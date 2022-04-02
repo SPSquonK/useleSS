@@ -1,0 +1,21 @@
+Program/*.exe
+Program/*.dll
+Resource/Char/
+Resource/Cursor/
+Resource/Icon/
+Resource/Item/
+Resource/Log/
+Resource/Model/
+Resource/Music/
+Resource/SFX/
+Resource/Sound/
+Resource/Theme/
+Resource/Weather/
+Resource/World/
+Resource/- Change IP of Neuz here.cmd
+Resource/**/*.exe
+Resource/**/*.dll
+Resource/**/*.asi
+Source/**/*.i
+**/error*.log
+**/*.plg
