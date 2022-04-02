@@ -144,7 +144,7 @@ BOOL CMessenger::AddDefferntFriend( u_long uidPlayer )
 	return FALSE;
 }
 
-CMessenger& CMessenger::operator =( CMessenger & rMessenger )
+CMessenger& CMessenger::operator =( const CMessenger & rMessenger )
 {
 	Clear();
 	for( C2FriendPtr::iterator i	= rMessenger.m_aFriend.begin(); i != rMessenger.m_aFriend.end(); ++i )

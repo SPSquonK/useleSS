@@ -82,7 +82,7 @@ public:
 	DWORD		GetState() { return m_dwMyState; };
 	LPFRIEND    GetAt( int nIndex );
 	int			GetSize();
-	virtual	CMessenger&	CMessenger::operator=( CMessenger & rMessenger );
+	CMessenger&	operator=( const CMessenger & rMessenger );
 
 	CMessenger();
 	~CMessenger();

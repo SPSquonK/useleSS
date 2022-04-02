@@ -57,6 +57,8 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
+      <ConformanceMode>false</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -87,89 +89,61 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DPCoreClient.cpp">
-      
     </ClCompile>
     <ClCompile Include="DPDatabaseClient.cpp">
-      
     </ClCompile>
     <ClCompile Include="DPLoginSrvr.cpp">
-      
     </ClCompile>
     <ClCompile Include="LoginProtect.cpp">
-      
     </ClCompile>
     <ClCompile Include="LoginServer.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_Common\memtrace.cpp">
-      
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="User.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\ar.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\dos2.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_Network\Misc\Src\heapmng.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\MyTrace.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\buffer.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsock.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsocke.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_Network\Net\Src\crc.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpmng.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpsock.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversock.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversocke.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\sock.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_DirectX\dxutil.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_common\debug.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_Common\file.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_Common\timer.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_Common\vUtil.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_common\xutil.cpp">
-      
     </ClCompile>
     <ClCompile Include="..\_Common\scanner.cpp">
-      
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

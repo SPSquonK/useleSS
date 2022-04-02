@@ -5,6 +5,7 @@
 #define __CACHESERVER
 #define POINTER_64 __ptr64
 #define MASSIVE
+#define _HAS_STD_BYTE 0
 
 #include <afxwin.h>
 

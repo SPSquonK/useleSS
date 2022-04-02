@@ -34,7 +34,7 @@ public:
 //	void	Serialize( CAr & ar );
 	int	Serialize( CAr & ar );
 
-	virtual	CRTMessenger &	CRTMessenger::operator =( CRTMessenger & rRTMessenger );
+	CRTMessenger &	operator =( CRTMessenger & rRTMessenger );
 private:
 	DWORD	m_dwState;
 };

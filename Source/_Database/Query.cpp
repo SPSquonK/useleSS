@@ -133,7 +133,7 @@ BOOL CQuery::EnableConnectionPooling()
 //        경로는 반드시 완전 경로로 지정해야 한다.
 // Type=3:SQLConnect 함수로 DSN에 직접 연결한다.
 // 연결 또는 명령 핸들 할당에 실패하면 FALSE를 리턴한다.
-BOOL CQuery::Connect(int Type, char *ConStr, char *UID, const char *PWD)
+BOOL CQuery::Connect(int Type, const char *ConStr, const char *UID, const char *PWD)
 {
 	strcpy( DBName, ConStr );
 	strcpy( DBId, UID );
