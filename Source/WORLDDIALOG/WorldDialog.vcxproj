@@ -54,6 +54,8 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
+      <ConformanceMode>false</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>.\..\..\Output\WorldDialog\Release\WorldDialog.dll</OutputFile>
@@ -79,20 +81,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="NpcScript.cpp">
-      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="NpcScriptHelper.cpp">
-      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="WorldDialog.cpp">
-      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
   </ItemGroup>

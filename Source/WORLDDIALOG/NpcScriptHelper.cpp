@@ -3,7 +3,7 @@
 
 struct TABLES
 {
-	char* name;
+	const char* name;
 	void ( CNpcScript::*pmf)();
 };
 

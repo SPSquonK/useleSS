@@ -1,5 +1,4 @@
-#ifndef __FUNCTIONSINFO_H__
-#define __FUNCTIONSINFO_H__
+#pragma once
 
 struct NPCDIALOG_INFO;
 
@@ -204,5 +203,3 @@ struct NPCDIALOG_INFO
 
 	virtual Functions* GetFunctions() = 0;
 };
-
-#endif // __FUNCTIONSINFO_H__
