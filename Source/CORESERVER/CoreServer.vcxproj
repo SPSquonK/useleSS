@@ -12,11 +12,12 @@
     <SccLocalPath />
     <SccProvider />
     <ProjectGuid>{E441E1BD-55F2-4649-A7D0-020CA5327C0C}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -86,116 +87,116 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CoreServer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="DPCacheSrvr.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="DPCoreSrvr.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="DPDatabaseClient.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="dploginsrvr.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\memtrace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\playerdata.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\rtmessenger.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="WantedList.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_DirectX\dxutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_common\debug.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\Environment.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_common\file.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_common\guild.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_common\guildwar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\InstanceDungeonBase.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\InstanceDungeonParty.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\messenger.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\party.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\timer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\vutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_common\xutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Common\scanner.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\buffer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsocke.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpmng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpsock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversocke.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\net\src\sock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\ar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_Network\Misc\Src\heapmng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\MyTrace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\ServerDesc.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

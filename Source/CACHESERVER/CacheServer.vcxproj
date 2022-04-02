@@ -12,11 +12,12 @@
     <SccLocalPath />
     <SccProvider />
     <ProjectGuid>{11F05019-EF07-4A5B-B143-7B569374E837}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -51,8 +52,6 @@
       <AssemblerListingLocation>.\..\..\Output\CacheServer\Release/</AssemblerListingLocation>
       <ObjectFileName>.\..\..\Output\CacheServer\Release/</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\Output\CacheServer\Release/</ProgramDataBaseFileName>
-      <BrowseInformation>true</BrowseInformation>
-      <BrowseInformationFile>.\..\..\Output\CacheServer\Release/</BrowseInformationFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
@@ -88,137 +87,71 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CacheServer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="crashstatus.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPCacheSrvr.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPClient.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPCoreClient.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\memtrace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\messenger.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="packetlog.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\rtmessenger.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\speedhackchecker.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\vutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Network\Net\Src\crc.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\buffer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsocke.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpmng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpsock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversocke.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\sock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\ar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\dos2.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Network\Misc\Src\heapmng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\MyTrace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\ServerDesc.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\dxutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\debug.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\file.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\scanner.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\timer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\xutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

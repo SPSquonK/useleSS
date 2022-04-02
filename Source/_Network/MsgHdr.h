@@ -1412,7 +1412,7 @@ typedef	struct	_runscriptfunc
 #define	PN_PATCHSRVR	1100
 #define	PN_WORLDSRVR	3000
 #define	PN_CERTIFIER	23000
-#define	PN_CORESRVR	    4000
+#define	PN_CORESRVR	    34000
 #define	PN_CACHESRVR	5400
 #define	PN_DBSRVR_0		7000	// l
 //#define	PN_DBSRVR_1		7100	// w

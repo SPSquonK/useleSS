@@ -1,4 +1,4 @@
-USE [ACCOUNT_DBF]
+USE [USELESS_ACCOUNT_DBF]
 GO
 
 DECLARE	@return_value int

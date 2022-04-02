@@ -13,11 +13,12 @@
     <SccLocalPath />
     <SccProvider />
     <ProjectGuid>{5B8B5D21-B3B4-4141-9233-C9A235C46E13}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -49,8 +50,6 @@
       <AssemblerListingLocation>.\..\..\Output\Neuz\NoGameguard/</AssemblerListingLocation>
       <ObjectFileName>.\..\..\Output\Neuz\NoGameguard/</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\Output\Neuz\NoGameguard/</ProgramDataBaseFileName>
-      <BrowseInformation>true</BrowseInformation>
-      <BrowseInformationFile>.\..\..\Output\Neuz\NoGameguard/</BrowseInformationFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -94,1153 +93,587 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\_Common\accessory.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="CampusHelper.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="clord.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="Cloth.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\collecting.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="couplehelper.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPCertified.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPClient.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPClientGuildWar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPClientLux.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="DPCollectClient.cpp" />
     <ClCompile Include="DPLoginClient.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="HelperWebBox.cpp" />
     <ClCompile Include="..\_Common\langman.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\lord.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\memtrace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="Network.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="Neuz.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="NeuzEnemy.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="NeuzMsgProc.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="OpenLoadWnd.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\playerdata.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\pocket.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\rtmessenger.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Create</PrecompiledHeader>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="TimeLimit.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="WebBox.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="WebCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndQuizEvent.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="WorldMap.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\d3dapp.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\d3denumeration.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\d3dfont.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\d3dsettings.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\d3dutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\dsutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_DirectX\dxutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\FuncApplet.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\FuncTextCmd.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuideSystem.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndHelperWebBox.cpp" />
     <ClCompile Include="..\_Interface\WndInvenRemoveItem.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMailRequestingBox.cpp" />
     <ClCompile Include="..\_Interface\WndManager.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMessageBox.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndNeuz.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndQuest.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndQuitRoom.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRoomList.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSelectVillage.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndUserMarkNameChanger.cpp" />
     <ClCompile Include="..\_Interface\WndWebBox.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndWorld.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndWorldControlPlayer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ResManager.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndBase.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndControl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndEditCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndItemCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndTradeCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndCredit.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndTitle.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\Clipboard.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\ITheme.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\tooltip.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\Wnd2ndPassword.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndAwakening.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndBagEx.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndBank.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndBlessingCancel.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_interface\WndChangeFace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndChangeName.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndChattingBlockingList.cpp" />
     <ClCompile Include="..\_interface\WndCloseExistingConnection.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndCollecting.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndCommItem.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndDialog.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndDuelConfirm.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndField.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndHelp.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndHousing.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndLord.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndLvReqDown.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMap.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMapEx.cpp" />
     <ClCompile Include="..\_Interface\WndMessengerSearch.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMiniGame.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMotion.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndNotice.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndOption.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndOptionGame.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndParty.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPartyChangeTroup.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPartyConfirm.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPartyQuick.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPetRes.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPetSys.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPvp.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndQuestQuickInfo.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRainbowRace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRepairItem.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRepairItemCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSealChar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSelectCh.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndShop.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSummonAngel.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSummonFriend.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndTaskBar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndText.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndTutorial.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndUpgradeBase.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_interface\WndChatFilter.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndCommand.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndCommunication.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndFriendConFirm.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndFriendCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMessenger.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMessengerCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPartyCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_interface\WndRegVend.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_interface\WndVendor.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_interface\WndVendorBuy.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_interface\WndVendorCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuild.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_interface\WndGuildBank.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildCombat1to1.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildHouse.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildMerit.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildName.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildTabApp.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildTabInfo.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildTabMember.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildTabPower.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildTabWar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildVote.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildWarDecl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildWarGiveUp.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildWarPeace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildWarPeaceConfirm.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildWarRequest.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSecretRoom.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRankGuild.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRankInfo.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRankWar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPiercing.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndAdminCreateItem.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndDebugInfo.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndIndirectTalk.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\AIInterface.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\buff.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Campus.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Chatting.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Continent.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\CooltimeMgr.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\couple.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\debug.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\DefineCommon.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\eveschool.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Exchange.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\flyffevent.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\GuildCombat1to1.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\GuildHouse.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\honor.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Housing.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\HwOption.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\lordskill.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\LuaBase.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MapComboBoxData.cpp" />
     <ClCompile Include="..\_Common\MapInformationManager.cpp" />
     <ClCompile Include="..\_Common\MapMonsterInformation.cpp" />
     <ClCompile Include="..\_Common\MapMonsterInformationPack.cpp" />
     <ClCompile Include="..\_Common\messenger.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MiniGame.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MiniGameBase.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\moverbuff.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Particle.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\partyquest.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\PCBang.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\piercing.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\post.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\profile.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ProfileInfo.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Project.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ProjectCmn.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ProjectLux.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Quiz.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\RainbowNPCInformation.cpp" />
     <ClCompile Include="..\_Common\RainbowNPCInformationPack.cpp" />
     <ClCompile Include="..\_Common\RainbowRace.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\randomoption.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Rijndael.cpp" />
     <ClCompile Include="..\_Common\SecretRoom.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\serialnumber.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\spevent.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Tax.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\TeleportationIconInfo.cpp" />
     <ClCompile Include="TexturePool.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ticket.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\TreeInformation.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\UltimateWeapon.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\UserMarkPositionInfo.cpp" />
     <ClCompile Include="..\_Common\yUtil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\lod.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\CommonCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\CreateObj.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Ctrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Item.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Light.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Mover.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverActEvent.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverAttack.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverEquip.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverItem.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverMove.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverMsg.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverParam.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverRender.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\MoverSkill.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Obj.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ObjSerialize.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\ObjSerializeOpt.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\PathObj.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\pet.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Region.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Sfx.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\sfxbase.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\SfxObj.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Ship.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\SkillInfluence.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\weather.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\billboard.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Bone.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Material.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Model.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ModelGlobal.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ModelMng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ModelObject.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Object3D.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ParticleMng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Shader.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\TailEffectMng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\scanner.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Script.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\guild.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\guildquest.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\GuildRender.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_common\guildwar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\party.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Camera.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Environment.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Respawn.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\SkyBox.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\TerrainMng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\World.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\World3D.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\WorldEnvironment.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\WorldFile.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\WorldIntersect.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\worldmng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\2DRender.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\EditString.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\File.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Graphic3D.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Music.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Music2.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\path.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\targa.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\timer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\vutil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\xUtil.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\xUtil3D.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ClientMsg.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\DialogMsg.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\Console.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Common\ConsoleFunc.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Network\tools.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\buffer.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\clientsocke.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Network\Net\Src\crc.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpmng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\dpsock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\serversocke.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\sock.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\ar.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Network\Misc\Src\heapmng.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_Multimedia\WRITEAVI.CPP">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\Action.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMover.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverCollision.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverCtrl.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverDmg.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverMsg.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverMsg2.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverState.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverState2.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionShip.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">Disabled</Optimization>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='NoGameguard|Win32'">true</BrowseInformation>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

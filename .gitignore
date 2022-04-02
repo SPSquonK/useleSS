@@ -19,3 +19,5 @@ Resource/**/*.asi
 Source/**/*.i
 **/error*.log
 **/*.plg
+Source/all/.vs/
+Output/

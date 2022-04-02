@@ -129,10 +129,10 @@ void CDbManager::DBQryAccount( char* qryAccount, char* szAccount, char* szPass )
 #endif	// __TWN_LOGIN0816
 #endif // __PCBANG
 
-// AccountFlag¸¦ ¾ò´Â´Ù.
-// f18 - µðºñ¿¡¼­ ¾ò´Â µ¥ÀÌÅ¸ 
-//       ÅÂ±¹: 2 - ¹Ì¼º³âÀÚ, 4 - ¹Ìµî·Ï ¼ºÀÎ, 8 - µî·ÏµÈ ¼ºÀÎ 
-//       ±×¿Ü: 0 - ¹Ì¼º³âÀÚ, 1 - ¼ºÀÎ 
+// AccountFlagï¿½ï¿½ ï¿½ï¿½Â´ï¿½.
+// f18 - ï¿½ï¿½ñ¿¡¼ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å¸ 
+//       ï¿½Â±ï¿½: 2 - ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½, 4 - ï¿½Ìµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, 8 - ï¿½ï¿½Ïµï¿½ ï¿½ï¿½ï¿½ï¿½ 
+//       ï¿½×¿ï¿½: 0 - ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½, 1 - ï¿½ï¿½ï¿½ï¿½ 
 
 BYTE CDbManager::GetAccountFlag( int f18, LPCTSTR szAccount )
 {
@@ -142,7 +142,7 @@ BYTE CDbManager::GetAccountFlag( int f18, LPCTSTR szAccount )
 	if( ::GetLanguage() == LANG_THA )
 	{
 		if( cb18 & 0x04 )
-			cbAccountFlag |= ACCOUNT_FLAG_UNREGISTER18;		// ¹Ìµî·Ï ¼ºÀÎ
+			cbAccountFlag |= ACCOUNT_FLAG_UNREGISTER18;		// ï¿½Ìµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		else if( cb18 & 0x08 )
 			cbAccountFlag |= ACCOUNT_FLAG_18;
 	}
@@ -264,27 +264,27 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 				OnCertifyQueryOK( query, pData );
 				m_pDbIOData->Free( pData );
 				return;
-			case 1:	// ¾ÏÈ£Æ²¸²
+			case 1:	// ï¿½ï¿½È£Æ²ï¿½ï¿½
 				if( pData->dwIP )
 					accountMgr.SetError( 1 );
 				nCode = ERROR_FLYFF_PASSWORD;
 				break;
-			case 3:	// °èÁ¤ºí·°ÀÌ°Å³ª À¯·áÈ­ ÃÊ°ú
+			case 3:	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½È­ ï¿½Ê°ï¿½
 				nCode = ERROR_BLOCKGOLD_ACCOUNT;				
 				break;
-			case 4:	// ½Ç¸íÀÎÁõÈÄ °ÔÀÓÁ¢¼ÓÀÌ °¡´ÉÇÕ´Ï´Ù www.flyff.comÀ¸·Î Á¢¼ÓÇØÁÖ½Ê½Ã¿À
+			case 4:	// ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½ www.flyff.comï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½Ê½Ã¿ï¿½
 				nCode = ERROR_FLYFF_AUTH;				
 				break;
-			case 5: // ÇÁ¸®ÇÁ´Â 12¼¼ ÀÌ»ó ÀÌ¿ë°¡ ÀÌ¹Ç·Î °ÔÀÓÁ¢¼ÓÀ» ÇÒ¼ö ¾ø½À´Ï´Ù.
+			case 5: // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 12ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½Ì¿ë°¡ ï¿½Ì¹Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
 				nCode = ERROR_FLYFF_PERMIT;
 				break;
-			case 6: // 14¼¼ ¹Ì¸¸ °¡ÀÔÀÚ ºÐµéÀº ºÎ¸ð´Ô µ¿ÀÇ¼­¸¦ º¸³»ÁÖ¼Å¾ß °ÔÀÓ Á¢¼ÓÀÌ °¡´ÉÇÕ´Ï´Ù. www.flyff.com À¸·Î Á¢¼ÓÇÏ¼Å¼­ È®ÀÎÇØ ÁÖ¼¼¿ä.
+			case 6: // 14ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ðµï¿½ï¿½ï¿½ ï¿½Î¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼Å¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½. www.flyff.com ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¼Å¼ï¿½ È®ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ï¿½ï¿½.
 				nCode = ERROR_FLYFF_NEED_AGREEMENT;
 				break;
-			case 7:	// WebÅ»ÅðÀÚ È¸¿ø
+			case 7:	// WebÅ»ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
 				nCode = ERROR_FLYFF_NO_MEMBERSHIP;
 				break;
-			case 9:	// ½Ç½Ã°£ µ¥ÀÌÅÍ ÀÛ¾÷ À¯Àú
+			case 9:	// ï¿½Ç½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½
 				nCode = ERROR_FLYFF_DB_JOB_ING;
 				break;
 			case 91:
@@ -328,9 +328,9 @@ u_int __stdcall DbWorkerThread( LPVOID nIndex )
 	CAccountMgr mgr;
 
 	CQuery query;
-	if( FALSE == query.Connect( 3, "login", "account", g_DbManager.m_szLoginPWD ) )
+	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
 	{
-		AfxMessageBox( "Error : Not Connect Login DB" );
+		AfxMessageBox( "Error : Not Connect useless_account DB" );
 	}
 
 	SetEvent( s_hHandle );
@@ -428,8 +428,8 @@ u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 	CAccountMgr mgr;
 
 	CQuery query;
-	if( FALSE == query.Connect( 3, "login", "account", g_DbManager.m_szLoginPWD ) )
-		AfxMessageBox( "can't connect to database : login" );
+	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
+		AfxMessageBox( "can't connect to database : useless_account" );
 
 	SetEvent( s_hHandle );
 
@@ -730,8 +730,8 @@ u_int __stdcall JapanAuthWorker( LPVOID pParam )
 	CAccountMgr mgr;
 
 	CQuery query;
-	if( FALSE == query.Connect( 3, "login", "account", g_DbManager.m_szLoginPWD ) )
-		AfxMessageBox( "can't connect to database : login" );
+	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
+		AfxMessageBox( "can't connect to database : useless_account" );
 
 	SetEvent( s_hHandle );
 

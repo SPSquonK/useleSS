@@ -12,11 +12,12 @@
     </SccProjectName>
     <SccLocalPath>
     </SccLocalPath>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -78,20 +79,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="NpcScript.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="NpcScriptHelper.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="WorldDialog.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WORLDDIALOG_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
   </ItemGroup>
