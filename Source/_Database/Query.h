@@ -28,7 +28,7 @@ private:
 	SQLHDBC hDbc;							// 연결 핸들
 	char*	Col[MAXCOL];					// 바인딩될 컬럼 정보
 
-	int FindCol(char *name);				// 컬럼의 이름으로부터 번호를 찾아준다.
+	int FindCol(const char *name);				// 컬럼의 이름으로부터 번호를 찾아준다.
 
 public:
 	SQLHSTMT hStmt;							// 명령 핸들. 직접 사용할 수도 있으므로 public으로 정의
@@ -53,7 +53,7 @@ public:
 	BOOL Fetch();						// 한 행 가져오기
 	void Clear();							// 커서 해제 및 언 바인딩
 	int GetInt(int nCol);					// 정수형 컬럼 읽기
-	int GetInt(char *sCol);					// 정수형 컬럼 읽기
+	int GetInt(const char *sCol);					// 정수형 컬럼 읽기
 
 	__int64		GetInt64( int nCol );
 	__int64		GetInt64( char* sCol );
@@ -74,7 +74,7 @@ public:
 	char GetChar(int nCol);					// 실수형 컬럼 읽기
 	char GetChar(char *sCol);				// 실수형 컬럼 읽기
 	void GetStr(int nCol, char *buf);		// 문자열형 컬럼 읽기
-	void GetStr(char *sCol, char *buf);		// 문자열형 컬럼 읽기
+	void GetStr(const char *sCol, char *buf);		// 문자열형 컬럼 읽기
 	int ReadBlob(LPCTSTR szSQL, void *buf);
 	void WriteBlob(LPCTSTR szSQL, void *buf, int size);
 	BOOL BindParameter(SQLUSMALLINT parameterNumber,
@@ -90,7 +90,7 @@ public:
 	BOOL MoreResults( void );
 	
 
-	void WriteLogFile(char *strLog,...);
+	void WriteLogFile(const char *strLog,...);
 	static BOOL EnableConnectionPooling();
 };
 // TODO: 모듈 분리 

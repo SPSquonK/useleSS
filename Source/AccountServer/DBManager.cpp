@@ -96,7 +96,7 @@ void CDbManager::GetStrTime( CTime *pTime, char *strbuf )
 	*pTime	= CTime( atoi( sYear ), atoi( sMonth ), atoi( sDay ), atoi( sHour ), atoi( sMin ), 0 );
 }
 
-void CDbManager::DBQryAccount( char* qryAccount, char* Gu, char* szAccount )
+void CDbManager::DBQryAccount( char* qryAccount, const char* Gu, const char* szAccount )
 {
 	sprintf( qryAccount, "LOGINJOIN_STR '%s', '%s'", Gu, szAccount );
 }

@@ -129,7 +129,7 @@ public:
 	void	GetStrTime( CTime *time, char *strbuf );
 	void	SetTracking( BOOL bEnable );
 	void	SetLogging( BOOL bEnable );
-	void	DBQryAccount( char* qryAccount, char* Gu, char* szAccount = '\0' );
+	void	DBQryAccount( char* qryAccount, const char* Gu, const char* szAccount = "" );
 	void	UpdateTracking( BOOL bON, LPCTSTR lpszAccount );
 	BOOL	AllOff();
 	void	AccountOn( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "debug.h"
+
 const DWORD NULL_ID	= 0xffffffff;
 
 
@@ -92,114 +94,6 @@ typedef CStack<UINT>   CUIntStack;
 typedef CStack<LONG>   CLongStack; 
 typedef CStack<short>  CShortStack; 
 typedef CStack<int>    CIntStack; 
-
-template <class T> class CQueue 
-{
-	int m_nSize;
-	int m_nHead;
-	int	m_nTail;
-
-	T* m_pData;
-public:
-	CQueue(int nSize = 1024);
-	~CQueue() { safe_delete_array( m_pData ); }
-	void SetSize(int nSize);
-	int  GetSize() { return m_nSize; }
-	int GetCount(void)
-	{ 
-		if (m_nHead >= m_nTail)
-			return (m_nHead - m_nTail);
-		else
-			return (m_nSize - 1 - m_nTail + m_nHead);
-	}
-	void Clear() { m_nHead = 0; m_nTail = 0; } 
-	void Push(T data);
-	T Pop();
-	T GetPop();
-
-private:
-	void IncreaseIndex(int	&nIndex)
-	{
-		nIndex++;
-		if (nIndex >= m_nSize)
-			nIndex = 0;
-	}
-	BOOL IsFull(void)
-	{
-		if (GetCount() == m_nSize-1)
-			return TRUE;
-		return FALSE;
-	}
-	BOOL IsEmpty(void)
-	{
-		if (m_nHead == m_nTail)
-			return TRUE;
-		return FALSE;
-	}
-};
-
-template <class T> inline CQueue<T>::CQueue(int nSize) 
-{
-	m_nHead = 0;
-	m_nTail = 0;
-	m_pData = new T[m_nSize = nSize];
-}
-
-template <class T> inline void CQueue<T>::SetSize(int nSize) 
-{
-	m_nTop = 0;
-	safe_delete_array( m_pData );
-	m_pData = new T[m_nSize = nSize];
-}
-
-template <class T> inline void CQueue<T>::Push(T data) 
-{
-	if (IsFull())
-	{
-		T* pOld = m_pData;
-		m_pData = new T[m_nSize + 1024];
-		if (m_nHead >= m_nTail)
-		{
-			memcpy(m_pData, &pOld[m_nTail], (m_nHead-m_nTail)*sizeof(T));
-			m_nHead = m_nHead-m_nTail;
-			m_nTail = 0;
-		}
-		else
-		{
-			memcpy(m_pData, &pOld[m_nTail], (m_nSize-1-m_nTail)*sizeof(T));
-			memcpy(&m_pData[m_nSize-1-m_nTail], pOld, m_nHead*sizeof(T));
-			m_nHead = (m_nSize-1-m_nTail)+m_nHead;
-			m_nTail = 0;
-		}
-		safe_delete_array( pOld );
-		m_nSize += 1024;
-	}
-	m_pData[m_nHead] = data;
-	IncreaseIndex(m_nHead);
-}
-
-template <class T> inline T CQueue<T>::Pop() 
-{
-	T *p;
-//	ASSERT(!IsEmpty());
-	if( IsEmpty() )
-	{
-		WriteLog( "%s, %d", __FILE__, __LINE__ );
-	}
-	p =  m_pData[m_nTail];
-	IncreaseIndex(m_nTail);
-	return p;
-}
-
-template <class T> inline T CQueue<T>::GetPop() 
-{
-//	ASSERT(!IsEmpty());
-	if( IsEmpty() )
-	{
-		WriteLog( "%s, %d", __FILE__, __LINE__ );
-	}
-	return m_pData[m_nTail];
-}
 
 template <class T> class CFixedArray
 {

@@ -42,7 +42,7 @@ public:
 	virtual	BOOL	Shutdown( SOCKET hSocket )	= 0;
 	virtual	void	Send( char* lpData, DWORD dwDataSize, DPID dpidTo )	= 0;
 	virtual	CSock*	Get( SOCKET hSocket );
-	virtual	void CSock::Detach( void )
+	virtual	void Detach( void )
 	{
 		m_hSocket	= INVALID_SOCKET;
 		m_dpid	= m_dpidpeer	= DPID_UNKNOWN;

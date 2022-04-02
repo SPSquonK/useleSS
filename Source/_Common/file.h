@@ -11,11 +11,11 @@ class CFileIO
 public:
 	FILE* fp;
 
-	CFileIO( LPCTSTR lpszFileName, TCHAR* mode ) { Open( lpszFileName, mode ); }
+	CFileIO( LPCTSTR lpszFileName, const TCHAR* mode ) { Open( lpszFileName, mode ); }
 	CFileIO() { fp = NULL; } 
 	
 	virtual ~CFileIO() { Close(); }
-	virtual BOOL  Open( LPCTSTR lpszFileName, TCHAR* mode );
+	virtual BOOL  Open( LPCTSTR lpszFileName, const TCHAR* mode );
 	virtual BOOL Close();
 	virtual int	 Flush()  { return fflush( fp ); }
 	virtual char  GetC()  { return (char)getc( fp ); }

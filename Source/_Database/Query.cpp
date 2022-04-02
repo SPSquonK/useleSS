@@ -331,7 +331,7 @@ void CQuery::Clear()
 }
 
 // 컬럼 이름으로부터 컬럼 인덱스를 찾는다. 없을 경우 -1을 리턴한다.
-int CQuery::FindCol(char *name)
+int CQuery::FindCol(const char *name)
 {
 	int i;
 	for (i=0;i<nCol;i++) 
@@ -358,7 +358,7 @@ int CQuery::GetInt(int nCol)
 }
 
 // sCol의 컬럼값을 정수로 읽어준다.
-int CQuery::GetInt(char *sCol)
+int CQuery::GetInt(const char *sCol)
 {
 	int n;
 	n=FindCol(sCol);
@@ -470,7 +470,7 @@ void CQuery::GetStr(int nCol, char *buf)
 }
 
 // sCol의 컬럼값을 문자열로 읽어준다.
-void CQuery::GetStr(char *sCol, char *buf)
+void CQuery::GetStr(const char *sCol, char *buf)
 {
 	int n;
 	n=FindCol(sCol);
@@ -602,7 +602,7 @@ void CQuery::WriteBlob(LPCTSTR szSQL, void *buf, int size)
 	Clear();
 }
 
-void CQuery::WriteLogFile(char* lpszFormat,...)
+void CQuery::WriteLogFile(const char* lpszFormat,...)
 {	
 	TCHAR szBuffer[1024* 64];
 

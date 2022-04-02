@@ -79,7 +79,7 @@ template <class T>
 inline CSock* CServerSockE<T>::Get( SOCKET hSocket )
 	{
 #ifdef __STL_0402
-		CMapChildE<T>::iterator i	= m_mapChild.find( hSocket );
+		auto i	= m_mapChild.find( hSocket );
 		if( i != m_mapChild.end() )
 			return i->second;
 		return NULL;
@@ -173,7 +173,7 @@ BOOL CServerSockE<T>::CloseChild( SOCKET hSocket )
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 #ifdef __STL_0402
-		CMapChildE<T>::iterator i	= m_mapChild.find( hSocket );
+		auto i	= m_mapChild.find( hSocket );
 		if( i != m_mapChild.end() )
 		{
 			CClientSockE<T>* pChild	= i->second;
@@ -203,7 +203,7 @@ void CServerSockE<T>::CloseAllChild( void )
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 #ifdef __STL_0402
-		for( CMapChildE<T>::iterator i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
+		for( auto i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 		{
 			CClientSockE<T>* pChild	= i->second;
 			TRACE( "~%x, %d\n", pChild, pChild->GetHandle() );
@@ -233,7 +233,7 @@ void CServerSockE<T>::Send( char* lpData, DWORD dwDataSize, DPID dpidTo )
 		{
 			CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 #ifdef __STL_0402
-			for( CMapChildE<T>::iterator i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
+			for( auto i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 			{
 				CClientSockE<T>* pChild	= i->second;
 				pChild->Send( lpData, dwDataSize, pChild->GetHandle() );

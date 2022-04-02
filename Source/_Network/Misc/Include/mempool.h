@@ -38,7 +38,7 @@ template <class T> CMemPool<T>::~CMemPool()
 {
 	CMclAutoLock Lock( m_cs );
 
-	for( list<T*>::iterator i = m_listBlock.begin(); i != m_listBlock.end(); ++i )
+	for( auto i = m_listBlock.begin(); i != m_listBlock.end(); ++i )
 		free( *i );
 	m_listBlock.clear();
 

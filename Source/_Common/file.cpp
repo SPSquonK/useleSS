@@ -24,7 +24,7 @@ BOOL CFileIO::Close(void)
 	return FALSE;
 }
 
-BOOL CFileIO::Open( LPCTSTR fileName, TCHAR* mode )
+BOOL CFileIO::Open( LPCTSTR fileName, const TCHAR* mode )
 {
 	fp = _tfopen( fileName, mode );
 	if( fp )

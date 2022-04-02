@@ -4,6 +4,7 @@
 #define POINTER_64 __ptr64
 #define _USE_32BIT_TIME_T
 #define __ACCOUNT
+#define _HAS_STD_BYTE 0
 
 #include <afxwin.h>
 
