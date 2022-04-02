@@ -21,3 +21,5 @@ Source/**/*.i
 **/*.plg
 Source/all/.vs/
 Output/
+ServerStarter/
+error_*
