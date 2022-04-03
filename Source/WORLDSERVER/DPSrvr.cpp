@@ -5548,9 +5548,10 @@ void CDPSrvr::QueryDestroyPlayer( DPID dpidCache, DPID dpidSocket, DWORD dwSeria
 
 void CDPSrvr::OnSetNaviPoint( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
+	const auto [pos, objidTarget] = ar.Extract<D3DXVECTOR3, OBJID>();
+
 	NaviPoint nv;
-	OBJID objidTarget;
-	ar >> nv.Pos >> objidTarget;
+	nv.Pos = pos;
 
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )

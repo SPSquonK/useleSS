@@ -1,17 +1,16 @@
-#ifndef __AR_H__
-#define __AR_H__
-
 #pragma once
 
 #include "HeapMng.h"
 
 
 
-class CAr
-{
+class CAr final {
 public:
 	CAr(void *lpBuf = NULL, u_int nBufSize = 0);
 	~CAr();
+
+	CAr(const CAr &) = delete;
+	CAr & operator=(const CAr &) = delete;
 
 // Flag values
 	enum	{ store = 0, load = 1 };
@@ -75,6 +74,14 @@ static	DWORD	s_dwHdrPrev;
 static	DWORD	s_dwHdrCur;
 #endif	// _DEBUG
 #endif	// __CLIENT
+
+	/** Push into the archiver each passed value */
+	template<typename ... Ts> void Accumulate(Ts ...);
+	/** Extract from the archiver one value of each specified value type */
+	template<typename ... Ts> std::tuple<Ts ...> Extract();
+
+private:
+	template<size_t POS, typename TupleType> void TupleExtract(TupleType & tuple);
 
 protected:
 	BYTE	m_nMode;	// read or write
@@ -191,4 +198,26 @@ inline u_long CAr::GetOffset( void )
 	return( m_lpBufCur - m_lpBufStart );
 }
 
-#endif //__AR_H__
+template<typename... Ts>
+inline void CAr::Accumulate(Ts ... ts) {
+	((*this << ts), ...);
+}
+
+template<>
+inline void CAr::Accumulate() {
+}
+
+template<size_t POS, typename TupleType>
+inline void CAr::TupleExtract(TupleType & tuple) {
+	if constexpr (POS != std::tuple_size<TupleType>::value) {
+		*this >> std::get<POS>(tuple);
+		TupleExtract<POS + 1, TupleType>(tuple);
+	}
+}
+
+template<typename ...Ts>
+inline std::tuple<Ts...> CAr::Extract() {
+	std::tuple<Ts...> tuples;
+	TupleExtract<0, std::tuple<Ts...>>(tuples);
+	return tuples;
+}

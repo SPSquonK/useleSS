@@ -14278,7 +14278,7 @@ void CDPClient::OnSetNaviPoint( OBJID objid, CAr & ar )
 void CDPClient::SendSetNaviPoint( const D3DXVECTOR3 & Pos, OBJID objidTarget )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SETNAVIPOINT, DPID_UNKNOWN );
-	ar << Pos << objidTarget;
+	ar.Accumulate<D3DXVECTOR3, OBJID>(Pos, objidTarget);
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
