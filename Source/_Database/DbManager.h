@@ -104,42 +104,28 @@ enum QUERYMODE
 	QM_DELETE_MESSENGER,
 	QM_UPDATE_MESSENGER,
 #endif	// __RT_1025
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	QM_GUILDBANK_LOG_VIEW,
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	LOG_GETHONORTIME,
-#endif	// __HONORABLE_TITLE			// 달인
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	QM_SEALCHAR,
 	QM_SEALCHARCONM,
 	QM_SEALCHARGET,
 	QM_SEALCHARSET,
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	GC1TO1_STATE,
 	GC1TO1_LOAD,
 	GC1TO1_TENDER,
 	GC1TO1_LINEUP,
 	GC1TO1_WARPERSON,
 	GC1TO1_WARGUILD,
-#endif // __GUILD_COMBAT_1TO1
 #ifdef __JEFF_FIX_0
 	QM_QUERY_MAIL_BOX,
 	QM_ALL_PLAYER_DATA,
 #endif	// __JEFF_FIX_0
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	LOG_INSTANCEDUNGEON,
-#endif // __INSTANCE_DUNGEON
 #ifdef __ERROR_LOG_TO_DB
 	LOG_ERROR,
 #endif // __ERROR_LOG_TO_DB
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	QM_LOGIN_PROTECT, 
-#endif // __2ND_PASSWORD_SYSTEM
-#if __VER >= 15 // __GUILD_HOUSE
 	LOG_GUILDFURNITURE
-#endif // __GUILD_HOUSE
 };
 
 typedef struct tagACCOUNT_INFO
@@ -202,19 +188,13 @@ struct	MAIL_QUERYINFO
 	int		nResistSMItemId;
 	BYTE	bCharged;
 	DWORD	dwKeepTime;
-#if __VER >= 11 // __SYS_IDENTIFY
 	__int64	iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-	int		nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 	int		nPiercedSize;
 	DWORD	dwItemId1;
 	DWORD	dwItemId2;
 	DWORD	dwItemId3;
 	DWORD	dwItemId4;
-#if __VER >= 9 // __ULTIMATE
 	DWORD	dwItemId5;
-#endif // __ULTIMATE
 	BOOL	bPet;
 	BYTE	nKind;
 	BYTE	nLevel;
@@ -252,19 +232,13 @@ struct	MAIL_QUERYINFO
 			nResistSMItemId	= 0;
 			bCharged	= 0;
 			dwKeepTime	= 0;
-#if __VER >= 11 // __SYS_IDENTIFY
 			iRandomOptItemId	= 0;
-#else	// __SYS_IDENTIFY
-			nRandomOptItemId	= 0;
-#endif	// __SYS_IDENTIFY
 			nPiercedSize	= 0;
 			dwItemId1	= 0;
 			dwItemId2	= 0;
 			dwItemId3	= 0;
 			dwItemId4	= 0;
-#if __VER >= 9 // __ULTIMATE
 			dwItemId5	= 0;
-#endif // __ULTIMATE
 			bPet	= FALSE;
 			nKind	= nLevel	= 0;
 			dwExp	= 0;
@@ -406,7 +380,6 @@ struct ADDBANK_QUERYINFO
 	};
 };
 
-#if __VER >= 11 // __SYS_POCKET
 typedef	struct	_PocketParam
 {
 	u_long		idPlayer;
@@ -434,7 +407,6 @@ typedef	struct	_PocketParam
 		tExpirationDate		= 0;
 	}
 }	PocketParam;
-#endif	// __SYS_POCKET
 
 struct WAR_QUERYINFO
 {
@@ -573,11 +545,7 @@ typedef	struct	_ItemStruct
 {
 	char	szItem[512];
 	char	szExt[64];
-#if __VER >= 12 // __EXT_PIERCING
 	char	szPiercing[256];
-#else // __EXT_PIERCING
-	char	szPiercing[64];
-#endif // __EXT_PIERCING
 
 #ifdef __PET_1024
 	char	szPet[100];
@@ -600,11 +568,7 @@ typedef	struct	_ItemContainerStruct
 	char	szIndex[512];
 	char	szObjIndex[512];
 	char	szExt[2048];
-#if __VER >= 15 // __PETVIS
 	char	szPiercing[8000];
-#else // __PETVIS
-	char	szPiercing[4096];
-#endif // __PETVIS
 #ifdef __PET_1024
 	char	szPet[4200];	// 42 * 100
 #else	// __PET_1024
@@ -621,7 +585,6 @@ typedef	struct	_ItemContainerStruct
 		}
 }	ItemContainerStruct, *PItemContainerStruct;
 
-#if __VER >= 11 // __SYS_POCKET
 typedef	struct	_PocketStruct : public ItemContainerStruct
 {
 	BOOL	bExpired;
@@ -632,10 +595,8 @@ typedef	struct	_PocketStruct : public ItemContainerStruct
 		tExpirationDate		= 0;
 	}
 }	PocketStruct,	*PPocketStruct;
-#endif	// __SYS_POCKET
 
 
-#if __VER >= 11 // __SYS_COLLECTING
 typedef	struct	_CONV_RESULT_ITEM
 {
 	DWORD	dwItemId;
@@ -646,14 +607,11 @@ typedef	struct	_CONV_RESULT_ITEM
 		nAbilityOption	= 0;
 	}
 }	CONV_RESULT_ITEM;
-#endif	// __SYS_COLLECTING
 
 class CGuildMng;
 class CMail;
 
-#if __VER >= 12
 typedef	map<DWORD, CONV_RESULT_ITEM>	MDC;
-#endif	// 12
 
 class CDbManager
 {
@@ -670,21 +628,7 @@ class CDbManager
 		char OneItem[MAX_PATH];
 		int nNo, Item_Count;
 		__int64 m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 		CItemElem itemElem;
-#else // __EXT_PIERCING
-		int m_nAbilityOption, nItemResist, nResistAbilityOption, nCharged;
-		int nPiercedSize;
-		DWORD adwItemId0, adwItemId1, adwItemId2, adwItemId3;
-#ifdef __SEND_ITEM_ULTIMATE
-		DWORD adwItemId4;
-#endif // __SEND_ITEM_ULTIMATE
-#if __VER >= 11 // __SYS_IDENTIFY
-		__int64	iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-		int	nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
-#endif // __EXT_PIERCING
 	};
 	struct __GCRESULTVALUEGUILD
 	{
@@ -728,9 +672,6 @@ public:
 
 	CAccountCacheMgr m_AccountCacheMgr;
 	CMclCritSec		m_AddRemoveLock;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	ULONG2STRING	m_ulong2str;
-#endif	// __SYS_PLAYER_DATA
 	ULONG2STRING	m_2PartyNamePtr;
 	CMclCritSec		m_joinLock;
 	char			m_aszJoin[MAX_JOIN_SIZE][MAX_PLAYER];
@@ -794,9 +735,7 @@ public:
 	void	AllSaveSkill( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 #endif // __S_NEW_SKILL_2	
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	void	SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery );
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __SKILL_0205
 	void	SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, LPBYTE abUpdateSkill, char* szQuery );
@@ -804,11 +743,7 @@ public:
 	void	SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, char* szQuery );
 #endif	// __SKILL_0205
 	void	SaveJobLv( CMover* pMover, char* szJobLv );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	void	SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest );
-#else // __IMPROVE_QUEST_INTERFACE
-	void	SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	void	SaveInventory( CMover* pMover, PItemContainerStruct pItemContainerStruct );
 	void	SaveBank( CMover* pMover, CItemContainer<CItemElem>* pPlayerBank, PItemContainerStruct pItemContainerStruct );
@@ -819,9 +754,7 @@ public:
 	void	SaveTaskBar( CMover* pMover, char* szAppletTaskBar, char* szItemTaskBar, char* szSkillTaskBar );
 	void	SaveSMCode( CMover* pMover, char* szszSMTime );
 	void	SaveSkillInfluence( CMover* pMover, char* szszSkillInfluence );
-#if __VER >= 11 // __SYS_POCKET
 	void	MakeQueryPocket( char* szQuery, const PocketParam & p );
-#endif	// __SYS_POCKET
 	void	DBQryAddBankSave( char* szSql, const ADDBANK_QUERYINFO & info );
 	void	SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct );
 	void	SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
@@ -835,16 +768,9 @@ public:
 	void	ChangeBankPass( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	Gamema_Chat( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void	SerializePlayerID( CAr & ar );
-#endif	// __SYS_PLAYER_DATA
 
 //	u_long	GetPlayerID( LPCSTR lpszPlayer );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	BOOL	LoadPlayerData( void );
-#else	// __SYS_PLAYER_DATA
-	BOOL	OpenPlayerID( void );
-#endif	// __SYS_PLAYER_DATA
 	BOOL	GetPartyName( void );
 	void	SerializeGuildCombat( CAr & ar );
 	void	SerializeResultValue( CAr & ar );
@@ -865,24 +791,18 @@ public:
 	BOOL	QueryGetMailRealTime( CQuery* pQuery );
 #endif // __GETMAILREALTIME
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	void	LoadGC1to1TenderGuild( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, DPID dpid );
 	void	GC1to1State( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	GC1to1Tender( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	GC1to1LineUp( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	GC1to1WarPerson( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	GC1to1WarGuild( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	void	GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	void	SealChar( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	SealCharConm( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	SealCharGet( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	SealCharSet( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 	void	CalluspPetLog( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 
@@ -893,20 +813,12 @@ public:
 	BOOL	RemoveInvalidItem();
 
 	BOOL	Conv( LPCSTR lpFileName );
-#if __VER >= 11 // __SYS_COLLECTING
 	BOOL	ConvInventory( map<DWORD, CONV_RESULT_ITEM> & mConv );
 	BOOL	ConvBank( map<DWORD, CONV_RESULT_ITEM> & mConv );
 	BOOL	ConvGuildBank( map<DWORD, CONV_RESULT_ITEM> & mConv );
-#else	// __SYS_COLLECTING
-	BOOL	ConvInventory( map<DWORD, DWORD> & mConv );
-	BOOL	ConvBank( map<DWORD, DWORD> & mConv );
-	BOOL	ConvGuildBank( map<DWORD, DWORD> & mConv );
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 12
 	CQuery*		CreateCharQuery( void );
 	BOOL	ConvertPocket( MDC & mConv );
-#endif	// 12
 
 	BOOL	RestorePet( LPCTSTR lpFileName );
 	BOOL	RestorePetInventory( map<DWORD, int> & mRestore );
@@ -958,11 +870,7 @@ public:
 
 	void	AddPartyName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
-#if __VER >= 11 // __SYS_IDENTIFY
 	BOOL	call_uspLoggingTrade( CQuery* pQuery, int nFlag, int nTradeID,  DWORD dwWorldID = 0, u_long idPlayer = 0, DWORD dwTradeGold = 0, const char* lpAddr = "", int nLevel = 0, int nJob = 0, int nItemIndex = 0, SERIALNUMBER iItemSerialNum = 0, int nItemCnt = 0, int nAbilityOpt = 0, int nItemResist = 0, int nResistAbilityOpt = 0, __int64 iRandomOpt=0 );
-#else	// __SYS_IDENTIFY
-	BOOL	call_uspLoggingTrade( CQuery* pQuery, int nFlag, int nTradeID,  DWORD dwWorldID = 0, u_long idPlayer = 0, DWORD dwTradeGold = 0, const char* lpAddr = "", int nLevel = 0, int nJob = 0, int nItemIndex = 0, SERIALNUMBER iItemSerialNum = 0, int nItemCnt = 0, int nAbilityOpt = 0, int nItemResist = 0, int nResistAbilityOpt = 0, int nRandomOpt=0 );
-#endif	// __SYS_IDENTIFY
 	LONG	m_cbTrade;
 	int		GetTradeNo( void );
 	void	call_uspXXXMultiServer( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
@@ -987,14 +895,10 @@ public:
 	//void	GetBank( BOOL bCache, ACCOUNT_CACHE* AccountCache, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nMySlot, char* pszBankPW );
 	BOOL	GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nSlot );
 	BOOL	GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#if __VER >= 12 // __EXT_PIERCING
 	void	LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, int* pLocation );
 	void	GetPiercingInfoFromMail( CQuery* pQuery, CItemElem* pItemElem );
-#endif // __EXT_PIERCING
-#if __VER >= 11 // __SYS_POCKET
 	BOOL	GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	SavePocket( CMover* pMover, PPocketStruct pPocketStruct );
-#endif	// __SYS_POCKET
 	BOOL	GetEquipment( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	GetCardCube( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
@@ -1004,9 +908,7 @@ public:
 	BOOL	GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetSMMode( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	void	GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif	// __HONORABLE_TITLE			// 달인
 
 	static	UINT	_GetThread( LPVOID pParam );
 	static	UINT	_PutThread( LPVOID pParam );
@@ -1030,11 +932,7 @@ public:
 		char* szLicenseSkill = '\0', char* aJobLv = '\0', DWORD dwExpertLv = 0, int nidMarkingWorld = 0, float vMarkingPos_x = 0.0f,
 		float vMarkingPos_y = 0.0f, float vMarkingPos_z = 0.0f, int nRemainGP = 0, int nRemainLP = 0, int nFlightLv = 0,
 		int nFxp = 0, int nTxp = 0, char* szQuestCntArray = '\0', char szAuthority = 'F', DWORD dwMode = 0,
-#if __VER >= 8 // __S8_PK
 		int nidparty = 0, int nidMuerderer = 0, int nFame = 0,
-#else // __VER >= 8 // __S8_PK
-		int nidparty = 0, int nNumKill = 0, int nidMuerderer = 0, int nSlaughter = 0, int nFame = 0,
-#endif // __VER >= 8 // __S8_PK
 		EXPINTEGER nDeathExp = 0, int nDeathLevel = 0, DWORD dwFlyTime = 0, DWORD dwMessengerState = 0,
 		int nTotalPlayTime = 0, char* szCard = '\0', char* szIndex_Card = '\0', char* szObjIndexCard = '\0', char* szCube = '\0',
 		char* szIndex_Cube = '\0', char* szObjIndex_Cube = '\0', char* szInventory = '\0', char* dzapIndex = '\0', char* szadwEquipment = '\0',
@@ -1044,12 +942,8 @@ public:
 		, char* m_aCompleteQuest = '\0'
 		, char* ExtInven = '\0', char* PirecingInven = '\0', char* ExtBank = '\0', char* PirecingBank = '\0'
 		, DWORD dwReturnWorldID = 0, float fReturnPosX  = 0.0f, float fReturnPosY = 0.0f, float fReturnPosZ = 0.0f
-#if __VER >= 8 // __S8_PK
 		, int nPKValue = 0, DWORD dwPKPropensity = 0, DWORD dwPKExp	= 0
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 //__CSC_VER8_5
 		, EXPINTEGER nAngelExp = 0, LONG nAngelLevel = 0
-#endif // __CSC_VER8_5
 		, char* szInventoryPet	= '\0',	char* szBankPet	= '\0', DWORD dwPetId = 0
 #ifdef __EXP_ANGELEXP_LOG
 		, int nExpLog = 0, int nAngelExpLog = 0
@@ -1057,18 +951,12 @@ public:
 #ifdef __EVENTLUA_COUPON
 		, int nCoupon = 0
 #endif // __EVENTLUA_COUPON
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		, int nHonor = -1					// 달인선택 
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __LAYER_1015
 		, int nLayer	= 0
 #endif	// __LAYER_1015
-#if __VER >= 15 // __CAMPUS
 		, int nCampusPoint = 0, u_long idCampus = 0
-#endif // __CAMPUS
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		, char* m_aCheckedQuest = '\0'
-#endif // __IMPROVE_QUEST_INTERFACE
 		);
 
 	void	DBQryLog( char* qryLog, char* Gu, u_long idPlayer, int nserverindex, EXPINTEGER nExp1 = 0, int nLevel = 0,
@@ -1194,15 +1082,11 @@ private:
 	void	LogSkillPoint( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
 	void	LogConcurrentUserNumber( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	void	LogInstanceDungeon( CQuery *pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __INSTANCE_DUNGEON
 #ifdef __ERROR_LOG_TO_DB
 	void	LogError( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 #endif // __ERROR_LOG_TO_DB
-#if __VER >= 15 // __GUILD_HOUSE
 	void	LogGuildFurniture( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __GUILD_HOUSE
 
 	void	SetPlayerName( CQuery* pQueryChar, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	SnoopGuild( CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
@@ -1224,11 +1108,7 @@ private:
 	void	SchoolReport( CQuery* pQuery, LPDB_OVERLAPPED_PLUS po );
 
 	BOOL	GetSendItem( CQuery *pQry, __SendItemContents * pSendItemContents );
-#if __VER >= 12 // __EXT_PIERCING
 	SERIALNUMBER	SendItem( CQuery *pQry, char* szSql, CMover* pMover, __SendItemContents& SendItemContents );
-#else // __EXT_PIERCING
-	SERIALNUMBER	SendItem( CQuery *pQry, char* szSql, CMover* pMover, __SendItemContents SendItemContents );
-#endif // __EXT_PIERCING
 	SERIALNUMBER	RemoveItemInventory( ItemProp* pItemProp, CMover* pMover, int nAbilityOption, int nItemResist, int nResistAbilityOption, int nItemCount );
 	BOOL	GetRemoveItem( CQuery *pQry, int &nNo, char* pOneItem, int &nItem_Count, int &nAbilityOption, int &nItemResist, int &nResistAbilityOption, char &chState );	
 
@@ -1241,9 +1121,7 @@ private:
 	void	RecommendEve( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 #endif // __S_RECOMMEND_EVE
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	void	LogGetHonorTime(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-#endif	// __HONORABLE_TITLE			// 달인
 	CQuery	m_qryPostProc;
 	void	AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	RemoveMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
@@ -1286,9 +1164,7 @@ private:
 	void	SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
 #endif	// __PET_1024
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	void	LoginProtectCert( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __2ND_PASSWORD_SYSTEM
 	
 	u_long			m_idPlayer;
 	HANDLE			m_hThreadGet[MAX_GETTHREAD_SIZE];

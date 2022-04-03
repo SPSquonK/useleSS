@@ -19,9 +19,7 @@ void CContDamageCtrl::Init( void )
 	m_pSkillProp = NULL;
 	m_pAddSkillProp = NULL;
 	m_idTarget = m_idSrc = NULL_ID;
-#if __VER >= 8 // __S8_PK
 	m_bControl = FALSE;
-#endif // __VER >= 8 // __S8_PK
 	// chipi - 범위 ctrl 생성 스킬로 인해 듀얼 종료 후 카오되는 현상 수정
 	m_bDuelTarget = FALSE;
 }
@@ -52,11 +50,7 @@ void CContDamageCtrl::ApplyDamage( void )
 	D3DXVECTOR3 vPos = GetPos();					// 중심좌표
 	int nApplyType;
 	nApplyType = OBJTYPE_PLAYER | OBJTYPE_MONSTER;
-#if __VER >= 8 // __S8_PK
 	pSrc->ApplySkillRegion( vPos, nApplyType, pSkillProp, pAddSkillProp, false, TRUE, pCenter, m_bControl );
-#else // __VER >= 8 // __S8_PK
-	pSrc->ApplySkillRegion( vPos, nApplyType, pSkillProp, pAddSkillProp, false, TRUE, pCenter );
-#endif // __VER >= 8 // __S8_PK
 }
 
  // 지속데미지를 줌.

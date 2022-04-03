@@ -76,10 +76,8 @@ void	SetLanguageInfo( int nLanguage, int nSubLanguage );
 int		GetLanguage();
 int		GetSubLanguage();
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void	SetUse2ndPassWord( BOOL bUse );
 BOOL	IsUse2ndPassWord();
-#endif // __2ND_PASSWORD_SYSTEM
 
 /////////////////////////////////////////////////////////////////////////////
 // MATH

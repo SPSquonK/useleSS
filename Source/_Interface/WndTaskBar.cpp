@@ -340,7 +340,6 @@ void CWndTaskBar::Serialize( CAr & ar )
 				}
 			}
 #ifdef __CLIENT
-#if __VER >= 8	// __JEFF_VER_8
 			else if( m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_ITEM )
 			{
 				if( g_pPlayer )
@@ -350,7 +349,6 @@ void CWndTaskBar::Serialize( CAr & ar )
 						m_aSlotApplet[nIndex].m_dwItemId	= pItemBase->m_dwItemId;
 				}
 			}
-#endif	// __JEFF_VER_8
 #endif	// __CLIENT
 		}
 		ar >> nCount;	// slot item count
@@ -363,7 +361,6 @@ void CWndTaskBar::Serialize( CAr & ar )
 			if( m_aSlotItem[nIndex][nIndex2].m_dwShortcut == SHORTCUT_CHAT )
 				ar.ReadString( m_aSlotItem[nIndex][nIndex2].m_szString, MAX_SHORTCUT_STRING );
 #ifdef __CLIENT
-#if __VER >= 8	// __JEFF_VER_8
 			else if( m_aSlotItem[nIndex][nIndex2].m_dwShortcut == SHORTCUT_ITEM )
 			{
 				if( g_pPlayer )
@@ -373,7 +370,6 @@ void CWndTaskBar::Serialize( CAr & ar )
 						m_aSlotItem[nIndex][nIndex2].m_dwItemId	= pItemBase->m_dwItemId;
 				}
 			}
-#endif	// __JEFF_VER_8
 #endif	// __CLIENT
 			m_aSlotItem[nIndex][nIndex2].m_dwIndex = nIndex2;
 			SetTaskBarTexture( &m_aSlotItem[nIndex][nIndex2] );
@@ -434,14 +430,12 @@ void CWndTaskBar::SetTaskBarTexture( LPSHORTCUT pShortcut )
 				pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
 		}
 	}
-#if __VER >= 12 // __LORD
 	else if ( pShortcut->m_dwShortcut == SHORTCUT_LORDSKILL)
 	{
 		CCLord* pLord									= CCLord::Instance();
 		CLordSkillComponentExecutable* pComponent		= pLord->GetSkills()->GetSkill(pShortcut->m_dwId);	
 		if(pComponent) pShortcut->m_pTexture							= pComponent->GetTexture();
 	}
-#endif
 	else if ( pShortcut->m_dwShortcut == SHORTCUT_MOTION )
 	{
 		MotionProp* pMotionProp = prj.GetMotionProp( pShortcut->m_dwId );
@@ -604,7 +598,6 @@ void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
 			g_WndMng.PutToolTip_Skill( lpSkill->dwSkill, lpSkill->dwLevel, point, pRect );
 		}
 	}
-#if __VER >= 12 // __LORD
 	else	
 	if( pShortcut->m_dwShortcut == SHORTCUT_LORDSKILL )
 	{
@@ -626,7 +619,6 @@ void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
 		strEdit.SetParsingString( string );
 		g_toolTip.PutToolTip(10000, strEdit, *pRect, point, 0);
 	}
-#endif
 	else	
 	if( pShortcut->m_dwShortcut == SHORTCUT_MOTION )
 	{
@@ -833,11 +825,7 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 					if( pItemElem->GetProp()->dwPackMax > 1 )
 					{
 						TCHAR szTemp[ 32 ];
-#if __VER >= 8	// __JEFF_VER_8
 						_stprintf( szTemp, "%d", g_pPlayer?g_pPlayer->m_Inventory.GetItemCount( pItemElem->m_dwItemId ): 0 );
-#else	// __JEFF_VER_8
-						_stprintf( szTemp, "%d", pItemElem->m_nItemNum );
-#endif	// __JEFF_VER_8
 						CSize size = m_p2DRender->m_pFont->GetTextExtent( szTemp );
 						p2DRender->TextOut( point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff );
 						p2DRender->TextOut( point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0 );
@@ -855,7 +843,6 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 				}
 				else
 				{
-#if __VER >= 8	// __JEFF_VER_8
 					ItemProp* pItemProp	= prj.GetItemProp( lpShortcut->m_dwItemId );
 					if( pItemProp && pItemProp->dwPackMax > 1 )	// 병합 가능한 아이템이면?
 					{
@@ -876,10 +863,6 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 						lpShortcut->Empty();
 						g_DPlay.SendRemoveAppletTaskBar( i );
 					}
-#else	// __JEFF_VER_8
-					lpShortcut->Empty();
-					g_DPlay.SendRemoveAppletTaskBar( i );
-#endif	// __JEFF_VER_8
 				}
 			}
 			else
@@ -896,12 +879,10 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 			{
 				RenderCollTime( point, lpShortcut->m_dwId, p2DRender );
 			}
-		#if __VER >= 12 // __LORD
 			else if( lpShortcut->m_dwShortcut == SHORTCUT_LORDSKILL)
 			{
 					RenderLordCollTime( point, lpShortcut->m_dwId, p2DRender );
 			}
-		#endif
 			else
 			if( lpShortcut->m_dwShortcut == SHORTCUT_MOTION )
 			{
@@ -943,11 +924,7 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 					if( pItemElem->GetProp()->dwPackMax > 1 )
 					{
 						TCHAR szTemp[ 32 ];
-#if __VER >= 8	// __JEFF_VER_8
 						_stprintf( szTemp, "%d", g_pPlayer?g_pPlayer->m_Inventory.GetItemCount( pItemElem->m_dwItemId ): 0 );
-#else	// __JEFF_VER_8
-						_stprintf( szTemp, "%d", pItemElem->m_nItemNum );
-#endif	// __JEFF_VER_8
 						CSize size = m_p2DRender->m_pFont->GetTextExtent( szTemp );
 						p2DRender->TextOut( point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff );
 						p2DRender->TextOut( point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0 );
@@ -969,12 +946,10 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 			{
 				RenderCollTime( point, lpShortcut->m_dwId, p2DRender );
 			}
-		#if __VER >= 12 // __LORD
 			else if( lpShortcut->m_dwShortcut == SHORTCUT_LORDSKILL)
 			{
 					RenderLordCollTime( point, lpShortcut->m_dwId, p2DRender );
 			}
-		#endif
 			else
 			if( lpShortcut->m_dwShortcut == SHORTCUT_MOTION )
 			{
@@ -1108,7 +1083,6 @@ void CWndTaskBar::UpdateItem()
 				}
 				else
 				{
-#if __VER >= 8	// __JEFF_VER_8
 					ItemProp* pItemProp	= prj.GetItemProp( lpShortcut->m_dwItemId );
 					if( pItemProp && pItemProp->dwPackMax > 1 )	// 병합 가능한 아이템이면?
 					{
@@ -1129,10 +1103,6 @@ void CWndTaskBar::UpdateItem()
 						lpShortcut->Empty(); 				
 						g_DPlay.SendRemoveItemTaskBar( m_nSlotIndex, i );
 					}
-#else	// __JEFF_VER_8
-					lpShortcut->Empty(); 				
-					g_DPlay.SendRemoveItemTaskBar( m_nSlotIndex, i );
-#endif	// __JEFF_VER_8
 				}
 			}
 		}
@@ -1275,7 +1245,6 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
 		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1280, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
 	}
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	else if( g_Option.m_nResWidth == 1360 )
 	{
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
@@ -1301,7 +1270,6 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
 		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1680W, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
 	}	
-#endif //__CSC_VER9_RESOLUTION
 	
 	DelWndStyle( WBS_MOVE );
 	return bResult;
@@ -1515,7 +1483,6 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 //	pWndButton->Create( _T( "" ), 0, CRect( 65 + nIndex * 32, 3, 65 + nIndex * 32 + 32 , 3 + 32), this, dwId );
 
 	//pShortcut = m_aSlotApplet[ nIndex ];
-#if __VER >= 11 // __CSC_VER11_5
 	// Chat Shortcut 10개로 제한
 	if(dwShortcut == SHORTCUT_CHAT)
 	{
@@ -1538,7 +1505,6 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 			return FALSE;
 		}
 	}
-#endif //__CSC_VER11_5
 
 	switch( m_nPosition )
 	{
@@ -1630,14 +1596,12 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 	else 
 		pShortcut->m_pTexture = pTexture;
 
-#if __VER >= 8	// __JEFF_VER_8
 	if( dwShortcut == SHORTCUT_ITEM )
 	{
 		CItemBase* pItemBase	= g_pPlayer->GetItemId( dwId );
 		if( pShortcut && pItemBase && pItemBase->GetProp()->dwPackMax > 1 )	// 병합 가능한 아이템이면?
 			pShortcut->m_dwItemId	= pItemBase->m_dwItemId;
 	}
-#endif	// __JEFF_VER_8
 
 	pShortcut->m_dwShortcut = dwShortcut   ;
 	pShortcut->m_dwType     = dwType;
@@ -1647,10 +1611,8 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 	pShortcut->m_dwData     = nWhere;
 	strcpy( pShortcut->m_szString, m_GlobalShortcut.m_szString );//, sizeof(pShortcut->m_szString) );
 	//pWndButton->SetTitle( m_GlobalShortcut.m_szString );
-#if __VER >= 12 // __LORD
 	if( dwShortcut == SHORTCUT_LORDSKILL)
 		pShortcut->m_dwId--;
-#endif
 	if( nWhere == 0 ) //m_aSlotApplet
 	{
 		g_DPlay.SendAddAppletTaskBar( nIndex, pShortcut );
@@ -1812,13 +1774,9 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD dwType, DWORD dwId, CTexture*
 	if( dwLevel <= 0 )
 		return FALSE;
 
-#if __VER >= 9	// __SKILL_0706
 	AddSkillProp* pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, dwLevel );
 	ASSERT( pAddSkillProp );
 	if( (int)pAddSkillProp->dwCooldown > 0 )	//  쿨타임있는 스킬은 액션슬롯에 못들어감
-#else	// __SKILL_0705
-	if( (int)(pSkillProp->dwSkillReady) > 0 )	//  쿨타임있는 스킬은 액션슬롯에 못들어감
-#endif	// __SKILL_0705
 	{
 		CString str;
 		str.Format( prj.GetText(TID_GAME_SKILLLNOTUSE), pSkillProp->szName );
@@ -1900,15 +1858,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	CWndBase* pWndFrame =  pShortcut->m_pFromWnd->GetFrameWnd();
 
 
-#if __VER >= 10 // __CSC_VER9_1
-#if __VER >= 12 // __LORD
 	if( pWndFrame && ( pWndFrame->GetWndId() != APP_INVENTORY && pWndFrame != g_WndMng.m_pWndTaskBar && pWndFrame->GetWndId() != APP_COMMUNICATION_CHAT && pWndFrame->GetWndId() != APP_SKILL3 && pWndFrame->GetWndId() != APP_MOTION && pWndFrame->GetWndId() != APP_PARTY && pWndFrame->GetWndId() != APP_LORD_SKILL) )
-#else
-	if( pWndFrame && ( pWndFrame->GetWndId() != APP_INVENTORY && pWndFrame != g_WndMng.m_pWndTaskBar && pWndFrame->GetWndId() != APP_COMMUNICATION_CHAT && pWndFrame->GetWndId() != APP_SKILL3 && pWndFrame->GetWndId() != APP_MOTION && pWndFrame->GetWndId() != APP_PARTY ) )
-#endif
-#else
-	if( pWndFrame && ( pWndFrame->GetWndId() != APP_INVENTORY && pWndFrame != g_WndMng.m_pWndTaskBar && pWndFrame->GetWndId() != APP_COMMUNICATION_CHAT && pWndFrame->GetWndId() != APP_SKILL1 && pWndFrame->GetWndId() != APP_MOTION && pWndFrame->GetWndId() != APP_PARTY ) )
-#endif //__CSC_VER9_1
 	{
 		SetForbid( TRUE );
 		return FALSE;
@@ -1923,11 +1873,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			return FALSE;
 		}
 	}
-#if __VER >= 12 // __LORD
 	if( pShortcut->m_dwId == 0 && strlen( pShortcut->m_szString ) < 1 && pShortcut->m_dwShortcut != SHORTCUT_SKILLFUN && pShortcut->m_dwShortcut != SHORTCUT_LORDSKILL)
-#else
-	if( pShortcut->m_dwId == 0 && strlen( pShortcut->m_szString ) < 1 && pShortcut->m_dwShortcut != SHORTCUT_SKILLFUN)
-#endif
 	{
 		SetForbid( TRUE );
 		return FALSE;
@@ -2149,12 +2095,10 @@ void CWndTaskBar::OnMouseMove(UINT nFlags, CPoint point)
 			if( m_pSelectShortcut->m_dwId == 400 )
 				return;
 #endif //__MAINSERVER
-#if __VER >= 12 // __LORD
 			if(m_pSelectShortcut->m_dwShortcut == SHORTCUT_LORDSKILL)
 			{
 				m_pSelectShortcut->m_dwId++;
 			}
-#endif
 			memcpy( &m_GlobalShortcut, m_pSelectShortcut, sizeof( m_GlobalShortcut ) );
 			m_GlobalShortcut.m_pFromWnd = this;
 			m_GlobalShortcut.m_dwData = (DWORD)m_pSelectShortcut;
@@ -2589,46 +2533,22 @@ void CWndTaskMenu::OnInitialUpdate()
 
 	pWndButton = AppendMenu( this, 0, APP_STATUS1    , GETTEXT( TID_APP_STATUS        ) );
 	pWndButton = AppendMenu( this, 0, APP_NAVIGATOR , GETTEXT( TID_APP_NAVIGATOR     ) );
-#if __VER >= 13 // __RENEW_CHARINFO
 	pWndButton = AppendMenu( this, 0, APP_CHARACTER3 , GETTEXT( TID_APP_CHARACTER     ) );
-#elif __VER >= 9 // __CSC_VER9_2
-	pWndButton = AppendMenu( this, 0, APP_CHARACTER2 , GETTEXT( TID_APP_CHARACTER     ) );
-#else //__CSC_VER9_2
-	pWndButton = AppendMenu( this, 0, APP_CHARACTER , GETTEXT( TID_APP_CHARACTER     ) );
-#endif //__CSC_VER9_2
 	pWndButton = AppendMenu( this, 0, APP_INVENTORY , GETTEXT( TID_APP_INVENTORY     ) );
-#if __VER >= 11 // __SYS_POCKET
 #ifndef __TMP_POCKET
 	pWndButton = AppendMenu( this, 0, APP_BAG_EX , GETTEXT( TID_APP_BAG_EX     ) );
 #endif
-#if __VER >= 13 // __HOUSING
 	pWndButton = AppendMenu( this, 0, APP_HOUSING, GETTEXT(TID_GAME_HOUSING_BOX));
-#endif // __HOUSING
-#endif // __SYS_POCKET
-#if __VER >= 8 // __S8_VENDOR_REVISION
 	pWndButton = AppendMenu( this, 0, APP_VENDOR_REVISION , GETTEXT( TID_APP_VENDOR     ) );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-	pWndButton = AppendMenu( this, 0, APP_VENDOREX , GETTEXT( TID_APP_VENDOR     ) );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
-#if __VER >= 10 // __CSC_VER9_1
 	pWndButton = AppendMenu( this, 0, APP_SKILL3     , GETTEXT( TID_APP_SKILL         ) );
-#else
-	pWndButton = AppendMenu( this, 0, APP_SKILL1     , GETTEXT( TID_APP_SKILL         ) );
-#endif //__CSC_VER9_1
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	pWndButton = AppendMenu( this, 0, APP_QUEST_EX_LIST     , GETTEXT( TID_APP_QUEST         ) );
-#else // __IMPROVE_QUEST_INTERFACE
-	pWndButton = AppendMenu( this, 0, APP_QUEST     , GETTEXT( TID_APP_QUEST         ) );
-#endif // __IMPROVE_QUEST_INTERFACE
 	pWndButton = AppendMenu( this, 0, APP_MOTION   , GETTEXT( TID_APP_MOTION       ) );
 
-#if __VER >= 9  // __INSERT_MAP
 #ifdef __IMPROVE_MAP_SYSTEM
 	pWndButton = AppendMenu( this, 0, APP_MAP_EX, GETTEXT( TID_APP_MAP ) );
 #else // __IMPROVE_MAP_SYSTEM
 	pWndButton = AppendMenu( this, 0, APP_MAP, GETTEXT( TID_APP_MAP));//GETTEXT( TID_APP_MAP));
 #endif // __IMPROVE_MAP_SYSTEM
-#endif
 	CWndButton* pWndButton7 = NULL;
 	pWndButton7 = AppendMenu( this, 0, 0 , GETTEXT( TID_APP_COMMITEM  ) ); pWndButton7->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) ); 
 
@@ -2661,9 +2581,7 @@ void CWndTaskMenu::OnInitialUpdate()
 	m_pMenu1->CreateMenu( this );
 	pWndButton = AppendMenu( m_pMenu1, 0, APP_COMMUNICATION_CHAT , GETTEXT( TID_APP_COMMUNICATION_CHAT    ) );
 	pWndButton = AppendMenu( m_pMenu1, 0, APP_MESSENGER_         , GETTEXT( TID_APP_MESSENGER ) );
-#if __VER >= 13 // __CSC_VER13_2
 	pWndButton = AppendMenu( m_pMenu1, 0, APP_COUPLE_MAIN        , GETTEXT( TID_GAME_COUPLE ) );
-#endif //__CSC_VER13_2
 	pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_APPLET; SetTexture( pWndButton );
 	pWndButton1->SetMenu( m_pMenu1 );
 
@@ -2687,10 +2605,8 @@ void CWndTaskMenu::OnInitialUpdate()
 	pWndButton = AppendMenu( m_pMenu6, 0, APP_HELPER_HELP , GETTEXT( TID_APP_HELPER_HELP ) );
 	pWndButton = AppendMenu( m_pMenu6, 0, APP_HELPER_TIP  , GETTEXT( TID_APP_HELPER_TIP  ) );
 	pWndButton = AppendMenu( m_pMenu6, 0, APP_HELPER_FAQ  , GETTEXT( TID_APP_HELPER_FAQ  ) );
-#if __VER >= 12 // __MOD_TUTORIAL
 	pWndButton = AppendMenu( m_pMenu6, 0, APP_INFOPANG , GETTEXT( TID_APP_INFOPANG ) );
 	//pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) );
-#endif
 #ifdef __NEW_WEB_BOX
 #ifdef __INTERNALSERVER
 	pWndButton = AppendMenu( m_pMenu6, 0, APP_WEBBOX2 , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TITLE ) );
@@ -2825,7 +2741,6 @@ void CWndTaskBar::RenderCollTime(CPoint pt, DWORD dwSkillId, C2DRender* p2DRende
 		DWORD dwDelay = g_pPlayer->GetReuseDelay( dwSkillId );
 		if( dwDelay > 0 )
 		{
-#if __VER >= 9	// __SKILL_0706
 			ItemProp* pSkillProp	= lpSkill->GetProp();
 			ASSERT( pSkillProp );
 			AddSkillProp* pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, lpSkill->dwLevel );
@@ -2833,16 +2748,10 @@ void CWndTaskBar::RenderCollTime(CPoint pt, DWORD dwSkillId, C2DRender* p2DRende
 			RenderRadar( p2DRender, pt, 
 			             pAddSkillProp->dwCooldown - dwDelay, 
 						 pAddSkillProp->dwCooldown );	
-#else	// __SKILL_0706
-			RenderRadar( p2DRender, pt, 
-			             lpSkill->GetProp()->dwSkillReady - dwDelay, 
-						 lpSkill->GetProp()->dwSkillReady );	
-#endif	// __SKILL_0706
 		}
 	}				
 }
 
-#if __VER >= 12 // __LORD
 	void CWndTaskBar::RenderLordCollTime( CPoint pt, DWORD dwSkillId, C2DRender* p2DRender )
 	{
 		CCLord* pLord									= CCLord::Instance();
@@ -2852,7 +2761,6 @@ void CWndTaskBar::RenderCollTime(CPoint pt, DWORD dwSkillId, C2DRender* p2DRende
 		if(pComponent->GetTick() > 0)
 			RenderRadar( p2DRender, pt, pComponent->GetCooltime() - pComponent->GetTick(), pComponent->GetCooltime() );	
 	}
-#endif
 
 void CWndTaskBar::RenderOutLineLamp(int x, int y, int num, DWORD size)
 {

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __HOUSING
 #include "HousingDBCtrl.h"
 #include "Housing.h"
 #include "dptrans.h"
@@ -198,4 +197,3 @@ void CHousingDBMng::DeleteFurnitureList( DWORD dwPlayerId, HOUSINGINFO housingIn
 {
 	m_HousingDBCtrl.DeleteFurnitureList( dwPlayerId, housingInfo );
 }
-#endif // __HOUSING

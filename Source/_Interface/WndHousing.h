@@ -2,7 +2,6 @@
 #define __WNDHOUSING__H
 #pragma once
 
-#if __VER >= 13 // __HOUSING
 #include "Housing.h"
 
 struct HOUSING_ITEM
@@ -15,12 +14,10 @@ struct HOUSING_ITEM
 	int			m_nIndex;
 	DWORD		dwItemId;		// 아이템 ID
 
-#if __VER >= 15 // __GUILD_HOUSE
 	int			m_nSlotIndex;		//서버에서 관리하는 가구벡터 인덱스 
 	D3DXVECTOR3 m_vPos;
 	float		m_fAngle;
 	int			m_nTeleIndex;
-#endif
 
 	HOUSING_ITEM() {Init();};
 	~HOUSING_ITEM() {};
@@ -61,9 +58,7 @@ public:
 	
 }; 
 
-#endif // __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 
 class CWndGHouseShowOneUnit : public CWndNeuz			
 {
@@ -198,6 +193,5 @@ protected:
 #endif //__GUILD_HOUSE_MIDDLE
 
 
-#endif //__GUILD_HOUSE
 
 #endif

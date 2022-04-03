@@ -143,10 +143,8 @@ vector<BYTE> CEventLua::GetEventList( BOOL bProxy )
 		return vecList;
 
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __EVENTLUA_0826
 		if( bProxy )
 			return m_proxy.GetEventList();
-#endif	// __EVENTLUA_0826
 #endif // __WORLDSERVER
 
 	if( m_Lua.GetLuaFunction( "GetEventList" ) )
@@ -177,9 +175,7 @@ void CEventLua::LoadScript()
 	{
 		m_bRun = TRUE;
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __EVENTLUA_0826
 		PrepareProxy();
-#endif	// __EVENTLUA_0826
 #ifdef __EVENTLUA_SPAWN
 		for( map<BYTE, VECSPAWNINFO>::iterator it=m_mapSpawnList.begin(); it!=m_mapSpawnList.end(); it++ )
 			m_vecEndSpawnEvent.push_back( it->first );
@@ -279,10 +275,8 @@ float CEventLua::GetExpFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetExpFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetExpFactor" ) )
 	{
@@ -302,10 +296,8 @@ float CEventLua::GetItemDropRate( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetItemDropRate();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetItemDropRate" ) )
 	{
@@ -325,10 +317,8 @@ float CEventLua::GetPieceItemDropRate( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetPieceItemDropRate();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetPieceItemDropRate" ) )
 	{
@@ -348,10 +338,8 @@ float CEventLua::GetGoldDropFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetGoldDropFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetGoldDropFactor" ) )
 	{
@@ -427,10 +415,8 @@ int CEventLua::GetAttackPower( BOOL bProxy )
 	if( !IsPossible() )
 		return nAttackPower;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetAttackPower();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetAttackPower" ) )
 	{
@@ -449,10 +435,8 @@ int CEventLua::GetDefensePower( BOOL bProxy )
 	if( !IsPossible() )
 		return nDefensePower;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetDefensePower();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetDefensePower" ) )
 	{
@@ -469,10 +453,8 @@ DWORD CEventLua::GetCouponEvent( BOOL bProxy )
 	if( !IsPossible() )
 		return 0;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetCouponEvent();
-#endif	// __EVENTLUA_0826
 
 	DWORD dwCouponEvent	= 0;
 	if( m_Lua.GetLuaFunction( "GetCouponEvent" ) )
@@ -581,10 +563,8 @@ float CEventLua::GetCheerExpFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetCheerExpFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetCheerExpFactor" ) )
 	{
@@ -881,10 +861,8 @@ float CEventLua::GetWeatherEventExpFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetWeatherEventExpFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetWeatherEventExpFactor" ) )
 	{
@@ -927,10 +905,8 @@ float CEventLua::GetRainEventExpFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetRainEventExpFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetRainEventExpFactor" ) )
 	{
@@ -972,10 +948,8 @@ float CEventLua::GetSnowEventExpFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetSnowEventExpFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetSnowEventExpFactor" ) )
 	{
@@ -1019,10 +993,8 @@ float CEventLua::GetShopBuyFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetShopBuyFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetShopBuyFactor" ) )
 	{
@@ -1042,10 +1014,8 @@ float CEventLua::GetShopSellFactor( BOOL bProxy )
 	if( !IsPossible() )
 		return fFactor;
 
-#if __VER >= 12 // __EVENTLUA_0826
 	if( bProxy )
 		return m_proxy.GetShopSellFactor();
-#endif	// __EVENTLUA_0826
 
 	if( m_Lua.GetLuaFunction( "GetShopSellFactor" ) )
 	{
@@ -1062,7 +1032,6 @@ float CEventLua::GetShopSellFactor( BOOL bProxy )
 #endif // __WORLDSERVER
 
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __EVENTLUA_0826
 CEventLuaProxy::CEventLuaProxy()
 :
 m_fExpFactor( 1.0f ),
@@ -1142,5 +1111,4 @@ void CEventLuaProxy::Initialize( CEventLua* pEventLua )
 	SetShopSellFactor( pEventLua->GetShopSellFactor( FALSE ) );
 #endif // __SHOP_COST_RATE
 }
-#endif // __WORLDSERVER
 #endif	// __EVENTLUA_0826

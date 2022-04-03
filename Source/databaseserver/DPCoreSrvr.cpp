@@ -428,7 +428,6 @@ void CDPCoreSrvr::OnServerEnable( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
 }
 #endif	// __SERVERLIST0911
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPCoreSrvr::SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData )
 {
 	BEFORESEND( ar, PACKETTYPE_UPDATE_PLAYER_DATA );
@@ -436,7 +435,6 @@ void CDPCoreSrvr::SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData
 	ar.Write( &pPlayerData->data, sizeof(sPlayerData) );
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __RT_1025
 void CDPCoreSrvr::OnAddMessenger( CAr & ar, LPBYTE lpBuf, u_long uBufSize )

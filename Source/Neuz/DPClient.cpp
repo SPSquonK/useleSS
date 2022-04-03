@@ -50,16 +50,10 @@ extern	CParty g_Party;
 #include "WndDuelConfirm.h"
 #include "Environment.h"
 
-#if __VER >= 12 // __LORD
 #include "clord.h"
-#endif	// __LORD
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "RainbowRace.h"
-#endif // __RAINBOW_RACE
-#if __VER >= 14 // __PCBANG
 #include "PCBang.h"
-#endif // __PCBANG
 
 #include "guild.h"
 #include "guildwar.h"
@@ -92,50 +86,30 @@ extern	CDPLoginClient	g_dpLoginClient;
 extern DWORD IsValidPlayerName( CString& strName );
 #endif // __S_SERVER_UNIFY
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 11 // __SYS_POCKET
 #include "WndBagEx.h"
-#endif	// __SYS_POCKET
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "RainbowRace.h"
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 #include "Housing.h"
 #include "WndHousing.h"
-#endif // __HOUSING
 
-#if __VER >= 13 // __HONORABLE_TITLE
 #include "honor.h"
-#endif	// __HONORABLE_TITLE
-#if __VER >= 13 // __COUPLE_1117
 #include "couplehelper.h"
-#endif	// __COUPLE_1117
 
 #ifdef __QUIZ
 #include "Quiz.h"
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 #include "CampusHelper.h"
-#endif // __CAMPUS
 
 BOOL	s_f	= FALSE;
 BOOL	fJoin	= FALSE;
@@ -215,10 +189,8 @@ CDPClient::CDPClient()
 	ON_MSG( PACKETTYPE_QUERYSETPLAYERNAME, &CDPClient::OnSetPlayerName );
 	ON_MSG( PACKETTYPE_SNOOP, &CDPClient::OnSnoop );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_UPDATE_PLAYER_DATA, &CDPClient::OnUpdatePlayerData );
 	ON_MSG( PACKETTYPE_LOGOUT, &CDPClient::OnLogout );
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __QUIZ
 	ON_MSG( PACKETTYPE_QUIZ_NOTICE, &CDPClient::OnQuizSystemMessage );
@@ -430,12 +402,8 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_FLYFF_EVENT:	OnFlyffEvent( ar );	break;
 			case SNAPSHOTTYPE_SET_LOCAL_EVENT:	OnSetLocalEvent( ar );	break;
 			case SNAPSHOTTYPE_GAMERATE:	OnGameRate( ar ); break;
-#if __VER >= 9 // __EVENTLUA
 			case SNAPSHOTTYPE_EVENTLUA_DESC: OnEventLuaDesc( ar ); break;
-#endif // __EVENTLUA
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 			case SNAPSHOTTYPE_REMOVE_ATTRIBUTE: OnRemoveAttributeResult( ar ); break;
-#endif // __REMOVE_ATTRIBUTE
 			case SNAPSHOTTYPE_MOTION_ARRIVE: OnMotionArrive( objid, ar ); break;
 
 #ifdef __S1108_BACK_END_SYSTEM
@@ -511,17 +479,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_GETITEMGUILDBANK: OnGetItemGuildBank( objid, ar ); break;
 			case SNAPSHOTTYPE_CHANGEBANKPASS: OnChangeBankPass( objid, ar ); break;
 			case SNAPSHOTTYPE_CONFIRMBANKPASS: OnConfirmBankPass( objid, ar ); break;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			case SNAPSHOTTYPE_QUERY_PLAYER_DATA:	OnQueryPlayerData( ar );	break;
-#else	// __SYS_PLAYER_DATA
-			case SNAPSHOTTYPE_QUERYPLAYERSTRING:	OnQueryPlayerString( ar );	break;
-			case SNAPSHOTTYPE_QUERYPLAYERLISTSTRING:	OnQueryPlayerListString( ar );	break;
-			case SNAPSHOTTYPE_GUILD_CHANGEJOBLEVEL: OnGuildChangeJobLevel( ar ); break;
-			case SNAPSHOTTYPE_PARTYMEMBERJOB: OnPartyMemberJob( ar ); break;
-			case SNAPSHOTTYPE_PARTYMEMBERLEVEL: OnPartyMemberLevel( ar ); break;
-			case SNAPSHOTTYPE_ADDFRIENDCHANGEJOB: OnFriendChangeJob( ar ); break;
-			case SNAPSHOTTYPE_ADDGETFRIENDNAME: OnGetFriendName( ar ); break;
-#endif	// __SYS_PLAYER_DATA
 			case SNAPSHOTTYPE_FOCUSOBJ:				OnFocusObj( ar );	break;
 				
 			case SNAPSHOTTYPE_GUILD_INVITE:	OnGuildInvite( ar );	break;
@@ -545,14 +503,10 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_VENDOR:	OnVendor( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_VENDOR:	OnUpdateVendor( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_ITEM:	OnUpdateItem( objid, ar );	break;
-#if __VER >= 11 // __SYS_IDENTIFY
 			case SNAPSHOTTYPE_UPDATE_ITEM_EX:	OnUpdateItemEx( objid, ar );	break;
-#endif	// __SYS_IDENTIFY
-#if __VER >= 11 // __SYS_POCKET
 			case SNAPSHOTTYPE_POCKET_ATTRIBUTE:	OnPocketAttribute( ar );	break;
 			case SNAPSHOTTYPE_POCKET_ADD_ITEM:	OnPocketAddItem( ar );	break;
 			case SNAPSHOTTYPE_POCKET_REMOVE_ITEM:	OnPocketRemoveItem( ar );	break;
-#endif	// __SYS_POCKET
 			case SNAPSHOTTYPE_SETDESTPARAM:		OnSetDestParam( objid, ar );	break;
 			case SNAPSHOTTYPE_RESETDESTPARAM:	OnResetDestParam( objid, ar );	break;
 			case SNAPSHOTTYPE_SETPOINTPARAM:	OnSetPointParam( objid, ar );	break;
@@ -597,9 +551,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_RETURNSAY:	OnReturnSay( objid, ar ); break;
 			case SNAPSHOTTYPE_CLEAR_USESKILL:	OnClearUseSkill( objid );	break;
 //			case SNAPSHOTTYPE_CRIME:	OnCrime( objid );	break;
-#if __VER < 8 //__S8_PK
-			case SNAPSHOTTYPE_SET_SLAUGHTER_POINT:	OnSetSlaughterPoint( objid, ar );	break;
-#endif // __VER < 8 __S8_PK
 			case SNAPSHOTTYPE_SETFAME:	OnSetFame( objid, ar );	break;
 			case SNAPSHOTTYPE_SETFUEL:	OnSetFuel( objid, ar );	break;
 			case SNAPSHOTTYPE_RESURRECTION:		OnResurrection( objid );	break;
@@ -637,11 +588,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_RESETBUFFSKILL:	OnResetBuffSkill( objid, ar );	break;
 			case SNAPSHOTTYPE_RESURRECTION_MESSAGE:	OnResurrectionMessage();	break;
 			case SNAPSHOTTYPE_SETDUEL:	OnSetDuel( objid, ar );	break;
-#if __VER >= 8 // __S8_PK
 			case SNAPSHOTTYPE_PK_RELATION: OnPKRelation( objid, ar ); break;
-#else // __VER >= 8 __S8_PK
-			case SNAPSHOTTYPE_UPDATE_PLAYER_ENEMY: OnUpdatePlayerEnemy( objid, ar ); break;
-#endif // __VER >= 8 __S8_PK
 			case SNAPSHOTTYPE_WANTED_INFO: OnWantedInfo( ar ); break;
 
 			case SNAPSHOTTYPE_WORLDMSG: OnWorldMsg( objid, ar );	break;
@@ -663,22 +610,17 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_CALLTHEROLL:	OnCallTheRoll( ar );	break;
 #endif	// __EVENT_1101
 
-#if __VER >= 8 //__CSC_VER8_5
 			case SNAPSHOTTYPE_ANGEL:	OnAngel( objid, ar );	break;
-#endif //__CSC_VER8_5
 #ifdef __EVE_MINIGAME
 			case SNAPSHOTTYPE_MINIGAME:		OnMiniGame( objid, ar ); break;
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 			case SNAPSHOTTYPE_ULTIMATE:		OnUltimateWeapon( objid, ar ); break;
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 			case SNAPSHOTTYPE_EXCHANGE:		OnExchange( objid, ar ); break;
 #endif // __TRADESYS
 
-#if __VER >= 9	// __PET_0410
 			case SNAPSHOTTYPE_PET_CALL:		OnPetCall( objid, ar );	break;
 			case SNAPSHOTTYPE_PET_RELEASE:	OnPetRelease( objid, ar );	break;
 			case SNAPSHOTTYPE_PET_LEVELUP:	OnPetLevelup( objid, ar );	break;
@@ -687,64 +629,42 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_PET_STATE:	OnPetState( objid, ar );	break;
 			case SNAPSHOTTYPE_PET_FEED:		OnPetFeed( objid, ar );		break;
 			case SNAPSHOTTYPE_PET_MILL:		OnPetFoodMill( objid, ar );	break;
-#endif	// __PET_0410
 
-#if __VER >= 9	// __AI_0509
 			case SNAPSHOTTYPE_SET_SPEED_FACTOR:		OnSetSpeedFactor( objid, ar );	break;
-#endif	// __AI_0509
-#if __VER >= 10 // __CSC_VER9_1
 			case SNAPSHOTTYPE_LEGENDSKILLUP_RESULT:	OnLegendSkillUp( ar ); break;
-#endif //__CSC_VER9_1
 
-#if __VER >= 11 // __SYS_COLLECTING
 			case SNAPSHOTTYPE_START_COLLECTING:		OnStartCollecting( objid );	break;
 			case SNAPSHOTTYPE_STOP_COLLECTING:	OnStopCollecting( objid );	break;
 			case SNAPSHOTTYPE_RESTART_COLLECTING:	OnRestartCollecting( objid, ar );	break;
-#endif	// __SYS_COLLECTING
 
 #ifdef __JEFF_11
 			case SNAPSHOTTYPE_QUE_PETRESURRECTION_RESULT:	OnQuePetResurrectionResult( ar );	break;
 #endif	// __JEFF_11
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 			case SNAPSHOTTYPE_GC1TO1_TENDEROPENWND: OnGC1to1TenderOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_GC1TO1_TENDERVIEW: OnGC1to1TenderView( ar ); break;
 			case SNAPSHOTTYPE_GC1TO1_NOWSTATE: OnGC1to1NowState( ar ); break;
 			case SNAPSHOTTYPE_GC1TO1_MEMBERLINEUPOPENWND: OnGC1to1MemberLineUpOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_GC1TO1_WARRESULT: OnGC1to1WarResult( ar ); break;
-#endif // __GUILD_COMBAT_1TO1
 	
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 			case SNAPSHOTTYPE_GUILDLOG_VIEW: OnGuildBankLogList( ar ); break;
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 			case SNAPSHOTTYPE_SEALCHAR_REQ: OnSealChar( ar ); break;
 			case SNAPSHOTTYPE_SEALCHARGET_REQ: OnSealCharGet( ar ); break;
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 			case SNAPSHOTTYPE_REMOVESFXOBJ:		OnRemoveSfxObj( objid, ar );	break;
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			case SNAPSHOTTYPE_HONOR_LIST_ACK: OnHonorListAck( ar ); break;
 			case SNAPSHOTTYPE_HONOR_CHANGE_ACK: OnHonorChangeAck( objid,ar ); break;
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __EVENTLUA_COUPON
 			case SNAPSHOTTYPE_EVENT_COUPON: OnEventCoupon( ar ); break;
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 12 // __SECRET_ROOM
 			case SNAPSHOTTYPE_SECRETROOM_MNG_STATE : OnSecretRoomMngState( ar ); break;
 			case SNAPSHOTTYPE_SECRETROOM_INFO : OnSecretRoomInfo( ar ); break;
 			case SNAPSHOTTYPE_SECRETROOM_TENDEROPENWND : OnSecretRoomTenderOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_SECRETROOM_LINEUPOPENWND : OnSecretRoomLineUpOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_SECRETROOM_TENDERVIEW : OnSecretRoomTenderView( ar ); break;
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __TAX
 			case SNAPSHOTTYPE_TAX_ALLINFO : OnTaxInfo( ar ); break;
 			case SNAPSHOTTYPE_TAX_SETTAXRATE_OPENWND : OnTaxSetTaxRateOpenWnd( ar ); break;
-#endif // __TAX
-#if __VER >= 12 // __LORD
 			// 군주 입찰 결과 갱신
 			case SNAPSHOTTYPE_ELECTION_ADD_DEPOSIT:	OnElectionAddDeposit( ar );		break;
 			// 공약 설정 결과 갱신
@@ -769,55 +689,38 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_L_EVENT_TICK:		OnLEventTick( ar );	break;
 			// 군주 스킬 사용
 			case SNAPSHOTTYPE_LORD_SKILL_USE:	OnLordSkillUse( objid, ar );	break;
-#endif	// __LORD
-#if __VER >= 12 // __MOD_TUTORIAL
 			case SNAPSHOTTYPE_SET_TUTORIAL_STATE:	OnTutorialState( ar );	break;
-#endif	// __MOD_TUTORIAL
-#if __VER >= 13 // __RAINBOW_RACE
 			case SNAPSHOTTYPE_RAINBOWRACE_PREVRANKING_OPENWND: OnRainbowRacePrevRankingOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_APPLICATION_OPENWND: OnRainbowRaceApplicationOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_NOWSTATE:	OnRainbowRaceNowState( ar ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMESTATE: OnRainbowRaceMiniGameState( ar, FALSE ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMEEXTSTATE: OnRainbowRaceMiniGameState( ar, TRUE ); break;
-#endif // __RAINBOW_RACE
 #ifdef __PET_1024
 			case SNAPSHOTTYPE_SET_PET_NAME:		OnSetPetName( objid, ar );	break;
 #endif	// __PET_1024
-#if __VER >= 13 // __HOUSING
 			case SNAPSHOTTYPE_HOUSING_ALLINFO: OnHousingAllInfo( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_FURNITURELIST: OnHousingSetFunitureList( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_SETUPFURNITURE: OnHousingSetupFurniture( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_PAPERINGINFO: OnHousingPaperingInfo( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_SETVISITALLOW: OnHousingSetVisitAllow( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_VISITABLELIST: OnHousingVisitableList( ar ); break;
-#endif // __HOUSING
 
-#if __VER >= 13 // __QUEST_HELPER
 			case SNAPSHOTTYPE_QUESTHELPER_NPCPOS: OnNPCPos( ar ); break;
-#endif // __QUEST_HELPER
 			case SNAPSHOTTYPE_CLEAR_TARGET: OnClearTarget( ar ); break;
-#if __VER >= 13 // __COUPLE_1117
 			case SNAPSHOTTYPE_COUPLE:	OnCouple( ar );	break;
 			case SNAPSHOTTYPE_PROPOSE_RESULT:	OnProposeResult( ar );	break;
 			case SNAPSHOTTYPE_COUPLE_RESULT:	OnCoupleResult( ar );	break;
 			case SNAPSHOTTYPE_DECOUPLE_RESULT:	OnDecoupleResult( ar );	break;
-#if __VER >= 13 // __COUPLE_1202
 			case SNAPSHOTTYPE_ADD_COUPLE_EXPERIENCE:	OnAddCoupleExperience( ar );	break;
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 
 #ifdef __SPEED_SYNC_0108		// ResetDestParam speed 수정
 			case SNAPSHOTTYPE_RESETDESTPARAM_SYNC:	OnResetDestParamSync( objid,ar );	break;
 #endif // __SPEED_SYNC_0108		// ResetDestParam speed 수정
-#if __VER >= 14 // __PCBANG
 			case SNAPSHOTTYPE_PCBANG_INFO:	OnPCBangInfo( ar ); break;
-#endif // __PCBANG
 #ifdef __VTN_TIMELIMIT
 			case SNAPSHOTTYPE_ACCOUNT_PLAYTIME: OnAccountPlayTime( ar ); break;
 #endif // __VTN_TIMELIMIT
-#if __VER >= 14 // __SMELT_SAFETY
 			case SNAPSHOTTYPE_SMELT_SAFETY:OnSmeltSafety( ar ); break;
-#endif // __SMELT_SAFETY
 #ifdef __MAP_SECURITY
 			case SNAPSHOTTYPE_WORLD_READINFO:	OnWorldReadInfo( ar ); break;
 #endif // __MAP_SECURITY
@@ -826,25 +729,17 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_QUIZ_MESSAGE:			OnQuizEventMessage( ar ); break;
 			case SNAPSHOTTYPE_QUIZ_QUESTION:		OnQuizQuestion( ar ); break;
 #endif // __QUIz
-#if __VER >= 15 // __PETVIS
 			case SNAPSHOTTYPE_VISPET_ACTIVATE:		OnActivateVisPet( ar ); break;
 			case SNAPSHOTTYPE_MOVER_CHANGESFX:		OnChangeMoverSfx( objid, ar ); break;
-#endif // __PETVIS
-#if __VER >= 15 // __GUILD_HOUSE
 			case SNAPSHOTTYPE_GUILDHOUSE_PACKET:	OnGuildHousePacket( ar ); break;
 			case SNAPSHOTTYPE_GUILDHOUSE_ALLINFO:	OnGuildHouseAllInfo( ar ); break;
 			case SNAPSHOTTYPE_GUILDHOUSE_REMOVE:	OnGuildHouseRemove( ar ); break;
 			case SNAPSHOTTYPE_GUILDHOUSE_RESTPOINT:	OnRestPoint( ar ); break;
-#endif // __GUILD_HOUSE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			case SNAPSHOTTYPE_QUEST_CHECKED:		OnCheckedQuest( ar ); break;
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __CAMPUS
 			case SNAPSHOTTYPE_CAMPUS_INVITE:		OnInviteCampusMember( ar ); break;
 			case SNAPSHOTTYPE_CAMPUS_UPDATE:		OnUpdateCampus( ar ); break;
 			case SNAPSHOTTYPE_CAMPUS_REMOVE:		OnRemoveCampus( ar ); break;
 			case SNAPSHOTTYPE_CAMPUS_UPDATE_POINT:	OnUpdateCampusPoint( ar ); break;
-#endif // __CAMPUS
 
 #ifdef __PROTECT_AWAKE
 			case SNAPSHOTTYPE_ITEM_SELECT_AWAKENING_VALUE: OnSafeAwakening( ar ); break;
@@ -947,7 +842,6 @@ void CDPClient::OnKeepAlive( CAr & ar )
 	SEND( ar2, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPClient::OnUpdatePlayerData( CAr & ar )
 {
 	u_long idPlayer;
@@ -962,17 +856,13 @@ void CDPClient::OnUpdatePlayerData( CAr & ar )
 
 	if( pPlayerData->data.nVer < data.nVer )
 		memcpy( &pPlayerData->data, &data, sizeof(sPlayerData) );
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 	{
 		pWndMessengerEx->UpdateFriendList();
 		pWndMessengerEx->UpdateGuildMemberList();
-#if __VER >= 15 // __CAMPUS
 		pWndMessengerEx->UpdateCampusMemberList();
-#endif // __CAMPUS
 	}
-#endif //__CSC_VER11_4
 	UpdateGuildWnd();
 }
 
@@ -983,20 +873,15 @@ void	CDPClient::OnLogout( CAr & ar )
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( idPlayer );
 	pPlayerData->data.uLogin	= 0;
 	TRACE( "OnLogout : %s\n", pPlayerData->szPlayer );
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 	{
 		pWndMessengerEx->UpdateFriendList();
 		pWndMessengerEx->UpdateGuildMemberList();
-#if __VER >= 15 // __CAMPUS
 		pWndMessengerEx->UpdateCampusMemberList();
-#endif // __CAMPUS
 	}
-#endif //__CSC_VER11_4
 	UpdateGuildWnd();
 }
-#endif	// __SYS_PLAYER_DATA
 
 void CDPClient::OnGetClock( CAr & ar )
 {
@@ -1096,17 +981,12 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					CMover* pPlayer	= (CMover*)pObj;
 //					pPlayer->RedoEquip( FALSE );
 					pPlayer->RedoEquip( CMover::GetActiveMover() != NULL );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					PlayerData pd;
 					pd.data.nJob	= pPlayer->GetJob();
 					pd.data.nLevel	= pPlayer->GetLevel();
 					pd.data.nSex	= pPlayer->GetSex();
 					lstrcpy( pd.szPlayer, pPlayer->GetName() );
 					CPlayerDataCenter::GetInstance()->AddPlayerData( ( (CMover*)pObj )->m_idPlayer, pd );
-#else	// __SYS_PLAYER_DATA
-					if( NULL == prj.GetPlayerString( pPlayer->m_idPlayer ) )
-						prj.SetPlayerID( pPlayer->m_idPlayer, pPlayer->GetName() );
-#endif	// __SYS_PLAYER_DATA
 				}
 				else 
 				{	
@@ -1146,7 +1026,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 				if( pPlayer->m_pActMover->IsFly() ) 
 				{
 					CModel* pModel	= prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, pPlayer->GetRideItemIdx() );
-#if __VER >= 14 // __WING_ITEM
 					CModelObject* pModelObject = (CModelObject*)pModel;
 					if( pModelObject->m_pBone )
 					{
@@ -1154,7 +1033,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 						assert( strMotion != _T("") );
 						pModelObject->LoadMotion( strMotion );
 					}
-#endif // __WING_ITEM
 					pPlayer->SetRide( pModel, pPlayer->GetRideItemIdx() );
 				}
 				pPlayer->InitMotion( pPlayer->m_dwMotion );	
@@ -1180,17 +1058,12 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			{
 				CMover* pPlayer	= (CMover*)pObj;
 				pPlayer->RedoEquip( CMover::GetActiveMover() != NULL );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				PlayerData pd;
 				pd.data.nJob	= pPlayer->GetJob();
 				pd.data.nLevel	= pPlayer->GetLevel();
 				pd.data.nSex	= pPlayer->GetSex();
 				lstrcpy( pd.szPlayer, pPlayer->GetName() );
 				CPlayerDataCenter::GetInstance()->AddPlayerData( ( (CMover*)pObj )->m_idPlayer, pd );
-#else	// __SYS_PLAYER_DATA
-				if( NULL == prj.GetPlayerString( pPlayer->m_idPlayer ) )
-					prj.SetPlayerID( pPlayer->m_idPlayer, pPlayer->GetName() );
-#endif	// __SYS_PLAYER_DATA
 			}
 			else 
 			{
@@ -1248,7 +1121,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			CMover* pPlayer	= (CMover*)pObj;
 			if( pPlayer->m_pActMover->IsFly() ) {
 				CModel* pModel	= prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, pPlayer->GetRideItemIdx() );
-#if __VER >= 14 // __WING_ITEM
 				CModelObject* pModelObject = (CModelObject*)pModel;
 				if( pModelObject->m_pBone )
 				{
@@ -1256,7 +1128,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					assert( strMotion != _T("") );
 					pModelObject->LoadMotion( strMotion );
 				}
-#endif // __WING_ITEM
 				pPlayer->SetRide( pModel, pPlayer->GetRideItemIdx() );
 				
 				ItemProp *pItemProp = prj.GetItemProp( pPlayer->GetRideItemIdx() );	// 빗자루 프로퍼티.
@@ -1274,23 +1145,8 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 		{
 			ItemProp* pItemProp = ( (CItem*)pObj )->GetProp();
 			assert(pItemProp != NULL);
-#if __VER >= 14 // __ITEM_DROP_SOUND
 			PLAYSND( pItemProp->dwSubDefine, &(pObj->GetPos()) );
-#else // __ITEM_DROP_SOUND
-			if( pItemProp && ( pItemProp->dwItemKind3 == IK3_DICE || pItemProp->dwItemKind3 == IK3_ELECARD || 
-				pItemProp->dwItemKind3 == IK3_PIERDICE || pItemProp->dwItemKind3 == IK3_SOCKETCARD
-#if __VER >= 12 // __EXT_PIERCING
-				|| pItemProp->dwItemKind3 == IK3_SOCKETCARD2
-#endif // __EXT_PIERCING
-				))
-				PLAYSND( SND_ITEM_DROPDING, &(pObj->GetPos()) );
-		#if __VER >= 8 //__Y_NEW_ENCHANT			
-			if( pItemProp && ( pItemProp->dwItemKind3 == IK3_ENCHANT ))
-				PLAYSND( SND_ITEM_DROPDING, &(pObj->GetPos()) );
-		#endif //__Y_NEW_ENCHANTS
-#endif // __ITEM_DROP_SOUND
 		}
-#if __VER >= 15 // __GUILD_HOUSE
 		else
 		if( OT_CTRL == pObj->GetType( ) )
 		{
@@ -1308,7 +1164,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 				}
 			}
 		}
-#endif
 	
 
 		pObj->UpdateLocalMatrix();
@@ -1343,13 +1198,11 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 				pMover->m_nDuel = 2;
 				pMover->m_idDuelParty = g_Party.m_uPartyId;
 			}
-#if __VER >= 8		// 8차 듀얼
 			if( g_pPlayer->m_nDuel && g_pPlayer->m_nDuel &&	g_pPlayer->m_idDuelOther == pMover->GetId() )
 			{
 				pMover->RenderFlag( ENEMY_PVP );
 				pMover->m_idDuelOther = g_pPlayer->GetId();
 			}
-#endif	// __VER >= 8
 
 			if( pMover->IsStateMode( STATE_BASEMOTION_MODE ) )
 			{
@@ -1368,7 +1221,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			if( dwDisquise != NULL_ID )
 			{
 				pMover->Disguise( D3DDEVICE, dwDisquise );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 				CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 				if( pWndQuestDetail )
 					pWndQuestDetail->UpdateQuestText();
@@ -1376,10 +1228,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 				CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 				if( pWndQuestQuickInfo )
 					pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-				CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-				if( pWndQuest )  pWndQuest->UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 			}
 #ifdef __QUIZ
 			else if( g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ && g_pPlayer && g_pPlayer != pMover )
@@ -1631,14 +1479,12 @@ void CDPClient::OnRemoveObj( OBJID objid )
 		if( pCtrl->GetType() == OT_MOVER )
 		{
 			TRACE( "%s Remove\n", ( (CMover*)pCtrl )->GetName() );
-#if __VER >= 9	// __PET_0410
 			CMover* pMover	= (CMover*)pCtrl;
 			if( pMover->m_pet.GetObj() )
 			{
 				pMover->m_pet.GetObj()->Delete();
 				pMover->m_pet.SetObj( NULL );
 			}
-#endif	// __PET_0410
 		}
 		CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 		if( pWndWorld )
@@ -1935,23 +1781,18 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 		}
 		else if( pAttacker && g_pPlayer == pAttacker )
 		{
-#if __VER >= 11 // __CSC_VER11_2
 			CObj* pTempObj = NULL;
 			if(( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj != NULL)
 				pTempObj = ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj;
-#endif //__CSC_VER11_2
 			pAttacker->GetWorld()->SetObjFocus( NULL );
 			( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( NULL_ID );
-#if __VER >= 11 // __CSC_VER11_2
 			if(pTempObj != NULL)
 			{
 				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = pTempObj;
 				( (CWndWorld *)g_WndMng.m_pWndWorld )->SetNextTarget();
 			}
-#endif //__CSC_VER11_2
 		}
 		
-#if __VER >= 8 //__CSC_VER8_5
 		if(pMover->IsPlayer() && pMover->m_pAngelFlag) //사망시 엔젤관련 초기화.
 		{
 			if(pMover->m_pAngel)
@@ -1959,8 +1800,6 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 			pMover->m_pAngel = NULL;
 			pMover->m_pAngelFlag = FALSE;
 		}
-#endif //__CSC_VER8_5
-#if __VER >= 11 // __CSC_VER11_2
 		if((CObj*)pMover == ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj)
 		{
 			if(( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj == ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pRenderTargetObj)
@@ -1971,7 +1810,6 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 			else
 				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = NULL;
 		}
-#endif //__CSC_VER11_2
 //		if( IsValidObj( (CObj*)pAttacker ) )
 		// pAttacker가 없을수도있다.
 		{
@@ -2003,20 +1841,16 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 						pMover->GetWorld()->GetID() == WI_DUNGEON_BEAR )
 						bBossDie = TRUE;
 				}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				else if( g_GuildCombat1to1Mng.IsPossibleMover( pMover ) )
 				{
 					// 아무처리 안함
 				}
-#endif // __GUILD_COMBAT_1TO1
 				else
 				{
 					PlayMusic( BGM_IN_DEATH );
 				}
 				
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				if( !g_GuildCombat1to1Mng.IsPossibleMover( pMover ) )
-#endif // __GUILD_COMBAT_1TO1
 				{
 #ifdef __JEFF_11_4
 					CWorld* pWorld	= pMover->GetWorld();
@@ -2052,10 +1886,6 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 				}
 				
 				CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-			#if __VER < 12 // __MOD_TUTORIAL
-				if( pWndWorld ) 
-					pWndWorld->m_pWndGuideSystem->SendGuideMessage(APP_DEATH_FIELD);
-			#endif
 
 				((CWndWorld*)g_WndMng.m_pWndWorld)->m_bAutoAttack = FALSE;		// g_pPlayer가 죽었으면 오토어택 해제시킴
 			}
@@ -2136,7 +1966,6 @@ void CDPClient::OnCreateItem( OBJID objid, CAr & ar )
 				PLAYSND( SND_INF_GROUNDPICKUP, &vPos );		
 		}
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -2144,11 +1973,6 @@ void CDPClient::OnCreateItem( OBJID objid, CAr & ar )
 		CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 		if( pWndQuestQuickInfo )
 			pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-		CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-		if( pWndQuest )  
-			pWndQuest->UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 }
 
@@ -2176,14 +2000,12 @@ void CDPClient::OnSetPos( OBJID objid, CAr & ar )
 
 		if( pCtrl->IsActiveObj() )
 		{
-#if __VER >= 9	// __PET_0410	// 康
 			CMover* pMover	= (CMover*)pCtrl;
 			if( pMover->m_pet.GetObj() )
 			{
 				pMover->m_pet.GetObj()->Delete();
 				pMover->m_pet.SetObj( NULL );
 			}
-#endif	// __PET_0410
 			pWorld->SetObjFocus( NULL );
 			pWorld->RemoveObj( pCtrl );
 			pWorld->ReadWorld( vPos, TRUE );
@@ -2205,7 +2027,6 @@ void CDPClient::OnSetPos( OBJID objid, CAr & ar )
 		}
 		if( pCtrl->GetType() == OT_MOVER )
 		{
-#if __VER >= 9	// __PET_0410
 			CMover* pMover	= (CMover*)pCtrl;
 			if( pMover->m_pet.GetObj() )
 			{
@@ -2216,7 +2037,6 @@ void CDPClient::OnSetPos( OBJID objid, CAr & ar )
 			pMover->SendActMsg( OBJMSG_ACC_STOP );
 			pMover->SendActMsg( OBJMSG_STOP_TURN );
 			pMover->SendActMsg( OBJMSG_STAND );
-#endif	// __PET_0410
 			pWorld->ProcessAllSfx();
 			( (CMover* )pCtrl )->InitInterpolation();
 		}
@@ -2260,9 +2080,7 @@ void CDPClient::OnReplace( CAr & ar )
 	g_WndMng.CloseBoundWindow(); // 월드가 바뀌면 아이템이 걸려 있거나, 아이템을 조작할 가능성이 있는 모든 창을 강제로 닫는다.
 #endif // __WINDOW_INTERFACE_BUG
 
-#if __VER >= 13 // __HOUSING
 	if(	CDeployManager::GetInstance()->IsReady())		CDeployManager::GetInstance()->EndDeploy();
-#endif
 	char* szMapFile[] = { "MapLoading2.tga", "MapLoading3.tga", "MapLoading4.tga" };
 
 	CString strPath = MakePath( DIR_THEME, szMapFile[xRandom( 0, 3 )] );
@@ -2270,35 +2088,21 @@ void CDPClient::OnReplace( CAr & ar )
 	CWorld::m_nZoomLevel = 0;
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	if( dwWorldID == WI_WORLD_GUILDWAR || (dwWorldID >= WI_WORLD_GUILDWAR1TO1_0 && dwWorldID <= WI_WORLD_GUILDWAR1TO1_L) )
-#else // __GUILD_COMBAT_1TO1
- 	if( dwWorldID == WI_WORLD_GUILDWAR )
-#endif // __GUILD_COMBAT_1TO1
 	{
 		strPath = MakePath( DIR_THEME, "MapLoading_GuildWar.tga" );
 	}
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	else if( dwWorldID == WI_INSTANCE_OMINOUS )
 		strPath = MakePath( DIR_THEME, "MapLoading_Ominous.tga" );
 	else if( dwWorldID == WI_INSTANCE_OMINOUS_1 )
 		strPath = MakePath( DIR_THEME, "MapLoading_Ominous_1.tga" );
-#endif // __INSTANCE_DUNGEON
-#if __VER >= 15 // __15TH_INSTANCE_DUNGEON
 	else if( dwWorldID == WI_INSTANCE_DREADFULCAVE )
 		strPath = MakePath( DIR_THEME, "MapLoading_DreadfulCave.tga" );
-#endif // __15TH_INSTANCE_DUNGEON
-#if __VER >= 15 // __GUILD_HOUSE
 	else if( GuildHouse->IsMyGuildHouse( dwWorldID ) )
 		strPath = MakePath( DIR_THEME, "MapLoading_Guildhouse.tga" );
-#endif // __GUILD_HOUSE
 	else
 	{
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( pWndWorld && g_GuildCombat1to1Mng.m_nState != CGuildCombat1to1Mng::GC1TO1_ENTRANCE)
-#else //__GUILD_COMBAT_1TO1
-		if( pWndWorld )
-#endif //__GUILD_COMBAT_1TO1
 			pWndWorld->m_dwGuildCombatTime = 0xffffffff;
 	}
 	if( pWndWorld )
@@ -2311,7 +2115,6 @@ void CDPClient::OnReplace( CAr & ar )
 	if(SUCCEEDED(g_Neuz.m_pd3dDevice->BeginScene()))
 	{
 		// render
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 		int wideOffsetX = 0;
 		
 		if(g_Option.m_nResWidth == 1280 && (g_Option.m_nResHeight == 720 || g_Option.m_nResHeight == 768 || g_Option.m_nResHeight == 800)) //Wide Offset
@@ -2342,10 +2145,6 @@ void CDPClient::OnReplace( CAr & ar )
 			g_Neuz.m_TexLoading.m_size = CSize(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
 		g_Neuz.m_2DRender.RenderTexture( CPoint(0 + wideOffsetX, 0), &g_Neuz.m_TexLoading, g_Neuz.m_nTexAlpha );		
-#else //__CSC_VER9_RESOLUTION
-		g_Neuz.m_TexLoading.m_size = CSize(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-		g_Neuz.m_2DRender.RenderTexture( CPoint(0,0), &g_Neuz.m_TexLoading, g_Neuz.m_nTexAlpha );
-#endif //__CSC_VER9_RESOLUTION
 	}
 	g_Neuz.m_pd3dDevice->EndScene();
 	g_Neuz.m_pd3dDevice->Present( NULL, NULL, NULL, NULL );
@@ -2392,10 +2191,8 @@ void CDPClient::OnReplace( CAr & ar )
 		CDeployManager::GetInstance()->SetMyRoom(FALSE);
 	}
 #endif
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	D3DXVECTOR3& rDestinationArrow = g_WndMng.m_pWndWorld->m_vDestinationArrow;
 	rDestinationArrow = D3DXVECTOR3( -1.0F, 0.0F, -1.0F );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	//GMPBIGSUN : check world loading 
 	Error( "DPClient::OnReplace END OK" );
@@ -2427,7 +2224,6 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 				
 				pPlayer->DoEquip( pItemElem, fEquip, nPart );
 				if( g_pBipedMesh )
-#if __VER >= 8 //__CSC_VER8_4
 				{
 					CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_dwSkinSet, pPlayer->m_dwFace, pPlayer->m_dwHairMesh, pPlayer->m_dwHeadMesh, pPlayer->m_aEquipInfo, g_pBipedMesh, &pPlayer->m_Inventory );
 					CWndBeautyShop* pWndBeautyShop = (CWndBeautyShop*)g_WndMng.GetWndBase(APP_BEAUTY_SHOP_EX);
@@ -2437,9 +2233,6 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 					if( pWndFaceShop )
 						pWndFaceShop->UpdateModels();
 				}
-#else
-					CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_dwSkinSet, pPlayer->m_dwFace, pPlayer->m_dwHairMesh, pPlayer->m_dwHeadMesh, pPlayer->m_aEquipInfo, g_pBipedMesh, &pPlayer->m_Inventory );
-#endif
 			if( g_WndMng.m_pWndBeautyShop && g_WndMng.m_pWndBeautyShop->m_pModel )
 			{
 				CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_dwSkinSet, pPlayer->m_dwFace, pPlayer->m_dwHairMesh, pPlayer->m_dwHeadMesh, pPlayer->m_aEquipInfo, g_WndMng.m_pWndBeautyShop->m_pModel, &pPlayer->m_Inventory );
@@ -2531,14 +2324,12 @@ void CDPClient::OnConfirmTrade( OBJID objid, CAr & ar )
 			SendBlock( 8, g_pPlayer->GetName(), pTrader->GetName() );
 			return;
 		}
-#if __VER >= 8 //__CSC_VER8_5
 		pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 		if( pWndBaseBuf )
 		{
 			SendBlock( 8, g_pPlayer->GetName(), pTrader->GetName() );
 			return;
 		}		
-#endif //__CSC_VER8_5
 		
 		g_WndMng.m_pWndConfirmTrade = new CWndConfirmTrade;
 		g_WndMng.m_pWndConfirmTrade->Initialize( NULL, APP_CONFIRM_TRADE );			
@@ -3135,7 +2926,6 @@ void CDPClient::OnUpdateVendor( OBJID objid, CAr & ar )
 	}
 }
 
-#if __VER >= 11 // __SYS_IDENTIFY
 void CDPClient::OnUpdateItemEx( OBJID objid, CAr & ar )
 {
 	unsigned char id;
@@ -3150,7 +2940,6 @@ void CDPClient::OnUpdateItemEx( OBJID objid, CAr & ar )
 
 	pMover->UpdateItemEx( id, cParam, iValue );
 }
-#endif	// __SYS_IDENTIFY
 
 void CDPClient::OnUpdateItem( OBJID objid, CAr & ar )
 {
@@ -3159,10 +2948,8 @@ void CDPClient::OnUpdateItem( OBJID objid, CAr & ar )
 	DWORD dwValue;
 
 	ar >> cType >> nId >> cParam >> dwValue;
-#if __VER >= 15 // __PETVIS
 	DWORD dwTime;
 	ar >> dwTime;
-#endif // __PETVIS
 
 	CMover* pMover	= prj.GetMover( objid );
 	if( IsValidObj( (CObj*)pMover ) == FALSE )
@@ -3191,13 +2978,8 @@ void CDPClient::OnUpdateItem( OBJID objid, CAr & ar )
 	}
 
 
-#if __VER >= 15 // __PETVIS
 	pMover->UpdateItem( nId, cParam, dwValue, dwTime );
-#else // __PETVIS
-	pMover->UpdateItem( nId, cParam, dwValue );
-#endif // __PETVIS
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 	if( pWndQuestDetail )
 		pWndQuestDetail->UpdateQuestText();
@@ -3205,11 +2987,6 @@ void CDPClient::OnUpdateItem( OBJID objid, CAr & ar )
 	CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 	if( pWndQuestQuickInfo )
 		pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-	if( pWndQuest )  
-		pWndQuest->UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 
 
@@ -3358,22 +3135,14 @@ void CDPClient::OnSetExperience( OBJID objid, CAr & ar )
 						g_Caption1.AddCaption(  prj.GetText( TID_GAME_SKILLPOINT_UP ), g_WndMng.m_pWndWorld->m_pFontAPICaption );// CWndBase::m_Theme.m_pFontCaption );
 					else
 						g_Caption1.AddCaption(  prj.GetText( TID_GAME_SKILLPOINT_UP ), NULL );// CWndBase::m_Theme.m_pFontCaption );
-#if __VER >= 10 // __CSC_VER9_1
 					g_WndMng.m_pWndWorld->GetAdvMgr()->AddAdvButton(APP_SKILL3);
-#else
-					g_WndMng.m_pWndWorld->GetAdvMgr()->AddAdvButton(APP_SKILL1);
-#endif //__CSC_VER9_1
 				}
 			}
 		}
 
 		if( pMover == g_pPlayer )
 		{
-#if __VER >= 10 // __CSC_VER9_1
 			CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-#else
-			CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL1 );
-#endif //__CSC_VER9_1
 			if( pSkillTree && nSP != nSkillPoint )
 				pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
 		}
@@ -3405,27 +3174,6 @@ void CDPClient::OnRevival( OBJID objid )
 	{
 		pMover->m_pActMover->ClearState();
 
-#if __VER < 9 // __S_9_ADD
-		int nRate;
-		int nLevel	= pMover->GetLevel();
-		if( nLevel == 1 )	nRate	= 8;
-		else if( nLevel == 2 )	nRate	= 6;
-		else if( nLevel <= 5 )	nRate	= 5;
-		else if( nLevel <= 10 )	nRate	= 4;
-		else if( nLevel <= 15 )	nRate	= 3;
-		else	nRate	= 3;
-	
-		if( pMover->GetWorld() && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-			nRate = 10;
-
-		pMover->SetHitPoint( pMover->GetMaxHitPoint() * nRate / 10 );
-		int nVal	= pMover->GetMaxManaPoint() * nRate / 10;
-		if( pMover->GetManaPoint() < nVal )
-			pMover->SetManaPoint( nVal );
-		nVal	= pMover->GetMaxFatiguePoint() * nRate / 10;
-		if( pMover->GetFatiguePoint() < nVal )
-			pMover->SetFatiguePoint( nVal );
-#endif // __S_9_ADD
 		
 		if( pMover->IsActiveMover() && g_WndMng.m_pWndResurrectionConfirm )
 			g_WndMng.m_pWndResurrectionConfirm->Destroy();
@@ -3439,7 +3187,6 @@ void CDPClient::OnRevivalLodestar( OBJID objid )
 	{
 		pMover->m_pActMover->ClearState();
 
-#if __VER >= 9 // __S_9_ADD
 		int nRate;
 		int nLevel	= pMover->GetLevel();
 		if( nLevel == 1 )	nRate	= 8;
@@ -3456,7 +3203,6 @@ void CDPClient::OnRevivalLodestar( OBJID objid )
 		nVal	= pMover->GetMaxFatiguePoint() * nRate / 10;
 		if( pMover->GetFatiguePoint() < nVal )
 			pMover->SetFatiguePoint( nVal );
-#endif // __S_9_ADD
 
 		if( pMover->IsActiveMover() && g_WndMng.m_pWndResurrectionConfirm )
 			g_WndMng.m_pWndResurrectionConfirm->Destroy();		
@@ -3470,9 +3216,7 @@ void CDPClient::OnRevivalLodelight( OBJID objid )
 	{
 		pMover->m_pActMover->ClearState();
 
-#if __VER >= 9 // __S_9_ADD
 		pMover->SetHitPoint( pMover->GetMaxHitPoint() / 5 );
-#endif // __S_9_ADD
 
 		if( pMover->IsActiveMover() && g_WndMng.m_pWndResurrectionConfirm )
 			g_WndMng.m_pWndResurrectionConfirm->Destroy();		
@@ -3531,17 +3275,8 @@ void CDPClient::OnSetStatLevel( OBJID objid, CAr & ar )
 		pMover->m_nRemainGP	= nRemainGP;
 		if( g_pPlayer == pMover )
 		{
-#if __VER >= 13 // __RENEW_CHARINFO
 			CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER3 );
-#elif __VER >= 9 // __CSC_VER9_2
-			CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER2 );
-#else //__CSC_VER9_2
-			CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER );
-#endif //__CSC_VER9_2
 			if( pWndBase ) {
-#if __VER < 9 // __CSC_VER9_2
-				( (CWndCharacter*)pWndBase )->m_wndStateDetail.m_fWaitingConfirm	= FALSE;
-#endif //__CSC_VER9_2
 			}
 			g_WndMng.PutString( lpString, NULL, dwColor );
 		}
@@ -3563,19 +3298,11 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar )
 			pMover->m_aJobSkill[ i ].dwLevel = 0;
 		}
 
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		ar.Read( (void*)&pMover->m_aJobSkill[ 0 ], sizeof(SKILL) *  ( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		ar.Read( (void*)&pMover->m_aJobSkill[ 0 ], sizeof(SKILL) *  ( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL ) );
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		DWORD dwJobLv[MAX_JOB];	// 사용하지 않는다.
 		ar.Read( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
 
-#if __VER >= 10 // __CSC_VER9_1
 		CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-#else
-		CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL1 );
-#endif //__CSC_VER9_1
 
 		if( pSkillTree )
 			pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
@@ -3597,9 +3324,6 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar )
 			{
 				pWndWorld->m_pWndGuideSystem->ChangeModel( pMover->GetJob() );
 				pWndWorld->m_pWndGuideSystem->SetAni( pMover->GetJob(), CWndGuideSystem::ANI_IDLE );
-			#if __VER < 12 // __MOD_TUTORIAL
-				pWndWorld->m_pWndGuideSystem->SendGuideMessage(APP_SKILL_AFTERJOB);
-			#endif
 			}
 		}			
 	}
@@ -3611,17 +3335,12 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar )
 		TempMover.m_nJob = nJob;
 		if( TempMover.IsExpert() )
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_JOB_SKILL ], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		else if( TempMover.IsHero() )
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
 		else if( TempMover.IsMaster() )
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
 		else
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		else
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		DWORD dwJobLv[MAX_JOB];	// 사용하지 않는다.
 		ar.Read( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
@@ -3639,17 +3358,12 @@ void CDPClient::OnSetNearChangeJob( OBJID objid, CAr & ar )
 
 		if( pMover->IsExpert() )
 			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_JOB_SKILL ], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		else if( pMover->IsHero() )
 			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
 		else if( pMover->IsMaster() )
 			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
 		else
 			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		else
-			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 
 		CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,pMover->GetPos(),pMover->GetId());
@@ -3665,17 +3379,12 @@ void CDPClient::OnSetNearChangeJob( OBJID objid, CAr & ar )
 		TempMover.m_nJob = nJob;
 		if( TempMover.IsExpert() )
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_JOB_SKILL ], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		else if( TempMover.IsHero() )
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
 		else if( TempMover.IsMaster() )
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
 		else
 			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		else
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	}
 }
 
@@ -3855,11 +3564,7 @@ void CDPClient::OnUseSkill( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) )
 	{
 		pMover->m_dwReqFlag &= (~REQ_USESKILL);	// 응답 받았음.
-#if __VER >= 8 //__S8_PK
 		BOOL bSuccess = pMover->DoUseSkill( 0, -1, id, (SKILLUSETYPE)nUseType, FALSE, nCastingTime, dwSkill, dwLevel );
-#else // __VER >= 8 __S8_PK
-		BOOL bSuccess = pMover->DoUseSkill( 0, -1, id, (SKILLUSETYPE)nUseType, nCastingTime, dwSkill, dwLevel );
-#endif // __VER >= 8 __S8_PK
 		if( bSuccess )
 		{
 			TRACE( "OnUseSkill성공 %d, ", dwSkill );
@@ -3870,22 +3575,14 @@ void CDPClient::OnUseSkill( OBJID objid, CAr & ar )
 				if( pItemProp )
 				{   
 					// 손에 들고 있는게 스태프나 치어스틱이 아닐때만 자동공격.
-#if __VER >= 11 // __CSC_VER11_2
 					if( pItemProp->dwItemKind3 != IK3_STAFF && pItemProp->dwItemKind3 != IK3_CHEERSTICK && pItemProp->dwItemKind3 != IK3_WAND )
-#else //__CSC_VER11_2
-					if( pItemProp->dwItemKind3 != IK3_STAFF && pItemProp->dwItemKind3 != IK3_CHEERSTICK )
-#endif //__CSC_VER11_2
 					{
 						ItemProp* pSkillProp;
 						pSkillProp = prj.GetSkillProp( dwSkill );
 						//자기 자신에게 시전하는 스킬일 경우 타겟이 있으면 자동공격 시작되는 문제 수정.
-#if __VER >= 10 // __LEGEND
 						if( g_WndMng.m_pWndWorld && pSkillProp && pSkillProp->dwExeTarget != EXT_SELFCHGPARAMET && 
 							dwSkill != SI_KNT_HERO_DRAWING ) //영웅 나이트의 리콜 스킬은 공격 스킬아님.
 							//pSkillProp->dwUseChance == WUI_NOW && dwSkill != SI_KNT_HERO_DRAWING ) //영웅 나이트의 리콜 스킬은 공격 스킬아님.
-#else //__LEGEND
-						if( g_WndMng.m_pWndWorld && pSkillProp && pSkillProp->dwExeTarget != EXT_SELFCHGPARAMET ) // && pSkillProp->dwUseChance == WUI_NOW )
-#endif //__LEGEND
 						{
 							g_WndMng.m_pWndWorld->m_bAutoAttack = TRUE;		// 스킬공격 시작되면 자동공격도 시작.
 						}
@@ -3914,47 +3611,6 @@ void CDPClient::OnClearUseSkill( OBJID objid )
 	}
 }
 
-#if __VER < 8 // __S8_PK
-void CDPClient::OnSetSlaughterPoint( OBJID objid, CAr & ar )
-{
-	int nVal;
-	int nNumKill;
-	ar >> nVal >> nNumKill;
-	
-	CMover* pPlayer	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pPlayer ) ) 
-	{
-		pPlayer->m_nSlaughter = nVal;
-		pPlayer->m_nNumKill = nNumKill;
-		KarmaProp* pProp = prj.GetKarmaProp( g_pPlayer->m_nSlaughter );
-		if( pProp )
-		{
-			if( pProp->nGrade == -6 )					
-			{
-				if( g_WndMng.m_pWndShop )
-					g_WndMng.m_pWndShop->Destroy();
-				g_pPlayer->m_vtInfo.SetOther( NULL );
-				SendCloseShopWnd();
-				g_WndMng.PutString( prj.GetText( TID_PK_MARKETNOUSE ), NULL, prj.GetTextColor( TID_PK_MARKETNOUSE ) );	// 사신은 상점을 이용할수 업습니다
-			}
-		}
-
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
-		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
-		if( pWndQuestDetail )
-			pWndQuestDetail->UpdateQuestText();
-
-		CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
-		if( pWndQuestQuickInfo )
-			pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-		CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-		if( pWndQuest )  
-			pWndQuest->UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
-	}
-}
-#endif // __VER < 8 __S8_PK
 
 void CDPClient::OnSetFame( OBJID objid, CAr & ar )
 {
@@ -4017,7 +3673,6 @@ void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar )
 	}
 }
 
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 void CDPClient::OnRemoveSfxObj( OBJID objid, CAr & ar )
 {
 	DWORD dwSfxObj;
@@ -4035,7 +3690,6 @@ void CDPClient::OnRemoveSfxObj( OBJID objid, CAr & ar )
 		pObj->SetRemoveSfxObj( dwSfxObj );
 	}
 }
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 void CDPClient::OnCreateSfxAllow( OBJID objid, CAr & ar )
 {
 	TRACE( "ON RANGE ATTACK\n" );
@@ -4090,9 +3744,7 @@ void CDPClient::OnDefinedText( CAr & ar )
 		s.GetToken();
 		while( s.tok != FINISHED )
 		{
-#if __VER >= 9	// __ULTIMATE
 			s.Token.Replace( " @", "" );
-#endif	//
 			_tcscpy( argv[argc], s.Token );
 			argc++;
 			s.GetToken();
@@ -4107,25 +3759,13 @@ void CDPClient::OnDefinedText( CAr & ar )
 	CString string;
 	string.FormatV( prj.GetText( dwText ), (va_list) pargv );
 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 
-#else //__Y_CHAT_SYSTEM_8
-	if( dwText == TID_GAME_DROPITEM || dwText == TID_GAME_DROPPENYA || dwText == TID_EVE_REAPITEM )
-//	if( dwText == TID_GAME_DROPITEM || dwText == TID_GAME_DROPPENYA || dwText == TID_EVE_REAPITEM || dwText == TID_GAME_REAPITEM )
-	{
-		CWndChat* pWndChat = (CWndChat*) g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );		
-		if( pWndChat )
-			pWndChat-> PutString( (LPCTSTR)string, D3DCOLOR_XRGB( 255, 255, 255 ) );
-		return;
-	}	
-#endif //__Y_CHAT_SYSTEM_8
 
 	g_WndMng.PutString( (LPCTSTR)string, NULL, prj.GetTextColor( dwText ) );
 }
 
 void CDPClient::OnChatText( CAr & ar )
 {
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	TCHAR lpString[1024], *pargv[32];
 	memset( pargv, 0, sizeof(pargv) );
 	int argc	= 0;
@@ -4133,49 +3773,6 @@ void CDPClient::OnChatText( CAr & ar )
 	DWORD dwText;
 	ar >> dwText;
 	ar.ReadString( lpString, 1024 );	
-#else //__Y_CHAT_SYSTEM_8
-	TCHAR lpString[1024], argv[32][256], *pargv[32];
-	memset( pargv, 0, sizeof(pargv) );
-	int argc	= 0;
-	
-	DWORD dwText;
-	ar >> dwText;
-	ar.ReadString( lpString, 1024 );
-	
-	if( dwText == TID_GAME_REAPMONEY )
-	{
-		//예외처리: 돈 문자열에 ','가 들어가서 CScanner로 작업하기 원할치 않다.
-		CString rString;
-		AfxExtractSubString( rString, lpString, 0, ' ' );
-		strcpy( argv[0], rString );
-		AfxExtractSubString( rString, lpString, 1, ' ' );
-		strcpy( argv[1], rString );
-		argc = 2;
-	}
-	else
-	{
-		CScanner s( lpString );
-		s.GetToken();
-		while( s.tok != FINISHED )
-		{
-			_tcscpy( argv[argc], s.Token );
-			argc++;
-			s.GetToken();
-		}
-	}
-	
-	for( int i = 0; i < argc; i++ )
-	{
-		pargv[ i ] = argv[ i ];
-	}
-	
-	CString string;
-	string.FormatV( prj.GetText( dwText ), (va_list) pargv );
-	
-	CWndChat* pWndChat = (CWndChat*) g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );		
-	if( pWndChat )
-		pWndChat-> PutString( (LPCTSTR)string, D3DCOLOR_XRGB( 0, 200, 0 ) );
-#endif //__Y_CHAT_SYSTEM_8
 }
 
 void CDPClient::OnDefinedText1( CAr & ar )
@@ -4343,37 +3940,17 @@ void CDPClient::OnAddPartyMember( CAr & ar )
 	u_long uPlayerId;
 	int nSizeofMember;
 	ar >> uPlayerId;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	char pszLeader[MAX_PLAYER]	= { 0,};
 	char pszMember[MAX_PLAYER]	= { 0,};
 	ar.ReadString( pszLeader, MAX_PLAYER );
 	ar.ReadString( pszMember, MAX_PLAYER );
-#else	// __SYS_PLAYER_DATA
-	char lpszPlayer[MAX_PLAYER]	= { 0, };
-#endif	// __SYS_PLAYER_DATA
 	ar >> nSizeofMember;
 	int nOldSize	= g_Party.GetSizeofMember();
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-	if( nOldSize > nSizeofMember )	// 탈퇴 했을시 이름가져오기
-	{
-		int i	= g_Party.FindMember( uPlayerId );
-		if( i != -1 )
-			strcpy( lpszPlayer, g_Party.m_aMember[i].m_szName );
-	}
-#endif	// __SYS_PLAYER_DATA
 
 	if( nSizeofMember != 0 )
 	{
 		g_Party.Serialize( ar );
-#if __VER < 11 // __SYS_PLAYER_DATA
-		if( nOldSize < nSizeofMember ) // 참가 했을시 이름가져오기
-		{
-			int i	= g_Party.FindMember( uPlayerId );
-			if( i != -1 )
-				strcpy( lpszPlayer, g_Party.m_aMember[i].m_szName );
-		}
-#endif	// __SYS_PLAYER_DATA
 
 		CString sMessage;
 		if( nOldSize == 0 && nSizeofMember == 2 )	// new
@@ -4381,77 +3958,21 @@ void CDPClient::OnAddPartyMember( CAr & ar )
 			if( g_Party.IsLeader( g_pPlayer->m_idPlayer ) )	// leader
 			{
 				g_WndMng.PutString( prj.GetText(TID_GAME_PARTYCREATE), NULL, prj.GetTextColor(TID_GAME_PARTYCREATE) );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				sMessage.Format( prj.GetText( TID_GAME_PARTYJOIN1 ), pszMember );
-#else	// __SYS_PLAYER_DATA
-				sMessage.Format( prj.GetText(TID_GAME_PARTYJOIN1), g_Party.m_aMember[1].m_szName );
-#endif	// __SYS_PLAYER_DATA
 			}
 			else	// member
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				sMessage.Format( prj.GetText( TID_GAME_PARTYJOIN2 ), pszLeader );
-#else	// __SYS_PLAYER_DATA
-				sMessage.Format( prj.GetText(TID_GAME_PARTYJOIN2), g_Party.m_aMember[0].m_szName );
-#endif	// __SYS_PLAYER_DATA
 			}
-#if __VER < 13 // __REMOVE_JOINPARTYMEMBER_ANI			// 파티맴버조인시,파티생성시,파티승격시 애니 빼기
-			for( int i = 0 ; i < g_Party.GetSizeofMember()-1 ; i++ )
-			{
-				u_long idPlayer = g_Party.GetPlayerId( i );
-				CMover* pMover  = prj.GetUserByID( idPlayer );
-				
-				if( !IsValidObj(pMover) )
-					continue;
-
-				if( pMover->m_pActMover && ( pMover->m_pActMover->IsState( OBJSTA_STAND ) || pMover->m_pActMover->IsState( OBJSTA_STAND2 )) )
-				{
-					if( !pMover->m_pActMover->IsFly() && !pMover->m_pActMover->IsDie() )
-					{
-						int Motion_Array[3] = { MTI_ACCLAIM, MTI_CLAPDOWN, 	MTI_CLAPUP };	
-						
-						pMover->SetMotion( Motion_Array[xRandom(3)], ANILOOP_1PLAY, MOP_FIXED );
-					}
-				}
-			}
-#endif //__REMOVE_JOINPARTYMEMBER_ANI			// 파티맴버조인시,파티생성시,파티승격시 애니 빼기
 			PlayMusic( BGM_IN_FITUP );
 		}
 		else if( nOldSize < nSizeofMember )		// add
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			sMessage.Format( prj.GetText(TID_GAME_PARTYJOIN1), pszMember );
-#else	// __SYS_PLAYER_DATA
-			sMessage.Format( prj.GetText(TID_GAME_PARTYJOIN1), lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
-#if __VER < 13 // __REMOVE_JOINPARTYMEMBER_ANI			// 파티맴버조인시 애니 빼기
-			for( int i = 0 ; i < g_Party.GetSizeofMember()-1 ; i++ )
-			{
-				u_long idPlayer = g_Party.GetPlayerId( i );
-				CMover* pMover  = prj.GetUserByID( idPlayer );
-				
-				if( !IsValidObj(pMover) )
-					continue;
-				
-				if( pMover->m_pActMover && ( pMover->m_pActMover->IsState( OBJSTA_STAND ) || pMover->m_pActMover->IsState( OBJSTA_STAND2 )) )
-				{
-					if( !pMover->m_pActMover->IsFly() && !pMover->m_pActMover->IsDie() )
-					{
-						int Motion_Array[3] = { MTI_ACCLAIM, MTI_CLAPDOWN, 	MTI_CLAPUP };	
-					
-						pMover->SetMotion( Motion_Array[xRandom(3)], ANILOOP_1PLAY, MOP_FIXED );
-					}
-				}
-			}
-#endif //__REMOVE_JOINPARTYMEMBER_ANI			// 파티맴버조인시 애니 빼기
 		}
 		else if( nOldSize > nSizeofMember )		// remove
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			sMessage.Format( prj.GetText(TID_GAME_PARTYREMOVE), pszMember );
-#else	// __SYS_PLAYER_DATA
-			sMessage.Format( prj.GetText(TID_GAME_PARTYREMOVE), lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 		}
 		g_WndMng.PutString( sMessage, NULL, 0xff99cc00 );
 
@@ -4654,9 +4175,7 @@ void CDPClient::OnDuelStart( CAr & ar )
 	
 	ar >> nFlag;
 	
-#if __VER >= 8 // 8차 듀얼 061226 ma
 	SAFE_DELETE( g_WndMng.m_pWndPartyConfirm );
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 
 	CString str;
@@ -4688,7 +4207,6 @@ void CDPClient::OnDuelStart( CAr & ar )
 				pTarget->ClearDuel();
 			}
 			break;
-#if __VER >= 8   // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 		case 3:		//win
 			{
 				// 신청하는 형태의 매시지 박스는 여러개가 날아올 수 있고, 내 의지와는 관계가 없다.
@@ -4721,7 +4239,6 @@ void CDPClient::OnDuelStart( CAr & ar )
 				}
 			}
 			break;
-#endif	//__VER >= 8 
 		}
 	}
 }
@@ -4976,12 +4493,8 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 	 */
 	int nMode;
 	BOOL bOnOff;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	DWORD	dwSkillTime;
 	ar >> nMode >> dwSkillTime >> bOnOff;
-#else // //12차 극단유료아이템
-	ar >> nMode >> bOnOff;
-#endif // //12차 극단유료아이템
 	if( bOnOff == TRUE )
 	{
 		ar >> g_Party.m_nPoint;
@@ -5159,15 +4672,11 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 		if( bOnOff )
 		{
 			CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 		#ifdef __BUFF_1107
 			pWndWorld->m_buffs.AddBuff( BUFF_SKILL, (WORD)( pItemProp->dwID ), 1, dwSkillTime );
 		#else	// __BUFF_1107
 			pWndWorld->m_partySkillState.Set( BUFF_SKILL, (WORD)( pItemProp->dwID ), 1, dwSkillTime );
 		#endif	// __BUFF_1107
-#else // //12차 극단유료아이템
-			pWndWorld->m_partySkillState.Set( BUFF_SKILL, pItemProp->dwID, 1, pItemProp->dwSkillTime );
-#endif // //12차 극단유료아이템
 			str.Format( prj.GetText( TID_GAME_TROUPESKILLUSE ), pItemProp->szName );
 			g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_TROUPESKILLUSE ) );
 		}
@@ -5241,26 +4750,6 @@ void CDPClient::OnPartyChangeTroup( CAr & ar )
 
 	g_Party.m_nKindTroup = 1;
 	g_WndMng.PutString( prj.GetText(TID_GAME_PARTYCHANGE), NULL, prj.GetTextColor(TID_GAME_PARTYCHANGE)); //순회극단으로 변경되었습니다.
-#if __VER < 13 // __REMOVE_JOINPARTYMEMBER_ANI			// 파티맴버조인시,파티생성시,파티승격시 애니 빼기
-	for( int i = 0 ; i < g_Party.GetSizeofMember() ; i++ )
-	{
-		u_long idPlayer = g_Party.GetPlayerId( i );
-		CMover* pMover  = prj.GetUserByID( idPlayer );
-		
-		if( !IsValidObj(pMover) )
-			continue;
-		
-		if( pMover->m_pActMover && ( pMover->m_pActMover->IsState( OBJSTA_STAND ) || pMover->m_pActMover->IsState( OBJSTA_STAND2 )) )
-		{
-			if( !pMover->m_pActMover->IsFly() && !pMover->m_pActMover->IsDie() )
-			{
-				int Motion_Array[3] = { MTI_ACCLAIM, MTI_CLAPDOWN, 	MTI_CLAPUP };	
-				
-				pMover->SetMotion( Motion_Array[xRandom(3)], ANILOOP_1PLAY, MOP_FIXED );
-			}
-		}
-	}
-#endif //__REMOVE_JOINPARTYMEMBER_ANI			// 파티맴버조인시,파티생성시,파티승격시 애니 빼기
 	PlayMusic( BGM_IN_FITUP );
 	
 	if( 0 != strlen( sParty ) )
@@ -5297,7 +4786,6 @@ void CDPClient::OnSetPartyMemberParam( CAr & ar )
 						{
 							fRemoveParty	= false;
 							g_Party.SwapPartyMember( 0, j );
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 							CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
 						#ifdef __BUFF_1107
 							pWndWorld->m_buffs.Clear();
@@ -5306,7 +4794,6 @@ void CDPClient::OnSetPartyMemberParam( CAr & ar )
 						#endif	// __BUFF_1107
 							for( int i = 0 ; i < MAX_SKILL ; i++ )
 								g_WndMng.m_dwSkillTime[i] = 0;
-#endif // //12차 극단유료아이템
 							break;
 						}
 					}
@@ -6370,7 +5857,6 @@ void CDPClient::OnSetLocalEvent( CAr & ar )
 	}
 }
 
-#if __VER >= 9 // __EVENTLUA
 void CDPClient::OnEventLuaDesc( CAr & ar )
 {
 	int nState;
@@ -6398,9 +5884,7 @@ void CDPClient::OnEventLuaDesc( CAr & ar )
 		g_WndMng.PutString( lpString, NULL, 0xffccffcc );
 	m_bEventTextColor = !m_bEventTextColor;
 }
-#endif // __EVENTLUA
 
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 void CDPClient::OnRemoveAttributeResult( CAr & ar )
 {
 	BOOL bSuccess;
@@ -6410,7 +5894,6 @@ void CDPClient::OnRemoveAttributeResult( CAr & ar )
 	if(pWndRemoveAttribute != NULL)
 		pWndRemoveAttribute->ReceiveResult(bSuccess);	
 }
-#endif // __REMOVE_ATTRIBUTE
 void CDPClient::OnGameRate( CAr & ar )
 {
 	BYTE nFlag;
@@ -6682,9 +6165,6 @@ void CDPClient::OnChangeFace( CAr & ar )
 			
 			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, &pMover->m_Inventory );		
 			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );		
-#if __VER < 8 //__CSC_VER8_4			
-			g_WndMng.PutDefinedString( TID_CHANGEFACE_FOUR, "%d", dwFace );
-#endif //__CSC_VER8_4
 		}
 		else
 		{
@@ -6805,11 +6285,7 @@ void CDPClient::OnGCInWindow( CAr& ar )
 	}
 	
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombatOffer);
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	g_WndMng.m_pWndGuildCombatOffer = new CWndGuildCombat1to1Offer(0);
-#else //__GUILD_COMBAT_1TO1
-	g_WndMng.m_pWndGuildCombatOffer = new CWndGuildCombatOffer;
-#endif //__GUILD_COMBAT_1TO1
 
 	if( g_WndMng.m_pWndGuildCombatOffer )
 	{
@@ -6830,9 +6306,6 @@ void CDPClient::OnGCInWindow( CAr& ar )
 			g_WndMng.m_pWndGuildCombatOffer->SetGold( dwRequestPenya );			
 		}
 
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-		g_WndMng.m_pWndGuildCombatOffer->SetTotalGold( nPrizePenya );
-#endif //__GUILD_COMBAT_1TO1
 
 		g_WndMng.m_pWndGuildCombatOffer->EnableAccept( TRUE );
 	}
@@ -6851,18 +6324,11 @@ void CDPClient::OnGCRequestStatus( CAr& ar )
 	ar >> nSize;
 	
 	SAFE_DELETE(g_WndMng.m_pWndGuildWarState);
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	g_WndMng.m_pWndGuildWarState = new CWndGuildCombatState(0);
-#else //__GUILD_COMBAT_1TO1
-	g_WndMng.m_pWndGuildWarState = new CWndGuildCombatState;
-#endif //__GUILD_COMBAT_1TO1
 
 	if( g_WndMng.m_pWndGuildWarState )
 	{
 		g_WndMng.m_pWndGuildWarState->Initialize();
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-		g_WndMng.m_pWndGuildWarState->SetTotalGold( nPrizePenya );
-#endif //__GUILD_COMBAT_1TO1
 		g_WndMng.m_pWndGuildWarState->SetTime( tNext );
 		
 		int nRate = -1;
@@ -7177,11 +6643,7 @@ void CDPClient::OnGCTele( CAr & ar )
 	ar.ReadString( strMessage, 512 );
 
 	SAFE_DELETE( g_WndMng.m_pWndGuildCombatInfoMessageBox);
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	g_WndMng.m_pWndGuildCombatInfoMessageBox = new CGuildCombatInfoMessageBox(0);
-#else //__GUILD_COMBAT_1TO1
-	g_WndMng.m_pWndGuildCombatInfoMessageBox = new CGuildCombatInfoMessageBox;
-#endif //__GUILD_COMBAT_1TO1
 	
 	if( g_WndMng.m_pWndGuildCombatInfoMessageBox )
 	{
@@ -7302,13 +6764,7 @@ void CDPClient::OnGCLog( CAr & ar )
 			if( nOldPoint != nPoint )
 				nRate++;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			str		= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
-#else	// __SYS_PLAYER_DATA
-			str = prj.GetPlayerString( uiPlayer );
-			if( str.IsEmpty() )
-				SendQueryPlayerString( uiPlayer, QPS_GUILD_MEMBER );				
-#endif	// __SYS_PLAYER_DATA
 
 			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
 				
@@ -7389,17 +6845,8 @@ void CDPClient::OnGCLog( CAr & ar )
 				strGuild2 = "";
 			}
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			strAtk	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerAttack );
 			strDef	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerDefence );
-#else	// __SYS_PLAYER_DATA
-			strAtk = prj.GetPlayerString( GCGetPoint.uidPlayerAttack );
-			strDef = prj.GetPlayerString( GCGetPoint.uidPlayerDefence );
-			if( strAtk.IsEmpty() )
-				SendQueryPlayerString( GCGetPoint.uidPlayerAttack, QPS_GUILD_MEMBER );
-			if( strDef.IsEmpty() )
-				SendQueryPlayerString( GCGetPoint.uidPlayerDefence, QPS_GUILD_MEMBER );
-#endif	// __SYS_PLAYER_DATA
 			if( GCGetPoint.bDefender )
 			{
 				strGuild2 = prj.GetText(TID_GAME_GC_LOG_DEFENDER);
@@ -7578,11 +7025,7 @@ void CDPClient::OnGCPlayerPoint( CAr & ar )
 
 		CString str;
 		CString strFormat;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		vector<PDVer>	vecPlayer;
-#else	// __SYS_PLAYER_DATA
-		vector< u_long > vecPlayer;
-#endif	// __SYS_PLAYER_DATA
 		vecPlayer.clear();
 
 		for( int i = 0 ; i < (int)( uSize ) ; ++i )
@@ -7592,27 +7035,17 @@ void CDPClient::OnGCPlayerPoint( CAr & ar )
 			ar >> GCPlayerPoint.nJob;		// 직업
 			ar >> GCPlayerPoint.nPoint;		// 포인트
 			g_GuildCombatMng.m_vecGCPlayerPoint.push_back( GCPlayerPoint );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PDVer pdv( GCPlayerPoint.uidPlayer, CPlayerDataCenter::GetInstance()->GetPlayerData( GCPlayerPoint.uidPlayer, FALSE )->data.nVer );
 			vecPlayer.push_back( pdv );
-#else	// __SYS_PLAYER_DATA
-			vecPlayer.push_back( GCPlayerPoint.uidPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 			g_WndMng.m_pWndGuildCombatRanking->InsertRank( GCPlayerPoint.nJob, GCPlayerPoint.uidPlayer, GCPlayerPoint.nPoint );
 		}
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		CWndGuildCombatRank_Person* pWndRank	= (CWndGuildCombatRank_Person*)g_WndMng.GetWndBase( APP_GUILDCOMBAT_RANK_P );
 		if( pWndRank )
 			pWndRank->DivisionList();
-#endif // __SYS_PLAYER_DATA
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		SendQueryPlayerData( vecPlayer );
-#else	// __SYS_PLAYER_DATA
-		SendQueryPlayerListString( QPS_GUILDCOMBAT_RANKING, vecPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 	}
 }
@@ -7803,25 +7236,14 @@ void CDPClient::OnFriendGameJoin( CAr & ar )
 	if( g_WndMng.m_Messenger.m_aFriend.size() )
 #endif	// __RT_1025
 	{
-#if __VER < 11 // __SYS_PLAYER_DATA
-		SendGetFriendName();
-#endif	// __SYS_PLAYER_DATA
 		SendGetFriendState();
 	}
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 	{
 		pWndMessengerEx->UpdateFriendList();
 		pWndMessengerEx->m_wndFriend.SetScrollBar();
 	}
-#else //__CSC_VER11_4
-	CWndMessenger* pWndMessenger = (CWndMessenger*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessenger )
-	{
-		pWndMessenger->m_wndFriend.SetScrollBar();
-	}
-#endif //__CSC_VER11_4
 }
 
 void CDPClient::OnAddFriend( CAr & ar )
@@ -7841,18 +7263,12 @@ void CDPClient::OnAddFriend( CAr & ar )
 	ar.ReadString( lpName, MAX_PLAYER );
 
 //	g_WndMng.m_Messenger.m_dwMyState = FRS_ONLINE;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	g_WndMng.m_RTMessenger.SetFriend( uidPlayer, NULL );
-#else	// __SYS_PLAYER_DATA
-	g_WndMng.m_Messenger.AddFriend( uidPlayer, nJob, nSex, lpName );
-#endif	// __SYS_PLAYER_DATA
 	SendGetFriendState();
 //	g_WndMng.AddFriend( pFocusMover->m_szName, pFocusMover->m_idPlayer 0, FALSE );////Add( lpFriend );
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 }
 
 void CDPClient::OnRemoveFriend( CAr & ar )
@@ -7865,11 +7281,9 @@ void CDPClient::OnRemoveFriend( CAr & ar )
 	g_WndMng.m_Messenger.RemoveFriend( uidPlayer );
 #endif	// __RT_1025
 
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 }
 
 
@@ -7957,11 +7371,9 @@ void CDPClient::OnRemoveFriendState( CAr & ar )
 		pFriend->dwState = FRS_OFFLINE;
 #endif	// __RT_1025
 
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 }
 
 void CDPClient::OnFriendJoin( CAr & ar )
@@ -7986,11 +7398,9 @@ void CDPClient::OnFriendJoin( CAr & ar )
 			if( pWndInstantMsg )
 				pWndInstantMsg->AddMessageJoin( CPlayerDataCenter::GetInstance()->GetPlayerString( idFriend ) );
 		}
-#if __VER >= 11 // __CSC_VER11_4
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 	}
 #else	// __RT_1025
 	// 친구들 중에 로그인을 하여서 알려주는 것임
@@ -8037,11 +7447,9 @@ void CDPClient::OnFriendLogOut( CAr & ar )
 	if( pFriend )
 	{
 		pFriend->dwState	= FRS_OFFLINE;
-#if __VER >= 11 // __CSC_VER11_4
 		CWndMessengerEx* pWndMessengerEx	= (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 	}
 #else	// __RT_1025
 	// 친구들 중에 로그아웃을 하여서 알려주는 것임
@@ -8065,11 +7473,9 @@ void CDPClient::OnFriendNoIntercept( CAr & ar )
 	u_long idFriend;
 	ar >> idFriend;
 	g_WndMng.m_RTMessenger.SetBlock( idFriend, FALSE );
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx	= (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 #else	// __RT_1025
 	u_long uidPlayer;
 	int state;
@@ -8103,11 +7509,9 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 			if( pFriend )
 				pFriend->dwState	= FRS_OFFLINE;
 		}
-#if __VER >= 11 // __CSC_VER11_4
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 	}
 #else	// __RT_1025
 	u_long uidPlayer, uidFriend;
@@ -8146,11 +7550,9 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 				}
 			}
 		}
-#if __VER >= 11 // __CSC_VER11_4
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 	}
 #endif	// __RT_1025
 }
@@ -8176,11 +7578,9 @@ void CDPClient::OnGetFriendState( CAr & ar )
 //		PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( uidPlayer );
 //		if( pPlayerData )
 //			pPlayerData->data.uLogin		= uIdofMulti;
-	#if __VER >= 11 // __CSC_VER11_4
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-	#endif //__CSC_VER11_4
 #else	// __RT_1025
 		LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
 		if( pFriend )
@@ -8202,11 +7602,9 @@ void CDPClient::OnGetFriendState( CAr & ar )
 //		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( uidPlayer );
 //		if( pPlayerData )
 //			pPlayerData->data.uLogin		= uIdofMulti;
-	#if __VER >= 11 // __CSC_VER11_4
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-	#endif //__CSC_VER11_4
 #else	// __RT_1025
 		LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
 		if( pFriend )
@@ -8241,11 +7639,9 @@ void CDPClient::OnSetFriendState( CAr & ar )
 			Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uidPlayer );
 			if( pFriend )
 				pFriend->dwState	= dwState;
-	#if __VER >= 11 // __CSC_VER11_4
 			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 			if( pWndMessengerEx )
 				pWndMessengerEx->UpdateFriendList();
-	#endif //__CSC_VER11_4
 #else	// __RT_1025
 			LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
 			if( pFriend )
@@ -8267,11 +7663,9 @@ void CDPClient::OnOneFriendState( CAr & ar )
 #endif	// __RT_1025
 	if( pFriend )
 		pFriend->dwState	= dwState;
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
 }
 
 void CDPClient::OnBlock( CAr & ar )
@@ -8398,11 +7792,7 @@ void CDPClient::OnSetQuest( OBJID objid, CAr & ar )
 	CMover* pMover	= prj.GetMover( objid );
 	if( IsValidObj( (CObj*)pMover ) && pMover->IsActiveMover() )
 	{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
-#else // __IMPROVE_QUEST_INTERFACE
-		CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-#endif // __IMPROVE_QUEST_INTERFACE
 		CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
 		LPQUEST lpCurQuest = pMover->GetQuest( quest.m_wId );
@@ -8455,33 +7845,23 @@ void CDPClient::OnSetQuest( OBJID objid, CAr & ar )
 				g_WndMng.PutString( strTemp );
 			}
 			pMover->SetQuest( &quest );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			if( pWndQuestDetail )
 				pWndQuestDetail->UpdateQuestText();
 
 			CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 			if( pWndQuestQuickInfo )
 				pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-			if( pWndQuest )
-				pWndQuest->UpdateText(); 
-#endif // __IMPROVE_QUEST_INTERFACE
 		}
 		// 신규 추가 
 		else
 		{
 			pMover->SetQuest( &quest );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			if( pWndQuestDetail )
 				pWndQuestDetail->UpdateQuestText( quest.m_wId ); 
 
 			CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 			if( pWndQuestQuickInfo )
 				pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-			if( pWndQuest )
-				pWndQuest->Update( quest.m_wId ); 
-#endif // __IMPROVE_QUEST_INTERFACE
 		}
 
 		//if( nQuestIdx == 1 ) 
@@ -9157,14 +8537,6 @@ void CDPClient::SendGCGetPenyaPlayer( void )
 	BEFORESENDSOLE( ar, PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT, DPID_UNKNOWN );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#if __VER < 8 // #ifndef __GUILDCOMBAT_85
-// 길드대전 아이템 보상
-void CDPClient::SendGCGetItem( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GETITEM_GUILDCOMBAT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-#endif // __VER < 8
 void CDPClient::SendGCTele( void )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_TELE_GUILDCOMBAT, DPID_UNKNOWN );
@@ -9243,7 +8615,6 @@ void CDPClient::SendDoEquip( CItemElem* pItemElem, int nPart, BOOL bResult )
 		return;
 	}
 
-#if __VER >= 8 //__CSC_VER8_4
 	// 헤어샵 / 메이크업 사용 중에는 머리에 쓰는 아이템을 사용할 수 없다.
 	if(pItemElem->GetProp()->dwParts == PARTS_HAT || pItemElem->GetProp()->dwParts == PARTS_CAP)
 	{
@@ -9253,7 +8624,6 @@ void CDPClient::SendDoEquip( CItemElem* pItemElem, int nPart, BOOL bResult )
 			return;
 		}
 	}
-#endif	//__CSC_VER8_4
 
 	if( pItemElem->GetProp()->dwParts == PARTS_RWEAPON )
 	{
@@ -9738,14 +9108,12 @@ void CDPClient::SendBuyItem( CHAR cTab, BYTE nId, short nNum, DWORD dwItemId )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 11 // __GUILDCOMBATCHIP
 void CDPClient::SendBuyChipItem( CHAR cTab, BYTE nId, short nNum, DWORD dwItemId )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_BUYCHIPITEM, DPID_UNKNOWN );
 	ar << cTab << nId << nNum << dwItemId;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __GUILDCOMBATCHIP
 
 void CDPClient::SendSellItem( BYTE nId, short nNum )
 {
@@ -9791,17 +9159,11 @@ void CDPClient::SendRangeAttack( OBJMSG dwAtkMsg, OBJID objid, DWORD dwItemID, i
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 8 // __S8_PK
 void CDPClient::SendUseSkill( WORD wType, WORD wId, OBJID objid, int nUseSkill, BOOL bControl )
-#else // __VER >= 8 __S8_PK
-void CDPClient::SendUseSkill( WORD wType, WORD wId, OBJID objid, int nUseSkill )
-#endif // __VER >= 8 __S8_PK
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_USESKILL, DPID_UNKNOWN );
 	ar << wType << wId << objid << nUseSkill;
-#if __VER >= 8 // __S8_PK
 	ar << bControl;
-#endif // __VER >= 8 __S8_PK
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -9898,9 +9260,7 @@ void CDPClient::OnMotion( OBJID objid, CAr & ar )
 		pMover->m_dwReqFlag		&= ~REQ_MOTION;
 		if( (OBJMSG)dwMsg != OBJMSG_NONE )
 		{
-#if __VER >= 8	// __JEFF_VER_8
 			if( dwMsg != OBJMSG_STANDUP )
-#endif	// __JEFF_VER_8
 			{
 				pMover->ClearDest();
 				pMover->ClearDestAngle();
@@ -10154,7 +9514,6 @@ void CDPClient::SendPlayerAngle( void )
 
 int		g_nItemDelay = 0;		// 땜빵.
 
-#if __VER >= 11 // __SYS_IDENTIFY
 void CDPClient::SendRemoveItemLevelDown( DWORD dwId )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_REMOVE_ITEM_LEVEL_DOWN, DPID_UNKNOWN );
@@ -10182,7 +9541,6 @@ void CDPClient::SendBlessednessCancel( int nItem )
 	ar << nItem;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __SYS_IDENTIFY
 
 void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bResult )
 {
@@ -10208,7 +9566,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		return;
 #endif // __S_SERVER_UNIFY
 
-#if __VER >= 8 //__CSC_VER8_4
 	if(pItemProp->dwParts == PARTS_HAT  || pItemProp->dwParts == PARTS_CAP)
 	{	
 		if(g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX ) || g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN ))
@@ -10218,9 +9575,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			return;
 		}
 	}
-#endif	//__CSC_VER8_4
 
-#if __VER >= 9 //__ULTIMATE
 	//얼터멋 웨폰 변환창에서는 최상급 두루마리 사용가능 그 외 아이템 사용 불가
 	//유니크 웨폰 변환창에서는 모든 아이템 사용 불가
 	CWndChangeWeapon* pWndChangeWeapon = (CWndChangeWeapon*)g_WndMng.GetWndBase( APP_SMELT_CHANGEWEAPON );
@@ -10232,9 +9587,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			return;
 		}
 	}
-#endif //__ULTIMATE
 		
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	BOOL bCreateMonster = FALSE;
 	if( g_Neuz.m_pCreateMonItem )
 	{
@@ -10244,7 +9597,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			bCreateMonster = TRUE;
 		}
 	}
-#endif // __ITEMCREATEMON_S0602
 	
 	DWORD dwGroup = pPlayer->m_cooltimeMgr.GetGroup( pItemProp );
 	if( dwGroup )
@@ -10336,7 +9688,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		return;
 	}
 
-#if __VER >= 13 // __HOUSING
 	if( pItemProp->dwItemKind2 == IK2_BLINKWING	&& g_pPlayer->GetWorld()->m_dwWorldID == WI_WORLD_MINIROOM )
 	{
 		char szMessege[128] = {0,};
@@ -10344,7 +9695,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		g_WndMng.PutString( szMessege, NULL, prj.GetTextColor(TID_PK_BLINK_NO) );
 		return;
 	}
-#endif // __HOUSING
 
 	if( bResult && pItemProp->dwID == II_SYS_SYS_SCR_RETURN )		// 귀환의 두루마리 (bResult - 더블클릭의 경우)
 	{
@@ -10367,12 +9717,8 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 #ifdef __SM_ITEM_2ND_EX		
 		|| pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT2
 #endif	// __SM_ITEM_2ND_EX
-#if __VER >= 9 // __ULTIMATE
 		|| pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT3
-#endif // __ULTIMATE
-#if __VER >= 11 // __SYS_COLLECTING
 		|| pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT4
-#endif	// __SYS_COLLECTING
 		))
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
@@ -10391,7 +9737,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		return;
 	}
 
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	if( bResult && pItemProp->dwID == II_SYS_SYS_SCR_SMELTING2 )	// 속성 제련의 두루마리
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
@@ -10400,7 +9745,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV10OVER_NOTUSE, dwId, objid );
 		return;
 	}
-#endif // __EXT_ATTRIBUTE
 
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PIEPROT )		// 보호의 두루마리(상급)
 	{
@@ -10524,18 +9868,13 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				return;
 
 			g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-#if __VER >= 8 //__CSC_VER8_4
 			g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
-#else
-			g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 
 			return;
 		}
 	}
 #endif //__Y_BEAUTY_SHOP_CHARGE
 	
-#if __VER >= 9 // __CSC_VER9_1
 	if( pItemProp->dwExeTarget == EXT_PET )
 	{
 		CPet* pPet	= g_pPlayer->GetPet();
@@ -10568,19 +9907,11 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_PET_HATCH_DESC, dwId, objid );
 				return;	
 			case II_SYS_SYS_FEED_01:
-#if __VER >= 12 // __PET_0519
 				{	// 별도의 개수 입력 없이 최대 사용 가능한 양을 사용하도록 수정
 					CItemElem* pItemElem	= static_cast<CItemElem*>( pItemBase );
 					SendUsePetFeed( dwId );
 					return;
 				}
-#else	// __PET_0519
-				SAFE_DELETE( g_WndMng.m_pWndFoodConfirm);
-				g_WndMng.m_pWndFoodConfirm = new CWndFoodConfirm(1);
-				g_WndMng.m_pWndFoodConfirm->SetItem( dwId );
-				g_WndMng.m_pWndFoodConfirm->Initialize( &g_WndMng, APP_DROP_ITEM );
-				return;	
-#endif	// __PET_0519
 			case II_SYS_SYS_FEED_MAKER:
 				if(g_WndMng.m_pWndPetFoodMill != NULL)
 					g_WndMng.PutString( prj.GetText( TID_GAME_WND_OVERLAPED ), NULL, prj.GetTextColor( TID_GAME_WND_OVERLAPED ) );
@@ -10598,7 +9929,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				g_WndMng.m_pWndPetLifeConfirm->SetItem(dwId);
 				g_WndMng.m_pWndPetLifeConfirm->Initialize( &g_WndMng, APP_MESSAGEBOX );				
 				return;
-#if __VER >= 11 // __SYS_COLLECTING
 			case II_GEN_TOO_COL_NORMALBATTERY:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
@@ -10613,7 +9943,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_CACHE_BETTERY_DESC, dwId, pItemProp->dwID );
 				return;	
-#endif	// __SYS_COLLECTING
 #ifndef __AZRIA_1023
 #ifdef __SYS_TICKET
 			case II_SYS_TICKET_KEBARAS01:
@@ -10637,7 +9966,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				break;
 		}
 	}
-#endif //__CSC_VER9_1
 
 #ifdef __AZRIA_1023
 	CItemElem* pItem	= static_cast<CItemElem*>( pItemBase );
@@ -10695,7 +10023,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		return;
 	}
 	
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	if( pItemProp->dwItemKind3 == IK3_CREATE_MONSTER )
 	{
 		if( bCreateMonster == FALSE && g_Neuz.m_pCreateMonItem == NULL )
@@ -10705,7 +10032,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		}
 		return;
 	}
-#endif // __ITEMCREATEMON_S0602
 
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PARTYSUMMON )
 	{
@@ -10745,7 +10071,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		}
 	}
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	if( pItemProp->dwID == II_SYS_SYS_SCR_SEAL )
 	{
 		if( !g_WndMng.m_pWndSealChar )
@@ -10773,7 +10098,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 */
 		return;
 	}
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 #ifdef __PET_1024
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PET_NAMING )
@@ -11000,7 +10324,6 @@ void CDPClient::SendFriendCancel( u_long uidLeader, u_long uidMember )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 11 // __SYS_POCKET
 void	CDPClient::SendAvailPocket( int nPocket, int nItem )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_AVAIL_POCKET, DPID_UNKNOWN );
@@ -11014,42 +10337,7 @@ void	CDPClient::SendMoveItem_Pocket( int nPocket1, int nItem, short nNum, int nP
 	ar << nPocket1 << nItem << nNum << nPocket2;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __SYS_POCKET
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPClient::SendGetFriendName()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GETFRIENDNAME, DPID_UNKNOWN );
-	// 여기는 친구의 이름을 가지고 오는 루틴이다.
-	int nCount	= 0;
-	u_long uOffset	= ar.GetOffset();
-	ar << nCount;
-		
-	for( C2FriendPtr::iterator i = g_WndMng.m_Messenger.m_aFriend.begin() ; i != g_WndMng.m_Messenger.m_aFriend.end() ; i++ )
-	{
-		LPFRIEND lpFriend = (LPFRIEND)i->second;
-
-		if( 0 == strlen( lpFriend->szName ) )
-		{
-			CMover* pObjMember = prj.GetUserByID( lpFriend->dwUserId );
-			if( pObjMember )
-			{
-				strcpy( lpFriend->szName, pObjMember->GetName() );
-			}
-			else
-			{
-				++nCount;
-				ar << lpFriend->dwUserId;
-			}
-		}	
-	}
-
-	int nBufSize1;
-	LPBYTE lpBuf1	= ar.GetBuffer( &nBufSize1 );
-	*(UNALIGNED int*)( lpBuf1 + uOffset )	= nCount;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPClient::SendGetFriendState()
 {
@@ -11128,13 +10416,11 @@ void CDPClient::SendSnapshot( BOOL fUnconditional )
 	m_ss.uFrameMove++;
 	if( fUnconditional || m_ss.uFrameMove % 30 == 0 )	// 5 / 1
 	{
-#if __VER >= 8	// __JEFF_VER_8
 	if( m_ss.playerdestpos.fValid == TRUE )
 	{
 		if( g_pPlayer->m_pActMover->IsSit() )
 			SendMotion( OBJMSG_STANDUP );
 	}
-#endif	// __JEFF_VER_8
 		BEFORESENDSOLE( ar, PACKETTYPE_SNAPSHOT, DPID_UNKNOWN );
 
 		u_long uOffset	= ar.GetOffset();
@@ -11208,7 +10494,6 @@ void CDPClient::SendScriptReplaceKey( DWORD dwWorld, LPCSTR lpszKey )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 8 //__CSC_VER8_5
 void CDPClient::SendCreateAngel(CString sendstr)
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_CREATEANGEL, DPID_UNKNOWN );
@@ -11220,7 +10505,6 @@ void CDPClient::SendAngelBuff()
 	BEFORESENDSOLE( ar, PACKETTYPE_ANGELBUFF, DPID_UNKNOWN );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif //__CSC_VER8_5
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -11232,7 +10516,6 @@ void CDPClient::SendAngelBuff()
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-#if __VER >= 8 //__CSC_VER8_5
 void CDPClient::OnAngel( OBJID objid, CAr& ar )
 {
 	BYTE nState;
@@ -11285,7 +10568,6 @@ void CDPClient::OnAngelInfo( OBJID objid, CAr & ar )
 			g_WndMng.PutString( prj.GetText( TID_GAME_COMPLETE_ANGEL ), NULL, prj.GetTextColor(TID_GAME_COMPLETE_ANGEL) );
 	}
 }
-#endif //__CSC_VER8_5
 
 #ifdef __EVE_MINIGAME
 void CDPClient::OnMiniGame( OBJID objid, CAr & ar )
@@ -11506,7 +10788,6 @@ void CDPClient::OnFiveSystem_Result( CAr & ar )
 }
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 void CDPClient::OnUltimateWeapon( OBJID objid, CAr & ar )
 {
 	BYTE nState;
@@ -11586,7 +10867,6 @@ void CDPClient::OnUltimateEnchantWeapon( OBJID objid, CAr & ar )
 	int nResult;
 	ar >> nResult;
 }
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 void CDPClient::OnExchange( OBJID objid, CAr & ar )
@@ -11612,7 +10892,6 @@ void CDPClient::OnExchangeResult( CAr & ar )
 }
 #endif // __TRADESYS
 
-#if __VER >= 10 // __CSC_VER9_1
 void CDPClient::OnLegendSkillUp( CAr & ar )
 {
 	int nResult;
@@ -11622,7 +10901,6 @@ void CDPClient::OnLegendSkillUp( CAr & ar )
 	if(pWndHeroSkillUp != NULL)
 		pWndHeroSkillUp->ReceiveResult(nResult);
 }
-#endif //__CSC_VER9_1
 
 void CDPClient::OnShout( CAr & ar )
 {
@@ -11634,9 +10912,7 @@ CHAR	lpszPlayer[MAX_PLAYER], lpString[260];
 	ar.ReadString( lpszPlayer, MAX_PLAYER );
 	ar.ReadString( lpString, 260 );
 	DWORD dwColor	= 0xffff99cc;
-#if __VER >= 12 // __LORD
 	ar >> dwColor;
-#endif	// __LORD
 
 	CMover* pMover	= prj.GetMover( objid );
 
@@ -12455,12 +11731,7 @@ void CDPClient::OnCreateGuild( CAr & ar )
 	ar.ReadString( lpszPlayer, MAX_PLAYER );
 	ar.ReadString( szGuild, MAX_G_NAME );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	CPlayerDataCenter::GetInstance()->AddPlayerData( idPlayer, lpszPlayer );
-#else	// __SYS_PLAYER_DATA
-	if( NULL == prj.GetPlayerString( idPlayer ) )
-		prj.SetPlayerID( idPlayer, lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 	CGuild* pGuild	= new CGuild;
 	pGuild->m_idGuild	= idGuild;
@@ -12491,14 +11762,12 @@ void CDPClient::OnCreateGuild( CAr & ar )
 				str.Format( prj.GetText( TID_GAME_COMCREATE ), lpszPlayer, pGuild->m_szGuild );
 				g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_COMCREATE ) );
 
-#if __VER >= 11 // __CSC_VER11_4
 				if(g_pPlayer->m_idPlayer == idPlayer)
 				{
 					CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 					if( pWndMessengerEx )
 						pWndMessengerEx->UpdateGuildMemberList();
 				}
-#endif //__CSC_VER11_4
 			}
 		}
 		else
@@ -12525,9 +11794,7 @@ void CDPClient::OnDestroyGuild( CAr & ar )
 	{
 		CString str;
 		str.Format( prj.GetText( TID_GAME_COMDISMESS ), lpszPlayer, pGuild->m_szGuild );
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( idGuild == g_pPlayer->m_idGuild )
-#endif // __GUILD_COMBAT_1TO1
 			g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_COMDISMESS ) );
 		g_GuildMng.RemoveGuild( idGuild );
 
@@ -12539,11 +11806,9 @@ void CDPClient::OnDestroyGuild( CAr & ar )
 			pWndGuild->m_WndGuildTabMember.UpdateData();
 			pWndGuild->m_WndGuildTabWar.UpdateData();
 		}
-#if __VER >= 11 // __CSC_VER11_4
 			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 			if( pWndMessengerEx )
 				pWndMessengerEx->UpdateGuildMemberList();
-#endif //__CSC_VER11_4
 	}
 }
 
@@ -12569,13 +11834,8 @@ void CDPClient::OnGuild( CAr & ar )
 		pGuildMember = pGuild->GetMember( m_uLoginPlayerIdGuild[ i ] );
 		if( pGuildMember )
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 //			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer );
 //			pPlayerData->data.uLogin	= m_uLoginGuildMulti[i];
-#else	// __SYS_PLAYER_DATA
-			pGuildMember->m_nLogin = 1;
-			pGuildMember->m_nMultiNo = m_uLoginGuildMulti[ i ];
-#endif	// __SYS_PLAYER_DATA
 		}
 	}
 	
@@ -12587,34 +11847,22 @@ void CDPClient::OnGuild( CAr & ar )
 		pWndGuild->m_WndGuildTabMember.UpdateData();
 		pWndGuild->m_WndGuildTabWar.UpdateData();
 	}
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateGuildMemberList();
-#endif // __CSC_VER11_4
 
 	if( pGuild )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		vector<PDVer>	aPDVer;
-#endif	// __SYS_PLAYER_DATA
 		CGuildMember* pMember;
 		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer, FALSE );
 			PDVer pdv( pMember->m_idPlayer, pPlayerData->data.nVer );
 			aPDVer.push_back( pdv );
-#else	// __SYS_PLAYER_DATA
-			LPCSTR pszPlayer	= prj.GetPlayerString( pMember->m_idPlayer );
-			if( pszPlayer == NULL )
-				SendQueryPlayerString( pMember->m_idPlayer, QPS_GUILD_MEMBER );
-#endif	// __SYS_PLAYER_DATA
 		}
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		SendQueryPlayerData( aPDVer );
-#endif	// __SYS_PLAYER_DATA
 	}
 }
 
@@ -12640,9 +11888,7 @@ void CDPClient::OnSetGuild( OBJID objid, CAr & ar )
 					str.Format( prj.GetText( TID_GAME_COMLEAVE ), pGuild->m_szGuild );
 					g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_COMLEAVE ) );
 				}
-#if __VER >= 15 // __GUILD_HOUSE
 				GuildHouse->Clear();
-#endif // __GUILD_HOUSE
 			}
 			else
 			{
@@ -12662,14 +11908,12 @@ void CDPClient::OnSetGuild( OBJID objid, CAr & ar )
 						pWndGuild->m_WndGuildTabMember.UpdateData();
 						pWndGuild->m_WndGuildTabWar.UpdateData();
 					}
-#if __VER >= 11 // __CSC_VER11_4
 					CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 					if( pWndMessengerEx )
 					{
 						pWndMessengerEx->UpdateFriendList();
 						pWndMessengerEx->UpdateGuildMemberList();
 					}
-#endif // __CSC_VER11_4
 				}
 			}
 //			CWndX
@@ -12688,23 +11932,12 @@ void CDPClient::OnAddGuildMember( CAr & ar )
 	ar >> idGuild;
 	ar.ReadString( lpszPlayer, MAX_PLAYER );
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-	if( NULL == prj.GetPlayerString( info.idPlayer ) )
-		prj.SetPlayerID( info.idPlayer, lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 	CGuild* pGuild	= g_GuildMng.GetGuild( idGuild );
 	if( pGuild )
 	{
 		CGuildMember* pMember	= new CGuildMember;
 		pMember->m_idPlayer	= info.idPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pMember->m_nLevel	= info.nLevel;
-		pMember->m_nJob		= info.nJob;
-		pMember->m_dwSex	= info.dwSex;
-		pMember->m_nMultiNo		= info.nMultiNo;
-		pMember->m_nLogin	= 1;
-#endif	// __SYS_PLAYER_DATA
 		pMember->m_nMemberLv	= GUD_ROOKIE;
 		if( pGuild->AddMember( pMember ) )
 		{
@@ -12720,14 +11953,12 @@ void CDPClient::OnAddGuildMember( CAr & ar )
 			pWndGuild->m_WndGuildTabInfo.UpdateData();
 			pWndGuild->m_WndGuildTabMember.UpdateData();
 		}
-#if __VER >= 11 // __CSC_VER11_4
 		if(g_pPlayer->m_idGuild == idGuild)
 		{
 			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 			if( pWndMessengerEx )
 				pWndMessengerEx->UpdateGuildMemberList();
 		}
-#endif //__CSC_VER11_4
 	}
 }
 
@@ -12740,11 +11971,7 @@ void CDPClient::OnRemoveGuildMember( CAr & ar )
 	{
 		if( pGuild->RemoveMember( idPlayer ) )
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			LPCSTR lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer );
-#else	// __SYS_PLAYER_DATA
-			LPCSTR lpszPlayer	= prj.GetPlayerString( idPlayer );
-#endif	// __SYS_PLAYER_DATA
 			if( lpszPlayer )
 			{
 				CString str;
@@ -12761,11 +11988,9 @@ void CDPClient::OnRemoveGuildMember( CAr & ar )
 				pWndGuild->m_WndGuildTabMember.UpdateData();
 				pWndGuild->m_WndGuildTabWar.UpdateData();
 			}
-#if __VER >= 11 // __CSC_VER11_4
 			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 			if( pWndMessengerEx )
 				pWndMessengerEx->UpdateGuildMemberList();
-#endif //__CSC_VER11_4
 		}
 	}
 }
@@ -12791,11 +12016,7 @@ void CDPClient::OnGuildChat( CAr & ar )
 #endif // __YS_CHATTING_BLOCKING_SYSTEM
 
 	CString str;
-#if __VER >= 11 // __CSC_VER11_1
 	str.Format( "[%s] %s", sPlayer, sChat );
-#else //__CSC_VER11_1
-	str.Format( "[%s][%s] %s", prj.GetText(TID_GUILD_CHAT), sPlayer, sChat );
-#endif //__CSC_VER11_1
 	g_WndMng.PutString( str, NULL, prj.GetTextColor( TID_GUILD_CHAT ), CHATSTY_GUILD );
 	
 #ifndef __YS_CHATTING_BLOCKING_SYSTEM
@@ -12842,11 +12063,9 @@ void CDPClient::OnGuildMemberLv( CAr & ar )
 			pWndGuild->m_WndGuildTabInfo.UpdateData();
 			pWndGuild->m_WndGuildTabMember.UpdateData();
 		}
-#if __VER >= 11 // __CSC_VER11_4
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateGuildMemberList();
-#endif //__CSC_VER11_4
 	}
 }
 
@@ -12951,22 +12170,15 @@ void CDPClient::OnGuildMemberLogin( CAr & ar )
 		{
 			TRACE( "OnGuildMemberLogin\n" );
 			CGuildMember* pMember	= pGuild->GetMember( uPlayerId );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 //			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( uPlayerId );
 //			pPlayerData->data.uLogin	= uMultiNo;
-#else	// __SYS_PLAYER_DATA
-			pMember->m_nLogin = nLogin;
-			pMember->m_nMultiNo = uMultiNo;
-#endif	// __SYS_PLAYER_DATA
 
 			CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
 			if( pWndGuild )
 				pWndGuild->m_WndGuildTabMember.UpdateData();
-#if __VER >= 11 // __CSC_VER11_4
 			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 			if( pWndMessengerEx )
 				pWndMessengerEx->UpdateGuildMemberList();
-#endif //__CSC_VER11_4
 		}
 	}
 }
@@ -12997,13 +12209,8 @@ void CDPClient::OnGuldMyGameJoin( CAr & ar )
 				pGuildMember = pGuild->GetMember( uLoginPlayerIdGuild[ i ] );
 				if( pGuildMember )
 				{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 //					PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer );
 //					pPlayerData->data.uLogin	= uLoginGuildMulti[i];
-#else	// __SYS_PLAYER_DATA
-					pGuildMember->m_nLogin = 1;
-					pGuildMember->m_nMultiNo = uLoginGuildMulti[ i ];
-#endif	// __SYS_PLAYER_DATA
 				}
 			}
 
@@ -13013,11 +12220,9 @@ void CDPClient::OnGuldMyGameJoin( CAr & ar )
 				pWndGuild->m_WndGuildTabInfo.UpdateData();
 				pWndGuild->m_WndGuildTabMember.UpdateData();
 			}
-#if __VER >= 11 // __CSC_VER11_4
 			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 			if( pWndMessengerEx )
 				pWndMessengerEx->UpdateGuildMemberList();
-#endif //__CSC_VER11_4
 		}
 	}
 
@@ -13413,7 +12618,6 @@ void CDPClient::OnGuildRank( CAr & ar )
 	CGuildRank::Instance()->Serialize( ar );
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPClient::SendQueryPlayerData( u_long idPlayer, int nVer )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_QUERY_PLAYER_DATA, DPID_UNKNOWN );
@@ -13430,25 +12634,6 @@ void CDPClient::SendQueryPlayerData( const vector<PDVer>& vecPlayer )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#else	// __SYS_PLAYER_DATA
-void CDPClient::SendQueryPlayerString( u_long idPlayer, BYTE nQuery )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYPLAYERSTRING, DPID_UNKNOWN );
-	ar << idPlayer << nQuery;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendQueryPlayerListString( BYTE nQuery, const vector<u_long>& vecPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYPLAYERLISTSTRING, DPID_UNKNOWN );
-	ar << vecPlayer.size() << nQuery;
-
-	for( int i=0; i< vecPlayer.size(); i++ )
-		ar << vecPlayer[i];
-
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPClient::OnSetState( CAr & ar )
 {
@@ -13481,15 +12666,10 @@ void CDPClient::OnCmdSetSkillLevel( CAr & ar )
 		
 		g_pPlayer->PutLvUpSkillName_2( dwSkill );
 
-#if __VER >= 10 // __CSC_VER9_1
 		CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-#else
-		CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL1 );
-#endif //__CSC_VER9_1
 		if( pSkillTree )
 			pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -13497,15 +12677,9 @@ void CDPClient::OnCmdSetSkillLevel( CAr & ar )
 		CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 		if( pWndQuestQuickInfo )
 			pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-		CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-		if( pWndQuest )  
-			pWndQuest->UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPClient::OnQueryPlayerData( CAr & ar )
 {
 	u_long idPlayer;
@@ -13523,111 +12697,16 @@ void CDPClient::OnQueryPlayerData( CAr & ar )
 	{
 		CPlayerDataCenter::GetInstance()->AddPlayerData( idPlayer, pd );
 	}
-#if __VER >= 11 // __CSC_VER11_4
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 	{
 		pWndMessengerEx->UpdateFriendList();
 		pWndMessengerEx->UpdateGuildMemberList();
-#if __VER >= 15 // __CAMPUS
 		pWndMessengerEx->UpdateCampusMemberList();
-#endif // __CAMPUS
 	}
-#endif //__CSC_VER11_4
 	UpdateGuildWnd();
 
 }
-#else	// __SYS_PLAYER_DATA
-void CDPClient::OnQueryPlayerString( CAr & ar )
-{
-	u_long idPlayer;
-	char lpszPlayer[MAX_PLAYER];
-	BYTE nQuery;
-	ar >> idPlayer;
-	ar.ReadString( lpszPlayer, MAX_PLAYER );
-	ar >> nQuery;
-
-	if( NULL == prj.GetPlayerString( idPlayer ) )
-		prj.SetPlayerID( idPlayer, lpszPlayer );
-
-	if( nQuery == QPS_GUILD_MASTER )
-	{
-		CWndGuild* pWndGuild	= (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
-
-		if( pWndGuild )
-		{
-			CWndBase *pWndText;
-			
-			pWndText = pWndGuild->m_WndGuildTabInfo.GetDlgItem(WIDC_GUILDMASTER);
-
-			pWndText->SetTitle(lpszPlayer);
-		}
-	}
-	else if( nQuery == QPS_GUILD_MEMBER )
-	{
-		CWndGuild* pWndGuild	= (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
-		
-		if( pWndGuild )
-		{
-			CMover* pMover = prj.GetUserByID(idPlayer);
-
-			if( pMover )
-			{
-				CGuild* pGuild = pMover->GetGuild();
-
-				if( pGuild )
-					pWndGuild->m_WndGuildTabMember.m_nMax = pGuild->m_mapPMember.size();
-			}
-
-			for( int i = 0; i < pWndGuild->m_WndGuildTabMember.m_nMax; i++ )
-				if( pWndGuild->m_WndGuildTabMember.m_aList[i].idPlayer == idPlayer )
-					lstrcpy( pWndGuild->m_WndGuildTabMember.m_aList[i].szName, lpszPlayer );
-		}
-	}
-	else if( nQuery == QPS_POST )
-	{
-
-	}
-}
-
-void CDPClient::OnQueryPlayerListString( CAr & ar )
-{
-	BYTE nQuery;
-	ar >> nQuery;
-	
-	if( nQuery == QPS_GUILDCOMBAT_RANKING )
-	{
-		CWndGuildCombatRank_Person* pWndRank	= (CWndGuildCombatRank_Person*)g_WndMng.GetWndBase( APP_GUILDCOMBAT_RANK_P );
-		
-		if( pWndRank )
-		{
-			pWndRank->DivisionList();
-		}
-	}
-}
-
-void CDPClient::OnGetFriendName( CAr & ar )
-{
-	int nCount;
-	u_long uidPlayer;
-	char szName[65];
-	ar >> nCount;
-	for( int i = 0 ; i < nCount ; i++ )
-	{
-		memset( szName, 0, sizeof( szName ) );
-		ar >> uidPlayer;
-		ar.ReadString( szName, 65 );
-		LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-		if( pFriend )
-			strcpy( pFriend->szName, szName );
-#if __VER >= 11 // __CSC_VER11_4
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPClient::SendActionPoint( int nAP )
 {
@@ -13648,7 +12727,6 @@ void CDPClient::OnDisguise( OBJID objid, CAr & ar )
 	if( pMover )
 	{
 		pMover->Disguise( D3DDEVICE, dwMoverIdx );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -13656,10 +12734,6 @@ void CDPClient::OnDisguise( OBJID objid, CAr & ar )
 		CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 		if( pWndQuestQuickInfo )
 			pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-		CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-		if( pWndQuest )  pWndQuest->UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 }
 void CDPClient::OnNoDisguise( OBJID objid, CAr & ar )
@@ -13671,7 +12745,6 @@ void CDPClient::OnNoDisguise( OBJID objid, CAr & ar )
 	if( pMover )
 	{
 		pMover->NoDisguise( D3DDEVICE );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -13679,10 +12752,6 @@ void CDPClient::OnNoDisguise( OBJID objid, CAr & ar )
 		CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 		if( pWndQuestQuickInfo )
 			pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-		CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-		if( pWndQuest )  pWndQuest->UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 }
 
@@ -13756,10 +12825,8 @@ void CDPClient::OnPVendorOpen( OBJID objid, CAr & ar )
 			g_Chatting.m_bState = TRUE;
 
 			pWnd->m_pwndVenderMessage = new CWndVendorMessage;
-			#if __VER >= 11 // __MOD_VENDOR
 				if(pWnd->m_pVendor->IsActiveMover())
 					pWnd->m_pwndVenderMessage->m_nIsOwner = TRUE;
-			#endif
 #ifdef __FIX_WND_1109
 			pWnd->m_pwndVenderMessage->Initialize( pWnd );
 #else	// __FIX_WND_1109
@@ -13769,11 +12836,9 @@ void CDPClient::OnPVendorOpen( OBJID objid, CAr & ar )
 		}
 	}
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 	CString strTitle = prj.GetText( TID_GAME_VENDOR_TITLE );
 	strTitle += prj.GetText( TID_GAME_VENDOR_TITLE0 );
 	pWnd->SetTitle( strTitle );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 }
 
 void CDPClient::OnPVendorClose( OBJID objid, CAr & ar )
@@ -13796,7 +12861,6 @@ void CDPClient::OnPVendorClose( OBJID objid, CAr & ar )
 			}
 		}
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 		BOOL bReSetVendor = FALSE;
 		CString strVendorTitle;
 		CItemBase	apItem_VT[MAX_VENDITEM];		/// vendor and trader share pointer array
@@ -13819,28 +12883,18 @@ void CDPClient::OnPVendorClose( OBJID objid, CAr & ar )
 				strVendorTitle = pMover->m_vtInfo.GetTitle();
 			}
 		}
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 
 		pMover->m_vtInfo.VendorClose( byClearTitle );
 		if( byClearTitle )
 			g_DialogMsg.RemoveVendorMessage( pMover );
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 		if( bReSetVendor )
 		{
 			CWndVendor* pWndVendor	= (CWndVendor*)g_WndMng.GetWndBase( APP_VENDOR_REVISION );
 			if( !pWndVendor )
 			{
 				g_WndMng.CreateApplet( APP_VENDOR_REVISION );
-			#if __VER >= 11 //	__MOD_VENDOR
 				// 수정된 버젼에서는 개인상점 초기화시 일괄적으로 처리해준다
-			#else
-				for( int i = 0; i < MAX_VENDITEM; i++ )
-				{
-					if( apItem_VT[i].m_dwObjId != 0 )
-						SendRegisterPVendorItem( i, 0, apItem_VT[i].m_dwObjId, apItem_VT[i].m_nExtra, apItem_VT[i].m_nCost );
-				}
-			#endif
 				pWndVendor = (CWndVendor*)g_WndMng.GetWndBase(APP_VENDOR_REVISION);
 				if(pWndVendor)
 				{
@@ -13861,7 +12915,6 @@ void CDPClient::OnPVendorClose( OBJID objid, CAr & ar )
 				
 			}
 		}
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 	}
 }
 
@@ -13902,14 +12955,11 @@ void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 	BYTE nItem;
 	short nVend;
 	ar >> nItem >> nVend;
-#if __VER >= 11 // __MOD_VENDOR
 	char sBuyer[MAX_PLAYER]	= { 0,};
 	ar.ReadString( sBuyer, MAX_PLAYER );
-#endif	// __MOD_VENDOR
 	CMover* pPVendor	= prj.GetMover( objid );
 	if( IsValidObj( (CObj*)pPVendor ) )
 	{
-#if __VER >= 11 // __MOD_VENDOR
 		if( pPVendor->IsActiveMover() )
 		{
 			CItemElem* pItemElem	= (CItemElem*)pPVendor->m_vtInfo.GetItem( nItem );
@@ -13926,7 +12976,6 @@ void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 					pWndVendor->m_pwndVenderMessage->WriteBuyInfo(sBuyer, strItem, nNum, nTotal);
 			}			
 		}
-#endif	// __MOD_VENDOR
 		pPVendor->m_vtInfo.VendorItemNum( nItem, nVend );
 	}
 	g_Neuz.m_aSavedInven[nItem].m_dwObjId = 0;
@@ -13964,11 +13013,7 @@ void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 		CMover::GetActiveMover()->m_vtInfo.SetOther( pPVendor );
 		pPVendor->m_vtInfo.VendorCopyItems( apItemVd );
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 		CWndVendor* pWndVendor	= (CWndVendor*)g_WndMng.CreateApplet( APP_VENDOR_REVISION );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-		CWndVendor* pWndVendor	= (CWndVendor*)g_WndMng.CreateApplet( APP_VENDOREX );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 		if( pWndVendor )
 		{
 			SendEnterChattingRoom( pPVendor->m_idPlayer );
@@ -14094,7 +13139,6 @@ void CDPClient::OnSetSkillState( CAr & ar )
 	DWORD dwLevel, dwTime;
 	OBJID	idTarget;
 	ar >> idTarget >> wType >> wID;
-#if __VER >= 11 // __SYS_COLLECTING
 	if( wType == BUFF_ITEM2 )
 	{
 		time_t t;
@@ -14103,9 +13147,6 @@ void CDPClient::OnSetSkillState( CAr & ar )
 	}
 	else
 		ar >> dwLevel;
-#else	// __SYS_COLLECTING
-	ar >> dwLevel;
-#endif	// __SYS_COLLECTING
 	ar >> dwTime;
 
 	CMover *pTarget = prj.GetMover( idTarget );
@@ -14203,11 +13244,7 @@ void CDPClient::OnTag( OBJID objid, CAr & ar )
 
 void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndDialog* pWndDialog	= (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG_EX );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndDialog* pWndDialog	= (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG );
-#endif // __IMPROVE_QUEST_INTERFACE
 	CMover *pMover = prj.GetMover( objid );
 
 	RunScriptFunc	rsf;
@@ -14253,18 +13290,13 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				ar.ReadString( rsf.lpszVal1, 1024 );
 				ar >> rsf.dwVal2; // quest
 				if( pWndDialog )
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 				{
 					pWndDialog->m_bSay = TRUE;
 					pWndDialog->Say( rsf.lpszVal1, rsf.dwVal2 );
 				}
-#else // __IMPROVE_QUEST_INTERFACE
-					pWndDialog->Say( rsf.lpszVal1, rsf.dwVal2 );
-#endif // __IMPROVE_QUEST_INTERFACE
 				TRACE( "FUNCTYPE_SAY, %s\n", rsf.lpszVal1 );
 				break;
 			}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		case FUNCTYPE_NEWQUEST:
 			{
 				ar.ReadString( rsf.lpszVal1, 1024 );
@@ -14285,7 +13317,6 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 					pWndDialog->AddCurrentQuestList( rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2 );
 				break;
 			}
-#endif // __IMPROVE_QUEST_INTERFACE
 		case FUNCTYPE_SETMARK:
 		case FUNCTYPE_GOMARK:
 			{
@@ -14585,37 +13616,25 @@ void CDPClient::OnRemoveQuest( CAr & ar )
 		g_WndMng.PutString( str, NULL, prj.GetTextColor( TID_GAME_REMOVEQUEST ) );
 
 		g_pPlayer->RemoveQuest( dwQuestCancelID );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		g_QuestTreeInfoManager.DeleteTreeInformation( dwQuestCancelID );
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 	else
 	if( nRemoveType == 0 )
 	{
 		g_pPlayer->RemoveQuest( dwQuestCancelID );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		g_QuestTreeInfoManager.DeleteTreeInformation( dwQuestCancelID );
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 	else
 	if( nRemoveType == 1 )
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	{
 		g_pPlayer->RemoveAllQuest();
 		g_QuestTreeInfoManager.DeleteAllTreeInformation();
 	}
-#else // __IMPROVE_QUEST_INTERFACE
-		g_pPlayer->RemoveAllQuest();
-#endif // __IMPROVE_QUEST_INTERFACE
 	else
 	if( nRemoveType == 2 )
 		g_pPlayer->RemoveCompleteQuest();
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST_EX_LIST );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST );
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( pWndQuest )
 	{
 		pWndQuest->Update();	
@@ -14639,7 +13658,6 @@ void CDPClient::OnInitSkillPoint( CAr & ar )
 		LPSKILL pSkill = (LPSKILL)&g_pPlayer->m_aJobSkill[ i ];
 		if( pSkill != NULL )
 		{
-	#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 			if(pSkill->dwLevel != 0)
 			{
 				ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
@@ -14649,17 +13667,10 @@ void CDPClient::OnInitSkillPoint( CAr & ar )
 				if( pSkillProp->dwItemKind1 != JTYPE_MASTER && pSkillProp->dwItemKind1 != JTYPE_HERO )
 					pSkill->dwLevel = 0;
 			}
-	#else
-			pSkill->dwLevel = 0;
-	#endif
 		}
 	}
 
-#if __VER >= 10 // __CSC_VER9_1
 	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-#else
-	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL1 );
-#endif //__CSC_VER9_1
 	if( pSkillTree )
 		pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
 	
@@ -14677,11 +13688,7 @@ void CDPClient::OnDoUseSkillPoint( CAr & ar )
 			pSkill->dwLevel	= dwLevel;
 	}
 	ar >> g_pPlayer->m_nSkillPoint;
-#if __VER >= 10 // __CSC_VER9_1
 	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-#else
-	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL1 );
-#endif //__CSC_VER9_1
 	if( pSkillTree )
 		pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
 }
@@ -14718,15 +13725,12 @@ void CDPClient::SendEnchant( OBJID objid, OBJID objMaterialId )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 void CDPClient::SendRemoveAttribute( OBJID objid )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_REMVOE_ATTRIBUTE, DPID_UNKNOWN );
 	ar << objid;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __REMOVE_ATTRIBUTE
-#if __VER >= 13 // __EXT_ENCHANT
 void CDPClient::SendChangeAttribute( OBJID objTargetItem, OBJID objMaterialItem, int nAttribute )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_CHANGE_ATTRIBUTE, DPID_UNKNOWN );
@@ -14734,7 +13738,6 @@ void CDPClient::SendChangeAttribute( OBJID objTargetItem, OBJID objMaterialItem,
 	ar << nAttribute;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __EXT_ENCHANT
 // 피어싱한 아템에 적용
 void CDPClient::SendPiercing( OBJID objid1, OBJID objid2 )
 {
@@ -14744,14 +13747,12 @@ void CDPClient::SendPiercing( OBJID objid1, OBJID objid2 )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 11 // __PIERCING_REMOVE
 void CDPClient::SendPiercingRemove( OBJID objid )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_PIERCINGREMOVE, DPID_UNKNOWN );
 	ar << objid;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __PIERCING_REMOVE
 
 // 피어싱(뚫음)
 void CDPClient::SendPiercingSize( OBJID objid1, OBJID objid2, OBJID objid3 )
@@ -15386,7 +14387,6 @@ void CDPClient::OnSetDuel( OBJID objid, CAr & ar )
 	}
 }
 
-#if __VER >= 8 // __S8_PK
 void CDPClient::OnPKRelation( OBJID objid, CAr& ar )
 {
 	BYTE byType;
@@ -15429,31 +14429,6 @@ void CDPClient::OnPKValue( OBJID objid, CAr& ar )
 	if( IsValidObj( pMover ) )
 		pMover->SetPKValue( nPKValue );
 }
-#else // __VER >= 8 __S8_PK
-void CDPClient::OnUpdatePlayerEnemy( OBJID objid, CAr & ar )
-{
-	BYTE byType;
-	OBJID dwObjid;
-	ar >> byType >> dwObjid;
-	if( byType == ADD_PLAYER_ENEMY )
-	{
-		// 적 추가
-		DWORD dwLast = g_Neuz.m_NeuzEnemy.Add( dwObjid );
-		
-		CMover* pMover	= prj.GetMover( dwObjid );		
-		if( IsValidObj( pMover ) )
-		{
-			if( dwLast == 0 || (GetTickCount() - dwLast) > MIN(1) )		//첫타 or 세션이 1분을 지났는가?
-				pMover->RenderFlag( ENEMY_PK );
-		}
-	}
-	else
-	{
-		// 적 해제( 있으면 자동으로 지워짐 )
-		g_Neuz.m_NeuzEnemy.Remove( dwObjid );
-	}
-}
-#endif // __VER >= 8 __S8_PK
 
 void CDPClient::OnWantedInfo( CAr & ar )
 {
@@ -15547,20 +14522,13 @@ void CDPClient::OnSetPlayerName( CAr & ar )
 	sprintf( lpOutputString, "NEUZ.EXE\t// PAKCETTYPE_QUERYSETPLAYERNAME\t// %d\t// %s", idPlayer, lpszPlayer );
 	OutputDebugString( lpOutputString );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	const char* pszOld	= CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer );
 	if( lstrlen( pszOld ) > 0  )
 		g_WndMng.UpdateMessage( pszOld, lpszPlayer );
-#else	// __SYS_PLAYER_DATA
-	LPCSTR pszOld	= prj.GetPlayerString( idPlayer );
-	if( pszOld )
-		g_WndMng.UpdateMessage( pszOld, lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 	// prj
 	CMover* pPlayer	= prj.GetUserByID( idPlayer );
 	if( IsValidObj( (CObj*)pPlayer ) )
 		pPlayer->SetName( lpszPlayer );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	CPlayerDataCenter*	pPlayerDataCenter	= CPlayerDataCenter::GetInstance();
 	PlayerData* pPlayerData		= pPlayerDataCenter->GetPlayerData( idPlayer );
 	if( pPlayerData )
@@ -15571,18 +14539,9 @@ void CDPClient::OnSetPlayerName( CAr & ar )
 		lstrcpy( pd.szPlayer, lpszPlayer );
 		pPlayerDataCenter->AddPlayerData( idPlayer, pd );
 	}
-#else	// __SYS_PLAYER_DATA
-	prj.RemovePlayerID( idPlayer );
-	prj.SetPlayerID( idPlayer, lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 	// Guild
 	UpdateGuildWnd();
 	// Messenger
-#if __VER < 11 // __SYS_PLAYER_DATA
-	LPFRIEND pFriend	= g_WndMng.m_Messenger.GetFriend( idPlayer );
-	if( pFriend )
-		lstrcpy( pFriend->szName, lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 	// Chat
 	if( g_Chatting.RemoveChattingMember( idPlayer ) )
 		g_Chatting.AddChattingMember( idPlayer, lpszPlayer );
@@ -15679,11 +14638,7 @@ void CDPClient::OnQueryEquip( OBJID objid, CAr & ar )
 	for( int i = 0; i < cbEquip; i++ )
 	{
 		ar >> nParts;
-#if __VER >= 11 // __SYS_IDENTIFY
 		ar >> aEquipInfoAdd[nParts].iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-		ar >> aEquipInfoAdd[nParts].nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 		aEquipInfoAdd[nParts].piercing.Serialize( ar );
 		ar >> aEquipInfoAdd[nParts].bItemResist >> aEquipInfoAdd[nParts].nResistAbilityOption;
 	}
@@ -15753,7 +14708,6 @@ void CDPClient::SendEndSkillQueue( void )
 	SendHdr( PACKETTYPE_ENDSKILLQUEUE );	
 }
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 void CDPClient::SendCreateMonster( DWORD dwItemId, D3DXVECTOR3 vPos )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_CREATEMONSTER, DPID_UNKNOWN );
@@ -15761,7 +14715,6 @@ void CDPClient::SendCreateMonster( DWORD dwItemId, D3DXVECTOR3 vPos )
 	ar << vPos;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __ITEMCREATEMON_S0602
 
 void CDPClient::SendQueryPostMail( BYTE nItem, short nItemNum, char* lpszReceiver, int nGold, char* lpszTitle, char* lpszText )
 {
@@ -16258,7 +15211,6 @@ void CDPClient::SendFiveSystemDestroyWnd()
 #endif // __EVE_MINIGAME
 
 
-#if __VER >= 9 // __ULTIMATE
 void CDPClient::SendUltimateMakeItem( OBJID* pdwItemId )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_ULTIMATE_MAKEITEM, DPID_UNKNOWN );
@@ -16309,7 +15261,6 @@ void CDPClient::SendUltimateEnchantWeapon( OBJID objItemWeapon, OBJID objItemGem
 	ar << objItemGem;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 void CDPClient::SendExchange( int nMMIId, int nListNum )
@@ -16380,17 +15331,10 @@ void CDPClient::SendPetRelease( void )
 }
 
 // dwFeedId : m_dwObjId
-#if __VER >= 12 // __PET_0519
 void CDPClient::SendUsePetFeed( DWORD dwFeedId )
-#else	// __PET_0519
-void CDPClient::SendUsePetFeed( DWORD dwFeedId, short nNum )
-#endif	// __PET_0519
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_USE_PET_FEED, DPID_UNKNOWN );
 	ar << dwFeedId;
-#if __VER < 12 // __PET_0519
-	ar << nNum;		// 12차 - 입력 개수가 필요 없어졌으므로 전송에서 제외
-#endif	// __PET_0519
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -16556,7 +15500,6 @@ void CDPClient::OnPetFoodMill( OBJID objid, CAr & ar )
 	}
 }
 
-#if __VER >= 9	//__AI_0509
 void CDPClient::OnSetSpeedFactor( OBJID objid, CAr & ar )
 {
 	FLOAT fSpeedFactor;
@@ -16566,9 +15509,7 @@ void CDPClient::OnSetSpeedFactor( OBJID objid, CAr & ar )
 	if( IsValidObj( pMover ) )
 		pMover->SetSpeedFactor( fSpeedFactor );
 }
-#endif	// __AI_0509
 
-#if __VER >= 10 // __CSC_VER9_1
 void CDPClient::SendLegendSkillUp(OBJID* pdwItemId, int count)
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_LEGENDSKILLUP_START, DPID_UNKNOWN );
@@ -16578,9 +15519,7 @@ void CDPClient::SendLegendSkillUp(OBJID* pdwItemId, int count)
 	
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif //__CSC_VER9_1
 
-#if __VER >= 9 // __CSC_VER9_2
 void CDPClient::SendModifyStatus(int nStrCount, int nStaCount, int nDexCount, int nIntCount)
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_MODIFY_STATUS, DPID_UNKNOWN );
@@ -16589,8 +15528,6 @@ void CDPClient::SendModifyStatus(int nStrCount, int nStaCount, int nDexCount, in
 	
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif //__CSC_VER9_2
-#if __VER >= 11 // __SYS_COLLECTING
 void CDPClient::SendQueryStartCollecting( void )
 {
 	SendHdr( PACKETTYPE_QUERY_START_COLLECTING );
@@ -16649,9 +15586,7 @@ void CDPClient::OnStopCollecting( OBJID objid )
 		}
 	}
 }
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CDPClient::SendGC1to1TenderOpenWnd()
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_GC1TO1_TENDEROPENWND, DPID_UNKNOWN );
@@ -16918,71 +15853,8 @@ void CDPClient::OnGC1to1MemberLineUpOpenWnd( CAr & ar )
 		g_WndMng.m_pWndGuildCombat1to1Selection->AddCombatPlayer( nTemp );
 	}
 }
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPClient::OnPartyMemberJob( CAr & ar )
-{
-	int MemberIndex;
-	ar >> MemberIndex;
-	ar >> g_Party.m_aMember[MemberIndex].m_nJob;
-}
 
-void CDPClient::OnPartyMemberLevel( CAr & ar )
-{
-	int MemberIndex;
-	ar >> MemberIndex;
-	ar >> g_Party.m_aMember[MemberIndex].m_nLevel;
-}
-
-void CDPClient::OnFriendChangeJob( CAr & ar )
-{
-	u_long uidPlayer;
-	int nJob;
-	ar >> uidPlayer >> nJob;
-	LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-	if( pFriend )
-	{
-		pFriend->nJob = nJob;
-#if __VER >= 11 // __CSC_VER11_4
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
-#endif //__CSC_VER11_4
-	}	
-}
-
-void CDPClient::OnGuildChangeJobLevel( CAr & ar )
-{
-	u_long uidPlayer;
-	LONG nJob, nLevel;
-	ar >> uidPlayer >> nJob >> nLevel;
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	if( pGuild )
-	{
-		CGuildMember* pGuildMemeber = pGuild->GetMember( uidPlayer );
-
-		if( pGuildMemeber )
-		{
-			pGuildMemeber->m_nJob = nJob;
-			pGuildMemeber->m_nLevel = nLevel;
-
-			CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
-			if( pWndGuild )
-			{
-				pWndGuild->m_WndGuildTabMember.UpdateData();
-			}
-#if __VER >= 11 // __CSC_VER11_4
-			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-			if( pWndMessengerEx )
-				pWndMessengerEx->UpdateGuildMemberList();
-#endif //__CSC_VER11_4
-		}
-	}
-}
-#endif	// __SYS_PLAYER_DATA
-
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 void CDPClient::SendReqGuildBankLogList( BYTE byListType )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_GUILDLOG_VIEW, DPID_UNKNOWN );
@@ -17142,8 +16014,6 @@ void CDPClient::OnGuildBankLogList( CAr & ar )
 
 	pWndGuildBankLog->UpdateScroll();
 }
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 void CDPClient::SendSealChar( )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SEALCHAR_REQ, DPID_UNKNOWN );
@@ -17205,9 +16075,7 @@ void CDPClient::SendSealCharSet( DWORD dwData )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void CDPClient::SendReqHonorList()
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_HONOR_LIST_REQ, DPID_UNKNOWN );
@@ -17271,9 +16139,7 @@ void CDPClient::OnHonorChangeAck( OBJID objid ,CAr & ar )
 	}
 }
 
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 11 // __SYS_POCKET
 void CDPClient::OnPocketAttribute( CAr & ar )
 {
 	int nAttribute, nPocket, nData;
@@ -17308,7 +16174,6 @@ void CDPClient::OnPocketRemoveItem( CAr & ar )
 	if( pPlayer )
 		pPlayer->m_Pocket.RemoveAtId( nPocket, nItem, nNum );
 }
-#endif	// __SYS_POCKET
 
 #ifdef __NPC_BUFF
 void CDPClient::SendNPCBuff( const char* szKey )
@@ -17357,7 +16222,6 @@ void	CDPClient::OnQuePetResurrectionResult( CAr & ar )
 }
 #endif	// __JEFF_11
 
-#if __VER >= 12 // __SECRET_ROOM
 void	CDPClient::SendSecretRoomTender( int nPenya )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SECRETROOM_TENDER, DPID_UNKNOWN );
@@ -17715,9 +16579,7 @@ void CDPClient::SendTeleportToSecretRoomDungeon()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __TAX
 void CDPClient::OnTaxInfo( CAr & ar )
 {
 	CTax::GetInstance()->Serialize( ar );
@@ -17749,18 +16611,14 @@ void CDPClient::SendTaxRate( BYTE nCont, int nSalesTaxRate, int nPurchaseTaxRate
 	ar << nCont << nSalesTaxRate << nPurchaseTaxRate;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __TAX
 
-#if __VER >= 12 // __HEAVEN_TOWER
 void CDPClient::SendTeleportToHeavenTower( int nFloor )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_HEAVENTOWER_TELEPORT, DPID_UNKNOWN );
 	ar << nFloor;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __HEAVEN_TOWER
 
-#if __VER >= 12 // __LORD
 void CDPClient::OnElectionAddDeposit( CAr & ar )
 {	// 군주 입찰 결과 갱신
 	u_long idPlayer;
@@ -17916,9 +16774,7 @@ void CDPClient::SendLordSkillUse( int nSkill, const char* szTarget )
 	ar.WriteString( szTarget );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __LORD
 
-#if __VER >= 12 // __PET_0519
 void CDPClient::SendTransformItem( CTransformStuff & stuff )
 {	// 알변환 프로토콜
 	// stuff는 변환에 필요한 아이템 목록
@@ -17933,9 +16789,7 @@ void CDPClient::SendPickupPetAwakeningCancel( DWORD dwItem )
 	ar << dwItem;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __PET_0519
 
-#if __VER >= 12 // __MOD_TUTORIAL
 void CDPClient::SendTutorialState( int nState )
 {
 	char szOut[64]	= { 0,};
@@ -17953,18 +16807,14 @@ void CDPClient::OnTutorialState( CAr & ar )
 	if( IsValidObj( g_pPlayer ) )
 		g_pPlayer->SetTutorialState( nTutorialState );
 }
-#endif	// __MOD_TUTORIAL
 
-#if __VER >= 12 // __UPDATE_OPT
 void CDPClient::SendOptionEnableRenderMask( BOOL bEnable )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_OPTION_ENABLE_RENDER_MASK, DPID_UNKNOWN );
 	ar << bEnable;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __UPDATE_OPT
 
-#if __VER >= 13 //#ifdef __RAINBOW_RACE
 void CDPClient::SendRainbowRacePrevRankingOpenWnd()
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_RAINBOWRACE_PREVRANKING_OPENWND, DPID_UNKNOWN );
@@ -18351,7 +17201,6 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 	SAFE_DELETE( pMiniGamePacket );
 }
-#endif // __RAINBOW_RACE
 
 #ifdef __AZRIA_1023
 void CDPClient::SendDoUseItemInput( DWORD dwData, char* szInput )
@@ -18395,7 +17244,6 @@ void CDPClient::OnSetPetName( OBJID objid, CAr & ar )
 }
 #endif	// __PET_1024
 
-#if __VER >= 13 // __HOUSING
 void CDPClient::OnHousingAllInfo( CAr & ar )
 {
 	CHousing::GetInstance()->Serialize( ar );
@@ -18569,9 +17417,7 @@ void CDPClient::SendHousingGoOut()
 	BEFORESENDSOLE( ar, PACKETTYPE_HOUSING_GOOUT, DPID_UNKNOWN );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __HOUSING
 
-#if __VER >= 13 // __QUEST_HELPER
 void CDPClient::SendReqNPCPos( const char* szCharKey )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_QUESTHELPER_REQNPCPOS, DPID_UNKNOWN );
@@ -18591,9 +17437,7 @@ void CDPClient::OnNPCPos( CAr & ar )
 		pWndWorld->m_vQuestNPCDest = vPos;
 	}
 }
-#endif // __QUEST_HELPER
 
-#if __VER >= 13 // __COUPLE_1117
 void CDPClient::SendPropose( const char* pszTarget )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_PROPOSE, DPID_UNKNOWN );
@@ -18636,20 +17480,15 @@ void CDPClient::OnDecoupleResult( CAr & ar )
 	CCoupleHelper::Instance()->OnDecoupleResult();
 }
 
-#if __VER >= 13 // __COUPLE_1202
 void CDPClient::OnAddCoupleExperience( CAr & ar )
 {
 	CCoupleHelper::Instance()->OnAddCoupleExperience( ar );
 }
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 
-#if __VER >= 14 // __PCBANG
 void CDPClient::OnPCBangInfo( CAr & ar )
 {
 	CPCBangInfo::GetInstance()->Serialize( ar );
 }
-#endif // __PCBANG
 #ifdef __VTN_TIMELIMIT
 void CDPClient::OnAccountPlayTime( CAr & ar )
 {
@@ -18663,7 +17502,6 @@ void CDPClient::OnAccountPlayTime( CAr & ar )
 }
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 14 // __SMELT_SAFETY
 void CDPClient::SendSmeltSafety(OBJID objid, OBJID objMaterialId, OBJID objProtScrId, OBJID objSmeltScrId  )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SMELT_SAFETY, DPID_UNKNOWN );
@@ -18707,7 +17545,6 @@ void CDPClient::OnSmeltSafety( CAr & ar )
 		break;
 	}
 }
-#endif // __SMELT_SAFETY
 
 #ifdef __MAP_SECURITY
 void CDPClient::OnWorldReadInfo( CAr & ar )
@@ -18910,7 +17747,6 @@ void CDPClient::SendQuizEventTeleport( int nZone )
 }
 #endif // __QUIZ
 
-#if __VER >= 15 // __PETVIS
 void CDPClient::SendRemoveVis( int nPos )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_VISPET_REMOVEVIS, DPID_UNKNOWN );
@@ -18966,9 +17802,7 @@ void CDPClient::OnChangeMoverSfx( OBJID objId, CAr & ar )
 		pMover->SetSfxBuffPet( dwSfxId );
 	}
 }
-#endif // __PETVIS
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CDPClient::SendBuyGuildHouse()		{ SendHdr( PACKETTYPE_GUILDHOUSE_BUY ); }
 void CDPClient::SendGuildHouseEnter()	{ SendHdr( PACKETTYPE_GUILDHOUSE_ENTER ); }
 void CDPClient::SendGuildHouseGoOut()	{ SendHdr( PACKETTYPE_GUILDHOUSE_GOOUT ); }
@@ -19023,9 +17857,7 @@ void CDPClient::OnRestPoint( CAr & ar )
 		g_WndMng.PutString( szRestPoint, NULL, 0xffffff99 );
 	}
 }
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __TELEPORTER
 void CDPClient::SendTeleporterReq( const char* szCharKey, int nIndex )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_TELEPORTER, DPID_UNKNOWN );
@@ -19033,9 +17865,7 @@ void CDPClient::SendTeleporterReq( const char* szCharKey, int nIndex )
 	ar << nIndex;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __TELEPORTER
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CDPClient::OnCheckedQuest( CAr & ar )
 {
 	ar >> g_pPlayer->m_nCheckedQuestSize;
@@ -19049,9 +17879,7 @@ void CDPClient::SendCheckedQuestId( int nQuestId, BOOL bCheck )
 	ar << nQuestId << bCheck;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __CAMPUS
 void CDPClient::OnInviteCampusMember( CAr & ar )
 {
 	u_long idRequest;
@@ -19119,7 +17947,6 @@ void CDPClient::SendRemoveCampusMember( u_long idTarget )
 	ar << idTarget;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __CAMPUS
 
 #ifdef __PROTECT_AWAKE
 void CDPClient::SendSelectedAwakeningValue( DWORD dwObjID, DWORD dwSerialNum, BYTE bySelectFlag )

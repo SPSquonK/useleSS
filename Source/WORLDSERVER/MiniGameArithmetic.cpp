@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include ".\minigamearithmetic.h"
 
 CMiniGameArithmetic::CMiniGameArithmetic(void)
@@ -184,4 +183,3 @@ char CMiniGameArithmetic::GetOperatorCh( int nOper )
 
 	return '+';
 }
-#endif // __RAINBOW_RACE

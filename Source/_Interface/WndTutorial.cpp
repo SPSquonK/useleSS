@@ -3,7 +3,6 @@
 #include "WndTutorial.h"
 
 
-#if __VER >= 12 // __MOD_TUTORIAL
 /****************************************************
   WndId : APP_TUTORIAL_VIEW - Æ©Åä¸®¾ó
   CtrlId : WIDC_TREE1 - 
@@ -144,4 +143,3 @@ BOOL CWndTutorial::AddToList(int nIndex)
 	return false;
 }
 
-#endif

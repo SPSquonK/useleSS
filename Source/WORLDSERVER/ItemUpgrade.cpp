@@ -1,16 +1,13 @@
 #include "stdafx.h"
 #include ".\itemupgrade.h"
 
-#if __VER >= 12 // __EXT_PIERCING
 #include "defineObj.h"
 #include "defineSound.h"
 #include "defineText.h"
 
-#if __VER >= 11 // __SYS_COLLECTING
 #include "collecting.h"
 #include "definesound.h"
 #include "defineitem.h"
-#endif	// __SYS_COLLECTING
 
 #include "User.h"
 extern CUserMng g_UserMng;
@@ -19,9 +16,7 @@ extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
 extern CDPDatabaseClient g_dpDBClient;
 
-#if __VER >= 15 // __PETVIS
 #include "AIPet.h"
-#endif // __PETVIS
 
 CItemUpgrade::CItemUpgrade(void)
 #ifdef __SYS_ITEMTRANSY
@@ -35,10 +30,8 @@ CItemUpgrade::~CItemUpgrade(void)
 {
 	m_mapSuitProb.clear();
 	m_mapWeaponProb.clear();
-#if __VER >= 13 // __EXT_ENCHANT
 	m_mapGeneralEnchant.clear();
 	m_mapAttributeEnchant.clear();
-#endif // __EXT_ENCHANT
 }
 
 CItemUpgrade* CItemUpgrade::GetInstance( void )
@@ -76,7 +69,6 @@ void CItemUpgrade::LoadScript()
 	}
 	lua.Pop(0);
 	
-#if __VER >= 13 // __EXT_ENCHANT
 	// 일반제련
 	lua.GetGloabal( "tGeneral" );
 	lua.PushNil();
@@ -95,19 +87,12 @@ void CItemUpgrade::LoadScript()
  		__ATTRIBUTE_ENCHANT attrEnchant;
 		attrEnchant.nProb = static_cast<int>(lua.GetFieldToNumber( -1, "nProb" ));
 		attrEnchant.nAddDamageRate = static_cast<int>(lua.GetFieldToNumber( -1, "nDamageRate" ));
-#if __VER >= 14 // __EXT_ATTRIBUTE
 		attrEnchant.nDefenseRate = static_cast<int>(lua.GetFieldToNumber( -1, "nDefenseRate" ));
 		attrEnchant.nAddAtkDmgRate = static_cast<int>(lua.GetFieldToNumber( -1, "nAddAtkDmgRate" ));
-#endif // __EXT_ATTRIBUTE
 		m_mapAttributeEnchant.insert( make_pair( static_cast<int>(lua.ToNumber(-2)), attrEnchant ) );  
 		lua.Pop( 1 );
-#if __VER < 14 // __EXT_ATTRIBUTE
-		if( ( ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_GER ) && m_mapAttributeEnchant.size() == 10 )
-			break;
-#endif // __EXT_ATTRIBUTE
   	}
 	lua.Pop(0);
-#endif // __EXT_ENCHANT
 #ifdef __SYS_ITEMTRANSY
 	m_nItemTransyLowLevel = static_cast<int>( lua.GetGlobalNumber( "nItemTransyLowLevel" ) );
 	m_nItemTransyHighLevel = static_cast<int>( lua.GetGlobalNumber( "nItemTransyHighLevel" ) );
@@ -378,12 +363,9 @@ void CItemUpgrade::OnPiercingRemove( CUser* pUser, DWORD objId )
 		}
 	}
 }
-#endif // __EXT_PIERCING
 
-#if __VER >= 13 // __EXT_ENCHANT
 void	CItemUpgrade::OnEnchant( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial )
 {
-#if __VER >= 14 // __SMELT_SAFETY
 	if( !IsUsableItem( pItemMain ) || !IsUsableItem( pItemMaterial ) )
 		return;
 	// 대상이 장착중인가?
@@ -392,7 +374,6 @@ void	CItemUpgrade::OnEnchant( CUser* pUser, CItemElem* pItemMain, CItemElem* pIt
 		pUser->AddDefinedText( TID_GAME_EQUIPPUT , "" );
 		return;
 	}
-#endif // __SMELT_SAFETY
 	
 	switch( pItemMaterial->GetProp()->dwItemKind3 )
 	{
@@ -405,18 +386,15 @@ void	CItemUpgrade::OnEnchant( CUser* pUser, CItemElem* pItemMain, CItemElem* pIt
 			break;
 
 		default:
-#if __VER >= 14 // __SMELT_SAFETY
 			if( pItemMain->IsAccessory() )
 				RefineAccessory( pUser, pItemMain, pItemMaterial );
 
 			else if( pItemMain->IsCollector() )
 				RefineCollector( pUser, pItemMain, pItemMaterial );
-#endif // __SMELT_SAFETY
 			break;
 	}
 }
 
-#if __VER >= 14 // __SMELT_SAFETY
 BYTE	CItemUpgrade::OnSmeltSafety( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr, CItemElem* pItemSmeltScr )
 {
 	// 재료에 따라 분기
@@ -436,11 +414,9 @@ BYTE	CItemUpgrade::OnSmeltSafety( CUser* pUser, CItemElem* pItemMain, CItemElem*
 			else if( pItemMain->IsPierceAble( NULL_ID, TRUE ) )
 				return SmeltSafetyPiercingSize( pUser, pItemMain, pItemMaterial, pItemProtScr );
 
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 		// 속성카드 일때
 		case IK3_ELECARD:
 			return SmeltSafetyAttribute( pUser, pItemMain, pItemMaterial, pItemProtScr, pItemSmeltScr );
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 
 		default:
 			break;
@@ -853,7 +829,6 @@ void	CItemUpgrade::RefineCollector( CUser* pUser, CItemElem* pItemMain, CItemEle
 	pUser->UpdateItem( (BYTE)pItemMaterial->m_dwObjId, UI_NUM, pItemMaterial->m_nItemNum - 1 );
 }
 
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr, CItemElem* pItemSmeltScr )
 {
 	// 속성 제련이 가능한가
@@ -954,8 +929,6 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 	}
 	return 0;
 }
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
-#endif // __SMELT_SAFETY
 
 void	CItemUpgrade::EnchantGeneral( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial )
 {	
@@ -964,7 +937,6 @@ void	CItemUpgrade::EnchantGeneral( CUser* pUser, CItemElem* pItemMain, CItemElem
 		return;
 
 	// 일반제련은 방어구, 무기
-#if __VER >= 9 // __ULTIMATE
 	if( pItemMain->GetProp()->dwReferStat1 == WEAPON_ULTIMATE )
 	{
 		pUser->AddDefinedText( TID_GAME_NOTEQUALITEM );
@@ -977,7 +949,6 @@ void	CItemUpgrade::EnchantGeneral( CUser* pUser, CItemElem* pItemMain, CItemElem
 		pUser->AddDefinedText( TID_GAME_NOTEQUALITEM );
 		return;
 	}
-#endif // __ULTIMATE
 
 	if( !CItemElem::IsDiceRefineryAble(pItemMain->GetProp()) )
 	{
@@ -1139,12 +1110,8 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 		return;								
 	}
 
-#if __VER >= 12 // __J12_0
 	// 속성 당 하나의 속성 제련 카드를 사용하도록 수정
 	DWORD dwReqCard	= WhatEleCard( pItemMaterial->GetProp()->eItemType );
-#else	// __J12_0
-	DWORD dwReqCard = WhatEleCard( *pAbilityOption, pItemMaterial->GetProp()->eItemType );
-#endif	// __J12_0
 
 	if( pItemMaterial->GetProp()->dwID != dwReqCard )
 	{
@@ -1180,26 +1147,13 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 			g_dpDBClient.SendLogSMItemUse( "2", pUser, NULL, pItemProp );
 	}
 	
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELTING2 ) )	// 속성 제련의 두루마리
-#else // __EXT_ATTRIBUTE
-	if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELTING ) ) // 제련의 두루마리
-#endif // __EXT_ATTRIBUTE
 	{
-#if __VER >= 14 // __EXT_ATTRIBUTE
 		if( *pAbilityOption < 10 )
-#else // __EXT_ATTRIBUTE
-		if( *pAbilityOption < 7 )
-#endif // __EXT_ATTRIBUTE
 		{
 			nPercent	+= 1000;
-#if __VER >= 14 // __EXT_ATTRIBUTE
 			pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELTING2 );
 			ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELTING2 );
-#else // __EXT_ATTRIBUTE
-			pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELTING );
-			ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELTING );
-#endif // __EXT_ATTRIBUTE
 			if( pItemProp )
 				g_dpDBClient.SendLogSMItemUse( "2", pUser, NULL, pItemProp );
 		}
@@ -1294,12 +1248,6 @@ void CItemUpgrade::ChangeAttribute( CUser* pUser, OBJID dwTargetItem, OBJID dwUs
 	if( pUser->m_vtInfo.VendorIsVendor() )		// 내가 팔고 있으면?
 		return;
 
-#if __VER >= 11 // __SYS_COLLECTING
-#if __VER < 14 // __SMELT_SAFETY
-	if( pUser->PreRefine( dwTargetItem, dwUseItem ) )
-		return;
-#endif // __SMELT_SAFETY
-#endif	// __SYS_COLLECTING
 	if( !IsUsableItem( pTargetItemElem ) || !IsUsableItem( pUseItemElem ) )
 		return;
 
@@ -1371,7 +1319,6 @@ int CItemUpgrade::GetAttributeDamageFactor( int nAbilityOption )
 	return 0;
 }
 
-#if __VER >= 14 // __EXT_ATTRIBUTE
 int CItemUpgrade::GetAttributeDefenseFactor( int nAbilityOption )
 {
 	if( nAbilityOption > GetMaxAttributeEnchantSize() )
@@ -1395,7 +1342,6 @@ int CItemUpgrade::GetAttributeAddAtkDmgFactor( int nAbilityOption )
 
 	return 0;
 }
-#endif // __EXT_ATTRIBUTE
 
 DWORD CItemUpgrade::WhatEleCard( DWORD dwItemType )
 {	// 속성 제련 용 카드의 종류가 
@@ -1416,7 +1362,6 @@ DWORD CItemUpgrade::WhatEleCard( DWORD dwItemType )
 		return 0;
 	}
 }
-#endif // __EXT_ENCHANT
 
 #ifdef __SYS_ITEMTRANSY
 void CItemUpgrade::OnItemTransy( CUser* pUser, OBJID objidTarget, OBJID objidTransy, DWORD dwChangeId, BOOL bCash )
@@ -1531,7 +1476,6 @@ BOOL CItemUpgrade::RunItemTransy( CUser* pUser, CItemElem* pItemElemTarget, DWOR
 }
 #endif // __SYS_ITEMTRANSY
 
-#if __VER >= 15 // __PETVIS
 void CItemUpgrade::PetVisSize( CUser* pUser, OBJID objIdMaterial )
 {
 	if( !IsValidObj( pUser ) )
@@ -1726,4 +1670,3 @@ void CItemUpgrade::TransFormVisPet( CUser* pUser, OBJID objIdMaterial )
 		pUser->AddDefinedText( TID_GAME_PET_TRAN_FAILURE );
 	}
 }
-#endif // __PETVIS

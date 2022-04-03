@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __COUPLE_1117
 
 #include "couplehelper.h"
 #include "dptrans.h"
@@ -98,7 +97,6 @@ BOOL CCoupleController::Decouple( u_long idPlayer )
 	return TRUE;
 }
 
-#if __VER >= 13 // __COUPLE_1202
 BOOL CCoupleController::AddExperience( u_long idPlayer, int nExperience )
 {
 	if( !GetQueryObject()->Execute( "uspAddCoupleExperience %d, %d, %d", g_appInfo.dwSys, idPlayer, nExperience ) )
@@ -108,7 +106,6 @@ BOOL CCoupleController::AddExperience( u_long idPlayer, int nExperience )
 	}
 	return TRUE;
 }
-#endif	// __COUPLE_1202
 
 void CCoupleController::Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwCompletionKey )
 {
@@ -180,17 +177,14 @@ void CCoupleHelper::Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwCompletionKey )
 		case eClearPropose:
 			OnClearPropose();
 			break;
-#if __VER >= 13 // __COUPLE_1202
 		case eAddExperience:
 			OnAddExperience( ar );
 			break;
-#endif	// __COUPLE_1202
 		default:
 			break;
 	}
 }
 
-#if __VER >= 13 // __COUPLE_1202
 void CCoupleHelper::OnAddExperience( CAr & ar )
 {
 	u_long idPlayer;
@@ -256,7 +250,6 @@ void CCoupleHelper::PostItem( u_long idPlayer, const COUPLE_ITEM& ci, int nLevel
 	pMail->m_pItemElem->SetSerialNumber( xRand() );
 	post::Post( idPlayer, pMail, m_pController->GetQueryObject() );
 }
-#endif	// __COUPLE_1202
 
 void CCoupleHelper::OnTimer()
 {
@@ -358,4 +351,3 @@ BOOL CCoupleHelper::SetPropose( u_long idPlayer, time_t t )
 	return TRUE;
 }
 
-#endif	// __COUPLE_1117

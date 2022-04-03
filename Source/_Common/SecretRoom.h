@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "Continent.h"
 ////////////////////////////////////////////////////////////////
 
@@ -172,7 +171,6 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////
-#endif // __SECRET_ROOM
 
 #endif // !defined(AFX_SECRETROOM_H__E848C037_E4D5_44ED_BC88_2CDBE643B64F__INCLUDED_)
 

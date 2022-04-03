@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 14 // __PCBANG
 #ifdef __WORLDSERVER
 #include "User.h"
 #endif // __WORLDSERVER
@@ -84,6 +83,5 @@ private:
 };
 #endif // __WORLDSERVER
 
-#endif // __PCBANG
 
 #endif // !defined(AFX_PCBANG_H__DD46F01A_2342_4D10_9A65_C6F56352353C__INCLUDED_)

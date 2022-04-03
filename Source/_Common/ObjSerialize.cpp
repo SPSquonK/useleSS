@@ -61,18 +61,13 @@ void CItemElem::Serialize( CAr & ar )	// 18
 		ar << m_nResistSMItemId;
 		m_piercing.Serialize( ar );
 		ar << m_bCharged;
-#if __VER >= 11 // __SYS_IDENTIFY
 		ar << m_iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-		ar << m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 		ar << m_dwKeepTime;
 		if( m_dwKeepTime )
 		{
 			time_t t	= m_dwKeepTime - time_null();
 			ar << t;
 		}
-#if __VER >= 9	// __PET_0410
 		if( m_pPet )
 		{
 			ar << (BYTE)0x01;
@@ -82,10 +77,7 @@ void CItemElem::Serialize( CAr & ar )	// 18
 		{
 			ar << (BYTE)0x00;
 		}
-#endif	// __PET_0410
-#if __VER >= 15 // __PETVIS
 		ar << m_bTranformVisPet;
-#endif // __PETVIS
 	}
 	else
 	{
@@ -102,11 +94,7 @@ void CItemElem::Serialize( CAr & ar )	// 18
 //		memset( &m_piercingInfo, 0, sizeof(m_piercingInfo) );
 		m_piercing.Serialize( ar );
 		ar >> m_bCharged;
-#if __VER >= 11 // __SYS_IDENTIFY
 		ar >> m_iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-		ar >> m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 		ar >> m_dwKeepTime;
 
 		if( m_dwKeepTime ) 
@@ -117,7 +105,6 @@ void CItemElem::Serialize( CAr & ar )	// 18
 			m_dwKeepTime	= time_null() + t;
 		#endif	// __CLIENT
 		}
-#if __VER >= 9	// __PET_0410
 		SAFE_DELETE( m_pPet );
 		BYTE bPet;
 		ar >> bPet;
@@ -126,10 +113,7 @@ void CItemElem::Serialize( CAr & ar )	// 18
 			m_pPet	= new CPet;
 			m_pPet->Serialize( ar );
 		}
-#endif	// __PET_0410
-#if __VER >= 15 // __PETVIS
 		ar >> m_bTranformVisPet;
-#endif // __PETVIS
 
 #ifdef __CLIENT
 		SetTexture();

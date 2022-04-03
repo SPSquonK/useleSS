@@ -18,9 +18,7 @@ public:
 	AddSkillProp *m_pAddSkillProp;
 	OBJID m_idSrc;
 	OBJID m_idTarget;
-#if __VER >= 8 // __S8_PK
 	BOOL m_bControl;
-#endif // __VER >= 8 // __S8_PK
 	// chipi - 범위 ctrl 생성 스킬로 인해 듀얼 종료 후 카오되는 현상 수정
 	BOOL m_bDuelTarget;
 

@@ -72,16 +72,12 @@ public:
 	CWndOptVideo(); 
 	~CWndOptVideo(); 
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8	
 	int				 m_nStep[5];
 	int				 m_nBrightTable[11];
 
 	BOOL			 m_bLButtonClick3;
 	BOOL			 m_bLButtonClick4;
 	BOOL			 m_bLButtonClick5;
-#else //__Y_GAMMA_CONTROL_8
-	int				 m_nStep[2];
-#endif //__Y_GAMMA_CONTROL_8
 
 	CTexture         m_Texture;
 	CTexture         m_TexturePt;
@@ -142,10 +138,6 @@ class CWndTotalOption : public CWndNeuz
 public:
 	CWndOptVideo		m_OptTabVideoSnd;
 	CWndOptionGame		m_OptTabGame;
-#if __VER < 12 // __UPDATE_OPT
-	CWndOption			m_OptTabEtc;
-	CWndOptSound		m_OptTabSound;
-#endif
 	CWndTotalOption(); 
 	~CWndTotalOption(); 
 

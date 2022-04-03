@@ -58,9 +58,7 @@ public:
 	BOOL	m_bShout;		// 외치기 표시 ON / OFF
 	BOOL	m_bMessengerJoin; // Messenger 알림 표시 On / Off
 	BOOL	m_bMessenger;	// Messenger 승인 / 거부
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	BOOL	m_bBattleBGM;	// 전투 음악 ON / OFF
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __GAME_GRADE_SYSTEM
 	BOOL	m_bGameGradeRendering;
 #endif // __GAME_GRADE_SYSTEM
@@ -77,12 +75,8 @@ public:
 	int		m_nGuide1;	
 	int		m_nGuide2;	
 	int		m_nGuide3;	
-#if __VER >= 12 // __MOD_TUTORIAL
 	int		m_nTutorialLv;
-#endif
-#if __VER >= 12 // __UPDATE_OPT
 	BOOL	m_bViewMask;
-#endif
 	BOOL    m_bIsShowReSkillMessage;
 
 #ifdef __YENV
@@ -100,19 +94,13 @@ public:
 	BOOL	m_bAutoAttack;
 	int*	m_pGuide;
 	
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	int     m_nOverBright;
 	float	m_fGamma;
 	float   m_fContrast;
-#endif //__Y_GAMMA_CONTROL_8
 
-#if __VER >= 8 //__CSC_VER8_3
 	int m_BuffStatusMode;
-#endif //__CSC_VER8_3
 
-#if __VER >= 11 // __ADD_ZOOMOPT
 	BOOL	m_bZoomLimit;		// 줌 제한 여부
-#endif
 	COption();
 	~COption();
 	
@@ -123,9 +111,7 @@ public:
 	int LoadToolTip( LPCTSTR szFileName );
 #endif // _DEBUG
 	
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	void CheckResolution();
-#endif //__CSC_VER9_RESOLUTION
 };
 
 extern COption		g_Option;

@@ -1,7 +1,6 @@
 #ifndef __SLORD_H__
 #define	__SLORD_H__
 
-#if __VER >= 12 // __LORD
 
 #include "lord.h"
 
@@ -72,6 +71,5 @@ namespace	lordevent
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif	// __LORD
 
 #endif	// __SLORD_H__

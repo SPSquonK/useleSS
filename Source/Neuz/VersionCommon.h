@@ -1,7 +1,6 @@
 #ifndef __VERSION_COMMON_H__
 #define __VERSION_COMMON_H__
 #define __MAINSERVER
-#define		__VER	15		// 15차
 
 #if !defined( __TESTSERVER ) && !defined( __MAINSERVER )
 	#define __INTERNALSERVER
@@ -381,8 +380,6 @@
 //	#define		__BS_NO_CREATION_POST		// 임시 : 우체통 생성 무시
 
 
-	#undef		__VER
-	#define		__VER 15
 
 	#define		__GUILD_HOUSE_MIDDLE		// 길드하우스 중형
 	#define		__BS_ADDOBJATTR_INVISIBLE	// CObj Invisible 에 관한 속성추가   --> 16차 예정 

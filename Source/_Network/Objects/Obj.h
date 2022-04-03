@@ -33,9 +33,7 @@ using	namespace	std;
 #include "buff.h"
 #endif	// __BUFF_1107
 
-#if __VER >= 9	// __PET_0410
 #include "pet.h"
-#endif	// __PET_0410
 
 #include "Piercing.h"
 
@@ -54,11 +52,7 @@ enum
 };
 
 
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 #define MAX_SKILL_JOB	( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL )
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#define MAX_SKILL_JOB	( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL )
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -152,7 +146,6 @@ public:
 	void	SerializePiercing( CAr & ar )	{	m_piercing.Serialize( ar );		}
 	BOOL	IsPiercedItem()	{ return m_piercing.IsPiercedItem(); }
 #ifdef __DBSERVER
-#if __VER >= 12 // __EXT_PIERCING
 	void	SetUltimatePiercingSize( int nSize )	{	m_piercing.SetUltimatePiercingSize( nSize );	}
 	int		GetUltimatePiercingSize()	{	return m_piercing.GetUltimatePiercingSize();		}
 	void	SetUltimatePiercingItem( int nth, DWORD dwItem )	{	m_piercing.SetUltimatePiercingItem( nth, dwItem );	}
@@ -160,7 +153,6 @@ public:
 
 	ItemProp*	GetProp()	{	return prj.GetItemProp( m_dwItemId );	}
 	BOOL	IsPierceAble( DWORD dwTargetItemKind3 = NULL_ID, BOOL bSize = FALSE );
-#endif // __EXT_PIERCING
 #endif // __DBSERVER
 
 private:
@@ -182,7 +174,6 @@ public:
 //	PIERCINGINFO	m_piercingInfo;
 	BOOL	m_bCharged;					// 상용화 아이템인지 확인
 	DWORD	m_dwKeepTime;				// 지속시간
-#if __VER >= 11 // __SYS_IDENTIFY
 	// 비트별 연산
 	// 12|12|16|16|8	= 64
 private:
@@ -191,18 +182,8 @@ public:
 	__int64		GetRandomOptItemId( void )	{	return m_iRandomOptItemId;	}
 	void	SetRandomOptItemId( __int64 iRandomOptItemId )	{	m_iRandomOptItemId	= iRandomOptItemId;	}
 	int		GetRandomOpt( void )	{	return static_cast<int>( m_iRandomOptItemId & 0x00000000000000FF );	}
-#else	// __SYS_IDENTIFY
-private:
-	int			m_nRandomOptItemId;
-public:
-	int		GetRandomOptItemId( void )	{	return m_nRandomOptItemId;	}
-	void	SetRandomOptItemId( int nRandomOptItemId )	{	m_nRandomOptItemId	= nRandomOptItemId;	}
-	int		GetRandomOpt( void )	{	return m_nRandomOptItemId;	}
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 9	// __PET_0410
 	CPet*	m_pPet;
-#endif	// __PET_0410
 
 public:
 //	Constructions
@@ -218,16 +199,13 @@ public:
 	virtual	void	Empty()
 	{
 		CItemBase::Empty();
-#if __VER >= 9
 		SAFE_DELETE( m_pPet );
-#endif	// __PET_0410
 	}
 
 	virtual	CItemElem&	operator = ( CItemElem & ie );
 	virtual	void	Serialize( CAr & ar );
 
 #ifdef __DBSERVER
-#if __VER >= 15 // __PETVIS
 	BOOL	IsVisPet()	{ return ( GetProp() && GetProp()->IsVisPet() ) || IsTransformVisPet() ; }
 	void	SetVisKeepTimeSize( int nSize )				{ m_piercing.SetVisKeepTimeSize( nSize ); }
 	void	SetVisKeepTime( int nth, time_t tmKeep )	{ m_piercing.SetVisKeepTime( nth, tmKeep ); }
@@ -235,7 +213,6 @@ public:
 	BOOL	IsTransformVisPet() { return GetProp() && GetProp()->dwItemKind3 == IK3_PET && m_bTranformVisPet; }
 
 	BOOL	m_bTranformVisPet;
-#endif // __PETVIS
 #endif // __DBSERVER
 };
 
@@ -273,19 +250,11 @@ public:
 //	T*	Add( DWORD dwItemId );
 
 	BOOL	Add( T* pElem, BYTE* pnId = NULL, short* pnNum = NULL, BYTE* pnCount = NULL );
-#if __VER >= 11 // __SYS_IDENTIFY
 #ifdef __SEND_ITEM_ULTIMATE
 	BOOL	Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, BYTE* pnId = NULL, short* pnNum = NULL, BYTE* pnCount = NULL, BOOL bCharged = FALSE, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwItemId4 = 0, DWORD dwKeepTime = 0, __int64 iRandomOptItemId = 0 );
 #else // __SEND_ITEM_ULTIMATE
 	BOOL	Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, BYTE* pnId = NULL, short* pnNum = NULL, BYTE* pnCount = NULL, BOOL bCharged = FALSE, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwKeepTime = 0, __int64 iRandomOptItemId = 0 );
 #endif // __SEND_ITEM_ULTIMATE
-#else	// __SYS_IDENTIFY
-#ifdef __SEND_ITEM_ULTIMATE
-	BOOL	Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, BYTE* pnId = NULL, short* pnNum = NULL, BYTE* pnCount = NULL, BOOL bCharged = FALSE, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwItemId4 = 0, DWORD dwKeepTime = 0, int nRandomOptItemId = 0 );
-#else // __SEND_ITEM_ULTIMATE
-	BOOL	Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, BYTE* pnId = NULL, short* pnNum = NULL, BYTE* pnCount = NULL, BOOL bCharged = FALSE, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwKeepTime = 0, int nRandomOptItemId = 0 );
-#endif // __SEND_ITEM_ULTIMATE
-#endif	// __SYS_IDENTIFY
 	BOOL	IsFull( ItemProp* pItemProp, short nNum, BOOL bCharged );
 
 	T*	GetAt( DWORD dwIndex );
@@ -330,9 +299,7 @@ template <class T> void CItemContainer<T>::Clear()
 	for( DWORD i = 0; i < m_dwItemMax; i++ )
 	{
 		m_apItem[ i ].Empty();
-#if __VER >= 9
 		SAFE_DELETE( m_apItem[i].m_pPet );
-#endif	// __PET_0410
 		m_apItem[ i ].m_dwObjId = i;
 		if( i < m_dwIndexNum )
 		{
@@ -372,19 +339,11 @@ template <class T> void CItemContainer<T>::SetItemContainer( DWORD dwItemType, D
 	}
 }
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #ifdef __SEND_ITEM_ULTIMATE
 template <class T> BOOL CItemContainer<T>::Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, BYTE* pnId, short* pnNum, BYTE* pnCount, BOOL bCharged, int nPiercedSize, DWORD dwItemId0, DWORD dwItemId1, DWORD dwItemId2, DWORD dwItemId3, DWORD dwItemId4, DWORD dwKeepTime, __int64 iRandomOptItemId )
 #else // __SEND_ITEM_ULTIMATE
 template <class T> BOOL CItemContainer<T>::Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, BYTE* pnId, short* pnNum, BYTE* pnCount, BOOL bCharged, int nPiercedSize, DWORD dwItemId0, DWORD dwItemId1, DWORD dwItemId2, DWORD dwItemId3, DWORD dwKeepTime, __int64 iRandomOptItemId )
 #endif // __SEND_ITEM_ULTIMATE
-#else	// __SYS_IDENTIFY
-#ifdef __SEND_ITEM_ULTIMATE
-template <class T> BOOL CItemContainer<T>::Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, BYTE* pnId, short* pnNum, BYTE* pnCount, BOOL bCharged, int nPiercedSize, DWORD dwItemId0, DWORD dwItemId1, DWORD dwItemId2, DWORD dwItemId3, DWORD dwItemId4, DWORD dwKeepTime, int nRandomOptItemId )
-#else // __SEND_ITEM_ULTIMATE
-template <class T> BOOL CItemContainer<T>::Add( DWORD dwItemId, short nNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, BYTE* pnId, short* pnNum, BYTE* pnCount, BOOL bCharged, int nPiercedSize, DWORD dwItemId0, DWORD dwItemId1, DWORD dwItemId2, DWORD dwItemId3, DWORD dwKeepTime, int nRandomOptItemId )
-#endif // __SEND_ITEM_ULTIMATE
-#endif	// __SYS_IDENTIFY
 {
 #if defined(__DBSERVER)
 	if( pnId )
@@ -472,11 +431,7 @@ template <class T> BOOL CItemContainer<T>::Add( DWORD dwItemId, short nNum, int 
 #endif // __SEND_ITEM_ULTIMATE
 				if( dwKeepTime )
 					pElemtmp->m_dwKeepTime	= dwKeepTime;
-#if __VER >= 11 // __SYS_IDENTIFY
 				pElemtmp->SetRandomOptItemId( iRandomOptItemId );
-#else	// __SYS_IDENTIFY
-				pElemtmp->SetRandomOptItemId( nRandomOptItemId );
-#endif	// __SYS_IDENTIFY
 				
 				if( nNumtmp > (short)pItemProp->dwPackMax )
 				{
@@ -928,9 +883,7 @@ typedef	struct	_EQUIP_INFO
 	BYTE	byFlag;
 }	EQUIP_INFO,	*PEQUIP_INFO;
 
-#if __VER >= 11 // __SYS_POCKET
 #include "pocket.h"
-#endif	// __SYS_POCKET
 
 class CMover: public CCtrl
 {
@@ -959,22 +912,13 @@ public:
 	DWORD			m_dwHairColor;
 	DWORD			m_dwHeadMesh;
 
-#if __VER >= 12 // __MOD_TUTORIAL
 private:
 	int		m_nTutorialState;
-#else	// __MOD_TUTORIAL
-	LONG			m_nFlightLv;
-#endif	// __MOD_TUTORIAL
 public:
-#if __VER >= 12 // __MOD_TUTORIAL
 	LONG	GetFlightLv( void )	{	return ( m_nLevel >= 20? 1: 0 );		}
 	void	SetFlightLv( LONG nFlightLv )	{}
 	int		GetTutorialState( void )	{	return m_nTutorialState;	}
 	void	SetTutorialState( int nTutorialState )	{	m_nTutorialState	= nTutorialState;	}
-#else	// __MOD_TUTORIAL
-	LONG	GetFlightLv( void )	{	return m_nFlightLv;		}
-	void	SetFlightLv( LONG nFlightLv )	{	m_nFlightLv	= nFlightLv;	}
-#endif	// __MOD_TUTORIAL
 
 	BOOL	IsEquipableNPC()	{	return FALSE;	}
 
@@ -1012,19 +956,12 @@ public:
 	u_long			m_idparty;
 	u_long			m_idGuild;
 	u_long			m_idWar;
-#if __VER >= 8 // __S8_PK
 	DWORD			m_dwPKTime;					/// 핑크 상태 시간
 	int				m_nPKValue;					/// PK 수치
 	DWORD			m_dwPKPropensity;			/// PK 성향
 	DWORD			m_dwPKExp;					/// PK 성향 습득 경험치
-#else // __VER >= 8 // __S8_PK
-	int				m_nNumKill;
-	int				m_nSlaughter;
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 // __CSC_VER8_5
 	EXPINTEGER		m_nAngelExp;				/// 엔젤 경험치
 	LONG			m_nAngelLevel;				/// 엔젤 Level
-#endif // __CSC_VER8_5
 
 	int				m_nFame;
 	u_long			m_idMurderer;
@@ -1037,9 +974,7 @@ public:
 	CActionMover*					m_pActMover; 
 	CItemContainer< CItemElem  >	m_Inventory ;
 
-#if __VER >= 11 // __SYS_POCKET
 	CPocketController	m_Pocket;
-#endif	// __SYS_POCKET
 
 	u_long							m_idPlayerBank[3];
 	CItemContainer< CItemElem  >	m_Bank[ 3 ] ;
@@ -1067,22 +1002,16 @@ public:
 #endif	// __EVENT_1101
 #endif // __DBSERVER
 
-#if __VER >= 15 // __PETVIS
 private:
 	OBJID	m_objIdVisPet;	// 소환중인 비스펫의 인벤토리 위치
 	DWORD	m_dwMoverSfxId; // 무버에 붙는 이펙트
-#endif // __PETVIS
-#if __VER >= 9	// __PET_0410
 private:
 	DWORD	m_dwPetId;	// 소환중이 펫의 인벤토리 위치(自), 소환중인 펫 인덱스(他)
 public:
 	DWORD	GetPetId( void )	{	return m_dwPetId;	}
 	void	SetPetId( DWORD dwPetId )		{	m_dwPetId	= dwPetId;	}
 	CItemElem*	GetPetItem( void );
-#endif	// __PET_0410
-#if __VER >= 9	//__AI_0509
 	FLOAT	m_fSpeedFactor;
-#endif	// __AI_0509
 
 #ifdef __EXP_ANGELEXP_LOG
 	int		m_nExpLog;
@@ -1093,11 +1022,9 @@ public:
 	int		m_nCoupon;
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	int				m_nHonor;					// 달인선택 
 	int				m_aHonorTitle[MAX_HONOR_TITLE];			// 달인수치
 	void			SetHonorCount(int nIdx , int nCount )	{	m_aHonorTitle[nIdx] = nCount;	}
-#endif	// __HONORABLE_TITLE			// 달인
 
 	LONG			m_nPlusMaxHitPoint;
 	DWORD			m_dwSMTime[SM_MAX];
@@ -1128,14 +1055,9 @@ public:
 	DWORD			m_dwPeriodicTick;
 	DWORD			m_dwTickCheer;
 	int				m_nCheerPoint;
-#if __VER >= 14 // __PCBANG
 	DWORD			m_dwPCBangClass;
-#endif // __PCBANG
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	LPWORD			m_aCheckedQuest;
 	BYTE			m_nCheckedQuestSize;
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __CAMPUS
 private:
 	u_long	m_idCampus;
 	int		m_nCampusPoint;
@@ -1144,13 +1066,10 @@ public:
 	void	SetCampusId( u_long idCampus )	{	m_idCampus = idCampus;	}
 	int		GetCampusPoint()	{	return m_nCampusPoint;	}
 	void	SetCampusPoint( int nMPPoint )		{	m_nCampusPoint = nMPPoint;	}
-#endif // __CAMPUS
 
-#if __VER >= 15 // __GUILD_HOUSE
 public:
 	int		m_nRestPoint;
 	time_t	m_tLogOut;
-#endif // __GUILD_HOUSE
 
 public:
 //	Constructions
@@ -1166,19 +1085,11 @@ public:
 
 	BOOL	RemoveQuest( int nQuestId );
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #ifdef __SEND_ITEM_ULTIMATE
 	BOOL	AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, int nCharged = 0, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwItemId4 = 0, DWORD dwKeepTime = 0, __int64 iRandomOptItemId = 0 );
 #else // __SEND_ITEM_ULTIMATE
 	BOOL	AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, int nCharged = 0, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwKeepTime = 0, __int64 iRandomOptItemId = 0 );
 #endif // __SEND_ITEM_ULTIMATE
-#else	// __SYS_IDENTIFY
-#ifdef __SEND_ITEM_ULTIMATE
-	BOOL	AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, int nCharged = 0, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwItemId4 = 0, DWORD dwKeepTime = 0, int nRandomOptItemId = 0 );
-#else // __SEND_ITEM_ULTIMATE
-	BOOL	AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, int nCharged = 0, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwKeepTime = 0, int nRandomOptItemId = 0 );
-#endif // __SEND_ITEM_ULTIMATE
-#endif	// __SYS_IDENTIFY
 	BOOL	AddItemBank( int nSlot, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber );
 	virtual void	Serialize( CAr & ar );
 //	int		GetMaxHitPoint()	    { return( ( m_nLevel * 16 ) + ( m_nSta * 6 ) + ( m_nStr  * 3 ) );		}

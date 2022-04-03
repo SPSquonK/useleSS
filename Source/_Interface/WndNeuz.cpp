@@ -60,10 +60,8 @@ void CWndTitleBar::OnInitialUpdate()
 	}
 	if(m_pParentWnd->IsWndStyle( WBS_MINIMIZEBOX ) )
 		m_awndButton[ WTBID_MIN - 10000 ].Create( _T( "_" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax* 16 + 16, 20), this, WTBID_MIN ), m_nButtonMax++;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_awndButton[ WTBID_MIN - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndMin.tga" ), TRUE );
 	m_awndButton[ WTBID_MIN - 10000 ].FitTextureSize();
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	if(m_pParentWnd->IsWndStyle( WBS_MAXIMIZEBOX ) )
 	{
@@ -75,20 +73,12 @@ void CWndTitleBar::OnInitialUpdate()
 	}
 	if(m_pParentWnd->IsWndStyle( WBS_CAPTION ) )
 	{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_pParentWnd->m_bNoCloseButton == FALSE )
 		{
 			m_awndButton[ WTBID_CLOSE - 10000 ].Create( _T( "x" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax * 16 + 16, 20), this, WTBID_CLOSE ), m_nButtonMax++;
 			m_awndButton[ WTBID_CLOSE - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndExit.tga" ), TRUE );
 			m_awndButton[ WTBID_CLOSE - 10000 ].FitTextureSize();
 		}
-#else // __IMPROVE_QUEST_INTERFACE
-		m_awndButton[ WTBID_CLOSE - 10000 ].Create( _T( "x" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax * 16 + 16, 20), this, WTBID_CLOSE ), m_nButtonMax++;
-//#ifdef __CLIENT
-		m_awndButton[ WTBID_CLOSE - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndExit.tga" ), TRUE );
-		m_awndButton[ WTBID_CLOSE - 10000 ].FitTextureSize();
-//#endif
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 	
 	CRect rect( 0, 4, m_nButtonMax * 16, 20 ); 
@@ -230,12 +220,10 @@ void CWndNeuz::OnInitialUpdate()
 //	SetFocus();
 	//m_bWndTile = TRUE;
 //	AdjustWndBase();
-#if __VER >= 8	
 #ifdef __DISABLE_GAMMA_WND
 	if(g_Neuz.m_bStartFullscreen)
 #endif
 	g_Neuz.Drv_SetGamma( g_Neuz.GetSafeHwnd(), g_Option.m_fGamma, g_Option.m_nOverBright, g_Option.m_fContrast );
-#endif //__Y_GAMMA_CONTROL_8
 }
 
 void CWndNeuz::AdjustWndBase( D3DFORMAT d3dFormat )

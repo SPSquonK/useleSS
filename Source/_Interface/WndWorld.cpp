@@ -17,9 +17,7 @@
 #include "WorldMap.h"
 #include "Commonctrl.h"
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
 
 extern	CGuildMng	g_GuildMng;
 extern	CDPClient	g_DPlay;
@@ -41,35 +39,25 @@ extern CFLASH g_Flash;
 
 #include "defineskill.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 13 // __HONORABLE_TITLE
 #include "honor.h"
-#endif	// __HONORABLE_TITLE
 
 #ifdef __SYS_ITEMTRANSY
 #include "wndchangeface.h"
 #endif //__SYS_ITEMTRANSY
 
-#if __VER >= 14 // __PCBANG
 #include "PCBang.h"
-#endif // __PCBANG
 
 #ifdef __QUIZ
 #include "Quiz.h"
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
-#endif
 
-#if __VER >= 15 // __CAMPUS
 #include "Campus.h"
 #include "CampusHelper.h"
-#endif // __CAMPUS
 
 #ifdef __IMPROVE_MAP_SYSTEM
 #include "WndMapEx.h"
@@ -244,12 +232,10 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 	lpCaption->m_size = size;
 
 	m_aCaption.Add( lpCaption );
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	if( bChatLog && g_WndMng.m_pWndChatLog )
 	{
 		g_WndMng.m_pWndChatLog->PutString( lpszCaption );
 	}
-#endif //__Y_CHAT_SYSTEM_8
 	m_bEnd = FALSE;
 
 	if( ::GetLanguage() != LANG_JAP )
@@ -645,24 +631,15 @@ m_buffs( NULL )
 	m_bAttackDbk = FALSE;
 #endif //__YAUTOATTACK
 
-#if __VER >= 8 // __CSC_VER8_3
 	m_pWndBuffStatus = NULL;
-#endif //__CSC_VER8_3
 
-#if __VER >= 8 // __CSC_VER8_5
 	m_bShiftPushed = FALSE;
 	m_bAngelFinish = FALSE;
-#endif //__CSC_VER8_5
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	m_bGuildCombat1to1Wait = FALSE;
-#endif //__GUILD_COMBAT_1TO1
-#if __VER >= 11 // __CSC_VER11_2
 	m_pNextTargetObj = NULL;
 	m_pRenderTargetObj = NULL;
-#endif //__CSC_VER11_2
 
-#if __VER >= 12 // __SECRET_ROOM
 	memset( m_szSecretRoomStr, 0, sizeof(char) * 256 );
 	
 	for(int i=0; i<MAX_KILLCOUNT_CIPHERS; i++)
@@ -676,13 +653,8 @@ m_buffs( NULL )
 	}
 
 	m_bFlashBackground = FALSE;
-#endif //__SECRET_ROOM
-#if __VER >= 13 // __QUEST_HELPER
 	m_bSetQuestNPCDest = FALSE;
-#endif //__QUEST_HELPER
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_vDestinationArrow = D3DXVECTOR3( -1.0F, 0.0F, -1.0F );
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 
 CWndWorld::~CWndWorld()
@@ -1040,12 +1012,8 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			g_pPlayer->RenderCasting( g_Neuz.m_pd3dDevice );
 			g_pPlayer->RenderPVPCount( g_Neuz.m_pd3dDevice );
 			g_pPlayer->RenderCtrlCasting( g_Neuz.m_pd3dDevice );
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 			g_pPlayer->RenderSkillCasting( g_Neuz.m_pd3dDevice );
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-#if __VER >= 11 // __SYS_COLLECTING
 			g_pPlayer->RenderCltGauge( g_Neuz.m_pd3dDevice );
-#endif
 		}
 	}
 	
@@ -1127,12 +1095,8 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 	g_Flash.RenderFlash( p2DRender );
 
-#if __VER >= 8 //__CSC_VER8_1 화면 Clear시 버프도 안보이게 함.
 	if(!g_WndMng.m_clearFlag)
 		RenderBuff( p2DRender );
-#else
-	RenderBuff( p2DRender );
-#endif //__CSC_VER8_1
 
 #ifdef __INTERNALSERVER
 	if( m_QuestTime.bFlag )
@@ -1169,7 +1133,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 		char szMsg[256] = { 0 };			
 		
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if(m_bGuildCombat1to1Wait)
 		{
 			CString strMsg, strSec;
@@ -1179,9 +1142,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		}
 		else
 			sprintf( szMsg, "%s %.2d:%.2d:%.2d", m_szGuildCombatStr, ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );
-#else //__GUILD_COMBAT_1TO1
-		sprintf( szMsg, "%s %.2d:%.2d:%.2d", m_szGuildCombatStr, ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );
-#endif //__GUILD_COMBAT_1TO1
 
 		if( ct.GetHours() <=0 && ct.GetMinutes() <=0 && ct.GetSeconds() <=0 )
 			m_dwGuildCombatTime = 0xffffffff;
@@ -1196,7 +1156,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		g_Neuz.m_2DRender.SetFont( pOldFont );		
 	}
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	if( g_pPlayer && g_pPlayer->GetWorld() && g_GuildCombat1to1Mng.IsPossibleMover(g_pPlayer) )
 	{
 //		if(g_GuildCombat1to1Mng.m_nState == CGuildCombat1to1Mng::GC1TO1_ENTRANCE || g_GuildCombat1to1Mng.m_nState == CGuildCombat1to1Mng::GC1TO1_WAR)
@@ -1206,9 +1165,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			DrawGuildCombat1ot1GuildInfo(p2DRender);
 		}
 	}
-#endif //__GUILD_COMBAT_1TO1
 
-#if __VER >= 12 // __SECRET_ROOM
 	DWORD dwSecretTime = CSecretRoomMng::GetInstance()->m_dwRemainTime;
 
 	if( dwSecretTime != 0 )
@@ -1243,7 +1200,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( g_pPlayer ) )
 			DrawSecretRoomInfo(p2DRender);
 	}
-#endif //__SECRET_ROOM
 
 	if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 	{
@@ -1379,13 +1335,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 //			if( nPoint > 0 )
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				str	= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
-#else	// __SYS_PLAYER_DATA
-				str = prj.GetPlayerString( uiPlayer );
-				if( str.IsEmpty() )
-					g_DPlay.SendQueryPlayerString( uiPlayer, QPS_GUILD_MEMBER );
-#endif	// __SYS_PLAYER_DATA
 				memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
 				
 				GetStrCut( str, szBuf, 5 );
@@ -1502,11 +1452,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 				nRate++;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
-#else	// __SYS_PLAYER_DATA
-				str = prj.GetPlayerString( GuildRate.m_uidPlayer );
-#endif	// __SYS_PLAYER_DATA
 				
 				memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
 				
@@ -1761,7 +1707,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	return TRUE;
 }
 
-#if __VER >= 12 // __SECRET_ROOM
 bool prKCountAsce(__SRGUILDINFO guild1, __SRGUILDINFO guild2)
 {
 	bool rtn_val = false;
@@ -2166,9 +2111,7 @@ void CWndWorld::DrawSecretRoomInfo(C2DRender *p2DRender)
 #endif //__CLIENT
 }
 
-#endif //__SECRET_ROOM
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CWndWorld::DrawGuildCombat1to1Info(C2DRender *p2DRender)
 {
 #ifdef __CLIENT
@@ -2250,11 +2193,7 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 			stPlayerInfo = g_GuildCombat1to1Mng.m_vecGuildCombat1to1_Players[i];
 			
 			nRate++;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			strTemp		= CPlayerDataCenter::GetInstance()->GetPlayerString( stPlayerInfo.m_uidPlayer );
-#else	// __SYS_PLAYER_DATA
-			strTemp = prj.GetPlayerString( stPlayerInfo.m_uidPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 			if( strTemp.GetLength() > 10 ) 
 			{
@@ -2394,7 +2333,6 @@ void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 	}
 #endif //__CLIENT
 }
-#endif //__GUILD_COMBAT_1TO1
 
 void CWndWorld::RenderArrow()
 {
@@ -2403,14 +2341,9 @@ void CWndWorld::RenderArrow()
 	if( !g_pPlayer || !pWorld ) 
 		return; // 플레이어가 없으면 렌더 안한다
 	D3DXVECTOR3 vSrc = g_pPlayer->GetPos();
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	D3DXVECTOR3 vDest( 0.0F, 0.0F, 0.0F );
-#else // __IMPROVE_QUEST_INTERFACE
-	D3DXVECTOR3 vDest;
-#endif // __IMPROVE_QUEST_INTERFACE
 	LPDIRECT3DDEVICE9 pd3dDevice = m_pApp->m_pd3dDevice;
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	int nBlend = 255;
 	if( m_vDestinationArrow == D3DXVECTOR3( -1.0F, 0.0F, -1.0F ) || g_pPlayer->GetWorld()->GetID() != WI_WORLD_MADRIGAL )
 		nBlend = 0;
@@ -2419,33 +2352,6 @@ void CWndWorld::RenderArrow()
 		vDest = m_vDestinationArrow;
 		vDest.y = g_pPlayer->GetPos().y;
 	}
-#else // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 13 // __QUEST_HELPER
-	int nBlend;
-	if(m_bSetQuestNPCDest)
-	{
-		nBlend = 255;
-		vDest = m_vQuestNPCDest;
-	}
-	else
-	{
-		nBlend = 80;
-		if( m_stnv.dwWorldId == pWorld->GetID() )
-			vDest = m_stnv.vPos;
-		else if( pWorld->GetObjFocus() ) 
-			vDest = ((CMover*)( pWorld->GetObjFocus() ) )->GetPos();
-		else 
-			return; // 타겟 안잡혀 있어도 당근 렌더 안한다.
-	}
-#else //__QUEST_HELPER
-	if( m_stnv.dwWorldId == pWorld->GetID() )
-		vDest = m_stnv.vPos;
-	else if( pWorld->GetObjFocus() ) 
-		vDest = ((CMover*)( pWorld->GetObjFocus() ) )->GetPos();
-	else 
-		return; // 타겟 안잡혀 있어도 당근 렌더 안한다.
-#endif //__QUEST_HELPER
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
 	pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
@@ -2489,17 +2395,12 @@ void CWndWorld::RenderArrow()
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
-#if __VER >= 13 // __QUEST_HELPER
 	m_meshArrow.SetBlendFactor( nBlend );
 	m_meshArrow.Render( pd3dDevice, &matWorld );
 
 	if( m_bSetQuestNPCDest )
 		RenderArrow_Text( pd3dDevice, vDest, matWorld);		//gmpbisgun : refactoring 2009_10_20
 
-#else //__QUEST_HELPER
-	m_meshArrow.SetBlendFactor( 80 );
-	m_meshArrow.Render( pd3dDevice, &matWorld );
-#endif //__QUEST_HELPER
 }
 
 void CWndWorld::RenderArrow_Text( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3& vDest, const D3DXMATRIX& matWorld  )
@@ -2607,11 +2508,9 @@ BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 							case CK1_HOUSING:
 								break;
 
-#if __VER >= 15 // __GUILD_HOUSE
 							case CK1_GUILD_HOUSE:
 								dwCursor = CUR_CONTROL;
 							break;
-#endif 
 							case CK1_CHEST:
 							default:
 								dwCursor = CUR_CONTROL;
@@ -2634,17 +2533,13 @@ BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 			dwCursor = CUR_NO;
 #endif //__EVE_MINIGAME
 
-#if __VER >= 13 // __RAINBOW_RACE
 		if( g_WndMng.GetWndBase(APP_RR_MINIGAME_KAWIBAWIBO) || g_WndMng.GetWndBase(APP_RR_MINIGAME_DICE) || g_WndMng.GetWndBase(APP_RR_MINIGAME_ARITHMETIC) 
 			|| g_WndMng.GetWndBase(APP_RR_MINIGAME_STOPWATCH) || g_WndMng.GetWndBase(APP_RR_MINIGAME_TYPING) || g_WndMng.GetWndBase(APP_RR_MINIGAME_CARD)
 			|| g_WndMng.GetWndBase(APP_RR_MINIGAME_LADDER) )
 			dwCursor = CUR_NO;
-#endif //__RAINBOW_RACE
 
-#if __VER >= 9 // __CSC_VER9_1
 		if( g_WndMng.GetWndBase(APP_SMELT_JEWEL) )
 			dwCursor = CUR_NO;
-#endif //__CSC_VER9_1
 
 #ifdef __S_SERVER_UNIFY
 		if( g_WndMng.m_bAllAction == FALSE )
@@ -2717,10 +2612,8 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 {
 	CWorld* pWorld	= g_WorldMng.Get();	
 
-#if __VER >= 11 // __CSC_VER11_2
 	if(m_pRenderTargetObj)
 		pObj = m_pRenderTargetObj;
-#endif //__CSC_VER11_2
 	if( pObj && pObj->GetType() == OT_MOVER )
 	{
 		CMover* pMover = (CMover*)pObj;
@@ -2847,7 +2740,6 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 					}
 					if( pMover->IsPlayer() )
 					{
-#if __VER >= 11 // __CSC_VER11_1
 						// 중앙 정렬
 						int n = 0;
 						int ntextlen = strlen(szText);
@@ -2855,9 +2747,6 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 							n = (16 - ntextlen) * 3;
 
 						p2DRender->TextOut( point.x + 50 + n, point.y - 18, szText, COLOR_PLAYER );
-#else //__CSC_VER11_1
-						p2DRender->TextOut( point.x + 50, point.y - 18, szText, COLOR_PLAYER );
-#endif //__CSC_VER11_1
 					}
 					else
 					{
@@ -2916,11 +2805,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 					{
 						CString string;
 						if( pMover->IsPlayer() )
-#if __VER >= 8 // __S8_PK
 							string.Format( prj.GetText( TID_GAME_SELECT_OBJECT_INFORMATION_PLAYER ), pMover->GetHitPoint(), pMover->GetMaxHitPoint(), pMover->GetGold(), (float)pMover->GetExpPercent()/100.0f, pMover->GetExp1(), pMover->GetMaxExp1() );
-#else // __VER >= 8 // __S8_PK
-							string.Format( "HP(%d/%d),Gold(%d),Karma(%d)", pMover->GetHitPoint(), pMover->GetMaxHitPoint(), pMover->GetGold(), pMover->GetKarma() );
-#endif // __VER >= 8 // __S8_PK
 						else
 							string.Format( prj.GetText( TID_GAME_SELECT_OBJECT_INFORMATION_MONSTER ), pMover->GetHitPoint(), pMover->GetMaxHitPoint() );
 						strTemp += string;
@@ -2957,13 +2842,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 				if( pCtrl->m_CtrlElem.m_dwSet & UA_PLAYER_ID )
 				{
 					CString strName;					
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					strName		= CPlayerDataCenter::GetInstance()->GetPlayerString( pCtrl->m_idExpPlayer );
-#else	// __SYS_PLAYER_DATA
-					strName = prj.GetPlayerString( pCtrl->m_idExpPlayer );
-					if( strName.IsEmpty() )
-						g_DPlay.SendQueryPlayerString( pCtrl->m_idExpPlayer, QPS_GENERIC );		
-#endif	// __SYS_PLAYER_DATA
 					str.Format( prj.GetText(TID_GAME_EXPBOX_INFO), strName );
 		
 					// 게이지 출력
@@ -3001,9 +2880,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 		m_bCtrlInfo = FALSE;
 	}
 
-#if __VER >= 11 // __CSC_VER11_2
 	pObj = pWorld->GetObjFocus();
-#endif //__CSC_VER11_2
 	if( pObj && pObj->GetType() != OT_CTRL )
 	{
 		if( pObj->IsCull() == TRUE )	// 재조정할것도 없고 컬링되서 안보이면 안찍음.
@@ -3015,16 +2892,11 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 			{
 				CRect rectBound;
 				GetBoundRect( pObj, &rectBound );
-#if __VER >= 11 // __CSC_VER11_2
 				RenderFocusObj( pObj, rectBound, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
-#else //__CSC_VER11_2
-				RenderFocusObj( rectBound, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
-#endif //__CSC_VER11_2
 			}
 		}
 	}
 
-#if __VER >= 15 // __GUILD_HOUSE
 	//gmpbigsun: 길드하우스 안에서는 선택된 가구에 대해서 표시를 해야한다.
 	if( IsValidObjID( GuildHouse->m_dwSelectedObjID ) )
 	{
@@ -3036,10 +2908,8 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 			RenderFocusObj( pCtrl, recBound, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
 		}
 	}
-#endif 
 	
 
-#if __VER >= 11 // __CSC_VER11_2
 	if( m_bAutoAttack && m_pNextTargetObj && m_pNextTargetObj->GetType() != OT_CTRL )
 	{
 		if( m_pNextTargetObj->IsCull() == TRUE )	// 재조정할것도 없고 컬링되서 안보이면 안찍음.
@@ -3055,7 +2925,6 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 			}
 		}
 	}
-#endif //__CSC_VER11_2
 
 /* chipi_090814 - 핑 출력을 디버그 창으로 이동
 	// 핑(Ping) 출력
@@ -3076,11 +2945,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 */
 }
 
-#if __VER >= 11 // __CSC_VER11_2
 void CWndWorld::RenderFocusObj( CObj* pObj, CRect rect, DWORD dwColor1, DWORD dwColor2 )
-#else //__CSC_VER11_2
-void CWndWorld::RenderFocusObj( CRect rect, DWORD dwColor1, DWORD dwColor2 )
-#endif //__CSC_VER11_2
 {
 	BOOL bFly = g_pPlayer->m_pActMover->IsFly();		
 
@@ -3100,17 +2965,10 @@ void CWndWorld::RenderFocusObj( CRect rect, DWORD dwColor1, DWORD dwColor2 )
 	}
 	
 	CWorld* pWorld = g_WorldMng.Get();
-#if __VER < 11 // __CSC_VER11_2
-	CObj* pObj = pWorld->GetObjFocus();
-#endif //__CSC_VER11_2
 
 	// 타겟표시의 4귀퉁이 그림.
-#if __VER >= 11 // __CSC_VER11_2
 	if( pObj && pObj != m_pNextTargetObj && (m_bSelectTarget || m_bAutoAttack || g_pPlayer->GetCmd() == OBJACT_USESKILL) && 
 		 pObj->GetType() == OT_MOVER && (((CMover*)pObj)->IsPeaceful() == FALSE || ((CMover*)pObj)->IsPlayer()) ) // 플레이어 PK시에도 붉은색 표시 가능
-#else //__CSC_VER11_2
-	if( (m_bSelectTarget || m_bAutoAttack || g_pPlayer->GetCmd() == OBJACT_USESKILL) && pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsPeaceful() == FALSE )
-#endif //__CSC_VER11_2
 	{
 		if( bFly )
 		{
@@ -3135,7 +2993,6 @@ void CWndWorld::RenderFocusObj( CRect rect, DWORD dwColor1, DWORD dwColor2 )
 			m_texTargetFly.GetAt( 2 )->Render( &g_Neuz.m_2DRender, pt3 );
 			m_texTargetFly.GetAt( 3 )->Render( &g_Neuz.m_2DRender, pt4 );
 		} else
-#if __VER >= 15 // __GUILD_HOUSE
 		if( IsValidObjID( GuildHouse->m_dwSelectedObjID ) && pObj->GetType( ) == OT_CTRL )
 		{
 			if( GUILDHOUSE_PCKTTYPE_RESET == GuildHouse->m_iMode )
@@ -3154,7 +3011,6 @@ void CWndWorld::RenderFocusObj( CRect rect, DWORD dwColor1, DWORD dwColor2 )
 			}
 		}
 		else 
-#endif
 		{
 			m_texTarget.GetAt( 0 )->Render( &g_Neuz.m_2DRender, pt1 );		// 흰색표시
 			m_texTarget.GetAt( 1 )->Render( &g_Neuz.m_2DRender, pt2 );
@@ -3588,18 +3444,13 @@ void CWndWorld::OnInitialUpdate()
 #ifdef __DST_GIFTBOX
 				|| pItemProp->dwDestParam[0] == DST_GIFTBOX || pItemProp->dwDestParam[1] == DST_GIFTBOX || pItemProp->dwDestParam[2] == DST_GIFTBOX 
 #endif // __DST_GIFTBOX
-#if __VER >= 9	// __PET_0410
 				|| pItemProp->dwItemKind3 == IK3_EGG
-#endif	// __PET_0410
-#if __VER >= 15 // __PETVIS
 				|| pItemProp->dwItemKind3 == IK3_PET
-#endif // __PETVIS
 			)
 			{
 				buffskill.m_bFlsh    = 0;
 				buffskill.m_nAlpha  = 192;
 
-#if __VER >= 9	// __PET_0410
 				CString strIcon	= pItemProp->szIcon;
 				if( pItemProp->dwItemKind3 == IK3_EGG && pItemProp->dwID != II_PET_EGG )
 				{
@@ -3625,10 +3476,6 @@ void CWndWorld::OnInitialUpdate()
 #endif //__DST_GIFTBOX
 					m_pBuffTexture[2].insert( make_pair(pItemProp->dwID, buffskill) );
 				}
-#else	// __PET_0410
-				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
-				m_pBuffTexture[2].insert( make_pair(pItemProp->dwID, buffskill) );
-#endif	// __PET_0410
 			}
 		}
 	}
@@ -3645,7 +3492,6 @@ void CWndWorld::OnInitialUpdate()
 	case 1280:
 		m_nLimitBuffCount = 13;
 		break;
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	case 1360:
 		m_nLimitBuffCount = 14;
 		break;
@@ -3661,7 +3507,6 @@ void CWndWorld::OnInitialUpdate()
 	case 1680:
 		m_nLimitBuffCount = 18;
 		break;
-#endif //__CSC_VER9_RESOLUTION
 	}
 	
 	// 아이콘 텍스쳐 로딩
@@ -3695,9 +3540,7 @@ void CWndWorld::OnInitialUpdate()
 	
 	m_texAttrIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\Icon_MonElemantkind.inc" );
 	
-#if __VER >= 11 // __CSC_VER11_4
 	m_texPlayerDataIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\icon_PlayerData.inc" );
-#endif //__CSC_VER11_4
 	for( int j = 0 ; j < SM_MAX ; ++j )
 	{
 		if( j != SM_RESIST_ATTACK_LEFT && j != SM_RESIST_ATTACK_RIGHT && j != SM_RESIST_DEFENSE )
@@ -3749,14 +3592,8 @@ void CWndWorld::OnInitialUpdate()
 
 	if( g_pPlayer->m_dwMode & FRESH_MODE )
 	{
-	#if __VER >= 12 // __MOD_TUTORIAL
 		m_pWndGuideSystem->m_dwGuideLevel = *g_Option.m_pGuide = 0;
 		if(g_pPlayer->m_nLevel <= 5) m_pWndGuideSystem->GuideStart(FALSE);
-	#else
-		m_pWndGuideSystem->CreateGuideSelection();
-		m_pWndGuideSystem->m_dwGuideLevel = 0;
-		*g_Option.m_pGuide = 0;
-	#endif
 	}
 	else
 	{
@@ -3768,12 +3605,8 @@ void CWndWorld::OnInitialUpdate()
 		if(g_pPlayer->m_nLevel <= 5) m_pWndGuideSystem->GuideStart(FALSE);
 	}
 
-#if __VER < 10 // __CSC_VER9_1
-	g_nSkillCurSelect = -1;
-#endif // __CSC_VER9_1
 
 	if( g_pPlayer && g_pPlayer->m_nSkillPoint > 0 )
-#if __VER >= 10 // __CSC_VER9_1
 	{
 		CWndBase* pWndBase = (CWndBase*)g_WndMng.GetWndBase( APP_SKILL3 );
 		if(!pWndBase)
@@ -3782,9 +3615,6 @@ void CWndWorld::OnInitialUpdate()
 			//g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SKILL3 );
 		}
 	}
-#else
-		g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SKILL1 );
-#endif //__CSC_VER9_1
 
 
 	g_Neuz.m_NeuzEnemy.Clear();
@@ -3947,11 +3777,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		// 취소하기
 		case MMI_GUILDWAR_CANCEL:
 			{
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				CWndGuildWarCancelConfirm* pWndGuildCombat = new CWndGuildWarCancelConfirm(0);
-#else //__GUILD_COMBAT_1TO1
-				CWndGuildWarCancelConfirm* pWndGuildCombat = new CWndGuildWarCancelConfirm;
-#endif //__GUILD_COMBAT_1TO1
 
 				if(pWndGuildCombat)
 					pWndGuildCombat->Initialize( NULL );
@@ -3960,11 +3786,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		// 입장하기
 		case MMI_GUILDWAR_JOIN:
 			{
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				CWndGuildWarJoinConfirm* pWndGuildCombat = new CWndGuildWarJoinConfirm(0);
-#else //__GUILD_COMBAT_1TO1
-				CWndGuildWarJoinConfirm* pWndGuildCombat = new CWndGuildWarJoinConfirm;
-#endif //__GUILD_COMBAT_1TO1
 				
 				if(pWndGuildCombat)
 					pWndGuildCombat->Initialize( NULL );
@@ -3988,11 +3810,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		case MMI_GUILDCOMBAT_INFO_TEX:
 			{
 				SAFE_DELETE(g_WndMng.m_pWndGuildCombatBoard);
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard(0);
-#else //__GUILD_COMBAT_1TO1
-				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard;
-#endif //__GUILD_COMBAT_1TO1
 				
 				if( g_WndMng.m_pWndGuildCombatBoard )
 				{
@@ -4034,11 +3852,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE(g_WndMng.m_pWndGuildCombatBoard);
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard(0);
-#else //__GUILD_COMBAT_1TO1
-				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard;
-#endif //__GUILD_COMBAT_1TO1
 
 				if( g_WndMng.m_pWndGuildCombatBoard )
 				{
@@ -4069,11 +3883,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE(g_WndMng.m_pWndGuildCombatBoard);
 				
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard(0);
-#else //__GUILD_COMBAT_1TO1
-				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard;
-#endif //__GUILD_COMBAT_1TO1
 				
 				if( g_WndMng.m_pWndGuildCombatBoard )
 				{
@@ -4098,11 +3908,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE(g_WndMng.m_pWndGuildCombatBoard);
 				
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard(0);
-#else //__GUILD_COMBAT_1TO1
-				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard;
-#endif //__GUILD_COMBAT_1TO1
 				
 				if( g_WndMng.m_pWndGuildCombatBoard )
 				{
@@ -4127,11 +3933,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE(g_WndMng.m_pWndGuildCombatBoard);
 				
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard(0);
-#else //__GUILD_COMBAT_1TO1
-				g_WndMng.m_pWndGuildCombatBoard = new CWndGuildCombatBoard;
-#endif //__GUILD_COMBAT_1TO1
 				
 				if( g_WndMng.m_pWndGuildCombatBoard )
 				{
@@ -4151,7 +3953,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				}
 			}
 			break;
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		case MMI_GUILDCOMBAT_1TO1_OFFER:
 			g_DPlay.SendGC1to1TenderOpenWnd();
 			break;
@@ -4297,8 +4098,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_DPlay.SendGC1to1TenderFailed();
 			}
 			break;
-#endif //__GUILD_COMBAT_1TO1
-#if __VER >= 12 // __SECRET_ROOM
 		case MMI_SECRET_OFFER:
 			{
 				g_DPlay.SendSecretRoomTenderOpenWnd();
@@ -4362,16 +4161,12 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.m_pWndSecretRoomCheckTaxRate->Initialize(NULL);
 			}
 			break;
-#if __VER >= 12 // __TAX
 		case MMI_SECRET_ENTRANCE_1:
 			{
 				g_DPlay.SendTeleportToSecretRoomDungeon();
 			}
 			break;
-#endif // __TAX
 
-#endif //__SECRET_ROOM
-#if __VER >= 11 // __SYS_IDENTIFY
 		case MMI_LVREQDOWN_CANCEL:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_LVREQDOWN );
@@ -4419,7 +4214,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndBlessingCancel->Initialize( &g_WndMng, APP_CANCEL_BLESSING );
 			}
 			break;
-#endif	// __SYS_IDENTIFY
 #ifdef __JEFF_11
 		case MMI_PET_RES:
 			{
@@ -4437,7 +4231,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 			break;
 #endif
-#if __VER >= 13 // __RAINBOW_RACE
 		case MMI_LORD_RAINBOWAPPLICATION:
 			{
 				g_DPlay.SendRainbowRaceApplicationOpenWnd();
@@ -4521,7 +4314,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				CRainbowRace::GetInstance()->SendMinigamePacket( RMG_LADDER, MP_OPENWND );
 			}
 			break;
-#endif //__RAINBOW_RACE
 		case MMI_POST:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_TRADE );
@@ -4576,7 +4368,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText( TID_GAME_TRADENOTBEAUTYSHOP ), NULL, prj.GetTextColor(TID_GAME_TRADENOTBEAUTYSHOP ) );
 					break;
 				}
-#if __VER >= 8 // __CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 				{
@@ -4585,16 +4376,12 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				}
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 				{
 					//g_WndMng.PutString( "이미 헤어샵을 이용중입니다", NULL, 0xffffff00 );
 					g_WndMng.PutString( prj.GetText(TID_GAME_BEAUTYSHOPUSING), NULL, prj.GetTextColor(TID_GAME_BEAUTYSHOPUSING) );
 					break;
 				}
-#if __VER >= 8 //__CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
@@ -4602,7 +4389,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_SUMMONANGELUSING), NULL, prj.GetTextColor(TID_GAME_SUMMONANGELUSING) );
 					break;
 				}
-#endif //__CSC_VER8_4			
 				g_WndMng.CreateApplet( APP_INVENTORY );
 				
 				SAFE_DELETE( g_WndMng.m_pWndPost );
@@ -4630,7 +4416,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText( TID_GAME_TRADENOTBEAUTYSHOP ), NULL, prj.GetTextColor(TID_GAME_TRADENOTBEAUTYSHOP ) );
 					break;
 				}
-#if __VER >= 8 // __CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 				{
@@ -4638,15 +4423,11 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				}
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_BEAUTYSHOPUSING), NULL, prj.GetTextColor(TID_GAME_BEAUTYSHOPUSING) );
 					break;
 				}
-#if __VER >= 8 // __CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
@@ -4654,8 +4435,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_SUMMONANGELUSING), NULL, prj.GetTextColor(TID_GAME_SUMMONANGELUSING) );
 					break;
 				}
-#endif //__CSC_VER8_5
-#if __VER >= 8 // __CSC_VER8_4
 				BYTE pbyFlag;
 				if(g_pPlayer->GetEquipFlag(PARTS_HAT, &pbyFlag) || g_pPlayer->GetEquipFlag(PARTS_CAP, &pbyFlag))
 				{
@@ -4663,9 +4442,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_NOTREADY_USESHOP), NULL, prj.GetTextColor(TID_GAME_NOTREADY_USESHOP) );
 					break;					
 				}
-#endif //__CSC_VER8_4
 
-#if __VER >= 8 // __CSC_VER8_4
 #ifdef __NEWYEARDAY_EVENT_COUPON
 				/*
 				//헤어 체인지 교환권을 소지하였을 경우.
@@ -4692,15 +4469,8 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
 				g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
 #endif //__NEWYEARDAY_EVENT_COUPON
-#else //__CSC_VER8_4
-				g_WndMng.CreateApplet( APP_INVENTORY );				
-				SAFE_DELETE( g_WndMng.m_pWndBeautyShop );				
-				g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-				g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 			}
 			break;
-#if __VER >= 8 // __CSC_VER8_4
 		case MMI_BEAUTYSHOP_SKIN:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_TRADE );
@@ -4733,7 +4503,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_FACESHOPUSING), NULL, prj.GetTextColor(TID_GAME_FACESHOPUSING) );
 					break;
 				}
-#if __VER >= 8 // __CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
@@ -4741,7 +4510,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_FACESHOPUSING), NULL, prj.GetTextColor(TID_GAME_FACESHOPUSING) );
 					break;
 				}
-#endif //__CSC_VER8_5
 				BYTE pbyFlag;
 				if(g_pPlayer->GetEquipFlag(PARTS_HAT, &pbyFlag) || g_pPlayer->GetEquipFlag(PARTS_CAP, &pbyFlag))				
 				{
@@ -4778,8 +4546,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 #endif //__NEWYEARDAY_EVENT_COUPON
 			}
 			break;
-#endif //__CSC_VER8_4
-#if __VER >= 8 // __CSC_VER8_5
 		case MMI_SUMMON_ANGEL:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_TRADE );
@@ -4870,7 +4636,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				}
 			}
 			break;
-#endif // __CSC_VER8_5
 #ifdef __EVE_MINIGAME
 		case MMI_KAWIBAWIBO:
 			{
@@ -4938,7 +4703,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 			break;
 #endif //__EVE_MINIGAME
-#if __VER >= 9 // __CSC_VER9_1
 		case MMI_SMELT_MIXJEWEL:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_SMELT_MIXJEWEL );
@@ -5025,7 +4789,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndChangeWeapon->Initialize();					
 			}
 			break;
-#if __VER >= 10 //__CSC_VER9_1 -> __LEGEND
 		case MMI_LEGEND_SKILLUP:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_HERO_SKILLUP );
@@ -5040,9 +4803,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndHeroSkillUp->Initialize();					
 			}
 			break;
-#endif //__CSC_VER9_1 -> __LEGEND
-#endif //__CSC_VER9_1
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 			case MMI_ATTRIBUTE:
 			{
 				CWndBase* pWndBase = g_WndMng.GetWndBase( APP_REMOVE_ATTRIBUTE );
@@ -5057,15 +4817,9 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndRemoveAttribute->Initialize();					
 			}
 			break;
-#endif //__REMOVE_ATTRIBUTE
-#if __VER >= 11 // __PIERCING_REMOVE
 			case MMI_SMELT_REMOVE_PIERCING:
 			{
-#if __VER >= 12 // __CSC_VER12_4
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_SMELT_REMOVE_PIERCING_EX );
-#else //__CSC_VER12_4
-				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_SMELT_REMOVE_PIERCING );
-#endif //__CSC_VER12_4
 				if( pWndBaseBuf )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_WND_OVERLAPED), NULL, prj.GetTextColor(TID_GAME_WND_OVERLAPED) );
@@ -5077,8 +4831,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndRemovePiercing->Initialize();
 			}
 			break;
-#endif //__PIERCING_REMOVE
-#if __VER >= 12 // __CSC_VER12_4
 			case MMI_SMELT_REMOVE_JEWEL:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_SMELT_REMOVE_JEWEL );
@@ -5093,8 +4845,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndRemoveJewel->Initialize();
 			}
 			break;
-#endif //__CSC_VER12_4
-#if __VER >= 12 // __CSC_VER12_5
 			case MMI_PET_EGG01:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_PET_TRANS_EGGS );
@@ -5111,8 +4861,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndPetTransEggs->Initialize();
 			}
 			break;
-#endif //__CSC_VER12_5
-#if __VER >= 12 // __HEAVEN_TOWER
 			case MMI_HEAVEN_TOWER:
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_HEAVEN_TOWER );
@@ -5127,7 +4875,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndHeavenTower->Initialize();
 			}
 			break;
-#endif //__HEAVEN_TOWER
 #ifdef __NPC_BUFF
 			case MMI_NPC_BUFF:
 			{
@@ -5173,13 +4920,8 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			SAFE_DELETE( g_WndMng.m_pWndDialog );
 			g_WndMng.m_pWndDialog = new CWndDialog;
 			g_WndMng.m_pWndDialog->m_idMover = ((CMover*)pFocusObj)->GetId();
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			g_WndMng.m_pWndDialog->Initialize( &g_WndMng, APP_DIALOG_EX );
-#else // __IMPROVE_QUEST_INTERFACE
-			g_WndMng.m_pWndDialog->Initialize( &g_WndMng, APP_DIALOG );
-#endif // __IMPROVE_QUEST_INTERFACE
 			break;
-#if __VER >= 12 // __LORD
 	case MMI_LORD_STATE:
 		SAFE_DELETE( g_WndMng.m_pWndLordState );
 		g_WndMng.m_pWndLordState = new CWndLordState;
@@ -5210,8 +4952,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		g_WndMng.m_pWndLordRPInfo = new CWndLordRPInfo;
 		g_WndMng.m_pWndLordRPInfo->Initialize(&g_WndMng);
 		break;
-#endif
-#if __VER >= 13 // __HOUSING
 	case MMI_VISIT_FRIEND:
 		SAFE_DELETE( g_WndMng.m_pWndRoomList );
 		g_WndMng.m_pWndRoomList = new CWndRoomList;
@@ -5226,14 +4966,11 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		if(g_pPlayer)
 			g_DPlay.SendHousingVisitRoom(g_pPlayer->m_idPlayer);
 		break;
-#endif // __HOUSING
-#if __VER >= 12 // __PET_0519
 	case MMI_PET_AWAK_CANCEL:
 		SAFE_DELETE( g_WndMng.m_pWndPetAwakCancel );
 		g_WndMng.m_pWndPetAwakCancel = new CWndPetAwakCancel;
 		g_WndMng.m_pWndPetAwakCancel->Initialize(&g_WndMng);
 		break;
-#endif
 #ifdef __PET_1024
 	case MMI_RENAME_CANCEL:
 		g_DPlay.SendClearPetName();
@@ -5283,7 +5020,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				}
 
-#if __VER >= 8 // __CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 				{
@@ -5293,16 +5029,12 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				}
 				
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 				{
 					//g_WndMng.PutString( "이미 헤어샵을 이용중입니다", NULL, 0xffffff00 );
 					g_WndMng.PutString( prj.GetText(TID_GAME_BEAUTYSHOPUSING ), NULL, prj.GetTextColor(TID_GAME_BEAUTYSHOPUSING ) );
 					break;
 				}
-#if __VER >= 8 // __CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
@@ -5310,7 +5042,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_SUMMONANGELUSING), NULL, prj.GetTextColor(TID_GAME_SUMMONANGELUSING) );
 					break;
 				}
-#endif //__CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_REPAIR );
 				
 				if( pWndBaseBuf )
@@ -5337,17 +5068,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			#endif//__THAI_0525VER
 					break;
 				}
-#if __VER < 8 // __S8_PK
-				KarmaProp* pProp = prj.GetKarmaProp( g_pPlayer->m_nSlaughter );
-				if( pProp )
-				{
-					if( pProp->nGrade == -6 )					
-					{
-						g_WndMng.PutString( "사신은 상점을 이용할수 없습니다", NULL, prj.GetTextColor( TID_GAME_REPAIR_NOACTION ) );
-						break;
-					}
-				}
-#endif // __VER < 8 // __S8_PK
 				
 				if( pFocusMover->IsPlayer() )
 				{
@@ -5360,7 +5080,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				{
 					if( g_pPlayer->m_vtInfo.GetOther() == NULL )
 					{
-#if __VER >= 8 // __S8_PK
 						if( g_pPlayer->IsChaotic() )
 						{
 							CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( g_pPlayer->GetPKPropensity() );
@@ -5371,16 +5090,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 							}
 						}
 						g_DPlay.SendOpenShopWnd( pFocusMover->GetId() );						
-#else // __VER >= 8 // __S8_PK
-						KarmaProp* pProp = prj.GetKarmaProp( g_pPlayer->m_nSlaughter );
-						if( pProp )
-						{
-							if( pProp->fDiscountRate != -1.0f )
-								g_DPlay.SendOpenShopWnd( pFocusMover->GetId() );
-							else
-								g_WndMng.PutString( prj.GetText( TID_PK_MARKETNOUSE ), NULL, prj.GetTextColor( TID_PK_MARKETNOUSE ) );
-						}
-#endif // __VER >= 8 // __S8_PK
 					}
 				}
 				break;
@@ -5405,7 +5114,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_TAKESHOP  ), NULL, prj.GetTextColor(TID_GAME_REPAIR_TAKESHOP  ) );
 					break;
 				}
-#if __VER >= 8 // __CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 				{
@@ -5414,15 +5122,11 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				}
 				
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_TAKEBEAUTY ), NULL, prj.GetTextColor(TID_GAME_REPAIR_TAKEBEAUTY ) );
 					break;
 				}
-#if __VER >= 8 //__CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
@@ -5430,7 +5134,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_SUMMONANGELUSING), NULL, prj.GetTextColor(TID_GAME_SUMMONANGELUSING) );
 					break;
 				}
-#endif //__CSC_VER8_5
 
 				pWndBaseBuf = g_WndMng.GetWndVendorBase();
 				if( pWndBaseBuf )
@@ -5495,7 +5198,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_BANKSTILLUSING ), NULL, prj.GetTextColor(TID_GAME_BANKSTILLUSING   ) );
 					break;
 				}
-#if __VER >= 8 //__CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 				{
@@ -5503,15 +5205,11 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				}
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_BEAUTYSHOPUSING   ), NULL, prj.GetTextColor(TID_GAME_BEAUTYSHOPUSING  ) );
 					break;
 				}
-#if __VER >= 8 //__CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
@@ -5519,8 +5217,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_SUMMONANGELUSING), NULL, prj.GetTextColor(TID_GAME_SUMMONANGELUSING) );
 					break;
 				}
-#endif //__CSC_VER8_5
-#if __VER >= 8 // __S8_PK
 				if( g_pPlayer->IsChaotic() )
 				{
 					CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( g_pPlayer->GetPKPropensity() );
@@ -5530,7 +5226,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 						break;
 					}
 				}
-#endif // __VER >= 8 // __S8_PK
 				g_DPlay.SendOpenBankWnd( NULL_ID, 0 );
 				break;
 			}
@@ -5578,7 +5273,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_BANKSTILLUSING   ), NULL, prj.GetTextColor(TID_GAME_BANKSTILLUSING   ) );
 					break;
 				}
-#if __VER >= 8 //__CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 				{
@@ -5588,15 +5282,11 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				}
 				
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_BEAUTYSHOPUSING   ), NULL, prj.GetTextColor(TID_GAME_BEAUTYSHOPUSING  ) );
 					break;
 				}
-#if __VER >= 8 //__CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
@@ -5604,7 +5294,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_SUMMONANGELUSING), NULL, prj.GetTextColor(TID_GAME_SUMMONANGELUSING) );
 					break;
 				}
-#endif //__CSC_VER8_5
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_DROP_ITEM );
 				if( pWndBaseBuf )
 					break;
@@ -5704,14 +5393,10 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_GUILD_BANK );
 				if( pWndBaseBuf )
 					break;
-#if __VER >= 8 //__CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 					break;
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 					break;
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_TEST );
@@ -5757,14 +5442,10 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_GUILD_BANK );
 				if( pWndBaseBuf )
 					break;
-#if __VER >= 8 //__CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 					break;
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 					break;
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_TEST );
@@ -5816,14 +5497,10 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( pWndBaseBuf )
 					break;
 				
-#if __VER >= 8 //__CSC_VER8_4
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBaseBuf )
 					break;
 				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBaseBuf = g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBaseBuf )
 					break;
 				
@@ -5859,7 +5536,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_DPlay.SendWantedList();
 			}
 			break;
-#if __VER >= 9	// __PET_0410
 		case MMI_PET_FOODMILL:	//먹이 제조기
 			{
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_PET_FOODMILL );
@@ -5898,7 +5574,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			break;
 		case MMI_BUFFPET_STATUS:
 			{
-#if __VER >= 15 // __PETVIS
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_BUFFPET_STATUS );
 				if( pWndBaseBuf )
 				{
@@ -5909,21 +5584,17 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndBuffPetStatus );
 				g_WndMng.m_pWndBuffPetStatus = new CWndBuffPetStatus;
 				g_WndMng.m_pWndBuffPetStatus->Initialize();	
-#endif
 			}
 
 			break;
 
 		case MMI_BUFFPET_RELEASE:
 			{
-#if __VER >= 15 // __PETVIS
 				CItemElem* pItem = g_pPlayer->GetVisPetItem( );
 				if( pItem )
 					g_DPlay.SendDoUseItem( MAKELONG( ITYPE_ITEM, pItem->m_dwObjId ), g_pPlayer->GetId() );
-#endif
 			}
 			break;
-#endif	// __PET_0410
 #ifdef __JEFF_11_4
 		case MMI_ARENA_ENTER:
 				g_DPlay.SendHdr( PACKETTYPE_ARENA_ENTER );
@@ -5945,7 +5616,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 			break;
 #endif //__SYS_ITEMTRANSY
-#if __VER >= 15 // __TELEPORTER
 		case MMI_TELEPORTER:
 			{
 #ifdef __IMPROVE_MAP_SYSTEM
@@ -5967,7 +5637,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 #endif // __IMPROVE_MAP_SYSTEM
 			}
 			break;
-#endif // __TELEPORTER
 #ifdef __TRADESYS
 		default:
 			{
@@ -5985,7 +5654,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 			break;
 #endif //__TRADESYS
-#if __VER >= 14 // __SMELT_SAFETY
 		case MMI_SMELT_SAFETY_GENERAL:
 			{
 				if( CMover::GetActiveMover()->m_vtInfo.GetOther() || CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
@@ -6031,8 +5699,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
 				break;
 			}
-#endif // __SMELT_SAFETY
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 		case MMI_SMELT_SAFETY_ELEMENT:
 			{
 				if( CMover::GetActiveMover()->m_vtInfo.GetOther() || CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
@@ -6047,7 +5713,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.m_pWndSmeltSafety->Initialize( NULL );
 				break;
 			}
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 #ifdef __QUIZ
 		case MMI_QUIZ_ENTRANCE:
 			{
@@ -6081,7 +5746,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 		case MMI_GUILDHOUSE_CHARGE:	//유지비 
 			{
 				BOOL bAuthority = FALSE;
@@ -6137,8 +5801,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			break;
 #endif //__GUILD_HOUSE_MIDDLE
 	
-#endif  //__GUILD_HOUSE
-#if __VER >= 15 // __CAMPUS
 		case MMI_INVITE_CAMPUS:			// 사제 맺기
 			{
 				g_DPlay.SendInviteCampusMember( pFocusMover->m_idPlayer );
@@ -6153,7 +5815,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndCampusSeveranceConfirm->Initialize( NULL );
 				break;
 			}
-#endif // __CAMPUS
 
 		} // switch
 		// 포커스를 윈도로 돌려주어야 매뉴가 닫힌다.
@@ -6203,10 +5864,8 @@ BOOL CWndWorld::UseFocusObj( CCtrl* pFocusObj )
 	if( IsInvalidObj(pFocusObj) )			return FALSE;	// 타겟이 거시기한 상태면 취소
 	if( pFocusObj->GetType() == OT_OBJ )	return FALSE;	// 타겟이 OT_OBJ면 취소
 	if( g_pPlayer->m_dwMode & DONMOVE_MODE )	return FALSE;	// 돈무브 모드면 암것도 못함.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 //	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)	return FALSE;
 	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)	return FALSE;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 //	DEBUG_CHATMSG( "타겟사용", NULL, 0xffffffff );
 	
@@ -6375,17 +6034,12 @@ CObj* CWndWorld::SelectObj( POINT point )
 			}			
 		}
 
-#if __VER >= 11 // __CSC_VER11_2
 		if(!m_bAutoAttack)
 			pWorld->SetObjFocus( pObj );
-#else //__CSC_VER11_2
-		pWorld->SetObjFocus( pObj );
-#endif //__CSC_VER11_2
 	}
 	return pObj;
 }
 
-#if __VER >= 11 // __CSC_VER11_2
 void CWndWorld::SetNextTarget()
 {
 	CWorld* pWorld = g_WorldMng();
@@ -6417,7 +6071,6 @@ void CWndWorld::SetNextTarget()
 	}
 	m_bAutoAttack = FALSE;
 }
-#endif //__CSC_VER11_2
 
 CObj* CWndWorld::HighlightObj( POINT point )
 {
@@ -6442,10 +6095,8 @@ CObj* CWndWorld::HighlightObj( POINT point )
 		g_WndMng.PutToolTip_Item( ((CItem*)pObj)->m_pItemBase, point, &rect );
 	}
 	
-#if __VER >= 11 // __CSC_VER11_2
 	if(pObj == NULL)
 		m_pSelectRenderObj = NULL;
-#endif //__CSC_VER11_2
 	return pObj;
 }
 
@@ -6504,9 +6155,7 @@ void CWndWorld::OnLButtonUp(UINT nFlags, CPoint point)
 			}
 		}
 	}
-#if __VER >= 13 // __HOUSING
 	if(!CDeployManager::GetInstance()->IsReady())
-#endif // __HOUSING
 	ControlPlayer( WM_LBUTTONUP, point );
 
 	m_bSelectTarget = FALSE;
@@ -6519,11 +6168,7 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 	// 메뉴를 띄우기에 적당한 거리인지 확인.
 	D3DXVECTOR3 vDist = pTarget->GetPos() - g_pPlayer->GetPos();
 	FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	if( (fDistSq < 20.0f * 20.0f) && ( m_bRButtonDown == FALSE || ( pTarget->IsPlayer() && m_bRButtonDown == TRUE ) ) )
-#else // __IMPROVE_SYSTEM_VER15
-	if( (fDistSq < 20.0f * 20.0f) && m_bRButtonDown == FALSE )
-#endif // __IMPROVE_SYSTEM_VER15
 	{
 		g_pPlayer->ClearDest();
 		m_wndMenuMover.DeleteAllMenu();
@@ -6536,19 +6181,13 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 
 		if( pTarget->IsPlayer() )
 		{
-#if __VER < 12 // __CSC_VER12_1
-			if( pTarget->m_vtInfo.IsVendorOpen() )
-				return;
-#endif //__CSC_VER12_1
 
-#if __VER >= 12 // __CSC_VER12_1
 			if( pTarget->m_vtInfo.IsVendorOpen() )
 			{
 				m_wndMenuMover.AppendMenu( 0,  MMI_QUERYEQUIP , prj.GetText(TID_MMI_QUERYEQUIP) );
 			}
 			else
 			{
-#endif //__CSC_VER12_1
 			m_wndMenuMover.AppendMenu( 0,  MMI_TRADE        , prj.GetText( TID_MMI_TRADE ) );
 			m_wndMenuMover.AppendMenu( 0,  MMI_ADD_MESSENGER, prj.GetText( TID_MMI_ADD_MESSENGER ) );
 			m_wndMenuMover.AppendMenu( 0,  MMI_INVITE_PARTY , prj.GetText( TID_MMI_INVITE_PARTY ) );
@@ -6605,7 +6244,6 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 			m_wndMenuMover.AppendMenu( 0, MMI_TRACE, prj.GetText( TID_MMI_TRACE ) );	
 			m_wndMenuMover.AppendMenu( 0, MMI_QUERYEQUIP , prj.GetText(TID_MMI_QUERYEQUIP) );
 			m_wndMenuMover.AppendMenu( 0, MMI_CHEER , prj.GetText( TID_MMI_CHEER ) );
-#if __VER >= 15 // __CAMPUS
 			CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 			if( pCampus == NULL )
 				m_wndMenuMover.AppendMenu( 0, MMI_INVITE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_INVITATION) );
@@ -6616,10 +6254,7 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 				else
 					m_wndMenuMover.AppendMenu( 0, MMI_INVITE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_INVITATION) );
 			}
-#endif // __CAMPUS
-#if __VER >= 12 // __CSC_VER12_1
 			}
-#endif //__CSC_VER12_1
 			bView = TRUE;
 		}
 		else
@@ -6728,10 +6363,8 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	if( g_pPlayer->m_dwMode & DONMOVE_MODE )	// 돈무브 모드면 암것도 못함.
 		return;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 //	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return;
 	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)		return;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 #ifdef __EVE_MINIGAME
 	if( g_WndMng.GetWndBase(APP_MINIGAME_KAWIBAWIBO) )
@@ -6740,7 +6373,6 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 #endif
 
-#if __VER >= 13 // __RAINBOW_RACE
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_KAWIBAWIBO) )
 		return;
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_DICE) )
@@ -6755,18 +6387,14 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_LADDER) )
 		return;	
-#endif //__RAINBOW_RACE
 
-#if __VER >= 9 // __CSC_VER9_1
 	if( g_WndMng.GetWndBase(APP_SMELT_JEWEL) )
 		return;
-#endif //__CSC_VER9_1
 
 	if( GetBuffIconRect( II_SYS_SYS_SCR_RETURN, point ) )	// 귀환의 두루마리 아이콘을 클릭하면 더블클릭까지 검사 
 		return;
 	if( GetBuffIconRect( II_SYS_SYS_SCR_PARTYSUMMON, point ) )	// 귀환의 두루마리 아이콘을 클릭하면 더블클릭까지 검사 
 		return;
-#if __VER >= 8 //__CSC_VER8_5
 #ifdef __PKSERVER_USE_ANGEL
 	if(g_eLocal.GetState( EVE_PK ))
 	{
@@ -6791,12 +6419,9 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 #endif //__PKSERVER_USE_ANGEL
-#endif //__CSC_VER8_5
 
-#if __VER >= 9	// __PET_0410
 	if( GetBuffIconRect(II_SYS_SYS_SCR_PET_FEED_POCKET, point) )
 		return;		
-#endif //__PET_0410
 
 	if( g_WndMng.GetWndBase(APP_WEBBOX) || g_WndMng.GetWndBase(APP_WEBBOX2) )
 		return;
@@ -6805,7 +6430,6 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 	// R버튼클릭 200ms이내라면 동시에 눌러진 것으로 판단 -> 스킬 사용 또는 포커싱을 스킵함.
 	if( m_timerRButtonDown.GetLeftTime() < 200 )
 		return;
-#if __VER >= 13 // __HOUSING
 	if(CDeployManager::GetInstance()->IsReady())	
 	{
 		if(CDeployManager::GetInstance()->IsCollide())
@@ -6818,9 +6442,7 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		g_DPlay.SendHousingReqSetupFurniture( *phousingInfo );
 		return;
 	}
-#endif // __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 	if( GuildDeploy()->IsReady( ) )
 	{
 		if( GuildDeploy()->IsCollide( ) )
@@ -6837,7 +6459,6 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 			GuildHouse->Reset( *pItem );
 		return;
 	}
-#endif
 	
 	SetCapture();
 	m_ptMouseOld = point;
@@ -6845,32 +6466,22 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 
 	CObj* pSelectOld = pWorld->GetObjFocus();
 	CObj* pSelectObj = CObj::m_pObjHighlight;	// 현재 커서 대고 있는 오브젝트.
-#if __VER < 11 // __CSC_VER11_2
-	m_bAutoAttack = FALSE;
-#else //__CSC_VER11_2
 	if(m_pNextTargetObj == NULL && pSelectOld == NULL)
 		m_bAutoAttack = FALSE;
-#endif //__CSC_VER11_2
 	g_pPlayer->ClearCmd();
 	if( pSelectObj && pSelectObj->GetType() == OT_MOVER )
 	{
 		CMover* pSelectMover = (CMover *)pSelectObj;
 		if( m_bRButtonDown || m_nMouseMode == 1 )	// 우버튼 누르고 있거나 / 마우스 커서 사라진 모드일땐 무조건 안잡힌다.
-#if __VER >= 11 // __CSC_VER11_2
 		{
 			m_bAutoAttack = FALSE;
 			pSelectObj = NULL;
 		}
-#else //__CSC_VER11_2
-			pSelectObj = NULL;
-#endif //__CSC_VER11_2
 		else
 		{
 			if( g_pPlayer->m_pActMover->IsFly() )
 			{
-#if __VER >= 11 // __CSC_VER11_2
 				m_bAutoAttack = FALSE;
-#endif //__CSC_VER11_2
 				if( pSelectMover->IsNPC() )
 				{
 					if( pSelectMover->IsPeaceful() == FALSE && pSelectMover->IsFlyingNPC() == FALSE )	
@@ -6884,18 +6495,14 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 			else
 			{
 				pSelectObj = SelectObj( point );
-#if __VER >= 11 // __CSC_VER11_2
 				CMover* pMover = (CMover*)pSelectObj;
 				if(pMover && (pMover->IsPlayer() || pMover->IsPeaceful() == FALSE)) //NPC를 제외한 몬스터 or 플레이어만 다음 타겟으로 지정
 					m_pRenderTargetObj = pSelectObj;
-#endif //__CSC_VER11_2
 				if( pSelectOld && pSelectOld == pSelectObj )  // 이미 셀렉트 되어 있고 새로 셀렉트한게 그넘이면
 				{
-#if __VER >= 11 // __CSC_VER11_2
 					m_bAutoAttack = FALSE;
 					if(m_pNextTargetObj != NULL) //다음 타겟이 있을 경우 공격하는 놈을 다시 선택하면 다음 타겟 제거
 						m_pNextTargetObj = NULL;
-#endif //__CSC_VER11_2
 					//if( g_Option.m_bAutoAttack )		// 여기야여기 - 자동공격 ON
 					//	m_bAutoAttack = TRUE;					  // 자동 공격.
 					ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
@@ -6908,37 +6515,24 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 						}
 					}	
 				}
-#if __VER >= 11 // __CSC_VER11_2
 				else if( pSelectOld != NULL && m_bAutoAttack && pSelectOld != pSelectObj ) //이미 타겟이 잡혀 공격상태에서 다른 타겟을 잡을 경우
 				{
 					m_pNextTargetObj = pSelectObj;
 				}
 				else 
 					m_bAutoAttack = FALSE;
-#endif //__CSC_VER11_2
 			}
 		}
 	} 
 	else
-#if __VER >= 11 // __CSC_VER11_2
 	{
 		pSelectObj = SelectObj( point );
 		m_bAutoAttack = FALSE;
 		m_pNextTargetObj = NULL;
 		m_pRenderTargetObj = NULL;
 	}
-#else //__CSC_VER11_2
-		pSelectObj = SelectObj( point );
-#endif //__CSC_VER11_2
 	
 
-#if __VER < 8     // 8차 ctrl 자동공격기능 삭제
-
-	if( (nFlags & MK_CONTROL) == MK_CONTROL )	// 컨트롤 누르면서 클릭했다.
-		if( pSelectObj && pSelectObj->GetType() == OT_MOVER )
-			m_bAutoAttack = TRUE;
-
-#endif	// __VER < 8  
 		
 
 //#ifdef __YAUTOATTACK
@@ -7007,7 +6601,6 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 			}
 
 			CMover* pMover = (CMover*)pSelectObj;
-#if __VER >= 11 // __ADD_ZOOMOPT
 			float	fDistant;
 
 			if(g_Option.m_bZoomLimit)
@@ -7015,27 +6608,12 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 			else
 				fDistant = 40.0f;
 
-#if __VER >= 12 // __CSC_VER12_1
 			if( pMover->IsPlayer() &&
 				!pMover->IsActiveMover() &&
 				pMover->m_vtInfo.IsVendorOpen() &&
 				CMover::GetActiveMover()->m_vtInfo.GetOther() == NULL &&
 				pMover->m_fDistCamera < fDistant &&
 				!(GetAsyncKeyState(VK_MENU) & 0x8000) ) //Alt Key 안 눌렀을 경우에만 진입
-#else //__CSC_VER12_1
-			if( pMover->IsPlayer() &&
-				!pMover->IsActiveMover() &&
-				pMover->m_vtInfo.IsVendorOpen() &&
-				CMover::GetActiveMover()->m_vtInfo.GetOther() == NULL &&
-				pMover->m_fDistCamera < fDistant)
-#endif //__CSC_VER12_1
-#else
-			if( pMover->IsPlayer() &&
-				!pMover->IsActiveMover() &&
-				pMover->m_vtInfo.IsVendorOpen() &&
-				CMover::GetActiveMover()->m_vtInfo.GetOther() == NULL &&
-				pMover->m_fDistCamera < 20.0f)
-#endif
 			{
 				if( pMover->IsRegionAttr( RA_SAFETY ) )
 				{
@@ -7050,10 +6628,6 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 				if( g_pPlayer->m_pActMover->IsFly() == FALSE )		// 비행중이 아닐때만 따라가기 된다.
 				{	
-				#if __VER < 12 // __MOD_TUTORIAL
-					if( m_pWndGuideSystem )
-						m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_TRACKING_MOVE);
-				#endif	
 					m_objidTracking	= pMover->GetId();
 					g_pPlayer->SetDestObj( pMover );
 				} 
@@ -7065,7 +6639,6 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 				if( pMover->IsPeaceful() && !g_pPlayer->IsFly() &&
 				   ( pMover->IsPlayer() == FALSE || ( pMover->IsPlayer() && (GetAsyncKeyState(VK_MENU) & 0x8000) ) ) ) 
 				{
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 					// 1:1길드 대전장 안에서는 플레이어 메뉴 사용 불가
 					if(g_GuildCombat1to1Mng.IsPossibleMover(g_pPlayer) && g_GuildCombat1to1Mng.IsPossibleMover(pMover))
 					{
@@ -7081,9 +6654,6 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 // 						pNewAcmd->_pModel = &m_meshArrow;
 // 						InsertAcmd( pNewAcmd );
 					}
-#else //__GUILD_COMBAT_1TO1
-					ShowMoverMenu( pMover );
-#endif //__GUILD_COMBAT_1TO1
 				} 
 			}
 
@@ -7103,9 +6673,7 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		else if( pSelectObj->GetType() == OT_CTRL )
 		{
 			m_bSelectTarget = TRUE;
-#if __VER >= 15 // __GUILD_HOUSE
 			ShowCCtrlMenu( (CCtrl*)pSelectObj );	
-#endif
 		}
 	}
 
@@ -7117,7 +6685,6 @@ void CWndWorld::OnRButtonUp(UINT nFlags, CPoint point)
 	if( m_nMouseMode == 0 )	// 모드1일땐 릴리즈 해선 안된다.
 		ReleaseCapture();
 	ControlPlayer( WM_RBUTTONUP, point );
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	if( point == m_ptMouseSpot && MenuException( point ) == TRUE )
 	{
 		CObj* pSelectObj = CObj::m_pObjHighlight;	// 현재 커서 대고 있는 오브젝트
@@ -7130,7 +6697,6 @@ void CWndWorld::OnRButtonUp(UINT nFlags, CPoint point)
 			ShowMoverMenu( pMover );
 		}
 	}
-#endif // __IMPROVE_SYSTEM_VER15
 	CMover* pMover = CMover::GetActiveMover();
 //	pMover->SendActMsg( OBJMSG_ACC_STOP );	// 가속중지
 #ifndef __VRCAMERA
@@ -7239,15 +6805,12 @@ BOOL CWndWorld::GetBuffIconRect( DWORD dwID, const CPoint& point )
 void CWndWorld::OnLButtonDblClk( UINT nFlags, CPoint point)
 {
 	m_objidTracking		= NULL_ID;
-#if __VER >= 13 // __HOUSING
 	if(!CDeployManager::GetInstance()->IsReady())
-#endif // __HOUSING
 	ControlPlayer( WM_LBUTTONDBLCLK, point );
 	CRect rect = GetClientRect();
 	CWorld* pWorld = g_WorldMng.Get();
 	CObj* pFocusObj	= g_WorldMng.Get()->GetObjFocus();
 	if( pFocusObj && CObj::m_pObjHighlight == pFocusObj )
-#if __VER >= 11 // __CSC_VER11_2
 	{
 		ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 		if( pItemProp )
@@ -7258,9 +6821,6 @@ void CWndWorld::OnLButtonDblClk( UINT nFlags, CPoint point)
 			}
 		}
 	}
-#else //__CSC_VER11_2
-		m_bAutoAttack = TRUE;
-#endif //__CSC_VER11_2
 
 	if( GetBuffIconRect( II_SYS_SYS_SCR_RETURN, point ) )
 		g_DPlay.SendReturnScroll( -1 );
@@ -7277,10 +6837,8 @@ void CWndWorld::OnLButtonDblClk( UINT nFlags, CPoint point)
 			pWndSummonPartyUse->Initialize( &g_WndMng );
 		}
 	}		
-#if __VER >= 9	// __PET_0410
 	if( GetBuffIconRect( II_SYS_SYS_SCR_PET_FEED_POCKET, point ) )	// II_SYS_SYS_SCR_PET_FEED_POCKET 버프 더블 클릭
 		g_DPlay.SendFeedPocketInactive();
-#endif	// __PET_0410
 }
 
 void CWndWorld::OnMButtonDblClk( UINT nFlags, CPoint point)
@@ -7338,25 +6896,19 @@ BOOL CWndWorld::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 {
 	if( CWorld::m_nZoomLevel != 0 )
 		return FALSE;
-#if __VER >= 13 // __HOUSING
 	if(CDeployManager::GetInstance()->IsReady())
 		return FALSE;
-#endif // __HOUSING
 	// zoom
 	if(zDelta < 0)
 	{
 		g_Neuz.m_camera.m_fZoom -= 0.5f;
 
 		if( g_Neuz.m_camera.m_fZoom > 2 )
-		#if __VER >= 12 // __MOD_TUTORIAL
 		{
 			CWndGuideSystem* pWndGuide = NULL;
 			pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 			if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamZoomed = true;
 		}
-		#else
-			m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_ZOOM);
-		#endif	
 		if(g_Neuz.m_camera.m_fZoom < -1.5f )
 			g_Neuz.m_camera.m_fZoom = -1.5f;
 	}
@@ -7365,22 +6917,17 @@ BOOL CWndWorld::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 		g_Neuz.m_camera.m_fZoom += 0.5f;
 
 		if( g_Neuz.m_camera.m_fZoom > 5 )
-		#if __VER >= 12 // __MOD_TUTORIAL
 		{
 			CWndGuideSystem* pWndGuide = NULL;
 			pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 			if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamZoomed = true;
 		}
-		#else
-			m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_ZOOM);
-		#endif
 
 
 #if defined(_DEBUG) || defined(__INTERNALSERVER)
 	if(g_Neuz.m_camera.m_fZoom > 15)
 		g_Neuz.m_camera.m_fZoom = 15;
 #else //_DEBUG
-	#if __VER >= 11 // __ADD_ZOOMOPT
 	if(g_Option.m_bZoomLimit)
 	{
 		if(g_Neuz.m_camera.m_fZoom > 7)
@@ -7391,10 +6938,6 @@ BOOL CWndWorld::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 		if(g_Neuz.m_camera.m_fZoom > 15)
 			g_Neuz.m_camera.m_fZoom = 15;
 	}
-	#else
-	if(g_Neuz.m_camera.m_fZoom > 7)
-		g_Neuz.m_camera.m_fZoom = 7;				
-	#endif
 #endif //_DEBUG
 	}
 
@@ -7538,14 +7081,9 @@ void CWndWorld::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	if( bCamera )
 	{
-	#if __VER >= 12 // __MOD_TUTORIAL
 		CWndGuideSystem* pWndGuide = NULL;
 		pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 		if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamMove = true;
-	#else
-		if( m_pWndGuideSystem )
-			m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_CAMERAMOVE);
-	#endif
 		FLOAT fRotSpeed = 1.0f;
 
 		switch( g_Option.m_MouseSpeed )
@@ -7628,16 +7166,10 @@ void CWndWorld::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 #else // __IMPROVE_MAP_SYSTEM
 	m_bCtrlPushed = FALSE;
 #endif // __IMPROVE_MAP_SYSTEM
-#if __VER >= 8 //__CSC_VER8_5
-#if __VER >= 14 // __SHIFT_KEY_CORRECTION
 	if(nChar == VK_SHIFT && m_bShiftPushed != FALSE)
 	{
 		m_bShiftPushed = FALSE;
 	}
-#else // __SHIFT_KEY_CORRECTION
-	m_bShiftPushed = FALSE;
-#endif // __SHIFT_KEY_CORRECTION
-#endif //__CSC_VER8_5
 	if( nChar == VK_SCROLL )
 	{
 		CWorld::m_nZoomLevel++;
@@ -7683,29 +7215,12 @@ void CWndWorld::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		
 		n_nMoverSelectCount = i;
 	}
-#if __VER >= 9  // __INSERT_MAP
 	if( nChar == VK_ESCAPE )	
 	{
 		CWorldMap* pWorldMap = CWorldMap::GetInstance();
 
 		if(pWorldMap->IsRender()) pWorldMap->DeleteWorldMap();
 	}
-#else
-	if( nChar == 'M' )	
-	{
-		CWorldMap* pWorldMap = CWorldMap::GetInstance();
-		m_bViewMap = !m_bViewMap;
-		
-		if( m_bViewMap )
-		{
-			m_bViewMap = pWorldMap->LoadWorldMap();
-		}
-		else
-		{
-			pWorldMap->DeleteWorldMap();
-		}
-	}
-#endif
 	
 	CWorld* pWorld = g_WorldMng.Get();
 
@@ -7748,10 +7263,8 @@ void CWndWorld::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 #endif // __IMPROVE_MAP_SYSTEM
 
-#if __VER >= 8 //__CSC_VER8_5
 	if( nChar == VK_SHIFT )
 		m_bShiftPushed = TRUE;	
-#endif //__CSC_VER8_5
 	if( g_pPlayer )
 		g_pPlayer->m_SkillTimerStop = FALSE;
 }
@@ -7777,15 +7290,9 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		g_WndMng.GetWndBase( APP_GUILD_MERIT1 ) ||
 		g_WndMng.GetWndBase( APP_GUILD_BANK ) ||
 		g_WndMng.GetWndBase( APP_COMMON_BANK ) ||
-#if __VER >= 8 //__CSC_VER8_4
 		g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX ) ||
 		g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN ) ||
-#else
-		g_WndMng.GetWndBase( APP_BEAUTY_SHOP ) ||
-#endif //__CSC_VER8_4
-#if __VER >= 8 //__CSC_VER8_5
 		g_WndMng.GetWndBase( APP_SUMMON_ANGEL ) ||
-#endif //__CSC_VER8_5
 		g_WndMng.GetWndBase( APP_TRADE ) )
 	{
 		if( pWndFrame && pWndFrame->GetWndId() == APP_INVENTORY )
@@ -7830,28 +7337,10 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			PLAYSND( SND_INF_GROUNDDROP );
 			if( pShortcut->m_dwData == 0 )
 			{
-#if __VER >= 8  	//8차게임내돈드롭금지
 				g_WndMng.PutString( prj.GetText(TID_GAME_CANNOT_DROPMONEY), NULL, prj.GetTextColor(TID_GAME_CANNOT_DROPMONEY) );
 				SetForbid( TRUE );
 				return FALSE;
 
-#else	//   __VER >= 8  
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
-				g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-				g_WndMng.m_pWndTradeGold->m_dwGold = 0;
-				g_WndMng.m_pWndTradeGold->m_vPos = vPos;
-				memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pShortcut, sizeof(SHORTCUT) );
-				g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-				g_WndMng.m_pWndTradeGold->MoveParentCenter();
-				
-				if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
-				{
-					CWndStatic* pWndStatic = (CWndStatic*)(g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC ));
-					pWndStatic->SetTitle( prj.GetText(TID_GAME_DROPPENYAREMOVE) );
-				}
-				
-				return TRUE;
-#endif	//	 __VER >= 8  
 
 			}
 			else
@@ -7926,7 +7415,6 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		else
 		{
 			// 이곳부터는 드랍된 곳이 인벤이 아니다 
-#if __VER >= 15 // __PETVIS
 			if( pWndFrame && APP_BUFFPET_STATUS == pWndFrame->GetWndId( ) ) // 버프펫 윈도우로 드랍됨.
 			{
 				CWndBuffPetStatus* pWnd = (CWndBuffPetStatus*)pWndFrame;
@@ -7934,7 +7422,6 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 				return FALSE;
 			}
-#endif
 
 		}
 	}
@@ -8028,7 +7515,6 @@ BOOL CWndWorld::Process()
 		else
 		{
 			m_dwIdBgmMusic	= g_WorldMng()->m_dwIdMusic;
-#if __VER >= 9
 			if( m_dwIdBgmMusic == 0 )
 				m_dwIdBgmMusic	= BGM_TH_GENERAL;
 			/*
@@ -8044,7 +7530,6 @@ BOOL CWndWorld::Process()
 					m_dwIdBgmMusic	= m_dwIdBgmMusicOld	= BGM_TH_GENERAL;				
 			}
 			*/
-#endif	//
 		}
 
 		CWorld* pWorld = g_WorldMng();
@@ -8065,17 +7550,9 @@ BOOL CWndWorld::Process()
 				g_pPlayer->m_dwCtrlReadyId   = NULL_ID;
 				g_DPlay.SendCtrlCoolTimeCancel();
 			}
-#if __VER < 12 // __MOD_TUTORIAL
-			if( m_pWndGuideSystem && m_pWndGuideSystem->m_bIsGuideChart[0] == FALSE )
-				m_pWndGuideSystem->m_wndGuideText->m_bVisible = FALSE;
-#endif
 			m_wndMenuMover.SetVisible(FALSE);
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			CWndBase* pWndBase = g_WndMng.GetWndBase( APP_DIALOG_EX );
-#else // __IMPROVE_QUEST_INTERFACE
-			CWndBase* pWndBase = g_WndMng.GetWndBase( APP_DIALOG );
-#endif // __IMPROVE_QUEST_INTERFACE
 			if( pWndBase ) 
 				pWndBase->Destroy();
 
@@ -8092,10 +7569,8 @@ BOOL CWndWorld::Process()
 			if( pWndBase )
 			{
 				((CWndInventory*)pWndBase)->BaseMouseCursor();
-#if __VER >= 14 // __SMELT_SAFETY
 				if(g_WndMng.m_pWndSmeltSafetyConfirm != NULL)
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafetyConfirm)
-#endif // __SMELT_SAFETY
 			}
 
 			pWndBase	= g_WndMng.GetWndVendorBase();
@@ -8118,7 +7593,6 @@ BOOL CWndWorld::Process()
 				if( pWndBase ) 
 					pWndBase->Destroy();
 			}
-#if __VER >= 8 //__CSC_VER8_4
 			pWndBase	= g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 			if( pWndBase )
 			{
@@ -8139,19 +7613,6 @@ BOOL CWndWorld::Process()
 				if( pWndBase )
 					pWndBase->Destroy();
 			}
-#else
-			pWndBase	= g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-				
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				
-				if( pWndBase )
-					pWndBase->Destroy();
-			}
-#endif //__CSC_VER8_4
-#if __VER >= 8 //__CSC_VER8_5
 			pWndBase	= g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 			if( pWndBase )
 			{
@@ -8162,7 +7623,6 @@ BOOL CWndWorld::Process()
 				if( pWndBase )
 					pWndBase->Destroy();
 			}	
-#endif //__CSC_VER8_5
 #ifdef __EVE_MINIGAME
 			if(g_WndMng.m_pWndKawiBawiBoGameConfirm != NULL)
 			{
@@ -8194,7 +7654,6 @@ BOOL CWndWorld::Process()
 				pWndBase->Destroy();
 			}
 #endif //__EVE_MINIGAME
-#if __VER >= 9 // __CSC_VER9_1
 			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_MIXJEWEL );
 			if( pWndBase )
 			{
@@ -8225,29 +7684,21 @@ BOOL CWndWorld::Process()
 			{
 				pWndBase->Destroy();
 			}
-#if __VER >= 12 // __CSC_VER12_4
 			pWndBase = g_WndMng.GetWndBase( APP_SMELT_REMOVE_PIERCING_EX );
-#else //__CSC_VER12_4
-			pWndBase = g_WndMng.GetWndBase( APP_SMELT_REMOVE_PIERCING );
-#endif //__CSC_VER12_4
 			if(pWndBase)
 			{
 				pWndBase->Destroy();
 			}
-#if __VER >= 12 // __CSC_VER12_4
 			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_REMOVE_JEWEL );
 			if( pWndBase )
 			{
 				pWndBase->Destroy();
 			}
-#endif //__CSC_VER12_4
-#if __VER >= 12 // __CSC_VER12_5
 			pWndBase	= g_WndMng.GetWndBase( APP_PET_TRANS_EGGS );
 			if( pWndBase )
 			{
 				pWndBase->Destroy();
 			}
-#endif //__CSC_VER12_5
 #ifdef __JEFF_11
 			pWndBase	= g_WndMng.GetWndBase( APP_PET_RES );
 			if( pWndBase )
@@ -8255,7 +7706,6 @@ BOOL CWndWorld::Process()
 				pWndBase->Destroy();
 			}
 #endif
-#if __VER >= 11 // __SYS_IDENTIFY
 			pWndBase	= g_WndMng.GetWndBase( APP_AWAKENING );
 			if( pWndBase )
 			{
@@ -8271,15 +7721,11 @@ BOOL CWndWorld::Process()
 			{
 				pWndBase->Destroy();
 			}
-#endif
-#if __VER >= 10 // __CSC_VER9_1 -> __LEGEND
 			pWndBase	= g_WndMng.GetWndBase( APP_HERO_SKILLUP );
 			if( pWndBase )
 			{
 				pWndBase->Destroy();
 			}
-#endif //__CSC_VER9_1 -> __LEGEND
-#endif //__CSC_VER9_1
 #ifdef __TRADESYS
 			pWndBase	= g_WndMng.GetWndBase( APP_DIALOG_EVENT );
 			if( pWndBase )
@@ -8287,20 +7733,16 @@ BOOL CWndWorld::Process()
 				pWndBase->Destroy();
 			}
 #endif //__TRADESYS
-#if __VER >= 12 // __HEAVEN_TOWER
 			pWndBase	= g_WndMng.GetWndBase( APP_HEAVEN_TOWER );
 			if( pWndBase )
 			{
 				pWndBase->Destroy();
 			}
-#endif //__HEAVEN_TOWER
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 			pWndBase	= g_WndMng.GetWndBase( APP_REMOVE_ATTRIBUTE );
 			if( pWndBase )
 			{
 				pWndBase->Destroy();
 			}
-#endif //__REMOVE_ATTRIBUTE
 			if( pWndBase )
 			{
 				pWndBase->Destroy();
@@ -8375,11 +7817,6 @@ BOOL CWndWorld::Process()
 			pWndBase	= g_WndMng.GetWndBase( APP_CHANGECLASS_2 );
 			if( pWndBase )
 				pWndBase->Destroy();
-#if __VER < 12 // __CSC_VER12_1
-			pWndBase	= g_WndMng.GetWndBase( APP_QUERYEQUIP );
-			if( pWndBase )
-				pWndBase->Destroy();
-#endif //__CSC_VER12_1
 			pWndBase	= g_WndMng.GetWndBase( APP_POST );
 			if( pWndBase )
 				pWndBase->Destroy();
@@ -8405,20 +7842,9 @@ BOOL CWndWorld::Process()
 			pWndBase	= g_WndMng.GetWndBase( APP_CLOSE_EXISTING_CONNECTION );
 			if( pWndBase )
 				pWndBase->Destroy();
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_OFFER );
-			if( pWndBase )
-				pWndBase->Destroy();
-#endif //__GUILD_COMBAT_1TO1
 			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_SELECTION );
 			if( pWndBase )
 				pWndBase->Destroy();
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_OFFERSTATE );
-			if( pWndBase )
-				pWndBase->Destroy();
-#endif //__GUILD_COMBAT_1TO1
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_1TO1_SELECTION );
 			if( pWndBase )
 				pWndBase->Destroy();
@@ -8428,8 +7854,6 @@ BOOL CWndWorld::Process()
 			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_1TO1_OFFER );
 			if( pWndBase )
 				pWndBase->Destroy();
-#endif //__GUILD_COMBAT_1TO1
-#if __VER >= 12 // __SECRET_ROOM
 			pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_SELECTION );
 			if( pWndBase )
 				pWndBase->Destroy();
@@ -8445,8 +7869,6 @@ BOOL CWndWorld::Process()
 			pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_BOARD );
 			if( pWndBase )
 				pWndBase->Destroy();
-#endif //__SECRET_ROOM
-#if __VER >= 13 // __RAINBOW_RACE
 			pWndBase	= g_WndMng.GetWndBase( APP_RAINBOWRACE_OFFER );
 			if( pWndBase )
 				pWndBase->Destroy();
@@ -8483,17 +7905,12 @@ BOOL CWndWorld::Process()
 			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_LADDER );
 			if( pWndBase )
 				pWndBase->Destroy();
-#endif //__RAINBOW_RACE
-#if __VER >= 13 // __EXT_ENCHANT
 			pWndBase	= g_WndMng.GetWndBase( APP_CHANGE_ATTRIBUTE );
 			if( pWndBase )
 				pWndBase->Destroy();
-#endif //__EXT_ENCHANT
-#if __VER >= 14 // __SMELT_SAFETY
 			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_SAFETY );
 			if( pWndBase )
 				pWndBase->Destroy();
-#endif // __SMELT_SAFETY
 		}
 		g_SoundMng.SetListener( g_pPlayer->GetPos(), g_Neuz.m_camera.m_fCurRotx );
 		g_WorldMng()->SetCamera( &g_Neuz.m_camera );
@@ -8678,9 +8095,7 @@ BOOL CWndWorld::Process()
 							}
 						}
 						lpRegionElem->m_bInside = (bResult == TRUE);
-#if __VER >= 9
 						break;
-#endif	//
 					}
 				}
 			}
@@ -8700,14 +8115,9 @@ BOOL CWndWorld::Process()
 			if(g_Neuz.m_camera.m_fRotx > 360 ) g_Neuz.m_camera.m_fRotx = g_Neuz.m_camera.m_fRotx - 360;
 			if(g_Neuz.m_camera.m_fRotx < 0) g_Neuz.m_camera.m_fRotx = 360 + g_Neuz.m_camera.m_fRotx;
 #endif //__Y_CAMERA_SLOW_8
-		#if __VER >= 12 // __MOD_TUTORIAL
 			CWndGuideSystem* pWndGuide = NULL;
 			pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 			if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamMove = true;
-		#else
-			if( m_pWndGuideSystem )
-				m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_CAMERAMOVE);
-		#endif
 			
 		}	
 		if( g_bKeyTable[ VK_RIGHT ] )
@@ -8723,74 +8133,47 @@ BOOL CWndWorld::Process()
 			if(g_Neuz.m_camera.m_fRotx > 360 ) g_Neuz.m_camera.m_fRotx = g_Neuz.m_camera.m_fRotx - 360;
 			if(g_Neuz.m_camera.m_fRotx < 0) g_Neuz.m_camera.m_fRotx = 360 + g_Neuz.m_camera.m_fRotx;
 #endif //__Y_CAMERA_SLOW_8
-			#if __VER >= 12 // __MOD_TUTORIAL
 				CWndGuideSystem* pWndGuide = NULL;
 				pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 				if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamMove = true;
-			#else
-				if( m_pWndGuideSystem )
-					m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_CAMERAMOVE);
-			#endif
 		}	
 		if( g_bKeyTable[ VK_UP ] )
 		{
 			g_Neuz.m_camera.m_fRoty += 2;
 			if(g_Neuz.m_camera.m_fRoty>80-g_Neuz.m_camera.m_fZoom*4) g_Neuz.m_camera.m_fRoty=80-g_Neuz.m_camera.m_fZoom*4;
 			if(g_Neuz.m_camera.m_fRoty<-80) g_Neuz.m_camera.m_fRoty=-80;
-			#if __VER >= 12 // __MOD_TUTORIAL
 				CWndGuideSystem* pWndGuide = NULL;
 				pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 				if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamMove = true;
-			#else
-				if( m_pWndGuideSystem )
-					m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_CAMERAMOVE);
-			#endif
 		}
 		if( g_bKeyTable[ VK_DOWN ] )
 		{
 			g_Neuz.m_camera.m_fRoty -= 2;
 			if(g_Neuz.m_camera.m_fRoty>80-g_Neuz.m_camera.m_fZoom*4) g_Neuz.m_camera.m_fRoty=80-g_Neuz.m_camera.m_fZoom*4;
 			if(g_Neuz.m_camera.m_fRoty<-80) g_Neuz.m_camera.m_fRoty=-80;
-			#if __VER >= 12 // __MOD_TUTORIAL
 				CWndGuideSystem* pWndGuide = NULL;
 				pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 				if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamMove = true;
-			#else
-				if( m_pWndGuideSystem )
-					m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_CAMERAMOVE);
-			#endif
 		}	
 
 		if( g_bKeyTable[ VK_PRIOR ])
 		{
-		#if __VER >= 12 // __MOD_TUTORIAL
 			CWndGuideSystem* pWndGuide = NULL;
 			pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 			if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamZoomed = true;
-		#endif
-#if __VER >= 13 // __HOUSING
 			if(!CDeployManager::GetInstance()->IsReady())
-#if __VER >= 15 // __GUILD_HOUSE
 			if( !GuildDeploy()->IsReady( ) )
-#endif
-#endif // __HOUSING
 			g_Neuz.m_camera.m_fZoom-=0.6f;
 			if(g_Neuz.m_camera.m_fZoom < 0)
 				g_Neuz.m_camera.m_fZoom = 0;
 		}
 		if( g_bKeyTable[ VK_NEXT ])
 		{
-		#if __VER >= 12 // __MOD_TUTORIAL
 			CWndGuideSystem* pWndGuide = NULL;
 			pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 			if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsCamZoomed = true;
-		#endif
-#if __VER >= 13 // __HOUSING
 			if(!CDeployManager::GetInstance()->IsReady())
-#if __VER >= 15 // __GUILD_HOUSE
 			if( !GuildDeploy()->IsReady( ) )
-#endif
-#endif // __HOUSING
 			g_Neuz.m_camera.m_fZoom+=0.6f;
 			if(g_Neuz.m_camera.m_fZoom > 7)
 				g_Neuz.m_camera.m_fZoom = 7;
@@ -8895,7 +8278,6 @@ BOOL CWndWorld::Process()
 	}
 #endif
 
-#if __VER >= 8 //__CSC_VER8_3
 	BOOL buffstatus = FALSE;
 	if( g_pPlayer )
 	{
@@ -8940,9 +8322,7 @@ BOOL CWndWorld::Process()
 				SetFocus();
 		}	
 	}
-#endif //__CSC_VER8_3
 	
-#if __VER >= 13 // __RAINBOW_RACE
 	if( g_pPlayer && CRainbowRace::GetInstance()->m_dwRemainTime != 0 )
 	{
 		if(g_WndMng.m_pWndRainbowRaceMiniGameButton == NULL)
@@ -8976,7 +8356,6 @@ BOOL CWndWorld::Process()
 		if(g_WndMng.m_pWndRainbowRaceMiniGame)
 			SAFE_DELETE(g_WndMng.m_pWndRainbowRaceMiniGame);
 	}
-#endif //__RAINBOW_RACE
 #ifdef __QUIZ
 	if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ )
 	{
@@ -9185,11 +8564,7 @@ DWORD CWndWorld::GetSystemPetTextureKey( SKILLINFLUENCE* pSkill )
 void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
 {
 	RECT rectHittest;
-#if __VER >= 14 // __BUFF_CRASH
 	multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
-#else // __BUFF_CRASH
-	multimap< DWORD, BUFFSKILL >::value_type* pp;
-#endif // __BUFF_CRASH
 
 	pInfo->pt.x		+= pInfo->nDelta;
 	ItemProp* pItem		= NULL;
@@ -9198,38 +8573,24 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 
 	if( pBuff->GetType() == BUFF_SKILL )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[nTexture].find(pBuff->GetId()) != m_pBuffTexture[nTexture].end())
 			pp	= &( *( m_pBuffTexture[nTexture].find( pBuff->GetId() ) ) );
-#else // __BUFF_CRASH
-		pp	= &( *( m_pBuffTexture[nTexture].find( pBuff->GetId() ) ) );
-#endif // __BUFF_CRASH
 		pItem	= bPlayer? prj.GetSkillProp( pBuff->GetId() ): prj.GetPartySkill( pBuff->GetId() );
 	}
 	else if( pBuff->GetType() == BUFF_ITEM || pBuff->GetType() == BUFF_ITEM2 || pBuff->GetType() == BUFF_EQUIP )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[2].find(pBuff->GetId()) != m_pBuffTexture[2].end())
 			pp	= &( *( m_pBuffTexture[2].find( pBuff->GetId() ) ) );
-#else // __BUFF_CRASH
-		pp	= &( *( m_pBuffTexture[2].find( pBuff->GetId() ) ) );
-#endif // __BUFF_CRASH
 		pItem	= prj.GetItemProp( pBuff->GetId() );
 	}
 	else if( pBuff->GetType() == BUFF_PET )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[2].find(GetSystemPetTextureKey(pBuff)) != m_pBuffTexture[2].end())
 			pp	= &( *( m_pBuffTexture[2].find( GetSystemPetTextureKey( pBuff ) ) ) );
-#else // __BUFF_CRASH
-		pp	= &( *( m_pBuffTexture[2].find( GetSystemPetTextureKey( pBuff ) ) ) );
-#endif // __BUFF_CRASH
 		pItem	= prj.GetItemProp( pBuff->GetId() );
 	}
-#if __VER >= 14 // __BUFF_CRASH
 	if(pp == NULL)
 		return;
-#endif // __BUFF_CRASH
 	ASSERT( pItem );
 	if( pp->second.m_pTexture == NULL )
 		return;
@@ -9377,19 +8738,14 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 				bItemKind3	= TRUE;
 			}
 		}
-#if __VER >= 13 // __COUPLE_1202
 		else if( pItem->dwItemKind3 == IK3_COUPLE_BUFF )
 		{
 			bItemKind3	= TRUE;
 		}
-#endif	// __COUPLE_1202
 
-#if __VER >= 15 // __CAMPUS
 		else if( pItem->dwItemKind3 == IK3_TS_BUFF )
 			bItemKind3	= TRUE;
-#endif // __CAMPUS
 
-#if __VER >= 15 // __PETVIS
 		if( pItem->dwItemKind3 == IK3_PET )
 		{
 			CItemElem* pItemElem = g_pPlayer->GetVisPetItem( );
@@ -9399,7 +8755,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 				bItemKind3 = TRUE;
 			}
 		}
-#endif
 
 		switch( pItem->dwID )
 		{
@@ -9410,9 +8765,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 			case II_SYS_SYS_SCR_SMELPROT3:
 			case II_SYS_SYS_SCR_SMELPROT4:
 			case II_SYS_SYS_SCR_SMELTING:
-#if __VER >= 14 // __EXT_ATTRIBUTE
 			case II_SYS_SYS_SCR_SMELTING2:
-#endif // __EXT_ATTRIBUTE
 				str.Format( "\n%s", prj.GetText( TID_GAME_DEMOL_USE ) );
 				break;
 			case II_SYS_SYS_SCR_RETURN:
@@ -9577,7 +8930,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 		if(pItem->dwID != II_SYS_SYS_SCR_PET_FEED_POCKET 
 			&& pItem->dwID != II_PET_EGG)
 			strEdit.AddString( str );
-#if __VER >= 14 // __PCBANG
 		if( pItem->dwID == II_PCBANG_BUFF01 )
 		{
 			CTimeSpan ts( CPCBangInfo::GetInstance()->GetConnectTime() );
@@ -9590,7 +8942,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 			strTemp.Format( prj.GetText( TID_GAME_PCBANGINFO_ITEMDROP ),( CPCBangInfo::GetInstance()->GetPieceItemDropFactor()-1.0f ) * 100.0f );
 			strTemp = '\n' + strTemp;	strEdit.AddString( strTemp, prj.GetTextColor( TID_GAME_PCBANGINFO_ITEMDROP ) );
 		}
-#endif // __PCBANG
 #ifdef __VTN_TIMELIMIT
 		//	mulcom	BEGIN100315	베트남 시간 제한
 		if( ::GetLanguage() == LANG_VTN )
@@ -9638,7 +8989,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 		//	mulcom	END100315	베트남 시간 제한
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 15 // __PETVIS
 		if( pItem->dwItemKind3 == IK3_PET )
 		{
 			// 각성 정보 출력 
@@ -9646,7 +8996,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 			if( pItemElem && ( pItemElem->m_dwItemId == pItem->dwID ) )
 				g_WndMng.PutAwakeningBlessing( pItemElem, &strEdit );
 		}
-#endif	//__PETVIS
 
 		g_toolTip.PutToolTip( wID, strEdit, rectHittest, ptMouse, 1 );	
 
@@ -9667,11 +9016,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
 {
 	RECT rectHittest;
-#if __VER >= 14 // __BUFF_CRASH
 	multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
-#else // __BUFF_CRASH
-	multimap< DWORD, BUFFSKILL >::value_type* pp;
-#endif // __BUFF_CRASH
 
 	pInfo->pt.x		+= pInfo->nDelta;
 	ItemProp* pItem		= NULL;
@@ -9680,38 +9025,24 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 
 	if( pSkill->wType == BUFF_SKILL )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[nTexture].find(pSkill->wID) != m_pBuffTexture[nTexture].end())
 			pp	= &( *( m_pBuffTexture[nTexture].find(pSkill->wID ) ) );
-#else // __BUFF_CRASH
-		pp	= &( *( m_pBuffTexture[nTexture].find(pSkill->wID ) ) );
-#endif // __BUFF_CRASH
 		pItem	= bPlayer? prj.GetSkillProp( pSkill->wID ): prj.GetPartySkill( pSkill->wID );
 	}
 	else if( pSkill->wType == BUFF_ITEM || pSkill->wType == BUFF_ITEM2 || pSkill->wType == BUFF_EQUIP )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[2].find(pSkill->wID) != m_pBuffTexture[2].end())
 			pp	= &( *( m_pBuffTexture[2].find(pSkill->wID ) ) );
-#else // __BUFF_CRASH
-		pp	= &( *( m_pBuffTexture[2].find(pSkill->wID ) ) );
-#endif // __BUFF_CRASH
 		pItem	= prj.GetItemProp( pSkill->wID );
 	}
 	else if( pSkill->wType == BUFF_PET )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[2].find(GetSystemPetTextureKey(pSkill)) != m_pBuffTexture[2].end())
 			pp	= &( *( m_pBuffTexture[2].find( GetSystemPetTextureKey( pSkill ) ) ) );
-#else // __BUFF_CRASH
-		pp	= &( *( m_pBuffTexture[2].find( GetSystemPetTextureKey( pSkill ) ) ) );
-#endif // __BUFF_CRASH
 		pItem	= prj.GetItemProp( pSkill->wID );
 	}
-#if __VER >= 14 // __BUFF_CRASH
 	if(pp == NULL)
 		return;
-#endif // __BUFF_CRASH
 	ASSERT( pItem );
 	if( pp->second.m_pTexture == NULL )
 		return;
@@ -9725,7 +9056,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 		if( pItem->dwID == II_SYS_SYS_SCR_RETURN )	// 귀환의 두루마리는 깜빡거림
 			bFlash	= TRUE;
 	}
-#if __VER >= 8 //__CSC_VER8_5
 	int nAngel = 100;
 	__int64 nPercent = 0;
 	
@@ -9758,7 +9088,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 		else
 			m_bAngelFinish = FALSE;
 	}
-#endif //__CSC_VER8_5
 
 	D3DXCOLOR color;
 	
@@ -9812,7 +9141,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 		CTimeSpan ct( (long)(dwOddTime / 1000.0f) );
 		RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 240, 240, 0 ) );
 	}
-#if __VER >= 11 // __SYS_COLLECTING
 	else if( pItem->dwItemKind2 == IK2_BUFF2 )
 	{
 		time_t	t = (time_t)pSkill->dwLevel - time_null();
@@ -9821,7 +9149,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 		CTimeSpan ts( t );
 		RenderOptBuffTime( p2DRender, pInfo->pt, ts, D3DCOLOR_XRGB( 240, 240, 0 ) );
 	}
-#endif	// __SYS_COLLECTING
 	
 	SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x+32, pInfo->pt.y+32 );
 	ClientToScreen( &rectHittest );
@@ -9843,7 +9170,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 
 		BOOL bItemKind3 = FALSE;
 		CString str;
-#if __VER >= 8 //__CSC_VER8_5
 		if( pItem->dwItemKind3 == IK3_ANGEL_BUFF )
 		{
 			BUFFICONRECT_INFO info;
@@ -9856,7 +9182,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 			strEdit.AddString( strPercent, D3DCOLOR_XRGB( 100, 100, 255 ), ESSTY_BOLD );
 			bItemKind3	= TRUE;
 		}
-#endif // __CSC_VER8_5
 		else if( pItem->dwItemKind3 == IK3_EGG )
 		{
 			CItemElem* pItemElem	= g_pPlayer->GetPetItem();
@@ -9872,16 +9197,10 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 #ifdef __SM_ITEM_2ND_EX
 			case II_SYS_SYS_SCR_SMELPROT2:
 #endif	// __SM_ITEM_2ND_EX
-#if __VER >= 9 // __ULTIMATE
 			case II_SYS_SYS_SCR_SMELPROT3:
-#endif // __ULTIMATE
-#if __VER >= 11 // __SYS_COLLECTING
 			case II_SYS_SYS_SCR_SMELPROT4:
-#endif	// __SYS_COLLECTING
 			case II_SYS_SYS_SCR_SMELTING:
-#if __VER >= 14 // __EXT_ATTRIBUTE
 			case II_SYS_SYS_SCR_SMELTING2:
-#endif // __EXT_ATTRIBUTE
 				str.Format( "\n%s", prj.GetText( TID_GAME_DEMOL_USE ) );
 				break;
 			case II_SYS_SYS_SCR_RETURN:
@@ -9910,7 +9229,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 					RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 240, 240, 0 ) );
 				}
 				break;
-#if __VER >= 9 // __CSC_VER9_1
 			case II_SYS_SYS_SCR_PET_FEED_POCKET:
 				{
 					//검색해서 활성화 된 먹이 주머니를 찾는다.
@@ -9948,22 +9266,11 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 									str.Format( prj.GetText(TID_PK_LIMIT_DAY), static_cast<int>(time.GetDays()+1) );
 								else if( time.GetHours() )
 									str.Format( prj.GetText(TID_PK_LIMIT_HOUR), time.GetHours() );
-#if __VER >= 11 // __CHIPI_071210
 								else if( time.GetMinutes() > 1 )
 									str.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
 								else
 									str.Format( prj.GetText(TID_PK_LIMIT_SECOND), time.GetSeconds() );
-#else //__CHIPI_071210
-								else if( time.GetMinutes() > 10 )
-									str.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
-								else
-									str.Format( prj.GetText(TID_TOOLTIO_PERIODOFMIN), 10 );
-#endif //__CHIPI_071210
 							}
-#if __VER < 11 // __CHIPI_071210
-							else
-								str.Format( prj.GetText(TID_TOOLTIO_PERIODOFMIN), 10 );
-#endif //__CHIPI_071210
 							strTemp = str + prj.GetText(TID_TOOLTIP_PERIOD);	
 							strEdit.AddString( "\n" );
 							strEdit.AddString( strTemp, D3DCOLOR_XRGB( 255, 20, 20 ) );
@@ -9979,7 +9286,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 					}
 				}
 				break;
-#endif //__CSC_VER9_1
 			default:
 				{
 					if( bItemKind3 )	// 위쪽에서 처리
@@ -9988,9 +9294,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 					if( pSkill->wType == BUFF_EQUIP )
 						break;
 				#endif // __DST_GIFTBOX
-				#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 					if( pSkill->tmCount > 0 )						
-				#endif //__Y_FLAG_SKILL_BUFF
 					{
 						CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// 남은시간을 초단위로 변환해서 넘겨줌
 						
@@ -10007,7 +9311,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 						}
 //						RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 240, 240, 0 ) );
 					}
-#if __VER >= 11 // __SYS_COLLECTING
 					else if( prj.GetItemProp( pSkill->wID )->dwItemKind2 == IK2_BUFF2 )
 					{
 						time_t	t = (time_t)pSkill->dwLevel - time_null();
@@ -10026,7 +9329,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 								str.Format( "\n%.2d:%.2d", ts.GetMinutes(), ts.GetSeconds() );
 						}
 					}
-#endif	// __SYS_COLLECTING
 				}
 				break;
 		}	// switch
@@ -10034,12 +9336,8 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 		CString strTemp;
 		strTemp.Format( "\n%s", pItem->szCommand );
 
-#if __VER >= 9 // __CSC_VER9_1
 		if(pItem->dwID != II_SYS_SYS_SCR_PET_FEED_POCKET && pItem->dwID != II_PET_EGG)
 			strEdit.AddString( strTemp );
-#else
-		strEdit.AddString( strTemp );
-#endif //__CSC_VER9_1
 
 #ifdef __JEFF_11_1
 		if( pItem->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET02 )
@@ -10056,7 +9354,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 		g_WndMng.PutDestParam( pItem->dwDestParam[2], 0, pItem->nAdjParamVal[2], 0, strEdit );
 #endif // __DST_GIFTBOX
 
-#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 		if( pSkill->wType == BUFF_SKILL )
 		{
 			AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pSkill->dwLevel );
@@ -10067,7 +9364,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 					pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit );
 			}
 		}
-#endif //__Y_FLAG_SKILL_BUFF		
 
 #ifdef __VTN_TIMELIMIT
 		//	mulcom	BEGIN100315	베트남 시간 제한
@@ -10090,13 +9386,9 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 		//	mulcom	END100315	베트남 시간 제한
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 9 // __CSC_VER9_1
 		if(pItem->dwID != II_SYS_SYS_SCR_PET_FEED_POCKET 
 			&& pItem->dwID != II_PET_EGG)
 			strEdit.AddString( str );
-#else
-		strEdit.AddString( str );
-#endif //__CSC_VER9_1
 
 		g_toolTip.PutToolTip( wID, strEdit, rectHittest, ptMouse, 1 );	
 	}
@@ -10114,7 +9406,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BO
 }
 #endif	// __BUFF_1107
 
-#if __VER >= 9 // __CSC_VER9_1
 void CWndWorld::PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit )
 {
 	if( pItemElem == NULL || pEdit == NULL )
@@ -10218,7 +9509,6 @@ void CWndWorld::PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit )
 //		pEdit->AddString( strTemp, D3DCOLOR_XRGB(178, 0, 255) );
 	}
 }
-#endif //__CSC_VER9_1
 
 #ifdef __BUFF_1107
 void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BUFFICON_INFO* pInfo, CPoint ptMouse, DWORD dwItemID )
@@ -10319,11 +9609,7 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 
 	int nTexture;
 	RECT rectHittest;	
-#if __VER >= 14 // __BUFF_CRASH
 	multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
-#else // __BUFF_CRASH
-	multimap< DWORD, BUFFSKILL >::value_type* pp;
-#endif // __BUFF_CRASH
 	
 	nTexture = 0;
 	pInfo->pt.x += pInfo->nDelta;
@@ -10332,40 +9618,26 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 #ifdef __BUFF_1107
 	if( pBuff->GetType() == BUFF_SKILL )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[nTexture].find(pBuff->GetId()) != m_pBuffTexture[nTexture].end())
 			pp = &(*(m_pBuffTexture[nTexture].find( pBuff->GetId() )));
-#else // __BUFF_CRASH
-		pp = &(*(m_pBuffTexture[nTexture].find( pBuff->GetId() )));
-#endif // __BUFF_CRASH
 		pItem = prj.GetSkillProp( pBuff->GetId() );
 	}
 #else	// __BUFF_1107
 	if( pSkill->wType == BUFF_SKILL )
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[nTexture].find(pSkill->wID) != m_pBuffTexture[nTexture].end())
 			pp = &(*(m_pBuffTexture[nTexture].find(pSkill->wID)));
-#else // __BUFF_CRASH
-		pp = &(*(m_pBuffTexture[nTexture].find(pSkill->wID)));
-#endif // __BUFF_CRASH
 		pItem = prj.GetSkillProp( pSkill->wID );
 	}
 #endif	// __BUFF_1107
 	else
 	{
-#if __VER >= 14 // __BUFF_CRASH
 		if(m_pBuffTexture[2].find(dwItemID) != m_pBuffTexture[2].end())
 			pp = &(*(m_pBuffTexture[2].find( dwItemID )));
-#else // __BUFF_CRASH
-		pp = &(*(m_pBuffTexture[2].find( dwItemID )));
-#endif // __BUFF_CRASH
 		pItem = prj.GetItemProp( dwItemID );
 	}
-#if __VER >= 14 // __BUFF_CRASH
 	if(pp == NULL)
 		return;
-#endif // __BUFF_CRASH
 	ASSERT( pItem );
 	if( pp->second.m_pTexture == NULL )
 		return;
@@ -10442,18 +9714,11 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 	//	strTemp.Format( "X %d", nExpCount );
 	//	p2DRender->TextOut(  pInfo->pt.x+5, pInfo->pt.y+32, strTemp, dwColor );
 	strEdit.AddString( '\n' );
-#if __VER >= 11 // __EXPITEM_TOOLTIP_CHANGE
 	int nPercent = (int)( (fFactor - 1.0f) * 100.0f );
 	strEdit.AddString( prj.GetText( TID_GAME_EXPITEM_TOOLTIP ) );
 	strTemp.Format( " %d%% ", nPercent );
 	strEdit.AddString( strTemp, D3DCOLOR_ARGB( 255, 255, 90, 80 ) );
 	strEdit.AddString( prj.GetText( TID_GAME_EXPITEM_TOOLTIP1 ) );
-#else //__EXPITEM_TOOLTIP_CHANGE
-	strEdit.AddString( prj.GetText( TID_GAME_EXPTOOLTIP ) );
-	strTemp.Format( "%.1f", fFactor );
-	strEdit.AddString( strTemp, D3DCOLOR_ARGB( 255, 255, 90, 80 ) );
-	strEdit.AddString( prj.GetText( TID_GAME_EXPTOOLTIP1 ) );
-#endif //__EXPITEM_TOOLTIP_CHANGE
 	strEdit.AddString( '\n' );
 	strEdit.AddString( prj.GetText( TID_GAME_EXP_COUTMSG0 ));//, 0xff99cc00 );
 #ifdef __BUFF_1107
@@ -10660,10 +9925,8 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 				ItemProp* pItemProp		= prj.GetItemProp( wId );
 				if( pItemProp && pItemProp->dwItemKind3 == IK3_TICKET )
 					continue;
-#if __VER >= 13 // __HOUSING
 				if( pItemProp && pItemProp->dwItemKind1 == IK1_HOUSING )
 					continue;
-#endif // __HOUSING
 			}
 
 			int nExpkind = 100;
@@ -10703,7 +9966,6 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 		}
 	}
 
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 	BOOL	bNearByLeader = false;
 	CMover *pLeader = prj.GetUserByID( g_Party.m_aMember[0].m_uPlayerId );
 	if( IsValidObj( (CObj*)pLeader )/* && pLeader->IsNearPC( (CUser*)pAttacker ) && IsOrigin()*/ )
@@ -10731,27 +9993,13 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 		}
 #endif	// __BUFF_1107
 	}
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-	for( i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		pSkill = m_partySkillState.Get(i);
-		if( pSkill->wID )	
-		{
-			pInfo = &left;
-			RenderBuffIcon( p2DRender, pSkill, FALSE, pInfo, ptMouse );		// 
-		}
-	}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 
 	// 상용화 아이템 버프
 	RenderSMBuff( p2DRender, &right, ptMouse );
 
-#if __VER >= 12 // __LORD
 	RenderEventIcon( p2DRender, &right, ptMouse );
-#endif	// __LORD
 }
 
-#if __VER >= 12 // __LORD
 #define	TTI_LORD_EVENT	123456789
 void CWndWorld::RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse )
 {
@@ -10785,7 +10033,6 @@ void CWndWorld::RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPo
 		}
 	}
 }
-#endif	// __LORD
 
 
 void CWndWorld::RenderCasting(C2DRender *p2DRender)
@@ -10871,11 +10118,7 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 		else
 			pItem = prj.GetItemProp( dwSkillID );
 
-#if __VER >= 14 // __BUFF_CRASH
 		multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
-#else // __BUFF_CRASH
-		multimap< DWORD, BUFFSKILL >::value_type* pp;
-#endif // __BUFF_CRASH
 
 		if( wType == BUFF_ITEM 
 #ifdef __JEFF_11_1
@@ -10885,43 +10128,25 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 			|| wType == BUFF_EQUIP
 #endif // __DST_GIFTBOX
 			)
-#if __VER >= 14 // __BUFF_CRASH
 		{
 			if(m_pBuffTexture[2].find(dwSkillID) != m_pBuffTexture[2].end())
 				pp = &(*(m_pBuffTexture[2].find(dwSkillID)));
 		}
-#else // __BUFF_CRASH
-			pp = &(*(m_pBuffTexture[2].find(dwSkillID)));
-#endif // __BUFF_CRASH
-#if __VER >= 9	// __PET_0410
 		else if( wType == BUFF_PET )
-#if __VER >= 14 // __BUFF_CRASH
 		{
 			if(m_pBuffTexture[2].find(dwSkillID) != m_pBuffTexture[2].end())
 				pp = &(*(m_pBuffTexture[2].find(dwSkillID)));
 		}
-#else // __BUFF_CRASH
-			pp = &( *( m_pBuffTexture[2].find( dwSkillID ) ) );
-#endif // __BUFF_CRASH
-#endif	// __PET_0410
 		else if( wType == BUFF_SKILL )
-#if __VER >= 14 // __BUFF_CRASH
 		{
 			if(m_pBuffTexture[0].find(dwSkillID) != m_pBuffTexture[0].end())
 				pp = &(*(m_pBuffTexture[0].find(dwSkillID)));
 		}
-#else // __BUFF_CRASH
-			pp = &(*(m_pBuffTexture[0].find(dwSkillID)));
-#endif // __BUFF_CRASH
 		else
-#if __VER >= 14 // __BUFF_CRASH
 		{
 			if(m_pBuffTexture[1].find(dwSkillID) != m_pBuffTexture[1].end())
 				pp = &(*(m_pBuffTexture[1].find(dwSkillID)));
 		}
-#else // __BUFF_CRASH
-			pp = &(*(m_pBuffTexture[1].find(dwSkillID)));
-#endif // __BUFF_CRASH
 		
 		BOOL bCharged = FALSE;
 		if( wType == BUFF_ITEM 
@@ -10938,18 +10163,12 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 			{
 				if( pItemProp->bCharged )	// 상용화 아이템 이면 안그려줌
 					bCharged = TRUE;
-#if __VER >= 13 // __HOUSING
 				else if( pItemProp->dwItemKind1 == IK1_HOUSING )	// 하우징 버프는 안그린다.
 					bCharged = TRUE;
-#endif // __HOUSING
 			}
 		}
 
-#if __VER >= 14 // __BUFF_CRASH
 		if( pp != NULL && pp->second.m_pTexture != NULL && bCharged == FALSE )
-#else // __BUFF_CRASH
-		if( pp->second.m_pTexture != NULL && bCharged == FALSE )
-#endif // __BUFF_CRASH
 		{
 #ifdef __BUFF_1107
 			DWORD dwOddTime = pBuff->GetTotal() - ( g_tmCurrent - pBuff->GetInst() );
@@ -10976,15 +10195,11 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 			else
 			{
 				Lpoint.x += nIconSize;
-		#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 			#ifdef __BUFF_1107
 				if( pBuff->GetTotal() > 0 && dwOddTime < 20 * 1000 )		// 20초 이하 남았으면 깜빡거림.					
 			#else	// __BUFF_1107
 				if( pSkill->tmCount > 0 && dwOddTime < 20 * 1000 )		// 20초 이하 남았으면 깜빡거림.					
 			#endif	// __BUFF_1107
-		#else //__Y_FLAG_SKILL_BUFF
-				if( dwOddTime < 20 * 1000 )		// 20초 이하 남았으면 깜빡거림.
-			#endif //__Y_FLAG_SKILL_BUFF
 				{
 					pp->second.m_pTexture->Render( p2DRender, Lpoint, CPoint(nIconSize,nIconSize), pp->second.m_nAlpha );
 					
@@ -11053,36 +10268,25 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 				BOOL bTime = TRUE;
 				if( dwSkillID == II_SYS_SYS_SCR_AMPES || dwSkillID == II_SYS_SYS_SCR_SMELPROT || dwSkillID == II_SYS_SYS_SCR_SMELPROT2 
 					|| dwSkillID == II_SYS_SYS_SCR_SMELTING || dwSkillID == II_SYS_SYS_SCR_RETURN || dwSkillID == II_SYS_SYS_SCR_SUPERSMELTING
-#if __VER >= 9 // __ULTIMATE
 					|| dwSkillID == II_SYS_SYS_SCR_SMELPROT3
-#endif // __ULTIMATE
-#if __VER >= 11 // __SYS_COLLECTING
 					|| dwSkillID == II_SYS_SYS_SCR_SMELPROT4
-#endif	// __SYS_COLLECTING
-#if __VER >= 14 // __EXT_ATTRIBUTE
 					|| dwSkillID == II_SYS_SYS_SCR_SMELTING2
-#endif // __EXT_ATTRIBUTE
 #ifdef __DST_GIFTBOX
 					|| wType == BUFF_EQUIP
 #endif // __DST_GIFTBOX
 					)
 					bTime = FALSE;
 				
-		#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 			#ifdef __BUFF_1107
 				if( bTime && pBuff->GetTotal() > 0  )					
 			#else	// __BUFF_1107
 				if( bTime && pSkill->tmCount > 0 )					
 			#endif	// __BUFF_1107
-		#else //__Y_FLAG_SKILL_BUFF
-				if( bTime )					
-		#endif //__Y_FLAG_SKILL_BUFF
 				{
 					CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// 남은시간을 초단위로 변환해서 넘겨줌
 					str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );		// 남은시간을 분/초 형태로 출력.
 					strEdit += str;
 				}
-			#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 				else
 				{
 					g_WndMng.PutDestParam( pItem->dwDestParam[0], pItem->dwDestParam[1],
@@ -11107,7 +10311,6 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 						}
 					}					
 				}
-			#endif //__Y_FLAG_SKILL_BUFF
 				
 				if( bTime && pBuff->GetTotal() > 0 )
 				{
@@ -11260,10 +10463,8 @@ void CWndWorld::InviteCompany( OBJID objId )
 	{
 		if( g_GuildCombatMng.m_bRequest && g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE && g_GuildCombatMng.m_nGCState != CGuildCombat::WAR_CLOSE_STATE )
 			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_NOT_INVITATION_GUILD) ); //길드대전에 신청한 길드는 대전중에는 길드원 초대를 할 수 없습니다.
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		else if( g_GuildCombat1to1Mng.m_nState != CGuildCombat1to1Mng::GC1TO1_CLOSE )
 			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_NOTINVITEGUILD) );
-#endif //__GUILD_COMBAT_1TO1
 		else
 			g_DPlay.SendGuildInvite( objId );
 	}
@@ -11402,7 +10603,6 @@ void CAdvMgr::SortButton()
 
 void CWndWorld::InitEyeFlash()
 {
-#if __VER >= 8 //__Y_EYE_FLASH_8
 	CObject3D* pObject3D;
 	GMOBJECT*  pGmObj;
 	CString str1;
@@ -11429,10 +10629,8 @@ void CWndWorld::InitEyeFlash()
 			CMover::m_pTextureEyeFlash[nSex][i] = pMtrl->m_pTexture;
 		}
 	}
-#endif //__Y_EYE_FLASH_8
 }
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CWndWorld::ShowCCtrlMenu( CCtrl* pCCtrl )
 {
 	if( !pCCtrl )
@@ -11471,9 +10669,7 @@ void CWndWorld::ShowCCtrlMenu( CCtrl* pCCtrl )
 	m_wndMenuMover.SetVisible( TRUE );
 }
 
-#endif //__GUILD_HOUSE
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 BOOL CWndWorld::MenuException( CPoint point )
 {
 	if( m_bViewMap )
@@ -11490,17 +10686,14 @@ BOOL CWndWorld::MenuException( CPoint point )
 		return FALSE;
 	if( g_pPlayer->m_dwMode & DONMOVE_MODE )	// 돈무브 모드면 암것도 못함.
 		return FALSE;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)
 		return FALSE;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 #ifdef __EVE_MINIGAME
 	if( g_WndMng.GetWndBase(APP_MINIGAME_KAWIBAWIBO) )
 		return FALSE;
 	if( g_WndMng.GetWndBase(APP_MINIGAME_DICE) )
 		return FALSE;
 #endif
-#if __VER >= 13 // __RAINBOW_RACE
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_KAWIBAWIBO) )
 		return FALSE;
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_DICE) )
@@ -11515,16 +10708,12 @@ BOOL CWndWorld::MenuException( CPoint point )
 		return FALSE;
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_LADDER) )
 		return FALSE;
-#endif //__RAINBOW_RACE
-#if __VER >= 9 // __CSC_VER9_1
 	if( g_WndMng.GetWndBase(APP_SMELT_JEWEL) )
 		return FALSE;
-#endif //__CSC_VER9_1
 	if( GetBuffIconRect( II_SYS_SYS_SCR_RETURN, point ) )	// 귀환의 두루마리 아이콘을 클릭하면 더블클릭까지 검사
 		return FALSE;
 	if( GetBuffIconRect( II_SYS_SYS_SCR_PARTYSUMMON, point ) )	// 귀환의 두루마리 아이콘을 클릭하면 더블클릭까지 검사
 		return FALSE;
-#if __VER >= 8 //__CSC_VER8_5
 #ifdef __PKSERVER_USE_ANGEL
 	if(g_eLocal.GetState( EVE_PK ))
 	{
@@ -11549,14 +10738,10 @@ BOOL CWndWorld::MenuException( CPoint point )
 		return FALSE;
 	}
 #endif //__PKSERVER_USE_ANGEL
-#endif //__CSC_VER8_5
-#if __VER >= 9	// __PET_0410
 	if( GetBuffIconRect(II_SYS_SYS_SCR_PET_FEED_POCKET, point) )
 		return FALSE;
-#endif //__PET_0410
 	if( g_WndMng.GetWndBase(APP_WEBBOX) || g_WndMng.GetWndBase(APP_WEBBOX2) )
 		return FALSE;
-#if __VER >= 13 // __HOUSING
 	if(CDeployManager::GetInstance()->IsReady())
 	{
 		if(CDeployManager::GetInstance()->IsCollide())
@@ -11569,8 +10754,6 @@ BOOL CWndWorld::MenuException( CPoint point )
 		g_DPlay.SendHousingReqSetupFurniture( *phousingInfo );
 		return FALSE;
 	}
-#endif // __HOUSING
-#if __VER >= 15 // __GUILD_HOUSE
 	if( GuildDeploy()->IsReady( ) )
 	{
 		if( GuildDeploy()->IsCollide( ) )
@@ -11585,7 +10768,6 @@ BOOL CWndWorld::MenuException( CPoint point )
 			GuildHouse->Reset( *pItem );
 		return FALSE;
 	}
-#endif
 	CObj* pSelectObj = CObj::m_pObjHighlight;	// 현재 커서 대고 있는 오브젝트.
 	if( pSelectObj )
 	{
@@ -11600,4 +10782,3 @@ BOOL CWndWorld::MenuException( CPoint point )
 	}
 	return TRUE;
 }
-#endif // __IMPROVE_SYSTEM_VER15

@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 15 // __CAMPUS
 #include "ar.h"
 
 #define		CAMPUS_MASTER			1
@@ -107,5 +106,4 @@ private:
 	MAP_CAMPUS	m_mapCampus;
 	MAP_PID2CID	m_mapPid2Cid;
 };
-#endif // __CAMPUS
 #endif // !defined(AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_)

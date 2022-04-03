@@ -1,7 +1,6 @@
 #ifndef __CREATEMONSTER_H__
 #define	__CREATEMONSTER_H__
 
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 
 struct CREATE_MONSTER_PROP
 {
@@ -61,31 +60,11 @@ private:
 	MAPINFO m_mapCreateMonsterInfo;
 
 };
-#endif // __NEW_ITEMCREATEMON_SERVER
 
 
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-#if __VER < 12 // __NEW_ITEMCREATEMON_SERVER
-class CCreateMonster
-{
-	struct __MONSTERPERSENT {
-		DWORD dwMonsterId;
-		short nPersent;
-	};
-public:
-	//	Constructions
-	CCreateMonster();
-	~CCreateMonster();
-	DWORD GetCreateMonster( DWORD dwItemId );
-	map< DWORD, vector< __MONSTERPERSENT > > pMonsterItem;
-#ifdef __WORLDSERVER
-	BOOL LoadScript( LPCSTR lpszFileName );
-#endif // __WORLDSERVER
-};
-
-#endif // __NEW_ITEMCREATEMON_SERVER
 
 #endif	//	__CREATEMONSTER_H__

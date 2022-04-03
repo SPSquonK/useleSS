@@ -39,9 +39,6 @@ FLOAT CLandscape::m_fCloud_v1 = 0.0f;
 FLOAT CLandscape::m_fCloud_u2 = 0.0f;
 FLOAT CLandscape::m_fCloud_v2 = 0.0f;
 
-#if __VER < 14 // __WATER_EXT
-FLOAT CLandscape::m_fWaterFrame = 0.0f;
-#endif //__WATER_EXT
 
 DWORD LODLEVELRANGE1 = (32*MPU);
 DWORD LODLEVELRANGE2 = (64*MPU);
@@ -423,17 +420,10 @@ HRESULT CLandscape::MakeWaterVertexBuffer()
 			LPWATERHEIGHT lpWaterHeight = &m_aWaterHeight[ j + i * NUM_PATCHES_PER_SIDE ];
 			if( ( lpWaterHeight->byWaterTexture & (byte)(~MASK_WATERFRAME) ) == WTYPE_WATER )
 			{
-#if __VER >= 14 // __WATER_EXT
 				int loop = lpWaterHeight->byWaterTexture >> 2;
 
 				if ( loop >= 0 && loop < prj.m_terrainMng.m_nWaterFrame && m_pWaterVB[ loop ].WaterVertexNum > 0)
 				{
-#else //__WATER_EXT
-				for ( loop = 0 ; loop < prj.m_terrainMng.m_nWaterFrame ; loop++ )
-				{
-					if ( !m_pWaterVB[ loop ].WaterVertexNum )
-						continue;
-#endif //__WATER_EXT
 					pVAWater[ loop ]->p.x   = (FLOAT)( nWorldX + ( j * PATCH_SIZE * MPU ) );
 					pVAWater[ loop ]->p.y   = (FLOAT)( lpWaterHeight->byWaterHeight );////96.0f;
 					pVAWater[ loop ]->p.z   = (FLOAT)( nWorldZ + ( i * PATCH_SIZE * MPU ) );
@@ -781,7 +771,6 @@ void CLandscape::SetVertices()
 	m_bDirty=FALSE;
 }
 
-#if __VER >= 13 // __HOUSING
 BOOL CLandscape::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex)
 {
 
@@ -800,7 +789,6 @@ BOOL CLandscape::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex)
 
 	return TRUE;
 }
-#endif // __HOUSING
 
 void CLandscape::RenderPatches()
 {
@@ -984,7 +972,6 @@ HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
 		m_pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
 		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
 
-#if __VER >= 14 // __WATER_EXT
 		if(prj.m_terrainMng.m_fWaterFrame[i] >= static_cast<FLOAT>(prj.m_terrainMng.m_pWaterIndexList[i].ListCnt))
 			prj.m_terrainMng.m_fWaterFrame[i] = static_cast<FLOAT>(prj.m_terrainMng.m_pWaterIndexList[i].ListCnt - 1);
 
@@ -998,12 +985,6 @@ HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
 
 		//	prj.m_terrainMng.GetTerrain( prj.m_terrainMng.m_pWaterIndexList[ i ].pList[ static_cast<int>(prj.m_terrainMng.m_fWaterFrame[i]) ] )->m_pTexture);  
 		}
-#else //__WATER_EXT
-		if ( m_fWaterFrame > 40)
-			m_fWaterFrame = m_fWaterFrame;
-		LPDIRECT3DTEXTURE9 Texture = prj.m_terrainMng.GetTerrain( prj.m_terrainMng.m_pWaterIndexList[ i ].pList[ (int)m_fWaterFrame ] )->m_pTexture;
-		m_pd3dDevice->SetTexture(0, prj.m_terrainMng.GetTerrain( prj.m_terrainMng.m_pWaterIndexList[ i ].pList[ (int)m_fWaterFrame ] )->m_pTexture);
-#endif //__WATER_EXT
 		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_pWaterVB[ i ].WaterVertexNum / 3);
     }
 
@@ -1028,9 +1009,7 @@ HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
 		pd3dDevice->SetTexture( 0, m_pSkyBoxTexture);
 		pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 56);
 */
-#if __VER >= 14 // __CLOUD_ANIMATION_BUG
 	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
-#endif // __CLOUD_ANIMATION_BUG
 	if( m_nCloudVertexNum )
 	{
 		// 랜더 구름 

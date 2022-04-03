@@ -35,9 +35,7 @@ public:
 	CWndEdit*		m_pEdit;
 	CWndStatic*		m_pStatic;
 	CWndStatic*		m_pStaticGold;
-#if __VER >= 11 // __CSC_VER11_3
 	int				m_nBuyType;
-#endif //__CSC_VER11_3
 };
 
 class CWndWarning : public CWndNeuz 
@@ -64,9 +62,7 @@ public:
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-#if __VER >= 14 // __DROP_CONFIRM_BUG
 	virtual BOOL Process( void );
-#endif // __DROP_CONFIRM_BUG
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
@@ -101,12 +97,10 @@ public:
 	virtual	void OnDestroy( void );
 }; 
 
-#if __VER >= 8 //__CSC_VER8_4
 class CWndBeautyShopConfirm;
 #ifdef __NEWYEARDAY_EVENT_COUPON
 class CWndUseCouponConfirm;
 #endif //__NEWYEARDAY_EVENT_COUPON
-#endif //__CSC_VER8_4
 
 class CWndBeautyShop : public CWndNeuz 
 { 
@@ -120,20 +114,13 @@ public:
 	CRect			 m_ColorRect[3];
 	FLOAT			 m_fColor[3];
 	int              m_nHairCost;
-#if __VER >= 8 //__CSC_VER8_4
 	int				 m_nHairColorCost;
-#else
-	int              m_nHairColorCostR;
-	int              m_nHairColorCostG;
-	int              m_nHairColorCostB;	
-#endif //__CSC_VER8_4
 	CPoint			 m_ColorScrollBar[3];
 	CPoint			 m_OriginalColorScrollBar[3];
 	
 #ifdef __Y_BEAUTY_SHOP_CHARGE
 	BOOL			 m_bChange;
 #endif //__Y_BEAUTY_SHOP_CHARGE
-#if __VER >= 8 //__CSC_VER8_4
 	CModelObject*	 m_pApplyModel;
 	CWndEdit*		 m_pRGBEdit[3];
 	int				 m_ChoiceBar;
@@ -141,7 +128,6 @@ public:
 	DWORD			 m_nHairNum[4];
 	DWORD			 m_dwSelectHairMesh;
 	CWndBeautyShopConfirm* m_pWndBeautyShopConfirm;
-#endif //__CSC_VER8_4
 	
 #ifdef __NEWYEARDAY_EVENT_COUPON
 	BOOL m_bUseCoupon;
@@ -169,19 +155,16 @@ public:
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 	virtual	void OnDestroy( void );
 
-#if __VER >= 8 //__CSC_VER8_4
 	void SetRGBToEdit(float color, int editnum);
 	void SetRGBToBar(int editnum);
 	void DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView);
 	void UpdateModels();
-#endif //__CSC_VER8_4
 
 #ifdef __NEWYEARDAY_EVENT_COUPON
 	void UseHairCoupon(BOOL isUse);
 #endif //__NEWYEARDAY_EVENT_COUPON
 }; 
 
-#if __VER >= 8 //__CSC_VER8_4
 
 #ifdef __NEWYEARDAY_EVENT_COUPON
 class CWndUseCouponConfirm : public CWndNeuz 
@@ -274,6 +257,5 @@ public:
 	void UseFaceCoupon(BOOL isUse);
 #endif //__NEWYEARDAY_EVENT_COUPON
 };
-#endif //__CSC_VER8_4
 
 #endif

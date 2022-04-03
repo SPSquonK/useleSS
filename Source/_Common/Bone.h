@@ -59,21 +59,12 @@ public:
 };
 
 
-#if __VER < 12 // __LEAK_0827
-#define		MAX_BONES			128
-#endif	// __LEAK_0827
 
 // read only bone database
 class CBonesMng
 {
 public:
-#if __VER >= 12 // __LEAK_0827
 	map<string, CBones*>	m_mapBones;
-#else	// __LEAK_0827
-	int			m_nSize;							// 관리자가 로딩해서 가지고 있는 본의 사이즈가 얼마나 되는가.
-	int			m_nMax;								// 갯수
-	CBones *m_pBonesAry[ MAX_BONES ];
-#endif	// __LEAK_0827
 
 //#ifdef __WORLDSERVER
 //	CRIT_SEC	m_AccessLock;
@@ -199,24 +190,12 @@ public:
 	
 };
 
-#if __VER < 12 // __LEAK_0827
-#define		MAX_MOTION					2048
-#define		MAX_MOTION_CACHE		16
-#endif	// __LEAK_0827
 
 // read only motion database
 class CMotionMng
 {
 public:
-#if __VER >= 12 // __LEAK_0827
 	map<string, CMotion*>	m_mapMotions;
-#else	// __LEAK_0827
-	int		m_nSize;
-	int		m_nMax;
-	int		m_nCachePos;				// 캐시 큐 인덱스
-	CMotion		*m_pCache[ MAX_MOTION_CACHE ];			// 최근에 읽은 동작의 포인터를 가지고 있음
-	CMotion		*m_pMotionAry[ MAX_MOTION ];
-#endif	// __LEAK_0827
 	
 	CMotionMng();
 	~CMotionMng();

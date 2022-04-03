@@ -40,21 +40,11 @@ void CWndTotalOption::OnInitialUpdate()
 
 	
 	
-#if __VER >= 12 // __UPDATE_OPT
 	m_OptTabVideoSnd.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_AV12);
 	m_OptTabGame.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_GAME12);
-#else
-	m_OptTabVideoSnd.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_AV );
-	m_OptTabGame.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_GAME );
-	m_OptTabEtc.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_ETC );
-#ifdef __SFX_OPT
-	m_OptTabSound.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_SOUND);
-#endif
-#endif
 	WTCITEM tabTabItem;
 	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 
-#if __VER >= 12 // __UPDATE_OPT
 	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO);
 	//tabTabItem.pszText = prj.GetText(TID_APP_OPTION_VIDEO);
 	tabTabItem.pWndBase = &m_OptTabVideoSnd;
@@ -64,27 +54,6 @@ void CWndTotalOption::OnInitialUpdate()
 	//tabTabItem.pszText = prj.GetText(TID_APP_OPTION_GAME);
 	tabTabItem.pWndBase = &m_OptTabGame;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
-#else
-	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO);
-	//tabTabItem.pszText = prj.GetText(TID_APP_OPTION_VIDEO);
-	tabTabItem.pWndBase = &m_OptTabVideoSnd;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-
-	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_ETC);
-	//tabTabItem.pszText = prj.GetText(TID_APP_OPTION_ETC);
-	tabTabItem.pWndBase = &m_OptTabEtc;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
-	
-	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_GAME);
-	//tabTabItem.pszText = prj.GetText(TID_APP_OPTION_GAME);
-	tabTabItem.pWndBase = &m_OptTabGame;
-	pWndTabCtrl->InsertItem( 2, &tabTabItem );
-#ifdef __SFX_OPT
-	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_SOUND);
-	tabTabItem.pWndBase = &m_OptTabSound;
-	pWndTabCtrl->InsertItem( 3, &tabTabItem );
-#endif
-#endif
 	MoveParentCenter();	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -201,10 +170,8 @@ void CWndOption::OnInitialUpdate()
 	CWndButton* pWndRoll = (CWndButton*)GetDlgItem( WIDC_CHECK3 );		
 	pWndRoll->SetCheck( g_Option.m_bRollEffect );
 
-	#if __VER >= 11 // __ADD_ZOOMOPT
 	CWndButton* pWndZoom = (CWndButton*)GetDlgItem( WIDC_CHECK5 );		
 	pWndZoom->SetCheck(!g_Option.m_bZoomLimit);
-	#endif
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
@@ -247,9 +214,7 @@ BOOL CWndOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	CWndButton* pWndHelp = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
 	CWndButton* pWndRoll = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
 	CWndButton* pWndCamearaLock = (CWndButton*)GetDlgItem( WIDC_CHECK4 );
-#if __VER >= 11 // __ADD_ZOOMOPT
 	CWndButton* pWndZoomLimit   = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
-#endif
 
 	switch( nID )
 	{
@@ -279,7 +244,6 @@ BOOL CWndOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				g_Option.m_bCameraLock = FALSE;			
 		}
 		break;
-#if __VER >= 11 // __ADD_ZOOMOPT
 	case WIDC_CHECK5:
 		{
 			if( pWndZoomLimit->GetCheck() )
@@ -288,7 +252,6 @@ BOOL CWndOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				g_Option.m_bZoomLimit = TRUE;			
 		}	
 		break;
-#endif
 
 	case WIDC_RADIO1:
 		g_Option.m_nSlangWord = 0;
@@ -426,13 +389,6 @@ void CWndOptSound::OnInitialUpdate()
 	}
 	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
 	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
-#if __VER < 12 // __UPDATE_OPT
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_MSHIGH );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_MSMID );
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_MSLOW );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ g_Option.m_MouseSpeed ]->SetCheck( TRUE );
-#endif
 	m_nStep[0] = (int)( g_Option.m_fEffectVolume * 10 );
 	m_nStep[1] = (int)( g_Option.m_fBGMVolume * 10 );
 
@@ -529,17 +485,6 @@ BOOL CWndOptSound::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		case WIDC_VOICEOFF:
 			g_Option.m_bVoice = 0;
 			break;
-#if __VER < 12 // __UPDATE_OPT
-		case WIDC_MSLOW:
-			g_Option.m_MouseSpeed = 2;
-			break;
-		case WIDC_MSMID:
-			g_Option.m_MouseSpeed = 1;
-			break;
-		case WIDC_MSHIGH:
-			g_Option.m_MouseSpeed = 0;
-			break;
-#endif
 	};
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
@@ -621,7 +566,6 @@ CWndOptVideo::CWndOptVideo()
 	m_nStep[0] = 0;
 	m_nStep[1] = 0;
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	m_nStep[2] = 0;
 	m_nStep[3] = 0;
 	m_nStep[4] = 0;
@@ -631,7 +575,6 @@ CWndOptVideo::CWndOptVideo()
 	m_bLButtonClick5 = FALSE;
 
 	memset( m_nBrightTable, 0, sizeof(int) * 11 );
-#endif //__Y_GAMMA_CONTROL_8
 } 
 CWndOptVideo::~CWndOptVideo() 
 { 
@@ -700,7 +643,6 @@ void CWndOptVideo::OnDraw( C2DRender* p2DRender )
 	pt.x += GetStepPos( m_nStep[1], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
 	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
 #endif
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 	pt1 = lpWndCtrl->rect.TopLeft();
 	pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
@@ -724,7 +666,6 @@ void CWndOptVideo::OnDraw( C2DRender* p2DRender )
 	pt = pt1;
 	pt.x += GetStepPos( m_nStep[4], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
 	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-#endif //__Y_GAMMA_CONTROL_8
 
 
 } 
@@ -833,7 +774,6 @@ void CWndOptVideo::OnInitialUpdate()
 	pWndButton[ 0 ]->SetCheck(g_Option.m_nMonName);	
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
 	pWndButton[ 0 ]->SetCheck(g_Option.m_bDamageRender);
-#if __VER >= 12 // __UPDATE_OPT
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK1);
 	pWndButton[ 0 ]->SetCheck(!g_Option.m_bZoomLimit);
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_VIEWMASK );
@@ -843,10 +783,6 @@ void CWndOptVideo::OnInitialUpdate()
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
 	if(pWndButton[ 0 ])
 	pWndButton[ 0 ]->SetCheck( g_Option.m_bCameraLock );
-#else
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_VISIBLEKEEPTIME );
-	pWndButton[ 0 ]->SetCheck(g_Option.m_bVisibleBuffTimeRender);	
-#endif
 	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
 	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
 #ifdef __SFX_OPT
@@ -866,7 +802,6 @@ void CWndOptVideo::OnInitialUpdate()
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
 	if(pWndButton[ 0 ]) pWndButton[ 0 ]->SetCheck(g_Option.m_nWeatherEffect);
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	m_nBrightTable[0] = -40;
 	m_nBrightTable[1] = -30;
 	m_nBrightTable[2] = -20;
@@ -890,7 +825,6 @@ void CWndOptVideo::OnInitialUpdate()
 
 	m_nStep[2] = (int)( g_Option.m_fGamma * 5 );
 	m_nStep[4] = (int)( g_Option.m_fContrast * 5 );
-#endif //__Y_GAMMA_CONTROL_8
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndOptVideo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
@@ -922,11 +856,9 @@ void CWndOptVideo::OnLButtonUp( UINT nFlags, CPoint point )
 	ReleaseCapture();
 	m_bLButtonClick = FALSE;
 	m_bLButtonClick2 = FALSE;
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	m_bLButtonClick3 = FALSE;
 	m_bLButtonClick4 = FALSE;
 	m_bLButtonClick5 = FALSE;
-#endif //__Y_GAMMA_CONTROL_8
 } 
 void CWndOptVideo::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
@@ -985,7 +917,6 @@ void CWndOptVideo::OnLButtonDown( UINT nFlags, CPoint point )
 		SetVolume(g_Option.m_fBGMVolume);		
 	}
 #endif
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	/////////////////////////////////////////
 	nResult = GetSliderStep( WIDC_CUSTOM1, m_nStep[2], point );	
 #ifdef __DISABLE_GAMMA_WND
@@ -1032,7 +963,6 @@ void CWndOptVideo::OnLButtonDown( UINT nFlags, CPoint point )
 #ifdef __DISABLE_GAMMA_WND
 	}
 #endif
-#endif //__Y_GAMMA_CONTROL_8
 } 
 
 void CWndOptVideo::OnMouseMove(UINT nFlags, CPoint point)
@@ -1067,7 +997,6 @@ void CWndOptVideo::OnMouseMove(UINT nFlags, CPoint point)
 	}
 #endif
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 #ifdef __DISABLE_GAMMA_WND
 	if(g_Neuz.m_bStartFullscreen)
 	{
@@ -1093,7 +1022,6 @@ void CWndOptVideo::OnMouseMove(UINT nFlags, CPoint point)
 #ifdef __DISABLE_GAMMA_WND
 	}
 #endif
-#endif //__Y_GAMMA_CONTROL_8
 }
 
 void CWndOptVideo::OnMouseWndSurface( CPoint point )
@@ -1103,9 +1031,7 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 { 
 	CWndButton* pWndButton		= (CWndButton*)*pLResult;
 	CWndButton* pWndZoomLimit   = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
-#if __VER >= 12 // __UPDATE_OPT
 	CWndButton* pWndCamearaLock = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
-#endif
 	switch( nID )
 	{
 	case WIDC_OBJECT_LOD_HIGH:
@@ -1234,7 +1160,6 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		pWndButton = (CWndButton*)GetDlgItem( WIDC_CHECK8 );
 		g_Option.m_nMonName = pWndButton->GetCheck();
 		break;
-#if __VER >= 12 // __UPDATE_OPT
 	case WIDC_CHECK1:
 	{
 		if( pWndZoomLimit->GetCheck() )
@@ -1256,12 +1181,6 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				g_Option.m_bCameraLock = FALSE;			
 		}
 		break;
-#else
-	case WIDC_VISIBLEKEEPTIME:
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_VISIBLEKEEPTIME );
-		g_Option.m_bVisibleBuffTimeRender = pWndButton->GetCheck();
-		break;
-#endif
 	case WIDC_CHECK3:
 		pWndButton = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
 		if(pWndButton) g_Option.m_nWeatherEffect = pWndButton->GetCheck();

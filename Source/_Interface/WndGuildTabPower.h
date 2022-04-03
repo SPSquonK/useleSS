@@ -5,7 +5,6 @@
 
 #pragma once 
 
-#if __VER >= 15 // __GUILD_HOUSE
 
 class CWndGuildTabPower : public CWndNeuz 
 { 
@@ -31,4 +30,3 @@ protected:
 
 }; 
 
-#endif //__GUILD_HOUSE

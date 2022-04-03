@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "CampusHelper.h"
 
-#if __VER >= 15 // __CAMPUS
 #include "User.h"
 extern CUserMng				g_UserMng;
 #include "DPDatabaseClient.h"
@@ -488,4 +487,3 @@ void CCampusHelper::OnRemoveCampusMember( CUser* pRequest, u_long idTarget )
 	}
 }
 
-#endif // __CAMPUS

@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "minigamebase.h"
 
 class CMiniGameTyping :	public CMiniGameBase
@@ -18,4 +17,3 @@ private:
 	vector<string>	m_vecTyping;	// 만들어진 문제를 가질 멤버
 };
 
-#endif // __RAINBOW_RACE

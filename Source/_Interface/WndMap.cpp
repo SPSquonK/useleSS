@@ -19,28 +19,12 @@ void CWndMap::OnDraw( C2DRender* p2DRender )
 void CWndMap::OnInitialUpdate() 
 { 
 
-#if __VER >= 9  // __INSERT_MAP
 
-#else
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-	SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_ITEM, m_szMapFile), TRUE );
-	FitTextureSize();
-
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
-	MoveParentCenter();
-#endif
 
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndMap::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-#if __VER >= 9  // __INSERT_MAP
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 
 
@@ -49,10 +33,6 @@ BOOL CWndMap::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	else						pWorldMap->LoadWorldMap();
 
 	return FALSE;
-#else
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MAP, 0, CPoint( 0, 0 ), pWndParent );
-#endif
 } 
 /*
   직접 윈도를 열때 사용 

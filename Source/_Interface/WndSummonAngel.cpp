@@ -8,7 +8,6 @@
 extern CDPClient	g_DPlay;
 
 
-#if __VER >= 8 //__CSC_VER8_5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndSummonAngel
@@ -558,4 +557,3 @@ void CWndSummonAngel::SummonAngel()
 	}
 }
 */
-#endif //__CSC_VER8_5

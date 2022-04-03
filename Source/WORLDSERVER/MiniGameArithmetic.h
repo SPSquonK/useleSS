@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "minigamebase.h"
 
 class CMiniGameArithmetic :	public CMiniGameBase
@@ -24,4 +23,3 @@ private:
 	vector<int>	m_vecnPrimeNumber;		// operator가 나눗셈 인 경우 피연산자를 조합할 소수 목록
 };
 
-#endif // __RAINBOW_RACE

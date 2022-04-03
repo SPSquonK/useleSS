@@ -7,21 +7,14 @@
 #include "WndMessengerCtrl.h"
 #include "WndMessenger.h"
 #include "WndManager.h"
-#if __VER >= 13 // __HOUSING
 #include "Housing.h"
-#endif // __HOUSING
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
-#if __VER >= 15 // __CAMPUS
 #include "Campus.h"
 #include "CampusHelper.h"
-#endif // __CAMPUS
 
 extern CDPClient	g_DPlay;
 extern CParty		g_Party;
 
-#if __VER >= 11 // __CSC_VER11_4
 //////////////////////////////////////////////////////////////////////////
 // Common Local Func.
 //////////////////////////////////////////////////////////////////////////
@@ -192,7 +185,6 @@ bool prNameDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
 	return rtn_val;
 }
 
-#if __VER >= 15 // __CAMPUS
 //-----------------------------------------------------------------------------
 __MESSENGER_PLAYER::__MESSENGER_PLAYER( void ) : 
 m_nChannel( 0 ),
@@ -218,7 +210,6 @@ void __MESSENGER_PLAYER::Initialize( void )
 	ZeroMemory( m_szName, sizeof( m_szName ) );
 }
 //-----------------------------------------------------------------------------
-#endif // __CAMPUS
 
 //////////////////////////////////////////////////////////////////////////
 // Messenger Friend Tab Ctrl
@@ -265,10 +256,8 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 	// Set Friends List
 	m_vPlayerList.clear();
 	__MESSENGER_PLAYER stPlayer;
-#if __VER >= 13 // __HOUSING
 	vector<DWORD> vecTemp;
 	CHousing::GetInstance()->GetVisitAllow( vecTemp );
-#endif // __HOUSING
 #ifdef __RT_1025
 	for( map<u_long, Friend>::iterator i	= g_WndMng.m_RTMessenger.begin(); i != g_WndMng.m_RTMessenger.end(); ++i )
 	{
@@ -299,7 +288,6 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 #ifdef __RT_1025
 		stPlayer.m_bBlock	= pFriend->bBlock;
 #endif	// __RT_1025
-#if __VER >= 13 // __HOUSING
 		stPlayer.m_bVisitAllowed = FALSE;
 		vector<DWORD>::iterator iterV = vecTemp.begin();
 		for( ; iterV != vecTemp.end(); ++iterV)
@@ -307,7 +295,6 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 			if(idPlayer == *iterV)
 				stPlayer.m_bVisitAllowed = TRUE;
 		}
-#endif // __HOUSING
 		if( stPlayer.m_dwStatus == FRS_OFFLINE )
 			stPlayer.m_nChannel	= 100;
 		else
@@ -399,31 +386,17 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 		else
 			dwMyState = stPlayer.m_dwStatus;
 		
-#if __VER >= 15 // __CAMPUS
 		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
-#else // __CAMPUS
-		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 74, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
-#endif // __CAMPUS
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
-#if __VER >= 15 // __CAMPUS
 		static const int LEVEL_TEXT_X = 127;
 		if( stPlayer.m_bVisitAllowed )
 			p2DRender->TextOut( LEVEL_TEXT_X, pt.y + 3, strFormat, 0xff00ff00 );
 		else
 			p2DRender->TextOut( LEVEL_TEXT_X, pt.y + 3, strFormat, 0xff000000 );
-#else // __CAMPUS
-#if __VER >= 13 // __HOUSING
-		if(stPlayer.m_bVisitAllowed)
-			p2DRender->TextOut( 122, pt.y + 3, strFormat, 0xff00ff00 );	// 초대허용한 사람은 녹색으로
-		else
-#endif // __HOUSING
-		p2DRender->TextOut( 122, pt.y + 3, strFormat, 0xff000000 );
-#endif // __CAMPUS
 
 		// Draw Job Icon
-#if __VER >= 15 // __CAMPUS
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
 		if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
@@ -454,36 +427,6 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 		}
 		else
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  14 + stPlayer.m_nJob, &pVertices, 0xffffffff );
-#else // __CAMPUS
-		if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )			
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), &pVertices, 0xffffffff );
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if(/*m_nLevel >= 60 && */stPlayer.m_nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
-				nMasterIndex = 27;
-			else if(stPlayer.m_nLevel >= 70 && stPlayer.m_nLevel < 80)
-				nMasterIndex = 28;
-			else if(stPlayer.m_nLevel >= 80 && stPlayer.m_nLevel < 90)
-				nMasterIndex = 29;
-			else if(stPlayer.m_nLevel >= 90 && stPlayer.m_nLevel < 100)
-				nMasterIndex = 30;
-			else if(stPlayer.m_nLevel >= 100 && stPlayer.m_nLevel < 110)
-				nMasterIndex = 31;
-			else if(stPlayer.m_nLevel >= 110 && stPlayer.m_nLevel <= 120)
-				nMasterIndex = 32;
-
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 166, pt.y ),  nMasterIndex, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), &pVertices, 0xffffffff );
-		}
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 166, pt.y ),  33, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), &pVertices, 0xffffffff );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  14 + stPlayer.m_nJob, &pVertices, 0xffffffff );
-#endif // __CAMPUS
 
 		// Draw Name
 		DWORD dwColor = 0xff000000;
@@ -514,21 +457,12 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 			strFormat = strFormat.Left( nReduceCount );
 			strFormat += "...";
 		}
-#if __VER >= 15 // __CAMPUS
 		const int NAME_TEXT_X = 226;
 		const int NAME_TEXT_Y = pt.y + 3;
 		if( stPlayer.m_bVisitAllowed )
 			p2DRender->TextOut( NAME_TEXT_X, NAME_TEXT_Y, strFormat, 0xff00ff00 );
 		else
 			p2DRender->TextOut( NAME_TEXT_X, NAME_TEXT_Y, strFormat, dwColor );
-#else // __CAMPUS
-#if __VER >= 13 // __HOUSING
-		if(stPlayer.m_bVisitAllowed)
-			p2DRender->TextOut( 220, pt.y + 3, strFormat, 0xff00ff00 );	// 초대허용한 사람은 녹색으로
-		else
-#endif // __HOUSING
-		p2DRender->TextOut( 220, pt.y + 3, strFormat, dwColor );
-#endif // __CAMPUS
 		
 		pt.y += m_nFontHeight;
 	}
@@ -607,11 +541,7 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 #endif	// __RT_1025
 		{
 			m_nCurSelect = nSelect;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			CWndMessage* pWndMessage	= g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
-#else	// __SYS_PLAYER_DATA
-			CWndMessage* pWndMessage	= g_WndMng.OpenMessage( lpFriend->szName );
-#endif	// __SYS_PLAYER_DATA
 		}
 		else
 		{
@@ -619,11 +549,7 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 			if( dwState == FRS_OFFLINE )
 				szMessage = prj.GetText(TID_GAME_NOTLOGIN);                               //"??? 님은 접속되어 있지 않습니다";
 			else
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
-#else	// __SYS_PLAYER_DATA
-				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), lpFriend->szName );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
-#endif	// __SYS_PLAYER_DATA
 			g_WndMng.PutString( szMessage, NULL, prj.GetTextColor( TID_GAME_NOTLOGIN ) );		
 		}
 	}	
@@ -793,7 +719,6 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 #endif	// __RT_1025
 		}
 		break;
-#if __VER >= 13 // __HOUSING
 		case 7 :	// 입장허가를 취소한다
 			{
 				u_long uidPlayer = GetSelectId( m_nCurSelect );
@@ -808,7 +733,6 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 					g_DPlay.SendHousingReqSetVisitAllow(uidPlayer, TRUE);
 			}
 			break;
-#endif // __HOUSING
 	}
 	return -1; 
 } 
@@ -879,7 +803,6 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 #endif	// __RT_1025
 			m_menu.AppendMenu( 0, 6 , _T( prj.GetText( TID_GAME_TAGSEND ) ) );
 
-#if __VER >= 13 // __HOUSING
 		vector<__MESSENGER_PLAYER>::iterator iter = m_vPlayerList.begin();
 		int		nCount		= 0;
 		BOOL	bIsAllowed	= FALSE;
@@ -895,7 +818,6 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 			m_menu.AppendMenu( 0, 7 , _T( prj.GetText( TID_GAME_PROHIBIT_VISIT ) ) );
 		else
 			m_menu.AppendMenu( 0, 8 , _T( prj.GetText( TID_GAME_ALLOW_VISIT ) ) );
-#endif // __HOUSING
 		m_menu.Move( point );
 		m_menu.SetVisible( TRUE );
 		m_menu.SetFocus();
@@ -1104,7 +1026,6 @@ void CWndGuildCtrlEx::UpdatePlayerList()
 		{
 			__MESSENGER_PLAYER stPlayer;
 			CGuildMember* pGuildMember = (CGuildMember*)iter->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer );
 			stPlayer.m_nJob	= pPlayerData->data.nJob;
 			stPlayer.m_nLevel = pPlayerData->data.nLevel;
@@ -1114,18 +1035,7 @@ void CWndGuildCtrlEx::UpdatePlayerList()
 				stPlayer.m_dwStatus = FRS_ONLINE;
 			else
 				stPlayer.m_dwStatus = FRS_OFFLINE;
-#else	// __SYS_PLAYER_DATA
-			stPlayer.m_nJob = pGuildMember->m_nJob;
-			stPlayer.m_nLevel = pGuildMember->m_nLevel;
-			stPlayer.m_dwPlayerId = pGuildMember->m_idPlayer;
-			stPlayer.m_dwStatus = 0; //Guild Member는 상태를 알 수 없다???
-			stPlayer.m_nChannel = pGuildMember->m_nMultiNo;
-#endif	// __SYS_PLAYER_DATA
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			lstrcpy( stPlayer.m_szName, pPlayerData->szPlayer );
-#else	// __SYS_PLAYER_DATA
-			strcpy(stPlayer.m_szName, prj.GetPlayerString( pGuildMember->m_idPlayer ));
-#endif	// __SYS_PLAYER_DATA
 			m_vPlayerList.push_back(stPlayer);
 		}
 	}
@@ -1211,22 +1121,13 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		else
 			dwMyState = stPlayer.m_dwStatus;
 		
-#if __VER >= 15 // __CAMPUS
 		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
-#else // __CAMPUS
-		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 74, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
-#endif // __CAMPUS
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
-#if __VER >= 15 // __CAMPUS
 		p2DRender->TextOut( 127, pt.y + 3, strFormat, 0xff000000 );
-#else // __CAMPUS
-		p2DRender->TextOut( 122, pt.y + 3, strFormat, 0xff000000 );
-#endif // __CAMPUS
 
 		// Draw Job Icon
-#if __VER >= 15 // __CAMPUS
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
 		if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
@@ -1257,36 +1158,6 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		}
 		else
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  14 + stPlayer.m_nJob, &pVertices, 0xffffffff );
-#else // __CAMPUS
-		if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )			
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), &pVertices, 0xffffffff );
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if(/*m_nLevel >= 60 && */stPlayer.m_nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
-				nMasterIndex = 27;
-			else if(stPlayer.m_nLevel >= 70 && stPlayer.m_nLevel < 80)
-				nMasterIndex = 28;
-			else if(stPlayer.m_nLevel >= 80 && stPlayer.m_nLevel < 90)
-				nMasterIndex = 29;
-			else if(stPlayer.m_nLevel >= 90 && stPlayer.m_nLevel < 100)
-				nMasterIndex = 30;
-			else if(stPlayer.m_nLevel >= 100 && stPlayer.m_nLevel < 110)
-				nMasterIndex = 31;
-			else if(stPlayer.m_nLevel >= 110 && stPlayer.m_nLevel <= 120)
-				nMasterIndex = 32;
-
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 166, pt.y ),  nMasterIndex, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), &pVertices, 0xffffffff );
-		}
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 166, pt.y ),  33, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), &pVertices, 0xffffffff );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 188, pt.y ),  14 + stPlayer.m_nJob, &pVertices, 0xffffffff );
-#endif // __CAMPUS
 
 		// Draw Name
 		DWORD dwColor = 0xff000000;
@@ -1311,11 +1182,7 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 			strFormat += "...";
 		}
 
-#if __VER >= 15 // __CAMPUS
 		p2DRender->TextOut( 226, pt.y + 3, strFormat, dwColor );
-#else // __CAMPUS
-		p2DRender->TextOut( 220, pt.y + 3, strFormat, dwColor );
-#endif // __CAMPUS
 		
 		pt.y += m_nFontHeight;
 	}
@@ -1637,7 +1504,6 @@ void CWndGuildCtrlEx::SortbyName(BOOL bCheckbefore)
 	m_nCurSort = SORT_BY_NAME;
 }
 
-#if __VER >= 15 // __CAMPUS
 //-----------------------------------------------------------------------------
 CWndCampus::CWndCampus( void ) : 
 m_bSortbyChannel( TRUE ), 
@@ -2202,6 +2068,4 @@ void CWndCampus::SortbyName( BOOL bCheckbefore )
 	m_nCurSort = SORT_BY_NAME;
 }
 //-----------------------------------------------------------------------------
-#endif // __CAMPUS
 
-#endif //__CSC_VER11_4

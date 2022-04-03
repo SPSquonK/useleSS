@@ -22,51 +22,33 @@
 #include "dpSrvr.h"
 #include "eveschool.h"
 #include "WorldDialog.h"
-#if __VER >= 13 // __EXT_ENCHANT
 #include "ItemUpgrade.h"
-#endif // __EXT_ENCHANT
 #endif	// __WORLDSERVER
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #include "randomoption.h"
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __LORD
 #ifdef __CLIENT
 #include "clord.h"
 #endif	// __CLIENT
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#include "honor.h"
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 13 // __RAINBOW_RACE
 #ifdef __WORLDSERVER
 #include "RainbowRace.h"
 #endif // __WORLDSERVER
-#endif // __RAINBOW_RACE
 
 #include "guild.h"
 #include "party.h"
 #include "post.h"
 
-#if __VER >= 13 // __COUPLE_1117
 #include "couplehelper.h"
 #include "couple.h"
-#endif	// __COUPLE_1117
 
 #ifdef __QUIZ
 #ifdef __WORLDSERVER
@@ -74,15 +56,11 @@
 #endif // __WORLDSERVER
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 #ifdef __WORLDSERVER
 #include "CampusHelper.h"
 #endif // __WORLDSERVER
-#endif // __CAMPUS
 
 extern	CPartyMng			g_PartyMng;
 extern	CGuildMng			g_GuildMng;
@@ -101,9 +79,7 @@ extern	CDPSrvr				g_DPSrvr;
 extern	CGuildCombat		g_GuildCombatMng;
 #endif
 
-#if __VER >= 11 // __SYS_COLLECTING
 #include "definesound.h"
-#endif	// __SYS_COLLECTING
 
 
 #define TCM_CLIENT 0
@@ -375,7 +351,6 @@ BOOL TextCmd_AroundKill( CScanner & scanner )
 	return TRUE;
 }
 
-#if __VER >= 9	// __PET_0410
 BOOL	TextCmd_PetLevel( CScanner & s )
 {
 #ifdef __WORLDSERVER
@@ -423,11 +398,7 @@ BOOL TextCmd_Pet( CScanner & s )
 	s.GetToken();
 	if( s.tok == FINISHED )
 		return TRUE;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	DWORD idPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerId( s.token );
-#else	// __SYS_PLAYER_DATA
-	DWORD idPlayer	= prj.GetPlayerID( s.token );
-#endif	// __SYS_PLAYER_DATA
 	if( idPlayer == 0 )	//
 		return TRUE;
 	CUser* pTarget	= (CUser*)prj.GetUserByID( idPlayer );
@@ -506,9 +477,7 @@ BOOL TextCmd_Pet( CScanner & s )
 	return TRUE;
 }
 
-#endif	// __PET_0410
 
-#if __VER >= 11 // __SYS_POCKET
 BOOL	TextCmd_MoveItem_Pocket( CScanner & s )
 {
 #ifdef __CLIENT
@@ -548,9 +517,7 @@ BOOL TextCmd_PocketView( CScanner & s )
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-#endif	// __SYS_POCKET
 
-#if __VER >= 11 // __SYS_COLLECTING
 BOOL TextCmd_RefineCollector( CScanner & s )
 {
 // 0번째
@@ -615,9 +582,7 @@ BOOL TextCmd_RefineAccessory( CScanner & s )
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 11 // __SYS_IDENTIFY
 BOOL TextCmd_SetRandomOption( CScanner & s )
 {
 #ifdef __WORLDSERVER
@@ -740,7 +705,6 @@ BOOL TextCmd_ItemLevel( CScanner & s )
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-#endif	// __SYS_IDENTIFY
 
 BOOL TextCmd_Level( CScanner & scanner )
 {
@@ -774,7 +738,6 @@ BOOL TextCmd_Level( CScanner & scanner )
 		return TRUE;
 	}
 
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	LONG	nLegend = scanner.GetNumber();
 	if( ( nLegend > 0 ) && ( nLegend < 3 ) )
 	{
@@ -793,7 +756,6 @@ BOOL TextCmd_Level( CScanner & scanner )
 		pUser->InitLevel( nJob, nLevel );	// lock
 		return	TRUE;
 	}
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	
 	if( nLevel <= MAX_JOB_LEVEL )	
 	{
@@ -905,14 +867,7 @@ BOOL TextCmd_ChangeJob( CScanner & scanner )
 		( (CUser*)pUser )->AddSetChangeJob( nJob );
 		g_UserMng.AddNearSetChangeJob( (CMover*)pUser, nJob, &pUser->m_aJobSkill[MAX_JOB_SKILL] );
 		g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		g_dpDBClient.SendUpdatePlayerData( pUser );
-#else	// __SYS_PLAYER_DATA
-		g_DPCoreClient.SendPartyMemberJob( (CUser*)pUser );
-		g_DPCoreClient.SendFriendChangeJob( (CUser*)pUser );
-		if( pUser->m_idGuild != 0 )
-			g_DPCoreClient.SendGuildChangeJobLevel( (CUser*)pUser );
-#endif	// __SYS_PLAYER_DATA
 		return TRUE;
 	}
 	else
@@ -970,7 +925,6 @@ BOOL TextCmd_stat( CScanner & scanner )
 			pUser->ReState();
 			return FALSE;
 		}
-#if __VER >= 8 //__CSC_VER8_6
 		else if( strcmp( strstat, "all" ) == 0 )
 		{
 			pUser->m_nStr = dwNum;
@@ -978,7 +932,6 @@ BOOL TextCmd_stat( CScanner & scanner )
 			pUser->m_nDex = dwNum;
 			pUser->m_nInt = dwNum;
 		}
-#endif //__CSC_VER8_6
 		else
 		{
 			strstat += "unknown setting target";
@@ -994,11 +947,9 @@ BOOL TextCmd_stat( CScanner & scanner )
 	}
 
 	pUser->AddSetState( pUser->m_nStr, pUser->m_nSta, pUser->m_nDex, pUser->m_nInt, pUser->m_nRemainGP );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	pUser->CheckHonorStat();
 	pUser->AddHonorListAck();
 	g_UserMng.AddHonorTitleChange( pUser, pUser->m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 #endif // __WORLDSERVER
 	return TRUE;
 }
@@ -1013,11 +964,7 @@ BOOL TextCmd_SetSnoop( CScanner & s )
 	{
 		if( lstrcmp( pUser->GetName(), s.Token ) )
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			u_long idPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerId( s.token );
-#else	// __SYS_PLAYER_DATA
-			u_long idPlayer	= prj.GetPlayerID( s.Token );
-#endif	// __SYS_PLAYER_DATA
 			if( idPlayer > 0 )
 			{
 				BOOL bRelease	= FALSE;
@@ -1099,11 +1046,6 @@ BOOL TextCmd_CreateGuild( CScanner & scanner )
 	scanner.GetToken();
 	GUILD_MEMBER_INFO	info;
 	info.idPlayer	= pUser->m_idPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	info.nLevel	= pUser->GetLevel();
-	info.nJob	= pUser->GetJob();
-	info.dwSex	= pUser->GetSex();
-#endif	// __SYS_PLAYER_DATA
 	g_DPCoreClient.SendCreateGuild( &info, 1, scanner.Token );
 	return TRUE;
 #endif	// __WORLDSERVER
@@ -1124,11 +1066,7 @@ BOOL TextCmd_RemoveGuildMember( CScanner & scanner )
 	scanner.GetToken();
 	char lpszPlayer[MAX_PLAYER]	= { 0, };
 	lstrcpy( lpszPlayer, scanner.Token );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( lpszPlayer );
-#else	// __SYS_PLAYER_DATA
-	u_long idPlayer	= prj.GetPlayerID( lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 	if( idPlayer != 0 )
 		g_DPlay.SendRemoveGuildMember( g_pPlayer->m_idPlayer, idPlayer );
 	return TRUE;
@@ -1142,17 +1080,12 @@ BOOL TextCmd_GuildChat( CScanner & scanner )
 	CUser* pUser	= (CUser*)scanner.dwValue;
 
 #ifdef __JEFF_9_20
-#if __VER >= 12 // __LORD
 	int nText	= pUser->GetMuteText();
 	if(  nText )
 	{
 		pUser->AddDefinedText( nText );
 		return TRUE;
 	}
-#else	// __LORD
-	if( pUser->IsMute() )
-		return TRUE;
-#endif	// __LORD
 #endif	// __JEFF_9_20
 
 	char sChat[260]		= { 0, };
@@ -1357,11 +1290,7 @@ BOOL TextCmd_SkillLevel( CScanner & scanner )
 
 	DWORD dwSkillLevel = scanner.GetNumber();
 
-#if __VER >= 10 // __CSC_VER9_1
 	CWndSkillTreeEx* pSkill = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-#else
-	CWndSkillTreeEx* pSkill = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL1 );
-#endif //__CSC_VER9_1
 	if( pSkill )
 	{
 		int nIndex = pSkill->GetCurSelect();
@@ -1442,28 +1371,19 @@ BOOL TextCmd_whisper( CScanner& scanner )
 	if( pUser->IsMode( SAYTALK_MODE ) )
 		return TRUE;
 #ifdef __JEFF_9_20
-#if __VER >= 12 // __LORD
 	int nText	= pUser->GetMuteText();
 	if(  nText )
 	{
 		pUser->AddDefinedText( nText );
 		return TRUE;
 	}
-#else	// __LORD
-	if( pUser->IsMute() )
-		return TRUE;
-#endif	// __LORD
 #endif	// __JEFF_9_20
 
 	scanner.GetToken();
 
 	if( strcmp( pUser->GetName(), scanner.Token ) )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			u_long idPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-			u_long idPlayer	= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 			if( idPlayer > 0 ) 
 			{
 				scanner.GetLastFull();
@@ -1506,27 +1426,18 @@ BOOL TextCmd_say( CScanner& scanner )
 	if( pUser->IsMode( SAYTALK_MODE ) )
 		return TRUE;
 #ifdef __JEFF_9_20
-#if __VER >= 12 // __LORD
 	int nText	= pUser->GetMuteText();
 	if(  nText )
 	{
 		pUser->AddDefinedText( nText );
 		return TRUE;
 	}
-#else	// __LORD
-	if( pUser->IsMute() )
-		return TRUE;
-#endif	// __LORD
 #endif	// __JEFF_9_20
 
 	scanner.GetToken();
 	if( strcmp( pUser->GetName(), scanner.Token ) )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-		u_long idPlayer		= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idPlayer > 0 ) 
 		{
 			scanner.GetLastFull();
@@ -1574,12 +1485,8 @@ BOOL TextCmd_ResistItem( CScanner& scanner )
 	{
 		return FALSE;
 	}
-#if __VER >= 13 // __EXT_ENCHANT
 	if( nResistAbilityOption < 0 || CItemUpgrade::GetInstance()->GetMaxAttributeEnchantSize() < nResistAbilityOption 
 		|| nAbilityOption < 0 || CItemUpgrade::GetInstance()->GetMaxGeneralEnchantSize() < nAbilityOption )
-#else // __EXT_ENCHANT
-	if( nResistAbilityOption < 0 || 10 < nResistAbilityOption || nAbilityOption < 0 || 10 < nAbilityOption )
-#endif // __EXT_ENCHANT
 	{
 		return FALSE;
 	}
@@ -1601,14 +1508,8 @@ BOOL TextCmd_ResistItem( CScanner& scanner )
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_IR,  bItemResist );
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_RAO,  nResistAbilityOption );
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_AO,  nAbilityOption );
-#if __VER >= 9 // __ULTIMATE
 	if( nAbilityOption > 5 && pItemElem0->GetProp()->dwReferStat1 == WEAPON_ULTIMATE )
-#if __VER >= 12 // __EXT_PIERCING
 		pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_ULTIMATE_PIERCING_SIZE, nAbilityOption - 5 );
-#else // __EXT_PIERCING
-		pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_PIERCING_SIZE, nAbilityOption - 5 );
-#endif // __EXT_PIERCING
-#endif //__ULTIMATE
 #else // __WORLDSEVER
 #ifdef __CLIENT
 	if( g_WndMng.m_pWndUpgradeBase == NULL )
@@ -1626,11 +1527,7 @@ BOOL TextCmd_ResistItem( CScanner& scanner )
 	{
 		return FALSE;
 	}
-#if __VER >= 13 // __EXT_ENCHANT
 	if( nResistAbilityOption < 0 || 20 < nResistAbilityOption || nAbilityOption < 0 || 10 < nAbilityOption )
-#else	// __EXT_ENCHANT
-	if( nResistAbilityOption < 0 || 10 < nResistAbilityOption || nAbilityOption < 0 || 10 < nAbilityOption )
-#endif	// __EXT_ENCHANT
 	{
 		return FALSE;
 	}
@@ -1702,9 +1599,7 @@ BOOL TextCmd_Piercing( CScanner& scanner )
 
 	for( int i=1; i<=bPierNum; i++ )
 	{
-#if __VER >= 12 // __EXT_PIERCING
 		if( pItemElem0->IsPierceAble( NULL_ID, TRUE ) )
-#endif // __EXT_PIERCING
 			pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_PIERCING_SIZE, i );
 	}
 #else // __WORLDSEVER
@@ -1778,17 +1673,12 @@ BOOL TextCmd_shout( CScanner& scanner )
 		return FALSE;
 #endif // __QUIZ
 #ifdef __JEFF_9_20
-#if __VER >= 12 // __LORD
 	int nText	= pUser->GetMuteText();
 	if(  nText )
 	{
 		pUser->AddDefinedText( nText );
 		return FALSE;
 	}
-#else	// __LORD
-	if( pUser->IsMute() )
-		return FALSE;
-#endif	// __LORD
 	if( ( // 미국 & 유럽
 		( ::GetLanguage() == LANG_ENG && ::GetSubLanguage() == LANG_SUB_USA )
 		|| ( ::GetLanguage() == LANG_ENG && ::GetSubLanguage() == LANG_SUB_IND )
@@ -1832,25 +1722,16 @@ BOOL TextCmd_shout( CScanner& scanner )
 	arBlock << GETID( pUser );
 	arBlock.WriteString(pUser->GetName());
 	arBlock.WriteString( szString );
-#if __VER >= 12 // __LORD
 	DWORD dwColor	= 0xffff99cc;
 	if( pUser->HasBuff(  BUFF_ITEM, II_SYS_SYS_LS_SHOUT ) )
 		dwColor		= 0xff00ff00;
 	arBlock << dwColor;
-#endif	// __LORD
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 
-#if  __VER >= 13
 	int nRange = 0x000000ff;
 	if( pUser->IsShoutFull() )
 		nRange = 0;
 	g_UserMng.AddShout( pUser, nRange, lpBlock, uBlockSize );
-#else // __VER >= 13
-	if( pUser->IsShoutFull() )	// 여기서 유료 아이템 사용중인지 확인
-		g_UserMng.AddShout( pUser->GetPos(), 0, lpBlock, uBlockSize );
-	else
-		g_UserMng.AddShout( pUser->GetPos(), 0xff, lpBlock, uBlockSize );
-#endif // __VER >= 13
 
 #else	// __WORLDSERVER
 #ifdef __CLIENT
@@ -2063,17 +1944,12 @@ BOOL TextCmd_PartyChat( CScanner& scanner )
 	CUser* pUser	= (CUser*)scanner.dwValue;
 
 #ifdef __JEFF_9_20
-#if __VER >= 12 // __LORD
 	int nText	= pUser->GetMuteText();
 	if(  nText )
 	{
 		pUser->AddDefinedText( nText );
 		return TRUE;
 	}
-#else	// __LORD
-	if( pUser->IsMute() )
-		return TRUE;
-#endif	// __LORD
 #endif	// __JEFF_9_20
 	
 	lpString[0] = '\0';
@@ -2163,11 +2039,7 @@ BOOL TextCmd_Summon( CScanner& scanner )
 	CUser* pUser	= (CUser*)scanner.dwValue;
 	if( strcmp( pUser->GetName(), scanner.Token) )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-		u_long idPlayer		= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idPlayer > 0 ){
 			strcpy( lpszPlayer, scanner.Token );
 #ifdef __LAYER_1015
@@ -2280,8 +2152,6 @@ BOOL TextCmd_Layer( CScanner & s )
 }
 #endif	// __LAYER_1020
 
-#if __VER >= 13 // __COUPLE_1117
-#if __VER >= 13 // __COUPLE_1202
 BOOL TextCmd_NextCoupleLevel( CScanner & s )
 {
 #ifdef __WORLDSERVER
@@ -2302,7 +2172,6 @@ BOOL TextCmd_NextCoupleLevel( CScanner & s )
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-#endif	// __COUPLE_1202
 
 BOOL TextCmd_Propose( CScanner & s )
 {
@@ -2370,7 +2239,6 @@ BOOL TextCmd_CoupleState( CScanner & s )
 	return TRUE;
 }
 */
-#endif	// __COUPLE_1117
 
 BOOL TextCmd_Teleport( CScanner& scanner )         
 { 
@@ -2384,12 +2252,7 @@ BOOL TextCmd_Teleport( CScanner& scanner )
 	if( nTok != NUMBER )
 	{
 		// player
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-		u_long idPlayer	= prj.GetPlayerID( scanner.token );
-#endif	// __SYS_PLAYER_DATA
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		CUser* pUserTarget = static_cast<CUser*>( prj.GetUserByID( idPlayer ) );
 		if( IsValidObj( pUserTarget ) )
 		{
@@ -2403,12 +2266,6 @@ BOOL TextCmd_Teleport( CScanner& scanner )
 				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pUserTarget->GetPos(), REPLACE_NORMAL, pUserTarget->GetLayer() );
 			}
 		}
-#else // __INSTANCE_DUNGEON
-		if( idPlayer > 0 ) 
-		{
-			g_DPCoreClient.SendTeleportPlayer( pUser->m_idPlayer, idPlayer );
-		}
-#endif // __INSTANCE_DUNGEON
 		else 
 		{
 		#ifdef _DEBUG
@@ -2426,13 +2283,11 @@ BOOL TextCmd_Teleport( CScanner& scanner )
 	}
 	// 첫번째 파라메타는 월드 번호.
 	DWORD dwWorldId = atoi( scanner.token );
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( dwWorldId ) )
 	{
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() != dwWorldId )
 			return TRUE;
 	}
-#endif // __INSTANCE_DUNGEON
 	if( g_WorldMng.GetWorldStruct( dwWorldId ) )
 	{
 		// 두번째 파라메타가 스트링이면 리젼 키
@@ -2468,11 +2323,7 @@ BOOL TextCmd_Out( CScanner& scanner )
 	CUser* pUser	= (CUser*)scanner.dwValue;
 	if( strcmp( pUser->GetName(), scanner.Token) )
 	{	
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-		u_long idPlayer		= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idPlayer > 0 ) {
 			g_DPCoreClient.SendKillPlayer( pUser->m_idPlayer, idPlayer );
 		}
@@ -2716,7 +2567,6 @@ BOOL TextCmd_GetMailGold( CScanner & s )
 	return TRUE;
 }
 
-#if __VER >= 9 // __EVENTLUA
 BOOL TextCmd_Lua( CScanner& s )
 {
 #ifdef __WORLDSERVER
@@ -2730,19 +2580,15 @@ BOOL TextCmd_Lua( CScanner& s )
 		Error( "Event.lua Reload... - %s", pUser->GetName() );
 		g_dpDBClient.SendEventLuaChanged();
 	}
-#if __VER >= 12 // __MONSTER_SKILL
 	else if( s.Token == "ms" )
 	{
 		CMonsterSkill::GetInstance()->Clear();
 		CMonsterSkill::GetInstance()->LoadScript();
 	}
-#endif // __MONSTER_SKILL
-#if __VER >= 13 // __RAINBOW_RACE
 	else if( s.Token == "rr" )
 	{
 		CRainbowRaceMng::GetInstance()->LoadScript();
 	}
-#endif // __RAINBOW_RACE
 #endif // __WORLDSERVER
 	return TRUE;
 }
@@ -2764,7 +2610,6 @@ BOOL TextCmd_LuaEventInfo( CScanner& s )
 #endif // __WORLDSERVER
 	return TRUE;
 }
-#endif // __EVENTLUA
 
 #ifdef __JEFF_9_20
 BOOL TextCmd_Mute( CScanner & s )
@@ -2774,11 +2619,7 @@ BOOL TextCmd_Mute( CScanner & s )
 	s.GetToken();
 	if( s.tok == FINISHED )
 		return TRUE;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( s.token );
-#else	// __SYS_PLAYER_DATA
-	u_long uidPlayer	= prj.GetPlayerID( s.token );
-#endif	// __SYS_PLAYER_DATA
 	
 	if( idPlayer == 0 )
 	{
@@ -2798,7 +2639,6 @@ BOOL TextCmd_Mute( CScanner & s )
 }
 #endif	// __JEFF_9_20
 
-#if __VER >= 8 // __CSC_VER8_5
 BOOL TextCmd_AngelExp( CScanner& s )
 {
 #ifdef __WORLDSERVER
@@ -2840,7 +2680,6 @@ BOOL TextCmd_AngelExp( CScanner& s )
 #endif // __WORLDSERVER
 	return TRUE;	
 }
-#endif // __CSC_VER8_5
 
 #ifdef __EVENT_1101
 BOOL TextCmd_CallTheRoll( CScanner& s )  
@@ -3019,11 +2858,7 @@ BOOL TextCmd_PartyInvite( CScanner& scanner )
 	CUser* pUser = (CUser*)scanner.dwValue;
 	MoverProp* pMoverProp = NULL;
 	scanner.GetToken();
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	u_long uidPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-	u_long uidPlayer = prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 	if( 0 < uidPlayer )
 	{
 		CUser* pUser2	= g_UserMng.GetUserByPlayerID( uidPlayer );	
@@ -3046,11 +2881,7 @@ BOOL TextCmd_GuildInvite( CScanner& scanner )
 	CUser* pUser = (CUser*)scanner.dwValue;
 	MoverProp* pMoverProp = NULL;
 	scanner.GetToken();
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	u_long uidPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-	u_long uidPlayer = prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 	if( 0 < uidPlayer )
 	{
 		CUser* pUser2	= g_UserMng.GetUserByPlayerID( uidPlayer );	
@@ -3198,13 +3029,8 @@ BOOL TextCmd_Freeze( CScanner& scanner )
 	if( strcmp( pUser->GetName(), scanner.Token) )
 	{
 		u_long idFrom, idTo;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		idFrom	= CPlayerDataCenter::GetInstance()->GetPlayerId( (char*)pUser->GetName() );
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-		idFrom	= prj.GetPlayerID( pUser->GetName() );
-		idTo	= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idFrom > 0 && idTo > 0 ) 
 		{
 			// 1 : 추가 m_dwMode
@@ -3233,13 +3059,8 @@ BOOL TextCmd_NoFreeze( CScanner& scanner )
 	if( strcmp( pUser->GetName(), scanner.Token) )
 	{
 		u_long idFrom, idTo;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		idFrom	= CPlayerDataCenter::GetInstance()->GetPlayerId( (char*)pUser->GetName() );
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-		idFrom	= prj.GetPlayerID( pUser->GetName() );
-		idTo	= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idFrom > 0 && idTo > 0 ) 
 		{
 			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, (BYTE)0, idFrom, idTo );	// 0 : 뺌 m_dwMode
@@ -3266,13 +3087,8 @@ BOOL TextCmd_Talk( CScanner& scanner )
 	scanner.GetToken();
 
 	u_long idFrom, idTo;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	idFrom	= CPlayerDataCenter::GetInstance()->GetPlayerId( (char*)pUser->GetName() );
 	idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-	idFrom	= prj.GetPlayerID( pUser->GetName() );
-	idTo	= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 	if( idFrom > 0 && idTo > 0 ) 
 	{
 		g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)0, idFrom, idTo );	// 0 : 뺌 m_dwMode
@@ -3296,13 +3112,8 @@ BOOL TextCmd_NoTalk( CScanner& scanner )
 
 	{
 		u_long idFrom, idTo;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		idFrom	= CPlayerDataCenter::GetInstance()->GetPlayerId( (char*)pUser->GetName() );
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-		idFrom	= prj.GetPlayerID( pUser->GetName() );
-		idTo	= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idFrom > 0 && idTo > 0 ) 
 		{
 			g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)1, idFrom, idTo );	// 1 : 추가
@@ -3597,11 +3408,7 @@ BOOL TextCmd_ip( CScanner& scanner )
 	scanner.GetToken();
 
 	CUser* pUser = (CUser*)scanner.dwValue;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
-#else	// __SYS_PLAYER_DATA
-	u_long idPlayer		= prj.GetPlayerID( scanner.Token );
-#endif	// __SYS_PLAYER_DATA
 	if( idPlayer > 0 )
 		g_DPCoreClient.SendGetPlayerAddr( pUser->m_idPlayer, idPlayer );
 	else 
@@ -3936,11 +3743,7 @@ BOOL TextCmd_QuestState( CScanner & s )
 	s.GetToken();
 	if( s.tok != FINISHED )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( s.token );
-#else	// __SYS_PLAYER_DATA
-		u_long idPlayer		= prj.GetPlayerID( s.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idPlayer )
 			pUser	= g_UserMng.GetUserByPlayerID( idPlayer );
 		if( pUser == NULL )
@@ -4001,11 +3804,7 @@ BOOL TextCmd_RemoveQuest( CScanner & s )
 	s.GetToken();
 	if( s.tok != FINISHED )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( s.token );
-#else	// __SYS_PLAYER_DATA
-		u_long idPlayer		= prj.GetPlayerID( s.Token );
-#endif	// __SYS_PLAYER_DATA
 		if( idPlayer )
 			pUser	= g_UserMng.GetUserByPlayerID( idPlayer );
 		if( pUser == NULL )
@@ -4062,13 +3861,9 @@ BOOL TextCmd_PvpParam( CScanner& scanner )
 	pUser->m_nFame  = nFame;
 	g_UserMng.AddSetFame( pUser, nFame );
 
-#if __VER < 8 // __S8_PK
-	pUser->ChangeSlaughter( CHANGE_SLAUGHTER_SET, NULL, nSlaughter );
-#endif // __VER < 8 // __S8_PK
 #endif
 	return TRUE;
 }
-#if __VER >= 8 // __S8_PK
 BOOL TextCmd_PKParam( CScanner& scanner )
 {
 #ifdef __WORLDSERVER
@@ -4080,11 +3875,9 @@ BOOL TextCmd_PKParam( CScanner& scanner )
 	{
 		pUser->SetPKValue( nPKValue );
 		pUser->AddPKValue();
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		pUser->CheckHonorStat();
 		pUser->AddHonorListAck();
 		g_UserMng.AddHonorTitleChange( pUser, pUser->m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 	}
 
 	if( nPKPropensity >= 0 )
@@ -4095,7 +3888,6 @@ BOOL TextCmd_PKParam( CScanner& scanner )
 #endif // __WORLDSERVER
 	return TRUE;
 }
-#endif // __VER >= 8 // __S8_PK
 
 #ifdef _DEBUG
 BOOL TextCmd_TransyItemList( CScanner& scanner )
@@ -4234,7 +4026,6 @@ BOOL TextCmd_GuildCombatNext( CScanner& scanner )
 	return TRUE;
 }
 
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 BOOL TextCmd_RemoveAttribute( CScanner& scanner )
 {
 #ifdef __CLIENT
@@ -4265,9 +4056,7 @@ BOOL TextCmd_RemoveAttribute( CScanner& scanner )
 #endif // __CLIENT
 	return TRUE;	
 }
-#endif // __REMOVE_ATTRIBUTE
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 BOOL	TextCmd_GC1to1Open( CScanner& scanner )
 {
 #ifdef __WORLDSERVER
@@ -4320,7 +4109,6 @@ BOOL	TextCmd_GC1to1Next( CScanner& scanner )
 #endif // __WORLDERVER
 	return TRUE;
 }
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __EVENTLUA_COUPON
 BOOL TextCmd_Coupon( CScanner& s )
@@ -4345,7 +4133,6 @@ BOOL TextCmd_RemoveAllBuff( CScanner& s )
 }
 #endif // __NPC_BUFF
 
-#if __VER >= 12 // __HEAVEN_TOWER
 BOOL TextCmd_HeavenTower( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4359,9 +4146,7 @@ BOOL TextCmd_HeavenTower( CScanner& s )
 #endif // __CLIENT
 	return TRUE;
 }
-#endif //__HEAVEN_TOWER
 
-#if __VER >= 12 // __CSC_VER12_4
 BOOL TextCmd_RemoveJewel( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4375,9 +4160,7 @@ BOOL TextCmd_RemoveJewel( CScanner& s )
 #endif // __CLIENT
 	return TRUE;
 }
-#endif //__CSC_VER12_4
 
-#if __VER >= 12 // __CSC_VER12_5
 BOOL TextCmd_TransEggs( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4393,9 +4176,7 @@ BOOL TextCmd_TransEggs( CScanner& s )
 #endif // __CLIENT
 	return TRUE;
 }
-#endif //__CSC_VER12_5
 
-#if __VER >= 12 // __SECRET_ROOM
 BOOL TextCmd_SecretRoomOpen( CScanner& s )
 {
 #ifdef __WORLDSERVER
@@ -4512,9 +4293,7 @@ BOOL TextCmd_SecretRoomTenderCancelReturn( CScanner& s )
 #endif // __CLIENT
 	return TRUE;
 }
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __LORD
 BOOL TextCmd_ElectionRequirement( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4652,9 +4431,7 @@ BOOL TextCmd_LSkill( CScanner & s )
 	return TRUE;
 }
 //#endif	// __INTERNALSERVER
-#endif	// __LORD
 
-#if __VER >= 12 // __MOD_TUTORIAL
 BOOL TextCmd_SetTutorialState( CScanner & s )
 {
 #ifdef __WORLDSERVER
@@ -4665,9 +4442,7 @@ BOOL TextCmd_SetTutorialState( CScanner & s )
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-#endif	// __MOD_TUTORIAL
 
-#if __VER >= 12 // __TAX
 BOOL TextCmd_TaxApplyNow( CScanner& s )
 {
 #ifdef __WORLDSERVER
@@ -4675,9 +4450,7 @@ BOOL TextCmd_TaxApplyNow( CScanner& s )
 #endif // __WORLDSERVER
 	return TRUE;
 }
-#endif // __TAX
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 BOOL TextCmd_HonorTitleSet( CScanner& s )
 {
 #ifdef __WORLDSERVER
@@ -4707,9 +4480,7 @@ BOOL TextCmd_HonorTitleSet( CScanner& s )
 	return TRUE;
 }
 
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 13 // __RAINBOW_RACE
 BOOL TextCmd_RainbowRaceApp( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4862,9 +4633,7 @@ BOOL TextCmd_RainbowRaceReqFininsh( CScanner& s )
 	return TRUE;
 }
 
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __EXT_ENCHANT
 BOOL TextCmd_ChangeAttribute( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4878,9 +4647,7 @@ BOOL TextCmd_ChangeAttribute( CScanner& s )
 #endif // __CLIENT
 	return TRUE;
 }
-#endif //__EXT_ENCHANT
 
-#if __VER >= 13 // __HOUSING
 BOOL TextCmd_HousingVisitRoom( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4905,7 +4672,6 @@ BOOL TextCmd_HousingGMRemoveAll( CScanner& s )
 #endif // __WORLDSERVER
 	return TRUE;
 }
-#endif // __HOUSING
 /*
 #if __VER >= 14 // __SMELT_SAFETY
 BOOL TextCmd_SmeltSafetyNormal( CScanner& s )
@@ -4955,7 +4721,6 @@ BOOL TextCmd_SmeltSafetyPiercing( CScanner& s )
 
 #endif //__SMELT_SAFETY
 */
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 BOOL TextCmd_SmeltSafetyElement( CScanner& s )
 {
 #ifdef __CLIENT
@@ -4968,7 +4733,6 @@ BOOL TextCmd_SmeltSafetyElement( CScanner& s )
 #endif // __CLIENT
 	return TRUE;
 }
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 
 #ifdef __QUIZ
 BOOL TextCmd_QuizEventOpen( CScanner& s )
@@ -5014,7 +4778,6 @@ BOOL TextCmd_QuizEventClose( CScanner& s )
 }
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 BOOL TextCmd_BuyGuildHouse( CScanner& s )
 {
 #ifdef __CLIENT
@@ -5042,9 +4805,7 @@ BOOL TextCmd_GuildHouseUpkeep( CScanner & s )
 #endif // __CLIENT
 	return TRUE;
 }
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 BOOL TextCmd_CampusInvite( CScanner& s )
 {
 #ifdef __WORLDSERVER
@@ -5111,7 +4872,6 @@ BOOL TextCmd_UpdateCampusPoint( CScanner& s )
 #endif // __WORLDSERVER
 	return TRUE;
 }
-#endif // __CAMPUS
 
 BOOL TextCmd_InvenRemove( CScanner& scanner )       
 { 
@@ -5144,9 +4904,7 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_GuildChat,             "GuildChat",         "g",              "길드말",         "길말",    TCM_BOTH, AUTH_GENERAL      , "길드말" )
 	ON_TEXTCMDFUNC( TextCmd_PartyInvite,           "PartyInvite",       "partyinvite",    "극단초청",       "극초",    TCM_SERVER, AUTH_GENERAL      , "극단 초청" )
 	ON_TEXTCMDFUNC( TextCmd_GuildInvite,           "GuildInvite",       "guildinvite",    "길드초청",       "길초",    TCM_SERVER, AUTH_GENERAL      , "길드 초청" )
-#if __VER >= 15 // __CAMPUS
 	ON_TEXTCMDFUNC( TextCmd_CampusInvite,          "CampusInvite",		"campusinvite",   "사제초청",		"사초",    TCM_SERVER, AUTH_GENERAL      , "사제 초청" )
-#endif // __CAMPUS
 #ifdef __CLIENT
 	ON_TEXTCMDFUNC( TextCmd_tradeagree,            "tradeagree",        "ta",             "거래승인",       "거승",    TCM_CLIENT, AUTH_GENERAL      , "거래 승인 [/명령] " )
 	ON_TEXTCMDFUNC( TextCmd_traderefuse,           "traderefuse",       "tr",             "거래거절",       "거절",    TCM_CLIENT, AUTH_GENERAL      , "거래 거절 [/명령] " )
@@ -5191,9 +4949,7 @@ BEGINE_TEXTCMDFUNC_MAP
 
 	// GM_LEVEL_3
 	ON_TEXTCMDFUNC( TextCmd_PvpParam,              "PvpParam",           "p_Param",        "PVP설정",        "피설",    TCM_SERVER, AUTH_GAMEMASTER3, "PVP(카오)설정" )
-#if __VER >= 8 // __S8_PK
 	ON_TEXTCMDFUNC( TextCmd_PKParam,			   "PKParam",			 "pkparam",		   "PK설정",		 "pk설정",  TCM_SERVER, AUTH_GAMEMASTER3, "카오설정" )
-#endif // __VER >= 8 // __S8_PK
 	ON_TEXTCMDFUNC( TextCmd_Undying,               "undying",            "ud",             "무적",           "무",      TCM_BOTH  , AUTH_GAMEMASTER3   , "무적" )
 	ON_TEXTCMDFUNC( TextCmd_Undying2,              "undying2",           "ud2",            "반무적",         "반무",    TCM_BOTH  , AUTH_GAMEMASTER3   , "반무적" )
 	ON_TEXTCMDFUNC( TextCmd_NoUndying,             "noundying",          "noud",           "무적해제",       "무해",    TCM_BOTH  , AUTH_GAMEMASTER3   , "무적 해제" )
@@ -5223,10 +4979,8 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_GuildCombatNext,       "GCNext",             "gcNext",         "길드워다음",     "길워다",  TCM_BOTH  , AUTH_GAMEMASTER3, "길드대전 다음" )	
 	ON_TEXTCMDFUNC( TextCmd_indirect,              "indirect",           "id",             "간접",           "간접",    TCM_BOTH  , AUTH_GAMEMASTER3   , "상대에게 간접으로 말하게 하기" )
 	ON_TEXTCMDFUNC( TextCmd_CreateNPC,             "createnpc",          "cn",             "엔피씨생성",     "엔생",    TCM_SERVER, AUTH_GAMEMASTER3   , "npc생성" )
-#if __VER >= 9 // __EVENTLUA
 	ON_TEXTCMDFUNC( TextCmd_LuaEventList,     "EVENTLIST",         "eventlist",          "이벤트목록",     "이벤트목록",    TCM_SERVER,  AUTH_GAMEMASTER3, "" )
 	ON_TEXTCMDFUNC( TextCmd_LuaEventInfo,     "EVENTINFO",         "eventinfo",          "이벤트정보",     "이벤트정보",    TCM_SERVER,  AUTH_GAMEMASTER3, "" )	
-#endif	// __EVENTLUA
 	ON_TEXTCMDFUNC( TextCmd_GameSetting,           "gamesetting",        "gs",             "게임설정",       "게설",    TCM_SERVER, AUTH_GAMEMASTER3   , "게임 설정 보기" )
 	ON_TEXTCMDFUNC( TextCmd_RemoveNpc,             "rmvnpc",             "rn",             "삭제",           "삭",      TCM_SERVER, AUTH_GAMEMASTER3, "NPC삭제" )
 
@@ -5243,16 +4997,11 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_ReloadConstant,			"ReloadConstant",     "rec",            "리로드콘스탄트", "리콘",    TCM_SERVER, AUTH_ADMINISTRATOR, "리로드 콘스탄트파일" )
 	ON_TEXTCMDFUNC( TextCmd_CTD,					"ctd",				 "ctd",            "이벤트듀얼존",   "이듀",    TCM_BOTH  , AUTH_ADMINISTRATOR   , "이벤트 듀얼존 설정" )
 	ON_TEXTCMDFUNC( TextCmd_Piercing,				"Piercing",           "pier",           "피어싱",         "피싱",    TCM_BOTH  , AUTH_ADMINISTRATOR, "피어싱(소켓)" )
-#if __VER >= 9	// __PET_0410
 	ON_TEXTCMDFUNC( TextCmd_PetLevel,				"petlevel",         "pl",          "펫레벨",     "펫레",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_PetExp,					"petexp",         "pe",          "펫경험치",     "펫경",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_MakePetFeed,			"makepetfeed",         "mpf",          "먹이만들기",     "먹이",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_Pet,					"Pet",         "pet",          "펫",     "펫",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
-#endif	// __PET_0410
-#if __VER >= 9 // __EVENTLUA
 	ON_TEXTCMDFUNC( TextCmd_Lua,					"Lua",         "lua",          "루아",     "루아",    TCM_SERVER,  AUTH_ADMINISTRATOR, "" )
-#endif	// __EVENTLUA
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	ON_TEXTCMDFUNC( TextCmd_GC1to1Open,				"GC1TO1OPEN",		"gc1to1open",			"일대일대전오픈", "일오",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_GC1to1Close,			"GC1TO1CLOSE",		"gc1to1close",			"일대일대전닫기", "일닫",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_GC1to1Next,				"GC1TO1NEXT",		"gc1to1next",			"일대일대전다음", "일다",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
@@ -5261,28 +5010,21 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_GenRandomOption,		"GenRandomOption",	"gro",	"각성축복", "각축",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_InitializeRandomOption,	"InitializeRandomOption",	"iro",	"각성축복제거", "각축제거",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_SetRandomOption,		"SetRandomOption",	"sro",	"각성축복지정", "각지",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
-#endif // __GUILD_COMBAT_1TO1
 #ifdef __PET_1024
 	ON_TEXTCMDFUNC( TextCmd_SetPetName,             "SetPetName",           "setpetname",             "펫작명",       "펫작",    TCM_SERVER, AUTH_ADMINISTRATOR , "펫작명" )
 	ON_TEXTCMDFUNC( TextCmd_ClearPetName,           "ClearPetName",           "cpn",             "펫작명취소",       "펫작취",    TCM_CLIENT, AUTH_ADMINISTRATOR , "펫작명취소" )
 #endif	// __PET_1024
-#if __VER >= 13 // __COUPLE_1117
 	ON_TEXTCMDFUNC( TextCmd_Propose,				"Propose",           "propose",             "프러포즈",       "프러포즈",    TCM_SERVER, AUTH_ADMINISTRATOR , "프러포즈" )
 	ON_TEXTCMDFUNC( TextCmd_Refuse,					"Refuse",           "refuse",             "프러포즈거절",       "프거",    TCM_SERVER, AUTH_ADMINISTRATOR , "프러포즈거절" )
 	ON_TEXTCMDFUNC( TextCmd_Couple,					"Couple",           "couple",             "커플",       "커플",    TCM_SERVER, AUTH_ADMINISTRATOR , "커플" )
 	ON_TEXTCMDFUNC( TextCmd_Decouple,				"Decouple",           "decouple",             "커플해지",       "커해",    TCM_SERVER, AUTH_ADMINISTRATOR , "커플해지" )
 	ON_TEXTCMDFUNC( TextCmd_ClearPropose,           "ClearPropose",           "clearpropose",             "프러포즈초기화",       "프초",    TCM_SERVER, AUTH_ADMINISTRATOR , "프러포즈초기화" )
 //	ON_TEXTCMDFUNC( TextCmd_CoupleState,            "CoupleState",           "couplestate",             "커플상태",       "커상",    TCM_CLIENT, AUTH_ADMINISTRATOR , "커플상태" )
-#if __VER >= 13 // __COUPLE_1202
 	ON_TEXTCMDFUNC( TextCmd_NextCoupleLevel,        "NextCoupleLevel",           "ncl",             "커플레벨업",       "커레",    TCM_SERVER, AUTH_ADMINISTRATOR , "커플레벨업" )
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 #ifdef __NPC_BUFF
 	ON_TEXTCMDFUNC( TextCmd_RemoveAllBuff,			"RemoveBuff",		"rb",			"버프해제", "버해",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 #endif // __NPC_BUFF
-	#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	ON_TEXTCMDFUNC( TextCmd_HonorTitleSet,			"HonorTitleSet", "hts", "달인세팅", "달세", TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-#endif	// __HONORABLE_TITLE			// 달인
 
 
 
@@ -5347,29 +5089,19 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_CallTheRoll,			"CallTheRoll",        "ctr",            "출석설정",       "출석",  TCM_BOTH,	AUTH_ADMINISTRATOR, "출석 조작 명령어" )
 #endif	// __EVENT_1101
 	
-#if __VER >= 8 //__CSC_VER8_5
 	ON_TEXTCMDFUNC( TextCmd_AngelExp,				"AExp",		"aexp",			"엔젤경험치", "엔경",	TCM_SERVER, AUTH_ADMINISTRATOR, "" )
-#endif // __CSC_VER8_5
 	
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 	ON_TEXTCMDFUNC( TextCmd_RemoveAttribute,		"RemAttr",		"remattr",			"속성제거", "속제",	TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
-#endif // __REMOVE_ATTRIBUTE
 
-#if __VER >= 11 // __SYS_COLLECTING
 	ON_TEXTCMDFUNC( TextCmd_StartCollecting,		"StartCollecting",	"col1",	"채집시작", "채시",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_StopCollecting,			"StopCollecting",	"col2",	"채집끝", "채끝",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_DoUseItemBattery,		"Battery",	"battery",	"채집기충전", "채충",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 11 // __SYS_POCKET
 	ON_TEXTCMDFUNC( TextCmd_AvailPocket,			"AvailPocket",	"ap",	"주머니사용", "주사",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_PocketView,				"PocketView",	"pv",	"주머니보기", "주보",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_MoveItem_Pocket,		"MoveItemPocket",	"mip",	"아이템이동", "아이",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
-#endif	// __SYS_POCKET
 
-#if __VER >= 11 // __SYS_IDENTIFY
 	ON_TEXTCMDFUNC( TextCmd_ItemLevel,				"ItemLevel",	"il",	"하락", "하락",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
-#endif	// __SYS_IDENTIFY
 
 #ifdef __EVENTLUA_COUPON
 	ON_TEXTCMDFUNC( TextCmd_Coupon,					"COUPON",		"coupon",			"쿠폰설정", "쿠폰",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
@@ -5382,7 +5114,6 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_SfxLv,					"SfxLevel",		"sl",			"sl", "sl",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 #endif	
 
-#if __VER >= 12 // __SECRET_ROOM
 	ON_TEXTCMDFUNC( TextCmd_SecretRoomOpen,			"SROPEN",		"sropen",			"비밀의방오픈", "비오",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_SecretRoomNext,			"SRNEXT",		"srnext",			"비밀의방다음", "비다",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_SecretRoomEntrance,		"SRENTRANCE",		"srentrance",			"비밀의방입장", "비입장",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
@@ -5391,9 +5122,7 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_SecretRoomClose,		"SRCLOSE",		"srclose",			"비밀의방닫기", "비닫",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_SecretRoomTenderView,	"SRVIEW",		"srview",			"비밀의방입찰현황", "비현",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_SecretRoomTenderCancelReturn, "SRCANCEL",		"srcancel",		"비밀의방입찰취소", "비취",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __LORD
 	ON_TEXTCMDFUNC( TextCmd_ElectionRequirement,	"ElectionRequirement", "er", "군주투표현황", "군투현", TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
 //#ifdef __INTERNALSERVER
 	ON_TEXTCMDFUNC( TextCmd_ElectionAddDeposit,		"ElectionAddDeposit", "ead", "군주입찰", "군입", TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
@@ -5409,27 +5138,16 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_LSkill,					"LSkill", "lskill", "군주스킬", "군스", TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_RemoveTotalGold,		"RemoveTotalGold", "rtg", "돈삭제", "돈삭", TCM_SERVER, AUTH_ADMINISTRATOR, "" )
 //#endif	// __INTERNALSERVER
-#endif	// __LORD
 
-#if __VER >= 12 // __MOD_TUTORIAL
 	ON_TEXTCMDFUNC( TextCmd_SetTutorialState,		"SetTutorialState", "sts", "튜토리얼레벨", "튜레", TCM_SERVER, AUTH_ADMINISTRATOR, "" )
-#endif	// __MOD_TUTORIAL
 
-#if __VER >= 12 // __TAX
 	ON_TEXTCMDFUNC( TextCmd_TaxApplyNow,			"TaxApplyNow", "tan", "세율적용", "세적", TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-#endif // __TAX
 
-#if __VER >= 12 // __HEAVEN_TOWER
 	ON_TEXTCMDFUNC( TextCmd_HeavenTower,			"HeavenTower", "HTower", "심연의탑", "심탑", TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-#endif //__HEAVEN_TOWER
 
-#if __VER >= 12 // __CSC_VER12_4
 	ON_TEXTCMDFUNC( TextCmd_RemoveJewel,			"RemoveJewel", "RJewel", "보석제거", "보제", TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-#endif //__CSC_VER12_4
 
-#if __VER >= 12 // __CSC_VER12_5
 	ON_TEXTCMDFUNC( TextCmd_TransEggs,				"TransEggs", "TEggs", "알변환", "알변", TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-#endif //__CSC_VER12_5
 	ON_TEXTCMDFUNC( TextCmd_PickupPetAwakeningCancel,	"PickupPetAwakeningCancel",	"ppac",	"픽업펫각성취소", "픽소",	TCM_CLIENT,	AUTH_ADMINISTRATOR, "" )
 
 #ifdef __LAYER_1020
@@ -5438,7 +5156,6 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_Layer,					"Layer",           "lay",             "레이어이동",       "레이",    TCM_SERVER, AUTH_ADMINISTRATOR , "레이어이동" )
 #endif	// __LAYER_1020
 
-#if __VER >= 13 // __RAINBOW_RACE
 	ON_TEXTCMDFUNC( TextCmd_RainbowRaceApp,			"RRApp",	"rrapp",	"레인보우신청", "레신",	TCM_CLIENT,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_RainbowRaceOpen,		"RROpen",	"rropen",	"레인보우오픈", "레오",	TCM_SERVER,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_RainbowRaceNext,		"RRNext",	"rrnext",	"레인보우다음", "레다",	TCM_SERVER,	AUTH_ADMINISTRATOR, "" )
@@ -5457,15 +5174,12 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_RainbowRaceCard,		"RRCard",	"rrcard",	"레인보우카드", "레카",	TCM_CLIENT,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_RainbowRaceLadder,		"RRLadder",	"rrladder",	"레인보우사다리", "레사",	TCM_CLIENT,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_RainbowRaceReqFininsh,	"RRFINISH",	"rrfinish",	"레인보우완주", "레완",	TCM_CLIENT,	AUTH_ADMINISTRATOR, "" )
-#endif // __RAINBOW_RACE
 
 //#ifdef __EXT_ENCHANT
 //	ON_TEXTCMDFUNC( TextCmd_ChangeAttribute,		"CHATTRIBUTE",	"chattribute",	"속성변경", "속변",	TCM_CLIENT,	AUTH_ADMINISTRATOR, "" )
 //#endif //__EXT_ENCHANT
-#if __VER >= 13 // __HOUSING
 	ON_TEXTCMDFUNC( TextCmd_HousingVisitRoom,		"HousingVisit",	"hv",	"방문", "방문",	TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_HousingGMRemoveAll,		"HousingGMRemoveAll",	"hgmra",	"가구삭제", "가삭",	TCM_SERVER, AUTH_ADMINISTRATOR, "" )
-#endif // __HOUSING
 /*
 #if __VER >= 14 // __SMELT_SAFETY
 	ON_TEXTCMDFUNC( TextCmd_SmeltSafetyNormal,		"SmeltSafetyNormal",	"ssn",	"안전제련일반", "안제일",	TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
@@ -5473,9 +5187,7 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_SmeltSafetyPiercing,	"SmeltSafetyPiercing",	"ssp",	"안전제련피어싱", "안제피",	TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
 #endif //__SMELT_SAFETY
 */
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	ON_TEXTCMDFUNC( TextCmd_SmeltSafetyElement,		"SmeltSafetyElement",	"sse",	"안전제련속성", "안제속",	TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 #ifdef __QUIZ
 	ON_TEXTCMDFUNC( TextCmd_QuizEventOpen,			"QuizEventOpen",		"qeo",		"퀴즈오픈", "퀴오", TCM_SERVER, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_QuizEventEnterance,		"QuizEventEnterance",	"qee",		"퀴즈입장", "퀴입", TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
@@ -5483,15 +5195,11 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_QuizEventClose,			"QuizEventClose",		"qec",		"퀴즈종료", "퀴종", TCM_SERVER, AUTH_ADMINISTRATOR, "" )
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 	ON_TEXTCMDFUNC( TextCmd_BuyGuildHouse,			"BuyGuildHouse",		"bgh",		"길드하우스구입",	"길하구", TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_GuildHouseUpkeep,		"GuildHouseUpkeep",		"ghu",		"길드하우스유지비",	"길하유", TCM_CLIENT, AUTH_ADMINISTRATOR, "" )
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 	ON_TEXTCMDFUNC( TextCmd_RemoveCampusMember,		"RemoveCampusMember",	"rcm",		"사제해지",		"사해",		TCM_SERVER, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_UpdateCampusPoint,		"UpdateCampusPoint",	"ucp",		"사제포인트업",	"사포업",	TCM_SERVER, AUTH_ADMINISTRATOR, "" )
-#endif // __CAMPUS
 	ON_TEXTCMDFUNC( TextCmd_InvenRemove,            "InvenRemove",         "irm",       "인벤삭제",       "인삭",    TCM_SERVER, AUTH_ADMINISTRATOR, "" )
 END_TEXTCMDFUNC_MAP
 

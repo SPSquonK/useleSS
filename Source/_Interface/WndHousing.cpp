@@ -2,16 +2,13 @@
 #include "resData.h"
 #include "defineText.h"
 
-#if __VER >= 13 // __HOUSING
 #ifdef __CLIENT
 
 #include "WndHousing.h"
 #include "DPClient.h"
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
-#endif
 
 extern	CDPClient	g_DPlay;
 
@@ -548,7 +545,6 @@ BOOL CWndHousing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 // CWndGuildHousing
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if __VER >= 15 // __GUILD_HOUSE
 
 CWndGuildHousing::CWndGuildHousing( )
 {
@@ -1515,7 +1511,6 @@ void CWndGHouseShowOneUnit::OnDraw( C2DRender* p2DRender )
 		p2DRender->RenderFillRect( pCustom->rect, 0x55ff0000 );
 }
 
-#endif // __GUILD_HOUSE
 
 #endif // __HOUSING
 
@@ -1938,4 +1933,3 @@ void CWndGuildHouseBid::MakeMoneyStyle( OUT CString& str )
 
 #endif //__GUILD_HOUSE_MIDDLE
 
-#endif // __CLIENT

@@ -47,13 +47,11 @@ public:
 	
 	CString m_strPlayer;
 
-#if __VER >= 11 // __MOD_VENDOR
 	CWndText		m_wndChat;
 	CWndText		m_wndInfo;
 	BOOL			m_nIsOwner;
 
 	void WriteBuyInfo(char *pBuyerName, CString strItem, int nItemNum, int	nTotalCost);
-#endif
 	
 	void InitSize( void );
 	void AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage );
@@ -70,7 +68,6 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 class CWndVendorConfirm : public CWndMessageBox
 { 
 public: 
@@ -80,6 +77,5 @@ public:
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 
 #endif

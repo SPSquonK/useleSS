@@ -58,25 +58,15 @@ CItemElem::CItemElem()
 
 	m_bCharged	= FALSE;
 	m_dwKeepTime = 0;
-#if __VER >= 11 // __SYS_IDENTIFY
 	m_iRandomOptItemId	= 0;
-#else	// __SYS_IDENTIFY
-	m_nRandomOptItemId	= 0;
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 9	// __PET_0410
 	m_pPet	= NULL;
-#endif	// __PET_0410
-#if __VER >= 15 // __PETVIS
 	m_bTranformVisPet = FALSE;
-#endif // __PETVIS
 }
 
 CItemElem::~CItemElem()
 {
-#if __VER >= 9	// __PET_0410
 	SAFE_DELETE( m_pPet );
-#endif	// __PET_0410
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -148,11 +138,7 @@ CMover::CMover()
 	m_dwHairMesh	= 0;//HAIRMESH_00;
 	m_dwHairColor	= 0xffffffff;
 	m_dwHeadMesh	= 0;
-#if __VER >= 12 // __MOD_TUTORIAL
 	m_nTutorialState	= 0;
-#else	// __MOD_TUTORIAL
-	m_nFlightLv		= 0;
-#endif	// __MOD_TUTORIAL
 	m_nFxp			= 0;
 //	m_nTxp			= 0;
 	m_bySex		= SEX_FEMALE;
@@ -181,28 +167,19 @@ CMover::CMover()
 	m_nCompleteQuestSize = 0;
 	memset( m_aQuest, 0, sizeof(QUEST) * MAX_QUEST );
 	memset( m_aCompleteQuest, 0, sizeof(WORD) * MAX_COMPLETE_QUEST );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_aCheckedQuest = new WORD[ MAX_CHECKED_QUEST ];
 	m_nCheckedQuestSize = 0;
 	memset( m_aCheckedQuest, 0, sizeof(WORD) * MAX_CHECKED_QUEST );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	m_idparty = 0;
 	m_idGuild	= 0;
 	m_idWar	= 0;
-#if __VER >= 8 // __S8_PK
 	m_dwPKTime			= 0;			/// 핑크 상태 시간
 	m_nPKValue			= 0;			/// PK 수치
 	m_dwPKPropensity	= 0;			/// PK 성향
 	m_dwPKExp			= 0;			/// PK 성향 습득 경험치
-#else // __VER >= 8 // __S8_PK
-	m_nNumKill			= 0;
-	m_nSlaughter		= 0;
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 //__CSC_VER8_5
 	m_nAngelExp			= 0;			/// 엔젤 경험치
 	m_nAngelLevel		= 0;			/// 엔젤 Level
-#endif // __CSC_VER8_5
 	m_nFame		= 0;
 	m_idMurderer	= 0;
 #ifdef __DBSERVER
@@ -243,12 +220,8 @@ CMover::CMover()
 	memset( m_abUpdateSkill, 0, sizeof(m_abUpdateSkill)  );		// 쿼리 실행해야하는가?
 #endif	// __SKILL_0205
 
-#if __VER >= 9	// __PET_0410
 	m_dwPetId	= NULL_ID;
-#endif	// __PET_0410
-#if __VER >= 9	//__AI_0509
 	m_fSpeedFactor	= 1.0F;
-#endif	// __AI_0509
 	
 #ifdef __EXP_ANGELEXP_LOG
 	m_nExpLog = 0;
@@ -262,25 +235,15 @@ CMover::CMover()
 #ifdef __JEFF_9_20
 	m_dwMute	= 0;
 #endif	// __JEFF_9_20
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	m_nHonor = -1;					// 달인선택 
 	memset( m_aHonorTitle, 0, sizeof( int ) * MAX_HONOR_TITLE );// 달인수치
-#endif	// __HONORABLE_TITLE			// 달인
-#if __VER >= 14 // __PCBANG
 	m_dwPCBangClass = 0;
-#endif // __PCBANG
-#if __VER >= 15 // __PETVIS
 	m_objIdVisPet = NULL_ID;
 	m_dwMoverSfxId = NULL_ID;
-#endif // __PETVIS
-#if __VER >= 15 // __CAMPUS
 	m_idCampus = 0;
 	m_nCampusPoint = 0;
-#endif // __CAMPUS
-#if __VER >= 15 // __GUILD_HOUSE
 	m_nRestPoint = 0;
 	m_tLogOut = 0;
-#endif // __GUILD_HOUSE
 }
 
 CMover::~CMover()
@@ -289,9 +252,7 @@ CMover::~CMover()
 
 	SAFE_DELETE_ARRAY( m_aQuest ); 
 	SAFE_DELETE_ARRAY( m_aCompleteQuest );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	SAFE_DELETE_ARRAY( m_aCheckedQuest );
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 
 void CMover::InitProp( void )
@@ -331,36 +292,20 @@ void CMover::InitProp( void )
 #endif	// __DBSERVER
 }
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #ifdef __SEND_ITEM_ULTIMATE
 BOOL CMover::AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, int nCharged, int nPiercedSize, DWORD adwItemId0, DWORD adwItemId1, DWORD adwItemId2, DWORD adwItemId3, DWORD adwItemId4, DWORD m_dwKeepTime, __int64 iRandomOptItemId )
 #else // __SEND_ITEM_ULTIMATE
 BOOL CMover::AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, int nCharged, int nPiercedSize, DWORD adwItemId0, DWORD adwItemId1, DWORD adwItemId2, DWORD adwItemId3, DWORD m_dwKeepTime, __int64 iRandomOptItemId )
 #endif // __SEND_ITEM_ULTIMATE
-#else	// __SYS_IDENTIFY
-#ifdef __SEND_ITEM_ULTIMATE
-BOOL CMover::AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, int nCharged, int nPiercedSize, DWORD adwItemId0, DWORD adwItemId1, DWORD adwItemId2, DWORD adwItemId3, DWORD adwItemId4, DWORD m_dwKeepTime, int nRandomOptItemId )
-#else // __SEND_ITEM_ULTIMATE
-BOOL CMover::AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, int nCharged, int nPiercedSize, DWORD adwItemId0, DWORD adwItemId1, DWORD adwItemId2, DWORD adwItemId3, DWORD m_dwKeepTime, int nRandomOptItemId )
-#endif // __SEND_ITEM_ULTIMATE
-#endif	// __SYS_IDENTIFY
 {
 	if( iSerialNumber == 0 )
 		iSerialNumber	= CSerialNumber::GetInstance()->Get();
 	
-#if __VER >= 11 // __SYS_IDENTIFY
 #ifdef __SEND_ITEM_ULTIMATE
 	return m_Inventory.Add( dwId, (short)( dwNum ), nOption, iSerialNumber, nItemResist, nResistAbilityOption, NULL, NULL, NULL, nCharged, nPiercedSize, adwItemId0, adwItemId1, adwItemId2, adwItemId3, adwItemId4, m_dwKeepTime, iRandomOptItemId );
 #else // __SEND_ITEM_ULTIMATE
 	return m_Inventory.Add( dwId, (short)( dwNum ), nOption, iSerialNumber, nItemResist, nResistAbilityOption, NULL, NULL, NULL, nCharged, nPiercedSize, adwItemId0, adwItemId1, adwItemId2, adwItemId3, m_dwKeepTime, iRandomOptItemId );
 #endif // __SEND_ITEM_ULTIMATE
-#else	// __SYS_IDENTIFY
-#ifdef __SEND_ITEM_ULTIMATE
-	return m_Inventory.Add( dwId, (short)( dwNum ), nOption, iSerialNumber, nItemResist, nResistAbilityOption, NULL, NULL, NULL, nCharged, nPiercedSize, adwItemId0, adwItemId1, adwItemId2, adwItemId3, adwItemId4, m_dwKeepTime, nRandomOptItemId );
-#else // __SEND_ITEM_ULTIMATE
-	return m_Inventory.Add( dwId, (short)( dwNum ), nOption, iSerialNumber, nItemResist, nResistAbilityOption, NULL, NULL, NULL, nCharged, nPiercedSize, adwItemId0, adwItemId1, adwItemId2, adwItemId3, m_dwKeepTime, nRandomOptItemId );
-#endif // __SEND_ITEM_ULTIMATE
-#endif	// __SYS_IDENTIFY
 }
 
 BOOL CMover::AddItemBank( int nSlot, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber )
@@ -614,7 +559,6 @@ int CMover::InitSkillExp()
 }
 #endif // __CONV_SKILL_11_MONTH_JOB1
 
-#if __VER >= 12 // __EXT_PIERCING
 // bSize는 피어싱 사이즈를 늘릴 수 있는지 검사할 때 TRUE값을 setting 한다.
 // bSize를 TRUE로 할 경우 dwTagetItemKind3는 NULL_ID로 한다.
 BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize )
@@ -653,7 +597,6 @@ BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize )
 
 	return FALSE;
 }
-#endif // __EXT_PIERCING
 
 
 CItemElem& CItemElem::operator =( CItemElem & ie )
@@ -671,24 +614,16 @@ CItemElem& CItemElem::operator =( CItemElem & ie )
 	m_dwKeepTime			= ie.m_dwKeepTime;
 	m_piercing	= ie.m_piercing;
 	m_bCharged				= ie.m_bCharged;
-#if __VER >= 11 // __SYS_IDENTIFY
 	m_iRandomOptItemId		= ie.GetRandomOptItemId();
-#else	// __SYS_IDENTIFY
-	m_nRandomOptItemId		= ie.GetRandomOptItemId();
-#endif	// __SYS_IDENTIFY
 	m_nRepair				= ie.m_nRepair;
 
-#if __VER >= 9	// __PET_0410
 	SAFE_DELETE( m_pPet );
 	if( ie.m_pPet )
 	{
 		m_pPet	= new CPet;
 		*m_pPet	= *ie.m_pPet;
 	}
-#endif	// __PET_0410
-#if __VER >= 15 // __PETVIS
 	m_bTranformVisPet		= ie.m_bTranformVisPet;
-#endif // __PETVIS
 
 	return *this;
 }
@@ -737,20 +672,14 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 #ifdef __BUFF_1107
 	m_buffs	= pMover->m_buffs;
 #endif	// __BUFF_1107
-#if __VER >= 14 // __PCBANG
 	m_dwPCBangClass = pMover->m_dwPCBangClass;
-#endif // __PCBANG
-#if __VER >= 15 // __CAMPUS
 	m_idCampus	= pMover->m_idCampus;
 	m_nCampusPoint	= pMover->m_nCampusPoint;
-#endif // __CAMPUS
 
 	if( bAll )
 	{
 		m_Inventory.Copy( pMover->m_Inventory );
-#if __VER >= 11 // __SYS_POCKET
 		m_Pocket.Copy( pMover->m_Pocket );
-#endif	// __SYS_POCKET
 		memcpy( m_aEquipInfo, pMover->m_aEquipInfo, sizeof(EQUIP_INFO) * MAX_HUMAN_PARTS );
 		memcpy( m_UserTaskBar.m_aSlotApplet, pMover->m_UserTaskBar.m_aSlotApplet, sizeof(m_UserTaskBar.m_aSlotApplet) );
 		memcpy( m_UserTaskBar.m_aSlotItem, pMover->m_UserTaskBar.m_aSlotItem, sizeof(m_UserTaskBar.m_aSlotItem) );
@@ -780,19 +709,12 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		SetGold( pMover->GetGold() );
 		m_nJob	= pMover->m_nJob;
 		m_idparty	= pMover->m_idparty;
-#if __VER >= 8 // __S8_PK
 		m_dwPKTime			= pMover->m_dwPKTime;
 		m_nPKValue			= pMover->m_nPKValue;
 		m_dwPKPropensity	= pMover->m_dwPKPropensity;
 		m_dwPKExp			= pMover->m_dwPKExp;
-#else // __VER >= 8 // __S8_PK
-		m_nNumKill	= pMover->m_nNumKill;
-		m_nSlaughter	= pMover->m_nSlaughter;
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 // __CSC_VER8_5
 		m_nAngelExp			= pMover->m_nAngelExp;
 		m_nAngelLevel		= pMover->m_nAngelLevel;
-#endif // __CSC_VER8_5
 		m_idMurderer	= pMover->m_idMurderer;
 		m_nFame	= pMover->m_nFame;
 		m_pActMover->m_dwState	= pMover->m_pActMover->GetState();
@@ -811,11 +733,7 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_idMarkingWorld	= pMover->m_idMarkingWorld;
 		m_vMarkingPos	= pMover->m_vMarkingPos;
 		m_nRemainGP	= pMover->m_nRemainGP;
-#if __VER >= 12 // __MOD_TUTORIAL
 		m_nTutorialState	= pMover->m_nTutorialState;
-#else	// __MOD_TUTORIAL
-		m_nFlightLv	= pMover->m_nFlightLv;
-#endif	// __MOD_TUTORIAL
 		m_nFxp	= pMover->m_nFxp;
 		m_bPlayer	= TRUE;
 		m_nDeathExp	= pMover->m_nDeathExp;
@@ -828,10 +746,8 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_nQuestSize	= pMover->m_nQuestSize;
 		memcpy( m_aCompleteQuest, pMover->m_aCompleteQuest, sizeof(WORD) * MAX_COMPLETE_QUEST );
 		m_nCompleteQuestSize	= pMover->m_nCompleteQuestSize;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		memcpy( m_aCheckedQuest, pMover->m_aCheckedQuest, sizeof(WORD) * MAX_CHECKED_QUEST );
 		m_nCheckedQuestSize	= pMover->m_nCheckedQuestSize;
-#endif // __IMPROVE_QUEST_INTERFACE
 		memcpy( m_dwSMTime, pMover->m_dwSMTime, sizeof(m_dwSMTime) );
 		m_nPlusMaxHitPoint	= pMover->m_nPlusMaxHitPoint;
 		m_nAttackResistLeft	= pMover->m_nAttackResistLeft;
@@ -860,12 +776,8 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 #endif	// __EVENT_1101
 #endif	// __DBSERVER
 
-#if __VER >= 9	// __PET_0410
 		SetPetId( pMover->GetPetId() );
-#endif	// __PET_0410
-#if __VER >= 9	//__AI_0509
 		m_fSpeedFactor	= pMover->m_fSpeedFactor;
-#endif	// __AI_0509
 
 #ifdef __EXP_ANGELEXP_LOG
 		m_nExpLog = pMover->m_nExpLog;
@@ -879,15 +791,11 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 #ifdef __JEFF_9_20
 		m_dwMute	= pMover->m_dwMute;
 #endif	// __JEFF_9_20
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		m_nHonor	= pMover->m_nHonor;
 		memcpy( m_aHonorTitle, pMover->m_aHonorTitle, sizeof(int) * MAX_HONOR_TITLE );
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 15 // __GUILD_HOUSE
 	m_nRestPoint = pMover->m_nRestPoint;
 	m_tLogOut = pMover->m_tLogOut;
-#endif // __GUILD_HOUSE
 
 	}
 }
@@ -932,7 +840,6 @@ BOOL CMover::RemoveQuest( int nQuestId )
 			break;
 		}
 	}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	for( int i = 0; i < m_nCheckedQuestSize; ++i )
 	{
 		if( m_aCheckedQuest[ i ] == nQuestId )
@@ -944,7 +851,6 @@ BOOL CMover::RemoveQuest( int nQuestId )
 			break;
 		}
 	}
-#endif // __IMPROVE_QUEST_INTERFACE
 	return bRemove;
 }
 

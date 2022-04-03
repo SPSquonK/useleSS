@@ -78,19 +78,15 @@ void CModelObject::Init( void )
 	m_vMax.x = m_vMax.y = m_vMax.z = -65535.0f;
 	m_vForce1.x = m_vForce1.y = m_vForce1.z = 0.0f;
 	m_vForce2.x = m_vForce2.y = m_vForce2.z = 0.0f;
-#if __VER >= 9 // __CSC_VER9_5
 	m_vForce3.x = m_vForce3.y = m_vForce3.z = 0.0f;
 	m_vForce4.x = m_vForce4.y = m_vForce4.z = 0.0f;
-#endif //__CSC_VER9_5
 	m_pCloakTexture = NULL;
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	m_nEffectCount  = 0;
 
 	m_pPartsEffect1_Detail = NULL;
 	m_pPartsEffect2_Detail = NULL;
 
-#endif //__Y_ADV_ENCHANT_EFFECT
 }
 
 void CModelObject::Init( int nIdx )
@@ -125,11 +121,9 @@ void CModelObject::Destroy( void )
 	SAFE_DELETE( m_pPartsEffect );
 	SAFE_DELETE( m_pPartsEffect2 );
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	m_nEffectCount  = 0;
 	SAFE_DELETE( m_pPartsEffect1_Detail );
 	SAFE_DELETE( m_pPartsEffect2_Detail );
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 	Init();
 	// m_pBone를 직접 삭제하면 안된다.
@@ -371,7 +365,6 @@ void CModelObject::FrameMoveAttachModel(D3DXVECTOR3 *pvSndPos, float fSpeed)
 }
 #endif //__ATTACH_MODEL
 
-#if __VER >= 14 // __WING_ITEM
 CString CModelObject::GetMotionFileName( const CString& rstrMotion ) const
 {
 	static TCHAR s_szRoot[ MAX_OBJTYPE ][32] = { "obj", "ani", "ctrl", "sfx", "item", "mvr", "region", "obj", "path" };
@@ -383,7 +376,6 @@ CString CModelObject::GetMotionFileName( const CString& rstrMotion ) const
 	strBoneFileName.Format( _T("%s_%s_%s.ani"), s_szRoot[ m_pModelElem->m_dwType ], m_pModelElem->m_szName, rstrMotion );
 	return strBoneFileName;
 }
-#endif // __WING_ITEM
 
 // OBB와 line의 충돌테스트 
 // BOOL bNeedCollObject = TRUE
@@ -392,14 +384,12 @@ BOOL CModelObject::TestIntersectionOBB_Line( const Segment3& segment, const CObj
 	CObject3D *pObject3D = m_Element[0].m_pObject3D;
 	if( pObject3D->m_CollObject.m_Type == GMT_ERROR && bNeedCollObject )	// 충돌메시가 없으면 검사하지 않음.
 		return FALSE;
-#if __VER >= 11 // __FIX_COLLISION
 	// 길드대전장이 너무 예외적인 모양이라 퍼포먼스 측면에서 예외처리함.. 보기 좋지는 않다.. 
 	char* pString = ((CModelObject *)pObj->m_pModel)->GetObject3D()->m_szFileName;
 	if( strcmp("obj_guildcombatground.o3d", pString) == 0 )
 	{
 		return TRUE;
 	}
-#endif
 	#ifdef __CPU_UTILDOWN_060502	//sun!!
 		return IntrSegment3Box3_Test( segment, pObj->m_OBB );
 	#else
@@ -494,7 +484,6 @@ void	CModelObject::TakeOffParts( int nParts )
 
 	if(nIdx != -1)
 	{
-	#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 		if( nParts == PARTS_LWEAPON || nParts == PARTS_RWEAPON )
 		{
 			m_nEffectCount  = 0;
@@ -507,7 +496,6 @@ void	CModelObject::TakeOffParts( int nParts )
 			// m_pPartsEffect1_Detail = NULL;
 			// m_pPartsEffect2_Detail = NULL;
 		}
-	#endif //__Y_ADV_ENCHANT_EFFECT
 
 		Init( nIdx );
 	}
@@ -776,7 +764,6 @@ int		CModelObject::LoadElement( LPCTSTR szFileName, int nParts )
 	return SUCCESS;
 }
 
-#if __VER >= 15 // __GUILD_HOUSE
 #ifdef __CLIENT
 
 int CModelObject::LoadClonedElement( LPCTSTR szFileName )
@@ -885,7 +872,6 @@ int CModelObject::LoadClonedElement( LPCTSTR szFileName )
 }
 #endif //__CLIENT
 
-#endif //__GUILD_HOUSE
 
 // SetParent( PARTS_LWEAPON, BONE_RHAND );
 // nParts의 오브젝트의 부모를 nBoneIdx로 세팅
@@ -1161,10 +1147,8 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 				fblack = fblack / 3.0f;
 				fblack *= 0.6f;
 
-#if __VER >= 14 // __BS_FIX_HAIR_AMBIENT	// ambient 설정값이 너무 낮을경우 거의 검은색에 가까워지는걸 방지 
 				if( fblack < 0.3f )		
 					fblack = 0.3f;
-#endif // __BS_FIX_HAIR_AMBIENT
 				SetAmbient( min( pObject3D->m_fAmbient[0]*fblack, 1.0f ), min( pObject3D->m_fAmbient[1]*fblack, 1.0f ), min( pObject3D->m_fAmbient[2]*fblack, 1.0f ) );
 			}
 			else
@@ -1286,14 +1270,10 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				else
 				if( nEffect & XE_ITEM_ELEC )
 				{
-			#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 					CreateParticle( PARTS_RWEAPON, mWorld, PE_ELEC, nLevel, nLevel2 );
 			#ifdef __CSC_ENCHANT_EFFECT_2
 					RenderItemElec_Adv( PARTS_RWEAPON, mWorld, nLevel2 );
 			#endif //__CSC_ENCHANT_EFFECT_2
-			#else //__Y_ADV_ENCHANT_EFFECT
-					RenderItemElec( PARTS_RWEAPON, mWorld, nLevel );
-			#endif //__Y_ADV_ENCHANT_EFFECT
 				}
 				else
 				if( nEffect & XE_ITEM_WATER )
@@ -1310,7 +1290,6 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				{
 					CreateParticle( PARTS_RWEAPON, mWorld, PE_EARTH, nLevel, nLevel2 );
 				}
-			#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 				else
 				if( nEffect & XE_ITEM_GEN )
 				{
@@ -1349,7 +1328,6 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				{
 					CreateParticle( PARTS_RWEAPON, mWorld, PE_EARTH_AL, nLevel, nLevel2 );
 				}
-			#endif //__Y_ADV_ENCHANT_EFFECT
 			}
 
 			if( dwItemKind3 != IK3_YOYO )
@@ -1387,7 +1365,6 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				nEffect = pElem->m_nEffect & 0x00FFFFFF;	// 하위 24비트
 				nLevel = (pElem->m_nEffect >> 24);			// 상위 8비트
 				
-			#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 			#ifdef __CSC_ENCHANT_EFFECT_2
 				if( dwItemKind3 != IK3_YOYO ) //요요는 레벨 일치 시켜 줘야 이펙트가 동일하게 나옴.
 					nLevel2 = nLevelL;
@@ -1395,7 +1372,6 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				if( dwItemKind3 == IK3_YOYO ) //요요는 레벨 일치 시켜 줘야 이펙트가 동일하게 나옴.
 					nLevel2 =  nLevel;
 			#endif //__CSC_ENCHANT_EFFECT_2
-			#endif
 
 				if( nEffect & XE_ITEM_FIRE )
 				{
@@ -1404,14 +1380,10 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				else
 				if( nEffect & XE_ITEM_ELEC )
 				{
-			#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 					CreateParticle( PARTS_LWEAPON, mWorld, PE_ELEC, nLevel, nLevel2 );
 			#ifdef __CSC_ENCHANT_EFFECT_2
 					RenderItemElec_Adv( PARTS_LWEAPON, mWorld, nLevel2 );
 			#endif //__CSC_ENCHANT_EFFECT_2
-			#else //__Y_ADV_ENCHANT_EFFECT
-					RenderItemElec( PARTS_LWEAPON, mWorld, nLevel );
-			#endif //__Y_ADV_ENCHANT_EFFECT
 				}
 				else
 				if( nEffect & XE_ITEM_WATER )
@@ -1428,7 +1400,6 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				{
 					CreateParticle( PARTS_LWEAPON, mWorld, PE_EARTH, nLevel, nLevel2 );
 				}
-			#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 				else
 				if( nEffect & XE_ITEM_GEN )
 				{
@@ -1467,7 +1438,6 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 				{
 					CreateParticle( PARTS_LWEAPON, mWorld, PE_EARTH_AL, nLevel, nLevel2 );
 				}
-			#endif //__Y_ADV_ENCHANT_EFFECT
 
 			}
 		}
@@ -1517,12 +1487,10 @@ HRESULT CModelObject::RestoreDeviceObjects()
 	if( m_pPartsEffect2 )
 		m_pPartsEffect2->RestoreDeviceObjects( m_pd3dDevice );
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	if( m_pPartsEffect1_Detail )
 		m_pPartsEffect1_Detail->RestoreDeviceObjects( m_pd3dDevice );
 	if( m_pPartsEffect2_Detail )
 		m_pPartsEffect2_Detail->RestoreDeviceObjects( m_pd3dDevice );
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 #ifdef __ATTACH_MODEL
 	RestoreAttachModelDeviceObjects();
@@ -1539,12 +1507,10 @@ HRESULT CModelObject::InvalidateDeviceObjects()
 	if( m_pPartsEffect2 )
 		m_pPartsEffect2->InvalidateDeviceObjects( m_pd3dDevice );
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	if( m_pPartsEffect1_Detail )
 		m_pPartsEffect1_Detail->InvalidateDeviceObjects( m_pd3dDevice );
 	if( m_pPartsEffect2_Detail )
 		m_pPartsEffect2_Detail->InvalidateDeviceObjects( m_pd3dDevice );
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 	return  S_OK;
 }	
@@ -1590,7 +1556,6 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 #ifdef __CLIENT
 	if( m_pMotion )		// CModel::FrameMove에서 프레임이 증가되기전에 검사해봐야 한다.
 	{
-#if __VER >= 9	//__AI_0509
 		MOTION_ATTR* pAttr	= IsAttrSound();
 		if( pAttr && pAttr->m_nSndID > 0 && m_nPause == 0 )
 			PLAYSND( pAttr->m_nSndID, pvSndPos );
@@ -1626,28 +1591,9 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 				break;
 			i	= ( i + 1 ) % GetMaxFrame();
 		}
-#else	// __AI_0509
-		MOTION_ATTR *pAttr = IsAttrSound();
-		if( pAttr )
-			if( pAttr->m_nSndID > 0 && m_nPause == 0 )		// 효과음 속성이 있다면 플레이, pause상태면 사운드 출력 안함
-				PLAYSND( pAttr->m_nSndID, pvSndPos );
-		BOOL bQuake = IsAttrQuake();
-		if( bQuake && m_nPause == 0 )
-		{
-			CMover *pMover = CMover::GetActiveMover();
-			if( pMover )
-			{
-				ItemProp* pItemProp = pMover->GetActiveHandItemProp();
-				
-				if( pItemProp && pItemProp->dwItemKind3 != IK3_YOYO && !pMover->IsActiveMover() )
-					pMover->GetWorld()->m_pCamera->SetQuake( 15 );				
-			}
-		}
-#endif	// __AI_0509
 	} else
 	{
 		CObject3D *pObject = GetObject3D();
-#if __VER >= 9	//__AI_0509
 		if( pObject->GetMaxFrame() )
 		{
 			MOTION_ATTR* pAttr	= pObject->IsAttrSound( m_fFrameCurrent );
@@ -1682,23 +1628,6 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 				i	= ( i + 1 ) % GetMaxFrame();
 			}
 		}
-#else	// __AI_0509
-		MOTION_ATTR *pAttr = pObject->IsAttrSound( m_fFrameCurrent );
-		if( pAttr )
-			if( pAttr->m_nSndID > 0 && m_nPause == 0 )		// 효과음 속성이 있다면 플레이, pause상태면 사운드 출력 안함
-				PLAYSND( pAttr->m_nSndID, pvSndPos );
-			
-		BOOL bQuake = pObject->IsAttrQuake(m_fFrameCurrent);
-		if( bQuake && m_nPause == 0 )
-		{
-			CMover *pMover = CMover::GetActiveMover();
-			if( pMover && m_nPause == 0 )
-			{
-				//Error("Quake - pos 2 ");
-				pMover->GetWorld()->m_pCamera->SetQuake( 30, 1.0f );
-			}
-		}
-#endif	// __AI_0509
 	}
 #endif
 	
@@ -1838,19 +1767,13 @@ void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWOR
 void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nType, int nLevel, int nLevel2 )
 {
 #ifdef __CLIENT
-#if __VER < 9 // __Y_ADV_ENCHANT_EFFECT
-	if( nLevel < 0 || nLevel > 5 )
-		return;
-#else //__Y_ADV_ENCHANT_EFFECT
 
 #ifdef __CSC_ENCHANT_EFFECT_2
 	int nEffLevel_2 = 0;
 	DWORD dwSfx_2 = 0;
 
-#if __VER >= 13 // __EXT_ENCHANT
 	if( nLevel2 >= 10 )
 		nLevel2 = 10;
-#endif //__EXT_ENCHANT
 
 	if( nLevel2 == 10 )		nEffLevel_2 = 5;
 	else if( nLevel2 == 9 )	nEffLevel_2 = 4;
@@ -1864,7 +1787,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 	if(nType <= PE_EARTH && (nEffLevel_2 == 0 && nLevel < 6)) return; 
 	
 #endif //__CSC_ENCHANT_EFFECT_2
-#endif //__Y_ADV_ENCHANT_EFFECT
 	O3D_ELEMENT		*pElem = GetParts( nParts );		// 오른손 무기의 포인터
 
 	if( !pElem )
@@ -1875,7 +1797,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 	if( pElem->m_pObject3D->m_vForce1.x == 0 )	return;
 	if( pElem->m_pObject3D->m_vForce2.x == 0 )	return;
 
-#if __VER >= 9 // __CSC_VER9_5
 	BOOL IsSecondLine = FALSE;
 	D3DXVECTOR3 v2_1( 0.0F, 0.0F, 0.0F );
 	D3DXVECTOR3 v2_2( 0.0F, 0.0F, 0.0F );
@@ -1888,7 +1809,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 		v2_1 = pElem->m_pObject3D->m_vForce3;
 		v2_2 = pElem->m_pObject3D->m_vForce4;
 	}
-#endif //__CSC_VER9_5
 	D3DXMATRIX m1;
 	D3DXMatrixIdentity( &m1 );
 	D3DXMATRIX m2;
@@ -1896,11 +1816,7 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 	D3DXVECTOR3 v1( 0.0F, 0.0F, 0.0F );
 	D3DXVECTOR3 v2( 0.0F, 0.0F, 0.0F );
 	D3DXVECTOR3 v3( 0.0F, 0.0F, 0.0F );
-#if __VER >= 13 // __EXT_ENCHANT
 	float		fTemp = 0.0f;
-#else // __EXT_ENCHANT
-	float		fTemp;
-#endif // __EXT_ENCHANT
 	D3DXMATRIX *pmLocal = NULL;
 	if( pElem->m_nParentIdx == GetRHandIdx() )
 		pmLocal = &pElem->m_mLocalRH;
@@ -1918,7 +1834,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 	v1 = pElem->m_pObject3D->m_vForce1;
 	v2 = pElem->m_pObject3D->m_vForce2;
 	
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	D3DXVECTOR3 vScale( 0.0F, 0.0F, 0.0F );
 	int nEffCount = MAX_PARTS_FIRE;
 #ifdef __SFX_OPT
@@ -1947,10 +1862,8 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 		fTemp = (FLOAT)m_nEffectCount / (FLOAT)nEffCount;
 
 		D3DXVec3Lerp( &v3, &v1, &v2, fTemp );
-#if __VER >= 9 // __CSC_VER9_5
 		if(IsSecondLine)
 			D3DXVec3Lerp( &v2_3, &v2_1, &v2_2, fTemp );
-#endif //__CSC_VER9_5
 		vScale = D3DXVECTOR3( 0.5f, 0.5f, 0.5f );
 
 		if( fTemp < 0.4f || fTemp > 0.6f )
@@ -1972,12 +1885,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 		m_nEffectCount = 0;
 	}
 
-#else //__Y_ADV_ENCHANT_EFFECT
-
-	float fSlp = xRandomF(1);
-	D3DXVec3Lerp( &v3, &v1, &v2, fSlp );
-
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 
 	CPartsFire *pFire = NULL;
@@ -2006,7 +1913,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 		DWORD dwSfx = 0;
 		switch( nType )
 		{
-	#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 			case PE_FIRE_AL : dwSfx = XI_NAT_FIRE01_ADV_AL; break;
 			case PE_ELEC_AL : dwSfx = XI_NAT_ELEC01_ADV_AL; break;	// 이경우 발생함...향상버전에서는
 			case PE_WATER_AL: dwSfx = XI_NAT_WATER01_ADV_AL; break;
@@ -2020,17 +1926,8 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 			case PE_GEN_AL: dwSfx = XI_NAT_NONE01_ADV; break;
 			case PE_GEN: dwSfx = XI_NAT_NONE01_ADV; break;
 			default: dwSfx = XI_NAT_FIRE01_ADV;
-	#else //__Y_ADV_ENCHANT_EFFECT
-			case PE_FIRE : dwSfx = XI_NAT_FIRE01;	break;
-			case PE_ELEC : dwSfx = XI_NAT_FIRE01;	break;	// 이경우는 발생하지 않음.
-			case PE_WATER: dwSfx = XI_NAT_WATER01;	break;
-			case PE_WIND : dwSfx = XI_NAT_WIND01;	break;
-			case PE_EARTH: dwSfx = XI_NAT_EARTH01;	break;
-			default: dwSfx = XI_NAT_FIRE01;
-	#endif //__Y_ADV_ENCHANT_EFFECT
 		}
 
-	#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 
 		if(nLevel > 0)
 		{
@@ -2059,11 +1956,7 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 			nLevel2 = 1;
 
 		dwSfx += (nLevel2-1);
-	#else //__Y_ADV_ENCHANT_EFFECT
-		dwSfx += nLevel;
-	#endif //__Y_ADV_ENCHANT_EFFECT
 
-	#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 #ifdef __CSC_ENCHANT_EFFECT_2
 		switch(nType)
 		{
@@ -2099,7 +1992,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 			&& (fTemp > 0.1f && fTemp < 0.93f))
 			pFire->Create( m_pd3dDevice, v3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
 #endif //__CSC_ENCHANT_EFFECT_2
-	#if __VER >= 9 // __CSC_VER9_5
 		if(IsSecondLine)
 		{
 #ifdef __CSC_ENCHANT_EFFECT_2
@@ -2113,10 +2005,6 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 				pFire->Create( m_pd3dDevice, v2_3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
 #endif //__CSC_ENCHANT_EFFECT_2
 		}
-	#endif //__CSC_VER9_5
-	#else //__Y_ADV_ENCHANT_EFFECT
-		pFire->Create( m_pd3dDevice, v3, dwSfx );	// 해당 sfx로 파티클 생성시킴.
-	#endif //__Y_ADV_ENCHANT_EFFECT
 	}
 
 	pFire->Render( m_pd3dDevice, &m2 );
@@ -2126,15 +2014,10 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 
 void	CModelObject::RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, int nLevel )
 {
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 #ifdef __CLIENT
 
 #ifdef __CSC_ENCHANT_EFFECT_2
-#if __VER >= 13 // __EXT_ENCHANT
 	if( nLevel >= 10 )		nLevel = 5;
-#else //__EXT_ENCHANT
-	if( nLevel == 10 )		nLevel = 5;
-#endif //__EXT_ENCHANT
 	else if( nLevel == 9 )	nLevel = 4;
 	else if( nLevel == 8 )	nLevel = 3;
 	else if( nLevel == 7 )	nLevel = 2;
@@ -2156,7 +2039,6 @@ void	CModelObject::RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, in
 	if( pElem->m_pObject3D->m_vForce1.x == 0 )	return;
 	if( pElem->m_pObject3D->m_vForce2.x == 0 )	return;
 
-#if __VER >= 9 // __CSC_VER9_5
 	BOOL IsSecondLine = FALSE;
 	D3DXVECTOR3 v2_1, v2_2;
 	if( pElem->m_pObject3D->m_vForce3.x != 0 && pElem->m_pObject3D->m_vForce4.x != 0 )
@@ -2167,7 +2049,6 @@ void	CModelObject::RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, in
 		v2_1 = pElem->m_pObject3D->m_vForce3;
 		v2_2 = pElem->m_pObject3D->m_vForce4;
 	}
-#endif //__CSC_VER9_5
 	
 	D3DXMATRIX	m1, m2;
 	D3DXVECTOR3	v1, v2, v3;
@@ -2214,13 +2095,10 @@ void	CModelObject::RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, in
 	}
 	
 	pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
-#if __VER >= 9 // __CSC_VER9_5
 	if(IsSecondLine)
 		pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v2_1, v2_2, nLevel );
-#endif //__CSC_VER9_5
 
 #endif // CLIENT
-#endif //__Y_ADV_ENCHANT_EFFECT
 }
 
 

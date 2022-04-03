@@ -37,10 +37,8 @@ void CDPSrvr::OnUseSkill( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 	int	 nUseType = 0;
 
 	ar >> wType >> wId >> objid >> nUseType;
-#if __VER >= 8 // __S8_PK
 	BOOL bControl;
 	ar >> bControl;
-#endif // __VER >= 8 // __S8_PK
 	
 	int nIdx = wId;
 	if( nIdx < 0 || nIdx >= MAX_SKILL_JOB )
@@ -74,11 +72,7 @@ void CDPSrvr::OnUseSkill( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 		if( dwLevel == 0 || dwLevel > pSkillProp->dwExpertMax )
 			return;
 
-#if __VER >= 8 // __S8_PK
 		BOOL fSuccess	= pUser->DoUseSkill( wType, nIdx, objid, (SKILLUSETYPE)nUseType, bControl );
-#else // __VER >= 8 // __S8_PK
-		BOOL fSuccess	= pUser->DoUseSkill( wType, nIdx, objid, (SKILLUSETYPE)nUseType );
-#endif // __VER >= 8 // __S8_PK
 		if( fSuccess == TRUE )	// 스킬사용에 성공했고
 		{
 			if( nUseType == SUT_QUEUESTART )	// 스킬큐로 실행하라고 한거였다.

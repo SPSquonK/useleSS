@@ -21,67 +21,41 @@
 #include "WantedListSnapshot.h"
 #include "definequest.h"
 
-#if __VER >= 12 // __PET_0519
 #include "pet.h"
-#endif	// __PET_0519
 
-#if __VER >= 12 // __LORD
 #include "slord.h"
 #include "lordskillexecutable.h"
-#endif	// __LORD
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #include "randomoption.h"
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	#include "CreateMonster.h"
-#endif // __ITEMCREATEMON_S0602
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#include "honor.h"
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
-#if __VER >= 12 // __EXT_PIERCING
 #include "ItemUpgrade.h"
-#endif // __EXT_PIERCING
 
 #include "tools.h"
 
-#if __VER >= 13 // __COUPLE_1117
 #include "couplehelper.h"
-#endif	// __COUPLE_1117
 
 #ifdef __QUIZ
 #include "Quiz.h"
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 #include "CampusHelper.h"
-#endif // __CAMPUS
 
-#if __VER >= 8 //__CSC_VER8_5
 struct ItemCountSet{
 	OBJID itemid;
 	int extracount;
 };
-#endif //__CSC_VER8_5
 
 #define	MAX_RANGE_ASYNC			1024
 #define	MAX_RANGE_NPC_MENU		1024
@@ -95,11 +69,6 @@ extern	CWorldMng			g_WorldMng;
 extern	CChattingMng		g_ChattingMng;
 extern	CGuildCombat		g_GuildCombatMng;
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
-#if __VER < 12 // __NEW_ITEMCREATEMON_SERVER
-extern	CCreateMonster		g_CreateMonster;
-#endif // __NEW_ITEMCREATEMON_SERVER
-#endif // __ITEMCREATEMON_S0602
 
 CCommonCtrl* CreateExpBox( CUser* pUser );
 CDPSrvr		g_DPSrvr;
@@ -178,22 +147,18 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_CONFIRMTRADECANCEL, &CDPSrvr::OnConfirmTradeCancel )
 	ON_MSG( PACKETTYPE_TRADECANCEL, &CDPSrvr::OnTradeCancel );
 	ON_MSG( PACKETTYPE_DOUSEITEM, &CDPSrvr::OnDoUseItem );
-#if __VER >= 11 // __SYS_IDENTIFY
 	ON_MSG( PACKETTYPE_DO_USE_ITEM_TARGET, &CDPSrvr::OnDoUseItemTarget );
 	ON_MSG( PACKETTYPE_REMOVE_ITEM_LEVEL_DOWN, &CDPSrvr::OnRemoveItemLevelDown );
 	ON_MSG( PACKETTYPE_AWAKENING, &CDPSrvr::OnAwakening );
 	ON_MSG( PACKETTYPE_BLESSEDNESS_CANCEL, &CDPSrvr::OnBlessednessCancel );
-#endif	// __SYS_IDENTIFY
 #ifdef __AZRIA_1023
 	ON_MSG( PACKETTYPE_DO_USE_ITEM_INPUT, &CDPSrvr::OnDoUseItemInput );
 #endif	// __AZRIA_1023
 #ifdef __PET_1024
 	ON_MSG( PACKETTYPE_CLEAR_PET_NAME, &CDPSrvr::OnClearPetName );
 #endif	// __PET_1024
-#if __VER >= 11 // __SYS_POCKET
 	ON_MSG( PACKETTYPE_AVAIL_POCKET, &CDPSrvr::OnAvailPocket );
 	ON_MSG( PACKETTYPE_MOVE_ITEM_POCKET, &CDPSrvr::OnMoveItemOnPocket );
-#endif	// __SYS_POCKET
 
 #ifdef __JEFF_11
 	ON_MSG( PACKETTYPE_QUE_PETRESURRECTION, &CDPSrvr::OnQuePetResurrection );
@@ -209,9 +174,7 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_DROPITEM, &CDPSrvr::OnDropItem );
 	ON_MSG( PACKETTYPE_DROPGOLD, &CDPSrvr::OnDropGold );
 	ON_MSG( PACKETTYPE_BUYITEM, &CDPSrvr::OnBuyItem );
-#if __VER >= 11 // __GUILDCOMBATCHIP
 	ON_MSG( PACKETTYPE_BUYCHIPITEM, &CDPSrvr::OnBuyChipItem );
-#endif // __GUILDCOMBATCHIP
 	ON_MSG( PACKETTYPE_SELLITEM, &CDPSrvr::OnSellItem );
 	ON_MSG( PACKETTYPE_TRADEOK, &CDPSrvr::OnTradeOk );
 	ON_MSG( PACKETTYPE_MELEE_ATTACK, &CDPSrvr::OnMeleeAttack );
@@ -244,14 +207,8 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_DUELPARTYYES, &CDPSrvr::OnDuelPartyYes );
 	ON_MSG( PACKETTYPE_DUELPARTYNO, &CDPSrvr::OnDuelPartyNo );
 	ON_MSG( PACKETTYPE_SEND_TO_SERVER_AP, &CDPSrvr::OnActionPoint );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_QUERY_PLAYER_DATA, &CDPSrvr::OnQueryPlayerData );
 	ON_MSG( PACKETTYPE_QUERY_PLAYER_DATA2, &CDPSrvr::OnQueryPlayerData2 );
-#else	// __SYS_PLAYER_DATA
-	ON_MSG( PACKETTYPE_QUERYPLAYERSTRING, &CDPSrvr::OnQueryPlayerString );
-	ON_MSG( PACKETTYPE_QUERYPLAYERLISTSTRING, &CDPSrvr::OnQueryPlayerListString );
-	ON_MSG( PACKETTYPE_GETFRIENDNAME, &CDPSrvr::OnGetFriendName );
-#endif	// __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_GUILD_INVITE, &CDPSrvr::OnGuildInvite );
 	ON_MSG( PACKETTYPE_IGNORE_GUILD_INVITE, &CDPSrvr::OnIgnoreGuildInvite );
 	ON_MSG( PACKETTYPE_NW_GUILDLOGO, &CDPSrvr::OnGuildLogo );			// 로고 변경 
@@ -272,23 +229,15 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_LOCALPOSFROMIA, &CDPSrvr::OnLocalPosFromIA );
 	ON_MSG( PACKETTYPE_UPGRADEBASE, &CDPSrvr::OnUpgradeBase );
 	ON_MSG( PACKETTYPE_ENCHANT, &CDPSrvr::OnEnchant );
-#if __VER >= 14 // __SMELT_SAFETY
 	ON_MSG( PACKETTYPE_SMELT_SAFETY, &CDPSrvr::OnSmeltSafety );
-#endif // __SMELT_SAFETY
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 	ON_MSG( PACKETTYPE_REMVOE_ATTRIBUTE, &CDPSrvr::OnRemoveAttribute );
-#endif // __REMOVE_ATTRIBUTE
-#if __VER >= 13 // __EXT_ENCHANT
 	ON_MSG( PACKETTYPE_CHANGE_ATTRIBUTE, &CDPSrvr::OnChangeAttribute );
-#endif // __EXT_ENCHANT
 	ON_MSG( PACKETTYPE_PIERCING_SIZE, &CDPSrvr::OnPiercingSize );
 	ON_MSG( PACKETTYPE_EXPBOXINFO, &CDPSrvr::OnExpBoxInfo );
 	ON_MSG( PACKETTYPE_RANDOMSCROLL, &CDPSrvr::OnRandomScroll );
 	ON_MSG( PACHETTYPE_ITEMTRANSY, &CDPSrvr::OnItemTransy );
 	ON_MSG( PACKETTYPE_PIERCING, &CDPSrvr::OnPiercing );
-#if __VER >= 11 // __PIERCING_REMOVE
 	ON_MSG( PACKETTYPE_PIERCINGREMOVE, &CDPSrvr::OnPiercingRemove );
-#endif // __PIERCING_REMOVE
 	ON_MSG( PACKETTYPE_BUYING_INFO, &CDPSrvr::OnBuyingInfo );
 	ON_MSG( PACKETTYPE_ENTERCHTTING, &CDPSrvr::OnEnterChattingRoom );
 	ON_MSG( PACKETTYPE_CHATTING, &CDPSrvr::OnChatting );
@@ -329,9 +278,7 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_QUERYMAILBOX, &CDPSrvr::OnQueryMailBox );
 	ON_MSG( PACKETTYPE_CHANGEFACE, &CDPSrvr::OnChangeFace );
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	ON_MSG( PACKETTYPE_CREATEMONSTER, &CDPSrvr::OnCreateMonster );
-#endif // __ITEMCREATEMON_S0602
 
 	ON_MSG( PACKETTYPE_IN_GUILDCOMBAT, &CDPSrvr::OnGCApp );
 	ON_MSG( PACKETTYPE_OUT_GUILDCOMBAT, &CDPSrvr::OnGCCancel );	
@@ -341,9 +288,6 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_JOIN_GUILDCOMBAT, &CDPSrvr::OnGCJoin );	
 	ON_MSG( PACKETTYPE_GETPENYAGUILD_GUILDCOMBAT, &CDPSrvr::OnGCGetPenyaGuild );
 	ON_MSG( PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT, &CDPSrvr::OnGCGetPenyaPlayer );
-#if __VER < 8 // #ifndef __GUILDCOMBAT_85
-	ON_MSG( PACKETTYPE_GETITEM_GUILDCOMBAT, &CDPSrvr::OnGCGetItem );
-#endif // __VER < 8
 	ON_MSG( PACKETTYPE_TELE_GUILDCOMBAT, &CDPSrvr::OnGCTele );
 	ON_MSG( PACKETTYPE_PLAYERPOINT_GUILDCOMBAT, &CDPSrvr::OnGCPlayerPoint );
 	ON_MSG( PACKETTYPE_SUMMON_FRIEND, &CDPSrvr::OnSummonFriend );
@@ -354,10 +298,8 @@ CDPSrvr::CDPSrvr()
 
 	ON_MSG( PACKETTYPE_REMOVEINVENITEM, &CDPSrvr::OnRemoveInvenItem );
 	////////////////////////////////////////////////////////////////////////
-#if __VER >= 8 //__CSC_VER8_5
 	ON_MSG( PACKETTYPE_CREATEANGEL, &CDPSrvr::OnCreateAngel );
 	ON_MSG( PACKETTYPE_ANGELBUFF, &CDPSrvr::OnAngleBuff );
-#endif //__CSC_VER8_5
 	
 #ifdef __EVE_MINIGAME
 	ON_MSG( PACKETTYPE_KAWIBAWIBO_START, &CDPSrvr::OnKawibawiboStart );
@@ -372,37 +314,28 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_FIVESYSTEM_DESTROYWND, &CDPSrvr::OnFiveSystemDestroyWnd );
 #endif // __EVE_MINIGAME
 	
-#if __VER >= 9 // __ULTIMATE
 	ON_MSG( PACKETTYPE_ULTIMATE_MAKEITEM, &CDPSrvr::OnUltimateMakeItem );
 	ON_MSG( PACKETTYPE_ULTIMATE_MAKEGEM, &CDPSrvr::OnUltimateMakeGem );
 	ON_MSG( PACKETTYPE_ULTIMATE_TRANSWEAPON, &CDPSrvr::OnUltimateTransWeapon );
 	ON_MSG( PACKETTYPE_ULTIMATE_SETGEM, &CDPSrvr::OnUltimateSetGem );
 	ON_MSG( PACKETTYPE_ULTIMATE_REMOVEGEM, &CDPSrvr::OnUltimateRemoveGem );
 	ON_MSG( PACKETTYPE_ULTIMATE_ENCHANTWEAPON, &CDPSrvr::OnUltimateEnchantWeapon );
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 	ON_MSG( PACKETTYPE_EXCHANGE, &CDPSrvr::OnExchange );
 #endif // __TRADESYS
 
-#if __VER >= 9	// __PET_0410
 	ON_MSG( PACKETTYPE_PET_RELEASE, &CDPSrvr::OnPetRelease );
 	ON_MSG( PACKETTYPE_USE_PET_FEED, &CDPSrvr::OnUsePetFeed );
 	ON_MSG( PACKETTYPE_MAKE_PET_FEED, &CDPSrvr::OnMakePetFeed );
 	ON_MSG( PACKETTYPE_PET_TAMER_MISTAKE, &CDPSrvr::OnPetTamerMistake );
 	ON_MSG( PACKETTYPE_PET_TAMER_MIRACLE, &CDPSrvr::OnPetTamerMiracle );
 	ON_MSG( PACKETTYPE_FEED_POCKET_INACTIVE, &CDPSrvr::OnFeedPocketInactive );
-#endif	// __PET_0410
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	ON_MSG( PACKETTYPE_LEGENDSKILLUP_START, &CDPSrvr::OnLegendSkillStart );
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
-#if __VER >= 9 // __CSC_VER9_2
 	ON_MSG( PACKETTYPE_MODIFY_STATUS, &CDPSrvr::OnModifyStatus );
-#endif //__CSC_VER9_2
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	ON_MSG( PACKETTYPE_GC1TO1_TENDEROPENWND, &CDPSrvr::OnGC1to1TenderOpenWnd );
 	ON_MSG( PACKETTYPE_GC1TO1_TENDERVIEW, &CDPSrvr::OnGC1to1TenderView );
 	ON_MSG( PACKETTYPE_GC1TO1_TENDER, &CDPSrvr::OnGC1to1Tender );
@@ -412,31 +345,21 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_GC1TO1_MEMBERLINEUP, &CDPSrvr::OnGC1to1MemberLineUp );
 	ON_MSG( PACKETTYPE_GC1TO1_TELEPORTTONPC, &CDPSrvr::OnGC1to1TeleportToNPC );
 	ON_MSG( PACKETTYPE_GC1TO1_TELEPORTTOSTAGE, &CDPSrvr::OnGC1to1TeleportToStage );	
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	ON_MSG( PACKETTYPE_GUILDLOG_VIEW, &CDPSrvr::OnQueryGuildBankLogList );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	ON_MSG( PACKETTYPE_SEALCHAR_REQ, &CDPSrvr::OnSealCharReq );
 	ON_MSG( PACKETTYPE_SEALCHARCONM_REQ, &CDPSrvr::OnSealCharConmReq );
 	ON_MSG( PACKETTYPE_SEALCHARGET_REQ, &CDPSrvr::OnSealCharGetReq );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	ON_MSG( PACKETTYPE_HONOR_LIST_REQ, &CDPSrvr::OnHonorListReq );
 	ON_MSG( PACKETTYPE_HONOR_CHANGE_REQ, &CDPSrvr::OnHonorChangeReq );
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 11 // __SYS_COLLECTING
 	ON_MSG( PACKETTYPE_QUERY_START_COLLECTING, &CDPSrvr::OnQueryStartCollecting );
 	ON_MSG( PACKETTYPE_QUERY_STOP_COLLECTING, &CDPSrvr::OnQueryStopCollecting );
-#endif	// __SYS_COLLECTING
 
 #ifdef __NPC_BUFF
 	ON_MSG( PACKETTYPE_NPC_BUFF, &CDPSrvr::OnNPCBuff );
 #endif // __NPC_BUFF
 
-#if __VER >= 12 // __SECRET_ROOM
 	ON_MSG( PACKETTYPE_SECRETROOM_TENDEROPENWND, &CDPSrvr::OnSecretRoomTenderOpenWnd );
 	ON_MSG( PACKETTYPE_SECRETROOM_TENDER, &CDPSrvr::OnSecretRoomTender );
 	ON_MSG( PACKETTYPE_SECRETROOM_TENDERCANCELRETURN, &CDPSrvr::OnSecretRoomTenderCancelReturn );
@@ -446,67 +369,44 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_SECRETROOM_TELEPORTTONPC, &CDPSrvr::OnSecretRoomTeleportToNPC );
 	ON_MSG( PACKETTYPE_SECRETROOM_TENDERVIEW, &CDPSrvr::OnSecretRoomTenderView );
 	ON_MSG( PACKETTYPE_SECRETROOM_TELEPORTTODUNGEON, &CDPSrvr::OnTeleportSecretRoomDungeon );
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __LORD
 	ON_MSG( PACKETTYPE_ELECTION_ADD_DEPOSIT, &CDPSrvr::OnElectionAddDeposit );
 	ON_MSG( PACKETTYPE_ELECTION_SET_PLEDGE, &CDPSrvr::OnElectionSetPledge );
 	ON_MSG( PACKETTYPE_ELECTION_INC_VOTE, &CDPSrvr::OnElectionIncVote );
 	ON_MSG( PACKETTYPE_L_EVENT_CREATE, &CDPSrvr::OnLEventCreate );
 	ON_MSG( PACKETTYPE_LORD_SKILL_USE, &CDPSrvr::OnLordSkillUse );
-#endif	// __LORD
-#if __VER >= 12 // __PET_0519
 	// 알변환 핸들러
 	ON_MSG( PACKETTYPE_TRANSFORM_ITEM, &CDPSrvr::OnTransformItem );
-#endif	// __PET_0519
 
-#if __VER >= 12 // __TAX
 	ON_MSG( PACKETTYPE_TAX_SET_TAXRATE, &CDPSrvr::OnSetTaxRate );
-#endif // __TAX
 
-#if __VER >= 12 // __HEAVEN_TOWER
 	ON_MSG( PACKETTYPE_HEAVENTOWER_TELEPORT, &CDPSrvr::OnTeleportToHeavenTower );
-#endif // __HEAVEN_TOWER
 
-#if __VER >= 12 // __MOD_TUTORIAL
 	ON_MSG( PACKETTYPE_TUTORIAL_STATE, &CDPSrvr::OnTutorialState );
-#endif	// __MOD_TUTORIAL
 
-#if __VER >= 12 // __PET_0519
 	ON_MSG( PACKETTYPE_PICKUP_PET_AWAKENING_CANCEL, &CDPSrvr::OnPickupPetAwakeningCancel );
-#endif	// __PET_0519
 
-#if __VER >= 12 // __UPDATE_OPT
 	ON_MSG( PACKETTYPE_OPTION_ENABLE_RENDER_MASK, &CDPSrvr::OnOptionEnableRenderMask );
-#endif	// __UPDATE_OPT
 
-#if __VER >= 13 // __RAINBOW_RACE
 	ON_MSG( PACKETTYPE_RAINBOWRACE_PREVRANKING_OPENWND, &CDPSrvr::OnRainbowRacePrevRankingOpenWnd );
 	ON_MSG( PACKETTYPE_RAINBOWRACE_APPLICATION_OPENWND, &CDPSrvr::OnRainbowRaceApplicationOpenWnd );
 	ON_MSG( PACKETTYPE_RAINBOWRACE_APPLICATION, &CDPSrvr::OnRainbowRaceApplication );
 	ON_MSG( PACKETTYPE_RAINBOWRACE_MINIGAME_PACKET, &CDPSrvr::OnRainbowRaceMiniGamePacket );
 	ON_MSG( PACKETTYPE_RAINBOWRACE_REQ_FINISH, &CDPSrvr::OnRainbowRaceReqFinish );
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 	ON_MSG( PACKETTYPE_HOUSING_SETUPFURNITURE, &CDPSrvr::OnHousingSetupFurniture );
 	ON_MSG( PACKETTYPE_HOUSING_SETVISITALLOW, &CDPSrvr::OnHousingSetVisitAllow );
 	ON_MSG( PACKETTYPE_HOUSING_VISITROOM, &CDPSrvr::OnHousingVisitRoom );
 	ON_MSG( PACKETTYPE_HOUSING_REQVISITABLELIST, &CDPSrvr::OnHousingVisitableList );
 	ON_MSG( PACKETTYPE_HOUSING_GOOUT, &CDPSrvr::OnHousingGoOut );
 
-#endif // __HOUSING
 
-#if __VER >= 13 // __QUEST_HELPER
 	ON_MSG( PACKETTYPE_QUESTHELPER_REQNPCPOS, &CDPSrvr::OnReqQuestNPCPos );
-#endif // __QUEST_HELPER
 
-#if __VER >= 13 // __COUPLE_1117
 	ON_MSG( PACKETTYPE_PROPOSE, &CDPSrvr::OnPropose );
 	ON_MSG( PACKETTYPE_REFUSE, &CDPSrvr::OnRefuse );
 	ON_MSG( PACKETTYPE_COUPLE, &CDPSrvr::OnCouple );
 	ON_MSG( PACKETTYPE_DECOUPLE, &CDPSrvr::OnDecouple );
-#endif	// __COUPLE_1117
 #ifdef __MAP_SECURITY
 	ON_MSG( PACKETTYPE_MAP_KEY, &CDPSrvr::OnMapKey );
 #endif // __MAP_SECURITY
@@ -514,28 +414,18 @@ CDPSrvr::CDPSrvr()
 	ON_MSG( PACKETTYPE_QUIZ_ENTRANCE, &CDPSrvr::OnQuizEventEntrance );
 	ON_MSG( PACKETTYPE_QUIZ_TELEPORT, &CDPSrvr::OnQuizEventTeleport );
 #endif // __QUIZ
-#if __VER >= 15 // __PETVIS
 	ON_MSG( PACKETTYPE_VISPET_REMOVEVIS, &CDPSrvr::OnRemoveVis );
 	ON_MSG( PACKETTYPE_VISPET_SWAPVIS, &CDPSrvr::OnSwapVis );
-#endif // __PETVIS
-#if __VER >= 15 // __GUILD_HOUSE
 	ON_MSG( PACKETTYPE_GUILDHOUSE_BUY, &CDPSrvr::OnBuyGuildHouse );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_PACKET, &CDPSrvr::OnGuildHousePacket );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_ENTER, &CDPSrvr::OnGuildHouseEnter );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_GOOUT, &CDPSrvr::OnGuildHouseGoOut );
-#endif // __GUILD_HOUSE
-#if __VER >= 15 // __TELEPORTER
 	ON_MSG( PACKETTYPE_TELEPORTER, &CDPSrvr::OnTeleporterReq );
-#endif // __TELEPORTER
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	ON_MSG( PACKETTYPE_QUEST_CHECK, &CDPSrvr::OnCheckedQuest );
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __CAMPUS
 	ON_MSG( PACKETTYPE_CAMPUS_INVITE, &CDPSrvr::OnInviteCampusMember );
 	ON_MSG( PACKETTYPE_CAMPUS_ACCEPT, &CDPSrvr::OnAcceptCampusMember );
 	ON_MSG( PACKETTYPE_CAMPUS_REFUSE, &CDPSrvr::OnRefuseCampusMember );
 	ON_MSG( PACKETTYPE_CAMPUS_REMOVE_MEMBER, &CDPSrvr::OnRemoveCampusMember );
-#endif // __CAMPUS
 
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리
@@ -681,17 +571,12 @@ void CDPSrvr::OnChat( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_l
 		if( pUser->IsMode( TALK_MODE ) )
 			return;
 #ifdef __JEFF_9_20
-#if __VER >= 12 // __LORD
 		int nText	= pUser->GetMuteText();
 		if(  nText )
 		{
 			pUser->AddDefinedText( nText );
 			return;
 		}
-#else	// __LORD
-		if( pUser->IsMute() )
-			return;
-#endif	// __LORD
 #endif	// __JEFF_9_20
 
 		if( !( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_FONTEDIT ) ) )
@@ -839,39 +724,9 @@ void CDPSrvr::OnDropItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 void CDPSrvr::OnDropGold( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 
-#if __VER >= 8  	//8차게임내돈드롭금지
 
 	return;
 
-#else	//  __VER >= 8  
-
-	DWORD dwGold;
-	D3DXVECTOR3 vPos;
-	ar >> dwGold >> vPos;
-
-	BOOL bLimit = FALSE;
-	if( dwGold > 30000 )	// 3만 페냐 이상은 땅에 떨어뜨릴 수 없습니다. 
-	{
-		dwGold = 30000;
-		bLimit = TRUE;
-	}
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
-		{
-			if( pUser->GetGold() >= (int)dwGold )	// raiders.2006.11.28
-				pUser->AddGold( -dwGold );
-		}
-		else
-		{
-			if( pUser->DropGold( dwGold, vPos ) != NULL && bLimit )
-				pUser->AddDefinedText( TID_GAME_LIMITMONEY, "" );
-		}
-	}
-
-#endif	//	  __VER >= 8  
 
 }
 
@@ -976,48 +831,22 @@ void CDPSrvr::OnRevival( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		{
 			pUser->m_nDead = PROCESS_COUNT * 5;		// 죽은 후 5초간은 무적
 
-#if __VER >= 8 // __S8_PK
 			if( pUser->IsChaotic() )
 			{
 				pUser->SubDieDecExp( TRUE, 0, TRUE );		// 죽어서 부활하면 겸치 깎임,.
 			}
 			else
 			{
-#if __VER < 12 // __ANGEL_NODIE
-				if( !pUser->m_bLastPK && !pUser->m_bGuildCombat )
-					pUser->RemoveAngel();
-#endif // __ANGEL_NODIE
 			}
-#endif // __VER >= 8 // __S8_PK
 			float fRate = 0.1f;
 
-#if __VER >= 9 // __S_9_ADD
 			fRate = 0.2f;
-#else // __S_9_ADD
-			int nLevel	= pUser->GetLevel();
-			if( nLevel == 1 )		{ fRate	= 0.8f; }
-			else if( nLevel == 2 )	{ fRate	= 0.6f; }
-			else if( nLevel <= 5 )	{ fRate	= 0.5f; }
-			else if( nLevel <= 10 )	{ fRate	= 0.4f; }
-			else if( nLevel <= 15 )	{ fRate	= 0.3f; }
-#endif // __S_9_ADD
 
 			pUser->m_pActMover->ClearState();
 
 			if( pWorld->GetID() == WI_WORLD_GUILDWAR )
 				fRate = 1.0f;
 
-#if __VER < 9 // __S_9_ADD	// 아래에서 채워주고 패킷까지 보내버리는 것으로 수정
-			pUser->SetHitPoint( (int)(pUser->GetMaxHitPoint() * fRate) );	// hp 회복
-
-			int nVal	= (int)(pUser->GetMaxManaPoint() * fRate);			// mp 회복
-			if( pUser->GetManaPoint() < nVal )
-				pUser->SetManaPoint( nVal );
-			
-			nVal	= (int)(pUser->GetMaxFatiguePoint() * fRate);			// fp 회복
-			if( pUser->GetFatiguePoint() < nVal )
-				pUser->SetFatiguePoint( nVal );
-#endif // __S_9_ADD
 
 			if( pWorld->GetID() == WI_WORLD_GUILDWAR )
 			{
@@ -1037,7 +866,6 @@ void CDPSrvr::OnRevival( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 				pUser->RemoveItem( (BYTE)pItemElem->m_dwObjId, 1 );
 			}
 
-#if __VER >= 9 // __S_9_ADD
 			pUser->SetPointParam( DST_HP, (int)( pUser->GetMaxHitPoint() * fRate ) );
 					
 			int nVal	= (int)(pUser->GetMaxManaPoint() * fRate);			// mp 회복
@@ -1047,7 +875,6 @@ void CDPSrvr::OnRevival( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 			nVal	= (int)(pUser->GetMaxFatiguePoint() * fRate);			// fp 회복
 			if( pUser->GetFatiguePoint() < nVal )
 				pUser->SetPointParam( DST_FP, nVal );			
-#endif // __S_9_ADD
 		}
 		else
 		{
@@ -1089,26 +916,11 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 
 		if( pWorld->GetID() == WI_WORLD_GUILDWAR )
 			fRate = 1.0f;
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		else if( g_GuildCombat1to1Mng.IsPossibleUser( pUser ) )
 			fRate = 1.0f;
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 9 // __S_9_ADD
 		else
 			fRate = 0.2f;
-#endif // __S_9_ADD
 		
-#if __VER < 9 // __S_9_ADD	// 아래에서 채워주고 패킷까지 보내버리는 것으로 수정
-		pUser->SetHitPoint( (int)(pUser->GetMaxHitPoint() * fRate) );	// hp 회복
-		
-		int nVal	= (int)(pUser->GetMaxManaPoint() * fRate);			// mp 회복
-		if( pUser->GetManaPoint() < nVal )
-			pUser->SetManaPoint( nVal );
-		
-		nVal	= (int)(pUser->GetMaxFatiguePoint() * fRate);			// fp 회복
-		if( pUser->GetFatiguePoint() < nVal )
-			pUser->SetFatiguePoint( nVal );
-#endif // __S_9_ADD
 
 		if( pWorld->GetID() == WI_WORLD_GUILDWAR )
 		{
@@ -1120,7 +932,6 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 			g_UserMng.AddHdr( pUser, SNAPSHOTTYPE_REVIVAL_TO_LODESTAR );
 		}		
 
-#if __VER >= 9 // __S_9_ADD
 		pUser->SetPointParam( DST_HP, (int)(pUser->GetMaxHitPoint() * fRate) );	// hp 회복
 		
 		int nVal	= (int)(pUser->GetMaxManaPoint() * fRate);			// mp 회복
@@ -1130,18 +941,15 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		nVal	= (int)(pUser->GetMaxFatiguePoint() * fRate);			// fp 회복
 		//if( pUser->GetFatiguePoint() < nVal )
 			pUser->SetPointParam( DST_FP, nVal );
-#endif // __S_9_ADD
 
 		if( pWorld->GetID() == WI_WORLD_GUILDWAR )
 			return;
 
-#if __VER >= 12 // __SECRET_ROOM
 		if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( pUser ) )
 		{
 			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CSecretRoomMng::GetInstance()->GetRevivalPos( pUser ), REPLACE_NORMAL, nDefaultLayer );
 			return;
 		}
-#endif // __SECRET_ROOM
 		
 		// 보스몹 맵에서 죽었다...
 		// 그러면 부활은 마을에서...
@@ -1158,14 +966,10 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 #endif	// __JEFF_11_4
 			)
 		{
-#if __VER >= 8 // __S8_PK
 			if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
 				pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
 			if( NULL == pRgnElem )	// Find near revival pos
 				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );	
-#else // __VER >= 8 // __S8_PK
-			pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );
-#endif // __VER >= 8 // __S8_PK
 		}
 		else
 		{
@@ -1501,12 +1305,10 @@ void CDPSrvr::OnAddFriendReqest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	if( IsValidObj( pMember ) && IsValidObj( pLeader ) )
 	{
 
-#if __VER >= 8 // 8차 듀얼 061226 ma
 		if( 0 < pLeader->m_nDuel ||  0 < pMember->m_nDuel )
 		{
 			return;
 		}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 		// 길드대전장에는 친구추가를 할수 없습니다
 		CWorld* pWorldLeader = pLeader->GetWorld();
@@ -1517,13 +1319,11 @@ void CDPSrvr::OnAddFriendReqest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 			pLeader->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_FRIENDADD) );
 			return;
 		}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( g_GuildCombat1to1Mng.IsPossibleUser( pLeader ) || g_GuildCombat1to1Mng.IsPossibleUser( pMember ) )
 		{
 			pLeader->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_FRIENDADD) );
 			return;
 		}
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __RT_1025
 		if( !pLeader->m_RTMessenger.GetFriend( uMemberid ) )
@@ -1549,11 +1349,7 @@ void CDPSrvr::OnAddFriendNameReqest( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 	ar >> uLeaderid;
 	ar.ReadString( szMemberName, 64 );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	uMember	= CPlayerDataCenter::GetInstance()->GetPlayerId( szMemberName );
-#else	// __SYS_PLAYER_DATA
-	uMember = prj.GetPlayerID( szMemberName );
-#endif	// __SYS_PLAYER_DATA
 	CUser* pLeader	= g_UserMng.GetUserByPlayerID( uLeaderid );	
 
 	if( IsValidObj( pLeader ) )
@@ -1641,7 +1437,6 @@ void CDPSrvr::OnRemoveQuest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	}
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPSrvr::OnQueryPlayerData( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	u_long idPlayer;
@@ -1679,84 +1474,6 @@ void CDPSrvr::OnQueryPlayerData2( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 		}
 	}
 }
-#else	// __SYS_PLAYER_DATA
-void CDPSrvr::OnQueryPlayerString( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	u_long idPlayer;
-	BYTE nQuery;
-	ar >> idPlayer >> nQuery;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		LPCSTR lpszPlayer	= prj.GetPlayerString( idPlayer );
-		if( lpszPlayer )
-			pUser->AddQueryPlayerString( idPlayer, lpszPlayer, nQuery );
-	}
-}
-
-void CDPSrvr::OnQueryPlayerListString( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	int nSize;
-	u_long idPlayer;
-	BYTE nQuery;
-	ar >> nSize >> nQuery;
-
-	if( nSize > 1024 )
-		return;
-		
-	CUser* pUser;
-
-	pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) )
-	{
-		for( int i=0; i<nSize; i++ )
-		{
-			ar >> idPlayer;
-			
-			LPCSTR lpszPlayer	= prj.GetPlayerString( idPlayer );
-			if( lpszPlayer )
-			{
-				pUser->AddQueryPlayerString( idPlayer, lpszPlayer, nQuery );
-			}
-			else
-			{
-				pUser->AddQueryPlayerString( idPlayer, "Unknown", nQuery );
-			}
-		}
-
-		if( nSize > 0 )
-			pUser->AddQueryPlayerListString( nQuery );
-	}
-}
-
-void CDPSrvr::OnGetFriendName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	int nCount;
-	ar >> nCount;		
-	if( nCount <= 0 || nCount > MAX_FRIEND )
-		return;
-
-	FRIEND aFriend[MAX_FRIEND];
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		for( int i = 0 ; i < nCount ; i++ )
-		{
-			ar >> aFriend[i].dwUserId;
-#if __VER >= 11 // __SYS_PLAYER_DATA
-//			LPCSTR lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( aFriend[i].dwUserId );
-#else	// __SYS_PLAYER_DATA
-			LPCSTR lpszPlayer	= prj.GetPlayerString( aFriend[i].dwUserId );
-			strcpy( aFriend[i].szName, lpszPlayer? lpszPlayer: "" );
-#endif	// __SYS_PLAYER_DATA
-			
-		}
-		pUser->AddGetFriendName( nCount, aFriend );
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPSrvr::OnGuildInvite( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
@@ -1918,7 +1635,6 @@ void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			return;
 		}
 
-#if __VER >= 8 // 8차 듀얼 061226 ma
 		if( 0 < pUser->m_idparty ||  0 < pDstUser->m_idparty )
 			return;
 		if( pUser->m_vtInfo.GetOther() )	// 거래중 이면 듀얼 불가 
@@ -1933,7 +1649,6 @@ void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( nState != 0 )
 			return;
 
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 		if( pUser->IsPVPInspection( pDstUser, 1 ) )
 		{
@@ -1974,7 +1689,6 @@ void CDPSrvr::OnDuelYes( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 			return;
 		}
 
-#if __VER >= 8 // 8차 듀얼 061226 ma
 		if( 0 < pSrc->m_idparty ||  0 < pDst->m_idparty )
 		{
 			return;
@@ -1985,7 +1699,6 @@ void CDPSrvr::OnDuelYes( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		{
 			return;	//
 		}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 
 		if( pSrc->IsPVPInspection( pDst, 1 ) )
@@ -2209,7 +1922,6 @@ void CDPSrvr::OnAddItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-#if __VER >= 11 // __CSC_VER11_5
 		DWORD dwShortCut;
 		ar >> dwShortCut;
 
@@ -2235,9 +1947,6 @@ void CDPSrvr::OnAddItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 
 		pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut = dwShortCut;
 	 	ar >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwId >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwType;
-#else //__CSC_VER11_5
-		ar >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwId >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwType;
-#endif //__CSC_VER11_5
 		ar >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwIndex >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwUserId >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwData;
 		if( pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut == SHORTCUT_CHAT )
 		{
@@ -2753,14 +2462,12 @@ void CDPSrvr::OnOpenShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			if( pVendor->IsNPC() == FALSE )		// 대상이 NPC가 아니면?
 				return;
 
-#if __VER >= 8 // __S8_PK
 			if( pUser->IsChaotic() )
 			{
 				CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( pUser->GetPKPropensity() );
 				if( !Propensity.nShop )
 					return;
 			}
-#endif // __VER >= 8 // __S8_PK
 
 			if( pVendor->IsVendorNPC() == FALSE )
 			{
@@ -2814,11 +2521,9 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 	if( IsValidObj( pUser ) && pUser->m_vtInfo.GetOther() )
 	{
 		CMover* pVendor = pUser->m_vtInfo.GetOther();
-#if __VER >= 11 // __GUILDCOMBATCHIP
 		LPCHARACTER lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
 		if( lpChar && lpChar->m_nVenderType != 0 )	// 0 - 페냐 상인
 			return;
-#endif // __GUILDCOMBATCHIP
 
 		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
 			return;
@@ -2850,25 +2555,9 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		nCost = (int)( prj.m_EventLua.GetShopBuyFactor() * nCost );
 #endif // __SHOP_COST_RATE
 		
-#if __VER < 8 // __S8_PK
-		// 직위에 따른 상점가격 변동
-		KarmaProp* pProp = prj.GetKarmaProp( pUser->m_nSlaughter );
-		if( pProp )
-		{
-			if( pProp->nGrade == -6 )
-				return;
 
-			if( pProp->fDiscountRate != 0.0f )
-			{
-				nCost = (int)( nCost * pProp->fDiscountRate );
-			}
-		}
-#endif // __VER < 8 // __S8_PK
-
-#if __VER >= 11 // __MA_VER11_02
 		if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 			nCost = PERIN_VALUE;
-#endif //__MA_VER11_02
 		if( nCost < 1 )
 			nCost = 1;
 		
@@ -2882,13 +2571,11 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 			return;
 		}
 
-#if __VER >= 12 // __TAX
 		int nTax = 0;
 		if( CTax::GetInstance()->IsApplyTaxRate( pUser, pItemElem ) )
 			nTax = (int)( nCost * CTax::GetInstance()->GetPurchaseTaxRate( pUser ) );
 		nCost += nTax;
 		nTax *= nNum;
-#endif // __TAX
 		int nGold = nCost * nNum;
 		if( nGold <= 0 )
 			return;
@@ -2927,10 +2614,8 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 				OnLogItem( aLogItem, pItemElem, nNum );		// why do not pass &itemElem as argument?
 				pItemElem->SetSerialNumber( 0 );
 				pUser->AddGold( -nGold );	
-#if __VER >= 12 // __TAX
 				if( nTax )
 					CTax::GetInstance()->AddTax( CTax::GetInstance()->GetContinent( pUser ), nTax, TAX_PURCHASE );
-#endif // __TAX
 			}
 			else
 				pUser->AddDefinedText( TID_GAME_LACKSPACE, "" );
@@ -2938,7 +2623,6 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 	}
 }
 
-#if __VER >= 11 // __GUILDCOMBATCHIP
 // 칩으로 아이템 구매
 void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
@@ -3066,7 +2750,6 @@ void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		}
 	}
 }
-#endif // __GUILDCOMBATCHIP
 
 //NPC에게 파는 경우
 void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -3103,21 +2786,16 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 			pUser->AddDefinedText( TID_GAME_EQUIPTRADE, "" );
 			return;
 		}
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 		if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
 			return;
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_02				// 수표 개념 화페 '페린' 추가
 		if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 			return;
-#endif // __MA_VER11_02				// 수표 개념 화페 '페린' 추가
 
 		if( nNum > pItemElem->m_nItemNum )
 			nNum = pItemElem->m_nItemNum;
 		if( nNum < 1 )
 			nNum = 1;
 
-#if __VER >= 12 // __TAX
 		int nGold = ( pItemElem->GetCost() / 4 );
 #ifdef __SHOP_COST_RATE
 		nGold = (int)( prj.m_EventLua.GetShopSellFactor() * nGold );
@@ -3131,9 +2809,6 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 		nGold *= nNum;
 		nTax  *= nNum;
 		float fTmpGold = (float)( pUser->GetGold() + nGold );
-#else // __TAX
-		float fTmpGold = pUser->GetGold() + ( pItemElem->GetCost() / 4 ) * nNum;
-#endif // __TAX
 		if( fTmpGold >= 2100000000 )
 		{
 			return;
@@ -3155,41 +2830,20 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 		aLogItem.RecvName = pUser->m_vtInfo.GetOther()->GetName();
 		aLogItem.WorldId = pUser->GetWorld()->GetID();
 		aLogItem.Gold = pUser->GetGold();
-#if __VER >= 12 // __TAX
 		aLogItem.Gold2 = pUser->GetGold() + nGold;
-#else // __TAX
-		aLogItem.Gold2 = pUser->GetGold() + ( pItemElem->GetCost() / 4 ) * nNum;
-#endif // __TAX
 		OnLogItem( aLogItem, pItemElem, nNum );
 		int nCost	= (int)pItemElem->GetCost() / 4;
 
-#if __VER < 8 // __S8_PK
-		KarmaProp* pProp = prj.GetKarmaProp( pUser->m_nSlaughter );
-		if( pProp )
-		{
-			if( pProp->nGrade == -6 )
-				return;
-
-			if( pProp->fSellPenaltyRate != 0.0f )
-			{
-				nCost = (int)( nCost * pProp->fSellPenaltyRate );
-			}
-		}
-#endif // __VER < 8 // __S8_PK
 
 		if( nCost < 1 )	
 			nCost = 1;
 
-#if __VER >= 12 // __TAX
 		if( nGold < 1 )
 			nGold = 1;
 		
 		pUser->AddGold( nGold );
 		if( nTax )
 			CTax::GetInstance()->AddTax( CTax::GetInstance()->GetContinent( pUser ), nTax, TAX_SALES );
-#else // __TAX
-		pUser->AddGold( nCost * nNum );
-#endif // __TAX
 		pUser->RemoveItem( nId, nNum );
 	}
 }
@@ -3205,14 +2859,12 @@ void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	{
 		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser->GetWorld(), pUser->GetPos() ) )
 			return;
-#if __VER >= 8 // __S8_PK
 		if( pUser->IsChaotic() )
 		{
 			CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( pUser->GetPKPropensity() );
 			if( !Propensity.nBank )
 				return;
 		}
-#endif // __VER >= 8 // __S8_PK
 		if( 0 == strcmp( pUser->m_szBankPass, "0000") )
 		{
 			// 변경창을 띄우라고 함
@@ -3455,13 +3107,8 @@ void CDPSrvr::OnPutItemBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 					return;
 			}
 				
-#if __VER >= 11 // __SYS_IDENTIFY
 			if( pItemElem->IsBinds() )
 				return;
-#else	// __SYS_IDENTIFY
-			if( pItemElem->IsFlag( CItemElem::binds ) )
-				return;
-#endif	// __SYS_IDENTIFY
 
 			ItemProp* pProp	= pItemElem->GetProp();
 			if( !pProp )
@@ -3538,9 +3185,7 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );	
 	if( IsValidObj( pUser ) )
 	{
-#if __VER >= 15 // __GUILD_HOUSE
 		if( !pUser->GetWorld() || !GuildHouseMng->IsGuildHouse( pUser->GetWorld()->GetID() ) )
-#endif // __GUILD_HOUSE
 			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDBANKING, pUser->GetWorld(), pUser->GetPos() ) )
 				return;
 
@@ -3627,9 +3272,7 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );	
 	if( IsValidObj( pUser ) )
 	{
-#if __VER >= 15 // __GUILD_HOUSE
 		if( !pUser->GetWorld() || !GuildHouseMng->IsGuildHouse( pUser->GetWorld()->GetID() ) )
-#endif // __GUILD_HOUSE
 			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDBANKING, pUser->GetWorld(), pUser->GetPos() ) )
 				return;
 		
@@ -4311,7 +3954,6 @@ void CDPSrvr::OnSetTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 					if( pTarget->m_idTargeter == pUser->GetId() )	// 자기가 잡았던 타겟만 자기가 풀수있다.
 					{
 						pTarget->m_idTargeter = NULL_ID;
-#if __VER >= 10 // __LEGEND
 						DWORD	dwTmpTick = GetTickCount();
 						int	nTmpSkillID = pUser->m_pActMover->GetCastingSKillID();
 						if( pUser->m_pActMover->GetCastingEndTick() > dwTmpTick && ( nTmpSkillID == SI_KNT_HERO_DRAWING || nTmpSkillID == SI_RIG_HERO_RETURN ) )
@@ -4319,7 +3961,6 @@ void CDPSrvr::OnSetTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 							pUser->m_pActMover->SetCastingEndTick(0);
 							pUser->m_pActMover->ClearState();				// 상태 클리어하고 다시 맞춤.
 						}
-#endif  //#if __VER >= 10 // __LEGEND
 					}
 				}
 				else
@@ -4710,29 +4351,13 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 		info.MaxNegudo	= pItemElem->m_nRepair;
 		info.m_bCharged = pItemElem->m_bCharged;
 		info.m_dwKeepTime = pItemElem->m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 		info.nPiercedSize = pItemElem->GetPiercingSize();
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
 			info.adwItemId[i] = pItemElem->GetPiercingItem( i );
 		info.nUMPiercedSize = pItemElem->GetUltimatePiercingSize();
 		for( int i=0; i<pItemElem->GetUltimatePiercingSize(); i++ )
 			info.adwUMItemId[i] = pItemElem->GetUltimatePiercingItem( i );
-#else // __EXT_PIERCING
-		info.nPiercedSize = pItemElem->GetPiercingSize();
-		info.adwItemId0 = pItemElem->GetPiercingItem( 0 );
-		info.adwItemId1 = pItemElem->GetPiercingItem( 1 );
-		info.adwItemId2 = pItemElem->GetPiercingItem( 2 );
-		info.adwItemId3 = pItemElem->GetPiercingItem( 3 );
-#if __VER >= 9 // __ULTIMATE
-		info.adwItemId4 = pItemElem->GetPiercingItem( 4 );
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
-#if __VER >= 11 // __SYS_IDENTIFY
 		info.m_iRandomOptItemId = pItemElem->GetRandomOptItemId();
-#else	// __SYS_IDENTIFY
-		info.m_nRandomOptItemId = pItemElem->GetRandomOptItemId();
-#endif	// __SYS_IDENTIFY
-#if __VER >= 9 // __PET_0410
 		if( pItemElem->m_pPet )
 		{
 			CPet* pPet = pItemElem->m_pPet;
@@ -4749,14 +4374,11 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 			info.nPetAL_S = pPet->GetAvailLevel( PL_S );
 		}
 		// mirchang_100514 TransformVisPet_Log
-#if __VER >= 15 // __PETVIS
 		else if( pItemElem->IsTransformVisPet() == TRUE )
 		{
 			info.nPetKind = (BYTE)100;
 		}
-#endif // __PETVIS
 		// mirchang_100514 TransformVisPet_Log
-#endif // __PET_0410
 	}
 
 	BEFORESENDDUAL( ar, PACKETTYPE_LOG_ALLITEM, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -4783,29 +4405,13 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 	ar << info.nResistAbilityOption;
 	ar << info.m_bCharged;
 	ar << info.m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 	ar << info.nPiercedSize;
 	for( int i=0; i<info.nPiercedSize; i++ )
 		ar << info.adwItemId[i];
 	ar << info.nUMPiercedSize;
 	for( int i=0; i<info.nUMPiercedSize; i++ )
 		ar << info.adwUMItemId[i];
-#else // __EXT_PIERCING
-	ar << info.nPiercedSize;
-	ar << info.adwItemId0;
-	ar << info.adwItemId1;
-	ar << info.adwItemId2;
-	ar << info.adwItemId3;
-#if __VER >= 9 // __ULTIMATE
-	ar << info.adwItemId4;
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
-#if __VER >= 11 // __SYS_IDENTIFY
 	ar << info.m_iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-	ar << info.m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
-#if __VER >= 9 // __PET_0410
 	ar << info.nPetKind;
 	ar << info.nPetLevel;
 	ar << info.dwPetExp;
@@ -4816,7 +4422,6 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 	ar << info.nPetAL_B;
 	ar << info.nPetAL_A;
 	ar << info.nPetAL_S;
-#endif // __PET_0410
 	
 	SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
 }
@@ -4902,9 +4507,6 @@ void CDPSrvr::OnRepairItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 				pUser->UpdateItem( (BYTE)apItemRepair[i]->m_dwObjId, UI_RN, apItemRepair[i]->m_nRepairNumber + anRepair[i] );
 			}
 		}
-#if __VER < 11 // __REMOVE_ENDURANCE
-		pUser->AddGold( -nCost );
-#endif // __REMOVE_ENDURANCE
 		pUser->AddDefinedText( TID_GAME_REPAIRITEM );
 	}
 }
@@ -4976,19 +4578,13 @@ void CDPSrvr::OnBlock( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 	ar.ReadString( szNameTo, MAX_NAME );
 	ar.ReadString( szNameFrom, MAX_NAME );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	uidPlayerTo	 = CPlayerDataCenter::GetInstance()->GetPlayerId( szNameTo );
 	uidPlayerFrom	= CPlayerDataCenter::GetInstance()->GetPlayerId( szNameFrom );
-#else	// __SYS_PLAYER_DATA
-	uidPlayerTo = prj.GetPlayerID( szNameTo );
-	uidPlayerFrom = prj.GetPlayerID( szNameFrom );
-#endif	// __SYS_PLAYER_DATA
 
 	if( uidPlayerTo > 0 && uidPlayerFrom > 0 )
 		g_DPCoreClient.SendBlock( nGu, uidPlayerTo, szNameTo, uidPlayerFrom );
 }
 
-#if __VER >= 12 // __J12_0
 DWORD WhatEleCard( DWORD dwItemType )
 {	// 속성 제련 용 카드의 종류가 
 	// 속성 당 하나로 통합됨
@@ -5008,26 +4604,6 @@ DWORD WhatEleCard( DWORD dwItemType )
 			return 0;
 	}
 }
-#else	// __J12_0
-DWORD WhatEleCard( DWORD dwLV, DWORD dwItemType )
-{
-	switch( dwItemType )
-	{
-		case SAI79::FIRE:
-			return ( dwLV <= 4 ) ? II_GEN_MAT_ELE_TOUCH: II_GEN_MAT_ELE_FLAME;
-		case SAI79::WATER:
-			return ( dwLV <= 4 ) ? II_GEN_MAT_ELE_LAKE: II_GEN_MAT_ELE_RIVER;
-		case SAI79::ELECTRICITY:
-			return ( dwLV <= 4 ) ? II_GEN_MAT_ELE_VOLTAGE: II_GEN_MAT_ELE_GENERATOR;
-		case SAI79::EARTH:
-			return ( dwLV <= 4 ) ? II_GEN_MAT_ELE_STONE: II_GEN_MAT_ELE_DESERT;
-		case SAI79::WIND:
-			return ( dwLV <= 4 ) ? II_GEN_MAT_ELE_GALE: II_GEN_MAT_ELE_CYCLON;
-		default:
-			return 0;
-	}
-}
-#endif	// __J12_0
 
 void CDPSrvr::OnPiercingSize( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
@@ -5038,122 +4614,8 @@ void CDPSrvr::OnPiercingSize( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	ar >> dwId3;
 	
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-#if __VER >= 12 // __EXT_PIERCING
 	if( IsValidObj( pUser ) )
 		CItemUpgrade::GetInstance()->OnPiercingSize( pUser, dwId1, dwId2, dwId3 );
-#else // __EXT_PIERCING
-	if( IsValidObj( pUser ) )
-	{
-		CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwId1 );
-		CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwId2 );
-		CItemElem* pItemElem2	= pUser->m_Inventory.GetAtId( dwId3 );
-
-		if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE )
-			return;
-
-		// 康
-		if( pUser->m_vtInfo.GetOther() )	// 거래중인 대상이 있으면?
-			return;
-		if( pUser->m_vtInfo.VendorIsVendor() )		// 내가 팔고 있으면?
-			return;
-
-		int nError = 1;
-		if( IsPiercingSize( pUser, pItemElem0, pItemElem1, pItemElem2, nError ) == FALSE )
-		{
-			if( nError != 1 )
-				pUser->AddDefinedText( nError );
-			return;
-		}
-
-		LogItemInfo aLogItem;
-		aLogItem.SendName = pUser->GetName();
-		aLogItem.RecvName = "PIERCING";
-		aLogItem.WorldId = pUser->GetWorld()->GetID();
-		
-		int nCost = pItemElem0->GetProp()->dwItemRare * ( 200  + ( pItemElem0->GetPiercingSize()+1) * 200 );
-
-		if( 0 < nCost )
-		{
-			if( pUser->GetGold() < nCost )
-			{
-				pUser->AddDefinedText( TID_GAME_LACKMONEY , "" );
-				return;
-			}
-				
-			pUser->AddGold( -( nCost ) );
-
-			aLogItem.Gold = pUser->GetGold() + nCost;
-			aLogItem.Gold2 = pUser->GetGold();
-			aLogItem.Action = "!";
-			//aLogItem.ItemName = "SEED";
-			_stprintf( aLogItem.szItemName, "%d", II_GOLD_SEED1 );
-			aLogItem.itemNumber = nCost;
-			OnLogItem( aLogItem );
-		}
-		else
-		{
-			return;
-		}
-		aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
-
-
-		int nPersent = 0;
-		int n8DicePersent[4] = { 80, 50, 20, 5 };
-#if __VER >= 8 //__Y_NEW_ENCHANT
-		if( pItemElem1->GetProp()->dwID == II_GEN_MAT_MOONSTONE
-			|| pItemElem1->GetProp()->dwID == II_GEN_MAT_MOONSTONE_1 )
-			nPersent = n8DicePersent[pItemElem0->GetPiercingSize()];
-#else //__Y_NEW_ENCHANT
-		int n10DicePersent[4] = { 85, 55, 25, 10 };
-		if( pItemElem1->GetProp()->dwID == II_GEN_MAT_DIE_EIGHT )
-			nPersent = n8DicePersent[pItemElem0->GetPiercingSize()];
-		else if( pItemElem1->GetProp()->dwID == II_GEN_MAT_DIE_TEN )
-			nPersent = n10DicePersent[pItemElem0->GetPiercingSize()];
-#endif //__Y_NEW_ENCHANT
-
-		if( xRandom( 100 ) > nPersent )
-		{	// 실패
-			aLogItem.Action = "!";
-			OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-			pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
-			pUser->AddDefinedText( TID_MMI_PIERCINGFAIL , "" );
-
-			if( pItemElem2 == NULL )								// 상용화 아이템을 사용하지 않았다면 
-				pUser->RemoveItem( dwId1, (short)1 );	// 피어싱 대상 아이템은 삭제된다.
-		}
-		else
-		{	// 성공			
-			pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
-			pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_PIERCING_SIZE, pItemElem0->GetPiercingSize() + 1 );
-			pUser->AddDefinedText( TID_MMI_PIERCINGSUCCESS , "" );
-
-			aLogItem.Action = "#";
-			OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-		}
-		aLogItem.Action = "!";
-		OnLogItem( aLogItem, pItemElem1, pItemElem1->m_nItemNum );
-		
-		// 다이스와 유료아이템 삭제한다.
-		pUser->RemoveItem( dwId2, (short)1 );
-		
-		if( dwId3 != NULL_ID )
-		{
-			aLogItem.Action = "!";
-			if( IsUsableItem( pItemElem2 ) )
-			{
-				OnLogItem( aLogItem, pItemElem2, pItemElem2->m_nItemNum );
-				g_dpDBClient.SendLogSMItemUse( "2", pUser, pItemElem2, pItemElem2->GetProp() );
-				pUser->RemoveItem( dwId3, (short)1 );
-			}
-			else
-			{
-				OnLogItem( aLogItem, NULL, 0 );
-			}
-		}
-	}
-#endif // __EXT_PIERCING
 }
 
 void CDPSrvr::OnItemTransy( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -5263,86 +4725,10 @@ void CDPSrvr::OnPiercing( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 	ar >> dwId2;
 	
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-#if __VER >= 12 // __EXT_PIERCING
 	if( IsValidObj( pUser ) )
 		CItemUpgrade::GetInstance()->OnPiercing( pUser, dwId1, dwId2 );
-#else // __EXT_PIERCING
-	if( IsValidObj( pUser ) )
-	{
-		// 인벤토리에 있는지 장착되어 있는지 확인을 해야 함
-		CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwId1 );
-		CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwId2 );
-		if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE )
-			return;
-
-		// 장착되어 있는 아이템은 피어싱 못함
-		if( pUser->m_Inventory.IsEquip( dwId1 ) )
-		{
-			pUser->AddDefinedText( TID_GAME_EQUIPPUT , "" );
-			return;
-		}			
-
-		// 카드가 IK3_SOCKETCARD가 아니면 피어싱 못함
-		if( pItemElem1->GetProp()->dwItemKind3 != IK3_SOCKETCARD )
-		{
-			pUser->AddDefinedText( TID_UPGRADE_ERROR_WRONGUPLEVEL , "" );			
-			return;					
-		}
-
-		// 카드가 들어갈 아이템이 슈트( IK3_SUIT ) 인지 검사
-		if( pItemElem0->GetProp()->dwItemKind3 != IK3_SUIT )
-		{
-			pUser->AddDefinedText(  TID_PIERCING_POSSIBLE_ITEM, "" );
-			return;
-		}
-		
-		// 총 피어싱된수와 전체 수를 비교한다.
-		int nSize = pItemElem0->GetPiercingSize();
-		
-		int nCount = 0;
-		for( int j = 0; j < nSize; j++ )
-		{
-			if( pItemElem0->GetPiercingItem( j ) != 0 )
-				nCount++;
-		}
-		
-		// 빈곳이 없으면 중단
-		if( nCount == nSize )
-		{
-			pUser->AddDefinedText( TID_PIERCING_ERROR_NOPIERCING, "" );
-			return;
-		}
-
-		// 康
-		if( pUser->m_vtInfo.GetOther() )	// 거래중인 대상이 있으면?
-			return;
-		if( pUser->m_vtInfo.VendorIsVendor() )		// 내가 팔고 있으면?
-			return;
-		
-		LogItemInfo aLogItem;
-		aLogItem.SendName = pUser->GetName();
-		aLogItem.RecvName = "PIERCING";
-		aLogItem.WorldId = pUser->GetWorld()->GetID();
-		aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
-		
-		if( pUser->Pierce( pItemElem0, pItemElem1->m_dwItemId ) )
-		{
-			aLogItem.Action = "$";
-			OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-			aLogItem.Action = "!";
-			OnLogItem( aLogItem, pItemElem1, pItemElem1->m_nItemNum );
-
-			// 아이템 박기 성공~
-			pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
-			// 재료 아이템 삭제
-			pUser->RemoveItem( dwId2, (short)1 );		
-		}
-	}
-#endif // __EXT_PIERCING
 }
 
-#if __VER >= 11 // __PIERCING_REMOVE
 // 피어싱 옵션 제거(카드 제거)
 void CDPSrvr::OnPiercingRemove( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
@@ -5353,53 +4739,8 @@ void CDPSrvr::OnPiercingRemove( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 	if( !IsValidObj( pUser ) )
 		return;
 	
-#if __VER >= 12 // __EXT_PIERCING
 	CItemUpgrade::GetInstance()->OnPiercingRemove( pUser, objId );
-#else // __EXT_PIERCING
-	CItemElem* pItemSuit = pUser->m_Inventory.GetAtId( objId );
-	if( !IsUsableItem( pItemSuit ) || pItemSuit->GetProp()->dwItemKind3 != IK3_SUIT )
-		return;
-
-	if( pUser->m_Inventory.IsEquip( objId ) )
-		return;
-
-	// 피어싱 옵션이 없는 경우
-	if( pItemSuit->GetPiercingSize() == 0 || pItemSuit->GetPiercingItem( 0 ) == 0 )
-	{
-		pUser->AddDefinedText( TID_GAME_REMOVE_PIERCING_ERROR );
-		return;
-	}
-
-	int nPayPenya = 1000000; // 지불할 페냐
-	if( pUser->GetGold() < nPayPenya )	// 페냐가 부족하다.
-	{
-		pUser->AddDefinedText( TID_GAME_LACKMONEY );
-		return;
-	}
-
-	for( int i=pItemSuit->GetPiercingSize()-1; i>=0; i-- )
-	{
-		if( pItemSuit->GetPiercingItem( i ) != 0 )
-		{
-			pUser->AddGold( -nPayPenya );	// 페냐 지불
-			pUser->AddDefinedText( TID_GAME_REMOVE_PIERCING_SUCCESS );
-			pUser->UpdateItem( pItemSuit->m_dwObjId, UI_PIERCING, MAKELONG( i, 0 ) );
-			
-			LogItemInfo aLogItem;
-			aLogItem.Action = "$";
-			aLogItem.SendName = pUser->GetName();
-			aLogItem.RecvName = "PIERCING_REMOVE";
-			aLogItem.WorldId = pUser->GetWorld()->GetID();
-			aLogItem.Gold = pUser->GetGold() + nPayPenya;
-			aLogItem.Gold2 = pUser->GetGold();
-			aLogItem.Gold_1 = -nPayPenya;
-			OnLogItem( aLogItem, pItemSuit, 1 );
-			break;
-		}
-	}
-#endif // __EXT_PIERCING
 }
-#endif // __PIERCING_REMOVE
 
 void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
@@ -5428,11 +4769,7 @@ void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 // dwID - 제련 아이템 아이디, n - 제련 단계 
 int GetEnchantPercent( DWORD dwID, int n )
 {
-#if __VER >= 8 //__Y_NEW_ENCHANT	
 	static int nPersent1[10] = { 1000, 1000, 700, 500, 400, 300, 200, 100, 50, 20 };
-#else //__Y_NEW_ENCHANT
-	static int nPersent1[10] = {  900,  850, 800, 600, 450, 300, 200, 100, 50, 20 };
-#endif //__Y_NEW_ENCHANT
 	static int nPersent2[10] = { 1000, 1000, 900, 750, 550, 400, 250, 150, 80, 40 };
 
 	float fFactor = 1.0f;
@@ -5445,7 +4782,6 @@ int GetEnchantPercent( DWORD dwID, int n )
 		return	( (int)( nPersent1[n] * fFactor ) );
 }
 
-#if __VER >= 11 // __SYS_IDENTIFY
 void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
 	DWORD dwId;
@@ -5538,7 +4874,6 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 					0, TID_GAME_USE_BLESSEDNESS_INFO, TID_GAME_BLESSEDNESS_INVALID_ITEM,
 					"r", "::Blessedness" );
 				break;
-#if __VER >= 12 // __PET_0519
 			case II_SYS_SYS_SCR_EATPETAWAKE:	// 먹펫 각성
 				b	= DoUseItemTarget_GenRandomOption( pUser, pTarget, CRandomOptionProperty::eEatPet,
 					TID_GAME_PETAWAKE_S00, TID_GAME_PETAWAKE_E00, TID_GAME_PETAWAKE_E00,
@@ -5554,7 +4889,6 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 					TID_GAME_PETAWAKECANCEL_S00, TID_GAME_PETAWAKECANCEL_E00,
 					"r", "PETAWAKECANCEL" );
 				break;
-#endif	// __PET_0519
 			case II_SYS_SYS_SCR_LEVELDOWN01:
 			case II_SYS_SYS_SCR_LEVELDOWN02:
 				b	= DoUseItemTarget_ItemLevelDown( pUser, pMaterial, pTarget );
@@ -5574,9 +4908,7 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		}
 	}
 }
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 14 // __SMELT_SAFETY
 void CDPSrvr::OnSmeltSafety( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
 	OBJID dwItemId, dwItemMaterialId, dwItemProtScrId, dwItemSmeltScrId;
@@ -5638,7 +4970,6 @@ void CDPSrvr::OnSmeltSafety( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		pUser->AddSmeltSafety( nResult );
 	}
 }
-#endif // __SMELT_SAFETY
 
 void CDPSrvr::OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
@@ -5659,12 +4990,6 @@ void CDPSrvr::OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 			return;
 		if( pUser->m_vtInfo.VendorIsVendor() )		// 내가 팔고 있으면?
 			return;
-#if __VER >= 11 // __SYS_COLLECTING
-#if __VER < 14 // __SMELT_SAFETY
-		if( pUser->PreRefine( dwItemId, dwItemMaterialId ) )
-			return;
-#endif // __SMELT_SAFETY
-#endif	// __SYS_COLLECTING
 
 
 		// 인벤토리에 있는지 장착되어 있는지 확인을 해야 함
@@ -5680,285 +5005,11 @@ void CDPSrvr::OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 			return;
 		}
 
-#if __VER < 11 // __SYS_COLLECTING
-		if( pUser->m_Inventory.IsEquip( dwItemId ) )
-		{
-			pUser->AddDefinedText( TID_GAME_EQUIPPUT , "" );
-			return;
-		}
-#endif	// __SYS_COLLECTING
 
-#if __VER < 14 // __SMELT_SAFETY
-	#if __VER >= 8 //__Y_NEW_ENCHANT
-		if( pItemElem1->GetProp()->dwItemKind3 != IK3_ELECARD && pItemElem1->GetProp()->dwItemKind3 != IK3_ENCHANT )
-	#else //__Y_NEW_ENCHANT
-		if( pItemElem1->GetProp()->dwItemKind3 != IK3_ELECARD && pItemElem1->GetProp()->dwItemKind3 != IK3_DICE )
-	#endif //__Y_NEW_ENCHANT
-		{
-			pUser->AddDefinedText( TID_UPGRADE_ERROR_WRONGUPLEVEL , "" );			
-			return;					
-		}
-#endif // __SMELT_SAFETY
-#if __VER >= 13 // __EXT_ENCHANT
 		CItemUpgrade::GetInstance()->OnEnchant( pUser, pItemElem0, pItemElem1 );
-#else // __EXT_ENCHANT
-		int nLevDown = 3;		
-		int*  pAbilityOption = NULL;
-			
-		// 속성제련은 슈트와, 무기에만 적용
-		if( pItemElem1->GetProp()->dwItemKind3 == IK3_ELECARD )
-		{
-			pAbilityOption = &(pItemElem0->m_nResistAbilityOption);
-
-			if( pAbilityOption == NULL )
-				return;
-
-			// 2가지 속성은 제련할수 없음
-			if( pItemElem0->m_bItemResist != SAI79::NO_PROP )
-			{
-				if( pItemElem0->m_bItemResist != pItemElem1->GetProp()->eItemType )
-				{
-					pUser->AddDefinedText( TID_UPGRADE_ERROR_TWOELEMENT , "" );								
-					return;
-				}
-			}
-
-			if( !CItemElem::IsEleRefineryAble(pItemElem0->GetProp()) )
-			{
-				pUser->AddDefinedText( TID_GAME_NOTEQUALITEM , "" );			
-				return;								
-			}
-
-#if __VER >= 12 // __J12_0
-			// 속성 당 하나의 속성 제련 카드를 사용하도록 수정
-			DWORD dwReqCard	= WhatEleCard( pItemElem1->GetProp()->eItemType );
-#else	// __J12_0
-			DWORD dwReqCard = WhatEleCard( *pAbilityOption, pItemElem1->GetProp()->eItemType );
-#endif	// __J12_0
-
-			if( pItemElem1->GetProp()->dwID != dwReqCard )
-			{
-				pUser->AddDefinedText( TID_UPGRADE_ERROR_WRONGUPLEVEL , "" );			
-				return;					
-			}
-		}
-		else
-		// 일반제련은 방어구, 무기
-	#if __VER >= 8 //__Y_NEW_ENCHANT
-		if( pItemElem1->GetProp()->dwItemKind3 == IK3_ENCHANT )
-	#else //__Y_NEW_ENCHANT
-		if( pItemElem1->GetProp()->dwItemKind3 == IK3_DICE )
-	#endif //__Y_NEW_ENCHANT
-		{
-#if __VER >= 9 // __ULTIMATE
-			if( pItemElem0->GetProp()->dwReferStat1 == WEAPON_ULTIMATE )
-			{
-				pUser->AddDefinedText( TID_GAME_NOTEQUALITEM , "" );
-				return;
-			}
-			
-			if( pItemElem1->GetProp()->dwID != II_GEN_MAT_ORICHALCUM01
-				&& pItemElem1->GetProp()->dwID != II_GEN_MAT_ORICHALCUM01_1 )
-			{
-				pUser->AddDefinedText( TID_GAME_NOTEQUALITEM , "" );
-				return;
-			}
-#endif // __ULTIMATE
-			pAbilityOption = pItemElem0->GetAbilityOptionPtr();
-
-			if( pAbilityOption == NULL )
-				return;
-
-			if( !CItemElem::IsDiceRefineryAble(pItemElem0->GetProp()) )
-			{
-				pUser->AddDefinedText( TID_GAME_NOTEQUALITEM , "" );			
-				return;								
-			}
-
-		#if __VER < 8 //__Y_NEW_ENCHANT
-			if( pItemElem1->GetProp()->dwID != II_GEN_MAT_DIE_TWELVE )
-			{
-				if( *pAbilityOption <= 4 )
-				{
-					if( pItemElem1->GetProp()->dwID != II_GEN_MAT_DIE_FOUR )
-					{
-						pUser->AddDefinedText( TID_UPGRADE_ERROR_WRONGUPLEVEL , "" );			
-						return;					
-					}
-				}
-				else
-				{
-					if( pItemElem1->GetProp()->dwID != II_GEN_MAT_DIE_SIX )
-					{
-						pUser->AddDefinedText( TID_UPGRADE_ERROR_WRONGUPLEVEL , "" );			
-						return;					
-					}
-				}
-			}
-		#endif //__Y_NEW_ENCHANT
-		}	
-		
-		if( *pAbilityOption >= 10 )
-		{
-			pUser->AddDefinedText( TID_UPGRADE_MAXOVER , "" );			
-			return;
-		}
-		// 1000단위의 성공 퍼센트 
-		int nPercent = ::GetEnchantPercent( pItemElem1->GetProp()->dwID, *pAbilityOption );
-
-		LogItemInfo aLogItem;
-		aLogItem.SendName = pUser->GetName();
-		aLogItem.RecvName = "UPGRADEITEM";
-		aLogItem.WorldId = pUser->GetWorld()->GetID();
-		aLogItem.Gold = pUser->GetGold();
-		aLogItem.Gold2 = pUser->GetGold();
-
-
-		BOOL bSmelprot	= FALSE;
-		if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT ) )
-		{
-			bSmelprot	= TRUE;
-			pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT );
-
-			ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELPROT );
-			if( pItemProp )
-				g_dpDBClient.SendLogSMItemUse( "2", pUser, NULL, pItemProp );
-		}
-		if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELTING ) )
-		{
-			if( *pAbilityOption < 7 )
-			{
-				nPercent	+= 100;
-				pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELTING );
-
-				ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELTING );
-				if( pItemProp )
-					g_dpDBClient.SendLogSMItemUse( "2", pUser, NULL, pItemProp );
-			}
-		}
-#ifdef __SM_ITEM_2ND_EX
-		BOOL bSmelprot2	= FALSE;
-		if( !bSmelprot && pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT2 ) )
-		{
-			bSmelprot2	= TRUE;
-			pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT2 );
-		}
-#endif	// __SM_ITEM_2ND_EX
-
-		if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SUPERSMELTING ) )
-		{
-			if( *pAbilityOption < 7 )
-			{
-				nPercent	+= 1000;
-				pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_SUPERSMELTING );
-				
-				ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SUPERSMELTING );
-				if( pItemProp )
-					g_dpDBClient.SendLogSMItemUse( "2", pUser, NULL, pItemProp );
-			}				
-		}
-
-		// 해당 아이템의 속성, 일반 레벨을 얻어 확율을 꺼낸다.
-		if( xRandom( 1000 ) > nPercent )
-		{
-			// 실패 메세지 출력
-			pUser->AddDefinedText( TID_UPGRADE_FAIL, "" );
-			pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
-
-			if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-				g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
-
-			// 실패하면 nLevDown이상이면 아이템 삭제
-			if( *pAbilityOption >= nLevDown )
-			{
-				if( !bSmelprot )
-				{	// 사용안하면 들어옴.. 대상 아이템 삭제 실패 로그
-				#ifdef __SM_ITEM_2ND_EX
-					if( bSmelprot2  )
-					{
-						if( pItemElem1->GetProp()->dwItemKind3 == IK3_ELECARD )
-						{
-							pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_RAO, pItemElem0->m_nResistAbilityOption - 1 );
-							aLogItem.Action = "8";
-						}
-						else 
-					#if __VER >= 8 //__Y_NEW_ENCHANT
-						if( pItemElem1->GetProp()->dwItemKind3 == IK3_ENCHANT )
-					#else //__Y_NEW_ENCHANT
-						if( pItemElem1->GetProp()->dwItemKind3 == IK3_DICE )
-					#endif //__Y_NEW_ENCHANT
-						{
-							pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_AO,  pItemElem0->GetAbilityOption() - 1 );
-							aLogItem.Action = "9";
-						}
-						OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-					}
-					else
-				#endif	// __SM_ITEM_2ND_EX
-					{
-						aLogItem.Action = "L";
-						OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-						pUser->RemoveItem( dwItemId, (short)1 );
-					}
-				}
-			}
-			else
-			{	// 사용을 하면 실패 로그
-				if( pItemElem1->GetProp()->dwItemKind3 == IK3_ELECARD )
-				{
-					aLogItem.Action = "J";
-					OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-				}
-				else 
-			#if __VER >= 8 //__Y_NEW_ENCHANT
-				if( pItemElem1->GetProp()->dwItemKind3 == IK3_ENCHANT )
-			#else //__Y_NEW_ENCHANT
-				if( pItemElem1->GetProp()->dwItemKind3 == IK3_DICE )
-			#endif //__Y_NEW_ENCHANT
-				{
-					aLogItem.Action = "F";
-					OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-				}		
-			}
-		}
-		else
-		{
-			// 성공
-			pUser->AddDefinedText( TID_UPGRADE_SUCCEEFUL, "" );
-			pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
-			
-			if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-				g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
-			
-			if( pItemElem1->GetProp()->dwItemKind3 == IK3_ELECARD )
-			{
-				pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_IR,  pItemElem1->GetProp()->eItemType );
-				pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_RAO,  pItemElem0->m_nResistAbilityOption+1 );
-				aLogItem.Action = "O";
-				OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-			}
-			else 
-		#if __VER >= 8 //__Y_NEW_ENCHANT
-			if( pItemElem1->GetProp()->dwItemKind3 == IK3_ENCHANT ) // // 주사위
-		#else //__Y_NEW_ENCHANT
-			if( pItemElem1->GetProp()->dwItemKind3 == IK3_DICE ) // // 주사위
-		#endif //__Y_NEW_ENCHANT
-			{
-				pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_AO,  pItemElem0->GetAbilityOption()+1 );
-				aLogItem.Action = "H";
-				OnLogItem( aLogItem, pItemElem0, pItemElem0->m_nItemNum );
-			}
-		}
-
-		aLogItem.Action = "N";
-		OnLogItem( aLogItem, pItemElem1, pItemElem1->m_nItemNum );
-		// 제련아템 삭제 - 성공이던, 실패던...
-		pUser->RemoveItem( dwItemMaterialId, (short)1 );
-#endif // __EXT_ENCHANT
 	}	
 }
 
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 void CDPSrvr::OnRemoveAttribute( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
 	int nPayPenya = 100000; //속성제련 제거시 필요한 페냐
@@ -6032,9 +5083,7 @@ void CDPSrvr::OnRemoveAttribute( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		pUser->AddRemoveAttribute( FALSE );
 	
 }
-#endif // __REMOVE_ATTRIBUTE
 
-#if __VER >= 13 // __EXT_ENCHANT
 void CDPSrvr::OnChangeAttribute( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpbuf, u_long uBufSize )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -6049,7 +5098,6 @@ void CDPSrvr::OnChangeAttribute( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 
 	CItemUpgrade::GetInstance()->ChangeAttribute( pUser, objTargetItem, objMaterialItem, static_cast<SAI79::ePropType>(nAttribute) );
 }
-#endif // __EXT_ENCHANT
 
 void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpbuf, u_long uBufSize )
 {
@@ -6392,17 +5440,12 @@ void CDPSrvr::OnChatting( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 	if( IsValidObj( pUser ) )
 	{
 #ifdef __JEFF_9_20
-#if __VER >= 12 // __LORD
 		int nText	= pUser->GetMuteText();
 		if(  nText )
 		{
 			pUser->AddDefinedText( nText );
 			return;
 		}
-#else	// __LORD
-		if( pUser->IsMute() )
-			return;
-#endif	// __LORD
 #endif	// __JEFF_9_20
 
 		if( !( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_FONTEDIT)))
@@ -6593,11 +5636,7 @@ void CDPSrvr::OnNWWantedGold( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	else
 		return;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	const char* lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( pUser->m_idMurderer );
-#else	// __SYS_PLAYER_DATA
-	LPCSTR lpszPlayer = prj.GetPlayerString( pUser->m_idMurderer );
-#endif	// __SYS_PLAYER_DATA
 	if( lpszPlayer == NULL )
 		lpszPlayer = "";
 	g_DPCoreClient.SendWCWantedGold( lpszPlayer, pUser->m_idMurderer, nGold, szMsg );
@@ -6630,11 +5669,7 @@ void CDPSrvr::OnNWWantedName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	LPCSTR lpszPlayer = "";
 	if( pUser->m_idMurderer )		
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( pUser->m_idMurderer );
-#else	// __SYS_PLAYER_DATA
-		lpszPlayer = prj.GetPlayerString( pUser->m_idMurderer );
-#endif	// __SYS_PLAYER_DATA
 		if( lpszPlayer == NULL )
 			lpszPlayer	= "";
 	}
@@ -6671,11 +5706,7 @@ void CDPSrvr::OnNWWantedInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 			DWORD		dwWorldID = 0;
 			LPCTSTR		lpszWorld = "";
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( szPlayer );
-#else	// __SYS_PLAYER_DATA
-			u_long idPlayer = prj.GetPlayerID( szPlayer );
-#endif	// __SYS_PLAYER_DATA
 			CUser* pTarget	= g_UserMng.GetUserByPlayerID( idPlayer );	
 			if( IsValidObj(pTarget) && pTarget->GetWorld() )
 			{
@@ -7028,7 +6059,6 @@ void CDPSrvr::OnQueryEquipSetting( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 	}
 }
 
-#if __VER >= 12 // __UPDATE_OPT
 void CDPSrvr::OnOptionEnableRenderMask( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -7043,7 +6073,6 @@ void CDPSrvr::OnOptionEnableRenderMask( CAr & ar, DPID dpidCache, DPID dpidUser,
 		g_UserMng.AddModifyMode( pUser );
 	}
 }
-#endif	// __UPDATE_OPT
 
 void CDPSrvr::OnReturnScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
@@ -7116,18 +6145,10 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 			return;
 #endif // __S_SERVER_UNIFY
 		//--
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		u_long idReceiver	= CPlayerDataCenter::GetInstance()->GetPlayerId( lpszReceiver );
-#else	// __SYS_PLAYER_DATA
-		u_long idReceiver	= prj.GetPlayerID( lpszReceiver );
-#endif	// __SYS_PLAYER_DATA
 		if( idReceiver > 0 )
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			if( CPlayerDataCenter::GetInstance()->GetPlayerId( (char*)pUser->GetName() ) == idReceiver )
-#else	// __SYS_PLAYER_DATA
-			if( prj.GetPlayerID( pUser->GetName() ) == idReceiver )
-#endif	// __SYS_PLAYER_DATA
 			{
 				pUser->AddDiagText(prj.GetText(TID_GAME_MSGSELFSENDERROR));
 				return;
@@ -7485,7 +6506,6 @@ void CDPSrvr::OnGCApp( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 			CGuild* pGuild	= g_GuildMng.GetGuild( pUser->m_idGuild );
 			if( pGuild && pGuild->IsMaster( pUser->m_idPlayer ) )
 			{
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				// 1:1길드대전에 입찰한 길드는 입찰 불가능하다.
 				int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser( pUser );
 				if( nIndex != NULL_ID )
@@ -7493,7 +6513,6 @@ void CDPSrvr::OnGCApp( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 					pUser->AddDefinedText( TID_GAME_GUILDCOMBAT1TO1_ISGC1TO1TENDER );
 					return;
 				}
-#endif // __GUILD_COMBAT_1TO1		
 				pUser->AddGCWindow( g_GuildCombatMng.GetPrizePenya( 2 ), g_GuildCombatMng.GetRequstPenya( pUser->m_idGuild ), g_GuildCombatMng.m_nJoinPanya );
 			}
 		}
@@ -7739,73 +6758,6 @@ void CDPSrvr::OnGCGetPenyaPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	}
 }
 
-#if __VER < 8 // #ifndef __GUILDCOMBAT_85
-void CDPSrvr::OnGCGetItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		CGuild *pGuild = pUser->GetGuild();		
-		if( pGuild && pGuild->IsMember( pUser->m_idPlayer ) )
-		{
-			if( pGuild->GetGuildId() != g_GuildCombatMng.m_uWinGuildId )
-				return;
-
-			if( g_GuildCombatMng.m_nItemPenya > pUser->GetGold() )
-			{
-				pUser->AddText( prj.GetText(TID_GAME_LACKMONEY) ); //페냐(돈)가 부족합니다.
-				return;
-			}
-
-			if( g_GuildCombatMng.m_nGCState != CGuildCombat::WAR_CLOSE_STATE && g_GuildCombatMng.m_nGCState != CGuildCombat::WAR_TELEPORT_STATE )
-			{
-				pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_NOT_GETITEM) ); // 길드대전 중에는 사용할수 없습니다.
-				return;
-			}
-
-			// 대전 상품 지급
-			CItemElem itemElem;
-			
-			if( g_GuildCombatMng.m_nWinGuildCount == 1 )
-				itemElem.m_dwItemId	= II_ARM_S_CLO_CLO_DRAGON1;		// 용망토 생성
-			else if( g_GuildCombatMng.m_nWinGuildCount == 2 )
-				itemElem.m_dwItemId	= II_ARM_S_CLO_CLO_DRAGON2;		// 용망토 생성
-			else if( g_GuildCombatMng.m_nWinGuildCount == 3 )
-				itemElem.m_dwItemId	= II_ARM_S_CLO_CLO_DRAGON3;		// 용망토 생성
-			else if( g_GuildCombatMng.m_nWinGuildCount >= 4 )
-				itemElem.m_dwItemId	= II_ARM_S_CLO_CLO_DRAGON4;		// 용망토 생성
-			itemElem.m_nItemNum		= 1;
-			itemElem.m_idGuild	= pGuild->m_idGuild;
-			itemElem.SetSerialNumber();
-			ItemProp* pItemProp		= itemElem.GetProp();
-			if( pItemProp )
-				itemElem.m_nHitPoint	= pItemProp->dwEndurance;
-			else
-				itemElem.m_nHitPoint	= 0;
-
-			CTime tNextCombat = g_GuildCombatMng.GetNextGuildCobmatTime();
-			itemElem.m_dwKeepTime = tNextCombat.GetTime();
-			
-			if( pUser->CreateItem( &itemElem ) )
-			{
-				LogItemInfo aLogItem;
-				aLogItem.Action = "9";
-				aLogItem.SendName = pUser->GetName();
-				aLogItem.RecvName = "GUILDCOMBAT";
-				aLogItem.WorldId = pUser->GetWorld()->GetID();
-				aLogItem.Gold = pUser->GetGold();
-				aLogItem.Gold2 = pUser->GetGold() - g_GuildCombatMng.m_nItemPenya;
-				OnLogItem( aLogItem, &itemElem, 1 );		// why do not pass &itemElem as argument?
-				pUser->AddGold( -g_GuildCombatMng.m_nItemPenya );	
-			}
-			else
-			{
-				pUser->AddDefinedText( TID_GAME_LACKSPACE, "" );
-			}
-		}
-	}
-}
-#endif // __VER < 8
 void CDPSrvr::OnGCTele( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -7851,10 +6803,8 @@ void CDPSrvr::OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 				dwMsgId = TID_GAME_ATTACK_NOTUSE;
 			else if( nState == 5 ) // 비행중
 				dwMsgId = TID_GAME_FLY_NOTUSE;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 			else if( nState == 6 ) // 듀얼중
 				dwMsgId = TID_GAME_ATTACK_NOTUSE;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
 			return;
@@ -7870,11 +6820,7 @@ void CDPSrvr::OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 			if( pItemElem->m_bQuery )
 				return;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			CUser* pUsertmp = g_UserMng.GetUserByPlayerID( CPlayerDataCenter::GetInstance()->GetPlayerId( lpszPlayer ) );
-#else	// __SYS_PLAYER_DATA
-			CUser* pUsertmp = g_UserMng.GetUserByPlayerID( prj.GetPlayerID( lpszPlayer ) );
-#endif	// __SYS_PLAYER_DATA
 			if( IsValidObj( (CObj*)pUsertmp ) )
 			{
 				nState = pUsertmp->GetSummonState();
@@ -7891,10 +6837,8 @@ void CDPSrvr::OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
 					else if( nState == 5 ) // 비행중
 						dwMsgId = TID_GAME_FLY_NOTUSE1;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 					else if( nState == 6 ) // 듀얼중
 						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 					
 					pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
 				}
@@ -7911,23 +6855,19 @@ void CDPSrvr::OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 					pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE1 ) );
 				}
 				else if( pUser->GetWorld()->GetID() != pUsertmp->GetWorld()->GetID()
-#if __VER >= 14 // __INSTANCE_DUNGEON
 						|| pUser->GetLayer() != pUsertmp->GetLayer()
-#endif // __INSTANCE_DUNGEON
 					)
 				{
 					CString strtmp;
 					strtmp.Format( prj.GetText( TID_GAME_WORLD_NOTUSE ), pUser->GetWorld()->m_szWorldName, pUsertmp->GetWorld()->m_szWorldName );
 					pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", strtmp );
 				}
-#if __VER >= 13 // __RAINBOW_RACE
 				else if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer )
 						|| CRainbowRaceMng::GetInstance()->IsEntry( pUsertmp->m_idPlayer ) )
 				{
 					pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
 					return;
 				}
-#endif // __RAINBOW_RACE
 #ifdef __QUIZ
 				else if( pUser->GetWorld()->GetID() == WI_WORLD_QUIZ 
 						|| pUsertmp->GetWorld()->GetID() == WI_WORLD_QUIZ )
@@ -7990,10 +6930,8 @@ void CDPSrvr::OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 					dwMsgId = TID_GAME_ATTACK_NOTUSE;
 				else if( nState == 5 ) // 비행중
 					dwMsgId = TID_GAME_FLY_NOTUSE;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 				else if( nState == 6 ) // 듀얼중
 					dwMsgId = TID_GAME_ATTACK_NOTUSE;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 				
 				pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText( dwMsgId ) );
 				pUsertmp->AddDefinedText( TID_GAME_STATE_NOTSUMMON, "\"%s\"", prj.GetText( dwMsgId + 1 ) );
@@ -8014,10 +6952,8 @@ void CDPSrvr::OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 					dwMsgId = TID_GAME_ATTACK_NOTUSE1;
 				else if( nState == 5 ) // 비행중
 					dwMsgId = TID_GAME_FLY_NOTUSE1;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 				else if( nState == 6 ) // 듀얼중
 					dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 				
 				pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK , "\"%s\"", prj.GetText( dwMsgId ) );
 				pUsertmp->AddDefinedText( TID_GAME_STATE_NOTSUMMON , "\"%s\"", prj.GetText( dwMsgId - 1 ) );
@@ -8043,9 +6979,7 @@ void CDPSrvr::OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 					pUsertmp->AddDefinedText( TID_GAME_STATE_NOTSUMMON , "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE ) );
 				}
 				else if( pUser->GetWorld()->GetID() != pUsertmp->GetWorld()->GetID()
-#if __VER >= 14 // __INSTANCE_DUNGEON
 						|| pUser->GetLayer() != pUsertmp->GetLayer()
-#endif // __INSTANCE_DUNGEON
 					)
 				{
 					CString strtmp;
@@ -8124,10 +7058,8 @@ void CDPSrvr::OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 				dwMsgId = TID_GAME_ATTACK_NOTUSE;
 			else if( nState == 5 ) // 비행중
 				dwMsgId = TID_GAME_FLY_NOTUSE;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 			else if( nState == 6 ) // 듀얼중
 				dwMsgId = TID_GAME_ATTACK_NOTUSE;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 			
 			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
 			return;
@@ -8138,13 +7070,11 @@ void CDPSrvr::OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE ) );
 			return;
 		}
-#if __VER >= 13 // __RAINBOW_RACE
 		if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer ) )
 		{
 			pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
 			return;
 		}
-#endif // __RAINBOW_RACE
 
 		
 		WORD wId	= LOWORD( dwData );
@@ -8183,11 +7113,7 @@ void CDPSrvr::OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 						}
 						else
 						{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 							pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString( pParty->GetPlayerId( i ) ) );
-#else	// __SYS_PLAYER_DATA
-							pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", prj.GetPlayerString( pParty->GetPlayerId( i ) ) );
-#endif	// __SYS_PLAYER_DATA
 						}
 					}
 					pUser->DoApplySkill( (CCtrl*)pUser, pItemElem->GetProp(), NULL );
@@ -8241,10 +7167,8 @@ void CDPSrvr::OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 						dwMsgId = TID_GAME_VENDOR_NOTUSE;
 					else if( nState == 4 ) // 전투중
 						dwMsgId = TID_GAME_ATTACK_NOTUSE;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 					else if( nState == 6 ) // 듀얼중
 						dwMsgId = TID_GAME_ATTACK_NOTUSE;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 					
 					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK , "\"%s\"", prj.GetText( dwMsgId ) );
 					return;
@@ -8264,10 +7188,8 @@ void CDPSrvr::OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
 					else if( nState == 5 ) // 비행중
 						dwMsgId = TID_GAME_FLY_NOTUSE1;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 					else if( nState == 6 ) // 듀얼중
 						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 					
 					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK , "\"%s\"", prj.GetText( dwMsgId ) );
 					return;
@@ -8301,20 +7223,16 @@ void CDPSrvr::OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 						pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", strtmp );
 					}
 				}
-#if __VER >= 14 // __INSTANCE_DUNGEON
 				else if( pLeader->GetLayer() != pUser->GetLayer() )
 				{
 					CString strtmp;
 					strtmp.Format( prj.GetText( TID_GAME_WORLD_NOTUSE ) );
 					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", strtmp );
 				}
-#endif // __INSTANCE_DUNGEON
-#if __VER >= 13 // __RAINBOW_RACE
 				else if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer ) )
 				{
 					pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
 				}
-#endif // __RAINBOW_RACE
 #ifdef __QUIZ
 				else if( pLeader->GetWorld()->GetID() == WI_WORLD_QUIZ 
 					|| pUser->GetWorld()->GetID() == WI_WORLD_QUIZ )
@@ -8391,7 +7309,6 @@ void CDPSrvr::OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	pUser->RemoveItem( (BYTE)( dwId ), (short)nNum );
 }
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 void CDPSrvr::OnCreateMonster( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	DWORD dwItemIdRec;
@@ -8408,58 +7325,9 @@ void CDPSrvr::OnCreateMonster( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 	if( pUser->IsUsableState( dwId ) == FALSE )
 		return;
 	
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 	CCreateMonster::GetInstance()->CreateMonster( pUser, dwId, vPos );
 
-#else // __NEW_ITEMCREATEMON_SERVER
-	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
-	if( IsUsableItem( pItemElem ) )
-	{
-		CWorld* pWorld	= pUser->GetWorld();
-		MoverProp* pMoverProp	= NULL;
-
-		DWORD dwMonsterId = g_CreateMonster.GetCreateMonster( pItemElem->GetProp()->dwID );
-		if( dwMonsterId )
-			pMoverProp	= prj.GetMoverProp( dwMonsterId );
-				
-		if( pWorld && pMoverProp && pMoverProp->dwID != 0 )
-		{
-			D3DXVECTOR3 vDist2 = pUser->GetPos() - vPos;
-			float fDist = D3DXVec3Length( &vDist2 );			// 두좌표간의 거리
-			if( 15.f < fDist )
-				return;
-
-			int nAttr = pWorld->GetHeightAttribute( vPos.x, vPos.z );		// 이동할 위치의 속성 읽음.
-			if( nAttr == HATTR_NOWALK || nAttr == HATTR_NOMOVE )		// 못 움직이는 곳이면 Pass
-				return;
-			if( pUser->IsRegionAttr( RA_SAFETY ) )		// 안전지역이면 Pass
-				return;
-			if( pWorld->GetID() == WI_WORLD_GUILDWAR )
-				return;
-
-//			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_CHR_CURSOR2, vPos.x, vPos.y, vPos.z);
-			for( DWORD dw = 0; dw < 1; dw++ )
-			{
-				CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
-				if( NULL == pObj )	return;	// ASSERT( pObj );
-				pObj->SetPos( vPos );
-				pObj->InitMotion( MTI_STAND );
-				pObj->UpdateLocalMatrix();
-			
-				((CMover*)pObj)->m_bActiveAttack = 0;
-				pWorld->AddObj( pObj, TRUE );
-			}
-			pUser->AddDefinedText( TID_GAME_CREATEMON_S, "\"%s\"", pMoverProp->szName );
-			pUser->RemoveItem( dwId, (short)1 );
-		}
-	}
-	else
-	{
-		// 아이템이 없어서 사용할수 없음.
-	}
-	#endif // __NEW_ITEMCREATEMON_SERVER
 }
-#endif // __ITEMCREATEMON_S0602
 
 void CDPSrvr::OnFoucusObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
@@ -8486,12 +7354,10 @@ void CDPSrvr::OnTrade( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 			if( pTrader->IsPlayer() )	// pc
 			{
 
-#if __VER >= 8 // 8차 듀얼 061226 ma
 				if( 0 < pUser->m_nDuel ||  0 < pTrader->m_nDuel )
 				{
 					return;
 				}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 
 				//개인상점 중에는 거래 불가 
@@ -8542,13 +7408,11 @@ void CDPSrvr::OnConfirmTrade( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 			pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_TRADE) ); //길드대전장 에서는 거래에 관한 모든것들을 이용 할 수 없습니다.
 			return;
 		}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( g_GuildCombat1to1Mng.IsPossibleUser( pUser ) )
 		{
 			pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_TRADE) ); //길드대전장 에서는 거래에 관한 모든것들을 이용 할 수 없습니다.
 			return;
 		}
-#endif // __GUILD_COMBAT_1TO1
 
 		CMover* pTrader		= prj.GetMover( objidTrader );
 		if( IsValidObj( pTrader ) && pTrader->GetWorld() && pTrader->m_vtInfo.GetOther() == NULL )
@@ -8556,12 +7420,10 @@ void CDPSrvr::OnConfirmTrade( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 			if( pTrader->IsPlayer() == FALSE )
 				return;
 
-#if __VER >= 8 // 8차 듀얼 061226 ma
 			if( 0 < pUser->m_nDuel ||  0 < pTrader->m_nDuel )
 			{
 				return;
 			}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 			if( pTrader->IsAttackMode() )
 				pUser->AddDefinedText( TID_GAME_BATTLE_NOTTRADE, "" );
@@ -8599,11 +7461,9 @@ void CDPSrvr::OnTradePut( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
-#if __VER >= 9 // JYJ
 		CItemElem* pItem	= (CItemElem*)pUser->GetItemId( nId );
 		if( pItem && pItem->IsFlag( CItemElem::expired ) )
 			return;
-#endif // __VER >= 9 // JYJ
 
 		if( pUser->m_vtInfo.TradeGetState() == TRADE_STEP_ITEM && pTrader->m_vtInfo.TradeGetState() == TRADE_STEP_ITEM )
 		{
@@ -8835,25 +7695,19 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_TRADE) ); //길드대전장 에서는 거래에 관한 모든것들을 이용 할 수 없습니다.
 			return;
 		}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( g_GuildCombat1to1Mng.IsPossibleUser( pUser ) )
 		{
 			pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_TRADE) ); //길드대전장 에서는 거래에 관한 모든것들을 이용 할 수 없습니다.
 			return;
 		}
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 13 // __HOUSING
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_MINIROOM )
 			return;
-#endif // __HOUSING
 		if( pUser->m_vtInfo.GetOther() )	// 거래중 이면 개인상점 불가 
 			return;
-#if __VER >= 8 // 8차 듀얼 061226 ma
 		if( 0 < pUser->m_nDuel )
 		{
 			return;
 		}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 		if( pUser->IsAttackMode() )
 			return;
@@ -8863,7 +7717,6 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( pUser->m_pActMover->IsFly() )
 			return;
 
-#if __VER >= 8 // __S8_PK
 		if( pUser->IsChaotic() )
 		{
 			CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( pUser->GetPKPropensity() );
@@ -8873,7 +7726,6 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 				return;
 			}
 		}
-#endif // __VER >= 8 // __S8_PK
 
 #ifdef __S_SERVER_UNIFY
 		if( pUser->m_bAllAction == FALSE )
@@ -8895,9 +7747,7 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 						pUser->m_idChatting		= pUser->m_idPlayer;
 					pUser->AddNewChatting( pChatting );
 				}
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 				pUser->m_dwHonorCheckTime = GetTickCount();
-#endif	// __HONORABLE_TITLE			// 달인
 			}
 		}
 	}
@@ -9003,9 +7853,6 @@ void CDPSrvr::OnBuyPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 		BOOL bOK = pPVendor->m_vtInfo.VendorSellItem( pUser, nItem, dwItemId, nNum, result );
 		if( bOK )
 		{
-#if __VER < 11 // __MOD_VENDOR
-			g_UserMng.AddPVendorItemNum( pPVendor, nItem, result.nRemain );
-#endif	// __MOD_VENDOR
 
 			LogItemInfo info;
 
@@ -9093,13 +7940,8 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 	int nCost;
 	ar >> iIndex >> nType >> nId >> nNum >> nCost;
 
-#if __VER >= 8 //__S8_VENDOR_REVISION
 	if( iIndex >= MAX_VENDOR_REVISION )
 		return;
-#else //__S8_VENDOR_REVISION
-	if( iIndex >= MAX_VENDITEM )
-		return;
-#endif //__S8_VENDOR_REVISION
 	if( nCost < 1 )	
 		nCost = 1;
 
@@ -9117,12 +7959,9 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 			return;
 		}
 
-#if __VER >= 13 // __HOUSING
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_MINIROOM )
 			return;
-#endif // __HOUSING
 
-#if __VER >= 9	// __JEFF_9
 		if( CNpcChecker::GetInstance()->IsCloseNpc( pUser->GetWorld(), pUser->GetPos() ) )
 		{
 			// NPC근처 개인 상점 불가(3m) - 시도 시 확인창이 생성 되도록 처리
@@ -9130,7 +7969,6 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 //			pUser->AddDefinedText( TID_GAME_NPC_RADIUS );
 			return;
 		}
-#endif	// __JEFF_9
 
 #ifdef __QUIZ
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_QUIZ )
@@ -9166,7 +8004,6 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 			if( pUser->m_Inventory.IsEquip( pItemElem->m_dwObjId ) )
 				return;
 
-#if __VER >= 9 // JYJ
 			if( pItemElem->IsFlag( CItemElem::expired ) )
 				return;
 			/*
@@ -9176,7 +8013,6 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 					return;
 			}
 			*/
-#endif // __VER >= 9 // JYJ
 			
 			if( nNum > pItemElem->m_nItemNum )
 				nNum = pItemElem->m_nItemNum;
@@ -9185,10 +8021,6 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 
 			ItemProp* pItemProp	= pItemElem->GetProp();
 
-#if __VER < 8     //8차게임내아이템판매가격제한풀기
-			if( (DWORD)nCost > (pItemProp->dwCost * 1000) )
-				return;
-#endif	//  __VER < 8  
 
 			pUser->m_vtInfo.VendorSetItem( nId, iIndex, nNum, nCost );
 			pUser->AddRegisterPVendorItem( iIndex, 0, nId, nNum, nCost );
@@ -9196,7 +8028,6 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 	}
 }
 
-#if __VER >= 8 //__CSC_VER8_5
 void CDPSrvr::OnCreateAngel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	int nOrichalcum, nMoonstone;
@@ -9435,7 +8266,6 @@ void CDPSrvr::OnAngleBuff( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 			pUser->AddDefinedText( TID_GAME_NOT_INVEN_ANGEL, "" );
 	}
 }
-#endif //__CSC_VER8_5
 
 #ifdef __EVE_MINIGAME
 void CDPSrvr::OnKawibawiboStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -9587,7 +8417,6 @@ void CDPSrvr::OnFiveSystemDestroyWnd( CAr & ar, DPID dpidCache, DPID dpidUser, L
 }
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 void CDPSrvr::OnUltimateMakeItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -9722,7 +8551,6 @@ void CDPSrvr::OnUltimateEnchantWeapon( CAr & ar, DPID dpidCache, DPID dpidUser, 
 	}
 	pUser->AddUltimateWeapon( ULTIMATE_ENCHANTWEAPON, nResult );
 }
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 void CDPSrvr::OnExchange( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -9757,20 +8585,16 @@ void CDPSrvr::InviteParty( u_long uLeaderid, u_long uMemberid, BOOL bTroup )
 			pLeaderUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_PARTY) );// "수정해야함 : 길드대전장에는 파티를 할수 없습니다" );
 			return;
 		}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( g_GuildCombat1to1Mng.IsPossibleUser( pUser ) )
 		{
 			pLeaderUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_PARTY) );// "수정해야함 : 길드대전장에는 파티를 할수 없습니다" );
 			return;
 		}
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 8 // 8차 듀얼 061226 ma
 		if( 0 < pUser->m_nDuel ||  0 < pLeaderUser->m_nDuel )
 		{
 			return;
 		}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 		
 		if( pLeaderUser->m_nDuel == 2 )
 		{			
@@ -9800,12 +8624,10 @@ void CDPSrvr::InviteParty( u_long uLeaderid, u_long uMemberid, BOOL bTroup )
 
 void CDPSrvr::InviteCompany( CUser* pUser, OBJID objid )
 {
-#if __VER >= 12 // __SECRET_ROOM
 	if( !IsInviteAbleGuild( pUser ) )
 	{
 		return;
 	}
-#endif // __SECRET_ROOM
 	
 	if( IsValidObj( pUser ) )
 	{
@@ -9835,12 +8657,10 @@ void CDPSrvr::InviteCompany( CUser* pUser, OBJID objid )
 				}
 				else
 				{
-#if __VER >= 8 // 8차 듀얼 061226 ma
 					if( 0 < pUsertmp->m_nDuel )
 					{
 						return;
 					}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 					if( !pGuild->GetWar() )
 					{
@@ -9866,7 +8686,6 @@ void CDPSrvr::InviteCompany( CUser* pUser, OBJID objid )
 	}	
 }
 
-#if __VER >= 12 // __SECRET_ROOM
 BOOL CDPSrvr::IsInviteAbleGuild( CUser* pUser )
 {
 	CGuild* pGuild = pUser->GetGuild();
@@ -9911,61 +8730,7 @@ BOOL CDPSrvr::IsInviteAbleGuild( CUser* pUser )
 
 	return TRUE;
 }
-#endif // __SECRET_ROOM
 
-#if __VER < 12 // __EXT_PIERCING
-BOOL CDPSrvr::IsPiercingSize( CUser* pUser, CItemElem* pItemElem0, CItemElem* pItemElem1, CItemElem* pItemElem2, int& nError )
-{
-	if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE )
-		return FALSE;
-	
-	if( pUser->m_Inventory.IsEquip( pItemElem0->m_dwObjId ) )
-	{
-		nError = TID_GAME_EQUIPPUT;
-		return FALSE;
-	}	
-	
-	//////////////// 첫번째 아이템 //////////////// 
-	if( pItemElem0->GetProp()->dwItemKind3 != IK3_SUIT )
-	{
-		nError = TID_PIERCING_POSSIBLE_ITEM;
-		return FALSE;
-	}
-		
-	// 피어싱 사이즈 검사 지금은 4개가 최고	
-	if( pItemElem0->GetPiercingSize() >= MAX_PIERCING_SUIT )
-	{
-		nError = TID_PIERCING_POSSIBLE;
-		return FALSE;
-	}
-	//////////////// 두번째 아이템 //////////////// 
-	// 다이스인지 검사
-	if( pItemElem1->GetProp()->dwItemKind3 != IK3_PIERDICE )
-	{
-		nError = TID_UPGRADE_ERROR_WRONGUPLEVEL;			
-		return FALSE;					
-	}
-	
-#if __VER >= 8 //__Y_NEW_ENCHANT
-	if( pItemElem1->GetProp()->dwID != II_GEN_MAT_MOONSTONE 
-		&& pItemElem1->GetProp()->dwID != II_GEN_MAT_MOONSTONE_1 )
-#else //__Y_NEW_ENCHANT
-	if( pItemElem1->GetProp()->dwID != II_GEN_MAT_DIE_EIGHT && pItemElem1->GetProp()->dwID != II_GEN_MAT_DIE_TEN )
-#endif //__Y_NEW_ENCHANT
-	{
-		nError = TID_SBEVE_NOTUSEITEM;			// 피어싱에 필요한 주사위가 아니면 불가능
-		return FALSE;
-	}
-	//////////////// 세번째 아이템 //////////////// 
-	if( IsUsableItem( pItemElem2 ) && pItemElem2->m_dwItemId != II_SYS_SYS_SCR_PIEPROT )
-	{
-		nError = TID_SBEVE_NOTUSEITEM;			// 상용아이템이 아니면 불가능
-		return FALSE;
-	}
-	
-	return TRUE;
-}
-#endif // __EXT_PIERCING
 
 CCommonCtrl* CreateExpBox( CUser* pUser )
 {
@@ -9987,11 +8752,7 @@ CCommonCtrl* CreateExpBox( CUser* pUser )
 	pMover->GetDieDecExp( nLevel, fRate, fDecExp, bPxpClear, bLvDown );
 	if( fDecExp )
 	{
-#if __VER >= 8 // __S8_PK
 		pMover->GetDieDecExpRate( fDecExp, 0, FALSE );
-#else // __VER >= 8 // __S8_PK
-		pMover->GetDieDecExpRate( fDecExp, 0, pMover->m_nSlaughter );
-#endif // __VER >= 8 // __S8_PK
 	}
 
 	// 축복의 두루마리 사용시에는 경험치 상자 만들지 않는다...
@@ -10032,7 +8793,6 @@ CCommonCtrl* CreateExpBox( CUser* pUser )
 	return pCtrl;
 }
 
-#if __VER >= 9	// __PET_0410
 void CDPSrvr::OnPetRelease( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -10065,25 +8825,13 @@ void CDPSrvr::OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 		DWORD dwFeedId;		// 먹이 식별자
 		short nNum;
 		ar >> dwFeedId;
-#if __VER < 12 // __PET_0519
-		ar >> nNum;		// 먹이 개수를 서버에서 구하도록 수정
-#endif	// __PET_0519
 		CItemElem* pFeed	= static_cast<CItemElem*>( pUser->GetItemId( dwFeedId ) );
 		if( IsUsableItem( pFeed ) == FALSE )
 			return;
 		if( !pFeed->IsFeed() )
 			return;
 
-#if __VER >= 12 // __PET_0519
 		nNum	= pFeed->m_nItemNum;
-#else	// __PET_0519
-		if( nNum <= 0 )
-			nNum	= 1;
-		if( nNum > pFeed->m_nItemNum )
-			nNum	= pFeed->m_nItemNum;
-		if( nNum > 1000 )	// 0723
-			nNum	= 1000;
-#endif	// __PET_0519
 
 		int nMaxNum	= 0;
 		if( pPet->GetLevel() == PL_EGG )
@@ -10112,9 +8860,7 @@ void CDPSrvr::OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 			g_UserMng.AddPetFeed( pUser, pPet->GetEnergy() );
 		}
 		pUser->UpdateItem( (BYTE)( pFeed->m_dwObjId ), UI_NUM, pFeed->m_nItemNum - nNum );
-#if __VER >= 12 // __PET_0519
 		pUser->AddDefinedText( TID_GAME_PETFEED_S01, "%d", nNum );
-#endif	// __PET_0519
 
 		// log
 		CItemElem* pPetItem	= pUser->GetPetItem();
@@ -10335,9 +9081,7 @@ void CDPSrvr::OnFeedPocketInactive( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 			pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_FEED_POCKET );
 	}
 }
-#endif	// __PET_0410
 
-#if __VER >= 9 // __CSC_VER9_2
 void CDPSrvr::OnModifyStatus( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	int nStrCount, nStaCount, nDexCount, nIntCount;
@@ -10360,16 +9104,12 @@ void CDPSrvr::OnModifyStatus( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 		pUser->m_nInt += nIntCount;
 		pUser->m_nRemainGP = pUser->m_nRemainGP - (nStrCount + nStaCount + nDexCount + nIntCount);
 		pUser->AddSetState( pUser->m_nStr, pUser->m_nSta, pUser->m_nDex, pUser->m_nInt, pUser->m_nRemainGP );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		pUser->CheckHonorStat();
 		pUser->AddHonorListAck();//09.02.12
 		g_UserMng.AddHonorTitleChange( pUser, pUser->m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 	}
 }	
-#endif //__CSC_VER9_2
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 void CDPSrvr::OnLegendSkillStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -10461,9 +9201,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 		pUser->AddLegendSkillResult(FALSE);
 	}
 }
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CDPSrvr::OnGC1to1TenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -10572,9 +9310,7 @@ void CDPSrvr::OnGC1to1TeleportToStage( CAr & ar, DPID dpidCache, DPID dpidUser, 
 
 	g_GuildCombat1to1Mng.SetTeleportToStage( pUser );
 }
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __SYS_COLLECTING
 void CDPSrvr::OnQueryStartCollecting( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -10592,10 +9328,8 @@ void CDPSrvr::OnQueryStopCollecting( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 	if( IsValidObj( pUser ) ) 
 		pUser->StopCollecting();
 }
-#endif	// __SYS_COLLECTING
 
 	
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 void CDPSrvr::OnQueryGuildBankLogList( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	bool bMK = FALSE;
@@ -10618,8 +9352,6 @@ void CDPSrvr::OnQueryGuildBankLogList( CAr & ar, DPID dpidCache, DPID dpidUser, 
 		// 길드가 없거나 길드장이 아니면 신청 불가
 	}
 }
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void CDPSrvr::OnHonorListReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -10653,9 +9385,7 @@ void CDPSrvr::OnHonorChangeReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 		}
 	}
 }
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 void CDPSrvr::OnSealCharReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -10717,13 +9447,11 @@ void CDPSrvr::OnSealCharReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			if( pItemElem->m_nItemNum > 0 )
 				nBankSize++;
 		}
-#if __VER >= 11 // __SYS_POCKET
 		if( !pUser->m_Pocket.IsAllClean() )
 		{
 			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANBANK );
 			return;
 		}
-#endif		
 		if( nBankSize > 0 || pUser->m_dwGoldBank[pUser->m_nSlot] > 0)
 		{
 			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANBANK );
@@ -10795,24 +9523,18 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 			if( pItemElem->m_nItemNum > 0 )
 				nBankSize++;
 		}
-#if __VER >= 11 // __SYS_POCKET
 		if( !pUser->m_Pocket.IsAllClean() )
 		{
 			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANBANK );
 			return;
 		}
-#endif
 		if( nBankSize > 0 || pUser->m_dwGoldBank[pUser->m_nSlot] > 0)
 		{
 			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANBANK );
 			return;
 		}
 	
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		const char* lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( objidSend );
-#else	// __SYS_PLAYER_DATA
-		LPCSTR lpszPlayer = prj.GetPlayerString( objidSend );
-#endif	// __SYS_PLAYER_DATA
 
 		if( lpszPlayer == NULL )
 		{
@@ -10894,9 +9616,7 @@ void CDPSrvr::OnSealCharGetReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 	}
 }
 
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 11 // __SYS_POCKET
 void	CDPSrvr::OnMoveItemOnPocket( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -10981,9 +9701,7 @@ void	CDPSrvr::OnAvailPocket( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		}
 	}
 }
-#endif	// __SYS_POCKET
 
-#if __VER >= 11 // __SYS_IDENTIFY
 void	CDPSrvr::OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11070,7 +9788,6 @@ void	CDPSrvr::OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 		}
 	}
 }
-#endif	// __SYS_IDENTIFY
 
 #ifdef __NPC_BUFF
 void	CDPSrvr::OnNPCBuff( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -11211,7 +9928,6 @@ void	CDPSrvr::OnQuePetResurrection( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 }
 #endif	// __JEFF_11
 
-#if __VER >= 12 // __SECRET_ROOM
 void	CDPSrvr::OnSecretRoomTenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11328,7 +10044,6 @@ void CDPSrvr::OnTeleportSecretRoomDungeon( CAr & ar, DPID dpidCache, DPID dpidUs
 
 	if( IsValidObj( pUser ) == FALSE )
 		return;
-#if __VER >= 12 // __TAX
 	if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_SECRET_ENTRANCE_1, pUser->GetWorld(), pUser->GetPos() ) )
 		return;
 
@@ -11343,11 +10058,8 @@ void CDPSrvr::OnTeleportSecretRoomDungeon( CAr & ar, DPID dpidCache, DPID dpidUs
 	}
 	else
 		pUser->AddDefinedText( TID_GAME_SECRETROOM_NOENTRANCE_1 );
-#endif // __TAX
 }
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __LORD
 void CDPSrvr::OnElectionAddDeposit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11484,9 +10196,7 @@ void CDPSrvr::OnLordSkillUse( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 		g_dpDBClient.SendLordSkillUse( pUser->m_idPlayer, idTarget, nSkill );
 	}
 }
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 void CDPSrvr::OnSetTaxRate( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11504,9 +10214,7 @@ void CDPSrvr::OnSetTaxRate( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 	else
 		Error( "\"%\"s User Is Not Next Win Guild Master!!!", pUser->GetName() );
 }
-#endif // __TAX
 
-#if __VER >= 12 // __HEAVEN_TOWER
 void CDPSrvr::OnTeleportToHeavenTower( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11553,19 +10261,15 @@ void CDPSrvr::OnTeleportToHeavenTower( CAr & ar, DPID dpidCache, DPID dpidUser, 
 		return;
 	}
 
-#if __VER >= 12 // __TAX
 	BYTE nCont = CTax::GetInstance()->GetContinent( pUser );
-#endif // __TAX	
 	// 해당 층으로 텔레포트 -> 실패시 그냥 리턴...
 	if( pUser->REPLACE( g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nDefaultLayer ) )
 	{
 		pUser->AddGold( -nCost );
 		pUser->SetAngle( fAngle );
-#if __VER >= 12 // __TAX
 		__TAXINFO* pTaxInfo = CTax::GetInstance()->GetTaxInfo( nCont );
 		if( pTaxInfo && pTaxInfo->dwId != NULL_ID )
 			CTax::GetInstance()->AddTax( nCont, nCost, TAX_ADMISSION );
-#endif // __TAX		
 		CString strFloor;
 		strFloor.Format( "HEAVEN_TOWER_%2d", nFloor );
 		PutPenyaLog( pUser, "h", strFloor, nCost );
@@ -11573,7 +10277,6 @@ void CDPSrvr::OnTeleportToHeavenTower( CAr & ar, DPID dpidCache, DPID dpidUser, 
 	else
 		return;
 }
-#endif // __HEAVEN_TOWER
 
 BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 											  CUser* pUser, CItemElem* pTarget, int nKind,
@@ -11588,10 +10291,8 @@ BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 	}
 
 	if( 
-#if __VER >= 12 // __J12_0
 		// 여신의 축복과 먹펫 각성은 각성 취소 없이 덮어 쓸 수 있게 한다
 		nKind != CRandomOptionProperty::eBlessing && nKind != CRandomOptionProperty::eEatPet &&
-#endif	// __J12_0
 		g_xRandomOptionProperty->GetRandomOptionSize( pTarget->GetRandomOptItemId() ) > 0
 	)
 	{
@@ -11641,12 +10342,10 @@ BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 
 	pUser->UpdateItemEx( (BYTE)( pTarget->m_dwObjId ), UI_RANDOMOPTITEMID, pTarget->GetRandomOptItemId() );
 
-#if __VER >= 12 // __PET_0519
 	// 활성화 된 픽업펫 또는 리어펫 각성 직 후 효과 적용
 	if( pUser->IsUsing( pTarget ) 
 		&& ( nKind == CRandomOptionProperty::eSystemPet || nKind == CRandomOptionProperty::eEatPet ) )
 		pUser->SetDestParamRandomOptExtension( pTarget );
-#endif	// __PET_0519
 
 	// log
 	LogItemInfo	log;
@@ -11668,12 +10367,10 @@ BOOL CDPSrvr::DoUseItemTarget_InitializeRandomOption(
 	int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pTarget );
 	if( nRandomOptionKind == nKind && g_xRandomOptionProperty->GetRandomOptionSize( pTarget->GetRandomOptItemId() ) > 0 )
 	{
-#if __VER >= 12 // __PET_0519
 		// 먹펫 또는 시스템 펫 각성 취소 후 효과 제거
 		if( pUser->IsUsing( pTarget ) 
 			&& ( nKind == CRandomOptionProperty::eSystemPet || nKind == CRandomOptionProperty::eEatPet ) )
 			pUser->ResetDestParamRandomOptExtension( pTarget );
-#endif	// __PET_0519
 
 		//	mulcom	BEGIN100405	각성 보호의 두루마리
 		//g_xRandomOptionProperty->InitializeRandomOption( pTarget->GetRandomOptItemIdPtr() );
@@ -11747,7 +10444,6 @@ BOOL CDPSrvr::DoUseItemTarget_ItemLevelDown( CUser* pUser, CItemElem* pMaterial,
 	return FALSE;
 }
 
-#if __VER >= 12 // __PET_0519
 void CDPSrvr::OnTransformItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {	// 알변환
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11761,9 +10457,7 @@ void CDPSrvr::OnTransformItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, 
 	ITransformer* pTransformer	= ITransformer::Transformer( stuff.GetTransform() );
 	pTransformer->Transform( pUser, stuff );	// 변환
 }
-#endif	// __PET_0519
 
-#if __VER >= 12 // __MOD_TUTORIAL
 void CDPSrvr::OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11782,9 +10476,7 @@ void CDPSrvr::OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, 
 		pUser->AddSetTutorialState();
 	}
 }
-#endif	// __MOD_TUTORIAL
 
-#if __VER >= 12 // __PET_0519
 // 픽업펫 각성 취소 메뉴 선택 핸들러
 void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
@@ -11809,7 +10501,6 @@ void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUse
 			g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 	}
 }
-#endif	// __PET_0519
 
 #ifdef __AZRIA_1023
 void CDPSrvr::OnDoUseItemInput( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
@@ -11845,7 +10536,6 @@ void CDPSrvr::OnClearPetName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u
 }
 #endif	// __PET_1024
 
-#if __VER >= 13 // __RAINBOW_RACE
 void CDPSrvr::OnRainbowRacePrevRankingOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11897,9 +10587,7 @@ void CDPSrvr::OnRainbowRaceReqFinish( CAr & ar, DPID dpidCache, DPID dpidUser, L
 
 	CRainbowRaceMng::GetInstance()->SetRanking( pUser );
 }
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 void CDPSrvr::OnHousingSetupFurniture( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11956,9 +10644,7 @@ void CDPSrvr::OnHousingGoOut( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u
 
 	CHousingMng::GetInstance()->GoOut( pUser );
 }
-#endif // __HOUSING
 
-#if __VER >= 13 // __QUEST_HELPER
 void CDPSrvr::OnReqQuestNPCPos( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -11977,9 +10663,7 @@ void CDPSrvr::OnReqQuestNPCPos( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE,
 			pUser->AddDefinedText( TID_GAME_QUESTINFO_FAIL );
 	}
 }
-#endif // __QUEST_HELPER
 
-#if __VER >= 13 // __COUPLE_1117
 void CDPSrvr::OnPropose( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -12011,7 +10695,6 @@ void CDPSrvr::OnDecouple( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_lon
 	if( IsValidObj( pUser ) ) 
 		CCoupleHelper::Instance()->OnDecouple( pUser );
 }
-#endif	// __COUPLE_1117
 
 #ifdef __MAP_SECURITY
 void CDPSrvr::OnMapKey( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
@@ -12057,7 +10740,6 @@ void CDPSrvr::OnQuizEventTeleport( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 }
 #endif // __QUIZ
 
-#if __VER >= 15 // __PETVIS
 void CDPSrvr::OnRemoveVis( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -12081,9 +10763,7 @@ void CDPSrvr::OnSwapVis( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long
 
 	CItemUpgrade::GetInstance()->SwapVis( pUser, nPos1, nPos2 );
 }
-#endif // __PETVIS
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CDPSrvr::OnBuyGuildHouse( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -12128,9 +10808,7 @@ void CDPSrvr::OnGuildHouseGoOut( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 
 	GuildHouseMng->GoOutGuildHouse( pUser );
 }
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __TELEPORTER
 void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
@@ -12154,9 +10832,7 @@ void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, 
 		}
 	}
 }
-#endif // __TELEPORTER
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CDPSrvr::OnCheckedQuest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -12201,9 +10877,7 @@ void CDPSrvr::OnCheckedQuest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u
 		pUser->AddCheckedQuest();
 	}
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __CAMPUS
 void CDPSrvr::OnInviteCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pRequest = g_UserMng.GetUser( dpidCache, dpidUser );
@@ -12258,7 +10932,6 @@ void CDPSrvr::OnRemoveCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 			CCampusHelper::GetInstance()->OnRemoveCampusMember( pRequest, idTarget );
 	}
 }
-#endif // __CAMPUS
 
 
 

@@ -27,9 +27,7 @@
 
 	#include "eveschool.h"
 	extern	CGuildCombat	g_GuildCombatMng;
-#if __VER >= 13 // __EXT_ENCHANT
 	#include "ItemUpgrade.h"
-#endif // __EXT_ENCHANT
 #endif	// __WORLDSERVER
 
 extern	CPartyMng				g_PartyMng;
@@ -263,12 +261,8 @@ BOOL CMover::GetAttackResult( CMover* pDefender, DWORD dwOption )
 	}
 	else
 	{
-#if __VER <= 9    // 	__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
-		nHitRate = (int)( ((nHR*1.6f) / (float)(nHR + pDefender->GetParrying())) * 1.2f * 0.6f * 100.0f );
-#else //__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 		nHitRate = (int)( ((nHR*1.6f) / (float)(nHR + pDefender->GetParrying())) * 1.2f * 
 				   (GetLevel()*1.2f / (float)(GetLevel() + pDefender->GetLevel())) * 100.0f );
-#endif	//__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 	}
 	nHitRate += GetAdjHitRate();
 
@@ -302,7 +296,6 @@ int CMover::GetPlusWeaponATK( DWORD dwWeaponType )
 		nATK = GetParam( DST_BOW_DMG, 0 );		
 		break;
 	}
-#if __VER >= 10 // __LEGEND		//10차 전승 마스터스킬
 	if(IsDualWeapon() == TRUE )
 		nATK += GetParam( DST_ONEHANDMASTER_DMG, 0 );
 	else
@@ -324,7 +317,6 @@ int CMover::GetPlusWeaponATK( DWORD dwWeaponType )
 			break;
 		}
 	}
-#endif //__LEGEND		//10차 전승 마스터스킬
 
 	return nATK;
 }
@@ -515,7 +507,7 @@ int CMover::CalcDefense( ATTACK_INFO* pInfo, BOOL bRandom )
 {
 	int nDefense = CalcDefenseCore( pInfo->pAttacker, pInfo->dwAtkFlags, bRandom );
 	nDefense	= (int)( nDefense * GetDEFMultiplier( pInfo ) );
-#if __VER >= 9 && defined(__WORLDSERVER) // __EVENTLUA_ATKDEF
+#if defined(__WORLDSERVER) // __EVENTLUA_ATKDEF
 	if( IsPlayer() )
 		nDefense += prj.m_EventLua.GetDefensePower();
 #endif // __EVENTLUA_ATKDEF
@@ -632,18 +624,6 @@ int CMover::GetCriticalProb( void )
 			m_dwFlag &= (~MVRF_CRITICAL);
 		}
 
-#if __VER < 9 // __S_9_ADD
-		if( IsAfterDeath() )							// 죽음 이후 상태라면?
-			nProb += CRITICAL_AFTER_DEATH;
-		
-		int nHitPercent = GetHitPointPercent( 100 );
-		if( nHitPercent < CRITICAL_BERSERK_HP )			// HP가 MAX대비 30% 미만? 
-		{
-			// CRITICAL_BERSERK_HP : nHitPercent = CRITICAL_BERSERK_PROB : x
-			// 30 : 15 = 20 : x
-			nProb += CRITICAL_BERSERK_PROB - ( nHitPercent * CRITICAL_BERSERK_PROB / CRITICAL_BERSERK_HP );
-		}
-#endif // __S_9_ADD
 	}
 	return nProb;
 }
@@ -667,7 +647,6 @@ int CMover::CalcLinkAttackDamage( int nDamage )
 				
 				float fDist;
 				D3DXVECTOR3	vDist;
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 				if( pParty->m_nModeTime[PARTY_PARSKILL_MODE] )
 				{
 					nJoinMember = pParty->m_nSizeofMember;
@@ -690,28 +669,6 @@ int CMover::CalcLinkAttackDamage( int nDamage )
 						}
 					}
 				}
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-				for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-				{
-					pMemberUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-					if( IsValidObj( (CObj*)pMemberUser )/* && pLeader->IsNearPC( pMemberUser ) && pMemberUser->IsOrigin()*/ )
-					{
-						if( pLeader->m_idSetTarget == pMemberUser->m_idSetTarget
-							&& ( pLeader->m_idSetTarget != NULL_ID && pMemberUser->m_idSetTarget != NULL_ID ) )
-						{
-							if( pLeader->IsSMMode( SM_PARTYSKILL1 ) || pLeader->IsSMMode( SM_PARTYSKILL15 ) || pLeader->IsSMMode( SM_PARTYSKILL30 ) )	// 여기서 유료 아이템 사용중인지 확인
-								nJoinMember++; // 참여한 단원수										
-							else
-							{
-								vDist = pMemberUser->GetPos() - GetPos();
-								fDist = D3DXVec3LengthSq( &vDist );		// 아이템 줍는사람과 멤버간의 거리.
-								if( fDist < 255.0f * 255.0f )		// xx미터보다 작으면
-									nJoinMember++; // 참여한 단원수										
-							}
-						}
-					}
-				}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 				nAdd = ( nDamage * nJoinMember / 10 ); 
 			}
 		}
@@ -843,10 +800,8 @@ float CMover::GetDamageMultiplier( ATTACK_INFO* pInfo )
 			if( pAddSkillProp )
 			{
 				dwProbability	= pAddSkillProp->nProbability;
-#if __VER >= 9	// __SKILL_0706
 				if( pInfo->pAttacker->IsPlayer() && pInfo->pDefender->IsPlayer() )
 					dwProbability	= pAddSkillProp->nProbabilityPVP;
-#endif	// __SKILL_0706
 				if( pAddSkillProp->nSkillCount > 0 )	//  발사체 개수가 있는건
 					factor	/= (float)pAddSkillProp->nSkillCount;	// 발사체 개수만큼 데미지를 나눠서 줌.
 			}
@@ -937,7 +892,6 @@ float CMover::GetDamageMultiplier( ATTACK_INFO* pInfo )
 
 	if( nDelta > 0 )
 	{
-#if __VER >= 9    // 	__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 		if( pInfo->pAttacker->IsNPC() || pInfo->pDefender->IsNPC() )
 		{
 			const int MAX_OVER_ATK = 16;
@@ -947,22 +901,6 @@ float CMover::GetDamageMultiplier( ATTACK_INFO* pInfo )
 			double radian = ( pi * nDelta ) / (float)(MAX_OVER_ATK * 2);
 			factor *= (float)cos( radian );
 		}
-#else //__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
-		if( pInfo->pAttacker->IsPlayer() && pInfo->pDefender->IsPlayer()/* && GetWorld()->GetID() == WI_WORLD_GUILDWAR */)	// 길드대전맵인가? && PVP인가?
-		{
-			nDelta = min( nDelta, 25 ); 
-			factor *= 25.0f / (25.0f + nDelta*2);
-		}
-		else
-		{
-			const int MAX_OVER_ATK = 16;
-			nDelta = min( nDelta, (MAX_OVER_ATK-1) ); 
-			
-			const double pi = 3.1415926535;
-			double radian = ( pi * nDelta ) / (float)(MAX_OVER_ATK * 2);
-			factor *= (float)cos( radian );
-		}
-#endif	//__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 	}
 
 	return factor;
@@ -1105,23 +1043,17 @@ int CMover::PostCalcMagicSkill( int nATK, ATTACK_INFO* pInfo )
 		skillType = pSkillProp->eItemType;
 	
 	float a, b;
-#if __VER >= 9    // 	__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 	if( IsNPC() || pDefender->IsNPC() )
 		b = 1.0f + (int)( nDelta / 0.05f );
 	else
 		b = 1.0f;
-#else //__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
-	b = 1.0f + (int)( nDelta / 0.05f );
-#endif	//__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 
 	if( b <= 0.0f )							
 		b = 0.0f;
 
 	int nDEF = pDefender->CalcDefense( pInfo );
-#if __VER >= 10    // 	__LEGEND
 	if( pInfo->dwAtkFlags & AF_MAGICSKILL )		// 예외처리:속성 매직스킬의 방어력을 구한다.
 		nATK = nATK - nATK * pDefender->GetParam( DST_RESIST_MAGIC_RATE, 0 ) / 100 ;
-#endif	//__LEGEND
 	a = ( nATK-nDEF ) * (1.0f - pDefender->GetResist(skillType) );
 
 	return	( (int)( (int)a*GetMagicSkillFactor( pDefender, skillType ) ) );
@@ -1141,12 +1073,10 @@ float CMover::GetATKMultiplier( CMover* pDefender, DWORD dwAtkFlags )
 	{
 		if( IsSMMode( SM_ATTACK_UP1 ) || IsSMMode( SM_ATTACK_UP ) )
 			fMultiplier *= 1.2f;
-#if __VER >= 9 // __ULTIMATE
 		if( pDefender->IsPlayer() )
 			nDstDmg = GetParam( DST_PVP_DMG, 0 );
 		else
 			nDstDmg = GetParam( DST_MONSTER_DMG, 0 );
-#endif // __ULTIMATE
 	}
 	else
 	{
@@ -1157,10 +1087,8 @@ float CMover::GetATKMultiplier( CMover* pDefender, DWORD dwAtkFlags )
 	#endif 
 	}
 
-#if __VER >= 9 // __ULTIMATE
 	if( 0 < nDstDmg )
 		fMultiplier += (fMultiplier * nDstDmg / 100.0f);
-#endif // __ULTIMATE
 
 	return fMultiplier;
 }
@@ -1196,22 +1124,13 @@ int CMover::GetPropDEFPlus()
 // GetHitPower함수에서 사용할 ATK, DEF의 증감 Factor를 구한다.
 void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* pnDEFFactor, int nParts )
 {
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	*pnATKFactor = 10000;	// 14차 부터는 n/10000 factor로 변경
 	*pnDEFFactor = 10000;	// 14차 부터는 n/10000 factor로 변경
-#else // __EXT_ATTRIBUTE
-	*pnATKFactor = 100;		// 속성 적용이 없으면 ATK를 100% 그대로 사용 
-	*pnDEFFactor = 100;		// 속성 적용이 없으면 DEF를 100% 그대로 사용 
-#endif // __EXT_ATTRIBUTE
 
 	SAI79::ePropType atkType, defType; 
 	int atkLevel, defLevel, nPlusATK, nPlusDEF;
 	atkType = defType = SAI79::NO_PROP;
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	atkLevel = defLevel = 0;
-#else // __EXT_ATTRIBUTE
-	atkLevel = defLevel = 1;
-#endif // __EXT_ATTRIBUTE
 	nPlusATK = nPlusDEF = 0;
 
 	if( IsPlayer() )
@@ -1233,15 +1152,9 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 	else
 	{
 		atkType = GetProp()->eElementType;
-#if __VER >= 14 // __EXT_ATTRIBUTE
 		atkLevel = GetProp()->wElementAtk;
-#endif // __EXT_ATTRIBUTE
 	}
 
-#if __VER < 14 // __EXT_ATTRIBUTE
-	if( atkType == SAI79::NO_PROP )
-		return;
-#endif // __EXT_ATTRIBUTE
 
 	if( pDefender->IsPlayer() )
 	{
@@ -1257,18 +1170,11 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 	else
 	{
 		defType = pDefender->GetProp()->eElementType;
-#if __VER >= 14 // __EXT_ATTRIBUTE
 		defLevel = pDefender->GetProp()->wElementAtk;
-#endif // __EXT_ATTRIBUTE
 	}
 
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	if( atkType == SAI79::NO_PROP && defType == SAI79::NO_PROP )
 		return;
-#else // __EXT_ATTRIBUTE
-	if( defType == SAI79::NO_PROP )
-		return;
-#endif // __EXT_ATTRIBUTE
 
 	// 속성ENUM을 인덱스로 갖는 테이블 
 	static int table[SAI79::END_PROP][SAI79::END_PROP] = {
@@ -1281,7 +1187,6 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 	};
 
 	int result = table[ atkType ][ defType ];
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	int nFactor = 0, nLevel = 0;
 	switch( result )
 	{
@@ -1313,35 +1218,6 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 									:	-( CItemUpgrade::GetInstance()->GetAttributeDefenseFactor( -nLevel ) );	// 방어력
 	*pnATKFactor += nFactor;
 	*pnDEFFactor += nFactor;
-#else // __EXT_ATTRIBUTE	
-	switch( result )
-	{
-	case 1:				//30% MISS
-#if __VER < 13 // __EXT_ENCHANT
-		if( xRandom( 100 ) < 30 )
-			*pnATKFactor = 0;
-#endif // __EXT_ENCHANT
-		break;
-	case 2:				//공격자 열성
-#if __VER >= 13 // __EXT_ENCHANT
-		*pnATKFactor -= CItemUpgrade::GetInstance()->GetAttributeDamageFactor( defLevel );
-		*pnDEFFactor -= CItemUpgrade::GetInstance()->GetAttributeDamageFactor( defLevel );
-#else // __EXT_ENCHANT
-		*pnATKFactor -= (atkLevel + 10 );
-		*pnDEFFactor += (defLevel + 5 + nPlusDEF );
-#endif // __EXT_ENCHANT
-		break;
-	case 3:				//공격자 우성 
-#if __VER >= 13 // __EXT_ENCHANT
-		*pnATKFactor += CItemUpgrade::GetInstance()->GetAttributeDamageFactor( atkLevel );
-		*pnDEFFactor += CItemUpgrade::GetInstance()->GetAttributeDamageFactor( atkLevel );
-#else // __EXT_ENCHANT
-		*pnATKFactor += (atkLevel + 10 + nPlusATK );
-		*pnDEFFactor -= (defLevel + 5 );
-#endif // __EXT_ENCHANT
-		break;
-	}
-#endif // __EXT_ATTRIBUTE
 }
 
 // 일반 공격 데미지를 구한다.
@@ -1360,9 +1236,7 @@ int CMover::GetHitPower( ATTACK_INFO* pInfo  )
 		float fMax = 1.4f;
 		if( GetLevel() > pInfo->pDefender->GetLevel() )  
 		{
-#if __VER >= 9    // 	__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 			if( pInfo->pDefender->IsNPC() )
-#endif	//__PVPDEMAGE0608	//	9th PVP DEMAGE edit 
 			{
 				fMin = 1.2f;
 				fMax = 2.0f;
@@ -1383,7 +1257,6 @@ int CMover::GetHitPower( ATTACK_INFO* pInfo  )
 		nMin	= (int)( nMin * fMin * fCriticalBonus );
 		nMax	= (int)( nMax * fMax * fCriticalBonus );
 
-#if __VER >= 9		// 	__FLYBYATTACK0608	//	9th FlyByAttack edit
 		BOOL bFlyByAttack = xRandom(100) < 15;
 		ItemProp* pItemProp = GetActiveHandItemProp();			//요요공격이나 반사류는 날리지 않음 
 		if( pItemProp && pItemProp->dwWeaponType == WT_MELEE_YOYO || (pInfo->dwAtkFlags & AF_FORCE) )
@@ -1393,22 +1266,10 @@ int CMover::GetHitPower( ATTACK_INFO* pInfo  )
 
 		if( pInfo->pDefender->CanFlyByAttack() && bFlyByAttack )
 			pInfo->dwAtkFlags |= AF_FLYING;
-#else //__FLYBYATTACK0608	//	9th FlyByAttack edit
-		BOOL bFlyByAttack = xRandom(100) < 30;
-		ItemProp* pItemProp = GetActiveHandItemProp();			//요요공격이나 반사류는 날리지 않음 
-		if( pItemProp && pItemProp->dwWeaponType == WT_MELEE_YOYO || (pInfo->dwAtkFlags & AF_FORCE) )
-			bFlyByAttack = FALSE;
-		if( pInfo->pDefender->CanFlyByAttack() && bFlyByAttack )
-			pInfo->dwAtkFlags |= AF_FLYING;
-#endif	//__FLYBYATTACK0608	//	9th FlyByAttack edit
 	}		
 
 	nATK = xRandom( nMin, nMax );						// 공격력에 랜덤적용  
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	nATK = MulDiv( nATK, nATKFactor, 10000 );				// 14차 부터는 n/10000 값으로 변경
-#else // __EXT_ATTRIBUTE
-	nATK = MulDiv( nATK, nATKFactor, 100 );				// 속성 상성에의한 팩터를 곱한다. nATKFactor 0-100사이의 퍼센트값  
-#endif // __EXT_ATTRIBUTE
 	if( pInfo->IsRangeAttack() )						// 플레이어의 원거리 공격의 경우 
 		nATK	= (int)( nATK * GetChargeMultiplier( pInfo->GetChargeLevel() ) );		// 충전레벨에 의한 증폭처리 
 
@@ -1419,11 +1280,7 @@ int CMover::GetHitPower( ATTACK_INFO* pInfo  )
 int CMover::PostCalcGeneric( int nATK, ATTACK_INFO* pInfo )
 {
 	int nDEF = pInfo->pDefender->CalcDefense( pInfo );  
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	nDEF = MulDiv( nDEF, pInfo->nDEFFactor, 10000 );	// 14차부터 n/10000으로 변경
-#else // __EXT_ATTRIBUTE
-	nDEF = MulDiv( nDEF, pInfo->nDEFFactor, 100 );
-#endif // __EXT_ATTRIBUTE
 
 	int nDamage = nATK - nDEF;
 	if( nDamage > 0 )
@@ -1506,13 +1363,11 @@ int	CMover::GetMeleeSkillPower( ATTACK_INFO* pInfo )
 
 	DWORD dwSkillAbilityMin	= pAddSkillProp->dwAbilityMin;
 	DWORD dwSkillAbilityMax	= pAddSkillProp->dwAbilityMax;
-#if __VER >= 9	// __SKILL_0706
 	if( pInfo->pAttacker->IsPlayer() && pInfo->pDefender->IsPlayer() )
 	{
 		dwSkillAbilityMin	= pAddSkillProp->dwAbilityMinPVP;
 		dwSkillAbilityMax	= pAddSkillProp->dwAbilityMaxPVP;
 	}	
-#endif	// __SKILL_0706
 
 	if( pWeapon )
 	{
@@ -1694,7 +1549,6 @@ void CMover::OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nRefl
 	{
 	case HITTYPE_PK:
 		{
-#if __VER >= 8 // __S8_PK
 			if( nReflect )
 				break;
 			
@@ -1712,16 +1566,6 @@ void CMover::OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nRefl
 			else
 				pAttacker->SetPKPink( GetTickCount() + SEC(prj.m_PKSetting.nGeneralAttack) );
 			g_UserMng.AddPKPink( pAttacker, 1 );
-#else // __VER >= 8 // __S8_PK
-			// PK세션을 시작하기 위해서 플레이어간의 적대관계 시작을 보낸다.
-			((CUser*)pAttacker)->UpdatePlayerEnemy( ADD_PLAYER_ENEMY, pDefender->GetId() );
-			((CUser*)pDefender)->UpdatePlayerEnemy( ADD_PLAYER_ENEMY, pAttacker->GetId() );
-			// 첫 PK시도이면 슬로터 포인트를 감소한다. 
-			if( dwLast == 0 || (GetTickCount() - dwLast) > MIN(1) )		//첫타 or 세션이 1분을 지났는가?
-			{
-				pAttacker->ChangeSlaughter( CHANGE_SLAUGHTER_ATTACK, pDefender );
-			}
-#endif // __VER >= 8 // __S8_PK
 		}
 		break;
 	case HITTYPE_PVP:
@@ -1749,11 +1593,7 @@ void CMover::OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nRefl
 
 // 좋은 버프일때만 여기 들어옴
 // return HITTYPE_GENERIC이면 안드러감
-#if __VER >= 8 // __S8_PK
 HITTYPE	CMover::GetHitType2( CMover* pMover, BOOL bTarget, BOOL bGood )
-#else // __VER >= 8 // __S8_PK
-HITTYPE	CMover::GetHitType2( CMover* pMover, BOOL bTarget )
-#endif // __VER >= 8 // __S8_PK
 {
 	if( !IsValidObj( (CObj*)this ) || !IsValidObj( (CObj*)pMover ) )
 		return HITTYPE_GENERIC;
@@ -1764,10 +1604,6 @@ HITTYPE	CMover::GetHitType2( CMover* pMover, BOOL bTarget )
 
 	if( IsPlayer() && pMover->IsPlayer() )
 	{
-#if __VER < 8 // 8차 듀얼 061226 ma
-		if( !g_eLocal.GetState( EVE_18 ) )
-			return HITTYPE_FAIL;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
 		if( m_pActMover->IsFly() || pMover->m_pActMover->IsFly() )	// 공중에 있으면 불가 
 			return HITTYPE_FAIL;
@@ -1786,20 +1622,11 @@ HITTYPE	CMover::GetHitType2( CMover* pMover, BOOL bTarget )
 
 		if( g_eLocal.GetState( EVE_PK ) )
 		{
-#if __VER >= 8 // __S8_PK
 			if( bGood )		// 선한 마법이면 모두 들어가게 하자
 				return HITTYPE_FAIL;
 			else if( GetLevel() <= prj.m_PKSetting.nLimitLevel || pMover->GetLevel() <= prj.m_PKSetting.nLimitLevel )
 				return HITTYPE_FAIL;
 			return HITTYPE_PK;
-#else // __VER >= 8 // __S8_PK
-			DWORD dwLast;										
-			GetEnemyHit( pMover->GetId(), &dwLast );
-			if( dwLast == 0 || (GetTickCount() - dwLast) > MIN(1) )		//PK세션 검사 
-				return HITTYPE_FAIL;
-			else
-				return HITTYPE_PK;		
-#endif // __VER >= 8 // __S8_PK
 		}
 		else
 		{
@@ -1822,22 +1649,16 @@ HITTYPE	CMover::GetHitType( CMover* pMover, BOOL bTarget, int nReflect )
 	if( m_nDead || pMover->m_nDead )					// 죽은후 무적상태
 		return HITTYPE_FAIL;
 
-#if __VER >= 9	//__AI_0509
 	// 자기 자신을 공격하는 경우가 아님
 	// 디버프 상태에서 재로그인 하면 공격자 대신 자신이 공격자로 설정됨.
 	if( this == pMover )	
 		return HITTYPE_GENERIC;
-#endif	// __AI_0509
 
 	if( IsPlayer() && pMover->IsPlayer() )
 	{
 		if( IsGuildCombatTarget( pMover ) )
 			return HITTYPE_GUILDCOMBAT;
 
-#if __VER < 8 // 8차 듀얼 061226 ma
-		if( !g_eLocal.GetState( EVE_18 ) )
-			return HITTYPE_FAIL;
-#endif // __VER >= 8 // 8차 듀얼 061226 ma		
 
 		if( m_pActMover->IsFly() || pMover->m_pActMover->IsFly() )	// 공중에 있으면 불가 
 			return HITTYPE_FAIL;
@@ -1856,12 +1677,6 @@ HITTYPE	CMover::GetHitType( CMover* pMover, BOOL bTarget, int nReflect )
 		DWORD dwAttr	= GetPKPVPRegionAttr();		
 		if( dwAttr == RA_SAFETY || dwAttr != pMover->GetPKPVPRegionAttr() )
 			return HITTYPE_FAIL;
-#if __VER < 8 // __S8_PK
-		if( m_idparty > 0 && m_idparty == pMover->m_idparty )	
-			return HITTYPE_FAIL;
-		if( m_idGuild > 0 && m_idGuild == pMover->m_idGuild )
-			return HITTYPE_FAIL;
-#endif // __VER < 8 // __S8_PK
 
 
 		if( IsBaseJob() || pMover->IsBaseJob() )
@@ -1874,23 +1689,8 @@ HITTYPE	CMover::GetHitType( CMover* pMover, BOOL bTarget, int nReflect )
 		
 		if( g_eLocal.GetState( EVE_PK ) )
 		{
-#if __VER >= 8 // __S8_PK
 			if( GetLevel() <= prj.m_PKSetting.nLimitLevel || pMover->GetLevel() <= prj.m_PKSetting.nLimitLevel )
 				return HITTYPE_FAIL;
-#else // __VER >= 8 // __S8_PK
-			if( pMover->IsChaotic() )						// 카오        - PK가능 
-				return HITTYPE_PK;
-			if( GetTickCount() >= m_dwPKTargetLimit )		// PK선공불가시간동안에는 선공이 안됨  
-			{
-				if( bTarget )								// 타켓유저    - PK가능 
-					return HITTYPE_PK;
-			}
-			
-			DWORD dwLast;										
-			GetEnemyHit( pMover->GetId(), &dwLast );
-			if( dwLast == 0 || (GetTickCount() - dwLast) > MIN(1) )		//PK세션 검사 
-				return HITTYPE_FAIL;
-#endif // __VER >= 8 // __S8_PK
 			return HITTYPE_PK;
 		}
 		else
@@ -1976,9 +1776,7 @@ BOOL CMover::IsGuildCombatTarget( CMover* pMover )
 {
 #ifdef __WORLDSERVER
 	if( g_GuildCombatMng.m_nGCState != CGuildCombat::WAR_WAR_STATE
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		&& g_GuildCombat1to1Mng.m_nState != g_GuildCombat1to1Mng.GC1TO1_WAR
-#endif // __GUILD_COMBAT_1TO1
 		)
 		return FALSE;
 #endif // __WORLDSERVER
@@ -2015,7 +1813,6 @@ void CMover::SetDamagedMotion( CMover* pAttacker, DWORD dwAtkFlags )
 	else
 		m_pActMover->SetState( OBJSTA_DMG_ALL, OBJSTA_DMG );
 	
-#if __VER >= 10 // __LEGEND
 	DWORD	dwTmpTick = GetTickCount();
 	int	nTmpSkillID = m_pActMover->GetCastingSKillID();
 	if( m_pActMover->GetCastingEndTick() > dwTmpTick && ( nTmpSkillID == SI_KNT_HERO_DRAWING || nTmpSkillID == SI_RIG_HERO_RETURN ) )
@@ -2023,7 +1820,6 @@ void CMover::SetDamagedMotion( CMover* pAttacker, DWORD dwAtkFlags )
 		m_pActMover->SetCastingEndTick(0);
 		m_pActMover->ClearState();				// 상태 클리어하고 다시 맞춤.
 	}
-#endif  //#if __VER >= 10 // __LEGEND
 
 	if( m_pActMover->IsActJump() || m_pActMover->IsActAttack() )	// 점프중 or 공격중 엔 데미지 모션 안냄.
 		return;
@@ -2047,10 +1843,6 @@ void CMover::SetDamagedMotion( CMover* pAttacker, DWORD dwAtkFlags )
 // 아이템의 효능 곱하기 팩터를 구한다.
 float CMover::GetItemMultiplier( CItemElem* pItemElem )
 {
-#if __VER < 8 // __S8_PK
-	if( IsChaotic() == FALSE && (pItemElem->GetProp()->nEvildoing < 0) )
-		return 0.0f;	// 선한자가 카오 아이템을 사용하면 효능이 없다.
-#endif // __VER < 8 // __S8_PK
 
 	if( pItemElem->IsFlag( CItemElem::expired ) )
 		return 0.0f;
@@ -2058,11 +1850,7 @@ float CMover::GetItemMultiplier( CItemElem* pItemElem )
 	ItemProp* pItemProp = pItemElem->GetProp();
 	ASSERT( pItemProp );
 
-#if __VER >= 11 // __REMOVE_ENDURANCE
 	float fValue = 1.0f;
-#else // __REMOVE_ENDURANCE
-	float fValue = CMover::GetItemEnduranceInfluence( ( pItemElem->m_nHitPoint * 100 ) / pItemProp->dwEndurance );
-#endif // __REMOVE_ENDURANCE
 	
 	// 康 - 2007-08-27
 	int nOption		= pItemElem->GetAbilityOption();
@@ -2093,10 +1881,6 @@ void CMover::GetItemATKPower( int *pnMin, int *pnMax, ItemProp* pItemProp, CItem
 	if( pWeapon )
 	{
 		f = GetItemMultiplier( pWeapon );
-#if __VER < 11 // __REMOVE_ENDURANCE
-		if( pWeapon->m_nRepairNumber >= 100 )
-			nAdd += prj.GetExpUpItem( pItemProp->dwItemKind3, 1 );
-#endif // __REMOVE_ENDURANCE
 	}
 	*pnMin	= (int)( GetItemAbilityMin( pItemProp->dwID ) * f ) + nAdd;
 	*pnMax	= (int) ( GetItemAbilityMax( pItemProp->dwID ) * f ) + nAdd;
@@ -2147,23 +1931,14 @@ float CMover::GetResist( SAI79::ePropType type )
 	return GetResistSpell( n ) / 100.0f;
 }
 
-#if __VER >= 8 // __S8_PK
 void CMover::OnAttackSFX( OBJID	idTarget, int nMagicPower, DWORD dwSkill, int nDmgCnt, float	fDmgAngle, float fDmgPower,  DWORD dwAtkFlags, BOOL bControl )
-#else // __VER >= 8 // __S8_PK
-void CMover::OnAttackSFX( OBJID	idTarget, int nMagicPower, DWORD dwSkill, int nDmgCnt, float	fDmgAngle, float fDmgPower,  DWORD dwAtkFlags )
-#endif // __VER >= 8 // __S8_PK
 {
 #ifdef __WORLDSERVER
 //	if( dwSkill == SI_MAG_FIRE_HOTAIR )		// 康	// 06-10-23
 //		return;
 
-#if __VER >= 8 // __S8_PK
 	SFXHIT_INFO si	= 
 		{ idTarget, nMagicPower, dwSkill, nDmgCnt, fDmgAngle, fDmgPower, dwAtkFlags, bControl };
-#else // __VER >= 8 // __S8_PK
-	SFXHIT_INFO si	= 
-		{ idTarget, nMagicPower, dwSkill, nDmgCnt, fDmgAngle, fDmgPower, dwAtkFlags };
-#endif // __VER >= 8 // __S8_PK
 	AddSFXInfo( idTarget, si );
 #endif
 }
@@ -2266,11 +2041,7 @@ BOOL AttackBySFX( CMover* pAttacker, SFXHIT_INFO & info )
 			BOOL bSuccess	= pAttacker->GetSkillProp( &pSkillProp, &pAddSkillProp, info.dwSkill, pSkill->dwLevel, "OnSfxHit" );
 		#endif	// __SKILL0517
 			if( bSuccess )
-#if __VER >= 8 // __S8_PK
 				pAttacker->DoApplySkill( pTarget, pSkillProp, pAddSkillProp, false, nParam, FALSE, info.bControl );
-#else // __VER >= 8 // __S8_PK
-				pAttacker->DoApplySkill( pTarget, pSkillProp, pAddSkillProp, false, nParam );
-#endif // __VER >= 8 // __S8_PK
 		} 
 		else
 			Error( "OnSfxHit : skill=%d를 가지지 않음", info.dwSkill );

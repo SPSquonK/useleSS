@@ -33,9 +33,7 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_TC_LIST, &CDPDatabaseClient::OnTCList );
 	ON_MSG( PACKETTYPE_QUERYSETPLAYERNAME, &CDPDatabaseClient::OnSetPlayerName );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_UPDATE_PLAYER_DATA, &CDPDatabaseClient::OnUpdatePlayerData );
-#endif	// __SYS_PLAYER_DATA
 #ifdef __AUTO_NOTICE
 	ON_MSG( PACKETTYPE_EVENTLUA_NOTICE, &CDPDatabaseClient::OnEventNotice );
 #endif // __AUTO_NOTICE
@@ -517,7 +515,6 @@ void CDPDatabaseClient::SendSnoopGuild( u_long idGuild, u_long idPlayer, const c
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar )
 {
 	u_long idPlayer;
@@ -564,7 +561,6 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar )
 		}
 	}
 }
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __RT_1025
 void CDPDatabaseClient::QueryAddMessenger( u_long idPlayer, u_long idFriend )

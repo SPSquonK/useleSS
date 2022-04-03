@@ -226,9 +226,7 @@ public:
 	// 검광지점은 인덱스로는 안되고 실제 버텍스 위치를 기록해야 할것이다.
 	D3DXVECTOR3		m_vBBMin, m_vBBMax;			// read bound box min, max
 	D3DXVECTOR3		m_vForce1, m_vForce2;		// 검광 시작점,끝점
-#if __VER >= 9 // __CSC_VER9_5
 	D3DXVECTOR3		m_vForce3, m_vForce4;			// 추가지점 시작점,끝점
-#endif //__CSC_VER9_5
 	float	m_fScrlU, m_fScrlV;
 	int		m_nMaxFace;					// 오브젝트들의 폴리곤 갯수 총합
 	int		m_nNoTexture;				// 텍스쳐를 사용하지 않음.
@@ -359,10 +357,8 @@ static 	BOOL IsAnimateFile( LPCTSTR szFileName );		// szFileName이 애니메이션이 
 	int		SlideVectorUnder( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vEnd , const D3DXMATRIX &mWorld, D3DXVECTOR3 *pIntersect );
 	void	FindTouchTriLine( D3DXVECTOR3 **pTriOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vEnd , const D3DXMATRIX &mWorld, FLOAT *pDist, BOOL bCollObj = TRUE );
 	D3DXVECTOR3 *IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE );
-#if __VER >= 13 // __HOUSING
 	BOOL	SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* TargetObj, D3DXMATRIX mTargetWorld);
 	void	ComputeInterval(float fVV0,float fVV1,float fVV2,float fD0,float fD1,float fD2,float fD0D1,float fD0D2,float &fA,float &fB,float &fC,float &fX0,float &fX1);
-#endif // __HOUSING
 	void	Skining( GMOBJECT *pObj, const D3DXMATRIX *mBones );
 	HRESULT	SetVertexBuffer( GMOBJECT *pObj );
 	void	Animate( FLOAT fFrameCurrent, int nNextFrame );

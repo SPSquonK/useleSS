@@ -22,11 +22,9 @@ int CWndWorld::ControlPlayer( DWORD dwMessage, CPoint point )
 		return 0;
 	if( g_pPlayer->m_dwMode & DONMOVE_MODE )
 		return 0;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 //	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
 	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)
 		return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	if( g_pPlayer->m_vtInfo.VendorIsVendor() )
 		return 0;
 #ifdef __S_SERVER_UNIFY
@@ -237,7 +235,6 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 	if( m_bLButtonDown )
 		pAct->m_dwCtrlMsg |= CTRLMSG_LDOWN;
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	D3DXVECTOR3 vec3Tri[3];
 	pWorld->ClientPointToVector( vec3Tri, rect, point, &pWorld->m_matProj, &g_Neuz.m_camera.m_matView, &vRayEnd, TRUE );
 	g_Neuz.m_vCursorPos = vRayEnd;
@@ -283,7 +280,6 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 				g_Neuz.m_pCreateMonItem = NULL;
 		}		
 	}
-#endif // __ITEMCREATEMON_S0602
 
 	//TODO:ata3k님 꼭 고쳐주세요. 왜 그런지 아무도 몰라!
 	// 이동금지 상태가 아닐때만 클릭으로 이동할수 있다.
@@ -320,11 +316,7 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 				{
 					{
 						if( m_pWndGuideSystem  && m_pWndGuideSystem->IsVisible())
-						#if __VER >= 12 // __MOD_TUTORIAL
 							m_pWndGuideSystem->m_Condition.bIsClickOnLand = true;
-						#else
-							m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_MOVE);
-						#endif
 	#ifdef __IAOBJ0622					
 						if( GetLastPickObj() && GetLastPickObj()->GetType() == OT_SHIP )
 							pMover->SetDestPos( (CShip *)GetLastPickObj(), vRayEnd );
@@ -387,15 +379,11 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 	{
 
 		if( bUp || bDown )
-	#if __VER >= 12 // __MOD_TUTORIAL
 		{
 			CWndGuideSystem* pWndGuide = NULL;
 			pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 			if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.bIsKeyMove = true;
 		}
-	#else
-			m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_MOVE);
-	#endif
 		m_bAutoAttack = FALSE;
 		g_pPlayer->ClearCmd();
 		if( !bSpace )
@@ -486,10 +474,6 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 //	jump
 	if( bSpace ) 
 	{
-	#if __VER < 12 // __MOD_TUTORIAL
-		if( m_pWndGuideSystem )
-			m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_JUMP);
-	#endif
 		if( pMover->SendActMsg( OBJMSG_JUMP ) == 1 ) 
 		{
 			fBehavior	= true;
@@ -533,10 +517,6 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 			}
 		} else
 		{
-		#if __VER < 12 // __MOD_TUTORIAL
-			if(m_pWndGuideSystem)
-				m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_KEY_RUN);
-		#endif
 			if( pMover->SendActMsg( OBJMSG_MODE_WALK ) == 1 ) {
 				g_WndMng.PutString( prj.GetText( TID_GAME_WALK ), NULL, prj.GetTextColor( TID_GAME_WALK ) , CHATSTY_SYSTEM_CLIENT );		
 				fBehavior	= true;

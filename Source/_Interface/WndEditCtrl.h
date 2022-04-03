@@ -212,9 +212,7 @@ public:
 	static HCURSOR		m_hEditCursor;
 	static CWndEdit*	m_pActWndEditCtrl;
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	void SetMaxStringNumber( DWORD dwMaxStringNumber );
-#endif // __2ND_PASSWORD_SYSTEM
 
 private:
 	void	DeleteBlock();
@@ -262,9 +260,7 @@ private:
 	CWndHCandList*		m_pWndHCandList;
 	CReadingList*		m_pWndReadingList;
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	DWORD				m_dwMaxStringNumber;
-#endif // __2ND_PASSWORD_SYSTEM
 };
 /////////////////////////////////////////////////////////////////////////////
 

@@ -116,9 +116,7 @@ public:
 						UINT nStateMask, int nImage, LPARAM lParam);
 	CItemElem* GetItemFromArr( DWORD dwIndex );
 	void	SetScrollBarVisible( BOOL bVisible = FALSE ) { m_wndScrollBar.SetVisible( bVisible ); };
-#if __VER >= 8 //__CSC_VER8_5
 	void	SetDieFlag(BOOL flag);
-#endif //__CSC_VER8_5
 // Overridables
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
@@ -158,19 +156,15 @@ protected:
 
 	int		HitTest( CPoint point );
 	
-#if __VER >= 9 // __CSC_VER9_1
 public:
 	void	UpdateTooltip( void );
-#endif	// __CSC_VER9_1
 
 	////{{AFX_MSG(CListCtrl)
 	//afx_msg void OnNcDestroy();
 	////}}AFX_MSG
 	//DECLARE_MESSAGE_MAP()
-#if __VER >= 8 //__CSC_VER8_5
 public:
 	BOOL m_useDieFlag;
-#endif //__CSC_VER8_5
 };
 
 #endif // !defined(AFX_WNDITEMLIST_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_)

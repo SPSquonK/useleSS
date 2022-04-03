@@ -12,9 +12,7 @@
 										int nBufSize;	\
 										LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );
 #endif	// __GETBLOCK
-#if __VER >= 13 // __HONORABLE_TITLE
 #include "honor.h"
-#endif	// __HONORABLE_TITLE
 void CObj::Serialize( CAr & ar )	// 21
 {
 	if( ar.IsStoring() )
@@ -107,9 +105,7 @@ void CMover::Serialize( CAr & ar )
 		ar << m_pActMover->GetState();
 		ar << m_pActMover->GetStateFlag();
 		ar << (u_char)m_dwBelligerence;
-#if __VER >= 15 // __PETVIS
 		ar << m_dwMoverSfxId;
-#endif // __PETVIS
 		if( m_bPlayer )	// PLAYER
 		{
 			ar.WriteString( m_szName );
@@ -162,7 +158,6 @@ void CMover::Serialize( CAr & ar )
  #else // __WORLDSERVER
 			ar << m_dwUseItemId;
  #endif // __WORLDSERVER
-#if __VER >= 8 // __S8_PK
 			if( m_dwPKTime > 0 )
 	#ifdef __WORLDSERVER
 				ar << ( m_dwPKTime - GetTickCount() );
@@ -174,15 +169,9 @@ void CMover::Serialize( CAr & ar )
 			ar << m_nPKValue;
 			ar << m_dwPKPropensity;
 			ar << m_dwPKExp;
-#else // __VER >= 8 // __S8_PK
-			ar << (u_short)m_nNumKill;
-			ar << m_nSlaughter;
-#endif // __VER >= 8 // __S8_PK
 			ar << m_nFame;
 			ar << (u_char)m_nDuel;
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			ar << m_nHonor;					// 달인선택 
-#endif	// __HONORABLE_TITLE			// 달인
 			{
 				int i;
 				for( i = 0; i < MAX_HUMAN_PARTS; i ++ )
@@ -199,11 +188,7 @@ void CMover::Serialize( CAr & ar )
 			{
 				ar << (u_short)m_nManaPoint;
 				ar << (u_short)m_nFatiguePoint;
-#if __VER >= 12 // __MOD_TUTORIAL
 				ar << m_nTutorialState;
-#else	// __MOD_TUTORIAL
-				ar << (u_short)m_nFlightLv;
-#endif	// __MOD_TUTORIAL
 				ar << m_nFxp;
 				
 				dwGold = GetGold();
@@ -222,10 +207,8 @@ void CMover::Serialize( CAr & ar )
 				ar << m_nCompleteQuestSize;
 				ar.Write( m_aCompleteQuest, sizeof(WORD) * m_nCompleteQuestSize ); 
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 				ar << m_nCheckedQuestSize;
 				ar.Write( m_aCheckedQuest, sizeof(WORD) * m_nCheckedQuestSize ); 
-#endif // __IMPROVE_QUEST_INTERFACE
 
 				ar << m_idMurderer;
 				ar << (short)m_nRemainGP;
@@ -247,33 +230,23 @@ void CMover::Serialize( CAr & ar )
 				ar << m_nAttackResistLeft;
 				ar << m_nAttackResistRight;
 				ar << m_nDefenseResist;
-#if __VER >= 8 // __CSC_VER8_5
 				ar << m_nAngelExp;
 				ar << m_nAngelLevel;
-#endif // __CSC_VER8_5
 				m_Inventory.Serialize( ar );
 				for( int k = 0 ; k < 3 ; ++k )
 					m_Bank[k].Serialize( ar );
-#if __VER >= 9	// __PET_0410
 				ar << GetPetId();	// 소환 중인 펫 인벤토리 위치
-#endif	// __PET_0410
-#if __VER >= 11 // __SYS_POCKET
 				m_Pocket.Serialize( ar );
-#endif	// __SYS_POCKET
 #ifdef __JEFF_9_20
 				ar << m_dwMute;
 #endif	// __JEFF_9_20
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 				for( int i = 0 ; i < MAX_HONOR_TITLE ; ++i )
 				{
 					ar << m_aHonorTitle[i];
 
 				}
-#endif	// __HONORABLE_TITLE			// 달인
-#if __VER >= 15 // __CAMPUS
 				ar << m_idCampus;
 				ar << m_nCampusPoint;
-#endif // __CAMPUS
 			}
 			else if( CObj::GetMethod() == METHOD_EXCLUDE_ITEM )
 			{
@@ -296,7 +269,6 @@ void CMover::Serialize( CAr & ar )
 				}
 				GETBLOCK( ar, pBlock, nBlockSize );
 				*(UNALIGNED u_char*)( pBlock + uOffset )	= uSize;
-#if __VER >= 9	// __PET_0410
 				DWORD dwPetId	= NULL_ID;
 #ifdef __PET_1024
 				char* pszPetName	= "";
@@ -313,7 +285,6 @@ void CMover::Serialize( CAr & ar )
 #ifdef __PET_1024
 				ar.WriteString( pszPetName );
 #endif	// __PET_1024
-#endif	// __PET_0410
 			}
 		}
 		else	// NPC
@@ -346,9 +317,7 @@ void CMover::Serialize( CAr & ar )
 			ar << (u_char)m_nMovePattern;
 			ar << (u_char)m_nMoveEvent;
 			ar << m_nMoveEventCnt;
-#if __VER >= 9	//__AI_0509
 			ar << m_fSpeedFactor;
-#endif	// __AI_0509
 		}
 #ifdef __BUFF_1107
 		m_buffs.Serialize( ar );
@@ -399,9 +368,7 @@ void CMover::Serialize( CAr & ar )
 		m_pActMover->AddStateFlag( dw2 );
 		m_pActMover->__ForceSetState( dw1 );
 		ar >> (u_char&)m_dwBelligerence;
-#if __VER >= 15 // __PETVIS
 		ar >> m_dwMoverSfxId;
-#endif // __PETVIS
 		if( m_bPlayer )	// PLAYER
 		{
 			m_dwSkinSet		=
@@ -415,9 +382,6 @@ void CMover::Serialize( CAr & ar )
 			m_nInt	=
 			m_nLevel	=
 			m_dwAuthorization	=
-#if __VER < 8 // __S8_PK
-			m_nNumKill	=
-#endif // __VER < 8 // __S8_PK
 									0;
 
 			BYTE bySex;
@@ -466,7 +430,6 @@ void CMover::Serialize( CAr & ar )
 #else // __WORLDSERVER
 			ar >> m_dwUseItemId;
 #endif // __WORLDSERVER
-#if __VER >= 8 // __S8_PK
 			ar >> m_dwPKTime;
 	#ifdef __WORLDSERVER
 			if( m_dwPKTime > 0 )
@@ -475,13 +438,8 @@ void CMover::Serialize( CAr & ar )
 			ar >> m_nPKValue;
 			ar >> m_dwPKPropensity;
 			ar >> m_dwPKExp;
-#else // __VER >= 8 // __S8_PK
-			ar >> (u_short&)m_nNumKill;
-			ar >> m_nSlaughter;
-#endif // __VER >= 8 // __S8_PK
 			ar >> m_nFame;
 			ar >> (u_char&)m_nDuel;
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			int nTemp = -1;
 			ar >> nTemp;
 #ifdef __CLIENT
@@ -493,7 +451,6 @@ void CMover::Serialize( CAr & ar )
 #else	// __CLIENT
 			m_nHonor = nTemp;
 #endif	// __CLIENT
-#endif	// __HONORABLE_TITLE			// 달인
 			{
 				for( int i = 0; i < MAX_HUMAN_PARTS; i ++ )
 				{
@@ -510,21 +467,14 @@ void CMover::Serialize( CAr & ar )
 			{
 				m_nManaPoint	= 0;
 				m_nFatiguePoint	= 0;
-#if __VER < 12 // __MOD_TUTORIAL
-				m_nFlightLv		= 0;
-#endif	// __MOD_TUTORIAL
 				m_nRemainGP		= 0;
 
 				ar >> (u_short&)m_nManaPoint;
 				ar >> (u_short&)m_nFatiguePoint;
-#if __VER >= 12 // __MOD_TUTORIAL
 				ar >> m_nTutorialState;
 #ifdef __CLIENT
 				g_Option.m_nTutorialLv	= m_nTutorialState;
 #endif	// __CLIENT
-#else	// __MOD_TUTORIAL
-				ar >> (u_short&)m_nFlightLv;
-#endif	// __MOD_TUTORIAL
 				ar >> m_nFxp;
 
 				ar >> dwGold;
@@ -544,10 +494,8 @@ void CMover::Serialize( CAr & ar )
 				ar >> m_nCompleteQuestSize;
 				ar.Read( m_aCompleteQuest, sizeof(WORD) * m_nCompleteQuestSize ); 
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 				ar >> m_nCheckedQuestSize;
 				ar.Read( m_aCheckedQuest, sizeof(WORD) * m_nCheckedQuestSize );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 				ar >> m_idMurderer;
 				short n1, n2;		// n2는 사용하지 않는다.
@@ -578,10 +526,8 @@ void CMover::Serialize( CAr & ar )
 				ar >> m_nAttackResistLeft;
 				ar >> m_nAttackResistRight;
 				ar >> m_nDefenseResist;
-#if __VER >= 8 //__CSC_VER8_5
 				ar >> m_nAngelExp;
 				ar >> m_nAngelLevel;
-#endif // __CSC_VER8_5
 				m_Inventory.Serialize( ar );
 				for( int k = 0 ; k < 3 ; ++k )
 					m_Bank[k].Serialize( ar );
@@ -590,7 +536,6 @@ void CMover::Serialize( CAr & ar )
 				if( pItemElem )
 					m_dwRideItemIdx		= pItemElem->m_dwItemId;
 
-#if __VER >= 9	// __PET_0410
 				DWORD dwPetId;
 				ar >> dwPetId;
 				SetPetId( dwPetId );
@@ -601,15 +546,11 @@ void CMover::Serialize( CAr & ar )
 					m_pet.SetName( const_cast<char*>( pPet->GetName() ) );
 	#endif	// __CLIENT
 	#endif	// __PET_1024
-#endif	// __PET_0410
-#if __VER >= 11 // __SYS_POCKET
 				m_Pocket.Serialize( ar );
-#endif	// __SYS_POCKET
 
 #ifdef __JEFF_9_20
 				ar >> m_dwMute;
 #endif	// __JEFF_9_20
-#if __VER >= 13 // __HONORABLE_TITLE	// 달인
 #ifdef __CLIENT
 				CTitleManager::Instance()->InitEarned();
 #endif	// __CLIENT
@@ -632,11 +573,8 @@ void CMover::Serialize( CAr & ar )
 					}
 #endif	// __CLIENT
 				}
-#endif	// __HONORABLE_TITLE			// 달인
-#if __VER >= 15 // __CAMPUS
 				ar >> m_idCampus;
 				ar >> m_nCampusPoint;
-#endif // __CAMPUS
 			}
 			else if( CObj::GetMethod() == METHOD_EXCLUDE_ITEM )
 			{
@@ -661,7 +599,6 @@ void CMover::Serialize( CAr & ar )
 				}
 				if( m_aEquipInfo[PARTS_RIDE].dwId != NULL_ID )
 					m_dwRideItemIdx		= m_aEquipInfo[PARTS_RIDE].dwId;
-#if __VER >= 9	// __PET_0410
 				DWORD dwPetId;
 				ar >> dwPetId;
 				SetPetId( dwPetId );
@@ -672,7 +609,6 @@ void CMover::Serialize( CAr & ar )
 				m_pet.SetName( szPetName );
 	#endif	// __CLIENT
 	#endif	// __PET_1024
-#endif	// __PET_0410
 			}
 
 		#if defined(__WORLDSERVER) || defined(__CLIENT)
@@ -749,9 +685,7 @@ void CMover::Serialize( CAr & ar )
 				}
 			}
 		#endif	// __CLIENT
-#if __VER >= 9	//__AI_0509
 			ar >> m_fSpeedFactor;
-#endif	// __AI_0509
 		}
 
 #ifdef __BUFF_1107

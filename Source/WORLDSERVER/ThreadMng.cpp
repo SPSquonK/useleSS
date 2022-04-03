@@ -12,36 +12,18 @@
 #include "eveschool.h"
 extern	CGuildCombat	g_GuildCombatMng;
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
-#if __VER < 12 // __NEW_ITEMCREATEMON_SERVER
-#include "CreateMonster.h"
-extern	CCreateMonster	g_CreateMonster;
-#endif // __NEW_ITEMCREATEMON_SERVER
-#endif // __ITEMCREATEMON_S0602
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 #include "CreateMonster.h"
-#endif // __NEW_ITEMCREATEMON_SERVER
 
-#if __VER >= 12 // __RANGDA_0521
 #include "rangda.h"
-#endif	// __RANGDA_0521
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "RainbowRace.h"
-#endif // __RAINBOW_RACE
 
-#if __VER >= 14 // __PCBANG
 #include "PCBang.h"
-#endif // __PCBANG
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonParty.h"
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __QUIZ
 #include "Quiz.h"
@@ -244,10 +226,8 @@ BOOL CRunObject::Init( void )
 	if( g_eLocal.GetState( EVE_WORMON ) )
 		g_dpDBClient.SendQueryGuildQuest();
 
-#if __VER >= 13 // __RAINBOW_RACE
 	if( g_eLocal.GetState( EVE_RAINBOWRACE ) )
 		g_dpDBClient.SendRainbowRaceReqLoad();
-#endif // __RAINBOW_RACE
 
 #ifdef __INVALID_LOGIN_0320
 	g_dpDBClient.CalluspXXXMultiServer( g_uIdofMulti, NULL );
@@ -276,15 +256,6 @@ BOOL CRunObject::Init( void )
 		OutputDebugString( "GuildCombat.txt not found" );
 		return FALSE;
 	}
-#if __VER >= 12 // __ITEMCREATEMON_S0602
-#if __VER < 12 // __NEW_ITEMCREATEMON_SERVER
-	if( !g_CreateMonster.LoadScript( "CreateMonster.txt" ) )
-	{
-		OutputDebugString( "CreateMonster.txt Not Found!" );
-		return FALSE;
-	}
-#endif // __NEW_ITEMCREATEMON_SERVER
-#endif // __ITEMCREATEMON_S0602
 
 	return TRUE;
 }
@@ -413,36 +384,26 @@ void CRunObject::Run( void )
 
 				if( g_eLocal.GetState( EVE_GUILDCOMBAT ) )
 					g_GuildCombatMng.Process();
-	#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				if( g_eLocal.GetState( EVE_GUILDCOMBAT1TO1 ) )
 					g_GuildCombat1to1Mng.Process();
-	#endif // __GUILD_COMBAT_1TO1
 
-	#if __VER >= 12 // __SECRET_ROOM
 				if( g_eLocal.GetState( EVE_SECRETROOM ) )
 				{
 					_PROFILE( "CSecretRoomMng::Process()" );
 					CSecretRoomMng::GetInstance()->Process();
 				}
-	#endif // __SECRET_ROOM
-	#if __VER >= 13 // __RAINBOW_RACE
 				if( g_eLocal.GetState( EVE_RAINBOWRACE ) )
 				{
 					_PROFILE( "CRainbowRaceMng::Process()" );
 					CRainbowRaceMng::GetInstance()->Process();
 				}
-	#endif // __RAINBOW_RACE
-	#if __VER >= 14 // __PCBANG
 				{
 					_PROFILE( "CPCBang::ProcessPCBang()" );
 					CPCBang::GetInstance()->ProcessPCBang();
 				}
-	#endif // __PCBANG
-	#if __VER >= 14 // __INSTANCE_DUNGEON
 				{
 					CInstanceDungeonParty::GetInstance()->Process();
 				}
-	#endif // __INSTANCE_DUNGEON
 
 	#ifdef __QUIZ
 				{
@@ -466,10 +427,8 @@ void CRunObject::Run( void )
 
 				PROFILE_RUN( r10 );
 
-	#if __VER >= 12 // __RANGDA_0521
 				// 랜덤 이벤트 몬스터 초당 1회 틱
 				CRangdaController::Instance()->OnTimer();
-	#endif	// __RANGDA_0521
 	#ifdef __EVENTLUA_SPAWN
 				prj.m_EventLua.EventSpawnProcess();
 	#endif // __EVENTLUA_SPAWN
@@ -479,9 +438,7 @@ void CRunObject::Run( void )
 			if( timeoutCallTheRoll.TimeoutReset( g_tmCurrent ) )	// 1분당 
 			{
 				CEventGeneric::GetInstance()->CallTheRoll();
-	#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 				CCreateMonster::GetInstance()->ProcessRemoveMonster();
-	#endif // __NEW_ITEMCREATEMON_SERVER
 			}
 	#endif	// __EVENT_1101
 

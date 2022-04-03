@@ -811,11 +811,6 @@ int APIENTRY CreateGuild( NPCDIALOG_INFO*  pInfo )
 			if( IsValidObj( pUsertmp ) )
 			{
 				info[nSize].idPlayer	= pUsertmp->m_idPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-				info[nSize].nLevel	= pUsertmp->GetLevel();
-				info[nSize].nJob	= pUsertmp->GetJob();
-				info[nSize].dwSex	= pUsertmp->GetSex();
-#endif	// __SYS_PLAYER_DATA
 				nSize++;
 			}
 			else
@@ -892,14 +887,7 @@ int APIENTRY ChangeJob( NPCDIALOG_INFO* pInfo, int nJob )
 		if( g_eLocal.GetState( EVE_RECOMMEND ) && pUser->IsPlayer() )
 			g_dpDBClient.SendRecommend( (CUser*)pUser, v1 );
 #endif // __S_RECOMMEND_EVE
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		g_dpDBClient.SendUpdatePlayerData( pUser );
-#else	// __SYS_PLAYER_DATA
-		g_DPCoreClient.SendPartyMemberJob( (CUser*)pUser );
-		g_DPCoreClient.SendFriendChangeJob( (CUser*)pUser );
-		if( pUser->m_idGuild != 0 )
-			g_DPCoreClient.SendGuildChangeJobLevel( (CUser*)pUser );
-#endif	// __SYS_PLAYER_DATA
 	}
 	else
 	{
@@ -1089,9 +1077,7 @@ int APIENTRY SetLevel( NPCDIALOG_INFO* pInfo , int nSetLevel )
 {
 	CUser* pUser = prj.GetUser( pInfo->GetPcId() );
 	int rtn_val = pUser->SetLevel(nSetLevel);
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	g_dpDBClient.SendUpdatePlayerData( pUser );
-#endif	// __SYS_PLAYER_DATA
 	return rtn_val;
 }
 
@@ -2613,14 +2599,7 @@ int ChangeJob( CScript* pScript )
 		if( g_eLocal.GetState( EVE_RECOMMEND ) && pUser->IsPlayer() )
 			g_dpDBClient.SendRecommend( (CUser*)pUser, v1 );
 #endif // __S_RECOMMEND_EVE
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		g_DPDBClient.SendUpdatePlayerData( pUser );
-#else	// __SYS_PLAYER_DATA
-		g_DPCoreClient.SendPartyMemberJob( (CUser*)pUser );
-		g_DPCoreClient.SendFriendChangeJob( (CUser*)pUser );
-		if( pUser->m_idGuild != 0 )
-			g_DPCoreClient.SendGuildChangeJobLevel( (CUser*)pUser );
-#endif	// __SYS_PLAYER_DATA
 	}
 	else
 	{

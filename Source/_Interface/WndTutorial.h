@@ -1,7 +1,6 @@
 #ifndef __WNDTUTORIAL__H
 #define __WNDTUTORIAL__H
 
-#if __VER >= 12 // __MOD_TUTORIAL
 struct TUTORIAL_STRING
 {
 	CString		strTitle;
@@ -33,6 +32,5 @@ public:
 	BOOL LoadTutorial(LPCTSTR lpszFileName);
 	BOOL AddToList(int nIndex);
 }; 
-#endif
 
 #endif

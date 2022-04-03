@@ -95,7 +95,6 @@ typedef struct tagREPLACEOBJ
 } REPLACEOBJ, *LPREPLACEOBJ; 
 
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 typedef vector< D3DXVECTOR3 >		Vec3D_Container;
 typedef Vec3D_Container::iterator	Vec3D_Iter;
 
@@ -158,7 +157,6 @@ struct WORLD_ENVIR_INFO
 	TextureSet _kMoon;
 };
 
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,13 +336,11 @@ public:
 	BOOL			IsVecInRange( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, FLOAT fRadius );
 	void			SetObjFocus( CObj* pObj, BOOL bSend = TRUE );
 	CObj*			GetObjFocus() { return m_pObjFocus; }
-#if __VER >= 13 // __HOUSING
 	CObj*			GetObjByName(TCHAR* ObjName);
 	void			ForceTexture(LPDIRECT3DTEXTURE9 pNewTex);
 	BOOL			ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj,CObj* pWallObj);
 	BOOL			TestOBBIntersect(BBOX* BoxA, BBOX* BoxB);
 	BOOL			TestTriIntersect(CObj* pWallObj, CObj* pTargetObj);
-#endif	// __HOUSING
 	CLandscape*		GetLandscape( CObj* pObj );
 	CLandscape*		GetLandscape( D3DXVECTOR3 vPos );
 	CLandscape*		GetLandscape( int x, int z );
@@ -380,7 +376,6 @@ public:
 
 	LIGHTCOLOR m_k24Light[24];				//월드당 24시간 Light정보를 외부Data에서 가져옴 
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	string m_strCurContName;
 	BOOL m_bProcessingEnvir;			
 	DWORD m_dwOldTime;
@@ -397,7 +392,6 @@ public:
 
 	//for the world
 	WORLD_ENVIR_INFO m_kWorldEnvir;
-#endif
 
 #ifdef __BS_CHANGEABLE_WORLD_SEACLOUD
 	TextureSet m_kSeaCloud;
@@ -453,9 +447,7 @@ public:
 	// 반환하지 않아 임시로 ProcessUnderCollision을 참고하여 만들었다.
 	FLOAT			GetItemHeight( const D3DXVECTOR3 & vPos );
 	FLOAT			GetUnderHeight( const D3DXVECTOR3 &vPos );
-#if __VER >= 15 // __BOUND_BOX_COLLISION
 	FLOAT			GetOverHeightForPlayer( D3DXVECTOR3 &vPos, CObj* pExceptionObj = NULL );
-#endif // __BOUND_BOX_COLLISION
 	FLOAT			GetOverHeight( D3DXVECTOR3 &vPos, CObj* pExceptionObj = NULL );
 	FLOAT			GetLandHeight( float x, float z );
 	FLOAT			GetLandHeight( const D3DXVECTOR3& vPos );
@@ -487,7 +479,6 @@ public:
 #endif	// __WORLDSERVER
 
 #ifdef __CLIENT
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 public:
 	int				GetDiffuseAvg( );
 	BOOL			IsInContinent( );	//존재하는 어느대륙에라도 속해있는가?
@@ -520,29 +511,22 @@ protected:
 	void			UpdateContinentLines( );
 	void			RenderContinentLines( );
 	
-#endif
-#if __VER >= 15 // __15TH_INSTANCE_DUNGEON
 public:
 	BOOL			IsWorldInstanceDungeon() { return ( WI_INSTANCE_OMINOUS <= GetID() && WI_INSTANCE_LAST_ID >= GetID() ); }
-#endif // __15TH_INSTANCE_DUNGEON
 #endif // __CLIENT
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // World3D.cpp
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if __VER >= 15 // __GUILD_HOUSE
 public:
 	BOOL			IsWorldGuildHouse() { return ( WI_GUILDHOUSE_SMALL <= GetID() && WI_GUILDHOUSE_LARGE >= GetID() ); }
-#endif // __GUILD_HOUSE
 
 #ifndef __WORLDSERVER
 public:
 	BOOL			InitWorldEnvir( );		// 24시간 Light 설정 및 기타 환경 초기화 
 
-#if __VER >= 15 // __GUILD_HOUSE
 	void			InProcessing( );		// gmpbigsun : 현재 월드로 진입시 한번 호출됨
 	void			OutProcessing( );		// gmpibgsun : 현재 월드에서 퇴장시 한번 호출됨 
-#endif
 
 	// Render
 	void			Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight );
@@ -611,11 +595,7 @@ private:
 	BOOL	IsLayerPlayer( CObj* pObj, int nLayer );
 
 public:
-#if __VER >= 15 // __GUILD_HOUSE
 	void	Invalidate( int nLayer, BOOL bInvalid = TRUE )	{	m_linkMap.Invalidate( nLayer, bInvalid );	}
-#else // __GUILD_HOUSE
-	void	Invalidate( int nLayer )	{	m_linkMap.Invalidate( nLayer );	}
-#endif // __GUILD_HOUSE
 	BOOL	HasNobody( int nLayer );
 	void	DriveOut( int nLayer );
 	BOOL	LoadObject( int nLayer );

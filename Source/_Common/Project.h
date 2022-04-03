@@ -22,15 +22,13 @@ using	namespace	std;
 #include "MiniGame.h"
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 #include "UltimateWeapon.h"
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 #include "Exchange.h"
 #endif // __TRADESYS
 
-#if __VER >= 9 && defined(__WORLDSERVER) // __EVENTLUA && __WORLDSERVER
+#if defined(__WORLDSERVER) // __EVENTLUA && __WORLDSERVER
 #include "EventLua.h"
 #endif // __EVENTLUA && __WORLDSERVER
 
@@ -67,7 +65,6 @@ struct QuestState
 	TCHAR	m_szDesc[ 512 ];
 };
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 struct QuestGoalData
 {
 	QuestGoalData( void );
@@ -77,7 +74,6 @@ struct QuestGoalData
 	FLOAT m_fGoalPositionZ;
 	DWORD m_dwGoalTextID;
 };
-#endif // __IMPROVE_QUEST_INTERFACE
 
 struct QuestPropItem 
 {
@@ -89,12 +85,8 @@ struct QuestPropItem
 #ifdef __JEFF_11
 	int		m_nAbilityOption;
 #endif	//__JEFF_11
-#if __VER >= 13 // __CHIPI_QUESTITEM_FLAG
 	BYTE	m_byFlag;
-#endif // __CHIPI_QUESTITEM_FLAG
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	QuestGoalData m_ItemGoalData;
-#endif // __IMPROVE_QUEST_INTERFACE
 };
 
 struct QuestProp
@@ -128,73 +120,45 @@ struct QuestProp
 	char	m_nBeginCondSex; 
 	int		m_nBeginCondSkillIdx;
 	char	m_nBeginCondSkillLvl;
-#if __VER >= 8 // __S8_PK
 	QuestPropItem* m_paBeginCondNotItem; 
 	char	m_nBeginCondNotItemNum;
 	int		m_nBeginCondPKValue;
-#else // __VER >= 8 // __S8_PK
-	char	m_nBeginCondKarmaComp;
-	int		m_nBeginCondKarmaPoint;
-	char	m_nBeginCondChaotic; 
-#endif // __VER >= 8 // __S8_PK
 	int		m_nBeginCondDisguiseMoverIndex;
 	// 시작 - 추가 
 	int  	m_nBeginSetAddItemIdx[ 4 ];
 	char	m_nBeginSetAddItemNum[ 4 ];
 	int		m_nBeginSetAddGold;
 	int     m_nBeginSetDisguiseMoverIndex;
-#if __VER >= 9	// __PET_0410
 	int		m_nBeginCondPetLevel;
 	int		m_nBeginCondPetExp;
-#endif	// __PET_0410
-#if __VER >= 12 // __MOD_TUTORIAL
 	int		m_nBeginCondTutorialState;
-#endif	// __MOD_TUTORIAL
-#if __VER >= 15 // __CAMPUS
 	int		m_nBeginCondTSP;
-#endif // __CAMPUS
 	// 종료 - 조건  
 	int     m_nEndCondLimitTime; //  퀘스트 수행 제한 시간 
 	QuestPropItem* m_paEndCondItem; 
 	char	m_nEndCondItemNum;
 	int     m_nEndCondKillNPCIdx[ 2 ]; // 죽여야할 NPC 인덱스 - 총 2개 
 	int     m_nEndCondKillNPCNum[ 2 ]; // 죽여야할 NPC 갯수 - 총 2개    
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	QuestGoalData m_KillNPCGoalData[ 2 ]; // 죽여야 할 NPC 목표 데이터
-#endif // __IMPROVE_QUEST_INTERFACE
 	DWORD   m_dwEndCondPatrolWorld; // 정찰해야될 맵 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	DWORD	m_dwPatrolDestinationID;	// 정찰 목적지 이름을 찾기 위한 ID
 	QuestGoalData m_PatrolWorldGoalData; // 정찰해야 할 지역 목표 데이터
-#endif // __IMPROVE_QUEST_INTERFACE
 	CRect   m_rectEndCondPatrol; // 정찰해야될 장소 영역 
 	CHAR    m_szEndCondCharacter[64]; // 퀘스트를 완수를 판단할 캐릭터 키(NULL이면 자신)
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	QuestGoalData m_MeetCharacterGoalData; // 퀘스트 완수를 판단할 캐릭터 목표 데이터
-#endif // __IMPROVE_QUEST_INTERFACE
 	CHAR*   m_lpszEndCondMultiCharacter; 
 	int		m_nEndCondSkillIdx;
 	char	m_nEndCondSkillLvl;
-#if __VER >= 8 // __S8_PK
 	QuestPropItem* m_paEndCondOneItem;
 	char	m_nEndCondOneItemNum;
 	int		m_nEndCondGold;
 	BYTE	m_nEndCondLevelMin;	
 	BYTE	m_nEndCondLevelMax;
-	#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	int		m_nEndCondExpPercentMin;	
 	int		m_nEndCondExpPercentMax;
-	#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#else // __VER >= 8 // __S8_PK
-	char	m_nEndCondKarmaComp;
-	int		m_nEndCondKarmaPoint;
-	char	m_nEndCondChaotic; 
-#endif // __VER >= 8 // __S8_PK
 
-#if __VER >= 9	// __PET_0410
 	int		m_nEndCondPetLevel;
 	int		m_nEndCondPetExp;
-#endif	// __PET_0410
 
 	int		m_nEndCondDisguiseMoverIndex; // 변신 
 	char	m_nEndCondParty; // 파티 여부 (솔로,파티,길드)  
@@ -209,14 +173,10 @@ struct QuestProp
 	BYTE    m_nEndCondCompleteQuestOper; // 0 = or, 1 = and
 	WORD	m_nEndCondCompleteQuest[ 6 ]; // 완료 퀘스트 여부. 시나리오 퀘스트에 필요 
 	CHAR    m_szEndCondDlgCharKey[ 64 ];
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	QuestGoalData m_DialogCharacterGoalData; // 대화해야 할 캐릭터 목표 데이터
-#endif // __IMPROVE_QUEST_INTERFACE
 	CHAR    m_szEndCondDlgAddKey[ 64 ];
 	CHAR    m_szPatrolZoneName[ 64 ];
-#if __VER >= 15 // __CAMPUS
 	int		m_nEndCondTSP;
-#endif // __CAMPUS
 	// EndDialog 대화시 지급할 아이템(일종의 보상)
 	int		m_nDlgRewardItemIdx[ 4 ];
 	int		m_nDlgRewardItemNum[ 4 ];
@@ -225,9 +185,7 @@ struct QuestProp
 	int		m_nEndRemoveItemNum[ 8 ];
 	int		m_nEndRemoveGold;
 	int		m_anEndRemoveQuest[ MAX_QUESTREMOVE ];
-#if __VER >= 15 // __CAMPUS
 	int		m_nEndRemoveTSP;
-#endif // __CAMPUS
 	// 보상 
 	QuestPropItem* m_paEndRewardItem; 
 	int		m_nEndRewardItemNum;
@@ -235,26 +193,15 @@ struct QuestProp
 	int		m_nEndRewardGoldMax;
 	int		m_nEndRewardExpMin;
 	int		m_nEndRewardExpMax;
-#if __VER >= 8 // __S8_PK
 	int		m_nEndRewardPKValueMin;
 	int		m_nEndRewardPKValueMax;
-#else // __VER >= 8 // __S8_PK
-	int     m_nEndRewardKarmaPoint;
-	char	m_nEndRewardKarmaStyle; // 0은 적용 안함, 1은 세팅, 2는 추가 
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 9 // __S_9_ADD
 	int		m_nEndRewardTeleport;
 	D3DXVECTOR3		m_nEndRewardTeleportPos;
-#endif // __S_9_ADD
-#if __VER >= 9	// __PET_0410
 	BOOL	m_bEndRewardPetLevelup;
-#endif	// __PET_0410
 	int		m_nEndRewardSkillPoint;
 	bool    m_bEndRewardHide; // 보상 목록을 보일지 여부
 	bool    m_bRepeat;
-#if __VER >= 15 // __CAMPUS
 	int		m_nEndRewardTSP;
-#endif // __CAMPUS
 
 #if defined( __WORLDSERVER ) 
 	CHAR*		m_apQuestDialog[ 32 ];
@@ -341,9 +288,7 @@ struct MotionProp
 
 typedef struct _VENDOR_ITEM 
 {
-#if __VER >= 11 // __CSC_VER11_3
 	DWORD	m_dwItemId;
-#endif //__CSC_VER11_3
 	int		m_nItemkind3;
 	int		m_nItemJob;
 	int		m_nUniqueMin;
@@ -389,10 +334,8 @@ typedef struct tagCHARACTER
 	CUIntArray		m_anDstQuestItem; 
 	void Clear();
 
-#if __VER >= 11 // __CSC_VER11_3
 	int				m_nVenderType;
 	CPtrArray		m_venderItemAry2[ 4 ];
-#endif //__CSC_VER11_3
 #ifdef __NPC_BUFF
 	vector<NPC_BUFF_SKILL> m_vecNPCBuffSkill;
 #endif // __NPC_BUFF
@@ -400,13 +343,9 @@ typedef struct tagCHARACTER
 	vector<DWORD>	m_vecdwLanguage;
 	BOOL			bOutput;
 #endif // __CHIPI_DYO
-#if __VER >= 13 // __QUEST_HELPER
 	DWORD			m_dwWorldId;
 	D3DXVECTOR3		m_vPos;
-#endif // __QUEST_HELPER
-#if __VER >= 15 // __TELEPORTER
 	vector<D3DXVECTOR3> m_vecTeleportPos;
-#endif // __TELEPORTER
 } CHARACTER,* LPCHARACTER;
 
 #ifdef __S1108_BACK_END_SYSTEM
@@ -457,7 +396,6 @@ typedef struct _MONSTER_PROP
 MONSTER_PROP, *PMONSTER_PROP;
 #endif // __S1108_BACK_END_SYSTEM
 
-#if __VER >= 8  
 typedef struct _DIE_PENALTY
 {
 	int		nLevel;
@@ -468,9 +406,7 @@ typedef struct _DIE_PENALTY
 		nValue = 0;
 	}
 } DIE_PENALTY, *PDIE_PENALTY;
-#endif //  __VER >= 8  
 
-#if __VER >= 8 // __S8_PK
 typedef struct _CHAO_PROPENSITY
 {
 	DWORD	dwPropensityMin;		/// 성향 수치 Min
@@ -525,7 +461,6 @@ typedef struct _PK_SETTING
 		mapLevelExp.clear();
 	}
 } PK_SETTING, *PPK_SETTING;
-#endif // __VER >= 8 // __S8_PK
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // enum 
@@ -577,39 +512,6 @@ inline void LOG_CALLSTACK()
 // KARMAPROP 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if __VER < 8 // __S8_PK
-const int MAX_KARMAPROP = 13;
-
-enum SLAUGHTER_GRADE
-{
-	SLAUGHTER_NORMAL,			// 일반유저 
-	SLAUGHTER_SEMI_CHAOTIC,		// 준 카오 
-	SLAUGHTER_CHAOTIC,			// 카오 
-};
-
-// 카르마별 프로퍼티 
-struct KarmaProp
-{
-	int		nGrade;					// 등급
-	TCHAR	szName[64];				// 명칭 
-	DWORD   dwKarmaRecoverPoint;	// 카르마 회복 수치 (초 단위)
-	int		nKarmaPoint;			// 포인트
-	DWORD	dwKarmaGrade;			// 유저 등급 ( 0 - 일반, 1 - 준카오, 2 - 카오 )
-	DWORD   dwColor;				// 명칭 색깔
-	FLOAT   fDiscountRate;			// 상점 물품 구입 할인
-	FLOAT   fSellPenaltyRate;		// 상점 물품 판매 패널티
-	BOOL    bGuardReaction;			// 경비병 반응
-	int		nSubtractExpRate;		// 경험치 하락률 
-	int		nDropGoldPercent;		// 소지 페냐중 드롭할 비율 
-	int		nDropItem;				// 드롭할 아이템 갯수 
-	int		nDropPercent;			// 아이템 드롭할 확률 
-	int		nKarmaRecoverNum;		// 카르마 회복수치
-	DWORD	dwStatLimitTime;		// 스탯 제한 시간
-	int		nStatLimitNum;			// 스탯 제한 갯수
-	int		nStatLimitRate;			// 스탯 제한 비율
-	TCHAR	szCommand [128];		// 설명
-};
-#endif // __VER < 8 // __S8_PK
 
 #ifdef __WORLDSERVER
 #define	MAX_GIFTBOX_ITEM	128
@@ -832,11 +734,7 @@ typedef	struct	_RANDOMOPTITEM
 		{	nId	= 0;	nLevel	= 0;	*pszString	= '\0';	dwProbability	= 0;	}
 }	RANDOMOPTITEM, *PRANDOMOPTITEM;
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #define	MAX_RANDOMOPTITEM		256
-#else	// __SYS_IDENTIFY
-#define	MAX_RANDOMOPTITEM		1024
-#endif	// __SYS_IDENTIFY
 
 class CRandomOptItemGen
 {
@@ -844,15 +742,7 @@ class CRandomOptItemGen
 	RANDOMOPTITEM	m_aRandomOptItem[MAX_RANDOMOPTITEM];
 	map<int, int>	m_mapid;
 
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#if __VER >= 15 // __HERO129_VER15				// 15차 히어로 레벨확장
 	int		m_anIndex[MAX_MONSTER_LEVEL];
-	#else	// 15차 히어로 레벨확장
-	int		m_anIndex[MAX_LEGEND_LEVEL];
-	#endif	// 15차 히어로 레벨확장
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-	int		m_anIndex[MAX_LEVEL];
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 public:
 //	Constructions
@@ -898,10 +788,6 @@ public:
 	virtual ~CProject();
 
 private:
-#if __VER < 11 // __SYS_PLAYER_DATA
-	ULONG2STRING				m_ulong2str;
-	STRING2ULONG				m_str2ulong;
-#endif	// __SYS_PLAYER_DATA
 	map<string, DWORD>			m_mapII;
 	map<string, DWORD>			m_mapMVI;
 	map<string, DWORD>			m_mapCtrl;
@@ -909,7 +795,7 @@ private:
 	CDWordArray					m_aStateQuest; // 스테이트 사용 여부를 체크할 배열 
 #endif
 
-#if __VER >= 15 /* __IMPROVE_QUEST_INTERFACE */ && defined( __CLIENT )
+#if defined( __CLIENT )
 	map< int, CString >			m_mapQuestDestination;		// 퀘스트 목적지 설명
 	map< int, CString >			m_mapPatrolDestination;		// 정찰 목적지 이름
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
@@ -968,16 +854,10 @@ public:
 	SETITEMAVAIL				m_aSetItemAvail[11];
 	SIZE						m_minMaxIdxAry[MAX_ITEM_KIND3][MAX_UNIQUE_SIZE];
 	map<int, PARTYQUESTPROP>	m_propPartyQuest;
-#if __VER >= 8  
 	vector< DIE_PENALTY >		m_vecRevivalPenalty;
 	vector< DIE_PENALTY >		m_vecDecExpPenalty;
 	vector< DIE_PENALTY >		m_vecLevelDownPenalty;
-#endif //  __VER >= 8  
-#if __VER >= 8 // __S8_PK
 	PK_SETTING					m_PKSetting;
-#else // __VER >= 8 // __S8_PK
-	KarmaProp					m_aKarmaProp[ MAX_KARMAPROP ];
-#endif // __VER >= 8 // __S8_PK
 	set<DWORD>					m_setExcept;
 
 #ifdef __CLIENT
@@ -1000,24 +880,20 @@ public:
 	char						m_chGMChat[10][256];
 #endif // __S1108_BACK_END_SYSTEM
 	
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	int				m_nEnchantLimitLevel[3];
 	float			m_fEnchantLevelScal[2][10];
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 #ifdef __EVE_MINIGAME
 	CMiniGame		m_MiniGame;			// 미니게임
 #endif // __EVE_MINIGAEM
 
-#if __VER >= 9 // __ULTIMATE
 	CUltimateWeapon	m_UltimateWeapon;
-#endif //__ULTIMATE
 	
 #ifdef __TRADESYS
 	CExchange m_Exchange;
 #endif // __TRADESYS
 
-#if __VER >= 9 && defined(__WORLDSERVER) // __EVENTLUA && __WORLDSERVER
+#if defined(__WORLDSERVER) // __EVENTLUA && __WORLDSERVER
 	CEventLua m_EventLua;
 #endif // __EVENTLUA && __WORLDSERVER
 	
@@ -1044,9 +920,7 @@ public:
 #endif // __IMPROVE_MAP_SYSTEM
 
 public:
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT	
 	BOOL			LoadPropEnchant( LPCTSTR lpszFileName );
-#endif //__Y_ADV_ENCHANT_EFFECT
 	static void		ReadConstant( CScript& script );
 	static BOOL		LoadConstant( LPCTSTR lpszFileName );
 	static void		SetGlobal( UINT type, float fValue );
@@ -1099,14 +973,8 @@ public:
 	BOOL			LoadEtc( LPCTSTR szFileName );
 	BOOL			LoadPropAddSkill( LPCTSTR lpszFileName );
 	void			InterpretRandomItem( LPRANDOM_ITEM pRandomItem, CScript& script );
-#if __VER >= 8  
 	BOOL			LoadScriptDiePenalty( LPCTSTR lpszFileName );
-#endif //  __VER >= 8  
-#if __VER >= 8 // __S8_PK
 	BOOL			LoadScriptPK( LPCTSTR lpszFileName );
-#else // __VER >= 8 // __S8_PK
-	BOOL			LoadPropKarma( LPCTSTR lpszFileName );
-#endif // __VER >= 8 // __S8_PK
 	BOOL			LoadPropQuest( LPCTSTR szFileName, BOOL bOptimize = TRUE );
 	BOOL			LoadPropGuildQuest( LPCTSTR szFilename );
 	BOOL			LoadPropPartyQuest( LPCTSTR szFilename );
@@ -1124,20 +992,8 @@ public:
 	CMover*			GetUserByID( u_long idPlayer );
 	LPCHARACTER		GetCharacter( LPCTSTR lpStrKey );
 	void			ProtectPropMover();
-#if __VER < 11 // __SYS_PLAYER_DATA
-	u_long			GetPlayerID( const CHAR* lpszPlayer );
-	LPCSTR			GetPlayerString( u_long idPlayer );
-	BOOL			SetPlayerID( u_long idPlayer, const CHAR* lpszPlayer );
-	BOOL			RemovePlayerID( u_long idPlayer );
-#endif	// __SYS_PLAYER_DATA
-#if __VER >= 8 // __S8_PK
 	DWORD			GetLevelExp( int nLevel );
 	CHAO_PROPENSITY GetPropensityPenalty( DWORD dwPropensity );
-#else // __VER >= 8 // __S8_PK
-	KarmaProp*		GetKarmaProp( int nSlaughter ); 
-	KarmaProp*		GetKarmaPropByGrade( int nGrade ); 
-	SLAUGHTER_GRADE GetSlaughterGrade( int nSlaughter );
-#endif // __VER >= 8 // __S8_PK
 	BOOL			LoadExcept( LPCTSTR lpszFilename );
 	void			LoadSkill();
 
@@ -1146,20 +1002,16 @@ public:
 	BOOL			LoadMiniGame();
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 	BOOL			LoadUltimateWeapon();
-#endif // __ULTIMATE
 
 #ifdef __WORLDSERVER
 	CUser*			GetUser( OBJID objid );
 	BOOL			SortDropItem( void );
-#if __VER >= 12 // __MOD_TUTORIAL
 private:
 	int			m_nMaxSequence;
 public:
 	int		GetGuildMaxSeq( void )	{	return m_nMaxSequence;	}
 	BOOL		LoadGuideMaxSeq();
-#endif	// __MOD_TUTORIAL
 
 #ifdef __JEFF_11_3
 	BOOL	LoadServerScript( const char* sFile );
@@ -1211,7 +1063,7 @@ public:
 	void			RemoveMonsterProp( char* lpszMonsterName );
 #endif 
 
-#if __VER >= 15 /* __IMPROVE_QUEST_INTERFACE */ && defined( __CLIENT )
+#if defined( __CLIENT )
 	BOOL LoadQuestDestination( void );
 	const CString& GetQuestDestination( DWORD dwKey ) const;
 	BOOL LoadPatrolDestination( void );
@@ -1225,7 +1077,6 @@ public:
 #endif // __IMPROVE_MAP_SYSTEM
 };
 
-#if __VER >= 8 // __S8_PK
 inline DWORD CProject::GetLevelExp( int nLevel )
 {
 	map<int, DWORD>::iterator it = m_PKSetting.mapLevelExp.find( nLevel );
@@ -1250,44 +1101,6 @@ inline CHAO_PROPENSITY CProject::GetPropensityPenalty( DWORD dwPropensity )
 	CHAO_PROPENSITY Propensity;
 	return Propensity;
 }
-#else // __VER >= 8 // __S8_PK
-inline SLAUGHTER_GRADE CProject::GetSlaughterGrade( int nSlaughter )
-{
-	KarmaProp* pProp = GetKarmaProp( nSlaughter );
-
-	switch( pProp->dwKarmaGrade )
-	{
-	case 0: return SLAUGHTER_NORMAL;
-	case 1: return SLAUGHTER_SEMI_CHAOTIC;
-	case 2: return SLAUGHTER_CHAOTIC;
-	default:	ASSERT( FALSE ); break;
-	}
-	return SLAUGHTER_NORMAL;
-}
-
-inline KarmaProp* CProject::GetKarmaProp( int nSlaughter ) 
-{ 
-	for( int i=0; i<MAX_KARMAPROP-1; i++ )
-	{
-		if( nSlaughter >= m_aKarmaProp[i].nKarmaPoint )
-			return &m_aKarmaProp[i];
-	}
-
-	return &m_aKarmaProp[MAX_KARMAPROP-1];
-}
-
-inline KarmaProp* CProject::GetKarmaPropByGrade( int nGrade ) 
-{ 
-	for( int i=0; i<MAX_KARMAPROP; i++ )
-	{
-		if( nGrade == m_aKarmaProp[i].nGrade )
-			return &m_aKarmaProp[i];
-	}
-
-	ASSERT( FALSE );
-	return NULL;
-}
-#endif // __VER >= 8 // __S8_PK
 
 inline ItemProp* CProject::GetItemProp( LPCTSTR lpszItem )
 {

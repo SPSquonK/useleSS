@@ -21,28 +21,20 @@
 #define MAX_PRO_LEVEL			30
 #define MAX_TROUPE_LEVEL		1
 
-#if __VER >= 15 // __HERO129_VER15				// 15Â÷ È÷¾î·Î ·¹º§È®Àå
 #define MAX_LEGEND_LEVEL			129	
 #define MAX_MONSTER_LEVEL			160	
-#else	// 15Â÷ È÷¾î·Î ·¹º§È®Àå
-#define MAX_LEGEND_LEVEL			121
-#endif	// 15Â÷ È÷¾î·Î ·¹º§È®Àå
-
-#if __VER >= 7 //__Y_MAX_LEVEL_8
 #define MAX_LEVEL				120
-#else //__Y_MAX_LEVEL_8
-#define MAX_LEVEL				150
-#endif //__Y_MAX_LEVEL_8
+
 //-------------------------------------------------------
-// Á÷¾÷ ¹øÈ£¸¦ ¸¶À½´ë·Î ¹Ù²Ù¸é ¾ÈµË´Ï´Ù.
-// ¹Ù²Ù°í ½ÍÀ¸½Ã¸é seghope »ó´ãÀ».. ¤»¤»
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²Ù¸ï¿½ ï¿½ÈµË´Ï´ï¿½.
+// ï¿½Ù²Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½ seghope ï¿½ï¿½ï¿½ï¿½ï¿½.. ï¿½ï¿½ï¿½ï¿½
 //-------------------------------------------------------
 // Job
 #define JOB_VAGRANT                 0 
 #define MAX_JOBBASE                 1
   
 // Expert
-#define JOB_MERCENARY               1 // ±âº» Á÷¾÷µé
+#define JOB_MERCENARY               1 // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define JOB_ACROBAT                 2
 #define JOB_ASSIST                  3
 #define JOB_MAGICIAN                4
@@ -86,12 +78,7 @@
 
 //
 
-#if __VER >= 10    //#ifdef 	__LEGEND	//	9Â÷ Àü½Â½Ã½ºÅÛ	Neuz, World, Trans
 #define MAX_JOB                      32
-#else //__LEGEND	//	9Â÷ Àü½Â½Ã½ºÅÛ	Neuz, World, Trans
-#define MAX_JOB                      16
-#endif	//__LEGEND	//	9Â÷ Àü½Â½Ã½ºÅÛ	Neuz, World, Trans
-
 #define JOB_ALL					MAX_JOB
 //-------------------------------------------------------
 
@@ -104,13 +91,13 @@
 #define DIS_YOYO                    5 //
 #define DIS_RIFLE                   6 //
 #define DIS_MARIONETTE              7 //
-#define DIS_BOW			    32 // »õ·Î Ãß°¡µÈ °Í
-// ¹æ¾î±â¼ú±º
+#define DIS_BOW			    32 // ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define DIS_SHIELD                  8 //
 #define DIS_DANCE                   9 //
 #define DIS_ACROBATIC              10 //
-#define DIS_SUPPORT                23 //¸Ó¼­³Ê¸®¿ë º¸Á¶½ºÅ³
-// ¸¶¹ý¿¬°è ±â¼ú±º   
+#define DIS_SUPPORT                23 //ï¿½Ó¼ï¿½ï¿½Ê¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å³
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½   
 #define DIS_HEAL                   11 //
 #define DIS_CHEER                  12 //
 #define DIS_ACTING                 13 //
@@ -120,7 +107,7 @@
 #define DIS_WATER                  17 //
 #define DIS_EARTH                  18 //
 #define DIS_ELECTRICITY            24 //
-// Æ¯¼ö ±â¼ú    
+// Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½    
 #define DIS_STRINGDANCE            19 //
 #define DIS_GIGAPUPPET             20 //
 #define DIS_KNUCKLE                21 //
@@ -138,18 +125,18 @@
 
 
 
-// ±Ø´Ü ¼Ò¼Ó
-#define TRO_MASTER                  0 // ´ÜÀå
-#define TRO_MEMBERE                 1 // ¸â¹ö
+// ï¿½Ø´ï¿½ ï¿½Ò¼ï¿½
+#define TRO_MASTER                  0 // ï¿½ï¿½ï¿½ï¿½
+#define TRO_MEMBERE                 1 // ï¿½ï¿½ï¿½
 
-// ±æµå¼Ò¼Ó
-#define GUD_MASTER                  0 // ¸¶½ºÅÍ
-#define GUD_KINGPIN                 1 // Å·ÇÉ
+// ï¿½ï¿½ï¿½Ò¼ï¿½
+#define GUD_MASTER                  0 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+#define GUD_KINGPIN                 1 // Å·ï¿½ï¿½
 #define GUD_CAPTAIN                 2 // Ä¸Æ¾
-#define GUD_SUPPORTER               3 // ¼­Æ÷ÅÍ
-#define GUD_ROOKIE                  4 // ·çÅ°
+#define GUD_SUPPORTER               3 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+#define GUD_ROOKIE                  4 // ï¿½ï¿½Å°
 
-// ÀÏ¹Ý ±â¼ú Á¾·ù.... Ä³¸¯ÅÍ ³»ºÎ¿¡ ÀúÀåµÇÁö ¾ÊÀ½
+// ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.... Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 #endif
 /*
 #ifndef __DEFINE_JOB
@@ -167,12 +154,12 @@
 #define MAX_PRO_LEVEL               30
 
 // Job
-#define JOB_MERCENARY               0 // ±âº» Á÷¾÷µé
+#define JOB_MERCENARY               0 // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define JOB_ACROBAT                 1
 #define JOB_ASSIST                  2
 #define JOB_MAGICIAN                3
 #define JOB_ENGINEER                4
-#define JOB_VAGRANT                 5 // ´õ¹Ì Á÷¾÷
+#define JOB_VAGRANT                 5 // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 #define MAX_JOBBASE                 5
   
 // Expert
@@ -189,16 +176,16 @@
 #define MAX_EXPERT                  15
 
 // Professional
-#define JOB_KNIGHT                  16 // ¹«¿¹°¡ Àü¹®Á÷
+#define JOB_KNIGHT                  16 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define JOB_BABARIAN                17
 #define JOB_DANCER                  18
-#define JOB_JESTER                  19 // ÆÛÆ÷¸Ó Àü¹®Á÷
+#define JOB_JESTER                  19 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define JOB_STARGAZER               20
 #define JOB_ACCOUNTER               21
-#define JOB_RAIDEN                  22 // ÀÎÅÍ¼¼¼­ Àü¹®Á÷
+#define JOB_RAIDEN                  22 // ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define JOB_OVERCASTER              23
 #define JOB_DOPPLER                 24
-#define JOB_STRINGMASTER            25 // Àè¹Ú½º Àü¹®Á÷
+#define JOB_STRINGMASTER            25 // ï¿½ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define MAX_PROFESSIONAL            26 
 #define MAX_JOB                     26 
 
@@ -215,12 +202,12 @@
 #define DIS_THROWING                8 //
 #define DIS_PISTOL                  9 //
 #define DIS_RIFLE                  10 //
-// ¹æ¾î±â¼ú±º
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define DIS_SHIELD                 11 //
 #define DIS_PARRY                  12 //
 #define DIS_ACROBAT                13 //
 
-// ¸¶¹ý¿¬°è ±â¼ú±º   
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½   
 #define DIS_DIVINEPOWER            14 //
 #define DIS_HEAL                   15 //
 #define DIS_ASTROLOGY              16 //
@@ -230,7 +217,7 @@
 #define DIS_DARK                   20 //
 #define DIS_WATER                  21 //
 #define DIS_EARTH                  22 //
-// Æ¯¼ö ±â¼ú    
+// Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½    
 #define DIS_CHEER                  23 //
 #define DIS_PROPERTIES             24 //
 #define DIS_TAMING                 25 //
@@ -240,6 +227,6 @@
 #define DIS_MARIONETTE             29 //
 #define DIS_STRINGDANCE            30 //
 
-// ÀÏ¹Ý ±â¼ú Á¾·ù.... Ä³¸¯ÅÍ ³»ºÎ¿¡ ÀúÀåµÇÁö ¾ÊÀ½
+// ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.... Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 #endif
 */

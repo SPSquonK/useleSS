@@ -77,12 +77,8 @@ void CWndVendor::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate(); 
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 	SetTitle( prj.GetText( TID_GAME_VENDOR_TITLE ) );
 	m_wndctrlVendor.Create( WLVS_ICON | WBS_NODRAWFRAME, CRect( 5, 60, 440, 460 ), this, 100 );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-	m_wndctrlVendor.Create( WLVS_ICON | WBS_NODRAWFRAME, CRect( 18, 80, 220, 250 ), this, 100 );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 	
 	SetVendor( g_pPlayer );
 	if( g_pPlayer )
@@ -92,9 +88,7 @@ void CWndVendor::OnInitialUpdate()
 			Destroy();
 		}
 	}
-#if __VER >= 11 // __SYS_POCKET
 	if(GetWndBase( APP_BAG_EX )) GetWndBase( APP_BAG_EX )->Destroy();
-#endif
 	if( g_WndMng.m_pWndTrade || g_WndMng.m_pWndShop || g_WndMng.m_pWndBank || g_WndMng.m_pWndGuildBank)
 	{
 		Destroy();
@@ -109,7 +103,6 @@ void CWndVendor::OnInitialUpdate()
 	}
 #endif // __S_SERVER_UNIFY
 	
-#if __VER >= 8 // __S8_PK
 	if( g_pPlayer->IsChaotic() )
 	{
 		CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( g_pPlayer->GetPKPropensity() );
@@ -120,7 +113,6 @@ void CWndVendor::OnInitialUpdate()
 			return;
 		}
 	}
-#endif // __VER >= 8 // __S8_PK
 
 	if( !m_pVendor->IsActiveMover() )
 	{
@@ -146,7 +138,6 @@ void CWndVendor::OnInitialUpdate()
 
 void CWndVendor::ReloadItemList()
 {
-#if __VER >= 11 // __MOD_VENDOR
 	// 백업해 둔 리스트를 로드한다 	
 	if( !g_pPlayer->m_vtInfo.IsVendorOpen() )
 	{
@@ -180,19 +171,16 @@ void CWndVendor::ReloadItemList()
 			}
 		}
 	}
-#endif
 }
 
 BOOL CWndVendor::Process()
 {
-#if __VER >= 11 // __MOD_VENDOR
 	// 장사를 시작하면 리셋버튼은 보이지 않게 함 
 	CWndButton* pButton	= (CWndButton*)GetDlgItem( WIDC_RESET );
 	if(g_pPlayer->m_vtInfo.IsVendorOpen())
 		pButton->SetVisible( FALSE );
 	else
 		pButton->SetVisible( TRUE );
-#endif
 	return TRUE;
 }
 
@@ -205,18 +193,12 @@ BOOL CWndVendor::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	{
 		return FALSE;
 	}
-#if __VER >= 8 // 8차 듀얼 061226 ma
 	if( g_pPlayer->m_nDuel )
 	{
 		return FALSE;
 	}
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 	return InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOR_REVISION, 0, 0, pWndParent );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOREX, 0, 0, pWndParent );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 }
 
 BOOL CWndVendor::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -263,7 +245,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //						return FALSE;	// 개인상점판매허용
 //#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 9 // __CSC_VER9_1
 //					ItemProp* pItemProp = pItemBase->GetProp();
 					CItemElem* pItemElem = (CItemElem*)pItemBase;
 					if( pItemElem->IsFlag( CItemElem::expired ) )
@@ -275,7 +256,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							return FALSE;
 					}
 					*/
-#endif //__CSC_VER9_1
 
 					/*
 					if( ((CItemElem*)pItemBase)->m_bCharged == 1 )
@@ -316,7 +296,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			strVendor.TrimLeft();
 			strVendor.TrimRight();
 
-		#if __VER >= 11 // __MOD_VENDOR
 			// 매물 액수 총합 + 현재 소지금이 2억1천이 넘으면 경고띄우고 리턴시킴.
 			int nGold = g_pPlayer->GetGold();
 
@@ -334,7 +313,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				g_WndMng.OpenMessageBox( _T(prj.GetText(TID_GAME_VENDOR_MAX_ALL_GOLD)), MB_OK, this );
 				return TRUE;
 			}
-		#endif
 
 			if( prj.IsInvalidName( strVendor )
 #ifdef __RULE_0615
@@ -366,20 +344,15 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				pWndEdit->m_string.GetTextFormat(strFormat);
 			}
 			
-#if __VER >= 8 // __S8_VENDOR_REVISION
 			CWndVendorConfirm* pBox = new CWndVendorConfirm;
 			g_WndMng.OpenCustomBox( "", pBox );			
 			pBox->SetVendorName( strFormat );
 			pBox->SetValue( prj.GetText( TID_GAME_VENDOR_START ) );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-			g_DPlay.SendPVendorOpen( (const char*)strFormat );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 			CWndButton* pWndButton	= (CWndButton*)GetDlgItem( WIDC_OK );
 			pWndButton->SetVisible( FALSE );
 		}
 		else if( nID == WIDC_CANCEL || nID == WTBID_CLOSE )
 		{
-#if __VER >= 8 // __S8_VENDOR_REVISION
 			if( g_pPlayer->m_vtInfo.IsVendorOpen() )
 			{
 				CWndVendorConfirm* pBox = new CWndVendorConfirm;
@@ -387,7 +360,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				pBox->SetValue( prj.GetText( TID_GAME_VENDOR_STOP ) );
 				return FALSE;
 			}
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 			Destroy( FALSE );
 		}
 		else if( nID == WIDC_CHAT )
@@ -405,7 +377,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 			if( bChattingRoom )
 			{
-			#if __VER >= 11 // __MOD_VENDOR
 				if(!m_pwndVenderMessage) 
 				{
 					m_pwndVenderMessage = new CWndVendorMessage;
@@ -423,19 +394,9 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if(m_pwndVenderMessage->IsVisible()) m_pwndVenderMessage->SetVisible(FALSE);
 					else								 m_pwndVenderMessage->SetVisible(TRUE);
 				}
-			#else
-				SAFE_DELETE( m_pwndVenderMessage );
-				m_pwndVenderMessage = new CWndVendorMessage;
-			#ifdef __FIX_WND_1109
-				m_pwndVenderMessage->Initialize( this );
-			#else	// __FIX_WND_1109
-				m_pwndVenderMessage->Initialize( );
-			#endif	// __FIX_WND_1109
-			#endif
 
 			}
 		}
-#if __VER >= 11 // __MOD_VENDOR
 		else if(nID == WIDC_RESET)
 		{
 			
@@ -459,7 +420,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				memset(g_Neuz.m_aSavedInven, 0, sizeof(g_Neuz.m_aSavedInven));
 			//}
 		}
-#endif
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
@@ -482,7 +442,6 @@ void CWndVendor::OnDestroyChildWnd( CWndBase* pWndChild )
 
 void CWndVendor::OnDestroy( void )
 {
-#if __VER >= 11 // __MOD_VENDOR
 	// 리스트를 백업해둔다
 	for( int i = 0; i < MAX_VENDITEM; i++ )
 	{
@@ -496,7 +455,6 @@ void CWndVendor::OnDestroy( void )
 			g_Neuz.m_aSavedInven[i].m_dwItemId = pItemBase->m_dwItemId;
 		}
 	}
-#endif
 	g_DPlay.SendPVendorClose( m_pVendor->GetId() );
 
 	SAFE_DELETE( m_pWndVendorBuy );
@@ -507,20 +465,16 @@ void CWndVendor::OnDestroy( void )
 
 CWndVendorMessage::CWndVendorMessage() 
 {
-#if __VER >= 11 // __MOD_VENDOR	
 	m_nIsOwner = FALSE;
-#endif
 } 
 
 CWndVendorMessage::~CWndVendorMessage() 
 { 
-#if __VER >= 11 // __MOD_VENDOR
 	m_wndChat.Destroy();
 	if( m_nIsOwner )
 	{
 		m_wndInfo.Destroy();
 	}
-#endif
 //	g_Chatting.m_nSizeofMember = 0;
 } 
 void CWndVendorMessage::OnDraw( C2DRender* p2DRender ) 
@@ -545,7 +499,6 @@ void CWndVendorMessage::OnInitialUpdate()
 
 	pWndEdit->SetFocus();
 
-#if __VER >= 11 // __MOD_VENDOR
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 	WTCITEM tabTabItem;
 
@@ -567,7 +520,6 @@ void CWndVendorMessage::OnInitialUpdate()
 		pWndTabCtrl->InsertItem( 1, &tabTabItem );
 	}
 		
-#endif
 
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
@@ -665,7 +617,6 @@ void CWndVendorMessage::AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage )
 {
 
 
-#if __VER >= 11 // __MOD_VENDOR
 	CString strMessage;
 
 	if( !strcmp( lpszFrom, g_pPlayer->GetName() ) )
@@ -677,25 +628,11 @@ void CWndVendorMessage::AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage )
 	m_wndChat.AddString( strMessage );
 	m_wndChat.m_wndScrollBar.SetMaxScrollPos();
 
-#else
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CString strMessage;
-
-	if( !strcmp( lpszFrom, g_pPlayer->GetName() ) )
-		strMessage.Format( "#cffff0000%s%s :#nc\n  %s\n", lpszFrom, prj.GetText(TID_GAME_FROM3), lpszMessage );
-	else
-		strMessage.Format( "#cff0000ff%s%s :#nc\n  %s\n", lpszFrom, prj.GetText(TID_GAME_FROM3), lpszMessage );
-	//  	strMessage.Format( "#cff0000ff%s님의 말 :#nc\n  %s\n", lpszFrom, lpszMessage );
-	
-	pWndText->AddString( strMessage );
-	pWndText->m_wndScrollBar.SetMaxScrollPos();
-#endif
 	
 }
 
 void CWndVendorMessage::AddChattingMemver(LPCTSTR lpszName)
 {
-#if __VER >= 11 // __MOD_VENDOR
 	if( m_nIsOwner )
 	{
 		CString str;
@@ -707,20 +644,8 @@ void CWndVendorMessage::AddChattingMemver(LPCTSTR lpszName)
 		m_wndInfo.AddString( strMessage );
 		m_wndInfo.m_wndScrollBar.SetMaxScrollPos();	
 	}
-#else
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CString str;
-	str.Format( prj.GetText(TID_GAME_VENCHATIN), lpszName );
-
-	CString strMessage;
-	strMessage.Format( "#cffff0000%s\n", str );
-	
-	pWndText->AddString( strMessage );
-	pWndText->m_wndScrollBar.SetMaxScrollPos();	
-#endif
 }
 
-#if __VER >= 11 // __MOD_VENDOR
 void CWndVendorMessage::WriteBuyInfo(char *pBuyerName, CString strItem, int nItemNum, int nTotalCost)
 {
 	if( m_nIsOwner )
@@ -735,11 +660,9 @@ void CWndVendorMessage::WriteBuyInfo(char *pBuyerName, CString strItem, int nIte
 		m_wndInfo.m_wndScrollBar.SetMaxScrollPos();
 	}
 }
-#endif
 
 void CWndVendorMessage::RemoveChattingMemver(LPCTSTR lpszName)
 {
-#if __VER >= 11 // __MOD_VENDOR
 	if( m_nIsOwner )
 	{
 		CString str;
@@ -751,20 +674,8 @@ void CWndVendorMessage::RemoveChattingMemver(LPCTSTR lpszName)
 		m_wndInfo.AddString( strMessage );
 		m_wndInfo.m_wndScrollBar.SetMaxScrollPos();
 	}
-#else
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CString str;
-	str.Format( prj.GetText(TID_GAME_VENCHATOUT), lpszName );
-
-	CString strMessage;
-	strMessage.Format( "#cffff0000%s\n", str );
-	
-	pWndText->AddString( strMessage );
-	pWndText->m_wndScrollBar.SetMaxScrollPos();	
-#endif	
 }
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 void CWndVendorConfirm::SetVendorName( CString str )
 {
 	m_strVendorName = str;
@@ -807,4 +718,3 @@ BOOL CWndVendorConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-#endif // __VER >= 8 // __S8_VENDOR_REVISION

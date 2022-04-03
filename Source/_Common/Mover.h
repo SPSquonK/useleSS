@@ -5,9 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 11 // __SYS_POCKET
 #include "pocket.h"
-#endif	// __SYS_POCKET
 
 #ifdef __BUFF_1107
 #include "buff.h"
@@ -74,30 +72,22 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define	UI_KEEPTIME				11
 #define UI_REPAIR_NUM			12
 
-#if __VER >= 12 // __EXT_PIERCING
 #define UI_ULTIMATE_PIERCING_SIZE	13
 #define UI_ULTIMATE_PIERCING		14
-#endif // __EXT_PIERCING
 
-#if __VER >= 15 // __PETVIS
 #define UI_PETVIS_SIZE			15
 #define UI_PETVIS_ITEM			16
 #define UI_PETVIS_ITEMSWAP		17
 #define UI_TRANSFORM_VISPET		18
 
 const int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
-#endif // __PETVIS
 
 #ifdef __ADD_RESTATE_LOW
 #define RESTATE_LOW				50
 #endif // __ADD_RESTATE_LOW
 
 
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 #define MAX_SKILL_JOB	( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL )
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#define MAX_SKILL_JOB	( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL )
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 #ifdef __INTERNALSERVER
 #define	TICK_CHEERPOINT	MIN( 1 )
@@ -114,13 +104,11 @@ const DWORD NEXT_TICK_RECOVERY      = SEC(2);
 const DWORD NEXT_TICK_RECOVERYSTAND = SEC(3);
 
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
 #define	LEGEND_CLASS_NORMAL			0
 #define	LEGEND_CLASS_MASTER			1
 #define	LEGEND_CLASS_HERO			2
 
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
 
 /// Replace함수에서 사용하는 타입 	
@@ -151,30 +139,6 @@ enum PVP_MODE
 	PVP_MODE_DUEL				/// 듀얼 
 };
 
-#if __VER < 8 // __S8_PK
-/// PK 타입 
-enum PK_TYPE
-{
-	NORMAL_AND_NORMAL,			/// 일반 유저 와 일반 유저 
-	NORMAL_AND_SEMI,
-	NORMAL_AND_CHAO,
-	SEMI_AND_NORMAL,			/// 준카오와 일반 유저 
-	SEMI_AND_SEMI,
-	SEMI_AND_CHAO,
-	CHAO_AND_NORMAL,			/// 카오와 일반 유저 
-	CHAO_AND_SEMI,
-	CHAO_AND_CHAO
-};
-
-/// 카르마 변경원인 
-enum CHANGE_SLAUGHTER_TYPE
-{
-	CHANGE_SLAUGHTER_ATTACK,	/// 'PK시도'로 인한 카르마(=슬로터값) 변경 
-	CHANGE_SLAUGHTER_KILL,		/// PK로 인한 카르마(=슬로터값) 변경 
-	CHANGE_SLAUGHTER_RECOVERY,	/// 자연회복 
-	CHANGE_SLAUGHTER_SET,		/// 단순한 대입 
-};
-#endif // __VER < 8 // __S8_PK
 
 /// 거래 확인 타입 
 enum TRADE_CONFIRM_TYPE
@@ -206,11 +170,7 @@ typedef	struct	_EQUIP_INFO
 /// 장착 추가 정보 구조체 
 typedef	struct	_EQUIP_INFO_ADD
 {
-#if __VER >= 11 // __SYS_IDENTIFY
 	__int64		iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-	int				nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 //	PIERCINGINFO	piercingInfo;
 	CPiercing	piercing;
 
@@ -394,9 +354,7 @@ struct SFXHIT_INFO
 	float	fDmgAngle;
 	float	fDmgPower;
 	DWORD	dwAtkFlags;
-#if __VER >= 8 // __S8_PK
 	BOOL	bControl;
-#endif // __VER >= 8 // __S8_PK
 	DWORD	dwTickCount;
 };
 
@@ -530,21 +488,12 @@ public:
 	EXPINTEGER		m_nExp1, m_nDeathExp;		/// m_nExp1 - 경험치, DeathExp - 죽었을 때 경험치
 
 private:
-#if __VER >= 12 // __MOD_TUTORIAL
 	int		m_nTutorialState;
-#else	__MOD_TUTORIAL
-	LONG	m_nFlightLv;
-#endif	// __MOD_TUTORIAL
 public:
-#if __VER >= 12 // __MOD_TUTORIAL
 	LONG	GetFlightLv( void )	{	return ( GetLevel() >= 20? 1: 0 );		}
 	void	SetFlightLv( LONG nFlightLv )	{}
 	int		GetTutorialState( void )	{	return m_nTutorialState;	}
 	void	SetTutorialState( int nTutorialState )	{	m_nTutorialState	= nTutorialState;	}
-#else	// __MOD_TUTORIAL
-	LONG	GetFlightLv( void )	{	return m_nFlightLv;		}
-	void	SetFlightLv( LONG nFlightLv )	{	m_nFlightLv	= nFlightLv;	}
-#endif	// __MOD_TUTORIAL
 
 	LONG			m_nFxp;		/// 비행레벨, 
 	LONG			m_nHitPoint;				/// HP
@@ -596,25 +545,19 @@ public:
 	short			m_wBleedingCnt;				/// 출혈 상태 시간 
 	short			m_wBleedingDamage;			/// 출혈로 깎일 데미지
 	short			m_wDarkCover;				/// 안보이게 숨기
-#if __VER >= 9	// __PET_0410
 	short			m_nHealCnt;		//	0일 경우만 자동 치유
-#endif	// __PET_0410
-#if __VER >= 9	//__AI_0509
 	FLOAT	m_fSpeedFactor;
 	void	SetSpeedFactor( FLOAT fSpeedFactor );
 	FLOAT	GetSpeedFactor( void )	{	return m_fSpeedFactor;	}
 #ifdef __WORLDSERVER
 	BOOL	IsReturnToBegin( void );
 #endif	// __WORLDSERVER
-#endif	// __AI_0509
 
-#if __VER >= 10	// __AI_0711
 	BOOL	IsRank( DWORD dwClass )	
 		{
 			MoverProp* pProp	= GetProp();
 			return( pProp && pProp->dwClass == dwClass );
 		}
-#endif	// __AI_0711
 
 	BYTE			m_nAttackResistLeft;		/// 코드 존재하지만 게임내 사용하지 않음 ( 왼손 속성 공격력 추가 ) 
 	BYTE			m_nAttackResistRight;		/// 코드 존재하지만 게임내 사용하지 않음 ( 오른손 속성 공격력 추가 ) 
@@ -639,31 +582,18 @@ public:
 	
 	int				m_nFame;					/// 명성치 
 	u_long			m_idMurderer;				/// 날 마지막으로 죽였던넘 플레이어 아이디
-#if __VER >= 8 // __S8_PK
 	DWORD			m_dwPKTime;					/// 핑크 상태 시간
 	int				m_nPKValue;					/// PK 수치
 	DWORD			m_dwPKPropensity;			/// PK 성향
 	DWORD			m_dwPKExp;					/// PK 성향 습득 경험치		
-#else // __VER >= 8 // __S8_PK
-	int				m_nNumKill;					/// 킬수
-	DWORD			m_dwKarmaTick;				/// 카르마 포인트 자연 회복용 타이머 
-	int				m_nSlaughter;				/// 카르마포인트(카오 수치)
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 //__CSC_VER8_5
 	EXPINTEGER		m_nAngelExp;				/// 엔젤 경험치
 	LONG			m_nAngelLevel;				/// 엔젤 Level
-#endif // __CSC_VER8_5
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	BYTE			m_nLegend;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	DWORD			dwRemoveSfxObj[MAX_SKILLBUFF_COUNT];			// 삭제할 효과 오브젝트 
 	DWORD			GetRemoveSfxObj(DWORD	dwRemoveSfxObjID);
 	void			SetRemoveSfxObj(DWORD	dwRemoveSfxObjID);
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	int				m_nHonor;					// 달인선택 
 	DWORD			m_dwHonorCheckTime;			//달인 시간체크
 	int				m_aHonorTitle[MAX_HONOR_TITLE];			// 달인수치
@@ -676,31 +606,23 @@ public:
 	LPCTSTR			GetTitle();
 	void			SetTitle(LPCTSTR	pTitle);
 
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __CLIENT
 	CSfx*			m_pSfxWing;
 	DWORD			m_dwWingTime;
 
-#if __VER >= 15 // __PETVIS
 	CSfx*			m_pSfxBuffPet;
 	void			SetSfxBuffPet( const DWORD idEffect );
-#endif	//__PETVIS
 #endif //__CLIENT
 
 #ifdef __JEFF_9_20
 	DWORD		m_dwMute;
-#if __VER < 12 // __LORD
-	BOOL	IsMute( void )	{	return ( m_dwMute > 0 );	}
-#endif	// __LORD
 #endif	// __JEFF_9_20
 
 	RESURRECTION_DATA				m_Resurrection_Data;		/// 리저렉션 스킬 정보 
 	CItemContainer< CItemElem  >*	m_ShopInventory[ MAX_VENDOR_INVENTORY_TAB ];	/// 상인NPC의 물품 정보 
 	CItemContainer< CItemElem  >	m_Inventory;				/// 인벤토리
-#if __VER >= 11 // __SYS_POCKET
 	CPocketController	m_Pocket;
-#endif	// __SYS_POCKET
 	EQUIP_INFO		m_aEquipInfo[MAX_HUMAN_PARTS];				/// 장착정보 	
 	CVTInfo			m_vtInfo;					/// 거래와 개인상점 번호 
 
@@ -716,10 +638,8 @@ public:
 	LPQUEST			m_aQuest;					/// 현재 진행중인 퀘스트 배열 
 	BYTE			m_nCompleteQuestSize;		/// 완료된 퀘스트 갯수 
 	LPWORD   		m_aCompleteQuest;			/// 완료된 퀘스트 배열 	
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	BYTE			m_nCheckedQuestSize;
 	LPWORD			m_aCheckedQuest;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	int				m_nDead;					/// 죽은 후 5초간은 무적
 	int				m_nGuildCombatState;		/// 길드 대전 상태 
@@ -743,10 +663,8 @@ public:
 	CCooltimeMgr	m_cooltimeMgr;	
 	LPDIRECT3DTEXTURE9		m_pCloakTexture;	/// 망토텍스쳐.
 
-#if __VER >= 8 //__Y_EYE_FLASH_8
 	static LPDIRECT3DTEXTURE9		m_pTextureEye[2][MAX_HEAD];
 	static LPDIRECT3DTEXTURE9		m_pTextureEyeFlash[2][MAX_HEAD];
-#endif //__Y_EYE_FLASH_8
 
 #endif // __CLIENT
 
@@ -778,15 +696,11 @@ public:
 	void	InactivateEatPet( void );
 	void	InactivateSystemPet( CItemElem* pItemElem );
 
-#if __VER >= 15 // __PETVIS
 	void	SetPetVisDST( CItemElem* pItemElem );
 	void	ResetPetVisDST( CItemElem* pItemElem );
 	void	ProcessVisPet();
-#endif // __PETVIS
 #endif	// __WORLDSERVER
-#if __VER >= 12 // __PET_0519
 	BOOL	IsUsingEatPet( CItemElem* pItemElem );	// 사용중인 먹펫인가?
-#endif	// __PET_0519
 
 	BOOL	HasActivatedEatPet( void )		{	return m_oiEatPet != NULL_ID;	}
 	BOOL	HasActivatedSystemPet( void )	{	return m_dwPetId != NULL_ID;	}
@@ -796,10 +710,7 @@ public:
 	void	SetPetId( DWORD dwPetId )		{	m_dwPetId	= dwPetId;	}
 private:
 	DWORD	m_dwPetId;	// 소환중이 펫의 인벤토리 위치(自), 소환중인 펫 인덱스(他)
-#if __VER >= 12 // __PET_0519
 	int		DoUseItemPetTonic( CItemElem* pItemElem );	// 펫 영양제 사용
-#endif	// __PET_0519
-#if __VER >= 15 // __PETVIS
 private:
 	BOOL	SetValidNeedVis( CItemElem* pItemElem, int nPos, vector<BYTE> & vecValid );
 public:
@@ -811,10 +722,8 @@ public:
 	DWORD		m_dwMoverSfxId;	// 무버에 붙는 이펙트
 private:
 	OBJID		m_objIdVisPet;	// 소환중인 비스펫의 인벤토리 위치
-#endif // __PETVIS
 
 public:
-#if __VER >= 9	// __PET_0410
 	CPet*	GetPet( void );
 	CItemElem*	GetPetItem( void );
 	void	PetLevelup( void );
@@ -824,28 +733,22 @@ public:
 	CClientPet	m_pet;
 	CModelObject*	GetPetModel( void )		{	return (CModelObject*)( m_pet.GetObj()? m_pet.GetObj()->m_pModel: NULL );	}
 	void	CreatePetSfx( void );
-#if __VER >= 12 // __UPDATE_OPT
 	BOOL	IsOptionRenderMask()	{	return !IsMode( MODE_OPTION_DONT_RENDER_MASK );	}
-#endif	// __UPDATE_OPT
 #else	// __CLIENT	// __WORLDSERVER
 	void	ProcessPetAvail( void );
 	void	ProcessPetEnergy( void );
 	void	ProcessPetExp( void );
 	int		DoUseItemFeedPocket( CItemElem* pItemElem );
 #endif	// __CLIENT
-#endif	// __PET_0410
 
 #ifdef __SYS_TICKET
 	CItemElem*	GetTicket( void );
 #endif	// __SYS_TICKET
 
-#if __VER >= 11 // __SYS_POCKET
 	CItemElem*	GetItemId2( int nPocket, int nItem, BOOL bExpiration = TRUE );
 	BOOL	CreateItem2( CItemElem* pItem, int nPocket );
 	void	RemoveItem2( int nItem, short nNum, int nPocket );
-#endif	// __SYS_POCKET
 
-#if __VER >= 11 // __SYS_COLLECTING
 	int						m_nMaxCltTime;
 	int						m_nCltTime;
 	BOOL	IsCollecting( void )	{	return	m_pActMover->GetActionState() == OBJSTA_COLLECT;	}
@@ -853,7 +756,6 @@ public:
 	virtual	void	StartCollecting( void );
 	virtual	void	StopCollecting( void );
 	CItemElem*	GetCollector( void );
-#endif	//	__SYS_COLLECTING
 
 	int				m_nSkillLevel;				/// 지금까지 올린 스킬레벨
 	int				m_nSkillPoint;				/// 스킬 찍을 포인트 수치 
@@ -861,13 +763,11 @@ public:
 	CTimer			m_SkillTimer;
 	BOOL			m_SkillTimerStop;
 	
-#if __VER >= 8 //__CSC_VER8_5
 	BOOL			m_pAngelFlag;				/// Angel Buff Exist?
 	CModelObject*	m_pAngel;					/// Angel Model Object.
 	D3DXVECTOR3		m_AngelPos;					/// Angel Position.
 	D3DXMATRIX		m_AngelWorldM;				/// Angel Matrix.
 	DWORD			m_dwAngelKind;				/// Angel Kind.
-#endif //__CSC_VER8_5
 	
 #ifdef __EVE_BALLOON
 	BOOL			m_pBalloonFlag;				/// Balloon Buff Exist?
@@ -885,11 +785,7 @@ private:
 	OBJACT			m_oaCmd;					/// 오브젝트 명령  
 	int				m_nCParam[3];				/// 범용 명령 파라메터
 	OBJACT			m_oaAct;					/// 오브젝트 행동상태
-#if __VER >= 8 // __S8_PK
 	int				m_nAParam[5];				/// 범용 행동 파라메터
-#else // __VER >= 8 // __S8_PK
-	int				m_nAParam[4];				/// 범용 행동 파라메터
-#endif // __VER >= 8 // __S8_PK
 
 	LONG			m_adjParamAry[ MAX_ADJPARAMARY ];		/// 수정 파라미터( 예: hp + 수정hp )
 	LONG			m_chgParamAry[ MAX_ADJPARAMARY ];		/// 교체 파라미터( 예: 교체 hp )
@@ -903,7 +799,6 @@ private:
 	DWORD			m_dwLadolfFlag;
 	CModelObject*   m_pLadolf;					/// 라돌프모델
 	int				m_nDmgCnt;					/// 데미지 카운트
-#if __VER >= 14 // __WING_ITEM
 	enum WingStateFlag
 	{
 		FLOATING, FLYING, TURNING
@@ -911,13 +806,9 @@ private:
 
 	WingStateFlag	m_eWingStateFlag;		/// 애니메이션 플래그 스위치
 	float			m_fOldLengthSq;			/// 날개 애니메이션 속도 변화량의 시작점을 저장하기 위한 변수
-#endif // __WING_ITEM
-#if __VER >= 8 //__Y_EYE_FLASH_8
 	CTimer			m_tmEye[2];
-#endif //__Y_EYE_FLASH_8
 #endif // __CLIENT
 
-#if __VER >= 15 // __CAMPUS
 private:
 	u_long	m_idCampus;			// 사제 아이디
 	int		m_nCampusPoint;		// 사제 포인트
@@ -926,7 +817,6 @@ public:
 	void	SetCampusId( u_long idCampus )		{	m_idCampus = idCampus;	}
 	int		GetCampusPoint()	{	return m_nCampusPoint;	}
 	void	SetCampusPoint( int nMPPoint )		{	m_nCampusPoint = nMPPoint;	}
-#endif // __CAMPUS
 
 protected:
 	int				m_nCount;					/// 무버가 범용으로 쓰는 순차적 카운터. 생성자 외엔 0으로 초기화 하지 말것.
@@ -1034,11 +924,7 @@ public:
 	void			UpdateParts( BOOL bFakeParts  = FALSE ); // normal or fake
 	int				InvalidEquipOff( BOOL fFakeparts );		// 거시기한 장비를 벗김.
 	BOOL			DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart = -1 ); // for normal
-#if __VER >= 11 // __SYS_IDENTIFY
 	BOOL			IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel = FALSE );		// 장착가능한가?
-#else	// __SYS_IDENTIFY
-	BOOL			IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel = FALSE);		// 장착가능한가?
-#endif	// __SYS_IDENTIFY
 	BOOL			IsUnEquipAble( ItemProp *pItemProp );					// 벗는게 가능한가?
 	void			SetEquipDstParam();
 	void			SumEquipAdjValue( int* pnAdjHitRate, int* pnAdjParray );
@@ -1122,9 +1008,6 @@ public:
 	BOOL			DecExperiencePercent( float fPercent, BOOL bExp2Clear, BOOL bLvDown  );	// 경험치를 퍼센트로 깎는다.
 	BOOL			AddFxp( int nFxp );
 	BOOL			SetFxp( int nFxp, int nFlightLv );
-#if __VER < 8 // __S8_PK
-	int				GetKarma() { return m_nSlaughter; }
-#endif // __VER < 8 // __S8_PK
 	BOOL			IsPVPTarget( CMover* pMover );
 	BOOL			IsWarTarget( CMover* pMover );
 	BOOL			IsSchoolTarget( CMover* pMover );
@@ -1132,11 +1015,7 @@ public:
 #ifdef __JEFF_11_4
 	BOOL	IsArenaTarget( CMover* pMover );
 #endif	// __JEFF_11_4
-#if __VER >= 8 // __S8_PK
 	HITTYPE			GetHitType2( CMover* pMover, BOOL bTarget, BOOL bGood );
-#else // __VER >= 8 // __S8_PK
-	HITTYPE			GetHitType2( CMover* pMover, BOOL bTarget );
-#endif // __VER >= 8 // __S8_PK
 	void			ReSetDuelTime( CMover* pAttacker , CMover* pDefender);
 	BOOL			IncStrLevel();
 	BOOL			IncStaLevel();
@@ -1153,14 +1032,12 @@ public:
 	int				GetSta();
 	FLOAT			GetSpeed(FLOAT fSrcSpeed);    
 	int				GetGold();
-#if __VER >= 12 // __LORD
 	int		GetPerinNum( void );
 	__int64		GetTotalGold( void );
 #ifdef __WORLDSERVER
 	int		RemoveTotalGold( __int64 iGold );	// 제거된 페린 개수
 	int		RemovePerin( int nPerin );
 #endif	// __WORLDSERVER
-#endif	// __LORD
 	void			SetGold( int nGold );
 	BOOL			AddGold( int nGold, BOOL bSend = TRUE );
 	int				GetHitPointPercent( int nPercent = 100 );
@@ -1221,7 +1098,6 @@ public:
 	BOOL			IsDie() { return m_pActMover->IsDie() || m_nHitPoint == 0; }
 	BOOL			IsLive() { return m_pActMover->IsDie() == FALSE || m_nHitPoint > 0; }		// && 를  ||로 바꿨음.  !=를 >로 바꿈
 	int				GetCount() { return m_nCount; }
-#if __VER >= 8 // __S8_PK
 	void			SetPKPink( DWORD dwTime ) { if( dwTime == 0 || m_dwPKTime < dwTime ) m_dwPKTime = dwTime; }
 	DWORD			GetPKPink( void ) { return m_dwPKTime; }
 	BOOL			IsPKPink( void )	{ return m_dwPKTime > 0; }			/// PK 핑크 모드인지
@@ -1231,12 +1107,6 @@ public:
 	void			SetPKPropensity( DWORD dwValue );
 	DWORD			GetPKPropensity( void ) { return m_dwPKPropensity; }
 	DWORD			NextPKPropensity( int nPKValue );
-#else // __VER >= 8 // __S8_PK
-	BOOL			IsGuardReactionChao();
-	BOOL			IsGuardReactionNormal(); 
-	BOOL			IsChaotic() { return GetSlaughterGrade() != SLAUGHTER_NORMAL; }	
-	SLAUGHTER_GRADE	GetSlaughterGrade();						
-#endif // __VER >= 8 // __S8_PK
 	float			GetResist(SAI79::ePropType p_PropType);
 	int				GetSetItemParts(DWORD dwParts);
 	int				GetSetItemClient();
@@ -1270,14 +1140,8 @@ public:
 	BOOL			IsDropable( CItemElem* pItemElem, BOOL bPK );
  	BOOL			IsDropableState( BOOL bPK );
 	CItem*			DropGold( DWORD dwGold, const D3DXVECTOR3& vPos, BOOL bPK = FALSE );
-#if __VER >= 15 // __PETVIS
 	void			UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime = 0 );
-#else // __PETVIS
-	void			UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue );
-#endif // __PETVIS
-#if __VER >= 11 // __SYS_IDENTIFY
 	void		UpdateItemEx( unsigned char id, char cParam, __int64 iValue );
-#endif	// __SYS_IDENTIFY
 	CItem*			_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos );
 	CItem*			DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BOOL bPlayer = FALSE );
 	int				DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyEquip = FALSE );
@@ -1299,11 +1163,7 @@ public:
 	void			RemoveItemBankId( int nSlot, DWORD dwId );
 	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, LPVENDOR_ITEM pVendor );
 	BOOL			DropItemByDied( CMover* pAttacker );		// 죽어서 떨어트리는 드랍.
-#if __VER >= 8 // __S8_PK
 	BOOL			DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType = SUT_NORMAL, BOOL bControl = FALSE, const int nCastingTime = 0 );		// dwSkill/nLevel만 가지고도 사용할 수 있는 버전.
-#else // __VER >= 8 // __S8_PK
-	BOOL			DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType = SUT_NORMAL, const int nCastingTime = 0 );		// dwSkill/nLevel만 가지고도 사용할 수 있는 버전.
-#endif // __VER >= 8 // __S8_PK
 	void			SetPKTargetLimit( int nSec );
 	void			ClearCmd(); 
 	OBJACT			GetCmd() { return m_oaCmd; }
@@ -1321,9 +1181,7 @@ public:
 	BOOL			IsAttackAbleNPC( CMover* pNPC );
 	BOOL			IsPKInspection( CMover* pMover );
 	int				IsPKPVPInspectionBase( DWORD dwRegionAttr, BOOL bPVP = TRUE );
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	int				IsPVPInspectionBase( DWORD dwRegionAttr,DWORD dwWorldID, BOOL bPVP = TRUE );//8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
-#endif	// __VER >= 8  
 	BOOL			SubPKPVPInspectionBase( CMover* pMover, CMover* pMover1, DWORD dwPKAttr, int nFlag );
 	void			PrintString( CMover* pMover, DWORD dwId );
 	int				CMD_SetUseSkill( OBJID idTarget, int nSkillIdx, SKILLUSETYPE sutType = SUT_NORMAL );
@@ -1374,11 +1232,7 @@ public:
 	void			ChangeExpRatio( CMover* pAttacker, CMover* pDefender );
 	void			OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nReflect );
 	BOOL			OnDamage( int nItemID, DWORD dwState, CMover *pHitObj, const D3DXVECTOR3 *pvDamagePos = NULL, DWORD dwAtkFlag = AF_GENERIC );
-#if __VER >= 9	// __SKILL_0706
 	void			SetCoolTime( AddSkillProp* pAddSkillProp, LPCTSTR szCall );
-#else	// __SKILL_0706
-	void			SetCoolTime( ItemProp *pSkillProp, LPCTSTR szCall );
-#endif	// __SKILL_0706
 	BOOL			OnMeleeSkill( int nType, int nCount = 1 );		// OBJMSG_ATK_MELEESKILL실행후 타점이 되었을때 발생하는 이벤트.
 	BOOL			OnMagicSkill( int nType, int nCount = 1 );		// OBJMSG_ATK_MAGICSKILL실행후 타점이 되었을때 발생하는 이벤트.
 	BOOL			OnAttackRange();		// 장거리무기가 발사되는 시점에 발생하는 이벤트
@@ -1388,9 +1242,7 @@ public:
 	void			OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj );	
 	void			OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj );	
 	void			OnAttackMelee_Bear( DWORD dwState, CMover *pHitObj );	
-#if __VER >= 10 // __Y_DRAGON_FIRE
 	void			OnAttackMelee_Meteonyker( DWORD dwState, CMover *pHitObj );
-#endif//__Y_DRAGON_FIRE
 	BOOL			OnAttackMagic();		// 완드공격이 발사되는 시점에 발생하는 이벤트.
 	BOOL			OnAttackSP();			// 특수공격.
 	void			OnActDrop();			// 캐릭터가 높은곳에서 떨어지기 시작하는 시점에 발생.
@@ -1442,46 +1294,32 @@ public:
 	BOOL			IsAttackMode();
 	void			AddSkillPoint( int nPoint);
 	
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	void			DoPVPEnd( CCtrl *pAttackCtrl, bool bWinner , DWORD dwMsg = 0 );	// 듀얼끝난뒤 처리
 	void			EndPVP(int	nPVPHP);	// 듀얼끝난뒤 처리
 	BOOL			m_bPVPEnd;			//듀얼이 끝났는가
-#endif	// __VER >= 8  
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	BYTE			GetLegendChar()	;
 	void			SetLegendChar(	BYTE	nLegend	)	{	m_nLegend	=	nLegend;	}
 	BOOL			IsMaster();
 	BOOL			IsHero();
 	void			SetMasterSkillPointUp();
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 	DWORD			GetJobType( int nJob = NULL_ID )	{	if( nJob == NULL_ID ) nJob = m_nJob;	return prj.m_aJob[ nJob ].dwJobType;	}	// 직업 타입
-#endif // __NEW_ITEM_LIMIT_LEVEL
 
 
-#if __VER >= 8 //__CSC_VER8_5
 	void			AngelMoveProcess();
-#endif //__CSC_VER8_5
 #ifdef __EVE_BALLOON
 	void			BalloonMoveProcess();
 #endif //__EVE_BALLOON
 
-#if __VER >= 8 // __S8_PK
 	void			OnAttackSFX( OBJID	idTarget, int nMagicPower, DWORD dwSkill, int nDmgCnt, float	fDmgAngle, float fDmgPower,  DWORD dwAtkFlags, BOOL bControl );
-#else // __VER >= 8 // __S8_PK
-	void			OnAttackSFX( OBJID	idTarget, int nMagicPower, DWORD dwSkill, int nDmgCnt, float	fDmgAngle, float fDmgPower,  DWORD dwAtkFlags );
-#endif // __VER >= 8 // __S8_PK
 	BOOL			IsGuildCombatTarget( CMover* pMover );
 #ifdef __WORLDSERVER
 	void	ProcessSFXDamage( void );
 	void	ProcessSFXExpire( void );
 #endif	// __WORLDSERVER
 
-#if __VER >= 9	// __PET_0410
 	void	ProcessPet( void );
-#endif	// __PET_0410
 
 #ifdef __WORLDSERVER
 	void			SetDestObj( OBJID idObj, float fRange = 0.0f, BOOL bSend = FALSE );
@@ -1490,9 +1328,6 @@ public:
 #endif
 
 #if defined(__WORLDSERVER)
-#if __VER < 8 // __S8_PK
-	void			UpgradeKarma();
-#endif // __VER < 8 // __S8_PK
 	BOOL			IsPVPInspection( CMover* pMover, int nFlag = 0 );
 	void			AddExperienceKillMember( CMover *pDead, EXPFLOAT fExpValue, MoverProp* pMoverProp, float fFxpValue );
 	void			AddExperienceSolo( EXPFLOAT fExpValue, MoverProp* pMoverProp, float fFxpValue, BOOL bParty );
@@ -1504,22 +1339,13 @@ public:
 //	BOOL			IsResourceMonster() { return m_nResource != -1; }		// 자원몬스터냐? -1이면 자원몬스터가 아니다. 0 ~ 자원몬스터라는 뜻.
 	void			ArrowDown( int nCount );
 	int				GetQueueCastingTime();
-#if __VER >= 8 // __S8_PK
 	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl );
 	float			SubDieDecExp( BOOL bTransfer = TRUE, DWORD dwDestParam = 0, BOOL bResurrection = FALSE  );	// 죽었을때 겸치 깎는 부분.
-#else // __VER >= 8 // __S8_PK
-	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType );
-	float			SubDieDecExp( BOOL bTransfer = TRUE, DWORD dwDestParam = 0 );	// 죽었을때 겸치 깎는 부분.
-#endif // __VER >= 8 // __S8_PK
 
 	void			SubAroundExp( CMover *pAttacker, float fRange );		// this를 중심으로 fRange범위안에 있는 유저에게 경험치를 배분한다.
 	void			AddPartyMemberExperience( CUser * pUser, EXPINTEGER nExp, int nFxp );
 	void			GetDieDecExp( int nLevel, FLOAT& fRate, FLOAT& fDecExp, BOOL& bPxpClear, BOOL& bLvDown );
-#if __VER >= 8 // __S8_PK
 	void			GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, BOOL bResurrection );
-#else // __VER >= 8 // __S8_PK
-	void			GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, int nSlaughter );
-#endif // __VER >= 8 // __S8_PK
 	BOOL			CreateItem( CItemBase* pItemBase, BYTE* pnId = NULL, short* pnNum = NULL, BYTE nCount = 0 );
 	void			RemoveItem( BYTE nId, short nNum );
 	int				RemoveItemA( DWORD dwItemId, short nNum );
@@ -1532,11 +1358,6 @@ public:
 #else	// __LAYER_1015
 	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, REPLACE_TYPE type );
 #endif	// __LAYER_1015
-#if __VER < 8 // __S8_PK
-	int				ChangeSlaughter( CHANGE_SLAUGHTER_TYPE type, CMover* pDefender, int nSetCarmaPoint = 0 );
-	int				IncSlaughterPoint2( CMover *pDead );
-	int				IncSlaughterPoint( CMover *pDead );
-#endif // __VER < 8 // __S8_PK
 	BOOL			IsLoot( CItem *pItem, BOOL bPet = FALSE );
 	void			ProcInstantBanker();
 	void			ProcInstantGC();
@@ -1579,9 +1400,6 @@ public:
 	void			PlayCombatMusic();
 	BOOL			IsLoot( CItem *pItem ) { return TRUE; }
 	LPCTSTR			GetFameName();						// 명성 이름 얻기
-#if __VER < 8 // __S8_PK
-	LPCTSTR			GetSlaughterName();					// 슬러터이름 얻기
-#endif // __VER < 8 // __S8_PK
 	LPCTSTR			GetJobString();						// 직업 이름 얻기 
 	void			DialogOut( LPCTSTR lpszText );		// 말풍선에 의한 대사 출력
 	BOOL			DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart, CModelObject* pModel = NULL ); // for Fake
@@ -1591,27 +1409,17 @@ public:
 	void			RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor = 0xffffffff );
 	void			RenderHP(LPDIRECT3DDEVICE9 pd3dDevice);
-#if __VER >= 11 // __SYS_COLLECTING
 	void			RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice);
-#endif
 	void			RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice);
 	void			RenderFlag( int nType );
 	void			RenderCasting( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderCtrlCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	void			RenderSkillCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	void			RenderPVPCount( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderGuildNameLogo( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor );
-#if __VER >= 8 // __S8_PK
 	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl, const int nCastingTime, DWORD dwSkill = 0, DWORD dwLevel = 0 );
-#else // __VER >= 8 // __S8_PK
-	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, const int nCastingTime, DWORD dwSkill = 0, DWORD dwLevel = 0 );
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 //__CSC_VER8_5
 	void			RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice);
-#endif //__CSC_VER8_5
 #endif	// __CLIENT
 
 	int				GetSkillLevel( SKILL* pSkill );
@@ -1655,18 +1463,12 @@ private:
 
 public:
 #ifdef __CLIENT
-#if __VER >= 8 //__CSC_VER8_5
 	void			CreateAngelParticle(D3DXVECTOR3 vPos);
-#endif //__CSC_VER8_5
 
-#if __VER >= 9	// __PET_0410
 	void			CreatePetParticle(D3DXVECTOR3 vPos);
-#endif //__PET_0410
 	void			ProcessEyeFlash();
-#if __VER >= 14 // __WING_ITEM
 	void			WingMotionSetting( const CModelObject* pModel );
 	float			GetRideFrameSpeed( void );
-#endif // __WING_ITEM
 
 #ifdef __BS_EFFECT_LUA
 	const char*		GetNameO3D( );
@@ -1784,9 +1586,7 @@ inline void CMover::ClearActParam()
 extern int GetWeaponPlusDamage( int nDamage, BOOL bRandom, ItemProp* pItemProp , int nOption );
 extern int __IsEndQuestCondition( CMover* pMover, int nQuestId );
 extern int __IsBeginQuestCondition( CMover* pMover, int nQuestId );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 extern int __IsNextLevelQuest( CMover* pMover, int nQuestId );
-#endif // __IMPROVE_QUEST_INTERFACE
 extern	BOOL AttackBySFX( CMover* pAttacker, SFXHIT_INFO & info );
 
 #endif // !defined(AFX_MOVER_H__4B7B21D7_A2D3_4115_946C_68DC9045A845__INCLUDED_)

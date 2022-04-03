@@ -4,16 +4,13 @@
 
 #ifdef __WORLDSERVER
 #include "user.h"
-#if __VER >= 12 // __PET_0519
 #include "dpsrvr.h"
 extern	CDPSrvr	g_DPSrvr;
 #include "definetext.h"
-#endif	// __PET_0519
 #endif	// __WORLDSERVER
 
 #include "xutil.h"
 
-#if __VER >= 9	// __PET_0410
 
 const	int		nDefaultLife	= 1;
 
@@ -662,9 +659,7 @@ BOOL CAIEgg::StateRage( const AIMSG & msg )
 }
 #endif	// __CLIENT
 
-#endif	// __PET_0410
 
-#if __VER >= 12 // __PET_0519
 // 알변환 일반적인 아이템 변환에 이용할 수 있도록 확장을 고려하여 만들었으나 아직 구체적이지 않다.
 // 비슷한 변환이 추가될 때, 나머지 작업을 하자
 CTransformStuff::CTransformStuff()
@@ -1003,7 +998,6 @@ CItemElem* CTransformItemProperty::GetItem( int nTransform )
 
 #endif	// __WORLDSERVER
 
-#endif	// __PET_0519
 
 #ifdef __PET_1024
 void CPet::SetName( const char* szName )

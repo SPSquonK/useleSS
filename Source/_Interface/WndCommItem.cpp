@@ -180,27 +180,19 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 				|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT2
 #endif	// __SM_ITEM_2ND_EX
 				|| pItem->dwID == II_SYS_SYS_SCR_SUPERSMELTING
-#if __VER >= 9 // __ULTIMATE
 				|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT3
-#endif // __ULTIMATE
-#if __VER >= 11 // __SYS_COLLECTING
 				|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT4
-#endif	// __SYS_COLLECTING
-#if __VER >= 14 // __EXT_ATTRIBUTE
 				|| pItem->dwID == II_SYS_SYS_SCR_SMELTING2
-#endif // __EXT_ATTRIBUTE
 			)
 			{
 				strTemp.Format( "%s", prj.GetText( TID_GAME_DEMOL_USE ) );
 				str += strTemp;
 			}
-#if __VER >= 8 // __CSC_VER8_5
 			else if( pItem->dwItemKind3 == IK3_ANGEL_BUFF )
 			{
 				strTemp.Format( "%s", prj.GetText( TID_GAME_TIP_ANGEL_PLAIN ) );
 				str += strTemp;
 			}
-#endif // __CSC_VER8_5
 #ifdef __SYS_TICKET
 			else if( pItem->dwItemKind3 == IK3_TICKET )
 			{
@@ -212,19 +204,8 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 					if( t > 0 )
 					{
 						CTimeSpan time( t );
-#if __VER >= 11 // __CHIPI_071210
 						str1.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes(), time.GetSeconds() );
-#else //__CHIPI_071210
-						if( t > 600 )
-							str1.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes(), time.GetSeconds() );
-						else
-							str1.Format( prj.GetText( TID_TOOLTIO_PERIODOFMIN ), 10 );
-#endif //__CHIPI_071210
 					}
-#if __VER < 11 // __CHIPI_071210
-					else
-						str1.Format( prj.GetText( TID_TOOLTIO_PERIODOFMIN ), 10 );
-#endif //__CHIPI_071210
 
 					str2	= str1 + prj.GetText( TID_TOOLTIP_PERIOD );
 					str		+= str2;
@@ -236,7 +217,6 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 			}
 #endif	// __SYS_TICKET
 
-#if __VER >= 9 // __CSC_VER9_1
 			else if( pItem->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET )
 			{
 				//검색해서 활성화 된 먹이 주머니를 찾는다.
@@ -272,19 +252,9 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 							strTemp.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	// 지속시간 : 
 							str += strTemp;
 						}
-#if __VER < 11 // __CHIPI_071210
-						else
-						{
-							strTemp.Format( prj.GetText(TID_TOOLTIO_PERIODOFMIN), 10 );
-							strTemp += prj.GetText(TID_TOOLTIP_PERIOD);
-							str += strTemp;							
-						}
-#endif //__CHIPI_071210
 					}
 				}
 			}
-#endif //__CSC_VER9_1
-#if __VER >= 11 // __SYS_COLLECTING
 			else if( pItem->dwItemKind2 == IK2_BUFF2 )
 			{
 			#ifdef __BUFF_1107
@@ -321,7 +291,6 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 				strTemp.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ts.GetDays()), ts.GetHours(), ts.GetMinutes(), ts.GetSeconds() );	// 지속시간 : 
 				str += strTemp;
 			}
-#endif
 			else
 			{
 				//TODO_미송님
@@ -445,11 +414,7 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 {
 #ifdef __BUFF_1107
 	ItemProp* pItem = NULL;
-#if __VER >= 14 // __BUFF_CRASH
 	multimap<DWORD, BUFFSKILL>::value_type* pp = NULL;
-#else // __BUFF_CRASH
-	multimap<DWORD, BUFFSKILL>::value_type* pp;
-#endif // __BUFF_CRASH
 	BOOL bExpRander[6];
 	BOOL IsOverlap;
 
@@ -549,21 +514,13 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 			continue;
 		if( pItem->dwItemKind3 == IK3_EGG )
 			continue;
-#if __VER >= 13 // __HOUSING
 		if( pItem->dwItemKind1 == IK1_HOUSING )
 			continue;
-#endif //__HOUSING
 
-#if __VER >= 14 // __BUFF_CRASH
 		if(pWndWorld->m_pBuffTexture[2].find(dwSkillID) != pWndWorld->m_pBuffTexture[2].end())
 			pp	= &( *( pWndWorld->m_pBuffTexture[2].find( dwSkillID ) ) );
-#else // __BUFF_CRASH
-		pp = &(*(pWndWorld->m_pBuffTexture[2].find(dwSkillID)));
-#endif // __BUFF_CRASH
-#if __VER >= 14 // __BUFF_CRASH
 		if(pp == NULL)
 			continue;
-#endif // __BUFF_CRASH
 		if( pp->second.m_pTexture == NULL )
 			continue;
 
@@ -587,9 +544,7 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 			|| pItem->dwID == II_SYS_SYS_SCR_SUPERSMELTING
 			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT3
 			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT4
-#if __VER >= 14 // __EXT_ATTRIBUTE
 			|| pItem->dwID == II_SYS_SYS_SCR_SMELTING2
-#endif // __EXT_ATTRIBUTE
 		)
 		{
 			string.Format( "%s", prj.GetText( TID_GAME_DEMOL_USE ) );
@@ -841,10 +796,8 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 		if( pItem->bCharged == FALSE )
 			continue;
 
-#if __VER >= 9 // __CSC_VER9_1
 		if( pItem->dwItemKind3 == IK3_EGG )
 			continue;
-#endif //__CSC_VER9_1
 		pp = &(*(pWndWorld->m_pBuffTexture[2].find(dwSkillID)));
 		if( pp->second.m_pTexture == NULL )
 			continue;
@@ -867,12 +820,8 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT2
 #endif	// __SM_ITEM_2ND_EX
 			|| pItem->dwID == II_SYS_SYS_SCR_SUPERSMELTING
-#if __VER >= 9 // __ULTIMATE
 			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT3
-#endif // __ULTIMATE
-#if __VER >= 11 // __SYS_COLLECTING
 			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT4
-#endif	// __SYS_COLLECTING
 		)
 		{
 			string.Format( "%s", prj.GetText( TID_GAME_DEMOL_USE ) );
@@ -903,12 +852,10 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 		}
 		else
 		{
-#if __VER >= 8 // __CSC_VER8_5
 			if( pItem->dwItemKind3 == IK3_ANGEL_BUFF )
 			{
 				string.Format( prj.GetText( TID_GAME_TIP_ANGEL_PLAIN ) );	
 			}
-#if __VER >= 11 // __SYS_COLLECTING
 			else
 			if( pItem->dwItemKind2 == IK2_BUFF2 )
 			{
@@ -926,7 +873,6 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 				str += strTemp;
 				string	= str;	
 			}
-#endif	// __SYS_COLLECTING
 #ifdef __SYS_TICKET
 			else
 			if( pItem->dwItemKind3 == IK3_TICKET )
@@ -939,19 +885,8 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 					if( t > 0 )
 					{
 						CTimeSpan time( t );
-#if __VER >= 11 // __CHIPI_071210
 						str.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes(), time.GetSeconds() );
-#else //__CHIPI_071210
-						if( t > 600 )
-							str.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes(), time.GetSeconds() );
-						else
-							str.Format( prj.GetText( TID_TOOLTIO_PERIODOFMIN ), 10 );
-#endif //__CHIPI_071210
 					}
-#if __VER < 11 // __CHIPI_071210
-					else
-						str.Format( prj.GetText( TID_TOOLTIO_PERIODOFMIN ), 10 );
-#endif //__CHIPI_071210
 					string	= str + prj.GetText( TID_TOOLTIP_PERIOD );
 				}
 				else
@@ -960,7 +895,6 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 				}
 			}
 #endif	// __SYS_TICKET
-#if __VER >= 9 // __CSC_VER9_1
 			else if( pItem->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET )
 			{
 				//검색해서 활성화 된 먹이 주머니를 찾는다.
@@ -991,19 +925,10 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 							CTimeSpan ct( t );
 							string.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );
 						}
-#if __VER < 11 // __CHIPI_071210
-						else
-						{
-							strTemp.Format( prj.GetText(TID_TOOLTIO_PERIODOFMIN), 10 );
-							string = strTemp + prj.GetText(TID_TOOLTIP_PERIOD);
-						}
-#endif //__CHIPI_071210
 					}
 				}
 			}
-#endif //__CSC_VER9_1
 			else
-#endif // __CSC_VER8_5
 			{
 				DWORD dwOddTime = pSkill->tmCount - (g_tmCurrent - pSkill->tmTime);
 				CTimeSpan ct( (dwOddTime / 1000 ) );		// 남은시간을 초단위로 변환해서 넘겨줌

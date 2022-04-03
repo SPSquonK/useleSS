@@ -76,9 +76,7 @@ BOOL CMover::OnMeleeSkill( int nType, int nCount )
 	int		nSkill = GetActParam( 0 );
 	OBJID	idTarget = GetActParam( 1 );
 	DWORD	dwLevel	= GetActParam( 3 );
-#if __VER >= 8 // __S8_PK
 	BOOL	bControl = GetActParam( 4 );
-#endif // __VER >= 8 // __S8_PK
 
 	ItemProp* pSkillProp;
 	AddSkillProp* pAddSkillProp;
@@ -125,22 +123,14 @@ BOOL CMover::OnMeleeSkill( int nType, int nCount )
 		if( pSkillProp->dwDmgShift != NULL_ID )
 			fDmgPower	= (int)pSkillProp->dwDmgShift * 0.2f;
 //		for( int nDmgCnt = 0; nDmgCnt < nMaxDmgCnt; nDmgCnt++ )
-#if __VER >= 8 // __S8_PK
 			OnAttackSFX( pFocusObj->GetId(), pAddSkillProp->dwSkillLvl, pSkillProp->dwID, 0, GetAngle(), fDmgPower, ( pSkillProp->dwSkillType == KT_SKILL? AF_MELEESKILL: AF_MAGICSKILL ), bControl );
-#else // __VER >= 8 // __S8_PK
-			OnAttackSFX( pFocusObj->GetId(), pAddSkillProp->dwSkillLvl, pSkillProp->dwID, 0, GetAngle(), fDmgPower, ( pSkillProp->dwSkillType == KT_SKILL? AF_MELEESKILL: AF_MAGICSKILL ) );
-#endif // __VER >= 8 // __S8_PK
 #endif	// __WORLDSERVER
 		nDamage = ShootSkill( pFocusObj, pSkillProp, pAddSkillProp );		// 서버에선 이부분은 실행안된다.
 	}
 	else
 	{
 		// 적용범위 처리. 내부에서 ApplySkill()을 호출.
-#if __VER >= 8 // __S8_PK
 		nDamage = DoApplySkill( pFocusObj, pSkillProp, pAddSkillProp, false, 0, FALSE, bControl );
-#else // __VER >= 8 // __S8_PK
-		nDamage = DoApplySkill( pFocusObj, pSkillProp, pAddSkillProp );
-#endif // __VER >= 8 // __S8_PK
 	}
 	TRACE( "OnMeleeSkill%s, ", pSkillProp->szName );
 
@@ -151,13 +141,8 @@ BOOL CMover::OnMeleeSkill( int nType, int nCount )
 		if( IsActiveMover() )
 #endif
 		{
-#if __VER >= 9	// __SKILL_0706
 			if( pAddSkillProp->dwCooldown != 0xFFFFFFFF )	// 쿨타임이 있는 스킬의 경우
 				SetCoolTime( pAddSkillProp, "OnMeleeSkill" );
-#else	// __SKILL_0706
-			if( pSkillProp->dwSkillReady != 0xffffffff )	// 쿨타임이 있는 스킬의 경우
-				SetCoolTime( pSkillProp, "OnMeleeSkill" );
-#endif	// __SKILL_0706
 		}
 	}
 	return TRUE;
@@ -211,9 +196,7 @@ BOOL	CMover::ApplyParam( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSk
 	int		nAdjParam, nChgParam;
 	int		nDestData[3];
 
-#if __VER >= 9	// __SKILL_0706
 	BOOL bPVP	= pSrc->GetType() == OT_MOVER && ( (CMover*)pSrc )->IsPlayer() && IsPlayer();
-#endif	// __SKILL_0706
 
 	for( i = 0; i < 2; i ++ )
 	{
@@ -222,11 +205,7 @@ BOOL	CMover::ApplyParam( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSk
 			dwDestParam = pAddSkillProp->dwDestParam[i];
 			dwSkillTime = pAddSkillProp->dwSkillTime;
 			dwPainTime = pAddSkillProp->dwPainTime;
-#if __VER >= 9	// __SKILL_0706
 			dwAbilityMin	= bPVP? pAddSkillProp->dwAbilityMinPVP: pAddSkillProp->dwAbilityMin;
-#else	// __SKILL_0706
-			dwAbilityMin	= pAddSkillProp->dwAbilityMin;
-#endif	// __SKILL_0706
 			nAdjParam	= pAddSkillProp->nAdjParamVal[i];
 			nChgParam	= (int)pAddSkillProp->dwChgParamVal[i];
 			nDestData[0] = pAddSkillProp->nDestData1[0];
@@ -418,9 +397,7 @@ BOOL	CMover::ApplyParam( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSk
 				if( pMoverProp )
 				{
 					if( pMoverProp->dwClass != RANK_MIDBOSS		// MIDBOSS만 아니면 다 걸림.
-#if __VER >= 12 // __SECRET_ROOM
 						&& pMoverProp->dwClass != RANK_SUPER	// 12차 부터는 SUPER도 안걸린다.
-#endif // __SECRET_ROOM
 						)		
 						pTarget->SetDestParam( dwDestParam, nAdjParam, nChgParam, bSend );
 				}
@@ -447,7 +424,6 @@ BOOL	CMover::GetSkillProp( ItemProp **ppSkillProp, AddSkillProp **ppAddSkillProp
 
 
 // 쿨타임 시작!
-#if __VER >= 9	// __SKILL_0706
 void	CMover::SetCoolTime( AddSkillProp* pAddSkillProp, LPCTSTR szCall )
 {
 	int nIdx	= GetSkillIdx( pAddSkillProp->dwName );		// 스킬리스트 인덱스를 찾음.
@@ -457,17 +433,6 @@ void	CMover::SetCoolTime( AddSkillProp* pAddSkillProp, LPCTSTR szCall )
 	else
 		m_tmReUseDelay[ nIdx ] = pAddSkillProp->dwCooldown + timeGetTime();		// 1/1000단위
 }
-#else	// __SKILL_0706
-void	CMover::SetCoolTime( ItemProp *pSkillProp, LPCTSTR szCall )
-{
-	int nIdx = GetSkillIdx( pSkillProp->dwID );		// 스킬리스트 인덱스를 찾음.
-	
-	if( nIdx < 0 || nIdx >= MAX_SKILL_JOB )
-		Error( "szCall SetCoolTime : %d %d스킬을 찾을 수 없음 %s", nIdx, pSkillProp->dwID, GetName() );
-	else
-		m_tmReUseDelay[ nIdx ] = pSkillProp->dwSkillReady + timeGetTime();	// 1/1000단위
-}
-#endif	// __SKILL_0706
 //
 //	마법 스킬의 타점때 호출.
 //  nCount 워터볼의 경우 여러번 호출이 되기때문에 nCount==0 의 경우만 경험치가 올라간다.
@@ -480,9 +445,7 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 	int			nSkill = GetActParam(0);
 	OBJID		idTarget = GetActParam(1);
 	DWORD		dwLevel = GetActParam( 3 );
-#if __VER >= 8 // __S8_PK
 	BOOL	bControl = GetActParam( 4 );
-#endif // __VER >= 8 // __S8_PK
 
 	ItemProp*	pSkillProp = NULL;
 	AddSkillProp* pAddSkillProp = NULL;
@@ -517,22 +480,14 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 		if( pSkillProp->dwDmgShift != NULL_ID )
 			fDmgPower	= (int)pSkillProp->dwDmgShift * 0.2f;
 //		for( int nDmgCnt = 0; nDmgCnt < nMaxDmgCnt; nDmgCnt++ )
-#if __VER >= 8 // __S8_PK
 			OnAttackSFX( pFocusObj->GetId(), pAddSkillProp->dwSkillLvl, pSkillProp->dwID, 0, GetAngle(), fDmgPower, ( pSkillProp->dwSkillType == KT_SKILL? AF_MELEESKILL: AF_MAGICSKILL ), bControl );
-#else // __VER >= 8 // __S8_PK
-			OnAttackSFX( pFocusObj->GetId(), pAddSkillProp->dwSkillLvl, pSkillProp->dwID, 0, GetAngle(), fDmgPower, ( pSkillProp->dwSkillType == KT_SKILL? AF_MELEESKILL: AF_MAGICSKILL ) );
-#endif // __VER >= 8 // __S8_PK
 #endif	// __WORLDSERVER
 		bSuccess = ShootSkill( pFocusObj, pSkillProp, pAddSkillProp );		// 서버에선 이부분은 실행안된다.
 	}
 	else
 	{
 		// 적용범위 처리. 내부에서 ApplySkill()을 호출.
-#if __VER >= 8 // __S8_PK
 		int nDamage = DoApplySkill( pFocusObj, pSkillProp, pAddSkillProp, false, 0, FALSE, bControl );
-#else // __VER >= 8 // __S8_PK
-		int nDamage = DoApplySkill( pFocusObj, pSkillProp, pAddSkillProp );
-#endif // __VER >= 8 // __S8_PK
 		if( nDamage == 0 )
 			return FALSE;
 		bSuccess = (BOOL)nDamage;
@@ -571,9 +526,7 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 		// 발사한 순간에 마나등을 깍는다.
 		int nReqMp = GetReqMp( pAddSkillProp->nReqMp );
 
-		#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if(nReqMp != 9999999)
-		#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		{
 			if( pAddSkillProp->nSkillCount > 1 )
 				nReqMp /= pAddSkillProp->nSkillCount;
@@ -582,7 +535,6 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 				IncFatiguePoint( -GetReqFp( pAddSkillProp->nReqFp ) );
 		}
 		
-		#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if( pSkillProp->dwID == SI_RIG_HERO_RETURN )
 			{
 				REPLACE_TYPE type = REPLACE_NORMAL;
@@ -594,14 +546,10 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 
 				if( IsChaotic() )
 				{
-		#if __VER >= 8 // __S8_PK
 					if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
 						pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
 					if( NULL == pRgnElem )	// Find near revival pos
 						pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
-		#else // __VER >= 8 // __S8_PK
-					pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
-		#endif // __VER >= 8 // __S8_PK
 				}
 				else
 
@@ -629,7 +577,6 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 				pFocusObj->ClearDestObj();
 //				pFocusObj->SetPosChanged( TRUE );
 			}
-		#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 
 	#endif // WORLDSERVER
@@ -638,13 +585,8 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 	#ifdef __CLIENT
 		if( IsActiveMover() && nCount == 0 )		// 연속타점일경우 첫번째 타점에만 적용
 	#endif // __CLIENT
-#if __VER >= 9	// __SKILL_0706
 		if( pAddSkillProp->dwCooldown != 0xFFFFFFFF )
 			SetCoolTime( pAddSkillProp, "OnMagicSkill" );
-#else	// __SKILL_0706
-		if( pSkillProp->dwSkillReady != 0xffffffff )	// 쿨타임이 있는 스킬의 경우
-			SetCoolTime( pSkillProp, "OnMagicSkill" );
-#endif	// __SKILL_0706
 	} // bSuccess
 
 #if defined(__CLIENT)
@@ -674,9 +616,7 @@ BOOL	CMover::OnAttackRange()
 	int		idTarget = GetActParam( 0 );
 	DWORD	dwItemID = GetActParam( 1 );		// 사용할 아이템 아이디 (player이면 충전레벨)
 	int		idSfxHit = GetActParam( 2 );		// 몬스터가 사용한것이면 여기에 서버로부터 받은값이 들어있다.
-#if __VER >= 8 // __S8_PK
 	BOOL	bControl = FALSE;
-#endif // __VER >= 8 // __S8_PK
 
 	CMover* pHit = prj.GetMover( idTarget );	// 타겟의 포인터를 얻어냄.
 	if( IsInvalidObj(pHit) )	
@@ -697,10 +637,8 @@ BOOL	CMover::OnAttackRange()
 		return FALSE;
 
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __MONSTER_SKILL
 	if( IsNPC() )
 		CMonsterSkill::GetInstance()->ApplySkill( this, pHit, ATK_RANGE );
-#endif // __MONSTER_SKILL
 #endif // __WORLDSERVER
 
 	DWORD dwSfxObj = pItemProp->dwSfxObj2;
@@ -741,11 +679,7 @@ BOOL	CMover::OnAttackRange()
 		dwAtkFlags |= AF_RANGE;
 
 #ifdef __WORLDSERVER
-#if __VER >= 8 // __S8_PK
 	OnAttackSFX( pHit->GetId(), ( IsPlayer()? dwItemID: 0 ), NULL_ID, 0, 0, 0, dwAtkFlags, bControl );
-#else // __VER >= 8 // __S8_PK
-	OnAttackSFX( pHit->GetId(), ( IsPlayer()? dwItemID: 0 ), NULL_ID, 0, 0, 0, dwAtkFlags );
-#endif // __VER >= 8 // __S8_PK
 #endif	// __WORLDSERVER
 
 #ifdef __CLIENT
@@ -774,9 +708,7 @@ BOOL	CMover::OnAttackMagic()
 {
 	int		idTarget = GetActParam( 0 );
 	int		nMagicPower = GetActParam( 1 );
-#if __VER >= 8 // __S8_PK
 	BOOL	bControl = GetActParam( 4 );
-#endif // __VER >= 8 // __S8_PK
 
 	CMover* pHit = prj.GetMover( idTarget );	// 타겟의 포인터를 얻어냄.
 
@@ -784,11 +716,7 @@ BOOL	CMover::OnAttackMagic()
 		return FALSE;		// 클릭했을당시는 있었으나 발사되기전에 삭제되었다.
 
 #ifdef __WORLDSERVER
-#if __VER >= 8 // __S8_PK
 	OnAttackSFX( pHit->GetId(), nMagicPower, NULL_ID, 0, 0, 0, AF_MAGIC, bControl );
-#else // __VER >= 8 // __S8_PK
-	OnAttackSFX( pHit->GetId(), nMagicPower, NULL_ID, 0, 0, 0, AF_MAGIC );
-#endif // __VER >= 8 // __S8_PK
 #else	// __WORLDSERVER
 	DWORD dwWeaponId;
 
@@ -804,16 +732,6 @@ BOOL	CMover::OnAttackMagic()
 		if( dwWeaponId == NULL )	return FALSE;
 	}
 
-#if __VER < 11 // __REMOVE_ENDURANCE
-	if( IsActiveMover() )
-	{
-		CItemElem* pWeapon = GetWeaponItem();
-		ItemProp* pItemProp		= pWeapon->GetProp();
-		if( pItemProp )
-			if( ( ( pWeapon->m_nHitPoint * 100 ) / pItemProp->dwEndurance ) == 0 )
-				g_WndMng.PutString( prj.GetText( TID_GAME_WASTEENDURANCE ), NULL, prj.GetTextColor( TID_GAME_WASTEENDURANCE ) );
-	}
-#endif // __REMOVE_ENDURANCE
 
 	D3DXVECTOR3 vPosDest = pHit->GetPos(); 
 	// 발사 목표지점은 상대의 중앙.
@@ -1266,7 +1184,6 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 	}
 }
 
-#if __VER >= 10 // __Y_DRAGON_FIRE
 void	CMover::OnAttackMelee_Meteonyker( DWORD dwState, CMover *pHitObj )
 {
 	int		nItemID = GetActParam( 1 );	// 사용할 아이템 아이디
@@ -1351,7 +1268,6 @@ void	CMover::OnAttackMelee_Meteonyker( DWORD dwState, CMover *pHitObj )
 		break;
 	}
 }
-#endif //__Y_DRAGON_FIRE
 
 void	CMover::OnAttackMelee_Bear( DWORD dwState, CMover *pHitObj )
 {
@@ -1625,7 +1541,6 @@ BOOL	CMover::OnAttackMelee( DWORD dwState, CMover *pHitObj )
 		return TRUE;
 	}	
 
-#if __VER >= 10 // __Y_DRAGON_FIRE
 	if( m_dwIndex == MI_DU_METEONYKER || m_dwIndex == MI_DU_METEONYKER2 || m_dwIndex == MI_DU_METEONYKER3 ||
 		m_dwIndex == MI_DU_METEONYKER4 )
 	{
@@ -1633,16 +1548,13 @@ BOOL	CMover::OnAttackMelee( DWORD dwState, CMover *pHitObj )
 		m_pActMover->m_nMotionHitCount++;		
 		return TRUE;
 	}
-#endif //__Y_DRAGON_FIRE
 
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __MONSTER_SKILL
 	if( IsNPC() && CMonsterSkill::GetInstance()->ApplySkill( this, pHitObj, ATK_MELEE ) )
 	{
 		//m_pActMover->m_nMotionHitCount++;
 		return TRUE;
 	}
-#endif // __MONSTER_SKILL
 #endif // __WORLDSERVER
 
 	BOOL bSuccess = FALSE;
@@ -1782,7 +1694,6 @@ BOOL	CMover::OnAttackMeleeContinue( DWORD dwState )
 			break;
 		}
 	}
-#if __VER >= 10 // __Y_DRAGON_FIRE
 	else
 	if( m_dwIndex == MI_DU_METEONYKER || m_dwIndex == MI_DU_METEONYKER2 || m_dwIndex == MI_DU_METEONYKER3 ||
 		m_dwIndex == MI_DU_METEONYKER4 )
@@ -1859,7 +1770,6 @@ BOOL	CMover::OnAttackMeleeContinue( DWORD dwState )
 			}
 		}
 	}
-#endif //__Y_DRAGON_FIRE
 
 	return TRUE;
 }
@@ -1914,9 +1824,7 @@ void	CMover::OnActDrop()
 	if( FALSE == IsPlayer() )
 	{
 		if( m_nCorr < 0
-#if __VER >= 9	//__AI_0509
 			&& GetSpeedFactor() < 1.9F
-#endif	// __AI_0509
 #ifdef __JEFF_11
 			&& m_dwAIInterface != AII_PET
 #endif	//	__JEFF_11
@@ -1962,9 +1870,7 @@ void	CMover::OnActDrop()
 	}
 	else
 	{
-#if __VER >= 9	//__AI_0509
 		if( IsPlayer() || GetSpeedFactor() < 1.9F )
-#endif	// __AI_0509
 		{
 			if( FALSE == IsEmptyDest() && FALSE == m_fWaitQueryGetPos )
 			{
@@ -1982,9 +1888,7 @@ void	CMover::OnActCollision()
 	if( FALSE == IsPlayer() )
 	{
 		if( m_nCorr < 0 
-#if __VER >= 9	//__AI_0509
 			&& GetSpeedFactor() < 1.9F && m_dwAIInterface != AII_PET
-#endif	// __AI_0509
 			)
 		{
 
@@ -2037,9 +1941,7 @@ void	CMover::OnActCollision()
 	}
 	else if( FALSE == IsActiveMover() )
 	{
-#if __VER >= 9	//__AI_0509
 		if( IsPlayer() || GetSpeedFactor() < 1.9F )
-#endif	// __AI_0509
 		{
 			if( FALSE == IsEmptyDest() && FALSE == m_fWaitQueryGetPos )
 			{
@@ -2230,11 +2132,7 @@ BOOL CMover::IsLoot( CItem *pItem, BOOL bPet )
 	}
 	else
 #endif // __EVENT_MONSTER
-#if __VER >= 9 // __S_9_ADD
 	if( (dwTime - pItem->m_dwDropTime) >= SEC(7) )	// 7초가 지난건 아무나 줏을 수 있다.
-#else // __S_9_ADD
-	if( (dwTime - pItem->m_dwDropTime) >= SEC(40) )	// 40초가 지난건 아무나 줏을 수 있다.
-#endif // __S_9_ADD
 		bTake = TRUE;
 
 	// 펫은 리스폰된 아이템을 집을수 없음.

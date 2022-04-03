@@ -22,7 +22,6 @@ CWndDialog::CWndDialog()
 	m_nWordButtonNum = 0;
 	m_nKeyButtonNum = 0;
 	m_nContextButtonNum = 0;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_nNewQuestListNumber = 0;
 	m_nCurrentQuestListNumber = 0;
 	m_nSelectKeyButton = -1;
@@ -30,7 +29,6 @@ CWndDialog::CWndDialog()
 	m_pExpectedQuestListIconTexture = NULL;
 	m_pCurrentQuestListIconTexture = NULL;
 	m_pCompleteQuestListIconTexture = NULL;
-#endif // __IMPROVE_QUEST_INTERFACE
 	m_bWordButtonEnable = FALSE;
 	m_dwQuest = 0;
 	ZeroMemory( m_apWndAnswer, sizeof( m_apWndAnswer ) );
@@ -44,11 +42,7 @@ CWndDialog::~CWndDialog()
 	}
 	for( int i = 0; i < 6; i++ )
 		SAFE_DELETE( m_apWndAnswer[ i ] )
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetWndBase( APP_QUEST_EX_LIST );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetWndBase( APP_QUEST );
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( pWndQuest ) pWndQuest->Update();
 } 
 BOOL CWndDialog::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
@@ -70,16 +64,12 @@ void CWndDialog::OnDraw( C2DRender* p2DRender )
 	POINT pt = lpWndCtrl->rect.TopLeft();
 
 	int i;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( m_bSay == TRUE )
 		p2DRender->TextOut_EditString( pt.x, pt.y, m_string, 0, 0, 6 );
 	else if( strcmp( m_aKeyButton[ m_nSelectKeyButton ].szWord, prj.GetText( TID_GAME_NEW_QUEST ) ) == 0 && m_nNewQuestListNumber == 0 )
 		p2DRender->TextOut( pt.x + 10, pt.y + 10, prj.GetText( TID_GAME_EMPTY_NEW_QUEST ), D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
 	else if( strcmp( m_aKeyButton[ m_nSelectKeyButton ].szWord, prj.GetText( TID_GAME_CURRENT_QUEST ) ) == 0 && m_nCurrentQuestListNumber == 0 )
 		p2DRender->TextOut( pt.x + 10, pt.y + 10, prj.GetText( TID_GAME_EMPTY_CURRENT_QUEST ), D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
-#else // __IMPROVE_QUEST_INTERFACE
-	p2DRender->TextOut_EditString( pt.x, pt.y, m_string, 0, 0, 6 );//f000000 );
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( m_bWordButtonEnable )
 	{
 		for( i = 0; i < m_nWordButtonNum; i++ )
@@ -108,11 +98,7 @@ void CWndDialog::OnDraw( C2DRender* p2DRender )
 	}
 	for( i = 0; i < m_nKeyButtonNum; i++ )
 	{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		DWORD dwColor = ( i == m_nSelectKeyButton ) ? D3DCOLOR_ARGB( 255, 128, 0, 255 ) : 0xff505050;
-#else // __IMPROVE_QUEST_INTERFACE
-		DWORD dwColor = 0xff505050;
-#endif // __IMPROVE_QUEST_INTERFACE
 		WORDBUTTON* pKeyButton = &m_aKeyButton[ i ];
 		if( pKeyButton->bStatus )
 		{
@@ -125,12 +111,10 @@ void CWndDialog::OnDraw( C2DRender* p2DRender )
 		p2DRender->TextOut( pKeyButton->rect.left, pKeyButton->rect.top,  pKeyButton->szWord, dwColor );
 		p2DRender->TextOut( pKeyButton->rect.left + 1, pKeyButton->rect.top,  pKeyButton->szWord, dwColor );
 	}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( m_WndNewQuestListBox.IsVisible() == TRUE )
 		RenderNewQuestListIcon( p2DRender );
 	else if( m_WndCurrentQuestListBox.IsVisible() == TRUE )
 		RenderCurrentQuestListIcon( p2DRender );
-#endif // __IMPROVE_QUEST_INTERFACE
 	for( i = 0; i < m_nContextButtonNum; i++ )
 	{
 		DWORD dwColor = 0xff101010;
@@ -243,7 +227,6 @@ void CWndDialog::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndGroupBox* pWndGroupBox = ( CWndGroupBox* )GetDlgItem( WIDC_GROUP_BOX_TITLE );
 	if( pWndGroupBox )
 	{
@@ -275,7 +258,6 @@ void CWndDialog::OnInitialUpdate()
 	if( m_pCurrentQuestListIconTexture )
 		m_WndCurrentQuestListBox.SetLeftMargin( m_pCurrentQuestListIconTexture->m_size.cx );
 	m_WndCurrentQuestListBox.SetVisible( FALSE );
-#endif // __IMPROVE_QUEST_INTERFACEf
 	
 	CWndBase* pWndBase = (CWndBase*)g_WndMng.GetApplet( APP_INVENTORY );
 
@@ -319,22 +301,14 @@ void CWndDialog::OnInitialUpdate()
 	CPoint point( x, 10 );
 	Move( point );
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetWndBase( APP_QUEST_EX_LIST );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetWndBase( APP_QUEST );
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( pWndQuest ) pWndQuest->Update();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndDialog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DIALOG_EX, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
-#else // __IMPROVE_QUEST_INTERFACE
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DIALOG, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
-#endif // __IMPROVE_QUEST_INTERFACE
 } 
 
 BOOL CWndDialog::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -368,7 +342,6 @@ void CWndDialog::OnLButtonUp( UINT nFlags, CPoint point )
 	{
 		if( m_aKeyButton[ i ].rect.PtInRect( point ) )
 		{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			m_nSelectKeyButton = i;
 
 			CWndGroupBox* pWndGroupBox = ( CWndGroupBox* )GetDlgItem( WIDC_GROUP_BOX_TITLE );
@@ -398,12 +371,6 @@ void CWndDialog::OnLButtonUp( UINT nFlags, CPoint point )
 			}
 			MakeKeyButton();
 			UpdateButtonEnable();
-#else // __IMPROVE_QUEST_INTERFACE
-			BeginText();
-			RunScript( m_aKeyButton[i].szKey, m_aKeyButton[i].dwParam, m_aKeyButton[i].dwParam2 );
-			MakeKeyButton();
-			UpdateButtonEnable();
-#endif // __IMPROVE_QUEST_INTERFACE
 		}
 	}
 	for( int i = 0; i < m_nContextButtonNum; i++ )
@@ -709,12 +676,10 @@ void CWndDialog::AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam,
 }
 void CWndDialog::RemoveAllKeyButton()
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_WndNewQuestListBox.ResetContent();
 	m_nNewQuestListNumber = 0;
 	m_WndCurrentQuestListBox.ResetContent();
 	m_nCurrentQuestListNumber = 0;
-#endif // __IMPROVE_QUEST_INTERFACE
 	m_nKeyButtonNum = 0;
 	EndSay();
 }
@@ -758,33 +723,21 @@ void CWndDialog::MakeKeyButton()
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM2 );
 	CRect rectClient = GetClientRect();
 	int x = 0, y = 0;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	BOOL bQuestButtonLinefeedSwitch = FALSE;
-#endif // __IMPROVE_QUEST_INTERFACE
 	for( int i = 0; i < m_nKeyButtonNum; i++ )
 	{
 		WORDBUTTON* pWndButton = &m_aKeyButton[ i ];
 
 		CSize size = m_pFont->GetTextExtent( pWndButton->szWord );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		size.cx += 16;
-#else // __IMPROVE_QUEST_INTERFACE
-		size.cx += 20;//10 * 6;
-#endif // __IMPROVE_QUEST_INTERFACE
 		//size.cy += 4;
 		pWndButton->bStatus = FALSE;
 		
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		pWndButton->rect = CRect( lpWndCtrl->rect.left + x, lpWndCtrl->rect.top + y * dwMaxHeight, 
 			lpWndCtrl->rect.left + x + size.cx, lpWndCtrl->rect.top + y * dwMaxHeight + size.cy );
-#else // __IMPROVE_QUEST_INTERFACE
-		pWndButton->rect = CRect( lpWndCtrl->rect.left + x, lpWndCtrl->rect.top + y * dwMaxHeight, 
-			lpWndCtrl->rect.left + x + size.cx, lpWndCtrl->rect.top + y * size.cy + dwMaxHeight );
-#endif // __IMPROVE_QUEST_INTERFACE
 		if( pWndButton->rect.right > lpWndCtrl->rect.right )
 		{
 			x = 0, y++;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			pWndButton->rect = CRect( lpWndCtrl->rect.left + x * size.cx, lpWndCtrl->rect.top + y * dwMaxHeight, 
 				lpWndCtrl->rect.left + ( x * size.cx ) + size.cx, lpWndCtrl->rect.top + y * dwMaxHeight + size.cy );
 		}
@@ -795,10 +748,6 @@ void CWndDialog::MakeKeyButton()
 			pWndButton->rect = CRect( lpWndCtrl->rect.left + x * size.cx, lpWndCtrl->rect.top + y * dwMaxHeight, 
 				lpWndCtrl->rect.left + ( x * size.cx ) + size.cx, lpWndCtrl->rect.top + y * dwMaxHeight + size.cy );
 			bQuestButtonLinefeedSwitch = TRUE;
-#else // __IMPROVE_QUEST_INTERFACE
-			pWndButton->rect = CRect( lpWndCtrl->rect.left + x * size.cx, lpWndCtrl->rect.top + y * dwMaxHeight, 
-				lpWndCtrl->rect.left + x * size.cx + size.cx, lpWndCtrl->rect.top + y * size.cy + dwMaxHeight );
-#endif // __IMPROVE_QUEST_INTERFACE
 		}				
 		x += size.cx;
 	}
@@ -855,11 +804,7 @@ void CWndDialog::MakeAnswerButton()
 		for( int i = 0; i < m_nWordButtonNum; i++ )
 		{
 			WORDBUTTON* pWordButton = &m_aWordButton[ i ];
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			rect = CRect( x, lpWndCtrl->rect.bottom - 20, x + 70, lpWndCtrl->rect.bottom + 10 );
-#else // __IMPROVE_QUEST_INTERFACE
-			rect = CRect( x, lpWndCtrl->rect.bottom - 10, x + 70, lpWndCtrl->rect.bottom + 10 );
-#endif // __IMPROVE_QUEST_INTERFACE
 			if( strcmp( pWordButton->szWord, "__YES__" ) == 0 )
 			{
 				nWndId =  WIDC_YES;
@@ -942,7 +887,6 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			UpdateButtonEnable();
 		}
 		break;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	case WIDC_CUSTOM1:
 		{
 			if( m_WndNewQuestListBox.IsVisible() == TRUE && m_WndCurrentQuestListBox.IsVisible() == FALSE )
@@ -984,12 +928,10 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 			break;
 		}
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWndDialog::AddNewQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest )
 {
 	MakeQuestKeyButton( prj.GetText( TID_GAME_NEW_QUEST ) );
@@ -1078,4 +1020,3 @@ void CWndDialog::AddQuestList( CWndListBox& pWndListBox, int& nQuestListNumber, 
 	pWndListBox.SetItemData2( nQuestListNumber, dwQuest );
 	++nQuestListNumber;
 }
-#endif // __IMPROVE_QUEST_INTERFACE

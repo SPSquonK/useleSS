@@ -1,7 +1,6 @@
 #ifndef __WNDBAGEX__H
 #define __WNDBAGEX__H
 
-#if __VER >= 11 // __SYS_POCKET
 class CWndBagEx : public CWndNeuz 
 { 
 public: 
@@ -30,5 +29,4 @@ public:
 
 	void	InitItem( void );
 }; 
-#endif
 #endif

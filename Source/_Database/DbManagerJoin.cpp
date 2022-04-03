@@ -97,12 +97,8 @@ void CDbManager::SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dw
 #ifdef __EVENTLUA_COUPON
 	ar << pMover->m_nCoupon;
 #endif // __EVENTLUA_COUPON
-#if __VER >= 14 // __PCBANG
 	ar << pMover->m_dwPCBangClass;
-#endif // __PCBANG
-#if __VER >= 15 // __GUILD_HOUSE
 	ar << pMover->m_nRestPoint << static_cast<time_t>( pMover->m_tLogOut ? time_null() - pMover->m_tLogOut : 0 );
-#endif // __GUILD_HOUSE
 	SEND( ar, CDPTrans::GetInstance(), lpDBOP->dpid );
 	
 	char lpOutputString[128]	= { 0, };
@@ -144,10 +140,8 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 #ifdef __BILLING0712
 	arRead >> dwBillingClass;
 #endif	// __BILLING0712
-#if __VER >= 14 // __PCBANG
 	DWORD dwPCBangClass;
 	arRead >> dwPCBangClass;
-#endif // __PCBANG
 	char lpOutputString[128]	= { 0, };
 	sprintf( lpOutputString, "DATABASESERVER.EXE\t// JOIN_0\t// %d\n", lpDBOP->dpid );
 	OutputDebugString( lpOutputString );
@@ -179,9 +173,7 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	// 임시 변수에 쿼리 결과를 저장한다
 	CMover	mover;
 	mover.m_nSlot	= nSlot;
-#if __VER >= 14 // __PCBANG
 	mover.m_dwPCBangClass = dwPCBangClass;
-#endif // __PCBANG
 	mover.m_dwIndex	= (DWORD)qry->GetInt( "m_dwIndex" );
 	mover.InitProp();
 	mover.m_idPlayer	= (u_long)qry->GetInt( "m_idPlayer" );
@@ -270,15 +262,11 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	mover.SetLayer( qry->GetInt( "m_nLayer" ) );
 #endif	// __LAYER_1015
 
-#if __VER >= 15 // __CAMPUS
 	mover.SetCampusPoint( qry->GetInt( "m_nCampusPoint" ) );
 	mover.SetCampusId( qry->GetInt( "idCampus" ) );
-#endif // __CAMPUS
 
-#if __VER >= 15 // __GUILD_HOUSE
 	mover.m_nRestPoint = qry->GetInt( "m_nRestPoint" );
 	mover.m_tLogOut = time_null() - qry->GetInt( "m_LogOutTime" );
-#endif // __GUILD_HOUSE
 
 	if( !qry->MoreResults() )
 	{
@@ -299,7 +287,6 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 		// mirchang_100416
 	}
 
-#if __VER >= 11 // __SYS_POCKET
 	if( qry->MoreResults() )
 	{
 		while( qry->Fetch() )
@@ -313,7 +300,6 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 			// mirchang_100416
 		}
 	}
-#endif	// __SYS_POCKET
 
 	GetMyPartyName( qry, lpDBOP, mover.m_idPlayer, szPartyName );
 	int nTags = SelectTag( qry, lpDBOP, mover.m_idPlayer, tags );
@@ -323,9 +309,7 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	GetMessengerFriend( &mover, qry, lpDBOP );
 #endif	// __RT_1025
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	GetHonor( &mover, qry, lpDBOP );
-#endif	// __HONORABLE_TITLE			// 달인
 
 	if( !GetSkill( &mover, qry, lpDBOP ) )
 	{
@@ -355,14 +339,12 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	
 	CMover* pMover	= pCache->pMover[nSlot];
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	if( memcmp( pCache->m_idPlayerBank, mover.m_idPlayerBank, sizeof(u_long) * 3 ) )
 	{
 		bRefresh = TRUE;
 	}
 	if( dwPlayTime == 0 || pMover->m_idPlayer != mover.m_idPlayer )	
 		bRefresh = TRUE;
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 
 	// 처음 접속하는 계정이거나 새로고침이 설정되어 있는

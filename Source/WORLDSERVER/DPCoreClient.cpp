@@ -8,9 +8,7 @@
 #include "ServerDesc.h"
 #include "WorldMng.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 #include "eveschool.h"
 extern	CGuildCombat	g_GuildCombatMng;
@@ -69,12 +67,6 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_REMOVEPARTYMEMBER, &CDPCoreClient::OnRemovePartyMember );
 	ON_MSG( PACKETTYPE_ADDPLAYERPARTY, &CDPCoreClient::OnAddPlayerParty );
 	ON_MSG( PACKETTYPE_REMOVEPLAYERPARTY, &CDPCoreClient::OnRemovePlayerParty );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	ON_MSG( PACKETTYPE_MEMBERLEVEL, &CDPCoreClient::OnPartyMemberLevel );
-	ON_MSG( PACKETTYPE_MEMBERJOB, &CDPCoreClient::OnPartyMemberJob );
-	ON_MSG( PACKETTYPE_CHANGEGUILDJOBLEVEL, &CDPCoreClient::OnChangeGuildJobLevel );
-	ON_MSG( PACKETTYPE_CHANGEJOB, &CDPCoreClient::OnFriendChangeJob );
-#endif	// __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_GUILD_MEMBER_LEVEL, &CDPCoreClient::OnGuildMemberLv );
 	ON_MSG( PACKETTYPE_SETPARTYEXP, &CDPCoreClient::OnSetPartyExp );
 	ON_MSG( PACKETTYPE_REMOVEPARTYPOINT, &CDPCoreClient::OnRemovePartyPoint );
@@ -151,13 +143,11 @@ CDPCoreClient::CDPCoreClient()
 
 	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCoreClient::OnDestroyPlayer );
     //////////////////////////////////////////////////
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_ALLINFO, &CDPCoreClient::OnInstanceDungeonAllInfo );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_CREATE, &CDPCoreClient::OnInstanceDungeonCreate );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_DESTROY, &CDPCoreClient::OnInstanceDungeonDestroy );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_SETCOOLTIME, &CDPCoreClient::OnInstanceDungeonSetCoolTimeInfo );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_DELETECOOLTIME, &CDPCoreClient::OnInstanceDungeonDeleteCoolTimeInfo );
-#endif // __INSTANCE_DUNGEON
 	
 	m_bAlive	= TRUE;
 	m_hWait		= WSACreateEvent();
@@ -287,21 +277,6 @@ void CDPCoreClient::SendEventRealItem( u_long uIdPlayer, int nRealItemIndex, int
 	PASS( ar );
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreClient::SendPartyMemberLevel( CUser* pUser )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_MEMBERLEVEL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << pUser->m_idparty << pUser->m_idPlayer << pUser->GetLevel();
-	PASS( ar );
-}
-
-void CDPCoreClient::SendPartyMemberJob( CUser* pUser )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_MEMBERJOB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << pUser->m_idparty << pUser->m_idPlayer << pUser->GetJob();
-	PASS( ar );
-}
-#endif	// SYS_PLAYER_DATA
 
 void CDPCoreClient::SendPartyLevel( CUser* pUser, DWORD dwLevel, DWORD dwPoint, DWORD dwExp )
 {
@@ -309,7 +284,6 @@ void CDPCoreClient::SendPartyLevel( CUser* pUser, DWORD dwLevel, DWORD dwPoint, 
 	ar << pUser->m_idparty << pUser->m_idPlayer << dwLevel << dwPoint << dwExp;	
 	PASS( ar );
 }
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 void CDPCoreClient::SendAddPartyExp( u_long uPartyId, int nMonLv, BOOL bSuperLeader , BOOL bLeaderSMExpUp )
 {
 	//극단에 속해있으면 포인트를 올려줌( core에서는 포인터만 가지고 있고 월드에서는 포인터를 이용하여~ 극단레벨을 구함)
@@ -317,15 +291,6 @@ void CDPCoreClient::SendAddPartyExp( u_long uPartyId, int nMonLv, BOOL bSuperLea
 	ar << uPartyId << nMonLv << bSuperLeader << bLeaderSMExpUp;
 	PASS( ar );
 }
-#else // //12차 극단유료아이템
-void CDPCoreClient::SendAddPartyExp( u_long uPartyId, int nMonLv, BOOL bSuperLeader )
-{
-	//극단에 속해있으면 포인트를 올려줌( core에서는 포인터만 가지고 있고 월드에서는 포인터를 이용하여~ 극단레벨을 구함)
-	BEFORESENDDUAL( ar, PACKETTYPE_ADDPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uPartyId << nMonLv << bSuperLeader;
-	PASS( ar );
-}
-#endif // //12차 극단유료아이템
 
 void CDPCoreClient::SendRemovePartyPoint( u_long uPartyId, int nRemovePoint )
 {
@@ -338,14 +303,6 @@ void CDPCoreClient::SendRemovePartyPoint( u_long uPartyId, int nRemovePoint )
 	}
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreClient::SendFriendChangeJob( CUser* pUser )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CHANGEJOB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << pUser->m_idPlayer << pUser->GetJob();
-	PASS( ar );
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPCoreClient::SendGameRate( FLOAT fRate, BYTE nFlag )
 {
@@ -370,14 +327,6 @@ void CDPCoreClient::SendSetMonsterRespawn( u_long uidPlayer, DWORD dwMonsterID, 
 	PASS( ar );	
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreClient::SendGuildChangeJobLevel( CUser * pUser )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CHANGEGUILDJOBLEVEL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << pUser->m_idGuild << pUser->m_idPlayer << pUser->GetJob() << pUser->GetLevel();
-	PASS( ar );
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPCoreClient::SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pItemElem, BYTE p_Mode )
 {
@@ -590,7 +539,6 @@ void CDPCoreClient::SendPartyChat( CUser* pUser, const CHAR* lpString )
 	ar.WriteString( lpString );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 void CDPCoreClient::SendUserPartySkill( u_long uidPlayer, int nMode, DWORD dwSkillTime, int nRemovePoint ,int nCachMode )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_PARTYSKILLUSE, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -601,17 +549,6 @@ void CDPCoreClient::SendUserPartySkill( u_long uidPlayer, int nMode, DWORD dwSki
 	ar << nCachMode;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#else	//12차 극단유료아이템
-void CDPCoreClient::SendUserPartySkill( u_long uidPlayer, int nMode, DWORD dwSkillTime, int nRemovePoint )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_PARTYSKILLUSE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uidPlayer;
-	ar << nMode;
-	ar << dwSkillTime;
-	ar << nRemovePoint;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-#endif // //12차 극단유료아이템
 void CDPCoreClient::SendGMSay( u_long idPlayer, DWORD dwWorldID, const CHAR* lpString )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_GMSAY, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -756,11 +693,7 @@ void CDPCoreClient::OnShout( CAr & ar, DPID, DPID, OBJID )
 	ar >> idPlayer;
 	ar.ReadString( lpString, 1024 );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	const char*	lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer );
-#else	// __SYS_PLAYER_DATA
-	LPCSTR lpszPlayer	= prj.GetPlayerString( idPlayer );
-#endif	// __SYS_PLAYER_DATA
 	if( lpszPlayer )
 	{
 		CAr ar1;
@@ -768,9 +701,7 @@ void CDPCoreClient::OnShout( CAr & ar, DPID, DPID, OBJID )
 		ar1 << NULL_ID;	//GETID( pUser );
 		ar1.WriteString( lpszPlayer );
 		ar1.WriteString( lpString );
-#if __VER >= 12 // __LORD
 		ar1 << (DWORD)0xffff99cc;
-#endif	// __LORD
 		GETBLOCK( ar1, lpBlock, uBlockSize );
 		g_UserMng.AddBlock( lpBlock, uBlockSize );
 	}
@@ -831,7 +762,6 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 	ar >> idLeader >> nLeaderLevel >> nLeaderJob >> nLeaderSex;
 	ar >> idMember >> nMemberLevel >> nMemberJob >> nMemberSex;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	char pszLeader[MAX_PLAYER]	= { 0,};
 	char pszMember[MAX_PLAYER]	= { 0,};
 	const char* lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader );
@@ -840,29 +770,20 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 	lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idMember );
 	if( lpPlayer )
 		lstrcpy( pszMember, lpPlayer );
-#endif	// __SYS_PLAYER_DATA
 		
 	CParty* pParty;
 
 	pParty	= g_PartyMng.GetParty( idParty );
 	if( pParty )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		if( pParty->NewMember( idMember ) )
-#else	// __SYS_PLAYER_DATA
-		if( TRUE == pParty->NewMember( idMember, nMemberLevel, nMemberJob, nMemberSex, (char*)prj.GetPlayerString( idMember ) ) )
-#endif	// __SYS_PLAYER_DATA
 		{
 			CUser* pMember	= NULL;
 			for( int i = 0; i < pParty->m_nSizeofMember; i++ )
 			{
 				pMember		= (CUser*)prj.GetUserByID( pParty->m_aMember[i].m_uPlayerId );
 				if( IsValidObj( (CObj*)pMember ) )
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
-#else	// __SYS_PLAYER_DATA
-					pMember->AddPartyMember( pParty, idMember );
-#endif	// __SYS_PLAYER_DATA
 			}
 			if( IsValidObj( (CObj*)pMember ) )
 				pMember->m_idparty	= idParty;
@@ -874,11 +795,7 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 	}
 	else
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		if( idParty == g_PartyMng.NewParty( idLeader, nLeaderLevel, nLeaderJob, nLeaderSex, (char*)CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader ), idMember, nMemberLevel, nMemberJob, nMemberSex, (char*)CPlayerDataCenter::GetInstance()->GetPlayerString( idMember ), idParty ) )
-#else	// __SYS_PLAYER_DATA
-		if( idParty == g_PartyMng.NewParty( idLeader, nLeaderLevel, nLeaderJob, nLeaderSex, (char*)prj.GetPlayerString( idLeader ), idMember, nMemberLevel, nMemberJob, nMemberSex, (char*)prj.GetPlayerString( idMember ), idParty ) )
-#endif	// __SYS_PLAYER_DATA
 		{
 			pParty	= g_PartyMng.GetParty( idParty );
 			if( pParty )
@@ -890,11 +807,7 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 					if( IsValidObj( (CObj*)pMember ) )
 					{
 						pMember->m_idparty	= idParty;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 						pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
-#else	// __SYS_PLAYER_DATA
-						pMember->AddPartyMember( pParty, idMember );
-#endif	// __SYS_PLAYER_DATA
 					}
 				}
 			}
@@ -919,7 +832,6 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 	pParty	= g_PartyMng.GetParty( idParty );
 	if( pParty )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		char pszLeader[MAX_PLAYER]	= { 0,};
 		char pszMember[MAX_PLAYER]	= { 0,};
 		const char* lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader );
@@ -928,7 +840,6 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 		lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idMember );
 		if( lpPlayer )
 			lstrcpy( pszMember, lpPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 		if( pParty->DeleteMember( idMember ) )
 		{
@@ -937,11 +848,7 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 				CUser* pMember	= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( 0 ) );
 				if( IsValidObj( pMember ) )
 				{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					pMember->AddPartyMember( NULL, 0, pszLeader, pszMember );
-#else	// __SYS_PLAYER_DATA
-					pMember->AddPartyMember( NULL );
-#endif	// __SYS_PLAYER_DATA
 					pMember->m_idparty	= 0;
 				}
 				pMember	= g_UserMng.GetUserByPlayerID( idMember );	// 먼저 삭제됐던 넘의 포인터.
@@ -963,11 +870,7 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 				{
 					pMember		= g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
 					if( IsValidObj( (CObj*)pMember ) )
-#if __VER >= 11 // __SYS_PLAYER_DATA
 						pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
-#else	// __SYS_PLAYER_DATA
-						pMember->AddPartyMember( pParty, idMember );
-#endif	// __SYS_PLAYER_DATA
 				}
 			}
 
@@ -975,11 +878,7 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 			if( IsValidObj( (CObj*)pRemovd ) )
 			{
 				pRemovd->m_idparty	= 0;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				pRemovd->AddPartyMember( NULL, idMember, pszLeader, pszMember );
-#else	// __SYS_PLAYER_DATA
-				pRemovd->AddPartyMember( NULL, idMember );
-#endif	// __SYS_PLAYER_DATA
 			}
 		}
 		else
@@ -1063,7 +962,6 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 					break;
 				}
 			}
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			for( int k = 0 ; k < MAX_PARTYMODE ; k++ )
 			{
 				if( pParty->m_nModeTime[k] )
@@ -1082,7 +980,6 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 				else
 					g_DPCoreClient.SendUserPartySkill( pMover->m_idPlayer, PARTY_PARSKILL_MODE, 0, 0, 1 );
 			}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			if( fRemoveParty )
 			{
 				CUser* pMember;
@@ -1098,61 +995,6 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreClient::OnPartyMemberLevel( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long idParty, idPlayer;
-	int nLevel;
-	ar >> idParty >> idPlayer >> nLevel;
-	
-	CParty* pParty = g_PartyMng.GetParty( idParty );
-	if( pParty )
-	{
-		int findIndex = pParty->FindMember( idPlayer );
-		if( findIndex < 0 )
-			return;	//
-
-		pParty->m_aMember[findIndex].m_nLevel = nLevel;
-
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-			{
-//				pUser->m_idparty = pParty->m_uPartyId;
-				pUser->AddPartyMemberLevel( findIndex, nLevel );
-			}
-		}
-	}
-}
-
-void CDPCoreClient::OnPartyMemberJob( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long idParty, idPlayer;
-	int nJob;
-	ar >> idParty >> idPlayer >> nJob;
-	
-	CParty* pParty = g_PartyMng.GetParty( idParty );
-	if( pParty )
-	{
-		int findIndex = pParty->FindMember( idPlayer );
-		if( findIndex < 0 )
-			return;	//
-
-		pParty->m_aMember[findIndex].m_nJob = nJob;
-
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-			{
-//				pUser->m_idparty = pParty->m_uPartyId;
-				pUser->AddPartyMemberJob( findIndex, nJob );
-			}
-		}
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 {
@@ -1160,12 +1002,8 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 	int nMode;
 	BOOL bOnOfff;
 	LONG nPoint;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	DWORD	dwSkillTime;
 	ar >> uPartyId >> nMode >> dwSkillTime >> bOnOfff;
-#else//12차 극단유료아이템
-	ar >> uPartyId >> nMode >> bOnOfff;
-#endif // //12차 극단유료아이템
 	if( bOnOfff == TRUE )
 		ar >> nPoint;
 
@@ -1174,7 +1012,6 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 	{
 		if( bOnOfff == TRUE )
 			pParty->m_nPoint = nPoint;
-#if __VER >= 12 // 12차 극단유료아이템
 		// 090917 mirchang - 모드가 파스킬풀 이고 bOnOfff가 FALSE 일땐 극단원중 파스킬풀 아이템 사용중인지 체크하여 사용중인 극단원이 있을땐 다시 모드 설정
 		if( nMode == PARTY_PARSKILL_MODE && !bOnOfff )
 		{
@@ -1191,18 +1028,13 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 				}
 			}
 		}
-#endif // 12차 극단유료아이템
 		pParty->m_nModeTime[nMode] = bOnOfff;
 		
 		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
 		{
 			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
 			if( IsValidObj( (CObj*)pUser ) )
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 				pUser->AddSetPartyMode( nMode, bOnOfff, pParty->m_nPoint , dwSkillTime );
-#else // //12차 극단유료아이템
-				pUser->AddSetPartyMode( nMode, bOnOfff, pParty->m_nPoint );
-#endif // //12차 극단유료아이템
 		}
 	}
 }
@@ -1371,11 +1203,7 @@ void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
 	pSender = g_UserMng.GetUserByPlayerID( uidSend );
 	pFriend = g_UserMng.GetUserByPlayerID( uidFriend );
 	
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	const char* lpszFriendPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( uidFriend );
-#else	// __SYS_PLAYER_DATA
-	const char* lpszFriendPlayer	= prj.GetPlayerString( uidFriend );
-#endif	// __SYS_PLAYER_DATA
 	if( lpszFriendPlayer == NULL )	//
 		return;
 	char lpszFriend[MAX_PLAYER];
@@ -1412,11 +1240,7 @@ void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
 		}
 	}
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	const char* lpszSendPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( uidSend );
-#else	// __SYS_PLAYER_DATA
-	const char* lpszSendPlayer	= prj.GetPlayerString( uidSend );
-#endif	// __SYS_PLAYER_DATA
 	if( lpszSendPlayer == NULL )
 		return;
 	char lpszSend[MAX_PLAYER];
@@ -1472,17 +1296,13 @@ void CDPCoreClient::OnRemovefriend( CAr & ar, DPID, DPID, OBJID )
 		return;
 
 #ifdef __RT_1025
-#if __VER >= 13 // __HOUSING
 	CHousingMng::GetInstance()->ReqSetAllowVisit( pSender, uidFriend, FALSE );
-#endif //__HOUSING
 	pSender->m_RTMessenger.RemoveFriend( uidFriend );
 	pSender->AddRemoveFriend( uidFriend );
 	CUser* pFriend	= g_UserMng.GetUserByPlayerID( uidFriend );
 	if( IsValidObj( pFriend ) )
 	{
-#if __VER >= 13 // __HOUSING
 		CHousingMng::GetInstance()->ReqSetAllowVisit( pFriend, uidSend, FALSE );
-#endif //__HOUSING
 		pFriend->m_RTMessenger.RemoveFriend( uidSend );
 		pFriend->AddRemoveFriend( uidSend );
 	}
@@ -1682,13 +1502,6 @@ void CDPCoreClient::OnCreateGuild( CAr & ar, DPID, DPID, OBJID )
 		CGuildMember* pMember	= new CGuildMember;
 		pMember->m_idPlayer	= info[0].idPlayer;
 		pMember->m_nMemberLv	= GUD_MASTER;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pMember->m_nLevel	= info[0].nLevel;
-		pMember->m_nJob		= info[0].nJob;
-		pMember->m_dwSex	= info[0].dwSex;
-		pMember->m_nMultiNo	= info[0].nMultiNo;
-		pMember->m_nLogin	= 1;
-#endif	// __SYS_PLAYER_DATA
 		if( pGuild->AddMember( pMember ) )
 		{
 			CUser* pUser	= (CUser*)prj.GetUserByID( info[0].idPlayer );
@@ -1703,13 +1516,6 @@ void CDPCoreClient::OnCreateGuild( CAr & ar, DPID, DPID, OBJID )
 				pMember		= new CGuildMember;
 				pMember->m_idPlayer		= info[i].idPlayer;
 				pMember->m_nMemberLv	= GUD_ROOKIE;
-#if __VER < 11 // __SYS_PLAYER_DATA
-				pMember->m_nLevel	= info[i].nLevel;
-				pMember->m_nJob		= info[i].nJob;
-				pMember->m_dwSex	= info[i].dwSex;
-				pMember->m_nMultiNo	= info[i].nMultiNo;
-				pMember->m_nLogin	= 1;
-#endif	// __SYS_PLAYER_DATA
 				if( pGuild->AddMember( pMember ) )
 				{
 					pUser	= (CUser*)prj.GetUserByID( info[i].idPlayer );
@@ -1739,11 +1545,7 @@ void CDPCoreClient::OnCreateGuild( CAr & ar, DPID, DPID, OBJID )
 
 	if( cb > 0 )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		g_UserMng.AddCreateGuild( info[0].idPlayer, CPlayerDataCenter::GetInstance()->GetPlayerString( info[0].idPlayer ), idGuild, szGuild );	// g_UserMng.Lock();
-#else	// __SYS_PLAYER_DATA
-		g_UserMng.AddCreateGuild( info[0].idPlayer, prj.GetPlayerString( info[0].idPlayer ), idGuild, szGuild );	// g_UserMng.Lock();
-#endif	// __SYS_PLAYER_DATA
 	}
 
 	for( int i = 0; i < cb; i++ )
@@ -1774,10 +1576,8 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 			pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
 			if( IsValidObj( pUsertmp ) )
 			{
-#if __VER >= 15 // __GUILD_HOUSE
 				pUsertmp->SetRestPoint( 0 );
 				GuildHouseMng->ResetApplyDST( pUsertmp );
-#endif // __GUILD_HOUSE
 				pUsertmp->m_idGuild		= 0;
 				g_UserMng.AddSetGuild( pUsertmp, 0 );
 				pUserIk3[nSize] = pUsertmp;
@@ -1785,12 +1585,7 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 			}
 		}
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		const char* lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( pGuild->m_idMaster );
-#else	// __SYS_PLAYER_DATA
-		LPCSTR lpszPlayer	= prj.GetPlayerString( pGuild->m_idMaster );
-#endif	// __SYS_PLAYER_DATA
-#if __VER >= 12 // __SECRET_ROOM
 		/*
 		if( CSecretRoomMng::GetInstance()->m_nState == SRMNG_WAR )
 		{
@@ -1798,7 +1593,6 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 			CSecretRoomMng::GetInstance()->SetFailGuild( pUserMaster );
 		}
 		*/
-#endif // __SECRET_ROOM
 		
 		g_GuildMng.RemoveGuild( pGuild->m_idGuild );
 		g_UserMng.AddDestroyGuild( lpszPlayer, idGuild );	// g_UserMng.Lock();
@@ -1829,14 +1623,10 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 							{
 								if( pUserIk3[cou]->IsChaotic() )
 								{
-#if __VER >= 8 // __S8_PK
 									if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
 										pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
 									if( !pRgnElem )	// Find near revival pos
 										pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUserIk3[cou]->GetPos() );
-#else // __VER >= 8 //__S8_PK
-									pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUserIk3[cou]->GetPos() );
-#endif // __VER >= 8 //__S8_PK
 								}
 								else
 								{
@@ -1876,13 +1666,6 @@ void CDPCoreClient::OnAddGuildMember( CAr & ar, DPID, DPID, OBJID )
 		CGuildMember* pMember	= new CGuildMember;
 		pMember->m_idPlayer	= info.idPlayer;
 		pMember->m_nMemberLv	= GUD_ROOKIE;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pMember->m_nLevel	= info.nLevel;
-		pMember->m_nJob		= info.nJob;
-		pMember->m_dwSex	= info.dwSex;
-		pMember->m_nMultiNo	= info.nMultiNo;
-		pMember->m_nLogin	= 1;
-#endif	// __SYS_PLAYER_DATA
 		if( pGuild->AddMember( pMember ) )
 		{
 			CUser* pUser	= g_UserMng.GetUserByPlayerID( info.idPlayer );
@@ -1890,10 +1673,8 @@ void CDPCoreClient::OnAddGuildMember( CAr & ar, DPID, DPID, OBJID )
 			{
 				pUser->m_idGuild	= idGuild;
 				g_UserMng.AddSetGuild( pUser, idGuild );
-#if __VER >= 15 // __GUILD_HOUSE
 				pUser->AddGuildHouseAllInfo( GuildHouseMng->GetGuildHouse( idGuild ) );
 				GuildHouseMng->SetApplyDST( pUser );
-#endif // __GUILD_HOUSE
 			}
 		}
 		else
@@ -1919,11 +1700,9 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 			pUser	= (CUser*)prj.GetUserByID( idPlayer );
 			if( IsValidObj(pUser) )
 			{
-#if __VER >= 15 // __GUILD_HOUSE
 				pUser->SetRestPoint( 0 );
 				GuildHouseMng->ResetApplyDST( pUser );
 				GuildHouseMng->GoOutGuildHouse( pUser );
-#endif // __GUILD_HOUSE
 				pUser->m_idGuild	= 0;
 				g_UserMng.AddSetGuild( pUser, 0 );
 				bRemove = TRUE;
@@ -1956,14 +1735,10 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 						{
 							if( pUser->IsChaotic() )
 							{
-#if __VER >= 8 // __S8_PK
 								if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
 									pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
 								if( !pRgnElem )	// Find near revival pos
 									pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );
-#else // __VER >= 8 __S8_PK
-								pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );
-#endif // __VER >= 8 __S8_PK
 							}
 							else
 							{
@@ -2056,15 +1831,6 @@ void CDPCoreClient::OnGuildMemberLogOut( CAr & ar, DPID, DPID, OBJID )
 {
 	u_long idPlayer, idGuild;
 	ar >> idGuild >> idPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	CGuild* pGuild	= g_GuildMng.GetGuild( idGuild );
-	if( pGuild )
-	{
-		CGuildMember* pMember	= pGuild->GetMember( idPlayer );
-		if( pMember )
-			pMember->m_nLogin = 0;
-	}
-#endif	// __SYS_PLAYER_DATA
 }
 
 void CDPCoreClient::SendWarDead( u_long idPlayer )
@@ -2460,38 +2226,6 @@ void CDPCoreClient::OnGuildRealPenya( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreClient::OnChangeGuildJobLevel( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long uidGuild, uidPlayer;
-	LONG nJob, nLevel;
-
-	ar >> uidGuild >> uidPlayer >> nJob >> nLevel;
-
-	CGuild* pGuild	= g_GuildMng.GetGuild( uidGuild );
-	if( pGuild && pGuild->IsMember( uidPlayer ) )
-	{
-		CGuildMember* pMember;
-		pMember = pGuild->GetMember( uidPlayer );
-		if( pMember )
-		{
-			pMember->m_nJob = nJob;
-			pMember->m_nLevel = nLevel;
-		}
-
-		CUser* pUser;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-		{
-			pMember		= i->second;
-			pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
-			if( IsValidObj(pUser) ) 
-			{
-				pUser->AddChangeGuildJobLevel( uidPlayer, nJob, nLevel );
-			}				
-		}
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 // raiders_test 유저가 아이템을 사용하고 나가면?
 void CDPCoreClient::OnGuildSetName( CAr & ar, DPID, DPID, OBJID )
@@ -2615,13 +2349,9 @@ BOOL CDPCoreClient::Contribute( CUser* pUser, DWORD dwPxpCount, DWORD dwPenya )
 	info.dwGuildPenya	= pGuild->m_nGoldGuild;
 	info.nGuildLevel	= pGuild->m_nLevel;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( idPlayer );
 	if( pPlayerData )
 		g_dpDBClient.SendGuildContribution( info, ( nLastGuildLv < pGuild->m_nLevel? 1: 0 ), pPlayerData->data.nLevel );
-#else	// __SYS_PLAYER_DATA
-	g_dpDBClient.SendGuildContribution( info, ( nLastGuildLv < pGuild->m_nLevel? 1: 0 ), pGuildMember->m_nLevel );
-#endif	// __SYS_PLAYER_DATA
 
 	{
 		BEFORESENDDUAL( ar, PACKETTYPE_WC_GUILDCONTRIBUTION, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -2774,42 +2504,6 @@ void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
 #endif	// __RT_1025
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreClient::OnFriendChangeJob( CAr & ar, DPID, DPID, OBJID )
-{
-	vector< u_long > vecIdFriend;
-	CUser* pUser;
-	u_long uidPlayer;
-	int nJob;
-	ar >> uidPlayer >> nJob;
-
-	pUser = (CUser*)prj.GetUserByID( uidPlayer );
-	if( IsValidObj( pUser ) )
-	{
-		for( C2FriendPtr::iterator i = pUser->m_Messenger.m_adifferntFriend.begin() ; i != pUser->m_Messenger.m_adifferntFriend.end() ; i++ )
-		{
-			LPFRIEND pFriend = (LPFRIEND)i->second;
-			if( pFriend )
-				vecIdFriend.push_back( pFriend->dwUserId );
-		}
-
-		for( int j = 0 ; j < vecIdFriend.size() ; j++ )
-		{
-			CUser* pPlayFriend = (CUser*)prj.GetUserByID( vecIdFriend[j] );
-			if( IsValidObj( pPlayFriend ) )
-			{
-				LPFRIEND pFriendbuf = pPlayFriend->m_Messenger.GetFriend( uidPlayer );
-				if( pFriendbuf )
-				{
-					pFriendbuf->bSave = TRUE;
-					pFriendbuf->nJob = nJob;
-				}
-				pPlayFriend->AddFriendChangeJob( uidPlayer, nJob );
-			}
-		}		
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPCoreClient::OnPartyChangeLeader( CAr & ar, DPID, DPID, OBJID )
 {
@@ -3108,7 +2802,6 @@ void CDPCoreClient::OnSetPlayerName( CAr& ar, DPID, DPID, OBJID )
 //		char* lpszOldPlayer	= prj.GetPlayerString( idPlayer );
 //		if( lpszOldPlayer )
 //			CWantedListSnapshot::GetInstance().Rename( lpszOldPlayer, lpszPlayer );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		CPlayerDataCenter*	pPlayerDataCenter	= CPlayerDataCenter::GetInstance();
 		PlayerData* pPlayerData	= pPlayerDataCenter->GetPlayerData( idPlayer );
 		if( pPlayerData )
@@ -3119,10 +2812,6 @@ void CDPCoreClient::OnSetPlayerName( CAr& ar, DPID, DPID, OBJID )
 			lstrcpy( pd.szPlayer, lpszPlayer );
 			pPlayerDataCenter->AddPlayerData( idPlayer, pd );
 		}
-#else	// __SYS_PLAYER_DATA
-		prj.RemovePlayerID( idPlayer );
-		prj.SetPlayerID( idPlayer, lpszPlayer );
-#endif	// __SYS_PLAYER_DATA
 	}
 }
 
@@ -3343,7 +3032,6 @@ void CDPCoreClient::OnDestroyPlayer( CAr & ar, DPID, DPID, OBJID )
 		g_DPSrvr.QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer );
 }
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 void CDPCoreClient::OnInstanceDungeonAllInfo( CAr & ar, DPID, DPID, OBJID )
 {
 	CInstanceDungeonHelper::GetInstance()->OnInstanceDungeonAllInfo( ar );
@@ -3419,7 +3107,6 @@ void CDPCoreClient::OnInstanceDungeonDeleteCoolTimeInfo( CAr & ar, DPID, DPID, O
 	
 	CInstanceDungeonHelper::GetInstance()->OnDeleteDungeonCoolTimeInfo( nType, dwPlayerId );
 }
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __QUIZ
 void CDPCoreClient::SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nChannel, int nTime )

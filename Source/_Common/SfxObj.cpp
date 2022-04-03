@@ -183,7 +183,6 @@ void CSfx::Process()
 		
 		SetPos( m_vPosDest );	// 타겟에 오브젝트 발동.
 #ifdef __CLIENT
-	#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 		if( m_dwIndex == XI_SKILL_PSY_HERO_STONE02 )
 		{
 			if( IsValidObj( pObjDest ) )		// 유효한넘인가?
@@ -196,7 +195,6 @@ void CSfx::Process()
 				}
 			}
 		}
-	#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 		// 091022 mirchang - 프로텍션, 펜바리어 스킬 버프 해제 시 sfx 삭제
 		if( m_dwIndex == XI_SKILL_MER_SHIELD_PANBARRIER02 )
 		{

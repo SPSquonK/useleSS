@@ -1,7 +1,6 @@
 #ifndef __TLORD_H__
 #define	__TLORD_H__
 
-#if __VER >= 12 // __LORD
 
 #include "lord.h"
 #include "dbcontroller.h"
@@ -195,6 +194,5 @@ private:
 	CTLord*	m_pLord;	// ±∫¡÷ ∞¥√º
 };
 
-#endif	// __LORD
 
 #endif	// __TLORD_H__

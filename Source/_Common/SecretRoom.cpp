@@ -15,15 +15,12 @@ extern	CDPDatabaseClient g_dpDBClient;
 extern	CGuildMng	g_GuildMng;
 #include "worldmng.h"
 extern	CWorldMng	g_WorldMng;
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 #include "DPSrvr.h"
 extern CDPSrvr g_DPSrvr;
 #endif // __WORLDSERVER
 
 
-#if __VER >= 12 // __SECRET_ROOM
 //////////////////////////////////////////////////////////////////////
 // 비밀의 방 전체 관리
 //////////////////////////////////////////////////////////////////////
@@ -1232,10 +1229,8 @@ void CSecretRoomContinent::SetContCloseWait()
 
 		if( m_vecSecretRoomTender[i].nWarState == MONSTER_WIN )
 		{
-	#if __VER >= 12 // __TAX
 			CTax::GetInstance()->SetNextSecretRoomGuild( m_nContinent, m_vecSecretRoomTender[i].dwGuildId );
 			CTax::GetInstance()->SendSetTaxRateOpenWnd( m_nContinent, m_vecSecretRoomTender[i].dwGuildId );
-	#endif // __TAX
 			// DB에 Update - 'W' : 우승 길드
 			g_dpDBClient.SendSecretRoomUpdateToDB( m_nContinent, m_vecSecretRoomTender[i], 'W' );
 		}
@@ -1376,4 +1371,3 @@ BOOL CSecretRoomContinent::IsSecretRoomMonster( DWORD dwMonsterId, int nWarState
 #endif // __WORLDSERVER
 
 //////////////////////////////////////////////////////////////////////////////
-#endif // __SECRET_ROOM

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "secretroomdbmng.h"
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "dptrans.h"
 extern AppInfo g_appInfo;
 ////////////////////////////////////////////////////////////////
@@ -206,4 +205,3 @@ void CSecretRoomDbController::InsertLineUpMemberToDB( BYTE nContinent, DWORD dwG
 		{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 	}
 }
-#endif // __SECRET_ROOM

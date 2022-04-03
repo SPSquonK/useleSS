@@ -6,7 +6,6 @@
 #include "randomoption.h"
 
 
-#if __VER >= 11 // __SYS_IDENTIFY
 extern CDPClient g_DPlay;
 
 /****************************************************
@@ -194,5 +193,4 @@ void  CWndBlessingCancel::SetDescription()
 	}
 
 }
-#endif
 

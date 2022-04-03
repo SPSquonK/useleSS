@@ -7,11 +7,8 @@
 #include "DPClient.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 
 //////////////////////////////////////////////////////////////////////////
 // 1:1 길드 컴뱃 참가자 구성
@@ -47,12 +44,8 @@ void CWndGuildCombat1to1Selection::AddCombatPlayer( u_long uiPlayer )
 				
 	CString str;
 	//str.Format( "Lv%.2d	%.16s %.10s", pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 
 	pWndList->AddString( str );			
 } 
@@ -82,12 +75,8 @@ void CWndGuildCombat1to1Selection::AddGuildPlayer( u_long uiPlayer )
 	CGuildMember* pMember = i->second;
 				
 	CString str;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-	str.Format( "Lv%.2d	%.16s %.10s", pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 	pWndList->AddString( str );			
 } 
 
@@ -115,12 +104,8 @@ void CWndGuildCombat1to1Selection::RemoveCombatPlayer( int nIndex )
 		CGuild* pGuild = g_pPlayer->GetGuild();
 		map<u_long, CGuildMember*>::iterator iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
 		CGuildMember* pMember = iter->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 		pWndList->SetString( i, temp );
 	}
 }
@@ -144,14 +129,9 @@ void CWndGuildCombat1to1Selection::UpDateGuildListBox()
 			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;				
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
 					m_mapSelectPlayer.insert( make_pair( pPlayerData->data.nLevel, pMember ) );
-#else	// __SYS_PLAYER_DATA
-				if( pMember->m_nLogin )
-					m_mapSelectPlayer.insert( make_pair( pMember->m_nLevel, pMember ) );
-#endif	// __SYS_PLAYER_DATA
 			}
 
 			// 리스트에 추가			
@@ -159,18 +139,10 @@ void CWndGuildCombat1to1Selection::UpDateGuildListBox()
 			for( multimap<int, CGuildMember*>::iterator j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
 			{
 				pMember		= j->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
-#else	// __SYS_PLAYER_DATA
-				if( pMember->m_nLogin )
-#endif	// __SYS_PLAYER_DATA
 				{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-					str.Format( "Lv%.2d	%.16s %.10s", pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 					pWndList->AddString( str );	
 					m_vecGuildList.push_back( pMember->m_idPlayer );
 				}
@@ -329,11 +301,7 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 
 			if( pGuildMember )
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				if( CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer )->data.nLevel < g_GuildCombat1to1Mng.m_nMinJoinPlayerLevel )
-#else	// __SYS_PLAYER_DATA
-				if( pGuildMember->m_nLevel < g_GuildCombat1to1Mng.m_nMinJoinPlayerLevel )
-#endif	// __SYS_PLAYER_DATA
 				{
 					g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_LIMIT_LEVEL_NOTICE) ); //출전자 등록은 레벨 30이상이 되어야 합니다.
 					return FALSE;
@@ -406,20 +374,12 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 		CGuild* pGuild = g_pPlayer->GetGuild();
 		map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
 		CGuildMember* pMember = i->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 		i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel-1] );
 		pMember = i->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel, pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 		pWndListBox->SetString( nCurSel, temp1 );
 		pWndListBox->SetString( nCurSel-1, temp2 );
 
@@ -452,20 +412,12 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 		CGuild* pGuild = g_pPlayer->GetGuild();
 		map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
 		CGuildMember* pMember = i->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 		i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel+1] );
 		pMember = i->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+2, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-#else	// __SYS_PLAYER_DATA
-		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+2, pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
-#endif	// __SYS_PLAYER_DATA
 		pWndListBox->SetString( nCurSel, temp1 );
 		pWndListBox->SetString( nCurSel+1, temp2 );
 
@@ -802,4 +754,3 @@ BOOL CWndGuildCombat1to1OfferMessageBox::OnChildNotify( UINT message, UINT nID, 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#endif //__GUILD_COMBAT_1TO1

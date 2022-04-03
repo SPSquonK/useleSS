@@ -28,37 +28,25 @@
 #include "WndInvenRemoveItem.h"
 #include "WndCollecting.h"
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #include "WndAwakening.h"
 #include "WndLvReqDown.h"
 #include "WndBlessingCancel.h"
-#endif
 
-#if __VER >= 12 // __LORD
 #include "WndLord.h"
-#endif
 
 #include "WndPetRes.h"
 
-#if __VER >= 8 //__CSC_VER8_5
 #include "WndSummonAngel.h"
-#endif //__CSC_VER8_5
 
 #ifdef __EVE_MINIGAME
 #include "WndMiniGame.h"
 #endif //__EVE_MINIGAME
 
-#if __VER >= 9 // __CSC_VER9_1
 #include "WndPetSys.h"
-#endif //__CSC_VER9_1
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 #include "WndGuildCombat1to1.h"
-#endif //__GUILD_COMBAT_1TO1
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "WndSecretRoom.h"
-#endif //__SECRET_ROOM
 #ifdef __AZRIA_1023
 #include "WndSelectCh.h"
 #endif
@@ -66,20 +54,14 @@
 #include "WndHelp.h"
 #endif //__HELP_BUG_FIX
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "WndRainbowRace.h"
-#endif //__RAINBOW_RACE
-#if __VER >= 13 // __HOUSING
 #include "WndRoomList.h"
 #include "WndQuitRoom.h"
-#endif // __HOUSING
 #ifdef __QUIZ
 #include "WndQuizEvent.h"
 #endif // __QUIZ
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 #include "WndQuestQuickInfo.h"
 #include "WndQuest.h"
-#endif // __IMPROVE_QUEST_INTERFACE
 
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 #include "WndChattingBlockingList.h"
@@ -103,9 +85,7 @@ class CWndPartyLeaveConfirm;
 class CWndFriendConFirm;
 class CWndDuelConfirm;
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 class CWndDuelResult;
-#endif	// __VER >= 8  
 
 class CWndAddFriend;
 class CWndCloseExistingConnection;
@@ -126,9 +106,7 @@ class CWndSelectVillage;
 
 #include "WndChangeName.h"
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 #include "WndSealChar.h"
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 #define MAX_SKILL		  16
 
@@ -207,7 +185,6 @@ struct ToolTipItemTextColor
 	DWORD dwGold;				// 가격
 	DWORD dwCommand;			// 설명
 	DWORD dwNotUse;				// 사용못함
-#if __VER >= 9 // __CSC_VER9_1
 	DWORD dwAddedOpt1;		//무기추가옵션1
 	DWORD dwAddedOpt2;		//무기추가옵션2
 	DWORD dwAddedOpt3;		//무기추가옵션3
@@ -217,12 +194,9 @@ struct ToolTipItemTextColor
 	DWORD dwAddedOpt7;		//무기추가옵션7
 	DWORD dwAddedOpt8;		//무기추가옵션8
 	DWORD dwAddedOpt9;		//무기추가옵션9
-#endif //__CSC_VER9_1
-#if __VER >= 11 // __SYS_IDENTIFY
 	DWORD dwAwakening;	// 아이템 각성
 	DWORD dwBlessing;	// 여신의 축복
 	DWORD dwBlessingWarning;	// 여신의 축복 경고
-#endif	// __SYS_IDENTIFY
 };
 
 enum 
@@ -233,10 +207,8 @@ enum
 	MAX_TC
 };
 
-#if __VER >= 15 // __GUILD_HOUSE
 class CWndGHMainMenu;
 class CWndGHUpkeep;
-#endif
 
 class CWndMgr : public CWndBase
 { 
@@ -298,18 +270,14 @@ public:
 	CPtrArray	m_awndShortCut;
 	BOOL	m_bTitle        ;
 	CMapDWordToPtr	m_mapAppletFunc ;
-#if __VER >= 8 // __CSC_VER8_1
 	list<int> m_tempWndId;
 	BOOL m_clearFlag;
-#endif //__CSC_VER8_1
 
 	AppletFunc*		GetAppletFunc( DWORD dwIdApplet );
 	void	AddAllApplet();
 	BOOL ScreenCapture();
 	BOOL SaveBitmap( LPCTSTR lpszName );
-#if __VER >= 11 // __CAPTURE_JPG
 	BOOL SaveJPG( LPCTSTR lpszName );
-#endif
 	void InitSetItemTextColor();
 	void Free();
 	void SetMessengerAutoState();
@@ -318,16 +286,12 @@ public:
 	DWORD		   m_dwSkillTime[MAX_SKILL];
 	
 	CWndBeautyShop* m_pWndBeautyShop;
-#if __VER >= 8 //__CSC_VER8_4
 	CWndFaceShop* m_pWndFaceShop;
 #ifdef __NEWYEARDAY_EVENT_COUPON
 	CWndUseCouponConfirm* m_pWndUseCouponConfirm;
 #endif //__NEWYEARDAY_EVENT_COUPON
 
-#endif //__CSC_VER8_4
-#if __VER >= 8 //__CSC_VER8_5
 	CWndSummonAngel* m_pWndSummonAngel;
-#endif //__CSC_VER8_5
 	CWndDialog*    m_pWndDialog;
 	CWndShop*      m_pWndShop;
 	CWndBase*      m_pWndActiveDesktop;
@@ -351,7 +315,6 @@ public:
 	CWndPuzzleGame* m_pWndPuzzleGame;
 #endif //__EVE_MINIGAME
 	
-#if __VER >= 9 // __CSC_VER9_1
 	CWndMixJewel* m_pWndSmeltMixJewel;
 	CWndSmeltJewel* m_pWndSmeltJewel;
 	CWndExtraction* m_pWndExtraction;
@@ -362,32 +325,17 @@ public:
 	CWndPetMiracle* m_pWndPetMiracle;
 	CWndPetFoodMill* m_pWndPetFoodMill;
 	CWndPetLifeConfirm* m_pWndPetLifeConfirm;
-#if __VER >= 10 // __CSC_VER9_1 -> __LEGEND
 	CWndHeroSkillUp* m_pWndHeroSkillUp;
-#endif //__CSC_VER9_1 -> __LEGEND
-#endif //__CSC_VER9_1
-#if __VER >= 11 // __PIERCING_REMOVE
 	CWndRemovePiercing* m_pWndRemovePiercing;
-#endif //__PIERCING_REMOVE
-#if __VER >= 12 // __CSC_VER12_4
 	CWndRemoveJewel* m_pWndRemoveJewel;
-#endif //__CSC_VER12_4
-#if __VER >= 12 // __CSC_VER12_5
 	CWndPetTransEggs* m_pWndPetTransEggs;
-#endif //__CSC_VER12_5
 #ifdef __TRADESYS
 	CWndDialogEvent* m_pWndDialogEvent;
 #endif //__TRADESYS
-#if __VER >= 12 // __HEAVEN_TOWER
 	CWndHeavenTower* m_pWndHeavenTower;
-#endif //__HEAVEN_TOWER
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	CWndChatLog* m_pWndChatLog;
-#endif //__Y_CHAT_SYSTEM_8
 
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 	CWndRemoveAttribute* m_pWndRemoveAttribute;
-#endif //__REMOVE_ATTRIBUTE
 	CWndPost* m_pWndPost;
 	CWndQueryEquip* m_pWndQueryEquip;
 	CWndSelectVillage*		m_pWndSelectVillage;
@@ -397,12 +345,10 @@ public:
 	CWndUpgradeBase*  m_pWndUpgradeBase;
 	CWndPiercing*	  m_pWndPiercing;
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	CWndSealChar*		m_pWndSealChar;
 	CWndSealCharSelect*		m_pWndSealCharSelect;
 	CWndSealCharSend*		m_pWndSealCharSend;
 	CWndSealCharSet*		m_pWndSealCharSet;
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 	CWndInvenRemoveItem* m_pWndInvenRemoveItem;
 
@@ -424,20 +370,14 @@ public:
 	BOOL	m_bWaitRequestMail;
 #endif
 
-#if __VER >= 11 // __GUILD_BANK_LOG
 	CWndGuildBankLog* m_pWndGuildBankLog;
-#endif //__GUILD_BANK_LOG
 	CWndGuildConfirm* m_pWndGuildConfirm;
 	CWndGuildWarPeaceConfirm* m_pWndGuildWarPeaceConfirm;
 	CWndGuildWarRequest* m_pWndGuildWarRequest;
 	CWndGuildNickName* m_pWndGuildNickName;
 	CWndGuildCombatRank_Person*   m_pWndGuildCombatRanking;
 	CWndGuildCombatState*		  m_pWndGuildWarState;	
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CWndGuildCombat1to1Offer*		  m_pWndGuildCombatOffer;
-#else //__GUILD_COMBAT_1TO1
-	CWndGuildCombatOffer*		  m_pWndGuildCombatOffer;
-#endif //__GUILD_COMBAT_1TO1
 	CWndGuildCombatSelection*	  m_pWndGuildCombatSelection;
 	CWndGuildCombatJoinSelection* m_pWndGuildCombatJoinSelection;
 	CWndGuildCombatBoard*		  m_pWndGuildCombatBoard;
@@ -445,17 +385,12 @@ public:
 	CGuildCombatInfoMessageBox*   m_pWndGuildCombatInfoMessageBox;
 	CWndGuildCombatResult*		  n_pWndGuildCombatResult;
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CWndGuildCombat1to1Selection*	m_pWndGuildCombat1to1Selection;
 	CWndGuildCombat1to1Offer*		m_pWndGuildCombat1to1Offer;
-#endif //__GUILD_COMBAT_1TO1
 	CCollectingWnd*				  m_pWndCollecting;
-#if __VER >= 11 // __SYS_IDENTIFY
 	CWndLvReqDown*				  m_pWndLvReqDown;
 	CWndBlessingCancel*			  m_pWndBlessingCancel;
 	CWndAwakening*				  m_pWndAwakening;
-#endif
-#if __VER >= 12 // __LORD
 	CWndLordTender*				m_pWndLordTender;
 	CWndLordVote*				m_pWndLordVote;
 	CWndLordState*				m_pWndLordState;
@@ -464,8 +399,6 @@ public:
 	CWndLordInfo*				m_pWndLordInfo;
 	CWndLordRPInfo*				m_pWndLordRPInfo;
 	bool						m_bIsOpenLordSkill;
-#endif
-#if __VER >= 12 // __SECRET_ROOM
 	CWndSecretRoomInfoMsgBox*		m_pWndSecretRoomMsg;
 	CWndSecretRoomSelection*		m_pWndSecretRoomSelection;
 	CWndSecretRoomOffer*			m_pWndSecretRoomOffer;
@@ -474,14 +407,10 @@ public:
 	CWndSecretRoomCheckTaxRate*		m_pWndSecretRoomCheckTaxRate;
 	CWndSecretRoomBoard*			m_pWndSecretRoomBoard;
 	CWndSecretRoomQuick*			m_pWndSecretRoomQuick;
-#endif //__SECRET_ROOM
-#if __VER >= 12 // __PET_0519
 	CWndPetAwakCancel*				m_pWndPetAwakCancel;
-#endif
 #ifdef __AZRIA_1023
 	CWndSelectCh*					m_pWndSelectCh;
 #endif
-#if __VER >= 13 // __RAINBOW_RACE
 	CWndRainbowRaceOffer*			m_pWndRainbowRaceOffer;
 	CWndRainbowRaceInfo*			m_pWndRainbowRaceInfo;
 	CWndRainbowRaceRule*			m_pWndRainbowRaceRule;
@@ -497,13 +426,8 @@ public:
 	CWndRRMiniGameTyping*			m_pWndRRMiniGameTyping;
 	CWndRRMiniGameCard*				m_pWndRRMiniGameCard;
 	CWndRRMiniGameLadder*			m_pWndRRMiniGameLadder;
-#endif //__RAINBOW_RACE
-#if __VER >= 13 // __CSC_VER13_2
 	CWndCoupleMessage*				m_pWndCoupleMessage;
-#endif //__CSC_VER13_2
-#if __VER >= 13 // __EXT_ENCHANT
 	CWndChangeAttribute*			m_pWndChangeAttribute;
-#endif //__EXT_ENCHANT
 
 	CWndReSkillWarning*			  m_pWndReSkillWarning;	
 	CWndFontEdit*				  m_pWndFontEdit;
@@ -518,9 +442,7 @@ public:
 	CWndFriendConFirm* m_pWndFriendConfirm;
 	CWndDuelConfirm* m_pWndDuelConfirm;
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	CWndDuelResult* m_pWndDuelResult;
-#endif	// __VER >= 8  
 
 	CWndAddFriend* m_pWndAddFriend;
 	CWndStateConfirm* m_pWndStateConfirm;
@@ -531,10 +453,8 @@ public:
 #ifdef __HELP_BUG_FIX
 	CWndHelpInstant* m_pWndHelpInstant;
 #endif //__HELP_BUG_FIX
-#if __VER >= 13 // __HOUSING
 	CWndRoomList*				m_pWndRoomList;
 	CWndQuitRoom*				m_pWndQuitRoom;
-#endif // __HOUSING
 #ifdef __PET_1024
 	CWndChangePetName*				m_pWndChangePetName;
 #endif
@@ -542,18 +462,12 @@ public:
 	BOOL							m_bAllAction;
 #endif // __S_SERVER_UNIFY
 
-#if __VER >= 14 // __SMELT_SAFETY
 	CWndSmeltSafety* m_pWndSmeltSafety;
 	CWndSmeltSafetyConfirm* m_pWndSmeltSafetyConfirm;
-#endif //__SMELT_SAFETY
 
-#if __VER >= 14 // __EQUIP_BIND
 	CWndEquipBindConfirm* m_pWndEquipBindConfirm;
-#endif // __EQUIP_BIND
 
-#if __VER >= 14 // __RESTATE_CONFIRM
 	CWndRestateConfirm* m_pWndRestateConfirm;
-#endif // __RESTATE_CONFIRM
 
 #ifdef __QUIZ
 	CWndQuizEventConfirm* m_pWndQuizEventConfirm;
@@ -562,25 +476,17 @@ public:
 	CWndQuizEventButton* m_pWndQuizEventButton;
 #endif // __QUIZ
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndQuestQuickInfo* m_pWndQuestQuickInfo;
 	CWndQuestDetail* m_pWndQuestDetail;
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __CAMPUS
 	CWndCampusInvitationConfirm* m_pWndCampusInvitationConfirm;
 	CWndCampusSeveranceConfirm* m_pWndCampusSeveranceConfirm;
-#endif // __CAMPUS
 
-#if __VER >= 15 // __PETVIS
 	CWndBuffPetStatus* m_pWndBuffPetStatus;
 	CWndConfirmVis* m_pWndConfirmVis;
-#endif
 
-#if __VER >= 15 // __GUILD_HOUSE
 	CWndGHMainMenu* m_pWndGHMain;
 	CWndGHUpkeep* m_pWndUpkeep;
-#endif
 
 #ifdef __PROTECT_AWAKE
 	CWndSelectAwakeCase* m_pWndSelectAwakeCase;
@@ -669,9 +575,7 @@ public:
 	// MessageBox
 	BOOL	OpenCustomBox( LPCTSTR strMessage, CWndMessageBox* pWndMessageBox, CWndBase* pWndParent = NULL );
 	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
-#endif // __IMPROVE_QUEST_INTERFACE
 	BOOL    OpenMessageBoxUpper( LPCTSTR lpszMessage, UINT nType = MB_OK, BOOL bPostLogoutMsg = FALSE );
 		
 	void	CloseMessageBox();
@@ -681,12 +585,10 @@ public:
 	void PutToolTip_Skill( DWORD dwSkill, DWORD dwLevel, CPoint point, CRect* pRect, BOOL bActive = TRUE );
 	void PutToolTip_Item( DWORD dwType, DWORD dwId, CPoint point, CRect* pRect, int flag = 0 );
 	void PutToolTip_Item( CItemBase* pItemBase, CPoint point, CRect* pRect, int flag = 0 );
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	enum { TOOL_TIP_SWITCH_MAIN = 0, TOOL_TIP_SWITCH_SUB1 = 1, TOOL_TIP_SWITCH_SUB2 = 2 };
 	void PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, CRect* pRect, int nFlag = 0 );
 	void PutToolTipParts( CItemBase* pPartsItemBase, CPoint point, CRect* pRect, const int nFlag, const int nSubToolTipFlag );
 	void MakeToolTipText( CItemBase* pItemBase, CEditString& strEdit, int flag = 0 );
-#endif // __IMPROVE_SYSTEM_VER15
 	void PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect );
 
 	DWORD PutItemName( CItemElem* pItemElem, CEditString* pEdit );
@@ -695,9 +597,7 @@ public:
 	void PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit );
-#if __VER >= 11 // __SYS_IDENTIFY
 	void	PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit );
-#endif	// __SYS_IDENTIFY
 	void PutPiercingOpt( CItemElem* pItemElem, CEditString* pEdit );
 	void PutEnchantOpt( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag );
 	void PutSetItemOpt( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
@@ -713,26 +613,18 @@ public:
 	void PutJob( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutLevel( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutWeapon( CItemElem* pItemElem, CEditString* pEdit );
-#if __VER >= 9 // __CSC_VER9_1
 	void PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit );
 	void PutPetInfo( CItemElem* pItemElem, CEditString* pEdit );
 	void PutPetFeedPocket( CItemElem* pItemElem, CEditString* pEdit );
-#endif //__CSC_VER9_1
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	void	PutSealChar( CItemElem* pItemElem, CEditString* pEdit );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 15 // __PETVIS
 	void PutNeededVis( CItemElem* pItemElem, CEditString* pEdit );
 	void PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit );
 	void PutPetKind( CItemElem* pItemElem, CEditString* pEdit );
 	BOOL CheckConfirm( CItemBase* pItem );
-#endif // __PETVIS
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	void PutEquipItemText( CEditString* pEdit );
-#endif // __IMPROVE_SYSTEM_VER15
 
 	CWndMgr();
 	virtual	~CWndMgr();
@@ -775,15 +667,11 @@ public:
 
 	CWndBase* GetWndVendorBase( void );
 
-#if __VER >= 8 //__CSC_VER8_1
 	void ClearAllWnd();
 	void RestoreWnd();
-#endif //__CSC_VER8_1
 
-#if __VER >= 12 // __CSC_VER12_4
 	DWORD GetDSTStringId(int nDstParam);
 	BOOL IsDstRate(int nDstParam);
-#endif //__CSC_VER12_4
 
 #ifdef __WINDOW_INTERFACE_BUG
 	void CloseBoundWindow(void); // 아이템이 걸려 있거나, 아이템을 조작할 가능성이 있는 모든 창을 강제로 닫는다.

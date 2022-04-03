@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 15 // __CAMPUS
 #include "Campus.h"
 
 class CCampusHelper  
@@ -32,5 +31,4 @@ private:
 	CCampus* m_pCampus;
 };
 
-#endif // __CAMPUS
 #endif // !defined(AFX_CAMPUSHELPER_H__8C0DE44B_A33F_472A_8502_1966B9EBA8EB__INCLUDED_)

@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonBase.h"
 
 class CInstanceDungeonParty : public CInstanceDungeonBase
@@ -32,6 +31,5 @@ private:
 #endif // __WORLDSERVER
 };
 
-#endif // __INSTANCE_DUNGEON
 
 #endif // !defined(AFX_INSTANCEDUNGEONPARTY_H__6DEF4167_3C00_4369_9AA3_A846FDF6EFD9__INCLUDED_)

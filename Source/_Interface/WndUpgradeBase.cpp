@@ -84,12 +84,6 @@ void CWndUpgradeBase::OnInitialUpdate()
 	Move( point );
 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-#if __VER < 12 // __MOD_TUTORIAL		
-	if( pWndWorld ) 
-	{
-		pWndWorld->m_pWndGuideSystem->SendGuideMessage(APP_TEST);
-	}
-#endif
 	LPWNDCTRL pCustom = NULL;
 	pCustom = GetWndCtrl( WIDC_CUSTOM3 );
 	m_Rect[0] = pCustom->rect;
@@ -216,11 +210,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			}
 			
 			// 카드, 주사위 아이템이 아니면 리턴
-		#if __VER >= 8 //__Y_NEW_ENCHANT
 			if( pItemElem->GetProp()->dwItemKind3 != IK3_ELECARD && pItemElem->GetProp()->dwItemKind3 != IK3_ENCHANT )
-		#else //__Y_NEW_ENCHANT			
-			if( pItemElem->GetProp()->dwItemKind3 != IK3_ELECARD && pItemElem->GetProp()->dwItemKind3 != IK3_DICE )
-		#endif //__Y_NEW_ENCHANT
 				return FALSE;
 
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_ELECARD  )
@@ -248,11 +238,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				pAbilityOption = &(m_pItemElem[0]->m_nResistAbilityOption);
 			}
 
-		#if __VER >= 8 //__Y_NEW_ENCHANT
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_ENCHANT )
-		#else //__Y_NEW_ENCHANT
-			if( pItemElem->GetProp()->dwItemKind3 == IK3_DICE )
-		#endif //__Y_NEW_ENCHANT
 			{
 				//*
 				// 속성레벨이 10 이상이면 제련 불가능

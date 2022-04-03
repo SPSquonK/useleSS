@@ -9,12 +9,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 9 // __EVENTLUA
 
 #include "LuaBase.h"
 
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __EVENTLUA_0826
 class CEventLua;
 class CEventLuaProxy
 {
@@ -108,7 +106,6 @@ private:
 	float	m_fShopSellFactor;
 #endif // __SHOP_COST_RATE
 };
-#endif	// __EVENTLUA_0826
 #endif // __WORLDSERVER
 
 class CEventLua  
@@ -190,11 +187,9 @@ public:
 	DWORD	GetCouponEvent( BOOL bProxy = TRUE );
 
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __EVENTLUA_0826
 	void	PrepareProxy()	{	m_proxy.Initialize( this );	}
 private:
 	CEventLuaProxy	m_proxy;
-#endif	// __EVENTLUA_0826
 
 #ifdef __EVENTLUA_SPAWN
 private:
@@ -252,6 +247,5 @@ public:
 
 #endif // __WORLDSERVER
 };
-#endif // __EVENTLUA
 
 #endif // !defined(AFX_EVENTLUA_H__CB7F2A4F_B0F3_47A4_BC55_55047E95D5D2__INCLUDED_)

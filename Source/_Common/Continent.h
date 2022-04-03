@@ -25,26 +25,8 @@
 #define CONT_ALL			(BYTE)0xff
 */
 
-#if __VER >= 15 // __USING_CONTINENT_DATA
 #include "ContinentDef.h"
-#else // __USING_CONTINENT_DATA
-const BYTE CONT_NODATA			= 0x00;
-const BYTE CONT_FLARIS			= 0x01;	// 플라리스 
-const BYTE CONT_SAINTMORNING	= 0x02; // 세인트모닝
-const BYTE CONT_RICIS			= 0x04; // 리시스의 정원
-const BYTE CONT_EAST			= 0x0f; // 동부
 
-const BYTE CONT_DARKON12		= 0x10; // 다콘 1, 2
-const BYTE CONT_DARKON3			= 0x20; // 다콘 3
-#if __VER >= 14 // __NEW_CONTINENT
-const BYTE CONT_HARMONIN		= 0x40; // 하르모닌
-#endif // __NEW_CONTINENT
-const BYTE CONT_WEST			= 0xf0; // 서부
-
-const BYTE CONT_ALL				= 0xff; // 군주
-#endif	//__USING_CONTINENT_DATA
-
-#if __VER >= 12 // __SECRET_ROOM
 
 class CContinent  
 {
@@ -63,16 +45,12 @@ public:
 	D3DXVECTOR3 GetRevivalPos( BYTE nContinent );
 #endif // __WORLDSERVER
 
-#if __VER >= 14 // __NEW_CONTINENT
 #ifdef __CLIENT
 	int	GetMapNo( CMover* pMover );
 	int	GetMapNo( const D3DXVECTOR3& vPos );		//gmpbigsun : const 
 #endif // __CLIENT
-#endif // __NEW_CONTINENT
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	int GetContinentIndex( const char* continentName );
-#endif
 
 #ifdef __IMPROVE_MAP_SYSTEM
 public:
@@ -94,6 +72,5 @@ public:
 	BYTE GetTown( const D3DXVECTOR3& vPos );		//world pos로 get town id!
 };
 
-#endif // __SECRET_ROOM
 
 #endif // !defined(AFX_CONTINENT_H__90911CD3_CA89_45BF_8632_B274DDDFE707__INCLUDED_)

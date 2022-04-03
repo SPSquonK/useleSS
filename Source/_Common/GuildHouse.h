@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 15 // __GUILD_HOUSE
 enum
 {
 	GUILDHOUSE_PCKTTYPE_LISTUP = 0,
@@ -503,6 +502,5 @@ private:
 };
 #endif // n__CLIENT 
 
-#endif // __GUILD_HOUSE
 
 #endif // !defined(AFX_GUILDHOUSE_H__7A401B90_A88E_4AB9_A5A3_CBFE71AB03F6__INCLUDED_)

@@ -3,9 +3,7 @@
 
 #include "WndPartyChangeTroup.h"
 
-#if __VER >= 8 //__CSC_VER8_2
 #include "WndPartyQuick.h"
-#endif //__CSC_VER8_2
 
 class CWndPartyInfo : public CWndNeuz 
 { 
@@ -58,12 +56,8 @@ public:
 	CWndButton* m_pWndLeave;
 	CWndButton* m_pWndChange;
 	CWndButton* m_pWndTransfer;
-#if __VER >= 8 //__CSC_VER8_2
 	CWndButton* m_pBtnPartyQuick;
 	CWndPartyQuick* m_pWndPartyQuick;
-#else
-	CWndButton* m_pBtnPartyQuick;
-#endif //__CSC_VER8_2
 	
 public: 
 	CWndPartyInfo  m_wndPartyInfo;

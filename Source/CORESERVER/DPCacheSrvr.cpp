@@ -771,7 +771,6 @@ void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser,
 	if( nFind == -1 || pParty->m_aMember[nFind].m_bRemove )
 		return;
 
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 	for( int j = 0 ; j < MAX_PARTYMODE ; j++ )
 	{
 		if( pParty->m_nModeTime[j] )
@@ -782,7 +781,6 @@ void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser,
 			g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, j, FALSE );
 		}
 	}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 	pParty->ChangeLeader( idChangeLeader );
 	g_dpCoreSrvr.SendChangeLeader( pParty->m_uPartyId, idChangeLeader );
 }
@@ -833,11 +831,7 @@ void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 		{
 			return;
 		}
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		if( FALSE == pParty->NewMember( pMember->uKey ) )
-#else	// __SYS_PLAYER_DATA
-		if( FALSE == pParty->NewMember( pMember->uKey, nMemberLevel, nMemberJob, dwMSex, pMember->lpszPlayer ) )
-#endif	// __SYS_PLAYER_DATA
 		{
 			// error
 		}
@@ -845,9 +839,7 @@ void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 		{
 			pMember->m_uPartyId		= pParty->m_uPartyId;
 			g_dpCoreSrvr.SendAddPartyMember( pParty->m_uPartyId, pLeader->uKey, nLeaderLevel, nLeaderJob, (BYTE)( dwLSex ), pMember->uKey, nMemberLevel, nMemberJob, (BYTE)( dwMSex ) );
-#if __VER >= 12 // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 			g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
-#endif // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 		}
 	}
 	else	// new
@@ -916,9 +908,7 @@ void CDPCacheSrvr::OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser,
 			return;
 		}
 	}
-#if __VER >= 12 // __PARSKILL1001
 	BOOL bLeader = pParty->IsLeader( idMember );
-#endif // ____PARSKILL1001
 	if( pParty->DeleteMember( idMember ) )
 	{
 		if( pMember )
@@ -931,7 +921,6 @@ void CDPCacheSrvr::OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser,
 				pLeadertmp->m_uPartyId	= 0;
 			g_PartyMng.DeleteParty( pParty->m_uPartyId );
 		}
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 		else
 		{
 			if( bLeader )
@@ -953,7 +942,6 @@ void CDPCacheSrvr::OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser,
 			if( pParty->m_nModeTime[PARTY_PARSKILL_MODE] )
 				g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
 		}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz	
 	}
 	else
 	{
@@ -1141,9 +1129,7 @@ void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, 
 				strcpy( pParty->m_sParty, lpszPlayer );
 				pParty->m_nKindTroup = 1;
 				g_dpCoreSrvr.SendPartyChangeTroup( pParty->m_uPartyId, pParty->m_sParty );
-#if __VER >= 12 // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 				g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
-#endif // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 			}
 			else
 			{
@@ -1151,9 +1137,7 @@ void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, 
 				{
 					pParty->m_nKindTroup = 1;
 					g_dpCoreSrvr.SendPartyChangeTroup( pParty->m_uPartyId, pParty->m_sParty );						
-#if __VER >= 12 // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 					g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
-#endif // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 					
 					if( lpszPlayer != NULL )
 						g_PartyMng.RemovePartyName( pPlayer->uKey, lpszPlayer );
@@ -1322,13 +1306,6 @@ void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 	CGuildMember* pMember	= new CGuildMember;
 	pMember->m_idPlayer	= pPlayer->uKey;
 	pMember->m_nMemberLv	= GUD_ROOKIE;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	pMember->m_nLevel	= info.nLevel;
-	pMember->m_nJob	= info.nJob;
-	pMember->m_dwSex	= info.dwSex;
-	pMember->m_nMultiNo		= info.nMultiNo		= pPlayer->m_uIdofMulti;
-	pMember->m_nLogin	= 1;
-#endif	// __SYS_PLAYER_DATA
 	if( pGuild->AddMember( pMember ) )
 	{
 		pPlayer->m_idGuild	= pGuild->m_idGuild;
@@ -2796,7 +2773,6 @@ void CDPCacheSrvr::SendSnoop( const char* lpszString, CPlayer* pSnoop )
 	SEND( ar, this, pSnoop->dpidCache );
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPCacheSrvr::SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData, CPlayer* pTo )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_UPDATE_PLAYER_DATA, pTo->dpidUser );
@@ -2811,7 +2787,6 @@ void CDPCacheSrvr::SendLogout( u_long idPlayer, CPlayer* pTo )
 	ar << idPlayer;
 	SEND( ar, this, pTo->dpidCache );
 }
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __QUIZ
 void CDPCacheSrvr::SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nChannel, int nTime )

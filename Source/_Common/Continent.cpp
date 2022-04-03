@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-#if __VER >= 12 // __SECRET_ROOM
 
 CContinent::CContinent()
 {
@@ -31,7 +30,6 @@ void CContinent::Init()
 	m_MapCont.clear();
 	vector<CPoint> vecMap;
 
-#if __VER >= 15 // __USING_CONTINENT_DATA// 대륙 경계정보 Data연결중 
 	// 세금이나 비밀의 방에 관여하는 대륙은 마드리갈에만(메인월드) 존재하며 앞으로도로 그럴꺼라고 가정한다.
 	const char* szWorldName = "WdMadrigal";				
 	CString strDir = MakePath( DIR_WORLD, szWorldName );
@@ -103,116 +101,6 @@ void CContinent::Init()
 
 	}while( script.tok != FINISHED );
 
-#else	
-	// 플라리스
-	vecMap.clear();
-	vecMap.push_back( CPoint(6159, 3407) );
-	vecMap.push_back( CPoint(6350, 3825) );
-	vecMap.push_back( CPoint(6736, 4649) );
-	vecMap.push_back( CPoint(7246, 4570) );
-	vecMap.push_back( CPoint(8258, 5022) );
-	vecMap.push_back( CPoint(8213, 4367) );
-	vecMap.push_back( CPoint(8021, 4037) );
-	vecMap.push_back( CPoint(8017, 3496) );
-	vecMap.push_back( CPoint(7245, 2685) );
-	vecMap.push_back( CPoint(6783, 2631) );
-	vecMap.push_back( CPoint(6366, 2922) );
-	vecMap.push_back( CPoint(6159, 3407) );
-	
-	m_MapCont.insert( make_pair(CONT_FLARIS, vecMap) );
-	
-	// 세인트모닝
-	vecMap.clear();
-	vecMap.push_back( CPoint(7253, 2684) );
-	vecMap.push_back( CPoint(8023, 3496) );
-	vecMap.push_back( CPoint(8029, 4039) );
-	vecMap.push_back( CPoint(8217, 4365) );
-	vecMap.push_back( CPoint(8609, 4187) );
-	vecMap.push_back( CPoint(9489, 3047) );
-	vecMap.push_back( CPoint(9289, 2130) );
-	vecMap.push_back( CPoint(8765, 1615) );
-	vecMap.push_back( CPoint(7855, 1554) );
-	vecMap.push_back( CPoint(7506, 1870) );
-	vecMap.push_back( CPoint(7253, 2684) );
-	
-	m_MapCont.insert( make_pair(CONT_SAINTMORNING, vecMap) );
-	
-	// 리시스정원
-	vecMap.clear();
-	vecMap.push_back( CPoint(9123, 3339) );
-	vecMap.push_back( CPoint(8922, 3740) );
-	vecMap.push_back( CPoint(8607, 4127) );
-	vecMap.push_back( CPoint(8285, 4397) );
-	vecMap.push_back( CPoint(8316, 4748) );
-	vecMap.push_back( CPoint(8833, 4762) );
-	vecMap.push_back( CPoint(9612, 4992) );
-	vecMap.push_back( CPoint(10436,4396) );
-	vecMap.push_back( CPoint(9441, 3171) );
-	vecMap.push_back( CPoint(9123, 3339) );
-	
-	m_MapCont.insert( make_pair(CONT_RICIS, vecMap) );
-	
-	// 다콘1,2
-	vecMap.clear();
-	vecMap.push_back( CPoint(4858, 2781) );
-	vecMap.push_back( CPoint(4561, 3613) );
-	vecMap.push_back( CPoint(4051, 3835) );
-	vecMap.push_back( CPoint(3796, 3790) );
-	vecMap.push_back( CPoint(3574, 4200) );
-	vecMap.push_back( CPoint(3455, 4479) );
-	vecMap.push_back( CPoint(3072, 4563) );
-	vecMap.push_back( CPoint(2833, 5237) );
-	vecMap.push_back( CPoint(3572, 5185) );
-	vecMap.push_back( CPoint(4863, 4778) );
-	vecMap.push_back( CPoint(6756, 4875) );
-	vecMap.push_back( CPoint(6558, 4367) );
-	vecMap.push_back( CPoint(6387, 3826) );
-	vecMap.push_back( CPoint(6102, 3298) );
-	vecMap.push_back( CPoint(5795, 2727) );
-	vecMap.push_back( CPoint(4858, 2781) );
-	
-	m_MapCont.insert( make_pair(CONT_DARKON12, vecMap) );
-	
-	// 다콘3
-	vecMap.clear();
-	vecMap.push_back( CPoint(2834, 5241) );
-	vecMap.push_back( CPoint(3069, 4562) );
-	vecMap.push_back( CPoint(3451, 4476) );
-	vecMap.push_back( CPoint(3567, 4196) );
-	vecMap.push_back( CPoint(3792, 3791) );
-	vecMap.push_back( CPoint(4049, 3736) );
-	vecMap.push_back( CPoint(4555, 3615) );
-	vecMap.push_back( CPoint(4854, 2775) );
-	vecMap.push_back( CPoint(3395, 1291) );
-	vecMap.push_back( CPoint(1291, 2425) );
-	vecMap.push_back( CPoint(1867, 3867) );
-	vecMap.push_back( CPoint(1946, 4694) );
-	vecMap.push_back( CPoint(2834, 5241) );
-	
-	m_MapCont.insert( make_pair(CONT_DARKON3, vecMap) );
-
-#if __VER >= 14 // __NEW_CONTINENT
-	// 하르모닌
-	vecMap.clear();
-	vecMap.push_back( CPoint(6037, 4875) );
-	vecMap.push_back( CPoint(6484, 5060) );
-	vecMap.push_back( CPoint(7800, 5600) );
-	vecMap.push_back( CPoint(7990, 5938) );
-	vecMap.push_back( CPoint(7940, 6100) );
-	vecMap.push_back( CPoint(7562, 6384) );
-	vecMap.push_back( CPoint(7170, 6616) );
-	vecMap.push_back( CPoint(6897, 6631) );
-	vecMap.push_back( CPoint(6561, 6768) );
-	vecMap.push_back( CPoint(5681, 6777) );
-	vecMap.push_back( CPoint(5544, 6379) );
-	vecMap.push_back( CPoint(5317, 6079) );
-	vecMap.push_back( CPoint(5200, 5900) );
-	vecMap.push_back( CPoint(5231, 4875) );
-	
-	m_MapCont.insert( make_pair(CONT_HARMONIN, vecMap) );
-#endif // __NEW_CONTINENT
-
-#endif
 
 }
 
@@ -323,7 +211,6 @@ BYTE CContinent::GetTown( const D3DXVECTOR3& vPos )
 
 BYTE CContinent::GetArea( BYTE nCont )
 {
-#if __VER >= 15 // __USING_CONTINENT_DATA
 	if( nCont == CONT_NODATA )
 		return CONT_NODATA;
 	else if( nCont <= CONT_EAST )
@@ -332,14 +219,6 @@ BYTE CContinent::GetArea( BYTE nCont )
 		return CONT_WEST;
 
 	return CONT_NODATA;
-#else // __USING_CONTINENT_DATA
-	if( nCont & CONT_EAST )
-		return CONT_EAST;
-	else if( nCont & CONT_WEST )
-		return CONT_WEST;
-	else
-		return CONT_NODATA;
-#endif // __USING_CONTINENT_DATA
 }
 
 CString CContinent::GetContinentName( BYTE nCont )
@@ -402,7 +281,6 @@ D3DXVECTOR3 CContinent::GetRevivalPos( BYTE nContinent )
 }
 #endif // __WORLDSERVER
 
-#if __VER >= 14 // __NEW_CONTINENT
 #ifdef __CLIENT
 int	CContinent::GetMapNo( CMover* pMover )
 {
@@ -422,18 +300,13 @@ int	CContinent::GetMapNo( const D3DXVECTOR3& vPos )
 		case CONT_DARKON3 :			return 2;
 		case CONT_RICIS :			return 3;
 		case CONT_HARMONIN :		return 6;
-#if __VER >= 15 // __NEW_CONTINENT15
 		case CONT_ESTIA :			return 7;
-#endif // __NEW_CONTINENT15
 		default:					return 100;
 	}
 }
 #endif // __CLIENT
-#endif // __NEW_CONTINENT
 
-#endif // __SECRET_ROOM
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 int CContinent::GetContinentIndex( const char* continentName )
 {
 	if( strcmp( "Flaris", continentName ) == 0 )
@@ -465,4 +338,3 @@ int CContinent::GetContinentIndex( const char* continentName )
 
 	return CONT_NODATA;
 }
-#endif

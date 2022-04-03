@@ -15,9 +15,7 @@ CString GetLangFileName( int nLang, int nType )
 #ifdef __RULE_0615
 			,"Letter"
 #endif	// __RULE_0615
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 			,"GuildCombat1to1_TEXT1", "GuildCombat1to1_TEXT2", "GuildCombat1to1_TEXT3", "GuildCombat1to1_TEXT4", "GuildCombat1to1_TEXT5"
-#endif //__GUILD_COMBAT_1TO1
 #ifdef __VENDOR_1106
 			, "Letter1"
 #endif	// __VENDOR_1106
@@ -192,15 +190,10 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		pProperty->dwAtk2				= scanner.GetNumber();
 		pProperty->dwAtk3				= scanner.GetNumber();
 		pProperty->dwAtk4				= scanner.GetNumber();
-#if __VER >= 9	//__AI_0509
 		pProperty->fFrame	= scanner.GetFloat();	// -1이면 가중치 영향 없음. 1.0 기본 값
 		if( abs( -1.0F  - pProperty->fFrame ) < 0.000001F )
 			pProperty->fFrame	= 1.0F;
 		pProperty->dwOrthograde	= scanner.GetNumber();
-#else	// __AI_0509
-		pProperty->dwVerticalRate		= scanner.GetNumber();
-		pProperty->dwDiagonalRate		= scanner.GetNumber();
-#endif	// __AI_0509
 		pProperty->dwThrustRate			= scanner.GetNumber();
 
 		pProperty->dwChestRate			= scanner.GetNumber();
@@ -513,26 +506,22 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 				prop.dwLimitLevel1	= 45;
 		}
 		
-		if( nVer <= __VER )
-		{
 //			TRACE( "PropItem = %d, %s\n", prop.dwID, prop.szName );
-			m_mapII.insert( map<string, DWORD>::value_type( prop.szName, prop.dwID ) );
-#if __VER >= 9	// __ULTIMATE
+		m_mapII.insert( map<string, DWORD>::value_type( prop.szName, prop.dwID ) );
 #ifdef __CLIENT
-			if( prop.IsUltimate() )
+		if( prop.IsUltimate() )
+		{
+			CString strName	= prop.szName;
+			int	nFind	= strName.Find( "@", 0 );
+			if( nFind > -1 )
 			{
-				CString strName	= prop.szName;
-				int	nFind	= strName.Find( "@", 0 );
-				if( nFind > -1 )
-				{
-					strName.Delete( nFind - 1, 2 );
-					lstrcpy( prop.szName, (LPCTSTR)strName );
-				}
+				strName.Delete( nFind - 1, 2 );
+				lstrcpy( prop.szName, (LPCTSTR)strName );
 			}
-#endif	// __CLIENT
-#endif	// __ULTIMATE
-			apObjProp->SetAtGrow( prop.dwID, &prop);
 		}
+#endif	// __CLIENT
+		apObjProp->SetAtGrow( prop.dwID, &prop);
+
 
 		nVer = scanner.GetNumber();	// version; 
 	}
@@ -632,9 +621,7 @@ void CProject::LoadStrings()
 		"Client\\InstantHelp.txt.txt",
 		"Client\\help.txt.txt",
 		"Client\\Guide.txt.txt",
-#if __VER >= 12 // __MOD_TUTORIAL
 		"Client\\tutorial.txt.txt",
-#endif
 //		"Client\\GameGuard.txt.txt",
 		"Client\\faq.txt.txt",
 		"World\\WdVolcane\\WdVolcane.txt.txt",
@@ -649,18 +636,13 @@ void CProject::LoadStrings()
 		"World\\DuBear\\DuBear.txt.txt",
 		"World\\DuSaTemple\\DuSaTemple.txt.txt",
 		"World\\DuSaTempleBoss\\DuSaTempleBoss.txt.txt"
-#if __VER >= 9	// __JEFF_9
 		,"World\\WdVolcane\\WdVolcane.txt.txt"
 		,"World\\WdVolcaneRed\\WdVolcaneRed.txt.txt"
 		,"World\\WdVolcaneYellow\\WdVolcaneYellow.txt.txt"
-#endif	// __JEFF_9
 #ifdef __JEFF_11_4
 		,"World\\WdArena\\WdArena.txt.txt"
 #endif	// __JEFF_11_4
-#if __VER >= 12 // __LORD
 		,"lordskill.txt.txt"
-#endif	// __LORD
-#if __VER >= 12 // __SECRET_ROOM
 		,"World\\WdHeaven01\\wdheaven01.txt.txt"
 		,"World\\WdHeaven02\\wdheaven02.txt.txt"
 		,"World\\WdHeaven03\\wdheaven03.txt.txt"
@@ -668,25 +650,18 @@ void CProject::LoadStrings()
 		,"World\\WdHeaven05\\wdheaven05.txt.txt"
 		,"World\\WdHeaven06\\wdheaven06.txt.txt"
 		,"World\\WdHeaven06_1\\wdheaven06_1.txt.txt"
-#endif // __SECRET_ROOM
-#if __VER >= 13 // __HONORABLE_TITLE
 		, "honorList.txt.txt"
-#endif	// __HONORABLE_TITLE
 #ifdef __AZRIA_1023
 		, "World\\WdCisland\\WdCisland.txt.txt"
 #endif // __AZRIA_1023
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		, "World\\DuOminous\\duominous.txt.txt"
 		, "World\\DuOminous_1\\duominous_1.txt.txt"
-#endif // __INSTANCE_DUNGEON
-#if __VER >= 15 // __GUILD_HOUSE
 		, "World\\WdGuildhousesmall\\WdGuildhousesmall.txt.txt"		// 소형 길드하우스
 		, "World\\WdGuildhousemiddle\\WdGuildhousemiddle.txt.txt"	// 중형 길드하우스
 		, "World\\WdGuildhouselarge\\WdGuildhouselarge.txt.txt"		// 대형 길드하우스
 		, "World\\DuDreadfulCave\\DuDreadfulCave.txt.txt"			// 추가 인던(드래드풀 케이브)
 		, "World\\DuRustia\\DuRustia.txt.txt"						// 추가 인던(러스티아 일반)
 		, "World\\DuRustia_1\\DuRustia_1.txt.txt"					// 추가 인던(러스티아 마스터)
-#endif // __GUILD_HOUSE
 #ifdef __IMPROVE_MAP_SYSTEM
 		, "propMapComboBoxData.txt.txt"
 #endif // __IMPROVE_MAP_SYSTEM
@@ -721,12 +696,8 @@ void CProject::LoadDefines()
 		"defineSound.h",
 		"resdata.h",
 		"WndStyle.h"
-#if __VER >= 12 // __LORD
 		, "definelordskill.h"
-#endif	// __LORD
-#if __VER >= 13 // __HONORABLE_TITLE
 		, "defineHonor.h"
-#endif	// __HONORABLE_TITLE
 #ifdef __IMPROVE_MAP_SYSTEM
 		, "ContinentDef.h"
 		, "defineMapComboBoxData.h"

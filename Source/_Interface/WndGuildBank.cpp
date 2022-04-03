@@ -11,47 +11,6 @@ extern	CDPClient	g_DPlay;
 #include "eveschool.h"
 extern	CGuildCombat	g_GuildCombatMng;
 
-#if __VER < 8 // #ifndef __GUILDCOMBAT_85
-///////////////////////////////////////////////////////////////////////////
-// CWndGuildBankMessageBox
-//////////////////////////////////////////////////////////////////////////////
-class CWndGuildBankMessageBox : public CWndMessageBox
-{ 
-public: 
-	void	SetValue( CString str );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-}; 
-
-BOOL CWndGuildBankMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	return CWndMessageBox::Initialize( "", 
-		pWndParent, 
-		MB_OKCANCEL );	
-}
-
-void CWndGuildBankMessageBox::SetValue( CString str )
-{
-	m_wndText.SetString( str );
-}
-
-BOOL CWndGuildBankMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	switch( nID )
-	{
-	case IDOK:
-		{
-			g_DPlay.SendGCGetItem();
-			Destroy();
-		}
-		break;
-	case IDCANCEL:
-		Destroy();
-		break;
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-#endif //__VER < 8
 
 /****************************************************
   WndId : APP_GUILD_BANK - 길드창고
@@ -70,9 +29,7 @@ CWndGuildBank::~CWndGuildBank()
 { 
 	SAFE_DELETE( m_pwndGuildMerit );
 	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
-#if __VER >= 11 // __GUILD_BANK_LOG
 	SAFE_DELETE( g_WndMng.m_pWndGuildBankLog );
-#endif //__GUILD_BANK_LOG
 } 
 void CWndGuildBank::OnDraw( C2DRender* p2DRender ) 
 { 
@@ -89,9 +46,7 @@ void CWndGuildBank::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-#if __VER >= 11 // __SYS_POCKET
 	if(GetWndBase( APP_BAG_EX )) GetWndBase( APP_BAG_EX )->Destroy();
-#endif
 	if( g_WndMng.m_pWndTrade || g_WndMng.m_pWndShop || g_WndMng.m_pWndBank || g_WndMng.GetWndVendorBase() )
 	{
 		Destroy();
@@ -152,26 +107,13 @@ void CWndGuildBank::OnInitialUpdate()
 	{
 		CWndButton* pWndButt = (CWndButton*)GetDlgItem(WIDC_BUTTON3);
 
-#if __VER >= 8 // __GUILDCOMBAT_85
 		pWndButt->EnableWindow(FALSE);
 		pWndButt->SetVisible(FALSE);
-#else // __VER >= 8
-		if( g_GuildCombatMng.m_uWinGuildId == pGuild->GetGuildId()  )
-			pWndButt->EnableWindow(TRUE);
-		else
-			pWndButt->EnableWindow(FALSE);
-#endif // __VER >= 8
 	}
 
-#if __VER >= 11 // __GUILD_BANK_LOG
 	CWndButton* pWndButtLog = (CWndButton*)GetDlgItem(WIDC_LOG);
 	pWndButtLog->EnableWindow(TRUE);
 	pWndButtLog->SetVisible(TRUE);
-#else //__GUILD_BANK_LOG
-	//CWndButton* pWndButtLog = (CWndButton*)GetDlgItem(WIDC_LOG);
-	//pWndButtLog->EnableWindow(FALSE);
-	//pWndButtLog->SetVisible(FALSE);
-#endif //__GUILD_BANK_LOG
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndGuildBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
@@ -344,24 +286,6 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 			}
 			break;
-#if __VER < 8 // #ifndef __GUILDCOMBAT_85
-		case WIDC_BUTTON3:
-			{
-				CGuild *pGuild = g_pPlayer->GetGuild();
-
-				// 길드가 존재하고 우승한 길드이면서...그길드의 맴버이면...망토 생성가능
-				if( pGuild && g_GuildCombatMng.m_uWinGuildId == pGuild->GetGuildId() && pGuild->IsMember( g_pPlayer->m_idPlayer ) )
-				{
-					CWndGuildBankMessageBox* pBox = new CWndGuildBankMessageBox;
-					g_WndMng.OpenCustomBox( "", pBox );
-					CString str;
-					str.Format( prj.GetText( TID_GAME_GUILDCOMBAT_MAKE_CLOAK ) );	//"수정요망!! 용망토를 생성하시겠습니까? 1,000페냐의 제작 수수료가 부과됩니다." );
-					pBox->SetValue( str );
-				}
-			}
-			break;
-#endif // __VER < 8
-#if __VER >= 11 // __GUILD_BANK_LOG
 		case WIDC_LOG:
 			{
 				CGuild* pGuild = g_pPlayer->GetGuild();
@@ -384,14 +308,12 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.PutString( prj.GetText( TID_GAME_CANNT_USE_GLOG ), NULL, prj.GetTextColor( TID_GAME_CANNT_USE_GLOG ) );
 			}
 			break;
-#endif //__GUILD_BANK_LOG
 		}
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#if __VER >= 11 // __GUILD_BANK_LOG
 //////////////////////////////////////////////////////////////////////////
 // Guild Bank Log Window
 //////////////////////////////////////////////////////////////////////////
@@ -903,4 +825,3 @@ int CWndInvestPenyaLog::GetDrawCount( void )
 
 	return nMax;
 }
-#endif //__GUILD_BANK_LOG

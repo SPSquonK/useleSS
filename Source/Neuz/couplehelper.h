@@ -17,9 +17,7 @@ public:
 	void	OnProposeResult( CAr & ar );
 	void	OnCoupleResult( CAr & ar );
 	void	OnDecoupleResult();
-#if __VER >= 13 // __COUPLE_1202
 	void	OnAddCoupleExperience( CAr & ar );
-#endif	// __COUPLE_1202
 	CCouple*	GetCouple()		{	return m_pCouple;	}
 private:
 	CCouple*	m_pCouple;

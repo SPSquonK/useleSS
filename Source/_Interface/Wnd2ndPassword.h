@@ -1,7 +1,7 @@
 #ifndef __WND_2ND_PASSWORD__
 #define __WND_2ND_PASSWORD__
 
-#if __VER >= 15 /* __2ND_PASSWORD_SYSTEM */ && defined( __CLIENT )
+#if defined( __CLIENT )
 class CWnd2ndPassword : public CWndNeuz
 {
 public:

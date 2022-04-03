@@ -33,11 +33,9 @@ public:
 	void	OnFail( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnOneHourNotify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	void	OnLoginProtect( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 public:
 	void	SendLoginProtect( const char* lpszAccount, const char* lpszPlayer, u_long idPlayer, int nBankPW, DPID dpid );
-#endif // __2ND_PASSWORD_SYSTEM
 };
 
 inline void CDPDatabaseClient::SendToServer( DPID idFrom, LPVOID lpMsg, DWORD dwMsgSize )

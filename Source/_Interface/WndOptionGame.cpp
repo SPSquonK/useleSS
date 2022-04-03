@@ -15,20 +15,17 @@ extern	CDPClient	g_DPlay;
 
 CWndOptionGame::CWndOptionGame() 
 { 
-#if __VER >= 12 // __UPDATE_OPT
 	m_bLButtonClick = FALSE;
 	m_bLButtonClick2 = FALSE;
 	
 	m_nStep[0] = 0;
 	m_nStep[1] = 0;
-#endif
 } 
 CWndOptionGame::~CWndOptionGame() 
 { 
 } 
 void CWndOptionGame::OnDraw( C2DRender* p2DRender ) 
 {
-#if __VER >= 12 // __UPDATE_OPT
 	CPoint pt;
 
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM2 );
@@ -47,7 +44,6 @@ void CWndOptionGame::OnDraw( C2DRender* p2DRender )
 	pt = pt1;
 	pt.x += GetStepPos( m_nStep[1], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
 	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-#endif
 } 
 
 void CWndOptionGame::OnInitialUpdate() 
@@ -71,7 +67,6 @@ void CWndOptionGame::OnInitialUpdate()
 	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
 	pWndButton[ 0 ]->SetGroup( TRUE );
 	pWndButton[ !(g_Option.m_bParty) ]->SetCheck( TRUE );
-#if __VER >= 12 // __UPDATE_OPT
 	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
 	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );	
 	m_nStep[0] = (int)( g_Option.m_fEffectVolume * 10 );
@@ -89,10 +84,8 @@ void CWndOptionGame::OnInitialUpdate()
 	CWndButton* pWndAlpha = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
 	pWndAlpha->SetCheck( g_Option.m_nWindowAlpha == 255 ? FALSE : TRUE);
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	CWndButton* pWndCheckBattleBGM = (CWndButton*)GetDlgItem( WIDC_CHECK_BATTLE_BGM );
 	pWndCheckBattleBGM->SetCheck( g_Option.m_bBattleBGM ? TRUE : FALSE );
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __GAME_GRADE_SYSTEM
 	CWndButton* pWndCheckGameGrade = (CWndButton*)GetDlgItem( WIDC_CHECK_GAME_GRADE );
 	if( pWndCheckGameGrade )
@@ -112,16 +105,6 @@ void CWndOptionGame::OnInitialUpdate()
 	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO8 );
 	pWndButton[ 0 ]->SetGroup( TRUE );
 	pWndButton[ !(g_Option.m_bMessengerJoin) ]->SetCheck( TRUE );
-#else
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_SHOUT_ON );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_SHOUT_OFF );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ !(g_Option.m_bShout) ]->SetCheck( TRUE );
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_MESSENGERJOIN_ON );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_MESSENGERJOIN_OFF );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ !(g_Option.m_bMessengerJoin) ]->SetCheck( TRUE );
-#endif
 	
 
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_MESSENGER_ON );
@@ -129,7 +112,6 @@ void CWndOptionGame::OnInitialUpdate()
 	pWndButton[ 0 ]->SetGroup( TRUE );
 	pWndButton[ !(g_Option.m_bMessenger) ]->SetCheck( TRUE );
 
-#if __VER >= 9 // __CSC_VER9_REMOVE_PKSETTING
 	CRect rect;
 	LPWNDCTRL lpWndCtrl;
 	// 자동 PK 모드 옵션 제거
@@ -156,15 +138,6 @@ void CWndOptionGame::OnInitialUpdate()
 	lpWndCtrl = GetWndCtrl( WIDC_AUTOPK_OFF );
 	rect = lpWndCtrl->rect;
 	pWndButton[ 1 ]->Move(rect.TopLeft().x, rect.TopLeft().y);
-#else //__CSC_VER9_REMOVE_PKSETTING
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_AUTOPK_ON );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_AUTOPK_OFF );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	if( g_pPlayer )
-		pWndButton[ !(g_pPlayer->IsMode( FREEPK_MODE ) ) ]->SetCheck( TRUE );
-	else
-		pWndButton[ 1 ]->SetCheck( TRUE );
-#endif //__CSC_VER9_REMOVE_PKSETTING
 	
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_ACCEPTPVP_ON );
 	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_ACCEPTPVP_OFF );
@@ -224,16 +197,13 @@ void CWndOptionGame::OnSize( UINT nType, int cx, int cy ) \
 } 
 void CWndOptionGame::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
-#if __VER >= 12 // __UPDATE_OPT
 	PLAYSND(SND_NONE);
 	ReleaseCapture();
 	m_bLButtonClick = FALSE;
 	m_bLButtonClick2 = FALSE;
-#endif
 } 
 void CWndOptionGame::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
-#if __VER >= 12 // __UPDATE_OPT
 	SetCapture();
 
 	int nResult = 0;
@@ -262,16 +232,13 @@ void CWndOptionGame::OnLButtonDown( UINT nFlags, CPoint point )
 		g_Option.m_fBGMVolume = m_nStep[1]*0.1f;
 		SetVolume(g_Option.m_fBGMVolume);		
 	}
-#endif
 } 
 BOOL CWndOptionGame::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CWndButton* pWndHelp = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
 	CWndButton* pWndCheck = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
 	CWndButton* pWndAlpha = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	CWndButton* pWndCheckBattleBGM = (CWndButton*)GetDlgItem( WIDC_CHECK_BATTLE_BGM );
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __GAME_GRADE_SYSTEM
 	CWndButton* pWndCheckGameGrade = (CWndButton*)GetDlgItem( WIDC_CHECK_GAME_GRADE );
 #endif // __GAME_GRADE_SYSTEM
@@ -296,7 +263,6 @@ BOOL CWndOptionGame::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	case WIDC_RADIO6:
 		g_Option.m_bParty = 0;
 		break;
-#if __VER >= 12 // __UPDATE_OPT
 	case WIDC_CHECK1: // 초보자 도움말 옵션 
 		if( pWndHelp->GetCheck() )
 			g_Option.m_nInstantHelp = TRUE;
@@ -321,13 +287,11 @@ BOOL CWndOptionGame::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		else
 			CWndBase::m_nAlpha = g_Option.m_nWindowAlpha = 255;
 		break;
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	case WIDC_CHECK_BATTLE_BGM: // 전투 음악
 		{
 			g_Option.m_bBattleBGM = ( pWndCheckBattleBGM->GetCheck() == TRUE ) ? TRUE: FALSE;
 			break;
 		}
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __GAME_GRADE_SYSTEM
 	case WIDC_CHECK_GAME_GRADE: // 게임물 등급 표시
 		{
@@ -345,34 +309,12 @@ BOOL CWndOptionGame::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		break;
 	case WIDC_RADIO8:
 		g_Option.m_bMessengerJoin = 0;
-#else
-	case WIDC_SHOUT_ON:
-		g_Option.m_bShout = 1;
-		break;
-	case WIDC_SHOUT_OFF:
-		g_Option.m_bShout = 0;
-		break;
-	case WIDC_MESSENGERJOIN_ON:
-		g_Option.m_bMessengerJoin = 1;
-		break;
-	case WIDC_MESSENGERJOIN_OFF:
-		g_Option.m_bMessengerJoin = 0;
-		break;	
-#endif
 	case WIDC_MESSENGER_ON:
 		g_Option.m_bMessenger = 1;
 		break;
 	case WIDC_MESSENGER_OFF:
 		g_Option.m_bMessenger = 0;
 		break;
-#if __VER < 9 // __CSC_VER9_REMOVE_PKSETTING
-	case WIDC_AUTOPK_ON:
-		g_DPlay.SendChangePKPVPMode( FREEPK_MODE, 0 );
-		break;
-	case WIDC_AUTOPK_OFF:
-		g_DPlay.SendChangePKPVPMode( FREEPK_MODE, 1 );
-		break;
-#endif //__CSC_VER9_REMOVE_PKSETTING
 	case WIDC_ACCEPTPVP_ON:
 		g_DPlay.SendChangePKPVPMode( PVPCONFIRM_MODE, 3 );
 		break;
@@ -395,7 +337,6 @@ BOOL CWndOptionGame::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#if __VER >= 12 // __UPDATE_OPT
 
 void CWndOptionGame::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -484,5 +425,4 @@ HRESULT CWndOptionGame::RestoreDeviceObjects()
 	return CWndNeuz::RestoreDeviceObjects();
 }
 
-#endif
 

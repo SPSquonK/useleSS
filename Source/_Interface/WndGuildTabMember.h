@@ -30,13 +30,11 @@ class CWndGuildTabMember : public CWndNeuz
 	CWndMenu	m_wndMenu;			// ÆË¾÷ ¸Þ´º.
 	CWndScrollBar m_wndScrollBar;
 
-#if __VER >= 12 // __CSC_VER12_2
 	BOOL m_bSortbyMemberLevel;
 	BOOL m_bSortbyLevel;
 	BOOL m_bSortbyJob;
 	BOOL m_bSortbyName;
 	BOOL m_bSortbyAlias;
-#endif //__CSC_VER12_2
 
 public: 
 	void UpdateData();
@@ -62,13 +60,11 @@ public:
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	virtual void OnMouseWndSurface( CPoint point );
 
-#if __VER >= 12 // __CSC_VER12_2
 	void SortbyMemberLevel();
 	void SortbyJob();
 	void SortbyLevel();
 	void SortbyName();
 	void SortbyAlias();
-#endif //__CSC_VER12_2		
 }; 
 
 #endif

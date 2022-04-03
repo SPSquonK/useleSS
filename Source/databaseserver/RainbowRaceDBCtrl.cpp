@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include ".\rainbowracedbctrl.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "dptrans.h"
 extern AppInfo g_appInfo;
 
@@ -173,4 +172,3 @@ CRainbowRaceDBMng* CRainbowRaceDBMng::GetInstance()
 	return & sRainbowRaceDBMng;
 }
 
-#endif // __RAINBOW_RACE

@@ -169,7 +169,6 @@ typedef struct __PGUEST_TIME_TEXT
 	DWORD dwQuestTime;
 } __PGUEST_TIME_TEXT;
 
-#if __VER >= 12 // __SECRET_ROOM
 typedef struct __SRGUILDINFO
 {
 	DWORD dwGuildId;
@@ -188,7 +187,6 @@ typedef struct __KILLCOUNTCIPHERS
 } __KILLCOUNTCIPHERS;
 
 #define MAX_KILLCOUNT_CIPHERS 3
-#endif //__SECRET_ROOM
 
 
 class CWndWorld : public CWndNeuz
@@ -217,14 +215,10 @@ public:
 	BOOL	m_bCtrlPushed;
 	BOOL	m_bRenderFPS;
 
-#if __VER >= 8 //__CSC_VER8_5
 	BOOL	m_bShiftPushed; //다이스 옮길 때 한번에 넣기.
 	BOOL	m_bAngelFinish; //Angel 경험치 완료 유무.
-#endif //__CSC_VER8_5
-#if __VER >= 11 // __CSC_VER11_2
 	CObj*	m_pNextTargetObj;
 	CObj*	m_pRenderTargetObj;
-#endif //__CSC_VER11_2
 	DWORD m_dwIdBgmMusic;
 //#if __VER >= 9
 //	DWORD	m_dwIdBgmMusicOld;
@@ -257,9 +251,7 @@ public:
 //#ifdef __QUEST_HELPER
 	BOOL m_bSetQuestNPCDest;
 	D3DXVECTOR3 m_vQuestNPCDest;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	D3DXVECTOR3 m_vDestinationArrow;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 #ifdef __BS_PUTNAME_QUESTARROW
 	CString m_strDestName;
@@ -310,9 +302,7 @@ public:
 	multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
 	vector  < __GUILDRATE >		m_vecGuildCombat_GuildStatus;
 	map< u_long, vector<__GCWARSTATE> >  m_mapGC_GuildStatus;	
-#if __VER >= 8 //__CSC_VER8_3
 	CWndBase* m_pWndBuffStatus;
-#endif //__CSC_VER8_3
 
 public:
 	void InitEyeFlash();
@@ -340,9 +330,7 @@ public:
 	CTexturePack	m_texMsgIcon;
 	SET_NAVIGATOR	m_stnv;
 	CTexturePack	m_texAttrIcon;
-#if __VER >= 11 // __CSC_VER11_4
 	CTexturePack	m_texPlayerDataIcon;
-#endif //__CSC_VER11_4
 
 	CTexture			m_pTextureLogo[CUSTOM_LOGO_MAX];
 	DWORD				m_dwOneSecCount;
@@ -432,12 +420,8 @@ public:
 	CWndWorld();
 	virtual ~CWndWorld();
 	void RenderAltimeter();
-#if __VER >= 11 // __CSC_VER11_2
 	void RenderFocusObj( CObj* pObj, CRect rect, DWORD dwColor1, DWORD dwColor2 );
 	void SetNextTarget();
-#else //__CSC_VER11_2
-	void RenderFocusObj( CRect rect, DWORD dwColor1, DWORD dwColor2 );
-#endif //__CSC_VER11_2
 	void RenderFocusArrow( CPoint pt );
 	void RenderGauFlight( C2DRender* p2DRender );		// 비행모드시 게이지 인터페이스 Draw
 
@@ -466,21 +450,14 @@ public:
 #endif	// __BUFF_1107
 	void RenderSMBuff( C2DRender *p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
 	void RenderCasting(C2DRender *p2DRender);
-#if __VER >= 12 // __LORD
 	void	RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
-#endif	// __LORD
 
-#if __VER >= 9 // __CSC_VER9_1
 	void PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit );
-#endif //__CSC_VER9_1
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	void DrawGuildCombat1to1Info(C2DRender *p2DRender);
 	void DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender);
 	void DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender);
 	BOOL m_bGuildCombat1to1Wait;
-#endif //__GUILD_COMBAT_1TO1
 
-#if __VER >= 12 // __SECRET_ROOM
 	char m_szSecretRoomStr[256];
 	vector<__SRGUILDINFO> m_vecGuildList;
 	__KILLCOUNTCIPHERS m_stKillCountCiphers[MAX_KILLCOUNT_CIPHERS];
@@ -492,7 +469,6 @@ public:
 	void DrawMyGuildKillCount(C2DRender *p2DRender, __SRGUILDINFO stGuildInfo, CPoint ptState, int nMax);
 	void DrawOutLineLamp(C2DRender *p2DRender, CRect rectBg, DWORD dwColorstart, DWORD dwColorend, int nState, int nRank, BOOL bIsMyGuild);
 	void DrawOutLineFlash(C2DRender *p2DRender, CRect rectBg, DWORD dwColorstart, DWORD dwColorend);
-#endif //__SECRET_ROOM
 
 	void InviteParty( u_long uidPlayer );
 	void InviteCompany( OBJID objId );
@@ -535,11 +511,7 @@ private:
 	void	ShowMoverMenu( CMover* pTarget );
 	int		GetGaugePower( int* pnValue );
 
-#if __VER >= 15 // __GUILD_HOUSE
 	void	ShowCCtrlMenu( CCtrl* pCCtrl );		
-#endif 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	BOOL MenuException( CPoint point );	// 메뉴를 띄우기 전에 처리해 줘야 할 예외 사항들
-#endif // __IMPROVE_SYSTEM_VER15
 };
 #endif // !defined(AFX_WNDFIELD_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)

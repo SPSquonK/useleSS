@@ -15,7 +15,6 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-#if __VER >= 12 // __UPDATE_OPT
 	CTexture         m_Texture;
 	CTexture         m_TexturePt;
 	BOOL			 m_bLButtonClick;
@@ -30,6 +29,5 @@ public:
 
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
-#endif
 }; 
 #endif

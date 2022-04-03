@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "CampusDBCtrl.h"
 
-#if __VER >= 15 // __CAMPUS
 #include "dptrans.h"
 extern	APP_INFO	g_appInfo;
 #include "DPCoreSrvr.h"
@@ -398,4 +397,3 @@ int CCampusHelper::GetMaxPupilNum( int nCampusPoint )
 	return 0;
 }
 
-#endif // __CAMPUS

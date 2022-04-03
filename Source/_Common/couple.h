@@ -34,7 +34,6 @@ private:
 	u_long	m_idSecond;
 };
 
-#if __VER >= 13 // __COUPLE_1202
 typedef	struct	_COUPLE_ITEM
 {
 	int	nItem;
@@ -52,12 +51,10 @@ typedef	vector<VCI>		VVCI;
 typedef	vector<int>		VSK;
 typedef vector<int>		VS;
 typedef vector<VS>		VVS;
-#endif	// __COUPLE_1202
 
 typedef	map<u_long, CCouple*>	MPC;
 typedef	vector<CCouple*>	VCOUPLE;
 
-#if __VER >= 13 // __COUPLE_1202
 class CCoupleProperty
 {
 public:
@@ -84,7 +81,6 @@ private:
 	VSK		m_vSkillKinds;
 	VVS		m_vSkills;
 };
-#endif	// __COUPLE_1202
 
 class CCoupleMgr
 {

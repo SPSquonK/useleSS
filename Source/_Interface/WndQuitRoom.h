@@ -1,4 +1,3 @@
-#if __VER >= 13 // __HOUSING
 #ifndef __WNDQUITROOM__H
 #define __WNDQUITROOM__H
 
@@ -18,4 +17,3 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 #endif
-#endif // __HOUSING

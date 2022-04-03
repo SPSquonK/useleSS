@@ -32,9 +32,7 @@ extern	BOOL	s_bEvent0913;
 extern	BOOL	s_bEvent1206;
 #endif	// __EVENT1206
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonParty.h"
-#endif // __INSTANCE_DUNGEON
 
 CDPCoreSrvr		g_dpCoreSrvr;
 
@@ -65,11 +63,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_CAPTION, &CDPCoreSrvr::OnCaption );	
 	ON_MSG( PACKETTYPE_ADDPARTYEXP, &CDPCoreSrvr::OnAddPartyExp );
 	ON_MSG( PACKETTYPE_REMOVEPARTYPOINT, &CDPCoreSrvr::OnRemovePartyPoint );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	ON_MSG( PACKETTYPE_MEMBERLEVEL, &CDPCoreSrvr::OnMemberLevel );
-	ON_MSG( PACKETTYPE_MEMBERJOB, &CDPCoreSrvr::OnMemberJob );
-	ON_MSG( PACKETTYPE_CHANGEJOB, &CDPCoreSrvr::OnFriendChangeJob );
-#endif	// __SYS_PLAYER_DATA
 #ifdef __ENVIRONMENT_EFFECT
 	ON_MSG( PACKETTYPE_FALLRAIN, &CDPCoreSrvr::OnFallRain );
 	ON_MSG( PACKETTYPE_STOPRAIN, &CDPCoreSrvr::OnStopRain );
@@ -97,9 +90,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_WC_GUILDCONTRIBUTION, &CDPCoreSrvr::OnGuildContribution );	// 공헌도 
 	ON_MSG( PACKETTYPE_WC_GUILDNOTICE, &CDPCoreSrvr::OnGuildNotice );			// 공지사항  
 	ON_MSG( PACKETTYPE_GUILD_DB_REALPENYA, &CDPCoreSrvr::OnGuildRealPenya );	// 월급을 주었다는것을 코어와 유저에게 알려줌
-#if __VER < 11 // __SYS_PLAYER_DATA
-	ON_MSG( PACKETTYPE_CHANGEGUILDJOBLEVEL, &CDPCoreSrvr::OnChangeGuildJobLevel ); // 길드원이 레벨이나 직업이 바뀌었음
-#endif	// __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_WAR_DEAD, &CDPCoreSrvr::OnWarDead );
 	ON_MSG( PACKETTYPE_WAR_MASTER_ABSENT, &CDPCoreSrvr::OnWarMasterAbsent );
 	ON_MSG( PACKETTYPE_WAR_TIMEOUT, &CDPCoreSrvr::OnWarTimeout );
@@ -114,11 +104,9 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_GUILDCOMBAT_STATE, &CDPCoreSrvr::OnGCState );
 	ON_MSG( PACKETTYPE_REMOVEPARTY_GUILDCOMBAT, &CDPCoreSrvr::OnGCRemoveParty );
 	ON_MSG( PACKETTYPE_ADDPARTY_GUILDCOMBAT, &CDPCoreSrvr::OnGCAddParty );
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_CREATE, &CDPCoreSrvr::OnInstanceDungeonCreate );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_DESTROY, &CDPCoreSrvr::OnInstanceDungeonDestroy );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_SETCOOLTIME, &CDPCoreSrvr::OnInstanceDungeonSetCoolTimeInfo );
-#endif // __INSTANCE_DUNGEON
 #ifdef __QUIZ
 	ON_MSG( PACKETTYPE_QUIZ_NOTICE, &CDPCoreSrvr::OnQuizSystemMessage );
 #endif // __QUIZ
@@ -281,9 +269,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		g_dpDatabaseClient.SendServerEnable( uWorldSrvr, 1L );
 #endif	// __SERVERLIST0911
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		CInstanceDungeonHelper::GetInstance()->SendInstanceDungeonAllInfo( dpid );
-#endif // __INSTANCE_DUNGEON
 	}
 	
 	CHAR lpAddr[16];
@@ -323,9 +309,7 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 		g_dpDatabaseClient.SendServerEnable( uWorldSrvr, 0L );
 #endif	// __SERVERLIST0911
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		CInstanceDungeonHelper::GetInstance()->DestroyAllDungeonByMultiKey( uWorldSrvr );
-#endif // __INSTANCE_DUNGEON
 	}
 }
 
@@ -370,14 +354,12 @@ void CDPCoreSrvr::OnJoin( CAr & ar, DPID dpid, DPID, DPID, u_long )
 	if( bOperator )
 		g_PlayerMng.AddItToSetofOperator( idPlayer );
 
-#if __VER >= 12 // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 	if( pPlayer )
 	{
 		CParty* pParty	= g_PartyMng.GetParty( pPlayer->m_uPartyId );
 		if( pParty )
 			g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
 	}
-#endif // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 }
 
 void CDPCoreSrvr::SendDuplicate( u_long uWorldSrvr )
@@ -745,16 +727,12 @@ void CDPCoreSrvr::OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long )
 	u_long uPartyId;
 	int nMonLv;
 	BOOL bSuperLeader = FALSE;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	BOOL bLeaderSMPartyExpUp = FALSE;
-#endif // //12차 극단유료아이템
 
 	ar >> uPartyId;
 	ar >> nMonLv;
 	ar >> bSuperLeader;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	ar >> bLeaderSMPartyExpUp;
-#endif // //12차 극단유료아이템
 	
 	CMclAutoLock	Lock( g_PartyMng.m_AddRemoveLock );
 	CParty* pParty	= g_PartyMng.GetParty( uPartyId );
@@ -768,10 +746,8 @@ void CDPCoreSrvr::OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long )
 				nAddExp		= (int)( nAddExp * s_fPartyExpRate );
 				if( bSuperLeader )
 					nAddExp		*= 2;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 				if( bLeaderSMPartyExpUp )
 					nAddExp	= (int)( nAddExp * 1.5 );
-#endif // //12차 극단유료아이템
 
 				pParty->m_nExp += nAddExp;
 
@@ -790,10 +766,8 @@ void CDPCoreSrvr::OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long )
 
 			if( bSuperLeader )
 				nAddExp		*= 2;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 			if( bLeaderSMPartyExpUp )
 				nAddExp		= (int)( nAddExp * 1.5 );
-#endif // //12차 극단유료아이템
 
 			pParty->m_nExp += nAddExp;
 			
@@ -842,52 +816,6 @@ void CDPCoreSrvr::OnRemovePartyPoint( CAr & ar, DPID, DPID, DPID, u_long )
 	}
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreSrvr::OnMemberLevel( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CMclAutoLock	Lock2( g_PartyMng.m_AddRemoveLock );
-
-	u_long idParty, idPlayer;
-	int nLevel;
-	ar >> idParty >> idPlayer >> nLevel;
-	CParty* pParty = g_PartyMng.GetParty( idParty );
-	if( pParty )
-	{
-		int Member = pParty->FindMember( idPlayer );
-		if( Member > -1 )
-		{
-			pParty->m_aMember[Member].m_nLevel = nLevel;
-			BEFORESENDDUAL( ar, PACKETTYPE_MEMBERLEVEL, DPID_UNKNOWN, DPID_UNKNOWN );
-			ar << idParty << idPlayer << nLevel;
-			SEND( ar, this, DPID_ALLPLAYERS );
-		}
-	}
-}
-
-void CDPCoreSrvr::OnMemberJob( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CMclAutoLock	Lock2( g_PartyMng.m_AddRemoveLock );
-
-	u_long idParty, idPlayer;
-	int nJob;
-	ar >> idParty >> idPlayer >> nJob;
-
-	CParty* pParty = g_PartyMng.GetParty( idParty );
-	if( pParty )
-	{
-		int Member = pParty->FindMember( idPlayer );
-		if( Member > -1 )
-		{
-			pParty->m_aMember[Member].m_nJob = nJob;
-			BEFORESENDDUAL( ar, PACKETTYPE_MEMBERJOB, DPID_UNKNOWN, DPID_UNKNOWN );
-			ar << idParty << idPlayer << nJob;
-			SEND( ar, this, DPID_ALLPLAYERS );
-		}
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPCoreSrvr::OnPartyLevel( CAr & ar, DPID, DPID, DPID, u_long )
 {
@@ -966,50 +894,6 @@ void CDPCoreSrvr::OnSetMonsterRespawn( CAr & ar, DPID, DPID, DPID, u_long )
 	}
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreSrvr::OnFriendChangeJob( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	vector< u_long > vecIdFriend;
-	u_long uidPlayer;
-	int nJob;
-	ar >> uidPlayer >> nJob;
-
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CPlayer* pPlayer = g_PlayerMng.GetPlayer( uidPlayer );
-	if( pPlayer )
-	{
-		pPlayer->Lock();
-		for( C2FriendPtr::iterator i = pPlayer->m_Messenger.m_adifferntFriend.begin() ; i != pPlayer->m_Messenger.m_adifferntFriend.end() ; i++ )
-		{
-			LPFRIEND pFriend = (LPFRIEND)i->second;
-			if( !pFriend )
-				continue;
-
-			vecIdFriend.push_back( pFriend->dwUserId );			
-		}
-		pPlayer->Unlock();
-
-		for( int j = 0 ; j < vecIdFriend.size() ; j++ )
-		{
-			CPlayer* pPlayFriend = g_PlayerMng.GetPlayer( vecIdFriend[j] );
-			if( pPlayFriend )
-			{
-				pPlayFriend->Lock();
-				LPFRIEND pFriendbuf = pPlayFriend->m_Messenger.GetFriend( uidPlayer );
-				if( pFriendbuf )
-				{
-					pFriendbuf->nJob = nJob;
-				}
-				pPlayFriend->Unlock();
-			}
-		}
-
-		BEFORESENDDUAL( ar, PACKETTYPE_CHANGEJOB, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << uidPlayer << nJob;
-		SEND( ar, this, DPID_ALLPLAYERS );
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPCoreSrvr::OnPartySkillUse( CAr & ar, DPID, DPID, DPID, u_long uBufSize )
 {
@@ -1017,17 +901,13 @@ void CDPCoreSrvr::OnPartySkillUse( CAr & ar, DPID, DPID, DPID, u_long uBufSize )
 	int nMode;
 	DWORD dwSkillTime;
 	int nRemovePoint;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	int nCachMode;
-#endif // //12차 극단유료아이템
 
 	ar >> uidPlayer;
 	ar >> nMode;
 	ar >> dwSkillTime;
 	ar >> nRemovePoint;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	ar >> nCachMode;
-#endif // //12차 극단유료아이템
 
 	CPlayer* pSender;
 	
@@ -1055,21 +935,14 @@ void CDPCoreSrvr::OnPartySkillUse( CAr & ar, DPID, DPID, DPID, u_long uBufSize )
 				return;
 
 			pParty->m_nPoint -= nRemovePoint;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
-	#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			if( nMode == PARTY_PARSKILL_MODE && dwSkillTime == 0 )
 			{
 			    pParty->SetPartyMode( nMode, dwSkillTime , 0 );	
 				SendSetPartyMode( pParty->m_uPartyId, nMode, FALSE );
 				return;
 			}
-	#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
             pParty->SetPartyMode( nMode, dwSkillTime , nCachMode );		
 			SendSetPartyMode( pParty->m_uPartyId, nMode, TRUE, pParty->m_nPoint, (DWORD)pParty->GetPartyModeTime(nMode) );
-#else // //12차 극단유료아이템
-			pParty->SetPartyMode( nMode, dwSkillTime );
-			SendSetPartyMode( pParty->m_uPartyId, nMode, TRUE, pParty->m_nPoint );
-#endif // //12차 극단유료아이템
 		}
 		else
 		{
@@ -1205,18 +1078,10 @@ void CDPCoreSrvr::SendPlaySound( u_long idsound, DWORD dwWorldID, DPID dpid )
 	ar << dwWorldID;
 	SEND( ar, this, dpid );
 }
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 void CDPCoreSrvr::SendSetPartyMode( u_long idParty, int nMode, BOOL bOnOff, LONG nPoint ,DWORD dwSkillTime )
-#else // //12차 극단유료아이템
-void CDPCoreSrvr::SendSetPartyMode( u_long idParty, int nMode, BOOL bOnOff, LONG nPoint )
-#endif // //12차 극단유료아이템
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_SETPARTYMODE, DPID_UNKNOWN, DPID_UNKNOWN );
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	ar << idParty << nMode << dwSkillTime << bOnOff;
-#else // //12차 극단유료아이템
-	ar << idParty << nMode << bOnOff;
-#endif // //12차 극단유료아이템
 	if( bOnOff == TRUE )
 	{
 		ar << nPoint;
@@ -1388,13 +1253,6 @@ void CDPCoreSrvr::OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long )
 		CGuildMember* pMember	= new CGuildMember;
 		pMember->m_idPlayer	= pPlayer->uKey;
 		pMember->m_nMemberLv	= GUD_MASTER;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pMember->m_nLevel	= info[0].nLevel;
-		pMember->m_nJob	= info[0].nJob;
-		pMember->m_dwSex	= info[0].dwSex;
-		pMember->m_nMultiNo		= info[0].nMultiNo	= pPlayer->m_uIdofMulti;
-		pMember->m_nLogin	= 1;
-#endif	// __SYS_PLAYER_DATA
 		if( pGuild->AddMember( pMember ) )	// master
 		{
 			pPlayer->m_idGuild	= idGuild;
@@ -1405,21 +1263,12 @@ void CDPCoreSrvr::OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long )
 				pMember		= new CGuildMember;
 				pMember->m_idPlayer		= info[i].idPlayer;
 				pMember->m_nMemberLv	= GUD_ROOKIE;
-#if __VER < 11 // __SYS_PLAYER_DATA
-				pMember->m_nLevel	= info[i].nLevel;
-				pMember->m_nJob	= info[i].nJob;
-				pMember->m_dwSex	= info[i].dwSex;
-#endif	// __SYS_PLAYER_DATA
 				if( pGuild->AddMember( pMember ) )
 				{
 					CPlayer* pPlayertmp		= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
 					if( pPlayertmp )
 					{
 						pPlayertmp->m_idGuild	= idGuild;
-#if __VER < 11 // __SYS_PLAYER_DATA
-						pMember->m_nMultiNo		= info[i].nMultiNo	= pPlayertmp->m_uIdofMulti;
-						pMember->m_nLogin	= 1;
-#endif	// __SYS_PLAYER_DATA
 //						apPlayer[cb++]	= pPlayertmp;
 					}
 				}
@@ -1978,32 +1827,6 @@ void CDPCoreSrvr::OnGuildRealPenya( CAr & ar, DPID, DPID, DPID, u_long )
 	}
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CDPCoreSrvr::OnChangeGuildJobLevel( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	u_long uidGuild, uidPlayer;
-	LONG nJob, nLevel;
-	ar >> uidGuild >> uidPlayer >> nJob >> nLevel;
-	
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
-	
-	CGuild* pGuild = g_GuildMng.GetGuild( uidGuild );
-	if( pGuild && pGuild->IsMember( uidPlayer ) )
-	{
-		CGuildMember* pGuildMember = pGuild->GetMember( uidPlayer );
-		if( pGuildMember )
-		{
-			pGuildMember->m_nJob = nJob;
-			pGuildMember->m_nLevel = nLevel;
-
-			BEFORESENDDUAL( ar, PACKETTYPE_CHANGEGUILDJOBLEVEL, DPID_UNKNOWN, DPID_UNKNOWN );
-			ar << uidGuild << uidPlayer << nJob << nLevel;
-			SEND( ar, this, DPID_ALLPLAYERS );
-		}
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPCoreSrvr::UpdateWantedList()
 {
@@ -2285,11 +2108,7 @@ void CDPCoreSrvr::OnGCAddParty( CAr & ar, DPID, DPID, DPID, u_long )
 		{
 			return;
 		}
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		if( FALSE == pParty->NewMember( idMember ) )
-#else	// __SYS_PLAYER_DATA
-		if( FALSE == pParty->NewMember( idMember, nMemberLevel, nMemberJob, dwMSex, pMember->lpszPlayer ) )
-#endif	// __SYS_PLAYER_DATA
 		{
 			// error
 		}
@@ -2391,7 +2210,6 @@ void CDPCoreSrvr::OnPing( CAr & ar, DPID dpid, DPID, DPID, u_long )
 	}
 }
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 void CDPCoreSrvr::SendInstanceDungeonAllInfo( int nType, CInstanceDungeonBase* pID, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_INSTANCEDUNGEON_ALLINFO, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -2467,7 +2285,6 @@ void CDPCoreSrvr::SendInstanceDungeonDeleteCoolTimeInfo( int nType, DWORD dwPlay
 	ar << nType << dwPlayerId;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#endif // __INSTANCE_DUNGEON
 #ifdef __QUIZ
 void CDPCoreSrvr::OnQuizSystemMessage( CAr & ar, DPID, DPID, DPID, u_long )
 {

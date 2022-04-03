@@ -121,9 +121,7 @@ void	CModelGlobal::SetCamera( const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vDest 
 }
 
 extern CPartsLaser g_Laser;
-#if __VER >= 10 // __Y_DRAGON_FIRE
 extern CPartsFireDragon	g_FireDragon;
-#endif //__Y_DRAGON_FIRE
 
 HRESULT CModelGlobal::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 {
@@ -134,9 +132,7 @@ HRESULT CModelGlobal::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	}	
 
 	g_Laser.InvalidateDeviceObjects( pd3dDevice );
-#if __VER >= 10 // __Y_DRAGON_FIRE
 	g_FireDragon.InvalidateDeviceObjects( pd3dDevice );
-#endif //__Y_DRAGON_FIRE
 #endif //__CLIENT
 	
 	return S_OK;
@@ -144,9 +140,7 @@ HRESULT CModelGlobal::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 
 #ifdef __CLIENT
 CPartsLaser		g_Laser;
-#if __VER >= 10 // __Y_DRAGON_FIRE
 CPartsFireDragon	g_FireDragon;
-#endif //__Y_DRAGON_FIRE
 #endif
 
 HRESULT CModelGlobal::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
@@ -165,9 +159,7 @@ HRESULT CModelGlobal::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 
 #ifdef __CLIENT
 	g_Laser.RestoreDeviceObjects( pd3dDevice );
-#if __VER >= 10 // __Y_DRAGON_FIRE
 	g_FireDragon.RestoreDeviceObjects( pd3dDevice );
-#endif //__Y_DRAGON_FIRE
 #endif // Client
 	return S_OK;
 }
@@ -343,11 +335,7 @@ void ResetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage )
 #ifdef __CLIENT
 
 ////////////////////////////////////////////////////////////////////////////
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale )
-#else //__Y_ADV_ENCHANT_EFFECT
-void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, DWORD dwSfx )
-#endif //__Y_ADV_ENCHANT_EFFECT
 {
 	int		i;
 	D3DXMATRIX	m_mScale;
@@ -360,9 +348,7 @@ void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, 
 		m_pList[i] = (CSfxModel *)prj.m_modelMng.LoadModel( pd3dDevice, OT_SFX, dwSfx );
 		m_pList[i]->m_matScale = m_mScale;
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 		m_pList[i]->m_vScale = vScale;
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 		m_vList[i] = vPos;
 		break;
@@ -436,9 +422,6 @@ void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld 
 		}
 		D3DXVec3TransformCoord( &pSfxModel->m_vPos, &m_vList[i], mWorld );
 		
-#if __VER < 9 // __Y_ADV_ENCHANT_EFFECT
-		pSfxModel->m_vScale.x = pSfxModel->m_vScale.y = pSfxModel->m_vScale.z = pSfxModel->m_pModelElem->m_fScale;
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 		pSfxModel->Render( pd3dDevice, NULL );	
 	}
@@ -494,7 +477,6 @@ void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld 
 }
 
 
-#if __VER >= 10 // __Y_DRAGON_FIRE
 ////////////////////////////////////////////////////////////////////////////
 void	CPartsFireDragon::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel  )
 {
@@ -702,7 +684,6 @@ HRESULT CPartsFireDragon::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice 
 	return S_OK;
 }
 
-#endif //__Y_DRAGON_FIRE
 
 ////////////////////////////////////////////////////////////////////////////
 void CPartsBeam :: Create( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fSize, int nLevel )

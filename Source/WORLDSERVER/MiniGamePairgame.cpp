@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include ".\minigamepairgame.h"
 
 CMiniGamePairgame::CMiniGamePairgame(void)
@@ -93,4 +92,3 @@ string CMiniGamePairgame::MakeGame()
 	return m_strCardStream;
 }
 
-#endif // __RAINBOW_RACE

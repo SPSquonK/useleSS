@@ -31,9 +31,7 @@
 	extern	CDPCoreClient		g_DPCoreClient;
 #endif	// __CLIENT
 
-#if __VER >= 11 // __SYS_COLLECTING
 #include "accessory.h"
-#endif	// __SYS_COLLECTING
 
 extern	CPartyMng		g_PartyMng;
 extern	CGuildMng		g_GuildMng;
@@ -492,11 +490,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			// 디폴트는 장착위치 오른손
 			// 왼손에 무기가 가야하는 상황을 검사
 			ItemProp *pProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 			if( pMover->GetJob() == JOB_BLADE || pMover->GetJob() == JOB_BLADE_MASTER || pMover->GetJob() == JOB_BLADE_HERO )	// 쌍칼속성
-#else //__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-			if( pMover->GetJob() == JOB_BLADE )	// 쌍칼속성
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 			{
 				if( pItemProp->dwID != II_WEA_KNU_ISHOFIST )
 				{
@@ -554,9 +548,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 						pMover->ResetDestParamEquip( pOldItemProp, pItemElemOld );
 						g_UserMng.AddDoEquip( pMover, -1, pItemElemOld, FALSE );
 					}
-#if __VER >= 9 // __ULTIMATE
 					prj.m_UltimateWeapon.SetDestParamUltimate( pMover, pItemElemOld, FALSE, PARTS_RWEAPON );
-#endif // __ULTIMATE
 #endif // worldserver
 					if( pEquipInfo )
 						pEquipInfo[PARTS_RWEAPON].dwId	= NULL_ID;
@@ -650,9 +642,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 						pMover->ResetDestParamEquip( pOldItemProp, pItemElemOld );
 						g_UserMng.AddDoEquip( pMover, -1, pItemElemOld, FALSE );
 					}
-#if __VER >= 9 // __ULTIMATE
 					prj.m_UltimateWeapon.SetDestParamUltimate( pMover, pItemElemOld, FALSE, PARTS_RWEAPON );
-#endif // __ULTIMATE
 #endif // __WORLDSERVER
 					pModel->TakeOffParts( PARTS_RWEAPON );
 					if( pEquipInfo )
@@ -722,9 +712,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 					pMover->ResetDestParamEquip( pOldItemProp, pItemElemOld );					
 				if( pItemElemOld->m_nResistSMItemId != 0 )	// 유료화 아이템이 셑팅되어 있다면
 					((CUser* )pMover)->DoSMItemUnEquip( pItemElemOld, dwParts );
-#if __VER >= 9 // __ULTIMATE
 				prj.m_UltimateWeapon.SetDestParamUltimate( pMover, pItemElemOld, FALSE, dwParts );
-#endif // __ULTIMATE
 #endif // worldserver
 				
 			}
@@ -742,9 +730,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 				{
 					((CUser* )pMover)->DoSMItemEquip( pItemElem, dwParts );
 				}
-#if __VER >= 9 // __ULTIMATE
 				prj.m_UltimateWeapon.SetDestParamUltimate( pMover, pItemElem, TRUE, dwParts );
-#endif // __ULTIMATE
 #endif // __WORLDSERVER
 			}
 			else
@@ -832,11 +818,9 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 		}
 
 #ifdef __CLIENT
-#if __VER >= 15 // __BS_FIXED_EQUIPMOTION
 		if( PARTS_LWEAPON == dwParts || PARTS_RWEAPON == dwParts || PARTS_SHIELD == dwParts )
 			pMover->SetMotion( MTI_STAND, ANILOOP_1PLAY , MOP_NO_TRANS );
 
-#endif //__BS_FIXED_EQUIPMOTION
 #endif //__CLIENT
 		
 #endif // not WorldServer
@@ -897,9 +881,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			}
 
 #ifdef __WORLDSERVER
-#if __VER >= 9 // __ULTIMATE
 			prj.m_UltimateWeapon.SetDestParamUltimate( pMover, pItemElem, FALSE, dwParts );
-#endif // __ULTIMATE
 			if( pItemElem && pItemElem->m_nResistSMItemId != 0 )	// 유료화 아이템이 셑팅되어 있다면
 			{
 				((CUser* )pMover)->DoSMItemUnEquip( pItemElem, dwParts );
@@ -940,10 +922,8 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 #endif
 
 #ifdef __CLIENT
-#if __VER >= 15 // __BS_FIXED_EQUIPMOTION
 		if( PARTS_LWEAPON == dwParts || PARTS_RWEAPON == dwParts || PARTS_SHIELD == dwParts )
 			pMover->SetMotion( MTI_STAND, ANILOOP_1PLAY , MOP_FIXED );
-#endif //__BS_FIXED_EQUIPMOTION
 #endif //__CLIENT
 
 	} // 탈착
@@ -976,9 +956,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 					int nInvenSize = pInventory->GetSize();
 					pInventory->Swap( nInvenSize + PARTS_LWEAPON, nInvenSize + PARTS_RWEAPON );	
 #ifdef __WORLDSERVER			
-#if __VER >= 9 // __ULTIMATE
 					prj.m_UltimateWeapon.SetDestParamUltimate( pMover, pItemLeft, TRUE, PARTS_RWEAPON );
-#endif // __ULTIMATE
 #endif // __WORLDSERVER
 
 				#ifdef __CLIENT
@@ -1474,18 +1452,12 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, DWORD dwItemIndex, int nOption, CIte
 
 
 // 장착 가능한가를 검사.
-#if __VER >= 11 // __SYS_IDENTIFY
 BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
-#else	// __SYS_IDENTIFY
-BOOL CMover::IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel )
-#endif	// __SYS_IDENTIFY
 {
-#if __VER >= 11 // __SYS_IDENTIFY
 	if( !pItem )
 		return FALSE;
 	ItemProp* pItemProp	= pItem->GetProp();
 	OBJID dwObjid	= pItem->m_dwObjId;
-#endif	// __SYS_IDENTIFY
 	// 빗자루류 검사.
 	if( pItemProp->dwParts == PARTS_RIDE )
 	{
@@ -1543,7 +1515,6 @@ BOOL CMover::IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel 
 		#endif 
 		}
 
-#if __VER >= 8 // __S8_PK
 #ifdef __WORLDSERVER
 		if( IsChaotic() )
 		{
@@ -1555,9 +1526,7 @@ BOOL CMover::IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel 
 			}
 		}
 #endif // __WORLDSERVER
-#endif // __VER >= 8 // __S8_PK
 
-#if __VER >= 9	// __PET_0410
 #ifdef __WORLDSERVER
 		if( HasActivatedEatPet() || HasActivatedSystemPet() )	// 펫이 소환된 상태라면 비행 불가
 		{
@@ -1565,7 +1534,6 @@ BOOL CMover::IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel 
 			return FALSE;
 		}
 #endif	// __WORLDSERVER
-#endif	// __PET_0410
 	}
 
 	// 무기류가 아닌것(방어구)는 성별을 확인한다.
@@ -1612,28 +1580,12 @@ BOOL CMover::IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel 
 		// 아이템 필요레벨 검사.
 		if( pItemProp->dwLimitLevel1 != 0xffffffff )	// 필요레벨이 지정되어 있고
 		{
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 			if( pItem->IsLimitLevel( this ) )	// 레벨이 안되면 못참.
-#else // __NEW_ITEM_LIMIT_LEVEL
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#if __VER >= 11 // __SYS_IDENTIFY
-			if( m_nLevel < pItem->GetLimitLevel() && !IsMaster() && !IsHero()  )	// 레벨이 안되면 못참.				
-#else	// __SYS_IDENTIFY
-			if( ( m_nLevel < pItemProp->dwLimitLevel1 ) && !IsMaster() && !IsHero()  )	// 레벨이 안되면 못참.				
-#endif	// __SYS_IDENTIFY
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-			if( m_nLevel < pItemProp->dwLimitLevel1 )	// 아이템을 찰 레벨이 안되었으면 못참.
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#endif // __NEW_ITEM_LIMIT_LEVEL
 			{
 #	ifdef __WORLDSERVER
 				if( TRUE == IsPlayer() )
 				{
-#if __VER >= 11 // __SYS_IDENTIFY
 					( (CUser*)this )->AddDefinedText( TID_GAME_REQLEVEL, "\"%d\"", pItem->GetLimitLevel() );
-#else	// __SYS_IDENTIFY
-					( (CUser*)this )->AddDefinedText( TID_GAME_REQLEVEL, "\"%d\"", pItemProp->dwLimitLevel1 );
-#endif	// __SYS_IDENTIFY
 				}
 #	endif	// __WORLDSERVER
 				return FALSE;
@@ -1644,28 +1596,12 @@ BOOL CMover::IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel 
 		{
 			if( pItemProp->dwLimitLevel1 != 0xffffffff )	// 제한레벨이 걸려있고
 			{
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 				if( pItem->IsLimitLevel( this ) )	// 레벨이 안되면 못참.
-#else // __NEW_ITEM_LIMIT_LEVEL
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#if __VER >= 11 // __SYS_IDENTIFY
-				if( m_nLevel < pItem->GetLimitLevel() && !IsMaster() && !IsHero()  )	// 레벨이 안되면 못참.				
-#else	// __SYS_IDENTIFY
-				if( ( m_nLevel < pItemProp->dwLimitLevel1 ) && !IsMaster() && !IsHero()  )	// 레벨이 안되면 못참.				
-#endif	// __SYS_IDENTIFY
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-				if( m_nLevel < pItemProp->dwLimitLevel1 )	// 레벨이 안되면 못참.
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#endif // __NEW_ITEM_LIMIT_LEVEL
 				{
 #	ifdef __WORLDSERVER
 					if( TRUE == IsPlayer() )
 					{
-#if __VER >= 11 // __SYS_IDENTIFY
 						( (CUser*)this )->AddDefinedText( TID_GAME_REQLEVEL, "\"%d\"", pItem->GetLimitLevel() );
-#else	// __SYS_IDENTIFY
-						( (CUser*)this )->AddDefinedText( TID_GAME_REQLEVEL, "\"%d\"", pItemProp->dwLimitLevel1 );
-#endif	// __SYS_IDENTIFY
 					}
 #	endif	// __WORLDSERVER
 					return FALSE;
@@ -1674,18 +1610,6 @@ BOOL CMover::IsEquipAble( ItemProp *pItemProp, OBJID dwObjid ,BOOL bIgnoreLevel 
 		}
 
 	}
-#if __VER < 8 // __S8_PK
-	//카오용 아이템을 선한자가 장착할 수 없다.
-	if( (pItemProp->nEvildoing < 0) && IsChaotic() == FALSE )
-	{
-	#ifdef __WORLDSERVER
-		if( IsPlayer() )
-			( (CUser*)this )->AddDefinedText( TID_PK_ITEM_MESSAGE1 , "" );	// 카오 아이템은 카오상태에서만...
-	#endif	// __WORLDSERVER
-			
-		return FALSE;
-	}
-#endif // __VER < 8 // __S8_PK
 
 	ItemProp *pHandItemProp	= NULL;
 	
@@ -1744,13 +1668,8 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 			return FALSE;
 		if( pItemProp->dwParts == PARTS_RIDE && pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 			return FALSE;
-#if __VER >= 11 // __SYS_IDENTIFY
 		if( IsEquipAble( pItemElem ) == FALSE )
 			return FALSE;
-#else	// __SYS_IDENTIFY
-		if( IsEquipAble( pItemProp, pItemElem->m_dwObjId ) == FALSE )
-			return FALSE;
-#endif	// __SYS_IDENTIFY
 	}
 	else
 	{
@@ -1774,14 +1693,12 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 		if( (pItemElem->m_dwObjIndex - m_Inventory.GetSize() ) != PARTS_LWEAPON  )	// equiped item
 #endif	//__BLADELWEAPON0608	//	9th 블레이드 양손에 무기를 착용 시 추가 옵션은 오른손에 들고 있는 무기의 것만 적용이 되도록 수정
 			SetDestParamEquip( pItemProp, pItemElem );		// 장착한 장비의 DestParam설정
-#if __VER >= 14 // __EQUIP_BIND
 		if( ( pItemProp->dwFlag & IP_FLAG_EQUIP_BIND ) && !pItemElem->IsFlag( CItemElem::binds ) )
 		{
 			pItemElem->SetFlag( CItemElem::binds );
 			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_FLAG, MAKELONG( pItemElem->m_dwObjIndex, pItemElem->m_byFlag ) );
 		}
 
-#endif // __EQUIP_BIND
 	}
 	else
 	if( bEquip == FALSE )
@@ -2011,10 +1928,8 @@ void CMover::RedoEquip( BOOL fFakeParts, BOOL bDestParam )
 					if( i != PARTS_LWEAPON )	// equiped item
 #endif	//__BLADELWEAPON0608	//	9th 블레이드 양손에 무기를 착용 시 추가 옵션은 오른손에 들고 있는 무기의 것만 적용이 되도록 수정
 						SetDestParamEquip( pItemProp, pItemElem, TRUE );
-#if __VER >= 9 // __ULTIMATE
 					if( i == PARTS_RWEAPON )
 						prj.m_UltimateWeapon.SetDestParamUltimate( this, pItemElem, TRUE, PARTS_RWEAPON );
-#endif // __ULTIMATE
 				}
 			}
 			else
@@ -2104,15 +2019,7 @@ int	CMover::InvalidEquipOff( BOOL bFakeParts )
 		if( pItemProp == NULL )	
 			continue;	// 프로퍼티 없으면 실패.
 
-#if __VER >= 8 // __S8_PK
-#if __VER >= 11 // __SYS_IDENTIFY
 		if( IsEquipAble( pItemElem,TRUE ) == FALSE )	// 장착할 수 없는 아이템이다.
-#else	// __SYS_IDENTIFY
-		if( IsEquipAble( pItemProp, pItemElem->m_dwObjId, TRUE ) == FALSE )	// 장착할 수 없는 아이템이다.
-#endif	// __SYS_IDENTIFY
-#else	// __S8_PK
-		if( IsEquipAble( pItemProp, pItemElem->m_dwObjId) == FALSE )	// 장착할 수 없는 아이템이다.
-#endif	// __S8_PK
 		{
 			if( pItemElem )
 			{
@@ -2178,7 +2085,6 @@ void CMover::SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL 
 			SetDestParam( DST_RESIST_EARTH, pItemProp->nItemResistEarth, NULL_CHGPARAM );
 	}
 
-#if __VER >= 11 // __SYS_COLLECTING
 	CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 	if( pItemElem && pItemElem->IsAccessory() )		// 액세서리
 	{
@@ -2186,7 +2092,6 @@ void CMover::SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL 
 		for( DWORD i = 0; i < pDst->size(); i++ )
 			SetDestParam( (*pDst)[i].nDst, (*pDst)[i].nAdj, NULL_CHGPARAM );
 	}
-#endif	// __SYS_COLLECTING
 
 #ifdef __WORLDSERVER
 #ifdef __DST_GIFTBOX
@@ -2271,7 +2176,6 @@ void CMover::ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem )
 
 	if( pItemElem )
 	{
-#if __VER >= 11 // __SYS_COLLECTING
 		CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 		if( pItemElem->IsAccessory() )		// 액세서리
 		{
@@ -2279,7 +2183,6 @@ void CMover::ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem )
 			for( DWORD i = 0; i < pDst->size(); i++ )
 				ResetDestParam( (*pDst)[i].nDst, (*pDst)[i].nAdj );
 		}
-#endif	// __SYS_COLLECTING
 
 #ifdef __WORLDSERVER
 #ifdef __DST_GIFTBOX

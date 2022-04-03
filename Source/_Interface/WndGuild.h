@@ -6,9 +6,7 @@
 #include "WndGuildTabMember.h"
 #include "WndGuildTabWar.h"
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "WndGuildTabPower.h"
-#endif
 
 
 class CWndGuild : public CWndNeuz 
@@ -22,11 +20,9 @@ public:
 	CWndGuildTabMember  m_WndGuildTabMember;
 	CWndGuildTabWar		m_WndGuildTabWar;
 
-#if __VER >= 15 // __GUILD_HOUSE
 	CWndGuildTabPower m_WndGuildTabPower;
 
 	void SetCurTab( int index );		//선택된 탭 변경 
-#endif
 
 	void UpdateDataAll();
 

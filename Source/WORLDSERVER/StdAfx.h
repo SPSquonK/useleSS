@@ -110,8 +110,6 @@ extern DWORD		g_tmCurrent;		// 전역으로 사용할 현재 시간.
 extern int			g_nProcessCnt;	// 프로세스마다 하나씩 카운트 되는 변수.
 extern int			g_nRenderCnt;	// 렌더화면때마다 하나씩 카운트 되는 변수
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 #include "GuildCombat1to1.h"
 extern CGuildCombat1to1Mng	g_GuildCombat1to1Mng;
-#endif // __GUILD_COMBAT_1TO1
 

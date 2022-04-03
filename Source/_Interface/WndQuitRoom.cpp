@@ -12,7 +12,6 @@ extern	CDPClient	g_DPlay;
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#if __VER >= 13 // __HOUSING
 /****************************************************
   WndId : APP_QUIT_ROOM - 미니룸
   CtrlId : WIDC_STATIC1 - 미니룸에서 퇴장 하시겠습니까?
@@ -88,4 +87,3 @@ BOOL CWndQuitRoom::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#endif // __HOUSING

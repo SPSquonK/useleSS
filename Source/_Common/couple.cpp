@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "couple.h"
 
-#if __VER >= 13 // __COUPLE_1117
 
 BOOL CCoupleTestCase::Test()
 {
@@ -218,7 +217,6 @@ void CCoupleMgr::Couple( CCouple* pCouple )
 	ASSERT( bResult );
 }
 
-#if __VER >= 13 // __COUPLE_1202
 CCoupleProperty::CCoupleProperty()
 {
 }
@@ -382,6 +380,4 @@ float	CCoupleProperty::GetExperienceRate( int nLevel, int nExperience )
 
 	return static_cast<float>( nExperience - GetTotalExperience( nLevel ) ) / static_cast<float>( nTotal );
 }
-#endif	// __COUPLE_1202
 
-#endif	// __COUPLE_1117

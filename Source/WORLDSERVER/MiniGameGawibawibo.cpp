@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include ".\minigamegawibawibo.h"
 
 CMiniGameGawibawibo::CMiniGameGawibawibo(void)
@@ -62,4 +61,3 @@ BOOL CMiniGameGawibawibo::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePack
 	return bReturn;
 }
 
-#endif // __RAINBOW_RACE

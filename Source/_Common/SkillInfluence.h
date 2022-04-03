@@ -33,9 +33,6 @@ class CMover;
 class CSkillInfluence
 {
 private:
-#if __VER < 8 //__CSC_VER8_3
-	SKILLINFLUENCE *m_pEmptyNode;	// 비어있는 공간의 인덱스.
-#endif //__CSC_VER8_3
 	CMover* m_pMover;
 //	CRIT_SEC	m_AddRemoveLock;
 
@@ -49,16 +46,12 @@ public:
 #endif // __PVPDEBUFSKILL
 	BOOL	RemoveSkillInfluence( WORD wType, WORD wID );
 	BOOL	RemoveSkillInfluenceState( DWORD dwChrState );
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	BOOL	RemoveSkillInfluenceDestParam( DWORD dwDestParam );
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 
 	BOOL    RemoveAllSkillInfluence();
 	BOOL	RemoveAllSkillDebuff( void );
 	BOOL	RemoveAllSkillBuff( void );
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	BOOL	RemoveAllBuff( void );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	BOOL	RemoveOneSkillBuff( void );
 	
 		
@@ -92,11 +85,9 @@ public:
 	void	Reset( void );		// 클라로 버프정보를 다시 갱신하도록 타이머를 클리어 시킴.
 	BOOL	HasSkill( WORD wType, WORD wID );
 
-#if __VER >= 9	// __PET_0410
 	BOOL	HasPet( void )	{	return FindPet() != NULL;	}
 	SKILLINFLUENCE *	FindPet( void );
 	BOOL	RemovePet( void );
-#endif	// __PET_0410
 
 #ifdef __CLIENT
 	DWORD	GetDisguise( void );
@@ -110,14 +101,12 @@ private:
 //	Attributes
 	void	Remove( SKILLINFLUENCE *pNode );
 	BOOL	LikeItemBuf( DWORD dwItemKind3 );
-#if __VER >= 8 //__CSC_VER8_3
 	SKILLINFLUENCE* SortSkillArray();
 #ifdef __PVPDEBUFSKILL
 	BOOL InsertBuff(SKILLINFLUENCE *pNode, WORD wType, WORD wID, DWORD dwLevel, DWORD dwTime, DWORD dwAttackerID);
 #else // __PVPDEBUFSKILL
 	BOOL InsertBuff(SKILLINFLUENCE *pNode, WORD wType, WORD wID, DWORD dwLevel, DWORD dwTime );
 #endif // __PVPDEBUFSKILL
-#endif //__CSC_VER8_3
 };
 
 //
@@ -140,7 +129,6 @@ inline SKILLINFLUENCE* CSkillInfluence::Find( WORD wType, WORD wID )
 	return NULL;
 }
 
-#if __VER >= 9	// __PET_0410
 inline SKILLINFLUENCE* CSkillInfluence::FindPet( void )
 {
 	int	i	= MAX_SKILLINFLUENCE;
@@ -153,7 +141,6 @@ inline SKILLINFLUENCE* CSkillInfluence::FindPet( void )
 	}
 	return NULL;
 }
-#endif	// __PET_0410
 
 //
 inline BOOL CSkillInfluence::HasSkill( WORD wType, WORD wID )
@@ -187,9 +174,6 @@ inline void CSkillInfluence::Remove( SKILLINFLUENCE *pNode )
 	pNode->bEffect = 0;
 	pNode->tmTime = 0;
 	pNode->tmCount = 0;
-#if __VER < 8 //__CSC_VER8_3
-	m_pEmptyNode = pNode;		// 지운 노드는 비어있으므로 그것을 받아둠.
-#endif //__CSC_VER8_3
 }
 
 #endif	// __BUFF_1107

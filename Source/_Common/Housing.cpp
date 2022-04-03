@@ -2,7 +2,6 @@
 #include "resData.h"
 #include "defineText.h"
 
-#if __VER >= 13 // __HOUSING
 #include ".\housing.h"
 
 #ifdef __WORLDSERVER
@@ -20,10 +19,8 @@ extern CWorldMng g_WorldMng;
 #endif // __DBSERVER
 
 #ifdef __CLIENT
-#if __VER >= 15 // __GUILD_HOUSE
 #include "WndHousing.h"
 #include "GuildHouse.h"
-#endif
 #endif
 
 /////////////////////////////////////////////////////////////////////
@@ -924,13 +921,11 @@ BOOL	CDeployManager::ChangeTileTex(TCHAR* pTexName)
 
 #endif //__CLIENT
 
-#endif // __VER >= 13 // __HOUSING
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CGuildDeployManager
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if __VER >= 15 // __GUILD_HOUSE
 
 #ifdef __CLIENT
 
@@ -1385,6 +1380,5 @@ BOOL CGuildDeployManager::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 #endif	// __CLIENT
 
-#endif //__GUILD_HOUSE
 
 

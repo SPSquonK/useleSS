@@ -10,10 +10,8 @@
 CProject         prj;
 CWorldMng  	     g_WorldMng;
 CToolTip         g_toolTip;
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 CToolTip         g_toolTipSub1;
 CToolTip         g_toolTipSub2;
-#endif // __IMPROVE_SYSTEM_VER15
 CULLINFO         g_cullinfo;
 CMover*          g_pPlayer;
 CShip*			 g_pShip;				// 플레이어가 조종 하는 비공정.
@@ -43,7 +41,5 @@ vector< CString > g_vecEncryptedValidCertifierIP;
 
 CNeuzApp         g_Neuz;                // 맨 마지막에
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 CGuildCombat1to1Mng g_GuildCombat1to1Mng;
-#endif // __GUILD_COMBAT_1TO1
 

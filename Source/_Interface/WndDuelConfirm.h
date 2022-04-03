@@ -22,7 +22,6 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 class CWndDuelResult : public CWndNeuz 
 { 
 public: 
@@ -43,6 +42,5 @@ public:
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
-#endif	// __VER >= 8  
 
 #endif

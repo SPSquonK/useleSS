@@ -8,7 +8,6 @@
 #include "DPClient.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 13 // __RAINBOW_RACE
 
 //////////////////////////////////////////////////////////////////////////
 // RainbowRace Offer Window
@@ -2749,4 +2748,3 @@ void CWndRRMiniGameLadder::Reset()
 	}
 }
 
-#endif //__RAINBOW_RACE

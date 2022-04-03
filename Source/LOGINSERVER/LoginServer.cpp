@@ -49,11 +49,9 @@ void InitLanguageFromResource( HINSTANCE hInstance )
 
 	::SetLanguageInfo( atoi( szLang ), atoi( szSubLang ) );
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	char sz2ndPassWord[2];
 	LoadString( hInstance, IDS_2ND_PASSWORD, sz2ndPassWord, 2 );
 	::SetUse2ndPassWord( static_cast<BOOL>( atoi( sz2ndPassWord ) ) );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance,

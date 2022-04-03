@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 11 // __SYS_POCKET
 
 #include "pocket.h"
 
@@ -359,4 +358,3 @@ void	CPocketController::ProcessExpiring( void )
 	}
 }
 #endif	// __WORLDSERVER
-#endif	// __SYS_POCKET

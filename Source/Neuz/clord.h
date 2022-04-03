@@ -1,7 +1,6 @@
 #ifndef __CLORD_H__
 #define	__CLORD_H__
 
-#if __VER >= 12 // __LORD
 
 #include "lord.h"
 
@@ -72,6 +71,5 @@ namespace	election
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif	// __LORD
 
 #endif	// __CLORD_H__

@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "CampusHelper.h"
 
-#if __VER >= 15 // __CAMPUS
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -57,4 +56,3 @@ void CCampusHelper::OnUpdateCampusPoint( CAr & ar )
 	ar >> nCampusPoint;
 	g_pPlayer->SetCampusPoint( nCampusPoint );
 }
-#endif // __CAMPUS

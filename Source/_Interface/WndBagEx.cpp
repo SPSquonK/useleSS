@@ -22,7 +22,6 @@ extern	CDPClient	g_DPlay;
   CtrlId : WIDC_ICO_BAG1 - 
   CtrlId : WIDC_ICO_BAG2 - 
 ****************************************************/
-#if __VER >= 11 // __SYS_POCKET
 
 CWndBagEx::CWndBagEx() 
 { 
@@ -521,4 +520,3 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#endif

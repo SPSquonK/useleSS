@@ -6,12 +6,8 @@
 #include <vector>
 #include <map>
 #include "Mymap.h"
-#if __VER >= 9 // __EVENTLUA
 #include "EventLua.h"
-#endif // __EVENTLUA
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 #include "GuildCombat1to1.h"
-#endif // __GUILD_COMBAT_1TO1
 using namespace std;
 
 
@@ -87,13 +83,9 @@ public:
 	MoverProp*				m_pPropMover;	// m_aPropMover배열에 메모리 침범이 있어서 수정함.04.10.14
 	CFixedArray< tagColorText >	m_colorText;
 
-#if __VER >= 9 // __EVENTLUA
 	CEventLua	m_EventLua;
-#endif // __EVENTLUA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CGuildCombat1to1Mng m_GuildCombat1to1;
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __CONV_SKILL_11_MONTH_JOB1
 	CFixedArray< AddSkillProp > m_aPropAddSkill;

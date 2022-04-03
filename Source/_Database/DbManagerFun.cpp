@@ -18,9 +18,7 @@ extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
 extern	CGuildWarMng	g_GuildWarMng;
 
-#if __VER >= 13 // __HONORABLE_TITLE
 #include "honor.h"
-#endif	// __HONORABLE_TITLE
 
 extern const int MAX_TASKBAR; 
 extern const int MAX_APPLETTASKBAR; 
@@ -242,17 +240,11 @@ BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDb
 		if( pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged != 1 )
 			pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged	= 0;
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-#if __VER >= 11 // __SYS_IDENTIFY
 		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
 		if( iRandomOptItemId == -102 )
 			iRandomOptItemId	= 0;
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( iRandomOptItemId );
-#else	// __SYS_IDENTIFY
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( (DWORD)GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif	// __SYS_IDENTIFY
-#if __VER >= 15 // __PETVIS
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif // __PETVIS
 		++CountStr;
 
 		++nExtBankCount;
@@ -261,17 +253,7 @@ BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDb
 	CountStr	= 0;	nPirecingBankCount = 0;
 	while( '$' != PirecingBank[CountStr] )
 	{
-#if __VER >= 12 // __EXT_PIERCING
 		LoadPiercingInfo( pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount], PirecingBank, &CountStr );
-#else // __EXT_PIERCING
-		int nItemIdCount = 0;
-		pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount].SetPiercingSize( GetIntFromStr( PirecingBank, &CountStr ) );
-		for( int i = 0 ; i < pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount].GetPiercingSize() ; ++i )
-		{
-			pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount].SetPiercingItem( nItemIdCount, (DWORD)GetIntFromStr( PirecingBank, &CountStr ) );
-			++nItemIdCount;
-		}
-#endif // __EXT_PIERCING
 		++nPirecingBankCount;
 	}
 
@@ -391,14 +373,8 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 		if( pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged != 1 )
 			pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged	= 0;
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-#if __VER >= 11 // __SYS_IDENTIFY
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
-#else	// __SYS_IDENTIFY
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( (DWORD)GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif	// __SYS_IDENTIFY
-#if __VER >= 15 // __PETVIS
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif // __PETVIS
 		++CountStr;
 		++nExtBankCount;
 	}
@@ -408,17 +384,7 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 	VERIFYSTRING_BANK( PirecingBank, pMover->m_szName );
 	while( '$' != PirecingBank[CountStr] )
 	{
-#if __VER >= 12 // __EXT_PIERCING
 		LoadPiercingInfo( pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount], PirecingBank, &CountStr );
-#else // __EXT_PIERCING
-		int nItemIdCount = 0;
-		pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount].SetPiercingSize( GetIntFromStr( PirecingBank, &CountStr ) );
-		for( int i = 0 ; i < pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount].GetPiercingSize(); ++i )
-		{
-			pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount].SetPiercingItem( nItemIdCount, (DWORD)GetIntFromStr( PirecingBank, &CountStr ) );
-			++nItemIdCount;
-		}
-#endif // __EXT_PIERCING
 		++nPirecingBankCount;
 	}
 
@@ -502,17 +468,11 @@ void CDbManager::GetGuildBank( CItemContainer< CItemElem  >*  GuildBank, CQuery 
 		if( GuildBank->m_apItem[nExtBank].m_bCharged != 1 )
 			GuildBank->m_apItem[nExtBank].m_bCharged	= 0;
 		GuildBank->m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-#if __VER >= 11 // __SYS_IDENTIFY
 		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
 		if( iRandomOptItemId == -102 )
 			iRandomOptItemId	= 0;
 		GuildBank->m_apItem[nExtBank].SetRandomOptItemId( iRandomOptItemId );
-#else	// __SYS_IDENTIFY
-		GuildBank->m_apItem[nExtBank].SetRandomOptItemId( (DWORD)GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif	// __SYS_IDENTIFY
-#if __VER >= 15 // __PETVIS
 		GuildBank->m_apItem[nExtBank].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif // __PETVIS
 		++CountStr; 		++nExtBank;
 	}
 	
@@ -522,17 +482,7 @@ void CDbManager::GetGuildBank( CItemContainer< CItemElem  >*  GuildBank, CQuery 
 	qry->GetStr( "m_GuildBankPiercing", PirecingBank );
 	while( '$' != PirecingBank[CountStr] )
 	{
-#if __VER >= 12 // __EXT_PIERCING
 		LoadPiercingInfo( GuildBank->m_apItem[nPirecingBank], PirecingBank, &CountStr );
-#else // __EXT_PIERCING
-		int nItemIdCount = 0;
-		GuildBank->m_apItem[nPirecingBank].SetPiercingSize( GetIntFromStr( PirecingBank, &CountStr ) );
-		for( int i = 0 ; i < GuildBank->m_apItem[nPirecingBank].GetPiercingSize() ; ++i )
-		{
-			GuildBank->m_apItem[nPirecingBank].SetPiercingItem( nItemIdCount, (DWORD)GetIntFromStr( PirecingBank, &CountStr ) );
-			++nItemIdCount;
-		}
-#endif // __EXT_PIERCING
 		++nPirecingBank;
 	}
 
@@ -586,7 +536,6 @@ void CDbManager::GetGuildBank( CItemContainer< CItemElem  >*  GuildBank, CQuery 
 	}
 }
 
-#if __VER >= 11 // __SYS_POCKET
 BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	char	szItem[7500]	= { 0,};
@@ -665,9 +614,7 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 				pPocket->m_apItem[i].m_bCharged		= 0;
 			pPocket->m_apItem[i].m_dwKeepTime	= (DWORD)GetIntPaFromStr( szExt, &nOffset );
 			__int64 iRandomOptItemId	= GetInt64PaFromStr( szExt, &nOffset );
-#if __VER >= 15 // __PETVIS
 			pPocket->m_apItem[i].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( szExt, &nOffset ) );
-#endif // __PETVIS
 			if( iRandomOptItemId == -102 )
 				iRandomOptItemId	= 0;
 			pPocket->m_apItem[i++].SetRandomOptItemId( iRandomOptItemId );
@@ -676,13 +623,7 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 		nOffset		= i	= 0;
 		while( '$' != szPiercing[nOffset] )
 		{
-#if __VER >= 12 // __EXT_PIERCING
 			LoadPiercingInfo( pPocket->m_apItem[i], szPiercing, &nOffset );
-#else // __EXT_PIERCING
-			pPocket->m_apItem[i].SetPiercingSize( GetIntFromStr( szPiercing, &nOffset ) );
-			for( int j = 0; j < pPocket->m_apItem[i].GetPiercingSize(); j++ )
-				pPocket->m_apItem[i].SetPiercingItem( j, (DWORD)GetIntFromStr( szPiercing, &nOffset ) );
-#endif // __EXT_PIERCING
 			i++;
 		}
 		nOffset		= i	= 0;
@@ -729,7 +670,6 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 	}
 	return TRUE;
 }
-#endif	// __SYS_POCKET
 
 BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
@@ -800,17 +740,11 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 		if( pMover->m_Inventory.m_apItem[nExtInven].m_bCharged != 1 )
 			pMover->m_Inventory.m_apItem[nExtInven].m_bCharged	= 0;
 		pMover->m_Inventory.m_apItem[nExtInven].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtInven, &CountStr );
-#if __VER >= 11 // __SYS_IDENTIFY
 		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtInven, &CountStr );
 		if( iRandomOptItemId == -102 )
 			iRandomOptItemId	= 0;
 		pMover->m_Inventory.m_apItem[nExtInven].SetRandomOptItemId( iRandomOptItemId );
-#if __VER >= 15 // __PETVIS
 		pMover->m_Inventory.m_apItem[nExtInven].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtInven, &CountStr ) );
-#endif // __PETVIS
-#else	// __SYS_IDENTIFY
-		pMover->m_Inventory.m_apItem[nExtInven].SetRandomOptItemId( (DWORD)GetIntPaFromStr( ExtInven, &CountStr ) );
-#endif	// __SYS_IDENTIFY
 		++CountStr; 	++nExtInven;
 	}
 
@@ -821,17 +755,7 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 	VERIFYSTRING_RETURN( PirecingInven, szPlayerName );
 	while( '$' != PirecingInven[CountStr] )
 	{
-#if __VER >= 12 // __EXT_PIERCING
 		LoadPiercingInfo( pMover->m_Inventory.m_apItem[nPirecingInven], PirecingInven, &CountStr );
-#else // __EXT_PIERCING
-		int nItemIdCount = 0;
-		pMover->m_Inventory.m_apItem[nPirecingInven].SetPiercingSize( GetIntFromStr( PirecingInven, &CountStr ) );
-		for( int i = 0 ; i < pMover->m_Inventory.m_apItem[nPirecingInven].GetPiercingSize(); ++i )
-		{
-			pMover->m_Inventory.m_apItem[nPirecingInven].SetPiercingItem( nItemIdCount, (DWORD)GetIntFromStr( PirecingInven, &CountStr ) );
-			++nItemIdCount;
-		}
-#endif // __EXT_PIERCING
 		++nPirecingInven;
 	}
 
@@ -887,7 +811,6 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 	return TRUE;
 }
 
-#if __VER >= 12 // __EXT_PIERCING
 void CDbManager::LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, int* pLocation )
 {
 	ItemProp* itemProp = itemElem.GetProp();
@@ -900,14 +823,12 @@ void CDbManager::LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, 
 	itemElem.SetPiercingSize( GetIntFromStr( szPirecingInven, pLocation ) );
 	for( int i = 0 ; i < itemElem.GetPiercingSize(); ++i )
 		itemElem.SetPiercingItem( i, (DWORD)GetIntFromStr( szPirecingInven, pLocation ) );
-#if __VER >= 15 // __PETVIS
 	if( itemElem.IsVisPet() )
 	{
 		itemElem.SetVisKeepTimeSize( itemElem.GetPiercingSize() );
 		for( int i=0; i<itemElem.GetPiercingSize(); i++ )
 			itemElem.SetVisKeepTime( i, (time_t)GetIntFromStr( szPirecingInven, pLocation ) );
 	}
-#endif // __PETVIS
 }
 
 // 얼터멋 웨폰의 경우 nPiercedSize가 얼터멋 피어싱 사이즈이고 dwItemId1 ~ 5 까지는 얼터멋 피어싱 아이템(보석)이다.
@@ -939,7 +860,6 @@ void CDbManager::GetPiercingInfoFromMail( CQuery* pQuery, CItemElem* pItemElem )
 		pItemElem->SetPiercingItem( i, pQuery->GetInt( szItem ) );
 	}
 }
-#endif // __EXT_PIERCING
 
 BOOL CDbManager::GetEquipment( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
@@ -1044,18 +964,11 @@ void CDbManager::GetBaseCharacter( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_
 	pMover->SetGold( qry->GetInt("m_dwGold") );
 	pMover->m_nJob			= (LONG)qry->GetInt( "m_nJob" );
 	pMover->m_idparty		= (u_long)qry->GetInt( "m_idparty" );
-#if __VER >= 8 // __S8_PK
 	pMover->m_nPKValue			= qry->GetInt( "m_nPKValue" );
 	pMover->m_dwPKPropensity	= qry->GetInt( "m_dwPKPropensity" );
 	pMover->m_dwPKExp			= qry->GetInt( "m_dwPKExp" );
-#else // __VER >= 8 // __S8_PK
-	pMover->m_nNumKill		= qry->GetInt( "m_nNumKill" );
-	pMover->m_nSlaughter	= qry->GetInt( "m_nSlaughter" );
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 // __CSC_VER8_5
 	pMover->m_nAngelExp		= qry->GetExpInteger( "m_nAngelExp" );
 	pMover->m_nAngelLevel	= qry->GetInt( "m_nAngelLevel" );
-#endif // __CSC_VER8_5
 	
 	pMover->m_idMurderer	= (u_long)qry->GetInt( "m_idMuerderer" );
 	pMover->m_nFame			= qry->GetInt( "m_nFame" );
@@ -1083,12 +996,8 @@ void CDbManager::GetBaseCharacter( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_
 	pMover->m_vMarkingPos.z		= qry->GetFloat( "m_vMarkingPos_z" );
 	pMover->m_nRemainGP = (long)qry->GetInt( "m_nRemainGP" );
 //	pMover->m_nRemainLP = (long)qry->GetInt( "m_nRemainLP" );
-#if __VER >= 12 // __MOD_TUTORIAL
 	int nTutorialState	= qry->GetInt( "m_nFlightLv" );
 	pMover->SetTutorialState( nTutorialState );
-#else	// __MOD_TUTORIAL
-	pMover->m_nFlightLv		= (long)qry->GetInt( "m_nFlightLv" );
-#endif	// __MOD_TUTORIAL
 	pMover->m_nFxp	= (long)qry->GetInt( "m_nFxp" );
 //	pMover->m_nTxp	= (long)qry->GetInt( "m_nTxp" );
 	pMover->m_dwMode	= (DWORD)qry->GetInt( "m_dwMode" );
@@ -1097,12 +1006,9 @@ void CDbManager::GetBaseCharacter( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_
 	pMover->m_nDeathLevel = qry->GetInt( "m_nDeathLevel" );
 	pMover->m_nSkillLevel	= qry->GetInt( "m_SkillLv" );
 	pMover->m_nSkillPoint	= qry->GetInt( "m_SkillPoint" );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	pMover->m_nHonor	= qry->GetInt( "m_nHonor" );
-#endif	// __HONORABLE_TITLE			// 달인
 
 }
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void	CDbManager::GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	// 내가 등록한 아이디 가지고 오기
@@ -1206,7 +1112,6 @@ void	CDbManager::GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 	}
 }
 
-#endif	// __HONORABLE_TITLE			// 달인
 
 BOOL CDbManager::GetSkill( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
@@ -1266,7 +1171,6 @@ BOOL CDbManager::GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 	}
 	pMover->m_nCompleteQuestSize = IndexQuest;
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CountStr = 0;
 	IndexQuest = 0;
 	char CheckedQuest[100] = {0, };
@@ -1278,7 +1182,6 @@ BOOL CDbManager::GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 		IndexQuest++;
 	}
 	pMover->m_nCheckedQuestSize = IndexQuest;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	// 기존 것중에 완료된것을 완료 배열에 넣는다.
 	for( int i = 0; i < nQuestSize; i++ )
@@ -1300,7 +1203,6 @@ BOOL CDbManager::GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 			{
 				pMover->m_aQuest[ j ] = pMover->m_aQuest[ j + 1 ];
 			}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			for( int k = 0; k < pMover->m_nCheckedQuestSize; ++k )
 			{
 				if( pMover->m_aCheckedQuest[ k ] == pMover->m_aQuest[ i ].m_wId )
@@ -1311,7 +1213,6 @@ BOOL CDbManager::GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 					break;
 				}
 			}
-#endif // __IMPROVE_QUEST_INTERFACE
 			nQuestSize--;
 			i--;
 		}
@@ -1395,10 +1296,8 @@ BOOL CDbManager::GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED
 		WORD wId	= (WORD)GetIntFromStr( szSKillInfluence, &CountStr );
 		DWORD dwLevel	= (DWORD)GetIntFromStr( szSKillInfluence, &CountStr );
 		DWORD tmTotal	= GetIntFromStr( szSKillInfluence, &CountStr );
-#if __VER >= 13 // __HOUSING
 		if( wType == 0 && wId == 0 && dwLevel == 0 && tmTotal == 0 )
 			break;
-#endif // __HOUSING
 		IBuff* pBuff	= pMover->m_buffs.CreateBuff( wType );
 		pBuff->SetId( wId );
 		pBuff->SetLevel( dwLevel );
@@ -1410,12 +1309,10 @@ BOOL CDbManager::GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED
 		pMover->m_SkillState.m_aSkillInfluence[iSkillIndex].wID = (WORD)GetIntFromStr( szSKillInfluence, &CountStr );
 		pMover->m_SkillState.m_aSkillInfluence[iSkillIndex].dwLevel = (DWORD)GetIntFromStr( szSKillInfluence, &CountStr );
 		pMover->m_SkillState.m_aSkillInfluence[iSkillIndex].tmCount = GetIntFromStr( szSKillInfluence, &CountStr );
-#if __VER >= 13 // __HOUSING
 		SKILLINFLUENCE* pSkillInfluenece = &pMover->m_SkillState.m_aSkillInfluence[iSkillIndex];
 		if( pSkillInfluenece->wType == 0 && pSkillInfluenece->wID == 0
 			&& pSkillInfluenece->dwLevel == 0 && pSkillInfluenece->tmCount == 0 )
 			break;
-#endif // __HOUSING
 #endif	// __BUFF_1107
 		
 		++iSkillIndex;
@@ -1448,22 +1345,14 @@ int CDbManager::GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation
 	pItemElem->m_idGuild = (u_long)GetIntPaFromStr( pstrItem, pLocation );
 	pItemElem->m_nResistSMItemId = GetIntPaFromStr( pstrItem, pLocation );
 	pItemElem->m_dwObjId		= IndexItem;
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
 	{
-	#if __VER >= 11 // __SYS_PLAYER_DATA
 		CPlayerDataCenter::GetInstance()->m_Access.Enter();
 		const char*	lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( pItemElem->m_nHitPoint );
-	#else	// __SYS_PLAYER_DATA
-		LPCSTR lpszPlayer	= prj.GetPlayerString( pItemElem->m_nHitPoint );
-	#endif	// __SYS_PLAYER_DATA
 		if( lpszPlayer != NULL)
 			memcpy(pItemElem->m_szItemText,lpszPlayer,sizeof(pItemElem->m_szItemText));
-	#if __VER >= 11 // __SYS_PLAYER_DATA
 		CPlayerDataCenter::GetInstance()->m_Access.Leave();
-	#endif	// __SYS_PLAYER_DATA
 	}
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	
 
 	++*pLocation;
@@ -1860,9 +1749,7 @@ BOOL CDbManager::RemoveQuest( void )
 	char lpOutputString[256];
 	char aQuest[3072]	= { 0,};
 	char aCompleteQuest[1024]	= { 0,};
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	char aCheckedQuest[100]	= {0, };
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	CQuery* pQuery	= new CQuery;
 	if( FALSE == pQuery->Connect( 3, DSN_NAME_CHARACTER01, DB_ADMIN_ID_CHARACTER01, DB_ADMIN_PASS_CHARACTER01 ) )
@@ -1873,20 +1760,11 @@ BOOL CDbManager::RemoveQuest( void )
 		return FALSE;
 	}
 	
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	char* pSql	=  new char[4296];	// aQuest + aCompleteQuest + aCheckedQuest + 100
-#else // __IMPROVE_QUEST_INTERFACE
-	char* pSql	=  new char[4196];	// aQuest + aCompleteQuest + 100
-#endif // __IMPROVE_QUEST_INTERFACE
 
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	sprintf( pSql, "SELECT m_idPlayer, m_lpQuestCntArray, m_aCompleteQuest, m_aCheckedQuest FROM CHARACTER_TBL WHERE serverindex = '%02d'",
 		g_appInfo.dwSys );
-#else // __IMPROVE_QUEST_INTERFACE
-	sprintf( pSql, "SELECT m_idPlayer, m_lpQuestCntArray, m_aCompleteQuest FROM CHARACTER_TBL WHERE serverindex = '%02d'",
-		g_appInfo.dwSys );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	sprintf( pSql, "SELECT m_idPlayer, m_lpQuestCntArray, m_aCompleteQuest FROM CHARACTER_TBL WHERE serverindex = '%02d'",
 		g_appInfo.dwSys );
@@ -1919,20 +1797,12 @@ BOOL CDbManager::RemoveQuest( void )
 		}
 		memset( aQuest, 0, sizeof(aQuest) );
 		memset( aCompleteQuest, 0, sizeof(aCompleteQuest) );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		memset( aCheckedQuest, 0, sizeof(aCheckedQuest) );
-#endif // __IMPROVE_QUEST_INTERFACE
 		if( bRemove )
 		{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			SaveQuest( &mover, aQuest, aCompleteQuest, aCheckedQuest );
 			FILEOUT( "query_removequest.txt", "UPDATE CHARACTER_TBL SET m_lpQuestCntArray = '%s', m_aCompleteQuest = '%s', m_aCheckedQuest = '%s' WHERE m_idPlayer = '%07d' and serverindex = '%02d'",
 				aQuest, aCompleteQuest, aCheckedQuest, mover.m_idPlayer, g_appInfo.dwSys );
-#else // __IMPROVE_QUEST_INTERFACE
-			SaveQuest( &mover, aQuest, aCompleteQuest );
-			FILEOUT( "query_removequest.txt", "UPDATE CHARACTER_TBL SET m_lpQuestCntArray = '%s', m_aCompleteQuest = '%s' WHERE m_idPlayer = '%07d' and serverindex = '%02d'",
-				aQuest, aCompleteQuest, mover.m_idPlayer, g_appInfo.dwSys );
-#endif // __IMPROVE_QUEST_INTERFACE
 		}
 	}
 	OutputDebugString( "RemoveQuest complete" );

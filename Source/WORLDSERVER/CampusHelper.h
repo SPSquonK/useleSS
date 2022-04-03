@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 15 // __CAMPUS
 #include "Campus.h"
 #include "playerdata.h"
 
@@ -76,5 +75,4 @@ private:
 	MAP_CREWORD	m_mapCReward;
 };
 
-#endif // __CAMPUS
 #endif // !defined(AFX_CAMPUSHELPER_H__8A983495_B49A_40BF_8D99_6663B0F63C26__INCLUDED_)

@@ -110,7 +110,6 @@ inline void GetStrFromStr(char *pBuf, char *strReturn, int *pLocation)
 	strReturn[count]=0;(*pLocation)++;
 }
 
-#if __VER >= 11 // __SYS_IDENTIFY
 inline	__int64 GetInt64PaFromStr( char *pBuf, int *pLocation )
 {
 	char strTemp[50];
@@ -138,7 +137,6 @@ inline	__int64 GetInt64PaFromStr( char *pBuf, int *pLocation )
 	strTemp[count]	=0;	( *pLocation )++;
 	return _atoi64( strTemp );
 }
-#endif	// __SYS_IDENTIFY
 
 // ',', '\0' 을 만날때까지 값을 리턴하고 커서는 다음...
 // '/' 를 만나면 값을 리턴하고 커서는 현재('/')...
@@ -564,7 +562,6 @@ ADDSMMODE, *PADDSMMODE;
 #define MAX_PIERCING_WEAPON		10
 #define	MAX_PIERCING_ULTIMATE	5
 #define	MAX_PIERCING			10
-#if __VER >= 15 // __PETVIS
 #define MAX_VIS					9
 
 #define	FAILED_BOTH_NEEDVIS	0
@@ -572,7 +569,6 @@ ADDSMMODE, *PADDSMMODE;
 #define	FAILED_2ND_NEEDVIS	2
 #define SUCCSESS_NEEDVIS	3
 #define UNDEFINED_NEEDVIS	4
-#endif // __PETVIS
 
 typedef	struct	_LogItemInfo	// ItemLog쓰임
 {
@@ -596,27 +592,11 @@ typedef	struct	_LogItemInfo	// ItemLog쓰임
 	int		nResistAbilityOption;
 	BOOL	m_bCharged;
 	DWORD	m_dwKeepTime;
-#if __VER >= 11 // __SYS_IDENTIFY
 	__int64	m_iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-	int		m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
-#if __VER >= 12 // __EXT_PIERCING
 	int 	nPiercedSize;
 	int		adwItemId[MAX_PIERCING_WEAPON];
 	int		nUMPiercedSize;
 	int		adwUMItemId[MAX_PIERCING_ULTIMATE];
-#else // __EXT_PIERCING
-	int 	nPiercedSize;
-	int		adwItemId0;
-	int		adwItemId1;
-	int		adwItemId2;
-	int		adwItemId3;
-#if __VER >= 9 // __ULTIMATE
-	int		adwItemId4;
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
-#if __VER >= 9 // __PET_0410
 	BYTE	nPetKind;
 	BYTE	nPetLevel;
 	DWORD	dwPetExp;
@@ -627,7 +607,6 @@ typedef	struct	_LogItemInfo	// ItemLog쓰임
 	BYTE	nPetAL_B;
 	BYTE	nPetAL_A;
 	BYTE	nPetAL_S;
-#endif // __PET_0410
 
 	_LogItemInfo()
 	{
@@ -649,12 +628,7 @@ typedef	struct	_LogItemInfo	// ItemLog쓰임
 		nResistAbilityOption = 0;
 		m_bCharged = FALSE;
 		m_dwKeepTime = 0;
-#if __VER >= 11 // __SYS_IDENTIFY
 		m_iRandomOptItemId = 0;
-#else	//__SYS_IDENTIFY
-		m_nRandomOptItemId = 0;
-#endif	// __SYS_IDENTIFY
-#if __VER >= 12 // __EXT_PIERCING
 		nPiercedSize = 0;
 //		for( int i=0; i<MAX_PIERCING_WEAPON; i++ )
 //			adwItemId[i] = 0;
@@ -663,17 +637,6 @@ typedef	struct	_LogItemInfo	// ItemLog쓰임
 //		for( i=0; i<MAX_PIERCING_ULTIMATE; i++ )
 //	adwUMItemId[i] = 0;
 		memset( adwUMItemId, 0, sizeof(adwUMItemId) );
-#else // __EXT_PIERCING
-		nPiercedSize = 0;
-		adwItemId0 = 0;
-		adwItemId1 = 0;
-		adwItemId2 = 0;
-		adwItemId3 = 0;
-#if __VER >= 9 // __ULTIMATE
-		adwItemId4 = 0;
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
-#if __VER >= 9 // __PET_0410
 		nPetKind = 0;
 		nPetLevel = 0;
 		dwPetExp = 0;
@@ -684,7 +647,6 @@ typedef	struct	_LogItemInfo	// ItemLog쓰임
 		nPetAL_B = 0;
 		nPetAL_A = 0;
 		nPetAL_S = 0;
-#endif // __PET_0410
 	}
 }	LogItemInfo,	*PLogItemInfo;
 

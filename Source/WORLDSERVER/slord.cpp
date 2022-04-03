@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __LORD
 
 #include "slord.h"
 #include "lordskillexecutable.h"
@@ -239,4 +238,3 @@ namespace	lordevent
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-#endif	// __LORD

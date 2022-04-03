@@ -96,14 +96,10 @@ BOOL CCommonCtrl::Read( CFileIO* pFile )
 	else
 	if( dwVersion == 0x90000000 )
 	{
-#if __VER >= 10 // __LEGEND		
 		// 예전 : 368
 		// 현재 : 432
 		pFile->Read( pCtrlElem, 88 );
 		pFile->Read( ((BYTE*)pCtrlElem + 152), sizeof(CCtrlElem) - 152 );	// 432 - 64 = 368
-#else //__LEGEND
-		pFile->Read( pCtrlElem, sizeof( CCtrlElem ) );
-#endif //__LEGEND
 	}
 	else
 	{
@@ -174,11 +170,9 @@ void CCommonCtrl::_ProcessWall( void )
 	int nMin = m_pAddSkillProp->dwAbilityMin + (pAttacker->GetLevel() + (pAttacker->GetInt() / 10) * (int)m_pAddSkillProp->dwSkillLvl);
 	int nMax = m_pAddSkillProp->dwAbilityMax + (pAttacker->GetLevel() + (pAttacker->GetInt() / 10) * (int)m_pAddSkillProp->dwSkillLvl);
 	int nDamage = xRandom( nMin, nMax );
-#if __VER >= 9	// __SKILL_0706
 	int nMinPVP	= m_pAddSkillProp->dwAbilityMinPVP + ( pAttacker->GetLevel() + ( pAttacker->GetInt() / 10 ) * (int)m_pAddSkillProp->dwSkillLvl );
 	int nMaxPVP		= m_pAddSkillProp->dwAbilityMaxPVP + ( pAttacker->GetLevel() + ( pAttacker->GetInt() / 10 ) * (int)m_pAddSkillProp->dwSkillLvl );
 	int nDamagePVP	= xRandom( nMinPVP, nMaxPVP );
-#endif	// __SKILL_0706
 
 	int nHitPoint = 0;
 	int nTargetHP = 0;
@@ -191,10 +185,8 @@ void CCommonCtrl::_ProcessWall( void )
 			CMover *pTarget = (CMover *)pObj;
 			if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 				bApply = TRUE;
-#if __VER >= 8 //	#ifdef	__JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 			if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
 				bApply = FALSE;
-#endif //			#endif // __JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World	
 			if( bApply )
 			{
 				if( IsValidObj( pTarget ) && pTarget->IsLive() )
@@ -224,9 +216,7 @@ void CCommonCtrl::_ProcessWall( void )
 							DestroyWall();
 						
 						// 뒤로 밀리기 처리.
-#if __VER >= 10	// __AI_0711
 						if( pTarget->IsRank( RANK_MIDBOSS ) == FALSE )
-#endif	// __AI_0711
 						{
 							FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
 							FLOAT fPower = 0.825f;
@@ -251,7 +241,6 @@ void CCommonCtrl::_ProcessWall( void )
 			{
 				if( pObj->IsRangeObj( vPos, 1.0f ) )
 				{
-#if __VER >= 9	// __SKILL_0706
 					int n = 0;
 					if( bPVP && pAttacker->IsPVPTarget( pTarget ) )
 						n	= pTarget->m_pActMover->SendDamage( AF_FORCE, pAttacker->GetId(), nDamagePVP, FALSE );	
@@ -259,9 +248,6 @@ void CCommonCtrl::_ProcessWall( void )
 								/*아레나 추가*/	|| pAttacker->IsArenaTarget( pTarget ) 
 						) )
 						n	= pTarget->m_pActMover->SendDamage( AF_FORCE, pAttacker->GetId(), nDamage, FALSE );	
-#else	// __SKILL_0706
-					int n	= pTarget->m_pActMover->SendDamage( AF_FORCE, pAttacker->GetId(), nDamage, FALSE );	
-#endif	// __SKILL_0706
 					if( n > 0 )
 					{
 						m_nLife ++;		// 부딪힐때마다 카운트 올라감
@@ -416,7 +402,6 @@ void CCommonCtrl::Process()
 			{
 				Init();
 
-#if __VER >= 15 // __GUILD_HOUSE
 				if( pProp->IsGuildHousingObj( ) )		//gmpbigsun : 길드 하우스 오브젝트는 애니메이션 돌림 
 				{
 					CModel* pModel = (CModel*)GetModel();
@@ -426,7 +411,6 @@ void CCommonCtrl::Process()
 						m_bAniPlay = TRUE;
 				//	pModel->SetLoop( ANILOOP_LOOP );
 				}
-#endif
 
 				m_pModel->m_bEndFrame     = FALSE;
 				m_pModel->m_fFrameCurrent = 0.0f;

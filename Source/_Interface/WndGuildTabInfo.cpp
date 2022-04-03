@@ -8,9 +8,7 @@
 #include "defineQuest.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 #include "guild.h"
 extern	CGuildMng	g_GuildMng;
@@ -433,20 +431,9 @@ void CWndGuildTabInfo::UpdateData()
 		strText.Format( "%d", pGuild->m_nLevel );
 		pWndText->SetTitle( strText );					// 길드 레벨.
 		pWndText = GetDlgItem( WIDC_GUILDMASTER );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		LPCTSTR szMaster	= CPlayerDataCenter::GetInstance()->GetPlayerString( pGuild->m_idMaster );
-#else	// __SYS_PLAYER_DATA
-		LPCTSTR szMaster = prj.GetPlayerString( pGuild->m_idMaster );
-#endif	// __SYS_PLAYER_DATA
 		
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		pWndText->SetTitle( szMaster );
-#else	// __SYS_PLAYER_DATA
-		if( szMaster )
-			pWndText->SetTitle( szMaster );		// 길드 장.
-		else
-			g_DPlay.SendQueryPlayerString( pGuild->m_idMaster, QPS_GUILD_MASTER);
-#endif	// __SYS_PLAYER_DATA
 
 		pWndText = GetDlgItem( WIDC_GUILDNUMBER );
 		

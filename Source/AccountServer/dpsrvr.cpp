@@ -123,10 +123,8 @@ void CDPSrvr::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 #ifdef __EUROPE_0514
 	ar.ReadString( szBak, MAX_ACCOUNT );
 #endif	// __EUROPE_0514
-#if __VER >= 14 // __PCBANG
 	DWORD dwPCBangClass;
 	ar >> dwPCBangClass;
-#endif // __PCBANG
 
 #endif	// __GPAUTH_02
 	BYTE cbResult = ACCOUNT_CHECK_OK;		 
@@ -158,10 +156,8 @@ void CDPSrvr::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 		if( g_AccountMng.m_nCount < m_nMaxConn )	
 		{
 			cbResult = g_AccountMng.AddAccount( lpszAccount, dpid1, dpid2, &dwAuthKey, cbAccountFlag, fCheck );
-#if __VER >= 14 // __PCBANG
 			if( dwPCBangClass != 0 )
 				g_AccountMng.PushPCBangPlayer( dwAuthKey, dwPCBangClass );
-#endif // __PCBANG
 		}
 		else
 			cbResult = ACCOUNT_OVERFLOW;

@@ -36,10 +36,8 @@ public:
 
 	int		HitTest( CPoint point );
 	CItemBase* GetItem( BYTE i );
-#if __VER >= 8 // __S8_VENDOR_REVISION
 	void	OnDrawItemInfo( C2DRender* p2DRender, CItemElem* pItemElem, int nX, int nY );
 	CString GetNumberFormatSelling( LPCTSTR szNumber );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 
 //	Attributes
 //	COLORREF	GetBkColor()	const;

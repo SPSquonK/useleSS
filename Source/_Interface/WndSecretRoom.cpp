@@ -10,12 +10,9 @@
 #include "DPClient.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
 
-#if __VER >= 12 // __SECRET_ROOM
 
 //////////////////////////////////////////////////////////////////////////
 // 비밀의 방 참가자 구성
@@ -1979,11 +1976,7 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 					if(pObjMember->IsMaster())
 						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
 					else if(pObjMember->IsHero())
-#if __VER >= 15 // __HERO129_VER15				// 15차 히어로 레벨확장
 						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-	#else	// 15차 히어로 레벨확장
-						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO_BEFORE ), pObjMember->GetName() );
-	#endif	// 15차 히어로 레벨확장
 					else 
 						strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
 				}
@@ -1992,11 +1985,7 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 					if(pObjMember->IsMaster())
 						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
 					else if(pObjMember->IsHero())
-#if __VER >= 15 // __HERO129_VER15				// 15차 히어로 레벨확장
 						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-	#else	// 15차 히어로 레벨확장
-						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO_BEFORE ), pObjMember->GetName() );
-	#endif	// 15차 히어로 레벨확장
 					else 
 						strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
 				}
@@ -2014,11 +2003,7 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
 				else if( MAX_MASTER <= nJob )
-#if __VER >= 15 // __HERO129_VER15 // 15차 히어로 레벨확장
 					strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-#else // 15차 히어로 레벨확장
-					strTemp2 = prj.GetText( TID_GAME_TOOLTIP_MARK_HERO_BEFORE );
-#endif // 15차 히어로 레벨확장
 				else 
 					strTemp2.Format( "%d", nLevel );
 
@@ -2259,4 +2244,3 @@ void CWndSecretRoomQuick::SortMemberList()
 	}
 }
 
-#endif //__SECRET_ROOM

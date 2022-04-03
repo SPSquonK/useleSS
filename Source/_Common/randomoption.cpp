@@ -66,18 +66,14 @@ BOOL CRandomOptionProperty::LoadScript( LPCTSTR szFile )
 			LoadScriptBlock( s, eAwakening );
 		else if( s.Token == _T( "Blessing" ) )
 			LoadScriptBlock( s, eBlessing );
-#if __VER >= 12 // __PET_0519
 		// 시스템 펫 각성과 먹펫 각성 추가
 		else if( s.Token == _T( "SystemPet" ) )
 			LoadScriptBlock( s, eSystemPet );
 		else if( s.Token == _T( "EatPet" ) )
 			LoadScriptBlock( s, eEatPet );
-#endif	// __PET_0519
 		s.GetToken();
 	}
-#if __VER >= 12 // __J12_0
 	AwakeningExtension();	// 각성, 축복 가능 파츠 추가를 위한 테이블 확장
-#endif	// __J12_0
 	return TRUE;
 }
 
@@ -116,22 +112,17 @@ int CRandomOptionProperty::GetRandomOptionKind( CItemElem* pItemElem )
 		case PARTS_UPPER_BODY:
 		case PARTS_RWEAPON:
 		case PARTS_SHIELD:
-#if __VER >= 12 // __J12_0
 		// 각성 가능 파츠 추가
 		case PARTS_HAND:	// 손
 		case PARTS_FOOT:	// 발
 		case PARTS_CAP:		// 머리
-#endif	// __J12_0
 			return static_cast<int>( eAwakening );
 		case PARTS_CLOTH:
 		case PARTS_CLOAK:
-#if __VER >= 12 // __J12_0
 		case PARTS_HAT:		// 겉옷 머리
 		case PARTS_GLOVE:	// 겉옷 손
 		case PARTS_BOOTS:	// 겉옷 발
-#endif	// __J12_0
 			return static_cast<int>( eBlessing );
-#if __VER >= 12 // __PET_0519
 		default:
 			{
 				// C급 이상의 시스템 펫인가?
@@ -142,7 +133,6 @@ int CRandomOptionProperty::GetRandomOptionKind( CItemElem* pItemElem )
 					return static_cast<int>( eEatPet );
 				break;
 			}
-#endif	// __PET_0519
 	}
 	return -1;
 }
@@ -325,12 +315,10 @@ short CRandomOptionProperty::DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOpt
 
 int	CRandomOptionProperty::GetRandomOptionKindIndex( int nRandomOptionKind, int nParts )
 {	// 각성 축복 시 참조할 테이블의 인덱스를 반환한다
-#if __VER >= 12 // __J12_0
 	//PARTS_HAND: 4, PARTS_FOOT: 5, PARTS_CAP: 6
 	// 기본 테이블의 마지막 인덱스부터 확장 인덱스 시작한다
 	if( nRandomOptionKind == eAwakening && ( nParts == PARTS_HAND || nParts == PARTS_FOOT || nParts == PARTS_CAP ) )
 		return eMaxRandomOptionKind + nParts - PARTS_HAND;
-#endif	// __J12_0
 	return nRandomOptionKind;
 }
 
@@ -407,7 +395,6 @@ bool	CRandomOptionProperty::IsCheckedSafeFlag( __int64 n64RandomeOption )
 
 
 
-#if __VER >= 12 // __J12_0
 void CRandomOptionProperty::AwakeningExtension( void )
 {
 	int	anDst[eAwakeningExtension][6]	= {		// 각 부분 별 각성 가능 속성
@@ -440,7 +427,6 @@ void CRandomOptionProperty::AwakeningExtension( void )
 		}
 	}
 }
-#endif	// __J12_0
 
 int	CRandomOptionProperty::GetUpperProbability( int iRandomOptionKindIndex )
 {

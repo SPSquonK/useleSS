@@ -24,9 +24,7 @@ extern	CGuildMng	g_GuildMng;
 
 #include <mmsystem.h>
 
-#if __VER >= 12 // __TAX
 #include "dbcontroller.h"
-#endif	// __TAX
 
 extern	CDPLoginSrvr	g_dpLoginSrvr;
 extern	CDPAccountClient	g_dpAccountClient;
@@ -38,9 +36,7 @@ extern	CDPCoreSrvr	g_dpCoreSrvr;
 
 #include "spevent.h"
 
-#if __VER >= 12 // __LORD
 #include "tlord.h"
-#endif	// __LORD
 
 #define MAX_LOADSTRING 100
 
@@ -57,21 +53,15 @@ BOOL	s_bRemoveInvalidItem	= FALSE;
 
 #include "DbController.h"
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
 #ifdef __QUIZ
 #include "QuizDBCtrl.h"
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouseDBCtrl.h"
-#endif //__GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 #include "CampusDBCtrl.h"
-#endif // __CAMPUS
 
 TCHAR szTitle[MAX_LOADSTRING];	// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];	// The title bar text
@@ -109,11 +99,9 @@ void InitLanguageFromResource( HINSTANCE hInstance )
 
 	::SetLanguageInfo( atoi( szLang ), atoi( szSubLang ) );
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	char sz2ndPassWord[2];
 	LoadString( hInstance, IDS_2ND_PASSWORD, sz2ndPassWord, 2 );
 	::SetUse2ndPassWord( static_cast<BOOL>( atoi( sz2ndPassWord ) ) );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance,
@@ -296,15 +284,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //______________________________________________________________________
 
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	if( !g_DbManager.LoadPlayerData() )
 		return FALSE;
-#else	// __SYS_PLAYER_DATA
-	if( !g_DbManager.OpenPlayerID() )
-	{
-		ASSERT( 0 );
-	}
-#endif	// __SYS_PLAYER_DATA
 
 	if( !g_DbManager.GetPartyName() )
 	{
@@ -335,13 +316,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		ASSERT( 0 );
 	}
 
-#if __VER >= 12 // __LORD
 	// 군주 시스템을 구성하는 협력 객체들을 생성한다
 	CTLord::Instance()->CreateColleagues();
-#endif	// __LORD
-#if __VER >= 12 // __TAX
 	CDbControllerTimer::GetInstance()->Create();
-#endif	// __TAX
 #ifdef __QUIZ
 	// load QuizEvent Id
 	if( !CQuizDBMng::GetInstance()->InitQuizEventId() )
@@ -351,12 +328,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	//CQuizDBMng::GetInstance()->PostRequest( QUERY_QUIZ_INIT );
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 	GuildHouseDBMng->PostRequest( GUILDHOUSE_LOAD );
-#endif // __GUILD_HOUSE
-#if __VER >= 15 // __CAMPUS
 	CCampusHelper::GetInstance()->PostRequest( CAMPUS_LOAD );
-#endif // __CAMPUS
 
 	if( !g_dpLoginSrvr.StartServer( PN_DBSRVR_0 ) )
 	{
@@ -410,13 +383,9 @@ void ExitInstance( void )
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
-#if __VER >= 12 // __TAX
 	CDbControllerTimer::GetInstance()->Destroy();
-#endif	// __TAX
-#if __VER >= 12 // __LORD
 	// 군주 시스템 협력 객체들을 제거한다
 	CTLord::Instance()->DestroyColleagues();
-#endif	// __LORD
 
 	UninitializeNetLib();
 }
@@ -451,7 +420,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						CDPTrans::GetInstance()->OnSaveConcurrentUserNumber( ar, DPID_UNKNOWN, DPID_UNKNOWN, DPID_UNKNOWN, lpBuf, nBufSize );
 						break;
 					}
-#if __VER >= 9 // __EVENTLUA
 				case IDM_EVENTLUA_APPLYNOW:
 					{
 						prj.m_EventLua.m_Access.Enter();
@@ -462,8 +430,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						prj.m_EventLua.m_Access.Leave();
 					}
 					break;
-#endif // __EVENTLUA
-#if __VER >= 14 // __PCBANG
 				case IDM_PCBANG_ON:
 					{
 						HMENU hMenu = GetMenu( hWnd );
@@ -482,7 +448,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						CDPTrans::GetInstance()->SendPCBangSetApply( DPID_ALLPLAYERS );
 					}
 					break;
-#endif // __PCBANG
 #ifdef __QUIZ
 				case IDM_QUIZEVENT_APPLYNOW:
 					{
@@ -520,7 +485,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							if( CEventGeneric::GetInstance()->Run() )
 							CDPTrans::GetInstance()->SendEventFlag( CEventGeneric::GetInstance()->GetFlag() ); 
-						#if __VER >= 9 // __EVENTLUA
 							prj.m_EventLua.m_Access.Enter();
 						#ifdef __AUTO_NOTICE
 							if( prj.m_EventLua.IsNoticeTime() )
@@ -529,13 +493,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 							if( prj.m_EventLua.CheckEventState() )
 								CDPTrans::GetInstance()->SendEventLuaState( prj.m_EventLua.m_mapState, TRUE );
 							prj.m_EventLua.m_Access.Leave();
-						#endif // __EVENTLUA
 
-						#if __VER >= 11 // __GUILD_COMBAT_1TO1
 							if( prj.m_GuildCombat1to1.CheckOpenTIme() == 1
 								&& prj.m_GuildCombat1to1.m_nState == CGuildCombat1to1Mng::GC1TO1_CLOSE )
 								CDPTrans::GetInstance()->SendGC1to1Open();
-						#endif // __GUILD_COMBAT_1TO1
 
 						#ifdef __GETMAILREALTIME
 							LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.AllocRequest();
@@ -567,10 +528,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			KillTimer( hWnd, TIMER_ID_EVENT_GENERIC );
 			PostQuitMessage(0);
 			break;
-#if __VER >= 9 // __EVENTLUA
 		case WM_RBUTTONDOWN:
 			break;
-#endif // __EVENTLUA
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
    }

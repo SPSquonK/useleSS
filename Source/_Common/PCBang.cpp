@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "PCBang.h"
 
-#if __VER >= 14 // __PCBANG
 
 #ifdef __WORLDSERVER
 CPCBangInfo::CPCBangInfo( DWORD dwPCBangClass, DWORD dwConnectTime )
@@ -284,4 +283,3 @@ float CPCBang::GetPieceItemDropFactor( CUser* pUser )
 }
 #endif // __WORLDSERVER
 
-#endif // __PCBANG

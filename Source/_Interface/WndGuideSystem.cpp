@@ -22,13 +22,11 @@ CWndGuideSystem::CWndGuideSystem()
 
 	m_wndGuideText = NULL;
 	m_wndGuideSelection = NULL;
-#if __VER >= 12 // __MOD_TUTORIAL
 	m_pWndTutorialView = NULL;
 	m_CurrentGuide.init();
 	m_vecEventGuide.clear();
 	m_mapGuide.clear();
 	m_bIsViewVisible = false;
-#endif
 }
 
 CWndGuideSystem::~CWndGuideSystem()
@@ -40,10 +38,8 @@ CWndGuideSystem::~CWndGuideSystem()
 	SAFE_DELETE(m_wndGuideText);
 	m_wndGuideSelection->Destroy();
 	SAFE_DELETE(m_wndGuideSelection);
-#if __VER >= 12 // __MOD_TUTORIAL
 	m_pWndTutorialView->Destroy();
 	SAFE_DELETE(m_pWndTutorialView);
-#endif
 }
 
 BOOL CWndGuideSystem::Initialize( CWndBase* pWndParent, DWORD nType )
@@ -294,7 +290,6 @@ void CWndGuideSystem::SetAni(int nJob, int nAniKind)
 		break;
 	}
 }
-#if __VER >= 12 // __MOD_TUTORIAL
 
 //================================================================================
 void CWndInfoPang::OnInitialUpdate()
@@ -801,275 +796,6 @@ void CWndGuideSystem::GuideStart(BOOL ischart)
 	}
 	
 }
-#else
-BOOL CWndGuideSystem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	CWndBase* pWndBase = (CWndBase*) pLResult;
-	
-	if( pWndBase->m_pParentWnd == &m_wndMenuPlace )
-	{
-		int nState = !m_wndMenuPlace.GetMenuState( nID, 0 );
-		m_wndMenuPlace.CheckMenuItem( nID, nState );
-		m_wndMenuPlace.CheckMenuItem( 0, FALSE );
-		m_wndMenuPlace.CheckMenuItem( 1, FALSE );
-		
-		SetFocus();
-		switch( nID )
-		{
-		case 0:
-			{
-				if(g_pPlayer)
-					SetAni( g_pPlayer->GetJob(), ANI_BYTE );
-
-				if( m_wndGuideText->m_VecGuideText.size() )
-					m_wndGuideText->m_bVisible = FALSE;
-				
-			}
-			break;
-		case 1:
-			if( m_wndGuideText->m_VecGuideText.size() )
-				m_wndGuideText->m_bVisible = !m_wndGuideText->m_bVisible;
-			break;
-		}
-	}
-
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-
-void CWndGuideSystem::OnInitialUpdate()
-{
-	CWndNeuz::OnInitialUpdate();
-
-	m_bIsLoad = FALSE;
-
-	this->DelWndStyle(WBS_CAPTION);
-	this->AddWndStyle(WBS_TOPMOST);
-
-	SAFE_DELETE(m_pModel);
-
-	if( g_pPlayer )
-	{
-		ChangeModel( g_pPlayer->GetJob() );
-		SetAni( g_pPlayer->GetJob(), ANI_INTRO );
-	}
-	else
-		Error( "CWndGuideSystem::OnInitialUpdate() -> g_pPlayer == NULL " );
-
-	m_wndTitleBar.SetVisible( FALSE );
-
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rect = GetWindowRect();
-	int nWidth  = rect.Width(); 
-	int nHeight = rect.Height(); 
-	int x = rectRoot.right - rect.Width();
-	int y = rectRoot.bottom - nHeight;	
-	CPoint point( x, y );
-	Move( point );
-
-	m_listGuide.clear();
-	m_listGuideMsg.clear();
-	m_listGuideChart.clear();
-
-	LoadGuide( MakePath( DIR_CLIENT, "Guide.inc" ) );
-	//*
-	//텍스트 창 출력
-	SAFE_DELETE(m_wndGuideText);
-	m_wndGuideText = new CWndGuideTextMgr;
-#ifdef __FIX_WND_1109
-	m_wndGuideText->Initialize( this );
-#else	// __FIX_WND_1109
-	m_wndGuideText->Initialize();
-#endif	// __FIX_WND_1109
-	/**/
-
-	m_bIsGuideChart[0] = FALSE;
-	m_bIsGuideChart[1] = FALSE;
-	
-	m_dwTime = g_tmCurrent;
-
-	m_wndMenuPlace.CreateMenu( this );	
-	m_wndMenuPlace.AppendMenu( 0, 0 , prj.GetText(TID_GAME_GUIDE_HIDE) );
-	m_wndMenuPlace.AppendMenu( 0, 1 , prj.GetText(TID_GAME_GUIDE_OPEN) );
-	m_wndMenuPlace.CheckMenuItem( 0, FALSE );
-	m_wndMenuPlace.CheckMenuItem( 1, m_wndGuideText->m_bVisible );
-	
-	m_dwGuideLevel = 1;
-}
-
-void CWndGuideSystem::PushBack(GUIDE_STRUCT guide)
-{
-	m_listGuide.push_back( guide );
-
-	GUIDE_STRUCT* pguide = &(m_listGuide.back());
-	
-	m_listGuideChart.push_back(pguide);
-}
-
-void CWndGuideSystem::SendGuideMessage( int nMsg )
-{
-	if( m_bAniState != ANI_IDLE )
-		return;
-
-	if( m_dwGuideLevel != 2 )
-		m_listGuideMsg.push_back( nMsg );
-}
-
-BOOL CWndGuideSystem::Process()
-{
-//	return 1;
-	if( !(g_tmCurrent > m_dwTime+SEC(2.5)) )
-		return TRUE;
-
-	if( m_pModel == NULL )
-		return FALSE;
-	
-	m_pModel->FrameMove();
-	
-	if( m_pModel->IsEndFrame() )
-	{
-		if( m_bAniState == ANI_INTRO )
-		{
-			if( g_pPlayer )
-				SetAni( g_pPlayer->GetJob(), ANI_IDLE );
-		}
-		else
-		if( m_bAniState == ANI_BYTE )
-		{
-			m_bVisible     = FALSE;
-			m_bAniState    = ANI_IDLE;
-		}
-	}
-	
-	int nMsg;
-
-	if( m_bIsGuideChart[0] )
-	{	
-		GUIDE_STRUCT* guidestruct;
-
-		if( m_listGuideMsg.size() )
-		{
-			nMsg = m_listGuideMsg.front();
-
-			if( m_listGuideChart.size() )
-			{
-				guidestruct = m_listGuideChart.front();
-
-				if( guidestruct->m_nEventMsg == nMsg )
-				{
-					m_listGuideChart.pop_front();
-					m_listGuideMsg.pop_front();
-
-					// 새로운 가이드 추가
-					if( m_listGuideChart.size() )
-					{
-						guidestruct = m_listGuideChart.front();
-						m_wndGuideText->AddGuideText( *guidestruct );
-					}
-					else
-					{
-						m_wndGuideText->m_bVisible = FALSE;
-						m_bIsGuideChart[0] = FALSE;
-						m_bIsGuideChart[1] = TRUE;
-					}
-				}
-				else
-					m_listGuideMsg.pop_front();
-			}
-		}
-	}
-	else
-	if( m_bIsGuideChart[1] )
-	{
-		if( m_listGuideMsg.size() )
-		{
-			nMsg = m_listGuideMsg.front();
-
-			for( list<GUIDE_STRUCT>::iterator i = m_listGuide.begin(); i != m_listGuide.end(); ++i )
-			{
-				GUIDE_STRUCT guidestruct;
-
-				guidestruct = (*i);
-
-				if( (*i).m_nEventMsg == nMsg && (*i).m_bBeginner == FALSE  )
-				{
-					if( g_pPlayer && g_pPlayer->GetLevel() == (*i).m_nShowLevel )
-					{
-						(*i).m_bFlag = !(*i).m_bFlag;
-
-						m_listGuideMsg.pop_front();
-						m_wndGuideText->AddGuideText( (*i) );
-					}
-				}
-			}
-
-			if( m_listGuideMsg.size() )
-				m_listGuideMsg.pop_front();
-		}
-		
-	}
-
-	return TRUE;
-}
-
-BOOL CWndGuideSystem::LoadGuide( LPCTSTR lpszFileName )
-{
-	CScript script;
-	if( script.Load( lpszFileName ) == FALSE )
-		return FALSE;
-
-	GUIDE_STRUCT guidestruct;
-	
-	m_listGuide.clear();
-	m_listGuideChart.clear();
-	
-	script.tok = 0;
-	
-	while( script.tok != FINISHED )
-	{
-		guidestruct.m_nEventMsg = script.GetNumber();
-
-		script.GetToken(); // {
-		if( *script.token  == '{' )
-		{
-			script.GetToken(); // BEGINNER
-			guidestruct.m_bBeginner = script.GetNumber();
-			script.GetToken(); // SHOWLEVEL
-			guidestruct.m_nShowLevel = script.GetNumber();
-			script.GetToken(); // FLAG
-			guidestruct.m_bFlag      = script.GetNumber();
-			script.GetToken(); // KEY
-			guidestruct.m_nkey = script.GetNumber();
-			guidestruct.m_str = "";
-			script.GetToken();
-			guidestruct.m_str	= script.Token;
-			script.GetToken();	// }
-			PushBack(guidestruct);
-		}
-		else
-			script.GetToken();
-	}
-	
-	m_bIsLoad = TRUE;
-	
-	return TRUE;
-}
-
-void CWndGuideSystem::GuideStart(BOOL ischart)
-{
-	if( ischart )
-	{
-		m_bIsGuideChart[0] = TRUE;
-		m_bIsGuideChart[1] = FALSE;
-		GUIDE_STRUCT* guidestruct = m_listGuideChart.front();
-		m_wndGuideText->AddGuideText( *guidestruct );
-	}
-	else
-	{
-		m_bIsGuideChart[1] = TRUE;
-		m_bIsGuideChart[0] = FALSE;
-	}
-}
-#endif
 
 
 BOOL CWndGuideSystem::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
@@ -1166,9 +892,7 @@ void CWndGuideTextMgr::OnInitialUpdate()
 	m_Rect[0] = pWndText->GetWndRect();
 	pWndButton = (CWndButton*)GetDlgItem( WIDC_BACK );
 	m_Rect[1] = pWndButton->GetWndRect();
-#if __VER >= 12 // __MOD_TUTORIAL
 	pWndButton->SetVisible(FALSE);
-#endif
 	pWndButton  = (CWndButton*)GetDlgItem( WIDC_NEXT );	
 	m_Rect[2] = pWndButton->GetWndRect();
 	m_Rect[3] = GetWndRect();
@@ -1196,7 +920,6 @@ void CWndGuideTextMgr::OnLButtonUp( UINT nFlags, CPoint point )
 void CWndGuideTextMgr::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
 } 
-#if __VER >= 12 // __MOD_TUTORIAL
 BOOL CWndGuideTextMgr::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	GUIDE_STRUCT guide;
@@ -1231,62 +954,6 @@ BOOL CWndGuideTextMgr::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
-#else
-BOOL CWndGuideTextMgr::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	GUIDE_STRUCT guide;
-	switch( nID )
-	{
-		case WIDC_BACK:
-			{
-				if( m_VecGuideText.size() )
-				{
-					m_nCurrentVector--;
-
-					if( m_nCurrentVector < 0 )
-						m_nCurrentVector = 0;
-
-					guide = m_VecGuideText[m_nCurrentVector];
-					_SetGuideText(guide);
-				}
-			}
-			break;
-		case WIDC_NEXT:
-			{
-				if( m_VecGuideText.size() )
-				{
-					m_nCurrentVector++;
-
-					if( m_nCurrentVector > m_VecGuideText.size()-1 )
-						m_nCurrentVector = m_VecGuideText.size()-1;
-
-					guide = m_VecGuideText[m_nCurrentVector];
-					_SetGuideText(guide);
-					
-					CWndWorld* pWndWorld = (CWndWorld*)GetWndBase( APP_WORLD );
-								
-					if( pWndWorld ) 
-					{
-						pWndWorld->m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_INTRO);
-						pWndWorld->m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_END);
-					}
-				}
-			}
-			break;
-		default:
-			{
-				m_bVisible = FALSE;
-				CWndWorld* pWndWorld = (CWndWorld*)GetWndBase( APP_WORLD );
-			
-				if( pWndWorld ) 
-					pWndWorld->m_pWndGuideSystem->SendGuideMessage(GUIDE_EVENT_INTRO);	
-			}
-			break;
-	}
-
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-#endif
 
 void CWndGuideTextMgr::PaintFrame( C2DRender* p2DRender )
 {
@@ -1320,20 +987,12 @@ void CWndGuideTextMgr::AddGuideText(GUIDE_STRUCT guide)
 	m_nCurrentVector = m_VecGuideText.size()-1;
 
 	PLAYSND( SND_INF_MESSENGERRING );
-#if __VER >= 12 // __MOD_TUTORIAL
 	if(guide.m_nVicCondition == 0)	_SetGuideText( guide, true);
 	else							_SetGuideText( guide, false);
-#else
-	_SetGuideText( guide );
-#endif
 	
 }
 
-#if __VER >= 12 // __MOD_TUTORIAL
 void CWndGuideTextMgr::_SetGuideText(GUIDE_STRUCT guide, bool bIsNext)
-#else
-void CWndGuideTextMgr::_SetGuideText(GUIDE_STRUCT guide)
-#endif
 {
 	CWndText* pWndText;
 	CWndButton* pWndButton;
@@ -1345,22 +1004,16 @@ void CWndGuideTextMgr::_SetGuideText(GUIDE_STRUCT guide)
 	pWndButton= (CWndButton*)GetDlgItem( WIDC_NEXT );
 	pWndButton->SetWndRect( m_Rect[2] );
 	SetWndRect(	m_Rect[3] );
-#if __VER >= 12 // __MOD_TUTORIAL
 	if(bIsNext) pWndButton->SetVisible(TRUE);
 	else		pWndButton->SetVisible(FALSE);
-#endif
 	
 	m_bVisible = TRUE;
 
 	m_strHelpKey = guide.m_str;
 	pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-#if __VER >= 12 // __MOD_TUTORIAL
 	pWndText->SetString("");
 	pWndText->m_string.AddParsingString(LPCTSTR(guide.m_str));
 	pWndText->ResetString();
-#else
-	pWndText->SetString( (guide.m_nkey == CWndGuideSystem::KEY) ? prj.GetHelp( m_strHelpKey ) : guide.m_str );
-#endif
 	CRect rect = pWndText->GetWndRect();
 
 	pWndText->m_string.Align( m_pFont );
@@ -1491,7 +1144,6 @@ BOOL CWndGuideSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 				if( pWndGuide && pWndGuide->m_bAniState == CWndGuideSystem::ANI_IDLE && pWndGuide->m_bIsLoad )
 				{
 					pWndGuide->m_dwGuideLevel = *g_Option.m_pGuide;
-				#if __VER >= 12 // __MOD_TUTORIAL
 					if( pWndGuide->m_dwGuideLevel == 0 )
 						pWndGuide->GuideStart();
 					else
@@ -1499,16 +1151,6 @@ BOOL CWndGuideSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 						if(g_pPlayer)
 							pWndGuide->SetAni( g_pPlayer->GetJob(), CWndGuideSystem::ANI_BYTE );
 					}
-				#else
-					if( pWndGuide->m_dwGuideLevel == 0 )
-						pWndGuide->GuideStart(TRUE);
-					else
-					{
-						pWndGuide->GuideStart(FALSE);
-						if(g_pPlayer)
-							pWndGuide->SetAni( g_pPlayer->GetJob(), CWndGuideSystem::ANI_BYTE );
-					}
-				#endif
 					
 					Destroy();
 				}

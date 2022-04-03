@@ -4,28 +4,20 @@
 //#include "company.h"
 #include "lang.h"
 
-#if __VER >= 13 // __COUPLE_1117
 #include "couplehelper.h"
-#endif	// __COUPLE_1117
 
 #include "guild.h"
 extern	CGuildMng	g_GuildMng;
 //extern	CCompanyMng		g_CompanyMng;
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
 #ifdef __LANG_1013
 #include "langman.h"
 #endif	// __LANG_1013
 
-#if __VER >= 12 // __LORD
 #include "tlord.h"
-#endif	// __LORD
 
-#if __VER >= 13 // __HONORABLE_TITLE
 #include "honor.h"
-#endif
 
 #ifdef __QUIZ
 #include "Quiz.h"
@@ -178,14 +170,10 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	LoadPropAddSkill( _T( "propSkillAdd.csv" ) );
 #endif // __CONV_SKILL_11_MONTH_JOB1
 
-#if __VER >= 9 // __EVENTLUA
 	m_EventLua.LoadScript();
 	m_EventLua.CheckEventState();
-#endif // __EVENTLUA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	m_GuildCombat1to1.LoadScript();
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __RULE_0615
 	LoadInvalidName();
@@ -195,22 +183,14 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #endif	// __VENDOR_1106
 #endif	// __RULE_0615
 	
-#if __VER >= 9	// __PET_0410
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );
-#endif	// __PET_0410
 
-#if __VER >= 12 // __TAX
 	CTax::GetInstance()->LoadScript();
-#endif // __TAX
 
-#if __VER >= 13 // __HONORABLE_TITLE
 	CTitleManager::Instance()->LoadTitle("honorList.txt");
 //CTitleManager::Instance()->AddValue(MI_AIBATT1, HI_HUNT_MONSTER, 1);
-#endif
 
-#if __VER >= 13 // __COUPLE_1117
 	CCoupleHelper::Instance()->Initialize();
-#endif	// __COUPLE_1117
 
 #ifdef __QUIZ
 	CQuiz::GetInstance()->LoadScript();

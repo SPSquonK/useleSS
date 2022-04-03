@@ -8,23 +8,15 @@
 #include "party.h"
 #include "defineText.h"
 
-#if __VER >= 15 // __TELEPORTER
 #include "defineSound.h"
 #include "DPClient.h"
 extern CDPClient g_DPlay;
-#endif
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	//__SYS_PLAYER_DATA
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "RainbowRace.h"
-#endif //__RAINBOW_RACE
 
-#if __VER >= 14 // __NEW_CONTINENT
 #include "Continent.h"
-#endif // __NEW_CONTINENT
 
 extern	CParty g_Party;
 
@@ -33,32 +25,23 @@ extern	CParty g_Party;
 //////////////////////////////////////////////////////////////////////
 CWorldMap::CWorldMap()
 {
-#if __VER < 14 // __NEW_CONTINENT
-	m_mapView.clear();
-#endif // __NEW_CONTINENT
 	m_bRender = FALSE;
 	m_pTexWorldMap = NULL;
 
 	m_cPos.x = 0;
 	m_cPos.y = 0;
-#if __VER >= 13 // __CSC_VER13_1
 	m_nSelMon = -1;
 	m_bShowMonsterInfo = FALSE;
-#endif //__CSC_VER13_1
 
-#if __VER >= 15 // __TELEPORTER
 	m_bTeleportMode = FALSE;
 	m_pTelPosTexture = NULL;
 	m_idTeleporter = NULL_ID;
-#endif
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_rectDestination = CRect( -1, -1, -1, -1 );
 	m_bDestinationMode = FALSE;
 	m_pDestinationPositionTexture = NULL;
 	m_nDestinationTextureAlpha = MINIMUM_ALPHA;
 	m_tmOld = g_tmCurrent;
 	m_bAlphaSwitch = FALSE;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 #ifdef __IMPROVE15_WORLDMAP
 	m_nSelected = 0;
@@ -67,12 +50,8 @@ CWorldMap::CWorldMap()
 
 CWorldMap::~CWorldMap()
 {
-#if __VER >= 13 // __CSC_VER13_1
 	m_MonsterInfo.m_vecMonsterInfo.clear();
-#endif //__CSC_VER13_1
-#if __VER >= 13 // __RAINBOW_RACE
 	m_RainbowNPC.m_vecRainbowNPC.clear();
-#endif //__RAINBOW_RACE
 	DeleteDeviceObjects();
 }
 
@@ -102,97 +81,6 @@ void CWorldMap::Init()
 	m_billArrow[1].InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard[1], &m_texArrow[1] );
 	m_billArrow[1].RestoreDeviceObjects();
 	
-#if __VER < 14 // __NEW_CONTINENT
-	m_mapView.clear();
-	vector<CPoint> vecMap;
-	
-	// 플라리스
-	vecMap.clear();
-	vecMap.push_back( CPoint(6159, 3407) );
-	vecMap.push_back( CPoint(6350, 3825) );
-	vecMap.push_back( CPoint(6736, 4649) );
-	vecMap.push_back( CPoint(7246, 4570) );
-	vecMap.push_back( CPoint(8258, 5022) );
-	vecMap.push_back( CPoint(8213, 4367) );
-	vecMap.push_back( CPoint(8021, 4037) );
-	vecMap.push_back( CPoint(8017, 3496) );
-	vecMap.push_back( CPoint(7245, 2685) );
-	vecMap.push_back( CPoint(6783, 2631) );
-	vecMap.push_back( CPoint(6366, 2922) );
-	vecMap.push_back( CPoint(6159, 3407) );
-	
-	m_mapView.insert( multimap< CString, vector<CPoint> >::value_type( "Flaris", vecMap ) );
-	
-	// 세인트모닝
-	vecMap.clear();
-	vecMap.push_back( CPoint(7253, 2684) );
-	vecMap.push_back( CPoint(8023, 3496) );
-	vecMap.push_back( CPoint(8029, 4039) );
-	vecMap.push_back( CPoint(8217, 4365) );
-	vecMap.push_back( CPoint(8609, 4187) );
-	vecMap.push_back( CPoint(9489, 3047) );
-	vecMap.push_back( CPoint(9289, 2130) );
-	vecMap.push_back( CPoint(8765, 1615) );
-	vecMap.push_back( CPoint(7855, 1554) );
-	vecMap.push_back( CPoint(7506, 1870) );
-	vecMap.push_back( CPoint(7253, 2684) );
-	
-	m_mapView.insert( multimap< CString, vector<CPoint> >::value_type( "Saint", vecMap ) );
-	
-	// 리시스정원
-	vecMap.clear();
-	vecMap.push_back( CPoint(9123, 3339) );
-	vecMap.push_back( CPoint(8922, 3740) );
-	vecMap.push_back( CPoint(8607, 4127) );
-	vecMap.push_back( CPoint(8285, 4397) );
-	vecMap.push_back( CPoint(8316, 4748) );
-	vecMap.push_back( CPoint(8833, 4762) );
-	vecMap.push_back( CPoint(9612, 4992) );
-	vecMap.push_back( CPoint(10436, 4396) );
-	vecMap.push_back( CPoint(9441, 3171) );
-	vecMap.push_back( CPoint(9123, 3339) );
-	
-	m_mapView.insert( multimap< CString, vector<CPoint> >::value_type( "Ricis", vecMap ) );
-	
-	// 다콘1
-	vecMap.clear();
-	vecMap.push_back( CPoint(4858, 2781) );
-	vecMap.push_back( CPoint(4561, 3613) );
-	vecMap.push_back( CPoint(4051, 3835) );
-	vecMap.push_back( CPoint(3796, 3790) );
-	vecMap.push_back( CPoint(3574, 4200) );
-	vecMap.push_back( CPoint(3455, 4479) );
-	vecMap.push_back( CPoint(3072, 4563) );
-	vecMap.push_back( CPoint(2833, 5237) );
-	vecMap.push_back( CPoint(3572, 5185) );
-	vecMap.push_back( CPoint(4863, 4778) );
-	vecMap.push_back( CPoint(6756, 4875) );
-	vecMap.push_back( CPoint(6558, 4367) );
-	vecMap.push_back( CPoint(6387, 3826) );
-	vecMap.push_back( CPoint(6102, 3298) );
-	vecMap.push_back( CPoint(5795, 2727) );
-	vecMap.push_back( CPoint(4858, 2781) );
-	
-	m_mapView.insert( multimap< CString, vector<CPoint> >::value_type( "Darkon12", vecMap ) );
-	
-	// 다콘2,3
-	vecMap.clear();
-	vecMap.push_back( CPoint(2834, 5241) );
-	vecMap.push_back( CPoint(3069, 4562) );
-	vecMap.push_back( CPoint(3451, 4476) );
-	vecMap.push_back( CPoint(3567, 4196) );
-	vecMap.push_back( CPoint(3792, 3791) );
-	vecMap.push_back( CPoint(4049, 3736) );
-	vecMap.push_back( CPoint(4555, 3615) );
-	vecMap.push_back( CPoint(4854, 2775) );
-	vecMap.push_back( CPoint(3395, 1291) );
-	vecMap.push_back( CPoint(1291, 2425) );
-	vecMap.push_back( CPoint(1867, 3867) );
-	vecMap.push_back( CPoint(1946, 4694) );
-	vecMap.push_back( CPoint(2834, 5241) );
-	
-	m_mapView.insert( multimap< CString, vector<CPoint> >::value_type( "Darkon3", vecMap ) );
-#endif // __NEW_CONTINENT
 
 	m_strMapStringList[0] = "WORLD_Flyff.dds";
 	m_strMapStringList[1] = "WORLD_Darkon12.dds";
@@ -200,31 +88,21 @@ void CWorldMap::Init()
 	m_strMapStringList[3] = "WORLD_Ricis.dds";
 	m_strMapStringList[4] = "WORLD_Saint.dds";
 	m_strMapStringList[5] = "WORLD_Flaris.dds";
-#if __VER >= 14 // __NEW_CONTINENT
 	m_strMapStringList[6] = "WORLD_harmonin.dds";
-#endif // __NEW_CONTINENT
 
-#if __VER >= 15 // __NEW_CONTINENT15
 	m_strMapStringList[7] = "WORLD_Estia.dds";
-#endif // __NEW_CONTINENT15
 
 	m_texMapButton.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapButton.inc" ) ) );	
 
-#if __VER >= 13 // __CSC_VER13_1
 	m_strMonScript[0] = "texMapMonster_Darkon12.inc";
 	m_strMonScript[1] = "texMapMonster_Darkon3.inc";
 	m_strMonScript[2] = "texMapMonster_Ricis.inc";
 	m_strMonScript[3] = "texMapMonster_Saint.inc";
 	m_strMonScript[4] = "texMapMonster_Flaris.inc";
-#if __VER >= 14 // __NEW_CONTINENT
 	m_strMonScript[5] = "texMapMonster_Harmonin.inc";
-#endif //__NEW_CONTINENT
 
-#if __VER >= 15 // __NEW_CONTINENT15
 	m_strMonScript[6] = "texMapMonster_Estia.inc";
-#endif //__NEW_CONTINENT15
 
-#endif //__CSC_VER13_1
 
 	m_fRate = 0.0f;
 	switch( g_Option.m_nResWidth )
@@ -244,7 +122,6 @@ void CWorldMap::Init()
 		m_cOffset.y = (g_Option.m_nResHeight-m_cpScreen.y) / 2;
 		break;
 	case 1280:
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 		if(g_Option.m_nResHeight == 720) //Wide
 		{
 			m_fRate = (FLOAT)1280 / (FLOAT)1280;
@@ -277,15 +154,7 @@ void CWorldMap::Init()
 			m_cOffset.x = (g_Option.m_nResWidth-m_cpScreen.x) / 2;
 			m_cOffset.y = (g_Option.m_nResHeight-m_cpScreen.y) / 2;			
 		}
-#else //__CSC_VER9_RESOLUTION
-		m_fRate = (FLOAT)1280 / (FLOAT)1280;
-		m_cpScreen.x = 1280;
-		m_cpScreen.y = 960;
-		m_cOffset.x = (g_Option.m_nResWidth-m_cpScreen.x) / 2;
-		m_cOffset.y = (g_Option.m_nResHeight-m_cpScreen.y) / 2;
-#endif //__CSC_VER9_RESOLUTION
 		break;
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	case 1360:
 		m_fRate = (FLOAT)1360 / (FLOAT)1280;
 		m_cpScreen.x = 1024;
@@ -321,17 +190,13 @@ void CWorldMap::Init()
 		m_cOffset.x = (g_Option.m_nResWidth-m_cpScreen.x) / 2;
 		m_cOffset.y = (g_Option.m_nResHeight-m_cpScreen.y) / 2;
 		break;
-#endif //__CSC_VER9_RESOLUTION	
 	}
 
-#if __VER >= 14 // __NEW_CONTINENT
 	m_fRate = (FLOAT)g_Option.m_nResHeight / (FLOAT)1024;
-#endif //__NEW_CONTINENT
 
 	m_cPos.y = (LONG)( 80.0f * m_fRate );
 	
 	FLOAT fGap = 0;
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	int wideOffsetX = 0;
 	if((g_Option.m_nResWidth == 1360 || g_Option.m_nResWidth == 1440 || g_Option.m_nResWidth == 1680) || 
 		(g_Option.m_nResWidth == 1280 && (g_Option.m_nResHeight == 720 || g_Option.m_nResHeight == 768 || g_Option.m_nResHeight == 800))) //Wide Offset
@@ -361,65 +226,28 @@ void CWorldMap::Init()
 	pTexture = m_texMapButton.GetAt(15);
 	m_cRect[5].SetRect( cp.x + wideOffsetX, cp.y, (int)( cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate) + wideOffsetX ), (int)( cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) ) );
 
-#if __VER >= 13 // __CSC_VER13_1
 	cp.y	= (LONG)( cp.y + ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap );
 	pTexture = m_texMapButton.GetAt(18);
 	m_cRect[6].SetRect( cp.x + wideOffsetX, cp.y, (int)( cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate) + wideOffsetX ), (int)( cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) ) );
-#if __VER >= 14 // __NEW_CONTINENT
 	cp.y	= (LONG)( cp.y + ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap );
 	pTexture = m_texMapButton.GetAt(21);
 	m_cRect[7].SetRect( cp.x + wideOffsetX, cp.y, (int)( cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate) + wideOffsetX ), (int)( cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) ) );
-#endif //__NEW_CONTINENT
 
-#if __VER >= 15 // __NEW_CONTINENT15
 	cp.y	= (LONG)( cp.y + ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap );
 	pTexture = m_texMapButton.GetAt(24);
 	m_cRect[8].SetRect( cp.x + wideOffsetX, cp.y, (int)( cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate) + wideOffsetX ), (int)( cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) ) );
-#endif // __NEW_CONTINENT15
 
-#endif //__CSC_VER13_1
-#else //__CSC_VER9_RESOLUTION
-	CTexture *pTexture = m_texMapButton.GetAt(0);
-	CPoint cp = CPoint( m_cPos.x, m_cPos.y );
-	m_cRect[0].SetRect( cp.x, cp.y, cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate), cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) );
-	
-	pTexture = m_texMapButton.GetAt(3);
-	cp.y += ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap;
-	m_cRect[1].SetRect( cp.x, cp.y, cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate), cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) );
-	
-	pTexture = m_texMapButton.GetAt(6);
-	cp.y += ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap;
-	m_cRect[2].SetRect( cp.x, cp.y, cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate), cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) );	
-
-	cp.y += ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap;
-	pTexture = m_texMapButton.GetAt(9);
-	m_cRect[3].SetRect( cp.x, cp.y, cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate), cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) );
-	
-	cp.y += ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap;
-	pTexture = m_texMapButton.GetAt(12);
-	m_cRect[4].SetRect( cp.x, cp.y, cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate), cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) );
-	
-	cp.y += ((FLOAT)pTexture->m_size.cy * m_fRate) + fGap;
-	pTexture = m_texMapButton.GetAt(15);
-	m_cRect[5].SetRect( cp.x, cp.y, cp.x + ((FLOAT)pTexture->m_size.cx * m_fRate), cp.y+((FLOAT)pTexture->m_size.cy * m_fRate) );
-#endif //__CSC_VER9_RESOLUTION
 	m_nDrawMenu[0] = 0;
 	m_nDrawMenu[1] = 3;
 	m_nDrawMenu[2] = 6;
 	m_nDrawMenu[3] = 9;
 	m_nDrawMenu[4] = 12;
 	m_nDrawMenu[5] = 15;
-#if __VER >= 13 // __CSC_VER13_1
 	m_nDrawMenu[6] = 18;
-#if __VER >= 14 // __NEW_CONTINENT
 	m_nDrawMenu[7] = 21;
-#endif //__NEW_CONTINENT
 
-#if __VER >= 15 // __NEW_CONTINENT15
 	m_nDrawMenu[8] = 24;
-#endif
 
-#endif //__CSC_VER13_1
 	m_bRender = FALSE;
 }
 
@@ -431,17 +259,11 @@ void CWorldMap::Process()
 	m_nDrawMenu[3] = 9;
 	m_nDrawMenu[4] = 12;
 	m_nDrawMenu[5] = 15;
-#if __VER >= 13 // __CSC_VER13_1
 	m_nDrawMenu[6] = 18;
-#if __VER >= 14 // __NEW_CONTINENT
 	m_nDrawMenu[7] = 21;
-#endif //__NEW_CONTINENT
 
-#if __VER >= 15 // __NEW_CONTINENT15
 	m_nDrawMenu[8] = 24;
-#endif //__NEW_CONTINENT15
 
-#endif //__CSC_VER13_1
 	
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
 	if( pWndWorld )
@@ -450,11 +272,7 @@ void CWorldMap::Process()
 
 #ifndef __IMPROVE15_WORLDMAP
 
-#if __VER >= 13 // __CSC_VER13_1
 		for( int i = 0 ; i < MAX_BUTTON ; ++i )
-#else //__CSC_VER13_1
-		for( int i = 0 ; i < 6 ; ++i )
-#endif //__CSC_VER13_1
 		{
 			if( m_nMap != i && m_cRect[i].PtInRect( point ) )
 			{
@@ -464,7 +282,6 @@ void CWorldMap::Process()
 
 #endif // __IMPROVE15_WORLDMAP
 
-#if __VER >= 13 // __CSC_VER13_1
 		if(m_bShowMonsterInfo && this->IsRender())
 		{
 			BOOL bSel = FALSE;
@@ -528,22 +345,16 @@ void CWorldMap::Process()
 			if(!bSel)
 				m_nSelMon = -1;
 		}
-#endif //__CSC_VER13_1
 	}
 }
 void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 vPos, const TCHAR* szName )
 {
-#if __VER >= 14 // __NEW_CONTINENT
 	int nMap = CContinent::GetInstance()->GetMapNo( vPos );
-#else // __NEW_CONTINENT
-	int nMap = GetMapNo( vPos );
-#endif // __NEW_CONTINENT
 					
 	if( m_nMap !=0 && m_nMap != nMap )
 		return;
 	// 주인공 화살표 출력
 	// 화면 비율 때문에 임의로 정사각형 뷰포트를 지정해 놓는다. 안그러면 화살표 모양이 찌그러짐.
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	D3DVIEWPORT9 viewport;
 	if((g_Option.m_nResWidth == 1360 || g_Option.m_nResWidth == 1440 || g_Option.m_nResWidth == 1680) || 
 		(g_Option.m_nResWidth == 1280 && (g_Option.m_nResHeight == 720 || g_Option.m_nResHeight == 768 || g_Option.m_nResHeight == 800))) //Wide Offset
@@ -564,15 +375,6 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		viewport.MinZ   = 0.0f;
 		viewport.MaxZ   = 1.0f;
 	}
-#else //__CSC_VER9_RESOLUTION
-	D3DVIEWPORT9 viewport;
-	viewport.X      = 0;
-	viewport.Y      = 0;
-	viewport.Width  = g_Option.m_nResWidth;
-	viewport.Height = g_Option.m_nResHeight;
-	viewport.MinZ   = 0.0f;
-	viewport.MaxZ   = 1.0f;
-#endif //__CSC_VER9_RESOLUTION
 	D3DDEVICE->SetViewport( &viewport );
 
 	// 프로젝션 
@@ -617,11 +419,7 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 	FLOAT fMap_X2 = _fMap_X2;
 	FLOAT fMap_Y2 = _fMap_Y2;
 
-#if __VER >= 14 // __NEW_CONTINENT
 	if( m_nMap == 0 )
-#else __NEW_CONTINENT
-	if( m_strViewMapString == m_strMapStringList[0] )
-#endif // __NEW_CONTINENT
 	{
 		fMap_X1 = 0.0f;
 		fMap_Y1 = 1298.0f;//0.0f;
@@ -630,11 +428,7 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 											// 월드 실제좌표를 구해서( 8662, 1770 ) 사이길이를 실제크기로 환산한후 각 좌표에 더하고( 상단 ) 빼준다( 하단 )
 	}
 	else
-#if __VER >= 14 // __NEW_CONTINENT
 	if( m_nMap == 1 )
-#else __NEW_CONTINENT
-	if( m_strViewMapString == m_strMapStringList[1] ) // 다콘 1, 2
-#endif // __NEW_CONTINENT
 	{
 		fMap_X1 = 2355.0f;
 		fMap_Y1 = 2019.0f;
@@ -642,11 +436,7 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		fMap_Y2 = 5814.0f;
 	}
 	else
-#if __VER >= 14 // __NEW_CONTINENT
 	if( m_nMap == 2 )
-#else __NEW_CONTINENT
-	if( m_strViewMapString == m_strMapStringList[2] ) // 다콘 3
-#endif // __NEW_CONTINENT
 	{
 		fMap_X1 = 985.0f;
 		fMap_Y1 = 1621.0f;
@@ -654,11 +444,7 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		fMap_Y2 = 5149.0f;
 	}		
 	else
-#if __VER >= 14 // __NEW_CONTINENT
 	if( m_nMap == 3 )
-#else __NEW_CONTINENT
-	if( m_strViewMapString == m_strMapStringList[3] ) // 리시스
-#endif // __NEW_CONTINENT
 	{
 		fMap_X1 = 8080.0f;
 		fMap_Y1 = 3200.0f;
@@ -666,11 +452,7 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		fMap_Y2 = 5000.0f;
 	}
 	else
-#if __VER >= 14 // __NEW_CONTINENT
 	if( m_nMap == 4 )
-#else __NEW_CONTINENT
-	if( m_strViewMapString == m_strMapStringList[4] ) // 세인트모닝
-#endif // __NEW_CONTINENT
 	{
 		fMap_X1 = 6854.0f;
 		fMap_Y1 = 1580.0f;
@@ -678,18 +460,13 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		fMap_Y2 = 4430.0f;
 	}
 	else
-#if __VER >= 14 // __NEW_CONTINENT
 	if( m_nMap == 5 )
-#else __NEW_CONTINENT
-	if( m_strViewMapString == m_strMapStringList[5] ) // 플라리스
-#endif // __NEW_CONTINENT
 	{
 		fMap_X1 = 5500.0f;
 		fMap_Y1 = 2540.0f;
 		fMap_X2 = 9200.0f;
 		fMap_Y2 = 5130.0f;
 	}
-#if __VER >= 14 // __NEW_CONTINENT
 	else
 	if( m_nMap == 6 ) // 하르모닌
 	{
@@ -698,8 +475,6 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		fMap_X2 = 8391.0f;
 		fMap_Y2 = 7236.0f;
 	}
-#endif //__NEW_CONTINENT
-#if __VER >= 15 // __NEW_CONTINENT15
 	else 
 	if( m_nMap == 7 ) // 이스티아 캐니언
 	{
@@ -708,7 +483,6 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		fMap_X2 = 9890.0f;
 		fMap_Y2 = 9158.0f;
 	}
-#endif
 	
 	FLOAT fX = fMap_X2 - fMap_X1;
 	FLOAT fY = fMap_Y1 - fMap_Y2;
@@ -742,7 +516,6 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 	{
 		int nX;
 		int nY;
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	if((g_Option.m_nResWidth == 1360 || g_Option.m_nResWidth == 1440 || g_Option.m_nResWidth == 1680) || 
 		(g_Option.m_nResWidth == 1280 && (g_Option.m_nResHeight == 720 || g_Option.m_nResHeight == 768 || g_Option.m_nResHeight == 800))) //Wide Offset
 	{
@@ -754,10 +527,6 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 		v1 = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 		v2 = D3DXVECTOR3( (FLOAT)( g_Option.m_nResWidth ), (FLOAT)( g_Option.m_nResHeight ), 0.0f );
 	}
-#else //__CSC_VER9_RESOLUTION
-		v1 = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-		v2 = D3DXVECTOR3( (FLOAT)( g_Option.m_nResWidth ), (FLOAT)( g_Option.m_nResHeight ), 0.0f );
-#endif //__CSC_VER9_RESOLUTION
 		D3DXVec3Lerp( &v3, &v2, &v1, fRate1 );
 		nX = (int)( v3.x );
 		D3DXVec3Lerp( &v3, &v2, &v1, fRate2 );
@@ -787,26 +556,18 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 {
 	if( m_bRender )
 	{	
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 		if((g_Option.m_nResWidth == 1360 || g_Option.m_nResWidth == 1440 || g_Option.m_nResWidth == 1680) || 
 			(g_Option.m_nResWidth == 1280 && (g_Option.m_nResHeight == 720 || g_Option.m_nResHeight == 768 || g_Option.m_nResHeight == 800))) //Wide Background Black
 			p2DRender->RenderFillRect( CRect( 0, 0, g_Option.m_nResWidth, g_Option.m_nResHeight ), 0xff000000 );
 		else
 			p2DRender->RenderFillRect( CRect( 0, 0, g_Option.m_nResWidth, g_Option.m_nResHeight ), 0xff3B3D2F );
-#else //__CSC_VER9_RESOLUTION
-		p2DRender->RenderFillRect( CRect( 0, 0, g_Option.m_nResWidth, g_Option.m_nResHeight ), 0xff3B3D2F );
-#endif //__CSC_VER9_RESOLUTION
 				
  		p2DRender->RenderTextureEx( CPoint(m_cOffset.x, m_cOffset.y), m_cpScreen, m_pTexWorldMap, 255, 1.0f, 1.0f );
 
-#if __VER >= 15 // __TELEPORTER
 		if( m_bTeleportMode )
 			RenderTelPos( p2DRender );
-#endif
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_bDestinationMode == TRUE )
 			RenderDestinationPosition( p2DRender );
-#endif // __IMPROVE_QUEST_INTERFACE
 		RenderPlayer( p2DRender, TRUE, g_pPlayer->GetPos( ) , g_pPlayer->GetName() );
 		
 		for( int i = 0 ; i < g_Party.GetSizeofMember() ; ++i )
@@ -814,11 +575,7 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 			if( g_pPlayer->m_idPlayer != g_Party.GetPlayerId( i ) )
 			{
 				if( !g_Party.m_aMember[ i ].m_bRemove )
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					RenderPlayer( p2DRender, FALSE, g_Party.GetPos( i ), CPlayerDataCenter::GetInstance()->GetPlayerString( g_Party.m_aMember[ i ].m_uPlayerId ) );	
-#else	// __SYS_PLAYER_DATA
-					RenderPlayer( p2DRender, FALSE, g_Party.GetPos( i ), g_Party.m_aMember[ i ].m_szName );	
-#endif	// __SYS_PLAYER_DATA
 			}
 		}
 
@@ -831,11 +588,7 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 
 #ifndef __IMPROVE15_WORLDMAP		// 대륙 이미지 버튼 제거 
 
-#if __VER >= 13 // __CSC_VER13_1
 		for( int i = 0; i < MAX_BUTTON; ++i )
-#else //__CSC_VER13_1
-		for( i = 0; i < 6; ++i )
-#endif //__CSC_VER13_1
 		{
 			pTexture = m_texMapButton.GetAt(m_nDrawMenu[i]);
 
@@ -848,7 +601,6 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 		}
 #endif // __IMPROVE15_WORLDMAP
 
-#if __VER >= 13 // __CSC_VER13_1
 		if(m_bShowMonsterInfo && m_nMap > 0)
 		{
 			for( int i=0; i<(int)( m_MonsterInfo.GetNumber() ); i++)
@@ -871,8 +623,6 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 			if(m_nSelMon > -1)
 				g_toolTip.Paint(p2DRender);
 		}
-#endif //__CSC_VER13_1
-#if __VER >= 13 // __RAINBOW_RACE
 		DWORD dwRainbowRaceTime = CRainbowRace::GetInstance()->m_dwRemainTime;
 		if(dwRainbowRaceTime > 0)
 		{
@@ -906,7 +656,6 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 				}
 			}
 		}
-#endif //__RAINBOW_RACE
 
 #ifdef __IMPROVE15_WORLDMAP
 		CPoint oldPoint = p2DRender->m_ptOrigin;
@@ -922,11 +671,7 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 BOOL CWorldMap::LoadWorldMap()
 {
 	// 전체 맵중에 내가 현재 어디에 있는지를 검사한다.
-#if __VER >= 14 // __NEW_CONTINENT
 	int nMap = CContinent::GetInstance()->GetMapNo( g_pPlayer );
-#else // __NEW_CONTINENT
-	int nMap = GetMapNo( g_pPlayer->GetPos() );
-#endif // __NEW_CONTINENT
 
 #ifdef __IMPROVE15_WORLDMAP
 	m_pWndList = new CWndListBox;
@@ -951,35 +696,23 @@ BOOL CWorldMap::LoadWorldMap()
 
 #endif //__IMPROVE15_WORLDMAP
 
-#if __VER >= 15 // __TELEPORTER
 	if( m_bTeleportMode )
 		nMap = CONT_NODATA;
-#endif
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( m_bDestinationMode == TRUE )
 		nMap = CONT_NODATA;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	if( nMap != 100 )
 	{
 		m_strViewMapString = m_strMapStringList[nMap];
 		m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
-#if __VER >= 13 // __CSC_VER13_1
-#if __VER >= 14 // __NEW_CONTINENT
 		if(nMap > 0 && nMap < MAX_BUTTON - 1 && m_MonsterInfo.m_nMap != nMap)
-#else // __NEW_CONTINENT
-		if(nMap > 0 && nMap < 6 && m_MonsterInfo.m_nMap != nMap)
-#endif // __NEW_CONTINENT
 		{
 			m_MonsterInfo.DeleteDeviceObjects();
 			m_MonsterInfo.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( m_strMonScript[nMap-1] ) ), nMap );	
 		}
-#endif //__CSC_VER13_1
 
-#if __VER >= 13 // __RAINBOW_RACE
 		m_RainbowNPC.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapRainbow_NPC.inc" ) ) );
-#endif //__RAINBOW_RACE
 
 		if( m_pTexWorldMap )
 		{
@@ -991,74 +724,19 @@ BOOL CWorldMap::LoadWorldMap()
 	else
 	{
 		m_strViewMapString.Empty();
-#if __VER >= 9  // __INSERT_MAP
 		g_WndMng.PutString( prj.GetText(TID_GAME_MAPMSG), NULL, prj.GetTextColor(TID_GAME_MAPMSG) );
-#endif
 	}
 	return FALSE;
 }
 
-#if __VER < 14 // __NEW_CONTINENT
-int CWorldMap::GetMapNo( D3DXVECTOR3 vPos )
-{
-	BOOL bResult = 100;
-	CString str;
-	CPoint  cpoint;
-	vector<CPoint>	vecPoint;
-	
-	cpoint.x    = vPos.x;
-	cpoint.y    = vPos.z;
-	
-	for( multimap< CString, vector<CPoint> >::iterator iter = m_mapView.begin(); iter != m_mapView.end(); ++iter )
-	{
-		str		  = iter->first;
-		vecPoint  = iter->second;	
-		if( Point_In_Poly( vecPoint, cpoint ) )
-		{
-			if( str == CString( "Darkon12" ) )
-				bResult = 1;
-			else 
-			if( str == CString( "Darkon3" ) )
-				bResult = 2;
-			else 
-			if( str == CString( "Ricis" ) )
-				bResult = 3;
-			else
-			if( str == CString( "Saint" ) )
-				bResult = 4;
-			else
-			if( str == CString( "Flaris" ) )
-				bResult = 5;
-#if __VER >= 14 // __NEW_CONTINENT
-			else
-			if( str == CString( "Harmonin" ) )
-				bResult = 6;
-#endif //__NEW_CONTINENT
-
-#if __VER >= 15 // __NEW_CONTINENT15
-			else
-			if( str == CString( "Estia" ) )
-				bResult = 7;
-#endif //__NEW_CONTINENT15
-
-		}
-	}
-
-	return bResult;
-}
-#endif // __NEW_CONTINENT
 
 void CWorldMap::DeleteWorldMap()
 {
 //	m_pTexWorldMap->DeleteDeviceObjects();
 	m_bRender = FALSE;
-#if __VER >= 15 // __TELEPORTER
 	m_bTeleportMode = FALSE;
 	m_idTeleporter = NULL_ID;
-#endif
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_bDestinationMode = FALSE;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 #ifdef __IMPROVE15_WORLDMAP
 	SAFE_DELETE( m_pWndList );
@@ -1073,12 +751,8 @@ void CWorldMap::DeleteDeviceObjects()
 	m_billArrow[0].DeleteDeviceObjects();
 	m_billArrow[1].DeleteDeviceObjects();
 	m_texMapButton.DeleteDeviceObjects();
-#if __VER >= 13 // __CSC_VER13_1
 	m_MonsterInfo.DeleteDeviceObjects();
-#endif //__CSC_VER13_1
-#if __VER >= 13 // __RAINBOW_RACE
 	m_RainbowNPC.DeleteDeviceObjects();
-#endif //__RAINBOW_RACE
 }
 
 void CWorldMap::RestoreDeviceObjects()
@@ -1089,12 +763,8 @@ void CWorldMap::RestoreDeviceObjects()
 	m_texArrow[1].DeleteDeviceObjects();
 	m_billArrow[1].DeleteDeviceObjects();
 	m_texMapButton.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-#if __VER >= 13 // __CSC_VER13_1
 	m_MonsterInfo.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-#endif //__CSC_VER13_1
-#if __VER >= 13 // __RAINBOW_RACE
 	m_RainbowNPC.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-#endif //__RAINBOW_RACE
 
 }
 
@@ -1103,12 +773,8 @@ void CWorldMap::InvalidateDeviceObjects()
 	m_billArrow[0].InvalidateDeviceObjects();
 	m_billArrow[1].InvalidateDeviceObjects();
 	m_texMapButton.InvalidateDeviceObjects();
-#if __VER >= 13 // __CSC_VER13_1
 	m_MonsterInfo.InvalidateDeviceObjects();
-#endif //__CSC_VER13_1
-#if __VER >= 13 // __RAINBOW_RACE
 	m_RainbowNPC.InvalidateDeviceObjects();
-#endif //__RAINBOW_RACE
 }
 
 void CWorldMap::OnLButtonDown( )
@@ -1117,7 +783,6 @@ void CWorldMap::OnLButtonDown( )
 	if( !pWndWorld )		
 		return;
 
-#if __VER >= 15 // __TELEPORTER
 	if( m_bTeleportMode )
 	{
 		CPoint pt = pWndWorld->GetMousePoint( );
@@ -1140,7 +805,6 @@ void CWorldMap::OnLButtonDown( )
 			}
 		}
 	}
-#endif	//__TELEPORTER
 
 #ifdef __IMPROVE15_WORLDMAP
 	m_pWndList->OnLButtonDown( 1, m_pWndList->GetMousePoint() );//WindowProc( message, wParam, lParam ); 
@@ -1158,12 +822,8 @@ void CWorldMap::OnLButtonDown( )
 		{
 			m_nMap = nowMapNum;
 
-#if __VER >= 15 // __TELEPORTER
 			UpdateTeleportWorld( );
-#endif 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			UpdateDestinationPosition( pWndWorld->m_vDestinationArrow );
-#endif // __IMPROVE_QUEST_INTERFACE
 			m_strViewMapString = m_strMapStringList[nowMapNum];
 			m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
@@ -1184,29 +844,16 @@ void CWorldMap::OnLButtonDown( )
 	{
 		CPoint point = pWndWorld->GetMousePoint();
 		
-#if __VER >= 13 // __CSC_VER13_1
 		for( int i = 0 ; i < MAX_BUTTON ; ++i )
-#else //__CSC_VER13_1
-		for( int i = 0 ; i < 6 ; ++i )
-#endif //__CSC_VER13_1
 		{
 			if( m_cRect[i].PtInRect( point ) )
 			{
-#if __VER >= 13 // __CSC_VER13_1
-#if __VER >= 14 // __NEW_CONTINENT
 				if(i < MAX_BUTTON - 1)
-#else //__NEW_CONTINENT
-				if(i < 6)
-#endif //__NEW_CONTINENT
 				{
 					m_nMap = i;
 
-#if __VER >= 15 // __TELEPORTER
 					UpdateTeleportWorld( );
-#endif 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 					UpdateDestinationPosition( pWndWorld->m_vDestinationArrow );
-#endif // __IMPROVE_QUEST_INTERFACE
 					m_strViewMapString = m_strMapStringList[m_nMap];
 					m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
@@ -1216,17 +863,8 @@ void CWorldMap::OnLButtonDown( )
 						m_MonsterInfo.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( m_strMonScript[m_nMap-1] ) ), m_nMap );
 					}
 				}
-#if __VER >= 14 // __NEW_CONTINENT
 				else if(i == MAX_BUTTON - 1)
-#else //__NEW_CONTINENT
-				else if(i == 6)
-#endif //__NEW_CONTINENT
 					m_bShowMonsterInfo = !m_bShowMonsterInfo;
-#else //__CSC_VER13_1
-				m_nMap = i;
-				m_strViewMapString = m_strMapStringList[m_nMap];
-				m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
-#endif //__CSC_VER13_1
 
 				break;
 			}
@@ -1236,7 +874,6 @@ void CWorldMap::OnLButtonDown( )
 #endif //__IMPROVE15_WORLDMAP
 }
 
-#if __VER >= 15 // __TELEPORTER
 void CWorldMap::UpdateTeleportWorld( )
 {
 	//해당 텔레포터로부터 얻어온 월드포인트 자료를 대상으로 현재 보고있는 맵월드 아이디에 따라 
@@ -1320,7 +957,6 @@ void CWorldMap::SetTelMode( BOOL bMode )
 	m_bRender = m_bTeleportMode;
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWorldMap::UpdateDestinationPosition( const D3DXVECTOR3& rPosition )
 {
 	CPoint pt( 0, 0 );
@@ -1378,7 +1014,6 @@ void CWorldMap::SetDestinationMode( BOOL bDestinationMode )
 {
 	m_bDestinationMode = bDestinationMode;
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
 BOOL CWorldMap::WorldPosToMapPos( const D3DXVECTOR3& vPos, OUT CPoint& cPos )
 {
@@ -1496,11 +1131,9 @@ BOOL CWorldMap::WorldPosToMapPos( const D3DXVECTOR3& vPos, OUT CPoint& cPos )
 
 }
 
-#endif	//__TELEPORTER
 
 //=====================================================================================================================================================
 
-#if __VER >= 13 // __CSC_VER13_1
 CMonsterInfoPack::CMonsterInfoPack()
 {
 	m_nMap = 0;
@@ -1649,10 +1282,8 @@ BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFile
 
 	return TRUE;
 }
-#endif //__CSC_VER13_1
 
 
-#if __VER >= 13 // __RAINBOW_RACE
 BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName )
 {
 	CScript scanner;
@@ -1804,4 +1435,3 @@ BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileN
 	return TRUE;
 }
 
-#endif //__RAINBOW_RACE

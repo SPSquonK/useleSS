@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "minigamebase.h"
 
 class CMiniGameDiceplay : public CMiniGameBase
@@ -16,4 +15,3 @@ private:
 	int m_nTargetNum;
 };
 
-#endif // __RAINBOW_RACE

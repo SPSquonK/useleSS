@@ -47,9 +47,7 @@ CSkyBox::CSkyBox()
 	m_nWeather = WEATHER_NONE; 
 //	for(i=0;i<m_nStar;i++) m_vStar[i]=D3DXVECTOR3(0,0,0);
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	m_bLockWeather = FALSE;
-#endif
 }
 CSkyBox::~CSkyBox()
 {
@@ -69,10 +67,8 @@ CSkyBox* CSkyBox::GetInstance()
 
 void CSkyBox::SetWeather( int nWeather, BOOL bOnOff )
 {
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	if( m_bLockWeather )		//gmpbigsun(100112) : 현재 대륙날씨쪽에서 락을 시키고 풀어줌 
 		return;
-#endif
 
 	if( bOnOff == FALSE )
 	{
@@ -357,17 +353,14 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 
 	float fAlphaEX = 1.0f;			//added 
 	int rstA = 255;				//added
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	//gmpbigsun: Hook은 리턴값으로 기존 루틴을 타거나 타지 않는다 
 	// FALSE인 경우( 루틴을 타야 하는경우 ) 곱해질 알파가 계산되어져 나오게 댐.
 	if( !m_pWorld->HookRenderSky( SKY_SIDE, 348/3, fAlphaEX ) )
-#endif 
 	{
 		IDirect3DTexture9* pSky1 = m_pSkyBoxTexture;
 		IDirect3DTexture9* pSky2 = m_pSkyBoxTexture2;
 		IDirect3DTexture9* pSky3 = m_pSkyBoxTexture3;
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 		WORLD_ENVIR_INFO& kWorldInfo = m_pWorld->m_kWorldEnvir;
 		if( kWorldInfo._kSky[ 0 ]._bUse )
 		{
@@ -383,7 +376,6 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 			return;
 		}
 
-#endif
 
 		if(g_GameTimer.m_nHour<6) 
 		{
@@ -480,15 +472,12 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 
 	pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	if( !m_pWorld->HookRenderSky( SKY_CLOUD, 28, fAlphaEX ) )
-#endif 
 	{
 		IDirect3DTexture9* pCloud1 = m_pCloudTexture;
 		IDirect3DTexture9* pCloud2 = m_pCloudTexture2;
 		IDirect3DTexture9* pCloud3 = m_pCloudTexture3;
 	
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 		WORLD_ENVIR_INFO& kWorldInfo = m_pWorld->m_kWorldEnvir;
 		if( kWorldInfo._kCloud[ 0 ]._bUse )
 		{
@@ -503,7 +492,6 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 			assert( 0 );
 			return;
 		}
-#endif
 		if( g_GameTimer.m_nHour < 6 ) 
 		{
 			rstA	= (int)( fAlphaEX * 255 );
@@ -593,7 +581,6 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 	IDirect3DTexture9* pSun1 = m_pSunTexture;
 	IDirect3DTexture9* pMoon = m_pMoonTexture;
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	WORLD_ENVIR_INFO& kWorldInfo = m_pWorld->m_kWorldEnvir;
 
 	if( kWorldInfo._kSun._bUse )
@@ -608,7 +595,6 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 		return;
 	}
 
-#endif
 
 //	if(m_fSunAngle>-20.0f)
 	{

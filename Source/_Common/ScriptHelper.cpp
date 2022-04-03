@@ -31,10 +31,8 @@ enum QUEST_ENUM
 	QE_QUEST_BEGIN_YES,
 	QE_QUEST_BEGIN_NO,
 	QE_QUEST_END_COMPLETE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	, QE_QUEST_NEXT_LEVEL
 	, QE_QUEST_END_FAIL
-#endif // __IMPROVE_QUEST_INTERFACE
 };
 
 static map< string, QUEST_ENUM > g_mapKey;
@@ -47,10 +45,8 @@ void InitPredefineKey()
 	g_mapKey[ "QUEST_BEGIN_YES" ]    = QE_QUEST_BEGIN_YES;
 	g_mapKey[ "QUEST_BEGIN_NO" ]     = QE_QUEST_BEGIN_NO;
 	g_mapKey[ "QUEST_END_COMPLETE" ] = QE_QUEST_END_COMPLETE;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	g_mapKey[ "QUEST_NEXT_LEVEL" ]   = QE_QUEST_NEXT_LEVEL;
 	g_mapKey[ "QUEST_END_FAIL" ]     = QE_QUEST_END_FAIL;
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 
 BOOL RunPredefineKey( LPCTSTR szKey, CNpcDialogInfo& info )
@@ -65,11 +61,7 @@ BOOL RunPredefineKey( LPCTSTR szKey, CNpcDialogInfo& info )
 	switch( type )
 	{
 	case QE_QUEST_END:
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		__QuestEnd( info.GetPcId(), info.GetNpcId(), nGlobal, info.GetQuest(), FALSE );
-#else // __IMPROVE_QUEST_INTERFACE
-		__QuestEnd( info.GetPcId(), info.GetNpcId(), nGlobal );
-#endif // __IMPROVE_QUEST_INTERFACE
 		break;
 	case QE_QUEST_BEGIN:
 		__QuestBegin( info.GetPcId(), info.GetNpcId(), info.GetQuest() );
@@ -83,11 +75,9 @@ BOOL RunPredefineKey( LPCTSTR szKey, CNpcDialogInfo& info )
 	case QE_QUEST_END_COMPLETE:
 		__QuestEndComplete( info.GetPcId(), info.GetNpcId(), nGlobal, info.GetReturn(), info.GetQuest() );
 		break;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	case QE_QUEST_END_FAIL:
 		__QuestEnd( info.GetPcId(), info.GetNpcId(), nGlobal, info.GetQuest(), TRUE );
 		break;
-#endif // __IMPROVE_QUEST_INTERFACE
 	default:
 		return FALSE;
 	};
@@ -315,11 +305,7 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 						{
 							int nItemNum = pEndRewardItem->m_nItemNum;
 #ifdef __JEFF_11
-#if __VER >= 13 // __CHIPI_QUESTITEM_FLAG
 							__CreateItem( nPcId, pEndRewardItem->m_nItemIdx, nItemNum, pEndRewardItem->m_nAbilityOption, pEndRewardItem->m_byFlag );
-#else // __CHIPI_QUESTITEM_FLAG
-							__CreateItem( nPcId, pEndRewardItem->m_nItemIdx, nItemNum, pEndRewardItem->m_nAbilityOption );
-#endif // __CHIPI_QUESTITEM_FLAG
 #else	// __JEFF_11
 							__CreateItem( nPcId, pEndRewardItem->m_nItemIdx, nItemNum );
 #endif	// __JEFF_11
@@ -335,11 +321,7 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 						{
 							int nItemNum = pEndRewardItem->m_nItemNum;
 #ifdef __JEFF_11
-#if __VER >= 13 // __CHIPI_QUESTITEM_FLAG
 							__CreateItem( nPcId, pEndRewardItem->m_nItemIdx, nItemNum, pEndRewardItem->m_nAbilityOption, pEndRewardItem->m_byFlag );
-#else // __CHIPI_QUESTITEM_FLAG
-							__CreateItem( nPcId, pEndRewardItem->m_nItemIdx, nItemNum, pEndRewardItem->m_nAbilityOption );
-#endif // __CHIPI_QUESTITEM_FLAG
 #else	// __JEFF_11
 							__CreateItem( nPcId, pEndRewardItem->m_nItemIdx, nItemNum );
 #endif	// __JEFF_11
@@ -348,10 +330,8 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 				}
 			}
 		}
-#if __VER >= 9	// __PET_0410
 		if( pQuestProp->m_bEndRewardPetLevelup )
 			pUser->PetLevelup();
-#endif	// __PET_0410
 		if(	pQuestProp->m_nEndRewardGoldMin )
 		{
 			nNum = pQuestProp->m_nEndRewardGoldMax - pQuestProp->m_nEndRewardGoldMin + 1; 
@@ -378,7 +358,6 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 			g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_GET_QUEST, pQuestProp->m_nEndRewardSkillPoint, (CMover*)pUser, NULL );
 		}
 
-#if __VER >= 8 // __S8_PK
 		if( pQuestProp->m_nEndRewardPKValueMin || pQuestProp->m_nEndRewardPKValueMax )
 		{
 			if( pQuestProp->m_nEndRewardPKValueMin <= pQuestProp->m_nEndRewardPKValueMax )
@@ -389,29 +368,12 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 				pUser->SetPKValue( nPKValue );
 				pUser->AddPKValue();
 				g_dpDBClient.SendLogPkPvp( (CMover*)pUser, NULL, 0, 'P' );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 				pUser->CheckHonorStat();
 				g_UserMng.AddHonorTitleChange( pUser, pUser->m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 			}
 		}
-#else // __VER >= 8 // __S8_PK
-		if( pQuestProp->m_nEndRewardKarmaStyle )
-		{
-			if( pQuestProp->m_nEndRewardKarmaStyle == 1 )
-				pUser->ChangeSlaughter( CHANGE_SLAUGHTER_SET, NULL, pQuestProp->m_nEndRewardKarmaPoint );
-			else
-			if( pQuestProp->m_nEndRewardKarmaStyle == 2 )
-			{
-				int nKarma = pUser->GetKarma();
-				pUser->ChangeSlaughter( CHANGE_SLAUGHTER_SET, NULL, nKarma + pQuestProp->m_nEndRewardKarmaPoint ); 
-			}
-		}
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 9 // __S_9_ADD
 		if( pQuestProp->m_nEndRewardTeleport != 0 )
 			pUser->REPLACE( g_uIdofMulti, pQuestProp->m_nEndRewardTeleport, pQuestProp->m_nEndRewardTeleportPos, REPLACE_NORMAL, nTempLayer );
-#endif // __S_9_ADD
 		// 시작시 변신을 했으면 종료시 변신 해제시킨다.
 		if( pQuestProp->m_nBeginSetDisguiseMoverIndex )
 		{
@@ -419,13 +381,11 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 			pUser->NoDisguise( NULL );
 			g_UserMng.AddNoDisguise( pUser );
 		}
-#if __VER >= 15 // __CAMPUS
 		if( pQuestProp->m_nEndRewardTSP )
 			g_dpDBClient.SendUpdateCampusPoint( pUser->m_idPlayer, pQuestProp->m_nEndRewardTSP, TRUE, 'Q' );
 
 		if( pQuestProp->m_nEndRemoveTSP )
 			g_dpDBClient.SendUpdateCampusPoint( pUser->m_idPlayer, pQuestProp->m_nEndRemoveTSP, FALSE, 'Q' );
-#endif // __CAMPUS
 		////////////////////////////
 		// 아이템 제거 
 		////////////////////////////
@@ -463,11 +423,7 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 	return 1;
 }
 //int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam = 0 )
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam, BOOL bNew )
-#else // __IMPROVE_QUEST_INTERFACE
-int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam )
-#endif // __IMPROVE_QUEST_INTERFACE
 {
 	CHAR szWord[ 128 ], szKey[ 128 ];
 	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
@@ -480,14 +436,10 @@ int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam )
 
 	CUser* pUser	= prj.GetUser( nPcId );
 	RunScriptFunc rsf;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( bNew )
 		rsf.wFuncType		= FUNCTYPE_NEWQUEST;
 	else
 		rsf.wFuncType		= FUNCTYPE_CURRQUEST;
-#else // __IMPROVE_QUEST_INTERFACE
-	rsf.wFuncType		= FUNCTYPE_ADDKEY;
-#endif // __IMPROVE_QUEST_INTERFACE
 	lstrcpy( rsf.lpszVal1, szWord );
 	lstrcpy( rsf.lpszVal2, szKey );
 	rsf.dwVal1	= nParam;
@@ -504,23 +456,12 @@ void __QuestBegin( int nPcId, int nNpcId, int nQuestId )
 	__SayQuest( nPcId, nQuestId, QSAY_BEGIN5 );
 	__AddAnswer( nPcId, "__YES__", "QUEST_BEGIN_YES", 0, nQuestId );
 	__AddAnswer( nPcId, "__NO__", "QUEST_BEGIN_NO", 0, nQuestId  );
-#if __VER < 15 // __IMPROVE_QUEST_INTERFACE
-	__RemoveAllKey( nPcId );
-#endif // __IMPROVE_QUEST_INTERFACE
 	// 기타 대화를 위한 키를 추가한다.
 	CMover* pMover = prj.GetMover( nNpcId );
-#if __VER < 15 // __IMPROVE_QUEST_INTERFACE
-	pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
-#endif // __IMPROVE_QUEST_INTERFACE
 	pMover->m_pNpcProperty->RunDialog( "#questBegin", NULL, 0, nNpcId, nPcId, nQuestId );
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK )
-#else // __IMPROVE_QUEST_INTERFACE
-void __QuestEnd( int nPcId, int nNpcId, int& nGlobal )
-#endif // __IMPROVE_QUEST_INTERFACE
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	// 현재 진행 중인 퀘스트 중에서 현재 NPC가 처리해야될 퀘스트를 실행(자신일 수도 있음)
 	CMover* pMover = prj.GetMover( nNpcId );
 	CUser* pUser = prj.GetUser( nPcId );
@@ -659,99 +600,6 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal )
 		else
 			pMover->m_pNpcProperty->RunDialog( "#noQuest", NULL, 0, nNpcId, nPcId, 0 );	// 준비된 퀘스트가 없을 때의 인사말
 	}
-#else // __IMPROVE_QUEST_INTERFACE
-	// 현재 진행 중인 퀘스트 중에서 현재 NPC가 처리해야될 퀘스트를 실행(자신일 수도 있음)
-	int nResult = 0;
-
-	CMover* pMover = prj.GetMover( nNpcId );
-	CUser* pUser = prj.GetUser( nPcId );
-
-	LPQUEST lpQuest;
-
-	__RemoveAllKey( nPcId );
-
-	while( nGlobal < pUser->m_nQuestSize )
-	{
-		lpQuest = &pUser->m_aQuest[ nGlobal ];
-		nGlobal++;
-		if( lpQuest )
-		{
-			WORD nQuest = lpQuest->m_wId;
-			QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuest );
-			if( pQuestProp )
-			{
-				// 대화하고 있는 캐릭터와 현재 실행 중인 퀘스트가 같으면 그놈이 종결 조건을 판정하는 놈이다.
-				if( strcmpi( pQuestProp->m_szEndCondCharacter, pMover->m_szCharacterKey ) == 0 )
-				{
-					if( lpQuest->m_nState != QS_END ) 
-					{
-						if( __IsEndQuestCondition( pUser, nQuest ) )
-						{
-							__SayQuest( nPcId, nQuest, QSAY_END_COMPLETE1 );
-							__SayQuest( nPcId, nQuest, QSAY_END_COMPLETE2 );
-							__SayQuest( nPcId, nQuest, QSAY_END_COMPLETE3 );
-							__AddAnswer( nPcId,"__OK__", "QUEST_END_COMPLETE", 0, nQuest );		
-						}
-						else
-						{
-							__SayQuest( nPcId, nQuest, QSAY_END_FAILURE1 );
-							__SayQuest( nPcId, nQuest, QSAY_END_FAILURE2 );
-							__SayQuest( nPcId, nQuest, QSAY_END_FAILURE3 );
-							__AddAnswer( nPcId,"__OK__", "QUEST_END", 0, nQuest );
-						}
-						nResult = 1;
-						break;
-					}
-				}
-			}
-			else 
-			{
-				WriteError( "__QuestEnd quest(%d) property null", nQuest );
-			}
-		}
-		else 
-		{
-			WriteError( "__QuestEnd : user member quest(%d) null", nGlobal-1  );
-		}
-	} // while( nGlobal < pUser->m_nQuestSize )
-
-	if( nResult == 0 )
-	{
-		LPCHARACTER lpChar = prj.GetCharacter( pMover->m_szCharacterKey );
-		int anQuest[ 32 ];
-
-		for( int i = 0; i < lpChar->m_awSrcQuest.GetSize(); i++ )
-		{
-			int nQuest = lpChar->m_awSrcQuest.GetAt( i );
-			lpQuest = pUser->GetQuest( nQuest );
-
-			if( __IsBeginQuestCondition( pUser, nQuest ) && 
-				lpQuest == NULL && 
-				pUser->IsCompleteQuest( nQuest ) == FALSE )
-			{
-				anQuest[ nResult ] = nQuest;
-				nResult++;
-			}
-		}
-
-		// 가능한 퀘스트가 하나일 때는 바로 퀘스트 시작 
-		if( nResult == 1 )
-			__QuestBegin( nPcId, nNpcId, anQuest[ 0 ] );
-		else
-		{
-			// 여러개일 경우는 키를 추가 
-			for( i = 0; i < nResult; i++ )
-				__AddQuestKey( nPcId, anQuest[ i ], "QUEST_BEGIN" );
-
-			if ( nResult == 0 )  				
-				pMover->m_pNpcProperty->RunDialog( "#noQuest", &nResult, 0, nNpcId, nPcId, 0 );	// 준비된 퀘스트가 없을 때의 인사말 
-			else				
-				pMover->m_pNpcProperty->RunDialog( "#yesQuest", &nResult, 0, nNpcId, nPcId, 0 ); // 준비된 퀘스트가 있을 때의 인사말 
-		}
-	}
-	// 기타 대화를 위한 키를 추가한다.
-	pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 {
@@ -782,7 +630,6 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 		__SayQuest( nPcId, nQuestId, QSAY_BEGIN_YES );
 		__RunQuest( nPcId, nNpcId, nQuestId );
 		CMover* pMover = prj.GetMover( nNpcId );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		__RemoveAllKey( nPcId );
 		pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
 		LPQUEST lpQuestList;
@@ -837,7 +684,6 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 			for( DWORD i = 0; i < vecCurrQuest.size(); ++i )
 				__AddQuestKey( nPcId, vecCurrQuest[ i ], "QUEST_END", 0, FALSE );
 		}
-#endif // __IMPROVE_QUEST_INTERFACE
 		pMover->m_pNpcProperty->RunDialog( "#questBeginYes", NULL, 0, nNpcId, nPcId, nQuestId );
 	}
 
@@ -876,11 +722,7 @@ void __QuestEndComplete( int nPcId, int nNpcId, int& nGlobal, int nVal, int nQue
 		CMover* pMover = prj.GetMover( nNpcId );
 		if( __EndQuest( nPcId, nQuestId ) == TRUE )
 			pMover->m_pNpcProperty->RunDialog( "#questEndComplete", NULL, 0, nNpcId, nPcId, nQuestId );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		__QuestEnd( nPcId, nNpcId, nGlobal, nQuestId, TRUE );
-#else // __IMPROVE_QUEST_INTERFACE
-		__QuestEnd( nPcId, nNpcId, nGlobal );
-#endif // __IMPROVE_QUEST_INTERFACE
 	}	
 }
 int __SetQuestState( DWORD dwIdMover, int nQuest, int nState )
@@ -920,11 +762,7 @@ void __SetQuest( DWORD dwIdMover, int nQuest )
 }
 
 #ifdef __JEFF_11
-#if __VER >= 13 // __CHIPI_QUESTITEM_FLAG
 void __CreateItem( DWORD dwIdMover, int v1, int v2, int v3, BYTE v4 )
-#else	// __CHIPI_QUESTITEM_FLAG
-void __CreateItem( DWORD dwIdMover, int v1, int v2, int v3 )
-#endif // __CHIPI_QUESTITEM_FLAG
 #else	// __JEFF_11
 void __CreateItem( DWORD dwIdMover, int v1, int v2 )	
 #endif	// __JEFF_11
@@ -939,9 +777,7 @@ void __CreateItem( DWORD dwIdMover, int v1, int v2 )
 #ifdef __JEFF_11
 	itemElem.SetAbilityOption( v3 );
 #endif	// __JEFF_11
-#if __VER >= 13 // __CHIPI_QUESTITEM_FLAG
 	itemElem.SetFlag( v4 );
-#endif // __CHIPI_QUESTITEM_FLAG
 	if( pUser->CreateItem( &itemElem ) )
 	{
 		LogItemInfo aLogItem;
@@ -967,7 +803,6 @@ void __RemoveGold( DWORD dwIdMover, int nGold )
 		pUser->SetGold( 0 );
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void __QuestSort( vector<int> & vecQuestId )
 {
 	QuestProp* pPrevQuestProp = NULL;
@@ -1003,4 +838,3 @@ void __QuestSort( vector<int> & vecQuestId )
 		}
 	}
 }
-#endif // __IMPROVE_QUEST_INTERFACE

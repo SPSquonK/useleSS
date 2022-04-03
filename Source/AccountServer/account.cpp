@@ -485,7 +485,6 @@ map<string, CAccount*> CAccountMng::GetMapAccount()
 }
 #endif // __LOG_PLAYERCOUNT_CHANNEL
 
-#if __VER >= 14 // __PCBANG
 DWORD CAccountMng::PopPCBangPlayer( DWORD dwAuthKey )
 {
 	map<DWORD, DWORD>::iterator it = m_mapPCBang.find( dwAuthKey );
@@ -498,4 +497,3 @@ DWORD CAccountMng::PopPCBangPlayer( DWORD dwAuthKey )
 
 	return 0;
 }
-#endif // __PCBANG

@@ -41,20 +41,11 @@ void CWndPvp::OnDraw( C2DRender* p2DRender )
 	strcpy( szBuff, g_pPlayer->GetFameName() );
 	if( IsEmpty(szBuff) ) {	szBuff[0] = '-'; szBuff[1] = NULL; }
 	p2DRender->TextOut( 90, y, szBuff, dwColor); y += nNext;
-#if __VER < 8 // __S8_PK
-	strcpy( szBuff, g_pPlayer->GetSlaughterName() );
-	if( IsEmpty(szBuff) ) {	szBuff[0] = '-'; szBuff[1] = NULL; }
-	p2DRender->TextOut( 90, y, szBuff  , dwColor ); y += nNext;
-#endif // __VER < 8 // __S8_PK
 
 //	p2DRender->TextOut( 90, y, g_pPlayer->GetFameName()       , dwColor); y += nNext;
 //	p2DRender->TextOut( 90, y, g_pPlayer->GetSlaughterName()  , dwColor ); y += nNext;
 	y = 58;
 	p2DRender->TextOut( 100, y, g_pPlayer->m_nFame	, dwColor ); y += nNext;
-#if __VER < 8 // __S8_PK
-	p2DRender->TextOut( 100, y, g_pPlayer->m_nSlaughter	, dwColor ); y += nNext;
-	p2DRender->TextOut( 100, y, g_pPlayer->m_nNumKill	, dwColor ); y += nNext;
-#endif // __VER < 8 // __S8_PK
 	
 } 
 void CWndPvp::OnInitialUpdate() 
@@ -148,36 +139,19 @@ void CWndPvpBase::OnDraw(C2DRender* p2DRender)
 	p2DRender->TextOut( 100+gap1, y, szBuff  , dwColor ); y += nNext;
 	y = 33;
 	p2DRender->TextOut( 100+gap2, y, g_pPlayer->m_nFame	, dwColor ); y += nNext;
-#if __VER >= 8 // __S8_PK
 	y += 20;
 	p2DRender->TextOut( 100+gap2, y, g_pPlayer->GetPKValue()	, dwColor ); y += nNext;
 	y += 4;
 	p2DRender->TextOut( 100+gap2, y, g_pPlayer->GetPKPropensity()	, dwColor ); y += nNext;
-#else // __VER >= 8 // __S8_PK
-	y += 4;
-	p2DRender->TextOut( 100+gap2, y, g_pPlayer->m_nNumKill	, dwColor ); y += nNext;
-	y += 4;
-	p2DRender->TextOut( 100+gap2, y, g_pPlayer->GetSlaughterName(), dwColor ); y += nNext;
-	y += 4;
-	p2DRender->TextOut( 100+gap2, y, g_pPlayer->m_nSlaughter	, dwColor ); y += nNext;
-#endif // __VER >= 8 // __S8_PK
 	
 	y = 13;
 	nNext = 19;
 	dwColor = D3DCOLOR_ARGB(255, 0, 0, 180);
-#if __VER >= 8 // __S8_PK
 	p2DRender->TextOut( 15, y, prj.GetText(TID_GAME_CHARACTTER_PVP1), dwColor ); y += nNext;
 	p2DRender->TextOut( 15, y, prj.GetText(TID_GAME_CHARACTTER_PVP2), dwColor ); y += nNext;
 	y += 20;
 	p2DRender->TextOut( 15, y, prj.GetText(TID_GAME_CHARACTTER_PVP3), dwColor ); y += nNext;
 	p2DRender->TextOut( 15, y, prj.GetText(TID_GAME_CHARACTTER_PVP4), dwColor ); y += nNext;
-#else // __VER >= 8 // __S8_PK
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_08), dwColor ); y += nNext;
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_09), dwColor ); y += nNext;
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_10), dwColor ); y += nNext;
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_11), dwColor ); y += nNext;
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_12), dwColor ); y += nNext;
-#endif // __VER >= 8 // __S8_PK
 	
 }
 
@@ -189,11 +163,7 @@ void CWndPvpBase::OnInitialUpdate()
 	if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
 		m_wndChangeJob.Create( ">", 0, CRect( 135, y, 135+40, y + 13 ), this, 10  ); 
 
-#if __VER >= 9 // __CSC_VER9_2
 	SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndPvP2.tga" ) ), TRUE );
-#else //__CSC_VER9_2
-	SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "wndPvP.tga" ) ), TRUE );
-#endif //__CSC_VER9_2
 	
 	FitTextureSize();
 }

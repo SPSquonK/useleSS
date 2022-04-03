@@ -6,7 +6,6 @@
 #include "defineText.h"
 #include "playerdata.h"
 
-#if __VER >= 12 // __LORD
 
 #include "definelordskill.h"
 #include "lord.h"
@@ -1165,4 +1164,3 @@ void CWndLordRPInfo::OnSize( UINT nType, int cx, int cy )
 {
 	CWndNeuz::OnSize( nType, cx, cy ); 
 }
-#endif

@@ -247,11 +247,7 @@ BOOL	CCtrl::GetSkillProp( ItemProp **ppSkillProp, AddSkillProp **ppAddSkillProp,
 //
 // 경우에따라 pAddSkillProp은 NULL일수도 있다.  아이템에서 사용할수도 있기때문. 아이템은 애드스킬프롭이 없다.
 // pCenter : 광역 지속스킬의 타겟. NULL일수도 있다
-#if __VER >= 8 // __S8_PK
 void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, BOOL bOnlyDmg, CCtrl* pCenter, BOOL bControl )
-#else // __VER >= 8 // __S8_PK
-void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, BOOL bOnlyDmg, CCtrl* pCenter )
-#endif // __VER >= 8 // __S8_PK
 {
 #ifdef __WORLDSERVER
 	int nRange	= 4;	// 4m
@@ -303,7 +299,6 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 				if( pAttacker->IsPlayer() )			// 공격자가 플레이어냐
 				{
 					bApply = TRUE;
-#if __VER >= 8 // __S8_PK
 					CMover *pDefender = (CMover *)pObj;
 					if( pDefender->IsPlayer() )
 					{
@@ -319,7 +314,6 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 							bApply = FALSE;
 //	#endif // __JHMA_VER_8_5_1	
 					}
-#endif // __VER >= 8 // __S8_PK
 				} else
 				{	// 공격자가 몬스터면
 					bApply = TRUE;		// 
@@ -366,11 +360,9 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 				CMover *pTarget = (CMover *)pObj;
 				if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 					bApply = TRUE;
-#if __VER >= 8 //	#ifdef	__JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 				CMover *pAttacker = (CMover *)pSrc;
 				if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
 					bApply = FALSE;
-#endif //	#endif // __JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 			} else
 			// 대상이 컨트롤이면.
 			if( pObj->GetType() == OT_CTRL )
@@ -412,11 +404,7 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 //
 // 경우에따라 pAddSkillProp은 NULL일수도 있다.  아이템에서 사용할수도 있기때문. 아이템은 애드스킬프롭이 없다.
 // fRangeCustom에 값이 있을경우에는 프로퍼티 nRange값을 무시하고 fRangeCustom으로 바뀐다.
-#if __VER >= 8 // __S8_PK
 void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, BOOL bOnlyDmg, FLOAT fRangeCustom, BOOL bControl )
-#else // __VER >= 8 // __S8_PK
-void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, BOOL bOnlyDmg, FLOAT fRangeCustom )
-#endif // __VER >= 8 // __S8_PK
 {
 #ifdef __WORLDSERVER
 	int nRange	= 4;	// 4m
@@ -469,7 +457,6 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 				if( pAttacker->IsPlayer() )			// 공격자가 플레이어냐
 				{
 					bApply	= TRUE;
-#if __VER >= 8 // __S8_PK
 					CMover *pDefender = (CMover *)pObj;
 					if( pDefender->IsPlayer() )
 					{
@@ -483,7 +470,6 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 //	#endif // __JHMA_VER_8_5_1	
 
 					}
-#endif // __VER >= 8 // __S8_PK
 				} else
 				{	// 공격자가 몬스터면
 					bApply = TRUE;		// 
@@ -528,11 +514,9 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 				CMover *pTarget = (CMover *)pObj;
 				if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 					bApply = TRUE;
-#if __VER >= 8 //	#ifdef	__JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 				CMover *pAttacker = (CMover *)pSrc;
 				if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
 					bApply = FALSE;
-#endif //	#endif // __JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 			} else
 			// 대상이 컨트롤이면.
 			if( pObj->GetType() == OT_CTRL )
@@ -578,11 +562,7 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 // nAttackID : 스킬이나 아이템 ID
 // fWidth, fHeight, fDepth : 폭, 높이, 길이.
 // this == Attacker
-#if __VER >= 8 // __S8_PK
 void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, float fWidth, float fHeight, float fDepth, bool bIgnoreProb, BOOL bControl )
-#else // __VER >= 8 // __S8_PK
-void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, float fWidth, float fHeight, float fDepth, bool bIgnoreProb )
-#endif // __VER >= 8 // __S8_PK
 {
 #ifdef __WORLDSERVER
 	int nRange	= 4;	// 4m
@@ -636,7 +616,6 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 				if( pAttacker->IsPlayer() )			// 공격자가 플레이어냐
 				{
 					bApply = TRUE;
-#if __VER >= 8 // __S8_PK
 					CMover *pDefender = (CMover *)pObj;
 					if( pDefender->IsPlayer() )
 					{
@@ -647,7 +626,6 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 							bApply = FALSE;
 //	#endif // __JHMA_VER_8_5_1	
 					}
-#endif // __VER >= 8 // __S8_PK
 				} else
 				{
 					// 공격자가 몬스터면
@@ -690,11 +668,9 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 				CMover *pTarget = (CMover *)pObj;
 				if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 					bApply = TRUE;
-#if __VER >= 8 //	#ifdef	__JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 				CMover *pAttacker = (CMover *)this;
 				if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
 					bApply = FALSE;
-#endif //	#endif // __JHMA_VER_8_5_1			 // 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 			} else
 			// 대상이 컨트롤이면
 			if( pObj->GetType() == OT_CTRL )
@@ -1079,7 +1055,6 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 	if( bOnlyDmg == TRUE )		
 		return;
 
-#if __VER >= 10	// __AI_0711
 	// 준보스 몬스터는 모든 디버프 면역
 	if( GetType() == OT_MOVER )
 	{
@@ -1089,14 +1064,12 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 			return;
 		}
 	}
-#endif	// __AI_0711
 
 #if defined(__WORLDSERVER)
 	if( this != pSrc && pSrc->GetType() == OT_MOVER && GetType() == OT_MOVER )		// 광역 디버프 중 타겟이아니면 skip
 	{
 		if( ((CMover *)this)->IsDie() == FALSE )
 		{
-#if __VER >= 8 // __S8_PK
 			if( pSkillProp->nEvildoing < 0 )													// 나쁜마법은
 				if( ((CMover *)pSrc)->GetHitType2(((CMover *)this), bTarget, FALSE ) == HITTYPE_FAIL )  	// 평화적인상대에게
 					return;																			// 적용안됨
@@ -1109,14 +1082,6 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 					if( ((CMover *)pSrc)->GetHitType2(((CMover *)this), bTarget, TRUE ) != HITTYPE_FAIL )  	// 적대적인상대에게
 						return;																			// 적용안됨
 			}
-#else // __VER >= 8 // __S8_PK
-			if( pSkillProp->nEvildoing < 0 )													// 나쁜마법은
-				if( ((CMover *)pSrc)->GetHitType2(((CMover *)this), bTarget ) == HITTYPE_FAIL )  	// 평화적인상대에게
-					return;																			// 적용안됨
-			if( pSkillProp->nEvildoing > 0 )													// 좋은 마법은
-				if( ((CMover *)pSrc)->GetHitType2(((CMover *)this), bTarget ) != HITTYPE_FAIL )  	// 적대적인상대에게
-					return;																			// 적용안됨
-#endif // __VER >= 8 // __S8_PK
 		}
 		else
 		{
@@ -1134,11 +1099,9 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 	if( pAddSkillProp )
 	{
 		nProb	= pAddSkillProp->nProbability;
-#if __VER >= 9	// __SKILL_0706
 		BOOL bPVP	= ( pSrc->GetType() == OT_MOVER && ( (CMover *)pSrc )->IsPlayer() && GetType() == OT_MOVER && ( (CMover *)this )->IsPlayer() );
 		if( bPVP )
 			nProb	= pAddSkillProp->nProbabilityPVP;
-#endif	// __SKILL_0706
 	}
 
 	if( bIgnoreProb )	// 확률무시옵이 있으면 무조건 100%
@@ -1155,11 +1118,7 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 				nSkillTime = (int)pSkillProp->dwSkillTime;
 
 			BOOL bNew = TRUE;	// 스킬이 첨 적용됐는가.
-#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 			if( nSkillTime >= 0 )	// 지속시간이 있는 스킬(프로텍션 등)
-#else //__Y_FLAG_SKILL_BUFF
-			if( nSkillTime > 0 )	// 지속시간이 있는 스킬(프로텍션 등)					
-#endif //__Y_FLAG_SKILL_BUFF
 			{
 				DWORD dwTime1 = 0, dwTime2 = 0;
 				if( pSkillProp->dwReferTarget1 == RT_TIME || pSkillProp->dwReferTarget2 == RT_TIME )
@@ -1286,13 +1245,11 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 		}	// this == OT_MOVER
 	}	// if( nProb == NULL_ID || xRandom(100) < nProb  )
 #ifdef __WORLDSERVER
-	#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	else
 	{
 		if(pSkillProp->dwID == SI_PSY_HERO_STONE )
 			g_UserMng.AddRemoveSfxObj( this, pSkillProp->dwSfxObj4 );
 	}
-	#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 #endif	//__WORLDSERVER
 	#ifdef __WORLDSERVER
 		switch( pSkillProp->dwSpellRegion )
@@ -1445,17 +1402,9 @@ int		CCtrl::TargetSelecter( CCtrl *pTarget )
 	return nApplyType;
 }
 
-#if __VER >= 8 // __S8_PK
 int		CCtrl::DoApplySkill( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, int nParam, BOOL bOnlyDmg, BOOL bControl )
-#else // __VER >= 8 // __S8_PK
-int		CCtrl::DoApplySkill( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, int nParam, BOOL bOnlyDmg )
-#endif // __VER >= 8 // __S8_PK
 {
-#if __VER >= 8 // __S8_PK
 	int nResult = DoApplySkillEx( pTarget, pSkillProp, pAddSkillProp, bIgnoreProb, nParam, bOnlyDmg, bControl );
-#else // __VER >= 8 // __S8_PK
-	int nResult = DoApplySkillEx( pTarget, pSkillProp, pAddSkillProp, bIgnoreProb, nParam, bOnlyDmg );
-#endif // __VER >= 8 // __S8_PK
 	if( nResult == 1 )
 	{
 	#if defined(__WORLDSERVER)	
@@ -1477,11 +1426,7 @@ int		CCtrl::DoApplySkill( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pA
 // 여기서는 SpellRegion에 따라 적용대상을 분류만 하고 실제 효과적용은
 // ApplySkill에서 처리한다.
 // bOnlyDmg : 오직 데미지적용시키는것만 한다.  광역 지속데미지개체에서 사용함.
-#if __VER >= 8 // __S8_PK
 int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, int nParam, BOOL bOnlyDmg, BOOL bControl )
-#else // __VER >= 8 // __S8_PK
-int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, int nParam, BOOL bOnlyDmg )
-#endif // __VER >= 8 // __S8_PK
 {
 	int		nRet = 1;
 	CCtrl	*pSrc = this;
@@ -1491,21 +1436,12 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 	case SRO_AROUND:	// 대상 0% 주위 100%
 	case SRO_REGION:	// 대상 100% 주위 100%
 		{
-#if __VER >= 10 //  __LEGEND
 			if( pSkillProp->dwExeTarget != EXT_TROUPE && pSkillProp->dwExeTarget != EXT_TROUPEWITH )	// 극단대상이 아닐때.
-#else // __VER >= 10 //  __LEGEND
-			if( pSkillProp->dwExeTarget != EXT_TROUPE )	// 극단대상이 아닐때.
-#endif // __VER >= 10 // __LEGEND
 			{
 				int nApplyType = 0;
 				nApplyType = pSrc->TargetSelecter( pTarget );
-#if __VER >= 8 // __S8_PK
 				pTarget->ApplySkillAround( this, nApplyType, pSkillProp, pAddSkillProp, bIgnoreProb, bOnlyDmg, 0.0f, bControl );
-#else // __VER >= 8 // __S8_PK
-				pTarget->ApplySkillAround( this, nApplyType, pSkillProp, pAddSkillProp, bIgnoreProb, bOnlyDmg );
-#endif // __VER >= 8 // __S8_PK
 			}
-#if __VER >= 10 //  __LEGEND
 			else if( pSkillProp->dwExeTarget == EXT_TROUPEWITH )	// 극단대상이 아닐때
 			{
 				// 극단 대상 범위 효과.
@@ -1527,7 +1463,6 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 					}
 				}
 			}			
-#endif // __VER >= 10 // __LEGEND
 			else
 			{
 				// 극단 대상 범위 효과.
@@ -1553,9 +1488,7 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 					pDmgCtrl->m_idSrc = pSrc->GetId();
 					pDmgCtrl->m_idTarget = pTarget->GetId();
 					pDmgCtrl->SetPos( pTarget->GetPos() );		// 중심이 되는 타겟의 좌표로...
-#if __VER >= 8 // __S8_PK
 					pDmgCtrl->m_bControl = bControl;
-#endif // __VER >= 8 // __S8_PK
 					// chipi - 범위 ctrl 생성 스킬로 인해 듀얼 종료 후 카오되는 현상 수정
 					if( ((CMover*)pSrc)->IsPVPTarget( ((CMover*)pTarget) ) )
 						pDmgCtrl->m_bDuelTarget = TRUE;
@@ -1570,11 +1503,7 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 		{
 			int nApplyType = 0;
 			nApplyType = pSrc->TargetSelecter( pTarget );
-#if __VER >= 8 // __S8_PK
 			ApplySkillLine( nApplyType, pSkillProp, pAddSkillProp, 2.5f, 2.5f, (float)pAddSkillProp->dwSkillRange, bIgnoreProb, bControl );
-#else // __VER >= 8 // __S8_PK
-			ApplySkillLine( nApplyType, pSkillProp, pAddSkillProp, 2.5f, 2.5f, (float)pAddSkillProp->dwSkillRange, bIgnoreProb );
-#endif // __VER >= 8 // __S8_PK
 		}
 		break;
 	case SRO_DIRECT:	// 대상 하나에만 적용
@@ -1665,11 +1594,7 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 	if( pSkillProp->dwActiveSkill != NULL_ID )
 	{
 		if( pSkillProp->dwActiveSkillRate == NULL_ID || xRandom(100) <= pSkillProp->dwActiveSkillRate )	// 발동확률에 걸렸는가.
-#if __VER >= 8 // __S8_PK
 			pSrc->DoActiveSkill( pSkillProp->dwActiveSkill, 1, pTarget, false, bControl );		// dwActiveSkill Lv1이 발동됨.
-#else // __VER >= 8 // __S8_PK
-			pSrc->DoActiveSkill( pSkillProp->dwActiveSkill, 1, pTarget );		// dwActiveSkill Lv1이 발동됨.
-#endif // __VER >= 8 // __S8_PK
 			
 	}
 
@@ -1678,11 +1603,7 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 
 // nLevel의 dwSkill이 pTarget을 향하여 발동됨.  어태커는 this
 // bIgnoreProb이 TRUE이면 내부에서 확률계산을 무시하고 100% 실행되게 한다.
-#if __VER >= 8 // __S8_PK
 void CCtrl::DoActiveSkill( DWORD dwSkill, int nLevel, CCtrl *pTarget, bool bIgnoreProb, BOOL bControl )
-#else // __VER >= 8 // __S8_PK
-void CCtrl::DoActiveSkill( DWORD dwSkill, int nLevel, CCtrl *pTarget, bool bIgnoreProb )
-#endif // __VER >= 8 // __S8_PK
 {
 	ItemProp *pSkillProp;
 	AddSkillProp *pAddSkillProp;
@@ -1694,11 +1615,7 @@ void CCtrl::DoActiveSkill( DWORD dwSkill, int nLevel, CCtrl *pTarget, bool bIgno
 		nRet = ShootSkill( pTarget, pSkillProp, pAddSkillProp );
 	else
 	{
-#if __VER >= 8 // __S8_PK
 		nRet = DoApplySkill( pTarget, pSkillProp, pAddSkillProp, bIgnoreProb, 0, FALSE, bControl );
-#else // __VER >= 8 // __S8_PK
-		nRet = DoApplySkill( pTarget, pSkillProp, pAddSkillProp, bIgnoreProb );
-#endif // __VER >= 8 // __S8_PK
  #ifdef __WORLDSERVER		
 		g_UserMng.AddDoApplySkill( this, pTarget->GetId(), dwSkill, nLevel );
  #endif

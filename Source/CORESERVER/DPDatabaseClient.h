@@ -76,9 +76,7 @@ public:
 	void	OnBuyingInfo( CAr & ar );
 	void	OnTCList( CAr & ar );
 	void	OnSetPlayerName( CAr & ar );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	OnUpdatePlayerData( CAr & ar );
-#endif	// __SYS_PLAYER_DATA
 #ifdef __AUTO_NOTICE
 	void	OnEventNotice( CAr & ar );
 #endif // __AUTO_NOTICE

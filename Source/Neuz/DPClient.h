@@ -5,17 +5,11 @@
 #include "Ar.h"
 //#include "MsgHdr.h"		// 이거 include 시키지 말것. 빌드 느려짐.
 #include "Obj.h"
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "RainbowRace.h"
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 #include "Housing.h"
-#endif // __HOUSING
 
 #undef	theClass
 #define	theClass	CDPClient
@@ -149,14 +143,10 @@ public:
 	void	SendDropGold( DWORD dwGold, const D3DXVECTOR3 & vPlayerPos, const D3DXVECTOR3 & vPos );
 	void	SendConfirmPKPVP( u_long uidPlayer );
 	void	OnSetDuel( OBJID objid, CAr & ar );
-#if __VER >= 8 // __S8_PK
 	void	OnPKRelation( OBJID objid, CAr & ar );
 	void	OnPKPink( OBJID objid, CAr & ar );
 	void	OnPKPropensity( OBJID objid, CAr& ar );
 	void	OnPKValue( OBJID objid, CAr& ar );
-#else // __VER >= 8 __S8_PK
-	void	OnUpdatePlayerEnemy( OBJID objid, CAr & ar );
-#endif // __VER >= 8 __S8_PK
 
 	void	SendConfirmTrade( CMover* pTrader );
 	void	SendConfirmTradeCancel( OBJID objid );
@@ -205,9 +195,7 @@ public:
 	void	SendOpenShopWnd( OBJID objid );
 	void	SendCloseShopWnd( void );
 	void	SendBuyItem( CHAR cTab, BYTE nId, short nNum, DWORD dwItemId );
-#if __VER >= 11 // __GUILDCOMBATCHIP
 	void	SendBuyChipItem( CHAR cTab, BYTE nId, short nNum, DWORD dwItemId );
-#endif // __GUILDCOMBATCHIP
 	void	SendSellItem( BYTE nId, short nNum );
 #ifdef __HACK_1023
 	void	SendMeleeAttack( OBJMSG dwAtkMsg, OBJID objid, int nParam2, int nParam3, FLOAT fVal );
@@ -218,11 +206,7 @@ public:
 	void	SendMagicAttack( OBJMSG dwAtkMsg, OBJID objid, int nParam2, int nParam3, int nMagicPower, int idSfxHit );
 	void	SendRangeAttack( OBJMSG dwAtkMsg, OBJID objid, DWORD dwItemID, int idSfxHit );
 
-#if __VER >= 8 // __S8_PK
 	void	SendUseSkill( WORD wType, WORD wId, OBJID objid, int nUseType = 0, int bControl = FALSE );
-#else // __VER >= 8 __S8_PK
-	void	SendUseSkill( WORD wType, WORD wId, OBJID objid, int nUseType = 0 );
-#endif // __VER >= 8 __S8_PK
 	void	SendSfxID( OBJID idTarget, int idSfxHit, DWORD dwType, DWORD dwSkill = NULL_ID, int nMaxDmgCnt = 1 );
 	void	SendSetTarget( OBJID idTarget, BYTE bClear );
 	void	SendTeleSkill( OBJID objid, D3DXVECTOR3 vPos );
@@ -299,13 +283,8 @@ public:
 	void	SendAddFriendReqest( u_long uidPlayer );
 	void	SendAddFriendNameReqest( const char * szName );
 	void	SendFriendCancel( u_long uidLeader, u_long uidMember );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void	SendGetFriendName();
-#endif	// __SYS_PLAYER_DATA
-#if __VER >= 11 // __SYS_POCKET
 	void	SendAvailPocket( int nPocket, int nItem );
 	void	SendMoveItem_Pocket( int nPocket1, int nItem, short nNum, int nPocket2 );
-#endif	// __SYS_POCKET
 #ifdef __JEFF_11
 	void	SendQuePetResurrection( int nItem );
 #endif	// __JEFF_11
@@ -321,12 +300,8 @@ public:
 
 	void	SendRandomScroll( OBJID objid, OBJID objid2 );
 	void	SendEnchant( OBJID objid, OBJID objMaterialId );
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 	void	SendRemoveAttribute( OBJID objid );
-#endif // __REMOVE_ATTRIBUTE
-#if __VER >= 13 // __EXT_ENCHANT
 	void	SendChangeAttribute( OBJID objTargetItem, OBJID objMaterialItem, int nAttribute );
-#endif // __EXT_ENCHANT
 	void	SendPiercingSize( OBJID objid1, OBJID objid2, OBJID objid3 );
 #ifdef __SYS_ITEMTRANSY
 	void	SendItemTransy( OBJID objid0, OBJID objid1, DWORD dwChangeId = NULL_ID, BOOL bCash = TRUE );
@@ -334,9 +309,7 @@ public:
 	void	SendItemTransy( OBJID objid0, OBJID objid1 );
 #endif // __SYS_ITEMTRANSY
 	void	SendPiercing( OBJID objid1, OBJID objid2 );
-#if __VER >= 11 // __PIERCING_REMOVE
 	void	SendPiercingRemove( OBJID objid );
-#endif // __PIERCING_REMOVE
 	void	SendCommercialElem( DWORD dwItemId, DWORD dwItemId1 );
 	void	SendCreateSfxObj( DWORD dwSfxId, u_long idPlayer = NULL_ID, BOOL bFlag = FALSE );
 	void	SendSetNaviPoint( const D3DXVECTOR3 & Pos, OBJID objidTarget );
@@ -389,12 +362,10 @@ public:
 //________________________________________________________________________________
 
 	void	SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart = -1 , BOOL bResult = TRUE );
-#if __VER >= 11 // __SYS_IDENTIFY
 	void	SendDoUseItemTarget( DWORD dwMaterial, DWORD dwTarget );
 	void	SendRemoveItemLevelDown( DWORD dwId );
 	void	SendAwakening( int nItem );
 	void	SendBlessednessCancel( int nItem );
-#endif	// __SYS_IDENTIFY
 
 	void	SendSnapshot( BOOL fUnconditional = FALSE );
 #ifdef __IAOBJ0622
@@ -412,24 +383,14 @@ public:
 	void	SendSummonFriendCancel( OBJID objid, DWORD dwData );
 	void	SendSummonParty( DWORD dwData );
 	void	SendSummonPartyConfirm( OBJID objid, DWORD dwData );
-#if __VER >= 9	// __PET_0410
 	void	SendPetRelease( void );
-#if __VER >= 12 // __PET_0519
 	void	SendUsePetFeed( DWORD dwFeedId );	// dwFeedId : 먹이	// 입력 개수 제거
-#else	// __PET_0519
-	void	SendUsePetFeed( DWORD dwFeedId, short nNum );	// dwFeedId : 먹이
-#endif	// __PET_0519
 	void	SendMakePetFeed( DWORD dwMaterialId, short nNum, DWORD dwToolId );	// dwFeedId : 무기/방어구/전리품, dwToolId : 분쇄기( npc일 경우 NULL_ID )
 	void	SendPetTamerMistake( DWORD dwId );
 	void	SendPetTamerMiracle( DWORD dwId );
 	void	SendFeedPocketInactive( void );
-#endif	// __PET_0410
-#if __VER >= 10 // __CSC_VER9_1
 	void	SendLegendSkillUp(OBJID* pdwItemId, int count);
-#endif //__CSC_VER9_1
-#if __VER >= 9 // __CSC_VER9_2
 	void	SendModifyStatus(int nStrCount, int nStaCount, int nDexCount, int nIntCount);
-#endif //__CSC_VER9_2
 	void	SendRemoveQuest( DWORD dwQuest );
 	void	SendWantedGold( int nGold, LPCTSTR szMsg );
 	void	SendWantedList();
@@ -458,14 +419,9 @@ public:
 	void	SendGCJoin( void );
 	void	SendGCGetPenyaGuild( void );
 	void	SendGCGetPenyaPlayer( void );
-#if __VER < 8 // #ifndef __GUILDCOMBAT_85
-	void	SendGCGetItem( void );
-#endif // __VER < 8
 	void	SendGCTele( void );
 	void	SendGCPlayerPoint( void );
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	void	SendCreateMonster( DWORD dwItemId, D3DXVECTOR3 vPos );
-#endif // __ITEMCREATEMON_S0602
 
 #ifdef __EVE_MINIGAME
 	void SendKawibawiboStart();
@@ -480,7 +436,6 @@ public:
 	void SendFiveSystemDestroyWnd();
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 	void OnUltimateWeapon( OBJID objid, CAr & ar );
 	void OnUltimateMakeItem( OBJID objid, CAr & ar );
 	void OnUltimateTransWeapon( OBJID objid, CAr & ar );
@@ -495,7 +450,6 @@ public:
 	void SendUltimateSetGem( OBJID objItemWeapon, OBJID objItemGem );
 	void SendUltimateRemoveGem( OBJID objItemWeapon, OBJID objItemGem );
 	void SendUltimateEnchantWeapon( OBJID objItemWeapon, OBJID objItemGem );
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 	void OnExchange( OBJID objid, CAr & ar );
@@ -504,7 +458,6 @@ public:
 	void SendExchange( int nMMIId, int nListNum );
 #endif // __TRADESYS
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	void	SendGC1to1TenderOpenWnd();
 	void	SendGC1to1TenderView();
 	void	SendGC1to1Tender( int nPenya );
@@ -522,35 +475,26 @@ public:
 
 	void	SendGC1to1TeleportToNPC();
 	void	SendGC1to1TeleportToStage();
-#endif // __GUILD_COMBAT_1TO1
 
 	
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	void	SendReqGuildBankLogList( BYTE byListType );
 	void	OnGuildBankLogList( CAr & ar );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	void	SendSealChar(  );
 	void	OnSealChar( CAr & ar );
 	void	SendSealCharConm( OBJID objid  );
 	void	OnSealCharGet( CAr & ar );
 	void	SendSealCharSet( DWORD dwData );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	void	SendReqHonorList();
 	void	SendReqHonorTitleChange( int nChange );
 	void	OnHonorListAck( CAr & ar ); 
 	void	OnHonorChangeAck( OBJID objid,CAr & ar ); 
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 8 //__CSC_VER8_5
 	void SendCreateAngel(CString sendstr);
 	void SendAngelBuff();
 	void OnAngel( OBJID objid, CAr& ar );
 	void OnCreateAngel( OBJID objid, CAr & ar );
 	void OnAngelInfo( OBJID objid, CAr & ar );
-#endif //__CSC_VER8_5
 	// Handlers
 	USES_PFNENTRIES;
 	void	OnGetClock( CAr & ar );
@@ -608,14 +552,10 @@ public:
 	void	OnVendor( OBJID objid, CAr & ar );
 	void	OnUpdateVendor( OBJID objid, CAr & ar );
 	void	OnUpdateItem( OBJID objid, CAr & ar );
-#if __VER >= 11 // __SYS_IDENTIFY
 	void	OnUpdateItemEx( OBJID objid, CAr & ar );
-#endif	// __SYS_IDENTIFY
-#if __VER >= 11 // __SYS_POCKET
 	void	OnPocketAttribute( CAr & ar );
 	void	OnPocketAddItem( CAr & ar );
 	void	OnPocketRemoveItem( CAr & ar );
-#endif	// __SYS_POCKET
 #ifdef __JEFF_11
 	void	OnQuePetResurrectionResult( CAr & ar );
 #endif	// __JEFF_11
@@ -661,9 +601,7 @@ public:
 	void	OnMoverSetDestObj( OBJID objid, CAr & ar );
 	void	OnUseSkill( OBJID objid, CAr & ar );
 	void	OnCreateSfxObj( OBJID objid, CAr & ar );
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	void	OnRemoveSfxObj( OBJID objid, CAr & ar );
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	void	OnCreateSfxAllow( OBJID objid, CAr & ar );				
 	void	OnDefinedText( CAr & ar );
 	void	OnChatText( CAr & ar );
@@ -726,12 +664,8 @@ public:
 	void	OnGameRate( CAr & ar );
 	void	OnClearTarget( CAr & ar );
 	
-#if __VER >= 9 // __EVENTLUA
 	void	OnEventLuaDesc( CAr & ar );
-#endif // __EVENTLUA
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 	void	OnRemoveAttributeResult( CAr & ar );
-#endif // __REMOVE_ATTRIBUTE
 	void    OnMotionArrive( OBJID objid, CAr & ar );
 #ifdef __S1108_BACK_END_SYSTEM
 	void	OnMonsterProp( CAr & ar );
@@ -827,9 +761,6 @@ public:
 	void	OnStateMode( OBJID objid, CAr & ar );
 	void	OnReturnSay( OBJID objid, CAr & ar );
 	void	OnClearUseSkill( OBJID objid );
-#if __VER < 8 // __S8_PK
-	void	OnSetSlaughterPoint( OBJID objid, CAr & ar );
-#endif // __VER < 8 __S8_PK
 	void	OnSetFame( OBJID objid, CAr & ar );
 	void	OnSetFuel( OBJID objid, CAr & ar );
 		
@@ -845,18 +776,8 @@ public:
 	void	OnGetPos( OBJID objid, CAr & ar );
 	void	OnQueryGetDestObj( CAr & ar );
 	void	OnGetDestObj( OBJID objid, CAr & ar );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	OnQueryPlayerData( CAr & ar );
 	void	OnLogout( CAr & ar );
-#else	// __SYS_PLAYER_DATA
-	void	OnQueryPlayerString( CAr & ar );
-	void	OnQueryPlayerListString( CAr & ar );
-	void	OnFriendChangeJob( CAr & ar );
-	void	OnGuildChangeJobLevel( CAr & ar );
-	void	OnPartyMemberJob( CAr & ar );
-	void	OnPartyMemberLevel( CAr & ar );
-	void	OnGetFriendName( CAr & ar );
-#endif	// __SYS_PLAYER_DATA
 	void	OnCreateGuild( CAr & ar );
 	void	OnDestroyGuild( CAr & ar );
 	void	OnGuild( CAr & ar );
@@ -925,9 +846,7 @@ private:
 	void	OnResurrectionMessage();
 	void	OnWorldMsg( OBJID objid, CAr & ar );
 	void	OnSetPlayerName( CAr & ar );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	OnUpdatePlayerData( CAr & ar );
-#endif	// __SYS_PLAYER_DATA
 	void	OnEscape( OBJID objid, CAr & ar );
 	void	OnSetActionPoint( OBJID objid, CAr & ar );
 	void	OnEndSkillQueue( OBJID objid );
@@ -960,7 +879,6 @@ private:
 	void	OnTraficLog( CAr & ar );
 #endif	// __TRAFIC_1218	
 
-#if __VER >= 9	// __PET_0410
 	void	OnPetCall( OBJID objid, CAr & ar );
 	void	OnPetRelease( OBJID objid, CAr & ar );
 	void	OnPetSetExp( OBJID objid, CAr & ar );
@@ -969,28 +887,19 @@ private:
 	void	OnPetState( OBJID objid, CAr & ar ); 
 	void	OnPetFeed( OBJID objid, CAr & ar );
 	void	OnPetFoodMill( OBJID objid, CAr & ar );
-#endif	// __PET_0410
 
-#if __VER >= 9	//__AI_0509
 	void	OnSetSpeedFactor( OBJID objid, CAr & ar );
-#endif	// __AI_0509
 	
-#if __VER >= 10 // __CSC_VER9_1
 	void OnLegendSkillUp( CAr & ar );
-#endif //__CSC_VER9_1
 
 public:
-#if __VER >= 11 // __SYS_COLLECTING
 	void	SendQueryStartCollecting( void );
 	void	SendQueryStopCollecting( void );
 	void	OnStartCollecting( OBJID objid );
 	void	OnStopCollecting( OBJID objid );
 	void	OnRestartCollecting( OBJID objid, CAr & ar );
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 12 // __UPDATE_OPT
 	void	SendOptionEnableRenderMask( BOOL bEnable );
-#endif	// __UPDATE_OPT
 
 #ifdef __NPC_BUFF
 	void	SendNPCBuff( const char* szKey );
@@ -1000,17 +909,9 @@ public:
 	void	OnEventCoupon( CAr & ar );
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	SendQueryPlayerData( u_long idPlayer, int nVer = 0 );
 	void	SendQueryPlayerData( const vector<PDVer> & vecPlayer );
-#else	// __SYS_PLAYER_DATA
-public:
-	void	SendQueryPlayerString( u_long idPlayer, BYTE nQuery );
-	void	SendQueryPlayerListString( BYTE nQuery, const vector<u_long>& vecPlayer );
-private:
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 12 // __SECRET_ROOM
 public:
 	void	SendSecretRoomTender( int nPenya );
 	void	SendSecretRoomTenderCancelReturn();
@@ -1027,23 +928,17 @@ public:
 	void	OnSecretRoomTenderView( CAr & ar );
 	void	SendTeleportToSecretRoomDungeon();
 private:
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __TAX
 public:
 	void	OnTaxInfo( CAr & ar );
 	void	OnTaxSetTaxRateOpenWnd( CAr & ar );
 	void	SendTaxRate( BYTE nCont, int nSalesTaxRate, int nPurchaseTaxRate );
 private:
-#endif // __TAX
 
-#if __VER >= 12 // __HEAVEN_TOWER
 public:
 	void	SendTeleportToHeavenTower( int nFloor );
 private:
-#endif // __HEAVEN_TOWER
 
-#if __VER >= 12 // __LORD
 private:
 	// 군주 입찰 결과 갱신
 	void	OnElectionAddDeposit( CAr & ar );
@@ -1080,11 +975,8 @@ public:
 	void	SendLEventCreate( int iEEvent, int iIEvent );
 	// 군주 스킬 사용 요청
 	void	SendLordSkillUse( int nSkill, const char* szTarget = "" );
-#endif	// __LORD
-#if __VER >= 12 // __PET_0519
 	void	SendTransformItem( CTransformStuff & stuff );	// 알변환 요청
 	void	SendPickupPetAwakeningCancel( DWORD dwItem );	// 픽업펫 각성 취소 요청
-#endif	// __PET_0519
 
 #ifdef __AZRIA_1023
 	void	SendDoUseItemInput( DWORD dwData, char* szInput );
@@ -1094,11 +986,8 @@ public:
 	void	OnSetPetName( OBJID objid, CAr & ar );
 #endif	// __PET_1024
 
-#if __VER >= 12 // __MOD_TUTORIAL
 	void	SendTutorialState( int nState );
 	void	OnTutorialState( CAr & ar );
-#endif	// __MOD_TUTORIAL
-#if __VER >= 13 // __RAINBOW_RACE
 private:
 	void	OnRainbowRacePrevRankingOpenWnd( CAr & ar );
 	void	OnRainbowRaceApplicationOpenWnd( CAr & ar );
@@ -1111,9 +1000,7 @@ public:
 	void	SendRainbowRaceMiniGameState( __MINIGAME_PACKET MiniGamePacket );
 	void	SendRainbowRaceMiniGameExtState( __MINIGAME_EXT_PACKET MiniGameExtPacket );
 	void	SendRainbowRaceReqFinish();
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 private:
 	void	OnHousingAllInfo( CAr & ar );
 	void	OnHousingSetFunitureList( CAr & ar );
@@ -1127,9 +1014,7 @@ public:
 	void	SendHousingVisitRoom( DWORD dwPlayerId );
 	void	SendHousingReqVisitableList();
 	void	SendHousingGoOut();
-#endif // __HOUSING
 
-#if __VER >= 13 // __COUPLE_1117
 	void	SendPropose( const char* pszTarget );
 	void	SendRefuse();
 	void	SendCouple();
@@ -1138,27 +1023,18 @@ public:
 	void	OnProposeResult( CAr & ar );
 	void	OnCoupleResult( CAr & ar );
 	void	OnDecoupleResult( CAr & ar );
-#if __VER >= 13 // __COUPLE_1202
 	void	OnAddCoupleExperience( CAr & ar );
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 
-#if __VER >= 13 // __QUEST_HELPER
 private:
 	void	OnNPCPos( CAr & ar );
 public:
 	void	SendReqNPCPos( const char* szCharKey );
-#endif // __QUEST_HELPER
-#if __VER >= 14 // __PCBANG
 	void	OnPCBangInfo( CAr & ar );
-#endif // __PCBANG
 #ifdef __VTN_TIMELIMIT
 	void	OnAccountPlayTime( CAr & ar );
 #endif // __VTN_TIMELIMIT
-#if __VER >= 14 // __SMELT_SAFETY
 	void	SendSmeltSafety( OBJID objid, OBJID objMaterialId, OBJID objProtScrId, OBJID objSmeltScrId = NULL_ID );
 	void	OnSmeltSafety( CAr & ar );
-#endif // __SMELT_SAFETY
 #ifdef __MAP_SECURITY
 	void	OnWorldReadInfo( CAr & ar );
 	void	SendMapKey( const char* szFileName, const char* szMapKey );
@@ -1172,14 +1048,11 @@ public:
 	void	SendQuizEventTeleport( int nZone );
 #endif // __QUIZ
 
-#if __VER >= 15 // __PETVIS
 	void	SendRemoveVis( int nPos );
 	void	SendSwapVis( int nPos1, int nPos2 );
 	void	OnActivateVisPet( CAr & ar );
 	void	OnChangeMoverSfx( OBJID objId, CAr & ar );
-#endif // __PETVIS
 
-#if __VER >= 15 // __GUILD_HOUSE
 	void	SendBuyGuildHouse();
 	void	SendGuildHouseEnter();
 	void	SendGuildHouseGoOut();
@@ -1187,17 +1060,11 @@ public:
 	void	OnGuildHouseAllInfo( CAr & ar );
 	void	OnGuildHouseRemove( CAr & ar );
 	void	OnRestPoint( CAr & ar );
-#endif // __GUILD_HOUSE
-#if __VER >= 15 // __TELEPORTER
 	void	SendTeleporterReq( const char* szCharKey, int nIndex );
-#endif // __TELEPORTER
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	void	OnCheckedQuest( CAr & ar );
 	void	SendCheckedQuestId( int nQuestId, BOOL bCheck );
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __CAMPUS
 	void	OnInviteCampusMember( CAr & ar );
 	void	OnUpdateCampus( CAr & ar );
 	void	OnRemoveCampus( CAr & ar );
@@ -1206,7 +1073,6 @@ public:
 	void	SendAcceptCampusMember( u_long idRequest );
 	void	SendRefuseCampusMember( u_long idRequest );
 	void	SendRemoveCampusMember( u_long idTarget );
-#endif // __CAMPUS
 
 #ifdef __PROTECT_AWAKE
 	void	SendSelectedAwakeningValue( DWORD dwObjID, DWORD dwSerialNum, BYTE bySelectFlag );

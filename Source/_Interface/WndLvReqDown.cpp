@@ -13,7 +13,6 @@ extern CDPClient g_DPlay;
   CtrlId : WIDC_STATIC1 - 
 ****************************************************/
 
-#if __VER >= 11 // __SYS_IDENTIFY
 CWndLvReqDown::CWndLvReqDown() 
 { 
 
@@ -204,4 +203,3 @@ void CWndLvReqDown::SetDescription()
 		m_pText->ResetString();	
 	}
 }
-#endif	// __SYS_IDENTIFY

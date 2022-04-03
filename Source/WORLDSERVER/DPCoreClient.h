@@ -8,9 +8,7 @@
 
 #include "guild.h"
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonBase.h"
-#endif // __INSTANCE_DUNGEON
 
 #define BEFOREPASS( ar, dw, wWorldSrvr, wCacheSrvr, dpid, objid )	\
 	BEFORESENDDUAL( ar, PACKETTYPE_PASSAGE, MAKELONG( wWorldSrvr, wCacheSrvr ), dpid );	\
@@ -66,11 +64,7 @@ public:
 	void	SendShout( CUser* pUser, const CHAR* lpString );
 	void	SendPartyChat( CUser* pUser, const CHAR* lpString );
 
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	void	SendUserPartySkill( u_long uidPlayer, int nMode, DWORD dwSkillTime, int nRemovePoint , int nCachMode );
-#else	//12차 극단유료아이템
-	void	SendUserPartySkill( u_long uidPlayer, int nMode, DWORD dwSkillTime, int nRemovePoint );
-#endif // //12차 극단유료아이템
 
 	void	SendGMSay( u_long idPlayer, DWORD dwWorldID, const CHAR* lpString );
 	void	SendPlayMusic( DWORD dwWorldID, u_long idmusic );
@@ -91,19 +85,9 @@ public:
 	void	SendCaption( const CHAR* lpString, DWORD dwWorldId = 0, BOOL bSmall = FALSE );
 		
 	void	SendEventRealItem( u_long uIdPlayer, int nRealItemIndex, int nRealItemCount );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void	SendPartyMemberLevel( CUser* pUser );
-	void	SendPartyMemberJob( CUser* pUser );
-	void	SendFriendChangeJob( CUser* pUser );
-	void	SendGuildChangeJobLevel( CUser * pUser );
-#endif	// __SYS_PLAYER_DATA
 	void	SendPartyLevel( CUser* pUser, DWORD dwLevel, DWORD dwPoint, DWORD dwExp );
 	void	SendPartyMemberFlightLevel( CUser* pUser );
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	void	SendAddPartyExp( u_long uPartyId, int nMonLv, BOOL bSuperLeader , BOOL bLeaderSMExpUp );
-#else // //12차 극단유료아이템
-	void	SendAddPartyExp( u_long uPartyId, int nMonLv, BOOL bSuperLeader );
-#endif // //12차 극단유료아이템
 
 	void	SendRemovePartyPoint( u_long uPartyId, int nRemovePoint );
 	void	SendGameRate( FLOAT fRate, BYTE nFlag );
@@ -147,7 +131,6 @@ public:
 	void	SendChat( u_long idPlayer1, u_long idPlayer2, const char* lpszChat );
 	void	SendPing( void );
 	void	OnDestroyPlayer( CAr & ar, DPID, DPID, OBJID );
-#if __VER >= 14 // __INSTANCE_DUNGEON
 private:
 	void	OnInstanceDungeonAllInfo( CAr & ar, DPID, DPID, OBJID );
 	void	OnInstanceDungeonCreate( CAr & ar, DPID, DPID, OBJID );
@@ -158,7 +141,6 @@ public:
 	void	SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, ID_INFO & ID_Info );
 	void	SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, ID_INFO & ID_Info );
 	void	SendInstanceDungeonSetCoolTimeInfo( int nType, DWORD dwPlayerId, COOLTIME_INFO & CT_Info );
-#endif // __INSTANCE_DUNGEON
 #ifdef __QUIZ
 public:
 	void	SendQuizSystemMessage( int nDefinedTextId, BOOL bAll = FALSE, int nChannel = 0, int nTime = 0 );
@@ -187,12 +169,6 @@ protected:
 	void	OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID );
 	void	OnAddPlayerParty( CAr & ar, DPID, DPID, OBJID );
 	void	OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void	OnPartyMemberLevel( CAr & ar, DPID, DPID, OBJID );
-	void	OnPartyMemberJob( CAr & ar, DPID, DPID, OBJID );
-	void	OnChangeGuildJobLevel( CAr & ar, DPID, DPID, OBJID );
-	void	OnFriendChangeJob( CAr & ar, DPID, DPID, OBJID );	
-#endif	// __SYS_PLAYER_DATA
 	void	OnGuildMemberLv( CAr & ar, DPID, DPID, OBJID );
 	void	OnSetPartyMode( CAr & ar, DPID, DPID, OBJID );
 	void	OnPartyChangeItemMode( CAr & ar, DPID, DPID, OBJID );

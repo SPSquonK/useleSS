@@ -2,17 +2,13 @@
 #include "defineObj.h"
 #include "CreateObj.h"
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #include "randomoption.h"
 #ifdef __WORLDSERVER
 #include "ticket.h"
 #endif	// __WORLDSERVER
-#endif	// __SYS_IDENTIFY
 
 #include "serialnumber.h"
-#if __VER >= 9
 #include "definetext.h"
-#endif	// 
 
 BOOL IsUsableItem( CItemBase* pItem )
 {
@@ -87,7 +83,6 @@ void CItemBase::SetTexture()
 		//ADDERRORMSG( szErr );
 	}
 
-#if __VER >= 9	// __PET_0410
 	CString strIcon	= pProp->szIcon;
 	if( pProp->dwItemKind3 == IK3_EGG )
 	{
@@ -110,9 +105,6 @@ void CItemBase::SetTexture()
 		}
 	}
 	m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-#else	// __PET_0410
-	m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, GetProp()->szIcon), 0xffff00ff );
-#endif	// __PET_0410
 #endif
 }
 
@@ -144,7 +136,6 @@ int	CItemBase::GetCost( void )
 	return nCost;
 }
 
-#if __VER >= 11 // __GUILDCOMBATCHIP
 DWORD CItemBase::GetChipCost()
 {
 	ItemProp *pProp = GetProp();
@@ -155,7 +146,6 @@ DWORD CItemBase::GetChipCost()
 
 	return pProp->dwReferValue1;
 }
-#endif // __GUILDCOMBATCHIP
 
 // 퀘스트 아이템인가?
 BOOL CItemBase::IsQuest()
@@ -210,11 +200,7 @@ CItemElem::CItemElem()
 //	memset( &m_piercingInfo, 0, sizeof(m_piercingInfo) );
 	m_bCharged	= FALSE;
 	m_dwKeepTime	= 0;
-#if __VER >= 11 // __SYS_IDENTIFY
 	m_iRandomOptItemId	= 0;
-#else	// __SYS_IDENTIFY
-	m_nRandomOptItemId	= 0;
-#endif	// __SYS_IDENTIFY
 
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리
@@ -237,28 +223,20 @@ CItemElem::CItemElem()
 #endif	// __WORLDSERVER
 #endif	// __GIFTBOX0213
 	*/
-#if __VER >= 9	// __PET_0410
 	m_pPet	= NULL;
-#endif	// __PET_0410
-#if __VER >= 15 // __PETVIS
 	m_bTranformVisPet = FALSE;
-#endif // __PETVIS
 
 }
 
 CItemElem::~CItemElem()
 {
-#if __VER >= 9	// __PET_0410
 	SAFE_DELETE( m_pPet );
-#endif	// __PET_0410
 }
 
 void	CItemElem::Empty( void )
 {
 	CItemBase::Empty();
-#if __VER >= 9
 	SAFE_DELETE( m_pPet );
-#endif	// __PET_0410
 	m_piercing.Clear();
 }
 
@@ -294,27 +272,19 @@ CItemElem& CItemElem::operator =( CItemElem & ie )
 	m_dwKeepTime           = ie.m_dwKeepTime;
 	m_piercing	= ie.m_piercing;
 	m_bCharged	           = ie.m_bCharged;
-#if __VER >= 11 // __SYS_IDENTIFY
 	m_iRandomOptItemId     = ie.GetRandomOptItemId();
-#else	// __SYS_IDENTIFY
-	m_nRandomOptItemId     = ie.m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리
 	m_n64NewRandomOption	= ie.GetNewRandomOption();
 	//	mulcom	END100405	각성 보호의 두루마리
 
-#if __VER >= 9	// __PET_0410
 	SAFE_DELETE( m_pPet );
 	if( ie.m_pPet )
 	{
 		m_pPet	= new CPet;
 		*m_pPet	= *ie.m_pPet;
 	}
-#endif	// __PET_0410
-#if __VER >= 15 // __PETVIS
 	m_bTranformVisPet		= ie.m_bTranformVisPet;
-#endif // __PETVIS
 
 	return *this;
 }
@@ -384,7 +354,6 @@ BOOL CItemElem::IsEleRefineryAble( ItemProp* pProp )
 	return FALSE;
 }
 
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 BOOL CItemElem::IsElementalCard( const DWORD dwItemID )
 {
 	switch( dwItemID )
@@ -395,7 +364,6 @@ BOOL CItemElem::IsElementalCard( const DWORD dwItemID )
 		return FALSE;
 	}
 }
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 
 BOOL CItemElem::IsBinds( void )
 {
@@ -409,13 +377,11 @@ BOOL CItemElem::IsBinds( void )
 	if( IsFlag( CItemElem::binds ) )
 		return TRUE;
 
-#if __VER >= 11 // __SYS_IDENTIFY
 	if( g_xRandomOptionProperty->GetRandomOptionSize( GetRandomOptItemId() ) > 0
 		&& ( g_xRandomOptionProperty->GetRandomOptionKind( this ) == CRandomOptionProperty::eBlessing || g_xRandomOptionProperty->GetRandomOptionKind( this ) == CRandomOptionProperty::eEatPet ) )
 		return TRUE;
 	if( GetLevelDown() < 0 )
 		return TRUE;
-#endif	// __SYS_IDENTIFY
 
 	return FALSE;
 }
@@ -609,7 +575,6 @@ CString CItemElem::GetName( void )
 {
 	ItemProp* pProp	= GetProp();
 	CString strName		= pProp->szName;
-#if __VER >= 9
 	if( pProp->dwItemKind3 == IK3_EGG && m_pPet /*&& m_pPet->GetLevel() > PL_EGG*/ )
 	{
 		MoverProp* pMoverProp	= prj.GetMoverProp( m_pPet->GetIndex() );
@@ -631,7 +596,6 @@ CString CItemElem::GetName( void )
 			strName.Delete( nFind - 1, 2 );
 	}
 */
-#endif	// 
 	return strName;
 }
 
@@ -641,7 +605,6 @@ enum	{	eNoLevelDown, e5LevelDown, e10LevelDown,	};
 	void	SetLevelDown( int i );
 
 
-#if __VER >= 11 // __SYS_IDENTIFY
 int	CItemElem::GetLevelDown( void )
 {
 	if( m_iRandomOptItemId & 0x8000000000000000 )
@@ -672,9 +635,7 @@ DWORD CItemElem::GetLimitLevel( void )
 
 	return (DWORD)nLimitLevel;
 }
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 BOOL CItemElem::IsLimitLevel( CMover* pMover )
 {
 	if( pMover->GetJobType() >= JTYPE_MASTER && pMover->GetJobType() > pMover->GetJobType( GetProp()->dwItemJob ) )
@@ -685,10 +646,8 @@ BOOL CItemElem::IsLimitLevel( CMover* pMover )
 
 	return TRUE;
 }
-#endif // __NEW_ITEM_LIMIT_LEVEL
 
 
-#if __VER >= 12 // __EXT_PIERCING
 // bSize는 피어싱 사이즈를 늘릴 수 있는지 검사할 때 TRUE값을 setting 한다.
 // bSize를 TRUE로 할 경우 dwTagetItemKind3는 NULL_ID로 한다.
 BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize )
@@ -725,7 +684,6 @@ BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize )
 		}
 	}
 
-#if __VER >= 15 // __PETVIS
 	else if( IsVisPet() )
 	{
 		if( nPiercedSize <= MAX_VIS )
@@ -736,13 +694,10 @@ BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize )
 				return TRUE;
 		}
 	}
-#endif // __PETVIS
 
 	return FALSE;
 }
-#endif // __EXT_PIERCING
 
-#if __VER >= 11
 #ifdef __WORLDSERVER
 BOOL CItemElem::IsActiveTicket( DWORD dwItemId )
 {
@@ -758,31 +713,9 @@ BOOL CItemElem::IsActiveTicket( DWORD dwItemId )
 BOOL	IsNeedTarget( ItemProp* pProp )
 {	// 아이템을 사용하기 위해 더블 클릭 했을 때
 	// 커서가 바뀌면서 인벤토리 내 다른 아이템 클릭이 필요한 아이템인가?
-#if __VER >= 12 // __PET_0519
 	// 아이템 식별자 추가가 번거로와 속성 확인으로 변경
 	return( pProp->dwExeTarget == EXT_ITEM );
-#else	// __PET_0519
-	switch( pProp->dwID )
-	{
-		case II_SYS_SYS_SCR_AWAKE:
-		case II_SYS_SYS_SCR_BLESSEDNESS:
-		case II_SYS_SYS_SCR_BLESSEDNESS02:
-		case II_SYS_SYS_SCR_LEVELDOWN01:
-		case II_SYS_SYS_SCR_LEVELDOWN02:
-		case II_SYS_SYS_SCR_AWAKECANCEL:
-		case II_SYS_SYS_SCR_AWAKECANCEL02:
-		case II_SYS_SYS_QUE_PETRESURRECTION02_S:
-		case II_SYS_SYS_QUE_PETRESURRECTION02_A:
-		case II_SYS_SYS_QUE_PETRESURRECTION02_B:
-//		case II_SYS_SYS_SCR_PETAWAKE:
-//		case II_SYS_SYS_SCR_PETAWAKECANCEL:
-			return TRUE;
-		default:
-			return FALSE;
-	}
-#endif	// __PET_0519
 }
-#endif	// __VER
 
 BOOL CItemElem::IsEgg()
 {
@@ -791,7 +724,6 @@ BOOL CItemElem::IsEgg()
 	return ( !m_pPet || m_pPet->GetLevel() == PL_EGG );
 }
 
-#if __VER >= 15 // __PETVIS
 void  CItemElem::SetSwapVisItem( int nPos1, int nPos2 )
 {
 	int nSize = GetPiercingSize();
@@ -826,7 +758,6 @@ DWORD CItemElem::GetVisPetSfxId()
 
 	return NULL_ID;
 }
-#endif // __PETVIS
 
 
 

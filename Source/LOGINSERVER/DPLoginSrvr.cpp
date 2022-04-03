@@ -4,9 +4,7 @@
 extern	CDPCoreClient	g_dpCoreClient;
 #include "DPLoginSrvr.h"
 #include "User.h"
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include "LoginProtect.h"
-#endif // __2ND_PASSWORD_SYSTEM
 
 extern	CDPLoginSrvr		g_dpLoginSrvr;
 extern	CDPDatabaseClient	g_dpDBClient;
@@ -172,9 +170,7 @@ void CDPLoginSrvr::OnAddConnection( CAr & ar, DPID dpid )
 		pUser->m_nIndexOfCache	= g_dpLoginSrvr.CacheIn();
 		g_dpLoginSrvr.SendCacheAddr( pUser->m_nIndexOfCache, dpid ); 
 		g_dpDBClient.SendGetPlayerList( dpid, lpszAccount, lpszPassword, dwAuthKey, (u_long)dwID );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 		SendNumPadId( dpid );
-#endif // __2ND_PASSWORD_SYSTEM
 	}
 	else
 	{
@@ -197,23 +193,18 @@ void CDPLoginSrvr::OnPreJoin( CAr & ar, DPID dpid )
 {
 	char lpszAccount[MAX_ACCOUNT], lpszPlayer[MAX_PLAYER];
 	u_long idPlayer;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	int nSecretNum = 0;
-#endif // __2ND_PASSWORD_SYSTEM
 
 	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
 	ar.ReadString( lpszAccount, MAX_ACCOUNT );
 	ar >> idPlayer;
 	ar.ReadString( lpszPlayer, MAX_PLAYER );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	ar >> nSecretNum;
-#endif // __2ND_PASSWORD_SYSTEM
 	CUser* pUser	= g_UserMng.GetUser( dpid );
 	if( pUser )
 	{
 		if( lstrcmp( lpszAccount, pUser->m_pKey ) == 0 )
 		{
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 			if( ::IsUse2ndPassWord() )
 			{
 				LOGIN_CHECK result = LOGIN_OK;
@@ -240,10 +231,6 @@ void CDPLoginSrvr::OnPreJoin( CAr & ar, DPID dpid )
 				pUser->m_idPlayer	= idPlayer;
 				g_dpCoreClient.SendPreJoin( pUser->m_dwAuthKey, lpszAccount, idPlayer, lpszPlayer );	// o
 			}
-#else // __2ND_PASSWORD_SYSTEM
-			pUser->m_idPlayer	= idPlayer;
-			g_dpCoreClient.SendPreJoin( pUser->m_dwAuthKey, lpszAccount, idPlayer, lpszPlayer );	// o
-#endif // __2ND_PASSWORD_SYSTEM
 		}
 		else
 		{
@@ -283,7 +270,6 @@ void CDPLoginSrvr::OnQueryTickCount( CAr & ar, DPID dpid )
 	SEND( ar1, this, dpid );
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CDPLoginSrvr::SendNumPadId( DPID dpid )
 {
 	BEFORESEND( ar, PACKETTYPE_LOGIN_PROTECT_NUMPAD );
@@ -299,6 +285,5 @@ void CDPLoginSrvr::SendLoginProtect( BOOL bLogin, DPID dpid )
 	ar << bLogin << idNumPad;
 	SEND( ar, this, dpid );
 }
-#endif // __2ND_PASSWORD_SYSTEM
 
 CDPLoginSrvr	g_dpLoginSrvr;

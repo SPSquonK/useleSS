@@ -60,13 +60,11 @@ public:
 	BOOL  m_bStart;
 	FLOAT m_fZoom;
 
-#if __VER >= 13 // __HOUSING
 #define CM_NORMAL	0
 #define CM_MYROOM	1
 
 	int m_nCamMode;
 	BOOL SetCamMode(int nType);
-#endif	// __HOUSING
 	CBackCamera();
 	
 	BOOL IsLock() { return m_bLock; }

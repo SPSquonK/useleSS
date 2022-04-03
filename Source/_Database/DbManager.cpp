@@ -24,17 +24,11 @@ extern	CDPAccountClient	g_dpAccountClient;
 
 #include "post.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouseDBCtrl.h"
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 #include "CampusDBCtrl.h"
-#endif // __CAMPUS
 
 #if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816) || defined(__ITEM_REMOVE_LIST)
 #define	MAX_QUERY_SIZE	1024 * 64
@@ -57,9 +51,6 @@ extern	CMyTrace			g_MyTrace;
 #define	VERIFY_GUILD_STRING( lpString, lpszGuild )	\
 if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszGuild ) )		return;
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-CMclCritSec	s_cs;
-#endif	// __SYS_PLAYER_DATA
 CDbManager & g_DbManager = CDbManager::GetInstance();							// CDbManager 클래스 생성
 
 // MAX_TASKBAR 300일경우 MAX_APPLETTASKBAR = 5400, MAX_ITEMTASKBAR = 10800
@@ -140,9 +131,7 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	BYTE nSlot, nFace, nCostume, nSkinSet, nHairMesh;
 	DWORD dwHairColor;
 	BYTE nSex, nJob, nHeadMesh;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	int nBankPW = 0;
-#endif // __2ND_PASSWORD_SYSTEM
 
 	//	 CHARACTER_STR 'I1',@im_idPlayer,@iserverindex,@iaccount,@im_szName,@iplayerslot,@idwWorldID,@im_dwIndex,@im_vPos_x,@im_vPos_y,@im_vPos_z,
 	//	 @im_szCharacterKey,@im_dwSkinSet,@im_dwHairMesh,@im_dwHairColor,@im_dwHeadMesh,@im_dwSex
@@ -163,9 +152,7 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	arRead >> nFace >> nCostume >> nSkinSet >> nHairMesh;
 	arRead >> dwHairColor;
 	arRead >> nSex >> nJob >> nHeadMesh;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	arRead >> nBankPW;
-#endif // __2ND_PASSWORD_SYSTEM
 
 	DWORD dwAuthKey;
 	arRead >> dwAuthKey;
@@ -185,14 +172,12 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		return;
 	}
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	if( nBankPW < 0 || nBankPW > 9999 )
 	{
 		Error( "nBankPW is Invalid! szPlayer : %s, nBankPW : %d", lpDbOverlappedPlus->AccountInfo.szPlayer, nBankPW );
 		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
-#endif // __2ND_PASSWORD_SYSTEM
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryCharacter( szQuery, "I1", 0, g_appInfo.dwSys, lpDbOverlappedPlus->AccountInfo.szAccount, lpDbOverlappedPlus->AccountInfo.szPlayer, nSlot, dwWorldID,
@@ -218,7 +203,6 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		if( nError == 1 )
 		{
 			nidPlayer = qry->GetInt( "m_idPlayer" );	
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData pd;
 //			pd.nJob	= 0;
 //			pd.dwState	= 0;
@@ -227,23 +211,13 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 			pd.data.nVer	= 1;
 			lstrcpy( pd.szPlayer, lpDbOverlappedPlus->AccountInfo.szPlayer );
 			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->AddPlayerData( nidPlayer, pd );
-#else	// __SYS_PLAYER_DATA
-			s_cs.Enter();
-			m_ulong2str.insert( map<u_long, string>::value_type( nidPlayer, lpDbOverlappedPlus->AccountInfo.szPlayer ) );
-			s_cs.Leave();
-#endif	// __SYS_PLAYER_DATA
 			m_AddRemoveLock.Enter();
 			m_AccountCacheMgr.AddMover( nidPlayer, lpDbOverlappedPlus->AccountInfo.szAccount, nSlot );
 			m_AddRemoveLock.Leave();
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			CDPTrans::GetInstance()->SendAddPlayerData( nidPlayer, pPlayerData );
-#else	// __SYS_PLAYER_DATA
-			CDPTrans::GetInstance()->SendPlayerID( nidPlayer, lpDbOverlappedPlus->AccountInfo.szPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 			g_dpLoginSrvr.SendPlayerList( lpDbOverlappedPlus->AccountInfo.szAccount, lpDbOverlappedPlus->AccountInfo.szPassword, lpDbOverlappedPlus->dpid, dwAuthKey );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 			char szQuery[QUERY_SIZE]	= { 0,};
 			sprintf( szQuery, "BANK_STR 'U', '%07d', '%02d', '%04d'", nidPlayer, g_appInfo.dwSys, nBankPW );
 			
@@ -253,7 +227,6 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 				FreeRequest( lpDbOverlappedPlus );
 				return;
 			}
-#endif // __2ND_PASSWORD_SYSTEM
 		}
 		else
 		{
@@ -339,7 +312,6 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		return;
 	}
 
-#if __VER >= 15 // __CAMPUS
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus( CCampusHelper::GetInstance()->GetCampusIdByPlayerId( idPlayer ) );
 	if( pCampus && pCampus->IsMember( idPlayer ) )
 	{
@@ -349,24 +321,13 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		LPBYTE lpBuf = ar.GetBuffer( &nBufSize );
 		CCampusHelper::GetInstance()->PostRequest( CAMPUS_REMOVE_MEMBER, lpBuf, nBufSize );
 	}
-#endif // __CAMPUS
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	CPlayerDataCenter::GetInstance()->DeletePlayerData( idPlayer );
-#else	// __SYS_PLAYER_DATA
-	s_cs.Enter();
-	m_ulong2str.erase( idPlayer );
-	s_cs.Leave();
-#endif	// __SYS_PLAYER_DATA
 	m_AddRemoveLock.Enter();
 	m_AccountCacheMgr.RemoveMover( idPlayer, lpDbOverlappedPlus->AccountInfo.szAccount );
 	m_AddRemoveLock.Leave();
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	CDPTrans::GetInstance()->SendDeletePlayerData( idPlayer );
-#else	// __SYS_PLAYER_ID
-	CDPTrans::GetInstance()->SendRemovePlayerID( idPlayer );
-#endif	// __SYS_PLAYER_ID
 #ifdef __RT_1025
 	for( vector<u_long>::iterator it=vecMessenger.begin(); it!=vecMessenger.end(); it++ )
 	{
@@ -570,9 +531,6 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 			mover.m_nSta = qry->GetInt( "m_nSta");
 			mover.m_nDex = qry->GetInt( "m_nDex");
 			mover.m_nInt = qry->GetInt( "m_nInt");
-#if __VER < 8 // __S8_PK
-			mover.m_nSlaughter = qry->GetInt( "m_nSlaughter");
-#endif // __VER < 8 // __S8_PK
 
 			int CountStr	= 0;
 			int IndexItem		= 0;
@@ -647,9 +605,6 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 			arbuf << mover.m_nSta;
 			arbuf << mover.m_nDex;
 			arbuf << mover.m_nInt;
-#if __VER < 8 // __S8_PK
-			arbuf << mover.m_nSlaughter;
-#endif // __VER < 8 // __S8_PK
 			arbuf << mover.m_dwMode;
 
 			MessengerSlot[countMessenger] = islot;
@@ -863,7 +818,6 @@ BOOL CDbManager::OpenGuildCombat( void )
 	return TRUE;
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 BOOL	CDbManager::LoadPlayerData( void )
 {
 	CQuery	query;
@@ -899,45 +853,6 @@ BOOL	CDbManager::LoadPlayerData( void )
 	m_idPlayer	= idPlayer;
 	return TRUE;
 }
-#else	// 
-BOOL CDbManager::OpenPlayerID( void )
-{
-//{{AFX
-	// CHARACTER_STR 'S3','',@iserverindex
-	CQuery qry;
-
-	if( qry.Connect( 3, DSN_NAME_CHARACTER01, DB_ADMIN_ID_CHARACTER01, DB_ADMIN_PASS_CHARACTER01 ) == FALSE )
-	{
-		WriteLog( "%s, %d", __FILE__, __LINE__ );
-		AfxMessageBox( "Error : Not Connect Character DB" );
-		return FALSE;
-	}
-	char szQuery[40960];
-
-	char szPlayer[36];
-	u_long id	=0;
-	
-	DBQryCharacter( szQuery, "S3", 0, g_appInfo.dwSys );
-	
-	if( FALSE == qry.Exec( szQuery ) )
-	{
-		
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		return FALSE;
-	}
-
-
-	while( qry.Fetch() )
-	{
-		qry.GetStr( "m_szName", szPlayer );
-		id	= qry.GetInt( "m_idPlayer" );
-		m_ulong2str.insert( map<u_long, string>::value_type( id, szPlayer ) );
-	}
-	m_idPlayer	= id;
-	return TRUE;
-//}}AFX
-}
-#endif	// __SYS_PLAYER_DATA
 
 BOOL CDbManager::GetPartyName( void )
 {
@@ -1060,10 +975,8 @@ void CDbManager::LogPlayConnect( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 	arRead.ReadString( szAccount, MAX_ACCOUNT );
 	arRead >> nLevel;
 	arRead >> nJob;
-#if __VER >= 14 // __PCBANG
 	DWORD dwPCBangClass;
 	arRead >> dwPCBangClass;
-#endif // __PCBANG
 
 	CTime tIn( siIn ), tOut	= CTime::GetCurrentTime();
 	CTimeSpan tConnect	= tOut - tIn;
@@ -1078,13 +991,9 @@ void CDbManager::LogPlayConnect( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 	char szQuery[QUERY_SIZE]	= { 0,};
 	sprintf( szQuery, 
 			"uspLoggingLogin '%07d', '%02d', '%s', %d, %d, %d, %d, '%s', %d, '%s'"
-#if __VER >= 14 // __PCBANG
 			", %d"
-#endif // __PCBANG
 			, uidPlayer, g_appInfo.dwSys, szAccount, iMap_No, dSeed, nLevel, nJob, timebuf, dConnectTime, cIP
-#if __VER >= 14 // __PCBANG
 			,dwPCBangClass
-#endif // __PCBANG
 			 );
 
 	if ( FALSE == qry->Exec( szQuery ) )
@@ -1237,24 +1146,13 @@ BOOL CDbManager::SendItemtoCharacter( int nSlot, CMover* pMover, CQuery *qry, CQ
 		while( qry->Fetch() )
 		{
 			__SendItemContents SendItemContents;
-#if __VER >= 12 // __EXT_PIERCING
 			CItemElem* pItemElem = &SendItemContents.itemElem;
 			pItemElem->m_bCharged = TRUE;
 			pItemElem->SetRandomOptItemId( 0 );
-#else // __EXT_PIERCING
-			SendItemContents.nCharged = 1;
-#if __VER >= 11 // __SYS_IDENTIFY
-			SendItemContents.iRandomOptItemId	= 0;
-#else	// __SYS_IDENTIFY
-			SendItemContents.nRandomOptItemId	= 0;
-#endif	// __SYS_IDENTIFY
-#endif // __EXT_PIERCING
 
 			if( GetSendItem( qry, &SendItemContents ) == FALSE )
 			{
-#if __VER >= 12 // __EXT_PIERCING
 				WriteLog( "SendItem::GetSendItem PlayerName = %s, Item_Count = %d Qry = %s", pMover->m_szName, SendItemContents.Item_Count, szQuery );
-#endif // __EXT_PIERCING
 				continue;
 			}
 
@@ -1303,15 +1201,9 @@ BOOL CDbManager::SendItemtoCharacter( int nSlot, CMover* pMover, CQuery *qry, CQ
 					_stprintf( aLogItem.szItemName, "%d", SendItemContents.itemElem.m_dwItemId );
 					aLogItem.itemNumber = SendItemContents.Item_Count;
 					aLogItem.ItemNo = iSerialNumber;
-#if __VER >= 12 // __EXT_PIERCING
 					aLogItem.nAbilityOption = pItemElem->GetOption();
 					aLogItem.nItemResist = pItemElem->m_bItemResist;
 					aLogItem.nResistAbilityOption = pItemElem->m_nResistAbilityOption;
-#else // __EXT_PIERCING
-					aLogItem.nAbilityOption = SendItemContents.m_nAbilityOption;
-					aLogItem.nItemResist = SendItemContents.nItemResist;
-					aLogItem.nResistAbilityOption = SendItemContents.nResistAbilityOption;
-#endif // __EXT_PIERCING
 					aLogItem.Action = "U";
 					if( ItemLogQuery( qrylog, "LC", aLogItem, pMover->m_idPlayer, SendItemContents.nNo, SendItemContents.OneItem ) == FALSE )
 					{
@@ -1343,7 +1235,6 @@ BOOL CDbManager::GetSendItem( CQuery *pQry, __SendItemContents * pSendItemConten
 	pQry->GetStr( "Item_Name", pSendItemContents->OneItem );								// 이름
 	
 	pSendItemContents->Item_Count				= pQry->GetInt( "Item_count" );				// 갯수
-#if __VER >= 12 // __EXT_PIERCING
 	int nIndex = atoi( pSendItemContents->OneItem );
 	ItemProp* pItemProp = NULL;
 	if( nIndex > 0 )
@@ -1363,7 +1254,6 @@ BOOL CDbManager::GetSendItem( CQuery *pQry, __SendItemContents * pSendItemConten
 	pItemElem->SetOption( pQry->GetInt( "m_nAbilityOption" ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt( "m_nAbilityOption" ) );
 	
 	// mirchang_100514 TransformVisPet_Log
-#if __VER >= 15 // __PETVIS
 	DWORD dwItemResist					= pQry->GetInt( "m_bItemResist" ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt( "m_bItemResist" );
 	ItemProp* pVisPetProp = prj.GetItemProp( (int)dwItemResist );
 	if( pVisPetProp != NULL && pVisPetProp->dwItemKind3 == IK3_PET )
@@ -1383,9 +1273,6 @@ BOOL CDbManager::GetSendItem( CQuery *pQry, __SendItemContents * pSendItemConten
 	{
 		pItemElem->m_bItemResist		= (BYTE)dwItemResist;
 	}
-#else // __PETVIS
-	pItemElem->m_bItemResist			= pQry->GetInt( "m_bItemResist" ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt( "m_bItemResist" );
-#endif // __PETVIS
 	// mirchang_100514 TransformVisPet_Log
 
 	pItemElem->m_nResistAbilityOption	= pQry->GetInt( "m_nResistAbilityOption" ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt( "m_nResistAbilityOption" );
@@ -1410,122 +1297,6 @@ BOOL CDbManager::GetSendItem( CQuery *pQry, __SendItemContents * pSendItemConten
 		sprintf( szItem, "adwUMItemId%d", i );
 		pItemElem->SetUltimatePiercingItem( i, pQry->GetInt( szItem ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt( szItem ) );
 	}
-#else // __EXT_PIERCING
-	pSendItemContents->m_nAbilityOption			= pQry->GetInt( "m_nAbilityOption" );		// AbilityOption ( + ) Option
-	pSendItemContents->nItemResist				= pQry->GetInt( "m_bItemResist" );			// 속성값	
-	pSendItemContents->nResistAbilityOption	= pQry->GetInt( "m_nResistAbilityOption" );	// 속성에 대한 Option값
-	pSendItemContents->nCharged				= pQry->GetInt( "m_bCharged" );				// 상용화 아이템인지 확인 0 : 상용화, 1 : 상용화 아님
-	pSendItemContents->nPiercedSize			= pQry->GetInt( "nPiercedSize" );
-	pSendItemContents->adwItemId0			= pQry->GetInt( "adwItemId0" );
-	pSendItemContents->adwItemId1			= pQry->GetInt( "adwItemId1" );
-	pSendItemContents->adwItemId2			= pQry->GetInt( "adwItemId2" );
-	pSendItemContents->adwItemId3			= pQry->GetInt( "adwItemId3" );
-#ifdef __SEND_ITEM_ULTIMATE
-	pSendItemContents->adwItemId4			= pQry->GetInt( "adwItemId4" );
-#endif // __SEND_ITEM_ULTIMATE
-	pSendItemContents->m_dwKeepTime			= pQry->GetInt64( "m_dwKeepTime" );
-#if __VER >= 11 // __SYS_IDENTIFY
-	pSendItemContents->iRandomOptItemId		= pQry->GetInt64( "nRandomOptItemId" );
-#else	// __SYS_IDENTIFY
-	pSendItemContents->nRandomOptItemId		= pQry->GetInt64( "nRandomOptItemId" );
-#endif	// __SYS_IDENTIFY
-	
-	if( 0 == strcmp( pSendItemContents->OneItem, "NULL") )
-	{
-		WriteLog( "Send NULL Item_Name : %s", pSendItemContents->OneItem );
-		return FALSE;
-	}
-	
-	if( pSendItemContents->Item_Count == -100 || pSendItemContents->Item_Count == 0 )
-		pSendItemContents->Item_Count = 1;
-	
-	if( pSendItemContents->m_nAbilityOption == -100 )
-		pSendItemContents->m_nAbilityOption = 0;
-	
-	if( pSendItemContents->nItemResist == -100 )
-		pSendItemContents->nItemResist = 0;
-	
-	if( pSendItemContents->nResistAbilityOption == -100 )
-		pSendItemContents->nResistAbilityOption = 0;
-
-	if( 0 < pSendItemContents->nCharged )
-		pSendItemContents->nCharged = 0;
-	else
-		pSendItemContents->nCharged = 1;
-	
-	if( pSendItemContents->nPiercedSize < 0 || MAX_PIERCING_ULTIMATE < pSendItemContents->nPiercedSize )
-		pSendItemContents->nPiercedSize = 0;
-
-	if( pSendItemContents->adwItemId0 == -100 )
-		pSendItemContents->adwItemId0 = 0;
-
-	if( pSendItemContents->adwItemId1 == -100 )
-		pSendItemContents->adwItemId1 = 0;
-	
-	if( pSendItemContents->adwItemId2 == -100 )
-		pSendItemContents->adwItemId2 = 0;
-
-	if( pSendItemContents->adwItemId3 == -100 )
-		pSendItemContents->adwItemId3 = 0;
-
-#ifdef __SEND_ITEM_ULTIMATE
-	if( pSendItemContents->adwItemId4 == -100 )
-		pSendItemContents->adwItemId4 = 0;
-#endif // __SEND_ITEM_ULTIMATE
-
-
-	if( pSendItemContents->nPiercedSize == 0 )
-	{
-		pSendItemContents->adwItemId0 = 0;
-		pSendItemContents->adwItemId1 = 0;
-		pSendItemContents->adwItemId2 = 0;
-		pSendItemContents->adwItemId3 = 0;
-#ifdef __SEND_ITEM_ULTIMATE
-		pSendItemContents->adwItemId4 = 0;
-#endif // __SEND_ITEM_ULTIMATE
-	}
-	else if( pSendItemContents->nPiercedSize == 1 )
-	{
-		pSendItemContents->adwItemId1 = 0;
-		pSendItemContents->adwItemId2 = 0;
-		pSendItemContents->adwItemId3 = 0;
-#ifdef __SEND_ITEM_ULTIMATE
-		pSendItemContents->adwItemId4 = 0;
-#endif // __SEND_ITEM_ULTIMATE
-	}
-	else if( pSendItemContents->nPiercedSize == 2 )
-	{
-		pSendItemContents->adwItemId2 = 0;
-		pSendItemContents->adwItemId3 = 0;
-#ifdef __SEND_ITEM_ULTIMATE
-		pSendItemContents->adwItemId4 = 0;
-#endif // __SEND_ITEM_ULTIMATE
-	}
-	else if( pSendItemContents->nPiercedSize == 3 )
-	{
-		pSendItemContents->adwItemId3 = 0;
-#ifdef __SEND_ITEM_ULTIMATE
-		pSendItemContents->adwItemId4 = 0;
-#endif // __SEND_ITEM_ULTIMATE
-	}
-#ifdef __SEND_ITEM_ULTIMATE
-	else if( pSendItemContents->nPiercedSize == 4 )
-	{
-		pSendItemContents->adwItemId4 = 0;
-	}
-#endif // __SEND_ITEM_ULTIMATE
-	
-
-	if( pSendItemContents->m_dwKeepTime == -100 )
-		pSendItemContents->m_dwKeepTime = 0;
-#if __VER >= 11 // __SYS_IDENTIFY
-	if( pSendItemContents->iRandomOptItemId == -100 )
-		pSendItemContents->iRandomOptItemId	= 0;
-#else	// __SYS_IDENTIFY
-	if( pSendItemContents->nRandomOptItemId == -100 )
-		pSendItemContents->nRandomOptItemId	= 0;
-#endif	// __SYS_IDENTIFY
-#endif // __EXT_PIERCING
 	return TRUE;
 }
 
@@ -1549,7 +1320,6 @@ BOOL CDbManager::SendPenya( CQuery *pQry, char* szSql, CMover* pMover, int nPeny
 	return TRUE;
 }
 
-#if __VER >= 12 // __EXT_PIERCING
 SERIALNUMBER CDbManager::SendItem( CQuery *pQry, char* szSql, CMover* pMover, __SendItemContents& SendItemContents )
 {
 	SERIALNUMBER iSerialNumber = 0;
@@ -1630,143 +1400,6 @@ SERIALNUMBER CDbManager::SendItem( CQuery *pQry, char* szSql, CMover* pMover, __
 	pItemElem->SetSerialNumber( iSerialNumber );
 	return pItemElem->GetSerialNumber();
 }
-#else // __EXT_PIERCING
-SERIALNUMBER CDbManager::SendItem( CQuery *pQry, char* szSql, CMover* pMover, __SendItemContents SendItemContents )
-{
-	SERIALNUMBER iSerialNumber = 0;
-
-	int nIndex = atoi( SendItemContents.OneItem );
-	ItemProp* pItemProp = NULL;
-	if( nIndex > 0 )
-		pItemProp = prj.GetItemProp( nIndex );	
-	else
-		pItemProp = prj.GetItemProp( SendItemContents.OneItem );	
-	
-	// 만약 강화 아이템을 넣어야 한다면, Item_Send 테이블에 강화 정도를 나타내는 컬럼을 추가하여 읽은 후, 이 함수 마지막 인자(현재 0)를  그 값으로 대체한다.
-	if( pItemProp )
-	{
-		iSerialNumber	= CSerialNumber::GetInstance()->Get();
-
-		// 유지시간 검사
-		DWORD dwKeepTime = 0;
-		if( SendItemContents.m_dwKeepTime != 0 )
-		{
-			DWORD dwTemp;
-			int nYear, nMonth, nDay, nHour, nMin;
-			nYear = SendItemContents.m_dwKeepTime / 100000000;	dwTemp = SendItemContents.m_dwKeepTime % 100000000;
-			nMonth = dwTemp / 1000000;		dwTemp = dwTemp % 1000000;
-			nDay = dwTemp / 10000;			dwTemp = dwTemp % 10000;
-			nHour = dwTemp / 100;			dwTemp = dwTemp % 100;
-			nMin = dwTemp;
-			
-			CTime tKeepTime( nYear, nMonth, nDay, nHour, nMin, 0 );
-			dwKeepTime = tKeepTime.GetTime();
-			if( (time_t)dwKeepTime <= time( NULL ) )
-			{
-				FILEOUT( "..\\SendItem.log", "Error dwKeepTime Over IdPlayer = %d, PlayerName = %s, ItemName : %s, KeepTime = %d", pMover->m_idPlayer, pMover->m_szName,  SendItemContents.OneItem, SendItemContents.m_dwKeepTime );
-				SendItemDeleteQuery( pQry, szSql, SendItemContents.nNo );
-				return 0;
-			}
-		}
-
-		// 피어싱 검사
-		if( SendItemContents.nPiercedSize != 0 )
-		{
-			if( pItemProp->dwItemKind3 != IK3_SUIT
-#ifdef __SEND_ITEM_ULTIMATE
-				&& pItemProp->dwReferStat1 != WEAPON_ULTIMATE
-#endif // __SEND_ITEM_ULTIMATE
-				)
-			{
-				FILEOUT( "..\\SendItem.log", "Error Not IK3_SUIT or ULTIMATE PiercedSize Over IdPlayer = %d, PlayerName = %s, ItemName : %s, nPiercedSize = %d", pMover->m_idPlayer, pMover->m_szName, SendItemContents.OneItem, SendItemContents.nPiercedSize );
-				SendItemDeleteQuery( pQry, szSql, SendItemContents.nNo );
-				return 0;
-			}
-
-			for( int nitem = 0 ; nitem < SendItemContents.nPiercedSize ; ++nitem )
-			{
-				ItemProp* pItemPropPiercing;
-				DWORD dwItemid;
-				if( nitem == 0 )
-				{
-					pItemPropPiercing = prj.GetItemProp( SendItemContents.adwItemId0 );
-					dwItemid = SendItemContents.adwItemId0;
-				}
-				else if( nitem == 1 )
-				{
-					pItemPropPiercing = prj.GetItemProp( SendItemContents.adwItemId1 );
-					dwItemid = SendItemContents.adwItemId1;
-				}
-				else if( nitem == 2 )
-				{
-					pItemPropPiercing = prj.GetItemProp( SendItemContents.adwItemId2 );
-					dwItemid = SendItemContents.adwItemId2;
-				}
-				else if( nitem == 3 )
-				{
-					pItemPropPiercing = prj.GetItemProp( SendItemContents.adwItemId3 );
-					dwItemid = SendItemContents.adwItemId3;
-				}
-#ifdef __SEND_ITEM_ULTIMATE
-				else if( nitem == 4 )
-				{
-					pItemPropPiercing = prj.GetItemProp( SendItemContents.adwItemId4 );
-					dwItemid = SendItemContents.adwItemId4;
-				}
-#endif // __SEND_ITEM_ULTIMATE
-
-
-				if( dwItemid != 0 )
-				{
-					if( pItemPropPiercing == NULL || (pItemPropPiercing->dwItemKind3 != IK3_SOCKETCARD)
-#ifdef __SEND_ITEM_ULTIMATE
-						&& (pItemPropPiercing->dwItemKind3 != IK3_ULTIMATE)
-#endif // __SEND_ITEM_ULTIMATE
-						)
-					{
-						FILEOUT( "..\\SendItem.log", "Error Not IK3_SOCKETCARD or IK3_ULTIMATE Piercing Over IdPlayer = %d, PlayerName = %s, ItemName : %s, PiercingItemId = %d", pMover->m_idPlayer, pMover->m_szName, SendItemContents.OneItem, dwItemid );
-						SendItemDeleteQuery( pQry, szSql, SendItemContents.nNo );
-						return 0;			
-					}
-				}
-			}
-		}
-		
-#if __VER >= 11 // __SYS_IDENTIFY
-#ifdef __SEND_ITEM_ULTIMATE
-		if( pMover->AddItem( ITYPE_ITEM, pItemProp->dwID, SendItemContents.Item_Count, SendItemContents.m_nAbilityOption, iSerialNumber, SendItemContents.nItemResist, SendItemContents.nResistAbilityOption, SendItemContents.nCharged, SendItemContents.nPiercedSize, SendItemContents.adwItemId0, SendItemContents.adwItemId1, SendItemContents.adwItemId2, SendItemContents.adwItemId3, SendItemContents.adwItemId4, dwKeepTime, SendItemContents.iRandomOptItemId ) == FALSE ) // 실재로 아이템을 넣음
-#else // __SEND_ITEM_ULTIMATE
-		if( pMover->AddItem( ITYPE_ITEM, pItemProp->dwID, SendItemContents.Item_Count, SendItemContents.m_nAbilityOption, iSerialNumber, SendItemContents.nItemResist, SendItemContents.nResistAbilityOption, SendItemContents.nCharged, SendItemContents.nPiercedSize, SendItemContents.adwItemId0, SendItemContents.adwItemId1, SendItemContents.adwItemId2, SendItemContents.adwItemId3, dwKeepTime, SendItemContents.iRandomOptItemId ) == FALSE ) // 실재로 아이템을 넣음
-#endif // __SEND_ITEM_ULTIMATE
-#else	// __SYS_IDENTIFY
-#ifdef __SEND_ITEM_ULTIMATE
-		if( pMover->AddItem( ITYPE_ITEM, pItemProp->dwID, SendItemContents.Item_Count, SendItemContents.m_nAbilityOption, iSerialNumber, SendItemContents.nItemResist, SendItemContents.nResistAbilityOption, SendItemContents.nCharged, SendItemContents.nPiercedSize, SendItemContents.adwItemId0, SendItemContents.adwItemId1, SendItemContents.adwItemId2, SendItemContents.adwItemId3, SendItemContents.adwItemId4, dwKeepTime, SendItemContents.nRandomOptItemId ) == FALSE ) // 실재로 아이템을 넣음		
-#else // __SEND_ITEM_ULTIMATE
-		if( pMover->AddItem( ITYPE_ITEM, pItemProp->dwID, SendItemContents.Item_Count, SendItemContents.m_nAbilityOption, iSerialNumber, SendItemContents.nItemResist, SendItemContents.nResistAbilityOption, SendItemContents.nCharged, SendItemContents.nPiercedSize, SendItemContents.adwItemId0, SendItemContents.adwItemId1, SendItemContents.adwItemId2, SendItemContents.adwItemId3, dwKeepTime, SendItemContents.nRandomOptItemId ) == FALSE ) // 실재로 아이템을 넣음
-#endif // __SEND_ITEM_ULTIMATE
-#endif	// __SYS_IDENTIFY
-		{
-			FILEOUT( "..\\SendItem.log", "Error Full IdPlayer = %d, PlayerName = %s, ItemName : %s", pMover->m_idPlayer, pMover->m_szName,  SendItemContents.OneItem );
-			return 0;
-		}
-		
-		if( SendItemDeleteQuery( pQry, szSql, SendItemContents.nNo ) == FALSE )
-		{
-			//			FILEOUT( "..\\SendItem.log", "Success IdPlayer = %d, PlayerName = %s, ItemName : %s", pMover->m_idPlayer, pMover->m_szName,  szItemName );
-			return 0;
-		}
-	}
-	else
-	{
-		if( SendItemDeleteQuery( pQry, szSql, SendItemContents.nNo ) == FALSE )
-		{
-			FILEOUT( "..\\SendItem.log", "Error Not PropElem IdPlayer = %d, PlayerName = %s, ItemName : %s", pMover->m_idPlayer, pMover->m_szName,  SendItemContents.OneItem );
-			return 0;
-		}
-	}
-	return iSerialNumber;
-}
-#endif // __EXT_PIERCING
 
 
 BOOL CDbManager::SendItemDeleteQuery( CQuery *pQry, char* szSql, int nNo )
@@ -2172,11 +1805,9 @@ void CDbManager::GetThread( void )
 			case REMOVEPLAYER:
 				RemovePlayer( pQuery, lpDbOverlappedPlus );
 				break;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 			case QM_LOGIN_PROTECT:
 				LoginProtectCert( pQuery, lpDbOverlappedPlus );
 				break;
-#endif // __2ND_PASSWORD_SYSTEM
 			default:
 				{
 					WriteLog( "%s, %d\t%d", __FILE__, __LINE__, lpDbOverlappedPlus->nQueryMode );
@@ -2328,11 +1959,9 @@ void CDbManager::PutThread( void )	// log
 				break;
 #endif // __S_NEW_SKILL_2
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			case LOG_GETHONORTIME: 
 				LogGetHonorTime( pQueryLog, lpDbOverlappedPlus );
 				break;
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __RT_1025
 			case QM_ADD_MESSENGER:
 				AddMessenger( pQueryChar, lpDbOverlappedPlus );
@@ -2381,21 +2010,17 @@ void CDbManager::PutThread( void )	// log
 			case QM_CALL_USP_PET_LOG:
 				CalluspPetLog( pQueryLog, lpDbOverlappedPlus );
 				break;
-#if __VER >= 14 // __INSTANCE_DUNGEON
 			case LOG_INSTANCEDUNGEON:
 				LogInstanceDungeon( pQueryLog, lpDbOverlappedPlus );
 				break;
-#endif // __INSTANCE_DUNGEON
 #ifdef __ERROR_LOG_TO_DB
 			case LOG_ERROR:
 				LogError( pQueryLog, lpDbOverlappedPlus );
 				break;
 #endif // __ERROR_LOG_TO_DB
-#if __VER >= 15 // __GUILD_HOUSE
 			case LOG_GUILDFURNITURE:
 				LogGuildFurniture(pQueryChar, lpDbOverlappedPlus );
 				break;
-#endif // __GUILD_HOUSE
 			default:
 				WriteLog( "%s, %d\t%d", __FILE__, __LINE__, lpDbOverlappedPlus->nQueryMode );
 				FreeRequest( lpDbOverlappedPlus );
@@ -2591,9 +2216,7 @@ void CDbManager::DestroyGuild( CQuery* pQuery, CQuery* pQueryLog, LPDB_OVERLAPPE
 		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
-#if __VER >= 15 // __GUILD_HOUSE
 	GuildHouseDBMng->PostRequest( GUILDHOUSE_REMOVE, NULL, 0, idGuild );
-#endif // __GUILD_HOUSE
 #ifndef __NOLOG
 	GUILDLOG_QUERYINFO qi( "L3" );
 	qi.idGuild = idGuild;
@@ -2863,11 +2486,6 @@ void CDbManager::OpenGuild( void )
 		pMember->m_nPay				= pQuery->GetInt( "m_nPay" );
 		pMember->m_nWin				= pQuery->GetInt( "m_nWin" );
 		pMember->m_nLose			= pQuery->GetInt( "m_nLose" );
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pMember->m_nJob				= pQuery->GetInt( "m_nJob" );
-		pMember->m_dwSex			= (DWORD)pQuery->GetInt( "m_dwSex" );
-		pMember->m_nLevel			= pQuery->GetInt( "m_nLevel" );
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __GUILDVOTE
 		pMember->m_idSelectedVote	= pQuery->GetInt( "m_idVote" );
@@ -3351,14 +2969,8 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 			if( GuildBank.m_apItem[nExtBank].m_bCharged != 1 )
 				GuildBank.m_apItem[nExtBank].m_bCharged	= 0;
 			GuildBank.m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-#if __VER >= 11 // __SYS_IDENTIFY
 			GuildBank.m_apItem[nExtBank].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
-#else	// __SYS_IDENTIFY
-			GuildBank.m_apItem[nExtBank].SetRandomOptItemId( (DWORD)GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif	// __SYS_IDENTIFY
-#if __VER >= 15 // __PETVIS
 			GuildBank.m_apItem[nExtBank].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-#endif // __PETVIS
 
 			++CountStr;
 			++nExtBank;
@@ -3371,17 +2983,7 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 		VERIFYSTRING( PirecingBank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
 		while( '$' != PirecingBank[CountStr] )
 		{
-#if __VER >= 12 // __EXT_PIERCING
 			LoadPiercingInfo( GuildBank.m_apItem[nPirecingBank], PirecingBank, &CountStr );
-#else // __EXT_PIERCING
-			int nItemIdCount = 0;
-			GuildBank.m_apItem[nPirecingBank].SetPiercingSize( GetIntFromStr( PirecingBank, &CountStr ) );
-			for( int i = 0 ; i < GuildBank.m_apItem[nPirecingBank].GetPiercingSize() ; ++i )
-			{
-				GuildBank.m_apItem[nPirecingBank].SetPiercingItem( nItemIdCount, (DWORD)GetIntFromStr( PirecingBank, &CountStr ) );
-				++nItemIdCount;
-			}
-#endif // __EXT_PIERCING
 			++nPirecingBank;
 		}
 
@@ -4127,7 +3729,6 @@ void CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver 
 	else
 		item.m_nItemNum = 0;
 
-#if __VER >= 12 // __EXT_PIERCING
 	if( item.GetProp() && item.GetProp()->IsUltimate() )
 	{
 		sprintf( szSql, "{call MAIL_STR('A1', %d, '%02d', '%07d', '%07d', %d, %d, %d, ?, ?,"
@@ -4182,26 +3783,6 @@ void CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver 
 			, 0
 			);
 	}
-#else // __EXT_PIERCING
-	sprintf( szSql, "{call MAIL_STR('A1', %d, '%02d', '%07d', '%07d', %d, %d, %d, ?, ?,"
-		"%d, %d, %d, %d, %d, %d, %d, %d,"
-		"%d, %d, %d, %d, %d, %d, %d,"
-		"%I64d,"
-		"%d, %d, %d, %d, %d"
-		",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d"
-		",%d"
-		")}",
-
-		pMail->m_nMail, g_appInfo.dwSys, idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead,
-		item.m_dwItemId, item.m_nItemNum, item.m_nRepairNumber, item.m_nHitPoint, item.m_nRepair, 0, item.m_byFlag, item.GetSerialNumber(),
-		item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, item.m_bCharged, item.m_dwKeepTime,
-		item.GetRandomOptItemId(),
-		item.GetPiercingSize(), item.GetPiercingItem( 0 ), item.GetPiercingItem( 1 ), item.GetPiercingItem( 2 ), item.GetPiercingItem( 3 ),
-		bPet, pet.GetKind(), pet.GetLevel(), pet.GetExp(), pet.GetEnergy(), pet.GetLife(),
-		pet.GetAvailLevel( PL_D ), pet.GetAvailLevel( PL_C ), pet.GetAvailLevel( PL_B ), pet.GetAvailLevel( PL_A ), pet.GetAvailLevel( PL_S )
-		,item.GetPiercingItem( 4 )
-		);
-#endif // __EXT_PIERCING
 }
 
 void CDbManager::DBQryGuildLog( char* szSql, const GUILDLOG_QUERYINFO& info )
@@ -4529,7 +4110,6 @@ void CDbManager::GuildThread( void )
 				FreeRequest( lpDbOverlappedPlus );
 				break;
 #endif // __GETMAILREALTIME
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 			case GC1TO1_LOAD:
 				LoadGC1to1TenderGuild( pQuery, lpDbOverlappedPlus, (DPID)dwCompletionKey );
 				break;
@@ -4548,13 +4128,9 @@ void CDbManager::GuildThread( void )
 			case GC1TO1_WARGUILD:
 				GC1to1WarGuild( pQuery, lpDbOverlappedPlus );
 				break;
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 			case QM_GUILDBANK_LOG_VIEW:
 				GuildBankLogView( pQuery, lpDbOverlappedPlus );
 				break;
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 			case QM_SEALCHAR:
 				SealChar( pQuery, lpDbOverlappedPlus );
 				break;
@@ -4567,7 +4143,6 @@ void CDbManager::GuildThread( void )
 			case QM_SEALCHARSET:
 				SealCharSet( pQuery, lpDbOverlappedPlus );
 				break;
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 #ifdef __JEFF_FIX_0
 			case QM_ALL_PLAYER_DATA:
 				{
@@ -4684,23 +4259,6 @@ void CDbManager::SerializePlayerPoint( CAr & ar )
 	}
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-//{{AFX
-void CDbManager::SerializePlayerID( CAr & ar )
-{
-	ASSERT( ar.IsStoring() );
-	
-	CMclAutoLock	Lock( s_cs );
-	
-	ar << (u_long)m_ulong2str.size();
-	for( ULONG2STRING::iterator i = m_ulong2str.begin(); i != m_ulong2str.end(); ++i )
-	{
-		ar << (*i).first;
-		ar.WriteString( (*i).second.data() );
-	}
-}
-//}}AFX
-#endif	// __SYS_PLAYER_DATA
 
 /*
 u_long CDbManager::GetPlayerID( LPCSTR lpszPlayer )
@@ -5276,21 +4834,8 @@ void CDbManager::SetPlayerName( CQuery* pQueryChar, CQuery* pQueryLog, LPDB_OVER
 
 	if( f )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		char szOldPlayer[MAX_PLAYER]		= { 0, };
 		CPlayerDataCenter::GetInstance()->ReplacePlayerString( idPlayer, lpszPlayer, szOldPlayer );
-#else	// _SYS_PLAYER_DATA
-		s_cs.Enter();
-		#ifndef __NOLOG
-			char szOldPlayer[MAX_PLAYER]	= { 0, };
-			map<u_long, string>::iterator i	= m_ulong2str.find( idPlayer );
-			if( i != m_ulong2str.end() )
-				lstrcpy( szOldPlayer, i->second.data() );
-		#endif	// __NOLOG
-		m_ulong2str.erase( idPlayer );
-		m_ulong2str.insert( map<u_long, string>::value_type( idPlayer, lpszPlayer ) );
-		s_cs.Leave();
-#endif	// _SYS_PLAYER_DATA
 /*
 		uspChangeNameLog
                   @pserverindex char(2) :
@@ -5348,11 +4893,7 @@ void CDbManager::DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, 
 								char* szLicenseSkill, char* aJobLv, DWORD dwExpertLv, int nidMarkingWorld, float vMarkingPos_x,
 								float vMarkingPos_y, float vMarkingPos_z, int nRemainGP, int nRemainLP, int nFlightLv,
 								int nFxp, int nTxp, char* szQuestCntArray, char szAuthority, DWORD dwMode,
-#if __VER >= 8 // __S8_PK
 								int nidparty, int nidMuerderer, int nFame,
-#else // __VER >= 8 // __S8_PK
-								int nidparty, int nNumKill, int nidMuerderer, int nSlaughter, int nFame,
-#endif // __VER >= 8 // __S8_PK
 								EXPINTEGER nDeathExp, int nDeathLevel, DWORD dwFlyTime, DWORD dwMessengerState,
 								int nTotalPlayTime, char* szCard, char* szIndex_Card, char* szObjIndexCard, char* szCube,
 								char* szIndex_Cube, char* szObjIndex_Cube, char* szInventory, char* dzapIndex, char* szadwEquipment,
@@ -5362,12 +4903,8 @@ void CDbManager::DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, 
 								, char* m_aCompleteQuest
 								, char* ExtInven, char* PirecingInven, char* ExtBank, char* PirecingBank
 								, DWORD dwReturnWorldID, float fReturnPosX, float fReturnPosY, float fReturnPosZ
-#if __VER >= 8 // __S8_PK
 								, int nPKValue, DWORD dwPKPropensity, DWORD dwPKExp	
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 //__CSC_VER8_5
 								, EXPINTEGER nAngelExp, LONG nAngelLevel
-#endif // __CSC_VER8_5
 								, char* szInventoryPet,	char* szBankPet, DWORD dwPetId
 #ifdef __EXP_ANGELEXP_LOG
 								, int nExpLog, int nAngelExpLog
@@ -5375,18 +4912,12 @@ void CDbManager::DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, 
 #ifdef __EVENTLUA_COUPON
 								, int nCoupon
 #endif // __EVENTLUA_COUPON
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 								, int nHonor					// 달인선택 
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __LAYER_1015
 								, int nLayer
 #endif	// __LAYER_1015
-#if __VER >= 15 // __CAMPUS
 								, int nCampusPoint, u_long idCampus
-#endif // __CAMPUS
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 								, char* m_aCheckedQuest
-#endif // __IMPROVE_QUEST_INTERFACE
 								)
 {
 	sprintf( qryCharacter, "CHARACTER_STR '%s'", Gu );
@@ -5419,13 +4950,8 @@ void CDbManager::DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, 
 		vMarkingPos_y, vMarkingPos_z, nRemainGP, nRemainLP,	nFlightLv, nFxp, nTxp, szQuestCntArray, szAuthority, dwMode );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 
-#if __VER >= 8 // __S8_PK
 	sprintf( strCharacter, ",@im_idparty=%d,@im_idMuerderer=%d,@im_nFame=%d,@im_nDeathExp=%I64d,@im_nDeathLevel=%d,@im_dwFlyTime=%d,@im_nMessengerState=%d,@iTotalPlayTime=%d",
 		nidparty, nidMuerderer, nFame, nDeathExp, nDeathLevel, dwFlyTime, dwMessengerState, nTotalPlayTime );
-#else // __VER >= 8 // __S8_PK
-	sprintf( strCharacter, ",@im_idparty=%d,@im_nNumKill=%d,@im_idMuerderer=%d,@im_nSlaughter=%d,@im_nFame=%d,@im_nDeathExp=%I64d,@im_nDeathLevel=%d,@im_dwFlyTime=%d,@im_nMessengerState=%d,@iTotalPlayTime=%d",
-		nidparty, nNumKill, nidMuerderer, nSlaughter, nFame, nDeathExp, nDeathLevel, dwFlyTime, dwMessengerState, nTotalPlayTime );
-#endif // __VER >= 8 // __S8_PK
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 
 	sprintf( strCharacter, ",@im_Card='%s',@im_Index_Card='%s',@im_ObjIndex_Card='%s',@im_Cube='%s',@im_Index_Cube='%s',@im_ObjIndex_Cube='%s',@im_Inventory='%s',@im_apIndex='%s',@im_adwEquipment='%s',@im_dwObjIndex='%s'",
@@ -5455,16 +4981,12 @@ void CDbManager::DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, 
 		                     dwReturnWorldID, fReturnPosX, fReturnPosY, fReturnPosZ );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 	
-#if __VER >= 8 // __S8_PK
 	sprintf( strCharacter, ",@im_nPKValue=%d,@im_dwPKPropensity=%d,@im_dwPKExp=%d",
 							nPKValue, dwPKPropensity, dwPKExp );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 //__CSC_VER8_5
 	sprintf( strCharacter, ",@im_nAngelExp=%I64d,@im_nAngelLevel=%d",
 							nAngelExp, nAngelLevel );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __CSC_VER8_5
 
 	sprintf( strCharacter, ",@iszInventoryPet='%s',@iszBankPet='%s', @im_dwPetId=%d",
 							szInventoryPet, szBankPet, dwPetId );
@@ -5479,29 +5001,23 @@ void CDbManager::DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, 
 							nCoupon );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 #endif // __EVENTLUA_COUPON
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	sprintf( strCharacter, ",@im_nHonor=%d",
 							nHonor );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __LAYER_1015
 	sprintf( strCharacter, ",@im_nLayer=%d",
 							nLayer );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 #endif	// __LAYER_1015
 	
-#if __VER >= 15 // __CAMPUS
 	sprintf( strCharacter, ",@im_nCampusPoint=%d", nCampusPoint );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 
 	sprintf( strCharacter, ",@im_idCampus=%d", idCampus );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __CAMPUS
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	sprintf( strCharacter, ",@im_aCheckedQuest='%s'", m_aCheckedQuest );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	if( strlen(qryCharacter) > 40960 )
 	{
@@ -5969,45 +5485,22 @@ void CDbManager::GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem )
 	pItemElem->m_nHitPoint	= pQuery->GetInt( "nHitPoint" );
 	pItemElem->m_nRepair = pQuery->GetInt( "nMaxHitPoint" );
 	pItemElem->m_nItemNum	= pQuery->GetInt( "nItemNum" );
-#if __VER >= 11 // __SYS_IDENTIFY
 	__int64 iRandomOptItemId	= pQuery->GetInt64( "nRandomOptItemId" );
 	if( iRandomOptItemId == -102 )
 		iRandomOptItemId	= 0;
 	pItemElem->SetRandomOptItemId( iRandomOptItemId );
-#else	// __SYS_IDENTIFY
-	pItemElem->SetRandomOptItemId( pQuery->GetInt( "nRandomOptItemId" ) );
-#endif	// __SYS_IDENTIFY
 	pItemElem->m_nRepairNumber	= pQuery->GetInt( "nRepairNumber" );
 	pItemElem->m_nResistAbilityOption	= pQuery->GetInt( "nResistAbilityOption" );
 	pItemElem->m_nResistSMItemId	= pQuery->GetInt( "nResistSMItemId" );
-#if __VER >= 12 // __EXT_PIERCING
 	GetPiercingInfoFromMail( pQuery, pItemElem );
-#else // __EXT_PIERCING
-	pItemElem->SetPiercingSize( pQuery->GetInt( "nPiercedSize" ) );
-	pItemElem->SetPiercingItem( 0, pQuery->GetInt( "dwItemId1" ) );
-	pItemElem->SetPiercingItem( 1, pQuery->GetInt( "dwItemId2" ) );
-	pItemElem->SetPiercingItem( 2, pQuery->GetInt( "dwItemId3" ) );
-	pItemElem->SetPiercingItem( 3, pQuery->GetInt( "dwItemId4" ) );
-#if __VER >= 9 // __ULTIMATE
-	pItemElem->SetPiercingItem( 4, pQuery->GetInt( "dwItemId5" ) );
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		CPlayerDataCenter::GetInstance()->m_Access.Enter();
 		const char*	lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( pItemElem->m_nHitPoint );
-#else	// __SYS_PLAYER_DATA
-		LPCSTR lpszPlayer	= prj.GetPlayerString( pItemElem->m_nHitPoint );
-#endif	// __SYS_PLAYER_DATA
 		if(lpszPlayer != NULL)
 			memcpy(pItemElem->m_szItemText,lpszPlayer,sizeof(pItemElem->m_szItemText));
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		CPlayerDataCenter::GetInstance()->m_Access.Leave();
-#endif	// __SYS_PLAYER_DATA
 	}
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 	BOOL bPet	= pQuery->GetInt( "bPet" );
 	if( bPet )
@@ -6316,11 +5809,7 @@ BOOL CDbManager::RestorePet( LPCSTR lpFileName )
 
 BOOL CDbManager::Conv( LPCSTR lpFileName )
 {
-#if __VER >= 11 // __SYS_COLLECTING
 	map<DWORD, CONV_RESULT_ITEM>	mConv;
-#else	// __SYS_COLLECTING
-	map<DWORD, DWORD>	mConv;
-#endif	// __SYS_COLLECTING
 	CScript s;
 	if( FALSE == s.Load( lpFileName ) )
 	{
@@ -6330,15 +5819,10 @@ BOOL CDbManager::Conv( LPCSTR lpFileName )
 	DWORD dwItemId1	= s.GetNumber();
 	while( s.tok != FINISHED )
 	{
-#if __VER >= 11 // __SYS_COLLECTING
 		CONV_RESULT_ITEM	result;
 		result.dwItemId		= s.GetNumber();
 		result.nAbilityOption	= s.GetNumber();
 		BOOL bResult	= mConv.insert( map<DWORD, CONV_RESULT_ITEM>::value_type( dwItemId1, result ) ).second;
-#else	// __SYS_COLLECTING
-		DWORD dwItemId2	= s.GetNumber();
-		BOOL bResult	= mConv.insert( map<DWORD, DWORD>::value_type( dwItemId1, dwItemId2 ) ).second;
-#endif	// __SYS_COLLECTING
 #ifdef __VERIFY_0201
 		/*
 		ItemProp* pItemProp1	= prj.GetItemProp( dwItemId1 );
@@ -6418,9 +5902,7 @@ BOOL CDbManager::Conv( LPCSTR lpFileName )
 	ConvInventory( mConv );
 	ConvBank( mConv );
 	ConvGuildBank( mConv );
-#if __VER >= 12
 	ConvertPocket( mConv );
-#endif	// 12
 #endif	// __VERIFY_0201
 
 	return TRUE;
@@ -6646,7 +6128,6 @@ BOOL CDbManager::RemoveInvalidItem( void )
 	return TRUE;
 }
 
-#if __VER >= 12
 CQuery* CDbManager::CreateCharQuery( void )
 {
 	CQuery* pQuery	= new CQuery;
@@ -6722,13 +6203,8 @@ BOOL CDbManager::ConvertPocket( MDC & mConv )
 	safe_delete( pQuery );
 	return TRUE;
 }
-#endif	// 12
 
-#if __VER >= 11 // __SYS_COLLECTING
 BOOL CDbManager::ConvInventory( map<DWORD, CONV_RESULT_ITEM> & mConv )
-#else	// __SYS_COLLECTING
-BOOL CDbManager::ConvInventory( map<DWORD, DWORD> & mConv )
-#endif	// __SYS_COLLECTING
 {
 	CQuery* pQueryLoad	= new CQuery;
 
@@ -6776,20 +6252,12 @@ BOOL CDbManager::ConvInventory( map<DWORD, DWORD> & mConv )
 			CItemElem* pItemElem	= pMover->m_Inventory.GetAtId( i );
 			if( pItemElem )
 			{
-#if __VER >= 11 // __SYS_COLLECTING
 				map<DWORD, CONV_RESULT_ITEM>::iterator it	= mConv.find( pItemElem->m_dwItemId );
-#else	// __SYS_COLLECTING
-				map<DWORD, DWORD>::iterator it	= mConv.find( pItemElem->m_dwItemId );
-#endif	// __SYS_COLLECTING
 				if( it != mConv.end() )
 				{
 					bUpdate		= TRUE;
-#if __VER >= 11 // __SYS_COLLECTING
 					pItemElem->m_dwItemId	= it->second.dwItemId;
 					pItemElem->SetOption( it->second.nAbilityOption );
-#else	// __SYS_COLLECTING
-					pItemElem->m_dwItemId	= it->second;
-#endif	// __SYS_COLLECTING
 				}
 			}
 		}
@@ -6816,11 +6284,7 @@ BOOL CDbManager::ConvInventory( map<DWORD, DWORD> & mConv )
 	return TRUE;
 }
 
-#if __VER >= 11 // __SYS_COLLECTING
 BOOL CDbManager::ConvBank( map<DWORD, CONV_RESULT_ITEM> & mConv )
-#else	// __SYS_COLLECTING
-BOOL CDbManager::ConvBank( map<DWORD, DWORD> & mConv )
-#endif	// __SYS_COLLECTING
 {
 	CQuery* pQueryLoad	= new CQuery;
 
@@ -6859,20 +6323,12 @@ BOOL CDbManager::ConvBank( map<DWORD, DWORD> & mConv )
 			CItemElem* pItemElem	= pMover->m_Bank[0].GetAtId( i );
 			if( pItemElem )
 			{
-#if __VER >= 11 // __SYS_COLLECTING
 				map<DWORD, CONV_RESULT_ITEM>::iterator it	= mConv.find( pItemElem->m_dwItemId );
-#else	// __SYS_COLLECTING
-				map<DWORD, DWORD>::iterator it	= mConv.find( pItemElem->m_dwItemId );
-#endif	// __SYS_COLLECTING
 				if( it != mConv.end() )
 				{
 					bUpdate	= TRUE;
-#if __VER >= 11 // __SYS_COLLECTING
 					pItemElem->m_dwItemId	= it->second.dwItemId;
 					pItemElem->SetOption( it->second.nAbilityOption );
-#else	// __SYS_COLLECTING
-					pItemElem->m_dwItemId	= it->second;
-#endif	// __SYS_COLLECTING
 				}
 			}
 		}
@@ -6898,11 +6354,7 @@ BOOL CDbManager::ConvBank( map<DWORD, DWORD> & mConv )
 	return TRUE;
 }
 
-#if __VER >= 11 // __SYS_COLLECTING
 BOOL CDbManager::ConvGuildBank( map<DWORD, CONV_RESULT_ITEM> & mConv )
-#else	// __SYS_COLLECTING
-BOOL CDbManager::ConvGuildBank( map<DWORD, DWORD> & mConv )
-#endif	// __SYS_COLLECTING
 {
 	CQuery* pQueryChar	= new CQuery;
 
@@ -6945,20 +6397,12 @@ BOOL CDbManager::ConvGuildBank( map<DWORD, DWORD> & mConv )
 			CItemElem* pItemElem	= GuildBank.GetAtId( i );
 			if( pItemElem )
 			{
-#if __VER >= 11 // __SYS_COLLECTING
 				map<DWORD, CONV_RESULT_ITEM>::iterator it	= mConv.find( pItemElem->m_dwItemId );
-#else	// __SYS_COLLECTING
-				map<DWORD, DWORD>::iterator it	= mConv.find( pItemElem->m_dwItemId );
-#endif	// __SYS_COLLECTING
 				if( it != mConv.end() )
 				{
 					bUpdate	= TRUE;
-#if __VER >= 11 // __SYS_COLLECTING
 					pItemElem->m_dwItemId	= it->second.dwItemId;
 					pItemElem->SetOption( it->second.nAbilityOption );
-#else	// __SYS_COLLECTING
-					pItemElem->m_dwItemId	= it->second;
-#endif	// __SYS_COLLECTING
 				}
 			}
 		}
@@ -7844,7 +7288,6 @@ void CDbManager::UpdateMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 }
 #endif	// __RT_1025
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CDbManager::LoadGC1to1TenderGuild( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, DPID dpId )
 {
 	vector< CGuildCombat1to1Mng::__GC1TO1TENDER > vecTenderGuild;
@@ -8025,9 +7468,7 @@ void CDbManager::GC1to1WarGuild( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverla
 
 	FreeRequest( lpDbOverlappedPlus );
 }
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 void CDbManager::GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -8087,19 +7528,11 @@ void CDbManager::GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOver
 		{
 			idPlayer = pQuery->GetInt( "m_idPlayer" );		// 
 			char szSender[MAX_PLAYER]	= "unknown";
-	#if __VER >= 11 // __SYS_PLAYER_DATA
 			CPlayerDataCenter::GetInstance()->m_Access.Enter();
 			const char* pszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer );
 			if( pszPlayer )
 				lstrcpy( szSender, pszPlayer );
 			CPlayerDataCenter::GetInstance()->m_Access.Leave();
-	#else	// __SYS_PLAYER_DATA
-			s_cs.Enter();
-			map<u_long, string>::iterator i	= m_ulong2str.find( idPlayer );
-			if( i != m_ulong2str.end() )
-				lstrcpy( szSender, i->second.data() );
-			s_cs.Leave();
-	#endif	// __SYS_PLAYER_DATA
 
 			pQuery->GetStr( "s_date", szDate );				//  
 			m_Item = pQuery->GetInt( "m_Item" );		// 
@@ -8126,8 +7559,6 @@ void CDbManager::GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOver
 	FreeRequest( lpDbOverlappedPlus );
 
 }
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 void CDbManager::SealChar( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -8287,7 +7718,6 @@ void CDbManager::SealCharSet( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 	FreeRequest( lpDbOverlappedPlus );
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CDbManager::LoginProtectCert( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -8321,6 +7751,4 @@ void CDbManager::LoginProtectCert( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlap
 
 	FreeRequest( lpDbOverlappedPlus );
 }
-#endif // __2ND_PASSWORD_SYSTEM
 
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz

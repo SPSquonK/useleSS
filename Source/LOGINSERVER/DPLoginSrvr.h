@@ -48,11 +48,9 @@ public:
 	void	OnPing( CAr & ar, DPID dpid );
 	void	OnQueryTickCount( CAr & ar, DPID dpid );
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	void	SendNumPadId( DPID dpid );
 public:
 	void	SendLoginProtect( BOOL bLogin, DPID dpid );
-#endif // __2ND_PASSWORD_SYSTEM
 };
 
 #endif	// __DPLOGINSRVR_H__

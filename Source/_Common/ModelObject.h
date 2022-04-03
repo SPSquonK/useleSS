@@ -117,9 +117,7 @@ public:
 	BOOL				m_bCollObj;						// 충돌메시를 포함하고 있는가?
 	LPDIRECT3DTEXTURE9	m_pCloakTexture;				// 외부 지정 망토 텍스쳐 
 	O3D_ELEMENT			m_Element[ MAX_ELEMENT ];		// 객체를 구성하는 o3d들.  Element라 칭하자.
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	int					m_nEffectCount;
-#endif //__Y_ADV_ENCHANT_EFFECT
 	
 public:
 	// Bone / animation
@@ -135,15 +133,11 @@ public:
 	CPartsEffect		*m_pPartsEffect;				// 파츠에 붙는 이펙트.
 	CPartsEffect		*m_pPartsEffect2;				// 왼손 무기에 붙는 이펙트.
 	
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	CPartsEffect		*m_pPartsEffect1_Detail;				// 파츠에 붙는 이펙트.
 	CPartsEffect		*m_pPartsEffect2_Detail;				// 왼손 무기에 붙는 이펙트.
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 	D3DXVECTOR3			m_vForce1, m_vForce2;
-#if __VER >= 9 // __CSC_VER9_5
 	D3DXVECTOR3			m_vForce3, m_vForce4;
-#endif //__CSC_VER9_5
 
 #ifdef __ATTACH_MODEL
 private:
@@ -178,9 +172,7 @@ public:
 	void				InvalidateAttachModelDeviceObjects();
 	void				DeleteAttachModelDeviceObjects();
 #endif //__ATTACH_MODEL
-#if __VER >= 14 // __WING_ITEM
 	CString				GetMotionFileName( const CString& rstrMotion ) const;
-#endif // __WING_ITEM
 
 	O3D_ELEMENT	*GetParts( int nParts ) 
 	{ 
@@ -353,9 +345,7 @@ public:
 	void	ResetStateShadow( LPDIRECT3DDEVICE9 pd3dDevice );
 #endif
 
-#if __VER >= 15 // __GUILD_HOUSE
 	int LoadClonedElement( LPCTSTR szFileName );		//gmpbigsun:복제본 생성 
-#endif
 
 #endif //__WORLDSERVER
 

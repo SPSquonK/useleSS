@@ -47,9 +47,7 @@ void CWndBank::OnDraw( C2DRender* p2DRender )
 void CWndBank::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-#if __VER >= 11 // __SYS_POCKET
 	if(GetWndBase( APP_BAG_EX )) GetWndBase( APP_BAG_EX )->Destroy();
-#endif
 	if( g_WndMng.m_pWndTrade || g_WndMng.m_pWndShop || g_WndMng.m_pWndGuildBank || g_WndMng.GetWndVendorBase() )
 	{
 		Destroy();
@@ -155,14 +153,12 @@ BOOL CWndBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	if( g_pPlayer == NULL )
 		return FALSE;
-#if __VER >= 12 // __MOD_TUTORIAL
 	CWndGuideSystem* pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
 	if(pWndGuide && pWndGuide->IsVisible()) 
 	{
 		if(pWndGuide->m_CurrentGuide.m_nVicCondition == OPEN_WINDOW && pWndGuide->m_CurrentGuide.m_nInput == APP_COMMON_BANK)
 			pWndGuide->m_Condition.nOpenedWindowID = 1;
 	}
-#endif
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COMMON_BANK, 0, CPoint( 0, 0 ), pWndParent );
 } 
 

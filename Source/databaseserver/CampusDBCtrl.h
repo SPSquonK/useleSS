@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 15 // __CAMPUS
 #include "dbcontroller.h"
 #include "Campus.h"
 
@@ -90,5 +89,4 @@ private:
 	CCampusMng*		m_pCampusMng;
 };
 
-#endif // __CAMPUS
 #endif // !defined(AFX_CAMPUSDBCTRL_H__D25D11CF_A207_47BA_A35B_5AD4D63DAAB9__INCLUDED_)

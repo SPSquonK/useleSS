@@ -8,9 +8,7 @@
 #include "Player.h"
 #include "guild.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 #undef	theClass
 #define theClass	CDPCacheSrvr
@@ -72,10 +70,8 @@ public:
 	void	SendSetPlayerName( u_long idPlayer, const char* lpszPlayer );
 	void	SendSnoop( const char* lpszString, CPlayer* pSnoop );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData, CPlayer* pTo );
 	void	SendLogout( u_long idPlayer, CPlayer* pTo );
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __QUIZ
 	void	SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nChannel, int nTime );

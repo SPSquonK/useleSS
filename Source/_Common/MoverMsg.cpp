@@ -148,19 +148,15 @@ FLOAT	CMover::GetAttackRange( DWORD dwAttackRange )
 	case AR_RANGE:	fAttRange = 10.0f;		break;
 	case AR_WAND:	fAttRange = 15.0f;		break;
 	case AR_HRANGE: fAttRange = 6.0f;	break;
-#if __VER >= 10 // __LEGEND		//10차 전승 마스터스킬
 	case AR_HWAND:	fAttRange = 18.0f;		break;
-#endif //__LEGEND		//10차 전승 마스터스킬
 	default:		fAttRange = 0.0f;		break;
 	}
-#if __VER >= 10 // __LEGEND		//10차 전승 마스터스킬
 	int  nTmpATR = GetParam( DST_HAWKEYE_RATE, 0 );
 	if( nTmpATR > 0 )
 	{
 		nTmpATR += 100;
 		fAttRange =  fAttRange * nTmpATR / 100;
 	}
-#endif //__LEGEND		//10차 전승 마스터스킬
 
 	return fAttRange;
 }

@@ -1,7 +1,6 @@
 #ifndef __LORD_H__
 #define	__LORD_H__
 
-#if __VER >= 12 // __LORD
 
 #include <string>
 #include <vector>
@@ -286,6 +285,5 @@ namespace	election
 	void	OutputDebugString( LPCTSTR lpszFormat, ... );
 };
 
-#endif	// __LORD
 
 #endif	// __LORD_H__

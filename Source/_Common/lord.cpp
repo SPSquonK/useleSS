@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __LORD
 
 #include "lord.h"
 
@@ -655,4 +654,3 @@ namespace	election
 	}
 };
 
-#endif	// __LORD

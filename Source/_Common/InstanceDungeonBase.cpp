@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "InstanceDungeonBase.h"
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #ifdef __WORLDSERVER
 #include "User.h"
 extern CUserMng g_UserMng;
@@ -625,13 +624,11 @@ BOOL CInstanceDungeonBase::TeleportToDungeon( CUser* pUser, DWORD dwWorldId, DWO
 	if( !CheckClassLevel( pUser, dwWorldId ) )
 		return FALSE;
 
-#if __VER >= 14 // __INSTANCE_DUNGEON	// 인던 내 또는 입장시 변신구 사용 금지
 	if( pUser->HasBuffByIk3( IK3_TEXT_DISGUISE ) )
 	{
 		pUser->AddDefinedText( TID_GAME_INSTANCE_DISGUISE02 );	
 		return FALSE;
 	}
-#endif // __INSTANCE_DUNGEON	// 인던 내 또는 입장시 변신구 사용 금지
 
 	CWorld* pWorld = g_WorldMng.GetWorld( dwWorldId );
 	if( !pWorld )
@@ -1027,4 +1024,3 @@ void CInstanceDungeonHelper::OnDeleteDungeonCoolTimeInfo( int nType, DWORD dwPla
 }
 #endif // __WORLDSERVER
 
-#endif // __INSTANCE_DUNGEON

@@ -5,7 +5,6 @@
 
 #include "StdAfx.h"
 
-#if __VER >= 15 // __MUSIC2
 
 #include "Music.h"
 #include "mss.h"
@@ -221,4 +220,3 @@ LPTSTR CMusicMng::GetFileName( DWORD dwId )
 }
 
 
-#endif

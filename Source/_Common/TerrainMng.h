@@ -17,16 +17,12 @@ typedef struct tagWaterTexList
 {
 	int  ListCnt;
 	int* pList;
-#if __VER >= 14 // __WATER_EXT
 	FLOAT fWaterFrame;
-#endif //__WATER_EXT
 	tagWaterTexList()
 	{
 		ListCnt = 0;
 		pList = NULL;
-#if __VER >= 14 // __WATER_EXT
 		fWaterFrame = 0.1f;
-#endif //__WATER_EXT
 	}
 }WaterTexList, *LPWATERTEXLIST;
 
@@ -41,9 +37,7 @@ public:
 	TERRAIN m_aTerrain[MAX_TERRAIN];
 	int				m_nWaterFrame;
 	WaterTexList	*m_pWaterIndexList;
-#if __VER >= 14 // __WATER_EXT
 	FLOAT			m_fWaterFrame[MAX_WATER];
-#endif //__WATER_EXT
 
 	CTerrainMng();
 	~CTerrainMng();

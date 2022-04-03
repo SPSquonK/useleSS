@@ -8,10 +8,8 @@
 
 #include "HwOption.h"
 
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 #include "D3D9.h"
 #pragma comment	(lib, "d3d9.lib")
-#endif //__CSC_VER9_RESOLUTION
 
 
 COption		g_Option;
@@ -190,9 +188,7 @@ void COption::Init()
 	m_bShout = TRUE;
 	m_bMessengerJoin = TRUE;
 	m_bMessenger = TRUE;
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	m_bBattleBGM = FALSE;
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __GAME_GRADE_SYSTEM
 	m_bGameGradeRendering = FALSE;
 #endif // __GAME_GRADE_SYSTEM
@@ -210,12 +206,8 @@ void COption::Init()
 	m_nGuide1        = 0;
 	m_nGuide2        = 0;
 	m_nGuide3        = 0;
-#if __VER >= 12 // __MOD_TUTORIAL
 	m_nTutorialLv = 0;
-#endif	
-#if __VER >= 12 // __UPDATE_OPT
 	m_bViewMask = TRUE;
-#endif
 	m_bIsShowReSkillMessage = TRUE;
 	m_pGuide = NULL;
 
@@ -247,19 +239,13 @@ void COption::Init()
 	m_nPlayerName		= 1;		    // 자신 이름 On / Off
 	m_nOtherPlayerName	= 1;		    // 다른 플레이어 이름 On / Off
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	m_nOverBright = 10;
 	m_fGamma = 1.0f;
 	m_fContrast = 1.0f;
-#endif //__Y_GAMMA_CONTROL_8
 
-#if __VER >= 8 //__CSC_VER8_3
 	m_BuffStatusMode = 0;
-#endif //__CSC_VER8_3
 	
-#if __VER >= 11 // __ADD_ZOOMOPT
 	m_bZoomLimit = TRUE;
-#endif
 }
 
 #if defined( _DEBUG) && !defined(__MINIMIZE_USE_OPTION)
@@ -498,7 +484,6 @@ int COption::LoadToolTip( LPCTSTR szFileName )
 			nB = scan.GetNumber();
 			g_WndMng.dwItemColor[m_nToolTipText].dwNotUse = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 사용못함	
 		}
-#if __VER >= 9 // __CSC_VER9_1
 		else if( scan.Token == _T( "무기추가옵션1" ) )
 		{
 			nR = scan.GetNumber();			
@@ -562,8 +547,6 @@ int COption::LoadToolTip( LPCTSTR szFileName )
 			nB = scan.GetNumber();
 			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt9 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 무기추가옵션9
 		}
-#endif //__CSC_VER9_1
-#if __VER >= 11 // __SYS_IDENTIFY
 		else if( scan.Token == _T( "아이템각성" ) )
 		{
 			nR = scan.GetNumber();			
@@ -585,14 +568,12 @@ int COption::LoadToolTip( LPCTSTR szFileName )
 			nB = scan.GetNumber();
 			g_WndMng.dwItemColor[m_nToolTipText].dwBlessingWarning	= D3DCOLOR_ARGB( 255, nR, nG, nB );
 		}
-#endif	// __SYS_IDENTIFY
 	} while( scan.tok != FINISHED );
 
 	return 1;
 }
 #endif // _DEBUG
 
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 void COption::CheckResolution()
 {
 	IDirect3D9* pD3D9;
@@ -688,7 +669,6 @@ void COption::CheckResolution()
 	//SAFE_RELEASE( pD3D9 );
 	pD3D9->Release();
 }
-#endif//__CSC_VER9_RESOLUTION
 
 int COption::Load( LPCTSTR szFileName )
 {
@@ -705,19 +685,6 @@ int COption::Load( LPCTSTR szFileName )
 			m_nResWidth = scan.GetNumber();
 			m_nResHeight = scan.GetNumber();
 
-#if __VER < 9 // __CSC_VER9_RESOLUTION
-			if( m_nResWidth != 800 && m_nResWidth != 1024 && m_nResWidth != 1280 )
-			{
-				Error( "지원하지않는 해상도 발견!! - Width : %d", m_nResWidth );
-				m_nResWidth = 800;
-			}
-
-			if( m_nResHeight != 600 && m_nResHeight != 768 && m_nResHeight != 1024 )
-			{
-				Error( "지원하지않는 해상도 발견!! - Height : %d", m_nResHeight );
-				m_nResHeight = 600;
-			}
-#endif //__CSC_VER9_RESOLUTION	
 		}
 		else
 		if( scan.Token == _T( "fullscreen" ) )
@@ -846,13 +813,11 @@ int COption::Load( LPCTSTR szFileName )
 			m_bMessenger = scan.GetNumber();
 		}
 		else
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		if( scan.Token == _T( "BattleBGM") )
 		{
 			m_bBattleBGM = scan.GetNumber();
 		}
 		else
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __GAME_GRADE_SYSTEM
 		if( scan.Token == _T( "GameGrade") )
 		{
@@ -925,11 +890,7 @@ int COption::Load( LPCTSTR szFileName )
 		else
 		if( scan.Token == _T( "ChatFilterEtc" ) )
 		{
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 			m_dwChatFilterEtc = CHATSTY_HELP_CHAT | CHATSTY_SYSTEM_CHAT | CHATSTY_GAME_CLIENT;
-#else //__Y_CHAT_SYSTEM_8
-			m_dwChatFilterEtc = scan.GetNumber();
-#endif //__Y_CHAT_SYSTEM_8
 		}
 #ifdef __YENV
 		else
@@ -983,7 +944,6 @@ int COption::Load( LPCTSTR szFileName )
 		{
 			m_nMonName = scan.GetNumber();
 		}
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 		else
 		if( scan.Token == _T( "BRIGHT" ) )
 		{
@@ -999,21 +959,16 @@ int COption::Load( LPCTSTR szFileName )
 		{
 			m_fContrast = scan.GetFloat();
 		}
-#endif //__Y_GAMMA_CONTROL_8
 
-#if __VER >= 8 //__CSC_VER8_3
 		else if(scan.Token == _T( "BUFFSTATUSMODE" ))
 		{
 			m_BuffStatusMode = scan.GetNumber();
 		}
-#endif //__CSC_VER8_3
 		
-#if __VER >= 11 // __ADD_ZOOMOPT
 	else if(scan.Token == _T( "ZOOMLIMIT" ))
 	{
 		m_bZoomLimit = scan.GetNumber();
 	}
-#endif
 #ifdef __SFX_OPT
 	else if(scan.Token == _T( "SFXLEVEL" ))
 	{
@@ -1024,19 +979,14 @@ int COption::Load( LPCTSTR szFileName )
 	{
 		m_nWeatherEffect = scan.GetNumber();
 	}
-#if __VER >= 12 // __UPDATE_OPT
 	else if(scan.Token == _T( "VIEWMASK" ))
 	{
 		m_bViewMask = scan.GetNumber();
 	}
-#endif
 	} while( scan.tok != FINISHED );
 
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	CheckResolution();
-#endif //__CSC_VER9_RESOLUTION
 
-#if __VER >= 12 // __UPDATE_OPT
 	m_nChatCommand				= 0;
 	m_nSlangWord				= 0;
 	m_nInterface				= 1;
@@ -1045,7 +995,6 @@ int COption::Load( LPCTSTR szFileName )
 	m_bVisibleBuffTimeRender	= TRUE;
 	m_bShout					= TRUE;
 	m_bMessengerJoin   			= TRUE;
-#endif
 
 	return 1;
 }
@@ -1088,9 +1037,7 @@ int	COption::Save( LPCTSTR szFileName )
 	_ftprintf(fp, _T( "Shout %d\n" ), m_bShout );
 	_ftprintf(fp, _T( "MessengerJoin %d\n" ), m_bMessengerJoin );
 	_ftprintf(fp, _T( "Messenger %d\n" ), m_bMessenger );
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	_ftprintf(fp, _T( "BattleBGM %d\n" ), m_bBattleBGM );
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __GAME_GRADE_SYSTEM
 	_ftprintf(fp, _T( "GameGrade %d\n" ), m_bGameGradeRendering );
 #endif // __GAME_GRADE_SYSTEM
@@ -1128,25 +1075,17 @@ int	COption::Save( LPCTSTR szFileName )
 	_ftprintf(fp, _T( "OPRenderName %d\n" ), m_nOtherPlayerName );
 	_ftprintf(fp, _T( "NRenderName %d\n" ), m_nMonName );
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	_ftprintf(fp, _T( "BRIGHT %d\n" ),   m_nOverBright );
 	_ftprintf(fp, _T( "GAMMA %f\n" ),    m_fGamma );
 	_ftprintf(fp, _T( "CONTRAST %f\n" ), m_fContrast );
-#endif //__Y_GAMMA_CONTROL_8
 			
-#if __VER >= 8 //__CSC_VER8_3
 	_ftprintf(fp, _T( "BUFFSTATUSMODE %d\n" ), m_BuffStatusMode );
-#endif //__CSC_VER8_3
-#if __VER >= 11 // __ADD_ZOOMOPT
 	_ftprintf(fp, _T( "ZOOMLIMIT %d\n" ), m_bZoomLimit );
-#endif
 #ifdef __SFX_OPT
 	_ftprintf(fp, _T( "SFXLEVEL %d\n" ), m_nSfxLevel );
 #endif
 	_ftprintf(fp, _T( "WEATHEREFFECT %d\n" ), m_nWeatherEffect );
-#if __VER >= 12 // __UPDATE_OPT
 	_ftprintf(fp, _T( "VIEWMASK %d\n" ), m_bViewMask );
-#endif
 	fclose(fp);
 	return 1;
 }

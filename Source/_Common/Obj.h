@@ -139,9 +139,7 @@ public:
 	float			m_fScrAngle;
 	float			m_fScrAngleX;
 
-#if __VER >= 9	//__AI_0509
 	D3DXVECTOR3		m_vOldRotate;
-#endif	// __AI_0509
 
 	#ifdef __YSMOOTH_OBJ	
 		BOOL			m_bSmooth;

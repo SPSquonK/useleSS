@@ -15,9 +15,7 @@ extern	CWorldMng	g_WorldMng;
 extern float s_fFogStart;
 extern float s_fFogEnd;
 #endif //__YENV
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonBase.h"
-#endif // __INSTANCE_DUNGEON
 
 
 BOOL CWorld::OpenWorld( OBJID idWorld, BOOL bDir )
@@ -99,14 +97,6 @@ BOOL CWorld::OpenWorld( LPCTSTR lpszFileName, BOOL bDir )
 		if( script.Token == _T( "pkmode" ) )
 		{
 			m_nPKMode = script.GetNumber();
-#if __VER <= 8
-			// 8차 버전 이하에서는 RA_PK를 RA_PENALTY_PK로 변경
-			if( m_nPKMode & RA_PK )
-			{
-				m_nPKMode	&= ~RA_PK;
-				m_nPKMode	|= RA_PENALTY_PK;
-			}
-#endif	// __VER
 
 		}
 		else
@@ -143,7 +133,6 @@ BOOL CWorld::OpenWorld( LPCTSTR lpszFileName, BOOL bDir )
 		}
 		
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 		else
 		if( script.Token == __T( "sky" ) )
 		{
@@ -209,7 +198,6 @@ BOOL CWorld::OpenWorld( LPCTSTR lpszFileName, BOOL bDir )
 		}
 #endif //__BS_CHANGEABLE_WORLD_SEACLOUD
 
-#endif
 	} while( script.tok != FINISHED );
 
 	if( !bLoaded_MPU )
@@ -219,11 +207,7 @@ BOOL CWorld::OpenWorld( LPCTSTR lpszFileName, BOOL bDir )
 	m_nVisibilityLand	= (int)( m_fFarPlane / ( MAP_SIZE * MPU ) );
 #endif
 
-#if __VER >= 15 // __DYNAMIC_MPU					// gmpbigsun:여기서 최초 MPU를 변경, 이곳에서 MPU값을 OLD_MPU로 설정하면 4로 고정되어 예전과 같음.
 	m_iMPU = g_MPU;						// __DYNAMIC_MPU가 설정된 경우 ".wld"파일에서 읽은 MPU값을 사용한다.!!!!!!!!!!!!!!!!!!!!!!!!
-#else
-	m_iMPU = OLD_MPU;
-#endif
 
 	// 파일명 보관 
 	_splitpath( szPathName, drive, dir, name, ext );
@@ -238,9 +222,7 @@ BOOL CWorld::OpenWorld( LPCTSTR lpszFileName, BOOL bDir )
 	if( m_dwWorldID == WI_WORLD_GUILDWAR )	// 길드대전 맵은 시야 2배 
 		nView = 2;
 
-#if __VER >= 15 // __GUILD_HOUSE
 	nView = nView + ( OLD_MPU - m_iMPU );
-#endif
 
 	m_linkMap.Init( m_nLandWidth, m_nLandHeight, nView, TRUE, m_iMPU );
 	m_apHeightMap = new float[ WORLD_WIDTH * WORLD_HEIGHT ];
@@ -252,12 +234,8 @@ BOOL CWorld::OpenWorld( LPCTSTR lpszFileName, BOOL bDir )
 	memset( m_apLand, 0, sizeof( CLandscape*) * m_nLandWidth * m_nLandHeight );
 	LoadRegion();
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	InitWorldEnvir( szPathName );
 	InitContinent( szPathName );
-#else
-	InitWorldEnvir( );
-#endif 
 
 	
 
@@ -324,14 +302,12 @@ BOOL CWorld::LoadObject()
 		if( IsUsableDYO( pObj ) )
 		{
 			ADDOBJ( pObj, TRUE, nLayer );
-#if __VER >= 13 // __QUEST_HELPER
 			if( pObj->GetType() == OT_MOVER && lstrlen( static_cast<CMover*>(pObj)->GetCharacter()->m_szKey ) )
 			{
 				LPCHARACTER lpChar = static_cast<CMover*>(pObj)->GetCharacter();
 				lpChar->m_dwWorldId = GetID();
 				lpChar->m_vPos = pObj->GetPos();
 			}
-#endif // __QUEST_HELPER
 		}
 		else
 		{
@@ -526,14 +502,6 @@ BOOL CWorld::ReadRegion( CScript& s )
 	if( ::GetLanguage() == LANG_KOR )	//__JAPAN_PVP
 		pRe->m_dwAttribute &= ~RA_FIGHT;
 
-#if __VER <= 8
-	// 8차 버전 이하에서는 RA_PK를 RA_PENALTY_PK로 변경
-	if( pRe->m_dwAttribute & RA_PK )
-	{
-		pRe->m_dwAttribute	&= ~RA_PK;
-		pRe->m_dwAttribute	|= RA_PENALTY_PK;
-	}
-#endif	// __VER
 
 	switch( dwIndex )
 	{
@@ -567,10 +535,8 @@ BOOL CWorld::ReadRespawn( CScript& s )
 		nVersion = 5;	
 	if( s.Token == _T( "respawn6" ) )
 		nVersion = 6;
-#if __VER >= 10 // __LEGEND
 	if( s.Token == _T( "respawn7" ) )
 		nVersion = 7;
-#endif //__LEGEND
 	
 	
 	CRespawnInfo ri,* pInfo = &ri;
@@ -710,7 +676,6 @@ BOOL CWorld::ReadRespawn( CScript& s )
 			}
 			pInfo->m_CtrlElem.m_dwSetGender = s.GetNumber();
 
-#if __VER >= 10 // __LEGEND
 			int maxjob = 0;
 			if(nVersion <= 6)
 				maxjob = 16;
@@ -719,10 +684,6 @@ BOOL CWorld::ReadRespawn( CScript& s )
 
 			for( int i = 0; i < maxjob; i++ )
 				pInfo->m_CtrlElem.m_bSetJob[ i ] = s.GetNumber();
-#else //__LEGEND
-			for( int i = 0; i < MAX_JOB; i++ )
-				pInfo->m_CtrlElem.m_bSetJob[ i ] = s.GetNumber();
-#endif //__LEGEND
 
 			pInfo->m_CtrlElem.m_dwSetEndu = s.GetNumber();  
 			pInfo->m_CtrlElem.m_dwMinItemNum = s.GetNumber();  
@@ -1127,14 +1088,12 @@ BOOL CWorld::IsUsableDYO( CObj* pObj )
 				if( g_eLocal.GetState( EVE_GUILDCOMBAT ) == FALSE )
 					return FALSE;
 			}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
  			if( stricmp( pCharacter->m_szKey, "MaFl_Annie" ) == 0
  					|| stricmp( pCharacter->m_szKey, "MaFl_Amos" ) == 0 )
  			{
  				if( g_eLocal.GetState( EVE_GUILDCOMBAT1TO1 ) == FALSE )
  					return FALSE;
  			}
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __JEFF_11_4
 			if( stricmp( pCharacter->m_szKey, "MaFl_Ray" ) == 0 )
@@ -1249,15 +1208,7 @@ BOOL CWorld::HasNoObj_Add( int nLayer )
 
 BOOL CWorld::HasNobody_Replace( int nLayer )
 {
-#if __VER >= 15 // __GUILD_HOUSE
 	return g_WorldMng.HasNobody_Replace( GetID(), nLayer );
-#else // __GUILD_HOUSE
-	for( int i = 0; i < m_cbReplaceObj; ++i )
-	{
-		if( m_aReplaceObj[i].nLayer == nLayer )
-			return FALSE;
-	}
-#endif // __GUILD_HOUSE
 	return TRUE;
 }
 
@@ -1276,25 +1227,19 @@ void CWorld::DriveOut( int nLayer )
 			CUser* pUser	= static_cast<CUser*>( m_apObject[i] );
 			switch( GetID() )
 			{
-#if __VER >= 13 // __HOUSING
 				case WI_WORLD_MINIROOM : CHousingMng::GetInstance()->GoOut( pUser ); break;
-#endif // __HOUSING
 				default :
-#if __VER >= 14 // __INSTANCE_DUNGEON
 					if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( GetID() ) )
 					{
 						CInstanceDungeonHelper::GetInstance()->GoOut( pUser );
 						break;
 					}
-#endif // __INSTANCE_DUNGEON
-#if __VER >= 15 // __GUILD_HOUSE
 					else if( GuildHouseMng->IsGuildHouse( GetID() ) )
 					{
 						//pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
 						Invalidate( nLayer, FALSE );
 						break;
 					}
-#endif // __GUILD_HOUSE
 					pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
 					break;
 			}

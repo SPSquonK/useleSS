@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "dbcontroller.h"
 
 enum {	QUERY_SECRETROOM_LOAD = 0,
@@ -41,4 +40,3 @@ private:
 
 };
 
-#endif // __SECRET_ROOM

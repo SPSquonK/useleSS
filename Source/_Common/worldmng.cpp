@@ -211,9 +211,7 @@ CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld )
 	{
 		pWorld	= Open( pd3dDevice, lpWorld->m_szFileName );
 		pWorld->m_dwWorldID	= idWorld;
-#if __VER >= 15 // __GUILD_HOUSE
 		pWorld->InProcessing( );			//added by gmpbigsun
-#endif
 		strcpy( pWorld->m_szWorldName, lpWorld->m_szWorldName );
 	}
 	return pWorld;
@@ -222,9 +220,7 @@ void CWorldMng::DestroyCurrentWorld()
 {
 	if( m_pWorld != NULL )
 	{
-#if __VER >= 15 // __GUILD_HOUSE
 		m_pWorld->OutProcessing( );			//added by gmpbigsun
-#endif
 
 #ifdef __WINDOW_INTERFACE_BUG
 		CWndBase* pWndBase = g_WndMng.GetWndBase( APP_INVENTORY );
@@ -673,7 +669,6 @@ void CWorldMng::Process()
 	}
 }
 
-#if __VER >= 15 // __GUILD_HOUSE
 BOOL CWorldMng::HasNobody_Replace( DWORD dwWorldId, int nLayer )
 {
 	CWorld* pWorld = GetFirstActive();
@@ -689,7 +684,6 @@ BOOL CWorldMng::HasNobody_Replace( DWORD dwWorldId, int nLayer )
 
 	return TRUE;
 }
-#endif // __GUILD_HOUSE
 
 // 모든 월드의 오브젝트 카운트를 얻는다.
 DWORD CWorldMng::GetObjCount()
@@ -778,13 +772,8 @@ void CWorldMng::CheckMapKey( CUser* pUser, const char* szFileName, const char* s
 
 	
 	// 맵 인증 실패 접속을 끊어버려야 한다.
-#if __VER >= 15
 	int x = int( pUser->GetPos().x ) / ( MAP_SIZE * pUser->GetWorld()->m_iMPU );
 	int z = int( pUser->GetPos().z ) / ( MAP_SIZE * pUser->GetWorld()->m_iMPU );
-#else // __VER >= 15
-	int x = int( pUser->GetPos().x ) / ( MAP_SIZE * MPU );
-	int z = int( pUser->GetPos().z ) / ( MAP_SIZE * MPU );
-#endif // __VER >= 15
 	char szLandFile[MAX_PATH] = {0,};
 	if( pUser->GetWorld() )
 	{

@@ -1104,7 +1104,6 @@ public:
 	void Process();
 };
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 class CSfxCursor : public CSfx
 {
 public:
@@ -1112,7 +1111,6 @@ public:
 	virtual ~CSfxCursor();
 	virtual void Process();
 };
-#endif // __ITEMCREATEMON_S0602
 
 class CSfxLinkMover : public CSfx			
 {

@@ -161,9 +161,7 @@ CWndChat::CWndChat()
 	m_bMoveLock = FALSE;
 	m_pWndChatFilter = NULL;
 	m_nHistoryIndex = 0;
-#if __VER >= 8 //__CSC_VER8_1
 	m_bChatLog = FALSE;
-#endif //__CSC_VER8_1
 }
 CWndChat::~CWndChat()
 {
@@ -303,7 +301,6 @@ void CWndChat::OnInitialUpdate()
 	}
 	pWndEdit->SetNativeMode();
 
-#if __VER >= 11 // __CSC_VER11_1
 	CRect rectEdit = m_wndEdit.GetWndRect();
 	rectEdit.left = rectEdit.left - 90;
 	m_wndEdit.SetWndRect( rectEdit );
@@ -317,7 +314,6 @@ void CWndChat::OnInitialUpdate()
 		pWndHead->EnableWindow(FALSE);
 		pWndHead->SetVisible(FALSE);
 	}
-#endif //__CSC_VER11_1
 	if( g_Option.m_nInstantHelp )
 	{
 		CScript	s;
@@ -415,11 +411,7 @@ void CWndChat::OnInitialUpdate()
 */
 	//LPBYTE m_wndChatEdit[3];
 	//CSize sizeWndChatEdit[3];
-#if __VER >= 11 // __CSC_VER11_1
 	LoadTGA( MakePath( DIR_THEME, "WndChatEdit00_1.tga" ), &m_wndChatEdit[0] );
-#else //__CSC_VER11_1
-	LoadTGA( MakePath( DIR_THEME, "WndChatEdit00.tga" ), &m_wndChatEdit[0] );
-#endif //__CSC_VER11_1
 	LoadTGA( MakePath( DIR_THEME, "WndChatEdit01.tga" ), &m_wndChatEdit[1] );
 #ifdef __LANG_IME_0327
 	LoadTGA( MakePath( DIR_THEME, "WndChatEdit02.tga" ), &m_wndChatEdit[2] );
@@ -453,7 +445,6 @@ void CWndChat::OnInitialUpdate()
 
 	m_timerInputTimeOut.Set( SEC( 300 ) );
 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	if( g_WndMng.m_pWndChatLog == NULL )
 	{
 		g_WndMng.m_pWndChatLog = new CWndChatLog;
@@ -487,7 +478,6 @@ void CWndChat::OnInitialUpdate()
 		if( pWndCheck3 )
 			pWndCheck3->SetCheck(g_WndMng.m_pWndChatLog->m_bVisible);
 	}
-#endif //__Y_CHAT_SYSTEM_8
 }
 
 BOOL CWndChat::Process ()
@@ -642,14 +632,11 @@ BOOL CWndChat::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				m_bChatLock = pWndCheck->GetCheck();
 			}
 			break;
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 		case WIDC_CHECK3: // 시스탐창
 			{
 				CWndButton* pWndCheck = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
 				BOOL bChatLog = pWndCheck->GetCheck();
-#if __VER >= 8 //__CSC_VER8_1 모든 윈도우를 지울때 ChatLog의 유무 구별을 위해 추가.
 				m_bChatLog = bChatLog;
-#endif //_CSC_VER8_1
 				if( g_WndMng.m_pWndChatLog )
 				{
 					if( bChatLog )
@@ -674,7 +661,6 @@ BOOL CWndChat::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 			}
 			break;
-#endif //__Y_CHAT_SYSTEM_8
 		case WIDC_MOVELOCK: // 이동 잠그기
 			{
 				CWndButton* pWndCheck = (CWndButton*)GetDlgItem( WIDC_MOVELOCK );
@@ -912,12 +898,10 @@ BOOL CWndChat::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							{
 								m_wndEdit.SetString( "/s " );
 							}
-#if __VER >= 11 // __CSC_VER11_1
 							else if( m_wndEdit.m_string == "/ㅈ " )
 							{
 								m_wndEdit.SetString( "/w " );
 							}
-#endif //__CSC_VER11_1
 						}
 					}
 				}
@@ -1000,11 +984,7 @@ void CWndChat::OnDestroy()
 }
 void CWndChat::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	AdjustMinRect( &rectWnd, 16 * 29, 16 * 3 );
-#else // __Y_CHAT_SYSTEM_8
-	AdjustMinRect( &rectWnd, 16 * 26, 16 * 3 );
-#endif //__Y_CHAT_SYSTEM_8
 	CRect rectOld = m_rectClient;
 	m_rectWindow = rectWnd;
 	m_rectClient = m_rectWindow;
@@ -1062,12 +1042,7 @@ void CWndChat::OnSize(UINT nType, int cx, int cy)
 	CWndButton* pWndButton2 = (CWndButton*)GetDlgItem( WIDC_HELP   );
 	CWndButton* pWndButton3 = (CWndButton*)GetDlgItem( WIDC_CLOSE  );
 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	CWndButton* pWndCheck3  = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
-#else //__Y_CHAT_SYSTEM_8
-	CWndButton* pWndCheck3  = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
-	pWndCheck3->SetVisible(FALSE);
-#endif //__Y_CHAT_SYSTEM_8
 
 	rect = GetClientRect();
 	rectEdit = pWndRadio1->GetWndRect();
@@ -1082,7 +1057,6 @@ void CWndChat::OnSize(UINT nType, int cx, int cy)
 	pWndRadio4->Move( rectEdit.TopLeft()  ); 
 	rectEdit.left = 200;
 	pWndRadio5->Move( rectEdit.TopLeft()  ); 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	rectEdit.left = rect.right - 200;
 	pWndCheck->Move( rectEdit.TopLeft()  ); 
 	rectEdit.left = rect.right - 150;
@@ -1090,12 +1064,6 @@ void CWndChat::OnSize(UINT nType, int cx, int cy)
 
 	rectEdit.left = rect.right - 100;
 	pWndCheck3->Move( rectEdit.TopLeft()  ); 	
-#else //__Y_CHAT_SYSTEM_8
-	rectEdit.left = rect.right - 150;
-	pWndCheck->Move( rectEdit.TopLeft()  ); 
-	rectEdit.left = rect.right - 100;
-	pWndButton1->Move( rectEdit.TopLeft()  ); 
-#endif //__Y_CHAT_SYSTEM_8
 	rectEdit.left = rect.right - 49;
 
 	CRect rectEdit2 = rectEdit;
@@ -1312,7 +1280,6 @@ void CWndChat::AdditionalSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFor
 }
 
 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 
 CWndChatLog::CWndChatLog()
 {
@@ -1512,7 +1479,6 @@ void CWndChatLog::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	MakeVertexBuffer();
 }
 
-#endif //__Y_CHAT_SYSTEM_8
 
 
 

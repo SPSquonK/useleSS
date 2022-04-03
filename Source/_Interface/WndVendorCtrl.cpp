@@ -49,7 +49,6 @@ void CWndVendorCtrl::OnInitialUpdate( void )
 	m_pTex = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndPosMark.tga" ), 0xffff00ff );
 }
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 CString CWndVendorCtrl::GetNumberFormatSelling( LPCTSTR szNumber )
 {
 	ASSERT( szNumber );
@@ -163,11 +162,7 @@ void CWndVendorCtrl::OnDraw( C2DRender* p2DRender )
 	int nWidth	= rect.Width() / 32;
 	int nHeight		= rect.Height() / 32;
 
-#if __VER >= 8 //__S8_VENDOR_REVISION
 	for( int i = 0; i < MAX_VENDOR_REVISION; i++ )
-#else //__S8_VENDOR_REVISION
-	for( int i = 0; i < MAX_VENDITEM; i++ )
-#endif //__S8_VENDOR_REVISION
 	{
 		int x	= i % 2;
 		int y	= i / 2;
@@ -231,71 +226,6 @@ void CWndVendorCtrl::OnDraw( C2DRender* p2DRender )
 		}
 	}
 }
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-void CWndVendorCtrl::OnDraw( C2DRender* p2DRender )
-{
-	if( m_pMover == NULL )
-		return;
-
-	CRect rect	= GetClientRect();
-	int nWidth	= rect.Width() / 32;
-	int nHeight		= rect.Height() / 32;
-
-	for( int i = 0; i < MAX_VENDITEM; i++ )
-	{
-		int x	= i % 6;
-		int y	= i / 6;
-		//p2DRender->RenderRect( CRect( x * 32 + 7, y * 32 + 11, x * 32 + 32 + 5, y * 32 + 32 + 9 ), 0xff00ffff );
-		CRect rectHittest	= CRect( x * 32 + 7, y * 32 + 11, x * 32 + 32 + 5, y * 32 + 32 + 9 );
-
-		CPoint point	= GetMousePoint();
-
-		if( rectHittest.PtInRect( point ) )
-		{
-			if( CWndBase::m_GlobalShortcut.m_dwData )
-			{
-				m_nCurSel = -1;
-				CPoint ptx = CPoint(x * 32 + 7, y * 32 + 11);
-				{
-					m_pTex->Render( p2DRender, ptx );
-				}
-			}
-		}			
-		CItemBase* pItemBase = GetItem( i );
-		if( pItemBase )
-		{
-			if( ((CItemElem*)pItemBase)->IsFlag( CItemElem::expired ) )
-			{
-				pItemBase->GetTexture()->Render2( p2DRender, CPoint( x * 32 + 6, y * 32 + 10 ), D3DCOLOR_XRGB( 255, 100, 100 ) );
-			}
-			else
-			{
-				pItemBase->GetTexture()->Render( p2DRender, CPoint( x * 32 + 6, y * 32 + 10 ) );
-			}
-
-			CPoint point	= GetMousePoint();
-			if( rectHittest.PtInRect( point ) )
-			{
-				CPoint point2 = point;
-				ClientToScreen( &point2 );
-				ClientToScreen( &rectHittest );
-				g_WndMng.PutToolTip_Item( pItemBase, point2, &rectHittest, APP_VENDOR );
-			}
-			if( i == m_nCurSel )
-				p2DRender->RenderRect( CRect( x * 32 + 7, y * 32 + 11, x * 32 + 32 + 5, y * 32 + 32 + 9 ), 0xff00ffff );
-			CItemElem* pItemElem	= (CItemElem*)pItemBase;
-			if( pItemElem->GetProp()->dwPackMax > 1 )
-			{
-				short nItemNum	= pItemBase->GetExtra();
-				TCHAR szTemp[32];
-				_stprintf( szTemp, "%d", nItemNum );
-				CSize size	= p2DRender->m_pFont->GetTextExtent( szTemp );
-				p2DRender->TextOut( x * 32 + 32 - size.cx+5, y * 32 + 32 - size.cy+12, szTemp, 0xff1010ff );
-			}
-		}
-	}
-}
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 
 BOOL CWndVendorCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
@@ -315,13 +245,8 @@ BOOL CWndVendorCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		CItemBase* pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( pItemBase )
 		{
-#if __VER >= 8 //__S8_VENDOR_REVISION
 			for( int i = 0; i < MAX_VENDOR_REVISION; i++ )
-#else //__S8_VENDOR_REVISION
-			for( int i = 0; i < MAX_VENDITEM; i++ )
-#endif //__S8_VENDOR_REVISION
 			{
-#if __VER >= 8 // __S8_VENDOR_REVISION
 				int x	= i % 2;
 				int y	= i / 2;
 				
@@ -333,11 +258,6 @@ BOOL CWndVendorCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					nX = 235;
 				
 				rect.SetRect( nX, nY, nX + 180, nY + 32 );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-				int x	= i % 6;
-				int y	= i / 6;
-				rect.SetRect( x * 32 + 7, y * 32 + 11, x * 32 + 32 + 5, y * 32 + 32 + 9 );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 				
 				if( rect.PtInRect( point ) && GetItem( i ) == NULL )
 				{
@@ -376,10 +296,6 @@ void CWndVendorCtrl::OnMouseMove( UINT nFlags, CPoint point )
 
 void CWndVendorCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 {
-#if __VER < 8 // __S8_VENDOR_REVISION
-	if( m_pMover == g_pPlayer )
-		return;
-#endif // __VER < 8 // __S8_VENDOR_REVISION
 
 	if( GetAsyncKeyState( VK_LCONTROL ) & 0x8000 )
 		return;
@@ -511,13 +427,8 @@ int CWndVendorCtrl::HitTest( CPoint point )
 	int nWidth	= rect.Width() / 32;
 	int nHeight		= rect.Height() / 32;
 
-#if __VER >= 8 //__S8_VENDOR_REVISION
 	for( int i = 0; i < MAX_VENDOR_REVISION; i++ )
-#else //__S8_VENDOR_REVISION
-	for( int i = 0; i < MAX_VENDITEM; i++ )
-#endif //__S8_VENDOR_REVISION
 	{
-#if __VER >= 8 // __S8_VENDOR_REVISION
 		int x	= i % 2;
 		int y	= i / 2;
 		
@@ -528,11 +439,6 @@ int CWndVendorCtrl::HitTest( CPoint point )
 		else
 			nX = 235;
 		rect.SetRect( nX, nY, nX + 32, nY + 32 );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-		int x	= i % 6;
-		int y	= i / 6;
-		rect.SetRect( x * 32 + 7, y * 32 + 11, x * 32 + 32 + 5, y * 32 + 32 + 9 );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 		
 		if( rect.PtInRect( point ) )
 			return i;

@@ -5,9 +5,7 @@
 #include "definetext.h"
 #include "party.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 extern		CDPClient		g_DPlay;
 

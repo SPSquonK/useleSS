@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "Campus.h"
 
-#if __VER >= 15 // __CAMPUS
 #ifdef __WORLDSERVER
 #include "User.h"
 extern CUserMng			g_UserMng;
@@ -314,4 +313,3 @@ u_long CCampusMng::GetCampusIdByPlayerId( u_long idPlayer )
 	
 	return NULL;
 }
-#endif // __CAMPUS

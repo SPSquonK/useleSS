@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include ".\minigameladder.h"
 
 CMiniGameLadder::CMiniGameLadder(void)
@@ -42,4 +41,3 @@ BOOL CMiniGameLadder::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
 	return bReturn;
 }
 
-#endif // __RAINBOW_RACE

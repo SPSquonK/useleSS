@@ -27,9 +27,7 @@ private:
 	int				m_nParam;
 	BOOL			m_bTarget;			// 타켓팅되었는가? - 광역일 경우 m_bTarget가 FALSE이면 주변에 있는 넘
 	int				m_nReflect;			// 반사데미지 0 일반, 1 : 당한넘(공격한넘), 2 : 준넘(방어한넘)
-#if __VER >= 11 // __REFLECTDMG_AFTER
 	int m_nReflectDmg;
-#endif // __REFLECTDMG_AFTER
 
 public:
 	int				OnDamageMsgW();
@@ -40,18 +38,12 @@ private:
 	void			ChanceSkill( int nDestParam, CCtrl *m_pAttacker, CCtrl *m_pDefender );
 	void			ProcessAbnormal( int nDamage, ATTACK_INFO* pInfo );
 	int				MinusHP( int *pnDamage );
-#if __VER >= 9 // __ULTIMATE
 	void			StealHP( int nDamage, ATK_TYPE type );
-#else // __ULTIMATE
-	void			StealHP( int nDamage );
-#endif // __ULTIMATE	
 	void			ChangeExpRatio();
 	void			OnDamaged( int nDamage );
 	void			OnDied();
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	void			OnDiedPVP();
-#endif	// __VER >= 8  
 
 	void			OnDiedSchoolEvent();
 	int				PostAsalraalaikum();

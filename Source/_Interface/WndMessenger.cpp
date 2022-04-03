@@ -83,7 +83,6 @@ void CWndMessenger::OnDraw( C2DRender* p2DRender )
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  ( 54 + g_pPlayer->GetJob() - 6 ) + ( 8 * g_pPlayer->GetSex() ), &pVertices, 0xffff6464 );
 		}
-#if __VER >= 10 // __LEGEND
 		else if( g_pPlayer->IsMaster() )
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  ( 54 + g_pPlayer->GetJob() - 16 ) + ( 8 * g_pPlayer->GetSex() ), &pVertices, 0xffff6464 );
@@ -92,7 +91,6 @@ void CWndMessenger::OnDraw( C2DRender* p2DRender )
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  ( 54 + g_pPlayer->GetJob() - 24 ) + ( 8 * g_pPlayer->GetSex() ), &pVertices, 0xffff6464 );
 		}
-#endif //__LEGEND
 		else
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  g_pPlayer->GetJob() + ( 6 * g_pPlayer->GetSex() ), &pVertices, 0xffff6464 );
@@ -104,7 +102,6 @@ void CWndMessenger::OnDraw( C2DRender* p2DRender )
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  ( 54 + g_pPlayer->GetJob() - 6 ) + ( 8 * g_pPlayer->GetSex() ), &pVertices, 0xffffffff );
 		}
-#if __VER >= 10 // __LEGEND
 		else if( g_pPlayer->IsMaster() )
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  ( 54 + g_pPlayer->GetJob() - 16 ) + ( 8 * g_pPlayer->GetSex() ), &pVertices, 0xffffffff );
@@ -113,7 +110,6 @@ void CWndMessenger::OnDraw( C2DRender* p2DRender )
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  ( 54 + g_pPlayer->GetJob() - 24 ) + ( 8 * g_pPlayer->GetSex() ), &pVertices, 0xffffffff );
 		}
-#endif //__LEGEND
 		else
 		{
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 5, 0 ),  g_pPlayer->GetJob() + ( 6 * g_pPlayer->GetSex() ), &pVertices, 0xffffffff );
@@ -197,9 +193,6 @@ void CWndMessenger::OnInitialUpdate()
 	if( g_WndMng.m_Messenger.m_aFriend.size() )
 #endif	// __RT_1025
 	{
-#if __VER < 11 // __SYS_PLAYER_DATA
-		g_DPlay.SendGetFriendName();
-#endif	// __SYS_PLAYER_DATA
 		g_DPlay.SendGetFriendState();
 	}
 	m_wndParty.Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pWndTabCtrl, 12 );
@@ -384,7 +377,6 @@ void CWndMessenger::OnSize(UINT nType, int cx, int cy)
 	CWndNeuz::OnSize( nType, cx, cy );
 }
 
-#if __VER >= 11 // __CSC_VER11_4
 //////////////////////////////////////////////////////////////////////////
 // New Messenger Window
 //////////////////////////////////////////////////////////////////////////
@@ -495,7 +487,6 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 		p2DRender->RenderTexture( CPoint(lpTagButton->rect.left + 2, lpTagButton->rect.top + 2), &m_TexMail, m_nFlashCounter );
 	}
 
-#if __VER >= 15 // __CAMPUS
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 	if( pWndTabCtrl == NULL )
 		return;
@@ -561,62 +552,6 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 			}
 		}
 	}
-#else // __CAMPUS
-	//서버 정보
-	CString strServerName;
-	strServerName.Format( "%s", g_dpCertified.GetServerName(g_Option.m_nSer) );
-	if( strServerName.GetLength() > 18 ) 
-	{
-		int	nReduceCount = 0;
-
-		for( nReduceCount=0; nReduceCount<18; )
-		{
-			if( IsDBCSLeadByte( strServerName[ nReduceCount ] ) )
-				nReduceCount+=2;
-			else
-				nReduceCount++;
-		}
-		strServerName = strServerName.Left( nReduceCount );
-		strServerName += "...";
-	}
-	p2DRender->TextOut( 170, 13, 1, 1, strServerName, 0xff606060 );
-
-	//채널 정보
-	LPSERVER_DESC pServerDesc = NULL;
-	int nCount = 0;
-	for( int j = 0; j < g_dpCertified.m_dwSizeofServerset; j++ )
-	{
-		if(g_dpCertified.m_aServerset[j].dwParent == NULL_ID)
-		{
-			if(nCount++ == g_Option.m_nSer)
-				pServerDesc = g_dpCertified.m_aServerset + j;
-		}
-		if(g_dpCertified.m_aServerset[j].dwParent != NULL_ID && g_dpCertified.m_aServerset[j].lEnable != 0L)
-		{
-			if(pServerDesc != NULL && g_dpCertified.m_aServerset[j].dwParent == pServerDesc->dwID)
-			{
-				strServerName.Format( "%s", g_dpCertified.m_aServerset[j+g_Option.m_nMSer].lpName );
-				if( strServerName.GetLength() > 18 ) 
-				{
-					int	nReduceCount = 0;
-
-					for( nRevivalLayer=0; nRevivalLayer<18; )
-					{
-						if( IsDBCSLeadByte( strServerName[ nRevivalLayer ] ) )
-							nRevivalLayer+=2;
-						else
-							nRevivalLayer++;
-					}
-					strServerName = strServerName.Left( nRevivalLayer );
-					strServerName += "...";
-				}
-				p2DRender->TextOut( 170, 27, 1, 1, strServerName, 0xff606060 );
-
-				j = g_dpCertified.m_dwSizeofServerset;
-			}
-		}
-	}
-#endif // __CAMPUS
 } 
 
 BOOL CWndMessengerEx::Process()
@@ -671,18 +606,13 @@ void CWndMessengerEx::OnInitialUpdate()
 	if( g_WndMng.m_Messenger.m_aFriend.size() )
 #endif	// __RT_1025
 	{
-#if __VER < 11 // __SYS_PLAYER_DATA
-		g_DPlay.SendGetFriendName();
-#endif	// __SYS_PLAYER_DATA
 		g_DPlay.SendGetFriendState();
 	}
 
 	m_wndGuild.Create( CRect( 0, 0, 250, 250 ), pWndTabCtrl, 13 );
 	m_wndGuild.AddWndStyle( WBS_NODRAWFRAME );
 
-#if __VER >= 15 // __CAMPUS
 	m_WndCampus.Create( WBS_CHILD | WBS_NODRAWFRAME, GetClientRect(), pWndTabCtrl, APP_MESSENGER_TAB_CAMPUS );
-#endif // __CAMPUS
 	
 	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_FRIEND); //"친구"
@@ -694,12 +624,10 @@ void CWndMessengerEx::OnInitialUpdate()
 	tabTabItem.pWndBase = &m_wndGuild;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
-#if __VER >= 15 // __CAMPUS
 	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_CAMPUS); //"사제"
 	tabTabItem.pWndBase = &m_WndCampus;
 	pWndTabCtrl->InsertItem( 2, &tabTabItem );
-#endif // __CAMPUS
 
 	m_wndFriend.ScrollBarPos( 0 );
 	m_wndGuild.ScrollBarPos( 0 );
@@ -834,10 +762,8 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			m_wndFriend.UpdatePlayerList();
 		else if(pChild == &m_wndGuild)
 			m_wndGuild.UpdatePlayerList();
-#if __VER >= 15 // __CAMPUS
 		else if( pChild == &m_WndCampus )
 			m_WndCampus.UpdatePlayerList();
-#endif // __CAMPUS
 	}
 	else
 	{
@@ -855,10 +781,8 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		nFocusChild = 1;
 	else if(pChild == &m_wndGuild)
 		nFocusChild = 2;
-#if __VER >= 15 // __CAMPUS
 	else if( pChild == &m_WndCampus )
 		nFocusChild = 3;
-#endif // __CAMPUS
 
 	switch(nID)
 	{
@@ -868,10 +792,8 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					m_wndFriend.SortbyChannel();
 				else if(nFocusChild == 2)
 					m_wndGuild.SortbyChannel();
-#if __VER >= 15 // __CAMPUS
 				else if( nFocusChild == 3 )
 					m_WndCampus.SortbyChannel();
-#endif // __CAMPUS
 			}
 			break;
 		case WIDC_STATE:
@@ -880,10 +802,8 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					m_wndFriend.SortbyStatus();
 				else if(nFocusChild == 2)
 					m_wndGuild.SortbyStatus();
-#if __VER >= 15 // __CAMPUS
 				else if( nFocusChild == 3 )
 					m_WndCampus.SortbyStatus();
-#endif // __CAMPUS
 			}
 			break;
 		case WIDC_LEVEL:
@@ -892,10 +812,8 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					m_wndFriend.SortbyLevel();
 				else if(nFocusChild == 2)
 					m_wndGuild.SortbyLevel();
-#if __VER >= 15 // __CAMPUS
 				else if( nFocusChild == 3 )
 					m_WndCampus.SortbyLevel();
-#endif // __CAMPUS
 			}
 			break;
 		case WIDC_JOB:
@@ -904,10 +822,8 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					m_wndFriend.SortbyJob();
 				else if(nFocusChild == 2)
 					m_wndGuild.SortbyJob();
-#if __VER >= 15 // __CAMPUS
 				else if( nFocusChild == 3 )
 					m_WndCampus.SortbyJob();
-#endif // __CAMPUS
 			}
 			break;
 		case WIDC_NAME:
@@ -916,10 +832,8 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					m_wndFriend.SortbyName();
 				else if(nFocusChild == 2)
 					m_wndGuild.SortbyName();
-#if __VER >= 15 // __CAMPUS
 				else if( nFocusChild == 3 )
 					m_WndCampus.SortbyName();
-#endif // __CAMPUS
 			}
 			break;
 	}
@@ -976,7 +890,6 @@ void CWndMessengerEx::UpdateGuildMemberList()
 		m_wndGuild.UpdatePlayerList();
 }
 
-#if __VER >= 15 // __CAMPUS
 void CWndMessengerEx::UpdateCampusMemberList()
 {
 	CWndTabCtrl* pTabCtrl = ( CWndTabCtrl* )GetDlgItem( WIDC_TABCTRL1 );
@@ -984,8 +897,6 @@ void CWndMessengerEx::UpdateCampusMemberList()
 	if( pChild == &m_WndCampus )
 		m_WndCampus.UpdatePlayerList();
 }
-#endif // __CAMPUS
-#endif //__CSC_VER11_4
 
 CWndInstantMsg::CWndInstantMsg() 
 { 

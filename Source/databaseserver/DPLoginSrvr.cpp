@@ -19,9 +19,7 @@ CDPLoginSrvr::CDPLoginSrvr()
 	ON_MSG( PACKETTYPE_DEL_PLAYER, &CDPLoginSrvr::OnRemovePlayer );
 	ON_MSG( PACKETTYPE_LEAVE, &CDPLoginSrvr::OnLeave );
 	ON_MSG( PACKETTYPE_CLOSE_ERROR, &CDPLoginSrvr::OnCloseError );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	ON_MSG( PACKETTYPE_LOGIN_PROTECT_CERT, &CDPLoginSrvr::OnLoginProtect );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 CDPLoginSrvr::~CDPLoginSrvr()
@@ -197,7 +195,6 @@ void CDPLoginSrvr::OnCloseError( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufS
 #endif
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CDPLoginSrvr::OnLoginProtect( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = g_DbManager.AllocRequest();
@@ -215,6 +212,5 @@ void CDPLoginSrvr::SendLoginProtect( const char* lpszAccount, const char* lpszPl
 	ar << idPlayer << bLogin;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#endif // __2ND_PASSWORD_SYSTEM
 
 CDPLoginSrvr	g_dpLoginSrvr;

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __LORD
 
 #include "lordskill.h"
 #include "definelordskill.h"
@@ -225,4 +224,3 @@ void CLordSkillComponentExecutable::PutSkillLog( CUser* pUser )
 	g_DPSrvr.PutPenyaLog( pUser, "s", GetName(), 0 );
 }
 #endif	// __WORLDSERVER
-#endif	// __LORD

@@ -19,9 +19,7 @@ extern	CDPDatabaseClient	g_dpDBClient;
 #include "EventMonster.h"
 #endif // __EVENT_MONSTER
 
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 #include "CreateMonster.h"
-#endif // __NEW_ITEMCREATEMON_SERVER
 
 //////////////////////////////////////////////////////////////////////
 // ATTACK_INFO
@@ -113,9 +111,7 @@ CAttackArbiter::CAttackArbiter( DWORD dwMsg, CMover* pAttacker, CMover* pDefende
 		  m_bTarget( bTarget ),
 		  m_nReflect( nReflect )		  
 {
-#if __VER >= 11 // __REFLECTDMG_AFTER
 	m_nReflectDmg = 0;
-#endif // __REFLECTDMG_AFTER
 }
 
 CAttackArbiter::~CAttackArbiter()
@@ -176,28 +172,19 @@ int CAttackArbiter::OnDamageMsgW()
 				continue;
 			}
 #endif // __EVENTLUA_SPAWN
-#if __VER < 11 // __REMOVE_ENDURANCE
-			m_pDefender->Abrade( m_pAttacker, info.nParts );
-#endif // __REMOVE_ENDURANCE
 			int n = CalcDamage( &info );					// 데미지를 구한다. (m_dwAtkFlags도 변경될 수 있다) 
 			if( n > 0 )
 			{
 				ProcessAbnormal( n, &info );				// 스턴, 암흑, 독, 반사 상태처리 
-#if __VER >= 9 // __ULTIMATE
 				StealHP( n, info.GetAtkType() );								// 흡혈 
-#else // __ULTIMATE
-				StealHP( n );								// 흡혈 
-#endif // __ULTIMATE
 				nDamage += n;
 			}
 		}
 	}
 
-#if __VER >= 8 // __GUILDCOMBAT_85
 	if( m_pAttacker->IsPlayer() && m_pDefender->IsPlayer() )
 	{
 		nDamage -= (nDamage * m_pDefender->GetParam( DST_PVP_DMG_RATE, 0) / 100);
-#if __VER >= 9 // __CHAO_DMGDEC
 		if( !m_pAttacker->IsGuildCombatTarget( m_pDefender ) )
 		{
 			int nDamageDecRate = m_pAttacker->GetPKValue() * 5;
@@ -205,17 +192,13 @@ int CAttackArbiter::OnDamageMsgW()
 				nDamageDecRate = 99;
 			nDamage -= (int)( nDamage * ( (float)nDamageDecRate/(float)100) );
 		}
-#endif // __CHAO_DMGDEC
 	}
-#endif // __VER >= 8
 
 	nDamage = max( nDamage, 1 );
 	int nHP = MinusHP( &nDamage );							// HP 감소 시킴 
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	if( CMonsterSkill::GetInstance()->MonsterTransform( m_pDefender, nHP ) )
 		return 0;
-#endif // __INSTANCE_DUNGEON
 
 	if( m_pDefender->m_pActMover->IsSit() )					// 앉기해제 & 이동을 멈춤 
 		m_pDefender->m_pActMover->ResetState( OBJSTA_MOVE_ALL );
@@ -240,23 +223,17 @@ int CAttackArbiter::OnDamageMsgW()
 				m_pDefender->RemoveBuff( BUFF_SKILL, SI_ASS_HEAL_PREVENTION );	// 해제.
 			}
 		}
-#if __VER >= 11 // __REFLECTDMG_AFTER
 		if( m_nReflectDmg )
 		{
 			m_pAttacker->m_pActMover->SendDamage( AF_FORCE, m_pDefender->GetId(), m_nReflectDmg, TRUE, 2 );
 			m_nReflectDmg = 0;
 		}
-#endif// __REFLECTDMG_AFTER
 	}
 	else	
 		OnDied();											// 경험치, 아이템 드랍 
 	
 
-#if __VER >= 8   // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	m_pDefender->EndPVP(nHP);
-#else	//__VER >= 8
-	m_pDefender->m_nHitPoint = nHP;
-#endif	//__VER >= 8
 
 	return nDamage;
 }
@@ -275,14 +252,12 @@ BOOL CAttackArbiter::CheckValidDamageMsg()
 	}
 #endif // __EVENT_MONSTER
 
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 	if( m_pAttacker->IsPlayer() && !CCreateMonster::GetInstance()->IsAttackAble( static_cast<CUser*>(m_pAttacker), m_pDefender, TRUE ) )
 	{
 		m_dwAtkFlags = AF_MISS;
 		m_pDefender->m_idAttacker = NULL_ID;
 		m_pDefender->m_idTargeter = NULL_ID;
 	}
-#endif // __NEW_ITEMCREATEMON_SERVER
 
 	if( m_dwAtkFlags & AF_MISS ) 
 	{
@@ -334,10 +309,8 @@ int CAttackArbiter::CalcATK( ATTACK_INFO* pInfo )
 	nATK	+= m_pAttacker->GetParam( DST_ATKPOWER, 0 );
 //#endif	// __PET_0410
 
-#if __VER >= 9 // __EVENTLUA_ATKDEF
 	if( m_pAttacker->IsPlayer() )
 		nATK += prj.m_EventLua.GetAttackPower();
-#endif // __EVENTLUA_ATKDEF
 
 #ifdef __JEFF_11
 	if( nATK < 0 )
@@ -390,11 +363,7 @@ int CAttackArbiter::OnAfterDamage( ATTACK_INFO* pInfo, int nDamage )
 #endif	// __SKILL0517
 				}
 			}
-#if __VER >= 8 // __S8_PK
 			pDefender->DoUseSkill( SI_GEN_ATK_COUNTER, nLevel, pAttacker->GetId(), SUT_NORMAL, FALSE, 0 );
-#else // __VER >= 8 __S8_PK
-			pDefender->DoUseSkill( SI_GEN_ATK_COUNTER, nLevel, pAttacker->GetId(), SUT_NORMAL, 0 );
-#endif // __VER >= 8 __S8_PK
 
 			nDamage = 0;
 			pInfo->dwAtkFlags = AF_MISS;
@@ -406,11 +375,7 @@ int CAttackArbiter::OnAfterDamage( ATTACK_INFO* pInfo, int nDamage )
 		if( pDefender->IsRangeObj( pAttacker->GetPos(), 3.0f ) )
 		{
 			pDefender->RemoveChrStateBuffs( CHS_DMG_COUNTERATTACK );
-#if __VER >= 8 // __S8_PK
 			pDefender->DoUseSkill( SI_GEN_ATK_COUNTER, pInfo->GetSkillLevel(), pAttacker->GetId(), SUT_NORMAL, FALSE, 0 );	
-#else // __VER >= 8 __S8_PK
-			pDefender->DoUseSkill( SI_GEN_ATK_COUNTER, pInfo->GetSkillLevel(), pAttacker->GetId(), SUT_NORMAL, 0 );	
-#endif // __VER >= 8 __S8_PK
 		}
 	}
 
@@ -420,13 +385,11 @@ int CAttackArbiter::OnAfterDamage( ATTACK_INFO* pInfo, int nDamage )
 		pAttacker->AddGold( -nDamage );
 	}
 
-#if __VER >= 9	//__AI_0509
 	if( pDefender->IsReturnToBegin() )
 	{
 		nDamage = 0;
 		pInfo->dwAtkFlags = AF_MISS;
 	}
-#endif	// __AI_0509
 
 	return nDamage;
 }
@@ -474,10 +437,6 @@ int CAttackArbiter::PostCalcDamage( int nATK, ATTACK_INFO* pInfo )
 	{
 	case POSTCALC_DPC:
 		nDamage = pDefender->ApplyDPC( nATK, pInfo );	// Defense, Parry, Critical 적용
-#if __VER < 13 // __EXT_ENCHANT
-		if( nATK > 0 )
-			nDamage += pAttacker->CalcPropDamage( pDefender, pInfo->dwAtkFlags );		// 속성데미지를 추가
-#endif // __EXT_ENCHANT
 		break;
 	case POSTCALC_MAGICSKILL:
 		nDamage = pAttacker->PostCalcMagicSkill( nATK, pInfo );
@@ -511,10 +470,8 @@ int CAttackArbiter::PostAsalraalaikum()
 		pSkill ? pSkill->dwLevel : 0;
 #endif	// __SKILL0517
 
-#if __VER >= 12 // __MONSTER_SKILL
 	if( m_pAttacker->IsNPC() )
 		dwSkillLevel = CMonsterSkill::GetInstance()->GetMonsterSkillLevel( m_pAttacker, SI_BIL_PST_ASALRAALAIKUM );
-#endif // __MONSTERSKILL
 
 	switch( dwSkillLevel )
 	{
@@ -593,9 +550,7 @@ void CAttackArbiter::ProcessAbnormal( int nDamage, ATTACK_INFO* pInfo )
 		case ATK_MAGICSKILL:
 			if( m_pDefender->HasBuff( BUFF_SKILL, SI_PSY_NLG_CRUCIOSPELL ) )		// 방어자가 크루시오 스펠일 경우
 				bAble = FALSE;
-#if __VER >= 11 // __REFLECTDMG_AFTER
 			break;
-#endif // __REFLECTDMG_AFTER
 		case ATK_FORCE:															// 미리계산된 데미지
 			bAble = FALSE;
 			break;
@@ -604,17 +559,9 @@ void CAttackArbiter::ProcessAbnormal( int nDamage, ATTACK_INFO* pInfo )
 		if( bAble )
 		{
 			int nDmg = (int)( nDamage * (float)(nReflectDmgRate / 100.0f) );
-#if __VER >= 8 // __S8_PVP_DST_REFLECT_DAMAGE
 			if( m_pAttacker->IsPlayer() && m_pDefender->IsPlayer() )
 				nDmg = (int)( nDmg * 0.1f );
-#endif // __VER >= 8 // __S8_PVP_DST_REFLECT_DAMAGE
-#if __VER >= 11 // __REFLECTDMG_AFTER
 			m_nReflectDmg = nDmg;
-#else // __REFLECTDMG_AFTER
-			m_pAttacker->m_pActMover->SendDamage( AF_FORCE, 
-			                                  m_pDefender->GetId(), 
-			                                  nDmg, TRUE, 2 );
-#endif // __REFLECTDMG_AFTER
 		}
 	}
 
@@ -672,10 +619,8 @@ void CAttackArbiter::ProcessAbnormal( int nDamage, ATTACK_INFO* pInfo )
 		if( dwActiveSkill != NULL_ID )		// 추가 발동 스킬이 있다.
 		{
 			DWORD dwActiveSkillRate	= pAddSkillProp->dwActiveSkillRate;
-#if __VER >= 9	// __SKILL_0706
 			if( m_pAttacker->IsPlayer() && m_pDefender->IsPlayer() )
 				dwActiveSkillRate	= pAddSkillProp->dwActiveSkillRatePVP;
-#endif	// __SKILL_0706
 			// 발동확률에 걸렸는가.
 			if( dwActiveSkillRate == NULL_ID || xRandom(100) < dwActiveSkillRate )
 				m_pAttacker->DoActiveSkill( dwActiveSkill, pAddSkillProp->dwSkillLvl, m_pDefender );	// 발동
@@ -719,11 +664,7 @@ int CAttackArbiter::MinusHP( int *pnDamage )
 }
 
 // 흡혈 
-#if __VER >= 9 // __ULTIMATE
 void CAttackArbiter::StealHP( int nDamage, ATK_TYPE type )
-#else // __ULTIMATE
-void CAttackArbiter::StealHP( int nDamage )
-#endif // __ULTIMATE
 {
 	ItemProp *pHandItem = m_pAttacker->GetActiveHandItemProp();
 	if( pHandItem )
@@ -735,7 +676,6 @@ void CAttackArbiter::StealHP( int nDamage )
 		}
 	}
 
-#if __VER >= 9 // __ULTIMATE
 	if( type == ATK_GENERIC && m_pAttacker->IsPlayer() )
 	{
 		int nDstHP = m_pAttacker->GetParam( DST_MELEE_STEALHP, 0 );
@@ -743,7 +683,6 @@ void CAttackArbiter::StealHP( int nDamage )
 		if( 0 < nDstHP )
 			m_pAttacker->SetDestParam( DST_HP, nStealHP, NULL_CHGPARAM );				// 공격자에게 흡혈HP를 줌.
 	}
-#endif // __ULTIMATE
 }
 
 
@@ -752,9 +691,7 @@ void CAttackArbiter::StealHP( int nDamage )
 // 공격당하고 데미지를 입을 경우 처리 
 void CAttackArbiter::OnDamaged( int nDamage )
 {
-#if __VER >= 9 // __RECOVERY10
 	m_pDefender->m_nAtkCnt = 1;
-#endif // __RECOVERY10
 	m_pDefender->SetDamagedMotion( m_pAttacker, m_dwAtkFlags );
 
 	g_UserMng.AddDamage( m_pDefender, GETID( m_pAttacker ), nDamage, m_dwAtkFlags );
@@ -763,14 +700,12 @@ void CAttackArbiter::OnDamaged( int nDamage )
 // 공격당하고 죽는 경우 처리 
 void CAttackArbiter::OnDied()
 {
-#if __VER >= 8   // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	if( m_pDefender && m_pAttacker && m_pDefender->m_nDuel != 0 && m_pAttacker->m_nDuel != 0 && 
 		m_pDefender->m_idDuelOther == m_pAttacker->GetId() )
 	{
 		OnDiedPVP();
 		return;
 	}
-#endif	//__VER >= 8  
 	m_pDefender->SubPVP( m_pAttacker, m_nReflect );					// m_pDefender가 죽고난 후 슬로터관련 처리.
 
 	m_pAttacker->AddKillRecovery();
@@ -790,7 +725,6 @@ void CAttackArbiter::OnDied()
 	
 	m_pDefender->DropItemByDied( m_pAttacker );
 
-#if __VER >= 8 // __S8_PK
 #ifdef __JEFF_11_4
 	BOOL bArena		= m_pDefender->GetWorld() && m_pDefender->GetWorld()->IsArena();
 #endif	// __JEFF_11_4
@@ -808,7 +742,6 @@ void CAttackArbiter::OnDied()
 		g_UserMng.AddPKPropensity( m_pDefender );
 		g_dpDBClient.SendLogPkPvp( m_pDefender, m_pAttacker, 0, 'P' );
 	}	
-#endif // __VER >= 8 // __S8_PK
 
 	m_pAttacker->m_nAtkCnt = 0;							// 타겟을 죽였으면 공격자의 어택카운트 클리어
 	m_pDefender->DoDie( m_pAttacker, m_dwMsg );			// m_pDefender야 죽어라. 
@@ -816,7 +749,6 @@ void CAttackArbiter::OnDied()
 	m_pAttacker->ClearDestObj();						// 목표를 죽였으면 이동목표도 클리어.
 }
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 // PVP공격당하고 죽는 경우 처리 
 void CAttackArbiter::OnDiedPVP()
 {
@@ -851,7 +783,6 @@ void CAttackArbiter::OnDiedPVP()
 	m_pAttacker->ClearDestObj();						// 이동목표도 클리어.
 	m_pDefender->ClearDestObj();						// 이동목표도 클리어.
 }
-#endif	// __VER >= 8  
 
 
 // 스쿨이벤트 처리 

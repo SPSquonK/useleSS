@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "TreeInformation.h"
 
-#if __VER >= 15 /* __IMPROVE_QUEST_INTERFACE */ && defined( __CLIENT )
+#if defined( __CLIENT )
 //-----------------------------------------------------------------------------
 CTreeInformation::CTreeInformation( void ) : 
 m_dwData( 0 ), 

@@ -1,4 +1,3 @@
-#if __VER >= 13 // __RAINBOW_RACE
 
 #ifndef __WNDRAINBOWRACE__H
 #define __WNDRAINBOWRACE__H
@@ -433,4 +432,3 @@ public:
 	void Reset();
 };
 #endif //__WNDRAINBOWRACE__H
-#endif //__RAINBOW_RACE

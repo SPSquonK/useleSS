@@ -95,9 +95,7 @@ using namespace std;
 #include "Messenger.h"
 #include "yUtil.h"
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 #include "TexturePool.h"	//gmpbigsun
-#endif	//__BS_CHANGING_ENVIR
 
 // Model
 #include "Model.h"
@@ -184,10 +182,8 @@ extern BYTE             g_bKeyTable2[256]; // 키 입력 테이블 (키 에지검사용)
 #endif //__XKEYEDGE
 extern CNeuzApp         g_Neuz        ; // 어플리케이션 클래스, DX3D 프레임 워크 
 extern CToolTip         g_toolTip     ; // 툴팁 출력 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 extern CToolTip         g_toolTipSub1 ;
 extern CToolTip         g_toolTipSub2 ;
-#endif // __IMPROVE_SYSTEM_VER15
 extern CMover*          g_pPlayer     ; // 플레이어 객체 
 extern CWorldMng	    g_WorldMng    ;
 extern CProject         prj;
@@ -209,10 +205,8 @@ extern int			g_nRenderCnt;	// 렌더화면때마다 하나씩 카운트 되는 변수
 extern int			g_nProcessCnt;	// 프로세스마다 하나씩 카운트 되는 변수.
 
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 #include "GuildCombat1to1.h"
 extern CGuildCombat1to1Mng g_GuildCombat1to1Mng;
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __BS_CONSOLE
 extern DlgConsole g_Console;

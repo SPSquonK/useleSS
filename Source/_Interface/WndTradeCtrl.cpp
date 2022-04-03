@@ -128,7 +128,6 @@ BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		CItemBase* pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( pItemBase ) 
 		{
-#if __VER >= 9 // __CSC_VER9_1
 //			ItemProp* pItemProp = pItemBase->GetProp();
 			CItemElem* pItemElem = (CItemElem*)pItemBase;
 			if( pItemElem->IsFlag( CItemElem::expired ) )
@@ -140,7 +139,6 @@ BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					return FALSE;
 			}
 */
-#endif //__CSC_VER9_1
 			if( ( (CItemElem*)pItemBase )->m_nItemNum > 1 )
 			{
 				for( int i = 0; i < MAX_TRADE; i++ )

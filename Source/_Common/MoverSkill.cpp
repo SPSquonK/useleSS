@@ -23,18 +23,12 @@
 #ifdef __SYS_TICKET
 	#include "ticket.h"
 #endif	// __SYS_TICKET
-#if __VER >= 15 // __PETVIS
 	#include "ItemUpgrade.h"
-#endif  // __PETVIS
 #endif	// __CLIENT
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#include "honor.h"
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __FUNNY_COIN
 #include "FunnyCoin.h"
@@ -48,9 +42,7 @@
 	extern	CDPSrvr				g_DPSrvr;
 	extern	CDPCoreClient		g_DPCoreClient;
 	extern	CDPDatabaseClient	g_dpDBClient;
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif // __GUILD_HOUSE
 #endif
 
 extern	CPartyMng				g_PartyMng;
@@ -60,7 +52,6 @@ extern void __SetQuest( DWORD dwIdMover, int nQuest );
 
 #ifdef __WORLDSERVER
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 void	CMover::SetMasterSkillPointUp()
 {
 	if( m_nLevel != 72 && m_nLevel != 84 && m_nLevel != 96 && m_nLevel != 108 )
@@ -91,7 +82,6 @@ void	CMover::SetMasterSkillPointUp()
 	g_dpDBClient.SaveSkill( this );
 #endif // __S_NEW_SKILL_2
 }
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
 // 스킬큐에 들어 있는 마법들의 총 캐스팅 시간을 계산.
 int		CMover::GetQueueCastingTime()
@@ -130,19 +120,10 @@ int		CMover::GetQueueCastingTime()
 			}
 
 		#ifdef _DEBUG
-		#if __VER >= 9	// __SKILL_0706
 			if( (int)pAddSkillProp->dwCastingTime <= 0 )
 				Error( "GetQueueCastingTime : %s의 addProp dwCastingTime이 %d", pSkillProp->szName, pAddSkillProp->dwCastingTime );
-		#else	// __SKILL_0706
-			if( (int)pAddSkillProp->dwSkillReady <= 0 )
-				Error( "GetQueueCastingTime : %s의 addProp dwSkillReady가 %d", pSkillProp->szName, pAddSkillProp->dwSkillReady );
-		#endif	// __SKILL_0706
 		#endif
-#if __VER >= 9	// __SKILL_0706
 			nTotalTime += (int)pAddSkillProp->dwCastingTime;
-#else	// __SKILL_0706
-			nTotalTime += (int)pAddSkillProp->dwSkillReady;
-#endif	// __SKILL_0706
 		}
 	}
 
@@ -161,17 +142,9 @@ int		CMover::GetQueueCastingTime()
 // sutType : 스킬사용시 단축키/스킬큐의 여부를 클라로부터 받아서 처리.  캐스팅타임 계산이 다르다.
 //
 #ifdef __CLIENT
-#if __VER >= 8 // __S8_PK
 	BOOL	CMover::DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl, const int nCastingTime, DWORD dwSkill, DWORD dwLevel )
-#else // __VER >= 8 // __S8_PK
-	BOOL	CMover::DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, const int nCastingTime, DWORD dwSkill, DWORD dwLevel )
-#endif // __VER >= 8 // __S8_PK
 #else // __CLIENT
-	#if __VER >= 8 // __S8_PK
 		BOOL	CMover::DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl )
-	#else // __VER >= 8 // __S8_PK
-		BOOL	CMover::DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType )
-	#endif // __VER >= 8 // __S8_PK
 #endif // __CLIENT
 {
 	if( IsNPC() )	
@@ -256,11 +229,7 @@ int		CMover::GetQueueCastingTime()
 		{									// 일반적인 마법 스킬 사용
 		#ifdef __WORLDSERVER
 		
-		#if __VER >= 9	// __SKILL_0706
 			nCastingTime	= (int)( ( pAddSkillProp->dwCastingTime / 1000.0f ) * SEC1 );	// 캐스팅 동작 있음.
-		#else	// __SKILL_0706
-			nCastingTime = (int)((pAddSkillProp->dwSkillReady / 1000.0f) * SEC1);	// 캐스팅 동작 있음.
-		#endif	// __SKILL_0706
 		
 			nCastingTime = GetCastingTime( nCastingTime );
 		#endif	// __WORLDSERVER
@@ -274,21 +243,13 @@ int		CMover::GetQueueCastingTime()
 	#endif
 	}
 
-#if __VER >= 8 // __S8_PK
 	BOOL bSuccess = DoUseSkill( dwSkill, dwLevel, idFocusObj, sutType, bControl, nCastingTime );
-#else // __VER >= 8 // __S8_PK
-	BOOL bSuccess = DoUseSkill( dwSkill, dwLevel, idFocusObj, sutType, nCastingTime );
-#endif // __VER >= 8 // __S8_PK
 	return  bSuccess;
 }
 
 // dwSkill,nLevel만 있으면 어디서든지 사용가능한 버전	
 // 몬스터까지 사용가능
-#if __VER >= 8 // __S8_PK
 BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl, const int nCastingTime )
-#else // __VER >= 8 // __S8_PK
-BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType, const int nCastingTime )
-#endif // __VER >= 8 // __S8_PK
 {
 	if( IsDie() )	return FALSE;
 	if( m_pActMover->IsFly() )	return FALSE;
@@ -395,14 +356,12 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 		}
 	}
 
-#if __VER >= 13 // __RAINBOW_RACE
 	if( pSkillProp->dwID == SI_RIG_HERO_RETURN
 		&& IsPlayer() && CRainbowRaceMng::GetInstance()->IsEntry( ((CUser*)this)->m_idPlayer ) )
 	{
 		((CUser*)this)->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
 		return FALSE;
 	}
-#endif // __RAINBOW_RACE
 #endif //defined(__WORLDSERVER)
 
 	MoverProp *pMoverProp = pTarget->GetProp();
@@ -433,11 +392,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 			if( pSkillProp->nEvildoing > 0 )	// 좋은 마법을
 			{
 				HITTYPE hy;
-#if __VER >= 8 // __S8_PK
 				if( (hy = GetHitType2( pTarget, TRUE, TRUE)) != HITTYPE_FAIL )  	// 적대적인 대상에게 쓰려할때
-#else // __VER >= 8 // __S8_PK
-				if( (hy = GetHitType2( pTarget, TRUE)) != HITTYPE_FAIL )  	// 적대적인 대상에게 쓰려할때
-#endif // __VER >= 8 // __S8_PK
 				{
 					if( IsPlayer() )
 						((CUser*)this)->AddDefinedText( TID_GAME_NEVERKILLSTOP, "" );		// 스킬을 사용할 수 없습니다.
@@ -453,11 +408,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	// 길드컴뱃중에는 부활스킬 금지
 	if( GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 	{
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pSkillProp->dwID == SI_MAG_MAG_BLINKPOOL || pSkillProp->dwID == SI_RIG_HERO_RETURN )
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		if( pSkillProp->dwID == SI_MAG_MAG_BLINKPOOL )
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			return FALSE;
 
 		if( g_GuildCombatMng.m_nState != CGuildCombat::WAR_STATE )
@@ -568,7 +519,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 		break;
 	}
 
-#if __VER >= 8 //__CSC_VER8_3 //타겟의 버프중 이미 걸린 버프가 레벨이 높을 경우 걸지 못하게 함.
 	if(pSkillProp->dwSkillType == BUFF_SKILL)
 	{
 		CMover* searchMover;
@@ -595,7 +545,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 			}
 		}
 	}
-#endif //__CSC_VER8_3
 
 	// 투핸드용이냐 원핸드용이냐의 조건검사.
 	if( pSkillProp->dwHanded != NULL_ID )
@@ -627,13 +576,8 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 
 	if( IsPlayer() )
 	{
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 		if( pSkillProp->dwReqDisLV != NULL_ID && GetLevel() < (int)( pSkillProp->dwReqDisLV )  && !IsMaster() && !IsHero() )
 			return FALSE;
-#else //__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-		if( pSkillProp->dwReqDisLV != NULL_ID && GetLevel() < pSkillProp->dwReqDisLV )
-			return FALSE;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 		
 		if( pSkillProp->dwReSkill1 != 0xffffffff )
 		{
@@ -709,7 +653,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	{
 	#ifdef __WORLDSERVER
 
-		#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if(GetReqFp( pAddSkillProp->nReqFp ) == 9999999)
 			{
 				if( GetManaPoint() != GetMaxManaPoint())
@@ -745,25 +688,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 					}
 				}
 			}
-		#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-			if( GetFatiguePoint() - GetReqFp( pAddSkillProp->nReqFp ) < 0 )	// FP가 모자르므로 취소
-			{
-				if( TRUE == IsPlayer() )
-					( (CUser*)this )->AddDefinedText( TID_GAME_REQFP, "" );
-				return FALSE;
-			}
-
-			// KT_SKILL중에 MP가 소모되는 값이있으면 FP와 같이 소모시켜준다.
-			if( (int)pAddSkillProp->nReqMp > 0 )
-			{
-				if( GetManaPoint() - GetReqMp( pAddSkillProp->nReqMp ) < 0 )		// 마나가 모자르므로 취소
-				{
-					if( TRUE == IsPlayer() )
-						( (CUser*)this )->AddDefinedText( TID_GAME_REQMP, "" );
-					return FALSE;
-				}
-			}
-		#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 	#endif
 		dwMsg = OBJMSG_MELEESKILL;	// 클라에서도 실행해야함
@@ -774,7 +698,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 		if( GetAdjParam( DST_CHRSTATE ) & CHS_SILENT )		// 침묵상태에선 매직스킬 쓸 수 없음.
 			return FALSE;
 
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if(GetReqMp( pAddSkillProp->nReqMp ) == 9999999)
 		{
 			if( GetManaPoint() != GetMaxManaPoint())
@@ -799,14 +722,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 				return FALSE;
 			}
 		}
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		if( GetManaPoint() - GetReqMp( pAddSkillProp->nReqMp ) < 0 )		// 마나가 모자르므로 취소
-		{
-			if( TRUE == IsPlayer() )
-				( (CUser*)this )->AddDefinedText( TID_GAME_REQMP, "" );
-			return FALSE;
-		}
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 	#endif // worldserver
 		if( sutType == SUT_QUEUESTART )		// 스킬큐 시작 스킬. - 큐내의 모든 스킬의 캐스팅을 몰아서 한다.
@@ -831,20 +746,14 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 		nMotion += 2;
 	
 	//--- 동작 시작 -----------------------------------------------------------------
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	int nRet = m_pActMover->SendActMsg( dwMsg, nMotion, idFocusObj, nCastingTime, dwSkill );
-#else //__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-	int nRet = m_pActMover->SendActMsg( dwMsg, nMotion, idFocusObj, nCastingTime );
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
 	if( nRet == 1 )	// 스킬 동작 시작.
 	{
 		// 명령수행중 필요한 파라메터세팅.
 		SetActParam( OBJACT_USESKILL, dwSkill, idFocusObj );	
 		m_nAParam[3]	= nLevel;
-#if __VER >= 8 // __S8_PK
 		m_nAParam[4]	= bControl;
-#endif // __VER >= 8 // __S8_PK
 
 	#ifdef __WORLDSERVER
 		if( pSkillProp->dwSkillType == KT_SKILL )
@@ -859,7 +768,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 				IncManaPoint( -nReqMp );
 			}
 		}
-	#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pSkillProp->dwSkillType == KT_MAGIC )
 		{
 			if( GetReqMp( pAddSkillProp->nReqMp ) == 9999999 )
@@ -868,7 +776,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 				IncManaPoint( -GetManaPoint() );
 			}
 		}
-	#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		
 		if( pSkillProp->dwLinkKindBullet != NULL_ID )	// 총알(?)을 필요로 하는거면
 		{
@@ -1046,7 +953,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	}
 #endif	// __CLIENT
 
-#if __VER >= 8 // __S8_PK
 #ifdef __WORLDSERVER
 	if( g_eLocal.GetState( EVE_PK ) )
 	{
@@ -1057,7 +963,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 		}
 	}
 #endif // __WORLDSERVER
-#endif // __VER >= 8 // __S8_PK
 	
 	return TRUE;
 }
@@ -1127,7 +1032,6 @@ void	CMover::OnEndMeleeAttack( DWORD dwState )
 #endif // WorldServer
 }
 
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 DWORD	CMover::GetRemoveSfxObj(DWORD	dwRemoveSfxObjID)
 {
 	DWORD	dwResult = 0;
@@ -1159,7 +1063,6 @@ void	CMover::SetRemoveSfxObj(DWORD	dwRemoveSfxObjID)
 		}
 	}
 }
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 /*--------------------------------------------------------------------------------------------------------
 
 
@@ -1260,14 +1163,12 @@ void CMover::OnAfterUseItem( const ItemProp* pItemProp )
 
 	if( dwSfxID != NULL_ID )		
 		g_UserMng.AddCreateSfxObj( this, dwSfxID, sPos.x, sPos.y, sPos.z );	// 절대좌표로 하자.
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	if( IsPlayer() )
 		((CUser*)this)->SetHonorAdd(pItemProp->dwID,HI_USE_ITEM);
 #ifndef __MAINSERVER
 	else
 		FILEOUT( "..\\HonorError.txt", "OnAfterUseItem()\n" );
 #endif	// __MAINSERVER
-#endif	// __HONORABLE_TITLE			// 달인
 
 #endif // __WORLDSERVER
 }
@@ -1314,10 +1215,8 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 			return FALSE;
 		}
 	}
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans 석화디버프에 걸리면 아이템 사용금지
 	if( GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)
 		return FALSE;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	if( pItemProp->dwParts != NULL_ID )
 	{
 		// armor, weapon
@@ -1351,7 +1250,6 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 		// 비 상용화 아이템
 		switch( pItemProp->dwItemKind2 )
 		{
-#if __VER >= 15 // __GUILD_HOUSE
 			case IK2_GUILDHOUSE_FURNITURE:
 			case IK2_GUILDHOUSE_NPC:
 			case IK2_GUILDHOUSE_PAPERING:
@@ -1368,8 +1266,6 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 						return FALSE;
 					break;
 				}			
-#endif // __GUILD_HOUSE
-#if __VER >= 13 // __HOUSING
 			case IK2_FURNITURE:
 			case IK2_PAPERING:
 				{
@@ -1389,7 +1285,6 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 						return FALSE;
 					break;
 				}
-#endif // __HOUSING
 #ifdef __FUNNY_COIN
 			case IK2_TOCASH:
 				{
@@ -1400,7 +1295,6 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 #endif // __FUNNY_COIN
 			case IK2_WARP:
 				return DoUseItemWarp( pItemProp, pItemElem );
-#if __VER >= 11 // __SYS_COLLECTING
 			case IK2_BUFF2:
 				{
 					if( IsDoUseBuff( pItemProp ) != 0 )
@@ -1412,7 +1306,6 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 					AddBuff( BUFF_ITEM2, (WORD)( pItemElem->m_dwItemId ), t, 0 ); 
 					break;
 				}
-#endif	// __SYS_COLLECTING
 #ifdef __BUFF_TOGIFT
 			case IK2_BUFF_TOGIFT:
 #endif // __BUFF_TOGIFT
@@ -1421,7 +1314,6 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 					if( IsDoUseBuff( pItemProp ) != 0 )
 						return FALSE;
 					DoApplySkill( this, pItemProp, NULL );		// 대상에게 아이템효과를 적용함. 
-#if __VER >= 8 //__CSC_VER8_5
 					if( pItemProp->dwItemKind3 == IK3_ANGEL_BUFF )
 					{
 		#ifdef __EXP_ANGELEXP_LOG
@@ -1442,7 +1334,6 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 						m_nAngelLevel = GetLevel() + 1;
 						((CUser*)this)->AddAngelInfo();
 					}
-#endif // __CSC_VER8_5
 				}
 				break;
 			case IK2_TEXT: //텍스트 문서 처리 
@@ -1602,13 +1493,11 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 								((CUser*)this)->AddDefinedText( TID_PK_FLIGHT_NOUSE, "" ); // 비행 중에는 사용할 수 없습니다.
 								bGMTime = FALSE;
 							}
-#if __VER >= 14	// __INSTANCE_DUNGEON	// 인던 내 또는 입장시 변신구 사용 금지
 							else if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( GetWorld()->GetID() ) )
 							{
 								((CUser*)this)->AddDefinedText( TID_GAME_INSTANCE_DISGUISE01 );
 								bGMTime = FALSE;
 							}
-#endif // __INSTANCE_DUNGEON	// 인던 내 또는 입장시 변신구 사용 금지
 						}
 						if( bGMTime )
 						{
@@ -1747,37 +1636,29 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 	if( GetWorld()->m_dwWorldID == WI_WORLD_GUILDWAR )
 		return FALSE;
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	if( g_GuildCombat1to1Mng.IsPossibleUser( (CUser*)this ) )
 	{
 		if( IsPlayer() )
 			((CUser*)this)->AddDefinedText( TID_GAME_GUILDCOMBAT1TO1_NOBLINKWING );
 		return FALSE;
 	}
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 12 // __SECRET_ROOM
 	if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( this ) )
 	{
 		if( IsPlayer() )
 			((CUser*)this)->AddDefinedText( TID_GAME_SECRETROOM_USEBRINKITEM );
 		return FALSE;
 	}
-#endif // __SECRET_ROOM
 
-#if __VER >= 13 // __RAINBOW_RACE
 	if( CRainbowRaceMng::GetInstance()->IsEntry( ((CUser*)this)->m_idPlayer ) )
 	{
 		if( IsPlayer() )
 			((CUser*)this)->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
 		return FALSE;
 	}
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 	if( GetWorld()->GetID() == WI_WORLD_MINIROOM )	// 하우징에서는 블링크윙 금지.
 		return FALSE;
-#endif // __HOUSING
 
 	// 제한레벨이 걸려있을때.
  	if( pItemProp->dwLimitLevel1 != NULL_ID && (int)( pItemProp->dwLimitLevel1 ) > GetLevel() )
@@ -1810,14 +1691,10 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 
 		if( IsChaotic() )
 		{
-#if __VER >= 8 // __S8_PK
 			if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
 				pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
 			if( NULL == pRgnElem )	// Find near revival pos
 				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
-#else // __VER >= 8 // __S8_PK
-			pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
-#endif // __VER >= 8 // __S8_PK
 		}
 		else
 
@@ -1852,7 +1729,6 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 			pItemElem->UseItem();
 			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum );
 		}
-#if __VER >= 8 // __S8_PK
 		if( IsChaotic() )
 		{
 			PRegionElem pRgnElem	= NULL;
@@ -1866,7 +1742,6 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 				REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
 		}
 		else
-#endif // __VER >= 8 // __S8_PK
 		{
 			REPLACE( g_uIdofMulti, pItemProp->dwWeaponType, vPos, REPLACE_NORMAL, nTempLayer );
 		}
@@ -1959,7 +1834,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 			}
 		}
 		break;
-#if __VER >= 9	// __PET_0410
 	case II_SYS_SYS_SCR_PET_LIFE:
 	case II_SYS_SYS_SCR_PET_LIFE02:
 		{
@@ -2012,8 +1886,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 			PetLevelup();
 			break;
 		}
-#endif	// __PET_0410
-#if __VER >= 11 // __SYS_COLLECTING
 	case II_GEN_TOO_COL_NORMALBATTERY:
 		{
 			CUser* pThis	= (CUser*)this;
@@ -2024,7 +1896,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 			}
 			break;
 		}
-#endif	// __SYS_COLLECTING
 	case II_CHR_SYS_SCR_SHOUTFULL15:
 		{
 			if( !IsShoutFull() )
@@ -2052,14 +1923,10 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 	case II_CHR_SYS_SCR_PSKILLFULL1:
 		{
 			if( !( IsSMMode( SM_PARTYSKILL1 ) || IsSMMode( SM_PARTYSKILL15 ) || IsSMMode( SM_PARTYSKILL30 ) ) )
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			{
 				SetSMMode( SM_PARTYSKILL1, pItemProp->dwCircleTime );
 				g_DPCoreClient.SendUserPartySkill( m_idPlayer, PARTY_PARSKILL_MODE, 1000, 0, 1 );
 			}
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-				SetSMMode( SM_PARTYSKILL1, pItemProp->dwCircleTime );
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			else
 				nResult = 2;
 		}
@@ -2067,14 +1934,10 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 	case II_CHR_SYS_SCR_PSKILLFULL15:
 		{
 			if( !( IsSMMode( SM_PARTYSKILL1 ) || IsSMMode( SM_PARTYSKILL15 ) || IsSMMode( SM_PARTYSKILL30 ) ) )
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			{
 				SetSMMode( SM_PARTYSKILL15, pItemProp->dwCircleTime );
 				g_DPCoreClient.SendUserPartySkill( m_idPlayer, PARTY_PARSKILL_MODE, 1000, 0, 1 );
 			}
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-				SetSMMode( SM_PARTYSKILL15, pItemProp->dwCircleTime );
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			else
 				nResult = 2;
 		}
@@ -2082,14 +1945,10 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 	case II_CHR_SYS_SCR_PSKILLFULL30:
 		{
 			if( !( IsSMMode( SM_PARTYSKILL1 ) || IsSMMode( SM_PARTYSKILL15 ) || IsSMMode( SM_PARTYSKILL30 ) ) )
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			{
 				SetSMMode( SM_PARTYSKILL30, pItemProp->dwCircleTime );
 				g_DPCoreClient.SendUserPartySkill( m_idPlayer, PARTY_PARSKILL_MODE, 1000, 0, 1 );
 			}
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-				SetSMMode( SM_PARTYSKILL30, pItemProp->dwCircleTime );
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			else
 				nResult = 2;
 		}
@@ -2144,24 +2003,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 				nResult = 2;
 		}
 		break;
-#if __VER < 8 // __S8_PK
-	case II_SYS_SYS_SCR_FORGIVE:
-		if( IsPlayer() )
-		{
-			if( IsChaotic() )
-			{
-				UpgradeKarma();
-				((CUser*)this)->AddDefinedText( TID_GAME_GETKARMA );	// 카르마가 1단계 회복되었습니다						
-			}
-			else
-			{
-				// 카오틱 플레이어의 경우만 사용 할 수 있습니다.
-				((CUser*)this)->AddDefinedText( TID_GAME_NOTCHOAS );
-				nResult = 1;		// 1 - 아이템이 사용안되게 한다.
-			}
-		}
-		break;
-#endif // __VER < 8 // __S8_PK
 	case II_SYS_SYS_SCR_BLESSING:
 		{
 			if( !( IsSMMode( SM_REVIVAL ) ) )
@@ -2446,12 +2287,8 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 						break;
 					}
 					CString strTemp;
-#if __VER >= 11 // __EXPITEM_TOOLTIP_CHANGE
 					int nPercent = (int)( (fFactor - 1.0f) * 100.0f );
 					strTemp.Format( "%s %d%% %s", prj.GetText( TID_GAME_EXPITEM_TOOLTIP ), nPercent, prj.GetText( TID_GAME_EXPITEM_TOOLTIP1 ) );
-#else //__EXPITEM_TOOLTIP_CHANGE
-					strTemp.Format( "%s%.1f%s", prj.GetText( TID_GAME_EXPTOOLTIP ), fFactor, prj.GetText( TID_GAME_EXPTOOLTIP1 ) );
-#endif //__EXPITEM_TOOLTIP_CHANGE
 					((CUser*)this)->AddText( strTemp ); // 
 				}
 				else
@@ -2515,12 +2352,8 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 #ifdef __SM_ITEM_2ND_EX
 	case II_SYS_SYS_SCR_SMELPROT2:
 #endif	// __SM_ITEM_2ND_EX
-#if __VER >= 9 // __ULTIMATE
 	case II_SYS_SYS_SCR_SMELPROT3: // " 보호의 두루마리(최상급)
-#endif // __ULTIMATE
-#if __VER >= 11 // __SYS_COLLECTING
 	case II_SYS_SYS_SCR_SMELPROT4:	// 악세사리 보호의 두루마리
-#endif	// __SYS_COLLECTING
 	case II_SYS_SYS_SCR_SMELTING:	// "제련의 두루마리"	
 	case II_SYS_SYS_SCR_SUPERLEADERPARTY:	// "단장의 축복"		
 	case II_SYS_SYS_SCR_SUPERSMELTING:	// "제련 두루마리(진)"
@@ -2529,9 +2362,7 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 	case II_SYS_SYS_SCR_VENDOR:	// "Vendor Charge"		
 #endif //__Y_BEAUTY_SHOP_CHARGE
 	case II_SYS_SYS_SCR_SKLINSTRUCT:	// "기술의 전수자"
-#if __VER >= 14 // __EXT_ATTRIBUTE
 	case II_SYS_SYS_SCR_SMELTING2:	// 속성 제련의 두루마리
-#endif // __EXT_ATTRIBUTE
 
 		{
 			if( HasBuff( BUFF_ITEM, (WORD)( pItemProp->dwID ) ) )
@@ -2558,49 +2389,17 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 		//	mulcom	END100405	각성 보호의 두루마리
 
 
-#if __VER >= 9	// __PET_0410
 	case II_SYS_SYS_SCR_PET_TONIC_A:
 	case II_SYS_SYS_SCR_PET_TONIC_B:
-#if __VER >= 12 // __PET_0519
 		nResult		= DoUseItemPetTonic( pItemElem );	// 펫 영양제 사용
 		break;
-#else	// __PET_0519
-		if( HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_TONIC_A ) || HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_TONIC_B ) )
-			nResult = 2;
-		else
-			DoApplySkill( (CCtrl*)this, pItemProp, NULL );
-		break;
-#endif	// __PET_0519
 	case II_SYS_SYS_SCR_PET_FEED_POCKET:
 		{
 			nResult = DoUseItemFeedPocket( pItemElem );
 			break;
 		}
-#endif	// __PET_0410
 #ifdef __EVE_BALLOON
-#if __VER < 14 // __BALLOON_CODE_IMPROVEMENT
-	case II_SYS_SYS_EVE_BALLOON:
-	case II_SYS_SYS_EVE_BALLOON01:
-	case II_SYS_SYS_EVE_BALLOON02:
-	case II_SYS_SYS_EVE_BALLOON_01:
-	case II_SYS_SYS_EVE_BALLOON01_01:
-	case II_SYS_SYS_EVE_BALLOON02_01:
-		{
-			if( HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON )
-				|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON01 )
-				|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON02 )
-				|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON_01 )
-				|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON01_01 )
-				|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON02_01 )
-			)
-				nResult = 2;
-			else
-				DoApplySkill( (CCtrl*)this, pItemProp, NULL );
-		}
-		break;
-#endif // __BALLOON_CODE_IMPROVEMENT
 #endif //__EVE_BALLOON
-#if __VER >= 9 // __II_SYS_SYS_SCR_GET
 	case II_SYS_SYS_SCR_GET01:
 	case II_SYS_SYS_SCR_GET02:
 		{
@@ -2611,7 +2410,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 				DoApplySkill( (CCtrl*)this, pItemProp, NULL );
 		}
 		break;
-#endif // __II_SYS_SYS_SCR_GET
 	case II_SYS_SYS_SCR_RETURN:		// "귀환의 두루마리"		
 		{
 			if( IsPlayer() )
@@ -2632,13 +2430,11 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 						return 0;
 					}
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 					if( g_GuildCombat1to1Mng.IsPossibleUser( (CUser*)this ) )
 					{
 						((CUser*) this)->AddDefinedText( TID_GAME_LIMITZONE_USE );
 						return 0;
 					}
-#endif // __GUILD_COMBAT_1TO1
 
 					((CUser*) this)->SetReturnPos( vPos );
 
@@ -2694,12 +2490,10 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 				
 				((CUser*) this)->AddDefinedText( TID_GAME_STATE_NOTUSE , "\"%s\"", prj.GetText( dwMsgId ) );
 			}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 			else if( g_GuildCombat1to1Mng.IsPossibleUser( (CUser*)this ) )
 			{
 				((CUser*) this)->AddDefinedText( TID_GAME_STATE_NOTUSE , "\"%s\"", prj.GetText( TID_GAME_ATTACK_NOTUSE ) );
 			}
-#endif // __GUILD_COMBAT_1TO1
 			else
 			{
 				((CUser*) this)->AddSummonFriendUse( pItemElem );	
@@ -2708,7 +2502,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 		}
 		break;
 
-#if __VER >= 11 // __MA_VER11_02	// 수표 개념 화페 '페린' 추가
 	case II_SYS_SYS_SCR_PERIN:
 		{
 			int nState = GetSummonState();
@@ -2759,7 +2552,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 			}
 		}
 		break;
-#endif	// __MA_VER11_02
 #ifdef __ADD_RESTATE_LOW
 	case II_CHR_SYS_SCR_RESTATE_STR_LOW:
 		{
@@ -2822,7 +2614,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 #endif	// __SYS_TICKET
 #endif	// __AZRIA_1023
 
-#if __VER >= 14 // __BALLOON_CODE_IMPROVEMENT
 	if( pItemProp->dwItemKind3 == IK3_BALLOON )
 	{
 		if( HasBuffByIk3( IK3_BALLOON ) != FALSE )
@@ -2833,7 +2624,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 			nResult = 0;
 		}
 	}
-#endif // __BALLOON_CODE_IMPROVEMENT
 
 #endif // __WORLDSERVER
 
@@ -2849,9 +2639,7 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 		|| pItemProp->dwItemKind3 == IK3_POTION_BUFF_INT
 		|| pItemProp->dwItemKind3 == IK3_POTION_BUFF_STA
 		|| pItemProp->dwItemKind3 == IK3_POTION_BUFF_DEFENSE		
-#if __VER >= 8 //__CSC_VER8_5
 		|| pItemProp->dwItemKind3 == IK3_ANGEL_BUFF		
-#endif // __CSC_VER8_5
 #ifdef __BUFF_TOGIFT
 		|| pItemProp->dwItemKind2 == IK2_BUFF_TOGIFT
 #endif // __BUFF_TOGIFT
@@ -2860,7 +2648,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 		if( HasBuffByIk3( pItemProp->dwItemKind3 ) )
 			nResult = 1;
 
-#if __VER >= 8 //__CSC_VER8_5
 #ifdef __PKSERVER_USE_ANGEL
 		if( pItemProp->dwItemKind3 == IK3_ANGEL_BUFF )
 		{
@@ -2895,15 +2682,12 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 				nResult = 4;
 		}
 #endif //__PKSERVER_USE_ANGEL
-#endif // __CSC_VER8_5
 	}
-#if __VER >= 8
 	else if( pItemProp->dwID == II_SYS_SYS_SCR_DEFENSE20 || pItemProp->dwID == II_SYS_SYS_SCR_DEFENSE50 )
 	{
 		if( HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_DEFENSE20 ) || HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_DEFENSE50 ) )
 			nResult = 1;
 	}
-#endif // __VER >= 8
 #ifdef __JEFF_11_1
 	else if( pItemProp->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET02 )
 	{
@@ -2948,7 +2732,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 	{
 		nResult = 1;
 	}
-#if __VER >= 11 // __SYS_COLLECTING
 	else if( pItemProp->dwID == II_GEN_TOO_COL_SILVERBATTERY
 		|| pItemProp->dwID == II_GEN_TOO_COL_GOLDBATTERY
 		|| pItemProp->dwID == II_GEN_TOO_COL_BATTERY001
@@ -2960,8 +2743,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 			)
 			nResult = 1;
 	}
-#endif // __SYS_COLLECTING
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	#define II_SYS_SYS_SCR_PARTYEXPUP01_01 20296
 #define II_SYS_SYS_SCR_PARTYSKILLUP01_01 20297
 	else if( pItemProp->dwID == II_SYS_SYS_SCR_PARTYEXPUP01
@@ -2993,14 +2774,12 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 			)
 			nResult = 1;
 	}
-#endif // //12차 극단유료아이템
 	
 	switch( nResult )
 	{
 	case 1:
 		((CUser*)this)->AddDefinedText( TID_GAME_LIMITED_USE, "" ); // 사용중이어서 사용할수 없음
 		break;
-#if __VER >= 8 //__CSC_VER8_5
 	case 2:
 		((CUser*)this)->AddDefinedText( TID_GAME_PKVALUE_NOT_ANGEL );
 		break;
@@ -3010,7 +2789,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 	case 4:
 		((CUser*)this)->AddDefinedText( TID_GAME_NOT_COMPLETE_ANGEL );
 		break;	
-#endif // __CSC_VER8_5
 	}
 	return nResult;
 }
@@ -3180,9 +2958,7 @@ BOOL CMover::DoUseItemSexChange( int nFace )
 	m_dwHeadMesh	= (DWORD)nFace;
 	g_UserMng.AddChangeFace( m_idPlayer, (DWORD)nFace );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	g_dpDBClient.SendUpdatePlayerData( static_cast<CUser*>(this) );
-#endif // __SYS_PLAYER_DATA
 
 	return TRUE;
 }
@@ -3468,16 +3244,6 @@ int		CMover::DoAttackMelee( CMover *pTarget, OBJMSG dwMsg, DWORD dwItemID )
 		if( IsActiveMover() )
 		{
 			PlayCombatMusic();
-#if __VER < 11 // __REMOVE_ENDURANCE
-			CItemElem* pWeapon	= GetWeaponItem();
-			if( pWeapon )
-			{
-				ItemProp* pItemProp		= pWeapon->GetProp();
-				if( pItemProp )
-					if( ( ( pWeapon->m_nHitPoint * 100 ) / pItemProp->dwEndurance ) == 0 )
-						g_WndMng.PutString( prj.GetText( TID_GAME_WASTEENDURANCE ), NULL, prj.GetTextColor( TID_GAME_WASTEENDURANCE ) );
-			}
-#endif // __REMOVE_ENDURANCE
 		}
 #else	// __CLIENT
 		g_UserMng.AddMeleeAttack( this, dwMsg, pTarget->GetId(), MAKELONG( 0, 0 ), MAKELONG( 0, (WORD)nError ) );
@@ -3807,9 +3573,7 @@ BOOL CMover::DoUseItemWarp( ItemProp* pItemProp, CItemElem* pItemElem )
 	{
 		case II_GEN_WARP_COUPLERING:
 		case II_GEN_WARP_WEDDING_BAND:
-#if __VER >= 8 // __S_COUPLERING01
 		case II_GEN_WARP_COUPLERING01:
-#endif // __VER >= 8
 			{
 				if( IsFly() )
 				{
@@ -3830,11 +3594,7 @@ BOOL CMover::DoUseItemWarp( ItemProp* pItemProp, CItemElem* pItemElem )
 				if( idCouple > 0 )
 				{
 					// teleport
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					const char* lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idCouple );
-#else	// __SYS_PLAYER_DATA
-					LPCSTR lpszPlayer	= prj.GetPlayerString( idCouple );
-#endif	// __SYS_PLAYER_DATA
 					if( lpszPlayer )
 					{
 						CUser* pUser	= (CUser*)prj.GetUserByID( idCouple );
@@ -3849,27 +3609,21 @@ BOOL CMover::DoUseItemWarp( ItemProp* pItemProp, CItemElem* pItemElem )
 								return FALSE;
 							if( GetWorld() && GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 								return FALSE;
-#if __VER >= 11	// __GUILD_COMBAT_1TO1
 							if( GetWorld() && GetWorld()->GetID() >= WI_WORLD_GUILDWAR1TO1_0
 								          && GetWorld()->GetID() <= WI_WORLD_GUILDWAR1TO1_L )
 								return FALSE;
 							if( pUser->GetWorld() && pUser->GetWorld()->GetID() >= WI_WORLD_GUILDWAR1TO1_0
 												&& pUser->GetWorld()->GetID() <= WI_WORLD_GUILDWAR1TO1_L )
 								return FALSE;
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 13 // __RAINBOW_RACE
 							if( CRainbowRaceMng::GetInstance()->IsEntry( ((CUser*)this)->m_idPlayer )
 								|| CRainbowRaceMng::GetInstance()->IsEntry( idCouple ) )
 							{
 								((CUser*)this)->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
 								return FALSE;
 							}
-#endif // __RAINBOW_RACE
 
 							if( GetWorld() == pUser->GetWorld() && !prj.IsGuildQuestRegion( pUser->GetPos() )
-#if __VER >= 14 // __INSTANCE_DUNGEON
 								&& GetLayer() == pUser->GetLayer()
-#endif // __INSTANCE_DUNGEON
 #ifdef __QUIZ
 								&& GetWorld()->GetID() != WI_WORLD_QUIZ
 								&& pUser->GetWorld()->GetID() != WI_WORLD_QUIZ
@@ -3890,11 +3644,7 @@ BOOL CMover::DoUseItemWarp( ItemProp* pItemProp, CItemElem* pItemElem )
 				else
 				{
 					// carve
-#if __VER >= 11 // __SYS_IDENTIFY
 					UpdateItemEx( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, (__int64)m_idPlayer );
-#else	// __SYS_IDENTIFY
-					UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, m_idPlayer );
-#endif	// __SYS_IDENTIFY
 					if( II_GEN_WARP_COUPLERING == pItemProp->dwID )
 						UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_KEEPTIME, 21600 );	// 15 days
 					( (CUser*)this )->AddDefinedText( TID_GAME_COUPLERING_CARVE, "%s", GetName() );
@@ -3921,7 +3671,6 @@ DWORD CMover::GetReuseDelay( int nIndex )
 		return m_tmReUseDelay[nIndex] - dwCur;	// 종료시각 - 현재시각 
 }
 
-#if __VER >= 9	// __PET_0410
 #ifndef __CLIENT
 int CMover::DoUseItemFeedPocket( CItemElem* pPocket )
 {
@@ -3976,7 +3725,6 @@ int CMover::DoUseItemFeedPocket( CItemElem* pPocket )
 	return nResult;
 }
 #endif	// __CLIENT
-#endif	// __PET_0410
 
 #ifdef __WORLDSERVER
 void CMover::ActivateSystemPet( CItemElem* pItemElem )
@@ -4067,10 +3815,7 @@ void CMover::ActivateEatPet( CItemElem* pItemElem )
 		{
 			pAIPet->SetOwner( GetId() );
 			SetEatPetId( pEatPet->GetId() );
-#if __VER >= 12 // __PET_0519
 			pAIPet->SetItem( this, pItemElem );		// 먹펫 활성화 시 각성 효과 적용
-#endif	// __PET_0519
-#if __VER >= 15 // __PETVIS
 			if( pItemElem->IsVisPet() )
 			{
 				if( pItemElem->GetPiercingSize() <= 0 )	// 첫 소환시 비스펫이면 비스 슬롯 2개(기본) 뚫어줌
@@ -4081,7 +3826,6 @@ void CMover::ActivateEatPet( CItemElem* pItemElem )
 				pEatPet->m_dwMoverSfxId = pItemElem->GetVisPetSfxId();
 				static_cast<CUser*>(this)->AddActivateVisPet( pItemElem->m_dwObjId, GetEatPetId() );
 			}
-#endif // __PETVIS
 		}
 	}
 }
@@ -4091,12 +3835,10 @@ void CMover::InactivateEatPet( void )
 	CMover* pEatPet		= prj.GetMover( GetEatPetId() );
 	if( IsValidObj( pEatPet ) )
 	{
-#if __VER >= 12 // __PET_0519
 		// 먹펫 소환 종료 시 각성 효과 제거
 		CAIPet *pAIPet	= static_cast<CAIPet*>( pEatPet->m_pAIInterface );
 		if( pAIPet )
 		{
-#if __VER >= 15 // __PETVIS
 			CItemElem* pItemElem = GetVisPetItem();
 			if( pItemElem )
 			{
@@ -4104,17 +3846,14 @@ void CMover::InactivateEatPet( void )
 				SetVisPetItem( NULL_ID );
 				static_cast<CUser*>(this)->AddActivateVisPet( NULL_ID, NULL_ID );
 			}
-#endif // __PETVIS
 			pAIPet->ResetItem();
 		}
-#endif	// __PET_0519
 
 		pEatPet->Delete();
 	}
 	SetEatPetId( NULL_ID );
 }
 
-#if __VER >= 15 // __PETVIS
 void CMover::SetPetVisDST( CItemElem* pItemElem )
 {
 	if( pItemElem && pItemElem->IsVisPet() )
@@ -4180,11 +3919,9 @@ void CMover::ProcessVisPet()
 		}		
 	}
 }
-#endif // __PETVIS
 
 #endif	// __WORLDSERVER
 
-#if __VER >= 15 // __PETVIS
 vector<BYTE> CMover::GetValidVisTable( CItemElem* pItemElem )
 {
 	vector<BYTE> vecTemp;
@@ -4273,9 +4010,7 @@ BYTE CMover::IsSatisfyNeedVis( CItemElem* pItemElemVisPet, ItemProp* pItemPropVi
 
 	return FAILED_BOTH_NEEDVIS;
 }
-#endif // __PETVIS
 
-#if __VER >= 12 // __PET_0519
 // 펫 영양제 사용
 int CMover::DoUseItemPetTonic( CItemElem* pItemElem )
 {
@@ -4301,4 +4036,3 @@ int CMover::DoUseItemPetTonic( CItemElem* pItemElem )
 	DoApplySkill( this, pItemElem->GetProp(), NULL );
 	return 0;
 }
-#endif	// __PET_0519

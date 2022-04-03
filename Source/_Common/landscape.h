@@ -113,9 +113,6 @@ public:
 protected:
 	static FLOAT	m_fCloud_u1, m_fCloud_v1 ;
 	static FLOAT	m_fCloud_u2, m_fCloud_v2 ;
-#if __VER < 14 // __WATER_EXT
-	static FLOAT	m_fWaterFrame;
-#endif //__WATER_EXT
 
 	LPDIRECT3DDEVICE9		m_pd3dDevice;	// d3d 디바이스
 	CWorld*					m_pWorld;		// 월드의 포인터
@@ -172,9 +169,7 @@ public:
 	void				RenderPatches(); // 모든 패치를 모든 레이어별로 그린다.
 	HRESULT				Render( LPDIRECT3DDEVICE9 pd3dDevice, BOOL bLod = TRUE );
 	HRESULT				RenderWater( LPDIRECT3DDEVICE9 pd3dDevice );
-#if __VER >= 13 // __HOUSING
 	BOOL				ForceTexture(LPDIRECT3DTEXTURE9 pNewTex);
-#endif	// __HOUSING
 	void				CalculateBound(); // 컬링용 바운드 박스 재계산
 	void				UpdateCull(void); // 각 패치별 컬링과 LOD 적용
 	void				Cull(); // 컬링

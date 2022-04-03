@@ -41,9 +41,7 @@ public:
 	void		Add( CJurisdiction* pJurisdiction );
 	void		ReadObject();
 	void		Process();
-#if __VER >= 15 // __GUILD_HOUSE
 	BOOL		HasNobody_Replace( DWORD dwWorldId, int nLayer );
-#endif // __GUILD_HOUSE
 #ifdef __LAYER_1015
 	BOOL		AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId, int nLayer );
 #else	// __LAYER_1015

@@ -35,11 +35,7 @@ public:
 	CLinkMap*	GetLinkMap( int nLayer );
 	void	DeleteLinkMap( int nLayer );
 	void	Process( CWorld* pWorld );
-#if __VER >= 15 // __GUILD_HOUSE
 	void	Invalidate( int nLayer, BOOL bInvalid );
-#else // __GUILD_HOUSE
-	void	Invalidate( int nLayer );
-#endif // __GUILD_HOUSE
 private:
 	MLM		m_mapLinkMap;
 	int	m_nLandWidth;

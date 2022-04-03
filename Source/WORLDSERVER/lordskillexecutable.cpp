@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __LORD
 
 #include "lordskillexecutable.h"
 #include "lord.h"
@@ -88,4 +87,3 @@ namespace	lordskill
 	}
 };
 
-#endif	// __LORD

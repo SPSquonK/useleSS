@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __RAINBOW_RACE
 
 enum { MP_NONE = 0, MP_OPENWND, MP_TRUE, MP_FALSE, MP_FINISH, MP_FAIL };
 
@@ -64,4 +63,3 @@ public:
 };
 #endif // __WORLDSERVER
 
-#endif // __RAINBOW_RACE

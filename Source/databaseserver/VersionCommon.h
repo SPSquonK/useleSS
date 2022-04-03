@@ -1,6 +1,5 @@
 #ifndef __VERSION_COMMON__
 #define __VERSION_COMMON__
-#define		__VER	15	// 15Â÷
 #define __MAINSERVER
 #if !defined( __TESTSERVER ) && !defined( __MAINSERVER )
 	#define __INTERNALSERVER

@@ -1,6 +1,5 @@
 #ifndef __WNDLORD__H
 #define __WNDLORD__H
-#if __VER >= 12 // __LORD
 #include "clord.h"
 
 
@@ -202,5 +201,4 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 };
 
-#endif
 #endif

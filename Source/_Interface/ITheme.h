@@ -60,10 +60,8 @@ public:
 	CD3DFont* m_pFontWorld;
 	CD3DFont* m_pFontStatus;
 	CD3DFont* m_pFontGuildCombatText;
-#if __VER >= 12 // __SECRET_ROOM
 	CD3DFont* m_pFontSRMyGiuld;
 	CD3DFont* m_pFontSRGiuld;
-#endif //__SECRET_ROOM
 	//CD3DFontAPI* m_pFontAPICaption;
 	//CD3DFontAPI* m_pFontAPITitle;
 

@@ -12,9 +12,7 @@
 #undef	theParameters
 #define theParameters	CAr & ar, LPBYTE lpBuf, u_long uBufSize
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 class CDPCoreSrvr : public CDPMng
 {
@@ -37,9 +35,7 @@ public:
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2 );	// 3
 	void	SendSetPlayerName( u_long idPlayer, const char* lpszPlayer, DWORD dwData, BOOL f );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData );
-#endif	// __SYS_PLAYER_DATA
 #ifdef __AUTO_NOTICE
 	void	SendEventLuaNotice();
 #endif // __AUTO_NOTICE

@@ -17,11 +17,9 @@ public:
 	int m_nWordButtonNum;
 	int m_nKeyButtonNum;
 	int m_nContextButtonNum;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	int m_nNewQuestListNumber;
 	int m_nCurrentQuestListNumber;
 	int m_nSelectKeyButton;
-#endif // __IMPROVE_QUEST_INTERFACE
 	CUIntArray m_aContextMark[ 32 ];
 	struct WORDBUTTON 
 	{
@@ -44,7 +42,6 @@ public:
 	CPtrArray m_strArray;
 	OBJID m_idMover;
 	CMapStringToString m_mapWordToOriginal;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 private:
 	CWndListBox m_WndNewQuestListBox;
 	CWndListBox m_WndCurrentQuestListBox;
@@ -53,7 +50,6 @@ private:
 	CTexture* m_pCurrentQuestListIconTexture;
 	CTexture* m_pCompleteQuestListIconTexture;
 public:
-#endif // __IMPROVE_QUEST_INTERFACE
 	 
 	CWndDialog(); 
 	~CWndDialog(); 
@@ -72,7 +68,6 @@ public:
 	void UpdateButtonEnable();
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	void RunScript( const char* szKey, DWORD dwParam, DWORD dwQuest );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	void AddNewQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
 	void AddCurrentQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
 	void MakeQuestKeyButton( const CString& rstrKeyButton );
@@ -83,7 +78,6 @@ private:
 	void AddQuestList( CWndListBox& pWndListBox, int& nQuestListNumber, const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
 
 public:
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	virtual BOOL Process();
 	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );

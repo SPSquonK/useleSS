@@ -80,10 +80,8 @@ void CMover::SetRenderPartsEffect( int nParts )
 			}
 			
 			int nEffLevel = 0;
-#if __VER >= 13 // __EXT_ENCHANT
 			if( nAttrLevel > 10 )
 				nAttrLevel = 10;
-#endif // __EXT_ENCHANT
 			if( nAttr && (nAttrLevel > 10 || nAttrLevel < 0) )	// 속성은 있는데 속성레벨값이 이상할때.
 			{
 				LPCTSTR szErr = Error( "m_nResistAbilityOption=%d %s", nAttrLevel, GetName() );
@@ -98,7 +96,6 @@ void CMover::SetRenderPartsEffect( int nParts )
 			DWORD dwItemEarth = XE_ITEM_EARTH;
 			DWORD dwItemNone = XE_ITEM_GEN;
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 #ifndef __CSC_ENCHANT_EFFECT_2
 			if( prj.m_nEnchantLimitLevel[2] >= nLevel )
 				return;
@@ -130,15 +127,6 @@ void CMover::SetRenderPartsEffect( int nParts )
 						break;
 				}
 			}
-#else //__Y_ADV_ENCHANT_EFFECT
-			if( nAttrLevel == 10 )		nEffLevel = 5;
-			else if( nAttrLevel == 9 )	nEffLevel = 4;
-			else if( nAttrLevel == 8 )	nEffLevel = 3;
-			else if( nAttrLevel == 7 )	nEffLevel = 2;
-			else if( nAttrLevel >= 4 )	nEffLevel = 1;	// 4 ~ 6
-			else 
-				nEffLevel = 0;
-#endif //__Y_ADV_ENCHANT_EFFECT
 			if( nEffLevel >= 0 )
 #ifdef __CSC_ENCHANT_EFFECT_2
 #else //__CSC_ENCHANT_EFFECT_2
@@ -149,9 +137,7 @@ void CMover::SetRenderPartsEffect( int nParts )
 				
 				switch( nAttr )
 				{
-			#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 				case 0:						pModel->SetEffect( nParts, dwItemNone  | nEffLevel );	break;	
-			#endif //__Y_ADV_ENCHANT_EFFECT
 				case SAI79::FIRE:			pModel->SetEffect( nParts, dwItemFire | nEffLevel );	break;	
 				case SAI79::ELECTRICITY:	pModel->SetEffect( nParts, dwItemElec | nEffLevel );	break;
 				case SAI79::WATER:			pModel->SetEffect( nParts, dwItemWater | nEffLevel );	break;
@@ -607,7 +593,6 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 					D3DXMatrixMultiply( &mRide, &mBoundY, &m_matWorld );
 				}
 			}
-#if __VER >= 14 // __WING_ITEM
 			if( pRideProp && pRideProp->dwItemKind3 == IK3_WING )
 			{
 				static const int SPINE1_BONE = 4;	// 몸 부근 척추(날개의 움직임은 캐릭터 몸의 움직임을 따른다)
@@ -644,7 +629,6 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 					D3DXMatrixMultiply( &mRide, &matEvent, &m_matWorld );
 				}
 			}
-#endif // __WING_ITEM
 #ifdef __CSC_EXTEXTURE
 			m_pRide->SetTextureEx(m_pRide->m_pModelElem->m_nTextureEx);
 #endif //__CSC_EXTEXTURE
@@ -654,9 +638,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 #ifdef __CLIENT
 			// 일본판은 일회용이 아니다...나머지국가는 일회용~
 			if( pRideProp && pRideProp->dwID == II_RID_RID_BOR_LADOLF || pRideProp->dwID == II_RID_RID_BOR_JLADOLF
-#if __VER >= 9
 				|| pRideProp->dwID == II_RID_RID_BOR_JLADOLF_S || pRideProp->dwID == II_RID_RID_BOR_LADOLF_S
-#endif	//
 				)
 			{
 				if( m_pLadolf == NULL )
@@ -718,14 +700,12 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 #ifdef __CLIENT
 	// 비행중 전방 xx각도 이내에 들어오는것은 TAB으로 자동 타겟팅.
-#if __VER >= 8 //__CSC_VER8_5
 	if(m_pAngelFlag && m_pAngel != NULL)
 	{
 		m_pAngel->m_nNoEffect = m_pModel->m_nNoEffect;
 		m_pAngel->Render( pd3dDevice, &m_AngelWorldM );
 		m_pAngel->m_nNoEffect = 0;
 	}
-#endif //__CSC_VER8_5
 
 #ifdef __EVE_BALLOON
 	if(m_pBalloonFlag && m_pBalloon != NULL)
@@ -776,7 +756,6 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	if( m_pModel->m_nNoEffect == 0 )
 		RenderQuestEmoticon( pd3dDevice );
 
-#if __VER >= 8 //__Y_EYE_FLASH_8
 	if( IsActiveMover() && m_pModel && IsDie() && HasBuffByIk3(IK3_TEXT_DISGUISE) == FALSE )
 	{
 		CModelObject* pModelObj = (CModelObject*)m_pModel;
@@ -794,7 +773,6 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 			}
 		}
 	}
-#endif //__Y_EYE_FLASH_8
 
 #endif
 	
@@ -908,14 +886,12 @@ void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
 	D3DXMatrixIdentity( &matWorld );
 	g_Laser.Render( pd3dDevice, &matWorld, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward );
 
-#if __VER >= 10 // __Y_DRAGON_FIRE
 	if( m_dwIndex == MI_DU_METEONYKER || m_dwIndex == MI_DU_METEONYKER2 || m_dwIndex == MI_DU_METEONYKER3 ||
 		m_dwIndex == MI_DU_METEONYKER4 )
 	{
 		extern CPartsFireDragon	g_FireDragon;
 		g_FireDragon.Render( pd3dDevice, &matWorld );
 	}
-#endif //__Y_DRAGON_FIRE
 }
 
 
@@ -1204,7 +1180,6 @@ void CMover::RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice)
 		}
 	}
 }
-#if __VER >= 13 // __HONORABLE_TITLE
 LPCTSTR	CMover::GetTitle()
 {
 	return m_strTitle.GetBuffer(0);
@@ -1214,7 +1189,6 @@ void	CMover::SetTitle(LPCTSTR pTitle)
 {
 	m_strTitle = pTitle;
 }
-#endif	// __HONORABLE_TITLE
 
 void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
 {
@@ -1244,7 +1218,6 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 				dwNewColor = COLOR_PLAYER;							
 		}
 		// 명성에 따른 색표시.
-#if __VER >= 13 // __HONORABLE_TITLE
 		if( IsChaotic() )
 			dwColor = prj.m_PKSetting.dwChaoColor;
 		else if( IsPKPink() )
@@ -1282,43 +1255,6 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 			}
 			strcpy( szName, (LPCTSTR)strName );
 		}
-#else
-#if __VER >= 8 // __S8_PK
-		if( IsChaotic() )
-			dwColor = prj.m_PKSetting.dwChaoColor;
-		else if( IsPKPink() )
-			dwColor = prj.m_PKSetting.dwReadyColor;
-		else
-			dwColor = prj.m_PKSetting.dwGeneralColor;
-		
-		CString strFameName = GetFameName();
-		if( strFameName.IsEmpty() == FALSE )
-		{
-			CString strName;
-			strName = "[";
-			strName += strFameName;
-			strName += "] ";
-			strName += m_szName;
-			strcpy( szName, (LPCTSTR)strName );
-		}
-#else // __VER >= 8 // __S8_PK
-		KarmaProp* pKarmaProp = prj.GetKarmaProp(m_nSlaughter);
-		if( pKarmaProp )
-		{
-			dwColor = pKarmaProp->dwColor;
-			CString strFameName = GetFameName();
-			if( strFameName.IsEmpty() == FALSE )
-			{
-				CString strName;
-				strName = "[";
-				strName += strFameName;
-				strName += "] ";
-				strName += m_szName;
-				strcpy( szName, (LPCTSTR)strName );
-			}		
-		}
-#endif // __VER >= 8 // __S8_PK
-#endif
 	}
 
 	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
@@ -1396,9 +1332,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 #ifdef __CLIENT
 	if( IsPlayer() )
 	{
-#if __VER >= 8 // __S8_PK
 		if( dwColor == prj.m_PKSetting.dwGeneralColor )		// 핑크색이나 카오색이면 바뀌지 않게 하자
-#endif // __VER >= 8 // __S8_PK
 		if( g_Party.FindMember( m_idPlayer ) != -1 )		// 파티멤버면 색깔 다르게 표시.
 			dwColor = COLOR_PARTY;
 		
@@ -1488,7 +1422,6 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 			bSkip = TRUE;
 	}
 	
-#if __VER >= 10 // __CSC_VER9_1
 	//전승 및 영웅 아이콘 표시 추가.
 	point.x = (LONG)( vOut.x );
 	point.y = (LONG)( vOut.y );
@@ -1560,7 +1493,6 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		}
 	}
 	//pd3dDevice->SetRenderState(D3DRS_DESTBLEND,D3DBLEND_INVSRCALPHA);
-#endif //__CSC_VER9_1
 
 	if( pGuild && bSkip == FALSE )
 	{
@@ -1571,11 +1503,6 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		point.y -= 32;
 		point.x -= 3;
 
-#if __VER < 8 // __S8_PK
-		KarmaProp* pKarmaProp = prj.GetKarmaProp(m_nSlaughter);
-		if( pKarmaProp )
-			dwColor = pKarmaProp->dwColor;
-#endif // __VER < 8 // __S8_PK
 
 		CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );				
 		// 길드마스터면 길드명을 노란색으로 출력
@@ -1805,21 +1732,6 @@ void CMover::RenderHP(LPDIRECT3DDEVICE9 pd3dDevice)
 	if( IsStateDbuff() )
 		bDbuff = TRUE;
 
-#if __VER < 9 // __S_9_ADD
-	int nHitPercent = GetHitPointPercent( 100 );
-	if( nHitPercent < CRITICAL_BERSERK_HP )
-	{
-		if( g_nRenderCnt & 1 )
-		{
-			g_Neuz.m_TextureHPGauge[0].RenderScal2(&(g_Neuz.m_2DRender), p, 200, 0.7f, 0.45f, 0xffffffff );		
-		}
-		else
-		{
-			g_Neuz.m_TextureHPGauge[0].RenderScal(&(g_Neuz.m_2DRender), p, 200, 0.8f, 0.55f);		
-		}
-	}
-	else
-#endif // __S_9_ADD
 	{
 		g_Neuz.m_TextureHPGauge[0].RenderScal(&(g_Neuz.m_2DRender), p, 200, 0.8f, 0.55f);		
 	}
@@ -1833,14 +1745,11 @@ void CMover::RenderHP(LPDIRECT3DDEVICE9 pd3dDevice)
 	else
 		g_Neuz.m_TextureHPGauge[1].Render(&(g_Neuz.m_2DRender), p, p2, 200, 0.8f, 0.55f);				
 
-#if __VER >= 8 //__CSC_VER8_5
 	if(m_pAngelFlag)
 		RenderAngelStatus( pd3dDevice );
-#endif //__CSC_VER8_5
 }
 
 
-#if __VER >= 11 // __SYS_COLLECTING
 void CMover::RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice)
 {
 
@@ -1897,9 +1806,7 @@ void CMover::RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice)
 	g_Neuz.m_TexCltGauge[1].Render(&(g_Neuz.m_2DRender), p, p2, 255, 0.8f, 0.55f);	
 
 }
-#endif
 
-#if __VER >= 8 //__CSC_VER8_5
 void CMover::RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice)
 {
 	if(m_pAngel == NULL)
@@ -1973,7 +1880,6 @@ void CMover::RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice)
 		g_Neuz.m_TextureAngelGauge[1].Render(&(g_Neuz.m_2DRender), p, p2, 200, 0.4f, 0.55f);		
 	}
 }
-#endif //__CSC_VER8_5
 
 void CMover::RenderCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 {
@@ -2101,7 +2007,6 @@ void CMover::RenderCtrlCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 	}
 }
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 void CMover::RenderSkillCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 {
 //	if( g_pPlayer->IsStateMode( STATE_BASEMOTION_MODE ) == FALSE )
@@ -2174,7 +2079,6 @@ void CMover::RenderSkillCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 		g_Neuz.m_TextureCastingGauge[1].Render(&(g_Neuz.m_2DRender), p, p2, 255, 0.8f, 0.55f);		
 	}
 }
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
 
 void CMover::RenderPVPCount(LPDIRECT3DDEVICE9 pd3dDevice)

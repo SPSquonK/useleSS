@@ -113,14 +113,12 @@ BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
 	pFont->m_dwBgColor	= pLangData->font.afi[5].dwBgColor;
 	pFont->m_dwFlags	= pLangData->font.afi[5].dwFlags;
 	m_mapFont.SetAt( _T( "gulim20"), pFont );
-#if __VER >= 12 // __SECRET_ROOM
 	pFont = new CD3DFont( pLangData->font.afi[2].szFont, 11, D3DFONT_BOLD );
 	pFont->m_nOutLine = 1;
 	m_mapFont.SetAt( _T( "gulim11"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[2].szFont, 9, D3DFONT_BOLD );
 	pFont->m_nOutLine = 1;
 	m_mapFont.SetAt( _T( "gulim9_2"), pFont );
-#endif //__SECRET_ROOM
 #else	// __LANG_1013
 	if( ::GetLanguage() == LANG_KOR )
 	{
@@ -418,10 +416,8 @@ BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
 	m_mapFont.Lookup( _T("FontWorld"), (void*&)m_pFontWorld );
 	m_mapFont.Lookup( _T("gulim20"), (void*&)m_pFontCaption );
 	m_mapFont.Lookup( _T("gulim13"), (void*&)m_pFontGuildCombatText );
-#if __VER >= 12 // __SECRET_ROOM
 	m_mapFont.Lookup( _T("gulim11"), (void*&)m_pFontSRMyGiuld );
 	m_mapFont.Lookup( _T("gulim9_2"), (void*&)m_pFontSRGiuld );	
-#endif //__SECRET_ROOM
 	
 #ifdef __FLYFF_INITPAGE_EXT
 	ReadTitleWorld();
@@ -753,11 +749,9 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 		}
 	}
 #else //__FLYFF_INITPAGE_EXT
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	int xOffset = 0;
 	int rectWidth = 0;
 	BOOL isWide = FALSE;
-#endif //__CSC_VER9_RESOLUTION
 	CTexture texture
 		= m_texWallPaper;
 	texture.SetAutoFree( FALSE );
@@ -765,7 +759,6 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 	CRect rectWindow = p2DRender->m_clipRect;
 	if( m_dwWallPaperType == WPT_STRETCH ) // ÀüÃ¼ ´Ã¸®±â 
 	{
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 		if(rectWindow.Width() == 1280 && (rectWindow.Height() == 720 || rectWindow.Height() == 768 || rectWindow.Height() == 800)) //Wide
 		{
 			rectWidth = 960;
@@ -804,12 +797,6 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 
 		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( CPoint( xOffset, 0 ), &texture );
-#else //__CSC_VER9_RESOLUTION
-		texture.m_size.cx = rectWindow.Width();
-		texture.m_size.cy = rectWindow.Height();
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
-		p2DRender->RenderTexture( CPoint( 0, 0 ), &texture );
-#endif //__CSC_VER9_RESOLUTION
 	}
 	else
 	if( m_dwWallPaperType == WPT_CENTER ) // Áß¾Ó Á¤·Ä 
@@ -854,13 +841,8 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 	}
 	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 	p2DRender->TextOut( 1 + xOffset, 1, "Version", 0xffffffff  );
 	p2DRender->TextOut( 50 + xOffset, 1, g_szVersion, 0xffffffff  );
-#else //__CSC_VER9_RESOLUTION
-	p2DRender->TextOut(  1, 1, "Version", 0xffffffff  );
-	p2DRender->TextOut( 50, 1, g_szVersion, 0xffffffff  );
-#endif //__CSC_VER9_RESOLUTION
 #endif //__FLYFF_INITPAGE_EXT
 }
 

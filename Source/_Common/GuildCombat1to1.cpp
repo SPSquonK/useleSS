@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 
 #ifdef __WORLDSERVER
 	#include "worldmng.h"
@@ -1663,4 +1662,3 @@ void	CGuildCombat1to1Mng::SetTeleportToStage( CUser* pUser )
 }	
 #endif // __WORLDSERVER
 
-#endif // __GUILD_COMBAT_1TO1

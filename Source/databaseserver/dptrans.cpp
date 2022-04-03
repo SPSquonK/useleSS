@@ -1,8 +1,6 @@
 #include "stdafx.h"
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "dpcoresrvr.h"
 extern	CDPCoreSrvr	g_dpCoreSrvr;
-#endif	// __SYS_PLAYER_DATA
 #include "dpaccountclient.h"
 extern	CDPAccountClient	g_dpAccountClient;
 #include "dptrans.h"
@@ -12,27 +10,15 @@ extern	CDPAccountClient	g_dpAccountClient;
 #include "post.h"
 #include "spevent.h"
 
-#if __VER >= 12 // __LORD
 #include "tlord.h"
-#endif	// __LORD
-#if __VER >= 13 // __COUPLE_1117
 #include "couplehelper.h"
-#endif	// __COUPLE_1117
 
 extern	APP_INFO	g_appInfo;
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoomDBMng.h"
-#endif // __SECRET_ROOM
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
-#if __VER >= 13 // __RAINBOW_RACE
 #include "RainbowRaceDBCtrl.h"
-#endif // __RAINBOW_RACE
-#if __VER >= 13 // __HOUSING
 #include "HousingDBCtrl.h"
-#endif // __HOUSING
 #ifdef __FUNNY_COIN
 #include "FunnyCoin.h"
 #endif // __FUNNY_COIN
@@ -42,17 +28,11 @@ extern	APP_INFO	g_appInfo;
 #ifdef __QUIZ
 #include "QuizDBCtrl.h"
 #endif // __QUIZ
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouseDBCtrl.h"
-#endif // __GUILD_HOUSE
-#if __VER >= 15 // __CAMPUS
 #include "CampusDBCtrl.h"
-#endif // __CAMPUS
 
 CDPTrans::CDPTrans()
-#if __VER >= 14 // __PCBANG
 :m_bPCBangApply( TRUE )
-#endif // __PCBANG
 {
 	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPTrans::OnJoin );
@@ -119,40 +99,27 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_CALL_XXX_MULTI_SERVER, &CDPTrans::OnCalluspXXXMultiServer );
 	ON_MSG( PACKETTYPE_LOG_EXPBOX, &CDPTrans::OnLogExpBox );
 
-#if __VER >= 9	// __PET_0410
 	ON_MSG( PACKETTYPE_CALL_USP_PET_LOG, &CDPTrans::OnCalluspPetLog );
-#endif	// __PET_0410
 	
-#if __VER >= 9 // __EVENTLUA
 	ON_MSG( PACKETTYPE_EVENTLUA_CHANGED, &CDPTrans::OnEventLuaChanged);
-#endif // __EVENTLUA
 #ifdef __S_RECOMMEND_EVE
 	ON_MSG( PACKETTYPE_EVE_RECOMMEND, &CDPTrans::OnEveRecommend );
 #endif // __S_RECOMMEND_EVE
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	ON_MSG( PACKETTYPE_GC1TO1_STATETODB, &CDPTrans::OnGC1to1StateToDBSrvr );
 	ON_MSG( PACKETTYPE_GC1TO1_TENDERTODB, &CDPTrans::OnGC1to1Tender );
 	ON_MSG( PACKETTYPE_GC1TO1_LINEUPTODB, &CDPTrans::OnGC1to1LineUp );
 	ON_MSG( PACKETTYPE_GC1TO1_WARPERSONTODB, &CDPTrans::OnGC1to1WarPerson );
 	ON_MSG( PACKETTYPE_GC1TO1_WARGUILDTODB, &CDPTrans::OnGC1to1WarGuild );
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_UPDATE_PLAYER_DATA, &CDPTrans::OnUpdatePlayerData );
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	ON_MSG( PACKETTYPE_GUILDLOG_VIEW, &CDPTrans::OnGuildBankLogView );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	ON_MSG( PACKETTYPE_SEALCHAR_REQ, &CDPTrans::OnSealChar );
 	ON_MSG( PACKETTYPE_SEALCHARCONM_REQ, &CDPTrans::OnSealCharConm );
 	ON_MSG( PACKETTYPE_SEALCHARGET_REQ, &CDPTrans::OnSealCharGet );
 	ON_MSG( PACKETTYPE_SEALCHARSET_REQ, &CDPTrans::OnSealCharSet );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 12 // __LORD
 	// /군주입찰
 	ON_MSG( PACKETTYPE_ELECTION_ADD_DEPOSIT, &CDPTrans::OnElectionAddDeposit );
 	// /공약설정
@@ -173,50 +140,35 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_ELECTION_END_VOTE, &CDPTrans::OnElectionEndVote );
 	// /군주이벤트초기화
 	ON_MSG( PACKETTYPE_L_EVENT_INITIALIZE,	&CDPTrans::OnLEventInitialize );
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 	ON_MSG( PACKETTYPE_TAX_SET_SECRETROOM_WINNER, &CDPTrans::OnSetSecretRoomWinGuild );
 	ON_MSG( PACKETTYPE_TAX_SET_LORD, &CDPTrans::OnSetLord );
 	ON_MSG( PACKETTYPE_TAX_SET_TAXRATE, &CDPTrans::OnTaxRate );
 	ON_MSG( PACKETTYPE_TAX_ADDTAX, &CDPTrans::OnAddTax );
 	ON_MSG( PACKETTYPE_TAX_APPLY_TAXRATE_NOW, &CDPTrans::OnApplyTaxRateNow );
-#endif // __TAX
 
-#if __VER >= 12 // __SECRET_ROOM
 	ON_MSG( PACKETTYPE_SECRETROOM_TENDER_INSERTTODB, &CDPTrans::OnSecretRoomInsertToDB );
 	ON_MSG( PACKETTYPE_SECRETROOM_TENDER_UPDATETODB, &CDPTrans::OnSecretRoomUpdateToDB );
 	ON_MSG( PACKETTYPE_SECRETROOM_LINEUP_INSERTTODB, &CDPTrans::OnSecretRoomLineUpToDB );
 	ON_MSG( PACKETTYPE_SECRETROOM_CLOSED, &CDPTrans::OnSecretRoomClosed );
-#endif // __SECRET_ROOM
 
-#if __VER >= 13 // __RAINBOW_RACE
 	ON_MSG( PACKETTYPE_RAINBOWRACE_LOADDBTOWORLD, &CDPTrans::OnRainbowRaceLoadInfo );
 	ON_MSG( PACKETTYPE_RAINBOWRACE_APPTODB, &CDPTrans::OnRainbowRaceApplication );
 	ON_MSG( PACKETTYPE_RAINBOWRACE_FAILEDTODB, &CDPTrans::OnRainbowRaceFailedUser );
 	ON_MSG( PACKETTYPE_RAINBOWRACE_RANKINGTODB, &CDPTrans::OnRainbowRaceRanking );
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 	ON_MSG( PACKETTYPE_HOUSING_LOADINFO, &CDPTrans::OnHousingLoadInfo );
 	ON_MSG( PACKETTYPE_HOUSING_FURNITURELIST, &CDPTrans::OnHousingReqSetFurnitureList );
 	ON_MSG( PACKETTYPE_HOUSING_SETUPFURNITURE, &CDPTrans::OnHousingReqSetupFurniture );
 	ON_MSG( PACKETTYPE_HOUSING_SETVISITALLOW, &CDPTrans::OnHousingReqSetVisitAllow );
 	ON_MSG( PACKETTYPE_HOUSING_GM_REMOVEALL, &CDPTrans::OnHousingReqGMRemoveAll );
-#endif // __HOUSING
 
-#if __VER >= 13 // __COUPLE_1117
 	ON_MSG( PACKETTYPE_PROPOSE, &CDPTrans::OnPropose );
 	ON_MSG( PACKETTYPE_COUPLE, &CDPTrans::OnCouple );
 	ON_MSG( PACKETTYPE_DECOUPLE, &CDPTrans::OnDecouple );
 	ON_MSG( PACKETTYPE_CLEAR_PROPOSE, &CDPTrans::OnClearPropose );
-#if __VER >= 13 // __COUPLE_1202
 	ON_MSG( PACKETTYPE_ADD_COUPLE_EXPERIENCE, &CDPTrans::OnQueryAddCoupleExperience );
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	ON_MSG( PACKETTYPE_LOG_GETHONORTIME, &CDPTrans::OnLogGetHonorTime );
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __FUNNY_COIN
 	ON_MSG( PACKETTYPE_FUNNYCOIN_REQ_USE, &CDPTrans::OnFunnyCoinReqUse );
@@ -227,9 +179,7 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_TIMELIMIT_UPDATE, &CDPTrans::OnTimeLimitUpdate );
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_LOG, &CDPTrans::OnLogInstanceDungeon );
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __QUIZ
 	ON_MSG( PACKETTYPE_QUIZ_OPEN, &CDPTrans::OnQuizEventOpen );
@@ -243,7 +193,6 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_ERROR_LOG_TO_DB, &CDPTrans::OnErrorLog );
 #endif // __ERROR_LOG_TO_DB
 
-#if __VER >= 15 // __GUILD_HOUSE
 	ON_MSG( PACKETTYPE_GUILDHOUSE_BUY, &CDPTrans::OnBuyGuildHouse );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_PACKET, &CDPTrans::OnGuildHousePacket );
 	ON_MSG( PACKETTYPE_GUILDFURNITURE_LOG, &CDPTrans::OnLogGuildFurniture );
@@ -251,13 +200,10 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_GUILDHOUSE_TENDER_JOIN, &CDPTrans::OnGuildHouseTenderJoin );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_LEVEL_UPDATE, &CDPTrans::OnGuildHouseLevelUpdate );
 #endif // __GUILD_HOUSE_MIDDLE
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 	ON_MSG( PACKETTYPE_CAMPUS_ADD_MEMBER, &CDPTrans::OnAddCampusMember );
 	ON_MSG( PACKETTYPE_CAMPUS_REMOVE_MEMBER, &CDPTrans::OnRemoveCampusMember );
 	ON_MSG( PACKETTYPE_CAMPUS_UPDATE_POINT, &CDPTrans::OnUpdateCampusPoint );
-#endif // __CAMPUS
 }
 
 CDPTrans::~CDPTrans()
@@ -279,7 +225,6 @@ void CDPTrans::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID i
 		case DPSYS_CREATEPLAYERORGROUP:
 			{
 				LPDPMSG_CREATEPLAYERORGROUP lpCreatePlayer	= (LPDPMSG_CREATEPLAYERORGROUP)lpMsg;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		#ifdef __JEFF_FIX_0
 				LPDB_OVERLAPPED_PLUS pov	= g_DbManager.AllocRequest();
 				pov->nQueryMode	= QM_ALL_PLAYER_DATA;
@@ -288,18 +233,11 @@ void CDPTrans::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID i
 		#else	// __JEFF_FIX_0
 				SendAllPlayerData( lpCreatePlayer->dpId );
 		#endif	// __JEFF_FIX_0
-#else	// __SYS_PLAYER_DATA
-				SendAllPlayerID( lpCreatePlayer->dpId );
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 12 // __LORD
 				// 월드 서버에 군주 정보 전송
 				CTLord::Instance()->PostRequest( CTLord::eInit, NULL, 0, lpCreatePlayer->dpId );
-#endif	// __LORD
 
-#if __VER >= 13 // __COUPLE_1117
 				CCoupleHelper::Instance()->PostRequest( CCoupleHelper::eTransfer, NULL, 0, lpCreatePlayer->dpId );
-#endif	// __COUPLE_1117
 
 #ifdef __S1108_BACK_END_SYSTEM
 				SendBaseGameSetting( TRUE, lpCreatePlayer->dpId );
@@ -314,7 +252,6 @@ void CDPTrans::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID i
 		#endif	// __JEFF_FIX_0
 
 				SendEventGeneric( lpCreatePlayer->dpId );
-#if __VER >= 9 // __EVENTLUA
 				prj.m_EventLua.m_Access.Enter();
 				vector<BYTE> vecEventList = prj.m_EventLua.GetEventList();
 				prj.m_EventLua.m_Access.Leave();
@@ -325,32 +262,19 @@ void CDPTrans::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID i
 						mapEventList.insert( make_pair( vecEventList[i], TRUE ) );
 					SendEventLuaState( mapEventList, FALSE, lpCreatePlayer->dpId );
 				}
-#endif// __EVENTLUA
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				//g_DbManager.LoadGC1to1TenderGuild();
 				LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.AllocRequest();
 				lpDbOverlappedPlus->nQueryMode	= GC1TO1_LOAD;
 				PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, lpCreatePlayer->dpId, &lpDbOverlappedPlus->Overlapped );
-#endif // __GUILD_COMBAT_1TO1
 			
-#if __VER >= 12 // __SECRET_ROOM
 				CSecretRoomDBMng::GetInstance()->PostRequest( QUERY_SECRETROOM_LOAD, NULL, 0, lpCreatePlayer->dpId );
-#endif // __SECRET_ROOM
-#if __VER >= 12 // __TAX
 				CTax::GetInstance()->LoadTaxInfo( lpCreatePlayer->dpId );
-#endif // __TAX
-#if __VER >= 14 // __PCBANG
 				SendPCBangSetApply( lpCreatePlayer->dpId );
-#endif // __PCBANG
-#if __VER >= 15 // __GUILD_HOUSE
 				GuildHouseDBMng->PostRequest( GUILDHOUSE_SEND, NULL, 0, lpCreatePlayer->dpId );
 #ifdef __GUILD_HOUSE_MIDDLE
 				GuildHouseDBMng->PostRequest( GUILDHOUSE_SEND, NULL, 0, lpCreatePlayer->dpId );
 #endif // __GUILD_HOUSE_MIDDLE
-#endif // __GUILD_HOUSE
-#if __VER >= 15 // __CAMPUS
 				CCampusHelper::GetInstance()->PostRequest( CAMPUS_SEND, NULL, 0, lpCreatePlayer->dpId );
-#endif // __CAMPUS
 				break;
 			}
 		case DPSYS_DESTROYPLAYERORGROUP:
@@ -394,7 +318,6 @@ void CDPTrans::SendAllGuildCombat( DPID dpId )
 	SEND( ar, this, dpId );
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPTrans::SendAllPlayerData( DPID dpid )
 {
 /*
@@ -446,31 +369,6 @@ void CDPTrans::SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData )
 	ar.Write( &pPlayerData->data, sizeof(sPlayerData) );
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#else	// __SYS_PLAYER_DATA
-//{{AFX
-void CDPTrans::SendAllPlayerID( DPID dpId )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ALLPLAYERID, DPID_UNKNOWN, DPID_UNKNOWN );
-	g_DbManager.SerializePlayerID( ar );
-	SEND( ar, this, dpId );
-}
-
-void CDPTrans::SendPlayerID( u_long idPlayer, const CHAR* lpszPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_PLAYERID, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer;
-	ar.WriteString( lpszPlayer );
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-void CDPTrans::SendRemovePlayerID( u_long idPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_REMOVEPLAYERID, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-//}}AFX
-#endif	// __SYS_PLAYER_DATA
 
 void CDPTrans::SendHdr( DWORD dwHdr, DPID dpid )
 {
@@ -613,9 +511,7 @@ void CDPTrans::OnJoin( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYT
 #ifdef __BILLING0712
 	ar1 << (DWORD)0;	// retrieve dwBilling;
 #endif	// __BILLING0712
-#if __VER >= 14 // __PCBANG
 	ar1 << (DWORD)0;
-#endif // __PCBANG
 
 	int nBlockSize;
 	LPBYTE pBlock	= ar1.GetBuffer( &nBlockSize );
@@ -698,10 +594,8 @@ void CDPTrans::OnSavePlayer( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser,
 	ar >> pMover->m_nCoupon;
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 15 // __GUILD_HOUSE
 	ar >> pMover->m_nRestPoint;
 	pMover->m_tLogOut = time_null();
-#endif // __GUILD_HOUSE
 
 	for( int j = 0 ; j < 3 ; ++j )
 	{
@@ -725,12 +619,10 @@ void CDPTrans::OnSavePlayer( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser,
 	pMover2->m_bLogout	= bLogout;
 	lstrcpy( pMover2->m_szAccount, sAccount );
 #endif	// __INVALID_LOGIN_0612
-#if __VER >= 15 // __GUILD_HOUSE
 	CAr arRestPoint;
 	arRestPoint << pMover2->m_idPlayer << pMover2->m_nRestPoint << pMover2->m_tLogOut;
 	int nBufRestPointSize;	LPBYTE lpBufRestPoint = arRestPoint.GetBuffer( &nBufRestPointSize );
 	GuildHouseDBMng->PostRequest( GUILDHOUSE_SAVE_RESTPOINT, lpBufRestPoint, nBufRestPointSize );
-#endif // __GUILD_HOUSE
 	
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPUpdate, (DWORD)pMover2, (DWORD)0, NULL );
 }
@@ -825,7 +717,6 @@ void CDPTrans::OnLogServerDeath( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidU
 	lpDbOverlappedPlus->nQueryMode	= LOG_SERVER_DEATH;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void	CDPTrans::OnLogGetHonorTime( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = g_DbManager.AllocRequest();
@@ -833,7 +724,6 @@ void	CDPTrans::OnLogGetHonorTime( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 	lpDbOverlappedPlus->nQueryMode	= LOG_GETHONORTIME;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
-#endif	// __HONORABLE_TITLE			// 달인
 
 void CDPTrans::OnLogUniqueItem( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
@@ -1447,7 +1337,6 @@ void CDPTrans::SendEventFlag( DWORD dwFlag )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-#if __VER >= 9 // __EVENTLUA
 void CDPTrans::SendEventLuaState( map<BYTE, BOOL> mapState, BOOL bTextOut, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_EVENTLUA_STATE, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1473,7 +1362,6 @@ void CDPTrans::OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 		SendEventLuaState( prj.m_EventLua.m_mapState, FALSE );
 	prj.m_EventLua.m_Access.Leave();
 }
-#endif // __EVENTLUA
 
 #ifdef __S_RECOMMEND_EVE
 void CDPTrans::OnEveRecommend( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1546,7 +1434,6 @@ void CDPTrans::OnLogExpBox( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, 
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
 
-#if __VER >= 9	// __PET_0410
 void CDPTrans::OnCalluspPetLog( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = g_DbManager.AllocRequest();
@@ -1554,9 +1441,7 @@ void CDPTrans::OnCalluspPetLog( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUs
 	lpDbOverlappedPlus->nQueryMode	= QM_CALL_USP_PET_LOG;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
-#endif	// __PET_0410
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CDPTrans::SendGC1to1Open( void )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_OPEN, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1620,9 +1505,7 @@ void CDPTrans::OnGC1to1WarGuild( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidU
 	lpDbOverlappedPlus->nQueryMode	= GC1TO1_WARGUILD;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPTrans::OnUpdatePlayerData( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	u_long idPlayer;
@@ -1649,9 +1532,7 @@ void CDPTrans::OnUpdatePlayerData( CAr & ar, DPID dpid, DPID dpidCache, DPID dpi
 	SendUpdatePlayerData( idPlayer, &pd );
 	g_dpCoreSrvr.SendUpdatePlayerData( idPlayer, &pd );
 }
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 void CDPTrans::OnGuildBankLogView( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.AllocRequest();
@@ -1659,8 +1540,6 @@ void CDPTrans::OnGuildBankLogView( CAr & ar, DPID dpid, DPID dpidCache, DPID dpi
 	lpDbOverlappedPlus->nQueryMode	= QM_GUILDBANK_LOG_VIEW;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 void CDPTrans::OnSealChar( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.AllocRequest();
@@ -1689,9 +1568,7 @@ void CDPTrans::OnSealCharSet( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser
 	lpDbOverlappedPlus->nQueryMode	= QM_SEALCHARSET;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 12 // __LORD
 void CDPTrans::SendElectionAddDeposit( u_long idPlayer, __int64 iDeposit, time_t tCreate, BOOL bRet )
 {	// 월드 서버에 군주입찰 결과 전송
 	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_ADD_DEPOSIT, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1837,9 +1714,7 @@ void CDPTrans::SendLEventTick( ILordEvent* pEvent )
 	pEvent->SerializeTick( ar );
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 void CDPTrans::SendTaxInfo( DPID dpId, BOOL bConnect, BOOL bToAllClient )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_TAX_ALLINFO, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1883,9 +1758,7 @@ void CDPTrans::OnApplyTaxRateNow( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 {
 	CTax::GetInstance()->SetApplyTaxRateNow();
 }
-#endif // __TAX
 
-#if __VER >= 12 // __SECRET_ROOM
 void CDPTrans::OnSecretRoomInsertToDB( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CSecretRoomDBMng::GetInstance()->PostRequest( QUERY_SECRETROOM_TENDER_INSERT, lpBuf, uBufSize );
@@ -1921,9 +1794,7 @@ void CDPTrans::SendSecretRoomTenderInfo( BYTE nContinent, DWORD dwGuildId, int n
 		ar << vecMemberId[i];
 	SEND( ar, this, dpId );
 }
-#endif // __SECRET_ROOM
 
-#if __VER >= 13 // __RAINBOW_RACE
 void CDPTrans::SendRainbowRaceInfo( vector<DWORD> & vec_dwNowPlayerId, vector<DWORD> & vec_prevRanking, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_RAINBOWRACE_LOADDBTOWORLD, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1954,9 +1825,7 @@ void CDPTrans::OnRainbowRaceRanking( CAr & ar, DPID dpid, DPID dpidCache, DPID d
 {
 	CRainbowRaceDBMng::GetInstance()->PostRequest( QUERY_RR_RANKING, lpBuf, uBufSize );
 }
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 void CDPTrans::SendHousingLoadInfo( DWORD dwPlayerId, CHousing* pHousing, DPID dpId )
 {
 	ASSERT( pHousing );
@@ -2020,9 +1889,7 @@ void CDPTrans::OnHousingReqGMRemoveAll( CAr & ar, DPID dpid, DPID dpidCache, DPI
 {
 	CHousingDBMng::GetInstance()->PostRequest( QUERY_HOUSING_GM_REMOVEALL, lpBuf, uBufSize );
 }
-#endif // __HOUSING
 
-#if __VER >= 13 // __COUPLE_1117
 void CDPTrans::OnPropose( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	OutputDebugString( "\nCDPTrans.OnPropose\n" );
@@ -2047,7 +1914,6 @@ void CDPTrans::OnClearPropose( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUse
 	CCoupleHelper::Instance()->PostRequest( CCoupleHelper::eClearPropose, lpBuf, uBufSize );
 }
 
-#if __VER >= 13 // __COUPLE_1202
 void CDPTrans::OnQueryAddCoupleExperience( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	OutputDebugString( "\nCDPTrans.OnQueryAddCoupleExperience\n" );
@@ -2060,7 +1926,6 @@ void CDPTrans::SendAddCoupleExperience( u_long idPlayer, int nExperience )
 	ar << idPlayer << nExperience;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#endif	// __COUPLE_1202
 
 void CDPTrans::SendCouple( CCoupleMgr* pMgr, DPID dpid )
 {
@@ -2090,7 +1955,6 @@ void CDPTrans::SendDecoupleResult( u_long idPlayer, int nResult )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-#endif	// __COUPLE_1117
 
 #ifdef __FUNNY_COIN
 void CDPTrans::OnFunnyCoinReqUse( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -2106,14 +1970,12 @@ void CDPTrans::SendFunnyCoinAckUse( DWORD dwPlayerId, DWORD dwItemId, SERIALNUMB
 }
 #endif // __FUNNY_COIN
 
-#if __VER >= 14 // __PCBANG
 void CDPTrans::SendPCBangSetApply( DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_PCBANG_SETAPPLY, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << m_bPCBangApply;
 	SEND( ar, this, dpId );
 }
-#endif // __PCBANG
 
 #ifdef __VTN_TIMELIMIT
 void CDPTrans::OnTimeLimitInfoReq( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -2140,7 +2002,6 @@ void CDPTrans::SendTimeLimitReset()
 }
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 void CDPTrans::OnLogInstanceDungeon( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = g_DbManager.AllocRequest();
@@ -2151,7 +2012,6 @@ void CDPTrans::OnLogInstanceDungeon( CAr & ar, DPID dpid, DPID dpidCache, DPID d
 	lpDbOverlappedPlus->nQueryMode	= LOG_INSTANCEDUNGEON;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );	
 }
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __QUIZ
 void CDPTrans::OnQuizEventOpen( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -2219,7 +2079,6 @@ void CDPTrans::OnErrorLog( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, L
 }
 #endif // __ERROR_LOG_TO_DB
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CDPTrans::OnBuyGuildHouse( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	GuildHouseDBMng->PostRequest( GUILDHOUSE_CREATE, lpBuf, uBufSize, dpid );
@@ -2252,9 +2111,7 @@ void CDPTrans::OnGuildHouseLevelUpdate( CAr & ar, DPID dpid, DPID dpidCache, DPI
 	GuildHouseDBMng->PostRequest( GUILDHOUSE_LEVEL_UPDATE, lpBuf, uBufSize, dpid );
 }
 #endif // __GUILD_HOUSE_MIDDLE
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 void CDPTrans::OnAddCampusMember( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CCampusHelper::GetInstance()->PostRequest( CAMPUS_ADD_MEMBER, lpBuf, uBufSize, dpid );
@@ -2297,4 +2154,3 @@ void CDPTrans::SendUpdateCampusPoint( u_long idPlayer, int nCampusPoint )
 	ar << idPlayer << nCampusPoint;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#endif // __CAMPUS

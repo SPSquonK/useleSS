@@ -7,10 +7,8 @@
 
 #ifdef __CLIENT
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "WndGuildHouse.h"
 #include "ResData.h"
-#endif
 
 // 오래전부터 써오던 게임내 시간단위 Light color values, 이 녀석을 default로 쓴다.
 static const LIGHTCOLOR gs_kLight[24] = // diffuse, ambient
@@ -48,7 +46,6 @@ BOOL CWorld::InitWorldEnvir( )
 	return TRUE;
 }
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CWorld::InProcessing( )
 {
 	//진입시 한번 호출 
@@ -87,9 +84,7 @@ void CWorld::OutProcessing( )
 	
 	}
 
-#if __VER >= 15 // __PETVIS
 	SAFE_DELETE( g_WndMng.m_pWndBuffPetStatus );
-#endif // __PETVIS
 
 
 	//gmpbigsun(20100419): 개인하우징에서 빠져나오면 물가 텍스쳐가 하우징 바닥이다?
@@ -98,11 +93,9 @@ void CWorld::OutProcessing( )
 
 }
 
-#endif // __GUILD_HOUSE
 
 #endif	//__CLIENT
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 #include "Continent.h"
 
 enum ChangingTo
@@ -800,4 +793,3 @@ void CWorld::RenderContinentLines( )
 #endif
 
 
-#endif //__BS_CHANGING_ENVIR

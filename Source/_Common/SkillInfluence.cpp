@@ -9,9 +9,7 @@
 #ifdef __WORLDSERVER
 #include "User.h"
 extern	CUserMng	g_UserMng;
-#if __VER >= 9
 #include "defineobj.h"
-#endif	//
 #include "DPDatabaseClient.h"
 extern	CDPDatabaseClient	g_dpDBClient;
 #endif // __WORLDSERVER
@@ -33,12 +31,8 @@ void CSkillInfluence::Init( void )
 {
 	m_pMover		= NULL;
 	memset( m_aSkillInfluence, 0, sizeof(m_aSkillInfluence) );
-#if __VER < 8 //__CSC_VER8_3
-	m_pEmptyNode = NULL;
-#endif //__CSC_VER8_3
 }
 
-#if __VER >= 8 //__CSC_VER8_3
 #if !( defined( __CORESERVER ) || defined( __DBSERVER ) ) 
 SKILLINFLUENCE* CSkillInfluence::SortSkillArray()
 {
@@ -92,11 +86,7 @@ BOOL CSkillInfluence::InsertBuff(SKILLINFLUENCE *pNode, WORD wType, WORD wID, DW
 		}
 		i++;
 	}
-#if __VER >= 9	// __PET_0410
 	if( count == MAX_SKILLBUFF_COUNT && wType == BUFF_SKILL )
-#else	// __PET_0410
-	if( count == MAX_SKILLBUFF_COUNT && wType != BUFF_ITEM )
-#endif	// __PET_0410
 	{
 		pItem = prj.GetSkillProp(pFirstSBuff->wID);
 		if(pItem != NULL && pItem->nEvildoing >= 0) //맨 처음 버프가 디버프일 경우 밀 수 없다.
@@ -119,7 +109,6 @@ BOOL CSkillInfluence::InsertBuff(SKILLINFLUENCE *pNode, WORD wType, WORD wID, DW
 	return bFlag;
 }
 #endif // #if !( defined( __CORESERVER ) || defined( __DBSERVER ) ) i
-#endif //__CSC_VER8_3
 
 LPSKILLINFLUENCE CSkillInfluence::GetItemBuf( DWORD dwItemKind3 )
 {
@@ -151,47 +140,31 @@ BOOL CSkillInfluence::Set( WORD wType, WORD wID, DWORD dwLevel, DWORD dwTime )
 	SKILLINFLUENCE *pList = m_aSkillInfluence, *pNode;
 	BOOL	bAdd = FALSE;
 
-#if __VER >= 8 //__CSC_VER8_3
 #if !( defined( __CORESERVER ) || defined( __DBSERVER ) )
 	//Array Sort
 	SKILLINFLUENCE *pNextNode;
 	pNextNode = SortSkillArray();
 #endif // !( defined( __CORESERVER ) || defined( __DBSERVER ) )
-#endif //__CSC_VER8_3
 
-#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 	if( (int)dwTime < 0 )
 	{
 		LPCTSTR szErr = Error( "CSkillInfluence::Set : dwTime=%d, %d %d %d", (int)dwTime, wType, wID, dwLevel );
 		return FALSE;
 	}	
-#else //__Y_FLAG_SKILL_BUFF
-	if( (int)dwTime <= 0 )
-	{
-		LPCTSTR szErr = Error( "CSkillInfluence::Set : dwTime=%d, %d %d %d", (int)dwTime, wType, wID, dwLevel );
-		return FALSE;
-	}
-#endif //__Y_FLAG_SKILL_BUFF
 	
 	pNode = Find( wType, wID );		// 이미 같은 스킬상태가 있었는지 찾음.
 
-#if __VER >= 8 //__CSC_VER8_3
 	if( pNode && pNode->dwLevel == dwLevel ) // 8차 Level Check Add.
-#else
-	if( pNode )		// 있었으면 시간만 재 세팅함.
-#endif //__CSC_VER8_3
 	{
 		DWORD dwTimeRemain = pNode->tmCount - ( ::timeGetTime() - pNode->tmTime ); // 현재 스킬 남은 시간
 #ifdef __PVPDEBUFSKILL
 #ifdef __JEFF_11_1
 		if( pNode ->wType == BUFF_ITEM && 
 			( pNode->wID == II_SYS_SYS_SCR_PET_FEED_POCKET02 
-#if __VER >= 12 // __PET_0519
 				// 펫 영양제가 중복 사용될 수 있도록 수정
 				// 이 후 더 추가된다면 프로퍼티를 확인하는 방법으로 수정하자
 				|| pNode->wID == II_SYS_SYS_SCR_PET_TONIC_A
 				|| pNode->wID == II_SYS_SYS_SCR_PET_TONIC_B 
-#endif	// __PET_0519
 			)
 		)
 			dwTime	+= dwTimeRemain;
@@ -207,24 +180,8 @@ BOOL CSkillInfluence::Set( WORD wType, WORD wID, DWORD dwLevel, DWORD dwTime )
 	else	// 없었으면 추가함.
 	{
 		int		i = MAX_SKILLINFLUENCE;
-#if __VER < 8 //__CSC_VER8_3		
-		if( m_pEmptyNode )
 		{
-#ifdef __PVPDEBUFSKILL
-			if( Set( m_pEmptyNode, wType, wID, dwLevel, dwTime, dwAttackerID ) )
-#else // __PVPDEBUFSKILL
-			if( Set( m_pEmptyNode, wType, wID, dwLevel, dwTime ) )
-#endif // __PVPDEBUFSKILL
-			{
-				bAdd = TRUE;
-				// 윤상이 확인 - Set에 성공했을 경우에만 m_pEmptyNode를 NULL로 초기화 해야 하지 않을까?
-				m_pEmptyNode = NULL;	// 빈곳에 넣었으니 지워줘야 한다.
-			}
-		} 
-		else
-#endif //__CSC_VER8_3		
-		{
-#if __VER >= 8 && !( defined( __CORESERVER ) || defined( __DBSERVER ) ) //__CSC_VER8_3
+#if !( defined( __CORESERVER ) || defined( __DBSERVER ) ) //__CSC_VER8_3
 			if( !(pNode && pNode->dwLevel >= dwLevel) )
 			{
 				if(pNode)
@@ -304,19 +261,15 @@ BOOL CSkillInfluence::Set( SKILLINFLUENCE *pNode, WORD wType, WORD wID, DWORD dw
 #ifdef __WORLDSERVER
 	BOOL bCharged = FALSE;
 	if( pNode->wType == BUFF_ITEM
-#if __VER >= 11 // __SYS_COLLECTING
 		|| pNode->wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 		)
 	{
 		ItemProp *pItemProp = prj.GetItemProp( pNode->wID );
 		if( pItemProp && pItemProp->bCharged ) // 상용화 아이템은 종료가 안되게 수정
 			bCharged = TRUE;
 	}
-#if __VER >= 9	// __PET_0410
 	else if( pNode->wType == BUFF_PET )
 		bCharged	= TRUE;
-#endif	// __PET_0410
 #ifdef __DST_GIFTBOX
 	else if( pNode->wType == BUFF_EQUIP )
 		bCharged = TRUE;
@@ -351,7 +304,6 @@ void CSkillInfluence::Serialize( CAr & ar )
 				ar << m_aSkillInfluence[j].wType;
 				ar << m_aSkillInfluence[j].wID;
 
-#if __VER >= 11 // __SYS_COLLECTING
 				if( m_aSkillInfluence[j].wType == BUFF_ITEM2 )
 				{
 					time_t t	= (time_t)m_aSkillInfluence[j].dwLevel - time_null();
@@ -359,9 +311,6 @@ void CSkillInfluence::Serialize( CAr & ar )
 				}
 				else
 					ar << m_aSkillInfluence[j].dwLevel;
-#else	// __SYS_COLLECTING
-				ar << m_aSkillInfluence[j].dwLevel;
-#endif	// __SYS_COLLECTING
 
 #ifdef __WORLDSERVER			
 				if( m_aSkillInfluence[j].tmCount )
@@ -385,15 +334,11 @@ void CSkillInfluence::Serialize( CAr & ar )
 	{
 
 		memset( m_aSkillInfluence, 0, sizeof(m_aSkillInfluence) );
-#if __VER < 8 //__CSC_VER8_3
-		m_pEmptyNode = NULL;
-#endif //__CSC_VER8_3
 		ar >> nMax;
 		for( j = 0 ; j < nMax; ++j )		// 있는만큼만 부른다.
 		{
 			ar >> m_aSkillInfluence[j].wType;
 			ar >> m_aSkillInfluence[j].wID;
-#if __VER >= 11 // __SYS_COLLECTING
 			if( m_aSkillInfluence[j].wType == BUFF_ITEM2 )
 			{
 				time_t t;
@@ -402,16 +347,11 @@ void CSkillInfluence::Serialize( CAr & ar )
 			}
 			else
 				ar >> m_aSkillInfluence[j].dwLevel;
-#else	// __SYS_COLLECTING
-			ar >> m_aSkillInfluence[j].dwLevel;
-#endif	// __SYS_COLLECTING
 			ar >> dwOdd;
 #ifdef __WORLDSERVER				
 			BOOL bCharged = FALSE;
 			if( m_aSkillInfluence[j].wType == BUFF_ITEM
-#if __VER >= 11 // __SYS_COLLECTING
 				|| m_aSkillInfluence[j].wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 				)
 			{
 				ItemProp *pItemProp = prj.GetItemProp( m_aSkillInfluence[j].wID );
@@ -421,10 +361,8 @@ void CSkillInfluence::Serialize( CAr & ar )
 						bCharged = TRUE;
 				}
 			}
-#if __VER >= 9	// __PET_0410
 			else if( m_aSkillInfluence[j].wType == BUFF_PET )
 				bCharged	= TRUE;
-#endif	// __PET_0410
 #ifdef __DST_GIFTBOX
 			else if( m_aSkillInfluence[j].wType == BUFF_EQUIP )
 				bCharged	= TRUE;
@@ -496,9 +434,7 @@ BOOL CSkillInfluence::LikeItemBuf( DWORD dwItemKind3 )
 	for( int i = 0; i < MAX_SKILLINFLUENCE; i ++ )	
 	{
 		if( m_aSkillInfluence[i].wType == BUFF_ITEM 
-#if __VER >= 11 // __SYS_COLLECTING
 			|| m_aSkillInfluence[i].wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 			)
 		{
 			ItemProp *pItemProp = prj.GetItemProp( m_aSkillInfluence[i].wID );
@@ -516,9 +452,7 @@ void CSkillInfluence::RemoveLikeItemBuf( DWORD dwItemKind3 )
 	for( int i = 0; i < MAX_SKILLINFLUENCE; i ++ )	
 	{
 		if( m_aSkillInfluence[i].wType == BUFF_ITEM
-#if __VER >= 11 // __SYS_COLLECTING
 			|| m_aSkillInfluence[i].wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 			)
 		{
 			ItemProp *pItemProp = prj.GetItemProp( m_aSkillInfluence[i].wID );
@@ -544,23 +478,17 @@ BOOL CSkillInfluence::RemoveAllSkillInfluence()
 		if( (int)pNode->wID > 0 )
 		{
 			if( pNode->wType == BUFF_ITEM
-#if __VER >= 11 // __SYS_COLLECTING
 				|| pNode->wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 			)
 			{
 				ItemProp *pItemProp = prj.GetItemProp( pNode->wID );
 				if( pItemProp && pItemProp->bCharged ) // 상용화 아이템은 종료가 안되게 수정
 					continue;
 			}
-#ifdef __VER >= 12
 			if( pNode->wType == BUFF_EQUIP )
 				continue;
-#endif // __VER >= 12
-#if __VER >= 9	// __PET_0410
 			if( pNode->wType == BUFF_PET )
 				continue;
-#endif	// __PET_0410
 
 			RemoveSkillInfluence( pNode );
 		}
@@ -602,9 +530,7 @@ void CSkillInfluence::Process( void )
 
 	CMover *pMover = m_pMover;
 	ItemProp *pProp = NULL;
-#if __VER >= 11 // __SYS_COLLECTING
 	time_t	t	= time_null();
-#endif	// __SYS_COLLECTING
 
 	int		i = MAX_SKILLINFLUENCE;
 	SKILLINFLUENCE *pList = m_aSkillInfluence, *pNode;
@@ -642,7 +568,6 @@ void CSkillInfluence::Process( void )
 						continue;
 					}
 					break;
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 				case SI_BLD_MASTER_ONEHANDMASTER:
 					if( !pMover->IsDualWeapon() )		// 손에들고 있는 무기가 양손무기가 아닐때.
 					{
@@ -657,7 +582,6 @@ void CSkillInfluence::Process( void )
 						continue;
 					}
 					break;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 				case SI_MER_SUP_IMPOWERWEAPON:		// 
 					{
 						BOOL bRelease = FALSE;
@@ -743,9 +667,7 @@ void CSkillInfluence::Process( void )
 		if( pMover )	// 이게 NULL일때도 있다 CWndWorld::m_SkillState 에서는 무버가 없다.
 		{
 			if( pNode->wType == BUFF_ITEM
-#if __VER >= 11 // __SYS_COLLECTING
 				|| pNode->wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 				)
 				pProp = prj.GetItemProp( pNode->wID );
 			else if( pNode->wType == BUFF_SKILL )
@@ -762,11 +684,9 @@ void CSkillInfluence::Process( void )
 					
 					if( pProp->dwSfxObj4 != NULL_ID )
 					{
-					#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 						if( (int)pNode->tmCount == 0 )
 							CreateSfx( g_Neuz.m_pd3dDevice, pProp->dwSfxObj4, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3( 0, 0, 0), pMover->GetId(), 0 );					
 						else
-					#endif //__Y_FLAG_SKILL_BUFF
 							CreateSfx( g_Neuz.m_pd3dDevice, pProp->dwSfxObj4, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3( 0, 0, 0), pMover->GetId(), fSkillTime );					
 					}
 				}
@@ -795,14 +715,12 @@ void CSkillInfluence::Process( void )
 					m_pMover->ApplyParam( m_pMover, pItemProp, NULL, FALSE, 0 );	// SetDestParam적용. 이때는 클라로 따로 보내지 않음.
 				}
 			}
-#if __VER >= 9	// __PET_0410
 			else if( pNode->wType == BUFF_PET )
 			{
 				int nDstParam	= HIWORD( pNode->dwLevel );
 				int nAdjParam	= LOWORD( pNode->dwLevel );
 				m_pMover->SetDestParam( nDstParam, nAdjParam, NULL_CHGPARAM, FALSE );
 			}
-#endif	// __PET_0410
 
 			pNode->tmTime = dwTimeCurrent;
 		}
@@ -834,12 +752,9 @@ void CSkillInfluence::Process( void )
 					bRemove = FALSE;
 			}
 		}
-#if __VER >= 9	// __PET_0410
 		if( pNode->wType == BUFF_PET )
 			bRemove	= FALSE;
-#endif	// __PET_0410
 
-#if __VER >= 11 // __SYS_COLLECTING
 		if( pNode->wType == BUFF_ITEM2 )
 		{
 			if( t >= pNode->dwLevel )
@@ -853,10 +768,8 @@ void CSkillInfluence::Process( void )
 			}
 		}
 		else
-#endif	// __SYS_COLLECTING
 		if( bRemove && dwTimeCurrent - pNode->tmTime >= pNode->tmCount )	// tmCount시간만큼 경과했으면 종료.
 		{
-#if __VER >= 10
 #ifdef __WORLDSERVER
 			if( pNode->wType == BUFF_SKILL )
 			{
@@ -881,7 +794,6 @@ void CSkillInfluence::Process( void )
 				}
 			}
 #endif	// __WORLDSERVER
-#endif	//
 			RemoveSkillInfluence( pNode );
 		}
 	}
@@ -896,9 +808,7 @@ void CSkillInfluence::RemoveSkillInfluence( SKILLINFLUENCE *pSkillInfluence )
 	if( m_pMover )
 	{
 		if( pSkillInfluence->wType == BUFF_ITEM		// 아이템의 지속효과가 다되어 끝냄.
-#if __VER >= 11 // __SYS_COLLECTING
 			|| pSkillInfluence->wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 			)
 		{
 #ifdef __WORLDSERVER
@@ -909,13 +819,11 @@ void CSkillInfluence::RemoveSkillInfluence( SKILLINFLUENCE *pSkillInfluence )
 				m_pMover->ResetDestParam( pItemProp->dwDestParam2, pItemProp->nAdjParamVal2, TRUE );
 				if( 0 < strlen( pItemProp->szTextFileName ) && pItemProp->dwItemKind3 != IK3_ANGEL_BUFF )
 				{
-				#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 					// 해당 변신구의 발동 스킬을 검사하여 삭제시킨다..
 					if( pItemProp->dwActiveSkill != NULL_ID )
 					{
 						RemoveSkillInfluence( BUFF_SKILL, pItemProp->dwActiveSkill );
 					}
-				#endif //__Y_FLAG_SKILL_BUFF
 					char szGMCommand[64] = {0,};
 					CString szGMText = pItemProp->szTextFileName;
 					szGMText.Replace( '(', '\"' );
@@ -934,7 +842,6 @@ void CSkillInfluence::RemoveSkillInfluence( SKILLINFLUENCE *pSkillInfluence )
 		{
 			m_pMover->OnEndSkillState( pSkillInfluence->wID, pSkillInfluence->dwLevel );		// 스킬상태가 하나 끝나면 핸들러 호출.
 		}
-#if __VER >= 9	// __PET_0410
 #ifdef __WORLDSERVER
 		else if( pSkillInfluence->wType == BUFF_PET )
 		{
@@ -943,7 +850,6 @@ void CSkillInfluence::RemoveSkillInfluence( SKILLINFLUENCE *pSkillInfluence )
 			m_pMover->ResetDestParam( nDstParam, nAdjParam, TRUE );
 		}
 #endif	// __WORLDSERVER
-#endif	// __PET_0410
 	}
 #ifdef __WORLDSERVER
 	g_UserMng.AddRemoveSkillInfluence( m_pMover, pSkillInfluence->wType, pSkillInfluence->wID );
@@ -1038,9 +944,7 @@ BOOL	CSkillInfluence::RemoveSkillInfluenceState( DWORD dwChrState )
 			}
 		} else
 		if( pNode->wType == BUFF_ITEM
-#if __VER >= 11 // __SYS_COLLECTING
 			|| pNode->wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 			)
 		{
 			if( pNode->wID > 0 )
@@ -1072,7 +976,6 @@ BOOL	CSkillInfluence::RemoveSkillInfluenceState( DWORD dwChrState )
 	return bRet;
 }
 
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 // dwDestParam 상태를 가진 스킬을 찾아 모두 해제함
 BOOL	CSkillInfluence::RemoveSkillInfluenceDestParam( DWORD dwDestParam )
 {
@@ -1113,7 +1016,6 @@ BOOL	CSkillInfluence::RemoveSkillInfluenceDestParam( DWORD dwDestParam )
 	} // loop
 	return bRet;
 }
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 
 // dwChrState의 상태를 가진 스킬을 찾아 모두 해제함
 BOOL	CSkillInfluence::RemoveAllSkillDebuff( void )
@@ -1141,9 +1043,7 @@ BOOL	CSkillInfluence::RemoveAllSkillDebuff( void )
 			}
 		} else
 		if( pNode->wType == BUFF_ITEM
-#if __VER >= 11 // __SYS_COLLECTING
 			|| pNode->wType == BUFF_ITEM2
-#endif	// __SYS_COLLECTING
 			)
 		{
 			if( pNode->wID > 0 )
@@ -1201,7 +1101,6 @@ BOOL	CSkillInfluence::RemoveAllSkillBuff( void )
 	
 }
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 // 모든버프들을 찾아 모두 제거.
 BOOL	CSkillInfluence::RemoveAllBuff( void )
 {
@@ -1221,7 +1120,6 @@ BOOL	CSkillInfluence::RemoveAllBuff( void )
 	
 	return bRet;
 }
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 
 // 버프스킬(Evildoing >= 0)하나만 제거.
@@ -1266,23 +1164,19 @@ BOOL CSkillInfluence::RemoveOneSkillBuff( void )
 	return FALSE;
 }
 
-#if __VER >= 9	// __PET_0410
 BOOL CSkillInfluence::RemovePet( void )
 {
 	SKILLINFLUENCE*	pSkillInfluence	= FindPet();
 	if( pSkillInfluence )
 	{
 		RemoveSkillInfluence( pSkillInfluence );
-#if __VER >= 12 // __PET_0519
 		CItemElem* pItem	= m_pMover->GetPetItem();
 		if( pItem )
 			m_pMover->ResetDestParamRandomOptExtension( pItem );
-#endif	// __PET_0519
 		return TRUE;
 	}
 	return FALSE;
 }
-#endif	// __PET_0410
 
 #endif // #if !( defined( __CORESERVER ) || defined( __DBSERVER ) )
 

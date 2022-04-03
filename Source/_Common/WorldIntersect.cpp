@@ -1,11 +1,7 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __HOUSING
 #include "housing.h"
-#endif // __HOUSING
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif
 //
 //	vPos지점의 지형 높이를 계산.  지형, 배경오브젝트 모두 포함이다.
 //
@@ -59,7 +55,6 @@ FLOAT CWorld::GetFullHeight( const D3DXVECTOR3& vPos )
 	return GetLandHeight( vPos.x, vPos.z );
 }
 
-#if __VER >= 13 // __HOUSING
 #ifdef __CLIENT
 // 현재 캐릭터가 있는 위치의 맵에서 해당이름을 가진 오브젝트를 찾는다
 CObj *CWorld::GetObjByName(TCHAR* ObjName)
@@ -110,9 +105,7 @@ BOOL	CWorld::ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj, CObj* pWall
 	{
 		if( pObj->GetType() == OT_CTRL )
 		{
-#if __VER >= 15 // __GUILD_HOUSE
 			if( ((CCtrl*)pObj)->GetId( ) != GuildHouse->m_dwSelectedObjID )		//gmpbigsun: 음 재설치의 경우 복사본이 원본과 충돌패스 
-#endif
 			{
 				if(pObj != pTargetObj)
 				{
@@ -171,7 +164,6 @@ BOOL	CWorld::TestOBBIntersect(BBOX* BoxA, BBOX* BoxB)
 	D3DXVECTOR3 vDist = BoxB->Center - BoxA->Center;	// 두 박스간의 라인
 	float		fTrans[3]; 
 
-#if __VER >= 15 // __BS_BBOX_ABS_EXTENT
  	for( i = 0; i < 3; ++i )			//backface가 없는경우 Extent가 음수로 들어간다. Export할때 해결하는게...
  	{
 		if( BoxA->Extent[i] < 0 )
@@ -179,7 +171,6 @@ BOOL	CWorld::TestOBBIntersect(BBOX* BoxA, BBOX* BoxB)
 		if( BoxB->Extent[i] < 0 )
  			BoxB->Extent[i] = -( BoxB->Extent[i] );
  	}
-#endif
 
 	for( i = 0; i < 3; ++i)	fTrans[i] = D3DXVec3Dot(&vDist, &BoxA->Axis[i]);
 	//회전 매트릭스 계산
@@ -275,7 +266,6 @@ BOOL	CWorld::TestOBBIntersect(BBOX* BoxA, BBOX* BoxB)
 	return TRUE;
 }
 #endif // __CLIENT
-#endif // __HOUSING
 
 //
 //	vPos바로 아래쪽의 높이 계산.  바로 아래쪽에 걸리는게 없다면 무조건 땅바닥 높이로 계산.
@@ -352,7 +342,6 @@ FLOAT	CWorld::GetItemHeight( const D3DXVECTOR3 & vPos )
 	return GetLandHeight( vPos );
 }
 
-#if __VER >= 15 // __BOUND_BOX_COLLISION
 FLOAT CWorld::GetOverHeightForPlayer( D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 {
 	static D3DXVECTOR3 vDir( 0.0f, 1.0f, 0.0f );
@@ -399,7 +388,6 @@ LP1:
 	}
 	return 65535.0f;	// 걸리는 게 없으면 최대치로 설정
 }
-#endif // __BOUND_BOX_COLLISION
 
 //
 //	vPos바로 위쪽의 높이 계산
@@ -417,7 +405,6 @@ FLOAT CWorld::GetOverHeight( D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 	vEnd = vPos + vDir;
 	Segment3 segment( vPos, vEnd );
 
-#if __VER >= 15 // __BOUND_BOX_COLLISION
 	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
 	{
 		pModel = pObj->m_pModel;
@@ -428,52 +415,6 @@ FLOAT CWorld::GetOverHeight( D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 		}
 	}
 	END_LINKMAP
-#else // __BOUND_BOX_COLLISION
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
-	{
-		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-		pModel = pObj->m_pModel;
-#if __VER >= 13 &&  defined(__CLIENT) // __HOUSING
-		if(GetID() == WI_WORLD_MINIROOM)
-		{
-			if(pObj != GetObjByName("obj_miniwall01.o3d") &&pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE)
-			{
-				pMinObj = pObj;		// 찾았으면 바로 튀어나옴
-				goto LP1;
-			}
-		}
-#if __VER >= 14 // __INSTANCE_DUNGEON
-		else if(GetID() == WI_INSTANCE_OMINOUS || GetID() == WI_INSTANCE_OMINOUS_1 )
-		{
-			char* pString = ((CModelObject *)pObj->m_pModel)->GetObject3D()->m_szFileName;
-			if(strcmp(pString, "obj_ceiling_01.o3d") == 0 || strcmp(pString, "obj_ceiling_02.o3d") == 0)
-			{
-				if(pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE)
-				{
-					pMinObj = pObj;		// 찾았으면 바로 튀어나옴
-					goto LP1;
-				}
-			}
-		}
-#endif // __INSTANCE_DUNGEON
-		else
-		{
-			if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-			{
-				pMinObj = pObj;		// 찾았으면 바로 튀어나옴
-				goto LP1;
-			}
-		}
-#else
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-		{
-			pMinObj = pObj;		// 찾았으면 바로 튀어나옴
-			goto LP1;
-		}
-#endif
-	}
-	END_LINKMAP
-#endif // __BOUND_BOX_COLLISION
 LP1:
 	if( pMinObj )	// 레이에 걸린 가장 가까운 오브젝트가 있는가
 	{
@@ -520,7 +461,6 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 			pModel = pObj->m_pModel;
 			if( pModel->TestIntersectionOBB_Line( segment, pObj, FALSE ) == TRUE )
 			{
-#if __VER >= 13 // __HOUSING
 				BOOL IsColl;
 
 				if(GetID() == WI_WORLD_MINIROOM)
@@ -529,9 +469,6 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 					IsColl = ((CModelObject *)pModel)->GetObject3D()->SlideVectorXZ2( &vSlide, &vIntersect, vPos, vEnd, pObj->GetMatrixWorld(), 0);
 
 				if(IsColl == TRUE)
-#else // __HOUSING
-				if( ((CModelObject *)pModel)->GetObject3D()->SlideVectorXZ2( &vSlide, &vIntersect, vPos, vEnd, pObj->GetMatrixWorld(), 0 ) == TRUE )
-#endif // __HOUSING
 				{
 					// 진행방향으로 뭔가 충돌했으면 한번더 돈다. 리커시브로.
 					D3DXVECTOR3 vE = vIntersect + vSlide;		// 미끄러진 끝점.
@@ -570,7 +507,6 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 			{
 				//D3DXVECTOR3 vE = vIntersect + vSlide;
 				*pOut = vSlide;
-			#if __VER >= 11 // __FIX_COLLISION	
 				if( (++nSlideCnt <= 1) && ((D3DXVec3Length(&vDir) < 3.0f)) )
 				{
 #ifdef __LAYER_1015
@@ -595,23 +531,6 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 						pOut->x = pOut->y = pOut->z = 0;	// 2번 부딪혔으면 앞으로 나가지 않음.
 					}
 				}
-			#else
-				D3DXVECTOR3 vE = vIntersect + vSlide;
-				*pOut = vSlide;
-
-				if( ++nSlideCnt <= 1 )
-				{	
-#ifdef __LAYER_1015
-					int r = ProcessCollision( pOut, vPos, vSlide, nSlideCnt, nLayer );	// 충돌한 지점에서 미끄러진지점까지의 벡터로 다시한번 검사.
-#else	// __LAYER_1015
-					int r = ProcessCollision( pOut, vPos, vSlide, nSlideCnt );	// 충돌한 지점에서 미끄러진지점까지의 벡터로 다시한번 검사.
-#endif	// __LAYER_1015
-					if( r )	// 충돌한 지점에서 미끄러진지점까지의 벡터로 다시한번 검사.
-					{
-						pOut->x = pOut->y = pOut->z = 0;	// 2번 부딪혔으면 앞으로 나가지 않음.
-					}
-				}
-#endif
 				return 2;
 			}
 		}
@@ -841,7 +760,6 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 	BOOL bAble = TRUE;
 	Segment3 segment( vPos, vEnd );
 
-#if __VER >= 12 // __CAM_FAST_RECOVER
 	bool			bIsCol    = false;
 	D3DXVECTOR3		vTempEnd  = vEnd;
 	float			fShortest = 0.0f;
@@ -889,35 +807,6 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 	END_LINKMAP
 	
 	if(bIsCol) return TRUE;
-#else
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
-	{
-		bAble = TRUE;
-		if( bSkipTrans && pObj->m_pModel->m_pModelElem->m_bTrans )	// 반투명이 되는 오브젝트는 검사대상에서 제외함.
-			bAble = FALSE;
-		
-		if( bAble )
-		{
-			// 선분과 오브젝트OBB의 검사.
-			pModel = pObj->m_pModel;
-			if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-			{
-				D3DXVECTOR3	*pTri[3];
-				((CModelObject *)pModel)->GetObject3D()->FindTouchTriLine( pTri, vPos, vEnd, pObj->GetMatrixWorld(), &fDist);
-				if( *pTri )
-				{
-					if( pOut )
-					{
-						vDir = vEnd - vPos;
-						*pOut = vPos + fDist * vDir;
-					}
-					return TRUE;
-				}
-			}
-		}
-	}
-	END_LINKMAP
-#endif
 	// 康: 카메라 충돌에서 사용하는 클라이언트 코드이므로 계층 값을 0으로 설정
 	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, nTempLayer )
 	{
@@ -1107,13 +996,8 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, D3DXVECTOR
 
 	D3DXVECTOR3 vEnd( vPos + vDir );
 	Segment3 segment( vPos, vEnd );
-#if __VER >= 13 // __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 	if(GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse() )
-#else
-	if(GetID() == WI_WORLD_MINIROOM )
-#endif //__GUILD_HOUSE
 	{
 		FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, nDefaultLayer )
 		{
@@ -1139,7 +1023,6 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, D3DXVECTOR
 		}
 		END_LINKMAP
 	}
-#endif // __HOUSING
 	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
@@ -1246,13 +1129,8 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, D3DXVEC
 	int		nCount = 0;
 	Segment3 segment( vPos, vEnd );
 
-#if __VER >= 13 // __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 	if(GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse() )
-#else
-	if(GetID() == WI_WORLD_MINIROOM )
-#endif //__GUILD_HOUSE
 	{
 		FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, nDefaultLayer )
 		{
@@ -1278,7 +1156,6 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, D3DXVEC
 		}
 		END_LINKMAP
 	}
-#endif // __HOUSING
 	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  

@@ -1,4 +1,3 @@
-#if __VER >= 11 // __CSC_VER11_4
 
 #ifndef __WNDMESSENGERCTRL_H
 #define __WNDMESSENGERCTRL_H
@@ -16,13 +15,9 @@ typedef struct __MESSENGER_PLAYER
 #ifdef __RT_1025
 	BOOL	m_bBlock;
 #endif	// __RT_1025
-#if __VER >= 13 // __HOUSING
 	BOOL	m_bVisitAllowed;
-#endif // __HOUSING
-#if __VER >= 15 // __CAMPUS
 	__MESSENGER_PLAYER( void );
 	void Initialize( void );
-#endif // __CAMPUS
 } __MESSENGER_PLAYER;
 
 class CWndFriendCtrlEx : public CWndBase
@@ -140,7 +135,6 @@ public:
 	int GetDrawCount( void );
 };
 
-#if __VER >= 15 // __CAMPUS
 class CWndCampus : public CWndNeuz
 {
 public:
@@ -186,8 +180,6 @@ private:
 	__MESSENGER_PLAYER m_MasterPlayer;
 	vector < __MESSENGER_PLAYER > m_vDisciplePlayer;
 };
-#endif // __CAMPUS
 
 #endif //__WNDMESSENGERCTRL_H
 
-#endif //__CSC_VER11_4

@@ -35,7 +35,6 @@ public:
 	virtual BOOL IsPickupSpace(CPoint point); 
 };
 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 class CWndChatLog : public CWndNeuz
 {
 	CWndMenu	 m_wndMenuPlace;
@@ -68,7 +67,6 @@ public:
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual BOOL Process ();	
 };
-#endif //__Y_CHAT_SYSTEM_8
 
 class CWndChat : public CWndNeuz
 {
@@ -89,9 +87,7 @@ class CWndChat : public CWndNeuz
 
 public:
 	BOOL m_bChatLock;
-#if __VER >= 8 //__CSC_VER8_1
 	BOOL m_bChatLog;
-#endif //CSC_VER8_1
 	BOOL m_bMoveLock;
 	static int m_nChatChannel;
 	CWndChatFilter* m_pWndChatFilter;

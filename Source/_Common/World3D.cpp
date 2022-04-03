@@ -7,9 +7,7 @@
 #include "defineskill.h"
 #include "WorldMap.h"
 #include "defineObj.h"
-#if __VER >= 13 // __HOUSING
 #include "housing.h"
-#endif // __HOUSING
 
 //
 // 오브젝트 타입(OT_OBJ, OT_MOVER.. )을 오브젝트 필터로 변환한다.(OF_OBJ, OF_MOVER... )
@@ -601,17 +599,13 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	{
 		bScan = TRUE;
 	}
-#if __VER >= 13 // __HOUSING
 	if(CDeployManager::GetInstance()->IsReady())
 	{
 		CDeployManager::GetInstance()->Process();
 	}
-#endif	// __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 	if( GuildDeploy()->IsReady( ) )
 		GuildDeploy()->Process( );
-#endif 
 
 #endif //__CLIENT	
 	
@@ -888,12 +882,8 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			if( g_Option.m_nShadow < 2 )	
 			{
 
-#if __VER >= 14 // __BS_FIX_SHADOW_ONOBJECT
 				bool bRenderedShadow = false;
 				D3DXVECTOR3 kMyPos = g_pPlayer->GetPos( );			//주인공은 항상 유효하다고 가정한다.
-#else
-				SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
-#endif 
 				//m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, m_bViewFog );
 				//m_pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
 				//m_pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_LINEAR );
@@ -908,22 +898,18 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					if( pObj->m_wBlendFactor < 255 )	
 						continue;
 
-#if __VER >= 14 // __BS_FIX_SHADOW_ONOBJECT
 
 					if( pObj->IsRangeObj( kMyPos, 1.0f ) )
 					{
 						if( pObj->GetPos().y < ( kMyPos.y + 0.5f ) )
 						{
-#if __VER >= 15 // __GUILD_HOUSE
 							if( !IsWorldGuildHouse() )			//길드하우스 안에서는 오브젝트 위에 그림자 받지 않게..
-#endif	//__GUILD_HOUSE
 							{
 								SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
 								bRenderedShadow = true;
 							}
 						}
 					}
-#endif
 					
 					if( m_bViewFog )
 					{
@@ -966,13 +952,11 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						RenderBoundBoxVertex( pObj );
 					}
 
-#if __VER >= 14 // __BS_FIX_SHADOW_ONOBJECT
 					if( bRenderedShadow )
 					{
 						bRenderedShadow = false;
 						ResetStateShadowMap( m_pd3dDevice, 2 );
 					}
-#endif
 				}
 
 				ResetStateShadowMap( m_pd3dDevice, 2 );
@@ -1192,7 +1176,6 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	{
 		pObj = m_asfxCull[ i ]; 
 
-#if __VER >= 10	// __AI_0711
 	#ifdef __SFX_OPT
 		if( pObj->GetType() == OT_SFX && (g_Option.m_nSfxLevel <= 0) && ( (CSfx*)pObj )->GetSkill() == FALSE)
 		{
@@ -1209,7 +1192,6 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			if( IsValidObj( pMover ) && pMover->IsPlayer() )
 				continue;
 		}
-#endif	// __AI_0711
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );//m_bViewLight );
 		pObj->Render( m_pd3dDevice );
 	}
@@ -1453,27 +1435,6 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, CObj **pList, int nMax )
 	D3DXVECTOR3 vLookAt = v1 + v2;	// 빛이 향하는지점.
 	vLightPos += vLookAt;				// 플레이어로부터 빛방향으로 28m떨어진곳.
 
-#if __VER < 14 // __BS_FIX_SHADOW_ONOBJECT
-#if __VER >= 13 // __HOUSING
-	CWorld* pWorld	= g_WorldMng.Get();
-	if(pWorld)
-	{
-#if __VER >= 14 // __INSTANCE_DUNGEON
-		if(pWorld->GetID() == WI_WORLD_MINIROOM || pWorld->GetID() == WI_INSTANCE_OMINOUS || pWorld->GetID() == WI_INSTANCE_OMINOUS_1)
-		{
-			vLightPos = v1;
-			vLightPos.y -= 40.0f;
-		}
-#else // __INSTANCE_DUNGEON
-		if(pWorld->GetID() == WI_WORLD_MINIROOM)
-		{
-			vLightPos = v1;
-			vLightPos.y -= 40.0f;
-		}
-#endif // __INSTANCE_DUNGEON
-	}
-#endif	// __HOUSING
-#endif  // __BS_SHADOW_ON_OBJECT
 	// 빛에서 바라보는 쪽의 뷰/프로젝션 매트릭스 설정.
 
 	D3DXMatrixLookAtLH( &g_mViewLight, &vLightPos, &vLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
@@ -1692,12 +1653,8 @@ BOOL CWorld::CheckBound(D3DXVECTOR3* vPos,D3DXVECTOR3* vDest,D3DXVECTOR3* vOut, 
 	{
 		tempVec2+=tempVec;
 		tempheight=GetLandHeight( tempVec2.x, tempVec2.z );
-		#if __VER >= 11 // __FIX_PICKING
 		// 카메라를 약간 더 들어주기 위해서 수정 - 07.10.24 - micky
 		if(tempVec2.y<tempheight+0.6f)
-		#else
-		if(tempVec2.y<tempheight+0.3f)
-		#endif
 		{
 			b1 = TRUE;
 			vDist1 = tempVec2 - *vDest;		// 사람에서 교차점까지의 방향벡터
@@ -1719,19 +1676,6 @@ BOOL CWorld::CheckBound(D3DXVECTOR3* vPos,D3DXVECTOR3* vDest,D3DXVECTOR3* vOut, 
 				break;
 			}
 		}
-#if __VER < 10
-		else
-		// 케릭터가 물위에 있고, 잠겼다면 수면 충돌체크하여 카메라가 물밖으로 못나가게 처리함
-		if( bWaterChkUp )
-		{
-			if(vWaterVec.y>fWaterHeight-0.3f)
-			{
-				b1 = TRUE;
-				vDist1 = vWaterVec - *vDest;	
-				break;
-			}
-		}
-#endif
 	}
 	D3DXVECTOR3 vIntersect;
 	BOOL bRet = IntersectObjLine2( &vIntersect, *vDest, *vPos, TRUE );
@@ -1787,7 +1731,6 @@ void CWorld::SetLight( BOOL bLight )
 
 	pLight = GetLight( "direction" );
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	ENVIR_INFO* pInfo = GetInContinent( g_pPlayer->GetPos( ) );
 	if( pInfo && m_kCurContinent._bUseEnvir )		// 대륙 안이고 대륙정보를 이용할 경우만 !!
 	{
@@ -1832,7 +1775,6 @@ void CWorld::SetLight( BOOL bLight )
 		}
 	}
 	else
-#endif 
 
 	if( m_bIsIndoor )
 	{
@@ -1862,9 +1804,7 @@ void CWorld::SetLight( BOOL bLight )
 				pLight->Ambient.b *= 0.7f;
 			}
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 			HookUpdateLight( pLight );
-#endif
 			memcpy( &m_lightFogSky, pLight, sizeof( m_lightFogSky ) );
 
 			pLight->Diffuse.r  += 0.1f;
@@ -1947,9 +1887,7 @@ void CWorld::SetLight( BOOL bLight )
 				pLight->Ambient.b *= 0.7f;
 			}
 			
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 			HookUpdateLight( pLight ); 
-#endif
 			memcpy( &m_lightFogSky, pLight, sizeof( m_lightFogSky ) );
 
 #ifdef __YENV
@@ -2381,7 +2319,6 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 						{
 							if( fDist < fNearDist ) 
 							{ 
-								#if __VER >= 11 // __FIX_PICKING
 								// 피킹 문제 수정 - 07.10.25 - micky
 								D3DXVECTOR3 vNormal;
 								D3DXVECTOR3	vRay;
@@ -2391,7 +2328,6 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 								D3DXVec3Normalize(&vNormal, &vNormal);
 								D3DXVec3Normalize(&vRay, &vPickRayDir);
 								if(D3DXVec3Dot(&vNormal, &vRay) < 0.0f) break;
-								#endif
 								fNearDist = fDist; *pVector = vecIntersect; bTriangle1 = TRUE; 
 							}
 						}
@@ -2400,7 +2336,6 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 						{
 							if( fDist < fNearDist ) 
 							{
-								#if __VER >= 11 // __FIX_PICKING
 								// 피킹 문제 수정 - 07.10.25 - micky
 								D3DXVECTOR3 vNormal;
 								D3DXVECTOR3	vRay;
@@ -2410,7 +2345,6 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 								D3DXVec3Normalize(&vNormal, &vNormal);
 								D3DXVec3Normalize(&vRay, &vPickRayDir);
 								if(D3DXVec3Dot(&vNormal, &vRay) < 0.0f) break;
-								#endif
 								fNearDist = fDist; *pVector = vecIntersect;	bTriangle1 = TRUE; 
 							}
 						}
@@ -2700,11 +2634,9 @@ CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmat
 						{
 							if( ((CMover*)pObj)->IsDie() )
 								continue;
-#if __VER >= 9	// __PET_0410
 							// 다른 사람이 소환한 펫이면,
 							if( ( (CMover*)pObj )->GetId() == NULL_ID && pObj != g_pPlayer->m_pet.GetObj() )
 								continue;
-#endif	// __PET_0410
 						}
 					}
 					pNonCullObjs[ nNonCullNum++ ] = pObj;
@@ -3070,10 +3002,8 @@ void CWorld::RenderGrid()
 			RenderGrids( CRect( 0, 0, WORLD_WIDTH * MPU, WORLD_HEIGHT * MPU) , MAP_SIZE, 0xffffff00 );
 	}
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 #ifdef _DEBUG
 	RenderContinentLines( );
-#endif
 #endif
 }
 

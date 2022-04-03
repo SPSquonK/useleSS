@@ -107,11 +107,7 @@ void CWndPiercing::OnDraw( C2DRender* p2DRender )
 		int nCost = 0;
 		ItemProp* pItemProp = m_pItemElem[0]->GetProp();
 		if( pItemProp )
-#if __VER >= 12 // __EXT_PIERCING
 			nCost = 100000;
-#else // __EXT_PIERCING
-			nCost = pItemProp->dwItemRare * ( 200  + ( m_pItemElem[0]->GetPiercingSize()+1) * 200 );
-#endif // __EXT_PIERCING
 
 		char buff[10] = { 0 };
 		pWndFocusStatic->SetTitle( itoa( nCost, buff, 10 ) );		
@@ -202,20 +198,9 @@ BOOL CWndPiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	if( PtInRect(&m_Rect[0], point) )
 	{
 		
-#if __VER < 9 // __ULTIMATE
-		if( pItemElem->GetProp()->dwItemKind3 != IK3_SUIT )
-		{
-			g_WndMng.PutString( prj.GetText(TID_PIERCING_POSSIBLE_ITEM), NULL, prj.GetTextColor(TID_PIERCING_POSSIBLE_ITEM) );
-			return FALSE;
-		}
-#endif // __ULTIMATE
 		
 		// 4개 초과로 피어싱 할수 없음
-#if __VER >= 12 // __EXT_PIERCING
 		if( !pItemElem->IsPierceAble( NULL_ID, TRUE ) )
-#else // __EXT_PIERCING
-		if( pItemElem->GetPiercingSize() >= MAX_PIERCING_SUIT )
-#endif // __EXT_PIERCING
 		{
 			g_WndMng.PutString( prj.GetText(TID_PIERCING_POSSIBLE), NULL, prj.GetTextColor(TID_PIERCING_POSSIBLE) );
 			return FALSE;
@@ -250,11 +235,7 @@ BOOL CWndPiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		// 파워다이스 8, 10만 사용할수 있음
 		if( m_pItemElem[0] )
 		{
-#if __VER >= 8 //__Y_NEW_ENCHANT
 			if( pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE && pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE_1 )
-#else //__Y_NEW_ENCHANT				
-			if( pItemElem->GetProp()->dwID != II_GEN_MAT_DIE_EIGHT && pItemElem->GetProp()->dwID != II_GEN_MAT_DIE_TEN )
-#endif //__Y_NEW_ENCHANT
 			{
 				g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
 				return FALSE;

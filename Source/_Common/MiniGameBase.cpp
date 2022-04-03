@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 
 #ifdef __WORLDSERVER
 #include ".\minigamebase.h"
@@ -25,4 +24,3 @@ void CMiniGameBase::SendExtPacket( CUser* pUser, __MINIGAME_EXT_PACKET MiniGameE
 }
 #endif // __WORLDSERVER
 
-#endif // __RAINBOW_RACE

@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "InstanceDungeonParty.h"
-#if __VER >= 14 // __INSTANCE_DUNGEON
 
 #ifdef __WORLDSERVER
 #include "Mover.h"
@@ -97,4 +96,3 @@ void CInstanceDungeonParty::Process()
 }
 #endif // __WORLDSERVER
 
-#endif // __INSTANCE_DUNGEON

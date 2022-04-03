@@ -1758,7 +1758,6 @@ void CSfxAtkStraight::Process()
 	m_pSfxObj->m_vPos += m_vDelta;		// 좌표 이동.
 	SetPos( m_pSfxObj->m_vPos );		// this도 좌표 같이 이동.
 	
-#if __VER >= 10 // __Y_DRAGON_FIRE	
 	#ifdef __CLIENT
 		//D3DXVECTOR3 vDir = v3 - v1;
 		//D3DXVec3Normalize( &vDir, &vDir );
@@ -1780,7 +1779,6 @@ void CSfxAtkStraight::Process()
 			//g_FireDragon.Create( D3DDEVICE, m_pSfxObj->m_vPos, XI_NAT_FIRE01_ADV, vScal, vTemp );
 		}
 	#endif
-#endif //__Y_DRAGON_FIRE
 
 	if( IsRangeObj( m_vPosDest, 0 ) )							// 목표좌표에 다다르면
 	{
@@ -2739,7 +2737,6 @@ void CSfxSkillMagHotAir::Process()
 		return;
 	}
 #ifdef __CLIENT
-	#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	else
 	{
 		DWORD dwTmpID =  pObjDest->GetRemoveSfxObj(XI_SKILL_MAG_FIRE_HOTAIR01 );
@@ -2749,7 +2746,6 @@ void CSfxSkillMagHotAir::Process()
 			return;
 		}
 	}
-	#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 #endif	// __CLIENT
 
 	m_SfxObj2.m_vPos = pObjDest->GetPos();
@@ -3996,7 +3992,6 @@ void	CSfxPartsLinkShoulder::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		CSfx::Render(pd3dDevice);
 }
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 CSfxCursor::CSfxCursor()
 {
 }
@@ -4018,7 +4013,6 @@ void CSfxCursor::Process()
 	if( g_Neuz.m_pCreateMonItem == NULL )
 		Delete();
 }
-#endif // __ITEMCREATEMON_S0602
 
 
 CSfxLinkMover::CSfxLinkMover( )

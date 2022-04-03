@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "dbcontroller.h"
 #include "GuildHouse.h"
 
@@ -90,5 +89,4 @@ private:
 	CGuildHouseDBCtrl	m_GHDBCtrl;
 };
 
-#endif // __GUILD_HOUSE
 #endif // !defined(AFX_GUILDHOUSEDBCTRL_H__C2521D9F_8544_4454_810A_F334CA03AABC__INCLUDED_)

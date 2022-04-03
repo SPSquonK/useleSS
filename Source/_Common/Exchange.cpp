@@ -10,10 +10,8 @@
 #include "DPSrvr.h"
 
 extern	CDPSrvr		g_DPSrvr;
-#if __VER >= 15 // __CAMPUS
 #include "DPDatabaseClient.h"
 extern	CDPDatabaseClient	g_dpDBClient;
-#endif // __CAMPUS
 #endif // __WORLDSERVER
 
 //////////////////////////////////////////////////////////////////////
@@ -112,7 +110,6 @@ BOOL CExchange::Load_Script()
 							s.GetToken();
 						} // while - REMOVE
 					}
-#if __VER >= 15 // __CAMPUS
 					else if( s.Token == _T( "CONDITION_POINT" ) )
 					{
 						s.GetToken(); // {
@@ -145,7 +142,6 @@ BOOL CExchange::Load_Script()
 							s.GetToken();
 						} // while - REMOVE_POINT
 					}
-#endif // __CAMPUS
 					else if( s.Token == _T( "PAY" ) )
 					{
 						int nSumProb = 0;	// 지급 확률의 합이 1000000인지 확인하기 위해
@@ -287,7 +283,6 @@ BOOL CExchange::CheckCondition( CUser* pUser, int nMMIId, int nListNum )
 			bReturn = FALSE;
 		}
 	}
-#if __VER >= 15 // __CAMPUS
 	vector<__POINT> vecPoint = pSetList->vecSet[nListNum].vecCondPoint;
 	int nPoint = 0;
 	for( int i = 0; i < (int)( vecPoint.size() ); ++i )
@@ -310,7 +305,6 @@ BOOL CExchange::CheckCondition( CUser* pUser, int nMMIId, int nListNum )
 			bReturn = FALSE;
 		}
 	}
-#endif // __CAMPUS
 	return bReturn;
 }
 
@@ -369,7 +363,6 @@ vector<CExchange::__ITEM> CExchange::GetRemoveItemList( int nMMIId, int nListNum
 	return vecList;
 }
 
-#if __VER >= 15 // __CAMPUS
 vector<CExchange::__POINT> CExchange::GetRemovePointList( int nMMIId, int nListNum )
 {
 	vector<__POINT> vecList;
@@ -383,7 +376,6 @@ vector<CExchange::__POINT> CExchange::GetRemovePointList( int nMMIId, int nListN
 	vecList = pSetList->vecSet[nListNum].vecRemovePoint;
 	return vecList;
 }
-#endif // __CAMPUS
 
 // 인벤토리에 여유가 있는지 확인
 BOOL CExchange::IsFull( CUser* pUser, vector<__ITEM> vecRemoveItem, vector<__ITEM> vecPayItem )
@@ -435,9 +427,7 @@ int CExchange::ResultExchange( CUser* pUser, int nMMIId, int nListNum )
 		return EXCHANGE_CONDITION_FAILED;
 	
 	vector<__ITEM> vecRemoveItem = GetRemoveItemList( nMMIId, nListNum );
-#if __VER >= 15 // __CAMPUS
 	vector<__POINT> vecRemovePoint = GetRemovePointList( nMMIId, nListNum );
-#endif // __CAMPUS
 	vector<__ITEM> vecPayItem = GetPayItemList( nMMIId, nListNum );
 	
 	// 인벤토리 공간 검사
@@ -481,14 +471,12 @@ int CExchange::ResultExchange( CUser* pUser, int nMMIId, int nListNum )
 			}
 		}
 	}
-#if __VER >= 15 // __CAMPUS
 	// 포인트 차감
 	for( int i = 0; i < (int)( vecRemovePoint.size() ); ++i )
 	{
 		if( vecRemovePoint[i].nType == POINTTYPE_CAMPUS )
 			g_dpDBClient.SendUpdateCampusPoint( pUser->m_idPlayer, vecRemovePoint[i].nPoint, FALSE, 'E' );
 	}
-#endif // __CAMPUS
 	
 	// 아이템 지급
 	for( int i=0; i<(int)( vecPayItem.size() ); i++ )

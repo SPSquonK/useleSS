@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include ".\minigamediceplay.h"
 
 CMiniGameDiceplay::CMiniGameDiceplay(void)
@@ -51,4 +50,3 @@ BOOL CMiniGameDiceplay::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket
 	SendPacket( pUser, MP );
 	return bReturn;
 }
-#endif // __RAINBOW_RACE

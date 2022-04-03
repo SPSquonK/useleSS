@@ -42,11 +42,7 @@ void CWndRegVend::SetItem( int iIndex, CItemBase* pItemBase )
 	if( pItemProp )
 	{
 		pStatic	= (CWndStatic*)GetDlgItem(WIDC_SELLPRI);
-#if __VER >= 8 // __S8_VENDOR_REVISION
 		sprintf( str, "%d", 0 );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-		sprintf( str, "%d", pItemProp->dwCost );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 		pStatic->SetTitle( str );
 
 		if(( (CItemElem*)pItemBase )->m_nItemNum <= 1 )
@@ -253,11 +249,7 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				ItemProp *pItemProp = m_pItemBase->GetProp();
 
 				int nValue = 0;
-#if __VER >= 8 // __S8_VENDOR_REVISION
 				nValue = ( m_dwFocus == 0 ) ? ( (CItemElem*)m_pItemBase )->m_nItemNum: 2100000000;
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-				nValue = ( m_dwFocus == 0 ) ? ( (CItemElem*)m_pItemBase )->m_nItemNum: pItemProp->dwCost;
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 				
 				CString str;
 				str.Format( "%d", nValue );
@@ -282,9 +274,6 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		int nCost	= 0;
 		pWndStatic	= (CWndStatic*)GetDlgItem( WIDC_SELLPRI );
 		str		= pWndStatic->GetTitle();
-#if __VER < 8 // __S8_VENDOR_REVISION
-		if( strlen( str ) > 9 )	return TRUE;	// 숫자가 너무 큽니다.
-#endif // __VER < 8 // __S8_VENDOR_REVISION
 		//nCost	= atoi( str );
 
 		__int64  n64Cost = 0;
@@ -298,7 +287,6 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		ItemProp* pItemProp	= m_pItemBase->GetProp();
 
 		
-#if __VER >= 8 // __S8_VENDOR_REVISION
 //		if( 999999999 < ((EXPINTEGER)nCost*nNum) )
 //		{
 //			g_WndMng.OpenMessageBox( _T(prj.GetText(TID_GAME_VENDOR_MAX_ONE_GOLD)), MB_OK, this );
@@ -334,15 +322,7 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //			g_WndMng.OpenMessageBox( _T(prj.GetText(TID_GAME_VENDOR_MAX_ALL_GOLD)), MB_OK, this );
 //			return TRUE;
 //		}
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 		
-#if __VER < 8     //8차게임내아이템판매가격제한풀기
-		if( nCost > pItemProp->dwCost * 1000 )
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_GAME_LIMITSELL)), MB_OK, this );
-			return TRUE;
-		}
-#endif	//	   __VER < 8  
 
 		g_DPlay.SendRegisterPVendorItem( m_iIndex, 0, (BYTE)( m_pItemBase->m_dwObjId ), nNum, nCost );
 		Destroy( FALSE );

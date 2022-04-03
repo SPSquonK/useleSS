@@ -16,15 +16,11 @@
 extern	CGuildCombat	g_GuildCombatMng;
 #include "..\_aiinterface\aipet.h"
 
-#if __VER >= 9	// __PET_0410
 #include "pet.h"
-#endif	// __PET_0410
 
-#if __VER >= 12 // __LORD
 #ifdef __WORLDSERVER
 #include "slord.h"
 #endif	// __WORLDSERVER
-#endif	// __LORD
 
 #ifdef __SYS_TICKET
 #ifdef __WORLDSERVER
@@ -32,17 +28,11 @@ extern	CGuildCombat	g_GuildCombatMng;
 #endif	// __WORLDSERVER
 #endif	// __SYS_TICKET
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #include "randomoption.h"
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#include "honor.h"
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __QUIZ
 #include "Quiz.h"
@@ -92,13 +82,9 @@ extern	CGuildWarMng	g_GuildWarMng;
 #include "EventMonster.h"
 #endif // __EVENT_MONSTER
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 #include "CreateMonster.h"
-#endif // __NEW_ITEMCREATEMON_SERVER
 
 extern	BOOL CanAdd( DWORD dwGold, int nPlus );
 
@@ -128,16 +114,12 @@ const int	MAX_DIALOGFILENAME = 32;
 BOOL CMover::m_bQuestEmoticonAdd = TRUE;
 FLOAT CMover::m_fQuestEmoticonScale = 1.0f;
 
-#if __VER >= 8 //__Y_EYE_FLASH_8
 LPDIRECT3DTEXTURE9 CMover::m_pTextureEye[2][MAX_HEAD] = { 0, };
 LPDIRECT3DTEXTURE9 CMover::m_pTextureEyeFlash[2][MAX_HEAD] = { 0, };
-#endif //__Y_EYE_FLASH_8
 
 #endif
 
-#if __VER >= 11 // __SYS_COLLECTING
 #include "collecting.h"
-#endif
 // 비스트일 때는 컴팔 안되게..
 
 //////////////////////////////////////////////////////////////////////
@@ -158,9 +140,7 @@ CMover::~CMover()
 {
 #ifdef __CLIENT
 	SAFE_DELETE( m_pLadolf );		// g_Object3DMng가 파괴되기전에 부를것
-#if __VER >= 8 //__CSC_VER8_5
 	SAFE_DELETE( m_pAngel );
-#endif //__CSC_VER8_5
 #ifdef __EVE_BALLOON
 	SAFE_DELETE( m_pBalloon );
 #endif //__EVE_BALLOON
@@ -171,9 +151,7 @@ CMover::~CMover()
 #endif
 
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 	CCreateMonster::GetInstance()->RemoveInfo( this );
-#endif // __NEW_ITEMCREATEMON_SERVER
 #endif // __WORLDSERVER
 
 	CMover* pOther = m_vtInfo.GetOther();
@@ -206,15 +184,11 @@ CMover::~CMover()
 
 	SAFE_DELETE_ARRAY( m_aQuest );
 	SAFE_DELETE_ARRAY( m_aCompleteQuest );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	SAFE_DELETE_ARRAY( m_aCheckedQuest );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 #ifdef __CLIENT
 	m_pSfxWing = NULL;
-#if __VER >= 15 // __PETVIS
 	m_pSfxBuffPet = NULL;
-#endif
 
 #ifdef __BS_EFFECT_LUA
 	CSfxModelMng::GetThis()->SubData( GetId() );
@@ -267,11 +241,7 @@ void CMover::Init()
 	m_dwHairMesh		= 0;
 	m_dwHairColor		= 0;
 	m_dwHeadMesh		= 0;
-#if __VER >= 12 // __MOD_TUTORIAL
 	m_nTutorialState	= 0;
-#else	// __MOD_TUTORIAL
-	m_nFlightLv			= 0;
-#endif	// __MOD_TUTORIAL
 	m_nFxp				= 0;
 	m_szCharacterKey[ 0 ] = 0;
 	{
@@ -284,11 +254,9 @@ void CMover::Init()
 
 	m_vtInfo.Init( this );
 
-#if __VER >= 11 // __SYS_POCKET
 #ifdef __WORLDSERVER
 	m_Pocket.Init( this );
 #endif	// __WORLDSERVER
-#endif	// __SYS_POCKET
 
 	m_idPlayer			= NULL_ID;
 	m_dwAuthorization	= AUTH_GENERAL;
@@ -312,10 +280,8 @@ void CMover::Init()
 	m_aQuest	        = NULL;
 	m_aCompleteQuest    = NULL; 
 	m_nCompleteQuestSize = 0; 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_aCheckedQuest		= NULL;
 	m_nCheckedQuestSize = 0;
-#endif // __IMPROVE_QUEST_INTERFACE
 #ifdef __WORLDSERVER
 	m_timerQuestLimitTime.Set( MIN( 1 ) );
 	m_dwPKTargetLimit = 0;
@@ -342,16 +308,10 @@ void CMover::Init()
 	m_idMurderer		= NULL_ID;
 	m_tmActionPoint		= timeGetTime();
 	m_nDead				= 0;
-#if __VER >= 8 // __S8_PK
 	m_dwPKTime			= 0;
 	m_nPKValue			= 0;
 	m_dwPKPropensity	= 0;
 	m_dwPKExp			= 0;
-#else // __VER >= 8 // __S8_PK
-	m_nNumKill			= 0;				// 킬수
-	m_nSlaughter		= 0;				// 슬로터 포인트
-	m_dwKarmaTick		= 0;
-#endif // __VER >= 8 // __S8_PK
 	m_wDarkCover        = 0;
 
 	m_idLastHitMover	= NULL_ID;			// this가 마지막으로 쳤던 무버아이디
@@ -432,25 +392,17 @@ void CMover::Init()
 	for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 		m_ShopInventory[ i ] = 0;
 	
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	m_bPVPEnd	=	FALSE;
-#endif	// __VER >= 8  
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	m_nLegend	=	LEGEND_CLASS_NORMAL;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	memset( dwRemoveSfxObj, 0, sizeof( DWORD ) * MAX_SKILLBUFF_COUNT );
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 
 #ifdef	__CLIENT
 	m_dwLadolfFlag = 0;
 	m_pLadolf = NULL;
-#if __VER >= 8 //__CSC_VER8_5
 	m_pAngel = NULL;
 	m_pAngelFlag = FALSE;
 	m_dwAngelKind = 0;
-#endif //__CSC_VER8_5
 
 #ifdef __EVE_BALLOON
 	m_pBalloonFlag = FALSE;
@@ -460,10 +412,8 @@ void CMover::Init()
 	m_bBalloon = TRUE;
 #endif	//__EVE_BALLOON
 
-#if __VER >= 14 // __WING_ITEM
 	m_eWingStateFlag = FLOATING;
 	m_fOldLengthSq = 0.0f;
-#endif // __WING_ITEM
 
 #endif //__CLIENT
 	m_fCrrSpd	= 0.0f;
@@ -493,60 +443,44 @@ void CMover::Init()
 	m_dwMotionArrive = OBJMSG_STAND;
 
 	m_SkillTimerStop = FALSE;
-#if __VER >= 8 //__CSC_VER8_5
 	m_nAngelExp = 0;				/// 엔젤 경험치
 	m_nAngelLevel = 0;				/// 엔젤 Level
-#endif // __CSC_VER8_5
 	
-#if __VER >= 8 //__Y_EYE_FLASH_8
 #ifdef __CLIENT
 	m_tmEye[0].Set( SEC(6) );
 	m_tmEye[1].Set( 200 );
 #endif //__CLIENT
-#endif //__Y_EYE_FLASH_8
 	
 #ifdef __CLIENT
 	m_SkillTimer.Set(1000); //Function Key누르고 있을 경우 Skill Delay값.
 #endif //__CLIENT
 
-#if __VER >= 9	// __PET_0410
 	m_dwPetId	= NULL_ID;
 	m_nHealCnt	= 0;
-#endif	// __PET_0410
-#if __VER >= 9	//__AI_0509
 	m_fSpeedFactor	= 1.0F;
-#endif	// __AI_0509
 	
 #ifdef __CLIENT
 	m_pSfxWing = NULL;
 	m_dwWingTime = -1;
 
-#if __VER >= 15 // __PETVIS
 	m_pSfxBuffPet = NULL;
-#endif  //__PETVIS
 #endif //__CLIENT
 
 #ifdef __JEFF_9_20
 	m_dwMute	= 0;
 #endif	// __JEFF_9_20
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	m_nHonor = -1;					// 달인선택 
 	m_dwHonorCheckTime = 0;			//달인 시간체크
 	memset( m_aHonorTitle, 0, sizeof( int ) * MAX_HONOR_TITLE );// 달인수치
 	m_strTitle.Empty();
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __VTN_TIMELIMIT
 	m_nAccountPlayTime = -1;
 #endif // __VTN_TIMELIMIT
-#if __VER >= 15 // __PETVIS
 	m_objIdVisPet = NULL_ID;
 	m_dwMoverSfxId = NULL_ID;
-#endif // __PETVIS
-#if __VER >= 15 // __CAMPUS
 	m_idCampus = 0;
 	m_nCampusPoint = 0;
-#endif // __CAMPUS
 }
 
 // AI 매시지 보냄 : 객체의 행동 패턴, 현재 상태를 매시지로 제어함 
@@ -637,7 +571,6 @@ int	CMover::GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair )
 	BYTE nOrignalB = (BYTE)( pMover->m_fHairColorB * 255 );
 
 	int nHairCost = 0;
-#if __VER >= 8 //__CSC_VER8_4
 	int nHairColorCost = 0;
 	
 	if( nR != nOrignalR || nG != nOrignalG || nB != nOrignalB )
@@ -651,45 +584,6 @@ int	CMover::GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair )
 		nHairCost = 0;
 
 	return (nHairCost + nHairColorCost);
-#else //__CSC_VER8_4
-	int nHairColorCostR = 0;
-	int nHairColorCostG = 0;
-	int nHairColorCostB = 0;
-	
-	if( nR >= nOrignalR  )
-		nHairColorCostR = (nR - nOrignalR)*13;
-	else
-		nHairColorCostR = (nOrignalR - nR)*7;
-	
-	if( nG >= nOrignalG  )
-		nHairColorCostG = (nG - nOrignalG)*13;
-	else
-		nHairColorCostG = (nOrignalG - nG)*7;
-	
-	if( nB >= nOrignalB  )
-		nHairColorCostB = (nB - nOrignalB)*13;
-	else
-		nHairColorCostB = (nOrignalB - nB)*7;
-	
-	if( pMover->m_dwHairMesh+1 != nHair+1 )
-	{
-		switch( nHair+1 )
-		{
-			case 1: nHairCost = 2500;	break;
-			case 2:	nHairCost = 2500;	break;
-			case 3:	nHairCost = 2500;	break;
-			case 4:	nHairCost = 2500;	break;
-			case 5:	nHairCost = 2500;	break;
-			default: nHairCost = 4000;	break;
-		}
-	}
-	else
-	{
-		nHairCost = 0;
-	}
-
-	return ( nHairColorCostR + nHairColorCostG + nHairColorCostB + nHairCost );
-#endif //__CSC_VER8_4
 }
 
 #ifdef __WORLDSERVER
@@ -802,11 +696,9 @@ void CMover::SubSMMode()
 						if( aItemprop->dwDestParam2 != -1 )
 							ResetDestParam( aItemprop->dwDestParam2, aItemprop->nAdjParamVal2 );
 					}
-#if __VER >= 12 // 12차 극단유료아이템
 					// 090917 mirchang - 파스킬풀 아이템 사용 기간 종료
 					else if( i == SM_PARTYSKILL30 || i == SM_PARTYSKILL15 || i == SM_PARTYSKILL1 )
 						g_DPCoreClient.SendUserPartySkill( m_idPlayer, PARTY_PARSKILL_MODE, 0, 0, 1 );
-#endif // 12차 극단유료아이템
 					
 					g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, NULL, aItemprop );
 				}
@@ -917,11 +809,9 @@ void CMover::ClearAllSMMode()
 					if( aItemprop->dwDestParam2 != -1 )
 						ResetDestParam( aItemprop->dwDestParam2, aItemprop->nAdjParamVal2 );
 				}
-#if __VER >= 12 // 12차 극단유료아이템
 				// 090917 mirchang - 파스킬풀 아이템 사용 기간 종료
 				else if( i == SM_PARTYSKILL30 || i == SM_PARTYSKILL15 || i == SM_PARTYSKILL1 )
 					g_DPCoreClient.SendUserPartySkill( m_idPlayer, PARTY_PARSKILL_MODE, 0, 0, 1 );
-#endif // 12차 극단유료아이템
 				g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, NULL, aItemprop );
 			}
 			else
@@ -1095,7 +985,6 @@ void CMover::ProcessQuest()
 	{
 		CMover* pMover = GetActiveMover();
 		m_nQuestEmoticonIndex = -1;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		// NPC 퀘스트 이모티콘 우선순위 변경 - 완료 > 신규 > 진행 > 근레벨
 		for( int i = 0; i < lpCharacter->m_awSrcQuest.GetSize() ; i++ )
 		{
@@ -1137,42 +1026,6 @@ void CMover::ProcessQuest()
 					m_nQuestEmoticonIndex = 2;
 			}
 		}
-#else // __IMPROVE_QUEST_INTERFACE
-		for( int i = 0; i < lpCharacter->m_awSrcQuest.GetSize() ; i++ )
-		{
-			int nQuest = lpCharacter->m_awSrcQuest.GetAt( i );
-			int nItem = lpCharacter->m_anSrcQuestItem.GetAt( i );
-			LPQUEST lpQuest = pMover->GetQuest( nQuest );
-			if( lpQuest == NULL && pMover->IsCompleteQuest( nQuest ) == FALSE )
-			{
-				// 내가 퀘스트 시작 조건인가?
-				if( __IsBeginQuestCondition( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
-					m_nQuestEmoticonIndex = 1;
-				// 내가 퀘스트 시작 조건이 아닌가?
-				else
-				if( m_nQuestEmoticonIndex != 1 && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
-					m_nQuestEmoticonIndex = 0;
-			}
-		}
-		for(  i = 0; i < lpCharacter->m_awDstQuest.GetSize(); i++ )
-		{
-			int nQuest = lpCharacter->m_awDstQuest.GetAt( i );
-			int nItem = lpCharacter->m_anDstQuestItem.GetAt( i );
-			LPQUEST lpQuest = pMover->GetQuest( nQuest );
-			// 퀘스트가 진행 중인 경우 
-			if( lpQuest && prj.m_aPropQuest.GetAt( lpQuest->m_wId ) && pMover->IsCompleteQuest( nQuest ) == FALSE && ( lpQuest->m_nState == 0 || lpQuest->m_nState == 14 ) ) 
-			{
-				// 내가 퀘스트 종료 조건인가?
-				if( __IsEndQuestCondition( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
-					m_nQuestEmoticonIndex = 3;
-				// 내가 퀘스트 종료 조건이 아닌가?
-				else
-				if( m_nQuestEmoticonIndex != 3 && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
-					m_nQuestEmoticonIndex = 2;
-			}
-
-		}
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 #endif // __WORLDSERVER
 }
@@ -1258,7 +1111,6 @@ void CMover::ProcessAbnormalState()
 			}
 		}
 	}
-#if __VER >= 9	// __PET_0410
 	int nHeal	= GetAdjParam( DST_HEAL );
 	if( nHeal > 0 )	// 자동 치유 상태면,
 	{
@@ -1276,7 +1128,6 @@ void CMover::ProcessAbnormalState()
 			}
 		}
 	}
-#endif	// __PET_0410
 }
 
 // 몬스터의 경우 정기적으로 idAttacker, m_idTargeter를 검사해서 없어진놈이면 삭제함.
@@ -1344,7 +1195,6 @@ void CMover::ProcessRegenItem()
 			LPVENDOR_ITEM pVendor;
 			for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i ++ )
 			{
-#if __VER >= 11 // __CSC_VER11_3
 				if(pCharacter->m_nVenderType == 1) // 칩으로 거래하는 vender일 경우
 				{
 					if(pCharacter->m_venderItemAry2[i].GetSize())
@@ -1367,7 +1217,6 @@ void CMover::ProcessRegenItem()
 				}
 				else
 				{
-#endif //__CSC_VER11_3
 					if( pCharacter->m_venderItemAry[i].GetSize() )
 					{
 						fShop	= TRUE;
@@ -1408,9 +1257,7 @@ void CMover::ProcessRegenItem()
 							}
 						}
 					}
-#if __VER >= 11 // __CSC_VER11_3
 				}
-#endif //__CSC_VER11_3
 			}
 
 			if( fShop )
@@ -1546,9 +1393,7 @@ void CMover::InitProp( BOOL bInitAI )
 	{
 		m_aQuest = new QUEST[ MAX_QUEST ]; 
 		m_aCompleteQuest = new WORD[ MAX_COMPLETE_QUEST ]; 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		m_aCheckedQuest = new WORD[ MAX_CHECKED_QUEST ];
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 }
 
@@ -1599,7 +1444,6 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 		{
 			m_nLevel	= i + 1;
 			m_nRemainGP += prj.m_aExpCharacter[ m_nLevel ].dwLPPoint;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if( nJob >= MAX_PROFESSIONAL && i > 59 )
 				m_nRemainGP++;
 
@@ -1672,31 +1516,6 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 					}
 				}
 			}
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-			if( ( i + 1 ) == MAX_JOB_LEVEL )
-			{
-				if( nJob < MAX_EXPERT )
-				{
-					AddChangeJob( nJob );
-				}
-				else
-				{
-					if( nJob % 2 != 0 )
-					{
-						AddChangeJob( ( nJob - 5 ) / 2 );
-					}
-					else
-					{
-						AddChangeJob( ( nJob - 4 ) / 2 );
-					}
-				}
-			}
-			else
-			if( ( i + 1 ) == MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-			{
-				AddChangeJob( nJob );
-			}
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		}
 		int nPoint = 0;
 		if( m_nLevel <= 20 )
@@ -1734,7 +1553,6 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 
 		SetJobLevel( nLevel, nJob );
 		m_nDeathLevel = nLevel;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if(IsMaster())
 		{
 			int dwTmpSkLevel = 1;//60, 72, 84, 96, 108
@@ -1778,7 +1596,6 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 				}
 			}
 		}
-#endif	// 	__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( bGamma )
 		{
 			m_nExp1 = 0;
@@ -1796,14 +1613,7 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 // 			g_dpDBClient.SendRecommend( (CUser*)this, nJob );
 // #endif // __S_RECOMMEND_EVE
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		g_dpDBClient.SendUpdatePlayerData( (CUser*)this );
-#else	// __SYS_PLAYER_DATA
-		g_DPCoreClient.SendPartyMemberJob( (CUser*)this );
-		g_DPCoreClient.SendFriendChangeJob( (CUser*)this );
-		if( m_idGuild != 0 )
-			g_DPCoreClient.SendGuildChangeJobLevel( (CUser*)this );
-#endif	// __SYS_PLAYER_DATA
 		SetHitPoint( GetMaxHitPoint() );
 		SetManaPoint( GetMaxManaPoint() );
 		SetFatiguePoint( GetMaxFatiguePoint() );
@@ -1814,11 +1624,9 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 		( (CUser*)this )->m_playTaskBar.InitTaskBarShorcutKind( SHORTCUT_SKILL );
 		( (CUser*)this )->AddTaskBar();
 		((CUser*)this)->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		((CUser*)this)->CheckHonorStat();
 		((CUser*)this)->AddHonorListAck();
 		g_UserMng.AddHonorTitleChange( this, m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 	}
 #endif // __WORLDSERVER
 }
@@ -1826,7 +1634,6 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 int   CMover::SetLevel( int nSetLevel )
 {
 #ifdef __WORLDSERVER
-	#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	m_nLevel = nSetLevel;
 	m_nExp1 = 0;
 	m_nDeathExp = GetExp1();
@@ -1834,7 +1641,6 @@ int   CMover::SetLevel( int nSetLevel )
 	( (CUser *)this )->AddSetExperience( GetExp1(), (WORD)m_nLevel,  m_nSkillPoint, m_nSkillLevel, m_nDeathExp, (WORD)m_nDeathLevel );		// 해당유저에게 exp1,exp2변경된 정보를 보냄.
 	g_UserMng.AddSetLevel( this, (WORD)m_nLevel );
 	g_dpDBClient.SendLogLevelUp( this, 1 );	// 레벨업 로그
-	#endif//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 #endif
 	return 0; 
 }
@@ -1842,11 +1648,9 @@ int   CMover::SetLevel( int nSetLevel )
 int   CMover::AddGPPoint( int nAddGPPoint )
 {
 #ifdef __WORLDSERVER
-	#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	m_nRemainGP += nAddGPPoint;
 	( (CUser*)this )->AddSetGrowthLearningPoint( m_nRemainGP );		// pUser에게 GP변동된것을 보냄.
 	g_dpDBClient.SendLogLevelUp( this, 1 );	// 레벨업 로그
-	#endif//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 #endif
 	return 0; 
 }
@@ -1863,21 +1667,14 @@ BOOL CMover::InitSkillExp()
 			if( pSkillProp == NULL )
 				return FALSE;
 
-	#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 			if( 0 < pSkill->dwLevel && pSkillProp->dwItemKind1 != JTYPE_MASTER && pSkillProp->dwItemKind1 != JTYPE_HERO )
 			{
 				m_nSkillPoint += (  pSkill->dwLevel * prj.GetSkillPoint( pSkillProp ) ); 
 				pSkill->dwLevel = 0;
 			}
-	#else	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-			if( 0 < pSkill->dwLevel )
-				m_nSkillPoint += (  pSkill->dwLevel * prj.GetSkillPoint( pSkillProp ) ); 
-			pSkill->dwLevel = 0;
-	#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 		}			
 	}
 
-	#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	int nMaxPoint = 1280;	// 최대인 JOB_ELEMENTOR 꺼로 설정함
 	if( m_nJob == JOB_KNIGHT || m_nJob == JOB_BLADE || m_nJob == JOB_KNIGHT_MASTER || m_nJob == JOB_BLADE_MASTER || m_nJob == JOB_KNIGHT_HERO || m_nJob == JOB_BLADE_HERO )
 		nMaxPoint = 870;
@@ -1890,7 +1687,6 @@ BOOL CMover::InitSkillExp()
 
 	if( m_nSkillPoint > nMaxPoint)
 		m_nSkillPoint = nMaxPoint;
-	#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
 #ifdef __WORLDSERVER
 	( (CUser*)this )->m_playTaskBar.InitTaskBarShorcutKind( SHORTCUT_SKILL );
@@ -1933,7 +1729,6 @@ int CMover::GetCurrentMaxSkillPoint()
 	return nCurrentMaxSkillPoint;
 }
 
-#if __VER >= 15 // __PETVIS
 //버프펫 이펙트 
 void CMover::SetSfxBuffPet( const DWORD idEffect )
 {
@@ -1946,7 +1741,6 @@ void CMover::SetSfxBuffPet( const DWORD idEffect )
 	if( NULL_ID != idEffect )
 		m_pSfxBuffPet =  CreateSfx( g_Neuz.m_pd3dDevice, idEffect, GetPos(), GetId(), GetPos(), GetId(), -1 );
 }
-#endif //__PETVIS
 
 #endif //__CLIENT
 void CMover::ReState()
@@ -1958,7 +1752,6 @@ void CMover::ReState()
 	int nLevelFor = m_nLevel;
 	if( m_nLevel < m_nDeathLevel )
 		nLevelFor = m_nDeathLevel;
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	for( int i = 1 ; i < nLevelFor ; i++ )
 	{
 		m_nRemainGP += prj.m_aExpCharacter[ i + 1 ].dwLPPoint;
@@ -1967,20 +1760,14 @@ void CMover::ReState()
 		if( IsHero() && i == MAX_LEVEL)
 			m_nRemainGP+=12;
 	}
-#else //__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-	for( int i = 1 ; i < nLevelFor ; i++ )
-		m_nRemainGP += prj.m_aExpCharacter[ i + 1 ].dwLPPoint;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	
 	SetHitPoint( GetMaxHitPoint() );
 	SetManaPoint( GetMaxManaPoint() );
 	SetFatiguePoint( GetMaxFatiguePoint() );
 	((CUser*)this)->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	((CUser*)this)->CheckHonorStat();
 	((CUser*)this)->AddHonorListAck();
 	g_UserMng.AddHonorTitleChange( this, m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 #endif // __WORLDSERVER
 }
 
@@ -2022,11 +1809,9 @@ void CMover::ReStateOne( int nKind )
 	SetManaPoint( GetMaxManaPoint() );
 	SetFatiguePoint( GetMaxFatiguePoint() );
 	((CUser*)this)->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	((CUser*)this)->CheckHonorStat();
 	((CUser*)this)->AddHonorListAck();
 	g_UserMng.AddHonorTitleChange( this, m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 #endif // __WORLDSERVER
 }
 #endif // __S_ADD_RESTATE
@@ -2101,11 +1886,9 @@ void CMover::ReStateOneLow( int nKind )
 	SetManaPoint( GetMaxManaPoint() );
 	SetFatiguePoint( GetMaxFatiguePoint() );
 	((CUser*)this)->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	((CUser*)this)->CheckHonorStat();
 	((CUser*)this)->AddHonorListAck();
 	g_UserMng.AddHonorTitleChange( this, m_nHonor);
-#endif	// __HONORABLE_TITLE			// 달인
 #endif // __WORLDSERVER
 }
 #endif // __ADD_RESTATE_LOW
@@ -2185,12 +1968,6 @@ BOOL CMover::ReplaceInspection( REGIONELEM* pPortkey )
 			bResult = FALSE;
 		TRACE( "ReplaceInspection Guild Inspection %d \n", bResult );
 	}	
-#if __VER < 14 // __INSTANCE_DUNGEON	// 상위 함수인 ProcessRegion()에서 처리
-	if( bResult != FALSE && IsFly() )
-	{
-		bResult = FALSE;
-	}
-#endif // __INSTANCE_DUNGEON
 
 	return bResult;
 }
@@ -2231,15 +2008,11 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, RE
 	SendActMsg( OBJMSG_STOP_TURN );
 	SendActMsg( OBJMSG_STAND );
 
-#if __VER >= 11 // __SYS_COLLECTING
 	if( IsCollecting() )
 		StopCollecting();
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 15 // __REACTIVATE_EATPET
 	if( HasActivatedEatPet() )
 		InactivateEatPet();
-#endif // __REACTIVATE_EATPET
 
 	LPREPLACEOBJ lpReplaceObj	= NULL;
 
@@ -2275,7 +2048,6 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, RE
 	lpReplaceObj->nLayer	= nLayer;
 #endif	// __LAYER_1015
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	if( IsPlayer() )
 	{
 		if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pWorld->GetID() )
@@ -2283,7 +2055,6 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, RE
 			//입장 인원수를 감소시킨다.
 			CInstanceDungeonHelper::GetInstance()->LeaveDungeon( static_cast<CUser*>( this ), pWorld->GetID() );
 	}
-#endif // __INSTANCE_DUNGEON
 
 	return TRUE;
 }
@@ -2448,17 +2219,10 @@ int	CMover::DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyE
 		if( pItemElem->IsCharged() )	// 유료 상품아이템 제외
 			continue;
 
-#if __VER >= 8 // __S8_PK
 		if( pItemElem->IsEatPet()
-#if __VER >= 9	// __PET_0410
 			|| IsUsing( pItemElem )
-#endif	// __PET_0410
 			)
 			continue;
-#else // __VER >= 8 // __S8_PK
-		if( HasActivatedEatPet() && pItemElem->IsEatPet() )
-			continue;
-#endif // __VER >= 8 // __S8_PK
 
 		if( pItemElem->IsBinds() )
 			continue;
@@ -2483,14 +2247,12 @@ int	CMover::DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyE
 		pItemElem = pElemBuff[ nIdx ];		// 아이템 리스트에서 랜덤으로 하나를 뽑아옴
 
 		int nPartBuf = -1;
-#if __VER >= 8 // __S8_PK
 		CItemElem* pItemElemLWepon = m_Inventory.GetEquip( PARTS_LWEAPON );
 		CItemElem* pItemElemRWepon = m_Inventory.GetEquip( PARTS_RWEAPON );
 		if( pItemElem == pItemElemLWepon )
 			nPartBuf = PARTS_LWEAPON;
 		else if( pItemElem == pItemElemRWepon )
 			nPartBuf = PARTS_RWEAPON; 
-#endif // __VER >= 8 // __S8_PK			
 		if( m_Inventory.IsEquip( pItemElem->m_dwObjId ) )	// 장착하고 있으면 벗김 			
 		{
 			if( DoEquip( pItemElem, FALSE, nPartBuf ) )
@@ -2873,7 +2635,6 @@ void CMover::ProcessRegion()
 
 	if( pPortkey )
 	{
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		if( IsFly() )	// ReplaceInspection() 에 있는 것을 밖으로 꺼내왔다.
 			return;
 		
@@ -2885,7 +2646,6 @@ void CMover::ProcessRegion()
 				REPLACE( g_uIdofMulti, pPortkey->m_dwIdTeleWorld, pPortkey->m_vTeleWorld, REPLACE_NORMAL, static_cast<CUser*>( this )->GetLayer() );
 			return;
 		}
-#endif // __INSTANCE_DUNGEON
 		if( ReplaceInspection( pPortkey ) == FALSE )
 			return;
 		REPLACE( g_uIdofMulti, pPortkey->m_dwIdTeleWorld, pPortkey->m_vTeleWorld, REPLACE_NORMAL, nTempLayer );
@@ -3102,45 +2862,13 @@ void CMover::ProcessAniSpeed()
 			break;
 		default:
 			{
-#if __VER < 9	// __AI_0509
-				int nSpeed = GetAdjParam( DST_SPEED );
-
-				if( nSpeed > 0 && (m_pActMover->GetState() == OBJSTA_FMOVE) )
-					m_fAniSpeed = 1.5f;		// 퀵스탭이고 전진중이면 에니속도 증가
-				else
-				if( nSpeed < 0 && (m_pActMover->GetState() == OBJSTA_FMOVE) )
-					m_fAniSpeed = 0.7f;		// 
-				else
-					m_fAniSpeed = 1.0f;		// 보통은 기본 속도.			
-#else	//	__AI_0509
 				m_fAniSpeed = 1.0f;		// 보통은 기본 속도.			
-#endif	// __AI_0509
 			}
 		}
 	} 
 	else
 	{	
-#if __VER < 9	// __AI_0509
-		if( GetAdjParam( DST_CHRSTATE ) & CHS_SLOW )
-			m_fAniSpeed = 0.5f;
-		else
-			m_fAniSpeed = 1.0f;
-
-		MoverProp* pMoverProp = GetProp();
-		if( pMoverProp->dwAI == AII_PET )
-		{
-			switch( m_pActMover->GetState() )
-			{
-			case OBJSTA_FMOVE:
-				m_fAniSpeed = 3.0f;
-				break;
-			default:
-				m_fAniSpeed = 1.0f;
-			}
-		}
-#else	// __AI_0509
 		m_fAniSpeed = 1.0f;
-#endif	// __AI_0509
 	}
 }
 
@@ -3176,11 +2904,7 @@ void CMover::ProcessWaterCircle( const D3DXVECTOR3& vPosTemp, const D3DXVECTOR3&
 	{
 		LPWATERHEIGHT pWaterHeight = GetWorld()->GetWaterHeight( GetPos() );
 
-#if __VER >= 14 // __WATER_EXT
 		if(pWaterHeight && (pWaterHeight->byWaterTexture & (byte)(~MASK_WATERFRAME)) == WTYPE_WATER)
-#else //__WATER_EXT
-		if( pWaterHeight && pWaterHeight->byWaterTexture == WTYPE_WATER )
-#endif //__WATER_EXT
 		{
 			FLOAT fHeight = (FLOAT)pWaterHeight->byWaterHeight;
 			if( vPosTemp.y > fHeight && vPos.y <= fHeight && m_pActMover->IsActJump() ) 
@@ -3505,7 +3229,6 @@ void CMover::Process()
 		return;
 #endif	// __WORLDSERVER
 #ifdef __CLIENT
-#if __VER >= 12 // __UPDATE_OPT
 	//if(IsPlayer()) 
 	//{
 		O3D_ELEMENT* pMask = pModel->GetParts(PARTS_MASK);
@@ -3517,7 +3240,6 @@ void CMover::Process()
 				pModel->SetEffect(PARTS_MASK, XE_HIDE);
 		}
 	//}
-#endif
 #endif	// __CLIENT
 	// 변수 조정 
 #ifdef __CLIENT
@@ -3537,25 +3259,17 @@ void CMover::Process()
 	ProcessScaleSlerp();
 	Interpolate();
 
-#if __VER >= 14 // __WING_ITEM
 	if( m_pRide && m_pRide->m_pBone )
 	{
 		WingMotionSetting( pModel );
 	}
-#endif // __WING_ITEM
 
-#if __VER >= 14 // __WING_ITEM
 	if( m_pRide )
 		m_pRide->FrameMove( NULL, GetRideFrameSpeed() );
-#else // __WING_ITEM
-	if( m_pRide )
-		m_pRide->FrameMove();
-#endif // __WING_ITEM
 
 	if( m_pLadolf )
 		m_pLadolf->FrameMove();
 
-#if __VER >= 8 //__CSC_VER8_5
 	if( IsPlayer() && HasBuffByIk3( IK3_ANGEL_BUFF ) )
 	{
 		if( m_pAngel == NULL )
@@ -3623,20 +3337,9 @@ void CMover::Process()
 		m_pAngel->FrameMove();
 		AngelMoveProcess();
 	}
-#endif //__CSC_VER8_5
 
 #ifdef __EVE_BALLOON
-#if __VER >= 14 // __BALLOON_CODE_IMPROVEMENT
 	if( IsPlayer() != FALSE && HasBuffByIk3( IK3_BALLOON ) != FALSE )
-#else // __BALLOON_CODE_IMPROVEMENT
-	if( IsPlayer() && (HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON )
-		|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON01 )
-		|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON02 )
-		|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON_01 )
-		|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON01_01 )
-		|| HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_BALLOON02_01 )
-	) )
-#endif // __BALLOON_CODE_IMPROVEMENT
 	{
 		if( m_pBalloon == NULL )
 		{
@@ -3644,29 +3347,10 @@ void CMover::Process()
 			m_pBalloon->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 			
 #ifdef __BUFF_1107
-#if __VER >= 14 // __BALLOON_CODE_IMPROVEMENT
 			IBuff* pBuff = m_buffs.GetBuffByIk3( IK3_BALLOON );
 			if( pBuff != NULL )
 			{
 				ItemProp *pItemProp = pBuff->GetProp();
-#else // __BALLOON_CODE_IMPROVEMENT
-			IBuff* pBuff	= NULL;
-			for( MAPBUFF::iterator i = m_buffs.m_mapBuffs.begin(); i != m_buffs.m_mapBuffs.end(); ++i )
-			{
-				IBuff* ptr	= i->second;
-				if( ptr->GetId() == II_SYS_SYS_EVE_BALLOON
-					|| ptr->GetId() == II_SYS_SYS_EVE_BALLOON01
-					|| ptr->GetId() == II_SYS_SYS_EVE_BALLOON02
-					|| ptr->GetId() == II_SYS_SYS_EVE_BALLOON_01
-					|| ptr->GetId() == II_SYS_SYS_EVE_BALLOON01_01
-					|| ptr->GetId() == II_SYS_SYS_EVE_BALLOON02_01
- 				)
-					pBuff = ptr;
-			}
-			if( pBuff )
-			{
-				ItemProp *pItemProp = pBuff->GetProp();
-#endif // __BALLOON_CODE_IMPROVEMENT
 #else	// __BUFF_1107
 			LPSKILLINFLUENCE itemskill;
 			for( int i=0; i<MAX_SKILLINFLUENCE; i++)
@@ -3687,15 +3371,9 @@ void CMover::Process()
 #endif	// __BUFF_1107
 				if( pItemProp )
 				{
-#if __VER >= 14 // __BALLOON_CODE_IMPROVEMENT
 					TCHAR szModelName[ MAX_PATH ];
 					prj.m_modelMng.MakeModelName( szModelName, OT_ITEM, pItemProp->dwID );
 					m_pBalloon->LoadElement( szModelName, 0 );
-#else // __BALLOON_CODE_IMPROVEMENT
-					CString textFile;
-					textFile.Format("%s.o3d", pItemProp->szTextFileName);
-					m_pBalloon->LoadElement( textFile, 0 );
-#endif // __BALLOON_CODE_IMPROVEMENT
 					
 					m_BalloonPos = GetPos();
 					
@@ -3764,10 +3442,7 @@ void CMover::Process()
 
 		if( ( m_nCount & CF_SEC ) == 0 )
 		{
-#if __VER >= 9	// __PET_0410
 			ProcessPet();
-#endif	// __PET_0410
-#if __VER >= 11 // __SYS_COLLECTING
 #ifdef __WORLDSERVER
 			ProcessCollecting();
 			( (CUser*)this )->m_Pocket.ProcessExpiring();
@@ -3775,7 +3450,6 @@ void CMover::Process()
 			if( IsActiveMover() )
 				ProcessCollecting();
 #endif	// ProcessCollecting
-#endif	// __SYS_COLLECTING
 #ifdef __JEFF_9_20
 			if( m_dwMute > 0 )
 				m_dwMute--;
@@ -3824,7 +3498,6 @@ void CMover::Process()
 			
 			if( IsAnimate() )
 			{
-#if __VER >= 9	//__AI_0509
 				FLOAT fFactor	= 1.0F;
 				
 				if( !( IsPlayer() && IsFly() ) && ( m_pActMover->IsState( OBJSTA_FMOVE ) || m_pActMover->IsState( OBJSTA_TURN_ALL ) ) )
@@ -3860,9 +3533,6 @@ void CMover::Process()
 						fFactor		= 1.0F;
 				}
 				pModel->FrameMove( &vPos, m_fAniSpeed * fFactor );		// 애니메이션 프레임 증가
-#else	// __AI_0509
-				pModel->FrameMove( &vPos, m_fAniSpeed );		// 애니메이션 프레임 증가
-#endif	// __AI_0509
 			#ifdef __CLIENT			
 				ProcessDustSFX();
 			#endif // CLIENT
@@ -3953,10 +3623,8 @@ void CMover::Process()
 	ProcessETC();
 	ProcessEyeFlash();
 
-#if __VER >= 15 // __PETVIS
 	if( NULL_ID != m_dwMoverSfxId && !m_pSfxBuffPet )		//gmpbigsun: buffpet effect
 		SetSfxBuffPet( m_dwMoverSfxId );
-#endif
 	
 #endif //defined(__CLIENT) 
 
@@ -3966,7 +3634,6 @@ void CMover::Process()
 
 #ifdef __CLIENT
 
-#if __VER >= 8 //__CSC_VER8_5
 void CMover::AngelMoveProcess()
 {
 	if( m_pAngelFlag && m_pAngel != NULL )
@@ -4017,7 +3684,6 @@ void CMover::AngelMoveProcess()
 		CreateAngelParticle( m_AngelPos );
 	}
 }
-#endif //__CSC_VER8_5
 
 #ifdef __EVE_BALLOON
 void CMover::BalloonMoveProcess()
@@ -4120,9 +3786,7 @@ void CMover::InitInterpolation()
 	m_vScrPos	= GetPos();
 	m_fScrAngle		= GetAngle();
 	m_fScrAngleX	= GetAngleX();
-#if __VER >= 9	//__AI_0509
 	m_vOldRotate	= D3DXVECTOR3( 0.0F, 0.0F, 0.0F );
-#endif	// __AI_0509
 
 	D3DXMatrixTranslation( &m_matTrans, m_vScrPos.x, m_vScrPos.y, m_vScrPos.z );
 	D3DXMATRIX matRotX;
@@ -4214,7 +3878,6 @@ void CMover::Interpolate()
 			m_matRotation	*= matRotX;
 			D3DXMatrixRotationYawPitchRoll( &m_matRotation, D3DXToRadian( -m_fScrAngle ), D3DXToRadian( -m_fScrAngleX ), 0 );
 
-#if __VER >= 9	//__AI_0509
 			if( 0 )	//if( GetProp()->dwOrthograde == 0 && fabs( m_pWorld->GetLandHeight( m_vScrPos ) - m_vScrPos.y ) < 0.1F )
 			{
 				D3DXVECTOR3 vScrPos	= m_vScrPos;
@@ -4290,7 +3953,6 @@ void CMover::Interpolate()
 				D3DXMatrixRotationYawPitchRoll( &matRotLand, D3DXToRadian( vRotate.y ), D3DXToRadian( vRotate.x ), D3DXToRadian( vRotate.z ) );
 				m_matRotation	*= matRotLand;
 			}
-#endif	// __AI_0509
 			SetUpdateMatrix( TRUE );
 		}
 	}
@@ -4882,11 +4544,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 					break;               
 				case IK3_WAND:
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 					if( GetJob() == JOB_PSYCHIKEEPER || GetJob() == JOB_PSYCHIKEEPER_MASTER || GetJob() == JOB_PSYCHIKEEPER_HERO )	dwMotion += MTI_STAND_11;
-#else //__LEGEND	//	9차 전승시스템	Neuz, World, Trans
-					if( GetJob() == JOB_PSYCHIKEEPER )	dwMotion += MTI_STAND_11;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 					else								dwMotion += MTI_STAND_02; 
 					break; 
 				case IK3_CHEERSTICK: dwMotion += 400; break; 
@@ -5067,18 +4725,6 @@ void CMover::RemoveEnemy( OBJID objid )
 		}
 
 	#ifdef __WORLDSERVER
-		#if __VER < 8 // __S8_PK
-			// PK세션을 종료시키기 위해서 플레이어간의 적대관계 종료를 보낸다.
-			if( IsPlayer() )	
-			{
-				CUser* pEnemy = prj.GetUser( objid );
-				if( IsValidObj( pEnemy ) && (GetTickCount() - i->second.dwTick) <= MIN(1) )
-				{
-					((CUser*)this)->UpdatePlayerEnemy( DEL_PLAYER_ENEMY, objid );
-					pEnemy->UpdatePlayerEnemy( DEL_PLAYER_ENEMY, GetId() );
-				}
-			}	
-		#endif // __VER < 8 // __S8_PK
 	#endif // __WORLDSERVER
 
 		m_idEnemies.erase( i );
@@ -5167,16 +4813,12 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 		m_bGuildCombat = FALSE;
 		if( GetWorld()->GetID() == WI_WORLD_GUILDWAR && g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE )
 			m_bGuildCombat = TRUE;
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( g_GuildCombat1to1Mng.IsPossibleUser( (CUser*)this ) )
 			m_bGuildCombat = TRUE;
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		if(IsNPC())
 		{
             ((CUser*)pAttacker)->SetHonorAdd(GetIndex(),HI_HUNT_MONSTER);
 		}
-#endif	// __HONORABLE_TITLE			// 달인
 	}
 
 	m_nAtkCnt = 0;		// 죽고 난 후에는 어택카운트를 클리어 해서 빗자루를 탈 수 있게하자.
@@ -5220,7 +4862,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 		if( fValid )
 		{
 			g_dpDBClient.SendLogPlayDeath( this, pAttacker );
-#if __VER >= 9	// __PET_0410
 			// 캐릭터간의 전투로 인한 모든 캐릭터의 사망 시 펫은 사망하지 않는다.	// 0723
 			if( IsValidObj( pAttacker ) == FALSE || pAttacker->IsNPC() )
 //			if( m_bLastPK == FALSE && m_bGuildCombat == FALSE )
@@ -5254,7 +4895,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 					( (CUser*)this )->AddPetState( pItemElem->m_dwObjId , pPet->GetLife(), pPet->GetEnergy(), pPet->GetExp() );
 				}
 			}
-#endif	// __PET_0410
 		}
 		// 듀얼중 플레이어의 경우 
 		// 리더인지 판단해서 듀얼을 취소시키고 
@@ -5285,7 +4925,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 	}
 
 	// 몬스터를 죽이면 몬스터가 퀘스트가 요구하는 것인지 판단해서 킬 카운트 증가 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( IsPlayer() == FALSE && pAttacker && pAttacker->IsPlayer() )
 	{
 		for( int i = 0; i < pAttacker->m_nQuestSize; i++ )
@@ -5332,40 +4971,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			}
 		}
 	}
-#else // __IMPROVE_QUEST_INTERFACE
-	if( IsPlayer() == FALSE && pAttacker && pAttacker->IsPlayer() )
-	{
-		for( int i = 0; i < pAttacker->m_nQuestSize; i++ )
-		{
-			LPQUEST lpQuest = (LPQUEST) &pAttacker->m_aQuest[ i ]; 
-			if( lpQuest )
-			{
-				QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( lpQuest->m_wId );
-				if( pQuestProp )
-				{
-					for( int i = 0; i < 2; i++ )
-					{
-						// 진행 중인 퀘스트의 종료 조건과 같은 NPC인가?
-						if( pQuestProp->m_nEndCondKillNPCIdx[ i ] == GetIndex() )
-						{
-							if( lpQuest->m_nKillNPCNum[ i ]  < pQuestProp->m_nEndCondKillNPCNum[ i ] )
-							{
-								lpQuest->m_nKillNPCNum[ i ]++; // 그렇다면 킬 넘버 
-								((CUser*)pAttacker)->AddSetQuest( lpQuest ); 
-							}
-						}
-					}
-				}
-				else
-				{
-				}
-			}
-			else
-			{
-			}
-		}
-	}
-#endif // __IMPROVE_QUEST_INTERFACE
 
 #else // WORLDSERVER
  #ifndef __CLIENT
@@ -5390,7 +4995,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			GetWorld()->OnDie( this, pAttacker );
 	}
 
-#if __VER >= 12 // __SECRET_ROOM
 	if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( this ) )
 	{
 		if( IsNPC() && pAttacker->IsPlayer() )
@@ -5398,20 +5002,15 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 		if( IsPlayer() && CSecretRoomMng::GetInstance()->IsGuildMaster( (CUser*)this ) )
 			CSecretRoomMng::GetInstance()->SetFailGuild( (CUser*)this );
 	}
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 	if( IsNPC() )
 		CCreateMonster::GetInstance()->SetState( GetId(), 'D' );
-#endif // __NEW_ITEMCREATEMON_SERVER
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( GetWorld()->GetID() ) )
 	{
 		if( !IsPlayer() && pAttacker->IsPlayer() )
 			CInstanceDungeonHelper::GetInstance()->SetInstanceDungeonKill( GetWorld()->GetID(), static_cast<DWORD>( this->GetLayer() ), GetProp()->dwID );
 	}
-#endif // __INSTANCE_DUNGEON
 #ifdef __EVENTLUA_SPAWN
 	if( IsNPC() )
 		prj.m_EventLua.RemoveSpawnedMonster( GetId() );
@@ -5423,7 +5022,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 }
 
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 
 void	CMover::EndPVP(int	nPVPHP)
 {
@@ -5485,62 +5083,9 @@ void	CMover::DoPVPEnd( CCtrl *pAttackCtrl, bool bWinner , DWORD dwMsg )
 #endif //__WORLDSERVER	
 
 }
-#endif	// __VER >= 8  
 
 #ifdef __WORLDSERVER
 
-#if __VER < 8 // __S8_PK
-int CMover::ChangeSlaughter( CHANGE_SLAUGHTER_TYPE type, CMover* pDefender, int nSetCarmaPoint )
-{
-	int nVal = 0;
-	switch( type )
-	{
-	case CHANGE_SLAUGHTER_KILL:		// PK에 의한 Slaughter 변경 
-		nVal = IncSlaughterPoint( pDefender );	
-		break;
-	case CHANGE_SLAUGHTER_ATTACK:	// PK시도에 의한 Slaughter 변경 
-		nVal = IncSlaughterPoint2( pDefender );	
-		break;
-	case CHANGE_SLAUGHTER_RECOVERY:	
-		if( m_nSlaughter < 0 )
-		{
-			m_nSlaughter += 1;
-			nVal = 1;
-		}
-		break;
-	case CHANGE_SLAUGHTER_SET:
-		{
-			nVal = nSetCarmaPoint - m_nSlaughter;
-			m_nSlaughter = nSetCarmaPoint;
-		}
-		break;
-	}
-
-	if( nVal > 0 )
-		((CUser*)this)->AddDefinedText( TID_GAME_GETPKPOINT, "%d", nVal );	// xxx 슬로터 포인트를 얻었다
-	else if( nVal < 0 )
-		((CUser*)this)->AddDefinedText( TID_GAME_DECPKPOINT, "%d", -nVal );	// xxx 슬로터 포인트가 감소했다.
-
-	if( nVal )
-	{
-		// 슬로터 포인트의 변화가 있었으면 갱신시킴.
-		g_UserMng.AddSetSlaughterPoint( this, m_nSlaughter, m_nNumKill );	// 어태커 주위 클라에 슬로터포인트 증가를 알림.
-		if( pDefender )  // 전투에 의함 
-			g_dpDBClient.SendLogPkPvp( this, pDefender, nVal, 'P' );
-	}
-	
-	return nVal;
-}
-
-// 카르마 등급을 한단계 올린다.
-void CMover::UpgradeKarma()
-{
-	KarmaProp* pProp = prj.GetKarmaProp( m_nSlaughter );
-	int nGrade = pProp->nGrade + 1;
-	pProp = prj.GetKarmaPropByGrade( nGrade ); 
-	ChangeSlaughter( CHANGE_SLAUGHTER_SET, NULL, pProp->nKarmaPoint );
-}
-#endif // __VER < 8 // __S8_PK
 
 int	CMover::SubPK( CMover *pAttacker, int nReflect )
 {
@@ -5551,17 +5096,14 @@ int	CMover::SubPK( CMover *pAttacker, int nReflect )
 		)
 		return 1;
 
-#if __VER >= 8 // __S8_PK
 	if( GetWorld()->GetID() == WI_WORLD_GUILDWAR && g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE )
 		return 1;
 
 	if( pAttacker->GetWorld()->GetID() == WI_WORLD_GUILDWAR && g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE )
 		return 1;
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	if( g_GuildCombat1to1Mng.IsPossibleUser( (CUser*)this ) && g_GuildCombat1to1Mng.IsPossibleUser( (CUser*)pAttacker ) )
 		return 1;
-#endif // __GUILD_COMBAT_1TO1
 
 	if( g_eLocal.GetState( EVE_PKCOST ) 
 #ifdef __JEFF_11_4
@@ -5631,77 +5173,12 @@ int	CMover::SubPK( CMover *pAttacker, int nReflect )
 		pAttacker->SetPKPropensity( pAttacker->GetPKPropensity() + NextPKPropensity( pAttacker->GetPKValue() ) );
 		g_UserMng.AddPKPropensity( pAttacker );
 		g_dpDBClient.SendLogPkPvp( pAttacker, this, 0, 'P' );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 #ifndef __MAINSERVER
 if(!pAttacker->IsPlayer())
 	FILEOUT( "..\\HonorError.txt", "subpk()AddHonorListAck()\n" );
 #endif // __MAINSERVER
 		((CUser*)pAttacker)->SetHonorAdd(HS_PK_COUNT,HI_COUNT_CHECK);
-#endif	// __HONORABLE_TITLE			// 달인
 	}
-#else // __VER >= 8 // __S8_PK
-	BOOL bChaotic = IsChaotic();
-
-	m_idMurderer = pAttacker->m_idPlayer;	// 날 마지막으로 죽인놈의 플레이어아이디를 저장해둠.
-	pAttacker->m_nNumKill++;				// 킬수 증가
-	((CUser*)this)->AddDefinedText( TID_GAME_PKDEAD, "\"%s\"", pAttacker->m_szName );	// ??에게 죽음을 당하였습니다.
-
-	int nGap = abs( this->GetLevel() - pAttacker->GetLevel() );
-	if( nGap >= 80 )
-		ChangeFame( this );	// 80 이상일 차이 날 경우, 예외적으로 명성치 증감  
-
-	// 보상금 떨구기를 요청한다.
-	CWorld* pWorld = GetWorld();
-	if( pWorld )
-	{
-		//"%s님이 현상범 %s를 잡아 현상금 %s페냐를 얻었습니다."
-		char szFormat[256];
-		strcpy( szFormat, pAttacker->GetName() );
-		strcat( szFormat, prj.GetText( TID_PK_REWARDNOTICE ) );
-		g_DPCoreClient.SendWCWantedReward( m_idPlayer, pAttacker->m_idPlayer, szFormat, pWorld->GetID(), GetPos() );
-	}
-
-	if( g_eLocal.GetState( EVE_PKCOST ) 
-#ifdef __JEFF_11_4
-		&& ( pWorld && pWorld->IsArena() == FALSE )
-#endif	// __JEFF_11_4
-		)
-	{
-		if( bChaotic )		
-		{
-		#if !defined(__INTERNALSERVER)
-			if( m_dwAuthorization < AUTH_HELPER )
-		#endif
-			{
-				// 페냐드롭 
-				KarmaProp* pProp = prj.GetKarmaProp( m_nSlaughter );
-				float fRate = pProp->nDropGoldPercent / 100.0f;
-				int nGold = GetGold() * fRate;
-			
-				if( nGold > 0 )
-					DropGold( nGold , GetPos(), TRUE );
-					
-				// 아이템 드롭 
-				for( int i=0; i<pProp->nDropItem; ++i )
-				{
-					BOOL bExcludeEquip = ( i == 0 );	// 1개 이하의 경우, 장착 아이템은 떨구지 않는다.
-
-					if( xRandom( 100 ) < pProp->nDropPercent )	
-					{
-						if( DoDropItemRandom( bExcludeEquip, pAttacker ) == 0 )	
-							break;
-					}
-				}
-			}
-		}				
-	}
-
-	//pAttacker의 slaughter값을 변경시킨다.
-	pAttacker->ChangeSlaughter( CHANGE_SLAUGHTER_KILL, this );
-	// 준카오 유저는 PK로 사망 당할 경우, 카르마 등급이 한 단계 올라간다.
-	if( GetSlaughterGrade() == SLAUGHTER_SEMI_CHAOTIC )
-		UpgradeKarma();
-#endif // __VER >= 8 // __S8_PK
 	return 1;
 }
 
@@ -5804,9 +5281,7 @@ void CMover::SubPVP( CMover *pAttacker, int nReflect )
 	case PVP_MODE_GUILDWAR:
 		SubWar( pAttacker );
 		break;
-#if __VER >= 8 // __S8_PK
 	case PVP_MODE_NONE:
-#endif // __VER >= 8 // __S8_PK
 	case PVP_MODE_PK:
 		SubPK( pAttacker, nReflect );		// PK의 서브루틴.
 		break;
@@ -5901,14 +5376,7 @@ void CMover::SubAroundExp( CMover *pAttacker, float fRange )
 			g_UserMng.AddSetLevel( pUser, (WORD)pUser->m_nLevel );		// pUser의 주위사람에게 pUser가 레벨이 올랐다는걸 보냄.
 			((CUser*)pUser)->AddSetGrowthLearningPoint( pUser->m_nRemainGP );		// pUser에게 GP변동된것을 보냄.
 			g_dpDBClient.SendLogLevelUp( pUser, 1 );	// 레벨업 로그
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			g_dpDBClient.SendUpdatePlayerData( pUser );
-#else	// __SYS_PLAYER_DATA
-			if( 0 < pUser->GetPartyId() )
-			g_DPCoreClient.SendPartyMemberLevel( pUser );
-			if( pUser->m_idGuild != 0 )
-				g_DPCoreClient.SendGuildChangeJobLevel( (CUser*)pUser );
-#endif	// __SYS_PLAYER_DATA
 		}
 		else
 		{
@@ -6147,9 +5615,7 @@ void CMover::AddExperienceKillMember( CMover *pDead, EXPFLOAT fExpValue, MoverPr
 				// 1. 주변 멤버 검사
 				if( pEnemy->GetPartyMemberFind( pParty, apMember, &nTotalLevel, &nMaxLevel10, &nMaxLevel, &nMemberSize ) == FALSE )
 					break;
-#if __VER >= 14 // __PCBANG
 				fExpValuePerson *= CPCBang::GetInstance()->GetPartyExpFactor( apMember, nMemberSize );
-#endif // __PCBANG
 				if( 1 < nMemberSize )	// 파티원가 같이 있음	// 파티원들 경험치 주기
 					pEnemy->AddExperienceParty( pDead, fExpValuePerson, pMoverProp, fFxpValue, pParty, apMember, &nTotalLevel, &nMaxLevel10, &nMaxLevel, &nMemberSize );
 				else	// 혼자서 싸운것으로 처리.
@@ -6157,10 +5623,8 @@ void CMover::AddExperienceKillMember( CMover *pDead, EXPFLOAT fExpValue, MoverPr
 			}
 			else
 			{
-#if __VER >= 14 // __PCBANG
 				if( IsPlayer() )
 					fExpValuePerson *= CPCBang::GetInstance()->GetExpFactor( static_cast<CUser*>( this ) );
-#endif // __PCBANG
 				pEnemy->AddExperienceSolo( fExpValuePerson, pMoverProp, fFxpValue, FALSE );
 			}
 		}
@@ -6173,27 +5637,7 @@ void CMover::AddExperienceSolo( EXPFLOAT fExpValue, MoverProp* pMoverProp, float
 		fExpValue	*= static_cast<EXPFLOAT>( 1.5f );
 		
 
-#if __VER < 8    // 8차 스킬경험치다운변경
-		// 죽음 이후 상태라면 경험치를 150%준다.
-		if( IsAfterDeath() )
-			fExpValue	*= static_cast<EXPFLOAT>( 1.5f );
-#endif	// __VER < 8  
 
-#if __VER < 9 // __S_9_ADD
-//#ifdef __VCRITICAL
-		// 크리티칼률 조정. 내 HP가 CRITICAL_BERSERK_HP%보다 적으면 적용
-		int nHitPercent = GetHitPointPercent( 100 );
-		if( nHitPercent < CRITICAL_BERSERK_HP )
-		{
-			// CRITICAL_BERSERK_HP : ( fExpValue * 0.2 ) = nHitPercent : x
-			// 30 : ( 1000 * 0.2 ) = 0 : x
-			if( nHitPercent <= 10 )
-				fExpValue	*= 1.2f;
-			else
-				fExpValue	+= ( fExpValue * .2f ) - ( ( fExpValue * .2f ) * nHitPercent / CRITICAL_BERSERK_HP );
-		}
-//#endif
-#endif // __S_9_ADD
 		// 레벨에 따라 경험치를 준다. 렙이 나보다 낮을경우 70  %, 나보다 높을경우 130 %
 		int dw_Level = GetLevel() - (int)pMoverProp->dwLevel;
 		if( dw_Level > 0 )
@@ -6341,23 +5785,7 @@ void CMover::AddExperiencePartyContribution( CMover *pDead, CUser* apMember[], C
 			{
 				nMemberExp	= static_cast<EXPINTEGER>( ( fExpValue * ( fContribution / 100.0f ) ) + ( fAddExp * ( ((float)apMember[i]->GetLevel() * (float)apMember[i]->GetLevel()) / fMaxMemberLevel ) ) + fOptionExp + fFullParty );
 
-#if __VER < 8     // 8차 스킬경험치다운변경
-				// 죽은후 경험치 더주기
-				if( apMember[i]->IsAfterDeath() )
-					nMemberExp	*= static_cast<EXPFLOAT>( 1.5f );
-#endif	// __VER < 8  
 
-#if __VER < 9 // __S_9_ADD
-				// HP가 적을때 경험치 더주기
-				int nHitPercent = apMember[i]->GetHitPointPercent( 100 );
-				if( nHitPercent < CRITICAL_BERSERK_HP )
-				{
-					if( nHitPercent <= 10 )
-						nMemberExp	*= 1.2f;
-					else
-						nMemberExp	+= ( nMemberExp * .2f ) - ( ( nMemberExp * .2f ) * nHitPercent / CRITICAL_BERSERK_HP );
-				}
-#endif // __S_9_ADD
 				TRACE("GetExp(Contribution) : %s -> %I64d\n ", apMember[i]->GetName(), static_cast<EXPINTEGER>( nMemberExp ) );
 				AddPartyMemberExperience( apMember[i], nMemberExp, 0 );
 			}
@@ -6368,23 +5796,7 @@ void CMover::AddExperiencePartyContribution( CMover *pDead, CUser* apMember[], C
 			{
 				nMemberExp	= static_cast<EXPINTEGER>( ( fAddExp * ( ((float)apMember[i]->GetLevel() * (float)apMember[i]->GetLevel()) / fMaxMemberLevel ) ) + fOptionExp + fFullParty );
 
-#if __VER < 8     // 8차 스킬경험치다운변경
-				// 죽은후 경험치 더주기
-				if( apMember[i]->IsAfterDeath() )
-					nMemberExp	*= static_cast<EXPFLOAT>( 1.5f );
-#endif	// __VER < 8  
 
-#if __VER < 9 // __S_9_ADD
-				// HP가 적을때 경험치 더주기
-				int nHitPercent = apMember[i]->GetHitPointPercent( 100 );
-				if( nHitPercent < CRITICAL_BERSERK_HP )
-				{
-					if( nHitPercent <= 10 )
-						nMemberExp	*= 1.2f;
-					else
-						nMemberExp	+= ( nMemberExp * .2f ) - ( ( nMemberExp * .2f ) * nHitPercent / CRITICAL_BERSERK_HP );
-				}
-#endif // __S_9_ADD
 				TRACE("GetExp(Contribution) : %s -> %I64d\n ", apMember[i]->GetName(), static_cast<EXPINTEGER>( nMemberExp ) );
 				AddPartyMemberExperience( apMember[i], nMemberExp, 0 );
 			}
@@ -6413,23 +5825,7 @@ void CMover::AddExperiencePartyLevel( CUser* apMember[], CParty* pParty, EXPFLOA
 			nMemberExp = static_cast<EXPINTEGER>( ( ( fExpValue + fAddExp ) * ( ((float)apMember[i]->GetLevel() * (float)apMember[i]->GetLevel()) / fMaxMemberLevel ) ) ); //+ fFullAddExp );
 
 
-#if __VER < 8     // 8차 스킬경험치다운변경
-			// 죽은후 경험치 더주기
-			if( apMember[i]->IsAfterDeath() )
-				nMemberExp	*= static_cast<EXPFLOAT>( 1.5f );
-#endif	// __VER < 8  
 
-#if __VER < 9 // __S_9_ADD
-			// HP가 적을때 경험치 더주기
-			int nHitPercent = apMember[i]->GetHitPointPercent( 100 );
-			if( nHitPercent < CRITICAL_BERSERK_HP )
-			{
-				if( nHitPercent <= 10 )
-					nMemberExp	*= 1.2f;
-				else
-					nMemberExp	+= ( nMemberExp * .2f ) - ( ( nMemberExp * .2f ) * nHitPercent / CRITICAL_BERSERK_HP );
-			}
-#endif // __S_9_ADD
 
 			AddPartyMemberExperience( apMember[i], nMemberExp, 0 );
 			TRACE("GetExp(Level) : %s -> %I64d\n ", apMember[i]->GetName(), static_cast<EXPINTEGER>( nMemberExp ) );
@@ -6468,10 +5864,8 @@ float CMover::GetExperienceReduceFactor( int nLevel, int nMaxLevel )
 // 서버에서도 사용되는 신버전.
 BOOL CMover::IsAttackAble( CObj *pObj )
 {
-#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 	if( HasBuffByIk3(IK3_TEXT_DISGUISE) )
 		return FALSE;
-#endif //__Y_FLAG_SKILL_BUFF
 
 	BOOL bAble	= FALSE;	
 
@@ -6536,13 +5930,11 @@ BOOL CMover::IsAttackAble( CObj *pObj )
 								bAble = TRUE;
 						}
 					}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
  					if( g_eLocal.GetState( EVE_GUILDCOMBAT1TO1 ) )
  					{
  						if( g_GuildCombat1to1Mng.IsPossibleMover( pMover ) && IsGuildCombatTarget( pMover ) )
  							bAble = TRUE;
  					}
-#endif // __GUILD_COMBAT_1TO1
 				}
 				else
 				{
@@ -6571,10 +5963,8 @@ BOOL CMover::IsAttackAble( CObj *pObj )
 
 BOOL CMover::IsAttackAbleNPC( CMover* pNPC )
 {
-#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 	if( HasBuffByIk3(IK3_TEXT_DISGUISE) )
 		return FALSE;
-#endif //__Y_FLAG_SKILL_BUFF
 	
 	BOOL bAble = TRUE;
 	if( pNPC->IsDie() )	// 이미 죽은넘은 포커스 해제시키고 더이상 실행하지 않음.
@@ -6639,13 +6029,6 @@ BOOL CMover::IsPKAttackAble( CMover* pMover )
 
 BOOL CMover::IsPKInspection( CMover* pOther )
 {
-#if __VER < 8 // __S8_PK
-	if( g_Party.IsMember( pOther->m_idPlayer ) )
-		return FALSE;
-
-	if( m_idGuild > 0 && m_idGuild == pOther->m_idGuild )
-		return FALSE;
-#endif // __VER >= 8 // __S8_PK
 
 	DWORD dwRegionAttr	= GetPKPVPRegionAttr();
 	BOOL bAble = TRUE;
@@ -6657,15 +6040,12 @@ BOOL CMover::IsPKInspection( CMover* pOther )
 	if( nDefenderPK = pOther->IsPKPVPInspectionBase( dwRegionAttr, FALSE ) )
 		bAble	= FALSE;
 
-#if __VER >= 8 // __S8_PK
 	if( bAble == FALSE && ( pOther->IsChaotic() || (GetAsyncKeyState(VK_CONTROL) & 0x8000)) )
 	{
 		if(GetWorld() && GetWorld()->GetID() == WI_WORLD_GUILDWAR && IsGuildCombatTarget( pOther ) )	// 길드대전 중인 유저에게는 메세지가 안나오게 하자
 			nAttackerPK = nDefenderPK = 9;
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
  		else if( g_GuildCombat1to1Mng.IsPossibleMover( this ) )
  			nAttackerPK = nDefenderPK = 9;
-#endif // __GUILD_COMBAT_1TO1
 		else if(!IsFly() && !pOther->IsFly())
 		{
 			CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
@@ -6680,7 +6060,6 @@ BOOL CMover::IsPKInspection( CMover* pOther )
 			}
 		}		
 	}
-#endif // __VER >= 8 // __S8_PK
 	if( bAble )
 	{
 		if( pOther->m_vtInfo.IsVendorOpen() )
@@ -6700,17 +6079,10 @@ BOOL CMover::IsPKInspection( CMover* pOther )
 				{
 					;
 				}
-#if __VER >= 8 // __S8_PK
 				else if( !pOther->IsChaotic() )
 				{
 					bAble	= FALSE;
 				}
-#else // __VER >= 8 // __S8_PK
-				else if( !( IsMode( FREEPK_MODE ) || ( g_Neuz.m_NeuzEnemy.IsPKing( pOther->GetId() ) ) || pOther->IsChaotic() )	)
-				{
-					bAble	= FALSE;
-				}
-#endif // __VER >= 8 // __S8_PK
 			}
 		}
 	}
@@ -6725,7 +6097,6 @@ BOOL CMover::IsPVPInspection( CMover* pMover, int nFlag )
 	int nError	= 0;
 
 	DWORD dwAttr	= GetPKPVPRegionAttr();
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 	DWORD dwWorldIDtmp = 0;
 	DWORD dwDestWorldIDtmp = 1;
 
@@ -6734,7 +6105,6 @@ BOOL CMover::IsPVPInspection( CMover* pMover, int nFlag )
 		dwWorldIDtmp = GetWorld()->GetID();
 		dwDestWorldIDtmp = pMover->GetWorld()->GetID();
 	}
-#endif	// __VER >= 8  
 	
 	switch( nFlag )
 	{
@@ -6748,17 +6118,10 @@ BOOL CMover::IsPVPInspection( CMover* pMover, int nFlag )
 				}
 //				1	// 2	// 3	// 4	// 5
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 				if( ( nError = IsPVPInspectionBase( dwAttr,dwDestWorldIDtmp ) ) == 0 )
 				{
 					nError = pMover->IsPVPInspectionBase( dwAttr ,dwWorldIDtmp);
 				}
-#else	// __VER >= 8  
-				if( ( nError = IsPKPVPInspectionBase( dwAttr ) ) == 0 )
-				{
-					nError = pMover->IsPKPVPInspectionBase( dwAttr );
-				}
-#endif	// __VER >= 8  
 				if( nError != 0 )
 				{
 					switch( nError )
@@ -6812,11 +6175,7 @@ BOOL CMover::IsPVPInspection( CMover* pMover, int nFlag )
 						CUser* pPlayer	= g_UserMng.GetUserByPlayerID( anPlayer[i] );
 						if( IsValidObj( (CObj*)pPlayer ) )
 						{
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 							if( ( nError = pPlayer->IsPVPInspectionBase( dwAttr,dwWorldIDtmp ) ) )
-#else	// __VER >= 8  
-							if( ( nError = pPlayer->IsPKPVPInspectionBase( dwAttr ) ) )
-#endif	// __VER >= 8  
 							{
 								if( nError != 0 )
 								{
@@ -6869,10 +6228,8 @@ int CMover::IsPKPVPInspectionBase( DWORD dwRegionAttr, BOOL bPVP )
 			return 3;
 	}
 
-#if __VER >= 8 // __S8_PK
 	if( !bPVP && GetLevel() <= prj.m_PKSetting.nLimitLevel )	// PK
 		return 5;
-#endif // __VER >= 8 // __S8_PK
 
 	if( bPVP )
 	{
@@ -6889,7 +6246,6 @@ int CMover::IsPKPVPInspectionBase( DWORD dwRegionAttr, BOOL bPVP )
 }
 
 //8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 int CMover::IsPVPInspectionBase( DWORD dwRegionAttr,DWORD dwWorldID, BOOL bPVP )
 {
 
@@ -6926,7 +6282,6 @@ int CMover::IsPVPInspectionBase( DWORD dwRegionAttr,DWORD dwWorldID, BOOL bPVP )
 
 	return 0;
 }
-#endif	// __VER >= 8  
 
 
 BOOL CMover::SubPKPVPInspectionBase( CMover* pMover, CMover* pMover1, DWORD dwPKAttr, int nFlag )
@@ -7019,11 +6374,7 @@ int CMover::IsSteal( CMover *pTarget )
 		return 0;		// 얘들은 이벤트몹이므로 아무나 스틸 가능
 		
 	// 플레이어만 여기로 들어온다.
-#if __VER >= 8 // __S8_PK
 	if( pTarget->IsNPC() )	// 공격자:플레이어, 맞는자:NPC 
-#else // __VER >= 8 // __S8_PK
-	if( pTarget->IsNPC() || (pTarget->IsPlayer() && pTarget->IsChaotic() == FALSE) )	// 공격자:플레이어, 맞는자:NPC 혹은 착한사람. (슬로터는 다구리당해도 된다).
-#endif // __VER >= 8 // __S8_PK
 	{
 		BOOL bStealCheck = TRUE;
 		if( pTarget->m_idTargeter == NULL_ID )	
@@ -7062,7 +6413,6 @@ int CMover::IsSteal( CMover *pTarget )
 //
 void  CMover::GetDieDecExp( int nLevel, FLOAT& fRate, FLOAT& fDecExp, BOOL& bPxpClear, BOOL& bLvDown )
 {
-#if __VER >= 8  
 	bPxpClear = FALSE;
 
 	// HP회복수치(%)
@@ -7108,16 +6458,7 @@ void  CMover::GetDieDecExp( int nLevel, FLOAT& fRate, FLOAT& fDecExp, BOOL& bPxp
 	}
 	bLvDown = (prj.m_vecLevelDownPenalty[veci].nValue)? TRUE : FALSE;
 
-#else //  __VER >= 8  
-	if( nLevel == 1 )		{ fRate	= 0.8f; fDecExp = 0.0f ; bPxpClear = FALSE; bLvDown = FALSE; }
-	else if( nLevel == 2 )	{ fRate	= 0.6f; fDecExp = 0.0f ; bPxpClear = FALSE; bLvDown = FALSE; }
-	else if( nLevel <= 5 )	{ fRate	= 0.5f; fDecExp = 0.0f ; bPxpClear = FALSE; bLvDown = FALSE; }
-	else if( nLevel <= 10 )	{ fRate	= 0.4f; fDecExp = 0.0f ; bPxpClear = TRUE ; bLvDown = FALSE; }
-	else if( nLevel <= 15 )	{ fRate	= 0.3f; fDecExp = 0.02f; bPxpClear = TRUE ; bLvDown = FALSE; }
-	else					{ fRate	= 0.3f; fDecExp = 0.03f; bPxpClear = TRUE ; bLvDown = TRUE;  }	
-#endif //  __VER >= 8  
 }
-#if __VER >= 8 // __S8_PK
 void CMover::GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, BOOL bResurrection )
 {
 	// 로드스타/라이트로 부활한것은 경험치 하락.
@@ -7132,32 +6473,8 @@ void CMover::GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, BOOL bResurrec
 	else if( IsSMMode( SM_REVIVAL ) )
 		fDecExp = 0.0f;
 }
-#else // __VER >= 8 // __S8_PK
-void CMover::GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, int nSlaughter )
-{
-	// 로드스타/라이트로 부활한것은 경험치 하락.
-	if( dwDestParam != 0 )
-	{
-		FLOAT fAddDec = (float)(100 - dwDestParam) / 100.0f;
-		fDecExp = fDecExp - (fDecExp * fAddDec);
-	}
-	
-	// 카르마 등급은 기존의 사망시 경험치 하락에도 영향을 미친다.
-	KarmaProp* pProp = prj.GetKarmaProp( nSlaughter );
-	if( pProp )
-	{
-		//fDecExp = ( fDecExp * (1.0f + ( 30.0f / 100.0f) ));
-		fDecExp = ( fDecExp * (1.0f + ( (float)pProp->nSubtractExpRate / 100.0f) ));
-	}
-	
-}
-#endif // __VER >= 8 // __S8_PK
 
-#if __VER >= 8 // __S8_PK
 float CMover::SubDieDecExp( BOOL bTransfer, DWORD dwDestParam, BOOL bResurrection )
-#else // __VER >= 8 // __S8_PK
-float CMover::SubDieDecExp( BOOL bTransfer, DWORD dwDestParam )
-#endif // __VER >= 8 // __S8_PK
 {
 	if( IsNPC() )	
 		return 0.0f;
@@ -7179,11 +6496,6 @@ float CMover::SubDieDecExp( BOOL bTransfer, DWORD dwDestParam )
 		m_bLastDuelParty = FALSE;
 		return fRate;
 	}
-#if __VER >= 8	// __CSC_VER8_5
-#if __VER < 12 // __ANGEL_NODIE
-	( (CUser*)this )->RemoveAngel();
-#endif // __ANGEL_NODIE
-#endif	// __CSC_VER8_5
 
 //#if __VER < 8  
 	bLvDown = FALSE;	// 사망 시 경험치 하락으로 인한 레벨 하락 막기
@@ -7197,24 +6509,13 @@ float CMover::SubDieDecExp( BOOL bTransfer, DWORD dwDestParam )
 			m_nDeathLevel = m_nLevel;	// 현재 레벨 기록 
 		}
 
-#if __VER >= 8 // __S8_PK
 		GetDieDecExpRate( fDecExp, dwDestParam, bResurrection );
-#else // __VER >= 8 // __S8_PK
-		GetDieDecExpRate( fDecExp, dwDestParam, m_nSlaughter );
-#endif // __VER >= 8 // __S8_PK
 
 
-#if __VER >= 8 // __S8_PK
 		if( bResurrection == FALSE && IsSMMode( SM_REVIVAL ) )
 			((CUser*)this)->SetSMMode( SM_REVIVAL, 0 );
 
 		bLvDown = DecExperiencePercent( fDecExp, bPxpClear, bLvDown );
-#else // __VER >= 8 // __S8_PK
-		if( IsSMMode( SM_REVIVAL ) )
-			((CUser*)this)->SetSMMode( SM_REVIVAL, 0 );
-		else
-			bLvDown = DecExperiencePercent( fDecExp, bPxpClear, bLvDown );
-#endif // __VER >= 8 // __S8_PK
 
 		if( bTransfer )
 		{
@@ -7362,7 +6663,6 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				}
 				pEventItem	= CEventGeneric::GetInstance()->GetItem( &nNum );
 			}
-#if __VER >= 9 // __EVENTLUA
 			map<DWORD, int> mapItemList = prj.m_EventLua.GetItem( lpMoverProp->dwLevel );
 
 			for( map<DWORD, int>::iterator it=mapItemList.begin(); it!=mapItemList.end(); it++ )
@@ -7403,7 +6703,6 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
 				}
 			}
-#endif // __EVENTLUA
 		}
 
 		QUESTITEM* pQuestItem;
@@ -7439,7 +6738,6 @@ BOOL CMover::DropItem( CMover* pAttacker )
 						WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpMoverProp->szName );
 						break;
 					}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 					CParty* pParty	= g_PartyMng.GetParty( pAttacker->m_idparty );
 					if( pParty && pParty->IsMember( pAttacker->m_idPlayer ) )	// party
 					{
@@ -7541,77 +6839,6 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 						}
 					}
-#else // __IMPROVE_QUEST_INTERFACE
-					int nMemberSize		= 0;
-					CMover* pMember;
-					CMover* apMember[MAX_PTMEMBER_SIZE];
-					// 1
-					CParty* pParty	= g_PartyMng.GetParty( pAttacker->m_idparty );
-					if( pParty && pParty->IsMember( pAttacker->m_idPlayer ) )
-					{
-						int nPartyMemberSize	= pParty->GetSizeofMember();
-						for( int j = 0; j < nPartyMemberSize; j++ )
-						{
-							PartyMember* pPartyMember	= &pParty->m_aMember[j];
-							pMember		= prj.GetUserByID( pPartyMember->m_uPlayerId );
-							if( IsValidObj( pMember ) && IsNearPC( pMember->GetId() ) )
-							{
-								LPQUEST pMemberQuest	= pMember->GetQuest( pQuestItem->dwQuest );
-								if( pMemberQuest && pMemberQuest->m_nState == pQuestItem->dwState )
-									apMember[nMemberSize++]	= pMember;
-							}
-						}
-					}
-					// 3
-					// 4
-					CMover* pTakeMover;
-					if( nMemberSize > 0 )
-						pTakeMover	= apMember[xRandom( nMemberSize )];
-					else
-						pTakeMover	= pAttacker;
-
-					BYTE nId;
-					CItemElem itemElem;
-					itemElem.m_dwItemId		= pQuestItem->dwIndex;
-					itemElem.m_nItemNum		= nNum;
-					itemElem.m_nHitPoint	= -1;
-					if( pTakeMover->CreateItem( &itemElem, &nId ) == FALSE )
-					{
-						CItemElem* pItemElem	= new CItemElem;
-						pItemElem->m_dwItemId	= pQuestItem->dwIndex;
-						pItemElem->m_nItemNum	= nNum;
-						ItemProp* pItemProp		= pItemElem->GetProp();
-						if( pItemProp )
-							pItemElem->m_nHitPoint		= pItemProp->dwEndurance;
-						pItemElem->SetSerialNumber();
-						CItem* pItem	= new CItem;
-						pItem->m_pItemBase	= pItemElem;
-						if( pItemElem->m_dwItemId == 0 ) Error("DropItem:1st %s\n", GetName() );
-						pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
-						pItem->SetPos( pTakeMover->GetPos() );
-						pItem->SetAngle( xRandom( 360 ) );
-						pItem->m_idHolder	= pTakeMover->m_idPlayer;
-						pItem->m_dwDropTime		= timeGetTime();
-						pTakeMover->GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
-					}
-					else
-					{
-						( (CUser*)pTakeMover )->AddDefinedText( TID_EVE_REAPITEM, "\"%s\"", prj.GetItemProp( pQuestItem->dwIndex )->szName );
-						// 퀘스트 아이템 로그
-						CItemBase* pItemBase	= pTakeMover->GetItemId( nId );
-						if( pItemBase )
-						{
-							CItemElem* pItemElem	= (CItemElem*)pItemBase;
-							LogItemInfo aLogItem;
-							aLogItem.Action = "Q";
-							aLogItem.SendName = pTakeMover->m_szName;
-							aLogItem.RecvName = "QUEST";
-							aLogItem.WorldId = pTakeMover->GetWorld()->GetID();
-							aLogItem.Gold = aLogItem.Gold2 = pTakeMover->GetGold();
-							g_DPSrvr.OnLogItem( aLogItem, pItemElem, pItemElem->m_nItemNum );
-						}
-					}
-#endif // __IMPROVE_QUEST_INTERFACE
 				}
 			}
 		}
@@ -7628,7 +6855,6 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				{
 					if( pParty->m_nModeTime[PARTY_GIFTBOX_MODE] || pParty->m_nModeTime[PARTY_FORTUNECIRCLE_MODE] )
 					{
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 						if( pParty->m_nModeTime[PARTY_PARSKILL_MODE] )
 						{
 							if( pParty->m_nModeTime[PARTY_GIFTBOX_MODE] )
@@ -7650,48 +6876,14 @@ BOOL CMover::DropItem( CMover* pAttacker )
 								}
 							}
 						}
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-						// 여기서 단장주위를 검색하여 주위이면 할수 잇게 함
-						CUser* pLeader = g_UserMng.GetUserByPlayerID( pParty->m_aMember[0].m_uPlayerId );
-						if( IsValidObj( (CObj*)pLeader )/* && pLeader->IsNearPC( (CUser*)pAttacker ) && IsOrigin()*/ )
-						{
-							if( pLeader->IsSMMode( SM_PARTYSKILL1 ) || pLeader->IsSMMode( SM_PARTYSKILL15 ) || pLeader->IsSMMode( SM_PARTYSKILL30 ) )	// 여기서 유료 아이템 사용중인지 확인
-							{
-								if( pParty->m_nModeTime[PARTY_GIFTBOX_MODE] )
-								{
-									nloop = 2;
-								}
-								if( pParty->m_nModeTime[PARTY_FORTUNECIRCLE_MODE] )
-								{
-									bUnique = TRUE;
-								}
-							}
-							else
-							{
-								if( pLeader->IsValidArea( pAttacker, 255.0f ) )
-								{
-									if( pParty->m_nModeTime[PARTY_GIFTBOX_MODE] )
-									{
-										nloop = 2;
-									}
-									if( pParty->m_nModeTime[PARTY_FORTUNECIRCLE_MODE] )
-									{
-										bUnique = TRUE;
-									}
-								}
-							}
-						}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 					}
 				}
 			}
 		}
-#if __VER >= 9 // __II_SYS_SYS_SCR_GET
 		if( pAttacker->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_GET01 ) )
 			nloop += 1;
 		if( pAttacker->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_GET02 ) )
 			nloop += 2;
-#endif // __II_SYS_SYS_SCR_GET
 #ifdef __DST_GIFTBOX
 			nloop += pAttacker->GetAdjParam( DST_GIFTBOX );
 #endif // __DST_GIFTBOX
@@ -7864,9 +7056,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							nNumGold	*= prj.m_fGoldDropRate;
 	#endif // __S1108_BACK_END_SYSTEM
 							
-	#if __VER >= 9 // __EVENTLUA
 							nNumGold	= (int)( nNumGold * prj.m_EventLua.GetGoldDropFactor() );
-	#endif // __EVENTLUA
 
 
 							if( lpMoverProp->dwFlying )
@@ -8171,22 +7361,6 @@ void CMover::ProcessRecovery()
 
 	DWORD dwCurTick = g_tmCurrent;
 
-#if __VER < 8 // __S8_PK
-	// 일정시간마다 카르마 회복 
-	KarmaProp* pProp = prj.GetKarmaProp( m_nSlaughter );
-	if( pProp->dwKarmaRecoverPoint )
-	{
-		if( m_dwKarmaTick == 0 )
-		{
-			m_dwKarmaTick = dwCurTick + pProp->dwKarmaRecoverPoint * 1000;
-		}
-		else if( dwCurTick > m_dwKarmaTick )
-		{
-			m_dwKarmaTick = 0; 
-			ChangeSlaughter( CHANGE_SLAUGHTER_RECOVERY, NULL );
-		}
-	}
-#endif // __VER < 8 // __S8_PK
 
 	if( dwCurTick > m_dwTickDuel )	// 두얼 시작후 1초에 3, 2, 1, Fight
 	{
@@ -8214,11 +7388,7 @@ void CMover::ProcessRecovery()
 						if( pParty->m_nKindTroup ) // 순회극단
 							pszPartyName = pParty->m_sParty;
 						else // 단막극단
-#if __VER >= 11 // __SYS_PLAYER_DATA
 							pszPartyName = CPlayerDataCenter::GetInstance()->GetPlayerString( pParty->GetPlayerId( 0 ) );
-#else	// __SYS_PLAYER_DATA
-							pszPartyName = prj.GetPlayerString( pParty->GetPlayerId( 0 ) );
-#endif	// __SYS_PLAYER_DATA
 
 						if( !pszPartyName )
 						{
@@ -8320,7 +7490,6 @@ void CMover::ProcessRecovery()
 		{
 			if( pParty->m_nKindTroup == 1 && pParty->m_nModeTime[PARTY_STRETCHING_MODE] )
 			{
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 				BOOL nMItem = FALSE;
 				CUser* pLeader = g_UserMng.GetUserByPlayerID( pParty->m_aMember[0].m_uPlayerId );
 				if( pParty->m_nModeTime[PARTY_PARSKILL_MODE] )
@@ -8342,32 +7511,6 @@ void CMover::ProcessRecovery()
 					else
 						fRecovery = 1.5f;
 				}
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-				CUser* pLeader = g_UserMng.GetUserByPlayerID( pParty->m_aMember[0].m_uPlayerId );
-				if( IsValidObj( (CObj*)pLeader ) )
-				{
-					BOOL nMItem = FALSE;
-					if( pLeader->IsSMMode( SM_PARTYSKILL1 ) || pLeader->IsSMMode( SM_PARTYSKILL15 ) || pLeader->IsSMMode( SM_PARTYSKILL30 ) )	// 여기서 유료 아이템 사용중인지 확인
-					{
-						nMItem = TRUE;
-					}
-					else
-					{
-						if( IsValidArea( pLeader, 255.0f ) )
-						{
-							nMItem = TRUE;
-						}
-					}				
-
-					if( nMItem )
-					{
-						if( pLeader->GetJob() == JOB_ASSIST || pLeader->GetJob() == JOB_RINGMASTER || pLeader->GetJob() == JOB_BILLPOSTER )
-							fRecovery = 1.8f;
-						else
-							fRecovery = 1.5f;
-					}
-				}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			}
 		}
 		else
@@ -8389,9 +7532,7 @@ void CMover::ProcessRecovery()
 			if( dwCurTick > m_dwTickRecoveryStand )	
 			{
 				m_dwTickRecoveryStand = dwCurTick + NEXT_TICK_RECOVERYSTAND;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 				if( ! (GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE) )
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 				{
 					IncHitPoint( GetHPRecovery() );
 					IncManaPoint( GetMPRecovery() );
@@ -8429,14 +7570,12 @@ BOOL CMover::IsVendorNPC()
 		if( pCharacter->m_venderItemAry[i].GetSize() )
 			return TRUE;
 	}
-#if __VER >= 11 // __CSC_VER11_3
 	if(pCharacter->m_nVenderType == 1)
 	for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 	{
 		if( pCharacter->m_venderItemAry2[i].GetSize() )
 			return TRUE;
 	}
-#endif //__CSC_VER11_3
 	return FALSE;
 }
 
@@ -8581,7 +7720,6 @@ BOOL CMover::IsItemRedyTime( ItemProp* pItemProp, OBJID dwObjid, BOOL bItemFind 
 	if( pItemProp->dwSkillReadyType != 0 &&
 		pItemProp->dwSkillReadyType != 0xffffffff )
 	{
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		if( pItemProp->dwItemKind2 == IK2_RIDING )
 		{
 			if( HasActivatedEatPet() || HasActivatedSystemPet() || HasPet() )
@@ -8590,7 +7728,6 @@ BOOL CMover::IsItemRedyTime( ItemProp* pItemProp, OBJID dwObjid, BOOL bItemFind 
 				return FALSE;
 			}
 		}
-#endif // __IMPROVE_SYSTEM_VER15
 		// 라이드를 장착을 하려면 프로퍼티에 있는값을 참조하여 시전을 해야함
 		if( IsStateMode( STATE_BASEMOTION_MODE ) ) 
 		{
@@ -8606,13 +7743,11 @@ BOOL CMover::IsItemRedyTime( ItemProp* pItemProp, OBJID dwObjid, BOOL bItemFind 
 		}
 		else	// 시전 셑팅
 		{
-#if __VER >= 9 // __S_9_ADD
 			if( pItemProp->dwItemKind2 == IK2_BLINKWING && m_pActMover->IsSit() )
 			{
 				( (CUser*)this )->AddDefinedText(TID_GAME_NOTSIT_BLINK, "" );	
 				return FALSE;
 			}
-#endif // __S_9_ADD
 			m_nReadyTime = timeGetTime() + pItemProp->dwSkillReadyType;
 			m_dwUseItemId = dwObjid;
 			m_bItemFind = bItemFind;
@@ -8655,10 +7790,8 @@ BOOL CMover::IsAfterDeath()
 
 	if( m_nDeathLevel == m_nLevel )
 	{
-#if __VER >= 8  
 		if( m_nExp1 == 0 )
 			return TRUE;
-#endif //  __VER >= 8  
 		if( m_nDeathExp > m_nExp1 )
 			return TRUE;
 	}
@@ -8813,11 +7946,7 @@ void CMover::ResetSetItemAvail( int nAbilityOption )
 
 void CMover::DestParamPiercingAvail( CItemElem* pItemElem, BOOL bSET )
 {
-#if __VER >= 12 // __EXT_PIERCING
 	if( !pItemElem->IsPierceAble() )
-#else // __EXT_PIERCING
-	if( pItemElem->GetProp()->dwItemKind3 != IK3_SUIT )
-#endif // __EXT_PIERCING
 		return;
 	
 	PIERCINGAVAIL piercingAvail;
@@ -9062,7 +8191,6 @@ void CMover::SetDestParamRandomOptOrigin( CItemElem* pItemElem )
 
 void CMover::SetDestParamRandomOptExtension( CItemElem* pItemElem )
 {
-#if __VER >= 11 // __SYS_IDENTIFY
 	int cbOption	= g_xRandomOptionProperty->GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
 	for( int i = 0; i < cbOption; i++ )
 	{
@@ -9070,7 +8198,6 @@ void CMover::SetDestParamRandomOptExtension( CItemElem* pItemElem )
 		if( g_xRandomOptionProperty->GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
 			SetDestParam( nDst, nAdj, NULL_CHGPARAM );
 	}
-#endif	// __SYS_IDENTIFY
 }
 
 void CMover::SetDestParamRandomOpt( CItemElem* pItemElem )
@@ -9094,7 +8221,6 @@ void CMover::ResetDestParamRandomOptOrigin( CItemElem* pItemElem )
 
 void CMover::ResetDestParamRandomOptExtension( CItemElem* pItemElem )
 {
-#if __VER >= 11 // __SYS_IDENTIFY
 	int cbOption	= g_xRandomOptionProperty->GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
 	for( int i = 0; i < cbOption; i++ )
 	{
@@ -9102,7 +8228,6 @@ void CMover::ResetDestParamRandomOptExtension( CItemElem* pItemElem )
 		if( g_xRandomOptionProperty->GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
 			ResetDestParam( nDst, nAdj, TRUE );
 	}
-#endif	// __SYS_IDENTIFY
 }
 
 void CMover::ResetDestParamRandomOpt( CItemElem* pItemElem )
@@ -9226,11 +8351,7 @@ void CMover::AddSkillPoint( int nPoint )
 // 전투중인가?
 BOOL CMover::IsAttackMode()
 {
-#if __VER >= 9 // __RECOVERY10
 	return ( m_nAtkCnt && m_nAtkCnt < (SEC1 * 10) );
-#else // __RECOVERY10
-	return ( m_nAtkCnt && m_nAtkCnt < (SEC1 * 5) );
-#endif // __RECOVERY10
 }
 
 BOOL CMover::IsDropable( CItemElem* pItemElem, BOOL bPK )
@@ -9243,15 +8364,11 @@ BOOL CMover::IsDropable( CItemElem* pItemElem, BOOL bPK )
 		&& !IsUsing( pItemElem )
 		&& !( pItemElem->GetProp()->dwParts == PARTS_RIDE && pItemElem->GetProp()->dwItemJob == JOB_VAGRANT )
 		&& !pItemElem->IsCharged()
-#if __VER >= 9	// __PET_0410
 		&& pItemElem->GetProp()->dwItemKind3 != IK3_EGG
-#endif	// __PET_0410
 #ifdef __JEFF_11
 		&& pItemElem->m_dwItemId != II_CHP_RED
 #endif	// __JEFF_11
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 		&& pItemElem->m_dwItemId != II_SYS_SYS_SCR_SEALCHARACTER
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 	);
 }
@@ -9305,7 +8422,6 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 					nResult++;
 			}
 		}
-#if __VER >= 8 // __S8_PK
 		// Penya 6
 		if( pQuestProp->m_nEndCondGold == 0 )
 			nResult++;
@@ -9317,49 +8433,10 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 		// 레벨 7
 		if( pQuestProp->m_nEndCondLevelMin == 0 || ( pMover->GetLevel() >= pQuestProp->m_nEndCondLevelMin && pMover->GetLevel() <= pQuestProp->m_nEndCondLevelMax ) )
 			nResult++;
-	#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pQuestProp->m_nEndCondExpPercentMin == 0 || ( pMover->GetExpPercent() >= pQuestProp->m_nEndCondExpPercentMin && pMover->GetExpPercent() <= pQuestProp->m_nEndCondExpPercentMax ) )
 			nResult++;
-	#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
-#else // __VER >= 8 // __S8_PK
-		// 카르마 6
-		if( pQuestProp->m_nEndCondKarmaPoint == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nEndCondKarmaComp == 0 )
-			{
-				if( pMover->GetKarma() == pQuestProp->m_nEndCondKarmaPoint )
-					nResult++;
-			}
-			else
-			if( pQuestProp->m_nEndCondKarmaComp == -1 )
-			{
-				if( pMover->GetKarma() <= pQuestProp->m_nEndCondKarmaPoint )
-					nResult++;
-			}
-			else
-			if( pQuestProp->m_nEndCondKarmaComp == 1 )
-			{
-				if( pMover->GetKarma() >= pQuestProp->m_nEndCondKarmaPoint )
-					nResult++;
-			}
-		}
-		// 카오틱 7
-		if( pQuestProp->m_nEndCondChaotic == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nEndCondChaotic == 1 && pMover->IsChaotic() )
-				nResult++;
-			else
-			if( pQuestProp->m_nEndCondChaotic == 2 && pMover->IsChaotic() == FALSE )
-				nResult++;
-		}
-#endif // __VER >= 8 // __S8_PK
 
-#if __VER >= 9	// __PET_0410
 		if( pQuestProp->m_nEndCondPetExp == 0 )
 			nResult++;
 		else
@@ -9376,7 +8453,6 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 			if( pPet && pPet->GetLevel() == pQuestProp->m_nEndCondPetLevel )
 				nResult++;
 		}
-#endif	// __PET_0410
 
 		// 변신 8
 		if( pQuestProp->m_nEndCondDisguiseMoverIndex == 0 )
@@ -9526,7 +8602,6 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 			}
 		}
 
-#if __VER >= 8 // __S8_PK
 		// 설정 아이템이 설정한 갯수가 있으면 충족
 		int nBufResult = nResult + MAX_QUESTCONDITEM;
 		if( pQuestProp->m_nEndCondOneItemNum == 0 )
@@ -9571,7 +8646,6 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 			else
 				nResult++;
 		}
-#endif // __VER >= 8 // __S8_PK
 		// 수집 아이템 갯수  17 + MAX_QUESTCONDITEM
 		if( pQuestProp->m_nEndCondItemNum == 0 )
 			nResult += MAX_QUESTCONDITEM;
@@ -9609,7 +8683,6 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 			else
 				nResult++;
 		}
-#if __VER >= 15 // __CAMPUS
 		if( pQuestProp->m_nEndCondTSP == 0 )
 			++nResult;
 		else
@@ -9617,29 +8690,8 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 			if( pMover->GetCampusPoint() >= pQuestProp->m_nEndCondTSP )
 				++nResult;
 		}
-#endif // __CAMPUS
 		// 총합이 17 + MAX_QUESTCONDITEM면 퀘스트 조건 성립 
-#if __VER >= 8 // __S8_PK
-	#if __VER >= 9	// __PET_0410
-		#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#if __VER >= 15 // __CAMPUS
 		if( nResult == 21+ MAX_QUESTCONDITEM + MAX_QUESTCONDITEM ) 
-#else // __CAMPUS
-		if( nResult == 20+ MAX_QUESTCONDITEM + MAX_QUESTCONDITEM ) 
-#endif // __CAMPUS
-		#else // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		if( nResult == 19+ MAX_QUESTCONDITEM + MAX_QUESTCONDITEM ) 
-		#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-	#else	// __PET_0410
-		#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		if( nResult == 18+ MAX_QUESTCONDITEM + MAX_QUESTCONDITEM ) 
-		#else
-		if( nResult == 17+ MAX_QUESTCONDITEM + MAX_QUESTCONDITEM ) 
-		#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-	#endif	//__PET_0410
-#else	// __VER >= 8 // __S8_PK
-		if( nResult == 17+ MAX_QUESTCONDITEM ) 
-#endif	// __VER >= 8 // __S8_PK
 		{
 			// 모든 조건 달성 순간에 타이머 카운트 중지 시키기 
 			// 이후에 인벤토리가 부족해서 퀘스트를 완료 못시키더라도 시간은 정지된다.
@@ -9855,7 +8907,6 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 					nResult++;
 			}
 		}
-#if __VER >= 8 // __S8_PK
 		// PK Value 19
 		if( pQuestProp->m_nBeginCondPKValue == 0 )
 			nResult++;
@@ -9901,42 +8952,6 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 			else
 				nResult++;
 		}
-#else // __VER >= 8 // __S8_PK
-		// 카르마 19
-		if( pQuestProp->m_nBeginCondKarmaPoint == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nBeginCondKarmaComp == 0 )
-			{
-				if( pMover->GetKarma() == pQuestProp->m_nBeginCondKarmaPoint )
-					nResult++;
-			}
-			else
-			if( pQuestProp->m_nBeginCondKarmaComp == -1 )
-			{
-				if( pMover->GetKarma() < pQuestProp->m_nBeginCondKarmaPoint )
-					nResult++;
-			}
-			else
-			if( pQuestProp->m_nBeginCondKarmaComp == 1 )
-			{
-				if( pMover->GetKarma() > pQuestProp->m_nBeginCondKarmaPoint )
-					nResult++;
-			}
-		}
-		// 카오틱 20
-		if( pQuestProp->m_nBeginCondChaotic == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nBeginCondChaotic == 1 && pMover->IsChaotic() )
-				nResult++;
-			else
-			if( pQuestProp->m_nBeginCondChaotic == 2 && pMover->IsChaotic() == FALSE )
-				nResult++;
-		}
-#endif // __VER >= 8 // __S8_PK
 		// 변신 21 
 		if( pQuestProp->m_nBeginCondDisguiseMoverIndex == 0 )
 			nResult++;
@@ -9949,7 +8964,6 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 				nResult++;
 		}
 
-#if __VER >= 9	// __PET_0410
 		if( pQuestProp->m_nBeginCondPetExp == 0 )
 			nResult++;
 		else
@@ -9966,12 +8980,9 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 			if( pPet && pPet->GetLevel() == pQuestProp->m_nBeginCondPetLevel )
 				nResult++;
 		}
-#endif	// __PET_0410
-#if __VER >= 12 // __MOD_TUTORIAL
 		if( pQuestProp->m_nBeginCondTutorialState == -1
 			|| pMover->GetTutorialState() >= pQuestProp->m_nBeginCondTutorialState )
 			nResult++;
-#endif	// __MOD_TUTORIAL
 
 		// 수집 아이템 갯수  21 + MAX_QUESTCONDITEM
 		if( pQuestProp->m_nBeginCondItemNum == 0 )
@@ -10010,7 +9021,6 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 			else
 				nResult++;
 		}
-#if __VER >= 15 // __CAMPUS
 		if( pQuestProp->m_nBeginCondTSP == 0 )
 			++nResult;
 		else
@@ -10018,24 +9028,14 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 			if( pMover->GetCampusPoint() >= pQuestProp->m_nBeginCondTSP )
 				++nResult;
 		}
-#endif // __CAMPUS
 
-#if __VER >= 12 // __MOD_TUTORIAL
-#if __VER >= 15 // __CAMPUS
 		if( nResult == 24 + MAX_QUESTCONDITEM + MAX_QUESTCONDITEM )
-#else // __CAMPUS
-		if( nResult == 23 + MAX_QUESTCONDITEM + MAX_QUESTCONDITEM )
-#endif // __CAMPUS
-#else	// __MOD_TUTORIAL
-		if( nResult == 22 + MAX_QUESTCONDITEM + MAX_QUESTCONDITEM )
-#endif	// __MOD_TUTORIAL
 			return 1;
 	}
 
 	return 0;
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 {
 	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
@@ -10222,7 +9222,6 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 					nResult++;
 			}
 		}
-#if __VER >= 8 // __S8_PK
 		// PK Value 19
 		if( pQuestProp->m_nBeginCondPKValue == 0 )
 			nResult++;
@@ -10268,42 +9267,6 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 			else
 				nResult++;
 		}
-#else // __VER >= 8 // __S8_PK
-		// 카르마 19
-		if( pQuestProp->m_nBeginCondKarmaPoint == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nBeginCondKarmaComp == 0 )
-			{
-				if( pMover->GetKarma() == pQuestProp->m_nBeginCondKarmaPoint )
-					nResult++;
-			}
-			else
-			if( pQuestProp->m_nBeginCondKarmaComp == -1 )
-			{
-				if( pMover->GetKarma() < pQuestProp->m_nBeginCondKarmaPoint )
-					nResult++;
-			}
-			else
-			if( pQuestProp->m_nBeginCondKarmaComp == 1 )
-			{
-				if( pMover->GetKarma() > pQuestProp->m_nBeginCondKarmaPoint )
-					nResult++;
-			}
-		}
-		// 카오틱 20
-		if( pQuestProp->m_nBeginCondChaotic == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nBeginCondChaotic == 1 && pMover->IsChaotic() )
-				nResult++;
-			else
-			if( pQuestProp->m_nBeginCondChaotic == 2 && pMover->IsChaotic() == FALSE )
-				nResult++;
-		}
-#endif // __VER >= 8 // __S8_PK
 		// 변신 21 
 		if( pQuestProp->m_nBeginCondDisguiseMoverIndex == 0 )
 			nResult++;
@@ -10316,7 +9279,6 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 				nResult++;
 		}
 
-#if __VER >= 9	// __PET_0410
 		if( pQuestProp->m_nBeginCondPetExp == 0 )
 			nResult++;
 		else
@@ -10333,12 +9295,9 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 			if( pPet && pPet->GetLevel() == pQuestProp->m_nBeginCondPetLevel )
 				nResult++;
 		}
-#endif	// __PET_0410
-#if __VER >= 12 // __MOD_TUTORIAL
 		if( pQuestProp->m_nBeginCondTutorialState == -1
 			|| pMover->GetTutorialState() >= pQuestProp->m_nBeginCondTutorialState )
 			nResult++;
-#endif	// __MOD_TUTORIAL
 
 		// 수집 아이템 갯수  21 + MAX_QUESTCONDITEM
 		if( pQuestProp->m_nBeginCondItemNum == 0 )
@@ -10377,7 +9336,6 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 			else
 				nResult++;
 		}
-#if __VER >= 15 // __CAMPUS
 		if( pQuestProp->m_nBeginCondTSP == 0 )
 			++nResult;
 		else
@@ -10385,25 +9343,14 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 			if( pMover->GetCampusPoint() >= pQuestProp->m_nBeginCondTSP )
 				++nResult;
 		}
-#endif // __CAMPUS
 
-#if __VER >= 12 // __MOD_TUTORIAL
-#if __VER >= 15 // __CAMPUS
 		if( nResult == 24 + MAX_QUESTCONDITEM + MAX_QUESTCONDITEM )
-#else // __CAMPUS
-		if( nResult == 23 + MAX_QUESTCONDITEM + MAX_QUESTCONDITEM )
-#endif // __CAMPUS
-#else	// __MOD_TUTORIAL
-		if( nResult == 22 + MAX_QUESTCONDITEM + MAX_QUESTCONDITEM )
-#endif	// __MOD_TUTORIAL
 			return 1;
 	}
 
 	return 0;
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 8 // __S8_PK
 void CMover::SetPKValue( int nValue )
 {
 	if( nValue >= 0 )	// overflow!!
@@ -10424,23 +9371,6 @@ DWORD CMover::NextPKPropensity( int nPKValue )
 		nResult = 0x7fffffff;
 	return nResult;
 }
-#else // __VER >= 8 // __S8_PK
-BOOL CMover::IsGuardReactionChao() 
-{ 
-	if( m_nSlaughter <= -2000 )
-		return TRUE;
-
-	return FALSE;
-}
-
-BOOL CMover::IsGuardReactionNormal() 
-{ 
-	if( m_nSlaughter > 0 )
-		return TRUE;
-	
-	return FALSE;
-}
-#endif // __VER < 8 // __S8_PK
 
 void CMover::SetJobLevel( int nLevel, int nJob )
 {
@@ -10639,7 +9569,6 @@ void CMover::ProcessSFXExpire( void )
 #ifdef __CLIENT
 void CMover::ProcessEyeFlash()
 {
-#if __VER >= 8 //__Y_EYE_FLASH_8
 	if( IsPlayer() && m_pModel && HasBuffByIk3(IK3_TEXT_DISGUISE) == FALSE && IsDisguise() == FALSE )
 	{
 		CModelObject* pModelObj = (CModelObject*)m_pModel;
@@ -10694,10 +9623,8 @@ void CMover::ProcessEyeFlash()
 			}
 		}
 	}
-#endif //__Y_EYE_FLASH_8
 }
 
-#if __VER >= 14 // __WING_ITEM
 void CMover::WingMotionSetting( const CModelObject* pModel )
 {
 	if( m_pRide == NULL && m_pRide->m_pBone == NULL )
@@ -10754,11 +9681,9 @@ float CMover::GetRideFrameSpeed( void )
 	}
 	return fFrameSpeed;
 }
-#endif // __WING_ITEM
 #endif //__CLIENT
 
 #ifdef __CLIENT
-#if __VER >= 8 //__CSC_VER8_5
 void CMover::CreateAngelParticle( D3DXVECTOR3 vPos )
 {
 	FLOAT fAngXZ, fAngH, fDist, fSpeed;
@@ -10793,9 +9718,7 @@ void CMover::CreateAngelParticle( D3DXVECTOR3 vPos )
 		}	
 	}
 }
-#endif //__CSC_VER8_5
 
-#if __VER >= 9	// __PET_0410
 void CMover::CreatePetParticle( D3DXVECTOR3 vPos )
 {
 	FLOAT fAngXZ, fAngH, fDist, fSpeed;
@@ -10828,11 +9751,9 @@ void CMover::CreatePetParticle( D3DXVECTOR3 vPos )
 		}	
 	}
 }
-#endif //__PET_0410
 
 #endif //__CLIENT
 
-#if __VER >= 9	// __PET_0410
 void CMover::ProcessPet( void )
 {
 #ifdef __CLIENT
@@ -10928,9 +9849,7 @@ void CMover::ProcessPet( void )
 	ProcessPetAvail();
 	ProcessPetEnergy();
 	ProcessPetExp();
-#if __VER >= 15 // __PETVIS
 	ProcessVisPet();
-#endif // __PETVIS
 #endif	// __CLIENT
 }
 
@@ -10970,9 +9889,7 @@ void CMover::PetLevelup( void )
 	{
 		pPet->SetKind( CPetProperty::GetInstance()->Hatch() );
 		pPet->SetLife( 1 );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
         ((CUser*)this)->SetHonorAdd(HS_HATCHING_EGG,HI_COUNT_CHECK);
-#endif	// __HONORABLE_TITLE			// 달인
 	}
 
 	pPet->IncLevel();
@@ -11011,9 +9928,7 @@ void CMover::ProcessPetAvail( void )
 				AddBuff( BUFF_PET, (WORD)( pItemElem->m_dwItemId ), MAKELONG( (WORD)nParam, (WORD)dwDestParam ), 0 ); 
 				SetDestParam( dwDestParam, nParam, NULL_CHGPARAM, TRUE );
 			}
-#if __VER >= 12 // __PET_0519
 			SetDestParamRandomOptExtension( pItemElem );
-#endif	// __PET_0519
 		}
 	}
 	else
@@ -11042,12 +9957,10 @@ void CMover::ProcessPetEnergy( void )
 		|| HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_TONIC_B )
 		)	// 펫 전용 영양제(A)	// 펫 전용 영양제(B)	사용시 기력 감소 없음.
 		return;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	if( HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_SPETGOOD )
 		&& pPet->GetLevel() == PL_S 
 		)	// S급 펫 전용 먹이	
 		return;
-#endif // //12차 극단유료아이템
 
 	// 자동 먹이 가방
 	if( HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_FEED_POCKET )
@@ -11231,9 +10144,7 @@ void CMover::PetRelease( void )
 #endif	// __CLIENT
 }
 
-#endif	// __PET_0410
 
-#if __VER >= 12 // __PET_0519
 // 11차 이전까지 현재 소환중인 먹펫 확인 불가
 // 이를 가능하게 하기 위해 먹펫 객체에 아이템 식별자를 추가함
 BOOL CMover::IsUsingEatPet( CItemElem* pItemElem )
@@ -11251,26 +10162,18 @@ BOOL CMover::IsUsingEatPet( CItemElem* pItemElem )
 	}
 	return FALSE;
 }
-#endif	// __PET_0519
 
 BOOL CMover::IsUsing( CItemElem* pItemElem )
 {	// 사용중인 아이템인가?
-#if __VER >= 12 // __PET_0519
 	if( IsUsingEatPet( pItemElem ) )	// 소환중인 먹펫이면
 		return TRUE;
-#else	// __PET_0519
-	if( HasActivatedEatPet() && pItemElem->IsEatPet() )
-		return TRUE;
-#endif	// __PET_0519
 
-#if __VER >= 9	// __PET_0410
 	if( GetPetId() == pItemElem->m_dwObjId )
 		return TRUE;
 
 	if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_FEED_POCKET && pItemElem->m_dwKeepTime > 0
 		&& HasBuff( BUFF_ITEM, (WORD)( pItemElem->m_dwItemId ) ) && !pItemElem->IsFlag( CItemElem::expired ))
 			return TRUE;
-#endif	// __PET_0410
 
 #ifdef __SYS_TICKET
 	if( pItemElem == GetTicket() )
@@ -11279,7 +10182,6 @@ BOOL CMover::IsUsing( CItemElem* pItemElem )
 
 	return FALSE;
 }
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 
 void	CMover::SetHonorCount(int nIdx , int nCount )
 {	
@@ -11526,9 +10428,7 @@ void	CMover::CheckHonorTime()
 #endif	// __WORLDSERVER
 }
 
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 9	//__AI_0509
 #ifdef __WORLDSERVER
 BOOL CMover::IsReturnToBegin( void )
 {
@@ -11548,9 +10448,7 @@ void CMover::SetSpeedFactor( FLOAT fSpeedFactor )
 #endif	// __WORLDSERVER
 	}
 }
-#endif	// __AI_0509
 
-#if __VER >= 11 // __SYS_COLLECTING
 void	CMover::ProcessCollecting( void )
 {
 #ifdef __CLIENT
@@ -11629,9 +10527,7 @@ CItemElem* CMover::GetCollector( void )
 		pCol	= NULL;
 	return pCol;
 }
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 11 // __SYS_POCKET
 CItemElem*	CMover::GetItemId2( int nPocket, int nItem, BOOL bExpiration )
 {
 	if( nPocket < 0 )
@@ -11657,7 +10553,6 @@ void	CMover::RemoveItem2( int nItem, short nNum, int nPocket )
 #endif	// __WORLDSERVER
 		m_Pocket.RemoveAtId( nPocket, nItem, nNum );
 }
-#endif	// __SYS_POCKET
 
 #ifdef __SYS_TICKET
 CItemElem*	CMover::GetTicket( void )
@@ -11748,7 +10643,6 @@ BOOL CMover::SetDataMTE( const char* alphaTex, const char* eff2ndTex )
 
 #endif //__BS_EFFECT_LUA
 
-#if __VER >= 12 // __LORD
 int CMover::GetPerinNum( void )
 {
 	int nPerin	= 0;
@@ -11800,7 +10694,6 @@ int CMover::RemoveTotalGold( __int64 iGold )
 	return nPerin;
 }
 #endif	// __WORLDSERVER
-#endif	// __LORD
 
 #ifdef __CLIENT
 CClientPet::CClientPet()

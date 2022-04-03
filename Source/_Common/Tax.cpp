@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "tax.h"
 
-#if __VER >= 12 // __TAX
 
 #ifdef __DBSERVER
 #include "dptrans.h"
@@ -450,11 +449,7 @@ BOOL CTax::AddTax( BYTE nCont, int nTax, BYTE nTaxKind )	// 판매, 구매, 입장료에
 #ifdef __DBSERVER
 	for( TAXINFOMAP::iterator it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
 	{
-#if __VER >= 15 // __USING_CONTINENT_DATA
 		if( it->first == CONT_ALL || it->first == nCont )
-#else // __USING_CONTINENT_DATA
-		if( it->first & nCont )
-#endif // __USING_CONTINENT_DATA
 		{
 			__TAXINFO* taxInfo = GetTaxInfo( it->first );
 			if( !taxInfo || taxInfo->dwId == NULL_ID )
@@ -868,4 +863,3 @@ void CTaxDBController::UpdateAllToDB()
 }
 #endif // __DBSERVER
 
-#endif // TAX

@@ -158,9 +158,7 @@ CWndBase::CWndBase()
 	m_dwColor = 0xff000000;
 	m_pVB = NULL;
 	m_bTile = FALSE;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_bNoCloseButton = FALSE;
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 CWndBase::~CWndBase()
 {
@@ -954,10 +952,8 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 	case WM_LBUTTONDOWN: case WM_RBUTTONDOWN: case WM_MBUTTONDOWN: case WM_RBUTTONDBLCLK: case WM_LBUTTONDBLCLK:
 #ifdef __CLIENT
 		g_toolTip.CancelToolTip();
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		g_toolTipSub1.CancelToolTip();
 		g_toolTipSub2.CancelToolTip();
-#endif // __IMPROVE_SYSTEM_VER15
 #endif
 		// 지금 포커스가 BWS_MODAL 스타일이라면 포커스와 순서를 변경하지 않는다.
 		if( m_pWndFocus && m_pWndFocus->m_dwStyle & WBS_MODAL )
@@ -1179,7 +1175,6 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		// 7 = bottomLeft
 		// 8 = bottomRigh;
 		//CPoint pt = ptWindow - m_pointOld;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( point.x < 0 || point.y < 0 || point.x > m_pWndRoot->m_rectWindow.right || point.y > m_pWndRoot->m_rectWindow.bottom )
 		{
 			m_bPush = FALSE;
@@ -1192,7 +1187,6 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 				ReleaseCapture();
 			}
 		}
-#endif // __IMPROVE_QUEST_INTERFACE
 		CPoint pt = point - m_pointOld;
 //#ifdef __NEWINTERFACE
 		pt.x = ( pt.x / 16 ) * 16;
@@ -2053,11 +2047,7 @@ CWndBase* CWndBase::GetWndBase()
 		if(pWnd && pWnd->IsVisible() && !pWnd->IsWndStyle(WBS_MANAGER|WBS_TOPMOST) )
 		{
 			// 상태창과 네비게이션은 걸러낸다...
-#if __VER >= 10 // __CSC_VER9_1
 			if( pWnd->GetWndId() == APP_SKILL3 )
-#else
-			if( pWnd->GetWndId() == APP_SKILL1 )
-#endif //__CSC_VER9_1
 			{
 				CWndBase* pWndBase = (CWndBase*)g_WndMng.GetWndBase( APP_QUEITMWARNING );	
 				if( pWndBase )
@@ -2074,21 +2064,11 @@ CWndBase* CWndBase::GetWndBase()
 					return NULL;
 				}
 			}
-#if __VER >= 8 //__CSC_VER8_3
-#if __VER >= 13 // __RAINBOW_RACE
 			if( pWnd->GetWndId() == APP_STATUS1 || pWnd->GetWndId() == APP_NAVIGATOR || pWnd->GetWndId() == APP_REVIVAL 
 				|| pWnd->GetWndId() == APP_BUFF_STATUS || pWnd->GetWndId() == APP_RAINBOWRACE_BUTTON )
-#else //__RAINBOW_RACE
-			if( pWnd->GetWndId() == APP_STATUS1 || pWnd->GetWndId() == APP_NAVIGATOR || pWnd->GetWndId() == APP_REVIVAL || pWnd->GetWndId() == APP_BUFF_STATUS )
-#endif//__RAINBOW_RACE
-#else
-			if( pWnd->GetWndId() == APP_STATUS1 || pWnd->GetWndId() == APP_NAVIGATOR || pWnd->GetWndId() == APP_REVIVAL )
-#endif //__CSC_VER8_3
 				continue;
-#if __VER >= 8 // __S8_VENDOR_REVISION
 			if( pWnd->GetWndId() == APP_VENDOR_REVISION )
 				continue;
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 #ifdef __S_SERVER_UNIFY
 			if( g_WndMng.m_bAllAction == FALSE && (pWnd->GetWndId() == APP_GUILDNAME || pWnd->GetWndId() == APP_CHANGENAME ) )
 				continue;
@@ -2261,10 +2241,8 @@ void CWndBase::OnDestroy()
 #ifdef __CLIENT
 	// 창이 닫힐 때 툴팁 제거. 이거 하지 않음 툴팁이 남아 있게 된다.
 	g_toolTip.CancelToolTip();
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	g_toolTipSub1.CancelToolTip();
 	g_toolTipSub2.CancelToolTip();
-#endif // __IMPROVE_SYSTEM_VER15
 #endif
 }
 BOOL CWndBase::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )

@@ -21,9 +21,7 @@ OSTYPE			g_osVersion = WINDOWS_UNKNOWN;
 static int		g_nLanguage = -1; // LANG_KOR;
 static int		g_nSubLanguage = 0;	//LANG_SUB_DEFAULT
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 static BOOL		g_b2ndPassWord = FALSE;
-#endif // __2ND_PASSWORD_SYSTEM
 
 ////////////////////////////////////////////////////////////////////////////////////
 // global functions
@@ -434,7 +432,6 @@ int GetSubLanguage()
 	return g_nSubLanguage;
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void SetUse2ndPassWord( BOOL bUse )
 {
 	g_b2ndPassWord = bUse;
@@ -444,4 +441,3 @@ BOOL IsUse2ndPassWord()
 {
 	return g_b2ndPassWord;
 }
-#endif // __2ND_PASSWORD_SYSTEM

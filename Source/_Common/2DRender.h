@@ -273,11 +273,7 @@ public:
 	void Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertices, int nVertexNum );
 	void Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX2* pVertices, int nVertexNum );
 
-#if __VER >= 13 // __CSC_VER13_1
 	virtual BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName );
-#else //__CSC_VER13_1
-	BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName );
-#endif //__CSC_VER13_1
 
 	CTexture* LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor );
 	CTexture* GetAt( DWORD dwIndex ) {

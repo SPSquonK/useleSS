@@ -14,9 +14,7 @@ extern	CDPClient	g_DPlay;
 
 #include "guild.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndPartyCtrl
@@ -111,25 +109,16 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 		for( ; iter != pGuild->m_mapPMember.end() ; ++iter )
 		{
 			CGuildMember * pGuildMember = (CGuildMember*)iter->second;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer );
 			if( pPlayerData->data.uLogin == 0 )
-#else	// __SYS_PLAYER_DATA
-			if( pGuildMember->m_nMultiNo == 100 || pGuildMember->m_nLogin == 0 ) // 로그오프인것은 나중에 출력해야 되므로 모아둠
-#endif	// __SYS_PLAYER_DATA
 			{
 				m_uServerPlayerId[10][m_nServerCount[10]] = pGuildMember->m_idPlayer ;
 				++m_nServerCount[10];
 			}
 			else	// 먼저 출력해야 될것 모아둠 // 멀티서버 별로 모아둠
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				m_uServerPlayerId[pPlayerData->data.uLogin-1][m_nServerCount[pPlayerData->data.uLogin-1]] = pGuildMember->m_idPlayer;
 				++m_nServerCount[pPlayerData->data.uLogin-1];
-#else	// __SYS_PLAYER_DATA
-				m_uServerPlayerId[pGuildMember->m_nMultiNo-1][m_nServerCount[pGuildMember->m_nMultiNo-1]] = pGuildMember->m_idPlayer;
-				++m_nServerCount[pGuildMember->m_nMultiNo-1];
-#endif	// __SYS_PLAYER_DATA
 			}
 		}
 
@@ -139,16 +128,10 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 			u_long uGuildMemberId = m_uServerPlayerId[g_Neuz.m_uIdofMulti-1][j];
 			CGuildMember * pGuildMember = pGuild->GetMember( uGuildMemberId );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer );
 			LPCSTR szMember		= pPlayerData->szPlayer;
 			int nJob	= pPlayerData->data.nJob;
 			DWORD dwSex		= pPlayerData->data.nSex;
-#else	// __SYS_PLAYER_DATA
-			LPCSTR szMember		= prj.GetPlayerString( pGuildMember->m_idPlayer );
-			int nJob	= pGuildMember->m_nJob;
-			DWORD dwSex		= pGuildMember->m_dwSex;
-#endif	// __SYS_PLAYER_DATA
 
 			if( szMember )
 			{
@@ -167,13 +150,11 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 				// 직업과 성별 아이템 생성
 				if( MAX_EXPERT <= nJob )
 				{
-#if __VER >= 10 // __LEGEND
 					if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 						pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * dwSex ), &pVertices, 0xffffffff );
 					else if( MAX_MASTER <= nJob )
 						pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * dwSex ), &pVertices, 0xffffffff );
 					else
-#endif //__LEGEND
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * dwSex ), &pVertices, 0xffffffff );
 				}
 				else
@@ -181,11 +162,7 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ), 12 + nJob + ( 6 * dwSex ), &pVertices, 0xffffffff );
 				}
 				// 멀티 서버 아이템 생성
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 21, pt.y ), 38 + pPlayerData->data.uLogin, &pVertices, 0xffffffff );
-#else	// __SYS_PLAYER_DATA
-				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 21, pt.y ), 38 + pGuildMember->m_nMultiNo, &pVertices, 0xffffffff );
-#endif	// __SYS_PLAYER_DATA
 			}
 			pt.y += m_nFontHeight;// + 3;
 
@@ -206,16 +183,10 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 				u_long uGuildMemberId = m_uServerPlayerId[j][k];
 				CGuildMember * pGuildMember = pGuild->GetMember( uGuildMemberId );
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( uGuildMemberId );
 				LPCSTR szMember	= pPlayerData->szPlayer;
 				int nJob	= pPlayerData->data.nJob;
 				DWORD dwSex		= pPlayerData->data.nSex;
-#else	// __SYS_PLAYER_DATA
-				LPCSTR szMember = prj.GetPlayerString( uGuildMemberId );
-				int nJob	= pGuildMember->m_nJob;
-				DWORD dwSex		= pGuildMember->m_dwSex;
-#endif	// __SYS_PLAYER_DATA
 
 				if( szMember )
 				{
@@ -236,13 +207,11 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 						// 직업과 성별 아이템 생성
 						if( MAX_EXPERT <= nJob )
 						{
-#if __VER >= 10 // __LEGEND
 							if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 								pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * dwSex ), &pVertices, 0xffff6464 );
 							else if( MAX_MASTER <= nJob )
 								pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * dwSex ), &pVertices, 0xffff6464 );
 							else
-#endif //__LEGEND
 							pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * dwSex ), &pVertices, 0xffff6464 );
 						}
 						else
@@ -255,13 +224,11 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 						// 직업과 성별 아이템 생성
 						if( MAX_EXPERT <= nJob )
 						{
-#if __VER >= 10 // __LEGEND
 							if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 								pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * dwSex ), &pVertices, 0xffffffff );
 							else if( MAX_MASTER <= nJob )
 								pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * dwSex ), &pVertices, 0xffffffff );
 							else
-#endif //__LEGEND
 							pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * dwSex ), &pVertices, 0xffffffff );
 						}
 						else
@@ -269,11 +236,7 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 							pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ), 12 + nJob + ( 6 * dwSex ), &pVertices, 0xffffffff );
 						}
 						// 멀티 서버 아이템 생성
-#if __VER >= 11 // __SYS_PLAYER_DATA
 						pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 21, pt.y ), 38 + pPlayerData->data.uLogin, &pVertices, 0xffffffff );
-#else	// __SYS_PLAYER_DATA
-						pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 21, pt.y ), 38 + pGuildMember->m_nMultiNo, &pVertices, 0xffffffff );
-#endif	// __SYS_PLAYER_DATA
 					}
 				}
 				pt.y += m_nFontHeight;// + 3;
@@ -426,21 +389,13 @@ void CWndGuildCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 	int nSelect = GetSelect( point, &pGuildMember );
 	if( nSelect != -1 )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer );
 		if( pPlayerData->data.uLogin > 0 )
-#else	// __SYS_PLAYER_DATA
-		if( pGuildMember->m_nLogin == 1 )
-#endif	// __SYS_PLAYER_DATA
 		{
 			m_nCurSelect = nSelect;
 			if( pGuildMember->m_idPlayer != g_pPlayer->m_idPlayer )
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				const char* szMember	= pPlayerData->szPlayer;
-#else	// __SYS_PLAYER_DATA
-				LPCSTR szMember = prj.GetPlayerString( pGuildMember->m_idPlayer );
-#endif	// __SYS_PLAYER_DATA
 				if( szMember )
 				{
 					CWndMessage* pWndMessage = g_WndMng.OpenMessage( szMember );

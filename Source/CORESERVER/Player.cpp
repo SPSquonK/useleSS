@@ -123,9 +123,7 @@ BOOL CPlayerMng::AddPlayer( u_long idPlayer, const CHAR* lpszPlayer, const CHAR*
 
 BOOL CPlayerMng::UnregisterPlayerInfo( CPlayer* pPlayer, BOOL bNotify )
 {
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	Logout( pPlayer );
-#endif	// __SYS_PLAYER_DATA
 
 	g_PartyMng.RemoveConnection( pPlayer );
 	g_GuildMng.RemoveConnection( pPlayer );
@@ -319,7 +317,6 @@ u_long CPlayerMng::GetCount( void )
 	return m_uCount;	
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void	CPlayerMng::Logout( CPlayer * pPlayer )
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
@@ -364,4 +361,3 @@ void	CPlayerMng::Logout( CPlayer * pPlayer )
 
 
 }
-#endif	// __SYS_PLAYER_DATA

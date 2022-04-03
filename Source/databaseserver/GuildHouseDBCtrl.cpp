@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "GuildHouseDBCtrl.h"
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "MsgHdr.h"
 #include "dptrans.h"
 extern AppInfo g_appInfo;
@@ -476,4 +475,3 @@ CGuildHouseDBMng* CGuildHouseDBMng::GetInstance()
 	static CGuildHouseDBMng sGHDBMng;
 	return & sGHDBMng;
 }
-#endif // __GUILD_HOUSE

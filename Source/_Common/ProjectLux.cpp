@@ -311,9 +311,7 @@ BOOL CProject::LoadPropMoverEx_AI_BATTLE( LPCTSTR szFileName, CScript &script, i
 				if( pProp->m_nSummNum > MAX_SUMMON )
 				{
 					CUSTOM_ERROR( "소환할수 있는 개수가 너무 많다" );
-#if __VER >= 12 // __NEW_SUMMON_RULE				
 					pProp->m_nSummNum = MAX_SUMMON;
-#endif // __NEW_SUMMON_RULE
 				}
 
 				script.GetToken();					// 몬스터 아이디

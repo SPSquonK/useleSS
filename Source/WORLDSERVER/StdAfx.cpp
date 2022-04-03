@@ -18,8 +18,6 @@ DWORD			g_tmCurrent = 0;		// 전역으로 사용할 현재 시간.
 time_t		g_tCurrent	= 0;
 int				g_nProcessCnt = 0;	// 프로세스마다 하나씩 카운트 되는 변수.
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 CGuildCombat1to1Mng	g_GuildCombat1to1Mng;
-#endif // __GUILD_COMBAT_1TO1
 
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __HOUSING
 #include "DbController.h"
 #include "Housing.h"
 ////////////////////////////////////////////////////////////////////
@@ -54,4 +53,3 @@ private:
 	CHousingDBCtrl m_HousingDBCtrl;
 
 };
-#endif // __HOUSING

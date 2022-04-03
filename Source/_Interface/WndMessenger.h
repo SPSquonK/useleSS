@@ -4,9 +4,7 @@
 #include "WndFriendCtrl.h"
 #include "WndPartyCtrl.h"
 #include "WndGuildCtrl.h"
-#if __VER >= 11 // __CSC_VER11_4
 #include "WndMessengerCtrl.h"
-#endif //__CSC_VER11_4
 
 class CWndMessenger : public CWndNeuz 
 { 
@@ -37,7 +35,6 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 };
 
-#if __VER >= 11 // __CSC_VER11_4
 class CWndMessengerEx : public CWndNeuz 
 { 
 public: 
@@ -47,9 +44,7 @@ public:
 	CWndMenu			m_menuState;
 	CWndFriendCtrlEx	m_wndFriend;
 	CWndGuildCtrlEx		m_wndGuild;
-#if __VER >= 15 // __CAMPUS
 	CWndCampus			m_WndCampus;
-#endif // __CAMPUS
 	CTexture			m_TexMail;
 	int					m_nFlashCounter;
 	int					m_nSwitch;
@@ -68,11 +63,8 @@ public:
 
 	void UpdateFriendList();
 	void UpdateGuildMemberList();
-#if __VER >= 15 // __CAMPUS
 	void UpdateCampusMemberList();
-#endif // __CAMPUS
 };
-#endif //__CSC_VER11_4
 
 class CWndInstantMsg : public CWndNeuz 
 { 

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __LORD
 
 #include "tlord.h"
 #include "lordskillexecutable.h"
@@ -788,4 +787,3 @@ void CTLordSkill::OnTimer( void )
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif	// __LORD

@@ -1,4 +1,3 @@
-#if __VER >= 12 // __SECRET_ROOM
 
 #ifndef __WNDGUILDSECRETROOM__H
 #define __WNDGUILDSECRETROOM__H
@@ -327,4 +326,3 @@ public:
 };
 
 #endif //__WNDGUILDSECRETROOM__H
-#endif //__SECRET_ROOM

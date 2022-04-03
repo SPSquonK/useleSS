@@ -7,9 +7,7 @@
 #include "ObjMap.h"
 #include "guild.h"
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonBase.h"
-#endif // __INSTANCE_DUNGEON
 
 #undef	theClass
 #define theClass	CDPCoreSrvr
@@ -48,11 +46,7 @@ public:
 	void	SendPlayMusic( u_long idmusic, DWORD dwWorldID, DPID dpid );
 	void	SendPlaySound( u_long idsound, DWORD dwWorldID, DPID dpid );
 	
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	void	SendSetPartyMode( u_long idParty, int nMode, BOOL bOnOff, LONG nPoint = 0 , DWORD dwSkillTime = 0 );
-#else // //12차 극단유료아이템
-	void	SendSetPartyMode( u_long idParty, int nMode, BOOL bOnOff, LONG nPoint = 0 );
-#endif // //12차 극단유료아이템
 	void	SendRemoveParty( u_long idParty, u_long idLeader, u_long idMember );
 	void	SendPartyChangeTroup( u_long idParty, const char * szPartyName );
 	void	SendPartyChangeName( u_long idParty, const char * szPartyName );
@@ -109,11 +103,6 @@ public:
 	void	OnCaption( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnRemovePartyPoint( CAr & ar, DPID, DPID, DPID, u_long );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void	OnMemberLevel( CAr & ar, DPID, DPID, DPID, u_long );
-	void	OnMemberJob( CAr & ar, DPID, DPID, DPID, u_long );
-	void	OnFriendChangeJob( CAr & ar, DPID, DPID, DPID, u_long );
-#endif	// __SYS_PLAYER_DATA
 	void	OnFallSnow( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnFallRain( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnStopSnow( CAr & ar, DPID, DPID, DPID, u_long );
@@ -129,9 +118,6 @@ public:
 	void    OnGuildContribution( CAr & ar, DPID, DPID, DPID, u_long );
 	void    OnGuildNotice( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGuildRealPenya( CAr & ar, DPID, DPID, DPID, u_long );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void	OnChangeGuildJobLevel( CAr & ar, DPID, DPID, DPID, u_long );
-#endif	// __SYS_PLAYER_DATA
 
 	void	OnSetSnoop( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnSetSnoopGuild( CAr & ar, DPID, DPID, DPID, u_long );
@@ -195,7 +181,6 @@ public:
 	void	OnSetPartyDuel( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnQuerySetGuildName( CAr & ar, DPID, DPID, DPID, u_long );
 	void	SendRemoveUser( DWORD dwSerial );
-#if __VER >= 14 // __INSTANCE_DUNGEON
 public:
 	void	SendInstanceDungeonAllInfo( int nType, CInstanceDungeonBase* pID, DPID dpId );
 	void	SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, ID_INFO & ID_Info );
@@ -206,7 +191,6 @@ private:
 	void	OnInstanceDungeonCreate( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnInstanceDungeonDestroy( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnInstanceDungeonSetCoolTimeInfo( CAr & ar, DPID, DPID, DPID, u_long );
-#endif // __INSTANCE_DUNGEON
 #ifdef __QUIZ
 private:
 	void	OnQuizSystemMessage( CAr & ar, DPID, DPID, DPID, u_long );

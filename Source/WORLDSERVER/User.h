@@ -19,31 +19,17 @@
 #include "Chatting.h"
 #include "CooltimeMgr.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
-#if __VER >= 13 // __RAINBOW_RACE
 #include "RainbowRace.h"
-#endif // __RAINBOW_RACE
-#if __VER >= 13 // __HOUSING
 #include "Housing.h"
-#endif // __HOUSING
-#if __VER >= 14 // __PCBANG
 #include "PCBang.h"
 class CPCBangInfo;
-#endif // __PCBANG
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 #include "CampusHelper.h"
-#endif // __CAMPUS
 
 #define GETID( pCtrl )		( (pCtrl) ? (pCtrl)->GetId() : NULL_ID )
 typedef	MemPooler<CUser>	CUserPool;
@@ -60,9 +46,7 @@ class CMailBox;
 #define CHECK_TICK_FROM_CLIENT	SEC(3)
 //////////////////////////////////////////////////////////////////////////
 
-#if __VER >= 12 // __LORD
 class CLordSkill;
-#endif	// __LORD
 /// 플레이어를 나타내는 클래스 
 class CUser : public CMover
 {
@@ -269,23 +253,15 @@ public:
 	void			AddTradelastConfirm()	{	AddHdr( NULL_ID, SNAPSHOTTYPE_TRADELASTCONFIRM );	}
 	void			AddTradelastConfirmOk( OBJID objid )	{	AddHdr( objid, SNAPSHOTTYPE_TRADELASTCONFIRMOK );	}
 	void			AddOpenShopWnd( CMover* pVendor );
-#if __VER >= 15 // __PETVIS
 	void			AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime );
-#else // __PETVIS
-	void			AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue );
-#endif // __PETVIS
-#if __VER >= 11 // __SYS_IDENTIFY
 	void			AddUpdateItemEx( unsigned char id, char cParam, __int64 iValue );
-#endif	// __SYS_IDENTIFY
 #ifdef __JEFF_11
 	void			AddQuePetResurrectionResult( BOOL bResult );
 #endif	// __JEFF_11
-#if __VER >= 11 // __SYS_POCKET
 	void			AddPocketAttribute( int nAttribute, int nPocket, int nData );
 	void			AddPocketView( void );
 	void			AddPocketAddItem( int nPocket, CItemElem* pItem );
 	void			AddPocketRemoveItem( int nPocket, int nItem, short nNum );
-#endif	// __SYS_POCKET
 	void			AddSetFxp( int nFxp, int nFlightLv );
 	void			AddSetGrowthLearningPoint( long nRemainGP );
 	void			AddSetStatLevel( CHAR chID, long nValue, long nRemainGP );
@@ -316,42 +292,24 @@ public:
 	void			AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId );
 	void			AddTaskBar();
 	void			AddSendErrorParty( DWORD dw, DWORD dwSkill = 0 );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void			AddPartyMember( CParty *pParty, u_long idPlayer, const char* pszLeader, const char* pszMember );
-#else	// __SYS_PLAYER_DATA
-	void			AddPartyMember( CParty *pParty, u_long uPlayerId = 0 );
-#endif	// __SYS_PLAYER_DATA
 	void			AddPartyRequest( CUser * pLeader, CUser * pMember, BOOL bTroup );
 	void			AddPartyRequestCancel( u_long uLeaderid, u_long uMemberid, int nMode = 0 );
 	void			AddPartyExpLevel( int Exp, int Level, int nPoint );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void			AddPartyMemberJob( int nMemberIndex, int nJob);
-	void			AddPartyMemberLevel( int nMemberIndex, int nLevel);
-#endif	// __SYS_PLAYER_DATA
 	void			AddPartyMemberFlightLevel( int nMemberIndex, int nLevel);
 	void			AddPartyChangeTroup( const char * szPartyName );
 	void			AddPartyChangeName( const char * szPartyName );
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	void			AddSetPartyMode( int nMode, BOOL bOnOff, LONG nPoint , DWORD dwSkillTime );
-#else // //12차 극단유료아이템
-	void			AddSetPartyMode( int nMode, BOOL bOnOff, LONG nPoint );		
-#endif // //12차 극단유료아이템
 	void			AddPartyChangeItemMode( int nItemMode );
 	void			AddPartyChangeExpMode( int nExpMode );
 	void			AddSetPartyMemberParam( u_long idPlayer, BYTE nParam, int nVal );
 	void			AddPartyName();
 	void			AddPartySkillCall( const D3DXVECTOR3 &vLeader );
 	void			AddPartySkillBlitz( OBJID idTarget );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void			AddFriendChangeJob( u_long uidPlayer, int nJob );
-#endif	// __SYS_PLAYER_DATA
 	void			AddFriendGameJoin();
 	void			AddFriendReqest( u_long uLeader, LONG nJob, BYTE nSex, const char * szName );
 	void			AddFriendCancel();
 	void			AddFriendError( BYTE nError, const char * szName );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void			AddGetFriendName( int nCount, FRIEND* aFriend );
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __ENVIRONMENT_EFFECT
 	void			AddEnvironmentSetting();
@@ -374,13 +332,8 @@ public:
 	void			AddDuelPartyNo( OBJID idTarget );
 	void			AddDuelPartyCancel( CParty *pDuelOther );	// 듀얼중 취소시킴
 	void			AddDuelPartyResult( CParty *pDuelOther, BOOL bWin );		// 듀얼결과 통보.
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void			AddQueryPlayerData( u_long idPlayer, PlayerData* pPlayerData );
 	void			AddPlayerData( void );
-#else	// __SYS_PLAYER_DATA
-	void			AddQueryPlayerString( u_long idPlayer, LPCSTR lpszPlayer, BYTE nQuery );
-	void			AddQueryPlayerListString( BYTE nQuery );
-#endif	// __SYS_PLAYER_DATA
 	void			AddSetState( LONG nStr, LONG nSta, LONG nDex, LONG nInt, LONG nGP );	
 	void			AddSetSkill( DWORD dwSkill, DWORD dwSkillLevel );
 	void			AddQueryGetPos( OBJID objid );
@@ -412,9 +365,6 @@ public:
 	void			AddSetGuildAuthority( DWORD dwAuthority[] );
 	void			AddSetGuildPenya( DWORD dwType, DWORD dwPenya );
 	void			AddGuildRealPenya( int nGoldGuild, int nType );
-#if __VER < 11 // __SYS_PLAYER_DATA
-	void			AddChangeGuildJobLevel( u_long uidPlayer, LONG nJob, LONG nLevel );
-#endif	// __SYS_PLAYER_DATA
 	void			AddAllGuilds();
 	void			AddMyGuild();
 	void			AddGuildInvite( u_long idGuild, u_long idMaster );
@@ -425,9 +375,7 @@ public:
 	void			AddResistSMMode( BYTE nAttackResistLeft, BYTE nAttackResistRight, BYTE nDefenceResist );
 	void			AddCommercialElem( DWORD dwItemId, int nResistSMItemId );
 	void			AddFlyffEvent();
-#if __VER >= 9 // __EVENTLUA
 	void			AddEventLuaDesc( int nState, string strDesc );
-#endif // __EVENTLUA
 	void			AddQueryGetDestObj( OBJID objid );
 	void			AddGetDestObj( OBJID objid, OBJID objidDest, FLOAT fRange );
 //	BOOL			DoCollect( CMover *pTarget );		// 채집시작.
@@ -471,11 +419,7 @@ public:
 	void			AddSetActionPoint( int nAP );	
 	void			AddSetTarget( OBJID idTarget );
 	void			AddSetDuel( CMover* pMover );
-#if __VER >= 8 // __S8_PK
 	void			AddPKValue();
-#else // __VER >= 8 // __S8_PK
-	void			UpdatePlayerEnemy( BYTE byType, OBJID objid );
-#endif // __VER >= 8 // __S8_PK
 	void			ScheduleDestory( DWORD dwDestoryTime  );
 	void			AddWantedInfo( const D3DXVECTOR3& vPos, BYTE byOnline, DWORD dwWorldID, LPCTSTR lpszWorld );
 	void			AddReturnScroll();
@@ -496,10 +440,8 @@ public:
 #ifdef __S1108_BACK_END_SYSTEM
 	void			AddMonsterProp();
 #endif // __S1108_BACK_END_SYSTEM
-#if __VER >= 8 //__CSC_VER8_5
 //	void			AddCreateAngel(BOOL isSuccess, char* createAngel);
 	void			AddAngelInfo( BOOL bComplete = FALSE );
-#endif //__CSC_VER8_5
 	
 #ifdef __EVE_MINIGAME
 	void			AddKawibawiboResult( int nResult, int nWinCount, DWORD dwItemId = 0, int nItemCount = 0, DWORD dwNextItemId = 0, int nNextItemCount = 0 );
@@ -511,44 +453,29 @@ public:
 	void			AddFiveSystemResult( int nResult, int nGetPenya = 0, int nBetNum = 0 );
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 	void			AddUltimateMakeItem( BOOL bResult );
 	void			AddUltimateMakeGem( int nResult, int nNum );
 	void			AddUltimateWeapon( BYTE state, int nResult );
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 	void			AddExchangeResult( BYTE state, int nResult );
 #endif // __TRADESYS
 
-#if __VER >= 9	// __PET_0410
 	void	AddPet( CPet* pPet, BYTE nPetLevelup = PF_PET );
 	void	AddPetState( DWORD dwPetId, WORD wLife, WORD wEnergy, DWORD dwExp );
 	void	AddPetSetExp( DWORD dwExp );
 	void	AddPetFoodMill( int nResult, int nCount );
-#endif	// __PET_0410
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	void			AddLegendSkillResult( int nResult );
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 	void			AddRemoveAttribute( BOOL bSuccess );
-#endif // __REMOVE_ATTRIBUTE
 
-#if __VER >= 11 // __SYS_COLLECTING
 	virtual	void	ProcessCollecting( void );
 	virtual	void	StartCollecting( void );
 	virtual	void	StopCollecting( void );
 	BOOL	DoUseItemBattery( void );
-#if __VER < 14 // __SMELT_SAFETY
-	BOOL	PreRefine( DWORD dwTarget, DWORD dwMaterial );
-	void	RefineCollector( CItemElem* pTarget, CItemElem* pMaterial );
-	void	RefineAccessory( CItemElem* pTarget, CItemElem* pMaterial );
-#endif // __SMELT_SAFETY
 	void	AddRestartCollecting( DWORD dwItemId );
 	int		m_nCollecting;
-#endif	// __SYS_COLLECTING
 
 #ifdef __AZRIA_1023
 	BOOL	HasInput()	{	return m_szInput[0] != '\0';	}
@@ -569,42 +496,29 @@ public:
 	void	DoUseItemTicket( CItemElem* pItemElem );
 #endif	// __SYS_TICKET
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	void	AddGC1to1TenderOpenWnd( int nPenya );
 	void	AddGC1to1TenderGuildView(  int nPenya, int nRanking, time_t t, vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild );
 	void	AddGC1to1MemberLineUpOpenWnd( vector<u_long>& vecMemberId );
 	void	AddGC1to1NowState( int nState, int nTime, int nProgCount = 0 );
 	void	AddGC1to1WarResult( int m_nState, u_long uIdPlayer, int nWinCount0, int nWinCount1 );
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 8 // __CSC_VER8_5
 	void	RemoveAngel( void );
-#endif	// __CSC_VER8_5
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	void	AddGuildBankLogView( BYTE byListType, short nLogCount, const __GUILDBANKLOG_ENTRY* logs );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	void	AddSealChar( short nLogCount, const __SEALCHAR_ENTRY* seals );
 	void	AddSealCharSet();
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	void	AddHonorListAck();
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __EVENTLUA_COUPON
 	void	AddCoupon( int nCoupon );
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 12 // __SECRET_ROOM
 	void	AddSecretRoomMngState( int nState, DWORD dwRemainTime );
 	void	AddSecretRoomContInfo( BYTE nContinent, BYTE nType, vector<__SECRETROOM_TENDER> & vecSecreetRoomTender, int nIndex );
 	void	AddSecretRoomTenderOpenWnd( int nTenderPenya );
 	void	AddSecretRoomLineUpOpenWnd( vector<DWORD>& vecLineUpMember );
 	void	AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, vector<__SECRETROOM_TENDER>& vecSRTender );
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __LORD
 	void	AddLord( void );
 	void	AddLordSkillTick( CLordSkill* pSkills );
 	int		GetMuteText( void );
@@ -613,16 +527,11 @@ public:
 	BOOL	IsTeleportable( void );
 	BOOL	IsQuerying( void )	{	return m_bQuerying;		}
 	void	SetQuerying( BOOL bQuerying )	{	m_bQuerying		= bQuerying;	}
-#endif	// __LORD
 
-#if __VER >= 12 // __MOD_TUTORIAL
 	void	AddSetTutorialState( void );
-#endif	// __MOD_TUTORIAL
 
-#if __VER >= 12 // __TAX
 	void	AddTaxInfo( void );
 	void	AddTaxSetTaxRateOpenWnd( BYTE nCont );
-#endif // __TAX
 
 	BOOL	IsGuildMaster();
 
@@ -643,41 +552,32 @@ public:
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
-#if __VER >= 13 // __RAINBOW_RACE
 	void AddRainbowRacePrevRankingOpenWnd();
 	void AddRainbowRaceApplicationOpenWnd();
 	void AddRainbowRaceState( CRainbowRace* pRainbowRace );
 	void AddMiniGameState( __MINIGAME_PACKET MiniGamePacket );
 	void AddMiniGameExtState( __MINIGAME_EXT_PACKET MiniGameExtPacket );
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 	void AddHousingAllInfo( CHousing* pHousing );
 	void AddHousingSetFurnitureList( HOUSINGINFO& housingInfo, BOOL bAdd );
 	void AddHousingSetupFurniture( HOUSINGINFO* pHousingInfo );
 	void AddHousingPaperingInfo( DWORD dwItemId, BOOL bSetup );
 	void AddHousingSetVisitAllow( DWORD dwTargetId, BOOL bAllow );
 	void AddHousingVisitableList( vector<DWORD> & vecVisitable );
-#endif // __HOUSING
 
-#if __VER >= 13 // __QUEST_HELPER
 	void AddNPCPos( const D3DXVECTOR3 & vPos );
-#endif // __QUEST_HELPER
 
 	void AddClearTarget();
 
 private:
 	void			Init( DPID dpidCache = DPID_UNKNOWN, DPID dpidUser = DPID_UNKNOWN );
 
-#if __VER >= 12 // __LORD
 	u_long	m_idElection;
 	BOOL	m_bQuerying;
-#endif	// __LORD
 #ifdef __AZRIA_1023
 	char	m_szInput[MAX_INPUT_LEN];
 #endif	// __AZRIA_1023
 
-#if __VER >= 13 // __COUPLE_1117
 public:
 	void	SetProposer( u_long idProposer )	{	m_idProposer	= idProposer;	}
 	u_long	GetProposer()	{	return m_idProposer;	}
@@ -685,20 +585,14 @@ public:
 	void	AddProposeResult( u_long idProposer, const char* pszProposer );
 	void	AddCoupleResult( u_long idPartner, const char* pszPartner );
 	void	AddDecoupleResult();
-#if __VER >= 13 // __COUPLE_1202
 	void	ProcessCouple();
 	void	ActiveCoupleBuff( int nLevel );
 	void	AddAddCoupleExperience( int nExperience );
-#endif	// __COUPLE_1202
-#if __VER >= 14 // __PCBANG
 	void	AddPCBangInfo( CPCBangInfo* pPI );
-#endif // __PCBANG
 #ifdef __VTN_TIMELIMIT
 	void	AddAccountPlayTime();
 #endif // __VTN_TIMELIMIT
-#if __VER >= 14 // __SMELT_SAFETY
 	void AddSmeltSafety( BYTE nResult );
-#endif // __SMELT_SAFETY
 #ifdef __MAP_SECURITY
 	void AddWorldReadInfo( DWORD dwWorldId, D3DXVECTOR3 vPos );
 #endif // __MAP_SECURITY
@@ -708,15 +602,10 @@ public:
 	void AddQuizQuestion( int nType, const char* lpszQuestion, int nCount );
 #endif // __QUIZ
 
-#if __VER >= 15 // __PETVIS
 	void AddActivateVisPet( OBJID objIdVisPetItem, OBJID objIdVisPetId );
-#endif // PETVIS
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	void AddCheckedQuest();
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __GUILD_HOUSE
 public:
 	void	AddGuildHousePakcet( int nPacketType, GH_Fntr_Info & gfi, int nIndex );
 	void	AddGuildHouseAllInfo( CGuildHouseBase* pGuildHouse );
@@ -735,9 +624,7 @@ private:
 	int		m_nRestPoint;
 	int		m_nPrevRestPoint;
 	time_t	m_tRestPointTick;
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 public:
 	void	AddInviteCampusMember( CUser* pRequest );
 	void	AddUpdateCampus( CCampus* pCampus );
@@ -752,7 +639,6 @@ public:
 
 private:
 	DWORD	m_dwCampusTick;
-#endif // __CAMPUS
 
 #ifdef __GUILD_HOUSE_MIDDLE
 public:
@@ -763,10 +649,7 @@ public:
 
 private:
 	u_long	m_idProposer;
-#if __VER >= 13 // __COUPLE_1202
 	int		m_cbProcessCouple;
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리
@@ -780,10 +663,8 @@ public:
 #define	SEC_SAVEPLAYER	900
 
 class CDPSrvr;
-#if __VER >= 12 // __LORD
 class CLEComponent;
 class ILordEvent;
-#endif	// __LORD
 	
 class CUserMng
 {
@@ -817,10 +698,8 @@ public:
 	void			AddSetStateLevel( CMover* pMover, CHAR chID, long nValue );
 	void			AddHdr( CCtrl* pCtrl, WORD wHdr );
 	void			AddChat( CCtrl* pCtrl, const TCHAR* szChat );
-#if __VER >= 11 // __SYS_COLLECTING
 	void			AddStartCollecting( CUser* pUser );
 	void			AddStopCollecting( CUser* pUser );
-#endif	// __SYS_COLLECTING
 	void			AddDlgEmoticon( CCtrl* pCtrl, int nIdx );
 	void			AddDamage( CMover* pMover, OBJID objidAttacker, DWORD dwHit, DWORD dwAtkFlags );
 	void			AddDoEquip( CMover* pMover, int nPart, BYTE nId, const EQUIP_INFO & rEquipInfo, BYTE fEquip );
@@ -859,15 +738,10 @@ public:
 
 	void			AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget );
 	void			AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	void			AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 	void			AddNearSetChangeJob( CMover* pMover, int nJob, LPSKILL lpSkill );
 	void			AddModifyMode( CUser* pUser );
 	void			AddStateMode( CUser* pUser, BYTE nFlag );
-#if __VER < 8 // __S8_PK
-	void			AddSetSlaughterPoint( CMover* pMover, int nVal, int nNumKill );
-#endif // __VER < 8 // __S8_PK
 	void			AddSetFame( CMover* pMover, int nFame );
 	void			AddDefinedText( CMover* pMover, int dwText, LPCSTR lpszFormat, ... );
 	void			AddBlock( LPBYTE lpBlock, u_long uBlockSize );
@@ -875,11 +749,7 @@ public:
 	void			AddBlock( CWorld* pWorld, const D3DXVECTOR3 & vPos, int nRange, LPBYTE lpBlock, u_long uBlockSize );
 	void			AddPVendorOpen( CUser* pUser );
 	void			AddPVendorClose( CUser* pUser );
-#if __VER >= 11 // __MOD_VENDOR
 	void			AddPVendorItemNum( CUser* pUser, BYTE nItem, short nVend, const char* sBuyer );
-#else	// __MOD_VENDOR
-	void			AddPVendorItemNum( CUser* pUser, BYTE nItem, short nVend );
-#endif	// __MOD_VENDOR
 	void			AddSetHair( CUser* pUser, BYTE nHair, BYTE r, BYTE g, BYTE b );
 
 //	void			AddDoCollect( CUser* pUser, OBJID idTarget );
@@ -919,9 +789,7 @@ public:
 	void			AddSetLogo( u_long idGuild, DWORD dwLogo );
 	void			AddGetItemElem( CUser* pUser, CItemElem* pItemElem );
 	void			AddPutItemElem( CUser* pUser, CItemElem* pItemElem );
-#if __VER >= 8 // __GUILDCOMBAT_85
 	void			AddPutItemElem( u_long uidGuild, CItemElem* pItemElem );
-#endif // __VER >= 8
 	void			AddSetWar( CUser* pUser, u_long idWar );
 	void			ModifyMode( DWORD dwMode );
 	void			AddSchoolReport( PSCHOOL_ENTRY pSchool, short nElapse = 0 );
@@ -929,11 +797,7 @@ public:
 	void			AddSetLocalEvent( short id, BYTE nState );
 	void			AddGameRate( FLOAT fRate, BYTE nFlag );
 	void			AddChangeFace( u_long uidPlayer, DWORD dwFace );
-#if __VER >= 13
 	void			AddShout( CUser* pUserSrc, int nRange, LPBYTE lpBlock, u_long uBlockSize );
-#else // __VER >= 13
-	void			AddShout( const D3DXVECTOR3 & vPos, int nRange, LPBYTE lpBlock, u_long uBlockSize );
-#endif // __VER >= 13
 	void			AddWorldMsg( const CRect* pRect, LPCTSTR lpszString );
 	void			AddGameSetting();
 	void			AddCommonPlace( CCtrl* pCtrl, BYTE nType );
@@ -971,10 +835,8 @@ public:
 
 	void			AddMotionArrive( CMover* pMover, OBJMSG objmsg );
 
-#if __VER >= 8 // __S8_PK
 	void			AddPKPink( CMover* pMover, BYTE byPink );
 	void			AddPKPropensity( CMover* pMover );
-#endif // __VER >= 8 // __S8_PK
 	
 #ifdef __IAOBJ0622
 	void			AddSetDestPos( CMover* pMover, CONST D3DXVECTOR3 & vPos, BYTE fForward, OBJID objidIAObj = NULL_ID );
@@ -985,7 +847,6 @@ public:
 #ifdef __EVENT_1101
 	void	CallTheRoll( int nBit );
 #endif	// __EVENT_1101
-#if __VER >= 9	// __PET_0410
 #ifdef __PET_1024
 	void	AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel, const char* szPetName );
 	void	AddSetPetName( CUser* pUser, const char* szPetName );
@@ -995,19 +856,11 @@ public:
 	void	AddPetRelease( CMover* pMover );
 	void	AddPetLevelup( CMover* pMover, DWORD dwPetId );
 	void	AddPetFeed( CMover* pMover, WORD wEnergy );
-#endif	// __PET_0410
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	void	AddHonorTitleChange( CMover* pMover, int nChange );
-#endif	// __HONORABLE_TITLE			// 달인
-#if __VER >= 9	//__AI_0509
 	void	AddSetSpeedFactor( CMover* pMover, FLOAT fSpeedFactor );
-#endif	// __AI_0509
 	
-#if __VER >= 9 // __EVENTLUA
 	void	AddEventLua( BYTE nId, BOOL bState );
-#endif // __EVENTLUA
 
-#if __VER >= 12 // __LORD
 	void	AddElectionBeginCandidacy( void );
 	void	AddElectionBeginVote( int nRequirement );
 	void	AddElectionEndVote( u_long idPlayer );
@@ -1019,22 +872,13 @@ public:
 	void	AddLEventTick( ILordEvent* pEvent );
 	void	AddLordSkillUse( CUser* pUser, u_long idTarget, int nSkill );
 	void	AddQueryPlayerData( u_long idPlayer );
-#endif	// __LORD
-#if __VER >= 12 // __TAX
 	void	AddTaxInfo( void );
-#endif // __TAX
-#if __VER >= 13 // __HOUSING
 	void	AddHousingPaperingInfo( DWORD dwItemId, BOOL bSetup, DWORD dwMasterId );
-#endif // __HOUSING
 #ifdef __VTN_TIMELIMIT
 	void	ResetAccountPlayTime();
 #endif // __VTN_TIMELIMIT
-#if __VER >= 15 // __PETVIS
 	void	AddChangeMoverSfxId( CMover* pMover );
-#endif // __PETVIS
-#if __VER >= 15 // __GUILD_HOUSE
 	BOOL	HasUserSameWorldnLayer( CUser* pUserSrc );
-#endif // __GUILD_HOUSE
 
 };
 

@@ -8,9 +8,7 @@
 #include "DPClient.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
 
 #define PARTSMESH_HAIR( nSex )  ( nSex == SEX_MALE ? _T( "Part_maleHair%02d.o3d" ) : _T( "Part_femaleHair%02d.o3d" ) )
@@ -73,7 +71,6 @@ CWndConfirmSell::CWndConfirmSell()
 CWndConfirmSell::~CWndConfirmSell() 
 { 
 } 
-#if __VER >= 14 // __DROP_CONFIRM_BUG
 BOOL CWndConfirmSell::Process( void )
 {
 	if(m_pItemElem->GetExtra() > 0)
@@ -82,7 +79,6 @@ BOOL CWndConfirmSell::Process( void )
 	}
 	return TRUE;
 }
-#endif // __DROP_CONFIRM_BUG
 void CWndConfirmSell::OnDraw( C2DRender* p2DRender ) 
 { 
 	if( m_pItemElem->IsEmpty() )
@@ -130,18 +126,11 @@ void CWndConfirmSell::OnDraw( C2DRender* p2DRender )
 #ifdef __SHOP_COST_RATE
 	BuyGold = static_cast< DWORD >( static_cast< float >( BuyGold ) * prj.m_fShopSellRate );
 #endif // __SHOP_COST_RATE
-#if __VER >= 12 // __TAX
 	if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
 		BuyGold -= ( static_cast<DWORD>(BuyGold * CTax::GetInstance()->GetSalesTaxRate( g_pPlayer )) );
-#endif // __TAX
 //	TCHAR szNumberGold[ 64 ];
 	CString szNumberGold;
 
-#if __VER < 8 // __S8_PK
-	KarmaProp* pProp = prj.GetKarmaProp( g_pPlayer->m_nSlaughter );
-	if( pProp && pProp->fSellPenaltyRate != 0 )
-		BuyGold *= pProp->fSellPenaltyRate;
-#endif // __VER < 8 // __S8_PK
 
 	if( BuyGold < 1 )
 		BuyGold = 1;
@@ -193,14 +182,7 @@ BOOL CWndConfirmSell::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 #ifdef __SHOP_COST_RATE
 	BuyGold = static_cast< DWORD >( static_cast< float >( BuyGold ) * prj.m_fShopSellRate );
 #endif // __SHOP_COST_RATE
-#if __VER >= 12 // __TAX
 	BuyGold -= ( static_cast<DWORD>(BuyGold * CTax::GetInstance()->GetSalesTaxRate( g_pPlayer )) );
-#endif // __TAX
-#if __VER < 8 // __S8_PK
-	KarmaProp* pProp = prj.GetKarmaProp( g_pPlayer->m_nSlaughter );
-	if( pProp && pProp->fSellPenaltyRate != 0 )
-		BuyGold *= pProp->fSellPenaltyRate;
-#endif // __VER < 8 // __S8_PK
 
 	if( BuyGold < 1 )
 		BuyGold = 1;
@@ -263,9 +245,7 @@ CWndConfirmBuy::CWndConfirmBuy()
 	m_dwItemId	= 0;
 	m_pEdit = NULL;
 	m_pStatic = NULL;
-#if __VER >= 11 // __CSC_VER11_3
 	m_nBuyType = 0;
-#endif //__CSC_VER11_3
 } 
 CWndConfirmBuy::~CWndConfirmBuy() 
 { 
@@ -309,32 +289,23 @@ void CWndConfirmBuy::OnChangeBuyCount( DWORD dwBuy )
 
 	DWORD dwTotalBuy = 0;
 	DWORD dwCost = 0;
-#if __VER >= 8 // __S8_PK
-#if __VER >= 11 // __CSC_VER11_3
 	if(m_nBuyType == 0)
 	{
 		dwCost = m_pItemElem->GetCost();
 #ifdef __SHOP_COST_RATE
 		dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
 #endif // __SHOP_COST_RATE
-#if __VER >= 12 // __TAX
 		if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
 			dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-#endif // __TAX
 	}
 	else if(m_nBuyType == 1)
 		dwCost = m_pItemElem->GetChipCost();
-#else //__CSC_VER11_3
-	dwCost = m_pItemElem->GetCost();
-#endif //__CSC_VER11_3
 	dwTotalBuy = (DWORD)( dwBuy * dwCost * prj.m_fShopCost );
-#if __VER >= 11 // __MA_VER11_02
 	if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 	{
 		dwCost = PERIN_VALUE;
 		dwTotalBuy = dwBuy * dwCost;
 	}
-#endif //__MA_VER11_02
 
 	if(dwTotalBuy > INT_MAX)
 	{
@@ -346,25 +317,6 @@ void CWndConfirmBuy::OnChangeBuyCount( DWORD dwBuy )
 	
 	szString.Format("%u", dwTotalBuy);
 //	_itot( dwTotalBuy, szString, 10 );	// integer to string
-#else // 
-	KarmaProp* pProp = prj.GetKarmaProp( g_pPlayer->m_nSlaughter );
-	if( pProp )
-	{
-		dwTotalBuy = m_pItemElem->GetCost() * pProp->fDiscountRate;
-		if( dwTotalBuy <= 0 )
-			dwTotalBuy = 1;
-		dwTotalBuy = dwBuy * dwCost * prj.m_fShopCost;
-#if __VER >= 11 // __MA_VER11_02
-		if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
-		{
-			dwCost = PERIN_VALUE;
-			dwTotalBuy = dwBuy * dwCost
-		}
-#endif //__MA_VER11_02
-//		_itot( dwTotalBuy, szString, 10 );	// integer to string
-		szString.Format("%u", dwTotalBuy);
-	}
-#endif // __VER < 8 // __S8_PK
 	m_pStaticGold->SetTitle( szString );
 }
 
@@ -384,7 +336,6 @@ BOOL CWndConfirmBuy::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 //	m_pStatic->m_dwColor = m_pStaticGold->m_dwColor = 0xff000000;
 	m_pStaticGold->AddWndStyle(WSS_MONEY);
 	
-#if __VER >= 11 // __CSC_VER11_3
 	DWORD dwCost;
 	if(m_nBuyType == 0)
 	{
@@ -392,16 +343,11 @@ BOOL CWndConfirmBuy::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 #ifdef __SHOP_COST_RATE
 		dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
 #endif // __SHOP_COST_RATE
-#if __VER >= 12 // __TAX
 		if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
 			dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-#endif // __TAX
 	}
 	else if(m_nBuyType == 1)
 		dwCost = m_pItemElem->GetChipCost();
-#else //__CSC_VER11_3
-	DWORD dwCost = m_pItemElem->GetCost();
-#endif //__CSC_VER11_3
 	if( dwCost == 0 )
 	{
 		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) ); // "다른 사용자에게 팔렸습니다."
@@ -419,10 +365,8 @@ void CWndConfirmBuy::OnDraw( C2DRender* p2DRender )
 #ifdef __SHOP_COST_RATE
 	dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
 #endif // __SHOP_COST_RATE
-#if __VER >= 12 // __TAX
 	if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
 		dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-#endif // __TAX
 	if( dwCost == 0 )
 	{
 		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) );  // 다른 사용자에게 팔렸습니다.
@@ -445,7 +389,6 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		nBuyNum = atoi(m_pEdit->GetString());
 		++nBuyNum;
 
-#if __VER >= 13 // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
 		if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
 			m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
 			m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
@@ -455,13 +398,6 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if ( nBuyNum > 9999 )
 				nBuyNum = 9999;
 		}
-#else	//	__MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
-		if( m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW )
-		{
-			if ( nBuyNum > 1000 )
-				nBuyNum = 1000;
-		}
-#endif // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
 		else
 		{
 			if ( nBuyNum > MAX_BUY_ITEMCOUNT )
@@ -482,21 +418,14 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	case WIDC_MAX:
 		{
 
-#if __VER >= 13 // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
 			if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
 				m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
 				m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
 				m_pItemElem->GetProp()->dwID == II_CHP_RED
 				)
 				OnChangeBuyCount( 9999 );
-#else	//	__MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
-			if( m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW )
-				OnChangeBuyCount( 1000 );
-#endif // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
-#if __VER >= 11 // __MA_VER11_02
 			else if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 				OnChangeBuyCount( 21 );
-#endif //__MA_VER11_02
 			else
 				OnChangeBuyCount( MAX_BUY_ITEMCOUNT );
 		}		
@@ -519,21 +448,14 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 			nBuyNum = max( nBuyNum, 0 );
 			DWORD dwMAXCount = MAX_BUY_ITEMCOUNT;
-#if __VER >= 13 // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
 			if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
 				m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
 				m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
 				m_pItemElem->GetProp()->dwID == II_CHP_RED
 				)
 				dwMAXCount = 9999;
-#else	//	__MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
-			if( m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW )
-				dwMAXCount = 1000;
-#endif // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
-#if __VER >= 11 // __MA_VER11_02
 			else if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 				dwMAXCount = 21;
-#endif //__MA_VER11_02
 			nBuyNum = min( nBuyNum, (int)( dwMAXCount ) );
 
 			OnChangeBuyCount(nBuyNum);
@@ -555,7 +477,6 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 void CWndConfirmBuy::OnOK()
 {
-#if __VER >= 11 // __CSC_VER11_3
 	//아래 메세지 처리 할 것
 	DWORD dwCost;
 	int nBuy;
@@ -579,13 +500,11 @@ void CWndConfirmBuy::OnOK()
 	else if(m_nBuyType == 0)
 	{
 		dwCost = m_pItemElem->GetCost();
-#if __VER >= 12 // __TAX
 		if( m_pItemElem->m_dwItemId != II_SYS_SYS_SCR_PERIN )
 		{
 			if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
 				dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
 		}
-#endif // __TAX
 		if( m_pItemElem->m_nItemNum < 1 || dwCost == 0 )
 		{
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) );	// 다른 사용자에게 팔렸습니다.
@@ -599,34 +518,14 @@ void CWndConfirmBuy::OnOK()
 			return;
 		}
 	}
-#else //__CSC_VER11_3
-	DWORD dwCost = m_pItemElem->GetCost();
-	if( m_pItemElem->m_nItemNum < 1 || dwCost == 0 )
-	{
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) );	// 다른 사용자에게 팔렸습니다.
-		return;
-	}
-
-	int nBuy = atoi( m_pEdit->GetString() );
-	if( (nBuy * dwCost) > g_pPlayer->GetGold() )
-	{
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0009) ) );	// 돈이 부족합니다.	
-		return;
-	}
-#endif //__CSC_VER11_3
 
 	DWORD dwMAXCount = MAX_BUY_ITEMCOUNT;
-#if __VER >= 13 // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
 	if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
 		m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
 		m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
 		m_pItemElem->GetProp()->dwID == II_CHP_RED
 		)
 		dwMAXCount = 9999;
-#else	//	__MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
-	if( m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW )
-		dwMAXCount = 1000;
-#endif // __MAX_BUY_ITEM9999			//  화살포스터구입갯수9999개
 
 	if( nBuy < 1 || nBuy > (int)( dwMAXCount ) )
 	{
@@ -643,14 +542,10 @@ void CWndConfirmBuy::OnOK()
 
 	CWndTabCtrl* pTabCtrl	= (CWndTabCtrl*)pWndShop->GetDlgItem( WIDC_INVENTORY );
 	CHAR cTab	= (CHAR)pTabCtrl->GetCurSel();
-#if __VER >= 11 // __CSC_VER11_3
 	if(m_nBuyType == 0)
 		g_DPlay.SendBuyItem( cTab, (BYTE)( m_pItemElem->m_dwObjId ), nBuy, m_dwItemId );
 	else if(m_nBuyType == 1)
 		g_DPlay.SendBuyChipItem( cTab, (BYTE)( m_pItemElem->m_dwObjId ), nBuy, m_dwItemId );
-#else //__CSC_VER11_3
-	g_DPlay.SendBuyItem( cTab, m_pItemElem->m_dwObjId, nBuy, m_dwItemId );	
-#endif //__CSC_VER11_3
 
 	PLAYSND( SND_INF_TRADE );
 }
@@ -713,7 +608,6 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 	{
 //		CItemBase* pItemBase	= pItemCtrl->m_pArrayItemBase[nIndex];
 		CItemBase* pItemBase	= pItemCtrl->GetItemFromArr( nIndex );
-#if __VER >= 11 // __CSC_VER11_3
 		if( pItemBase && m_pMover )
 		{
 			LPCHARACTER lpCharacter = m_pMover->GetCharacter();
@@ -725,41 +619,24 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 #ifdef __SHOP_COST_RATE
 					dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
 #endif // __SHOP_COST_RATE
-				#if __VER >= 12 // __TAX
 					if(CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, (CItemElem*)pItemBase ))
 						dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-				#endif // __TAX
 				}
 
 				else if(lpCharacter->m_nVenderType == 1)
 					dwCost += pItemBase->GetChipCost();
 			}
 		}
-#else //__CSC_VER11_3
-		if( pItemBase )
-			dwCost	+= pItemBase->GetCost()/* * ( (CItemElem*)pItemBase )->m_nItemNum*/;
-#endif //__CSC_VER11_3
 	}
 
 	dwCost = (int)((float)dwCost * prj.m_fShopCost );
 
-#if __VER < 8 // __S8_PK
-	KarmaProp* pProp = prj.GetKarmaProp( g_pPlayer->m_nSlaughter );
-	if( pProp )
-	{
-		dwCost = (int)( dwCost * pProp->fDiscountRate );
-		if( dwCost <= 0 )
-			dwCost = 1;
-	}
-#endif // __VER < 8 // __S8_PK
-#if __VER >= 11 // __MA_VER11_02
 	if( nIndex >= 0 )
 	{
 		CItemBase* pItemBase	= pItemCtrl->GetItemFromArr( nIndex );
 		if( pItemBase && pItemBase->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 			dwCost = PERIN_VALUE;
 	}
-#endif //__MA_VER11_02
 
 	string.Format( _T( "%d" ), dwCost );
 
@@ -768,9 +645,7 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 void CWndShop::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-#if __VER >= 11 // __SYS_POCKET
 	if(GetWndBase( APP_BAG_EX )) GetWndBase( APP_BAG_EX )->Destroy();
-#endif
 	if( g_WndMng.m_pWndTrade || g_WndMng.m_pWndBank || g_WndMng.m_pWndGuildBank || g_WndMng.GetWndVendorBase() )
 	{
 		Destroy();
@@ -977,20 +852,13 @@ CWndBeautyShop::CWndBeautyShop()
 	memset( m_fColor, 0, sizeof(FLOAT)*3 );
 	m_bLButtonClick   = FALSE;
 	m_nHairCost       = 0;
-#if __VER >= 8 //__CSC_VER8_4
 	m_pApplyModel = NULL;
 	m_nHairColorCost  = 0;
-#else
-	m_nHairColorCostR  = 0;
-	m_nHairColorCostG  = 0;
-	m_nHairColorCostB  = 0;
-#endif //__CSC_VER8_4
 	
 #ifdef __Y_BEAUTY_SHOP_CHARGE
 	m_bChange = FALSE;
 #endif //__Y_BEAUTY_SHOP_CHARGE
 
-#if __VER >= 8 //__CSC_VER8_4
 	for(int i=0; i<4; i++)
 	{
 		m_nHairNum[i] = 0;
@@ -999,7 +867,6 @@ CWndBeautyShop::CWndBeautyShop()
 	m_dwSelectHairMesh = 1;
 	m_ChoiceBar = -1;
 	m_pWndBeautyShopConfirm = NULL;
-#endif //__CSC_VER8_4
 	
 #ifdef __NEWYEARDAY_EVENT_COUPON
 	m_bUseCoupon = FALSE;
@@ -1012,11 +879,9 @@ CWndBeautyShop::~CWndBeautyShop()
 //	m_Texture.DeleteDeviceObjects();
 	SAFE_DELETE( m_pModel );
 	SAFE_DELETE( m_pWndConfirmSell );
-#if __VER >= 8 //__CSC_VER8_4
 	SAFE_DELETE(m_pApplyModel);
 	SAFE_DELETE(m_pHairModel);
 	SAFE_DELETE(m_pWndBeautyShopConfirm);
-#endif //__CSC_VER8_4
 #ifdef __NEWYEARDAY_EVENT_COUPON
 	SAFE_DELETE(m_pWndUseCouponConfirm);
 #endif //__NEWYEARDAY_EVENT_COUPON
@@ -1064,11 +929,7 @@ HRESULT CWndBeautyShop::RestoreDeviceObjects()
 
 void CWndBeautyShop::OnDraw( C2DRender* p2DRender ) 
 { 
-#if __VER >= 8 //__CSC_VER8_4
 	if( g_pPlayer == NULL || m_pModel == NULL || m_pApplyModel == NULL )
-#else
-	if( g_pPlayer == NULL || m_pModel == NULL )
-#endif //__CSC_VER8_4
 		return;
 
 	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
@@ -1181,66 +1042,6 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		if( g_pPlayer )
 			g_pPlayer->OverCoatItemRenderCheck(m_pModel);
 
-#if __VER < 8 //__CSC_VER8_4
-		// 헬멧이 머리카락 날려야하는것이냐?  // 인벤이 있는 경우 
-		CItemElem* pItemElem	= g_pPlayer->GetEquipItem( PARTS_CAP );
-		if( pItemElem )
-		{
-			O3D_ELEMENT* pElement = NULL;
-			ItemProp* pItemProp = pItemElem->GetProp();
-			if( pItemProp && pItemProp->dwBasePartsIgnore != -1 )
-			{
-				pElement = m_pModel->GetParts(pItemProp->dwBasePartsIgnore);
-				
-				//if( pElement )
-				//	pElement->m_nEffect |= XE_HIDE;
-			}
-
-			// 외투의상을 입었을경우 머리날릴것인가의 기준을 외투 모자를 기준으로 바꾼다
-			CItemElem* pItemElemOvercoat	= g_pPlayer->GetEquipItem( PARTS_HAT );
-			
-			if( pItemElemOvercoat )
-			{
-				if( !pItemElemOvercoat->IsFlag( CItemElem::expired ) )
-				{					
-					ItemProp* pItemPropOC = pItemElemOvercoat->GetProp();
-					if( pItemPropOC && pItemPropOC->dwBasePartsIgnore != -1 )
-					{
-						if( pItemPropOC->dwBasePartsIgnore == PARTS_HEAD )
-							m_pModel->SetEffect(PARTS_HAIR, XE_HIDE);
-						
-						m_pModel->SetEffect(pItemPropOC->dwBasePartsIgnore, XE_HIDE);
-					}
-					else
-					{
-						if( pElement )
-							pElement->m_nEffect &= ~XE_HIDE;
-					}
-				}
-			}
-										
-		}
-		else
-		{
-			// 외투의상을 입었을경우 머리날릴것인가의 기준을 외투 모자를 기준으로 바꾼다
-			CItemElem* pItemElemOvercoat	= g_pPlayer->GetEquipItem( PARTS_HAT );
-			
-			if( pItemElemOvercoat )
-			{
-				if( !pItemElemOvercoat->IsFlag( CItemElem::expired ) )
-				{
-					ItemProp* pItemPropOC = pItemElemOvercoat->GetProp();
-					if( pItemPropOC && pItemPropOC->dwBasePartsIgnore != -1 )
-					{
-						if( pItemPropOC->dwBasePartsIgnore == PARTS_HEAD )
-							m_pModel->SetEffect(PARTS_HAIR, XE_HIDE);
-						
-						m_pModel->SetEffect(pItemPropOC->dwBasePartsIgnore, XE_HIDE);
-					}
-				}
-			}
-		}
-#endif //__CSC_VER8_4
 		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
 	}
 	// 오른쪽 색입힌 모델 랜더링
@@ -1289,15 +1090,9 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		
 		::SetLight( FALSE );
 		::SetFog( FALSE );
-#if __VER >= 8 //__CSC_VER8_4
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[0] = m_fColor[0];
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[1] = m_fColor[1];
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[2] = m_fColor[2];
-#else
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[0] = m_fColor[0];
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[1] = m_fColor[1];
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[2] = m_fColor[2];
-#endif //__CSC_VER8_4
 		D3DXVECTOR4 vConst( 1.0f, 1.0f, 1.0f, 1.0f );
 #ifdef __YENV
 		g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvFog, &vConst );
@@ -1305,65 +1100,20 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		pd3dDevice->SetVertexShaderConstantF( 95, (float*)&vConst, 1 );
 #endif //__YENV
 
-#if __VER >= 8 //__CSC_VER8_4
 		if( g_pPlayer )
 			g_pPlayer->OverCoatItemRenderCheck(m_pApplyModel);
-#endif //__CSC_VER8_4
 
 		::SetTransformView( matView );
 		::SetTransformProj( matProj );
 
-#if __VER < 8 //__CSC_VER8_4		
-		// 헬멧이 머리카락 날려야하는것이냐?  // 인벤이 있는 경우 
-		CItemElem* pItemElem	= g_pPlayer->GetEquipItem( PARTS_CAP );
-		if( pItemElem )
-		{
-			ItemProp* pItemProp = pItemElem->GetProp();
-			if( pItemProp && pItemProp->dwBasePartsIgnore != -1 )
-			{
-				if( pItemProp->dwBasePartsIgnore == PARTS_HEAD )
-					m_pModel->SetEffect(PARTS_HAIR, XE_HIDE );
-				
-				m_pModel->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
-			}
-		}
-		else
-		{
-			pItemElem	= g_pPlayer->GetEquipItem( PARTS_HAT );
-			if( pItemElem )
-			{
-				if( !pItemElem->IsFlag( CItemElem::expired ) )
-				{		
-					ItemProp* pItemProp = pItemElem->GetProp();
-					if( pItemProp && pItemProp->dwBasePartsIgnore != -1 )
-					{
-						if( pItemProp->dwBasePartsIgnore == PARTS_HEAD )
-							m_pModel->SetEffect(PARTS_HAIR, XE_HIDE );
-
-						m_pModel->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
-					}
-				}
-			}				
-		}
-#endif //__CSC_VER8_4
 		
-#if __VER >= 8 //__CSC_VER8_4
 		m_pApplyModel->Render( p2DRender->m_pd3dDevice, &matWorld );
 		
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[0] = 1.0f;
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[1] = 1.0f;
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[2] = 1.0f;
-#else
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
-
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[0] = 1.0f;
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[1] = 1.0f;
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[2] = 1.0f;
-#endif //__CSC_VER8_4
 	}
-#if __VER >= 8 //__CSC_VER8_4
 	DrawHairKind(p2DRender, matView);
-#endif //__CSC_VER8_4
 	viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
 	viewport.Y      = p2DRender->m_ptOrigin.y;// + 5;
 	viewport.Width  = p2DRender->m_clipRect.Width();
@@ -1398,7 +1148,6 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 	BYTE nOrignalG = (BYTE)( g_pPlayer->m_fHairColorG * 255 );
 	BYTE nOrignalB = (BYTE)( g_pPlayer->m_fHairColorB * 255 );
 
-#if __VER >= 8 //__CSC_VER8_4
 #ifdef __NEWYEARDAY_EVENT_COUPON
 	if( (nColorR != nOrignalR || nColorG != nOrignalG || nColorB != nOrignalB) && !m_bUseCoupon )
 #else //__NEWYEARDAY_EVENT_COUPON
@@ -1407,22 +1156,6 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		m_nHairColorCost = HAIRCOLOR_COST;
 	else
 		m_nHairColorCost = 0;
-#else
-	if( nColorR >= nOrignalR  )
-		m_nHairColorCostR = (nColorR - nOrignalR)*13;
-	else
-		m_nHairColorCostR = (nOrignalR - nColorR)*7;
-
-	if( nColorG >= nOrignalG  )
-		m_nHairColorCostG = (nColorG - nOrignalG)*13;
-	else
-		m_nHairColorCostG = (nOrignalG - nColorG)*7;
-
-	if( nColorB >= nOrignalB  )
-		m_nHairColorCostB = (nColorB - nOrignalB)*13;
-	else
-		m_nHairColorCostB = (nOrignalB - nColorB)*7;
-#endif //__CSC_VER8_4	
 	CString string;
 	CWndStatic* pCost = (CWndStatic*) GetDlgItem( WIDC_COST );
 
@@ -1432,11 +1165,7 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 	}
 	else
 	{
-#if __VER >= 8 //__CSC_VER8_4
 		string.Format( _T( "%d" ), m_nHairCost + m_nHairColorCost );
-#else
-		string.Format( _T( "%d" ), m_nHairCost + m_nHairColorCostR + m_nHairColorCostG + m_nHairColorCostB );
-#endif //__CSC_VER8_4
 	}
 
 	pCost->SetTitle( string );
@@ -1462,18 +1191,13 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 	}
 	else
 	{
-#if __VER >= 8 //__CSC_VER8_4
 		string.Format( _T( "%d" ), m_nHairColorCost );
-#else
-		string.Format( _T( "%d" ), m_nHairColorCostR + m_nHairColorCostG + m_nHairColorCostB );
-#endif //__CSC_VER8_4
 	}
 	
 	pCost->SetTitle( string );
 	
 } 
 
-#if __VER >= 8 //__CSC_VER8_4
 void CWndBeautyShop::DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView)
 {
 	// 뷰포트 세팅 
@@ -1579,7 +1303,6 @@ void CWndBeautyShop::UpdateModels()
 	if(m_pApplyModel != NULL)	
 		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwSelectHairMesh-1, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 }
-#endif //__CSC_VER8_4
 
 void CWndBeautyShop::OnInitialUpdate() 
 { 
@@ -1599,7 +1322,6 @@ void CWndBeautyShop::OnInitialUpdate()
 
 	Move( ptMove );
 	
-#if __VER >= 8 //__CSC_VER8_4
 	LPWNDCTRL lpWndCtrl;
 	lpWndCtrl = GetWndCtrl( WIDC_CUSTOM_R );
 	rect = lpWndCtrl->rect;
@@ -1645,7 +1367,6 @@ void CWndBeautyShop::OnInitialUpdate()
 	kindcost->AddWndStyle(WSS_MONEY);
 	colorcost->AddWndStyle(WSS_MONEY);
 	totalcost->AddWndStyle(WSS_MONEY);
-#endif //__CSC_VER8_4
 } 
 
 BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
@@ -1664,20 +1385,17 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
 	
 	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
-#if __VER >= 8 //__CSC_VER8_4
 	SAFE_DELETE( m_pApplyModel );
 	m_pApplyModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	prj.m_modelMng.LoadMotion( m_pApplyModel,  OT_MOVER, nMover, MTI_STAND2 );
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 	m_pApplyModel->InitDeviceObjects( g_Neuz.GetDevice() );
-#endif //__CSC_VER8_4
 
 	///
 	m_fColor[0] = g_pPlayer->m_fHairColorR;
 	m_fColor[1] = g_pPlayer->m_fHairColorG;
 	m_fColor[2] = g_pPlayer->m_fHairColorB;
 
-#if __VER >= 8 //__CSC_VER8_4
 	m_dwSelectHairMesh = m_dwHairMesh;
 
 	SAFE_DELETE(m_pHairModel);
@@ -1688,44 +1406,11 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	m_nHairCost = 0;
 	m_nHairColorCost = 0;	
-#else
-	///
-	m_ColorRect[0].left   = 44;
-	m_ColorRect[0].top    = 251;
-	m_ColorRect[0].right  = 162;
-	m_ColorRect[0].bottom = 267;
-	
-	m_ColorRect[1].left   = 44;
-	m_ColorRect[1].top    = 272;
-	m_ColorRect[1].right  = 162;
-	m_ColorRect[1].bottom = 287;
-
-	m_ColorRect[2].left   = 44;
-	m_ColorRect[2].top    = 293;
-	m_ColorRect[2].right  = 162;
-	m_ColorRect[2].bottom = 307;
-
-	m_nHairCost   = 0;
-	m_nHairColorCostR  = 0;
-	m_nHairColorCostG  = 0;
-	m_nHairColorCostB  = 0;
-
-	ReSetBar( m_fColor[0], m_fColor[1], m_fColor[2] );
-
-	m_OriginalColorScrollBar[0] = m_ColorScrollBar[0];
-	m_OriginalColorScrollBar[1] = m_ColorScrollBar[1];
-	m_OriginalColorScrollBar[2] = m_ColorScrollBar[2];
-#endif
 	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
 
-#if __VER >= 8 //__CSC_VER8_4
 	return InitDialog( g_Neuz.GetSafeHwnd(), APP_BEAUTY_SHOP_EX, 0, 0, pWndParent );
-#else
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_BEAUTY_SHOP, 0, 0, pWndParent );
-#endif //__CSC_VER8_4
 }
 
-#if __VER >= 8 //__CSC_VER8_4
 void CWndBeautyShop::SetRGBToEdit(float color, int editnum)
 {
 	char szNumberbuf[8] = {0, };
@@ -1788,7 +1473,6 @@ void CWndBeautyShop::SetRGBToBar(int editnum)
 #endif //__Y_HAIR_BUG_FIX
 	ReSetBar( m_fColor[0], m_fColor[1], m_fColor[2] );
 }
-#endif //__CSC_VER8_4
 
 void CWndBeautyShop::ReSetBar( FLOAT r, FLOAT g, FLOAT b )
 {
@@ -1802,36 +1486,22 @@ void CWndBeautyShop::ReSetBar( FLOAT r, FLOAT g, FLOAT b )
 	FLOAT fB = ((b-0.3f)/(1.0f - 0.3f)) * 100.0f;
 #endif //__Y_HAIR_BUG_FIX
 
-#if __VER >= 8 //__CSC_VER8_4
 	m_ColorScrollBar[0].x = (LONG)( (((m_ColorRect[0].right-m_ColorRect[0].left) * fR) / 100.0f) + m_ColorRect[0].left );
 	m_ColorScrollBar[0].y = m_ColorRect[0].top;
 	m_ColorScrollBar[1].x = (LONG)( (((m_ColorRect[1].right-m_ColorRect[1].left) * fG) / 100.0f) + m_ColorRect[1].left );
 	m_ColorScrollBar[1].y = m_ColorRect[1].top;
 	m_ColorScrollBar[2].x = (LONG)( (((m_ColorRect[2].right-m_ColorRect[2].left) * fB) / 100.0f) + m_ColorRect[2].left );
 	m_ColorScrollBar[2].y = m_ColorRect[2].top;
-#else
-	m_ColorScrollBar[0].x = (LONG)( (((m_ColorRect[0].right-m_ColorRect[0].left) * fR) / 100.0f) + m_ColorRect[0].left );
-	m_ColorScrollBar[0].y = m_ColorRect[0].top - 20;
-	m_ColorScrollBar[1].x = (LONG)( (((m_ColorRect[1].right-m_ColorRect[1].left) * fG) / 100.0f) + m_ColorRect[1].left );
-	m_ColorScrollBar[1].y = m_ColorRect[1].top - 20;
-	m_ColorScrollBar[2].x = (LONG)( (((m_ColorRect[2].right-m_ColorRect[2].left) * fB) / 100.0f) + m_ColorRect[2].left );
-	m_ColorScrollBar[2].y = m_ColorRect[2].top - 20;
-#endif //__CSC_VER8_4
 }
 
 void CWndBeautyShop::OnMouseWndSurface( CPoint point )
 {
 	if( g_pPlayer == NULL )
 		return;
-#if __VER >= 8 //__CSC_VER8_4
 	CRect rect = CRect( 44, 198, 186, 398 );
-#else
-	CRect rect = CRect( 22, 198, 186, 298 );
-#endif //__CSC_VER8_4
 	if( !rect.PtInRect( point ) )
 		m_bLButtonClick = FALSE;
 
-#if __VER >= 8 //__CSC_VER8_4
 	if( m_ChoiceBar != -1 && m_bLButtonClick )
 	{
 		CRect DrawRect = m_ColorRect[m_ChoiceBar];
@@ -1863,46 +1533,6 @@ void CWndBeautyShop::OnMouseWndSurface( CPoint point )
 #endif //__Y_BEAUTY_SHOP_CHARGE	
 		SetRGBToEdit(m_fColor[m_ChoiceBar], m_ChoiceBar);
 	}
-#else
-	
-	for( int i=0; i<3; i++ )
-	{
-		CRect DrawRect = m_ColorRect[i];
-
-		DrawRect.top    -= 22;
-		DrawRect.bottom -= 22;
-	
-		if( DrawRect.PtInRect( point ) && m_bLButtonClick )
-		{
-			point.x = (point.x > DrawRect.right) ? DrawRect.right : point.x;
-			
-			LONG Width = DrawRect.right - DrawRect.left;
-			LONG Pos   = point.x - DrawRect.left;
-			
-			FLOAT p = ((FLOAT)((FLOAT)Pos / (FLOAT)Width));
-
-#ifdef __Y_HAIR_BUG_FIX
-			D3DXVECTOR2 vec1= D3DXVECTOR2( 0.0f, 1.0f );
-			D3DXVECTOR2 vec2= D3DXVECTOR2( 1.0f, 1.0f );
-#else //__Y_HAIR_BUG_FIX
-			D3DXVECTOR2 vec1= D3DXVECTOR2( 0.3f, 1.0f );
-			D3DXVECTOR2 vec2= D3DXVECTOR2( 1.0f, 1.0f );
-#endif //__Y_HAIR_BUG_FIX
-			D3DXVECTOR2 vec3;
-
-			D3DXVec2Lerp( &vec3, &vec1, &vec2, p );
-			
-			m_fColor[i] = vec3.x;
-			
-			m_ColorScrollBar[i].x = point.x;
-
-#ifdef __Y_BEAUTY_SHOP_CHARGE
-			if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK )
-				m_bChange = TRUE;
-#endif //__Y_BEAUTY_SHOP_CHARGE		
-		}
-	}
-#endif //__CSC_VER8_4
 }
 	
 BOOL CWndBeautyShop::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1917,15 +1547,12 @@ void CWndBeautyShop::OnSize( UINT nType, int cx, int cy )
 
 void CWndBeautyShop::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
-#if __VER >= 8 //__CSC_VER8_4
 	m_ChoiceBar = -1;
-#endif //__CSC_VER8_4
 	m_bLButtonClick = FALSE;
 } 
 
 void CWndBeautyShop::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
-#if __VER >= 8 //__CSC_VER8_4
 	int i;
 	int custom[4] = {WIDC_CUSTOM1, WIDC_CUSTOM2, WIDC_CUSTOM3, WIDC_CUSTOM4};
 	LPWNDCTRL lpWndCtrl;
@@ -1962,7 +1589,6 @@ void CWndBeautyShop::OnLButtonDown( UINT nFlags, CPoint point )
 				m_nHairCost = 0;
 		}
 	}
-#endif //__CSC_VER8_4
 	m_bLButtonClick = TRUE;
 } 
 
@@ -1980,11 +1606,7 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					//m_pModel->DeleteDeviceObjects();
 
 					m_dwHairMesh = g_pPlayer->m_dwHairMesh+1;
-#if __VER >= 8 //__CSC_VER8_4
 					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwHairMesh-1, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
-#else
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwHairMesh-1, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
-#endif //__CSC_VER8_4
 					
 					m_fColor[0] = g_pPlayer->m_fHairColorR;
 					m_fColor[1] = g_pPlayer->m_fHairColorG;
@@ -1993,13 +1615,11 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					m_nHairCost = 0;
 					
 					ReSetBar( m_fColor[0], m_fColor[1], m_fColor[2] );
-#if __VER >= 8 //__CSC_VER8_4
 					m_nHairColorCost = 0;
 					m_dwSelectHairMesh = m_dwHairMesh;
 					SetRGBToEdit(m_fColor[0], 0);
 					SetRGBToEdit(m_fColor[1], 1);
 					SetRGBToEdit(m_fColor[2], 2);
-#endif //__CSC_VER8_4
 #ifdef __Y_BEAUTY_SHOP_CHARGE
 					if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK )
 						m_bChange = FALSE;
@@ -2010,79 +1630,12 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					m_dwHairMesh--;
 					( m_dwHairMesh < 1 ) ? m_dwHairMesh = MAX_HAIR: m_dwHairMesh;
-#if __VER < 8 //__CSC_VER8_4
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwHairMesh-1, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
-					if( g_pPlayer->m_dwHairMesh != m_dwHairMesh-1 )
-					{
-						switch( m_dwHairMesh )
-						{
-							case 1:
-								m_nHairCost = 2500;
-								break;
-							case 2:
-								m_nHairCost = 2500;
-								break;
-							case 3:
-								m_nHairCost = 2500;
-								break;
-							case 4:
-								m_nHairCost = 2500;
-								break;
-							case 5:
-								m_nHairCost = 2500;
-								break;
-							default:
-								m_nHairCost = 4000;
-								break;
-						}
-
-#ifdef __Y_BEAUTY_SHOP_CHARGE
-						if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK )
-							m_bChange = TRUE;
-#endif //__Y_BEAUTY_SHOP_CHARGE						
-					}
-					else
-						m_nHairCost = 0;
-#endif //__CSC_VER8_4					
 				}
 				break;
 			case WIDC_HAIRSTYLE_RIGHT: // hair
 				{
 					m_dwHairMesh++;
 					( m_dwHairMesh > MAX_HAIR ) ? m_dwHairMesh = 1: m_dwHairMesh;
-#if __VER < 8 //__CSC_VER8_4
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwHairMesh-1, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
-					if( g_pPlayer->m_dwHairMesh != m_dwHairMesh-1 )
-					{
-						switch( m_dwHairMesh )
-						{
-						case 1:
-							m_nHairCost = 2500;
-							break;
-						case 2:
-							m_nHairCost = 2500;
-							break;
-						case 3:
-							m_nHairCost = 2500;
-							break;
-						case 4:
-							m_nHairCost = 2500;
-							break;
-						case 5:
-							m_nHairCost = 2500;
-							break;
-						default:
-							m_nHairCost = 4000;
-							break;
-						}
-		#ifdef __Y_BEAUTY_SHOP_CHARGE
-						if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK )
-							m_bChange = TRUE;
-		#endif //__Y_BEAUTY_SHOP_CHARGE												
-					}
-					else
-						m_nHairCost = 0;
-#endif //__CSC_VER8_4
 				}
 				break;
 			case WIDC_OK:
@@ -2105,15 +1658,11 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( m_bChange && g_pPlayer )
 						{
-#if __VER >= 8 //__CSC_VER8_4
 							if(m_pWndBeautyShopConfirm == NULL)
 							{
 								m_pWndBeautyShopConfirm = new CWndBeautyShopConfirm;
 								m_pWndBeautyShopConfirm->Initialize(this);
 							}
-#else
-							g_DPlay.SendSetHair( m_dwHairMesh-1, m_fColor[0], m_fColor[1], m_fColor[2] );	//, nCost );
-#endif //__CSC_VER8_4
 						}
 					}
 					else
@@ -2121,15 +1670,10 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( g_pPlayer )
 						{
-#if __VER >= 8 //__CSC_VER8_4
 							int nCost = m_nHairCost + m_nHairColorCost;
-#else
-							int nCost = m_nHairCost + m_nHairColorCostR + m_nHairColorCostG + m_nHairColorCostB;
-#endif //__CSC_VER8_4
 							
 							if( nCost < 0 )
 								nCost = 0;
-#if __VER >= 8 //__CSC_VER8_4
 #ifdef __NEWYEARDAY_EVENT_COUPON
 							if(m_bUseCoupon && !noChange)
 							{
@@ -2149,12 +1693,8 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 									m_pWndBeautyShopConfirm->Initialize(this);
 								}
 							}
-#else
-							g_DPlay.SendSetHair( m_dwHairMesh-1, m_fColor[0], m_fColor[1], m_fColor[2] );	//, nCost );
-#endif //__CSC_VER8_4
 						}
 					}
-#if __VER >= 8 //__CSC_VER8_4	
 					int nCost = m_nHairCost + m_nHairColorCost;
 #ifdef __NEWYEARDAY_EVENT_COUPON
 					if(nCost <= 0 && (!m_bUseCoupon || noChange))
@@ -2162,9 +1702,6 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if(nCost <= 0)
 #endif //__NEWYEARDAY_EVENT_COUPON
 						Destroy();
-#else
-					Destroy();
-#endif //__CSC_VER8_4	
 				}
 				break;
 			case WIDC_CANCEL:
@@ -2174,36 +1711,25 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				break;
 		}
 	}
-#if __VER >= 8 //__CSC_VER8_4
 	if(nID == WIDC_EDIT1 || nID == WIDC_EDIT2 || nID == WIDC_EDIT3)
 		SetRGBToBar(nID);
-#endif //__CSC_VER8_4
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
 void CWndBeautyShop::OnDestroyChildWnd( CWndBase* pWndChild )
 {
-#if __VER < 8 //__CSC_VER8_4
-	if( pWndChild == m_pWndConfirmSell )
-		SAFE_DELETE( m_pWndConfirmSell );
-
-	SAFE_DELETE( m_pModel );
-#endif //__CSC_VER8_4
 }
 
 void CWndBeautyShop::OnDestroy( void )
 {
 	SAFE_DELETE( m_pModel );
 	SAFE_DELETE( m_pWndConfirmSell );
-#if __VER >= 8 //__CSC_VER8_4
 	SAFE_DELETE(m_pApplyModel);
 	SAFE_DELETE(m_pHairModel);
 	SAFE_DELETE(m_pWndBeautyShopConfirm);
-#endif //__CSC_VER8_4
 }
 
-#if __VER >= 8 //__CSC_VER8_4
 #ifdef __NEWYEARDAY_EVENT_COUPON
 CWndUseCouponConfirm::CWndUseCouponConfirm() 
 {
@@ -3067,4 +2593,3 @@ BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#endif //__CSC_VER8_4

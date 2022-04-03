@@ -42,14 +42,12 @@ void CWndChatFilter::OnInitialUpdate()
 	// 여기에 코딩하세요
 	SetButtonStatus();
 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 	CRect rect = GetClientRect();
 	SetWndRect( CRect(0, 0, rect.right, rect.bottom - 130));
 
 	CWndGroupBox* pWndGroup = (CWndGroupBox*)GetDlgItem( WIDC_GROUPBOX2 );
 	if( pWndGroup )
 		pWndGroup->SetVisible(FALSE);	
-#endif //__Y_CHAT_SYSTEM_8
 
 	// 윈도를 중앙으로 옮기는 부분.
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
@@ -65,17 +63,7 @@ void CWndChatFilter::SetButtonStatus()
 	CWndButton* pWndCheck3 = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
 	CWndButton* pWndCheck4 = (CWndButton*)GetDlgItem( WIDC_CHECK4 );
 	CWndButton* pWndCheck5 = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8	
 
-#else //#if __VER >= 8
-	CWndButton* pWndCheck6 = (CWndButton*)GetDlgItem( WIDC_CHECK6 );
-	CWndButton* pWndCheck7 = (CWndButton*)GetDlgItem( WIDC_CHECK7 );
-
-	CWndButton* pWndRadio1 = (CWndButton*)GetDlgItem( WIDC_RADIO1 );
-	CWndButton* pWndRadio2 = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-	CWndButton* pWndRadio3 = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-	CWndButton* pWndRadio4 = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-#endif //__Y_CHAT_SYSTEM_8
 
 	int nChannel = 0;
 	switch( CWndChat::m_nChatChannel )
@@ -93,18 +81,7 @@ void CWndChatFilter::SetButtonStatus()
 	if( dwChatFilter & CHATSTY_PARTY         ) pWndCheck4->SetCheck( TRUE );
 	if( dwChatFilter & CHATSTY_GUILD         ) pWndCheck5->SetCheck( TRUE );
 
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 
-#else //#if __VER >= 8
-	DWORD dwChatFilterEtc = g_Option.m_dwChatFilterEtc;
-
-	if( dwChatFilterEtc & CHATSTY_HELP_CLIENT   ) pWndCheck6->SetCheck( TRUE );
-	if( dwChatFilterEtc & CHATSTY_HELP_CHAT     ) pWndCheck7->SetCheck( TRUE );
-	if( dwChatFilterEtc & CHATSTY_GAME_CLIENT   ) pWndRadio1->SetCheck( TRUE );
-	if( dwChatFilterEtc & CHATSTY_GAME_CHAT     ) pWndRadio2->SetCheck( TRUE );
-	if( dwChatFilterEtc & CHATSTY_SYSTEM_CLIENT ) pWndRadio3->SetCheck( TRUE );
-	if( dwChatFilterEtc & CHATSTY_SYSTEM_CHAT   ) pWndRadio4->SetCheck( TRUE );
-#endif//__Y_CHAT_SYSTEM_8
 
 	if( CWndChat::m_nChatChannel == CHATSTY_GENERAL ) pWndCheck1->EnableWindow( FALSE );
 	if( CWndChat::m_nChatChannel == CHATSTY_WHISPER ) pWndCheck2->EnableWindow( FALSE );
@@ -150,17 +127,7 @@ BOOL CWndChatFilter::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	CWndButton* pWndCheck3 = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
 	CWndButton* pWndCheck4 = (CWndButton*)GetDlgItem( WIDC_CHECK4 );
 	CWndButton* pWndCheck5 = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
 
-#else //#if __VER >= 8 //
-	CWndButton* pWndCheck6 = (CWndButton*)GetDlgItem( WIDC_CHECK6 );
-	CWndButton* pWndCheck7 = (CWndButton*)GetDlgItem( WIDC_CHECK7 );
-
-	CWndButton* pWndRadio1 = (CWndButton*)GetDlgItem( WIDC_RADIO1 );
-	CWndButton* pWndRadio2 = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-	CWndButton* pWndRadio3 = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-	CWndButton* pWndRadio4 = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-#endif //__Y_CHAT_SYSTEM_8
 
 	CWndChat* pWndChat = (CWndChat*)g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
 	int nChannel = 0;
@@ -209,39 +176,6 @@ BOOL CWndChatFilter::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			g_Option.m_dwChatFilter[nChannel] &= ~CHATSTY_GUILD;
 		SetButtonStatus();
 		break;
-#if __VER >= 8 //__Y_CHAT_SYSTEM_8
-#else //#if __VER >= 8 //
-	case WIDC_CHECK6 :
-		if( pWndCheck6->GetCheck() )
-			g_Option.m_dwChatFilterEtc |= CHATSTY_HELP_CLIENT;
-		else
-			g_Option.m_dwChatFilterEtc &= ~CHATSTY_HELP_CLIENT;
-		SetButtonStatus();
-		break;
-	case WIDC_CHECK7 :
-		if( pWndCheck7->GetCheck() )
-			g_Option.m_dwChatFilterEtc |= CHATSTY_HELP_CHAT;
-		else
-			g_Option.m_dwChatFilterEtc &= ~CHATSTY_HELP_CHAT;
-		SetButtonStatus();
-		break;
-	case WIDC_RADIO1 :
-		g_Option.m_dwChatFilterEtc |= CHATSTY_GAME_CLIENT;
-		g_Option.m_dwChatFilterEtc &= ~CHATSTY_GAME_CHAT;
-		break;
-	case WIDC_RADIO2 :
-		g_Option.m_dwChatFilterEtc |= CHATSTY_GAME_CHAT;
-		g_Option.m_dwChatFilterEtc &= ~CHATSTY_GAME_CLIENT;
-		break;
-	case WIDC_RADIO3 :
-		g_Option.m_dwChatFilterEtc |= CHATSTY_SYSTEM_CLIENT;
-		g_Option.m_dwChatFilterEtc &= ~CHATSTY_SYSTEM_CHAT;
-		break;
-	case WIDC_RADIO4 :
-		g_Option.m_dwChatFilterEtc |= CHATSTY_SYSTEM_CHAT;
-		g_Option.m_dwChatFilterEtc &= ~CHATSTY_SYSTEM_CLIENT;
-		break;
-#endif //__Y_CHAT_SYSTEM_8
 	}
 	pWndChat->SetChannel();
 

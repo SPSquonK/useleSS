@@ -237,7 +237,6 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 			pModel->InitDeviceObjects( pd3dDevice );
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
-#if __VER >= 14 // __WING_ITEM
 			memset( szFileName, 0, sizeof(szFileName) );
 			_tcsncpy( szFileName, lpszFileName, _tcslen( lpszFileName ) - 4 );	// .o3d를 떼고 파일명부분만 카피
 			_tcscat( szFileName, _T(".chr") );
@@ -257,15 +256,6 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 					break;
 				}
 			}
-#else // __WING_ITEM
-			if( nType == OT_MOVER )	// 무버는 외장본(.chr)을 먼저로딩해야한다.  여기다 넣어도 되는건지 몰겠군 -_-;
-			{
-				memset( szFileName, 0, sizeof(szFileName) );
-				_tcsncpy( szFileName, lpszFileName, _tcslen( lpszFileName ) - 4 );	// .o3d를 떼고 파일명부분만 카피
-				_tcscat( szFileName, _T(".chr") );
-				((CModelObject*)pModel)->LoadBone( szFileName );
-			}
-#endif // __WING_ITEM
 			if( bParts == FALSE )
 			{
 				if( ((CModelObject*)pModel)->LoadModel( lpszFileName ) == SUCCESS )  // skin 읽음

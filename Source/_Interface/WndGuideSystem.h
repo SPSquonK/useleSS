@@ -15,7 +15,6 @@ typedef struct GUIDE_STRUCT
 	BOOL    m_bFlag;
 	BOOL    m_bIsClear;
 	int		m_nShowLevel;
-#if __VER >= 12 // __MOD_TUTORIAL
 	int		m_nSequence;
 	int		m_nVicCondition;
 	int		m_nLevel;
@@ -33,7 +32,6 @@ typedef struct GUIDE_STRUCT
 		m_strInput.Empty();
 		m_str.Empty();
 	};
-#endif
 } GUIDE_STRUCT;
 
 class CWndGuideTextMgr : public CWndNeuz 
@@ -54,11 +52,7 @@ public:
 
 
 	void AddGuideText( GUIDE_STRUCT guide );
-#if __VER >= 12 // __MOD_TUTORIAL
 	void _SetGuideText( GUIDE_STRUCT guide, bool bIsNext);
-#else
-	void _SetGuideText( GUIDE_STRUCT guide );
-#endif
 	CWndGuideTextMgr(); 
 	~CWndGuideTextMgr(); 
 	
@@ -91,7 +85,6 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnRButtonDown( UINT nFlags, CPoint point );
 };
-#if __VER >= 12 // __MOD_TUTORIAL
 	typedef map<int, GUIDE_STRUCT>::value_type mgValType;
 	typedef map<int, GUIDE_STRUCT>::iterator mgMapItor;
 
@@ -140,7 +133,6 @@ public:
 	virtual void OnRButtonUp( UINT nFlags, CPoint point );
 };
 
-#endif
 
 class CWndGuideSystem : public CWndNeuz 
 {
@@ -151,7 +143,6 @@ public:
 	DWORD				 m_dwGuideLevel;
 	DWORD				 m_dwTime;
 	BYTE				 m_bAniState;
-#if __VER >= 12 // __MOD_TUTORIAL
 	vector<GUIDE_STRUCT>	m_vecEventGuide;
 	map<int, GUIDE_STRUCT>  m_mapGuide;
 	mgMapItor				m_CurrentIter;
@@ -162,11 +153,6 @@ public:
 	BOOL PassToNext();
 	CWndTutorial*		m_pWndTutorialView;
 	bool				m_bIsViewVisible;
-#else
-	list<int>			 m_listGuideMsg;
-	list<GUIDE_STRUCT>   m_listGuide;
-	list<GUIDE_STRUCT*>  m_listGuideChart;
-#endif
 	CModelObject*		 m_pModel;
 	CWndGuideTextMgr*    m_wndGuideText;
 	CWndGuideSelection*  m_wndGuideSelection;

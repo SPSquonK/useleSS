@@ -24,11 +24,6 @@ typedef struct tagFRIEND
 	BOOL bGroup;	// TRUE이면 그룹, 아니면 유저 
 	DWORD dwState;	// 상태 0 이면 정상, 1이면 disconnect, 2이면 자리 비움.....
 	DWORD dwUserId;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	BYTE  nSex;
-	LONG  nJob;
-	TCHAR szName[ 64 ];
-#endif	// __SYS_PLAYER_DATA
 	BOOL  bSave;
 #ifdef __CLIENT
 	u_long m_uIdofMulti;
@@ -39,11 +34,6 @@ typedef struct tagFRIEND
 		bGroup = FALSE;
 		dwState = FRS_OFFLINE;
 		dwUserId = 0;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		nSex = 0;
-		nJob = 0;
-		szName[0] = '\0';
-#endif	// __SYS_PLAYER_DATA
 		bSave = FALSE;
 #ifdef __CLIENT
 		m_uIdofMulti = 100;
@@ -61,14 +51,8 @@ public:
 	DWORD		m_dwMyState;
 
 public:
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	BOOL		AddFriend( u_long uidPlayer );
 	BOOL		AddFriend( u_long uidPlayer, DWORD dwSate, BOOL bSave = FALSE );
-#else	// __SYS_PLAYER_DATA
-	BOOL		AddFriend( u_long uidPlayer, LONG nJob, BYTE nSex );
-	BOOL		AddFriend( u_long uidPlayer, LONG nJob, BYTE nSex, LPSTR lpName );
-	BOOL		AddFriend( u_long uidPlayer, LONG nJob, BYTE nSex, DWORD dwSate, BOOL bSave = FALSE );
-#endif	// __SYS_PLAYER_DATA
 	void		SetSave( void );
 	BOOL		RemoveFriend( u_long uidPlayer );
 	BOOL		RemoveDifferntFriend( u_long uidPlayer );

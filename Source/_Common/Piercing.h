@@ -23,7 +23,6 @@ public:
 private:
 	vector<DWORD>	m_vPiercing;
 
-#if __VER >= 12 // __EXT_PIERCING
 public:
 	void	SetUltimatePiercingSize( int nSize );
 	int		GetUltimatePiercingSize();
@@ -32,13 +31,10 @@ public:
 
 private:
 	vector<DWORD> m_vUltimatePiercing;
-#endif // __EXT_PIERCING
 
-#if __VER >= 15 // __PETVIS
 	vector<time_t>	m_vtmPetVis;
 public:
 	void	SetVisKeepTimeSize( int nSize )	{ m_vtmPetVis.resize( min( nSize, MAX_VIS ), 0 ); }
 	void	SetVisKeepTime( int nth, time_t tmKeep );
 	time_t	GetVisKeepTime( int nth );
-#endif // __PETVIS
 };

@@ -60,7 +60,6 @@ struct WANTED_ENTRY
 };
 
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 const int GUILDBANKLOGVIEW_MAX = 100;
 
 struct __GUILDBANKLOG_ENTRY
@@ -79,8 +78,6 @@ struct __GUILDBANKLOG_ENTRY
 		nItemCount = 0;
 	};
 };
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 const int SEALCHAR_MAX = 3;
 
 struct __SEALCHAR_ENTRY
@@ -95,7 +92,6 @@ struct __SEALCHAR_ENTRY
 		nPlayerSlot = 0;	
 	};
 };
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 
 #ifdef __TRAFIC_1218

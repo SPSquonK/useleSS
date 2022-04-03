@@ -10,9 +10,7 @@
 	#include "..\_AIInterface\AIBigMuscle.h"
 	#include "..\_AIInterface\AIKrrr.h"
 	#include "..\_AIInterface\AIBear.h"
-	#if __VER >= 10	// __METEONYKER_0608
 		#include "..\_AIInterface\aimeteonyker.h"
-	#endif	// __METEONYKER_0608
 #endif // __WORLDSERVER
 
 
@@ -126,11 +124,7 @@ ObjProp* CObj::GetProp()
 void CObj::UpdateLocalMatrix(void)
 {
 	D3DXMatrixScaling( &m_matScale, m_vScale.x, m_vScale.y, m_vScale.z );
-#if __VER >= 11 // __FIX_ROTATE
 	D3DXMatrixRotationYawPitchRoll( &m_matRotation, D3DXToRadian( -m_fAngle ), D3DXToRadian( -m_fAngX ), D3DXToRadian( m_fAngZ ) );
-#else
-	D3DXMatrixRotationYawPitchRoll( &m_matRotation, D3DXToRadian( -m_fAngle ), D3DXToRadian( -m_fAngX ), D3DXToRadian( -m_fAngZ ) );
-#endif
 	
 	D3DXMatrixTranslation( &m_matTrans, m_vPos.x, m_vPos.y, m_vPos.z );
 	UpdateMatrix();
@@ -409,9 +403,7 @@ BOOL CObj::SetTypeIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwInd
 		else
 		{
 #ifdef __WORLDSERVER
-#if __VER >= 11 // __FIX_COLLISION
 			if(dwType != OT_OBJ)
-#endif
 			ResetScale();
 #endif //__WORLDSERVER
 			UpdateBoundBox();
@@ -732,9 +724,7 @@ void CObj::SetAIInterface( DWORD dwAIInterface, DWORD dwState )
 		case AII_KRRR:			m_pAIInterface = new CAIKrrr( this );		break;
 		case AII_BEAR:			m_pAIInterface = new CAIBear( this );		break;
 		case AII_VER2_TYPE0:	m_pAIInterface = new CAIMonster2( this );	break;
-#if __VER >= 10	// __METEONYKER_0608
 		case AII_METEONYKER:	m_pAIInterface	= new CAIMeteonyker( this );	break;
-#endif	// __METEONYKER_0608
 	}
 
 	m_dwAIInterface		 = dwAIInterface;

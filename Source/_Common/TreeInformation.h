@@ -1,7 +1,7 @@
 #ifndef __TREE_INFORMATION_H__
 #define __TREE_INFORMATION_H__
 
-#if __VER >= 15 /* __IMPROVE_QUEST_INTERFACE */ && defined( __CLIENT )
+#if defined( __CLIENT )
 //-----------------------------------------------------------------------------
 class CTreeInformation // 트리의 정보( 아이디, 체킹 여부 )
 {

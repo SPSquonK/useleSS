@@ -96,7 +96,6 @@ BOOL CDbManager::CreateDbWorkers()
 	return TRUE;
 }
 
-#if __VER >= 14 // __PCBANG
 void CDbManager::DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData )
 {
 	char lpAddr[16] = {0,};
@@ -111,23 +110,6 @@ void CDbManager::DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData )
 		wsprintf( qryAccount, "LOGIN_STR '%s', '%s', '%s'", pData->AccountInfo.szAccount, pData->AccountInfo.szPassword, lpAddr );
 //		wsprintf( qryAccount, "LOGIN_STR '%s', '%s'", pData->AccountInfo.szAccount, pData->AccountInfo.szPassword );
 }
-#else // __PCBANG
-#ifdef __TWN_LOGIN0816
-void CDbManager::DBQryAccount( char* qryAccount, char* szAccount, char* szPass, char* szSessionPwd )
-{
-	if( GetLanguage() == LANG_TWN )
-		wsprintf( qryAccount, "LOGIN_STR @iaccount='%s', @ipassword='%s', @isession='%s'", szAccount, szPass, szSessionPwd );
-	else
-		wsprintf( qryAccount, "LOGIN_STR '%s', '%s'", szAccount, szPass );
-}
-#else	// __TWN_LOGIN0816
-void CDbManager::DBQryAccount( char* qryAccount, char* szAccount, char* szPass )
-{
-	wsprintf( qryAccount, 
-		"LOGIN_STR '%s', '%s'", szAccount, szPass );
-}
-#endif	// __TWN_LOGIN0816
-#endif // __PCBANG
 
 // AccountFlag�� ��´�.
 // f18 - ��񿡼� ��� ����Ÿ 
@@ -198,11 +180,7 @@ void CDbManager::OnCertifyQueryOK( CQuery & query, LPDB_OVERLAPPED_PLUS pData, c
 
 #ifdef __GPAUTH_02
 #ifdef __EUROPE_0514
-#if __VER >= 14 // __PCBANG
 	g_dpAccountClient.SendAddAccount( lpAddr, pData->AccountInfo.szAccount, cbAccountFlag, pData->dpId, fCheck, szCheck, pData->AccountInfo.szBak, pData->AccountInfo.dwPCBangClass );
-#else // __PCBANG
-	g_dpAccountClient.SendAddAccount( lpAddr, pData->AccountInfo.szAccount, cbAccountFlag, pData->dpId, fCheck, szCheck, pData->AccountInfo.szBak );
-#endif // __PCBANG
 #else	// __EUROPE_0514
 	g_dpAccountClient.SendAddAccount( lpAddr, pData->AccountInfo.szAccount, cbAccountFlag, pData->dpId, fCheck, szCheck );
 #endif	// __EUROPE_0514
@@ -233,15 +211,7 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 	query.Clear();
 
 	char	szQuery[256];
-#if __VER >= 14 // __PCBANG
 	DBQryAccount( szQuery, pData );
-#else // __PCBANG
-#ifdef __TWN_LOGIN0816
-	DBQryAccount( szQuery, pData->AccountInfo.szAccount, pData->AccountInfo.szPassword, pData->AccountInfo.szSessionPwd );
-#else	// __TWN_LOGIN0816
-	DBQryAccount( szQuery, pData->AccountInfo.szAccount, pData->AccountInfo.szPassword );
-#endif	// __TWN_LOGIN0816
-#endif // __PCBANG
 
 	int nCode = ERROR_CERT_GENERAL;		
 
@@ -253,9 +223,7 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 			switch( nError )
 			{
 			case 0:
-#if __VER >= 14 // __PCBANG
 				pData->AccountInfo.dwPCBangClass = query.GetInt( "fPCZone" );
-#endif // __PCBANG
 				if( pData->dwIP )
 					accountMgr.SetError( 0 );
 #ifdef __EUROPE_0514
@@ -306,11 +274,7 @@ void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS p
 	query.Clear();
 
 	char	szQuery[128];
-#if __VER >= 14 // __PCBANG
 	DBQryAccount( szQuery, pData );
-#else // __PCBANG
-	DBQryAccount( szQuery, pData->AccountInfo.szAccount, pData->AccountInfo.szPassword );
-#endif // __PCBANG
 
 	if( query.Exec( szQuery ) )
 	{

@@ -30,14 +30,12 @@ public:
 		};
 	};
 
-#if __VER >= 15 // __CAMPUS
 	struct __POINT
 	{
 		BYTE	nType;
 		int		nPoint;
 		__POINT() : nType( 0 ), nPoint( 0 )	{}
 	};
-#endif // __CAMPUS
 
 	struct __SET
 	{
@@ -45,10 +43,8 @@ public:
 		vector<int>    vecResultMsg;
 		vector<__ITEM> vecCondItem;
 		vector<__ITEM> vecRemoveItem;
-#if __VER >= 15 // __CAMPUS
 		vector<__POINT> vecCondPoint;
 		vector<__POINT> vecRemovePoint;
-#endif // __CAMPUS
 		vector<__ITEM> vecPayItem;
 		int		nPayNum;
 		__SET()
@@ -78,9 +74,7 @@ public:
 	BOOL			IsFull( CUser* pUser, vector<__ITEM> vecRemoveItem, vector<__ITEM> vecPayItem ); // 인벤 공간
 	vector<__ITEM>	GetRemoveItemList( int nMMIId, int nListNum ); // 삭제 아이템 리스트
 	vector<__ITEM>	GetPayItemList( int nMMIId, int nListNum ); // 지급 아이템 리스트
-#if __VER >= 15 // __CAMPUS
 	vector<__POINT>	GetRemovePointList( int nMMIId, int nListNum ); // 차감 포인트 리스트
-#endif // __CAMPUS
 #endif // __WORLDSERVER
 		
 	map<int, __SETLIST> m_mapExchange;

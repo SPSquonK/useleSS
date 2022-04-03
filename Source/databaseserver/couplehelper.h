@@ -17,9 +17,7 @@ public:
 	BOOL	DeletePropose( time_t t );
 	BOOL	Couple( u_long idProposer, u_long idTarget );
 	BOOL	Decouple( u_long idPlayer );
-#if __VER >= 13 // __COUPLE_1202
 	BOOL	AddExperience( u_long idPlayer, int nExperience );
-#endif	// __COUPLE_1202
 	virtual	void	Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwCompletionKey );
 	virtual	void	OnTimer(); 
 
@@ -48,11 +46,9 @@ public:
 	void	OnCouple( CAr & ar );
 	void	OnDecouple( CAr & ar );
 	void	OnClearPropose();
-#if __VER >= 13 // __COUPLE_1202
 	void	OnAddExperience( CAr & ar );
 	void	PostItem( CCouple* pCouple );
 	void	PostItem( u_long idPlayer, const COUPLE_ITEM& ci, int nLevel );
-#endif	// __COUPLE_1202
 	BOOL	SetPropose( u_long idPlayer, time_t t );
 	time_t	GetPropose( u_long idPlayer );
 	void	ProcessPropose();

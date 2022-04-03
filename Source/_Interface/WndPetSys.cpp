@@ -7,11 +7,8 @@
 #include "DPClient.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 15 // __PETVIS
 #include "definesound.h"
-#endif
 
-#if __VER >= 12 // __PET_0519
 CWndPetAwakCancel::CWndPetAwakCancel() 
 { 
 
@@ -164,9 +161,7 @@ void CWndPetAwakCancel::SetDescription()
 	}
 }
 
-#endif
 
-#if __VER >= 9 // __CSC_VER9_1
 //////////////////////////////////////////////////////////////////////////
 // CWndPetStatus
 //////////////////////////////////////////////////////////////////////////
@@ -535,11 +530,6 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 		int nMax = m_pPetElem->m_pPet->GetMaxEnergy();
 		int nHitPercent = MulDiv( m_pPetElem->m_pPet->GetEnergy(), 100, nMax );
 
-#if __VER < 9 // __S_9_ADD
-		if( nHitPercent < CRITICAL_BERSERK_HP )
-			m_bHPVisible = !m_bHPVisible;
-		else
-#endif // __S_9_ADD
 			m_bHPVisible = TRUE;
 
 		if( m_bHPVisible )
@@ -728,17 +718,6 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 		int nMax = m_pPetElem->m_pPet->GetMaxEnergy();
 		int nHitPercent = MulDiv( m_pPetElem->m_pPet->GetEnergy(), 100, nMax );
 
-#if __VER < 9 // __S_9_ADD
-		if( nHitPercent < CRITICAL_BERSERK_HP )
-		{
-			::SetLight( TRUE );
-			SetDiffuse( 1.0f, 0.3f, 0.3f );
-			D3DXVECTOR3 vDir( 0.0f, 1.0f, 0.0f );
-			SetAmbient( 0.55f, 0.55f, 0.55f );
-			SetLightVec( vDir );
-		}
-		else
-#endif // __S_9_ADD
 		{	
 			SetDiffuse( 0.0f, 0.0f, 0.0f );
 			SetAmbient( 1.0f, 1.0f, 1.0f );
@@ -1180,9 +1159,6 @@ BOOL CWndFoodConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				if(m_nParent == 1) //Pet Food
 				{
 					//Send to Server...
-					#if __VER < 12 // __PET_0519
-					g_DPlay.SendUsePetFeed(m_pItemElem->m_dwObjId, DropNum);
-					#endif	// __PET_0519
 					//PLAYSND( "Feed.wav" );
 				}
 				else if(m_nParent == 2) //Food Mill
@@ -1670,9 +1646,7 @@ void CWndPetFoodMill::OnInitialUpdate()
 	CWndStatic* pStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC1);
 	pStatic->SetTitle(prj.GetText(TID_GAME_PETFOODMILL_DESC));
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	CWndInventory* pWndInventory = (CWndInventory*)g_WndMng.CreateApplet(APP_INVENTORY);
-#endif // __IMPROVE_SYSTEM_VER15
 	
 	MoveParentCenter();
 }
@@ -1720,14 +1694,12 @@ void CWndPetFoodMill::OnLButtonDblClk( UINT nFlags, CPoint point )
 
 BOOL CWndPetFoodMill::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-#if __VER >= 11
 	CWndBase* pWndFrame = pShortcut->m_pFromWnd->GetFrameWnd();
 	if( pWndFrame && pWndFrame->GetWndId() == APP_BAG_EX )
 	{
 		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_GAME_ERROR_FOOD_MILL_POCKET) ) );
 		return FALSE;
 	}
-#endif //__VER >= 11
 
 	CItemElem* pTempElem;
 	pTempElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
@@ -1888,7 +1860,6 @@ BOOL CWndPetLifeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
 
-#if __VER >= 12 // __CSC_VER12_5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndPetTransEggs Class
@@ -2136,12 +2107,9 @@ void CWndPetTransEggs::CheckFull()
 	}
 }
 
-#endif //__CSC_VER12_5
-
-#endif //__CSC_VER9_1
 
 
-#if __VER >= 15 // __PETVIS
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndBuffPetStatus
@@ -2963,4 +2931,3 @@ BOOL CWndConfirmVis::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-#endif //#ifdef __PETVIS

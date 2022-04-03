@@ -10,9 +10,7 @@ extern char	g_szVersion[];
 #include "dpclient.h"
 #include "DPLoginClient.h"
 #include "Network.h"
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include "Wnd2ndPassword.h"
-#endif // __2ND_PASSWORD_SYSTEM
 
 extern	CDPClient		g_DPlay;
 extern	CDPLoginClient	g_dpLoginClient;
@@ -24,9 +22,7 @@ CDPLoginClient::CDPLoginClient()
 	m_nSlot	= -1;
 	m_bShowDisconnectMsg = TRUE;
 	m_lError = 0;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	m_idNumberPad = 0;
-#endif // __2ND_PASSWORD_SYSTEM
 
 	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_ERROR, &CDPLoginClient::OnError );
@@ -37,10 +33,8 @@ CDPLoginClient::CDPLoginClient()
 	ON_MSG( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPLoginClient::OnOneHourNotify );
 	
 	ON_MSG( PACKETTYPE_PING, &CDPLoginClient::OnPing );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	ON_MSG( PACKETTYPE_LOGIN_PROTECT_NUMPAD, &CDPLoginClient::OnLoginNumPad );
 	ON_MSG( PACKETTYPE_LOGIN_PROTECT_CERT, &CDPLoginClient::OnLoginProtect );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 CDPLoginClient::~CDPLoginClient()
@@ -125,11 +119,7 @@ void CDPLoginClient::SendGetPlayerList( DWORD dwID, LPCSTR lpszAccount, LPCSTR l
 	ar << dwID;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD adwEquipment*/, BYTE nFace, BYTE nCostume, BYTE nSkinSet, BYTE nHairMesh, DWORD dwHairColor, BYTE nSex, BYTE nJob, BYTE nHeadMesh, int nBankPW )
-#else // __2ND_PASSWORD_SYSTEM
-void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD adwEquipment*/, BYTE nFace, BYTE nCostume, BYTE nSkinSet, BYTE nHairMesh, DWORD dwHairColor, BYTE nSex, BYTE nJob, BYTE nHeadMesh )
-#endif // __2ND_PASSWORD_SYSTEM
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_CREATE_PLAYER, DPID_UNKNOWN );
 #ifdef __GPAUTH_01
@@ -151,9 +141,7 @@ void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD a
 	ar << nFace << nCostume << nSkinSet << nHairMesh;
 	ar << dwHairColor;
 	ar << nSex << nJob << nHeadMesh;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	ar << nBankPW;
-#endif // __2ND_PASSWORD_SYSTEM
 	ar << g_Neuz.m_dwAuthKey;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
@@ -183,11 +171,7 @@ void CDPLoginClient::SendDeletePlayer( BYTE nSlot, LPCTSTR szNo )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CDPLoginClient::SendPreJoin( const TCHAR* lpszAccount, u_long idPlayer, const TCHAR* lpszPlayer, int nSlot, int nSecretNum )
-#else // __2ND_PASSWORD_SYSTEM
-void CDPLoginClient::SendPreJoin( const TCHAR* lpszAccount, u_long idPlayer, const TCHAR* lpszPlayer, int nSlot )
-#endif // __2ND_PASSWORD_SYSTEM
 {
 	m_nSlot		= nSlot;
 	BEFORESENDSOLE( ar, PACKETTYPE_PRE_JOIN, DPID_UNKNOWN );
@@ -195,9 +179,7 @@ void CDPLoginClient::SendPreJoin( const TCHAR* lpszAccount, u_long idPlayer, con
 	ar.WriteString( lpszAccount );
 	ar << idPlayer;
 	ar.WriteString( lpszPlayer );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	ar << nSecretNum;
-#endif // __2ND_PASSWORD_SYSTEM
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -333,7 +315,6 @@ void CDPLoginClient::OnError( CAr & ar )
 			m_bShowDisconnectMsg = FALSE;       // 서버로 부터 접속이 종료되었습니다를 표시하지 않음 
 			g_WndMng.OpenMessageBoxUpper( prj.GetText(TID_DIAG_PLAYNOCHARGING), MB_OK, TRUE );  // TRUE - 메세지 표시후 로그인화면으로 
 			break;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 		case ERROR_15MIN_PREVENT:	// 2차 비밀번호 3회이상 틀렸을 경우
 			{
 				g_WndMng.CloseMessageBox();
@@ -341,7 +322,6 @@ void CDPLoginClient::OnError( CAr & ar )
 				g_Neuz.m_dwTimeOutDis = 0xffffffff;
 				break;
 			}
-#endif // __2ND_PASSWORD_SYSTEM
 	}
 }
 
@@ -389,12 +369,10 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 	{
 		( (CWndDeleteChar*)pWndBase )->Destroy();
 	}
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	if( ( pWndBase = g_WndMng.GetWndBase( APP_2ND_PASSWORD_NUMBERPAD ) ) )
 	{
 		( (CWnd2ndPassword*)pWndBase )->Destroy();
 	}
-#endif // __2ND_PASSWORD_SYSTEM
 
 	DWORD dwAuthKey;
 	ar >> dwAuthKey;
@@ -464,9 +442,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 		ar >> g_Neuz.m_apPlayer[slot]->m_nDex;
 		ar >> g_Neuz.m_apPlayer[slot]->m_nInt;
 		g_Neuz.m_apPlayer[slot]->SetHairColor( g_Neuz.m_apPlayer[slot]->m_dwHairColor );
-#if __VER < 8 // __S8_PK
-		ar >> g_Neuz.m_apPlayer[slot]->m_nSlaughter;
-#endif // __VER < 8 __S8_PK
 		ar >> g_Neuz.m_apPlayer[slot]->m_dwMode;
 
 		int CountEquip = 0;
@@ -542,7 +517,6 @@ void CDPLoginClient::OnCacheAddr( CAr & ar )
 	CNetwork::GetInstance().OnEvent( LOGIN_CACHE_ADDR );
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CDPLoginClient::OnLoginNumPad( CAr & ar )
 {
 	u_long idNumPad;
@@ -578,6 +552,5 @@ u_long CDPLoginClient::GetNumberPad( void ) const
 {
 	return m_idNumberPad;
 }
-#endif // __2ND_PASSWORD_SYSTEM
 
 CDPLoginClient	g_dpLoginClient;

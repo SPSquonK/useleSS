@@ -229,9 +229,7 @@ void IBuffItemBase::Release( CBuffMgr* pBuffMgr )
 		pBuffMgr->GetMover()->ResetDestParam( pProp->dwDestParam1, pProp->nAdjParamVal1, TRUE );
 		pBuffMgr->GetMover()->ResetDestParam( pProp->dwDestParam2, pProp->nAdjParamVal2, TRUE );
 		if( strlen( pProp->szTextFileName ) > 0 && IK3_ANGEL_BUFF != pProp->dwItemKind3 
-#if __VER >= 13 // __HOUSING
 			&& IK2_PAPERING != pProp->dwItemKind2
-#endif // )__HOUSING
 			)
 		{
 			if( NULL_ID != pProp->dwActiveSkill )
@@ -831,9 +829,7 @@ void CBuffMgr::RemoveBuffs( DWORD dwFlags, DWORD dwParam )
 		IBuff* pBuff	= i->second;
 		if(
 			( ( dwFlags & RBF_UNCONDITIONAL )
-#if __VER >= 13 // __HOUSING
 				&& !pBuff->IsIk1( IK1_HOUSING )	// 하우징 버프는 "버프해제" 명령으로 삭제 안됨.
-#endif // __HOUSING	
 			)
 			|| ( ( dwFlags & RBF_COMMON ) && GetMover() && pBuff->IsCommon() )
 			|| ( ( dwFlags & RBF_IK3 ) && pBuff->IsIk3( dwParam ) )
@@ -975,14 +971,12 @@ void CBuffMgr::ToString( char* szString )
 		IBuff* pBuff	= i->second;
 		if( pBuff->GetType() == BUFF_EQUIP )
 			continue;
-#if __VER >= 13 // __HOUSING
 		if( pBuff->GetType() == BUFF_ITEM )
 		{
 			ItemProp* pProp	= prj.GetItemProp( pBuff->GetId() );
 			if( pProp && pProp->dwItemKind1 == IK1_HOUSING )
 				continue;
 		}
-#endif	// __HOUSING
 		sprintf( szBuff, "%d,%d,%d,%d/", 
 			pBuff->GetType(), pBuff->GetId(), pBuff->GetLevel(), pBuff->GetTotal() );
 		strcat( szString, szBuff );

@@ -15,7 +15,6 @@ extern	CDPClient	g_DPlay;
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#if __VER >= 13 // __HOUSING
 /****************************************************
   WndId : APP_MINIROOM_LIST - ¹Ì´Ï·ë ¸ñ·Ï
   CtrlId : WIDC_BUTTON1 - Button
@@ -134,4 +133,3 @@ BOOL CWndRoomList::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#endif // __HOUSING

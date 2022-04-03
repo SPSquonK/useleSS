@@ -1,7 +1,6 @@
 #ifndef __PET_H__
 #define	__PET_H__
 
-#if __VER >= 9	// __PET_0410
 
 #ifdef __CLIENT
 #include "..\_AIInterface\AIInterface.h"
@@ -193,9 +192,7 @@ public:
 };
 #endif	// __CLIENT
 
-#endif	// __PET_0410
 
-#if __VER >= 12 // __PET_0519
 // 변환 시 필요한 개별 아이템 요소
 typedef	struct	_TransformStuffComponent
 {
@@ -318,6 +315,5 @@ private:
 
 #endif	// __WORLDSERVER
 
-#endif	// __PET_0519
 
 #endif	// __PET_H__

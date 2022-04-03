@@ -25,28 +25,20 @@ class CToolTip
 	BOOL        m_bToolTip      ;
 	int         m_nAlpha        ;
 	CTexture	m_apTextureToolTip[ MAX_TT * 9 ];
-#if __VER >= 9 // __CSC_VER9_1
 	int			m_nAdded;
 	int			m_nAddedJewel[5];
 	int			m_nSlot;
 	CItemBase*	m_pUltimateItemBase;
-#if __VER >= 12 // __EXT_PIERCING
 	CTexture*	m_pUltimateTexture;
 	CTexture*	m_pJewelBgTexture;
-#endif //__EXT_PIERCING
-#endif //__CSC_VER9_1
 
 #ifndef __IMPROVE_MAP_SYSTEM
-#if __VER >= 13 // __CSC_VER13_1
 	int			m_nMonInfoCnt;
 	DWORD		m_pDwMonId[5];
-#endif //__CSC_VER13_1
 #endif // __IMPROVE_MAP_SYSTEM
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	int			m_nSubToolTipFlag;
 	CRect		m_nRevisedRect;
 	int			m_nSubToolTipNumber;
-#endif // __IMPROVE_SYSTEM_VER15
 #ifdef __IMPROVE_MAP_SYSTEM
 	vector< DWORD > m_vecMapMonsterID;
 #endif // __IMPROVE_MAP_SYSTEM
@@ -61,26 +53,19 @@ public:
 	void PutToolTip( DWORD dwToolTipId, CEditString& string, CRect rect, CPoint pt, int nToolTipPos = 0 );
 	void PutToolTip( DWORD dwToolTipId, CString& string, CRect rect, CPoint pt, int nToolTipPos = 0 );
 	void PutToolTip( DWORD dwToolTipId, LPCTSTR lpszString, CRect rect, CPoint pt, int nToolTipPos = 0 );	
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	void PutToolTipEx( DWORD dwToolTipId, CEditString& string, CRect rect, CPoint pt, int nToolTipPos = 0, int nSubToolTipFlag = 0 );
-#endif // __IMPROVE_SYSTEM_VER15
 	void Process( CPoint pt, C2DRender* p2DRender );
 	void Paint( C2DRender* p2DRender );
 	void Delete();
 	void InitTexture();
-#if __VER >= 9 // __CSC_VER9_1
 	void SetUltimateToolTip(CItemBase* pItemBase);
-#endif //__CSC_VER9_1
 #ifndef __IMPROVE_MAP_SYSTEM
-#if __VER >= 13 // __CSC_VER13_1
 	void SetWorldMapMonsterInfo(int nMonCnt, DWORD* pDwMonId);
-#endif //__CSC_VER13_1
 #endif // __IMPROVE_MAP_SYSTEM
 #ifdef __IMPROVE_MAP_SYSTEM
 	void ResizeMapMonsterToolTip( void );
 	void InsertMonsterID( DWORD dwMonsterID );
 #endif // __IMPROVE_MAP_SYSTEM
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	const CPoint& GetPointToolTip( void ) const;
 	const CRect& GetRect( void ) const;
 	void SetRenderRect( const CRect& rectRender );
@@ -89,7 +74,6 @@ public:
 	void SetSubToolTipNumber( int nSubToolTipNumber );
 	int GetSubToolTipNumber( void ) const;
 	BOOL GetReadyToolTipSwitch( void ) const;
-#endif // __IMPROVE_SYSTEM_VER15
 };
 /*
 #define TOOLTIP_COMBATMODE   1  // "전투/평화\n단축키[C]"

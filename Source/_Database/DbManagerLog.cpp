@@ -16,9 +16,7 @@ extern	CGuildWarMng	g_GuildWarMng;
 
 #include "eveschool.h"
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif // __GUILD_HOUSE
 
 #if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816)
 #define	MAX_QUERY_SIZE	1024 * 64
@@ -135,7 +133,6 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 
 				arRead >> aLogItem.m_bCharged;
 				arRead >> aLogItem.m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 				arRead >> aLogItem.nPiercedSize;
 				
 				int	k = 0;
@@ -145,23 +142,8 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 				arRead >> aLogItem.nUMPiercedSize;
 				for( k=0; k<aLogItem.nUMPiercedSize; k++ )
 					arRead >> aLogItem.adwUMItemId[k];
-#else // __EXT_PIERCING
-				arRead >> aLogItem.nPiercedSize;
-				arRead >> aLogItem.adwItemId0;
-				arRead >> aLogItem.adwItemId1;
-				arRead >> aLogItem.adwItemId2;
-				arRead >> aLogItem.adwItemId3;
-#if __VER >= 9 // __ULTIMATE
-				arRead >> aLogItem.adwItemId4;
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
-#if __VER >= 11 // __SYS_IDENTIFY
 				arRead >> aLogItem.m_iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-				arRead >> aLogItem.m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 				
-#if __VER >= 9 // __PET_0410
 				arRead >> aLogItem.nPetKind;
 				arRead >> aLogItem.nPetLevel;
 				arRead >> aLogItem.dwPetExp;
@@ -172,7 +154,6 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 				arRead >> aLogItem.nPetAL_B;
 				arRead >> aLogItem.nPetAL_A;
 				arRead >> aLogItem.nPetAL_S;
-#endif // __PET_0410
 
 				DBQryNewItemLog( szQuery, aLogItem );
 
@@ -183,11 +164,7 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 					return;
 				}
 				// 2. tblTradeItemLog. 트레이드 대상 아이템 정보입니다. (ItemIndex, SerialNo 외)
-#if __VER >= 11 // __SYS_IDENTIFY
 				call_uspLoggingTrade( qry, 2, nTradeID, 0, idPlayer2, 0, "", 0, 0, dwItemId, iSerialNumber, nItemNum, nAbilityOption, nItemResist, nResistAbilityOption, aLogItem.m_iRandomOptItemId );
-#else	// __SYS_IDENTIFY
-				call_uspLoggingTrade( qry, 2, nTradeID, 0, idPlayer2, 0, "", 0, 0, dwItemId, iSerialNumber, nItemNum, nAbilityOption, nItemResist, nResistAbilityOption, aLogItem.m_nRandomOptItemId );
-#endif	// __SYS_IDENTIFY
 			}
 			for( u_long i = 0; i < uSize2; i++ )
 			{
@@ -235,31 +212,15 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 				
 				arRead >> aLogItem.m_bCharged;
 				arRead >> aLogItem.m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 				arRead >> aLogItem.nPiercedSize;
 				for( int i=0; i<aLogItem.nPiercedSize; i++ )
 					arRead >> aLogItem.adwItemId[i];
 				arRead >> aLogItem.nUMPiercedSize;
 				for( int i=0; i<aLogItem.nUMPiercedSize; i++ )
 					arRead >> aLogItem.adwUMItemId[i];
-#else // __EXT_PIERCING
-				arRead >> aLogItem.nPiercedSize;
-				arRead >> aLogItem.adwItemId0;
-				arRead >> aLogItem.adwItemId1;
-				arRead >> aLogItem.adwItemId2;
-				arRead >> aLogItem.adwItemId3;
-#if __VER >= 9 // __ULTIMATE
-				arRead >> aLogItem.adwItemId4;
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
 
-#if __VER >= 11 // __SYS_IDENTIFY
 				arRead >> aLogItem.m_iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-				arRead >> aLogItem.m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 9 // __PET_0410
 				arRead >> aLogItem.nPetKind;
 				arRead >> aLogItem.nPetLevel;
 				arRead >> aLogItem.dwPetExp;
@@ -270,7 +231,6 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 				arRead >> aLogItem.nPetAL_B;
 				arRead >> aLogItem.nPetAL_A;
 				arRead >> aLogItem.nPetAL_S;
-#endif // __PET_0410
 
 				DBQryNewItemLog( szQuery, aLogItem );
 
@@ -281,11 +241,7 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 					return;
 				}
 				// 2. tblTradeItemLog. 트레이드 대상 아이템 정보입니다. (ItemIndex, SerialNo 외)
-#if __VER >= 11 // __SYS_IDENTIFY
 				call_uspLoggingTrade( qry, 2, nTradeID, 0, idPlayer1, 0, "", 0, 0, dwItemId, iSerialNumber, nItemNum, nAbilityOption, nItemResist, nResistAbilityOption, aLogItem.m_iRandomOptItemId );
-#else	// __SYS_IDENTIFY
-				call_uspLoggingTrade( qry, 2, nTradeID, 0, idPlayer1, 0, "", 0, 0, dwItemId, iSerialNumber, nItemNum, nAbilityOption, nItemResist, nResistAbilityOption, aLogItem.m_nRandomOptItemId );
-#endif	// __SYS_IDENTIFY
 			}
 			if( iSeed1 > 0 )
 			{
@@ -388,31 +344,15 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 
 			arRead >> aLogItem.m_bCharged;
 			arRead >> aLogItem.m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 			arRead >> aLogItem.nPiercedSize;
 			for( int i=0; i<aLogItem.nPiercedSize; i++ )
 				arRead >> aLogItem.adwItemId[i];
 			arRead >> aLogItem.nUMPiercedSize;
 			for( int i=0; i<aLogItem.nUMPiercedSize; i++ )
 				arRead >> aLogItem.adwUMItemId[i];
-#else // __EXT_PIERCING
-			arRead >> aLogItem.nPiercedSize;
-			arRead >> aLogItem.adwItemId0;
-			arRead >> aLogItem.adwItemId1;
-			arRead >> aLogItem.adwItemId2;
-			arRead >> aLogItem.adwItemId3;
-#if __VER >= 9 // __ULTIMATE
-			arRead >> aLogItem.adwItemId4;
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
 
-#if __VER >= 11 // __SYS_IDENTIFY
 			arRead >> aLogItem.m_iRandomOptItemId;
-#else	// __SYS_IDENTIFY
-			arRead >> aLogItem.m_nRandomOptItemId;
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 9 // __PET_0410
 			arRead >> aLogItem.nPetKind;
 			arRead >> aLogItem.nPetLevel;
 			arRead >> aLogItem.dwPetExp;
@@ -423,7 +363,6 @@ void CDbManager::LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 			arRead >> aLogItem.nPetAL_B;
 			arRead >> aLogItem.nPetAL_A;
 			arRead >> aLogItem.nPetAL_S;
-#endif // __PET_0410
 			DBQryNewItemLog( szQuery, aLogItem );
 
 			if ( FALSE == qry->Exec( szQuery ) )
@@ -611,7 +550,6 @@ void CDbManager::LogServerDeath(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlapped
 
 	FreeRequest( lpDbOverlappedPlus );
 }
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void	CDbManager::LogGetHonorTime(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 {
 	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -639,7 +577,6 @@ void	CDbManager::LogGetHonorTime(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 //	qry->Clear();
 	FreeRequest( lpDbOverlappedPlus );;
 }
-#endif	// __HONORABLE_TITLE			// 달인
 void CDbManager::LogUniqueItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 {
 	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -835,13 +772,8 @@ void CDbManager::LogPkPvp( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus 
 	int iServer_No, iLoseServer_No;
 	int nLevel, nLoseLevel;
 	int nPoint;
-#if __VER >= 8 // __S8_PK
 	int nPKValue, nLosePKValue;
 	DWORD dwPKPropensity, dwLosePKPropensity;
-#else // __VER >= 8 // __S8_PK
-	int nSlaughter, nLoseSlaughter;
-	int nKillNum, nLoseKillNum;
-#endif // __VER >= 8 // __S8_PK
 	int nFame, nLoseFame;
 	char chState;
 	D3DXVECTOR3 vPos, vLosePos;
@@ -857,13 +789,8 @@ void CDbManager::LogPkPvp( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus 
 		arRead >> nLoseLevel;
 		arRead >> vLosePos;
 		arRead >> nLoseFame;
-#if __VER >= 8 // __S8_PK
 		arRead >> nLosePKValue;
 		arRead >> dwLosePKPropensity;
-#else // __VER >= 8 // __S8_PK
-		arRead >> nLoseKillNum;
-		arRead >> nLoseSlaughter;
-#endif // __VER >= 8 // __S8_PK
 	}
 	
 	if( nSendBuf == 2 || nSendBuf == 3 )
@@ -873,17 +800,11 @@ void CDbManager::LogPkPvp( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus 
 		arRead >> nLevel;
 		arRead >> vPos;
 		arRead >> nFame;
-#if __VER >= 8 // __S8_PK
 		arRead >> nPKValue;
 		arRead >> dwPKPropensity;
-#else // __VER >= 8 // __S8_PK
-		arRead >> nKillNum;
-		arRead >> nSlaughter;
-#endif // __VER >= 8 // __S8_PK
 	}
 
 	char szQuery[QUERY_SIZE]	= { 0,};
-#if __VER >= 8 // __S8_PK
 	if( nSendBuf == 3 )
 	{
 		DBQryLog( szQuery, "LA", uidPlayer, g_appInfo.dwSys, nLoseLevel, nLevel, nPoint, dwPKPropensity, nPKValue,
@@ -905,29 +826,6 @@ void CDbManager::LogPkPvp( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus 
 			'\0', 0, 0, 0, '\0', 0, 0, 0, 
 			'\0', 0, '\0', 0, 0 );
 	}
-#else // __VER >= 8 // __S8_PK
-	if( nSendBuf == 3 )
-	{
-		DBQryLog( szQuery, "LA", uidPlayer, g_appInfo.dwSys, nLoseLevel, nLevel, nPoint, nSlaughter, nKillNum,
-			nFame, nLoseSlaughter, nLoseFame, 0, 0, 0, chState, 0, '\0', vPos.x, 0.0f, vPos.z, 0, 0,
-			'\0', 0, 0, 0, '\0', 0, 0, 0, 
-			'\0', 0, '\0', 0, uLoseidPlayer );
-	}
-	else if( nSendBuf == 1 )
-	{
-		DBQryLog( szQuery, "LA", 0, g_appInfo.dwSys, nLoseLevel, 0, nPoint, 0, nLoseKillNum,
-			0, nLoseSlaughter, nLoseFame, 0, 0, 0, chState, 0, '\0', vLosePos.x, 0.0f, vLosePos.z, 0, 0,
-			'\0', 0, 0, 0, '\0', 0, 0, 0, 
-			'\0', 0, '\0', 0, uLoseidPlayer );
-	}
-	else
-	{
-		DBQryLog( szQuery, "LA", uidPlayer, g_appInfo.dwSys, 0, nLevel, nPoint, nSlaughter, nKillNum,
-			nFame, 0, 0, 0, 0, 0, chState, 0, '\0', vPos.x, 0.0f, vPos.z, 0, 0,
-			'\0', 0, 0, 0, '\0', 0, 0, 0, 
-			'\0', 0, '\0', 0, 0 );
-	}
-#endif // __VER >= 8 // __S8_PK
 
 	if ( FALSE == qry->Exec( szQuery ) )
 	{
@@ -1020,65 +918,36 @@ void CDbManager::DBQryNewItemLog( char* qryLog, const LogItemInfo& info )
 		"@iItem_UniqueNo=%d,@iItem_Name='%s',@iItem_durability=%d,@im_nAbilityOption=%d,@Im_GetdwGold=%d,"
 		"@iItem_count=%d,@iState='%s',@im_nSlot0=%d,@im_nSlot1=%d,@im_bItemResist=%d,@im_nResistAbilityOption=%d"
 		",@im_bCharged=%d,@im_dwKeepTime=%d,"
-#if __VER >= 11 // __SYS_IDENTIFY
 		"@im_nRandomOptItemId=%I64d"
-#else	// __SYS_IDENTIFY
-		"@im_nRandomOptItemId=%d"
-#endif	// __SYS_IDENTIFY
 		",@inPiercedSize=%d,@iadwItemId0=%d,@iadwItemId1=%d,@iadwItemId2=%d,@iadwItemId3=%d"
-#if __VER >= 9 // __ULTIMATE
 		",@iadwItemId4=%d"
-#endif // __ULTIMATE
 
 		",@iMaxDurability=%d"
 
-#if __VER >= 9 // __PET_0410
 		",@inPetKind=%d,@inPetLevel=%d,@idwPetExp=%d,@iwPetEnergy=%d,@iwPetLife=%d"
 		",@inPetAL_D=%d,@inPetAL_C=%d,@inPetAL_B=%d,@inPetAL_A=%d,@inPetAL_S=%d"
-#endif // __PET_0410
-#if __VER >= 12 // __EXT_PIERCING
 		",@iadwItemId5=%d,@iadwItemId6=%d,@iadwItemId7=%d,@iadwItemId8=%d,@iadwItemId9=%d"
 		",@inUMPiercedSize=%d,@iadwUMItemId0=%d,@iadwUMItemId1=%d,@iadwUMItemId2=%d,@iadwUMItemId3=%d,@iadwUMItemId4=%d"
-#endif // __EXT_PIERCING
 		,
 		info.SendName, g_appInfo.dwSys, info.RecvName, info.WorldId, info.Gold, info.Gold2, 
 		info.ItemNo, info.szItemName, info.Negudo, info.nAbilityOption, info.Gold_1,
 		info.itemNumber, info.Action, info.nSlot, info.nSlot1, info.nItemResist, info.nResistAbilityOption
 		, info.m_bCharged, info.m_dwKeepTime,
-#if __VER >= 11 // __SYS_IDENTIFY
 		info.m_iRandomOptItemId
-#else	// __SYS_IDENTIFY
-		info.m_nRandomOptItemId
-#endif	// __SYS_IDENTIFY
-#if __VER >= 12 // __EXT_PIERCING
 		, info.nPiercedSize, info.adwItemId[0], info.adwItemId[1], info.adwItemId[2], info.adwItemId[3]
 		, info.adwItemId[4]
-#else // __EXT_PIERCING
-		, info.nPiercedSize, info.adwItemId0, info.adwItemId1, info.adwItemId2, info.adwItemId3
-#if __VER >= 9 // __ULTIMATE
-		, info.adwItemId4
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
 		, info.MaxNegudo
-#if __VER >= 9 // __PET_0410
 		, info.nPetKind, info.nPetLevel, info.dwPetExp, info.wPetEnergy, info.wPetLife
 		, info.nPetAL_D, info.nPetAL_C, info.nPetAL_B, info.nPetAL_A, info.nPetAL_S
-#endif // __PET_0410
-#if __VER >= 12 // __EXT_PIERCING
 		, info.adwItemId[5], info.adwItemId[6], info.adwItemId[7], info.adwItemId[8], info.adwItemId[9]
 		, info.nUMPiercedSize, info.adwUMItemId[0], info.adwUMItemId[1], info.adwUMItemId[2], info.adwUMItemId[3], info.adwUMItemId[4]
-#endif // __EXT_PIERCING
 		);	
 	if( strlen(qryLog) > 40960 )
 		ASSERT(0);
 ///	TRACE("%s\n", qryLog);
 }
 
-#if __VER >= 11 // __SYS_IDENTIFY
 BOOL CDbManager::call_uspLoggingTrade( CQuery* pQuery, int nFlag, int nTradeID, DWORD dwWorldID, u_long idPlayer, DWORD dwTradeGold, const char* lpAddr, int nLevel, int nJob, int nItemIndex, SERIALNUMBER iItemSerialNum, int nItemCnt, int nAbilityOpt, int nItemResist, int nResistAbilityOpt, __int64 iRandomOpt )
-#else	// __SYS_IDENTIFY
-BOOL CDbManager::call_uspLoggingTrade( CQuery* pQuery, int nFlag, int nTradeID, DWORD dwWorldID, u_long idPlayer, DWORD dwTradeGold, const char* lpAddr, int nLevel, int nJob, int nItemIndex, SERIALNUMBER iItemSerialNum, int nItemCnt, int nAbilityOpt, int nItemResist, int nResistAbilityOpt, int nRandomOpt )
-#endif	// __SYS_IDENTIFY
 {
 	char pszQuery[1024]	= { 0, };
 	switch( nFlag )
@@ -1098,16 +967,8 @@ BOOL CDbManager::call_uspLoggingTrade( CQuery* pQuery, int nFlag, int nTradeID, 
 		case 2:
 			{
 				sprintf( pszQuery, "uspLoggingTrade @pFlag=2, @pTradeID=%d, @pserverindex='%02d', @pidPlayer='%07d', @pItemIndex='%d', @pItemSerialNum=%d, @pItemCnt=%d, @pAbilityOpt=%d, @pItemResist=%d, @pResistAbilityOpt=%d,"
-#if __VER >= 11 // __SYS_IDENTIFY
 						"@pRandomOpt=%I64d",
-#else	// __SYS_IDENTIFY
-						"@pRandomOpt=%d",
-#endif	// __SYS_IDENTIFY
-#if __VER >= 11 // __SYS_IDENTIFY
 					nTradeID, g_appInfo.dwSys, idPlayer, nItemIndex, iItemSerialNum, nItemCnt, nAbilityOpt, nItemResist, nResistAbilityOpt, iRandomOpt );
-#else	// __SYS_IDENTIFY
-					nTradeID, g_appInfo.dwSys, idPlayer, nItemIndex, iItemSerialNum, nItemCnt, nAbilityOpt, nItemResist, nResistAbilityOpt, nRandomOpt );
-#endif	// __SYS_IDENTIFY
 				break;
 			}
 	}
@@ -1140,7 +1001,6 @@ void CDbManager::LogExpBox( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 //	OutputDebugString( pszQuery );
 }
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 void CDbManager::LogInstanceDungeon( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -1157,7 +1017,6 @@ void CDbManager::LogInstanceDungeon( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 	
 	FreeRequest( lpDbOverlappedPlus );
 }
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __ERROR_LOG_TO_DB
 void CDbManager::LogError( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
@@ -1181,7 +1040,6 @@ void CDbManager::LogError( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPl
 }
 #endif // __ERROR_LOG_TO_DB
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CDbManager::LogGuildFurniture( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -1199,4 +1057,3 @@ void CDbManager::LogGuildFurniture( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 
 	FreeRequest( lpDbOverlappedPlus );
 }
-#endif // __GUILD_HOUSE

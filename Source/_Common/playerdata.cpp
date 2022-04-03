@@ -5,7 +5,6 @@
 extern	CDPClient	g_DPlay;
 #endif	// __CLIENT
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 CPlayerDataCenter::CPlayerDataCenter()
 {
 }
@@ -216,4 +215,3 @@ void CPlayerDataCenter::ReplacePlayerString( u_long idPlayer, char* pszPlayer, c
 		lstrcpy( pPlayerData->szPlayer, pszPlayer );
 	}
 }
-#endif	// __SYS_PLAYER_DATA

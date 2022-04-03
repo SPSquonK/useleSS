@@ -14,32 +14,20 @@
 #endif	// __SYS_TICKET
 #endif
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 11 // __SYS_COLLECTING
 #include "collecting.h"
 #include "definesound.h"
 #include "defineitem.h"
-#endif	// __SYS_COLLECTING
 
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
-#if __VER >= 12 // __LORD
 #include "slord.h"
 #include "lordskillexecutable.h"
-#endif	// __LORD
 
-#if __VER >= 15 // __PETVIS
 #include "ItemUpgrade.h"
-#endif // __PETVIS
 
 extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPCoreClient	g_DPCoreClient;
@@ -71,9 +59,7 @@ extern CGuildCombat g_GuildCombatMng;
 #include "UserMacro.h"
 #include "post.h"
 
-#if __VER >= 13 // __COUPLE_1117
 #include "couplehelper.h"
-#endif	// __COUPLE_1117
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 extern	CDPSrvr		g_DPSrvr;
@@ -204,39 +190,29 @@ void CUser::Init( DPID dpidCache, DPID dpidUser )
 	m_nAngelExpLog = 0;
 #endif // __EXP_ANGELEXP_LOG
 
-#if __VER >= 11 // __SYS_COLLECTING
 	m_nCollecting	= 0;
-#endif	// __SYS_COLLECTING
 
 #ifdef __EVENTLUA_COUPON
 	m_nCoupon = 0;
 	m_dwTickCoupon = GetTickCount();
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 12 // __LORD
 	m_idElection	= NULL_ID;
 	m_bQuerying		= FALSE;
-#endif	// __LORD
 
 #ifdef __AZRIA_1023
 	m_szInput[0]	= '\0';
 #endif	// __AZRIA_1023
 
-#if __VER >= 13 // __COUPLE_1117
 	m_idProposer	= 0;
-#if __VER >= 13 // __COUPLE_1202
 	m_cbProcessCouple	= 0;
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 
 #ifdef __EVENTLUA_KEEPCONNECT
 	m_dwTickKeepConnect = GetTickCount();
 #endif // __EVENTLUA_KEEPCONNECT
-#if __VER >= 15 // __GUILD_HOUSE
 	m_nRestPoint = 0;
 	m_nPrevRestPoint = 0;
 	m_tRestPointTick = time_null();
-#endif // __GUILD_HOUSE
 
 #ifdef __PERIN_BUY_BUG
 	m_dwLastTryBuyItem = NULL_ID;
@@ -249,14 +225,7 @@ void CUser::LevelUpSetting( void )
 	g_UserMng.AddSetLevel( this, (short)GetLevel() );
 	AddSetGrowthLearningPoint( m_nRemainGP );
 	g_dpDBClient.SendLogLevelUp( this, 1 );	// 레벨업 로그
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	g_dpDBClient.SendUpdatePlayerData( this );
-#else	// __SYS_PLAYER_DATA
-	if( 0 < GetPartyId() )
-		g_DPCoreClient.SendPartyMemberLevel( this );
-	if( m_idGuild != 0 )
-		g_DPCoreClient.SendGuildChangeJobLevel( this );
-#endif	// __SYS_PLAYER_DATA
 }
 
 void CUser::ExpUpSetting( void )
@@ -320,9 +289,7 @@ void CUser::Open( void )
 	AddGameTimer( g_GameTimer.GetCurrentTime() );
 	AddTaskBar();
 	AddEnvironment();
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	AddPlayerData();
-#endif	// __SYS_PLAYER_DATA
 	AddFriendGameJoin();
 	AddPartyName();
 	ADDGameJoin();
@@ -333,12 +300,8 @@ void CUser::Open( void )
 
 	AddFlyffEvent();
 
-#if __VER >= 12 // __LORD
 	AddLord();
-#endif	// __LORD
-#if __VER >= 13 // __COUPLE_1117
 	AddCouple();
-#endif	// __COUPLE_1117
 		
 /*	// chipi_090617 - 불필요하다.
 	CItemElem *pShield = GetEquipItem( PARTS_SHIELD );
@@ -425,13 +388,9 @@ void CUser::Process()
 		{
 			RemoveIk3Buffs( IK3_TICKET );
 		}
-#if __VER >= 13 // __COUPLE_1202
 		ProcessCouple();
-#endif // __COUPLE_1202
-#if __VER >= 15 // __CAMPUS
 		ProcessCampus();
 		CCampusHelper::GetInstance()->RecoveryCampusPoint( this, dwTick );
-#endif // __CAMPUS
 	}
 #endif	// __SYS_TICKET
 
@@ -490,9 +449,7 @@ void CUser::Process()
 	{
 //		m_dwTickSFS = dwTick + 1000;
 		m_dwTickSFS	+= 1000;	// 초당 오차가 평균 33 ms	- 康
-#if __VER >= 11 // __CHIPI_071210
 		CheckFiniteItem();
-#endif // __CHIPI_071210
 		#ifdef __EVENTLUA_COUPON
 		prj.m_EventLua.SetCoupon( this, dwTick );
 		#endif // __EVENTLUA_COUPON
@@ -506,12 +463,7 @@ void CUser::Process()
 			SubSMMode();
 			if( --m_dwTimeout4Save == 0 )		// 180초마다 
 			{
-#if __VER < 11 // __CHIPI_071210
-				CheckFiniteItem();
-#endif // __CHIPI_071210
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 				CheckHonorTime();
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __LAYER_1015
 				g_dpDBClient.SavePlayer( this, pWorld->GetID(), GetPos(), GetLayer() );
 #else	// __LAYER_1015
@@ -519,7 +471,6 @@ void CUser::Process()
 #endif	// __LAYER_1015
 				AddEventLuaDesc();
 			}
-#if __VER >= 15 // __GUILD_HOUSE
 			if( GuildHouseMng->IsGuildHouse( pWorld->GetID() ) && GetLayer() == m_idGuild )
 			{
 				if( m_tRestPointTick <= time_null() )	
@@ -534,7 +485,6 @@ void CUser::Process()
 				AddRestPoint();
 				m_nPrevRestPoint = m_nRestPoint;
 			}
-#endif // __GUILD_HOUSE
 		}
 #ifdef __VTN_TIMELIMIT
 		if( m_nAccountPlayTime > -1 )
@@ -543,14 +493,11 @@ void CUser::Process()
 	}
 
 
-#if __VER >= 8 // __S8_PK
 	if( IsPKPink() && GetTickCount() > GetPKPink() )
 	{
 		SetPKPink( 0 );
 		g_UserMng.AddPKPink( this, 0 );
 	}
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 15 // __REACTIVATE_EATPET
 	if( HasActivatedEatPet() )
 	{
 		CMover* pEatPet = prj.GetMover( GetEatPetId() );
@@ -571,7 +518,6 @@ void CUser::Process()
 			}
 		}
 	}
-#endif // __REACTIVATE_EATPET
 }
 
 //void CUser::Notify( void )
@@ -1073,7 +1019,6 @@ void CUser::AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId )
 	m_Snapshot.ar << dwId << dwItemId;
 }
 
-#if __VER >= 11 // __SYS_IDENTIFY
 void CUser::AddUpdateItemEx( unsigned char id, char cParam, __int64 iValue )
 {
 	if( IsDelete() )	return;
@@ -1083,13 +1028,8 @@ void CUser::AddUpdateItemEx( unsigned char id, char cParam, __int64 iValue )
 	m_Snapshot.ar << SNAPSHOTTYPE_UPDATE_ITEM_EX;
 	m_Snapshot.ar << id << cParam << iValue;
 }
-#endif	// __SYS_IDENTIFY
 
-#if __VER >= 15 // __PETVIS
 void CUser::AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
-#else // __PETVIS
-void CUser::AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue )
-#endif // __PETVIS
 {
 	if( IsDelete() )	return;
 	
@@ -1097,9 +1037,7 @@ void CUser::AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_UPDATE_ITEM;
 	m_Snapshot.ar << cType << nId << cParam << dwValue;
-#if __VER >= 15 // __PETVIS
 	m_Snapshot.ar << dwTime;
-#endif // __PETVIS
 }
 
 void CUser::AddUpdateBankItem( BYTE nSlot, BYTE nId, CHAR cParam, DWORD dwValue )
@@ -1163,11 +1101,7 @@ void CUser::AddSetChangeJob( int nJob )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_SET_JOB_SKILL;
 	m_Snapshot.ar << nJob;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	m_Snapshot.ar.Write( (void*)&m_aJobSkill[0], sizeof(SKILL) *  ( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-	m_Snapshot.ar.Write( (void*)&m_aJobSkill[0], sizeof(SKILL) *  ( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL ) );
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	m_Snapshot.ar.Write( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
 }
 
@@ -1242,11 +1176,7 @@ void CUser::AddSetPartyMemberParam( u_long idPlayer, BYTE nParam, int nVal )
 	
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CUser::AddPartyMember( CParty *pParty, u_long idPlayer, const char* pszLeader, const char* pszMember )
-#else	// __SYS_PLAYER_DATA
-void CUser::AddPartyMember( CParty *pParty, u_long idPlayer )
-#endif	// __SYS_PLAYER_DATA
 {
 	if( IsDelete() )	return;
 	
@@ -1254,10 +1184,8 @@ void CUser::AddPartyMember( CParty *pParty, u_long idPlayer )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_PARTYMEMBER;
 	m_Snapshot.ar << idPlayer;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	m_Snapshot.ar.WriteString( pszLeader );
 	m_Snapshot.ar.WriteString( pszMember );
-#endif	// __SYS_PLAYER_DATA
 	if( pParty )
 	{
 		m_Snapshot.ar << pParty->m_nSizeofMember;
@@ -1282,11 +1210,7 @@ void CUser::AddPartyExpLevel( int Exp, int Level, int nPoint )
 	m_Snapshot.ar << nPoint;
 	
 }
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 void CUser::AddSetPartyMode( int nMode, BOOL bOnOff, LONG nPoint ,DWORD dwSkillTime )			
-#else // //12차 극단유료아이템
-void CUser::AddSetPartyMode( int nMode, BOOL bOnOff, LONG nPoint )			
-#endif // //12차 극단유료아이템
 {
 	if( IsDelete() )	return;
 	
@@ -1294,9 +1218,7 @@ void CUser::AddSetPartyMode( int nMode, BOOL bOnOff, LONG nPoint )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_SETPARTYMODE;
 	m_Snapshot.ar << nMode;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	m_Snapshot.ar << dwSkillTime;
-#endif // //12차 극단유료아이템
 	m_Snapshot.ar << bOnOff;
 	if( bOnOff == TRUE )
 	{
@@ -1529,23 +1451,6 @@ void CUser::AddFriendError( BYTE nError, const char * szName )
 	
 }
 
-#if __VER < 11 // __SYS_PLAYER_DATA
-void CUser::AddGetFriendName( int nCount, FRIEND* aFriend )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_ADDGETFRIENDNAME;
-	m_Snapshot.ar << nCount;
-
-	for( int i = 0 ; i < nCount ; i++ )
-	{
-		m_Snapshot.ar << aFriend[i].dwUserId;
-		m_Snapshot.ar.WriteString( aFriend[i].szName );
-	}
-}
-#endif	// __SYS_PLAYER_DATA
 
 #ifdef __ENVIRONMENT_EFFECT
 
@@ -1775,7 +1680,6 @@ void CUser::AddDuelPartyResult( CParty *pDuelOther, BOOL bWin )
 	
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CUser::AddQueryPlayerData( u_long idPlayer, PlayerData* pPlayerData )
 {
 	if( IsDelete() )	return;
@@ -1813,77 +1717,6 @@ void CUser::AddPlayerData( void )
 			AddQueryPlayerData( aPlayer[i], pPlayerData );
 	}
 }
-#else	// __SYS_PLAYER_DATA
-void CUser::AddQueryPlayerString( u_long idPlayer, LPCSTR lpszPlayer, BYTE nQuery )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_QUERYPLAYERSTRING;
-	m_Snapshot.ar << idPlayer;
-	m_Snapshot.ar.WriteString( lpszPlayer );
-	m_Snapshot.ar << nQuery;
-	
-}
-
-void CUser::AddQueryPlayerListString( BYTE nQuery )
-{
-	if( IsDelete() )	return;
-	
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_QUERYPLAYERLISTSTRING;
-	m_Snapshot.ar << nQuery;
-}
-
-void CUser::AddFriendChangeJob( u_long uidPlayer, int nJob )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_ADDFRIENDCHANGEJOB;
-	m_Snapshot.ar << uidPlayer;
-	m_Snapshot.ar << nJob;
-}
-
-void CUser::AddPartyMemberJob( int nMemberIndex, int nJob)
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PARTYMEMBERJOB;
-	m_Snapshot.ar << nMemberIndex;
-	m_Snapshot.ar << nJob;
-}
-
-void CUser::AddPartyMemberLevel( int nMemberIndex, int nLevel)
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PARTYMEMBERLEVEL;
-	m_Snapshot.ar << nMemberIndex;
-	m_Snapshot.ar << nLevel;
-}
-
-void CUser::AddChangeGuildJobLevel( u_long uidPlayer, LONG nJob, LONG nLevel )
-{
-	if( IsDelete() )	return;
-	
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_GUILD_CHANGEJOBLEVEL;
-	m_Snapshot.ar << uidPlayer;
-	m_Snapshot.ar << nJob;	
-	m_Snapshot.ar << nLevel;	
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CUser::AddGuildInvite( u_long idGuild, u_long idMaster )
 {
@@ -2152,7 +1985,6 @@ void CUser::AddFlyffEvent( void )
 	
 }
 
-#if __VER >= 9 // __EVENTLUA
 void CUser::AddEventLuaDesc( int nState, string strDesc )
 {
 	if( strDesc.length() == 0 ) return;
@@ -2164,7 +1996,6 @@ void CUser::AddEventLuaDesc( int nState, string strDesc )
 	m_Snapshot.ar << nState;
 	m_Snapshot.ar.WriteString( strDesc.c_str() );	
 }
-#endif // __EVENTLUA
 
 void CUser::AddGoldText( int nPlus )
 {
@@ -2454,11 +2285,7 @@ void CUser::AddTag( short nTagCount, const TAG_ENTRY* tags )
 	short nReal = 0;
 	for( short i=0; i<nTagCount; ++i )
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		LPCTSTR lpszName = CPlayerDataCenter::GetInstance()->GetPlayerString( tags[i].idFrom );
-#else	// __SYS_PLAYER_DATA
-		LPCTSTR lpszName = prj.GetPlayerString( tags[i].idFrom );
-#endif	// __SYS_PLAYER_DATA
 		if( lpszName )
 		{
 			TRACE("TAG:%s %d %s\n", lpszName, tags[i].dwDate, tags[i].szString);
@@ -2573,7 +2400,6 @@ void CUser::AddSetDuel( CMover* pMover )
 	
 }
 
-#if __VER >= 8 // __S8_PK
 void CUser::AddPKValue()
 {
 	if( IsDelete() )	return;
@@ -2584,18 +2410,6 @@ void CUser::AddPKValue()
 	m_Snapshot.ar << PK_PKVALUE;
 	m_Snapshot.ar << GetPKValue();
 }
-#else // __VER >= 8 // __S8_PK
-void CUser::UpdatePlayerEnemy( BYTE byType, OBJID objid )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_UPDATE_PLAYER_ENEMY;
-	m_Snapshot.ar << byType;
-	m_Snapshot.ar << objid;
-}
-#endif // __VER >= 8 // __S8_PK
 
 
 void CUser::ScheduleDestory( DWORD dwDestoryTime  )
@@ -2931,17 +2745,12 @@ void CUser::OnDoUseItem( DWORD dwData, OBJID objid, int nPart )
 		ItemProp* pItemProp	= pItemElem->GetProp();
 		if( pItemProp && pItemProp->dwParts == NULL_ID && pItemElem->IsFlag( CItemElem::expired ) )
 		{
-#if __VER >= 9	// __PET_0410
 			if(pItemProp->dwItemKind3 == IK3_EGG)
 				AddDefinedText( TID_GAME_PET_DEAD );
 			else
 				AddDefinedText( TID_GAME_ITEM_EXPIRED );
-#else
-			AddDefinedText( TID_GAME_ITEM_EXPIRED );
-#endif //__PET_0410
 			return;
 		}
-#if __VER >= 15 // __PETVIS
 		if( pItemProp )
 		{
 			if( pItemProp->dwItemKind3 == IK3_VIS )
@@ -2960,7 +2769,6 @@ void CUser::OnDoUseItem( DWORD dwData, OBJID objid, int nPart )
 				return;
 			}
 		}			
-#endif // __PETVIS
 
 		dwItemId = pItemElem->m_dwItemId;
 	
@@ -2990,7 +2798,6 @@ void CUser::OnDoUseItem( DWORD dwData, OBJID objid, int nPart )
 	}
 }
 
-#if __VER >= 9	// __PET_0410
 void CUser::AddPetState( DWORD dwPetId, WORD wLife, WORD wEnergy, DWORD dwExp )
 {
 	if( IsDelete() )	return;
@@ -3032,9 +2839,7 @@ void CUser::AddPetFoodMill(int nResult, int nCount)
 	m_Snapshot.ar << nResult;
 	m_Snapshot.ar << nCount;
 }
-#endif	// __PET_0410
 
-#if __VER >= 11 // __SYS_COLLECTING
 void	CUser::ProcessCollecting( void )
 {
 	CItemElem* pCol		= GetCollector();
@@ -3143,9 +2948,7 @@ void CUser::StartCollecting( void )
 	log.Gold2	= GetGold();
 	log.Gold_1	= GetCollector()->m_nHitPoint;
 	g_DPSrvr.OnLogItem( log );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	m_dwHonorCheckTime = GetTickCount();
-#endif	// __HONORABLE_TITLE			// 달인
 }
 
 void CUser::StopCollecting( void )
@@ -3173,163 +2976,6 @@ BOOL CUser::DoUseItemBattery( void )
 	return TRUE;
 }
 
-#if __VER < 14 // __SMELT_SAFETY
-// called by CDPSrvr::OnEnchant()
-BOOL CUser::PreRefine( DWORD dwTarget, DWORD dwMaterial )
-{
-	CItemElem* pMaterial	= m_Inventory.GetAtId( dwMaterial );
-	// 재료가 유효한가?
-	if( !IsUsableItem( pMaterial ) )
-		return TRUE;
-	CItemElem* pTarget	= m_Inventory.GetAtId( dwTarget );
-	// 대상이 유효한가?
-	if( !IsUsableItem( pTarget ) )
-		return TRUE;
-	// 대상이 장착중인가?
-	if( m_Inventory.IsEquip( dwTarget ) )
-	{
-		AddDefinedText( TID_GAME_EQUIPPUT , "" );
-		return TRUE;
-	}
-
-	// 대상이 채집기인가?
-	if( pTarget->IsCollector( TRUE ) )
-	{
-		RefineCollector( pTarget, pMaterial );
-		return TRUE;
-	}
-	if( pTarget->IsAccessory() )
-	{
-		RefineAccessory( pTarget, pMaterial );
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-void	CUser::RefineCollector( CItemElem* pTarget, CItemElem* pMaterial )
-{
-	// 재료가 문스톤인가?
-	if( pMaterial->m_dwItemId != II_GEN_MAT_MOONSTONE && pMaterial->m_dwItemId != II_GEN_MAT_MOONSTONE_1 )
-	{
-		AddDefinedText( TID_GAME_NOTEQUALITEM , "" );
-		return;
-	}
-	CCollectingProperty* pProperty	= CCollectingProperty::GetInstance();
-	if( pTarget->GetAbilityOption() >= pProperty->GetMaxCollectorLevel() )
-	{
-		AddDefinedText( TID_GAME_MAX_COLLECTOR_LEVEL, "" );
-		return;
-	}
-	int nProb	= pProperty->GetEnchantProbability( pTarget->GetAbilityOption() );
-	if( nProb == 0 )
-		return;
-
-	// log
-	LogItemInfo lii;
-	lii.SendName	= GetName();
-	lii.RecvName	= "UPGRADEITEM";
-	lii.WorldId	= GetWorld()->GetID();
-	lii.Gold	= GetGold();
-	lii.Gold2	= GetGold();
-
-	DWORD dwRand	= xRandom( 1000 );	// 0 - 999
-	if( dwRand < nProb )
-	{
-		AddDefinedText( TID_UPGRADE_SUCCEEFUL );
-		AddPlaySound( SND_INF_UPGRADESUCCESS );
-		if( IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( this, XI_INT_SUCCESS, GetPos().x, GetPos().y, GetPos().z );
-		UpdateItem( pTarget->m_dwObjId, UI_AO,  pTarget->GetAbilityOption()+1 );
-		lii.Action		= "H";
-		g_DPSrvr.OnLogItem( lii, pTarget, pTarget->m_nItemNum );
-	}
-	else
-	{
-		AddDefinedText( TID_UPGRADE_FAIL );
-		AddPlaySound( SND_INF_UPGRADEFAIL );
-		if( IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( this, XI_INT_FAIL, GetPos().x, GetPos().y, GetPos().z );
-		// log
-	}
-	lii.Action	= "N";
-	g_DPSrvr.OnLogItem( lii, pMaterial, pMaterial->m_nItemNum );
-	UpdateItem( pMaterial->m_dwObjId, UI_NUM, pMaterial->m_nItemNum - 1 );	
-}
-
-void CUser::RefineAccessory( CItemElem* pTarget, CItemElem* pMaterial )
-{
-	// 재료가 문스톤인가?
-	if( pMaterial->m_dwItemId != II_GEN_MAT_MOONSTONE && pMaterial->m_dwItemId != II_GEN_MAT_MOONSTONE_1 )
-	{
-		AddDefinedText( TID_GAME_NOTEQUALITEM );
-		return;
-	}
-	if( pTarget->GetAbilityOption() >= MAX_AAO )	// 20
-	{
-		AddDefinedText( TID_GAME_ACCESSORY_MAX_AAO );
-		return;
-	}
-
-	// log
-	LogItemInfo lii;
-	lii.SendName	= GetName();
-	lii.RecvName	= "UPGRADEITEM";
-	lii.WorldId	= GetWorld()->GetID();
-	lii.Gold	= GetGold();
-	lii.Gold2	= GetGold();
-
-	CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
-	DWORD dwProbability		= pProperty->GetProbability( pTarget->GetAbilityOption() );
-	DWORD dwRandom	= xRandom( 10000 );	// 0 - 9999
-
-	// 액세서리 보호의 두루마리
-	BOOL bSmelprot	= FALSE;
-	if( HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT4 ) )
-	{
-		bSmelprot	= TRUE;
-		RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT4 );
-		ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELPROT4 );
-		if( pItemProp )
-			g_dpDBClient.SendLogSMItemUse( "2", this, NULL, pItemProp );
-	}
-
-	if( dwRandom < dwProbability )	// 성공
-	{
-		AddDefinedText( TID_UPGRADE_SUCCEEFUL );
-		AddPlaySound( SND_INF_UPGRADESUCCESS );
-			
-		if( IsMode( TRANSPARENT_MODE ) == 0)
-			g_UserMng.AddCreateSfxObj( this, XI_INT_SUCCESS, GetPos().x, GetPos().y, GetPos().z);
-
-		int nAbilityOption	= pTarget->GetAbilityOption() + 1;
-		UpdateItem( pTarget->m_dwObjId, UI_AO,  nAbilityOption );
-
-		lii.Action		= "H";
-		g_DPSrvr.OnLogItem( lii, pTarget, pTarget->m_nItemNum );
-	}
-	else	// 실패
-	{
-		AddDefinedText( TID_UPGRADE_FAIL );
-		AddPlaySound( SND_INF_UPGRADEFAIL );
-		if( IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( this, XI_INT_FAIL, GetPos().x, GetPos().y, GetPos().z );
-		if( !bSmelprot )
-		{
-			if( pTarget->GetAbilityOption() >= 3 )		// 삭제
-			{
-				lii.Action	= "L";
-				g_DPSrvr.OnLogItem( lii, pTarget, pTarget->m_nItemNum );
-				UpdateItem( pTarget->m_dwObjId, UI_NUM, 0 );
-			}
-		}
-	}
-	lii.Action	= "N";
-	g_DPSrvr.OnLogItem( lii, pMaterial, pMaterial->m_nItemNum );
-	UpdateItem( pMaterial->m_dwObjId, UI_NUM, pMaterial->m_nItemNum - 1 );	
-}
-#endif // __SMELT_SAFETY
-#endif	// __SYS_COLLECTING
 
 #ifdef __SYS_TICKET
 CItemElem* CUser::FindActiveTicket( DWORD dwItemId )
@@ -3378,13 +3024,11 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 	}
 	else
 	{
-#if __VER >= 13 // __RAINBOW_RACE
 		if( CRainbowRaceMng::GetInstance()->IsEntry( m_idPlayer ) )
 		{
 			AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
 			return;
 		}
-#endif // __RAINBOW_RACE
 		if( pItemElem->m_dwKeepTime == 0 )
 		{
 			CItemElem* pTicket	= FindActiveTicket( pItemElem->m_dwItemId );
@@ -3428,7 +3072,6 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 }
 #endif	// __SYS_TICKET
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CUser::AddGC1to1TenderOpenWnd( int nPenya )
 {
 	if( IsDelete() )	return;
@@ -3500,9 +3143,7 @@ void CUser::AddGC1to1WarResult( int m_nState, u_long uIdPlayer, int nWinCount0, 
 	m_Snapshot.ar << SNAPSHOTTYPE_GC1TO1_WARRESULT;
 	m_Snapshot.ar << m_nState << uIdPlayer << nWinCount0 << nWinCount1;
 }
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 8 // __CSC_VER8_5
 void CUser::RemoveAngel( void )
 {
 #ifdef __ANGEL_LOG
@@ -3542,9 +3183,7 @@ void CUser::RemoveAngel( void )
 #endif // __ANGEL_LOG
 	AddAngelInfo();
 }
-#endif	// __CSC_VER8_5
 
-#if __VER >= 11 // __SYS_POCKET
 void	CUser::AddPocketAttribute( int nAttribute, int nPocket, int nData )
 {
 	if( IsDelete() )	return;
@@ -3596,7 +3235,6 @@ void	CUser::AddPocketRemoveItem( int nPocket, int nItem, short nNum )
 	m_Snapshot.ar << SNAPSHOTTYPE_POCKET_REMOVE_ITEM;
 	m_Snapshot.ar << nPocket << nItem << nNum;
 }
-#endif	// __SYS_POCKET
 
 #ifdef __JEFF_11
 void	CUser::AddQuePetResurrectionResult( BOOL bResult )
@@ -3710,7 +3348,6 @@ void CUser::AdjustPartyQuest( DWORD dwWorldId )
 	}
 }
 
-#if __VER >= 13 // __COUPLE_1117
 void CUser::AddCouple()
 {
 	if( IsDelete() )	return;
@@ -3752,7 +3389,6 @@ void CUser::AddDecoupleResult()
 	m_Snapshot.ar << SNAPSHOTTYPE_DECOUPLE_RESULT;
 }
 
-#if __VER >= 13 // __COUPLE_1202
 // 1회/1초 
 void CUser::ProcessCouple()
 {
@@ -3804,9 +3440,7 @@ void CUser::AddAddCoupleExperience( int nExperience )
 	m_Snapshot.ar << SNAPSHOTTYPE_ADD_COUPLE_EXPERIENCE;
 	m_Snapshot.ar << nExperience;
 }
-#endif	// __COUPLE_1202
 
-#endif	// __COUPLE_1117
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 CUserMng::CUserMng()
 {
@@ -3954,19 +3588,15 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 		return;
 	}
 
-#if __VER >= 11 // __SYS_COLLECTING
 	if( pUser->IsCollecting() )
 		pUser->StopCollecting();
-#endif	// __SYS_COLLECTING
 
 #ifdef __EVE_MINIGAME
 	prj.m_MiniGame.DestroyWnd_FiveSystem( pUser );
 #endif // __EVE_MINIGAME
 
-#if __VER >= 8 //__Y_FLAG_SKILL_BUFF
 	if( pUser->HasActivatedEatPet() )
 		pUser->InactivateEatPet();
-#endif //__Y_FLAG_SKILL_BUFF		
 
 	D3DXVECTOR3 vPos;
 	DWORD		dwWorldId;
@@ -4023,15 +3653,11 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 			PRegionElem pRgnElem	= NULL;
 			if( pUser->IsChaotic() )
 			{
-#if __VER >= 8 // __S8_PK
 				if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
 					pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
 				
 				if( NULL == pRgnElem )
 					pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );
-#else // __VER >= 8 // __S8_PK
-				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );
-#endif // __VER >= 8 // __S8_PK
 			}
 			else
 			{
@@ -4090,7 +3716,6 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 		pUser->m_idChatting = 0;
 	}	
 
-#if __VER >= 12 // __SECRET_ROOM
 	// 비밀의 방 - 길마이면 패배 처리하고 아니면 밖으로 쫓아냄
 	if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( pUser ) )
 	{
@@ -4121,9 +3746,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 			vPos = D3DXVECTOR3( 6968, 100, 3328 );
 		}
 	}
-#endif // __SECRET_ROOM
 
-#if __VER >= 13 // __HOUSING
 	if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_MINIROOM )
 	{
 		dwWorldId = WI_WORLD_MADRIGAL;
@@ -4133,14 +3756,10 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 #endif	// __LAYER_1015
 	}
 	CHousingMng::GetInstance()->DestroyHousing( pUser->m_idPlayer );
-#endif // __HOUSING
 
-#if __VER >= 13 // __RAINBOW_RACE
 	// 접속종료시 탈락 처리로 변경 chipi_090317
 	CRainbowRaceMng::GetInstance()->SetDropOut( pUser->m_idPlayer );
-#endif // __RAINBOW_RACE
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pUser->GetWorld()->GetID() ) )
 	{
 		CInstanceDungeonHelper::GetInstance()->GoOut( pUser );
@@ -4156,7 +3775,6 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 		}
 		nLayer = nDefaultLayer;
 	}
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __LAYER_1015
 	g_dpDBClient.SavePlayer( pUser, dwWorldId, vPos, nLayer, TRUE );
@@ -4168,12 +3786,8 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 	g_dpDBClient.SaveSkill( pUser );	// 게임 종료시 스킬 저장
 #endif // __S_NEW_SKILL_2
 	g_dpDBClient.SendLogConnect( pUser );
-#if __VER >= 14 // __PCBANG
 	CPCBang::GetInstance()->DestroyPCBangPlayer( pUser->m_idPlayer );
-#endif // __PCBANG
-#if __VER >= 15 // __GUILD_HOUSE
 	GuildHouseMng->GoOutGuildHouse( pUser );
-#endif // __GUILD_HOUSE
 #ifdef __INVALID_LOGIN_0320
 	g_dpDBClient.CalluspXXXMultiServer( 0, pUser );
 #else	// __INVALID_LOGIN_0320
@@ -4201,7 +3815,6 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 			if( g_GuildCombatMng.m_nGCState == CGuildCombat::MAINTENANCE_STATE || g_GuildCombatMng.m_nGCState == CGuildCombat::WAR_WAR_STATE )
 				g_GuildCombatMng.OutWar( pUser, NULL, TRUE );
 		}
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		if( g_eLocal.GetState( EVE_GUILDCOMBAT1TO1 ) )
 		{
 			if( g_GuildCombat1to1Mng.IsPossibleUser( pUser ) && pUser->m_nGuildCombatState == 1 )
@@ -4215,7 +3828,6 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 				}
 			}
 		}
-#endif // __GUILD_COMBAT_1TO1
 	}
 }
 /*
@@ -4272,7 +3884,6 @@ void	CUserMng::AddDlgEmoticon( CCtrl* pCtrl, int nIdx )
 	AddChat( pCtrl, szString );
 }
 
-#if __VER >= 11 // __SYS_COLLECTING
 void CUserMng::AddStartCollecting( CUser* pUser )
 {
 	CAr ar;
@@ -4302,7 +3913,6 @@ void CUserMng::AddStopCollecting( CUser* pUser )
 	}
 	NEXT_VISIBILITYRANGE( pUser )
 }
-#endif	// __SYS_COLLECTING
 
 void CUserMng::AddChat( CCtrl* pCtrl, const TCHAR* szChat )
 {
@@ -4421,9 +4031,7 @@ void CUserMng::AddWorldShout( const TCHAR* szName, const TCHAR* szShout, D3DXVEC
 		arBlock << NULL_ID;
 		arBlock.WriteString( szName );
 		arBlock.WriteString( szShout );
-#if __VER >= 12 // __LORD
 		arBlock << (DWORD)0xffff99cc;
-#endif	// __LORD
 		GETBLOCK( arBlock, lpBlock, uBlockSize );
 		
 		AddBlock( pWorld, vPos, 0xff, lpBlock, uBlockSize );
@@ -4987,7 +4595,6 @@ void CUserMng::AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, 
 	NEXT_VISIBILITYRANGE( pCtrl )
 }
 
-#if __VER >= 11 // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 void CUserMng::AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, float z, BOOL bFlag )
 {
 	CAr ar;
@@ -5002,7 +4609,6 @@ void CUserMng::AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, 
 		USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pCtrl )
 }
-#endif // __MA_VER11_06				// 확율스킬 효과수정 world,neuz
 
 
 void CUserMng::AddMotionArrive( CMover* pMover, OBJMSG objmsg )
@@ -5018,7 +4624,6 @@ void CUserMng::AddMotionArrive( CMover* pMover, OBJMSG objmsg )
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-#if __VER >= 8 // __S8_PK
 void CUserMng::AddPKPink( CMover* pMover, BYTE byPink )
 {
 	CAr ar;
@@ -5043,7 +4648,6 @@ void CUserMng::AddPKPropensity( CMover* pMover )
 		USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pMover )
 }
-#endif // __VER >= 8 // __S8_PK
 
 void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, BOOL bFlag, DWORD dwWorldId )
 {
@@ -5072,16 +4676,12 @@ void CUserMng::AddNearSetChangeJob( CMover* pMover, int nJob, LPSKILL lpSkill )
 	CAr ar;
 	ar << GETID( pMover ) << SNAPSHOTTYPE_SET_NEAR_JOB_SKILL;
 	ar << nJob;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	if( pMover->IsHero() )
 		ar.Write( (void*)&pMover->m_aJobSkill[MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
 	else if( pMover->IsMaster() )
 		ar.Write( (void*)&pMover->m_aJobSkill[MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
 	else
 		ar.Write( (void*)&pMover->m_aJobSkill[MAX_JOB_SKILL], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-	ar.Write( (void*)&pMover->m_aJobSkill[MAX_JOB_SKILL], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
@@ -5144,21 +4744,6 @@ void CUserMng::AddStateMode( CUser* pUser, BYTE nFlag )
 	NEXT_VISIBILITYRANGE( pUser )
 }
 
-#if __VER < 8 // __S8_PK
-void CUserMng::AddSetSlaughterPoint( CMover* pMover, int nVal, int nNumKill )
-{
-	CAr ar;
-	
-	ar << GETID( pMover ) << SNAPSHOTTYPE_SET_SLAUGHTER_POINT;
-	ar << nVal << nNumKill;
-	
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
-}
-#endif // __VER < 8 // __S8_PK
 
 void CUserMng::AddSetFame( CMover* pMover, int nFame )
 {
@@ -5316,7 +4901,6 @@ void CUserMng::AddPutItemElem( CUser* pUser, CItemElem* pItemElem )
 	NEXT_VISIBILITYRANGE( pUser )
 }
 
-#if __VER >= 8 // __GUILDCOMBAT_85
 void CUserMng::AddPutItemElem( u_long uidGuild, CItemElem* pItemElem )
 {
 	CAr ar;
@@ -5337,7 +4921,6 @@ void CUserMng::AddPutItemElem( u_long uidGuild, CItemElem* pItemElem )
 			pUsertmp->AddBlock( lpBuf, nBufSize );
 	}
 }
-#endif // __VER >= 8
 
 void CUserMng::AddPVendorOpen( CUser* pUser )
 {
@@ -5363,18 +4946,12 @@ void CUserMng::AddPVendorClose( CUser* pUser )
 	NEXT_VISIBILITYRANGE( pUser )
 }
 
-#if __VER >= 11 // __MOD_VENDOR
 void CUserMng::AddPVendorItemNum( CUser* pUser, BYTE nItem, short nVend, const char* sBuyer )
-#else	// __MOD_VENDOR
-void CUserMng::AddPVendorItemNum( CUser* pUser, BYTE nItem, short nVend )
-#endif	// __MOD_VENDOR
 {
 	CAr ar;
 	ar << GETID( pUser ) << SNAPSHOTTYPE_PVENDOR_ITEM_NUM;
 	ar << nItem << nVend;
-#if __VER >= 11 // __MOD_VENDOR
 	ar.WriteString( sBuyer );
-#endif	// __MOD_VENDOR
 	GETBLOCK( ar, lpBuf, nBufSize );
 
 	FOR_VISIBILITYRANGE( pUser )
@@ -5503,11 +5080,7 @@ void CUserMng::AddGameSetting( void )
 		pUser->AddGameSetting();
 	}
 }
-#if __VER >= 13
 void CUserMng::AddShout( CUser* pUserSrc, int nRange, LPBYTE lpBlock, u_long uBlockSize )
-#else // __VER >= 13
-void CUserMng::AddShout( const D3DXVECTOR3 & vPos, int nRange, LPBYTE lpBlock, u_long uBlockSize )
-#endif // __VER >= 13
 {
 	float fRange = (float)( nRange * nRange );
 	D3DXVECTOR3 v;
@@ -5520,7 +5093,6 @@ void CUserMng::AddShout( const D3DXVECTOR3 & vPos, int nRange, LPBYTE lpBlock, u
 			continue;
 		if( pUser->GetWorld() == NULL )
 			continue;
-#if __VER >= 13
 		if( nRange > 0  )
 		{
 			v = pUserSrc->GetPos() - pUser->GetPos();
@@ -5531,13 +5103,6 @@ void CUserMng::AddShout( const D3DXVECTOR3 & vPos, int nRange, LPBYTE lpBlock, u
 		}
 
 		pUser->AddBlock( lpBlock, uBlockSize );
-#else // __VER >= 13
-		v = vPos - pUser->GetPos();
-		if( nRange == 0 || D3DXVec3LengthSq( &v ) < fRange )
-		{
-			pUser->AddBlock( lpBlock, uBlockSize );
-		}
-#endif // __VER >= 13
 	}
 }
 
@@ -5598,7 +5163,6 @@ void CUserMng::AddSetSkillState( CMover* pCenter, CMover *pTarget, WORD wType, W
 	ar << GETID( pCenter );
 	ar << SNAPSHOTTYPE_SETSKILLSTATE;	
 	ar << pTarget->GetId() << wType << wID;
-#if __VER >= 11 // __SYS_COLLECTING
 	if( wType == BUFF_ITEM2 )
 	{
 		time_t t	= (time_t)dwLevel - time_null();
@@ -5606,9 +5170,6 @@ void CUserMng::AddSetSkillState( CMover* pCenter, CMover *pTarget, WORD wType, W
 	}
 	else
 		ar << dwLevel;
-#else	// __SYS_COLLECTING
-	ar << dwLevel;
-#endif	// __SYS_COLLECTING
 	ar << dwTime;
 	
 	GETBLOCK( ar, lpBuf, nBufSize );
@@ -5813,13 +5374,8 @@ void CUserMng::AddGCLogWorld( void )
 void CUserMng::AddGCLogRealTimeWorld( CGuildCombat::__GCGETPOINT GCGetPoint )
 {
 	LPCSTR szAttacker, szDefender;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	szAttacker	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerAttack );
 	szDefender	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerDefence );
-#else	// __SYS_PLAYER_DATA
-	szAttacker = prj.GetPlayerString( GCGetPoint.uidPlayerAttack );
-	szDefender = prj.GetPlayerString( GCGetPoint.uidPlayerDefence );
-#endif	// __SYS_PLAYER_DATA
 	if( szAttacker == NULL || szDefender == NULL )
 		return;
 
@@ -6300,7 +5856,6 @@ void CUser::AddRunScriptFunc( const RunScriptFunc & runScriptFunc )
 				m_Snapshot.ar << runScriptFunc.vPos;
 				break;
 			}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		case FUNCTYPE_NEWQUEST:
 		case FUNCTYPE_CURRQUEST:
 			{
@@ -6310,7 +5865,6 @@ void CUser::AddRunScriptFunc( const RunScriptFunc & runScriptFunc )
 				m_Snapshot.ar << runScriptFunc.dwVal2;
 				break;
 			}
-#endif // __IMPROVE_QUEST_INTERFACE
 		default:
 			break;
 	}
@@ -6342,27 +5896,18 @@ void CUser::AddNewChatting( CChatting* pChatting )
 	for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
 	{
 		m_Snapshot.ar << pChatting->m_idMember[i];
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		if( NULL == CPlayerDataCenter::GetInstance()->GetPlayerString( pChatting->m_idMember[i] ) )
-#else	// __SYS_PLAYER_DATA
-		if( NULL == prj.GetPlayerString( pChatting->m_idMember[i] ) )
-#endif	// __SYS_PLAYER_DATA
 		{
 			Error( "AddNewChatting : MAX_ChattingMember = %d, GetMember = %d", pChatting->GetChattingMember(), pChatting->m_idMember[i] );
 			m_Snapshot.ar.WriteString( "" );
 		}
 		else
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			m_Snapshot.ar.WriteString( CPlayerDataCenter::GetInstance()->GetPlayerString( pChatting->m_idMember[i] ) );
-#else	//__SYS_PLAYER_DATA
-			m_Snapshot.ar.WriteString( prj.GetPlayerString( pChatting->m_idMember[i] ) );
-#endif	// __SYS_PLAYER_DATA
 		}
 	}
 }
 
-#if __VER >= 8 //__CSC_VER8_5
 /*
 void CUser::AddCreateAngel(BOOL isSuccess, char* createAngel)
 {
@@ -6389,7 +5934,6 @@ void CUser::AddAngelInfo( BOOL bComplete )
 	m_Snapshot.ar << m_nAngelLevel;
 	m_Snapshot.ar << bComplete;
 }
-#endif //__CSC_VER8_5
 
 void CUser::AddRemoveChatting( u_long uidPlayer )
 {
@@ -6582,7 +6126,6 @@ void CUser::AddReturnScroll()
 
 void CUserMng::OutputStatistics( void )
 {
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	int	acbUser[MAX_LEGEND_LEVEL];
 	
 	int cb	= 0;
@@ -6625,50 +6168,6 @@ void CUserMng::OutputStatistics( void )
 
 	CTime time	= CTime::GetCurrentTime();
 	FILEOUT( time.Format( "../statistics%Y%m%d%H%M%S.txt" ), lpOutputString );
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-
-	int	acbUser[MAX_LEVEL];
-	int cb	= 0;
-	int nTotal	= 0;
-
-	memset( acbUser, 0, sizeof(int) * MAX_LEVEL );
-
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
-	{
-		CUser* pUser = it->second;
-		if( pUser->IsValid() == FALSE )
-			continue;
-
-		if( pUser->GetLevel() >= 1 && pUser->GetLevel() <= MAX_LEVEL )
-		{
-			acbUser[pUser->GetLevel() - 1]++;
-			cb++;
-			nTotal	+= pUser->GetLevel();
-		}
-	}
-
-	static char lpOutputString[4096];
-	*lpOutputString	= '\0';
-	for( int i = 0; i < MAX_LEVEL; i++ )
-	{
-		if( acbUser[i] == 0 )
-			continue;
-		char lpString[32]	= { 0, };
-		sprintf( lpString, "%d\t%d\n", i+1, acbUser[i] );
-		lstrcat( lpOutputString, lpString );
-	}
-
-	if( cb > 0 )
-	{
-		char lpOverview[32]	= { 0, };
-		sprintf( lpOverview, "U=%d, A=%d", cb, nTotal / cb );
-		lstrcat( lpOutputString, lpOverview );
-	}
-
-	CTime time	= CTime::GetCurrentTime();
-	FILEOUT( time.Format( "../statistics%Y%m%d%H%M%S.txt" ), lpOutputString );
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 }
 
@@ -7285,11 +6784,9 @@ void CUser::CheckFiniteItem()
 
 				pItemElem->SetFlag( CItemElem::expired );
 				UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_FLAG, MAKELONG( pItemElem->m_dwObjIndex, pItemElem->m_byFlag ) );
-#if __VER >= 9	// __PET_0410
 				// 먹이 주머니 기간 만료이고, 활성화 되어있는 경우에는 비 활성화 처리한다.
 				if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_FEED_POCKET && pItemElem->m_dwKeepTime > 0 && HasBuff( BUFF_ITEM, (WORD)( pItemElem->m_dwItemId ) ) )
 					RemoveBuff( BUFF_ITEM, (WORD)( pItemElem->m_dwItemId ) );
-#endif	// __PET_0410
 			}
 		}
 	}
@@ -7576,17 +7073,13 @@ void CUserMng::CallTheRoll( int nBit )
 #ifdef __PROTECT_AWAKE
 						vecItemInfo.push_back( ITEMINFO( II_SYS_SYS_SCR_AWAKESAFE, 1, 0 ) );
 #endif // __PROTECT_AWAKE
-#if __VER >= 15 // __PETVIS
 						vecItemInfo.push_back( ITEMINFO( II_SYS_SYS_SCR_BXVISMAGIC01, 2, 0 ) );
 						vecItemInfo.push_back( ITEMINFO( II_SYS_SYS_SCR_BXVISMELEE01, 2, 0 ) );
-#endif // __PETVIS
 						break;
 
 					case 35:
 						vecItemInfo.push_back( ITEMINFO( II_CHR_FOO_COO_REMANTIS, 5, 0 ) );
-#if __VER >= 15 // __PETVIS
 						vecItemInfo.push_back( ITEMINFO( II_SYS_SYS_SCR_PET_MAGIC, 1, 0 ) );
-#endif // __PETVIS
 						break;
 
 					default:
@@ -7734,7 +7227,6 @@ void CUser::AddFiveSystemResult( int nResult, int nGetPenya, int nBetNum )
 }
 #endif // __EVE_MINIGAME
 
-#if __VER >= 9 // __ULTIMATE
 void CUser::AddUltimateMakeItem( int nResult )
 {
 	if( IsDelete() )	return;
@@ -7768,7 +7260,6 @@ void CUser::AddUltimateWeapon( BYTE state, int nResult )
 	m_Snapshot.ar << state;
 	m_Snapshot.ar << nResult;
 }
-#endif // __ULTIMATE
 
 #ifdef __TRADESYS
 void CUser::AddExchangeResult( BYTE state, int nResult )
@@ -7783,7 +7274,6 @@ void CUser::AddExchangeResult( BYTE state, int nResult )
 }
 #endif // __TRADESYS
 
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 void CUser::AddRemoveAttribute( BOOL bSuccess )
 {
 	if( IsDelete() )	return;
@@ -7793,9 +7283,7 @@ void CUser::AddRemoveAttribute( BOOL bSuccess )
 	m_Snapshot.ar << SNAPSHOTTYPE_REMOVE_ATTRIBUTE;
 	m_Snapshot.ar << bSuccess;
 }
-#endif // __REMOVE_ATTRIBUTE
 
-#if __VER >= 9	// __PET_0410
 #ifdef __PET_1024
 void CUserMng::AddSetPetName( CUser* pUser, const char* szPetName )
 {
@@ -7874,9 +7362,7 @@ void CUserMng::AddPetFeed( CMover* pMover, WORD wEnergy )
 			USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pMover )
 }
-#endif	// __PET_0410
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void CUserMng::AddHonorTitleChange( CMover* pMover, int nChange )
 {
 	// 兩
@@ -7892,9 +7378,7 @@ void CUserMng::AddHonorTitleChange( CMover* pMover, int nChange )
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 9	//__AI_0509
 void CUserMng::AddSetSpeedFactor( CMover* pMover, FLOAT fSpeedFactor )
 {
 	CAr ar;
@@ -7908,9 +7392,7 @@ void CUserMng::AddSetSpeedFactor( CMover* pMover, FLOAT fSpeedFactor )
 			USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pMover )
 }
-#endif	// __AI_0509
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 void CUser::AddLegendSkillResult( int nResult )
 {
 	if( IsDelete() )	return;
@@ -7921,9 +7403,7 @@ void CUser::AddLegendSkillResult( int nResult )
 //	m_Snapshot.ar << LEGENDSKILL_RESULT;	
 	m_Snapshot.ar << nResult;	
 }
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
-#if __VER >= 9 // __EVENTLUA
 void CUserMng::AddEventLua( BYTE nId, BOOL bState )
 {
 	string strDesc = prj.m_EventLua.GetDesc( nId );
@@ -7937,10 +7417,8 @@ void CUserMng::AddEventLua( BYTE nId, BOOL bState )
 		pUser->AddEventLuaDesc( (int)bState, strDesc );
 	}
 }
-#endif // __EVENTLUA
 
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 void CUser::AddGuildBankLogView( BYTE byListType, short nLogCount, const __GUILDBANKLOG_ENTRY* logs )
 {
 	if( IsDelete() )	return;
@@ -7964,9 +7442,7 @@ void CUser::AddGuildBankLogView( BYTE byListType, short nLogCount, const __GUILD
 		}
 	}
 }
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void CUser::AddHonorListAck()
 {
 	if( IsDelete() )	return;
@@ -7980,9 +7456,7 @@ void CUser::AddHonorListAck()
 		m_Snapshot.ar << m_aHonorTitle[i];
 	}
 }
-#endif	// __HONORABLE_TITLE			// 달인
 
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 void CUser::AddSealChar( short nLogCount, const __SEALCHAR_ENTRY* seals )
 {
 	if( IsDelete() )	return;
@@ -8008,7 +7482,6 @@ void CUser::AddSealCharSet()
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_SEALCHARGET_REQ;
 }
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 #ifdef __EVENTLUA_COUPON
 void CUser::AddCoupon( int nCoupon )
@@ -8021,7 +7494,6 @@ void CUser::AddCoupon( int nCoupon )
 }
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 12 // __SECRET_ROOM
 void CUser::AddSecretRoomMngState( int nState, DWORD dwRemainTime )
 {
 	if( IsDelete() )	return;
@@ -8129,9 +7601,7 @@ void CUser::AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, v
 	for( int i=0; i<(int)( vecSRTender.size() ); i++ )
 		m_Snapshot.ar << vecSRTender[i].dwGuildId;
 }
-#endif // __SECRET_ROOM
 
-#if __VER >= 12 // __LORD
 void CUser::AddLord( void )
 {
 	if( IsDelete() )	return;
@@ -8174,9 +7644,7 @@ BOOL CUser::IsTeleportable( void )
 		|| ( dwWorld >= WI_DUNGEON_SECRET_1 && dwWorld <= WI_DUNGEON_SECRET_L )
 		|| dwWorld == WI_WORLD_CISLAND	// 2008.01.21 코랄 아일랜드 검사 추가
 //		|| ( dwWorld >= WI_WORLD_HEAVEN01 && dwWorld <= WI_WORLD_HEAVEN05 )
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		|| CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( dwWorld )
-#endif // __INSTANCE_DUNGEON
 #ifdef __QUIZ
 		|| dwWorld == WI_WORLD_QUIZ
 #endif // __QUIZ
@@ -8184,9 +7652,7 @@ BOOL CUser::IsTeleportable( void )
 		return FALSE;
 	return ( GetSummonState() == 0 );
 }
-#endif	// __LORD
 
-#if __VER >= 12 // __MOD_TUTORIAL
 void CUser::AddSetTutorialState( void )
 {
 	if( IsDelete() )	return;
@@ -8195,9 +7661,7 @@ void CUser::AddSetTutorialState( void )
 	m_Snapshot.ar << SNAPSHOTTYPE_SET_TUTORIAL_STATE;
 	m_Snapshot.ar << GetTutorialState();
 }
-#endif	// __MOD_TUTORIAL
 
-#if __VER >= 12 // __LORD
 void CUserMng::AddElectionBeginCandidacy( void )
 {
 	CAr ar;
@@ -8306,9 +7770,7 @@ void CUserMng::AddQueryPlayerData( u_long idPlayer )
 	GETBLOCK( ar, lpBuf, uBufSize );
 	AddBlock( lpBuf, uBufSize );
 }
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 void CUser::AddTaxInfo( void )
 {
 	if( IsDelete() )	return;
@@ -8339,9 +7801,7 @@ void CUserMng::AddTaxInfo( void )
 		pUser->AddTaxInfo();
 	}
 }
-#endif // __TAX
 
-#if __VER >= 13 // __RAINBOW_RACE
 void CUser::AddRainbowRacePrevRankingOpenWnd()
 {
 	if( IsDelete() )	return;
@@ -8390,9 +7850,7 @@ void CUser::AddMiniGameExtState( __MINIGAME_EXT_PACKET MiniGameExtPacket )
 	m_Snapshot.ar << SNAPSHOTTYPE_RAINBOWRACE_MINIGAMEEXTSTATE;
 	MiniGameExtPacket.Serialize( m_Snapshot.ar );
 }
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 void CUser::AddHousingAllInfo( CHousing* pHousing )
 {
 	if( IsDelete() )	return;
@@ -8463,9 +7921,7 @@ void CUser::AddHousingVisitableList( vector<DWORD> & vecVisitable )
 	for( int i=0; i<(int)( vecVisitable.size() ); i++ )
 		m_Snapshot.ar << vecVisitable[i];
 }
-#endif // __HOUSING
 
-#if __VER >= 13 // __QUEST_HELPER
 void CUser::AddNPCPos( const D3DXVECTOR3 & vPos )
 {
 	if( IsDelete() )	return;
@@ -8474,7 +7930,6 @@ void CUser::AddNPCPos( const D3DXVECTOR3 & vPos )
 	m_Snapshot.ar << SNAPSHOTTYPE_QUESTHELPER_NPCPOS;
 	m_Snapshot.ar << vPos;
 }
-#endif // __QUEST_HELPER
 
 void CUser::AddClearTarget()
 {
@@ -8535,7 +7990,6 @@ int CUser::DoUseItemPetNaming()
 }
 #endif	// __PET_1024
 
-#if __VER >= 14 // __PCBANG
 void CUser::AddPCBangInfo( CPCBangInfo* pPI )
 {
 	if( IsDelete() )	return;
@@ -8544,7 +7998,6 @@ void CUser::AddPCBangInfo( CPCBangInfo* pPI )
 	m_Snapshot.ar << SNAPSHOTTYPE_PCBANG_INFO;
 	pPI->Serialize( m_Snapshot.ar );
 }
-#endif // __PCBANG
 
 #ifdef __VTN_TIMELIMIT
 void CUser::AddAccountPlayTime()
@@ -8571,7 +8024,6 @@ void CUserMng::ResetAccountPlayTime()
 }
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 14 // __SMELT_SAFETY
 void CUser::AddSmeltSafety( BYTE nResult )
 {
 	if( IsDelete() )	return;
@@ -8581,7 +8033,6 @@ void CUser::AddSmeltSafety( BYTE nResult )
 	m_Snapshot.ar << SNAPSHOTTYPE_SMELT_SAFETY;
 	m_Snapshot.ar << nResult;
 }
-#endif // __SMELT_SAFETY
 
 #ifdef __MAP_SECURITY
 void CUser::AddWorldReadInfo( DWORD dwWorldId, D3DXVECTOR3 vPos )
@@ -8632,7 +8083,6 @@ void CUser::AddQuizQuestion( int nType, const char* lpszQuestion, int nCount )
 }
 #endif // __QUIZ
 
-#if __VER >= 15 // __PETVIS
 void CUser::AddActivateVisPet( OBJID objIdVisPetItem, OBJID objIdVisPetId )
 {
 	if( IsDelete() )	return;
@@ -8655,9 +8105,7 @@ void CUserMng::AddChangeMoverSfxId( CMover* pMover )
 		USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pMover )
 }
-#endif // __PETVIS
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CUser::AddGuildHousePakcet( int nPacketType, GH_Fntr_Info & gfi, int nIndex )
 {
 	if( IsDelete() )	return;
@@ -8750,9 +8198,7 @@ BOOL CUserMng::HasUserSameWorldnLayer( CUser* pUserSrc )
 
 	return FALSE;
 }
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CUser::AddCheckedQuest()
 {
 	if( IsDelete() )	return;
@@ -8763,9 +8209,7 @@ void CUser::AddCheckedQuest()
 	if( this->m_nCheckedQuestSize )
 		m_Snapshot.ar.Write( this->m_aCheckedQuest, sizeof(WORD) * this->m_nCheckedQuestSize ); 
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __CAMPUS
 void CUser::AddInviteCampusMember( CUser* pRequest )
 {
 	if( IsDelete() )	return;
@@ -8855,7 +8299,6 @@ int CUser::GetPointByType( int nType )
 	
 	return nPoint;
 }
-#endif // __CAMPUS
 
 
 

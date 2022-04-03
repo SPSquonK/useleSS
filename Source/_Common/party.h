@@ -21,12 +21,8 @@
 #define PARTY_STRETCHING_MODE		2	// 스트레칭 상태	: 휴식 2배 : 단장 어시스트 3배
 #define PARTY_GIFTBOX_MODE			3	// 기프트박스 상태  : 아이템 양 2배
 
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 #define PARTY_PARSKILL_MODE			4	// parskill 상태  :단장에게서 멀리떨어져도 사용가능
 #define MAX_PARTYMODE				5
-#else	//__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-#define MAX_PARTYMODE				4
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 
 #define	PP_REMOVE	0
 
@@ -44,12 +40,6 @@ typedef	struct	_PartyMember	// 플레이어 아이디만 가지고 있음
 	u_long	m_uPlayerId;
 	CTime	m_tTime;
 	BOOL	m_bRemove;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	LONG	m_nLevel;
-	LONG	m_nJob;
-	BYTE	m_nSex;
-	TCHAR	m_szName[20];		// 한글 8자 (영문 16자)
-#endif	// __SYS_PLAYER_DATA
 #if defined( __WORLDSERVER ) || defined( __CLIENT )
 	D3DXVECTOR3	m_vPos;
 #endif // defined( __WORLDSERVER ) || defined( __CLIENT )
@@ -58,11 +48,6 @@ typedef	struct	_PartyMember	// 플레이어 아이디만 가지고 있음
 		m_uPlayerId	= 0;
 		m_tTime = CTime::GetCurrentTime();
 		m_bRemove = FALSE;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		m_nLevel = m_nJob = 0;
-		m_szName[0] = '\0';
-		m_nSex = 0;
-#endif	// __SYS_PLAYER_DATA
 
 #if defined( __WORLDSERVER ) || defined( __CLIENT )
 		m_vPos = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
@@ -122,11 +107,7 @@ public:
 //	}
 		
 	void	SetPartyId( u_long uPartyId )		{	 m_uPartyId = uPartyId ;	}
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	BOOL	NewMember( u_long uPlayerId );
-#else	// __SYS_PLAYER_DATA
-	BOOL	NewMember( u_long uPlayerId, LONG nLevel, LONG nJob, BYTE nSex, LPSTR szName );
-#endif	// __SYS_PLAYER_DATA
 	BOOL	DeleteMember( u_long uPlayerId );
 
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
@@ -140,12 +121,8 @@ public:
 
 	void	SwapPartyMember( int first, int Second );
 
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 	int		GetPartyModeTime( int nMode );
 	void	SetPartyMode( int nMode, DWORD dwSkillTime ,int nCachMode );
-#else	//12차 극단유료아이템
-	void	SetPartyMode( int nMode, DWORD dwSkillTime );
-#endif // //12차 극단유료아이템
 
 	void	DoUsePartySkill( u_long uPartyId, u_long nLeaderid, int nSkill );
 #ifdef __WORLDSERVER

@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __HOUSING
 
 #include "Object3D.h"
 
@@ -185,9 +184,7 @@ public:
 };
 
 #endif // __CLIENT
-#endif // __VER >= 13
 
-#if __VER >= 15 // __GUILD_HOUSE
 
 #ifdef __CLIENT
 
@@ -246,5 +243,4 @@ inline CGuildDeployManager* GuildDeploy( ) { return CGuildDeployManager::GetInst
 
 #endif //__CLIENT
 
-#endif	//__GUILD_HOUSE
 

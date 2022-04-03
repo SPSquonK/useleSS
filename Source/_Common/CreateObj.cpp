@@ -295,11 +295,9 @@ CSfx* CreateSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 		pObj = new CSfxFixed();
 		break;
 		
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	case XI_CHR_CURSOR1:
 		pObj = new CSfxCursor();
 		break;
-#endif // __ITEMCREATEMON_S0602
 
 	case XI_BUFFPET_GRADE1:
 	case XI_BUFFPET_GRADE2:
@@ -642,7 +640,6 @@ CObj* CreateObj( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwObjType, DWORD dwObjIndex
 		{
 			CMover *pMover = (CMover *)pObj;
 			pMover->m_pActMover->m_fSpeed = pMover->GetProp()->fSpeed;
-#if __VER >= 9	//__AI_0509
 			MoverProp* pProp	= pMover->GetProp();
 			if( pProp->dwAI == AII_MONSTER )
 			{
@@ -650,7 +647,6 @@ CObj* CreateObj( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwObjType, DWORD dwObjIndex
 //				if( pProp->dwClass == RANK_SUPER )
 //					pMover->m_pActMover->m_fSpeed	*= 1.5F;
 			}
-#endif	// __AI_0509
 		}
 		return pObj;
 	}

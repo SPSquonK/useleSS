@@ -1,7 +1,6 @@
 #ifndef __VERSION_COMMON_H__
 #define __VERSION_COMMON_H__ 
 #define __MAINSERVER
-#define		__VER	15	// 15차
 
 #if !defined( __TESTSERVER ) && !defined( __MAINSERVER )
 	#define __INTERNALSERVER
@@ -315,8 +314,7 @@
 	#define		__PROTECT_AWAKE				//	각성 보호의 두루마리.
 
 
-	#undef		__VER
-	#define		__VER 16
+// error : inserted by coan: "#define __VER 16" differently redefines -D symbol at B:\Useless\Source\WORLDSERVER\VersionCommon.h(319)
 
 	#define		__GUILD_HOUSE_MIDDLE		// 길드하우스 중형
 
@@ -412,8 +410,6 @@
 #endif	// end - 서버종류별 define 
 
 // 임시 - 여기다 넣지 말것 
-#if __VER >= 7
 	#define		__REMOVE_SCIRPT_060712		 
-#endif
 
 #endif

@@ -106,12 +106,7 @@ BOOL CWndDuelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if( IsValidObj( pSrc ) )
 			{
 
-#if __VER >= 8 // 8차 듀얼 061226 ma
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 				CWndBase* pWndBase = g_WndMng.GetWndBase( APP_DIALOG_EX );
-#else // __IMPROVE_QUEST_INTERFACE
-				CWndBase* pWndBase = g_WndMng.GetWndBase( APP_DIALOG );
-#endif // __IMPROVE_QUEST_INTERFACE
 				if( pWndBase ) 
 					pWndBase->Destroy();
 
@@ -150,7 +145,6 @@ BOOL CWndDuelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if( pWndBase ) 
 						pWndBase->Destroy();
 				}
-#if __VER >= 8 //__CSC_VER8_4
 				pWndBase	= g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
 				if( pWndBase )
 				{
@@ -162,9 +156,6 @@ BOOL CWndDuelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						pWndBase->Destroy();
 				}
 				pWndBase	= g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-#else
-				pWndBase	= g_WndMng.GetWndBase( APP_BEAUTY_SHOP );
-#endif //__CSC_VER8_4
 				if( pWndBase )
 				{
 					pWndBase->Destroy();
@@ -272,21 +263,9 @@ BOOL CWndDuelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				pWndBase	= g_WndMng.GetWndBase( APP_CLOSE_EXISTING_CONNECTION );
 				if( pWndBase )
 					pWndBase->Destroy();
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-				pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_OFFER );
-				if( pWndBase )
-					pWndBase->Destroy();
-#endif //__GUILD_COMBAT_1TO1
 				pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_SELECTION );
 				if( pWndBase )
 					pWndBase->Destroy();
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-
-				pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_OFFERSTATE );
-				if( pWndBase )
-					pWndBase->Destroy();
-#endif //__GUILD_COMBAT_1TO1
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_1TO1_SELECTION );
 				if( pWndBase )
 					pWndBase->Destroy();
@@ -296,8 +275,6 @@ BOOL CWndDuelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_1TO1_OFFER );
 				if( pWndBase )
 					pWndBase->Destroy();
-#endif //__GUILD_COMBAT_1TO1
-#if __VER >= 12 // __SECRET_ROOM
 				pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_SELECTION );
 				if( pWndBase )
 					pWndBase->Destroy();
@@ -307,9 +284,7 @@ BOOL CWndDuelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_OFFERSTATE );
 				if( pWndBase )
 					pWndBase->Destroy();
-#endif //__SECRET_ROOM
 
-#endif // __VER >= 8 // 8차 듀얼 061226 ma
 				g_DPlay.SendDuelYes( pSrc, g_pPlayer );		// 듀얼 신청 허락함.
 			}
 			bResult = TRUE;
@@ -357,7 +332,6 @@ BOOL CWndDuelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#if __VER >= 8     // 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 
 CWndDuelResult::CWndDuelResult() 
 { 
@@ -452,4 +426,3 @@ BOOL CWndDuelResult::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#endif	// __VER >= 8  

@@ -78,9 +78,7 @@ public:
 	float m_fCloudx,m_fCloudy; // 흘러가는 구름용 좌표
 	float m_fSunAngle; // 현재 태양의 각도
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	BOOL m_bLockWeather; //gmpbigsun :  날씨 고정flag (대륙단위로 설정한 날씨는 어떠한 이유로든 변하지 않는다)
-#endif
 
 	CSkyBox();
 	~CSkyBox();

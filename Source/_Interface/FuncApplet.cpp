@@ -22,20 +22,12 @@
 #endif // __IMPROVE_MAP_SYSTEM
 #include "WndBagEx.h"
 
-#if __VER >= 8 //__CSC_VER8_2
 #include "WndPartyQuick.h"
-#endif //__CSC_VER8_2
-#if __VER >= 13 // __HOUSING
 #include "WndHousing.h"
-#endif // __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "WndGuildHouse.h"
-#endif
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include "Wnd2ndPassword.h"
-#endif // __2ND_PASSWORD_SYSTEM
 
 #ifdef __NEW_WEB_BOX
 #include "WndHelperWebBox.h"
@@ -78,11 +70,7 @@ DECLAREAPPLET( AppMain_WndCommItem     , new CWndCommItem  );
 DECLAREAPPLET( AppMain_WndUpgradeBase  , new CWndUpgradeBase  );
 DECLAREAPPLET( AppMain_WndPiercing     , new CWndPiercing  );
 DECLAREAPPLET( AppMain_WndChat         , new CWndChat    );
-#if __VER >= 11 // __CSC_VER11_4
 DECLAREAPPLET( AppMain_WndMessenger    , new CWndMessengerEx );
-#else //__CSC_VER11_4
-DECLAREAPPLET( AppMain_WndMessenger    , new CWndMessenger );
-#endif //__CSC_VER11_4
 DECLAREAPPLET( AppMain_WndOptSound     , new CWndOptSound    );
 DECLAREAPPLET( AppMain_WndOptWindow    , new CWndOptWindow   );
 DECLAREAPPLET( AppMain_WndOptMyInfo    , new CWndOptMyInfo   );
@@ -101,51 +89,31 @@ DECLAREAPPLET( AppMain_WndSelectServer , new CWndSelectServer );
 DECLAREAPPLET( AppMain_WndCreateChar   , new CWndCreateChar   );
 DECLAREAPPLET( AppMain_WndSelectChar   , new CWndSelectChar   );
 
-#if __VER >= 9  // __INSERT_MAP
 #ifdef __IMPROVE_MAP_SYSTEM
 DECLAREAPPLET( AppMain_WndMap   , new CWndMapEx   );
 #else // __IMPROVE_MAP_SYSTEM
 DECLAREAPPLET( AppMain_WndMap   , new CWndMap   );
 #endif // __IMPROVE_MAP_SYSTEM
-#endif
-#if __VER >= 12 // __LORD
 DECLAREAPPLET( AppMain_LordSkill, new CWndLordSkill  );
-#endif
-#if __VER >= 8 //__CSC_VER8_2
 DECLAREAPPLET( AppMain_WndPartyQuick   , new CWndPartyQuick   );
-#endif //__CSC_VER8_2
-#if __VER >= 8 //__CSC_VER8_3
 DECLAREAPPLET( AppMain_WndBuffStatus   , new CWndBuffStatus   );
-#endif //__CSC_VER8_3
 
 #ifdef __GUILDVOTE
 DECLAREAPPLET( AppMain_WndGuildVote   , new CWndGuildVote  );
 #endif
 DECLAREAPPLET( AppMain_WndInvenRemoveItem, new CWndInvenRemoveItem );
-#if __VER >= 11 // __SYS_POCKET
 #ifndef __TMP_POCKET
 DECLAREAPPLET( AppMain_BagEx    , new CWndBagEx   );
 #endif
-#endif
 
-#if __VER >= 12 // __MOD_TUTORIAL
 DECLAREAPPLET( AppMain_InfoPang    , new CWndInfoPang   );
-#endif
-#if __VER >= 13 // __HOUSING
 DECLAREAPPLET( AppMain_Housing    , new CWndHousing   );
-#endif // __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 DECLAREAPPLET( AppMain_GuildHousing    , new CWndGuildHousing   );
-#endif
 
-#if __VER >= 13 // __CSC_VER13_2
 DECLAREAPPLET( AppMain_Couple    , new CWndCoupleManager );
-#endif //__CSC_VER13_2
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 DECLAREAPPLET( AppMain_Wnd2ndPassword  , new CWnd2ndPassword );
-#endif // __2ND_PASSWORD_SYSTEM
 
 #ifdef __NEW_WEB_BOX
 DECLAREAPPLET( AppMain_WndHelperWebBox , new CWndHelperWebBox  );
@@ -156,59 +124,31 @@ void CWndMgr::AddAllApplet()
 	//             생성자                    ID                            타이틀                    아이콘                          툴팁 텍스트 
 	AddAppletFunc( AppMain_WndNavigator    , APP_NAVIGATOR               , _T( "WndNavigator" )    , _T( "Icon_Navigator.dds" )    , GETTEXT( TID_TIP_NAVIGATOR      ),  'N'  );	
 	AddAppletFunc( AppMain_WndStatus       , APP_STATUS1                 , _T( "WndStatus" )       , _T( "Icon_Status.dds"    )    , GETTEXT( TID_TIP_STATUS         ), 'T' );
-#if __VER >= 9  // __INSERT_MAP
 #ifdef __IMPROVE_MAP_SYSTEM
 	AddAppletFunc( AppMain_WndMap       , APP_MAP_EX              , _T( "WndMap" )       , _T( "Icon_Applet.dds"    )    , GETTEXT(TID_TIP_MAP), 'M' );
 #else // __IMPROVE_MAP_SYSTEM
 	AddAppletFunc( AppMain_WndMap       , APP_MAP                 , _T( "WndMap" )       , _T( "Icon_Applet.dds"    )    , GETTEXT(TID_TIP_MAP), 'M' );
 #endif // __IMPROVE_MAP_SYSTEM
-#endif
-#if __VER >= 12 // __LORD
 	if( ::GetLanguage() == LANG_FRE )
 		AddAppletFunc( AppMain_LordSkill       , APP_LORD_SKILL             , _T( "WndLordSkill" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), 'A' );
 	else
 		AddAppletFunc( AppMain_LordSkill       , APP_LORD_SKILL             , _T( "WndLordSkill" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), 'L' );
-#endif	// __LORD
-#if __VER >= 12 // __MOD_TUTORIAL
 	AddAppletFunc( AppMain_InfoPang       , APP_INFOPANG                , _T( "WndInfoPang" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), 0 );
-#endif
-#if __VER >= 13 // __HOUSING
 	AddAppletFunc( AppMain_Housing       , APP_HOUSING                , _T( "WndHousing" )       , _T( "Icon_Housing.dds"    )    , GETTEXT(TID_GAME_HOUSING_BOX), 'Y' );
-#endif // __HOUSING
 
-#if __VER >= 15 // __GUILD_HOUSE
 	AddAppletFunc( AppMain_GuildHousing     , APP_GH_FURNITURE_STORAGE, _T( "WndGuildHousing" )     , _T( "Icon_Housing.dds"    )    , GETTEXT(TID_GAME_HOUSING_BOX), 'R' );
-#endif 
-#if __VER >= 13 // __RENEW_CHARINFO
 	AddAppletFunc( AppMain_WndCharacter    , APP_CHARACTER3               , _T( "WndCharacter" )    , _T( "Icon_Character.dds" )    , GETTEXT( TID_TIP_CHARACTER      ), 'H' );
-#elif __VER >= 9 // __CSC_VER9_2
-	AddAppletFunc( AppMain_WndCharacter    , APP_CHARACTER2               , _T( "WndCharacter" )    , _T( "Icon_Character.dds" )    , GETTEXT( TID_TIP_CHARACTER      ), 'H' );
-#else //__CSC_VER9_2
-	AddAppletFunc( AppMain_WndCharacter    , APP_CHARACTER               , _T( "WndCharacter" )    , _T( "Icon_Character.dds" )    , GETTEXT( TID_TIP_CHARACTER      ), 'H' );
-#endif //__CSC_VER9_2
 	AddAppletFunc( AppMain_WndInventory    , APP_INVENTORY               , _T( "WndInventory" )    , _T( "Icon_Inventory.dds" )    , GETTEXT( TID_TIP_INVENTORY      ), 'I' );
 	
 	AddAppletFunc( AppMain_WndWebBox       , APP_WEBBOX                  , _T( "WebBox" )          , _T( "Icon_CitemMall.dds" )    , GETTEXT( TID_TIP_ITEMMALL       ), 0 );
-#if __VER >= 10 // __CSC_VER9_1
 	AddAppletFunc( AppMain_WndSkill2       , APP_SKILL3                  , _T( "WndSkill"     )    , _T( "Icon_Skill.dds"     )    , GETTEXT( TID_TIP_SKILL          ), 'K' );
-#else
-	AddAppletFunc( AppMain_WndSkill2       , APP_SKILL1                  , _T( "WndSkill"     )    , _T( "Icon_Skill.dds"     )    , GETTEXT( TID_TIP_SKILL          ), 'K' );
-#endif //__CSC_VER9_1
 
 	AddAppletFunc( AppMain_WndMotion       , APP_MOTION                  , _T( "WndMotion"    )    , _T( "Icon_Motion.dds"   )     , GETTEXT( TID_TIP_MOTION         ),  'O'  );
 	AddAppletFunc( AppMain_WndTrade        , APP_TRADE                   , _T( "WndTrade"     )    , _T( "Icon_Trade.dds"     )    , GETTEXT( TID_TIP_TRADE          ),  0  );
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 	AddAppletFunc( AppMain_WndVendor	   , APP_VENDOR_REVISION         , _T( "WndVendor" )	   , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_VENDOR ), 0 );
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-	AddAppletFunc( AppMain_WndVendor	   , APP_VENDOREX	             , _T( "WndVendor" )	   , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_VENDOR ), 0 );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	AddAppletFunc( AppMain_WndQuest        , APP_QUEST_EX_LIST           , _T( "WndQuest"     )    , _T( "Icon_Quest.dds"     )    , GETTEXT( TID_TIP_QUEST          ), g_Neuz.Key.chQuest );
-#else // __IMPROVE_QUEST_INTERFACE
-	AddAppletFunc( AppMain_WndQuest        , APP_QUEST                   , _T( "WndQuest"     )    , _T( "Icon_Quest.dds"     )    , GETTEXT( TID_TIP_QUEST          ), g_Neuz.Key.chQuest );
-#endif // __IMPROVE_QUEST_INTERFACE
 	AddAppletFunc( AppMain_WndParty        , APP_PARTY                   , _T( "WndParty"     )    , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  'P' );
 
 	AddAppletFunc( AppMain_WndGuild        , APP_GUILD                   , _T( "WndGuild"     )    , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_COMPANY          ),  'G' );
@@ -217,11 +157,9 @@ void CWndMgr::AddAllApplet()
 	AddAppletFunc( AppMain_WndGuildVote    , APP_GUILD_VOTE              , _T( "WndGuildVote")     , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_COMPANY          ),  'V' );
 #endif
 	
-#if __VER >= 11 // __SYS_POCKET
 	#ifndef __TMP_POCKET
 	AddAppletFunc( AppMain_BagEx       , APP_BAG_EX                , _T( "WndBagEx" )       , _T( "Icon_BagBag.tga"    )    , GETTEXT(TID_APP_BAG_EX), 'B' );
 	#endif
-#endif
 	AddAppletFunc( AppMain_WndCommItem    , APP_COMM_ITEM                , _T( "WndCommItem"  )    , _T( "Icon_CItemTime.dds" )    , GETTEXT( TID_TIP_ITEMTIME   ),  'J' );
 	AddAppletFunc( AppMain_WndUpgradeBase    , APP_TEST                  , _T( "WndUpgradeBase" )  , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  0 );
 	AddAppletFunc( AppMain_WndPiercing    , APP_PIERCING                 , _T( "WndPiercing"     ) , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  0 );
@@ -250,21 +188,13 @@ void CWndMgr::AddAllApplet()
 	AddAppletFunc( AppMain_WndCreateChar   , APP_CREATE_CHAR             , _T( "WndCreateChar" )   , _T( "Icon_CreateChar.dds" )   , GETTEXT( TID_TIP_WORLD     ),  0  );
 	AddAppletFunc( AppMain_WndSelectChar   , APP_SELECT_CHAR             , _T( "WndSelectChar" )   , _T( "Icon_SelectChar.dds" )   , GETTEXT( TID_TIP_DIALOG    ),  0  );
 
-#if __VER >= 8 //__CSC_VER8_2
 	AddAppletFunc( AppMain_WndPartyQuick   , APP_PARTY_QUICK             , _T( "WndPartyQuick" )   , NULL   , GETTEXT( TID_TIP_DIALOG    ),  0  );
-#endif //__CSC_VER8_2
-#if __VER >= 8 //__CSC_VER8_3
 	AddAppletFunc( AppMain_WndBuffStatus   , APP_BUFF_STATUS             , _T( "WndBuffStatus" )   , NULL   , GETTEXT( TID_TIP_DIALOG    ),  0  );
-#endif //__CSC_VER8_3
-#if __VER >= 13 // __CSC_VER13_2
 	if( ::GetLanguage() == LANG_FRE )
 		AddAppletFunc( AppMain_Couple   , APP_COUPLE_MAIN             , _T( "WndCoupleManager" )   , _T( "Icon_Couple.dds" )   , GETTEXT( TID_GAME_COUPLE ),  'X' );
 	else
 		AddAppletFunc( AppMain_Couple   , APP_COUPLE_MAIN             , _T( "WndCoupleManager" )   , _T( "Icon_Couple.dds" )   , GETTEXT( TID_GAME_COUPLE ),  'F' );
-#endif //__CSC_VER13_2
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	AddAppletFunc( AppMain_Wnd2ndPassword  , APP_2ND_PASSWORD_NUMBERPAD  , _T( "Wnd2ndPassword" )   , _T( "Icon_Applet.dds" )   , GETTEXT( TID_2ND_PASSWORD_WINDOW_OPEN ),  0  );
-#endif // __2ND_PASSWORD_SYSTEM
 #ifdef __NEW_WEB_BOX
 	AddAppletFunc( AppMain_WndHelperWebBox , APP_WEBBOX2              , _T( "HelperWebBox" )       , _T( "Icon_HelperHelp.dds" ) , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TOOLTIP ), 0 );
 #endif // __NEW_WEB_BOX

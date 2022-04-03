@@ -5,9 +5,7 @@
 #include "WndManager.h"
 #include "defineText.h"
 
-#if __VER >= 11 // __SYS_IDENTIFY
 #include "randomoption.h"
-#endif	// __SYS_IDENTIFY
 
 extern CDPClient g_DPlay;
 
@@ -17,7 +15,6 @@ extern CDPClient g_DPlay;
   CtrlId : WIDC_STATIC1 - 
   CtrlId : WIDC_BUTTON1 - Button
 ****************************************************/
-#if __VER >= 11 // __SYS_IDENTIFY
 
 // gmpbigsun ( 10_04_05 ) : CWndAwakening class는 현재 쓰이지 않음
 CWndAwakening::CWndAwakening() 
@@ -223,7 +220,6 @@ void CWndAwakening::SetDescription()
 		m_pText->ResetString();	
 	}
 }
-#endif
 
 #ifdef __PROTECT_AWAKE
 CWndSelectAwakeCase::CWndSelectAwakeCase( )

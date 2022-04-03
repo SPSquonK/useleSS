@@ -45,7 +45,6 @@ CCollectingWnd::~CCollectingWnd()
 
 void CCollectingWnd::OnDraw( C2DRender* p2DRender ) 
 { 
-#if __VER >= 11 // __SYS_COLLECTING
 	//if( m_pElem == NULL)
 	//return;
     if(!g_pPlayer) return;
@@ -233,7 +232,6 @@ void CCollectingWnd::OnDraw( C2DRender* p2DRender )
 	if(m_fAngle > 360.0f)
 	m_fAngle -= 360.0f;
 */
-#endif
 }
  
 void CCollectingWnd::OnDestroy()
@@ -302,7 +300,6 @@ HRESULT CCollectingWnd::DeleteDeviceObjects()
 void CCollectingWnd::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-#if __VER >= 11 // __SYS_COLLECTING
 	// 여기에 코딩하세요
 	if(!g_pPlayer) return;
 	CItemElem* pCollector = g_pPlayer->GetCollector();
@@ -366,17 +363,12 @@ void CCollectingWnd::OnInitialUpdate()
 	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
 	Move( point );
 	
-#endif
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CCollectingWnd::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	#if __VER >= 11 // __SYS_COLLECTING
 		// Daisy에서 설정한 리소스로 윈도를 연다.
 		return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COLLECTING, 0, CPoint( 0, 0 ), pWndParent );
-	#else
-		return FALSE;
-	#endif
 } 
 /*
   직접 윈도를 열때 사용 
@@ -392,7 +384,6 @@ BOOL CCollectingWnd::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 void  CCollectingWnd::Update()
 {
-#if __VER >= 11 // __SYS_COLLECTING
 	if(!g_pPlayer) return;
 	CItemElem* pCollector = g_pPlayer->GetCollector();
 
@@ -405,7 +396,6 @@ void  CCollectingWnd::Update()
 		sprintf(szTemp, "%d  /  5", pCollector->GetAbilityOption());
 		pLevel->SetTitle(szTemp);
 	}
-#endif
 }
 
 BOOL CCollectingWnd::Process()
@@ -416,7 +406,6 @@ BOOL CCollectingWnd::Process()
 
 BOOL CCollectingWnd::SetButtonCaption(bool bIsStart)
 {
-#if __VER >= 11 // __SYS_COLLECTING
 	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
 	
 	if(bIsStart)
@@ -428,7 +417,6 @@ BOOL CCollectingWnd::SetButtonCaption(bool bIsStart)
 		else
 			pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtStart.bmp" )), TRUE );
 	}
-#endif
 	return true;
 
 }
@@ -449,7 +437,6 @@ void CCollectingWnd::OnLButtonDown( UINT nFlags, CPoint point )
 } 
 BOOL CCollectingWnd::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	#if __VER >= 11 // __SYS_COLLECTING
 	if(!g_pPlayer) return FALSE;
 	switch(nID)
 	{
@@ -466,7 +453,6 @@ BOOL CCollectingWnd::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				g_DPlay.SendQueryStopCollecting();
 			break;
 	};
-	#endif
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
@@ -483,7 +469,6 @@ BOOL CCollectingWnd::OnEraseBkgnd(C2DRender* p2DRender)
 
 void CCollectingWnd::OnMouseWndSurface( CPoint point )
 {
-#if __VER >= 11 // __SYS_COLLECTING
 	CRect DrawRect 		= m_BetteryRect;
 
 
@@ -495,9 +480,7 @@ void CCollectingWnd::OnMouseWndSurface( CPoint point )
 		ClientToScreen( &point2 );
 		ClientToScreen( &DrawRect );
 
-#if __VER >= 11
 		strText = prj.GetText(TID_GAME_COLLECTOR_BETTERY_INFO);
-#endif	// 
 		g_toolTip.PutToolTip( 100000, strText, DrawRect, point2 );
 
 	}
@@ -511,11 +494,8 @@ void CCollectingWnd::OnMouseWndSurface( CPoint point )
 
 		ClientToScreen( &point2 );
 		ClientToScreen( &DrawRect );
-#if __VER >= 11		
 		strText = prj.GetText(TID_GAME_COLLECTOR_LEVEL_INFO);
-#endif	// 
 		g_toolTip.PutToolTip( 100000, strText, DrawRect, point2 );
 
 	}
-#endif
 }

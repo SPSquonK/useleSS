@@ -40,10 +40,8 @@ const DWORD PF_LEVEL			= 0x00000002;
 const DWORD PF_INVITATION		= 0x00000004;
 const DWORD PF_PENYA			= 0x00000008;
 const DWORD PF_ITEM				= 0x00000010;
-#if __VER >= 15 // __GUILD_HOUSE
 const DWORD PF_GUILDHOUSE_FURNITURE		= 0x00000020;
 const DWORD PF_GUILDHOUSE_UPKEEP		= 0x00000040;
-#endif // __GUILD_HOUSE
 
 typedef struct _SGuildMsgHeader
 {
@@ -187,13 +185,6 @@ public:
 	short	m_nLose;						// 무엇을 졌을까나?
 	char	m_szAlias[MAX_GM_ALIAS];	
 	BYTE	m_nMemberLv;					// 나의 지위
-#if __VER < 11 // __SYS_PLAYER_DATA
-	DWORD	m_dwSex;						// 성별
-	LONG	m_nJob;							// 직업
-	LONG	m_nLevel;						// 레벨
-	BYTE	m_nLogin;						// 로그인 상태( 1 ) / 로그 아웃( 0 )
-	BYTE	m_nMultiNo;						// 멀티 번호
-#endif	// __SYS_PLAYER_DATA
 	u_long  m_idSelectedVote;				// 선택한 투표ID
 	int		m_nSurrender;	// 항복 회수
 	int		m_nClass;						// 등급 A, B, C
@@ -243,17 +234,9 @@ enum CONTRIBUTION_RESULT
 typedef	struct	_GUILD_MEMBER_INFO
 {
 	u_long	idPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	LONG	nLevel;
-	LONG	nJob;
-	DWORD	dwSex;
-#endif	// __SYS_PLAYER_DATA
 	BYTE	nMultiNo;
 	_GUILD_MEMBER_INFO() 
 	{	idPlayer	= 0;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		nLevel	= nJob	= dwSex	= 0;
-#endif	// __SYS_PLAYER_DATA
 		nMultiNo	= 100;
 	}
 }
@@ -329,9 +312,7 @@ public:
 	// 권한 검사
 	BOOL	IsCmdCap( int nMemberLv, DWORD dwPower )	{	return( ( m_adwPower[nMemberLv] & dwPower )? TRUE: FALSE );	}
 
-#if __VER >= 15 // __GUILD_HOUSE
 	BOOL	IsAuthority( DWORD dwPlayerId, int nAuthority )	{ return GetMember(dwPlayerId) ? ( m_adwPower[GetMember(dwPlayerId)->m_nMemberLv] & nAuthority ) : FALSE; }
-#endif // __GUILD_HOUSE
 	//	Attributes
 	int		GetSize( void )	{	return m_mapPMember.size();	}
 	CGuildMember*	GetMember( u_long idPlayer );

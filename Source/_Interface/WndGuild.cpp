@@ -34,9 +34,7 @@ void CWndGuild::UpdateDataAll()
 	m_WndGuildTabMember.UpdateData();
 	m_WndGuildTabWar.UpdateData();
 
-#if __VER >= 15 // __GUILD_HOUSE
 	m_WndGuildTabPower.UpdateData( );
-#endif
 }
 
 void CWndGuild::OnInitialUpdate() 
@@ -55,16 +53,10 @@ void CWndGuild::OnInitialUpdate()
 	
 	m_WndGuildTabInfo.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TABINFO );
 	m_WndGuildTabApp.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TABAPPELLATION );
-#if __VER >= 12 // __CSC_VER12_2
 	m_WndGuildTabMember.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TABMEMBER_EX );
-#else //__CSC_VER12_2
-	m_WndGuildTabMember.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TABMEMBER );
-#endif //__CSC_VER12_2
 	m_WndGuildTabWar.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TABGUILDWAR );
 
-#if __VER >= 15 // __GUILD_HOUSE
 	m_WndGuildTabPower.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TAPPOWER );
-#endif
 	
 	WTCITEM tabTabItem;
 	
@@ -86,11 +78,9 @@ void CWndGuild::OnInitialUpdate()
 	tabTabItem.pWndBase = &m_WndGuildTabWar;
 	pWndTabCtrl->InsertItem( 3, &tabTabItem );
 
-#if __VER >= 15 // __GUILD_HOUSE
 	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_AGIT);
 	tabTabItem.pWndBase = &m_WndGuildTabPower;
 	pWndTabCtrl->InsertItem( 4, &tabTabItem );
-#endif
 
 
 #ifdef __S_SERVER_UNIFY
@@ -160,7 +150,6 @@ void CWndGuild::OnMouseMove(UINT nFlags, CPoint point )
 #endif
 }
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CWndGuild::SetCurTab( int index )
 {
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
@@ -168,7 +157,6 @@ void CWndGuild::SetCurTab( int index )
 
 	pWndTabCtrl->SetCurSel( index );
 }
-#endif
 
 
 
@@ -234,11 +222,6 @@ BOOL CWndGuildConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 //			g_DPlay.SendAddGuildMember( m_idMaster, m_idPlayer );
 			GUILD_MEMBER_INFO	info;
 			info.idPlayer	= g_pPlayer->m_idPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-			info.nLevel		= g_pPlayer->GetLevel();
-			info.nJob	= g_pPlayer->GetJob();
-			info.dwSex	= g_pPlayer->GetSex();
-#endif	// __SYS_PLAYER_DATA
 			g_DPlay.SendAddGuildMember( m_idMaster, info, g_pPlayer->IsAuthorization( AUTH_GAMEMASTER ) );
 		}
 		Destroy();

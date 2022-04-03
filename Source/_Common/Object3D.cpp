@@ -509,10 +509,8 @@ void	CObject3D :: Init( void )
 
 	m_vForce1.x = m_vForce1.y = m_vForce1.z = 0;
 	m_vForce2.x = m_vForce2.y = m_vForce2.z = 0;
-#if __VER >= 9 // __CSC_VER9_5
 	m_vForce3.x = m_vForce3.y = m_vForce3.z = 0;
 	m_vForce4.x = m_vForce4.y = m_vForce4.z = 0;
-#endif //__CSC_VER9_5
 	m_vBBMin.x = m_vBBMin.y = m_vBBMin.z = 65535.0;
 	m_vBBMax.x = m_vBBMax.y = m_vBBMax.z = -65535.0;
 	m_nMaxFace = 0;
@@ -966,13 +964,11 @@ int		CObject3D :: LoadObject( LPCTSTR szFileName )
 	resFp.Read( &m_nID, 4, 1 );		// Serial ID
 	resFp.Read( &m_vForce1, sizeof(D3DXVECTOR3), 1 );		// 검광1,2의 좌표인데 일단 이렇게 하자.
 	resFp.Read( &m_vForce2, sizeof(D3DXVECTOR3), 1 );
-#if __VER >= 9 // __CSC_VER9_5
 	if(nVer >= 22)
 	{
 		resFp.Read( &m_vForce3, sizeof(D3DXVECTOR3), 1 );		// 검광3,4의 좌표인데 일단 이렇게 하자.
 		resFp.Read( &m_vForce4, sizeof(D3DXVECTOR3), 1 );
 	}
-#endif //__CSC_VER9_5
 	resFp.Read( &m_fScrlU, sizeof(float), 1 );
 	resFp.Read( &m_fScrlV, sizeof(float), 1 );
 	resFp.Seek( 16, SEEK_CUR );		// reserved
@@ -1744,7 +1740,6 @@ int		CObject3D::SlideVectorXZ2( D3DXVECTOR3 *pOut, D3DXVECTOR3 *pIntersect, cons
 			v3 = &pVB[ *pIB++ ].position;
 
 			bRet = IsTouchRayTri( v1, v2, v3, &vInvPos, &vInvDir, &fDist );
-#if __VER >= 11 //  __FIX_COLLISION
 			if(bRet)
 			{
 				vDir = vEnd - vPos;
@@ -1829,45 +1824,6 @@ int		CObject3D::SlideVectorXZ2( D3DXVECTOR3 *pOut, D3DXVECTOR3 *pIntersect, cons
 		}
 	}
 	return 0;
-#else
-			if( bRet && fDist >= 0.0f )	// 반대방향 면은 검사하지 않음.
-			{
-				// 정확하게 하려면 모든 면을 다 검사해서 가장 가까운것을 골라야 하나
-				// S자 형태로 구부러진 면이 없다는 가정하에 간략화 시킨다.
-				if( fDist < 1.0f )
-				{
-					// Line과 닿은 삼각형을 찾아냈다.
-					vDir = vEnd - vPos;
-//					fDist *= 0.5f;
-					vIntersect = vPos + fDist * vDir;	// 교차점을 계산.
-					vA = *v2 - *v1;
-					vB = *v3 - *v1;
-					D3DXVec3Cross( &vN, &vA, &vB );		// 충돌한 면의 노말 구함. 이건 나중에 미리 계산해두자.
-					mInv = mTM;
-					mInv._41 = mInv._42 = mInv._43 = 0;
-					D3DXVec3TransformCoord( &vN, &vN, &mInv );	// 충돌한면의 노말을 원래대로(mWorld)돌림.
-
-					if( vN.x == 0 && vN.z == 0 )
-						Error( "CActionMover::ProcessCollisionGround : 충돌한 면의 노말이 완전 수직이다" );
-
-					vN.y = 0;	// y성분을 없애서 수직면의 법선인것처럼 변환
-					D3DXVec3Normalize( &vN, &vN );		// 최종 단위벡터로 변환
-					
-					// 자, 이제 vIntersect와 vN은 월드좌표계로 준비가 되었다.
-					vTemp = vEnd - vIntersect;		// 교차점 - 라인끝 vector V라고 칭함
-					*pIntersect = vIntersect;		// 교차점을 받아둠
-					CalcSlideVec( &vTemp, vTemp, vN );
-					
-					*pOut = vTemp;		// 미끄러진 벡터를 결과로 받도록 바꿔보자.
-//					*pOut = vTemp;
-					
-					return 1;
-				}
-			}
-		}
-	}
-	return 0;
-#endif		
 			
 					
 
@@ -2122,7 +2078,6 @@ D3DXVECTOR3 *GetLastPickTri( void )
 // 용량이 큰 이유는 스킨오브젝트는 뼈대변환된 버텍스를 다시 계산 해야하므로 그 변환된 버텍스가 vPool로 들어온다.
 static D3DXVECTOR3	_vPool[4096];
 
-#if __VER >= 13 // __HOUSING
 
 void	CObject3D::ComputeInterval(float fVV0,float fVV1,float fVV2,float fD0,float fD1,float fD2,float fD0D1,float fD0D2,float &fA,float &fB,float &fC,float &fX0,float &fX1)
 {
@@ -2319,7 +2274,6 @@ BOOL	CObject3D::SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* pTargetObj, D3DX
 	
 	return FALSE;
 }
-#endif // __HOUSING
 //
 // 레이와 교차한 삼각형의 시작포인터를 리턴.
 //

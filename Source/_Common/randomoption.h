@@ -45,16 +45,10 @@ typedef struct	_RANDOM_OPTION
 class CRandomOptionProperty
 {
 public:
-#if __VER >= 12 // __PET_0519
 	// 시스템 펫 각성과 먹펫 각성 추가
 	enum	{	eAwakening, eBlessing,	eSystemPet, eEatPet, eMaxRandomOptionKind	};		// 랜덤 옵션 종류	// 각성: 0, 축복: 1
-#else	// __PET_0519
-	enum	{	eAwakening, eBlessing,	eMaxRandomOptionKind	};		// 랜덤 옵션 종류	// 각성: 0, 축복: 1
-#endif	// __PET_0519
 
-#if __VER >= 12 // __J12_0
 	enum	{	eAwakeningExtension	= 3	};	// 0: 손, 1: 발, 2: 머리	// 각성 확장
-#endif	// __J12_0
 
 	CRandomOptionProperty();
 	virtual	~CRandomOptionProperty();
@@ -97,17 +91,11 @@ private:
 
 	int		GetRandomOptionKindIndex( int nRandomOptionKind, int nParts );
 	int		GetUpperProbability( int iRandomOptionKindIndex );
-#if __VER >= 12 // __J12_0
 	void	AwakeningExtension( void );		// 각성 축복 테이블 확장
-#endif	// __J12_0
 private:
 	int		m_anRandomOptionProb[eMaxRandomOptionKind][MAX_RANDOM_OPTION];
-#if __VER >= 12 // __J12_0
 	// 기본 + 확장
 	vector<RANDOM_OPTION>	m_aRandomOption[eMaxRandomOptionKind + eAwakeningExtension];
-#else	// __J12_0
-	vector<RANDOM_OPTION>	m_aRandomOption[eMaxRandomOptionKind];
-#endif	// __J12_0
 
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리

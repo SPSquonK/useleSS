@@ -1,15 +1,11 @@
 #include "stdafx.h"
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include "dpcoreclient.h"
-#endif // __2ND_PASSWORD_SYSTEM
 #include "dploginsrvr.h"
 #include "dpdatabaseclient.h"
 #include "mytrace.h"
 #include "user.h"
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include "LoginProtect.h"
 extern	CDPCoreClient	g_dpCoreClient;
-#endif // __2ND_PASSWORD_SYSTEM
 
 extern	CDPLoginSrvr	g_dpLoginSrvr;
 extern	CMyTrace	g_MyTrace;
@@ -24,9 +20,7 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPDatabaseClient::OnOneHourNotify );
 	ON_MSG( PACKETTYPE_PLAYER_LIST, &CDPDatabaseClient::OnPlayerList );
 	ON_MSG( PACKETTYPE_FAIL, &CDPDatabaseClient::OnFail );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	ON_MSG( PACKETTYPE_LOGIN_PROTECT_CERT, &CDPDatabaseClient::OnLoginProtect );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 CDPDatabaseClient::~CDPDatabaseClient()
@@ -192,7 +186,6 @@ void CDPDatabaseClient::OnFail( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSi
 	}
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CDPDatabaseClient::OnLoginProtect( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
 	char lpszAccount[MAX_ACCOUNT] = {0, };
@@ -236,6 +229,5 @@ void CDPDatabaseClient::SendLoginProtect( const char* lpszAccount, const char* l
 	ar << idPlayer << nBankPW;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __2ND_PASSWORD_SYSTEM
 
 CDPDatabaseClient	g_dpDBClient;

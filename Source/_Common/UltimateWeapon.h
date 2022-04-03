@@ -11,7 +11,6 @@
 
 #define MAX_JEWEL 10
 
-#if __VER >= 9 // __ULTIMATE
 class CItemElem;
 class CUltimateWeapon  
 {
@@ -73,9 +72,7 @@ public:
 	int MakeItem( CUser* pUser, OBJID* objItemId );
 	int  TransWeapon( CUser* pUser, OBJID objItem, OBJID objGem1, OBJID objGem2 );
 	int  EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItem2 );
-#if __VER >= 14 // __SMELT_SAFETY
 	BYTE SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr );
-#endif // __SMELT_SAFETY
 #endif //__WORLDSERVER
 	void SetDestParamUltimate( CMover* pMover, CItemElem* pItemElem, BOOL bEquip, DWORD dwParts );
 	map<int, int> GetDestParamUltimate( CItemElem* pItemElem );
@@ -94,6 +91,5 @@ public:
 	int						m_nUni2UltiProb;	// 유니크->얼터멋
 #endif // __WORLDSERVER
 };
-#endif // __ULTIMATE
 
 #endif // !defined(AFX_ULTIMATEWEAPON_H__637EE691_5DDC_4A45_8D63_A5870157585B__INCLUDED_)

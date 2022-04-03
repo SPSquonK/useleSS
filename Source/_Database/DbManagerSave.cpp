@@ -19,9 +19,7 @@ extern const int MAX_APPLETTASKBAR;
 extern const int MAX_ITEMTASKBAR;   
 extern const char NullStr[2];
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#include "honor.h"
-#endif	// __HONORABLE_TITLE			// 달인
 
 #include "eveschool.h"
 
@@ -62,12 +60,8 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 	///////// Quest
 	char QuestCnt[3072]	= { 0, };
 	char m_aCompleteQuest[1024] = { 0, };
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	char CheckedQuest[100] = {0, };
 	SaveQuest( pMover, QuestCnt, m_aCompleteQuest, CheckedQuest );
-#else // __IMPROVE_QUEST_INTERFACE
-	SaveQuest( pMover, QuestCnt, m_aCompleteQuest );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	///////// Inventory
 	ItemContainerStruct	icsInventory, icsBank[3];
@@ -119,12 +113,8 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 	#else	// __EVENT_1101
 					  "?,?,?"
 	#endif	// __EVENT_1101
-#if __VER >= 8 // __S8_PK
 					  ",?"
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 // __CSC_VER8_5
 					  ",?,?"
-#endif // __CSC_VER8_5
 					  ",?,?,?"
 #ifdef __EXP_ANGELEXP_LOG
 					  ",?,?"
@@ -132,18 +122,12 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 #ifdef __EVENTLUA_COUPON
 					  ",?"
 #endif // __EVENTLUA_COUPON
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 					  ",?"
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __LAYER_1015
 					  ",?"
 #endif	// __LAYER_1015
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 					  ",?"
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __CAMPUS
 					  ",?,?"
-#endif // __CAMPUS
 
 //					  ")}", pMover->m_idPlayer, g_appInfo.dwSys );		// +3
 					  ")}", pMover->m_idPlayer, g_appInfo.dwSys, pMover->m_vReturnPos.x, pMover->m_vReturnPos.y, pMover->m_vReturnPos.z );		// +3
@@ -167,12 +151,8 @@ int MAX_SAVEPARAM = 88;
 #ifdef __EVENT_1101
 		MAX_SAVEPARAM += 3;
 #endif // __EVENT_1101
-#if __VER >= 8 // __S8_PK
 	MAX_SAVEPARAM += 1;
-#endif // __VER >= 8 // __S8_PK
-#if __VER >= 8 // __CSC_VER8_5
 	MAX_SAVEPARAM += 2;
-#endif // __CSC_VER8_5
 
 	MAX_SAVEPARAM += 3;
 
@@ -184,25 +164,17 @@ int MAX_SAVEPARAM = 88;
 	MAX_SAVEPARAM += 1;
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	MAX_SAVEPARAM += 1;
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __LAYER_1015
 	MAX_SAVEPARAM	+= 1;	// m_nLayer
 #endif	// __LAYER_1015
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	MAX_SAVEPARAM	+= 1;	// m_aCheckedQuest
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __CAMPUS
 	MAX_SAVEPARAM	+= 2;	// m_nCampusPoint, m_idCampus
-#endif // __CAMPUS
 
 //////////////////////////////////////////////////////////////////////////////////////
 	
-#if __VER >= 8 // __S8_PK
 	int nNumSkill = 0;
 	int nSlaughter = 0;
-#endif // __VER >= 8 // __S8_PK
 	SQLINTEGER cbLen = SQL_NTS;
 	BOOL* bOK = new BOOL[MAX_SAVEPARAM];
 //	BOOL bOK[MAX_SAVEPARAM];
@@ -249,12 +221,8 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vMarkingPos.z, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nRemainGP, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nRemainLP, 0, 0 );
-#if __VER >= 12 // __MOD_TUTORIAL
 	int nTutorialState	= pMover->GetTutorialState();
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nTutorialState, 0, 0 );
-#else	// __MOD_TUTORIAL
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFlightLv, 0, 0 );
-#endif	// __MOD_TUTORIAL
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFxp, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFxp, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  3072, 0, QuestCnt, 0, &cbLen );
@@ -262,13 +230,7 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_CHAR,     1, 0, szAuthority, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwMode, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_idparty, 0, 0 );
-#if __VER < 8 // __S8_PK
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nNumKill, 0, 0 );
-#endif // __VER < 8 // __S8_PK
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_idMurderer, 0, 0 );
-#if __VER < 8 // __S8_PK
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nSlaughter, 0, 0 );
-#endif // __VER < 8 // __S8_PK
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFame, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &pMover->m_nDeathExp, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nDeathLevel, 0, 0 );
@@ -284,12 +246,10 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_Messenger.m_dwMyState, 0, 0 );
 #endif	// __RT_1025
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nTotalPlayTime, 0, 0 );
-#if __VER >= 8 // __S8_PK
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nPKValue, 0, 0 );
 	// 5
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwPKPropensity, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwPKExp, 0, 0 );
-#endif // __VER >= 8 // __S8_PK
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  1980, 0, Card, 0, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215,  0, sCardIndex, 0, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215,  0, sCardObjIndex, 0, &cbLen );
@@ -318,13 +278,8 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  1024, 0, m_aCompleteQuest, 0, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsInventory.szExt, 0, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsBank[pMover->m_nSlot].szExt, 0, &cbLen );
-#if __VER >= 15 // __PETVIS
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  7800, 0, icsInventory.szPiercing, 0, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  7800, 0, icsBank[pMover->m_nSlot].szPiercing, 0, &cbLen );
-#else // __PETVIS
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsInventory.szPiercing, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsBank[pMover->m_nSlot].szPiercing, 0, &cbLen );
-#endif // __PETVIS
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwReturnWorldID, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nSkillPoint, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nSkillLevel, 0, 0 );
@@ -338,10 +293,8 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwEventTime, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwEventElapsed, 0, 0 );
 #endif	// __EVENT_1101
-#if __VER >= 8 // __CSC_VER8_5
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &pMover->m_nAngelExp, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &pMover->m_nAngelLevel, 0, 0 );
-#endif // __CSC_VER8_5
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsInventory.szPet, 0, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsBank[pMover->m_nSlot].szPet, 0, &cbLen );
 	DWORD dwPetId	= pMover->GetPetId();
@@ -354,22 +307,16 @@ int MAX_SAVEPARAM = 88;
 #ifdef __EVENTLUA_COUPON
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nCoupon, 0, 0 );
 #endif // __EVENTLUA_COUPON
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nHonor, 0, 0 );
-#endif	// __HONORABLE_TITLE			// 달인
 #ifdef __LAYER_1015
 	int nLayer	= pMover->GetLayer();
 	bOK[++j]	= qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nLayer, 0, 0 );
 #endif	// __LAYER_1015
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  100, 0, CheckedQuest, 0, &cbLen );
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __CAMPUS
 	int nCampusPoint	= pMover->GetCampusPoint();
 	bOK[++j]	= qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nCampusPoint, 0, 0 );
 	u_long idCampus		= pMover->GetCampusId();
 	bOK[++j]	= qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &idCampus, 0, 0 );
-#endif // __CAMPUS
 	for( i=0; i<j; ++i )
 	{
 		if( bOK[i] == FALSE )
@@ -418,9 +365,7 @@ int MAX_SAVEPARAM = 88;
 	SaveMessengerFriend( qry, pMover, szQuery );
 #endif	// __RT_1025
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	SaveHonor( qry, pMover->m_idPlayer, pMover->m_aHonorTitle, szQuery );
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifndef __S_NEW_SKILL_2
 #ifdef __SKILL_0205
@@ -456,11 +401,7 @@ int MAX_SAVEPARAM = 88;
 				bOK[2] = qry->BindParameter( 3, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215, 0, (char*)info.pszObjIndexBank, 0, &cbLen );
 				bOK[3] = qry->BindParameter( 4, SQL_PARAM_INPUT, SQL_C_LONG,  SQL_INTEGER,  0, 0, &info.dwGoldBank, 0, 0 );
 				bOK[4] = qry->BindParameter( 5, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, (char*)info.pszExtBank, 0, &cbLen );
-#if __VER >= 15 // __PETVIS
 				bOK[5] = qry->BindParameter( 6, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  7800, 0, (char*)info.pszPirecingBank, 0, &cbLen );
-#else // __PETVIS
-				bOK[5] = qry->BindParameter( 6, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, (char*)info.pszPirecingBank, 0, &cbLen );
-#endif // __PETVIS
 				bOK[6] = qry->BindParameter( 7, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2689, 0, (char*)info.pszBankPet, 0, &cbLen );
 			}
 
@@ -471,7 +412,6 @@ int MAX_SAVEPARAM = 88;
 			}
 		}
 	}
-#if __VER >= 11 // __SYS_POCKET
 	PocketStruct	aPocket[3];
 	SavePocket( pMover, aPocket );
 	for( i = 0; i < MAX_POCKET; i++ )
@@ -496,11 +436,7 @@ int MAX_SAVEPARAM = 88;
 		bOk[2]	= qry->BindParameter( 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 215, 0, (char*)p.pszIndex, 0, &cbLen );
 		bOk[3]	= qry->BindParameter( 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 215, 0, (char*)p.pszObjIndex, 0, &cbLen );
 		bOk[4]	= qry->BindParameter( 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 2000, 0, (char*)p.pszExt, 0, &cbLen );
-#if __VER >= 15 // __PETVIS
 		bOk[5]	= qry->BindParameter( 6, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 7800, 0, (char*)p.pszPiercing, 0, &cbLen );
-#else // __PETVIS
-		bOk[5]	= qry->BindParameter( 6, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 2000, 0, (char*)p.pszPiercing, 0, &cbLen );
-#endif // __PETVIS
 		bOk[6]	= qry->BindParameter( 7, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 2689, 0, (char*)p.pszPet, 0, &cbLen );
 		bOk[7]	= qry->BindParameter( 8, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &p.bExpired, 0, &cbLen );
 		bOk[8]	= qry->BindParameter( 9, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &p.tExpirationDate, 0, &cbLen );
@@ -512,7 +448,6 @@ int MAX_SAVEPARAM = 88;
 			return;
 		}
 	}
-#endif	// __SYS_POCKET
 
 	SAFE_DELETE_ARRAY( bOK );
 }
@@ -597,7 +532,6 @@ void CDbManager::AllSaveSkill( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 }
 #endif // __S_NEW_SKIL_2
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void	CDbManager::SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery )
 {
 	int	aHonorEtc[50] = {0,};
@@ -675,7 +609,6 @@ void	CDbManager::SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* s
 
 }
 
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __SKILL_0205
 void CDbManager::SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, LPBYTE abUpdateSkill, char* szQuery )
@@ -683,11 +616,7 @@ void CDbManager::SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, LP
 void CDbManager::SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, char* szQuery )
 #endif	// #define	__SKILL_0205
 {
-#if __VER >= 10 //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	for( int i = 0 ; i < (MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) ; i++)
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-	for( int i = 0 ; i < (MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL) ; i++)
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	{
 #ifdef __SKILL_0205
 		if( abUpdateSkill[i] == 0 )
@@ -718,17 +647,11 @@ void CDbManager::SaveJobLv( CMover* pMover, char* szJobLv )
 	strncat(szJobLv, NullStr, sizeof(NullStr));
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CDbManager::SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest )
-#else // __IMPROVE_QUEST_INTERFACE
-void CDbManager::SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest )
-#endif // __IMPROVE_QUEST_INTERFACE
 {
 	char sPerQuest[128];
 	char OneCompleteQuest[20] = {0,};
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	char OneCheckedQuest[20] = {0, };
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	for( int i = 0; i < pMover->m_nQuestSize; i++ )
 	{
@@ -750,17 +673,14 @@ void CDbManager::SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aComplet
 	strcat( szQuestCnt, NullStr );
 	strcat( szm_aCompleteQuest, NullStr );
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	for( int i = 0; i < pMover->m_nCheckedQuestSize; ++i )
 	{
 		sprintf( OneCheckedQuest, "%d/", pMover->m_aCheckedQuest[i]);
 		strncat( szCheckedQuest, OneCheckedQuest, sizeof( OneCheckedQuest ) );
 	}
 	strcat( szCheckedQuest, NullStr );
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 
-#if __VER >= 11 // __SYS_POCKET
 void	CDbManager::SavePocket( CMover* pMover, PPocketStruct pPocketStruct )
 {
 	for( int nPocket = 0; nPocket < MAX_POCKET; nPocket++ )
@@ -820,7 +740,6 @@ void	CDbManager::SavePocket( CMover* pMover, PPocketStruct pPocketStruct )
 		}
 	}
 }
-#endif	// __SYS_POCKET
 
 void CDbManager::SaveInventory( CMover* pMover, PItemContainerStruct pItemContainerStruct )
 {
@@ -1072,11 +991,9 @@ void CDbManager::SaveSkillInfluence( CMover* pMover, char* szszSkillInfluence )
 		SKILLINFLUENCE* pSkillInfluenece = &pMover->m_SkillState.m_aSkillInfluence[ch];
 		if( pSkillInfluenece->wType == BUFF_EQUIP )
 			continue;
-#if __VER >= 13 // __HOUSING
 		if( pSkillInfluenece->wType == 0 && pSkillInfluenece->wID == 0
 			&& pSkillInfluenece->dwLevel == 0 && pSkillInfluenece->tmCount == 0 )
 			break;
-#endif // __HOUSING
 		sprintf( OneSkillInfluence, "%d,%d,%d,%d/", 
 			pSkillInfluenece->wType, pSkillInfluenece->wID,
 			pSkillInfluenece->dwLevel, pSkillInfluenece->tmCount );
@@ -1113,12 +1030,10 @@ void CDbManager::DBQryAddBankSave( char* szSql, const ADDBANK_QUERYINFO & info )
 		sprintf( szSql, "{call ADD_BANK_STR('U1','%07d','%02d', ?, ?, ?, ?, ?, ?, ?)}", info.idPlayer, g_appInfo.dwSys ); 
 }
 
-#if __VER >= 11 // __SYS_POCKET
 void CDbManager::MakeQueryPocket( char* szQuery, const PocketParam & p )
 {
 	sprintf( szQuery, "{call uspSavePocket( '%02d', '%07d', ?, ?, ?, ?, ?, ?, ?, ?, ?) }", g_appInfo.dwSys, p.idPlayer );
 }
-#endif	// __SYS_POCKET
 
 void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
 {
@@ -1126,7 +1041,6 @@ void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
 
 	if( pItemElem->IsEmpty() == FALSE )
 	{
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 		if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
 			sprintf( pItemStruct->szItem, "%d,%d,%d,%d,,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
 					pItemElem->m_dwObjId, pItemElem->m_dwItemId,
@@ -1151,38 +1065,15 @@ void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
   					pItemElem->m_idGuild,
 					pItemElem->m_nResistSMItemId
 				);
-#else	//  __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
-		// item
-		sprintf( pItemStruct->szItem, "%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
-				pItemElem->m_dwObjId, pItemElem->m_dwItemId,
-				0, 0, pItemElem->m_szItemText,
-				pItemElem->m_nItemNum, pItemElem->m_nRepairNumber,
-				pItemElem->m_nHitPoint, pItemElem->m_nRepair,
-				0, pItemElem->m_byFlag,
-				pItemElem->GetSerialNumber(), pItemElem->GetOption(), 
-  				pItemElem->m_bItemResist, pItemElem->m_nResistAbilityOption,
-  				pItemElem->m_idGuild,
-				pItemElem->m_nResistSMItemId
-			);
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 		// ext
-#if __VER >= 11 // __SYS_IDENTIFY
 		sprintf( pItemStruct->szExt, "%d,%d,%I64d"
-#if __VER >= 15 // __PETVIS	
 			",%d"
-#endif // __PETVIS
 			"/", pItemElem->m_bCharged, pItemElem->m_dwKeepTime, pItemElem->GetRandomOptItemId()
-#if __VER >= 15 // __PETVIS
 			, static_cast<int>( pItemElem->m_bTranformVisPet )
-#endif // __PETVIS
 			);
-#else	// __SYS_IDENTIFY
-		sprintf( pItemStruct->szExt, "%d,%d,%d/", pItemElem->m_bCharged, pItemElem->m_dwKeepTime, pItemElem->GetRandomOptItemId() );
-#endif	// __SYS_IDENTIFY
 
 		// piercing
-#if __VER >= 12 // __EXT_PIERCING
 		ItemProp* itemProp = prj.GetItemProp( pItemElem->m_dwItemId );
 		if( itemProp && itemProp->IsUltimate() )
 		{
@@ -1199,7 +1090,6 @@ void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
 			}
 		}
 		else
-#endif // __EXT_PIERCING
 			sprintf( pItemStruct->szPiercing, "%d", pItemElem->GetPiercingSize() );
 
 		for( int nPirecing = 0 ; nPirecing < pItemElem->GetPiercingSize(); ++nPirecing )
@@ -1207,7 +1097,6 @@ void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
 			sprintf( szPiercing, ",%d", pItemElem->GetPiercingItem( nPirecing ) );
 			strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
 		}
-#if __VER >= 15 // __PETVIS
 		if( pItemElem->IsVisPet() )
 		{
 			for( int nPirecing = 0; nPirecing < pItemElem->GetPiercingSize(); ++nPirecing )
@@ -1216,7 +1105,6 @@ void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
 				strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
 			}
 		}
-#endif // __PETVIS
 		strcat( pItemStruct->szPiercing, "/" );
 
 		// pet

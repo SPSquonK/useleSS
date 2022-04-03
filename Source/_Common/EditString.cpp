@@ -10,14 +10,7 @@ void CEditString::InitWordAlignment()
 
 CEditString::CEditString() : CString( )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	InitializeValue();
-#else // __IMPROVE_QUEST_INTERFACE
-	m_nWidth = 100;
-	m_sizeFont.cx = 12;
-	m_sizeFont.cy = 12;
-	m_pFont = NULL;
-#endif // __IMPROVE_QUEST_INTERFACE
 #ifdef __IMPROVE_MAP_SYSTEM
 	SetColor( 0xff000000 );
 	SetStyle( 0 );
@@ -27,9 +20,7 @@ CEditString::CEditString() : CString( )
 }
 CEditString::CEditString( const CString& stringSrc ) : CString( stringSrc )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	InitializeValue();
-#endif // __IMPROVE_QUEST_INTERFACE
 #ifdef __IMPROVE_MAP_SYSTEM
 	SetColor( 0xff000000 );
 	SetStyle( 0 );
@@ -40,11 +31,9 @@ CEditString::CEditString( const CString& stringSrc ) : CString( stringSrc )
 
 CEditString::CEditString( const CEditString& stringSrc ) : CString( stringSrc )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_bWordAlign = stringSrc.m_bWordAlign;
 	m_pFont = stringSrc.m_pFont;
 	Init( stringSrc.m_nWidth, stringSrc.m_sizeFont );
-#endif // __IMPROVE_QUEST_INTERFACE
 	m_adwColor.Append( stringSrc.m_adwColor );
 	m_abyStyle.Append( stringSrc.m_abyStyle );
 	m_awCodePage.Append( stringSrc.m_awCodePage );
@@ -53,12 +42,8 @@ CEditString::CEditString( const CEditString& stringSrc ) : CString( stringSrc )
 
 CEditString::CEditString( TCHAR ch, int nRepeat ) : CString( ch, nRepeat )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	InitializeValue();
 	SetColor( 0xff000000 );
-#else // __IMPROVE_QUEST_INTERFACE
-	SetColor( 0xffffffff );
-#endif // __IMPROVE_QUEST_INTERFACE
 	SetStyle( 0 );
 	SetCodePage( 0 );
 	InitWordAlignment();
@@ -66,12 +51,8 @@ CEditString::CEditString( TCHAR ch, int nRepeat ) : CString( ch, nRepeat )
 
 CEditString::CEditString( LPCTSTR lpch, int nLength ) : CString( lpch, nLength )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	InitializeValue();
 	SetColor( 0xff000000 );
-#else // __IMPROVE_QUEST_INTERFACE
-	SetColor( 0xffffffff );
-#endif // __IMPROVE_QUEST_INTERFACE
 	SetStyle( 0 );
 	SetCodePage( 0 );
 	InitWordAlignment();
@@ -79,12 +60,8 @@ CEditString::CEditString( LPCTSTR lpch, int nLength ) : CString( lpch, nLength )
 
 CEditString::CEditString( const unsigned char* psz ) : CString( psz )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	InitializeValue();
 	SetColor( 0xff000000 );
-#else // __IMPROVE_QUEST_INTERFACE
-	SetColor( 0xffffffff );
-#endif // __IMPROVE_QUEST_INTERFACE
 	SetStyle( 0 );
 	SetCodePage( 0 );
 	InitWordAlignment();
@@ -92,12 +69,8 @@ CEditString::CEditString( const unsigned char* psz ) : CString( psz )
 
 CEditString::CEditString( LPCWSTR lpsz ) : CString( lpsz )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	InitializeValue();
 	SetColor( 0xff000000 );
-#else // __IMPROVE_QUEST_INTERFACE
-	SetColor( 0xffffffff );
-#endif // __IMPROVE_QUEST_INTERFACE
 	SetStyle( 0 );
 	SetCodePage( 0 );
 	InitWordAlignment();
@@ -105,12 +78,8 @@ CEditString::CEditString( LPCWSTR lpsz ) : CString( lpsz )
 
 CEditString::CEditString( LPCSTR lpsz ) : CString( lpsz )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	InitializeValue();
 	SetColor( 0xff000000 );
-#else // __IMPROVE_QUEST_INTERFACE
-	SetColor( 0xffffffff );
-#endif // __IMPROVE_QUEST_INTERFACE
 	SetStyle( 0 );
 	SetCodePage( 0 );
 	InitWordAlignment();
@@ -464,7 +433,6 @@ void CEditString::AddParsingString( LPCTSTR lpsz, DWORD dwColor, DWORD dwStyle, 
 		*/
 	Align( m_pFont, nLine );
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CEditString::SetParsingString( LPCTSTR lpsz, DWORD dwColor, DWORD dwStyle, WORD wCodePage, DWORD dwPStyle, BOOL bNoInitAlign )
 { 
 	Empty();
@@ -472,18 +440,6 @@ void CEditString::SetParsingString( LPCTSTR lpsz, DWORD dwColor, DWORD dwStyle, 
 	if( bNoInitAlign == FALSE )
 		Align( m_pFont, 0 );
 }
-#else // __IMPROVE_QUEST_INTERFACE
-void CEditString::SetParsingString( LPCTSTR lpsz, DWORD dwColor, DWORD dwStyle, WORD wCodePage, DWORD dwPStyle )
-{ 
-	Empty();
-	ParsingString( lpsz, dwColor, dwStyle, CODE_PAGE(wCodePage), (CString&)*this, m_adwColor, m_abyStyle, m_awCodePage, dwPStyle );
-	//*((CString*)this) = lpsz; 
-	//SetColor( dwColor );
-	//SetStyle( dwStyle );
-	//ParsingString( lpsz, dwColor );
-	Align( m_pFont, 0 );
-}
-#endif // __IMPROVE_QUEST_INTERFACE
 void CEditString::AddString( LPCTSTR lpsz, DWORD dwColor, DWORD dwStyle, WORD wCodePage )
 { 
 	int nLine = GetLineCount() - 1;
@@ -631,7 +587,6 @@ void CEditString::SetAt( int nIndex, TCHAR ch, DWORD dwColor, DWORD dwStyle, WOR
 	m_awCodePage.SetAt( nIndex, CODE_PAGE(wCodePage) );
 	Align( m_pFont, 0 );//nLine );
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CEditString::InitializeValue( void )
 {
 	m_nWidth = 100;
@@ -639,7 +594,6 @@ void CEditString::InitializeValue( void )
 	m_sizeFont.cy = 12;
 	m_pFont = NULL;
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 void CEditString::Init( int nWidth, SIZE sizeFont )
 {
 	m_nWidth = nWidth;
@@ -879,7 +833,6 @@ DWORD CEditString::OffsetToLine(DWORD dwOffset)
 	return 0;
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 const CEditString& CEditString::operator=( const CEditString& stringSrc )
 {
 	m_bWordAlign = stringSrc.m_bWordAlign;
@@ -887,4 +840,3 @@ const CEditString& CEditString::operator=( const CEditString& stringSrc )
 	Init( stringSrc.m_nWidth, stringSrc.m_sizeFont );
 	SetEditString( stringSrc ); return *this;
 }
-#endif // __IMPROVE_QUEST_INTERFACE

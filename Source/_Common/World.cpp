@@ -9,11 +9,9 @@
 #endif	// __AZRIA_1023
 #endif	// __WORLDSERVER
 
-#if __VER >= 9	// __PET_0410
 #ifdef __CLIENT
 #include "resdata.h"
 #endif	// __CLIENT
-#endif	// __PET_0410
 
 #include "..\_AIInterface\AIInterface.h"
 
@@ -38,10 +36,8 @@ extern	CGuildCombat	g_GuildCombatMng;
 #include "DPClient.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
 #include "WndHousing.h"
-#endif
 
 #endif
 
@@ -156,12 +152,10 @@ m_cbRunnableObject( 0 )
 	m_pCamera	= NULL;
 	m_apLand	= NULL;
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	m_bProcessingEnvir = FALSE;
 	m_dwOldTime		= 0;
 	m_dwAddedTime	= 0;
 	m_bUsing24Light = FALSE;
-#endif
 #endif // __WORLDSERVER
 }
 
@@ -218,9 +212,7 @@ void CWorld::Free()
 	m_pObjFocus	= NULL;
 	m_nDeleteObjs	= 0;
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	m_strCurContName = "";
-#endif 	
 
 #ifdef __BS_EFFECT_LUA
 	CSfxModelMng::Free( );
@@ -252,7 +244,6 @@ void CWorld::LoadAllMoverDialog()
 // pObj는 CItem도 들어온다.
 void CWorld::SetObjFocus( CObj* pObj, BOOL bSend ) 
 {
-#if __VER >= 13 // __HOUSING
 	 CtrlProp* pProp = NULL;
 	 CCtrl* pCtrl = NULL;
 	if( pObj && OT_CTRL == pObj->GetType( ) )
@@ -266,7 +257,6 @@ void CWorld::SetObjFocus( CObj* pObj, BOOL bSend )
 			return;
 	}
 
-#if __VER >= 15 // __GUILD_HOUSE
 	//gmpbigsun : 현재 콘트롤들은 클릭->서버처리(작동)->타겟제거 방식으로 작동되고, 수정되지 않는한 콘트롤에 대해 다른기능를 부여하는것이 일반적이지 않다.
 	//			  그러나 길드하우징 오브젝트는 팝업메뉴로 다른기능을 하게끔 해야 하는 상황이고, 아래와 같이 우회한다.
 	//			  팝업메뉴를 설정한뒤, 현재 선택할려는 대상이 길드하우징 오브젝트이면 현재 타겟을 바꾸지 않고 PASS한다.
@@ -285,18 +275,14 @@ void CWorld::SetObjFocus( CObj* pObj, BOOL bSend )
 			return;
 		}
 	}
-#endif 
 
-#endif	//#if __VER > 13
 
-#if __VER >= 13 // __QUEST_HELPER
 	CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
 	if(pWndWorld)
 	{
 		if(pWndWorld->m_bSetQuestNPCDest)
 			pWndWorld->m_bSetQuestNPCDest = FALSE;
 	}
-#endif //__QUEST_HELPER
 	CObj *pOldFocus = m_pObjFocus;
 	
 	if( m_pObjFocus && m_pObjFocus->GetType() == OT_MOVER )
@@ -332,14 +318,12 @@ void CWorld::SetObjFocus( CObj* pObj, BOOL bSend )
 		{
 			if( bSend )
 				g_DPlay.SendSetTarget( NULL_ID, 2 );	// 타겟 클리어.
-#if __VER >= 11 // __CSC_VER11_2
 			CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
 			if(pWndWorld)
 			{
 				pWndWorld->m_pNextTargetObj = NULL;
 				pWndWorld->m_pRenderTargetObj = NULL;
 			}
-#endif //__CSC_VER11_2
 		}
 	}
 
@@ -891,7 +875,6 @@ void CWorld::Process()
 	
 		if( m_pObjFocus == pObj )
 			SetObjFocus( NULL );
-#if __VER >= 9	// __PET_0410
 #ifdef __CLIENT
 		CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 		if( pWndWorld )
@@ -902,7 +885,6 @@ void CWorld::Process()
 				pWndWorld->m_pNextTargetObj = NULL;
 		}
 #endif	// __CLIENT
-#endif	// __PET_0410
 		if( CObj::m_pObjHighlight == pObj )
 			CObj::m_pObjHighlight = NULL;
 		// 화면에 출력되고 있는 오브젝트인가.
@@ -943,13 +925,10 @@ void CWorld::Process()
 			m_skyBox.Process();
 		}
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 		CheckInOutContinent( );
-#endif 
 	}
 
 	// 물 애니메이션
-#if __VER >= 14 // __WATER_EXT
 	for(i=0; i<prj.m_terrainMng.m_nWaterFrame; i++)
     {
 		if(i<MAX_WATER)
@@ -960,12 +939,6 @@ void CWorld::Process()
 				prj.m_terrainMng.m_fWaterFrame[i] = 0.0f;
 		}
 	}
-#else //__WATER_EXT
-	CLandscape::m_fWaterFrame += 0.15f;
-	
-	if( CLandscape::m_fWaterFrame >= 54.0f )
-		CLandscape::m_fWaterFrame = 0.0f;	
-#endif //__WATER_EXT
 
 #ifdef __BS_EFFECT_LUA
 	CSfxModelMng::GetThis()->Update();
@@ -1608,24 +1581,15 @@ void CWorld::_replace( void )
 				continue;
 
 			CUser* pUser = (CUser*)pMover;
-#if __VER >= 15 // __GUILD_HOUSE
 			if( GuildHouseMng->IsGuildHouse( GetID() ) )
 				GuildHouseMng->CheckDestroyGuildHouse( pUser );
-#endif // __GUILD_HOUSE
 			CWorld* pWorld = g_WorldMng.GetWorld( dwWorldID );
 			if( pWorld && pWorld->VecInWorld( vPos ) )	
 			{
 				pUser->RemoveItFromView( TRUE );		// pc
 				pUser->RemoveItFromView2( TRUE );		// npc
-#if __VER >= 9	// __PET_0410
 				if( pUser->HasPet() )
 					pUser->RemovePet();
-#if __VER < 15 // __REACTIVATE_EATPET
-				if( pUser->HasActivatedEatPet() )
-					pUser->InactivateEatPet();
-#endif // __REACTIVATE_EATPET
-#endif	// __PET_0410
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				if( dwWorldID == WI_WORLD_MADRIGAL && pUser->GetWorld() &&
 					(pUser->GetWorld()->GetID() >= WI_WORLD_GUILDWAR1TO1_0 &&
 					pUser->GetWorld()->GetID() <= WI_WORLD_GUILDWAR1TO1_L) )
@@ -1633,10 +1597,7 @@ void CWorld::_replace( void )
 					pUser->m_nGuildCombatState = 0;
 					g_UserMng.AddGuildCombatUserState( pUser );
 				}
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 15 // __GUILD_HOUSE
 				GuildHouseMng->ResetApplyDST( pUser );
-#endif // __GUILD_HOUSE
 				pUser->AddReplace( dwWorldID, vPos );
 				pUser->Notify();	
 				RemoveObj( pUser );						// pWorld = NULL, RemoveObjLink, RemoveObjArray
@@ -1649,11 +1610,8 @@ void CWorld::_replace( void )
 #endif // __BUFF_1107
 				pUser->AddSMModeAll();
 				pUser->AddEnvironment(); // 현재 날씨 세팅
-#if __VER >= 15 // __GUILD_HOUSE
 				GuildHouseMng->SetApplyDST( pUser );
-#endif // __GUILD_HOUSE
 
-#if __VER >= 13 // __HOUSING
 				if( dwWorldID == WI_WORLD_MINIROOM )
 				{
 					CHousing* pHousing = CHousingMng::GetInstance()->GetHousing( static_cast<DWORD>( nLayer ) );
@@ -1667,7 +1625,6 @@ void CWorld::_replace( void )
 						}
 					}
 				}
-#endif // __HOUSING
 			}
 			else
 			{
@@ -1948,7 +1905,6 @@ void CWorld::_OnDie( void )
 	{
 		g_GuildCombatMng.OutWar( m_aOnDie[i].pDie, NULL );
 		g_GuildCombatMng.GetPoint( m_aOnDie[i].pAttacker, m_aOnDie[i].pDie );
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser( m_aOnDie[i].pDie );
 		if( nIndex != NULL_ID )
 		{
@@ -1956,7 +1912,6 @@ void CWorld::_OnDie( void )
 			if( nStageId != NULL_ID )
 				g_GuildCombat1to1Mng.m_vecGuilCombat1to1[nStageId].SetLost( m_aOnDie[i].pDie );
 		}
-#endif // __GUILD_COMBAT_1TO1
 	}
 	m_cbOnDie	= 0;
 }

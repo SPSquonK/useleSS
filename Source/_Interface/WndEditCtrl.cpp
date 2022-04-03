@@ -1208,9 +1208,7 @@ CWndEdit::CWndEdit()
 
 	m_string.m_bWordAlign = FALSE;
 	m_stringBack.m_bWordAlign = FALSE;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	m_dwMaxStringNumber = 0xffffffff;
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 CWndEdit::~CWndEdit()
@@ -1261,10 +1259,8 @@ void CWndEdit::OnDestroyChildWnd( CWndBase* pWndChild )
 }
 void CWndEdit::OnSetFocus(CWndBase* pOldWnd)
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( IsWndStyle( EBS_READONLY ) == TRUE )
 		return;
-#endif // __IMPROVE_QUEST_INTERFACE
 	// Edit창에 포커스가 올 경우 눌린 이동키에 대한 해제를 하자.
 	g_bKeyTable[g_Neuz.Key.chUp] = FALSE;
 	g_bKeyTable[g_Neuz.Key.chLeft] = FALSE;
@@ -1332,22 +1328,16 @@ void CWndEdit::PaintFrame(C2DRender* p2DRender)
 }
 BOOL CWndEdit::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( IsWndStyle( EBS_READONLY ) == FALSE )
 		m_pApp->SetDeviceCursor( m_hEditCursor );
-#else // __IMPROVE_QUEST_INTERFACE
-	m_pApp->SetDeviceCursor( m_hEditCursor );
-#endif // __IMPROVE_QUEST_INTERFACE
 	return TRUE;
 }
 // 마우스 왼쪽 버튼을 에디트 창에 누르면 조합이 완료된다.
 // 이는 조합시 다른 오동작을 방지하기 위해 클릭하면 무조건 조합을 완료하게 한 것이다.
 void CWndEdit::OnLButtonDown( UINT nFlags, CPoint point )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( IsWndStyle( EBS_READONLY ) == TRUE )
 		return;
-#endif // __IMPROVE_QUEST_INTERFACE
 	// 조합 완료 매지시를 ime에게 보낸다.
 	g_imeMgr.CompleteComposition(m_hWnd);
 	CWndText::OnLButtonDown( nFlags, point );
@@ -1444,7 +1434,6 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 		if(GetParentWnd()->GetFocusChild() != this)
 			return FALSE;
 	}
-#if __VER >= 14 // __WND_EDIT_NUMBER_MODE
 	if(IsWndStyle(EBS_NUMBER) == TRUE)
 	{
 		switch(msg)
@@ -1455,10 +1444,8 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 				{
 				case 8:case 27:case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':
 					{
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 						if( static_cast< DWORD >( strlen( m_string ) ) < m_dwMaxStringNumber )
 							OnChar_(wparam);
-#endif // __2ND_PASSWORD_SYSTEM
 						break;
 					}
 				}
@@ -1561,7 +1548,6 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 		}
 		return FALSE;
 	}
-#endif //__WND_EDIT_NUMBER_MODE
 	switch( msg )
 	{ 
 /*
@@ -2237,10 +2223,8 @@ void CWndEdit::ClearAll()
 	m_wndScrollBar.SetMinScrollPos();
 }
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 void CWndEdit::SetMaxStringNumber( DWORD dwMaxStringNumber )
 {
 	m_dwMaxStringNumber = dwMaxStringNumber;
 }
-#endif // __2ND_PASSWORD_SYSTEM
 /*----------------------------------------------------------------------------*/ 

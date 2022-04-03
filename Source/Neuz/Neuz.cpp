@@ -22,18 +22,14 @@
 #include "defineSound.h"
 #include "ClientMsg.h"
 
-#if __VER >= 12 // __MOD_TUTORIAL
 #include "WndBase.h"
 #include "WndGuideSystem.h"
-#endif
 
 #include "WorldMap.h"
 
 #include "tools.h"
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif
 
 #ifdef __CERTIFIER_COLLECTING_SYSTEM
 #include "DPCollectClient.h"
@@ -163,10 +159,8 @@ CNeuzApp::CNeuzApp()
 	m_dwSummonPartyObjid = 0;
 	ZeroMemory( m_szSummonPartyWorldName, sizeof( m_szSummonPartyWorldName ) );
 	
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	m_vCursorPos = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 	m_pCreateMonItem = NULL;
-#endif // __ITEMCREATEMON_S0602
 
 	m_szWhisperName[0] = '\0';
 
@@ -179,14 +173,10 @@ CNeuzApp::CNeuzApp()
 	m_idPlayer	= 0;
 	m_hThread = INVALID_HANDLE_VALUE;
 	memset( m_apPlayer, 0, sizeof(m_apPlayer) );
-#if __VER >= 11 // __MOD_VENDOR
 	memset( m_aSavedInven, 0, sizeof(m_aSavedInven) );
-#endif
 	for(int i = 0; i < 6; i++) m_pMasterIcon[i] = NULL;
 	m_pHeroIcon = NULL;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	m_n2ndPasswordNumber = -1;
-#endif // __2ND_PASSWORD_SYSTEM
 
 #ifdef __GAME_GRADE_SYSTEM
 #ifdef __CLIENT
@@ -466,10 +456,8 @@ HRESULT CNeuzApp::DeleteDeviceObjects()
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 	pWorldMap->DeleteDeviceObjects(); 
 	g_toolTip.Delete();
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	g_toolTipSub1.Delete();
 	g_toolTipSub2.Delete();
-#endif // __IMPROVE_SYSTEM_VER15
 	g_Glare.DeleteDeviceObjects();
 	CWndBase::m_Theme.DeleteDeviceObjects();
 	g_WndMng.DestroyApplet();
@@ -510,10 +498,8 @@ HRESULT CNeuzApp::DeleteDeviceObjects()
 	g_Object3DMng.Destroy();	
 	CWndNeuz::FreeTileTexture();
 
-	#if __VER >= 11 //	__SYS_COLLECTING
 	m_TexCltGauge[0].DeleteDeviceObjects();
 	m_TexCltGauge[1].DeleteDeviceObjects();
-	#endif
 	m_TextureGauge[0].DeleteDeviceObjects();
 	m_TextureGauge[1].DeleteDeviceObjects();
 	m_TextureGauge[2].DeleteDeviceObjects();
@@ -529,10 +515,8 @@ HRESULT CNeuzApp::DeleteDeviceObjects()
 	m_TextureCastingGauge[0].DeleteDeviceObjects();
 	m_TextureCastingGauge[1].DeleteDeviceObjects();	
 
-#if __VER >= 8 // __CSC_VER8_5
 	m_TextureAngelGauge[0].DeleteDeviceObjects();
 	m_TextureAngelGauge[1].DeleteDeviceObjects();
-#endif //__CSC_VER8_5
 	m_TexturePackPVP.DeleteDeviceObjects();
 	m_TexLoading.DeleteDeviceObjects();
 	m_texQuestEmoticon.DeleteDeviceObjects();
@@ -553,9 +537,7 @@ HRESULT CNeuzApp::FinalCleanup()
 	// 다시 알트탭 되게
 	::SystemParametersInfo (SPI_SCREENSAVERRUNNING, FALSE, NULL, 0);		// 95, 98, Me면 API를 쓴다.
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	Drv_SetGamma(GetSafeHwnd(), 1.0f, 10, 1.0f);
-#endif //__Y_GAMMA_CONTROL_8
 	
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
@@ -586,10 +568,8 @@ HRESULT CNeuzApp::FinalCleanup()
 	SAFE_DELETE( CSfxModel::m_pPool );
 	SAFE_DELETE( CSfxGenRainCircle::m_pPool );
 
-#if __VER >= 12 // __LORD
 	// 군주 협력 객체의 제거
 	CCLord::Instance()->DestroyColleagues();
-#endif	// __LORD
 
 	UninitializeNetLib();
 
@@ -738,18 +718,10 @@ HRESULT CNeuzApp::Render()
 			CWorld *pWorld = g_pPlayer->GetWorld();
 			if( pWorld )
 			{
-#if __VER >= 13 // __HOUSING
 
-#if __VER >= 14 // __BS_FIX_SHADOW_ONOBJECT
 		if( pWorld->GetID() != WI_WORLD_MINIROOM ) // 7.28기획요청 : 하우징 그림자 제거
 			RenderShadowMap( m_pd3dDevice, pWorld->m_aobjCull, pWorld->m_nObjCullSize );
-#else 
-		if(pWorld->GetID() != WI_WORLD_MINIROOM && pWorld->GetID() != WI_INSTANCE_OMINOUS && pWorld->GetID() != WI_INSTANCE_OMINOUS_1)
-			RenderShadowMap( m_pd3dDevice, pWorld->m_aobjCull, pWorld->m_nObjCullSize );
 
-#endif	//__VER >= 14
-
-#endif	//__VER >= 13
 			}
 
 		}
@@ -791,11 +763,7 @@ HRESULT CNeuzApp::Render()
 #ifdef __VCINEMASCOPE
 		CRect rect = g_WndMng.GetWndRect();
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CWndDialog* pWndDialog = (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG_EX );
-#else // __IMPROVE_QUEST_INTERFACE
-		CWndDialog* pWndDialog = (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG );
-#endif // __IMPROVE_QUEST_INTERFACE
 //		m_nCinemaScopeCnt = 0;
 		if( pWndDialog )
 		{
@@ -827,10 +795,8 @@ HRESULT CNeuzApp::Render()
 
 		// 툴립 관련
 		g_toolTip.Paint(&m_2DRender);
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		g_toolTipSub1.Paint( &m_2DRender );
 		g_toolTipSub2.Paint( &m_2DRender );
-#endif // __IMPROVE_SYSTEM_VER15
 		m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 		m_2DRender.SetFont( 	CWndBase::m_Theme.m_pFontWorld );
 		g_ClientMsg.Render( CPoint( m_2DRender.m_clipRect.Width() / 2 , 520 * m_2DRender.m_clipRect.Height() / 768 ), &m_2DRender );
@@ -857,7 +823,6 @@ HRESULT CNeuzApp::Render()
 			}
 			else
 			{
-#if __VER >= 9 // __CSC_VER9_RESOLUTION
 				int wideOffsetX = 0;
 				
 				if(g_Option.m_nResWidth == 1280 && (g_Option.m_nResHeight == 720 || g_Option.m_nResHeight == 768 || g_Option.m_nResHeight == 800)) //Wide Offset
@@ -888,10 +853,6 @@ HRESULT CNeuzApp::Render()
 					m_TexLoading.m_size = CSize(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 				
 				m_2DRender.RenderTexture( CPoint(0 + wideOffsetX, 0), &m_TexLoading, m_nTexAlpha );		
-#else //__CSC_VER9_RESOLUTION				
-				m_TexLoading.m_size = CSize(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-				m_2DRender.RenderTexture( CPoint(0,0), &m_TexLoading, m_nTexAlpha );
-#endif //__CSC_VER9_RESOLUTION
 			}			
 		}
 
@@ -1004,11 +965,7 @@ HRESULT CNeuzApp::FrameMove()
 {
 
 #ifdef __VCINEMASCOPE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndDialog* pWndDialog = (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG_EX );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndDialog* pWndDialog = (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG );
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( pWndDialog )
 	{
 		if( m_nCinemaScopeCnt < 0 )
@@ -1073,10 +1030,8 @@ NEXT:
 		CWndBase::m_Theme.FrameMove();
 	GET_CLIENT_POINT( GetSafeHwnd(), point );
 	g_toolTip.Process( point, &m_2DRender );
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	g_toolTipSub1.Process( point, &m_2DRender );
 	g_toolTipSub2.Process( point, &m_2DRender );
-#endif // __IMPROVE_SYSTEM_VER15
 	g_DamageNumMng.Process();
 #ifdef __FLYFF_INITPAGE_EXT
 	if(CWndBase::m_Theme.m_bRenderTitleWorld)
@@ -1201,21 +1156,15 @@ static BOOL IsPushedKey( int nVirtKey )
 
 LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-#if __VER >= 15 // __GUILD_HOUSE
 	BOOL bHook = GuildDeploy()->MsgProc( hWnd, msg, wParam, lParam );
 	if( bHook )
 		return 0;
-#endif
 
 	CWndEdit* pWndEdit = CWndEdit::GetWndEditCtrl();
 	if( pWndEdit )
 	{
-#if __VER >= 9 // __CSC_VER9_3
 		if( !( ( msg == WM_KEYDOWN || msg == WM_KEYUP ) && (wParam == VK_ESCAPE || wParam == VK_F1 || wParam == VK_F2 || wParam == VK_F3 ||
 			wParam == VK_F4 || wParam == VK_F5 || wParam == VK_F6 || wParam == VK_F7 || wParam == VK_F8 || wParam == VK_F9) ) )
-#else //__CSC_VER9_3
-		if( !( ( msg == WM_KEYDOWN || msg == WM_KEYUP ) && wParam == VK_ESCAPE ) )
-#endif //__CSC_VER9_3
 		{
 			if( pWndEdit->IsYouMessage( msg, wParam, lParam ) )	
 				return 0;
@@ -1304,11 +1253,9 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 	{
 	case WM_KEYDOWN:
 		{
-		#if __VER >= 12 // __MOD_TUTORIAL
 			CWndGuideSystem* pWndGuide = NULL;
 			pWndGuide = (CWndGuideSystem*)g_WndMng.GetWndBase( APP_GUIDE );
 			if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.nInputKey = (UINT)wParam;
-		#endif
 			if( g_WndMng.m_pLogOutWaitting ) // 종료중이면 키보드 입력 불가
 				break;
 			
@@ -1332,7 +1279,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 					break;
 				}
 			}
-#if __VER >= 13 // __HOUSING
 			if(nVirtKey == VK_ESCAPE)
 			{
 				if(CDeployManager::GetInstance()->IsReady())
@@ -1341,11 +1287,8 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 					return FALSE;
 				}
 
-#if __VER >= 15 // __GUILD_HOUSE
 				GuildHouse->m_dwSelectedObjID = NULL_ID;		//최우선순위이므로 걍 NULL_ID로 ..
-#endif
 			}
-#endif // __HOUSING
 			CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
 			if( pWndWorld && pWndWorld->IsFocusWnd() == FALSE )
 				pWndWorld->OnKeyDown( nVirtKey, 0, 0 );
@@ -1374,7 +1317,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 			CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
 			if( pWndWorld && pWndWorld->IsFocusWnd() == FALSE )
 				pWndWorld->OnKeyUp( nVirtKey, 0, 0 );
-#if __VER >= 13 // __HOUSING
 			if(g_bKeyTable[VK_NEXT])
 			{
 				if(CDeployManager::GetInstance()->IsReady())
@@ -1395,8 +1337,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 					CDeployManager::GetInstance()->m_pTargetObj->UpdateLocalMatrix();
 				}
 			}
-#endif // __HOUSING
-#if __VER >= 8 //__CSC_VER8_1
 			if( g_bKeyTable[ VK_MULTIPLY ] ) //VK_MULTIPLY 임시로....
 			{
 				if(!g_WndMng.m_clearFlag)
@@ -1404,7 +1344,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 				else
 					g_WndMng.RestoreWnd();
 			}
-#endif //__CSC_VER8_1
 			
 			g_bKeyTable[ nVirtKey ] = FALSE;
 			g_WndMng.SetMessengerAutoState();
@@ -1417,7 +1356,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 	case WM_RBUTTONUP:
 	case WM_MOUSEMOVE:
 	case WM_MOUSEWHEEL:
-#if __VER >= 13 // __HOUSING
 		if(CDeployManager::GetInstance()->IsReady() && msg == WM_MOUSEWHEEL)
 		{
 			int nDelta = (short)HIWORD(wParam);
@@ -1432,7 +1370,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 				CDeployManager::GetInstance()->m_pTargetObj->UpdateLocalMatrix();
 			}
 		}
-#endif // __HOUSING
 			g_WndMng.SetMessengerAutoState();		
 		break;
 	case WM_CLOSE:
@@ -1495,17 +1432,8 @@ BOOL CNeuzApp::KillWindow( int wParam )
 		}
 		else if( wParam == VK_ESCAPE )
 		{
-#if __VER >= 13 // __RENEW_CHARINFO
 	CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER3 );
-#elif __VER >= 9 // __CSC_VER9_2
-			CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER2 );
-#else //__CSC_VER9_2
-			CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER );
-#endif //__CSC_VER9_2
 			if( pWndBase ) {
-#if __VER < 9 // __CSC_VER9_2
-				( (CWndCharacter*)pWndBase )->m_wndStateDetail.m_fWaitingConfirm	= FALSE;
-#endif //__CSC_VER9_2
 			}
 			pWndStateConfirm->Destroy();
 		}
@@ -1624,16 +1552,12 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	m_pMasterIcon[5] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert6.dds"), 0xffff00ff );
 	m_pHeroIcon		 = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Hero.dds"), 0xffff00ff );
 
-#if __VER >= 11 //	__SYS_COLLECTING
 	m_TexCltGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
 	m_TexCltGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
 	//m_TexCltGauge[2].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauPartyHp_Dbf.TGA" ), 0xffff00ff, TRUE );
-#endif
 	
-#if __VER >= 8 //__CSC_VER8_5
 	m_TextureAngelGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAngelExpBG.TGA" ), 0xffff00ff, TRUE );
 	m_TextureAngelGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAngelExp.TGA" ), 0xffff00ff, TRUE );
-#endif //__CSC_VER8_5
 
 	m_dwPVPTime = GetTickCount();
 	m_nTexAlpha		= 255;
@@ -1641,10 +1565,8 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	m_bTexLoadAlpha = FALSE;
 
 	g_toolTip.InitTexture();
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	g_toolTipSub1.InitTexture();
 	g_toolTipSub2.InitTexture();
-#endif // __IMPROVE_SYSTEM_VER15
 	
 #ifdef __YENV
 	HRESULT	hr;
@@ -1709,23 +1631,18 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	m_texQuestEmoticon.LoadScript( m_pd3dDevice, MakePath( DIR_ICON, "icon_QuestEmoticon.inc" ) );
 	m_TexturePackPVP.LoadScript( m_pd3dDevice, MakePath( DIR_SFX, "CountFight.inc" ) );
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 	TexturePool::Get()->Init( m_pd3dDevice );
-#endif	//__BS_CHANGING_ENVIR
 
 	PlayMusic( BGM_TITLE, 0 );
 
 	return S_OK;
 }
 
-#if __VER >= 15
 void CNeuzApp::ResetStaticValues( )
 {
 	GuildHouse->ResetValues( );
 }
-#endif
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 void CNeuzApp::Drv_SetGamma(HWND hWnd, float gamma, int overbright, float fContrast)
 {
     unsigned short ramp[3*256];
@@ -1766,7 +1683,6 @@ void CNeuzApp::Loop()
 }
 */
 
-#endif //__Y_GAMMA_CONTROL_8
 
 #ifdef __GAME_GRADE_SYSTEM
 #ifdef __CLIENT

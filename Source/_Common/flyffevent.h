@@ -27,9 +27,7 @@ enum
 	EVE_RECOMMEND,
 #endif // __S_RECOMMEND_EVE
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	EVE_GUILDCOMBAT1TO1,
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __JEFF_11_4
 	EVE_ARENA, 

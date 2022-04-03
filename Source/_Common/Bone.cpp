@@ -190,9 +190,6 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 ////////////////////////////////////////////////////////////////////////////////////
 CBonesMng :: CBonesMng()
 {
-#if __VER < 12 // __LEAK_0827
-	Init();
-#endif	// __LEAK_0827
 }
 
 CBonesMng :: ~CBonesMng()
@@ -203,35 +200,13 @@ CBonesMng :: ~CBonesMng()
 
 void	CBonesMng :: Init( void )
 {
-#if __VER < 12 // __LEAK_0827
-	int		i;
-	m_nSize = 0;
-	m_nMax = 0;
-	for( i = 0; i < MAX_BONES; i ++ )	m_pBonesAry[i] = NULL;
-#endif	// __LEAK_0827
 }
 
 void	CBonesMng :: Destroy( void )
 {
-#if __VER >= 12 // __LEAK_0827
 	for( map<string, CBones*>::iterator i = m_mapBones.begin(); i != m_mapBones.end(); ++i )
 		safe_delete( i->second );
 	m_mapBones.clear();
-#else	// __LEAK_0827
-	int		i;
-	CBones	**pAry = m_pBonesAry;
-	CBones	*pBone;
-
-	for( i = 0; i < MAX_BONES; i ++ )
-	{
-		pBone = *pAry++;
-		if( pBone )
-		{
-			SAFE_DELETE( pBone );
-		}
-	}
-	Init();
-#endif	// __LEAK_0827
 }
 
 // 본 파일Load요청이 들어오면 파일을 읽어 메모리에 적재한다.
@@ -239,7 +214,6 @@ void	CBonesMng :: Destroy( void )
 // 파일의 첫머리에 고유 아이디를 넣어서 검색할때 파일이름으로 하지말고 아이디로 하도록 한다.
 CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
 {
-#if __VER >= 12 // __LEAK_0827
 	char sFile[MAX_PATH]	= { 0,};
 	strcpy( sFile, szFileName );
 	strlwr( sFile );
@@ -256,40 +230,6 @@ CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
 	}
 	bool bResult	= m_mapBones.insert( map<string, CBones*>::value_type( sFile, pBones ) ).second;
 	return pBones;
-#else	// __LEAK_0827
-	int		i;
-	CBones **pAry = m_pBonesAry;
-	CBones *pBones;
-	int		nIdx = -1;
-
-	// 이미 메모리에 적재 되었는지 검색, 동시에 빈곳도 검색
-	for( i = 0; i < MAX_BONES; i ++ )
-	{
-		pBones = *pAry++;
-		if( pBones )				// 널이 아닌것은 무슨 본이든 로딩되어 있다는 뜻
-		{
-			if( strcmpi(pBones->m_szName, szFileName) == 0 )		// 같은걸 찾았으면 그걸 리턴
-//			if( pBones->m_nIDstrcmp(pBones->m_szName, szFileName) == 0 )		// 같은걸 찾았으면 그걸 리턴
-				return pBones;
-		}
-		else
-		{
-			if( nIdx == -1 )		nIdx = i;			// 빈곳이 있으면 가장처음 빈곳이 나온곳을 기억해둠
-		}
-	}
-
-	pBones = new CBones;
-	// 로딩된게 아니었다면.  실제로 데이타 읽음.
-	if( pBones->LoadBone( szFileName ) == FAIL )
-		return NULL;
-
-	// 읽은 본포인터를 리스트에 등록
-	m_pBonesAry[ nIdx ] = pBones;
-
-	m_nMax ++;			// 가진 본 갯수 증가
-
-	return pBones;		// 읽은 본 포인터 리턴
-#endif	// __LEAK_0827
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -305,9 +245,6 @@ CMotionMng		g_MotionMng;
 
 CMotionMng :: CMotionMng()
 {
-#if __VER < 12 // __LEAK_0827
-	Init();
-#endif	// __LEAK_0827
 }
 
 CMotionMng :: ~CMotionMng()
@@ -317,41 +254,13 @@ CMotionMng :: ~CMotionMng()
 
 void	CMotionMng :: Init( void )
 {
-#if __VER < 12 // __LEAK_0827
-	int		i;
-	m_nSize = 0;
-	m_nMax = 0;
-	m_nCachePos = 0;
-
-	for( i = 0; i < MAX_MOTION; i ++ )
-		m_pMotionAry[i] = NULL;
-	
-	for( i = 0; i < MAX_MOTION_CACHE; i ++ )
-		m_pCache[i] = NULL;
-#endif	// __LEAK_0827
 }
 
 void	CMotionMng :: Destroy( void )
 {
-#if __VER >= 12 // __LEAK_0827
 	for( map<string, CMotion*>::iterator i = m_mapMotions.begin(); i != m_mapMotions.end(); ++i )
 		safe_delete( i->second );
 	m_mapMotions.clear();
-#else	// __LEAK_0827
-	int		i;
-	CMotion		**pAry = m_pMotionAry;
-	CMotion		*pMotion;
-
-	for( i = 0; i < MAX_MOTION; i ++ )
-	{
-		pMotion = *pAry++;
-		if( pMotion )
-		{
-			SAFE_DELETE( pMotion );
-		}
-	}
-	Init();
-#endif	// __LEAK_0827
 }
 
 //
@@ -359,7 +268,6 @@ void	CMotionMng :: Destroy( void )
 //
 CMotion *CMotionMng :: LoadMotion( LPCTSTR szFileName )
 {
-#if __VER >= 12 // __LEAK_0827
 	char sFile[MAX_PATH]	= { 0,};
 	strcpy( sFile, szFileName );
 	strlwr( sFile );
@@ -377,61 +285,6 @@ CMotion *CMotionMng :: LoadMotion( LPCTSTR szFileName )
 	}
 	bool bResult	= m_mapMotions.insert( map<string, CMotion*>::value_type( sFile, pMotion ) ).second;
 	return pMotion;
-#else	// __LEAK_0827
-	int		i;
-	CMotion **pAry, *pMotion;
-	int		nIdx = -1;
-
-	// 이미 메모리에 적재 되었는지 검색, 동시에 빈곳도 검색
-	// 일단 캐쉬를 검색
-	pAry = m_pCache;
-	for( i = 0; i < MAX_MOTION_CACHE; i ++ )
-	{
-		pMotion = *pAry++;
-		if( pMotion )
-		{
-			if( strcmpi(pMotion->m_szName, szFileName) == 0 )		// 같은걸 찾았으면 그걸 리턴
-				return pMotion;
-		}
-	}
-
-	// 캐쉬에서 못찾았으면 리스트에서 검색
-	pAry = m_pMotionAry;
-	for( i = 0; i < MAX_MOTION; i ++ )
-	{
-		pMotion = *pAry++;
-		if( pMotion )				// 널이 아닌것은 무슨 모션이든 로딩되어 있다는 뜻
-		{
-			if( strcmpi(pMotion->m_szName, szFileName) == 0 )		// 같은걸 찾았으면 그걸 리턴
-				return pMotion;
-		} else
-		{
-			if( nIdx == -1 )		nIdx = i;			// 빈곳이 있으면 가장처음 빈곳이 나온곳을 기억해둠
-		}
-	}
-	if( nIdx == -1 )	
-	{
-		Error( "%s : 읽을 수 있는 한계를 초과했다", szFileName );
-	}
-
-	pMotion = new CMotion;
-	// 로딩된게 아니었다면.  실제로 데이타 읽음.
-	if( pMotion->LoadMotion( szFileName ) == FAIL )
-	{
-		safe_delete( pMotion );
-		return NULL;
-	}
-	// 읽은 모션포인터를 리스트에 등록
-	m_pMotionAry[ nIdx ] = pMotion;
-	
-	// 캐시에도 넣음
-	m_pCache[ m_nCachePos++ ] = pMotion;	
-	if( m_nCachePos >= MAX_MOTION_CACHE )		m_nCachePos = 0;
-
-	m_nMax ++;			// 가진 모션 갯수 증가
-
-	return pMotion;		// 읽은 모션 포인터 리턴
-#endif	// __LEAK_0827
 }
 
 

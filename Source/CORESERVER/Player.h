@@ -93,9 +93,7 @@ public:
 	void		PackName( CAr & ar );
 	void		AddItToSetofOperator( u_long uPlayerId );
 	BOOL	IsOperator( u_long idPlayer );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	Logout( CPlayer* pPlayer );
-#endif	// __SYS_PLAYER_DATA
 };
 
 

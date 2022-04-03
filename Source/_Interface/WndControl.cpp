@@ -14,10 +14,8 @@
 // API 자체를 수정하는 행위는 불가능하다. 윈도에서는 콜백, 훅. 오버라이드 같은 방식으로 기능에 변형을 가한다.
 // 여기서는 클레스를 계승받아 오버라이드하여 재작성하는 방법이 적당하다.
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
-#endif
 
 #define EDIT_HEIGHT 8
 #define VSCROLL_WIDTH 16
@@ -70,7 +68,6 @@ void CWndStatic::OnDraw( C2DRender* p2DRender )
 				point.y -= nFontMaxHeight - 14;
 		}
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( IsWndStyle( WSS_ALIGNHRIGHT ) )
 		{
 			CSize sizeTitle = p2DRender->m_pFont->GetTextExtent( m_strTitle );
@@ -103,7 +100,6 @@ void CWndStatic::OnDraw( C2DRender* p2DRender )
 			if( point.y < 2 )
 				point.y = 2;
 		}
-#endif // __IMPROVE_QUEST_INTERFACE
 		//p2DRender->TextOut( 6, 0, m_strTitle, D3DCOLOR_ARGB( 255, 217, 91, 51) );
 		//p2DRender->TextOut( 7, 0, m_strTitle, D3DCOLOR_ARGB( 255, 217, 91, 51) );
 		//p2DRender->TextOut( 6, 2, m_strTitle, D3DCOLOR_ARGB( 255, 217, 91, 51) );
@@ -141,7 +137,6 @@ void CWndStatic::OnDraw( C2DRender* p2DRender )
 	{
 		CPoint point( 2, 2 );
 
-#if __VER >= 14 // __STATIC_ALIGN
 		if( IsWndStyle( WSS_ALIGNHRIGHT ) )
 		{
 			CSize sizeTitle = p2DRender->m_pFont->GetTextExtent( m_strTitle );
@@ -174,7 +169,6 @@ void CWndStatic::OnDraw( C2DRender* p2DRender )
 			if( point.y < 2 )
 				point.y = 2;
 		}
-#endif // __STATIC_ALIGN
 
 		if( IsWndStyle( WSS_MONEY ) )
 		{
@@ -773,7 +767,6 @@ CWndTreeCtrl::CWndTreeCtrl()
 	m_nLineSpace = 3;
 	m_nFontColor   = D3DCOLOR_ARGB( 255, 64, 64, 64 );
 	m_nSelectColor = D3DCOLOR_ARGB( 255, 0, 0,   255 );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_pFocusElem = NULL;
 	m_nFontHeight = 0;
 	m_pTexButtOpen = NULL;
@@ -783,7 +776,6 @@ CWndTreeCtrl::CWndTreeCtrl()
 	m_nTreeTabWidth = 16;
 	m_nCategoryTextSpace = 16;
 	m_nTreeItemsMaxWidth = 0;
-#endif // __IMPROVE_QUEST_INTERFACE
 } 
 
 CWndTreeCtrl::~CWndTreeCtrl()
@@ -794,15 +786,12 @@ BOOL CWndTreeCtrl::Create(DWORD dwTextStyle,const RECT& rect,CWndBase* pParentWn
 {
 	return CWndBase::Create( WBS_CHILD | dwTextStyle, rect, pParentWnd, nID );
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWndTreeCtrl::DeleteItemArray( void )
 {
 	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
 		safe_delete( (LPTREEITEM)m_treeItemArray.GetAt(i) );
 	m_treeItemArray.RemoveAll();
 }
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 BOOL CWndTreeCtrl::DeleteAllItems()
 {
 	FreeTree(m_treeElem.m_ptrArray);
@@ -810,17 +799,6 @@ BOOL CWndTreeCtrl::DeleteAllItems()
 	m_pFocusElem = NULL;
 	return TRUE;
 }
-#else // __IMPROVE_QUEST_INTERFACE
-BOOL CWndTreeCtrl::DeleteAllItems()
-{
-	FreeTree(m_treeElem.m_ptrArray);
-	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
-		safe_delete( (LPTREEITEM)m_treeItemArray.GetAt(i) );
-	m_pFocusElem = NULL;
-	m_treeItemArray.RemoveAll();
-	return TRUE;
-}
-#endif // __IMPROVE_QUEST_INTERFACE
 LPTREEELEM CWndTreeCtrl::GetCurSel()
 {
 	return m_pFocusElem;
@@ -874,10 +852,8 @@ void CWndTreeCtrl::FreeTree( CPtrArray& ptrArray )
 	for(int i = 0; i < ptrArray.GetSize(); i++)
 	{
 		LPTREEELEM lpTreeElem = (LPTREEELEM)ptrArray.GetAt(i);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_bMemberCheckingMode == TRUE )
 			SAFE_DELETE( lpTreeElem->m_pWndCheckBox );
-#endif // __IMPROVE_QUEST_INTERFACE
 		if(lpTreeElem->m_ptrArray.GetSize())
 			FreeTree(lpTreeElem->m_ptrArray);
 		safe_delete( lpTreeElem );
@@ -904,7 +880,6 @@ LPTREEELEM CWndTreeCtrl::FindTreeElem( CPtrArray& ptrArray, LPCTSTR lpszKeyword 
 	return NULL;
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 LPTREEELEM CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWORD dwData, BOOL bForbidChecking, BOOL bCheck, DWORD dwFontColor, DWORD dwSelectColor )
 {
 	LPTREEELEM lpTreeElem = new TREEELEM( &GetClientRect() );
@@ -934,23 +909,6 @@ LPTREEELEM CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWOR
 		m_treeElem.m_ptrArray.Add( lpTreeElem );
 	return lpTreeElem;
 }
-#else // __IMPROVE_QUEST_INTERFACE
-LPTREEELEM CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWORD dwData )
-{
-	LPTREEELEM lpTreeElem = new TREEELEM;
-
-	lpTreeElem->m_lpParent = lpParent;
-	lpTreeElem->m_dwColor = m_nFontColor;
-	lpTreeElem->m_strKeyword = lpString;
-	lpTreeElem->m_dwData = dwData;
-	lpTreeElem->m_bOpen = FALSE;
-	if( lpParent )
-		lpParent->m_ptrArray.Add( lpTreeElem );
-	else
-		m_treeElem.m_ptrArray.Add( lpTreeElem );
-	return lpTreeElem;
-}
-#endif // __IMPROVE_QUEST_INTERFACE
 void CWndTreeCtrl::LoadTreeScript(LPCTSTR lpFileName) 
 {
 	CScript script;
@@ -986,7 +944,6 @@ void CWndTreeCtrl::InterpriteScript( CScript& script, CPtrArray& ptrArray )
 		return;
 	script.GetToken();
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 BOOL CWndTreeCtrl::CheckParentTreeBeOpened( LPTREEELEM lpTreeElem )
 {
 	if( lpTreeElem->m_bOpen == FALSE )
@@ -1122,7 +1079,6 @@ void CWndTreeCtrl::CalculateTextColor( DWORD dwCategoryTextColor, DWORD dwNormal
 		}
 	}
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 void CWndTreeCtrl::OnInitialUpdate()
 {
 	//CSize size = m_pSprPack->GetAt(13)->GetSize();
@@ -1171,16 +1127,10 @@ void CWndTreeCtrl::OnDraw(C2DRender* p2DRender)
 	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
 		safe_delete( (LPTREEITEM)m_treeItemArray.GetAt(i) );
 	m_treeItemArray.RemoveAll();
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_nTreeItemsMaxWidth = 0;
-#endif // __IMPROVE_QUEST_INTERFACE
 	PaintTree(p2DRender,pt,m_treeElem.m_ptrArray) ;
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	int nPage = GetClientRect().Height() / m_nFontHeight;
-#else // __IMPROVE_QUEST_INTERFACE
-	int nPage = GETRANGE; //GetClientRect().Height() / (m_nFontHeight + 3);
-#endif // __IMPROVE_QUEST_INTERFACE
 	int nRange = m_treeItemArray.GetSize();// - nPage;
 
 	if(	IsWndStyle( WBS_VSCROLL ) )  
@@ -1206,7 +1156,6 @@ void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray
 		pTreeItem = new TREEITEM;
 		CSize sizeStr;
 		p2DRender->m_pFont->GetTextExtent( pTreeElem->m_strKeyword, &sizeStr);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		int nRectLeft = pt.x + m_nCategoryTextSpace;
 		int nRectTop = pt.y;
 		int nRectRight = pt.x + m_nCategoryTextSpace + sizeStr.cx;
@@ -1223,9 +1172,6 @@ void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray
 				pWndCheckBox->SetWndRect( CRect( pt.x, pt.y - 1, pt.x + CHECK_BOX_SIZE_XY, pt.y + CHECK_BOX_SIZE_XY - 1 ) );
 			}
 		}
-#else // __IMPROVE_QUEST_INTERFACE
-		pTreeItem->m_rect.SetRect( pt.x, pt.y, pt.x + m_nFontHeight + 5 + sizeStr.cx, pt.y + sizeStr.cy );
-#endif // __IMPROVE_QUEST_INTERFACE
 		pTreeItem->m_lpTreeElem = pTreeElem;
 		m_treeItemArray.Add( pTreeItem );
 		if( pTreeElem->m_ptrArray.GetSize() )
@@ -1237,7 +1183,6 @@ void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray
 				p2DRender->RenderTexture( pt, m_pTexButtClose );
 
 		}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_pFocusElem == pTreeElem )
 		{
 			pTreeElem->m_strKeyword.SetColor( pTreeElem->m_dwSelectColor );
@@ -1248,29 +1193,13 @@ void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray
 			pTreeElem->m_strKeyword.SetColor( pTreeElem->m_dwColor );
 			p2DRender->TextOut_EditString( nRectLeft, nRectTop, pTreeElem->m_strKeyword );
 		}
-#else // __IMPROVE_QUEST_INTERFACE
-		if( m_pFocusElem == pTreeElem )
-		{
-			p2DRender->TextOut( pt.x + m_nFontHeight + 2, pt.y, pTreeElem->m_strKeyword, m_nSelectColor );
-		}
-		else
-		{
-			p2DRender->TextOut( pt.x + m_nFontHeight + 2, pt.y, pTreeElem->m_strKeyword, pTreeElem->m_dwColor );
-		}
-#endif // __IMPROVE_QUEST_INTERFACE
 
 		pt.y += GetFontHeight();
 		if( pTreeElem->m_ptrArray.GetSize() && pTreeElem->m_bOpen )
 		{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			pt.x += m_nTreeTabWidth;
 			PaintTree( p2DRender, pt, pTreeElem->m_ptrArray );
 			pt.x -= m_nTreeTabWidth;
-#else // __IMPROVE_QUEST_INTERFACE
-			pt.x += GetFontHeight();
-			PaintTree(p2DRender,pt,pTreeElem->m_ptrArray) ;
-			pt.x -= GetFontHeight();
-#endif // __IMPROVE_QUEST_INTERFACE
 		}
 	}
 }
@@ -1282,24 +1211,12 @@ void CWndTreeCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		pTreeItem = (LPTREEITEM)m_treeItemArray.GetAt(i);
 		if(pTreeItem->m_rect.PtInRect(point))
 		{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			m_pFocusElem = pTreeItem->m_lpTreeElem;
 			CWndBase* pWnd = m_pParentWnd;
 			while(pWnd->GetStyle() & WBS_CHILD)
 				pWnd = pWnd->GetParentWnd();
 			pWnd->OnChildNotify( WNM_CLICKED, m_nIdWnd, (LRESULT*)m_pFocusElem );
 			return;
-#else // __IMPROVE_QUEST_INTERFACE
-			if(m_pFocusElem == pTreeItem->m_lpTreeElem)
-			{
-				// 부모가 차일드 윈도가 아니어야 OnCommand 메시지를 받는다.
-				CWndBase* pWnd = m_pParentWnd;
-				while(pWnd->GetStyle() & WBS_CHILD)
-					pWnd = pWnd->GetParentWnd();
-				pWnd->OnChildNotify( WNM_CLICKED, m_nIdWnd, (LRESULT*)m_pFocusElem );
-				return;
-			}
-#endif // __IMPROVE_QUEST_INTERFACE
 		}
 	}
 }
@@ -1309,7 +1226,6 @@ void CWndTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
 	{
 		pTreeItem = (LPTREEITEM)m_treeItemArray.GetAt(i);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_bMemberCheckingMode == TRUE )
 		{
 			CWndButton* pWndCheckBox = pTreeItem->m_lpTreeElem->m_pWndCheckBox;
@@ -1331,17 +1247,6 @@ void CWndTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			pTreeItem->m_lpTreeElem->m_bOpen = !pTreeItem->m_lpTreeElem->m_bOpen;
 			m_pFocusElem = pTreeItem->m_lpTreeElem;
 		}
-#else // __IMPROVE_QUEST_INTERFACE
-		if(pTreeItem->m_rect.PtInRect(point))
-		{
-			CRect rect = pTreeItem->m_rect;
-			rect.SetRect(rect.left,rect.top,rect.left+m_nFontHeight,rect.top+m_nFontHeight);
-			if(rect.PtInRect(point))
-				pTreeItem->m_lpTreeElem->m_bOpen = !pTreeItem->m_lpTreeElem->m_bOpen;
-			else
-				m_pFocusElem = pTreeItem->m_lpTreeElem;
-		}
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 }
 
@@ -1358,7 +1263,6 @@ void CWndTreeCtrl::OnLButtonDblClk( UINT nFlags, CPoint point)
 	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
 	{
 		pTreeItem = (LPTREEITEM)m_treeItemArray.GetAt(i);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_bMemberCheckingMode == TRUE )
 		{
 			CWndButton* pWndCheckBox = pTreeItem->m_lpTreeElem->m_pWndCheckBox;
@@ -1371,7 +1275,6 @@ void CWndTreeCtrl::OnLButtonDblClk( UINT nFlags, CPoint point)
 					pWndCheckBox->SetVisible( FALSE );
 			}
 		}
-#endif // __IMPROVE_QUEST_INTERFACE
 		if(pTreeItem->m_rect.PtInRect(point))
 		{
 			m_pFocusElem = pTreeItem->m_lpTreeElem;
@@ -1421,7 +1324,6 @@ BOOL CWndTreeCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 tagScriptElem::tagScriptElem( void ) : 
 m_lpParent( NULL ), 
 m_dwColor( D3DCOLOR_ARGB( 255, 64, 64, 64 ) ), 
@@ -1443,7 +1345,6 @@ m_pWndCheckBox( NULL )
 {
 	m_strKeyword.Init( CWndBase::m_Theme.m_pFontText, pRect );
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndScrollBar
@@ -1688,10 +1589,8 @@ void CWndScrollBar::OnLButtonDblClk( UINT nFlags, CPoint point)
 }
 void CWndScrollBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( GetScrollPage() >= GetMaxScrollPos() )
 		return;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	SetCapture();
 	CRect rect = GetClientRect();
@@ -1805,11 +1704,9 @@ CWndListBox::CWndListBox()
 	m_nFontColor   = D3DCOLOR_ARGB( 255, 64, 64, 64 );
 	//m_nSelectColor = D3DCOLOR_ARGB( 255, 64, 64, 0   );
 	m_nSelectColor = D3DCOLOR_ARGB( 255, 64, 64,  255   );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_dwOnMouseColor = D3DCOLOR_ARGB( 255, 255, 128, 0 );
 	m_dwInvalidColor = D3DCOLOR_ARGB( 255, 170, 170, 170 );
 	m_nLeftMargin = 0;
-#endif // __IMPROVE_QUEST_INTERFACE
 	m_nCurSelect = -1;
 	m_pFocusItem = NULL;
 	m_byWndType = WTYPE_LISTBOX;
@@ -1885,7 +1782,6 @@ void CWndListBox::PaintListBox(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArr
 	for(int i = 0; i < ptrArray.GetSize(); i++)
 	{
 		pListItem = (LPLISTITEM)ptrArray.GetAt(i);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( pListItem->m_bIsVisible == FALSE )
 			continue;
 
@@ -1912,19 +1808,6 @@ void CWndListBox::PaintListBox(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArr
 			pListItem->m_strWord.SetColor( m_dwInvalidColor );
 		p2DRender->TextOut_EditString( m_nLeftMargin + pt.x, pt.y, pListItem->m_strWord );
 		pt.y += m_nFontHeight;
-#else // __IMPROVE_QUEST_INTERFACE
-		if( i == m_nCurSelect ) //m_pFocusItem == pListItem)
-		{
-			p2DRender->SetTextColor(m_nSelectColor);
-			p2DRender->TextOut(pt.x,pt.y,pListItem->m_strWord,m_nSelectColor);
-		}
-		else
-		{
-			p2DRender->SetTextColor(m_nFontColor);
-			p2DRender->TextOut(pt.x,pt.y,pListItem->m_strWord,m_nFontColor);
-		}
-		pt.y += m_nFontHeight;
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 }
 void CWndListBox::OnLButtonUp(UINT nFlags, CPoint point)
@@ -1938,13 +1821,11 @@ void CWndListBox::OnLButtonUp(UINT nFlags, CPoint point)
 		for(int i = 0; i < m_listItemArray.GetSize(); i++)
 		{
 			pListItem = (LPLISTITEM)m_listItemArray.GetAt(i);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			if( pListItem->m_bIsValid == FALSE )
 			{
 				pt.y += m_nFontHeight;
 				continue;
 			}
-#endif // __IMPROVE_QUEST_INTERFACE
 			int nScrollBarWidth = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetClientRect().Width() : 0;
 			rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - nScrollBarWidth, pt.y + m_nFontHeight );
 			if(rect.PtInRect(point))
@@ -1970,13 +1851,11 @@ void CWndListBox::OnLButtonDown(UINT nFlags, CPoint point)
 	for(int i = 0; i < m_listItemArray.GetSize(); i++)
 	{
 		pListItem = (LPLISTITEM)m_listItemArray.GetAt(i);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( pListItem->m_bIsValid == FALSE )
 		{
 			pt.y += m_nFontHeight;
 			continue;
 		}
-#endif // __IMPROVE_QUEST_INTERFACE
 		int nScrollBarWidth = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetClientRect().Width() : 0;
 		rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - nScrollBarWidth, pt.y + m_nFontHeight );
 		if(rect.PtInRect(point))
@@ -1996,13 +1875,11 @@ void CWndListBox::OnRButtonUp(UINT nFlags, CPoint point)
 	for(int i = 0; i < m_listItemArray.GetSize(); i++)
 	{
 		pListItem = (LPLISTITEM)m_listItemArray.GetAt(i);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( pListItem->m_bIsValid == FALSE )
 		{
 			pt.y += m_nFontHeight;
 			continue;
 		}
-#endif // __IMPROVE_QUEST_INTERFACE
 		int nScrollBarWidth = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetClientRect().Width() : 0;
 		rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - nScrollBarWidth, pt.y + m_nFontHeight );
 		if(rect.PtInRect(point))
@@ -2056,10 +1933,8 @@ void CWndListBox::OnRButtonDblClk( UINT nFlags, CPoint point)
 }
 BOOL CWndListBox::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( m_wndScrollBar.GetScrollPage() >= m_wndScrollBar.GetMaxScrollPos() )
 		return TRUE;
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( zDelta < 0 )
 	{
 		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
@@ -2112,7 +1987,6 @@ int CWndListBox::SetItemDataPtr(int nIndex,void* pData)
 	return 0;
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 DWORD CWndListBox::GetItemData2( int nIndex ) const
 {
 	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
@@ -2172,20 +2046,12 @@ int CWndListBox::SetItemVisibility( int nIndex, BOOL bIsVisible )
 	lpListItem->m_bIsVisible = bIsVisible;
 	return 0;
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 const CRect& CWndListBox::GetItemRect( int nIndex ) const
 {
 	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
 	return lpListItem->m_rect;
 }
-#else // __IMPROVE_QUEST_INTERFACE
-int CWndListBox::GetItemRect(int nIndex,LPRECT lpRect) const
-{
-		return 1;
-}
-#endif // __IMPROVE_QUEST_INTERFACE
 
 int CWndListBox::GetSel(int nIndex) const
 {
@@ -2263,10 +2129,8 @@ int CWndListBox::AddString(LPCTSTR lpszItem)
 {
 	LPLISTITEM lpListItem = new LISTITEM;
 	lpListItem->m_strWord = lpszItem;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	lpListItem->m_strWord.Init( m_pFont, &GetClientRect() );
 	lpListItem->m_strWord.SetParsingString( lpszItem, m_nFontColor, 0x00000000, 0, 0x00000001, TRUE );
-#endif // __IMPROVE_QUEST_INTERFACE
 	m_listItemArray.Add(lpListItem);
 	return m_listItemArray.GetSize()-1;
 }
@@ -2289,7 +2153,6 @@ void CWndListBox::SetString( int nIndex, LPCTSTR lpszItem )
 	lpListItem->m_strWord	= lpszItem;
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 const CString& CWndListBox::GetString( int nIndex ) const
 {
 	LPLISTITEM lpListItem	= ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
@@ -2343,7 +2206,6 @@ int CWndListBox::GetLeftMargin( void ) const
 {
 	return m_nLeftMargin;
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
 #ifdef __IMPROVE_MAP_SYSTEM
 int CWndListBox::GetItemIndex( const CString& strItem ) const
@@ -3136,10 +2998,8 @@ void CWndText::OnLButtonDblClk(UINT nFlags, CPoint point)
 }
 BOOL CWndText::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( m_wndScrollBar.GetScrollPage() >= m_wndScrollBar.GetMaxScrollPos() )
 		return TRUE;
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( zDelta < 0 )
 	{
 		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
@@ -3574,7 +3434,6 @@ BOOL CWndMenu::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 }
 BOOL CWndMenu::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 {
-#if __VER >= 15 // __GUILD_HOUSE
 	
 	//gmpbigsun: 길드하우징 콘트롤 오브젝트에 대해 메세지전파를 차단, 새로운방식으로 작동해야 하기때문에...
 	if( MMI_GHOUSE_INFO == nID )
@@ -3601,7 +3460,6 @@ BOOL CWndMenu::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		GuildHouse->Remove( );
 		return TRUE;
 	}
-#endif
 
 	BOOL bResult = FALSE;
 	if( m_pParentWnd )
@@ -4071,7 +3929,6 @@ int CWndListCtrl::InsertColumn( int nCol, const LVCOLUMN* pColumn )
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 tagWTCITEM::tagWTCITEM( void ) : 
 mask( 0 ), 
 dwState( 0 ), 
@@ -4083,15 +3940,12 @@ lParam( 0 ),
 pWndBase( NULL )
 {
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 CWndTabCtrl::CWndTabCtrl()
 {
 	m_nTabButtonLength = 0;
 	m_nCurSelect = 0;
 	m_aTab.reserve( 10 );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_eTabTitleAlign = ALIGN_LEFT;
-#endif // __IMPROVE_QUEST_INTERFACE
 //#ifndef __NEWTAB
 	//ZeroMemory( m_apTexture, sizeof( m_apTexture ) );
 //#endif
@@ -4232,7 +4086,6 @@ void CWndTabCtrl::OnDraw( C2DRender* p2DRender )
 			LPWTCITEM pItem = m_aTab[ i ];
 			if( pItem )
 			{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 				switch( m_eTabTitleAlign )
 				{
 				case ALIGN_LEFT:
@@ -4273,12 +4126,6 @@ void CWndTabCtrl::OnDraw( C2DRender* p2DRender )
 						p2DRender->TextOut( ( i * nLength ) + 2, y, pItem->pszText, dwTextColor );
 					}
 				}
-#else // __IMPROVE_QUEST_INTERFACE
-				if( i != m_nCurSelect )
-					p2DRender->TextOut( i * nLength + 2, y, pItem->pszText, 0xffffffff );
-				else
-					p2DRender->TextOut( i * nLength + 2, y, pItem->pszText, 0xff000000 );
-#endif // __IMPROVE_QUEST_INTERFACE
 			}
 		}
 	}
@@ -4546,7 +4393,6 @@ BOOL CWndTabCtrl::GetItem(int nItem, WTCITEM* pTabCtrlItem) const
 	memcpy( pTabCtrlItem, m_aTab[ nItem ], sizeof( WTCITEM ) );
 	return TRUE;
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 LPWTCITEM CWndTabCtrl::GetTabItem( int nItemNumber ) const
 {
 	if( nItemNumber < 0 || nItemNumber >= (int)( m_aTab.size() ) )
@@ -4568,7 +4414,6 @@ const CWndTabCtrl::TabTitleAlign CWndTabCtrl::GetTabTitleAlign( void ) const
 {
 	return m_eTabTitleAlign;
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 BOOL CWndTabCtrl::InsertItem( int nItem, WTCITEM* pTabCtrlItem )
 {
 	if( nItem >= (int)( m_aTab.size() ) )
@@ -4656,22 +4501,18 @@ void CWndComboListBox::PaintFrame( C2DRender* p2DRender )
 }
 #endif // __IMPROVE_MAP_SYSTEM
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWndComboListBox::OnKillFocus( CWndBase* pNewWnd )
 {
 	m_pParentWnd->OnChildNotify( WNM_KILLFOCUS, m_nIdWnd, ( LRESULT* )this );
 
 	CWndBase::OnKillFocus( pNewWnd );
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 
 CWndComboBox::CWndComboBox()
 {
 //	m_dwComboBoxStyle = 0; 
 	m_byWndType = WTYPE_COMBOBOX;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_bOpen = FALSE;
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 CWndComboBox::~CWndComboBox()
 {
@@ -4723,7 +4564,6 @@ void CWndComboBox::OnDraw( C2DRender* p2DRender )
 
 void CWndComboBox::OnLButtonDown( UINT nFlags, CPoint point )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( m_bOpen == TRUE )
 		m_bOpen = FALSE;
 	else
@@ -4731,7 +4571,6 @@ void CWndComboBox::OnLButtonDown( UINT nFlags, CPoint point )
 		m_bOpen = TRUE;
 		OpenListBox();
 	}
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 
 void CWndComboBox::OnLButtonUp( UINT nFlags, CPoint point )
@@ -4741,7 +4580,6 @@ BOOL CWndComboBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
 	if( nID == 0 && message == WNM_CLICKED) // list
 	{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_bOpen == TRUE )
 			m_bOpen = FALSE;
 		else
@@ -4749,21 +4587,9 @@ BOOL CWndComboBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			m_bOpen = TRUE;
 			OpenListBox();
 		}
-#else // __IMPROVE_QUEST_INTERFACE
-		CRect rect = GetScreenRect();//GetWindowRect( );
-		rect.top = rect.bottom;
-		rect.bottom += 200;
-
-		m_wndListBox.Move( rect.TopLeft() );
-		m_wndListBox.SetVisible( TRUE );
-		m_wndListBox.m_bTile = m_bTile;
-		m_wndListBox.AdjustWndBase();
-		m_wndListBox.SetFocus();
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
 	if( nID == 1 && message == WNM_SELCHANGE) // list
 	{
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		if( m_bOpen == TRUE )
 		{
 #ifdef __IMPROVE_MAP_SYSTEM
@@ -4779,16 +4605,7 @@ BOOL CWndComboBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			m_wndListBox.SetVisible( FALSE );
 			m_bOpen = FALSE;
 		}
-#else // __IMPROVE_QUEST_INTERFACE
-		CString string;
-		m_wndListBox.GetText( m_wndListBox.GetCurSel(), string );
-		SetString( string );
-		m_wndListBox.SetVisible( FALSE );
-		CWndBase* pWnd = m_pParentWnd;
-		pWnd->OnChildNotify( WNM_SELCHANGE, m_nIdWnd, (LRESULT*)this); 
-#endif // __IMPROVE_QUEST_INTERFACE
 	}
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( nID == 1 && message == WNM_KILLFOCUS )
 	{
 		CPoint point = GetMousePoint();
@@ -4802,7 +4619,6 @@ BOOL CWndComboBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				m_bOpen = FALSE;
 		}
 	}
-#endif // __IMPROVE_QUEST_INTERFACE
 	return TRUE;
 }
 // manipulating listbox items
@@ -4878,15 +4694,12 @@ int CWndComboBox::GetCurSel() const
 }
 int CWndComboBox::SetCurSel( int nSelect )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	assert( nSelect >= 0 && nSelect < m_wndListBox.GetCount() );
-#endif // __IMPROVE_QUEST_INTERFACE
 	CString string;
 	m_wndListBox.GetText( nSelect, string );
 	SetString( string );
 	return m_wndListBox.SetCurSel( nSelect );
 }
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWndComboBox::OpenListBox( void )
 {
 	CRect rect = GetScreenRect();
@@ -4899,7 +4712,6 @@ void CWndComboBox::OpenListBox( void )
 	m_wndListBox.AdjustWndBase();
 	m_wndListBox.SetFocus();
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 #ifdef __IMPROVE_MAP_SYSTEM
 DWORD CWndComboBox::GetSelectedItemData( void ) const
 {

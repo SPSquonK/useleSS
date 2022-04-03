@@ -24,7 +24,6 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };
 
-#if __VER >= 11 // __GUILD_BANK_LOG
 class CWndAddItemLog : public CWndBase
 {
 public:
@@ -150,6 +149,5 @@ public:
 
 	void UpdateScroll();
 };
-#endif //__GUILD_BANK_LOG
 
 #endif

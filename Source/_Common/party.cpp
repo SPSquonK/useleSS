@@ -19,14 +19,10 @@ extern CWorldMng   g_WorldMng;
 extern	CDPCoreClient	g_DPCoreClient;
 #include "dpdatabaseclient.h"
 extern	CDPDatabaseClient	g_dpDBClient;
-#if __VER >= 12 // __LORD
 #include "slord.h"
-#endif	// __LORD
 #endif	// __WORLDSERVER
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
@@ -38,9 +34,7 @@ extern	CDPDatabaseClient	g_dpDBClient;
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonParty.h"
-#endif // __INSTANCE_DUNGEON
 /*--------------------------------------------------------------------------------*/
 
 CParty::CParty()
@@ -83,10 +77,6 @@ void CParty::InitParty()
 		m_aMember[i].m_uPlayerId	= 0;
 		m_aMember[i].m_tTime = CTime::GetCurrentTime();
 		m_aMember[i].m_bRemove = FALSE;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		m_aMember[i].m_nLevel = m_aMember[i].m_nJob = 0;
-		m_aMember[i].m_szName[0] = '\0';
-#endif	// __SYS_PLAYER_DATA
 	}
 }
 
@@ -111,29 +101,13 @@ int CParty::FindMember( u_long uPlayerId )
 	return -1;
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 BOOL CParty::NewMember( u_long uPlayerId )
-#else	// __SYS_PLAYER_DATA
-BOOL CParty::NewMember( u_long uPlayerId, LONG nLevel, LONG nJob, BYTE nSex, LPSTR szName )
-#endif	// __SYS_PLAYER_DATA
 {
-#if __VER < 11 // __SYS_PLAYER_DATA
-	if( szName == NULL )
-		return FALSE;
-#endif	// __SYS_PLAYER_DATA
 	
 	if( IsMember( uPlayerId ) == FALSE && m_nSizeofMember < MAX_PTMEMBER_SIZE )
 	{
 		m_aMember[m_nSizeofMember].m_uPlayerId = uPlayerId;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		m_aMember[m_nSizeofMember].m_nLevel = nLevel;
-		m_aMember[m_nSizeofMember].m_nJob = nJob;
-		m_aMember[m_nSizeofMember].m_nSex = nSex;
-#endif	// __SYS_PLAYER_DATA
 		m_aMember[m_nSizeofMember].m_bRemove	= FALSE;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		strcpy( m_aMember[m_nSizeofMember].m_szName, szName );
-#endif	// __SYS_PLAYER_DATA
 		m_nSizeofMember++;
 		return TRUE;
 	}
@@ -151,9 +125,7 @@ BOOL CParty::DeleteMember( u_long uPlayerId )
 		}
 		m_nSizeofMember--;
 #ifdef __WORLDSERVER
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		CInstanceDungeonParty::GetInstance()->SetPartyLeaveTime( uPlayerId );
-#endif // __INSTANCE_DUNGEON
 #endif // __WORLDSERVER
 		return TRUE;
 	}
@@ -183,15 +155,7 @@ void CParty::Serialize( CAr & ar )
 		for( int i = 0 ; i < m_nSizeofMember ; i++ )
 		{
 			ar << m_aMember[i].m_uPlayerId;
-#if __VER < 11 // __SYS_PLAYER_DATA
-			ar << m_aMember[i].m_nLevel;
-			ar << m_aMember[i].m_nJob;
-#endif	// __SYS_PLAYER_DATA
 			ar << m_aMember[i].m_bRemove;
-#if __VER < 11 // __SYS_PLAYER_DATA
-			ar << m_aMember[i].m_nSex;
-			ar.WriteString( m_aMember[i].m_szName );
-#endif	// __SYS_PLAYER_DATA
 		}
 	}
 	else
@@ -209,15 +173,7 @@ void CParty::Serialize( CAr & ar )
 		for( int i = 0 ; i < m_nSizeofMember ; i++ )
 		{
 			ar >> m_aMember[i].m_uPlayerId;
-#if __VER < 11 // __SYS_PLAYER_DATA
-			ar >> m_aMember[i].m_nLevel;
-			ar >> m_aMember[i].m_nJob;
-#endif	// __SYS_PLAYER_DATA
 			ar >> m_aMember[i].m_bRemove;
-#if __VER < 11 // __SYS_PLAYER_DATA
-			ar >> m_aMember[i].m_nSex;
-			ar.ReadString( m_aMember[i].m_szName, 20 );
-#endif	// __SYS_PLAYER_DATA
 		}
 	}
 }
@@ -231,7 +187,6 @@ void CParty::SwapPartyMember( int first, int Second )
 	memcpy( &m_aMember[Second], &PartyMemberBuf, sizeof(PartyMember) );
 }
 
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 int CParty::GetPartyModeTime( int nMode )
 {
 	return m_nModeTime[nMode];	
@@ -243,12 +198,6 @@ void CParty::SetPartyMode( int nMode, DWORD dwSkillTime ,int nCachMode )
 	else
 		m_nModeTime[nMode] = (int)dwSkillTime;	
 }
-#else	//12차 극단유료아이템
-void CParty::SetPartyMode( int nMode, DWORD dwSkillTime )
-{
-	m_nModeTime[nMode] = (int)dwSkillTime;	
-}
-#endif // //12차 극단유료아이템
 
 #ifdef __WORLDSERVER
 void CParty::SetPartyLevel( CUser* pUser, DWORD dwLevel, DWORD dwPoint, DWORD dwExp )
@@ -266,9 +215,7 @@ void CParty::GetPoint( int nTotalLevel, int nMemberSize, int nDeadLeavel )
 	{
 		BOOL bExpResult = TRUE;
 		BOOL bSuperLeader = FALSE;
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 		BOOL bLeaderSMExpUp = FALSE;
-#endif // //12차 극단유료아이템
 		if( m_nKindTroup == 0 && m_nLevel >= MAX_PARTYLEVEL )
 			bExpResult = FALSE;
 
@@ -277,7 +224,6 @@ void CParty::GetPoint( int nTotalLevel, int nMemberSize, int nDeadLeavel )
 		{
 			bSuperLeader = TRUE;
 		}
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 		#define II_SYS_SYS_SCR_PARTYEXPUP01_01 20296
 		#define II_SYS_SYS_SCR_PARTYSKILLUP01_01 20297
 		if( pMover && ( pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP01 ) || pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP02 )
@@ -285,14 +231,9 @@ void CParty::GetPoint( int nTotalLevel, int nMemberSize, int nDeadLeavel )
 		{
 			bLeaderSMExpUp = TRUE;
 		}
-#endif // //12차 극단유료아이템
 
 		if( bExpResult )
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 			g_DPCoreClient.SendAddPartyExp( m_uPartyId, nDeadLeavel, bSuperLeader , bLeaderSMExpUp );
-#else // //12차 극단유료아이템
-			g_DPCoreClient.SendAddPartyExp( m_uPartyId, nDeadLeavel, bSuperLeader );
-#endif // //12차 극단유료아이템
 	}
 #endif // __WORLDSERVER
 }
@@ -313,7 +254,6 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 #endif // __PARTYDEBUG
 			{
 #ifndef __PARTYDEBUG
-	#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 				CUser *pLeadertmp = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
 				if( IsValidObj( pLeadertmp ) == FALSE )
 					return;
@@ -333,18 +273,13 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 				int nRemovePoint	= pItemProp->dwExp;
 
 				nFPoint	= int( GetPoint() - pItemProp->dwExp);
-#if __VER >= 12 // __LORD
 				// 군주의 극단
 				// 군주가 극단장 으로써 극단스킬 사용 시,
 				// 지속시간 4배 증가(소모 포인트는 동일)
 				if( CSLord::Instance()->IsLord( uLeaderid ) )
 					dwSkillTime		*= 4;
-#endif	// __LORD
 
 				if( nFPoint >= 0 )
-	#else
-				if( int( GetPoint() - pItemProp->dwExp) >= 0 )
-	#endif // //12차 극단유료아이템
 #endif // __PARTYDEBUG
 				{
 					switch( nSkill )
@@ -483,7 +418,6 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 						}
 						break;
 
-#if __VER >= 12 // __JHMA_VER12_1	//12차 극단유료아이템
 					case ST_LINKATTACK:
 						{
 							// 데미지 증가
@@ -508,32 +442,6 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 							g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_GIFTBOX_MODE, dwSkillTime, nRemovePoint, nHasCashSkill );
 						}
 						break;
-#else	//12차 극단유료아이템
-					case ST_LINKATTACK:
-						{
-							// 데미지 증가
-							g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_LINKATTACK_MODE, dwSkillTime, nRemovePoint );
-						}
-						break;
-					case ST_FORTUNECIRCLE:
-						{
-							// 유니크 아이템 발생확률 증가
-								g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_FORTUNECIRCLE_MODE, dwSkillTime, nRemovePoint );
-						}
-						break;
-					case ST_STRETCHING:
-						{
-							// 쉬는경우 회복속도 높여줌
-							g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_STRETCHING_MODE, dwSkillTime, nRemovePoint );
-						}
-						break;
-					case ST_GIFTBOX:
-						{
-							// 아이템 양이 두배
-							g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_GIFTBOX_MODE, dwSkillTime, nRemovePoint );
-						}
-						break;
-#endif // //12차 극단유료아이템
 					default:
 						break;
 					}
@@ -592,11 +500,7 @@ void CParty::DoDuelPartyStart( CParty *pDst )
 	}
 	else	// 단막극단 일때는 리더이름을 보냄
 	{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		pszLeader	= CPlayerDataCenter::GetInstance()->GetPlayerString( pDst->GetPlayerId( 0 ) );
-#else	// __SYS_PLAYER_DATA
-		pszLeader	= prj.GetPlayerString( pDst->GetPlayerId( 0 ) );
-#endif	//__SYS_PLAYER_DATA
 	}
 	
 	if( !pszLeader )
@@ -901,11 +805,7 @@ u_long	CPartyMng::NewParty( u_long uLeaderId, LONG nLeaderLevel, LONG nLeaderJob
 		
 //		pParty->Lock();
 		pParty->SetPartyId( m_id );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		if( TRUE == pParty->NewMember( uLeaderId ) && TRUE == pParty->NewMember( uMemberId ) )
-#else	// __SYS_PLAYER_DATA
-		if( TRUE == pParty->NewMember( uLeaderId, nLeaderLevel, nLeaderJob, nLeaderSex, szLeaderName ) && TRUE == pParty->NewMember( uMemberId, nMemberLevel, nMemberJob, nMemberSex, szMembername ) )
-#endif	// __SYS_PLAYER_DATA
 		{
 //			m_2Party.SetAt( m_id, pParty );
 			m_2PartyPtr.insert( C2PartyPtr::value_type( m_id, pParty ) );
@@ -948,9 +848,7 @@ BOOL CPartyMng::DeleteParty( u_long uPartyId )
 			pParty->DoDuelPartyCancel( pDstParty );	// this파티원들에게도 듀얼해제됐다는걸 알림.
 		}
 #ifdef __WORLDSERVER
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		CInstanceDungeonParty::GetInstance()->DestroyAllDungeonByDungeonID( uPartyId );
-#endif // __INSTANCE_DUNGEON
 #endif // __WORLDSERVER
 
 		safe_delete( pParty );
@@ -1145,10 +1043,8 @@ void CPartyMng::Worker( void )
 			{
 				if( pParty->m_nModeTime[j] )
 				{
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 					if( j == PARTY_PARSKILL_MODE)
 						continue;
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 					pParty->m_nModeTime[j] -= 1000;
 					if( pParty->m_nModeTime[j] <= 0 )
 					{
@@ -1210,10 +1106,8 @@ void CPartyMng::RemoveConnection( CPlayer* pPlayer )
 		ar << pPlayer->m_uPartyId << pPlayer->uKey;
 		SEND( ar, &g_dpCoreSrvr, DPID_ALLPLAYERS );
 
-#if __VER >= 12 // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 		if( pParty->m_nModeTime[PARTY_PARSKILL_MODE] )
 			g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
-#endif // __PARSKILL1001 090917 mirchang - 파스킬 아이템 수정
 
 		if( i == 0 )
 		{
@@ -1227,7 +1121,6 @@ void CPartyMng::RemoveConnection( CPlayer* pPlayer )
 					break;
 				}
 			}
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 			for( int k = 0 ; k < MAX_PARTYMODE ; k++ )
 			{
 				if( pParty->m_nModeTime[k] )
@@ -1237,7 +1130,6 @@ void CPartyMng::RemoveConnection( CPlayer* pPlayer )
 					pParty->m_nModeTime[k] = 0;
 				}
 			}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
 
 			if( fRemoveParty )
 			{

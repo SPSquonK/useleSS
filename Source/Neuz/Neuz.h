@@ -127,15 +127,9 @@ public:
 	CTexture				m_TextureHPGauge[3];
 	CTexture*				m_pMasterIcon[6];
 	CTexture*				m_pHeroIcon;
-#if __VER >= 11 //	__SYS_COLLECTING
 	CTexture				m_TexCltGauge[2];
-#endif
-#if __VER >= 11 // __MOD_VENDOR
 	CItemBase				m_aSavedInven[MAX_VENDITEM];
-#endif
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	int						m_n2ndPasswordNumber;
-#endif // __2ND_PASSWORD_SYSTEM
 
 #ifdef __GAME_GRADE_SYSTEM
 #ifdef __CLIENT
@@ -158,16 +152,12 @@ public:
 #endif // __GAME_GRADE_SYSTEM
 	
 
-#if __VER >= 8 //__CSC_VER8_5
 	CTexture				m_TextureAngelGauge[2];
-#endif //__CSC_VER8_5
 
 	TCHAR					m_szWhisperName[MAX_NAME];			// 귓속말 보낼 이름
 	
-#if __VER >= 12 // __ITEMCREATEMON_S0602
 	D3DXVECTOR3				m_vCursorPos;
 	CItemElem*				m_pCreateMonItem;
-#endif // __ITEMCREATEMON_S0602
 
 #ifdef __YENV
 	LPD3DXEFFECT			m_pEffect;
@@ -217,13 +207,9 @@ protected:
 
 public:
 
-#if __VER >= 15
 	void		ResetStaticValues( );	//gmpbigsun(100429)
-#endif
 
-#if __VER >= 8 //__Y_GAMMA_CONTROL_8
 	void Drv_SetGamma(HWND hWnd, float gamma, int overbright, float fContrast);
-#endif //__Y_GAMMA_CONTROL_8	
 
 	LRESULT		MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 	void		SetLeftTime( long lTimeLeft );

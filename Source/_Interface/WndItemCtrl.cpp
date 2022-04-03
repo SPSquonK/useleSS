@@ -32,9 +32,7 @@ CWndItemCtrl::CWndItemCtrl()
 	memset( m_pArrayItemElem, 0, sizeof(CItemElem*)*100 );
 	m_nArrayCount = 0;
 	m_bVisibleCount = TRUE;
-#if __VER >= 8 // __CSC_VER8_5
 	m_useDieFlag = FALSE;
-#endif // __CSC_VER8_5
 }
 CWndItemCtrl::~CWndItemCtrl()
 {
@@ -58,7 +56,6 @@ void CWndItemCtrl::OnInitialUpdate()
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );//,m_pSprPack,-1);
 }
 
-#if __VER >= 9 // __CSC_VER9_1
 void CWndItemCtrl::UpdateTooltip( void )
 {
 	CRect rect = GetClientRect();
@@ -102,18 +99,13 @@ void CWndItemCtrl::UpdateTooltip( void )
 				}
 				else
 				{
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 					g_WndMng.PutToolTipItemAndSubToolTip( pItemElem, point2, &rectHittest, APP_INVENTORY );
-#else // __IMPROVE_SYSTEM_VER15
-					g_WndMng.PutToolTip_Item( pItemElem, point2, &rectHittest, APP_INVENTORY );		
-#endif // __IMPROVE_SYSTEM_VER15
 				}
 			}
 		}
 	}
 }
 
-#endif	// __CSC_VER9_1
 
 void CWndItemCtrl::OnMouseWndSurface( CPoint point )
 {
@@ -173,11 +165,7 @@ void CWndItemCtrl::OnMouseWndSurface( CPoint point )
 					}
 					else
 					{
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 						g_WndMng.PutToolTipItemAndSubToolTip( pItemElem, point2, &rectHittest, APP_INVENTORY );
-#else // __IMPROVE_SYSTEM_VER15
-						g_WndMng.PutToolTip_Item( pItemElem, point2, &rectHittest, APP_INVENTORY );		
-#endif // __IMPROVE_SYSTEM_VER15
 					}
 				}
 
@@ -185,7 +173,6 @@ void CWndItemCtrl::OnMouseWndSurface( CPoint point )
 			}
 		}
 	}
-#if __VER >= 11 // __SYS_POCKET
 	if( nParent == APP_BAG_EX )
 	{
 		for( int i = pt.y; i < m_pItemContainer->GetSize(); i++ ) 
@@ -208,7 +195,6 @@ void CWndItemCtrl::OnMouseWndSurface( CPoint point )
 			}
 		}
 	}
-#endif
 	else
 	{
 		for( int i = 0; i < m_nArrayCount; i++ ) 
@@ -290,15 +276,7 @@ void CWndItemCtrl::RanderIcon( C2DRender* p2DRender, CItemElem* pItemElem, int x
 						break;
 					}
 				}
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 				if( pItemProp->dwLimitLevel1 != 0xffffffff && pItemElem->IsLimitLevel( g_pPlayer ) )
-#else // __NEW_ITEM_LIMIT_LEVEL
-#if __VER >= 11 // __SYS_IDENTIFY
-				if( pItemProp->dwLimitLevel1 != 0xffffffff && g_pPlayer->GetLevel() < pItemElem->GetLimitLevel() )
-#else	// __SYS_IDENTIFY
-				if( pItemProp->dwLimitLevel1 != 0xffffffff && g_pPlayer->GetLevel() < pItemProp->dwLimitLevel1 )
-#endif	// __SYS_IDENTIFY
-#endif // __NEW_ITEM_LIMIT_LEVEL
 				{
 					bRander = 1;
 					break;
@@ -320,7 +298,6 @@ void CWndItemCtrl::RanderIcon( C2DRender* p2DRender, CItemElem* pItemElem, int x
 		}
  
 		// 모든아이템 가격 비교
-#if __VER >= 11 // __CSC_VER11_3
 		if( nParent == APP_SHOP_ )
 		{
 			CWndShop* pWndBase = (CWndShop*)g_WndMng.GetWndBase( APP_SHOP_ );
@@ -336,10 +313,6 @@ void CWndItemCtrl::RanderIcon( C2DRender* p2DRender, CItemElem* pItemElem, int x
 			if( bRander == 0 && g_pPlayer->GetGold() < (int)pItemProp->dwCost )
 				bRander = 1;
 		}
-#else //__CSC_VER11_3
-		if( bRander == 0 && g_pPlayer->GetGold() < (int)pItemProp->dwCost )
-			bRander = 1;
-#endif //__CSC_VER11_3
 	}
 
 	if( pItemElem->IsFlag( CItemElem::expired ) )
@@ -452,11 +425,7 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 
 		pt.y = 0;
 		pt.y += m_wndScrollBar.GetScrollPos() * nWidth;
-#if __VER >= 11 // __SYS_POCKET
 	if( nParent == APP_INVENTORY || nParent == APP_BAG_EX)
-#else
-	if( nParent == APP_INVENTORY )
-#endif
 		{
 			for( int i = pt.y; i < m_pItemContainer->GetSize(); i++ ) 
 			{
@@ -469,27 +438,20 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 
 				if( pItemElem->GetTexture() )
 				{
-#if __VER >= 8 //__CSC_VER8_5
 					if( 
 						( pItemElem->m_nItemNum == pItemElem->GetExtra() || !m_useDieFlag ) 
 							&& ( IsUsingItem(pItemElem) || pItemElem->m_bRepair 
-#if __VER >= 9	// __PET_0410
 								|| ( nParent == APP_INVENTORY && g_pPlayer->GetPetId() == pItemElem->m_dwObjId )
-#endif	// __PET_0410
 #ifdef __SYS_TICKET
 								|| pPlayer->GetTicket() == pItemElem
 #endif	// __SYS_TICKET
 							) 
 					)
-#else
-					if( IsUsingItem( pItemElem ) || pItemElem->m_bRepair )
-#endif	//__CSC_VER8_5
 						RanderIcon( p2DRender, pItemElem, x * 32, y * 32, nParent, 60 );
 					else if( m_nOnSelect == i )
 					{
 						pItemElem->GetTexture()->m_size.cx += 4;
 						pItemElem->GetTexture()->m_size.cy += 4;
-#if __VER >= 9 // __CSC_VER9_1
 						if( ( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_FEED_POCKET && pItemElem->m_dwKeepTime <= 0 )
 #ifdef __SYS_TICKET
 							|| pPlayer->GetTicket() == pItemElem
@@ -498,22 +460,15 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 							RanderIcon( p2DRender, pItemElem, x * 32 - 2, y * 32 - 2, nParent, 100 );
 						else
 							RanderIcon( p2DRender, pItemElem, x * 32 - 2, y * 32 - 2, nParent );
-#else //__CSC_VER9_1
-						RanderIcon( p2DRender, pItemElem, x * 32 - 2, y * 32 - 2, nParent );
-#endif //__CSC_VER9_1
 						pItemElem->GetTexture()->m_size.cx -= 4;
 						pItemElem->GetTexture()->m_size.cy -= 4;
 					}
 					else
 					{
-#if __VER >= 9 // __CSC_VER9_1
 						if(pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_FEED_POCKET && pItemElem->m_dwKeepTime <= 0) //먹이 주머니 아이템이 사용안된 상태인가?
 							RanderIcon( p2DRender, pItemElem, x * 32, y * 32, nParent, 100 );
 						else						
 							RanderIcon( p2DRender, pItemElem, x * 32, y * 32, nParent );
-#else //__CSC_VER9_1
-						RanderIcon( p2DRender, pItemElem, x * 32, y * 32, nParent );
-#endif //__CSC_VER9_1
 #ifdef __DEV
 						if( pItemElem->GetAbilityOption() > 0 )
 						{
@@ -592,15 +547,7 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 						{
 							if( pItemProp->dwItemSex != 0xffffffff && pItemProp->dwLimitLevel1 != 0xffffffff )
 							{
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 								if( pItemProp->dwItemSex == g_pPlayer->GetSex() && !pItemElem->IsLimitLevel( g_pPlayer ) )
-#else // __NEW_ITEM_LIMIT_LEVEL
-#if __VER >= 11 // __SYS_IDENTIFY
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() && pItemElem->GetLimitLevel() <= g_pPlayer->m_nLevel )
-#else	// __SYS_IDENTIFY
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() && pItemProp->dwLimitLevel1 <= g_pPlayer->m_nLevel )
-#endif	// __SYS_IDENTIFY
-#endif // __NEW_ITEM_LIMIT_LEVEL
 									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
 							}
 							else
@@ -612,15 +559,7 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 							else
 							if( pItemProp->dwLimitLevel1 != 0xffffffff )
 							{
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 								if( !pItemElem->IsLimitLevel( g_pPlayer ) )
-#else // __NEW_ITEM_LIMIT_LEVEL
-#if __VER >= 11 // __SYS_IDENTIFY
-								if( pItemElem->GetLimitLevel() <= g_pPlayer->m_nLevel )
-#else	// __SYS_IDENTIFY
-								if( pItemProp->dwLimitLevel1 <= g_pPlayer->m_nLevel )
-#endif	// __SYS_IDENTIFY
-#endif // __NEW_ITEM_LIMIT_LEVEL
 									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
 							}
 							else
@@ -642,15 +581,7 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 						{
 							if( pItemProp->dwLimitLevel1 != 0xffffffff )
 							{
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 								if( !pItemElem->IsLimitLevel( g_pPlayer ) )
-#else // __NEW_ITEM_LIMIT_LEVEL
-#if __VER >= 11 // __SYS_IDENTIFY
-								if( pItemElem->GetLimitLevel() <= g_pPlayer->m_nLevel )
-#else	// __SYS_IDENTIFY
-								if( pItemProp->dwLimitLevel1 <= g_pPlayer->m_nLevel )
-#endif	// __SYS_IDENTIFY
-#endif // __NEW_ITEM_LIMIT_LEVEL
 									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
 							}
 							else
@@ -758,43 +689,30 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 	CItemElem* pItemElem = NULL;
 
 	CWndInventory* pWndInventory	= (CWndInventory*)GetWndBase( APP_INVENTORY );
-#if __VER >= 11 // __SYS_POCKET
 	if( nParent == APP_INVENTORY || nParent == APP_BAG_EX)
 	{
 		if(!(nParent == APP_BAG_EX)) 
-#else
-	if( nParent == APP_INVENTORY )
-	{
-#endif
 
-#if __VER >= 14 // __SMELT_SAFETY
 		if( pWndInventory->m_dwEnchantWaitTime != 0xffffffff || GetWndBase(APP_SMELT_SAFETY_CONFIRM) != NULL )
-#else //__SMELT_SAFETY
-		if( pWndInventory->m_dwEnchantWaitTime != 0xffffffff )
-#endif //__SMELT_SAFETY
 		{
 			g_WndMng.PutString( prj.GetText(TID_MMI_NOTUPGRADE), NULL, prj.GetTextColor(TID_MMI_NOTUPGRADE) );			
 			m_pFocusItem = NULL;
 			return;
 		}
 
-#if __VER >= 14 // __EQUIP_BIND
 		if( GetWndBase(APP_EQUIP_BIND_CONFIRM) != NULL )
 		{
 			g_WndMng.PutString( prj.GetText(TID_TOOLTIP_EQUIPBIND_ERROR01), NULL, prj.GetTextColor(TID_TOOLTIP_EQUIPBIND_ERROR01) );
 			m_pFocusItem = NULL;
 			return;
 		}
-#endif // __EQUIP_BIND
 
-#if __VER >= 14 // __DROP_CONFIRM_BUG
 		if( GetWndBase(APP_COMMITEM_DIALOG) != NULL )
 		{
 			g_WndMng.PutString( prj.GetText(TID_TOOLTIP_ITEM_USING_ERROR), NULL, prj.GetTextColor(TID_TOOLTIP_ITEM_USING_ERROR) );
 			m_pFocusItem = NULL;
 			return;
 		}
-#endif // __DROP_CONFIRM_BUG
 
 		pItemElem = GetItem( nItem );
 	}
@@ -805,16 +723,10 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 	
 	if( pItemElem )
 	{
-#if __VER >= 8 //__CSC_VER8_5
 		if( (pItemElem->m_nItemNum != pItemElem->GetExtra() && m_useDieFlag) || 
 			( IsUsingItem( pItemElem ) == FALSE && pItemElem->m_bRepair == FALSE) )
 		{
 			if( m_useDieFlag || IsSelectedItem( nItem ) == FALSE )
-#else
-		if( IsUsingItem( pItemElem ) == FALSE && pItemElem->m_bRepair == FALSE )
-		{
-			if( IsSelectedItem( nItem ) == FALSE )
-#endif //__CSC_VER8_5
 			{
 				m_dwSelectAry.RemoveAll();
 				m_dwSelectAry.Add( nItem );
@@ -848,7 +760,6 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 			int x = ( nItem - pt.y ) % nWidth;
 			int y = ( nItem - pt.y ) / nWidth;
 
-#if __VER >= 14 // __SMELT_SAFETY
 			if(pWndInventory->m_bIsUpgradeMode && pWndInventory->m_pUpgradeMaterialItem != NULL && m_pFocusItem != NULL)
 			{
 				if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT) && 
@@ -901,7 +812,6 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize(NULL);
 					}
 				}
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 				else if( g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT ) == FALSE && 
 						 m_pFocusItem->GetResistAbilityOption() >= 3 && 
 						 CItemElem::IsElementalCard( pWndInventory->m_pUpgradeMaterialItem->m_dwItemId ) == TRUE && 
@@ -919,13 +829,9 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize( NULL );
 					}
 				}
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 				else
 					pWndInventory->RunUpgrade(m_pFocusItem);
 			}
-#else //__SMELT_SAFETY									
-			pWndInventory->RunUpgrade(m_pFocusItem);	
-#endif //__SMELT_SAFETY
 		}
 	}
 	else
@@ -968,11 +874,7 @@ void CWndItemCtrl::OnLButtonUp( UINT nFlags, CPoint point )
 
 	CItemElem* pItemElem = NULL;
 
-#if __VER >= 11 // __SYS_POCKET
 	if( nParent == APP_INVENTORY || nParent == APP_BAG_EX)
-#else
-	if( nParent == APP_INVENTORY )
-#endif
 		pItemElem = GetItem( nItem );
 	else
 		pItemElem = m_pArrayItemElem[nItem];
@@ -1037,19 +939,12 @@ void CWndItemCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 	CItemElem* pItemElem = NULL;
 
-#if __VER >= 11 // __SYS_POCKET
 	if( nParent == APP_INVENTORY || nParent == APP_BAG_EX)
-#else
-	if( nParent == APP_INVENTORY )
-#endif
 		pItemElem = GetItem( m_nCurSelect ); //
 	else
 		pItemElem = m_pArrayItemElem[m_nCurSelect];
 	
-#if __VER >= 8 //__CSC_VER8_5
-#if __VER >= 9 // __CSC_VER9_1
 	CWndInventory* pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
-#if __VER >= 11 // __SYS_POCKET
 	if(!pWndInventory && nParent == APP_BAG_EX && pItemElem != NULL)
 	{
 		if(IsUsableItem( pItemElem ))
@@ -1072,14 +967,7 @@ void CWndItemCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		}
 		return;
 	}
-#endif
 	if( ((pItemElem != NULL && m_useDieFlag) || IsUsableItem( pItemElem )) && !pWndInventory->m_bRemoveJewel)
-#else
-	if( (pItemElem != NULL && m_useDieFlag) || IsUsableItem( pItemElem ) )
-#endif //__CSC_VER9_1
-#else
-	if( IsUsableItem( pItemElem ) )
-#endif //__CSC_VER8_5
 	{
 		m_GlobalShortcut.m_pFromWnd   = this;
 		m_GlobalShortcut.m_dwShortcut = SHORTCUT_ITEM;
@@ -1164,11 +1052,7 @@ int CWndItemCtrl::HitTest( CPoint point )
 			return nDstId;
 		}
 
-	#if __VER >= 11 // __SYS_POCKET
 		if( nParent == APP_INVENTORY || nParent == APP_BAG_EX)
-	#else
-		if( nParent == APP_INVENTORY )
-	#endif
 		{
 			for( int i = pt.y; i < (int)( m_pItemContainer->m_dwIndexNum ); i++ ) 
 			{
@@ -1311,10 +1195,8 @@ void CWndItemCtrl::OnRButtonDown( UINT nFlags, CPoint point )
 	if( pWndInventory && pWndInventory->m_dwEnchantWaitTime == 0xffffffff )
 	{
 		pWndInventory->BaseMouseCursor();
-#if __VER >= 14 // __SMELT_SAFETY
 		if(g_WndMng.m_pWndSmeltSafetyConfirm != NULL)
 			SAFE_DELETE(g_WndMng.m_pWndSmeltSafetyConfirm)
-#endif // __SMELT_SAFETY
 	}
 	
 	if( !m_pItemContainer )
@@ -1420,11 +1302,7 @@ void CWndItemCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 	CItemElem* pItemElem = NULL;
 	pItemElem = GetItem( nItem );
 
-#if __VER >= 8 //__CSC_VER8_5
 	if( IsUsableItem( pItemElem ) || (m_useDieFlag && pItemElem != NULL))
-#else
-	if( IsUsableItem( pItemElem ) )
-#endif //__CSC_VER8_5
 	{
 		if( IsSelectedItem( nItem ) == FALSE )
 		{
@@ -1630,9 +1508,7 @@ BOOL CWndItemCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 	return TRUE;
 }
 
-#if __VER >= 8 //__CSC_VER8_5
 void CWndItemCtrl::SetDieFlag(BOOL flag)
 {
 	this->m_useDieFlag = flag;
 }
-#endif //__CSC_VER8_5

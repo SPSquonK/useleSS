@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "LoginProtect.h"
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -328,4 +327,3 @@ void CLoginProtect::SetError( u_long idPlayer, BOOL bLogin )
 	}
 }
 
-#endif // __2ND_PASSWORD_SYSTEM

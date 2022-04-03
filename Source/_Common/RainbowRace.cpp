@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 
 #include "RainbowRace.h"
 #ifdef __CLIENT
@@ -718,4 +717,3 @@ vector<DWORD>	CRainbowRaceMng::GetPrevRanking()
 }
 #endif // __WORLDSERVER
 
-#endif // __RAINBOW_RACE

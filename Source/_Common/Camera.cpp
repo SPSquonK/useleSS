@@ -108,9 +108,7 @@ void CBackCamera::Unlock()
 	m_bLock = FALSE;
 	m_fRotx = 0;
 	m_fRoty = 0;
-#if __VER >= 13 // __HOUSING
 	m_nCamMode = CM_NORMAL;
-#endif // __HOUSING
 }
 
 CBackCamera::CBackCamera()
@@ -198,13 +196,11 @@ void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
 	D3DXVECTOR3 vPos = pMover->GetPos();
 	
 	vPos.y += 0.9f;
-#if __VER >= 13 // __HOUSING
 	if(m_nCamMode == CM_MYROOM)
 	{
 		if(m_fZoom <= 0.5f) m_fZoom = 0.5f;
 	//	if(m_fZoom >= 3.0f) m_fZoom = 3.0f;
 	}
-#endif // __HOUSING
 	CMover* pMoverTarget = (CMover*)g_WorldMng.Get()->GetObjFocus() ;
 	D3DXVECTOR3 vTarget,vTemp;
 	if( pMoverTarget && pMover->m_pActMover->IsFly() && (pMover->m_dwFlag & MVRF_TRACKING) ) 
@@ -336,7 +332,6 @@ void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
 	if( m_fCurRoty > 80.0f ) 
 		m_fCurRoty = 80.0f;
 
-#if __VER >= 13 // __HOUSING
 	if(m_nCamMode == CM_MYROOM)
 	{
 		if(m_fCurRoty <= 10.0f) 
@@ -346,7 +341,6 @@ void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
 			if(m_fRoty < -30.0f) m_fRoty = -30.0f;
 		}
 	}
-#endif // __HOUSING
 
 	fAngle = m_fCurRotx - fAngle + 180.0f;
 
@@ -386,14 +380,10 @@ void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
 	D3DXVECTOR3 m_vOutPos = m_vPos;
 
 	m_vLookAt.y += 0.4f;
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	if( g_pPlayer && g_GuildCombat1to1Mng.IsPossibleMover( g_pPlayer ) )
 		bCrash = FALSE;
 	else
 		bCrash = pWorld->CheckBound( &m_vPos, &m_vLookAt, &m_vOutPos, &fLength );
-#else //__GUILD_COMBAT_1TO1
-	bCrash = pWorld->CheckBound( &m_vPos, &m_vLookAt, &m_vOutPos, &fLength );
-#endif //__GUILD_COMBAT_1TO1
 
 	// 충돌이있다면 마지막으로 충돌했던 거리를 저장
 	if( bCrash )
@@ -411,11 +401,7 @@ void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
 		D3DXVECTOR3 vCPos = vPos + m_vOffset;
 		D3DXVECTOR3 vDir  = vCPos - m_vLookAt;
 		D3DXVec3Normalize(&vDir, &vDir);
-#if __VER >= 12 // __CAM_FAST_RECOVER
 		m_fLength2 += 0.37f;
-#else
-		m_fLength2 += 0.07f;
-#endif
 		if( m_fLength2 > fLength )
 			m_bStart = FALSE;
 

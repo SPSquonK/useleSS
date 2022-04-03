@@ -22,9 +22,7 @@
 #define	MAX_VENDOR_INVENTORY_TAB	4
 #define	MAX_QUEST				100
 #define	MAX_COMPLETE_QUEST		300 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 #define MAX_CHECKED_QUEST		5
-#endif // __IMPROVE_QUEST_INTERFACE
 #define MAX_PARTYLEVEL			10
 #define MAX_ADDEXPPARTY			16
 #define MAX_RENEWEVENT			8000
@@ -37,9 +35,7 @@ const int	MAX_PROPMOVER =		2000;		// MoverProp배열의 최대갯수
 
 #define	MAX_HONOR_TITLE		150	// 달인타이틀 제한
 
-#if __VER >= 8 // __S8_VENDOR_REVISION
 #define MAX_VENDOR_REVISION		20
-#endif //__S8_VENDOR_REVISION
 
 #define dwDestParam1	dwDestParam[0]
 #define dwDestParam2	dwDestParam[1]
@@ -54,9 +50,7 @@ const int	MAX_PROPMOVER =		2000;		// MoverProp배열의 최대갯수
 #define dwChgParamVal3	dwChgParamVal[2]
 #endif	// __PROP_0827
 
-#if __VER >= 9
 #include "defineitemkind.h"
-#endif	// 
 
 struct tagColorText
 {
@@ -90,10 +84,8 @@ struct CtrlProp : ObjProp
 		dwCtrlKind1	= dwCtrlKind2	= dwCtrlKind3	= dwSfxCtrl	= dwSndDamage	= 0;
 	}
 
-#if __VER >= 15 // __GUILD_HOUSE
 	BOOL IsGuildHousingObj( )	{ return CK1_GUILD_HOUSE == dwCtrlKind1; } //길드 하우징 전용 오브젝트 인가?
 	BOOL IsHousingObj( )		{ return CK1_HOUSING == dwCtrlKind1; }		//개인 하우징 전용 오브젝트 
-#endif // __GUILD_HOUSE
 };
 
 struct AddSkillProp
@@ -113,17 +105,11 @@ struct AddSkillProp
 	int		nDestData1[3];		// 적용데이타3개, DestParam[0]에 해당.
 	DWORD	dwActiveSkill;		// 발동 마법
 	DWORD	dwActiveSkillRate;	// 발동 마법 확률.
-#if __VER >= 9	// __SKILL_0706
 	DWORD	dwActiveSkillRatePVP;	// 대인 발동 마법 확률.
-#endif	// __SKILL_0706
 	int		nReqMp;				//필요MP
 	int		nReqFp;				//필요FP
-#if __VER >= 9	// __SKILL_0706
 	DWORD	dwCooldown;		// 쿨다운
 	DWORD	dwCastingTime;		//기술 준비시간
-#else	// __SKILL_0706
-	DWORD	dwSkillReady;		//기술 준비시간
-#endif	// __SKILL_0706
 	DWORD	dwSkillRange;		// 기술 시전거리	
 	DWORD	dwCircleTime;		//유지시간
 	DWORD   dwPainTime;         // 지속 피해시간
@@ -132,11 +118,9 @@ struct AddSkillProp
 	DWORD   dwSkillExp;         //스킬 경험치
 	DWORD	dwExp;				//현재경험치
 	DWORD	dwComboSkillTime;	//콤보스킬타임
-#if __VER >= 9	// __SKILL_0706
 	DWORD	dwAbilityMinPVP;	// 최소능력(대인)
 	DWORD	dwAbilityMaxPVP;	// 최대능력(대인)
 	DWORD	nProbabilityPVP;	// 발동 확률(대인)
-#endif	// __SKILL_0706
 
 	AddSkillProp()
 	{
@@ -146,16 +130,12 @@ struct AddSkillProp
 		dwDestParam[0] = dwDestParam[1] = nAdjParamVal[0] = nAdjParamVal[1] = dwChgParamVal[0] = dwChgParamVal[1] = 0;
 		nReqMp = nReqFp = 0;
 		dwActiveSkillRate	= 0;
-#if __VER >= 9	// __SKILL_0706
 		dwCastingTime	= 0;
 		dwAbilityMinPVP		= 0;
 		dwAbilityMaxPVP		= 0;
 		dwCooldown	= 0;
 		nProbabilityPVP	= 0;
 		dwActiveSkillRatePVP	= 0;
-#else	// __SKILL_0706
-		dwSkillReady = 0;
-#endif	// __SKILL_0706
 		dwCircleTime = dwSkillTime = dwExp = dwComboSkillTime = 0;
 	}
 };
@@ -205,14 +185,12 @@ enum
 #ifdef __RULE_0615
 	,FILE_ALLOWED_LETTER	= 9
 #endif	// __RULE_0615
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	,
 	FILE_GUILDCOMBAT_1TO1_TEXT_1 = 10,
 	FILE_GUILDCOMBAT_1TO1_TEXT_2 = 11,
 	FILE_GUILDCOMBAT_1TO1_TEXT_3 = 12,
 	FILE_GUILDCOMBAT_1TO1_TEXT_4 = 13,
 	FILE_GUILDCOMBAT_1TO1_TEXT_5 = 14
-#endif //__GUILD_COMBAT_1TO1
 #ifdef __VENDOR_1106
 	,FILE_ALLOWED_LETTER2	= 15
 #endif	// __VENDOR_1106
@@ -224,9 +202,7 @@ enum IP_TYPE
 	IP_FLAG_NONE	= 0x00,				// 플래그 없음 
 	IP_FLAG_BINDS	= 0x01,				// 1 - 귀속 아이템 
 	IP_FLAG_UNDESTRUCTABLE	= 0x02	//	2 - 삭제 불가 아이템
-#if __VER >= 14 // __EQUIP_BIND
 	,IP_FLAG_EQUIP_BIND	= 0x04
-#endif // __EQUIP_BIND
 //	0x04
 };
 
@@ -364,7 +340,6 @@ struct ItemProp : CtrlProp
 #endif	// __VERIFY_0201
 
 	DWORD	GetCoolTime()  { return dwSkillReady; }
-#if __VER >= 9	// __ULTIMATE
 	BOOL	IsUltimate( void )
 		{
 			return( 
@@ -375,15 +350,12 @@ struct ItemProp : CtrlProp
 				&& dwReferStat1 == WEAPON_ULTIMATE
 			);
 		}
-#endif	// 
-#if __VER >= 15 // __PETVIS
 	BOOL	IsVisPet()	{ return (dwItemKind3 == IK3_PET) && (dwReferStat1 == PET_VIS); }
 	BOOL	IsVis()		{ return (dwItemKind3 == IK3_VIS ); }
 #ifdef __CLIENT
 	BOOL	IsVisKey()	{ return (II_SYS_SYS_VIS_KEY01 == dwID ); }
 	BOOL	IsPickupToBuff( ) { return ( II_SYS_SYS_SCR_PET_MAGIC == dwID ); }
 #endif //__CLIENT
-#endif // __PETVIS
 };
 
 
@@ -550,14 +522,12 @@ public:
 	QUESTITEM*	GetAt( int nIndex );
 };
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 struct MonsterTransform
 {
 	float fHPRate;
 	DWORD dwMonsterId;
 	MonsterTransform() : fHPRate( 0.0f ), dwMonsterId( NULL_ID ) {}
 };
-#endif // __INSTANCE_DUNGEON
 /*----------------------------------------------------------------------------------------------------*/
 
 struct MoverProp : CtrlProp
@@ -589,13 +559,8 @@ struct MoverProp : CtrlProp
 	DWORD	dwAtk2;
 	DWORD	dwAtk3;
 	DWORD	dwAtk4;		// dwHorizontalRate가 이걸로 바뀜.
-#if __VER >= 9	//__AI_0509
 	FLOAT	fFrame;	// 이동 시 프레임 가중치
 	DWORD	dwOrthograde;
-#else	// __AI_0509
-	DWORD	dwVerticalRate;		// 세로비율,
-	DWORD	dwDiagonalRate;		// 사선비율,
-#endif	// __AI_0509
 	DWORD	dwThrustRate;	// 찌르기비율,
 
 	DWORD	dwChestRate;
@@ -725,9 +690,7 @@ struct MoverProp : CtrlProp
 	CDropItemGenerator	m_DropItemGenerator;
 	CQuestItemGenerator		m_QuestItemGenerator;
 	CDropKindGenerator	m_DropKindGenerator;
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	MonsterTransform	m_MonsterTransform;
-#endif // __INSTANCE_DUNGEON
 	
 	MoverProp()
 	{
@@ -739,12 +702,8 @@ struct MoverProp : CtrlProp
 		= dwDefExtent
 		#endif // __S1108_BACK_END_SYSTEM
 		= dwActionRadius	= dwAtkMin	= dwAtkMax	= dwAtk1	= dwAtk2	= dwAtk3	= dwAtk4	= 0;
-		#if __VER >= 9	//__AI_0509
 			fFrame	= 1.0F;
 			dwOrthograde	= 0;
-		#else	// __AI_0509
-			dwVerticalRate	= dwDiagonalRate	= 0;
-		#endif	// __AI_0509
 		dwThrustRate		= 0;
 		dwChestRate			= 0;
 		dwHeadRate			= 0;
@@ -900,11 +859,7 @@ BEGINPOSARR, *LPBEGINPOSARR;
 #define MAX_SLOT_APPLET			18
 #define MAX_SLOT_ITEM			9
 #define MAX_SLOT_QUEUE			5
-#if __VER >= 11 // __CSC_VER11_5
 #define	MAX_SLOT_ITEM_COUNT		8
-#else
-#define	MAX_SLOT_ITEM_COUNT		4
-#endif //__CSC_VER11_5
 
 
 #define	SHORTCUT_NONE    0
@@ -932,9 +887,7 @@ typedef struct tagSHORTCUT
 #if defined ( __CLIENT )
 	CWndBase* m_pFromWnd   ;
 	CTexture* m_pTexture   ;
-#if __VER >= 8	// __JEFF_VER_8
 	DWORD	m_dwItemId;
-#endif	// __JEFF_VER_8
 #endif	// __CLIENT
 	DWORD     m_dwShortcut ; 
 	DWORD     m_dwId       ; 

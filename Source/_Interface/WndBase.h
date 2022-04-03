@@ -113,9 +113,7 @@ static CMapStringToPtr m_strWndTileMap;
 	int       m_nAlphaCount;
 	bool      m_bTile;
 	CString   m_strTexture;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	BOOL      m_bNoCloseButton;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 static BOOL           m_bCling          ;
 static BOOL           m_bEdit           ;

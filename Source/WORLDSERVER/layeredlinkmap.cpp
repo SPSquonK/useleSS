@@ -165,11 +165,7 @@ void CLayeredLinkMap::Process( CWorld* pWorld )
 	}
 }
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CLayeredLinkMap::Invalidate( int nLayer, BOOL bInvalid )
-#else // __GUILD_HOUSE
-void CLayeredLinkMap::Invalidate( int nLayer )
-#endif // __GUILD_HOUSE
 {
 	CLinkMap* pLinkMap	= GetLinkMap( nLayer );
 	if( pLinkMap )

@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "MiniGameBase.h"
 
 enum {	RMG_GAWIBAWIBO = 0, RMG_DICEPLAY, RMG_ARITHMATIC, RMG_STOPWATCH,
@@ -126,4 +125,3 @@ private:
 };
 #endif __WORLDSERVER
 
-#endif // __RAINBOW_RACE

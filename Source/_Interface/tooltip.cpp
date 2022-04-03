@@ -7,20 +7,14 @@
 #include "DialogMsg.h"
 extern CDialogMsg g_DialogMsg;
 
-#if __VER >= 9 // __CSC_VER9_1
 #include "defineText.h"
-#endif //__CSC_VER9_1
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 CToolTip::CToolTip() : 
 m_rectRender( 0, 0, 0, 0 ), 
 m_strToolTip( _T( "" ) ), 
 m_nSubToolTipFlag( CWndMgr::TOOL_TIP_SWITCH_MAIN ), 
 m_nRevisedRect( 0, 0, 0, 0 ), 
 m_nSubToolTipNumber( CWndMgr::TOOL_TIP_SWITCH_MAIN )
-#else // __IMPROVE_SYSTEM_VER15
-CToolTip::CToolTip()
-#endif // __IMPROVE_SYSTEM_VER15
 {
 	m_bReadyToopTip = FALSE;
 	m_dwToolTipId   = 0;
@@ -31,20 +25,14 @@ CToolTip::CToolTip()
 	m_nPosition = 0;
 	m_bToolTip = FALSE;
 	m_nAlpha = 255;
-#if __VER >= 9 // __CSC_VER9_1
 	m_nAdded = 0;
 	m_nSlot = 0;
-#if __VER >= 12 // __EXT_PIERCING
 	m_pUltimateTexture = NULL;
 	m_pJewelBgTexture = NULL;
-#endif //__EXT_PIERCING
-#endif //__CSC_VER9_1
 #ifndef __IMPROVE_MAP_SYSTEM
-#if __VER >= 13 // __CSC_VER13_1
 	m_nMonInfoCnt = 0;
 	for(int i=0; i<5; i++)
 		m_pDwMonId[i] = 0;
-#endif //__CSC_VER13_1
 #endif // __IMPROVE_MAP_SYSTEM
 #ifdef __IMPROVE_MAP_SYSTEM
 	m_vecMapMonsterID.clear();
@@ -88,7 +76,6 @@ void CToolTip::InitTexture()
 		}
 	}
 
-#if __VER >= 12 // __EXT_PIERCING
 	//Ultimate Icon & Bg Load
 	CString strPath;
 	
@@ -99,7 +86,6 @@ void CToolTip::InitTexture()
 
 	m_pUltimateTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
 	m_pJewelBgTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndChgElemItem.bmp"), 0xffff00ff );
-#endif //__EXT_PIERCING
 }
 /////////////////////////////////////////////////////////////////////////////
 // Parameters :
@@ -146,9 +132,7 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, LPCTSTR lpszString, CRect rect, CP
 		m_timerToopTip.Set(0);
 		if(m_bToolTip)
 			m_bToolTip = FALSE;
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		m_nSubToolTipNumber = CWndMgr::TOOL_TIP_SWITCH_MAIN;
-#endif // __IMPROVE_SYSTEM_VER15
 	}
 	m_strToolTip = lpszString;
 	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &CRect( 0, 0, 200, 0 ) );
@@ -163,16 +147,12 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, LPCTSTR lpszString, CRect rect, CP
 	m_rect = rect;
 	m_nPosition = nToolTipPos;
 	m_bPutToolTip = TRUE;
-#if __VER >= 9 // __CSC_VER9_1
 	m_nAdded = 0;
 	m_nSlot = 0;
-#endif //__CSC_VER9_1
 #ifndef __IMPROVE_MAP_SYSTEM
-#if __VER >= 13 // __CSC_VER13_1
 	m_nMonInfoCnt = 0;
 	for(int i=0; i<5; i++)
 		m_pDwMonId[i] = 0;
-#endif //__CSC_VER13_1
 #endif // __IMPROVE_MAP_SYSTEM
 #ifdef __IMPROVE_MAP_SYSTEM
 	m_vecMapMonsterID.clear();
@@ -196,9 +176,7 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, CEditString& string, CRect rect, C
 		m_timerToopTip.Set(0);
 		if(m_bToolTip)
 			m_bToolTip = FALSE;
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		m_nSubToolTipNumber = CWndMgr::TOOL_TIP_SWITCH_MAIN;
-#endif // __IMPROVE_SYSTEM_VER15
 	}
 	m_strToolTip = string;
 	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &CRect( 0, 0, 200, 0 ) );
@@ -213,23 +191,18 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, CEditString& string, CRect rect, C
 	m_rect = rect;
 	m_nPosition = nToolTipPos;
 	m_bPutToolTip = TRUE;
-#if __VER >= 9 // __CSC_VER9_1
 	m_nAdded = 0;
 	m_nSlot = 0;
-#endif //__CSC_VER9_1
 #ifndef __IMPROVE_MAP_SYSTEM
-#if __VER >= 13 // __CSC_VER13_1
 	m_nMonInfoCnt = 0;
 	for(int i=0; i<5; i++)
 		m_pDwMonId[i] = 0;
-#endif //__CSC_VER13_1
 #endif // __IMPROVE_MAP_SYSTEM
 #ifdef __IMPROVE_MAP_SYSTEM
 	m_vecMapMonsterID.clear();
 #endif // __IMPROVE_MAP_SYSTEM
 }
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 void CToolTip::PutToolTipEx( DWORD dwToolTipId, CEditString& string, CRect rect, CPoint pt, int nToolTipPos, int nSubToolTipFlag )
 {
 	if(m_bEnable == FALSE)
@@ -287,7 +260,6 @@ void CToolTip::PutToolTipEx( DWORD dwToolTipId, CEditString& string, CRect rect,
 	m_vecMapMonsterID.clear();
 #endif // __IMPROVE_MAP_SYSTEM
 }
-#endif // __IMPROVE_SYSTEM_VER15
 
 /////////////////////////////////////////////////////////////////////////////
 // Func. Name : 
@@ -428,7 +400,6 @@ void CToolTip::Paint(C2DRender* p2DRender)
 			//pt.x += m_bToolTip->GetHeight() + 2;
 		}
 		//CRect rect(pt.x,pt.y,pt.x+m_bToolTip->GetWidth(),pt.y+m_bToolTip->GetHeight());
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		switch( m_nSubToolTipFlag )
 		{
 		case CWndMgr::TOOL_TIP_SWITCH_SUB1:
@@ -450,11 +421,7 @@ void CToolTip::Paint(C2DRender* p2DRender)
 		if( m_nSlot > 0 && m_rectRender.right < TOOL_TIP_WIDTH_FOR_SLOTS )
 			m_rectRender.right = TOOL_TIP_WIDTH_FOR_SLOTS;
 		CRect rect( pt.x, pt.y, pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() );
-#else // __IMPROVE_SYSTEM_VER15
-		CRect rect( pt.x, pt.y, pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() );
-#endif // __IMPROVE_SYSTEM_VER15
 		// 사각형이 만들어졌지만, 화면rect.Width() 가장자리를 벗어날 수 있다. 벗어나면 벗어날 수 없도록 수정 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		switch( m_nSubToolTipFlag )
 		{
 		case CWndMgr::TOOL_TIP_SWITCH_MAIN:
@@ -498,21 +465,7 @@ void CToolTip::Paint(C2DRender* p2DRender)
 				break;
 			}
 		}
-#else // __IMPROVE_SYSTEM_VER15
-		if( rect.right > p2DRender->m_clipRect.right )
-		{
-//			pt.x -= m_rectRender.Width() - m_rect.Width();			// 버그인거 같애서 아래처럼 수정함 2006/6/30 -xuzhu-
-			pt.x = p2DRender->m_clipRect.Width() - rect.Width() - 8;
-		}
-		if( rect.top < p2DRender->m_clipRect.top )
-		{
-//			pt.y += m_rectRender.Height() + m_rect.Height();
-//			pt.y = p2DRender->m_clipRect.Height() - rect.Height() - 8;
-			pt.y = p2DRender->m_clipRect.top + 8;
-		}
-#endif // __IMPROVE_SYSTEM_VER15
 
-#if __VER >= 9 // __CSC_VER9_1
 		if(m_nSlot > 0)
 		{
 //			CItemElem* pItemElem = (CItemElem*)m_pUltimateItemBase;
@@ -520,11 +473,6 @@ void CToolTip::Paint(C2DRender* p2DRender)
 //				rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width() + 16, pt.y + m_rectRender.Height() + (m_nSlot * 26) );
 //			else
 //				rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width() + 10, pt.y + m_rectRender.Height() + (m_nSlot * 26) );
-#if __VER >= 12 // __EXT_PIERCING
-#if __VER < 15 // __IMPROVE_SYSTEM_VER15
-			if(m_rectRender.right < 194)    // Min Width Size
-				m_rectRender.right = 194;
-#endif // __IMPROVE_SYSTEM_VER15
 
 			rect.SetRect( pt.x, pt.y - (36), pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() );
 			if(rect.top < p2DRender->m_clipRect.top)
@@ -532,23 +480,9 @@ void CToolTip::Paint(C2DRender* p2DRender)
 				pt.y = p2DRender->m_clipRect.top + 8;
 				rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() + (36) );
 			}
-#else //__EXT_PIERCING
-			if(m_rectRender.right < 190)    // Min Width Size
-				m_rectRender.right = 190;
-
-			rect.SetRect( pt.x, pt.y - (m_nSlot * 26), pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() );
-			if(rect.top < p2DRender->m_clipRect.top)
-			{
-				pt.y = p2DRender->m_clipRect.top + 8;
-				rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() + (m_nSlot * 26) );
-			}
-#endif //__EXT_PIERCING
 		}
 		else
 			rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() );
-#else
-		rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() );
-#endif //__CSC_VER9_1
 
 		int nPlusLow = 8;
 		int nPlusColumn = 8;
@@ -645,7 +579,6 @@ void CToolTip::Paint(C2DRender* p2DRender)
 		p2DRender->TextOut_EditString( rect.TopLeft().x + 3, rect.TopLeft().y + 3, m_strToolTip, 0, 0, 2 );//, D3DCOLOR_ARGB( m_nAlpha * 255 / 255, 0, 0, 0 ) );
 
 #ifndef __IMPROVE_MAP_SYSTEM
-#if __VER >= 13 // __CSC_VER13_1
 		if(m_nMonInfoCnt > 0)
 		{
 			int nMonElementYPos = 0;
@@ -692,7 +625,6 @@ void CToolTip::Paint(C2DRender* p2DRender)
 				}
 			}
 		}
-#endif //__CSC_VER13_1
 #endif // __IMPROVE_MAP_SYSTEM
 
 #ifdef __IMPROVE_MAP_SYSTEM
@@ -737,13 +669,10 @@ void CToolTip::Paint(C2DRender* p2DRender)
 		}
 #endif // __IMPROVE_MAP_SYSTEM
 
-#if __VER >= 9 // __CSC_VER9_1
 		if(m_nAdded == 1)
 		{
-#if __VER >= 12 // __EXT_PIERCING
 			CTexture* pTexture;
 			
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 			if(m_pUltimateTexture != NULL)
 			{
 				if( m_nSubToolTipFlag == CWndMgr::TOOL_TIP_SWITCH_MAIN )
@@ -751,10 +680,6 @@ void CToolTip::Paint(C2DRender* p2DRender)
 				else
 					m_pUltimateTexture->Render( p2DRender, CPoint( PlusRect.left + 10, PlusRect.top + 24) );
 			}
-#else // __IMPROVE_SYSTEM_VER15
-			if(m_pUltimateTexture != NULL)
-				m_pUltimateTexture->Render( p2DRender, CPoint( PlusRect.left + 10, PlusRect.top + 8) );
-#endif // __IMPROVE_SYSTEM_VER15
 
 			//Jewel Icon Added
 			CPoint point;
@@ -781,128 +706,21 @@ void CToolTip::Paint(C2DRender* p2DRender)
 
 				point.x += 38;
 			}
-#else //__EXT_PIERCING
-			//Ultimate Icon Added
-			CString strPath;
-			CTexture* pTexture;
-			
-			if(::GetLanguage() == LANG_FRE)
-				strPath = MakePath( DIR_THEME, "Icon_Ultimate.dds");
-			else
-				strPath = MakePath( DIR_ICON, "Icon_Ultimate.dds");
-
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
-			if(pTexture != NULL)
-				pTexture->Render( p2DRender, CPoint( PlusRect.left + 10, PlusRect.top + 8) );
-
-			//Jewel Icon Added
-			for(int i=0; i<m_nSlot; i++)
-			{
-				CPoint point;
-				point.x = PlusRect.left + 8;
-				point.y = PlusRect.bottom - 16 - (26*i);
-				//Slot Render
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndChgElemItem.bmp"), 0xffff00ff );
-				if(pTexture != NULL)
-					pTexture->RenderScal( p2DRender, point, 255, 0.7f, 0.7f );
-
-				point.x += 36;
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Window02.bmp"), 0xffff00ff );
-				if(pTexture != NULL)
-					pTexture->RenderScal( p2DRender, point, 255, 0.9f, 0.7f );
-				point.x -= 36;
-				//Jewel Render
-				if(m_nAddedJewel[i] != 0)
-				{
-					ItemProp* pItemProp;
-					pItemProp = prj.GetItemProp( m_nAddedJewel[i] );
-					if(pItemProp != NULL)
-					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-						if(pTexture != NULL)
-							pTexture->RenderScal( p2DRender, point, 255, 0.7f, 0.7f );
-					}
-					//Text Render
-					CString DstText;
-					DWORD dwColorbuf;
-					
-					if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND01 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ01) //HP 상승
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt1;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_HP_MAX) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND02 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ02) //공격력 상승
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt2;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_ATKPOWER) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND03 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ03) //방어력 상승
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt3;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_ADJDEF) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND04 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ04) //흡혈
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt4;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_MELEE_STEALHP) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND05 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ05) //PvP시 대미지 증가
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt5;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_PVP_DMG) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND06 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ06) //힘증가
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt6;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_STR) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND07 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ07) //체력증가
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt7;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_STA) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND08 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ08) //민첩증가
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt8;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DEX) );
-					}
-					else if(m_nAddedJewel[i] >= II_GEN_MAT_DIAMOND09 && m_nAddedJewel[i] <= II_GEN_MAT_TOPAZ09) //지능증가
-					{
-						dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt9;
-						DstText.Format( "%s", prj.GetText(TID_TOOLTIP_INT) );
-					}
-
-					point.x += 50;
-					point.y += 6;
-					p2DRender->TextOut( point.x, point.y, DstText, dwColorbuf );
-				}
-			}
-#endif //__EXT_PIERCING
 		}
-#endif //__CSC_VER9_1
 	}
 }
 
-#if __VER >= 9 // __CSC_VER9_1
 void CToolTip::SetUltimateToolTip(CItemBase* pItemBase)
 {
 	m_nAdded = 1;
-#if __VER >= 12 // __EXT_PIERCING
 	m_nSlot = ((CItemElem*)pItemBase)->GetUltimatePiercingSize();
 	for(int i=0; i<m_nSlot; i++)
 		m_nAddedJewel[i] = ((CItemElem*)pItemBase)->GetUltimatePiercingItem(i);
-#else // __EXT_PIERCING
-	m_nSlot = ((CItemElem*)pItemBase)->GetPiercingSize();
-	for(int i=0; i<m_nSlot; i++)
-		m_nAddedJewel[i] = ((CItemElem*)pItemBase)->GetPiercingItem( m_nSlot - i - 1 );
-#endif // __EXT_PIERCING
 
 	m_pUltimateItemBase = pItemBase;
 }
-#endif //__CSC_VER9_1
 
 #ifndef __IMPROVE_MAP_SYSTEM
-#if __VER >= 13 // __CSC_VER13_1
 void CToolTip::SetWorldMapMonsterInfo(int nMonCnt, DWORD* pDwMonId)
 {
 	m_nMonInfoCnt = nMonCnt;
@@ -911,7 +729,6 @@ void CToolTip::SetWorldMapMonsterInfo(int nMonCnt, DWORD* pDwMonId)
 
 	m_rectRender.right += 18;
 }
-#endif //__CSC_VER13_1
 #endif // __IMPROVE_MAP_SYSTEM
 
 #ifdef __IMPROVE_MAP_SYSTEM
@@ -928,7 +745,6 @@ void CToolTip::InsertMonsterID( DWORD dwMonsterID )
 //-----------------------------------------------------------------------------
 #endif // __IMPROVE_MAP_SYSTEM
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 //-----------------------------------------------------------------------------
 const CPoint& CToolTip::GetPointToolTip( void ) const
 {
@@ -970,4 +786,3 @@ BOOL CToolTip::GetReadyToolTipSwitch( void ) const
 	return m_bReadyToopTip;
 }
 //-----------------------------------------------------------------------------
-#endif // __IMPROVE_SYSTEM_VER15

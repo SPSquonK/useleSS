@@ -5,7 +5,6 @@
 //#include "DPSrvr.h"
 //extern CDPSrvr g_DPSrvr;
 
-#if __VER >= 13 // __HONORABLE_TITLE
 
 CTitleManager::CTitleManager()
 {
@@ -520,4 +519,3 @@ void	CTitleManager::InitEarned()
 
 #endif	// __CLIENT
 
-#endif	// __HONORABLE_TITLE

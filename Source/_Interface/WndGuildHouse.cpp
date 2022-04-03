@@ -1,7 +1,6 @@
 
 #include "StdAfx.h"
 
-#if __VER >= 15 // __GUILD_HOUSE
 
 #include "AppDefine.h"
 #include "defineText.h"
@@ -15,9 +14,7 @@ static const int MAX_LIST_VIEW_CAPACITY = 10;
 
 CWndGHMainMenu::CWndGHMainMenu( )
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	m_bNoCloseButton = TRUE;
-#endif
 }
 
 CWndGHMainMenu::~CWndGHMainMenu( )
@@ -814,4 +811,3 @@ void CWndGHUpkeep::OnOK()
 }
 
 
-#endif //__GUILD_HOUSE

@@ -11,9 +11,7 @@
 #include "OpenLoadWnd.h"
 #endif //__CSC_VER9_4
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include "xUtil.h"
-#endif // __2ND_PASSWORD_SYSTEM
 
 HANDLE	g_hMutex = NULL;
 static char		g_szProtocolVersion[32];			// MSG_VER
@@ -138,9 +136,7 @@ void InitGlobalVars( HINSTANCE hInstance )
 	g_Neuz.m_uCachePort = atoi( szCachePort );
 	g_Neuz.m_bFakeFullMode = ( atoi(szFakeFullmode) == 1 );
 	g_Neuz.m_bEncryptPWD = ( atoi(szEnryptPWD) == 1 );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	::SetUse2ndPassWord( atoi( szUsing2ndPassword ) == 1 );
-#endif // __2ND_PASSWORD_SYSTEM
 #ifdef __GPAUTH
 	g_Neuz.m_bGPotatoAuth	= ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;
 	if( g_Neuz.m_bGPotatoAuth )

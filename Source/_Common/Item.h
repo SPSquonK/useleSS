@@ -13,13 +13,9 @@
 #include "ProjectCmn.h"
 #include "lang.h"
 
-#if __VER >= 9	// __PET_0410
 #include "pet.h"
-#endif	// __PET_0410
 
-#if __VER >= 11 // __SYS_COLLECTING
 #include "accessory.h"
-#endif	// __SYS_COLLECTING
 
 #include "Piercing.h"
 
@@ -56,9 +52,7 @@ public:
 	int				GetCost();							// °¡°ÝÀ» ¾ò´Â´Ù.
 	void			SetExtra( int nExtra );			// È®Àå µ¥ÀÌÅ¸¸¦ ¼¼ÆÃ 
 	int				GetExtra();							// È®Àå µ¥ÀÌÅ¸¸¦ ¾ò±â 
-#if __VER >= 11 // __GUILDCOMBATCHIP
 	DWORD			GetChipCost();
-#endif // __GUILDCOMBATCHIP
 
 	void	SetSerialNumber( void );
 	SERIALNUMBER	GetSerialNumber( void )		{	return m_liSerialNumber;	}
@@ -104,14 +98,12 @@ public:
 	void	CopyPiercing( const CPiercing & piercing )		{	m_piercing	= piercing;		}
 	void	SerializePiercing( CAr & ar )	{	m_piercing.Serialize( ar );		}
 	BOOL	IsPiercedItem()	{ return m_piercing.IsPiercedItem(); }
-#if __VER >= 12 // __EXT_PIERCING
 	void	SetUltimatePiercingSize( int nSize )	{	m_piercing.SetUltimatePiercingSize( nSize );	}
 	int		GetUltimatePiercingSize()	{	return m_piercing.GetUltimatePiercingSize();		}
 	void	SetUltimatePiercingItem( int nth, DWORD dwItem )	{	m_piercing.SetUltimatePiercingItem( nth, dwItem );	}
 	DWORD	GetUltimatePiercingItem( int nth )	{	return m_piercing.GetUltimatePiercingItem( nth );	}
 	
 	BOOL	IsPierceAble( DWORD dwTargetItemKind3 = NULL_ID, BOOL bSize = FALSE );
-#endif // __EXT_PIERCING
 
 	int			m_nAbilityOption;	// Ãß°¡ ´É·ÂÄ¡ °¡º¯ ¿É¼Ç
 
@@ -144,15 +136,10 @@ public:
 #endif	// __WORLDSERVER
 #endif	// __GIFTBOX0213
 	*/
-#if __VER >= 12 // __LORD
 	BOOL	IsPerin( void )		{	return m_dwItemId == II_SYS_SYS_SCR_PERIN;	}
-#endif	// __LORD
-#if __VER >= 11 // __SYS_COLLECTING
 	BOOL	IsCollector( BOOL bRefinable = FALSE )	{	return( m_dwItemId == II_GEN_TOO_COL_NORMAL || ( !bRefinable && m_dwItemId == II_GEN_TOO_COL_EVENT ) );		}
 	BOOL	IsAccessory( void )		{	return CAccessoryProperty::GetInstance()->IsAccessory( m_dwItemId );	}
 	BOOL	IsActiveTicket( DWORD dwItemId );
-#endif	// __SYS_COLLECTING
-#if __VER >= 11 // __SYS_IDENTIFY
 	// ºñÆ®º° ¿¬»ê
 	// 8|10|8|10|8|10|8	= 64
 private:
@@ -185,18 +172,7 @@ public:
 	int		GetLevelDown( void );	// 64|63
 	void	SetLevelDown( int i = eNoLevelDown );
 	DWORD	GetLimitLevel( void );
-#if __VER >= 14 // __NEW_ITEM_LIMIT_LEVEL
 	BOOL	IsLimitLevel( CMover* pMover );	// Âø¿ëÀÌ ºÒ°¡´ÉÇÑ ·¹º§ÀÎ°¡?
-#endif // __NEW_ITEM_LIMIT_LEVEL
-#else	// __SYS_IDENTIFY
-private:
-	int			m_nRandomOptItemId;
-public:
-	int		GetRandomOptItemId( void )	{	return m_nRandomOptItemId;	}
-	void	SetRandomOptItemId( int nRandomOptItemId )	{	m_nRandomOptItemId	= nRandomOptItemId;	}
-	int		GetRandomOpt( void )	{	return m_nRandomOptItemId;	}
-	void	SetRandomOpt( int nRandomOpt )	{ m_nRandomOptItemId	= nRandomOpt;	}
-#endif	// __SYS_IDENTIFY
 /*
 #ifdef __XPET2
 	int	m_nMaxLevel;	// ¼ö¸í
@@ -209,10 +185,8 @@ public:
 #endif
 */
 	
-#if __VER >= 9	// __PET_0410
 	CPet*	m_pPet;		// Æê °´Ã¼, Ã¹ ¼ÒÈ¯ ãÁ »ý¼º
 	BOOL	IsPet( void )	{	return GetProp()->dwItemKind3 == IK3_EGG;	}
-#endif	// __PET_0410
 	BOOL	IsEatPet( void )	{	return GetProp()->dwItemKind3 == IK3_PET;	}
 	BOOL	IsFeed( void )		{	return GetProp()->dwItemKind3 == IK3_FEED;	}
 	BOOL	IsEgg( void );
@@ -228,10 +202,8 @@ public:
 	ItemProp*	GetProp()	{	return prj.GetItemProp( m_dwItemId );	}
 	int			GetAttrOption();		// ¾ÆÀÌÅÛÀÇ +¿É¼Ç°ª°ú ¼Ó¼º/¼Ó¼º·¹º§°ªÀ» ÇÕÃÄ¼­ ¸®ÅÏ.
 	int			GetAbilityOption() { return m_nAbilityOption; }
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	int			GetItemResist( void ) const;
 	int			GetResistAbilityOption( void ) const;
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	int*		GetAbilityOptionPtr() { return &m_nAbilityOption; }
 	void		SetAbilityOption( int nAbilityOption ) { m_nAbilityOption = nAbilityOption; }
 	int			GetGold();
@@ -260,16 +232,13 @@ public:
 
 	static BOOL	IsDiceRefineryAble( ItemProp* pProp );
 	static BOOL	IsEleRefineryAble( ItemProp* pProp );
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	static BOOL	IsElementalCard( const DWORD dwItemID );
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	
 //	Operations
 	void		UseItem();
 	virtual	CItemElem&	operator = ( CItemElem & ie );
 	virtual	void		Serialize( CAr & ar );
 
-#if __VER >= 15 // __PETVIS
 	BOOL	IsVisPet()	{ return ( GetProp() && GetProp()->IsVisPet() ) || IsTransformVisPet() ; }
 	void	SetSwapVisItem( int nPos1, int nPos2 );
 	void	SetVisKeepTimeSize( int nSize )				{ m_piercing.SetVisKeepTimeSize( nSize ); }
@@ -279,7 +248,6 @@ public:
 	BOOL	IsTransformVisPet() { return GetProp() && GetProp()->dwItemKind3 == IK3_PET && m_bTranformVisPet; }
 
 	BOOL	m_bTranformVisPet;
-#endif // __PETVIS
 };
 
 inline int CItemElem::GetAttrOption()		// ¾ÆÀÌÅÛÀÇ +¿É¼Ç°ª°ú ¼Ó¼º/¼Ó¼º·¹º§°ªÀ» ÇÕÃÄ¼­ ¸®ÅÏ.
@@ -293,7 +261,6 @@ inline int CItemElem::GetAttrOption()		// ¾ÆÀÌÅÛÀÇ +¿É¼Ç°ª°ú ¼Ó¼º/¼Ó¼º·¹º§°ªÀ» Ç
 	return nRet;
 }
 
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 inline int CItemElem::GetItemResist( void ) const
 {
 	return m_bItemResist;
@@ -303,7 +270,6 @@ inline int CItemElem::GetResistAbilityOption( void ) const
 {
 	return m_nResistAbilityOption;
 }
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 
 typedef struct tagSkill
 {
@@ -360,7 +326,6 @@ public:
 	void InsertAt( DWORD dwIndex, DWORD dwItemId );
 	void InsertAt( DWORD dwIndex, T* pItemElem );
 	void RemoveAt( DWORD dwIndex );
-#if __VER >= 8	// __JEFF_VER_8
 	DWORD	Find( DWORD dwItemId )
 		{
 			if( dwItemId == 0 )
@@ -388,7 +353,6 @@ public:
 			}
 			return( nCount );
 		}
-#endif	// __JEFF_VER_8
 #endif	// __CLIENT
 
 	// Equip °ü·Ã 
@@ -1009,9 +973,7 @@ public:
 extern BOOL IsUsableItem( CItemBase* pItem );
 extern BOOL IsUsingItem( CItemBase* pItem );
 
-#if __VER >= 11
 extern	BOOL	IsNeedTarget( ItemProp* pProp );
-#endif	// __VER
 
 #endif // !defined(AFX_ITEM_H__80E88B36_BD6B_449B_BE76_34F2B5B77552__INCLUDED_)
 

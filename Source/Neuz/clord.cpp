@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __LORD
 
 #include "clord.h"
 #include "playerdata.h"
@@ -311,4 +310,3 @@ BOOL IsActivePlayer( u_long idPlayer )
 
 };
 
-#endif	// __LORD

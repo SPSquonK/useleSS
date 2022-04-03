@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include ".\minigametyping.h"
 
 CMiniGameTyping::CMiniGameTyping(void)
@@ -67,4 +66,3 @@ void CMiniGameTyping::MakeQuestion()
 		m_vecTyping.push_back( strTemp );
 	}
 }
-#endif // __RAINBOW_RACE

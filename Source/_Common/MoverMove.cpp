@@ -32,14 +32,8 @@ void CMover::PlayCombatMusic()
 {
 	//gmpbigsun: 전투음악 on off
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 	if( g_Option.m_bBattleBGM == FALSE )
 		return;
-#else // __IMPROVE_SYSTEM_VER15
-#if __VER >= 9
-	return;
-#endif	// 
-#endif // __IMPROVE_SYSTEM_VER15
 	if( GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 		return;
 
@@ -152,7 +146,6 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 						}
 					}
 					
-#if __VER >= 8 // __S8_PK
 					// 카오에게 좋은 스킬을 사용할때는 Control 키를 눌러야 함
 					if( g_eLocal.GetState( EVE_PK ) )
 					{
@@ -163,15 +156,10 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 								if( !(GetAsyncKeyState(VK_CONTROL) & 0x8000) )
 									break;
 					}
-#endif // __VER >= 8 // __S8_PK
 					
 					TRACE( "OBJACT_USESKILL %d\n", nSkillIdx );
-#if __VER >= 8 // __S8_PK
 					BOOL bControl = ((GetAsyncKeyState(VK_CONTROL) & 0x8000)? TRUE:FALSE);
 					g_DPlay.SendUseSkill( 0, nSkillIdx, idTarget, sutType, bControl );	// 목표지점에 도착하면 스킬쓴다고 알림.
-#else // __VER >= 8 // __S8_PK
-					g_DPlay.SendUseSkill( 0, nSkillIdx, idTarget, sutType );	// 목표지점에 도착하면 스킬쓴다고 알림.
-#endif // __VER >= 8 // __S8_PK
 
 					m_dwReqFlag |= REQ_USESKILL;	// 응답 요청중
 					
@@ -294,11 +282,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 				Error( "ProcessMoveArrival mover:%s skill(%d) not found.", m_szName, nSkillIdx );
 				return;	// skill not found
 			}
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if( pSkill->dwSkill == SI_MAG_MAG_BLINKPOOL || pSkill->dwSkill == SI_RIG_HERO_RETURN )
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-			if( pSkill->dwSkill == SI_MAG_MAG_BLINKPOOL )
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 				return;		// 아직 서버명령으로는 블링크풀 사용못함.
 
 			CWorld *pWorld = GetWorld();
@@ -312,11 +296,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 				break;
 			}
 
-#if __VER >= 8 // __S8_PK
 			BOOL bSuccess = DoUseSkill( 0, nSkillIdx, idTarget, sutType, FALSE );		// 목표지점에 도착하면 스킬 사용시작.
-#else // __VER >= 8 // __S8_PK
-			BOOL bSuccess = DoUseSkill( 0, nSkillIdx, idTarget, sutType );		// 목표지점에 도착하면 스킬 사용시작.
-#endif // __VER >= 8 // __S8_PK
 			if( bSuccess == FALSE )
 				if( IsPlayer() )
 					((CUser *)this)->m_playTaskBar.OnEndSkillQueue( (CUser *)this );

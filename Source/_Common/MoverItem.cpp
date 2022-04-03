@@ -257,25 +257,13 @@ void TradeLog( CAr & ar, CItemBase* pItemBase, short nItemCount )
 	ar << ( (CItemElem*)pItemBase )->m_nRepair;
 	ar << ( (CItemElem*)pItemBase )->m_bCharged;
 	ar << ( (CItemElem*)pItemBase )->m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 	ar << ( (CItemElem*)pItemBase )->GetPiercingSize();
 	for( int i=0; i<( (CItemElem*)pItemBase )->GetPiercingSize(); i++ )
 		ar << ( (CItemElem*)pItemBase )->GetPiercingItem( i );
 	ar << ( (CItemElem*)pItemBase )->GetUltimatePiercingSize();
 	for( int i=0; i<( (CItemElem*)pItemBase )->GetUltimatePiercingSize(); i++ )
 		ar << ( (CItemElem*)pItemBase )->GetUltimatePiercingItem( i );
-#else // __EXT_PIERCING
-	ar << ( (CItemElem*)pItemBase )->GetPiercingSize();
-	ar << ( (CItemElem*)pItemBase )->GetPiercingItem( 0 );
-	ar << ( (CItemElem*)pItemBase )->GetPiercingItem( 1 );
-	ar << ( (CItemElem*)pItemBase )->GetPiercingItem( 2 );
-	ar << ( (CItemElem*)pItemBase )->GetPiercingItem( 3 );
-#if __VER >= 9 // __ULTIMATE
-	ar << ( (CItemElem*)pItemBase )->GetPiercingItem( 4 );
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
 	ar << ( (CItemElem*)pItemBase )->GetRandomOptItemId();
-#if __VER >= 9 // __PET_0410
 		if( ((CItemElem*)pItemBase)->m_pPet )
 		{
 			CPet* pPet = ((CItemElem*)pItemBase)->m_pPet;
@@ -294,7 +282,6 @@ void TradeLog( CAr & ar, CItemBase* pItemBase, short nItemCount )
 		else
 		{
 			// mirchang_100514 TransformVisPet_Log
-#if __VER >= 15 // __PETVIS
 			if( ((CItemElem*)pItemBase)->IsTransformVisPet() == TRUE )
 			{
 				ar << (BYTE)100;
@@ -303,9 +290,6 @@ void TradeLog( CAr & ar, CItemBase* pItemBase, short nItemCount )
 			{
 				ar << (BYTE)0;
 			}
-#else // __PETVIS
-			ar << (BYTE)0;
-#endif // __PETVIS
 			// mirchang_100514 TransformVisPet_Log
 			ar << (BYTE)0;
 			ar << (DWORD)0;
@@ -317,7 +301,6 @@ void TradeLog( CAr & ar, CItemBase* pItemBase, short nItemCount )
 			ar << (BYTE)0;
 			ar << (BYTE)0;
 		}
-#endif // __PET_0410
 }
 
 // nMinus - ³ª°¥ µ· 
@@ -654,12 +637,8 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 //	06.10.26
 	if( pItemBase->m_nCost > 0 && (float)pBuyer->GetGold() < (float)nNum * (float)pItemBase->m_nCost )
 	{
-#if __VER >= 8 // __S8_VENDOR_REVISION
 		result.nErrorCode = TID_GAME_LACKMONEY;
 		return FALSE;
-#else // __VER >= 8 // __S8_VENDOR_REVISION
-		nNum = (short)( pBuyer->GetGold() / pItemBase->m_nCost );
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 	}
 	
 	if( nNum == 0 )
@@ -689,11 +668,9 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 	if( nRemain <= 0 )
 		m_apItem_VT[i] = NULL;
 
-#if __VER >= 11 // __MOD_VENDOR
 #ifdef __WORLDSERVER
 	g_UserMng.AddPVendorItemNum( (CUser*)m_pOwner, i, nRemain, pBuyer->GetName() );
 #endif	// __WORLDSERVER
-#endif	// __MOD_VENDOR
 
 	m_pOwner->RemoveItem( (BYTE)pItemBase->m_dwObjId, nNum );
 

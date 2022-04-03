@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 12 // __TAX
 #include "Continent.h"
 
 #define TAX_SALES		(BYTE)0	// 판매 세금
@@ -145,4 +144,3 @@ public:
 #endif // __OCCUPATION_SHOPITEM
 };
 
-#endif // __TAX

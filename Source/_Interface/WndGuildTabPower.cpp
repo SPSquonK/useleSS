@@ -4,7 +4,6 @@
 //Author : gmpbigsun
 //Date : 2009_11_16
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "WndGuildTabPower.h"
 #include "AppDefine.h"
 #include "DPClient.h"
@@ -266,4 +265,3 @@ BOOL CWndGuildTabPower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#endif //__GUILD_HOUSE

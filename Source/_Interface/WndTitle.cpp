@@ -1359,9 +1359,7 @@ int CWndSelectChar::m_nSelectCharacter = 0;
 CWndSelectChar::CWndSelectChar()
 {
 	m_pWndDeleteChar = NULL;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	m_pWnd2ndPassword = NULL;
-#endif // __2ND_PASSWORD_SYSTEM
 	ZeroMemory( m_pBipedMesh, sizeof( m_pBipedMesh ) );	
 	m_dwMotion[ 0 ] = MTI_SITSTAND;
 	m_dwMotion[ 1 ] = MTI_SITSTAND;
@@ -1378,9 +1376,7 @@ CWndSelectChar::~CWndSelectChar()
 		SAFE_DELETE( m_pBipedMesh[ i ] );
 	}
 	SAFE_DELETE( m_pWndDeleteChar );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	SAFE_DELETE( m_pWnd2ndPassword );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 void CWndSelectChar::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -1413,10 +1409,8 @@ void CWndSelectChar::OnDestroyChildWnd( CWndBase* pWndChild )
 {
 	if( pWndChild == m_pWndDeleteChar )
 		SAFE_DELETE( m_pWndDeleteChar );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	if( pWndChild == m_pWnd2ndPassword )
 		SAFE_DELETE( m_pWnd2ndPassword );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 HRESULT CWndSelectChar::InitDeviceObjects()
 {
@@ -1555,7 +1549,6 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 
 		if( g_Neuz.m_apPlayer[i] != NULL )
 		{
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 			if( g_WndMng.GetWndBase( APP_2ND_PASSWORD_NUMBERPAD ) == NULL )
 			{
 				POINT point = GetMousePoint();
@@ -1568,17 +1561,6 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 					g_WndMng.PutToolTip_Character( i, point2, &rectHittest );
 				}
 			}
-#else // __2ND_PASSWORD_SYSTEM
-			POINT point = GetMousePoint();
-			if( m_aRect[ i ].PtInRect( point ) )
-			{
-				CRect rectHittest = m_aRect[ i ];
-				CPoint point2 = point;
-				ClientToScreen( &point2 );
-				ClientToScreen( rectHittest );
-				g_WndMng.PutToolTip_Character( i, point2, &rectHittest );
-			}
-#endif // __2ND_PASSWORD_SYSTEM
 			if( m_nSelectCharacter == i )
 			{
 				CRect rectTemp = rect;
@@ -1943,31 +1925,15 @@ void CWndSelectChar::Connected()
 	}
 #ifdef __USE_IDPLAYER0519
 	#ifdef __GPAUTH_01
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	g_dpLoginClient.SendPreJoin( g_Neuz.m_bGPotatoAuth? g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-#else __2ND_PASSWORD_SYSTEM
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_bGPotatoAuth? g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, m_nSelectCharacter );
-#endif // __2ND_PASSWORD_SYSTEM
 	#else	// __GPAUTH_01
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	g_dpLoginClient.SendPreJoin( g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-#else __2ND_PASSWORD_SYSTEM
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, m_nSelectCharacter );
-#endif // __2ND_PASSWORD_SYSTEM
 	#endif	// __GPAUTH_01
 #else	// __USE_IDPLAYER0519
 	#ifdef __GPAUTH_01
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	g_dpLoginClient.SendPreJoin( g_Neuz.m_bGPotatoAuth? g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, g_Neuz.m_apPlayer[m_nSelectCharacter]->GetName(), m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-#else __2ND_PASSWORD_SYSTEM
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_bGPotatoAuth? g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, g_Neuz.m_apPlayer[m_nSelectCharacter]->GetName(), m_nSelectCharacter );
-#endif // __2ND_PASSWORD_SYSTEM
 	#else	// __GPAUTH_01
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	g_dpLoginClient.SendPreJoin( g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, g_Neuz.m_apPlayer[m_nSelectCharacter]->GetName(), m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-#else __2ND_PASSWORD_SYSTEM
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, g_Neuz.m_apPlayer[m_nSelectCharacter]->GetName(), m_nSelectCharacter );
-#endif // __2ND_PASSWORD_SYSTEM
 	#endif	// __GPAUTH_01
 #endif	// __USE_IDPLAYER0519
 
@@ -2083,7 +2049,6 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					break;
 				}
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 				if( ::IsUse2ndPassWord() == TRUE )
 				{
 					if( m_pWnd2ndPassword )
@@ -2107,18 +2072,6 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 						CNetwork::GetInstance().OnEvent( CACHE_CONNECTED );
 						if( m_nSelectCharacter != -1 && g_Neuz.m_apPlayer[m_nSelectCharacter] )
 						{
-#if __VER < 8 // __S8_PK
-							// 한국은 2005/11/1 PK서버가 없어지고, 아래의 코드가 있으면 카오인 유저는 모든 서버에 접속 할 수 없으므로 막는다.
-							if( ::GetLanguage() != LANG_KOR )		
-							{
-								if( g_Neuz.m_b18Server == FALSE && g_Neuz.m_apPlayer[m_nSelectCharacter]->IsChaotic() )
-								{
-									//g_WndMng.OpenMessageBox( "선택된 플레이어는 카르마 수치가 낮아서 PK서버에만 접속 할 수 있습니다." );
-									g_WndMng.OpenMessageBox( prj.GetText(TID_PK_REFUSE_CHAOTIC) );
-									break;
-								}
-							}
-#endif // __VER < 8 // __S8_PK
 							g_Neuz.m_dwTempMessage = 1;
 							g_Neuz.m_timerConnect.Set( SEC( 1 ) );
 						}
@@ -2129,41 +2082,6 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 						TRACE( _T( "Can't connect to server. : %s \n" ), g_Neuz.m_lpCacheAddr );
 					}
 				}
-#else // __2ND_PASSWORD_SYSTEM
-				g_WndMng.OpenCustomBox( _T( prj.GetText(TID_DIAG_0064) ), new CWndConnectingBox );
-				//g_WndMng.OpenCustomBox( _T( "로딩중입니다. 잠시만 기다려 주십시오." ), new CWndConnectingBox );
-
-				if( g_DPlay.Connect( g_Neuz.m_lpCacheAddr, g_Neuz.m_uCachePort ) )
-				{						
-					CNetwork::GetInstance().OnEvent( CACHE_CONNECTED );
-
-					if( m_nSelectCharacter != -1 && g_Neuz.m_apPlayer[m_nSelectCharacter] )
-					{
-#if __VER < 8 // __S8_PK
-						// 한국은 2005/11/1 PK서버가 없어지고, 아래의 코드가 있으면 카오인 유저는 모든 서버에 접속 할 수 없으므로 막는다.
-						if( ::GetLanguage() != LANG_KOR )		
-						{
-							if( g_Neuz.m_b18Server == FALSE && g_Neuz.m_apPlayer[m_nSelectCharacter]->IsChaotic() )
-							{
-								//g_WndMng.OpenMessageBox( "선택된 플레이어는 카르마 수치가 낮아서 PK서버에만 접속 할 수 있습니다." );
-								g_WndMng.OpenMessageBox( prj.GetText(TID_PK_REFUSE_CHAOTIC) );
-								break;
-							}
-						}
-
-#endif // __VER < 8 // __S8_PK
-
-						g_Neuz.m_dwTempMessage = 1;
-						g_Neuz.m_timerConnect.Set( SEC( 1 ) );
-						
-					}
-				}
-				else
-				{
-					CNetwork::GetInstance().OnEvent( CACHE_CONNECT_FAIL );
-					TRACE( _T( "Can't connect to server. : %s \n" ), g_Neuz.m_lpCacheAddr );
-				}
-#endif // __2ND_PASSWORD_SYSTEM
 			}
 			break;
 	}
@@ -2632,7 +2550,6 @@ void CWndCreateChar::OnInitialUpdate()
 
 	CWndStatic* pWnd2ndPasswordText =  ( CWndStatic* )GetDlgItem( WIDC_STATIC_2ND_PASSWORD_TEXT );
 	assert( pWnd2ndPasswordText );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	pWnd2ndPasswordText->m_dwColor = D3DCOLOR_ARGB( 255, 255, 0, 0 );
 
 	CWndEdit* pWnd2ndPassword = ( CWndEdit* )GetDlgItem( WIDC_EDIT_2ND_PASSWORD );
@@ -2643,9 +2560,6 @@ void CWndCreateChar::OnInitialUpdate()
 	assert( pWnd2ndPasswordConfirm );
 	pWnd2ndPasswordConfirm->AddWndStyle( EBS_PASSWORD | EBS_AUTOHSCROLL | EBS_NUMBER );
 	pWnd2ndPasswordConfirm->SetMaxStringNumber( MAX_2ND_PASSWORD_NUMBER );
-#else // __2ND_PASSWORD_SYSTEM
-	pWnd2ndPasswordText->EnableWindow( FALSE );
-#endif // __2ND_PASSWORD_SYSTEM
 }
 
 void CWndCreateChar::SetSex( int nSex )
@@ -2863,7 +2777,6 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					return TRUE;
 				}
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 				CWndEdit* pWnd2ndPassword = ( CWndEdit* )GetDlgItem( WIDC_EDIT_2ND_PASSWORD );
 				assert( pWnd2ndPassword );
 				CWndEdit* pWnd2ndPasswordConfirm = ( CWndEdit* )GetDlgItem( WIDC_EDIT_2ND_PASSWORD_CONFIRM );
@@ -2895,7 +2808,6 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.OpenMessageBox( prj.GetText( TID_2ND_PASSWORD_INPUT_ERROR05 ) );	// 2차 비밀번호 확인이 2차 비밀번호와 일치하지 않습니다.
 					return TRUE;
 				}
-#endif // __2ND_PASSWORD_SYSTEM
 
 //				_tcscpy( m_Player.m_szName, string );
 				
@@ -2918,11 +2830,7 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 													nFeMaleHairColor[m_Player.m_byHairMesh][2] );
 				}
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 				g_dpLoginClient.SendCreatePlayer( (BYTE)( m_Player.m_uSlot ), string, m_Player.m_byFace, m_Player.m_byCostume, m_Player.m_bySkinSet, m_Player.m_byHairMesh, dwHairColor, m_Player.m_bySex, m_Player.m_byJob, m_Player.m_byHeadMesh, atoi( pWnd2ndPassword->GetString() ) );
-#else // __2ND_PASSWORD_SYSTEM
-				g_dpLoginClient.SendCreatePlayer( (BYTE)( m_Player.m_uSlot ), string, m_Player.m_byFace, m_Player.m_byCostume, m_Player.m_bySkinSet, m_Player.m_byHairMesh, dwHairColor, m_Player.m_bySex, m_Player.m_byJob, m_Player.m_byHeadMesh );
-#endif // __2ND_PASSWORD_SYSTEM
 			}
 			break;
 		case 10002: // Accept

@@ -17,9 +17,7 @@ DECLARE_WNDMESSAGEBOX( CWndAllCharBlockBox )
 #ifdef __NPKCRYPT
 #include "npkcrypt.h"
 #endif	// __NPKCRYPT
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include "Wnd2ndPassword.h"
-#endif // __2ND_PASSWORD_SYSTEM
 
 class CWndLogin : public CWndNeuz
 {
@@ -121,9 +119,7 @@ public:
 	CWndText m_wndText3;
 	
 	CWndDeleteChar* m_pWndDeleteChar;
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	CWnd2ndPassword* m_pWnd2ndPassword;
-#endif // __2ND_PASSWORD_SYSTEM
 static int m_nSelectCharacter; 
 	CRect m_aRect[ MAX_CHARACTER_LIST ];
 	DWORD m_dwMotion[ MAX_CHARACTER_LIST ];
@@ -190,9 +186,7 @@ BEGIN_WNDCLASS( CWndCreateChar )
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	enum { MAX_2ND_PASSWORD_NUMBER = 4 };
-#endif // __2ND_PASSWORD_SYSTEM
 END_WNDCLASS
 
 #endif // !defined(AFX_WNDTITLE_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)

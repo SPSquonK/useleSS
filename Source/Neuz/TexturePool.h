@@ -5,7 +5,6 @@
 
 #pragma  once 
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 
 typedef std::map< string, IDirect3DTexture9* >		Texture_Container;
 typedef Texture_Container::iterator					Texture_Iter;
@@ -29,7 +28,6 @@ protected:
 
 };
 
-#endif //__BS_CHANGING_ENVIR
 
 
 

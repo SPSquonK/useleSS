@@ -33,7 +33,6 @@ LPFRIEND CMessenger::GetAt( int nIndex )
 	return NULL;
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 BOOL CMessenger::AddFriend( u_long uidPlayer )
 {
 	if( FALSE == IsFriend( uidPlayer ) )
@@ -65,67 +64,6 @@ BOOL CMessenger::AddFriend( u_long uidPlayer, DWORD dwSate, BOOL bSave )
 	}
 	return FALSE;
 }
-#else	// __SYS_PLAYER_DATA
-BOOL CMessenger::AddFriend( u_long uidPlayer, LONG nJob, BYTE nSex )
-{
-	if( FALSE == IsFriend( uidPlayer ) )
-	{
-		LPFRIEND pFrined	= new FRIEND;
-		pFrined->dwUserId = uidPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pFrined->nSex = nSex;
-		pFrined->nJob = nJob;
-#endif	// __SYS_PLAYER_DATA
-#ifdef __WORLDSERVER
-		pFrined->bSave = TRUE;
-#endif // __WORLDSERVER
-		m_aFriend.insert( C2FriendPtr::value_type( uidPlayer, pFrined ) );
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CMessenger::AddFriend( u_long uidPlayer, LONG nJob, BYTE nSex, DWORD dwSate, BOOL bSave )
-{
-	if( FALSE == IsFriend( uidPlayer ) )
-	{
-		LPFRIEND pFrined	= new FRIEND;
-		pFrined->dwUserId = uidPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pFrined->nSex = nSex;
-		pFrined->nJob = nJob;
-#endif	// __SYS_PLAYER_DATA
-		pFrined->dwState = dwSate;
-		pFrined->bSave	= bSave;
-#ifdef __WORLDSERVER
-		pFrined->bSave = TRUE;
-#endif // __WORLDSERVER
-		m_aFriend.insert( C2FriendPtr::value_type( uidPlayer, pFrined ) );
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CMessenger::AddFriend( u_long uidPlayer, LONG nJob, BYTE nSex, LPSTR lpName )
-{
-	if( FALSE == IsFriend( uidPlayer ) )
-	{
-		LPFRIEND pFrined	= new FRIEND;
-		pFrined->dwUserId = uidPlayer;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		pFrined->nSex = nSex;
-		pFrined->nJob = nJob;
-#endif	// __SYS_PLAYER_DATA
-#ifdef __WORLDSERVER
-		pFrined->bSave = TRUE;
-#endif // __WORLDSERVER
-		strcpy( pFrined->szName, lpName );
-		m_aFriend.insert( C2FriendPtr::value_type( uidPlayer, pFrined ) );
-		return TRUE;
-	}
-	return FALSE;
-}
-#endif	// __SYS_PLAYER_DATA
 
 int  CMessenger::GetSize( void )
 {
@@ -148,11 +86,7 @@ CMessenger& CMessenger::operator =( const CMessenger & rMessenger )
 {
 	Clear();
 	for( C2FriendPtr::iterator i	= rMessenger.m_aFriend.begin(); i != rMessenger.m_aFriend.end(); ++i )
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		AddFriend( i->second->dwUserId, i->second->dwState, i->second->bSave );
-#else	// __SYS_PLAYER_DATA
-		AddFriend( i->second->dwUserId, i->second->nJob, i->second->nSex, i->second->dwState, i->second->bSave );
-#endif	// __SYS_PLAYER_DATA
 	for( C2FriendPtr::iterator j	= rMessenger.m_adifferntFriend.begin(); j != rMessenger.m_adifferntFriend.end(); ++j )
 		AddDefferntFriend( j->second->dwUserId );
 	m_dwMyState	= rMessenger.m_dwMyState;
@@ -243,10 +177,6 @@ void CMessenger::Serialize( CAr & ar )
 			LPFRIEND pFriend = (LPFRIEND)i->second;
 			ar << pFriend->bGroup;
 			ar << pFriend->dwUserId;
-#if __VER < 11 // __SYS_PLAYER_DATA
-			ar << pFriend->nSex;
-			ar << pFriend->nJob;
-#endif	// __SYS_PLAYER_DATA
 			ar << pFriend->bSave;
 			if( pFriend->dwState == FRS_BLOCK )
 				ar << (BYTE)1;
@@ -286,10 +216,6 @@ void CMessenger::Serialize( CAr & ar )
 			LPFRIEND pFriend = new FRIEND;
 			ar >> pFriend->bGroup;
 			ar >> pFriend->dwUserId;
-#if __VER < 11 // __SYS_PLAYER_DATA
-			ar >> pFriend->nSex;
-			ar >> pFriend->nJob;
-#endif	// __SYS_PLAYER_DATA
 			ar >> pFriend->bSave;
 			BYTE bState;
 			ar >> bState;

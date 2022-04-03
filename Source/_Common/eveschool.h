@@ -221,10 +221,8 @@ public:
 
 	int		m_nJoinPanya;		// 대전에 참가할수 있는 기본 Penya
 	int		m_nGuildLevel;		// 대전에 참가할수 있는 최소 길드레벨
-#if __VER >= 8 // __GUILDCOMBAT_85
 	int		m_nMinGuild;		// 최소 전쟁을 할수 있는 길드 개수(최소 참여 길드 조건이 되야 길드 대전이 시작함)
 	int		m_nMaxGCSendItem;
-#endif // __VER >= 8 
 	int		m_nMaxGuild;		// 대전에 참가할수 있는 길드
 	int		m_nMaxJoinMember;	// 대전에 참가할수 있는 최대 유저
 	int		m_nMaxPlayerLife;	// 대전에 참가한 유저의 최대 생명
@@ -238,10 +236,8 @@ public:
 	BOOL    m_bMutex;					// 길드대전 오픈 한번만...
 	BOOL    m_bMutexMsg;					// 길드대전 오픈 한번만...
 	CTimer   m_ctrMutexOut;
-#if __VER >= 8 // __GUILDCOMBAT_85
 	vector< CString > m_vecstrGuildMsg;
 	vector<__GCSENDITEM>	vecGCSendItem;
-#endif // __VER >= 8 
 	
 	vector<__REQUESTGUILD>	vecRequestRanking;	// 참가 순위
 	vector<__GCRESULTVALUEGUILD>			m_GCResultValueGuild;		// 길드대전 결과값
@@ -306,9 +302,7 @@ public:
 	void	SendGCLog( void );
 	void	SerializeGCWarPlayerList( CAr & ar );
 
-#if __VER >= 11 // __GUILDCOMBATCHIP
 	void	GuildCombatResultRanking();
-#endif // __GUILDCOMBATCHIP
 
 	CTime	GetNextGuildCobmatTime(void);
 	int		m_nDay;

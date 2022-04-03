@@ -6,12 +6,9 @@
 #include "Party.h"
 #include "WndParty.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 
-#if __VER >= 8 //__CSC_VER8_2
 
 #define MAX_PARTY_MEMBER 8
 
@@ -91,37 +88,21 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 			if(g_Party.IsLeader(nLeadMember)) //Leader Color Set
 			{
 				dwColor = 0xff1fb72d; //굵게 해야함...
-#if __VER >= 10 // __LEGEND
 				if(pObjMember->IsMaster())
 					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
 				else if(pObjMember->IsHero())
-#if __VER >= 15 // __HERO129_VER15				// 15차 히어로 레벨확장
 					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-	#else	// 15차 히어로 레벨확장
-					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO_BEFORE ), pObjMember->GetName() );
-	#endif	// 15차 히어로 레벨확장
 				else 
 					strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
-#else //__LEGEND
-				strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
-#endif //__LEGEND
 			}
 			else
 			{
-#if __VER >= 10 // __LEGEND
 				if(pObjMember->IsMaster())
 					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
 				else if(pObjMember->IsHero())
-#if __VER >= 15 // __HERO129_VER15				// 15차 히어로 레벨확장
 					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-	#else	// 15차 히어로 레벨확장
-					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO_BEFORE ), pObjMember->GetName() );
-	#endif	// 15차 히어로 레벨확장
 				else 
 					strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
-#else //__LEGEND
-				strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
-#endif //__LEGEND
 			}
 		}
 		else
@@ -129,31 +110,17 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 			dwColor = 0xff878787; // 디폴트는 주위에 없는놈
 			if( g_Party.m_aMember[i].m_bRemove ) 
 				dwColor = 0xff000000; // 서버에 없는놈
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			const char* pszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( g_Party.m_aMember[i].m_uPlayerId );
-#else	// __SYS_PLAYER_DATA
-			const char* pszPlayer	= g_Party.m_aMember[i].m_szName;
-#endif	// __SYS_PLAYER_DATA
 
-#if __VER >= 11 // __MA_VER11_03	// neuz극단창(B)에서 극단원이 멀리 떨어져 있어도 레벨이 표시 되도록
 			CString	strTemp2;
-	#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( g_Party.m_aMember[i].m_uPlayerId );
 			int nLevel	= pPlayerData->data.nLevel;
 			int nJob	= pPlayerData->data.nJob;
-	#else	// __SYS_PLAYER_DATA
-			int nLevel	= g_Party.m_aMember[i].m_nLevel;
-			int nJob	= g_Party.m_aMember[i].m_nJob;
-	#endif	// __SYS_PLAYER_DATA
 
 			if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 				strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
 			else if( MAX_MASTER <= nJob )
-#if __VER >= 15 // __HERO129_VER15 // 15차 히어로 레벨확장
 				strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-#else // 15차 히어로 레벨확장
-				strTemp2 = prj.GetText( TID_GAME_TOOLTIP_MARK_HERO_BEFORE );
-#endif // 15차 히어로 레벨확장
 			else 
 				strTemp2.Format( "%d", nLevel );
 
@@ -162,12 +129,6 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 			else
 				strMember.Format( "%s. %s", strTemp2,pszPlayer );
 
-#else	//	__MA_VER11_03	// neuz극단창(B)에서 극단원이 멀리 떨어져 있어도 레벨이 표시 되도록
-			if(g_Party.IsLeader(nLeadMember)) //Leader Set 굵게 해야함...
-				strMember.Format( "??. %s", pszPlayer );
-			else
-				strMember.Format( "??. %s", pszPlayer );
-#endif	//	__MA_VER11_03	// neuz극단창(B)에서 극단원이 멀리 떨어져 있어도 레벨이 표시 되도록
 
 		}
 		//Member - Level, Name Draw
@@ -248,11 +209,9 @@ void CWndPartyQuick::OnLButtonUp( UINT nFlags, CPoint point )
 	LPWNDCTRL lpWndCtrl;
 	int nMax = g_Party.m_nSizeofMember;
 
-#if __VER >= 11 // __CSC_VER11_2
 	CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
 	if(((CWndWorld*)g_WndMng.m_pWndWorld)->m_bAutoAttack || pTaskBar->m_nExecute != 0)
 		return;
-#endif //__CSC_VER11_2
 	
 	for(int i=0; i<nMax; i++) 
 	{
@@ -348,4 +307,3 @@ void CWndPartyQuick::SetActiveMember(int MemberNum)
 	}
 }
 
-#endif //__CSC_VER8_2

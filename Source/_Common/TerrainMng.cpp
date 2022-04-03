@@ -8,10 +8,8 @@ CTerrainMng::CTerrainMng()
 	m_nWaterFrame = 0;
 	m_pd3dDevice = NULL;
 	m_nSize = 0;
-#if __VER >= 14 // __WATER_EXT
 	for(int i=0; i<MAX_WATER; i++)
 		m_fWaterFrame[i] = 0.0f;
-#endif //__WATER_EXT
 }
 
 CTerrainMng::~CTerrainMng()
@@ -119,9 +117,7 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				else if ( nBrace == 2 && FrameCnt )
 				{
 					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-#if __VER >= 14 // __WATER_EXT
 					m_pWaterIndexList[ImageCnt].fWaterFrame = 0.15f;
-#endif //__WATER_EXT
 					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
 					ZeroMemory( m_pWaterIndexList[ImageCnt].pList, FrameCnt * sizeof(int) );
 					ImageCnt++;
@@ -147,9 +143,7 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				if ( nBrace == 2 && FrameCnt )
 				{
 					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-#if __VER >= 14 // __WATER_EXT
 					m_pWaterIndexList[ImageCnt].fWaterFrame = 0.15f;
-#endif //__WATER_EXT
 					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
 					ImageCnt++;
 				}

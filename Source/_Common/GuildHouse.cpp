@@ -3,7 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
 #include "defineText.h"
 #ifdef __CLIENT
@@ -2785,4 +2784,3 @@ void CGuildHouseMng::CloseTender( DWORD dwGHType )
 
 #endif // n__CLIENT
 
-#endif // __GUILD_HOUSE

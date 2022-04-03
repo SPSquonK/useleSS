@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "minigamebase.h"
 
 class CMiniGameGawibawibo :	public CMiniGameBase
@@ -21,4 +20,3 @@ private:
 	int m_nWinCount;	// ¿¬½Â
 };
 
-#endif // __RAINBOW_RACE

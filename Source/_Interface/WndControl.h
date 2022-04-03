@@ -468,7 +468,6 @@ public:
 
 typedef struct tagScriptElem
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	tagScriptElem( void );
 	tagScriptElem( CRect* pRect );
 	tagScriptElem* m_lpParent;
@@ -479,14 +478,6 @@ typedef struct tagScriptElem
 	CPtrArray m_ptrArray;
 	BOOL m_bOpen;
 	CWndButton* m_pWndCheckBox;
-#else // __IMPROVE_QUEST_INTERFACE
-	tagScriptElem* m_lpParent;
-	DWORD m_dwColor;
-	CString   m_strKeyword;
-	DWORD     m_dwData;
-	CPtrArray m_ptrArray;
-	BOOL      m_bOpen;
-#endif // __IMPROVE_QUEST_INTERFACE
 } 
 TREEELEM,* LPTREEELEM;
 
@@ -503,18 +494,13 @@ public:							//sun!!
 private:
 	CPtrArray m_treeItemArray;
 	void InterpriteScript( CScript& script, CPtrArray& ptrArray ); 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	virtual void PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptrArray );
-#else // __IMPROVE_QUEST_INTERFACE
-	void PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptrArray );
-#endif // __IMPROVE_QUEST_INTERFACE
 	LPTREEELEM m_pFocusElem;
 	int  m_nFontHeight ;
 	DWORD m_nWndColor   ;
 	TREEELEM m_treeElem;
 	CWndScrollBar m_wndScrollBar;
 	void FreeTree( CPtrArray& ptrArray );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 public:
 	enum { CHECK_BOX_SIZE_XY = 13 };
 private:
@@ -523,7 +509,6 @@ private:
 	int m_nTreeTabWidth;
 	int m_nCategoryTextSpace;
 	int m_nTreeItemsMaxWidth;
-#endif // __IMPROVE_QUEST_INTERFACE
 public:
 	int   m_nLineSpace  ;
 	CTexture* m_pTexButtOpen;
@@ -535,9 +520,7 @@ public:
 	~CWndTreeCtrl();
 	int GetFontHeight() { return m_pFont->GetMaxHeight() + m_nLineSpace; }
 	BOOL DeleteAllItems();
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	void DeleteItemArray( void );
-#endif // __IMPROVE_QUEST_INTERFACE
 	LPTREEELEM GetCurSel();
 	LPTREEELEM GetRootElem();
 	LPTREEELEM GetNextElem( LPTREEELEM pElem, int& nPos );
@@ -547,7 +530,6 @@ public:
 	LPTREEELEM SetCurSel( LPCTSTR lpszKeyword );
 	LPTREEELEM FindTreeElem( LPCTSTR lpszKeyword );
 	LPTREEELEM FindTreeElem( CPtrArray& ptrArray, LPCTSTR lpszKeyword );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	LPTREEELEM InsertItem( LPTREEELEM lpParent, 
 						   LPCTSTR lpString, 
 						   DWORD dwData, 
@@ -555,12 +537,8 @@ public:
 						   BOOL bCheck = FALSE, 
 						   DWORD dwColor = D3DCOLOR_ARGB( 255, 64, 64, 64 ), 
 						   DWORD dwSelectColor = D3DCOLOR_ARGB( 255, 0, 0, 255 ) );
-#else // __IMPROVE_QUEST_INTERFACE
-	LPTREEELEM InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWORD dwData );
-#endif // __IMPROVE_QUEST_INTERFACE
 	void LoadTreeScript( LPCTSTR lpFileName ); 
 	BOOL Create(DWORD dwTextStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	BOOL CheckParentTreeBeOpened( LPTREEELEM lpTreeElem );
 	CPtrArray* GetTreeItemArray( void );
 	void SetFocusElem( const LPTREEELEM pFocusElem );
@@ -587,7 +565,6 @@ private:
 	void CalculateTextColor( DWORD dwCategoryTextColor, DWORD dwNormalTextColor, DWORD dwSelectedCategoryTextColor, DWORD dwSelectedNormalTextColor, const CPtrArray& rPtrArray );
 
 public:
-#endif // __IMPROVE_QUEST_INTERFACE
 	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
 	virtual void OnInitialUpdate();
@@ -720,20 +697,13 @@ public:
 	typedef struct tagITEM
 	{
 		CRect      m_rect;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CEditString m_strWord;
 		BOOL		m_bIsValid;
 		BOOL		m_bIsVisible;
-#else // __IMPROVE_QUEST_INTERFACE
-		BOOL       m_bButton;
-		CString    m_strWord;
-#endif // __IMPROVE_QUEST_INTERFACE
 		DWORD      m_dwData;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 		CString    m_strKey;
 		DWORD      m_dwData2;
 		tagITEM( void ) : m_rect( 0, 0, 0, 0 ), m_strWord( _T("") ), m_bIsValid( TRUE ), m_bIsVisible( TRUE ), m_dwData( 0 ), m_strKey( _T("") ), m_dwData2( 0 ) {}
-#endif // __IMPROVE_QUEST_INTERFACE
 	} LISTITEM,* LPLISTITEM;
 
 protected:
@@ -746,13 +716,11 @@ protected:
 public:
 	DWORD         m_nFontColor  ; 
 	DWORD         m_nSelectColor;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 private:
 	DWORD         m_dwOnMouseColor;
 	DWORD         m_dwInvalidColor;
 	DWORD         m_nLeftMargin;
 public:
-#endif // __IMPROVE_QUEST_INTERFACE
 	int           m_nLineSpace  ;
 	int           m_nFontHeight ;
 
@@ -766,7 +734,6 @@ public:
 	void* GetItemDataPtr(int nIndex) const;
 	int   SetItemData(int nIndex,DWORD dwItemData);
 	int   SetItemDataPtr(int nIndex,void* pData);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	DWORD GetItemData2( int nIndex ) const;
 	void* GetItemData2Ptr( int nIndex ) const;
 	BOOL GetItemValidity( int nIndex );
@@ -775,12 +742,7 @@ public:
 	int SetItemData2Ptr( int nIndex,void* pData );
 	int SetItemValidity( int nIndex, BOOL bValidity );
 	int SetItemVisibility( int nIndex, BOOL bIsVisible );
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	const CRect& GetItemRect( int nIndex ) const;
-#else // __IMPROVE_QUEST_INTERFACE
-	int   GetItemRect(int nIndex,LPRECT lpRect) const;
-#endif // __IMPROVE_QUEST_INTERFACE
 	int   GetSel(int nIndex) const;
 	int   GetText(int nIndex,LPSTR lpszBuffer) const;
 	void  GetText(int nIndex,CString& rString) const;
@@ -797,7 +759,6 @@ public:
 	int   DeleteString(UINT nIndex);
 	int   InsertString(int nIndex,LPCTSTR lpszItem);
 	void	SetString( int nIndex, LPCTSTR lpszItem );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	const CString& GetString( int nIndex ) const;
 	void SetListStringAlpha( int nIndex, BYTE byAlpha );
 	void SetKeyString( int nIndex, LPCTSTR lpszItem );
@@ -808,7 +769,6 @@ public:
 	DWORD GetInvalidColor( void ) const;
 	void SetLeftMargin( int nLeftMargin );
 	int GetLeftMargin( void ) const;
-#endif // __IMPROVE_QUEST_INTERFACE
 #ifdef __IMPROVE_MAP_SYSTEM
 	int GetItemIndex( const CString& strItem ) const;
 	int GetItemIndex( DWORD dwItem ) const;
@@ -1063,9 +1023,7 @@ typedef struct tagWTCITEM
     int iImage;
     LPARAM lParam;
 	CWndBase* pWndBase;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	tagWTCITEM( void );
-#endif // __IMPROVE_QUEST_INTERFACE
 } WTCITEM, FAR *LPWTCITEM;
 
 
@@ -1082,13 +1040,11 @@ class CWndTabCtrl: public CWndBase
 //	CTexture* m_apTexture[ 10 ];
 //#endif
 	int m_nTabButtonLength;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 public:
 	enum TabTitleAlign { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER };
 
 private:
 	TabTitleAlign m_eTabTitleAlign;
-#endif // __IMPROVE_QUEST_INTERFACE
 public:
 	CWndTabCtrl();
 	BOOL Create(DWORD dwStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID);
@@ -1116,12 +1072,10 @@ public:
 	//CImageList* SetImageList(CImageList* pImageList);
 	//int GetItemCount() const;
 	BOOL GetItem(int nItem, WTCITEM* pTabCtrlItem) const;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	LPWTCITEM GetTabItem( int nItemNumber ) const;
 	LPWTCITEM GetSelectedTab( void ) const;
 	void SetTabTitleAlign( const TabTitleAlign eTabTitleAlign );
 	const TabTitleAlign GetTabTitleAlign( void ) const;
-#endif // __IMPROVE_QUEST_INTERFACE
 	//BOOL SetItem(int nItem, TCITEM* pTabCtrlItem);
 	//BOOL SetItemExtra(int nBytes);
 	//BOOL GetItemRect(int nItem, LPRECT lpRect) const;
@@ -1192,7 +1146,6 @@ public:
 
 #include "WndEditCtrl.h"
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 class CWndComboListBox : public CWndListBox
 {
 public:
@@ -1201,17 +1154,12 @@ public:
 #endif // __IMPROVE_MAP_SYSTEM
 	virtual void OnKillFocus( CWndBase* pNewWnd );
 };
-#endif // __IMPROVE_QUEST_INTERFACE
 
 class CWndComboBox : public CWndEdit
 {
 public: 
 //	DWORD m_dwComboBoxStyle; 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndComboListBox m_wndListBox;
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndListBox m_wndListBox;
-#endif // __IMPROVE_QUEST_INTERFACE
 	CWndButton  m_wndButton;
 
 	CWndComboBox();
@@ -1309,11 +1257,9 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 private:
 	void OpenListBox( void );
 	BOOL m_bOpen;
-#endif // __IMPROVE_QUEST_INTERFACE
 };
 
 #endif // !defined(AFX_WNDCONTROL_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_)

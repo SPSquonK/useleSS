@@ -56,11 +56,7 @@ void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 
 #ifdef __GPAUTH_02
 #ifdef __EUROPE_0514
-#if __VER >= 14 // __PCBANG
 void CDPAccountClient::SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck, const char* szCheck, const char* szBak, DWORD dwPCBangClass )
-#else // __PCBANG
-void CDPAccountClient::SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck, const char* szCheck, const char* szBak )
-#endif // __PCBANG
 #else	// __EUROPE_0514
 void CDPAccountClient::SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck, const char* szCheck )
 #endif	// __EUROPE_0514
@@ -85,9 +81,7 @@ void CDPAccountClient::SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE c
 #ifdef __EUROPE_0514
 	ar.WriteString( szBak );
 #endif	// __EUROPE_0514
-#if __VER >= 14 // __PCBANG
 	ar << dwPCBangClass;
-#endif // __PCBANG
 
 	SEND( ar, this, DPID_SERVERPLAYER );
 }

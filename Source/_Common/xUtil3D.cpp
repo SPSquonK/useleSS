@@ -341,11 +341,7 @@ bool IntrSegment3Box3_Test( const Segment3& rkSegment, const BBOX& rkBox )
 		afAWdU[i] = fabs( D3DXVec3Dot(&rkSegment.Direction, &rkBox.Axis[i]) );
 		afADdU[i] = fabs( D3DXVec3Dot(&kDiff, &rkBox.Axis[i]) );
 
-#if __VER >= 15 // __BS_BBOX_ABS_EXTENT
 		fRhs = fabs(rkBox.Extent[i]) + rkSegment.Extent*afAWdU[i];
-#else
-		fRhs = rkBox.Extent[i] + rkSegment.Extent*afAWdU[i];
-#endif //__BS_BBOX_ABS_EXTENT
 		
 		if (afADdU[i] > fRhs)
 		{
@@ -358,11 +354,7 @@ bool IntrSegment3Box3_Test( const Segment3& rkSegment, const BBOX& rkBox )
 	
     afAWxDdU[0] = fabs( D3DXVec3Dot(&kWxD, &rkBox.Axis[0]) );
   
-#if __VER >= 15 // __BS_BBOX_ABS_EXTENT
 	fRhs = fabs(rkBox.Extent[1])*afAWdU[2] + fabs(rkBox.Extent[2])*afAWdU[1];
-#else
-	fRhs = rkBox.Extent[1]*afAWdU[2] + rkBox.Extent[2]*afAWdU[1];
-#endif //__BS_BBOX_ABS_EXTENT
 
     if (afAWxDdU[0] > fRhs)
     {
@@ -371,11 +363,7 @@ bool IntrSegment3Box3_Test( const Segment3& rkSegment, const BBOX& rkBox )
 
     afAWxDdU[1] = fabs( D3DXVec3Dot(&kWxD, &rkBox.Axis[1]) );
    
-#if __VER >= 15 // __BS_BBOX_ABS_EXTENT
 	fRhs = fabs(rkBox.Extent[0])*afAWdU[2] + fabs(rkBox.Extent[2])*afAWdU[0];
-#else
-	fRhs = rkBox.Extent[0]*afAWdU[2] + rkBox.Extent[2]*afAWdU[0];
-#endif //__BS_BBOX_ABS_EXTENT
 
     if (afAWxDdU[1] > fRhs)
     {
@@ -384,11 +372,7 @@ bool IntrSegment3Box3_Test( const Segment3& rkSegment, const BBOX& rkBox )
 
     afAWxDdU[2] = fabs( D3DXVec3Dot(&kWxD, &rkBox.Axis[2]) );
    
-#if __VER >= 15 // __BS_BBOX_ABS_EXTENT
 	fRhs = fabs(rkBox.Extent[0])*afAWdU[1] + fabs(rkBox.Extent[1])*afAWdU[0];
-#else
-	fRhs = rkBox.Extent[0]*afAWdU[1] + rkBox.Extent[1]*afAWdU[0];
-#endif //__BS_BBOX_ABS_EXTENT
 
     if (afAWxDdU[2] > fRhs)
     {

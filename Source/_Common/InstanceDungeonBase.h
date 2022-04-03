@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "ar.h"
 #ifdef __WORLDSERVER
 #include "defineText.h"
@@ -217,6 +216,5 @@ private:
 #endif // __WORLDSERVER
 };
 
-#endif // __INSTANCE_DUNGEON
 
 #endif // !defined(AFX_INSTANCEDUNGEONBASE_H__5F92E1D4_2A9F_4602_8D26_35E328B9C160__INCLUDED_)

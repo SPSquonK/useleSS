@@ -5,17 +5,13 @@
 #include "party.h"
 #include "dpclient.h"
 #include "definequest.h"
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 #include "WorldMap.h"
-#endif // __IMPROVE_QUEST_INTERFACE
 #ifdef __IMPROVE_MAP_SYSTEM
 #include "WndMapEx.h"
 #endif // __IMPROVE_MAP_SYSTEM
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 CTreeInformationManager g_QuestTreeInfoManager;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 
 BOOL CWndRemoveQuest::Initialize( CWndBase* pWndParent, DWORD dwWndId )
@@ -60,10 +56,8 @@ CWndQuest::CWndQuest()
 }     
 CWndQuest::~CWndQuest() 
 { 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( g_WndMng.m_pWndQuestDetail )
 		SAFE_DELETE( g_WndMng.m_pWndQuestDetail );
-#endif // __IMPROVE_QUEST_INTERFACE
 } 
 void CWndQuest::OnDraw( C2DRender* p2DRender ) 
 { 
@@ -91,11 +85,7 @@ void CWndQuest::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 				m_aOpenTree.Add( nQuest );
 			}
 			TreeOpen();
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 			RemoveQuest();
-#else // __IMPROVE_QUEST_INTERFACE
-			UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 		}
 	}
 	else
@@ -109,42 +99,16 @@ void CWndQuest::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 }
 void CWndQuest::TreeOpen() 
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
 	LPWTCITEM lpItem = pWndTabCtrl->GetSelectedTab();
 	assert( lpItem );
 	CWndQuestTreeCtrl* pTreeCtrl = ( CWndQuestTreeCtrl* )lpItem->pWndBase;
 	assert( pTreeCtrl );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndTreeCtrl* pTreeCtrl = (CWndTreeCtrl*)GetDlgItem( WIDC_TREECTRL1 );
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	OpenTreeArray( pTreeCtrl->GetRootElem()->m_ptrArray );
-#else // __IMPROVE_QUEST_INTERFACE
-	LPTREEELEM lpRoot = pTreeCtrl->GetRootElem();
-	int nPos = 0;
-	LPTREEELEM lpElem = NULL;
-	do {
-		lpElem = pTreeCtrl->GetNextElem( lpRoot, nPos );
-		if( lpElem )
-		{
-			for( int i = 0; i < m_aOpenTree.GetSize(); i++ )
-			{
-				if( m_aOpenTree.GetAt( i ) == lpElem->m_dwData )
-				{
-					lpElem->m_bOpen = TRUE;
-					break;
-				}
-			}
-		}
-	} while( lpElem );
-	pTreeCtrl->SetCurSel( m_idSelQuest );
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 void CWndQuest::Update( int nNewQuestId ) 
 {
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
 	LPWTCITEM lpItem = NULL;
@@ -161,9 +125,6 @@ void CWndQuest::Update( int nNewQuestId )
 	assert( lpItem );
 	pTreeCtrl = ( CWndQuestTreeCtrl* )lpItem->pWndBase;
 	assert( pTreeCtrl );
-#else // __IMPROVE_QUEST_INTERFACE
-	CWndTreeCtrl* pTreeCtrl = (CWndTreeCtrl*)GetDlgItem( WIDC_TREECTRL1 );
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	LPQUEST lpQuest = NULL;
 
@@ -172,11 +133,7 @@ void CWndQuest::Update( int nNewQuestId )
 	//pTreeCtrl->GetText( pTreeCtrl->GetCurSel(), strQuest );
 
 	//pTreeCtrl->m_dwColor = 0xff000000;
-#if __VER < 15 // __IMPROVE_QUEST_INTERFACE
-	pTreeCtrl->DeleteAllItems();
-#endif // __IMPROVE_QUEST_INTERFACE
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CDWordArray aOldHeadData;
 	if( CTreeInformationManager::m_eQuestListGroup != CTreeInformationManager::COMPLETE_QUEST_LIST )
 	{
@@ -198,148 +155,10 @@ void CWndQuest::Update( int nNewQuestId )
 			InsertQuestItem( wQuest, aOldHeadData, TRUE, nNewQuestId );
 		}
 	}
-#else // __IMPROVE_QUEST_INTERFACE
-	QuestProp * pQuestProp;
-	//CPtrArray* paQuestArray;
-	
-	CUIntArray* paHeadQuest;
-	CPtrArray aOrderQuest;
-	// 해드 퀘스트를 만든다. 
-	int i;
-	for( i = 0; i < g_pPlayer->m_nCompleteQuestSize; i++ )
-	{
-		WORD wQuest = g_pPlayer->m_aCompleteQuest[ i ];
-		if( wQuest != 0xffff )
-		{
-			pQuestProp = prj.m_aPropQuest.GetAt( wQuest );
-			if( pQuestProp )
-			{
-				for( int j = 0; j < aOrderQuest.GetSize(); j++ )
-				{
-					paHeadQuest = (CUIntArray*) aOrderQuest.GetAt( j );
-					// 같은게 발견되면 뒤를 이어 추가 : 추가된건 일반 퀘스트 
-					if( paHeadQuest->GetAt( 0 ) == pQuestProp->m_nHeadQuest ) 
-					{
-						paHeadQuest->Add( wQuest );
-						break;
-					}
-				}
-				// 발견 못했으면 해드 퀘스트를 처음 추가 
-				if( j == aOrderQuest.GetSize() )
-				{
-					paHeadQuest = new CUIntArray;
-					paHeadQuest->Add( pQuestProp->m_nHeadQuest );
-					paHeadQuest->Add( wQuest );
-					aOrderQuest.Add( paHeadQuest );
-				}
-			}
-			else
-			{
-				CString string;
-				string.Format( "CWndQuest::Update 1 : Quest %d의 pQuestProp NULL이다.", wQuest );
-				//ADDERRORMSG( string );
-			}
-		}
-	}
-	for( i = 0; i < g_pPlayer->m_nQuestSize; i++ )
-	{
-		lpQuest = &g_pPlayer->m_aQuest[ i ];
-		if( lpQuest->m_wId != 0xffff )
-		{
-			pQuestProp = prj.m_aPropQuest.GetAt( lpQuest->m_wId );
-			if( pQuestProp )
-			{
-				for( int j = 0; j < aOrderQuest.GetSize(); j++ )
-				{
-					paHeadQuest = (CUIntArray*) aOrderQuest.GetAt( j );
-					// 같은게 발견되면 뒤를 이어 추가 : 추가된건 일반 퀘스트 
-					if( paHeadQuest->GetAt( 0 ) == pQuestProp->m_nHeadQuest ) 
-					{
-						paHeadQuest->Add( lpQuest->m_wId );
-						break;
-					}
-				}
-				// 발견 못했으면 해드 퀘스트를 처음 추가 
-				if( j == aOrderQuest.GetSize() )
-				{
-					paHeadQuest = new CUIntArray;
-					paHeadQuest->Add( pQuestProp->m_nHeadQuest );
-					paHeadQuest->Add( lpQuest->m_wId );
-					aOrderQuest.Add( paHeadQuest );
-				}
-			}
-			else
-			{
-				CString string;
-				string.Format( "CWndQuest::Update 2 : Quest %d의 pQuestProp NULL이다.", lpQuest->m_wId );
-				//ADDERRORMSG( string );
-			}
-		}
-	}
-
-	// 퀘스트를 list에 넣는다.
-	QUEST questTemp;
-	BOOL bCompleteQuest;
-	for( i = 0; i < aOrderQuest.GetSize(); i++ )
-	{
-		paHeadQuest = (CUIntArray*)aOrderQuest.GetAt( i );
-		LPTREEELEM lpTreeElem = NULL;
-		for( int j = 0; j < paHeadQuest->GetSize(); j++ )
-		{
-			int nQuestId = paHeadQuest->GetAt( j );
-			QuestProp * pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
-			if( pQuestProp )
-			{
-				lpQuest = g_pPlayer->GetQuest( nQuestId );
-				bCompleteQuest = FALSE;
-				if( lpQuest == NULL )
-				{
-					if( g_pPlayer->IsCompleteQuest( nQuestId ) )
-					{
-						g_pPlayer->MakeCompleteQuest( nQuestId, &questTemp );
-						lpQuest = &questTemp;
-						bCompleteQuest = TRUE;
-					}
-				}
-				// 실제 퀘스트 
-				CString string;
-				if( lpQuest )
-				{
-					CString strState;
-					if( g_Option.m_bOperator || g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-						strState.Format( "(%d,%d)", lpQuest->m_nState, lpQuest->m_wId );
-					string.Format( "%s%s", pQuestProp->m_szTitle, strState );
-					if( bCompleteQuest )
-						pTreeCtrl->InsertItem( lpTreeElem, string, nQuestId )->m_dwColor = 0xffc0c0c0;
-					else
-						pTreeCtrl->InsertItem( lpTreeElem, string, nQuestId );
-
-				}
-				// 해드 퀘스트 
-				else
-				{
-					string.Format( "%s", pQuestProp->m_szTitle );
-					lpTreeElem = pTreeCtrl->InsertItem( NULL, string, nQuestId );
-					// 새 퀘스트의 헤드랑 나랑 같으면 트리 자동 오픈 
-					if( nNewQuestId != -1 && prj.m_aPropQuest.GetAt( nNewQuestId )->m_nHeadQuest == nQuestId )
-					{
-						lpTreeElem->m_bOpen = TRUE;
-						m_aOpenTree.Add( nQuestId );
-					}
-				}
-			}
-		}
-		safe_delete( paHeadQuest );
-	}
-#endif // __IMPROVE_QUEST_INTERFACE
 	if( nNewQuestId != -1 )
 		m_idSelQuest = nNewQuestId;
 	TreeOpen();
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	RemoveQuest();
-#else // __IMPROVE_QUEST_INTERFACE
-	UpdateText();
-#endif // __IMPROVE_QUEST_INTERFACE
 }
 
 CString CWndQuest::MakeQuestString( CString& string, BOOL bCond ) 
@@ -352,7 +171,6 @@ CString CWndQuest::MakeQuestString( CString& string, BOOL bCond )
 	return strResult;
 }
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWndQuest::RemoveQuest( void )
 {
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
@@ -392,681 +210,6 @@ void CWndQuest::RemoveQuest( void )
 	else
 		pWndRemove->EnableWindow( FALSE );
 }
-#else // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 13 // __QUEST_HELPER
-void CWndQuest::UpdateText(BOOL bClick)
-#else //__QUEST_HELPER
-void CWndQuest::UpdateText()
-#endif //__QUEST_HELPER
-{
-	QuestProp* pQuestProp; 
-	CWndTreeCtrl* pTreeCtrl = (CWndTreeCtrl*)GetDlgItem( WIDC_TREECTRL1 );
-	CWndButton* pWndRemove = (CWndButton*)GetDlgItem( WIDC_REMOVE );
-	CWndText* pTextDesc   = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText* pTextCond   = (CWndText*)GetDlgItem( WIDC_TEXT2 );
-	CWndText* pTextReward  = (CWndText*)GetDlgItem( WIDC_TEXT3 );
-	LPQUEST lpQuest = NULL;
-	LPTREEELEM lpTreeElem = pTreeCtrl->GetCurSel();
-	int nQuest = -1;
-	if( lpTreeElem && lpTreeElem->m_lpParent )
-	{
-		nQuest = lpTreeElem->m_dwData ;
-		lpQuest = g_pPlayer->FindQuest( nQuest );
-	}
-	BOOL bComplete = nQuest != -1 && g_pPlayer->IsCompleteQuest( nQuest ); 
-
-	if( lpQuest || bComplete ) 
-	{
-#ifdef __CSC_VER12_3
-		CWndDialog* pWndDialog = (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG_EX );
-#else //__CSC_VER12_3
-		CWndDialog* pWndDialog = (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG );
-#endif //__CSC_VER12_3
-		pQuestProp = prj.m_aPropQuest.GetAt( nQuest );
-		// 영자는 언제나 퀘스트를 지울 수 있다.
-		if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) && g_Option.m_bOperator )
-			pWndRemove->EnableWindow( TRUE );
-		else
-		if( bComplete || lpQuest->m_nState == QS_END || pWndDialog )
-		{
-			pWndRemove->EnableWindow( FALSE );
-		}
-		else
-		{
-			if( pQuestProp->m_bNoRemove )
-				pWndRemove->EnableWindow( FALSE );
-			else
-				pWndRemove->EnableWindow( TRUE );
-		}
-
-		// 디스크립션만 출력
-		if( bComplete )
-		{
-			for( int i = QS_END; i >= 0; i-- )
-			{
-				QuestState* pQuestState = pQuestProp->m_questState[ i ];
-				if( pQuestState )
-				{
-					pTextDesc->SetString( pQuestState->m_szDesc, 0xff000000 );
-					break;
-				}
-			}
-		}
-		else
-		{
-			QuestState* pQuestState = pQuestProp->m_questState[ lpQuest->m_nState ];
-			pTextDesc->SetString( pQuestState->m_szDesc, 0xff000000 );
-		}
-		//////////////////////////////////////////////////////////////////////////////////
-		// 퀘스트 종료 조건 
-		//////////////////////////////////////////////////////////////////////////////////
-		CString strTemp;
-		CString strCond;
-		CString strComplete;
-
-#ifdef __BS_PUTNAME_QUESTARROW
-		CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
-		if(pWndWorld)
-			pWndWorld->m_strDestName = "";
-#endif
-
-		if( bComplete )
-			pTextCond->SetString( GETTEXT( TID_QUEST_COMPLETED  ), 0xff404040 );
-		else
-		{
-			for( int i = 0; i < 14; i++ )
-			{
-				if( pQuestProp->m_questState[ i ] == NULL )
-					break;
-			}
-			if( lpQuest->m_nState == ( i - 1 ) || lpQuest->m_nState == 14 )
-			{
-				int nNum;
-				if( pQuestProp->m_nEndCondLimitTime )
-				{
-					if( lpQuest->m_wTime )
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_LIMIT_TIME ), lpQuest->m_wTime & 0x7fff );
-						strCond += strTemp + "\n";
-					}
-					else
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_LIMIT_TIMEOUT ) );
-						strCond += "#cffff0000" + strTemp + "#ns#nc\n";
-					}
-				}
-				for( int i = 0 ; i < 2; i++ )
-				{
-					if( pQuestProp->m_nEndCondKillNPCIdx[ i ] )
-					{
-						MoverProp* pMoverProp = prj.GetMoverProp( pQuestProp->m_nEndCondKillNPCIdx[ i ] );
-						nNum = lpQuest->m_nKillNPCNum[ i ];
-						if( nNum > pQuestProp->m_nEndCondKillNPCNum[ i ] )
-							nNum = pQuestProp->m_nEndCondKillNPCNum[ i ];
-						strTemp.Format( GETTEXT( TID_QUEST_KILL_NPC ), pMoverProp->szName, lpQuest->m_nKillNPCNum[ i ], pQuestProp->m_nEndCondKillNPCNum[ i ] );
-
-						if( nNum == pQuestProp->m_nEndCondKillNPCNum[ i ] )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else 
-							strCond += strTemp + "\n";
-					}
-				}
-				for( i = 0; i < pQuestProp->m_nEndCondItemNum; i++ )
-				{
-					QuestPropItem* pEndCondItem = &pQuestProp->m_paEndCondItem[ i ];
-
-					if( pEndCondItem->m_nSex == -1 || pEndCondItem->m_nSex == g_pPlayer->GetSex() )
-					{
-						if( pEndCondItem->m_nType == 0 )
-						{
-							if( pEndCondItem->m_nJobOrItem == -1 || pEndCondItem->m_nJobOrItem == g_pPlayer->GetJob() )
-							{
-								if( pEndCondItem->m_nItemIdx )
-								{
-									ItemProp* pItemProp = prj.GetItemProp( pEndCondItem->m_nItemIdx );
-									nNum = g_pPlayer->GetItemNum( pEndCondItem->m_nItemIdx );
-									strTemp.Format( GETTEXT( TID_QUEST_ITEM ), pItemProp->szName, nNum, pEndCondItem->m_nItemNum );
-
-									if( nNum >= pEndCondItem->m_nItemNum )
-										strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-									else 
-										strCond += strTemp + "\n";
-								}
-							}
-						}
-						else
-						if( pEndCondItem->m_nType == 1 )
-						{
-							if( pEndCondItem->m_nJobOrItem == -1 || g_pPlayer->GetItemNum( pEndCondItem->m_nJobOrItem ) )
-							{
-								if( pEndCondItem->m_nItemIdx )
-								{
-									ItemProp* pItemProp = prj.GetItemProp( pEndCondItem->m_nItemIdx );
-									nNum = g_pPlayer->GetItemNum( pEndCondItem->m_nItemIdx );
-									strTemp.Format( GETTEXT( TID_QUEST_ITEM ), pItemProp->szName, nNum, pEndCondItem->m_nItemNum );
-
-									if( nNum >= pEndCondItem->m_nItemNum )
-										strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-									else 
-										strCond += strTemp + "\n";
-								}
-
-							}
-						}
-					}
-				}
-				if( pQuestProp->m_dwEndCondPatrolWorld )
-				{
-					strTemp.Format( GETTEXT( TID_QUEST_PATROL ), pQuestProp->m_szPatrolZoneName );
-					if( lpQuest->m_bPatrol )
-						strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-					else
-						strCond += strTemp + "\n";
-				}
-				if( pQuestProp->m_nEndCondDisguiseMoverIndex )
-				{
-					if( pQuestProp->m_nEndCondDisguiseMoverIndex == -1 )
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_NODISQUISE ) );
-						if( g_pPlayer->IsDisguise() == FALSE )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-					else
-					{
-						MoverProp* pMoverProp = prj.GetMoverProp( pQuestProp->m_nEndCondDisguiseMoverIndex );
-						strTemp.Format( GETTEXT( TID_QUEST_DISQUISE ), pMoverProp->szName );
-						if( g_pPlayer->IsDisguise() )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-				}
-				if( pQuestProp->m_nEndCondSkillIdx ) 
-				{
-					ItemProp* pSkillProp = prj.GetSkillProp( pQuestProp->m_nEndCondSkillIdx );
-					LPSKILL lpSkill = g_pPlayer->GetSkill( pQuestProp->m_nEndCondSkillIdx );
-					if( g_pPlayer->CheckSkill( pQuestProp->m_nEndCondSkillIdx ) && lpSkill )
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_SKILL_LVL ), pSkillProp->szName, lpSkill->dwLevel, pQuestProp->m_nEndCondSkillLvl );
-						if( lpSkill->dwLevel >= pQuestProp->m_nEndCondSkillLvl )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-					else
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_SKILL_LVL ), pSkillProp->szName, 0, pQuestProp->m_nEndCondSkillLvl );
-						strCond += strTemp + "\n";
-					}
-				}
-#if __VER < 8 // __S8_PK
-				if( pQuestProp->m_nEndCondKarmaPoint ) 
-				{
-					if( pQuestProp->m_nEndCondKarmaComp == 0 )
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_KARMA_POINT ), g_pPlayer->GetKarma(),"=",pQuestProp->m_nEndCondKarmaPoint );
-						if( g_pPlayer->GetKarma() == pQuestProp->m_nEndCondKarmaPoint )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-					else
-					if( pQuestProp->m_nEndCondKarmaComp == -1 )
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_KARMA_POINT ), g_pPlayer->GetKarma(),"<=",pQuestProp->m_nEndCondKarmaPoint );
-						if( g_pPlayer->GetKarma() <= pQuestProp->m_nEndCondKarmaPoint )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-					else
-					if( pQuestProp->m_nEndCondKarmaComp == 1)
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_KARMA_POINT ), g_pPlayer->GetKarma(),">=",pQuestProp->m_nEndCondKarmaPoint );
-						if( g_pPlayer->GetKarma() >= pQuestProp->m_nEndCondKarmaPoint )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-				}
-#endif // __VER < 8 // __S8_PK
-				// 파티 체크 
-				if( pQuestProp->m_nEndCondParty != 0 ) 
-				{
-					BOOL bLeader = FALSE;
-					BOOL bParty  = g_Party.IsMember( g_pPlayer->m_idPlayer );
-					int nSize = g_Party.GetSizeofMember();
-
-					if( pQuestProp->m_nEndCondParty == 1 ) // 싱글이어야함 
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_PARTY_SOLO ) );
-						strCond += MakeQuestString( strTemp, !bParty );
-					}
-					else
-					if( pQuestProp->m_nEndCondParty == 2 ) // 파티여야함
-					{
-						int nTextId = 0;
-						BOOL bResult = FALSE;
-
-						if( pQuestProp->m_nEndCondPartyNum == 0 ) 
-						{
-							if( pQuestProp->m_nEndCondPartyLeader == 0 ) // 파티 여부 (0 == 0 )
-								nTextId = TID_QUEST_PARTY;
-							else // 파티, 맴버 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondPartyLeader == 1 )
-								nTextId = TID_QUEST_PARTY_MEMBER;
-							else // 파티, 리더 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondPartyLeader == 2 )
-								nTextId = TID_QUEST_PARTY_LEADER;
-
-							strTemp.Format( GETTEXT( nTextId ) );
-
-							if( pQuestProp->m_nEndCondPartyLeader == 0 ) // 파티 여부 
-								bResult = TRUE;
-							else // 파티, 맴버 여부 
-							if( ( pQuestProp->m_nEndCondPartyLeader - 1 ) == bLeader )
-								bResult = TRUE;
-						}
-						else
-						{
-							if( pQuestProp->m_nEndCondPartyLeader == 0 ) // 파티 여부 (0 == 0 )
-								nTextId = TID_QUEST_PARTY_NUM;
-							else // 파티, 맴버 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondPartyLeader == 1 )
-								nTextId = TID_QUEST_PARTY_MEMBER_NUM;
-							else // 파티, 리더 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondPartyLeader == 2 )
-								nTextId = TID_QUEST_PARTY_LEADER_NUM;
-
-							if( pQuestProp->m_nEndCondPartyNumComp == 0 ) 
-							{
-								strTemp.Format( GETTEXT( nTextId ), nSize,"=",pQuestProp->m_nEndCondPartyNum );
-								if( nSize == pQuestProp->m_nEndCondPartyNum )
-									bResult = TRUE;
-							}
-							else
-							if( pQuestProp->m_nEndCondPartyNumComp == -1 )
-							{
-								strTemp.Format( GETTEXT( nTextId ), nSize,"<=",pQuestProp->m_nEndCondPartyNum );
-								if( nSize <= pQuestProp->m_nEndCondPartyNum )
-									bResult = TRUE;
-							}
-							else
-							if( pQuestProp->m_nEndCondPartyNumComp == 1)
-							{
-								strTemp.Format( GETTEXT( nTextId ), nSize,">=",pQuestProp->m_nEndCondPartyNum );
-								if( nSize >= pQuestProp->m_nEndCondPartyNum )
-									bResult = TRUE;
-							}
-						}
-						strCond += MakeQuestString( strTemp, bResult && bParty );
-					}
-				}
-				// 길드 체크 
-				if( pQuestProp->m_nEndCondGuild != 0 ) 
-				{
-					BOOL bLeader = FALSE;
-					BOOL bGuild  = g_Party.IsMember( g_pPlayer->m_idPlayer );
-					int nSize = g_Party.GetSizeofMember();
-
-
-
-					if( pQuestProp->m_nEndCondGuild == 1 ) // 길드가 아니어야됨 
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_GUILD_SOLO ) );
-						strCond += MakeQuestString( strTemp, !bGuild );
-					}
-					else
-					if( pQuestProp->m_nEndCondGuild == 2 ) // 길드여야됨 
-					{
-						int nTextId = 0;
-						BOOL bResult = FALSE;
-
-						if( pQuestProp->m_nEndCondGuildNum == 0 ) 
-						{
-							if( pQuestProp->m_nEndCondGuildLeader == 0 ) // 파티 여부 (0 == 0 )
-								nTextId = TID_QUEST_GUILD;
-							else // 파티, 맴버 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondGuildLeader == 1 )
-								nTextId = TID_QUEST_GUILD_MEMBER;
-							else // 파티, 리더 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondGuildLeader == 2 )
-								nTextId = TID_QUEST_GUILD_LEADER;
-
-							strTemp.Format( GETTEXT( nTextId ) );
-
-							if( pQuestProp->m_nEndCondGuildLeader == 0 ) // 길드 여부 
-								bResult = TRUE;
-							else // 길드, 리더 여부 
-							if( ( pQuestProp->m_nEndCondGuildLeader - 1 ) == bLeader )
-								bResult = TRUE;
-						}
-						else
-						{
-							if( pQuestProp->m_nEndCondGuildLeader == 0 ) // 길드 여부 (0 == 0 )
-								nTextId = TID_QUEST_GUILD_NUM;
-							else // 길드, 맴버 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondGuildLeader == 1 )
-								nTextId = TID_QUEST_GUILD_MEMBER_NUM;
-							else // 길드, 리더 여부 (0 == 0 ) 
-							if( pQuestProp->m_nEndCondGuildLeader == 2 )
-								nTextId = TID_QUEST_GUILD_LEADER_NUM;
-
-							if( pQuestProp->m_nEndCondGuildNumComp == 0 ) 
-							{
-								strTemp.Format( GETTEXT( nTextId ), nSize,"=",pQuestProp->m_nEndCondGuildNum );
-								if( nSize == pQuestProp->m_nEndCondGuildNum )
-									bResult = TRUE;
-							}
-							else
-							if( pQuestProp->m_nEndCondGuildNumComp == -1 )
-							{
-								strTemp.Format( GETTEXT( nTextId ), nSize,"<=",pQuestProp->m_nEndCondGuildNum );
-								if( nSize <= pQuestProp->m_nEndCondGuildNum )
-									bResult = TRUE;
-							}
-							else
-							if( pQuestProp->m_nEndCondGuildNumComp == 1)
-							{
-								strTemp.Format( GETTEXT( nTextId ), nSize,">=",pQuestProp->m_nEndCondGuildNum );
-								if( nSize >= pQuestProp->m_nEndCondGuildNum )
-									bResult = TRUE;
-							}
-						}
-						strCond += MakeQuestString( strTemp, bResult && bGuild );
-					}
-				}
-				//////////////////////////////////////////////////////
-#if __VER >= 8 // __S8_PK
-				CString strEndCondOneItem;
-				CString strEndCondOneItemComplete;
-				for( i = 0; i < pQuestProp->m_nEndCondOneItemNum; i++ )
-				{
-					QuestPropItem* pEndCondOneItem = &pQuestProp->m_paEndCondOneItem[ i ];
-					
-					if( pEndCondOneItem->m_nSex == -1 || pEndCondOneItem->m_nSex == g_pPlayer->GetSex() )
-					{
-						if( pEndCondOneItem->m_nType == 0 )
-						{
-							if( pEndCondOneItem->m_nJobOrItem == -1 || pEndCondOneItem->m_nJobOrItem == g_pPlayer->GetJob() )
-							{
-								if( pEndCondOneItem->m_nItemIdx )
-								{
-									ItemProp* pItemProp = prj.GetItemProp( pEndCondOneItem->m_nItemIdx );
-									nNum = g_pPlayer->GetItemNum( pEndCondOneItem->m_nItemIdx );
-									if( nNum >= pEndCondOneItem->m_nItemNum )
-									{
-										strEndCondOneItemComplete = "#s#cffa0a0a0";
-										break;
-									}
-								}
-							}
-						}
-						else
-						if( pEndCondOneItem->m_nType == 1 )
-						{
-							if( pEndCondOneItem->m_nJobOrItem == -1 || g_pPlayer->GetItemNum( pEndCondOneItem->m_nJobOrItem ) )
-							{
-								if( pEndCondOneItem->m_nItemIdx )
-								{
-									ItemProp* pItemProp = prj.GetItemProp( pEndCondOneItem->m_nItemIdx );
-									nNum = g_pPlayer->GetItemNum( pEndCondOneItem->m_nItemIdx );									
-									if( nNum >= pEndCondOneItem->m_nItemNum )
-									{
-										strEndCondOneItemComplete = "#s#cffa0a0a0";
-										break;
-									}
-								}
-								
-							}
-						}
-					}
-				}
-				for( i = 0; i < pQuestProp->m_nEndCondOneItemNum; i++ )
-				{
-					QuestPropItem* pEndCondOneItem = &pQuestProp->m_paEndCondOneItem[ i ];
-					
-					if( pEndCondOneItem->m_nSex == -1 || pEndCondOneItem->m_nSex == g_pPlayer->GetSex() )
-					{
-						if( pEndCondOneItem->m_nType == 0 )
-						{
-							if( pEndCondOneItem->m_nJobOrItem == -1 || pEndCondOneItem->m_nJobOrItem == g_pPlayer->GetJob() )
-							{
-								if( pEndCondOneItem->m_nItemIdx )
-								{
-									ItemProp* pItemProp = prj.GetItemProp( pEndCondOneItem->m_nItemIdx );
-									nNum = g_pPlayer->GetItemNum( pEndCondOneItem->m_nItemIdx );
-									strTemp.Format( GETTEXT( TID_QUEST_ITEM ), pItemProp->szName, nNum, pEndCondOneItem->m_nItemNum );
-									
-									strEndCondOneItem += strEndCondOneItemComplete + "-" + strTemp + "#ns#nc\n";
-								}
-							}
-						}
-						else
-						if( pEndCondOneItem->m_nType == 1 )
-						{
-							if( pEndCondOneItem->m_nJobOrItem == -1 || g_pPlayer->GetItemNum( pEndCondOneItem->m_nJobOrItem ) )
-							{
-								if( pEndCondOneItem->m_nItemIdx )
-								{
-									ItemProp* pItemProp = prj.GetItemProp( pEndCondOneItem->m_nItemIdx );
-									nNum = g_pPlayer->GetItemNum( pEndCondOneItem->m_nItemIdx );
-									strTemp.Format( GETTEXT( TID_QUEST_ITEM ), pItemProp->szName, nNum, pEndCondOneItem->m_nItemNum );
-									
-									strEndCondOneItem += strEndCondOneItemComplete + "-" + strTemp + "#ns#nc\n";								
-								}
-								
-							}
-						}
-					}
-				}
-				if( 0 < strEndCondOneItem.GetLength() )
-				{
-					strTemp.Format( GETTEXT( TID_QUEST_COND_ITEM ) );
-					strCond += strEndCondOneItemComplete + strTemp + "#ns#nc\n";
-					strCond += strEndCondOneItem;
-				}
-#else // __VER >= 8 // __S8_PK
-				if( pQuestProp->m_nEndCondChaotic ) 
-				{
-					if( pQuestProp->m_nEndCondChaotic == 1 )
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_CAOTIC1 ) );
-						if( g_pPlayer->IsChaotic() )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-					else
-					if( pQuestProp->m_nEndCondChaotic == 2 )
-					{
-						strTemp.Format( GETTEXT( TID_QUEST_CAOTIC2 ) );
-						if( g_pPlayer->IsChaotic() == FALSE )
-							strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-						else
-							strCond += strTemp + "\n";
-					}
-				}
-#endif // __VER < 8 // __S8_PK
-				if( pQuestProp->m_szEndCondDlgCharKey[ 0 ] )
-				{
-					LPCHARACTER lpCharacter = prj.GetCharacter( pQuestProp->m_szEndCondDlgCharKey );
-					strTemp.Format( GETTEXT( TID_QUEST_DIALOG ), lpCharacter->m_strName );
-					if( lpQuest->m_bDialog )
-						strCond += "#s#cffa0a0a0" + strTemp + "#ns#nc\n";
-					else
-						strCond += strTemp + "\n";
-				}
-				if( pQuestProp->m_szEndCondCharacter[ 0 ] ) 
-				{
-					LPCHARACTER lpCharacter = prj.GetCharacter( pQuestProp->m_szEndCondCharacter );
-					strTemp.Format( GETTEXT( TID_QUEST_DESTINATION ), lpCharacter->m_strName );
-					strCond += strTemp + "\n";
-#if __VER >= 13 // __QUEST_HELPER
-					if(bClick) //클릭해서 업데이트 되는 경우에만 좌표를 요청한다.
-					{
-						CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
-						if(pWndWorld)
-						{
-							CWorld* pWorld = g_WorldMng();
-							if(pWorld)
-								pWorld->SetObjFocus(NULL);
-
-							pWndWorld->m_bSetQuestNPCDest = FALSE;
-							pWndWorld->m_pNextTargetObj = NULL;
-#ifdef __BS_PUTNAME_QUESTARROW
-							pWndWorld->m_strDestName = lpCharacter->m_strName;
-#endif
-						}
-
-						if(pQuestProp->m_nHeadQuest != 1992)
-							g_DPlay.SendReqNPCPos(lpCharacter->m_szKey);
-					}
-#endif //__QUEST_HELPER
-				}
-				else
-				if( pQuestProp->m_lpszEndCondMultiCharacter ) 
-				{
-					for( int i = 0; i < 10; i++ )
-					{
-						CHAR* lpszChar = &pQuestProp->m_lpszEndCondMultiCharacter[ i * 64 ];
-						if( lpszChar[ 0 ] )
-						{
-							LPCHARACTER lpCharacter = prj.GetCharacter( lpszChar );
-							if( lpCharacter )
-							{
-								for( int j = 0; j < lpCharacter->m_anDstQuestItem.GetSize(); j++ )
-								{
-									if( g_pPlayer->GetItemNum( lpCharacter->m_anDstQuestItem.GetAt( j ) ) )
-									{
-										strTemp.Format( GETTEXT( TID_QUEST_DESTINATION ), lpCharacter->m_strName );
-										strCond += strTemp + "\n";
-										i = 10;
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			pTextCond->SetString( strCond, 0xff404040 );
-		}
-
-		//////////////////////////////////////////////////////////////////////////////////
-		// 보상 아이템 목록
-		//////////////////////////////////////////////////////////////////////////////////
-		CString strReward;
-
-		for( int i = 0; i < pQuestProp->m_nEndRewardItemNum; i++ )
-		{
-			QuestPropItem* pEndRewardItem = &pQuestProp->m_paEndRewardItem[ i ]; 
-
-			if( pEndRewardItem->m_nSex == -1 || pEndRewardItem->m_nSex == g_pPlayer->GetSex() )
-
-			{
-				if( pEndRewardItem->m_nType == 0 )
-				{
-					if( pEndRewardItem->m_nJobOrItem == -1 || pEndRewardItem->m_nJobOrItem == g_pPlayer->GetJob() )
-					{
-
-						if( pEndRewardItem->m_nItemIdx )
-						{
-							ItemProp* pItemProp = prj.GetItemProp( pEndRewardItem->m_nItemIdx );
-							if( pQuestProp->m_bEndRewardHide == FALSE || bComplete == TRUE )
-								strTemp.Format( GETTEXT( TID_QUEST_ITEM1 ), pItemProp->szName, pEndRewardItem->m_nItemNum );
-							else
-								strTemp.Format( GETTEXT( TID_QUEST_ITEM2 ) );
-							strReward += strTemp + "\n";
-						}
-
-					}
-				}
-				else
-				if( pEndRewardItem->m_nType == 1 )
-				{
-					if( pEndRewardItem->m_nJobOrItem == -1 || g_pPlayer->GetItemNum( pEndRewardItem->m_nJobOrItem ) ) 
-					{
-						if( pEndRewardItem->m_nItemIdx )
-						{
-							ItemProp* pItemProp = prj.GetItemProp( pEndRewardItem->m_nItemIdx );
-							if( pQuestProp->m_bEndRewardHide == FALSE || bComplete == TRUE )
-								strTemp.Format( GETTEXT( TID_QUEST_ITEM1 ), pItemProp->szName, pEndRewardItem->m_nItemNum );
-							else
-								strTemp.Format( GETTEXT( TID_QUEST_ITEM2 ) );
-							strReward += strTemp + "\n";
-						}
-					}
-				}
-			}
-		}
-		if( pQuestProp->m_nEndRewardGoldMin )
-		{
-			if( pQuestProp->m_bEndRewardHide == FALSE || bComplete == TRUE )
-			{
-				if( ( pQuestProp->m_nEndRewardGoldMax - pQuestProp->m_nEndRewardGoldMin ) == 0 )
-					strTemp.Format( GETTEXT( TID_QUEST_GOLD1 ), pQuestProp->m_nEndRewardGoldMin );
-				else
-					strTemp.Format( GETTEXT( TID_QUEST_GOLD2 ), pQuestProp->m_nEndRewardGoldMin, pQuestProp->m_nEndRewardGoldMax );
-			}
-			else
-				strTemp.Format( GETTEXT( TID_QUEST_GOLD3 ) );
-			strReward += strTemp + "\n";
-		}
-		if( pQuestProp->m_nEndRewardExpMin )
-		{
-			strTemp.Format( GETTEXT( TID_QUEST_EXP1 ) );
-			strReward += strTemp + "\n";
-		}
-		if( pQuestProp->m_nEndRewardSkillPoint )
-		{
-			strTemp.Format( GETTEXT( TID_QUEST_SKILLPOINT ) );
-			strReward += strTemp + "\n";
-		}
-#if __VER >= 8 // __S8_PK
-		if( pQuestProp->m_nEndRewardPKValueMin )
-		{
-			strTemp.Format( GETTEXT( TID_QUEST_PK_REWARD_PKVALUE ) );
-			strReward += strTemp + "\n";
-		}
-#else // __VER >= 8 // __S8_PK
-		if( pQuestProp->m_nEndRewardKarmaStyle )
-		{
-			if( pQuestProp->m_bEndRewardHide == FALSE || bComplete == TRUE )
-			{
-				if( pQuestProp->m_nEndRewardKarmaStyle == 1 )
-					strTemp.Format( GETTEXT( TID_QUEST_MODIFY_KARMA1 ), pQuestProp->m_nEndRewardKarmaPoint );
-				else
-					strTemp.Format( GETTEXT( TID_QUEST_ADD_KARMA1 ), pQuestProp->m_nEndRewardKarmaPoint );
-			}
-			else
-			{
-				if( pQuestProp->m_nEndRewardKarmaStyle == 1 )
-					strTemp.Format( GETTEXT( TID_QUEST_MODIFY_KARMA2 ) );
-				else
-					strTemp.Format( GETTEXT( TID_QUEST_ADD_KARMA2 ) );
-			}
-			strReward += strTemp + "\n";
-		}
-#endif // __VER < 8 // __S8_PK
-		pTextReward->SetString( strReward );
-	}
-	else
-	{
-		pWndRemove->EnableWindow( FALSE );
-		pTextDesc->SetString( "" );
-		pTextCond->SetString( "" );
-		pTextReward->SetString( "" );
-	}
-	pTextDesc->ResetString();
-	pTextCond->ResetString();
-	pTextReward->ResetString();
-
-}
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWndQuest::ControlOpenTree( const LPTREEELEM lpTreeElem )
 {
 	if( lpTreeElem->m_bOpen == TRUE )
@@ -1084,12 +227,10 @@ void CWndQuest::ControlOpenTree( const LPTREEELEM lpTreeElem )
 		}
 	}
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 void CWndQuest::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CWndTabCtrl* pWndTabCtrl = ( CWndTabCtrl* )GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
 
@@ -1148,7 +289,6 @@ void CWndQuest::OnInitialUpdate()
 		pWndComboBox->AddString( prj.GetText( TID_GAME_QUEST_COMPLETE_LIST ) );
 		pWndComboBox->SetCurSel( CTreeInformationManager::m_eQuestListGroup );
 	}
-#endif // __IMPROVE_QUEST_INTERFACE
 
 	Update();
 
@@ -1162,18 +302,13 @@ void CWndQuest::OnInitialUpdate()
 BOOL CWndQuest::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEST_EX_LIST, 0, CPoint( 0, 0 ), pWndParent );
-#else // __IMPROVE_QUEST_INTERFACE
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEST, 0, CPoint( 0, 0 ), pWndParent );
-#endif // __IMPROVE_QUEST_INTERFACE
 } 
 
 BOOL CWndQuest::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
 	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
 } 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 void CWndQuest::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
 	CWndNeuz::SetWndRect( rectWnd, bOnSize );
@@ -1187,7 +322,6 @@ void CWndQuest::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		pWndQuestDetail->Move( nRevisedLeft, rectWnd.top );
 	}
 }
-#endif // __IMPROVE_QUEST_INTERFACE
 void CWndQuest::OnSize( UINT nType, int cx, int cy ) \
 { 
 	CWndNeuz::OnSize( nType, cx, cy ); 
@@ -1201,7 +335,6 @@ void CWndQuest::OnLButtonDown( UINT nFlags, CPoint point )
 
 BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	if( message != WNM_SELCHANGE && message != WNM_DBLCLK && message != WNM_SELCANCEL && message != WNM_CLICKED )
 		return FALSE;
 
@@ -1302,54 +435,8 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-#else // __IMPROVE_QUEST_INTERFACE
-	int nId = 0;
-	CWndTreeCtrl* pTreeCtrl = (CWndTreeCtrl*)GetDlgItem( WIDC_TREECTRL1 );
-	LPTREEELEM lpTreeElem = pTreeCtrl->GetCurSel();
-	if( lpTreeElem && lpTreeElem->m_lpParent )
-		nId = lpTreeElem->m_dwData;
-	if( lpTreeElem )
-		m_idSelQuest = lpTreeElem->m_dwData;
-
-	if( ( message == WNM_CLICKED || message == WNM_SELCANCEL ) ) //&& (nID == 100000 || nID == 1000001 || nID == 1000002 ) )
-	{
-#if __VER >= 13 // __QUEST_HELPER
-		UpdateText(TRUE);
-#else //__QUEST_HELPER
-		UpdateText();
-#endif //__QUEST_HELPER
-		LPTREEELEM lpRoot = pTreeCtrl->GetRootElem();
-		int nPos = 0;
-		LPTREEELEM lpElem = NULL;
-		m_aOpenTree.RemoveAll();
-		do {
-			lpElem = pTreeCtrl->GetNextElem( lpRoot, nPos );
-			if( lpElem && lpElem->m_bOpen )
-				m_aOpenTree.Add( lpElem->m_dwData );
-		} while( lpElem );
-	}
-
-	if( message == WNM_CLICKED )
-	{
-		switch(nID)
-		{
-		case WIDC_REMOVE: // cancel
-			{
-				CWndRemoveQuest* pWndRemoveQuest = new CWndRemoveQuest;
-				pWndRemoveQuest->m_nRemoveQuestId = nId;
-				g_WndMng.OpenCustomBox( NULL, pWndRemoveQuest );
-			}
-			break;
-		case WIDC_CLOSE:
-			nID = WTBID_CLOSE;
-			break;
-		}
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-#endif // __IMPROVE_QUEST_INTERFACE
 } 
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 CWndQuestTreeCtrl* CWndQuest::GetQuestTreeSelf( const DWORD dwQuestID )
 {
 	DWORD dwRootHeadQuestID = GetRootHeadQuest( dwQuestID );
@@ -1600,8 +687,6 @@ void CWndQuestTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 		}
 	}
 }
-#endif // __IMPROVE_QUEST_INTERFACE
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 //-----------------------------------------------------------------------------
 CWndQConditionTreeCtrl::CWndQConditionTreeCtrl( void )
 {
@@ -1845,32 +930,11 @@ void CWndQuestDetail::UpdateQuestDetailText( DWORD dwQuestID, LPQUEST lpQuest, B
 		strTemp.Format( GETTEXT( TID_QUEST_SKILLPOINT ) );
 		strReward += strTemp + "\n";
 	}
-#if __VER >= 8 // __S8_PK
 	if( pQuestProp->m_nEndRewardPKValueMin )
 	{
 		strTemp.Format( GETTEXT( TID_QUEST_PK_REWARD_PKVALUE ) );
 		strReward += strTemp + "\n";
 	}
-#else // __VER >= 8 // __S8_PK
-	if( pQuestProp->m_nEndRewardKarmaStyle )
-	{
-		if( pQuestProp->m_bEndRewardHide == FALSE || bComplete == TRUE )
-		{
-			if( pQuestProp->m_nEndRewardKarmaStyle == 1 )
-				strTemp.Format( GETTEXT( TID_QUEST_MODIFY_KARMA1 ), pQuestProp->m_nEndRewardKarmaPoint );
-			else
-				strTemp.Format( GETTEXT( TID_QUEST_ADD_KARMA1 ), pQuestProp->m_nEndRewardKarmaPoint );
-		}
-		else
-		{
-			if( pQuestProp->m_nEndRewardKarmaStyle == 1 )
-				strTemp.Format( GETTEXT( TID_QUEST_MODIFY_KARMA2 ) );
-			else
-				strTemp.Format( GETTEXT( TID_QUEST_ADD_KARMA2 ) );
-		}
-		strReward += strTemp + "\n";
-	}
-#endif // __VER < 8 // __S8_PK
 	pTextReward->SetString( strReward );
 }
 //-----------------------------------------------------------------------------
@@ -2019,29 +1083,6 @@ void MakeQuestConditionItems( DWORD dwQuestID, CWndTreeCtrl* pWndTreeCtrl, BOOL 
 				pWndTreeCtrl->InsertItem( lpTreeElem, strTemp, 0, TRUE, FALSE, dwCompleteColor, dwSelectColor );
 			}
 		}
-#if __VER < 8 // __S8_PK
-		if( pQuestProp->m_nEndCondKarmaPoint ) 
-		{
-			if( pQuestProp->m_nEndCondKarmaComp == 0 )
-			{
-				strTemp.Format( GETTEXT( TID_QUEST_KARMA_POINT ), g_pPlayer->GetKarma(),"=",pQuestProp->m_nEndCondKarmaPoint );
-				DWORD dwCompleteColor = MakeTextColor( dwStartColor, dwEndColor, g_pPlayer->GetKarma(), pQuestProp->m_nEndCondKarmaPoint );
-				pWndTreeCtrl->InsertItem( lpTreeElem, MakeString( strTemp, g_pPlayer->GetKarma() == pQuestProp->m_nEndCondKarmaPoint ), 0, TRUE, FALSE, dwCompleteColor, dwSelectColor );
-			}
-			else if( pQuestProp->m_nEndCondKarmaComp == -1 )
-			{
-				strTemp.Format( GETTEXT( TID_QUEST_KARMA_POINT ), g_pPlayer->GetKarma(),"<=",pQuestProp->m_nEndCondKarmaPoint );
-				DWORD dwCompleteColor = MakeTextColor( dwStartColor, dwEndColor, g_pPlayer->GetKarma(), pQuestProp->m_nEndCondKarmaPoint );
-				pWndTreeCtrl->InsertItem( lpTreeElem, MakeString( strTemp, g_pPlayer->GetKarma() <= pQuestProp->m_nEndCondKarmaPoint ), 0, TRUE, FALSE, dwCompleteColor, dwSelectColor );
-			}
-			else if( pQuestProp->m_nEndCondKarmaComp == 1)
-			{
-				strTemp.Format( GETTEXT( TID_QUEST_KARMA_POINT ), g_pPlayer->GetKarma(),">=",pQuestProp->m_nEndCondKarmaPoint );
-				DWORD dwCompleteColor = MakeTextColor( dwStartColor, dwEndColor, g_pPlayer->GetKarma(), pQuestProp->m_nEndCondKarmaPoint );
-				pWndTreeCtrl->InsertItem( lpTreeElem, MakeString( strTemp, g_pPlayer->GetKarma() >= pQuestProp->m_nEndCondKarmaPoint ), 0, TRUE, FALSE, dwCompleteColor, dwSelectColor );
-			}
-		}
-#endif // __VER < 8 // __S8_PK
 		// 파티 체크
 		if( pQuestProp->m_nEndCondParty != 0 )
 		{
@@ -2191,7 +1232,6 @@ void MakeQuestConditionItems( DWORD dwQuestID, CWndTreeCtrl* pWndTreeCtrl, BOOL 
 			}
 		}
 		//////////////////////////////////////////////////////
-#if __VER >= 8 // __S8_PK
 		CString strEndCondOneItem;
 		CString strEndCondOneItemComplete;
 		for( int i = 0; i < pQuestProp->m_nEndCondOneItemNum; i++ )
@@ -2275,21 +1315,6 @@ void MakeQuestConditionItems( DWORD dwQuestID, CWndTreeCtrl* pWndTreeCtrl, BOOL 
 			strTemp.Format( GETTEXT( TID_QUEST_COND_ITEM ) );
 			pWndTreeCtrl->InsertItem( lpTreeElem, strEndCondOneItemComplete + strTemp + "#ns#nc" + strEndCondOneItem, 0, TRUE, FALSE, dwEndColor, dwSelectColor );
 		}
-#else // __VER >= 8 // __S8_PK
-		if( pQuestProp->m_nEndCondChaotic )
-		{
-			if( pQuestProp->m_nEndCondChaotic == 1 )
-			{
-				strTemp.Format( GETTEXT( TID_QUEST_CAOTIC1 ) );
-				pWndTreeCtrl->InsertItem( lpTreeElem, MakeString( strTemp, g_pPlayer->IsChaotic() ), 0, TRUE, FALSE, dwStartColor, dwSelectColor );
-			}
-			else if( pQuestProp->m_nEndCondChaotic == 2 )
-			{
-				strTemp.Format( GETTEXT( TID_QUEST_CAOTIC2 ) );
-				pWndTreeCtrl->InsertItem( lpTreeElem, MakeString( strTemp, g_pPlayer->IsChaotic() == FALSE ), 0, TRUE, FALSE, dwEndColor, dwSelectColor );
-			}
-		}
-#endif // __VER < 8 // __S8_PK
 		if( pQuestProp->m_szEndCondDlgCharKey[ 0 ] )
 		{
 			LPCHARACTER lpCharacter = prj.GetCharacter( pQuestProp->m_szEndCondDlgCharKey );
@@ -2301,7 +1326,6 @@ void MakeQuestConditionItems( DWORD dwQuestID, CWndTreeCtrl* pWndTreeCtrl, BOOL 
 			LPCHARACTER lpCharacter = prj.GetCharacter( pQuestProp->m_szEndCondCharacter );
 			strTemp.Format( GETTEXT( TID_QUEST_DESTINATION ), lpCharacter->m_strName );
 			pWndTreeCtrl->InsertItem( lpTreeElem, strTemp, pQuestProp->m_MeetCharacterGoalData.m_dwGoalIndex, TRUE, FALSE, dwEndColor, dwSelectColor );
-#if __VER >= 13 // __QUEST_HELPER
 			if( bClick ) // 클릭해서 업데이트되는 경우에만 좌표를 요청한다
 			{
 				CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
@@ -2317,12 +1341,7 @@ void MakeQuestConditionItems( DWORD dwQuestID, CWndTreeCtrl* pWndTreeCtrl, BOOL 
 					pWndWorld->m_strDestName = lpCharacter->m_strName;
 #endif // __BS_PUTNAME_QUESTARROW
 				}
-#if __VER < 15 // __IMPROVE_QUEST_INTERFACE
-				if( GetRootHeadQuest( pQuestProp->m_nHeadQuest ) != QUEST_KIND_EVENT )
-					g_DPlay.SendReqNPCPos( lpCharacter->m_szKey );
-#endif // __IMPROVE_QUEST_INTERFACE
 			}
-#endif //__QUEST_HELPER
 		}
 		else if( pQuestProp->m_lpszEndCondMultiCharacter )
 		{
@@ -2528,4 +1547,3 @@ void ProcessQuestDestinationWorldMap( DWORD dwGoalTextID )
 	}
 }
 //-----------------------------------------------------------------------------
-#endif // __IMPROVE_QUEST_INTERFACE

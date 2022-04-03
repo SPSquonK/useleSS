@@ -19,14 +19,12 @@
 #define XE_HIGHLIGHT_OBJ	(0x00002000)		// 하이라이트 오브젝트(선택시)
 #define XE_ITEM_GEN			(0x00004000)		// 일반속성
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 #define XE_ITEM_FIRE_AL		(0x00008000)		// Ultimate용
 #define XE_ITEM_ELEC_AL		(0x00010000)		// Ultimate용
 #define XE_ITEM_WATER_AL	(0x00020000)		// Ultimate용
 #define XE_ITEM_WIND_AL		(0x00040000)		// Ultimate용
 #define XE_ITEM_EARTH_AL	(0x00080000)		// Ultimate용
 #define XE_ITEM_GEN_AL		(0x00100000)		// Ultimate용
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 #ifdef __BS_EFFECT_LUA
 #define XE_MTE				(0x00200000)		// multi texturing effect
@@ -112,7 +110,6 @@ extern int		g_nProcessCnt;	// 프로세스마다 하나씩 카운트 되는 변수.
 #define		PE_WIND		5
 #define		PE_EARTH	6
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 #define		PE_FIRE_AL	7
 #define		PE_ELEC_AL	8
 #define		PE_LASER_AL	9
@@ -121,7 +118,6 @@ extern int		g_nProcessCnt;	// 프로세스마다 하나씩 카운트 되는 변수.
 #define		PE_EARTH_AL	12
 #define		PE_GEN		13
 #define		PE_GEN_AL	14
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 class CPartsEffect
 {
@@ -140,14 +136,10 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////
 #ifdef __CLIENT
 
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 #define MAX_PARTS_FIRE		28
 #ifdef __CSC_ENCHANT_EFFECT_2
 #define MAX_PARTS_FIRE_2	16
 #endif //__CSC_ENCHANT_EFFECT_2
-#else //__Y_ADV_ENCHANT_EFFECT
-#define MAX_PARTS_FIRE		16
-#endif //__Y_ADV_ENCHANT_EFFECT
 
 class CSfxModel;
 
@@ -177,18 +169,13 @@ public:
 #endif //__CSC_ENCHANT_EFFECT_2
 	}
 	virtual	~CPartsFire();
-#if __VER >= 9 // __Y_ADV_ENCHANT_EFFECT
 	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale );
 #ifdef __CSC_ENCHANT_EFFECT_2
 	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx );
 #endif //__CSC_ENCHANT_EFFECT_2
-#else //__Y_ADV_ENCHANT_EFFECT
-	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, DWORD dwSfx );
-#endif //__Y_ADV_ENCHANT_EFFECT
 	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
 };
 
-#if __VER >= 10 // __Y_DRAGON_FIRE
 
 #define MAX_PARTS_FIRE_DRAGON		256
 
@@ -235,7 +222,6 @@ public:
 	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
 };
 
-#endif //__Y_DRAGON_FIRE
 
 /////////////////////////////////////////////////////////////////////////////////////
 struct FVF_BEAM

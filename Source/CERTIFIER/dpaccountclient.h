@@ -22,11 +22,7 @@ public:
 
 #ifdef __GPAUTH_02
 #ifdef __EUROPE_0514
-#if __VER >= 14 // __PCBANG
 	void SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck, const char* szCheck, const char* szBak, DWORD dwPCBangClass );
-#else // __PCBANG
-	void	SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE b18, DPID idFrom, int fCheck, const char* szCheck, const char* szBak );
-#endif // __PCBANG
 #else	// __EUROPE_0514
 	void	SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE b18, DPID idFrom, int fCheck, const char* szCheck );
 #endif	// __EUROPE_0514

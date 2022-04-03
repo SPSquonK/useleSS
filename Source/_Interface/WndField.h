@@ -8,17 +8,13 @@
 #include "post.h"
 #include "guild.h"
 
-#if __VER >= 13 // __CSC_VER13_2
 #include "couple.h"
 #include "couplehelper.h"
-#endif //__CSC_VER13_2
 
 extern 	int g_nSkillCurSelect;
 const int MAX_WANTED_LIST =	100;
 
-#if __VER >= 13 // __HONORABLE_TITLE
 #include "honor.h"
-#endif	// __HONORABLE_TITLE
 
 #ifdef __MAIL_REQUESTING_BOX
 #include "WndMailRequestingBox.h"
@@ -63,9 +59,7 @@ public:
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-#if __VER >= 14 // __DROP_CONFIRM_BUG
 	virtual BOOL Process( void );
-#endif // __DROP_CONFIRM_BUG
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
@@ -85,9 +79,7 @@ public:
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-#if __VER >= 14 // __DROP_CONFIRM_BUG
 	virtual BOOL Process( void );
-#endif // __DROP_CONFIRM_BUG
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
@@ -165,9 +157,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////
 // 인벤토리 
 //
-#if __VER >= 9 // __CSC_VER9_1
 class CWndRemoveJewelConfirm;
-#endif //__CSC_VER9_1
 
 class CWndGold : public CWndButton
 {
@@ -213,10 +203,8 @@ public:
 	CWndConfirmBuy* m_pWndConfirmBuy;
 	CWndGold     m_wndGold;
 	CWndItemCtrl m_wndItemCtrl;
-#if __VER >= 9 // __CSC_VER9_1
 	BOOL		m_bRemoveJewel;
 	CWndRemoveJewelConfirm* m_pWndRemoveJewelConfirm;
-#endif //__CSC_VER9_1
 	CWndInventory();
 	virtual ~CWndInventory();
 	virtual BOOL Process ();
@@ -238,10 +226,8 @@ public:
 	virtual void OnDestroy( void );
 	virtual BOOL OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message );
 	
-#if __VER >= 9 // __CSC_VER9_1
 public:
 	void UpdateTooltip( void )	{	m_wndItemCtrl.UpdateTooltip();	}
-#endif //__CSC_VER9_1
 
 };
 
@@ -348,7 +334,6 @@ protected:
 	void RenderATK( C2DRender* p2DRender, int x, int y );
 };
 
-#if __VER >= 9 // __CSC_VER9_2
 class CWndCharacterDetail2 : public CWndBase
 {
 public:
@@ -400,7 +385,6 @@ public:
 protected:
 	void RenderATK( C2DRender* p2DRender, int x, int y );
 };
-#endif //__CSC_VER9_2
 
 class CWndChangeJob;
 
@@ -449,7 +433,6 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 };
 
-#if __VER >= 13 // __RENEW_CHARINFO
 class CWndCharInfo : public CWndBase
 {
 
@@ -531,23 +514,12 @@ public:
 	void RefreshList();
 
 };
-#endif // __RENEW_CHARINFO
 
 class CWndCharacter : public CWndNeuz
 {
 public:
-#if __VER >= 13 // __RENEW_CHARINFO
 	CWndCharInfo		m_wndCharInfo;
 	CWndHonor			m_wndHonor;
-#else // __RENEW_CHARINFO
-#if __VER >= 9 // __CSC_VER9_2
-	CWndCharacterDetail2 m_wndStateDetail;
-#else //__CSC_VER9_2
-	CWndCharacterDetail m_wndStateDetail;
-#endif
-	CWndCharacterBase   m_wndStateBase;	
-	CWndPvpBase         m_wndPvp;
-#endif // __RENEW_CHARINFO
 public:
 	CWndCharacter();
 	virtual ~CWndCharacter();
@@ -622,9 +594,7 @@ protected:
 	CTexture*	  m_aSkillLevel[ 3 ];
 	//CTexture*     m_atexJobPannel[ 2 ];
 	LPIMAGE       m_atexJobPannel[ 2 ];
-#if __VER >= 10 // __CSC_VER9_1
 	CString		  m_strHeroSkilBg;			//히어로 이미지 파일 이름
-#endif //__CSC_VER9_1
 	int           m_nJob         ;			//class 번호
 	
 	CTexture m_texGauEmptyNormal ;
@@ -634,16 +604,10 @@ protected:
 
 	CTexture*     m_atexTopDown[2];
 	int 	m_nTopDownGap;
-#if __VER >= 10 // __CSC_VER9_1
 	BOOL	m_bSlot[4];
-#else
-	BOOL	m_bSlot[3];
-#endif //__CSC_VER9_1
 
-#if __VER >= 10 // __CSC_VER9_1
 	BOOL m_bLegend;							//전승
 	CWndStatic* m_pWndHeroStatic[2];
-#endif //__CSC_VER9_1
 
 public:
 	BOOL	IsReSkillPointDone();
@@ -729,9 +693,7 @@ class CWndNavigator : public CWndNeuz
 	void ResizeMiniMap();
 	
 	CTexture m_GuildCombatTextureMask;
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	CTexture* m_pDestinationPositionTexture;
-#endif // __IMPROVE_QUEST_INTERFACE
 
 public:
 	BOOL m_bObjFilterPlayer ;
@@ -795,11 +757,9 @@ public:
 	BOOL m_bVBFPGauge;
 	BOOL m_bVBEXPGauge;
 
-#if __VER >= 15 // __GUILD_HOUSE
 	BOOL m_bShowTip_AEXP;
 	BOOL m_bVBAEXPGauge;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBAEXPGauge;
-#endif
 	
 	int m_nHPWidth ;
 	int m_nMPWidth ;
@@ -823,9 +783,7 @@ public:
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
 	virtual	void PaintFrame( C2DRender* p2DRender );
 
-#if __VER >= 15 // __GUILD_HOUSE
 	virtual void OnMouseWndSurface( CPoint point );
-#endif
 };
 
 class CWndQuit : public CWndMessageBox
@@ -882,13 +840,8 @@ public:
 	CWndBase* m_pWndBase;
 	CWndStatic* pStatic;
 	CWndStatic* pStaticCount;
-#if __VER >= 11 // __SYS_POCKET
 	char m_nSlot;
 	char m_nPutSlot;
-#else
-	BYTE m_nSlot;
-	BYTE m_nPutSlot;
-#endif
 	CWndTradeGold(); 
 	virtual ~CWndTradeGold(); 
 
@@ -966,9 +919,7 @@ public:
 	CWndButton* m_pLodeLight;
 	CWndButton* m_pLodeStar;
 	CWndButton* m_pRevival;
-#if __VER >= 9 // __S_9_ADD
 	CWndButton* m_pShop;
-#endif // __S_9_ADD
 	CWndRevival(); 
 	virtual ~CWndRevival(); 
 
@@ -1365,16 +1316,10 @@ public:
 class CWndGuildCombatBoard : public CWndNeuz
 {
 protected:
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 public:
 	int m_nCombatType;
-#endif	//__GUILD_COMBAT_1TO1
 public: 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CWndGuildCombatBoard(int m_nCombatType);
-#else //__GUILD_COMBAT_1TO1
-	CWndGuildCombatBoard();
-#endif //__GUILD_COMBAT_1TO1
 	virtual ~CWndGuildCombatBoard();
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
@@ -1385,9 +1330,7 @@ public:
 	virtual	void	OnSize( UINT nType, int cx, int cy );
 	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	virtual void	PaintFrame( C2DRender* p2DRender );
-#endif //__GUILD_COMBAT_1TO1
 	void			SetString( CHAR* szChar );
 }; 
 
@@ -1402,25 +1345,17 @@ public:
 
 class CGuildCombatInfoMessageBox : public CWndNeuz
 {
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 public:
 	int	m_nCombatType;
-#endif //__GUILD_COMBAT_1TO1
 public:
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CGuildCombatInfoMessageBox(int nCombatType);
-#else //__GUILD_COMBAT_1TO1
-	CGuildCombatInfoMessageBox();
-#endif //__GUILD_COMBAT_1TO1
 	virtual ~CGuildCombatInfoMessageBox();
 	void	SetString( CHAR* szChar );
 	virtual	void OnInitialUpdate();
 	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	virtual void PaintFrame( C2DRender* p2DRender );
 	void	SetString( CString strMsg );
-#endif //__GUILD_COMBAT_1TO1
 }; 
 
 class CGuildCombatInfoMessageBox2 : public CWndNeuz
@@ -1488,17 +1423,11 @@ private:
 	time_t    		m_tEndTime; // timegettime+
 	time_t    		m_tCurrentTime; // timegettime+
 	
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 public:
 	int				m_nCombatType;
-#endif //__GUILD_COMBAT_1TO1
 
 public:
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CWndGuildCombatState(int nCombatType);
-#else //__GUILD_COMBAT_1TO1
-	CWndGuildCombatState();
-#endif //__GUILD_COMBAT_1TO1
 	virtual ~CWndGuildCombatState(); 
 	
 	void		 InsertTitle( const char szTitle[] );
@@ -1516,13 +1445,8 @@ public:
 	virtual	void OnRButtonUp( UINT nFlags, CPoint point );
 	virtual void OnRButtonDown( UINT nFlags, CPoint point );
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);	
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	virtual void	PaintFrame( C2DRender* p2DRender );
-#endif //__GUILD_COMBAT_1TO1
 	virtual BOOL Process ();
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-	void		 SetTotalGold( __int64 nGold );
-#endif //__GUILD_COMBAT_1TO1
 	void		 SetGold( int nGold );
 	void		 SetRate( int nRate );
 	void	 	 SetTime( time_t tTime ) { m_tCurrentTime = 0; m_tEndTime = time_null() + tTime; }
@@ -1574,15 +1498,9 @@ class CWndGuildWarCancelConfirm : public CWndNeuz
 {
 protected:
 	CWndText	m_wndText;
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	int			m_nCombatType;
-#endif //__GUILD_COMBAT_1TO1
 public:
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CWndGuildWarCancelConfirm(int nCombatType);
-#else //__GUILD_COMBAT_1TO1
-	CWndGuildWarCancelConfirm();
-#endif //__GUILD_COMBAT_1TO1
 	virtual ~CWndGuildWarCancelConfirm();
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
@@ -1593,24 +1511,16 @@ public:
 	virtual	void	OnSize( UINT nType, int cx, int cy );
 	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	virtual void	PaintFrame( C2DRender* p2DRender );
-#endif //__GUILD_COMBAT_1TO1
 }; 
 class CWndGuildWarJoinConfirm : public CWndNeuz
 {
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 public:
 	int			m_nCombatType;
-#endif //__GUILD_COMBAT_1TO1
 protected:
 	CWndText	m_wndText;
 public:
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	CWndGuildWarJoinConfirm(int nCombatType);
-#else //__GUILD_COMBAT_1TO1
-	CWndGuildWarJoinConfirm();
-#endif //__GUILD_COMBAT_1TO1
 	virtual ~CWndGuildWarJoinConfirm();
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
@@ -1621,9 +1531,7 @@ public:
 	virtual	void	OnSize( UINT nType, int cx, int cy );
 	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	virtual void	PaintFrame( C2DRender* p2DRender );
-#endif //__GUILD_COMBAT_1TO1
 }; 
 
 class CWndGuildWarState : public CWndNeuz 
@@ -1854,7 +1762,6 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 }; 
 
-#if __VER >= 8 //__CSC_VER8_3
 
 #include "WndWorld.h"
 
@@ -1892,9 +1799,7 @@ public:
 	void SetBuffIconInfo();
 	BOOL GetHitTestResult();
 };
-#endif //__CSC_VER8_3
 
-#if __VER >= 9 // __CSC_VER9_1
 /*******************************
 	제련 시스템 관련 Window
 ********************************/
@@ -2092,9 +1997,7 @@ public:
 
 	void SetItem(CItemBase*	m_pItem);
 };
-#endif //__CSC_VER9_1
 
-#if __VER >= 10 // __CSC_VER9_1 -> __LEGEND
 /*******************************
 	전승 시스템 관련 Window
 ********************************/
@@ -2130,7 +2033,6 @@ public:
 	void SetJewel(CItemElem* pItemElem);
 };
 
-#endif //__CSC_VER9_1 -> __LEGEND
 
 #ifdef __TRADESYS
 
@@ -2166,7 +2068,6 @@ public:
 };
 #endif //__TRADESYS
 
-#if __VER >= 12 // __HEAVEN_TOWER
 #define MAX_FLOOR_COUNT 15
 
 class CWndHeavenTower : public CWndNeuz
@@ -2209,9 +2110,7 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-#endif //__HEAVEN_TOWER
 
-#if __VER >= 10 // __REMOVE_ATTRIBUTE
 
 class CWndRemoveAttributeConfirm : public CWndNeuz 
 {
@@ -2261,9 +2160,7 @@ public:
 	void SetWeapon(CItemElem* pItemElem);
 };
 
-#endif //__REMOVE_ATTRIBUTE
 
-#if __VER >= 11 // __PIERCING_REMOVE
 class CWndRemovePiercing : public CWndNeuz
 {
 public:
@@ -2271,9 +2168,7 @@ public:
 	CItemElem*	m_pItemElem;
 	ItemProp*	m_pEItemProp;
 	CTexture*	m_pTexture;
-#if __VER >= 12 // __CSC_VER12_4
 	int			m_nInfoSlot[10];
-#endif //__CSC_VER12_4
 	
 public: 
 	CWndRemovePiercing(); 
@@ -2292,16 +2187,10 @@ public:
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	
 	void SetDescription(CHAR* szChar);
-#if __VER >= 12 // __CSC_VER12_4
 	virtual void OnMouseWndSurface( CPoint point );
 	void SetItem(CItemElem* pItemElem);
-#else //__CSC_VER12_4
-	void SetSuit(CItemElem* pItemElem);
-#endif //__CSC_VER12_4
 };
-#endif //__PIERCING_REMOVE
 
-#if __VER >= 12 // __CSC_VER12_4
 class CWndRemoveJewel : public CWndNeuz
 {
 public:
@@ -2340,9 +2229,7 @@ public:
 private:
 	void ResetJewel();
 };
-#endif //__CSC_VER12_4
 
-#if __VER >= 13 // __EXT_ENCHANT
 class CWndChangeAttribute : public CWndNeuz 
 {
 public:
@@ -2372,9 +2259,7 @@ public:
 	void SetChangeItem( CItemElem* pItemElem );
 	void FillRect(C2DRender *p2DRender, CRect rectBg, DWORD dwColorstart, DWORD dwColorend);
 };
-#endif //__EXT_ENCHANT
 
-#if __VER >= 13 // __CSC_VER13_2
 class CWndCoupleMessage : public CWndMessageBox
 {
 public:
@@ -2443,7 +2328,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 };
-#endif //__CSC_VER13_2
 
 #ifdef __FUNNY_COIN
 class CWndFunnyCoinConfirm : public CWndNeuz 
@@ -2463,22 +2347,15 @@ public:
 };
 #endif //__FUNNY_COIN
 
-#if __VER >= 14 // __SMELT_SAFETY
 
 class CWndSmeltSafety : public CWndNeuz
 {
 public:
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	enum WndMode { WND_NORMAL, WND_ACCESSARY, WND_PIERCING, WND_ELEMENT };
-#else // __15_5TH_ELEMENTAL_SMELT_SAFETY
-	enum WndMode {WND_NORMAL, WND_ACCESSARY, WND_PIERCING};
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	enum { SMELT_MAX = 10 };
 	enum { ENCHANT_TIME = 2 };
 	enum { EXTENSION_PIXEL = 32, HALF_EXTENSION_PIXEL = EXTENSION_PIXEL / 2 };
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	enum { GENERAL_NON_USING_SCROLL2_LEVEL = 7, ELEMENTAL_NON_USING_SCROLL2_LEVEL = 10 };
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 
 private:
 	WndMode m_eWndMode;
@@ -2506,9 +2383,7 @@ private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferGauge;
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferSuccessImage;
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferFailureImage;
-#if __VER >= 15 // __15_5TH_ELEMENTAL_SMELT_SAFETY
 	ItemProp* m_pSelectedElementalCardItemProp;
-#endif // __15_5TH_ELEMENTAL_SMELT_SAFETY
 
 public:
 	CWndSmeltSafety(WndMode eWndMode);
@@ -2574,9 +2449,7 @@ public:
 	void SetWndMode(CItemElem* pItemElem);
 };
 
-#endif //__SMELT_SAFETY
 
-#if __VER >= 14 // __EQUIP_BIND
 class CWndEquipBindConfirm : public CWndNeuz
 {
 public:
@@ -2604,9 +2477,7 @@ private:
 	DWORD m_dwObjId;
 	CItemElem* m_pItemElem;
 };
-#endif // __EQUIP_BIND
 
-#if __VER >= 14 // __RESTATE_CONFIRM
 class CWndRestateConfirm : public CWndNeuz
 {
 public:
@@ -2627,9 +2498,7 @@ private:
 	OBJID m_ObjID;
 	int m_nPart;
 };
-#endif // __RESTATE_CONFIRM
 
-#if __VER >= 15 // __CAMPUS
 class CWndCampusInvitationConfirm : public CWndNeuz
 {
 public:
@@ -2661,7 +2530,6 @@ private:
 	u_long m_idTarget;
 	CString m_strTargetName;
 };
-#endif // __CAMPUS
 
 #endif // !defined(AFX_WNDFIELD_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)
 

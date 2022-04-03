@@ -192,7 +192,6 @@ BOOL CWndVendorBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		CWndVendor* pWndVendor	= (CWndVendor*)GetParentWnd();
 		int nNum	= atoi( pWndStatic->GetTitle() );
 		if( nNum < 1 )	return TRUE;	// 개수가 너무 작습니다.
-#if __VER >= 8 // __S8_VENDOR_REVISION
 		int nBufNum = nNum;
 		if( nNum > m_pItemBase->GetExtra() )
 			nBufNum = m_pItemBase->GetExtra();
@@ -201,7 +200,6 @@ BOOL CWndVendorBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_GAME_LACKMONEY)), MB_OK, this );
 			return TRUE;			
 		}
-#endif // __VER >= 8 // __S8_VENDOR_REVISION
 		g_DPlay.SendBuyPVendorItem( pWndVendor->m_pVendor->GetId(), m_iIndex, m_pItemBase->m_dwItemId, nNum );
 		Destroy();
 	}

@@ -7,9 +7,7 @@
 #include "dpclient.h"
 extern CDPClient	g_DPlay;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 
 /****************************************************
@@ -22,9 +20,7 @@ extern CDPClient	g_DPlay;
 CWndParty::CWndParty() 
 { 
 	m_WndPartyChangeTroup = NULL;
-#if __VER >= 8 //__CSC_VER8_2
 	m_pWndPartyQuick = NULL;
-#endif //__CSC_VER8_2
 	Error( "CWndParty::CWndParty()" );
 } 
 CWndParty::~CWndParty() 
@@ -67,17 +63,13 @@ void CWndParty::OnDraw( C2DRender* p2DRender )
 	{
 		m_pWndLeave->EnableWindow( FALSE );
 		m_pWndTransfer->EnableWindow( FALSE );
-#if __VER >= 8 //__CSC_VER8_2
 		m_pBtnPartyQuick->EnableWindow( FALSE );
-#endif //__CSC_VER8_2
 	}
 	else
 	{
 		m_pWndLeave->EnableWindow( TRUE );
 		m_pWndTransfer->EnableWindow( TRUE );
-#if __VER >= 8 //__CSC_VER8_2
 		m_pBtnPartyQuick->EnableWindow( TRUE );
-#endif //__CSC_VER8_2
 	}
 
 #ifdef __PARTY_DEBUG_0129		// 극단장 튕기는 현상 디버깅 neuz
@@ -222,20 +214,12 @@ void CWndParty::OnInitialUpdate()
 	m_pWndLeave = (CWndButton*)GetDlgItem( WIDC_LEAVE );
 	m_pWndChange = (CWndButton*)GetDlgItem( WIDC_CHANGE );
 	m_pWndTransfer = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
-#if __VER >= 8 //__CSC_VER8_2
 	m_pBtnPartyQuick = (CWndButton*)GetDlgItem( WIDC_BUTTON2 );
-#else
-	m_pBtnPartyQuick = (CWndButton*)GetDlgItem( WIDC_BUTTON2 );
-	m_pBtnPartyQuick->EnableWindow(FALSE);
-	m_pBtnPartyQuick->SetVisible(FALSE);
-#endif //__CSC_VER8_2
 	if( g_Party.GetSizeofMember() < 2 )
 	{
 		m_pWndTransfer->EnableWindow( FALSE );
 		m_pWndLeave->EnableWindow( FALSE );
-#if __VER >= 8 //__CSC_VER8_2
 		m_pBtnPartyQuick->EnableWindow( FALSE );
-#endif	//__CSC_VER8_2
 	}
 	m_pWndChange->EnableWindow( FALSE );
 	
@@ -397,7 +381,6 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 #endif	// __FIX_WND_1109
 		}
 	}
-#if __VER >= 8 //__CSC_VER8_2
 	else if(nID == WIDC_BUTTON2)
 	{
 		if(g_Party.GetSizeofMember() >= 2)
@@ -415,7 +398,6 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 		}
 	}
-#endif //__CSC_VER8_2
 	// 순회극단일때만 아이템 경험치 분배방식 갱신
 	else
 	if( g_Party.IsLeader(g_pPlayer->m_idPlayer) )
@@ -516,17 +498,10 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 	}
 	int y = 10;
 
-#if __VER >= 8 //__CSC_VER8_2
 	DWORD dwColor;
 	for( int i = 0; i < g_Party.m_nSizeofMember; i++ ) 
 	{		
 		dwColor = 0xff000000;
-#else 
-	DWORD dwColor = 0xff000000;
-	for( int i = 0; i < g_Party.m_nSizeofMember; i++ ) 
-	//for( int i = 0; i < 8; i++ )//g_Party.m_nSizeofMember; i++ ) 
-	{
-#endif //__CSC_VER8_2
 		CMover* pObjMember	= prj.GetUserByID( g_Party.m_aMember[ i ].m_uPlayerId );
 
 		CRect rectTemp,rect;
@@ -557,11 +532,9 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		}
 		p2DRender->RenderFillRect( rectTemp, colorStatus );
 
-#if __VER >= 8 //__CSC_VER8_2
 		u_long  nLeadMember = g_Party.m_aMember[i].m_uPlayerId;
 		if(g_Party.IsLeader(nLeadMember)) //Leader Color Set
 			dwColor = 0xff1fb72d;
-#endif	//__CSC_VER8_2	
 		BOOL bSummary	= FALSE;
 		int nLang	= ::GetLanguage();
 		switch( nLang )
@@ -575,15 +548,10 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		// 레벨 계급 직업
 		if( IsValidObj(pObjMember) )
 		{
-#if __VER >= 10 // __LEGEND
 			if( MAX_PROFESSIONAL <= pObjMember->GetJob() && pObjMember->GetJob() < MAX_MASTER )
 				strTemp.Format( "%d%s", pObjMember->GetLevel(), prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
 			else if( MAX_MASTER <= pObjMember->GetJob() )
-#if __VER >= 15 // __HERO129_VER15 // 15차 히어로 레벨확장
 				strTemp.Format( "%d%s", pObjMember->GetLevel(), prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-#else // 15차 히어로 레벨확장
-				strTemp = prj.GetText( TID_GAME_TOOLTIP_MARK_HERO_BEFORE );
-#endif // 15차 히어로 레벨확장
 			else 
 				strTemp.Format( "%d", pObjMember->GetLevel() );
 			p2DRender->TextOut( 30, y, 1.0f, 1.0f, strTemp, dwColor );
@@ -600,43 +568,16 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 				p2DRender->TextOut( 80, y, 1.0f, 1.0f, strTemp, dwColor );
 			}
 			strName		= pObjMember->GetName();
-#else //__LEGEND
-			strTemp.Format( "%d", pObjMember->GetLevel() );
-			p2DRender->TextOut( 30, y, 1.0f, 1.0f, strTemp, dwColor );
-			if( !bSummary )
-			{
-				strTemp.Format( "%s", strClass );
-				p2DRender->TextOut( 50, y, 1.0f, 1.0f, strTemp, dwColor );
-				strTemp.Format( "%s", pObjMember->GetJobString() );
-				p2DRender->TextOut( 80, y, 1.0f, 1.0f, strTemp, dwColor );
-			}
-			else
-			{
-				strTemp.Format( "%s", pObjMember->GetJobString() );
-				p2DRender->TextOut( 50, y, 1.0f, 1.0f, strTemp, dwColor );
-			}
-			strName = pObjMember->GetName();
-#endif //__LEGEND
 		}
 		else
 		{
-#if __VER >= 10 // __LEGEND
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( g_Party.m_aMember[i].m_uPlayerId );
 			int nLevel	= pPlayerData->data.nLevel;
 			int nJob	= pPlayerData->data.nJob;
-#else	// __SYS_PLAYER_DATA
-			int nLevel	= g_Party.m_aMember[i].m_nLevel;
-			int nJob	= g_Party.m_aMember[i].m_nJob;
-#endif	// __SYS_PLAYER_DATA
 			if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 				strTemp.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
 			else if( MAX_MASTER <= nJob )
-#if __VER >= 15 // __HERO129_VER15 // 15차 히어로 레벨확장
 				strTemp.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-#else // 15차 히어로 레벨확장
-				strTemp = prj.GetText( TID_GAME_TOOLTIP_MARK_HERO_BEFORE );
-#endif // 15차 히어로 레벨확장
 			else 
 				strTemp.Format( "%d", nLevel );
 			p2DRender->TextOut(30,y,1.0f,1.0f,strTemp,dwColor);
@@ -652,28 +593,7 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 				strTemp.Format( "%s", prj.m_aJob[nJob].szName );
 				p2DRender->TextOut( 80, y, 1.0f, 1.0f, strTemp, dwColor );
 			}
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			strName		= pPlayerData->szPlayer;
-#else	// __SYS_PLAYER_DATA
-			strName		= g_Party.m_aMember[i].m_szName;
-#endif	// __SYS_PLAYER_DATA
-#else //__LEGEND
-			strTemp.Format("%d",g_Party.m_aMember[i].m_nLevel);
-			p2DRender->TextOut(30,y,1.0f,1.0f,strTemp,dwColor);
-			if( !bSummary )
-			{
-				strTemp.Format("%s",strClass);
-				p2DRender->TextOut(50,y,1.0f,1.0f,strTemp,dwColor);
-				strTemp.Format("%s",prj.m_aJob[g_Party.m_aMember[i].m_nJob].szName);
-				p2DRender->TextOut(80,y,1.0f,1.0f,strTemp,dwColor);
-			}
-			else
-			{
-				strTemp.Format( "%s", prj.m_aJob[g_Party.m_aMember[i].m_nJob].szName );
-				p2DRender->TextOut( 50,y,1.0f,1.0f,strTemp,dwColor );
-			}
-			strName		= g_Party.m_aMember[i].m_szName;
-#endif //__LEGEND
 		}
 		// 이름은 10바이트째에서 짜른다
 		if( strName.GetLength() > 8 ) 
@@ -692,11 +612,7 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 			strName+="..."; // 이름 짤린놈은 이게 끝이 아니라고 표시하자... 기획에는 없지만 내멋대로 붙였음
 		}
 		strTemp.Format("%s",strName);
-#if __VER >= 10		// __LEGEND
 		p2DRender->TextOut( 180, y, 1.0f, 1.0f, strTemp, dwColor );
-#else //__LEGEND
-		p2DRender->TextOut( 135, y, 1.0f, 1.0f, strTemp, dwColor );	// 50
-#endif //__LEGEND
 		
 		// HP 게이지
 		int nWidth	= ( IsValidObj( pObjMember ) ? 110 * pObjMember->GetHitPoint() / pObjMember->GetMaxHitPoint() : 0 );
@@ -782,11 +698,9 @@ void CWndPartyInfo::OnLButtonUp( UINT nFlags, CPoint point )
 } 
 void CWndPartyInfo::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
-#if __VER >= 11 // __CSC_VER11_2
 	CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
 	if(((CWndWorld*)g_WndMng.m_pWndWorld)->m_bAutoAttack || pTaskBar->m_nExecute != 0)
 		return;
-#endif //__CSC_VER11_2
 	
 	// 파티창에서 어떤놈 눌렀는지 색출
 	CRect rect( 10, 10, 365, 10 + g_Party.GetSizeofMember() * 15 );
@@ -797,9 +711,7 @@ void CWndPartyInfo::OnLButtonDown( UINT nFlags, CPoint point )
 	if( m_nSelected != -1 ) 
 	{ // 선택된놈 있으면
 		// 그놈을 타겟으로
-#if __VER >= 8 //__CSC_VER8_2
 		((CWndWorld*)g_WndMng.m_pWndWorld)->m_pSelectRenderObj = NULL; //마우스에 걸려 그려진놈을 지우고 타겟을 잡아야 안겹친다..
-#endif //__CSC_VER8_2
 		CMover* pObjMember = prj.GetUserByID( g_Party.m_aMember[m_nSelected].m_uPlayerId );
 		if(g_pPlayer!=pObjMember) 
 		{
@@ -811,10 +723,8 @@ void CWndPartyInfo::OnLButtonDown( UINT nFlags, CPoint point )
 					pWndWorld->m_pRenderTargetObj = NULL;
 			}
 		}
-#if __VER >= 8 //__CSC_VER8_2
 		else
 			g_WorldMng()->SetObjFocus( NULL );
-#endif //__CSC_VER8_2
 	}
 	else 
 	{

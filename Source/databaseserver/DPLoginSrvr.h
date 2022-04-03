@@ -41,10 +41,8 @@ public:
 	void	OnRemovePlayer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnLeave( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnCloseError( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 	void	OnLoginProtect( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	SendLoginProtect( const char* lpszAccount, const char* lpszPlayer, u_long idPlayer, BOOL bLogin, DPID dpId );
-#endif // __2ND_PASSWORD_SYSTEM
 };
 
 #endif	// __DPLOGINSRVR_H__

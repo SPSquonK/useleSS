@@ -22,9 +22,7 @@ extern CWorldMng g_WorldMng;
 #include "defineobj.h"
 #include "definesound.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 CEveSchool::CEveSchool()
 {
@@ -287,9 +285,7 @@ CGuildCombat::CGuildCombat()
 	m_vecGCGetPoint.clear();
 	m_vecGCPlayerPoint.clear();
 #ifdef __WORLDSERVER
-#if __VER >= 8 // __GUILDCOMBAT_85
 	vecGCSendItem.clear();
-#endif // __VER >= 8
 #ifdef __S_BUG_GC
 	m_vecGuildCombatMem.clear();
 #else // __S_BUG_GC
@@ -721,92 +717,8 @@ void CGuildCombat::JoinObserver( CUser* pUser )
 	{
 		pUser->m_nGuildCombatState		= 2;
 		g_UserMng.AddGuildCombatUserState( (CMover*)pUser );
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 		if( ENTER_STATE <= m_nGCState && m_nGCState <= WAR_CLOSE_STATE )
 			g_DPCoreClient.SendGCRemoveParty( pUser->GetPartyId(), pUser->m_idPlayer );
-#else // __IMPROVE_SYSTEM_VER15
-		// 참가자 들은 파티 해제
-		if( m_nGCState == ENTER_STATE )
-		{
-			g_DPCoreClient.SendGCRemoveParty( pUser->GetPartyId(), pUser->m_idPlayer );
-		}
-		else if( MAINTENANCE_STATE <= m_nGCState && m_nGCState <= WAR_CLOSE_STATE )
-		{
-#ifdef __S_BUG_GC
-			__GuildCombatMember* pGCMember = FindGuildCombatMember( pUser->m_idGuild );
-			if( pGCMember != NULL )
-			{
-				CMover* pLeader = NULL;
-				for( int veci = 0 ; veci < pGCMember->vecGCSelectMember.size() ; ++veci )
-				{
-						__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-					if( pJoinPlayer->uidPlayer != pUser->m_idPlayer )
-					{
-						CMover* pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );
-						if( IsValidObj( pMover ) && pMover->GetWorld() && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-						{
-							if( 0 < pMover->GetPartyId() )
-							{
-								pLeader = pMover;
-								break;
-							}
-						}
-					}
-				}
-				
-				if( pLeader != NULL )
-				{
-					if( 0 < pUser->GetPartyId() )
-					{
-						if( pUser->GetPartyId() != pLeader->GetPartyId() )
-							g_DPCoreClient.SendGCRemoveParty( pUser->GetPartyId(), pUser->m_idPlayer );
-					}
-					
-					if( pUser->GetPartyId() != pLeader->GetPartyId() )
-						g_DPCoreClient.SendGCAddParty( pLeader->m_idPlayer, pLeader->GetLevel(), pLeader->GetJob(), pLeader->GetSex(), 
-						pUser->m_idPlayer, pUser->GetLevel(), pUser->GetJob(), pUser->GetSex() );
-				}
-			}
-#else // __S_BUG_GC
-			map<u_long, __GuildCombatMember*>::iterator ita = m_GuildCombatMem.find( pUser->m_idGuild );
-			if( ita != m_GuildCombatMem.end() )
-			{
-				__GuildCombatMember* pGuildCombatMem = ita->second;
-				
-				CMover* pLeader = NULL;
-				for( int veci = 0 ; veci < pGuildCombatMem->vecGCSelectMember.size() ; ++veci )
-				{
-						__JOINPLAYER* pJoinPlayer = pGuildCombatMem->vecGCSelectMember[veci];
-					if( pJoinPlayer->uidPlayer != pUser->m_idPlayer )
-					{
-						CMover* pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );
-						if( IsValidObj( pMover ) && pMover->GetWorld() && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-						{
-							if( 0 < pMover->GetPartyId() )
-							{
-								pLeader = pMover;
-								break;
-							}
-						}
-					}
-				}
-				
-				if( pLeader != NULL )
-				{
-					if( 0 < pUser->GetPartyId() )
-					{
-						if( pUser->GetPartyId() != pLeader->GetPartyId() )
-							g_DPCoreClient.SendGCRemoveParty( pUser->GetPartyId(), pUser->m_idPlayer );
-					}
-					
-					if( pUser->GetPartyId() != pLeader->GetPartyId() )
-						g_DPCoreClient.SendGCAddParty( pLeader->m_idPlayer, pLeader->GetLevel(), pLeader->GetJob(), pLeader->GetSex(), 
-						pUser->m_idPlayer, pUser->GetLevel(), pUser->GetJob(), pUser->GetSex() );
-				}
-			}
-#endif // __S_BUG_GC
-		}
-#endif // __IMPROVE_SYSTEM_VER15
 	}
 	g_UserMng.AddGCGuildStatus( pUser->m_idGuild, pUser );
 	g_UserMng.AddGCGuildPrecedence( pUser );
@@ -1296,18 +1208,11 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 			g_DPCoreClient.SendSystem( str );
 			g_DPCoreClient.SendCaption( str );
 			sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_WINNER), pGuild->m_szGuild );
-#if __VER >= 8 // __GUILDCOMBAT_85
 			int nBufWinGuildCount = m_nWinGuildCount;
 			if( m_nMaxGCSendItem < m_nWinGuildCount )
 				nBufWinGuildCount = m_nMaxGCSendItem;
 			// 연승 아이템 주기
 			CString strGuildMsg;
-#if __VER < 11 // __GUILDCOMBATCHIP
-			strGuildMsg.Format( prj.GetText(TID_GAME_GUILDCOMBAT_PRIZEMSG), pGuild->m_szGuild, m_nWinGuildCount );
-			m_vecstrGuildMsg.push_back( strGuildMsg );
-			strGuildMsg.Format( prj.GetText(TID_GAME_GUILDCOMBAT_PRIZEMSG1 ) );
-			m_vecstrGuildMsg.push_back( strGuildMsg );
-#endif // __GUILDCOMBATCHIP
 			for( int si = 0 ; si < (int)( vecGCSendItem.size() ) ; ++si )
 			{
 				if( vecGCSendItem[si].nWinCount != nBufWinGuildCount )
@@ -1344,99 +1249,11 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 					g_DPSrvr.OnLogItem( aLogItem, &itemElem, vecGCSendItem[si].nItemNum );
 				}
 			}
-#if __VER < 11 // __GUILDCOMBATCHIP
-			strGuildMsg.Format(prj.GetText(TID_GAME_GUILDCOMBAT_PRIZEMSG2) );
-			m_vecstrGuildMsg.push_back( strGuildMsg );
-#endif // __GUILDCOMBATCHIP
-#else // __VER >= 8
-			if( 0 )//g_eLocal.GetState( 500 ) == 1 )
-			{
-				CItemElem itemElem1;
-				itemElem1.m_dwItemId	= II_SYS_SYS_SCR_BXSCRACH;	// 스크래치
-				itemElem1.m_nItemNum	= 1;
-
-				CItemElem aItemElem[3];
-				int nItemSize	= 0;
-				CTime t	= CTime::GetCurrentTime() + CTimeSpan( 14, 0, 0, 0 );	// 2주 사용 가능
-				DWORD dwKeepTime	= t.GetTime();
-				if( m_nWinGuildCount == 1 )
-				{
-					aItemElem[0].m_dwItemId	= II_RID_RID_BOR_RIDINGCLOUD;
-					aItemElem[0].m_nItemNum	= 1;
-					aItemElem[0].m_dwKeepTime	= dwKeepTime;
-					nItemSize	= 1;
-				}
-				else if( m_nWinGuildCount == 2 )
-				{
-					aItemElem[0].m_dwItemId	= II_GEN_JEW_NEC_HPNECKLACE06;
-					aItemElem[0].m_nItemNum	= 1;
-					aItemElem[0].m_dwKeepTime	= dwKeepTime;
-					nItemSize	= 1;
-				}
-				else if( m_nWinGuildCount == 3 )
-				{
-					aItemElem[0].m_dwItemId	= II_GEN_JEW_EAR_DEFEARRING06;
-					aItemElem[0].m_nItemNum	= 1;
-					aItemElem[0].m_dwKeepTime	= dwKeepTime;
-					aItemElem[1].m_dwItemId	= II_GEN_JEW_EAR_DEFEARRING06;
-					aItemElem[1].m_nItemNum	= 1;
-					aItemElem[1].m_dwKeepTime	= dwKeepTime;
-					nItemSize	= 2;
-				}
-				else	// > 4
-				{
-					aItemElem[0].m_dwItemId	= II_GEN_JEW_NEC_HPNECKLACE06;
-					aItemElem[0].m_nItemNum	= 1;
-					aItemElem[0].m_dwKeepTime	= dwKeepTime;
-					aItemElem[1].m_dwItemId	= II_GEN_JEW_EAR_DEFEARRING06;
-					aItemElem[1].m_nItemNum	= 1;
-					aItemElem[1].m_dwKeepTime	= dwKeepTime;
-					aItemElem[2].m_dwItemId	= II_GEN_JEW_EAR_DEFEARRING06;
-					aItemElem[2].m_nItemNum	= 1;
-					aItemElem[2].m_dwKeepTime	= dwKeepTime;
-					nItemSize	= 3;
-				}
-
-				for( map<u_long, __GuildCombatMember*>::iterator i1	= m_GuildCombatMem.begin(); i1 != m_GuildCombatMem.end(); ++i1 )
-				{
-					u_long idGuild	= i1->first;
-					__GuildCombatMember* pGCMember	= i1->second;
-					for( int i = 0; i < pGCMember->vecGCSelectMember.size(); ++i )
-					{
-						__JOINPLAYER* pJoinPlayer	= pGCMember->vecGCSelectMember[i];
-						itemElem1.SetSerialNumber();
-						g_dpDBClient.SendQueryPostMail( pJoinPlayer->uidPlayer, 0, itemElem1, 0, itemElem1.GetProp()->szName, (char*)GETTEXT( TID_GAME_GUILDCOMBAT_EVENT_MAIL ) );
-						if( idGuild == m_uWinGuildId )
-						{
-							for( int i = 0; i < nItemSize; i++ )
-							{
-								aItemElem[i].SetSerialNumber();
-								g_dpDBClient.SendQueryPostMail( pJoinPlayer->uidPlayer, 0, aItemElem[i], 0, aItemElem[i].GetProp()->szName, "" );
-							}
-						}
-					}
-				}
-			}	// 500
-#endif // __VER >= 8
 		}
 		u_long uBestPlayerGuild;
 		int nGetPoint;
 		m_uBestPlayer = GetBestPlayer( &uBestPlayerGuild, &nGetPoint );
 
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-		g_DPCoreClient.SendSystem( str );
-		g_DPCoreClient.SendCaption( str, 0, TRUE );
-#if __VER >= 11 // __SYS_PLAYER_DATA
-		sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_WINNER1), CPlayerDataCenter::GetInstance()->GetPlayerString( m_uBestPlayer ) );
-#else	// __SYS_PLAYER_DATA
-		sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_WINNER1), prj.GetPlayerString( m_uBestPlayer ) );
-#endif	// __SYS_PLAYER_DATA
-		g_DPCoreClient.SendSystem( str );
-		g_DPCoreClient.SendCaption( str, 0, TRUE );
-		sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_WINNER2) );
-		g_DPCoreClient.SendSystem( str );
-		g_DPCoreClient.SendCaption( str, 0, TRUE );
-#endif // __GUILD_COMBAT_1TO1
 		
 		++m_nGuildCombatIndex;
 		g_UserMng.AddGCWinGuild();
@@ -1446,7 +1263,6 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 	}
 }
 
-#if __VER >= 11 // __GUILDCOMBATCHIP
 void CGuildCombat::GuildCombatResultRanking()
 {
 	vector<__REQUESTGUILD> vecGCRanking;
@@ -1625,7 +1441,6 @@ void CGuildCombat::GuildCombatResultRanking()
 		}
 	}
 }
-#endif // __GUILDCOMBATCHIP
 
 void CGuildCombat::GuildCombatCloseTeleport()
 {
@@ -1642,10 +1457,8 @@ void CGuildCombat::GuildCombatCloseTeleport()
 	g_UserMng.ReplaceWorld( WI_WORLD_GUILDWAR, WI_WORLD_MADRIGAL, 6968.0f, 3328.8f );
 #endif	// __LAYER_1015
 
-#if __VER >= 8 // __GUILDCOMBAT_85
 	for( int i = 0 ; i < (int)( m_vecstrGuildMsg.size() ) ; ++i )
 		g_UserMng.AddGuildMsg( m_uWinGuildId, m_vecstrGuildMsg[i] );
-#endif // __VER >= 8
 
 	m_nState = CLOSE_STATE;
 	m_nGCState = WAR_CLOSE_STATE;
@@ -1689,9 +1502,7 @@ void CGuildCombat::GuildCombatOpen( void )
 	if( m_nState != CLOSE_STATE )
 		return;
 
-#if __VER >= 8 // __GUILDCOMBAT_85
 	m_vecstrGuildMsg.clear();
-#endif // __VER >= 8
 	if( g_eLocal.GetState( EVE_GUILDCOMBAT ) )
 		g_DPCoreClient.SendGuildCombatState( OPEN_STATE );	
 
@@ -2268,7 +2079,6 @@ void CGuildCombat::SetMaintenance()
 
 				g_UserMng.AddGCGuildStatus( pGCMember->uGuildId );
 
-#if __VER >= 15 // __IMPROVE_SYSTEM_VER15
 				for( int veci = 0; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
 				{
 					__JOINPLAYER* pJoinPlayer	= pGCMember->vecGCSelectMember[veci];
@@ -2284,30 +2094,6 @@ void CGuildCombat::SetMaintenance()
 							((CUser*)pMover)->AddDiagText( strMsgGeneral );
 					}
 				}
-#else // __IMPROVE_SYSTEM_VER15
-				// 메세지 처리
-				CMover* pLeader = NULL;
-				for( int veci = 0; veci < pGCMember->vecGCSelectMember.size() ; ++veci )
-				{
-					__JOINPLAYER* pJoinPlayer	= pGCMember->vecGCSelectMember[veci];
-					CMover* pMover	= prj.GetUserByID( pJoinPlayer->uidPlayer );
-					if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-					{
-						// Message
-						if( pGuild->IsMaster( pMover->m_idPlayer ) )	// Master
-							((CUser*)pMover)->AddDiagText( strMsgMaster );
-						else if( pGCMember->m_uidDefender == pMover->m_idPlayer )	// Defender
-							((CUser*)pMover)->AddDiagText( strMsgDefender );
-						else
-							((CUser*)pMover)->AddDiagText( strMsgGeneral );
-						if( pLeader == NULL )
-							pLeader = pMover;
-						else					
-							g_DPCoreClient.SendGCAddParty( pLeader->m_idPlayer, pLeader->GetLevel(), pLeader->GetJob(), pLeader->GetSex(), 
-							pMover->m_idPlayer, pMover->GetLevel(), pMover->GetJob(), pMover->GetSex() );
-					}
-				}
-#endif // __IMPROVE_SYSTEM_VER15
 
 				if( 0 < pGCMember->vecGCSelectMember.size() )
 					++nCount;
@@ -2390,11 +2176,7 @@ void CGuildCombat::SetMaintenance()
 	}
 
 	// 참가한 길드가 2개 이상일때만 길드대전이 시작하게함.
-#if __VER >= 8 // __GUILDCOMBAT_85
 	if( nCount < m_nMinGuild )
-#else // __VER >= 8
-	if( nCount < 2 )
-#endif // __VER >= 8
 	{
 		// 시작이 안되었을때
 		// 연승한 길드가 참가하고 있으면 승수 이어감
@@ -2417,11 +2199,6 @@ void CGuildCombat::SetEnter()
 	sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_ENTER) );
 	g_DPCoreClient.SendSystem( str );
 	g_DPCoreClient.SendCaption( str, 0, TRUE );
-#if __VER < 11 // __GUILD_COMBAT_1TO1
-	sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_ENTER1) );
-	g_DPCoreClient.SendSystem( str );
-	g_DPCoreClient.SendCaption( str, 0, TRUE );
-#endif // __GUILD_COMBAT_1TO1
 
 	for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
 	{
@@ -2671,9 +2448,7 @@ void CGuildCombat::SetGuildCombatCloseWait( BOOL bGM )
 	else
 	{
 		GuildCombatResult();
-#if __VER >= 11 // __GUILDCOMBATCHIP
 		GuildCombatResultRanking();
-#endif // __GUILDCOMBATCHIP
 	}	
 }
 // 신청한 길드중에 출전할수 있는 길드인지?
@@ -2913,9 +2688,7 @@ void CGuildCombat::ProcessCommand()
 		{
 		case ALLMSG:
 			{
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 				if( GuildCombatProcess[m_nProcessGo].dwCommand != TID_GAME_GUILDCOMBAT_OPEN_MSG )
-#endif // __GUILD_COMBAT_1TO1
 				{
 					CString str;
 					str.Format( prj.GetText( GuildCombatProcess[m_nProcessGo].dwCommand ), GuildCombatProcess[m_nProcessGo].dwTime / 1000 );
@@ -3081,12 +2854,10 @@ BOOL CGuildCombat::LoadScript( LPCSTR lpszFileName )
 		{
 			m_nGuildLevel = s.GetNumber();
 		}
-#if __VER >= 8 // __GUILDCOMBAT_85
 		else if( s.Token == _T( "MINJOINGUILDSIZE" ) )
 		{
 			m_nMinGuild = s.GetNumber();
 		}
-#endif // __VER >= 8
 		else if( s.Token == _T( "MAXJOINGUILDSIZE" ) )
 		{
 			m_nMaxGuild = s.GetNumber();
@@ -3127,7 +2898,6 @@ BOOL CGuildCombat::LoadScript( LPCSTR lpszFileName )
 		{
 			m_nItemPenya = s.GetNumber();
 		}
-#if __VER >= 8 // __GUILDCOMBAT_85
 		else if( s.Token == _T( "MAX_GCSIENDITEM" ) )
 		{
 			m_nMaxGCSendItem = s.GetNumber();
@@ -3149,7 +2919,6 @@ BOOL CGuildCombat::LoadScript( LPCSTR lpszFileName )
 			GCSendItem.nItemNum = nItemNum;
 			vecGCSendItem.push_back( GCSendItem );
 		}
-#endif // __VER >= 8
 		else if( s.Token == _T( "OPEN" ) )
 		{
 			nCount = 0;

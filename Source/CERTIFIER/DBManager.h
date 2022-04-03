@@ -29,9 +29,7 @@ typedef	struct	tagACCOUNT_INFO
 #ifdef __EUROPE_0514
 	char	szBak[MAX_ACCOUNT];
 #endif	// __EUROPE_0514
-#if __VER >= 14 // __PCBANG
 	DWORD	dwPCBangClass;
-#endif // __PCBANG
 }	ACCOUNT_INFO, *LPACCOUNT_INFO;
 
 typedef	struct tagDB_OVERLAPPED_PLUS
@@ -121,15 +119,7 @@ public:
 	void	Certify_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr & mgr );
 	void	CloseExistingConnection_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov );
 #endif // __JAPAN_AUTH
-#if __VER >= 14 // __PCBANG
 	void	DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData );
-#else // __PCBANG
-#ifdef __TWN_LOGIN0816
-	void	DBQryAccount( char* qryAccount, char* szAccount, char* szPass, char* szSessionPwd = "" );
-#else	// __TWN_LOGIN0816
-	void	DBQryAccount( char* qryAccount, char* szAccount, char* szPass );
-#endif	// __TWN_LOGIN0816
-#endif // __PCBANG
 	BOOL	LoadEveSchoolAccount( void );
 	BOOL	IsEveSchoolAccount( const char* pszAccount );
 	BYTE	GetAccountFlag( int f18, LPCTSTR szAccount );

@@ -6,9 +6,7 @@
 #include "WorldMng.h"
 #include "misc.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 #include "eveschool.h"
 #include "definetext.h"
@@ -29,43 +27,29 @@ extern	CGuildMng	g_GuildMng;
 extern	BOOL CanAdd( DWORD dwGold, int nPlus );
 #include "spevent.h"
 
-#if __VER >= 12 // __LORD
 #include "slord.h"
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 #include "Tax.h"
-#endif // __TAX
 
 extern char		g_szDBAddr[16];
 
-#if __VER >= 13 // __COUPLE_1117
 #include "couplehelper.h"
-#endif	// __COUPLE_1117
 
 #ifdef __FUNNY_COIN
 #include "FunnyCoin.h"
 #endif // __FUNNY_COIN
 
-#if __VER >= 14 // __PCBANG
 #include "PCBang.h"
-#endif // __PCBANG
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 #include "InstanceDungeonBase.h"
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __QUIZ
 #include "Quiz.h"
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 #include "CampusHelper.h"
-#endif // __CAMPUS
 
 CDPDatabaseClient	g_dpDBClient;
 
@@ -73,16 +57,10 @@ CDPDatabaseClient::CDPDatabaseClient()
 {
 	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPDatabaseClient::OnJoin );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_ALL_PLAYER_DATA, &CDPDatabaseClient::OnAllPlayerData );
 	ON_MSG( PACKETTYPE_ADD_PLAYER_DATA, &CDPDatabaseClient::OnAddPlayerData );
 	ON_MSG( PACKETTYPE_DELETE_PLAYER_DATA, &CDPDatabaseClient::OnDeletePlayerData );
 	ON_MSG( PACKETTYPE_UPDATE_PLAYER_DATA, &CDPDatabaseClient::OnUpdatePlayerData );
-#else	// __SYS_PLAYER_DATA
-	ON_MSG( PACKETTYPE_ALLPLAYERID, &CDPDatabaseClient::OnAllPlayerID );
-	ON_MSG( PACKETTYPE_PLAYERID, &CDPDatabaseClient::OnPlayerID );
-	ON_MSG( PACKETTYPE_REMOVEPLAYERID, &CDPDatabaseClient::OnRemovePlayerID );
-#endif	// __SYS_PLAYER_DATA
 	ON_MSG( PACKETTYPE_GUILD_BANK, &CDPDatabaseClient::OnGuildBank );
 	ON_MSG( PACKETTYPE_UPDATE_GUILD_RANKING_END, &CDPDatabaseClient::OnUpdateGuildRankingFinish );
 	ON_MSG( PACKETTYPE_QUERYGUILDQUEST, &CDPDatabaseClient::OnQueryGuildQuest );
@@ -122,24 +100,15 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_EVENT_GENERIC, &CDPDatabaseClient::OnEventGeneric );
 	ON_MSG( PACKETTYPE_EVENT_FLAG, &CDPDatabaseClient::OnEventFlag );
 
-#if __VER >= 9 // __EVENTLUA
 	ON_MSG( PACKETTYPE_EVENTLUA_STATE, &CDPDatabaseClient::OnEventStateLua );
 	ON_MSG( PACKETTYPE_EVENTLUA_CHANGED, &CDPDatabaseClient::OnEventLuaChanged );
-#endif // __EVENTLUA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	ON_MSG( PACKETTYPE_GC1TO1_OPEN, &CDPDatabaseClient::OnGC1to1Open );
 	ON_MSG( PACKETTYPE_GC1TO1_TENDERTOSRVR, &CDPDatabaseClient::OnGC1to1TenderGuildFromDB );
-#endif // __GUILD_COMBAT_1TO1
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	ON_MSG( PACKETTYPE_GUILDLOG_VIEW, &CDPDatabaseClient::OnGuildBankLogViewFromDB );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	ON_MSG( PACKETTYPE_SEALCHAR_REQ, &CDPDatabaseClient::OnSealCharFromDB );
 	ON_MSG( PACKETTYPE_SEALCHARGET_REQ, &CDPDatabaseClient::OnSealCharGetFromDB );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 12 // __LORD
 	ON_MSG( PACKETTYPE_ELECTION_ADD_DEPOSIT, &CDPDatabaseClient::OnElectionAddDeposit );
 	ON_MSG( PACKETTYPE_ELECTION_SET_PLEDGE, &CDPDatabaseClient::OnElectionSetPledge );
 	ON_MSG( PACKETTYPE_ELECTION_INC_VOTE, &CDPDatabaseClient::OnElectionIncVote );
@@ -152,45 +121,30 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_LORD_SKILL_USE, &CDPDatabaseClient::OnLordSkillUse );
 	ON_MSG( PACKETTYPE_LORD_SKILL_TICK, &CDPDatabaseClient::OnLordSkillTick );
 	ON_MSG( PACKETTYPE_L_EVENT_TICK, &CDPDatabaseClient::OnLEventTick );
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 	ON_MSG( PACKETTYPE_TAX_ALLINFO, &CDPDatabaseClient::OnTaxInfo );
-#endif // __TAX
 
-#if __VER >= 12 // __SECRET_ROOM
 	ON_MSG( PACKETTYPE_SECRETROOM_INFO_CLEAR, &CDPDatabaseClient::OnSecretRoomInfoClear );
 	ON_MSG( PACKETTYPE_SECRETROOM_TENDERINFO_TO_WSERVER, &CDPDatabaseClient::OnSecretRoomTenderInfo );
-#endif // __SECRET_ROOM
 
-#if __VER >= 13 // __RAINBOW_RACE
 	ON_MSG( PACKETTYPE_RAINBOWRACE_LOADDBTOWORLD, &CDPDatabaseClient::OnRainbowRaceInfo );
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 	ON_MSG( PACKETTYPE_HOUSING_LOADINFO, &CDPDatabaseClient::OnHousingLoadInfo );
 	ON_MSG( PACKETTYPE_HOUSING_FURNITURELIST, &CDPDatabaseClient::OnHousingSetFunitureList );
 	ON_MSG( PACKETTYPE_HOUSING_SETUPFURNITURE, &CDPDatabaseClient::OnHousingSetupFuniture );
 	ON_MSG( PACKETTYPE_HOUSING_SETVISITALLOW, &CDPDatabaseClient::OnHousingSetVisitAllow );
 	ON_MSG( PACKETTYPE_HOUSING_DBFAILED, &CDPDatabaseClient::OnHousingDBFailed );
-#endif // __HOUSING
 	m_bAlive	= TRUE;
 	m_cbPing	= 0;
-#if __VER >= 13 // __COUPLE_1117
 	ON_MSG( PACKETTYPE_PROPOSE, &CDPDatabaseClient::OnProposeResult );
 	ON_MSG( PACKETTYPE_COUPLE, &CDPDatabaseClient::OnCoupleResult );
 	ON_MSG( PACKETTYPE_DECOUPLE, &CDPDatabaseClient::OnDecoupleResult );
 	ON_MSG( PACKETTYPE_ALL_COUPLES, &CDPDatabaseClient::OnCouple );
-#if __VER >= 13 // __COUPLE_1202
 	ON_MSG( PACKETTYPE_ADD_COUPLE_EXPERIENCE, &CDPDatabaseClient::OnAddCoupleExperience );
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 #ifdef __FUNNY_COIN
 	ON_MSG( PACKETTYPE_FUNNYCOIN_ACK_USE, &CDPDatabaseClient::OnFunnyCoinAckUse );
 #endif // __FUNNY_COIN
-#if __VER >= 14 // __PCBANG
 	ON_MSG( PACKETTYPE_PCBANG_SETAPPLY, &CDPDatabaseClient::OnPCBangToggle );
-#endif // __PCBANG
 #ifdef __VTN_TIMELIMIT
 	ON_MSG( PACKETTYPE_TIMELIMIT_INFO, &CDPDatabaseClient::OnTimeLimitInfoAck );
 	ON_MSG( PACKETTYPE_TIMELIMIT_RESET, &CDPDatabaseClient::OnTimeLimitReset );
@@ -202,7 +156,6 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_QUIZ_CHANGED, &CDPDatabaseClient::OnQuizEventChanged );
 #endif // __QUIZ
 
-#if __VER >= 15 // __GUILD_HOUSE
 	ON_MSG( PACKETTYPE_GUILDHOUSE_LOAD, &CDPDatabaseClient::OnLoadGuildHouse );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_BUY, &CDPDatabaseClient::OnBuyGuildHouse );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_REMOVE, &CDPDatabaseClient::OnRemoveGuildHouse );
@@ -216,14 +169,11 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_GUILDHOUSE_LEVEL_UPDATE, &CDPDatabaseClient::OnGuildHouseLevelUpdate );
 	ON_MSG( PACKETTYPE_GUILDHOUSE_EXPIRED, &CDPDatabaseClient::OnGuildHouseExpired );
 #endif // __GUILD_HOUSE_MIDDLE
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 	ON_MSG( PACKETTYPE_CAMPUS_ALL, &CDPDatabaseClient::OnAllCampus );
 	ON_MSG( PACKETTYPE_CAMPUS_ADD_MEMBER, &CDPDatabaseClient::OnAddCampusMember );
 	ON_MSG( PACKETTYPE_CAMPUS_REMOVE_MEMBER, &CDPDatabaseClient::OnRemoveCampusMember );
 	ON_MSG( PACKETTYPE_CAMPUS_UPDATE_POINT, &CDPDatabaseClient::OnUpdateCampusPoint );
-#endif // __CAMPUS
 }
 
 CDPDatabaseClient::~CDPDatabaseClient()
@@ -277,16 +227,6 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 
 	pUser->m_dwTimeout4Save	= SEC_SAVEPLAYER;
 
-#if __VER < 14 // __INSTANCE_DUNGEON
-#if __VER >= 13 // __HOUSING
-	if( nLayer > 0 )
-	{
-		dwWorldId	= WI_WORLD_MADRIGAL;
-		vPos	= D3DXVECTOR3( 6968, 100, 3328 );
-		nLayer	= nDefaultLayer;
-	}
-#endif	// __HOUSING
-#endif // __INSTANCE_DUNGEON
 
 	ar << dwWorldId;
 	ar << vPos;
@@ -349,9 +289,7 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 	ar << pUser->m_nCoupon;
 #endif // __EVENTLUA_COUPON
 
-#if __VER >= 15 // __GUILD_HOUSE
 	ar << pUser->GetRestPoint();
-#endif // __GUILD_HOUSE
 
 	SEND( ar, this, DPID_SERVERPLAYER );
 #ifdef __VTN_TIMELIMIT
@@ -434,9 +372,7 @@ void CDPDatabaseClient::SendLogConnect( CUser* pUser )
 	ar.WriteString( pUser->m_playAccount.lpszAccount );
 	ar << pUser->GetLevel();
 	ar << pUser->GetJob();
-#if __VER >= 14 // __PCBANG
 	ar << CPCBang::GetInstance()->GetPCBangClass( pUser->m_idPlayer );
-#endif // __PCBANG
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -701,13 +637,6 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 #ifdef __LAYER_1015
 		int nLayer;
 		ar >> nLayer;
-#if __VER < 14 // __INSTANCE_DUNGEON
-		if( nLayer > 0 )
-		{
-			Error( "LAYER > 0" );
-			return;
-		}
-#endif // __INSTANCE_DUNGEON
 #endif // __LAYER_1015
 
 		ar >> dwIndex;
@@ -725,11 +654,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		
 		pUser->SetStateNotMode( STATE_BASEMOTION_MODE, STATEMODE_BASEMOTION_CANCEL );	// 셑팅 빼기
 
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pUser->GetLevel() > MAX_LEGEND_LEVEL )
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-		if( pUser->GetLevel() > MAX_LEVEL )
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		{
 			WriteError( "MAX_LEVEL//%s//%d", pUser->GetName(), pUser->GetLevel() );
 			pUser->m_nLevel	= MAX_LEVEL;
@@ -836,17 +761,13 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 #ifdef __EVENTLUA_COUPON
 		ar >> pUser->m_nCoupon;
 #endif // __EVENTLUA_COUPON
-#if __VER >= 14 // __PCBANG
 		DWORD dwPCBangClass;
 		ar >> dwPCBangClass;
-#endif // __PCBANG
 
-#if __VER >= 15 // __GUILD_HOUSE
 		int nRestPoint; time_t tLogOut;
 		ar >> nRestPoint >> tLogOut;
 		if( pUser->m_idGuild != 0 )
 			pUser->SetRestPoint( nRestPoint );
-#endif // __GUILD_HOUSE
 
 #ifdef __ON_ERROR
 		nOnError	= 5;
@@ -863,9 +784,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		pUser->SetFatiguePoint( pUser->GetFatiguePoint() ); // max넘은 경우를 대비한다.
 
 		pUser->SetId( NULL_ID );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		pUser->CheckHonorStat();
-#endif	// __HONORABLE_TITLE			// 달인
 
 		if( prj.GetUserByID( pUser->m_idPlayer ) )
 		{
@@ -986,11 +905,8 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 #endif	// __ON_ERROR
 
 #ifdef __LAYER_1015
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		if( 
-#if __VER >= 15 // __GUILD_HOUSE
 			GuildHouseMng->IsLoginAble( pUser, dwWorldId, nLayer ) &&
-#endif // __GUILD_HOUSE
 			pWorld && pWorld->m_linkMap.GetLinkMap( nLayer )							// 해당 레이어가 존재하고
 			&& !CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( dwWorldId )	// 인스턴스 던전이 아닌 경우...
 #ifdef __QUIZ
@@ -1006,9 +922,6 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 			g_UserMng.AddPlayer( pUser, WI_WORLD_MADRIGAL, nDefaultLayer );
 			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984f, 99.8f, 3336.884f ), REPLACE_NORMAL, nDefaultLayer );
 		}
-#else // __INSTANCE_DUNGEON
-		g_UserMng.AddPlayer( pUser, dwWorldId, nLayer );
-#endif // __INSTANCE_DUNGEON
 #else	// __LAYER_1015
 		g_UserMng.AddPlayer( pUser, dwWorldId );
 #endif	// __LAYER_1015
@@ -1061,12 +974,8 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		CParty* pParty	= g_PartyMng.GetParty( pUser->m_idparty );
 		if( pParty && pParty->IsMember( pUser->m_idPlayer ) )
 		{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			const char* pszLeader	= CPlayerDataCenter::GetInstance()->GetPlayerString( pParty->GetPlayerId( 0 ) );
 			pUser->AddPartyMember( pParty, 0, ( pszLeader? pszLeader: "" ), "" );
-#else	// __SYS_PLAYER_DATA
-			pUser->AddPartyMember( pParty );
-#endif	// __SYS_PLAYER_DATA
 			if( pParty->m_idDuelParty )		// 듀얼중인 파티였다면.
 			{
 				pUser->m_nDuel = 2;			// 듀얼상태를 세팅
@@ -1127,7 +1036,6 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 #endif	// __ON_ERROR
 
 		pWorld = pUser->GetWorld();
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		g_GuildCombat1to1Mng.SendNowState( pUser );
 		if( g_eLocal.GetState( EVE_GUILDCOMBAT1TO1 ) )
 		{
@@ -1140,71 +1048,47 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 // 		if( !pUser->GetWorld() )
 // 			pUser->Replace( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ) );
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __SYS_COLLECTING
 	if( pUser->IsCollecting() )
 		pUser->StopCollecting();
-#endif	// __SYS_COLLECTING
 
 #ifdef __ON_ERROR
 		nOnError	= 14;
 #endif	// __ON_ERROR
 
-#if __VER >= 12 // __SECRET_ROOM
 		CSecretRoomMng::GetInstance()->GetAllInfo( pUser );
 		if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( pUser ) )
 			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( CONT_FLARIS ), REPLACE_NORMAL, nDefaultLayer );
 
 		if( pWorld->GetID() == WI_DUNGEON_SECRET_0 )
 			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( CONT_DARKON12 ), REPLACE_NORMAL, nDefaultLayer );
-#endif // __SECRET_ROOM
 
 #ifdef __LAYER_1015
-#if __VER < 14 // __INSTANCE_DUNGEON
-		if( nLayer > 0 )
-		{
-			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
-		}
-		else
-		{
-			if( !pWorld || !pWorld->m_linkMap.GetLinkMap( nLayer ) )
-			{
-				Error( "LAYER NOT FOUND" );
-				pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
-			}
-		}
-#endif // __INSTANCE_DUNGEON
 #endif	// __LAYER_1015
 
 #ifdef __ON_ERROR
 		nOnError	= 15;
 #endif	// __ON_ERROR
 
-#if __VER >= 12 // __TAX
 		pUser->AddTaxInfo();
 		CTax::GetInstance()->SendNoSetTaxRateOpenWnd( pUser );
-#endif // __TAX
 
 #ifdef __ON_ERROR
 		nOnError	= 16;
 #endif	// __ON_ERROR
 
-#if __VER >= 12 // __PET_0519
 		{
 			// 게임 진입 시 시스템 펫 각성 효과 적용
 			CItemElem* pItem	= pUser->GetPetItem();
 			if( pItem )
 				pUser->SetDestParamRandomOptExtension( pItem );
 		}
-#endif	// __PET_0519
 
 
 #ifdef __ON_ERROR
 		nOnError	= 17;
 #endif	// __ON_ERROR
 
-#if __VER >= 13 // __RAINBOW_RACE
 		// 완주하지 않고 접속을 끊은 놈은 탈락이므로 완주한 놈만 정보를 받게된다. chipi_090317
 		if( CRainbowRaceMng::GetInstance()->GetState() == CRainbowRaceMng::RR_PROGRESS )
 		{
@@ -1212,16 +1096,11 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 			if( pRainbowRace )
 				pUser->AddRainbowRaceState( pRainbowRace );
 		}
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 		CHousingMng::GetInstance()->CreateRoomLayer( pUser->m_idPlayer );
 		CHousingMng::GetInstance()->ReqLoadHousingInfo( pUser->m_idPlayer );
-#endif // __HOUSING
 
-#if __VER >= 14 // __PCBANG
 		CPCBang::GetInstance()->SetPCBangPlayer( pUser, dwPCBangClass );
-#endif // __PCBANG
 
 #ifdef __VTN_TIMELIMIT
 		//	mulcom	BEGIN100315	베트남 시간 제한
@@ -1232,21 +1111,16 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		//	mulcom	END100315	베트남 시간 제한
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( dwWorldId ) )
 		{
 			// 인던 안에서 접속 종료 후 재접속 시 플라리스로 가지 않고 인던 출구로 강제 이동
 			CInstanceDungeonHelper::GetInstance()->GoOut( pUser );
 		}
-#endif // __INSTANCE_DUNGEON
-#if __VER >= 15 // __GUILD_HOUSE
 		pUser->AddGuildHouseAllInfo( GuildHouseMng->GetGuildHouse( pUser->m_idGuild ) );
 		GuildHouseMng->SetApplyDST( pUser );
 		if( pWorld && GuildHouseMng->IsGuildHouse( pWorld->GetID() ) && pUser->GetLayer() == pUser->m_idGuild )	// 접속지가 길드하우스 이면..
 			pUser->SetIncRestPoint( tLogOut / REST_POINT_TICK * REST_POINT_LOGOUT_INC );	// 로그아웃 휴식 포인트를 증가 시켜준다.
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 		u_long idCampus = pUser->GetCampusId();
 		if( idCampus )
 		{
@@ -1256,7 +1130,6 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 			else
 				pUser->SetCampusId( 0 );
 		}
-#endif // __CAMPUS
 
 #ifdef __ON_ERROR
 		}
@@ -1495,11 +1368,7 @@ void CDPDatabaseClient::OnGetPenyaGuildGC( CAr & ar, DPID, DPID )
 				}
 			}
 
-#if __VER >= 8 // __GUILDCOMBAT_85
 			if( bFind && nGetResult )
-#else // __VER >= 8
-			if( bFind )
-#endif // __VER >= 8
 			{				
 				__int64 nTotal = (__int64)pMover->GetGold() + nGetPenya;
 				if( nGetPenya > INT_MAX || nTotal > INT_MAX )
@@ -1596,7 +1465,6 @@ void CDPDatabaseClient::OnContinueGC( CAr & ar, DPID, DPID )
 	g_UserMng.AddGCWinGuild();
 }
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 void CDPDatabaseClient::OnAllPlayerData( CAr & ar , DPID, DPID )
 {
 	CPlayerDataCenter::GetInstance()->Serialize( ar );
@@ -1644,55 +1512,10 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar , DPID, DPID )
 	if( pPlayerData )
 	{
 		memcpy( &pPlayerData->data, &data, sizeof(sPlayerData) );
-#if __VER >= 13 // __COUPLE_1117
 		CCoupleHelper::Instance()->OnUpdatePlayerData( idPlayer, pPlayerData );
-#endif	// __COUPLE_1117
-#if __VER >= 15 // __CAMPUS
 		CCampusHelper::GetInstance()->OnUpdatePlayerData( idPlayer, pPlayerData );
-#endif // __CAMPUS
 	}
 }
-#else	// __SYS_PLAYER_DATA
-void CDPDatabaseClient::OnAllPlayerID( CAr & ar, DPID, DPID )
-{
-//	CHAR lpszPlayer[36]	= { 0, };
-	CHAR lpszPlayer[256]	= { 0, };
-	u_long uSize, idPlayer;
-
-	DWORD dwTickCount	= GetTickCount();
-
-	ar >> uSize; 
-	for( u_long i = 0; i < uSize; i++ )
-	{
-		ar >> idPlayer;
-		ar.ReadString( lpszPlayer, 256 );
-		prj.SetPlayerID( idPlayer, lpszPlayer );
-	}
-	
-	if( g_uKey == 101 )
-	{
-		SendITEM_TBL_Update();
-	}
-}
-void CDPDatabaseClient::OnPlayerID( CAr & ar, DPID, DPID )
-{
-	u_long idPlayer;
-//	CHAR lpszPlayer[36]	= { 0, };
-	CHAR lpszPlayer[256]	= { 0, };
-
-	ar >> idPlayer;
-	ar.ReadString( lpszPlayer, 256 );
-	prj.SetPlayerID( idPlayer, lpszPlayer );
-}
-
-void CDPDatabaseClient::OnRemovePlayerID( CAr & ar, DPID, DPID )
-{
-	u_long idPlayer;
-
-	ar >> idPlayer;
-	prj.RemovePlayerID( idPlayer );
-}
-#endif	// __SYS_PLAYER_DATA
 
 void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 {
@@ -1737,15 +1560,7 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 				if( pRespawnInfo->m_dwType == OT_MOVER )	// 몬스터 리스폰
 				{
 					MoverProp* pMoverProp	= prj.GetMoverProp( pRespawnInfo->m_dwIndex );
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-#if __VER >= 15 // __HERO129_VER15				// 15차 히어로 레벨확장
 					if( pMoverProp && pMoverProp->dwFlying == 0 && pMoverProp->dwLevel > 0 && pMoverProp->dwLevel <= MAX_MONSTER_LEVEL )
-		#else	// 15차 히어로 레벨확장
-					if( pMoverProp && pMoverProp->dwFlying == 0 && pMoverProp->dwLevel > 0 && pMoverProp->dwLevel <= MAX_LEGEND_LEVEL )
-		#endif	// 15차 히어로 레벨확장
-#else //__LEGEND	//	10차 전승시스템	Neuz, World, Trans
-					if( pMoverProp && pMoverProp->dwFlying == 0 && pMoverProp->dwLevel > 0 && pMoverProp->dwLevel <= MAX_LEVEL )
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 					{
 #ifdef _DEBUG
 						TRACE( "%d, (%d, %d, %d, %d)\n", pRespawnInfo->m_dwIndex, pRespawnInfo->m_rect.left, pRespawnInfo->m_rect.top, pRespawnInfo->m_rect.right, pRespawnInfo->m_rect.bottom );
@@ -2063,19 +1878,8 @@ void CDPDatabaseClient::SendLogSMItemUse( const char *Action, CUser* pUser, CIte
 		ar << (int)0;
 		ar << (BOOL)0;
 		ar << (DWORD)0;
-#if __VER >= 12 // __EXT_PIERCING
 		ar << (int)0;
 		ar << (int)0;
-#else // __EXT_PIERCING
-		ar << (int)0;
-		ar << (DWORD)0;
-		ar << (DWORD)0;
-		ar << (DWORD)0;
-		ar << (DWORD)0;
-#if __VER >= 9 // __ULTIMATE
-		ar << (DWORD)0;
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
 		ar << (int)0;
 	}
 	else
@@ -2096,31 +1900,18 @@ void CDPDatabaseClient::SendLogSMItemUse( const char *Action, CUser* pUser, CIte
 		ar << (int)pItemElem->m_nResistAbilityOption;
 		ar << pItemElem->m_bCharged;
 		ar << pItemElem->m_dwKeepTime;
-#if __VER >= 12 // __EXT_PIERCING
 		ar << pItemElem->GetPiercingSize();
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
 			ar << pItemElem->GetPiercingItem( i );
 		ar << pItemElem->GetUltimatePiercingSize();
 		for( int i=0; i<pItemElem->GetUltimatePiercingSize(); i++ )
 			ar << pItemElem->GetUltimatePiercingItem( i );
-#else // __EXT_PIERCING
-		ar << pItemElem->GetPiercingSize();
-		ar << pItemElem->GetPiercingItem( 0 );
-		ar << pItemElem->GetPiercingItem( 1 );
-		ar << pItemElem->GetPiercingItem( 2 );
-		ar << pItemElem->GetPiercingItem( 3 );
-#if __VER >= 9 // __ULTIMATE
-		ar << pItemElem->GetPiercingItem( 4 );
-#endif // __ULTIMATE
-#endif // __EXT_PIERCING
 		ar << pItemElem->GetRandomOptItemId();
 		// mirchang_100514 TransformVisPet_Log
-#if __VER >= 15 // __PETVIS
 		if( pItemElem->IsTransformVisPet() == TRUE )
 		{
 			ar << (BYTE)100;
 		}
-#endif // __PETVIS
 		// mirchang_100514 TransformVisPet_Log
 	}
 	SEND( ar, this, DPID_SERVERPLAYER );
@@ -2136,7 +1927,6 @@ void CDPDatabaseClient::SendChangeBankPass( const char* szName, const char *szNe
 
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 void	CDPDatabaseClient::SendLogGetHonorTime(CMover* pMover, int nGetHonor )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_LOG_GETHONORTIME, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -2144,7 +1934,6 @@ void	CDPDatabaseClient::SendLogGetHonorTime(CMover* pMover, int nGetHonor )
 	ar << pMover->m_idPlayer;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __HONORABLE_TITLE			// 달인
 
 void CDPDatabaseClient::SendLogUniqueItem(CMover* pMover, CItem* pItem, int nOption )
 {
@@ -2217,13 +2006,8 @@ void CDPDatabaseClient::SendLogPkPvp( CMover* pUser, CMover* pLose, int nPoint, 
 		ar << pLose->GetLevel();
 		ar << pLose->GetPos();
 		ar << pLose->m_nFame;
-#if __VER >= 8 // __S8_PK
 		ar << pLose->m_nPKValue;
 		ar << pLose->m_dwPKPropensity;
-#else // __VER >= 8 // __S8_PK
-		ar << pLose->m_nNumKill;
-		ar << pLose->m_nSlaughter;
-#endif // __VER >= 8 // __S8_PK
 	}
 
 	if( nSendBuf == 2 || nSendBuf == 3 )
@@ -2233,13 +2017,8 @@ void CDPDatabaseClient::SendLogPkPvp( CMover* pUser, CMover* pLose, int nPoint, 
 		ar << pUser->GetLevel();
 		ar << pUser->GetPos();
 		ar << pUser->m_nFame;
-#if __VER >= 8 // __S8_PK
 		ar << pUser->m_nPKValue;
 		ar << pUser->m_dwPKPropensity;
-#else // __VER >= 8 // __S8_PK
-		ar << pUser->m_nNumKill;
-		ar << pUser->m_nSlaughter;
-#endif // __VER >= 8 // __S8_PK
 	}
 
 	SEND( ar, this, DPID_SERVERPLAYER );		
@@ -2934,7 +2713,6 @@ void CDPDatabaseClient::OnEventFlag( CAr & ar, DPID, DPID )
 	}
 }
 
-#if __VER >= 9 // __EVENTLUA
 void CDPDatabaseClient::OnEventStateLua( CAr & ar, DPID, DPID )
 {
 	BOOL bTextOut = FALSE;
@@ -2952,9 +2730,7 @@ void CDPDatabaseClient::OnEventStateLua( CAr & ar, DPID, DPID )
 		if( bTextOut )
 			g_UserMng.AddEventLua( nId, bState );
 	}
-#if __VER >= 12 // __EVENTLUA_0826
 	prj.m_EventLua.PrepareProxy();
-#endif	// __EVENTLUA_0826	
 }
 
 void CDPDatabaseClient::OnEventLuaChanged( CAr & ar, DPID, DPID )
@@ -2963,9 +2739,7 @@ void CDPDatabaseClient::OnEventLuaChanged( CAr & ar, DPID, DPID )
 	if( prj.m_EventLua.m_bRun )
 		Error( "Event.lua 재실행 완료!!!" );
 }
-#endif // __EVENTLUA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CDPDatabaseClient::OnGC1to1Open( CAr & ar, DPID, DPID )
 {
 	g_GuildCombat1to1Mng.GuildCombat1to1Open();
@@ -3009,7 +2783,6 @@ void CDPDatabaseClient::OnGC1to1TenderGuildFromDB( CAr & ar, DPID, DPID )
 			g_GuildCombat1to1Mng.m_vecTenderFailGuild.push_back( gc1to1Tender );
 	}
 }
-#endif // __GUILD_COMBAT_1TO1
 
 void CDPDatabaseClient::CalluspLoggingQuest( u_long idPlayer, int nQuest, int nState, const char* pszComment )
 {
@@ -3043,7 +2816,6 @@ void CDPDatabaseClient::CalluspXXXMultiServer( u_long uKey, u_long idPlayer )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#if __VER >= 9	// __PET_0410
 void CDPDatabaseClient::CalluspPetLog( u_long idPlayer, SERIALNUMBER iSerial, DWORD dwData, int nType, CPet* pPet )
 {
 	if( pPet == NULL )
@@ -3053,17 +2825,13 @@ void CDPDatabaseClient::CalluspPetLog( u_long idPlayer, SERIALNUMBER iSerial, DW
 	pPet->Serialize( ar );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __PET_0410
 
-#if __VER >= 9 // __EVENTLUA
 void CDPDatabaseClient::SendEventLuaChanged( void )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_EVENTLUA_CHANGED, DPID_UNKNOWN, DPID_UNKNOWN );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __EVENTLUA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 void CDPDatabaseClient::SendGC1to1StateToDBSrvr( void )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_STATETODB, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -3101,10 +2869,8 @@ void CDPDatabaseClient::SendGC1to1WarGuild( DWORD dwWorldId, u_long uGuildId_0, 
 	ar << dwWorldId << uGuildId_0 << uGuildId_1 << cState;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __GUILD_COMBAT_1TO1
 
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 
 void CDPDatabaseClient::SendQueryGetGuildBankLogList( u_long idReceiver, DWORD idGuild, BYTE byListType )
 {
@@ -3141,8 +2907,6 @@ void CDPDatabaseClient::OnGuildBankLogViewFromDB( CAr & ar, DPID, DPID )
 	}
 }
 
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 void CDPDatabaseClient::SendQueryGetSealChar( u_long idReceiver ,const char* szAccount)
 {
@@ -3287,9 +3051,7 @@ void CDPDatabaseClient::OnSealCharGetFromDB( CAr & ar, DPID, DPID )
 		}
 	}
 }
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 12 // __LORD
 void CDPDatabaseClient::OnElectionAddDeposit( CAr & ar, DPID, DPID )
 {
 	u_long idPlayer;
@@ -3543,9 +3305,7 @@ void CDPDatabaseClient::SendElectionBeginEndVote( void )
 	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_END_VOTE, DPID_UNKNOWN, DPID_UNKNOWN );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 void CDPDatabaseClient::SendSecretRoomWinGuild( BYTE nCont, DWORD dwGuildId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_TAX_SET_SECRETROOM_WINNER, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -3599,10 +3359,8 @@ void CDPDatabaseClient::OnTaxInfo( CAr & ar, DPID, DPID )
 	if( bToAllClient )	// 세율 변경 시점
 	{
 		g_UserMng.AddTaxInfo();
-#if __VER >= 12 // __SECRET_ROOM
 		if( g_eLocal.GetState( EVE_SECRETROOM ) )
 			g_DPCoreClient.SendCaption( GETTEXT(TID_GAME_TAX_CHANGENEXT) );
-#endif // __SECRET_ROOM
 		// 사냥터용 비밀의 방에 있는 놈들을 쫓아낸다.
 		CWorld* pWorld = g_WorldMng.GetWorld( WI_DUNGEON_SECRET_0 );
 		if( !pWorld )
@@ -3624,9 +3382,7 @@ void CDPDatabaseClient::SendAddTax( BYTE nCont, int nTax, BYTE nTaxKind )
 	ar << nCont << nTax << nTaxKind;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __TAX
 
-#if __VER >= 12 // __SECRET_ROOM
 void CDPDatabaseClient::SendSecretRoomInsertToDB( BYTE nContinent, __SECRETROOM_TENDER & srTender )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_SECRETROOM_TENDER_INSERTTODB, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -3697,9 +3453,7 @@ void CDPDatabaseClient::OnSecretRoomTenderInfo( CAr & ar, DPID, DPID )
 		pSRCont->m_vecSecretRoomTender.push_back( srTender );
 	}
 }
-#endif // __SECRET_ROOM
 
-#if __VER >= 13 // __RAINBOW_RACE
 void CDPDatabaseClient::OnRainbowRaceInfo( CAr & ar, DPID, DPID )
 {
 	CRainbowRaceMng::GetInstance()->Clear();
@@ -3752,9 +3506,7 @@ void CDPDatabaseClient::SendRainbowRaceRanking( DWORD dwPlayerId, int nRanking )
 	ar << dwPlayerId << nRanking;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 void CDPDatabaseClient::OnHousingLoadInfo( CAr & ar, DPID, DPID )
 {
 	DWORD dwPlayerId;
@@ -3831,9 +3583,7 @@ void CDPDatabaseClient::OnHousingDBFailed( CAr & ar, DPID, DPID )
 			Error( "CDPDatabaseClient::OnHousingDBFailed -> Invalid User - %d, %d", dwPlayerId, dwItemId );
 	}
 }
-#endif // __HOUSING
 
-#if __VER >= 13 // __COUPLE_1117
 void CDPDatabaseClient::SendPropose( u_long idProposer, u_long idTarget )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_PROPOSE, DPID_UNKNOWN, DPID_UNKNOWN );  
@@ -3881,7 +3631,6 @@ void CDPDatabaseClient::OnCouple( CAr & ar, DPID, DPID )
 	CCoupleHelper::Instance()->Serialize( ar );
 }
 
-#if __VER >= 13 // __COUPLE_1202
 void CDPDatabaseClient::SendQueryAddCoupleExperience( u_long idPlayer, int nExperience )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_ADD_COUPLE_EXPERIENCE, DPID_UNKNOWN, DPID_UNKNOWN );  
@@ -3893,8 +3642,6 @@ void CDPDatabaseClient::OnAddCoupleExperience( CAr & ar, DPID, DPID )
 {
 	CCoupleHelper::Instance()->OnAddCoupleExperience( ar );
 }
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
 
 #ifdef __FUNNY_COIN
 void CDPDatabaseClient::SendFunnyCoinReqUse( DWORD dwPlayerId, CItemElem* pItemElem )	// 퍼니코인을 사용했음을 TransServer에 알린다.
@@ -3910,14 +3657,12 @@ void CDPDatabaseClient::OnFunnyCoinAckUse( CAr & ar, DPID, DPID )	// 퍼니코인 사
 	CFunnyCoin::GetInstance()->OnFunnyCoinAckUse( ar );
 }
 #endif // __FUNNY_COIN
-#if __VER >= 14 // __PCBANG
 void CDPDatabaseClient::OnPCBangToggle( CAr & ar, DPID, DPID )
 {
 	BOOL bApply;
 	ar >> bApply;
 	CPCBang::GetInstance()->SetApply( bApply );
 }
-#endif // __PCBANG
 
 #ifdef __VTN_TIMELIMIT
 void CDPDatabaseClient::SendTimeLimitInfoReq( DWORD dwPlayerId, char* szAccount )
@@ -3967,14 +3712,12 @@ void CDPDatabaseClient::OnTimeLimitReset( CAr & ar, DPID, DPID )
 
 #endif // __VTN_TIMELIMIT
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 void CDPDatabaseClient::SendLogInstanceDungeon( DWORD dwDungeonId, DWORD dwWorldId, u_long uChannel, int nDungeonType, char chState )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_INSTANCEDUNGEON_LOG, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << dwDungeonId << dwWorldId << uChannel << nDungeonType << chState;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-#endif // __INSTANCE_DUNGEON
 
 #ifdef __QUIZ
 void CDPDatabaseClient::OnQuizEventOpen( CAr & ar, DPID, DPID )
@@ -4052,7 +3795,6 @@ void CDPDatabaseClient::SendErrorLogToDB( CUser* pUser, char chType, LPCTSTR szE
 }
 #endif // __ERROR_LOG_TO_DB
 
-#if __VER >= 15 // __GUILD_HOUSE
 void CDPDatabaseClient::OnLoadGuildHouse( CAr & ar, DPID, DPID )
 {
 	GuildHouseMng->Serialize( ar );
@@ -4137,9 +3879,7 @@ void CDPDatabaseClient::OnGuildHouseExpired( CAr & ar, DPID, DPID )
 	GuildHouseMng->OnGuildHouseExpired( ar );
 }
 #endif // __GUILD_HOUSE_MIDDLE
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 void CDPDatabaseClient::OnAllCampus( CAr & ar, DPID, DPID )
 {
 	CCampusHelper::GetInstance()->Serialize( ar );
@@ -4181,4 +3921,3 @@ void CDPDatabaseClient::SendUpdateCampusPoint( u_long idPlayer, int nCampusPoint
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#endif // __CAMPUS

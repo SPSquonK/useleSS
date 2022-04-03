@@ -3,7 +3,6 @@
 
 #include "StdAfx.h"
 
-#if __VER >= 15 // __BS_CHANGING_ENVIR
 
 #include "vutil.h"
 
@@ -57,4 +56,3 @@ IDirect3DTexture9* TexturePool::GetTexture( const string& dir, const string& fil
 	return pNewTex;
 }
 
-#endif	//__BS_CHANGING_ENVIR

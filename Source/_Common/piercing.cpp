@@ -13,24 +13,16 @@ CPiercing::~CPiercing()
 CPiercing& CPiercing::operator=( const CPiercing & piercing )
 {
 	m_vPiercing.assign( piercing.m_vPiercing.begin(), piercing.m_vPiercing.end() );
-#if __VER >= 12 // __EXT_PIERCING
 	m_vUltimatePiercing.assign( piercing.m_vUltimatePiercing.begin(), piercing.m_vUltimatePiercing.end() );
-#endif // __EXT_PIERCING
-#if __VER >= 15 // __PETVIS
 	m_vtmPetVis.assign( piercing.m_vtmPetVis.begin(), piercing.m_vtmPetVis.end() );
-#endif // __PETVIS
 	return *this;
 }
 
 void CPiercing::Clear( void )
 {
 	m_vPiercing.clear();
-#if __VER >= 12 // __EXT_PIERCING
 	m_vUltimatePiercing.clear();
-#endif // __EXT_PIERCING
-#if __VER >= 15 // __PETVIS
 	m_vtmPetVis.clear();
-#endif // __PETVIS
 }
 
 void CPiercing::Serialize( CAr & ar )
@@ -40,16 +32,12 @@ void CPiercing::Serialize( CAr & ar )
 		ar << GetPiercingSize();
 		for( int i = 0; i < GetPiercingSize(); i++ )
 			ar << GetPiercingItem( i );
-#if __VER >= 12 // __EXT_PIERCING
 		ar << GetUltimatePiercingSize();
 		for( int i = 0; i < GetUltimatePiercingSize(); i++ )
 			ar << GetUltimatePiercingItem( i );
-#endif // __EXT_PIERCING
-#if __VER >= 15 // __PETVIS
 		ar << m_vtmPetVis.size();
 		for( int i=0; i<(int)( m_vtmPetVis.size() ); i++ )
 			ar << GetVisKeepTime( i ) - time_null();
-#endif // __PETVIS
 	}
 	else
 	{
@@ -63,7 +51,6 @@ void CPiercing::Serialize( CAr & ar )
 			ar >> dwItem;
 			SetPiercingItem( i, dwItem );
 		}
-#if __VER >= 12 // __EXT_PIERCING
 		m_vUltimatePiercing.clear();
 		ar >> nSize;
 		SetUltimatePiercingSize( nSize );
@@ -73,8 +60,6 @@ void CPiercing::Serialize( CAr & ar )
 			ar >> dwItem;
 			SetUltimatePiercingItem( i, dwItem );
 		}
-#endif // __EXT_PIERCING
-#if __VER >= 15 // __PETVIS
 		ar >> nSize;
 		SetVisKeepTimeSize( nSize );
 		for( int i=0; i<nSize; i++ )
@@ -83,7 +68,6 @@ void CPiercing::Serialize( CAr & ar )
 			ar >> tmTemp;
 			SetVisKeepTime( i, tmTemp + time_null() );
 		}
-#endif // __PETVIS
 	}
 }
 
@@ -119,16 +103,13 @@ DWORD CPiercing::GetPiercingItem( int nth )
 BOOL CPiercing::IsPiercedItem()
 {
 	if( GetPiercingSize() > 0
-#if __VER >= 12 // __EXT_PIERCING
 		|| GetUltimatePiercingSize() > 0 
-#endif // __EXT_PIERCING
 		)
 		return TRUE;
 
 	return FALSE;
 }
 
-#if __VER >= 12 // __EXT_PIERCING
 void CPiercing::SetUltimatePiercingSize( int nSize )
 {
 	if( nSize > MAX_PIERCING_ULTIMATE )
@@ -157,9 +138,7 @@ DWORD CPiercing::GetUltimatePiercingItem( int nth )
 
 	return m_vUltimatePiercing[nth];
 }
-#endif // __EXT_PIERCING
 
-#if __VER >= 15 // __PETVIS
 void CPiercing::SetVisKeepTime( int nth, time_t tmKeep )
 {
 	if( nth >= GetPiercingSize() || nth >= (int)( m_vtmPetVis.size() ) )
@@ -175,4 +154,3 @@ time_t CPiercing::GetVisKeepTime( int nth )
 
 	return m_vtmPetVis[nth];
 }
-#endif // __PETVIS

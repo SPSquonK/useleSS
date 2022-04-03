@@ -1,6 +1,5 @@
 #include "stdafx.H"
 
-#if __VER >= 13 // __COUPLE_1117
 
 #include "couplehelper.h"
 #include "user.h"
@@ -12,9 +11,7 @@
 #include "defineobj.h"
 extern	CUserMng	g_UserMng;
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#include "honor.h"
-#endif	// __HONORABLE_TITLE			// 달인
 
 CCoupleHelper::CCoupleHelper()
 {
@@ -174,16 +171,12 @@ void CCoupleHelper::OnCoupleResult( CAr & ar )
 		if( IsValidObj( pProposer ) )
 		{
 			pProposer->AddCoupleResult( idTarget, pszTarget );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			pProposer->SetHonorAdd(	HS_COUPLE_COUNT,HI_COUNT_CHECK );
-#endif	// __HONORABLE_TITLE
 		}
 		if( IsValidObj( pTarget ) )
 		{
 			pTarget->AddCoupleResult( idProposer, pszProposer );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			pTarget->SetHonorAdd(HS_COUPLE_COUNT,HI_COUNT_CHECK );
-#endif	// __HONORABLE_TITLE			// 달인
 		}
 	}
 	else
@@ -223,7 +216,6 @@ void CCoupleHelper::OnDecoupleResult( CAr & ar )
 		if( IsValidObj( pUser ) )
 		{
 			pUser->AddDecoupleResult();
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			int nIdx = CTitleManager::Instance()->GetIdx(HS_COUPLE_LV,HI_COUNT_CHECK);
 			if( nIdx >= 0)
 			{	
@@ -233,12 +225,10 @@ void CCoupleHelper::OnDecoupleResult( CAr & ar )
 				if( nNeedCount >= nPrevLvl )
 					pUser->AddHonorListAck();
 			}
-#endif	// __HONORABLE_TITLE			// 달인
 		}
 		if( IsValidObj( pPartner ) )
 		{
 			pPartner->AddDecoupleResult();
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			int nIdx = CTitleManager::Instance()->GetIdx(HS_COUPLE_LV,HI_COUNT_CHECK);
 			if( nIdx >= 0)
 			{	
@@ -248,7 +238,6 @@ void CCoupleHelper::OnDecoupleResult( CAr & ar )
 				if( nNeedCount >= nPrevLvl )
 					pPartner->AddHonorListAck();
 			}
-#endif	// __HONORABLE_TITLE			// 달인
 		}
 	}
 	else
@@ -258,7 +247,6 @@ void CCoupleHelper::OnDecoupleResult( CAr & ar )
 	}
 }
 
-#if __VER >= 13 // __COUPLE_1202
 void CCoupleHelper::OnAddCoupleExperience( CAr & ar )
 {
 	u_long idPlayer;
@@ -267,9 +255,7 @@ void CCoupleHelper::OnAddCoupleExperience( CAr & ar )
 	CCouple* pCouple	= GetCouple( idPlayer );
 	if( pCouple )
 	{
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 		int nPreCouplelvl =	pCouple->GetLevel();
-#endif	// __HONORABLE_TITLE			// 달인
 		pCouple->AddExperience( nExperience );
 		CUser* pFirst	= static_cast<CUser*>( prj.GetUserByID( pCouple->GetFirst() ) );
 		CUser* pSecond	= static_cast<CUser*>( prj.GetUserByID( pCouple->GetSecond() ) );
@@ -277,23 +263,18 @@ void CCoupleHelper::OnAddCoupleExperience( CAr & ar )
 		{
 			pFirst->RemoveIk3Buffs( IK3_COUPLE_BUFF );
 			pFirst->AddAddCoupleExperience( nExperience );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			if(nPreCouplelvl < pCouple->GetLevel())
 				pFirst->SetHonorAdd(HS_COUPLE_LV,HI_COUNT_CHECK,pCouple->GetLevel());
-#endif	// __HONORABLE_TITLE			// 달인
 		}
 		if( IsValidObj( pSecond ) )
 		{
 			pSecond->RemoveIk3Buffs( IK3_COUPLE_BUFF );
 			pSecond->AddAddCoupleExperience( nExperience );
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 			if(nPreCouplelvl < pCouple->GetLevel())
 				pSecond->SetHonorAdd(HS_COUPLE_LV,HI_COUNT_CHECK,pCouple->GetLevel());
-#endif	// __HONORABLE_TITLE			// 달인
 		}
 	}
 }
-#endif	// __COUPLE_1202
 
 void CCoupleHelper::OnUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData )
 {
@@ -306,4 +287,3 @@ void CCoupleHelper::OnUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData
 			pPartner->AddQueryPlayerData( idPlayer, pPlayerData );
 	}
 }
-#endif	// __COUPLE_1117

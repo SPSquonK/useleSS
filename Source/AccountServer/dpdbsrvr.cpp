@@ -166,9 +166,7 @@ void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 #ifdef __BILLING0712
 		*(UNALIGNED DWORD*)( lpBuf + uBufSize - sizeof(DWORD) )	= pAccount->m_dwBillingClass;
 #endif	// __BILLING0712
-#if __VER >= 14 // __PCBANG
 		*(UNALIGNED DWORD*)( lpBuf + uBufSize - sizeof(DWORD) )	= g_AccountMng.PopPCBangPlayer( dwAuthKey );
-#endif // __PCBANG
 		Send( (LPVOID)lpBuf, (DWORD)uBufSize, dpid );
 		OutputDebugString( "ACCOUNTSERVER.EXE\t// PACKETTYPE_JOIN" );
 		

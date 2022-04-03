@@ -44,11 +44,7 @@ public:
 	void		ModifyView( CCtrl* pCtrl );
 
 #ifdef __LAYER_1015
-#if __VER >= 15 // __GUILD_HOUSE
 	void	Invalidate( BOOL bInvalid )	{ m_bInvalid = bInvalid; }
-#else // __GUILD_HOUSE
-	void	Invalidate()	{	m_bInvalid	= TRUE;		}
-#endif // __GUILD_HOUSE
 	BOOL	IsInvalid()		{	return m_bInvalid;	}
 #endif	// __LAYER_1015
 

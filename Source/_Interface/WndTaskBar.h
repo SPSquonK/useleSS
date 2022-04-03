@@ -108,9 +108,7 @@ public:
 	OBJID		   m_idTarget;		// 스킬사용대상.
 	int            m_nSlotIndex;
 	int		       m_nActionPoint;		// 액션 포인트 - 시리얼라이즈 대상.
-#if __VER >= 12 // __LORD
 	void RenderLordCollTime( CPoint pt, DWORD dwSkillId, C2DRender* p2DRender );
-#endif
 	void RenderCollTime( CPoint pt, DWORD dwSkillId, C2DRender* p2DRender );
 	void UpdateItem();
 	void PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect );

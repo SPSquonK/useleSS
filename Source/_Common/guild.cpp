@@ -246,13 +246,6 @@ CGuildMember::CGuildMember()
 	m_nLose			= 0;
 	*m_szAlias		= '\0';
 	m_nMemberLv		= 0;
-#if __VER < 11 // __SYS_PLAYER_DATA
-	m_dwSex			= 0;
-	m_nJob			= 0;
-	m_nLevel		= 0;
-	m_nLogin		= 0;
-	m_nMultiNo		= 100;
-#endif	// __SYS_PLAYER_DATA
 	m_idSelectedVote = 0; 
 	m_nSurrender	= 0;
 	m_nClass = 0;
@@ -268,10 +261,6 @@ void CGuildMember::Serialize( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_idPlayer << m_nPay << m_nGiveGold << m_dwGivePxpCount << m_nWin << m_nLose << m_nMemberLv;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		ar << m_dwSex << m_nJob << m_nLevel;
-		ar << m_nLogin << m_nMultiNo;
-#endif	// __SYS_PLAYER_DATA
 		ar << m_idSelectedVote;
 		ar << m_nSurrender;
 		ar << m_nClass;
@@ -280,10 +269,6 @@ void CGuildMember::Serialize( CAr & ar )
 	else
 	{
 		ar >> m_idPlayer >> m_nPay >> m_nGiveGold >> m_dwGivePxpCount >> m_nWin >> m_nLose >> m_nMemberLv;
-#if __VER < 11 // __SYS_PLAYER_DATA
-		ar >> m_dwSex >> m_nJob >> m_nLevel;
-		ar >> m_nLogin >> m_nMultiNo;
-#endif	// __SYS_PLAYER_DATA
 		ar >> m_idSelectedVote;
 		ar >> m_nSurrender;
 		ar >> m_nClass;

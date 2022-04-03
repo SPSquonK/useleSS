@@ -1,4 +1,3 @@
-#if __VER >= 9 // __CSC_VER9_1
 
 #ifndef __WNDPETSYSTEM__H
 #define __WNDPETSYSTEM__H
@@ -15,7 +14,6 @@ struct PETCAMTABLE
 
 #define MAX_PET_CLASS 7
 
-#if __VER >= 12 // __PET_0519
 class CWndPetAwakCancel : public CWndNeuz 
 { 
 public: 	
@@ -41,7 +39,6 @@ public:
 
 	void SetDescription();
 }; 
-#endif
 
 class CWndPetStatus : public CWndNeuz
 {
@@ -110,7 +107,6 @@ public:
 	void LockShowLevel(BOOL lFlag, int nLevel, int nPos);
 };
 
-#if __VER >= 15 // __PETVIS
 
 class CWndConfirmVis : public CWndNeuz 
 { 
@@ -199,7 +195,6 @@ protected:
 	float	m_fRadius;
 };
 
-#endif //#ifdef __PETVIS
 
 class CWndFoodConfirm : public CWndNeuz 
 { 
@@ -320,7 +315,6 @@ public:
 	void SetItem(int nId);
 }; 
 
-#if __VER >= 12 // __CSC_VER12_5
 #define MAX_TRANS_EGG 10
 
 class CWndPetTransEggs : public CWndNeuz 
@@ -351,7 +345,5 @@ private:
 	void ResetEgg();
 	void CheckFull();
 }; 
-#endif //__CSC_VER12_5
 
 #endif //__WNDPETSYSTEM__H
-#endif //__CSC_VER9_1

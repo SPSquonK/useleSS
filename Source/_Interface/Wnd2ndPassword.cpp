@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Wnd2ndPassword.h"
-#if __VER >= 15 /* __2ND_PASSWORD_SYSTEM */ && defined( __CLIENT )
+#if defined( __CLIENT )
 #include "DPClient.h"
 #include "DPLoginClient.h"
 #include "Network.h"
@@ -8,7 +8,7 @@
 #include "defineText.h"
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
 
-#if __VER >= 15 /* __2ND_PASSWORD_SYSTEM */ && defined( __CLIENT )
+#if defined( __CLIENT )
 //-----------------------------------------------------------------------------
 extern CDPClient g_DPlay;
 //-----------------------------------------------------------------------------
@@ -126,18 +126,6 @@ BOOL CWnd2ndPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					CNetwork::GetInstance().OnEvent( CACHE_CONNECTED );
 					if( m_nSelectCharacter != -1 && g_Neuz.m_apPlayer[ m_nSelectCharacter ] )
 					{
-#if __VER < 8 // __S8_PK
-						// 한국은 2005/11/1 PK서버가 없어지고, 아래의 코드가 있으면 카오인 유저는 모든 서버에 접속 할 수 없으므로 막는다.
-						if( ::GetLanguage() != LANG_KOR )		
-						{
-							if( g_Neuz.m_b18Server == FALSE && g_Neuz.m_apPlayer[ m_nSelectCharacter ]->IsChaotic() )
-							{
-								//g_WndMng.OpenMessageBox( "선택된 플레이어는 카르마 수치가 낮아서 PK서버에만 접속 할 수 있습니다." );
-								g_WndMng.OpenMessageBox( prj.GetText(TID_PK_REFUSE_CHAOTIC) );
-								break;
-							}
-						}
-#endif // __VER < 8 // __S8_PK
 						g_Neuz.m_dwTempMessage = 1;
 						g_Neuz.m_timerConnect.Set( SEC( 1 ) );
 					}

@@ -1,7 +1,6 @@
 #pragma once
 #include "dbcontroller.h"
 
-#if __VER >= 13 // __RAINBOW_RACE
 
 /////////////////////////////////////////////////////////////////////////
 /// CRainbowRaceDBCtrl //////////////////////////////////////////////////
@@ -50,4 +49,3 @@ private:
 	CRainbowRaceDBCtrl	m_RRDbCtrl;
 };
 
-#endif // __RAINBOW_RACE

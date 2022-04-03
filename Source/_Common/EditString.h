@@ -46,9 +46,7 @@ public:
 
 	~CEditString();
 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	void InitializeValue( void );
-#endif // __IMPROVE_QUEST_INTERFACE
 	void Init( int nWidth, SIZE sizeFont );
 	void Init( CD3DFont* pFont, CRect* pRect );
 	void Adjust( int nWidth, SIZE sizeFont );
@@ -68,11 +66,7 @@ public:
 	
 	// ref-counted copy from another CString
 	const CEditString& operator=( const CString& stringSrc ) { SetString( stringSrc ); return *this; } 
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	const CEditString& operator=( const CEditString& stringSrc );
-#else // __IMPROVE_QUEST_INTERFACE
-	const CEditString& operator=( const CEditString& stringSrc ) { SetEditString( stringSrc ); return *this; } 
-#endif // __IMPROVE_QUEST_INTERFACE
 	// set string content to single character
 	//const CString& operator=(TCHAR ch) { SetString( ch ); return *this; } 
 #ifdef _UNICODE
@@ -109,11 +103,7 @@ public:
 	TCHAR GetAt( int nIndex ) const;
 	void SetAt( int nIndex, TCHAR ch, DWORD dwColor = 0xff000000, DWORD dwStyle = 0x00000000, WORD wCodePage = 0 );
 	void AddParsingString( LPCTSTR lpsz, DWORD dwColor = 0xff000000, DWORD dwStyle = 0x00000000, WORD wCodePage = 0, DWORD dwPStyle = 0x00000001 );
-#if __VER >= 15 // __IMPROVE_QUEST_INTERFACE
 	void SetParsingString( LPCTSTR lpsz, DWORD dwColor = 0xff000000, DWORD dwStyle = 0x00000000, WORD wCodePage = 0, DWORD dwPStyle = 0x00000001, BOOL bNoInitAlign = FALSE );
-#else // __IMPROVE_QUEST_INTERFACE
-	void SetParsingString( LPCTSTR lpsz, DWORD dwColor = 0xff000000, DWORD dwStyle = 0x00000000, WORD wCodePage = 0, DWORD dwPStyle = 0x00000001 );
-#endif // __IMPROVE_QUEST_INTERFACE
 	void AddString( LPCTSTR lpsz, DWORD dwColor = 0xff000000, DWORD dwStyle = 0x00000000, WORD wCodePage = 0 );
 	void AddString( char ch, DWORD dwColor = 0xff000000, DWORD dwStyle = 0x00000000, WORD wCodePage = 0 );
 	void SetString( LPCTSTR lpsz, DWORD dwColor = 0xff000000, DWORD dwStyle = 0x00000000, WORD wCodePage = 0 );

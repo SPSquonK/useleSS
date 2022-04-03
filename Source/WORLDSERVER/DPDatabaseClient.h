@@ -6,12 +6,8 @@
 #include "guild.h"
 
 #include "eveschool.h"
-#if __VER >= 12 // __SECRET_ROOM
 #include "SecretRoom.h"
-#endif // __SECRET_ROOM
-#if __VER >= 15 // __GUILD_HOUSE
 #include "GuildHouse.h"
-#endif // __GUILD_HOUSE
 
 #undef	theClass
 #define theClass	CDPDatabaseClient
@@ -110,51 +106,33 @@ public:
 	void	SendSchoolReport( PSCHOOL_ENTRY pSchool );
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2, SERIALNUMBER iSerialNumber );
 	
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	void	SendQueryGetGuildBankLogList( u_long idReceiver, DWORD	idGuild,BYTE byListType );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	void	SendQueryGetSealChar( u_long idReceiver ,const char* szAccount);
 	void	SendQueryGetSealCharConm( u_long idReceiver );
 	void	SendQueryGetSealCharGet( u_long idReceiver ,const char* szAccount,DWORD dwGetId);
 	void	SendQueryGetSealCharSet( u_long idReceiver ,const char* szAccount,LONG lSetPlayerSlot,DWORD dwSetPlayerId);
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
-#if __VER >= 9	// __PET_0410
 	void	CalluspPetLog( u_long idPlayer, SERIALNUMBER iSerial, DWORD dwData, int nType, CPet* pPet );
-#endif	// __PET_0410
 	
-#if __VER >= 9 // __EVENTLUA
 	void	SendEventLuaChanged( void );
-#endif // __EVENTLUA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	void	SendGC1to1StateToDBSrvr( void );
 	void	SendGC1to1Tender( char cGU, u_long uGuildId, int nPenya, char cState );
 	void	SendGC1to1LineUp( u_long uGuildId, vector<u_long>& vecMemberId );
 	void	SendGC1to1WarPerson( u_long uGuildId, u_long uIdPlayer, char cState );
 	void	SendGC1to1WarGuild( DWORD dwWorldId, u_long uGuildId_0, u_long uGuildId_1, char cState );
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	SendUpdatePlayerData( CUser* pUser );
-#endif	// __SYS_PLAYER_DATA
 
 private:
 	USES_PFNENTRIES;
 
 //	Handlers
 	void	OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser );
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	void	OnAllPlayerData( CAr & ar, DPID, DPID );
 	void	OnAddPlayerData( CAr & ar, DPID, DPID );
 	void	OnDeletePlayerData( CAr & ar, DPID, DPID );
 	void	OnUpdatePlayerData( CAr & ar, DPID, DPID );
-#else	// __SYS_PLAYER_DATA
-	void	OnAllPlayerID( CAr & ar, DPID, DPID );
-	void	OnPlayerID( CAr & ar, DPID, DPID );
-	void	OnRemovePlayerID( CAr & ar, DPID, DPID );
-#endif	// __SYS_PLAYER_DATA
 	void	OnGCPlayerPoint( CAr & ar );
 	void	OnGCResultValue( CAr & ar );
 	void	OnAllGuildCombat( CAr & ar, DPID, DPID );
@@ -178,23 +156,15 @@ private:
 	void	OnEventGeneric( CAr & ar, DPID, DPID );
 	void	OnEventFlag( CAr & ar, DPID, DPID );
 
-#if __VER >= 9 // __EVENTLUA
 	void	OnEventStateLua( CAr & ar, DPID, DPID );
 	void	OnEventLuaChanged( CAr & ar, DPID, DPID );
-#endif // __EVENTLUA
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 	void	OnGC1to1Open( CAr & ar, DPID, DPID );
 	void	OnGC1to1TenderGuildFromDB( CAr & ar, DPID, DPID );
-#endif // __GUILD_COMBAT_1TO1
 
-#if __VER >= 11 // __MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
 	void	OnGuildBankLogViewFromDB( CAr & ar, DPID, DPID );
-#endif //__MA_VER11_04	// 길드 창고 로그 기능 world,database,neuz
-#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 	void	OnSealCharFromDB( CAr & ar, DPID, DPID );
 	void	OnSealCharGetFromDB( CAr & ar, DPID, DPID );
-#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
 
 /*
 #ifdef __S0114_RELOADPRO
@@ -202,7 +172,6 @@ private:
 #endif // __S0114_RELOADPRO
 */
 
-#if __VER >= 12 // __LORD
 private:
 	void	OnElectionAddDeposit( CAr & ar, DPID, DPID );
 	void	OnElectionSetPledge( CAr & ar, DPID, DPID );
@@ -228,9 +197,7 @@ public:
 	void	SendElectionBeginVote( void );
 	void	SendElectionBeginEndVote( void );
 	void	SendLEventInitialize( void );
-#endif	// __LORD
 
-#if __VER >= 12 // __TAX
 private:
 	void	OnTaxInfo( CAr & ar, DPID, DPID );
 public:
@@ -239,9 +206,7 @@ public:
 	void	SendTaxRate( BYTE nCont, int nSalesTaxRate, int nPurchaseTaxRate );
 	void	SendAddTax( BYTE nCont, int nTax, BYTE nTaxKind );
 	void	SendApplyTaxRateNow();
-#endif // __TAX
 
-#if __VER >= 12 // __SECRET_ROOM
 private:
 	void	OnSecretRoomInfoClear( CAr & ar, DPID, DPID );
 	void	OnSecretRoomTenderInfo( CAr & ar, DPID, DPID );
@@ -250,9 +215,7 @@ public:
 	void	SendSecretRoomUpdateToDB( BYTE nContinent, __SECRETROOM_TENDER & srTender, char chState );
 	void	SendSecretRoomInsertLineUpToDB( BYTE nContinent, __SECRETROOM_TENDER & srTender );
 	void	SendSecretRoomClosed();
-#endif // __SECRET_ROOM
 
-#if __VER >= 13 // __RAINBOW_RACE
 private:
 	void	OnRainbowRaceInfo( CAr & ar, DPID, DPID );
 
@@ -261,17 +224,13 @@ public:
 	void	SendRainbowRaceApplication( DWORD dwPlayerId );
 	void	SendRainbowRaceFailedUser( DWORD dwPlayerId );
 	void	SendRainbowRaceRanking( DWORD dwPlayerId, int nRanking );
-#endif // __RAINBOW_RACE
 
-#if __VER >= 13 // __HOUSING
 	void	OnHousingLoadInfo( CAr & ar, DPID, DPID );
 	void	OnHousingSetFunitureList( CAr & ar, DPID, DPID );
 	void	OnHousingSetupFuniture( CAr & ar, DPID, DPID );
 	void	OnHousingSetVisitAllow( CAr & ar, DPID, DPID );
 	void	OnHousingDBFailed( CAr & ar, DPID, DPID );
-#endif // __HOUSING
 
-#if __VER >= 13 // __COUPLE_1117
 	void	SendPropose( u_long idProposer, u_long idTarget );
 	void	SendCouple( u_long idProposer, u_long idTarget );
 	void	SendDecouple( u_long idPlayer );
@@ -280,31 +239,22 @@ public:
 	void	OnCoupleResult( CAr & ar, DPID, DPID );
 	void	OnDecoupleResult( CAr & ar, DPID, DPID );
 	void	OnCouple( CAr & ar, DPID, DPID );
-#if __VER >= 13 // __COUPLE_1202
 	void	SendQueryAddCoupleExperience( u_long idPlayer, int nExperience );
 	void	OnAddCoupleExperience( CAr & ar, DPID, DPID );
-#endif	// __COUPLE_1202
-#endif	// __COUPLE_1117
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	void	SendLogGetHonorTime(CMover* pMover, int nGetHonor );
-#endif	// __HONORABLE_TITLE			// 달인
 
 #ifdef __FUNNY_COIN
 	void	SendFunnyCoinReqUse( DWORD dwPlayerId, CItemElem* pItemElem );	// 퍼니코인을 사용했음을 TransServer에 알린다.
 	void	OnFunnyCoinAckUse( CAr & ar, DPID, DPID );		// 퍼니코인 사용에 대한 응답을 TranServer로 부터 받았다.
 #endif // __FUNNY_COIN
-#if __VER >= 14 // __PCBANG
 	void	OnPCBangToggle( CAr & ar, DPID, DPID );
-#endif // __PCBANG
 #ifdef __VTN_TIMELIMIT
 	void	SendTimeLimitInfoReq( DWORD dwPlayerId, char* szAccount );
 	void	OnTimeLimitInfoAck( CAr & ar, DPID, DPID );
 	void	SendTimeLimitUpdateReq( char* szAccount, int nPlayTime );
 	void	OnTimeLimitReset( CAr & ar, DPID, DPID );
 #endif // __VTN_TIMELIMIT
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	void	SendLogInstanceDungeon( DWORD dwDungeonId, DWORD dwWorldId, u_long uChannel, int nDungeonType, char chState );
-#endif // __INSTANCE_DUNGEON
 #ifdef __QUIZ
 	void	OnQuizEventOpen( CAr & ar, DPID, DPID );
 	void	OnQuizList( CAr & ar, DPID, DPID );
@@ -320,7 +270,6 @@ public:
 #ifdef __ERROR_LOG_TO_DB
 	void	SendErrorLogToDB( CUser* pUser, char chType, LPCTSTR szError );
 #endif // __ERROR_LOG_TO_DB
-#if __VER >= 15 // __GUILD_HOUSE
 	void	OnLoadGuildHouse( CAr & ar, DPID, DPID );
 	void	OnBuyGuildHouse( CAr & ar, DPID, DPID );
 	void	OnRemoveGuildHouse( CAr & ar, DPID, DPID );
@@ -337,9 +286,7 @@ private:
 	void	OnGuildHouseExpired( CAr & ar, DPID, DPID );
 public:
 #endif // __GUILD_HOUSE_MIDDLE
-#endif // __GUILD_HOUSE
 
-#if __VER >= 15 // __CAMPUS
 private:
 	void	OnAllCampus( CAr & ar, DPID, DPID );
 	void	OnAddCampusMember( CAr & ar, DPID, DPID );
@@ -349,7 +296,6 @@ public:
 	void	SendAddCampusMember( u_long idMaster, int nMasterPoint, u_long idPupil, int nPupilPoint );
 	void	SendRemoveCampusMember( u_long idCampus, u_long idPlayer );
 	void	SendUpdateCampusPoint( u_long idPlayer, int nCampusPoint, BOOL bAdd, char chState );
-#endif // __CAMPUS
 };
 
 #endif	// __DPDATABASECLIENT_H__

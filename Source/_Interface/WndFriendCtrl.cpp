@@ -16,9 +16,7 @@ extern CParty g_Party;
 
 #include "WndManager.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndFriendCtrl
@@ -192,13 +190,11 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 		{
 			if( MAX_EXPERT <= nJob )
 			{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else
-#endif //__LEGEND
 				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 66 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 			}
 			else
@@ -210,13 +206,11 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 		{
 			if( MAX_EXPERT <= nJob )
 			{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else
-#endif //__LEGEND
 				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 			}
 			else
@@ -301,13 +295,11 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 			{
 				if( MAX_EXPERT <= nJob )
 				{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else
-#endif //__LEGEND
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				}
 				else
@@ -319,13 +311,11 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 			{
 				if( MAX_EXPERT <= nJob )
 				{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else
-#endif //__LEGEND
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				}
 				else
@@ -350,9 +340,7 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 #else	// __RT_1025
 void CWndFriendCtrl::OnDraw( C2DRender* p2DRender ) 
 {
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	CPlayerDataCenter* pPlayerDataCenter	= CPlayerDataCenter::GetInstance();
-#endif	// __SYS_PLAYER_DATA
 	CPoint pt( 3, 3 );
 	m_nDrawCount = 0;
 	memset( m_nServerCount, 0, sizeof( m_nServerCount ) );
@@ -427,52 +415,33 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 		{
 			if( lpFriend->dwState == FRS_OFFLINEBLOCK )
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				string.Format( "%s(%s)", pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId ), prj.GetText( TID_FRS_ONLINE + 2 ) );
-#else	// __SYS_PLAYER_DATA
-				string.Format( "%s(%s)", lpFriend->szName, prj.GetText( TID_FRS_ONLINE + 2 ) );
-#endif	// __SYS_PLAYER_DATA
 				dwColor = 0xff000000; 
 			}
 			else
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				string	= pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId );
-#else	// __SYS_PLAYER_DATA
-				string = lpFriend->szName;
-#endif	// __SYS_PLAYER_DATA
 			}
 		}
 		else
 		{	
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			string.Format( "%s(%s)", pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId ), prj.GetText( TID_FRS_ONLINE + dwState ) );
-#else	// __SYS_PLAYER_DATA
-			string.Format( "%s(%s)", lpFriend->szName, prj.GetText( TID_FRS_ONLINE + dwState ) );
-#endif	// __SYS_PLAYER_DATA
 		}
 		
 		p2DRender->TextOut( x + 40, pt.y + 3, string, dwColor ); 				
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		PlayerData* pPlayerData	= pPlayerDataCenter->GetPlayerData( lpFriend->dwUserId );
 		LONG nJob	= pPlayerData->nJob;
 		BYTE nSex	= pPlayerData->nSex;
-#else	// __SYS_PLAYER_DATA
-		LONG nJob	= lpFriend->nJob;
-		BYTE nSex	= lpFriend->nSex;
-#endif	// __SYS_PLAYER_DATA
 		if( dwState == FRS_OFFLINE )
 		{
 			if( MAX_EXPERT <= nJob )
 			{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else
-#endif //__LEGEND
 				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 66 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 			}
 			else
@@ -484,13 +453,11 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 		{
 			if( MAX_EXPERT <= nJob )
 			{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else
-#endif //__LEGEND
 				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 			}
 			else
@@ -552,53 +519,34 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 			{
 				if( lpFriend->dwState == FRS_OFFLINEBLOCK )
 				{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					string.Format( "%s(%s)", pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId ), prj.GetText( TID_FRS_ONLINE + 2 ) );
-#else	// __SYS_PLAYER_DATA
-					string.Format( "%s(%s)", lpFriend->szName, prj.GetText( TID_FRS_ONLINE + 2 ) );
-#endif	// __SYS_PLAYER_DATA
 					dwColor = 0xff000000; 
 				}
 				else
 				{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 					string	= pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId );
-#else	// __SYS_PLAYER_DATA
-					string	= lpFriend->szName;
-#endif	// __SYS_PLAYER_DATA
 				}
 			}
 			else
 			{	
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				string.Format( "%s(%s)", pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId ), prj.GetText( TID_FRS_ONLINE + dwState ) );
-#else	// __SYS_PLAYER_DATA
-				string.Format( "%s(%s)", lpFriend->szName, prj.GetText( TID_FRS_ONLINE + dwState ) );
-#endif	// __SYS_PLAYER_DATA
 			}
 			
 			p2DRender->TextOut( x + 40, pt.y + 3, string, dwColor ); 				
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		PlayerData* pPlayerData	= pPlayerDataCenter->GetPlayerData( lpFriend->dwUserId );
 		LONG nJob	= pPlayerData->nJob;
 		BYTE nSex	= pPlayerData->nSex;
-#else	// __SYS_PLAYER_DATA
-		LONG nJob	= lpFriend->nJob;
-		BYTE nSex	= lpFriend->nSex;
-#endif	// __SYS_PLAYER_DATA
 			
 			if( dwState == FRS_OFFLINE )
 			{
 				if( MAX_EXPERT <= nJob )
 				{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				else
-#endif //__LEGEND
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffff6464 );
 				}
 				else
@@ -610,13 +558,11 @@ void CWndFriendCtrl::OnDraw( C2DRender* p2DRender )
 			{
 				if( MAX_EXPERT <= nJob )
 				{
-#if __VER >= 10 // __LEGEND
 				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else if( MAX_MASTER <= nJob )
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				else
-#endif //__LEGEND
 					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 				}
 				else
@@ -993,9 +939,7 @@ int CWndFriendCtrl::GetSelect( CPoint point, LPFRIEND* lppFriend )
 
 BOOL CWndFriendCtrl::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 	CPlayerDataCenter*	pPlayerDataCenter	= CPlayerDataCenter::GetInstance();
-#endif	// __SYS_PLAYER_DATA
 	m_menu.SetVisible(FALSE);
 
 	switch( nID )

@@ -5,7 +5,6 @@
 #include <string>
 
 
-#if __VER >= 13 // __HONORABLE_TITLE
 
 #include "defineHonor.h"
 
@@ -72,4 +71,3 @@ public:
 
 
 
-#endif	// __HONORABLE_TITLE

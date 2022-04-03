@@ -142,13 +142,11 @@ public:
 public:
 	CMclCritSec		m_AddRemoveLock;
 
-#if __VER >= 14 // __PCBANG
 	void	PushPCBangPlayer( DWORD dwAuthKey, DWORD dwClass )	{ m_mapPCBang.insert( map<DWORD, DWORD>::value_type( dwAuthKey, dwClass ) ); }
 	DWORD	PopPCBangPlayer( DWORD dwAuthKey );
 
 private:
 	map<DWORD, DWORD>	m_mapPCBang;
-#endif // __PCBANG
 };
 
 #endif	// __ACCOUNT_H__

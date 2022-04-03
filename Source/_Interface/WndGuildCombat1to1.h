@@ -1,4 +1,3 @@
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 
 #ifndef __WNDGUILDCOMBAT1TO1__H
 #define __WNDGUILDCOMBAT1TO1__H
@@ -105,4 +104,3 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 #endif //__WNDGUILDCOMBAT1TO1__H
-#endif //__GUILD_COMBAT_1TO1

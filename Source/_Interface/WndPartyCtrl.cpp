@@ -13,9 +13,7 @@ extern CParty g_Party;
 
 #include "WndManager.h"
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,9 +92,6 @@ void CWndPartyCtrl::OnDraw( C2DRender* p2DRender )
 
 //	pt.y -= ( m_nFontHeight + 3 ) * m_wndScrollBar.GetScrollPos();
 
-#if __VER < 11 // __CSC_VER11_4
-	CWndMessenger* pWndMessenger = (CWndMessenger*)GetWndBase( APP_MESSENGER_ );
-#endif //__CSC_VER11_4
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	
 	int nMax = g_Party.m_nSizeofMember;
@@ -113,14 +108,9 @@ void CWndPartyCtrl::OnDraw( C2DRender* p2DRender )
 	{
 		CMover* pObjMember = prj.GetUserByID( g_Party.m_aMember[i].m_uPlayerId );
 		CString strMember;
-#if __VER >= 11 // __SYS_PLAYER_DATA
 		PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( g_Party.m_aMember[i].m_uPlayerId );
 		int nJob	= pPlayerData->data.nJob;
 		int nSex	= pPlayerData->data.nSex;
-#else	// __SYS_PLAYER_DATA
-		int nJob	= g_Party.m_aMember[ i ].m_nJob;
-		int nSex	= g_Party.m_aMember[ i ].m_nSex;
-#endif	// __SYS_PLAYER_DATA
 		
 		// 상태에 따라 색 변경
 		DWORD dwColor = 0xff000000;
@@ -138,11 +128,7 @@ void CWndPartyCtrl::OnDraw( C2DRender* p2DRender )
 			dwColor = 0xff878787; // 디폴트는 주위에 없는 놈
 			if( g_Party.m_aMember[ i ].m_bRemove ) 
 				dwColor = 0xff000000; // 서버에 없는 놈
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			strMember.Format( "?? %s", pPlayerData->szPlayer );
-#else	// __SYS_PLAYER_DATA
-			strMember.Format( "?? %s", g_Party.m_aMember[ i ].m_szName );
-#endif	// __SYS_PLAYER_DATA
 		}
 		if( i == m_nCurSelect )
 			dwColor = 0xff6060ff; 
@@ -167,13 +153,11 @@ void CWndPartyCtrl::OnDraw( C2DRender* p2DRender )
 
 		if( MAX_EXPERT <= nJob )
 		{
-#if __VER >= 10 // __LEGEND
 			if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
 				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 16 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 			else if( MAX_MASTER <= nJob )
 				pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 24 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 			else
-#endif //__LEGEND
 			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( 2, pt.y ),  ( 70 + nJob - 6 ) + ( 8 * nSex ), &pVertices, 0xffffffff );
 		}
 		else
@@ -238,11 +222,7 @@ void CWndPartyCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 			m_nCurSelect = i;
 			if( g_pPlayer != pObjMember ) 
 			{
-#if __VER >= 11 // __SYS_PLAYER_DATA
 				CWndMessage* pWndMessage	= g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( g_Party.m_aMember[ i ].m_uPlayerId ) );
-#else	// __SYS_PLAYER_DATA
-				CWndMessage* pWndMessage = g_WndMng.OpenMessage( g_Party.m_aMember[ i ].m_szName );
-#endif	// __SYS_PLAYER_DATA
 			}
 		}
 		pt.y += m_nFontHeight + 3;

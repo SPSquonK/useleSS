@@ -62,14 +62,6 @@ BOOL CWndWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
 	return FALSE;
 #endif //defined(__INTERNALSERVER) || defined(__TESTSERVER)
 
-#if __VER < 9 // __S_9_ADD
-	if( g_pPlayer && g_pPlayer->IsDie() )	// 죽은 상태에서 유료상점을 이용 불가능하게 수정 
-	{
-		m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
-		Destroy();
-		return FALSE;
-	}
-#endif // __S_9_ADD
 
 #if defined(__INTERNALSERVER)
 	m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;

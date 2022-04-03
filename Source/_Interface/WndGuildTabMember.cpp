@@ -8,9 +8,7 @@
 #include "defineQuest.h"
 extern	CDPClient	g_DPlay;
 
-#if __VER >= 11 // __SYS_PLAYER_DATA
 #include "playerdata.h"
-#endif	// __SYS_PLAYER_DATA
 
 #include "guild.h"
 extern	CGuildMng	g_GuildMng;
@@ -25,7 +23,6 @@ extern CGuildCombat g_GuildCombatMng;
 #define		MAX_MEMBER_LIST_DRAW	14		// 한화면에 보이는 리스트 수.
 #define		MEMBER_LIST_HEIGHT		18		// 리스트의 한라인 폭 y += MEMBER_LIST_HEIGHT 로 쓰라.
 
-#if __VER >= 12 // __CSC_VER12_2
 //////////////////////////////////////////////////////////////////////////
 // Common Local Func.
 //////////////////////////////////////////////////////////////////////////
@@ -192,7 +189,6 @@ bool prAliasDesc(MEMBERLIST player1, MEMBERLIST player2)
 	return rtn_val;
 }
 
-#endif //__CSC_VER12_2
 CWndGuildTabMember::CWndGuildTabMember() 
 { 
 //	m_pListCtrl = NULL;
@@ -201,13 +197,11 @@ CWndGuildTabMember::CWndGuildTabMember()
 	m_nSelect = 0;
 	memset( m_aList, 0, sizeof(MEMBERLIST) * MAX_MEMBER );
 	m_nMxOld = m_nMyOld = 0;
-#if __VER >= 12 // __CSC_VER12_2
 	m_bSortbyMemberLevel = FALSE;
 	m_bSortbyLevel = TRUE;
 	m_bSortbyJob = TRUE;
 	m_bSortbyName = TRUE;
 	m_bSortbyAlias = TRUE;
-#endif //__CSC_VER12_2
 } 
 
 CWndGuildTabMember::~CWndGuildTabMember() 
@@ -236,12 +230,8 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 	
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
-#if __VER >= 11 // __CSC_VER11_4
 	// 영웅, 마스터 아이콘 추가됬으니 vertex 하나 늘임
 	TEXTUREVERTEX2* pVertex = new TEXTUREVERTEX2[ ((m_nMax > MAX_MEMBER_LIST_DRAW) ? MAX_MEMBER_LIST_DRAW: m_nMax) * 6 * 5 ];
-#else //__CSC_VER11_4
-	TEXTUREVERTEX2* pVertex = new TEXTUREVERTEX2[ ((m_nMax > MAX_MEMBER_LIST_DRAW) ? MAX_MEMBER_LIST_DRAW: m_nMax) * 6 * 4 ];
-#endif //__CSC_VER11_4
 
 	TEXTUREVERTEX2* pVertices = pVertex;
 
@@ -267,32 +257,22 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		int nClass = pMember->nClass;
 		++nClass;
 
-#if __VER >= 11 // __CSC_VER11_4
 		int nposx = sx + 14;
 		if(nClass == 2)
 			nposx -= 5;
 		else if(nClass == 3)
 			nposx -= 10;
-#endif //__CSC_VER11_4
 
 		switch( pMember->nMemberLv )
 		{
 		case 0:
-#if __VER >= 11 // __CSC_VER11_4
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( nposx, sy - 4 ), 44, &pVertices, 0xffffffff );
-#else //__CSC_VER11_4
-			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx - 5, sy - 4 ), 43 + 0 + ( 6 * 1 ), &pVertices, 0xffffffff );
-#endif //__CSC_VER11_4
 			break;
 		case 1:
 			{
 				for( j = 0 ; j < nClass ; ++j )
 				{
-#if __VER >= 11 // __CSC_VER11_4
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( nposx + j * 10, sy - 4 ), 45, &pVertices, 0xffffffff );
-#else //__CSC_VER11_4
-					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx - 5 + j * 17, sy - 4 ), 43 + 1 + ( 6 * 1 ), &pVertices, 0xffffffff );
-#endif //__CSC_VER11_4
 				}
 			}
 			break;
@@ -300,11 +280,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 			{
 				for( j = 0 ; j < nClass ; ++j )
 				{
-#if __VER >= 11 // __CSC_VER11_4
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( nposx + j * 10, sy - 4 ), 46, &pVertices, 0xffffffff );
-#else //__CSC_VER11_4
-					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx - 5 + j * 17, sy - 4 ), 43 + 2 + ( 6 * 1 ), &pVertices, 0xffffffff );
-#endif //__CSC_VER11_4
 				}
 			}
 			break;
@@ -312,11 +288,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 			{
 				for( j = 0 ; j < nClass ; ++j )
 				{
-#if __VER >= 11 // __CSC_VER11_4
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( nposx + j * 10, sy - 4 ), 47, &pVertices, 0xffffffff );
-#else //__CSC_VER11_4
-					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx - 5 + j * 17, sy - 4 ), 43 + 3 + ( 6 * 1 ), &pVertices, 0xffffffff );
-#endif //__CSC_VER11_4
 				}
 			}
 			break;
@@ -324,11 +296,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 			{
 				for( j = 0 ; j < nClass ; ++j )
 				{
-#if __VER >= 11 // __CSC_VER11_4
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( nposx + j * 10, sy - 4 ), 48, &pVertices, 0xffffffff );
-#else //__CSC_VER11_4
-					pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx - 5 + j * 17, sy - 4 ), 43 + 4 + ( 6 * 1 ), &pVertices, 0xffffffff );
-#endif //__CSC_VER11_4
 				}
 			}
 			break;
@@ -342,7 +310,6 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 			Color = 0xffffffff;
 		else
 			Color = 0xffff6464;
-#if __VER >= 11 // __CSC_VER11_4
 		// Draw Job Icon
 		if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_PRO )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob - 6 ), &pVertices, Color );
@@ -371,42 +338,8 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		}
 		else
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  14 + pMember->nJob, &pVertices, Color );
-#else //__CSC_VER11_4
-		if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_PRO )
-			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx +  50, sy-3 ), ( 70 + pMember->nJob - 6 ) + ( 8 * pMember->nSex ), &pVertices, Color );
-#if __VER >= 10 // __LEGEND
-		else if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_MASTER )
-			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx +  50, sy-3 ), ( 70 + pMember->nJob - 16 ) + ( 8 * pMember->nSex ), &pVertices, Color );
-		else if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_HERO )
-			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx +  50, sy-3 ), ( 70 + pMember->nJob - 24 ) + ( 8 * pMember->nSex ), &pVertices, Color );
-#endif //__LEGEND
-		else
-			pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, CPoint( sx +  50, sy-3 ), 12 + pMember->nJob + ( 6 * pMember->nSex ), &pVertices, Color );
-#endif //__CSC_VER11_4
 
-#if __VER >= 10 // __LEGEND
-#if __VER < 11 // __CSC_VER11_4
-		CString strLevel;
-		if(prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_MASTER)
-		{
-			strLevel.Format("%d-M", pMember->nLevel);
-			p2DRender->TextOut( sx + 90, sy, strLevel, dwColor );
-		}
-		else if(prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_HERO)
-		{
-			strLevel = "HERO";
-			p2DRender->TextOut( sx + 90, sy, strLevel, dwColor );
-		}
-		else
-#endif //__CSC_VER11_4
-#if __VER >= 12 // __CSC_VER12_2
 			p2DRender->TextOut( sx + 126, sy, pMember->nLevel, dwColor );
-#else //__CSC_VER12_2
-			p2DRender->TextOut( sx + 95, sy, pMember->nLevel, dwColor );
-#endif //__CSC_VER12_2
-#else //__LEGEND
-		p2DRender->TextOut( sx + 95, sy, pMember->nLevel, dwColor );
-#endif //__LEGEND
 		
 		CString strFormat;
 		strFormat.Format("%s", pMember->szName);
@@ -427,22 +360,13 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 			strFormat += "...";
 		}
 
-#if __VER >= 12 // __CSC_VER12_2
 		p2DRender->TextOut( sx + 168, sy, strFormat, dwColor );
 		p2DRender->TextOut( sx + 264, sy, pMember->szAlias , dwColor );
-#else //__CSC_VER12_2
-		p2DRender->TextOut( sx + 135, sy, strFormat, dwColor );
-		p2DRender->TextOut( sx + 218, sy, pMember->szAlias , dwColor );
-#endif //__CSC_VER12_2
 
 		sy += MEMBER_LIST_HEIGHT;
 	}
 
-#if __VER >= 11 // __CSC_VER11_4
 	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
-#else //__CSC_VER11_4
-	pWndWorld->m_texMsgIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
-#endif //__CSC_VER11_4
 	
 	//	delete pVertex;
 	SAFE_DELETE_ARRAY( pVertex );
@@ -468,7 +392,6 @@ void CWndGuildTabMember::OnInitialUpdate()
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 
-#if __VER >= 12 // __CSC_VER12_2
 	// 버튼 이미지 세팅
 	CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_MLEVEL);
 	if(pWndButton)
@@ -524,13 +447,10 @@ void CWndGuildTabMember::OnInitialUpdate()
 		else
 			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
 	}
-#endif //__CSC_VER12_2
 
 	UpdateData();
 
-#if __VER >= 12 // __CSC_VER12_2
 	SortbyMemberLevel();	// Default Sort
-#endif //__CSC_VER12_2
 
 	// 윈도를 중앙으로 옮기는 부분.
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
@@ -543,11 +463,7 @@ void CWndGuildTabMember::OnInitialUpdate()
 BOOL CWndGuildTabMember::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-#if __VER >= 12 // __CSC_VER12_2
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_TABMEMBER_EX, 0, CPoint( 0, 0 ), pWndParent );
-#else //__CSC_VER12_2
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_TABMEMBER, 0, CPoint( 0, 0 ), pWndParent );
-#endif //__CSC_VER12_2
 } 
 BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -647,10 +563,8 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 					if( g_GuildCombatMng.m_bRequest && g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE && g_GuildCombatMng.m_nGCState != CGuildCombat::WAR_CLOSE_STATE )
 					//if( g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE && g_GuildCombatMng.m_nGCState != CGuildCombat::WAR_CLOSE_STATE )
 						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDCOMBAT_NOT_LEAVE_GUILD ) );		//"수정해야함 : 길드대전에 신청한길드는 대전중에는 길드 탈퇴를 할수 없습니다" );
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 					else if( g_GuildCombat1to1Mng.m_nState != CGuildCombat1to1Mng::GC1TO1_CLOSE )
 						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDCOMBAT1TO1_NOTLEAVEGUILD ) );
-#endif //__GUILD_COMBAT_1TO1
 					else
 					{
 						g_DPlay.SendRemoveGuildMember( pMover->m_idPlayer, m_aList[m_nSelect].idPlayer );
@@ -725,7 +639,6 @@ BOOL CWndGuildTabMember::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 { 
 	m_wndMenu.SetVisible( FALSE );
 
-#if __VER >= 12 // __CSC_VER12_2
 	switch(nID)
 	{
 		case WIDC_MLEVEL:
@@ -744,7 +657,6 @@ BOOL CWndGuildTabMember::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 			SortbyAlias();
 			break;
 	}
-#endif //__CSC_VER12_2
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
@@ -847,34 +759,19 @@ void CWndGuildTabMember::UpdateData()
 
 			m_aList[ m_nMax ].idPlayer       = pMember->m_idPlayer;
 			m_aList[ m_nMax ].nMemberLv      = pMember->m_nMemberLv;			// 호칭
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 			m_aList[ m_nMax ].nJob	= pPlayerData->data.nJob;
 			m_aList[ m_nMax ].nSex	= pPlayerData->data.nSex;
 			m_aList[ m_nMax ].nLevel	= pPlayerData->data.nLevel;	// 레벨
 			m_aList[ m_nMax ].bIsOnLine      = ( pPlayerData->data.uLogin > 0 );
-#else	// __SYS_PLAYER_DATA
-			m_aList[ m_nMax ].nJob           = pMember->m_nJob;	// 직업
-			m_aList[ m_nMax ].nSex           = pMember->m_dwSex;	// 성
-			m_aList[ m_nMax ].nLevel = pMember->m_nLevel;			// 레벨
-			m_aList[ m_nMax ].bIsOnLine      = pMember->m_nLogin;
-#endif	// __SYS_PLAYER_DATA
 
 			m_aList[ m_nMax ].nGiveGold      = pMember->m_nGiveGold;					// 길드에 기부한 페냐
 			m_aList[ m_nMax ].dwGivePxpCount = pMember->m_dwGivePxpCount;				// 길드에 기부한 PXP횟수( 스킬 경험치 )
 			m_aList[ m_nMax ].nWin           = pMember->m_nWin;							// 무엇을 이겼지?
 			m_aList[ m_nMax ].nLose          = pMember->m_nLose;						// 무엇을 졌을까나?
 		
-#if __VER >= 11 // __SYS_PLAYER_DATA
 			LPCSTR pszPlayer	= pPlayerData->szPlayer;
 			lstrcpy( m_aList[m_nMax].szName, pszPlayer );
-#else	//__SYS_PLAYER_DATA
-			LPCSTR pszPlayer	= prj.GetPlayerString( pMember->m_idPlayer );
-			if( pszPlayer )
-				lstrcpy( m_aList[m_nMax].szName, pszPlayer );
-			else
-				g_DPlay.SendQueryPlayerString( pMember->m_idPlayer, QPS_GUILD_MEMBER );
-#endif	// __SYS_PLAYER_DATA
 			strcpy( m_aList[ m_nMax ].szAlias, pMember->m_szAlias );
 			m_aList[ m_nMax ].nClass		= pMember->m_nClass;
 
@@ -891,7 +788,6 @@ void CWndGuildTabMember::UpdateData()
 	}		
 }
 
-#if __VER >= 12 // __CSC_VER12_2
 
 void CWndGuildTabMember::SortbyMemberLevel()
 {
@@ -978,4 +874,3 @@ void CWndGuildTabMember::SortbyAlias()
 	}
 }
 
-#endif //__CSC_VER12_2

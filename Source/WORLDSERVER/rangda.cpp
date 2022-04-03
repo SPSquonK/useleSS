@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __RANGDA_0521
 #include "rangda.h"
 #include "worldmng.h"
 #include "lord.h"
@@ -227,4 +226,3 @@ BOOL CRangdaController::LoadScript( const char* szFile )
 	return TRUE;
 }
 
-#endif	// __RANGDA_0521

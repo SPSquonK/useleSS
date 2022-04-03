@@ -10,11 +10,9 @@
 #include "DPSrvr.h"
 #include "dpdatabaseclient.h"
 #include "definetext.h"
-#if __VER >= 14 // __SMELT_SAFETY
 extern CUserMng g_UserMng;
 #include "defineSound.h"
 #include "defineObj.h"
-#endif // __SMELT_SAFETY
 #endif // __WORLDSERVER
 
 #ifdef __WORLDSERVER
@@ -26,7 +24,6 @@ extern	CDPDatabaseClient	g_dpDBClient;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-#if __VER >= 9 // __ULTIMATE
 CUltimateWeapon::CUltimateWeapon()
 {
 #ifdef __WORLDSERVER
@@ -294,22 +291,13 @@ int CUltimateWeapon::SetGem( CUser* pUser, OBJID objItemId, OBJID objGemItemId )
 		return ULTIMATE_CANCEL;
 	}
 		
-#if __VER >= 12 // __EXT_PIERCING
 	int nCount = NULL;
 	for( ; nCount < pItemElem->GetUltimatePiercingSize(); nCount++ )
 		if( pItemElem->GetUltimatePiercingItem( nCount ) == 0 )
-#else // __EXT_PIERCING
-	for( int nCount=0; nCount < pItemElem->GetPiercingSize(); nCount++ )
-		if( pItemElem->GetPiercingItem( nCount ) == 0 )
-#endif // __EXT_PIERCING
 			break;
 		
 	// 빈곳이 없으면 중단
-#if __VER >= 12 // __EXT_PIERCING
 	if( nCount == pItemElem->GetUltimatePiercingSize() )
-#else //__EXT_PIERCING
-	if( nCount == pItemElem->GetPiercingSize() )
-#endif //__EXT_PIERCING
 	{
 		pUser->AddDefinedText( TID_GAME_ULTIMATE_GEMSPACE, "" );
 		return ULTIMATE_CANCEL;
@@ -333,11 +321,7 @@ int CUltimateWeapon::SetGem( CUser* pUser, OBJID objItemId, OBJID objGemItemId )
 	if( nRandom < m_nSetGemProb )
 	{
 		// 보석 합성
-#if __VER >= 12 // __EXT_PIERCING
 		pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_ULTIMATE_PIERCING, MAKELONG( nCount, dwSetItemId ) );
-#else // __EXT_PIERCING
-		pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_PIERCING, MAKELONG( nCount, dwSetItemId ) );
-#endif // __EXT_PIERCING
 		aLogItem.RecvName = "ULTIMATE_PIERCING_SUCCESS";
 		g_DPSrvr.OnLogItem( aLogItem, pItemElem, 1 );
 		return ULTIMATE_SUCCESS;	
@@ -359,11 +343,7 @@ int CUltimateWeapon::RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem 
 		return ULTIMATE_ISNOTULTIMATE;
 	
 	// 합성된 보석이 없을 때 X
-#if __VER >= 12 // __EXT_PIERCING
 	if( pItemElem->GetUltimatePiercingItem( 0 ) == 0 )
-#else // __EXT_PIERCING
-	if( pItemElem->GetPiercingItem( 0 ) == 0 )
-#endif // __EXT_PIERCING
 		return ULTIMATE_CANCEL;
 
 	if( pItemElemGem->m_dwItemId != II_GEN_MAT_MOONSTONE
@@ -391,19 +371,11 @@ int CUltimateWeapon::RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem 
 	if( nRandom < m_nRemoveGemProb )
 	{
 		// 성공시 - 보석 제거
-#if __VER >= 12 // __EXT_PIERCING
 		for( int i=pItemElem->GetUltimatePiercingSize()-1; i>=0; i-- )
 		{
 			if( pItemElem->GetUltimatePiercingItem( i ) != 0 )
 			{
 				pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_ULTIMATE_PIERCING, MAKELONG( i, 0 ) );
-#else // __EXT_PIERCING
-		for( int i=pItemElem->GetPiercingSize()-1; i>=0; i-- )
-		{
-			if( pItemElem->GetPiercingItem( i ) != 0 )
-			{
-				pUser->UpdateItem( pItemElem->m_dwObjId, UI_PIERCING, MAKELONG( i, 0 ) );
-#endif // __EXT_PIERCING
 				aLogItem.RecvName = "ULTIMATE_PIERCING_REMOVE_SUC";
 				g_DPSrvr.OnLogItem( aLogItem, pItemElem, 1 );
 				break;
@@ -706,11 +678,7 @@ int CUltimateWeapon::EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItemGe
 	{
 		pUser->UpdateItem( (BYTE)pItemElemWeapon->m_dwObjId, UI_AO, ++pAbilityOpt );
 		if( pAbilityOpt > 5 )
-#if __VER >= 12 // __EXT_PIERCING
 			pUser->UpdateItem( (BYTE)pItemElemWeapon->m_dwObjId, UI_ULTIMATE_PIERCING_SIZE, pAbilityOpt - 5 );
-#else //__EXT_PIERCING
-			pUser->UpdateItem( (BYTE)pItemElemWeapon->m_dwObjId, UI_PIERCING_SIZE, pAbilityOpt - 5 );
-#endif // __EXT_PIERCING
 		aLogItem.RecvName = "ULTIMATE_ENCHANT_SUCCESS";
 		g_DPSrvr.OnLogItem( aLogItem, pItemElemWeapon, 1 );
 		return ULTIMATE_SUCCESS;
@@ -733,7 +701,6 @@ int CUltimateWeapon::EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItemGe
 }
 
 
-#if __VER >= 14 // __SMELT_SAFETY
 BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr )
 {
 	//	얼터멋웨폰이 아니면 리턴
@@ -813,7 +780,6 @@ BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, C
 	}
 	return 0;
 }
-#endif // __SMELT_SAFETY
 #endif // __WORLDSERVER
 
 // 보석 합성 후 능력치 적용
@@ -841,7 +807,6 @@ map<int, int> CUltimateWeapon::GetDestParamUltimate( CItemElem* pItemElem )
 		return mapDst;
 	
 	map<DWORD, int> mapItem;		
-#if __VER >= 12 // __EXT_PIERCING
 	for( int i=0; i<pItemElem->GetUltimatePiercingSize(); i++ )
 	{
 		if( pItemElem->GetUltimatePiercingItem( i ) == 0 )
@@ -850,16 +815,6 @@ map<int, int> CUltimateWeapon::GetDestParamUltimate( CItemElem* pItemElem )
 		map<DWORD, int>::iterator it=mapItem.find( pItemElem->GetUltimatePiercingItem( i ) );
 		if( it==mapItem.end() )
 			mapItem.insert( map<DWORD, int>::value_type( pItemElem->GetUltimatePiercingItem( i ), 1 ) );
-#else // __EXT_PIERCING
-	for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
-	{
-		if( pItemElem->GetPiercingItem( i ) == 0 )
-			break;
-		
-		map<DWORD, int>::iterator it=mapItem.find( pItemElem->GetPiercingItem( i ) );
-		if( it==mapItem.end() )
-			mapItem.insert( map<DWORD, int>::value_type( pItemElem->GetPiercingItem( i ), 1 ) );
-#endif // __EXT_PIERCING
 		else
 			it->second++;
 	}
@@ -908,4 +863,3 @@ int CUltimateWeapon::GetDST( DWORD dwItemId, int nItemNum, int nDSTInfo )
 	}	
 	return nResultDST;
 }
-#endif //__ULTIMATE

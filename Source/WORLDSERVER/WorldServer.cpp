@@ -28,22 +28,11 @@
 #include "vmlog.h"
 #endif	// __VM_0819
 
-#if __VER >= 13 // __COUPLE_1117
 #include "couple.h"
-#endif	// __COUPLE_1117
-#if __VER >= 13 // __HOUSING
 #include "housing.h"
-#endif	// __HOUSING
 
-#if __VER >= 12 // __ITEMCREATEMON_S0602
-#if __VER < 12 // __NEW_ITEMCREATEMON_SERVER
-#include "CreateMonster.h"
-#endif // __NEW_ITEMCREATEMON_SERVER
-#endif // __ITEMCREATEMON_S0602
 
-#if __VER >= 12 // __LORD
 #include "slord.h"
-#endif	// __LORD
 
 /*
 #ifdef __GIFTBOX0213
@@ -66,11 +55,6 @@ BOOL				Script( LPCSTR lpszFileName );
 void				ExitInstance( void );
 void				SetTitle();
 extern BOOL			LoadAIScript();
-#if __VER >= 12 // __ITEMCREATEMON_S0602
-#if __VER < 12 // __NEW_ITEMCREATEMON_SERVER
-BOOL				LoadScriptCreateMonster( void );
-#endif // __NEW_ITEMCREATEMON_SERVER
-#endif // __ITEMCREATEMON_S0602
 
 const int			MAX_LOADSTRING = 100;
 static TCHAR		g_szTitle[MAX_LOADSTRING];			
@@ -99,11 +83,6 @@ extern	CDPDatabaseClient	g_dpDBClient;
 extern	CUserMng			g_UserMng;
 extern	CWorldMng			g_WorldMng;
 extern CGuildCombat			g_GuildCombatMng;
-#if __VER >= 12 // __ITEMCREATEMON_S0602
-#if __VER < 12 // __NEW_ITEMCREATEMON_SERVER
-extern	CCreateMonster		g_CreateMonster;
-#endif // __NEW_ITEMCREATEMON_SERVER
-#endif 
 
 
 #if defined(__LUASCRIPT060908)
@@ -427,9 +406,7 @@ void ExitInstance( void )
 
 	g_GuildMng.Clear();
 
-#if __VER >= 13 // __HOUSING
 	CHousingMng::GetInstance()->Clear();
-#endif	// __HOUSING
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 	SAFE_DELETE( CGuildMember::sm_pPool );
@@ -453,9 +430,7 @@ void ExitInstance( void )
 	g_Object3DMng.Destroy();
 	prj.m_modelMng.DeleteDeviceObjects();
 
-#if __VER >= 12 // __LORD
 	CSLord::Instance()->DestroyColleagues();
-#endif	// __LORD
 }
 
 
@@ -589,12 +564,10 @@ BOOL Script( LPCSTR lpszFileName )
 		}
 #endif // __S_RECOMMEND_EVE
 
-#if __VER >= 11 // __GUILD_COMBAT_1TO1
 		else if( s.Token == "GUILDCOMBAT1TO1" )
 		{
 			g_eLocal.SetState( EVE_GUILDCOMBAT1TO1, 1 );
 		}
-#endif // __GUILD_COMBAT_1TO1
 
 #ifdef __JEFF_11_4
 		else if( s.Token == "ARENA" )
@@ -603,18 +576,14 @@ BOOL Script( LPCSTR lpszFileName )
 		}
 #endif // __JEFF_11_4
 
-#if __VER >= 12 // __SECRET_ROOM
 		else if( s.Token == "SECRETROOM" )
 		{
 			g_eLocal.SetState( EVE_SECRETROOM, 1 );
 		}
-#endif // __SECRET_ROOM
-#if __VER >= 13 // __RAINBOW_RACE
 		else if( s.Token == "RAINBOWRACE" )
 		{
 			g_eLocal.SetState( EVE_RAINBOWRACE, 1 );
 		}
-#endif // __RAINBOW_RACE
 
 		s.GetToken();
 	}

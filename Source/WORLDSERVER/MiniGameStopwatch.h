@@ -1,6 +1,5 @@
 #pragma once
 
-#if __VER >= 13 // __RAINBOW_RACE
 #include "minigamebase.h"
 
 class CMiniGameStopwatch :	public CMiniGameBase
@@ -19,4 +18,3 @@ private:
 	int m_nTargetTime;
 };
 
-#endif // __RAINBOW_RACE

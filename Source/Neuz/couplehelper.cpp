@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 13 // __COUPLE_1117
 
 #include "couplehelper.h"
 #include "playerdata.h"
@@ -92,7 +91,6 @@ void CCoupleHelper::OnDecoupleResult()
 	}
 }
 
-#if __VER >= 13 // __COUPLE_1202
 void CCoupleHelper::OnAddCoupleExperience( CAr & ar )
 {
 	int nExperience;
@@ -109,6 +107,4 @@ void CCoupleHelper::OnAddCoupleExperience( CAr & ar )
 		}
 	}
 }
-#endif	// __COUPLE_1202
 
-#endif	// __COUPLE_1117

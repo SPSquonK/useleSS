@@ -1,7 +1,6 @@
 #ifndef __WND__H
 #define __WND__H
 
-#if __VER >= 11 // __SYS_IDENTIFY
 class CWndAwakening : public CWndNeuz 
 { 
 public: 
@@ -29,7 +28,6 @@ public:
 
 	void SetDescription();
 }; 
-#endif
 
 #ifdef __PROTECT_AWAKE
 class CWndSelectAwakeCase : public CWndNeuz

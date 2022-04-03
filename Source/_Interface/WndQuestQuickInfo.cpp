@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "WndQuestQuickInfo.h"
-#if __VER >= 15 /* __IMPROVE_QUEST_INTERFACE */ && defined( __CLIENT )
+#if defined( __CLIENT )
 #include "ResData.h"
 #include "defineText.h"
 #include "party.h"
@@ -8,7 +8,7 @@
 #include "WorldMap.h"
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
 
-#if __VER >= 15 /* __IMPROVE_QUEST_INTERFACE */ && defined( __CLIENT )
+#if defined( __CLIENT )
 //-----------------------------------------------------------------------------
 CWndQITreeCtrl::CWndQITreeCtrl( void )
 {

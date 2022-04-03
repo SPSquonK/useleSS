@@ -5,7 +5,6 @@
 
 #pragma  once
 
-#if __VER >= 15 // __GUILD_HOUSE
 
 #include "WndHousing.h"
 #include "GuildHouse.h"
@@ -110,10 +109,7 @@ public:
 	CWndEdit*		m_pEdit;
 	CWndStatic*		m_pStatic;
 	CWndStatic*		m_pStaticGold;
-#if __VER >= 11 // __CSC_VER11_3
 	int				m_nBuyType;
-#endif //__CSC_VER11_3
 };
 
 
-#endif 

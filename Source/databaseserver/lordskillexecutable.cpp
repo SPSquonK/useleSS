@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if __VER >= 12 // __LORD
 
 #include "tlord.h"
 #include "lordskillexecutable.h"
@@ -32,4 +31,3 @@ void CLordSkillComponentODBC::Execute( u_long idPlayer, u_long idTarget, VOID* p
 	CDPTrans::GetInstance()->SendLordSkillUse( idPlayer, idTarget, GetId(), nRet );
 }
 
-#endif	// __LORD

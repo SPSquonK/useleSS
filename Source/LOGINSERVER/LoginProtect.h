@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if __VER >= 15 // __2ND_PASSWORD_SYSTEM
 #include <dplay.h>
 
 #define	MAX_NUMPADID	999
@@ -50,5 +49,4 @@ private:
 	MAP_NUMPAD_ID	m_mapNumPadId;
 };
 
-#endif // __2ND_PASSWORD_SYSTEM
 #endif // !defined(AFX_LOGINPROTECT_H__818DA819_B42E_4A41_9CEF_53B0C13A0F51__INCLUDED_)
