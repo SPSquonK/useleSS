@@ -48,9 +48,9 @@ public:
 
 	void InitializeValue( void );
 	void Init( int nWidth, SIZE sizeFont );
-	void Init( CD3DFont* pFont, CRect* pRect );
+	void Init( CD3DFont* pFont, const CRect* pRect );
 	void Adjust( int nWidth, SIZE sizeFont );
-	void Adjust( CD3DFont* pFont, CRect* pRect );
+	void Adjust( CD3DFont* pFont, const CRect* pRect );
 	void ParsingString( LPCTSTR lpsz, DWORD dwColor, DWORD dwStyle, WORD wCodePage, CString& string, CDWordArray& adwColor, CByteArray& abyStyle, CWordArray& awCodePage, DWORD dwPStyle = 0x00000001 );
 	void SetAlpha( DWORD dwColor );
 	void SetColor( DWORD dwColor );

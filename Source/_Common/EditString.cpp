@@ -599,7 +599,7 @@ void CEditString::Init( int nWidth, SIZE sizeFont )
 	m_nWidth = nWidth;
 	m_sizeFont = sizeFont;
 }
-void CEditString::Init( CD3DFont* pFont, CRect* pRect )
+void CEditString::Init( CD3DFont* pFont, const CRect* pRect )
 {
 	TCHAR str[ 3 ] = _T( "°¡" );
 
@@ -619,7 +619,7 @@ void CEditString::Adjust( int nWidth, SIZE sizeFont )
 	m_nWidth = nWidth;
 	m_sizeFont = sizeFont;
 }
-void CEditString::Adjust( CD3DFont* pFont, CRect* pRect )
+void CEditString::Adjust( CD3DFont* pFont, const CRect* pRect )
 {
 	TCHAR str[ 3 ] = _T( "°¡" );
 	m_sizeFont = pFont->GetTextExtent(str);

@@ -7,6 +7,7 @@
 #include "dpclient.h"
 extern CDPClient	g_DPlay;
 #endif
+#include "Vector3Helper.h"
 
 
 /****************************************************
@@ -163,11 +164,10 @@ void CWndChangeSex::OnDraw( C2DRender* p2DRender )
 	D3DXMATRIXA16 matTrans;
 
 	// Ä«¸Þ¶ó 
-	D3DXMATRIX  matView;
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.7f, -3.5f );
 	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	

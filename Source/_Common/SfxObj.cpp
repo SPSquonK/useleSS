@@ -116,10 +116,9 @@ void CSfx::DamageToTarget( int nDmgCnt, float fDmgAngle, float fDmgPower, int nM
 	{
 		CMover* pMover = (CMover*) pObjDest;
 #ifdef __CLIENT
-		PLAYSND( pMover->GetProp()->dwSndDmg2, &pMover->GetPos() );	// 마법류 맞을때 타격음.	
-#endif 
+		const auto pos = pMover->GetPos();
+		PLAYSND( pMover->GetProp()->dwSndDmg2, &pos );	// 마법류 맞을때 타격음.	
 
-#ifdef __CLIENT
 		// 쏜놈이 플레이어이거나 / 쏜놈은 플레이어가 아닌데 맞은놈이 플레이어일경우 전송
 		if( pObjSrc->IsActiveMover() || (pObjSrc->IsPlayer() == FALSE && pObjDest->IsActiveObj()) )
 		{
@@ -133,12 +132,6 @@ void CSfx::DamageToTarget( int nDmgCnt, float fDmgAngle, float fDmgPower, int nM
 }
 void CSfx::Process()
 {
-#ifdef _DEBUG
-	if( m_dwIndex == XI_SKILL_MAG_FIRE_HOTAIR01 )	// 디버깅 하려면 이걸 바꿔 쓰세요.
-	{
-		int a = 0;
-	}
-#endif
 	m_nFrame++;
 	if( m_nSec == 0 )	// 0은 1회 플레이후 종료.
 	{

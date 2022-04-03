@@ -9,7 +9,7 @@ extern	CDPCertified	g_dpCertified;
 extern	CDPLoginClient	g_dpLoginClient;
 extern	CDPClient		g_DPlay;
 
-static char* g_szText[] = 
+static const char* g_szText[] = 
 { 
 	"CERT_CONNECTED",		
 	"CERT_CONNECT_FAIL",	

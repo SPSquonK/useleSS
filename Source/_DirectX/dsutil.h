@@ -85,9 +85,9 @@ public:
 		HWND           m_hwndApp;
 
 public:
-		BOOL Play( LPTSTR pszFileName, D3DXVECTOR3* pvPosition = NULL, D3DXVECTOR3* pvVelocity = NULL, BOOL bIsAutoplay = TRUE, BOOL bIsVoice = FALSE );
-		BOOL Play( LPCTSTR pszFileName, D3DXVECTOR3* pvPosition = NULL, D3DXVECTOR3* pvVelocity = NULL, BOOL bIsAutoplay = TRUE,  BOOL bIsVoice = FALSE ) { return Play((LPTSTR)pszFileName,pvPosition,pvVelocity, bIsAutoplay, bIsVoice ); }
-		BOOL Play( int nId, D3DXVECTOR3* pvPosition = NULL, D3DXVECTOR3* pvVelocity = NULL, BOOL bIsAutoplay = TRUE,  BOOL bIsVoice = FALSE ); 
+		BOOL Play( LPTSTR pszFileName, const D3DXVECTOR3* pvPosition = NULL, const D3DXVECTOR3* pvVelocity = NULL, BOOL bIsAutoplay = TRUE, BOOL bIsVoice = FALSE );
+		BOOL Play( LPCTSTR pszFileName, const D3DXVECTOR3* pvPosition = NULL, const D3DXVECTOR3* pvVelocity = NULL, BOOL bIsAutoplay = TRUE,  BOOL bIsVoice = FALSE ) { return Play((LPTSTR)pszFileName,pvPosition,pvVelocity, bIsAutoplay, bIsVoice ); }
+		BOOL Play( int nId, const D3DXVECTOR3* pvPosition = NULL, const D3DXVECTOR3* pvVelocity = NULL, BOOL bIsAutoplay = TRUE,  BOOL bIsVoice = FALSE ); 
 		CSound* GetSound( LPTSTR pszFileName );
 		void Stop();
 		void SetListener( D3DXVECTOR3 vecPos, FLOAT fAngle );
@@ -216,11 +216,11 @@ public:
 #if	defined(__CLIENT)
 extern CSoundManager g_SoundMng;
 #include "..\_common\Path.h"
-inline BOOL PLAYSND( LPCTSTR pszFileName, D3DXVECTOR3* pvPosition = NULL, BOOL bIsVoice = FALSE ) 
+inline BOOL PLAYSND( LPCTSTR pszFileName, const D3DXVECTOR3* pvPosition = NULL, BOOL bIsVoice = FALSE ) 
 { 
 	return g_SoundMng.Play( MakePath( DIR_SOUND, pszFileName ), pvPosition, NULL, TRUE, bIsVoice ); 
 }
-inline BOOL PLAYSND( int nId, D3DXVECTOR3* pvPosition = NULL, BOOL bIsVoice = FALSE ) 
+inline BOOL PLAYSND( int nId, const D3DXVECTOR3* pvPosition = NULL, BOOL bIsVoice = FALSE ) 
 { 
 	return g_SoundMng.Play( nId, pvPosition, NULL, TRUE, bIsVoice ); 
 }

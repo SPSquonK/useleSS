@@ -1086,7 +1086,8 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 			if( pSfx )
 				pSfx->SetAngle( -GetAngle() );
 
-			PLAYSND( SND_PC_BOSS_CRASH, &pHitObj->GetPos() );
+			const auto pos = pHitObj->GetPos();
+			PLAYSND( SND_PC_BOSS_CRASH, &pos );
 		#endif //__CLIENT
 
 		#ifdef __WORLDSERVER
@@ -1606,7 +1607,8 @@ BOOL	CMover::OnAttackMelee( DWORD dwState, CMover *pHitObj )
 			}
 		#endif //__Y_DRAGON_FIRE
 */
-			PLAYSND( pItemProp->dwSndAttack1, &GetPos() );
+			const auto pos = GetPos();
+			PLAYSND( pItemProp->dwSndAttack1, &pos );
 		}
 		
 		if( IsPlayer() )

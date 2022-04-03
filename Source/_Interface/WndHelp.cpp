@@ -362,7 +362,8 @@ BOOL CWndHelpFAQ::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					m_strKeyword = strKey;
 
 					CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-					pWndText->m_string.Init( m_pFont, &pWndText->GetClientRect() );
+					const auto rect = pWndText->GetClientRect();
+					pWndText->m_string.Init( m_pFont, &rect );
 					pWndText->m_string.SetString("");
 					pWndText->m_string.AddString(m_strKeyword, 0xff8080ff, ESSTY_BOLD);
 					pWndText->m_string.AddString("\n\n");

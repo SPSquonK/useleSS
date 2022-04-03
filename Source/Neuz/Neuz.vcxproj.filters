@@ -1850,6 +1850,9 @@
     <ClInclude Include="..\_Common\langman.h" />
     <ClInclude Include="..\_Common\rtmessenger.h" />
     <ClInclude Include="..\_Interface\WndQuizEvent.h" />
+    <ClInclude Include="..\_Common\Vector3Helper.h">
+      <Filter>Source Files\_Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

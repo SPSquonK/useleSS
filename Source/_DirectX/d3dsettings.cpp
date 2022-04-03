@@ -27,7 +27,7 @@ CD3DSettingsDialog* s_pSettingsDialog = NULL;
 // Name: D3DDevTypeToString
 // Desc: Returns the string for the given D3DDEVTYPE.
 //-----------------------------------------------------------------------------
-TCHAR* D3DDevTypeToString(D3DDEVTYPE devType)
+const TCHAR* D3DDevTypeToString(D3DDEVTYPE devType)
 {
     switch (devType)
     {
@@ -43,7 +43,7 @@ TCHAR* D3DDevTypeToString(D3DDEVTYPE devType)
 // Name: MultisampleTypeToString
 // Desc: Returns the string for the given D3DMULTISAMPLE_TYPE.
 //-----------------------------------------------------------------------------
-TCHAR* MultisampleTypeToString(D3DMULTISAMPLE_TYPE MultiSampleType)
+const TCHAR* MultisampleTypeToString(D3DMULTISAMPLE_TYPE MultiSampleType)
 {
     switch (MultiSampleType)
     {
@@ -73,7 +73,7 @@ TCHAR* MultisampleTypeToString(D3DMULTISAMPLE_TYPE MultiSampleType)
 // Name: VertexProcessingTypeToString
 // Desc: Returns the string for the given VertexProcessingType.
 //-----------------------------------------------------------------------------
-TCHAR* VertexProcessingTypeToString(VertexProcessingType vpt)
+const TCHAR* VertexProcessingTypeToString(VertexProcessingType vpt)
 {
     switch (vpt)
     {
@@ -90,7 +90,7 @@ TCHAR* VertexProcessingTypeToString(VertexProcessingType vpt)
 // Name: PresentIntervalToString
 // Desc: Returns the string for the given present interval.
 //-----------------------------------------------------------------------------
-TCHAR* PresentIntervalToString( UINT pi )
+const TCHAR* PresentIntervalToString( UINT pi )
 {
     switch( pi )
     {

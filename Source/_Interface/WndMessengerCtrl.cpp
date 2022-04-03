@@ -234,7 +234,7 @@ CWndFriendCtrlEx::~CWndFriendCtrlEx()
 {
 }
 
-void CWndFriendCtrlEx::Create( RECT& rect, CWndBase* pParentWnd, UINT nID )
+void CWndFriendCtrlEx::Create(const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
 	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
 }
@@ -998,7 +998,7 @@ CWndGuildCtrlEx::~CWndGuildCtrlEx()
 {
 }
 
-void CWndGuildCtrlEx::Create( RECT& rect, CWndBase* pParentWnd, UINT nID )
+void CWndGuildCtrlEx::Create( const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
 	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
 }

@@ -57,7 +57,7 @@ FLOAT CWorld::GetFullHeight( const D3DXVECTOR3& vPos )
 
 #ifdef __CLIENT
 // 현재 캐릭터가 있는 위치의 맵에서 해당이름을 가진 오브젝트를 찾는다
-CObj *CWorld::GetObjByName(TCHAR* ObjName)
+CObj *CWorld::GetObjByName(const TCHAR* ObjName)
 {
 	CObj* pObj;
 	if(g_pPlayer)

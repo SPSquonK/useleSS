@@ -270,7 +270,7 @@ void CResFile::FreeResource()
 		safe_delete( lpRes );
 	}
 }
-BOOL CResFile::Open( LPCTSTR lpszFileName, TCHAR *mode )
+BOOL CResFile::Open( LPCTSTR lpszFileName, const TCHAR *mode )
 {
 //	TRACE("CResFile::Open( %s )\n", lpszFileName );
 	if( CFileIO::Open( lpszFileName, mode ) == TRUE )

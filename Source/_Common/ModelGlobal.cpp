@@ -5,6 +5,7 @@
 #include "ModelGlobal.h"
 #ifdef __CLIENT
 #include "Shader.h"
+#include "Vector3Helper.h"
 #endif
 
 #include "Project.h"
@@ -854,10 +855,10 @@ void CPartsBeam :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 	//	}
 	//	fSize += (nCnt * 0.01f);
 		
-		D3DXVec3TransformCoord( &m_vList[i * 4 + 0].pos, &(D3DXVECTOR3( -fSize, 0, 0 )), &m1 );
-		D3DXVec3TransformCoord( &m_vList[i * 4 + 1].pos, &(D3DXVECTOR3(  fSize, 0, 0 )), &m1 );
-		D3DXVec3TransformCoord( &m_vList[i * 4 + 2].pos, &(D3DXVECTOR3( -fSize, 0, 0 )), &m2 );
-		D3DXVec3TransformCoord( &m_vList[i * 4 + 3].pos, &(D3DXVECTOR3(  fSize, 0, 0 )), &m2 );
+		m_vList[i * 4 + 0].pos = D3DXR::TransformCoord(D3DXVECTOR3(-fSize, 0, 0), m1);
+		m_vList[i * 4 + 1].pos = D3DXR::TransformCoord(D3DXVECTOR3( fSize, 0, 0), m1);
+		m_vList[i * 4 + 2].pos = D3DXR::TransformCoord(D3DXVECTOR3(-fSize, 0, 0), m2);
+		m_vList[i * 4 + 3].pos = D3DXR::TransformCoord(D3DXVECTOR3( fSize, 0, 0), m2);
 
 //		m_fScale[i] += 0.01f;
 		float f2 = 1.0f; //m_fScale[i];
@@ -1009,10 +1010,10 @@ void CPartsLaser :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWor
 
 		FLOAT fSize = m_fSize;
 		
-		D3DXVec3TransformCoord( &m_vList[0].pos, &(D3DXVECTOR3( -fSize, 0, 0 )), &m1 );
-		D3DXVec3TransformCoord( &m_vList[1].pos, &(D3DXVECTOR3(  fSize, 0, 0 )), &m1 );
-		D3DXVec3TransformCoord( &m_vList[2].pos, &(D3DXVECTOR3( -fSize, 0, 0 )), &m2 );
-		D3DXVec3TransformCoord( &m_vList[3].pos, &(D3DXVECTOR3(  fSize, 0, 0 )), &m2 );
+		m_vList[0].pos = D3DXR::TransformCoord(D3DXVECTOR3(-fSize, 0, 0), m1);
+		m_vList[1].pos = D3DXR::TransformCoord(D3DXVECTOR3( fSize, 0, 0), m1);
+		m_vList[2].pos = D3DXR::TransformCoord(D3DXVECTOR3(-fSize, 0, 0), m2);
+		m_vList[3].pos = D3DXR::TransformCoord(D3DXVECTOR3( fSize, 0, 0), m2);
 
 		float f2 = 1.0f;
 		

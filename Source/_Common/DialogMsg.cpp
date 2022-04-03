@@ -390,9 +390,11 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 					D3DXMATRIX matWorld;
 					D3DXMatrixIdentity(&matWorld);
 					D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-
-					D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixScale() );
-					D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixRotation() );
+					
+					const auto matrixScale = pObj->GetMatrixScale();
+					D3DXMatrixMultiply( &matWorld, &matWorld, &matrixScale );
+					const auto matrixRotation = pObj->GetMatrixRotation();
+					D3DXMatrixMultiply( &matWorld, &matWorld, &matrixRotation );
 					D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
 
 					vPosHeight = pBB->m_vPos[0];
@@ -438,8 +440,11 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 				D3DXMatrixIdentity(&matWorld);
 				D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
 
-				D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixScale() );
-				D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixRotation() );
+				const auto matrixScale = pObj->GetMatrixScale();
+				D3DXMatrixMultiply(&matWorld, &matWorld, &matrixScale);
+				const auto matrixRotation = pObj->GetMatrixRotation();
+				D3DXMatrixMultiply(&matWorld, &matWorld, &matrixRotation);
+
 				D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
 
 				vPosHeight = pBB->m_vPos[0];
@@ -656,8 +661,10 @@ g_ShoutChat:
 			D3DXMatrixIdentity(&matWorld);
 			D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
 
-			D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixScale() );
-			D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixRotation() );
+			const auto matrixScale = pObj->GetMatrixScale();
+			D3DXMatrixMultiply(&matWorld, &matWorld, &matrixScale);
+			const auto matrixRotation = pObj->GetMatrixRotation();
+			D3DXMatrixMultiply(&matWorld, &matWorld, &matrixRotation);
 			D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
 
 			vPosHeight = pBB->m_vPos[0];
@@ -901,15 +908,16 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 	{
 		cx = 160;
 		cy = 160; // 이 수치는 의미가 없음. Reset 이후에 줄수로 재 계산 됨
-		
-		lpCustomText->m_string.Init( lpCustomText->m_pFont, &CRect( 0, 0, cx - 16, cy - 16) );
+		const CRect rect = CRect(0, 0, cx - 16, cy - 16);
+		lpCustomText->m_string.Init( lpCustomText->m_pFont, &rect );
 	}
 	else
 	{
 		cx = size.cx + 16; 
 		cx = ( ( cx / 16 ) * 16 ) + ( ( cx % 16 ) ? 16 : 0 );
 		cy = size.cy;// 이 수치는 의미가 없음. Reset 이후에 줄수로 재 계산 됨 
-		lpCustomText->m_string.Init( lpCustomText->m_pFont, &CRect( 0, 0, cx - 16, cy - 16) );
+		const CRect rect = CRect(0, 0, cx - 16, cy - 16);
+		lpCustomText->m_string.Init( lpCustomText->m_pFont, &rect );
 	}
 
 
@@ -977,7 +985,8 @@ void CDialogMsg::AddVendorMessage(CObj *pObj, LPCTSTR lpszMessage, DWORD RGB)
 		cx = size.cx + 16; 
 		cx = ( ( cx / 16 ) * 16 ) + ( ( cx % 16 ) ? 16 : 0 );
 		cy = size.cy;// 이 수치는 의미가 없음. Reset 이후에 줄수로 재 계산 됨 
-		lpCustomText->m_string.Init( lpCustomText->m_pFont, &CRect( 0, 0, cx - 16, cy - 16) );
+		const CRect rect = CRect(0, 0, cx - 16, cy - 16);
+		lpCustomText->m_string.Init( lpCustomText->m_pFont, &rect );
 	}
 	if( lpCustomText->m_bInfinite )
 	{

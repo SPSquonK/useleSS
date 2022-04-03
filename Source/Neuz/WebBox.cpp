@@ -11,8 +11,8 @@
 
 #define	WEB_HEADER	"Content-Type: application/x-www-form-urlencoded\r\nContent-length: %d\r\n"
 
-LPTSTR WEB_ADDRESS_DEFAULT	= NULL;
-LPTSTR WEB_POSTDATA = NULL;
+LPCTSTR WEB_ADDRESS_DEFAULT	= NULL;
+LPCTSTR WEB_POSTDATA = NULL;
 static LPCTSTR WEB_ADDRESS_QOODO	= "www.omg.com.tw/qoodo02/default.aspx";
 static LPCTSTR WEB_POSTDATA_QOODO	= "account=%s&check=%s";
 

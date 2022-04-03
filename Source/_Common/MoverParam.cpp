@@ -3427,7 +3427,8 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 					static_cast<CItemElem*>(pItemBase)->SetVisKeepTimeSize( dwValue );
 
 #ifdef __CLIENT	//sun : ��ü �� ������( �����κ��� ��Ŷ�� �޾Ƽ� ó���ɶ� )�̷������ ȿ���� ��� 
-					PLAYSND(SND_INF_EQUIPACCESSORY, &g_pPlayer->GetPos());
+					const auto pos = g_pPlayer->GetPos();
+					PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
 #endif // __CLIENT
 				}
 				break;
@@ -3438,7 +3439,8 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 					static_cast<CItemElem*>(pItemBase)->SetVisKeepTime( wIndex, ( dwTime * 60 ) + time_null() ); // �д��� �ð��� �ʴ����� ����
 
 #ifdef __CLIENT
-					PLAYSND(SND_INF_EQUIPACCESSORY, &g_pPlayer->GetPos());
+					const auto pos = g_pPlayer->GetPos();
+					PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
 #endif // __CLIENT
 				}
 				break;
@@ -3449,7 +3451,8 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 					static_cast<CItemElem*>(pItemBase)->SetSwapVisItem( wPos1, wPos2 );
 
 #ifdef __CLIENT
-					PLAYSND(SND_INF_EQUIPACCESSORY, &g_pPlayer->GetPos());
+					const auto pos = g_pPlayer->GetPos();
+					PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
 #endif // __CLIENT
 				}
 				break;

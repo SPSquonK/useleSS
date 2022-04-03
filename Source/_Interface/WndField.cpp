@@ -27,6 +27,7 @@ extern	CDPClient	g_DPlay;
 #include "playerdata.h"
 
 #include "GuildHouse.h"
+#include "Vector3Helper.h"
 
 extern int g_nSkillCurSelect;
 extern float g_fHairLight;
@@ -666,11 +667,10 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 	D3DXMATRIXA16 matTrans;
 
 	// 카메라 
-	D3DXMATRIX  matView;
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.7f, -3.5f );
-	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
@@ -1318,11 +1318,10 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 	D3DXMATRIXA16 matTrans;
 
 	// 카메라 
-	D3DXMATRIX  matView;
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.7f, -3.5f );
 	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
@@ -8498,8 +8497,10 @@ void CWndTrade::OnDraw(C2DRender* p2DRender)
 }
 void CWndTrade::OnInitialUpdate()
 {
-	m_wndItemCtrlYou.Create( WLVS_ICON|WBS_NODRAWFRAME, CRect(   5, 25 + 15,   5 + 32 * 5 + 5, 25 + 32 * 5 + 5 + 15 ), this, 10001 );
-	m_wndItemCtrlI.  Create( WLVS_ICON|WBS_NODRAWFRAME, CRect( 175, 25 + 15, 175 + 32 * 5 + 5, 25 + 32 * 5 + 5 + 15 ), this, 10002 );
+	const auto youRect = CRect(   5, 25 + 15,   5 + 32 * 5 + 5, 25 + 32 * 5 + 5 + 15 );
+	m_wndItemCtrlYou.Create( WLVS_ICON|WBS_NODRAWFRAME, youRect, this, 10001 );
+	const auto iRect   = CRect( 175, 25 + 15, 175 + 32 * 5 + 5, 25 + 32 * 5 + 5 + 15 );
+	m_wndItemCtrlI.  Create( WLVS_ICON|WBS_NODRAWFRAME, iRect, this, 10002 );
 
 	m_nGoldI = 0;
 	m_nGoldYou = 0;
@@ -8697,7 +8698,7 @@ CWndNavigator::~CWndNavigator()
 
 }
 
-void CWndNavigator::SetRegionName( TCHAR *tszName )
+void CWndNavigator::SetRegionName( const TCHAR *tszName )
 {
 	CString strTitle = tszName;
 
@@ -10116,11 +10117,10 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 	D3DXMatrixIdentity(&matTrans);
 	D3DXMatrixIdentity(&matWorld);
 
-//#ifdef __VCRITICAL
 	{	
 		D3DXVECTOR3 vecLookAt( 0.0f, -0.0f, 3.0f );
 		D3DXVECTOR3 vecPos(  0.0f, 0.7f, -3.5f );
-		D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+		matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 		pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
 		D3DXMatrixScaling(&matScale, 6.0f, 6.0f, 6.0f);
@@ -10128,17 +10128,6 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 
 		D3DXMatrixRotationY( &matRot1, D3DXToRadian( -20 ) );
 	}
-//#else
-//	D3DXVECTOR3 vecLookAt( 0.0f, -0.0f, 3.0f );
-//	D3DXVECTOR3 vecPos(  0.0f, 0.7f, -3.5f );
-//	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
-//	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
-//
-//	D3DXMatrixScaling(&matScale, 6.0f, 6.0f, 6.0f);
-//	D3DXMatrixTranslation(&matTrans,0.0f,-7.8f,0.0f);
-//	
-//	D3DXMatrixRotationY( &matRot1, D3DXToRadian( -20 ) );
-//#endif
 	
 	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
 	D3DXMatrixMultiply(&matWorld, &matWorld,&matRot1);
@@ -13399,18 +13388,18 @@ void CWndPostSend::ClearData()
 	*/
 }
 
-void CWndPostSend::SetReceive( char* pchar )
+void CWndPostSend::SetReceive( const char* pchar )
 {
 	CWndComboBox* pWndCombo = (CWndComboBox*)GetDlgItem( WIDC_COMBOBOX1 );	
 	pWndCombo->SetString( pchar );
 }
-void CWndPostSend::SetTitle( char* pchar )
+void CWndPostSend::SetTitle( const char* pchar )
 {
 	CWndEdit* pWndEdit1	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
 	
 	pWndEdit1->SetString( pchar );
 }
-void CWndPostSend::SetText( char* pchar )
+void CWndPostSend::SetText( const char* pchar )
 {
 	CWndEdit* pWndEdit1	= (CWndEdit*)GetDlgItem( WIDC_EDIT3 );
 	

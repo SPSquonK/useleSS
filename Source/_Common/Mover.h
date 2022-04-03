@@ -390,7 +390,7 @@ public:
 	void	SetLevelup( BYTE nLevelup )		{	m_nLevelup	= nLevelup;		}
 	BYTE	GetLevelup()	{	return m_nLevelup;	}
 #ifdef __PET_1024
-	void	SetName( char* szName );
+	void	SetName( const char* szName );
 	char*	GetName()	{	return m_szName;	}
 	BOOL	HasName()	{	return strlen( m_szName ) > 0;	}
 #endif	// __PET_1024

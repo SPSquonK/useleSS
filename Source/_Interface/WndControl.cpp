@@ -882,11 +882,12 @@ LPTREEELEM CWndTreeCtrl::FindTreeElem( CPtrArray& ptrArray, LPCTSTR lpszKeyword 
 
 LPTREEELEM CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWORD dwData, BOOL bForbidChecking, BOOL bCheck, DWORD dwFontColor, DWORD dwSelectColor )
 {
-	LPTREEELEM lpTreeElem = new TREEELEM( &GetClientRect() );
+	const CRect clientRect = GetClientRect();
+	LPTREEELEM lpTreeElem = new TREEELEM( &clientRect);
 	lpTreeElem->m_lpParent = lpParent;
 	lpTreeElem->m_dwColor = dwFontColor;
 	lpTreeElem->m_dwSelectColor = dwSelectColor;
-	lpTreeElem->m_strKeyword.Init( m_pFont, &GetClientRect() );
+	lpTreeElem->m_strKeyword.Init( m_pFont, &clientRect);
 	lpTreeElem->m_strKeyword.SetParsingString( lpString, dwFontColor, 0x00000000, 0, 0x00000001, TRUE );
 	lpTreeElem->m_dwData = dwData;
 	lpTreeElem->m_bOpen = FALSE;
@@ -1334,7 +1335,7 @@ m_bOpen( FALSE ),
 m_pWndCheckBox( NULL )
 {}
 
-tagScriptElem::tagScriptElem( CRect* pRect ) : 
+tagScriptElem::tagScriptElem( const CRect* pRect ) : 
 m_lpParent( NULL ), 
 m_dwColor( D3DCOLOR_ARGB( 255, 64, 64, 64 ) ), 
 m_dwSelectColor( D3DCOLOR_ARGB( 255, 0, 0, 255 ) ), 
@@ -2129,7 +2130,8 @@ int CWndListBox::AddString(LPCTSTR lpszItem)
 {
 	LPLISTITEM lpListItem = new LISTITEM;
 	lpListItem->m_strWord = lpszItem;
-	lpListItem->m_strWord.Init( m_pFont, &GetClientRect() );
+	const auto rect = GetClientRect();
+	lpListItem->m_strWord.Init( m_pFont, &rect );
 	lpListItem->m_strWord.SetParsingString( lpszItem, m_nFontColor, 0x00000000, 0, 0x00000001, TRUE );
 	m_listItemArray.Add(lpListItem);
 	return m_listItemArray.GetSize()-1;
@@ -2434,8 +2436,8 @@ void CWndText::OnInitialUpdate()
 		SetWndRect( rect, TRUE );
 	}
 
-	m_string.Init( m_pFont, &GetClientRect() );
 	CRect rect = GetClientRect();
+	m_string.Init( m_pFont, &rect );
 	m_wndScrollBar.Create( WBS_DOCKING | WBS_VERT, rect, this, 1000 );
 	UpdateScrollBar();
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
@@ -3034,7 +3036,8 @@ void CWndText::OnKillFocus(CWndBase* pNewWnd)
 void CWndText::SetString( LPCTSTR pszString, DWORD dwColor )
 {
 	// Init의 목적은 Align이 아니라 m_pfont와 Rect세팅이다.
-	m_string.Init( m_pFont, &GetClientRect() );
+	const auto rect = GetClientRect();
+	m_string.Init( m_pFont, &rect );
 	// 이 내부에서 Align을 한다.
 	m_string.SetParsingString( pszString, dwColor );
 	if( IsWndStyle( WBS_VSCROLL ) )
@@ -3818,13 +3821,15 @@ void CWndListCtrl::PaintFrame( C2DRender* p2DRender )
 		{
 			LVCOLUMN* pColumn = (LVCOLUMN*)m_aColumns.GetAt( i );
 			p2DRender->TextOut( x + 4, 4, pColumn->pszText ); 
-			m_pTheme->GradationRect( p2DRender, &CRect( x, 0, x + pColumn->cx + 5, 20 ), 
+			const auto rect = CRect(x, 0, x + pColumn->cx + 5, 20);
+			m_pTheme->GradationRect( p2DRender, &rect, 
 				D3DCOLOR_ARGB( 50, 100, 100, 100 ),
 				D3DCOLOR_ARGB( 90, 255, 255, 255 ),
 				D3DCOLOR_ARGB( 50, 000, 000, 000 ), 20 );
 			x += pColumn->cx + 6;
 		}
-		m_pTheme->GradationRect( p2DRender, &CRect( x, 0, rect.Width(), 20 ), 
+		const auto gradRect = CRect(x, 0, rect.Width(), 20);
+		m_pTheme->GradationRect( p2DRender, &gradRect,
 			D3DCOLOR_ARGB( 50, 100, 100, 100 ),
 			D3DCOLOR_ARGB( 90, 255, 255, 255 ),
 			D3DCOLOR_ARGB( 50, 000, 000, 000 ), 20 );

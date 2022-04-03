@@ -8,6 +8,7 @@
 #include "resdata.h"
 #include "WndGuideSystem.h"
 #include "dpclient.h"
+#include "Vector3Helper.h"
 
 extern	CDPClient	g_DPlay;
 
@@ -82,11 +83,10 @@ void CWndGuideSystem::OnDraw( C2DRender* p2DRender )
 	D3DXMATRIXA16 matTrans;
 
 	// Ä«¸Þ¶ó 
-	D3DXMATRIX  matView;
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.7f, -5.5f );
 	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
@@ -218,11 +218,11 @@ void CWndGuideSystem::SetAni(int nJob, int nAniKind)
 		return;
 	
 	CString filename;
-	char* VagArry[3] = { "Mvr_Guidepang_Appear.ani", "Mvr_Guidepang_Default.ani", "Mvr_Guidepang_Disappear.ani"	};
-	char* MerArry[3] = { "Mvr_McGuidepang_appear.ani", "Mvr_McGuidepang_default.ani", "Mvr_McGuidepang_Disappear.ani"	};
-	char* AssArry[3] = { "Mvr_AsGuidepang_Appear.ani", "Mvr_AsGuidepang_Default.ani", "Mvr_AsGuidepang_Disappear.ani"	};
-	char* MagArry[3] = { "Mvr_MgGuidepang_Appear.ani", "Mvr_MgGuidepang_Dafault.ani", "Mvr_MgGuidepang_DisAppear.ani"	};
-	char* AcrArry[3] = { "Mvr_AcrGuidepang_Appear.ani", "Mvr_AcrGuidepang_Default.ani", "Mvr_AcrGuidepang_DisAppear.ani"	};
+	const char* VagArry[3] = { "Mvr_Guidepang_Appear.ani", "Mvr_Guidepang_Default.ani", "Mvr_Guidepang_Disappear.ani"	};
+	const char* MerArry[3] = { "Mvr_McGuidepang_appear.ani", "Mvr_McGuidepang_default.ani", "Mvr_McGuidepang_Disappear.ani"	};
+	const char* AssArry[3] = { "Mvr_AsGuidepang_Appear.ani", "Mvr_AsGuidepang_Default.ani", "Mvr_AsGuidepang_Disappear.ani"	};
+	const char* MagArry[3] = { "Mvr_MgGuidepang_Appear.ani", "Mvr_MgGuidepang_Dafault.ani", "Mvr_MgGuidepang_DisAppear.ani"	};
+	const char* AcrArry[3] = { "Mvr_AcrGuidepang_Appear.ani", "Mvr_AcrGuidepang_Default.ani", "Mvr_AcrGuidepang_DisAppear.ani"	};
 	
 	switch( nJob )
 	{

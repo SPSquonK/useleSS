@@ -38,7 +38,7 @@ CWndItemCtrl::~CWndItemCtrl()
 {
 //	ResetContent();
 }
-void CWndItemCtrl::Create( DWORD dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID )
+void CWndItemCtrl::Create( DWORD dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
 	CWndBase::Create( WBS_CHILD | dwListCtrlStyle, rect, pParentWnd, nID );
 }

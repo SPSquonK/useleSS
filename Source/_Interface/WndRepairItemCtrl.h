@@ -33,7 +33,7 @@ public:
 	
 //	void	InitItem( DWORD* pItemContainer );
 	void	InitItem( DWORD* pdwIdRepair );
-	void	Create( DWORD dwListCtrlStyle, RECT & rect, CWndBase* pParentWnd, UINT nID );
+	void	Create( DWORD dwListCtrlStyle, const RECT & rect, CWndBase* pParentWnd, UINT nID );
 //	void	LoadListBoxScript( LPCTSTR lpFileName );
 
 	int		HitTest( CPoint point );

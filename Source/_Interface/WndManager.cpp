@@ -531,7 +531,7 @@ CWndMgr::~CWndMgr()
 	while( pos )
 	{
 		m_mapAppletFunc.GetNextAssoc( pos, dwIdApplet, (void*&)pApplet );
-		SAFE_DELETE( (AppletFunc*) pApplet );
+		SAFE_DELETE( pApplet );
 	}
 	Free();
 	
@@ -4162,7 +4162,7 @@ BOOL IsDst_Rate( int nDstParam )
 
 // dst 파라메터이름을 스트링으로 리턴.
 // ex) nDstparam = DST_STR -> "힘"
-char *FindDstString( int nDstParam )
+const char *FindDstString( int nDstParam )
 {
 	for( int i = 0; ; ++i )
 	{

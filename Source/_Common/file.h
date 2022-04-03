@@ -88,7 +88,7 @@ public:
 
 		BOOL IsEncryption() { return m_bEncryption; }
 		virtual ~CResFile() { Close(); }
-		virtual BOOL Open( LPCTSTR lpszFileName, TCHAR *mode );
+		virtual BOOL Open( LPCTSTR lpszFileName, const TCHAR *mode );
 		virtual BOOL Close( void );
 		
 		virtual LPVOID Read();

@@ -10,6 +10,8 @@ extern	CEnvironment	g_Environment;
 #endif // __ENVIRONMENT_EFFECT
 #endif	// __JEFF_11
 
+#include "Vector3Helper.h"
+
 
 CSkyBox::CSkyBox()
 {
@@ -291,7 +293,6 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 	D3DXMatrixIdentity( &matWorld );
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
-	D3DXMATRIX  matView;
 	
 	vecLookAt.z=(float)(sqrt((vecLookAt.x*vecLookAt.x)+(vecLookAt.z*vecLookAt.z)));
 	vecLookAt.x=0;
@@ -300,7 +301,8 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 	vecLookAt.y+=pWorld->m_pCamera->GetPos().y;//m_vPos2.y;
 	vecPos.y+=pWorld->m_pCamera->GetPos().y;//m_vPos2.y;
 	vecTempLookAt=vecLookAt;
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	matView._41=0;matView._42=0;matView._43=0;
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
@@ -810,7 +812,7 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 
 BOOL CSkyBox::CheckSun(LPDIRECT3DDEVICE9 pd3dDevice)
 {
-	D3DXMATRIX mat,matView,matProj;
+	D3DXMATRIX mat,matProj;
 	pd3dDevice->GetTransform( D3DTS_PROJECTION, &matProj );
 	D3DXVECTOR3 m_vIntersect;
 	D3DXVECTOR3 vSun( 0.0f,0.0f,300.0f);
@@ -819,7 +821,7 @@ BOOL CSkyBox::CheckSun(LPDIRECT3DDEVICE9 pd3dDevice)
 	D3DXMatrixRotationX( &mat,m_fSunAngle);
 	D3DXVec3TransformCoord(&vSun,&vSun,&mat);
 	vSun+=vPos;
-	D3DXMatrixLookAtLH( &matView, &vPos, &vSun, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vPos, vSun);
 
 	CRect rect(0,0,800,600);
 
@@ -870,7 +872,6 @@ void CSkyBox::DrawLensFlare(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	D3DXMatrixIdentity( &matWorld );
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMATRIX  matView;
 	vecLookAt.z=(float)(sqrt((vecLookAt.x*vecLookAt.x)+(vecLookAt.z*vecLookAt.z)));
 	vecLookAt.x=0;
 	D3DXMatrixRotationY( &mat,angle1*3.1415926f/180.0f);
@@ -878,7 +879,8 @@ void CSkyBox::DrawLensFlare(LPDIRECT3DDEVICE9 pd3dDevice)
 	vecLookAt.y+=m_pWorld->m_pCamera->GetPos().y;//m_vPos2.y;
 	vecPos.y+=m_pWorld->m_pCamera->GetPos().y;//m_vPos2.y;
 	vecTempLookAt=vecLookAt;
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	matView._41=0;matView._42=0;matView._43=0;
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
@@ -1021,7 +1023,8 @@ void CSkyBox::DrawRain(LPDIRECT3DDEVICE9 pd3dDevice)
 		D3DXVECTOR3 vLookAt = m_pWorld->m_pCamera->m_vLookAt;
 		vPos.y = 0;
 		vLookAt.y = 0;
-		D3DXMatrixLookAtLH( &matWorld, &vPos, &vLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+
+		D3DXMATRIX matWorld = D3DXR::LookAtLH010(vPos, vLookAt);
 		float fTemp;
 		D3DXMatrixInverse(&matWorld,&fTemp,&matWorld);
 		for(int i=0;i<(int)( m_nFall );i++) 

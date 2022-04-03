@@ -10,6 +10,9 @@
 #include "ModelGlobal.h"
 #include "ModelObject.h"
 
+#ifdef __CLIENT
+#include "Vector3Helper.h"
+#endif
 
 
 
@@ -1179,8 +1182,7 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 		{
 			SetLightVec( m_SparkInfo.m_v3SparkDir );
 			
-			D3DXVECTOR3 vec3Diffuse;
-			D3DXVec3Lerp( &vec3Diffuse, &D3DXVECTOR3(0.0f,0.0f,0.0f), &m_SparkInfo.m_v3Color, m_SparkInfo.m_fLerp );
+			const D3DXVECTOR3 vec3Diffuse = D3DXR::LerpWith0(m_SparkInfo.m_v3Color, m_SparkInfo.m_fLerp);
 			SetDiffuse( vec3Diffuse.x, vec3Diffuse.y, vec3Diffuse.z );
 		}
 		

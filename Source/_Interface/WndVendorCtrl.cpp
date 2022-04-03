@@ -23,7 +23,7 @@ CWndVendorCtrl::CWndVendorCtrl()
 	m_bDrag		= FALSE;
 }
 
-void CWndVendorCtrl::Create( DWORD dwListCtrlStyle, RECT & rect, CWndBase* pParentWnd, UINT nID )
+void CWndVendorCtrl::Create( DWORD dwListCtrlStyle, const RECT & rect, CWndBase* pParentWnd, UINT nID )
 {
 	m_dwListCtrlStyle	= dwListCtrlStyle;
 	CWndBase::Create( m_dwListCtrlStyle | WBS_CHILD, rect, pParentWnd, nID );

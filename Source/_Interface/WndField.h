@@ -703,7 +703,7 @@ public:
 	
 
 	void RenderPartyMember( C2DRender* p2DRender, TEXTUREVERTEX** pVertices, CRect rect, D3DXVECTOR3 vPos, u_long uIdPlayer, LPCTSTR lpStr );
-	void SetRegionName( TCHAR *tszName );		// 지역
+	void SetRegionName( const TCHAR *tszName );		// 지역
 		
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
 	
@@ -1111,9 +1111,9 @@ public:
 	void SetItemId( BYTE nId );
 	void SetCost( int nCost ) { m_nCost = nCost; }
 	void SetCount( int nCount ) { m_nCount = nCount; }
-	void SetReceive( char* pchar );
-	void SetTitle( char* pchar );	
-	void SetText( char* pchar );	
+	void SetReceive( const char* pchar );
+	void SetTitle( const char* pchar );	
+	void SetText( const char* pchar );	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 

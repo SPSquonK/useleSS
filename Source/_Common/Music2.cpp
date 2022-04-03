@@ -101,7 +101,7 @@ BOOL PlayMusic( DWORD dwIdMusic, int nLoopCount )
 {
 	if( dwIdMusic == NULL_ID || dwIdMusic == 0 ) //BGM_NONE )
 		return FALSE;
-	LPTSTR lpFileName = g_MusicMng.GetFileName( dwIdMusic );
+	LPCTSTR lpFileName = g_MusicMng.GetFileName( dwIdMusic );
 	if( lpFileName[ 0 ] )
 	{	
 		if( PlayMusic( lpFileName, nLoopCount ) )
@@ -114,7 +114,7 @@ BOOL PlayBGM( DWORD dwIdMusic )
 {
 	if( dwIdMusic == NULL_ID || dwIdMusic == 0 ) //BGM_NONE )
 		return FALSE;
-	LPTSTR lpFileName = g_MusicMng.GetFileName( dwIdMusic );
+	LPCTSTR lpFileName = g_MusicMng.GetFileName( dwIdMusic );
 	if( lpFileName[ 0 ] )
 		return PlayMusic( lpFileName, 1 );
 	
@@ -211,7 +211,7 @@ BOOL CMusicMng::LoadScript( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
-LPTSTR CMusicMng::GetFileName( DWORD dwId )
+LPCTSTR CMusicMng::GetFileName( DWORD dwId )
 {
 	MUSIC* pMusic = m_aMusic.GetAt( dwId );
 	if( pMusic )

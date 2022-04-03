@@ -31,7 +31,7 @@ CWndPartyCtrl::~CWndPartyCtrl()
 //	ResetContent();
 	DeleteDeviceObjects();
 }
-void CWndPartyCtrl::Create( DWORD dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID )
+void CWndPartyCtrl::Create( DWORD dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
 	m_dwListCtrlStyle = dwListCtrlStyle;
 	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );

@@ -140,7 +140,7 @@ public:
 	HRESULT RestoreDeviceObjects();
 
 	// GUI 랜더에 필요한 함수들 
-	void  GradationRect( C2DRender* p2DRender, CRect* pRect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent = 40 );
+	void  GradationRect( C2DRender* p2DRender, const CRect* pRect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent = 40 );
 	DWORD GetButtonFontColor( CWndButton* pWndButton );
 	POINT GetButtonTextPos( C2DRender* p2DRender, CWndButton* pWndButton );
 

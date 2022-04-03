@@ -38,7 +38,7 @@ CWndFriendCtrl::~CWndFriendCtrl()
 	DeleteDeviceObjects();
 }
 
-void CWndFriendCtrl::Create( DWORD dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID )
+void CWndFriendCtrl::Create( DWORD dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
 	m_dwListCtrlStyle = dwListCtrlStyle;
 	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );

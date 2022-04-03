@@ -2,7 +2,7 @@
 #include "model.h" 
 #include "sfxbase.h"
 #include "..\_Common\ParticleMng.h"
-
+#include "Vector3Helper.h"
 
 LPDIRECT3DDEVICE9 CSfxMng::m_pd3dDevice;
 LPDIRECT3DVERTEXBUFFER9 CSfxMng::m_pSfxVB;
@@ -2312,7 +2312,7 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 		if( dFrame != 0 )
 		{
 			FLOAT Lerp = (FLOAT)(nFrame-pPrevKey->nFrame)/dFrame;
-			D3DXVec3Lerp( &v3Rot, &D3DXVECTOR3(0.0f,0.0f,0.0f), &pParticle->vRotation, Lerp );
+			v3Rot = D3DXR::LerpWith0(pParticle->vRotation, Lerp);
 		}
 		
 		D3DXMatrixRotationYawPitchRoll(&matRot, DEGREETORADIAN(v3Rot.y), DEGREETORADIAN(v3Rot.x), DEGREETORADIAN(v3Rot.z) );
@@ -2657,7 +2657,7 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 		if( dFrame != 0 )
 		{
 			FLOAT Lerp = (FLOAT)(nFrame-pPrevKey->nFrame)/dFrame;
-			D3DXVec3Lerp( &v3Rot, &D3DXVECTOR3(0.0f,0.0f,0.0f), &pParticle->vRotation, Lerp );
+			v3Rot = D3DXR::LerpWith0(pParticle->vRotation, Lerp);
 		}
 
 		D3DXMatrixRotationYawPitchRoll(&matRot, DEGREETORADIAN(v3Rot.y), DEGREETORADIAN(v3Rot.x), DEGREETORADIAN(v3Rot.z) );

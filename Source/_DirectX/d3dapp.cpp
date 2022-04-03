@@ -1742,7 +1742,7 @@ void CD3DApplication::UpdateStats()
             strDepthFmt[0] = TEXT('\0');
         }
 
-        TCHAR* pstrMultiSample;
+        const TCHAR* pstrMultiSample;
         switch( m_d3dSettings.MultisampleType() )
         {
         case D3DMULTISAMPLE_NONMASKABLE:  pstrMultiSample = TEXT(" (Nonmaskable Multisample)"); break;

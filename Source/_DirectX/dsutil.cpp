@@ -19,7 +19,7 @@
 
 CSoundManager  g_SoundMng;
 
-BOOL CSoundManager::Play( int nId, D3DXVECTOR3* pvPosition, D3DXVECTOR3* pvVelocity, BOOL bIsAutoplay, BOOL bIsVoice ) 
+BOOL CSoundManager::Play( int nId, const D3DXVECTOR3* pvPosition, const D3DXVECTOR3* pvVelocity, BOOL bIsAutoplay, BOOL bIsVoice ) 
 { 
 	if( !m_bSuccess )
 		return FALSE;
@@ -247,7 +247,7 @@ void CSoundManager::Stop()
 	}
 }
 
-BOOL CSoundManager::Play(LPTSTR pszFileName, D3DXVECTOR3* pvPosition, D3DXVECTOR3* pvVelocity, BOOL bIsAutoplay, BOOL bIsVoice)
+BOOL CSoundManager::Play(LPTSTR pszFileName, const D3DXVECTOR3* pvPosition, const D3DXVECTOR3* pvVelocity, BOOL bIsAutoplay, BOOL bIsVoice)
 {
 	if (!m_bSuccess) { return false; }
 	if (m_nSoundVolume == -5000) { return false; }

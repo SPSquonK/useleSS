@@ -38,7 +38,7 @@ static CTextureMng m_textureMng;
 	CWndTradeCtrl();
 	virtual ~CWndTradeCtrl();
 
-	void Create( DWORD m_dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID );
+	void Create( DWORD m_dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
 	void LoadListBoxScript(LPCTSTR lpFileName); 
 
 // Attributes

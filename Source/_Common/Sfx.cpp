@@ -5,6 +5,7 @@
 #include "defineSkill.h"
 #include "defineSound.h"
 #include "..\_Common\ParticleMng.h"
+#include "Vector3Helper.h"
 
 #include "dpclient.h"
 extern	CDPClient	g_DPlay;
@@ -1045,8 +1046,10 @@ void CSfxItemRangeAtk1::Process()
 		vDelta = m_pSfxObj->m_vPos - m_vPosDest;		// 대상과의 거리
 		if( D3DXVec3LengthSq( &vDelta ) < 0.4f * 0.4f )		// 폭발 거리까지 다가가면 충돌.
 		{
-			if( m_dwSndHit != NULL_ID )
-				PLAYSND( m_dwSndHit, &GetPos() );		// 사운드 플레이.
+			if (m_dwSndHit != NULL_ID) {
+				const auto pos = GetPos();
+				PLAYSND(m_dwSndHit, &pos);		// 사운드 플레이.
+			}
 			DamageToTarget();
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
@@ -1128,9 +1131,7 @@ void CSfxItemYoyoAtk::MakePath(int nType)
 		return;
 	}
 
-	FLOAT fLength;
-	
-	fLength = D3DXVec3LengthSq( &D3DXVECTOR3(m_vPosDest - GetPos()) );
+	FLOAT fLength = D3DXR::LengthSq(m_vPosDest - GetPos());
 
 	if( fLength > 7.0f * 7.0f )  // 7미터 이상 못 날라감
 		fLength = 49.0f;
@@ -1266,7 +1267,7 @@ void CSfxItemYoyoAtk::Process()
 			m_pSfxObj->m_vPos = vPos;
 			SetPos( vPos );
 			
-			FLOAT fLen = D3DXVec3LengthSq( &D3DXVECTOR3(m_aSpline[0] - vPos) );
+			const FLOAT fLen = D3DXR::LengthSq(m_aSpline[0] - vPos);
 			if( fLen <= 0.05f )
 			{
 				m_nStep = 1;
@@ -1304,11 +1305,14 @@ void CSfxItemYoyoAtk::Process()
 			m_pSfxObj->m_vPos = vPos;
 			SetPos( vPos );
 
-			FLOAT fLen = D3DXVec3LengthSq( &D3DXVECTOR3(v3SrcPos - vPos) );
+			const FLOAT fLen = D3DXR::LengthSq(v3SrcPos - vPos);
 			if( fLen <= 0.1f )
 			{
-				if( m_dwSndHit != NULL_ID )
-					PLAYSND( m_dwSndHit, &GetPos() );		// 사운드 플레이.
+				if (m_dwSndHit != NULL_ID) {
+					const auto pos = GetPos();
+					PLAYSND(m_dwSndHit, &pos);		// 사운드 플레이.
+				}
+					
 
 				// 폭발 오브젝트 생성.
 				if( m_dwSfxHit != NULL_ID )
@@ -1471,8 +1475,10 @@ void CSfxItemRangeAtk_JunkBow::Process()
 		vDelta = m_pSfxObj->m_vPos - m_vPosDest;		// 대상과의 거리
 		if( D3DXVec3LengthSq( &vDelta ) < 0.4f * 0.4f )		// 폭발 거리까지 다가가면 충돌.
 		{
-			if( m_dwSndHit != NULL_ID )
-				PLAYSND( m_dwSndHit, &GetPos() );		// 사운드 플레이.
+			if (m_dwSndHit != NULL_ID) {
+				const auto pos = GetPos();
+				PLAYSND(m_dwSndHit, &pos);		// 사운드 플레이.
+			}
 			DamageToTarget();
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
@@ -2346,7 +2352,7 @@ void CSfxNpcDirSteam::Process()
 					CModelObject *pModel = (CModelObject *)pObjSrc->m_pModel;
 					D3DXVECTOR3 v;
 					pModel->GetEventPos( &v, 0 );
-					D3DXVec3TransformCoord( &m_pSfxObj->m_vPos, &v, &pObjSrc->GetMatrixWorld() );
+					m_pSfxObj->m_vPos = D3DXR::TransformCoord(v, pObjSrc->GetMatrixWorld());
 
 					if( pMoverProp->dwClass == RANK_BOSS )
 						m_pSfxObj->m_vScale = D3DXVECTOR3( 2.0f, 2.0f, 2.0f );
@@ -2484,7 +2490,8 @@ void CSfxSkillMagStrongWind::Process()
 		m_pSfxObj->m_vRotate.y = m_SfxObj2.m_vRotate.y = fAngle;
 		if( D3DXVec3Length(&vDelta) < 0.2f ) 
 		{
-			PLAYSND( SND_PC_SKILLM_STRONGWIND2, &GetPos() );     
+			const auto pos = GetPos();
+			PLAYSND( SND_PC_SKILLM_STRONGWIND2, &pos );     
 			m_bHit = TRUE;
 		} else
 			m_fAngle = fAngle;	// else에다 넣은이유는 너무 가까이 붙었을때의 각도는 오차가 있을수 있기때문에..
@@ -2576,7 +2583,8 @@ void CSfxSkillMagSwordWind::Process()
 		m_pSfxObj->m_vRotate.y=m_SfxObj2.m_vRotate.y=fAngle;
 		if(D3DXVec3Length(&vDelta)<.4f) 
 		{
-			PLAYSND( SND_PC_SKILLM_SWORDWIND2, &GetPos() );     
+			const auto pos = GetPos();
+			PLAYSND( SND_PC_SKILLM_SWORDWIND2, &pos );     
 			m_bHit=TRUE;
 		}
 	}
@@ -2659,7 +2667,8 @@ void CSfxSkillMagFireBoomerang::Process()
 
 		if( D3DXVec3Length( &vDelta ) < .2f ) 
 		{
-			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &GetPos() );
+			const auto pos = GetPos();
+			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &pos );
 			m_bHit=TRUE;
 		}
 	}
@@ -2776,7 +2785,8 @@ void CSfxSkillMagHotAir::Process()
 			DamageToTarget( m_nDmgCnt, 0, 0, nMaxDmgCnt );
 		if( m_nDmgCnt >= nMaxDmgCnt )
 			m_idSfxHit = 0;
-		PLAYSND( SND_PC_SKILLM_HOTAIR2, &GetPos() );
+		const auto pos = GetPos();
+		PLAYSND( SND_PC_SKILLM_HOTAIR2, &pos );
 	}
 	BOOL res2 = m_SfxObj2.Process();
 	if( res2 )
@@ -3170,7 +3180,8 @@ void CSfxSkillMagIceMissile::Process()
 
 		if( D3DXVec3Length( &vDelta ) < .2f ) 
 		{
-			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &GetPos() );
+			const auto pos = GetPos();
+			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &pos );
 			m_bHit=TRUE;
 		}
 	}
@@ -3254,7 +3265,8 @@ void CSfxSkillMagLightningBall::Process()
 		
 		if( D3DXVec3Length( &vDelta ) < .2f ) 
 		{
-			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &GetPos() );
+			const auto pos = GetPos();
+			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &pos );
 			m_bHit=TRUE;
 		}
 	}
@@ -3337,7 +3349,8 @@ void CSfxSkillMagSpikeStone::Process()
 		
 		if( D3DXVec3Length( &vDelta ) < .2f ) 
 		{
-			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &GetPos() );
+			const auto pos = GetPos();
+			PLAYSND( SND_PC_SKILLM_FIREBOOMERANG2, &pos );
 			m_bHit=TRUE;
 		}
 	}
@@ -3509,8 +3522,10 @@ void CSfxShoot::Process()
 		vDelta = m_pSfxObj->m_vPos - m_vPosDest;		// 대상과의 거리
 		if( D3DXVec3LengthSq( &vDelta ) < 0.2f * 0.2f )		// 폭발 거리까지 다가가면 충돌.
 		{
-			if( m_dwSndHit != NULL_ID )
-				PLAYSND( m_dwSndHit, &GetPos() );		// 사운드 플레이.
+			if (m_dwSndHit != NULL_ID) {
+				const auto pos = GetPos();
+				PLAYSND(m_dwSndHit, &pos);		// 사운드 플레이.
+			}
 			DamageToTarget();
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
@@ -3655,8 +3670,10 @@ void CSfxShootWave::Process()
 		vDelta = m_pSfxObj->m_vPos - m_SfxObj2.m_vPos;		// 대상과의 거리
 		if( D3DXVec3LengthSq( &vDelta ) < 0.4f * 0.4f )		// 폭발 거리까지 다가가면 충돌.
 		{
-			if( m_dwSndHit != NULL_ID )
-				PLAYSND( m_dwSndHit, &GetPos() );		// 사운드 플레이.
+			if (m_dwSndHit != NULL_ID) {
+				const auto pos = GetPos();
+				PLAYSND(m_dwSndHit, &pos);		// 사운드 플레이.
+			}
 			m_bHit = TRUE;
 			DamageToTarget();
 		}
@@ -3889,31 +3906,28 @@ void	CSfxPartsLinkShoulder::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 	if( m_nPartsLink == 0 )		// 오른 어깨
 	{
-		D3DXMatrixMultiply( &mPartMatrix, (pModel->GetMatrixBone(15)), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(15) * pMover->GetMatrixWorld();
 	} 
 	else
 	if( m_nPartsLink == 1 )		// 왼 어깨
 	{
-		D3DXMatrixMultiply( &mPartMatrix, (pModel->GetMatrixBone(11)), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(11) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 2 )    // 오른 팔꿈치
 	{
-		D3DXMatrixMultiply( &mPartMatrix, (pModel->GetMatrixBone(16)), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(16) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 3 )	   // 왼 팔꿈치
 	{
-		D3DXMatrixMultiply( &mPartMatrix, (pModel->GetMatrixBone(12)), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(12) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 4 )   // 오른쪽어깨 + 팔꿈치 보간
 	{
-		D3DXMATRIX  mMatrix1;
-		D3DXMATRIX  mMatrix2;
-
-		D3DXMatrixMultiply( &mMatrix1, (pModel->GetMatrixBone(15)), &(pMover->GetMatrixWorld()) );
-		D3DXMatrixMultiply( &mMatrix2, (pModel->GetMatrixBone(16)), &(pMover->GetMatrixWorld()) );
+		D3DXMATRIX  mMatrix1 = *pModel->GetMatrixBone(15) * pMover->GetMatrixWorld();
+		D3DXMATRIX  mMatrix2 = *pModel->GetMatrixBone(16) * pMover->GetMatrixWorld();
 
 		D3DXVECTOR3 vPos1 = D3DXVECTOR3( mMatrix1._41, mMatrix1._42, mMatrix1._43 );
 		D3DXVECTOR3 vPos2 = D3DXVECTOR3( mMatrix2._41, mMatrix2._42, mMatrix2._43 );
@@ -3929,11 +3943,8 @@ void	CSfxPartsLinkShoulder::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	else
 	if( m_nPartsLink == 5 )   // 왼쪽어깨 + 팔꿈치 보간
 	{
-		D3DXMATRIX  mMatrix1;
-		D3DXMATRIX  mMatrix2;
-		
-		D3DXMatrixMultiply( &mMatrix1, (pModel->GetMatrixBone(11)), &(pMover->GetMatrixWorld()) );
-		D3DXMatrixMultiply( &mMatrix2, (pModel->GetMatrixBone(12)), &(pMover->GetMatrixWorld()) );
+		D3DXMATRIX mMatrix1 = *pModel->GetMatrixBone(11) * pMover->GetMatrixWorld();
+		D3DXMATRIX mMatrix2 = *pModel->GetMatrixBone(12) * pMover->GetMatrixWorld();
 		
 		D3DXVECTOR3 vPos1 = D3DXVECTOR3( mMatrix1._41, mMatrix1._42, mMatrix1._43 );
 		D3DXVECTOR3 vPos2 = D3DXVECTOR3( mMatrix2._41, mMatrix2._42, mMatrix2._43 );
@@ -3949,32 +3960,32 @@ void	CSfxPartsLinkShoulder::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	else
 	if( m_nPartsLink == 6 )    // 몸 중간
 	{
-		D3DXMatrixMultiply( &mPartMatrix, (pModel->GetMatrixBone(2)), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(2) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 7 )	   // 몸 아래
 	{
-		D3DXMatrixMultiply( &mPartMatrix, (pModel->GetMatrixBone(3)), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(3) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 8 )    // 오른손
 	{
-		D3DXMatrixMultiply( &mPartMatrix, pModel->GetMatrixBone(pModel->GetRHandIdx()), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(pModel->GetRHandIdx()) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 9 )	   // 왼손
 	{
-		D3DXMatrixMultiply( &mPartMatrix, pModel->GetMatrixBone(pModel->GetLHandIdx()), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(pModel->GetLHandIdx()) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 26 )	   // 왼손
 	{
-		D3DXMatrixMultiply( &mPartMatrix, pModel->GetMatrixBone(m_nPartsLink), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(m_nPartsLink) * pMover->GetMatrixWorld();
 	}
 	else
 	if( m_nPartsLink == 29 )	   // 왼손
 	{
-		D3DXMatrixMultiply( &mPartMatrix, pModel->GetMatrixBone(m_nPartsLink), &(pMover->GetMatrixWorld()) );
+		mPartMatrix = *pModel->GetMatrixBone(m_nPartsLink) * pMover->GetMatrixWorld();
 	}
 		
 			

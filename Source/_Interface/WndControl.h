@@ -469,7 +469,7 @@ public:
 typedef struct tagScriptElem
 {
 	tagScriptElem( void );
-	tagScriptElem( CRect* pRect );
+	tagScriptElem( const CRect* pRect );
 	tagScriptElem* m_lpParent;
 	DWORD m_dwColor;
 	DWORD m_dwSelectColor;

@@ -953,7 +953,7 @@ void CTheme::RenderGameGradeMark( C2DRender* p2DRender, DWORD dwAlpha )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CTheme::GradationRect( C2DRender* p2DRender, CRect* pRect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent )
+void CTheme::GradationRect( C2DRender* p2DRender, const CRect* pRect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent )
 {
 	int nFirstHeight = pRect->Height() * nMidPercent / 100;
 	

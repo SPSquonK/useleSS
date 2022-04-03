@@ -18,6 +18,7 @@
 #include "Commonctrl.h"
 
 #include "SecretRoom.h"
+#include "Vector3Helper.h"
 
 extern	CGuildMng	g_GuildMng;
 extern	CDPClient	g_DPlay;
@@ -2375,7 +2376,7 @@ void CWndWorld::RenderArrow()
 	D3DXMatrixIdentity( &matWorld );
 
 	// 화살표의 위치, 회전값을 결정한다.
-	D3DXMatrixLookAtLH( &matWorld, &vDest, &vSrc, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	matWorld = D3DXR::LookAtLH010(vDest, vSrc);
 	D3DXMatrixInverse (&matWorld,NULL,&matWorld);
 
 	matWorld._41 = g_pPlayer->GetPos().x; 
@@ -2582,9 +2583,7 @@ void CWndWorld::GetBoundRect( CObj* pObj, CRect* pRect )
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixScale() );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixRotation() );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
 
 	const BOUND_BOX* pBB = pModel->GetBBVector();
 	D3DXVECTOR3 vOut[ 8 ];
@@ -10369,7 +10368,7 @@ void CWndWorld::RenderWantedArrow()
 		D3DXMatrixIdentity( &matWorld );
 
 		// 화살표의 위치, 회전값을 결정한다.
-		D3DXMatrixLookAtLH( &matWorld, &vDest, &vSrc, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+		matWorld = D3DXR::LookAtLH010(vDest, vSrc);
 		D3DXMatrixInverse (&matWorld,NULL,&matWorld);
 		matWorld._41 = g_pPlayer->GetPos().x; matWorld._42 = g_pPlayer->GetPos().y + 2.0f; matWorld._43 = g_pPlayer->GetPos().z;
 

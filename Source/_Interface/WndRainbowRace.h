@@ -114,7 +114,7 @@ public:
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 //	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
-	virtual void CWndRainbowRaceMiniGameButton::PaintFrame( C2DRender* p2DRender );
+	virtual void PaintFrame( C2DRender* p2DRender );
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();

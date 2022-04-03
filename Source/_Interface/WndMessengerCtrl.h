@@ -43,7 +43,7 @@ public:
 	CWndFriendCtrlEx();
 	~CWndFriendCtrlEx();
 
-	void Create( RECT& rect, CWndBase* pParentWnd, UINT nID );
+	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
 
 	// Overridables
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE );
@@ -101,7 +101,7 @@ public:
 	CWndGuildCtrlEx();
 	~CWndGuildCtrlEx();
 
-	void Create( RECT& rect, CWndBase* pParentWnd, UINT nID );
+	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
 
 	// Overridables
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE );

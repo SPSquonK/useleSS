@@ -9,6 +9,7 @@
 extern	CDPClient	g_DPlay;
 
 #include "Tax.h"
+#include "Vector3Helper.h"
 
 
 #define PARTSMESH_HAIR( nSex )  ( nSex == SEX_MALE ? _T( "Part_maleHair%02d.o3d" ) : _T( "Part_femaleHair%02d.o3d" ) )
@@ -962,11 +963,10 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 	D3DXMATRIXA16 matTrans;
 
 	// 카메라 
-	D3DXMATRIX  matView;
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.7f, -3.5f );
 	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	const D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
@@ -2104,11 +2104,10 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 	D3DXMATRIXA16 matTrans;
 
 	// 카메라 
-	D3DXMATRIX  matView;
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.7f, -3.5f );
 	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	

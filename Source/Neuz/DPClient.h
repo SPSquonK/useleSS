@@ -979,7 +979,7 @@ public:
 	void	SendPickupPetAwakeningCancel( DWORD dwItem );	// 픽업펫 각성 취소 요청
 
 #ifdef __AZRIA_1023
-	void	SendDoUseItemInput( DWORD dwData, char* szInput );
+	void	SendDoUseItemInput( DWORD dwData, const char* szInput );
 #endif	// __AZRIA_1023
 #ifdef __PET_1024
 	void	SendClearPetName();

@@ -11,7 +11,7 @@ public:
 	CFixedArray< MUSIC > m_aMusic;
 
 	BOOL LoadScript( LPCTSTR lpszFileName );
-	LPTSTR GetFileName( DWORD dwId );
+	LPCTSTR GetFileName( DWORD dwId );
 };
 void ProcessFadeMusic();
 BOOL PlayMusic( LPCTSTR lpszFileName, int nLoopCount = 1 );

@@ -4,6 +4,7 @@
 #pragma	once
 #include <assert.h>
 #include <list>
+#include "xUtil.h"
 
 template <class T>	class MemPooler
 {

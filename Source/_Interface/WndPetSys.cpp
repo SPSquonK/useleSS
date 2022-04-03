@@ -8,6 +8,7 @@
 extern	CDPClient	g_DPlay;
 
 #include "definesound.h"
+#include "Vector3Helper.h"
 
 CWndPetAwakCancel::CWndPetAwakCancel() 
 { 
@@ -632,8 +633,6 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 	D3DXMatrixOrthoLH( &matProj, w, h, CWorld::m_fNearPlane - 0.01f, CWorld::m_fFarPlane );
 	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
-	D3DXMATRIX  matView;
-
 	// 월드 
 	D3DXMATRIXA16 matWorld;
 	D3DXMATRIXA16 matScale;
@@ -673,7 +672,7 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 
 	D3DXMatrixScaling(&matScale, fScale, fScale, fScale);
 	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	const D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
 	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
@@ -2293,8 +2292,6 @@ void CWndBuffPetStatus::OnDraw(C2DRender* p2DRender)
 	D3DXMatrixOrthoLH( &matProj, w, h, CWorld::m_fNearPlane - 0.01f, CWorld::m_fFarPlane );
 	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
-	D3DXMATRIX  matView;
-
 	// 월드 
 	D3DXMATRIXA16 matWorld;
 	D3DXMATRIXA16 matScale;
@@ -2345,7 +2342,7 @@ void CWndBuffPetStatus::OnDraw(C2DRender* p2DRender)
 
 	D3DXMatrixScaling(&matScale, fScale, fScale, fScale);
 	
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
 	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);

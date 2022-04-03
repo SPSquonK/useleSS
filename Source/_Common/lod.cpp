@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Sfx.h"
-
+#include "Vector3Helper.h"
 
 //  width unit
 //	128  1   = 0  1 ~ 1.9
@@ -210,7 +210,7 @@ void CPatch::Cull()
 
 void CPatch::CalculateLevel()
 {
-	float dist=D3DXVec3Length(&(CWorld::m_pCamera->m_vPos-m_vCenter));
+	const float dist = D3DXR::Length(CWorld::m_pCamera->m_vPos - m_vCenter);
 	if(dist>LODLEVELRANGE3) m_nLevel=3;
 	else if(dist>LODLEVELRANGE2) m_nLevel=2;
 	else if(dist>LODLEVELRANGE1) m_nLevel=1;
@@ -712,20 +712,16 @@ void CLandscape::SetVertices()
 									v4=D3DXVECTOR3((float) (X*PATCH_SIZE+j+m_nWorldX) * MPU,(float)GetHeightMap(((i-1+Y*PATCH_SIZE)*(MAP_SIZE+1))+(j+X*PATCH_SIZE)),(float) (Y*PATCH_SIZE+i-1+m_nWorldY) * MPU);
 
 								if( (j-1+X*PATCH_SIZE)>0 && (i+1+Y*PATCH_SIZE)<MAP_SIZE+1 ) {
-									D3DXVec3Cross(&vTemp,&(vTempPos-v1),&(v1-v2));
-									vTempNormal+=vTemp;
+									vTempNormal += D3DXR::Cross(vTempPos - v1, v1 - v2);
 								}
 								if( (i+1+Y*PATCH_SIZE)<MAP_SIZE+1 && (j+1+X*PATCH_SIZE)<MAP_SIZE+1 ) {
-									D3DXVec3Cross(&vTemp,&(vTempPos-v2),&(v2-v3));
-									vTempNormal+=vTemp;
+									vTempNormal += D3DXR::Cross(vTempPos - v2, v2 - v3);
 								}
 								if( (j+1+X*PATCH_SIZE)<MAP_SIZE+1 && (i-1+Y*PATCH_SIZE)>0 ) {
-									D3DXVec3Cross(&vTemp,&(vTempPos-v3),&(v3-v4));
-									vTempNormal+=vTemp;
+									vTempNormal += D3DXR::Cross(vTempPos - v3, v3 - v4);
 								}
 								if( (i-1+Y*PATCH_SIZE)>0 && (j-1+X*PATCH_SIZE)>0 ) {
-									D3DXVec3Cross(&vTemp,&(vTempPos-v4),&(v4-v1));
-									vTempNormal+=vTemp; 
+									vTempNormal += D3DXR::Cross(vTempPos - v4, v4 - v1);
 								}
 								D3DXVec3Normalize(&(vTempNormal),&(vTempNormal));
 								pVB[nV].n=vTempNormal;

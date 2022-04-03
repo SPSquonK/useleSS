@@ -8,6 +8,7 @@
 #include "WorldMap.h"
 #include "defineObj.h"
 #include "housing.h"
+#include "Vector3Helper.h"
 
 //
 // 오브젝트 타입(OT_OBJ, OT_MOVER.. )을 오브젝트 필터로 변환한다.(OF_OBJ, OF_MOVER... )
@@ -627,19 +628,12 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			FOR_OBJARRAY( pLand, pObj )
 			{
 				// 거리를 계산하고, 거리에 따라 출력할 것과 안할 것을 구분한다.
-				D3DXVECTOR3 *pv, *pvCamera;
-				float xDist, yDist, zDist;
-				pvCamera = &(m_pCamera->GetPos());//;m_vPos2);	// 카메라 좌표
-				pv = &(pObj->GetPos());	// CObj좌표
-				xDist = (pv->x - pvCamera->x);
-				yDist = (pv->y - pvCamera->y);
-				zDist = (pv->z - pvCamera->z);
-#ifdef _DEBUG
-				if( pObj->m_dwIndex == 88 )
-				{
-					int a = 0;
-				}
-#endif
+
+				const D3DXVECTOR3 pvCamera = m_pCamera->GetPos();	// 카메라 좌표
+				const D3DXVECTOR3 pv = pObj->GetPos();	// CObj좌표
+				const float xDist = (pv.x - pvCamera.x);
+				const float yDist = (pv.y - pvCamera.y);
+				const float zDist = (pv.z - pvCamera.z);
 
 				LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( pObj->m_dwType, pObj->m_dwIndex );
 				if( lpModelElem && g_Option.m_bSFXRenderOff && lpModelElem->m_bRenderFlag != 1 )
@@ -1118,7 +1112,10 @@ void CWorld::RenderObject( CD3DFont* pFont )
 		if( lpWaterHeight && m_pCamera->m_vPos.y < lpWaterHeight->byWaterHeight && 
 			( lpWaterHeight->byWaterTexture & (byte)(~MASK_WATERFRAME)) == WTYPE_WATER )
 		{
-			D3DXMatrixLookAtLH( &mat, &D3DXVECTOR3(0.0f,0.0f,-1.0f), &D3DXVECTOR3(0.0f,0.0f,1.0f), &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+			const auto pEye = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+			const auto pAt = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+			const auto pUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+			D3DXMatrixLookAtLH( &mat, &pEye, &pAt, &pUp );
 			m_pd3dDevice->SetTransform( D3DTS_VIEW, &mat );
 			m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1 );
 			m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
@@ -1290,48 +1287,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	}
 	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, m_bViewFog );
 	CHECK2("  Render Effect");
-
-/*
-	{
-		D3DXMatrixLookAtLH( &mat, &D3DXVECTOR3(0.0f,0.0f,-1.0f), &D3DXVECTOR3(0.0f,0.0f,1.0f), &D3DXVECTOR3(0.0f,1.0f,0.0f) );
-		m_pd3dDevice->SetTransform( D3DTS_VIEW, &mat );
 		
-		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1 );
-		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_CURRENT );
-		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
-		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
-		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE );
-		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
-		
-		m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-		m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-		m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
-		m_pd3dDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
-		m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-		//m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, 0x7fffffff );
-		//m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain( 20 )->m_pTexture );
-		m_pd3dDevice->SetFVF ( D3DFVF_3DVERTEX );
-		//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
-		
-		FVF_3DVERTEX* pVertices = new FVF_3DVERTEX[ 4 ];
-		pVertices[ 0 ].vPos = D3DXVECTOR3(-2.0f,-2.0f,1.0f);
-		pVertices[ 0 ].dwColor = D3DCOLOR_ARGB( 255, 255, 0, 0 );
-		pVertices[ 1 ].vPos = D3DXVECTOR3(-2.0f,2.0f,1.0f);
-		pVertices[ 1 ].dwColor = D3DCOLOR_ARGB( 255, 255, 0, 0 );
-		pVertices[ 2 ].vPos = D3DXVECTOR3(2.0f,2.0f,1.0f);
-		pVertices[ 2 ].dwColor = D3DCOLOR_ARGB( 255, 255, 0, 0 );
-		pVertices[ 3 ].vPos = D3DXVECTOR3(2.0f,-2.0f,1.0f);
-		pVertices[ 3 ].dwColor = D3DCOLOR_ARGB( 255, 255, 0, 0 );
-		m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, pVertices, sizeof( FVF_3DVERTEX ) );
-		m_pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
-		m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
-		m_pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
-		delete pVertices;
-	}
-*/	
-	
 }
 void	_DrawRect( LPDIRECT3DDEVICE9 pd3dDevice, int x, int y, int w, int h, DWORD dwColor )
 {
@@ -1437,7 +1393,7 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, CObj **pList, int nMax )
 
 	// 빛에서 바라보는 쪽의 뷰/프로젝션 매트릭스 설정.
 
-	D3DXMatrixLookAtLH( &g_mViewLight, &vLightPos, &vLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	g_mViewLight = D3DXR::LookAtLH010(vLightPos, vLookAt);
 	D3DXMatrixPerspectiveFovLH( &g_mShadowProj, D3DX_PI/4, 1.0f, 0.5f, 128.0f );
 
 	pd3dDevice->SetTransform( D3DTS_VIEW, &g_mViewLight );

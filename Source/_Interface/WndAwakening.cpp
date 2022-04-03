@@ -355,7 +355,7 @@ void CWndSelectAwakeCase::OnDraw( C2DRender* p2DRender )
 } 
 
 extern BOOL IsDst_Rate( int nDstParam );
-extern char *FindDstString( int nDstParam );
+extern const char *FindDstString( int nDstParam );
 void CWndSelectAwakeCase::OutputOptionString( C2DRender* p2DRender, CItemElem* pItemElem, BOOL bNew )
 {
 	// 옵션 문자열 그리기

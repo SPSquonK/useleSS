@@ -1145,7 +1145,8 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 		{
 			ItemProp* pItemProp = ( (CItem*)pObj )->GetProp();
 			assert(pItemProp != NULL);
-			PLAYSND( pItemProp->dwSubDefine, &(pObj->GetPos()) );
+			const auto pos = pObj->GetPos();
+			PLAYSND( pItemProp->dwSubDefine, &pos );
 		}
 		else
 		if( OT_CTRL == pObj->GetType( ) )
@@ -1729,8 +1730,10 @@ g_PASS:
 				if( dwAtkFlags & AF_CRITICAL )
 				{
 					ItemProp *pItemProp = ((CMover *)pAttacker)->GetActiveHandItemProp();
-					if( pItemProp && pItemProp->dwSndAttack2 != NULL_ID )
-						PLAYSND( pItemProp->dwSndAttack2, &pAttacker->GetPos() );
+					if (pItemProp && pItemProp->dwSndAttack2 != NULL_ID) {
+						const auto attackerPos = pAttacker->GetPos();
+						PLAYSND(pItemProp->dwSndAttack2, &attackerPos);
+					}
 				}
 				
 				if( dwAtkFlags & AF_FLYING )
@@ -2081,7 +2084,7 @@ void CDPClient::OnReplace( CAr & ar )
 #endif // __WINDOW_INTERFACE_BUG
 
 	if(	CDeployManager::GetInstance()->IsReady())		CDeployManager::GetInstance()->EndDeploy();
-	char* szMapFile[] = { "MapLoading2.tga", "MapLoading3.tga", "MapLoading4.tga" };
+	const char* szMapFile[] = { "MapLoading2.tga", "MapLoading3.tga", "MapLoading4.tga" };
 
 	CString strPath = MakePath( DIR_THEME, szMapFile[xRandom( 0, 3 )] );
 	// 맵(던전) 로딩시 이미지 출력
@@ -17203,7 +17206,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 }
 
 #ifdef __AZRIA_1023
-void CDPClient::SendDoUseItemInput( DWORD dwData, char* szInput )
+void CDPClient::SendDoUseItemInput( DWORD dwData, const char* szInput )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_DO_USE_ITEM_INPUT, DPID_UNKNOWN );
 	ar << dwData;

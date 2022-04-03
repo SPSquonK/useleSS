@@ -135,7 +135,8 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, LPCTSTR lpszString, CRect rect, CP
 		m_nSubToolTipNumber = CWndMgr::TOOL_TIP_SWITCH_MAIN;
 	}
 	m_strToolTip = lpszString;
-	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &CRect( 0, 0, 200, 0 ) );
+	const auto r = CRect(0, 0, 200, 0);
+	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &r );
 	CSize size = CWndBase::m_Theme.m_pFontText->GetTextExtent_EditString( m_strToolTip );
 	m_rectRender 
 		= CRect( 
@@ -179,7 +180,8 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, CEditString& string, CRect rect, C
 		m_nSubToolTipNumber = CWndMgr::TOOL_TIP_SWITCH_MAIN;
 	}
 	m_strToolTip = string;
-	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &CRect( 0, 0, 200, 0 ) );
+	const auto r = CRect(0, 0, 200, 0);
+	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &r );
 	CSize size = CWndBase::m_Theme.m_pFontText->GetTextExtent_EditString( m_strToolTip );
 	m_rectRender 
 		= CRect( 
@@ -242,7 +244,8 @@ void CToolTip::PutToolTipEx( DWORD dwToolTipId, CEditString& string, CRect rect,
 			m_bToolTip = FALSE;
 	}
 	m_strToolTip = string;
-	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &CRect( 0, 0, 200, 0 ) );
+	const auto r = CRect(0, 0, 200, 0);
+	m_strToolTip.Init( CWndBase::m_Theme.m_pFontText, &r );
 	CSize size = CWndBase::m_Theme.m_pFontText->GetTextExtent_EditString( m_strToolTip );
 	m_rectRender = CRect( 0, 0, size.cx + 6, size.cy + 3 + ( 2 * ( size.cy / CWndBase::m_Theme.m_pFontText->GetMaxHeight() ) ) );
 	m_rect = rect;

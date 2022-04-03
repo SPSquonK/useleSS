@@ -26,7 +26,7 @@ public:
 
 	static CTextureMng	m_textureMng;
 
-	void	Create( DWORD m_dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID );
+	void	Create( DWORD m_dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
 	void	InitItem( CItemContainer<CItemElem>* pItemContainer, DWORD SendToId );
 	CItemElem* GetItem( DWORD dwIndex );
 	COLORREF GetBkColor() const;

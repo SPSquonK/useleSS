@@ -16,6 +16,7 @@
 
 #include "WndManager.h"
 #include "Network.h"
+#include "Vector3Helper.h"
 
 extern	CDPLoginClient	g_dpLoginClient;
 extern	CDPClient	g_DPlay;
@@ -1628,11 +1629,10 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 			pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
 			// 카메라 
-			D3DXMATRIX  matView;
 			D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 1.0f );
 			D3DXVECTOR3 vecPos(  0.0f, 0.5f, -3.5f );
 
-			D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+			D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 
 			pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
@@ -2414,7 +2414,6 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
 	// 카메라 
-	D3DXMATRIX  matView;
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.0f, -5.0f );
 /*
@@ -2433,7 +2432,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 
 	}
 	*/
-	D3DXMatrixLookAtLH( &matView, &vecPos, &vecLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
+	const D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 

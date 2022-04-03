@@ -17,8 +17,8 @@ HANDLE	g_hMutex = NULL;
 static char		g_szProtocolVersion[32];			// MSG_VER
 static HHOOK	g_hHook;
 
-extern	LPTSTR WEB_ADDRESS_DEFAULT;
-extern	LPTSTR WEB_POSTDATA;
+extern	LPCTSTR WEB_ADDRESS_DEFAULT;
+extern	LPCTSTR WEB_POSTDATA;
 #ifdef __LINK_PORTAL
 BOOL	g_bBuddyFlag;
 #endif //__LINK_PORTAL

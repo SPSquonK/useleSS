@@ -107,7 +107,7 @@ protected:
     FLOAT             m_fTime;             // Current time in seconds
 	
     // Overridable variables for the app
-    TCHAR*            m_strWindowTitle;    // Title for the app's window
+    const TCHAR*      m_strWindowTitle;    // Title for the app's window
     DWORD             m_dwCreationWidth;   // Width used to create window
     DWORD             m_dwCreationHeight;  // Height used to create window
     bool              m_bShowCursorWhenFullscreen; // Whether to show cursor when fullscreen

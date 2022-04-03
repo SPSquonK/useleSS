@@ -1150,8 +1150,7 @@ void CMover::RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice)
 			D3DXMatrixIdentity(&matWorld);
 			D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
 			
-			D3DXMatrixMultiply( &matWorld, &matWorld, &GetMatrixScale() );
-			D3DXMatrixMultiply( &matWorld, &matWorld, &GetMatrixRotation() );
+			matWorld = matWorld * GetMatrixScale() * GetMatrixRotation();
 			D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
 			
 			vPosHeight = pBB->m_vPos[0];

@@ -122,17 +122,11 @@ void CGuildHouseBase::SendClientToWorld( int nPacketType, GH_Fntr_Info& gfi, int
 	SEND( ar, &g_DPlay, DPID_SERVERPLAYER );
 }
 
-struct IsSameID : public binary_function< GH_Fntr_Info, OBJID, bool > 
-{
-	bool operator( ) ( const GH_Fntr_Info& kInfo, OBJID id_ ) const 
-	{
-		return ( kInfo.objId == id_ );
-	}
-};
-
 GH_Fntr_Info*  CGuildHouseBase::Find( OBJID objID_ )
 {
-	VECFurnitureIter finder = find_if( m_vecFntInfo.begin(), m_vecFntInfo.end(), bind2nd( IsSameID(), objID_ ) );
+	VECFurnitureIter finder = find_if( m_vecFntInfo.begin(), m_vecFntInfo.end(),
+		[objID_](const GH_Fntr_Info & kInfo) { return kInfo.objId == objID_; }
+	);
 	if( finder != m_vecFntInfo.end() )
 		return &( *finder );
 

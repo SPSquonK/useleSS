@@ -88,7 +88,8 @@ BOOL CWndTutorial::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				map<int, TUTORIAL_STRING>::iterator iter = m_mapTutorial.find(pWndListBox->GetCurSel());
 				m_strKeyword = iter->second.strTitle;
 				CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT2 );
-				pWndText->m_string.Init( m_pFont, &pWndText->GetClientRect() );
+				const auto rect = pWndText->GetClientRect();
+				pWndText->m_string.Init( m_pFont, &rect );
 				pWndText->m_string.SetString("");
 				pWndText->m_string.AddParsingString(LPCTSTR(iter->second.strContents));
 				pWndText->UpdateScrollBar();

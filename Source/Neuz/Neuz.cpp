@@ -1099,8 +1099,7 @@ NEXT:
 void CNeuzApp::HashMD5(char* szResult, LPCTSTR szPWD)
 {
 	char szBuffer[256];
-	char* szKey = "";
-	szKey = "kikugalanet";
+	const char* szKey = "kikugalanet";
 	sprintf(szBuffer, "%s%s", szKey, szPWD);
 	md5(szResult, szBuffer);
 }

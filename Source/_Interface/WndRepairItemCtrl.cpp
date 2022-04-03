@@ -18,7 +18,7 @@ CWndRepairItemCtrl::CWndRepairItemCtrl()
 	m_bDrag		= FALSE;
 }
 
-void CWndRepairItemCtrl::Create( DWORD dwListCtrlStyle, RECT & rect, CWndBase* pParentWnd, UINT nID )
+void CWndRepairItemCtrl::Create( DWORD dwListCtrlStyle, const RECT & rect, CWndBase* pParentWnd, UINT nID )
 {
 	m_dwListCtrlStyle	= dwListCtrlStyle;
 	CWndBase::Create( m_dwListCtrlStyle | WBS_CHILD, rect, pParentWnd, nID );

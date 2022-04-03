@@ -2936,7 +2936,8 @@ void CMover::ProcessWalkSound()
 			CModelObject*	pModel = (CModelObject*)m_pModel;
 			if( pModel->IsAttrHit() )
 			{
-				PLAYSND( SND_WALK_LANDSOFT, &GetPos() );
+				const auto pos = GetPos();
+				PLAYSND( SND_WALK_LANDSOFT, &pos );
 			}
 		}
 	}
@@ -10711,7 +10712,7 @@ CClientPet::~CClientPet()
 }
 
 #ifdef __PET_1024
-void CClientPet::SetName( char * szName )
+void CClientPet::SetName( const char * szName )
 {
 	strncpy( m_szName, szName, MAX_PET_NAME-1 );
 	m_szName[MAX_PET_NAME-1]		= '\0';

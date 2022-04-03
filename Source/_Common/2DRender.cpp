@@ -1861,7 +1861,8 @@ void CDamageNum::Process()
 		D3DXVECTOR3 vTemp;
 		g_DamageNumMng.m_viewport.X = 0;
 		g_DamageNumMng.m_viewport.Y = 0;
-		D3DXVec3Project( &vTemp, &(m_vPos + D3DXVECTOR3(0, 1.0f, 0)), &g_DamageNumMng.m_viewport, &g_DamageNumMng.m_matProj, &g_DamageNumMng.m_matView, &g_DamageNumMng.m_matWorld );
+		const auto pos = m_vPos + D3DXVECTOR3(0, 1.0f, 0);
+		D3DXVec3Project( &vTemp, &pos, &g_DamageNumMng.m_viewport, &g_DamageNumMng.m_matProj, &g_DamageNumMng.m_matView, &g_DamageNumMng.m_matWorld );
 		m_fY = vTemp.y;
 		m_fDy = 10.0f;
 		m_nState ++;
@@ -1922,7 +1923,8 @@ void CDamageNum::Render(CTexturePack *textPackNum)
 	if( vTemp.z < 0 )	return;
 	g_DamageNumMng.m_viewport.X = 0;
 	g_DamageNumMng.m_viewport.Y = 0;
-	D3DXVec3Project( &vTemp, &(m_vPos + D3DXVECTOR3(0, 1.0f, 0)), &g_DamageNumMng.m_viewport, &g_DamageNumMng.m_matProj, &g_DamageNumMng.m_matView, &g_DamageNumMng.m_matWorld );
+	const auto pos = m_vPos + D3DXVECTOR3(0, 1.0f, 0);
+	D3DXVec3Project( &vTemp, &pos, &g_DamageNumMng.m_viewport, &g_DamageNumMng.m_matProj, &g_DamageNumMng.m_matView, &g_DamageNumMng.m_matWorld );
 	// 현재 애니메이션 진행 상황에 맞추어 위치, 크기, opacity 등을 설정한다.
 	fX = vTemp.x;
 //	if( m_nFrame == 1 )

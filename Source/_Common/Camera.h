@@ -39,8 +39,8 @@ public:
 	CCamera();
 
 	void Reset();
-	void SetPos( D3DXVECTOR3& vPos ) { m_vPos = vPos; }
-	D3DXVECTOR3 GetPos() { return m_vPos; }
+	void SetPos( const D3DXVECTOR3& vPos ) { m_vPos = vPos; }
+	[[nodiscard]] D3DXVECTOR3 GetPos() const { return m_vPos; }
 
 	void	SetQuake( int nSec, float fSize = 0.06f );
 
