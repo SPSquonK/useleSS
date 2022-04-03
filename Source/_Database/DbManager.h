@@ -925,38 +925,7 @@ public:
 	void	DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, int nserverindex, char* szAccount = '\0', char* szName = '\0',
 		int nPlayerslot = 0, DWORD dwWorldID = 0, DWORD dwIndex = 0, float vPos_x = 0.0f, float vPos_y = 0.0f,
 		float vPos_z = 0.0f, char* szCharacterKey = '\0', DWORD dwSkinSet = 0, DWORD dwHairMesh = 0, DWORD dwHairColor = 0,
-		DWORD dwHeadMesh = 0, DWORD dwSex = 0, float vScale_x = 0.0f, DWORD dwMotion = 0, float fAngle = 0.0f,
-		int nHitPoint = 0, int nManaPoint = 0, int nFatiguePoint = 0, DWORD dwRideItemIdx = 0, DWORD dwGold = 0,
-		int nJob = 0, char* szActMover = '\0', int nStr = 0, int nSta = 0, int nDex = 0,
-		int nInt = 0, int nLevel = 0, EXPINTEGER nExp1 = 0, EXPINTEGER nExp2 = 0, char* szJobSkill = '\0',
-		char* szLicenseSkill = '\0', char* aJobLv = '\0', DWORD dwExpertLv = 0, int nidMarkingWorld = 0, float vMarkingPos_x = 0.0f,
-		float vMarkingPos_y = 0.0f, float vMarkingPos_z = 0.0f, int nRemainGP = 0, int nRemainLP = 0, int nFlightLv = 0,
-		int nFxp = 0, int nTxp = 0, char* szQuestCntArray = '\0', char szAuthority = 'F', DWORD dwMode = 0,
-		int nidparty = 0, int nidMuerderer = 0, int nFame = 0,
-		EXPINTEGER nDeathExp = 0, int nDeathLevel = 0, DWORD dwFlyTime = 0, DWORD dwMessengerState = 0,
-		int nTotalPlayTime = 0, char* szCard = '\0', char* szIndex_Card = '\0', char* szObjIndexCard = '\0', char* szCube = '\0',
-		char* szIndex_Cube = '\0', char* szObjIndex_Cube = '\0', char* szInventory = '\0', char* dzapIndex = '\0', char* szadwEquipment = '\0',
-		char* szdwObjIndex = '\0', char* szSlotApplet = '\0', char* szSlotItem = '\0', char* szSlotQueue = '\0', int nActionPoint = 0,
-		char* szBank = '\0', char* m_apIndex_Bank = '\0', char* sadwObjIndex_Bank = '\0', DWORD dwGoldBank = 0,
-		int nFuel = 0, int tmAccFuel = 0, char* szSMTime = '\0', char* szSkillInfluence = '\0', DWORD m_dwSkillPoint = 0
-		, char* m_aCompleteQuest = '\0'
-		, char* ExtInven = '\0', char* PirecingInven = '\0', char* ExtBank = '\0', char* PirecingBank = '\0'
-		, DWORD dwReturnWorldID = 0, float fReturnPosX  = 0.0f, float fReturnPosY = 0.0f, float fReturnPosZ = 0.0f
-		, int nPKValue = 0, DWORD dwPKPropensity = 0, DWORD dwPKExp	= 0
-		, EXPINTEGER nAngelExp = 0, LONG nAngelLevel = 0
-		, char* szInventoryPet	= '\0',	char* szBankPet	= '\0', DWORD dwPetId = 0
-#ifdef __EXP_ANGELEXP_LOG
-		, int nExpLog = 0, int nAngelExpLog = 0
-#endif // __EXP_ANGELEXP_LOG
-#ifdef __EVENTLUA_COUPON
-		, int nCoupon = 0
-#endif // __EVENTLUA_COUPON
-		, int nHonor = -1					// 달인선택 
-#ifdef __LAYER_1015
-		, int nLayer	= 0
-#endif	// __LAYER_1015
-		, int nCampusPoint = 0, u_long idCampus = 0
-		, char* m_aCheckedQuest = '\0'
+		DWORD dwHeadMesh = 0, DWORD dwSex = 0
 		);
 
 	void	DBQryLog( char* qryLog, char* Gu, u_long idPlayer, int nserverindex, EXPINTEGER nExp1 = 0, int nLevel = 0,
