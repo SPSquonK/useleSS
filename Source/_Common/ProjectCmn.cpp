@@ -10,7 +10,7 @@
 
 CString GetLangFileName( int nLang, int nType )
 {
-	char* file[] =
+	const char* file[] =
 		{ "Filter", "InvalidName", "Notice", "GuildCombatTEXT_1", "GuildCombatTEXT_2", "GuildCombatTEXT_3", "GuildCombatTEXT_4", "GuildCombatTEXT_5", "GuildCombatTEXT_6" 
 #ifdef __RULE_0615
 			,"Letter"
@@ -593,7 +593,7 @@ CString CProject::GetLangScript( CScript& script )
 
 void CProject::LoadStrings()
 {
-	char* lpszFiles[] = {
+	const char* lpszFiles[] = {
 		"character.txt.txt",
 		"character-etc.txt.txt",
 		"character-school.txt.txt",
@@ -680,7 +680,7 @@ void CProject::LoadStrings()
 
 void CProject::LoadDefines()
 {
-	char* lpszDefines[] = {
+	const char* lpszDefines[] = {
 		"define.h",
 		"defineNeuz.h",
 		"defineQuest.h",

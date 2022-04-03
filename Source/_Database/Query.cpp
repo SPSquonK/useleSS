@@ -387,7 +387,7 @@ __int64 CQuery::GetInt64(int nCol)
 }
 
 // sCol의 컬럼값을 정수로 읽어준다.
-__int64 CQuery::GetInt64(char *sCol )
+__int64 CQuery::GetInt64(const char *sCol )
 {
 	int n;
 	n=FindCol(sCol);
@@ -416,7 +416,7 @@ float CQuery::GetFloat(int nCol)
 }
 
 
-float CQuery::GetFloat(char *sCol)
+float CQuery::GetFloat(const char *sCol)
 {
 	int n;
 	n = FindCol(sCol);
@@ -441,7 +441,7 @@ char CQuery::GetChar(int nCol)					// 실수형 컬럼 읽기
 	}
 }
 
-char CQuery::GetChar(char *sCol)				// 실수형 컬럼 읽기
+char CQuery::GetChar(const char *sCol)				// 실수형 컬럼 읽기
 {
 	int n;
 	n = FindCol(sCol);

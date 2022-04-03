@@ -27,7 +27,7 @@ public:
 	static int	_ERROR( lua_State* pLuaState );
 	
 	lua_State*	GetLuaState()								{  return m_pLuaState;  }
-	void		RegisterFunction( char* szFromLuaFunc, lua_CFunction ToCFunc );
+	void		RegisterFunction(const char* szFromLuaFunc, lua_CFunction ToCFunc );
 	int			RunScript( const char* szFileName );
 	
 	BOOL		IsNil( int nStackPos )						{  return lua_isnil( m_pLuaState, nStackPos );  }
@@ -44,16 +44,16 @@ public:
 	const char*	ToString( int nStackPos )					{  return lua_tostring( m_pLuaState, nStackPos );  }
 	BOOL		ToBool( int nStackPos )						{  return static_cast<BOOL>( lua_toboolean( m_pLuaState, nStackPos ) );  }
 	int			TableLoop( int nStackPos )					{  return lua_next( m_pLuaState, nStackPos );  }	
-	void		GetGloabal( char* szName )					{  lua_getglobal( m_pLuaState, szName );  }
-	double		GetGlobalNumber( char* szName );
-	const char* GetGlobalString( char* szName );
-	BOOL		GetGlobalBool( char* szName );
-	void		GetField( int nStackPos, char* szName )		{  lua_getfield( m_pLuaState, nStackPos, szName );  }
-	double		GetFieldToNumber( int nStackPos, char* szName );
-	const char* GetFieldToString( int nStackPos, char* szName );
-	BOOL		GetFieldToBool( int nStackPos, char* szName );
+	void		GetGloabal( const char* szName )					{  lua_getglobal( m_pLuaState, szName );  }
+	double		GetGlobalNumber( const char* szName );
+	const char* GetGlobalString( const char* szName );
+	BOOL		GetGlobalBool( const char* szName );
+	void		GetField( int nStackPos, const char* szName )		{  lua_getfield( m_pLuaState, nStackPos, szName );  }
+	double		GetFieldToNumber( int nStackPos, const char* szName );
+	const char* GetFieldToString( int nStackPos, const char* szName );
+	BOOL		GetFieldToBool( int nStackPos, const char* szName );
 	
-	BOOL		GetLuaFunction( char* szFunc );
+	BOOL		GetLuaFunction( const char* szFunc );
 	void		CallLuaFunction( int nElem, int nReturn );
 	
 private:

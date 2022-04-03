@@ -452,7 +452,7 @@ int CScript::InternalFunc(char *s)
 	return -1;
 }
 
-char *CScript::FindFunc(char *name)
+char *CScript::FindFunc(const char *name)
 {
 	int i;
 	for(i = 0; i < funcIndex; i++)
@@ -546,7 +546,7 @@ void CScript::GetFindIdToArray(LPCTSTR lpStrDef,CStringArray* pStrArray)
 
 
 #if !defined(__REMOVE_SCIRPT_060712)
-void CScript::Write(LPSTR* cplProg,char* str)
+void CScript::Write(LPSTR* cplProg,const char* str)
 {
 	while(*str) 
 		*((*cplProg)++) = *(str++);

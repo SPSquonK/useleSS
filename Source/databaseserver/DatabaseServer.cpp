@@ -770,7 +770,7 @@ BOOL LoadRemoveItem( LPCSTR lpszFileName )
 		s.GetToken();
 		while( s.tok != FINISHED )
 		{
-			string strbuf = s.Token;
+			std::string strbuf = s.Token.GetString();
 			g_DbManager.m_RemoveItem_List.insert( strbuf );
 			s.GetToken();
 		}

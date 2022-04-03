@@ -1015,7 +1015,7 @@ void CDbManager::SavePlayTime( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	dwTime /= 1000;
 
 	char szQuery[QUERY_SIZE]	= { 0,};
-	DBQryCharacter( szQuery, "U3", idPlayer, g_appInfo.dwSys, '\0', "", dwTime );
+	DBQryCharacter( szQuery, "U3", idPlayer, g_appInfo.dwSys, "", "", dwTime );
 	
 	if( FALSE == qry->Exec( szQuery ) )
 	{

@@ -271,14 +271,14 @@ void CMover::Serialize( CAr & ar )
 				*(UNALIGNED u_char*)( pBlock + uOffset )	= uSize;
 				DWORD dwPetId	= NULL_ID;
 #ifdef __PET_1024
-				char* pszPetName	= "";
+				const char* pszPetName	= "";
 #endif	// __PET_1024
 				CItemElem* pItemElem	= GetPetItem();
 				if( pItemElem )
 				{
 					dwPetId		= MAKELONG( (WORD)pItemElem->m_pPet->GetIndex(), (WORD)pItemElem->m_pPet->GetLevel() );
 #ifdef __PET_1024
-					pszPetName	= const_cast<char*>( pItemElem->m_pPet->GetName() );
+					pszPetName	= pItemElem->m_pPet->GetName();
 #endif	// __PET_1024
 				}
 				ar << dwPetId;

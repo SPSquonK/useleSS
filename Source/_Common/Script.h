@@ -157,10 +157,10 @@ public:
 	char		LookUp(const char *s);
 	int			InternalFunc(char *s);
 	void		ExecDefine();
-	char*		FindFunc(char *name);
+	char*		FindFunc(const char *name);
 
 #if !defined(__REMOVE_SCIRPT_060712)
-	void		Write(LPSTR* cplProg,char* str);
+	void		Write(LPSTR* cplProg,const char* str);
 	int			IsFunc(char *str);
 	void		Compile();
 	void		Call();

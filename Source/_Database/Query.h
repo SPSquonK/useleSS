@@ -56,23 +56,23 @@ public:
 	int GetInt(const char *sCol);					// 정수형 컬럼 읽기
 
 	__int64		GetInt64( int nCol );
-	__int64		GetInt64( char* sCol );
+	__int64		GetInt64( const char* sCol );
 
 	EXPINTEGER	GetExpInteger( int nCol )	{ return GetInt64( nCol );	}
-	EXPINTEGER	GetExpInteger(	char* sCol ) { return GetInt64( sCol ); 	}
+	EXPINTEGER	GetExpInteger(	const char* sCol ) { return GetInt64( sCol ); 	}
 	SERIALNUMBER	GetSerialNumber( int nCol )
 		{
 			return GetInt( nCol );
 		}
-	SERIALNUMBER	GetSerialNumber( char* sCol )
+	SERIALNUMBER	GetSerialNumber( const char* sCol )
 		{
 			return GetInt( sCol );
 		}
 
 	float GetFloat(int nCol);					// 실수형 컬럼 읽기
-	float GetFloat(char *sCol);				// 실수형 컬럼 읽기
+	float GetFloat(const char *sCol);				// 실수형 컬럼 읽기
 	char GetChar(int nCol);					// 실수형 컬럼 읽기
-	char GetChar(char *sCol);				// 실수형 컬럼 읽기
+	char GetChar(const char *sCol);				// 실수형 컬럼 읽기
 	void GetStr(int nCol, char *buf);		// 문자열형 컬럼 읽기
 	void GetStr(const char *sCol, char *buf);		// 문자열형 컬럼 읽기
 	int ReadBlob(LPCTSTR szSQL, void *buf);

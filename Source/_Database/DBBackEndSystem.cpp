@@ -137,7 +137,7 @@ void CDbManager::GetGemeSettingtime( CQuery* pQuery, int nChat )
 	}		
 }
 
-BOOL CDbManager::GetGMChat( CQuery* pQuery, char * lpstrTime, int& nChatCount )
+BOOL CDbManager::GetGMChat( CQuery* pQuery, const char * lpstrTime, int& nChatCount )
 {
 	char szQuery[1024];
 	BOOL bResult = FALSE;
@@ -166,7 +166,7 @@ BOOL CDbManager::GetGMChat( CQuery* pQuery, char * lpstrTime, int& nChatCount )
 	return bResult;
 }
 
-BOOL CDbManager::GetBaseGameSetting( CQuery* pQuery, char * lpstrTime )
+BOOL CDbManager::GetBaseGameSetting( CQuery* pQuery, const char * lpstrTime )
 {
 	char szQuery[1024];
 	
@@ -243,7 +243,7 @@ BOOL CDbManager::GetBaseGameSetting( CQuery* pQuery, char * lpstrTime )
 				TRACE( "Price GAME_SETTING %f\n", prj.m_fShopCost );
 			}
 		}
-		else if( lpstrTime != '\0' )
+		else if( lpstrTime[0] != '\0' )
 		{
 			if( strcmp( chBufName, "Exp" ) == 0 )
 			{
@@ -305,7 +305,7 @@ BOOL CDbManager::GetBaseGameSetting( CQuery* pQuery, char * lpstrTime )
 	return bResult;
 }
 
-void CDbManager::GetMonsterRespawnSetting( CQuery* pQuery, int& nRemoveMaxRespawn, int aRemoveRespawn[], char* lpstrTime )
+void CDbManager::GetMonsterRespawnSetting( CQuery* pQuery, int& nRemoveMaxRespawn, int aRemoveRespawn[], const char* lpstrTime )
 {
 	char szQuery[1024];
 
@@ -349,7 +349,7 @@ void CDbManager::GetMonsterRespawnSetting( CQuery* pQuery, int& nRemoveMaxRespaw
 	TRACE( "%d MONSTER_RESPAWN\n", prj.m_nMonsterRespawnSize );
 }
 
-void CDbManager::GetMonsterPropSetting( CQuery* pQuery, char* lpstrTime )
+void CDbManager::GetMonsterPropSetting( CQuery* pQuery, const char* lpstrTime )
 {
 	char szQuery[1024];
 	
@@ -381,7 +381,7 @@ void CDbManager::GetMonsterPropSetting( CQuery* pQuery, char* lpstrTime )
 		}
 		else		// ªË¡¶
 		{
-			if( lpstrTime != '\0' )
+			if( lpstrTime[0] != '\0' )
 			{
 				RemoveMonsterProp( MonsterProp );
 			}

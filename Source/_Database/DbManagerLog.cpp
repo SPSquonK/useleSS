@@ -510,7 +510,7 @@ void CDbManager::LogLevelUp(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus
 	}
 
 	char szQuery[QUERY_SIZE]	= { 0,};
-	DBQryLog( szQuery, "L1", uidPlayer, iServer_No, iExp1, iLevel, iPlayJob, iJobLevel, iFlightLevel, iStr, iDex, iInt, iSta, iGP, iLP, cAction, 0, '\0', 0, 0, 0, dwGold, dwPlayerTime );
+	DBQryLog( szQuery, "L1", uidPlayer, iServer_No, iExp1, iLevel, iPlayJob, iJobLevel, iFlightLevel, iStr, iDex, iInt, iSta, iGP, iLP, cAction, 0, "", 0, 0, 0, dwGold, dwPlayerTime);
 
 	if ( FALSE == qry->Exec( szQuery ) )
 	{
@@ -537,8 +537,8 @@ void CDbManager::LogServerDeath(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlapped
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryLog( szQuery, "L8", 0, iServer_No, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 'A',
-		0, '\0', 0.0f, 0.0f, 0.0f, 0, 0,
-		0, 0, 0, 0, '\0', 0, 0,
+		0, "", 0.0f, 0.0f, 0.0f, 0, 0,
+		0, 0, 0, 0, "", 0, 0,
 		0, strStart.GetBuffer( strStart.GetLength() ) );
 
 	if ( FALSE == qry->Exec( szQuery ) )
@@ -600,7 +600,7 @@ void CDbManager::LogUniqueItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryLog( szQuery, "L4", uidPlayer, iServer_No, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 'A',
-		iWorld, '\0', Pos.x, Pos.y, Pos.z, 0, 0, '\0', 0, 0, 0, cUniqueName, 0, 0, cItemAddLevel );
+		iWorld, "", Pos.x, Pos.y, Pos.z, 0, 0, "", 0, 0, 0, cUniqueName, 0, 0, cItemAddLevel );
 
 	qry->Exec( szQuery );
 
@@ -632,8 +632,8 @@ void CDbManager::LogQuest(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 	if( Action == 1 ) // Äù½ºÆ® ½ÃÀÛ
 	{
 		DBQryLog( szQuery, "L6", uidPlayer, iServer_No, 0, 0, 0, 0, 0, 
-			0, 0, 0, 0, 0, 0, 'C', 0, '\0', 0.0f, 0.0f, 0.0f, 0, 0, 0,
-			0, 0, 0, '\0', 0, 0, 0, strQuestTime.GetBuffer( strQuestTime.GetLength() ), 0, '\0', nQuest );
+			0, 0, 0, 0, 0, 0, 'C', 0, "", 0.0f, 0.0f, 0.0f, 0, 0, 0,
+			0, 0, 0, "", 0, 0, 0, strQuestTime.GetBuffer( strQuestTime.GetLength() ), 0, "", nQuest );
 
 		if ( FALSE == qry->Exec( szQuery ) )
 		{
@@ -647,8 +647,8 @@ void CDbManager::LogQuest(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 	else	// Äù½ºÆ® ¿Ï·á
 	{
 		DBQryLog( szQuery, "L7", uidPlayer, iServer_No, 0, 0, 0, 0, 0, 
-			0, 0, 0, 0, 0, 0, 'A', 0, '\0', 0.0f, 0.0f, 0.0f, 0, 0, 0,
-			0, 0, 0, '\0', 0, 0, 0, strQuestTime.GetBuffer( strQuestTime.GetLength() ), 0, '\0', nQuest );
+			0, 0, 0, 0, 0, 0, 'A', 0, "", 0.0f, 0.0f, 0.0f, 0, 0, 0,
+			0, 0, 0, "", 0, 0, 0, strQuestTime.GetBuffer( strQuestTime.GetLength() ), 0, "", nQuest);
 
 		if ( FALSE == qry->Exec( szQuery ) )
 		{
@@ -662,13 +662,13 @@ void CDbManager::LogQuest(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
 	FreeRequest( lpDbOverlappedPlus );
 }
 
-void CDbManager::DBQryLog( char* qryLog, char* Gu, u_long idPlayer, int nserverindex, EXPINTEGER nExp1, int nLevel,
+void CDbManager::DBQryLog( char* qryLog, const char* Gu, u_long idPlayer, int nserverindex, EXPINTEGER nExp1, int nLevel,
 						  int nJob, int JobLv, int FlightLv, int nStr, int nDex,
 						  int nInt, int nSta, int nRemainGP, int nRemainLP, char szState,
-						  int WorldID, char* szkilled_szName, float vPos_x, float vPos_y, float vPos_z,
-						  int nAttackPower, int nMax_HP, char *uGetidPlayer, DWORD dwGold, int nRemainGold,
-						  int nItem_UniqueNo, char *szItem_Name, int Item_durability, int Item_count, int ItemAddLv,
-						  char* szStart_Time, int TotalPlayerTime, char *szRemoteIP, int nQuest_Index, u_long uKill_idPlayer )
+						  int WorldID, const char* szkilled_szName, float vPos_x, float vPos_y, float vPos_z,
+						  int nAttackPower, int nMax_HP, const char *uGetidPlayer, DWORD dwGold, int nRemainGold,
+						  int nItem_UniqueNo, const char *szItem_Name, int Item_durability, int Item_count, int ItemAddLv,
+						  const char* szStart_Time, int TotalPlayerTime, const char *szRemoteIP, int nQuest_Index, u_long uKill_idPlayer )
 {
 	CString strItem	= szItem_Name;
 	strItem.Replace( '\'', ' ' );
@@ -808,23 +808,23 @@ void CDbManager::LogPkPvp( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus 
 	if( nSendBuf == 3 )
 	{
 		DBQryLog( szQuery, "LA", uidPlayer, g_appInfo.dwSys, nLoseLevel, nLevel, nPoint, dwPKPropensity, nPKValue,
-			nFame, dwLosePKPropensity, nLoseFame, 0, 0, 0, chState, 0, '\0', vPos.x, 0.0f, vPos.z, 0, 0,
-			'\0', 0, 0, 0, '\0', 0, 0, 0, 
-			'\0', 0, '\0', 0, uLoseidPlayer );
+			nFame, dwLosePKPropensity, nLoseFame, 0, 0, 0, chState, 0, "", vPos.x, 0.0f, vPos.z, 0, 0,
+			"", 0, 0, 0, "", 0, 0, 0, 
+			"", 0, "", 0, uLoseidPlayer);
 	}
 	else if( nSendBuf == 1 )
 	{
 		DBQryLog( szQuery, "LA", 0, g_appInfo.dwSys, nLoseLevel, 0, nPoint, 0, nLosePKValue,
-			0, dwLosePKPropensity, nLoseFame, 0, 0, 0, chState, 0, '\0', vLosePos.x, 0.0f, vLosePos.z, 0, 0,
-			'\0', 0, 0, 0, '\0', 0, 0, 0, 
-			'\0', 0, '\0', 0, uLoseidPlayer );
+			0, dwLosePKPropensity, nLoseFame, 0, 0, 0, chState, 0, "", vLosePos.x, 0.0f, vLosePos.z, 0, 0,
+			"", 0, 0, 0, "", 0, 0, 0, 
+			"", 0, "", 0, uLoseidPlayer);
 	}
 	else
 	{
 		DBQryLog( szQuery, "LA", uidPlayer, g_appInfo.dwSys, 0, nLevel, nPoint, dwPKPropensity, nPKValue,
-			nFame, 0, 0, 0, 0, 0, chState, 0, '\0', vPos.x, 0.0f, vPos.z, 0, 0,
-			'\0', 0, 0, 0, '\0', 0, 0, 0, 
-			'\0', 0, '\0', 0, 0 );
+			nFame, 0, 0, 0, 0, 0, chState, 0, "", vPos.x, 0.0f, vPos.z, 0, 0,
+			"", 0, 0, 0, "", 0, 0, 0, 
+			"", 0, "", 0, 0 );
 	}
 
 	if ( FALSE == qry->Exec( szQuery ) )

@@ -144,8 +144,7 @@ protected:
 };
 
 // 입찰금 반환을 처리하기 위한 함수자 클래스
-struct	PostDeposit:
-	public unary_function< SPC, void >	{
+struct	PostDeposit	{
 	void operator() ( const SPC & lhs )	const;
 	PostDeposit( CQuery* pQuery )	{	m_pQuery	= pQuery;	}
 private:

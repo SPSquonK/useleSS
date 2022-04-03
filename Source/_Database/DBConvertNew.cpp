@@ -56,7 +56,7 @@ void CDbManager::InitConvItemDialog( )
 	SendMessage( hItemConvWndPB, PBM_SETRANGE, 0, MAKELPARAM( 0, 100 ) ); 
 }
 
-void CDbManager::UpdateConvItemDialog( char* pTitle, char* pString, char* pPosStirng, int nPos )
+void CDbManager::UpdateConvItemDialog( const char* pTitle, const char* pString, const char* pPosStirng, int nPos )
 {
 	SetDlgItemText( hItemConvDlg, IDC_STATIC2, pTitle );
 	SetDlgItemText( hItemConvDlg, IDC_STATIC1, pString );

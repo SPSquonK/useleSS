@@ -321,7 +321,7 @@ int CCampusDBCtrl::UpdateCampusPoint( u_long idPlayer, int nCampusPoint )
 	CQuery* pQuery = GetQueryObject();
 	char szQuery[QUERY_SIZE] = {0, };
 	
-	g_DbManager.DBQryCharacter( szQuery, "U5", idPlayer, g_appInfo.dwSys, '\0', "", nCampusPoint );
+	g_DbManager.DBQryCharacter( szQuery, "U5", idPlayer, g_appInfo.dwSys, "", "", nCampusPoint );
 	if( pQuery->Exec( szQuery ) == FALSE )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return INT_MAX; }
 
@@ -337,7 +337,7 @@ void CCampusDBCtrl::UpdateCampusId( u_long idPlayer, u_long idCampus )
 	CQuery* pQuery = GetQueryObject();
 	char szQuery[QUERY_SIZE] = {0, };
 	
-	g_DbManager.DBQryCharacter( szQuery, "U6", idPlayer, g_appInfo.dwSys, '\0', "", idCampus );
+	g_DbManager.DBQryCharacter( szQuery, "U6", idPlayer, g_appInfo.dwSys, "", "", idCampus );
 	if( pQuery->Exec( szQuery ) == FALSE )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 }

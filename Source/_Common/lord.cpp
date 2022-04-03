@@ -315,12 +315,12 @@ void IElection::IncVote( u_long idPlayer, u_long idElector )
 
 void IElection::SortDeposit( void )
 {
-	std::sort( m_vCandidates.begin(), m_vCandidates.end(), DepositCompare() );
+	std::sort( m_vCandidates.begin(), m_vCandidates.end(), DepositCompare );
 }
 
 void IElection::SortVote( void )
 {
-	std::sort( m_vCandidates.begin(), m_vCandidates.end(), VoteCompare() );
+	std::sort( m_vCandidates.begin(), m_vCandidates.end(), VoteCompare );
 }
 
 int IElection::GetVote()

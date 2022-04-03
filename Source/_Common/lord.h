@@ -140,28 +140,22 @@ protected:
 };
 
 // 후보간 입찰금 비교 함수자
-struct	DepositCompare:
-	public binary_function<SPC, SPC, bool>	{
-	bool operator() ( const SPC & lhs, const SPC & rhs )	const
+	inline bool DepositCompare( const SPC & lhs, const SPC & rhs )
 	{
 //		return lhs->GetDeposit() > rhs->GetDeposit();
 		return ( lhs->GetDeposit() == rhs->GetDeposit()?
 			lhs->GetCreate() < rhs->GetCreate():
 			lhs->GetDeposit() > rhs->GetDeposit() );
 	}
-};
 
 ////////////////////////////////////////////////////////////////////////////////
-struct	VoteCompare:
-	public binary_function<SPC, SPC, bool>	{
-	bool operator() ( const SPC & lhs, const SPC & rhs )	const
+	inline bool VoteCompare ( const SPC & lhs, const SPC & rhs )
 	{
 //		return lhs->GetVote() > rhs->GetVote();
 		return ( lhs->GetVote() == rhs->GetVote()?
 			lhs->GetCreate() < rhs->GetCreate():
 			lhs->GetVote() > rhs->GetVote() );
 	}
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 class CLEComponent

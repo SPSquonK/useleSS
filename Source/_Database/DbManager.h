@@ -922,19 +922,19 @@ public:
 
 	void	Clear( void );
 
-	void	DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, int nserverindex, char* szAccount = '\0', char* szName = '\0',
+	void	DBQryCharacter( char* qryCharacter, const char* Gu, u_long idPlaeyr, int nserverindex, const char* szAccount = "", const char * szName = "",
 		int nPlayerslot = 0, DWORD dwWorldID = 0, DWORD dwIndex = 0, float vPos_x = 0.0f, float vPos_y = 0.0f,
-		float vPos_z = 0.0f, char* szCharacterKey = '\0', DWORD dwSkinSet = 0, DWORD dwHairMesh = 0, DWORD dwHairColor = 0,
+		float vPos_z = 0.0f, const char* szCharacterKey = "", DWORD dwSkinSet = 0, DWORD dwHairMesh = 0, DWORD dwHairColor = 0,
 		DWORD dwHeadMesh = 0, DWORD dwSex = 0
 		);
 
-	void	DBQryLog( char* qryLog, char* Gu, u_long idPlayer, int nserverindex, EXPINTEGER nExp1 = 0, int nLevel = 0,
+	void	DBQryLog( char* qryLog, const char* Gu, u_long idPlayer, int nserverindex, EXPINTEGER nExp1 = 0, int nLevel = 0,
 						  int nJob = 0, int JobLv = 0, int FlightLv = 0, int nStr = 0, int nDex = 0,
 						  int nInt = 0, int nSta = 0, int nRemainGP = 0, int nRemainLP = 0, char szState = 'A',
-						  int WorldID = 0, char* szkilled_szName = '\0', float vPos_x = 0.0f, float vPos_y = 0.0f, float vPos_z = 0.0f,
-						  int nAttackPower = 0, int nMax_HP = 0, char *uGetidPlayer = '\0', DWORD dwGold = 0, int nRemainGold = 0,
-						  int nItem_UniqueNo = 0, char *szItem_Name = '\0', int Item_durability = 0, int Item_count = 0, int ItemAddLv = 0,
-						  char* szStart_Time = '\0', int TotalPlayerTime = 0, char *szRemoteIP = '\0', int nQuest_Index = 0, u_long uKill_idPlayer = 0 );	
+						  int WorldID = 0, const char* szkilled_szName = "", float vPos_x = 0.0f, float vPos_y = 0.0f, float vPos_z = 0.0f,
+						  int nAttackPower = 0, int nMax_HP = 0, const char *uGetidPlayer = "", DWORD dwGold = 0, int nRemainGold = 0,
+						  int nItem_UniqueNo = 0, const char *szItem_Name = "", int Item_durability = 0, int Item_count = 0, int ItemAddLv = 0,
+						  const char* szStart_Time = "", int TotalPlayerTime = 0, const char * szRemoteIP = "", int nQuest_Index = 0, u_long uKill_idPlayer = 0);
 
 	void	DBQryGuild( char* szSql, const char* szType, u_long idPlayer = 0, u_long idGuild = 0, const char* szGuild = "" );
 	void	DBQryGuild( char* szSql, const GUILD_QUERYINFO & info);
@@ -981,7 +981,7 @@ public:
 
 #ifdef __ITEM_REMOVE_LIST
 	void	InitConvItemDialog( void );
-	void	UpdateConvItemDialog( char* pTitle, char* pString, char* pPosStirng, int nPos );
+	void	UpdateConvItemDialog( const char* pTitle, const char* pString, const char* pPosStirng, int nPos );
 	BOOL	ConvItemConnectDB( CQuery* pQueryChar, CQuery* pQuerySave );
 	DWORD	GetMaxInventory( char* pszSQL, CQuery* pQueryChar, CQuery* pQuerySave );
 	DWORD	GetMaxGuildBank( char* pszSQL, CQuery* pQueryChar, CQuery* pQuerySave );
@@ -1083,7 +1083,7 @@ private:
 
 	BOOL	SendPenya( CQuery *pQry, char* szSql, CMover* pMover, int nPenya, int nNo );
 	BOOL	SendItemDeleteQuery( CQuery *pQry, char* szSql, int nNo );
-	BOOL	ItemLogQuery( CQuery *pQryLog, char *szQueryState, const LogItemInfo& info, u_long uIdPlayer, int nNo, char *szItemName );
+	BOOL	ItemLogQuery( CQuery *pQryLog, const char *szQueryState, const LogItemInfo& info, u_long uIdPlayer, int nNo, const char *szItemName );
 	BOOL	RemoveItemDeleteQuery( CQuery *pQry, char* szSql, int nNo );
 
 #ifdef __S_RECOMMEND_EVE
@@ -1102,14 +1102,14 @@ private:
 
 #ifdef __S1108_BACK_END_SYSTEM
 	void	GetGemeSettingtime( CQuery* pQuery, int nChat = 0 );
-	BOOL	GetBaseGameSetting( CQuery* pQuery, char* lpstrTime = '\0' );
-	void	GetMonsterRespawnSetting( CQuery* pQuery, int& nRemoveMaxRespawn, int aRemoveRespawn[] = NULL, char* lpstrTime = '\0' );
-	void	GetMonsterPropSetting( CQuery* pQuery, char* lpstrTime = '\0' );
+	BOOL	GetBaseGameSetting( CQuery* pQuery, const char* lpstrTime = "");
+	void	GetMonsterRespawnSetting( CQuery* pQuery, int& nRemoveMaxRespawn, int aRemoveRespawn[] = NULL, const char* lpstrTime = "");
+	void	GetMonsterPropSetting( CQuery* pQuery, const char* lpstrTime = "");
 	BOOL	AddMonsterRespawn( MONSTER_RESPAWN BufMonsterRespawn );
 	BOOL	RemoveMonsterRespawn( int nIndex, int &nMaxRemove, int aRemoveRespawn[] );
 	BOOL	AddMonsterProp( MONSTER_PROP BufMonsterProp );
 	BOOL	RemoveMonsterProp( MONSTER_PROP BufMonsterProp );
-	BOOL	GetGMChat( CQuery* pQuery, char * lpstrTime, int& nChatCount );
+	BOOL	GetGMChat( CQuery* pQuery, const char * lpstrTime, int& nChatCount );
 #endif // __S1108_BACK_END_SYSTEM
 
 	BOOL	OnWantedQuery( CQuery* pQuery, WANTED_QUERYINFO& info );

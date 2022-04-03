@@ -181,7 +181,7 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryCharacter( szQuery, "I1", 0, g_appInfo.dwSys, lpDbOverlappedPlus->AccountInfo.szAccount, lpDbOverlappedPlus->AccountInfo.szPlayer, nSlot, dwWorldID,
-		dwIndex, vPos.x, vPos.y, vPos.z, '\0', nSkinSet, nHairMesh,	dwHairColor, nHeadMesh, nSex );
+		dwIndex, vPos.x, vPos.y, vPos.z, "", nSkinSet, nHairMesh,	dwHairColor, nHeadMesh, nSex );
 
 	if( FALSE == qry->Exec( szQuery ) )
 	{
@@ -1423,12 +1423,12 @@ BOOL CDbManager::SendItemDeleteQuery( CQuery *pQry, char* szSql, int nNo )
 	return TRUE;
 }
 
-BOOL CDbManager::ItemLogQuery( CQuery *pQryLog, char *szQueryState, const LogItemInfo& info, u_long uIdPlayer, int nNo, char *szItemName )
+BOOL CDbManager::ItemLogQuery( CQuery *pQryLog, const char *szQueryState, const LogItemInfo& info, u_long uIdPlayer, int nNo, const char *szItemName )
 {
 	char szQuerylog[4096] = { 0, };
 
-	DBQryLog( szQuerylog, szQueryState, uIdPlayer , g_appInfo.dwSys, nNo, 0, 0, 0, 0, info.nItemResist, info.nResistAbilityOption, 0, 0, 0, 0, 'A', 0, '\0',
-		0.0f, 0.0f, 0.0f, 0, 0, "\0", 0, 0, 0, szItemName, 0, info.itemNumber );
+	DBQryLog( szQuerylog, szQueryState, uIdPlayer , g_appInfo.dwSys, nNo, 0, 0, 0, 0, info.nItemResist, info.nResistAbilityOption, 0, 0, 0, 0, 'A', 0, "",
+		0.0f, 0.0f, 0.0f, 0, 0, "", 0, 0, 0, szItemName, 0, info.itemNumber );
 			
 	if( FALSE == pQryLog->Exec( szQuerylog ) )
 	{
@@ -4798,7 +4798,7 @@ void CDbManager::PutExpLog( CQuery* pQueryLog, CMover* pMover, char ch )
 			pMover->m_nJob, 0, pMover->GetFlightLv(),
 			pMover->m_nStr, pMover->m_nDex, pMover->m_nInt, pMover->m_nSta,
 			pMover->m_nRemainGP, 0,
-			ch, 0, '\0', 0, 0, 0, pMover->GetGold(), 0 );
+			ch, 0, "", 0, 0, 0, pMover->GetGold(), 0);
 
 		if( FALSE == pQueryLog->Exec( szSql ) )
 			return;
@@ -4883,9 +4883,9 @@ void CDbManager::SnoopGuild( CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlap
 	FreeRequest( lpDbOverlappedPlus );
 }
 
-void CDbManager::DBQryCharacter( char* qryCharacter, char* Gu, u_long idPlaeyr, int nserverindex, char* szAccount, char* szName,
+void CDbManager::DBQryCharacter( char* qryCharacter, const char* Gu, u_long idPlaeyr, int nserverindex, const char* szAccount, const char* szName,
 								int nPlayerslot, DWORD dwWorldID, DWORD dwIndex, float vPos_x, float vPos_y,
-								float vPos_z, char* szCharacterKey, DWORD dwSkinSet, DWORD dwHairMesh, DWORD dwHairColor,
+								float vPos_z, const char* szCharacterKey, DWORD dwSkinSet, DWORD dwHairMesh, DWORD dwHairColor,
 								DWORD dwHeadMesh, DWORD dwSex
 								)
 {

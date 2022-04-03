@@ -38,7 +38,7 @@ int CLuaBase::_ERROR( lua_State* pLuaState )
 	return 0;
 }
 
-void CLuaBase::RegisterFunction( char* szFromLuaFunc, lua_CFunction ToCFunc )
+void CLuaBase::RegisterFunction(const char* szFromLuaFunc, lua_CFunction ToCFunc )
 {
 	lua_register( m_pLuaState, szFromLuaFunc, ToCFunc );
 }
@@ -52,7 +52,7 @@ int CLuaBase::RunScript( const char* szFileName )
 	return nReturn;
 }
 
-BOOL CLuaBase::GetLuaFunction( char* szFunc )
+BOOL CLuaBase::GetLuaFunction(const char* szFunc )
 {
 	lua_getglobal( m_pLuaState, szFunc );
 	if( lua_isfunction(m_pLuaState, -1) )
@@ -70,7 +70,7 @@ void CLuaBase::CallLuaFunction( int nElem, int nReturn )
 	}
 }
 
-double CLuaBase::GetGlobalNumber( char* szName )
+double CLuaBase::GetGlobalNumber( const char* szName )
 {
 	double fValue = 0;
 	lua_getglobal( m_pLuaState, szName );
@@ -81,7 +81,7 @@ double CLuaBase::GetGlobalNumber( char* szName )
 	return fValue;
 }
 
-const char* CLuaBase::GetGlobalString( char* szName )
+const char* CLuaBase::GetGlobalString(const char* szName )
 {
 	char* szValue = NULL;
 	lua_getglobal( m_pLuaState, szName );
@@ -93,7 +93,7 @@ const char* CLuaBase::GetGlobalString( char* szName )
 	return szValue;
 }
 
-BOOL CLuaBase::GetGlobalBool( char* szName )
+BOOL CLuaBase::GetGlobalBool(const char* szName )
 {
 	BOOL bValue = FALSE;
 	lua_getglobal( m_pLuaState, szName );
@@ -113,7 +113,7 @@ void CLuaBase::Pop( int nPop )
 		lua_pop( m_pLuaState, nPop );
 }
 
-double CLuaBase::GetFieldToNumber( int nStackPos, char* szName )
+double CLuaBase::GetFieldToNumber( int nStackPos, const char* szName )
 {
 	double fValue = 0;
 	lua_getfield( m_pLuaState, nStackPos, szName );
@@ -124,7 +124,7 @@ double CLuaBase::GetFieldToNumber( int nStackPos, char* szName )
 	return fValue;
 }
 
-const char* CLuaBase::GetFieldToString( int nStackPos, char* szName )
+const char* CLuaBase::GetFieldToString( int nStackPos, const char* szName )
 {
 	char* szValue = NULL;
 	lua_getfield( m_pLuaState, nStackPos, szName );
@@ -135,7 +135,7 @@ const char* CLuaBase::GetFieldToString( int nStackPos, char* szName )
 	return szValue;
 }
 
-BOOL CLuaBase::GetFieldToBool( int nStackPos, char* szName )
+BOOL CLuaBase::GetFieldToBool( int nStackPos, const char* szName )
 {
 	int bValue = 0;
 	lua_getfield( m_pLuaState, nStackPos, szName );
