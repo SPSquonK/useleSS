@@ -4,6 +4,7 @@
 #define _USE_32BIT_TIME_T
 #define POINTER_64 __ptr64
 #define __WORLDSERVER
+#define _HAS_STD_BYTE 0
 
 #pragma warning(disable:4786)
 #pragma comment(linker, "/subsystem:Windows,5")

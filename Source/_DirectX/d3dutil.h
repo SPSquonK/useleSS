@@ -80,7 +80,7 @@ HRESULT D3DUtil_SetDeviceCursor( LPDIRECT3DDEVICE9 pd3dDevice, HCURSOR hCursor,
 // Desc: Returns the string for the given D3DFORMAT.
 //       bWithPrefix determines whether the string should include the "D3DFMT_"
 //-----------------------------------------------------------------------------
-TCHAR* D3DUtil_D3DFormatToString( D3DFORMAT format, bool bWithPrefix = true );
+const TCHAR* D3DUtil_D3DFormatToString( D3DFORMAT format, bool bWithPrefix = true );
 
 
 //-----------------------------------------------------------------------------

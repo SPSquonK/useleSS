@@ -51,7 +51,7 @@ protected:
 	void			SetStop( DWORD dwTime );
 	BOOL			IsEndStop();
 	BOOL			IsMove() { return GetMover()->m_pActMover->IsMove(); }
-	BOOL			IsInRange( D3DXVECTOR3& vDistant, FLOAT fRange );
+	BOOL			IsInRange( D3DXVECTOR3 vDistant, FLOAT fRange );
 	int				SelectAttackType( CMover *pTarget );	// AI에 따른 공격방식을 선택.
 	BOOL			MoveProcessIdle( const AIMSG & msg );
 	BOOL			MoveProcessRage( const AIMSG & msg );

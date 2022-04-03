@@ -91,7 +91,7 @@ public:
                     BOOL bDrawAlphaSubsets = TRUE,
                     D3DXMATRIX* pmatWorldMartix = NULL);
     
-    CD3DFrame( TCHAR* strName = _T("CD3DFile_Frame") );
+    CD3DFrame( const TCHAR* strName = _T("CD3DFile_Frame") );
     virtual ~CD3DFrame();
 };
 

@@ -850,14 +850,6 @@ void CSecretRoomContinent::SetContTender( CUser* pUser, int nPenya )
 	SortTenderGuild();
 }
 
-struct TenderCompare :	public binary_function< __SECRETROOM_TENDER, __SECRETROOM_TENDER, bool>
-{
-	bool operator() ( const __SECRETROOM_TENDER & lhs, const __SECRETROOM_TENDER & rhs )	const
-	{
-		return ( lhs.nPenya > rhs.nPenya );
-	}
-};
-
 void CSecretRoomContinent::SortTenderGuild()
 {
 	// 입찰금 순서로 정렬

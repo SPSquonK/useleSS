@@ -712,7 +712,7 @@ public:
 	void			AddResetDestParamSync( CMover* pMover, int nDstParameter,int nAdjParameterValue, int nParameterValue );
 #endif // __SPEED_SYNC_0108		// ResetDestParam speed ¼öÁ¤
 	void			AddSetPointParam( CMover* pMover, int nDstParameter, int nValue );
-	void			AddSetPos( CCtrl* pCtrl, D3DXVECTOR3 & vPos );
+	void			AddSetPos( CCtrl* pCtrl, const D3DXVECTOR3 & vPos );
 	void			AddSetPosAngle( CCtrl* pCtrl, const D3DXVECTOR3 &vPos, FLOAT fAngle );
 	void			AddSetLevel( CMover* pMover, WORD wLevel );
 	void			AddSetFlightLevel( CMover* pMover, int nFlightLv );
@@ -731,7 +731,7 @@ public:
 	void			AddMoverDeath( CMover* pMover, CMover* pAttacker, DWORD dwMsg );
 	void			AddSetMovePattern( CMover* pMover, int nPattern, const D3DXVECTOR3 &vPos, FLOAT fAngle, FLOAT fAngleX );
 		
-	void			AddMoverBehavior2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+	void			AddMoverBehavior2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 										float fAngleX, float fAccPower, float fTurnAngle,
 										DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 										int nLoop, DWORD dwMotionOption, __int64 nTickCount, BOOL fTransferToMe = FALSE );
@@ -760,13 +760,13 @@ public:
 	void			AddRemoveSkillInfluence( CMover *pMover, WORD wType, WORD wID );
 	void			AddDoApplySkill( CCtrl *pCtrl, OBJID idTarget, DWORD dwSkill, DWORD dwLevel );
 	void			AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, BOOL bFlag, DWORD dwWorldId );
-	void			AddMoverMoved( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+	void			AddMoverMoved( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 									DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 									int nLoop, DWORD dwMotionOption, __int64 nTickCount );
-	void			AddMoverBehavior( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+	void			AddMoverBehavior( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 									DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 									int nLoop, DWORD dwMotionOption, __int64 nTickCount, BOOL fTransferToMe = FALSE );
-	void			AddMoverMoved2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+	void			AddMoverMoved2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 									float fAngleX, float fAccPower, float fTurnAngle,
 									DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 									int nLoop, DWORD dwMotionOption, __int64 nTickCount, BYTE nFrame = MAX_CORR_SIZE_150 );
@@ -774,12 +774,12 @@ public:
 	void			AddEventMessage( CCtrl* pCtrl, const TCHAR* szChat, int nFlag, DWORD dwItemId = 0);
 	void			AddMotion( CMover* pMover, DWORD dwMsg );
 	void			AddRemoveAllSkillInfluence( CMover* pMover );
-	void			AddMoverAngle( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 & vd,
+	void			AddMoverAngle( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 & vd,
 									float f, float fAngleX, float fAccPower, float fTurnAngle, __int64 nTickCount );
-	void			AddMoverCorr( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+	void			AddMoverCorr( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 									DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 									int nLoop, DWORD dwMotionOption, __int64 nTickCount );
-	void			AddMoverCorr2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+	void			AddMoverCorr2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 									float fAngleX, float fAccPower, float fTurnAngle,
 									DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 									int nLoop, DWORD dwMotionOption, __int64 nTickCount );

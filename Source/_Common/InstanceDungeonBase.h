@@ -33,14 +33,18 @@ typedef struct INSTACNEDUNGEON_INFO
 	,nState( ID_NORMAL ), nPlayerCount( 0 ), nKillCount( 0 )
 #endif // __WORLDSERVER
 	{}
-	void	Serialize( CAr & ar )
-	{
-		if( ar.IsStoring() )
-			ar << dwWorldId << uMultiKey;
-		else
-			ar >> dwWorldId >> uMultiKey;
+
+	friend CAr & operator<<(CAr & ar, const INSTACNEDUNGEON_INFO & self) {
+		return ar << self.dwWorldId << self.uMultiKey;
 	}
+
+	friend CAr & operator>>(CAr & ar, INSTACNEDUNGEON_INFO & self) {
+		return ar >> self.dwWorldId >> self.uMultiKey;
+	}
+
 } ID_INFO;	
+
+
 
 typedef vector<ID_INFO> VEC_IDINFO;
 typedef map<DWORD, VEC_IDINFO> MAP_IDBASE;
@@ -52,15 +56,15 @@ struct COOLTIME_INFO
 	DWORD dwCoolTime;
 	COOLTIME_INFO() : dwWorldId( NULL_ID), dwDungeonId( NULL_ID ), dwCoolTime( 0 ) {}
 	COOLTIME_INFO( DWORD dwWI, DWORD dwDI, DWORD dwCT ) : dwWorldId( dwWI ), dwDungeonId( dwDI ), dwCoolTime( dwCT ) {}
-	void	Serialize( CAr & ar )
-	{
-		if( ar.IsStoring() )
-			ar << dwWorldId << dwDungeonId << ( dwCoolTime - GetTickCount() );
-		else
-		{
-			ar >> dwWorldId >> dwDungeonId >> dwCoolTime;
-			dwCoolTime += GetTickCount();
-		}
+	
+	friend CAr & operator<<(CAr & ar, const COOLTIME_INFO & self) {
+		return ar << self.dwWorldId << self.dwDungeonId << (self.dwCoolTime - GetTickCount());
+	}
+
+	friend CAr & operator>>(CAr & ar, COOLTIME_INFO & self) {
+		ar >> self.dwWorldId >> self.dwDungeonId >> self.dwCoolTime;
+		self.dwCoolTime += GetTickCount();
+		return ar;
 	}
 };
 typedef vector<COOLTIME_INFO> VEC_CTINFO;
@@ -176,9 +180,9 @@ public:
 	void OnSetDungeonCoolTimeInfo( ULONG uKey, int nType, COOLTIME_INFO CT_Info, DWORD dwPlayerId );
 	void OnResetDungeonCoolTimeInfo( int nType, DWORD dwWorldId, DWORD dwDungeonId );
 
-	void SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, ID_INFO & ID_Info );
-	void SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, ID_INFO & ID_Info );
-	void SendInstanceDungeonSetCoolTimeInfo( ULONG uKey, int nType, DWORD dwPlayerId, COOLTIME_INFO & CT_Info );
+	void SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info );
+	void SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info );
+	void SendInstanceDungeonSetCoolTimeInfo( ULONG uKey, int nType, DWORD dwPlayerId, const COOLTIME_INFO & CT_Info );
 
 	void DestroyAllDungeonByMultiKey( ULONG uMultiKey );
 

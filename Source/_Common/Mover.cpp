@@ -1974,9 +1974,9 @@ BOOL CMover::ReplaceInspection( REGIONELEM* pPortkey )
 
 // default type =  REPLACE_NORMAL
 #ifdef __LAYER_1015
-BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer  )
+BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer  )
 #else	// __LAYER_1015
-BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, REPLACE_TYPE type  )
+BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type  )
 #endif	// __LAYER_1015
 
 {

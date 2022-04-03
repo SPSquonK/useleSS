@@ -32,7 +32,7 @@ public:
 
 	void	SendITEM_TBL_Update( void );
 #ifdef __LAYER_1015
-	void	SavePlayer( CUser* pUser, DWORD dwWorldId, D3DXVECTOR3 & vPos, int nLayer, BOOL bLogout = FALSE );
+	void	SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVECTOR3 & vPos, int nLayer, BOOL bLogout = FALSE );
 #else	// __LAYER_1015
 	void	SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVECTOR3 & vPos, BOOL bLogout = FALSE );
 #endif	// __LAYER_1015
@@ -90,7 +90,7 @@ public:
 
 
 	void	OnMailBox( CAr & ar, DPID, DPID ); 
-	void	SendQueryPostMail( u_long idReceiver, u_long idSender, CItemElem& itemElem, int nGold, char* lpszTitle, char* lpszText );
+	void	SendQueryPostMail( u_long idReceiver, u_long idSender, CItemElem& itemElem, int nGold, const char* lpszTitle, const char* lpszText );
 	void	SendQueryRemoveMail( u_long idReceiver, u_long nMail );
 	void	SendQueryGetMailItem( u_long idReceiver, u_long nMail );
 	void	SendQueryGetMailGold( u_long idReceiver, u_long nMail );

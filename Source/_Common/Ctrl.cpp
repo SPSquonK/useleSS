@@ -643,7 +643,8 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 				if( IsValidObj( pTarget ) && pTarget->IsLive() )
 				{
 					// Å¸°ÙÃø ÁÂÇ¥¸¦ ¿ªº¯È¯.
-					D3DXVec3TransformCoord( &vDestLocal, &pTarget->GetPos(), &mInv );
+					const auto targetPos = pTarget->GetPos();
+					D3DXVec3TransformCoord( &vDestLocal, &targetPos, &mInv );
 					// Å¸°ÙÃø AABB
 					D3DXVECTOR3 vMin2 = vDestLocal + pTarget->m_pModel->m_vMin;
 					D3DXVECTOR3 vMax2 = vDestLocal + pTarget->m_pModel->m_vMax;
@@ -689,7 +690,8 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 					if( IsValidObj( pTarget ) && pTarget->IsLive() )
 					{
 						// Å¸°ÙÃø ÁÂÇ¥¸¦ ¿ªº¯È¯.
-						D3DXVec3TransformCoord( &vDestLocal, &pTarget->GetPos(), &mInv );
+						const auto targetPos = pTarget->GetPos();
+						D3DXVec3TransformCoord( &vDestLocal, &targetPos, &mInv );
 						// Å¸°ÙÃø AABB
 						D3DXVECTOR3 vMin2 = vDestLocal + pTarget->m_pModel->m_vMin;
 						D3DXVECTOR3 vMax2 = vDestLocal + pTarget->m_pModel->m_vMax;

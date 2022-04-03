@@ -554,7 +554,7 @@ void CGuildHouseBase::AfterFailedGuildHousePacket( int nPacketType, GH_Fntr_Info
 	}
 }
 
-BOOL CGuildHouseBase::SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info& gfi, int nIndex )
+BOOL CGuildHouseBase::SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info gfi, int nIndex )
 {
 	if( !IsValidObj( pUser ) )
 		return FALSE;
@@ -1326,7 +1326,7 @@ void CGuildHouseMng::OnRemoveGuildHouse( CAr & ar )
 	}
 }
 
-BOOL CGuildHouseMng::SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info& gfi, int nIndex )
+BOOL CGuildHouseMng::SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info gfi, int nIndex )
 {
 	if( !IsValidObj( pUser ) )
 		return FALSE;

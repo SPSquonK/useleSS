@@ -77,9 +77,9 @@ private:
 #ifdef __WORLDSERVER
 public:
 	PRegionElem		GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey );
-	PRegionElem		GetNearRevivalPosChao( DWORD dwWorldId, D3DXVECTOR3 & vPos );
+	PRegionElem		GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
 	PRegionElem		GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey );
-	PRegionElem		GetNearRevivalPos( DWORD dwWorldId, D3DXVECTOR3 & vPos );
+	PRegionElem		GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
 #endif	// __WORLDSERVER
 public:
 

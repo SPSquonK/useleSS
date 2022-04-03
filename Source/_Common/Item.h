@@ -9,6 +9,7 @@
 #include "..\_Network\Objects\Obj.h"
 #else
 #include "Ctrl.h"
+#include "ar.h"
 #endif
 #include "ProjectCmn.h"
 #include "lang.h"

@@ -568,7 +568,7 @@ PRegionElem	CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey )
 	}
 	return NULL;	// not found
 }
-PRegionElem CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, D3DXVECTOR3 & vPos )
+PRegionElem CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
 {
 	RegionElem *pRgnElem, *ptr	= NULL;
 	CPoint point;
@@ -620,7 +620,7 @@ PRegionElem	CWorldMng::GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey )
 	return NULL;	// not found
 }
 
-PRegionElem CWorldMng::GetNearRevivalPos( DWORD dwWorldId, D3DXVECTOR3 & vPos )
+PRegionElem CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
 {
 	RegionElem *pRgnElem, *ptr	= NULL;
 	CPoint point;

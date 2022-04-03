@@ -358,9 +358,9 @@ End:
 // Name: D3DFormatToString
 // Desc: Returns the string for the given D3DFORMAT.
 //-----------------------------------------------------------------------------
-TCHAR* D3DUtil_D3DFormatToString( D3DFORMAT format, bool bWithPrefix )
+const TCHAR* D3DUtil_D3DFormatToString( D3DFORMAT format, bool bWithPrefix )
 {
-    TCHAR* pstr = NULL;
+    const TCHAR* pstr = NULL;
     switch( format )
     {
     case D3DFMT_UNKNOWN:         pstr = TEXT("D3DFMT_UNKNOWN"); break;

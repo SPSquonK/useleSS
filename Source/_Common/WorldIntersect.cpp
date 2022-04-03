@@ -342,7 +342,7 @@ FLOAT	CWorld::GetItemHeight( const D3DXVECTOR3 & vPos )
 	return GetLandHeight( vPos );
 }
 
-FLOAT CWorld::GetOverHeightForPlayer( D3DXVECTOR3 &vPos, CObj* pExceptionObj )
+FLOAT CWorld::GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 {
 	static D3DXVECTOR3 vDir( 0.0f, 1.0f, 0.0f );
 	D3DXVECTOR3 vIntersect, vEnd;
@@ -392,7 +392,7 @@ LP1:
 //
 //	vPos바로 위쪽의 높이 계산
 //
-FLOAT CWorld::GetOverHeight( D3DXVECTOR3 &vPos, CObj* pExceptionObj )
+FLOAT CWorld::GetOverHeight( const D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 {
 	static D3DXVECTOR3 vDir( 0.0f, 1.0f, 0.0f );	
 	D3DXVECTOR3 vIntersect, vEnd;
@@ -984,7 +984,7 @@ BOOL CanSlide( const D3DXVECTOR3& v0, const D3DXVECTOR3& v1, const D3DXVECTOR3& 
 //
 // 중력방향의 충돌검사 및 미끄러짐 처리.
 // 중력방향의 라인과 충돌하는 삼각형을 찾고 그 지점의 좌표를 얻고 Slide계산후의 좌표도 얻음.
-FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, D3DXVECTOR3 &vPos )
+FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, const D3DXVECTOR3 &vPos )
 {
 	D3DXVECTOR3		vDir( 0.0f, -1.5f, 0.0f );	// 키높이(1.5)
 	D3DXVECTOR3		vIntersect;
@@ -1113,7 +1113,7 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, D3DXVECTOR
 // 중력방향의 충돌검사 및 미끄러짐 처리.
 // 중력방향의 라인과 충돌하는 삼각형을 찾고 그 지점의 좌표를 얻고 Slide계산후의 좌표도 얻음.
 // pType : 충돌한 오브젝트의 타입. OT_OBJ냐 OT_SHIP이냐.
-FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, D3DXVECTOR3 &vPos )
+FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D3DXVECTOR3 &vPos )
 {
 	D3DXVECTOR3 vDir( 0.0f, -1.5f, 0.0f );	// 키높이(1.5) +	여유분(0.5)
 	D3DXVECTOR3 vIntersect, vEnd;

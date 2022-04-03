@@ -86,14 +86,14 @@ private:
 
 private:
     // ComboBox helper functions
-    void ComboBoxAdd( int id, void* pData, TCHAR* pstrDesc );
+    void ComboBoxAdd( int id, void* pData, const TCHAR* pstrDesc );
     void ComboBoxSelect( int id, void* pData );
     void* ComboBoxSelected( int id );
     bool ComboBoxSomethingSelected( int id );
     UINT ComboBoxCount( int id );
     void ComboBoxSelectIndex( int id, int index );
     void ComboBoxClear( int id );
-    bool ComboBoxContainsText( int id, TCHAR* pstrText );
+    bool ComboBoxContainsText( int id, const TCHAR* pstrText );
 
     void AdapterChanged( void );
     void DeviceChanged( void );

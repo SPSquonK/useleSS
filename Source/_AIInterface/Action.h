@@ -110,7 +110,7 @@ template <class T> CActMsgq<T>::CActMsgq()
 
 template <class T>CActMsgq<T>::~CActMsgq()
 {
-	for( deque<T*>::iterator i = m_qpam.begin(); i != m_qpam.end(); ++i )
+	for( auto i = m_qpam.begin(); i != m_qpam.end(); ++i )
 		safe_delete( *i );
 	m_qpam.clear();
 }

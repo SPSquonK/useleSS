@@ -195,7 +195,7 @@ void CAIMonster::MoveToRandom( UINT nState )
 	}
 }
 
-BOOL CAIMonster::IsInRange( D3DXVECTOR3& vDistant, FLOAT fRange )
+BOOL CAIMonster::IsInRange( D3DXVECTOR3 vDistant, FLOAT fRange )
 {
 #ifdef __JEFF_11_6
 	vDistant.y	= 0.0f;

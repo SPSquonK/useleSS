@@ -395,15 +395,15 @@ int CUltimateWeapon::MakeItem( CUser* pUser, OBJID* objItemId )
 	map<OBJID, int> mapObjId2;
 	for( int i=0; i<5; i++ )
 	{
-		map<OBJID, int>::iterator* it = &mapObjId1.find(objItemId[i]);
-		if( *it != mapObjId1.end() )
-			++(*it)->second;
+		auto it = mapObjId1.find(objItemId[i]);
+		if( it != mapObjId1.end() )
+			++(it->second);
 		else
 			mapObjId1.insert(map<OBJID, int>::value_type( objItemId[i], 1 ));
 		
-		it = &mapObjId2.find(objItemId[i+5]);
-		if( *it != mapObjId2.end() )
-			++(*it)->second;
+		it = mapObjId2.find(objItemId[i+5]);
+		if( it != mapObjId2.end() )
+			++(it->second);
 		else
 			mapObjId2.insert(map<OBJID, int>::value_type( objItemId[i+5], 1 ));
 	}

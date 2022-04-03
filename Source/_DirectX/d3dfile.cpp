@@ -368,7 +368,7 @@ HRESULT CD3DMesh::Render( LPDIRECT3DDEVICE9 pd3dDevice, bool bDrawOpaqueSubsets,
 // Name:
 // Desc:
 //-----------------------------------------------------------------------------
-CD3DFrame::CD3DFrame( TCHAR* strName )
+CD3DFrame::CD3DFrame( const TCHAR* strName )
 {
     _tcsncpy( m_strName, strName, sizeof(m_strName) / sizeof(TCHAR) );
     m_strName[sizeof(m_strName) / sizeof(TCHAR) - 1] = _T('\0');

@@ -6087,7 +6087,7 @@ void CDPSrvr::OnReturnScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 
 	if( nSelect >= 0 )
 	{
-		static char* szPos[] = { "flaris",	"saintmorning",	"darkon" };
+		static const char* szPos[] = { "flaris",	"saintmorning",	"darkon" };
 		pUser->m_lpszVillage = szPos[nSelect];
 		pUser->AddReturnScroll();	//응답을 보내면 '귀환의 두루마리'아이템을 사용한다.	
 	}

@@ -842,7 +842,8 @@ void	CMover::OnAttackMelee_ClockWorks( DWORD dwState, CMover *pHitObj )
 			CMover *pTarget = pHitObj;
 			if( IsValidObj(pTarget) )
 			{
-				OnDamage( nItemID, dwState, NULL, &pTarget->GetPos() );		// 타겟의 좌표를 중심으로 데미지를 줌.
+				const auto targetPos = pTarget->GetPos();
+				OnDamage( nItemID, dwState, NULL, &targetPos );		// 타겟의 좌표를 중심으로 데미지를 줌.
 #ifdef __CLIENT
 				pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1RANBALL, vPos, GetId(), pTarget->GetPos(), pTarget->GetId(), -1 );		// 포탄
 				if( pSfx )
@@ -920,8 +921,9 @@ void	CMover::OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj )
 	case OBJSTA_ATK3:		// 땅치기 스킬 - 두손
 		{
 			D3DXMATRIX mMatrix;
+			const auto worldMatrix = GetMatrixWorld();
 			
-			D3DXMatrixMultiply( &mMatrix, (pModel->GetMatrixBone(12)), &(GetMatrixWorld()) );
+			D3DXMatrixMultiply( &mMatrix, (pModel->GetMatrixBone(12)), &worldMatrix );
 			
 			D3DXVECTOR3 v2;
 			v2.x = mMatrix._41;
@@ -938,7 +940,7 @@ void	CMover::OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj )
 			PLAYSND( SND_PC_SKILLD_HITOFPENYA );//, &v2 );
 		#endif //__CLIENT 			
 			
-			D3DXMatrixMultiply( &mMatrix, (pModel->GetMatrixBone(16)), &(GetMatrixWorld()) );
+			D3DXMatrixMultiply( &mMatrix, (pModel->GetMatrixBone(16)), &worldMatrix );
 			D3DXVECTOR3 v3;
 			v3.x = mMatrix._41;
 			v3.y = mMatrix._42;
@@ -955,7 +957,8 @@ void	CMover::OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj )
 			if( m_pActMover->m_nMotionHitCount == 1 )
 			{				
 	#ifdef __WORLDSERVER
-				GetWorld()->SendDamageAround( &GetPos(), (AF_GENERIC | AF_CRITICAL) , this, OBJTYPE_PLAYER, II_WEA_MOB_MONSTER4_ATK2
+				const auto myPos = GetPos();
+				GetWorld()->SendDamageAround( &myPos, (AF_GENERIC | AF_CRITICAL) , this, OBJTYPE_PLAYER, II_WEA_MOB_MONSTER4_ATK2
 					, 16.0f );					
 
 				ItemProp *pSkillProp;
@@ -993,8 +996,9 @@ void	CMover::OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj )
 			if( m_pActMover->m_nMotionHitCount == 1 )
 			{
 				D3DXMATRIX mMatrix;
+				const auto worldMatrix = GetMatrixWorld();
 				
-				D3DXMatrixMultiply( &mMatrix, (pModel->GetMatrixBone(12)), &(GetMatrixWorld()) );
+				D3DXMatrixMultiply( &mMatrix, (pModel->GetMatrixBone(12)), &worldMatrix );
 				
 				D3DXVECTOR3 v2;
 				v2.x = mMatrix._41;
@@ -1092,7 +1096,8 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 			if( bSuccess )
 				ApplySkillAround( this, OBJTYPE_PLAYER, pSkillProp, pAddSkillProp , false );							
 
-			GetWorld()->SendDamageAround( &(pHitObj->GetPos()), AF_GENERIC, this, OBJTYPE_PLAYER, II_WEA_MOB_MONSTER4_ATK1
+			const auto hitObj = pHitObj->GetPos();
+			GetWorld()->SendDamageAround( &hitObj, AF_GENERIC, this, OBJTYPE_PLAYER, II_WEA_MOB_MONSTER4_ATK1
 				, 7.0f );	
 		#endif //__WORLDSERVER
 		}
@@ -1174,7 +1179,8 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 			if( m_pActMover->m_nMotionHitCount == 3 )
 			{	
 		#ifdef __WORLDSERVER
-				GetWorld()->SendDamageAround( &(pHitObj->GetPos()), AF_GENERIC, this, OBJTYPE_PLAYER, II_WEA_MOB_MONSTER4_ATK2
+				const auto hitObjPos = pHitObj->GetPos();
+				GetWorld()->SendDamageAround( &hitObjPos, AF_GENERIC, this, OBJTYPE_PLAYER, II_WEA_MOB_MONSTER4_ATK2
 					, 5.0f );	
 		#endif //__WORLDSERVER
 				
@@ -1218,7 +1224,8 @@ void	CMover::OnAttackMelee_Meteonyker( DWORD dwState, CMover *pHitObj )
 
 				if( IsValidObj(pTarget) )
 				{
-					OnDamage( nItemID, dwState, pTarget, &pTarget->GetPos() );		// 타겟의 좌표를 중심으로 데미지를 줌.
+					const auto targetPos = pTarget->GetPos();
+					OnDamage( nItemID, dwState, pTarget, &targetPos );		// 타겟의 좌표를 중심으로 데미지를 줌.
 					ItemProp *pSkillProp;
 					AddSkillProp *pAddSkillProp;
 					BOOL bFind	= GetSkillProp( &pSkillProp, &pAddSkillProp, SI_GEN_STUNSINGLE, 5, "SI_GEN_STUNSINGLE" );

@@ -53,7 +53,7 @@ void CNpcChecker::RemoveNpc( CObj* pObj )
 	}
 }
 
-BOOL CNpcChecker::IsCloseNpc( int nMenu, CWorld* pWorld, D3DXVECTOR3 & v )
+BOOL CNpcChecker::IsCloseNpc( int nMenu, CWorld* pWorld, const D3DXVECTOR3 & v )
 {
 // CProject::m_AddRemoveLock
 	for( set<OBJID>::iterator i = m_aset[nMenu].begin(); i != m_aset[nMenu].end(); ++i )
@@ -71,7 +71,7 @@ BOOL CNpcChecker::IsCloseNpc( int nMenu, CWorld* pWorld, D3DXVECTOR3 & v )
 	return FALSE;
 }
 
-BOOL CNpcChecker::IsCloseNpc( CWorld* pWorld, D3DXVECTOR3 & v )
+BOOL CNpcChecker::IsCloseNpc( CWorld* pWorld, const D3DXVECTOR3 & v )
 {
 	for( int nMenu = 0; nMenu < MAX_MOVER_MENU; nMenu++ )
 	{

@@ -213,7 +213,7 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 }
 
 #ifdef __LAYER_1015
-void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, D3DXVECTOR3 & vPos, int nLayer, BOOL bLogout )
+void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVECTOR3 & vPos, int nLayer, BOOL bLogout )
 #else	// __LAYER_1015
 void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVECTOR3 & vPos, BOOL bLogout )
 #endif	//__LAYER_1015
@@ -2312,7 +2312,7 @@ void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::SendQueryPostMail( u_long idReceiver, u_long idSender, CItemElem& itemElem, int nGold, char* lpszTitle, char* lpszText )
+void CDPDatabaseClient::SendQueryPostMail( u_long idReceiver, u_long idSender, CItemElem& itemElem, int nGold, const char* lpszTitle, const char* lpszText )
 {
 // 	//	BEGINTEST
 // 	Error( "SendQueryPostMail  Receiver[%d] Sender[%d]", idReceiver, idSender );

@@ -12,8 +12,8 @@ public:
 	static	CNpcChecker*	GetInstance( void );
 	void	AddNpc( CObj* pObj );
 	void	RemoveNpc( CObj* pObj );
-	BOOL	IsCloseNpc( int nMenu, CWorld* pWorld, D3DXVECTOR3 & v );
-	BOOL	IsCloseNpc( CWorld* pWorld, D3DXVECTOR3 & v );
+	BOOL	IsCloseNpc( int nMenu, CWorld* pWorld, const D3DXVECTOR3 & v );
+	BOOL	IsCloseNpc( CWorld* pWorld, const D3DXVECTOR3 & v );
 private:
 	set<OBJID>	m_aset[MAX_MOVER_MENU];
 };

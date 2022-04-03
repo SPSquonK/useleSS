@@ -1354,9 +1354,9 @@ public:
 	BOOL			DoUseItemSexChange( int nFace );
 	BOOL			ReplaceInspection( REGIONELEM* pPortkey );
 #ifdef __LAYER_1015
-	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );
+	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );
 #else	// __LAYER_1015
-	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, D3DXVECTOR3 & vPos, REPLACE_TYPE type );
+	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type );
 #endif	// __LAYER_1015
 	BOOL			IsLoot( CItem *pItem, BOOL bPet = FALSE );
 	void			ProcInstantBanker();

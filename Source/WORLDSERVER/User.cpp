@@ -4243,7 +4243,7 @@ void CUserMng::AddSetPointParam( CMover* pMover, int nDstParameter, int nValue )
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddSetPos( CCtrl* pCtrl, D3DXVECTOR3 & vPos )
+void CUserMng::AddSetPos( CCtrl* pCtrl, const D3DXVECTOR3 & vPos )
 {
 	CAr ar;
 
@@ -4442,7 +4442,7 @@ void CUserMng::AddAttackSP( CMover* pMover, DWORD dwAtkMsg, OBJID objid, int nPa
 		NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddMoverMoved( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+void CUserMng::AddMoverMoved( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 		DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 		int nLoop, DWORD dwMotionOption, __int64 nTickCount )
 {
@@ -4460,7 +4460,7 @@ void CUserMng::AddMoverMoved( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, 
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddMoverBehavior( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+void CUserMng::AddMoverBehavior( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 		DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 		int nLoop, DWORD dwMotionOption, __int64 nTickCount, BOOL fTransferToMe )
 {
@@ -4478,7 +4478,7 @@ void CUserMng::AddMoverBehavior( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &v
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddMoverMoved2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+void CUserMng::AddMoverMoved2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 		float fAngleX, float fAccPower, float fTurnAngle,
 		DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 		int nLoop, DWORD dwMotionOption, __int64 nTickCount, BYTE nFrame )
@@ -4498,7 +4498,7 @@ void CUserMng::AddMoverMoved2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd,
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddMoverBehavior2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+void CUserMng::AddMoverBehavior2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 		float fAngleX, float fAccPower, float fTurnAngle,
 		DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 		int nLoop, DWORD dwMotionOption, __int64 nTickCount, BOOL fTransferToMe )
@@ -4517,7 +4517,7 @@ void CUserMng::AddMoverBehavior2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddMoverAngle( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 & vd,
+void CUserMng::AddMoverAngle( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 & vd,
 							float f, float fAngleX, float fAccPower, float fTurnAngle, __int64 nTickCount )
 {
 	CAr ar;
@@ -4535,7 +4535,7 @@ void CUserMng::AddMoverAngle( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 & vd,
 
 
 
-void CUserMng::AddMoverCorr( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+void CUserMng::AddMoverCorr( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 		DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 		int nLoop, DWORD dwMotionOption, __int64 nTickCount )
 {
@@ -4560,7 +4560,7 @@ void CUserMng::AddMoverCorr( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, f
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddMoverCorr2( CMover* pMover, D3DXVECTOR3 & v, D3DXVECTOR3 &vd, float f,
+void CUserMng::AddMoverCorr2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 		float fAngleX, float fAccPower, float fTurnAngle,
 		DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 		int nLoop, DWORD dwMotionOption, __int64 nTickCount )

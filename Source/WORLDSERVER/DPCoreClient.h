@@ -138,9 +138,9 @@ private:
 	void	OnInstanceDungeonSetCoolTimeInfo( CAr & ar, DPID, DPID, OBJID );
 	void	OnInstanceDungeonDeleteCoolTimeInfo( CAr & ar, DPID, DPID, OBJID );
 public:
-	void	SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, ID_INFO & ID_Info );
-	void	SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, ID_INFO & ID_Info );
-	void	SendInstanceDungeonSetCoolTimeInfo( int nType, DWORD dwPlayerId, COOLTIME_INFO & CT_Info );
+	void	SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info );
+	void	SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info );
+	void	SendInstanceDungeonSetCoolTimeInfo( int nType, DWORD dwPlayerId, const COOLTIME_INFO & CT_Info );
 #ifdef __QUIZ
 public:
 	void	SendQuizSystemMessage( int nDefinedTextId, BOOL bAll = FALSE, int nChannel = 0, int nTime = 0 );

@@ -138,7 +138,7 @@ CD3DSettingsDialog::CD3DSettingsDialog( CD3DEnumeration* pEnumeration,
 // Name: ComboBoxAdd
 // Desc: Adds an entry to the combo box.
 //-----------------------------------------------------------------------------
-void CD3DSettingsDialog::ComboBoxAdd( int id, void* pData, TCHAR* pstrDesc )
+void CD3DSettingsDialog::ComboBoxAdd( int id, void* pData, const TCHAR* pstrDesc )
 {
     HWND hwndCtrl = GetDlgItem( m_hDlg, id );
     DWORD dwItem = ComboBox_AddString( hwndCtrl, pstrDesc );
@@ -249,7 +249,7 @@ void CD3DSettingsDialog::ComboBoxClear( int id )
 // Name: ComboBoxContainsText
 // Desc: Returns whether the combo box contains the given text.
 //-----------------------------------------------------------------------------
-bool CD3DSettingsDialog::ComboBoxContainsText( int id, TCHAR* pstrText )
+bool CD3DSettingsDialog::ComboBoxContainsText( int id, const TCHAR* pstrText )
 {
     TCHAR strItem[200];
     HWND hwndCtrl = GetDlgItem( m_hDlg, id );

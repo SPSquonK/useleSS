@@ -447,8 +447,8 @@ public:
 	// 반환하지 않아 임시로 ProcessUnderCollision을 참고하여 만들었다.
 	FLOAT			GetItemHeight( const D3DXVECTOR3 & vPos );
 	FLOAT			GetUnderHeight( const D3DXVECTOR3 &vPos );
-	FLOAT			GetOverHeightForPlayer( D3DXVECTOR3 &vPos, CObj* pExceptionObj = NULL );
-	FLOAT			GetOverHeight( D3DXVECTOR3 &vPos, CObj* pExceptionObj = NULL );
+	FLOAT			GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionObj = NULL );
+	FLOAT			GetOverHeight( const D3DXVECTOR3 &vPos, CObj* pExceptionObj = NULL );
 	FLOAT			GetLandHeight( float x, float z );
 	FLOAT			GetLandHeight( const D3DXVECTOR3& vPos );
 	FLOAT			GetLandHeight_Fast( float x, float z );
@@ -465,7 +465,7 @@ public:
 	BOOL			ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vDir, int nSlideCnt );
 #endif	// __LAYER_1015
 	BOOL			ProcessCollisionReflection( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vDir, int nRecusCnt );
-	FLOAT			ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, D3DXVECTOR3 &vPos );	
+	FLOAT			ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D3DXVECTOR3 &vPos );	
 	BOOL			IntersectObjLine( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vEnd, BOOL bSkipTrans = FALSE, BOOL bWithTerrain = FALSE, BOOL bWithObject = TRUE );	
 	BOOL			IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vEnd, BOOL bSkipTrans = FALSE, BOOL bWithTerrain = FALSE, BOOL bWithObject = TRUE );	
 	FLOAT			IntersectRayTerrain2( const D3DXVECTOR3 &vPickRayOrig, const D3DXVECTOR3 &vPickRayDir );

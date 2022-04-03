@@ -54,8 +54,9 @@ void CInstanceDungeonBase::SerializeAllInfo( CAr & ar )
 			VEC_IDINFO* pvecTemp;
 			pvecTemp = &itMap->second;
 			ar << pvecTemp->size();
-			for( VEC_IDINFO::iterator itVec=pvecTemp->begin(); itVec!=pvecTemp->end(); itVec++ )
-				(*itVec).Serialize( ar );
+			for (auto itVec = pvecTemp->begin(); itVec != pvecTemp->end(); itVec++) {
+				ar << *itVec;
+			}
 		}
 		
 		// 플레이어 쿨타임 정보
@@ -66,8 +67,9 @@ void CInstanceDungeonBase::SerializeAllInfo( CAr & ar )
 			VEC_CTINFO* pvecIDCT;
 			pvecIDCT = &it->second;
 			ar << pvecIDCT->size();
-			for( VEC_CTINFO::iterator itVec=pvecIDCT->begin(); itVec!=pvecIDCT->end(); itVec++)
-				(*itVec).Serialize( ar );
+			for (VEC_CTINFO::iterator itVec = pvecIDCT->begin(); itVec != pvecIDCT->end(); itVec++) {
+				ar << *itVec;
+			}
 		}
 	}
 	else
@@ -83,7 +85,7 @@ void CInstanceDungeonBase::SerializeAllInfo( CAr & ar )
 			for( DWORD j=0; j<nSizeVec; j++ )
 			{
 				ID_INFO ID_Info( NULL_ID, NULL_ID );
-				ID_Info.Serialize( ar );
+				ar >> ID_Info;
 				CreateDungeon( ID_Info, dwDungeonId );
 			}
 		}
@@ -98,7 +100,7 @@ void CInstanceDungeonBase::SerializeAllInfo( CAr & ar )
 			for( DWORD j=0; j<nSizeVec; j++ )
 			{
 				COOLTIME_INFO CT_Info;
-				CT_Info.Serialize( ar );
+				ar >> CT_Info;
 				SetDungeonCoolTimeInfo( CT_Info, dwPlayerId );
 			}
 		}
@@ -724,7 +726,8 @@ void CInstanceDungeonBase::SetLeaveMarkingPos( CUser* pUser, DWORD dwWorldId, D3
 		LPREGIONELEM lpRegionElem = pWorld->m_aRegion.GetAt( i );
 		if( !lpRegionElem || lpRegionElem->m_dwIdTeleWorld == WI_WORLD_NONE )
 			continue;
-		float fTemp = D3DXVec3LengthSq( &( vPos - lpRegionElem->m_vPos ) );
+		const auto delta = vPos - lpRegionElem->m_vPos;
+		float fTemp = D3DXVec3LengthSq( &delta );
 		if( fTemp < fDist )
 		{
 			fDist = fTemp;
@@ -870,7 +873,7 @@ void CInstanceDungeonHelper::OnSetDungeonCoolTimeInfo( ULONG uKey, int nType, CO
 	}
 }
 
-void CInstanceDungeonHelper::SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, ID_INFO & ID_Info )
+void CInstanceDungeonHelper::SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info )
 {
 #ifdef __WORLDSERVER
 	if( !IsCertifying() )
@@ -884,7 +887,7 @@ void CInstanceDungeonHelper::SendInstanceDungeonCreate( int nType, DWORD dwDunge
 #endif// __CORESERVER
 }
 
-void CInstanceDungeonHelper::SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, ID_INFO & ID_Info )
+void CInstanceDungeonHelper::SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info )
 {
 #ifdef __WORLDSERVER
 	g_DPCoreClient.SendInstanceDungeonDestroy( nType, dwDungeonId, ID_Info );
@@ -894,7 +897,7 @@ void CInstanceDungeonHelper::SendInstanceDungeonDestroy( int nType, DWORD dwDung
 #endif// __CORESERVER
 }
 
-void CInstanceDungeonHelper::SendInstanceDungeonSetCoolTimeInfo( ULONG uKey, int nType, DWORD dwPlayerId, COOLTIME_INFO & CT_Info )
+void CInstanceDungeonHelper::SendInstanceDungeonSetCoolTimeInfo( ULONG uKey, int nType, DWORD dwPlayerId, const COOLTIME_INFO & CT_Info )
 {
 #ifdef __WORLDSERVER
 	if( !IsCertifying() )

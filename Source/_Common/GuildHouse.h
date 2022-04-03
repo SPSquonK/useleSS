@@ -148,7 +148,7 @@ public:
 	void	SetWaitDBAckPlayerId( DWORD dwWaitDBAckPlayerId )	{ m_dwWaitDBAckPlayerId = dwWaitDBAckPlayerId; }
 	DWORD	GetWaitDBAckPlayerId()	{ return m_dwWaitDBAckPlayerId; }
 	BOOL	IsWaitDBAck()	{ return m_dwWaitDBAckPlayerId != NULL_ID; }
-	BOOL	SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info& gfi, int nIndex );
+	BOOL	SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info gfi, int nIndex );
 	void	SendWorldToClient( int nPacketType, GH_Fntr_Info& gfi, int nIndex );
 
 	BOOL	IsEnteranceAble( CUser* pUser );
@@ -313,7 +313,7 @@ public:
 	void	ReqBuyGuildHouse( CUser* pUser );
 	void	OnBuyGuildHouse( CAr & ar );
 	void	OnRemoveGuildHouse( CAr & ar );
-	BOOL	SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info& gfi, int nIndex = NULL_ID );
+	BOOL	SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fntr_Info gfi, int nIndex = NULL_ID );
 
 	void	SetApplyDST( CUser* pUser );
 	void	ResetApplyDST( CUser* pUser );

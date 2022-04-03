@@ -2224,17 +2224,15 @@ void CDPCoreSrvr::OnInstanceDungeonCreate( CAr & ar, DPID, DPID, DPID, u_long )
 	DWORD dwDungeonId;
 	ID_INFO ID_Info( NULL_ID, NULL_ID );
 
-	ar >> nType >> dwDungeonId;
-	ID_Info.Serialize( ar );
+	ar >> nType >> dwDungeonId >> ID_Info;
 	
 	CInstanceDungeonHelper::GetInstance()->OnCreateDungeon( nType, ID_Info, dwDungeonId );
 }
 
-void CDPCoreSrvr::SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, ID_INFO & ID_Info )
+void CDPCoreSrvr::SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_INSTANCEDUNGEON_CREATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nType << dwDungeonId;
-	ID_Info.Serialize( ar );
+	ar << nType << dwDungeonId << ID_Info;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
@@ -2244,17 +2242,15 @@ void CDPCoreSrvr::OnInstanceDungeonDestroy( CAr & ar, DPID, DPID, DPID, u_long )
 	DWORD dwDungeonId;
 	ID_INFO ID_Info( NULL_ID, NULL_ID );
 	
-	ar >> nType >> dwDungeonId;
-	ID_Info.Serialize( ar );
+	ar >> nType >> dwDungeonId >> ID_Info;
 	
 	CInstanceDungeonHelper::GetInstance()->OnDestroyDungeon( nType, ID_Info, dwDungeonId );
 }
 
-void CDPCoreSrvr::SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, ID_INFO & ID_Info )
+void CDPCoreSrvr::SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_INSTANCEDUNGEON_DESTROY, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nType << dwDungeonId;
-	ID_Info.Serialize( ar );
+	ar << nType << dwDungeonId << ID_Info;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
@@ -2265,8 +2261,7 @@ void CDPCoreSrvr::OnInstanceDungeonSetCoolTimeInfo( CAr & ar, DPID, DPID, DPID, 
 	COOLTIME_INFO CT_Info;
 	ULONG uKey;
 	
-	ar >> uKey >> nType >> dwPlayerId;
-	CT_Info.Serialize( ar );
+	ar >> uKey >> nType >> dwPlayerId >> CT_Info;
 	
 	CInstanceDungeonHelper::GetInstance()->OnSetDungeonCoolTimeInfo( uKey, nType, CT_Info, dwPlayerId );
 }
@@ -2274,8 +2269,7 @@ void CDPCoreSrvr::OnInstanceDungeonSetCoolTimeInfo( CAr & ar, DPID, DPID, DPID, 
 void CDPCoreSrvr::SendInstanceDungeonSetCoolTimeInfo( ULONG uKey, int nType, DWORD dwPlayerId, COOLTIME_INFO CT_Info )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_INSTANCEDUNGEON_SETCOOLTIME, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uKey << nType << dwPlayerId;
-	CT_Info.Serialize( ar );
+	ar << uKey << nType << dwPlayerId << CT_Info;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
