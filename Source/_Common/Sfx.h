@@ -65,7 +65,7 @@ public:
 	void DamageToTarget( int nDmgCnt = 0, float fDmgAngle = 0, float fDmgPower = 0, int nMaxDmgCnt = 1 ); // 목표물에 맞았을때 데미지를 준다
 	BOOL SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp = FALSE );
 
-	virtual	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3& vPosSrc, OBJID idSrc, D3DXVECTOR3& vPosDest, OBJID idDest, int nSec = 0 ); // 사용할 SFX 지정
+	virtual	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec = 0 ); // 사용할 SFX 지정
 	virtual void ShootSfx( float fAngXZ, float fAngY, float fSpeed ) {}
 	virtual void SetPartLink( int nPart ) {}
 #ifndef __WORLDSERVER
@@ -654,12 +654,12 @@ public:
 	//CSfxModel m_SfxObj2; // 명중시 이펙트 표시용
 	BOOL m_bHit; // 명중했는지의 여부
 	CSfxItemWandAtkAir();
-	virtual ~CSfxItemWandAtkAir();
-	virtual void Process();
-	virtual	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3& vPosSrc, OBJID idSrc, D3DXVECTOR3& vPosDest, OBJID idDest, int nSec = 0 ); // 사용할 SFX 지정
-	virtual void ShootSfx( float fAngXZ, float fAngY, float fSpeed );
+	~CSfxItemWandAtkAir() override;
+	void Process() override;
+	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec = 0 ) override; // 사용할 SFX 지정
+	void ShootSfx( float fAngXZ, float fAngY, float fSpeed ) override;
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	void Render( LPDIRECT3DDEVICE9 pd3dDevice ) override;
 #endif	// __WORLDSERVER
 };
 
