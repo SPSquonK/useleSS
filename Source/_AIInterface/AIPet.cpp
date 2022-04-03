@@ -60,10 +60,8 @@ void CAIPet::Init( void )
 	m_bLootMove		= FALSE;				
 	m_idLootItem	= NULL_ID;				
 	m_nState	= PETSTATE_IDLE;
-#if __VER >= 12 // __PET_0519
 	m_dwSkillId		= NULL_ID;	// 
 	m_idPetItem		= NULL_ID;	// ¸ÔÆê ¾ÆÀÌÅÛ
-#endif	// __PET_0519
 }
 
 void CAIPet::Destroy( void )
@@ -433,7 +431,6 @@ BOOL CAIPet::NotOwnedPetInactivated( void )
 	return FALSE;
 }
 
-#if __VER >= 12 // __PET_0519
 void CAIPet::SetItem( CMover* pPlayer, CItemElem* pItem )
 {	// »ç¿ëÀÚ¿¡°Ô ¸ÔÆê °¢¼º È¿°ú Àû¿ë
 	m_idPetItem		= pItem->m_dwObjId;
@@ -471,4 +468,3 @@ void CAIPet::ResetSkill( CMover* pPlayer )
 	if( GetSkillId() != NULL_ID && pPlayer->HasBuff( BUFF_SKILL, (WORD)( GetSkillId() ) ) )
 		pPlayer->RemoveBuff( BUFF_SKILL, (WORD)( GetSkillId() ) );
 }
-#endif	// __PET_0519

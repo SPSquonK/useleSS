@@ -142,11 +142,9 @@ void	CActionMover::Init( void )
 	m_bMove			= 0;
 	m_dwAtkFlags	= 0;
 	m_nCastingTime	= 0;
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	m_dwCastingEndTick	= 0;
 	m_nCastingTick	= 0;
 	m_nCastingSKillID = 0;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	m_fDistance		= 0.0f;
 	m_nShootCnt		= 0;
 	m_nMotionHitCount = 0;
@@ -319,12 +317,10 @@ int		CActionMover :: ProcessAction( const D3DXVECTOR3 *vPos )
 
 	if( (GetState() & OBJSTA_DMG_FLY) == 0 )
 	{
-	#if __VER >= 11 // __FIX_COLLISION
 		if(D3DXVec3LengthSq(&m_vDeltaE) < 0.01f) 
 		{
 			m_vDeltaE.x = 0.0f; m_vDeltaE.y = 0.0f; m_vDeltaE.z = 0.0f;
 		}
-	#endif
 		m_vDeltaE *= 0.9f;			// 외부힘은 마찰때문에 계속 감소.
 	}
 
@@ -455,12 +451,8 @@ void	CActionMover::DoDamageFly( float fAngleXZ, float fAngleY, float fPower )
 
 int	CActionMover::SendDamageForce( DWORD dwAtkFlags, OBJID idSender, int nParam, BOOL bTarget )	// 강공격
 {
-#if __VER >= 10	// __AI_0711
 	// 준보스 몬스터는 강공 면역
 	if( m_pMover->IsRank( RANK_MIDBOSS ) )
 		return SendActMsg( OBJMSG_DAMAGE, dwAtkFlags, idSender, nParam, bTarget );
 	return SendActMsg( OBJMSG_DAMAGE_FORCE, dwAtkFlags, idSender, nParam, bTarget );
-#else	// __AI_0711
-	return SendActMsg( OBJMSG_DAMAGE_FORCE, dwAtkFlags, idSender, nParam, bTarget );
-#endif	// __AI_0711
 }

@@ -293,7 +293,6 @@
 //	#define		__JHMA_VER_8_3				// 8차 ctrl 자동공격기능 삭제	Neuz
 //	#define		__JHMA_VER_8_4				// 8차 타겟클릭자동공격 이모티콘	Neuz
 //	#define		__JHMA_VER_8_5				// 8차 스킬경험치다운변경	Neuz, World
-//	#define		__JHMA_VER_8_7				// 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 
 
 //	#define		__CSC_VER8_5				// 8차 엔젤 소환 Neuz, World, Trans

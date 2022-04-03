@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "aimeteonyker.h"
 
-#if __VER >= 10	// __METEONYKER_0608
 
 #include "user.h"
 #include "dialogmsg.h"
@@ -858,4 +857,3 @@ CMover* CAIMeteonyker::GetTarget( OBJID objid )
 	return NULL;
 }
 
-#endif	// __METEONYKER_0608

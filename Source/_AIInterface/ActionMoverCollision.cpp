@@ -175,19 +175,15 @@ BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 			bColl = FALSE;		// 변신구를 사용하지 않은 순수 펫은 오브젝트와 충돌검사 안함.
 		}
 
-#if __VER >= 9	//__AI_0509
 		if( pMover->IsNPC() && ( pMover->GetSpeedFactor() > 1.9F || pMover->m_dwAIInterface == AII_PET ) )	// 귀환중이면
 		{
 			// 넉백같은 힘이 가해진 상황에는 충돌체크 진행
 			if( pMover->m_pActMover->m_vDeltaE.x == 0 && pMover->m_pActMover->m_vDeltaE.y == 0 && pMover->m_pActMover->m_vDeltaE.z == 0 )
 				bColl = FALSE;
 		}
-#endif	// __AI_0509
 #ifdef __CLIENT
-#if __VER >= 9	// __PET_0410
 		if( pMover->GetId() == NULL_ID )	// 클라이언트에서만 생성한 객체면,
 			bColl	= FALSE;
-#endif	// __PET_0410
 #endif	// __CLIENT
 
 		bColl = TRUE;
@@ -222,14 +218,12 @@ BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 			vDeltaXZ *= gConsole()->_fSpeedMul;
 #endif
 
-	#if __VER >= 11 // __FIX_COLLISION
 		if(fResult && (D3DXVec3Length(&vDeltaXZ) > 0.15f))
 		{
 			vDeltaXZ.y = m_vDeltaAccu.y = m_vDelta.y = 0;
 			m_vDelta.x = vDeltaXZ.x;
 			m_vDelta.z = vDeltaXZ.z;
 		}
-	#endif
 		BOOL bCollision = FALSE;
 
 		// x축 더하기
@@ -307,13 +301,9 @@ BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 			{
 				if( vDelta.y < -0.1f )		// 떨어지는 속도가 0.x보다 클때만 하강동작.  살짝 떨어지는건 걍 좌표만 내려감.
 				{
-					#if __VER >= 11 // __SYS_COLLECTING
 						if( (GetState() & OBJSTA_COLLECT)== 0 )
-					#endif
 
-#if __VER >= 15 // __BS_FIXED_KNOCKBACK
 						if( pMover->IsPlayer() && !( GetDmgState() & OBJSTA_DMG_FLY_ALL ) )			//몬스터는 하강 애니 없음 
-#endif
 					SetJumpState( OBJSTA_SJUMP3 );		// 하강 상태로 전환
 
 					pMover->OnActDrop();				// 이벤트 호출
@@ -361,7 +351,6 @@ BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 	} 
 	else if( vDelta.y > 0 )			// 좌표가 올라갔음
 	{
-#if __VER >= 15 // __BOUND_BOX_COLLISION
 		FLOAT h = 65535.0f;			// pPos위치의 천장 높이
 		if( pMover->IsPlayer() )
 		{
@@ -371,10 +360,6 @@ BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 		{
 			h = pWorld->GetOverHeight( D3DXVECTOR3( pPos->x, pPos->y + 1.5f, pPos->z ), pMover );
 		}
-#else // __BOUND_BOX_COLLISION
-		// pPos위치의 천장 높이
-		FLOAT h	= pWorld->GetOverHeight( D3DXVECTOR3( pPos->x, pPos->y + 1.5f, pPos->z ) );
-#endif // __BOUND_BOX_COLLISION
 			
 		pPos->y += vDelta.y;		// 운동량을 더해줌
 		if( pPos->y + 1.5f > h )	// 머리 부분이 천장에 닿았으면 

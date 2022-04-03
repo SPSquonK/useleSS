@@ -19,9 +19,7 @@ protected:
 	D3DXVECTOR3		m_vDestPos;
 	D3DXVECTOR3		m_vOldPos;					// 이전 프레임 좌표
 
-#if __VER >= 9	//__AI_0509
 	D3DXVECTOR3		m_vPosDamage;
-#endif	// __AI_0509
 	
 	_VECINFO		m_vecPatrolInfo;
 	FLOAT			m_fAngleBegine;
@@ -36,11 +34,7 @@ protected:
 
 	DWORD			m_dwIdTarget;
 	DWORD			m_dwAtkMethod;
-#if __VER >= 12 // __NEW_SUMMON_RULE
 	vector<OBJID>	m_vecIdSummon;					// 소환된 몬스터는 아이디가 채워진다.
-#else // __NEW_SUMMON_RULE
-	OBJID			m_idSummon[ MAX_SUMMON ];	// 소환된 몬스터는 아이디가 채워진다.
-#endif // __NEW_SUMMON_RULE
 	DWORD			m_idLootItem;				// 루팅할 아이템.
 
 	DWORD			GetAtkMethod_Near();
@@ -83,11 +77,9 @@ protected:
 
 	void	SetTarget( OBJID dwIdTarget, u_long uParty );
 
-#if __VER >= 9	//__AI_0509
 public:
 	virtual	BOOL	IsReturnToBegin( void )		{	return m_bReturnToBegin;	}
 protected:
-#endif	// __AI_0509
 	
 public:
 	CAIMonster();
@@ -110,7 +102,6 @@ public:
 };
 
 
-#if __VER >= 12 // __MONSTER_SKILL
 struct __MONSTERSKILL
 {
 	int		nAtkMethod;
@@ -153,14 +144,11 @@ public:
 
 	DWORD	GetMonsterSkillLevel( CMover* pAttacker, DWORD dwSkillId );
 	BOOL	ApplySkill( CMover* pAttacker, CMover* pTarget, DWORD dwAtkMethod );
-#if __VER >= 14 // __INSTANCE_DUNGEON
 	BOOL	MonsterTransform( CMover* pMover, int nMoverHP );
-#endif // __INSTANCE_DUNGEON
 
 private:
 	MAPMONSTERSKILL		m_mapMonsterSkill;
 };
-#endif // __MONSTER_SKILL
 
 #endif
 

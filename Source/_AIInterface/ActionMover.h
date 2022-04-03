@@ -100,11 +100,9 @@ public:
 private:
 	OBJID			m_objidHit;
 	int				m_nCastingTime;
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	DWORD			m_dwCastingEndTick;
 	int				m_nCastingSKillID;
 	int				m_nCastingTick;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	int				m_bMove;		// 이번턴에 움직인적 있는가?
 
 #ifdef __CLIENT
@@ -116,12 +114,10 @@ public:
 	virtual	void	ProcessState( DWORD dwState, float fSpeed );	
 
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 	int				GetCastingSKillID() { return m_nCastingSKillID;}
 	DWORD			GetCastingEndTick() { return m_dwCastingEndTick;}
 	void			SetCastingEndTick(DWORD dwCastingEnd) { m_dwCastingEndTick = dwCastingEnd;}
 	int				GetCastingTick() { return m_nCastingTick;}
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 
 	void			ForcedSet( D3DXVECTOR3 &vDelta, DWORD dwState, DWORD dwStateFlag, int nMotionEx );
 	void			ForcedSet2( D3DXVECTOR3 &vDelta, float fAccPower, float fTurnAngle, DWORD dwState, DWORD dwStateFlag, int nMotionEx );

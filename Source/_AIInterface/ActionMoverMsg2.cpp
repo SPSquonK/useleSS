@@ -213,9 +213,7 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 				return 0;
 
 			int nDamage = _ProcessMsgDmg( dwMsg, pAttacker, (DWORD)nParam1, nParam3, nParam4, nParam5 );
-#if __VER >= 10	// __METEONYKER_0608
 			pMover->PostAIMsg( AIMSG_DAMAGE, pAttacker->GetId(), nDamage );
-#endif	// __METEONYKER_0608
 			pAttacker->RemoveInvisible();
 			return nDamage;
 		}

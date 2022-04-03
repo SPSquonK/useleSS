@@ -17,15 +17,9 @@ extern	CPartyMng		g_PartyMng;
 
 #define RANGE_CANCEL	120.0f
 #define RANGE_MOVE	30.0f
-#if __VER >= 9	//__AI_0509
 #define	RANGE_RETURN_TO_BEGIN	120.0F
-#endif	// __AI_0509
 
-#if __VER >= 9	//__AI_0509
 #define	TIMEGETTIME		g_tmCurrent
-#else	// __AI_0509
-#define	TIMEGETTIME		timeGetTime()
-#endif	// __AI_0509
 
 enum
 {
@@ -74,11 +68,7 @@ END_AISTATE_MAP()
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
-#if __VER >= 9	// __JEFF_9
 static DWORD s_tmAttack = SEC(15);		//  m_tmAttack 20초 
-#else	// __JEFF_9
-static DWORD s_tmAttack = SEC(20);		//  m_tmAttack 20초 
-#endif	// __JEFF_9
 
 CAIMonster::CAIMonster()
 {
@@ -102,22 +92,13 @@ void CAIMonster::Init()
 	m_tmAttack	= TIMEGETTIME + s_tmAttack;		// 공격 후 20초간 추적해옴.
 	m_vOldPos.x	= m_vOldPos.y = m_vOldPos.z = 0;
 	m_bRangeAttack	= FALSE;
-#if __VER < 12 // __NEW_SUMMON_RULE
-	memset( m_idSummon, NULL_ID, sizeof(m_idSummon) );
-#endif // __NEW_SUMMON_RULE
-#if __VER >= 12 // __SECRET_ROOM
 	m_tmSummon = TIMEGETTIME;
 	m_tmHelp = 0;
-#else // __SECRET_ROOM
-	m_tmSummon	= m_tmHelp = 0;
-#endif // __SECRET_ROOM
 	m_bLootMove	= FALSE;
 	m_idLootItem	= NULL_ID;
 	m_tmAttackDelay	= m_tmMove = m_tmReturnToBegin = TIMEGETTIME;
 	m_fAngleBegine	= 0.0f;
-#if __VER >= 9	//__AI_0509
 	m_vPosDamage	= D3DXVECTOR3( 0, 0, 0 );
-#endif	// __AI_0509
 }
 
 CAIMonster::~CAIMonster()
@@ -159,9 +140,7 @@ void CAIMonster::MoveToDst(	OBJID dwIdTarget )
 	if( pMover->GetDestId() == dwIdTarget )
 		return;
 
-#if __VER >= 9	//__AI_0509
 	GetMover()->SetSpeedFactor( 2.0F );
-#endif	// __AI_0509
 
 	CMover* pTarget	= prj.GetMover( dwIdTarget );
 	if( IsValidObj( pTarget ) )
@@ -290,21 +269,17 @@ void CAIMonster::DoReturnToBegin( BOOL bReturn )
 		m_bReturnToBegin	= TRUE;
 		m_tmReturnToBegin	= TIMEGETTIME;		// 돌아가라는 명령을 받은 시간 기록.
 		SetTarget( NULL_ID, 0 );
-#if __VER >= 9	//__AI_0509
 		CMover* pMover	= GetMover();
 		pMover->SetSpeedFactor( 2.66F );
-#endif	// __AI_0509
 		MoveToDst( m_vPosBegin );
 	}
 	else
 	{
 		m_bReturnToBegin	= FALSE;
 		SetTarget( NULL_ID, 0 );
-#if __VER >= 9	//__AI_0509
 		CMover* pMover	= GetMover();
 		pMover->SetPointParam( DST_HP, pMover->GetMaxHitPoint() );
 		pMover->RemoveAllEnemies();
-#endif	// __AI_0509
 	}
 }
 
@@ -336,38 +311,8 @@ BOOL CAIMonster::MoveProcessIdle( const AIMSG & msg )
 			DoReturnToBegin( FALSE );
 			SendAIMsg( AIMSG_ARRIVAL, NULL_ID );
 		}
-#if __VER < 9	//__AI_0509
-		else if( m_dwIdTarget != NULL_ID )	// 놀고있던 중에 전에 쫒던 적이 있으면 재공격
-		{
-			if( TIMEGETTIME - m_tmReturnToBegin > SEC(5) )		// 돌아가기 시작한지 5초는 지나야 다시 반격한다.
-			{
-				int nAttackFirstRange = pProp->m_nAttackFirstRange;		//??
-				CMover* pTarget = prj.GetMover( m_dwIdTarget );
-				if( IsValidObj(pTarget) )
-				{
-					D3DXVECTOR3 vDist = pTarget->GetPos() - pMover->GetPos();
-					FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
-					if( fDistSq < (float)(nAttackFirstRange * nAttackFirstRange) )	// 타겟이 거리내에 들어오면
-					{
 
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-						if( pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() || pMover->IsFlyingNPC() == FALSE )	
-#else	// __VER >= 8  
-						// this랑 타겟이랑 지상-지상, 비행-비행 이면 
-						if( pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() )	
-#endif	// __VER >= 8  
-							SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, NULL_ID );	// 다시 공격
-					}
-				}			
-			}
-		}
-#endif	// __AI_0509
-
-#if __VER >= 9	//__AI_0509
 		if( TIMEGETTIME - m_tmReturnToBegin >= SEC(20) )		// 집으로 돌아가기 시작한지 10초나 지났다.
-#else	// __AI_0509
-		if( TIMEGETTIME - m_tmReturnToBegin >= SEC(10) )		// 집으로 돌아가기 시작한지 10초나 지났다.
-#endif	// __AI_0509
 		{
 			// 제대로 못돌아가고 있다고 판단하고 시작지점으로 워프시킴.
 			pMover->SetPos( m_vPosBegin );
@@ -434,11 +379,7 @@ BOOL CAIMonster::MoveProcessIdle( const AIMSG & msg )
 				if( IsValidObj( (CObj*)pTarget ) )
 				{
 
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-					if( pMover->IsFlyingNPC() == FALSE || pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() || pProp->dwClass == RANK_GUARD )	// 가드는 무조건 공격.
-#else	// __VER >= 8  
 					if( (pMover->IsFlyingNPC() || pTarget->m_pActMover->IsFly() == FALSE) || pProp->dwClass == RANK_GUARD )	// 가드는 무조건 공격.
-#endif	// __VER >= 8  
 					{
 						// 타겟이 존재하면 추적 모드로 변경 
 						if( pTarget )	
@@ -486,17 +427,12 @@ BOOL CAIMonster::StateIdle( const AIMSG & msg )
 		//분노 모드로 변경
 
 		if( m_bReturnToBegin == FALSE
-#if __VER < 9	// __AI_0509
-			|| ( m_bReturnToBegin && ( TIMEGETTIME - m_tmReturnToBegin) > SEC(5) )
-#endif	// __AI_0509
 			)
 		{
 			MoveToDst( msg.dwParam1 );
 			SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, msg.dwParam1 );
 			m_tmAttack	= TIMEGETTIME + s_tmAttack;		// 대기중일때 공격받으면 20초 타이머 시작
-#if __VER >= 9	//__AI_0509
 			m_vPosDamage	= pMover->GetPos();
-#endif	// __AI_0509
 		}
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	OnMessage( AIMSG_DIE )		// 꽥!
@@ -607,17 +543,12 @@ BOOL CAIMonster::StateStand( const AIMSG & msg )
 		//분노 모드로 변경
 
 		if( m_bReturnToBegin == FALSE
-#if __VER < 9	// __AI_0509
-			|| ( m_bReturnToBegin && ( TIMEGETTIME - m_tmReturnToBegin) > SEC(5) ) 
-#endif	// __AI_0509
 			)
 		{
 			MoveToDst( msg.dwParam1 );
 			SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, msg.dwParam1 );
 			m_tmAttack	= TIMEGETTIME + s_tmAttack;		// 대기중일때 공격받으면 20초 타이머 시작
-#if __VER >= 9	//__AI_0509
 			m_vPosDamage	= pMover->GetPos();
-#endif	// __AI_0509
 		}
 
 
@@ -736,17 +667,12 @@ BOOL CAIMonster::StatePatrol( const AIMSG & msg )
 		//분노 모드로 변경
 
 		if( m_bReturnToBegin == FALSE
-#if __VER < 9	// __AI_0509
-			|| ( m_bReturnToBegin && ( TIMEGETTIME - m_tmReturnToBegin) > SEC(5) )
-#endif	// __AI_0509
 		)
 		{
 			MoveToDst( msg.dwParam1 );
 			SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, msg.dwParam1 );
 			m_tmAttack	= TIMEGETTIME + s_tmAttack;		// 대기중일때 공격받으면 20초 타이머 시작
-#if __VER >= 9	//__AI_0509
 			m_vPosDamage	= pMover->GetPos();
-#endif	// __AI_0509
 		}
 
 
@@ -796,32 +722,6 @@ BOOL CAIMonster::MoveProcessStand( const AIMSG & msg )
 			g_UserMng.AddSetDestAngle( pMover, m_fAngleBegine, 0 );			
 			SendAIMsg( AIMSG_ARRIVAL, NULL_ID );
 		}
-#if __VER < 9	// __AI_0509
-		else if( m_dwIdTarget != NULL_ID )	// 놀고있던 중에 전에 쫒던 적이 있으면 재공격
-		{
-			if( TIMEGETTIME - m_tmReturnToBegin > SEC(5) )		// 돌아가기 시작한지 5초는 지나야 다시 반격한다.
-			{
-				int nAttackFirstRange = pProp->m_nAttackFirstRange;		//??
-				CMover* pTarget = prj.GetMover( m_dwIdTarget );
-				if( IsValidObj(pTarget) )
-				{
-					D3DXVECTOR3 vDist = pTarget->GetPos() - pMover->GetPos();
-					FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
-					if( fDistSq < (float)(nAttackFirstRange * nAttackFirstRange) )	// 타겟이 거리내에 들어오면
-					{
-
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-						if( pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() || pMover->IsFlyingNPC() == FALSE )	
-#else	// __VER >= 8  
-						// this랑 타겟이랑 지상-지상, 비행-비행 이면 
-						if( pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() )	
-#endif	// __VER >= 8  
-							SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, NULL_ID );	// 다시 공격
-					}
-				}
-			}
-		}
-#endif	// __AI_0509
 
 #ifdef __AI_0905
 		if( TIMEGETTIME - m_tmReturnToBegin >= SEC(20) )
@@ -892,11 +792,7 @@ BOOL CAIMonster::MoveProcessStand( const AIMSG & msg )
 				if( IsValidObj( (CObj*)pTarget ) )
 				{
 
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-					if( pMover->IsFlyingNPC() == FALSE || pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() || pProp->dwClass == RANK_GUARD )	// 가드는 무조건 공격.
-#else	// __VER >= 8  
 					if( (pMover->IsFlyingNPC() || pTarget->m_pActMover->IsFly() == FALSE) || pProp->dwClass == RANK_GUARD )	// 가드는 무조건 공격.
-#endif	// __VER >= 8  
 					{
 						// 타겟이 존재하면 추적 모드로 변경 
 						if( pTarget )	
@@ -930,32 +826,6 @@ BOOL CAIMonster::MoveProcessPatrol( const AIMSG & msg )
 			DoReturnToBegin( FALSE );
 //			SendAIMsg( AIMSG_ARRIVAL, NULL_ID );
 		}
-#if __VER < 9	// __AI_0509
-		else if( m_dwIdTarget != NULL_ID )	// 놀고있던 중에 전에 쫒던 적이 있으면 재공격
-		{
-			if( TIMEGETTIME - m_tmReturnToBegin > SEC(5) )		// 돌아가기 시작한지 5초는 지나야 다시 반격한다.
-			{
-				int nAttackFirstRange = pProp->m_nAttackFirstRange;		//??
-				CMover* pTarget = prj.GetMover( m_dwIdTarget );
-				if( IsValidObj(pTarget) )
-				{
-					D3DXVECTOR3 vDist = pTarget->GetPos() - pMover->GetPos();
-					FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
-					if( fDistSq < (float)(nAttackFirstRange * nAttackFirstRange) )	// 타겟이 거리내에 들어오면
-					{
-
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-						if( pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() || pMover->IsFlyingNPC() == FALSE )	
-#else	// __VER >= 8  
-						// this랑 타겟이랑 지상-지상, 비행-비행 이면 
-						if( pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() )	
-#endif	// __VER >= 8  
-							SendAIMsg( AIMSG_SETSTATE, STATE_RAGE_PATROL, NULL_ID );	// 다시 공격
-					}
-				}
-			}
-		}
-#endif	// __AI_0509
 
 		if( TIMEGETTIME - m_tmReturnToBegin >= SEC(10) )	// 집으로 돌아가기 시작한지 10초나 지났다.
 		{
@@ -1029,11 +899,7 @@ BOOL CAIMonster::MoveProcessPatrol( const AIMSG & msg )
 				if( IsValidObj( (CObj*)pTarget ) )
 				{
 
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-					if( pMover->IsFlyingNPC() == FALSE || pMover->IsFlyingNPC() == pTarget->m_pActMover->IsFly() || pProp->dwClass == RANK_GUARD )	// 가드는 무조건 공격.
-#else	// __VER >= 8  
 					if( (pMover->IsFlyingNPC() || pTarget->m_pActMover->IsFly() == FALSE) || pProp->dwClass == RANK_GUARD )	// 가드는 무조건 공격.
-#endif	// __VER >= 8  
 					{
 						// 타겟이 존재하면 추적 모드로 변경 
 						if( pTarget )	
@@ -1434,7 +1300,6 @@ int CAIMonster::SelectAttackType( CMover *pTarget )
 	return nAttackType;
 }
 
-#if __VER >= 12 // __NEW_SUMMON_RULE
 // SummonAI가 있을때 소환을 시도한다. xx초 마다.
 void CAIMonster::SubSummonProcess( CMover *pTarget )
 {
@@ -1486,75 +1351,6 @@ void CAIMonster::SubSummonProcess( CMover *pTarget )
 		}
 	}
 }
-#else // __NEW_SUMMON_RULE
-void CAIMonster::SubSummonProcess( CMover *pTarget )
-{
-	if( TIMEGETTIME - m_tmSummon < SEC(20) )		// 20초마다 한번씩 소환을 시도.
-		return;
-
-	m_tmSummon = TIMEGETTIME;
-	
-	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	MoverProp *pProp = pMover->GetProp();
-	// 소환 AI
-	if( pProp->m_nSummProb )	// 값이 있으면 소환 AI가 있다.
-	{
-		BOOL bEmpty = TRUE;
-		for( int i = 0; i < MAX_SUMMON; i ++ )
-		{
-			if( m_idSummon[i] != NULL_ID )		
-			{
-				CMover *pZako = prj.GetMover( m_idSummon[i] );
-				if( IsValidObj(pZako) )
-				{
-					if( pZako->IsLive() )	// 그넘들이 살아있는지까지도 검사해야한다.
-						bEmpty = FALSE;		// 아직 소환되어 있는 애들이 있다.
-					else
-						m_idSummon[i] = NULL_ID;
-				} else
-					m_idSummon[i] = NULL_ID;
-			}
-		}
-		if( bEmpty == TRUE )	// 소환되어 있는 애들이 없는가?
-		{
-			if( xRandom(100) < pProp->m_nSummProb )	// 소환 시도.
-			{
-				if( pProp->m_nSummNum < 0 || pProp->m_nSummNum >= MAX_SUMMON )
-				{
-					Error( "SubSummonProcess : m_nSummNum의 값이 범위 초과 %d", pProp->m_nSummNum );
-					pProp->m_nSummNum = 0;
-				}
-				CObj* pObj = NULL;
-				D3DXVECTOR3 vLocal, vPos;
-				for( i = 0; i < pProp->m_nSummNum; i ++ )
-				{
-					pObj	= CreateObj( D3DDEVICE, OT_MOVER, (DWORD)pProp->m_nSummID );
-					if( NULL == pObj )	
-					{
-						Error( "SubSummonProcess : 소환 실패 %d", pProp->m_nSummID );
-						break;
-					}
-					vLocal.x = 1.5f - xRandomF( 3.0f );		// 보스 주위에 랜덤으로 생성.
-					vLocal.y = 0;
-					vLocal.z = 1.5f - xRandomF( 3.0f );
-					vPos = pMover->GetPos();
-					vPos += vLocal;
-					pObj->SetPos( vPos );
-					pObj->InitMotion( MTI_STAND );
-					pObj->UpdateLocalMatrix();
-					((CMover*)pObj)->m_bActiveAttack = TRUE;	// 부하는 선공 형으로 소환하자.
-					((CMover*)pObj)->AddItToGlobalId();
-					pWorld->AddObj( pObj, FALSE );
-					m_idSummon[i] = ((CMover *)pObj)->GetId();	// 소환한넘을 기억함.
-				}
-				
-			}
-			g_UserMng.AddDlgEmoticon( pMover, DLGEMOT_SUMMON );
-		}
-	}
-}
-#endif // __NEW_SUMMON_RULE
 
 
 
@@ -1573,53 +1369,37 @@ BOOL CAIMonster::MoveProcessRage( const AIMSG & msg )
 	DWORD dwAIState = pMover->m_dwAIInterfaceState;
 
 	if( IsValidObj( pTarget ) == FALSE || ((CMover*)pTarget)->IsDie()
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		|| pTarget->GetWorld() != pMover->GetWorld()
-#endif // __INSTANCE_DUNGEON
 		)	
 	{
-#if __VER >= 9	//__AI_0509
 		int nAttackFirstRange	= pProp->m_nAttackFirstRange;
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		CMover* pTarget	= NULL;
 		if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pWorld->GetID() ) )
 			pTarget	= ScanTargetNext( pMover, 160, m_dwIdTarget, m_uParty );
 		else
 			pTarget	= ScanTargetNext( pMover, 15, m_dwIdTarget, m_uParty );
-#else // __INSTANCE_DUNGEON
-		CMover* pTarget	= ScanTargetNext( pMover, 15/*nAttackFirstRange*/, m_dwIdTarget, m_uParty );
-#endif // __INSTANCE_DUNGEON
 		if( pTarget	== NULL )
 		{
-#endif	// __AI_0509
 			if( dwAIState == STATE_STAND )
 				DoReturnToBegin();	// SetTarget( NULL_ID, 0 );
 			SendAIMsg( AIMSG_SETSTATE, dwAIState );
 			return TRUE;
-#if __VER >= 9	//__AI_0509
 		}
 		else
 		{
 			SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, pTarget->GetId() );
 			return TRUE;
 		}
-#endif	// __AI_0509
 	}
 
-#if __VER >= 9	//__AI_0509
 	if( pTarget->IsRegionAttr( RA_SAFETY ) && pProp->dwClass != RANK_GUARD )	// 타겟 안전 영역 內
 	{
 		DoReturnToBegin();
 		SendAIMsg( AIMSG_SETSTATE, dwAIState );
 		return TRUE;
 	}
-#endif	// __AI_0509
 
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-	if( pMover->IsFlyingNPC() != ((CMover*)pTarget)->m_pActMover->IsFly() && pMover->IsFlyingNPC() )	
-#else	// __VER >= 8  
 	if( pMover->IsFlyingNPC() != ((CMover*)pTarget)->m_pActMover->IsFly() )	// this가 비행형이 아니고 상대가 비행중이라면
-#endif	// __VER >= 8  
 	{
 		if( dwAIState == STATE_STAND )
 			DoReturnToBegin();
@@ -1643,21 +1423,10 @@ BOOL CAIMonster::MoveProcessRage( const AIMSG & msg )
 				g_UserMng.AddSetPos( pMover, pMover->GetPos() );
 			} 
 		} 
-#if __VER < 9	// __AI_0509
-		else
-		{
-			m_tmReturnToBegin	= TIMEGETTIME;	// 다시 돌아갈땐 시간을 재기시작.  x초간은 맞아도 반격안하고 계속 간다.
-			if( dwAIState == STATE_STAND )
-				DoReturnToBegin();
-			SendAIMsg( AIMSG_SETSTATE, dwAIState );
-			return TRUE;
-		}
-#endif	// __AI_0509
 		m_vOldPos = pMover->GetPos();	// 현재 좌표를 저장함.
 	}
 
 	D3DXVECTOR3	vTargetTo = pTarget->GetPos() - pMover->GetPos();	
-#if __VER >= 9	//__AI_0509
 	// 마지막 피격 위치로 부터 40 미터 떨어지면 생성 위치로 돌아간다.
 	// 생성 위치로 부터 40 + 15 OR 45 미터 떨어지면 생성 위치로 돌아간다.
 	D3DXVECTOR3 v1	= pMover->GetPos() - m_vPosBegin;
@@ -1667,9 +1436,7 @@ BOOL CAIMonster::MoveProcessRage( const AIMSG & msg )
 		fRange	*= 3.0F;
 	
 	if( IsInRange( v1, RANGE_RETURN_TO_BEGIN + fRange ) == FALSE
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		&& !CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pWorld->GetID() )
-#endif // __INSTANCE_DUNGEON
 		)
 	{
 		DoReturnToBegin();
@@ -1681,32 +1448,15 @@ BOOL CAIMonster::MoveProcessRage( const AIMSG & msg )
 
 	D3DXVECTOR3 v2	= pMover->GetPos() - m_vPosDamage;
 	if( IsInRange( v2, RANGE_RETURN_TO_BEGIN ) == FALSE
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		&& !CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pWorld->GetID() )
-#endif // __INSTANCE_DUNGEON
 		)
 	{
 		DoReturnToBegin();
 		SendAIMsg( AIMSG_SETSTATE, dwAIState );
 		return TRUE;
 	}
-#else	// __AI_0509
-	// 만약 상대가 공격할 수 없는 곳에 있다면 공격 포기하고 돌아가자.
-	if( IsInRange( vTargetTo, RANGE_CANCEL ) == FALSE
-#if __VER >= 14 // __INSTANCE_DUNGEON
-		&& !CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pWorld->GetID() )
-#endif // __INSTANCE_DUNGEON
-		)
-	{
-		if( dwAIState == STATE_STAND )
-			DoReturnToBegin();	// SetTarget( NULL_ID, 0 );	// 타겟을 포기함.
-		SendAIMsg( AIMSG_SETSTATE, dwAIState );
-		return TRUE;
-	}
-#endif	// __AI_0509
 	else if( pTarget->GetType() == OT_MOVER && ((CMover *)pTarget)->IsMode( TRANSPARENT_MODE ) )		// 쫒고 있던 타겟이 투명화 상태가 되면 
 	{
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pWorld->GetID() ) )
 		{
 			CMover* pTarget = ScanTargetNext( pMover, 160, m_dwIdTarget, m_uParty );	// 범위 50미터 이내를 스캔한다.
@@ -1716,7 +1466,6 @@ BOOL CAIMonster::MoveProcessRage( const AIMSG & msg )
 				return TRUE;
 			}
 		}
-#endif // __INSTANCE_DUNGEON
 		if( dwAIState == STATE_STAND )
 			DoReturnToBegin();	// SetTarget( NULL_ID, 0 )// 타겟을 포기함.
 		SendAIMsg( AIMSG_SETSTATE, dwAIState );
@@ -1813,11 +1562,7 @@ BOOL CAIMonster::MoveProcessRagePatrol( const AIMSG & msg )
 		return TRUE;
 	}
 
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-	if( pMover->IsFlyingNPC() == TRUE && ((CMover*)pTarget)->m_pActMover->IsFly() == FALSE )	
-#else	// __VER >= 8  
 	if( pMover->IsFlyingNPC() == FALSE && ((CMover*)pTarget)->m_pActMover->IsFly() )	// this가 비행형이 아니고 상대가 비행중이라면
-#endif	// __VER >= 8  
 	{
 		DoReturnToBegin();
 		SendAIMsg( AIMSG_SETSTATE, dwAIState );
@@ -1859,7 +1604,6 @@ BOOL CAIMonster::MoveProcessRagePatrol( const AIMSG & msg )
 	}
 	else if( pTarget->GetType() == OT_MOVER && ((CMover *)pTarget)->IsMode( TRANSPARENT_MODE ) )		// 쫒고 있던 타겟이 투명화 상태가 되면 
 	{
-#if __VER >= 14 // __INSTANCE_DUNGEON
 		if( CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( pWorld->GetID() ) )
 		{
 			CMover* pTarget = ScanTargetNext( pMover, 160, m_dwIdTarget, m_uParty );	// 범위 50미터 이내를 스캔한다.
@@ -1869,7 +1613,6 @@ BOOL CAIMonster::MoveProcessRagePatrol( const AIMSG & msg )
 				return TRUE;
 			}
 		}
-#endif // __INSTANCE_DUNGEON
 
 		DoReturnToBegin();	// SetTarget( NULL_ID, 0 );	// 타겟을 포기함.
 		SendAIMsg( AIMSG_SETSTATE, dwAIState );
@@ -2008,9 +1751,7 @@ BOOL CAIMonster::StateRagePatrol( const AIMSG & msg )
 		else
 			m_bCallHelper = FALSE;
 
-#if __VER >= 9	//__AI_0509
 		m_vPosDamage	= pMover->GetPos();
-#endif	// __AI_0509
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	OnMessage( AIMSG_COLLISION )
@@ -2022,7 +1763,6 @@ BOOL CAIMonster::StateRagePatrol( const AIMSG & msg )
 	OnMessage( AIMSG_DSTDIE ) 
 		if( m_dwIdTarget == msg.dwParam1 )
 		{
-#if __VER >= 9	//__AI_0509
 			CMover* pTarget	= ScanTargetNext( pMover, /*pProp->m_nAttackFirstRange*/ 15, m_dwIdTarget, m_uParty );
 			if( pTarget )
 			{
@@ -2030,7 +1770,6 @@ BOOL CAIMonster::StateRagePatrol( const AIMSG & msg )
 				return TRUE;
 			}
 			else
-#endif	// __AI_0509
 			{
 				SetTarget( NULL_ID, 0 );
 			}
@@ -2078,7 +1817,6 @@ BOOL CAIMonster::StateRage( const AIMSG & msg )
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	OnMessage( AIMSG_INIT_TARGETCLEAR )		// 타겟을 클리어하고 대기모드로 돌아감.
-#if __VER >= 9	//__AI_0509
 		CMover* pTarget	= ScanTargetNext( pMover, /*pProp->m_nAttackFirstRange*/ 15, m_dwIdTarget, m_uParty );
 		if( pTarget )
 		{
@@ -2090,10 +1828,6 @@ BOOL CAIMonster::StateRage( const AIMSG & msg )
 			SetTarget( NULL_ID, 0 );
 			SendAIMsg( AIMSG_SETSTATE, dwAIState );
 		}
-#else	// __AI_0509
-		SetTarget( NULL_ID, 0 );
-		SendAIMsg( AIMSG_SETSTATE, dwAIState );
-#endif	// __AI_0509
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	OnMessage( AIMSG_PROCESS ) 
@@ -2138,9 +1872,7 @@ BOOL CAIMonster::StateRage( const AIMSG & msg )
 		else
 			m_bCallHelper = FALSE;
 
-#if __VER >= 9	//__AI_0509
 		m_vPosDamage	= pMover->GetPos();
-#endif	// __AI_0509
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	OnMessage( AIMSG_COLLISION )
@@ -2156,7 +1888,6 @@ BOOL CAIMonster::StateRage( const AIMSG & msg )
 	OnMessage( AIMSG_DSTDIE ) 
 		if( m_dwIdTarget == msg.dwParam1 )
 		{
-#if __VER >= 9	//__AI_0509
 			CMover* pTarget	= ScanTargetNext( pMover, /*pProp->m_nAttackFirstRange*/ 15, m_dwIdTarget, m_uParty );
 			if( pTarget )
 			{
@@ -2164,7 +1895,6 @@ BOOL CAIMonster::StateRage( const AIMSG & msg )
 				return TRUE;
 			}
 			else
-#endif	// __AI_0509
 			{
 				SetTarget( NULL_ID, 0 );
 			}
@@ -2290,9 +2020,7 @@ BOOL CAIMonster::StateRunaway( const AIMSG & msg )
 		if( m_bTargetNoMovePos == TRUE && m_bFirstRunaway == FALSE )
 			SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, NULL_ID );
 
-#if __VER >= 9	//__AI_0509
 		m_vPosDamage	= pMover->GetPos();
-#endif	// __AI_0509
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	OnMessage( AIMSG_COLLISION )
@@ -2312,7 +2040,6 @@ BOOL CAIMonster::StateRunaway( const AIMSG & msg )
 	OnMessage( AIMSG_DSTDIE ) 
 		if( m_dwIdTarget == msg.dwParam1 )
 		{
-#if __VER >= 9	//__AI_0509
 			CMover* pTarget	= ScanTargetNext( pMover, /*pProp->m_nAttackFirstRange*/ 15, m_dwIdTarget, m_uParty );
 			if( pTarget )
 			{
@@ -2320,7 +2047,6 @@ BOOL CAIMonster::StateRunaway( const AIMSG & msg )
 				return TRUE;
 			}
 			else
-#endif	// __AI_0509
 			{
 				SetTarget( NULL_ID, 0 );
 			}
@@ -2344,15 +2070,12 @@ BOOL CAIMonster::StateRunaway( const AIMSG & msg )
 void	CAIMonster::SetTarget( OBJID dwIdTarget, u_long uParty )
 {
 	m_dwIdTarget	= dwIdTarget;
-#if __VER >= 9	//__AI_0509
 	m_uParty	= uParty;
 	if( dwIdTarget == NULL_ID )
 		GetMover()->SetSpeedFactor( 1.0F );
-#endif	// __AI_0509
 }
 
 
-#if __VER >= 12 // __MONSTER_SKILL
 CMonsterSkill::CMonsterSkill()
 {
 
@@ -2531,7 +2254,6 @@ BOOL CMonsterSkill::ApplySkill( CMover* pAttacker, CMover* pTarget, DWORD dwAtkM
 	return TRUE;
 }
 
-#if __VER >= 14 // __INSTANCE_DUNGEON
 BOOL CMonsterSkill::MonsterTransform( CMover* pMover, int nMoverHP )
 {
 	if( !IsValidObj( pMover ) || !pMover->IsNPC() || pMover->GetProp()->m_MonsterTransform.dwMonsterId == NULL_ID )
@@ -2564,6 +2286,4 @@ BOOL CMonsterSkill::MonsterTransform( CMover* pMover, int nMoverHP )
 
 	return TRUE;
 }
-#endif // __INSTANCE_DUNGEON
 
-#endif // __MONSTER_SKILL

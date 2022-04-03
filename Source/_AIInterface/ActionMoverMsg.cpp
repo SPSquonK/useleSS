@@ -14,9 +14,7 @@
 	#include "..\_AIInterface\AIInterface.h"
 #endif	
 
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 #include "CreateMonster.h"
-#endif // __NEW_ITEMCREATEMON_SERVER
 
 
 
@@ -254,9 +252,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( GetMoveState() == OBJSTA_FMOVE && (int)pMover->GetAngle() == nParam1 )	return 0;	// 전진 상태이며 각도가 같으면 메시지 무효 
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	
 			return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		
 		if( GetState() & OBJSTA_DMG_FLY_ALL )	// 날라가는 동작중이면 취소
 			return 0;
@@ -275,9 +271,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 	case OBJMSG_TURNMOVE2:
 		if( GetMoveState() == OBJSTA_FMOVE && (int)pMover->GetAngle() == nParam1 )	return 0;	// 전진 상태이며 각도가 같으면 메시지 무효 
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		if( IsAction() )	return 0;
 
@@ -309,9 +303,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( GetMoveState() == OBJSTA_LMOVE )	return 0;	// 이미 전진상태면 추가로 처리 하지 않음
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetMoveState( OBJSTA_LMOVE );
 		if( IsStateFlag( OBJSTAF_WALK ) )	// 걷는모드
@@ -335,9 +327,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( GetMoveState() == OBJSTA_RMOVE )	return 0;	// 이미 전진상태면 추가로 처리 하지 않음
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetMoveState( OBJSTA_RMOVE );
 		if( IsStateFlag( OBJSTAF_WALK ) )	// 걷는모드
@@ -362,9 +352,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( GetMoveState() == OBJSTA_FMOVE )	return 0;	// 이미 전진상태면 추가로 처리 하지 않음
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetMoveState( OBJSTA_FMOVE );
 		if( IsStateFlag( OBJSTAF_WALK ) )	// 걷는모드
@@ -390,9 +378,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( GetMoveState() == OBJSTA_STOP_RUN )	return 0;	// 이미 전진상태면 추가로 처리 하지 않음
 		if( IsSit() )		return 0;						// 리턴 0으로 해도 되나?.
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;	// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetMoveState( OBJSTA_STOP_RUN );
 	#endif
@@ -408,9 +394,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( IsAction() )	return 0;
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetMoveState( OBJSTA_BMOVE );
 		pMover->SetMotion( MTI_WALK );		
@@ -427,9 +411,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( IsAction() )	return 0;
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetTurnState( OBJSTA_LTURN );
 		break;
@@ -444,9 +426,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( IsAction() )	return 0;
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetTurnState( OBJSTA_RTURN );
 		break;
@@ -467,9 +447,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( IsAction() )	return 0;
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetLookState( OBJSTA_LOOKUP );
 		break;
@@ -484,9 +462,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )		return 0;		// 리턴 0으로 해도 되나?.
 		if( IsAction() )	return 0;
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 		SetLookState( OBJSTA_LOOKDOWN );
 		break;
@@ -502,9 +478,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )			return 0;		// 리턴 0으로 해도 되나?.
 		if( IsAction() )		return 0;
 		if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 #ifdef __CLIENT
 		if( pMover->IsActiveMover() )
@@ -787,11 +761,9 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 
 			m_nCastingTime	= nParam3 * 4;	// ProcessAction은 서버/클라 호출 회수 동일하므로, SEC1 사용이 적당하지 않다.
 
-#if __VER >= 10 // __LEGEND	//	9차 전승시스템	Neuz, World, Trans
 			m_dwCastingEndTick = (DWORD)( GetTickCount() + nParam3 * 66.66F );
 			m_nCastingTick	= (int)( nParam3 * 66.66F );
 			m_nCastingSKillID = nParam4;
-#endif	//__LEGEND	//	9차 전승시스템	Neuz, World, Trans
 			if( m_nCastingTime > 0 )	// 캐스팅 타임이 있을때만...
 			{
 				m_nCount	= 0;	// 전체 캐스팅 타임은 동작1+동작2의 합이어야 하므로 여기서 카운터를 초기화 한다.
@@ -826,14 +798,10 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 
 			// 실제 가격한 데미지를 리턴함.
 			int nDamage = _ProcessMsgDmg( dwMsg, pAttacker, (DWORD)nParam1, nParam3, nParam4, nParam5 );	
-#if __VER >= 10	// __METEONYKER_0608
 #ifdef __WORLDSERVER
-#if __VER >= 12 // __NEW_ITEMCREATEMON_SERVER
 			if( pAttacker->IsPlayer() && CCreateMonster::GetInstance()->IsAttackAble( static_cast<CUser*>(pAttacker), pMover ) )
-#endif // __NEW_ITEMCREATEMON_SERVER
 #endif // __WORLDSERVER
 				pMover->PostAIMsg( AIMSG_DAMAGE, pAttacker->GetId(), nDamage );
-#endif	// __METEONYKER_0608
 			return nDamage;
 		}
 		break;
@@ -1049,9 +1017,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			if( IsAction() )	return 0;
 			if( IsActAttack() )	return 0;
 			if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 			{
 				CWorld* pWorld	= pMover->GetWorld();
@@ -1090,7 +1056,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 #endif
 
 		CModel* pModel = prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, (DWORD) nParam1 );
-#if __VER >= 14 // __WING_ITEM
 		CModelObject* pModelObject = (CModelObject*)pModel;
 		if( pModelObject->m_pBone )
 		{
@@ -1098,7 +1063,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			assert( strMotion != _T("") );
 			pModelObject->LoadMotion( strMotion );
 		}
-#endif // __WING_ITEM
 		m_pMover->SetRide( pModel, (DWORD) nParam1 );
 		break;
 	}
@@ -1110,9 +1074,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			if( IsActAttack() )	return 0;
 			if( IsActDamage() )	return 0;
 			if( pMover->m_dwFlag & MVRF_NOMOVE )	return 0;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 		if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 			AddStateFlag( OBJSTAF_ETC );		// 단순 모션 플레이 상태
 			m_nMotionEx = nParam1;				// 모션 인덱스
@@ -1191,10 +1153,8 @@ CMover* CActionMover::PreProcessDamage( CMover* pMover, OBJID idAttacker, BOOL b
 {
 	if( pMover->m_dwMode & MATCHLESS_MODE )		// 무적이면 여기서 리턴.	
 		return NULL;
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 	if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)
 		return NULL;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 	CCtrl* pCtrl = prj.GetCtrl( idAttacker );	// 공격자 
 	if( IsValidObj( pCtrl ) == FALSE )
@@ -1217,9 +1177,6 @@ CMover* CActionMover::PreProcessDamage( CMover* pMover, OBJID idAttacker, BOOL b
 	HITTYPE ht = pAttacker->GetHitType( pMover, bTarget, nReflect );
 	if( ht == HITTYPE_FAIL )
 		return 0;
-#if __VER < 10	// __METEONYKER_0608
-	pMover->PostAIMsg( AIMSG_DAMAGE, idAttacker ); 
-#endif	// __METEONYKER_0608
 
 #endif
 

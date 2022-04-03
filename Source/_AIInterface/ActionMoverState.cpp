@@ -16,9 +16,7 @@ extern	CDPClient	g_DPlay;
 extern	CUserMng			g_UserMng;
 #endif
 
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#include "honor.h"
-#endif	// __HONORABLE_TITLE			// 달인
 
 #include "party.h"
 extern	CParty g_Party;
@@ -93,9 +91,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 		{
 			if( pMover->m_dwFlag & MVRF_NOMOVE )	
 				break;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			break;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 			
 			FLOAT fT = pMover->GetAngle();
@@ -143,9 +139,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 		{
 			if( pMover->m_dwFlag & MVRF_NOMOVE )	
 				break;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			break;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 
 			FLOAT fT = pMover->GetAngle();
@@ -195,9 +189,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 		{
 			if( pMover->m_dwFlag & MVRF_NOMOVE )	
 				break;		// 이동금지 상태면 걍 리턴.
-#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
 			if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			break;
-#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
 
 			
 		if( IsStateFlag( OBJSTAF_WALK ) )		// 걷는모드
@@ -424,7 +416,6 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 			ResetState( OBJSTA_JUMP_ALL );
 			break;
 		}
-#if __VER >= 13 // __HONORABLE_TITLE			// 달인
 	#ifdef __WORLDSERVER
 #ifndef __MAINSERVER
 if(!pMover->IsPlayer())
@@ -433,7 +424,6 @@ if(!pMover->IsPlayer())
 		if(pMover->IsPlayer() )
             ((CUser*)pMover)->SetHonorAdd(HS_JUMP,HI_COUNT_CHECK);
 	#endif	// __WORLDSERVER
-#endif	// __HONORABLE_TITLE			// 달인
 		break;
 	//--------- 공격 ---------------------------
 	case OBJSTA_ATK1:
@@ -489,11 +479,7 @@ if(!pMover->IsPlayer())
 				m_vDelta.x = m_vDelta.z = 0;	// 떨어지면 걍 속도 없애자.
 				m_vDeltaE.x = m_vDelta.x;	// m_vDeltaE는 자동적으로 마찰이 계산된다.
 				m_vDeltaE.z = m_vDelta.z;
-#if __VER >= 15 // __BS_FIXED_KNOCKBACK
 				m_vDelta.y = 0.04f;
-#else
-				m_vDelta.y = 0.12f;	// bGround가 1이면 이미 .y값을 0으로 만들었기땜에 다시 상승 벡터를 넣어야 한다. 개선의 필요가 있음.
-#endif
 				SetState( OBJSTA_DMG_ALL, OBJSTA_DMG_DIE );	
 				pMover->SetMotion( MTI_DMGDIE, ANILOOP_CONT );		// 털썩! 떨어진후 쓰러져있는 모습
 				break;

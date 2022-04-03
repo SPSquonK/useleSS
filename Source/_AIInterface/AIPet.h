@@ -39,7 +39,6 @@ public:
 
 	BOOL SubItemLoot( void );
 
-#if __VER >= 12 // __PET_0519
 	// 주인과 먹펫 아이템 설정, 설정 시 각성 효과 적용
 	void	SetItem( CMover* pPlayer, CItemElem* pItem );
 	// 주인으로부터 먹펫 각성 효과 제거
@@ -53,7 +52,6 @@ private:
 	void	ResetSkill( CMover* pPlayer );	// 사용 예 없음
 	DWORD	m_dwSkillId;	// 사용 예 없음
 	OBJID	m_idPetItem;	// 먹펫 아이템 식별자
-#endif	// __PET_0519
 private:
 	BOOL	NotOwnedPetInactivated();
 

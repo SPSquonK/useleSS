@@ -1907,22 +1907,11 @@ HITTYPE	CMover::GetHitType( CMover* pMover, BOOL bTarget, int nReflect )
 			return HITTYPE_FAIL;
 
 		//TODO: IsFly()로 통합 
-		bool bAttackerFly = ( IsNPC() && IsFlyingNPC() ) || ( IsPlayer() && IsFly() );
-		bool bDefenderFly = ( pMover->IsNPC() && pMover->IsFlyingNPC() ) || ( pMover->IsPlayer() && pMover->IsFly() );
-
-
-#ifdef __JHMA_VER_8_6     // 8차 몬스터가 저공비행유저를 공격가능하게함   World
-	
-		if( bAttackerFly != bDefenderFly && bAttackerFly )
-			return HITTYPE_FAIL;
-
-#else	// __VER >= 8  
+		const bool bAttackerFly = ( IsNPC() && IsFlyingNPC() ) || ( IsPlayer() && IsFly() );
+		const bool bDefenderFly = ( pMover->IsNPC() && pMover->IsFlyingNPC() ) || ( pMover->IsPlayer() && pMover->IsFly() );
 
 		if( bAttackerFly != bDefenderFly )
 			return HITTYPE_FAIL;
-
-#endif	// __VER >= 8  
-
 
 		return HITTYPE_GENERIC;
 	}

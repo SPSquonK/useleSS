@@ -246,7 +246,6 @@
 //	#define		__JHMA_VER_8_1				// 8차 게임내돈드롭금지	Neuz, World 
 //	#define		__JHMA_VER_8_2				// 8차 게임내아이템판매가격제한풀기	Neuz, World
 //	#define		__JHMA_VER_8_5				// 8차 스킬경험치다운변경	Neuz, World
-//	#define		__JHMA_VER_8_6				// 8차 지상몬스터가 저공비행유저를 공격가능하게함   World
 //	#define		__JHMA_VER_8_7				// 8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
 //	#define		__JHMA_VER_8_5_1			// 8.5차 경비병 범위스킬 공격효과 불가로 수정 World
 //	#define		__JHMA_VER_8_5_2			// 8.5차 듀얼중인 두구룹이 연관되지않게 수정  World

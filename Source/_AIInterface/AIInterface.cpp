@@ -14,17 +14,13 @@ CAIInterface::CAIInterface()
 {
 	m_pObj = NULL;
 	m_pStateFunc = NULL;
-#if __VER >= 9	//__AI_0509
 	m_uParty	= 0;
-#endif	// __AI_0509
 }
 CAIInterface::CAIInterface( CObj* pObj ) 
 { 
 	m_pObj = pObj;
 	m_pStateFunc = NULL;
-#if __VER >= 9	//__AI_0509
 	m_uParty	= 0;
-#endif	// __AI_0509
 }
 
 CAIInterface::~CAIInterface()
@@ -99,7 +95,6 @@ void CAIInterface::SendAIMsg( DWORD dwMessage, DWORD dwParam1, DWORD dwParam2 )
 
 void CAIInterface::PostAIMsg( DWORD dwMessage, DWORD dwParam1, DWORD dwParam2 )
 {
-#if __VER >= 9	//__AI_0509
 	switch( dwMessage )
 	{
 		case AIMSG_ARRIVAL:
@@ -113,16 +108,8 @@ void CAIInterface::PostAIMsg( DWORD dwMessage, DWORD dwParam1, DWORD dwParam2 )
 			}
 		default:	SendAIMsg( dwMessage, dwParam1, dwParam2 );	break;
 	}
-#else	// __AI_0509
-	AIMSG msg;
-	msg.dwMessage	= dwMessage;
-	msg.dwParam1	= dwParam1;
-	msg.dwParam2	= dwParam2;
-	m_MsgQueue.push( msg );
-#endif	// __AI_0509
 }
 
-#if __VER >= 9	//__AI_0509
 CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTarget, u_long uParty )
 {
 	// 타겟이 없어졌을 때, 공격 조건을 만족하는 주변에 같은 파티원을 검색한다.
@@ -159,7 +146,6 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 	END_LINKMAP
 	return NULL;
 }
-#endif	// __AI_0509
 
 // pObjCenter를 중심으로 nRangeMeter반경내에 들어오는넘들중 가장먼저 걸리는 넘 골라냄/
 // nJobCond : 해당 직업만 감시함. 직업검사 안함.
@@ -212,20 +198,12 @@ CMover* CAIInterface::ScanTarget( CObj* pObjCenter, int nRangeMeter, int nJobCon
 				// 100 = 카오유저, 101 = 비카오
 				if( nChao == 100 )
 				{
-#if __VER >= 8 // __S8_PK
 					if( pTarget->IsChaotic() )
-#else // __VER >= 8 // __S8_PK
-					if( pTarget->IsGuardReactionChao() )
-#endif // __VER >= 8 // __S8_PK
 						nAble++;
 				}
 				else if( nChao == 101 )
 				{
-#if __VER >= 8 // __S8_PK
 					if( !pTarget->IsChaotic() )
-#else // __VER >= 8 // __S8_PK
-					if( pTarget->IsGuardReactionNormal() )
-#endif // __VER >= 8 // __S8_PK
 						nAble++;
 				}
 			}
@@ -235,11 +213,7 @@ CMover* CAIInterface::ScanTarget( CObj* pObjCenter, int nRangeMeter, int nJobCon
 			// 가드는 무조건 공격			
 			// 비행몹은 비행플레이어만 공격, 지상몹은 지상플레이어만만 공격 - 1. true true  2. false false
 
-#ifdef __JHMA_VER_8_6     // 8차 지상몬스터가 저공비행유저를 공격가능하게함   World
-			if( bGuard || bFlyMob == pTarget->IsFly() || bFlyMob == FALSE  )		
-#else	// __VER >= 8  
 			if( bGuard || bFlyMob == pTarget->IsFly() )		
-#endif	// __VER >= 8  
 			{
 				vDist = pTarget->GetPos() - vPos;				
 				if( D3DXVec3LengthSq( &vDist ) < fRadius )	// 두 객체간의 거리가 범위 이내이면 

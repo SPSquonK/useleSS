@@ -106,9 +106,7 @@ public:
 	virtual void	SendAIMsg( DWORD dwMessage, DWORD dwParam1 = 0, DWORD dwParam2 = 0 );
 	virtual void	PostAIMsg( DWORD dwMessage, DWORD dwParam1 = 0, DWORD dwParam2 = 0 );
 	virtual void	InitAI() { }
-#if __VER >= 9	//__AI_0509
 	virtual		BOOL	IsReturnToBegin( void )		{	return FALSE;	}
-#endif	// __AI_0509
 
 protected:
 	CMover* GetMover() { return (CMover*)m_pObj; }
@@ -118,10 +116,8 @@ protected:
 	CMover* ScanTarget( CObj* pObjCenter, int nRangeMeter = 5, int nJobCond = 0, DWORD dwQuest = 0, DWORD dwItem = 0, int nChao = 0 );
 	CMover* ScanTargetStrong( CObj* pObjCenter, FLOAT fRangeMeter );
 	CMover* ScanTargetOverHealer( CObj* pObjCenter, FLOAT fRangeMeter  );
-#if __VER >= 9	//__AI_0509
 	CMover*	ScanTargetNext( CObj* pObjCenter, int nRange,  OBJID dwIdTarget, u_long uParty );
 	u_long	m_uParty;
-#endif	// __AI_0509
 };
 //////////////////////////////////////////////////////////////////////////////
 
