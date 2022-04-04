@@ -703,8 +703,8 @@ BOOL CItemElem::IsActiveTicket( DWORD dwItemId )
 {
 	if( !IsFlag( expired ) && GetProp()->dwItemKind3 == IK3_TICKET && m_dwKeepTime > 0 )
 	{
-		TicketProp*	pProp1	= CTicketProperty::GetInstance()->GetTicketProp( m_dwItemId );
-		TicketProp*	pProp2	= CTicketProperty::GetInstance()->GetTicketProp( dwItemId );
+		const TicketProp*	const pProp1	= g_ticketProperties.GetTicketProp( m_dwItemId );
+		const TicketProp*	const pProp2	= g_ticketProperties.GetTicketProp( dwItemId );
 		return ( pProp1->dwWorldId == pProp2->dwWorldId );
 	}
 	return FALSE;

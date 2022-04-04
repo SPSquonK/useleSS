@@ -1,47 +1,40 @@
-#ifndef __TICKET_H__
-#define	__TICKET_H__
+#pragma once
 
-typedef	struct	_TicketProp
-{
+struct TicketProp {
 	DWORD	dwWorldId;
 	D3DXVECTOR3	vPos;
-}	TicketProp, *PTicketProp;
+};
 
 #ifdef __AZRIA_1023
-typedef struct	_LayerStruct
-{
+struct LayerStruct {
 	DWORD dwWorldId;
-	int		nExpand;
-}	LayerStruct;
-typedef vector<LayerStruct>	VLS;
-class CLayerProperty
-{
+	int nExpand;
+};
+
+class CLayerProperty final {
 public:
-	CLayerProperty();
-	virtual ~CLayerProperty();
-	BOOL	LoadScript();
-	int	GetExpanedLayer( DWORD dwWorldId );
+	BOOL LoadScript();
+	[[nodiscard]] int GetExpanedLayer(DWORD dwWorldId) const;
 private:
-	VLS	m_vLayers;
+	std::vector<LayerStruct> m_vLayers;
 };
 #endif	// __AZRIA_1023
 
-class CTicketProperty
-{
+class CTicketProperty final {
 public:
-	CTicketProperty();
-	virtual	~CTicketProperty();
-	static	CTicketProperty*	GetInstance();
-	TicketProp*	GetTicketProp( DWORD dwItemId );
-	BOOL	IsTarget( DWORD dwWorldId );
-	BOOL	LoadScript();
+	[[nodiscard]] const TicketProp * GetTicketProp(DWORD dwItemId) const;
+	[[nodiscard]] BOOL IsTarget(DWORD dwWorldId) const;
+	BOOL LoadScript();
 #ifdef __AZRIA_1023
-	int		GetExpanedLayer( DWORD dwWorldId )	{	return m_lp.GetExpanedLayer( dwWorldId );	}
+	[[nodiscard]] int GetExpanedLayer(DWORD dwWorldId) const {
+		return m_lp.GetExpanedLayer( dwWorldId );
+	}
 #endif	// __AZRIA_1023
 private:
-	map<DWORD, TicketProp>	m_mapTicketProp;
+	std::map<DWORD, TicketProp>	m_mapTicketProp;
 #ifdef __AZRIA_1023
-	CLayerProperty	m_lp;
+	CLayerProperty m_lp;
 #endif // __AZRIA_1023
 };
-#endif	// __TICKET_H__
+
+extern CTicketProperty g_ticketProperties;

@@ -9974,7 +9974,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	CItemElem* pItem	= static_cast<CItemElem*>( pItemBase );
 	if( !pItem->IsFlag( CItemElem::expired ) )
 	{
-		TicketProp* pTicketProp	= CTicketProperty::GetInstance()->GetTicketProp( pItemProp->dwID );
+		const TicketProp * const pTicketProp = g_ticketProperties.GetTicketProp(pItemProp->dwID);
 		if( pTicketProp && g_pPlayer )
 		{
 			if( g_pPlayer->GetWorld()->GetID() == pTicketProp->dwWorldId )
@@ -9988,7 +9988,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			else
 			{
 				// 확장 레이어 개수
-				int nExpand	= CTicketProperty::GetInstance()->GetExpanedLayer( pTicketProp->dwWorldId );
+				const int nExpand	= g_ticketProperties.GetExpanedLayer( pTicketProp->dwWorldId );
 				/*
 				1. 개요
 					입장권 아이템에 정의된 레이어 선택 창을 출력한다.(CDPClient::SendDoUseItem에서 __AZRIA_1023이 있는 곳에서)

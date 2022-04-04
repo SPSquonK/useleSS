@@ -1938,7 +1938,7 @@ void CWorld::Expand()
 {
 	m_respawner.Expand( nDefaultLayer );
 #ifdef __AZRIA_1023
-	int nExpand	= CTicketProperty::GetInstance()->GetExpanedLayer( GetID() );
+	const int nExpand = g_ticketProperties.GetExpanedLayer(GetID());
 	for( int nLayer = -1, i = 0; i < nExpand; i++, nLayer-- )
 		CreateLayer( nLayer );
 #endif	// __AZRIA_1023

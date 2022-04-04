@@ -375,7 +375,7 @@ void CUser::Process()
 #ifdef __SYS_TICKET
 	if( ( m_nCount & 15 ) == 0 )
 	{
-		if( GetWorld() && CTicketProperty::GetInstance()->IsTarget( GetWorld()->GetID() ) )
+		if( GetWorld() && g_ticketProperties.IsTarget( GetWorld()->GetID() ) )
 		{
 			CItemElem* pTicket	= GetTicket();
 			if( !pTicket )
@@ -3051,13 +3051,13 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 				g_DPSrvr.OnLogItem( log, pItemElem, 1 );
 			}
 		}
-		CTicketProperty* pProperty	= CTicketProperty::GetInstance();
-		TicketProp* pTicketProp		= pProperty->GetTicketProp( pItemElem->m_dwItemId );
+		
+		const TicketProp * const pTicketProp = g_ticketProperties.GetTicketProp(pItemElem->m_dwItemId);
 		if( pTicketProp )
 		{
 #ifdef __AZRIA_1023
 			int nLayer	= ::atoi( GetInput() );
-			int nExpand	= CTicketProperty::GetInstance()->GetExpanedLayer( pTicketProp->dwWorldId );
+			int nExpand	= g_ticketProperties.GetExpanedLayer( pTicketProp->dwWorldId );
 			if( nLayer <= 0 && nLayer >= -nExpand )
 			{
 				DoApplySkill( (CCtrl*)this, pItemProp, NULL );

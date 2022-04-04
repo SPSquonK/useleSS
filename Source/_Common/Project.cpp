@@ -562,12 +562,13 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	CCollectingProperty::GetInstance()->LoadScript( "collecting.inc" );
 	CAccessoryProperty::GetInstance()->LoadScript( "accessory.inc" );
 	g_xRandomOptionProperty->LoadScript( "randomoption.inc" );
+
 #ifdef __SYS_TICKET
 #ifdef __AZRIA_1023
-	CTicketProperty::GetInstance()->LoadScript();
+	g_ticketProperties.LoadScript();
 #else	// __AZRIA_1023
 	#ifdef __WORLDSERVER
-	CTicketProperty::GetInstance()->LoadScript();
+	g_ticketProperties.LoadScript();
 	#endif	// __WORLDSERVER
 #endif	// __AZRIA_1023
 #endif	// __SYS_TICKET

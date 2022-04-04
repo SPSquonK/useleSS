@@ -1,38 +1,25 @@
 #include "stdafx.h"
+#include <algorithm>
 #include "ticket.h"
 
-CTicketProperty::CTicketProperty()
-{
+CTicketProperty g_ticketProperties;
+
+BOOL CTicketProperty::IsTarget(DWORD dwWorldId) const {
+	const auto it = std::find_if(
+		m_mapTicketProp.begin(), m_mapTicketProp.end(),
+		[dwWorldId](const auto & pair) {
+			return pair.second.dwWorldId == dwWorldId;
+		}
+	);
+
+	return (it != m_mapTicketProp.end()) ? TRUE : FALSE;
 }
 
-CTicketProperty::~CTicketProperty()
-{
-	m_mapTicketProp.clear();
+const TicketProp * CTicketProperty::GetTicketProp(DWORD dwItemId) const {
+	auto i = m_mapTicketProp.find(dwItemId);
+	return i != m_mapTicketProp.end() ? &i->second : nullptr;
 }
 
-BOOL	CTicketProperty::IsTarget( DWORD dwWorldId )
-{
-	for( map<DWORD, TicketProp>::iterator i = m_mapTicketProp.begin(); i != m_mapTicketProp.end(); ++i )
-	{
-		if( i->second.dwWorldId == dwWorldId )
-			return TRUE;
-	}
-	return FALSE;
-}
-
-TicketProp*	CTicketProperty::GetTicketProp( DWORD dwItemId )
-{
-	map<DWORD, TicketProp>::iterator i	= m_mapTicketProp.find( dwItemId );
-	if( i != m_mapTicketProp.end() )
-		return &i->second;
-	return NULL;
-}
-
-CTicketProperty*	CTicketProperty::GetInstance( void )
-{
-	static	CTicketProperty sTicketProperty;
-	return &sTicketProperty;
-}
 
 BOOL	CTicketProperty::LoadScript()
 {
@@ -58,14 +45,6 @@ BOOL	CTicketProperty::LoadScript()
 }
 
 #ifdef __AZRIA_1023
-CLayerProperty::CLayerProperty()
-{
-}
-
-CLayerProperty::~CLayerProperty()
-{
-}
-
 BOOL CLayerProperty::LoadScript()
 {
 	CScript s;
@@ -83,11 +62,13 @@ BOOL CLayerProperty::LoadScript()
 	return TRUE;
 }
 
-int CLayerProperty::GetExpanedLayer( DWORD dwWorldId )
-{
-	for( VLS::iterator i = m_vLayers.begin(); i != m_vLayers.end(); ++i )
-		if( ( *i ).dwWorldId == dwWorldId )
-			return ( *i ).nExpand;
-	return 0;
+int CLayerProperty::GetExpanedLayer(DWORD dwWorldId) const {
+	const auto it = std::find_if(m_vLayers.begin(), m_vLayers.end(),
+		[dwWorldId](const LayerStruct & layerStruct) {
+			return layerStruct.dwWorldId == dwWorldId;
+		}
+	);
+
+	return it != m_vLayers.end() ? it->nExpand : 0;
 }
 #endif	// __AZRIA_1023
