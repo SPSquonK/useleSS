@@ -63,6 +63,10 @@ class		CModel;
 struct		ObjProp;
 class		CAr;
 
+#if defined(__WORLDSERVER) || defined(__CLIENT)
+class CMover;
+#endif
+
 /// 지형 위에 들어가는 모든 객체의 Base
 class CObj  
 { 
@@ -151,6 +155,11 @@ public:
 	#define	MAX_LINKTYPE	4
 	enum	{	linkStatic	= 0, linkDynamic	= 1, linkPlayer	= 2,	linkAirShip		= 3,	};
 
+#if defined(__WORLDSERVER) || defined(__CLIENT)
+	CMover * ToMover();
+	const CMover * ToMover() const;
+#endif
+
 public:
 	static BOOL		IsAnimate()						{ return m_bAnimate; }
 	static void		AnimateEnable( BOOL bAnimate )	{ m_bAnimate = bAnimate; }
@@ -201,7 +210,7 @@ public:
 
 	void			SetAIInterface( DWORD dwAIInterface, DWORD dwState = 2 );
 	ObjProp*		GetProp();
-	DWORD			GetType() { return m_dwType; }
+	[[nodiscard]] DWORD GetType() const { return m_dwType; }
 	DWORD			GetIndex() { return m_dwIndex; }
 	BOOL			SetTypeIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );
 	void			ProcessAI();

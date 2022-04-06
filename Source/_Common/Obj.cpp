@@ -1011,4 +1011,16 @@ void CObj::CalcLinkLevel()
 #endif // !__WORLDSERVER
 }
 
+#if defined(__WORLDSERVER) || defined(__CLIENT)
 
+CMover * CObj::ToMover() {
+	if (GetType() != OT_MOVER) return nullptr;
+	return static_cast<CMover *>(this);
+}
+
+const CMover * CObj::ToMover() const {
+	if (GetType() != OT_MOVER) return nullptr;
+	return static_cast<const CMover *>(this);
+}
+
+#endif
