@@ -996,7 +996,7 @@ void CDPSrvr::OnSetLodelight( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_MARKING, pUser->GetWorld(), pUser->GetPos() ) )
+		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_MARKING, pUser) )
 			return;
 		pUser->SetMarkingPos();
 		pUser->AddDefinedText( TID_GAME_LODELIGHT, "" );
@@ -2528,7 +2528,7 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
 			return;
 
-		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TRADE, pUser->GetWorld(), pUser->GetPos() ) )
+		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TRADE, pUser ) )
 			return;
 
 		CItemElem* pItemElem = pVendor->m_ShopInventory[cTab]->GetAtId( nId );
@@ -2646,7 +2646,7 @@ void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
 			return;
 
-		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TRADE, pUser->GetWorld(), pUser->GetPos() ) )
+		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TRADE, pUser) )
 			return;
 
 		CItemElem* pItemElem = pVendor->m_ShopInventory[cTab]->GetAtId( nId );
@@ -2767,7 +2767,7 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 		if( pUser->m_vtInfo.GetOther()->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
 			return;
 
-		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TRADE, pUser->GetWorld(), pUser->GetPos() ) )
+		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TRADE, pUser) )
 			return;
 
 		CItemElem* pItemElem = pUser->m_Inventory.GetAtId( nId );		
@@ -2857,7 +2857,7 @@ void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser->GetWorld(), pUser->GetPos() ) )
+		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser) )
 			return;
 		if( pUser->IsChaotic() )
 		{
@@ -3091,7 +3091,7 @@ void CDPSrvr::OnPutItemBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	{
 		if( !pUser->m_bInstantBank )
 		{
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser) )
 				return;
 		}
 
@@ -3186,7 +3186,7 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	if( IsValidObj( pUser ) )
 	{
 		if( !pUser->GetWorld() || !GuildHouseMng->IsGuildHouse( pUser->GetWorld()->GetID() ) )
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDBANKING, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDBANKING, pUser) )
 				return;
 
 		if( mode == 0 ) // 길드창고에는 Gold를 넣을수 없습니다.
@@ -3273,7 +3273,7 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	if( IsValidObj( pUser ) )
 	{
 		if( !pUser->GetWorld() || !GuildHouseMng->IsGuildHouse( pUser->GetWorld()->GetID() ) )
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDBANKING, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDBANKING, pUser) )
 				return;
 		
 		if (mode == 0) // Gold를 길드창고에서 빼낼때
@@ -3444,7 +3444,7 @@ void CDPSrvr::OnGetItemBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	{
 		if( !pUser->m_bInstantBank )
 		{
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser) )
 				return;
 		}
 		if( pUser->m_nSlot == nSlot || ( pUser->m_idPlayerBank[nSlot] != 0 && pUser->IsCommBank() ) )
@@ -3504,7 +3504,7 @@ void CDPSrvr::OnPutGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpb
 	{
 		if( !pUser->m_bInstantBank )
 		{
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser) )
 				return;
 		}
 		if( pUser->m_nSlot == nSlot || ( pUser->m_idPlayerBank[nSlot] != 0 && pUser->IsCommBank() ) )
@@ -3557,7 +3557,7 @@ void CDPSrvr::OnGetGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpb
 	{
 		if( !pUser->m_bInstantBank )
 		{
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser ) )
 				return;
 		}
 		if( pUser->m_nSlot == nSlot || ( pUser->m_idPlayerBank[nSlot] != 0 && pUser->IsCommBank() ) )
@@ -3652,7 +3652,7 @@ void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		DWORD dwId, dwItemId;
 		ar >> dwId >> dwItemId;
 
-		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser->GetWorld(), pUser->GetPos() ) )
+		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BANKING, pUser) )
 				return;
 
 		if( 0 == strcmp( szPass, pUser->m_szBankPass ) )
@@ -6155,7 +6155,7 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 				return;
 			}
 
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_POST, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_POST, pUser) )
 			{
 				return;
 			}
@@ -6680,7 +6680,7 @@ void CDPSrvr::OnGCJoin( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDWAR_JOIN, pUser->GetWorld(), pUser->GetPos() ) )
+		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDWAR_JOIN, pUser) )
 			return;
 		g_GuildCombatMng.GuildCombatEnter( pUser );
 	}
@@ -7963,7 +7963,7 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_MINIROOM )
 			return;
 
-		if( CNpcChecker::GetInstance()->IsCloseNpc( pUser->GetWorld(), pUser->GetPos() ) )
+		if( CNpcChecker::GetInstance()->IsCloseNpc(pUser) )
 		{
 			// NPC근처 개인 상점 불가(3m) - 시도 시 확인창이 생성 되도록 처리
 			pUser->AddDiagText( prj.GetText( TID_GAME_NPC_RADIUS ) );
@@ -8894,7 +8894,7 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		}
 
 		// 펫 테이머에 의한 먹이 제조 시, 펫 테이머와 인접해 있지 않으면 무시
-		if( bTool == FALSE && CNpcChecker::GetInstance()->IsCloseNpc( MMI_PET_FOODMILL, pUser->GetWorld(), pUser->GetPos() ) == FALSE )
+		if( bTool == FALSE && CNpcChecker::GetInstance()->IsCloseNpc( MMI_PET_FOODMILL, pUser) == FALSE )
 			return;
 
 		CItemElem* pMaterial	= (CItemElem*)pUser->GetItemId( dwMaterialId );
@@ -9708,7 +9708,7 @@ void	CDPSrvr::OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) ) 
 	{
-		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BLESSING_CANCEL, pUser->GetWorld(), pUser->GetPos() ) )
+		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_BLESSING_CANCEL, pUser) )
 			return;
 
 		int nItem;
@@ -9745,7 +9745,7 @@ void	CDPSrvr::OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) ) 
 	{
-		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_ITEM_AWAKENING, pUser->GetWorld(), pUser->GetPos() ) )
+		if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_ITEM_AWAKENING, pUser) )
 			return;
 
 		const int	nCost	= 100000;
@@ -9802,7 +9802,7 @@ void	CDPSrvr::OnNPCBuff( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		
 		if( lpChar )
 		{
-			if( !CNpcChecker::GetInstance()->IsCloseNpc(MMI_NPC_BUFF, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc(MMI_NPC_BUFF, pUser) )
 				return;
 
 			vector<NPC_BUFF_SKILL> vecNPCBuff = lpChar->m_vecNPCBuffSkill;
@@ -10045,7 +10045,7 @@ void CDPSrvr::OnTeleportSecretRoomDungeon( CAr & ar, DPID dpidCache, DPID dpidUs
 
 	if( IsValidObj( pUser ) == FALSE )
 		return;
-	if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_SECRET_ENTRANCE_1, pUser->GetWorld(), pUser->GetPos() ) )
+	if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_SECRET_ENTRANCE_1, pUser) )
 		return;
 
 	__TAXINFO* pTaxInfo = CTax::GetInstance()->GetTaxInfo( CTax::GetInstance()->GetContinent( pUser ) );
@@ -10222,7 +10222,7 @@ void CDPSrvr::OnTeleportToHeavenTower( CAr & ar, DPID dpidCache, DPID dpidUser, 
 	if( !IsValidObj( pUser ) )
 		return;
 
-	if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_HEAVEN_TOWER, pUser->GetWorld(), pUser->GetPos() ) )
+	if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_HEAVEN_TOWER, pUser) )
 		return;
     	
 	int nFloor;
@@ -10484,7 +10484,7 @@ void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUse
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( !IsValidObj( pUser ) )
 		return;
-	if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_PET_AWAK_CANCEL, pUser->GetWorld(), pUser->GetPos() ) )
+	if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_PET_AWAK_CANCEL, pUser) )
 		return;
 
 	DWORD dwItem;
@@ -10823,7 +10823,7 @@ void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, 
 		LPCHARACTER lpChar = prj.GetCharacter( m_szKey );
 		if( lpChar )
 		{
-			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TELEPORTER, pUser->GetWorld(), pUser->GetPos() ) )
+			if( !CNpcChecker::GetInstance()->IsCloseNpc( MMI_TELEPORTER, pUser) )
 				return;
 
 			if( (int)( lpChar->m_vecTeleportPos.size() ) <= nIndex )

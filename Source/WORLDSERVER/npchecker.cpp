@@ -1,93 +1,73 @@
 #include "stdafx.h"
 #include "npchecker.h"
 
-CNpcChecker::CNpcChecker()
-{
-}
-
-CNpcChecker::~CNpcChecker()
-{
-}
-
-CNpcChecker* CNpcChecker::GetInstance( void )
-{
-	static	CNpcChecker	sNpcChecker;
+CNpcChecker * CNpcChecker::GetInstance(void) {
+	static CNpcChecker	sNpcChecker;
 	return &sNpcChecker;
 }
 
-void CNpcChecker::AddNpc( CObj* pObj )
-{
-	if( pObj->GetType() != OT_MOVER )
-		return;
-	CMover* pNpc	= (CMover*)pObj;
-	if( !pNpc->IsNPC() )
-		return;
-	LPCHARACTER	pCharacter	= pNpc->GetCharacter();
-	if( !pCharacter )
-		return;
-
-	for( int i = 0; i < MAX_MOVER_MENU; i++ )
-	{
-		if( pCharacter->m_abMoverMenu[i] )
-			m_aset[i].insert( pNpc->GetId() );
-	}
+void CNpcChecker::RemoveFrom(std::set<OBJID> & set, const OBJID id) {
+	auto it = set.find(id);
+	if (it != set.end()) set.erase(it);
 }
 
-void CNpcChecker::RemoveNpc( CObj* pObj )
-{
-	if( pObj->GetType() != OT_MOVER )
-		return;
-	CMover* pNpc	= (CMover*)pObj;
-	if( !pNpc->IsNPC() )
-		return;
-	LPCHARACTER	pCharacter	= pNpc->GetCharacter();
-	if( !pCharacter )
-		return;
+void CNpcChecker::AddNpc(CObj * const pObj) {
+	CMover * pNpc = pObj->ToMover();
+	if (!pNpc) return;
 
-	OBJID objid		= pNpc->GetId();
-	for( int j = 0; j < MAX_MOVER_MENU; j++ )
-	{
-		set<OBJID>::iterator	i = m_aset[j].find( objid );
-		if( i != m_aset[j].end() )
-			m_aset[j].erase( i );		
-	}
-}
+	const CHARACTER * pCharacter = pNpc->GetCharacter();
+	if (!pCharacter) return;
 
-BOOL CNpcChecker::IsCloseNpc( int nMenu, CWorld* pWorld, const D3DXVECTOR3 & v )
-{
-// CProject::m_AddRemoveLock
-	for( set<OBJID>::iterator i = m_aset[nMenu].begin(); i != m_aset[nMenu].end(); ++i )
-	{
-		CMover* pNpc	= prj.GetMover( *i );
-		if( IsValidObj( pNpc ) )
-		{
-			if( pWorld != pNpc->GetWorld() )
-				continue;
-			D3DXVECTOR3 vOut	= v - pNpc->GetPos();
-			if( fabs( (double)D3DXVec3LengthSq( &vOut ) ) < MAX_LEN_MOVER_MENU )
-				return TRUE;
+	const OBJID objid = pNpc->GetId();
+	bool atLeastOne = false;
+	for (int i = 0; i < MAX_MOVER_MENU; ++i) {
+		if (pCharacter->m_abMoverMenu[i]) {
+			m_perMenu[i].insert(objid);
+			atLeastOne = true;
 		}
 	}
-	return FALSE;
+
+	if (atLeastOne) {
+		m_all.insert(objid);
+	}
 }
 
-BOOL CNpcChecker::IsCloseNpc( CWorld* pWorld, const D3DXVECTOR3 & v )
-{
-	for( int nMenu = 0; nMenu < MAX_MOVER_MENU; nMenu++ )
-	{
-		for( set<OBJID>::iterator i = m_aset[nMenu].begin(); i != m_aset[nMenu].end(); ++i )
-		{
-			CMover* pNpc	= prj.GetMover( *i );
-			if( IsValidObj( pNpc ) )
-			{
-				if( pWorld != pNpc->GetWorld() )
-					continue;
-				D3DXVECTOR3 vOut	= v - pNpc->GetPos();
-				vOut.y = 0.0f;
-				if( fabs( (double)D3DXVec3LengthSq( &vOut ) ) < MAX_NPC_RADIUS )
-					return TRUE;
-			}
-		}
+void CNpcChecker::RemoveNpc(CObj * const pObj) {
+	CMover * pNpc = pObj->ToMover();
+	if (!pNpc) return;
+
+	const CHARACTER * pCharacter = pNpc->GetCharacter();
+	if (!pCharacter) return;
+
+	const OBJID objid = pNpc->GetId();
+	for (int j = 0; j < MAX_MOVER_MENU; ++j) {
+		RemoveFrom(m_perMenu[j], objid);
 	}
-	return FALSE;
+
+	RemoveFrom(m_all, objid);
+}
+
+BOOL CNpcChecker::IsCloseNpc(int nMenu, const CObj * const pObj) const {
+	return (HasNear(m_perMenu[nMenu], pObj, MAX_LEN_MOVER_MENU)) ? TRUE : FALSE;
+}
+
+BOOL CNpcChecker::IsCloseNpc(const CObj * const pObj) const {
+	return (HasNear(m_all, pObj, MAX_NPC_RADIUS)) ? TRUE : FALSE;
+}
+
+bool CNpcChecker::HasNear(const std::set<OBJID> & objIds, const CObj * const pObj, const double maxDistance) {
+	const CWorld * const pWorld = pObj->GetWorld();
+	const D3DXVECTOR3 v = pObj->GetPos();
+
+	for (const auto objId : objIds) {
+		const CMover * const pOther = prj.GetMover(objId);
+		if (pWorld != pOther->GetWorld()) continue;
+
+		D3DXVECTOR3 vOut = v - pOther->GetPos();
+		vOut.y = 0.0f;
+
+		if (fabs((D3DXVec3LengthSq(&vOut))) < maxDistance) return true;
+	}
+
+	return false;
 }

@@ -219,13 +219,13 @@ public:
 	void			Delete();
 
 	void			SetPos( const D3DXVECTOR3& vPos ); 
-	D3DXVECTOR3		GetPos()	{ return m_vPos; }
+	[[nodiscard]] D3DXVECTOR3 GetPos() const { return m_vPos; }
 	void			SetAngle( FLOAT fAngle );
 	FLOAT			GetAngle()	{ return m_fAngle; }
 	void			AddAngle( FLOAT fAngle );
 	void			SetScale( const D3DXVECTOR3& vScale ); 
 	D3DXVECTOR3		GetScale()	{ return m_vScale; }
-	CWorld*			GetWorld()	{ return m_pWorld; }
+	[[nodiscard]] CWorld * GetWorld() const { return m_pWorld; }
 	void			SetWorld( CWorld* pWorld );
 	CModel*			GetModel()	{ return m_pModel; }
 	BOOL			Pick( D3DXVECTOR3* pPickRayOrg, D3DXVECTOR3* pPickRayDir, D3DXVECTOR3* pvIntersect, 

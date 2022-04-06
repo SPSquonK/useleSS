@@ -1,21 +1,27 @@
-#ifndef __NPCHECKER_H__
-#define	__NPCHECKER_H__
+#pragma once
 
-#define	MAX_LEN_MOVER_MENU	1024	// 32
-#define	MAX_NPC_RADIUS	9	// 3
+#include <array>
 
-class CNpcChecker
-{
+/* Max distance to open an NPC menu */
+static constexpr double MAX_LEN_MOVER_MENU = 1024.;
+
+/* Min distance with nearest NPC to open a shop */
+static constexpr double MAX_NPC_RADIUS = 9.;
+
+class CObj;
+
+class CNpcChecker final {
 public:
-	CNpcChecker();
-	virtual	~CNpcChecker();
-	static	CNpcChecker*	GetInstance( void );
-	void	AddNpc( CObj* pObj );
-	void	RemoveNpc( CObj* pObj );
-	BOOL	IsCloseNpc( int nMenu, CWorld* pWorld, const D3DXVECTOR3 & v );
-	BOOL	IsCloseNpc( CWorld* pWorld, const D3DXVECTOR3 & v );
-private:
-	set<OBJID>	m_aset[MAX_MOVER_MENU];
-};
+	static CNpcChecker * GetInstance();
+	void AddNpc(CObj * pObj);
+	void RemoveNpc(CObj * pObj);
+	[[nodiscard]] BOOL IsCloseNpc(int nMenu, const CObj * obj) const;
+	[[nodiscard]] BOOL IsCloseNpc(const CObj * obj) const;
 
-#endif	// __NPCHECKER_H__
+private:
+	std::array<std::set<OBJID>, MAX_MOVER_MENU> m_perMenu;
+	std::set<OBJID> m_all;
+
+	static bool HasNear(const std::set<OBJID> & objIds, const CObj * pObj, double maxDistance);
+	static void RemoveFrom(std::set<OBJID> & set, OBJID id);
+};
