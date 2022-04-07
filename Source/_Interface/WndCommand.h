@@ -1,24 +1,19 @@
-#ifndef __WNDCOMMAND__H
-#define __WNDCOMMAND__H
+#pragma once
 
-class CWndCommand : public CWndListBox //CWndNeuz 
-{ 
+class CWndCommand final : public CWndListBox {
 public: 
-	CWndBase* m_pWndEdit;
+	CWndBase * m_pWndEdit = nullptr;
 
-	CWndCommand(); 
-	~CWndCommand(); 
+	~CWndCommand() override = default;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);
-	virtual void OnSetFocus( CWndBase* pOldWnd );
-	virtual void OnKillFocus(CWndBase* pNewWnd);
-}; 
-#endif
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
+	void OnLButtonUp(UINT nFlags, CPoint point) override;
+	void OnLButtonDblClk(UINT nFlags, CPoint point) override;
+	void OnSetFocus(CWndBase * pOldWnd) override;
+	void OnKillFocus(CWndBase * pNewWnd) override;
+
+private:
+	void DrawKoreanDescription(C2DRender * p2DRender);
+};

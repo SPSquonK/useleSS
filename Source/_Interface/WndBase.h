@@ -62,6 +62,11 @@ static CPoint    m_pointOld;
 static CRect     m_rectOld;
 
 public:
+	CWndBase(const CWndBase &) = delete;
+	CWndBase(CWndBase &&) = delete;
+	CWndBase & operator=(const CWndBase &) = delete;
+	CWndBase & operator=(CWndBase &&) = delete;
+
 static CWndBase* m_pWndCapture;
 	//BOOL      m_bCapture;
 	bool      m_bPush; // 포커스 윈도가 눌렸나?

@@ -725,7 +725,7 @@ public:
 	int           m_nFontHeight ;
 
 	CWndListBox();
-	~CWndListBox();
+	~CWndListBox() override;
 
 	void Create( DWORD dwListBoxStyle, RECT& rect, CWndBase* pParentWnd, UINT nID );
 	int GetFontHeight() { return m_pFont->GetMaxHeight() + m_nLineSpace; }
