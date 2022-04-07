@@ -249,9 +249,6 @@
     <ClCompile Include="..\_Common\serialnumber.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\SkillInfluence.cpp">
-      <Filter>Neuz Files\Common Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\spevent.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>

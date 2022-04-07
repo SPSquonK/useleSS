@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AppDefine.h"
 #include "WndIndirectTalk.h"
+#include "FuncTextCmd.h"
 
 /****************************************************
   WndId : APP_ADMIN_INDIRECT_TALK - 간접 대화
@@ -91,8 +92,7 @@ BOOL CWndIndirectTalk::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				LPCTSTR lpText = pWndEdit2->m_string;
 				CString string;
 				string.Format( "/id %s %s", lpId, lpText );
-				ParsingCommand( string.LockBuffer(), g_pPlayer );
-				string.UnlockBuffer();
+				g_textCmdFuncs.ParseCommand(string.GetString(), g_pPlayer);
 				pWndEdit2->Empty();
 			}
 			break;

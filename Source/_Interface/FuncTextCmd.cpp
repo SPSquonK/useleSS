@@ -79,6 +79,8 @@ extern	CDPSrvr				g_DPSrvr;
 extern	CGuildCombat		g_GuildCombatMng;
 #endif
 
+CmdFunc::AllCommands g_textCmdFuncs;
+
 #include "definesound.h"
 
 
@@ -87,9 +89,6 @@ extern	CGuildCombat		g_GuildCombatMng;
 #define TCM_BOTH   2
 
 
-#define BEGINE_TEXTCMDFUNC_MAP TextCmdFunc m_textCmdFunc[] = {
-#define END_TEXTCMDFUNC_MAP 0, 0, 0, 0, 0, 0, AUTH_GENERAL, 0 };
-#define ON_TEXTCMDFUNC( a, b, c, d, e, f, g, h ) a, b, c, d, e, f, g, h,
 
 BOOL TextCmd_InvenClear( CScanner& scanner )       
 { 
@@ -4891,8 +4890,26 @@ BOOL TextCmd_InvenRemove( CScanner& scanner )
 	return TRUE;
 }
 
+#define ON_TEXTCMDFUNC( a, b, c, d, e, f, g, h ) AddCommand(m_allCommands, a, b, c, d, e, f, g, h);
 
-BEGINE_TEXTCMDFUNC_MAP
+void AddCommand(
+	std::vector<TextCmdFunc> & commands,
+	BOOL(*func)(CScanner & scanner),
+	const TCHAR * pCommand,
+	const TCHAR * pAbbreviation,
+	const TCHAR * pKrCommand,
+	const TCHAR * pKrAbbreviation,
+	DWORD nServer,
+	DWORD dwAuthorization,
+	const TCHAR * pszDesc
+) {
+	commands.push_back({
+		func, pCommand, pAbbreviation, pKrCommand, pKrAbbreviation,
+		nServer, dwAuthorization, pszDesc
+	});
+}
+
+CmdFunc::AllCommands::AllCommands() {
 ////////////////////////////////////////////////// AUTH_GENERAL begin/////////////////////////////////////////////////////
 	ON_TEXTCMDFUNC( TextCmd_whisper,               "whisper",           "w",              "귓속말",         "귓",      TCM_SERVER, AUTH_GENERAL      , "귓속말 [/명령 아이디 내용]" )
 	ON_TEXTCMDFUNC( TextCmd_say,                   "say",               "say",            "말",             "말",      TCM_SERVER, AUTH_GENERAL      , "속삭임 [/명령 아이디 내용]" )
@@ -5201,11 +5218,10 @@ BEGINE_TEXTCMDFUNC_MAP
 	ON_TEXTCMDFUNC( TextCmd_RemoveCampusMember,		"RemoveCampusMember",	"rcm",		"사제해지",		"사해",		TCM_SERVER, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_UpdateCampusPoint,		"UpdateCampusPoint",	"ucp",		"사제포인트업",	"사포업",	TCM_SERVER, AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_InvenRemove,            "InvenRemove",         "irm",       "인벤삭제",       "인삭",    TCM_SERVER, AUTH_ADMINISTRATOR, "" )
-END_TEXTCMDFUNC_MAP
 
+}
 
-int ParsingCommand( LPCTSTR lpszString, CMover* pMover, BOOL bItem )
-{
+BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CMover * pMover, BOOL bItem) {
 	CScanner scanner;
 	scanner.SetProg( (LPTSTR)lpszString );
 	scanner.dwValue	= (DWORD)pMover;
@@ -5213,9 +5229,11 @@ int ParsingCommand( LPCTSTR lpszString, CMover* pMover, BOOL bItem )
 	scanner.GetToken(); // get command
 
 	int nCount = 0;
-	while( m_textCmdFunc[ nCount ].m_pFunc )
+
+
+	for (const auto & command : m_allCommands)
 	{
-		TextCmdFunc* pTextCmdFunc = &m_textCmdFunc[nCount];			// 해외 명령어 제한 
+		const TextCmdFunc * pTextCmdFunc = &command;			// 해외 명령어 제한 
 		if( ::GetLanguage() != LANG_KOR )
 		{
 			if( memcmp( pTextCmdFunc->m_pCommand, "open", 4 ) == 0 )
@@ -5226,14 +5244,6 @@ int ParsingCommand( LPCTSTR lpszString, CMover* pMover, BOOL bItem )
 			scanner.Token == pTextCmdFunc->m_pKrCommand || scanner.Token == pTextCmdFunc->m_pKrAbbreviation )
 
 		{
-		#ifdef __CLIENT
-			/*if( scanner.Token == "disguise" || scanner.Token == "dis" || scanner.Token == "변신" || scanner.Token == "변" ||
-				scanner.Token == "noDisguise" || scanner.Token == "nodis" || scanner.Token == "변신해제" || scanner.Token == "변해" )
-			{
-				g_WndMng.PutString( "Not Command!" );
-				return TRUE;
-			}*/				
-		#endif // __CLIENT
 
 			if( bItem == FALSE && pTextCmdFunc->m_dwAuthorization > pMover->m_dwAuthorization )
 				break;

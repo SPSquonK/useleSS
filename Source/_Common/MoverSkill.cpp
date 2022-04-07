@@ -11,6 +11,8 @@
 
 #include "definequest.h"
 
+#include "FuncTextCmd.h"
+
 #ifdef __CLIENT
 	#include "DPClient.h"
 #else	// __CLIENT
@@ -1534,7 +1536,8 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 								strncpy( szGMCommand, szGMText, nGMCount );
 							else
 								strcpy( szGMCommand, szGMText );
-							ParsingCommand( szGMCommand, (CMover*)this, TRUE );
+							
+							g_textCmdFuncs.ParseCommand(szGMCommand, this, TRUE);
 						}
 					}
 					else

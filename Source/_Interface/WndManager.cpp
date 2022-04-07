@@ -29,6 +29,7 @@ extern CGuildCombat g_GuildCombatMng;
 #include "wndbagex.h"
 
 #include "couplehelper.h"
+#include "FuncTextCmd.h"
 
 #ifdef __Y_INTERFACE_VER3
 #include "WorldMap.h"
@@ -3510,8 +3511,7 @@ void CWndMgr::ParsingChat( CString string )
 	{
 		if( string[0] == '/' )
 		{
-			ParsingCommand( string.LockBuffer(), g_pPlayer );
-			string.UnlockBuffer();
+			g_textCmdFuncs.ParseCommand(string.GetString(), g_pPlayer);
 		}
 		else 
 		{

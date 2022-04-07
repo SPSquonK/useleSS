@@ -316,8 +316,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\serialnumber.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\SkillInfluence.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\spevent.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\Tax.cpp">

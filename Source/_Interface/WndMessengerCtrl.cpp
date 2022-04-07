@@ -11,6 +11,7 @@
 #include "playerdata.h"
 #include "Campus.h"
 #include "CampusHelper.h"
+#include "FuncTextCmd.h"
 
 extern CDPClient	g_DPlay;
 extern CParty		g_Party;
@@ -658,27 +659,14 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 		break;
 	case 3:		// 이동
 		{
-#ifdef __RT_1025
 			Friend* pFriend		= NULL;
 			GetSelectFriend( m_nCurSelect, idPlayer, &pFriend );
 			if( pFriend )
 			{
 				CString string;
 				string.Format( "/teleport \"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
-				ParsingCommand( string.LockBuffer(), g_pPlayer );
-				string.UnlockBuffer();
+				g_textCmdFuncs.ParseCommand(string.GetString(), g_pPlayer);
 			}
-#else	// __RT_1025
-			LPFRIEND lpFriend = NULL;
-			GetSelectFriend( m_nCurSelect, &lpFriend );
-			if( lpFriend )
-			{
-				CString string;
-				string.Format( "/teleport \"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString( lpFriend->dwUserId ) );
-				ParsingCommand( string.LockBuffer(), g_pPlayer );
-				string.UnlockBuffer();			
-			}
-#endif	// __RT_1025
 		}
 		break;
 	case 4:		// 극단 초청

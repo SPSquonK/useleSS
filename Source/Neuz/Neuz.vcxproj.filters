@@ -790,9 +790,6 @@
     <ClCompile Include="..\_Common\Ship.cpp">
       <Filter>Source Files\_Common\Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\SkillInfluence.cpp">
-      <Filter>Source Files\_Common\Object</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\weather.cpp">
       <Filter>Source Files\_Common\Object</Filter>
     </ClCompile>

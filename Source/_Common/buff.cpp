@@ -6,6 +6,11 @@
 #include "defineskill.h"
 #include "defineobj.h"
 
+
+#if defined(__WORLDSERVER) || defined(__CLIENT)
+#include "FuncTextCmd.h"
+#endif
+
 #ifdef __WORLDSERVER
 #include "user.h"
 #include "dpdatabaseclient.h"
@@ -241,8 +246,8 @@ void IBuffItemBase::Release( CBuffMgr* pBuffMgr )
 			int n	= strCommand.Find( "/", 1 );
 			if( n >= 0 )
 			{
-				strncpy( szCommand, &pProp->szTextFileName[n], strCommand.GetLength() );
-				ParsingCommand( szCommand, pBuffMgr->GetMover(), TRUE );
+				strncpy(szCommand, &pProp->szTextFileName[n], strCommand.GetLength());
+				g_textCmdFuncs.ParseCommand(szCommand, pBuffMgr->GetMover(), TRUE);
 			}
 		}
 #ifdef __BUFF_TOGIFT

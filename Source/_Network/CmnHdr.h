@@ -475,7 +475,6 @@ PLAY_ACCOUNT;
 
 
 class CMover;
-extern int ParsingCommand( LPCTSTR lpszString, CMover* pMover, BOOL bItem = FALSE );
 extern void ParsingEffect( TCHAR* pChar, int nLen );
 extern	void RemoveCRLF( char* szString );
 

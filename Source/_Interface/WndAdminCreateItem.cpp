@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AppDefine.h"
 #include "WndAdminCreateItem.h"
+#include "FuncTextCmd.h"
 
 
 CWndAdminCreateItem::CWndAdminCreateItem() 
@@ -172,8 +173,7 @@ BOOL CWndAdminCreateItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			str2 = pWndItemName->m_string;
 			string.Format( "/ci %s %d",str2, dwNum);
 
-			ParsingCommand( string.LockBuffer(), g_pPlayer );
-			string.UnlockBuffer();
+			g_textCmdFuncs.ParseCommand(string.GetString(), g_pPlayer);
 		}
 		else 
 		{
@@ -184,8 +184,7 @@ BOOL CWndAdminCreateItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 				if( pItemProp )	
 				{
 					string.Format( "/ci \"%s\" %d", pItemProp->szName, dwNum);
-					ParsingCommand( string.LockBuffer(), g_pPlayer );
-					string.UnlockBuffer();
+					g_textCmdFuncs.ParseCommand(string.GetString(), g_pPlayer);
 				}
 			}
 		}

@@ -49,9 +49,9 @@ void CWndCommand::OnInitialUpdate()
 	CWndListBox::OnInitialUpdate(); 
 
 	int nCount = 0, nIndex, nNum = 0;
-	while( m_textCmdFunc[ nCount ].m_pFunc )
-	{
-		TextCmdFunc* pTextCmdFunc = &m_textCmdFunc[nCount];
+
+	for (const auto & func : g_textCmdFuncs) {
+		const TextCmdFunc * pTextCmdFunc = &func;
 		if( ::GetLanguage() != LANG_KOR )			// 한국이외에서는 사용제한 
 		{
 			if( memcmp( pTextCmdFunc->m_pCommand, "open", 4 ) == 0 )
@@ -79,7 +79,7 @@ void CWndCommand::OnInitialUpdate()
 				nIndex = AddString( &(*pTextCmdFunc->m_pAbbreviation) );
 				break;
 			}
-			SetItemDataPtr( nIndex, pTextCmdFunc );
+			SetItemDataPtr( nIndex, (void *) (pTextCmdFunc) );
 			nNum++;
 		}
 		nCount++;

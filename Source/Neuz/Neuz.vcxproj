@@ -537,8 +537,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\Ship.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\SkillInfluence.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\weather.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\billboard.cpp">

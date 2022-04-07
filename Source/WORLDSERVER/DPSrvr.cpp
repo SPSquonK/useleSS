@@ -51,6 +51,7 @@
 #include "GuildHouse.h"
 
 #include "CampusHelper.h"
+#include "FuncTextCmd.h"
 
 struct ItemCountSet{
 	OBJID itemid;
@@ -566,8 +567,8 @@ void CDPSrvr::OnChat( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_l
 			g_dpDBClient.SendLogGamemaChat( pUser, strChat );
 		}
 
-		if( sChat[0] == '/'  && ParsingCommand( strChat, (CMover*)pUser ) )
-			return;
+		if (sChat[0] == '/' && g_textCmdFuncs.ParseCommand(strChat, pUser)) return;
+
 		if( pUser->IsMode( TALK_MODE ) )
 			return;
 #ifdef __JEFF_9_20
