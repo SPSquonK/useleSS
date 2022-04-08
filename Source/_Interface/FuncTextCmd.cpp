@@ -4892,9 +4892,43 @@ BOOL TextCmd_InvenRemove( CScanner& scanner )
 
 #define ON_TEXTCMDFUNC( a, b, c, d, e, f, g, h ) AddCommand(m_allCommands, a, b, c, d, e, f, g, h);
 
+
+TextCmdFunc::TextCmdFunc(
+	BOOL(*withPlayer)(CScanner & scanner, CPlayer_ * player),
+	const TCHAR * m_pCommand,
+	const TCHAR * m_pAbbreviation,
+	const TCHAR * m_pKrCommand,
+	const TCHAR * m_pKrAbbreviation,
+	DWORD m_nServer,
+	DWORD m_dwAuthorization,
+	const TCHAR * m_pszDesc
+) : m_withPlayer(withPlayer), m_ignoresPlayer(false),
+m_pCommand(m_pCommand), m_pAbbreviation(m_pAbbreviation),
+m_pKrCommand(m_pKrCommand), m_pKrAbbreviation(m_pKrAbbreviation),
+m_nServer(m_nServer), m_dwAuthorization(m_dwAuthorization),
+m_pszDesc(m_pszDesc) {
+}
+
+TextCmdFunc::TextCmdFunc(
+	BOOL(*withoutPlayer)(CScanner & scanner),
+	const TCHAR * m_pCommand,
+	const TCHAR * m_pAbbreviation,
+	const TCHAR * m_pKrCommand,
+	const TCHAR * m_pKrAbbreviation,
+	DWORD m_nServer,
+	DWORD m_dwAuthorization,
+	const TCHAR * m_pszDesc
+) : m_withoutPlayer(withoutPlayer), m_ignoresPlayer(true),
+m_pCommand(m_pCommand), m_pAbbreviation(m_pAbbreviation),
+m_pKrCommand(m_pKrCommand), m_pKrAbbreviation(m_pKrAbbreviation),
+m_nServer(m_nServer), m_dwAuthorization(m_dwAuthorization),
+m_pszDesc(m_pszDesc) {
+}
+
+template<typename F>
 void AddCommand(
 	std::vector<TextCmdFunc> & commands,
-	BOOL(*func)(CScanner & scanner),
+	F func,
 	const TCHAR * pCommand,
 	const TCHAR * pAbbreviation,
 	const TCHAR * pKrCommand,
@@ -4903,11 +4937,12 @@ void AddCommand(
 	DWORD dwAuthorization,
 	const TCHAR * pszDesc
 ) {
-	commands.push_back({
-		func, pCommand, pAbbreviation, pKrCommand, pKrAbbreviation,
+	commands.emplace_back(func,
+		pCommand, pAbbreviation, pKrCommand, pKrAbbreviation,
 		nServer, dwAuthorization, pszDesc
-	});
+	);
 }
+
 
 CmdFunc::AllCommands::AllCommands() {
 ////////////////////////////////////////////////// AUTH_GENERAL begin/////////////////////////////////////////////////////
@@ -5221,7 +5256,7 @@ CmdFunc::AllCommands::AllCommands() {
 
 }
 
-BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CMover * pMover, BOOL bItem) {
+BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CPlayer_ * pMover, BOOL bItem) {
 	CScanner scanner;
 	scanner.SetProg( (LPTSTR)lpszString );
 	scanner.dwValue	= (DWORD)pMover;
@@ -5251,19 +5286,20 @@ BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CMover * pMover, BOO
 		#ifdef __CLIENT
 			if( pTextCmdFunc->m_nServer == TCM_CLIENT || pTextCmdFunc->m_nServer == TCM_BOTH )
 			{
-				if( ( *pTextCmdFunc->m_pFunc )( scanner ) )
-					if( pTextCmdFunc->m_nServer == TCM_BOTH )
-					{
+				if (pTextCmdFunc->Call(scanner, pMover)) {
+					if (pTextCmdFunc->m_nServer == TCM_BOTH) {
 						char szSendChat[MAX_PATH];
-						sprintf( szSendChat, "%s", scanner.m_pBuf );
-						g_DPlay.SendChat( (LPCSTR)szSendChat );
+						sprintf(szSendChat, "%s", scanner.m_pBuf);
+						g_DPlay.SendChat((LPCSTR)szSendChat);
 					}
+				}
 			}
 			else
 				g_DPlay.SendChat( (LPCSTR)lpszString );
 		#else	// __CLIENT
-			if( pTextCmdFunc->m_nServer == TCM_SERVER ||  pTextCmdFunc->m_nServer == TCM_BOTH )
-				( *pTextCmdFunc->m_pFunc )( scanner );
+			if (pTextCmdFunc->m_nServer == TCM_SERVER || pTextCmdFunc->m_nServer == TCM_BOTH) {
+				pTextCmdFunc->Call(scanner, pMover);
+			}
 		#endif	// __CLIENT
 			return TRUE;
 		}

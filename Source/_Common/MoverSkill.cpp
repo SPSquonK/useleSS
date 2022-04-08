@@ -1537,7 +1537,9 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 							else
 								strcpy( szGMCommand, szGMText );
 							
-							g_textCmdFuncs.ParseCommand(szGMCommand, this, TRUE);
+							// TODO: CMover::DoUseItem should probably a function of CUser
+							CUser * self = dynamic_cast<CUser *>(this);
+							if (self) g_textCmdFuncs.ParseCommand(szGMCommand, self, TRUE);
 						}
 					}
 					else

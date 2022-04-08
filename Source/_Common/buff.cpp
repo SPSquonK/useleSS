@@ -247,7 +247,8 @@ void IBuffItemBase::Release( CBuffMgr* pBuffMgr )
 			if( n >= 0 )
 			{
 				strncpy(szCommand, &pProp->szTextFileName[n], strCommand.GetLength());
-				g_textCmdFuncs.ParseCommand(szCommand, pBuffMgr->GetMover(), TRUE);
+				CUser * user = dynamic_cast<CUser *>(pBuffMgr->GetMover());
+				if (user) g_textCmdFuncs.ParseCommand(szCommand, user, TRUE);
 			}
 		}
 #ifdef __BUFF_TOGIFT
