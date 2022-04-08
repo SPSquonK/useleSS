@@ -441,7 +441,6 @@ CScanner::CScanner( BOOL bComma )
 	m_bComma = bComma;
 	m_pProg = m_pBuf = NULL;
 	m_bMemFlag = 1;
-	dwValue	= 0;
 	m_lpMark = NULL;
 	m_dwDef = 0;
 	token = m_mszToken;
@@ -453,7 +452,6 @@ CScanner::CScanner( LPVOID p, BOOL bComma )
 	m_bComma = bComma;
 	m_pProg = m_pBuf = (CHAR*)p;
 	m_bMemFlag = 1;
-	dwValue	= 0;
 	m_dwDef = 0;
 	token = m_mszToken;
 	m_bErrorCheck = TRUE;

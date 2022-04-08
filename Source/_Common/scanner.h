@@ -60,7 +60,6 @@ public:
 	int			tokenType;					
 	int			tok;					
 	int			m_nDoubleOps;
-	DWORD		dwValue;
 	CString 	m_strFileName;
 	BOOL		m_bErrorCheck;
 
