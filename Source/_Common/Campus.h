@@ -35,7 +35,6 @@ private:
 	u_long	m_idPlayer;
 	int		m_nMemberLv;
 };
-typedef map<u_long, CCampusMember*>		MAP_CM;
 
 class CCampus
 {
@@ -68,7 +67,7 @@ public:
 private:
 	u_long	m_idCampus;
 	u_long	m_idMaster;
-	MAP_CM	m_mapCM;
+	std::map<u_long, CCampusMember *>	m_mapCM;
 
 #ifdef __WORLDSERVER
 public:
@@ -79,8 +78,6 @@ private:
 	int		m_nPreBuffLevel;
 #endif // __WORLDSERVER
 };
-typedef map<u_long, CCampus*>	MAP_CAMPUS;
-typedef map<u_long, u_long>		MAP_PID2CID;
 
 class CCampusMng
 {
@@ -103,7 +100,7 @@ public:
 
 private:
 	u_long	m_idCampus;
-	MAP_CAMPUS	m_mapCampus;
-	MAP_PID2CID	m_mapPid2Cid;
+	std::map<u_long, CCampus *>	m_mapCampus;
+	std::map<u_long, u_long>	m_mapPid2Cid;
 };
 #endif // !defined(AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_)
