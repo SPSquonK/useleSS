@@ -47,12 +47,14 @@ void CNpcChecker::RemoveNpc(CObj * const pObj) {
 	RemoveFrom(m_all, objid);
 }
 
-BOOL CNpcChecker::IsCloseNpc(int nMenu, const CObj * const pObj) const {
-	return (HasNear(m_perMenu[nMenu], pObj, MAX_LEN_MOVER_MENU)) ? TRUE : FALSE;
+std::optional<bool> CNpcChecker::IsCloseNpc(int nMenu, const CObj * const pObj) const {
+	if (nMenu < 0 || nMenu >= MAX_MOVER_MENU) return std::nullopt;
+
+	return HasNear(m_perMenu[nMenu], pObj, MAX_LEN_MOVER_MENU);
 }
 
-BOOL CNpcChecker::IsCloseNpc(const CObj * const pObj) const {
-	return (HasNear(m_all, pObj, MAX_NPC_RADIUS)) ? TRUE : FALSE;
+bool CNpcChecker::IsCloseFromAnyNpc(const CObj * const pObj) const {
+	return HasNear(m_all, pObj, MAX_NPC_RADIUS);
 }
 
 bool CNpcChecker::HasNear(const std::set<OBJID> & objIds, const CObj * const pObj, const double maxDistance) {

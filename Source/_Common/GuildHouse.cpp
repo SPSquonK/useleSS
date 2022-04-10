@@ -1373,7 +1373,7 @@ BOOL CGuildHouseMng::EnteranceGuildHouse( CUser* pUser, DWORD dwComebackItemId )
 	{
 		case NULL_ID :	// 길드하우스 귀환 주문서를 사용하지 않은 경우(NPC 입장 메뉴 선택)
 			{
-				if( CNpcChecker::GetInstance()->IsCloseNpc( MMI_GUILDHOUSE_ENTER, pUser ) )
+				if( CNpcChecker::GetInstance()->IsCloseNpc<MMI_GUILDHOUSE_ENTER>(pUser ) )
 					pUser->SetMarkingPos();
 				else
 					return FALSE;
