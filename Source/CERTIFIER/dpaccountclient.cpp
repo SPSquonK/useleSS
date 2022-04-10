@@ -157,20 +157,13 @@ void CDPAccountClient::OnAddAccount( CAr & ar, DPID dpid )
 			break;
 		case ACCOUNT_CHECK_OK:					// ¼º°ø
 			{
-				{
-					CMclAutoLock Lock(CCertUserMng::GetInstance()->m_AddRemoveLock );
-					CCertUser * pUser	= CCertUserMng::GetInstance()->GetUser( dpid );
-					if( !pUser )
-						return;
-					pUser->m_dwTick		= 0xffffffff;
-#ifdef __EUROPE_0514
-					if( lstrcmp( pUser->GetAccount(), szBak ) )
-					{
-						Error( "CDPAccountClient.OnAddAccount: %s, %s", pUser->GetAccount(), szBak );
-						return;
-					}
-#endif	// __EUROPE_0514
-				}
+#ifndef __EUROPE_0514
+			const char * szBak = nullptr;
+#endif
+
+			if (!g_CertUserMng.AccountCheckOk(dpid, szBak)) {
+				return;
+			}
 
 			#ifdef __GPAUTH_01
 				#ifdef __GPAUTH_02
@@ -214,10 +207,7 @@ void CDPAccountClient::OnAddAccount( CAr & ar, DPID dpid )
 		default:
 			{
 				Error("CDPAccountClient::OnAddAccount result:%d ", cbResult );
-				CMclAutoLock Lock(CCertUserMng::GetInstance()->m_AddRemoveLock );
-				CCertUser * pUser	= CCertUserMng::GetInstance()->GetUser( dpid );
-				if( pUser )
-					Error("account: %s", pUser->GetAccount() );
+				g_CertUserMng.PrintUserAccount(dpid);
 				break;
 			}
 	}

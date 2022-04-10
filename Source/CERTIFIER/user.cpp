@@ -1,76 +1,63 @@
 #include "stdafx.h"
 #include "user.h"
 #include "msghdr.h"
+#include <ranges>
 #ifdef _DEBUG
 #include "mytrace.h"
 extern	CMyTrace	g_MyTrace;
 #endif	// _DEBUG
 
-CCertUser::CCertUser( DPID dpid )
-:
-m_dpid( dpid ),
-m_bValid( TRUE )
-{
-	m_dwTick	= GetTickCount();
-	*m_pszAccount	= '\0';
+CCertUserMng g_CertUserMng;
+
+CCertUser::CCertUser(DPID dpid)
+	:
+	m_dpid(dpid),
+	m_bValid(TRUE) {
+	m_dwTick = GetTickCount();
+	*m_pszAccount = '\0';
 }
 
-CCertUserMng::CCertUserMng()
-{
-	
+CCertUserMng::~CCertUserMng() {
+	const auto lock = std::lock_guard(m_AddRemoveLock);
+	m_users.clear();
 }
 
-CCertUserMng::~CCertUserMng()
-{
-	CMclAutoLock	Lock( m_AddRemoveLock );
+bool CCertUserMng::AddUser(const DPID dpid) {
+	CCertUser * const pUser	= new CCertUser(dpid);
 
-	for( auto i	= begin(); i != end(); ++i )
-		safe_delete( i->second );
-	clear();
-}
+	const auto lock = std::lock_guard(m_AddRemoveLock);
 
-BOOL CCertUserMng::AddUser( DPID dpid )
-{
-	CCertUser * pUser	= new CCertUser( dpid );
-
-	CMclAutoLock	Lock( m_AddRemoveLock );
-
-	bool bResult	= insert( map<DPID, CCertUser *>::value_type( dpid, pUser ) ).second;
-	if( bResult == false )
-	{
+	bool bResult	= m_users.insert( map<DPID, CCertUser *>::value_type( dpid, pUser ) ).second;
+	if( bResult == false ) {
 		WriteError( "ADD//0" );
-		SAFE_DELETE( pUser );
-		return FALSE;
+		return false;
 	}
 #ifdef _DEBUG
-	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "// %04d", size() );
+	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "// %04d", m_users.size() );
 #endif	// _DEBUG
-	return TRUE;
+	return true;
 }
 
-BOOL CCertUserMng::RemoveUser( DPID dpid )
-{
-	CMclAutoLock	Lock( m_AddRemoveLock );
-	map<DPID, CCertUser *>::iterator i	= find( dpid );
-	if( i != end() )
+bool CCertUserMng::RemoveUser(const DPID dpid) {
+	const auto lock = std::lock_guard(m_AddRemoveLock);
+	auto i	= m_users.find( dpid );
+	if( i != m_users.end() )
 	{
-		CCertUser * pRemoved		= i->second;
-		SAFE_DELETE( pRemoved );
-		erase( dpid );
+		m_users.erase( dpid );
 #ifdef _DEBUG
-	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "// %04d", size() );
+	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "// %04d", m_users.size() );
 #endif	// _DEBUG
-		return TRUE;
+		return true;
 	}
 	WriteError( "REMOVE//0" );
-	return FALSE;
+	return false;
 }
 
 CCertUser * CCertUserMng::GetUser( DPID dpid )
 {
-	auto i	= find( dpid );
-	if( i != end() )
-		return i->second;
+	auto i	= m_users.find( dpid );
+	if( i != m_users.end() )
+		return i->second.get();
 	return NULL;
 }
 
@@ -78,33 +65,62 @@ void CCertUserMng::ClearDum( CDPMng* pdp )
 {
 	BEFORESEND( ar, PACKETTYPE_KEEP_ALIVE );
 
-	CCertUser * pUsertmp;
 	DWORD dwTick	= GetTickCount() - SEC( 10 );
 
-	CMclAutoLock	Lock( m_AddRemoveLock );
+	const auto lock = std::lock_guard(m_AddRemoveLock);
 
-	for( auto i = begin(); i != end(); ++i )
-	{
-		pUsertmp	= i->second;
-		if( pUsertmp->m_dwTick < dwTick )
-		{
-			pdp->DestroyPlayer( pUsertmp->m_dpid );
-		}
-		else if( pUsertmp->m_bValid == FALSE )
-		{
-			pUsertmp->m_bValid	= TRUE;
-			pdp->DestroyPlayer( pUsertmp->m_dpid );
-		}
-		else
-		{
-			pUsertmp->m_bValid	= FALSE;
-			SEND( ar, pdp, pUsertmp->m_dpid );
+	for (auto & pUsertmp : m_users | std::views::values) {
+		if (pUsertmp->m_dwTick < dwTick) {
+			pdp->DestroyPlayer(pUsertmp->m_dpid);
+		} else if (pUsertmp->m_bValid == FALSE) {
+			pUsertmp->m_bValid = TRUE;
+			pdp->DestroyPlayer(pUsertmp->m_dpid);
+		} else {
+			pUsertmp->m_bValid = FALSE;
+			SEND(ar, pdp, pUsertmp->m_dpid);
 		}
 	}
 }
 
-CCertUserMng * CCertUserMng::GetInstance( void )
-{
-	static	CCertUserMng	sUserMng;
-	return	&sUserMng;
+void CCertUserMng::KeepAlive(const DPID dpid) {
+	const auto lock = std::lock_guard(m_AddRemoveLock);
+
+	if (CCertUser * const pUser = GetUser(dpid)) {
+		pUser->m_bValid = TRUE;
+	}
+}
+
+bool CCertUserMng::SetAccount(const DPID dpid, const char * const accountName) {
+	const auto lock = std::lock_guard(m_AddRemoveLock);
+
+	CCertUser * const pUser = GetUser(dpid);
+	if (!pUser) return false;
+	
+	pUser->SetAccount(accountName);
+	return true;
+}
+
+void CCertUserMng::PrintUserAccount(const DPID dpid) {
+	const auto lock = std::lock_guard(m_AddRemoveLock);
+
+	if (CCertUser * const pUser = GetUser(dpid)) {
+		Error("account: %s", pUser->GetAccount());
+	}
+}
+
+bool CCertUserMng::AccountCheckOk(const DPID dpid, const char * const szBak) {
+	const auto lock = std::lock_guard(m_AddRemoveLock);
+	CCertUser * pUser = GetUser(dpid);
+	if (!pUser) return false;
+	
+	pUser->m_dwTick = 0xffffffff;
+
+#ifdef __EUROPE_0514
+	if (lstrcmp(pUser->GetAccount(), szBak)) {
+		Error("CDPAccountClient.OnAddAccount: %s, %s", pUser->GetAccount(), szBak);
+		return false;
+	}
+#endif	// __EUROPE_0514
+
+	return true;
 }

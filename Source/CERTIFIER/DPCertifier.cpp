@@ -103,12 +103,11 @@ void CDPCertifier::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 
 void CDPCertifier::OnAddConnection( DPID dpid )
 {
+	if (!g_CertUserMng.AddUser(dpid)) {
 #ifdef __US_LOGIN_0223
-	if( !CUserMng::GetInstance()->AddUser( dpid ) )
-		DestroyPlayer( dpid );
-#else	// __US_LOGIN_0223
-	CCertUserMng::GetInstance()->AddUser( dpid );
-#endif	// __US_LOGIN_0223
+		DestroyPlayer(dpid);
+#endif
+	}
 }
 
 // 태국의 경우 돌아오는 22:00시까지의 남은 시간을 초단위로 보낸다.
@@ -216,10 +215,9 @@ void CDPCertifier::SendErrorString( const char* szError, DPID dpid )
 
 // Handlers
 /*________________________________________________________________________________*/
-void CDPCertifier::OnRemoveConnection( DPID dpid )
-{
-	CCertUserMng::GetInstance()->RemoveUser( dpid );
-	g_dpAccountClient.SendRemoveAccount( dpid );
+void CDPCertifier::OnRemoveConnection(const DPID dpid) {
+	g_CertUserMng.RemoveUser(dpid);
+	g_dpAccountClient.SendRemoveAccount(dpid);
 }
 
 void CDPCertifier::OnError( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
@@ -276,13 +274,8 @@ void CDPCertifier::OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 	}
 
 #ifdef __EUROPE_0514
-	{
-		CMclAutoLock Lock(CCertUserMng::GetInstance()->m_AddRemoveLock );
-		CCertUser * pUser	= CCertUserMng::GetInstance()->GetUser( dpid );
-		if( pUser )
-			pUser->SetAccount( pszAccount );
-		else
-			return;
+	if (!g_CertUserMng.SetAccount(dpid, pszAccount)) {
+		return;
 	}
 #endif	// __EUROPE_0514
 
@@ -327,14 +320,8 @@ void CDPCertifier::OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE lpBuf,
 	g_DbManager.PostQ( pData );
 }
 
-void CDPCertifier::OnKeepAlive( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
-{
-	CCertUserMng * pMng	= CCertUserMng::GetInstance();
-	CMclAutoLock	Lock( pMng->m_AddRemoveLock );
-	
-	CCertUser * pUser	= pMng->GetUser( dpid );
-	if( pUser )
-		pUser->m_bValid		= TRUE;
+void CDPCertifier::OnKeepAlive(CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize) {
+	g_CertUserMng.KeepAlive(dpid);
 }
 /*________________________________________________________________________________*/
 CDPCertifier	g_dpCertifier;
