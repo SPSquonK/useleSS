@@ -6,7 +6,7 @@
 extern	CMyTrace	g_MyTrace;
 #endif	// _DEBUG
 
-CUser::CUser( DPID dpid )
+CCertUser::CCertUser( DPID dpid )
 :
 m_dpid( dpid ),
 m_bValid( TRUE )
@@ -15,27 +15,27 @@ m_bValid( TRUE )
 	*m_pszAccount	= '\0';
 }
 
-CUserMng::CUserMng()
+CCertUserMng::CCertUserMng()
 {
 	
 }
 
-CUserMng::~CUserMng()
+CCertUserMng::~CCertUserMng()
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	for( map<DPID, CUser*>::iterator i	= begin(); i != end(); ++i )
+	for( auto i	= begin(); i != end(); ++i )
 		safe_delete( i->second );
 	clear();
 }
 
-BOOL CUserMng::AddUser( DPID dpid )
+BOOL CCertUserMng::AddUser( DPID dpid )
 {
-	CUser* pUser	= new CUser( dpid );
+	CCertUser * pUser	= new CCertUser( dpid );
 
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	bool bResult	= insert( map<DPID, CUser*>::value_type( dpid, pUser ) ).second;
+	bool bResult	= insert( map<DPID, CCertUser *>::value_type( dpid, pUser ) ).second;
 	if( bResult == false )
 	{
 		WriteError( "ADD//0" );
@@ -48,13 +48,13 @@ BOOL CUserMng::AddUser( DPID dpid )
 	return TRUE;
 }
 
-BOOL CUserMng::RemoveUser( DPID dpid )
+BOOL CCertUserMng::RemoveUser( DPID dpid )
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
-	map<DPID, CUser*>::iterator i	= find( dpid );
+	map<DPID, CCertUser *>::iterator i	= find( dpid );
 	if( i != end() )
 	{
-		CUser* pRemoved		= i->second;
+		CCertUser * pRemoved		= i->second;
 		SAFE_DELETE( pRemoved );
 		erase( dpid );
 #ifdef _DEBUG
@@ -66,24 +66,24 @@ BOOL CUserMng::RemoveUser( DPID dpid )
 	return FALSE;
 }
 
-CUser* CUserMng::GetUser( DPID dpid )
+CCertUser * CCertUserMng::GetUser( DPID dpid )
 {
-	map<DPID, CUser*>::iterator i	= find( dpid );
+	auto i	= find( dpid );
 	if( i != end() )
 		return i->second;
 	return NULL;
 }
 
-void CUserMng::ClearDum( CDPMng* pdp )
+void CCertUserMng::ClearDum( CDPMng* pdp )
 {
 	BEFORESEND( ar, PACKETTYPE_KEEP_ALIVE );
 
-	CUser* pUsertmp;
+	CCertUser * pUsertmp;
 	DWORD dwTick	= GetTickCount() - SEC( 10 );
 
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	for( map<DPID, CUser*>::iterator i = begin(); i != end(); ++i )
+	for( auto i = begin(); i != end(); ++i )
 	{
 		pUsertmp	= i->second;
 		if( pUsertmp->m_dwTick < dwTick )
@@ -103,8 +103,8 @@ void CUserMng::ClearDum( CDPMng* pdp )
 	}
 }
 
-CUserMng* CUserMng::GetInstance( void )
+CCertUserMng * CCertUserMng::GetInstance( void )
 {
-	static	CUserMng	sUserMng;
+	static	CCertUserMng	sUserMng;
 	return	&sUserMng;
 }

@@ -107,7 +107,7 @@ void CDPCertifier::OnAddConnection( DPID dpid )
 	if( !CUserMng::GetInstance()->AddUser( dpid ) )
 		DestroyPlayer( dpid );
 #else	// __US_LOGIN_0223
-	CUserMng::GetInstance()->AddUser( dpid );
+	CCertUserMng::GetInstance()->AddUser( dpid );
 #endif	// __US_LOGIN_0223
 }
 
@@ -218,7 +218,7 @@ void CDPCertifier::SendErrorString( const char* szError, DPID dpid )
 /*________________________________________________________________________________*/
 void CDPCertifier::OnRemoveConnection( DPID dpid )
 {
-	CUserMng::GetInstance()->RemoveUser( dpid );
+	CCertUserMng::GetInstance()->RemoveUser( dpid );
 	g_dpAccountClient.SendRemoveAccount( dpid );
 }
 
@@ -277,8 +277,8 @@ void CDPCertifier::OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 
 #ifdef __EUROPE_0514
 	{
-		CMclAutoLock Lock( CUserMng::GetInstance()->m_AddRemoveLock );
-		CUser* pUser	= CUserMng::GetInstance()->GetUser( dpid );
+		CMclAutoLock Lock(CCertUserMng::GetInstance()->m_AddRemoveLock );
+		CCertUser * pUser	= CCertUserMng::GetInstance()->GetUser( dpid );
 		if( pUser )
 			pUser->SetAccount( pszAccount );
 		else
@@ -329,10 +329,10 @@ void CDPCertifier::OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE lpBuf,
 
 void CDPCertifier::OnKeepAlive( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
-	CUserMng* pMng	= CUserMng::GetInstance();
+	CCertUserMng * pMng	= CCertUserMng::GetInstance();
 	CMclAutoLock	Lock( pMng->m_AddRemoveLock );
 	
-	CUser* pUser	= pMng->GetUser( dpid );
+	CCertUser * pUser	= pMng->GetUser( dpid );
 	if( pUser )
 		pUser->m_bValid		= TRUE;
 }

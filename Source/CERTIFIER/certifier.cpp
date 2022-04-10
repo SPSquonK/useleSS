@@ -267,7 +267,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					case 0:	// 
 						{
-							CUserMng::GetInstance()->ClearDum( (CDPMng*)&g_dpCertifier );
+						CCertUserMng::GetInstance()->ClearDum(&g_dpCertifier);
 							hb.Run();
 							break;
 						}

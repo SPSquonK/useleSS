@@ -158,8 +158,8 @@ void CDPAccountClient::OnAddAccount( CAr & ar, DPID dpid )
 		case ACCOUNT_CHECK_OK:					// ¼º°ø
 			{
 				{
-					CMclAutoLock Lock( CUserMng::GetInstance()->m_AddRemoveLock );
-					CUser* pUser	= CUserMng::GetInstance()->GetUser( dpid );
+					CMclAutoLock Lock(CCertUserMng::GetInstance()->m_AddRemoveLock );
+					CCertUser * pUser	= CCertUserMng::GetInstance()->GetUser( dpid );
 					if( !pUser )
 						return;
 					pUser->m_dwTick		= 0xffffffff;
@@ -214,8 +214,8 @@ void CDPAccountClient::OnAddAccount( CAr & ar, DPID dpid )
 		default:
 			{
 				Error("CDPAccountClient::OnAddAccount result:%d ", cbResult );
-				CMclAutoLock Lock( CUserMng::GetInstance()->m_AddRemoveLock );
-				CUser* pUser	= CUserMng::GetInstance()->GetUser( dpid );
+				CMclAutoLock Lock(CCertUserMng::GetInstance()->m_AddRemoveLock );
+				CCertUser * pUser	= CCertUserMng::GetInstance()->GetUser( dpid );
 				if( pUser )
 					Error("account: %s", pUser->GetAccount() );
 				break;
