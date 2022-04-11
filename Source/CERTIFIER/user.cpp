@@ -43,7 +43,7 @@ bool CCertUserMng::RemoveUser(const DPID dpid) {
 	auto i	= m_users.find( dpid );
 	if( i != m_users.end() )
 	{
-		m_users.erase( dpid );
+		m_users.erase( i );
 #ifdef _DEBUG
 	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "// %04d", m_users.size() );
 #endif	// _DEBUG
