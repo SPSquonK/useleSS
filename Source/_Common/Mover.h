@@ -946,7 +946,7 @@ public:
 	DWORD			IsAuthorization( DWORD dwAuthorization ) { return dwAuthorization == m_dwAuthorization; }
 	DWORD			IsAuthHigher( DWORD dwAuthorization ) { return dwAuthorization <= m_dwAuthorization; }
 	void			UpdateParam();		
-	int				GetParam( int nDestParameter, int nParam );
+	[[nodiscard]] int GetParam(int nDestParameter, int nParam) const;
 	void			SetDestParam( int nDstParameter, int nAdjParameterValue, int nChgParameterValue, BOOL fSend = TRUE );
 	void			SetDestParam( int nItemIdx2, BOOL fSend = TRUE );
 	void			SetDestParam( int nIdx, ItemProp *pProp, BOOL bSend = TRUE );
@@ -955,8 +955,8 @@ public:
 	void			ResetDestParamSync( int nDstParameter,int nAdjParameterValue, int nParameterValue, BOOL fSend = TRUE );
 #endif // __SPEED_SYNC_0108		// ResetDestParam speed 수정
 	void			ResetDestParam( int nIdx, ItemProp *pProp, BOOL bSend = TRUE );
-	int				GetAdjParam( int nDestParameter );
-	int				GetChgParam( int nDestParameter );
+	[[nodiscard]] int GetAdjParam(int nDestParameter) const;
+	[[nodiscard]] int	GetChgParam(int nDestParameter) const;
 	int				GetPointParam( int nDstParameter );
 	void			SetPointParam( int nDstParameter, int nValue, BOOL bTrans = FALSE ); // bTrans가 TRUE이면 강제전송
 	void			OnApplySM();
@@ -1026,10 +1026,10 @@ public:
 	void			SetSta( int nSta ) { m_nSta = nSta; }
 	void			SetDex( int nDex ) { m_nDex = nDex; }
 	void			SetInt( int nInt ) { m_nInt = nInt; }	
-	int				GetStr();
-	int				GetDex();
-	int				GetInt();
-	int				GetSta();
+	[[nodiscard]] int GetStr() const;
+	[[nodiscard]] int GetDex() const;
+	[[nodiscard]] int GetInt() const;
+	[[nodiscard]] int GetSta() const ;
 	FLOAT			GetSpeed(FLOAT fSrcSpeed);    
 	int				GetGold();
 	int		GetPerinNum( void );
@@ -1221,7 +1221,8 @@ public:
 	void			AddKillRecovery();
 	BOOL			IsValidArea( CMover* pMover, float fLength );
 	void			SetJJim( CMover *pJJimer );		// this를 pJJimer가 찜했다는걸 표시.
-	void			SubReferTime( DWORD *pTime1, DWORD *pTime2, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp );
+	void			SubReferTime(DWORD & pTime1, DWORD & pTime2, const ItemProp & pSkillProp, const AddSkillProp * pAddSkillProp) const;
+	[[nodiscard]] DWORD GetReferTime(DWORD referTarget, DWORD referStat, DWORD referValue, DWORD skillLevel) const;
 	BOOL			ApplyParam( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, BOOL bSend = TRUE, int nDamage = 0 );	// this에게 파라메터를 적용. pSrc는 시전자.
 	BOOL			ApplyMagicSkill( CMover *pMover, DWORD dwSkill, DWORD dwLevel, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp );	// pMover에게 스킬효과를 적용함.
 	BOOL			GetSkillProp( ItemProp **ppSkillProp, AddSkillProp **ppAddSkillProp, int nSkill, DWORD dwLevel, LPCTSTR szErr );

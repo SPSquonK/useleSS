@@ -150,37 +150,29 @@ BOOL CMover::OnMeleeSkill( int nType, int nCount )
 
 
 // RT_TIME을 쓰는 스킬들의 스킬 시간을 계산.
-void	CMover::SubReferTime( DWORD *pTime1, DWORD *pTime2, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp )
-{
-	DWORD dwTime1 = 0, dwTime2 = 0;
-
-	if( pSkillProp->dwReferTarget1 == RT_TIME )
-	{
-		switch( pSkillProp->dwReferStat1 )
-		{
-		case DST_STA:	dwTime1 = GetSta();		break;
-		case DST_DEX:	dwTime1 = GetDex();		break;
-		case DST_INT:	dwTime1 = GetInt();		break;
-		}
-		
-		dwTime1 = (DWORD)( ((pSkillProp->dwReferValue1/10.0f)*dwTime1) + (pAddSkillProp->dwSkillLvl * FLOAT(dwTime1/50.0f)) );
-	}
-	
-	if( pSkillProp->dwReferTarget2 == RT_TIME )
-	{
-		switch( pSkillProp->dwReferStat2 )
-		{
-		case DST_STA:	dwTime2 = GetSta();		break;
-		case DST_DEX:	dwTime2 = GetDex();		break;
-		case DST_INT:	dwTime2 = GetInt();		break;
-		}
-		
-		dwTime2 = (DWORD)( ((pSkillProp->dwReferValue2/10.0f)*dwTime2) + (pAddSkillProp->dwSkillLvl * FLOAT(dwTime2/50.0f)) );
-	}
-
-	*pTime1 = dwTime1;
-	*pTime2 = dwTime2;
+void	CMover::SubReferTime(
+	DWORD & pTime1, DWORD & pTime2,
+	const ItemProp & pSkillProp, const AddSkillProp * const pAddSkillProp
+) const {
+	const DWORD skillLevel = pAddSkillProp ? pAddSkillProp->dwSkillLvl : 0;
+	pTime1 = GetReferTime(pSkillProp.dwReferTarget1, pSkillProp.dwReferStat1, pSkillProp.dwReferValue1, skillLevel);
+	pTime2 = GetReferTime(pSkillProp.dwReferTarget2, pSkillProp.dwReferStat2, pSkillProp.dwReferValue2, skillLevel);
 }
+
+DWORD CMover::GetReferTime(const DWORD referTarget, const DWORD referStat, const DWORD referValue, const DWORD skillLevel) const {
+	if (referTarget != RT_TIME) return 0;
+
+	DWORD base = 0;
+
+	switch (referStat) {
+		case DST_STA:	base = GetSta(); break;
+		case DST_DEX:	base = GetDex(); break;
+		case DST_INT:	base = GetInt(); break;
+	}
+
+	return (referValue * base * 5 + skillLevel * base) / 50;
+}
+
 
 //
 // this에게 파라메터를 적용한다.

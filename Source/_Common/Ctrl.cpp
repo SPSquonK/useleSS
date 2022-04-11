@@ -1125,8 +1125,9 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 				DWORD dwTime1 = 0, dwTime2 = 0;
 				if( pSkillProp->dwReferTarget1 == RT_TIME || pSkillProp->dwReferTarget2 == RT_TIME )
 				{
-					if( pSrc->GetType() == OT_MOVER )		// 시전자가 무버일때만.
-						((CMover *)pSrc)->SubReferTime( &dwTime1, &dwTime2, pSkillProp, pAddSkillProp );
+					if (const CMover * pMover = pSrc->ToMover()) {		// 시전자가 무버일때만.
+						pMover->SubReferTime(dwTime1, dwTime2, *pSkillProp, pAddSkillProp);
+					}
 				}
 
 				WORD wType;

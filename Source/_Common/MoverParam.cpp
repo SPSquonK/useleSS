@@ -2355,23 +2355,21 @@ void CMover::ResetDestParamSync( int nDstParameter,int nAdjParameterValue, int n
 #endif // __SPEED_SYNC_0108		// ResetDestParam speed ����
 
 // ���� �Ķ���͸� ��´�.
-int CMover::GetAdjParam( int nDestParameter )
-{
-	if( nDestParameter < MAX_ADJPARAMARY )
-		return m_adjParamAry[ nDestParameter ];
+int CMover::GetAdjParam(const int nDestParameter) const {
+	if (nDestParameter < MAX_ADJPARAMARY)
+		return m_adjParamAry[nDestParameter];
 	return 0;
 }
+
 // ��ü �Ķ���͸� ��´�.
-int CMover::GetChgParam( int nDestParameter )
-{
-	if( nDestParameter < MAX_ADJPARAMARY )
-		return m_chgParamAry[ nDestParameter ];
+int CMover::GetChgParam(const int nDestParameter) const {
+	if (nDestParameter < MAX_ADJPARAMARY)
+		return m_chgParamAry[nDestParameter];
 	return 0x7FFFFFFF;
 }
 
 // �Ķ���͸� ��´�.
-int CMover::GetParam( int nDest, int nParam )
-{
+int CMover::GetParam(const int nDest, const int nParam) const {
 	int nChgParam = GetChgParam( nDest );
 	if( nChgParam != 0x7FFFFFFF ) 
 		return nChgParam;
@@ -2766,11 +2764,9 @@ int CMover::GetNaturalArmor()
 	return GetProp()->dwNaturalArmor;//GetParam(DST_NATURAL_ARMOR,GetProp()->m_dwNaturalArmor);
 }
 
-int CMover::GetStr()
-{
+int CMover::GetStr() const {
 	int nResult = m_nStr + GetParam( DST_STR, 0 );
 
-
 #ifdef __JEFF_11
 	if( nResult < 1 )
 		nResult	= 1;
@@ -2778,11 +2774,9 @@ int CMover::GetStr()
 
 	return nResult;
 }
-int CMover::GetDex()
-{
+int CMover::GetDex() const {
 	int nResult = m_nDex + GetParam( DST_DEX, 0 );
 
-
 #ifdef __JEFF_11
 	if( nResult < 1 )
 		nResult	= 1;
@@ -2790,11 +2784,9 @@ int CMover::GetDex()
 
 	return nResult;
 }
-int CMover::GetInt()
-{
+int CMover::GetInt() const {
 	int nResult = m_nInt + GetParam( DST_INT, 0 );
 
-
 #ifdef __JEFF_11
 	if( nResult < 1 )
 		nResult	= 1;
@@ -2802,10 +2794,9 @@ int CMover::GetInt()
 
 	return nResult;
 }
-int CMover::GetSta()
-{
-	int nResult = m_nSta + GetParam( DST_STA, 0 );
 
+int CMover::GetSta() const {
+	int nResult = m_nSta + GetParam( DST_STA, 0 );
 
 #ifdef __JEFF_11
 	if( nResult < 1 )
