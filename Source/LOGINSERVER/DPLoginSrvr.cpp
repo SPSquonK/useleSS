@@ -8,7 +8,6 @@ extern	CDPCoreClient	g_dpCoreClient;
 
 extern	CDPLoginSrvr		g_dpLoginSrvr;
 extern	CDPDatabaseClient	g_dpDBClient;
-extern	CUserMng			g_UserMng;
 extern  char				g_szMSG_VER[];
 
 CDPLoginSrvr::CDPLoginSrvr()
@@ -38,9 +37,9 @@ void CDPLoginSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 			LPDPMSG_CREATEPLAYERORGROUP lpCreatePlayer = (LPDPMSG_CREATEPLAYERORGROUP)lpMsg;
 			DPID dpid = lpCreatePlayer->dpId;
 
-			CUser* pUser = new CUser( dpid ); 
+			CLoginUser* pUser = new CLoginUser( dpid );
 		
-			if( g_UserMng.AddUser( dpid, pUser ) )
+			if( g_LoginUserMng.AddUser( dpid, pUser ) )
 			{
 			}
 			else
@@ -152,9 +151,9 @@ void CDPLoginSrvr::OnAddConnection( CAr & ar, DPID dpid )
 		return;
 	}
 
-	CMclAutoLock Lock( g_UserMng.m_AddRemoveLock );
+	CMclAutoLock Lock(g_LoginUserMng.m_AddRemoveLock );
 
-	CUser* pUser = g_UserMng.GetUser( dpid );
+	CLoginUser* pUser = g_LoginUserMng.GetUser( dpid );
 	if( pUser == NULL )
 		return;
 
@@ -165,7 +164,7 @@ void CDPLoginSrvr::OnAddConnection( CAr & ar, DPID dpid )
 	}
 
 	pUser->SetExtra( lpszAccount, dwAuthKey );
-	if( g_UserMng.AddUser( lpszAccount, pUser ) )
+	if(g_LoginUserMng.AddUser( lpszAccount, pUser ) )
 	{
 		pUser->m_nIndexOfCache	= g_dpLoginSrvr.CacheIn();
 		g_dpLoginSrvr.SendCacheAddr( pUser->m_nIndexOfCache, dpid ); 
@@ -175,7 +174,7 @@ void CDPLoginSrvr::OnAddConnection( CAr & ar, DPID dpid )
 	else
 	{
 		WriteError( "OnAddUser(): AddUser() return 0, %s", lpszAccount );
-		CUser* pUser = g_UserMng.GetUser( lpszAccount );
+		CLoginUser* pUser = g_LoginUserMng.GetUser( lpszAccount );
 		if( pUser )
 			DestroyPlayer( pUser->m_dpid );
 		else
@@ -186,7 +185,7 @@ void CDPLoginSrvr::OnAddConnection( CAr & ar, DPID dpid )
 
 void CDPLoginSrvr::OnRemoveConnection( DPID dpid )
 {
-	g_UserMng.RemoveUser( dpid );
+	g_LoginUserMng.RemoveUser( dpid );
 }
 
 void CDPLoginSrvr::OnPreJoin( CAr & ar, DPID dpid )
@@ -195,12 +194,12 @@ void CDPLoginSrvr::OnPreJoin( CAr & ar, DPID dpid )
 	u_long idPlayer;
 	int nSecretNum = 0;
 
-	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
+	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
 	ar.ReadString( lpszAccount, MAX_ACCOUNT );
 	ar >> idPlayer;
 	ar.ReadString( lpszPlayer, MAX_PLAYER );
 	ar >> nSecretNum;
-	CUser* pUser	= g_UserMng.GetUser( dpid );
+	CLoginUser* pUser	= g_LoginUserMng.GetUser( dpid );
 	if( pUser )
 	{
 		if( lstrcmp( lpszAccount, pUser->m_pKey ) == 0 )
@@ -245,8 +244,8 @@ void CDPLoginSrvr::OnPreJoin( CAr & ar, DPID dpid )
 
 void CDPLoginSrvr::OnPing( CAr & ar, DPID dpid )
 {
-	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
-	CUser* pUser	= g_UserMng.GetUser( dpid );
+	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
+	CLoginUser* pUser	= g_LoginUserMng.GetUser( dpid );
 	if( pUser )
 	{
 		pUser->m_tPingRecvd		= timeGetTime();

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "user.h"
-extern	CUserMng	g_UserMng;
 #include "dploginsrvr.h"
 extern	CDPLoginSrvr	g_dpLoginSrvr;
 #include "dpcoreclient.h"
@@ -92,9 +91,9 @@ void CDPCoreClient::OnPreJoin( CAr & ar )
 	ar.ReadString( lpszPlayer, MAX_PLAYER );
 	ar >> f;
 
-	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
+	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
 
-	CUser* pUser	= g_UserMng.GetUser( lpszAccount );
+	CLoginUser * pUser	= g_LoginUserMng.GetUser( lpszAccount );
 	if( pUser )
 	{
 		if( pUser->m_dwAuthKey == dwAuthKey )
@@ -126,8 +125,8 @@ void CDPCoreClient::OnQueryRemovePlayer( CAr & ar )
 	char lpszAccount[MAX_ACCOUNT] = { 0, };
 	ar.ReadString( lpszAccount, MAX_ACCOUNT );
 
-	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
-	CUser* pUser	= g_UserMng.GetUser( lpszAccount );
+	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
+	CLoginUser* pUser	= g_LoginUserMng.GetUser( lpszAccount );
 	if( pUser )
 	{
 		pUser->m_idPlayer	= 0;

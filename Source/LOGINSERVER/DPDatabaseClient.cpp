@@ -11,8 +11,6 @@ extern	CDPLoginSrvr	g_dpLoginSrvr;
 extern	CMyTrace	g_MyTrace;
 extern	char	g_lpDBAddr[16];
 
-extern	CUserMng	g_UserMng;
-
 CDPDatabaseClient::CDPDatabaseClient()
 {
 	BEGIN_MSG;
@@ -106,8 +104,8 @@ void CDPDatabaseClient::OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE l
 	ar.ReadString( lpszAccount, MAX_ACCOUNT );
 	ar >> lError;
 
-	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
-	CUser* pUser	= g_UserMng.GetUser( lpszAccount );
+	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
+	CLoginUser * pUser	= g_LoginUserMng.GetUser( lpszAccount );
 	if( pUser )
 	{
 		if( lError )
@@ -127,8 +125,8 @@ void CDPDatabaseClient::OnOneHourNotify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_lo
 	char lpszAccount[MAX_ACCOUNT]	= { 0, };
 	ar.ReadString( lpszAccount, MAX_ACCOUNT );
 	
-	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
-	CUser* pUser	= g_UserMng.GetUser( lpszAccount );
+	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
+	CLoginUser* pUser	= g_LoginUserMng.GetUser( lpszAccount );
 	if( pUser )
 	{
 		g_dpLoginSrvr.SendHdr( PACKETTYPE_ONE_HOUR_NOTIFY, pUser->m_dpid );
@@ -151,10 +149,9 @@ void CDPDatabaseClient::OnPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long 
 	DWORD dwAuthKey;
 	ar >> dwAuthKey;
 
-	CUser* pUser;
-	CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
+	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
 
-	pUser	= g_UserMng.GetUser( dpid );
+	CLoginUser * pUser	= g_LoginUserMng.GetUser( dpid );
 	if( pUser && pUser->m_dwAuthKey == dwAuthKey )
 		g_dpLoginSrvr.Send( lpBuf, uBufSize, dpid );
 }
@@ -169,8 +166,8 @@ void CDPDatabaseClient::OnFail( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSi
 	{
 		case ERROR_FLYFF_ACCOUNT:
 			{
-				CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
-				CUser* pUser	= g_UserMng.GetUser( lpszAccount );
+				CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
+				CLoginUser* pUser	= g_LoginUserMng.GetUser( lpszAccount );
 				if( pUser )
 				{
 					pUser->m_bIllegal	= TRUE;
@@ -201,8 +198,8 @@ void CDPDatabaseClient::OnLoginProtect( CAr & ar, DPID dpid, LPBYTE lpBuf, u_lon
 
 	if( bLogin )
 	{
-		CMclAutoLock	Lock( g_UserMng.m_AddRemoveLock );
-		CUser* pUser	= g_UserMng.GetUser( dpid );
+		CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
+		CLoginUser * pUser	= g_LoginUserMng.GetUser( dpid );
 		if( pUser )
 		{
 			if( lstrcmp( lpszAccount, pUser->m_pKey ) == 0 )

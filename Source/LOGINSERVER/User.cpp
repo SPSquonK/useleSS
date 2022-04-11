@@ -9,10 +9,10 @@ extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPCoreClient		g_dpCoreClient;
 
 #ifndef __VM_0820
-MemPooler<CUser>*	CUser::m_pPool	= new MemPooler<CUser>( 1024 );
+MemPooler<CLoginUser>*	CLoginUser::m_pPool	= new MemPooler<CLoginUser>( 1024 );
 #endif	// __VM_0820
 
-CUser::CUser( DPID dpid )
+CLoginUser::CLoginUser( DPID dpid )
 {
 	m_pKey[0] = '\0';
 	m_dwAuthKey	= 0;
@@ -33,54 +33,33 @@ CUser::CUser( DPID dpid )
 	m_tAuth		= time( NULL ) + AUTH_PERIOD;
 }
 
-CUser::~CUser()
-{
-}
-
-void CUser::SetExtra( const char* pKey, DWORD dwAuthKey )
+void CLoginUser::SetExtra( const char* pKey, DWORD dwAuthKey )
 {
 	strcpy( m_pKey, pKey );
 	m_dwAuthKey	= dwAuthKey;
 }
 
-CUserMng::CUserMng()
-{
-#ifndef __STL_0402
-	m_dpid2User.SetSize( 1024, 4096, 1024 );
-#endif	// __STL_0402
-	m_uCount	= 0;
-}
-
-CUserMng::~CUserMng()
+CLoginUserMng::~CLoginUserMng()
 {
 	Free();
 }
 
-void CUserMng::Free( void )
+void CLoginUserMng::Free( void )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-#ifdef __STL_0402
 	for( C2User::iterator i = m_dpid2User.begin(); i != m_dpid2User.end(); ++i )
 	{
-		CUser* pUser	= i->second;
+		CLoginUser* pUser	= i->second;
 		SAFE_DELETE( pUser );
 	}
 	m_dpid2User.clear();
-#else	// __STL_0402
-	CUserBucket* pBucket	= m_dpid2User.GetFirstActive();
-	while( pBucket )
-	{
-		safe_delete( pBucket->m_value );
-		pBucket		= pBucket->pNext;
-	}
-	m_dpid2User.ClearActiveList();
-#endif	// __STL_0402
+
 	m_ac2User.clear();
 }
 
 // dpid를 키로 콘테이너에 넣는다.
-BOOL CUserMng::AddUser( DPID dpid, CUser* pUser )
+BOOL CLoginUserMng::AddUser( DPID dpid, CLoginUser* pUser )
 {
 	ASSERT( dpid == pUser->m_dpid );
 
@@ -88,12 +67,9 @@ BOOL CUserMng::AddUser( DPID dpid, CUser* pUser )
 
 	if( GetUser( dpid ) == NULL )
 	{
-#ifdef __STL_0402
 		bool bResult	= m_dpid2User.insert( C2User::value_type( dpid, pUser ) ).second;
 //		ASSERT( bResult );
-#else	// __STL_0402
-		m_dpid2User.SetAt( dpid, pUser );
-#endif	// __STL_0402
+
 		m_uCount++;
 		return TRUE;
 	}
@@ -102,22 +78,22 @@ BOOL CUserMng::AddUser( DPID dpid, CUser* pUser )
 }
 
 // pKey 키로 콘테이너에 넣는다.
-BOOL CUserMng::AddUser( const char* pKey, CUser* pUser )
+BOOL CLoginUserMng::AddUser( const char* pKey, CLoginUser * pUser )
 {
 	// lock이 걸린 상태라고 가정됨 
-	bool result = m_ac2User.insert( map<string, CUser*>::value_type( pKey, pUser ) ).second;
+	bool result = m_ac2User.insert( map<string, CLoginUser *>::value_type( pKey, pUser ) ).second;
 	return ( result == true );
 }
 
-CUser* CUserMng::GetUser( const char* pKey )
+CLoginUser * CLoginUserMng::GetUser( const char* pKey )
 {
-	map<string, CUser*>::iterator i	= m_ac2User.find( pKey );
+	map<string, CLoginUser *>::iterator i	= m_ac2User.find( pKey );
 	if( i != m_ac2User.end() )
 		return i->second;
 	return NULL;
 }
 
-CUser* CUserMng::GetUser( DPID dpid )
+CLoginUser * CLoginUserMng::GetUser( DPID dpid )
 {
 #ifdef __STL_0402
 	C2User::iterator i = m_dpid2User.find( dpid );
@@ -132,21 +108,16 @@ CUser* CUserMng::GetUser( DPID dpid )
 #endif	// __STL_0402
 }
 
-BOOL CUserMng::RemoveUser( DPID dpid )
+BOOL CLoginUserMng::RemoveUser( DPID dpid )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
-#ifdef __STL_0402
+
 	C2User::iterator i = m_dpid2User.find( dpid );
 	if( i != m_dpid2User.end() )
 	{
-		CUser* pUser	= i->second;
+		CLoginUser* pUser	= i->second;
 		m_dpid2User.erase( i );
-#else	// __STL_0402
-	CUser* pUser;
-	if( m_dpid2User.Lookup( dpid, pUser ) )
-	{
-		m_dpid2User.RemoveKey( dpid );
-#endif	// __STL_0402
+
 		m_ac2User.erase( pUser->m_pKey );
 
 		if( !pUser->m_bIllegal )
@@ -175,7 +146,7 @@ BOOL CUserMng::RemoveUser( DPID dpid )
 	return FALSE;
 }
 
-void CUserMng::DestroyAbnormalPlayer( void )
+void CLoginUserMng::DestroyAbnormalPlayer( void )
 {
 #ifdef __INTERNALSERVER
 	return;
@@ -186,28 +157,12 @@ void CUserMng::DestroyAbnormalPlayer( void )
 	//CString strTime	= time.Format( "%Y/%m/%d %H:%M:%S" );
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-#ifdef __STL_0402
 	for( C2User::iterator i = m_dpid2User.begin(); i != m_dpid2User.end(); ++i )
 	{
-		CUser* pUser	= i->second;
+		CLoginUser* pUser	= i->second;
 		if( ( t - pUser->m_tPingRecvd ) > 90000 ) // 90
 			g_dpLoginSrvr.DestroyPlayer( pUser->m_dpid );
 	}
-#else	// __STL_0402
-	CUser* pUser;
-	CUserBucket* pBucket	= m_dpid2User.GetFirstActive();
-	while( pBucket )
-	{
-		pUser	= pBucket->m_value;
-		if( ( t - pUser->m_tPingRecvd ) > 90000 ) // 90
-		{
-			//FILEOUT( "error.log", "%s - %s", (LPCTSTR)strTime, pUser->m_pKey );
-			g_dpLoginSrvr.DestroyPlayer( pUser->m_dpid );
-		}
-		pBucket		= pBucket->pNext;
-	}
-#endif	// __STL_0402
 }
 
-
-CUserMng	g_UserMng;
+CLoginUserMng	g_LoginUserMng;

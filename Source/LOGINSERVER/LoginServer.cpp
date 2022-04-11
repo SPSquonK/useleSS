@@ -19,7 +19,6 @@ extern	CDPLoginSrvr		g_dpLoginSrvr;
 extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPCoreClient		g_dpCoreClient;
 extern	CMyTrace			g_MyTrace;
-extern	CUserMng			g_UserMng;
 
 
 #define MAX_LOADSTRING 100
@@ -166,8 +165,8 @@ void ExitInstance( void )
 	g_dpLoginSrvr.DeleteDPObject();
 	g_dpCoreClient.DeleteDPObject();
 	g_dpDBClient.DeleteDPObject();
-	g_UserMng.Free();
-	SAFE_DELETE( CUser::m_pPool );
+	g_LoginUserMng.Free();
+	SAFE_DELETE( CLoginUser::m_pPool );
 
 	UninitializeNetLib();
 }
@@ -201,7 +200,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				switch( wTimerID )
 				{
 					case 0:
-						g_UserMng.DestroyAbnormalPlayer();
+						g_LoginUserMng.DestroyAbnormalPlayer();
 						break;
 				}
 				break;
