@@ -150,6 +150,7 @@
     <ResourceCompile Include="LoginServer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\_Common\StaticString.h" />
     <ClInclude Include="DPCoreClient.h" />
     <ClInclude Include="DPDatabaseClient.h" />
     <ClInclude Include="DPLoginSrvr.h" />

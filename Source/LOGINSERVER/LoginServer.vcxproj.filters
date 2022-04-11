@@ -262,6 +262,9 @@
     <ClInclude Include="..\_Common\scanner.h">
       <Filter>Neuz Files\Common Files\Script</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\StaticString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="LoginServer.ico">

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "HeapMng.h"
-
-
+#include "StaticString.h"
 
 class CAr final {
 public:
@@ -220,4 +219,16 @@ inline std::tuple<Ts...> CAr::Extract() {
 	std::tuple<Ts...> tuples;
 	TupleExtract<0, std::tuple<Ts...>>(tuples);
 	return tuples;
+}
+
+template<size_t N>
+inline CAr & operator<<(CAr & ar, const StaticString<N> & str) {
+	ar.WriteString(str.GetRawStr());
+	return ar;
+}
+
+template<size_t N>
+inline CAr & operator>>(CAr & ar, StaticString<N> & str) {
+	ar.ReadString(str.buffer.data(), N);
+	return ar;
 }

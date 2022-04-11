@@ -122,11 +122,10 @@ void CDPCoreClient::OnPreJoin( CAr & ar )
 
 void CDPCoreClient::OnQueryRemovePlayer( CAr & ar )
 {
-	char lpszAccount[MAX_ACCOUNT] = { 0, };
-	ar.ReadString( lpszAccount, MAX_ACCOUNT );
+	const auto [lpszAccount] = ar.Extract<StaticString<MAX_ACCOUNT>>();
 
 	CMclAutoLock	Lock(g_LoginUserMng.m_AddRemoveLock );
-	CLoginUser* pUser	= g_LoginUserMng.GetUser( lpszAccount );
+	CLoginUser * pUser	= g_LoginUserMng.GetUser(lpszAccount);
 	if( pUser )
 	{
 		pUser->m_idPlayer	= 0;
