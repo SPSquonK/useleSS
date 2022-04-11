@@ -1,6 +1,3 @@
-#ifndef __USER_H__
-#define __USER_H__
-
 #pragma once
 
 #include <DPlay.h>
@@ -201,6 +198,28 @@ public:
 	void			SetAllAction();
 #endif // __S_SERVER_UNIFY
 
+public:
+	// Functions used to replace simple Add... functions
+#pragma region SqKsEmission
+//	/* Sends a packet to this user */
+//	template<DWORD packetId, typename... Ts>
+//	void SendPacket(Ts ... ts);
+
+	/* Adds a new snapshot centered on this user */
+	template<WORD snapshotID, typename... Ts>
+	void SendSnapshotThisId(Ts ... ts);
+
+	/* Adds a new snapshot centered on no target */
+	template<WORD snapshotID, typename... Ts>
+	void SendSnapshotNoTarget(Ts ... ts);
+
+	/* Adds a snapshot centered on another object */
+	template<WORD snapshotID, typename... Ts>
+	void SendSnapshotWithTarget(DWORD targetId, Ts ... ts);
+#pragma endregion
+
+public:
+
 	void			AddPostMail( CMail* pMail );
 	void			AddRemoveMail( u_long nMail, int nType );
 	void			AddMailBox( CMailBox* pMailBox );
@@ -216,8 +235,6 @@ public:
 	void			ResetCheckClientReq();
 	int				GetCountClientReq();
 	//////////////////////////////////////////////////////////////////////////
-
-
 
 
 	void			SetPosting( BOOL bPosting )		{	m_bPosting	= bPosting;	}
@@ -276,7 +293,6 @@ public:
 	void			AddRemoveGuildQuest( int nQuestId );
 	void			AddSetChangeJob( int nJob );
 	void			AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer );
-	void			AddGameTimer( double dCurrentTime );
 	void			AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip );
 	void			AddPartyChangeLeader( u_long uidChangeLeader );
 	void			AddCancelQuest( DWORD dwQuestCancelID );
@@ -882,4 +898,35 @@ public:
 
 };
 
-#endif	// __USER_H__
+
+
+#pragma region SqKsEmission
+
+template<WORD SnapshotId, typename... Ts>
+void CUser::SendSnapshotThisId(Ts ... ts) {
+	if (IsDelete())	return;
+	m_Snapshot.cb++;
+	m_Snapshot.ar << GetId();
+	m_Snapshot.ar << SnapshotId;
+	m_Snapshot.ar.Accumulate<Ts...>(ts...);
+}
+
+template<WORD SnapshotId, typename... Ts>
+void CUser::SendSnapshotNoTarget(Ts ... ts) {
+	if (IsDelete())	return;
+	m_Snapshot.cb++;
+	m_Snapshot.ar << static_cast<DWORD>(NULL_ID);
+	m_Snapshot.ar << SnapshotId;
+	m_Snapshot.ar.Accumulate<Ts...>(ts...);
+}
+
+template<WORD SnapshotId, typename... Ts>
+void CUser::SendSnapshotWithTarget(DWORD targetId, Ts ... ts) {
+	if (IsDelete())	return;
+	m_Snapshot.cb++;
+	m_Snapshot.ar << targetId;
+	m_Snapshot.ar << SnapshotId;
+	m_Snapshot.ar.Accumulate<Ts...>(ts...);
+}
+
+#pragma endregion

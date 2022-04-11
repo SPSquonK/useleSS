@@ -286,7 +286,7 @@ void CUser::Open( void )
 	AddWorldReadInfo( dwWorldId, GetPos() );
 #endif // __MAP_SECURITY
 	AddAddObj( (CCtrl*)this );
-	AddGameTimer( g_GameTimer.GetCurrentTime() );
+	SendSnapshotThisId<SNAPSHOTTYPE_GAMETIMER, double>(g_GameTimer.GetCurrentTime());
 	AddTaskBar();
 	AddEnvironment();
 	AddPlayerData();
@@ -1114,17 +1114,6 @@ void CUser::AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer )
 	m_Snapshot.ar << SNAPSHOTTYPE_RETURNSAY;
 	m_Snapshot.ar << ReturnFlag;
 	m_Snapshot.ar.WriteString( lpszPlayer );
-	
-}
-
-void CUser::AddGameTimer( double dCurrentTime )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_GAMETIMER;
-	m_Snapshot.ar << dCurrentTime;
 	
 }
 
