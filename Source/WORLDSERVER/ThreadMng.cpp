@@ -431,6 +431,11 @@ void CRunObject::Run( void )
 	#ifdef __EVENTLUA_SPAWN
 				prj.m_EventLua.EventSpawnProcess();
 	#endif // __EVENTLUA_SPAWN
+
+				g_DisplayedInfo.UpdateConnectionState({
+					.database = g_dpDBClient.IsAlive(),
+					.core = g_DPCoreClient.IsAlive()
+					});
 			}
 
 #ifdef __EVENT_1101

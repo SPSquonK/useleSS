@@ -53,6 +53,8 @@ public:
 	BOOL	Run( LPSTR lpszAddr, USHORT uPort, u_long uKey );
 	BOOL	CheckIdStack( void );
 
+	[[nodiscard]] bool IsAlive() const { return m_bAlive; }
+
 	void	SendJoin( u_long idPlayer, const char* szPlayer, BOOL bOperator );
 	void	SendSystemMessage( LPCTSTR lpsz );
 //	Operator commands

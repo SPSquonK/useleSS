@@ -17,6 +17,15 @@ void CDisplayedInfo::Paint(HDC & hDC) {
 		y += 20;
 	}
 
+	if (!m_connectedTo.database || !m_connectedTo.core) {
+		const std::string_view text = m_connectedTo.GetText();
+
+		const auto originalColor = GetTextColor(hDC);
+		SetTextColor(hDC, RGB(255, 0, 0));
+		TextOutA(hDC, 200, 0, text.data(), text.size());
+		SetTextColor(hDC, originalColor);
+	}
+
 	y += 10;
 
 	if (m_invalidWorlds != "") {
@@ -47,6 +56,22 @@ void CDisplayedInfo::Paint(HDC & hDC) {
 	}
 	*/
 #endif // __NEW_PROFILE
+}
+
+std::string_view CDisplayedInfo::ConnectedTo::GetText() const {
+	if (database) {
+		if (core) {
+			return "Ok";
+		} else {
+			return "Core KO";
+		}
+	} else {
+		if (core) {
+			return "DB KO";
+		} else {
+			return "DB KO / Core KO";
+		}
+	}
 }
 
 void CDisplayedInfo::Redraw() {

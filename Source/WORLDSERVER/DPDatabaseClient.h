@@ -30,6 +30,8 @@ public:
 	virtual	void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual	void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 
+	[[nodiscard]] bool IsAlive() const { return m_bAlive; }
+
 	void	SendITEM_TBL_Update( void );
 #ifdef __LAYER_1015
 	void	SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVECTOR3 & vPos, int nLayer, BOOL bLogout = FALSE );

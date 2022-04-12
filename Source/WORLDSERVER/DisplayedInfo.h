@@ -15,6 +15,13 @@ enum LOGTYPE {
 
 class CDisplayedInfo {
 public:
+	struct ConnectedTo {
+		bool database = false;
+		bool core = false;
+
+		[[nodiscard]] std::string_view GetText() const;
+	};
+
 	template<typename ... Ts>
 	void SetLogInfo(LOGTYPE type, LPCTSTR lpszFormat, Ts && ... ts) {
 		g_szBuffer[type].Format(lpszFormat, std::forward<Ts>(ts)...);
@@ -25,6 +32,8 @@ public:
 		std::vector<DWORD> invalidWorlds
 	);
 
+	void UpdateConnectionState(ConnectedTo connectedTo) { m_connectedTo = connectedTo; }
+
   void Paint(HDC & hDC);
 	void Redraw();
 
@@ -34,6 +43,8 @@ private:
 
 private:
 	std::array<StaticString<256>, LOGTYPE_MAX> g_szBuffer;
+
+	ConnectedTo m_connectedTo;
 	std::string m_listOfMaps;
 	std::string m_invalidWorlds;
 };
