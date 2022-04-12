@@ -432,20 +432,21 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	}
 	
 
-	std::string szMsg;
+	std::vector<std::pair<DWORD, std::string>> knownWorlds;
 
 	for (CJurisdiction * pJurisdiction : desc.m_lspJurisdiction) {
-		WORLD * lpWorld = g_WorldMng.GetWorldStruct( pJurisdiction->m_dwWorldID );
+		WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction->m_dwWorldID);
 
-		szMsg += std::to_string(pJurisdiction->m_dwWorldID);
-		szMsg += "=";
-		szMsg += lpWorld->m_szFileName;
-		szMsg += " ";
+		knownWorlds.push_back(
+			std::pair<DWORD, std::string>(
+				pJurisdiction->m_dwWorldID, lpWorld->m_szFileName
+			)
+		);
 
 		g_WorldMng.Add( pJurisdiction );
 	}
 
-	g_DisplayedInfo.SetListOfMaps(std::move(szMsg));
+	g_DisplayedInfo.SetListOfMaps(std::move(knownWorlds));
 
 	g_WorldMng.ReadObject();
 

@@ -20,7 +20,7 @@ public:
 		g_szBuffer[type].Format(lpszFormat, std::forward<Ts>(ts)...);
 	}
 
-	void SetListOfMaps(std::string s) { m_listOfMaps = std::move(s); }
+	void SetListOfMaps(std::vector<std::pair<DWORD, std::string>> worlds);
 
   void Paint(HDC & hDC);
 	void Redraw();
