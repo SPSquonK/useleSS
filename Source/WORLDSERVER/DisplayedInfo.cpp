@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "DisplayedInfo.h"
+#include <algorithm>
 #include <ranges>
 
 CDisplayedInfo g_DisplayedInfo;
@@ -13,6 +14,16 @@ void CDisplayedInfo::Paint(HDC & hDC) {
 	for (int i = 0; i < LOGTYPE_MAX; ++i) {
 		TextOut(hDC, x, y, g_szBuffer[i], strlen(g_szBuffer[i]));
 		
+		y += 20;
+	}
+
+	y += 10;
+
+	if (m_invalidWorlds != "") {
+		const auto originalColor = GetTextColor(hDC);
+		SetTextColor(hDC, RGB(255, 0, 0));
+		TextOutA(hDC, x, y, m_invalidWorlds.c_str(), m_invalidWorlds.size());
+		SetTextColor(hDC, originalColor);
 		y += 20;
 	}
 
@@ -44,7 +55,17 @@ void CDisplayedInfo::Redraw() {
 
 static std::string WorldsIdsToString(const std::vector<DWORD> & ids);
 
-void CDisplayedInfo::SetListOfMaps(std::vector<std::pair<DWORD, std::string>> worlds) {
+void CDisplayedInfo::SetListOfMaps(
+	std::vector<std::pair<DWORD, std::string>> worlds,
+	std::vector<DWORD> invalidWorlds
+) {
+	m_listOfMaps = ExistingWorldsToString(worlds);
+
+	std::sort(invalidWorlds.begin(), invalidWorlds.end());
+	m_invalidWorlds = InvalidWorldsToString(invalidWorlds);
+}
+
+std::string CDisplayedInfo::ExistingWorldsToString(const std::vector<std::pair<DWORD, std::string>> & worlds) {
 	std::map<DWORD, std::string> worldIdToWorldName;
 	std::map<std::string, DWORD> worldNameToFirstWorldId;
 
@@ -79,7 +100,26 @@ void CDisplayedInfo::SetListOfMaps(std::vector<std::pair<DWORD, std::string>> wo
 		str += WorldsIdsToString(worldsIds) + "=" + worldName + " ";
 	}
 
-	m_listOfMaps = str;
+	return str;
+}
+
+
+std::string DWordsToString(const std::vector<DWORD> & values, const char * const separator) {
+	if (values.size() == 0) return "";
+
+	std::string res = std::to_string(values[0]);
+
+	for (const DWORD id : values | std::views::drop(1)) {
+		res += separator;
+		res += std::to_string(id);
+	}
+
+	return res;
+}
+
+std::string CDisplayedInfo::InvalidWorldsToString(const std::vector<DWORD> & invalidWorlds) {
+	if (invalidWorlds.size() == 0) return "";
+	return "/!\\ Invalid worlds: " + DWordsToString(invalidWorlds, ", ");
 }
 
 static bool IsContiguous(const std::vector<DWORD> & values) {
@@ -100,16 +140,10 @@ static std::string WorldsIdsToString(const std::vector<DWORD> & ids) {
 	std::string res = "[";
 
 	if (ids.size() != 0) {
-		res += std::to_string(ids[0]);
-
 		if (ids.size() > 5 && IsContiguous(ids)) {
-			res += ":";
-			res += std::to_string(ids.back());
+			res += std::to_string(ids[0]) + ":" + std::to_string(ids.back());
 		} else {
-			for (const DWORD id : ids | std::views::drop(1)) {
-				res += ",";
-				res += std::to_string(id);
-			}
+			res += DWordsToString(ids, ",");
 		}
 	}
 
