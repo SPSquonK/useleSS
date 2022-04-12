@@ -167,7 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="account.h" />
-    <ClInclude Include="AccountServer.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="dpdbsrvr.h" />
     <ClInclude Include="dpsrvr.h" />

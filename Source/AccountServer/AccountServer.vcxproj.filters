@@ -148,9 +148,6 @@
     <ClInclude Include="account.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AccountServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DBManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
