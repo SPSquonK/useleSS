@@ -7,7 +7,7 @@
 #include "User.h"
 #include "ServerDesc.h"
 #include "WorldMng.h"
-
+#include "DisplayedInfo.h"
 #include "playerdata.h"
 
 #include "eveschool.h"
@@ -431,21 +431,22 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 		g_eLocal.SetState( EVE_EVENT0214, 1 );
 	}
 	
-	char szMsg[512] = "";
-	for( list<CJurisdiction*>::iterator i = desc.m_lspJurisdiction.begin(); i != desc.m_lspJurisdiction.end(); ++i )
-	{
-		CJurisdiction* pJurisdiction = *i;
-		
-		LPWORLD lpWorld	= g_WorldMng.GetWorldStruct( pJurisdiction->m_dwWorldID );
-		if( strlen( szMsg ) + strlen( lpWorld->m_szFileName ) < 512 )
-		{
-			strcat( szMsg, lpWorld->m_szFileName );
-			strcat( szMsg, " " );
-		}
+
+	std::string szMsg;
+
+	for (CJurisdiction * pJurisdiction : desc.m_lspJurisdiction) {
+		WORLD * lpWorld = g_WorldMng.GetWorldStruct( pJurisdiction->m_dwWorldID );
+
+		szMsg += std::to_string(pJurisdiction->m_dwWorldID);
+		szMsg += "=";
+		szMsg += lpWorld->m_szFileName;
+		szMsg += " ";
 
 		g_WorldMng.Add( pJurisdiction );
 	}
-	SetLogInfo( LOGTYPE_MAP, szMsg );
+
+	g_DisplayedInfo.SetListOfMaps(std::move(szMsg));
+
 	g_WorldMng.ReadObject();
 
 	WSASetEvent( m_hWait );

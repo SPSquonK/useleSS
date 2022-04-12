@@ -12,6 +12,12 @@ class CAr;
 template<size_t N>
 class StaticString {
 public:
+  StaticString() = default;
+
+  template<typename ... Ts>
+  StaticString(LPCTSTR lpszFormat, Ts && ... ts) {
+    _vsntprintf(buffer.data(), N, lpszFormat, std::forward(ts)...);
+  }
 
   operator const char * () const {
     return buffer.data();
@@ -31,6 +37,11 @@ public:
 
   template<size_t M> friend CAr & operator<<(CAr &, const StaticString<M> &);
   template<size_t M> friend CAr & operator>>(CAr &, StaticString<M> &);
+
+  template<typename ... Ts>
+  void Format(LPCTSTR lpszFormat, Ts && ... ts) {
+    _sntprintf(buffer.data(), N - 1, lpszFormat, std::forward<Ts>(ts)...);
+  }
 
 private:
   std::array<char, N> buffer = { '\0' };

@@ -105,6 +105,7 @@
     </ClCompile>
     <ClCompile Include="couplehelper.cpp">
     </ClCompile>
+    <ClCompile Include="DisplayedInfo.cpp" />
     <ClCompile Include="dpaccountclient.cpp">
     </ClCompile>
     <ClCompile Include="DPCoreClient.cpp">
@@ -450,6 +451,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\_Common\StaticString.h" />
+    <ClInclude Include="DisplayedInfo.h" />
     <ClInclude Include="WantedListSnapshot.h" />
     <ClInclude Include="AttackArbiter.h" />
     <ClInclude Include="..\_Common\auction.h" />
@@ -500,7 +503,6 @@
     <ClInclude Include="VersionCommon.h" />
     <ClInclude Include="vmlog.h" />
     <ClInclude Include="WorldDialog.h" />
-    <ClInclude Include="WorldServer.h" />
     <ClInclude Include="WScript.h" />
     <ClInclude Include="..\_network\CmnHdr.h" />
     <ClInclude Include="..\_Network\ErrorCode.h" />

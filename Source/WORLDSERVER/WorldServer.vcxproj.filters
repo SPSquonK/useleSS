@@ -52,6 +52,9 @@
     <Filter Include="AI">
       <UniqueIdentifier>{71806398-35db-4299-bb74-d65bb2a4bdde}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World Files">
+      <UniqueIdentifier>{f8dc7f37-f7df-4398-a748-5ba314c6de0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AttackArbiter.cpp">
@@ -585,6 +588,9 @@
     <ClCompile Include="..\_AIInterface\FSMstate.cpp">
       <Filter>AI</Filter>
     </ClCompile>
+    <ClCompile Include="DisplayedInfo.cpp">
+      <Filter>World Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">
@@ -735,9 +741,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WorldDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WScript.h">
@@ -1138,6 +1141,12 @@
     </ClInclude>
     <ClInclude Include="..\_AIInterface\FSMstate.h">
       <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayedInfo.h">
+      <Filter>World Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\StaticString.h">
+      <Filter>World Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,7 +6,6 @@
 #include "DPDatabaseClient.h"
 #include "User.h"
 #include "WorldMng.h"
-#include "WorldServer.h"
 #include "ThreadMng.h"
 #include "AIBear.h"
 #include "AIBigMuscle.h"
@@ -23,6 +22,7 @@
 #include "ItemScript.h"
 #include "WorldDialog.h"
 #include "WScript.h"
+#include "DisplayedInfo.h"
 
 #ifdef __VM_0819
 #include "vmlog.h"
@@ -59,8 +59,7 @@ extern BOOL			LoadAIScript();
 const int			MAX_LOADSTRING = 100;
 static TCHAR		g_szTitle[MAX_LOADSTRING];			
 static TCHAR		g_szWindowClass[MAX_LOADSTRING];	
-static HWND			g_hMainWnd;
-static char			g_szBuffer[LOGTYPE_MAX][256] = {0, };
+HWND g_hMainWnd;
 char				g_szCoreAddr[16];
 /*
 #ifdef __GIFTBOX0213
@@ -163,51 +162,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassEx(&wcex);
 }
 
-void SetLogInfo( LOGTYPE type, LPCTSTR lpszFormat, ... )
-{
-	if( type == LOGTYPE_REDRAW )
-	{
-		InvalidateRect( g_hMainWnd, NULL, TRUE );
-		return;
-	}
-
-	va_list args;
-	va_start(args, lpszFormat);
-
-	_vsntprintf( g_szBuffer[ type ], 255, lpszFormat, args );
-
-	va_end(args);
-}
-
-
-void OnPaint( HDC& hDC )
-{
-	int x, y;
-	x = 0;
-	y = 0;
-	
-	for( int i=0; i<LOGTYPE_MAX; ++i )
-	{
-		TextOut( hDC, x, y, g_szBuffer[i], strlen( g_szBuffer[i] ) );
-		y += 20;
-	}
-
-#ifdef __NEW_PROFILE
-	if( CProfileInfo::GetInstance()->IsToggleProfiling() )
-	{
-		TextOut( hDC, x, y, "Profiler : ON", 13 );
-		y += 20;
-	}
-	/*
-	for( i=0; i<CProfileInfo::GetInstance()->m_vecstrProfileInfo.size(); i++ )
-	{
-		TextOut( hDC, x, y, CProfileInfo::GetInstance()->m_vecstrProfileInfo[i].c_str(), CProfileInfo::GetInstance()->m_vecstrProfileInfo[i].length() );
-		y += 20;
-	}
-	*/
-#endif // __NEW_PROFILE
-}
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
@@ -245,7 +199,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case WM_PAINT:
 			hdc = BeginPaint( hWnd, &ps );
-			OnPaint( hdc );
+			g_DisplayedInfo.Paint(hdc);
 			EndPaint( hWnd, &ps );
 			break;
 		case WM_LBUTTONDOWN:
@@ -308,7 +262,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	SetTimer( g_hMainWnd, 1, MIN( 60 ), NULL );	// 3600
 
 	CTime time = CTime::GetCurrentTime();
-	SetLogInfo( LOGTYPE_TIME, "%s", time.Format( "%Y/%m/%d %H:%M:%S" ) );
+	g_DisplayedInfo.SetLogInfo(LOGTYPE_TIME, "%s", time.Format("%Y/%m/%d %H:%M:%S"));
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -339,7 +293,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 			return FALSE;
 		}
 
-		SetLogInfo( LOGTYPE_REDRAW, "" );
+		g_DisplayedInfo.Redraw();
 		SetTitle();
 
 		if( CompileItemScript( "ItemScript.lua" ) == FALSE )

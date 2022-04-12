@@ -3,12 +3,11 @@
 #include "WorldMng.h"
 #include "DPSrvr.h"
 #include "User.h"
-#include "WorldServer.h"
 #include "GlobalTime.h"
 #include "party.h"
 #include "dpdatabaseclient.h"
 #include "guildquest.h"
-
+#include "DisplayedInfo.h"
 #include "eveschool.h"
 extern	CGuildCombat	g_GuildCombatMng;
 
@@ -113,7 +112,7 @@ void LogPerformance( DWORD dwCurTick )
 
 	if( dwTick > 100 )
 	{
-		SetLogInfo( LOGTYPE_WARN1, "warning - tick:%d", dwTick );
+		g_DisplayedInfo.SetLogInfo(LOGTYPE_WARN1, "warning - tick:%d", dwTick);
 
 		if( g_bProfiling )
 		{
@@ -136,7 +135,7 @@ void LogPerformance( DWORD dwCurTick )
 					( r11 * 100.0f / sum ),
 					( r12 * 100.0f / sum ) );
 
-			SetLogInfo( LOGTYPE_WARN2, szBuffer );
+			g_DisplayedInfo.SetLogInfo(LOGTYPE_WARN2, szBuffer);
 			OutputDebugString( szBuffer );
 		}
 	}
@@ -154,16 +153,16 @@ void LogPerformance( DWORD dwCurTick )
 
 	if( dwElapsed > 1000 )
 	{
-		SetLogInfo( LOGTYPE_CCU, "CCU:%d", g_UserMng.GetCount() );
+		g_DisplayedInfo.SetLogInfo( LOGTYPE_CCU, "CCU:%d", g_UserMng.GetCount() );
 
 		if( g_bProfiling )
-			SetLogInfo( LOGTYPE_PERFOMANCE, "frame:%d tick:%d", nFrame, dwTick );
+			g_DisplayedInfo.SetLogInfo( LOGTYPE_PERFOMANCE, "frame:%d tick:%d", nFrame, dwTick );
 
 		dwElapsed = 0; // -= 1000
 		nFrame = 0;
 
 		r1 = r2 = r3 = r4 = r5 = r6 = r7 = r8 = r9 = r10 = r11 = r12 = 0;
-		SetLogInfo( LOGTYPE_REDRAW, "" );
+		g_DisplayedInfo.Redraw();
 #ifdef __NEW_PROFILE
 		if( CProfileInfo::GetInstance()->IsToggleProfiling() )
 			CProfileInfo::GetInstance()->SetProfileInfo();
@@ -367,7 +366,7 @@ void CRunObject::Run( void )
 				_PROFILE( "g_WorldMng.Respawn()" );
 				u_long uRespawned = g_WorldMng.Respawn();
 //				if( uRespawned > 0 )
-					SetLogInfo( LOGTYPE_RESPAWN, "Respawn:%d Object:%d", uRespawned, g_WorldMng.GetObjCount() );
+				g_DisplayedInfo.SetLogInfo( LOGTYPE_RESPAWN, "Respawn:%d Object:%d", uRespawned, g_WorldMng.GetObjCount() );
 			}
 
 			PROFILE_RUN( r6 );

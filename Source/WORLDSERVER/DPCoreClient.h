@@ -3,7 +3,6 @@
 
 #include "DPMng.h"
 #include "MsgHdr.h"
-#include "WorldServer.h"
 #include "misc.h"
 
 #include "guild.h"
