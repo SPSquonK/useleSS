@@ -435,13 +435,18 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	std::vector<std::pair<DWORD, std::string>> knownWorlds;
 
 	for (CJurisdiction * pJurisdiction : desc.m_lspJurisdiction) {
-		WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction->m_dwWorldID);
+		if (pJurisdiction == nullptr) {
+			Error(__FUNCTION__ ": One of the world was not properly loaded");
+			continue;
+		}
 
-		knownWorlds.push_back(
-			std::pair<DWORD, std::string>(
-				pJurisdiction->m_dwWorldID, lpWorld->m_szFileName
-			)
-		);
+		WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction->m_dwWorldID);
+		if (!lpWorld) {
+			Error(__FUNCTION__ ": The world #%lu has no world Struct", pJurisdiction->m_dwWorldID);
+			continue;
+		}
+
+		knownWorlds.emplace_back(pJurisdiction->m_dwWorldID, lpWorld->m_szFileName);
 
 		g_WorldMng.Add( pJurisdiction );
 	}
