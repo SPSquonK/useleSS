@@ -678,6 +678,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h" />
+    <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
     <ClInclude Include="CNTREVNT.h" />
     <ClInclude Include="couplehelper.h" />

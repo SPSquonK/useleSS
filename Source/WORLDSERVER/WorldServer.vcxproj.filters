@@ -1148,6 +1148,9 @@
     <ClInclude Include="..\_Common\StaticString.h">
       <Filter>World Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\CommonHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldServer.rc">

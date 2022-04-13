@@ -166,6 +166,7 @@
     <ResourceCompile Include="CoreServer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="CoreServer.h" />
     <ClInclude Include="DPCacheSrvr.h" />
     <ClInclude Include="DPCoreSrvr.h" />

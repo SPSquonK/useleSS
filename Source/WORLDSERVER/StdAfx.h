@@ -21,7 +21,6 @@
 #include <map>
 #include <queue>
 #include <set>
-using namespace std;
 
 #include <afxdisp.h>        // MFC Automation classes
 
@@ -33,6 +32,7 @@ using namespace std;
 #include <d3dx9math.h>
 
 #include "VersionCommon.h"
+#include "CommonHeader.h"
 #include "memtrace.h"
 #ifdef __MEM_TRACE
 #ifndef _DEBUG

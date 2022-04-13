@@ -21,9 +21,9 @@
 #include <set>
 #include <list>
 #include <vector>
-using	namespace	std;
 
 #include "VersionCommon.h"
+#include "CommonHeader.h"
 
 #include "memtrace.h"
 

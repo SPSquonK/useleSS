@@ -295,6 +295,9 @@
     <ClInclude Include="dpBillingTH.h">
       <Filter>Billing</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\CommonHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="AccountServer.ico">

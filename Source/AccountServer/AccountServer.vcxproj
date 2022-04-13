@@ -166,6 +166,7 @@
     <ResourceCompile Include="AccountServer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="account.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="dpdbsrvr.h" />

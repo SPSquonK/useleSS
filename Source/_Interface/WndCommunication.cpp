@@ -731,7 +731,7 @@ BOOL CWndChat::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 				if( m_nHistoryIndex >= (int)( m_strHistory.size() ) )
 				{
-					m_strHistory.front();
+					// m_strHistory.front();
 					m_nHistoryIndex = 0;
 				}
 

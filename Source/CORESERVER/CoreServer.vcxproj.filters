@@ -325,6 +325,9 @@
     <ClInclude Include="..\_network\misc\include\tickcount.h">
       <Filter>Network Files\Misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\CommonHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="BoA!!!.txt">

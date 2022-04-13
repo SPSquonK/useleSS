@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "VersionCommon.h"
+#include "CommonHeader.h"
 #include "memtrace.h"
 #include "DefineCommon.h"
 #include "CmnHdr.h"
@@ -31,5 +32,3 @@
 #include "Timer.h"
 #include "d3dfont.h"
 #include "xutil.h"
-
-using namespace	std;

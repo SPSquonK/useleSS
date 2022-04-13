@@ -14,6 +14,7 @@
 #include <afxcmn.h>			
 
 #include "VersionCommon.h"
+#include "CommonHeader.h"
 
 #include "memtrace.h"
 

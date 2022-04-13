@@ -578,6 +578,9 @@
     <ClInclude Include="..\_database\Query.h">
       <Filter>Database Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\CommonHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="DatabaseServer.ico">

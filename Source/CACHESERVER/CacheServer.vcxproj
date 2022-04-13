@@ -160,6 +160,7 @@
     <ResourceCompile Include="CacheServer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="CacheServer.h" />
     <ClInclude Include="crashstatus.h" />
     <ClInclude Include="DPCacheSrvr.h" />

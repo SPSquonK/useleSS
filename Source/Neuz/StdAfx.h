@@ -30,7 +30,6 @@
 #include <map>
 #include <string> 
 #include <queue>
-using namespace std;
 
 
 #define		__CLIENT
@@ -39,6 +38,7 @@ using namespace std;
 
 #include "NeuzVersion.h"  
 #include "VersionCommon.h"
+#include "CommonHeader.h"
 #include "DefineCommon.h"
 #include "Resource.h"    
 #include "authorization.h" 

@@ -158,6 +158,7 @@
     <ResourceCompile Include="certifier.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="AccountMgr.h" />
     <ClInclude Include="certifier.h" />
     <ClInclude Include="DBManager.h" />

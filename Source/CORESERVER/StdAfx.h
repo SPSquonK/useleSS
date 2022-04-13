@@ -17,10 +17,9 @@
 #include <string>
 #include <set>
 
-using	namespace	std;
-
 #include <DPlay.h>
 #include "VersionCommon.h"
+#include "CommonHeader.h"
 
 #include "memtrace.h"
 
