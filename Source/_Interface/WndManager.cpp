@@ -85,6 +85,44 @@ CPtrArray      m_wndOrder;
 
 CWndMgr          g_WndMng;
 
+BOOL IsDst_Rate(int nDstParam);
+const char * FindDstString(int nDstParam);
+
+static CString SingleDstToString(const SINGLE_DST & singleDst) {
+	if (singleDst.nDst == DST_STAT_ALLUP) {
+		CString str;
+		str.AppendFormat("\n%s%+d", FindDstString(DST_STR), singleDst.nAdj);
+		str.AppendFormat("\n%s%+d", FindDstString(DST_DEX), singleDst.nAdj);
+		str.AppendFormat("\n%s%+d", FindDstString(DST_INT), singleDst.nAdj);
+		str.AppendFormat("\n%s%+d", FindDstString(DST_STA), singleDst.nAdj);
+		return str;
+	} else {
+		const char * dstName = FindDstString(singleDst.nDst);
+
+		CString strTemp;
+
+		if (IsDst_Rate(singleDst.nDst)) {
+			if (singleDst.nDst == DST_ATTACKSPEED) {
+				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj / 2 / 10);
+			} else {
+				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj);
+			}
+		} else {
+			strTemp.Format("\n%s%+d", dstName, singleDst.nAdj);
+		}
+
+		return strTemp;
+	}
+}
+
+template<MultipleDsts DstList>
+static CString DstsToString(const DstList & dstList) {
+	CString res;
+	for (const auto & dst : dstList) {
+		res += SingleDstToString(dst);
+	}
+	return res;
+}
 
 const char* GetATKSpeedString( float fSpeed )
 {
@@ -4388,17 +4426,8 @@ void CWndMgr::PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit )
 		int nDst, nAdj;
 		if( !g_xRandomOptionProperty->GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
 			continue;
-		if( IsDst_Rate( nDst ) )
-		{
-			if( nDst == DST_ATTACKSPEED )
-				str.Format( "\n%s %c%d%% ", FindDstString( nDst ), ( nAdj > 0? '+': '-' ), ::abs( nAdj / 2 / 10 ) );
-			else
-				str.Format( "\n%s %c%d%%", FindDstString( nDst ), ( nAdj > 0? '+': '-' ), ::abs( nAdj ) );
-		}
-		else
-		{
-			str.Format( "\n%s %c%d", FindDstString( nDst ), ( nAdj > 0? '+': '-' ), ::abs( nAdj ) );
-		}
+
+		str = SingleDstToString(SINGLE_DST{ nDst, nAdj });
 
 		if( nKind == CRandomOptionProperty::eAwakening )
 		{
@@ -4422,8 +4451,8 @@ void CWndMgr::PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit )
 {
 	if( pItemElem->GetProp()->dwParts == (DWORD)-1 )
 		return;
-	CString strTemp;
-	PRANDOMOPTITEM pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
+
+	RANDOMOPTITEM * pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
 	if( pRandomOptItem ) // 2. 랜덤 옵션의 내용을 출력한다.
 	{
 		for( int i = 0; i < pRandomOptItem->ia.nSize; i++ )
@@ -4431,25 +4460,14 @@ void CWndMgr::PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit )
 			int nDst = (int)pRandomOptItem->ia.anDstParam[i];
 			int nAdj = (int)pRandomOptItem->ia.anAdjParam[i];
 			
-			if( IsDst_Rate(nDst) )
-			{
-				if( nDst == DST_ATTACKSPEED )
-					strTemp.Format( "\n%s%+d%%", FindDstString(nDst), nAdj / 2 / 10 );
-				else
-					strTemp.Format( "\n%s%+d%%", FindDstString(nDst), nAdj );					
-			}
-			else
-			{
-				strTemp.Format( "\n%s+%d", FindDstString(nDst), nAdj );								
-			}
-	
+			const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
+				
 			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwRandomOption );
 		}
 	}
 }
 void CWndMgr::PutPiercingOpt( CItemElem* pItemElem, CEditString* pEdit )
 {
-	CString strTemp;
 	PIERCINGAVAIL pa;
 	memset( &pa, 0, sizeof(PIERCINGAVAIL) );
 	pItemElem->GetPiercingAvail( &pa );
@@ -4457,18 +4475,8 @@ void CWndMgr::PutPiercingOpt( CItemElem* pItemElem, CEditString* pEdit )
 	{
 		int nDst = (int)pa.anDstParam[i];
 		int nAdj = (int)pa.anAdjParam[i];
-		
-		if( IsDst_Rate(nDst) )
-		{
-			if( nDst == DST_ATTACKSPEED )
-				strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), nAdj / 2 / 10 );
-			else
-				strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), nAdj );
-		}
-		else
-		{
-			strTemp.Format( "\n%s+%d", FindDstString( nDst ), nAdj );
-		}
+
+		const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
 		
 		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );
 	}
@@ -4564,17 +4572,8 @@ void CWndMgr::PutSetItemOpt( CMover* pMover, CItemElem* pItemElem, CEditString* 
 			int nDst = (int)itemAvail.anDstParam[i];
 			int nAdj = (int)itemAvail.anAdjParam[i];
 			
-			if( IsDst_Rate(nDst) )
-			{
-				if( nDst == DST_ATTACKSPEED )
-					strTemp.Format( "\n%s: %s% +d%%", prj.GetText(TID_TOOLTIP_SET), FindDstString( nDst ), nAdj / 2 / 10 );	
-				else
-					strTemp.Format( "\n%s: %s% +d%%", prj.GetText(TID_TOOLTIP_SET), FindDstString( nDst ), nAdj );	
-			}
-			else
-			{
-				strTemp.Format( "\n%s: %s +%d", prj.GetText(TID_TOOLTIP_SET), FindDstString( nDst ), nAdj );
-			}
+			const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
+
 			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetEffect );
 		}
 	}
@@ -4685,42 +4684,6 @@ void CWndMgr::PutMedicine( CItemElem* pItemElem, DWORD dwParam, LONG nParamVal, 
 	}
 }
 
-static CString SingleDstToString(const SINGLE_DST & singleDst) {
-	if (singleDst.nDst == DST_STAT_ALLUP) {
-		CString str;
-		str.AppendFormat("\n%s%+d", FindDstString(DST_STR), singleDst.nAdj);
-		str.AppendFormat("\n%s%+d", FindDstString(DST_DEX), singleDst.nAdj);
-		str.AppendFormat("\n%s%+d", FindDstString(DST_INT), singleDst.nAdj);
-		str.AppendFormat("\n%s%+d", FindDstString(DST_STA), singleDst.nAdj);
-		return str;
-	} else {
-		const char * dstName = FindDstString(singleDst.nDst);
-
-		CString strTemp;
-
-		if (IsDst_Rate(singleDst.nDst)) {
-			if (singleDst.nDst == DST_ATTACKSPEED) {
-				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj / 2 / 10);
-			} else {
-				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj);
-			}
-		} else {
-			strTemp.Format("\n%s%+d", dstName, singleDst.nAdj);
-		}
-
-		return strTemp;
-	}
-}
-
-template<MultipleDsts DstList>
-static CString DstsToString(const DstList & dstList) {
-	CString res;
-	for (const auto & dst : dstList) {
-		res += SingleDstToString(dst);
-	}
-	return res;
-}
-
 void CWndMgr::PutBaseItemOpt(CItemElem * pItemElem, CEditString * pEdit) {
 	if (const ItemProp * itemProp = pItemElem->GetProp()) {
 		boost::container::small_vector<SINGLE_DST, 3> itemParams;
@@ -4796,16 +4759,10 @@ void CWndMgr::PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit )
 		//추가 옵션을 툴팁에 추가.
 		if(nAddedOpt[i] >= 0)
 		{
+			const int nDst = nAddedOptDST[nAddedOpt[i]];
+			const int nAdj = nAddedValue[i];
 
-			if(FindDstString( nAddedOptDST[nAddedOpt[i]] ))
-			{
-				if(nAddedOpt[i] == 3 || nAddedOpt[i] == 4)
-					str.Format( "\n%s+%d%%", FindDstString( nAddedOptDST[nAddedOpt[i]] ), nAddedValue[i] );
-				else
-					str.Format( "\n%s+%d", FindDstString( nAddedOptDST[nAddedOpt[i]] ), nAddedValue[i] );
-			}
-
-			strTemp = str;
+			const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
 			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwAddedOpt7 );
 		}			
 	}			
@@ -6475,54 +6432,22 @@ void CWndMgr::SetMessengerAutoState()
 
 void CWndMgr::PutDestParam( DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString &str )
 {
-	CString strTemp;
-	CString strSignAdj;
 	if( dwDst1 != NULL_ID && dwDst1 != 0 && dwDst1 != DST_CHRSTATE )
 	{
+		int nDst = dwDst1;
 		int nAdj = dwAdj1;
 
-		if(nAdj < 0)
-			strSignAdj = "";
-		else
-			strSignAdj = "+";
-		
-		if( IsDst_Rate(dwDst1) )
-		{
-			if( dwDst1 == DST_ATTACKSPEED )
-				strTemp.Format( "\n%s%s%d%%", FindDstString(dwDst1), strSignAdj, static_cast< int >( dwAdj1 ) / 2 / 10 );
-			else
-				strTemp.Format( "\n%s%s%d%%", FindDstString(dwDst1), strSignAdj, dwAdj1 );					
-		}
-		else
-		{
-			strTemp.Format( "\n%s%s%d", FindDstString(dwDst1), strSignAdj, dwAdj1 );								
-		}
-
+		const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
 		str.AddString(strTemp, D3DCOLOR_XRGB( 0, 0, 255 ) );
 	}
 
 	if( dwDst2 != NULL_ID && dwDst2 != 0 && dwDst2 != DST_CHRSTATE )
 	{
+		int nDst = dwDst2;
 		int nAdj = dwAdj2;
 
-		if(nAdj < 0)
-			strSignAdj = "";
-		else
-			strSignAdj = "+";
-
-		if( IsDst_Rate(dwDst2) )
-		{
-			if( dwDst2 == DST_ATTACKSPEED )
-				strTemp.Format( "\n%s%s%d%%", FindDstString(dwDst2), strSignAdj, static_cast< int >( dwAdj2 ) / 2 / 10 );
-			else
-				strTemp.Format( "\n%s%s%d%%", FindDstString(dwDst2), strSignAdj, dwAdj2 );					
-		}
-		else
-		{
-			strTemp.Format( "\n%s%s%d", FindDstString(dwDst2), strSignAdj, dwAdj2 );								
-		}
-
-		str.AddString(strTemp, D3DCOLOR_XRGB( 0, 0, 255 ) );
+		const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
+		str.AddString(strTemp, D3DCOLOR_XRGB(0, 0, 255));
 	}	
 }
 
@@ -6624,23 +6549,8 @@ void CWndMgr::PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit )
 	}
 
 	//전부 더해진 옵션에 대해서 출력 
-	for( iter = cTotalOpt.begin(); iter != cTotalOpt.end(); ++iter )
-	{
-		int nDst = iter->first;
-		int nVal = iter->second;
-		
-		if( IsDst_Rate( nDst ) )
-		{
-			if( nDst == DST_ATTACKSPEED )
-				strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), nVal / 2 / 10 );
-			else
-				strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), nVal );
-		}
-		else
-		{
-			strTemp.Format( "\n%s%+d", FindDstString( nDst ), nVal );
-		}
-
+	for (const auto & [nDst, nVal] : cTotalOpt) {
+		const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nVal });
 		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );
 	}
 
