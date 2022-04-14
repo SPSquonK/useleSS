@@ -4685,6 +4685,42 @@ void CWndMgr::PutMedicine( CItemElem* pItemElem, DWORD dwParam, LONG nParamVal, 
 	}
 }
 
+static CString SingleDstToString(const SINGLE_DST & singleDst) {
+	if (singleDst.nDst == DST_STAT_ALLUP) {
+		CString str;
+		str.AppendFormat("\n%s%+d", FindDstString(DST_STR), singleDst.nAdj);
+		str.AppendFormat("\n%s%+d", FindDstString(DST_DEX), singleDst.nAdj);
+		str.AppendFormat("\n%s%+d", FindDstString(DST_INT), singleDst.nAdj);
+		str.AppendFormat("\n%s%+d", FindDstString(DST_STA), singleDst.nAdj);
+		return str;
+	} else {
+		const char * dstName = FindDstString(singleDst.nDst);
+
+		CString strTemp;
+
+		if (IsDst_Rate(singleDst.nDst)) {
+			if (singleDst.nDst == DST_ATTACKSPEED) {
+				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj / 2 / 10);
+			} else {
+				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj);
+			}
+		} else {
+			strTemp.Format("\n%s%+d", dstName, singleDst.nAdj);
+		}
+
+		return strTemp;
+	}
+}
+
+template<MultipleDsts DstList>
+static CString DstsToString(const DstList & dstList) {
+	CString res;
+	for (const auto & dst : dstList) {
+		res += SingleDstToString(dst);
+	}
+	return res;
+}
+
 void CWndMgr::PutBaseItemOpt( CItemElem* pItemElem, CEditString* pEdit )
 {
 	CString str;
@@ -4730,37 +4766,8 @@ void CWndMgr::PutBaseItemOpt( CItemElem* pItemElem, CEditString* pEdit )
 	if( pItemElem && pItemElem->IsAccessory() )		// 액세서리
 	{
 		vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
-		for( int i = 0; i < (int)( pDst->size() ); i++ )
-		{
-			int nDst	= (*pDst)[i].nDst;
-			int nAdj	= (*pDst)[i].nAdj;
-			if( nDst == DST_STAT_ALLUP )
-			{
-				str.Format( "\n%s%+d", FindDstString( DST_STR ), nAdj );
-				strTemp = str;
-				str.Format( "\n%s%+d", FindDstString( DST_DEX ), nAdj );
-				strTemp += str;
-				str.Format( "\n%s%+d", FindDstString( DST_INT ), nAdj );
-				strTemp += str;
-				str.Format( "\n%s%+d", FindDstString( DST_STA ), nAdj );
-				strTemp += str;
-			}
-			else
-			{
-				if( IsDst_Rate( nDst ) )
-				{
-					if( nDst == DST_ATTACKSPEED )
-						strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), nAdj / 2 / 10 );
-					else
-						strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), nAdj );
-				}
-				else
-				{
-					strTemp.Format( "\n%s%+d", FindDstString( nDst ), nAdj );
-				}
-			}
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-		}
+		CString str = DstsToString(*pDst);
+		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 	}
 }
 

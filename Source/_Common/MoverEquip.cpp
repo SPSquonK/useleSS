@@ -2088,9 +2088,8 @@ void CMover::SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL 
 	CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 	if( pItemElem && pItemElem->IsAccessory() )		// 咀技辑府
 	{
-		vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
-		for( DWORD i = 0; i < pDst->size(); i++ )
-			SetDestParam( (*pDst)[i].nDst, (*pDst)[i].nAdj, NULL_CHGPARAM );
+		vector<SINGLE_DST> * pDst = pProperty->GetDst(pItemElem->m_dwItemId, pItemElem->GetAbilityOption());
+		SetDSTs(*pDst);
 	}
 
 #ifdef __WORLDSERVER
@@ -2180,8 +2179,7 @@ void CMover::ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem )
 		if( pItemElem->IsAccessory() )		// 咀技辑府
 		{
 			vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
-			for( DWORD i = 0; i < pDst->size(); i++ )
-				ResetDestParam( (*pDst)[i].nDst, (*pDst)[i].nAdj );
+			ResetDSTs(*pDst);
 		}
 
 #ifdef __WORLDSERVER

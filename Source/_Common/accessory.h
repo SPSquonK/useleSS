@@ -1,12 +1,17 @@
-#ifndef __ACCESSORY_H__
-#define	__ACCESSORY_H__
+#pragma once
+
+#include <ranges>
 
 #define	MAX_AAO		20
-typedef	struct	_SINGLE_DST
-{
+
+struct SINGLE_DST {
 	int	nDst;
 	int	nAdj;
-}	SINGLE_DST;
+};
+
+template<typename T>
+concept MultipleDsts = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, SINGLE_DST>;
+
 
 class CAccessoryProperty
 {
@@ -27,4 +32,3 @@ private:
 	DWORD	m_adwProbability[MAX_AAO];
 	map<DWORD, vector<SINGLE_DST>*>	m_mapAccessory;
 };
-#endif	// __ACCESSORY_H__

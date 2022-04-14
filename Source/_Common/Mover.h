@@ -1486,6 +1486,21 @@ public:
 	void			operator delete( void* lpMem, LPCSTR lpszFileName, int nLine )	{ CMover::m_pPool->Free( (CMover*)lpMem );	}
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
+
+public:
+	template<MultipleDsts DstList>
+	void SetDSTs(const DstList & dsts) {
+		for (const auto & dst : dsts) {
+			SetDestParam(dst.nDst, dst.nAdj, NULL_CHGPARAM);
+		}
+	}
+
+	template<MultipleDsts DstList>
+	void ResetDSTs(const DstList & dsts) {
+		for (const auto & dst : dsts) {
+			ResetDestParam(dst.nDst, dst.nAdj);
+		}
+	}
 };
 
 
