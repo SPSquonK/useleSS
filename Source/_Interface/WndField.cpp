@@ -21262,15 +21262,13 @@ void CWndRemovePiercing::OnDraw( C2DRender* p2DRender )
 				if(nPiercingSize > nMaxPiercing)
 					break;
 
-				PPIERCINGAVAIL ptr = NULL;
-				ptr = CPiercingAvail::GetInstance()->GetPiercingAvail( m_pItemElem->GetPiercingItem( i ) );
+				const PIERCINGAVAIL * ptr = CPiercingAvail::GetInstance()->GetPiercingAvail(m_pItemElem->GetPiercingItem(i));
 
 				if(ptr != NULL)
 				{
-					for(int j=0; j<ptr->nSize; j++)
-					{
-						int nDst = (int)ptr->anDstParam[j];
-						int nAdj = (int)ptr->anAdjParam[j];
+					for (const auto & singleDst : ptr->params) {
+						const int nDst = singleDst.nDst;
+						const int nAdj = singleDst.nAdj;
 						
 						if( g_WndMng.IsDstRate(nDst) )
 						{

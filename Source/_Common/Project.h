@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "boost/container/static_vector.hpp"
+#include "SingleDst.h"
 
 #include "defineNeuz.h"
 #include "ModelMng.h"
@@ -695,13 +697,10 @@ typedef struct	_SETITEMAVAIL
 }	SETITEMAVAIL, *PSETITEMAVAIL;
 
 #define	MAX_PIERCING_DSTPARAM	32
-typedef struct _PIERCINGAVAIL
-{
+struct PIERCINGAVAIL {
 	DWORD	dwItemId;
-	int		nSize;
-	int		anDstParam[MAX_PIERCING_DSTPARAM];
-	int		anAdjParam[MAX_PIERCING_DSTPARAM];
-} PIERCINGAVAIL, *PPIERCINGAVAIL;
+	boost::container::static_vector<SINGLE_DST, MAX_PIERCING_DSTPARAM> params;
+};
 
 #define	MAX_PIERCING_MATERIAL	128
 class CPiercingAvail
@@ -714,8 +713,8 @@ private:
 public:
 	CPiercingAvail();
 	~CPiercingAvail();
-	BOOL	AddPiercingAvail( DWORD dwItemId, int nDstParam, int nAdjParam );
-	PPIERCINGAVAIL	GetPiercingAvail( DWORD dwItemId );
+	BOOL AddPiercingAvail( DWORD dwItemId, int nDstParam, int nAdjParam );
+	const PIERCINGAVAIL * GetPiercingAvail(DWORD dwItemId) const;
 
 	static	CPiercingAvail*	GetInstance( void );
 };

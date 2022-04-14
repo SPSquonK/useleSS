@@ -4466,20 +4466,11 @@ void CWndMgr::PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit )
 		}
 	}
 }
-void CWndMgr::PutPiercingOpt( CItemElem* pItemElem, CEditString* pEdit )
-{
-	PIERCINGAVAIL pa;
-	memset( &pa, 0, sizeof(PIERCINGAVAIL) );
-	pItemElem->GetPiercingAvail( &pa );
-	for( int i = 0; i < pa.nSize; i++ )
-	{
-		int nDst = (int)pa.anDstParam[i];
-		int nAdj = (int)pa.anAdjParam[i];
 
-		const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
-		
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );
-	}
+void CWndMgr::PutPiercingOpt(const CItemElem * const pItemElem, CEditString * pEdit) {
+	const auto multipleDsts = pItemElem->GetPiercingAvail();
+	const CString strTemp = DstsToString(multipleDsts);
+	pEdit->AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing);
 }
 
 void CWndMgr::PutEnchantOpt( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag )

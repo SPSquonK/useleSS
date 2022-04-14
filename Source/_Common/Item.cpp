@@ -298,31 +298,27 @@ BOOL CItemElem::IsCharged()
 	return FALSE;
 }
 
-void CItemElem::GetPiercingAvail( PPIERCINGAVAIL pPiercingAvail )
-{
-	for( int i = 0; i < GetPiercingSize(); i++ )
-	{
-		PPIERCINGAVAIL ptr	= CPiercingAvail::GetInstance()->GetPiercingAvail( GetPiercingItem( i ) );
-		if( ptr )
-		{
-			for( int j = 0; j < ptr->nSize; j++ )
-			{
-				int nFind	= -1;
-				for( int k = 0; k < pPiercingAvail->nSize; k++ )
-				{
-					if(  pPiercingAvail->anDstParam[k] == ptr->anDstParam[j] )
-					{
-						nFind	= k;
-						break;
-					}
+SmallDstList CItemElem::GetPiercingAvail() const {
+	SmallDstList result;
+
+	for (int i = 0; i < GetPiercingSize(); i++) {
+		const PIERCINGAVAIL * ptr	= CPiercingAvail::GetInstance()->GetPiercingAvail( GetPiercingItem( i ) );
+		if (ptr) {
+			for (const auto & dstToAdd : ptr->params) {
+				const auto it = std::find_if(result.begin(), result.end(),
+					[&](const SINGLE_DST & dst) { return dst.nDst == dstToAdd.nDst; }
+				);
+
+				if (it == result.end()) {
+					result.emplace_back(dstToAdd);
+				} else {
+					it->nAdj += dstToAdd.nAdj;
 				}
-				if( nFind < 0 )
-					nFind	= pPiercingAvail->nSize++;
-				pPiercingAvail->anDstParam[nFind]		= ptr->anDstParam[j];
-				pPiercingAvail->anAdjParam[nFind]		+= ptr->anAdjParam[j];
 			}
 		}
 	}
+
+	return result;
 }
 
 // 주사위로 제련 가능한 아이템 종류

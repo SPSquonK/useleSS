@@ -7950,17 +7950,12 @@ void CMover::DestParamPiercingAvail( CItemElem* pItemElem, BOOL bSET )
 	if( !pItemElem->IsPierceAble() )
 		return;
 	
-	PIERCINGAVAIL piercingAvail;
-	memset( &piercingAvail, 0, sizeof(piercingAvail) );
-	
-	pItemElem->GetPiercingAvail( &piercingAvail );
-	
-	for( int i = 0; i < piercingAvail.nSize; i++ )
-	{
-		if( bSET )
-			SetDestParam( piercingAvail.anDstParam[i], piercingAvail.anAdjParam[i], NULL_CHGPARAM );
-		else
-			ResetDestParam( piercingAvail.anDstParam[i], piercingAvail.anAdjParam[i], TRUE );
+	const auto dstDiff = pItemElem->GetPiercingAvail();
+
+	if (bSET) {
+		SetDSTs(dstDiff);
+	} else {
+		ResetDSTs(dstDiff);
 	}
 }
 

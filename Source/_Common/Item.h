@@ -93,9 +93,9 @@ private:
 	CPiercing	m_piercing;
 public:
 	void	SetPiercingSize( int nSize )	{	m_piercing.SetPiercingSize( nSize );	}
-	int		GetPiercingSize()	{	return m_piercing.GetPiercingSize();		}
+	int		GetPiercingSize() const	{	return m_piercing.GetPiercingSize();		}
 	void	SetPiercingItem( int nth, DWORD dwItem )	{	m_piercing.SetPiercingItem( nth, dwItem );	}
-	DWORD	GetPiercingItem( int nth )	{	return m_piercing.GetPiercingItem( nth );	}
+	DWORD	GetPiercingItem( int nth ) const	{	return m_piercing.GetPiercingItem( nth );	}
 	void	CopyPiercing( const CPiercing & piercing )		{	m_piercing	= piercing;		}
 	void	SerializePiercing( CAr & ar )	{	m_piercing.Serialize( ar );		}
 	BOOL	IsPiercedItem()	{ return m_piercing.IsPiercedItem(); }
@@ -210,7 +210,7 @@ public:
 	int			GetGold();
 
 //	PIERCINGINFO	m_piercingInfo;
-	void	GetPiercingAvail( PPIERCINGAVAIL pPiercingAvail/*input, output*/ );
+	[[nodiscard]] SmallDstList GetPiercingAvail() const;
 	BOOL	m_bCharged;			// 상용화 아이템인지 확인
 	DWORD	m_dwKeepTime;		// 지속시간
 

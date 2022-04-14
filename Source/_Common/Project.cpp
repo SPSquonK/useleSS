@@ -4013,20 +4013,18 @@ BOOL CPiercingAvail::AddPiercingAvail( DWORD dwItemId, int nDstParam, int nAdjPa
 	if( m_nSize >= MAX_PIERCING_MATERIAL )
 		return FALSE;
 
-	if( m_pPiercingAvail[nIdx1].nSize == MAX_PIERCING_DSTPARAM )
+	if( m_pPiercingAvail[nIdx1].params.size() == MAX_PIERCING_DSTPARAM)
 		return FALSE;
 
 	m_pPiercingAvail[nIdx1].dwItemId	= dwItemId;
-	int nIdx2	= m_pPiercingAvail[nIdx1].nSize++;
-	m_pPiercingAvail[nIdx1].anDstParam[nIdx2]	= nDstParam;
-	m_pPiercingAvail[nIdx1].anAdjParam[nIdx2]	= nAdjParam;
+	m_pPiercingAvail[nIdx1].params.push_back(SINGLE_DST{ nDstParam, nAdjParam });
 
 	return TRUE;
 }
 
-PPIERCINGAVAIL CPiercingAvail::GetPiercingAvail( DWORD dwItemId  )
+const PIERCINGAVAIL * CPiercingAvail::GetPiercingAvail( DWORD dwItemId  ) const
 {
-	map<DWORD, int>::iterator i	= m_mapIdx.find( dwItemId );
+	auto i	= m_mapIdx.find( dwItemId );
 	if( i != m_mapIdx.end() )
 		return &m_pPiercingAvail[i->second];
 	return NULL;

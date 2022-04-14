@@ -14,9 +14,9 @@ public:
 	CPiercing&	operator=( const CPiercing & piercing );
 	virtual	void	Serialize( CAr & ar );
 	void	SetPiercingSize( int nSize );
-	int		GetPiercingSize();
+	int		GetPiercingSize() const;
 	void	SetPiercingItem( int nth, DWORD dwItem );
-	DWORD	GetPiercingItem( int nth );
+	DWORD	GetPiercingItem( int nth ) const;
 	void	Clear( void );
 	BOOL	IsPiercedItem();
 	

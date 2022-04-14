@@ -1,16 +1,8 @@
 #pragma once
 
-#include <ranges>
+#include "SingleDst.h"
 
 #define	MAX_AAO		20
-
-struct SINGLE_DST {
-	int	nDst;
-	int	nAdj;
-};
-
-template<typename T>
-concept MultipleDsts = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, SINGLE_DST>;
 
 
 class CAccessoryProperty

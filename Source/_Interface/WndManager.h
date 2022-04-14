@@ -598,7 +598,7 @@ public:
 	void PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit );
 	void	PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit );
-	void PutPiercingOpt( CItemElem* pItemElem, CEditString* pEdit );
+	void PutPiercingOpt(const CItemElem* pItemElem, CEditString* pEdit );
 	void PutEnchantOpt( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag );
 	void PutSetItemOpt( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutBaseItemOpt( CItemElem* pItemElem, CEditString* pEdit );

@@ -79,7 +79,7 @@ void CPiercing::SetPiercingSize( int nSize )
 	m_vPiercing.resize( nSize, 0 );
 }
 
-int CPiercing::GetPiercingSize()
+int CPiercing::GetPiercingSize() const
 {
 	return m_vPiercing.size();
 }
@@ -92,7 +92,7 @@ void CPiercing::SetPiercingItem( int nth, DWORD dwItem )
 	m_vPiercing[nth]	= dwItem;
 }
 
-DWORD CPiercing::GetPiercingItem( int nth )
+DWORD CPiercing::GetPiercingItem( int nth ) const
 {
 	if( nth >= GetPiercingSize()  )
 		return 0;
