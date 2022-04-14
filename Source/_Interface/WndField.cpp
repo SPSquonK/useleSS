@@ -21262,7 +21262,7 @@ void CWndRemovePiercing::OnDraw( C2DRender* p2DRender )
 				if(nPiercingSize > nMaxPiercing)
 					break;
 
-				const PIERCINGAVAIL * ptr = CPiercingAvail::GetInstance()->GetPiercingAvail(m_pItemElem->GetPiercingItem(i));
+				const PIERCINGAVAIL * ptr = g_PiercingAvail.GetPiercingAvail(m_pItemElem->GetPiercingItem(i));
 
 				if(ptr != NULL)
 				{

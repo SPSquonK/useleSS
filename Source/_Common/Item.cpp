@@ -302,7 +302,7 @@ SmallDstList CItemElem::GetPiercingAvail() const {
 	SmallDstList result;
 
 	for (int i = 0; i < GetPiercingSize(); i++) {
-		const PIERCINGAVAIL * ptr	= CPiercingAvail::GetInstance()->GetPiercingAvail( GetPiercingItem( i ) );
+		const PIERCINGAVAIL * ptr	= g_PiercingAvail.GetPiercingAvail( GetPiercingItem( i ) );
 		if (ptr) {
 			for (const auto & dstToAdd : ptr->params) {
 				const auto it = std::find_if(result.begin(), result.end(),

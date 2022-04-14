@@ -3902,7 +3902,7 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 			while( *s.token != '}' )
 			{
 				nAdjParam	= s.GetNumber();
-				if( !CPiercingAvail::GetInstance()->AddPiercingAvail( dwItemId, nDstParam, nAdjParam ) )
+				if (!g_PiercingAvail.AddPiercingAvail( dwItemId, nDstParam, nAdjParam ) )
 					return FALSE;
 				nDstParam	= s.GetNumber();
 			}
@@ -3980,54 +3980,43 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
-CPiercingAvail::CPiercingAvail()
-{
-	m_nSize		= 0;
-	memset( &m_pPiercingAvail, 0, sizeof(m_pPiercingAvail) );
-}
+CPiercingAvail g_PiercingAvail;
 
-CPiercingAvail::~CPiercingAvail()
-{
-}
+bool CPiercingAvail::AddPiercingAvail(const DWORD dwItemId, const int nDstParam, const int nAdjParam) {
+	// Is it already there?
+	auto it = m_itemIdToPosition.find(dwItemId);
 
-CPiercingAvail* CPiercingAvail::GetInstance( void )
-{
-	static CPiercingAvail sPiercingAvail;
-	return &sPiercingAvail;
-}
+	size_t pos;
+	if (it != m_itemIdToPosition.end()) {
+		pos = it->second;
+	} else {
+		// No, add the item
+		if (m_pPiercingAvail.size() == m_pPiercingAvail.max_size()) {
+			return false;
+		}
 
-BOOL CPiercingAvail::AddPiercingAvail( DWORD dwItemId, int nDstParam, int nAdjParam )
-{
-	map<DWORD, int>::iterator i	= m_mapIdx.find( dwItemId );
-	int nIdx1	= 0;
-	if( i != m_mapIdx.end() )
-	{
-		nIdx1	= i->second;
+		// Insert and setup iterator
+		pos = m_pPiercingAvail.size();
+		m_pPiercingAvail.emplace_back();
+		m_pPiercingAvail.back().dwItemId = dwItemId;
+		m_itemIdToPosition.insert_or_assign(dwItemId, pos);
 	}
-	else
-	{
-		nIdx1	= m_nSize++;
-		m_mapIdx.insert( map<DWORD, int>::value_type( dwItemId, nIdx1 ) );
+	
+	// Add the bonus
+	PIERCINGAVAIL & piercingAvail = m_pPiercingAvail[pos];
+
+	if (piercingAvail.params.size() >= PIERCINGAVAIL::MAX_PIERCING_DSTPARAM) {
+		return false;
 	}
 
-	if( m_nSize >= MAX_PIERCING_MATERIAL )
-		return FALSE;
-
-	if( m_pPiercingAvail[nIdx1].params.size() == MAX_PIERCING_DSTPARAM)
-		return FALSE;
-
-	m_pPiercingAvail[nIdx1].dwItemId	= dwItemId;
-	m_pPiercingAvail[nIdx1].params.push_back(SINGLE_DST{ nDstParam, nAdjParam });
-
-	return TRUE;
+	piercingAvail.params.push_back(SINGLE_DST{ nDstParam, nAdjParam });
+	return true;
 }
 
-const PIERCINGAVAIL * CPiercingAvail::GetPiercingAvail( DWORD dwItemId  ) const
-{
-	auto i	= m_mapIdx.find( dwItemId );
-	if( i != m_mapIdx.end() )
-		return &m_pPiercingAvail[i->second];
-	return NULL;
+const PIERCINGAVAIL * CPiercingAvail::GetPiercingAvail(DWORD dwItemId) const {
+	auto i = m_itemIdToPosition.find(dwItemId);
+	if (i == m_itemIdToPosition.end()) return nullptr;
+	return &m_pPiercingAvail[i->second];
 }
 
 CSetItem::CSetItem( int nId, const char* pszString )

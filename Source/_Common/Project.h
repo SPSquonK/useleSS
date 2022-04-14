@@ -696,28 +696,27 @@ typedef struct	_SETITEMAVAIL
 	int		nAdded;
 }	SETITEMAVAIL, *PSETITEMAVAIL;
 
-#define	MAX_PIERCING_DSTPARAM	32
-struct PIERCINGAVAIL {
+struct PIERCINGAVAIL final {
+	static constexpr size_t MAX_PIERCING_DSTPARAM = 32;
+
 	DWORD	dwItemId;
 	boost::container::static_vector<SINGLE_DST, MAX_PIERCING_DSTPARAM> params;
 };
 
-#define	MAX_PIERCING_MATERIAL	128
-class CPiercingAvail
-{
+class CPiercingAvail final {
+public:
+	static constexpr size_t MAX_PIERCING_MATERIAL = 128;
+
 private:
-	int		m_nSize;
-	map<DWORD, int>		m_mapIdx;
-	PIERCINGAVAIL	m_pPiercingAvail[MAX_PIERCING_MATERIAL];
+	std::map<DWORD, size_t> m_itemIdToPosition;
+	boost::container::static_vector<PIERCINGAVAIL, MAX_PIERCING_MATERIAL> m_pPiercingAvail;
 
 public:
-	CPiercingAvail();
-	~CPiercingAvail();
-	BOOL AddPiercingAvail( DWORD dwItemId, int nDstParam, int nAdjParam );
-	const PIERCINGAVAIL * GetPiercingAvail(DWORD dwItemId) const;
-
-	static	CPiercingAvail*	GetInstance( void );
+	bool AddPiercingAvail(DWORD dwItemId, int nDstParam, int nAdjParam);
+	[[nodiscard]] const PIERCINGAVAIL * GetPiercingAvail(DWORD dwItemId) const;
 };
+
+extern CPiercingAvail g_PiercingAvail;
 
 
 
