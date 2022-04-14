@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "boost/container/small_vector.hpp"
 #include "defineSkill.h"
 #include "defineItem.h"
 #include "defineSound.h"
@@ -43,7 +44,6 @@ extern CGuildCombat g_GuildCombatMng;
 
 #include "definelordskill.h"
 #include "SecretRoom.h"
-
 #include "webbox.h"
 
 extern	CParty	g_Party;
@@ -4721,52 +4721,28 @@ static CString DstsToString(const DstList & dstList) {
 	return res;
 }
 
-void CWndMgr::PutBaseItemOpt( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString str;
-	CString strTemp;
-#ifdef __PROP_0827
-	for( int i = 0; i < 3; i ++ )
-#else	// __PROP_0827
-	for( int i = 0; i < 2; i ++ )
-#endif	// __PROP_0827
-	{
-		if( pItemElem->GetProp()->dwDestParam[i] != 0xffffffff )		
-		{
-			if( pItemElem->GetProp()->dwDestParam[i] == DST_STAT_ALLUP )
-			{
-				str.Format( "\n%s%+d", FindDstString( DST_STR ), (int)pItemElem->GetProp()->nAdjParamVal[i] );
-				strTemp = str;
-				str.Format( "\n%s%+d", FindDstString( DST_DEX ), (int)pItemElem->GetProp()->nAdjParamVal[i] );
-				strTemp += str;
-				str.Format( "\n%s%+d", FindDstString( DST_INT ), (int)pItemElem->GetProp()->nAdjParamVal[i] );
-				strTemp += str;
-				str.Format( "\n%s%+d", FindDstString( DST_STA ), (int)pItemElem->GetProp()->nAdjParamVal[i] );
-				strTemp += str;
+void CWndMgr::PutBaseItemOpt(CItemElem * pItemElem, CEditString * pEdit) {
+	if (const ItemProp * itemProp = pItemElem->GetProp()) {
+		boost::container::small_vector<SINGLE_DST, 3> itemParams;
+
+		for (int i = 0; i != 3; ++i) {
+			if (itemProp->dwDestParam[i] != 0xffffffff) {
+				const int nDst = static_cast<int>(itemProp->dwDestParam[i]);
+				const int nAdj = itemProp->nAdjParamVal[i];
+
+				itemParams.push_back(SINGLE_DST{ nDst, nAdj });
 			}
-			else
-			{
-				int nDst	= (int)pItemElem->GetProp()->dwDestParam[i];
-				if( IsDst_Rate( nDst ) )
-				{
-					if( nDst == DST_ATTACKSPEED )
-						strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), (int)pItemElem->GetProp()->nAdjParamVal[i] / 2 / 10 );
-					else
-						strTemp.Format( "\n%s%+d%%", FindDstString( nDst ), (int)pItemElem->GetProp()->nAdjParamVal[i] );
-				}
-				else
-				{
-					strTemp.Format( "\n%s%+d", FindDstString( (int)pItemElem->GetProp()->dwDestParam[i] ), (int)pItemElem->GetProp()->nAdjParamVal[i] );
-				}
-			}
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
 		}
+
+		const CString str = DstsToString(itemParams);
+		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 	}
+	
 	CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 	if( pItemElem && pItemElem->IsAccessory() )		// 액세서리
 	{
-		vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
-		CString str = DstsToString(*pDst);
+		const vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
+		const CString str = DstsToString(*pDst);
 		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 	}
 }
