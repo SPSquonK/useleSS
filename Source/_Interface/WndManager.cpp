@@ -3426,7 +3426,6 @@ void CWndMgr::SetPlayer( CMover* pMover )
 }
 void CWndMgr::WordChange( CString& rString )
 {
-#ifdef __FILTER_0705
 	CString strResult;
 
 	CScanner s;
@@ -3496,29 +3495,6 @@ void CWndMgr::WordChange( CString& rString )
 		}
 	}
 	rString		= strResult;
-#else	// __FILTER_0705
-	for( int i = 0; i < prj.m_aWordFilter.GetSize(); i++)
-	{
-		LPFILTER lpFilter = prj.m_aWordFilter.GetAt( i );
-		int nFind;
-		if( ( nFind = rString.Find( lpFilter->m_szSrc ) ) >= 0 )
-		{
-			if( g_Option.m_nSlangWord == 1 ) 
-			{
-				TCHAR szWord[ 128 ];
-				int nLength = strlen( lpFilter->m_szSrc );
-				for( int i = 0; i < nLength; i++ )
-					szWord[ i ] = '*';
-				szWord[ i ] = 0;
-				rString.Replace( lpFilter->m_szSrc,szWord );
-			}
-			else
-			{
-				rString.Replace( lpFilter->m_szSrc, lpFilter->m_szDst );
-			}
-		}
-	}
-#endif	// __FILTER_0705
 }
 // 챗에서 또는 매크로로 입력된 텍스트가 이 함수를 용도에 맞게 분류된다.
 void CWndMgr::ParsingChat( CString string )

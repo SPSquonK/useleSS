@@ -102,13 +102,6 @@ DWORD	CProject::m_dwVagSP = 1;				// ����� ��ų�� ����
 DWORD	CProject::m_dwExpertSP = 2;				// 1������ ��ų�� �������� �ʿ��� SP����Ʈ
 DWORD	CProject::m_dwProSP = 3;				// 2������ ��ų�� �������� �ʿ��� SP����Ʈ
 
-QuestGoalData::QuestGoalData( void ) : 
-m_dwGoalIndex( 0 ), 
-m_fGoalPositionX( 0.0F ), 
-m_fGoalPositionZ( 0.0F ), 
-m_dwGoalTextID( 0 )
-{
-}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // CHARACTER

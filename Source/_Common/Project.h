@@ -67,14 +67,11 @@ struct QuestState
 	TCHAR	m_szDesc[ 512 ];
 };
 
-struct QuestGoalData
-{
-	QuestGoalData( void );
-
-	DWORD m_dwGoalIndex;
-	FLOAT m_fGoalPositionX;
-	FLOAT m_fGoalPositionZ;
-	DWORD m_dwGoalTextID;
+struct QuestGoalData {
+	DWORD m_dwGoalIndex = 0;
+	FLOAT m_fGoalPositionX = 0.0f;
+	FLOAT m_fGoalPositionZ = 0.0f;
+	DWORD m_dwGoalTextID = 0;
 };
 
 struct QuestPropItem 
@@ -211,42 +208,32 @@ struct QuestProp
 	QuestState*	m_questState[ 16 ];
 };
 
-typedef struct 
-{
+struct FILTER {
 	TCHAR	m_szSrc[ 64 ];
 	TCHAR	m_szDst[ 64 ];
+};
 
-} FILTER,* LPFILTER;
-
-typedef struct tagJOB
-{
-	TCHAR	szName[ 32 ];
-	TCHAR	szEName[ 32 ];
+struct JOB {
+	TCHAR	szName[32];
+	TCHAR	szEName[32];
 	DWORD	dwJobBase;
 	DWORD	dwJobType;
+};
 
-} JOB,* LPJOB;
-
-typedef struct tagSTRUCTURE
-{
+struct STRUCTURE {
 	TCHAR	szName[ 32 ];
 	TCHAR	szEName[ 32 ];
-	
-} STRUCTURE,* LPSTRUCTURE;
+};
 
-
-typedef struct tagGUILD_APPELL
-{
+struct GUILD_APPELL {
 	TCHAR	szName[ 32 ];
 	TCHAR	szEName[ 32 ];
-	
-} GUILD_APPELL,* LPGUILD_APPELL;
+};
 
-typedef struct tagFxpCharacter
-{
+struct FXPCHARACTER {
 	DWORD	dwFxp;
 	DWORD	dwFxp2;
-} FXPCHARACTER,* LPFXPCHARACTER;
+};
 
 #ifndef __S_ADD_RESTATE
 typedef struct tagJobAbility
@@ -259,16 +246,14 @@ typedef struct tagJobAbility
 } JOBABILITY,* LPJOBABILITY;
 #endif // __S_ADD_RESTATE
 
-typedef struct tagATKSTYLE
-{
-	DWORD	dwParam1, dwParam2;
+struct ATKSTYLE {
+	DWORD	dwParam1;
+	DWORD dwParam2;
+};
 
-} ATKSTYLE,* LPATKSTYLE;
-
-typedef struct tagADDEXPPARTY
-{
+struct ADDEXPPARTY {
 	DWORD	Exp, Level;	//  협동 추가 경험치 / 제공레벨
-} ADDEXPPARTY,* LPADDEXPPARTY;
+};
 
 
 
@@ -300,14 +285,13 @@ typedef struct _VENDOR_ITEM
 } VENDOR_ITEM,* LPVENDOR_ITEM;
 
 #ifdef __NPC_BUFF
-typedef struct _NPC_BUFF_SKILL
-{
+struct NPC_BUFF_SKILL {
 	DWORD	dwSkillID;
 	DWORD	dwSkillLV;
 	int		nMinPlayerLV;
 	int		nMaxPlayerLV;
 	DWORD	dwSkillTime;
-} NPC_BUFF_SKILL;
+};
 #endif // __NPC_BUFF
 
 typedef struct tagCHARACTER
@@ -398,71 +382,37 @@ typedef struct _MONSTER_PROP
 MONSTER_PROP, *PMONSTER_PROP;
 #endif // __S1108_BACK_END_SYSTEM
 
-typedef struct _DIE_PENALTY
-{
-	int		nLevel;
-	int		nValue;
-	_DIE_PENALTY()
-	{
-		nLevel = 0;
-		nValue = 0;
-	}
-} DIE_PENALTY, *PDIE_PENALTY;
+struct DIE_PENALTY {
+	int		nLevel = 0;
+	int		nValue = 0;
+};
 
-typedef struct _CHAO_PROPENSITY
-{
-	DWORD	dwPropensityMin;		/// 성향 수치 Min
-	DWORD	dwPropensityMax;		/// 성향 수치 Max
-	int		nEquipDorpMin;			/// 착용아이템 드롭 개수 Min
-	int		nEquipDorpMax;			/// 착용아이템 드롭 개수 Max
-	int		nInvenDorpMin;			/// 인벤아이템 드롭 개수 Min
-	int		nInvenDorpMax;			/// 인벤아이템 드롭 개수 Max
-	int		nShop;					/// 상점 이용 유/무
-	int		nBank;					/// 창고 이용 유/무
-	int		nFly;					/// 비행 이용 유/무
-	int		nGuardAttack;			/// 경비병 공격 유/무
-	int		nVendor;				/// 개인상점 이용 및 개설 유/무
-	_CHAO_PROPENSITY()
-	{
-		dwPropensityMin = 0;
-		dwPropensityMax = 0;
-		nEquipDorpMin = 0;
-		nEquipDorpMax = 0;
-		nInvenDorpMin = 0;
-		nInvenDorpMax = 0;
-		nShop = 1;
-		nBank = 1;
-		nFly = 1;
-		nGuardAttack = 1;
-		nVendor = 1;
-	}
-} CHAO_PROPENSITY, *PCHAO_PROPENSITY;
-typedef struct _PK_SETTING
-{
-	DWORD	dwGeneralColor;			/// 색 : 일반(흰색)
-	DWORD	dwReadyColor;			/// 색 : 준카오(핑크색)
-	DWORD	dwChaoColor;			/// 색 : 카오(레드색)
-	int		nGeneralAttack;			/// 일반인을 공격했을시 준카오가 되는 시간
-	int		nReadyAttack;			/// 준카오를 공격했을시 준카오가 되는 시간
-	int     nLimitLevel;			/// 카오를 할수 있는 레벨
-	int		nDiePropensityMin;		/// 죽으면 성향치 깍이는 Min
-	int		nDiePropensityMax;		/// 죽으면 성향치 깍이는 Max
-	map<int, CHAO_PROPENSITY> mapPropensityPenalty;	/// 성향수치 단계별 Penalty
-	map<int, DWORD> mapLevelExp;					/// 레벨에 따른 경험치
-	_PK_SETTING()
-	{
-		dwGeneralColor = 0;
-		dwReadyColor = 0;
-		dwChaoColor = 0;
-		nGeneralAttack = 0;
-		nReadyAttack = 0; 
-		nLimitLevel = 0;
-		nDiePropensityMin = 0;
-		nDiePropensityMax = 0;
-		mapPropensityPenalty.clear();
-		mapLevelExp.clear();
-	}
-} PK_SETTING, *PPK_SETTING;
+struct CHAO_PROPENSITY {
+	DWORD	dwPropensityMin = 0;		/// 성향 수치 Min
+	DWORD	dwPropensityMax = 0;		/// 성향 수치 Max
+	int		nEquipDorpMin = 0;			/// 착용아이템 드롭 개수 Min
+	int		nEquipDorpMax = 0;			/// 착용아이템 드롭 개수 Max
+	int		nInvenDorpMin = 0;			/// 인벤아이템 드롭 개수 Min
+	int		nInvenDorpMax = 0;			/// 인벤아이템 드롭 개수 Max
+	int		nShop = 1;					    /// 상점 이용 유/무
+	int		nBank = 1;					    /// 창고 이용 유/무
+	int		nFly = 1;					      /// 비행 이용 유/무
+	int		nGuardAttack = 1;		  	/// 경비병 공격 유/무
+	int		nVendor = 1;			    	/// 개인상점 이용 및 개설 유/무
+};
+
+struct PK_SETTING {
+	DWORD	dwGeneralColor = 0;			/// 색 : 일반(흰색)
+	DWORD	dwReadyColor = 0;			/// 색 : 준카오(핑크색)
+	DWORD	dwChaoColor = 0;			/// 색 : 카오(레드색)
+	int		nGeneralAttack = 0;			/// 일반인을 공격했을시 준카오가 되는 시간
+	int		nReadyAttack = 0;			/// 준카오를 공격했을시 준카오가 되는 시간
+	int    nLimitLevel = 0;			/// 카오를 할수 있는 레벨
+	int		nDiePropensityMin = 0;		/// 죽으면 성향치 깍이는 Min
+	int		nDiePropensityMax = 0;		/// 죽으면 성향치 깍이는 Max
+	std::map<int, CHAO_PROPENSITY> mapPropensityPenalty;	/// 성향수치 단계별 Penalty
+	std::map<int, DWORD> mapLevelExp;					/// 레벨에 따른 경험치
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // enum 
@@ -817,12 +767,8 @@ public:
 	CFixedArray< ItemProp >		m_aPropSkill;
 	CFixedArray< AddSkillProp > m_aPropAddSkill;
 	CFixedArray< tagColorText >	m_colorText;
-#ifdef __FILTER_0705
 	map<string, string>	m_mapAlphaFilter;
 	map<string, string>	m_mapNonalphaFilter;
-#else	// __FILTER_0705
-	CFixedArray< FILTER >		m_aWordFilter;
-#endif	// __FILTER_0705
 	CFixedArray< QuestProp >	m_aPropQuest ;
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;
@@ -938,7 +884,6 @@ public:
 	MoverProp*		GetMoverProp( LPCTSTR lpszMover ); 
 	CtrlProp*		GetCtrlProp( LPCTSTR lpszMover );
 	MotionProp*		GetMotionProp ( int nIndex ) { return m_aPropMotion.GetAt( nIndex ); }
-//	LPATKSTYLE		GetAttackStyle( int nIndex ) { return &m_aAttackStyle[ nIndex ]; }
 	int				GetExpUpItem( DWORD dwItemKind3, int nOption ); 
 	AddSkillProp*	GetAddSkillProp( DWORD dwSubDefine, DWORD dwLevel );
 	AddSkillProp*	GetAddSkillProp( DWORD dwSubDefine );

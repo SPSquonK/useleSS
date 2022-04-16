@@ -1354,7 +1354,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 			LPCHARACTER lpCharacter = GetCharacter();
 			if( lpCharacter && lpCharacter->m_nStructure != -1 ) 
 			{
-				LPSTRUCTURE lpStr = &prj.m_aStructure[ lpCharacter->m_nStructure ];
+				STRUCTURE * lpStr = &prj.m_aStructure[ lpCharacter->m_nStructure ];
 				TCHAR szStr[ 64 ];
 				sprintf( szStr, "[%s]", lpStr->szName );
 				point.x = (LONG)( vOut.x );
