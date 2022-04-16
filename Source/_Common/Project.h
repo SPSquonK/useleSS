@@ -630,21 +630,16 @@ public:
 
 
 #define	MAX_ITEMAVAIL	32
-typedef struct	__ITEMAVAIL
-{
-	int		nSize;
-	int		anDstParam[MAX_ITEMAVAIL];
-	int		anAdjParam[MAX_ITEMAVAIL];
-	__ITEMAVAIL()
-	{
-		nSize	= 0;
-	}
-}	ITEMAVAIL, *PITEMAVAIL;
+using ITEMAVAIL = boost::container::static_vector<SINGLE_DST, MAX_ITEMAVAIL>;
 
-typedef	struct	__NEWSETITEMAVAIL : public ITEMAVAIL
-{
-	int		anEquiped[MAX_ITEMAVAIL];
-}	NEWSETITEMAVAIL, *PNEWSETITEMAVAIL;
+struct EquipedDst {
+	int nDst;
+	int nAdj;
+	int anEquiped;
+};
+
+using NEWSETITEMAVAIL = boost::container::static_vector<EquipedDst, MAX_ITEMAVAIL>;
+
 
 #define	MAX_SETITEM_STRING		64
 #define	MAX_SETITEM_ELEM		8
@@ -667,7 +662,8 @@ public:
 	BOOL	AddItemAvail( int nDstParam, int nAdjParam, int nEquiped );
 	void	SortItemAvail( void );
 
-	void	GetItemAvail( PITEMAVAIL pItemAvail, int nEquiped, BOOL bAll );
+	ITEMAVAIL GetItemAvail(int nEquiped, BOOL bAll) const;
+
 	char* GetString( void )		{	return m_pszString;		}
 };
 

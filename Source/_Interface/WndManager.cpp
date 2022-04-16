@@ -4455,15 +4455,8 @@ void CWndMgr::PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit )
 	RANDOMOPTITEM * pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
 	if( pRandomOptItem ) // 2. 랜덤 옵션의 내용을 출력한다.
 	{
-		for( int i = 0; i < pRandomOptItem->ia.nSize; i++ )
-		{
-			int nDst = (int)pRandomOptItem->ia.anDstParam[i];
-			int nAdj = (int)pRandomOptItem->ia.anAdjParam[i];
-			
-			const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
-				
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwRandomOption );
-		}
+		const CString strTemp = DstsToString(pRandomOptItem->ia);
+		pEdit->AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwRandomOption);
 	}
 }
 
@@ -4555,18 +4548,9 @@ void CWndMgr::PutSetItemOpt( CMover* pMover, CItemElem* pItemElem, CEditString* 
 			}
 		}
 		// 4. 추가 능력치 출력
-		ITEMAVAIL itemAvail;
-		memset( &itemAvail, 0, sizeof(itemAvail) );
-		pSetItem->GetItemAvail( &itemAvail, nEquiped, TRUE );
-		for( int i = 0; i < itemAvail.nSize; i++ )
-		{
-			int nDst = (int)itemAvail.anDstParam[i];
-			int nAdj = (int)itemAvail.anAdjParam[i];
-			
-			const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
-
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetEffect );
-		}
+		const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, TRUE);
+		const CString strTemp = DstsToString(itemAvail);
+		pEdit->AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetEffect);
 	}
 }
 

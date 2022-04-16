@@ -8080,16 +8080,14 @@ LPCTSTR CMover::GetName( BOOL bNickname )
 
 void CMover::SetDestParamSetItem( CItemElem* pItemElem )
 {
-	ITEMAVAIL itemAvail;
-	memset( &itemAvail, 0, sizeof(itemAvail) );
-
 	if( pItemElem && !pItemElem->IsFlag( CItemElem::expired ) )
 	{
 		CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
 		if( pSetItem )
 		{
 			int nEquiped	= GetEquipedSetItemNumber( pSetItem );
-			pSetItem->GetItemAvail( &itemAvail, nEquiped, FALSE );
+			ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, FALSE );
+			SetDSTs(itemAvail);
 		}
 	}
 	else
@@ -8116,12 +8114,10 @@ void CMover::SetDestParamSetItem( CItemElem* pItemElem )
 		{
 			CSetItem* pSetItem	= i->first;
 			int nEquiped	= i->second;
-			pSetItem->GetItemAvail( &itemAvail, nEquiped, TRUE );
+			const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, TRUE);
+			SetDSTs(itemAvail);
 		}
 	}
-		
-	for( int i = 0; i < itemAvail.nSize; i++ )
-		SetDestParam( itemAvail.anDstParam[i], itemAvail.anAdjParam[i], NULL_CHGPARAM );
 }
 
 void CMover::ResetDestParamSetItem( CItemElem* pItemElem )
@@ -8131,12 +8127,9 @@ void CMover::ResetDestParamSetItem( CItemElem* pItemElem )
 		CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
 		if( pSetItem )
 		{
-			ITEMAVAIL itemAvail;
-			memset( &itemAvail, 0, sizeof(itemAvail) );
-			int nEquiped	= GetEquipedSetItemNumber( pSetItem );
-			pSetItem->GetItemAvail( &itemAvail, nEquiped + 1, FALSE );
-			for( int i = 0; i < itemAvail.nSize; i++ )
-				ResetDestParam( itemAvail.anDstParam[i], itemAvail.anAdjParam[i], TRUE );				
+			const int nEquiped = GetEquipedSetItemNumber( pSetItem );
+			const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped + 1, FALSE);
+			ResetDSTs(itemAvail);
 		}
 	}
 }
@@ -8179,8 +8172,7 @@ void CMover::SetDestParamRandomOptOrigin( CItemElem* pItemElem )
 		PRANDOMOPTITEM pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
 		if( pRandomOptItem )
 		{
-			for( int i = 0; i < pRandomOptItem->ia.nSize; i++ )
-				SetDestParam( pRandomOptItem->ia.anDstParam[i], pRandomOptItem->ia.anAdjParam[i], NULL_CHGPARAM );
+			SetDSTs(pRandomOptItem->ia);
 		}
 	}
 }
@@ -8209,8 +8201,7 @@ void CMover::ResetDestParamRandomOptOrigin( CItemElem* pItemElem )
 		PRANDOMOPTITEM pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
 		if( pRandomOptItem )
 		{
-			for( int i = 0; i < pRandomOptItem->ia.nSize; i++ )
-				ResetDestParam( pRandomOptItem->ia.anDstParam[i], pRandomOptItem->ia.anAdjParam[i], TRUE );
+			ResetDSTs(pRandomOptItem->ia);
 		}
 	}
 }

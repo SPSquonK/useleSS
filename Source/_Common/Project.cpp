@@ -3966,9 +3966,7 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 			while( *s.token != '}' )
 			{
 				int nAdjParam	= s.GetNumber();
-				randomOptItem.ia.anDstParam[randomOptItem.ia.nSize]		= nDstParam;
-				randomOptItem.ia.anAdjParam[randomOptItem.ia.nSize]		= nAdjParam;
-				randomOptItem.ia.nSize++;
+				randomOptItem.ia.push_back(SINGLE_DST{ nDstParam, nAdjParam });
 				nDstParam	= s.GetNumber();
 			}
 			CRandomOptItemGen::GetInstance()->AddRandomOption( &randomOptItem );
@@ -4049,68 +4047,50 @@ BOOL CSetItem::AddSetItemElem( DWORD dwItemId, int nParts )
 	return TRUE;
 }
 
-BOOL CSetItem::AddItemAvail( int nDstParam, int nAdjParam, int nEquiped )
-{
-	if( m_avail.nSize == MAX_ITEMAVAIL )
-	{
+BOOL CSetItem::AddItemAvail( int nDstParam, int nAdjParam, int nEquiped ) {
+	if( m_avail.size() == MAX_ITEMAVAIL) {
 		TRACE( "too many setitem avail\n" );
 		return FALSE;
 	}
-	m_avail.anDstParam[m_avail.nSize]	= nDstParam;
-	m_avail.anAdjParam[m_avail.nSize]	= nAdjParam;
-	m_avail.anEquiped[m_avail.nSize]	= nEquiped;
-	m_avail.nSize++;
+
+	m_avail.push_back(EquipedDst{ nDstParam, nAdjParam, nEquiped });
 	return TRUE;
 }
 
-void CSetItem::SortItemAvail( void )
-{
-	for( int i = 0; i < m_avail.nSize-1; i++ )
-	{
-		for( int j = i+1; j < m_avail.nSize; j++ )
-		{
-			if( m_avail.anEquiped[i] > m_avail.anEquiped[j] )
-			{
-				int nDstParam, nAdjParam, nEquiped;
-				
-				nDstParam	= m_avail.anDstParam[i];
-				nAdjParam	= m_avail.anAdjParam[i];
-				nEquiped	= m_avail.anEquiped[i];
-				m_avail.anDstParam[i]	= m_avail.anDstParam[j];
-				m_avail.anAdjParam[i]	= m_avail.anAdjParam[j];
-				m_avail.anEquiped[i]	= m_avail.anEquiped[j];
-				m_avail.anDstParam[j]	= nDstParam;
-				m_avail.anAdjParam[j]	= nAdjParam;
-				m_avail.anEquiped[j]	= nEquiped;
-			}
+void CSetItem::SortItemAvail() {
+	std::sort(
+		m_avail.begin(), m_avail.end(),
+		[](const EquipedDst & lhs, const EquipedDst & rhs) {
+			if (lhs.anEquiped < rhs.anEquiped) return true;
+			if (lhs.anEquiped > rhs.anEquiped) return false;
+
+			if (lhs.nDst < rhs.nDst) return true;
+			if (lhs.nDst > rhs.nDst) return false;
+
+			return lhs.nAdj < rhs.nAdj;
 		}
-	}
+	);
 }
 
-void CSetItem::GetItemAvail( PITEMAVAIL pItemAvail, int nEquiped, BOOL bAll )
-{
-	for( int i = 0; i < m_avail.nSize; i++ )
-	{
-		if( m_avail.anEquiped[i] > nEquiped )
-			return;
+ITEMAVAIL CSetItem::GetItemAvail(int nEquiped, BOOL bAll) const {
+	ITEMAVAIL result;
 
-		if( !bAll && m_avail.anEquiped[i] != nEquiped )
-			continue;
+	for (const auto & avail : m_avail) {
+		if (avail.anEquiped > nEquiped) return result;
+		if (!bAll && avail.anEquiped != nEquiped) continue;
 
-		int nFind	= -1;
-		for( int j = 0; j < pItemAvail->nSize; j++ )
-		{
-			if( pItemAvail->anDstParam[j] == m_avail.anDstParam[i] )
-			{
-				nFind	= j;
-				break;
-			}
+		const auto it = std::find_if(result.begin(), result.end(),
+			[&](const SINGLE_DST & sDst) { return sDst.nDst == avail.nDst; }
+			);
+
+		if (it == result.end()) {
+			result.push_back(SINGLE_DST{ avail.nDst, avail.nAdj });
+		} else {
+			it->nAdj += avail.nAdj;
 		}
-		if( nFind < 0 )
-			nFind	= pItemAvail->nSize++;
-		pItemAvail->anDstParam[nFind]	= m_avail.anDstParam[i];
-		pItemAvail->anAdjParam[nFind]	+= m_avail.anAdjParam[i];
 	}
+
+	return result;
 }
 
 void CSetItemFinder::Free()
