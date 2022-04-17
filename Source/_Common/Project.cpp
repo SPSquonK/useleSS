@@ -3865,7 +3865,7 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 
 			s.GetToken();
 
-			CSetItem * pSetItem = new CSetItem(nId, s.Token.GetString());
+			std::unique_ptr<CSetItem> pSetItem = std::make_unique<CSetItem>(nId, s.Token.GetString());
 
 			s.GetToken();	// {
 			s.GetToken();	// categori
@@ -3899,7 +3899,7 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 				}
 			}
 			pSetItem->SortItemAvail();
-			CSetItemFinder::GetInstance()->AddSetItem( pSetItem );
+			g_SetItemFinder.AddSetItem(std::move(pSetItem));
 		}
 
 		else if( s.Token == _T( "RandomOptItem" ) )
@@ -4039,53 +4039,32 @@ ITEMAVAIL CSetItem::GetItemAvail(int nEquiped, bool bAll) const {
 	return result;
 }
 
-void CSetItemFinder::Free()
-{
-	for( map<int, CSetItem*>::iterator i	= m_mapSetId.begin(); i != m_mapSetId.end(); ++i )
-	{
-		CSetItem* pSetItem	= i->second;
-		SAFE_DELETE( pSetItem );
-	}
-	m_mapSetId.clear();
-	m_mapItemId.clear();
-}
+CSetItemFinder g_SetItemFinder;
 
-CSetItemFinder*	CSetItemFinder::GetInstance( void )
-{
-	static	CSetItemFinder	sSetItemFinder;
-	return &sSetItemFinder;
-}
+void CSetItemFinder::AddSetItem(std::unique_ptr<CSetItem> pSetItem) {
+	CSetItem * const ptr = pSetItem.release();
 
-void CSetItemFinder::AddSetItem( CSetItem* pSetItem )
-{
-	bool	bResult	= m_mapSetId.insert( map<int, CSetItem*>::value_type( pSetItem->m_nId, pSetItem ) ).second;
-	if( !bResult )
-	{
-		TRACE( "adding setitem failed\t// 0\n" );
-	}
-	for (const CSetItem::PartItem & partItem : pSetItem->m_components) {
-		bResult	= m_mapItemId.insert( map<DWORD, CSetItem*>::value_type(partItem.itemId, pSetItem ) ).second;
-		if( !bResult )
-		{
-			TRACE( "adding setitem failed\t// 1\n" );
+	for (const CSetItem::PartItem & partItem : ptr->m_components) {
+		const bool bResult = m_mapItemId.emplace(partItem.itemId, ptr).second;
+		if (!bResult) {
+			TRACE("adding setitem failed\t// 1\n");
 		}
 	}
+
+	const bool bResult = m_mapSetId.emplace(ptr->m_nId, ptr).second;
+	if (!bResult) {
+		TRACE("adding setitem failed\t// 0\n");
+	}
 }
 
-CSetItem* CSetItemFinder::GetSetItem( int nSetItemId )
-{
-	map<int, CSetItem*>::iterator i	= m_mapSetId.find( nSetItemId );
-	if( i != m_mapSetId.end() )
-		return i->second;
-	return NULL;
+const CSetItem * CSetItemFinder::GetSetItem(const int nSetItemId) const {
+	const auto i = m_mapSetId.find( nSetItemId );
+	return i != m_mapSetId.end() ? i->second.get() : nullptr;
 }
 
-CSetItem* CSetItemFinder::GetSetItemByItemId( DWORD dwItemId )
-{
-	map<DWORD, CSetItem*>::iterator i	= m_mapItemId.find( dwItemId );
-	if( i != m_mapItemId.end() )
-		return i->second;
-	return NULL;
+const CSetItem * CSetItemFinder::GetSetItemByItemId(const DWORD dwItemId) const {
+	const auto i = m_mapItemId.find(dwItemId);
+	return i != m_mapItemId.end() ? i->second : nullptr;
 }	
 
 

@@ -2745,10 +2745,10 @@ ItemProp* CMover::GetTransyItem( ItemProp* pItemProp, BOOL bCheck, LPCTSTR lpszF
 					&& pItemProp->dwAbilityMin == pItemProp1->dwAbilityMin && pItemProp->dwAbilityMax == pItemProp1->dwAbilityMax && pItemProp->fAttackSpeed == pItemProp1->fAttackSpeed
 					)
 				{
-					if( CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemProp->dwID ) )
+					if(g_SetItemFinder.GetSetItemByItemId( pItemProp->dwID ) )
 						bSetIteFirst = TRUE;
 					
-					if( CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemProp1->dwID ) )
+					if(g_SetItemFinder.GetSetItemByItemId( pItemProp1->dwID ) )
 						bSetIteSecond = TRUE;
 
 					// 같은 종류 인지? ( 세트? 일반? )
@@ -8080,7 +8080,7 @@ void CMover::SetDestParamSetItem( CItemElem* pItemElem )
 	if( pItemElem && !pItemElem->IsFlag( CItemElem::expired ) )
 	{
 		
-		if (const CSetItem * pSetItem = CSetItemFinder::GetInstance()->GetSetItemByItemId(pItemElem->m_dwItemId)) {
+		if (const CSetItem * pSetItem = g_SetItemFinder.GetSetItemByItemId(pItemElem->m_dwItemId)) {
 			const int nEquiped = GetEquipedSetItemNumber(*pSetItem);
 			ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, false);
 			SetDSTs(itemAvail);
@@ -8088,15 +8088,13 @@ void CMover::SetDestParamSetItem( CItemElem* pItemElem )
 	}
 	else
 	{
-		std::map<CSetItem *, int> mapSetItem;
+		std::map<const CSetItem *, int> mapSetItem;
 		for( int nParts = 0; nParts < MAX_HUMAN_PARTS; nParts++ )
 		{
 			pItemElem	= GetEquipItem( nParts );
 			if( pItemElem && !pItemElem->IsFlag( CItemElem::expired ) )
 			{
-				CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
-				if( pSetItem )
-				{
+				if(const CSetItem * pSetItem = g_SetItemFinder.GetSetItemByItemId( pItemElem->m_dwItemId )) {
 					++mapSetItem[pSetItem];
 				}
 			}
@@ -8113,9 +8111,7 @@ void CMover::ResetDestParamSetItem( CItemElem* pItemElem )
 {
 	if( pItemElem && !pItemElem->IsFlag( CItemElem::expired ) )
 	{
-		CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
-		if( pSetItem )
-		{
+		if (const CSetItem * pSetItem = g_SetItemFinder.GetSetItemByItemId(pItemElem->m_dwItemId)) {
 			const int nEquiped = GetEquipedSetItemNumber(*pSetItem);
 			const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped + 1, false);
 			ResetDSTs(itemAvail);

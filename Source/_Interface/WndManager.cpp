@@ -4497,7 +4497,7 @@ void CWndMgr::PutEnchantOpt( CMover* pMover, CItemElem* pItemElem, CEditString* 
 
 void CWndMgr::PutSetItemOpt(CMover* pMover, CItemElem* pItemElem, CEditString* pEdit) {
 	// 2. 세트 아이템의 구성 요소 인가?
-	const CSetItem * pSetItem = CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
+	const CSetItem * const pSetItem = g_SetItemFinder.GetSetItemByItemId( pItemElem->m_dwItemId );
 	if (!pSetItem) return;
 
 	// 해당 세트 아이템의 구성 요소를 모두 출력 하되 장착 된 것과 안된 것을 색으로 구별하여 출력한다.

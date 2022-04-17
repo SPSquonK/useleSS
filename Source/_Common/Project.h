@@ -629,21 +629,18 @@ public:
 	[[nodiscard]] const char * GetString() const { return m_pszString; }
 };
 
-class CSetItemFinder
-{
+class CSetItemFinder final {
 private:
-	map<DWORD, CSetItem*>		m_mapItemId;
-	map<int, CSetItem*>		m_mapSetId;
+	std::map<DWORD, const CSetItem *>        m_mapItemId;
+	std::map<int, std::unique_ptr<CSetItem>> m_mapSetId;
 public:
-	CSetItemFinder()	{}
-	virtual	~CSetItemFinder()	{	Free();	}
+	void AddSetItem(std::unique_ptr<CSetItem> pSetItem);
 
-	void	AddSetItem( CSetItem* pSetItem );
-	CSetItem*	GetSetItem( int nSetItemId );
-	CSetItem*	GetSetItemByItemId( DWORD dwItemId );
-	void	Free();
-	static	CSetItemFinder*	GetInstance( void );
+	const CSetItem * GetSetItem(int nSetItemId) const;
+	const CSetItem * GetSetItemByItemId(DWORD dwItemId) const;
 };
+
+extern CSetItemFinder g_SetItemFinder;
 
 typedef struct	_SETITEMAVAIL
 {
