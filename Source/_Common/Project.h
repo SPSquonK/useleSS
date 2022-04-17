@@ -1,12 +1,14 @@
-#if !defined(AFX_PROJECT_H__3C837668_F3CC_430F_87E6_792AF43D7626__INCLUDED_)
-#define AFX_PROJECT_H__3C837668_F3CC_430F_87E6_792AF43D7626__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#if !(defined(__WORLDSERVER) || defined(__CLIENT))
+static_assert(false, "Project.h was included")
+#endif
+
 
 #include <memory>
+#include <set>
 #include "boost/container/static_vector.hpp"
+
 #include "SingleDst.h"
 
 #include "defineNeuz.h"
@@ -18,7 +20,6 @@
 #include "guildquest.h"
 
 #include "partyquest.h"
-#include <set>
 using	namespace	std;
 
 #ifdef __EVE_MINIGAME
@@ -1168,5 +1169,3 @@ public:
 	ItemProp*	GetItemProp( int nSex, int nParts );
 };
 #endif	// __PERF_0226
-
-#endif // !defined(AFX_PROJECT_H__3C837668_F3CC_430F_87E6_792AF43D7626__INCLUDED_)
