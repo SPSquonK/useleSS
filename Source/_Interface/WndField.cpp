@@ -1699,7 +1699,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				if(pwndShop)
 				{
 					LPCHARACTER lpCharacter = pwndShop->m_pMover->GetCharacter();
-					if(lpCharacter->m_vendor.m_nVenderType == 1)
+					if(lpCharacter->m_vendor.m_type == CVendor::Type::RedChip)
 					{
 						if(g_pPlayer->m_Inventory.GetAtItemNum( II_CHP_RED ) - (int)((CItemElem*)lpShortcut->m_dwData)->GetChipCost() >= 0) //구매하려는 품목의 칩개수 이상을 가지고 있는지 확인.
 						{
@@ -1713,7 +1713,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						else
 							g_WndMng.OpenMessageBox( _T( prj.GetText(TID_GAME_CANNT_BY_REDCHIP) ) );
 					}
-					else if(lpCharacter->m_vendor.m_nVenderType == 0)
+					else if(lpCharacter->m_vendor.m_type == CVendor::Type::Penya)
 					{
 						if( g_pPlayer->GetGold() - ( ( ( CItemElem* )lpShortcut->m_dwData )->GetCost() * prj.m_fShopBuyRate ) >= 0 )
 						{

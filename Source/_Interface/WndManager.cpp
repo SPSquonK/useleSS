@@ -5077,17 +5077,15 @@ void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pE
 			int nBeforeTax = 0;
 			if(lpCharacter)
 			{
-				if(lpCharacter->m_vendor.m_nVenderType == 0)
+				if(lpCharacter->m_vendor.m_type == CVendor::Type::Penya)
 				{
 					nCost = pItemElem->GetCost();
-#ifdef __SHOP_COST_RATE
 					nCost = (int)( prj.m_fShopBuyRate * nCost );
-#endif // __SHOP_COST_RATE
 					nBeforeTax = nCost;
 					if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, pItemElem ) )
 						nCost += ( static_cast<int>(nCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
 				}
-				else if(lpCharacter->m_vendor.m_nVenderType == 1)
+				else if(lpCharacter->m_vendor.m_type == CVendor::Type::RedChip)
 					nCost = pItemElem->GetChipCost();
 			}
 			nCost = (int)(nCost * prj.m_fShopCost );
@@ -5104,16 +5102,15 @@ void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pE
 			_itoa( nCost, szbuffer, 10 );
 			str = GetNumberFormatEx(szbuffer);
 			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_COST2), str );
-			if(lpCharacter && lpCharacter->m_vendor.m_nVenderType == 1)
+			if(lpCharacter && lpCharacter->m_vendor.m_type == CVendor::Type::RedChip)
 			{
-				CString temp;
-				temp.Format(" %s", prj.GetText(TID_GAME_REDCHIP));
-				strTemp += temp;
+				strTemp += " ";
+				strTemp += prj.GetText(TID_GAME_REDCHIP);
 			}
 			pEdit->AddString( "\n" );
 			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGold );
 			if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, pItemElem )
-				&& lpCharacter->m_vendor.m_nVenderType == 0
+				&& lpCharacter->m_vendor.m_type == CVendor::Type::Penya
 				)
 			{
 				_itoa( nBeforeTax, szbuffer, 10 );

@@ -1195,7 +1195,7 @@ void CMover::ProcessRegenItem()
 			LPVENDOR_ITEM pVendor;
 			for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i ++ )
 			{
-				if(pCharacter->m_vendor.m_nVenderType == 1) // 칩으로 거래하는 vender일 경우
+				if(pCharacter->m_vendor.m_type == CVendor::Type::RedChip) // 칩으로 거래하는 vender일 경우
 				{
 					if(pCharacter->m_vendor.m_venderItemAry2[i].GetSize())
 					{
@@ -7565,7 +7565,7 @@ static bool CVendor_IsShop(CVendor & vendor) {
 		if (vendor.m_venderItemAry[i].GetSize())
 			return TRUE;
 	}
-	if (vendor.m_nVenderType == 1) {
+	if (vendor.m_type == CVendor::Type::RedChip) {
 		for (int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++) {
 			if (vendor.m_venderItemAry2[i].GetSize())
 				return TRUE;

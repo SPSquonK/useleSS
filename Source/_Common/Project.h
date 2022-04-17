@@ -274,13 +274,18 @@ typedef struct _VENDOR_ITEM
 } VENDOR_ITEM,* LPVENDOR_ITEM;
 
 struct CVendor {
+	enum class Type { Penya, RedChip };
+
 	/* 0 = penya, 1 = red chip */
-	int				  m_nVenderType = 0;
+	Type m_type = Type::Penya;
 
 	/* Shop name */
 	CString			m_venderSlot[4];
 
+	// List of sold items, Only populated for penya items?
 	CPtrArray		m_venderItemAry[4];
+
+	// List of sold items, Only populated for red chip items?
 	CPtrArray		m_venderItemAry2[4];
 };
 

@@ -614,18 +614,15 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 			LPCHARACTER lpCharacter = m_pMover->GetCharacter();
 			if(lpCharacter)
 			{
-				if(lpCharacter->m_vendor.m_nVenderType == 0)
+				if(lpCharacter->m_vendor.m_type == CVendor::Type::Penya)
 				{
 					dwCost += pItemBase->GetCost();
-#ifdef __SHOP_COST_RATE
 					dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
-#endif // __SHOP_COST_RATE
 					if(CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, (CItemElem*)pItemBase ))
 						dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-				}
-
-				else if(lpCharacter->m_vendor.m_nVenderType == 1)
+				} else if (lpCharacter->m_vendor.m_type == CVendor::Type::RedChip) {
 					dwCost += pItemBase->GetChipCost();
+				}
 			}
 		}
 	}

@@ -2707,7 +2707,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 		_tcscpy( lpCharacter->m_szKey, strName );
 		strName.MakeLower();
 
-		lpCharacter->m_vendor.m_nVenderType = 0;
+		lpCharacter->m_vendor.m_type = CVendor::Type::Penya;
 
 #ifdef __CHIPI_DYO
 		lpCharacter->bOutput = TRUE;
@@ -2932,7 +2932,16 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 			{
 				script.GetToken();
 				int nVenderType = script.GetNumber();
-				lpCharacter->m_vendor.m_nVenderType = nVenderType;
+
+				if (nVenderType == 0) {
+					lpCharacter->m_vendor.m_type = CVendor::Type::Penya;
+				} else if (nVenderType == 1) {
+					lpCharacter->m_vendor.m_type = CVendor::Type::RedChip;
+				} else {
+					Error(__FUNCTION__ "(): SetVenderType(%d) = Invalid vendor type", nVenderType);
+					lpCharacter->m_vendor.m_type = static_cast<CVendor::Type>(nVenderType);
+				}
+				
 				script.GetToken();
 			}
 #ifdef __NPC_BUFF

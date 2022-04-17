@@ -302,7 +302,7 @@ void CWndItemCtrl::RanderIcon( C2DRender* p2DRender, CItemElem* pItemElem, int x
 		{
 			CWndShop* pWndBase = (CWndShop*)g_WndMng.GetWndBase( APP_SHOP_ );
 			LPCHARACTER lpCharacter = pWndBase->m_pMover->GetCharacter();
-			if(lpCharacter && lpCharacter->m_vendor.m_nVenderType == 1)
+			if(lpCharacter && lpCharacter->m_vendor.m_type == CVendor::Type::RedChip)
 			{
 				if( bRander == 0 && g_pPlayer->m_Inventory.GetAtItemNum( II_CHP_RED ) < (int)pItemElem->GetChipCost() )
 					bRander = 1;

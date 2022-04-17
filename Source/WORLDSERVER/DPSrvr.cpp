@@ -2509,12 +2509,7 @@ void CDPSrvr::OnCloseShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 
 void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	CHAR cTab;
-	BYTE nId;
-	short nNum;
-	DWORD dwItemId;
-
-	ar >> cTab >> nId >> nNum >> dwItemId;
+	auto [cTab, nId, nNum, dwItemId] = ar.Extract<CHAR, BYTE, short, DWORD>();
 	if( cTab >= MAX_VENDOR_INVENTORY_TAB || nNum < 1 )
 		return;
 
@@ -2523,7 +2518,9 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 	{
 		CMover* pVendor = pUser->m_vtInfo.GetOther();
 		LPCHARACTER lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
-		if( lpChar && lpChar->m_vendor.m_nVenderType != 0 )	// 0 - 페냐 상인
+		if (!lpChar) return;
+
+		if(lpChar->m_vendor.m_type != CVendor::Type::Penya)	// 0 - 페냐 상인
 			return;
 
 		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
@@ -2627,12 +2624,7 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 // 칩으로 아이템 구매
 void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	CHAR cTab;
-	BYTE nId;
-	short nNum;
-	DWORD dwItemId;
-
-	ar >> cTab >> nId >> nNum >> dwItemId;
+	auto [cTab, nId, nNum, dwItemId] = ar.Extract<CHAR, BYTE, short, DWORD>();
 	if( cTab >= MAX_VENDOR_INVENTORY_TAB || nNum < 1 )
 		return;
 
@@ -2641,7 +2633,9 @@ void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	{
 		CMover* pVendor = pUser->m_vtInfo.GetOther();
 		LPCHARACTER lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
-		if( lpChar && lpChar->m_vendor.m_nVenderType != 1 )	// 1 - 칩 상인
+		if (!lpChar) return;
+
+		if(lpChar->m_vendor.m_type != CVendor::Type::RedChip)	// 1 - 칩 상인
 			return;
 
 		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
