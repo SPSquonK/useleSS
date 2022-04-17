@@ -1192,18 +1192,15 @@ void CMover::ProcessRegenItem()
 			if( !pCharacter )
 				return;
 
-			LPVENDOR_ITEM pVendor;
 			for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i ++ )
 			{
 				if(pCharacter->m_vendor.m_type == CVendor::Type::RedChip) // 칩으로 거래하는 vender일 경우
 				{
-					if(pCharacter->m_vendor.m_venderItemAry2[i].GetSize())
+					if(!pCharacter->m_vendor.m_venderItemAry2[i].empty())
 					{
 						fShop	= TRUE;
 						m_ShopInventory[i]->Clear();		// m_pack을 다 없앤다.
-						for( int j = 0; j < pCharacter->m_vendor.m_venderItemAry2[i].GetSize(); j++ )
-						{
-							pVendor	= (LPVENDOR_ITEM)pCharacter->m_vendor.m_venderItemAry2[i].GetAt(j);
+						for (const auto & pVendor : pCharacter->m_vendor.m_venderItemAry2[i]) {
 							CItemElem itemElem;
 							itemElem.m_dwItemId	= pVendor->m_dwItemId;
 							itemElem.m_nItemNum	= (short)( prj.GetItemProp( pVendor->m_dwItemId )->dwPackMax );
@@ -1217,7 +1214,7 @@ void CMover::ProcessRegenItem()
 				}
 				else
 				{
-					if( pCharacter->m_vendor.m_venderItemAry[i].GetSize() )
+					if( !pCharacter->m_vendor.m_venderItemAry[i].empty() )
 					{
 						fShop	= TRUE;
 						{
@@ -1226,10 +1223,8 @@ void CMover::ProcessRegenItem()
 							ItemProp* apItemProp[MAX_VENDOR_INVENTORY];
 							int cbSize	= 0;
 							// generate
-							for( int j = 0; j < pCharacter->m_vendor.m_venderItemAry[i].GetSize(); j++ )
-							{
-								pVendor		= (LPVENDOR_ITEM)pCharacter->m_vendor.m_venderItemAry[i].GetAt(j);
-								GenerateVendorItem( apItemProp, &cbSize, MAX_VENDOR_INVENTORY, pVendor );
+							for (const auto & pVendor : pCharacter->m_vendor.m_venderItemAry[i]) {
+								GenerateVendorItem( apItemProp, &cbSize, MAX_VENDOR_INVENTORY, *pVendor );
 							}
 							// sort
 							for( int j = 0; j < cbSize - 1; j++ )
@@ -4249,9 +4244,9 @@ void CMover::CreateAbilityOption_SetItemSFX( int nAbilityOption )
 #endif //__CLIENT
 
 //int nItemKind, int nItemKind2, int nNumMax, int nUniqueMin, int nUniqueMax, int nTotalNum, CAnim* pAnimParent, int nMaterialCount )
-void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, LPVENDOR_ITEM pVendor )
+void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const VENDOR_ITEM & pVendor )
 {
-	CPtrArray* pItemKindAry		= prj.GetItemKindAry( pVendor->m_nItemkind3 );
+	CPtrArray* pItemKindAry		= prj.GetItemKindAry( pVendor.m_nItemkind3 );
 	ItemProp* pItemProp		= NULL;
 	int cbSizeOld	= *pcbSize;
 
@@ -4263,21 +4258,21 @@ void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, 
 
 	int nMinIdx	= -1, nMaxIdx	= -1;
 
-	for( int j = pVendor->m_nUniqueMin; j <= pVendor->m_nUniqueMax; j++ )
+	for( int j = pVendor.m_nUniqueMin; j <= pVendor.m_nUniqueMax; j++ )
 	{
-		nMinIdx		= prj.GetMinIdx( pVendor->m_nItemkind3, j );
+		nMinIdx		= prj.GetMinIdx( pVendor.m_nItemkind3, j );
 		if( nMinIdx != -1 )
 			break;
 	}
-	for( int j = pVendor->m_nUniqueMax; j >= pVendor->m_nUniqueMin; j-- )
+	for( int j = pVendor.m_nUniqueMax; j >= pVendor.m_nUniqueMin; j-- )
 	{
-		nMaxIdx		= prj.GetMaxIdx( pVendor->m_nItemkind3, j );
+		nMaxIdx		= prj.GetMaxIdx( pVendor.m_nItemkind3, j );
 		if( nMaxIdx != -1 )
 			break;
 	}
 	if( nMinIdx < 0 )
 	{
-		WriteError( "VENDORITEM//%s//%d-%d//%d", GetName(), pVendor->m_nUniqueMin, pVendor->m_nUniqueMax, pVendor->m_nItemkind3 );
+		WriteError( "VENDORITEM//%s//%d-%d//%d", GetName(), pVendor.m_nUniqueMin, pVendor.m_nUniqueMax, pVendor.m_nItemkind3 );
 		return;
 	}
 
@@ -4287,7 +4282,7 @@ void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, 
 
 		if( ( NULL == pItemProp ) ||
 			( pItemProp->dwShopAble == (DWORD)-1 ) ||
-			( pVendor->m_nItemJob != -1 && (DWORD)pItemProp->dwItemJob != pVendor->m_nItemJob ) )
+			( pVendor.m_nItemJob != -1 && (DWORD)pItemProp->dwItemJob != pVendor.m_nItemJob ) )
 			continue;
 		
 		if( *pcbSize >= nMax )
@@ -7562,12 +7557,12 @@ void CMover::AllocShopInventory( LPCHARACTER pCharacter )
 
 static bool CVendor_IsShop(CVendor & vendor) {
 	for (int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++) {
-		if (vendor.m_venderItemAry[i].GetSize())
+		if (!vendor.m_venderItemAry[i].empty())
 			return TRUE;
 	}
 	if (vendor.m_type == CVendor::Type::RedChip) {
 		for (int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++) {
-			if (vendor.m_venderItemAry2[i].GetSize())
+			if (!vendor.m_venderItemAry2[i].empty())
 				return TRUE;
 		}
 	}

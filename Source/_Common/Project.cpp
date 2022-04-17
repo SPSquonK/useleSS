@@ -240,18 +240,6 @@ m_nMaxSequence( 0 )
 #endif // __IMPROVE_MAP_SYSTEM
 }
 
-void CVendor_Clear(CVendor & vendor) {
-	for (int j = 0; j < MAX_VENDOR_INVENTORY_TAB; j++) {
-		for (int i = 0; i < vendor.m_venderItemAry[j].GetSize(); i++)
-			safe_delete((LPVENDOR_ITEM)vendor.m_venderItemAry[j].GetAt(i));
-	}
-
-	for (int j = 0; j < MAX_VENDOR_INVENTORY_TAB; j++) {
-		for (int i = 0; i < vendor.m_venderItemAry2[j].GetSize(); i++)
-			safe_delete((LPVENDOR_ITEM)vendor.m_venderItemAry2[j].GetAt(i));
-	}
-}
-
 CProject::~CProject()
 {
 #ifdef __CLIENT
@@ -278,8 +266,6 @@ CProject::~CProject()
 	while(pos)
 	{
 		m_mapCharacter.GetNextAssoc(pos,string,(void*&)lpCharacter);
-
-		CVendor_Clear(lpCharacter->m_vendor);
 		safe_delete( lpCharacter );
 	}
 
@@ -2895,7 +2881,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 					pVendorItem->m_nUniqueMin	= nUniqueMin;
 					pVendorItem->m_nUniqueMax	= nUniqueMax;
 					pVendorItem->m_nTotalNum	= nTotalNum;
-					lpCharacter->m_vendor.m_venderItemAry[ nSlot ].Add( pVendorItem );
+					lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back( pVendorItem );
 				}
 			}
 #endif	// __RULE_0615
@@ -2916,7 +2902,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 				pVendorItem->m_nUniqueMin = nUniqueMin;
 				pVendorItem->m_nUniqueMax = nUniqueMax;
 				pVendorItem->m_nTotalNum  = nTotalNum;
-				lpCharacter->m_vendor.m_venderItemAry[ nSlot ].Add( pVendorItem );
+				lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back( pVendorItem );
 			}
 			else if( script.Token == "AddVenderItem2" || script.Token == "AddVendorItem2")
 			{
@@ -2926,7 +2912,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 
 				LPVENDOR_ITEM pVendorItem = new VENDOR_ITEM;
 				pVendorItem->m_dwItemId = dwId;
-				lpCharacter->m_vendor.m_venderItemAry2[ nSlot ].Add( pVendorItem );
+				lpCharacter->m_vendor.m_venderItemAry2[ nSlot ].emplace_back( pVendorItem );
 			}
 			else if( script.Token == "SetVenderType" )
 			{

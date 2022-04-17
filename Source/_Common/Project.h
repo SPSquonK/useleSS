@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <memory>
 #include "boost/container/static_vector.hpp"
 #include "SingleDst.h"
 
@@ -283,10 +284,10 @@ struct CVendor {
 	CString			m_venderSlot[4];
 
 	// List of sold items, Only populated for penya items?
-	CPtrArray		m_venderItemAry[4];
+	std::vector<std::unique_ptr<VENDOR_ITEM>>		m_venderItemAry[4];
 
 	// List of sold items, Only populated for red chip items?
-	CPtrArray		m_venderItemAry2[4];
+	std::vector<std::unique_ptr<VENDOR_ITEM>>   m_venderItemAry2[4];
 };
 
 #ifdef __NPC_BUFF
