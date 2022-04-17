@@ -1394,7 +1394,7 @@ typedef	struct	_runscriptfunc
 
 // port num
 #define	PN_PATCHSRVR	1100
-#define	PN_WORLDSRVR	3000
+#define	PN_WORLDSRVR	39000
 #define	PN_CERTIFIER	23000
 #define	PN_CORESRVR	    34000
 #define	PN_CACHESRVR	5400
