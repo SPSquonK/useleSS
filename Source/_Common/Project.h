@@ -263,19 +263,27 @@ struct MotionProp
 	CTexture*	pTexture;
 };
 
-typedef struct _VENDOR_ITEM 
-{
-	DWORD	m_dwItemId;
-	int		m_nItemkind3;
-	int		m_nItemJob;
-	int		m_nUniqueMin;
-	int		m_nUniqueMax;
-	int		m_nTotalNum ;
-	int		m_nMaterialCount;
-} VENDOR_ITEM,* LPVENDOR_ITEM;
-
 struct CVendor {
 	enum class Type { Penya, RedChip };
+
+	struct CategoryItem {
+		int		m_nItemkind3;
+		int		m_nItemJob;
+		int		m_nUniqueMin;
+		int		m_nUniqueMax;
+		int		m_nTotalNum;
+
+		CategoryItem(int nItemkind3, int nItemJob,
+			int nUniqueMin, int nUniqueMax, int nTotalNum)
+			: m_nItemkind3(nItemkind3), m_nItemJob(nItemJob),
+			m_nUniqueMin(nUniqueMin), m_nUniqueMax(nUniqueMax), m_nTotalNum(nTotalNum) {
+		}
+	};
+
+	struct SingleItem {
+		DWORD	m_dwItemId;
+		SingleItem(DWORD dwItemId) : m_dwItemId(dwItemId) {}
+	};
 
 	/* 0 = penya, 1 = red chip */
 	Type m_type = Type::Penya;
@@ -284,10 +292,10 @@ struct CVendor {
 	CString			m_venderSlot[4];
 
 	// List of sold items, Only populated for penya items?
-	std::vector<std::unique_ptr<VENDOR_ITEM>>		m_venderItemAry[4];
+	std::vector<CategoryItem>		m_venderItemAry[4];
 
 	// List of sold items, Only populated for red chip items?
-	std::vector<std::unique_ptr<VENDOR_ITEM>>   m_venderItemAry2[4];
+	std::vector<SingleItem>   m_venderItemAry2[4];
 };
 
 #ifdef __NPC_BUFF

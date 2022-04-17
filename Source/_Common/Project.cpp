@@ -2875,13 +2875,9 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 				int nTotalNum	= script.GetNumber(); script.GetToken(); // 
 				if( nLang == ::GetLanguage() && nSubLang == ::GetSubLanguage() )
 				{
-					LPVENDOR_ITEM pVendorItem	= new VENDOR_ITEM;
-					pVendorItem->m_nItemkind3	= nItemKind3;
-					pVendorItem->m_nItemJob		= nItemJob;
-					pVendorItem->m_nUniqueMin	= nUniqueMin;
-					pVendorItem->m_nUniqueMax	= nUniqueMax;
-					pVendorItem->m_nTotalNum	= nTotalNum;
-					lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back( pVendorItem );
+					lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back(
+						nItemKind3, nItemJob, nUniqueMin, nUniqueMax, nTotalNum
+					);
 				}
 			}
 #endif	// __RULE_0615
@@ -2896,23 +2892,16 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 				int nUniqueMax = script.GetNumber(); script.GetToken(); // 
 				int nTotalNum  = script.GetNumber(); script.GetToken(); // 
 
-				LPVENDOR_ITEM pVendorItem = new VENDOR_ITEM;
-				pVendorItem->m_nItemkind3  = nItemKind3;
-				pVendorItem->m_nItemJob	= nItemJob;
-				pVendorItem->m_nUniqueMin = nUniqueMin;
-				pVendorItem->m_nUniqueMax = nUniqueMax;
-				pVendorItem->m_nTotalNum  = nTotalNum;
-				lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back( pVendorItem );
+				lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back(
+					nItemKind3, nItemJob, nUniqueMin, nUniqueMax, nTotalNum
+				);
 			}
 			else if( script.Token == "AddVenderItem2" || script.Token == "AddVendorItem2")
 			{
 				script.GetToken(); // (
 				int nSlot = script.GetNumber(); script.GetToken(); // 
 				DWORD dwId = script.GetNumber(); script.GetToken(); //
-
-				LPVENDOR_ITEM pVendorItem = new VENDOR_ITEM;
-				pVendorItem->m_dwItemId = dwId;
-				lpCharacter->m_vendor.m_venderItemAry2[ nSlot ].emplace_back( pVendorItem );
+				lpCharacter->m_vendor.m_venderItemAry2[ nSlot ].emplace_back(dwId);
 			}
 			else if( script.Token == "SetVenderType" )
 			{

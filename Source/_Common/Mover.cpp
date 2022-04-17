@@ -1202,11 +1202,11 @@ void CMover::ProcessRegenItem()
 						m_ShopInventory[i]->Clear();		// m_packÀ» ´Ù ¾ø¾Ø´Ù.
 						for (const auto & pVendor : pCharacter->m_vendor.m_venderItemAry2[i]) {
 							CItemElem itemElem;
-							itemElem.m_dwItemId	= pVendor->m_dwItemId;
-							itemElem.m_nItemNum	= (short)( prj.GetItemProp( pVendor->m_dwItemId )->dwPackMax );
-							itemElem.m_nHitPoint = prj.GetItemProp( pVendor->m_dwItemId )->dwEndurance;
+							itemElem.m_dwItemId	= pVendor.m_dwItemId;
+							itemElem.m_nItemNum	= (short)( prj.GetItemProp( pVendor.m_dwItemId )->dwPackMax );
+							itemElem.m_nHitPoint = prj.GetItemProp( pVendor.m_dwItemId )->dwEndurance;
 							if( (int)itemElem.GetChipCost() < 1 )
-								Error( "chip cost < 1 : npc = %s, item = %d", pCharacter->m_szKey, pVendor->m_dwItemId );
+								Error( "chip cost < 1 : npc = %s, item = %d", pCharacter->m_szKey, pVendor.m_dwItemId );
 							else
 								m_ShopInventory[i]->Add( &itemElem );
 						}
@@ -1224,7 +1224,7 @@ void CMover::ProcessRegenItem()
 							int cbSize	= 0;
 							// generate
 							for (const auto & pVendor : pCharacter->m_vendor.m_venderItemAry[i]) {
-								GenerateVendorItem( apItemProp, &cbSize, MAX_VENDOR_INVENTORY, *pVendor );
+								GenerateVendorItem( apItemProp, &cbSize, MAX_VENDOR_INVENTORY, pVendor );
 							}
 							// sort
 							for( int j = 0; j < cbSize - 1; j++ )
@@ -4244,7 +4244,7 @@ void CMover::CreateAbilityOption_SetItemSFX( int nAbilityOption )
 #endif //__CLIENT
 
 //int nItemKind, int nItemKind2, int nNumMax, int nUniqueMin, int nUniqueMax, int nTotalNum, CAnim* pAnimParent, int nMaterialCount )
-void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const VENDOR_ITEM & pVendor )
+void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor )
 {
 	CPtrArray* pItemKindAry		= prj.GetItemKindAry( pVendor.m_nItemkind3 );
 	ItemProp* pItemProp		= NULL;

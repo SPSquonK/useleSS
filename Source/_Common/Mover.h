@@ -1161,7 +1161,7 @@ public:
 	void			UpdateItemBank( int nSlot, BYTE nId, CHAR cParam, DWORD dwValue );
 	CItemBase*		GetItemBankId( int nSlot, DWORD dwId );
 	void			RemoveItemBankId( int nSlot, DWORD dwId );
-	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const VENDOR_ITEM & pVendor );
+	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor );
 	BOOL			DropItemByDied( CMover* pAttacker );		// 죽어서 떨어트리는 드랍.
 	BOOL			DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType = SUT_NORMAL, BOOL bControl = FALSE, const int nCastingTime = 0 );		// dwSkill/nLevel만 가지고도 사용할 수 있는 버전.
 	void			SetPKTargetLimit( int nSec );
