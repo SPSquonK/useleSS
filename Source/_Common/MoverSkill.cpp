@@ -1780,7 +1780,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 				ReState();
 		}
 		break;
-#ifdef __S_ADD_RESTATE
 	case II_CHR_SYS_SCR_RESTATE_STR:
 		{
 			if( m_nStr == 15 )
@@ -1825,7 +1824,6 @@ int	CMover::DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPar
 				ReStateOne( 3 );
 		}
 		break;
-#endif // __S_ADD_RESTATE
 	case II_CHR_SYS_SCR_TRANSY:
 		{
 			if( DoUseItemSexChange( nPart ) == FALSE )

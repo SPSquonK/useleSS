@@ -782,98 +782,42 @@ void CMover::SetPointParam( int nDstParameter, int nValue, BOOL bTrans )	// bTra
 }
 BOOL CMover::IncStrLevel()
 {
-#ifdef __S_ADD_RESTATE
 	if( m_nRemainGP > 0 )
 	{
 		m_nStr += 1;
 		m_nRemainGP -= 1;
 		return TRUE;
 	}
-#else // __S_ADD_RESTATE
-	LPJOBABILITY pJobAbillity;
-	if( IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-	if( (int)m_nRemainGP >= (int)pJobAbillity->dwStr )		// �̺κ� (int)�� ĳ��Ʈ ������ ������ �����Ϸ� ���� ����.
-	{
-		m_nStr += pJobAbillity->dwStrAdd;
-		m_nRemainGP -= pJobAbillity->dwStr;
-		return TRUE;
-	}
-#endif // __S_ADD_RESTATE
 	return FALSE;
 }
 BOOL CMover::IncStaLevel()
 {
-#ifdef __S_ADD_RESTATE
 	if( m_nRemainGP > 0 )
 	{
 		m_nSta += 1;
 		m_nRemainGP -= 1;
 		return TRUE;
 	}
-#else // __S_ADD_RESTATE
-	LPJOBABILITY pJobAbillity;
-	if( IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-	if( (int)m_nRemainGP >= (int)pJobAbillity->dwSta )
-	{
-		m_nSta += pJobAbillity->dwStaAdd;
-		m_nRemainGP -= pJobAbillity->dwSta;
-		return TRUE;
-	}
-#endif // __S_ADD_RESTATE
 	return FALSE;
 }
 BOOL CMover::IncDexLevel()
 {
-#ifdef __S_ADD_RESTATE
 	if( m_nRemainGP > 0 )
 	{
 		m_nDex += 1;
 		m_nRemainGP -= 1;
 		return TRUE;
 	}
-#else // __S_ADD_RESTATE
-	LPJOBABILITY pJobAbillity;
-	if( IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-	if( (int)m_nRemainGP >= (int)pJobAbillity->dwDex )
-	{
-		m_nDex += pJobAbillity->dwDexAdd;
-		m_nRemainGP -= pJobAbillity->dwDex;
-		return TRUE;
-	}
-#endif // __S_ADD_RESTATE
 	return FALSE;
 }
 BOOL CMover::IncIntLevel()
 {
-#ifdef __S_ADD_RESTATE
 	if( m_nRemainGP > 0 )
 	{
 		m_nInt += 1;
 		m_nRemainGP -= 1;
 		return TRUE;
 	}
-#else // __S_ADD_RESTATE
-	LPJOBABILITY pJobAbillity;
-	if( IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-	if( (int)m_nRemainGP >= (int)pJobAbillity->dwInt )
-	{
-		m_nInt += pJobAbillity->dwIntAdd;
-		m_nRemainGP -= pJobAbillity->dwInt;
-		return TRUE;
-	}
-#endif // __S_ADD_RESTATE
 	return FALSE;
 }
 

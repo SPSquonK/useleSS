@@ -235,17 +235,6 @@ struct FXPCHARACTER {
 	DWORD	dwFxp2;
 };
 
-#ifndef __S_ADD_RESTATE
-typedef struct tagJobAbility
-{
-	DWORD	dwStr, dwStrAdd;
-	DWORD	dwSta, dwStaAdd;
-	DWORD	dwDex, dwDexAdd;
-	DWORD	dwInt, dwIntAdd;
-
-} JOBABILITY,* LPJOBABILITY;
-#endif // __S_ADD_RESTATE
-
 struct ATKSTYLE {
 	DWORD	dwParam1;
 	DWORD dwParam2;
@@ -781,9 +770,6 @@ public:
 	GUILD_APPELL				m_aGuildAppell[ MAX_GUILDAPPELL ];
 	EXPCHARACTER				m_aExpCharacter[ MAX_EXPCHARACTER ];
 	FXPCHARACTER				m_aFxpCharacter[ MAX_FXPCHARACTER ];
-#ifndef __S_ADD_RESTATE
-	JOBABILITY					m_aJobAbillity[ MAX_JOB + 1 ];
-#endif // __S_ADD_RESTATE
 	DWORD						m_aExpLPPoint[ MAX_EXPLPPOINT ];
 	DWORD						m_aExpSkill[ MAX_EXPSKILL ];
 	EXPPARTY					m_aExpParty[MAX_PARTYLEVEL];

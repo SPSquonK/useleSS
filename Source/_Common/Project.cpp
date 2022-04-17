@@ -3067,34 +3067,6 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 				script.GetNumber();		// skip
 			}
 		}
-#ifndef __S_ADD_RESTATE
-		else
-		if( script.Token == _T( "jobAbillity" ) )
-		{
-			ZeroMemory( m_aJobAbillity, sizeof( m_aJobAbillity ) );
-			script.GetToken(); // { 
-			dwJob = script.GetNumber();
-			while( *script.token != '}' )
-			{
-				script.GetToken(); // { 
-				dwVal = script.GetNumber();
-				while( *script.token != '}' )
-				{
-					m_aJobAbillity[ i ].dwStr = dwVal;
-					m_aJobAbillity[ i ].dwStrAdd = script.GetNumber();
-					m_aJobAbillity[ i ].dwSta = script.GetNumber();
-					m_aJobAbillity[ i ].dwStaAdd = script.GetNumber();
-					m_aJobAbillity[ i ].dwDex = script.GetNumber();
-					m_aJobAbillity[ i ].dwDexAdd = script.GetNumber();
-					m_aJobAbillity[ i ].dwInt = script.GetNumber();
-					m_aJobAbillity[ i++ ].dwIntAdd = script.GetNumber();
-
-					dwVal = script.GetNumber();
-				}
-				dwJob = script.GetNumber();
-			}
-		}
-#endif // __S_ADD_RESTATE
 		else
 		if( script.Token == _T( "expSkill" ) )
 		{

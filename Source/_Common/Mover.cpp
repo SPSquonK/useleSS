@@ -1771,7 +1771,6 @@ void CMover::ReState()
 #endif // __WORLDSERVER
 }
 
-#ifdef __S_ADD_RESTATE
 void CMover::ReStateOne( int nKind )
 {
 #ifdef __WORLDSERVER
@@ -1814,7 +1813,6 @@ void CMover::ReStateOne( int nKind )
 	g_UserMng.AddHonorTitleChange( this, m_nHonor);
 #endif // __WORLDSERVER
 }
-#endif // __S_ADD_RESTATE
 
 #ifdef __ADD_RESTATE_LOW
 void CMover::ReStateOneLow( int nKind )

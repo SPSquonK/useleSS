@@ -3325,18 +3325,6 @@ void CWndCharInfo::OnInitialUpdate()
 	}
 
 	//모든 스탯의 증가량 1로 고정이므로 아래 삭제
-	/*
-	LPJOBABILITY pJobAbillity;
-	if( g_pPlayer->IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ g_pPlayer->GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-
-	m_wndStr.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwStr ) ? TRUE : FALSE );
-	m_wndSta.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwSta ) ? TRUE : FALSE );
-	m_wndDex.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwDex ) ? TRUE : FALSE );
-	m_wndInt.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwInt ) ? TRUE : FALSE );
-	*/
 
 	m_nGpPoint = g_pPlayer->GetRemainGP();
 	//스탯 증가량 한적 없으므로 Minus Button Default는 False
@@ -4536,7 +4524,6 @@ void CWndCharacterDetail::OnDraw(C2DRender* p2DRender)
 
 	p2DRender->TextOut( 65, y, g_pPlayer->GetInt(), dwColor ); y += nNext;
 
-#ifdef __S_ADD_RESTATE
 	if( m_fWaitingConfirm  == FALSE )
 	{
 		m_wndStr.EnableWindow( ( (int)g_pPlayer->GetRemainGP() > 0 ) ? TRUE : FALSE );
@@ -4544,21 +4531,6 @@ void CWndCharacterDetail::OnDraw(C2DRender* p2DRender)
 		m_wndDex.EnableWindow( ( (int)g_pPlayer->GetRemainGP() > 0 ) ? TRUE : FALSE );
 		m_wndInt.EnableWindow( ( (int)g_pPlayer->GetRemainGP() > 0 ) ? TRUE : FALSE );
 	}
-#else // __S_ADD_RESTATE
-	LPJOBABILITY pJobAbillity;
-	if( g_pPlayer->IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ g_pPlayer->GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-
-	if( m_fWaitingConfirm  == FALSE )
-	{
-		m_wndStr.EnableWindow( ( (int)g_pPlayer->GetRemainGP() >= (int)pJobAbillity->dwStr ) ? TRUE : FALSE );
-		m_wndSta.EnableWindow( ( (int)g_pPlayer->GetRemainGP() >= (int)pJobAbillity->dwSta ) ? TRUE : FALSE );
-		m_wndDex.EnableWindow( ( (int)g_pPlayer->GetRemainGP() >= (int)pJobAbillity->dwDex ) ? TRUE : FALSE );
-		m_wndInt.EnableWindow( ( (int)g_pPlayer->GetRemainGP() >= (int)pJobAbillity->dwInt ) ? TRUE : FALSE );
-	}
-#endif // __S_ADD_RESTATE
 	else
 	{
 		m_wndStr.EnableWindow( FALSE );
@@ -4571,17 +4543,10 @@ void CWndCharacterDetail::OnDraw(C2DRender* p2DRender)
 #else
 	y = 52;
 #endif
-#ifdef __S_ADD_RESTATE
 	p2DRender->TextOut( 135, y, 1, dwColor ); y += nNext;
 	p2DRender->TextOut( 135, y, 1, dwColor ); y += nNext;
 	p2DRender->TextOut( 135, y, 1, dwColor ); y += nNext;
 	p2DRender->TextOut( 135, y, 1, dwColor ); y += nNext;
-#else // __S_ADD_RESTATE
-	p2DRender->TextOut( 135, y, pJobAbillity->dwStr, dwColor ); y += nNext;
-	p2DRender->TextOut( 135, y, pJobAbillity->dwSta, dwColor ); y += nNext;
-	p2DRender->TextOut( 135, y, pJobAbillity->dwDex, dwColor ); y += nNext;
-	p2DRender->TextOut( 135, y, pJobAbillity->dwInt, dwColor ); y += nNext;
-#endif // __S_ADD_RESTATE
 
 	//
 	// m_nCnt같은 글로벌성 카운터는 g_nRenderCnt나 g_nProcessCnt를 쓰면 됩니다.
@@ -4738,22 +4703,10 @@ void CWndCharacterDetail::OnInitialUpdate()
 	m_wndDex.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtCharPlus.bmp" ) ), TRUE );
 	m_wndInt.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtCharPlus.bmp" ) ), TRUE );
 
-#ifdef __S_ADD_RESTATE
 	m_wndStr.EnableWindow( ( g_pPlayer->GetRemainGP() > 0 ) ? TRUE : FALSE );
 	m_wndSta.EnableWindow( ( g_pPlayer->GetRemainGP() > 0 ) ? TRUE : FALSE );
 	m_wndDex.EnableWindow( ( g_pPlayer->GetRemainGP() > 0 ) ? TRUE : FALSE );
 	m_wndInt.EnableWindow( ( g_pPlayer->GetRemainGP() > 0 ) ? TRUE : FALSE );
-#else // __S_ADD_RESTATE
-	LPJOBABILITY pJobAbillity;
-	if( g_pPlayer->IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ g_pPlayer->GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-	m_wndStr.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwStr ) ? TRUE : FALSE );
-	m_wndSta.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwSta ) ? TRUE : FALSE );
-	m_wndDex.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwDex ) ? TRUE : FALSE );
-	m_wndInt.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwInt ) ? TRUE : FALSE );
-#endif // __S_ADD_RESTATE
 }
 BOOL CWndCharacterDetail::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
@@ -4996,20 +4949,7 @@ void CWndCharacterDetail2::OnDraw(C2DRender* p2DRender)
 		dwColor = D3DCOLOR_ARGB(255,255,0,0);
 
 	p2DRender->TextOut( StatYPos, y, g_pPlayer->GetInt(), dwColor ); y += nNext;
-/*
-	LPJOBABILITY pJobAbillity;
-	if( g_pPlayer->IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ g_pPlayer->GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
 
-	y = 52;
-
-	p2DRender->TextOut( 135, y, pJobAbillity->dwStr, dwColor ); y += nNext;
-	p2DRender->TextOut( 135, y, pJobAbillity->dwSta, dwColor ); y += nNext;
-	p2DRender->TextOut( 135, y, pJobAbillity->dwDex, dwColor ); y += nNext;
-	p2DRender->TextOut( 135, y, pJobAbillity->dwInt, dwColor ); y += nNext;
-*/
 	if(m_nGpPoint)
 	{
 		if( (g_nRenderCnt / 8) & 1 )	
@@ -5219,18 +5159,6 @@ void CWndCharacterDetail2::OnInitialUpdate()
 	}
 
 	//모든 스탯의 증가량 1로 고정이므로 아래 삭제
-	/*
-	LPJOBABILITY pJobAbillity;
-	if( g_pPlayer->IsExpert() )
-		pJobAbillity = &prj.m_aJobAbillity[ g_pPlayer->GetJob() ];
-	else
-		pJobAbillity = &prj.m_aJobAbillity[ JOB_VAGRANT ];
-
-	m_wndStr.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwStr ) ? TRUE : FALSE );
-	m_wndSta.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwSta ) ? TRUE : FALSE );
-	m_wndDex.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwDex ) ? TRUE : FALSE );
-	m_wndInt.EnableWindow( ( g_pPlayer->GetRemainGP() >= pJobAbillity->dwInt ) ? TRUE : FALSE );
-	*/
 
 	m_nGpPoint = g_pPlayer->GetRemainGP();
 	//스탯 증가량 한적 없으므로 Minus Button Default는 False
