@@ -2238,14 +2238,13 @@ BOOL TextCmd_CreateItem2(CScanner & s, CPlayer_ * pUser) {
 	if( pItemProp && pItemProp->dwItemKind3 != IK3_VIRTUAL )
 	{
 		int nRandomOptItemId	= s.GetNumber();
-		PRANDOMOPTITEM pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( nRandomOptItemId );
-		if( pRandomOptItem )
-		{
+		
+		if (const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(nRandomOptItemId)) {
 			CItemElem itemElem;
 			itemElem.m_dwItemId		= pItemProp->dwID;
 			itemElem.m_nItemNum	= 1;
 			itemElem.m_nHitPoint	= -1;
-			itemElem.SetRandomOpt( pRandomOptItem->nId );
+			itemElem.SetRandomOpt(pRandomOptItem->nId);
 			pUser->CreateItem( &itemElem );
 		}
 	}

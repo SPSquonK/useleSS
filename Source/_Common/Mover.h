@@ -1123,9 +1123,9 @@ public:
 	void			SetDestParamRandomOpt( CItemElem* pItemElem );
 	void			ResetDestParamRandomOpt( CItemElem* pItemElem );
 	
-	void	SetDestParamRandomOptOrigin( CItemElem* pItemElem );
+	void	SetDestParamRandomOptOrigin(const CItemElem * pItemElem);
 	void	SetDestParamRandomOptExtension( CItemElem* pItemElem );
-	void	ResetDestParamRandomOptOrigin( CItemElem* pItemElem );
+	void	ResetDestParamRandomOptOrigin(const CItemElem * pItemElem);
 	void	ResetDestParamRandomOptExtension( CItemElem* pItemElem );
 
 	void			GetItemATKPower( int *pnMin, int *pnMax, ItemProp* pItemProp, CItemElem *pWeapon ); 

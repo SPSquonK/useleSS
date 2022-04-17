@@ -4215,9 +4215,10 @@ DWORD CWndMgr::PutItemName( CItemElem* pItemElem, CEditString* pEdit )
 	// 랜덤 옵션
 	if( pItemElem->GetProp()->dwParts != (DWORD)-1 )
 	{
-		PRANDOMOPTITEM pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
-		if( pRandomOptItem )
-			strTemp.Format( "%s ", pRandomOptItem->pszString );
+		if (const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(pItemElem->GetRandomOpt())) {
+			strTemp += pRandomOptItem->pszString;
+			strTemp += " ";
+		}
 	}
 
 	BOOL bGuildCombatCloak = FALSE;
@@ -4428,7 +4429,7 @@ void CWndMgr::PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit )
 	if( pItemElem->GetProp()->dwParts == (DWORD)-1 )
 		return;
 
-	RANDOMOPTITEM * pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
+	const auto * const pRandomOptItem	= g_RandomOptItemGen.GetRandomOptItem(pItemElem->GetRandomOpt());
 	if( pRandomOptItem ) // 2. 랜덤 옵션의 내용을 출력한다.
 	{
 		const CString strTemp = DstsToString(pRandomOptItem->ia);

@@ -153,7 +153,7 @@ private:
 public:
 	__int64		GetRandomOptItemId( void )	{	return m_iRandomOptItemId;	}
 	void	SetRandomOptItemId( __int64 iRandomOptItemId )	{	m_iRandomOptItemId	= iRandomOptItemId;	}
-	int		GetRandomOpt( void )	{	return static_cast<int>( m_iRandomOptItemId & 0x00000000000000FF );	}
+	[[nodiscard]] int		GetRandomOpt() const	{	return static_cast<int>( m_iRandomOptItemId & 0x00000000000000FF );	}
 	void	SetRandomOpt( int nRandomOpt )	{	m_iRandomOptItemId	= ( m_iRandomOptItemId & 0xFFFFFFFFFFFFFF00 ) | static_cast<__int64>( nRandomOpt & 0x00000000000000FF );	}
 	__int64*	GetRandomOptItemIdPtr( void )	{	return &m_iRandomOptItemId;	}
 

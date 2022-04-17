@@ -6974,7 +6974,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							if( pItemProp )
 							{
 								pItemElem->m_nHitPoint	= pItemProp->dwEndurance;
-								pItemElem->SetRandomOpt( CRandomOptItemGen::GetInstance()->GenRandomOptItem( lpMoverProp->dwLevel, (FLOAT)nProbability / 100.0f, pItemProp, lpMoverProp->dwClass ) );
+								pItemElem->SetRandomOpt(g_RandomOptItemGen.GenRandomOptItem( lpMoverProp->dwLevel, (FLOAT)nProbability / 100.0f, pItemProp, lpMoverProp->dwClass ) );
 							}
 							pItemElem->SetAbilityOption( lpDropItem->dwLevel );		// 추가 능력치 +1, +2 같은거.
 							pItemElem->SetSerialNumber();
@@ -7181,7 +7181,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 								itemElem.m_dwItemId		= pItemProp->dwID;
 								itemElem.m_nItemNum		= 1;
 								itemElem.SetAbilityOption( k );
-								itemElem.SetRandomOpt( CRandomOptItemGen::GetInstance()->GenRandomOptItem( lpMoverProp->dwLevel, (FLOAT)nProbability / 100.0f, pItemProp, lpMoverProp->dwClass ) );
+								itemElem.SetRandomOpt(g_RandomOptItemGen.GenRandomOptItem( lpMoverProp->dwLevel, (FLOAT)nProbability / 100.0f, pItemProp, lpMoverProp->dwClass ) );
 
 								if( pAttacker->CreateItem( &itemElem ) == TRUE )
 								{	// log
@@ -7204,7 +7204,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							pItemElem->m_nItemNum	= 1;
 							pItemElem->m_nHitPoint	= pItemProp->dwEndurance;
 							pItemElem->SetAbilityOption( k );
-							pItemElem->SetRandomOpt( CRandomOptItemGen::GetInstance()->GenRandomOptItem( lpMoverProp->dwLevel, (FLOAT)nProbability / 100.0f, pItemProp, lpMoverProp->dwClass ) );
+							pItemElem->SetRandomOpt(g_RandomOptItemGen.GenRandomOptItem( lpMoverProp->dwLevel, (FLOAT)nProbability / 100.0f, pItemProp, lpMoverProp->dwClass ) );
 							pItemElem->SetSerialNumber();
 							CItem* pItem	= new CItem;
 							pItem->m_pItemBase	= pItemElem;
@@ -8163,18 +8163,6 @@ void CMover::GetEquipedSetItem( int nSetItemId, BOOL* pbEquiped, int* pnEquip )
 	}
 }
 
-void CMover::SetDestParamRandomOptOrigin( CItemElem* pItemElem )
-{
-	if( pItemElem->GetRandomOpt() > 0 )
-	{
-		PRANDOMOPTITEM pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
-		if( pRandomOptItem )
-		{
-			SetDSTs(pRandomOptItem->ia);
-		}
-	}
-}
-
 void CMover::SetDestParamRandomOptExtension( CItemElem* pItemElem )
 {
 	int cbOption	= g_xRandomOptionProperty->GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
@@ -8192,13 +8180,19 @@ void CMover::SetDestParamRandomOpt( CItemElem* pItemElem )
 	SetDestParamRandomOptExtension( pItemElem );
 }
 
-void CMover::ResetDestParamRandomOptOrigin( CItemElem* pItemElem )
-{
-	if( pItemElem->GetRandomOpt() > 0 )
-	{
-		PRANDOMOPTITEM pRandomOptItem	= CRandomOptItemGen::GetInstance()->GetRandomOptItem( pItemElem->GetRandomOpt() );
-		if( pRandomOptItem )
-		{
+void CMover::SetDestParamRandomOptOrigin(const CItemElem * const pItemElem) {
+	const int randomOpt = pItemElem->GetRandomOpt();
+	if (randomOpt > 0) {
+		if (const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(randomOpt)) {
+			SetDSTs(pRandomOptItem->ia);
+		}
+	}
+}
+
+void CMover::ResetDestParamRandomOptOrigin(const CItemElem * const pItemElem) {
+	const int randomOpt = pItemElem->GetRandomOpt();
+	if (randomOpt > 0) {
+		if (const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(randomOpt)) {
 			ResetDSTs(pRandomOptItem->ia);
 		}
 	}

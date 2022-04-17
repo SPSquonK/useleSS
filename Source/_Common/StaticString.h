@@ -43,6 +43,11 @@ public:
     _sntprintf(buffer.data(), N - 1, lpszFormat, std::forward<Ts>(ts)...);
   }
 
+  StaticString & operator=(const char * str) {
+    StringCchCopy(buffer.data(), N, str);
+    return *this;
+  }
+
 private:
   std::array<char, N> buffer = { '\0' };
 };

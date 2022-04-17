@@ -3907,10 +3907,10 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 
 		else if( s.Token == _T( "RandomOptItem" ) )
 		{
-			RANDOMOPTITEM randomOptItem;
+			CRandomOptItemGen::RandomOptItem randomOptItem;
 			randomOptItem.nId	= s.GetNumber();
 			s.GetToken();
-			lstrcpy( randomOptItem.pszString, s.Token );
+			randomOptItem.pszString = s.Token;
 			randomOptItem.nLevel	= s.GetNumber();
 			randomOptItem.dwProbability		= s.GetNumber();
 			s.GetToken();	// {
@@ -3921,11 +3921,12 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 				randomOptItem.ia.push_back(SINGLE_DST{ nDstParam, nAdjParam });
 				nDstParam	= s.GetNumber();
 			}
-			CRandomOptItemGen::GetInstance()->AddRandomOption( &randomOptItem );
+			g_RandomOptItemGen.AddRandomOption(randomOptItem);
 		}
 		s.GetToken();
 	}
-	CRandomOptItemGen::GetInstance()->Arrange();
+
+	g_RandomOptItemGen.Arrange();
 
 	return TRUE;
 }
@@ -4095,118 +4096,77 @@ CSetItem* CSetItemFinder::GetSetItemByItemId( DWORD dwItemId )
 	return NULL;
 }	
 
-CRandomOptItemGen::CRandomOptItemGen()
-{
-	int m_nSize		= 0;
-	memset( m_aRandomOptItem, 0, sizeof(m_aRandomOptItem) );
-	memset( m_anIndex, 0, sizeof(m_anIndex) );
-}
 
-void CRandomOptItemGen::Free( void )
-{
-	m_mapid.clear();
-}
-
-BOOL CRandomOptItemGen::AddRandomOption( PRANDOMOPTITEM pRandomOptItem )
-{
-	if( m_nSize == MAX_RANDOMOPTITEM )
-	{
-		TRACE( "adding randomoptitem\t// 1\n" );
-		return FALSE;
+void CRandomOptItemGen::AddRandomOption(const RandomOptItem & pRandomOptItem) {
+	if (m_aRandomOptItem.size() == m_aRandomOptItem.static_capacity) {
+		Error(__FUNCTION__ "(): More than %lu random options", m_aRandomOptItem.static_capacity);
 	}
-	memcpy( &m_aRandomOptItem[m_nSize], pRandomOptItem, sizeof(RANDOMOPTITEM) );
-	m_nSize++;
-	return TRUE;
+
+	m_aRandomOptItem.emplace_back(pRandomOptItem);
 }
 
-CRandomOptItemGen* CRandomOptItemGen::GetInstance( void )
-{
-	static	CRandomOptItemGen sRandomOptItemGen;
-	return &sRandomOptItemGen;
-}
+CRandomOptItemGen g_RandomOptItemGen;
 
-void CRandomOptItemGen::Arrange( void )
-{
+void CRandomOptItemGen::Arrange() {
 	// sort
-	for( int i = 0; i < m_nSize-1; i++ )
-	{
-		for( int j = i + 1; j < m_nSize; j++ )
-		{
-			if( m_aRandomOptItem[i].nLevel > m_aRandomOptItem[j].nLevel )
-			{
-				RANDOMOPTITEM tmp;
-				memcpy( &tmp, &m_aRandomOptItem[i], sizeof(RANDOMOPTITEM) );
-				memcpy( &m_aRandomOptItem[i], &m_aRandomOptItem[j], sizeof(RANDOMOPTITEM) );
-				memcpy( &m_aRandomOptItem[j], &tmp, sizeof(RANDOMOPTITEM) );
-			}
+	std::sort(
+		m_aRandomOptItem.begin(), m_aRandomOptItem.end(),
+		[](const RandomOptItem & lhs, const RandomOptItem & rhs) {
+			return lhs.nLevel < rhs.nLevel;
 		}
-	}
+	);
+
 	// make index & make lv index
 	int nLevel	= 1, nPrevious	= -1;
-	for( int i = 0; i  < m_nSize; i++ )
-	{
-		bool bResult	= m_mapid.insert( map<int, int>::value_type( m_aRandomOptItem[i].nId, i ) ).second;
-		if( !bResult )
-		{
-			TRACE( "adding randomoptitem failed\t// 0\n" );
+	for (int i = 0; i != m_aRandomOptItem.size(); ++i) {
+		const bool bResult	= m_mapid.insert( map<int, int>::value_type( m_aRandomOptItem[i].nId, i ) ).second;
+		if (!bResult) {
+			TRACE("adding randomoptitem failed\t// 0\n");
 		}
 		
-		if( m_aRandomOptItem[i].nLevel > nLevel )
-		{
-			for( int j = nLevel; j < m_aRandomOptItem[i].nLevel; j++ )
-				m_anIndex[j-1]	= nPrevious;
-			nLevel	= m_aRandomOptItem[i].nLevel;
+		if (m_aRandomOptItem[i].nLevel > nLevel) {
+			for (int j = nLevel; j < m_aRandomOptItem[i].nLevel; j++)
+				m_anIndex[j - 1] = nPrevious;
+			nLevel = m_aRandomOptItem[i].nLevel;
 		}
+
 		nPrevious	= i;
 	}
 
-
-	
-	for( int i = nLevel; i <= MAX_MONSTER_LEVEL; i++ )
-		m_anIndex[i-1]	= nPrevious;
-
-}
-
-int CRandomOptItemGen::GenRandomOptItem( int nLevel, FLOAT fPenalty, ItemProp* pItemProp, DWORD dwClass )
-{
-	if( !pItemProp )
-		return 0;
-	
-	if( pItemProp->dwItemKind1 != IK1_WEAPON && pItemProp->dwItemKind1 != IK1_ARMOR )
-		return 0;
-
-	if( nLevel >= MAX_MONSTER_LEVEL )
-		nLevel = MAX_MONSTER_LEVEL - 1 ;
-
-	int i	= m_anIndex[nLevel];
-
-	if( i != -1 )
-	{
-		int nIndex	= xRandom( i + 1 );
-		DWORD dwRandom	= xRandom( 3000000000 );
-		if( dwClass == RANK_MIDBOSS )
-			dwRandom	/= 5;	// �� ���� ���� ���� �ɼ� Ȯ�� 500%
-		DWORD dwProbability	= (DWORD)(m_aRandomOptItem[nIndex].dwProbability * fPenalty);
-		if( dwRandom < dwProbability )
-			return m_aRandomOptItem[nIndex].nId;
+	for (int i = nLevel; i <= MAX_MONSTER_LEVEL; i++) {
+		m_anIndex[i - 1] = nPrevious;
 	}
-	return 0;
 }
 
-PRANDOMOPTITEM CRandomOptItemGen::GetRandomOptItem( int nId )
-{
-	map<int, int>::iterator i	= m_mapid.find( nId );
-	if( i != m_mapid.end() )
-		return &m_aRandomOptItem[i->second];
-	return NULL;
+int CRandomOptItemGen::GenRandomOptItem(int nLevel, FLOAT fPenalty, ItemProp * pItemProp, DWORD dwClass) const {
+	if (!pItemProp) return 0;
+	
+	if (pItemProp->dwItemKind1 != IK1_WEAPON && pItemProp->dwItemKind1 != IK1_ARMOR) return 0;
+
+	if (nLevel >= MAX_MONSTER_LEVEL) nLevel = MAX_MONSTER_LEVEL - 1;
+
+	const int i = m_anIndex[nLevel];
+	if (i == -1) return 0;
+
+	const int nIndex	= xRandom( i + 1 );
+	DWORD dwRandom	= xRandom( 3000000000 );
+	if( dwClass == RANK_MIDBOSS )
+		dwRandom	/= 5;	// �� ���� ���� ���� �ɼ� Ȯ�� 500%
+	
+	DWORD dwProbability	= (DWORD)(m_aRandomOptItem[nIndex].dwProbability * fPenalty);
+	if (dwRandom >= dwProbability) return 0;
+	
+	return m_aRandomOptItem[nIndex].nId;
 }
 
-const char* CRandomOptItemGen::GetRandomOptItemString( int nId )
-{
-	PRANDOMOPTITEM pRandomOptItem	= GetRandomOptItem( nId );
-	if( pRandomOptItem )
-		return pRandomOptItem->pszString;
-	return NULL;
+const CRandomOptItemGen::RandomOptItem * CRandomOptItemGen::GetRandomOptItem(const int nId) const {
+	const auto i = m_mapid.find(nId);
+	return i != m_mapid.end() ? &m_aRandomOptItem[i->second] : nullptr;
+}
+
+const char * CRandomOptItemGen::GetRandomOptItemString(int nId) const {
+	const auto * pRandomOptItem = GetRandomOptItem(nId);
+	return pRandomOptItem ? pRandomOptItem->pszString.GetRawStr() : nullptr;
 }
 
 BOOL CProject::IsGuildQuestRegion( const D3DXVECTOR3 & vPos )

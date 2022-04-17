@@ -8,6 +8,7 @@ static_assert(false, "Project.h was included")
 #include <memory>
 #include <set>
 #include "boost/container/static_vector.hpp"
+#include "StaticString.h"
 
 #include "SingleDst.h"
 
@@ -677,44 +678,33 @@ public:
 
 extern CPiercingAvail g_PiercingAvail;
 
+class CRandomOptItemGen final {
+public:
+	static constexpr size_t MAXNAME = 32;
 
+	struct RandomOptItem {
+		int nId = 0;
+		int nLevel = 0;
+		StaticString<MAXNAME> pszString;
+		DWORD dwProbability = 0;
+		ITEMAVAIL ia;
+	};
 
-#define	MAX_RANDOMOPTITEMSTRING		32
-typedef	struct	_RANDOMOPTITEM
-{
-	int	nId;
-	int nLevel;
-	char pszString[MAX_RANDOMOPTITEMSTRING];
-	DWORD	dwProbability;
-	ITEMAVAIL	ia;
-	_RANDOMOPTITEM()
-		{	nId	= 0;	nLevel	= 0;	*pszString	= '\0';	dwProbability	= 0;	}
-}	RANDOMOPTITEM, *PRANDOMOPTITEM;
-
-#define	MAX_RANDOMOPTITEM		256
-
-class CRandomOptItemGen
-{
-	int		m_nSize;
-	RANDOMOPTITEM	m_aRandomOptItem[MAX_RANDOMOPTITEM];
-	map<int, int>	m_mapid;
-
-	int		m_anIndex[MAX_MONSTER_LEVEL];
+private:
+	boost::container::small_vector<RandomOptItem, 256> m_aRandomOptItem;
+	std::map<int, int> m_mapid;
+	std::array<int, MAX_MONSTER_LEVEL> m_anIndex;
 
 public:
-//	Constructions
-	CRandomOptItemGen();
-	virtual	~CRandomOptItemGen()	{	Free();	}
+	void AddRandomOption(const RandomOptItem & pRandomOptItem);
+	void Arrange();
 
-	BOOL	AddRandomOption( PRANDOMOPTITEM pRandomOptItem );
-	PRANDOMOPTITEM	GetRandomOptItem( int nId );
-	const char*	GetRandomOptItemString( int nId );
-	int		GenRandomOptItem( int nLevel, FLOAT fPenalty, ItemProp* pItemProp, DWORD dwClass );
-	void	Arrange( void );
-	void	Free( void );
-
-	static	CRandomOptItemGen*	GetInstance();
+	[[nodiscard]] const RandomOptItem * GetRandomOptItem(int nId) const;
+	[[nodiscard]] const char * GetRandomOptItemString(int nId) const;
+	[[nodiscard]] int GenRandomOptItem(int nLevel, FLOAT fPenalty, ItemProp* pItemProp, DWORD dwClass) const;
 };
+
+extern CRandomOptItemGen g_RandomOptItemGen;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
