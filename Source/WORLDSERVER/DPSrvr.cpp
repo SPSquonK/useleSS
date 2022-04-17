@@ -2523,7 +2523,7 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 	{
 		CMover* pVendor = pUser->m_vtInfo.GetOther();
 		LPCHARACTER lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
-		if( lpChar && lpChar->m_nVenderType != 0 )	// 0 - 페냐 상인
+		if( lpChar && lpChar->m_vendor.m_nVenderType != 0 )	// 0 - 페냐 상인
 			return;
 
 		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
@@ -2641,7 +2641,7 @@ void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	{
 		CMover* pVendor = pUser->m_vtInfo.GetOther();
 		LPCHARACTER lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
-		if( lpChar && lpChar->m_nVenderType != 1 )	// 1 - 칩 상인
+		if( lpChar && lpChar->m_vendor.m_nVenderType != 1 )	// 1 - 칩 상인
 			return;
 
 		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?

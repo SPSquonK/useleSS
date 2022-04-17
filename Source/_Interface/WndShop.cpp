@@ -614,7 +614,7 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 			LPCHARACTER lpCharacter = m_pMover->GetCharacter();
 			if(lpCharacter)
 			{
-				if(lpCharacter->m_nVenderType == 0)
+				if(lpCharacter->m_vendor.m_nVenderType == 0)
 				{
 					dwCost += pItemBase->GetCost();
 #ifdef __SHOP_COST_RATE
@@ -624,7 +624,7 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 						dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
 				}
 
-				else if(lpCharacter->m_nVenderType == 1)
+				else if(lpCharacter->m_vendor.m_nVenderType == 1)
 					dwCost += pItemBase->GetChipCost();
 			}
 		}
@@ -664,12 +664,12 @@ void CWndShop::OnInitialUpdate()
 		int i = NULL;
 		for( ; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 		{
-			if( lpCharacter->m_venderSlot[ i ].IsEmpty() == FALSE )
+			if( lpCharacter->m_vendor.m_venderSlot[ i ].IsEmpty() == FALSE )
 			{
 				m_wndItemCtrl[ i ].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, i + 10 );
 				m_wndItemCtrl[ i ].InitItem( m_pMover->m_ShopInventory[ i ], APP_SHOP_ );
-				tabTabItem.pszText = lpCharacter->m_venderSlot[ i ].LockBuffer();
-				lpCharacter->m_venderSlot[ i ].UnlockBuffer();
+				tabTabItem.pszText = lpCharacter->m_vendor.m_venderSlot[ i ].LockBuffer();
+				lpCharacter->m_vendor.m_venderSlot[ i ].UnlockBuffer();
 				tabTabItem.pWndBase = &m_wndItemCtrl[ i ];
 				pTabCtrl->InsertItem( i, &tabTabItem );
 			}

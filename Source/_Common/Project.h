@@ -273,6 +273,17 @@ typedef struct _VENDOR_ITEM
 	int		m_nMaterialCount;
 } VENDOR_ITEM,* LPVENDOR_ITEM;
 
+struct CVendor {
+	/* 0 = penya, 1 = red chip */
+	int				  m_nVenderType = 0;
+
+	/* Shop name */
+	CString			m_venderSlot[4];
+
+	CPtrArray		m_venderItemAry[4];
+	CPtrArray		m_venderItemAry2[4];
+};
+
 #ifdef __NPC_BUFF
 struct NPC_BUFF_SKILL {
 	DWORD	dwSkillID;
@@ -300,8 +311,6 @@ typedef struct tagCHARACTER
 	DWORD			m_dwHeadMesh;
 	RANDOM_ITEM		m_randomItem;
 	BOOL			m_abMoverMenu[ MAX_MOVER_MENU ];
-	CString			m_venderSlot[ 4 ];
-	CPtrArray		m_venderItemAry[ 4 ];
 
 	CWordArray		m_awSrcQuest; // 이 캐릭터가 소유한 퀘스트 아이디 목록 
 	CWordArray		m_awDstQuest; // 이 캐릭터가 소유한 퀘스트 아이디 목록 
@@ -309,8 +318,8 @@ typedef struct tagCHARACTER
 	CUIntArray		m_anDstQuestItem; 
 	void Clear();
 
-	int				m_nVenderType;
-	CPtrArray		m_venderItemAry2[ 4 ];
+	CVendor m_vendor;
+
 #ifdef __NPC_BUFF
 	vector<NPC_BUFF_SKILL> m_vecNPCBuffSkill;
 #endif // __NPC_BUFF

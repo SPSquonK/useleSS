@@ -1195,15 +1195,15 @@ void CMover::ProcessRegenItem()
 			LPVENDOR_ITEM pVendor;
 			for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i ++ )
 			{
-				if(pCharacter->m_nVenderType == 1) // 칩으로 거래하는 vender일 경우
+				if(pCharacter->m_vendor.m_nVenderType == 1) // 칩으로 거래하는 vender일 경우
 				{
-					if(pCharacter->m_venderItemAry2[i].GetSize())
+					if(pCharacter->m_vendor.m_venderItemAry2[i].GetSize())
 					{
 						fShop	= TRUE;
 						m_ShopInventory[i]->Clear();		// m_pack을 다 없앤다.
-						for( int j = 0; j < pCharacter->m_venderItemAry2[i].GetSize(); j++ )
+						for( int j = 0; j < pCharacter->m_vendor.m_venderItemAry2[i].GetSize(); j++ )
 						{
-							pVendor	= (LPVENDOR_ITEM)pCharacter->m_venderItemAry2[i].GetAt(j);
+							pVendor	= (LPVENDOR_ITEM)pCharacter->m_vendor.m_venderItemAry2[i].GetAt(j);
 							CItemElem itemElem;
 							itemElem.m_dwItemId	= pVendor->m_dwItemId;
 							itemElem.m_nItemNum	= (short)( prj.GetItemProp( pVendor->m_dwItemId )->dwPackMax );
@@ -1217,7 +1217,7 @@ void CMover::ProcessRegenItem()
 				}
 				else
 				{
-					if( pCharacter->m_venderItemAry[i].GetSize() )
+					if( pCharacter->m_vendor.m_venderItemAry[i].GetSize() )
 					{
 						fShop	= TRUE;
 						{
@@ -1226,9 +1226,9 @@ void CMover::ProcessRegenItem()
 							ItemProp* apItemProp[MAX_VENDOR_INVENTORY];
 							int cbSize	= 0;
 							// generate
-							for( int j = 0; j < pCharacter->m_venderItemAry[i].GetSize(); j++ )
+							for( int j = 0; j < pCharacter->m_vendor.m_venderItemAry[i].GetSize(); j++ )
 							{
-								pVendor		= (LPVENDOR_ITEM)pCharacter->m_venderItemAry[i].GetAt(j);
+								pVendor		= (LPVENDOR_ITEM)pCharacter->m_vendor.m_venderItemAry[i].GetAt(j);
 								GenerateVendorItem( apItemProp, &cbSize, MAX_VENDOR_INVENTORY, pVendor );
 							}
 							// sort
@@ -7559,23 +7559,28 @@ void CMover::AllocShopInventory( LPCHARACTER pCharacter )
 	}
 }
 
+
+static bool CVendor_IsShop(CVendor & vendor) {
+	for (int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++) {
+		if (vendor.m_venderItemAry[i].GetSize())
+			return TRUE;
+	}
+	if (vendor.m_nVenderType == 1) {
+		for (int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++) {
+			if (vendor.m_venderItemAry2[i].GetSize())
+				return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 BOOL CMover::IsVendorNPC()
 {
 	LPCHARACTER pCharacter	= GetCharacter();
 	if( !pCharacter )
 		return FALSE;
-	for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-	{
-		if( pCharacter->m_venderItemAry[i].GetSize() )
-			return TRUE;
-	}
-	if(pCharacter->m_nVenderType == 1)
-	for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-	{
-		if( pCharacter->m_venderItemAry2[i].GetSize() )
-			return TRUE;
-	}
-	return FALSE;
+
+	return CVendor_IsShop(pCharacter->m_vendor) ? TRUE : FALSE;
 }
 
 #ifdef __CLIENT	
