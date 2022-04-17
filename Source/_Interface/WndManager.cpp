@@ -4495,40 +4495,38 @@ void CWndMgr::PutEnchantOpt( CMover* pMover, CItemElem* pItemElem, CEditString* 
 	}			
 }
 
-void CWndMgr::PutSetItemOpt( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString strTemp;
+void CWndMgr::PutSetItemOpt(CMover* pMover, CItemElem* pItemElem, CEditString* pEdit) {
 	// 2. 세트 아이템의 구성 요소 인가?
-	CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
-	if( pSetItem )
-	{
-		// 해당 세트 아이템의 구성 요소를 모두 출력 하되 장착 된 것과 안된 것을 색으로 구별하여 출력한다.
-		BOOL pbEquiped[MAX_HUMAN_PARTS];
-		memset( pbEquiped, 0, sizeof(pbEquiped) );
-		int nEquiped;
-		pMover->GetEquipedSetItem( pSetItem->m_nId, pbEquiped, &nEquiped );
-		// 3. 세트아이템 타이틀 출력
-		strTemp.Format( "\n\n%s (%d/%d)", pSetItem->GetString(), pMover->GetEquipedSetItemNumber( pSetItem ), pSetItem->m_nElemSize );
-//		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetName, ESSTY_BOLD );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetName );
+	const CSetItem * pSetItem = CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
+	if (!pSetItem) return;
+
+	// 해당 세트 아이템의 구성 요소를 모두 출력 하되 장착 된 것과 안된 것을 색으로 구별하여 출력한다.
+	// 3. 세트아이템 타이틀 출력
+
+	const int nEquiped = pMover->GetEquipedSetItemNumber(*pSetItem);
+
+	CString strTemp;
+	strTemp.Format( "\n\n%s (%d/%lu)", pSetItem->GetString(), nEquiped, pSetItem->m_components.size());
+	pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetName );
 		
-		for( int i = 0; i < pSetItem->m_nElemSize; i++ )
-		{
-			ItemProp* pItemProp	= prj.GetItemProp( pSetItem->m_adwItemId[i] );
-			if( pItemProp )
-			{
-				strTemp.Format( "\n   %s", pItemProp->szName  );
-				if( pbEquiped[i] ) // 장착되어있는 세트 아이템
-					pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetItem1 );
-				else
-					pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetItem0 );
-			}
-		}
-		// 4. 추가 능력치 출력
-		const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, TRUE);
-		const CString strTemp = DstsToString(itemAvail);
-		pEdit->AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetEffect);
+	for (const CSetItem::PartItem & partItem : pSetItem->m_components) {
+		const ItemProp * pItemProp = prj.GetItemProp(partItem.itemId);
+		if (!pItemProp) continue;
+
+		strTemp.Format("\n   %s", pItemProp->szName);
+
+		// 장착되어있는 세트 아이템
+		const DWORD color = pMover->IsEquipedPartItem(partItem)
+			? dwItemColor[g_Option.m_nToolTipText].dwSetItem1
+			: dwItemColor[g_Option.m_nToolTipText].dwSetItem0;
+
+		pEdit->AddString(strTemp, color);
 	}
+
+	// 4. 추가 능력치 출력
+	const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, true);
+	const CString strDsts = DstsToString(itemAvail);
+	pEdit->AddString(strDsts, dwItemColor[g_Option.m_nToolTipText].dwSetEffect);
 }
 
 void CWndMgr::PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )

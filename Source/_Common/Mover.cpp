@@ -2783,9 +2783,8 @@ ItemProp* CMover::GetTransyItem( ItemProp* pItemProp, BOOL bCheck, LPCTSTR lpszF
 	return pItemPropChange;
 }
 
-CItemElem* CMover::GetEquipItem( int nParts )
-{
-	return (CItemElem*)m_Inventory.GetEquip( nParts );
+CItemElem * CMover::GetEquipItem(const int nParts) {
+	return m_Inventory.GetEquip(nParts);
 }
 
 ItemProp* CMover::GetEquipItemProp( CItemContainer<CItemElem>* pInventory, PEQUIP_INFO pEquipInfo, int nParts )
@@ -8080,18 +8079,16 @@ void CMover::SetDestParamSetItem( CItemElem* pItemElem )
 {
 	if( pItemElem && !pItemElem->IsFlag( CItemElem::expired ) )
 	{
-		CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
-		if( pSetItem )
-		{
-			int nEquiped	= GetEquipedSetItemNumber( pSetItem );
-			ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, FALSE );
+		
+		if (const CSetItem * pSetItem = CSetItemFinder::GetInstance()->GetSetItemByItemId(pItemElem->m_dwItemId)) {
+			const int nEquiped = GetEquipedSetItemNumber(*pSetItem);
+			ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, false);
 			SetDSTs(itemAvail);
 		}
 	}
 	else
 	{
-		map<CSetItem*, int>	mapSetItem;
-		map<CSetItem*, int>::iterator i;
+		std::map<CSetItem *, int> mapSetItem;
 		for( int nParts = 0; nParts < MAX_HUMAN_PARTS; nParts++ )
 		{
 			pItemElem	= GetEquipItem( nParts );
@@ -8100,19 +8097,13 @@ void CMover::SetDestParamSetItem( CItemElem* pItemElem )
 				CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
 				if( pSetItem )
 				{
-					i	= mapSetItem.find( pSetItem );
-					if( i != mapSetItem.end() )
-						i->second++;
-					else
-						mapSetItem.insert( map<CSetItem*, int>::value_type( pSetItem, 1 ) );
+					++mapSetItem[pSetItem];
 				}
 			}
 		}
-		for( i = mapSetItem.begin(); i != mapSetItem.end(); ++i )
-		{
-			CSetItem* pSetItem	= i->first;
-			int nEquiped	= i->second;
-			const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, TRUE);
+
+		for (const auto & [pSetItem, nEquiped] : mapSetItem) {
+			const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, true);
 			SetDSTs(itemAvail);
 		}
 	}
@@ -8125,42 +8116,31 @@ void CMover::ResetDestParamSetItem( CItemElem* pItemElem )
 		CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItemByItemId( pItemElem->m_dwItemId );
 		if( pSetItem )
 		{
-			const int nEquiped = GetEquipedSetItemNumber( pSetItem );
-			const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped + 1, FALSE);
+			const int nEquiped = GetEquipedSetItemNumber(*pSetItem);
+			const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped + 1, false);
 			ResetDSTs(itemAvail);
 		}
 	}
 }
 
-int CMover::GetEquipedSetItemNumber( CSetItem* pSetItem )
-{
-	int nEquiped	= 0;
-	for( int i = 0; i < pSetItem->m_nElemSize; i++ )
-	{
-		CItemElem* pItemElem	= GetEquipItem( pSetItem->m_anParts[i] );
-		if( pItemElem && pItemElem->m_dwItemId == pSetItem->m_adwItemId[i] && !pItemElem->IsFlag( CItemElem::expired ) )
+int CMover::GetEquipedSetItemNumber(const CSetItem & pSetItem) {
+	int nEquiped = 0;
+
+	for (const CSetItem::PartItem & partItem : pSetItem.m_components) {
+		if (IsEquipedPartItem(partItem)) {
 			nEquiped++;
+		}
 	}
+
 	return nEquiped;
 }
 
-void CMover::GetEquipedSetItem( int nSetItemId, BOOL* pbEquiped, int* pnEquip )
-{
-	*pnEquip	= 0;
-//	memset( pbEquiped, 0, sizeof(BYTE) * MAX_HUMAN_PARTS );
-	CSetItem* pSetItem	= CSetItemFinder::GetInstance()->GetSetItem( nSetItemId );
-	if( pSetItem )
-	{
-		for( int i = 0; i < pSetItem->m_nElemSize; i++ )
-		{
-			CItemElem* pItemElem	= GetEquipItem( pSetItem->m_anParts[i] );
-			if( pItemElem && pItemElem->m_dwItemId == pSetItem->m_adwItemId[i] && !pItemElem->IsFlag( CItemElem::expired ) )
-			{
-				pbEquiped[i]	= TRUE;
-				(*pnEquip)++;
-			}
-		}
-	}
+bool CMover::IsEquipedPartItem(const CSetItem::PartItem & partItem) {
+	const CItemElem * const pItemElem = GetEquipItem(partItem.part);
+	if (!pItemElem) return false;
+	if (pItemElem->m_dwItemId != partItem.itemId) return false;
+	if (pItemElem->IsFlag(CItemElem::expired)) return false;
+	return true;
 }
 
 void CMover::SetDestParamRandomOptExtension( CItemElem* pItemElem )

@@ -225,7 +225,7 @@ public:
 		}
 	void	ResetFlag( BYTE byFlag )	{	m_byFlag	&= ~byFlag;		}
 	void	SetFlag( BYTE byFlag )		{	m_byFlag	|= byFlag;		}
-	BOOL	IsFlag( BYTE byFlag )	{	return ( m_byFlag & byFlag ) ? TRUE: FALSE;		}
+	[[nodiscard]] BOOL IsFlag( BYTE byFlag ) const	{	return ( m_byFlag & byFlag ) ? TRUE: FALSE;		}
 	BOOL	IsBinds();
 	BOOL	IsUndestructable( void );
 	BOOL	IsCharged();

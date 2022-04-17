@@ -3861,14 +3861,11 @@ BOOL CProject::LoadPiercingAvail( LPCTSTR lpszFileName )
 		}
 		else if( s.Token == _T( "SetItem" ) )
 		{
-			int nId;
-			char pszString[MAX_SETITEM_STRING];
-			nId		= s.GetNumber();
+			const int nId = s.GetNumber();
 
 			s.GetToken();
-			lstrcpy( pszString, s.Token );
 
-			CSetItem* pSetItem	= new CSetItem( nId, pszString );
+			CSetItem * pSetItem = new CSetItem(nId, s.Token.GetString());
 
 			s.GetToken();	// {
 			s.GetToken();	// categori
@@ -3970,40 +3967,36 @@ const PIERCINGAVAIL * CPiercingAvail::GetPiercingAvail(DWORD dwItemId) const {
 	return &m_pPiercingAvail[i->second];
 }
 
-CSetItem::CSetItem( int nId, const char* pszString )
-{
-	m_nId	= nId;
-	lstrcpy( m_pszString, pszString );
-	m_nElemSize		= 0;
-}
-
-BOOL CSetItem::AddSetItemElem( DWORD dwItemId, int nParts )
-{
-	if( m_nElemSize == MAX_SETITEM_ELEM )
-	{
-		TRACE( "too many setitem elements\n" );
-		return FALSE;
+bool CSetItem::AddSetItemElem(const DWORD dwItemId, const int nParts) {
+	if (m_components.size() == m_components.static_capacity) {
+		Error(__FUNCTION__"(): The set #%lu %s has too much components", m_components.size(), GetString());
+		return false;
 	}
-#ifdef _DEBUG
-	for( int i = 0; i < m_nElemSize; i++ )
-	{
-		if( m_anParts[i] == nParts )
-		{
-			TRACE( "parts duplicated\n" );
-			return FALSE;
+
+	const auto it = std::find_if(
+		m_components.begin(), m_components.end(),
+		[nParts](const PartItem & partItem) {
+			return partItem.part == nParts;
 		}
+	);
+
+	if (it != m_components.end()) {
+		Error(__FUNCTION__"(): The set #%lu %s already has a component for part %d",
+			m_components.size(), GetString(), nParts
+		);
+		return false;
 	}
-#endif	// _DEBUG
-	m_adwItemId[m_nElemSize]	= dwItemId;
-	m_anParts[m_nElemSize]		= nParts;
-	m_nElemSize++;
-	return TRUE;
+
+	m_components.emplace_back(PartItem{ nParts, dwItemId });
+
+	return true;
 }
 
-BOOL CSetItem::AddItemAvail( int nDstParam, int nAdjParam, int nEquiped ) {
-	if( m_avail.size() == MAX_ITEMAVAIL) {
-		TRACE( "too many setitem avail\n" );
-		return FALSE;
+bool CSetItem::AddItemAvail(const int nDstParam, const int nAdjParam, const int nEquiped) {
+	if (m_avail.size() == m_avail.static_capacity) {
+		Error(__FUNCTION__"(): The set #%lu %s already has more than %lu bonuses",
+			m_components.size(), GetString(), m_avail.static_capacity
+		);
 	}
 
 	m_avail.push_back(EquipedDst{ nDstParam, nAdjParam, nEquiped });
@@ -4025,7 +4018,7 @@ void CSetItem::SortItemAvail() {
 	);
 }
 
-ITEMAVAIL CSetItem::GetItemAvail(int nEquiped, BOOL bAll) const {
+ITEMAVAIL CSetItem::GetItemAvail(int nEquiped, bool bAll) const {
 	ITEMAVAIL result;
 
 	for (const auto & avail : m_avail) {
@@ -4070,9 +4063,8 @@ void CSetItemFinder::AddSetItem( CSetItem* pSetItem )
 	{
 		TRACE( "adding setitem failed\t// 0\n" );
 	}
-	for( int i = 0; i < pSetItem->m_nElemSize; i++ )
-	{
-		bResult	= m_mapItemId.insert( map<DWORD, CSetItem*>::value_type( pSetItem->m_adwItemId[i], pSetItem ) ).second;
+	for (const CSetItem::PartItem & partItem : pSetItem->m_components) {
+		bResult	= m_mapItemId.insert( map<DWORD, CSetItem*>::value_type(partItem.itemId, pSetItem ) ).second;
 		if( !bResult )
 		{
 			TRACE( "adding setitem failed\t// 1\n" );

@@ -596,39 +596,37 @@ public:
 #define	MAX_ITEMAVAIL	32
 using ITEMAVAIL = boost::container::static_vector<SINGLE_DST, MAX_ITEMAVAIL>;
 
-struct EquipedDst {
-	int nDst;
-	int nAdj;
-	int anEquiped;
-};
+class CSetItem final {
+public:
+	static constexpr size_t SetItemNameSize = 64;
+	static constexpr size_t ElemSize = 8;
 
-using NEWSETITEMAVAIL = boost::container::static_vector<EquipedDst, MAX_ITEMAVAIL>;
+	struct PartItem { int part; DWORD itemId; };
 
+	struct EquipedDst {
+		int nDst;
+		int nAdj;
+		int anEquiped;
+	};
 
-#define	MAX_SETITEM_STRING		64
-#define	MAX_SETITEM_ELEM		8
-class CSetItem
-{
 public:
 	int		m_nId;
-	char	m_pszString[MAX_SETITEM_STRING];
-	int		m_nElemSize;
-	int		m_anParts[MAX_SETITEM_ELEM];
-	DWORD	m_adwItemId[MAX_SETITEM_ELEM];
-	NEWSETITEMAVAIL		m_avail;
+	StaticString<SetItemNameSize> m_pszString;
+	boost::container::static_vector<PartItem, ElemSize>       m_components;
+	boost::container::small_vector<EquipedDst, MAX_ITEMAVAIL> m_avail;
 
 public:
-//	Constructions
-	CSetItem( int nId, const char* pszString );
-	virtual	~CSetItem()		{}
+	CSetItem(const int nId, const char * const pszString)
+		: m_nId(nId) {
+		m_pszString = pszString;
+	}
 
-	BOOL	AddSetItemElem( DWORD dwItemId, int nParts );
-	BOOL	AddItemAvail( int nDstParam, int nAdjParam, int nEquiped );
-	void	SortItemAvail( void );
+	bool AddSetItemElem(DWORD dwItemId, int nParts);
+	bool AddItemAvail(int nDstParam, int nAdjParam, int nEquiped);
+	void SortItemAvail();
 
-	ITEMAVAIL GetItemAvail(int nEquiped, BOOL bAll) const;
-
-	char* GetString( void )		{	return m_pszString;		}
+	[[nodiscard]] ITEMAVAIL GetItemAvail(int nEquiped, bool bAll) const;
+	[[nodiscard]] const char * GetString() const { return m_pszString; }
 };
 
 class CSetItemFinder

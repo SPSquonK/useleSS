@@ -11,6 +11,8 @@
 #include "buff.h"
 #endif	// __BUFF_1107
 
+#include <array>
+
 #include "Ctrl.h"
 #include "..\_AIInterface\ActionMover.h"
 #include "SkillInfluence.h"
@@ -1118,8 +1120,9 @@ public:
 	BOOL			Pierce( CItemElem *pSuit, DWORD dwItemId );
 	void			SetDestParamSetItem( CItemElem* pItemElem );
 	void			ResetDestParamSetItem( CItemElem* pItemElem );
-	int				GetEquipedSetItemNumber( CSetItem* pSetItem );
-	void			GetEquipedSetItem( int nSetItemId, BOOL* pbEquiped, int* pnEquip );
+	[[nodiscard]] int GetEquipedSetItemNumber(const CSetItem & pSetItem);
+	[[nodiscard]] bool IsEquipedPartItem(const CSetItem::PartItem & partItem);
+
 	void			SetDestParamRandomOpt( CItemElem* pItemElem );
 	void			ResetDestParamRandomOpt( CItemElem* pItemElem );
 	
