@@ -1151,7 +1151,7 @@ public:
 #endif //__CLIENT
 	int				RemoveAllItem( DWORD dwItemId );
 	BOOL			AddItem( CItemBase* pItemBase );
-	CItemBase*		GetItemId( DWORD dwId );
+	CItemElem *		GetItemId( DWORD dwId );
 	void			RemoveItemId( DWORD dwId  );
 	void			SetKeeptimeInven( DWORD dwItemId, DWORD dwTime );
 	void			SetKeeptimeBank( DWORD dwItemId, DWORD dwTime );

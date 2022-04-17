@@ -1972,7 +1972,7 @@ void CWndPetTransEggs::OnMouseWndSurface(CPoint point)
 			{
 				ClientToScreen( &point );
 				ClientToScreen( &rect );
-				g_WndMng.PutToolTip_Item( (CItemBase*)m_pItemElem[i], point, &rect );
+				g_WndMng.PutToolTip_Item( m_pItemElem[i], point, &rect );
 			}
 		}
 	}
@@ -2782,7 +2782,7 @@ void CWndBuffPetStatus::OnMouseWndSurface( CPoint point )
 				continue;
 			}
 
-			g_WndMng.PutToolTip_Item( (CItemBase*)m_pItemElem[i], point, &rect );
+			g_WndMng.PutToolTip_Item( m_pItemElem[i], point, &rect );
 		}
 
 	}

@@ -109,8 +109,7 @@ void CWndQuickList::OnDraw( C2DRender* p2DRender )
 					p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
 				if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
 				{
-					CItemBase* pItemBase = g_pPlayer->GetItemId( lpShortcut->m_dwId );
-					CItemElem* pItemElem = (CItemElem*)pItemBase;
+					CItemElem * pItemElem = g_pPlayer->GetItemId( lpShortcut->m_dwId );
 
 					if( pItemElem  )
 					{

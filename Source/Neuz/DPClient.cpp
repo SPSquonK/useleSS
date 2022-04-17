@@ -2699,7 +2699,7 @@ void CDPClient::OnGetItemGuildBank( OBJID objid, CAr & ar )
 			CItemElem itemElem;
 			itemElem.Serialize( ar );
 		
-			CItemElem* pTempElem = g_pPlayer->GetGuild()->m_GuildBank.GetAtId(static_cast<CItemBase*>(&itemElem)->m_dwObjId);
+			CItemElem* pTempElem = g_pPlayer->GetGuild()->m_GuildBank.GetAtId(itemElem.m_dwObjId);
 			if (pTempElem)
 			{
 				g_pPlayer->m_Inventory.Add( &itemElem );
@@ -2707,7 +2707,7 @@ void CDPClient::OnGetItemGuildBank( OBJID objid, CAr & ar )
 				if (pTempElem->m_nItemNum > itemElem.m_nItemNum )
 					pTempElem->m_nItemNum -= itemElem.m_nItemNum;
 				else
-					g_pPlayer->GetGuild()->m_GuildBank.RemoveAtId( static_cast<CItemBase*>(&itemElem)->m_dwObjId );
+					g_pPlayer->GetGuild()->m_GuildBank.RemoveAtId(itemElem.m_dwObjId);
 			}
 		}
 		break;
@@ -2716,13 +2716,13 @@ void CDPClient::OnGetItemGuildBank( OBJID objid, CAr & ar )
 			CItemElem itemElem;
 			itemElem.Serialize( ar );
 			
-			CItemElem* pTempElem = g_pPlayer->GetGuild()->m_GuildBank.GetAtId(static_cast<CItemBase*>(&itemElem)->m_dwObjId);
+			CItemElem* pTempElem = g_pPlayer->GetGuild()->m_GuildBank.GetAtId(itemElem.m_dwObjId);
 			if (pTempElem)
 			{
 				if (pTempElem->m_nItemNum > itemElem.m_nItemNum )
 					pTempElem->m_nItemNum -= itemElem.m_nItemNum;
 				else
-					g_pPlayer->GetGuild()->m_GuildBank.RemoveAtId( static_cast<CItemBase*>(&itemElem)->m_dwObjId );
+					g_pPlayer->GetGuild()->m_GuildBank.RemoveAtId(itemElem.m_dwObjId);
 			}
 		}
 		break;

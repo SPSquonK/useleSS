@@ -399,7 +399,7 @@ void CWndItemTransy::OnDraw( C2DRender* p2DRender )
 		ClientToScreen( &Point2 );
 		ClientToScreen( &HitRect );
 		if( m_pItemElem[0] )
-			g_WndMng.PutToolTip_Item( (CItemBase*)m_pItemElem[0], Point2, &HitRect );
+			g_WndMng.PutToolTip_Item( m_pItemElem[0], Point2, &HitRect );
 		else
 			g_toolTip.PutToolTip( 100, prj.GetText( TID_GAME_TRANSITEM_PUT ), *HitRect, Point2, 0 );
 	}
@@ -410,7 +410,7 @@ void CWndItemTransy::OnDraw( C2DRender* p2DRender )
 		ClientToScreen( &Point2 );
 		ClientToScreen( &HitRect );
 		if( m_pItemElem[0] )
-			g_WndMng.PutToolTip_Item( (CItemBase*)&m_pItemElemChange, Point2, &HitRect );
+			g_WndMng.PutToolTip_Item( &m_pItemElemChange, Point2, &HitRect );
 		else
 			g_toolTip.PutToolTip( 100, prj.GetText( TID_GAME_TRANSITEM_PUT1 ), *HitRect, Point2, 0 );
 	}

@@ -4405,7 +4405,7 @@ BOOL CMover::AddItemBank( int nSlot, CItemElem* pItemElem )
 	return m_Bank[nSlot].Add( pItemElem );
 }
 
-CItemBase* CMover::GetItemId( DWORD dwId )
+CItemElem * CMover::GetItemId( DWORD dwId )
 {
 	return m_Inventory.GetAtId( dwId );
 }

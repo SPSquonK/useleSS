@@ -559,7 +559,7 @@ void CWndQueryEquip::OnMouseWndSurface( CPoint point )
 			itemElem.CopyPiercing( m_aEquipInfoAdd[i].piercing );
 			
 			// 장비창에 있는것 툴팁
-			g_WndMng.PutToolTip_Item( (CItemBase*)&itemElem, point2, &DrawRect, APP_QUERYEQUIP );
+			g_WndMng.PutToolTip_Item( &itemElem, point2, &DrawRect, APP_QUERYEQUIP );
 		}
 	}
 }
@@ -8491,8 +8491,8 @@ BOOL CWndTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 		else // 아이템
 		{
-			CItemBase* pItemBase = g_pPlayer->GetItemId( g_WndMng.m_pWndTradeGold->m_Shortcut.m_dwId );
-			g_WndMng.m_pWndTradeGold->m_dwGold = ( (CItemElem*)pItemBase )->m_nItemNum;
+			CItemElem * pItemBase = g_pPlayer->GetItemId( g_WndMng.m_pWndTradeGold->m_Shortcut.m_dwId );
+			g_WndMng.m_pWndTradeGold->m_dwGold = pItemBase->m_nItemNum;
 		}
 		g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_TRADE;
 		g_WndMng.m_pWndTradeGold->m_pWndBase = this;
@@ -13365,7 +13365,7 @@ void CWndPostSend::OnDraw( C2DRender* p2DRender )
 				ClientToScreen( &point2 );
 				ClientToScreen( &hitrect );
 				
-				g_WndMng.PutToolTip_Item( (CItemBase*)pItemElem, point2, &hitrect );
+				g_WndMng.PutToolTip_Item( pItemElem, point2, &hitrect );
 			}
 			/**/
 		}
@@ -13736,7 +13736,7 @@ void CWndPostRead::OnDraw( C2DRender* p2DRender )
 			ClientToScreen( &hitrect );
 			
 			p2DRender->RenderRoundRect( pCustom->rect, D3DCOLOR_XRGB( 150, 0, 0 ) );
-			g_WndMng.PutToolTip_Item( (CItemBase*)m_pItemElem, point2, &hitrect );
+			g_WndMng.PutToolTip_Item( m_pItemElem, point2, &hitrect );
 		}
 
 		m_pItemElem->GetTexture()->Render( p2DRender, pCustom->rect.TopLeft(), 255 );
@@ -22910,7 +22910,7 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 		{
 			ClientToScreen( &pointMouse );
 			ClientToScreen( &rectSmeltItem );
-			g_WndMng.PutToolTip_Item((CItemBase*)m_pItemElem, pointMouse, &rectSmeltItem);
+			g_WndMng.PutToolTip_Item(m_pItemElem, pointMouse, &rectSmeltItem);
 		}
 		else
 		{

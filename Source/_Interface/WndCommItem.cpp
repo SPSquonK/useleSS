@@ -1156,7 +1156,7 @@ void CWndCommercialElem::OnDraw( C2DRender* p2DRender )
 				ClientToScreen( &point2 );
 				ClientToScreen( &hitrect );
 				
-				g_WndMng.PutToolTip_Item( (CItemBase*)m_pItemElem[i], point2, &hitrect );
+				g_WndMng.PutToolTip_Item( m_pItemElem[i], point2, &hitrect );
 			}
 		}
 	}
