@@ -88,12 +88,6 @@ template <class T> inline T CStack<T>::Peek( void )
 
 
 typedef CStack<DWORD>  CDWordStack; 
-typedef CStack<WORD>   CWordStack; 
-typedef CStack<CHAR>   CCharStack; 
-typedef CStack<UINT>   CUIntStack; 
-typedef CStack<LONG>   CLongStack; 
-typedef CStack<short>  CShortStack; 
-typedef CStack<int>    CIntStack; 
 
 template <class T> class CFixedArray
 {
