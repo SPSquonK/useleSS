@@ -10,7 +10,6 @@
 
 #if defined( __CLIENT )
 //-----------------------------------------------------------------------------
-extern CDPClient g_DPlay;
 //-----------------------------------------------------------------------------
 CWnd2ndPassword::CWnd2ndPassword( void ) : 
 m_nSelectCharacter( -1 )

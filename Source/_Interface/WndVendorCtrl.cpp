@@ -4,8 +4,6 @@
 #include "wndvendor.h"
 #include "DPClient.h"
 #include "defineText.h"
-extern	CDPClient	g_DPlay;
-
 #include "WndManager.h"
 
 

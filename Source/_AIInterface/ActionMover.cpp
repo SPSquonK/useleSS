@@ -7,7 +7,6 @@
 #include "DialogMsg.h"
 #include "DPClient.h"
 extern CDialogMsg	g_DialogMsg;
-extern	CDPClient	g_DPlay;
 #endif
 
 #ifdef __WORLDSERVER

@@ -12,8 +12,6 @@
 #include "WndHelperWebBox.h"
 #endif // __NEW_WEB_BOX
 
-extern	CDPClient	g_DPlay;
-
 
 #define TASKBAR_HEIGHT 48
 

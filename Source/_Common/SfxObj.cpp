@@ -3,7 +3,6 @@
 
 #ifdef __CLIENT
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 #endif	// __CLIENT
 
 #include "defineObj.h"

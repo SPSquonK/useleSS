@@ -6,8 +6,6 @@
 #include "randomoption.h"
 
 
-extern CDPClient g_DPlay;
-
 /****************************************************
   WndId : APP_CALCEL_BLESSING - 아이템 각성
   CtrlId : WIDC_CHANGE - 

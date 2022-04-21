@@ -12,6 +12,7 @@
 #include "WndChangeFace.h"
 #include "dpclient.h"
 #include "timeLimit.h"
+#include "MsgHdr.h"
 #endif // __CLIENT
 
 #ifdef __WORLDSERVER
@@ -67,7 +68,6 @@ extern	CGuildMng			g_GuildMng;
 
 #ifdef __CLIENT
 extern	CParty				g_Party;
-extern  CDPClient			g_DPlay;
 #endif // __CLITEM
 
 #ifdef __WORLDSERVER

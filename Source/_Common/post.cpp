@@ -4,7 +4,6 @@
 
 #ifdef	__CLIENT
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 #endif	//__CLIENT
 
 u_long	CMail::s_nMail	= 0;

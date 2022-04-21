@@ -21,7 +21,6 @@
 #include "Vector3Helper.h"
 
 extern	CGuildMng	g_GuildMng;
-extern	CDPClient	g_DPlay;
 
 #include "party.h"
 extern	CParty		g_Party;

@@ -9,7 +9,6 @@
 
 #ifdef __CLIENT
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 #else	// __CLIENT
 #ifdef __WORLDSERVER
 #include "User.h"

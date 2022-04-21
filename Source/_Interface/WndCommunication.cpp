@@ -9,7 +9,6 @@
 #include "WndChatFilter.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 
 #define		MAX_HISTORY_STRING		20
@@ -555,8 +554,6 @@ BOOL CWndChat::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	"to"     TY_SERVER 0
 	"to"     TY_SERVER 0
 */
-
-extern	CDPClient	g_DPlay;
 
 void CWndChat::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {

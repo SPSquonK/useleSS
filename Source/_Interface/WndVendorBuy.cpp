@@ -4,7 +4,6 @@
 #include "wndvendor.h"
 #include "WndVendorBuy.h"
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 
 
 /*

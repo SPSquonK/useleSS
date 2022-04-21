@@ -11,8 +11,6 @@
 
 #include "Ship.h"
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
-
 
 //int		__bTestLOD = 1;
 

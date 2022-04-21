@@ -18,7 +18,6 @@
 
 #include "DPClient.h"
 #include "MsgHdr.h"
-extern	CDPClient	g_DPlay;
 
 #include "wndvendor.h"
 #include "wndwebbox.h"

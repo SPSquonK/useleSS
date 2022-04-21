@@ -3,10 +3,7 @@
 #include "AppDefine.h"
 #include "WndPartyChangeTroup.h"
 #include "WndManager.h"
-
-
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 #include "party.h"
 extern	CParty g_Party;

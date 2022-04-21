@@ -14,7 +14,6 @@
 #ifdef __CLIENT
 	#include "DPClient.h"
 	#include "DialogMsg.h"
-	extern	CDPClient	g_DPlay;
 	#include "GuildRender.h"
 #else	// __CLIENT
 	#include "User.h"

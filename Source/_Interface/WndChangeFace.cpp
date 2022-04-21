@@ -5,7 +5,6 @@
 #include "defineText.h"
 #ifdef __CLIENT
 #include "dpclient.h"
-extern CDPClient	g_DPlay;
 #endif
 #include "Vector3Helper.h"
 

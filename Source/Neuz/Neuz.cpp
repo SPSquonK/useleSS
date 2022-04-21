@@ -41,7 +41,6 @@
 
 extern	CGuildWarMng	g_GuildWarMng;
 extern	CGuildMng		g_GuildMng;
-extern	CDPClient		g_DPlay;	 
 extern	CDPLoginClient	g_dpLoginClient;
 extern	CDPCertified	g_dpCertified;
 extern CSfxTexture      g_SfxTex;

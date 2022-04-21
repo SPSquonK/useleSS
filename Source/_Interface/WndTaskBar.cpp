@@ -11,7 +11,6 @@
 #include "WndRegVend.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 
 _ERROR_STATE g_Error_State;

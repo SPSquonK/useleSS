@@ -6,8 +6,6 @@
 #include "DPClient.h"
 #include "MsgHdr.h"
 #include "defineQuest.h"
-extern	CDPClient	g_DPlay;
-
 #include "playerdata.h"
 
 #include "guild.h"

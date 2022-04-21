@@ -43,7 +43,6 @@ extern	CGuildCombat	g_GuildCombatMng;
 	#include "Resdata.h"
 	#include "DPClient.h"
 	#include "DialogMsg.h"
-	extern	CDPClient	g_DPlay;
 	#include "GuildRender.h"
 #else	// __CLIENT
 	#include "User.h"

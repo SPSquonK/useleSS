@@ -4,7 +4,7 @@
 #include "WndMailRequestingBox.h"
 #include "ResData.h"
 #include "DPClient.h"
-extern CDPClient g_DPlay;
+
 //-----------------------------------------------------------------------------
 CWndMailRequestingBox::CWndMailRequestingBox( void ) : 
 m_timeWaitingRequest( g_tmCurrent + SEC( REQUEST_BUTTON_WAITING_TIME ) ), 

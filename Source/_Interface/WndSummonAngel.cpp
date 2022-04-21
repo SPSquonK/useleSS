@@ -5,7 +5,6 @@
 #include "WndSummonAngel.h"
 
 #include "dpclient.h"
-extern CDPClient	g_DPlay;
 
 
 

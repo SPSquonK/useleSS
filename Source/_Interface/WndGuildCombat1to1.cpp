@@ -5,8 +5,6 @@
 #include "WndGuildCombat1to1.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
-
 #include "playerdata.h"
 
 

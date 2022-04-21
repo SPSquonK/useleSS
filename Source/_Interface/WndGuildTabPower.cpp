@@ -8,8 +8,6 @@
 #include "AppDefine.h"
 #include "DPClient.h"
 
-extern	CDPClient	g_DPlay;
-
 CWndGuildTabPower::CWndGuildTabPower() 
 { 
 	m_bChanedCheckBox = FALSE;

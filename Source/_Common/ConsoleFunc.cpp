@@ -6,7 +6,6 @@
 #include "Console.h"
 #include "defineObj.h"
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 
 //TEST!!!!!
 #include "WndGuildHouse.h"

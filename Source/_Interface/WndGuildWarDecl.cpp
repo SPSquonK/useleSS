@@ -3,8 +3,6 @@
 #include "WndGuildWarDecl.h"
 #include "dpclient.h"
 
-extern	CDPClient	g_DPlay;
-
 /****************************************************
   WndId : APP_GUILD_WAR - 길드전선언창
   CtrlId : WIDC_OK - Button

@@ -9,9 +9,6 @@
 
 
 
-
-extern	CDPClient	g_DPlay;
-
 /****************************************************
   WndId : APP_BAG_EX - ÈÞ´ë °¡¹æ
   CtrlId : WIDC_EXBAG1 - 

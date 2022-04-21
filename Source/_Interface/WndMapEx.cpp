@@ -11,7 +11,7 @@
 #include "defineText.h"
 #include "defineMapComboBoxData.h"
 #include "defineSound.h"
-extern CDPClient g_DPlay;
+
 //-----------------------------------------------------------------------------
 const FLOAT CWndMapEx::SOURCE_MAP_SIZE_X( 1280.0F );
 const FLOAT CWndMapEx::SOURCE_MAP_SIZE_Y( 960.0F );

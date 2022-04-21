@@ -10,8 +10,6 @@
 #include "definelordskill.h"
 #include "lord.h"
 
-extern	CDPClient			g_DPlay;
-
 /****************************************************
   WndId : APP_LORD_STATE - 후보 등록 현황
   CtrlId : WIDC_STATIC1 - Static

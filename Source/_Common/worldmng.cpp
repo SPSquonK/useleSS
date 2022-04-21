@@ -10,7 +10,6 @@
 #endif // __WINDOW_INTERFACE_BUG
 #ifdef __MAP_SECURITY
 #include "DPClient.h"
-extern CDPClient g_DPlay;
 #endif // __MAP_SECURITY
 #endif // CLIENT
 

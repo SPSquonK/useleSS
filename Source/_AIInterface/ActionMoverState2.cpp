@@ -18,7 +18,6 @@ const float FRIC_AIR = 0.011f;		// 비행중 마찰계수
 
 
 #ifdef __CLIENT
-extern	CDPClient	g_DPlay;
 extern int			g_nFlySpeed;
 extern int			g_nDrift;
 #endif // CLIENT

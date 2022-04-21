@@ -4,7 +4,6 @@
 #include "WndPartyConfirm.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 
 /****************************************************

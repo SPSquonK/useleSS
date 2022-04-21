@@ -5,7 +5,6 @@
 
 #include "WndManager.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 
 /****************************************************

@@ -8,8 +8,6 @@
 #include "DPClient.h"
 #include "WndGuildCtrl.h"
 #include "WndMessenger.h"
-extern	CDPClient	g_DPlay;
-
 #include "WndManager.h"
 
 #include "guild.h"

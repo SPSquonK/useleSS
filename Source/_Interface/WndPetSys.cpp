@@ -5,7 +5,6 @@
 #include "WndPetSys.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 #include "definesound.h"
 #include "Vector3Helper.h"

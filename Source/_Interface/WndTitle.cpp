@@ -19,7 +19,6 @@
 #include "Vector3Helper.h"
 
 extern	CDPLoginClient	g_dpLoginClient;
-extern	CDPClient	g_DPlay;
 extern	CDPCertified	g_dpCertified;
 
 extern BYTE  nMaleHairColor[10][3];

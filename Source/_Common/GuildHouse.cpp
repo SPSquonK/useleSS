@@ -9,7 +9,6 @@
 #include "MsgHdr.h"
 #include "DPClient.h"
 #include "WndHousing.h"
-extern CDPClient g_DPlay;
 #endif // __CLIENT
 #ifdef __WORLDSERVER
 #include "WorldMng.h"

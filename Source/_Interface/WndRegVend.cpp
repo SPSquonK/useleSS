@@ -4,7 +4,6 @@
 #include "WndVendor.h"
 #include "WndRegVend.h"
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 
 
 

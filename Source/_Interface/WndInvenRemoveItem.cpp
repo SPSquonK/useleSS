@@ -3,8 +3,6 @@
 #include "WndInvenRemoveItem.h"
 #include "defineText.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
-
 
 /****************************************************
   WndId : APP_INVEN_REMOVE_ITEM - 아이템 삭제 확인

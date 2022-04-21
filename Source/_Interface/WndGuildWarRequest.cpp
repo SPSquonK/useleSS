@@ -5,8 +5,6 @@
 
 #include "dpclient.h"
 
-extern	CDPClient	g_DPlay;
-
 /****************************************************
   WndId : APP_GUILD_WARREQUEST - 길드전요청창
   CtrlId : WIDC_EDIT1 - 

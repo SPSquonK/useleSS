@@ -6,8 +6,6 @@
 #include "WndManager.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
-
 #include "eveschool.h"
 extern	CGuildCombat	g_GuildCombatMng;
 

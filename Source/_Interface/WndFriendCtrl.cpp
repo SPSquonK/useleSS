@@ -10,7 +10,6 @@
 #include "WndFriendCtrl.h"
 #include "WndMessenger.h"
 //#include "company.h"
-extern	CDPClient	g_DPlay;
 extern CParty g_Party;
 //extern	CCompanyMng		g_CompanyMng;
 #include "FuncTextCmd.h"

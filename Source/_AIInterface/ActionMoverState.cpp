@@ -7,7 +7,6 @@
 #ifdef __CLIENT
 #include "Sfx.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 #endif // CLIENT
 
 #ifdef __WORLDSERVER

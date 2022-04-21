@@ -3,7 +3,6 @@
 
 #ifdef __CLIENT
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 #endif
 
 #ifdef __WORLDSERVER

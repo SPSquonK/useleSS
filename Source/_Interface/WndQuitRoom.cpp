@@ -3,15 +3,7 @@
 #include "resData.h"
 #include "WndQuitRoom.h"
 #include "MsgHdr.h"
-
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /****************************************************
   WndId : APP_QUIT_ROOM - 미니룸
@@ -20,15 +12,6 @@ static char THIS_FILE[] = __FILE__;
   CtrlId : WIDC_BUTTON2 - Button
 ****************************************************/
 
-CWndQuitRoom::CWndQuitRoom() 
-{ 
-} 
-CWndQuitRoom::~CWndQuitRoom() 
-{ 
-} 
-void CWndQuitRoom::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndQuitRoom::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -48,24 +31,7 @@ BOOL CWndQuitRoom::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUIT_ROOM, 0, CPoint( 0, 0 ), pWndParent );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndQuitRoom::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndQuitRoom::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndQuitRoom::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
+
 void CWndQuitRoom::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
 } 

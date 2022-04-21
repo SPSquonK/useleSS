@@ -7,8 +7,6 @@
 
 #include "randomoption.h"
 
-extern CDPClient g_DPlay;
-
 /****************************************************
   WndId : APP_AWAKENING - 아이템 각성 창
   CtrlId : WIDC_TEXT1 - 

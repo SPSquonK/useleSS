@@ -8,7 +8,6 @@
 #include "Vector3Helper.h"
 
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 
 
 #include "party.h"

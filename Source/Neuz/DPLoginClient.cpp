@@ -12,7 +12,6 @@ extern char	g_szVersion[];
 #include "Network.h"
 #include "Wnd2ndPassword.h"
 
-extern	CDPClient		g_DPlay;
 extern	CDPLoginClient	g_dpLoginClient;
  
 CDPLoginClient::CDPLoginClient()

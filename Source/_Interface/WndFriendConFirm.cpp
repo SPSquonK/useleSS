@@ -4,7 +4,6 @@
 #include "WndFriendConFirm.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 #include "WndManager.h"
 

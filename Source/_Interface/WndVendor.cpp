@@ -6,7 +6,6 @@
 #include "WndManager.h"
 
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 
 #include "Chatting.h"
 extern	CChatting g_Chatting;

@@ -13,7 +13,6 @@
 #include "CampusHelper.h"
 #include "FuncTextCmd.h"
 
-extern CDPClient	g_DPlay;
 extern CParty		g_Party;
 
 //////////////////////////////////////////////////////////////////////////

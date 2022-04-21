@@ -7,8 +7,6 @@
 
 #include "playerdata.h"
 
-extern		CDPClient		g_DPlay;
-
 
 
 /****************************************************

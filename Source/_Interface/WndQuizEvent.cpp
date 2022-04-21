@@ -9,7 +9,6 @@
 #include "ResData.h"
 #include "defineText.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

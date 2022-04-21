@@ -4,8 +4,6 @@
 #include "DPClient.h"
 
 
-extern CDPClient g_DPlay;
-
 /****************************************************
   WndId : APP_LVREQDOWN - 착용레벨 하락 해지창
   CtrlId : WIDC_TEXT1 - 

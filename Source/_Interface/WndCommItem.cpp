@@ -3,7 +3,6 @@
 #include "AppDefine.h"
 #include "WndCommItem.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 
 /****************************************************

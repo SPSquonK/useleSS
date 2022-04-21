@@ -6,7 +6,6 @@
 #include "WndPiercing.h"
 #include "DPClient.h"
 
-extern	CDPClient	g_DPlay;
 extern	CGuildMng	g_GuildMng;
 
 

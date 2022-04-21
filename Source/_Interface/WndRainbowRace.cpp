@@ -4,9 +4,7 @@
 #include "WndManager.h"
 #include "WndRainbowRace.h"
 #include "defineSound.h"
-
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 
 //////////////////////////////////////////////////////////////////////////

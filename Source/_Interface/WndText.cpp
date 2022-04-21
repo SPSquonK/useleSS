@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "WndText.h"
 #include "resdata.h"
-#ifdef __CLIENT
- #include "DPClient.h"
- extern	CDPClient	g_DPlay;
-#endif
+#include "DPClient.h"
 
 /****************************************************
   WndId : APP_TEXT_BOOK - ¼­Àû

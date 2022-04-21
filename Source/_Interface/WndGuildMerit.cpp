@@ -7,10 +7,7 @@
 
 #include "WndGuildMerit.h"
 
-#ifdef __CLIENT
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
-#endif // CLIENT
 
 /****************************************************
   WndId : APP_GUILD_MERIT - 길드공헌창

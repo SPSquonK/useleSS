@@ -1110,3 +1110,5 @@ void CDPClient::SendPacket(Ts ... ts) {
 	ar.Accumulate(ts...);
 	SEND(ar, this, DPID_SERVERPLAYER);
 }
+
+extern CDPClient g_DPlay;

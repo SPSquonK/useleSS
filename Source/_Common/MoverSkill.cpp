@@ -36,9 +36,7 @@
 #include "FunnyCoin.h"
 #endif // __FUNNY_COIN
 
-#ifdef __CLIENT
-	extern	CDPClient			g_DPlay;
-#else
+#ifdef __WORLDSERVER
 	extern	CUserMng			g_UserMng;
 	extern	CWorldMng			g_WorldMng;
 	extern	CDPSrvr				g_DPSrvr;

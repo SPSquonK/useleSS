@@ -7,8 +7,6 @@
 #include "WndGuildHouse.h"
 #include "GuildHouse.h"
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
-
 
 static const int MAX_LIST_VIEW_CAPACITY = 10;
 
@@ -405,7 +403,6 @@ int CWndGHTeleporter::GetCountListUp( )
 	return count;
 }
 
-extern	CDPClient		g_DPlay;
 BOOL CWndGHTeleporter::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	CWndBase* pWndFrame	= pShortcut->m_pFromWnd->GetFrameWnd();

@@ -11,7 +11,6 @@
 
 #define		MAX_SLIDER		10
 
-extern	CDPClient	g_DPlay;
 
 CWndTotalOption::CWndTotalOption() 
 { 

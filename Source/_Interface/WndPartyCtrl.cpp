@@ -8,7 +8,6 @@
 #include "Party.h"
 #include "WndPartyCtrl.h"
 #include "WndMessenger.h"
-extern	CDPClient	g_DPlay;
 extern CParty g_Party;
 
 #include "WndManager.h"

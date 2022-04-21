@@ -3,7 +3,6 @@
 #include "WndChangeName.h"
 #include "dpclient.h"
 #include "definetext.h"
-extern		CDPClient		g_DPlay;
 
 
 /*

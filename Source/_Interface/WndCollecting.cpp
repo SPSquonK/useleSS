@@ -6,8 +6,6 @@
 #include "DefineObj.h"
 #include "defineText.h"
 
-extern	CDPClient	g_DPlay;
-
 
 /****************************************************
   WndId : APP_COLLECTING - Applet

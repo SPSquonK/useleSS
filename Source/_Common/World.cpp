@@ -34,7 +34,6 @@ extern	CGuildCombat	g_GuildCombatMng;
 #ifdef __CLIENT
 #include "dialogmsg.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 #include "GuildHouse.h"
 #include "WndHousing.h"

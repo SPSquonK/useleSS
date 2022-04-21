@@ -2,7 +2,6 @@
 #include "playerdata.h"
 #ifdef __CLIENT
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 #endif	// __CLIENT
 
 CPlayerDataCenter::CPlayerDataCenter()

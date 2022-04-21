@@ -4,8 +4,6 @@
 #include "DPClient.h"
 #include "defineSound.h"
 
-extern	CDPClient	g_DPlay;
-
 #define		MAX_SLIDER		10
 
 

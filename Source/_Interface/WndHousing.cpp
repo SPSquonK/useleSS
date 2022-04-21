@@ -10,8 +10,6 @@
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
 
-extern	CDPClient	g_DPlay;
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE

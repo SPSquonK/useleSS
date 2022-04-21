@@ -7,7 +7,6 @@
 //#include "WndSample.h"
 #include "WndDebugInfo.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Ä¸Ãç À©µµ 

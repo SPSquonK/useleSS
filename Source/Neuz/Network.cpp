@@ -7,7 +7,6 @@
 
 extern	CDPCertified	g_dpCertified;
 extern	CDPLoginClient	g_dpLoginClient;
-extern	CDPClient		g_DPlay;
 
 static const char* g_szText[] = 
 { 

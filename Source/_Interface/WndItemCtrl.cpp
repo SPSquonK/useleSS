@@ -6,8 +6,6 @@
 #include "AppDefine.h"
 #include "DefineText.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
-
 #include "WndManager.h"
 
 #include "WndText.h"

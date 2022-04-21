@@ -5,9 +5,7 @@
 #include "WndMiniGame.h"
 #include "MiniGame.h"
 #include "defineSound.h"
-
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 #ifdef __EVE_MINIGAME
 

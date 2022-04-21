@@ -3,8 +3,6 @@
 #include "WndGuildWarGiveUp.h"
 #include "dpclient.h"
 
-extern	CDPClient	g_DPlay;
-
 
 /****************************************************
   WndId : APP_GUILD_WARGIVEUP - Ç×º¹Ã¢

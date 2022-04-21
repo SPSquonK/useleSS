@@ -4,7 +4,6 @@
 #include "WndDuelConfirm.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 /****************************************************
   WndId : APP_DUEL_CONFIRM - party confirm

@@ -9,7 +9,6 @@
 	#include "Sfx.h"
 	#include "DPClient.h"
 	#include "DialogMsg.h"
-	extern	CDPClient	g_DPlay;
 #else	// __CLIENT
   #include "User.h"
   #include "WorldMng.h"

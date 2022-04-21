@@ -14,7 +14,6 @@
 
 #ifdef __CLIENT
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 #endif  
 
 #ifdef __WORLDSERVER
@@ -22,7 +21,6 @@ extern	CDPClient	g_DPlay;
 #include "dpcoreclient.h"
 #include "dpsrvr.h"
 
-#ifdef __WORLDSERVER
  extern	CUserMng	g_UserMng;
  extern	CDPCoreClient	g_DPCoreClient;
  extern	CDPSrvr		g_DPSrvr;
@@ -30,7 +28,6 @@ extern	CDPClient	g_DPlay;
  extern	CPartyMng	g_PartyMng;
  #include "dpDatabaseClient.h"
  extern	CDPDatabaseClient	g_dpDBClient;
-#endif // Worldserver
 #endif
 
 #include "commonctrl.h"

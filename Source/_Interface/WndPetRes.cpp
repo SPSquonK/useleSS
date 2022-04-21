@@ -10,8 +10,6 @@
 
 #ifdef __JEFF_11
 
-extern CDPClient g_DPlay;
-
 /****************************************************
   WndId : APP_PET_RES - ±³È¯Ã¢
   CtrlId : WIDC_OK - 

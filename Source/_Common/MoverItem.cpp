@@ -514,7 +514,6 @@ void CVTInfo::TradeSetState( TRADE_STATE state )
 // 개인상점 
 ///////////////////////////////////////////////////////////////////////////////
 
-//void CDPClient::OnUnregisterPVendorItem( OBJID objid, CAr & ar )
 BOOL CVTInfo::VendorClearItem( BYTE i )
 {
 	CItemBase* pItemBase = m_apItem_VT[i];
@@ -531,7 +530,6 @@ BOOL CVTInfo::VendorClearItem( BYTE i )
 	}
 }
 
-// void CDPClient::OnRegisterPVendorItem( OBJID objid, CAr & ar )
 void CVTInfo::VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost )
 {
 	CItemBase* pItemBase = m_pOwner->GetItemId( nId );
@@ -543,7 +541,6 @@ void CVTInfo::VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost )
 	}
 }
 
-//void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 // nNum - 남은 갯수 
 void CVTInfo::VendorItemNum( BYTE i, short nNum )
 {
@@ -563,7 +560,6 @@ void CVTInfo::VendorItemNum( BYTE i, short nNum )
 }
 
 // 데이타 카피를 해서 보관?
-// void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 void CVTInfo::VendorCopyItems( CItemBase** ppItemVd )
 {
 	memcpy( (void*)m_apItem_VT, ppItemVd, sizeof(m_apItem_VT) );

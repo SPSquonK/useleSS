@@ -4,11 +4,8 @@
 #include "WndManager.h"
 #include "WndSecretRoom.h"
 #include "playerdata.h"
-
 #include "SecretRoom.h"
-
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 #include "Tax.h"
 

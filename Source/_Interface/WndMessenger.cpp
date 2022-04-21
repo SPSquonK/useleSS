@@ -12,7 +12,6 @@ extern	CDPCertified	g_dpCertified;
 #include "WndManager.h"
 
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;	 
 
 /****************************************************
   WndId : APP_MESSENGER - Messenger

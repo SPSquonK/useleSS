@@ -6,7 +6,6 @@
 #include "definetext.h"
 #include "resdata.h"
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 ////////////////////////////////////////////////////////////////////////////////
 // 클라이언트용 군주 클래스

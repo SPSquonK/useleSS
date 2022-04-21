@@ -5,9 +5,7 @@
 #include "WndRoomList.h"
 #include "defineText.h"
 #include "playerdata.h"
-
 #include "DPClient.h"
-extern	CDPClient	g_DPlay;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

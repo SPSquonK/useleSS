@@ -9,7 +9,6 @@
 #ifdef __IMPROVE_MAP_SYSTEM
 #include "WndMapEx.h"
 #endif // __IMPROVE_MAP_SYSTEM
-extern	CDPClient	g_DPlay;
 
 CTreeInformationManager g_QuestTreeInfoManager;
 

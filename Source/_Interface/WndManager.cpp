@@ -48,12 +48,10 @@ extern CGuildCombat g_GuildCombatMng;
 
 extern	CParty	g_Party;
 
-extern	CDPClient	g_DPlay;	 
 extern	CDPLoginClient	g_dpLoginClient;
 extern	CDPCertified	g_dpCertified;
 
 #include "dpclient.h"
-extern	CDPClient	g_DPlay;
 
 #include "guild.h"
 extern	CGuildMng	g_GuildMng;

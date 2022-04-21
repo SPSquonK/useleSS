@@ -3,8 +3,6 @@
 #include "WndGuildWarPeace.h"
 #include "dpclient.h"
 
-extern	CDPClient	g_DPlay;
-
 /****************************************************
   WndId : APP_GUILD_WARPEACE - ÈÞÀüÃ¢
   CtrlId : WIDC_YES - Yes
