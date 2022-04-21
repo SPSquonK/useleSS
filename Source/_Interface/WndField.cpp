@@ -8282,7 +8282,7 @@ BOOL CWndConfirmTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	else 
 	if( nID == WIDC_CANCEL || nID == WTBID_CLOSE )
 	{
-		g_DPlay.SendConfirmTradeCancel( m_objid );
+		g_DPlay.SendPacket<PACKETTYPE_CONFIRMTRADECANCEL, OBJID>(m_objid);
 		Destroy();
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 

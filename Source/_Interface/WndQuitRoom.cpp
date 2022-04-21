@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "resData.h"
 #include "WndQuitRoom.h"
+#include "MsgHdr.h"
 
 #include "DPClient.h"
 extern	CDPClient	g_DPlay;
@@ -76,7 +77,7 @@ BOOL CWndQuitRoom::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	switch(nID)
 	{
 		case WIDC_BUTTON1:// ok ¹öÆ°
-			g_DPlay.SendHousingGoOut();
+			g_DPlay.SendPacket<PACKETTYPE_HOUSING_GOOUT>();
 			Destroy();
 			break;
 

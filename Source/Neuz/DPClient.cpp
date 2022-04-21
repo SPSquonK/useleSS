@@ -8734,13 +8734,6 @@ void CDPClient::SendConfirmTrade( CMover* pTrader )
 	}
 }
 
-void CDPClient::SendConfirmTradeCancel( OBJID objid )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CONFIRMTRADECANCEL, DPID_UNKNOWN );
-	ar << objid;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendTradePut( BYTE i, BYTE nItemType, BYTE nId, short ItemNum )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_TRADEPUT, DPID_UNKNOWN );
@@ -17415,12 +17408,6 @@ void CDPClient::SendHousingReqVisitableList()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendHousingGoOut()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_HOUSING_GOOUT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendReqNPCPos( const char* szCharKey )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_QUESTHELPER_REQNPCPOS, DPID_UNKNOWN );
@@ -17806,9 +17793,6 @@ void CDPClient::OnChangeMoverSfx( OBJID objId, CAr & ar )
 	}
 }
 
-void CDPClient::SendBuyGuildHouse()		{ SendHdr( PACKETTYPE_GUILDHOUSE_BUY ); }
-void CDPClient::SendGuildHouseEnter()	{ SendHdr( PACKETTYPE_GUILDHOUSE_ENTER ); }
-void CDPClient::SendGuildHouseGoOut()	{ SendHdr( PACKETTYPE_GUILDHOUSE_GOOUT ); }
 void CDPClient::OnGuildHousePacket( CAr & ar )
 {
 	int nPacketType, nIndex;

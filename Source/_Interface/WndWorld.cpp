@@ -5772,21 +5772,15 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			break;
 
  		case MMI_GUILDHOUSE_ENTER:  
- 			{
- 				g_DPlay.SendGuildHouseEnter();
- 			}
+			g_DPlay.SendPacket<PACKETTYPE_GUILDHOUSE_ENTER>();
  			break;
 
 		case MMI_GUILDHOUSE_OUT :
-			{
-				g_DPlay.SendGuildHouseGoOut();
-			}
+			g_DPlay.SendPacket<PACKETTYPE_GUILDHOUSE_GOOUT>();
 			break;
 
 		case MMI_GUILDHOUSE_SALE:		//길드하우스 구입
-			{
-				g_DPlay.SendBuyGuildHouse();
-			}
+			g_DPlay.SendPacket<PACKETTYPE_GUILDHOUSE_BUY>();
 			break;
 #ifdef __GUILD_HOUSE_MIDDLE
 		case MMI_GUILDHOUSE_AUCTION01:	//중형 길드하우스 입찰

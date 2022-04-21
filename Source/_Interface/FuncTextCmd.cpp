@@ -4490,7 +4490,7 @@ BOOL TextCmd_QuizEventClose( CScanner& s )
 BOOL TextCmd_BuyGuildHouse( CScanner& s )
 {
 #ifdef __CLIENT
-	g_DPlay.SendBuyGuildHouse();
+	g_DPlay.SendPacket<PACKETTYPE_GUILDHOUSE_BUY>();
 #endif // __CLIENT
 	return TRUE;
 }

@@ -1,5 +1,4 @@
-#ifndef __DPCLIENT_H__
-#define __DPCLIENT_H__
+#pragma once
 
 #include "DPMng.h"
 #include "Ar.h"
@@ -149,7 +148,6 @@ public:
 	void	OnPKValue( OBJID objid, CAr& ar );
 
 	void	SendConfirmTrade( CMover* pTrader );
-	void	SendConfirmTradeCancel( OBJID objid );
 	void	SendTrade( CMover* pTrader );
 	void	SendTradePut( BYTE i, BYTE ItemType, BYTE nId, short ItemNum = 1 );
 	void	SendTradePull( int i );
@@ -1013,7 +1011,6 @@ public:
 	void	SendHousingReqSetVisitAllow( DWORD dwPlayerId, BOOL bAllow );
 	void	SendHousingVisitRoom( DWORD dwPlayerId );
 	void	SendHousingReqVisitableList();
-	void	SendHousingGoOut();
 
 	void	SendPropose( const char* pszTarget );
 	void	SendRefuse();
@@ -1053,9 +1050,6 @@ public:
 	void	OnActivateVisPet( CAr & ar );
 	void	OnChangeMoverSfx( OBJID objId, CAr & ar );
 
-	void	SendBuyGuildHouse();
-	void	SendGuildHouseEnter();
-	void	SendGuildHouseGoOut();
 	void	OnGuildHousePacket( CAr & ar );
 	void	OnGuildHouseAllInfo( CAr & ar );
 	void	OnGuildHouseRemove( CAr & ar );
@@ -1103,8 +1097,16 @@ public:
 	
 	void    OnDisguise( OBJID objid, CAr & ar );
 	void    OnNoDisguise( OBJID objid, CAr & ar );
+
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacket(Ts ... ts);
 private:
 	BOOL	m_bEventTextColor;
 };
 
-#endif	// __DPCLIENT_H__
+template<DWORD PacketId, typename ... Ts>
+void CDPClient::SendPacket(Ts ... ts) {
+	BEFORESENDSOLE(ar, PacketId, DPID_UNKNOWN);
+	ar.Accumulate(ts...);
+	SEND(ar, this, DPID_SERVERPLAYER);
+}
