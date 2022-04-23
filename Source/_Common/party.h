@@ -6,6 +6,10 @@
 #include "projectcmn.h"
 #endif // __CORESERVER
 
+#if defined(__CLIENT) || defined(__WORLDSERVER)
+#include <ranges>
+#endif
+
 //#ifdef __WORLDSERVER
 //#include "User.h"
 //extern	CUserMng	g_UserMng;
@@ -89,7 +93,7 @@ public:
 	void	InitParty();
 	BOOL	IsMember( u_long uPlayerId )		{	return( FindMember( uPlayerId ) >= 0 );	}
 	int		IsLeader( u_long uPlayerId )		{	return( m_aMember[0].m_uPlayerId == uPlayerId );	}
-	int		GetSizeofMember()					{	return m_nSizeofMember;		}
+	int		GetSizeofMember() const					{	return m_nSizeofMember;		}
 	int		GetLevel()							{	return m_nLevel;			}
 	int		GetExp()							{	return m_nExp;			}
 	int		GetPoint()							{	return m_nPoint;		}

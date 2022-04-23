@@ -452,6 +452,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Common\GroupUtils.h" />
     <ClInclude Include="..\_Common\StaticString.h" />
     <ClInclude Include="DisplayedInfo.h" />
     <ClInclude Include="WantedListSnapshot.h" />

@@ -12,6 +12,7 @@
 	#include "dpcoreclient.h"
 	#include "dpdatabaseclient.h"
 	#include "..\_AIInterface\AIInterface.h"
+#include "GroupUtils.h"
 #endif	
 
 #include "CreateMonster.h"
@@ -833,29 +834,18 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 				else if( pMover->m_nDuel == 2 && pMover->m_idDuelParty == pAttacker->m_idparty )
 				{
 					pMover->m_nDuelState	= 300;		
-					CMover *pMember;
 					CParty* pParty	= g_PartyMng.GetParty( pMover->m_idparty );
 
-					if( pParty )
-					{
-						for( int i = 0; i < pParty->m_nSizeofMember; i ++ )
-						{
-							pMember = (CMover *)g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-							if( IsValidObj( pMember ) )
-								((CUser*)pMember)->AddSetDuel( pMover );
-						}
-					}
+					const auto applyToParty = [pMover](CParty * party) {
+						if (!party) return;
 
-					CParty* pParty2		= g_PartyMng.GetParty( pMover->m_idDuelParty );
-					if( pParty2 )
-					{
-						for( int i = 0; i < pParty2->m_nSizeofMember; i ++ )
-						{
-							pMember = (CMover *)g_UserMng.GetUserByPlayerID( pParty2->m_aMember[i].m_uPlayerId );
-							if( IsValidObj( pMember ) )
-								((CUser*)pMember)->AddSetDuel( pMover );
+						for (CUser * pMember : AllMembers(*party)) {
+							pMember->AddSetDuel(pMover);
 						}
-					}
+					};
+
+					applyToParty(g_PartyMng.GetParty(pMover->m_idparty));
+					applyToParty(g_PartyMng.GetParty(pMover->m_idDuelParty));
 				}
 #endif	// __WORLDSERVER
 			}

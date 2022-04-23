@@ -1151,6 +1151,9 @@
     <ClInclude Include="..\_Common\CommonHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\GroupUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldServer.rc">

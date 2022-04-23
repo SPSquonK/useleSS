@@ -107,9 +107,9 @@ void CCtrl::AddItToGlobalId()
 
 	if( OT_MOVER == GetType() && ( (CMover*)this )->IsPlayer() )
 	{
-		bool bResult = prj.m_idPlayerToUserPtr.insert( make_pair( ( (CMover*)this )->m_idPlayer, (CMover*)this ) ).second;
+		bool bResult = prj.m_idPlayerToUserPtr.insert( make_pair( ( (CPlayerCls *)this )->m_idPlayer, (CPlayerCls *)this ) ).second;
 		if( bResult == false )
-			Error("AddItToGlobalId id:%d duplicated.", ((CMover*)this)->m_idPlayer );
+			Error("AddItToGlobalId id:%d duplicated.", ((CPlayerCls *)this)->m_idPlayer );
 	}
 
 #ifdef __WORLDSERVER	

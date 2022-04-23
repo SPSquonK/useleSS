@@ -4789,12 +4789,7 @@ void CDPClient::OnSetPartyMemberParam( CAr & ar )
 						{
 							fRemoveParty	= false;
 							g_Party.SwapPartyMember( 0, j );
-							CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-						#ifdef __BUFF_1107
-							pWndWorld->m_buffs.Clear();
-						#else	// __BUFF_1107
-							pWndWorld->m_partySkillState.Init();
-						#endif	// __BUFF_1107
+							g_WndMng.m_pWndWorld->m_buffs.Clear();
 							for( int i = 0 ; i < MAX_SKILL ; i++ )
 								g_WndMng.m_dwSkillTime[i] = 0;
 							break;

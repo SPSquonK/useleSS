@@ -64,6 +64,9 @@ extern	CGuildCombat	g_GuildCombatMng;
 	#include "..\_AIInterface\AIInterface.h"
 
 #include "party.h"
+#ifdef __WORLDSERVER
+#include "GroupUtils.h"
+#endif
 extern	CPartyMng	g_PartyMng;
 
 #include "guild.h"
@@ -5508,13 +5511,8 @@ BOOL CMover::IsValidArea( CMover* pMover, float fLength )
 
 BOOL CMover::GetPartyMemberFind( CParty* pParty, CUser* apMember[], int* nTotalLevel, int* nMaxLevel10, int* nMaxLevel, int* nMemberSize )
 {
-	CUser* pUsertmp = NULL;
-	D3DXVECTOR3	vDist;
-
-	for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )	
-	{
-		pUsertmp	= g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-		if( IsValidArea( (CMover*)pUsertmp, 64.0f ) )
+	for (CUser * pUsertmp : AllMembers(*pParty)) {
+		if (IsValidArea(pUsertmp, 64.0f))
 		{
 			apMember[(*nMemberSize)++]	= pUsertmp;
 			(*nTotalLevel)		+= pUsertmp->GetLevel();
@@ -7452,15 +7450,11 @@ void CMover::ProcessRecovery()
 						}
 					}
 				}
+
 				if( pParty2 )
 				{
-					for( int k = 0 ; k < pParty2->m_nSizeofMember ; ++k )
-					{
-						pMember	= (CMover *)g_UserMng.GetUserByPlayerID( pParty2->m_aMember[k].m_uPlayerId );					
-						if( IsValidObj( pMember ) )
-						{	
-							pParty->DoDuelPartyCancel( pParty2 );
-						}
+					for (CUser * user : AllMembers(*pParty2)) {
+						pParty->DoDuelPartyCancel(pParty2);
 					}
 				}
 				g_DPCoreClient.SendSetPartyDuel( m_idparty, uidDuelParty, FALSE );

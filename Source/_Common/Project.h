@@ -723,6 +723,13 @@ class CShip;
 class CUser;
 #endif
 
+#ifdef __WORLDSERVER
+using CPlayerCls = CUser;
+#else
+using CPlayerCls = CMover;
+#endif
+
+
 class CProject  
 { 
 public:
@@ -753,7 +760,7 @@ public:
 	static DWORD				m_dwExpertSP;				// 1차직업 스킬의 레벨업때 필요한 SP포인트
 	static DWORD				m_dwProSP;					// 2차직업 스킬의 레벨업때 필요한 SP포인트
 
-	map<u_long, CMover*>		m_idPlayerToUserPtr;
+	std::map<u_long, CPlayerCls *>		m_idPlayerToUserPtr;
 	CObjMap						m_objmap;
 	CModelMng					m_modelMng;
 	int							m_nMoverPropSize;
@@ -923,7 +930,7 @@ public:
 	CItem*			GetItem( OBJID objid );
 	CMover*			GetMover( OBJID objid );
 	CShip*			GetShip( OBJID objid );
-	CMover*			GetUserByID( u_long idPlayer );
+	CPlayerCls * GetUserByID(u_long idPlayer);
 	LPCHARACTER		GetCharacter( LPCTSTR lpStrKey );
 	void			ProtectPropMover();
 	DWORD			GetLevelExp( int nLevel );
@@ -1112,9 +1119,8 @@ inline LPCTSTR CProject::GetText( DWORD dwIndex )
 	return m_colorText.GetAt( dwIndex )->lpszData; 
 }
 
-inline CMover* CProject::GetUserByID( u_long idPlayer )
-{
-	map<u_long, CMover*>::iterator i = m_idPlayerToUserPtr.find( idPlayer );
+inline CPlayerCls * CProject::GetUserByID(const u_long idPlayer) {
+	auto i = m_idPlayerToUserPtr.find( idPlayer );
 	if( i != m_idPlayerToUserPtr.end() )
 		return i->second;
 	return NULL;

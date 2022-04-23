@@ -52,6 +52,7 @@
 
 #include "CampusHelper.h"
 #include "FuncTextCmd.h"
+#include "GroupUtils.h"
 
 struct ItemCountSet{
 	OBJID itemid;
@@ -5553,16 +5554,9 @@ void CDPSrvr::OnSetNaviPoint( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	{
 		if( objidTarget == NULL_ID )
 		{
-			CParty* pParty	= g_PartyMng.GetParty( pUser->m_idparty );
-			if( pParty )
-			{
-				for( int i = 0 ; i < pParty->GetSizeofMember() ; ++i )
-				{
-					CUser* pUsertmp = (CUser *)prj.GetUserByID( pParty->GetPlayerId( i ) );
-					if( IsValidObj( pUsertmp ) )
-					{
-						pUsertmp->AddSetNaviPoint( nv, pUser->GetId(), pUser->GetName( TRUE ) );
-					}
+			if(CParty * pParty = g_PartyMng.GetParty(pUser->m_idparty)) {
+				for (CUser * pUsertmp : AllMembers(*pParty)) {
+					pUsertmp->AddSetNaviPoint(nv, pUser->GetId(), pUser->GetName(TRUE));
 				}
 			}
 		}

@@ -20,6 +20,7 @@ extern	CDPSrvr		g_DPSrvr;
 extern  CDPDatabaseClient	g_dpDBClient;
 
 #include "Party.h"
+#include "GroupUtils.h"
 extern	CPartyMng	g_PartyMng;
 #include "Environment.h"
 
@@ -786,15 +787,16 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 	{
 		if( pParty->NewMember( idMember ) )
 		{
-			CUser* pMember	= NULL;
-			for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-			{
-				pMember		= (CUser*)prj.GetUserByID( pParty->m_aMember[i].m_uPlayerId );
-				if( IsValidObj( (CObj*)pMember ) )
-					pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
+			CUser * pMember = nullptr;
+
+			for (CUser * const pUser : AllMembers(*pParty)) {
+				pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
+				pMember = pUser;
 			}
-			if( IsValidObj( (CObj*)pMember ) )
-				pMember->m_idparty	= idParty;
+
+			if (pMember != nullptr) {
+				pMember->m_idparty = idParty;
+			}
 		}
 		else
 		{
@@ -808,15 +810,9 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 			pParty	= g_PartyMng.GetParty( idParty );
 			if( pParty )
 			{
-				CUser* pMember;
-				for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-				{
-					pMember	= g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-					if( IsValidObj( (CObj*)pMember ) )
-					{
-						pMember->m_idparty	= idParty;
-						pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
-					}
+				for (CUser * const pMember : AllMembers(*pParty)) {
+					pMember->m_idparty	= idParty;
+					pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
 				}
 			}
 			else
@@ -873,12 +869,8 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 			else
 			{
 				// leave
-				CUser* pMember;
-				for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-				{
-					pMember		= g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-					if( IsValidObj( (CObj*)pMember ) )
-						pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
+				for (CUser * const pMember : AllMembers(*pParty)) {
+					pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
 				}
 			}
 
@@ -900,29 +892,20 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnAddPlayerParty( CAr & ar, DPID, DPID, OBJID )
-{
+void CDPCoreClient::OnAddPlayerParty(CAr & ar, DPID, DPID, OBJID) {
 	u_long idParty, idPlayer;
 	ar >> idParty >> idPlayer;
 
-	CParty* pParty;
+	CParty * const pParty = g_PartyMng.GetParty(idParty);
+	if (!pParty) return;
 
-	pParty	= g_PartyMng.GetParty( idParty );
-	if( pParty )
-	{
-		int i	= pParty->FindMember( idPlayer );
-		if( i < 0 )
-			return;	//
+	const int i = pParty->FindMember(idPlayer);
+	if (i < 0) return;
 
-		pParty->m_aMember[i].m_bRemove	= FALSE;
+	pParty->m_aMember[i].m_bRemove	= FALSE;
 
-		CUser* pMember;
-		for( int j = 0 ; j < pParty->m_nSizeofMember ; j++ )
-		{
-			pMember		= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( j ) );
-			if( IsValidObj( (CObj*)pMember ) )
-				pMember->AddSetPartyMemberParam( idPlayer, PP_REMOVE, 0 );
-		}
+	for (CUser * const pMember : AllMembers(*pParty)) {
+		pMember->AddSetPartyMemberParam(idPlayer, PP_REMOVE, 0);
 	}
 }
 
@@ -942,12 +925,8 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 
 		pParty->m_aMember[i].m_bRemove	= TRUE;
 
-		CUser* pMember;
-		for( int j = 0; j < pParty->m_nSizeofMember; j++ )
-		{
-			pMember		= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( j ) );
-			if( IsValidObj( (CObj*)pMember ) )
-				pMember->AddSetPartyMemberParam( idPlayer,PP_REMOVE, 1 );
+		for (CUser * const pMember : AllMembers(*pParty)) {
+			pMember->AddSetPartyMemberParam(idPlayer, PP_REMOVE, 1);
 		}
 
 		if( i == 0 )		// 극단장이 나갈경우
@@ -1038,11 +1017,8 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 		}
 		pParty->m_nModeTime[nMode] = bOnOfff;
 		
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-				pUser->AddSetPartyMode( nMode, bOnOfff, pParty->m_nPoint , dwSkillTime );
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddSetPartyMode(nMode, bOnOfff, pParty->m_nPoint, dwSkillTime);
 		}
 	}
 }
@@ -1058,11 +1034,8 @@ void CDPCoreClient::OnPartyChangeItemMode( CAr & ar, DPID, DPID, OBJID )
 	{
 		pParty->m_nTroupeShareItem = nMode;
 
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-				pUser->AddPartyChangeItemMode( nMode );
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddPartyChangeItemMode( nMode );
 		}
 	}
 }
@@ -1077,12 +1050,9 @@ void CDPCoreClient::OnPartyChangeExpMode( CAr & ar, DPID, DPID, OBJID )
 	if( pParty )
 	{
 		pParty->m_nTroupsShareExp = nMode;
-		
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-				pUser->AddPartyChangeExpMode( nMode );
+
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddPartyChangeExpMode(nMode);
 		}
 	}
 }
@@ -1100,11 +1070,9 @@ void CDPCoreClient::OnSetPartyExp( CAr & ar, DPID, DPID, OBJID )
 		pParty->m_nExp	= nExp;
 		pParty->m_nPoint	= nPoint;
 		pParty->m_nLevel	= nLevel;
-		for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-		{
-			CUser* pUser	= g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-				pUser->AddPartyExpLevel( pParty->GetExp(), pParty->GetLevel(), pParty->GetPoint() );
+
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddPartyExpLevel(pParty->GetExp(), pParty->GetLevel(), pParty->GetPoint());
 		}
 	}
 	else
@@ -1124,12 +1092,9 @@ void CDPCoreClient::OnRemovePartyPoint( CAr & ar, DPID, DPID, OBJID )
 	if( pParty )
 	{
 		pParty->m_nPoint = nPartyPoint;
-	
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-				pUser->AddPartyExpLevel( pParty->GetExp(), pParty->GetLevel(), pParty->GetPoint() );
+
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddPartyExpLevel(pParty->GetExp(), pParty->GetLevel(), pParty->GetPoint());
 		}
 	}
 	else
@@ -1152,11 +1117,9 @@ void CDPCoreClient::OnPartyChangeName( CAr & ar, DPID, DPID, OBJID )
 	if( pParty )
 	{
 		strcpy( pParty->m_sParty, sParty );
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-				pUser->AddPartyChangeName( pParty->m_sParty );
+
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddPartyChangeName(pParty->m_sParty);
 		}
 	}
 }
@@ -1176,22 +1139,10 @@ void CDPCoreClient::OnPartyChangeTroup( CAr & ar, DPID, DPID, OBJID )
 	{
 		pParty->m_nKindTroup = 1;
 		strcpy( pParty->m_sParty, sParty );
-		for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
-		{
-			CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pUser ) )
-				pUser->AddPartyChangeTroup( pParty->m_sParty );
+
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddPartyChangeName(pParty->m_sParty);
 		}
-/*
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-		CMover* pMover = pParty->GetLeader();
-		if( pMover )
-		{
-			if( pMover->IsSMMode( SM_PARTYSKILL1 ) || pMover->IsSMMode( SM_PARTYSKILL15 ) || pMover->IsSMMode( SM_PARTYSKILL30 ) )
-                g_DPCoreClient.SendUserPartySkill( pMover->m_idPlayer, PARTY_PARSKILL_MODE, 1000, 0, 1 );
-		}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-*/
 	}
 }
 
@@ -1219,32 +1170,15 @@ void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
 
 	if( IsValidObj( (CObj*)pSender ) )
 	{
-#ifdef __RT_1025
 		if( MAX_FRIEND <= pSender->m_RTMessenger.size() )
-#else	// __RT_1025
-		if( MAX_FRIEND <= pSender->m_Messenger.GetSize() )
-#endif	// __RT_1025
 		{
 			pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
 		}
 		else
 		{
-#ifdef __RT_1025
 			pSender->m_RTMessenger.SetFriend( uidFriend, NULL );
 			pSender->AddAddFriend( uidFriend, lpszFriend ); 
 			bAdd++;
-#else	// __RT_1025
-			if( pSender->m_Messenger.AddFriend( uidFriend, nFriendJob, nFriendSex ) )
-			{
-				pSender->m_Messenger.AddDefferntFriend( uidFriend );	
-				pSender->AddAddFriend( uidFriend, nFriendJob, nFriendSex, lpszFriend );
-				bAdd += 1;
-			}
-			else
-			{
-				// 
-			}
-#endif	// __RT_1025
 		}
 	}
 
@@ -1256,32 +1190,16 @@ void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
 
 	if( IsValidObj( (CObj*)pFriend ) )
 	{
-#ifdef __RT_1025
 		if( MAX_FRIEND <= pFriend->m_RTMessenger.size() )
-#else	// __RT_1025
-		if( MAX_FRIEND <= pFriend->m_Messenger.GetSize() )
-#endif	// __RT_1025
 		{
 			if( IsValidObj( (CObj*)pSender ) )
 				pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
 		}
 		else
 		{
-#ifdef __RT_1025
 			pFriend->m_RTMessenger.SetFriend( uidSend, NULL );
 			pFriend->AddAddFriend( uidSend, lpszSend );
 			bAdd	+= 2;
-#else	//__RT_1025
-			if( pFriend->m_Messenger.AddFriend( uidSend, nSendJob, nSendSex ) )
-			{
-				pFriend->m_Messenger.AddDefferntFriend( uidSend );
-				pFriend->AddAddFriend( uidSend, nSendJob, nSendSex, lpszSend );
-				bAdd += 2;
-			}
-			else
-			{
-			}
-#endif	// __RT_1025
 		}
 	}
 
@@ -1303,7 +1221,6 @@ void CDPCoreClient::OnRemovefriend( CAr & ar, DPID, DPID, OBJID )
 	if( FALSE == IsValidObj( (CObj*)pSender ) )
 		return;
 
-#ifdef __RT_1025
 	CHousingMng::GetInstance()->ReqSetAllowVisit( pSender, uidFriend, FALSE );
 	pSender->m_RTMessenger.RemoveFriend( uidFriend );
 	pSender->AddRemoveFriend( uidFriend );
@@ -1314,16 +1231,6 @@ void CDPCoreClient::OnRemovefriend( CAr & ar, DPID, DPID, OBJID )
 		pFriend->m_RTMessenger.RemoveFriend( uidSend );
 		pFriend->AddRemoveFriend( uidSend );
 	}
-#else	// __RT_1025
-	if( pSender->m_Messenger.RemoveFriend( uidFriend ) )
-	{
-		pSender->AddRemoveFriend( uidFriend );
-
-		CUser* pFriend	= g_UserMng.GetUserByPlayerID( uidFriend );
-		if( IsValidObj( (CObj*)pFriend ) )
-			pFriend->m_Messenger.RemoveDifferntFriend( uidSend );
-	}
-#endif	// __RT_1025
 }
 
 void CDPCoreClient::OnQueryTickCount( CAr & ar, DPID, DPID, OBJID )
@@ -1434,12 +1341,7 @@ static	\
 	pParty	= g_PartyMng.GetParty( idParty );
 	if( pParty )
 	{
-		CUser* pMember	= NULL;
-		for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-		{
-			pMember		= (CUser*)prj.GetUserByID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( (CObj*)pMember ) )
-			{
+		for (CUser * const pMember : AllMembers(*pParty)) {
 				pMember->AddPartyChat( lpName, lpString, objid );
 				if( pMember->m_idSnoop )
 				{
@@ -1450,7 +1352,6 @@ static	\
 						pSnoop->AddSnoop( lpSnoopString );
 					}
 				}
-			}
 		}
 	}
 }
@@ -2525,25 +2426,9 @@ void CDPCoreClient::OnPartyChangeLeader( CAr & ar, DPID, DPID, OBJID )
 	{
 		pParty->ChangeLeader( idChangeLeader );
 
-		CUser* pMember;
-		for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-		{
-			pMember		= (CUser*)prj.GetUserByID( pParty->m_aMember[i].m_uPlayerId );
-			if( IsValidObj( pMember ) )
-				pMember->AddPartyChangeLeader( idChangeLeader );
+		for (CUser * const pUser : AllMembers(*pParty)) {
+			pUser->AddPartyChangeLeader(idChangeLeader);
 		}
-/*
-#if __VER >= 12 // __PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-		CMover* pMover = pParty->GetLeader();
-		if( pMover )
-		{
-			if( pMover->IsSMMode( SM_PARTYSKILL1 ) || pMover->IsSMMode( SM_PARTYSKILL15 ) || pMover->IsSMMode( SM_PARTYSKILL30 ) )
-                g_DPCoreClient.SendUserPartySkill( pMover->m_idPlayer, PARTY_PARSKILL_MODE, 1000, 0, 1 );
-			else
-                g_DPCoreClient.SendUserPartySkill( pMover->m_idPlayer, PARTY_PARSKILL_MODE, 0, 0, 1 );
-		}
-#endif //__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-*/
 	}
 }
 

@@ -56,7 +56,7 @@
       <CompileAs>Default</CompileAs>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>false</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dxof.lib;dxerr9.lib;dsound.lib;winmm.lib;dxguid.lib;imm32.lib;ws2_32.lib;VERSION.LIB;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
