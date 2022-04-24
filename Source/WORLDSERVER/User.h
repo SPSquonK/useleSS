@@ -222,9 +222,6 @@ public:
 #pragma region MoverExtension
 
 	void AddExperienceSolo(EXPFLOAT fExpValue, MoverProp * pMoverProp, float fFxpValue, bool bParty);
-	void AddExperienceParty(CMover * pDead, EXPFLOAT fExpValue, MoverProp * pMoverProp, float fFxpValue, CParty * pParty, CUser * apMember[], int * nTotalLevel, int * nMaxLevel10, int * nMaxLevel, int * nMemberSize);
-	void AddExperiencePartyContribution(CMover * pDead, CUser * apMember[], CParty * pParty, EXPFLOAT fExpValue, int nMemberSize, int nMaxLevel10);
-	static void AddExperiencePartyLevel(CUser * apMember[], CParty * pParty, EXPFLOAT fExpValue, int nMemberSize, int nMaxLevel10);
 	void AddPartyMemberExperience(EXPINTEGER nExp, int nFxp);
 
 #pragma endregion

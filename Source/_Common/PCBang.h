@@ -66,6 +66,23 @@ public:
 	void	ProcessPCBang();							// 접속 해제 후 10분이 경과된 유저를 초기화 한다.
 	float	GetExpInfo( DWORD dwHour );
 	float	GetExpFactor( CUser* pUser );				// 증가될 경험치를 얻어온다.
+	
+	template <typename T>
+	float GetPartyExpFactor(T range) {
+		float fExpFactor = 0.0f;
+		int nMemberSize = 0;
+		for (CUser * pUser : range) {
+			fExpFactor += GetExpFactor(pUser) - 1.0f;
+			++nMemberSize;
+		}
+		if (nMemberSize == 0) nMemberSize = 1;
+
+		fExpFactor /= nMemberSize;
+		fExpFactor += 1.0f;
+
+		return fExpFactor;
+	}
+	
 	float	GetPartyExpFactor( CUser* apUser[], int nMemberSize );
 	float	GetPieceItemDropInfo( DWORD dwHour );
 	float	GetPieceItemDropFactor( CUser* pUser );		// 증가될 아이템 드롭률을 가져온다.

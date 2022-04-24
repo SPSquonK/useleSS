@@ -989,7 +989,7 @@ public:
 	int				AddGPPoint( int nAddGPPoint );
 	void			SetJobLevel( int nLevel, int nJob );
 	BOOL			IsJobType( DWORD dwJobType ); 
-	int				GetLevel() { return m_nLevel; }
+	[[nodiscard]] int GetLevel() const { return m_nLevel; }
 	int				GetFxp() { return m_nFxp; }
 	int				GetTxp() { return m_nFxp; }
 	EXPINTEGER		GetExp1()	{	return m_nExp1;	}
@@ -1048,7 +1048,7 @@ public:
 	int				GetHitPoint();
 	int				GetManaPoint();
 	int				GetFatiguePoint();
-	int				GetMaxHitPoint();
+	[[nodiscard]] int GetMaxHitPoint();
 	int				GetMaxManaPoint();
 	int				GetMaxFatiguePoint();
 	int				GetMaxOriginHitPoint( BOOL bOrinal = TRUE );

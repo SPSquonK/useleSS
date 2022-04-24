@@ -245,17 +245,6 @@ float CPCBang::GetExpFactor( CUser* pUser )
 	return 1.0f;
 }
 
-float CPCBang::GetPartyExpFactor( CUser* apUser[], int nMemberSize )
-{
-	float fExpFactor = 0.0f;
-	for( int i=0; i<nMemberSize; i++ )
-		fExpFactor += GetExpFactor( apUser[i] ) - 1.0f;		
-	fExpFactor /= nMemberSize;
-	fExpFactor += 1.0f;
-
-	return fExpFactor;
-}
-
 float CPCBang::GetPieceItemDropInfo( DWORD dwHour )
 {
 	int nMaxIndex = m_vecfDropRate.size() - 1;

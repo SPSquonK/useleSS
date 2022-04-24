@@ -2354,8 +2354,7 @@ int CMover::GetFatiguePoint()
 }
 
 // �ִ� ��Ʈ ����Ʈ ��� 
-int CMover::GetMaxHitPoint()
-{
+int CMover::GetMaxHitPoint() {
 	if( IsInvalidObj(this) )	
 		return 0;
 
