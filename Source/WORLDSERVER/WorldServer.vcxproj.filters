@@ -591,6 +591,9 @@
     <ClCompile Include="DisplayedInfo.cpp">
       <Filter>World Files</Filter>
     </ClCompile>
+    <ClCompile Include="MoverExp.cpp">
+      <Filter>World Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">

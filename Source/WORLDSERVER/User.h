@@ -218,6 +218,14 @@ public:
 	void SendSnapshotWithTarget(DWORD targetId, Ts ... ts);
 #pragma endregion
 
+	// Functions that should be in CMover but that are only called for players in Worldserver
+#pragma region MoverExtension
+
+	void AddExperienceSolo(EXPFLOAT fExpValue, MoverProp * pMoverProp, float fFxpValue, bool bParty);
+
+
+#pragma endregion
+
 public:
 
 	void			AddPostMail( CMail* pMail );
@@ -930,3 +938,5 @@ void CUser::SendSnapshotWithTarget(DWORD targetId, Ts ... ts) {
 }
 
 #pragma endregion
+
+extern	CUserMng	g_UserMng;

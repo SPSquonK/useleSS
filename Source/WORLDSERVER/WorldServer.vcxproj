@@ -150,6 +150,7 @@
     </ClCompile>
     <ClCompile Include="..\_Common\moverbuff.cpp">
     </ClCompile>
+    <ClCompile Include="MoverExp.cpp" />
     <ClCompile Include="MySplashWnd.cpp">
     </ClCompile>
     <ClCompile Include="npchecker.cpp">

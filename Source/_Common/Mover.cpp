@@ -53,7 +53,6 @@ extern	CGuildCombat	g_GuildCombatMng;
 	#include "dpdatabaseclient.h"
 	#include "spevent.h"
 
-	extern	CUserMng	g_UserMng;
 	extern	CWorldMng	g_WorldMng;
 	extern	CDPSrvr		g_DPSrvr;
 	extern	CDPDatabaseClient	g_dpDBClient;
@@ -5564,9 +5563,10 @@ void CMover::AddExperienceKillMember( CMover *pDead, EXPFLOAT fExpValue, MoverPr
 	{
 		if( adwEnemy[j] == 0 )		// 무시
 			continue;
-		CMover* pEnemy	= prj.GetMover( adwEnemy[j] );
-		if( IsValidObj( pEnemy ) && pDead->IsValidArea( pEnemy, 64.0f ) && pEnemy->IsPlayer() )		// 플레이어, 범위 검사
+		CMover* pEnemy_	= prj.GetMover( adwEnemy[j] );
+		if( IsValidObj(pEnemy_) && pDead->IsValidArea(pEnemy_, 64.0f ) && pEnemy_->IsPlayer() )		// 플레이어, 범위 검사
 		{
+			CUser * pEnemy = static_cast<CUser *>(pEnemy_);
 			DWORD dwHitPointParty	= 0;
 			CParty* pParty	= g_PartyMng.GetParty( pEnemy->m_idparty );
 			if( pParty && pParty->IsMember( pEnemy->m_idPlayer ) )
@@ -5609,84 +5609,16 @@ void CMover::AddExperienceKillMember( CMover *pDead, EXPFLOAT fExpValue, MoverPr
 				if( 1 < nMemberSize )	// 파티원가 같이 있음	// 파티원들 경험치 주기
 					pEnemy->AddExperienceParty( pDead, fExpValuePerson, pMoverProp, fFxpValue, pParty, apMember, &nTotalLevel, &nMaxLevel10, &nMaxLevel, &nMemberSize );
 				else	// 혼자서 싸운것으로 처리.
-					pEnemy->AddExperienceSolo( fExpValuePerson, pMoverProp, fFxpValue, TRUE );
+					pEnemy->AddExperienceSolo( fExpValuePerson, pMoverProp, fFxpValue, true );
 			}
 			else
 			{
 				if( IsPlayer() )
 					fExpValuePerson *= CPCBang::GetInstance()->GetExpFactor( static_cast<CUser*>( this ) );
-				pEnemy->AddExperienceSolo( fExpValuePerson, pMoverProp, fFxpValue, FALSE );
+				pEnemy->AddExperienceSolo( fExpValuePerson, pMoverProp, fFxpValue, false );
 			}
 		}
 	}
-}
-
-void CMover::AddExperienceSolo( EXPFLOAT fExpValue, MoverProp* pMoverProp, float fFxpValue, BOOL bParty )
-{
-	if( g_eLocal.GetState( EVE_EVENT0214 ) && !bParty )	// 발렌타인 이벤트 중 솔로 플레이 시 경험치 1.5배
-		fExpValue	*= static_cast<EXPFLOAT>( 1.5f );
-		
-
-
-		// 레벨에 따라 경험치를 준다. 렙이 나보다 낮을경우 70  %, 나보다 높을경우 130 %
-		int dw_Level = GetLevel() - (int)pMoverProp->dwLevel;
-		if( dw_Level > 0 )
-		{
-			if( 1 == dw_Level || dw_Level == 2 )		// 1~2 차이
-			{
-				fExpValue	*= static_cast<EXPFLOAT>( 0.7f );
-				fFxpValue	*= 0.7f;
-			}
-			else if( 3 == dw_Level || dw_Level == 4 )	// 3~4 차이
-			{
-				fExpValue	*= static_cast<EXPFLOAT>( 0.4f );
-				fFxpValue	*= 0.4f;
-			}
-			else										// 5이상 차이
-			{
-				fExpValue	*= static_cast<EXPFLOAT>( 0.1f );
-				fFxpValue	*= 0.1f;
-			}
-		}
-
-		EXPINTEGER	iLogExp		= GetExp1() * 100 / GetMaxExp1();
-		iLogExp	/= 20;
-
-		if( fExpValue > static_cast<EXPFLOAT>( prj.m_aExpCharacter[m_nLevel].nLimitExp ) )
-			fExpValue	= static_cast<EXPFLOAT>( prj.m_aExpCharacter[m_nLevel].nLimitExp );
-
-		// 올릴 비행경험치가 없다면 실행안해도 된다.
-		if( fFxpValue )
-		{
-			if( AddFxp( (int)fFxpValue ) )
-			{
-#ifdef __WORLDSERVER
-				g_UserMng.AddSetFlightLevel( this, GetFlightLv() );
-#endif	// __WORLDSERVER
-			}
-			else
-			{
-				// 비행경험치 획득 로그 넣을것!
-			}
-#ifdef __WORLDSERVER
-			( (CUser*)this )->AddSetFxp( m_nFxp, GetFlightLv() );
-#endif	// __WORLDSERVER
-		}
-		
-		TRACE("Name : %s 얻어지는 : %I64d ", this->GetName(), static_cast<EXPINTEGER>( fExpValue ) );
-		TRACE(" 레벨업에 필요한:%I64d\n", prj.m_aExpCharacter[m_nLevel+1].nExp1 - m_nExp1 );
-
-		if( AddExperience( static_cast<EXPINTEGER>( fExpValue ), TRUE, TRUE, TRUE ) )	// lv up
-#		ifdef __WORLDSERVER
-			((CUser*)this)->LevelUpSetting();
-#		endif	// __WORLDSERVER
-		else
-#		ifdef __WORLDSERVER
-			((CUser*)this)->ExpUpSetting();
-#		endif	// __WORLDSERVER
-#		ifdef __WORLDSERVER
-		( (CUser*)this )->AddSetExperience( GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel );
-#		endif	// __WORLDSERVER	
 }
 
 void CMover::AddExperienceParty( CMover *pDead, EXPFLOAT fExpValue, MoverProp* pMoverProp, float fFxpValue, CParty* pParty, CUser* apMember[], int* nTotalLevel, int* nMaxLevel10, int* nMaxLevel, int* nMemberSize )

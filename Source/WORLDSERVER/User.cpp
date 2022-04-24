@@ -234,7 +234,6 @@ void CUser::ExpUpSetting( void )
 	// 20% 단위로 로그를 남김
 	if( GetLevel() > 5 ) // 레벨 5이상
 	{
-#ifdef __EXP_ANGELEXP_LOG
 		int nNextExpLog = (int)(m_nExpLog/20 + 1) * 20;	
 		int nExpPercent = (int)( GetExp1() * 100 / GetMaxExp1() );
 		if( nExpPercent >= nNextExpLog )
@@ -242,13 +241,6 @@ void CUser::ExpUpSetting( void )
 			m_nExpLog = nExpPercent;
 			g_dpDBClient.SendLogLevelUp( this, 5 );
 		}
-#else // __EXP_ANGELEXP_LOG
-		int iLogExp = GetExp1() * 100 / GetMaxExp1();
-		iLogExp /= 20;
-		
-		if( ( 20 * ( iLogExp + 1 ) ) <= ( GetExp1() * 100 / GetMaxExp1() ) )
-			g_dpDBClient.SendLogLevelUp( this, 5 );
-#endif // __EXP_ANGELEXP_LOG
 	}
 }
 
