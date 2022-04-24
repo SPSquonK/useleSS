@@ -184,7 +184,7 @@ public:
 	void			SetVisible( BOOL bUpdate ) { SetFlag( bUpdate, OBJ_FLAG_VISIBLE ); }
 	BOOL			IsVirtual() { return (m_dwFlags & OBJ_FLAG_VIRTUAL);  } 
 	void			SetVirtual( BOOL bUpdate ) { SetFlag( bUpdate, OBJ_FLAG_VIRTUAL ); }
-	BOOL			IsDelete()	{ return (m_dwFlags & OBJ_FLAG_DELETE);  }
+	[[nodiscard]] BOOL			IsDelete() const	{ return (m_dwFlags & OBJ_FLAG_DELETE);  }
 	void			SetDelete( BOOL bUpdate ) { SetFlag( bUpdate, OBJ_FLAG_DELETE ); }
 	BOOL			IsPosChanged()  { return (m_dwFlags & OBJ_FLAG_POSCHANGED); }
 	void			SetPosChanged( BOOL bUpdate) { SetFlag( bUpdate, OBJ_FLAG_POSCHANGED ); }
@@ -251,7 +251,7 @@ private:
 	int		m_nLayer;
 public:
 	void	SetLayer( int nLayer )	{	m_nLayer	= nLayer;	}
-	int		GetLayer()	{	return m_nLayer;	}
+	[[nodiscard]] int		GetLayer() const	{	return m_nLayer;	}
 #endif	// __LAYER_1015
 #else	// __WORLDSERVER
 	D3DXVECTOR3		GetLinkPos()					{	return m_vPos;	}
@@ -329,12 +329,12 @@ inline FLOAT GetDegreeX( const D3DXVECTOR3 &vDestPos, const D3DXVECTOR3 &vSrcPos
 	return a;
 }
 
-inline BOOL IsValidObj( CObj* pObj ) 
+inline BOOL IsValidObj( const CObj* const pObj ) 
 { 
 	return pObj && ( pObj->IsDelete() == FALSE ); 
 }
 
-inline BOOL IsInvalidObj( CObj* pObj ) 
+inline BOOL IsInvalidObj( const CObj * const pObj ) 
 { 
 	return !IsValidObj( pObj ); 
 }

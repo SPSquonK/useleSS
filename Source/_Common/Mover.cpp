@@ -1139,7 +1139,7 @@ void CMover::ProcessTarget()
 		CMover *pAttacker = GETMOVER( m_idAttacker );
 		if( IsValidObj( pAttacker ) )
 		{
-			if( IsValidArea( pAttacker, 32.0f ) == FALSE )
+			if( !IsValidArea( pAttacker, 32.0f ) )
 			{
 				m_idAttacker = NULL_ID;
 			}
@@ -1152,7 +1152,7 @@ void CMover::ProcessTarget()
 		CMover *pTargeter = GETMOVER( m_idTargeter );
 		if( IsValidObj( pTargeter ) )
 		{
-			if( IsValidArea( pTargeter, 32.0f ) == FALSE )
+			if( !IsValidArea( pTargeter, 32.0f ) )
 			{
 				m_idTargeter = NULL_ID;
 			}
@@ -5488,24 +5488,21 @@ int CMover::SubExperience( CMover *pDead )
 	return 1;
 }
 
-BOOL CMover::IsValidArea( CMover* pMover, float fLength )
-{
-	float fDist;
-	D3DXVECTOR3	vDist;
-	if( IsValidObj( (CObj*)this) && IsValidObj( (CObj*)pMover ) && GetWorld() == pMover->GetWorld()/*2008.04.11 동맵 검사 추가*/
+bool CMover::IsValidArea(const CMover * const pMover, const float fLength) const {
+	if (!IsValidObj(this)) return false;
+	if (!IsValidObj(pMover)) return false;
+
+	/*2008.04.11 동맵 검사 추가*/
+	if (GetWorld() != pMover->GetWorld()) return false;
+
 #ifdef __LAYER_1015
-		&& GetLayer() == pMover->GetLayer() // 2008.12.26 레이어 검사
-#endif // __LAYER_1015
-		)
-	{
-		vDist = pMover->GetPos() - GetPos();
-		fDist = D3DXVec3LengthSq( &vDist );
-		if( fDist < fLength * fLength )
-		{
-			return TRUE;
-		}
-	}
-	return FALSE;
+	// 2008.12.26 레이어 검사
+	if (GetLayer() != pMover->GetLayer()) return false;
+#endif
+
+	const D3DXVECTOR3 vDist = pMover->GetPos() - GetPos();
+	const float fDist = D3DXVec3LengthSq( &vDist );
+	return fDist < fLength * fLength;
 }
 
 BOOL CMover::GetPartyMemberFind( CParty* pParty, CUser* apMember[], int* nTotalLevel, int* nMaxLevel10, int* nMaxLevel, int* nMemberSize )

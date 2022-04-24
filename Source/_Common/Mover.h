@@ -1222,7 +1222,7 @@ public:
 	int				SubWar( CMover *pAttacker );	// 전쟁때 죽었음
 	int				SubExperience( CMover *pDead );
 	void			AddKillRecovery();
-	BOOL			IsValidArea( CMover* pMover, float fLength );
+	[[nodiscard]] bool IsValidArea(const CMover * pMover, float fLength) const;
 	void			SetJJim( CMover *pJJimer );		// this를 pJJimer가 찜했다는걸 표시.
 	void			SubReferTime(DWORD & pTime1, DWORD & pTime2, const ItemProp & pSkillProp, const AddSkillProp * pAddSkillProp) const;
 	[[nodiscard]] DWORD GetReferTime(DWORD referTarget, DWORD referStat, DWORD referValue, DWORD skillLevel) const;

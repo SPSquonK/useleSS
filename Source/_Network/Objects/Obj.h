@@ -80,7 +80,7 @@ protected:
 	int		m_nLayer;
 public:
 	void	SetLayer( int nLayer )	{	m_nLayer	= nLayer;	}
-	int		GetLayer()	{	return m_nLayer;	}
+	[[nodiscard]] int		GetLayer() const	{	return m_nLayer;	}
 #endif	// __LAYER_1015
 };
 
