@@ -231,4 +231,9 @@ public:
 #endif // __WORLDSERVER
 };
 
+#if defined(__WORLDSERVER)
+extern CPartyMng g_PartyMng;
+#endif
+
+
 #endif	//	_PARTY_H

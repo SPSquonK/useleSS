@@ -1,8 +1,88 @@
 #include "StdAfx.h"
 #include "User.h"
+#include "party.h"
+#include "GroupUtils.h"
 
 #undef min
 #undef max
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Entry point
+
+static BOOL GetPartyMemberFind(const CMover & pDead, CParty * pParty, CUser * apMember[], int * nTotalLevel, int * nMaxLevel10, int * nMaxLevel, int * nMemberSize);
+
+void CMover::AddExperienceKillMember(CMover * pDead, EXPFLOAT fExpValue, MoverProp * pMoverProp, float fFxpValue) {
+	std::vector<OBJID>	adwEnemy;
+	std::vector<int>		anHitPoint;
+	DWORD	dwMaxEnemyHit = 0;
+	for (SET_OBJID::iterator it = pDead->m_idEnemies.begin(); it != pDead->m_idEnemies.end(); ++it) {
+		adwEnemy.push_back((*it).first);
+		anHitPoint.push_back((*it).second.nHit);
+		dwMaxEnemyHit += (*it).second.nHit;
+	}
+
+	if (adwEnemy.size() > 1024) {
+		Error("CMover::AddExperienceKillMember - enemy size is too big");
+	}
+
+	if (dwMaxEnemyHit == 0)
+		return;
+
+	for (DWORD j = 0; j < adwEnemy.size(); j++) {
+		if (adwEnemy[j] == 0) continue;
+
+		CMover * pEnemy_ = prj.GetMover(adwEnemy[j]);
+		if (IsValidObj(pEnemy_) && pDead->IsValidArea(pEnemy_, 64.0f) && pEnemy_->IsPlayer())
+		{
+			CUser * pEnemy = static_cast<CUser *>(pEnemy_);
+			DWORD dwHitPointParty = 0;
+			CParty * pParty = g_PartyMng.GetParty(pEnemy->m_idparty);
+			if (pParty && pParty->IsMember(pEnemy->m_idPlayer)) {
+				dwHitPointParty = anHitPoint[j];
+				for (DWORD k = j + 1; k < adwEnemy.size(); k++) {
+					if (adwEnemy[k] == 0)
+						continue;	// Skip duplicates
+					CMover * pEnemy2 = prj.GetMover(adwEnemy[k]);
+					if (IsValidObj(pEnemy2) && pDead->IsValidArea(pEnemy2, 64.0f) && pEnemy2->IsPlayer())
+					{
+						if (pEnemy->m_idparty == pEnemy2->m_idparty && pParty->IsMember(pEnemy2->m_idPlayer))
+						{
+							dwHitPointParty += anHitPoint[k];
+							adwEnemy[k] = 0;
+						}
+					} else {
+						adwEnemy[k] = 0;
+					}
+				}
+			}
+			if (dwHitPointParty > 0)
+				anHitPoint[j] = dwHitPointParty;
+			float fExpValuePerson = (float)(fExpValue * (float(anHitPoint[j]) / float(dwMaxEnemyHit)));
+			if (dwHitPointParty)
+			{
+				int nTotalLevel = 0;
+				int nMaxLevel10 = 0;
+				int nMaxLevel = 0;
+				int nMemberSize = 0;
+				CUser * apMember[MAX_PTMEMBER_SIZE];
+				memset(apMember, 0, sizeof(apMember));
+
+				if (!GetPartyMemberFind(*pDead, pParty, apMember, &nTotalLevel, &nMaxLevel10, &nMaxLevel, &nMemberSize))
+					break;
+				fExpValuePerson *= CPCBang::GetInstance()->GetPartyExpFactor(apMember, nMemberSize);
+				if (1 < nMemberSize)
+					pEnemy->AddExperienceParty(pDead, fExpValuePerson, pMoverProp, fFxpValue, pParty, apMember, &nTotalLevel, &nMaxLevel10, &nMaxLevel, &nMemberSize);
+				else
+					pEnemy->AddExperienceSolo(fExpValuePerson, pMoverProp, fFxpValue, true);
+			} else {
+				if (IsPlayer())
+					fExpValuePerson *= CPCBang::GetInstance()->GetExpFactor(static_cast<CUser *>(this));
+				pEnemy->AddExperienceSolo(fExpValuePerson, pMoverProp, fFxpValue, false);
+			}
+		}
+	}
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,26 +109,7 @@ void CUser::AddExperienceSolo(EXPFLOAT fExpValue, MoverProp * pMoverProp, float 
 		fFxpValue *= debuff;
 	}
 
-	const auto expLimit = static_cast<EXPFLOAT>(prj.m_aExpCharacter[m_nLevel].nLimitExp);
-	if (fExpValue > expLimit) fExpValue = expLimit;
-
-	// Flight Exp
-	if (fFxpValue) {
-		if (AddFxp(static_cast<int>(fFxpValue))) {
-			g_UserMng.AddSetFlightLevel(this, GetFlightLv());
-		}
-
-		AddSetFxp(m_nFxp, GetFlightLv());
-	}
-
-	if (AddExperience(static_cast<EXPINTEGER>(fExpValue), TRUE, TRUE, TRUE)) {
-		// Level up
-		LevelUpSetting();
-	} else {
-		ExpUpSetting();
-	}
-
-	AddSetExperience(GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel);
+	AddPartyMemberExperience(fExpValue, fFxpValue);
 }
 
 
@@ -70,6 +131,30 @@ static float GetExperienceReduceFactor(const int nLevel, const int nMaxLevel) {
 	} else {
 		return other[nDelta - 1];
 	}
+}
+
+BOOL GetPartyMemberFind(const CMover & pDead, CParty * pParty, CUser * apMember[], int * nTotalLevel, int * nMaxLevel10, int * nMaxLevel, int * nMemberSize) {
+	for (CUser * pUsertmp : AllMembers(*pParty)) {
+		if (pDead.IsValidArea(pUsertmp, 64.0f)) {
+			apMember[(*nMemberSize)++] = pUsertmp;
+			(*nTotalLevel) += pUsertmp->GetLevel();
+			if ((*nMaxLevel10) < pUsertmp->GetLevel()) {
+				(*nMaxLevel) = (*nMaxLevel10) = pUsertmp->GetLevel();
+			}
+		}
+	}
+
+	if (0 < (*nMaxLevel10) - 20) {
+		(*nMaxLevel10) -= 20;
+	} else {
+		(*nMaxLevel10) = 0;
+	}
+
+	if ((*nMemberSize) == 0 || (*nTotalLevel) == 0) {
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 enum class PartyDistributionType { Unknown, Level, Contribution };
@@ -152,7 +237,7 @@ void CUser::AddExperiencePartyContribution(CMover * pDead, CUser * apMember[], C
 
 		const EXPINTEGER nMemberExp = damageExp + watchExp;
 
-		AddPartyMemberExperience(apMember[i], nMemberExp, 0);
+		apMember[i]->AddPartyMemberExperience(nMemberExp, 0);
 	}
 }
 
@@ -169,8 +254,27 @@ void CUser::AddExperiencePartyLevel(CUser * apMember[], CParty * pParty, EXPFLOA
 		
 		const float squaredLevel = ((float)apMember[i]->GetLevel() * (float)apMember[i]->GetLevel());
 		const EXPINTEGER nMemberExp = static_cast<EXPINTEGER>((fExpValue + fAddExp) * (squaredLevel / fMaxMemberLevel));
-		AddPartyMemberExperience(apMember[i], nMemberExp, 0);
+		apMember[i]->AddPartyMemberExperience(nMemberExp, 0);
 	}
 }
 
+void CUser::AddPartyMemberExperience(EXPINTEGER nExp, int nFxp) {
+	const auto expLimit = prj.m_aExpCharacter[m_nLevel].nLimitExp;
+	if (nExp > expLimit) nExp = expLimit;
+
+	if (nFxp) {
+		if (AddFxp(nFxp)) { // Flight level up
+			g_UserMng.AddSetFlightLevel(this, GetFlightLv());
+		}
+
+		AddSetFxp(m_nFxp, GetFlightLv());
+	}
+
+	if (AddExperience(nExp, TRUE, TRUE, TRUE))
+		LevelUpSetting();
+	else
+		ExpUpSetting();
+
+	AddSetExperience(GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel);
+}
 

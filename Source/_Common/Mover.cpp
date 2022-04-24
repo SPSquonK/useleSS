@@ -66,7 +66,6 @@ extern	CGuildCombat	g_GuildCombatMng;
 #ifdef __WORLDSERVER
 #include "GroupUtils.h"
 #endif
-extern	CPartyMng	g_PartyMng;
 
 #include "guild.h"
 extern	CGuildMng	g_GuildMng;
@@ -5285,33 +5284,6 @@ void CMover::SubPVP( CMover *pAttacker, int nReflect )
 	}
 }
 
-void CMover::AddPartyMemberExperience( CUser * pUser, EXPINTEGER nExp, int nFxp )
-{
-	if( nFxp )	// 비행경험치가 0인경우는 아무 처리도 안해도 된다.
-	{
-		if( pUser->AddFxp( nFxp ) )
-		{
-			// 비행레벨업!
-			g_UserMng.AddSetFlightLevel( pUser, pUser->GetFlightLv() );
-		} else
-		{
-			// 레벨업하지 않고 경험치만 올라감.
-			// 로그 남길것.
-		}
-		pUser->AddSetFxp( pUser->m_nFxp, pUser->GetFlightLv() );		// 당사자에게 비행경험치/레벨을 보냄.
-	}
-
-	if( nExp > prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp )
-		nExp	= prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp;
-
-	if( pUser->AddExperience( nExp, TRUE, TRUE, TRUE ) )
-		pUser->LevelUpSetting();
-	else
-		pUser->ExpUpSetting();
-
-	pUser->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
-}
-
 // this가 죽은무버다.
 // this를 중심으로 반경 fRange 이내에 있는 사람들에게 경험치를 분배한다.
 void CMover::SubAroundExp( CMover *pAttacker, float fRange )
@@ -5503,119 +5475,6 @@ bool CMover::IsValidArea(const CMover * const pMover, const float fLength) const
 	const D3DXVECTOR3 vDist = pMover->GetPos() - GetPos();
 	const float fDist = D3DXVec3LengthSq( &vDist );
 	return fDist < fLength * fLength;
-}
-
-BOOL CMover::GetPartyMemberFind( CParty* pParty, CUser* apMember[], int* nTotalLevel, int* nMaxLevel10, int* nMaxLevel, int* nMemberSize )
-{
-	for (CUser * pUsertmp : AllMembers(*pParty)) {
-		if (IsValidArea(pUsertmp, 64.0f))
-		{
-			apMember[(*nMemberSize)++]	= pUsertmp;
-			(*nTotalLevel)		+= pUsertmp->GetLevel();
-			if( (*nMaxLevel10) < pUsertmp->GetLevel() )
-			{
-				(*nMaxLevel) = (*nMaxLevel10) = pUsertmp->GetLevel();
-			}			
-		}
-	}
-	
-	if( 0 < (*nMaxLevel10) - 20 )
-	{
-		(*nMaxLevel10) -= 20;
-	}
-	else
-	{
-		(*nMaxLevel10) = 0;
-	}
-
-	if( (*nMemberSize) == 0 || (*nTotalLevel) == 0 )
-	{
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-void CMover::AddExperienceKillMember( CMover *pDead, EXPFLOAT fExpValue, MoverProp* pMoverProp, float fFxpValue )
-{
-	vector<OBJID>	adwEnemy;
-	vector<int>		anHitPoint;
-	DWORD	dwMaxEnemyHit	= 0;
-	for( SET_OBJID::iterator it = pDead->m_idEnemies.begin(); it != pDead->m_idEnemies.end(); ++it )
-	{
-		adwEnemy.push_back( (*it).first );
-		anHitPoint.push_back( (*it).second.nHit );
-		dwMaxEnemyHit	+= (*it).second.nHit;
-	}
-
-	if( adwEnemy.size() > 1024 )
-	{
-		Error( "CMover::AddExperienceKillMember - enemy size is too big" );
-	}
-
-	if( dwMaxEnemyHit == 0 )		//
-		return;
-
-	for( DWORD j = 0; j < adwEnemy.size(); j++ )
-	{
-		if( adwEnemy[j] == 0 )		// 무시
-			continue;
-		CMover* pEnemy_	= prj.GetMover( adwEnemy[j] );
-		if( IsValidObj(pEnemy_) && pDead->IsValidArea(pEnemy_, 64.0f ) && pEnemy_->IsPlayer() )		// 플레이어, 범위 검사
-		{
-			CUser * pEnemy = static_cast<CUser *>(pEnemy_);
-			DWORD dwHitPointParty	= 0;
-			CParty* pParty	= g_PartyMng.GetParty( pEnemy->m_idparty );
-			if( pParty && pParty->IsMember( pEnemy->m_idPlayer ) )
-			{
-				dwHitPointParty		= anHitPoint[j];
-				for( DWORD k = j + 1 ; k < adwEnemy.size(); k++ )
-				{
-					if( adwEnemy[k] == 0 )
-						continue;	// 중복 처리 스킵
-					CMover* pEnemy2	= prj.GetMover( adwEnemy[k] );
-					if( IsValidObj( pEnemy2 ) && pDead->IsValidArea( pEnemy2, 64.0f ) && pEnemy2->IsPlayer() )	// 플레이어, 범위 검사
-					{
-						if( pEnemy->m_idparty == pEnemy2->m_idparty && pParty->IsMember( pEnemy2->m_idPlayer ) )	// 같은 파티 삭제 대상
-						{
-							dwHitPointParty		+= anHitPoint[k];
-							adwEnemy[k]	= 0;	// 중복 처리 방지
-						}
-					}
-					else
-					{
-						adwEnemy[k]	= 0;		// 삭제 대상
-					}
-				}
-			}
-			if( dwHitPointParty > 0 )
-				anHitPoint[j]	= dwHitPointParty;
-			float fExpValuePerson = (float)( fExpValue * ( float( anHitPoint[j] ) / float( dwMaxEnemyHit ) ) );
-			if( dwHitPointParty )		// 극단 경험치 분배
-			{	
-				int nTotalLevel		= 0;
-				int nMaxLevel10	= 0;
-				int nMaxLevel	= 0;
-				int nMemberSize		= 0;
-				CUser* apMember[MAX_PTMEMBER_SIZE];
-				memset( apMember, 0, sizeof(apMember) );
-				// 1. 주변 멤버 검사
-				if( pEnemy->GetPartyMemberFind( pParty, apMember, &nTotalLevel, &nMaxLevel10, &nMaxLevel, &nMemberSize ) == FALSE )
-					break;
-				fExpValuePerson *= CPCBang::GetInstance()->GetPartyExpFactor( apMember, nMemberSize );
-				if( 1 < nMemberSize )	// 파티원가 같이 있음	// 파티원들 경험치 주기
-					pEnemy->AddExperienceParty( pDead, fExpValuePerson, pMoverProp, fFxpValue, pParty, apMember, &nTotalLevel, &nMaxLevel10, &nMaxLevel, &nMemberSize );
-				else	// 혼자서 싸운것으로 처리.
-					pEnemy->AddExperienceSolo( fExpValuePerson, pMoverProp, fFxpValue, true );
-			}
-			else
-			{
-				if( IsPlayer() )
-					fExpValuePerson *= CPCBang::GetInstance()->GetExpFactor( static_cast<CUser*>( this ) );
-				pEnemy->AddExperienceSolo( fExpValuePerson, pMoverProp, fFxpValue, false );
-			}
-		}
-	}
 }
 
 #endif	// __WORLDSERVER not client
