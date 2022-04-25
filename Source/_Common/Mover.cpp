@@ -5450,12 +5450,6 @@ int CMover::SubExperience( CMover *pDead )
 	float	fFxpValue	= pMoverProp->nFxpValue;
 #endif	// __WORLDSERVER
 
-	if( IsAuthHigher( AUTH_ADMINISTRATOR ) )	// 운영자 계정일때
-	{
-		if( IsMode( MODE_EXPUP_STOP ) )			// 경험치 상승 금지 상태면
-			fExpValue = 0;						// 경험치값 0
-	}
-
 	AddExperienceKillMember( pDead, fExpValue, pMoverProp, fFxpValue );
 	return 1;
 }

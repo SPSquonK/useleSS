@@ -842,6 +842,12 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 	//	mulcom	END100315	��Ʈ�� �ð� ����
 #endif // __VTN_TIMELIMIT
 
+	if (IsAuthHigher(AUTH_ADMINISTRATOR))	// ¿î¿µÀÚ °èÁ¤ÀÏ¶§
+	{
+		if (IsMode(MODE_EXPUP_STOP))			// °æÇèÄ¡ »ó½Â ±ÝÁö »óÅÂ¸é
+			return FALSE;						// °æÇèÄ¡°ª 0
+	}
+
 	if( nExp <= 0 )		// nExp�� ���̳ʽ��̰ų� 0�̸� ó�����ʿ� ����.
 		return FALSE;
 

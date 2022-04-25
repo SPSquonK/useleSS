@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <numeric>
 #include "User.h"
 #include "party.h"
 #include "GroupUtils.h"
@@ -10,32 +11,33 @@ static constexpr float EXP_RANGE = 64.f;
 
 namespace {
 	namespace Rewarder {
-		struct Parter {
+		// Somebody that did damage to a monster
+		struct DamageDealer {
 			OBJID m_objid;
 			CUser * m_user;
 			unsigned int m_contribution;
 
-			Parter(const OBJID objid, CUser * const user, const unsigned int contribution)
-				: m_objid(objid), m_user(user), m_contribution(contribution) {
-			}
-
-			explicit Parter(CUser * const user)
+			explicit DamageDealer(CUser * const user)
 				: m_objid(user->GetId()), m_user(user), m_contribution(0) {
 			}
 
-			static CUser * GetUser(const Parter & parter) {
+			DamageDealer(const OBJID objid, CUser * const user, const unsigned int contribution)
+				: m_objid(objid), m_user(user), m_contribution(contribution) {
+			}
+
+			static CUser * GetUser(const DamageDealer & parter) {
 				return parter.m_user;
 			}
 		};
 
+		// A party that did damage to a monster
 		struct ParterParty {
 			unsigned long m_id;
 			CParty * m_party;
-			unsigned int m_contribution;
-			std::vector<Parter> m_players;
+			std::vector<DamageDealer> m_players;
 
 			ParterParty(CParty & party, const CMover & pDead)
-				: m_id(party.m_uPartyId), m_party(&party), m_contribution(0) {
+				: m_id(party.m_uPartyId), m_party(&party) {
 
 				for (CUser * const member : AllMembers(party)) {
 					if (pDead.IsValidArea(member, EXP_RANGE)) {
@@ -44,11 +46,11 @@ namespace {
 				}
 			}
 
-			void AddPlayer(const Parter & toAdd) {
+			void AddPlayer(const DamageDealer & toAdd) {
 				auto memberIt = std::find_if(
 					m_players.begin(),
 					m_players.end(),
-					[&](const Parter & existing) { return existing.m_user == toAdd.m_user; }
+					[&](const DamageDealer & existing) { return existing.m_user == toAdd.m_user; }
 				);
 
 				if (memberIt == m_players.end()) {
@@ -56,26 +58,29 @@ namespace {
 				} else {
 					memberIt->m_contribution += toAdd.m_contribution;
 				}
+			}
 
-				m_contribution += toAdd.m_contribution;
+			[[nodiscard]] unsigned int GetTotalContribution() const {
+				const auto xs = m_players | std::views::transform([](const auto & dealer) { return dealer.m_contribution; });
+				return std::accumulate(xs.begin(), xs.end(), 0u);
 			}
 
 			void ExpReward(float baseExp, CMover & pDead, MoverProp * pMoverProp, float fFxpValue) const;
 
 			[[nodiscard]] auto GetPlayers() const {
-				return m_players | std::views::transform(Parter::GetUser);
+				return m_players | std::views::transform(DamageDealer::GetUser);
 			}
 
 		private:
 			void AddExperienceParty(EXPFLOAT fExpValue, CMover & pDead, const MoverProp & pMoverProp) const;
-			void AddExperiencePartyContribution(EXPFLOAT fExpValue, int nMaxLevel10, int ennemyMaxHp) const;
+			void AddExperiencePartyContribution(EXPFLOAT fExpValue, int nMaxLevel10) const;
 			void AddExperiencePartyLevel(EXPFLOAT fExpValue, int nMaxLevel10) const;
 
 			[[nodiscard]] float ComputeSumOfSquaredLevel() const;
 		};
 
 		struct Accumulator {
-			std::vector<Parter> m_players;
+			std::vector<DamageDealer> m_players;
 			unsigned int m_totalDamage = 0;
 
 			Accumulator(const CMover & pDead, const SET_OBJID & enemies) {
@@ -130,24 +135,27 @@ namespace {
 ///////////////////////////////////////////////////////////////////////////////
 // Entry point
 
+static float GetBaseExp(const EXPFLOAT fExpValue, unsigned int contribution, DWORD maxHP) {
+	return fExpValue * static_cast<float>(contribution) / static_cast<float>(maxHP);
+}
+
 void CMover::AddExperienceKillMember(CMover * pDead, EXPFLOAT fExpValue, MoverProp * pMoverProp, float fFxpValue) {
 	Rewarder::Accumulator accumulator = Rewarder::Accumulator(*pDead, pDead->m_idEnemies);
 	if (accumulator.IsEmpty()) return;
 
 	if (accumulator.m_players.size() > 1024) {
 		Error("CMover::AddExperienceKillMember - enemy size is too big (%lu / 1024)", accumulator.m_players.size());
-		return;
 	}
 
 	const auto parties = accumulator.IsolateParties(*pDead);
 
 	for (const auto & party : parties) {
-		const float baseExp = (float)(fExpValue * (float(party.m_contribution) / float(accumulator.m_totalDamage)));
+		const float baseExp = GetBaseExp(fExpValue, party.GetTotalContribution(), pDead->GetMaxHitPoint());
 		party.ExpReward(baseExp, *pDead, pMoverProp, fFxpValue);
 	}
 
 	for (const auto & member : accumulator.m_players) {
-		const float fExpValuePerson = (float)(fExpValue * (float(member.m_contribution) / float(accumulator.m_totalDamage)))
+		const float fExpValuePerson = GetBaseExp(fExpValue, member.m_contribution, pDead->GetMaxHitPoint())
 			* CPCBang::GetInstance()->GetExpFactor(static_cast<CUser *>(this));
 
 		member.m_user->AddExperienceSolo(fExpValuePerson, pMoverProp, fFxpValue, false);
@@ -241,7 +249,6 @@ void Rewarder::ParterParty::ExpReward(float baseExp, CMover & pDead, MoverProp *
 }
 
 void Rewarder::ParterParty::AddExperienceParty(EXPFLOAT fExpValue, CMover & pDead, const MoverProp & pMoverProp) const {
-
 	int maxLevel = 0;
 	int totalLevel = 0;
 	for (const CUser * const user : GetPlayers()) {
@@ -250,7 +257,7 @@ void Rewarder::ParterParty::AddExperienceParty(EXPFLOAT fExpValue, CMover & pDea
 	}
 
 	// Decreased experience to be the highest level party member among nearby party members
-	float fFactor = GetExperienceReduceFactor((int)pMoverProp.dwLevel, maxLevel);
+	const float fFactor = GetExperienceReduceFactor((int)pMoverProp.dwLevel, maxLevel);
 	fExpValue *= static_cast<EXPFLOAT>(fFactor);
 
 	// If the monster level and the average level delta is 5 or higher, the
@@ -265,7 +272,7 @@ void Rewarder::ParterParty::AddExperienceParty(EXPFLOAT fExpValue, CMover & pDea
 
 	switch (type) {
 		case PartyDistributionType::Contribution:
-			AddExperiencePartyContribution(fExpValue, maxLevel, pDead.GetMaxHitPoint());
+			AddExperiencePartyContribution(fExpValue, maxLevel);
 			break;
 		case PartyDistributionType::Level:
 		default:
@@ -275,8 +282,7 @@ void Rewarder::ParterParty::AddExperienceParty(EXPFLOAT fExpValue, CMover & pDea
 }
 
 // Reward by contribution to damage
-void Rewarder::ParterParty::AddExperiencePartyContribution(EXPFLOAT fExpValue, int nMaxLevel10, int ennemyMaxHp) const {
-
+void Rewarder::ParterParty::AddExperiencePartyContribution(EXPFLOAT fExpValue, int nMaxLevel10) const {
 	const float fMaxMemberLevel = ComputeSumOfSquaredLevel();
 
 	int nAttackMember = 0;
@@ -300,9 +306,9 @@ void Rewarder::ParterParty::AddExperiencePartyContribution(EXPFLOAT fExpValue, i
 	for (const auto & member : m_players) {
 		if (member.m_user->GetLevel() <= nMaxLevel10) continue;
 
-		const float fContribution = std::min((float)member.m_contribution * 100 / (float)ennemyMaxHp, 100.f);
+		const float fContribution = static_cast<float>(member.m_contribution) / static_cast<float>(GetTotalContribution());
 
-		const EXPINTEGER damageExp = static_cast<EXPINTEGER>(fExpValue * (fContribution / 100.0f));
+		const EXPINTEGER damageExp = static_cast<EXPINTEGER>(fExpValue * fContribution);
 
 		const float level = static_cast<float>(member.m_user->GetLevel());
 		const float squaredLevel = level * level;
