@@ -1,16 +1,8 @@
-// PCBang.h: interface for the CPCBang class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_PCBANG_H__DD46F01A_2342_4D10_9A65_C6F56352353C__INCLUDED_)
-#define AFX_PCBANG_H__DD46F01A_2342_4D10_9A65_C6F56352353C__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #ifdef __WORLDSERVER
 #include "User.h"
+#include <ranges>
 #endif // __WORLDSERVER
 
 class CPCBangInfo
@@ -67,8 +59,7 @@ public:
 	float	GetExpInfo( DWORD dwHour );
 	float	GetExpFactor( CUser* pUser );				// 증가될 경험치를 얻어온다.
 	
-	template <typename T>
-	float GetPartyExpFactor(T range) {
+	float GetPartyExpFactor(std::ranges::range auto range) {
 		float fExpFactor = 0.0f;
 		int nMemberSize = 0;
 		for (CUser * pUser : range) {
@@ -99,6 +90,3 @@ private:
 	BOOL	m_bApply;
 };
 #endif // __WORLDSERVER
-
-
-#endif // !defined(AFX_PCBANG_H__DD46F01A_2342_4D10_9A65_C6F56352353C__INCLUDED_)

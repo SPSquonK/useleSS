@@ -4,6 +4,8 @@
 #include "party.h"
 #include "GroupUtils.h"
 
+#include "boost/container/small_vector.hpp"
+
 #undef min
 #undef max
 
@@ -34,7 +36,7 @@ namespace {
 		struct ParterParty {
 			unsigned long m_id;
 			CParty * m_party;
-			std::vector<DamageDealer> m_players;
+			boost::container::small_vector<DamageDealer, 8> m_players;
 
 			ParterParty(CParty & party, const CMover & pDead)
 				: m_id(party.m_uPartyId), m_party(&party) {
@@ -80,7 +82,7 @@ namespace {
 		};
 
 		struct Accumulator {
-			std::vector<DamageDealer> m_players;
+			boost::container::small_vector<DamageDealer, 16> m_players;
 			unsigned int m_totalDamage = 0;
 
 			Accumulator(const CMover & pDead, const SET_OBJID & enemies) {
@@ -100,8 +102,8 @@ namespace {
 				return m_totalDamage == 0 || m_players.size() == 0;
 			}
 
-			std::vector<ParterParty> IsolateParties(const CMover & pDead) {
-				std::vector<ParterParty> result;
+			[[nodiscard]] auto IsolateParties(const CMover & pDead) {
+				boost::container::small_vector<ParterParty, 4> result;
 
 				for (auto it = m_players.begin(); it != m_players.end();) {
 					const auto & player = *it;
