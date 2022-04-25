@@ -85,16 +85,16 @@ namespace {
 			boost::container::small_vector<DamageDealer, 16> m_players;
 			unsigned int m_totalDamage = 0;
 
-			Accumulator(const CMover & pDead, const SET_OBJID & enemies) {
-				for (const auto & [objid, nHitInfo] : enemies) {
+			Accumulator(const CMover & pDead, const MoverEnnemies & enemies) {
+				for (const auto & [objid, nHit] : enemies) {
 					CMover * const pEnemy = prj.GetMover(objid);
-					m_totalDamage += nHitInfo.nHit;
+					m_totalDamage += nHit;
 
 					if (!IsValidObj(pEnemy)) continue;
 					if (!pEnemy->IsPlayer()) continue;
 					if (!pDead.IsValidArea(pEnemy, EXP_RANGE)) continue;
 
-					m_players.emplace_back(objid, static_cast<CUser *>(pEnemy), nHitInfo.nHit);
+					m_players.emplace_back(objid, static_cast<CUser *>(pEnemy), nHit);
 				}
 			}
 

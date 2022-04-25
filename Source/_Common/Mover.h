@@ -261,14 +261,7 @@ typedef	struct tagCORR_ACTION
 	BOOL		fHalf;
 } CORR_ACTION, *PCORR_ACTION;
 
-/// 피격 정보 구조체 
-struct HIT_INFO
-{
-	int		nHit;		/// 입은 데미지 
-	DWORD	dwTick;		/// 공격당한 시각 
-};
-
-typedef map<OBJID, HIT_INFO> SET_OBJID;		
+using MoverEnnemies = std::map<OBJID, unsigned int>;
 
 /// 공격의 타입 
 enum HITTYPE
@@ -782,7 +775,7 @@ public:
 #endif //__EVE_BALLOON
 
 private:
-	SET_OBJID		m_idEnemies;				/// 적에게 공격받은 정보 
+	MoverEnnemies m_idEnemies;				/// 적에게 공격받은 정보 
 
 	OBJACT			m_oaCmd;					/// 오브젝트 명령  
 	int				m_nCParam[3];				/// 범용 명령 파라메터
@@ -1175,8 +1168,7 @@ public:
 	void			ClearActParam(); 
 	int				GetEnemyCount();
 	OBJID			GetMaxEnemyHitID();
-	DWORD			AddEnemy( OBJID objid, int nHit );
-	int				GetEnemyHit( OBJID objid, DWORD* pdwTick = NULL );
+	void AddEnemy(OBJID objid, int nHit);
 	void			RemoveEnemy( OBJID objid  );
 	void			RemoveAllEnemies();
 	BOOL			IsAttackAble( CObj *pObj );

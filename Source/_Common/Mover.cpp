@@ -12,6 +12,7 @@
 #include "authorization.h"
 #include "CreateObj.h"
 #include "eveschool.h"
+#include <ranges>
 
 extern	CGuildCombat	g_GuildCombatMng;
 #include "..\_aiinterface\aipet.h"
@@ -4642,126 +4643,51 @@ int CMover::GetEnemyCount()
 	return nCount;
 }
 
-OBJID CMover::GetMaxEnemyHitID()
-{
-	OBJID objId = NULL_ID;
-	int	nHitPoint = 0;
+OBJID CMover::GetMaxEnemyHitID() {
+	auto it = std::max_element(m_idEnemies.begin(), m_idEnemies.end(),
+		[](const auto & lhs, const auto & rhs) {
+			return lhs.second > rhs.second;
+		});
 
-	for( SET_OBJID::iterator i = m_idEnemies.begin(); i != m_idEnemies.end(); ++i )
-	{
-		HIT_INFO info = (*i).second;
-		if( nHitPoint < info.nHit )
-		{
-			objId = (*i).first;
-			nHitPoint = info.nHit;
-		}
-	}
-	return objId;
-}
-
-int CMover::GetEnemyHit( OBJID objid, DWORD* pdwTick )
-{
-	int nHit = 0;
-	DWORD dwTick = 0;
-
-	SET_OBJID::iterator i	= m_idEnemies.find( objid );
-	if( i != m_idEnemies.end() )
-	{
-		HIT_INFO info = (*i).second;
-		nHit = info.nHit;
-		dwTick = info.dwTick;
-	}
-
-	if( pdwTick )
-		*pdwTick = dwTick;
-
-	return nHit;
+	if (it == m_idEnemies.end()) return NULL_ID;
+	return it->first;
 }
 
 // 마지막으로 때린 시각을 리턴한다.
-DWORD CMover::AddEnemy( OBJID objid, int nHit )
-{
-	DWORD dwLast = 0;
-	SET_OBJID::iterator i	= m_idEnemies.find( objid );
-	if( i == m_idEnemies.end() )
-	{
-		HIT_INFO info;
-		info.nHit = nHit;
-		info.dwTick = GetTickCount();
-		m_idEnemies.insert( make_pair(objid, info) );
-	}
-	else
-	{
-		HIT_INFO& info = (*i).second;
-		dwLast = info.dwTick;
-		info.dwTick = GetTickCount();
-		info.nHit += nHit;
-	}
-	return dwLast;
+void CMover::AddEnemy(const OBJID objid, const int nHit) {
+	m_idEnemies[objid] += nHit;
 }
 
-void CMover::RemoveEnemy( OBJID objid )
-{
-	SET_OBJID::iterator i	= m_idEnemies.find( objid );
-	if( i != m_idEnemies.end() )
-	{
-		if( m_pActMover->GetObjHit() == objid )
-			m_pActMover->SetObjHit( NULL_ID );
-	#ifdef __WORLDSERVER
-		PostAIMsg( AIMSG_DSTDIE, objid );
-	#endif
+void CMover::RemoveEnemy(const OBJID objid) {
+	auto i = m_idEnemies.find(objid);
+	if (i == m_idEnemies.end()) return;
 
-		if( GetDestId() == objid )
-		{
-			ClearDestObj();
-			SendActMsg( OBJMSG_STAND );
-		}
+	if (m_pActMover->GetObjHit() == objid)
+		m_pActMover->SetObjHit(NULL_ID);
 
-	#ifdef __WORLDSERVER
-	#endif // __WORLDSERVER
+#ifdef __WORLDSERVER
+	PostAIMsg(AIMSG_DSTDIE, objid);
+#endif
 
-		m_idEnemies.erase( i );
+	if (GetDestId() == objid) {
+		ClearDestObj();
+		SendActMsg(OBJMSG_STAND);
 	}
+
+	m_idEnemies.erase(i);
 }
 
-void CMover::RemoveAllEnemies()
-{
-	vector<OBJID>	adwEnemy;
-	for( SET_OBJID::iterator it = m_idEnemies.begin(); it != m_idEnemies.end(); ++it )
-		adwEnemy.push_back( it->first );
-	m_idEnemies.clear();
-	
-	CMover* pEnemy;
-	while( adwEnemy.size() > 0 )
-	{
-		OBJID objid		= adwEnemy.back();
-		pEnemy	= prj.GetMover( objid );
-		if( IsValidObj( (CObj*)pEnemy ) )
-			pEnemy->RemoveEnemy( GetId() );
-		adwEnemy.pop_back();
-	}
-	adwEnemy.clear();
-/*
-	int nSizeofEnemies	= 0;
-	OBJID	idEnemies[1024];
+void CMover::RemoveAllEnemies() {
+	auto range = m_idEnemies
+		| std::views::keys
+		| std::views::transform([](const OBJID objid) { return prj.GetMover(objid); })
+		| std::views::filter(IsValidObj);
 
-	for( SET_OBJID::iterator i = m_idEnemies.begin(); i != m_idEnemies.end(); ++i )
-	{
-		idEnemies[nSizeofEnemies++]	= (*i).first;
-		if( nSizeofEnemies >= 1024 )
-			break;
+	for (CMover * const pEnemy : range) {
+		pEnemy->RemoveEnemy(GetId());
 	}
 
 	m_idEnemies.clear();
-
-	CMover* pEnemy;
-	for( int j = 0; j < nSizeofEnemies; j++ )
-	{
-		pEnemy	= prj.GetMover( idEnemies[j] );
-		if( IsValidObj( (CObj*)pEnemy ) )
-			pEnemy->RemoveEnemy( GetId() );
-	}
-*/
 }
 
 //

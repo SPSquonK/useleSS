@@ -1529,7 +1529,6 @@ void CMover::OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nRefl
 	}
 
 	BOOL bAddEnemy = TRUE;
-	DWORD dwLast = 0;
 
 	HITTYPE type = pAttacker->GetHitType( pDefender, bTarget, nReflect );
 	if( type == HITTYPE_PVP || type == HITTYPE_WAR || type == HITTYPE_SCHOOL
@@ -1541,8 +1540,8 @@ void CMover::OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nRefl
 	
 	if( bAddEnemy )		// TODO_raiders: HITTYPE_PK와 HITTYPE_GENERIC인 경우로 수정해야 함  
 	{
-		dwLast = pDefender->AddEnemy( pAttacker->GetId(), nDamage );
-		pAttacker->AddEnemy( pDefender->GetId(), 0 );
+		pDefender->AddEnemy(pAttacker->GetId(), nDamage);
+		pAttacker->AddEnemy(pDefender->GetId(), 0);
 	}
 
 	switch( type )
