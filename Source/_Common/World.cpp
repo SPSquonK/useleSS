@@ -1585,8 +1585,8 @@ void CWorld::_replace( void )
 			CWorld* pWorld = g_WorldMng.GetWorld( dwWorldID );
 			if( pWorld && pWorld->VecInWorld( vPos ) )	
 			{
-				pUser->RemoveItFromView( TRUE );		// pc
-				pUser->RemoveItFromView2( TRUE );		// npc
+				pUser->RemoveItFromPcView();
+				pUser->RemoveItFromNpcView();
 				if( pUser->HasPet() )
 					pUser->RemovePet();
 				if( dwWorldID == WI_WORLD_MADRIGAL && pUser->GetWorld() &&

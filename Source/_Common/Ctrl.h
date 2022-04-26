@@ -76,7 +76,7 @@ public:
 #ifdef __WORLDSERVER
 	void			PCSetAt( OBJID objid, CCtrl* pCtrl );	
 	BOOL			PCRemoveKey( OBJID objid );	
-	void			RemoveItFromView( BOOL bRemoveall = FALSE );
+	void RemoveItFromPcView();
 	BOOL			IsNearPC( OBJID objid );
 	BOOL			IsNearPC( CUser* pUser );
 	LONG			GetRespawn()			{ return m_lRespawn; }

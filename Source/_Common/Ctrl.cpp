@@ -60,7 +60,7 @@ CCtrl::~CCtrl()
 	if( IsVirtual() )
 		return;
 
-	RemoveItFromView();
+	RemoveItFromPcView();
 #endif	// __WORLDSERVER
 
 	RemoveItFromGlobalId();
@@ -160,38 +160,24 @@ BOOL CCtrl::ProcessDeleteRespawn()
 	return FALSE;
 }
 
-void CCtrl::RemoveItFromView( BOOL bRemoveall )
-{
-	if( !GetWorld() )	
-		return;
+void CCtrl::RemoveItFromPcView() {
+	if (!GetWorld()) return;
 
-	auto it = m_2pc.begin();
-
-	CUser* pUser;
-	if( GetType() == OT_MOVER && ( (CMover*)this )->IsPlayer() )
-	{
-		while( it != m_2pc.end() )
-		{
-			pUser = it->second;
-			if( pUser != this && pUser->PCRemoveKey( GetId() ) )
-				pUser->AddRemoveObj( GetId() );
-			++it;
+	if (GetType() == OT_MOVER && ((CMover*) this)->IsPlayer()) {
+		for (CUser * const pUser : m_2pc | std::views::values) {
+			if (pUser != this && pUser->PCRemoveKey(GetId())) {
+				pUser->AddRemoveObj(GetId());
+			}
+		}
+	} else {
+		for (CUser * const pUser : m_2pc | std::views::values) {
+			if (pUser->NPCRemoveKey(GetId())) {
+				pUser->AddRemoveObj(GetId());
+			}
 		}
 	}
-	else
-	{
-		while( it != m_2pc.end() )
-		{
-			pUser = it->second;
-			if( pUser->NPCRemoveKey( GetId() ) )
-				pUser->AddRemoveObj( GetId() );
-			++it;
-		}
 
-	}
-
-	if (bRemoveall)
-		m_2pc.clear();
+	m_2pc.clear();
 }
 
 BOOL CCtrl::IsNearPC( CUser* pUser )

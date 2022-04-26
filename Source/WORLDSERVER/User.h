@@ -185,7 +185,7 @@ public:
 #endif	// __JEFF_9_20
 	void			NPCSetAt( OBJID objid, CCtrl* pCtrl )	{	m_2npc[objid] = pCtrl;	}
 	BOOL			NPCRemoveKey( OBJID objid )		{	return m_2npc.erase( objid ) > 0; }
-	void			RemoveItFromView2( BOOL bRemoveall = FALSE );
+	void RemoveItFromNpcView();
 #ifdef __MAP_SECURITY
 	void			Open( DWORD dwWorldId );
 #else // __MAP_SECURITY

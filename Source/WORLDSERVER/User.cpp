@@ -97,9 +97,8 @@ CUser::CUser( DPID dpidCache, DPID dpidUser )
 	Init( dpidCache, dpidUser );
 }
 
-CUser::~CUser()
-{
-	RemoveItFromView2();	// npc
+CUser::~CUser() {
+	RemoveItFromNpcView();
 }
 
 BOOL CUser::IsValid()
@@ -244,15 +243,12 @@ void CUser::ExpUpSetting( void )
 	}
 }
 
-void CUser::RemoveItFromView2( BOOL bRemoveall )
-{
-	for(auto it = m_2npc.begin(); it != m_2npc.end(); ++it )
-	{
-		CCtrl * pCtrl = it->second;
-		pCtrl->PCRemoveKey( GetId() );
+void CUser::RemoveItFromNpcView() {
+	for(CCtrl * const pCtrl : m_2npc | std::views::values) {
+		pCtrl->PCRemoveKey(GetId());
 	}
-	if( bRemoveall )
-		m_2npc.clear();
+
+	m_2npc.clear();
 }
 
 #ifdef __MAP_SECURITY
