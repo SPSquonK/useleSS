@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ranges>
 #include "defineText.h"
 #include "AppDefine.h"
 #include "WndGuildTabMember.h"
@@ -750,10 +751,8 @@ void CWndGuildTabMember::UpdateData()
 	if( pGuild )
 	{
 		m_nMax = 0;
-		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-		{
-			pMember		= i->second;
+
+		for(const CGuildMember * const pMember : pGuild->m_mapPMember | std::views::values) {
 
 			m_aList[ m_nMax ].idPlayer       = pMember->m_idPlayer;
 			m_aList[ m_nMax ].nMemberLv      = pMember->m_nMemberLv;			// ȣĪ

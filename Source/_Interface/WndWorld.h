@@ -135,7 +135,7 @@ class CAdvMgr
 {
 	int						m_nIndex;
 	CWndBase*				m_pParentWnd;
-	vector<BUTTON_INFO>		m_vecButton;
+	std::vector<BUTTON_INFO>		m_vecButton;
 	
 public:
 	CAdvMgr();
@@ -294,14 +294,14 @@ public:
 	CDWordArray		m_aFlyTarget;
 
 	DWORD	m_dwNextSkill;		// 치고있는중에 스킬치기 예약.
-	vector <BUFFICONRECT_INFO> m_rcCheck;
+	std::vector <BUFFICONRECT_INFO> m_rcCheck;
 
 	CTexture		m_TexGuildWinner;
 	CTexture		m_TexGuildBest;
-	multimap< int, CString >	m_mmapGuildCombat_GuildPrecedence;
-	multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
-	vector  < __GUILDRATE >		m_vecGuildCombat_GuildStatus;
-	map< u_long, vector<__GCWARSTATE> >  m_mapGC_GuildStatus;	
+	std::multimap< int, CString >	m_mmapGuildCombat_GuildPrecedence;
+	std::multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
+	std::vector  < __GUILDRATE >		m_vecGuildCombat_GuildStatus;
+	std::map< u_long, std::vector<__GCWARSTATE> >  m_mapGC_GuildStatus;
 	CWndBase* m_pWndBuffStatus;
 
 public:
@@ -382,11 +382,11 @@ public:
 		int nOutSize;
 	};
 #ifdef __S_BUG_GC
-	vector< __GuildCombatJoin > m_vecGuildCombatJoin;
+	std::vector< __GuildCombatJoin > m_vecGuildCombatJoin;
 #else // __S_BUG_GC
-	map< u_long, __GuildCombatJoin > m_GuildCombatJoin;
+	std::map< u_long, __GuildCombatJoin > m_GuildCombatJoin;
 #endif // __S_BUG_GC
-	vector< __GuildCombatJoin > m_vGuildCombatSort;
+	std::vector< __GuildCombatJoin > m_vGuildCombatSort;
 
 	CWndButton m_wndMenu;
 	D3DXVECTOR3		m_vTelePos;
@@ -432,7 +432,7 @@ public:
 #else	// __BUFF_1107
 	CSkillInfluence             m_partySkillState;
 #endif	// __BUFF_1107
-	vector< multimap<DWORD, BUFFSKILL> >	m_pBuffTexture;
+	std::vector< std::multimap<DWORD, BUFFSKILL> >	m_pBuffTexture;
 
 #ifdef __BUFF_1107
 	DWORD	GetSystemPetTextureKey( IBuff* pBuff );
@@ -459,7 +459,7 @@ public:
 	BOOL m_bGuildCombat1to1Wait;
 
 	char m_szSecretRoomStr[256];
-	vector<__SRGUILDINFO> m_vecGuildList;
+	std::vector<__SRGUILDINFO> m_vecGuildList;
 	__KILLCOUNTCIPHERS m_stKillCountCiphers[MAX_KILLCOUNT_CIPHERS];
 	BOOL m_bFlashBackground;
 

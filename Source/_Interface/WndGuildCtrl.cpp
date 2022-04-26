@@ -94,7 +94,7 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 		TEXTUREVERTEX2* pVertex = new TEXTUREVERTEX2[ 6 * 2 * nMax ];
 		TEXTUREVERTEX2* pVertices = pVertex;
 
-		map<u_long, CGuildMember*>::iterator iter = pGuild->m_mapPMember.begin();
+		auto iter = pGuild->m_mapPMember.begin();
 
 		m_nDrawCount = 0;
 		int i = NULL;

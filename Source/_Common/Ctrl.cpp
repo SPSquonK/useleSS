@@ -32,7 +32,7 @@
 
 #include "commonctrl.h"
 
-extern map< string, DWORD > g_MapStrToObjId;
+extern std::map< std::string, DWORD > g_MapStrToObjId;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -107,7 +107,7 @@ void CCtrl::AddItToGlobalId()
 
 	if( OT_MOVER == GetType() && ( (CMover*)this )->IsPlayer() )
 	{
-		bool bResult = prj.m_idPlayerToUserPtr.insert( make_pair( ( (CPlayerCls *)this )->m_idPlayer, (CPlayerCls *)this ) ).second;
+		bool bResult = prj.m_idPlayerToUserPtr.emplace(((CPlayerCls *)this)->m_idPlayer, (CPlayerCls *)this).second;
 		if( bResult == false )
 			Error("AddItToGlobalId id:%d duplicated.", ((CPlayerCls *)this)->m_idPlayer );
 	}

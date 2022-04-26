@@ -21,7 +21,7 @@ class CMonsterInfoPack : public CTexturePack
 {
 public:
 	int m_nMap;
-	vector<__MONSTER_INFO>	m_vecMonsterInfo;
+	std::vector<__MONSTER_INFO>	m_vecMonsterInfo;
 public:
 	CMonsterInfoPack();
 	~CMonsterInfoPack();
@@ -38,7 +38,7 @@ typedef struct __RAINBOW_NPC
 class CRainbowNPCPack : public CTexturePack
 {
 public:
-	vector<__RAINBOW_NPC>	m_vecRainbowNPC;
+	std::vector<__RAINBOW_NPC>	m_vecRainbowNPC;
 public:
 	BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName );
 };
@@ -88,8 +88,8 @@ public:
 	};
 	OBJID	m_idTeleporter;
 	BOOL	m_bTeleportMode;
-	vector< WMapIcon > m_cTelPosRects;
-	vector< D3DXVECTOR3 > m_cWorldPos;
+	std::vector< WMapIcon > m_cTelPosRects;
+	std::vector< D3DXVECTOR3 > m_cWorldPos;
 	CTexture* m_pTelPosTexture;
 
 	void ProcessingTeleporter( CMover* pFocusMover );			// 월드맵을 열고, 좌표에 대한 버튼 생성/업데이트

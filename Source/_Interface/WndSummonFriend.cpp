@@ -115,34 +115,10 @@ void CWndSummonFriend::OnInitialUpdate()
 	m_dwData	= 0;
 
 	CWndComboBox* pWndCombo		= (CWndComboBox*)GetDlgItem( WIDC_COMBOBOX1 );
-#ifdef __RT_1025
-	for( map<u_long, Friend>::iterator i = g_WndMng.m_RTMessenger.begin(); i != g_WndMng.m_RTMessenger.end(); ++i )
-	{
-		u_long idPlayer		= i->first;
-		Friend* pFriend		= &i->second;
-		if( pFriend->dwState != FRS_OFFLINE && !pFriend->bBlock	)
+
+	for (const auto & [idPlayer, pFriend] : g_WndMng.m_RTMessenger) {
+		if( pFriend.dwState != FRS_OFFLINE && !pFriend.bBlock	)
 			pWndCombo->AddString( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
-#else	//__RT_1025
-	C2FriendPtr::iterator iter = g_WndMng.m_Messenger.m_aFriend.begin();
-	for( ; iter != g_WndMng.m_Messenger.m_aFriend.end() ; ++iter )
-	{
-		LPFRIEND lpFriend = (LPFRIEND)iter->second;
-		if( lpFriend )
-		{
-			u_long idPlayer		= lpFriend->dwUserId;
-			DWORD dwState	= lpFriend->dwState;
-			switch( dwState )
-			{
-				case FRS_BLOCK:
-				case FRS_OFFLINE:
-				case FRS_OFFLINEBLOCK:
-					break;
-				default:
-					pWndCombo->AddString( lpFriend->szName );
-					break;
-			}
-		}
-#endif	// __RT_1025
 	}
 	pWndCombo->SetFocus();
 

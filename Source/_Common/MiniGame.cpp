@@ -648,7 +648,7 @@ BOOL CMiniGame::Load_Alphabet()
 	if( !s.Load( "MiniGame_Alphabet.txt.txt" ) )
 		return FALSE;
 
-	map< int, CString > mapQuestion;
+	std::map< int, CString > mapQuestion;
 	s.GetToken();
 	while( s.tok != FINISHED )
 	{
@@ -657,7 +657,7 @@ BOOL CMiniGame::Load_Alphabet()
 		CString strQuestion;
 		strQuestion = s.Token;
 
-		mapQuestion.insert( make_pair( nID, strQuestion ) );
+		mapQuestion.emplace(nID, strQuestion);
 		s.GetToken();
 	}
 
@@ -683,7 +683,7 @@ BOOL CMiniGame::Load_Alphabet()
 			Alpabet.strWord.MakeUpper();
 			Alpabet.nPublic = s.GetNumber();
 			s.GetLastFull();
-			map< int, CString >::iterator it = mapQuestion.find( atoi( s.Token.Right(4) ) );
+			const auto it = mapQuestion.find( atoi( s.Token.Right(4) ) );
 			if( it != mapQuestion.end() )
 				Alpabet.strQuestion = it->second;
 			else
@@ -743,8 +743,7 @@ BOOL CMiniGame::Load_KawiBawiBo()
 
 			KawiBawiBo.nItemCount = s.GetNumber();
 
-			m_mapKawiBawiBo.insert( make_pair( nWinCount, KawiBawiBo) );
-//			m_mapKawiBawiBo.insert( map<int, __KAWIBAWIBO>::value_type( nWinCount, KawiBawiBo ) );
+			m_mapKawiBawiBo.emplace(nWinCount, KawiBawiBo);
 
 			if( nMaxWin < nWinCount )
 				nMaxWin = nWinCount;
@@ -784,7 +783,7 @@ BOOL CMiniGame::Load_FiveSystem()
 			FiveSystem.dwMin = s.GetNumber();
 			FiveSystem.dwMax = s.GetNumber();
 
-			m_mapFiveSystem.insert( map<int, __FIVESYSTEM>::value_type( nCount, FiveSystem ) );
+			m_mapFiveSystem.emplace(nCount, FiveSystem);
 		}
 		else if( s.Token == _T( "MULTIPLE" ) )
 		{

@@ -39,7 +39,7 @@ PlayerData*	CPlayerDataCenter::GetPlayerData( u_long idPlayer )
 #ifdef __CLIENT
 		pPlayerData	= new PlayerData;
 		pPlayerData->data.nLevel		= 1;
-		bool b	= m_mapPlayerData.insert( map<u_long, PlayerData*>::value_type( idPlayer, pPlayerData ) ).second;
+		bool b	= m_mapPlayerData.emplace(idPlayer, pPlayerData).second;
 		ASSERT( b );
 		if( bQuery )
 			g_DPlay.SendQueryPlayerData( idPlayer );
@@ -96,11 +96,11 @@ PlayerData*	CPlayerDataCenter::AddPlayerData( u_long idPlayer, const char* pszPl
 	PlayerData* pPlayerData	= GetPlayerData( idPlayer );
 	if( pPlayerData )
 		return pPlayerData;
-	bool b	= m_mapPlayerStringToId.insert( map<string, u_long>::value_type( pszPlayer, idPlayer ) ).second;
+	bool b	= m_mapPlayerStringToId.emplace(pszPlayer, idPlayer).second;
 	ASSERT( b );
 	pPlayerData		= new PlayerData;
 	lstrcpy( pPlayerData->szPlayer, pszPlayer );
-	b	= m_mapPlayerData.insert( map<u_long, PlayerData*>::value_type( idPlayer, pPlayerData ) ).second;
+	b	= m_mapPlayerData.emplace(idPlayer, pPlayerData).second;
 	ASSERT( b );	
 	return pPlayerData;
 }

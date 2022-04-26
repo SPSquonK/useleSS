@@ -728,8 +728,7 @@ void CGuildCombat1to1Mng::SetGuildCombat1to1Guild(u_long nGuildId)
 
 void CGuildCombat1to1Mng::SetGuildCombat1to1State(int nState, u_long nPlayer, int nMyGuildPoint, int nVsGuildPoint)
 {
-	vector < __GC1TO1_PLAYER_INFO >::iterator it = m_vecGuildCombat1to1_Players.begin();
-	for( ; it != m_vecGuildCombat1to1_Players.end(); ++it )
+	for(auto it = m_vecGuildCombat1to1_Players.begin(); it != m_vecGuildCombat1to1_Players.end(); ++it )
 	{
 		__GC1TO1_PLAYER_INFO &Playerinfo = *it;
 		if( Playerinfo.m_uidPlayer ==  nPlayer )

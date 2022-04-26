@@ -30,9 +30,9 @@ class CWndHousing : public CWndNeuz
 {
 private:
 	// 서버에서 주는 정보
-	vector<HOUSINGINFO>		m_vecItem;
+	std::vector<HOUSINGINFO>		m_vecItem;
 	// 실제 창에서 쓰일 정보들
-	vector<HOUSING_ITEM>	m_mapItem;
+	std::vector<HOUSING_ITEM>	m_mapItem;
 	// 소팅 타입
 	int						m_nSortType;
 	BOOL					m_bIsGreater;
@@ -117,7 +117,7 @@ protected:
 	void AutoAddingComboItems( );
 
 protected:
-	vector<HOUSING_ITEM>	m_cWndItems;
+	std::vector<HOUSING_ITEM>	m_cWndItems;
 
 	CWndButton	m_wndButton[ GH_MAX_VIEW_CAPACITY ];	
 

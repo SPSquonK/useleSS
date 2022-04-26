@@ -1894,7 +1894,7 @@ BOOL CWndRRMiniGameTyping::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 {
 	if(nID == WIDC_OK)
 	{
-		vector<string> vecStrValue;
+		std::vector<std::string> vecStrValue;
 
 		for(int i=0; i<3; i++)
 		{

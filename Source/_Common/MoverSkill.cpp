@@ -3925,9 +3925,9 @@ void CMover::ProcessVisPet()
 
 #endif	// __WORLDSERVER
 
-vector<BYTE> CMover::GetValidVisTable( CItemElem* pItemElem )
+std::vector<BYTE> CMover::GetValidVisTable( CItemElem* pItemElem )
 {
-	vector<BYTE> vecTemp;
+	std::vector<BYTE> vecTemp;
 	vecTemp.resize( pItemElem->GetPiercingSize(), UNDEFINED_NEEDVIS );
 
 	for( DWORD i=0; i<vecTemp.size(); i++ )
@@ -3941,7 +3941,7 @@ vector<BYTE> CMover::GetValidVisTable( CItemElem* pItemElem )
 	return vecTemp;
 }
 
-BOOL CMover::SetValidNeedVis( CItemElem* pItemElem, int nPos, vector<BYTE> & vecValid )
+BOOL CMover::SetValidNeedVis( CItemElem* pItemElem, int nPos, std::vector<BYTE> & vecValid )
 {
 	if( vecValid[nPos] != UNDEFINED_NEEDVIS )
 		return ( vecValid[nPos] == SUCCSESS_NEEDVIS );
@@ -3995,7 +3995,7 @@ BYTE CMover::IsSatisfyNeedVis( CItemElem* pItemElemVisPet, ItemProp* pItemPropVi
 		if( dwNeeds[0] == NULL_ID && dwNeeds[1] == NULL_ID )
 			return SUCCSESS_NEEDVIS;
 		
-		vector<BYTE> vecValidTable = GetValidVisTable( pItemElemVisPet );
+		std::vector<BYTE> vecValidTable = GetValidVisTable( pItemElemVisPet );
 		for( int i=0; i<pItemElemVisPet->GetPiercingSize(); i++ )	// 필요 비스가 충족되지 않은 경우는 능력치가 적용되지 않았으므로 능력치를 빼면 안된다.
 		{
 			DWORD dwVis = pItemElemVisPet->GetPiercingItem( i );

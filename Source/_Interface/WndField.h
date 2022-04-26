@@ -497,7 +497,7 @@ class CWndHonor : public CWndNeuz
 private:
 	int						m_nSelectedId;
 	int						m_nCount;
-	vector<EarnedTitle>		m_vecTitle;	
+	std::vector<EarnedTitle>		m_vecTitle;
 public:
 
 	CWndHonor();
@@ -1374,10 +1374,10 @@ public:
 class CWndGuildCombatSelection : public CWndNeuz
 {
 protected:	
-	multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 길드리스트...레벨소팅
+	std::multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 길드리스트...레벨소팅
 
-	vector<u_long>					m_vecGuildList   ;   // 길드 리스트
-	vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트..
+	std::vector<u_long>					m_vecGuildList   ;   // 길드 리스트
+	std::vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트..
 
 	u_long							m_uidDefender;
 	CTexture						m_TexDefender;
@@ -1577,7 +1577,7 @@ class CWndGuildCombatRanking : public CWndNeuz
 private: 
 	CWndScrollBar		m_wndScrollBar;
 	int					m_nMax;
-	multimap< int, GUILDNAME > m_multimapRanking;
+	std::multimap< int, GUILDNAME > m_multimapRanking;
 	int					m_nSelect;
 	
 public: 
@@ -1706,7 +1706,7 @@ public:
 class CWndGuildCombatRank_Person : public CWndNeuz 
 { 
 public: 
-	multimap< int, __GUILDCOMBAT_RANK_INFO > m_mTotalRanking;
+	std::multimap< int, __GUILDCOMBAT_RANK_INFO > m_mTotalRanking;
 			
 	CWndGuildCombatRank_Person(); 
 	virtual ~CWndGuildCombatRank_Person(); 
@@ -1768,8 +1768,8 @@ public:
 class CWndBuffStatus : public CWndNeuz 
 {
 public:
-	vector< multimap<DWORD, BUFFSKILL> > m_pBuffTexture;
-	list<BUFFICON_INFO> m_pBuffIconInfo;
+	std::vector< std::multimap<DWORD, BUFFSKILL> > m_pBuffTexture;
+	std::list<BUFFICON_INFO> m_pBuffIconInfo;
 
 	int m_BuffIconViewOpt;
 public:
@@ -2041,8 +2041,8 @@ public:
 class CWndDialogEvent : public CWndNeuz
 {
 public:
-	vector<int> m_nVecList;
-	vector<int> m_nDescList;
+	std::vector<int> m_nVecList;
+	std::vector<int> m_nDescList;
 
 	int m_nChoiceNum;
 	int m_nListCount;
@@ -2073,10 +2073,10 @@ public:
 class CWndHeavenTower : public CWndNeuz
 {
 public:
-	vector<int> m_nVecList;
-	vector<int> m_nDescList;
-	vector<int> m_nMsgList;
-	vector<int>	m_nCost;
+	std::vector<int> m_nVecList;
+	std::vector<int> m_nDescList;
+	std::vector<int> m_nMsgList;
+	std::vector<int>	m_nCost;
 
 	int m_nChoiceNum;
 	int m_nListCount;

@@ -108,7 +108,7 @@ enum ChangingTo
 BOOL LoadTextureSet( TextureSet* pSet )
 {
 	assert( pSet );
-	if( string::npos != pSet->_strFileName.find( '.' ) ) //".xxx"
+	if( std::string::npos != pSet->_strFileName.find( '.' ) ) //".xxx"
 	{
 		pSet->_pTexture = TexturePool::Get()->GetTexture( DIR_WEATHER, pSet->_strFileName );
 
@@ -246,7 +246,7 @@ BOOL CWorld::CheckInOutContinent( )
 	ENVIR_INFO* pInfo = GetInContinent( g_pPlayer->GetPos( ) );
 	if( !pInfo )	// 월드에 있음
 	{
-		if( string::npos == m_strCurContName.find( ".wld" ) )// 찾을수 없다! 이전에 대륙 
+		if( std::string::npos == m_strCurContName.find( ".wld" ) )// 찾을수 없다! 이전에 대륙 
 			MoveOutContinent( m_szFileName );	// 대륙 탈출!
 	
 		return TRUE;
@@ -306,7 +306,7 @@ void CWorld::MoveInContinent( const ENVIR_INFO& kInfo )
 	StartEV( m_kCurContinent  );
 }
 
-void CWorld::MoveOutContinent( const string& worldname )
+void CWorld::MoveOutContinent( const std::string& worldname )
 {
 	// 대륙 -> 월드 
 	ENVIR_INFO* pOldContInfo = GetContinentInfo( m_strCurContName );		//미리 받아놓고.
@@ -610,7 +610,7 @@ BOOL CWorld::HookRenderSky_Cloud( int numRender, ENVIR_INFO* pInfo, float& fAlph
 	return TRUE;
 }
 
-ENVIR_INFO* CWorld::GetContinentInfo( const string& name )
+ENVIR_INFO* CWorld::GetContinentInfo( const std::string& name )
 {
 	for( ENVIR_INFO_Iter iter = m_cContinents.begin(); iter != m_cContinents.end(); ++iter )
 	{

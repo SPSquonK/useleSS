@@ -930,7 +930,7 @@ void CWorldMap::RenderTelPos( C2DRender *p2DRender )
 	CPoint mousePt = pWndWorld->GetMousePoint();
 
 	CPoint pt;
-	for( vector< WMapIcon >::iterator iter = m_cTelPosRects.begin(); iter != m_cTelPosRects.end(); ++iter )
+	for( auto iter = m_cTelPosRects.begin(); iter != m_cTelPosRects.end(); ++iter )
 	{
 		WMapIcon& kIcon = *iter;
 		CRect& rect = kIcon._rect;

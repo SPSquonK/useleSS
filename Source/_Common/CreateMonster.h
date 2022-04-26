@@ -5,14 +5,14 @@
 struct CREATE_MONSTER_PROP
 {
 	DWORD dwKeepTime;
-	map<DWORD, int> mapMonster;
+	std::map<DWORD, int> mapMonster;
 	
 	CREATE_MONSTER_PROP() :	dwKeepTime(0) {}
 		
 	DWORD GetRandomMonsterId()
 	{
 		int nRandom = xRandom( 100 );
-		map<DWORD, int>::iterator it=mapMonster.begin();
+		auto it=mapMonster.begin();
 		for( ; it!=mapMonster.end(); it++ )
 		{
 			if( nRandom < it->second )
@@ -26,15 +26,13 @@ struct CREATE_MONSTER_PROP
 
 struct CREATE_MONSTER_INFO
 {
-	DWORD dwOwnerId;
-	DWORD dwEndTick;
-	char  chState;
-	
-	CREATE_MONSTER_INFO(): dwOwnerId(NULL_ID), dwEndTick(0), chState( 'N' ) {}
+	DWORD dwOwnerId = NULL_ID;
+	DWORD dwEndTick = 0;
+	char  chState = 'N';
 };
 
-typedef map<DWORD, CREATE_MONSTER_PROP*> MAPPROP;
-typedef map<DWORD, CREATE_MONSTER_INFO> MAPINFO;
+typedef std::map<DWORD, CREATE_MONSTER_PROP*> MAPPROP;
+typedef std::map<DWORD, CREATE_MONSTER_INFO> MAPINFO;
 
 class CCreateMonster
 {

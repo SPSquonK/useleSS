@@ -9,10 +9,10 @@
 class CWndSecretRoomSelection : public CWndNeuz
 {
 protected:	
-	multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 정렬된 길드원 리스트
+	std::multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 정렬된 길드원 리스트
 
-	vector<u_long>					m_vecGuildList   ;   // 길드원 리스트
-	vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트
+	std::vector<u_long>					m_vecGuildList   ;   // 길드원 리스트
+	std::vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트
 	
 public: 
 	void Reset();
@@ -193,7 +193,7 @@ public:
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
 
-	vector<u_long> m_vecGuildMemberId;
+	std::vector<u_long> m_vecGuildMemberId;
 	u_long m_FocusMemberid;
 	int m_MemberCount;
 	int m_nWndHeight;

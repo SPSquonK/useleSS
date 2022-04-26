@@ -20,7 +20,7 @@ private:
 	BOOL m_bOpen;
 };
 //-----------------------------------------------------------------------------
-typedef list< CTreeInformation* > TreeInformationList;
+typedef std::list< CTreeInformation* > TreeInformationList;
 
 class CTreeInformationManager // 트리의 정보를 리스트로 구성해 전역으로 관리하는 관리자 클래스
 {

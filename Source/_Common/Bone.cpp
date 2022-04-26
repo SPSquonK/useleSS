@@ -204,7 +204,7 @@ void	CBonesMng :: Init( void )
 
 void	CBonesMng :: Destroy( void )
 {
-	for( map<string, CBones*>::iterator i = m_mapBones.begin(); i != m_mapBones.end(); ++i )
+	for( auto i = m_mapBones.begin(); i != m_mapBones.end(); ++i )
 		safe_delete( i->second );
 	m_mapBones.clear();
 }
@@ -218,7 +218,7 @@ CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
 	strcpy( sFile, szFileName );
 	strlwr( sFile );
 
-	map<string, CBones*>::iterator i	= m_mapBones.find( sFile );
+	auto i	= m_mapBones.find( sFile );
 	if( i != m_mapBones.end() )
 		return i->second;
 	// 로딩된게 아니었다면.  실제로 데이타 읽음.
@@ -228,7 +228,7 @@ CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
 		safe_delete( pBones );
 		return NULL;
 	}
-	bool bResult	= m_mapBones.insert( map<string, CBones*>::value_type( sFile, pBones ) ).second;
+	bool bResult	= m_mapBones.emplace(sFile, pBones).second;
 	return pBones;
 }
 
@@ -258,7 +258,7 @@ void	CMotionMng :: Init( void )
 
 void	CMotionMng :: Destroy( void )
 {
-	for( map<string, CMotion*>::iterator i = m_mapMotions.begin(); i != m_mapMotions.end(); ++i )
+	for( auto i = m_mapMotions.begin(); i != m_mapMotions.end(); ++i )
 		safe_delete( i->second );
 	m_mapMotions.clear();
 }
@@ -272,7 +272,7 @@ CMotion *CMotionMng :: LoadMotion( LPCTSTR szFileName )
 	strcpy( sFile, szFileName );
 	strlwr( sFile );
 
-	map<string, CMotion*>::iterator i	= m_mapMotions.find( sFile );
+	const auto i	= m_mapMotions.find( sFile );
 	if( i != m_mapMotions.end() )
 		return i->second;
 
@@ -283,7 +283,7 @@ CMotion *CMotionMng :: LoadMotion( LPCTSTR szFileName )
 		safe_delete( pMotion );
 		return NULL;
 	}
-	bool bResult	= m_mapMotions.insert( map<string, CMotion*>::value_type( sFile, pMotion ) ).second;
+	bool bResult	= m_mapMotions.emplace(sFile, pMotion).second;
 	return pMotion;
 }
 

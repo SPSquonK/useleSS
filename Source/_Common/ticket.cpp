@@ -35,7 +35,7 @@ BOOL	CTicketProperty::LoadScript()
 		tp.vPos.x	= s.GetFloat();
 		tp.vPos.y	= s.GetFloat();
 		tp.vPos.z	= s.GetFloat();
-		bool b	= m_mapTicketProp.insert( map<DWORD, TicketProp>::value_type( dwItemId, tp ) ).second;
+		bool b	= m_mapTicketProp.emplace( dwItemId, tp ).second;
 		ASSERT( b );
 		dwItemId	= s.GetNumber();
 	}

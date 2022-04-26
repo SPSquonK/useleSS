@@ -3431,7 +3431,7 @@ BOOL TextCmd_BlockUser( CScanner & scanner )
 		g_WndMng.PutString( prj.GetText( TID_GAME_ERROR_MY_CHARACTER_CANT_BLOCKING ), NULL, prj.GetTextColor( TID_GAME_ERROR_MY_CHARACTER_CANT_BLOCKING ) );
 		return FALSE;
 	}
-	set< CString >::iterator BlockedUserIterator = prj.m_setBlockedUserID.find( strUserName );
+	const auto BlockedUserIterator = prj.m_setBlockedUserID.find( strUserName );
 	if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
 	{
 		// 이미 채팅 차단되어 있는 대상입니다.
@@ -3458,7 +3458,7 @@ BOOL TextCmd_CancelBlockedUser( CScanner & scanner )
 {
 	scanner.GetToken();
 	CString strUserName = scanner.token;
-	set< CString >::iterator BlockedUserIterator = prj.m_setBlockedUserID.find( strUserName );
+	const auto BlockedUserIterator = prj.m_setBlockedUserID.find( strUserName );
 	if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
 	{
 		prj.m_setBlockedUserID.erase( strUserName );

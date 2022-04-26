@@ -412,7 +412,7 @@ public:
 	void	SendGuildCombatCancel( void );
 	void	SendGCRequestStatusWindow( void );
 	void	SendGCSelectPlayerWindow( void );
-	void	SendGCSelectPlayer( vector<u_long> vecSelectPlayer, u_long uidDefender );
+	void	SendGCSelectPlayer(std::vector<u_long> vecSelectPlayer, u_long uidDefender );
 	void	SendGCSelectMap( int nMap );
 	void	SendGCJoin( void );
 	void	SendGCGetPenyaGuild( void );
@@ -468,7 +468,7 @@ public:
 	void	OnGC1to1WarResult( CAr & ar );
 	
 	void	SendGC1to1MemberLienUpOpenWnd();
-	void	SendGC1to1MemberLienUp( vector<u_long>& vecMemberId );
+	void	SendGC1to1MemberLienUp(std::vector<u_long>& vecMemberId );
 	void	OnGC1to1MemberLineUpOpenWnd( CAr & ar );
 
 	void	SendGC1to1TeleportToNPC();
@@ -908,12 +908,12 @@ public:
 #endif // __EVENTLUA_COUPON
 
 	void	SendQueryPlayerData( u_long idPlayer, int nVer = 0 );
-	void	SendQueryPlayerData( const vector<PDVer> & vecPlayer );
+	void	SendQueryPlayerData( const std::vector<PDVer> & vecPlayer );
 
 public:
 	void	SendSecretRoomTender( int nPenya );
 	void	SendSecretRoomTenderCancelReturn();
-	void	SendSecretRoomLineUpMember( vector<DWORD> vecLineUpMember );
+	void	SendSecretRoomLineUpMember(std::vector<DWORD> vecLineUpMember );
 	void	OnSecretRoomMngState( CAr & ar );
 	void	OnSecretRoomInfo( CAr & ar );
 	void	SendSecretRoomTenderOpenWnd();

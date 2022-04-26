@@ -56,12 +56,12 @@ CHousing* CHousing::GetInstance()
 	return & sHousing;
 }
 
-void CHousing::GetHousingList( vector<HOUSINGINFO> & vHousingList )
+void CHousing::GetHousingList(std::vector<HOUSINGINFO> & vHousingList )
 {
 	vHousingList.assign( m_vecHousingInfo.begin(), m_vecHousingInfo.end() );
 }
 
-void CHousing::GetVisitAllow( vector<DWORD> & vVisitAllow )
+void CHousing::GetVisitAllow(std::vector<DWORD> & vVisitAllow )
 {
 	vVisitAllow.assign( m_vecIdVisitAllow.begin(), m_vecIdVisitAllow.end() );
 }
@@ -806,7 +806,7 @@ BOOL	CDeployManager::ChangeObjMode(int nType)
 					m_nBlendFactor = 80;
 					for(int i = 0; i < m_nNumTex; ++i)
 					{
-						vector<LPDIRECT3DTEXTURE9>::iterator	iter = 	m_vecOriginal.begin();
+						auto	iter = 	m_vecOriginal.begin();
 						if(*iter && iter != m_vecOriginal.end())
 							((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0] = *iter;
 						iter++;
@@ -1084,7 +1084,7 @@ BOOL	CGuildDeployManager::ChangeObjMode(int nType)
 					m_nBlendFactor = 80;
 					for(int i = 0; i < m_nNumTex; ++i)
 					{
-						vector<LPDIRECT3DTEXTURE9>::iterator	iter = 	m_vecOriginal.begin();
+						auto	iter = 	m_vecOriginal.begin();
 						if(*iter && iter != m_vecOriginal.end())
 							((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0] = *iter;
 						iter++;

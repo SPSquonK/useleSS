@@ -26,8 +26,8 @@ extern CDPSrvr g_DPSrvr;
 //////////////////////////////////////////////////////////////////////
 CSecretRoomMng::CSecretRoomMng()
 {
-	m_mapSecretRoomContinent.insert( make_pair( CONT_EAST, new CSecretRoomContinent(CONT_EAST) ) );
-	m_mapSecretRoomContinent.insert( make_pair( CONT_WEST, new CSecretRoomContinent(CONT_WEST) ) );
+	m_mapSecretRoomContinent.emplace(CONT_EAST, new CSecretRoomContinent(CONT_EAST));
+	m_mapSecretRoomContinent.emplace(CONT_WEST, new CSecretRoomContinent(CONT_WEST));
 
 	m_nState = SRMNG_CLOSE;
 	m_dwRemainTime = 0;
@@ -39,8 +39,7 @@ CSecretRoomMng::CSecretRoomMng()
 
 CSecretRoomMng::~CSecretRoomMng()
 {
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
-	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
+	for(auto it = m_mapSecretRoomContinent.begin(); it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		if( it->second )
 			safe_delete( it->second );

@@ -1044,7 +1044,7 @@ void CWndHCandList::UpdateCandList(CPoint windowPos)
 		len += g_imeMgr.GetCandidate(i, buf+len, sizeof(buf)-len);
 		buf[len] = 0;
 
-		m_candidate.push_back( string(buf, buf+len) );
+		m_candidate.push_back( std::string(buf, buf+len) );
 
 		SIZE size;
 		

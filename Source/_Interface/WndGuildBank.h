@@ -32,7 +32,7 @@ public:
 	int m_nDrawCount;
 	
 	CWndScrollBar m_wndScrollBar;
-	vector < CString > m_vLogList;
+	std::vector < CString > m_vLogList;
 
 public:
 	CWndAddItemLog();
@@ -58,7 +58,7 @@ public:
 	int m_nDrawCount;
 	
 	CWndScrollBar m_wndScrollBar;
-	vector < CString > m_vLogList;
+	std::vector < CString > m_vLogList;
 
 public:
 	CWndRemoveItemLog();
@@ -84,7 +84,7 @@ public:
 	int m_nDrawCount;
 	
 	CWndScrollBar m_wndScrollBar;
-	vector < CString > m_vLogList;
+	std::vector < CString > m_vLogList;
 
 public:
 	CWndReceivePenyaLog();
@@ -110,7 +110,7 @@ public:
 	int m_nDrawCount;
 	
 	CWndScrollBar m_wndScrollBar;
-	vector < CString > m_vLogList;
+	std::vector < CString > m_vLogList;
 
 public:
 	CWndInvestPenyaLog();

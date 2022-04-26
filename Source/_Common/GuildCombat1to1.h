@@ -91,7 +91,7 @@ public:
 #endif // __DBSERVER
 
 #ifdef __CLIENT
-	vector < __GC1TO1_PLAYER_INFO > m_vecGuildCombat1to1_Players;		// 일대일 길드대전에 참여하는 길드원 리스트
+	std::vector < __GC1TO1_PLAYER_INFO > m_vecGuildCombat1to1_Players;		// 일대일 길드대전에 참여하는 길드원 리스트
 	u_long m_nGuildCombat1to1Guild;										// 일대일 길드대전시 상대 길드
 	int m_nMyGuildCount;
 	int m_nVsGuildCount;

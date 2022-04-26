@@ -256,10 +256,10 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 	// Set Friends List
 	m_vPlayerList.clear();
 	__MESSENGER_PLAYER stPlayer;
-	vector<DWORD> vecTemp;
+	std::vector<DWORD> vecTemp;
 	CHousing::GetInstance()->GetVisitAllow( vecTemp );
-#ifdef __RT_1025
-	for( map<u_long, Friend>::iterator i	= g_WndMng.m_RTMessenger.begin(); i != g_WndMng.m_RTMessenger.end(); ++i )
+
+	for( auto i	= g_WndMng.m_RTMessenger.begin(); i != g_WndMng.m_RTMessenger.end(); ++i )
 	{
 		u_long idPlayer	= i->first;
 		Friend* pFriend		= &i->second;
@@ -269,28 +269,15 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 		u_long uLogin	= pPlayerData->data.uLogin;
 		LPCSTR lpszPlayer	= pPlayerData->szPlayer;
 		DWORD dwState	= pFriend->dwState;
-#else	// __RT_1025
-	C2FriendPtr::iterator iter = g_WndMng.m_Messenger.m_aFriend.begin();
-	for( ; iter != g_WndMng.m_Messenger.m_aFriend.end(); ++iter )
-	{
-		LPFRIEND lpFriend = (LPFRIEND)iter->second;
-		u_long idPlayer	= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-		int nJob	= lpFriend->nJob;
-		int nLevel	= 0;
-		u_long uLogin	= lpFriend->m_uIdofMulti;
-		LPCSTR lpszPlayer	= lpFriend->szName;
-#endif	// __RT_1025
+
 		stPlayer.m_dwPlayerId	= idPlayer;
 		stPlayer.m_dwStatus		= dwState;
 		stPlayer.m_nJob		= nJob;
 		stPlayer.m_nLevel	= nLevel;
-#ifdef __RT_1025
 		stPlayer.m_bBlock	= pFriend->bBlock;
-#endif	// __RT_1025
 		stPlayer.m_bVisitAllowed = FALSE;
-		vector<DWORD>::iterator iterV = vecTemp.begin();
-		for( ; iterV != vecTemp.end(); ++iterV)
+		
+		for(auto iterV = vecTemp.begin(); iterV != vecTemp.end(); ++iterV)
 		{
 			if(idPlayer == *iterV)
 				stPlayer.m_bVisitAllowed = TRUE;
@@ -355,7 +342,7 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 	TEXTUREVERTEX2* pVertex = new TEXTUREVERTEX2[ 6 * 4 * nMax ];
 	TEXTUREVERTEX2* pVertices = pVertex;
 	
-	vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+	auto iter = m_vPlayerList.begin();
 	
 	for(int i=0; iter<m_vPlayerList.end(); i++, iter++)
 	{
@@ -485,7 +472,7 @@ void CWndFriendCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 		rect.SetRect( pt.x, pt.y, pt.x + 24, pt.y + m_nFontHeight );
 		if( rect.PtInRect( point ) )
 		{
-			vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+			auto iter = m_vPlayerList.begin();
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
 			__MESSENGER_PLAYER stPlayer	= *(iter);
@@ -555,38 +542,26 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 	}	
 }
 
-#ifdef __RT_1025
 void	CWndFriendCtrlEx::GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend )
-#else	// __RT_1025
-void CWndFriendCtrlEx::GetSelectFriend( int SelectCount, LPFRIEND* lppFriend )
-#endif	// __RT_1025
 {
 	*ppFriend	= NULL;
-	vector < __MESSENGER_PLAYER >::iterator iter	= m_vPlayerList.begin();
+	auto iter	= m_vPlayerList.begin();
 	iter	+= SelectCount;
 	__MESSENGER_PLAYER stPlayer	= *(iter);
-#ifdef __RT_1025
 	idPlayer	= stPlayer.m_dwPlayerId;
 	*ppFriend	= g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
-#else	// __RT_1025
-	*lppFriend = g_WndMng.m_Messenger.GetFriend( stPlayer.m_dwPlayerId );
-#endif	// __RT_1025
 }
 
 u_long CWndFriendCtrlEx::GetSelectId( int SelectCount )
 {
-	vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+	auto iter = m_vPlayerList.begin();
 	iter += SelectCount;
 	__MESSENGER_PLAYER stPlayer = *(iter);
 	
 	return stPlayer.m_dwPlayerId;
 }
 
-#ifdef __RT_1025
 int	CWndFriendCtrlEx::GetSelect( CPoint point, u_long &idPlayer, Friend** ppFriend )
-#else	// __RT_1025
-int CWndFriendCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
-#endif	// __RT_1025
 {
 	CPoint pt( 3, 3 );
 	CRect rect;
@@ -598,17 +573,13 @@ int CWndFriendCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
 		rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - m_wndScrollBar.GetClientRect().Width(), pt.y + m_nFontHeight );
 		if( rect.PtInRect( point ) )
 		{
-			vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+			auto iter = m_vPlayerList.begin();
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
 			rtn_val += nPos;
 			__MESSENGER_PLAYER stPlayer	= *(iter);
-#ifdef __RT_1025
 			idPlayer = stPlayer.m_dwPlayerId;
 			*ppFriend = g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
-#else	// __RT_1025
-			*lppFriend = g_WndMng.m_Messenger.GetFriend( stPlayer.m_dwPlayerId );
-#endif	// __RT_1025
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -621,25 +592,16 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 { 
 	m_menu.SetVisible(FALSE);
 
-#ifdef __RT_1025
 	u_long idPlayer;
-#endif	// __RT_1025
 
 	switch( nID )
 	{
 	case 0:		// 메시지
 		{
-#ifdef __RT_1025
 			Friend* pFriend		= NULL;
 			GetSelectFriend( m_nCurSelect, idPlayer, &pFriend );
 			if( pFriend )
 				CWndMessage* pWndMessage	= g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
-#else	// __RT_1025
-			LPFRIEND lpFriend = NULL;
-			GetSelectFriend( m_nCurSelect, &lpFriend );
-			if( lpFriend )
-				CWndMessage* pWndMessage = g_WndMng.OpenMessage( lpFriend->szName );				
-#endif	// __RT_1025
 		}
 		break;
 	case 1:		// 차단 / 차단해제
@@ -750,50 +712,34 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 		m_nCurSelect	= nSelect;
 		ClientToScreen( &point );
 		m_menu.DeleteAllMenu();
-#ifdef __RT_1025
+
 		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState != FRS_OFFLINE && dwState != FRS_BLOCK && dwState != FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 			m_menu.AppendMenu( 0, 0 ,_T( prj.GetText( TID_APP_MESSAGE ) ) );
-#ifdef __RT_1025
+
 		if( pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState == FRS_BLOCK || dwState == FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 			m_menu.AppendMenu( 0, 1 ,_T( prj.GetText( TID_FRS_BLOCKRESTORE ) ) );
 		else
 			m_menu.AppendMenu( 0, 1 ,_T( prj.GetText( TID_FRS_BLOCK ) ) );
+
 		m_menu.AppendMenu( 0, 2 ,_T( prj.GetText( TID_FRS_DELETE ) ) );
-#ifdef __RT_1025
+
 		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState != FRS_OFFLINE && dwState != FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 		{					
 			if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
 				m_menu.AppendMenu( 0, 3 ,_T( prj.GetText( TID_FRS_MOVE2 ) ) );
-#ifdef __RT_1025
 			if( !pFriend->bBlock )
-#else	// __RT_1025
-			if( dwState != FRS_BLOCK )
-#endif	// __RT_1025
 			{
 				if( g_Party.IsMember( idPlayer ) == FALSE )
 					m_menu.AppendMenu( 0, 4 ,_T( prj.GetText(TID_MMI_INVITE_PARTY) ) );
 			}
 		}
-#ifdef __RT_1025
 		if( dwState == FRS_OFFLINE || pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState == FRS_OFFLINE || dwState == FRS_BLOCK || dwState == FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 			m_menu.AppendMenu( 0, 6 , _T( prj.GetText( TID_GAME_TAGSEND ) ) );
 
-		vector<__MESSENGER_PLAYER>::iterator iter = m_vPlayerList.begin();
+		
 		int		nCount		= 0;
 		BOOL	bIsAllowed	= FALSE;
-		for(; iter != m_vPlayerList.end(); ++iter)
+		for(auto iter = m_vPlayerList.begin(); iter != m_vPlayerList.end(); ++iter)
 		{
 			if(idPlayer == iter->m_dwPlayerId)
 			{
@@ -1007,9 +953,9 @@ void CWndGuildCtrlEx::UpdatePlayerList()
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	if( pGuild )
 	{
-		map<u_long, CGuildMember*>::iterator iter = pGuild->m_mapPMember.begin();
+		
 
-		for( ; iter != pGuild->m_mapPMember.end() ; ++iter )
+		for(auto iter = pGuild->m_mapPMember.begin(); iter != pGuild->m_mapPMember.end() ; ++iter )
 		{
 			__MESSENGER_PLAYER stPlayer;
 			CGuildMember* pGuildMember = (CGuildMember*)iter->second;
@@ -1077,7 +1023,7 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 	TEXTUREVERTEX2* pVertex = new TEXTUREVERTEX2[ 6 * 4 * nMax ];
 	TEXTUREVERTEX2* pVertices = pVertex;
 	
-	vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+	auto iter = m_vPlayerList.begin();
 	
 	for(int i=0; iter<m_vPlayerList.end(); i++, iter++)
 	{
@@ -1192,7 +1138,7 @@ void CWndGuildCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 		rect.SetRect( pt.x, pt.y, pt.x + 24, pt.y + m_nFontHeight );
 		if( rect.PtInRect( point ) )
 		{
-			vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+			auto iter = m_vPlayerList.begin();
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
 			__MESSENGER_PLAYER stPlayer	= *(iter);
@@ -1291,7 +1237,7 @@ void CWndGuildCtrlEx::GetSelectFriend( int SelectCount, LPFRIEND* lppFriend )
 	
 u_long CWndGuildCtrlEx::GetSelectId( int SelectCount )
 {
-	vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+	auto iter = m_vPlayerList.begin();
 	iter += SelectCount;
 	__MESSENGER_PLAYER stPlayer = *(iter);
 	
@@ -1318,7 +1264,7 @@ int CWndGuildCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
 			rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - m_wndScrollBar.GetClientRect().Width(), pt.y + m_nFontHeight );
 			if( rect.PtInRect( point ) )
 			{
-				vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
+				auto iter = m_vPlayerList.begin();
 				int nPos = m_wndScrollBar.GetScrollPos();
 				iter += j + nPos;
 				rtn_val += nPos;
@@ -1609,7 +1555,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 	{
 		pt.y = DISCIPLE_RENDERING_POSITION;
 		int nDiscipleMax = GetDiscipleDrawCount();
-		vector < __MESSENGER_PLAYER >::iterator iter = m_vDisciplePlayer.begin();
+		auto iter = m_vDisciplePlayer.begin();
 		for( int i = 0; iter < m_vDisciplePlayer.end(); ++i, ++iter )
 		{
 			CString strFormat = _T( "" );
@@ -1823,7 +1769,7 @@ void CWndCampus::OnMouseMove( UINT nFlags, CPoint point )
 			rect.SetRect( pt.x, pt.y, pt.x + 24, pt.y + m_nFontHeight );
 			if( rect.PtInRect( point ) == TRUE )
 			{
-				vector< __MESSENGER_PLAYER >::iterator DiscipleIterator = m_vDisciplePlayer.begin();
+				auto DiscipleIterator = m_vDisciplePlayer.begin();
 				DiscipleIterator += i;
 				__MESSENGER_PLAYER stPlayer	= *DiscipleIterator;
 				ClientToScreen( &point );
@@ -1856,11 +1802,7 @@ void CWndCampus::UpdatePlayerList( void )
 		return;
 	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) )
 	{
-		typedef vector< u_long > DiscipleVector;
-		DiscipleVector vecPupil = pCampus->GetPupilPlayerId();
-		for( DiscipleVector::iterator itor = vecPupil.begin(); itor != vecPupil.end(); ++itor )
-		{
-			u_long idDisciplePlayer = *itor;
+		for(const u_long idDisciplePlayer : pCampus->GetPupilPlayerId()) {
 			PlayerData* pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData( idDisciplePlayer );
 			if( pPlayerData == NULL )
 				continue;

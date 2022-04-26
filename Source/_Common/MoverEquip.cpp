@@ -2087,7 +2087,7 @@ void CMover::SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL 
 	CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 	if( pItemElem && pItemElem->IsAccessory() )		// 咀技辑府
 	{
-		vector<SINGLE_DST> * pDst = pProperty->GetDst(pItemElem->m_dwItemId, pItemElem->GetAbilityOption());
+		std::vector<SINGLE_DST> * pDst = pProperty->GetDst(pItemElem->m_dwItemId, pItemElem->GetAbilityOption());
 		SetDSTs(*pDst);
 	}
 
@@ -2177,7 +2177,7 @@ void CMover::ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem )
 		CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 		if( pItemElem->IsAccessory() )		// 咀技辑府
 		{
-			vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
+			std::vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
 			ResetDSTs(*pDst);
 		}
 

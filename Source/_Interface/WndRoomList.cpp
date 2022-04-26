@@ -37,7 +37,7 @@ void CWndRoomList::Refresh()
 {
 	// 리스트를 새로 갱신
 	CWndListBox*				pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-	vector<DWORD>::iterator		iter		= CHousing::GetInstance()->m_vecVisitable.begin();
+	auto		iter		= CHousing::GetInstance()->m_vecVisitable.begin();
 	int							nIndex		= 0;
 	
 	pWndListBox->ResetContent();

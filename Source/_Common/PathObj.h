@@ -12,8 +12,8 @@ typedef struct _VECINFO
 
 class CPatrolPath
 {
-	map< DWORD, vector<_VECINFO> > m_mapPatrolPath;
-	map< DWORD, BOOL	 > m_bReturn;
+	std::map< DWORD, std::vector<_VECINFO> > m_mapPatrolPath;
+	std::map< DWORD, BOOL	 > m_bReturn;
 	
 public:
 	CPatrolPath();

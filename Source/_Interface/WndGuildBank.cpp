@@ -523,7 +523,7 @@ void CWndAddItemLog::OnDraw( C2DRender* p2DRender )
 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	
-	vector < CString >::iterator iter = m_vLogList.begin();
+	auto iter = m_vLogList.begin();
 	
 	for(int i=0; iter<m_vLogList.end(); i++, iter++)
 	{
@@ -614,7 +614,7 @@ void CWndRemoveItemLog::OnDraw( C2DRender* p2DRender )
 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	
-	vector < CString >::iterator iter = m_vLogList.begin();
+	auto iter = m_vLogList.begin();
 	
 	for(int i=0; iter<m_vLogList.end(); i++, iter++)
 	{
@@ -704,7 +704,7 @@ void CWndReceivePenyaLog::OnDraw( C2DRender* p2DRender )
 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	
-	vector < CString >::iterator iter = m_vLogList.begin();
+	auto iter = m_vLogList.begin();
 	
 	for(int i=0; iter<m_vLogList.end(); i++, iter++)
 	{
@@ -794,7 +794,7 @@ void CWndInvestPenyaLog::OnDraw( C2DRender* p2DRender )
 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	
-	vector < CString >::iterator iter = m_vLogList.begin();
+	auto iter = m_vLogList.begin();
 	
 	for(int i=0; iter<m_vLogList.end(); i++, iter++)
 	{

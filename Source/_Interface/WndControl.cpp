@@ -3957,8 +3957,7 @@ CWndTabCtrl::CWndTabCtrl()
 }
 CWndTabCtrl::~CWndTabCtrl()
 {
-	vector< LPWTCITEM >::iterator itor;
-	for( itor = m_aTab.begin(); itor != m_aTab.end(); itor++ )
+	for( auto itor = m_aTab.begin(); itor != m_aTab.end(); itor++ )
 		SAFE_DELETE( *itor );
 //#ifndef __NEWTAB
 //	for( int i = 0; i < 10; i++ )

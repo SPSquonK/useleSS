@@ -9,10 +9,10 @@
 class CWndGuildCombat1to1Selection : public CWndNeuz
 {
 protected:	
-	multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 정렬된 길드원 리스트
+	std::multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 정렬된 길드원 리스트
 
-	vector<u_long>					m_vecGuildList   ;   // 길드원 리스트
-	vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트
+	std::vector<u_long>					m_vecGuildList   ;   // 길드원 리스트
+	std::vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트
 
 //	u_long							m_uidDefender;
 //	CTexture						m_TexDefender;

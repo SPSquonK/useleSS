@@ -133,7 +133,7 @@ BOOL	CPocketController::Add( CItemElem* pItemElem, vector<PocketController_Resul
 }
 */
 
-BOOL	CPocketController::Add( int nPocket, CItemElem*pItemElem, vector<PocketController_Result>* apResult )
+BOOL	CPocketController::Add( int nPocket, CItemElem*pItemElem, std::vector<PocketController_Result>* apResult )
 {
 	BYTE anId[POCKET_SLOT_SIZE_1_2];
 	short	anNum[POCKET_SLOT_SIZE_1_2];

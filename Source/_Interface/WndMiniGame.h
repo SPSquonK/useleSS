@@ -289,7 +289,7 @@ public:
 	virtual BOOL Process ();
 	
 	int HitTest( CPoint point );
-	void SetPuzzle(vector<DWORD> vPuzzle);
+	void SetPuzzle(std::vector<DWORD> vPuzzle);
 	void SetPicture(CItemElem* pItemElem);
 	void ReceiveResult();
 	void SetDescription(CHAR* szChar);

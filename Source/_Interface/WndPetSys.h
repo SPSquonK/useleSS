@@ -189,7 +189,7 @@ protected:
 
 	CWndConfirmVis* m_pWndConfirmVis;
 
-	vector<BYTE> m_cVisStates;
+	std::vector<BYTE> m_cVisStates;
 	CTexture* m_pTexPetStatusBg;
 
 	float	m_fRadius;

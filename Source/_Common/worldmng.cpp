@@ -39,9 +39,6 @@ CWorldMng::CWorldMng()
 	m_lCount	= 0;
 #else	// __WORLDSERVER
 
-#ifndef __STL_0402
-	SetSize( 2, 4, 4 );
-#endif	// __STL_0402
 	m_pWorld	= NULL;
 #endif	// __WORLDSERVER
 	m_nSize = 0;
@@ -55,21 +52,13 @@ CWorldMng::~CWorldMng()
 #ifndef __WORLDSERVER
 void CWorldMng::Free()
 {
-#ifdef __STL_0402
-	for( map<string, CWorld*>::iterator i = begin(); i != end(); ++i )
+	for( auto i = begin(); i != end(); ++i )
 	{
 		CWorld* pWorld	= i->second;
 		SAFE_DELETE( pWorld );
 	}
 	clear();
-#else	// __STL_0402
-	CMyBucket2<CWorld*>* pBucket	= GetFirstActive();
-	while( pBucket )
-	{
-		SAFE_DELETE( pBucket->m_value );
-		pBucket	= pBucket->pNext;
-	}
-#endif	// __STL_0402
+
 	m_aWorld.RemoveAll();
 }
 #endif // __WORLDSERVER
@@ -234,21 +223,13 @@ void CWorldMng::DestroyCurrentWorld()
 		if( lpWorld )
 		{
 			ASSERT( lpWorld->IsValid() );
-#ifdef __STL_0402
 			erase( lpWorld->m_szFileName );
-#else	// __STL_0402
-			RemoveKey( lpWorld->m_szFileName );
-#endif	// __STL_0402
 		}
 		else
 		{
 			TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], name[ _MAX_FNAME ], ext[_MAX_EXT];
 			_splitpath( m_pWorld->m_szFileName, drive, dir, name, ext );
-#ifdef __STL_0402
 			erase( name );
-#else	// __STL_0402
-			RemoveKey( name );
-#endif	// __STL_0402
 		}
 		SAFE_DELETE( m_pWorld );
 	}
@@ -260,14 +241,14 @@ CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, LPCSTR lpszWorld )
 		DestroyCurrentWorld();
 	}
 	CWorld* pWorld;
-#ifdef __STL_0402
-	map<string, CWorld*>::iterator i	= find( lpszWorld );
+
+	auto i	= find( lpszWorld );
 	if( i == end() )
 	{
 		pWorld	= new CWorld;
 		pWorld->InitDeviceObjects( pd3dDevice );
 		pWorld->OpenWorld( MakePath( DIR_WORLD, lpszWorld ), TRUE );
-		bool bResult	= insert( map<string, CWorld*>::value_type( lpszWorld, pWorld ) ).second;
+		bool bResult	= emplace( lpszWorld, pWorld ).second;
 		ASSERT( bResult );
 	}
 	else
@@ -275,19 +256,6 @@ CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, LPCSTR lpszWorld )
 		pWorld	= i->second;
 		pWorld->InitDeviceObjects( pd3dDevice );
 	}
-#else	// __STL_0402
-	if( FALSE == Lookup( lpszWorld, pWorld ) )
-	{
-		pWorld	= new CWorld;
-		pWorld->InitDeviceObjects( pd3dDevice );
-		pWorld->OpenWorld( MakePath( DIR_WORLD, lpszWorld ), TRUE );
-		SetAt( lpszWorld, pWorld );
-	}
-	else
-	{
-		pWorld->InitDeviceObjects( pd3dDevice );
-	}
-#endif	// __STL_0402
 
 	return( m_pWorld = pWorld );
 }

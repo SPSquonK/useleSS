@@ -3448,7 +3448,7 @@ void CWndMgr::WordChange( CString& rString )
 			CString str1	= s1.Token;
 			str1.MakeLower();
 
-			map<string, string>::iterator it	= prj.m_mapAlphaFilter.find( (LPSTR)(LPCSTR)str1 );
+			auto it	= prj.m_mapAlphaFilter.find( (LPSTR)(LPCSTR)str1 );
 			if( it != prj.m_mapAlphaFilter.end() )
 			{
 //				if( g_Option.m_nSlangWord == 1 ) 
@@ -3478,7 +3478,7 @@ void CWndMgr::WordChange( CString& rString )
 		bFirst	= ( *s.m_pProg == ' ' );
 	}
 
-	for( map<string, string>::iterator it = prj.m_mapNonalphaFilter.begin(); it != prj.m_mapNonalphaFilter.end(); ++it )
+	for( auto it = prj.m_mapNonalphaFilter.begin(); it != prj.m_mapNonalphaFilter.end(); ++it )
 	{
 		CString str		= it->first.data();
 		if( g_Option.m_nSlangWord == 1 ) 
@@ -4652,7 +4652,7 @@ void CWndMgr::PutBaseItemOpt(CItemElem * pItemElem, CEditString * pEdit) {
 	CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 	if( pItemElem && pItemElem->IsAccessory() )		// 액세서리
 	{
-		const vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
+		const std::vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
 		const CString str = DstsToString(*pDst);
 		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 	}
@@ -4686,11 +4686,10 @@ void CWndMgr::PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit )
 	nAddedOptDST[7] = DST_DEX;
 	nAddedOptDST[8] = DST_INT;
 
-	map<int, int> mapDst = prj.m_UltimateWeapon.GetDestParamUltimate( pItemElem );
+	std::map<int, int> mapDst = prj.m_UltimateWeapon.GetDestParamUltimate( pItemElem );
 
-	for( map<int, int>::iterator it=mapDst.begin(); it!=mapDst.end(); it++ )
+	for( auto it=mapDst.begin(); it!=mapDst.end(); it++ )
 	{
-		int a = it->first;
 		for(i=0; i<9; i++)
 		{
 			if( nAddedOptDST[i] == it->first )
@@ -6455,8 +6454,7 @@ void CWndMgr::PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit )
 		return;
 
 	//펫의 정보 (비스들의 총합 )
-	map< int, int > cTotalOpt;
-	map< int, int >::iterator iter;
+	std::map< int, int > cTotalOpt;
 	CString strTemp, strTemp2;
 	
 	static const int MAX_PROP = 3;
@@ -6485,10 +6483,8 @@ void CWndMgr::PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit )
 					continue;
 
 				int nVal	= (int)pProp->nAdjParamVal[iaa];
-				iter = cTotalOpt.find( nDst );
-				if( iter == cTotalOpt.end() )
-					cTotalOpt.insert( map< int, int >::value_type( nDst, nVal ) );
-				else cTotalOpt[ nDst ] += nVal;
+
+				cTotalOpt[nDst] += nVal;
 			}
 		}
 	}

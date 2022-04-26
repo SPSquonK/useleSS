@@ -35,7 +35,7 @@ void CWndSecretRoomSelection::AddCombatPlayer( u_long uiPlayer )
 
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	
-	map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( uiPlayer );
+	auto i = pGuild->m_mapPMember.find( uiPlayer );
 	CGuildMember* pMember = i->second;
 	if( !pMember )	return;
 				
@@ -46,7 +46,7 @@ void CWndSecretRoomSelection::AddCombatPlayer( u_long uiPlayer )
 
 	pWndList->AddString( str );
 
-	vector<u_long>::iterator iter = m_vecGuildList.begin();
+	auto iter = m_vecGuildList.begin();
 
 	int index = -1;
 	int count = 0;
@@ -76,7 +76,7 @@ void CWndSecretRoomSelection::AddGuildPlayer( u_long uiPlayer )
 	
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	
-	map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( uiPlayer );
+	const auto i = pGuild->m_mapPMember.find( uiPlayer );
 	CGuildMember* pMember = i->second;
 				
 	CString str;
@@ -107,7 +107,7 @@ void CWndSecretRoomSelection::RemoveCombatPlayer( int nIndex )
 		CString temp;
 
 		CGuild* pGuild = g_pPlayer->GetGuild();
-		map<u_long, CGuildMember*>::iterator iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
+		const auto iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
 		CGuildMember* pMember = iter->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
@@ -131,17 +131,17 @@ void CWndSecretRoomSelection::UpDateGuildListBox()
 		{
 			// 레벨별로 소팅
 			CGuildMember* pMember;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;				
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
-					m_mapSelectPlayer.insert( make_pair( pPlayerData->data.nLevel, pMember ) );
+					m_mapSelectPlayer.emplace(pPlayerData->data.nLevel, pMember);
 			}
 
 			// 리스트에 추가			
 			CString str;
-			for( multimap<int, CGuildMember*>::iterator j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
+			for( auto j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
 			{
 				pMember		= j->second;
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );

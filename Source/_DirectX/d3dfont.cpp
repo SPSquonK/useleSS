@@ -245,7 +245,7 @@ HRESULT CD3DFontAPI::GetTextExtent( const TCHAR* strText, SIZE* pSize )
 	int nOffset  = 0;
 	int nOffNext = 0;
 	CString str = strText;
-	vector<CString> OffsetIndex;
+	std::vector<CString> OffsetIndex;
 	OffsetIndex.clear();
 	
 	nOffNext = str.Find( '\n', nOffset );

@@ -52,10 +52,10 @@ public:
 	~CHousing(void);
 
 #ifdef __CLIENT
-	vector<DWORD>	m_vecVisitable;
+	std::vector<DWORD>	m_vecVisitable;
 	static CHousing* GetInstance();
-	void	GetHousingList( vector<HOUSINGINFO> & vHousingList );	// 가구 목록 정보를 복사해서 넘김.
-	void	GetVisitAllow( vector<DWORD> & vVisitAllow );		// 방문허용자 목록을 넘김
+	void	GetHousingList(std::vector<HOUSINGINFO> & vHousingList );	// 가구 목록 정보를 복사해서 넘김.
+	void	GetVisitAllow(std::vector<DWORD> & vVisitAllow );		// 방문허용자 목록을 넘김
 #endif // __CLIENT
 		
 	void Serialize( CAr & ar );
@@ -153,7 +153,7 @@ private:
 
 	LPDIRECT3DTEXTURE9	m_pOriginWall;				// 벽 기본텍스쳐
 	LPDIRECT3DTEXTURE9	m_pOriginTile;				// 바닥 기본텍스쳐
-	vector<LPDIRECT3DTEXTURE9>	m_vecOriginal;		// 타겟오브젝트 텍스쳐셋
+	std::vector<LPDIRECT3DTEXTURE9>	m_vecOriginal;		// 타겟오브젝트 텍스쳐셋
 	LPDIRECT3DTEXTURE9	m_pRed;
 	BOOL				m_bIsColl;
 	BOOL				m_bIsMyRoom;				// 가는방이 내방인가?

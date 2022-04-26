@@ -1634,11 +1634,11 @@ void CWndPuzzleGame::OnDestroy()
 		m_pWndInventory->m_wndItemCtrl.SetDieFlag(FALSE);
 }
 
-void CWndPuzzleGame::SetPuzzle(vector<DWORD> vPuzzle)
+void CWndPuzzleGame::SetPuzzle(std::vector<DWORD> vPuzzle)
 {
 	int i=0;
 
-	std::vector<DWORD>::iterator iter = vPuzzle.begin();
+	auto iter = vPuzzle.begin();
 	while(iter != vPuzzle.end())
 	{
 		m_itemID[i] = *iter;

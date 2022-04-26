@@ -1034,9 +1034,9 @@ BOOL CProject::LoadFilter( LPCTSTR lpszFileName )
 		strcpy( filter.m_szDst, scanner.Token );
 #ifdef __FILTER_0705
 		if( bAlpha )
-			m_mapAlphaFilter.insert( map<string, string>::value_type( filter.m_szSrc, filter.m_szDst ) );
+			m_mapAlphaFilter.emplace( filter.m_szSrc, filter.m_szDst );
 		else
-			m_mapNonalphaFilter.insert( map<string, string>::value_type( filter.m_szSrc, filter.m_szDst ) );
+			m_mapNonalphaFilter.emplace( filter.m_szSrc, filter.m_szDst );
 #else	// __FILTER_0705
 		m_aWordFilter.Add( &filter );
 #endif	// __FILTER_0705
@@ -1255,7 +1255,7 @@ BOOL CProject::LoadPropPartyQuest( LPCTSTR lpszFilename )
 			}
 			s.GetToken();
 		}
-		bool bResult = m_propPartyQuest.insert( map<int, PARTYQUESTPROP>::value_type( nQuestId, prop) ).second;
+		bool bResult = m_propPartyQuest.emplace( nQuestId, prop ).second;
 		nQuestId	= s.GetNumber();	// id
 	}
 	return TRUE;
@@ -3744,7 +3744,7 @@ CPackItem* CPackItem::GetInstance( void )
 
 BOOL CPackItem::AddItem( DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum )
 {
-	map<DWORD, int>::iterator i	= m_mapIdx.find( dwPackItem );
+	const auto i	= m_mapIdx.find( dwPackItem );
 	int nIdx1	= 0;
 	if( i != m_mapIdx.end() )
 	{
@@ -3753,7 +3753,7 @@ BOOL CPackItem::AddItem( DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int
 	else
 	{
 		nIdx1	= m_nSize++;
-		m_mapIdx.insert( map<DWORD, int>::value_type( dwPackItem, nIdx1 ) );
+		m_mapIdx.emplace( dwPackItem, nIdx1 );
 	}
 
 	if( m_nSize >= MAX_PACKITEM )
@@ -3778,7 +3778,7 @@ BOOL CPackItem::AddItem( DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int
 
 PPACKITEMELEM CPackItem::Open( DWORD dwPackItem )
 {
-	map<DWORD, int>::iterator i		= m_mapIdx.find( dwPackItem );
+	const auto i		= m_mapIdx.find( dwPackItem );
 	if( i != m_mapIdx.end() )
 		return &m_packitem[i->second];	
 	return NULL;
@@ -4090,7 +4090,7 @@ void CRandomOptItemGen::Arrange() {
 	// make index & make lv index
 	int nLevel	= 1, nPrevious	= -1;
 	for (int i = 0; i != m_aRandomOptItem.size(); ++i) {
-		const bool bResult	= m_mapid.insert( map<int, int>::value_type( m_aRandomOptItem[i].nId, i ) ).second;
+		const bool bResult	= m_mapid.emplace(m_aRandomOptItem[i].nId, i).second;
 		if (!bResult) {
 			TRACE("adding randomoptitem failed\t// 0\n");
 		}
@@ -4457,7 +4457,7 @@ BOOL CProject::LoadPropCtrl( LPCTSTR lpszFileName, CFixedArray<CtrlProp>*	apObjP
 		scanner.GetToken();
 		TRACE( "PropCtrl = %d, %s\n", i, scanner.token );
 		_tcscpy( ctrlProp.szName, scanner.token );
-		m_mapCtrl.insert( map<string, DWORD>::value_type( ctrlProp.szName, ctrlProp.dwID ) );
+		m_mapCtrl.emplace(ctrlProp.szName, ctrlProp.dwID);
 		ctrlProp.dwCtrlKind1 = scanner.GetNumber();
 		ctrlProp.dwCtrlKind2 = scanner.GetNumber();
 		ctrlProp.dwCtrlKind3 = scanner.GetNumber();
@@ -4610,7 +4610,7 @@ BOOL CProject::LoadScriptPK( LPCTSTR lpszFileName )
 					bufPropensity.nFly				= scanner.GetNumber();
 					bufPropensity.nGuardAttack		= scanner.GetNumber();
 					bufPropensity.nVendor			= scanner.GetNumber();
-					m_PKSetting.mapPropensityPenalty.insert( map<int,CHAO_PROPENSITY>::value_type( nPropensity, bufPropensity ) );
+					m_PKSetting.mapPropensityPenalty.emplace(nPropensity, bufPropensity);
 				}
 				scanner.GetToken();
 			}
@@ -4626,7 +4626,7 @@ BOOL CProject::LoadScriptPK( LPCTSTR lpszFileName )
 				{
 					int nLevel = scanner.GetNumber();
 					DWORD dwExp = scanner.GetNumber();
-					m_PKSetting.mapLevelExp.insert( map<int,DWORD>::value_type( nLevel, dwExp ) );
+					m_PKSetting.mapLevelExp.emplace(nLevel, dwExp);
 				}
 				scanner.GetToken();
 			}
@@ -4660,7 +4660,7 @@ GUILDQUESTPROP*	CProject::GetGuildQuestProp( int nQuestId )
 
 PARTYQUESTPROP*	CProject::GetPartyQuestProp( int nQuestId )
 {
-	map<int, PARTYQUESTPROP>::iterator i = m_propPartyQuest.find( nQuestId );
+	const auto i = m_propPartyQuest.find( nQuestId );
 	if( i != m_propPartyQuest.end() )
 		return &i->second;
 	return NULL;
@@ -5042,7 +5042,7 @@ BOOL CProject::LoadQuestDestination( void )
 		int nID = atoi( s.Token.Right( 4 ) );
 		s.GetLastFull();
 		CString strQuestion = s.Token;
-		m_mapQuestDestination.insert( make_pair( nID, strQuestion ) );
+		m_mapQuestDestination.emplace(nID, strQuestion);
 		s.GetToken();
 	}
 	return TRUE;
@@ -5051,7 +5051,7 @@ BOOL CProject::LoadQuestDestination( void )
 const CString& CProject::GetQuestDestination( DWORD dwKey ) const
 {
 	static CString strEmpty = _T( "" );
-	map< int, CString >::const_iterator i = m_mapQuestDestination.find( dwKey );
+	const auto i = m_mapQuestDestination.find( dwKey );
 	if( i != m_mapQuestDestination.end() )
 		return i->second;
 	return strEmpty;
@@ -5069,7 +5069,7 @@ BOOL CProject::LoadPatrolDestination( void )
 		int nID = atoi( s.Token.Right( 4 ) );
 		s.GetLastFull();
 		CString strQuestion = s.Token;
-		m_mapPatrolDestination.insert( make_pair( nID, strQuestion ) );
+		m_mapPatrolDestination.emplace( nID, strQuestion);
 		s.GetToken();
 	}
 	return TRUE;
@@ -5078,7 +5078,7 @@ BOOL CProject::LoadPatrolDestination( void )
 const CString& CProject::GetPatrolDestination( DWORD dwKey ) const
 {
 	static CString strEmpty = _T( "" );
-	map< int, CString >::const_iterator i = m_mapPatrolDestination.find( dwKey );
+	const auto i = m_mapPatrolDestination.find( dwKey );
 	if( i != m_mapPatrolDestination.end() )
 		return i->second;
 	return strEmpty;

@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include <ranges>
 #include "defineObj.h"
 #include "DefineItem.h"
 #include "defineText.h"
@@ -3879,9 +3880,8 @@ void CWndHonor::RefreshList()
 
 	if(m_vecTitle.size() > 0)
 	{
-		vector<EarnedTitle>::iterator	iter;
 		pWndListBox->AddString(prj.GetText(TID_GAME_NOT_SELECTED_TITLE));
-		for(iter = m_vecTitle.begin(); iter != m_vecTitle.end(); ++iter)
+		for(auto iter = m_vecTitle.begin(); iter != m_vecTitle.end(); ++iter)
 		{
 			pWndListBox->AddString(iter->strTitle.GetBuffer(0));
 		}
@@ -13393,25 +13393,9 @@ void CWndPostSend::OnInitialUpdate()
 	pWndEdit2->SetTabStop( TRUE );
 	pWndEdit3->SetTabStop( TRUE );
 
-#ifdef __RT_1025
-	for( map<u_long, Friend>::iterator i	= g_WndMng.m_RTMessenger.begin(); i != g_WndMng.m_RTMessenger.end(); ++i )
-	{
-		u_long idPlayer	= i->first;
-		Friend* pFriend	= &i->second;
-//		if( pFriend )
-		{
-#else	// __RT_1025
-	C2FriendPtr::iterator iter = g_WndMng.m_Messenger.m_aFriend.begin();
-	for( ; iter != g_WndMng.m_Messenger.m_aFriend.end() ; ++iter )
-	{
-		LPFRIEND lpFriend = (LPFRIEND)iter->second;
-		if( lpFriend )
-		{
-			u_long idPlayer	= lpFriend->dwUserId;
-#endif	// __RT_1025
 
-			pWndCombo->AddString( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
-		}
+	for (const u_long idPlayer : g_WndMng.m_RTMessenger | std::views::keys) {
+		pWndCombo->AddString(CPlayerDataCenter::GetInstance()->GetPlayerString(idPlayer));
 	}
 
 	if( ::GetLanguage() != LANG_KOR )
@@ -15075,7 +15059,7 @@ void CWndGuildCombatSelection::AddCombatPlayer( u_long uiPlayer )
 
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	
-	map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( uiPlayer );
+	const auto i = pGuild->m_mapPMember.find( uiPlayer );
 	CGuildMember* pMember = i->second;
 				
 	CString str;
@@ -15104,7 +15088,7 @@ void CWndGuildCombatSelection::AddGuildPlayer( u_long uiPlayer )
 	
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	
-	map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( uiPlayer );
+	const auto i = pGuild->m_mapPMember.find( uiPlayer );
 	CGuildMember* pMember = i->second;
 				
 	CString str;
@@ -15150,17 +15134,17 @@ void CWndGuildCombatSelection::UpDateGuildListBox()
 		{
 			// 레벨별로 소팅
 			CGuildMember* pMember;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
-					m_mapSelectPlayer.insert( make_pair( pPlayerData->data.nLevel, pMember) );
+					m_mapSelectPlayer.emplace( pPlayerData->data.nLevel, pMember);
 			}
 
 			// 리스트에 추가			
 			CString str;
-			for( multimap<int, CGuildMember*>::iterator j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
+			for( auto j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
 			{
 				pMember		= j->second;		
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
@@ -16505,7 +16489,7 @@ void CWndGuildCombatRanking::InsertGuild( const char szGuild[], int nWinCount )
 		_tcscpy( p.szGuild, szGuild );
 	}
 	
-	m_multimapRanking.insert( make_pair(nWinCount, p) );
+	m_multimapRanking.emplace(nWinCount, p);
 
 	m_nMax++;
 }
@@ -16534,14 +16518,14 @@ void CWndGuildCombatRanking::OnDraw( C2DRender* p2DRender )
 
 	int nRanking = 0;
 	int nOldRanking = -1;
-	multimap< int, GUILDNAME >::reverse_iterator iterRobotBegin = m_multimapRanking.rbegin();
+	auto iterRobotBegin = m_multimapRanking.rbegin();
 	
 	for( int i=nBase; i<nBase + MAX_GUILDCOMBAT_LIST_PER_PAGE; ++i )
 	{
 		if( i >= m_nMax )	
 			break;
 
-		multimap< int, GUILDNAME >::value_type& refValue = *iterRobotBegin;
+		auto & refValue = *iterRobotBegin;
 		
 		if( nOldRanking != refValue.first )
 			nRanking++;
@@ -16908,7 +16892,7 @@ void CWndGuildCombatRank_Person::InsertRank( int nJob, u_long	uidPlayer, int nPo
 	__GUILDCOMBAT_RANK_INFO GcRankInfo;
 	GcRankInfo.nJob      = nJob;
 	GcRankInfo.uidPlayer = uidPlayer;
-	m_mTotalRanking.insert( make_pair( nPoint, GcRankInfo ) );
+	m_mTotalRanking.emplace(nPoint, GcRankInfo);
 }
 
 void CWndGuildCombatRank_Person::DivisionList()
@@ -16924,11 +16908,10 @@ void CWndGuildCombatRank_Person::DivisionList()
 
 	// 전체목록에 등록
 	pRankTot = &(m_WndGuildCombatTabClass_Tot);
-	multimap< int, __GUILDCOMBAT_RANK_INFO >::reverse_iterator i;
 
 	// 각지업별 등록
 	pRank = NULL;
-	for( i = m_mTotalRanking.rbegin(); i != m_mTotalRanking.rend(); ++i )
+	for( auto i = m_mTotalRanking.rbegin(); i != m_mTotalRanking.rend(); ++i )
 	{ 
 		nPoint			= i->first;
 		GcRankInfo		= i->second;
@@ -17777,15 +17760,11 @@ void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
 #endif	// __BUFF_1107
 }
 
-#ifdef __BUFF_1107
 void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
-#else	// __BUFF_1107
-void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
-#endif	// __BUFF_1107
 {
 	int nTexture;
 	RECT rectHittest;	
-	multimap< DWORD, BUFFSKILL >::iterator iter;
+	std::multimap< DWORD, BUFFSKILL >::iterator iter;
 	
 	if( bPlayer )
 		nTexture = 0;
@@ -17818,8 +17797,7 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkil
 		pItem = prj.GetItemProp( wID );
 	}
 	
-	multimap< DWORD, BUFFSKILL >::value_type* pp;
-	pp = &(*iter);
+	std::multimap< DWORD, BUFFSKILL >::value_type* pp = &(*iter);
 
 	ASSERT( pItem );
 	if( pp->second.m_pTexture == NULL )
@@ -20543,7 +20521,7 @@ void CWndDialogEvent::SetDescription( CHAR* szChar )
 
 void CWndDialogEvent::ReceiveResult(int result)
 {
-	vector<int> vResult = prj.m_Exchange.GetResultMsg(m_nMMI, m_nChoiceNum);
+	const std::vector<int> vResult = prj.m_Exchange.GetResultMsg(m_nMMI, m_nChoiceNum);
 	
 	switch(result) 
 	{

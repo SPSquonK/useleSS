@@ -80,7 +80,7 @@ protected:
 
 	int			m_nCtrlId[MAX_TELEPORTER_SLOT];
 	CTexture*	m_pTexture[MAX_TELEPORTER_SLOT];
-	vector<HOUSING_ITEM>	m_cWndItems;
+	std::vector<HOUSING_ITEM>	m_cWndItems;
 	int			m_nSelectedSlot;
 };
 

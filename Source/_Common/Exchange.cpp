@@ -202,7 +202,7 @@ BOOL CExchange::Load_Script()
 			}
 			s.GetToken();
 		} // while - MMI_ID
-		m_mapExchange.insert( map<int, __SETLIST>::value_type(nMMIId, create) );
+		m_mapExchange.emplace(nMMIId, create);
 		s.GetToken(); //get MMI ID
 	}
 	return TRUE;
@@ -210,16 +210,16 @@ BOOL CExchange::Load_Script()
 
 PSETLIST CExchange::FindExchange( int nMMIId )
 {
-	map<int, __SETLIST>::iterator it = m_mapExchange.find( nMMIId );
+	const auto it = m_mapExchange.find( nMMIId );
 	if( it != m_mapExchange.end() )
 		return &it->second;
 	return NULL;
 }
 		
 // 리스트에 들어갈 TEXT ID 목록을 얻어온다. vector<int>
-vector<int> CExchange::GetListTextId( int nMMIId )
+std::vector<int> CExchange::GetListTextId( int nMMIId )
 {
-	vector<int> list;
+	std::vector<int> list;
 	PSETLIST pSetList = FindExchange( nMMIId );
 	if( pSetList )
 	{
@@ -230,24 +230,22 @@ vector<int> CExchange::GetListTextId( int nMMIId )
 }
 
 // 전체 설명 TEXT ID 목록을 얻어온다. vector<int>
-vector<int> CExchange::GetDescId( int nMMIId )
+std::vector<int> CExchange::GetDescId( int nMMIId )
 {
 	PSETLIST pSetList = FindExchange( nMMIId );
 	if( pSetList )
 		return pSetList->vecDesciprtionId;
 
-	vector<int> vectmp;
-	return vectmp;
+	return {};
 }
 
-vector<int> CExchange::GetResultMsg( int nMMIId, int nListNum )
+std::vector<int> CExchange::GetResultMsg( int nMMIId, int nListNum )
 {
 	PSETLIST pSetList = FindExchange( nMMIId );
 	if( pSetList )
 		return pSetList->vecSet[nListNum].vecResultMsg;
 
-	vector<int> vectmp;
-	return vectmp;
+	return {};
 }
 
 #ifdef __WORLDSERVER

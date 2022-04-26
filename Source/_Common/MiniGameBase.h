@@ -22,7 +22,7 @@ struct __MINIGAME_PACKET
 
 struct __MINIGAME_EXT_PACKET : public __MINIGAME_PACKET
 {
-	vector<string> vecszData;
+	std::vector<std::string> vecszData;
 	__MINIGAME_EXT_PACKET( WORD wG = 0x0000, int nS = MP_NONE, int nP1 = 0, int nP2 = 0 )
 	{ wNowGame=wG; nState=nS; nParam1=nP1; nParam2=nP2; vecszData.clear(); }
 	virtual void Serialize( CAr & ar )

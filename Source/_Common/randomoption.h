@@ -28,7 +28,7 @@ typedef struct	_RANDOM_OPTION
 {
 	int		nDst;	// 파라미터
 	int		nProb;	//	이 파라미터가 나올 확률
-	vector<AdjData>	aAdjData;
+	std::vector<AdjData>	aAdjData;
 	_RANDOM_OPTION()
 	{
 		nDst	= 0;
@@ -95,7 +95,7 @@ private:
 private:
 	int		m_anRandomOptionProb[eMaxRandomOptionKind][MAX_RANDOM_OPTION];
 	// 기본 + 확장
-	vector<RANDOM_OPTION>	m_aRandomOption[eMaxRandomOptionKind + eAwakeningExtension];
+	std::vector<RANDOM_OPTION>	m_aRandomOption[eMaxRandomOptionKind + eAwakeningExtension];
 
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리

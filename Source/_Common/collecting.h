@@ -3,13 +3,8 @@
 
 typedef	struct	_COLLECTING_ITEM
 {
-	DWORD	dwItemId;
-	DWORD	dwProb;
-	_COLLECTING_ITEM()
-	{
-		dwItemId	= 0;
-		dwProb	= 0;
-	}
+	DWORD	dwItemId = 0;
+	DWORD	dwProb = 0;
 }	COLLECTING_ITEM;
 
 class CCollectingProperty
@@ -32,9 +27,9 @@ public:
 #endif	// __WORLDSERVER
 
 private:
-	vector<int>	m_anCool;
-	vector<int>	m_anEnchant;
-	vector<COLLECTING_ITEM>	m_aItem;
+	std::vector<int>	m_anCool;
+	std::vector<int>	m_anEnchant;
+	std::vector<COLLECTING_ITEM>	m_aItem;
 	int		m_nMaxBattery;
 };
 #endif	// __COLLECTING_H__

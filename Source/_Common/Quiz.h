@@ -171,7 +171,7 @@ private:
 	
 #ifdef __CLIENT
 public:
-	string			m_strQuestion;
+	std::string			m_strQuestion;
 	int				m_nQCount;
 #endif // __CLIENT
 };

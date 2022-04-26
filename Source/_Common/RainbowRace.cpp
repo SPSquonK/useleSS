@@ -118,7 +118,7 @@ void CRainbowRace::SendMinigamePacket( int nGameKey, int nState, int nParam1, in
     g_DPlay.SendRainbowRaceMiniGameState( MiniGamePacket );
 }
 
-void CRainbowRace::SendMinigameExtPacket( vector<string> & vecszData, int nGameKey, int nState, int nParam1, int nParam2 )
+void CRainbowRace::SendMinigameExtPacket(std::vector<std::string> & vecszData, int nGameKey, int nState, int nParam1, int nParam2 )
 {
 	__MINIGAME_EXT_PACKET MiniGameExtPacket( m_wNowGame, nState, nParam1, nParam2 );
 	MiniGameExtPacket.vecszData.assign( vecszData.begin(), vecszData.end() );

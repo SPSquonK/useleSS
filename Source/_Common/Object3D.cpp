@@ -255,7 +255,7 @@ void	CObject3DMng :: Init( void )
 void	CObject3DMng :: Destroy( void )
 {
 #ifdef __JEFF_11_5
-	for( map<string, CObject3D*>::iterator i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
+	for( auto i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
 	{
 		i->second->DeleteDeviceObjects();
 		SAFE_DELETE( i->second );
@@ -290,7 +290,7 @@ HRESULT CObject3DMng :: InvalidateDeviceObjects()
 HRESULT CObject3DMng :: DeleteDeviceObjects()
 {
 #ifdef __JEFF_11_5
-	for( map<string, CObject3D*>::iterator i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
+	for( auto i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
 		i->second->DeleteDeviceObjects();
 #else	// __JEFF_11_5
 	int		i;
@@ -373,7 +373,7 @@ CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR 
 	strcpy( sFile, szFileName );
 	strlwr( sFile );
 
-	map<string, CObject3D*>::iterator i		= m_mapObject3D.find( sFile );
+	auto i		= m_mapObject3D.find( sFile );
 	if( i != m_mapObject3D.end() )
 	{
 		i->second->m_nUseCnt++;
@@ -387,7 +387,7 @@ CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR 
 		return NULL;
 	}
 	pObject3D->m_nUseCnt	= 1;
-	bool bResult	= m_mapObject3D.insert( map<string, CObject3D*>::value_type( sFile, pObject3D ) ).second;
+	bool bResult	= m_mapObject3D.emplace( sFile, pObject3D).second;
 
 	return pObject3D;
 #else	// __JEFF_11_5

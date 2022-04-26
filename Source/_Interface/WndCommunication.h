@@ -82,7 +82,7 @@ class CWndChat : public CWndNeuz
 #endif //__CSC_GAME_GRADE
 	int m_nInsMsgCnt;
 	int				m_nHistoryIndex;
-	vector<CString> m_strHistory;
+	std::vector<CString> m_strHistory;
 	CTimer m_timerInputTimeOut;
 
 public:

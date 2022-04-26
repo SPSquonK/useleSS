@@ -40,21 +40,13 @@ struct __SECRETROOM_MONSTER
 
 struct __SECRETROOM_TENDER
 {
-	DWORD	dwGuildId;
-	int		nPenya;
-	int		nKillCount;
-	DWORD	dwWorldId;
-	int		nWarState;
-	vector<DWORD>	vecLineUpMember;
-	vector<__SECRETROOM_MONSTER> vecMonster;
-	__SECRETROOM_TENDER()
-	{
-		dwGuildId = NULL_ID;
-		nPenya = 0;
-		nKillCount = 0;
-		dwWorldId = NULL_ID;
-		nWarState = MONSTER_NORMAL;
-	}
+	DWORD	dwGuildId = NULL_ID;
+	int		nPenya = 0;
+	int		nKillCount = 0;
+	DWORD	dwWorldId = NULL_ID;
+	int		nWarState = MONSTER_NORMAL;
+	std::vector<DWORD>	vecLineUpMember;
+	std::vector<__SECRETROOM_MONSTER> vecMonster;
 
 	bool operator ==( DWORD dwGuildId )
 	{
@@ -76,7 +68,7 @@ public:
 	BYTE GetContinent( CMover* pMover );
 	BOOL IsInTheSecretRoom( CMover* pMover );
 
-	map<BYTE, CSecretRoomContinent*>	m_mapSecretRoomContinent;
+	std::map<BYTE, CSecretRoomContinent*>	m_mapSecretRoomContinent;
 	
 	int	m_nMinGuildLevel;			// 참여 가능 최소 길드 레벨
 	int m_nMinGuildMemberLevel;		// 참여 길드원의 최소 레벨
@@ -93,7 +85,7 @@ public:
 	int		m_nState;				// 현재 state
 	DWORD	m_dwRemainTime;			// 현재 state의 남은 시간
 
-	map<int, int>	m_mapMonsterNum;	// 각 몬스터의 종 개체수(지정된 개체수씩 생성하기 때문에 필요하다.)
+	std::map<int, int>	m_mapMonsterNum;	// 각 몬스터의 종 개체수(지정된 개체수씩 생성하기 때문에 필요하다.)
 #ifdef __CLIENT
 	CSecretRoomContinent* m_pSRCont;
 #endif // __CLIENT
@@ -139,7 +131,7 @@ public:
 	int		m_nState;
 	DWORD	m_dwRemainTime;
 	BYTE	m_nContinent;	// 현재 진행되는 비밀의 방이 해당하는 대륙(동부, 서부)
-	vector<__SECRETROOM_TENDER> m_vecSecretRoomTender;		// 신청 길드 목록
+	std::vector<__SECRETROOM_TENDER> m_vecSecretRoomTender;		// 신청 길드 목록
 
 	int		GetTenderGuild( DWORD dwGuildId );			// 신청한 길드이면 m_vecSecretRoomTender의 index를 반환한다.
 #ifdef __WORLDSERVER

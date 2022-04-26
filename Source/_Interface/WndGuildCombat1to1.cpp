@@ -37,8 +37,8 @@ void CWndGuildCombat1to1Selection::AddCombatPlayer( u_long uiPlayer )
 
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	
-	map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( uiPlayer );
-	CGuildMember* pMember = i->second;
+	const auto i = pGuild->m_mapPMember.find( uiPlayer );
+	const CGuildMember * const pMember = i->second;
 				
 	CString str;
 	//str.Format( "Lv%.2d	%.16s %.10s", pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
@@ -69,8 +69,8 @@ void CWndGuildCombat1to1Selection::AddGuildPlayer( u_long uiPlayer )
 	
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	
-	map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( uiPlayer );
-	CGuildMember* pMember = i->second;
+	const auto i = pGuild->m_mapPMember.find( uiPlayer );
+	const CGuildMember * const pMember = i->second;
 				
 	CString str;
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
@@ -100,8 +100,8 @@ void CWndGuildCombat1to1Selection::RemoveCombatPlayer( int nIndex )
 		CString temp;
 
 		CGuild* pGuild = g_pPlayer->GetGuild();
-		map<u_long, CGuildMember*>::iterator iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
-		CGuildMember* pMember = iter->second;
+		const auto iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
+		const CGuildMember * const pMember = iter->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
 		pWndList->SetString( i, temp );
@@ -124,17 +124,17 @@ void CWndGuildCombat1to1Selection::UpDateGuildListBox()
 		{
 			// 레벨별로 소팅
 			CGuildMember* pMember;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;				
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
-					m_mapSelectPlayer.insert( make_pair( pPlayerData->data.nLevel, pMember ) );
+					m_mapSelectPlayer.emplace(pPlayerData->data.nLevel, pMember);
 			}
 
 			// 리스트에 추가			
 			CString str;
-			for( multimap<int, CGuildMember*>::iterator j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
+			for( auto j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
 			{
 				pMember		= j->second;
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
@@ -370,7 +370,7 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 		CString temp1, temp2;
 
 		CGuild* pGuild = g_pPlayer->GetGuild();
-		map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
+		auto i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
 		CGuildMember* pMember = i->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
@@ -408,7 +408,7 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 		CString temp1, temp2;
 
 		CGuild* pGuild = g_pPlayer->GetGuild();
-		map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
+		auto i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
 		CGuildMember* pMember = i->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );

@@ -757,7 +757,7 @@ void CWndGuideSystem::GuideStart(BOOL ischart)
 	{
 		if(m_vecEventGuide.size())
 		{
-			for( vector<GUIDE_STRUCT>::iterator iter = m_vecEventGuide.begin(); iter != m_vecEventGuide.end(); ++iter )
+			for( auto iter = m_vecEventGuide.begin(); iter != m_vecEventGuide.end(); ++iter )
 			{
 				GUIDE_STRUCT guidestruct;
 				guidestruct = (*iter);

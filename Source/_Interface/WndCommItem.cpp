@@ -413,13 +413,13 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 {
 #ifdef __BUFF_1107
 	ItemProp* pItem = NULL;
-	multimap<DWORD, BUFFSKILL>::value_type* pp = NULL;
+	std::multimap<DWORD, BUFFSKILL>::value_type* pp = NULL;
 	BOOL bExpRander[6];
 	BOOL IsOverlap;
 
 	for( int iRander = 0 ; iRander < 6 ; ++iRander )
 		bExpRander[iRander]		= TRUE;
-	for( MAPBUFF::iterator it1 = g_pPlayer->m_buffs.m_mapBuffs.begin(); it1 != g_pPlayer->m_buffs.m_mapBuffs.end(); ++it1 )
+	for( auto it1 = g_pPlayer->m_buffs.m_mapBuffs.begin(); it1 != g_pPlayer->m_buffs.m_mapBuffs.end(); ++it1 )
 	{
 		IBuff* ptr1	= it1->second;
 		if( ptr1->GetType() == BUFF_SKILL || ptr1->GetType() == BUFF_EQUIP )

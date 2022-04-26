@@ -32,7 +32,7 @@ void TexturePool::Free( )
 	_cTextures.clear();
 }
 
-IDirect3DTexture9* TexturePool::GetTexture( const string& dir, const string& filename )
+IDirect3DTexture9* TexturePool::GetTexture( const std::string& dir, const std::string& filename )
 {
 	Texture_Iter iter =  _cTextures.find( filename );
 	if( iter != _cTextures.end() )
@@ -42,7 +42,7 @@ IDirect3DTexture9* TexturePool::GetTexture( const string& dir, const string& fil
 
 	assert( _pMyDevice );
 
-	string fullname = dir + filename;
+	std::string fullname = dir + filename;
 	IDirect3DTexture9* pNewTex = NULL;
 	if( FAILED( LoadTextureFromRes( _pMyDevice, fullname.c_str(), &pNewTex ) ) )
 	{
@@ -50,7 +50,7 @@ IDirect3DTexture9* TexturePool::GetTexture( const string& dir, const string& fil
 		return NULL;
 	}
 
-	pair< Texture_Iter, bool > rst =_cTextures.insert( Texture_Container::value_type( filename, pNewTex ) );
+	const auto rst =_cTextures.emplace(filename, pNewTex);
 	assert( rst.second );
 
 	return pNewTex;

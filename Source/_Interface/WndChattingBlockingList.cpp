@@ -52,7 +52,7 @@ void CWndChattingBlockingList::UpdateInformation( void )
 	if( pWndListBox )
 	{
 		pWndListBox->ResetContent();
-		for( set< CString >::iterator Iterator = prj.m_setBlockedUserID.begin(); Iterator != prj.m_setBlockedUserID.end(); ++Iterator )
+		for( auto Iterator = prj.m_setBlockedUserID.begin(); Iterator != prj.m_setBlockedUserID.end(); ++Iterator )
 		{
 			pWndListBox->AddString( *Iterator );
 		}

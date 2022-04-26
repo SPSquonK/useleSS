@@ -1224,7 +1224,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		CString str;		
 		p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_RATE), 0xFFEBAD18, 0xFF000000 );
 		cPoint.y += ( nGap + (nGap / 2) );		
-		for( multimap<int, CString>::reverse_iterator i = m_mmapGuildCombat_GuildPrecedence.rbegin(); i != m_mmapGuildCombat_GuildPrecedence.rend(); ++i )
+		for( auto i = m_mmapGuildCombat_GuildPrecedence.rbegin(); i != m_mmapGuildCombat_GuildPrecedence.rend(); ++i )
 		{
 			nPoint  = i->first;
 			str		= i->second;
@@ -1302,7 +1302,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		u_long uiPlayer;
 		p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_PERSON_RATE), 0xFFEBAD18, 0xFF000000 );
 		cPoint.y += ( nGap + (nGap / 2) );
-		for( multimap<int, u_long>::reverse_iterator j = m_mmapGuildCombat_PlayerPrecedence.rbegin(); j != m_mmapGuildCombat_PlayerPrecedence.rend(); ++j )
+		for( auto j = m_mmapGuildCombat_PlayerPrecedence.rbegin(); j != m_mmapGuildCombat_PlayerPrecedence.rend(); ++j )
 		{ 
 			nPoint			= j->first;
 			uiPlayer		= j->second;	
@@ -1574,7 +1574,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		CRect crect;
 
 		int nCount = 0;
-		for( vector<__GuildCombatJoin>::iterator  itv = m_vGuildCombatSort.begin() ; itv != m_vGuildCombatSort.end() ; ++itv )
+		for( auto  itv = m_vGuildCombatSort.begin() ; itv != m_vGuildCombatSort.end() ; ++itv )
 		{
 			if( 9 < nCount )
 				break;
@@ -2043,7 +2043,7 @@ void CWndWorld::DrawSecretRoomInfo(C2DRender *p2DRender)
 
 			std::sort(m_vecGuildList.begin(), m_vecGuildList.end(), prKCountAsce);
 
-			vector<__SRGUILDINFO>::iterator iter = m_vecGuildList.begin();
+			auto iter = m_vecGuildList.begin();
 
 			for(int j=0; j<(int)( m_vecGuildList.size() ); j++)
 			{
@@ -3409,7 +3409,7 @@ void CWndWorld::OnInitialUpdate()
 					
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
 
-					m_pBuffTexture[0].insert( make_pair(pItem->dwID, buffskill) );
+					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
 				}
 			}
 		}
@@ -3427,7 +3427,7 @@ void CWndWorld::OnInitialUpdate()
 				buffskill.m_nAlpha  = 192;
 				
 				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp->szIcon ), 0xffff00ff );
-				m_pBuffTexture[1].insert( make_pair(pItemProp->dwID, buffskill) );
+				m_pBuffTexture[1].emplace(pItemProp->dwID, buffskill);
 			}
 		}
 	}
@@ -3454,13 +3454,13 @@ void CWndWorld::OnInitialUpdate()
 				{
 					strIcon.Replace( ".", "_00." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].insert( make_pair( MAKELONG( (WORD)pItemProp->dwID, 0 ), buffskill ) );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 0 ), buffskill );
 					strIcon.Replace( "0.", "1." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].insert( make_pair( MAKELONG( (WORD)pItemProp->dwID, 1 ), buffskill ) );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 1 ), buffskill );
 					strIcon.Replace( "1.", "2." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].insert( make_pair( MAKELONG( (WORD)pItemProp->dwID, 2 ), buffskill ) );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 2 ), buffskill );
 				}
 				else
 				{
@@ -3472,7 +3472,7 @@ void CWndWorld::OnInitialUpdate()
 #else //__DST_GIFTBOX
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
 #endif //__DST_GIFTBOX
-					m_pBuffTexture[2].insert( make_pair(pItemProp->dwID, buffskill) );
+					m_pBuffTexture[2].emplace( pItemProp->dwID, buffskill );
 				}
 			}
 		}
@@ -3648,12 +3648,12 @@ void CWndWorld::OnInitialUpdate()
 
 void CWndWorld::AddGuildPrecedence( int nRate, CString str)
 {
-	m_mmapGuildCombat_GuildPrecedence.insert( make_pair( nRate, str ) );
+	m_mmapGuildCombat_GuildPrecedence.emplace( nRate, str );
 }
 
 void CWndWorld::AddPlayerPrecedence( int nRate, u_long uiPlayer)
 {
-	m_mmapGuildCombat_PlayerPrecedence.insert( make_pair( nRate, uiPlayer ) );
+	m_mmapGuildCombat_PlayerPrecedence.emplace( nRate, uiPlayer );
 }
 
 void CWndWorld::AddGuildStatus( u_long uidPlayer, int nLife, BOOL bJoinReady )
@@ -3667,7 +3667,7 @@ void CWndWorld::AddGuildStatus( u_long uidPlayer, int nLife, BOOL bJoinReady )
 
 void CWndWorld::AddGCStatus( u_long uidDefender, u_long uidPlayer, BOOL bWar )
 {
-	map< u_long, vector<__GCWARSTATE> >:: iterator it = m_mapGC_GuildStatus.find( uidDefender );
+	const auto it = m_mapGC_GuildStatus.find( uidDefender );
 	
 	__GCWARSTATE gcTemp;
 
@@ -3679,17 +3679,17 @@ void CWndWorld::AddGCStatus( u_long uidDefender, u_long uidPlayer, BOOL bWar )
 	}
 	else
 	{
-		vector<__GCWARSTATE> vecTemp;
+		std::vector<__GCWARSTATE> vecTemp;
 		gcTemp.m_uidPlayer = uidPlayer;
 		gcTemp.m_bWar	   = bWar;
 		vecTemp.push_back( gcTemp );		
-		m_mapGC_GuildStatus.insert( map< u_long, vector<__GCWARSTATE> >::value_type( uidDefender, vecTemp ) );
+		m_mapGC_GuildStatus.emplace(uidDefender, vecTemp);
 	}
 }
 
 u_long CWndWorld::GetGCStatusDefender( u_long uidDefender )
 {
-	map< u_long, vector<__GCWARSTATE> >:: iterator it = m_mapGC_GuildStatus.find( uidDefender );
+	auto it = m_mapGC_GuildStatus.find( uidDefender );
 	
 	if( it != m_mapGC_GuildStatus.end() )
 	{
@@ -3706,7 +3706,7 @@ int CWndWorld::IsGCStatusPlayerWar( u_long uidPlayer )
 		return -2;
 
 	__GCWARSTATE gcTemp;
-	map< u_long, vector<__GCWARSTATE> >::iterator i	= m_mapGC_GuildStatus.begin();
+	auto i	= m_mapGC_GuildStatus.begin();
 
 	while( i != m_mapGC_GuildStatus.end() )
 	{
@@ -6781,7 +6781,7 @@ void CWndWorld::OnMButtonDown(UINT nFlags, CPoint point)
 
 BOOL CWndWorld::GetBuffIconRect( DWORD dwID, const CPoint& point )
 {
-	vector <BUFFICONRECT_INFO>::iterator it = m_rcCheck.begin();
+	auto it = m_rcCheck.begin();
 	for( ; it != m_rcCheck.end(); ++it )
 	{
 		BUFFICONRECT_INFO &info = *it;
@@ -8556,7 +8556,7 @@ DWORD CWndWorld::GetSystemPetTextureKey( SKILLINFLUENCE* pSkill )
 void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
 {
 	RECT rectHittest;
-	multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
+	std::multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
 
 	pInfo->pt.x		+= pInfo->nDelta;
 	ItemProp* pItem		= NULL;
@@ -9601,27 +9601,19 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 
 	int nTexture;
 	RECT rectHittest;	
-	multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
+	std::multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
 	
 	nTexture = 0;
 	pInfo->pt.x += pInfo->nDelta;
 	
 	ItemProp* pItem = NULL;
-#ifdef __BUFF_1107
+
 	if( pBuff->GetType() == BUFF_SKILL )
 	{
 		if(m_pBuffTexture[nTexture].find(pBuff->GetId()) != m_pBuffTexture[nTexture].end())
 			pp = &(*(m_pBuffTexture[nTexture].find( pBuff->GetId() )));
 		pItem = prj.GetSkillProp( pBuff->GetId() );
 	}
-#else	// __BUFF_1107
-	if( pSkill->wType == BUFF_SKILL )
-	{
-		if(m_pBuffTexture[nTexture].find(pSkill->wID) != m_pBuffTexture[nTexture].end())
-			pp = &(*(m_pBuffTexture[nTexture].find(pSkill->wID)));
-		pItem = prj.GetSkillProp( pSkill->wID );
-	}
-#endif	// __BUFF_1107
 	else
 	{
 		if(m_pBuffTexture[2].find(dwItemID) != m_pBuffTexture[2].end())
@@ -10110,7 +10102,7 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 		else
 			pItem = prj.GetItemProp( dwSkillID );
 
-		multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
+		std::multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
 
 		if( wType == BUFF_ITEM 
 #ifdef __JEFF_11_1
@@ -10162,11 +10154,8 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 
 		if( pp != NULL && pp->second.m_pTexture != NULL && bCharged == FALSE )
 		{
-#ifdef __BUFF_1107
 			DWORD dwOddTime = pBuff->GetTotal() - ( g_tmCurrent - pBuff->GetInst() );
-#else	// __BUFF_1107
-			DWORD dwOddTime = pSkill->tmCount - (g_tmCurrent - pSkill->tmTime);
-#endif	// __BUFF_1107
+
 			if( dwSkillID == II_SYS_SYS_SCR_AMPESA || dwSkillID == II_SYS_SYS_SCR_AMPESA1 || dwSkillID == II_SYS_SYS_SCR_AMPESA2 
 				|| dwSkillID == II_SYS_SYS_SCR_AMPESB || dwSkillID == II_SYS_SYS_SCR_AMPESB1 || dwSkillID == II_SYS_SYS_SCR_AMPESB2 
 				|| dwSkillID == II_SYS_SYS_SCR_AMPESC || dwSkillID == II_SYS_SYS_SCR_AMPESC1 || dwSkillID == II_SYS_SYS_SCR_AMPESC2 
@@ -10480,7 +10469,7 @@ void CAdvMgr::RemoveButton()
 {
 	m_nIndex = 0;
 	
-	vector<BUTTON_INFO>::iterator i = m_vecButton.begin();
+	auto i = m_vecButton.begin();
 	for( ; i != m_vecButton.end(); ++i )
 	{
 		BUTTON_INFO* vecButton	= &(*i);
@@ -10539,7 +10528,7 @@ void CAdvMgr::AddAdvButton( DWORD dwid )
 // 해당버튼을 눌렀을경우 연결된 창을 화면에 띄운후 버튼은 삭제된다.
 BOOL CAdvMgr::RunButton( DWORD dwID )
 {
-	vector<BUTTON_INFO>::iterator i = m_vecButton.begin();
+	auto i = m_vecButton.begin();
 	for( ; i != m_vecButton.end(); ++i )
 	{
 		BUTTON_INFO* vecButton	= &(*i);
@@ -10565,7 +10554,7 @@ BOOL CAdvMgr::RunButton( DWORD dwID )
 // 버튼의 실행할 창을 검색한다.
 BUTTON_INFO* CAdvMgr::FindRunWindowButton( DWORD dwID )
 {
-	vector<BUTTON_INFO>::iterator i = m_vecButton.begin();
+	auto i = m_vecButton.begin();
 	for( ; i != m_vecButton.end(); ++i )
 	{
 		BUTTON_INFO* vecButton	= &(*i);

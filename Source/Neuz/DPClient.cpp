@@ -8497,7 +8497,7 @@ void CDPClient::SendGCSelectPlayerWindow( void )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 // 대전 선택 캐릭 신청
-void CDPClient::SendGCSelectPlayer( vector<u_long> vecSelectPlayer, u_long uidDefender )
+void CDPClient::SendGCSelectPlayer(std::vector<u_long> vecSelectPlayer, u_long uidDefender )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SELECTPLAYER_GUILDCOMBAT, DPID_UNKNOWN );
 	ar << (BOOL)FALSE;		// bWindow
@@ -11844,9 +11844,9 @@ void CDPClient::OnGuild( CAr & ar )
 
 	if( pGuild )
 	{
-		vector<PDVer>	aPDVer;
+		std::vector<PDVer>	aPDVer;
 		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer, FALSE );
@@ -12616,7 +12616,7 @@ void CDPClient::SendQueryPlayerData( u_long idPlayer, int nVer )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendQueryPlayerData( const vector<PDVer>& vecPlayer )
+void CDPClient::SendQueryPlayerData( const std::vector<PDVer>& vecPlayer )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_QUERY_PLAYER_DATA2, DPID_UNKNOWN );
 	ar << vecPlayer.size();
@@ -15614,7 +15614,7 @@ void CDPClient::SendGC1to1MemberLienUpOpenWnd()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendGC1to1MemberLienUp( vector<u_long>& vecMemberId )
+void CDPClient::SendGC1to1MemberLienUp(std::vector<u_long>& vecMemberId )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_GC1TO1_MEMBERLINEUP, DPID_UNKNOWN );
 	ar << vecMemberId.size();
@@ -16226,7 +16226,7 @@ void	CDPClient::SendSecretRoomTenderCancelReturn()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendSecretRoomLineUpMember( vector<DWORD> vecLineUpMember )
+void CDPClient::SendSecretRoomLineUpMember(std::vector<DWORD> vecLineUpMember )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SECRETROOM_LINEUPMEMBER, DPID_UNKNOWN );
 	ar << vecLineUpMember.size();

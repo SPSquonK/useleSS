@@ -117,7 +117,7 @@ BOOL IsForceAttack()
 #define OUTSIDE 1
 
 
-int Point_In_Poly( vector<CPoint> vecMap, CPoint test_point )
+int Point_In_Poly( std::vector<CPoint> vecMap, CPoint test_point )
 {
 	int counter = 0;
 	int i;

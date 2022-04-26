@@ -270,7 +270,7 @@ public:
 	CPtrArray	m_awndShortCut;
 	BOOL	m_bTitle        ;
 	CMapDWordToPtr	m_mapAppletFunc ;
-	list<int> m_tempWndId;
+	std::list<int> m_tempWndId;
 	BOOL m_clearFlag;
 
 	AppletFunc*		GetAppletFunc( DWORD dwIdApplet );

@@ -155,7 +155,7 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		_tcscpy( pProperty->szName, scanner.token );
 
 #if !( defined(__DBSERVER) || defined(__VPW) )
-		m_mapMVI.insert( map<string, DWORD>::value_type( pProperty->szName, pProperty->dwID ) );
+		m_mapMVI.emplace(pProperty->szName, pProperty->dwID);
 #endif	// __DBSERVER
 
 		pProperty->dwAI					= scanner.GetNumber();

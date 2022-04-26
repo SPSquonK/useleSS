@@ -66,13 +66,9 @@ void CWndGuildVote::OnInitialUpdate()
 
 	pCombo->ResetContent();
 	
-	list <CGuildVote*>::iterator it = pGuild->m_votes.begin();
-	
-	for ( ; it != pGuild->m_votes.end() ; ++it )
-	{
-		int nIndex;
-		nIndex = pCombo->AddString( (*it)->GetTitle() );
-		pCombo->SetItemData( nIndex, (*it)->GetID() );
+	for (CGuildVote * vote : pGuild->m_votes) {
+		int nIndex = pCombo->AddString(vote->GetTitle() );
+		pCombo->SetItemData( nIndex, vote->GetID() );
 	}
 		
 	CWndButton* pWndButton[4];
@@ -159,7 +155,7 @@ BOOL CWndGuildVote::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				
 				if( pGuild->m_votes.size() )
 				{
-					list <CGuildVote*>::iterator it = pGuild->m_votes.begin();
+					auto it = pGuild->m_votes.begin();
 					
 					for ( ; it != pGuild->m_votes.end() ; ++it )
 					{
@@ -361,7 +357,7 @@ BOOL CWndGuildVoteSeting::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 				{
 					if( pGuild->m_votes.size() )
 					{
-						list <CGuildVote*>::iterator it = pGuild->m_votes.begin();
+						auto it = pGuild->m_votes.begin();
 						
 						for ( ; it != pGuild->m_votes.end() ; ++it )
 						{
@@ -544,7 +540,7 @@ void CWndGuildVote::SelChange(CGuild* pGuild, int nIndex)
 	
 	CWndComboBox* pCombo = (CWndComboBox*)GetDlgItem(WIDC_COMBOBOX1);
 	
-	list <CGuildVote*>::iterator it = pGuild->m_votes.begin();
+	auto it = pGuild->m_votes.begin();
 	
 	for ( ; it != pGuild->m_votes.end() ; ++it )
 	{

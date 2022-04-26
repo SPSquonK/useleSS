@@ -13,7 +13,7 @@ extern	CUserMng			g_UserMng;
 #endif	// __WORLDSERVER
 
 
-typedef map< string, DWORD >			CMapStrToObjId;
+typedef std::map< std::string, DWORD >			CMapStrToObjId;
 typedef CMapStrToObjId :: value_type	MapStrToObjIdType;
 
 CMapStrToObjId	g_MapStrToObjId;

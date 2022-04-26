@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-typedef map< OBJID, DWORD > MAP_ENEMY;
+typedef std::map< OBJID, DWORD > MAP_ENEMY;
 
 class CNeuzEnemy  
 {

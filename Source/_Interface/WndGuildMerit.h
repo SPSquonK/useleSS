@@ -25,7 +25,7 @@ public:
 	CRect	m_rect;
 	BOOL	m_bDrag;
 	DWORD	m_dwListCtrlStyle;
-	vector<CItemBase*>		m_pItemContainer;
+	std::vector<CItemBase*>		m_pItemContainer;
 	
 	void	Create( DWORD dwListCtrlStyle, RECT & rect, CWndBase* pParentWnd, UINT nID );
 

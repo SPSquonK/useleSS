@@ -8,9 +8,9 @@ CAccessoryProperty::CAccessoryProperty()
 
 CAccessoryProperty::~CAccessoryProperty()
 {
-	for( map<DWORD, vector<SINGLE_DST>*>::iterator i = m_mapAccessory.begin(); i != m_mapAccessory.end(); ++i )
+	for( auto i = m_mapAccessory.begin(); i != m_mapAccessory.end(); ++i )
 	{
-		vector<SINGLE_DST>* pVector	= i->second;
+		std::vector<SINGLE_DST>* pVector	= i->second;
 		safe_delete_array( pVector );
 	}
 	m_mapAccessory.clear();
@@ -24,13 +24,13 @@ CAccessoryProperty*	CAccessoryProperty::GetInstance( void )
 
 BOOL CAccessoryProperty::IsAccessory( DWORD dwItemId )
 {
-	map<DWORD, vector<SINGLE_DST>*>::iterator i	= m_mapAccessory.find( dwItemId );
+	const auto i	= m_mapAccessory.find( dwItemId );
 	return( i != m_mapAccessory.end() );
 }
 
-vector<SINGLE_DST>* CAccessoryProperty::GetDst( DWORD dwItemId, int nAbilityOption )
+std::vector<SINGLE_DST>* CAccessoryProperty::GetDst( DWORD dwItemId, int nAbilityOption )
 {
-	map<DWORD, vector<SINGLE_DST>*>::iterator i	= m_mapAccessory.find( dwItemId );
+	const auto i	= m_mapAccessory.find( dwItemId );
 	if( i != m_mapAccessory.end() )
 		return &( i->second[nAbilityOption] );
 	return NULL;
@@ -63,7 +63,7 @@ BOOL CAccessoryProperty::LoadScript( LPCTSTR szFile )
 			while( *s.token != '}' )
 			{
 				s.GetToken();	// {
-				vector<SINGLE_DST>* pVector	= new vector<SINGLE_DST>[MAX_AAO+1];
+				std::vector<SINGLE_DST>* pVector	= new std::vector<SINGLE_DST>[MAX_AAO+1];
 				int nAbilityOption	= s.GetNumber();
 				while( *s.token != '}' )
 				{
@@ -79,7 +79,7 @@ BOOL CAccessoryProperty::LoadScript( LPCTSTR szFile )
 					}
 					nAbilityOption	= s.GetNumber();
 				}
-				bool b	= m_mapAccessory.insert( map<DWORD, vector<SINGLE_DST>*>::value_type( dwItemId, pVector ) ).second;
+				bool b	= m_mapAccessory.emplace(dwItemId, pVector).second;
 				ASSERT( b );
 				dwItemId	= s.GetNumber();
 			}

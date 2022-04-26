@@ -4,7 +4,7 @@
 class CWndInfoNotice : public CWndNeuz 
 { 
 public: 
-	vector<CString> m_vecStrBanner;	
+	std::vector<CString> m_vecStrBanner;
 	DWORD		 m_dwChangeBannerTime;
 	LPIMAGE m_atexPannel;
 

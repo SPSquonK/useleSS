@@ -29,7 +29,7 @@ DWORD CNeuzEnemy::Add( OBJID objid )
 		it->second = GetTickCount();
 	}
 	else
-		m_Enemy.insert( make_pair(objid, GetTickCount() ) );
+		m_Enemy.emplace(objid, GetTickCount());
 
 	return dwLast;
 }

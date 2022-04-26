@@ -811,7 +811,7 @@ IBuff* CBuffMgr::GetFirstBS()
 
 void CBuffMgr::Process()
 {
-	vector<LONG> vTemp;
+	std::vector<LONG> vTemp;
 	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
 	{
 		IBuff* pBuff	= i->second;
@@ -829,7 +829,7 @@ void CBuffMgr::Process()
 
 void CBuffMgr::RemoveBuffs( DWORD dwFlags, DWORD dwParam )
 {
-	vector<LONG> vTemp;
+	std::vector<LONG> vTemp;
 	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
 	{
 		IBuff* pBuff	= i->second;

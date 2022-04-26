@@ -85,7 +85,7 @@ BOOL CWndTutorial::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LIST1 );
 				int sel = pWndListBox->GetCurSel();
-				map<int, TUTORIAL_STRING>::iterator iter = m_mapTutorial.find(pWndListBox->GetCurSel());
+				const auto iter = m_mapTutorial.find(pWndListBox->GetCurSel());
 				m_strKeyword = iter->second.strTitle;
 				CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT2 );
 				const auto rect = pWndText->GetClientRect();
@@ -124,7 +124,7 @@ BOOL CWndTutorial::LoadTutorial(LPCTSTR lpszFileName)
 		temp.strTitle		= s.token;
 		s.GetToken();
 		temp.strContents	= s.token;
-		m_mapTutorial.insert(map<int, TUTORIAL_STRING>::value_type(nIndex, temp));
+		m_mapTutorial.emplace(nIndex, temp);
 		s.GetToken();	// }
 
 		// 완료한 레벨까지만 추가한다

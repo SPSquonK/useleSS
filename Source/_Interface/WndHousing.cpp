@@ -93,7 +93,6 @@ void CWndHousing::OnDraw( C2DRender* p2DRender )
 { 
 	if(m_vecItem.size())
 	{
-		vector<HOUSING_ITEM>::iterator iter;
 		CWndListBox*	pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
 		LPWNDCTRL		pCustom = NULL;
 		DWORD			dwColor;
@@ -107,7 +106,7 @@ void CWndHousing::OnDraw( C2DRender* p2DRender )
 		int nDrawCount = 0;
 		int nLine = 0;
 
-		for(iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
+		for(auto iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
 		{
 			if(m_nSelected != 0 && (m_nSelected - 1) == nLine)
 				dwColor = D3DCOLOR_ARGB( 255, 0, 0, 255 );
@@ -200,7 +199,7 @@ void CWndHousing::RefreshItemList()
 
 	pWndListBox->ResetContent();
 	
-	for(vector<HOUSINGINFO>::iterator iter = m_vecItem.begin(); iter != m_vecItem.end(); ++iter)
+	for(auto iter = m_vecItem.begin(); iter != m_vecItem.end(); ++iter)
 	{
 		ItemProp *pItemProp = prj.GetItemProp(iter->dwItemId);
 		
@@ -424,7 +423,7 @@ BOOL CWndHousing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				
 				m_nSelected					= pWndListBox->GetCurSel() + 1;
 
-				for(vector<HOUSING_ITEM>::iterator iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
+				for(auto iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
 				{
 					++nLoop;
 					if(m_nSelected > nLoop)	continue;
@@ -474,7 +473,7 @@ BOOL CWndHousing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						CDeployManager::GetInstance()->EndDeploy();
 
 				CWndListBox*	pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-				for(vector<HOUSING_ITEM>::iterator iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
+				for(auto iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
 				{
 					++nLoop;
 					if(m_nSelected > nLoop)	continue;
@@ -511,7 +510,7 @@ BOOL CWndHousing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if(!CDeployManager::GetInstance()->IsReady())
 			{
 				CWndListBox*	pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-				for(vector<HOUSING_ITEM>::iterator iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
+				for(auto iter = m_mapItem.begin(); iter != m_mapItem.end(); ++iter)
 				{
 					++nLoop;
 					if(m_nSelected > nLoop)	continue;
@@ -654,7 +653,6 @@ void CWndGuildHousing::OnDraw( C2DRender* p2DRender )
 { 
 	if( !m_cWndItems.empty() )
 	{
-		vector<HOUSING_ITEM>::iterator iter;
 		CWndListBox*	pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
 		assert( pWndListBox );
 	
@@ -682,7 +680,7 @@ void CWndGuildHousing::OnDraw( C2DRender* p2DRender )
 
 		BOOL bNoSelecting = TRUE;
 
-		for(iter = m_cWndItems.begin(); iter != m_cWndItems.end(); ++iter)
+		for(auto iter = m_cWndItems.begin(); iter != m_cWndItems.end(); ++iter)
 		{
 			//선택 라인
 			bSelected = ( m_nSelected != 0 && (m_nSelected - 1) == nLine );
@@ -1051,7 +1049,7 @@ BOOL CWndGuildHousing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			CWndListBox*	pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
 			m_nSelected					= pWndListBox->GetCurSel() + 1;
 
-			for(vector<HOUSING_ITEM>::iterator iter = m_cWndItems.begin(); iter != m_cWndItems.end(); ++iter)
+			for(auto iter = m_cWndItems.begin(); iter != m_cWndItems.end(); ++iter)
 			{
 				HOUSING_ITEM& kItem = *iter;
 				++nLoop;

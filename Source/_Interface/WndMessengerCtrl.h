@@ -28,7 +28,7 @@ public:
 	int m_nDrawCount;
 	CWndScrollBar m_wndScrollBar;
 	CWndMenu m_menu;
-	vector < __MESSENGER_PLAYER > m_vPlayerList;
+	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
 	enum {SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME};
@@ -86,7 +86,7 @@ public:
 	int m_nFontHeight;
 	int m_nDrawCount;
 	CWndScrollBar m_wndScrollBar;
-	vector < __MESSENGER_PLAYER > m_vPlayerList;
+	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
 	enum {SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME};
@@ -178,7 +178,7 @@ private:
 	int m_nFontHeight;
 	CWndMenu m_Menu;
 	__MESSENGER_PLAYER m_MasterPlayer;
-	vector < __MESSENGER_PLAYER > m_vDisciplePlayer;
+	std::vector < __MESSENGER_PLAYER > m_vDisciplePlayer;
 };
 
 #endif //__WNDMESSENGERCTRL_H

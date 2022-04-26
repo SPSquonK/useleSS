@@ -788,47 +788,34 @@ void CUltimateWeapon::SetDestParamUltimate( CMover* pMover, CItemElem* pItemElem
 	
 	if( dwParts != PARTS_RWEAPON )
 		return;
-	
-	map<int, int> mapDst = GetDestParamUltimate( pItemElem );
-	for(map<int, int>::iterator it = mapDst.begin(); it != mapDst.end(); it++ )
-	{
+
+	for (const auto & pair : GetDestParamUltimate(pItemElem)) {
 		if( bEquip )
-			pMover->SetDestParam( it->first, it->second, NULL_CHGPARAM );
+			pMover->SetDestParam(pair.first, pair.second, NULL_CHGPARAM);
 		else 
-			pMover->ResetDestParam( it->first, it->second, TRUE );
+			pMover->ResetDestParam(pair.first, pair.second, TRUE);
 	}
 }
 
 // 합성된 보석들의 종류 및 능력
-map<int, int> CUltimateWeapon::GetDestParamUltimate( CItemElem* pItemElem )
+std::map<int, int> CUltimateWeapon::GetDestParamUltimate( CItemElem* pItemElem )
 {
-	map<int, int> mapDst;  
 	if( !pItemElem || pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE )
-		return mapDst;
+		return {};
 	
-	map<DWORD, int> mapItem;		
-	for( int i=0; i<pItemElem->GetUltimatePiercingSize(); i++ )
-	{
-		if( pItemElem->GetUltimatePiercingItem( i ) == 0 )
-			break;
-
-		map<DWORD, int>::iterator it=mapItem.find( pItemElem->GetUltimatePiercingItem( i ) );
-		if( it==mapItem.end() )
-			mapItem.insert( map<DWORD, int>::value_type( pItemElem->GetUltimatePiercingItem( i ), 1 ) );
-		else
-			it->second++;
+	std::map<DWORD, int> mapItem;		
+	for (int i=0; i<pItemElem->GetUltimatePiercingSize(); i++) {
+		const DWORD piercingItem = pItemElem->GetUltimatePiercingItem(i);
+		if (piercingItem != 0) {
+			mapItem[piercingItem] += 1;
+		}
 	}
 	
-	for( map<DWORD, int>::iterator it=mapItem.begin(); it!=mapItem.end(); it++ )
-	{
-		ItemProp* pItemProp	= prj.GetItemProp( it->first );
-		int nResultDst = GetDST( it->first, it->second, pItemProp->dwReferStat2 );
-		
-		map<int, int>::iterator iter=mapDst.find( pItemProp->dwReferStat2 );
-		if( iter==mapDst.end() )
-			mapDst.insert( map<int, int>::value_type( pItemProp->dwReferStat2, nResultDst ) );
-		else
-			iter->second += nResultDst;
+	std::map<int, int> mapDst;
+	for (const auto & [itemId, qtt] : mapItem) {
+		const ItemProp * const pItemProp	= prj.GetItemProp(itemId);
+		const int nResultDst = GetDST(itemId, qtt, pItemProp->dwReferStat2 );
+		mapDst[pItemProp->dwReferStat2] += nResultDst;
 	}
 	return mapDst;
 }
