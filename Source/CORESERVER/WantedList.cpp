@@ -72,7 +72,7 @@ void CWantedList::Read( CAr& ar )
 		ar >> pEntry->nEnd;
 		ar.ReadString( pEntry->szMsg, WANTED_MSG_MAX + 1 );
 
-		m_wantedList.insert( make_pair(idPlayer, pEntry) );
+		m_wantedList.insert( std::make_pair(idPlayer, pEntry) );
 	}
 }
 
@@ -80,7 +80,7 @@ void CWantedList::Write( CAr& ar )
 {
 	CMclAutoLock Lock( m_AccessLock );
 
-	vector<WANTED_ENTRY *> array;
+	std::vector<WANTED_ENTRY *> array;
 	array.reserve( 100 );
 	long lCurrent = time( NULL );
 
@@ -149,7 +149,7 @@ BOOL CWantedList::SetEntry( u_long idPlayer, LPCTSTR szPlayer, int nGold, LPCTST
 		pEntry->nEnd = nEnd;
 		strcpy( pEntry->szMsg, szMsg );
 		
-		m_wantedList.insert( make_pair(idPlayer, pEntry) );
+		m_wantedList.insert( std::make_pair(idPlayer, pEntry) );
 	}
 	nResult = pEntry->nGold;
 	g_dpDatabaseClient.SendCTWanted( CT_WANTED_SET, idPlayer, nGold, nEnd, szMsg );	// DBÃ³¸® 

@@ -48,7 +48,7 @@ void CLoginUserMng::Free( void )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-	for( C2User::iterator i = m_dpid2User.begin(); i != m_dpid2User.end(); ++i )
+	for( auto i = m_dpid2User.begin(); i != m_dpid2User.end(); ++i )
 	{
 		CLoginUser* pUser	= i->second;
 		SAFE_DELETE( pUser );
@@ -67,7 +67,7 @@ BOOL CLoginUserMng::AddUser( DPID dpid, CLoginUser* pUser )
 
 	if( GetUser( dpid ) == NULL )
 	{
-		bool bResult	= m_dpid2User.insert( C2User::value_type( dpid, pUser ) ).second;
+		bool bResult	= m_dpid2User.emplace(dpid, pUser).second;
 //		ASSERT( bResult );
 
 		m_uCount++;
@@ -81,13 +81,13 @@ BOOL CLoginUserMng::AddUser( DPID dpid, CLoginUser* pUser )
 BOOL CLoginUserMng::AddUser( const char* pKey, CLoginUser * pUser )
 {
 	// lock이 걸린 상태라고 가정됨 
-	bool result = m_ac2User.insert( map<string, CLoginUser *>::value_type( pKey, pUser ) ).second;
+	bool result = m_ac2User.emplace(pKey, pUser).second;
 	return ( result == true );
 }
 
 CLoginUser * CLoginUserMng::GetUser( const char* pKey )
 {
-	map<string, CLoginUser *>::iterator i	= m_ac2User.find( pKey );
+	const auto i	= m_ac2User.find( pKey );
 	if( i != m_ac2User.end() )
 		return i->second;
 	return NULL;
@@ -96,7 +96,7 @@ CLoginUser * CLoginUserMng::GetUser( const char* pKey )
 CLoginUser * CLoginUserMng::GetUser( DPID dpid )
 {
 #ifdef __STL_0402
-	C2User::iterator i = m_dpid2User.find( dpid );
+	const auto i = m_dpid2User.find( dpid );
 	if( i != m_dpid2User.end() )
 		return i->second;
 	return NULL;
@@ -112,7 +112,7 @@ BOOL CLoginUserMng::RemoveUser( DPID dpid )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-	C2User::iterator i = m_dpid2User.find( dpid );
+	const auto i = m_dpid2User.find( dpid );
 	if( i != m_dpid2User.end() )
 	{
 		CLoginUser* pUser	= i->second;
@@ -157,7 +157,7 @@ void CLoginUserMng::DestroyAbnormalPlayer( void )
 	//CString strTime	= time.Format( "%Y/%m/%d %H:%M:%S" );
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	for( C2User::iterator i = m_dpid2User.begin(); i != m_dpid2User.end(); ++i )
+	for( auto i = m_dpid2User.begin(); i != m_dpid2User.end(); ++i )
 	{
 		CLoginUser* pUser	= i->second;
 		if( ( t - pUser->m_tPingRecvd ) > 90000 ) // 90

@@ -232,13 +232,13 @@ void CInstanceDungeonBase::DestroyAllDungeonByDungeonID( DWORD dwDungeonId )
 
 void CInstanceDungeonBase::DestroyAllDungeonByMultiKey( ULONG uMultiKey )
 {
-	vector< pair<ID_INFO, DWORD> > vecpairTemp;
+	std::vector< std::pair<ID_INFO, DWORD> > vecpairTemp;
 	for( MAP_IDBASE::iterator it=m_mapID.begin(); it!=m_mapID.end(); it++ )
 	{
 		for( VEC_IDINFO::iterator itVec=it->second.begin(); itVec!=it->second.end(); itVec++ )
 		{
 			if( uMultiKey == (*itVec).uMultiKey )
-				vecpairTemp.push_back( make_pair( (*itVec), it->first ) );
+				vecpairTemp.emplace_back(*itVec, it->first);
 		}
 	}
 	

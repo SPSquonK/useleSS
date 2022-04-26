@@ -8,8 +8,6 @@
 #include <mmsystem.h>
 #include "mempooler.h"
 
-using	namespace	std;
-
 typedef	struct	_CONNECTIONREQUEST
 {
 	u_long	ip;
@@ -18,8 +16,8 @@ typedef	struct	_CONNECTIONREQUEST
 	BOOL	bBlock;
 }	CONNECTIONREQUEST, *PCONNECTIONREQUEST;
 
-typedef	map<u_long, PCONNECTIONREQUEST>	ULONGMAP;
-typedef deque<u_long, allocator<u_long> >	ULONGDEQUE; 
+typedef	std::map<u_long, PCONNECTIONREQUEST>	ULONGMAP;
+typedef std::deque<u_long, std::allocator<u_long> >	ULONGDEQUE; 
 
 #define	MAX_QUEUEITEM	8196
 #define	MAX_HIT		4

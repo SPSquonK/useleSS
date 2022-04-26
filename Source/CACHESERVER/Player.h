@@ -4,7 +4,6 @@
 #pragma once
 
 #include <map>
-using	namespace	std;
 #include "dpclient.h"
 
 class CPlayer
@@ -53,7 +52,7 @@ private:
 	BYTE	m_nSlot;
 };
 
-typedef	map<DPID, CPlayer*>	MPP;
+typedef	std::map<DPID, CPlayer*>	MPP;
 class CPlayerMng
 {
 public:

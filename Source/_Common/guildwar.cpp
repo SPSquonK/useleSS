@@ -228,8 +228,7 @@ void CGuildWarMng::Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nT
 	pLose->m_idWar	= 0;
 	pLose->m_idEnemyGuild	= 0;
 
-	for( map<u_long, CGuildMember*>::iterator i = pWin->m_mapPMember.begin();
-		i != pWin->m_mapPMember.end(); ++i )
+	for( auto i = pWin->m_mapPMember.begin(); i != pWin->m_mapPMember.end(); ++i )
 	{
 #ifdef __CORESERVER
 		CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
@@ -245,7 +244,7 @@ void CGuildWarMng::Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nT
 		}
 #endif	// __WORLDSERVER
 	}
-	for( map<u_long, CGuildMember*>::iterator i	= pLose->m_mapPMember.begin(); i != pLose->m_mapPMember.end(); ++i )
+	for( auto i	= pLose->m_mapPMember.begin(); i != pLose->m_mapPMember.end(); ++i )
 	{
 #ifdef __CORESERVER
 		CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );

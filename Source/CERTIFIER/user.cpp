@@ -27,7 +27,7 @@ bool CCertUserMng::AddUser(const DPID dpid) {
 
 	const auto lock = std::lock_guard(m_AddRemoveLock);
 
-	bool bResult	= m_users.insert( map<DPID, CCertUser *>::value_type( dpid, pUser ) ).second;
+	bool bResult	= m_users.emplace(dpid, pUser).second;
 	if( bResult == false ) {
 		WriteError( "ADD//0" );
 		return false;

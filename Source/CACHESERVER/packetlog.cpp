@@ -21,22 +21,22 @@ void CPacketLog::Add( DPID dpid, DWORD dwHdr, DWORD dwBytes )
 {
 	CMclAutoLock lock( m_AccessLock );
 
-	MPLR::iterator i	= m_players.find( dpid );
+	auto i	= m_players.find( dpid );
 	if( i == m_players.end() )
 	{
 		MPAR mpar;
-		mpar.insert( MPAR::value_type( dwHdr, PacketRecvd( dwHdr, dwBytes ) ) );
-		m_players.insert( MPLR::value_type( dpid, PlayerRecvd( dpid, dwBytes, mpar ) ) );
+		mpar.emplace( dwHdr, PacketRecvd( dwHdr, dwBytes ) );
+		m_players.emplace( dpid, PlayerRecvd( dpid, dwBytes, mpar ) );
 	}
 	else
 	{
 		i->second.dwTotalBytes	+= dwBytes;
 		++i->second.dwTotalPackets;
 		MPAR& mpar	= i->second.mpar;
-		MPAR::iterator j = mpar.find( dwHdr );
+		const auto j = mpar.find( dwHdr );
 		if( j == mpar.end() )
 		{
-			mpar.insert( MPAR::value_type( dwHdr, PacketRecvd( dwHdr, dwBytes ) ) );
+			mpar.emplace( dwHdr, PacketRecvd( dwHdr, dwBytes ) );
 		}
 		else
 		{
@@ -70,7 +70,7 @@ void CPacketLog::Print()
 
 	VPLR	vPlayers;
 	DWORD dwTotalBytes	= 0, dwTotalPackets	= 0;
-	for( MPLR::iterator i = m_players.begin(); i != m_players.end(); ++i )
+	for( auto i = m_players.begin(); i != m_players.end(); ++i )
 	{
 		dwTotalBytes	+= i->second.dwTotalBytes;
 		dwTotalPackets	+= i->second.dwTotalPackets;
@@ -86,10 +86,10 @@ void CPacketLog::Print()
 	if( ( f = fopen( "error.txt","a" ) ) )
 	{
 		int c	= 0;
-		for( VPLR::iterator j = vPlayers.begin(); j != vPlayers.end(); ++j )
+		for( auto j = vPlayers.begin(); j != vPlayers.end(); ++j )
 		{
 			VPAR vPackets;
-			for( MPAR::iterator k = j->mpar.begin(); k != j->mpar.end(); ++k )
+			for( auto k = j->mpar.begin(); k != j->mpar.end(); ++k )
 				vPackets.push_back( k->second );
 			std::sort( vPackets.begin(), vPackets.end(), pllpr2 );
 
@@ -98,7 +98,7 @@ void CPacketLog::Print()
 				j->dwTotalBytes	= 1;
 			if( c++ < MAX_DETAIL_PACKETLOG )
 			{
-				for( VPAR::iterator m = vPackets.begin(); m != vPackets.end(); ++m )
+				for( auto m = vPackets.begin(); m != vPackets.end(); ++m )
 					fprintf( f, "\t\t(%3.2f%%)\t%08X: %d(bytes) %d(packets)\r\n", (float)m->dwBytes * 100 / (float)j->dwTotalBytes, m->dwHdr, m->dwBytes, m->dwPackets );
 			}
 		}

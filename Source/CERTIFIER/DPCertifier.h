@@ -6,8 +6,6 @@
 #include "misc.h"
 #include <map>
 
-using	namespace	std;
-
 #undef	theClass
 #define theClass	CDPCertifier
 #undef theParameters
@@ -40,7 +38,7 @@ public:
 #ifdef __SECURITY_0628
 	char	m_szResVer[100];
 #endif	// __SECURITY_0628
-	map<u_long, LPSERVER_DESC>	m_2ServersetPtr;
+	std::map<u_long, SERVER_DESC *>	m_2ServersetPtr;
 public:
 //	Constructions
 	CDPCertifier();

@@ -26,7 +26,7 @@ public:
 	void	Run();
 private:
 	HANDLE	_heartbeat;
-	const	string	_name;
+	const	std::string	_name;
 };
 Heartbeat hb( "10" );
 ////////////////////////////////////////////////////////////////////////////////

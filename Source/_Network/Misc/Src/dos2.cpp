@@ -11,7 +11,7 @@ CDos2::CDos2()
 
 CDos2::~CDos2()
 {
-	for( map<u_long, PCONNECTIONREQUEST2>::iterator i = begin(); i != end(); ++i )
+	for( auto i = begin(); i != end(); ++i )
 		m_pPool->Free( i->second );
 	clear();
 	SAFE_DELETE( m_pPool );
@@ -19,7 +19,7 @@ CDos2::~CDos2()
 
 PCONNECTIONREQUEST2 CDos2::Get( u_long addr )
 {
-	map<u_long, PCONNECTIONREQUEST2>::iterator i	= find( addr );
+	const auto i	= find( addr );
 	if( i != end() )
 		return i->second;
 	return NULL;
@@ -31,7 +31,7 @@ void CDos2::Add( u_long addr )
 	memset( ptrtmp, 0, sizeof(CONNECTIONREQUEST2 ) );
 	ptrtmp->ip	= addr;
 	ptrtmp->dwHit	= GetTickCount();
-	insert( map<u_long, PCONNECTIONREQUEST2>::value_type( addr, ptrtmp ) );
+	emplace(addr, ptrtmp);
 }
 
 int CDos2::IsOver( u_long addr )

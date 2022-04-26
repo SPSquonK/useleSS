@@ -9,7 +9,6 @@
 #include "Ar.h"
 #include <string>
 #include <map>
-using	namespace	std;
 
 #include "SkillInfluence.h"
 #include "UserTaskBar.h"

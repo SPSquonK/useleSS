@@ -20,7 +20,7 @@ private:
 	u_short	m_uPort;
 	char	m_lpAddr[32];
 	u_long	m_uIoWorker;
-	list<HANDLE>	m_listthread;
+	std::list<HANDLE>	m_listthread;
 	CMclCritSec		m_locklistthread;
 	HANDLE* m_phCompletionPort;
 	WSAEVENT	m_hClose;

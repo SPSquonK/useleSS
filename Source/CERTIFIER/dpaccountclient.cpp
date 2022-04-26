@@ -242,7 +242,7 @@ void CDPAccountClient::OnServersetList( CAr & ar, DPID dpid )
 //		if( pServer->dwParent != NULL_ID )
 		{
 			u_long uId	= pServer->dwParent * 100 + pServer->dwID;
-			g_dpCertifier.m_2ServersetPtr.insert( map<u_long, LPSERVER_DESC>::value_type( uId, pServer ) );
+			g_dpCertifier.m_2ServersetPtr.emplace(uId, pServer);
 		}
 	}
 }
@@ -253,7 +253,7 @@ void CDPAccountClient::OnPlayerCount( CAr & ar, DPID dpid )
 	long lCount;
 	ar >> uId >> lCount;
 
-	map<u_long, LPSERVER_DESC>::iterator i2	= g_dpCertifier.m_2ServersetPtr.find( uId );
+	const auto i2	= g_dpCertifier.m_2ServersetPtr.find( uId );
 	if( i2 != g_dpCertifier.m_2ServersetPtr.end() )
 		InterlockedExchange( &i2->second->lCount, lCount );
 }
@@ -264,7 +264,7 @@ void CDPAccountClient::OnEnableServer( CAr & ar, DPID dpid )
 	long lEnable;
 	ar >> uId >> lEnable;
 
-	map<u_long, LPSERVER_DESC>::iterator i2	= g_dpCertifier.m_2ServersetPtr.find( uId );
+	const auto i2	= g_dpCertifier.m_2ServersetPtr.find( uId );
 	if( i2 != g_dpCertifier.m_2ServersetPtr.end() )
 		InterlockedExchange( &i2->second->lEnable, lEnable );
 }

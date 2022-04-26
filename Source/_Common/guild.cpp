@@ -359,14 +359,14 @@ CGuild::~CGuild()
 void CGuild::Clear( void )
 {
 	CGuildMember* pMember;
-	for( map<u_long, CGuildMember*>::iterator i	= m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
+	for( auto i	= m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
 	{
 		pMember	= i->second;
 		SAFE_DELETE( pMember );
 	}
 	m_mapPMember.clear();
 
-	for (list <CGuildVote*>::iterator it = m_votes.begin() ;it != m_votes.end(); ++it )
+	for (auto it = m_votes.begin() ;it != m_votes.end(); ++it )
 		SAFE_DELETE( *it );
 	m_votes.clear();
 }
@@ -375,7 +375,7 @@ BOOL CGuild::AddMember( CGuildMember* pMember )
 {
 	if( GetMember( pMember->m_idPlayer ) )
 		return FALSE;	// already exists
-	m_mapPMember.insert( map<u_long, CGuildMember*>::value_type( pMember->m_idPlayer, pMember ) );
+	m_mapPMember.emplace(pMember->m_idPlayer, pMember);
 	return TRUE;	//
 }
 
@@ -409,11 +409,11 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			ar << m_nLevel;					// 레벨 
 			ar << m_idEnemyGuild;
 			ar << (short)GetSize();
-			for( map<u_long, CGuildMember*>::iterator i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
+			for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
 				( i->second )->Serialize( ar );
 
 			ar << (short)m_votes.size();
-			for ( list <CGuildVote*>::iterator it = m_votes.begin(); it!=m_votes.end(); ++it )
+			for ( auto it = m_votes.begin(); it!=m_votes.end(); ++it )
 				(*it)->Serialize( ar );
 			ar << m_nQuestSize;
 			ar.Write( (const void*)m_aQuest, sizeof(GUILDQUEST) * m_nQuestSize );
@@ -444,7 +444,7 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			{
 				CGuildMember* pMember	= new CGuildMember;
 				pMember->Serialize( ar );
-				m_mapPMember.insert( map<u_long, CGuildMember*>::value_type( pMember->m_idPlayer, pMember ) );
+				m_mapPMember.emplace(pMember->m_idPlayer, pMember);
 			}
 
 			ar >> nSize;
@@ -463,7 +463,7 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 
 CGuildMember* CGuild::GetMember( u_long idPlayer )
 {
-	map<u_long, CGuildMember*>::iterator i	= m_mapPMember.find( idPlayer );
+	const auto i	= m_mapPMember.find( idPlayer );
 	if( i != m_mapPMember.end() )
 		return i->second;
 	return NULL;
@@ -472,9 +472,7 @@ CGuildMember* CGuild::GetMember( u_long idPlayer )
 int CGuild::GetMemberLvSize( int nMemberLv )
 {
 	int cb	= 0;
-	for( map<u_long, CGuildMember*>::iterator i	= m_mapPMember.begin();
-		i != m_mapPMember.end(); ++i )
-	{
+	for( auto i	= m_mapPMember.begin(); i != m_mapPMember.end(); ++i ) {
 		if( i->second->m_nMemberLv == nMemberLv )
 			cb++;
 	}
@@ -615,8 +613,7 @@ void CGuild::AddVote( const VOTE_INSERTED_INFO& info, bool bCompleted, BYTE* cbC
 // 투표 찾기 
 CGuildVote* CGuild::FindVote( u_long idVote )
 {
-	list <CGuildVote*>::iterator it = m_votes.begin();
-	for ( ; it != m_votes.end() ; ++it )
+	for (auto it = m_votes.begin(); it != m_votes.end() ; ++it )
 	{
 		if ( (*it)->GetID() == idVote )
 			return *it;
@@ -636,8 +633,7 @@ bool CGuild::ModifyVote( u_long idVote, BYTE cbOperation, BYTE cbExtra )
 	case REMOVE_VOTE:
 		//RemoveVote( idVote );
 		{
-			list <CGuildVote*>::iterator it = m_votes.begin();
-			for ( ; it != m_votes.end() ; ++it )
+			for (auto it = m_votes.begin() ; it != m_votes.end() ; ++it )
 			{
 				if ( (*it)->GetID() == idVote )
 				{
@@ -687,7 +683,7 @@ CGuild & CGuild::operator = ( CGuild & source )
 //	m_nWinPoint	= source.m_nWinPoint;
 	lstrcpy( m_szGuild, source.m_szGuild );
 //	lstrcpy( m_szNotice, source.m_szNotice );
-	for( map<u_long, CGuildMember*>::iterator i = source.m_mapPMember.begin(); i != source.m_mapPMember.end(); ++ i )
+	for( auto i = source.m_mapPMember.begin(); i != source.m_mapPMember.end(); ++ i )
 	{
 		CGuildMember* pMember	= new CGuildMember;
 		*pMember	= *( i->second );
@@ -717,7 +713,7 @@ void CGuildMng::Clear( void )
 	m_AddRemoveLock.Enter( theLineFile );	// lock1
 #endif
 
-	for( map<u_long, CGuild*>::iterator i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
+	for( auto i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
 		safe_delete( i->second );
 	m_mapPGuild.clear();
 	m_mapPGuild2.clear();
@@ -736,7 +732,7 @@ BOOL CGuildMng::SetName( CGuild* pGuild, const char* szName )
 		m_mapPGuild2.erase( pGuild->m_szGuild );	// erase
 	lstrcpy( pGuild->m_szGuild, szName );	// set
 	if( lstrlen( pGuild->m_szGuild ) > 0 )
-		m_mapPGuild2.insert( map<string, CGuild*>::value_type( pGuild->m_szGuild, pGuild ) );	// insert
+		m_mapPGuild2.emplace(pGuild->m_szGuild, pGuild);	// insert
 	return TRUE;
 }
 
@@ -747,9 +743,9 @@ u_long CGuildMng::AddGuild( CGuild* pGuild )
 	if( GetGuild( m_id ) )
 		return 0;
 	pGuild->m_idGuild	= m_id;
-	m_mapPGuild.insert( map<u_long, CGuild*>::value_type( m_id, pGuild ) );
+	m_mapPGuild.emplace( m_id, pGuild );
 	if( lstrlen( pGuild->m_szGuild ) > 0 )
-		m_mapPGuild2.insert( map<string, CGuild*>::value_type( pGuild->m_szGuild, pGuild ) );
+		m_mapPGuild2.emplace( pGuild->m_szGuild, pGuild );
 	return m_id;
 }
 
@@ -770,7 +766,7 @@ BOOL CGuildMng::RemoveGuild( u_long idGuild )
 
 CGuild* CGuildMng::GetGuild( u_long idGuild )
 {
-	map<u_long, CGuild*>::iterator i	= m_mapPGuild.find( idGuild );
+	const auto i	= m_mapPGuild.find( idGuild );
 	if( i != m_mapPGuild.end() )
 		return i->second;
 	return NULL;
@@ -778,7 +774,7 @@ CGuild* CGuildMng::GetGuild( u_long idGuild )
 
 CGuild* CGuildMng::GetGuild( const char* szGuild )
 {
-	map<string, CGuild*>::iterator i	= m_mapPGuild2.find( szGuild );
+	const auto i	= m_mapPGuild2.find( szGuild );
 	if( i != m_mapPGuild2.end() )
 		return i->second;
 	return NULL;
@@ -790,7 +786,7 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 	{
 		ar << m_id;
 		ar << GetSize();
-		for( map<u_long, CGuild*>::iterator i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
+		for( auto i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
 			( i->second )->Serialize( ar, bDesc );
 		
 		// 길드랭크 정보 로드
@@ -808,9 +804,9 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 		{
 			CGuild* pGuild	= new CGuild;
 			pGuild->Serialize( ar, bDesc );
-			m_mapPGuild.insert( map<u_long, CGuild*>::value_type( pGuild->m_idGuild, pGuild ) );
+			m_mapPGuild.emplace( pGuild->m_idGuild, pGuild );
 			if( lstrlen( pGuild->m_szGuild ) > 0 )
-				m_mapPGuild2.insert( map<string, CGuild*>::value_type( pGuild->m_szGuild, pGuild ) );
+				m_mapPGuild2.emplace( pGuild->m_szGuild, pGuild );
 		}
 
 		// 길드랭크 정보  쓰기
@@ -841,8 +837,7 @@ void CGuildMng::AddConnection( CPlayer* pPlayer )
 		u_long uLoginGuildMulti[MAX_GM_SIZE];
 		CGuildMember* pMember;
 		CPlayer* pSendPlayer;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-		i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 			pSendPlayer	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -870,8 +865,7 @@ void CGuildMng::RemoveConnection( CPlayer* pPlayer )
 		// 내가 나가므로 길드원들에게 로그아웃 상태
 		CGuildMember* pMember;
 		CPlayer* pSendPlayer;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-		i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 			if( pMember->m_idPlayer != pPlayer->uKey )

@@ -5,7 +5,6 @@
 
 #include <dplay.h>
 #include <list>
-using namespace std;
 
 class CSock
 {

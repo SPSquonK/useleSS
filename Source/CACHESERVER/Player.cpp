@@ -56,7 +56,7 @@ CPlayerMng::~CPlayerMng()
 void CPlayerMng::Clear( void )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
-	for( MPP::iterator i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
+	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
 		safe_delete( i->second );
 	m_mapPlayers.clear();
 }
@@ -65,7 +65,7 @@ BOOL CPlayerMng::AddPlayer( DPID dpid )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 	CPlayer* pPlayer	= new CPlayer( dpid, InterlockedIncrement( &m_lSerial ) );
-	bool bResult	= m_mapPlayers.insert( MPP::value_type( dpid, pPlayer ) ).second;
+	bool bResult	= m_mapPlayers.emplace(dpid, pPlayer).second;
 	if( !bResult )
 		safe_delete( pPlayer );
 	return bResult;
@@ -73,7 +73,7 @@ BOOL CPlayerMng::AddPlayer( DPID dpid )
 
 CPlayer* CPlayerMng::GetPlayer( DPID dpid )
 {
-	MPP::iterator i	= m_mapPlayers.find( dpid );
+	const auto i	= m_mapPlayers.find( dpid );
 	if( i != m_mapPlayers.end() )
 		return i->second;
 	return NULL;
@@ -82,7 +82,7 @@ CPlayer* CPlayerMng::GetPlayer( DPID dpid )
 BOOL CPlayerMng::RemovePlayer( DPID dpid )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
-	MPP::iterator i	= m_mapPlayers.find( dpid );
+	const auto i	= m_mapPlayers.find( dpid );
 	if( i != m_mapPlayers.end() )
 	{
 		safe_delete( i->second );
@@ -103,7 +103,7 @@ void CPlayerMng::DestroyPlayer( CDPClient* pClient )
 
 void CPlayerMng::DestroyPlayersOnChannel( CDPClient* pClient )
 {
-	for( MPP::iterator i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
+	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
 	{
 		CPlayer* pPlayer	= i->second;
 		if( pPlayer->GetClient() == pClient )
@@ -116,7 +116,7 @@ void CPlayerMng::DestroyPlayersOnChannel( CDPClient* pClient )
 
 void CPlayerMng::DestroyAllPlayers( void )
 {
-	for( MPP::iterator i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
+	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
 		g_DPCacheSrvr.DestroyPlayer( i->second->GetNetworkId() );
 }
 
@@ -124,7 +124,7 @@ CPlayer* CPlayerMng::GetPlayerBySerial( DWORD dwSerial )
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	for( MPP::iterator i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
+	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
 	{
 		CPlayer* pPlayer	= i->second;
 		if( pPlayer->GetSerial() == dwSerial )
@@ -138,7 +138,7 @@ void CPlayerMng::DestroyGarbage( void )
 	DWORD dwTick	= GetTickCount() - SEC( 60 );
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	for( MPP::iterator i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
+	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
 	{
 		CPlayer* pPlayer	= i->second;
 		if( pPlayer->IsTimeover( dwTick ) )

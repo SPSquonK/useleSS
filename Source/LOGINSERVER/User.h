@@ -45,13 +45,13 @@ public:
 #endif	// __VM_0820
 };
 
-using C2User = map<DPID, CLoginUser *>;
+using C2User = std::map<DPID, CLoginUser *>;
 
 class CLoginUserMng
 {
 private:
 	C2User	m_dpid2User;
-	map<string, CLoginUser *>	m_ac2User;
+	std::map<std::string, CLoginUser *>	m_ac2User;
 	u_long	m_uCount = 0;
 
 public:

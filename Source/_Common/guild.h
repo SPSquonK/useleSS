@@ -266,7 +266,7 @@ public:
 #endif
 	DWORD						m_nGoldGuild;	// 길드 창고 페냐 / 공헌된 페냐
 
-	list <CGuildVote*>			m_votes;		// 투표데이타들 
+	std::list <CGuildVote*>			m_votes;		// 투표데이타들 
 	u_long	m_idEnemyGuild;						// 전쟁중인 적대길드
 	int		m_nWinPoint;
 	int		m_nWin;
@@ -367,7 +367,7 @@ class CGuildMng
 public:
 	u_long	m_id;								// load
 	std::map<u_long, CGuild*>	m_mapPGuild;		// Guild ID를 이용하여 길드 얻음
-	std::map<string, CGuild*>	m_mapPGuild2;		// Guild Name를 이용하여 길드 얻음
+	std::map<std::string, CGuild*>	m_mapPGuild2;		// Guild Name를 이용하여 길드 얻음
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
 	CRIT_SEC	m_AddRemoveLock;
 #endif

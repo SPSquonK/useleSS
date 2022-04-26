@@ -4,8 +4,6 @@
 #include <map>
 #include <dplay.h>
 
-using	namespace	std;
-
 typedef struct	_PacketRecvd
 {
 	DWORD	dwHdr;
@@ -14,7 +12,7 @@ typedef struct	_PacketRecvd
 	_PacketRecvd( DWORD h, DWORD dwRecvd ) : dwHdr( h ), dwPackets( 1 ), dwBytes( dwRecvd )		{}
 }	PacketRecvd;
 
-typedef	map<DWORD, PacketRecvd>	MPAR;
+typedef	std::map<DWORD, PacketRecvd>	MPAR;
 
 typedef struct	_PlayerRecvd
 {
@@ -25,9 +23,9 @@ typedef struct	_PlayerRecvd
 	_PlayerRecvd( DPID d, DWORD dwBytes, MPAR & m ) : dpid( d ), dwTotalBytes( dwBytes ), dwTotalPackets( 1 ), mpar( m )	{}
 } PlayerRecvd;
 
-typedef map<DPID, PlayerRecvd>	MPLR;
-typedef vector<PacketRecvd>	VPAR;
-typedef vector<PlayerRecvd>	VPLR;
+typedef std::map<DPID, PlayerRecvd>	MPLR;
+typedef std::vector<PacketRecvd>	VPAR;
+typedef std::vector<PlayerRecvd>	VPLR;
 
 class CPacketLog
 {

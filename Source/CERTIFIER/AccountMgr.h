@@ -27,7 +27,7 @@ struct ACCOUNT_CACHE
 class CAccountMgr
 {
 public:
-	list< ACCOUNT_CACHE* >	m_cache;		// LRU로 유지되는 캐쉬 정보 
+	std::list< ACCOUNT_CACHE* >	m_cache;		// LRU로 유지되는 캐쉬 정보 
 
 public:
 	CAccountMgr();

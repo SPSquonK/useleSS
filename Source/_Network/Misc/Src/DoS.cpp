@@ -8,7 +8,7 @@ CDoS::CDoS()
 
 CDoS::~CDoS()
 {
-	for( ULONGMAP::iterator i = begin(); i != end(); ++i )
+	for( auto i = begin(); i != end(); ++i )
 		m_pPool->Free( i->second );
 	clear();
 	m_q.clear();
@@ -18,7 +18,7 @@ CDoS::~CDoS()
 
 PCONNECTIONREQUEST CDoS::Get( u_long addr )
 {
-	ULONGMAP::iterator i	= find( addr );
+	const auto i	= find( addr );
 	if( i != end() )
 		return i->second;
 	return NULL;
@@ -38,7 +38,7 @@ void CDoS::Add( u_long addr )
 	ptrtmp	= (PCONNECTIONREQUEST)m_pPool->Alloc();	// add
 	ZeroMemory( ptrtmp, sizeof(CONNECTIONREQUEST) );
 	ptrtmp->dwHit	= timeGetTime();
-	insert( ULONGMAP::value_type( addr, ptrtmp ) );
+	emplace(addr, ptrtmp);
 	m_q.push_back( addr );
 }
 

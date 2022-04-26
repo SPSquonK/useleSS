@@ -168,7 +168,7 @@ void CDPSock::RemoveThread( HANDLE hThread )
 	if( m_listthread.size() > 0 )
 	{
 		INIT_LOOP;
-		for( list<HANDLE>::iterator i = m_listthread.begin(); i != m_listthread.end(); ++i )
+		for( auto i = m_listthread.begin(); i != m_listthread.end(); ++i )
 		{
 			VERIFY_LOOP( __FILE__, __LINE__ );
 			h	= *i;

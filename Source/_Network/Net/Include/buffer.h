@@ -9,7 +9,6 @@
 
 #ifdef __CRC
 	#include "crc.h"
-	using	namespace	std;
 	#define	HEADERSIZE5		( sizeof(DWORD) + 1 )
 #if defined( __PACKET_REPLAY_R ) || defined( __PACKET_REPLAY_W )
 	#define	HEADERSIZE13	( sizeof(char) + sizeof(int) + sizeof(DWORD) + sizeof(DWORD) + sizeof(DWORD) )

@@ -9,7 +9,6 @@
 #ifdef __CRC
 #include "crc.h"
 //using	namespace	CryptoPP;
-using	namespace	std;
 #endif	// __CRC
 
 

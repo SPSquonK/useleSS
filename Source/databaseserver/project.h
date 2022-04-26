@@ -8,8 +8,6 @@
 #include "Mymap.h"
 #include "EventLua.h"
 #include "GuildCombat1to1.h"
-using namespace std;
-
 
 
 typedef std::map< std::string, void* > CMapStrToPtr;

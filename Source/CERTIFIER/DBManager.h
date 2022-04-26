@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 #include <set>
-using	namespace	std;
 
 const DWORD			DEFAULT_DB_WORKER_THREAD_NUM = 8;
 
@@ -93,7 +92,7 @@ protected:
 
 public:
 	CMemPool<DB_OVERLAPPED_PLUS>*	m_pDbIOData;
-	set<string>						m_eveSchoolAccount;
+	std::set<std::string>						m_eveSchoolAccount;
 	char							m_szLoginPWD[256];
 
 public:

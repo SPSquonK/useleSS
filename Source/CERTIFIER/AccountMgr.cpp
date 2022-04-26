@@ -24,8 +24,7 @@ CAccountMgr::CAccountMgr()
 
 CAccountMgr::~CAccountMgr()
 {
-	list< ACCOUNT_CACHE* >::iterator it;
-	for( it = m_cache.begin(); it != m_cache.end(); ++it )
+	for( auto it = m_cache.begin(); it != m_cache.end(); ++it )
 		safe_delete( *it );
 }
 
@@ -36,8 +35,7 @@ ACCOUNT_CHECK CAccountMgr::Check( DWORD dwIP )
 	time_t	tmCur = time( NULL );
 
 	// 캐쉬에서 찾는다.
-	list< ACCOUNT_CACHE* >::iterator it;
-	for( it = m_cache.begin(); it != m_cache.end(); ++it )
+	for(auto it = m_cache.begin(); it != m_cache.end(); ++it )
 	{
 		ACCOUNT_CACHE* pInfo = *it;
 		if( pInfo->m_dwIP == dwIP )

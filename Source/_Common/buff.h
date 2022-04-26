@@ -6,7 +6,6 @@
 #include "ar.h"
 
 #include <map>
-using	namespace	std;
 
 #define	RBF_COMMON	(DWORD)0x00000001
 #define	RBF_IK3	(DWORD)0x00000002

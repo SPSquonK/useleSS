@@ -6,8 +6,6 @@
 #include <map>
 #include "mempooler.h"
 
-using	namespace	std;
-
 typedef struct	_CONNECTIONREQUEST2
 {
 	u_long	ip;
@@ -21,7 +19,7 @@ CONNECTIONREQUEST2,	*PCONNECTIONREQUEST2;
 #undef MAX_HIT
 #define	MAX_HIT		50
 
-class CDos2 : public map<u_long, PCONNECTIONREQUEST2>
+class CDos2 : public std::map<u_long, PCONNECTIONREQUEST2>
 {
 public:
 	CDos2();

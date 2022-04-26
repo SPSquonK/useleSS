@@ -369,7 +369,7 @@ BOOL CDbManager::LoadEveSchoolAccount( void )
 
 BOOL CDbManager::IsEveSchoolAccount( const char* pszAccount )
 {
-	set<string>::iterator i	= m_eveSchoolAccount.find( pszAccount );
+	auto i	= m_eveSchoolAccount.find( pszAccount );
 	return( i != m_eveSchoolAccount.end() );
 }
 
