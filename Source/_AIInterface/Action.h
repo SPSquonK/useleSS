@@ -75,7 +75,7 @@ class CActMsgq
 {
 private:
 #ifdef __OPT_MEM_0811
-	deque<T*>	m_qpam;
+	std::deque<T*>	m_qpam;
 #else	// __OPT_MEM_0811
 //{{AFX
 	ACTMSG	m_aActMsg[MAX_ACTMSG];

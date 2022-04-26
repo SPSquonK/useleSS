@@ -61,7 +61,7 @@ public:
 
 BEGIN_WNDCLASS( CWndSelectServer )
 public:
-	vector<CString> m_vecStrBanner;	
+	std::vector<CString> m_vecStrBanner;	
 	DWORD		 m_dwChangeBannerTime;
 	LPIMAGE		 m_atexPannel;
 	

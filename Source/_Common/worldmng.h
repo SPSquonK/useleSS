@@ -22,7 +22,7 @@ class CWorld;
 class CWorldMng
 #else	// __WORLDSERVER
 #ifdef __STL_0402
-class CWorldMng : public map<string, CWorld*>
+class CWorldMng : public std::map<std::string, CWorld*>
 #else	// __STL_0402
 class CWorldMng : public CMyMap2<CWorld*>
 #endif	// __STL_0402
@@ -97,7 +97,7 @@ public:
 private:
 	BOOL	SetMapCheck( const char* szFileName );
 #ifdef __CLIENT
-	vector<string> m_vecstrFileName;
+	std::vector<std::string> m_vecstrFileName;
 public:
 	void	CheckMapKey();
 #endif // __CLIENT

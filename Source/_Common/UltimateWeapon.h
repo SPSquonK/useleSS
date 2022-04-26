@@ -20,45 +20,31 @@ public:
 	
 	struct __MAKEGEMPROB
 	{
-		int		nEnchant;
-		DWORD	dwGeneralProb;
-		int		nGeneralNum;
-		DWORD	dwUniqueProb;
-		int		nUniqueNum;
-		__MAKEGEMPROB()
-		{
-			nEnchant = 0;
-			dwGeneralProb = 0;
-			nGeneralNum = 0;
-			dwUniqueProb = 0;
-			nUniqueNum = 0;
-		};
+		int		nEnchant = 0;
+		DWORD	dwGeneralProb = 0;
+		int		nGeneralNum = 0;
+		DWORD	dwUniqueProb = 0;
+		int		nUniqueNum = 0;
 	};
 
 	struct __MAKEGEMITEM
 	{
-		DWORD	dwItemID;
-		int		nMinLevel;
-		int		nMaxLevel;
-		__MAKEGEMITEM()
-		{
-			dwItemID = 0;
-			nMinLevel = 0;
-			nMaxLevel = 0;
-		};
+		DWORD	dwItemID = 0;
+		int		nMinLevel = 0;
+		int		nMaxLevel = 0;
 	};
 
 	struct __GEMABILITY
 	{
 		DWORD		dwGemItemId;
 		DWORD		dwAbilityItemId;
-		vector<int>	vecAbility;
+		std::vector<int>	vecAbility;
 	};
 	
 	struct __GEMABILITYKIND
 	{
 		int						nAbility;
-		vector<__GEMABILITY>	vecAbilityKind;
+		std::vector<__GEMABILITY>	vecAbilityKind;
 	};
 		
 	BOOL Load_GemAbility();
@@ -75,16 +61,16 @@ public:
 	BYTE SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr );
 #endif //__WORLDSERVER
 	void SetDestParamUltimate( CMover* pMover, CItemElem* pItemElem, BOOL bEquip, DWORD dwParts );
-	map<int, int> GetDestParamUltimate( CItemElem* pItemElem );
+	std::map<int, int> GetDestParamUltimate( CItemElem* pItemElem );
 	int GetDST( DWORD dwItemId, int nItemNum, int nDSTInfo );
 	CUltimateWeapon();
 	virtual ~CUltimateWeapon();
 
-	vector<__MAKEGEMITEM>	m_vecMakeGemItem;
-	vector<__GEMABILITYKIND>	m_vecGemAbilityKind;
+	std::vector<__MAKEGEMITEM>	m_vecMakeGemItem;
+	std::vector<__GEMABILITYKIND>	m_vecGemAbilityKind;
 #ifdef __WORLDSERVER
-	map<int, __MAKEGEMPROB> m_mapMakeGemProb;	
-	map<int, int>			m_mapUltimateProb;
+	std::map<int, __MAKEGEMPROB> m_mapMakeGemProb;	
+	std::map<int, int>			m_mapUltimateProb;
 	int						m_nSetGemProb;		// 보석합성 확률
 	int						m_nRemoveGemProb;	// 보석제거 확률
 	int						m_nGen2UniProb;		// 일반->유니크

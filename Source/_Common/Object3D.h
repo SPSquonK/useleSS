@@ -391,7 +391,7 @@ class	CObject3DMng
 {
 private:
 #ifdef __JEFF_11_5
-	map<string, CObject3D*>	m_mapObject3D;
+	std::map<std::string, CObject3D*>	m_mapObject3D;
 #else	// __JEFF_11_5
 	int			m_nCachePos;
 	int			m_nSize;

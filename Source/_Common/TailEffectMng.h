@@ -39,7 +39,7 @@ public:
 class CTailModelMng
 {
 protected:
-	list<CTailModel*>	m_ListTailModel;
+	std::list<CTailModel*>	m_ListTailModel;
 
 public:
 	CTailModelMng();
@@ -123,7 +123,7 @@ class CTailEffectModel : public CTailEffect
 protected:
 	int					m_nMaxTail;
 	CModelObject*		m_pModel;
-	vector<TAILMODEL>	m_vecTail;
+	std::vector<TAILMODEL>	m_vecTail;
 	
 	virtual void Init( void );
 	virtual void Destroy( void );

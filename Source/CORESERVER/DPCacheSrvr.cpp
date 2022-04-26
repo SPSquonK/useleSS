@@ -293,8 +293,8 @@ void CDPCacheSrvr::SendGMSay( const CHAR* sPlayerFrom, const CHAR* sPlayerTo, co
 
 void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 {
-	vector< u_long > vecIdFriend;
-	vector< u_long > vecIdBlock;
+	std::vector< u_long > vecIdFriend;
+	std::vector< u_long > vecIdBlock;
 
 	DWORD dwState;
 	u_long uIdofMulti;
@@ -302,7 +302,7 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 	
 	pTo->Lock();
 #ifdef __RT_1025
-	for( map<u_long, Friend>::iterator i = pTo->m_RTMessenger.begin(); i != pTo->m_RTMessenger.end(); ++i )
+	for( auto i = pTo->m_RTMessenger.begin(); i != pTo->m_RTMessenger.end(); ++i )
 	{
 		Friend* pFriend		= &i->second;
 		if( !pFriend->bBlock )
@@ -371,7 +371,6 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 		if( pPlayer )
 		{
 			pPlayer->Lock();
-#ifdef __RT_1025
 			Friend* pFriend		= pPlayer->m_RTMessenger.GetFriend( pTo->uKey );
 			if( pFriend )
 			{
@@ -384,29 +383,11 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 			{
 				dwState		= FRS_OFFLINE;
 			}
-#else	// __RT_1025
-			LPFRIEND lpFriend = pPlayer->m_Messenger.GetFriend( pTo->uKey );
-			if( lpFriend )
-			{
-				if( lpFriend->dwState == FRS_BLOCK )
-					dwState = FRS_OFFLINEBLOCK;
-				else
-					dwState = FRS_BLOCK;
-			}
-			else
-			{
-				dwState = FRS_OFFLINE;
-			}
-#endif	// __RT_1025
 			pPlayer->Unlock();
 		}
 		else
 		{
-#ifdef __RT_1025
 			dwState		= FRS_OFFLINE;
-#else	// __RT_1025
-			dwState		= FRS_OFFLINEBLOCK;
-#endif	// __RT_1025
 		}
 		ar << vecIdBlock[k] << dwState;
 		uIdofMulti	= ( pPlayer? pPlayer->m_uIdofMulti : 100 );
@@ -418,34 +399,17 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 
 void CDPCacheSrvr::SendSetFriendState( CPlayer* pTo )
 {
-	vector< u_long > vecIdFriend;
+	std::vector< u_long > vecIdFriend;
 
 	pTo->Lock();
 	u_long idPlayer = pTo->uKey;
-#ifdef __RT_1025
 	DWORD  dwState	= pTo->m_RTMessenger.GetState();
-	for( map<u_long, Friend>::iterator i = pTo->m_RTMessenger.begin(); i != pTo->m_RTMessenger.end(); ++i )
+	for( auto i = pTo->m_RTMessenger.begin(); i != pTo->m_RTMessenger.end(); ++i )
 	{
 		Friend* pFriend		= &i->second;
 		if( !pFriend->bBlock )
 			vecIdFriend.push_back( i->first );
 	}
-#else	// __RT_1025
-	DWORD  dwState = pTo->m_Messenger.m_dwMyState;
-	for( C2FriendPtr::iterator i = pTo->m_Messenger.m_adifferntFriend.begin() ; i != pTo->m_Messenger.m_adifferntFriend.end() ; i++ )
-	{
-		LPFRIEND lpFriend	= (LPFRIEND)i->second;
-		if( !lpFriend )
-			continue;
-		// locked
-		
-		if( lpFriend->dwState != FRS_BLOCK )// && lpFriend->dwState != FRS_OFFLINE )
-		{
-			vecIdFriend.push_back( lpFriend->dwUserId );
-			lpFriend->dwState = dwState;		// ¿Ö?
-		}
-	}
-#endif	// __RT_1025
 
 	BEFORESENDSOLE( ar, PACKETTYPE_SETFRIENDSTATE, pTo->dpidUser );
 	ar << idPlayer;
@@ -460,7 +424,6 @@ void CDPCacheSrvr::SendSetFriendState( CPlayer* pTo )
 		if( pPlayer )
 		{
 			pPlayer->Lock();
-#ifdef __RT_1025
 			Friend* pFriend		= pPlayer->m_RTMessenger.GetFriend( idPlayer );
 			if( pFriend )
 			{
@@ -470,19 +433,6 @@ void CDPCacheSrvr::SendSetFriendState( CPlayer* pTo )
 				ar << dwState;
 				SEND( ar, this, pPlayer->dpidCache );
 			}
-#else	// __RT_1025
-			LPFRIEND pFriendbuf = pPlayer->m_Messenger.GetFriend( idPlayer );
-			if( pFriendbuf )
-			{
-				if( pFriendbuf->dwState != FRS_BLOCK )		// ¿Ö?
-				{
-					BEFORESENDSOLE( ar, PACKETTYPE_SETFRIENDSTATE, pPlayer->dpidUser );
-					ar << idPlayer; 
-					ar << dwState;
-					SEND( ar, this, pPlayer->dpidCache );
-				}
-			}
-#endif	// __RT_1025
 			pPlayer->Unlock();
 		}
 	}
@@ -1206,8 +1156,7 @@ void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 
 	CGuildMember* pMember;
 	CPlayer* pPlayer;
-	for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-		i != pGuild->m_mapPMember.end(); ++i )
+	for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 	{
 		pMember		= i->second;
 		pPlayer	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -1312,8 +1261,7 @@ void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 		g_dpCoreSrvr.SendAddGuildMember( info, pGuild->m_idGuild );
 		g_dpDatabaseClient.SendAddGuildMember( pPlayer->uKey, pGuild->m_idGuild, pMaster->uKey );
 		CPlayer* pPlayertmp;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-			i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pPlayertmp	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 			if( pPlayertmp )
@@ -1402,8 +1350,7 @@ void CDPCacheSrvr::OnRemoveGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser,
 		}
 //		
 		CPlayer* pPlayertmp;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-			i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pPlayertmp	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 			if( pPlayertmp )
@@ -1491,8 +1438,7 @@ void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 
 	CGuildMember* pMember;
 	CPlayer* pPlayertmp;
-	for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-		i != pGuild->m_mapPMember.end(); ++i )
+	for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 	{
 		pMember		= i->second;
 		pPlayertmp	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -1683,8 +1629,7 @@ void CDPCacheSrvr::OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	
 	CGuildMember* pMember;
 	CPlayer* pPlayertmp;
-	for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-	i != pGuild->m_mapPMember.end(); ++i )
+	for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 	{
 		pMember		= i->second;
 		pPlayertmp	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -1746,8 +1691,7 @@ void CDPCacheSrvr::OnChgMaster( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 		}
 
 		CPlayer* pPlayertmp;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-		i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 			pPlayertmp	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -1819,8 +1763,7 @@ void CDPCacheSrvr::OnGuildNickName( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 		
 		CGuildMember* pMember;
 		CPlayer* pPlayertmp;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-		i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 			pPlayertmp	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -2311,13 +2254,13 @@ void CDPCacheSrvr::OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 
 void CDPCacheSrvr::SendSurrender( u_long idWar, CGuild* pDecl, CGuild* pAcpt, u_long idPlayer, const char* sPlayer, BOOL bDecl )
 {
-	for( map<u_long, CGuildMember*>::iterator i = pDecl->m_mapPMember.begin(); i != pDecl->m_mapPMember.end(); ++i )
+	for( auto i = pDecl->m_mapPMember.begin(); i != pDecl->m_mapPMember.end(); ++i )
 	{
 		CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 		if( pPlayer )
 			SendSurrender( idWar, idPlayer, sPlayer, bDecl, pPlayer );
 	}
-	for( map<u_long, CGuildMember*>::iterator i	= pAcpt->m_mapPMember.begin(); i != pAcpt->m_mapPMember.end(); ++i )
+	for( auto i	= pAcpt->m_mapPMember.begin(); i != pAcpt->m_mapPMember.end(); ++i )
 	{
 		CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 		if( pPlayer )
@@ -2547,14 +2490,13 @@ void CDPCacheSrvr::OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uB
 		pAcpt->m_idWar	= idWar;
 		pAcpt->m_idEnemyGuild	= pDecl->m_idGuild;
 
-		for( map<u_long, CGuildMember*>::iterator i = pDecl->m_mapPMember.begin();
-				i != pDecl->m_mapPMember.end(); ++i )
+		for( auto i = pDecl->m_mapPMember.begin(); i != pDecl->m_mapPMember.end(); ++i )
 		{
 			CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 			if( pPlayer )
 				pPlayer->m_idWar	= idWar;
 		}
-		for( map<u_long, CGuildMember*>::iterator i	= pAcpt->m_mapPMember.begin(); i != pAcpt->m_mapPMember.end(); ++i )
+		for( auto i	= pAcpt->m_mapPMember.begin(); i != pAcpt->m_mapPMember.end(); ++i )
 		{
 			CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 			if( pPlayer )

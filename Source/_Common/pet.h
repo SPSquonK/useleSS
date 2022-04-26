@@ -62,7 +62,7 @@ public:
 #ifdef __JEFF_11_3
 	LPDWORD		GetLevelupAvailLevelProbabilityPtr( void )	{	return &m_adwLevelupAvailLevelProbability[0][0];	}
 	LPBYTE	GetLevelupAvailLevelMaxPtr( void )		{	return m_anLevelupAvailLevelMax;	}
-	vector<WORD>*	GetAddLifeProbabilityPtr( void )	{	return &m_awAddLifeProbability;		}
+	std::vector<WORD>*	GetAddLifeProbabilityPtr( void )	{	return &m_awAddLifeProbability;		}
 #endif	// __JEFF_11_3
 
 	static	CPetProperty*	GetInstance( void );
@@ -269,7 +269,7 @@ typedef	struct _TransformItemElement
 	}
 }	TransformItemElement;
 
-typedef	vector<TransformItemElement>	VTIE;
+typedef	std::vector<TransformItemElement>	VTIE;
 
 // 하나의 구체적인 변환을 의미하는 요소이다
 class CTransformItemComponent
@@ -293,7 +293,7 @@ private:
 	VTIE	m_vTransformItemElements;
 };
 
-typedef	map<int, CTransformItemComponent*>	MPTIC;
+typedef	std::map<int, CTransformItemComponent*>	MPTIC;
 // 모든 변환을 관리한다
 class CTransformItemProperty
 {

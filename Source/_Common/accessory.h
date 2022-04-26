@@ -19,8 +19,8 @@ public:
 	LPDWORD		GetProbabilityPtr( void )		{	return	m_adwProbability;	}
 #endif	// __JEFF_11_3
 
-	vector<SINGLE_DST>*	GetDst( DWORD dwItemId, int nAbilityOption );
+	std::vector<SINGLE_DST>*	GetDst( DWORD dwItemId, int nAbilityOption );
 private:
 	DWORD	m_adwProbability[MAX_AAO];
-	map<DWORD, vector<SINGLE_DST>*>	m_mapAccessory;
+	std::map<DWORD, std::vector<SINGLE_DST>*>	m_mapAccessory;
 };

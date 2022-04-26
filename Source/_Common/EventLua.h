@@ -20,8 +20,8 @@ public:
 	CEventLuaProxy();
 	virtual	~CEventLuaProxy();
 public:
-	vector<BYTE>	GetEventList()	{	return m_vEventLists;	}
-	void	SetEventList( const vector<BYTE> & vEventLists )	{	m_vEventLists.assign( vEventLists.begin(), vEventLists.end() );	}
+	std::vector<BYTE>	GetEventList()	{	return m_vEventLists;	}
+	void	SetEventList( const std::vector<BYTE> & vEventLists )	{	m_vEventLists.assign( vEventLists.begin(), vEventLists.end() );	}
 	float	GetExpFactor()	{	return m_fExpFactor;	}
 	void	SetExpFactor( float fExpFactor )	{	m_fExpFactor	= fExpFactor;	}
 	float	GetItemDropRate()	{	return m_fItemDropRate;	}
@@ -71,7 +71,7 @@ public:
 #endif // __SHOP_COST_RATE
 	void	Initialize( CEventLua* pEventLua );
 private:
-	vector<BYTE>	m_vEventLists;
+	std::vector<BYTE>	m_vEventLists;
 	float	m_fExpFactor;
 	float	m_fItemDropRate;
 	float	m_fPieceItemDropRate;
@@ -117,7 +117,7 @@ public:
 #ifdef __DBSERVER
 #ifdef __AUTO_NOTICE
 	BOOL			IsNoticeTime();
-	vector<string>	GetNoticeMessage();
+	std::vector<string>	GetNoticeMessage();
 #endif // __AUTO_NOTICE
 	BOOL			CheckEventState();
 	map<BYTE, BOOL>	m_mapState;
@@ -131,7 +131,7 @@ public:
 #endif // __DBSERVER
 
 #if defined(__WORLDSERVER) || defined(__DBSERVER)
-	vector<BYTE>	GetEventList( BOOL bProxy = TRUE );
+	std::vector<BYTE>	GetEventList( BOOL bProxy = TRUE );
 	void			LoadScript();
 	BOOL			IsPossible() { return m_bRun; }
 	BOOL			m_bRun;
@@ -149,11 +149,11 @@ public:
 #ifdef __EVENTLUA_COUPON
 	void			SetCoupon( CUser* pUser, DWORD dwTick );
 #endif // __EVENTLUA_COUPON
-	string			GetDesc( BYTE nId );	// x
+	std::string			GetDesc( BYTE nId );	// x
 #ifdef __EVENTLUA_GIFT
 	void			SetLevelUpGift( CUser* pUser, int nLevel );		// x
 #endif // __EVENTLUA_GIFT
-	map<DWORD, int>	GetItem( DWORD dwLevel );	// x
+	std::map<DWORD, int>	GetItem( DWORD dwLevel );	// x
 	void GetAllEventList( CUser* pUser );	// x
 	void GetEventInfo( CUser* pUser, int nId );	// x
 #ifdef __EVENTLUA_CHEEREXP
@@ -163,17 +163,17 @@ public:
 #ifdef __ENVIRONMENT_EFFECT
 
 	float			GetWeatherEventExpFactor( BOOL bProxy = TRUE );
-	string			GetWeatherEventTitle();
+	std::string			GetWeatherEventTitle();
 
 #else // __ENVIRONMENT_EFFECT
 
 #ifdef __EVENTLUA_RAIN
 	float			GetRainEventExpFactor( BOOL bProxy = TRUE );
-	string			GetRainEventTitle();
+	std::string			GetRainEventTitle();
 #endif // __EVENTLUA_RAIN
 #ifdef __EVENTLUA_SNOW
 	float			GetSnowEventExpFactor( BOOL bProxy = TRUE );
-	string			GetSnowEventTitle();
+	std::string			GetSnowEventTitle();
 #endif // __EVENTLUA_SNOW
 
 #endif // __ENVIRONMENT_EFFECT
@@ -207,7 +207,7 @@ private:
 			return TRUE;
 		}
 	};
-	typedef vector<__SPAWNINFO> VECSPAWNINFO;
+	typedef std::vector<__SPAWNINFO> VECSPAWNINFO;
 
 	struct __SPAWNREGION
 	{
@@ -217,12 +217,12 @@ private:
 		D3DXVECTOR3 GetPos() { return D3DXVECTOR3( (float)( xRandom( rect.left, rect.right ) ), 0.0f, (float)( xRandom( rect.top, rect.bottom ) ) ); }
 	};
 
-	vector<__SPAWNREGION>	m_vecSpawnRegion;		// spawn 이벤트 진행시 아이템 및 몬스터의 생성위치(월드 및 좌표) 정보
+	std::vector<__SPAWNREGION>	m_vecSpawnRegion;		// spawn 이벤트 진행시 아이템 및 몬스터의 생성위치(월드 및 좌표) 정보
 
-	map<BYTE, VECSPAWNINFO>	m_mapSpawnList;			// spawn 이벤트 진행시 생성될 아이템 및 몬스터 정보
-	map<DWORD, BYTE>		m_mapMonsterId;			// spawn 이벤트 진행시 생성된 몬스터가 이벤트용 인지 검사하기 위해 필요
-	map<OBJID, BYTE>		m_mapSpawnedMonster;	// spawn 이벤트 진행시 실제로 생성된 몬스터들의 목록 저장(이벤트 종료시 삭제하기 위해 필요)
-	vector<BYTE>			m_vecEndSpawnEvent;			// 종료된 이벤트 ID 목록( 남아있는 spawn 몬스터가 있으면 다 삭제한 후 ID를 제거한다
+	std::map<BYTE, VECSPAWNINFO>	m_mapSpawnList;			// spawn 이벤트 진행시 생성될 아이템 및 몬스터 정보
+	std::map<DWORD, BYTE>		m_mapMonsterId;			// spawn 이벤트 진행시 생성된 몬스터가 이벤트용 인지 검사하기 위해 필요
+	std::map<OBJID, BYTE>		m_mapSpawnedMonster;	// spawn 이벤트 진행시 실제로 생성된 몬스터들의 목록 저장(이벤트 종료시 삭제하기 위해 필요)
+	std::vector<BYTE>			m_vecEndSpawnEvent;			// 종료된 이벤트 ID 목록( 남아있는 spawn 몬스터가 있으면 다 삭제한 후 ID를 제거한다
 
 	void	SetSpawnEvent( BYTE nId, BOOL bState );
 	__SPAWNREGION GetSpawnRegion() { return m_vecSpawnRegion[xRandom( m_vecSpawnRegion.size() )]; }
@@ -236,8 +236,8 @@ public:
 
 #ifdef __EVENTLUA_KEEPCONNECT
 private:
-	vector<u_long>	m_vecKeepConnectUser;
-	map<DWORD, int>	m_mapItemList;
+	std::vector<u_long>	m_vecKeepConnectUser;
+	std::map<DWORD, int>	m_mapItemList;
 public:
 	void			SetKeepConnectEvent( CUser* pUser, DWORD dwTick );
 	DWORD			GetKeepConnectTime( BOOL bProxy = TRUE );

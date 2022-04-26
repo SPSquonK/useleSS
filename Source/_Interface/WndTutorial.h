@@ -15,7 +15,7 @@ class CWndTutorial : public CWndNeuz
 public: 
 
 	CString       m_strKeyword;
-	map<int, TUTORIAL_STRING>  m_mapTutorial;
+	std::map<int, TUTORIAL_STRING>  m_mapTutorial;
 
 	CWndTutorial(); 
 	~CWndTutorial(); 

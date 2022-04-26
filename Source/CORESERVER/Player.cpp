@@ -75,8 +75,7 @@ void CPlayerMng::Free()
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-	map<DWORD, CPlayer*>::iterator it;
-	for( it = m_players.begin(); it != m_players.end(); ++it )
+	for( auto it = m_players.begin(); it != m_players.end(); ++it )
 	{
 		safe_delete( it->second );
 	}
@@ -95,8 +94,7 @@ BOOL CPlayerMng::RemoveCache( DPID dpidCache )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-	map<DWORD, CPlayer*>::iterator it;
-	for( it = m_players.begin(); it != m_players.end(); ++it )
+	for( auto it = m_players.begin(); it != m_players.end(); ++it )
 	{
 		CPlayer* pPlayer = it->second;
 		if( *pPlayer->lpszAccount != '\0' )
@@ -116,7 +114,7 @@ BOOL CPlayerMng::AddPlayer( u_long idPlayer, const CHAR* lpszPlayer, const CHAR*
 		return FALSE;
  
 	pPlayer		= new CPlayer( idPlayer, lpszPlayer, lpszAccount );	
-	m_ulong2.insert( map<u_long, CPlayer*>::value_type( idPlayer, pPlayer ) );
+	m_ulong2.emplace(idPlayer, pPlayer);
 	return TRUE;
 }
 
@@ -131,28 +129,13 @@ BOOL CPlayerMng::UnregisterPlayerInfo( CPlayer* pPlayer, BOOL bNotify )
 	pPlayer->Lock();
 	
 	// messenger
-#ifdef __RT_1025
 	pPlayer->m_RTMessenger.SetState( FRS_OFFLINE );
-	for( map<u_long, Friend>::iterator i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
+	for( auto i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
 	{
 		CPlayer* pPlayertmp		= GetPlayer( i->first );
 		if( pPlayertmp )
 			g_DPCacheSrvr.SendFriendLogOut( pPlayertmp, pPlayer->uKey );
 	}
-#else	// __RT_1025
-	pPlayer->m_Messenger.m_dwMyState	= FRS_OFFLINE;
-	for( C2FriendPtr::iterator i = pPlayer->m_Messenger.m_adifferntFriend.begin(); 
-		 i != pPlayer->m_Messenger.m_adifferntFriend.end() ; ++i )
-	{
-		LPFRIEND lpFriend	= (LPFRIEND)i->second;
-		if( lpFriend )
-		{
-			CPlayer *pPlayertmp		= GetPlayer( lpFriend->dwUserId );
-			if( pPlayertmp )
-				g_DPCacheSrvr.SendFriendLogOut( pPlayertmp, pPlayer->uKey );
-		}
-	}
-#endif	// __RT_1025
 
 	if( pPlayer == GetPlayerBySerial( pPlayer->m_dwSerial ) )
 	{
@@ -173,42 +156,21 @@ BOOL CPlayerMng::UnregisterPlayerInfo( CPlayer* pPlayer, BOOL bNotify )
 
 BOOL CPlayerMng::RegisterPlayerInfo( CPlayer* pPlayer )
 {
-	m_players.insert( make_pair( pPlayer->m_dwSerial, pPlayer ) );
+	m_players.emplace(pPlayer->m_dwSerial, pPlayer);
 	m_uCount++;
 	g_PartyMng.AddConnection( pPlayer );
 	g_GuildMng.AddConnection( pPlayer );
 
-	vector< u_long > vecIdFriend;
+	std::vector< u_long > vecIdFriend;
 	// 여기 루틴은 나를 등록한 사람에게 내가 들어왔다는 메세지를 날려주는 것임
 	pPlayer->Lock();
 	
-#ifdef __RT_1025
-	for( map<u_long, Friend>::iterator i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
+	for( auto i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
 	{
 		Friend* pFriend		= &i->second;
 		if( !pFriend->bBlock )
 			vecIdFriend.push_back( i->first );
 	}
-#else	// __RT_1025
-	vector< DWORD > vecState;
- 	for( C2FriendPtr::iterator i = pPlayer->m_Messenger.m_adifferntFriend.begin() ; i != pPlayer->m_Messenger.m_adifferntFriend.end() ; i++ )
-	{
-		LPFRIEND lpFriend	= (LPFRIEND)i->second;
-		if( !lpFriend )
-			continue;
-		CPlayer *pPlayertmp		= GetPlayer( lpFriend->dwUserId );
-		if( pPlayertmp )
-		{
-			LPFRIEND lpFriendBuf = pPlayer->m_Messenger.GetFriend( lpFriend->dwUserId );
-			if( lpFriendBuf != NULL && lpFriendBuf->dwState == FRS_BLOCK )
-				vecState.push_back( FRS_BLOCK );
-			else
-				vecState.push_back( 0 );
-
-			vecIdFriend.push_back( lpFriend->dwUserId );
-		}
-	}
-#endif	// __RT_1025
 
 	pPlayer->Unlock();
 
@@ -217,27 +179,7 @@ BOOL CPlayerMng::RegisterPlayerInfo( CPlayer* pPlayer )
 		CPlayer *pFriendPlayer = GetPlayer( vecIdFriend[j] );
 		if( pFriendPlayer )
 		{
-#ifdef __RT_1025
 			g_DPCacheSrvr.SendFriendJoin( pFriendPlayer, pPlayer );
-#else	// __RT_1025
-			pFriendPlayer->Lock();
-			LPFRIEND lpFriend = pFriendPlayer->m_Messenger.GetFriend( pPlayer->uKey );
-			if( lpFriend )
-			{
-				if( lpFriend->dwState != FRS_BLOCK && vecState[j] != FRS_BLOCK )
-				{
-					g_DPCacheSrvr.SendFriendJoin( pFriendPlayer, pPlayer );				
-				}
-				else
-				{
-					if( vecState[j] == FRS_BLOCK )
-						g_DPCacheSrvr.SendFriendIntercept( pPlayer, pFriendPlayer );
-					else
-						g_DPCacheSrvr.SendFriendIntercept( pFriendPlayer, pPlayer );
-				}
-			}
-			pFriendPlayer->Unlock();
-#endif	// __RT_1025
 		}
 	}
 	
@@ -258,7 +200,7 @@ void CPlayerMng::RemovePlayer( CPlayer* pPlayer, BOOL bNotify )
 
 CPlayer* CPlayerMng::GetPlayerBySerial( DWORD dwSerial )
 {
-	map< DWORD, CPlayer* >::iterator it = m_players.find( dwSerial );
+	const auto it = m_players.find( dwSerial );
 	if( it != m_players.end() )
 		return it->second;
 
@@ -267,8 +209,7 @@ CPlayer* CPlayerMng::GetPlayerBySerial( DWORD dwSerial )
 
 CPlayer* CPlayerMng::GetPlayerBySocket( DPID dpidSocket )
 {
-	map< DWORD, CPlayer* >::iterator it;
-	for( it = m_players.begin(); it != m_players.end(); ++it )
+	for( auto it = m_players.begin(); it != m_players.end(); ++it )
 	{
 		CPlayer* p = it->second;
 		if( p->dpidUser == dpidSocket )
@@ -290,9 +231,8 @@ void CPlayerMng::PackName( CAr & ar )
 	CMclAutoLock Lock( m_AddRemoveLock );
 
 	ar << m_uCount;
-	map< DWORD, CPlayer* >::iterator it;
 
-	for( it = m_players.begin(); it != m_players.end(); ++ it )
+	for( auto it = m_players.begin(); it != m_players.end(); ++ it )
 	{
 		CPlayer* pPlayer = it->second;
 		ar.WriteString( pPlayer->lpszPlayer );
@@ -308,7 +248,7 @@ void CPlayerMng::AddItToSetofOperator( u_long uPlayerId )
 BOOL CPlayerMng::IsOperator( u_long idPlayer )
 {
 		CMclAutoLock	Lock( m_AddRemoveLock );
-		set<u_long>::iterator i	= m_set.find( idPlayer );
+		const auto i	= m_set.find( idPlayer );
 		return (BOOL)( i != m_set.end() );
 }
 
@@ -320,7 +260,7 @@ u_long CPlayerMng::GetCount( void )
 void	CPlayerMng::Logout( CPlayer * pPlayer )
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
-	map<u_long, int>	mapIdPlayer;
+	std::map<u_long, int>	mapIdPlayer;
 	if( pPlayer )
 	{
 		u_long idPlayer	= pPlayer->uKey;
@@ -330,8 +270,8 @@ void	CPlayerMng::Logout( CPlayer * pPlayer )
 			CGuild* pGuild	= g_GuildMng.GetGuild( pPlayer->m_idGuild );
 			if( pGuild && pGuild->IsMember( idPlayer ) )
 			{
-				for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-					mapIdPlayer.insert( map<u_long, u_long>::value_type( i->second->m_idPlayer, 0 ) );
+				for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+					mapIdPlayer.emplace(i->second->m_idPlayer, 0);
 			}
 		}
 		//
@@ -341,17 +281,17 @@ void	CPlayerMng::Logout( CPlayer * pPlayer )
 			if( pParty && pParty->IsMember( idPlayer ) )
 			{
 				for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-					mapIdPlayer.insert( map<u_long, u_long>::value_type( pParty->m_aMember[i].m_uPlayerId, 0 ) );
+					mapIdPlayer.emplace(pParty->m_aMember[i].m_uPlayerId, 0);
 			}
 		}
 		//
 		{
 			pPlayer->Lock();
-			for( map<u_long, Friend>::iterator i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
-				mapIdPlayer.insert( map<u_long, u_long>::value_type( i->first, 0 ) );
+			for( auto i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
+				mapIdPlayer.emplace(i->first, 0);
 			pPlayer->Unlock();
 		}
-		for( map<u_long, int>::iterator i = mapIdPlayer.begin(); i != mapIdPlayer.end(); ++i )
+		for( auto i = mapIdPlayer.begin(); i != mapIdPlayer.end(); ++i )
 		{
 			CPlayer* pTo	= g_PlayerMng.GetPlayer( i->first );
 			if( pTo )

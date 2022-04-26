@@ -225,7 +225,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 #ifdef __STL_0402
 		bool bResult	= m_apServer.insert( CServerDescArray::value_type( dpid, pServerDesc ) ).second;
 		ASSERT( bResult );
-		bResult	= m_toHandle.insert( map<u_long, DPID>::value_type( uWorldSrvr, dpid ) ).second;
+		bResult	= m_toHandle.emplace(uWorldSrvr, dpid).second;
 		ASSERT( bResult );
 #else	// __STL_0402
 		m_apServer.SetAt( dpid, pServerDesc );
@@ -485,7 +485,7 @@ void CDPCoreSrvr::OnGMSay( CAr& ar, DPID, DPID, DPID, u_long uBufSize )
 	CMclAutoLock Lock( g_PlayerMng.m_AddRemoveLock );
 	pFrom	= g_PlayerMng.GetPlayer( idPlayer );
 
-	for( set<u_long>::iterator i = g_PlayerMng.m_set.begin(); i != g_PlayerMng.m_set.end(); ++i )
+	for( auto i = g_PlayerMng.m_set.begin(); i != g_PlayerMng.m_set.end(); ++i )
 	{
 		pTo	= g_PlayerMng.GetPlayer( u_long(*i) );
 		
@@ -1318,8 +1318,7 @@ void CDPCoreSrvr::OnGuildChat( CAr & ar, DPID, DPID, DPID, u_long )
 
 			CGuildMember* pMember;
 			CPlayer* pPlayertmp;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-				i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;
 				pPlayertmp	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -1508,13 +1507,13 @@ void CDPCoreSrvr::OnWarDead( CAr & ar, DPID, DPID, DPID, u_long )
 		}
 
 		SendWarDead( pWar->m_idWar, bDecl );	// worldserver
-		for( map<u_long, CGuildMember*>::iterator i = pDecl->m_mapPMember.begin(); i != pDecl->m_mapPMember.end(); ++i )
+		for( auto i = pDecl->m_mapPMember.begin(); i != pDecl->m_mapPMember.end(); ++i )
 		{
 			CPlayer* pPlayertmp	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 			if( pPlayertmp )
 				g_DPCacheSrvr.SendWarDead( pWar->m_idWar, pPlayer->lpszPlayer, bDecl, pPlayertmp );
 		}
-		for( map<u_long, CGuildMember*>::iterator i	= pAcpt->m_mapPMember.begin(); i != pAcpt->m_mapPMember.end(); ++i )
+		for( auto i	= pAcpt->m_mapPMember.begin(); i != pAcpt->m_mapPMember.end(); ++i )
 		{
 			CPlayer* pPlayertmp	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 			if( pPlayertmp )

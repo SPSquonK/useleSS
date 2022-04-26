@@ -96,12 +96,12 @@ protected:
 	//
 	DWORD		m_dwId[2];
 
-	vector<wchar_t>		m_result;
-	vector<wchar_t>		m_composition;
-	vector<BYTE>		m_attr;
+	std::vector<wchar_t>		m_result;
+	std::vector<wchar_t>		m_composition;
+	std::vector<BYTE>		m_attr;
 	int					m_cursorPos;
-	vector<BYTE>		m_candidate;
-	vector<wchar_t>		m_reading;
+	std::vector<BYTE>		m_candidate;
+	std::vector<wchar_t>		m_reading;
 
 	bool		m_bUnicodeIME;
 	bool		m_bVerticalReading;
@@ -154,7 +154,7 @@ public:
 	virtual void OnDraw( C2DRender* p2DRender ); 
 
 	int					m_maxWidth;
-	vector<string>		m_candidate;
+	std::vector<std::string>		m_candidate;
 };
 /////////////////////////////////////////////////////////////////////////////
 class CReadingList : public CWndBase
@@ -168,7 +168,7 @@ public:
 
 	CRect	GetReadingSize();
 
-	vector<char>	m_reading;
+	std::vector<char>	m_reading;
 };
 /////////////////////////////////////////////////////////////////////////////
 class CWndEdit : public CWndText
@@ -254,7 +254,7 @@ private:
 
 	CEditString			m_stringBack;
 
-	vector<BYTE>		m_CandidateBuffer;
+	std::vector<BYTE>		m_CandidateBuffer;
 
 	CWndCandList*		m_pWndCandList;
 	CWndHCandList*		m_pWndHCandList;

@@ -21,7 +21,6 @@ static_assert(false, "Project.h was included")
 #include "guildquest.h"
 
 #include "partyquest.h"
-using	namespace	std;
 
 #ifdef __EVE_MINIGAME
 #include "MiniGame.h"
@@ -337,15 +336,15 @@ typedef struct tagCHARACTER
 	CVendor m_vendor;
 
 #ifdef __NPC_BUFF
-	vector<NPC_BUFF_SKILL> m_vecNPCBuffSkill;
+	std::vector<NPC_BUFF_SKILL> m_vecNPCBuffSkill;
 #endif // __NPC_BUFF
 #ifdef __CHIPI_DYO
-	vector<DWORD>	m_vecdwLanguage;
+	std::vector<DWORD>	m_vecdwLanguage;
 	BOOL			bOutput;
 #endif // __CHIPI_DYO
 	DWORD			m_dwWorldId;
 	D3DXVECTOR3		m_vPos;
-	vector<D3DXVECTOR3> m_vecTeleportPos;
+	std::vector<D3DXVECTOR3> m_vecTeleportPos;
 } CHARACTER,* LPCHARACTER;
 
 #ifdef __S1108_BACK_END_SYSTEM
@@ -530,12 +529,12 @@ class	CGiftboxMan
 {
 private:
 #ifdef __STL_GIFTBOX_VECTOR
-	vector<GIFTBOX> m_vGiftBox;
+	std::vector<GIFTBOX> m_vGiftBox;
 #else // __STL_GIFTBOX_VECTOR
 	int		m_nSize;
 	GIFTBOX	m_giftbox[MAX_GIFTBOX];
 #endif // __STL_GIFTBOX_VECTOR
-	map<DWORD, int>	m_mapIdx;
+	std::map<DWORD, int>	m_mapIdx;
 	int	m_nQuery;
 
 public:
@@ -579,7 +578,7 @@ class CPackItem
 private:
 	int		m_nSize;
 	PACKITEMELEM	m_packitem[MAX_PACKITEM];
-	map<DWORD, int>	m_mapIdx;
+	std::map<DWORD, int>	m_mapIdx;
 
 public:
 	CPackItem();
@@ -706,8 +705,8 @@ extern CRandomOptItemGen g_RandomOptItemGen;
 // typedef 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef map<u_long, string>	ULONG2STRING;
-typedef map<string, u_long>	STRING2ULONG;
+typedef std::map<u_long, std::string>	ULONG2STRING;
+typedef std::map<std::string, u_long>	STRING2ULONG;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // CProject
@@ -737,16 +736,16 @@ public:
 	virtual ~CProject();
 
 private:
-	map<string, DWORD>			m_mapII;
-	map<string, DWORD>			m_mapMVI;
-	map<string, DWORD>			m_mapCtrl;
+	std::map<std::string, DWORD>			m_mapII;
+	std::map<std::string, DWORD>			m_mapMVI;
+	std::map<std::string, DWORD>			m_mapCtrl;
 #ifdef __CLIENT
 	CDWordArray					m_aStateQuest; // 스테이트 사용 여부를 체크할 배열 
 #endif
 
 #if defined( __CLIENT )
-	map< int, CString >			m_mapQuestDestination;		// 퀘스트 목적지 설명
-	map< int, CString >			m_mapPatrolDestination;		// 정찰 목적지 이름
+	std::map< int, CString >			m_mapQuestDestination;		// 퀘스트 목적지 설명
+	std::map< int, CString >			m_mapPatrolDestination;		// 정찰 목적지 이름
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
 
 public:
@@ -772,8 +771,8 @@ public:
 	CFixedArray< ItemProp >		m_aPropSkill;
 	CFixedArray< AddSkillProp > m_aPropAddSkill;
 	CFixedArray< tagColorText >	m_colorText;
-	map<string, string>	m_mapAlphaFilter;
-	map<string, string>	m_mapNonalphaFilter;
+	std::map<std::string, std::string>	m_mapAlphaFilter;
+	std::map<std::string, std::string>	m_mapNonalphaFilter;
 	CFixedArray< QuestProp >	m_aPropQuest ;
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;
@@ -795,12 +794,12 @@ public:
 	DWORD						m_adwExpDropLuck[122][11];
 	SETITEMAVAIL				m_aSetItemAvail[11];
 	SIZE						m_minMaxIdxAry[MAX_ITEM_KIND3][MAX_UNIQUE_SIZE];
-	map<int, PARTYQUESTPROP>	m_propPartyQuest;
-	vector< DIE_PENALTY >		m_vecRevivalPenalty;
-	vector< DIE_PENALTY >		m_vecDecExpPenalty;
-	vector< DIE_PENALTY >		m_vecLevelDownPenalty;
+	std::map<int, PARTYQUESTPROP>	m_propPartyQuest;
+	std::vector< DIE_PENALTY >		m_vecRevivalPenalty;
+	std::vector< DIE_PENALTY >		m_vecDecExpPenalty;
+	std::vector< DIE_PENALTY >		m_vecLevelDownPenalty;
 	PK_SETTING					m_PKSetting;
-	set<DWORD>					m_setExcept;
+	std::set<DWORD>					m_setExcept;
 
 #ifdef __CLIENT
 	CTerrainMng					m_terrainMng;
@@ -842,7 +841,7 @@ public:
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 #ifdef __CLIENT
 	enum { BLOCKING_NUMBER_MAX = 1000 };
-	set< CString > m_setBlockedUserID;
+	std::set< CString > m_setBlockedUserID;
 #endif // __CLIENT
 #endif // __YS_CHATTING_BLOCKING_SYSTEM
 
@@ -975,13 +974,13 @@ public:
 #endif	// __CLIENT
 
 #ifdef __RULE_0615
-	set<string>		m_sInvalidNames;
+	std::set<std::string>		m_sInvalidNames;
 	BOOL	LoadInvalidName( void );
 	BOOL	IsInvalidName( LPCSTR szName );
 
-	set<char>	m_sAllowedLetter;
+	std::set<char>	m_sAllowedLetter;
 #ifdef __VENDOR_1106
-	set<char>	m_sAllowedLetter2;
+	std::set<char>	m_sAllowedLetter2;
 	BOOL	LoadAllowedLetter( BOOL bVendor = FALSE );
 #else	// __VENDOR_1106
 	BOOL	LoadAllowedLetter( void );
@@ -1020,14 +1019,14 @@ public:
 
 inline DWORD CProject::GetLevelExp( int nLevel )
 {
-	map<int, DWORD>::iterator it = m_PKSetting.mapLevelExp.find( nLevel );
+	const auto it = m_PKSetting.mapLevelExp.find( nLevel );
 	if( it != m_PKSetting.mapLevelExp.end() )
 		return it->second;
 	return 4400000;
 }
 inline CHAO_PROPENSITY CProject::GetPropensityPenalty( DWORD dwPropensity )
 {
-	map<int, CHAO_PROPENSITY >::iterator it = m_PKSetting.mapPropensityPenalty.begin();
+	auto it = m_PKSetting.mapPropensityPenalty.begin();
 	for( ; it != m_PKSetting.mapPropensityPenalty.end() ; it++ )
 	{
 		CHAO_PROPENSITY Propensity = it->second;
@@ -1045,7 +1044,7 @@ inline CHAO_PROPENSITY CProject::GetPropensityPenalty( DWORD dwPropensity )
 
 inline ItemProp* CProject::GetItemProp( LPCTSTR lpszItem )
 {
-	map<string, DWORD>::iterator i	= m_mapII.find( lpszItem );
+	const auto i	= m_mapII.find( lpszItem );
 	if( i != m_mapII.end() )
 		return GetItemProp( i->second );
 	return NULL;
@@ -1053,7 +1052,7 @@ inline ItemProp* CProject::GetItemProp( LPCTSTR lpszItem )
 
 inline CtrlProp* CProject::GetCtrlProp( LPCTSTR lpszCtrl )
 {
-	map<string, DWORD>::iterator i	= m_mapCtrl.find( lpszCtrl );
+	const auto i	= m_mapCtrl.find( lpszCtrl );
 	if( i != m_mapCtrl.end() )
 		return (CtrlProp*)GetCtrlProp( i->second );
 	return NULL;
@@ -1061,7 +1060,7 @@ inline CtrlProp* CProject::GetCtrlProp( LPCTSTR lpszCtrl )
 
 inline MoverProp* CProject::GetMoverProp( LPCTSTR lpszMover )
 {
-	map<string, DWORD>::iterator i	= m_mapMVI.find( lpszMover );
+	const auto i	= m_mapMVI.find( lpszMover );
 	if( i != m_mapMVI.end() )
 		return GetMoverProp( i->second );
 	return NULL;

@@ -188,7 +188,7 @@ public:
 };
 #endif	// __DBSERVER
 
-typedef	map<DWORD, IBuff*>	MAPBUFF;
+typedef	std::map<DWORD, IBuff*>	MAPBUFF;
 
 #ifdef __CLIENT
 class	CWndWorld;

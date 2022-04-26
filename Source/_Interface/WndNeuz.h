@@ -72,7 +72,7 @@ class CWndNeuz : public CWndBase
 	
 protected:
 	CWndTitleBar m_wndTitleBar;
-	vector< CWndBase* > m_aryDlgItem;
+	std::vector< CWndBase* > m_aryDlgItem;
 	CRect m_rectBackup;
 	CPtrArray m_wndArrayTemp;
 

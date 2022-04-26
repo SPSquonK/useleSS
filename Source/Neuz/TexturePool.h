@@ -6,7 +6,7 @@
 #pragma  once 
 
 
-typedef std::map< string, IDirect3DTexture9* >		Texture_Container;
+typedef std::map< std::string, IDirect3DTexture9* >		Texture_Container;
 typedef Texture_Container::iterator					Texture_Iter;
 
 class TexturePool 
@@ -20,7 +20,7 @@ public:
 	void Init( IDirect3DDevice9* pDevice )		{ _pMyDevice = pDevice; }
 
 	void Free( );
-	IDirect3DTexture9* GetTexture( const string& dir, const string& filename );		//if not find, create the texture
+	IDirect3DTexture9* GetTexture( const std::string& dir, const std::string& filename );		//if not find, create the texture
 
 protected:
 	IDirect3DDevice9* _pMyDevice;

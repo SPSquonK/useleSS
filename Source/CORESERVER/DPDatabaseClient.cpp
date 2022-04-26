@@ -374,8 +374,7 @@ void CDPDatabaseClient::OnDelPlayer( CAr & ar )
 	{
 		CGuildMember* pMember;
 		CPlayer* pPlayer;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-			i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 			pPlayer	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
@@ -395,8 +394,7 @@ void CDPDatabaseClient::OnDelPlayer( CAr & ar )
 		if( pGuild->RemoveMember( idPlayer ) )
 		{
 			CPlayer* pPlayer;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-				i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
 				if( pPlayer )
@@ -523,7 +521,7 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar )
 	ar.Read( &pd.data, sizeof(sPlayerData) );
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer* pPlayer	= g_PlayerMng.GetPlayer( idPlayer );
-	map<u_long, int>	mapIdPlayer;
+	std::map<u_long, int>	mapIdPlayer;
 	if( pPlayer )
 	{
 		//
@@ -532,8 +530,8 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar )
 			CGuild* pGuild	= g_GuildMng.GetGuild( pPlayer->m_idGuild );
 			if( pGuild && pGuild->IsMember( idPlayer ) )
 			{
-				for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-					mapIdPlayer.insert( map<u_long, u_long>::value_type( i->second->m_idPlayer, 0 ) );
+				for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+					mapIdPlayer.emplace(i->second->m_idPlayer, 0);
 			}
 		}
 		//
@@ -543,17 +541,17 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar )
 			if( pParty && pParty->IsMember( idPlayer ) )
 			{
 				for( int i = 0; i < pParty->m_nSizeofMember; i++ )
-					mapIdPlayer.insert( map<u_long, u_long>::value_type( pParty->m_aMember[i].m_uPlayerId, 0 ) );
+					mapIdPlayer.emplace(pParty->m_aMember[i].m_uPlayerId, 0);
 			}
 		}
 		//
 		{
 			pPlayer->Lock();
-			for( map<u_long, Friend>::iterator i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
-				mapIdPlayer.insert( map<u_long, u_long>::value_type( i->first, 0 ) );
+			for( auto i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
+				mapIdPlayer.emplace(i->first, 0);
 			pPlayer->Unlock();
 		}
-		for( map<u_long, int>::iterator i = mapIdPlayer.begin(); i != mapIdPlayer.end(); ++i )
+		for( auto i = mapIdPlayer.begin(); i != mapIdPlayer.end(); ++i )
 		{
 			CPlayer* pTo	= g_PlayerMng.GetPlayer( i->first );
 			if( pTo )
@@ -615,7 +613,6 @@ void CDPDatabaseClient::OnEventNotice( CAr & ar )
 {
 	int nSize = 0;
 	char szTemp[255] = {0,};
-	vector<string> vecstrMessage;
 	ar >> nSize;
 	for( int i=0; i<nSize; i++ )
 	{

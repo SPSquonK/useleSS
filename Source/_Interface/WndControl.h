@@ -1030,7 +1030,7 @@ typedef struct tagWTCITEM
 class CWndTabCtrl: public CWndBase
 {
 //	DECLARE_DYNAMIC(CTabCtrl)
-	vector< LPWTCITEM > m_aTab;
+	std::vector< LPWTCITEM > m_aTab;
 //	CObjArray::iterator m_itor;
 // Constructors
 	int m_nCurSelect;

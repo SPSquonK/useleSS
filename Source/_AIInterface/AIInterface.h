@@ -89,7 +89,7 @@ class CAIInterface
 	FUNCAISTATE GetAIStateFunc( DWORD dwState );
 
 protected:
-	queue< AIMSG >	m_MsgQueue;
+	std::queue< AIMSG >	m_MsgQueue;
 //	CRIT_SEC		m_AddRemoveLock;
 	FUNCAISTATE		m_pStateFunc;
 	CObj*			m_pObj;

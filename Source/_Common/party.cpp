@@ -950,8 +950,8 @@ u_long CPartyMng::GetPartyID( const char* szPartyName )
 
 void CPartyMng::AddPartyName( u_long uidPlayer, const char* szPartyName )
 {
-	m_2PartyNameLongPtr.insert(  map<u_long, string>::value_type( uidPlayer, szPartyName ) );
-	m_2PartyNameStringPtr.insert(  map<string, u_long>::value_type(szPartyName, uidPlayer ) );
+	m_2PartyNameLongPtr.emplace(uidPlayer, szPartyName);
+	m_2PartyNameStringPtr.emplace(szPartyName, uidPlayer);
 }
 
 void CPartyMng::RemovePartyName( u_long uidPlayer, const char* szPartyName )

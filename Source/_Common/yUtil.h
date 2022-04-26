@@ -27,7 +27,7 @@ public:
 
 
 BOOL		IsForceAttack();
-int			Point_In_Poly( vector<CPoint> vecMap, CPoint test_point );
+int			Point_In_Poly( std::vector<CPoint> vecMap, CPoint test_point );
 
 
 #endif //__YUTIL_H__

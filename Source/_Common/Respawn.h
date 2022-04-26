@@ -65,7 +65,7 @@ public:
 #endif	// __RES0807
 };
 
-typedef vector<CRespawnInfo>	VRI;
+typedef std::vector<CRespawnInfo>	VRI;
 class CRespawner
 {
 public:
@@ -94,7 +94,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifdef __LAYER_1021
-typedef	map<int, CRespawner*>	MRP;
+typedef	std::map<int, CRespawner*>	MRP;
 class CLayerdRespawner
 {
 public:

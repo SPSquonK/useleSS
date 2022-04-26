@@ -43,7 +43,7 @@ public:
 	CRect       m_Rect[4];
 	int						  m_nCurrentVector;
 
-	vector<GUIDE_STRUCT>	  m_VecGuideText;
+	std::vector<GUIDE_STRUCT>	  m_VecGuideText;
 
 	GUIDE_STRUCT GetGuideText()
 	{
@@ -85,8 +85,8 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnRButtonDown( UINT nFlags, CPoint point );
 };
-	typedef map<int, GUIDE_STRUCT>::value_type mgValType;
-	typedef map<int, GUIDE_STRUCT>::iterator mgMapItor;
+	typedef std::map<int, GUIDE_STRUCT>::value_type mgValType;
+	typedef std::map<int, GUIDE_STRUCT>::iterator mgMapItor;
 
 #define NO_CONDITION		0
 #define CAMERA_ROTATION		1
@@ -143,8 +143,8 @@ public:
 	DWORD				 m_dwGuideLevel;
 	DWORD				 m_dwTime;
 	BYTE				 m_bAniState;
-	vector<GUIDE_STRUCT>	m_vecEventGuide;
-	map<int, GUIDE_STRUCT>  m_mapGuide;
+	std::vector<GUIDE_STRUCT>	m_vecEventGuide;
+	std::map<int, GUIDE_STRUCT>  m_mapGuide;
 	mgMapItor				m_CurrentIter;
 	mgMapItor				m_EmptyIter;
 	GUIDE_STRUCT			m_CurrentGuide;

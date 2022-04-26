@@ -95,7 +95,7 @@ typedef struct tagREPLACEOBJ
 } REPLACEOBJ, *LPREPLACEOBJ; 
 
 
-typedef vector< D3DXVECTOR3 >		Vec3D_Container;
+typedef std::vector< D3DXVECTOR3 >		Vec3D_Container;
 typedef Vec3D_Container::iterator	Vec3D_Iter;
 
 struct TextureSet
@@ -104,7 +104,7 @@ struct TextureSet
 	~TextureSet( ) { _pTexture = NULL; }
 
 	BOOL _bUse;
-	string _strFileName;
+	std::string _strFileName;
 	IDirect3DTexture9* _pTexture;
 };
 
@@ -122,7 +122,7 @@ struct ENVIR_INFO
 	}
 
 	int		_id;
-	string _strName;
+	std::string _strName;
 	BOOL	_bUseEnvir;
 	BOOL	_bUseRealData;
 	float _fAmbient[ 3 ];
@@ -146,7 +146,7 @@ struct ENVIR_INFO
 
 };
 
-typedef vector< ENVIR_INFO >				ENVIR_INFO_Container;
+typedef std::vector< ENVIR_INFO >				ENVIR_INFO_Container;
 typedef ENVIR_INFO_Container::iterator		ENVIR_INFO_Iter;
 
 struct WORLD_ENVIR_INFO
@@ -376,7 +376,7 @@ public:
 
 	LIGHTCOLOR m_k24Light[24];				//월드당 24시간 Light정보를 외부Data에서 가져옴 
 
-	string m_strCurContName;
+	std::string m_strCurContName;
 	BOOL m_bProcessingEnvir;			
 	DWORD m_dwOldTime;
 	DWORD m_dwAddedTime;
@@ -483,7 +483,7 @@ public:
 	int				GetDiffuseAvg( );
 	BOOL			IsInContinent( );	//존재하는 어느대륙에라도 속해있는가?
 
-	ENVIR_INFO*		GetContinentInfo( const string& name );
+	ENVIR_INFO*		GetContinentInfo( const std::string& name );
 
 	//Hook the rendering
 	BOOL			HookRenderSky( CSkyBox::SKY_TYPE eType, int numRender, float& fAlpha );	
@@ -500,7 +500,7 @@ protected:
 	void			StartEV( const ENVIR_INFO& kOld );		//환경변화 시작 !				
 	BOOL			CheckInOutContinent( );					//주인공에 대한 대륙진입 체크 ( 월드 <-> 대륙 )
 	void			MoveInContinent( const ENVIR_INFO& kInfo );
-	void			MoveOutContinent( const string& oldname );
+	void			MoveOutContinent( const std::string& oldname );
 	void			HookUpdateLight( CLight* pLight );		//환경이 변해야 할때 Hooking the light 
 	ENVIR_INFO*		GetInContinent( const D3DXVECTOR3& test_point );
 	

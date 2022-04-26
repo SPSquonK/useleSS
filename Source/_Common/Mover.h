@@ -305,7 +305,7 @@ private:
 	OBJID					m_objId;						/// 상대방 id
 	CMover*					m_pOwner;						/// 클래스 소유자 
 	TRADE_STATE				m_state;						/// 거래상태 
-	string					m_strTitle;						/// 개인상점의 타이틀 
+	std::string					m_strTitle;						/// 개인상점의 타이틀 
 
 public:
 	OBJID					GetOtherID() { return m_objId; }
@@ -676,9 +676,9 @@ public:
 //	int				m_nResource;				/// 자원 보유량. - 몬스터측에서 사용.
 //	int				m_nCollectOwnCnt;			/// > 0 인상황은 this는 m_idCollecter것이다.
 	CSfxHitArray	m_sfxHitArray;				/// sfx hit 정보 배열 
-	map< OBJID, queue< SFXHIT_INFO> >	m_mapSFXInfo;		/// sfx 해킹 때문에 ....	
+	std::map< OBJID, std::queue< SFXHIT_INFO> >	m_mapSFXInfo;		/// sfx 해킹 때문에 ....	
 //	map< OBJID, int>					m_mapSFXCount;		/// sfx가 발사되면 ++ 
-	map< OBJID, queue< SFXHIT_COUNT > >	m_mapSFXCount;
+	std::map< OBJID, std::queue< SFXHIT_COUNT > >	m_mapSFXCount;
 #endif	// __WORLDSERVER
 
 #ifdef __WORLDSERVER
@@ -707,9 +707,9 @@ private:
 	DWORD	m_dwPetId;	// 소환중이 펫의 인벤토리 위치(自), 소환중인 펫 인덱스(他)
 	int		DoUseItemPetTonic( CItemElem* pItemElem );	// 펫 영양제 사용
 private:
-	BOOL	SetValidNeedVis( CItemElem* pItemElem, int nPos, vector<BYTE> & vecValid );
+	BOOL	SetValidNeedVis( CItemElem* pItemElem, int nPos, std::vector<BYTE> & vecValid );
 public:
-	vector<BYTE>	GetValidVisTable( CItemElem* pItemElem );
+	std::vector<BYTE>	GetValidVisTable( CItemElem* pItemElem );
 	BYTE		IsSatisfyNeedVis( CItemElem* pItemElemVisPet, ItemProp* pItemPropVis );			
 	CItemElem*	GetVisPetItem( void )	{ return m_Inventory.GetAtId( m_objIdVisPet ); }
 	void		SetVisPetItem( OBJID objId )	{ m_objIdVisPet = objId; }

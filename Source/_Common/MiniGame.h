@@ -22,24 +22,17 @@ public:
 
 	struct __ITEMGAME
 	{
-		DWORD	dwItemId;	// 아이디
-		int		nItemCount;	// 갯수
-		DWORD	dwPer;		// 퍼센트
-		__ITEMGAME()
-		{
-			dwItemId = 0;
-			nItemCount = 0;
-			dwPer = 0;
-		};
+		DWORD	dwItemId = 0;	// 아이디
+		int		nItemCount = 0;	// 갯수
+		DWORD	dwPer = 0;		// 퍼센트
 	};
 	
 	struct __ALPHABET
 	{
-		int		nPublic;	// 공개 글자 위치
-		CString strWord;	// 제시 단어
-		CString	strQuestion;	// 문제
-		vector<__ITEMGAME>	vecItem;	// 지급 아이템
-		__ALPHABET():nPublic(1),strWord(_T("")), strQuestion(_T("")) {}
+		int		nPublic = 1;	// 공개 글자 위치
+		CString strWord = _T("");	// 제시 단어
+		CString	strQuestion = _T("");	// 문제
+		std::vector<__ITEMGAME>	vecItem;	// 지급 아이템
 	};
 	
 	struct __KAWIBAWIBORESULT
@@ -51,30 +44,17 @@ public:
 
 	struct __KAWIBAWIBO
 	{
-		DWORD	dwDraw;		// 비김 확률
-		DWORD	dwLost;		// 패배 확률
-		DWORD	dwWin;		// 승리 확률
-		DWORD	dwItemId;	// 아이디
-		int		nItemCount;	// 아이템 갯수
-		__KAWIBAWIBO()
-		{
-			dwDraw = 0;		
-			dwLost = 0;	
-			dwWin = 0;	
-			dwItemId = 0;
-			nItemCount = 0;
-		};
+		DWORD	dwDraw = 0;		// 비김 확률
+		DWORD	dwLost = 0;		// 패배 확률
+		DWORD	dwWin = 0;		// 승리 확률
+		DWORD	dwItemId = 0;	// 아이디
+		int		nItemCount = 0;	// 아이템 갯수
 	};
 
 	struct __FIVESYSTEM		// (오곱) 입찰금 상위 순위별 확률
 	{
-		DWORD	dwMin;		// Min 확률
-		DWORD	dwMax;		// Max 확률
-		__FIVESYSTEM()
-		{
-			dwMin = 0;
-			dwMax = 0;
-		};
+		DWORD	dwMin = 0;		// Min 확률
+		DWORD	dwMax = 0;		// Max 확률
 	};
 
 
@@ -120,12 +100,12 @@ public:
 	
 	int nKawiBawiBo_MaxWin;			// 가위바위보 최대 연승 인덱스
 
-	vector<__ALPHABET>		m_vecAlphabet;	
-	map<int, __KAWIBAWIBO>  m_mapKawiBawiBo;
-	map<int, __FIVESYSTEM>	m_mapFiveSystem;
-	vector<__ITEMGAME>		m_vecReassembleItem;
-	vector<DWORD>	m_vecReassembleCard;
-	vector<__KAWIBAWIBORESULT> m_vecKawibawiboResult;
+	std::vector<__ALPHABET>		m_vecAlphabet;	
+	std::map<int, __KAWIBAWIBO>  m_mapKawiBawiBo;
+	std::map<int, __FIVESYSTEM>	m_mapFiveSystem;
+	std::vector<__ITEMGAME>		m_vecReassembleItem;
+	std::vector<DWORD>	m_vecReassembleCard;
+	std::vector<__KAWIBAWIBORESULT> m_vecKawibawiboResult;
 };
 
 #endif // __EVE_MINIGAME

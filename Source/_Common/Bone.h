@@ -64,7 +64,7 @@ public:
 class CBonesMng
 {
 public:
-	map<string, CBones*>	m_mapBones;
+	std::map<std::string, CBones*>	m_mapBones;
 
 //#ifdef __WORLDSERVER
 //	CRIT_SEC	m_AccessLock;
@@ -195,7 +195,7 @@ public:
 class CMotionMng
 {
 public:
-	map<string, CMotion*>	m_mapMotions;
+	std::map<std::string, CMotion*>	m_mapMotions;
 	
 	CMotionMng();
 	~CMotionMng();
