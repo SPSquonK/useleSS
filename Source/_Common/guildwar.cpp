@@ -101,7 +101,7 @@ CGuildWarMng::~CGuildWarMng()
 
 void CGuildWarMng::Clear( void )
 {
-	for( map<u_long, CGuildWar*>::iterator i = m_mapPWar.begin(); i != m_mapPWar.end(); ++i )
+	for( auto i = m_mapPWar.begin(); i != m_mapPWar.end(); ++i )
 		safe_delete( i->second );
 	m_mapPWar.clear();
 }
@@ -112,7 +112,7 @@ u_long	CGuildWarMng::AddWar( CGuildWar* pWar )
 	if( GetWar( m_id ) )
 		return 0;
 	pWar->m_idWar	= m_id;
-	m_mapPWar.insert( map<u_long, CGuildWar*>::value_type( m_id, pWar ) );
+	m_mapPWar.emplace(m_id, pWar);
 	return m_id;
 }
 
@@ -130,7 +130,7 @@ BOOL CGuildWarMng::RemoveWar( u_long idWar )
 
 CGuildWar* CGuildWarMng::GetWar( u_long idWar )
 {
-	map<u_long, CGuildWar*>::iterator i		= m_mapPWar.find( idWar );
+	const auto i		= m_mapPWar.find( idWar );
 	if( i != m_mapPWar.end() )
 		return i->second;
 	return NULL;
@@ -142,7 +142,7 @@ void CGuildWarMng::Serialize( CAr & ar )
 	{
 		ar << m_id;
 		ar << GetSize();
-		for( map<u_long, CGuildWar*>::iterator i = m_mapPWar.begin(); i != m_mapPWar.end(); ++i )
+		for( auto i = m_mapPWar.begin(); i != m_mapPWar.end(); ++i )
 			( i->second )->Serialize( ar );
 	}
 	else
@@ -157,7 +157,7 @@ void CGuildWarMng::Serialize( CAr & ar )
 		{
 			CGuildWar* pWar	= new CGuildWar;
 			pWar->Serialize( ar );
-			m_mapPWar.insert( map<u_long, CGuildWar*>::value_type( pWar->m_idWar, pWar ) );
+			m_mapPWar.emplace(pWar->m_idWar, pWar);
 		}
 	}
 }

@@ -291,7 +291,7 @@ public:
 		p2DRender->RenderTexture( pt, &m_ap2DTexture[ dwIndex ], dwBlendFactorAlhpa, fScaleX , fScaleY ); 
 	}
 };
-typedef map< string, CTexture* > CMapTexture;
+typedef std::map< std::string, CTexture* > CMapTexture;
 typedef CMapTexture::value_type MapTexType;
 typedef CMapTexture::iterator MapTexItor;
 

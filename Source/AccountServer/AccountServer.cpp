@@ -287,7 +287,7 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 //				if( pServer->dwParent != NULL_ID )
 				{
 					u_long uId	= pServer->dwParent * 100 + pServer->dwID;
-					g_dpSrvr.m_2ServersetPtr.insert( map<u_long, LPSERVER_DESC>::value_type( uId, pServer ) );
+					g_dpSrvr.m_2ServersetPtr.emplace(uId, pServer);
 				}
 			}
 			else if( s.Token == "MAX" )

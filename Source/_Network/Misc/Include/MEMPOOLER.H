@@ -17,7 +17,7 @@ template <class T>	class MemPooler
 
 protected:
 	BlockNode*	m_pFreeList;
-	list<void*>		m_ListOfMemBlockPtr;
+	std::list<void*>		m_ListOfMemBlockPtr;
 	int		m_nNumOfBlock;
 	int		m_nListBlockSize;	// size per block
 	int		m_nAllocCount;
@@ -146,7 +146,7 @@ protected:
 #ifdef __VERIFY_MEMPOOL
 		return;
 #endif
-		for( list<void*>::iterator i = m_ListOfMemBlockPtr.begin(); i != m_ListOfMemBlockPtr.end(); ++i )
+		for( auto i = m_ListOfMemBlockPtr.begin(); i != m_ListOfMemBlockPtr.end(); ++i )
 			VirtualFree( *i, 0, MEM_RELEASE );
 		m_ListOfMemBlockPtr.clear();
 

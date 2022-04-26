@@ -15,8 +15,6 @@
 #include <map>
 #include "cmcl.h"
 
-using	namespace	std;
-
 typedef struct	_AllocInfo
 {
 	size_t	nSize;
@@ -24,8 +22,8 @@ typedef struct	_AllocInfo
 	_AllocInfo( size_t nSize ) : nSize( nSize ), nAlloc( 0 )	{}
 }	AllocInfo;
 
-typedef map<string, AllocInfo>	MSA;
-typedef	map<void*, AllocInfo*>	MPA;
+typedef std::map<std::string, AllocInfo>	MSA;
+typedef	std::map<void*, AllocInfo*>	MPA;
 
 class CMemTrace
 {

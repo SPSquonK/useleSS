@@ -475,7 +475,7 @@ EVENTITEM,	*PEVENTITEM;
 class CDropItemGenerator
 {
 private:
-	vector<DROPITEM>	m_dropItems;
+	std::vector<DROPITEM>	m_dropItems;
 
 public:
 	DWORD				m_dwMax;

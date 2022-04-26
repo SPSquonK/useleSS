@@ -82,7 +82,7 @@ public:
 
 inline BOOL CObjMap::Lookup( DWORD dwKey, CCtrl* & value )
 {
-	map<DWORD, CCtrl*>::iterator it = m_map.find( dwKey );
+	const auto it = m_map.find( dwKey );
 	if( it == m_map.end() )
 		return FALSE;
 
@@ -109,7 +109,7 @@ inline BOOL CObjMap::Add( CCtrl* pCtrl )
 	#endif
 	}
 
-	if( m_map.insert( make_pair( id, pCtrl ) ).second )
+	if( m_map.emplace(id, pCtrl).second )
 		return TRUE;
 
 	assert( 0 );

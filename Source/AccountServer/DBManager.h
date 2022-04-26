@@ -10,8 +10,7 @@
 #include <map>
 #include <set>
 #include <string>
-using	namespace	std;
-typedef	std::set<string>			SET_STRING;
+typedef	std::set<std::string>			SET_STRING;
 
 enum QUERYMODE
 {	

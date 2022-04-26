@@ -161,9 +161,9 @@ public:
 };
 
 using	namespace	std;
-typedef	map< u_long, CParty*>	C2PartyPtr;
-typedef map<u_long, string>	ULONG2STRING;
-typedef map<string, u_long>	STRING2ULONG;
+typedef	std::map< u_long, CParty*>	C2PartyPtr;
+typedef std::map<u_long, std::string>	ULONG2STRING;
+typedef std::map<std::string, u_long>	STRING2ULONG;
 
 class CPlayer;
 

@@ -28,7 +28,7 @@ struct	PARTYQUESTPROP
 	DWORD	dwWorldId;
 	char    szWorldKey[32];
 //	D3DXVECTOR3		vPos;
-	vector< WORMON > vecWormon;	
+	std::vector< WORMON > vecWormon;	
 	int	x1;
 	int y1;
 	int x2;

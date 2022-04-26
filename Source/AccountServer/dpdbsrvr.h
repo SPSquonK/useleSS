@@ -32,7 +32,7 @@ public:
 	void	SendLogSMItem( );
 
 #ifdef __LOG_PLAYERCOUNT_CHANNEL
-	vector<CString>	m_vecstrChannelAccount;
+	std::vector<CString>	m_vecstrChannelAccount;
 #endif // __LOG_PLAYERCOUNT_CHANNEL
 /*
 #ifdef __S0114_RELOADPRO

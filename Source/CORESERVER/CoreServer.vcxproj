@@ -57,6 +57,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;winmm.lib;pdh.lib;VERSION.LIB;%(AdditionalDependencies)</AdditionalDependencies>

@@ -299,7 +299,7 @@ BOOL CDPSrvr::LoadIPCut( LPCSTR lpszFileName )
 					nBufFind = m_nIPCut[nBufFind][2];
 				}
 			}
-			m_sIPCut.insert( map<string, int>::value_type( strABClass, m_nSizeofIPCut ) );
+			m_sIPCut.emplace(strABClass, m_nSizeofIPCut);
 			++m_nSizeofIPCut;
 
 			if( nFindLast != -1 )
@@ -421,7 +421,7 @@ BOOL CDPSrvr::EnableServer( DWORD dwParent, DWORD dwID, long lEnable )
 //	if( dwParent != NULL_ID )
 	{
 		u_long uId	= dwParent * 100 + dwID;
-		map<u_long, LPSERVER_DESC>::iterator i2	= m_2ServersetPtr.find( uId );
+		const auto i2	= m_2ServersetPtr.find( uId );
 		if( i2 != m_2ServersetPtr.end() )
 		{
 			InterlockedExchange( &i2->second->lEnable, lEnable );

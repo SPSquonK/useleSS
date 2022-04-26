@@ -45,7 +45,7 @@ typedef struct tagMODELELEM
 
 }* LPMODELELEM, MODELELEM;
 
-typedef map< string, void* > CMapStrToPtr;
+typedef std::map< std::string, void* > CMapStrToPtr;
 typedef CMapStrToPtr::value_type MapStrToPtrType;
 typedef CMapStrToPtr::iterator MapStrToPtrItor;
 

@@ -1,17 +1,13 @@
-#ifndef __MEMPOOL_H__
-#define __MEMPOOL_H__
-
 #pragma once
 
 #include <stack>
 #include <list>
-using namespace std;
 
 template <class T> class CMemPool
 {
 private:
-	stack<T*>	m_stackData;
-	list<T*>	m_listBlock;
+	std::stack<T*>	m_stackData;
+	std::list<T*>	m_listBlock;
 	size_t	m_nGrowSize;
 	CMclCritSec		m_cs;
 
@@ -74,5 +70,3 @@ template <class T> inline void CMemPool<T>::Free( T* lpMem )
 	CMclAutoLock Lock( m_cs );
 	m_stackData.push( lpMem );
 }
-
-#endif	// __MEMPOOL_H__

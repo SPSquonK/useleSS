@@ -25,7 +25,7 @@ typedef struct _socklist : public OVERLAPPED
 
 #ifdef __STL_0402
 template <class T>
-class CMapChild : public map<DPID,CClientSock<T>*>
+class CMapChild : public std::map<DPID,CClientSock<T>*>
 {
 public:
 	CMapChild()	{}

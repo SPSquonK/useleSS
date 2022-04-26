@@ -1,11 +1,7 @@
-#ifndef __SOCK_H__
-#define __SOCK_H__
-
 #pragma once
 
 #include <dplay.h>
 #include <list>
-using namespace std;
 
 class CSock
 {
@@ -56,5 +52,3 @@ inline void	CSock::SetID( DPID dpid )	{	m_dpid	= dpid;	}
 inline DPID CSock::GetID( void )	{	return m_dpid;	}
 inline void CSock::SetPeerID( DPID dpid )	{	m_dpidpeer	= dpid;	}
 inline DPID CSock::GetPeerID( void )	{	return m_dpidpeer;	}
-
-#endif //__SOCK_H__

@@ -12,7 +12,7 @@ class CDPSock;
 
 #ifdef __STL_0402
 template <class T>
-class CMapChildE : public map<DPID,CClientSockE<T>*>
+class CMapChildE : public std::map<DPID,CClientSockE<T>*>
 {
 public:
 	CMapChildE()	{}

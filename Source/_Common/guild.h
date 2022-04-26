@@ -249,7 +249,7 @@ class CGuild
 public:
 	u_long	m_idGuild;							// Guild ID
 	char	m_szGuild[MAX_G_NAME];				// Guild Name
-	map<u_long, CGuildMember*>	m_mapPMember;	// 회원들
+	std::map<u_long, CGuildMember*>	m_mapPMember;	// 회원들
 	u_long	m_idMaster;							// 길드장 ID
 	int		m_nLevel;							// Guild Level
 	DWORD	m_adwPower[MAX_GM_LEVEL];			// 권한 설정값
@@ -366,8 +366,8 @@ class CGuildMng
 {
 public:
 	u_long	m_id;								// load
-	map<u_long, CGuild*>	m_mapPGuild;		// Guild ID를 이용하여 길드 얻음
-	map<string, CGuild*>	m_mapPGuild2;		// Guild Name를 이용하여 길드 얻음
+	std::map<u_long, CGuild*>	m_mapPGuild;		// Guild ID를 이용하여 길드 얻음
+	std::map<string, CGuild*>	m_mapPGuild2;		// Guild Name를 이용하여 길드 얻음
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
 	CRIT_SEC	m_AddRemoveLock;
 #endif

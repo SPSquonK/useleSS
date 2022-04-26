@@ -6,8 +6,6 @@
 #include "misc.h"
 #include <map>
 
-using	namespace	std;
-
 #undef	theClass
 #define theClass	CDPSrvr
 #undef theParameters
@@ -15,7 +13,7 @@ using	namespace	std;
 
 #define MAX_IP 10240
 
-typedef map<string, int>	STRING2INT;
+typedef std::map<std::string, int>	STRING2INT;
 
 class CDPSrvr : public CDPMng<CBuffer>
 {
@@ -35,7 +33,7 @@ public:
 
 	DWORD	m_dwSizeofServerset;
 	SERVER_DESC		m_aServerset[128];
-	map<u_long, LPSERVER_DESC>	m_2ServersetPtr;
+	std::map<u_long, SERVER_DESC *>	m_2ServersetPtr;
 	char	m_szVer[32];
 #ifdef __SECURITY_0628
 	char	m_szResVer[100];

@@ -12,7 +12,7 @@ using namespace std;
 
 
 
-typedef map< string, void* > CMapStrToPtr;
+typedef std::map< std::string, void* > CMapStrToPtr;
 #define	MAX_WORLD	256
 
 
@@ -73,7 +73,7 @@ public:
 	virtual	~CProject();
 
 private:
-	map<string, DWORD>	m_mapII;
+	std::map<std::string, DWORD>	m_mapII;
 
 public:
 	ItemProp*	GetItemProp( LPCTSTR lpszItem );
@@ -131,7 +131,7 @@ public:
 	BOOL			m_bItemUpdate;		// 
 	TCHAR	m_apszWorld[MAX_WORLD][64];
 	TCHAR	m_apszWorldName[MAX_WORLD][64];
-	vector<BEGINITEM>	m_aryBeginItem;
+	std::vector<BEGINITEM>	m_aryBeginItem;
 	CMapStrToPtr	m_mapBeginPos;
 	JOBITEM		m_jobItem[MAX_JOBITEM];
 //	DWORD	m_aExpJobLevel[MAX_EXPJOBLEVEL + 1];
@@ -241,7 +241,7 @@ inline int CProject::GetBeginItemSize( void )
 
 inline ItemProp* CProject::GetItemProp( LPCTSTR lpszItem )
 {
-	map<string, DWORD>::iterator i	= m_mapII.find( lpszItem );
+	const auto i	= m_mapII.find( lpszItem );
 	if( i != m_mapII.end() )
 		return GetItemProp( i->second );
 	return NULL;

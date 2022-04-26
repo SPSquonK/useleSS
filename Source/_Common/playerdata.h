@@ -62,8 +62,8 @@ public:
 	int		size( void )	{	return m_mapPlayerData.size();	}
 
 private:
-	map<u_long, PlayerData*>	m_mapPlayerData;
-	map<string, u_long>	m_mapPlayerStringToId;
+	std::map<u_long, PlayerData*>	m_mapPlayerData;
+	std::map<std::string, u_long>	m_mapPlayerStringToId;
 public:
 	CMclCritSec		m_Access;
 };

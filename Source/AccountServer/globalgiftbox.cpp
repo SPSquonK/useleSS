@@ -37,7 +37,7 @@ void CGlobalGiftbox::OnUpload( CAr & ar )
 		{
 			ar >> dwItem >> nNum;
 			DWORD dwKey	= MAKELONG( (WORD)dwGiftbox, (WORD)dwItem );
-			bool bResult	= m_map.insert( map<DWORD, int>::value_type( dwKey, nNum ) ).second;
+			bool bResult	= m_map.emplace(dwKey, nNum).second;
 			if( !bResult )
 				Error( "global giftbox error: %d, %d, %d", dwGiftbox, dwItem, nNum );
 		}
@@ -54,7 +54,7 @@ void CGlobalGiftbox::OnUpload( CAr & ar )
 			dwItem	= (DWORD)s.GetNumber();
 			nNum	= s.GetNumber();
 
-			map<DWORD, int>::iterator it	= m_map.find( MAKELONG( (WORD)dwGiftbox, (WORD)dwItem ) );
+			const auto it	= m_map.find( MAKELONG( (WORD)dwGiftbox, (WORD)dwItem ) );
 			if( it == m_map.end() )
 			{
 				char szString[100];
@@ -82,7 +82,7 @@ void CGlobalGiftbox::OnQuery( CDPMng<CBuffer>* pdp, CAr & ar, DPID dpid )	// rec
 	int nNum, nQueryGiftbox;
 	ar >> idPlayer >> dwGiftbox >> dwItem >> nNum >> dwObjId >> nQueryGiftbox;
 
-	map<DWORD, int>::iterator i	= m_map.find( MAKELONG( (WORD)dwGiftbox, (WORD)dwItem ) );
+	const auto i	= m_map.find( MAKELONG( (WORD)dwGiftbox, (WORD)dwItem ) );
 	if( i == m_map.end() )
 	{
 		Error( "CGlobalGiftbox::OnQuery: key not found, g: %d, i: %d", dwGiftbox, dwItem );
@@ -109,7 +109,7 @@ void CGlobalGiftbox::OnRestore( CAr & ar )
 {
 	DWORD dwGiftbox, dwItem;
 	ar >> dwGiftbox >> dwItem;
-	map<DWORD, int>::iterator i	= m_map.find( MAKELONG( (WORD)dwGiftbox, (WORD)dwItem ) );
+	const auto i	= m_map.find( MAKELONG( (WORD)dwGiftbox, (WORD)dwItem ) );
 	if( i == m_map.end() )
 	{
 		Error( "CGlobalGiftbox::OnRestore: key not found, g: %d, i: %d", dwGiftbox, dwItem );
@@ -125,7 +125,7 @@ BOOL CGlobalGiftbox::Save( void )
 	FILE *f	= fopen( "../globalgiftbox.txt", "w" );
 	if( f )
 	{
-		for( map<DWORD, int>::iterator i = m_map.begin(); i != m_map.end(); ++i )
+		for( auto i = m_map.begin(); i != m_map.end(); ++i )
 		{
 			DWORD dwGiftbox, dwItem;
 			dwGiftbox	= (DWORD)LOWORD( i->first );

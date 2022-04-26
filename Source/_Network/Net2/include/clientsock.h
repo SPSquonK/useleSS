@@ -1,14 +1,9 @@
-#ifndef __CLIENTSOCK_H__
-#define __CLIENTSOCK_H__
-
 #pragma once
 
 #include "sock.h"
 #include "buffer.h"
 
 #include "crc.h"
-//using	namespace	CryptoPP;
-//using	namespace	std;
 
 template <class T>
 class CClientSock : public CSock
@@ -335,5 +330,3 @@ HRESULT CClientSock<T>::GetPeerAddr( DPID dpidPlayer, LPVOID lpAddr, LPDWORD lpd
 																	, sin.sin_addr.s_impno );
 	return DP_OK;
 }
-
-#endif //__CLIENTSOCK_H__

@@ -7,7 +7,7 @@
 #include "mymap.h"
 
 #ifdef __STL_0402
-class CMapChildE : public map<DPID, CClientSockE*>
+class CMapChildE : public std::map<DPID, CClientSockE*>
 {
 public:
 	CMapChildE()	{}

@@ -73,10 +73,10 @@ private:
 	PETAVAILPARAM	m_aPetAvailParam[PK_MAX];
 	BYTE	m_anLevelupAvailLevelMax[PL_MAX];
 	DWORD	m_adwLevelupAvailLevelProbability[PL_MAX][MAX_PET_AVAIL_LEVEL];	// 확률
-	vector<FEEDENERGY>	m_aFeedEnergy[2];	// 먹이 만들기 시 전리 가격에 따른 먹이 량 
+	std::vector<FEEDENERGY>	m_aFeedEnergy[2];	// 먹이 만들기 시 전리 가격에 따른 먹이 량 
 	DWORD	m_adwIncrementExp[PL_MAX];		// 분당 습득 경험치
 	WORD	m_awMaxEnergy[PL_MAX];
-	vector<WORD>	m_awAddLifeProbability;
+	std::vector<WORD>	m_awAddLifeProbability;
 
 	PETPENALTY	m_aPenalty[PL_MAX];
 };
@@ -209,7 +209,7 @@ typedef	struct	_TransformStuffComponent
 		this->nNum	= nNum;
 	}
 }	TransformStuffComponent, *PTransformStuffComponent;
-typedef	vector<TransformStuffComponent>	VTSC;
+typedef	std::vector<TransformStuffComponent>	VTSC;
 
 // 변환 시 필요한 아이템 집합
 class CTransformStuff

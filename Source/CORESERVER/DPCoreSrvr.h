@@ -22,7 +22,7 @@ public:
 	CServerDescArray	m_apSleepServer;
 	CServerDescArray	m_apServer;	// active
 #ifdef __STL_0402
-	map<u_long, DPID>	m_toHandle;	// key to dpid
+	std::map<u_long, DPID>	m_toHandle;	// key to dpid
 #else	// __STL_0402
 	CMyMap<DPID>	m_toHandle;	// key to dpid
 #endif	// __STL_0402
@@ -200,7 +200,7 @@ private:
 inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uWorldSrvr )
 {
 #ifdef __STL_0402
-	map<u_long, DPID>::iterator i	= m_toHandle.find( uWorldSrvr );
+	const auto i	= m_toHandle.find( uWorldSrvr );
 	if( i != m_toHandle.end() )
 		return i->second;
 	return DPID_UNKNOWN;

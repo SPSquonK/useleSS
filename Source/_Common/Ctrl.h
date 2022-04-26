@@ -39,7 +39,7 @@ public:
 #ifdef __WORLDSERVER
 	LONG			m_lRespawn;			/// 리스폰 번호
 	int	            m_nRespawnType;		/// 리스폰 타입 
-	map< DWORD, CUser* > m_2pc;			/// 주변 플레이어 맵 
+	std::map< DWORD, CUser* > m_2pc;			/// 주변 플레이어 맵 
 	int				m_nOldCenter[MAX_LINKLEVEL];	/// 링크맵 계산용 
 #endif	// __WORLDSERVER
 

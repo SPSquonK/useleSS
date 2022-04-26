@@ -18,7 +18,7 @@ typedef struct _socklist : public OVERLAPPED
 #endif	// __NEWDPMNG
 
 #ifdef __STL_0402
-class CMapChild : public map<DPID, CClientSock*>
+class CMapChild : public std::map<DPID, CClientSock*>
 {
 public:
 	CMapChild()	{}

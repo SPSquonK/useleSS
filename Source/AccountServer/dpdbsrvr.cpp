@@ -137,7 +137,7 @@ void CDPDBSrvr::OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufS
 		pAccount->m_dwIdofServer	= g_AccountMng.GetIdofServer( dpid );
 		pAccount->m_uIdofMulti	= uIdofMulti;
 		u_long uId	= pAccount->m_dwIdofServer * 100 + uIdofMulti;
-		map<u_long, LPSERVER_DESC>::iterator i	= g_dpSrvr.m_2ServersetPtr.find( uId );
+		const auto i	= g_dpSrvr.m_2ServersetPtr.find( uId );
 		if( i != g_dpSrvr.m_2ServersetPtr.end() )
 		{
 			g_dpSrvr.DestroyPlayer( pAccount->m_dpid1, pAccount->m_dpid2 );
@@ -172,7 +172,7 @@ void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 		
 		// 동접을 보낸다.
 		u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
-		map<u_long, LPSERVER_DESC>::iterator i	= g_dpSrvr.m_2ServersetPtr.find( uId );
+		const auto i	= g_dpSrvr.m_2ServersetPtr.find( uId );
 		if( i != g_dpSrvr.m_2ServersetPtr.end() )
 		{
 			long lCount	= InterlockedIncrement( &i->second->lCount );
@@ -208,7 +208,7 @@ void CDPDBSrvr::SendPlayerCount( void )
 		memset( (void*)adpid, 0xff, sizeof(DPID) * 64 );
 		DWORD dwIdofServer;
 		g_AccountMng.m_AddRemoveLock.Enter();
-		for( map<DWORD, DWORD>::iterator i2 = g_AccountMng.m_2IdofServer.begin(); i2 != g_AccountMng.m_2IdofServer.end(); ++i2 )
+		for( auto i2 = g_AccountMng.m_2IdofServer.begin(); i2 != g_AccountMng.m_2IdofServer.end(); ++i2 )
 		{
 			dwIdofServer	= i2->second;
 			if( dwIdofServer >= 0 && dwIdofServer < 64 )
@@ -247,12 +247,11 @@ void CDPDBSrvr::SendPlayerCount( void )
 				{
 					CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 					long lCount = 0;
-					map<string, CAccount*> mapTemp = g_AccountMng.GetMapAccount();
-					for( map<string, CAccount*>::iterator it=mapTemp.begin(); it!=mapTemp.end(); it++ )
-					{
-						if( it->first.find( m_vecstrChannelAccount[nChannel-1] ) != -1
-							&& it->second->m_dwIdofServer == pServer->dwParent
-							&& it->second->m_uIdofMulti == pServer->dwID )
+
+					for (const auto & [accountName, account] : g_AccountMng.GetMapAccount()) {
+						if(accountName.find( m_vecstrChannelAccount[nChannel-1] ) != -1
+							&& account->m_dwIdofServer == pServer->dwParent
+							&& account->m_uIdofMulti == pServer->dwID )
 						{
 							lCount++;
 						}

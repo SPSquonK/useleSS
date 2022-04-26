@@ -46,8 +46,8 @@ typedef struct INSTACNEDUNGEON_INFO
 
 
 
-typedef vector<ID_INFO> VEC_IDINFO;
-typedef map<DWORD, VEC_IDINFO> MAP_IDBASE;
+typedef std::vector<ID_INFO> VEC_IDINFO;
+typedef std::map<DWORD, VEC_IDINFO> MAP_IDBASE;
 
 struct COOLTIME_INFO
 {
@@ -67,8 +67,8 @@ struct COOLTIME_INFO
 		return ar;
 	}
 };
-typedef vector<COOLTIME_INFO> VEC_CTINFO;
-typedef map<DWORD, VEC_CTINFO> MAP_CTINFO;
+typedef std::vector<COOLTIME_INFO> VEC_CTINFO;
+typedef std::map<DWORD, VEC_CTINFO> MAP_CTINFO;
 
 //////////////////////////////////////////////////////////////////////
 // CInstanceDungeonBase
@@ -189,7 +189,7 @@ public:
 private:
 	CInstanceDungeonBase* GetDungeonPtr( int nType );
 
-	typedef map<DWORD, int> MAP_WORLD2TYPE;
+	typedef std::map<DWORD, int> MAP_WORLD2TYPE;
 	MAP_WORLD2TYPE	m_mapDungeonType;
 
 #ifdef __CORESERVER

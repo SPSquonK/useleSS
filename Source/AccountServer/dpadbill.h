@@ -30,7 +30,7 @@ public:
 class CBuyingInfoMng
 {
 private:
-	map<DWORD, PBUYING_INFO3>	m_mapPbi3;
+	std::map<DWORD, PBUYING_INFO3>	m_mapPbi3;
 
 public:
 	CMclCritSec		m_AddRemoveLock;
@@ -42,7 +42,7 @@ public:
 	void	Clear( void )
 		{
 			m_AddRemoveLock.Enter();
-			for( map<DWORD, PBUYING_INFO3>::iterator i = m_mapPbi3.begin(); i != m_mapPbi3.end(); ++i )
+			for( auto i = m_mapPbi3.begin(); i != m_mapPbi3.end(); ++i )
 				safe_delete( i->second );
 			m_mapPbi3.clear();
 			m_AddRemoveLock.Leave();
@@ -51,7 +51,7 @@ public:
 	void	Add( PBUYING_INFO3 pbi3 )
 		{
 			m_AddRemoveLock.Enter();
-			m_mapPbi3.insert( map<DWORD, PBUYING_INFO3>::value_type( pbi3->dwKey, pbi3 ) );
+			m_mapPbi3.emplace(pbi3->dwKey, pbi3);
 			m_AddRemoveLock.Leave();
 		}
 	void	Remove( DWORD dwKey )
@@ -63,7 +63,7 @@ public:
 
 	PBUYING_INFO3	Get( DWORD dwKey )
 		{
-			map<DWORD, PBUYING_INFO3>::iterator i	= m_mapPbi3.find( dwKey );
+			auto i	= m_mapPbi3.find( dwKey );
 			if( i != m_mapPbi3.end() )
 				return i->second;
 			return NULL;
@@ -73,12 +73,12 @@ public:
 		{
 			DWORD dwTickCount	= GetTickCount();
 //			static DWORD adwKey[1024];
-			vector<DWORD>	adwKey;
+			std::vector<DWORD>	adwKey;
 			
 			int nSize	= 0;
 			
 			m_AddRemoveLock.Enter();
-			for( map<DWORD, PBUYING_INFO3>::iterator i = m_mapPbi3.begin(); i != m_mapPbi3.end(); ++i )
+			for( auto i = m_mapPbi3.begin(); i != m_mapPbi3.end(); ++i )
 			{
 				PBUYING_INFO3 pbi3	= i->second;
 				if( dwTickCount - pbi3->dwTickCount > SEC( 3 ) )

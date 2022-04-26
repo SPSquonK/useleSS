@@ -182,13 +182,13 @@ public:
 	FONTTEX* GetFontTex(const char* begin, const char* end, WORD wCodePage );
 	HFONT    GetFont(WORD wCodePage);
 
-	typedef	map<GLYPHINFO,FONTTEX>	font_tex_map;
+	typedef	std::map<GLYPHINFO,FONTTEX>	font_tex_map;
 	typedef	font_tex_map::iterator	font_tex_map_iter;
 
 	font_tex_map	m_fontTex;
 	DWORD			m_dwNumTriangles;
 
-	typedef map<WORD, HFONT>		font_map;
+	typedef std::map<WORD, HFONT>		font_map;
 	typedef font_map::iterator		font_map_iter;
 
 	font_map		m_fontMap;

@@ -24,8 +24,8 @@ public:
 private:
 	CDPBillingTH*		m_pDPBillings;
 	int					m_nMaxConnect;
-	vector< string >	m_strIPs;
-	vector< u_short >	m_nPorts;
+	std::vector< std::string >	m_strIPs;
+	std::vector< u_short >	m_nPorts;
 
 	bool				Connect();
 	bool				RequestBillingInfo( LPCTSTR lpszAccount, LPCTSTR lpAddr, DWORD dwSession );

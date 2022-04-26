@@ -50,10 +50,10 @@ extern	void	TestNetLib( const char* lpAddr, u_short uPort );
 #ifdef __STL_0402
 	#define	USES_PFNENTRIES	\
 		private:	\
-		map<DWORD, void (theClass::*)( theParameters )>	m_pfnEntries;	\
+		std::map<DWORD, void (theClass::*)( theParameters )>	m_pfnEntries;	\
 		void ( theClass::*GetHandler( DWORD dwType ) )( theParameters )	\
 			{	\
-				map<DWORD, void (theClass::*)( theParameters )>::iterator i = m_pfnEntries.find( dwType );	\
+				const auto i = m_pfnEntries.find( dwType );	\
 				if( i != m_pfnEntries.end() )	\
 					return i->second;	\
 				return NULL;	\
@@ -64,7 +64,7 @@ extern	void	TestNetLib( const char* lpAddr, u_short uPort );
 
 	#define	ON_MSG( dwKey, hndlr )	\
 		pfn		= hndlr;	\
-		m_pfnEntries.insert( map<DWORD, void (theClass::*)( theParameters )>::value_type( dwKey, pfn ) );
+		m_pfnEntries.emplace(dwKey, pfn);
 
 #else	// __STL_0402
 	#define	USES_PFNENTRIES	\

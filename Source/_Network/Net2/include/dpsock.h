@@ -16,7 +16,7 @@ private:
 	u_short	m_uPort;
 	char	m_lpAddr[32];
 	u_long	m_uIoWorker;
-	list<HANDLE>	m_listthread;
+	std::list<HANDLE>	m_listthread;
 	CMclCritSec		m_locklistthread;
 	HANDLE	m_hCompletionPort;
 	WSAEVENT	m_hClose;
@@ -240,7 +240,7 @@ void CDPSock<T>::RemoveThread( HANDLE hThread )
 		m_locklistthread.Enter();
 		if( m_listthread.size() > 0 )
 		{
-			for( list<HANDLE>::iterator i = m_listthread.begin(); i != m_listthread.end(); ++i )
+			for( auto i = m_listthread.begin(); i != m_listthread.end(); ++i )
 			{
 				h	= *i;
 				if( h == hThread )

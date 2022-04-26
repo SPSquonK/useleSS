@@ -77,7 +77,7 @@ public:
 	u_long	m_id;
 public:
 //	CRIT_SEC	m_AddRemoveLock;
-	map<u_long, CGuildWar*>	m_mapPWar;
+	std::map<u_long, CGuildWar*>	m_mapPWar;
 //	Constructions
 	CGuildWarMng();
 	~CGuildWarMng();

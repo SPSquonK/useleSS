@@ -58,7 +58,7 @@ public:
 // Operations
 	CItemElem*	GetAtId( int nPocket, int nItem, BOOL bExpiration = TRUE );	
 //	BOOL	Add( CItemElem* pItemElem, vector<PocketController_Result>* apResult );
-	BOOL	Add( int nPocket, CItemElem*pItemElem, vector<PocketController_Result>* apResult = NULL );
+	BOOL	Add( int nPocket, CItemElem*pItemElem, std::vector<PocketController_Result>* apResult = NULL );
 	BOOL	RemoveAtId( int nPocket, int nItem, int nNum );		// if nNum < 0, remove all.
 	int		RemoveItem( DWORD dwItemId, int nNum );
 	

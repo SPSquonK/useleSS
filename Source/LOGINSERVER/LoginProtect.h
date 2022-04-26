@@ -42,10 +42,10 @@ private:
 		time_t	tmError;
 		LOGIN_CACHE() : nError( 0 ), tmError( time( NULL ) )	{};
 	};
-	typedef map<u_long, LOGIN_CACHE>	MAP_CACHE;
+	typedef std::map<u_long, LOGIN_CACHE>	MAP_CACHE;
 	MAP_CACHE	m_mapCache;
 
-	typedef map<DPID, u_long>	MAP_NUMPAD_ID;
+	typedef std::map<DPID, u_long>	MAP_NUMPAD_ID;
 	MAP_NUMPAD_ID	m_mapNumPadId;
 };
 

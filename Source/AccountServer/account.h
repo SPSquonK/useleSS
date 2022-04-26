@@ -4,7 +4,6 @@
 #include "mempooler.h"
 #include <map>
 #include <string>
-using	namespace	std;
 
 #define	MAX_CERTIFIER			32
 const int LEFTIME_NOTIFIED		= 1;
@@ -88,9 +87,9 @@ public:
 class CAccountMng
 {
 private:
-	map<string, CAccount*>	m_stringToPAccount;
-	map<DWORD, int>			m_dpidToIndex;
-	map<DWORD, CAccount*>	m_adpidToPAccount[MAX_CERTIFIER];
+	std::map<std::string, CAccount*>	m_stringToPAccount;
+	std::map<DWORD, int>			m_dpidToIndex;
+	std::map<DWORD, CAccount*>	m_adpidToPAccount[MAX_CERTIFIER];
 	int		m_nSizeof;
 	int		m_nOldHour;
 #ifndef __EUROPE_0514
@@ -98,7 +97,7 @@ private:
 #endif	// __EUROPE_0514
 public:
 	int						m_nCount;
-	map<DWORD, DWORD>		m_2IdofServer;
+	std::map<DWORD, DWORD>		m_2IdofServer;
 
 	int		m_nYear;
 	int		m_nMonth;
@@ -117,7 +116,7 @@ public:
 	CAccount*	GetAccount( DWORD dpid1, DWORD dpid2 );
 	CAccount*	GetAccount( LPCTSTR lpszAccount, DWORD dwSerial );
 #ifdef __LOG_PLAYERCOUNT_CHANNEL
-	map<string, CAccount*> GetMapAccount();
+	[[nodiscard]] const auto & GetMapAccount() const { return m_stringToPAccount; }
 #endif // __LOG_PLAYERCOUNT_CHANNEL
 
 //	Operations
@@ -142,11 +141,11 @@ public:
 public:
 	CMclCritSec		m_AddRemoveLock;
 
-	void	PushPCBangPlayer( DWORD dwAuthKey, DWORD dwClass )	{ m_mapPCBang.insert( map<DWORD, DWORD>::value_type( dwAuthKey, dwClass ) ); }
+	void	PushPCBangPlayer( DWORD dwAuthKey, DWORD dwClass )	{ m_mapPCBang.emplace(dwAuthKey, dwClass); }
 	DWORD	PopPCBangPlayer( DWORD dwAuthKey );
 
 private:
-	map<DWORD, DWORD>	m_mapPCBang;
+	std::map<DWORD, DWORD>	m_mapPCBang;
 };
 
 #endif	// __ACCOUNT_H__

@@ -18,16 +18,16 @@ void	CRTMessenger::SetFriend( u_long idFriend, Friend * pFriend )
 	Friend f;	//
 	if( !pFriend )
 		pFriend		= &f;
-	map<u_long, Friend>::iterator i	= find( idFriend );
+	const auto i	= find( idFriend );
 	if( i != end() )
 		memcpy( &i->second, pFriend, sizeof(Friend) );
 	else
-		insert( map<u_long, Friend>::value_type( idFriend, *pFriend ) );
+		emplace( idFriend, *pFriend);
 }
 
 Friend*	CRTMessenger::GetFriend( u_long idFriend )
 {
-	map<u_long, Friend>::iterator i		= find( idFriend );
+	const auto i		= find( idFriend );
 	if( i != end() )
 		return &i->second;
 	return NULL;
@@ -39,10 +39,9 @@ int CRTMessenger::Serialize( CAr & ar )
 	{
 		ar << m_dwState;
 		ar << static_cast<int>( size() );
-		for( map<u_long, Friend>::iterator i = begin(); i != end(); ++i )
-		{
-			ar << i->first;
-			ar.Write( &i->second, sizeof(Friend) );
+		for(const auto & [idFriend, friend_] : *this) {
+			ar << idFriend;
+			ar.Write( &friend_, sizeof(Friend) );
 		}
 	}
 	else
@@ -71,8 +70,9 @@ int CRTMessenger::Serialize( CAr & ar )
 CRTMessenger &	CRTMessenger::operator =( CRTMessenger & rRTMessenger )
 {
 	clear();
-	for( map<u_long, Friend>::iterator i = rRTMessenger.begin(); i != rRTMessenger.end(); ++i )
-		SetFriend( i->first, &i->second );
+	for (auto & [friendId, friend_] : rRTMessenger) {
+		SetFriend(friendId, &friend_);
+	}
 	m_dwState	= rRTMessenger.GetState();
 	return *this;
 }

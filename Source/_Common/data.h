@@ -257,29 +257,13 @@ typedef	double	EXPFLOAT;
 #if defined(__WORLDSERVER ) || defined(__CLIENT)
 struct NaviPoint //	네비게이션에 클릭으로 위치를 표시하는 기능을 위한 구조체
 {
-	D3DXVECTOR3 Pos;		//	이 위치는 네이게이터상의 위치가 아닌 월드상의 위치임을 강조한다.
-	short		Time;			//	포인트의 남아있는 시간
-	DWORD		objid;		
-	string      Name;
-	NaviPoint()
-	{
-		Pos = D3DXVECTOR3(0.f, 0.f, 0.f);
-		objid = 0xffffffff;
-		Time = 0;
-	}
-	
-	NaviPoint& operator=( const NaviPoint& src )
-	{
-		Pos   = src.Pos;
-		objid = src.objid;
-		Time  = src.Time;
-		Name  = src.Name;
-
-		return *this;
-	}
+	D3DXVECTOR3 Pos = D3DXVECTOR3(0.f, 0.f, 0.f);		//	이 위치는 네이게이터상의 위치가 아닌 월드상의 위치임을 강조한다.
+	short		Time = 0;			//	포인트의 남아있는 시간
+	DWORD		objid = 0xffffffff;
+	std::string      Name = "";
 }; 
 
-typedef vector<NaviPoint> V_NaviPoint;
+typedef std::vector<NaviPoint> V_NaviPoint;
 
 #endif // defined(__WORLDSERVER ) || defined(__CLIENT)
 

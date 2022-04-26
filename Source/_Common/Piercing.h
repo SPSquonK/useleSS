@@ -21,7 +21,7 @@ public:
 	BOOL	IsPiercedItem();
 	
 private:
-	vector<DWORD>	m_vPiercing;
+	std::vector<DWORD>	m_vPiercing;
 
 public:
 	void	SetUltimatePiercingSize( int nSize );
@@ -30,9 +30,9 @@ public:
 	DWORD	GetUltimatePiercingItem( int nth );
 
 private:
-	vector<DWORD> m_vUltimatePiercing;
+	std::vector<DWORD> m_vUltimatePiercing;
 
-	vector<time_t>	m_vtmPetVis;
+	std::vector<time_t>	m_vtmPetVis;
 public:
 	void	SetVisKeepTimeSize( int nSize )	{ m_vtmPetVis.resize( min( nSize, MAX_VIS ), 0 ); }
 	void	SetVisKeepTime( int nth, time_t tmKeep );

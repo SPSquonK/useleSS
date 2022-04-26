@@ -139,7 +139,7 @@ void CAccountMng::Clear( void )
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
 	
-	for( map<string, CAccount*>::iterator i	= m_stringToPAccount.begin(); i != m_stringToPAccount.end(); ++i )
+	for( auto i	= m_stringToPAccount.begin(); i != m_stringToPAccount.end(); ++i )
 		safe_delete( i->second );
 	m_stringToPAccount.clear();
 
@@ -151,7 +151,7 @@ void CAccountMng::Clear( void )
 int CAccountMng::GetIndex( DWORD dpid1 )
 {
 // locked
-	map<DWORD, int>::iterator i		= m_dpidToIndex.find( dpid1 );
+	auto i		= m_dpidToIndex.find( dpid1 );
 	if( i  != m_dpidToIndex.end() )
 		return i->second;
 	return( -1 );
@@ -160,7 +160,7 @@ int CAccountMng::GetIndex( DWORD dpid1 )
 int CAccountMng::GetIdofServer( DWORD dpid )
 {
 // locked
-	map<DWORD, DWORD>::iterator i	= m_2IdofServer.find( dpid );
+	auto i	= m_2IdofServer.find( dpid );
 	if( i != m_2IdofServer.end() )
 		return i->second;
 	return( -1 );
@@ -170,18 +170,18 @@ BYTE CAccountMng::AddAccount( LPCTSTR lpszAccount, DWORD dpid1, DWORD dpid2, DWO
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	map<string, CAccount*>::iterator i1	= m_stringToPAccount.find( lpszAccount );
+	const auto i1	= m_stringToPAccount.find( lpszAccount );
 	if( i1 == m_stringToPAccount.end() )
 	{
 		int nIndex	= GetIndex( dpid1 );
 		if( nIndex >= 0 && nIndex < MAX_CERTIFIER )
 		{
-			map<DWORD, CAccount*>::iterator i2	= m_adpidToPAccount[nIndex].find( dpid2 );
+			auto i2	= m_adpidToPAccount[nIndex].find( dpid2 );
 			if( i2 == m_adpidToPAccount[nIndex].end() )
 			{
 				CAccount* pAccount	= new CAccount( lpszAccount, dpid1, dpid2, cbAccountFlag, fCheck );
-				m_stringToPAccount.insert( map<string, CAccount*>::value_type( lpszAccount, pAccount ) );
-				m_adpidToPAccount[nIndex].insert( map<DWORD, CAccount*>::value_type( dpid2, pAccount ) );
+				m_stringToPAccount.emplace(lpszAccount, pAccount);
+				m_adpidToPAccount[nIndex].emplace(dpid2, pAccount);
 				m_nCount++;
 #ifdef __EUROPE_0514
 				*pdwAuthKey	= pAccount->m_dwAuthKey		= xRandom( 0x00000001UL, ULONG_MAX );
@@ -244,7 +244,7 @@ void CAccountMng::RemoveAccount( LPCTSTR lpszAccount )
 	WriteLog( "CAccountMng::RemoveAccount(%s) - %s\n", lpszAccount, ctime( &cur ));
 #endif
 
-	map<string, CAccount*>::iterator i	= m_stringToPAccount.find( lpszAccount );
+	const auto i	= m_stringToPAccount.find( lpszAccount );
 	if( i != m_stringToPAccount.end() )
 	{
 		CAccount* pAccount = i->second;
@@ -252,7 +252,7 @@ void CAccountMng::RemoveAccount( LPCTSTR lpszAccount )
 		if( pAccount->m_fRoute && pAccount->m_cbRef == 2 )
 		{
 			u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
-			map<u_long, LPSERVER_DESC>::iterator i2	= g_dpSrvr.m_2ServersetPtr.find( uId );
+			auto i2	= g_dpSrvr.m_2ServersetPtr.find( uId );
 
 			if( i2 != g_dpSrvr.m_2ServersetPtr.end() )
 			{
@@ -283,7 +283,7 @@ void CAccountMng::RemoveAccount( DWORD dpid1, DWORD dpid2 )
 	nIndex	= GetIndex( dpid1 );
 	if( nIndex >= 0 && nIndex < m_nSizeof )
 	{
-		map<DWORD, CAccount*>::iterator i	= m_adpidToPAccount[nIndex].find( dpid2 );
+		auto i	= m_adpidToPAccount[nIndex].find( dpid2 );
 		if( i != m_adpidToPAccount[nIndex].end() )
 		{
 			pAccount	= i->second;
@@ -300,7 +300,7 @@ void CAccountMng::RemoveAccount( DWORD dpid1, DWORD dpid2 )
 CAccount* CAccountMng::GetAccount( LPCTSTR lpszAccount )
 {
 // locked
-	map<string, CAccount*>::iterator i	= m_stringToPAccount.find( lpszAccount );
+	const auto i	= m_stringToPAccount.find( lpszAccount );
 	if( i != m_stringToPAccount.end() )
 		return i->second;
 	return NULL;
@@ -312,7 +312,7 @@ CAccount* CAccountMng::GetAccount( DWORD dpid1, DWORD dpid2 )
 	int nIndex	= GetIndex( dpid1 );
 	if( nIndex >= 0 && nIndex < m_nSizeof )
 	{
-		map<DWORD, CAccount*>::iterator i	= m_adpidToPAccount[nIndex].find( dpid2 );
+		const auto i	= m_adpidToPAccount[nIndex].find( dpid2 );
 		if( i != m_adpidToPAccount[nIndex].end() )
 		{
 			return i->second;
@@ -325,10 +325,10 @@ void CAccountMng::AddConnection( DWORD dpid1 )
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
-	map<DWORD, int>::iterator i	= m_dpidToIndex.find( dpid1 );
+	auto i	= m_dpidToIndex.find( dpid1 );
 	if( i == m_dpidToIndex.end() )
 	{
-		m_dpidToIndex.insert( map<DWORD, int>::value_type( dpid1, m_nSizeof ) );
+		m_dpidToIndex.emplace(dpid1, m_nSizeof);
 		m_nSizeof++;
 	}
 //	else
@@ -338,18 +338,15 @@ void CAccountMng::AddConnection( DWORD dpid1 )
 
 void CAccountMng::RemoveConnection( DWORD dpid1 )
 {
-	CAccount* pAccount;
-	int nIndex;
-
 	CMclAutoLock	Lock( m_AddRemoveLock );
-	nIndex	= GetIndex( dpid1 );
+	const int nIndex	= GetIndex( dpid1 );
 	if( nIndex >= 0 && nIndex < m_nSizeof )
 	{
-		map<DWORD, CAccount*>::iterator	i1	= m_adpidToPAccount[nIndex].begin();
+		auto	i1	= m_adpidToPAccount[nIndex].begin();
 		while( i1 != m_adpidToPAccount[nIndex].end() )
 		{
-			pAccount	= i1->second;
-			map<DWORD, CAccount*>::iterator	i2	= i1;
+			CAccount * pAccount	= i1->second;
+			auto	i2	= i1;
 			++i1;
 			m_adpidToPAccount[nIndex].erase( i2 );
 			RemoveAccount( pAccount->m_lpszAccount );	// erase & delete
@@ -364,7 +361,7 @@ void CAccountMng::AddIdofServer( DPID dpid, DWORD dwIdofServer )
 
 	nIdofServer		= GetIdofServer( dpid );
 	if( nIdofServer < 0 )
-		m_2IdofServer.insert( map<DPID, DWORD>::value_type( dpid, dwIdofServer ) );
+		m_2IdofServer.emplace(dpid, dwIdofServer);
 }
 
 #ifdef __SERVERLIST0911
@@ -377,7 +374,7 @@ void CAccountMng::RemoveIdofServer( DWORD dpid, BOOL bRemoveConnection )
 	CMclAutoLock	Lock( m_AddRemoveLock );
 	DWORD dwIdofServer	= GetIdofServer( dpid );
 
-	map<string, CAccount*>::iterator i	= m_stringToPAccount.begin();
+	auto i	= m_stringToPAccount.begin();
 	while( i != m_stringToPAccount.end() )
 	{
 		pAccount	= i->second;
@@ -409,7 +406,7 @@ void CAccountMng::PreventExcess()
 	{	
 		CAccount* pAccount;
 		CMclAutoLock	Lock( m_AddRemoveLock );
-		map<string, CAccount*>::iterator i	= m_stringToPAccount.begin();
+		auto i	= m_stringToPAccount.begin();
 		while( i != m_stringToPAccount.end() )
 		{
 			pAccount	= i->second;
@@ -456,7 +453,7 @@ void CAccountMng::KickOutCheck()
 {
 	CAccount* pAccount;
 	CMclAutoLock	Lock( m_AddRemoveLock );
-	map<string, CAccount*>::iterator i	= m_stringToPAccount.begin();
+	auto i	= m_stringToPAccount.begin();
 	while( i != m_stringToPAccount.end() )
 	{
 		pAccount = i->second;
@@ -478,16 +475,9 @@ BOOL CAccountMng::IsTimeCheckAddr()
 	return FALSE;
 }
 
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-map<string, CAccount*> CAccountMng::GetMapAccount()
-{
-	return m_stringToPAccount;
-}
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-
 DWORD CAccountMng::PopPCBangPlayer( DWORD dwAuthKey )
 {
-	map<DWORD, DWORD>::iterator it = m_mapPCBang.find( dwAuthKey );
+	auto it = m_mapPCBang.find( dwAuthKey );
 	if( it != m_mapPCBang.end() )
 	{
 		DWORD dwReturn = it->second;

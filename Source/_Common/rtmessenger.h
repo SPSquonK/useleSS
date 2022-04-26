@@ -14,7 +14,7 @@ typedef struct	_Friend
 	}
 }	Friend;
 
-class CRTMessenger	: public	map<u_long, Friend>
+class CRTMessenger	: public	std::map<u_long, Friend>
 {
 public:
 	CRTMessenger();

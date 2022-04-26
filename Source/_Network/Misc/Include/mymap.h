@@ -1,11 +1,7 @@
-#ifndef __MYMAP_H__
-#define __MYMAP_H__
-
 #pragma once
 
 #include <stack>
 #include <list>
-using namespace std;
 
 #define INVALID_KEY	(DWORD)0xFFFFFFFF
 
@@ -724,5 +720,3 @@ template <class T> inline DWORD CMyMap2<T>::MAKESTR2DWORD( const char* pKey, siz
 	return ( x + y );
 }
 #endif	// __STL_0402
-
-#endif // __MYMAP_H__

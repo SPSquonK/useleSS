@@ -45,7 +45,7 @@ private:
 	u_long	m_uKey;
 public:
 	char	m_szAddr[16];
-	list<CJurisdiction*>	m_lspJurisdiction;
+	std::list<CJurisdiction*>	m_lspJurisdiction;
 
 public:
 //	Constructions
@@ -53,8 +53,8 @@ public:
 	virtual	~CServerDesc();
 
 //	Operations
-	BOOL	IsUnderJurisdiction( DWORD dwWorldID, const D3DVECTOR & vPos );
-	BOOL	IsIntersected( DWORD dwWorldID );
+	BOOL	IsUnderJurisdiction( DWORD dwWorldID, const D3DVECTOR & vPos ) const;
+	BOOL	IsIntersected( DWORD dwWorldID ) const;
 //	Attributes
 #ifdef __S8_SERVER_PORT
 	void	SetKey( u_long uKey )	{	m_uKey	= uKey;		m_uIdofMulti	= uKey % 100;	}
@@ -66,7 +66,7 @@ public:
 	void	Serialize( CAr & ar );
 };
 
-class CServerDescArray : public map<u_long, CServerDesc*>
+class CServerDescArray : public std::map<u_long, CServerDesc*>
 {
 public:
 #ifdef __STL_0402

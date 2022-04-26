@@ -139,8 +139,8 @@ protected:
 #endif
 
 public:
-	static map<CString, int>		m_defines;
-	static map<CString,CString>		m_mapString;
+	static std::map<CString, int>		    m_defines;
+	static std::map<CString,CString>		m_mapString;
 
 #if !defined(__REMOVE_SCIRPT_060712)
 	CTimer*						m_paTimer;

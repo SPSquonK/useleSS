@@ -9,7 +9,7 @@ class CDPMng;
 class CGlobalGiftbox
 {
 private:
-	map<DWORD, int>	m_map;		
+	std::map<DWORD, int>	m_map;		
 /* first: MAKELOG( dwGiftBox, dwItem )
 	second: nNum;
 */

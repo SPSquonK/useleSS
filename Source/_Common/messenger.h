@@ -41,7 +41,7 @@ typedef struct tagFRIEND
 	}
 } FRIEND,* LPFRIEND;
 
-typedef	map< u_long, FRIEND*>	C2FriendPtr;
+typedef	std::map< u_long, FRIEND*>	C2FriendPtr;
 
 class CMessenger
 {

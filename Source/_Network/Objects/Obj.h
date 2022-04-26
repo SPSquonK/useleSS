@@ -465,6 +465,8 @@ template <class T> BOOL CItemContainer<T>::Add( DWORD dwItemId, short nNum, int 
 	return FALSE;
 }
 
+#ifndef __CORESERVER
+
 template <class T> BOOL CItemContainer<T>::Add( T* pElem, BYTE* pnId, short* pnNum, BYTE* pnCount )
 {
 	if( pnId )
@@ -565,6 +567,7 @@ template <class T> BOOL CItemContainer<T>::Add( T* pElem, BYTE* pnId, short* pnN
 	return TRUE;
 }
 
+#endif
 
 template <class T> BOOL CItemContainer<T>::IsFull( ItemProp* pItemProp, short nNum, BOOL bCharged )
 {

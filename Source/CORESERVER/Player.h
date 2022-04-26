@@ -63,15 +63,15 @@ public:
 };
 
 
-typedef map< u_long, CPlayer* >		ULONG2PTR;
+typedef std::map< u_long, CPlayer* >		ULONG2PTR;
 
 class CPlayerMng
 {
 public:
 	CMclCritSec				m_AddRemoveLock;
-	map< DWORD, CPlayer*>	m_players;			// serial value key
+	std::map< DWORD, CPlayer*>	m_players;			// serial value key
 	ULONG2PTR				m_ulong2;			// player id key
-	set<u_long>				m_set;				// set of operators
+	std::set<u_long>				m_set;				// set of operators
 	u_long					m_uCount;			
 
 public:

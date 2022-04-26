@@ -255,7 +255,7 @@ int CLoginProtect::GetNumPad2PW( u_long idNumPad, u_long uSecretNum )
 
 u_long CLoginProtect::GetNumPadId( DPID dpId )
 {
-	MAP_NUMPAD_ID::iterator it = m_mapNumPadId.find( dpId );
+	const auto it = m_mapNumPadId.find( dpId );
 	if( it != m_mapNumPadId.end() )
 		return it->second;
 	
@@ -271,17 +271,16 @@ u_long CLoginProtect::SetNumPadId( DPID dpId, BOOL bLogin )
 	}
 	srand( time( NULL ) );
 	u_long idNumPad = rand() % 1000;
-	MAP_NUMPAD_ID::iterator it = m_mapNumPadId.find( dpId );
+	const auto it = m_mapNumPadId.find( dpId );
 	if( it != m_mapNumPadId.end() )
 	{
 		while( idNumPad == it->second )
 			idNumPad = rand() % 1000;
 
 		m_mapNumPadId.erase( dpId );
-		m_mapNumPadId.insert( MAP_NUMPAD_ID::value_type( dpId, idNumPad ) );
 	}
-	else
-		m_mapNumPadId.insert( MAP_NUMPAD_ID::value_type( dpId, idNumPad ) );
+
+	m_mapNumPadId.emplace(dpId, idNumPad);
 	return idNumPad;
 }
 
@@ -289,7 +288,7 @@ LOGIN_CHECK CLoginProtect::Check( u_long idPlayer )
 {
 	time_t	tmCur = time( NULL );
 
-	MAP_CACHE::iterator it = m_mapCache.find( idPlayer );
+	const auto it = m_mapCache.find( idPlayer );
 	if( it != m_mapCache.end() )
 	{
 		if( it->second.nError >= 3 )
@@ -304,7 +303,7 @@ LOGIN_CHECK CLoginProtect::Check( u_long idPlayer )
 
 void CLoginProtect::SetError( u_long idPlayer, BOOL bLogin )
 {
-	MAP_CACHE::iterator it = m_mapCache.find( idPlayer );
+	const auto it = m_mapCache.find( idPlayer );
 	if( it != m_mapCache.end() )
 	{
 		if( bLogin )
@@ -322,7 +321,7 @@ void CLoginProtect::SetError( u_long idPlayer, BOOL bLogin )
 			LOGIN_CACHE sCache;
 			sCache.nError = 1;
 			sCache.tmError = time( NULL );
-			m_mapCache.insert( MAP_CACHE::value_type( idPlayer, sCache ) );
+			m_mapCache.emplace(idPlayer, sCache);
 		}
 	}
 }

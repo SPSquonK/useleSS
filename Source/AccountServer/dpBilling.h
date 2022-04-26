@@ -6,8 +6,6 @@
 #include "misc.h"
 #include <map>
 
-using	namespace	std;
-
 #undef	theClass
 #define theClass	CDPBilling
 #undef theParameters

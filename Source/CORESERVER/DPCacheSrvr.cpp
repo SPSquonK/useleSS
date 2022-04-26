@@ -2731,7 +2731,7 @@ void CDPCacheSrvr::OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long u
 			return;
 
 		GUILD_VOTE_SELECT& select = pVote->GetVoteSelect( cbSelection );
-		if( select.szString == '\0' )				// 빈문자열은 투표불가 		
+		if( select.szString[0] == '\0')				// 빈문자열은 투표불가 		
 			return;
 
 		g_dpDatabaseClient.SendCastVote( idVote, cbSelection );

@@ -22,27 +22,22 @@ CServerDesc::~CServerDesc()
 	}
 }
 
-BOOL CServerDesc::IsUnderJurisdiction( DWORD dwWorldID, const D3DVECTOR & vPos )
-{
+BOOL CServerDesc::IsUnderJurisdiction(const DWORD dwWorldID, const D3DVECTOR & vPos) const {
 	int x	= (int)( vPos.x / MPU / MAP_SIZE );
 	int z	= (int)( vPos.z / MPU / MAP_SIZE );
 
-	for( list<CJurisdiction*>::iterator i = m_lspJurisdiction.begin(); i != m_lspJurisdiction.end(); ++i )
-	{
-		if( (*i)->m_dwWorldID == dwWorldID )
-			return TRUE;
-	}
-	return FALSE;
+	return IsIntersected(dwWorldID);
 }
 
-BOOL CServerDesc::IsIntersected( DWORD dwWorldID )
-{
-	for( list<CJurisdiction*>::iterator i = m_lspJurisdiction.begin(); i != m_lspJurisdiction.end(); ++i )
-	{
-		if( (*i)->m_dwWorldID == dwWorldID )
-			return TRUE;
-	}
-	return FALSE;
+BOOL CServerDesc::IsIntersected(const DWORD dwWorldID) const {
+	const auto i = std::find_if(
+		m_lspJurisdiction.begin(), m_lspJurisdiction.end(),
+		[dwWorldID](const CJurisdiction * const juridiction) {
+			return juridiction->m_dwWorldID == dwWorldID;
+		}
+	);
+
+	return (i != m_lspJurisdiction.end()) ? TRUE : FALSE;
 }
 
 void CServerDesc::Serialize( CAr & ar )
@@ -51,12 +46,11 @@ void CServerDesc::Serialize( CAr & ar )
 	{
 		ar << m_uKey;
 		ar << (short)m_lspJurisdiction.size();
-		for( list<CJurisdiction*>::iterator i = m_lspJurisdiction.begin(); i != m_lspJurisdiction.end(); ++i )
-		{
-			ar << (*i)->m_dwWorldID;
-			ar << (*i)->m_rect;
-			ar << (*i)->m_wLeft;
-			ar << (*i)->m_wRight;
+		for (const auto & juridiction : m_lspJurisdiction) {
+			ar << juridiction->m_dwWorldID;
+			ar << juridiction->m_rect;
+			ar << juridiction->m_wLeft;
+			ar << juridiction->m_wRight;
 		}
 		ar.WriteString( m_szAddr );
 	}
@@ -97,7 +91,7 @@ void CServerDescArray::Free( void )
 	CMclAutoLock Lock( m_AddRemoveLock );
 
 #ifdef __STL_0402
-	for( CServerDescArray::iterator i = begin(); i != end(); ++i )
+	for( auto i = begin(); i != end(); ++i )
 	{
 		CServerDesc* pServer	= i->second;
 		SAFE_DELETE( pServer );
