@@ -45,15 +45,15 @@ typedef	struct	_COUPLE_ITEM
 	_COUPLE_ITEM( int i, int s, int f, int l, int n ) : nItem( i ), nSex( s ), nFlags( f ), nLife( l ), nNum( n )		{}
 }	COUPLE_ITEM, *PCOUPLE_ITEM;
 
-typedef vector<int>		VE;
-typedef vector<COUPLE_ITEM>		VCI;
-typedef	vector<VCI>		VVCI;
-typedef	vector<int>		VSK;
-typedef vector<int>		VS;
-typedef vector<VS>		VVS;
+typedef std::vector<int>		VE;
+typedef std::vector<COUPLE_ITEM>		VCI;
+typedef	std::vector<VCI>		VVCI;
+typedef	std::vector<int>		VSK;
+typedef std::vector<int>		VS;
+typedef std::vector<VS>		VVS;
 
-typedef	map<u_long, CCouple*>	MPC;
-typedef	vector<CCouple*>	VCOUPLE;
+typedef	std::map<u_long, CCouple*>	MPC;
+typedef	std::vector<CCouple*>	VCOUPLE;
 
 class CCoupleProperty
 {

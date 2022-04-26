@@ -60,7 +60,7 @@ struct __TAXDETAIL
 #endif // __DBSERVER
 	}
 };
-typedef map<BYTE, __TAXDETAIL*> TAXDETAILMAP;
+typedef std::map<BYTE, __TAXDETAIL*> TAXDETAILMAP;
 
 struct __TAXINFO
 {
@@ -72,12 +72,12 @@ struct __TAXINFO
 	{
 		dwId = NULL_ID;
 		bSetTaxRate = TRUE;
-		mapTaxDetail.insert( make_pair( TAX_SALES, new __TAXDETAIL ) );			// 구매 세금은 기본
-		mapTaxDetail.insert( make_pair( TAX_PURCHASE, new __TAXDETAIL ) );		// 판매 세금은 기본
+		mapTaxDetail.emplace(TAX_SALES, new __TAXDETAIL );			// 구매 세금은 기본
+		mapTaxDetail.emplace(TAX_PURCHASE, new __TAXDETAIL );		// 판매 세금은 기본
 		dwNextId = NULL_ID;
 	}
 };
-typedef map<BYTE, __TAXINFO*> TAXINFOMAP;
+typedef std::map<BYTE, __TAXINFO*> TAXINFOMAP;
 
 
 class CTax
@@ -123,7 +123,7 @@ public:
 	
 	CLuaBase m_Lua;
 	CTaxDBController m_taxDBController;
-	string	m_strChangedDate;		// 마지막으로 세율이 변경된 시간
+	std::string	m_strChangedDate;		// 마지막으로 세율이 변경된 시간
 #endif // __DBSERVER
 
 #ifndef __DBSERVER
@@ -136,7 +136,7 @@ public:
 #endif // __DBSERVER
 
 #ifdef __OCCUPATION_SHOPITEM
-	vector<DWORD> m_vecdwOccupationShopItem;
+	std::vector<DWORD> m_vecdwOccupationShopItem;
 #ifdef __WORLDSERVER
 	BOOL IsOccupationGuildMember( CMover* pMover );
 	BOOL IsOccupationShopItem( DWORD dwItemId );

@@ -80,7 +80,7 @@ void CRainbowRaceDBCtrl::LoadRainbowRace( DPID dpId )
 	}
 
 	// 신청자 목록
-	vector<DWORD> vec_dwNowPlayerId;
+	std::vector<DWORD> vec_dwNowPlayerId;
 	sprintf( szQuery, "RAINBOWRACE_STR 'S2', '%02d', %d, '0000000', 0", g_appInfo.dwSys, m_nTimes );
 	if( pQuery->Exec( szQuery ) == FALSE )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
@@ -92,7 +92,7 @@ void CRainbowRaceDBCtrl::LoadRainbowRace( DPID dpId )
 		m_nTimes++;
 
 	// 이전 대회 랭킹
-	vector<DWORD> vec_dwPrevRanking;
+	std::vector<DWORD> vec_dwPrevRanking;
 	if( m_nTimes > 1 )	// 현재가 2회 이상일때만..( 1회 이상 진행했을 경우 )
 	{
 		sprintf( szQuery, "RAINBOWRACE_STR 'S3', '%02d', %d, '0000000', 0", g_appInfo.dwSys, m_nTimes );

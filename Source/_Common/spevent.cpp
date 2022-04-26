@@ -157,14 +157,14 @@ CEventGeneric::~CEventGeneric()
 
 void CEventGeneric::Clear( BOOL bDestructor )
 {
-	for( list<EVENT_GENERIC*>::iterator i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
+	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
 		safe_delete( *i );
 	m_lspEvent.clear();
 
-	for( map<int, list<CEventItem*>*>::iterator i2 = m_mapEventItemList.begin(); i2 != m_mapEventItemList.end(); ++i2 )
+	for( auto i2 = m_mapEventItemList.begin(); i2 != m_mapEventItemList.end(); ++i2 )
 	{
-		list<CEventItem*>* pList	= i2->second;
-		for( list<CEventItem*>::iterator i3 = pList->begin(); i3 != pList->end(); ++i3 )
+		std::list<CEventItem*>* pList	= i2->second;
+		for( auto i3 = pList->begin(); i3 != pList->end(); ++i3 )
 			safe_delete( *i3 );
 		pList->clear();
 		safe_delete( pList );
@@ -173,7 +173,7 @@ void CEventGeneric::Clear( BOOL bDestructor )
 #ifdef __EVENT_0117
 	if( bDestructor )
 	{
-		for( map<int, CSpawn*>::iterator i3	= m_mapSpawn.begin(); i3 != m_mapSpawn.end(); ++i3 )
+		for( auto i3	= m_mapSpawn.begin(); i3 != m_mapSpawn.end(); ++i3 )
 			safe_delete( i3->second );
 		m_mapSpawn.clear();
 	}
@@ -331,12 +331,12 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 
 BOOL CEventGeneric::AddItem( int nEvent, DWORD dwItemId, int nMax, int nNum )
 {
-	list<CEventItem*>*	pList	= NULL;
-	map<int, list<CEventItem*>*>::iterator i	= m_mapEventItemList.find( nEvent );
+	std::list<CEventItem*>*	pList	= NULL;
+	auto i	= m_mapEventItemList.find( nEvent );
 	if( i == m_mapEventItemList.end() )
 	{
-		pList	= new list<CEventItem*>;
-		bool bResult	= m_mapEventItemList.insert( map<int, list<CEventItem*>*>::value_type( nEvent, pList ) ).second;
+		pList	= new std::list<CEventItem*>;
+		bool bResult	= m_mapEventItemList.emplace(nEvent, pList).second;
 		if( !bResult )	// ?
 			return FALSE;
 	}
@@ -411,18 +411,18 @@ void CEventGeneric::Serialize( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << (int)m_lspEvent.size();
-		for( list<EVENT_GENERIC*>::iterator i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
+		for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
 		{
 			PEVENT_GENERIC pEvent	= *i;
 			ar.Write( (const void*)pEvent, sizeof(EVENT_GENERIC) );
 		}
 		ar << (int)m_mapEventItemList.size();
-		for( map<int, list<CEventItem*>*>::iterator i2 = m_mapEventItemList.begin(); i2 != m_mapEventItemList.end(); ++i2 )
+		for( auto i2 = m_mapEventItemList.begin(); i2 != m_mapEventItemList.end(); ++i2 )
 		{
 			ar << (int)i2->first;
-			list<CEventItem*>* pList	= i2->second;
+			std::list<CEventItem*>* pList	= i2->second;
 			ar << (int)pList->size();
-			for( list<CEventItem*>::iterator i3 = pList->begin(); i3 != pList->end(); ++i3 )
+			for( auto i3 = pList->begin(); i3 != pList->end(); ++i3 )
 			{
 				CEventItem* pEventItem	= *i3;
 				pEventItem->Serialize( ar );
@@ -446,8 +446,8 @@ void CEventGeneric::Serialize( CAr & ar )
 		{
 			int nEvent;
 			ar >> nEvent;
-			list<CEventItem*>* pList	= new list<CEventItem*>;
-			bool bResult	= m_mapEventItemList.insert( map<int, list<CEventItem*>*>::value_type( nEvent, pList ) ).second;
+			std::list<CEventItem*>* pList	= new std::list<CEventItem*>;
+			bool bResult	= m_mapEventItemList.emplace(nEvent, pList).second;
 			if( !bResult )
 			{
 				//
@@ -468,7 +468,7 @@ BOOL CEventGeneric::Run( void )
 {
 	BOOL f	= FALSE;
 	time_t t	= time_null();
-	for( list<EVENT_GENERIC*>::iterator i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
+	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
 	{
 		PEVENT_GENERIC pEvent	= *i;
 		BOOL bEvent	= ( t >= pEvent->tStart && t < pEvent->tEnd );
@@ -493,7 +493,7 @@ BOOL CEventGeneric::Run( void )
 
 PEVENT_GENERIC CEventGeneric::GetEvent( int nEvent )
 {
-	for( list<EVENT_GENERIC*>::iterator i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
+	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
 	{
 		PEVENT_GENERIC pEvent	= *i;
 		if( pEvent->nId == nEvent )

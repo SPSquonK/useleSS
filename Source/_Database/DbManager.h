@@ -469,7 +469,7 @@ struct ACCOUNT_CACHE
 	CItemContainer< CItemElem  >	m_Bank[3];
 	DWORD							m_dwGoldBank[3];
 	time_t							m_tmLastAccess;
-	string							m_strAccount;
+	std::string							m_strAccount;
 
 	void	Init();
 	void	Clear();
@@ -537,9 +537,9 @@ inline BOOL ACCOUNT_CACHE::IsReleaseable()
 
 //typedef CMyMap2<CMover*>	C2Mover;
 //typedef CMyBucket2<CMover*> CMoverBucket;
-typedef	set<string>			SET_STRING;
-typedef map<u_long, string>	ULONG2STRING;
-typedef map<int, string>	INT2STRING;
+typedef	std::set<std::string>			SET_STRING;
+typedef std::map<u_long, std::string>	ULONG2STRING;
+typedef std::map<int, std::string>	INT2STRING;
 
 typedef	struct	_ItemStruct
 {
@@ -587,31 +587,21 @@ typedef	struct	_ItemContainerStruct
 
 typedef	struct	_PocketStruct : public ItemContainerStruct
 {
-	BOOL	bExpired;
-	time_t	tExpirationDate;
-	_PocketStruct() : ItemContainerStruct()
-	{
-		bExpired	= TRUE;
-		tExpirationDate		= 0;
-	}
+	BOOL	bExpired = TRUE;
+	time_t	tExpirationDate = 0;
 }	PocketStruct,	*PPocketStruct;
 
 
 typedef	struct	_CONV_RESULT_ITEM
 {
-	DWORD	dwItemId;
-	int		nAbilityOption;
-	_CONV_RESULT_ITEM()
-	{
-		dwItemId	= 0;
-		nAbilityOption	= 0;
-	}
+	DWORD	dwItemId = 0;
+	int		nAbilityOption = 0;
 }	CONV_RESULT_ITEM;
 
 class CGuildMng;
 class CMail;
 
-typedef	map<DWORD, CONV_RESULT_ITEM>	MDC;
+typedef	std::map<DWORD, CONV_RESULT_ITEM>	MDC;
 
 class CDbManager
 {
@@ -677,7 +667,7 @@ public:
 	char			m_aszJoin[MAX_JOIN_SIZE][MAX_PLAYER];
 	int				m_nJoin;
 	CMclCritSec		m_csMapSavePlayer;
-	map<u_long, int>	m_mapSavePlayer;		// m_idPlayer, nSlot
+	std::map<u_long, int>	m_mapSavePlayer;		// m_idPlayer, nSlot
 	HANDLE			m_hIOCPGet;
 	HANDLE			m_hIOCPPut;
 	HANDLE			m_hIOCPUpdate;
@@ -702,14 +692,14 @@ public:
 	CMclCritSec		m_csCreatePlayer;
 #endif	// __J0826
 
-	vector<__GCRESULTVALUEGUILD>			m_GCResultValueGuild;		// 길드대전 결과값
-	vector<__GCRESULTVALUEPLAYER>			m_GCResultValuePlayer;		// 길드대전 결과값
-	vector<__GCPLAYERPOINT> m_vecGCPlayerPoint;
+	std::vector<__GCRESULTVALUEGUILD>			m_GCResultValueGuild;		// 길드대전 결과값
+	std::vector<__GCRESULTVALUEPLAYER>			m_GCResultValuePlayer;		// 길드대전 결과값
+	std::vector<__GCPLAYERPOINT> m_vecGCPlayerPoint;
 
 #ifdef __S_BUG_GC
-	vector<__GUILDCOMBATJOIN>	m_vecGuildCombat;	
+	std::vector<__GUILDCOMBATJOIN>	m_vecGuildCombat;	
 #else // __S_BUG_GC
-	map<u_long, __GUILDCOMBATJOIN>	m_GuildCombat;	
+	std::map<u_long, __GUILDCOMBATJOIN>	m_GuildCombat;	
 #endif // __S_BUG_GC
 	int		m_nGuildCombatIndex;
 	u_long	m_uWinGuildId;
@@ -779,9 +769,9 @@ public:
 	BOOL	LoadPost( void );
 	void	GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem );
 #ifdef __POST_1204
-	void	RemoveMail( list<CMail*> & lspMail, time_t t );
+	void	RemoveMail(std::list<CMail*> & lspMail, time_t t );
 #else	// __POST_1204
-	void	RemoveMail( list<CMail*> & lspMail );
+	void	RemoveMail(std::list<CMail*> & lspMail );
 #endif	// __POST_1204
 	CQuery*	m_apQuery[MAX_QUERY_RESERVED];
 	BOOL	QueryRemoveGuildBankTbl( void );
@@ -813,17 +803,17 @@ public:
 	BOOL	RemoveInvalidItem();
 
 	BOOL	Conv( LPCSTR lpFileName );
-	BOOL	ConvInventory( map<DWORD, CONV_RESULT_ITEM> & mConv );
-	BOOL	ConvBank( map<DWORD, CONV_RESULT_ITEM> & mConv );
-	BOOL	ConvGuildBank( map<DWORD, CONV_RESULT_ITEM> & mConv );
+	BOOL	ConvInventory(std::map<DWORD, CONV_RESULT_ITEM> & mConv );
+	BOOL	ConvBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv );
+	BOOL	ConvGuildBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv );
 
 	CQuery*		CreateCharQuery( void );
 	BOOL	ConvertPocket( MDC & mConv );
 
 	BOOL	RestorePet( LPCTSTR lpFileName );
-	BOOL	RestorePetInventory( map<DWORD, int> & mRestore );
-	BOOL	RestorePetBank( map<DWORD, int> & mRestore );
-	BOOL	RestorePetGuildBank( map<DWORD, int> & mRestore );
+	BOOL	RestorePetInventory(std::map<DWORD, int> & mRestore );
+	BOOL	RestorePetBank(std::map<DWORD, int> & mRestore );
+	BOOL	RestorePetGuildBank(std::map<DWORD, int> & mRestore );
 
 	void	CreateGuild( CQuery* pQuery, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	DestroyGuild( CQuery* pQuery, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );

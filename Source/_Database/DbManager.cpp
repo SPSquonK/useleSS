@@ -254,7 +254,7 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 
 #ifdef __RT_1025
 	size_t nSize;	u_long uMessengerId;
-	vector<u_long> vecMessenger;
+	std::vector<u_long> vecMessenger;
 	arRead >> nSize;
 	for( size_t i=0; i<nSize; i++ )
 	{
@@ -329,7 +329,7 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 
 	CDPTrans::GetInstance()->SendDeletePlayerData( idPlayer );
 #ifdef __RT_1025
-	for( vector<u_long>::iterator it=vecMessenger.begin(); it!=vecMessenger.end(); it++ )
+	for( auto it=vecMessenger.begin(); it!=vecMessenger.end(); it++ )
 	{
 		qry->Execute( "uspDeleteMessenger '%02d', '%07d', '%07d'", g_appInfo.dwSys, idPlayer, (*it) );
 		g_dpCoreSrvr.SendRemovePlayerFriend( idPlayer, (*it) );
@@ -882,7 +882,7 @@ BOOL CDbManager::GetPartyName( void )
 	{
 		qry.GetStr( "partyname", szPartyName );
 		id	= qry.GetInt( "m_idPlayer" );
-		m_2PartyNamePtr.insert( map<u_long, string>::value_type( id, szPartyName ) );
+		m_2PartyNamePtr.emplace(id, szPartyName );
 	}
 	m_idPlayer	= id;
 	return TRUE;	
@@ -1031,7 +1031,7 @@ void CDbManager::AddPartyName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 	if( iter != m_2PartyNamePtr.end() )
 		m_2PartyNamePtr.erase( iter );
 
-	m_2PartyNamePtr.insert( map<u_long, string>::value_type( uidPlayer, sParty ) );
+	m_2PartyNamePtr.emplace(uidPlayer, sParty);
 	FreeRequest( lpDbOverlappedPlus );
 }
 
@@ -5321,7 +5321,7 @@ BOOL CDbManager::LoadPost( void )
 	}
 
 #ifdef __POST_DUP_1209
-	set<int>	setnMail;
+	std::set<int>	setnMail;
 	int	nTotal	= 0;
 #endif	// __POST_DUP_1209
 
@@ -5624,10 +5624,10 @@ void CDbManager::RemoveMail( list<CMail*> & lspMail, time_t t )
 }
 #else	// __POST_1204
 //{{AFX
-void CDbManager::RemoveMail( list<CMail*> & lspMail )
+void CDbManager::RemoveMail(std::list<CMail*> & lspMail )
 {
 	char szQuery[QUERY_SIZE]	= { 0,};
-	for( list<CMail*>::iterator i = lspMail.begin(); i != lspMail.end(); ++i )
+	for( auto i = lspMail.begin(); i != lspMail.end(); ++i )
 	{
 		CMail* pMail	= *i;
 		MAIL_QUERYINFO info( "D1" );
@@ -5748,7 +5748,7 @@ int	CDbManager::GetTradeNo( void )
 
 BOOL CDbManager::RestorePet( LPCSTR lpFileName )
 {
-	map<DWORD, int>	mRestore;
+	std::map<DWORD, int>	mRestore;
 	CScript s;
 	if( FALSE == s.Load( lpFileName ) )
 		return FALSE;
@@ -5757,7 +5757,7 @@ BOOL CDbManager::RestorePet( LPCSTR lpFileName )
 	while( s.tok != FINISHED )
 	{
 		int nLife	= s.GetNumber();
-		BOOL bResult	= mRestore.insert( map<DWORD, int>::value_type( dwSerial, nLife ) ).second;
+		BOOL bResult	= mRestore.emplace(dwSerial, nLife).second;
 		dwSerial	= s.GetNumber();
 	}
 
@@ -5765,7 +5765,7 @@ BOOL CDbManager::RestorePet( LPCSTR lpFileName )
 	RestorePetBank( mRestore );
 	RestorePetGuildBank( mRestore );
 
-	for( map<DWORD, int>::iterator i = mRestore.begin(); i != mRestore.end(); ++i )
+	for( auto i = mRestore.begin(); i != mRestore.end(); ++i )
 		FILEOUT( "../result.txt", "%07d\t%d", i->first, i->second );
 
 	return TRUE;
@@ -5773,7 +5773,7 @@ BOOL CDbManager::RestorePet( LPCSTR lpFileName )
 
 BOOL CDbManager::Conv( LPCSTR lpFileName )
 {
-	map<DWORD, CONV_RESULT_ITEM>	mConv;
+	std::map<DWORD, CONV_RESULT_ITEM>	mConv;
 	CScript s;
 	if( FALSE == s.Load( lpFileName ) )
 	{
@@ -5786,7 +5786,7 @@ BOOL CDbManager::Conv( LPCSTR lpFileName )
 		CONV_RESULT_ITEM	result;
 		result.dwItemId		= s.GetNumber();
 		result.nAbilityOption	= s.GetNumber();
-		BOOL bResult	= mConv.insert( map<DWORD, CONV_RESULT_ITEM>::value_type( dwItemId1, result ) ).second;
+		BOOL bResult	= mConv.emplace(dwItemId1, result).second;
 #ifdef __VERIFY_0201
 		/*
 		ItemProp* pItemProp1	= prj.GetItemProp( dwItemId1 );
@@ -6168,7 +6168,7 @@ BOOL CDbManager::ConvertPocket( MDC & mConv )
 	return TRUE;
 }
 
-BOOL CDbManager::ConvInventory( map<DWORD, CONV_RESULT_ITEM> & mConv )
+BOOL CDbManager::ConvInventory(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 {
 	CQuery* pQueryLoad	= new CQuery;
 
@@ -6216,7 +6216,7 @@ BOOL CDbManager::ConvInventory( map<DWORD, CONV_RESULT_ITEM> & mConv )
 			CItemElem* pItemElem	= pMover->m_Inventory.GetAtId( i );
 			if( pItemElem )
 			{
-				map<DWORD, CONV_RESULT_ITEM>::iterator it	= mConv.find( pItemElem->m_dwItemId );
+				const auto it	= mConv.find( pItemElem->m_dwItemId );
 				if( it != mConv.end() )
 				{
 					bUpdate		= TRUE;
@@ -6248,7 +6248,7 @@ BOOL CDbManager::ConvInventory( map<DWORD, CONV_RESULT_ITEM> & mConv )
 	return TRUE;
 }
 
-BOOL CDbManager::ConvBank( map<DWORD, CONV_RESULT_ITEM> & mConv )
+BOOL CDbManager::ConvBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 {
 	CQuery* pQueryLoad	= new CQuery;
 
@@ -6287,7 +6287,7 @@ BOOL CDbManager::ConvBank( map<DWORD, CONV_RESULT_ITEM> & mConv )
 			CItemElem* pItemElem	= pMover->m_Bank[0].GetAtId( i );
 			if( pItemElem )
 			{
-				map<DWORD, CONV_RESULT_ITEM>::iterator it	= mConv.find( pItemElem->m_dwItemId );
+				const auto it	= mConv.find( pItemElem->m_dwItemId );
 				if( it != mConv.end() )
 				{
 					bUpdate	= TRUE;
@@ -6318,7 +6318,7 @@ BOOL CDbManager::ConvBank( map<DWORD, CONV_RESULT_ITEM> & mConv )
 	return TRUE;
 }
 
-BOOL CDbManager::ConvGuildBank( map<DWORD, CONV_RESULT_ITEM> & mConv )
+BOOL CDbManager::ConvGuildBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 {
 	CQuery* pQueryChar	= new CQuery;
 
@@ -6361,7 +6361,7 @@ BOOL CDbManager::ConvGuildBank( map<DWORD, CONV_RESULT_ITEM> & mConv )
 			CItemElem* pItemElem	= GuildBank.GetAtId( i );
 			if( pItemElem )
 			{
-				map<DWORD, CONV_RESULT_ITEM>::iterator it	= mConv.find( pItemElem->m_dwItemId );
+				const auto it	= mConv.find( pItemElem->m_dwItemId );
 				if( it != mConv.end() )
 				{
 					bUpdate	= TRUE;
@@ -6401,7 +6401,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		return FALSE;
 	}
 	
-	map<SERIALNUMBER, DWORD>	mapItemRemove;
+	std::map<SERIALNUMBER, DWORD>	mapItemRemove;
 
 	DWORD dwID;
 	SERIALNUMBER iSerialNumber;
@@ -6410,7 +6410,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 	while( s.tok != FINISHED )
 	{
 		iSerialNumber	= s.GetSerialNumber();
-		bool bResult	= mapItemRemove.insert( map<SERIALNUMBER, DWORD>::value_type( iSerialNumber, dwID ) ).second;
+		bool bResult	= mapItemRemove.emplace(iSerialNumber, dwID).second;
 		if( !bResult )
 		{
 			AfxMessageBox( "mapItemRemove.insert" );
@@ -6464,7 +6464,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 			CItemElem* pItemElem	= pMover->m_Inventory.GetAtId( i );
 			if( pItemElem )
 			{
-				map<SERIALNUMBER, DWORD>::iterator i	= mapItemRemove.find( pItemElem->GetSerialNumber() );
+				const auto i	= mapItemRemove.find( pItemElem->GetSerialNumber() );
 				if( i != mapItemRemove.end() )
 				{
 					if( pItemElem->m_dwItemId == i->second )
@@ -6529,7 +6529,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 			CItemElem* pItemElem	= pMover->m_Bank[0].GetAtId( i );
 			if( pItemElem )
 			{
-				map<SERIALNUMBER, DWORD>::iterator i	= mapItemRemove.find( pItemElem->GetSerialNumber() );
+				const auto i	= mapItemRemove.find( pItemElem->GetSerialNumber() );
 				if( i != mapItemRemove.end() )
 				{
 					if( pItemElem->m_dwItemId == i->second )
@@ -6603,7 +6603,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 			CItemElem* pItemElem	= GuildBank.GetAtId( i );
 			if( pItemElem )
 			{
-				map<SERIALNUMBER, DWORD>::iterator i	= mapItemRemove.find( pItemElem->GetSerialNumber() );
+				auto i	= mapItemRemove.find( pItemElem->GetSerialNumber() );
 				if( i != mapItemRemove.end() )
 				{
 					if( pItemElem->m_dwItemId == i->second )
@@ -6661,7 +6661,7 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 	}
 
 	__MAIL_REALTIME OneMail;
-	vector< __MAIL_REALTIME > vecMailRT;
+	std::vector< __MAIL_REALTIME > vecMailRT;
 
 	while( pQuery->Fetch() )
 	{
@@ -6944,7 +6944,7 @@ void CDbManager::CalluspPetLog( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	FreeRequest( pov );
 }
 
-BOOL CDbManager::RestorePetInventory( map<DWORD, int> & mRestore )
+BOOL CDbManager::RestorePetInventory(std::map<DWORD, int> & mRestore )
 {
 	OutputDebugString( "start - RestorePetInventory" );
 	CQuery* pQueryLoad	= new CQuery;
@@ -6989,7 +6989,7 @@ BOOL CDbManager::RestorePetInventory( map<DWORD, int> & mRestore )
 			CItemElem* pItemElem	= pMover->m_Inventory.GetAtId( i );
 			if( pItemElem )
 			{
-				map<DWORD, int>::iterator it	= mRestore.find( pItemElem->GetSerialNumber() );
+				auto it	= mRestore.find( pItemElem->GetSerialNumber() );
 				if( it != mRestore.end() )
 				{
 					if( pItemElem->m_pPet )
@@ -7026,7 +7026,7 @@ BOOL CDbManager::RestorePetInventory( map<DWORD, int> & mRestore )
 	return TRUE;
 }
 
-BOOL CDbManager::RestorePetBank( map<DWORD, int> & mRestore )
+BOOL CDbManager::RestorePetBank(std::map<DWORD, int> & mRestore )
 {
 	OutputDebugString( "start - RestorePetBank" );
 
@@ -7063,7 +7063,7 @@ BOOL CDbManager::RestorePetBank( map<DWORD, int> & mRestore )
 			CItemElem* pItemElem	= pMover->m_Bank[0].GetAtId( i );
 			if( pItemElem )
 			{
-				map<DWORD, int>::iterator it	= mRestore.find( pItemElem->GetSerialNumber() );
+				auto it	= mRestore.find( pItemElem->GetSerialNumber() );
 				if( it != mRestore.end() )
 				{
 					if( pItemElem->m_pPet )
@@ -7100,7 +7100,7 @@ BOOL CDbManager::RestorePetBank( map<DWORD, int> & mRestore )
 	return TRUE;
 }
 
-BOOL CDbManager::RestorePetGuildBank( map<DWORD, int> & mRestore )
+BOOL CDbManager::RestorePetGuildBank(std::map<DWORD, int> & mRestore )
 {
 //	return TRUE;
 	OutputDebugString( "start - RestorePetGuildBank" );
@@ -7142,7 +7142,7 @@ BOOL CDbManager::RestorePetGuildBank( map<DWORD, int> & mRestore )
 			CItemElem* pItemElem	= GuildBank.GetAtId( i );
 			if( pItemElem )
 			{
-				map<DWORD, int>::iterator it	= mRestore.find( pItemElem->GetSerialNumber() );
+				auto it	= mRestore.find( pItemElem->GetSerialNumber() );
 				if( it != mRestore.end() )
 				{
 					if( pItemElem->m_pPet )
@@ -7254,8 +7254,8 @@ void CDbManager::UpdateMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 
 void CDbManager::LoadGC1to1TenderGuild( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, DPID dpId )
 {
-	vector< CGuildCombat1to1Mng::__GC1TO1TENDER > vecTenderGuild;
-	vector< CGuildCombat1to1Mng::__GC1TO1TENDER > vecTenderFailGuild;
+	std::vector< CGuildCombat1to1Mng::__GC1TO1TENDER > vecTenderGuild;
+	std::vector< CGuildCombat1to1Mng::__GC1TO1TENDER > vecTenderFailGuild;
 	
 	char szQuery[QUERY_SIZE] = {0,};
 	// 인덱스 얻어오기
@@ -7359,7 +7359,7 @@ void CDbManager::GC1to1LineUp( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 	
 	u_long	uIdGuild, uPlayerId;
 	int nVecSize;
-	vector<u_long> vecMemberId;
+	std::vector<u_long> vecMemberId;
 	
 	ar >> uIdGuild >> nVecSize;
 	for( int i=0; i<nVecSize; i++ )

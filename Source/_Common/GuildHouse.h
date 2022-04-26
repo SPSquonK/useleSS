@@ -72,7 +72,7 @@ public:
 		GuildHouse_Furniture_Info( DWORD dwII = NULL_ID, BOOL bS = FALSE, D3DXVECTOR3 v = D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), float fA = 0.0f, time_t tK = 0 );
 		void		Serialize( CAr & ar );
 	};
-	typedef vector<GuildHouse_Furniture_Info>	VECFurnituretInfo;
+	typedef std::vector<GuildHouse_Furniture_Info>	VECFurnituretInfo;
 	typedef VECFurnituretInfo::iterator			VECFurnitureIter;
 	
 protected:
@@ -296,7 +296,7 @@ public:
 	static CGuildHouseMng* GetInstance();
 
 	CGuildHouseBase*	MakeGuildHouse( DWORD dwGuildId, DWORD dwWorldId );
-	BOOL				AddGuildHouse( DWORD dwGuildId, CGuildHouseBase* pGuildHouse )	{ return m_mapGuildHouse.insert( make_pair( dwGuildId, pGuildHouse ) ).second; }
+	BOOL				AddGuildHouse( DWORD dwGuildId, CGuildHouseBase* pGuildHouse )	{ return m_mapGuildHouse.emplace( dwGuildId, pGuildHouse ).second; }
 	BOOL				RemoveGuildHouse( DWORD dwGuildId );
 	CGuildHouseBase* GetGuildHouse( DWORD dwGuildId );
 	BOOL	IsEmpty()	{ return m_mapGuildHouse.empty(); }
@@ -342,7 +342,7 @@ private:
 #endif // __DBSERVER
 
 private:
-	typedef map<DWORD, CGuildHouseBase*> MapGuildHouse;
+	typedef std::map<DWORD, CGuildHouseBase*> MapGuildHouse;
 	MapGuildHouse m_mapGuildHouse;
 
 #ifdef __GUILD_HOUSE_MIDDLE

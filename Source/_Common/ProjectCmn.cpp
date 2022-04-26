@@ -507,7 +507,7 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 		}
 		
 //			TRACE( "PropItem = %d, %s\n", prop.dwID, prop.szName );
-		m_mapII.insert( map<string, DWORD>::value_type( prop.szName, prop.dwID ) );
+		m_mapII.emplace(prop.szName, prop.dwID);
 #ifdef __CLIENT
 		if( prop.IsUltimate() )
 		{
@@ -763,10 +763,8 @@ BOOL CProject::IsInvalidName( LPCSTR szName )
 	strlwr( pszName );
 //	string str	= pszName;
 	CString str = pszName;
-	for( set<string>::iterator i = m_sInvalidNames.begin(); i != m_sInvalidNames.end(); ++i )
-	{
-		string strstr = *i;
-		
+	for( auto i = m_sInvalidNames.begin(); i != m_sInvalidNames.end(); ++i )
+	{	
 //		if( str.find( *i, 0 ) != -1 )
 		if( str.Find( (*i).c_str(), 0 ) != -1 )
 			return TRUE;
@@ -784,7 +782,7 @@ BOOL	CProject::LoadAllowedLetter( void )
 	CString strFile;
 
 #ifdef __VENDOR_1106
-	set<char>*	ptr	= NULL;
+	std::set<char>*	ptr;
 	if( bVendor )
 	{
 		ptr		= &m_sAllowedLetter2;
@@ -797,7 +795,7 @@ BOOL	CProject::LoadAllowedLetter( void )
 	}
 #else	// __VENDOR_1106
 	strFile		= GetLangFileName( ::GetLanguage(), FILE_ALLOWED_LETTER );
-	set<char>*	ptr		= &m_sAllowedLetter;
+	std::set<char>*	ptr		= &m_sAllowedLetter;
 #endif	// __VENDOR_1106
 	if( s.Load( strFile ) ) 
 	{
@@ -816,7 +814,7 @@ BOOL	CProject::LoadAllowedLetter( void )
 BOOL	CProject::IsAllowedLetter( LPCSTR szName, BOOL bVendor )	
 {
 #ifdef __VENDOR_1106
-	set<char>* ptr		= NULL;
+	std::set<char>* ptr		= NULL;
 	if( bVendor )
 		ptr		= &m_sAllowedLetter2;
 	else
@@ -832,7 +830,7 @@ BOOL	CProject::IsAllowedLetter( LPCSTR szName, BOOL bVendor )
 	for( int i = 0; i < nLen; i++ )
 	{
 		char chLetter	= szName[i];
-		set<char>::iterator it	= ptr->find( chLetter );
+		auto it	= ptr->find( chLetter );
 		if( it == ptr->end() )
 		{
 #ifndef __VENDOR_1106

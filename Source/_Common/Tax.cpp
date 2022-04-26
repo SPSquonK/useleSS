@@ -25,11 +25,11 @@ CTax::CTax(void)
 	m_nMinTaxRate = 0;
 	m_nMaxTaxRate = 0;
 	
-	m_mapTaxInfo.insert( make_pair(CONT_EAST, new __TAXINFO) );		// 동부 점령 길드 - 입장료도 포함
-	m_mapTaxInfo.find( CONT_EAST )->second->mapTaxDetail.insert( make_pair( TAX_ADMISSION, new __TAXDETAIL ) ); 
-	m_mapTaxInfo.insert( make_pair(CONT_WEST, new __TAXINFO) );		// 서부 점령 길드
-	m_mapTaxInfo.insert( make_pair(CONT_ALL, new __TAXINFO) );		// 군주 - 입장료도 포함
-	m_mapTaxInfo.find( CONT_ALL )->second->mapTaxDetail.insert( make_pair( TAX_ADMISSION, new __TAXDETAIL ) );
+	m_mapTaxInfo.emplace( CONT_EAST, new __TAXINFO );		// 동부 점령 길드 - 입장료도 포함
+	m_mapTaxInfo.find( CONT_EAST )->second->mapTaxDetail.emplace(TAX_ADMISSION, new __TAXDETAIL); 
+	m_mapTaxInfo.emplace( CONT_WEST, new __TAXINFO );		// 서부 점령 길드
+	m_mapTaxInfo.emplace( CONT_ALL, new __TAXINFO );		// 군주 - 입장료도 포함
+	m_mapTaxInfo.find( CONT_ALL )->second->mapTaxDetail.emplace(TAX_ADMISSION, new __TAXDETAIL);
 
 #ifdef __DBSERVER
 	m_nTaxSecretRoomRate = 0;
@@ -47,12 +47,12 @@ CTax::CTax(void)
 
 CTax::~CTax(void)
 {
-	for( TAXINFOMAP::iterator it = m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
+	for( auto it = m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
 	{
 		__TAXINFO* taxInfo = it->second;
 		if( taxInfo )
 		{
-			for( TAXDETAILMAP::iterator it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
+			for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
 			{
 				__TAXDETAIL* taxDetail = it2->second;
 				if( taxDetail )
@@ -230,7 +230,7 @@ void CTax::CheckChangeTime( BOOL bPay, BOOL bGameMaster )
 void CTax::SetChangeNextTax()	// 변경될 세율을 적용
 {
 	//각 대륙별 점령길드(CONT_대륙)와 군주(CONT_ALL)를 모두 포함한다.
-	for( TAXINFOMAP::iterator it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
+	for( auto it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
 	{
 		__TAXINFO* taxInfo = it->second;
 		taxInfo->dwId = taxInfo->dwNextId;
@@ -255,7 +255,7 @@ void CTax::SetChangeNextTax()	// 변경될 세율을 적용
 		}
 		
 		// 세금을 모두 초기화 한다.
-		for( TAXDETAILMAP::iterator it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
+		for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
 		{
 			__TAXDETAIL* taxDetail = it2->second;
 			taxDetail->nNextTaxRate = 0;
@@ -332,7 +332,7 @@ void CTax::SetNextSecretRoomGuild( BYTE nCont, DWORD dwGuildId )	// 담주 점령길�
 		taxInfo->bSetTaxRate = FALSE;
 	// 다음 ID등록 및 세율 초기화
 	taxInfo->dwNextId = dwGuildId;
-	for( TAXDETAILMAP::iterator it=taxInfo->mapTaxDetail.begin(); it!=taxInfo->mapTaxDetail.end(); it++ )
+	for( auto it=taxInfo->mapTaxDetail.begin(); it!=taxInfo->mapTaxDetail.end(); it++ )
 		it->second->nNextTaxRate = 0;
 #endif // __DBSERVER
 }
@@ -351,7 +351,7 @@ void CTax::SetNextLord( DWORD dwIdPlayer )	// 다음 군주 설정
 	taxInfo->bSetTaxRate = TRUE;
 	// 다음 ID등록 및 세율 초기화
 	taxInfo->dwNextId = dwIdPlayer;
-	for( TAXDETAILMAP::iterator it=taxInfo->mapTaxDetail.begin(); it!=taxInfo->mapTaxDetail.end(); it++ )
+	for( auto it=taxInfo->mapTaxDetail.begin(); it!=taxInfo->mapTaxDetail.end(); it++ )
 		it->second->nNextTaxRate = 0; // 군주는 세율이 무의미 하지만 초기화...
 #endif // __DBSERVER
 }
@@ -392,7 +392,7 @@ void CTax::Serialize( CAr & ar )	// 세율에 필요한 모든 정보를 전송한다.
 	if( ar.IsStoring() )
 	{
 		ar << m_mapTaxInfo.size();
-		for( TAXINFOMAP::iterator it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
+		for( auto it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
 		{
 			__TAXINFO* taxInfo = it->second;
 			ar << it->first;
@@ -403,7 +403,7 @@ void CTax::Serialize( CAr & ar )	// 세율에 필요한 모든 정보를 전송한다.
 			ar << taxInfo->dwNextId;
 #endif // __DBSERVER
 			ar << taxInfo->mapTaxDetail.size();
-			for( TAXDETAILMAP::iterator it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
+			for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
 			{
 				__TAXDETAIL* taxDetail = it2->second;
 				ar << it2->first;
@@ -447,7 +447,7 @@ BOOL CTax::AddTax( BYTE nCont, int nTax, BYTE nTaxKind )	// 판매, 구매, 입장료에
 #endif // __WORLDSERVER
 
 #ifdef __DBSERVER
-	for( TAXINFOMAP::iterator it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
+	for( auto it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
 	{
 		if( it->first == CONT_ALL || it->first == nCont )
 		{
@@ -649,7 +649,7 @@ void CTaxDBController::PayTaxToPost()
 {
 	CTax* tax = CTax::GetInstance();
 	CQuery* pQuery = GetQueryObject();
-	for( TAXINFOMAP::iterator it=tax->m_mapTaxInfo.begin(); it!=tax->m_mapTaxInfo.end(); it++ )
+	for( auto it=tax->m_mapTaxInfo.begin(); it!=tax->m_mapTaxInfo.end(); it++ )
 	{
 		__TAXINFO* taxInfo = it->second;
 
@@ -676,7 +676,7 @@ void CTaxDBController::PayTaxToPost()
 		if( dwId == NULL_ID )
 			continue;
 
-		for( TAXDETAILMAP::iterator it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
+		for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
 		{
 			__TAXDETAIL* taxDetail = it2->second;
 
@@ -748,7 +748,7 @@ void CTaxDBController::LoadTaxInfo()
 		return;
 	}
 
-	for( TAXINFOMAP::iterator it=tax->m_mapTaxInfo.begin(); it!=tax->m_mapTaxInfo.end(); it++ )
+	for( auto it=tax->m_mapTaxInfo.begin(); it!=tax->m_mapTaxInfo.end(); it++ )
 	{
 		// DB에 저장된 row가 있으면 정보를 읽어온다.
 		BYTE nContinent = it->first;
@@ -800,7 +800,7 @@ void CTaxDBController::InsertToDB()
 	
 	m_nTimes++;
 	CTax* pTax = CTax::GetInstance();
-	for( TAXINFOMAP::iterator it=pTax->m_mapTaxInfo.begin(); it!=pTax->m_mapTaxInfo.end(); it++ )
+	for( auto it=pTax->m_mapTaxInfo.begin(); it!=pTax->m_mapTaxInfo.end(); it++ )
 	{
 		__TAXINFO* taxInfo = it->second;
 		DWORD dwTempId = 0, dwTempNextId = 0;
@@ -811,7 +811,7 @@ void CTaxDBController::InsertToDB()
 		if( pQuery->Exec( szQuery ) == FALSE )
 		{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 				
-		for( TAXDETAILMAP::iterator it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
+		for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
 		{
 			__TAXDETAIL* taxDetail = it2->second;
 			sprintf( szQuery, "TAX_DETAIL_STR 'I1', '%02d', %d, %d, %d, %d, %d, %d, %d, %d",
@@ -844,7 +844,7 @@ void CTaxDBController::UpdateToDB( BYTE nContinent )
 	if( pQuery->Exec( szQuery ) == FALSE )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 
-	for( TAXDETAILMAP::iterator it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
+	for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
 	{
 		__TAXDETAIL* taxDetail = it2->second;
 		sprintf( szQuery, "TAX_DETAIL_STR 'U1', '%02d', %d, %d, %d, %d, %d, %d, %d, %d",
@@ -858,7 +858,7 @@ void CTaxDBController::UpdateToDB( BYTE nContinent )
 void CTaxDBController::UpdateAllToDB()
 {
 	CTax* tax = CTax::GetInstance();
-	for( TAXINFOMAP::iterator it=tax->m_mapTaxInfo.begin(); it!=tax->m_mapTaxInfo.end(); it++ )
+	for( auto it=tax->m_mapTaxInfo.begin(); it!=tax->m_mapTaxInfo.end(); it++ )
 		UpdateToDB( it->first );
 }
 #endif // __DBSERVER

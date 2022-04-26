@@ -502,7 +502,7 @@ void CTElection::PostLordItems( u_long idLord )
 			if( iIndex < 0 || iIndex > 2 )
 				iIndex	= 0;
 		}
-		for( vector<int>::iterator i = property.m_vItems[iIndex].begin(); i != property.m_vItems[iIndex].end(); ++i )
+		for( auto i = property.m_vItems[iIndex].begin(); i != property.m_vItems[iIndex].end(); ++i )
 		{
 			PostItemStruct pi;
 			pi.nItem	= *i;

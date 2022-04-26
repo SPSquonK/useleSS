@@ -57,8 +57,8 @@ void CParser::SntxErr( LPCTSTR lpszHeader, int error)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
-map<CString, int> CScript::m_defines;
-map<CString, CString>	CScript::m_mapString;
+std::map<CString, int> CScript::m_defines;
+std::map<CString, CString>	CScript::m_mapString;
 
 #if defined( __WORLDSERVER ) 
 	#if defined(__REMOVE_SCIRPT_060712)
@@ -114,7 +114,7 @@ void CScript::LoadString( void )
 		}
 		GetLastFull();
 		
-		bool bResult = m_mapString.insert( map<CString, CString>::value_type( (LPCTSTR)str, (LPCTSTR)Token ) ).second;
+		bool bResult = m_mapString.emplace((LPCTSTR)str, (LPCTSTR)Token).second;
 		if( !bResult )
 			Error( "string error: %s", str );
 
@@ -190,7 +190,7 @@ int CScript::GetToken( BOOL bComma )
 		// 인터프리터 모드에서만 실행 
 		if( IsInterpriterMode() )
 		{
-			map<CString, CString>::iterator i = CScript::m_mapString.find( m_mszToken );
+			auto i = CScript::m_mapString.find( m_mszToken );
 			if( i != CScript::m_mapString.end() )
 			{
 				tokenType = STRING;
@@ -339,7 +339,7 @@ void CScript::PreScan()
 					GetTkn(); // ,
 				}
 				
-				if( m_defines.insert( make_pair( Token, eNum ) ).second == false )
+				if( m_defines.emplace(Token, eNum).second == false )
 					TRACE("Enum %s dup.\n", Token);
 				eNum++;
 			} 
@@ -415,7 +415,7 @@ void CScript::ExecDefine()
 	else
 		return;
 
-	if( m_defines.insert( make_pair( str, n ) ).second == false )
+	if( m_defines.emplace(str, n).second == false )
 		TRACE("define %s dup\n", Token);
 }
 
@@ -503,7 +503,7 @@ BOOL CScript::Load( LPCTSTR lpszFileName, BOOL bMultiByte, int nProcess)
 
 BOOL CScript::LookupDefine( LPCTSTR lpszString, int& rValue )
 {
-	map<CString, int >::iterator it = m_defines.find( lpszString );
+	const auto it = m_defines.find( lpszString );
 	if( it != m_defines.end() )
 	{
 		rValue = it->second;
@@ -533,10 +533,9 @@ int CScript::GetDefineNum(LPCTSTR lpId)
 //
 void CScript::GetFindIdToArray(LPCTSTR lpStrDef,CStringArray* pStrArray)
 {
-	string strValue; 
+	std::string strValue;
 
-	map<CString, int>::iterator it;
-	for( it = m_defines.begin(); it != m_defines.end(); ++it )
+	for( auto it = m_defines.begin(); it != m_defines.end(); ++it )
 	{
 		strValue = it->first;
 		if( strValue.find( lpStrDef ) == 0 )	// 인덱스 0에서 찾았으면 결과배열에 넣는다.

@@ -253,13 +253,13 @@ void CDPTrans::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID i
 
 				SendEventGeneric( lpCreatePlayer->dpId );
 				prj.m_EventLua.m_Access.Enter();
-				vector<BYTE> vecEventList = prj.m_EventLua.GetEventList();
+				std::vector<BYTE> vecEventList = prj.m_EventLua.GetEventList();
 				prj.m_EventLua.m_Access.Leave();
 				if( !vecEventList.empty() )
 				{
-					map<BYTE, BOOL> mapEventList;
+					std::map<BYTE, BOOL> mapEventList;
 					for( DWORD i=0; i<vecEventList.size(); i++ )
-						mapEventList.insert( make_pair( vecEventList[i], TRUE ) );
+						mapEventList.emplace(vecEventList[i], TRUE);
 					SendEventLuaState( mapEventList, FALSE, lpCreatePlayer->dpId );
 				}
 				//g_DbManager.LoadGC1to1TenderGuild();
@@ -977,7 +977,7 @@ void CDPTrans::OnItemTBLUpdate( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUs
 		ZeroMemory( szQuestName, sizeof( szQuestName ) );
 		ar >> nQuestID;
 		ar.ReadString( szQuestName, 64 );
-		g_DbManager.m_int2StrItemUpdate.insert( map<int, string>::value_type( nQuestID, szQuestName ) );
+		g_DbManager.m_int2StrItemUpdate.emplace(nQuestID, szQuestName);
 	}
 	g_DbManager.m_nItemUpdate = 1;
 }
@@ -1337,12 +1337,12 @@ void CDPTrans::SendEventFlag( DWORD dwFlag )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPTrans::SendEventLuaState( map<BYTE, BOOL> mapState, BOOL bTextOut, DPID dpId )
+void CDPTrans::SendEventLuaState(std::map<BYTE, BOOL> mapState, BOOL bTextOut, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_EVENTLUA_STATE, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << bTextOut;
 	ar << mapState.size();
-	for( map<BYTE, BOOL>::iterator it = mapState.begin(); it != mapState.end(); it++ )
+	for( auto it = mapState.begin(); it != mapState.end(); it++ )
 		ar << it->first << it->second;
 	SEND( ar, this, dpId );
 }
@@ -1448,7 +1448,7 @@ void CDPTrans::SendGC1to1Open( void )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPTrans::SendGC1to1TenderGuild( vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecT, vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecF, DPID dpId )
+void CDPTrans::SendGC1to1TenderGuild(std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecT, std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecF, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_TENDERTOSRVR, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << vecT.size();
@@ -1785,7 +1785,7 @@ void CDPTrans::SendSecretRoomInfoClear( DPID dpId )
 	SEND( ar, this, dpId );
 }
 
-void CDPTrans::SendSecretRoomTenderInfo( BYTE nContinent, DWORD dwGuildId, int nPenya, vector<DWORD> & vecMemberId, DPID dpId )
+void CDPTrans::SendSecretRoomTenderInfo( BYTE nContinent, DWORD dwGuildId, int nPenya, std::vector<DWORD> & vecMemberId, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_SECRETROOM_TENDERINFO_TO_WSERVER, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << nContinent << dwGuildId << nPenya;
@@ -1795,7 +1795,7 @@ void CDPTrans::SendSecretRoomTenderInfo( BYTE nContinent, DWORD dwGuildId, int n
 	SEND( ar, this, dpId );
 }
 
-void CDPTrans::SendRainbowRaceInfo( vector<DWORD> & vec_dwNowPlayerId, vector<DWORD> & vec_prevRanking, DPID dpId )
+void CDPTrans::SendRainbowRaceInfo(std::vector<DWORD> & vec_dwNowPlayerId, std::vector<DWORD> & vec_prevRanking, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_RAINBOWRACE_LOADDBTOWORLD, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << vec_dwNowPlayerId.size();

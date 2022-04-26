@@ -38,8 +38,8 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef pair<CDbController*, DWORD>	PDD;
-typedef vector<PDD>	VPDD;
+typedef std::pair<CDbController*, DWORD>	PDD;
+typedef std::vector<PDD>	VPDD;
 
 class CDbControllerTimer
 {

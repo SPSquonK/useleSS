@@ -58,12 +58,12 @@ void IElection::sProperty::Serialize( CAr & ar )
 	{
 		ar << nDayOfWeek << nHour << tCandidacy << tVote << fRequirementFactor << nDays;
 		ar << m_vReturnDepositRates.size();
-		for( vector<float>::iterator i1 = m_vReturnDepositRates.begin(); i1 != m_vReturnDepositRates.end(); ++i1 )
+		for( auto i1 = m_vReturnDepositRates.begin(); i1 != m_vReturnDepositRates.end(); ++i1 )
 			ar << *( i1 );
 		for( int iIndex = 0; iIndex < 2; iIndex++ )
 		{
 			ar << m_vItems[iIndex].size();
-			for( vector<int>::iterator i2 = m_vItems[iIndex].begin(); i2 != m_vItems[iIndex].end(); ++i2 )
+			for( auto i2 = m_vItems[iIndex].begin(); i2 != m_vItems[iIndex].end(); ++i2 )
 				ar << *( i2 );
 		}
 	}
@@ -121,7 +121,7 @@ CCandidate* IElection::AddCandidate( CCandidate * pCandidate )
 
 CCandidate* IElection::GetCandidate( u_long idPlayer )
 {
-	for( VSPC::iterator i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
+	for( auto i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
 	{
 		if( ( *i )->GetIdPlayer() == idPlayer )
 			return ( *i ).get();
@@ -131,7 +131,7 @@ CCandidate* IElection::GetCandidate( u_long idPlayer )
 
 int IElection::GetOrder( u_long idPlayer )
 {
-	for( VSPC::iterator i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
+	for( auto i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
 	{
 		if( ( *i )->GetIdPlayer() == idPlayer )
 			return std::distance( m_vCandidates.begin(), i );
@@ -155,7 +155,7 @@ void IElection::Serialize( CAr & ar )
 		ar << m_nRequirement;
 		property.Serialize( ar );
 		ar << m_vCandidates.size();
-		for( VSPC::iterator i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
+		for( auto i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
 			( *i )->Serialize( ar );
 	}
 	else
@@ -326,7 +326,7 @@ void IElection::SortVote( void )
 int IElection::GetVote()
 {
 	int nTotal	= 0;
-	for( VSPC::iterator i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
+	for( auto i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
 		nTotal	+= ( *i )->GetVote();
 	return nTotal;
 }
@@ -439,7 +439,7 @@ ILordEvent::~ILordEvent()
 
 void ILordEvent::Clear( void )
 {
-	for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
+	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
 		safe_delete( *i );
 	m_vComponents.clear();
 }
@@ -460,7 +460,7 @@ BOOL ILordEvent::Initialize( const char* szFile )
 			while( *s.token != '}' )
 			{
 				__int64 iCost	= s.GetInt64();
-				m_vEFactor.push_back( make_pair( fRate, iCost ) );
+				m_vEFactor.emplace_back(fRate, iCost);
 				fRate	= s.GetFloat();
 			}
 		}
@@ -471,7 +471,7 @@ BOOL ILordEvent::Initialize( const char* szFile )
 			while( *s.token != '}' )
 			{
 				__int64 iCost	= s.GetInt64();
-				m_vIFactor.push_back( make_pair( fRate, iCost ) );
+				m_vIFactor.emplace_back(fRate, iCost);
 				fRate	= s.GetFloat();
 			}
 		}

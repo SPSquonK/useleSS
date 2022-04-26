@@ -70,7 +70,7 @@ public:
 		int		nWinCount;
 		int		nNowPlayerLife;
 		int		nLastWinState;
-		vector<u_long> vecMemberId;
+		std::vector<u_long> vecMemberId;
 		__GC1TO1TENDER()
 		{
 			nNowPlayerLife = 0;

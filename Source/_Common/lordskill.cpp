@@ -85,7 +85,7 @@ CLordSkill::~CLordSkill()
 
 void CLordSkill::Clear( void )
 {
-	for( VLSC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
+	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
 		safe_delete( *i );
 	m_vComponents.clear();
 }
@@ -97,7 +97,7 @@ void CLordSkill::AddSkillComponent( CLordSkillComponentExecutable* pComponent )
 
 CLordSkillComponentExecutable* CLordSkill::GetSkill( int nId )
 {
-	for( VLSC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
+	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
 	{
 		if( ( *i )->GetId() == nId )
 			return ( *i );
@@ -112,7 +112,7 @@ CLordSkillComponentExecutable* CLordSkill::CreateSkillComponent( int nType )
 
 void CLordSkill::Reset( void )
 {
-	for( VLSC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
+	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
 		( *i )->SetTick( 0 );
 }
 
@@ -158,7 +158,7 @@ void CLordSkill::SerializeTick( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_vComponents.size();
-		for( VLSC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
+		for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
 		{
 			ar << ( *i )->GetId();
 			ar << ( *i )->GetTick();

@@ -135,13 +135,13 @@ public:
 //	DWORD	m_aExpJobLevel[MAX_EXPJOBLEVEL + 1];
 
 #ifdef __RULE_0615
-	set<string>		m_sInvalidNames;
+	std::set<std::string>		m_sInvalidNames;
 	BOOL	LoadInvalidName( void );
 	BOOL	IsInvalidName( LPCSTR szName );
 
-	set<char>	m_sAllowedLetter;
+	std::set<char>	m_sAllowedLetter;
 #ifdef __VENDOR_1106
-	set<char>	m_sAllowedLetter2;
+	std::set<char>	m_sAllowedLetter2;
 	BOOL	LoadAllowedLetter( BOOL bVendor = FALSE );
 #else	// __VENDOR_1106
 	BOOL	LoadAllowedLetter( void );

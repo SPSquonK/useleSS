@@ -126,7 +126,7 @@ void CQuizDBCtrl::OnTimer()
 
 	DWORD dwTick = GetTickCount();
 	
-	for( map<DPID, WORLDDATA>::iterator it = m_mapWorldData.begin(); it != m_mapWorldData.end(); ++it )
+	for( auto it = m_mapWorldData.begin(); it != m_mapWorldData.end(); ++it )
 	{
 		// notice send
 		if( dwTick > it->second.dwNoticeCycle && ( it->second.nState == CQuiz::QE_OPEN || it->second.nState == CQuiz::QE_WATCHINGZONE_OPEN ) )
@@ -152,12 +152,12 @@ void CQuizDBCtrl::InitWorldData( DPID dpId, int nChannel, int nState )
 		WD.bQuizSend = TRUE;
 	WD.nQuizEventId = SetQuizEventId();
 	WD.nChannel = nChannel;
-	m_mapWorldData.insert( map<DPID, WORLDDATA>::value_type( dpId, WD ) );
+	m_mapWorldData.emplace(dpId, WD);
 }
 
 void CQuizDBCtrl::DeleteWorldData( DPID dpId, int nState )
 {
-	map<DPID, WORLDDATA>::iterator it = m_mapWorldData.find( dpId );
+	auto it = m_mapWorldData.find( dpId );
 	if( it != m_mapWorldData.end() )
 		m_mapWorldData.erase( it );
 	if( !m_mapWorldData.size() && nState == CQuiz::QE_CLOSE )
@@ -177,7 +177,7 @@ void CQuizDBCtrl::DeleteWorldData( DPID dpId, int nState )
 
 CQuizDBCtrl::WORLDDATA* CQuizDBCtrl::GetWorldData( DPID dpId )
 {
-	map<DPID, WORLDDATA>::iterator it = m_mapWorldData.find( dpId );
+	auto it = m_mapWorldData.find( dpId );
 	if( it != m_mapWorldData.end() )
 		return &it->second;
 	return NULL;
@@ -185,7 +185,7 @@ CQuizDBCtrl::WORLDDATA* CQuizDBCtrl::GetWorldData( DPID dpId )
 
 void CQuizDBCtrl::SetState( DPID dpId, int nState)
 {
-	map<DPID, WORLDDATA>::iterator it = m_mapWorldData.find( dpId );
+	auto it = m_mapWorldData.find( dpId );
 	if( it != m_mapWorldData.end() )
 		it->second.nState = nState;
 }
@@ -206,7 +206,7 @@ BOOL CQuizDBCtrl::LoadQuizEventId()
 
 int CQuizDBCtrl::GetQuizEventId( DPID dpId )
 {
-	map<DPID, WORLDDATA>::iterator it = m_mapWorldData.find( dpId );
+	auto it = m_mapWorldData.find( dpId );
 	if( it != m_mapWorldData.end() )
 		return it->second.nQuizEventId;
 

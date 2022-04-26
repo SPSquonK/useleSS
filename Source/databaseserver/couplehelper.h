@@ -25,7 +25,7 @@ private:
 	CCoupleHelper*	m_pHelper;
 };
 
-typedef map<u_long, time_t>	MUT;
+typedef std::map<u_long, time_t>	MUT;
 class CCoupleHelper
 {
 public:
@@ -52,7 +52,7 @@ public:
 	BOOL	SetPropose( u_long idPlayer, time_t t );
 	time_t	GetPropose( u_long idPlayer );
 	void	ProcessPropose();
-	bool	AddPropose( u_long idPlayer, time_t t )	{	return m_mapProposes.insert( MUT::value_type( idPlayer, t ) ).second;	}
+	bool	AddPropose( u_long idPlayer, time_t t )	{	return m_mapProposes.emplace( idPlayer, t ).second;	}
 	void	Couple( CCouple* pCouple )	{	ASSERT( m_pMgr );	m_pMgr->Couple( pCouple );	}
 private:
 	void	GetGender( CCouple* pCouple, int & nGenderFirst, int & nGenderSecond );

@@ -143,7 +143,7 @@ CCoupleMgr::~CCoupleMgr()
 
 void CCoupleMgr::Clear()
 {
-	for( VCOUPLE::iterator i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
+	for( auto i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
 		SAFE_DELETE( *i );
 	m_mapPlayers.clear();
 	m_vCouples.clear();
@@ -151,7 +151,7 @@ void CCoupleMgr::Clear()
 
 CCouple* CCoupleMgr::GetCouple( u_long idPlayer )
 {
-	MPC::iterator i	= m_mapPlayers.find( idPlayer );
+	const auto i	= m_mapPlayers.find( idPlayer );
 	if( i != m_mapPlayers.end() )
 		return i->second;
 	return NULL;
@@ -165,7 +165,7 @@ void CCoupleMgr::Couple( u_long idFirst, u_long idSecond )
 
 BOOL CCoupleMgr::Decouple( u_long idFirst )
 {
-	for( VCOUPLE::iterator i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
+	for( auto i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
 	{
 		if( (*i)->HasPlayer( idFirst ) )
 		{
@@ -182,7 +182,7 @@ BOOL CCoupleMgr::Decouple( u_long idFirst )
 
 void CCoupleMgr::OnTimer()
 {
-	for( VCOUPLE::iterator i2 = m_vCouples.begin(); i2 != m_vCouples.end(); ++i2 )
+	for( auto i2 = m_vCouples.begin(); i2 != m_vCouples.end(); ++i2 )
 		(*i2)->OnTimer();
 }
 
@@ -191,7 +191,7 @@ void CCoupleMgr::Serialize( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_vCouples.size();
-		for( VCOUPLE::iterator i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
+		for( auto i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
 			(*i)->Serialize( ar );
 	}
 	else
@@ -211,9 +211,9 @@ void CCoupleMgr::Serialize( CAr & ar )
 void CCoupleMgr::Couple( CCouple* pCouple )
 {
 	m_vCouples.push_back( pCouple );
-	bool bResult	= m_mapPlayers.insert( MPC::value_type( pCouple->GetFirst(), pCouple ) ).second;
+	bool bResult	= m_mapPlayers.emplace( pCouple->GetFirst(), pCouple ).second;
 	ASSERT( bResult );
-	bResult	= m_mapPlayers.insert( MPC::value_type( pCouple->GetSecond(), pCouple ) ).second;
+	bResult	= m_mapPlayers.emplace( pCouple->GetSecond(), pCouple ).second;
 	ASSERT( bResult );
 }
 

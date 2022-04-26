@@ -63,8 +63,8 @@ WORD	CPetProperty::GetFeedEnergy( DWORD dwCost, int nIndex )
 	if( nIndex < 0 || nIndex > 1 )
 		return 0;
 
-	vector<FEEDENERGY>* pArr	= &m_aFeedEnergy[nIndex];
-	for( vector<FEEDENERGY>::iterator i = pArr->begin(); i != pArr->end(); ++i )
+	auto * pArr	= &m_aFeedEnergy[nIndex];
+	for( auto i = pArr->begin(); i != pArr->end(); ++i )
 	{
 		if( dwCost >= i->dwCostMin && dwCost <= i->dwCostMax )
 			return (WORD)xRandom( i->wEnergyMin, i->wEnergyMax + 1 );	// wEnergyMin ~ wEnergyMax
@@ -171,7 +171,7 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 			int nIndex	= s.GetNumber();
 			ASSERT( nIndex >= 0 && nIndex <= 1 );
 
-			vector<FEEDENERGY>* pArr	= &m_aFeedEnergy[nIndex];
+			auto * pArr	= &m_aFeedEnergy[nIndex];
 			// 	1	575	7	14
 			FEEDENERGY	fe;
 			s.GetToken();	// {

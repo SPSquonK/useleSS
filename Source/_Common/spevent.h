@@ -136,12 +136,12 @@ class CEventGeneric
 {
 private:
 	DWORD	m_dwFlag;
-	list<PEVENT_GENERIC>	m_lspEvent;
-	map<int, list<CEventItem*>*>	m_mapEventItemList;
+	std::list<PEVENT_GENERIC>	m_lspEvent;
+	std::map<int, std::list<CEventItem*>*>	m_mapEventItemList;
 
 #ifdef __EVENT_0117
-	vector<REGION_GENERIC>	m_aRegionGeneric;	// 모든 월드의 리스폰 영역을 벡터에 저장한다.	// 월드 번호, 지역, 레벨
-	map<int, CSpawn*>	m_mapSpawn;		// 이벤트가 활성화 되었을 때, 해당 이벤트가 스폰을 포함한다면 가져오기 위한 맵이다.
+	std::vector<REGION_GENERIC>	m_aRegionGeneric;	// 모든 월드의 리스폰 영역을 벡터에 저장한다.	// 월드 번호, 지역, 레벨
+	std::map<int, CSpawn*>	m_mapSpawn;		// 이벤트가 활성화 되었을 때, 해당 이벤트가 스폰을 포함한다면 가져오기 위한 맵이다.
 #endif	// __EVENT_0117
 
 public:
@@ -176,7 +176,7 @@ public:
 	void	Serialize( CAr & ar );
 	DWORD	GetFlag( void )		{	return m_dwFlag;	}
 	BOOL	Run( void );
-	list<PEVENT_GENERIC>*	GetEventList( void )	{	return &m_lspEvent;		}
+	std::list<PEVENT_GENERIC>*	GetEventList( void )	{	return &m_lspEvent;		}
 	PEVENT_GENERIC	GetEvent( int nEvent );
 };
 

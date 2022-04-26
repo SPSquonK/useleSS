@@ -14,8 +14,6 @@
 #include "lordskill.h"
 #endif	// __WORLDSEVER
 
-using	namespace	std;
-
 ////////////////////////////////////////////////////////////////////////////////
 class CAr;
 class	CCandidate
@@ -46,8 +44,8 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef	shared_ptr<CCandidate>	SPC;		// smart pointer to CCandidate
-typedef	vector<SPC>		VSPC;
+typedef	std::shared_ptr<CCandidate>	SPC;		// smart pointer to CCandidate
+typedef	std::vector<SPC>		VSPC;
 
 class IElection	// abstract
 {
@@ -131,8 +129,8 @@ protected:
 			time_t	tCandidacy;		// 입후보 기간
 			time_t	tVote;	// 투표 기간
 			int		nDays;	// 군주 투표 간격
-			vector<float>	m_vReturnDepositRates;	// 입찰금 반환 비율
-			vector<int>	m_vItems[2];	// 군주 아이템
+			std::vector<float>	m_vReturnDepositRates;	// 입찰금 반환 비율
+			std::vector<int>	m_vItems[2];	// 군주 아이템
 			float	fRequirementFactor;		// 최소 군주 득표 비율
 			sProperty()	: nDayOfWeek( 0 ), nHour( 0 ), tCandidacy( 0 ), tVote( 0 ), fRequirementFactor( 0.0f ), nDays( 0 )	{}
 			void	Serialize( CAr & ar );
@@ -187,9 +185,9 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef pair<float, __int64>	PFI64;
-typedef vector<PFI64>	VPFI64;
-typedef	vector<CLEComponent*>	VLEC;
+typedef std::pair<float, __int64>	PFI64;
+typedef std::vector<PFI64>	VPFI64;
+typedef	std::vector<CLEComponent*>	VLEC;
 
 class CLord;
 class ILordEvent

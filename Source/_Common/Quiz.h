@@ -70,7 +70,7 @@ public:
 			}
 		}
 	} QUIZLIST;
-	typedef vector<QUIZLIST>	VEC_QUIZLIST;
+	typedef std::vector<QUIZLIST>	VEC_QUIZLIST;
 	
 	void	SetAutoMode( BOOL bAuto )	{	m_bAuto = bAuto;	}
 	BOOL	IsAutoMode()	{	return m_bAuto;		}

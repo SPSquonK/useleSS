@@ -1082,7 +1082,7 @@ CGuildHouseMng::CGuildHouseMng()
 
 CGuildHouseMng::~CGuildHouseMng()
 {
-	for( MapGuildHouse::iterator it=m_mapGuildHouse.begin(); it!=m_mapGuildHouse.end(); it++ )
+	for( auto it=m_mapGuildHouse.begin(); it!=m_mapGuildHouse.end(); it++ )
 		delete it->second;
 	m_mapGuildHouse.clear();
 #ifdef __GUILD_HOUSE_MIDDLE
@@ -1112,7 +1112,7 @@ CGuildHouseBase* CGuildHouseMng::MakeGuildHouse( DWORD dwGuildId, DWORD dwWorldI
 
 BOOL CGuildHouseMng::RemoveGuildHouse( DWORD dwGuildId )
 {
-	MapGuildHouse::iterator it = m_mapGuildHouse.find( dwGuildId );
+	auto it = m_mapGuildHouse.find( dwGuildId );
 	if( it == m_mapGuildHouse.end() )
 		return FALSE;
 	
@@ -1123,7 +1123,7 @@ BOOL CGuildHouseMng::RemoveGuildHouse( DWORD dwGuildId )
 
 CGuildHouseBase* CGuildHouseMng::GetGuildHouse( DWORD dwGuildId )
 {
-	MapGuildHouse::iterator it = m_mapGuildHouse.find( dwGuildId );
+	const auto it = m_mapGuildHouse.find( dwGuildId );
 	if( it == m_mapGuildHouse.end() )
 		return NULL;
 
@@ -1135,7 +1135,7 @@ void CGuildHouseMng::Serialize( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_mapGuildHouse.size();
-		for( MapGuildHouse::iterator it=m_mapGuildHouse.begin(); it!=m_mapGuildHouse.end(); it++ )
+		for( auto it=m_mapGuildHouse.begin(); it!=m_mapGuildHouse.end(); it++ )
 		{
 			ar << it->first << it->second->GetType();
 			it->second->SerializeAllInfo( ar );

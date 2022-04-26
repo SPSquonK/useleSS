@@ -4,8 +4,6 @@
 #include "ar.h"
 #include <vector>
 
-using	namespace	std;
-
 #ifdef __CLIENT
 class CTexture;
 #endif	// __CLIENT
@@ -78,7 +76,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef vector<CLordSkillComponentExecutable*>	VLSC;
+typedef std::vector<CLordSkillComponentExecutable*>	VLSC;
 class CLord;
 class CLordSkill
 {

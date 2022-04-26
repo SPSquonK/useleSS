@@ -158,7 +158,7 @@ CDbControllerTimer::~CDbControllerTimer()
 void CDbControllerTimer::Register( CDbController* dbCtrl )
 {
 	CMclAutoLock Lock( m_csLock );
-	m_vDbController.push_back( make_pair( dbCtrl, ::GetTickCount() + dbCtrl->GetTimer() ) );
+	m_vDbController.emplace_back(dbCtrl, ::GetTickCount() + dbCtrl->GetTimer());
 }
 
 u_int CDbControllerTimer::_Tick( LPVOID pParam )
@@ -174,7 +174,7 @@ void CDbControllerTimer::Tick( void )
 	{
 		DWORD dwTick	= GetTickCount();
 		CMclAutoLock Lock( m_csLock );
-		for( VPDD::iterator i = m_vDbController.begin(); i != m_vDbController.end(); i++ )
+		for( auto i = m_vDbController.begin(); i != m_vDbController.end(); i++ )
 		{
 			if( dwTick > ( *i ).second )
 			{

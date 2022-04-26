@@ -71,9 +71,9 @@ BOOL CEventLua::IsNoticeTime()
 	return bIsNoticeTime;
 }
 
-vector<string> CEventLua::GetNoticeMessage()
+std::vector<std::string> CEventLua::GetNoticeMessage()
 {
-	vector<string> vecstrMessage;
+	std::vector<std::string> vecstrMessage;
 
 	if( !IsPossible() )
 		return vecstrMessage;
@@ -85,8 +85,7 @@ vector<string> CEventLua::GetNoticeMessage()
 		m_Lua.PushNil();
 		while( m_Lua.TableLoop( -2 ) )
 		{
-			string strMessage;
-			strMessage = m_Lua.ToString( -1 );
+			std::string strMessage = m_Lua.ToString( -1 );
 			vecstrMessage.push_back( strMessage );
 
 			m_Lua.Pop( 1 );
@@ -118,7 +117,7 @@ BOOL CEventLua::CheckEventState()
 		{
 			BYTE nId = (BYTE)m_Lua.GetFieldToNumber( -1, "nId" );
 			BOOL bState = (BOOL)m_Lua.GetFieldToNumber( -1, "State" );
-			m_mapState.insert( make_pair( nId, bState ) );
+			m_mapState.emplace(nId, bState);
 			m_Lua.Pop( 1 );
 		}
 		
@@ -135,9 +134,9 @@ BOOL CEventLua::CheckEventState()
 #endif // __DBSERVER
 
 #if defined(__WORLDSERVER) || defined(__DBSERVER)
-vector<BYTE> CEventLua::GetEventList( BOOL bProxy )
+std::vector<BYTE> CEventLua::GetEventList( BOOL bProxy )
 {
-	vector<BYTE> vecList;
+	std::vector<BYTE> vecList;
 
 	if( !IsPossible() )
 		return vecList;

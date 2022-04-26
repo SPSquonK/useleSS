@@ -481,7 +481,7 @@ void CDPCoreSrvr::OnRemoveFriend( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
 void CDPCoreSrvr::SendEventLuaNotice()
 {
 	BEFORESEND( ar, PACKETTYPE_EVENTLUA_NOTICE );
-	vector<string> vecstrMessage;
+	std::vector<std::string> vecstrMessage;
 	vecstrMessage = prj.m_EventLua.GetNoticeMessage();
 	ar << vecstrMessage.size();
 	for( DWORD i=0; i<vecstrMessage.size(); i++ )

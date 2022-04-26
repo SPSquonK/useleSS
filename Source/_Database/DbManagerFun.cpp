@@ -1738,7 +1738,7 @@ BOOL CDbManager::RemoveQuest( void )
 	OutputDebugString( "call BOOL CDbManager::RemoveQuest" );
 	if( FALSE == s.Load( "removequest.txt" ) )
 		return FALSE;
-	vector<int>	vecRemoveQuestId;
+	std::vector<int>	vecRemoveQuestId;
 	int	nQuestId	= s.GetNumber();
 	while( s.tok != FINISHED )
 	{

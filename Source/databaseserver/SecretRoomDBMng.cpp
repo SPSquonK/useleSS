@@ -78,7 +78,7 @@ void CSecretRoomDbController::Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwComplet
 			{
 				CAr ar( pov->lpBuf, pov->uBufSize );
 				BYTE nContinent; DWORD dwGuildId, dwPlayerId; int nSize; 
-				vector<DWORD> vecMemberId;
+				std::vector<DWORD> vecMemberId;
 				ar >> nContinent >> dwGuildId;
 				ar >> nSize;
 				for( int i=0; i<nSize; i++ )
@@ -107,9 +107,9 @@ void CSecretRoomDbController::LoadSecretRoom( DPID dpId )
 	char szQuery[QUERY_SIZE] = {0,};
 
 //	BYTE nContinent;
-	vector<BYTE> vec_nContinent;
-	vector<DWORD> vec_dwGuildId;
-	vector<int>	vec_nPenya;
+	std::vector<BYTE> vec_nContinent;
+	std::vector<DWORD> vec_dwGuildId;
+	std::vector<int>	vec_nPenya;
 
    	// m_nTimes 가져오기 없으면 0
 	sprintf( szQuery, "SECRET_ROOM_STR 'S1', '%02d', 0, 0, '0', 0, 'T', 0, 0, 0", g_appInfo.dwSys );
@@ -143,7 +143,7 @@ void CSecretRoomDbController::LoadSecretRoom( DPID dpId )
 	// 구성원 목록 가져와서 WorldServer로 전송
 	for( DWORD i=0; i<vec_nContinent.size(); i++ )
 	{
-		vector<DWORD> vec_dwMemberId;
+		std::vector<DWORD> vec_dwMemberId;
 
 		sprintf( szQuery, "SECRET_ROOM_MEMBER_STR 'S2', '%02d', %d, %d, '%06d', '0'",
 							g_appInfo.dwSys, m_nTimes, vec_nContinent[i], vec_dwGuildId[i] );
@@ -185,7 +185,7 @@ void CSecretRoomDbController::UpdateTenderToDB( BYTE nContinent, DWORD dwGuildId
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 }
 
-void CSecretRoomDbController::InsertLineUpMemberToDB( BYTE nContinent, DWORD dwGuildId, vector<DWORD>& vecMemberId )
+void CSecretRoomDbController::InsertLineUpMemberToDB( BYTE nContinent, DWORD dwGuildId, std::vector<DWORD>& vecMemberId )
 {
 	CQuery* pQuery = GetQueryObject();
 	char szQuery[QUERY_SIZE] = {0,};

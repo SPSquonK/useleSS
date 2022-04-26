@@ -3,7 +3,6 @@
 
 #include <map>
 #include <list>
-using	namespace	std;
 
 //	mulcom	BEGIN100420	메일 관련 사이즈 변경.
 //#define	MAX_MAILTITLE	128
@@ -136,12 +135,12 @@ public:
 	BOOL	AddMailBox( CMailBox* pMailBox );
 	void	Serialize( CAr & ar, BOOL bData = TRUE );
 #ifdef __DBSERVER
-	map< u_long, CMail* >	m_mapMail4Proc;
+	std::map< u_long, CMail* >	m_mapMail4Proc;
 	CMclCritSec	m_csPost;
 	void	Process( void );
 #endif	// __DBSERVER
 	static	CPost*	GetInstance( void );
 private:
-	map< u_long, CMailBox* >	m_mapMailBox;
+	std::map< u_long, CMailBox* >	m_mapMailBox;
 };
 #endif	// __POST_H__

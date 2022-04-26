@@ -12,21 +12,12 @@ enum
 
 typedef	struct	_SCHOOL_ENTRY
 {
-	u_long	id;
-	char	lpName[MAX_G_NAME];
-	int		nSurvivor;
-	int		nSize;
-	int		nLevel;
-	int		nDead;
-	_SCHOOL_ENTRY()
-		{	
-			id	= 0;
-			*lpName	= '\0';
-			nSurvivor	= 0;
-			nSize	= 0;
-			nLevel = 0;
-			nDead	= 0;
-		};
+	u_long	id = 0;
+	char	lpName[MAX_G_NAME] = { '\0'};
+	int		nSurvivor = 0;
+	int		nSize = 0;
+	int		nLevel = 0;
+	int		nDead = 0;
 }
 SCHOOL_ENTRY, *PSCHOOL_ENTRY;
 
@@ -115,7 +106,7 @@ public:
 #ifdef __S_BUG_GC
 		u_long	uGuildId;
 #endif // __S_BUG_GC
-		vector<__JOINPLAYER*> vecGCSelectMember;	// 대전에 선택된 멤버 정보
+		std::vector<__JOINPLAYER*> vecGCSelectMember;	// 대전에 선택된 멤버 정보
 //		set<u_long> GuildCombatJoinMember;		// 길드전에 참가한멤버
 //		set<u_long> GuildCombatOutMember;		// 참가했는데 죽었던가 나간 멤버
 //		FLOAT fAvgLevel;		// 평균 레벨
@@ -125,7 +116,7 @@ public:
 		int	  nJoinCount;		// 참가 카운터
 		int	  nWarCount;		// 전투 인원수
 		int   nGuildPoint;		// 길드 포인트
-		list<__JOINPLAYER*>	lspFifo;
+		std::list<__JOINPLAYER*>	lspFifo;
 
 		void Clear()
 		{
@@ -205,13 +196,13 @@ public:
 	u_long	m_uWinGuildId;
 	int		m_nWinGuildCount;
 	u_long	m_uBestPlayer;
-	vector<__GCGETPOINT> m_vecGCGetPoint;
-	vector<__GCPLAYERPOINT> m_vecGCPlayerPoint;
+	std::vector<__GCGETPOINT> m_vecGCGetPoint;
+	std::vector<__GCPLAYERPOINT> m_vecGCPlayerPoint;
 #ifdef __WORLDSERVER 
 #ifdef __S_BUG_GC
-	vector<__GuildCombatMember*> m_vecGuildCombatMem;
+	std::vector<__GuildCombatMember*> m_vecGuildCombatMem;
 #else // __S_BUG_GC
-	map<u_long, __GuildCombatMember*> m_GuildCombatMem;
+	std::map<u_long, __GuildCombatMember*> m_GuildCombatMem;
 #endif // __S_BUG_GC
 	DWORD	m_dwTime;
 	int		m_nProcessGo;
@@ -236,12 +227,12 @@ public:
 	BOOL    m_bMutex;					// 길드대전 오픈 한번만...
 	BOOL    m_bMutexMsg;					// 길드대전 오픈 한번만...
 	CTimer   m_ctrMutexOut;
-	vector< CString > m_vecstrGuildMsg;
-	vector<__GCSENDITEM>	vecGCSendItem;
+	std::vector< CString > m_vecstrGuildMsg;
+	std::vector<__GCSENDITEM>	vecGCSendItem;
 	
-	vector<__REQUESTGUILD>	vecRequestRanking;	// 참가 순위
-	vector<__GCRESULTVALUEGUILD>			m_GCResultValueGuild;		// 길드대전 결과값
-	vector<__GCRESULTVALUEPLAYER>			m_GCResultValuePlayer;		// 길드대전 결과값
+	std::vector<__REQUESTGUILD>	vecRequestRanking;	// 참가 순위
+	std::vector<__GCRESULTVALUEGUILD>			m_GCResultValueGuild;		// 길드대전 결과값
+	std::vector<__GCRESULTVALUEPLAYER>			m_GCResultValuePlayer;		// 길드대전 결과값
 #endif // __WORLDSERVER
 	int		m_nState;		// 길드워 상태
 	int		m_nGCState;	// 전투 중일 때의 상태

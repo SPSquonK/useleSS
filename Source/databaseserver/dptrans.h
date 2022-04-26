@@ -51,7 +51,7 @@ public:
 	void	SendMonsterPropSetting( BOOL bFirst, DPID dpid );
 	void	SendGMChat( int nCount );
 	void	SendGC1to1Open( void );
-	void	SendGC1to1TenderGuild( vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecT, vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecF, DPID dpId );
+	void	SendGC1to1TenderGuild(std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecT, std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecF, DPID dpId );
 
 	void	OnQueryMailBox( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
@@ -78,7 +78,7 @@ public:
 	void	SendEventFlag( DWORD dwFlag );
 	void	SendEventGeneric( DPID dpid );
 
-	void	SendEventLuaState( map<BYTE, BOOL> mapState, BOOL bLuaChanged, DPID dpid = DPID_ALLPLAYERS );
+	void	SendEventLuaState(std::map<BYTE, BOOL> mapState, BOOL bLuaChanged, DPID dpid = DPID_ALLPLAYERS );
 	void	SendEventLuaChanged( void );
 	void	OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
@@ -229,7 +229,7 @@ private:
 
 public:
 	void	SendSecretRoomInfoClear( DPID dpId );
-	void	SendSecretRoomTenderInfo( BYTE nContinent, DWORD dwGuildId, int nPenya, vector<DWORD> & vecMemberId, DPID dpId );
+	void	SendSecretRoomTenderInfo( BYTE nContinent, DWORD dwGuildId, int nPenya, std::vector<DWORD> & vecMemberId, DPID dpId );
 private:
 	void	OnSecretRoomInsertToDB( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnSecretRoomUpdateToDB( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
@@ -237,7 +237,7 @@ private:
 	void	OnSecretRoomClosed( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
 public:
-	void	SendRainbowRaceInfo( vector<DWORD> & vec_dwNowPlayerId, vector<DWORD> & vec_prevRanking, DPID dpId );
+	void	SendRainbowRaceInfo(std::vector<DWORD> & vec_dwNowPlayerId, std::vector<DWORD> & vec_prevRanking, DPID dpId );
 
 private:
 	void	OnRainbowRaceLoadInfo( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );

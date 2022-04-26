@@ -147,7 +147,7 @@ BOOL CHousing::RemoveFurnitureList( DWORD dwItemId )
 		if( m_vecHousingInfo[nIndex].bSetup )
 			RemoveFurnitureControl( nIndex );
 #endif // __WORLDSERVER
-		vector<HOUSINGINFO>::iterator it = m_vecHousingInfo.begin();
+		auto it = m_vecHousingInfo.begin();
 		it += nIndex;
 		m_vecHousingInfo.erase( it );
 		return TRUE;
@@ -188,7 +188,7 @@ void CHousing::SetVisitAllow( DWORD dwTargetId, BOOL bAllow )
 		m_vecIdVisitAllow.push_back( dwTargetId );
 	else
 	{
-		for( vector<DWORD>::iterator it=m_vecIdVisitAllow.begin(); it!=m_vecIdVisitAllow.end(); it++ )
+		for( auto it=m_vecIdVisitAllow.begin(); it!=m_vecIdVisitAllow.end(); it++ )
 		{
 			if( (*it) == dwTargetId )
 			{
@@ -418,7 +418,7 @@ vector<DWORD> CHousing::GetAllPaperingInfo()
 #ifdef __DBSERVER
 void CHousing::ProcessExpiredFurniture( time_t time, BOOL bGMRemove )
 {
-	vector<HOUSINGINFO> vecTemp;
+	std::vector<HOUSINGINFO> vecTemp;
 	for( DWORD i=0; i<m_vecHousingInfo.size(); i++ )
 	{
 		if( time >= m_vecHousingInfo[i].tKeepTime || bGMRemove )
@@ -446,7 +446,7 @@ CHousingMng::~CHousingMng(void)
 
 void CHousingMng::Clear()
 {
-	for( MAP_HP::iterator it=m_mapHousing.begin(); it!=m_mapHousing.end(); it++ )
+	for( auto it=m_mapHousing.begin(); it!=m_mapHousing.end(); it++ )
 		SAFE_DELETE( it->second );
 	m_mapHousing.clear();
 #ifdef __WORLDSERVER
@@ -646,7 +646,7 @@ void CHousingMng::SetVisitAllow( DWORD dwPlayerId, DWORD dwTargetId, BOOL bAllow
 
 CHousing* CHousingMng::CreateHousing( DWORD dwPlayerId )
 {
-	pair<MAP_HP::iterator, bool> p	= m_mapHousing.insert( MAP_HP::value_type( dwPlayerId, new CHousing( dwPlayerId ) ) );
+	auto p	= m_mapHousing.emplace(dwPlayerId, new CHousing( dwPlayerId ));
 	if( !p.second )
 	{
 		Error( "CHousingMng::CreateHousing() - Housing Create Failed!!" );
@@ -658,7 +658,7 @@ CHousing* CHousingMng::CreateHousing( DWORD dwPlayerId )
 
 CHousing* CHousingMng::GetHousing( DWORD dwPlayerId )
 {
-	MAP_HP::iterator it = m_mapHousing.find( dwPlayerId );
+	auto it = m_mapHousing.find( dwPlayerId );
 	if( it == m_mapHousing.end() )
 		return NULL;
 
@@ -671,7 +671,7 @@ void CHousingMng::ProcessRemoveExpiredFurniture()
 {
 	time_t time = time_null();
 
-	for( MAP_HP::iterator it=m_mapHousing.begin(); it!=m_mapHousing.end(); it++ )
+	for( auto it=m_mapHousing.begin(); it!=m_mapHousing.end(); it++ )
 		it->second->ProcessExpiredFurniture( time );
 }
 #endif // __DBSERVER

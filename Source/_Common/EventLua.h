@@ -117,10 +117,10 @@ public:
 #ifdef __DBSERVER
 #ifdef __AUTO_NOTICE
 	BOOL			IsNoticeTime();
-	std::vector<string>	GetNoticeMessage();
+	std::vector<std::string>	GetNoticeMessage();
 #endif // __AUTO_NOTICE
 	BOOL			CheckEventState();
-	map<BYTE, BOOL>	m_mapState;
+	std::map<BYTE, BOOL>	m_mapState;
 	CMclCritSec		m_Access;
 #ifdef __VTN_TIMELIMIT
 private:

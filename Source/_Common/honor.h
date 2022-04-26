@@ -33,10 +33,10 @@ class CTitleManager
 {
 
 private:
-	map<int, HonorData>		m_mapMonster;
-	map<int, HonorData>		m_mapItem;
-	map<int, HonorData>		m_mapEtc;
-	map<int, HonorData>		m_mapAll;
+	std::map<int, HonorData>		m_mapMonster;
+	std::map<int, HonorData>		m_mapItem;
+	std::map<int, HonorData>		m_mapEtc;
+	std::map<int, HonorData>		m_mapAll;
 
 public:
 	CTitleManager();
@@ -57,7 +57,7 @@ public:
 
 #ifdef __CLIENT
 	// »πµÊ«— ≈∏¿Ã∆≤ ¿Œµ¶Ω∫
-	vector<EarnedTitle>	m_vecEarned;
+	std::vector<EarnedTitle>	m_vecEarned;
 
 	BOOL	IsEarned(int nId);
 	void	AddEarned(int nId);

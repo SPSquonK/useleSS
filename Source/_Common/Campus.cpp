@@ -85,9 +85,9 @@ BOOL CCampus::IsPupil( u_long idPlayer )
 	return FALSE;
 }
 
-vector<u_long> CCampus::GetPupilPlayerId()
+std::vector<u_long> CCampus::GetPupilPlayerId()
 {
-	vector<u_long> vecPupil;
+	std::vector<u_long> vecPupil;
 	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
 	{
 		if( (it->second)->GetLevel() == CAMPUS_PUPIL )
@@ -107,9 +107,9 @@ int CCampus::GetPupilNum()
 	return nPupil;
 }
 
-vector<u_long> CCampus::GetAllMemberPlayerId()
+std::vector<u_long> CCampus::GetAllMemberPlayerId()
 {
-	vector<u_long> vecMember;
+	std::vector<u_long> vecMember;
 	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++ it )
 		vecMember.push_back( (it->second)->GetPlayerId() );
 	return vecMember;

@@ -28,7 +28,7 @@ CContinent* CContinent::GetInstance( void )
 void CContinent::Init()
 {
 	m_MapCont.clear();
-	vector<CPoint> vecMap;
+	std::vector<CPoint> vecMap;
 
 	// 세금이나 비밀의 방에 관여하는 대륙은 마드리갈에만(메인월드) 존재하며 앞으로도로 그럴꺼라고 가정한다.
 	const char* szWorldName = "WdMadrigal";				
@@ -57,7 +57,7 @@ void CContinent::Init()
 				if( !vecMap.empty() )
 					vecMap.push_back( vecMap[ 0 ] );
 
-				pair< map< BYTE, vector<CPoint> >::iterator, BOOL > rst;
+				std::pair< std::map< BYTE, std::vector<CPoint> >::iterator, BOOL > rst;
 
 				// gmpbigsun(100409): bTown이 TRUE라면 이구역은 마을이라는 의미고, 현재는 Client 맵관련 정보를 위해 사용되지만
 				// Server에서도 충분히 사용가능하고, 비용이 아주 적기때문에 풀어둠.
@@ -104,7 +104,7 @@ void CContinent::Init()
 
 }
 
-BOOL CContinent::Point_In_Poly( vector<CPoint> vecMap, CPoint test_point )
+BOOL CContinent::Point_In_Poly(std::vector<CPoint> vecMap, CPoint test_point )
 {
 	int counter = 0;
 	int i;
@@ -176,12 +176,12 @@ BOOL CContinent::IsValidObj( CMover* pMover )
 BYTE CContinent::GetContinent( const D3DXVECTOR3& vPos )
 {
 	CPoint  cpoint;
-	vector<CPoint>	vecPoint;
+	std::vector<CPoint>	vecPoint;
 
 	cpoint.x    = (long)( vPos.x );
 	cpoint.y    = (long)( vPos.z );
 
-	for( map< BYTE, vector<CPoint> >::iterator iter = m_MapCont.begin(); iter != m_MapCont.end(); ++iter )
+	for( auto iter = m_MapCont.begin(); iter != m_MapCont.end(); ++iter )
 	{
 		vecPoint  = iter->second;	
 		if( Point_In_Poly( vecPoint, cpoint ) )
@@ -194,12 +194,12 @@ BYTE CContinent::GetContinent( const D3DXVECTOR3& vPos )
 BYTE CContinent::GetTown( const D3DXVECTOR3& vPos )
 {
 	CPoint  cpoint;
-	vector<CPoint>	vecPoint;
+	std::vector<CPoint>	vecPoint;
 
 	cpoint.x    = (long)( vPos.x );
 	cpoint.y    = (long)( vPos.z );
 
-	for( map< BYTE, vector<CPoint> >::iterator iter = m_MapContTown.begin(); iter != m_MapContTown.end(); ++iter )
+	for( auto iter = m_MapContTown.begin(); iter != m_MapContTown.end(); ++iter )
 	{
 		vecPoint  = iter->second;	
 		if( Point_In_Poly( vecPoint, cpoint ) )

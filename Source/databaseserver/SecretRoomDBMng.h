@@ -21,7 +21,7 @@ private:
 	void LoadSecretRoom( DPID dpId );
 	void InsertTenderToDB( BYTE nContinent, DWORD dwGuildId, int nPenya );
 	void UpdateTenderToDB( BYTE nContinent, DWORD dwGuildId, int nPenya, char chState, DWORD dwWorldId, int nWarState, int nKillCount );
-	void InsertLineUpMemberToDB( BYTE nContinent, DWORD dwGuildId, vector<DWORD>& vecMemberId );
+	void InsertLineUpMemberToDB( BYTE nContinent, DWORD dwGuildId, std::vector<DWORD>& vecMemberId );
 
 	int m_nTimes;
 };

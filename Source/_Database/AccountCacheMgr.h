@@ -5,10 +5,10 @@ struct ACCOUNT_CACHE;
 class CAccountCacheMgr
 {
 private:
-	map<string, ACCOUNT_CACHE*>	m_2Account;
+	std::map<std::string, ACCOUNT_CACHE*>	m_2Account;
 //	map<u_long, string>			m_2AccountPtr;
 	MemPooler<ACCOUNT_CACHE>*	m_pAccountMemPooler;
-	list< ACCOUNT_CACHE* >		m_list;
+	std::list< ACCOUNT_CACHE* >		m_list;
 	int							m_nAlloc;
 public:
 	CAccountCacheMgr();

@@ -86,16 +86,16 @@ private:
 	int		GetIndexFromList( DWORD dwItemId );
 
 	DWORD	m_dwMasterId;
-	vector<HOUSINGINFO> m_vecHousingInfo;		// 가구 목록
-	vector<DWORD>		m_vecIdVisitAllow;		// 내가 방문 허용한 목록
+	std::vector<HOUSINGINFO> m_vecHousingInfo;		// 가구 목록
+	std::vector<DWORD>		m_vecIdVisitAllow;		// 내가 방문 허용한 목록
 };
 
 #ifndef __CLIENT	// __WORLDSERVER, __DBSERVER
 /////////////////////////////////////////////////////////////////////
 //// CHousingMng ////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
-typedef map<DWORD, CHousing*> MAP_HP;
-typedef map< DWORD, vector<DWORD> > MAP_VSTABLE;
+typedef std::map<DWORD, CHousing*> MAP_HP;
+typedef std::map< DWORD, std::vector<DWORD> > MAP_VSTABLE;
 class CHousingMng
 {
 public:
@@ -224,7 +224,7 @@ protected:
 
 	LPDIRECT3DTEXTURE9	m_pOriginWall;				// 벽 기본텍스쳐
 	LPDIRECT3DTEXTURE9	m_pOriginTile;				// 바닥 기본텍스쳐
-	vector<LPDIRECT3DTEXTURE9>	m_vecOriginal;		// 타겟오브젝트 텍스쳐셋
+	std::vector<LPDIRECT3DTEXTURE9>	m_vecOriginal;		// 타겟오브젝트 텍스쳐셋
 	LPDIRECT3DTEXTURE9	m_pRed;
 	BOOL				m_bIsColl;
 	BOOL				m_bIsManagement;				// 가구설정 권한이 있는가?

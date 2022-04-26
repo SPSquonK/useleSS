@@ -53,10 +53,10 @@ public:
 	int		GetMemberSize()	{	return m_mapCM.size();	}
 
 	BOOL	IsPupil( u_long idPlayer );
-	vector<u_long>	GetPupilPlayerId();
+	std::vector<u_long>	GetPupilPlayerId();
 	int		GetPupilNum();
 	
-	vector<u_long>	GetAllMemberPlayerId();
+	std::vector<u_long>	GetAllMemberPlayerId();
 	int		GetMemberLv( u_long idPlayer );
 	BOOL	IsMember( u_long idPlayer );
 	BOOL	AddMember( CCampusMember* pCM );

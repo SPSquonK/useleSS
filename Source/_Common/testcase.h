@@ -9,7 +9,7 @@ public:
 	virtual	BOOL	Test()	= 0;
 };
 
-typedef	vector<ITestCase*>	VTC;
+typedef	std::vector<ITestCase*>	VTC;
 class CTestCaseMgr
 {
 private:

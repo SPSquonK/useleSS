@@ -224,7 +224,7 @@ u_long CMailBox::AddMail( CMail* pMail )
 	pMail->SetMailBox( this );
 	if( m_pPost )
 	{
-		bool bResult	= m_pPost->m_mapMail4Proc.insert( map<u_long, CMail*>::value_type( pMail->m_nMail, pMail ) ).second;
+		bool bResult	= m_pPost->m_mapMail4Proc.emplace(pMail->m_nMail, pMail).second;
 		if( bResult == FALSE )
 		{
 			Error( "AddMail Failed - nMail : %d, idSender : %d", pMail->m_nMail, pMail->m_idSender );
@@ -515,7 +515,7 @@ CPost::~CPost()
 
 void CPost::Clear( void )
 {
-	for( map<u_long, CMailBox*>::iterator i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
+	for( auto i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
 	{
 		CMailBox* pMailBox	= i->second;
 		SAFE_DELETE( pMailBox );
@@ -550,7 +550,7 @@ u_long CPost::AddMail( u_long idReceiver, CMail* pMail )
 
 CMailBox* CPost::GetMailBox( u_long idReceiver )
 {
-	map<u_long, CMailBox*>::iterator i = m_mapMailBox.find( idReceiver );
+	auto i = m_mapMailBox.find( idReceiver );
 	if( i != m_mapMailBox.end() )
 		return i->second;
 	return NULL;
@@ -561,7 +561,7 @@ BOOL CPost::AddMailBox( CMailBox* pMailBox )
 #ifdef __DBSERVER
 	pMailBox->SetPost( this );
 #endif	// __DBSERVER
-	return m_mapMailBox.insert( map<u_long, CMailBox*>::value_type( pMailBox->m_idReceiver, pMailBox ) ).second;
+	return m_mapMailBox.emplace(pMailBox->m_idReceiver, pMailBox).second;
 }
 
 void CPost::Serialize( CAr & ar, BOOL bData )
@@ -569,7 +569,7 @@ void CPost::Serialize( CAr & ar, BOOL bData )
 	if( ar.IsStoring() )
 	{
 		ar << m_mapMailBox.size();
-		for( map<u_long, CMailBox*>::iterator i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
+		for( auto i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
 		{
 			CMailBox* pMailBox	= i->second;
 			pMailBox->Serialize( ar, bData );
@@ -600,8 +600,8 @@ void CPost::Process( void )
 	CMclAutoLock	Lock( m_csPost );
 	CTime t	= CTime::GetCurrentTime() - CTimeSpan( MAX_KEEP_MAX_DAY, 0, 0, 0 );
 
-	list<CMail*>	lspMail;
-	for( map<u_long, CMail*>::iterator i = m_mapMail4Proc.begin(); i != m_mapMail4Proc.end(); ++i )
+	std::list<CMail*>	lspMail;
+	for( auto i = m_mapMail4Proc.begin(); i != m_mapMail4Proc.end(); ++i )
 	{
 		CMail* pMail	= i->second;
 		if( pMail->m_tmCreate < t.GetTime() )

@@ -70,7 +70,7 @@ private:
 	int		m_nQuizEventId;						// 퀴즈 이벤트 회차
 	DWORD	m_dwQuizSendTick;
 
-	map<DPID, WORLDDATA>	m_mapWorldData;
+	std::map<DPID, WORLDDATA>	m_mapWorldData;
 };
 
 //////////////////////////////////////////////////////////////////////

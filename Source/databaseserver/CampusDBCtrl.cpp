@@ -209,8 +209,8 @@ void CCampusDBCtrl::RemoveCampusMember( CAr & ar )
 	{
 		if( pCampus->IsMaster( idPlayer ) )
 		{
-			vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-			for( vector<u_long>::iterator it = vecMember.begin(); it != vecMember.end(); ++it )
+			const auto & vecMember = pCampus->GetAllMemberPlayerId();
+			for( auto it = vecMember.begin(); it != vecMember.end(); ++it )
 			{
 				CCampusHelper::GetInstance()->RemovePlayerId2CampusId( *it );
 				UpdateCampusId( *it, 0 );
