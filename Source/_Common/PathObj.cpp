@@ -32,9 +32,9 @@ void CPatrolPath::SetReturn( DWORD dwIndex, BOOL bReturn )
 // 좌표를 추가한다.
 void CPatrolPath::AddPatrolPath( DWORD dwIndex, _VECINFO vecInfo )
 {
-	map< DWORD, vector<_VECINFO> >::iterator it = m_mapPatrolPath.find( dwIndex );
+	const auto it = m_mapPatrolPath.find( dwIndex );
 
-	vector<_VECINFO> pTemp;
+	std::vector<_VECINFO> pTemp;
 
 	// 기존에 들어가있다
 	if( it != m_mapPatrolPath.end() )
@@ -46,7 +46,7 @@ void CPatrolPath::AddPatrolPath( DWORD dwIndex, _VECINFO vecInfo )
 	// 새롭게 넣는다
 	{
 		pTemp.push_back( vecInfo );
-		m_mapPatrolPath.insert( map< DWORD, vector<_VECINFO> >::value_type(dwIndex, pTemp) );
+		m_mapPatrolPath.emplace(dwIndex, pTemp);
 	}
 }
 
@@ -54,7 +54,7 @@ void CPatrolPath::AddPatrolPath( DWORD dwIndex, _VECINFO vecInfo )
 void CPatrolPath::GetNextPosInfo( CObj* pObj, const D3DXVECTOR3 vPos, D3DXVECTOR3& vDest, _VECINFO& _vecInfo )
 //void CPatrolPath::GetNextPosInfo( DWORD dwIndex, DWORD& dwCount, const D3DXVECTOR3 vPos, D3DXVECTOR3& vDest, _VECINFO& _vecInfo )
 {
-	map< DWORD, vector<_VECINFO> >::iterator it1 = m_mapPatrolPath.find( pObj->m_dwPatrolIndex );
+	const auto it1 = m_mapPatrolPath.find( pObj->m_dwPatrolIndex );
 	
 	if( it1 == m_mapPatrolPath.end() )
 	{
@@ -67,7 +67,7 @@ void CPatrolPath::GetNextPosInfo( CObj* pObj, const D3DXVECTOR3 vPos, D3DXVECTOR
 		return;
 	}
 
-	vector<_VECINFO> _vecinfoTemp = it1->second;
+	std::vector<_VECINFO> _vecinfoTemp = it1->second;
 
 	D3DXVECTOR3	v3Dir = _vecinfoTemp[pObj->m_nPatrolIndexCount].m_vDir;
 	FLOAT fLength = _vecinfoTemp[pObj->m_nPatrolIndexCount].m_fLength;
@@ -118,7 +118,7 @@ void CPatrolPath::GetNextPosInfo( CObj* pObj, const D3DXVECTOR3 vPos, D3DXVECTOR
 
 void CPatrolPath::AddPatrolIndex(DWORD dwIndex)
 {
-	map< DWORD, vector<_VECINFO> >::iterator it = m_mapPatrolPath.find( dwIndex );
+	const auto it = m_mapPatrolPath.find( dwIndex );
 	
 	// 기존에 들어가있다
 	if( it != m_mapPatrolPath.end() )
@@ -128,15 +128,14 @@ void CPatrolPath::AddPatrolIndex(DWORD dwIndex)
 	else
 	// 새롭게 넣는다
 	{
-		vector<_VECINFO> pTemp;
-		pTemp.clear();
-		m_mapPatrolPath.insert( map< DWORD, vector<_VECINFO> >::value_type(dwIndex, pTemp) );
+		std::vector<_VECINFO> pTemp;
+		m_mapPatrolPath.emplace(dwIndex, pTemp);
 	}	
 }
 
 BOOL CPatrolPath::IsFirstPath( DWORD dwIndex )
 {
-	map< DWORD, vector<_VECINFO> >::iterator it = m_mapPatrolPath.find( dwIndex );
+	const auto it = m_mapPatrolPath.find( dwIndex );
 	
 	// 기존에 들어가있다
 	if( it != m_mapPatrolPath.end() )
@@ -157,7 +156,7 @@ BOOL CPatrolPath::LoadPatrol( LPCTSTR szFileName )
 		
 		DWORD nIndex = 0;
 		D3DXVECTOR3 v3Pos;
-		vector<D3DXVECTOR3> v3PosList;
+		std::vector<D3DXVECTOR3> v3PosList;
 		_VECINFO vecInfo;
 		_VECINFO vecInfoBackup;
 		

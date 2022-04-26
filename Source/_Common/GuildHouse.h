@@ -326,7 +326,7 @@ public:
 private:
 	BOOL	IsBuyAble( CUser* pUser );
 	
-	typedef map<int, float> MapRestExpFactor;
+	typedef std::map<int, float> MapRestExpFactor;
 	MapRestExpFactor	m_mapRestExpFactorTable;
 #endif // __WORLDSERVER
 

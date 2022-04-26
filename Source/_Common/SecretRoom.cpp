@@ -86,9 +86,9 @@ BOOL CSecretRoomMng::LoadScript()
 	m_nCancelReturnRate		= static_cast<int>( m_Lua.GetGlobalNumber( "CancelReturnRate" ) );
 	m_nDropoutReturnRate	= static_cast<int>( m_Lua.GetGlobalNumber( "DropoutReturnRate" ) );
 
-	m_mapMonsterNum.insert( make_pair( MONSTER_NORMAL, 0 ) );
-	m_mapMonsterNum.insert( make_pair( MONSTER_MIDBOSS, 0 ) );
-	m_mapMonsterNum.insert( make_pair( MONSTER_BOSS, 0 ) );
+	m_mapMonsterNum.emplace(MONSTER_NORMAL, 0);
+	m_mapMonsterNum.emplace(MONSTER_MIDBOSS, 0);
+	m_mapMonsterNum.emplace(MONSTER_BOSS, 0);
 
 	m_Lua.GetGloabal( "tMonster" );
 	m_Lua.PushNil();
@@ -137,7 +137,7 @@ void CSecretRoomMng::Process()
 				m_nState = SRMNG_LINEUP;
 				m_dwRemainTime = dwTick + (DWORD)m_Lua.GetGlobalNumber( "LineUpTime" );
 				
-				map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+				auto it = m_mapSecretRoomContinent.begin();
 				for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 				{
 					CSecretRoomContinent* pSRCont = it->second;
@@ -183,7 +183,7 @@ void CSecretRoomMng::Process()
 					m_nState = SRMNG_ENTRANCE;
 					m_dwRemainTime = dwTick + (DWORD)m_Lua.GetGlobalNumber( "EntranceTime" );
 					
-					map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+					auto it = m_mapSecretRoomContinent.begin();
 					for( int nContCount=0; it!=m_mapSecretRoomContinent.end(); it++, nContCount++ )
 					{
 						if( it->second )
@@ -221,7 +221,7 @@ void CSecretRoomMng::Process()
 		case SRMNG_WAR :
 			{
 				int nCloseConut = 0;
-				map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+				auto it = m_mapSecretRoomContinent.begin();
 				for( ; it != m_mapSecretRoomContinent.end(); it++ )
 				{
 					if( it->second && it->second->m_nState == SRCONT_CLOSE )
@@ -268,7 +268,7 @@ BOOL CSecretRoomMng::IsGuildMaster( CUser* pUser )
 // 다른 대륙에 입찰한 길드인가?
 BOOL CSecretRoomMng::IsOtherTenderGuild( CUser* pUser )
 {
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+	auto it = m_mapSecretRoomContinent.begin();
 	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		if( it->first != GetContinent( (CMover*)pUser ) )
@@ -288,7 +288,7 @@ void CSecretRoomMng::SendNowState( CUser* pUser, int nState, DWORD dwRemainTime 
 // 현재 비밀의 방 진행 상태를 참가신청한 모든 유저에게 전달한다.
 void CSecretRoomMng::SendNowStateAllMember( BYTE nCont, int nState, DWORD dwRemainTime )
 {
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+	auto it = m_mapSecretRoomContinent.begin();
 	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		if( nCont != CONT_NODATA && it->first != nCont )
@@ -327,7 +327,7 @@ void CSecretRoomMng::GetAllInfo( CUser* pUser )
 		return;
 	}
 
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+	auto it = m_mapSecretRoomContinent.begin();
 	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		CSecretRoomContinent* pSRCont = it->second;
@@ -381,7 +381,7 @@ void CSecretRoomMng::SecretRoomOpen()
 	
 	BOOL bOpen = FALSE;
 	
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+	auto it = m_mapSecretRoomContinent.begin();
 	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		CSecretRoomContinent* pSRCont = it->second;
@@ -529,7 +529,7 @@ void CSecretRoomMng::SetLineUpOpenWnd( CUser* pUser )
 }
 
 // 참가자 구성 신청
-void CSecretRoomMng::SetLineUp( CUser* pUser, vector<DWORD> vecLineUpMemeber )
+void CSecretRoomMng::SetLineUp( CUser* pUser, std::vector<DWORD> vecLineUpMemeber )
 {
 	if( m_nState != SRMNG_LINEUP )
 	{
@@ -617,7 +617,7 @@ void CSecretRoomMng::SetSecretRoomKill( DWORD dwWorldId, DWORD dwMonsterId )
 	if( m_nState != SRMNG_WAR )
 		return;
 
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+	auto it = m_mapSecretRoomContinent.begin();
 	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		CSecretRoomContinent* pSRCont = it->second;
@@ -634,7 +634,7 @@ void CSecretRoomMng::SetFailGuild( CUser* pUser )
 	if( !IsValidObj( pUser ) )
 		return;
 
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+	auto it = m_mapSecretRoomContinent.begin();
 	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		CSecretRoomContinent* pSRCont = it->second;
@@ -648,7 +648,7 @@ D3DXVECTOR3 CSecretRoomMng::GetRevivalPos( CUser* pUser )
 	if( !IsValidObj( pUser ) )
 		return CContinent::GetInstance()->GetRevivalPos( CONT_NODATA );
 
-	map<BYTE, CSecretRoomContinent*>::iterator it = m_mapSecretRoomContinent.begin();
+	auto it = m_mapSecretRoomContinent.begin();
 	for( ; it!=m_mapSecretRoomContinent.end(); it++ )
 	{
 		CSecretRoomContinent* pSRCont = it->second;
@@ -910,7 +910,7 @@ void CSecretRoomContinent::SetContTenderCancelReturn( CUser* pUser )
 	g_DPSrvr.OnLogItem( aLogItem );
 }
 
-void CSecretRoomContinent::SetContLineUp( CUser* pUser, vector<DWORD> vecLineUpMember )
+void CSecretRoomContinent::SetContLineUp( CUser* pUser, std::vector<DWORD> vecLineUpMember )
 {
 	int nIndex = GetTenderGuild( pUser->m_idGuild );
 	if( nIndex == NULL_ID )
@@ -953,7 +953,7 @@ void CSecretRoomContinent::SecretRoomContOpen()
 {
 	m_nState = SRCONT_OPEN;
 
-	vector<__SECRETROOM_TENDER>::iterator it = m_vecSecretRoomTender.begin();
+	auto it = m_vecSecretRoomTender.begin();
 	for( int nCount=1; it!=m_vecSecretRoomTender.end(); nCount++ )
 	{
 		// 순위에서 밀려난 길드 처리
@@ -1079,7 +1079,7 @@ void CSecretRoomContinent::CreateMonster()
 		if( m_vecSecretRoomTender[i].vecMonster.empty() )
 			continue;
 
-		vector<__SECRETROOM_MONSTER>::iterator it = m_vecSecretRoomTender[i].vecMonster.begin();
+		auto it = m_vecSecretRoomTender[i].vecMonster.begin();
 		if( (*it).nNum < nCount )
 				nCount = (*it).nNum;
 	
@@ -1334,7 +1334,7 @@ BOOL CSecretRoomContinent::IsSecretRoomMonster( DWORD dwMonsterId, int nWarState
 	if( dwMonsterId == NULL_ID )
 		return FALSE;
 
-	vector<__SECRETROOM_MONSTER>::iterator it, itEnd;
+	std::vector<__SECRETROOM_MONSTER>::iterator it, itEnd;
 	switch( nWarState )
 	{
 		case MONSTER_NORMAL :

@@ -8,7 +8,7 @@ typedef	struct	_RANGDA_POS
 	D3DXVECTOR3 vPos;	// 나타날 수 있는 곳의 좌표
 }	RANGDA_POS,	*PRANGDA_POS;
 
-typedef	vector<RANGDA_POS>	VRP;
+typedef	std::vector<RANGDA_POS>	VRP;
 // 단일 랜덤 이벤트 몬스터를 제어하는 클래스
 class CRangda
 {
@@ -45,7 +45,7 @@ private:
 	OBJID	m_objid;	// 실 객체 식별자
 };
 
-typedef	vector<CRangda*>	VR;
+typedef	std::vector<CRangda*>	VR;
 // 모든 랜덤 이벤트 몬스터에 대한 제어 클래스
 class CRangdaController
 {

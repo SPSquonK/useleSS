@@ -2,14 +2,13 @@
 #define	__LAYERED_LINK_MAP_H
 
 #include <map>
-using	namespace	std;
 
 const	int	nDefaultLayer	= 0;	// 변경 가능성이 없는 기본 계층이다.
 const	int	nRevivalLayer	= 0;	// 부활이 계층으로 구분되면 해당 상수값 대신 변수를 사용한다.
 const	int	nTempLayer	= 0;	// 기획에 따라 변경될 가능성이 있는 임시 계층 값이다.
 
 class CLinkMap;
-typedef	map<int, CLinkMap*>	MLM;
+typedef	std::map<int, CLinkMap*>	MLM;
 class CLayeredLinkMap
 {
 public:

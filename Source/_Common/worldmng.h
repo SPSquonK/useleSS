@@ -103,7 +103,7 @@ public:
 #endif // __CLIENT
 
 #ifdef __WORLDSERVER
-	map<string, string>	m_mapMapKey;
+	std::map<std::string, std::string>	m_mapMapKey;
 public:
 	void	CheckMapKey( CUser* pUser, const char* szFileName, const char* szMapKey );
 #endif // __WORLDSERVER

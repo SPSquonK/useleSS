@@ -25,8 +25,8 @@ struct REWARD
 	int nPupilReward;
 	REWARD() : nMasterReward( 0 ), nPupilReward( 0 )	{}
 };
-typedef map<int, REWARD> MAP_CREWORD;
-typedef map<int, DWORD> MAP_CBUFF;
+typedef std::map<int, REWARD> MAP_CREWORD;
+typedef std::map<int, DWORD> MAP_CBUFF;
 
 	CCampusHelper();
 	~CCampusHelper();
@@ -70,7 +70,7 @@ private:
 	CCampusMng* m_pCampusMng;
 	DWORD		m_dwRecoveryTime;
 	int			m_nRecoveryPoint;
-	vector<int>	m_vecCQuest;
+	std::vector<int>	m_vecCQuest;
 	MAP_CBUFF	m_mapCBuff;
 	MAP_CREWORD	m_mapCReward;
 };

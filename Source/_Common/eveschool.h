@@ -254,7 +254,7 @@ public:
 	BOOL	LoadScript( LPCSTR lpszFileName );
 	void	JoinGuildCombat( u_long idGuild, DWORD dwPenya, BOOL bRequest );
 	void	AddSelectPlayer( u_long idGuild, u_long uidPlayer );
-	void	GetSelectPlayer( u_long idGuild, vector<__JOINPLAYER> &vecSelectPlayer );
+	void	GetSelectPlayer( u_long idGuild, std::vector<__JOINPLAYER> &vecSelectPlayer );
 	void	OutGuildCombat( u_long idGuild );
 	void	SetMaintenance();
 	void	SetEnter();

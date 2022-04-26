@@ -1945,7 +1945,7 @@ void CMover::OnAttackSFX( OBJID	idTarget, int nMagicPower, DWORD dwSkill, int nD
 #ifdef __WORLDSERVER
 int CMover::GetSFXCount( OBJID idTarget )
 { 
-	map<OBJID, queue<SFXHIT_COUNT> >::iterator it = m_mapSFXCount.find( idTarget );
+	const auto it = m_mapSFXCount.find( idTarget );
 	if( it != m_mapSFXCount.end() )
 		return it->second.size();
 	return 0;
@@ -1953,19 +1953,19 @@ int CMover::GetSFXCount( OBJID idTarget )
 
 void CMover::IncSFXCount( OBJID idTarget, DWORD dwSkill )
 {
-	map<OBJID, queue<SFXHIT_COUNT> >::iterator it = m_mapSFXCount.find( idTarget );
+	auto it = m_mapSFXCount.find( idTarget );
 	if( it != m_mapSFXCount.end() )
 	{
-		queue<SFXHIT_COUNT> &q	= it->second;
+		std::queue<SFXHIT_COUNT> &q	= it->second;
 		SFXHIT_COUNT c	= {	dwSkill, GetTickCount()	};
 		q.push( c );
 	}
 	else
 	{
-		queue<SFXHIT_COUNT> q;
+		std::queue<SFXHIT_COUNT> q;
 		SFXHIT_COUNT c	= {	dwSkill, GetTickCount()	};
 		q.push( c );
-		m_mapSFXCount.insert( map<OBJID, queue<SFXHIT_COUNT> >::value_type( idTarget, q ) );
+		m_mapSFXCount.emplace( idTarget, q );
 	}
 }
 
@@ -1973,17 +1973,17 @@ void CMover::AddSFXInfo( OBJID idTarget, SFXHIT_INFO& info )
 {
 	info.dwTickCount	= GetTickCount();
 
-	map<OBJID, queue<SFXHIT_INFO> >::iterator it = m_mapSFXInfo.find( idTarget );
+	auto it = m_mapSFXInfo.find( idTarget );
 	if( it != m_mapSFXInfo.end() )
 	{		
-		queue<SFXHIT_INFO> &q = it->second;
+		std::queue<SFXHIT_INFO> &q = it->second;
 		q.push( info );
 	}
 	else
 	{
-		queue<SFXHIT_INFO> q;
+		std::queue<SFXHIT_INFO> q;
 		q.push( info );
-		m_mapSFXInfo.insert( map<OBJID, queue<SFXHIT_INFO> >::value_type( idTarget, q ) );
+		m_mapSFXInfo.emplace( idTarget, q );
 	}
 }
 

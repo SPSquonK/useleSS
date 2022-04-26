@@ -359,12 +359,12 @@ CEventGeneric*	CEventGeneric::GetInstance( void )
 CEventItem* CEventGeneric::GetItem( int* pnNum )
 {
 	int nHour	= CTime::GetCurrentTime().GetHour();
-	for( map<int, list<CEventItem*>*>::iterator i = m_mapEventItemList.begin(); i != m_mapEventItemList.end(); ++i )
+	for( auto i = m_mapEventItemList.begin(); i != m_mapEventItemList.end(); ++i )
 	{
 		if( g_eLocal.GetState( i->first ) )
 		{
-			list<CEventItem*>* pList	= i->second;
-			for( list<CEventItem*>::iterator i2 = pList->begin(); i2 != pList->end(); ++i2 )
+			std::list<CEventItem*>* pList	= i->second;
+			for( auto i2 = pList->begin(); i2 != pList->end(); ++i2 )
 			{
 				CEventItem* pEventItem	= *i2;
 				if( pEventItem->IsTimeout( nHour ) )
@@ -383,7 +383,7 @@ CEventItem* CEventGeneric::GetItem( int* pnNum )
 FLOAT CEventGeneric::GetExpFactor( void )
 {
 	FLOAT	fExpFactor	= 1.0f;
-	for( list<EVENT_GENERIC*>::iterator i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
+	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
 	{
 		PEVENT_GENERIC pEvent	= *i;
 		if( g_eLocal.GetState( pEvent->nId ) )
@@ -396,7 +396,7 @@ FLOAT CEventGeneric::GetExpFactor( void )
 FLOAT CEventGeneric::GetItemDropRateFactor( void )
 {
 	FLOAT	fFactor	= 1.0f;
-	for( list<EVENT_GENERIC*>::iterator i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
+	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
 	{
 		PEVENT_GENERIC pEvent	= *i;
 		if( g_eLocal.GetState( pEvent->nId ) )
@@ -536,7 +536,7 @@ void CEventGeneric::CallTheRoll( void )
 void CEventGeneric::AddSpawn( int nEvent, DWORD dwType, DWORD dwIndex, int nMax, float fRatio, DWORD dwInterval )
 {
 	CSpawn* pSpawn	= new CSpawn( dwType, dwIndex, nMax, fRatio, dwInterval );
-	bool bResult	= m_mapSpawn.insert( map<int, CSpawn*>::value_type( nEvent, pSpawn ) ).second;
+	bool bResult	= m_mapSpawn.emplace( nEvent, pSpawn ).second;
 }
 
 void CEventGeneric::AddRegionGeneric( int nLevel, DWORD dwWorldId, CRespawnInfo* pi )
@@ -563,7 +563,7 @@ void CEventGeneric::Spawn( void )
 {
 	if( m_aRegionGeneric.size() == 0 )
 		return;
-	for( map<int, CSpawn*>::iterator i	= m_mapSpawn.begin(); i != m_mapSpawn.end(); ++i )
+	for( auto i	= m_mapSpawn.begin(); i != m_mapSpawn.end(); ++i )
 	{
 		if( g_eLocal.GetState( i->first ) )
 		{

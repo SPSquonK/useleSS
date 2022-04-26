@@ -10,7 +10,7 @@ class CAIMeteonyker : public CAIInterface
 //	Mvr_Meteonyker_dmg3.ani로 공격
 //	피해량 5000-20000
 	int		m_cbRetaliation;					// 30초 카운트
-	map<OBJID, int>	m_mapDamage;	// 누적 피해
+	std::map<OBJID, int>	m_mapDamage;	// 누적 피해
 	void	AddDamage( OBJID idAttacker, int nDamage );	// 피해 누적
 	void	ResetDamage( void );	// 초기화 GetDealer 후
 	OBJID	GetDealer( void );	// 살아있는 않은 딜러 중

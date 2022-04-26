@@ -38,11 +38,11 @@ BOOL CEveSchool::Ready( void )
 
 	g_UserMng.ModifyMode( OBSERVE_MODE );	// Observe mode	// all
 
-	for( map<u_long, CGuild*>::iterator i = m_pSchoolMng->m_mapPGuild.begin(); i != m_pSchoolMng->m_mapPGuild.end(); ++i )
+	for( auto i = m_pSchoolMng->m_mapPGuild.begin(); i != m_pSchoolMng->m_mapPGuild.end(); ++i )
 	{
 		CGuild* pSchool	= i->second;
 		pSchool->m_nDead	= 0;
-		for( map<u_long, CGuildMember*>::iterator i2 = pSchool->m_mapPMember.begin(); i2 != pSchool->m_mapPMember.end(); ++i2 )
+		for( auto i2 = pSchool->m_mapPMember.begin(); i2 != pSchool->m_mapPMember.end(); ++i2 )
 		{
 			CGuildMember* pMember	= i2->second;
 			CUser* pUser	= g_UserMng.GetUserByPlayerID( pMember->m_idPlayer );
@@ -94,8 +94,7 @@ BOOL CEveSchool::Report( void )
 	SCHOOL_ENTRY	school[MAX_SCHOOL];
 
 	int iIndex	= 0;
-	for( map<u_long, CGuild*>::iterator i = m_pSchoolMng->m_mapPGuild.begin();
-		i != m_pSchoolMng->m_mapPGuild.end(); ++i )
+	for( auto i = m_pSchoolMng->m_mapPGuild.begin(); i != m_pSchoolMng->m_mapPGuild.end(); ++i )
 	{
 		CGuild* pSchool	= i->second;
 		
@@ -103,8 +102,7 @@ BOOL CEveSchool::Report( void )
 		lstrcpy( school[iIndex].lpName, pSchool->m_szGuild );
 		school[iIndex].nDead	= pSchool->m_nDead;
 
-		for( map<u_long, CGuildMember*>::iterator i2 = pSchool->m_mapPMember.begin();
-		i2 != pSchool->m_mapPMember.end(); ++i2 )
+		for( auto i2 = pSchool->m_mapPMember.begin(); i2 != pSchool->m_mapPMember.end(); ++i2 )
 		{
 			CGuildMember* pMember	= i2->second;
 			CUser* pUser	= g_UserMng.GetUserByPlayerID( pMember->m_idPlayer );
@@ -164,8 +162,7 @@ BOOL CEveSchool::End( void )
 	SCHOOL_ENTRY	school[MAX_SCHOOL];
 
 	int iIndex	= 0;
-	for( map<u_long, CGuild*>::iterator i = m_pSchoolMng->m_mapPGuild.begin();
-		i != m_pSchoolMng->m_mapPGuild.end(); ++i )
+	for( auto i = m_pSchoolMng->m_mapPGuild.begin(); i != m_pSchoolMng->m_mapPGuild.end(); ++i )
 	{
 		CGuild* pSchool	= i->second;
 		
@@ -173,8 +170,7 @@ BOOL CEveSchool::End( void )
 		lstrcpy( school[iIndex].lpName, pSchool->m_szGuild );
 		school[iIndex].nDead	= pSchool->m_nDead;
 
-		for( map<u_long, CGuildMember*>::iterator i2 = pSchool->m_mapPMember.begin();
-		i2 != pSchool->m_mapPMember.end(); ++i2 )
+		for( auto i2 = pSchool->m_mapPMember.begin(); i2 != pSchool->m_mapPMember.end(); ++i2 )
 		{
 			CGuildMember* pMember	= i2->second;
 			CUser* pUser	= g_UserMng.GetUserByPlayerID( pMember->m_idPlayer );
@@ -540,7 +536,7 @@ void CGuildCombat::AddSelectPlayer( u_long idGuild, u_long uidPlayer )
 	}
 #endif // __S_BUG_GC
 }
-void CGuildCombat::GetSelectPlayer( u_long idGuild, vector<__JOINPLAYER> &vecSelectPlayer )
+void CGuildCombat::GetSelectPlayer( u_long idGuild, std::vector<__JOINPLAYER> &vecSelectPlayer )
 {
 #ifdef __S_BUG_GC
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( idGuild );
@@ -619,8 +615,8 @@ void CGuildCombat::OutWar( CUser* pUser, CUser* pLeader, BOOL bLogOut )
 				CGuild* pGuild = g_GuildMng.GetGuild( pUser->m_idGuild  );
 				if( pGuild )
 				{
-					vector<int> vecDefender;
-					vecDefender.clear();
+					std::vector<int> vecDefender;
+					
 					for( int vecii0 = 0 ; vecii0 < (int)( pGCMember->vecGCSelectMember.size() ) ; ++vecii0 )
 					{
 						__JOINPLAYER* pJoinPlayer3 = pGCMember->vecGCSelectMember[vecii0];
@@ -975,8 +971,8 @@ void CGuildCombat::UserOutGuildCombatResult( CUser* pUser )
 
 void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 {
-	vector<u_long> vecSameidGuildWin; 
-	vecSameidGuildWin.clear();
+	std::vector<u_long> vecSameidGuildWin; 
+	
 	int nMaxPoint = -1;
 
 	// 최고 점수를 가지고 옴( 최고 점수가 공동으로 가지고 있으면 vecSameidGuildWin에 넣음 )
@@ -1040,8 +1036,8 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 	int nMaxLife = 0;
 	if( 1 < vecSameidGuildWin.size() )
 	{
-		vector<u_long> vecSameidGuildWinTmp;
-		vecSameidGuildWinTmp.clear();
+		std::vector<u_long> vecSameidGuildWinTmp;
+
 		for( int vecSame = 0 ; vecSame < (int)( vecSameidGuildWin.size() ) ; ++vecSame )
 		{
 			int nLife = 0;
@@ -1099,7 +1095,7 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 	float fMaxAvgLv = 0.0f;
 	if( 1 < vecSameidGuildWin.size() )
 	{
-		vector<u_long> vecSameidGuildWinTmp;
+		std::vector<u_long> vecSameidGuildWinTmp;
 		vecSameidGuildWinTmp.clear();
 		for( int vecSame = 0 ; vecSame < (int)( vecSameidGuildWin.size() ) ; ++vecSame )
 		{
@@ -1265,8 +1261,7 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 
 void CGuildCombat::GuildCombatResultRanking()
 {
-	vector<__REQUESTGUILD> vecGCRanking;
-	vecGCRanking = vecRequestRanking;
+	std::vector<__REQUESTGUILD> vecGCRanking = vecRequestRanking;
 	
 	for( int i=0; i<(int)( vecGCRanking.size()-1 ); i++ )
 	{
@@ -1524,7 +1519,7 @@ void CGuildCombat::GuildCombatOpen( void )
 		CGuild* pGuild = g_GuildMng.GetGuild( RequestGuild.uidGuild );
 		if( pGuild )
 		{
-			for( map<u_long, CGuildMember*>::iterator Guildi = pGuild->m_mapPMember.begin();	// neuz
+			for( auto Guildi = pGuild->m_mapPMember.begin();	// neuz
 			Guildi != pGuild->m_mapPMember.end(); ++Guildi )
 			{
 				CGuildMember* pGuildMember = Guildi->second;
@@ -1564,7 +1559,7 @@ void CGuildCombat::SetRequestRanking( void )
 		else
 		{
 			BOOL bInsert = FALSE;
-			for( vector<__REQUESTGUILD>::iterator  itv = vecRequestRanking.begin() ; itv != vecRequestRanking.end() ; ++itv )
+			for( auto  itv = vecRequestRanking.begin() ; itv != vecRequestRanking.end() ; ++itv )
 			{
 				if( ((__REQUESTGUILD)*itv).dwPenya  == pGCMember->dwPenya )
 				{
@@ -1701,7 +1696,7 @@ u_long CGuildCombat::GetDefender( u_long uidGuild )
 u_long CGuildCombat::GetBestPlayer( u_long* dwGetGuildId, int* nGetPoint )
 {
 	u_long uBestPlayer = 0;
-	map<u_long, int> mapSame;	// 동점자 발생시 처리하기 위한 playerId
+	std::map<u_long, int> mapSame;	// 동점자 발생시 처리하기 위한 playerId
 	// 포인트 검사
 	BOOL bResult = FALSE;
 	int nMaxPoint = -1;
@@ -1726,12 +1721,12 @@ u_long CGuildCombat::GetBestPlayer( u_long* dwGetGuildId, int* nGetPoint )
 					*dwGetGuildId = pGCMember->uGuildId;
 					bResult = TRUE;
 					mapSame.clear();
-					mapSame.insert( make_pair( pJoinPlayer->uidPlayer, nVeci ) );
+					mapSame.emplace( pJoinPlayer->uidPlayer, nVeci);
 				}
 				else if( nMaxPoint == pJoinPlayer->nPoint )
 				{
 					bResult = FALSE;
-					mapSame.insert( make_pair( pJoinPlayer->uidPlayer, nVeci ) );
+					mapSame.emplace( pJoinPlayer->uidPlayer, nVeci);
 				}
 			}
 		}
@@ -2262,7 +2257,7 @@ void CGuildCombat::SetGuildCombatStart()
 			{
 				pJoinPlayer = pGuildCombatMem->vecGCSelectMember[veci];
 				BOOL bFind	= FALSE;
-				for( list<__JOINPLAYER*>::iterator i1 = pGuildCombatMem->lspFifo.begin(); i1 != pGuildCombatMem->lspFifo.end(); ++i1 )
+				for( auto i1 = pGuildCombatMem->lspFifo.begin(); i1 != pGuildCombatMem->lspFifo.end(); ++i1 )
 				{
 					if( pJoinPlayer == *i1 )
 					{
@@ -2391,8 +2386,7 @@ void CGuildCombat::SetGuildCombatClose( BOOL bGM )
 			pGuildMsg = g_GuildMng.GetGuild( RequestGuild.uidGuild );
 			if( pGuildMsg )
 			{
-				for( map<u_long, CGuildMember*>::iterator iGuild = pGuildMsg->m_mapPMember.begin();
-				iGuild != pGuildMsg->m_mapPMember.end(); ++iGuild )
+				for( auto iGuild = pGuildMsg->m_mapPMember.begin(); iGuild != pGuildMsg->m_mapPMember.end(); ++iGuild )
 				{
 					pMember		= iGuild->second;
 					pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -3067,7 +3061,7 @@ void CGuildCombat::SetPlayerChange( CUser* pUser, CUser* pLeader )
 			if( pJoinPlayer->uidPlayer == pUser->m_idPlayer )
 			{
 				// 대기열에 존재 하는  pUser는 전투와 무관하므로 무시
-				for( list<__JOINPLAYER*>::iterator i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
+				for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
 				{
 					if( pJoinPlayer == *i1 )
 						return;
@@ -3297,8 +3291,7 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 	pGuildMsg = pAttacker->GetGuild();
 	if( pGuildMsg )
 	{
-		for( map<u_long, CGuildMember*>::iterator i = pGuildMsg->m_mapPMember.begin();
-		i != pGuildMsg->m_mapPMember.end(); ++i )
+		for( auto i = pGuildMsg->m_mapPMember.begin(); i != pGuildMsg->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 			pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -3317,8 +3310,7 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 		pGuildMsg = pDefender->GetGuild();
 		if( pGuildMsg )
 		{
-			for( map<u_long, CGuildMember*>::iterator i = pGuildMsg->m_mapPMember.begin();
-			i != pGuildMsg->m_mapPMember.end(); ++i )
+			for( auto i = pGuildMsg->m_mapPMember.begin(); i != pGuildMsg->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;
 				pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -3364,7 +3356,7 @@ void CGuildCombat::SerializeGCWarPlayerList( CAr & ar )
 				if( 0 < pJoinPlayer1->nlife )
 				{
 					BOOL bFind	= FALSE;
-					for( list<__JOINPLAYER*>::iterator i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
+					for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
 					{
 						if( pJoinPlayer1 == *i1 )
 						{

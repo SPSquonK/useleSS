@@ -520,11 +520,7 @@ void CAIMeteonyker::AddDamage( OBJID idAttacker, int nDamage )
 {
 	if( nDamage == 0 )
 		return;
-	map<OBJID, int>::iterator	i = m_mapDamage.find( idAttacker );
-	if( i == m_mapDamage.end() )
-		m_mapDamage.insert( map<OBJID, int>::value_type( idAttacker, nDamage ) );
-	else
-		i->second	+= nDamage;
+	m_mapDamage[idAttacker] += nDamage;
 }
 
 void CAIMeteonyker::ResetDamage( void )
@@ -536,7 +532,7 @@ OBJID CAIMeteonyker::GetDealer( void )
 {
 	int nDamage	= 0;
 	OBJID objid	= NULL_ID;
-	for( map<OBJID, int>::iterator i = m_mapDamage.begin(); i != m_mapDamage.end(); ++i )
+	for( auto i = m_mapDamage.begin(); i != m_mapDamage.end(); ++i )
 	{
 		if( i->second >= nDamage )
 		{

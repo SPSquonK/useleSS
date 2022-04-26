@@ -3333,7 +3333,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			dwMaxLevel	= s.GetNumber();	// max
 			s.GetToken();	// )
 
-			set<DWORD>::iterator i2	= m_setExcept.find( di.dwIndex );
+			const auto i2	= m_setExcept.find( di.dwIndex );
 			if( i2 != m_setExcept.end() )
 				continue;
 			if( GetLanguage() != LANG_KOR )
@@ -3411,7 +3411,7 @@ BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, i
 BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag, int nSpan, int nAbilityOption )
 //#endif	// __GIFTBOX0213
 {
-	map<DWORD, int>::iterator i	= m_mapIdx.find( dwGiftbox );
+	const auto i	= m_mapIdx.find( dwGiftbox );
 	int nIdx1	= 0;
 	if( i != m_mapIdx.end() )
 	{
@@ -3419,15 +3419,12 @@ BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, i
 	}
 	else
 	{
-#ifdef __STL_GIFTBOX_VECTOR
 		nIdx1	= m_vGiftBox.size();
 		GIFTBOX giftBox;
 		memset( &giftBox, 0, sizeof(GIFTBOX) );
 		m_vGiftBox.push_back( giftBox );
-#else // __STL_GIFTBOX_VECTOR
-		nIdx1	= m_nSize++;
-#endif // __STL_GIFTBOX_VECTOR
-		m_mapIdx.insert( map<DWORD, int>::value_type( dwGiftbox, nIdx1 ) );
+
+		m_mapIdx.emplace( dwGiftbox, nIdx1 );
 	}
 
 #ifdef __STL_GIFTBOX_VECTOR
@@ -3477,7 +3474,7 @@ BOOL CGiftboxMan::Open( DWORD dwGiftbox, PGIFTBOXRESULT pGiftboxResult )
 //#endif	// __GIFTBOX0213
 {
 	DWORD dwRand	= xRandom( 1000000 );
-	map<DWORD, int>::iterator i		= m_mapIdx.find( dwGiftbox );
+	const auto i		= m_mapIdx.find( dwGiftbox );
 	if( i == m_mapIdx.end() )
 		return 0;
 	int nIdx	= i->second;
@@ -4794,7 +4791,7 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 		else if( s.Token == _T( "Collecting_Enchant" ) )
 		{
 			CCollectingProperty* pProperty	= CCollectingProperty::GetInstance();
-			vector<int>* ptr	= pProperty->GetEnchantProbabilityPtr();
+			std::vector<int>* ptr	= pProperty->GetEnchantProbabilityPtr();
 			// 1 / 1000
 			s.GetToken();	// {
 			int nProb	= s.GetNumber();
@@ -4807,7 +4804,7 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 		else if( s.Token == _T( "Collecting_Item" ) )
 		{
 			CCollectingProperty* pProperty	= CCollectingProperty::GetInstance();
-			vector<COLLECTING_ITEM>* ptr	= pProperty->GetItemPtr();
+			std::vector<COLLECTING_ITEM>* ptr	= pProperty->GetItemPtr();
 			COLLECTING_ITEM item;
 			DWORD dwTotal	= 0;
 			s.GetToken();	// {
@@ -4848,7 +4845,7 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 		else if( s.Token == _T( "Pet_AddLifeProbability" ) )
 		{
 			CPetProperty* pProperty		= CPetProperty::GetInstance();
-			vector<WORD>* ptr	= pProperty->GetAddLifeProbabilityPtr();
+			std::vector<WORD>* ptr	= pProperty->GetAddLifeProbabilityPtr();
 			// ���� ȸ���� Ȯ��	// �߰� �� ��� ���� 100�� �ǵ��� Ȯ��
 			// 	50	// +1
 			s.GetToken();	// {

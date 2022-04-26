@@ -1617,7 +1617,7 @@ void CWorld::_replace( void )
 					if( pHousing )
 					{
 						pUser->AddHousingPaperingInfo( NULL_ID, FALSE );	// 벽지 및 장판 초기화
-						vector<DWORD> vecTemp = pHousing->GetAllPaperingInfo();
+						std::vector<DWORD> vecTemp = pHousing->GetAllPaperingInfo();
 						for( DWORD i=0; i<vecTemp.size(); i++ )
 						{
 							pUser->AddHousingPaperingInfo( vecTemp[i], TRUE );

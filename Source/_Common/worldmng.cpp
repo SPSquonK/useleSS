@@ -693,7 +693,7 @@ BOOL CWorldMng::SetMapCheck( const char* szFileName )
 		md5( szOut, szIn );
 
 #ifdef __WORLDSERVER
-		m_mapMapKey.insert( map<string, string>::value_type( szFileNameOut, szOut ) );
+		m_mapMapKey.emplace( szFileNameOut, szOut );
 #endif // __WORLDSERVER
 #ifdef __CLIENT
 		g_DPlay.SendMapKey( szFileNameOut, szOut );
@@ -730,7 +730,7 @@ void CWorldMng::CheckMapKey()
 #ifdef __WORLDSERVER
 void CWorldMng::CheckMapKey( CUser* pUser, const char* szFileName, const char* szMapKey )
 {	
-	map<string, string>::iterator it = m_mapMapKey.find( szFileName );
+	const auto it = m_mapMapKey.find( szFileName );
 	if( it != m_mapMapKey.end() )
 	{
 		if( !strcmpi( szMapKey, it->second.c_str() ) )	// 맵 인증 성공!

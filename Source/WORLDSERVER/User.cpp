@@ -246,12 +246,9 @@ void CUser::ExpUpSetting( void )
 
 void CUser::RemoveItFromView2( BOOL bRemoveall )
 {
-	CCtrl* pCtrl;
-
-	map<DWORD, CCtrl*>::iterator it = m_2npc.begin();
-	for( ; it != m_2npc.end(); ++it )
+	for(auto it = m_2npc.begin(); it != m_2npc.end(); ++it )
 	{
-		pCtrl = it->second;
+		CCtrl * pCtrl = it->second;
 		pCtrl->PCRemoveKey( GetId() );
 	}
 	if( bRemoveall )
@@ -1674,28 +1671,25 @@ void CUser::AddQueryPlayerData( u_long idPlayer, PlayerData* pPlayerData )
 
 void CUser::AddPlayerData( void )
 {
-	vector<u_long>	aPlayer;
-#ifdef __RT_1025
-	for( map<u_long, Friend>::iterator i1 = m_RTMessenger.begin(); i1 != m_RTMessenger.end(); ++i1 )
-		aPlayer.push_back( i1->first );
-#else	// __RT_1025
-	for( map<u_long, FRIEND*>::iterator i1 = m_Messenger.m_aFriend.begin(); i1 != m_Messenger.m_aFriend.end(); ++i1 )
-	{
-		if( i1->second )
-			aPlayer.push_back( i1->second->dwUserId );
+	const auto messengerPlayerIds = m_RTMessenger | std::views::keys;
+
+	std::vector<u_long>	aPlayer = std::vector<u_long>(messengerPlayerIds.begin(), messengerPlayerIds.end());
+
+	if (CGuild * pGuild = GetGuild()) {
+		const auto guildRange = pGuild->m_mapPMember
+			| std::views::values
+			| std::views::transform([](const CGuildMember * const gm) { return gm->m_idPlayer; });
+
+		for (const u_long guildMemberId : guildRange) {
+			aPlayer.push_back(guildMemberId);
+		}
 	}
-#endif	//__RT_1025
-	CGuild* pGuild	= GetGuild();
-	if( pGuild )
-	{
-		for( map<u_long, CGuildMember*>::iterator i2 = pGuild->m_mapPMember.begin(); i2 != pGuild->m_mapPMember.end(); ++i2 )
-			aPlayer.push_back( i2->second->m_idPlayer );
-	}
-	for( int i = 0; i < (int)( aPlayer.size() ); i++ )
-	{
-		PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( aPlayer[i] );
-		if( pPlayerData )
-			AddQueryPlayerData( aPlayer[i], pPlayerData );
+
+	for (const u_long playerId : aPlayer) {
+		PlayerData * pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
+		if (pPlayerData) {
+			AddQueryPlayerData(playerId, pPlayerData);
+		}
 	}
 }
 
@@ -1966,7 +1960,7 @@ void CUser::AddFlyffEvent( void )
 	
 }
 
-void CUser::AddEventLuaDesc( int nState, string strDesc )
+void CUser::AddEventLuaDesc( int nState, std::string strDesc )
 {
 	if( strDesc.length() == 0 ) return;
 	if( IsDelete() )	return;
@@ -3063,7 +3057,7 @@ void CUser::AddGC1to1TenderOpenWnd( int nPenya )
 	m_Snapshot.ar << g_GuildCombat1to1Mng.m_nJoinPenya;
 }
 
-void CUser::AddGC1to1TenderGuildView( int nPenya, int nRanking, time_t t, vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild )
+void CUser::AddGC1to1TenderGuildView( int nPenya, int nRanking, time_t t, std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild )
 {
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
@@ -3102,7 +3096,7 @@ void CUser::AddGC1to1NowState( int nState, int nTime, int nProgCount )
 		m_Snapshot.ar << nProgCount;
 }
 
-void CUser::AddGC1to1MemberLineUpOpenWnd( vector<u_long>& vecMemberId )
+void CUser::AddGC1to1MemberLineUpOpenWnd( std::vector<u_long>& vecMemberId )
 {
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
@@ -3305,7 +3299,7 @@ void CUser::AdjustMailboxState( void )
 
 void CUser::AddEventLuaDesc( void )
 {
-	vector<BYTE> vecList	= prj.m_EventLua.GetEventList();
+	std::vector<BYTE> vecList	= prj.m_EventLua.GetEventList();
 	for( int it = 0; it < (int)( vecList.size() ); it++ )
 		AddEventLuaDesc( 2, prj.m_EventLua.GetDesc( vecList[it] ) );
 }
@@ -3437,8 +3431,7 @@ CUserMng::~CUserMng()
 // 월드서버에서 소켓과 접속이 끊길 경우 호출된다.
 void CUserMng::RemoveAllUsers()
 {
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		DestroyPlayer( it->second );
 	}
@@ -3457,7 +3450,7 @@ CUser* CUserMng::AddUser( DPID dpidCache, DPID dpidUser, DPID dpidSocket )
 		
 		pUser = new CUser( dpidCache, dpidSocket );
 		pUser->m_dwSerial = dpidUser;
-		m_users.insert( make_pair( dpidUser, pUser ) );
+		m_users.emplace( dpidUser, pUser );
 	}
 	else
 	{
@@ -3472,7 +3465,7 @@ extern CCommonCtrl* CreateExpBox( CUser* pUser );
 
 void CUserMng::RemoveUser( DWORD dwSerial )
 {
-	map<DWORD, CUser*>::iterator it = m_users.find( dwSerial );
+	const auto it = m_users.find( dwSerial );
 	if( it == m_users.end() )
 		return;
 
@@ -3524,11 +3517,10 @@ void CUserMng::RemoveUserFromCacheMsg( CUser *pUser )
 	}
 }
 
-CUser* CUserMng::GetUser( DPID dpidCache, DPID dpidUser )
+CUser* CUserMng::GetUser( DPID, const DPID dpidUser )
 {
-	UNUSED_ALWAYS(dpidCache);
 
-	map<DWORD, CUser*>::iterator it = m_users.find( dpidUser );
+	const auto it = m_users.find( dpidUser );
 	if( it != m_users.end() )
 		return it->second;
 	else
@@ -3825,8 +3817,7 @@ void CUserMng::Notify( void )
 
 void CUserMng::ModifyMode( DWORD dwMode )
 {
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -4891,8 +4882,7 @@ void CUserMng::AddPutItemElem( u_long uidGuild, CItemElem* pItemElem )
 	pItemElem->Serialize( ar );
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUsertmp = it->second;
 		if( pUsertmp->IsValid() == FALSE )
@@ -4967,8 +4957,7 @@ void CUserMng::AddHdr( CCtrl* pCtrl, WORD wHdr )
 
 void CUserMng::AddBlock( LPBYTE lpBlock, u_long uBlockSize )
 {
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -4985,8 +4974,7 @@ void CUserMng::AddBlock( LPBYTE lpBlock, u_long uBlockSize, CWorld* pWorld )
 	if( !pWorld )
 		return;
 
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -4999,8 +4987,7 @@ void CUserMng::AddBlock( LPBYTE lpBlock, u_long uBlockSize, CWorld* pWorld )
 
 void CUserMng::AddBlockNoLock( LPBYTE lpBlock, u_long uBlockSize )
 {
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5016,8 +5003,7 @@ void CUserMng::AddBlockNoLock( LPBYTE lpBlock, u_long uBlockSize, CWorld* pWorld
 	if( !pWorld )
 		return;
 
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for( auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5036,8 +5022,7 @@ void CUserMng::AddBlock( CWorld* pWorld, const D3DXVECTOR3 & vPos, int nRange, L
 	float d	= (float)( nRange * nRange );
 	D3DXVECTOR3 vtmp;
 
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for( auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5051,8 +5036,7 @@ void CUserMng::AddBlock( CWorld* pWorld, const D3DXVECTOR3 & vPos, int nRange, L
 
 void CUserMng::AddGameSetting( void )
 {
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5066,8 +5050,7 @@ void CUserMng::AddShout( CUser* pUserSrc, int nRange, LPBYTE lpBlock, u_long uBl
 	float fRange = (float)( nRange * nRange );
 	D3DXVECTOR3 v;
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5097,8 +5080,7 @@ void CUserMng::AddWorldMsg( const CRect* pRect, LPCTSTR lpszString )
 
 	D3DXVECTOR3 vtmp;
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5256,8 +5238,7 @@ void CUserMng::AddGuildCombatNextTimeWorld( DWORD dwTime, DWORD dwState )
 	arBlock << dwTime << dwState;
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5274,8 +5255,7 @@ void CUserMng::AddGuildCombatEnterTime( DWORD dwTime )
 	arBlock << dwTime ;
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5295,8 +5275,7 @@ void CUserMng::AddGCWarPlayerlist( u_long uidGuild, CUser* pSendUser )
 	
 	if( pSendUser == NULL )
 	{
-		map<DWORD, CUser*>::iterator it;
-		for( it = m_users.begin(); it != m_users.end(); ++it )
+		for(auto it = m_users.begin(); it != m_users.end(); ++it )
 		{
 			CUser* pUser = it->second;
 			if( pUser->IsValid() == FALSE )
@@ -5341,8 +5320,7 @@ void CUserMng::AddGCLogWorld( void )
 	}
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5376,8 +5354,7 @@ void CUserMng::AddGCLogRealTimeWorld( CGuildCombat::__GCGETPOINT GCGetPoint )
 	arBlock << GCGetPoint.bLastLife;
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5397,8 +5374,7 @@ void CUserMng::ReplaceWorld( DWORD dwWorldId, DWORD dwReplaceWorldId, float fRep
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	if( pWorld )
 	{
-		map<DWORD, CUser*>::iterator it;
-		for( it = m_users.begin(); it != m_users.end(); ++it )
+		for(auto it = m_users.begin(); it != m_users.end(); ++it )
 		{
 			CUser* pUser = it->second;
 			if( pUser->IsValid() == FALSE )
@@ -5456,8 +5432,7 @@ void CUserMng::AddWorldMsg( DWORD dwWorldId, LPCTSTR lpszString )
 	arBlock.WriteString( lpszString );
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -5479,8 +5454,7 @@ void CUserMng::AddGuildMsg( CGuild* pGuild, LPCSTR lpsz )
 	CGuildMember*	pMember;
 	CUser*			pUsertmp;
 	
-	for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-	i != pGuild->m_mapPMember.end(); ++i )
+	for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 	{
 		pMember		= i->second;
 		pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -5497,8 +5471,7 @@ void CUserMng::AddGCIsRequest( u_long uidGuild, BOOL bRequest )
 	arBlock << bRequest;
 
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUsertmp = it->second;
 		if( pUsertmp->IsValid() == FALSE )
@@ -5517,17 +5490,15 @@ void CUserMng::AddGCGuildStatus( u_long uidGuild, CUser* pSendUser )
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_GUILDSTATUS;
 	
-#ifdef __S_BUG_GC
 	CGuildCombat::__GuildCombatMember* pGCMember = g_GuildCombatMng.FindGuildCombatMember( uidGuild );
 	if( pGCMember != NULL )
 	{
 		// 순서에 맞게 vecPlayerList에 넣기 : 선수 -> 대기자(들어갈수 있음) -> 대기자(못들어감)
-		list<CGuildCombat::__JOINPLAYER*> lspPlyaerList;
-		lspPlyaerList.clear();
+		std::list<CGuildCombat::__JOINPLAYER*> lspPlyaerList;
 
 		CGuildCombat::__JOINPLAYER* pJoinPlayer;
 		// 대기자(들어갈수 잇음) 넣음
-		for( list<CGuildCombat::__JOINPLAYER*>::iterator i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
+		for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
 		{
 			pJoinPlayer = *i1;
 			lspPlyaerList.push_back( pJoinPlayer );
@@ -5540,7 +5511,7 @@ void CUserMng::AddGCGuildStatus( u_long uidGuild, CUser* pSendUser )
 			if( 0 < pJoinPlayer->nlife )	// 선수
 			{
 				BOOL bFind = FALSE;
-				for( list<CGuildCombat::__JOINPLAYER*>::iterator i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
+				for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
 				{
 					if( pJoinPlayer == *i1 )
 					{
@@ -5566,73 +5537,13 @@ void CUserMng::AddGCGuildStatus( u_long uidGuild, CUser* pSendUser )
 			arBlock << (int)0;
 		
 		arBlock << (int)lspPlyaerList.size();
-		for( list<CGuildCombat::__JOINPLAYER*>::iterator i1 = lspPlyaerList.begin(); i1 != lspPlyaerList.end(); ++i1 )
+		for( auto i1 = lspPlyaerList.begin(); i1 != lspPlyaerList.end(); ++i1 )
 		{
 			pJoinPlayer = *i1;
 			arBlock << pJoinPlayer->uidPlayer;
 			arBlock << pJoinPlayer->nlife;
 		}	
 	}
-#else // __S_BUG_GC
-	map<u_long, CGuildCombat::__GuildCombatMember*>::iterator itGuild = g_GuildCombatMng.m_GuildCombatMem.find( uidGuild );
-	if( itGuild != g_GuildCombatMng.m_GuildCombatMem.end() )
-	{
-		CGuildCombat::__GuildCombatMember* pGCMember	= itGuild->second;
-		
-		// 순서에 맞게 vecPlayerList에 넣기 : 선수 -> 대기자(들어갈수 있음) -> 대기자(못들어감)
-		list<CGuildCombat::__JOINPLAYER*> lspPlyaerList;
-		lspPlyaerList.clear();
-
-		CGuildCombat::__JOINPLAYER* pJoinPlayer;
-
-		// 대기자(들어갈수 잇음) 넣음
-		for( list<CGuildCombat::__JOINPLAYER*>::iterator i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
-		{
-			pJoinPlayer = *i1;
-			lspPlyaerList.push_back( pJoinPlayer );
-		}
-
-		// 선수 및 대기자(못들어감) 넣음
-		for( int veci = pGCMember->vecGCSelectMember.size()-1 ; veci >= 0 ; --veci )
-		{
-			pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-			if( 0 < pJoinPlayer->nlife )	// 선수
-			{
-				BOOL bFind = FALSE;
-				for( i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
-				{
-					if( pJoinPlayer == *i1 )
-					{
-						bFind	= TRUE;
-						break;
-					}
-				}				
-				if( bFind == FALSE )
-				{
-					lspPlyaerList.push_front( pJoinPlayer );
-				}
-			}
-			else // 대기자(못들어감)
-			{
-				lspPlyaerList.push_back( pJoinPlayer );
-			}
-		}
-
-		// 보내기
-		if( 0 < pGCMember->lspFifo.size() )
-			arBlock << g_GuildCombatMng.m_nMaxWarPlayer;
-		else
-			arBlock << (int)0;
-		
-		arBlock << (int)lspPlyaerList.size();
-		for( i1 = lspPlyaerList.begin(); i1 != lspPlyaerList.end(); ++i1 )
-		{
-			pJoinPlayer = *i1;
-			arBlock << pJoinPlayer->uidPlayer;
-			arBlock << pJoinPlayer->nlife;
-		}	
-	}
-#endif // __S_BUG_GC
 	else
 	{
 		arBlock << (int)0;
@@ -5642,8 +5553,7 @@ void CUserMng::AddGCGuildStatus( u_long uidGuild, CUser* pSendUser )
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	if( pSendUser == NULL )
 	{
-		map<DWORD, CUser*>::iterator it;
-		for( it = m_users.begin(); it != m_users.end(); ++it )
+		for(auto it = m_users.begin(); it != m_users.end(); ++it )
 		{
 			CUser* pUser = it->second;
 			if( pUser->IsValid() == FALSE )
@@ -5669,7 +5579,6 @@ void CUserMng::AddGCGuildPrecedence( CUser* pSendUser )
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_GUILDPRECEDENCE;
 
-#ifdef __S_BUG_GC
 	arBlock << (int)g_GuildCombatMng.m_vecGuildCombatMem.size();
 	for( int gcmi = 0 ; gcmi < (int)( g_GuildCombatMng.m_vecGuildCombatMem.size() ) ; ++gcmi )
 	{
@@ -5689,34 +5598,11 @@ void CUserMng::AddGCGuildPrecedence( CUser* pSendUser )
 			arBlock << (BOOL)FALSE; // bSend;
 		}
 	}
-#else // __S_BUG_GC
-	arBlock << (int)g_GuildCombatMng.m_GuildCombatMem.size();
-	for( map<u_long, CGuildCombat::__GuildCombatMember*>::iterator itGuild = g_GuildCombatMng.m_GuildCombatMem.begin();
-		itGuild != g_GuildCombatMng.m_GuildCombatMem.end(); ++itGuild )
-	{
-		CGuildCombat::__GuildCombatMember* pGCMember = itGuild->second;
-		if( 0 < pGCMember->vecGCSelectMember.size() )
-		{			
-			arBlock << (BOOL)TRUE; // bSend;
-			CGuild* pGuild = g_GuildMng.GetGuild( itGuild->first );
-			if( pGuild )
-				arBlock.WriteString( pGuild->m_szGuild );
-			else
-				arBlock.WriteString( "Not Guild" );
-			arBlock << pGCMember->nGuildPoint;
-		}
-		else
-		{
-			arBlock << (BOOL)FALSE; // bSend;
-		}		
-	}
-#endif // __S_BUG_GC
 
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	if( pSendUser == NULL )
 	{
-		map<DWORD, CUser*>::iterator it;
-		for( it = m_users.begin(); it != m_users.end(); ++it )
+		for( auto it = m_users.begin(); it != m_users.end(); ++it )
 		{
 			CUser* pUser = it->second;
 			if( pUser->IsValid() == FALSE )
@@ -5739,7 +5625,6 @@ void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_PLAYERPRECEDENCE;
 
-#ifdef __S_BUG_GC
 	arBlock << (int)g_GuildCombatMng.m_vecGuildCombatMem.size();
 	for( int gcmi = 0 ; gcmi < (int)( g_GuildCombatMng.m_vecGuildCombatMem.size() ) ; ++gcmi )
 	{
@@ -5752,28 +5637,12 @@ void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
 			arBlock << pJoinPlayer->nPoint;
 		}
 	}
-#else // __S_BUG_GC
-	arBlock << (int)g_GuildCombatMng.m_GuildCombatMem.size();
-	for( map<u_long, CGuildCombat::__GuildCombatMember*>::iterator itGuild = g_GuildCombatMng.m_GuildCombatMem.begin();
-	itGuild != g_GuildCombatMng.m_GuildCombatMem.end(); ++itGuild )
-	{
-		CGuildCombat::__GuildCombatMember* pGCMember = itGuild->second;
-		arBlock << (int)pGCMember->vecGCSelectMember.size();
-		for( int veci = 0 ; veci < pGCMember->vecGCSelectMember.size() ; ++veci )
-		{
-			CGuildCombat::__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-			arBlock << pJoinPlayer->uidPlayer;
-			arBlock << pJoinPlayer->nPoint;
-		}
-	}
-#endif // __S_BUG_GC
 
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	
 	if( pSendUser == NULL )
 	{
-		map<DWORD, CUser*>::iterator it;
-		for( it = m_users.begin(); it != m_users.end(); ++it )
+		for(auto it = m_users.begin(); it != m_users.end(); ++it )
 		{
 			CUser* pUser = it->second;
 			if( pUser->IsValid() == FALSE )
@@ -6114,8 +5983,7 @@ void CUserMng::OutputStatistics( void )
 
 	memset( acbUser, 0, sizeof(int) * MAX_LEGEND_LEVEL );
 
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for(auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -6242,7 +6110,7 @@ void CUser::AddGCWindow( __int64 nPrizePenya, DWORD dwRequstPenya, DWORD dwMinRe
 	
 }
 
-void CUser::AddGCRequestStatus( __int64 nPrizePenya, vector<CGuildCombat::__REQUESTGUILD> vecRequestStatus )
+void CUser::AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::__REQUESTGUILD> vecRequestStatus )
 {
 	DWORD dwRequstPenya = 0;
 	if( IsDelete() )	return;
@@ -6273,7 +6141,7 @@ void CUser::AddGCRequestStatus( __int64 nPrizePenya, vector<CGuildCombat::__REQU
 	
 }
 // 선택 캐릭터 윈도우 띄움
-void CUser::AddGCSelectPlayerWindow( vector<CGuildCombat::__JOINPLAYER> &vecSelectPlayer, u_long uidDefender, BOOL bWindow, BOOL bRequestWar )
+void CUser::AddGCSelectPlayerWindow( std::vector<CGuildCombat::__JOINPLAYER> &vecSelectPlayer, u_long uidDefender, BOOL bWindow, BOOL bRequestWar )
 {
 	if( IsDelete() )	return;
 	
@@ -6901,10 +6769,8 @@ void CUserMng::AddAddRegion( DWORD dwWorldId, REGIONELEM & re )
 	ar << dwWorldId;
 	ar.Write( &re, sizeof(re) );
 	
-	map<DWORD, CUser*>::iterator it;
-	list<CUser*>	lspUser;
-	list<CUser*>::iterator i;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	std::list<CUser*>	lspUser;
+	for( auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -6919,13 +6785,13 @@ void CUserMng::AddAddRegion( DWORD dwWorldId, REGIONELEM & re )
 	}
 
 	ar << (int)lspUser.size();
-	for( i	= lspUser.begin(); i != lspUser.end(); ++i )
+	for( auto i	= lspUser.begin(); i != lspUser.end(); ++i )
 		ar << (*i)->GetId();
 
 	GETBLOCK( ar, lpBuf, nBufSize );
 
 	// transfer
-	for( i	= lspUser.begin(); i != lspUser.end(); ++i )
+	for( auto i	= lspUser.begin(); i != lspUser.end(); ++i )
 		(*i)->AddBlock( lpBuf, nBufSize );
 
 	lspUser.clear();
@@ -6987,8 +6853,7 @@ typedef struct __ITEMINFO
 
 void CUserMng::CallTheRoll( int nBit )
 {
-	map<DWORD, CUser*>::iterator i;
-	for( i = m_users.begin(); i != m_users.end(); ++i )
+	for(auto i = m_users.begin(); i != m_users.end(); ++i )
 	{
 		CUser* pUser = i->second;
 		if( pUser->IsValid() == FALSE )
@@ -7016,7 +6881,7 @@ void CUserMng::CallTheRoll( int nBit )
 			{
 				int nCount	= pUser->SetEventFlagBit( nBit );
 				pUser->AddCallTheRoll();	// print
-				vector<ITEMINFO> vecItemInfo;
+				std::vector<ITEMINFO> vecItemInfo;
 #ifdef __EVENT_1101_2
 				// 매일 지급
 				vecItemInfo.push_back( ITEMINFO( II_SYS_SYS_EVE_FUN01, 2, 0 ) );
@@ -7114,7 +6979,7 @@ void CUser::AddKawibawiboResult( int nResult, int nWinCount, DWORD dwItemId, int
 	}
 }
 
-void CUser::AddReassembleOpenWnd( vector<DWORD> vecItemId )
+void CUser::AddReassembleOpenWnd( std::vector<DWORD> vecItemId )
 {
 	if( IsDelete() )	return;
 	
@@ -7387,10 +7252,9 @@ void CUser::AddLegendSkillResult( int nResult )
 
 void CUserMng::AddEventLua( BYTE nId, BOOL bState )
 {
-	string strDesc = prj.m_EventLua.GetDesc( nId );
+	std::string strDesc = prj.m_EventLua.GetDesc( nId );
 	
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for( auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -7485,7 +7349,7 @@ void CUser::AddSecretRoomMngState( int nState, DWORD dwRemainTime )
 	m_Snapshot.ar << dwRemainTime;
 }
 
-void CUser::AddSecretRoomContInfo( BYTE nContinent, BYTE nType, vector<__SECRETROOM_TENDER> & vecSecreetRoomTender, int nIndex )
+void CUser::AddSecretRoomContInfo( BYTE nContinent, BYTE nType, std::vector<__SECRETROOM_TENDER> & vecSecreetRoomTender, int nIndex )
 {
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
@@ -7518,10 +7382,10 @@ void CUser::AddSecretRoomContInfo( BYTE nContinent, BYTE nType, vector<__SECRETR
 					}
 				}
 				
-				map<int, int> mapMonsterNum = CSecretRoomMng::GetInstance()->m_mapMonsterNum;
-				map<int, int>::iterator it = mapMonsterNum.begin();
+				const std::map<int, int> & mapMonsterNum = CSecretRoomMng::GetInstance()->m_mapMonsterNum;
+				
 				m_Snapshot.ar << mapMonsterNum.size();
-				for( ; it!=mapMonsterNum.end(); it++ )
+				for(auto it = mapMonsterNum.begin(); it!=mapMonsterNum.end(); it++ )
 				{
 					m_Snapshot.ar << it->first;
 					m_Snapshot.ar << it->second;
@@ -7555,7 +7419,7 @@ void CUser::AddSecretRoomTenderOpenWnd( int nTenderPenya )
 	m_Snapshot.ar << nTenderPenya;
 }
 
-void CUser::AddSecretRoomLineUpOpenWnd( vector<DWORD>& vecLineUpMember )
+void CUser::AddSecretRoomLineUpOpenWnd( std::vector<DWORD>& vecLineUpMember )
 {
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
@@ -7569,7 +7433,7 @@ void CUser::AddSecretRoomLineUpOpenWnd( vector<DWORD>& vecLineUpMember )
 		m_Snapshot.ar << vecLineUpMember[i];
 }
 
-void CUser::AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, vector<__SECRETROOM_TENDER>& vecSRTender )
+void CUser::AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, std::vector<__SECRETROOM_TENDER>& vecSRTender )
 {
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
@@ -7773,8 +7637,7 @@ void CUser::AddTaxSetTaxRateOpenWnd( BYTE nCont )
 
 void CUserMng::AddTaxInfo( void )
 {
-	map<DWORD, CUser*>::iterator it;
-	for( it = m_users.begin(); it != m_users.end(); ++it )
+	for( auto it = m_users.begin(); it != m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() == FALSE )
@@ -7789,8 +7652,7 @@ void CUser::AddRainbowRacePrevRankingOpenWnd()
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_RAINBOWRACE_PREVRANKING_OPENWND;
-	vector<DWORD> vecdwPrevRanking;
-	vecdwPrevRanking = CRainbowRaceMng::GetInstance()->GetPrevRanking();
+	const std::vector<DWORD> & vecdwPrevRanking = CRainbowRaceMng::GetInstance()->GetPrevRanking();
 	m_Snapshot.ar << vecdwPrevRanking.size();
 	for( int i=0; i<(int)( vecdwPrevRanking.size() ); i++ )
 		m_Snapshot.ar << vecdwPrevRanking[i];
@@ -7872,7 +7734,7 @@ void CUser::AddHousingPaperingInfo( DWORD dwItemId, BOOL bSetup )
 
 void CUserMng::AddHousingPaperingInfo( DWORD dwItemId, BOOL bSetup, DWORD dwMasterId )
 {
-	for( map<DWORD, CUser*>::iterator it=m_users.begin(); it!=m_users.end(); ++it )
+	for( auto it=m_users.begin(); it!=m_users.end(); ++it )
 	{
 		CUser* pUser = it->second;
 		if( pUser->IsValid() && pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_MINIROOM  )
@@ -7892,7 +7754,7 @@ void CUser::AddHousingSetVisitAllow( DWORD dwTargetId, BOOL bAllow )
 	m_Snapshot.ar << dwTargetId << bAllow;
 }
 
-void CUser::AddHousingVisitableList( vector<DWORD> & vecVisitable )
+void CUser::AddHousingVisitableList( std::vector<DWORD> & vecVisitable )
 {
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
@@ -8170,7 +8032,7 @@ BOOL CUserMng::HasUserSameWorldnLayer( CUser* pUserSrc )
 	if( !IsValidObj( pUserSrc ) || !pUserSrc->GetWorld() )
 		return FALSE;
 
-	for( map<DWORD, CUser*>::iterator it=m_users.begin(); it!=m_users.end(); it++ )
+	for( auto it=m_users.begin(); it!=m_users.end(); it++ )
 	{
 		if( ( pUserSrc != it->second ) && ( pUserSrc->GetWorld() && it->second->GetWorld() )
 			&& ( pUserSrc->GetWorld()->GetID() == it->second->GetWorld()->GetID() ) && ( pUserSrc->GetLayer() && it->second->GetLayer() ) )

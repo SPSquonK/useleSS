@@ -103,7 +103,7 @@ public:
 	void SetTender( CUser* pUser, int nPenya );		// 입찰
 	void SetTenderCancelReturn( CUser* pUser );		// 입찰 취소시 수수료를 제외한 신청금을 반환한다.
 	void SetLineUpOpenWnd( CUser* pUser );			// 참가자 구성 창을 열때 필요한 정보 전송
-	void SetLineUp( CUser* pUser, vector<DWORD> vecLineUpMember );	// 참가자 구성
+	void SetLineUp( CUser* pUser, std::vector<DWORD> vecLineUpMember );	// 참가자 구성
 	void GetTenderView( CUser* pUser );				// 입찰현황 창을 열때 
 	void SecretRoomOpen();							// 금주 비밀의 방을 오픈한다.
 	void SetTeleportSecretRoom( CUser* pUser );		// 비밀의 방으로 텔레포트...
@@ -113,9 +113,9 @@ public:
 
 	CLuaBase m_Lua;
 
-	vector<__SECRETROOM_MONSTER> m_vecNormalMonster;	// 일반 몬스터 종류, 위치, 개체수, 선공 속성
-	vector<__SECRETROOM_MONSTER> m_vecMidBossMonster;	// 중간보스 몬스터 종류, 위치, 개체수, 선공 속성
-	vector<__SECRETROOM_MONSTER> m_vecBossMonster;		// 최종보스 몬스터 종류, 위치, 개체수, 선공 속성
+	std::vector<__SECRETROOM_MONSTER> m_vecNormalMonster;	// 일반 몬스터 종류, 위치, 개체수, 선공 속성
+	std::vector<__SECRETROOM_MONSTER> m_vecMidBossMonster;	// 중간보스 몬스터 종류, 위치, 개체수, 선공 속성
+	std::vector<__SECRETROOM_MONSTER> m_vecBossMonster;		// 최종보스 몬스터 종류, 위치, 개체수, 선공 속성
 #endif // __WORLDSERVER
 };
 
@@ -140,7 +140,7 @@ public:
 	void	SetContTender( CUser* pUser, int nPenya );	// 실제 해당 대륙에 입찰
 	void	SortTenderGuild();							// 입찰금 순으로 정렬
 	void	SetContTenderCancelReturn( CUser* pUser );	// 입찰 취소시 반환
-	void	SetContLineUp( CUser* pUser, vector<DWORD> vecLineUpMember );	// 참가자 구성
+	void	SetContLineUp( CUser* pUser, std::vector<DWORD> vecLineUpMember );	// 참가자 구성
 	void	SecretRoomContOpen();							// 실제 대륙별 비밀의 방 오픈
 	void	SetSecretRoomWorld( int nContNum );				// 각 길드를 비밀의 방 16개중에 지정해 준다.
 	void	SetTeleportSecretRoomCont( CUser* pUser );		// 해당 비밀의 방으로 텔레포트...

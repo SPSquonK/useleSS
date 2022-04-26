@@ -1133,8 +1133,7 @@ void CDPSrvr::OnCreateGuildCloak( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 			CGuildMember*	pMember;
 			CUser*			pUsertmp;
 			CGuild*			pGuild = pUser->GetGuild();
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-			i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;
 				pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -3304,7 +3303,7 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 
 				CGuildMember*	pMember;
 				CUser*			pUsertmp;
-				map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
+				auto i = pGuild->m_mapPMember.begin();
 				for( ; i != pGuild->m_mapPMember.end(); ++i )
 				{
 					pMember		= i->second;
@@ -6568,14 +6567,14 @@ void CDPSrvr::OnGCSelectPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 				// 윈도우 메세지가 아니므로 Settting
 				int nSize;
 				u_long uidPlayer, uidDefender;
-				vector< u_long > vecSelectPlayer;
+				std::vector< u_long > vecSelectPlayer;
 				BOOL bMasterOrKinpin = FALSE;
 				BOOL bDefender = FALSE;
 				BOOL bLevel = FALSE;
 				BOOL bLogOut = FALSE;
 				BOOL bGuildMember = FALSE;
 				BOOL bMastertoDefender = FALSE;
-				vecSelectPlayer.clear();
+
 				ar >> uidDefender;
 				ar >> nSize;
 				if( nSize > g_GuildCombatMng.m_nMaxJoinMember )
@@ -6645,7 +6644,7 @@ void CDPSrvr::OnGCSelectPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 				}
 			}
 
-			vector<CGuildCombat::__JOINPLAYER> vecSelectList;
+			std::vector<CGuildCombat::__JOINPLAYER> vecSelectList;
 			g_GuildCombatMng.GetSelectPlayer( pUser->m_idGuild, vecSelectList );
 			pUser->AddGCSelectPlayerWindow( vecSelectList, g_GuildCombatMng.GetDefender(pUser->m_idGuild), bWindow, g_GuildCombatMng.IsRequestWarGuild(pUser->m_idGuild, FALSE) );
 			if( bWindow == FALSE )
@@ -8706,7 +8705,7 @@ BOOL CDPSrvr::IsInviteAbleGuild( CUser* pUser )
 	// 비밀의 방
 	if( CSecretRoomMng::GetInstance()->m_nState != SRMNG_CLOSE )
 	{
-		map<BYTE, CSecretRoomContinent*>::iterator it = CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.begin();
+		auto it = CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.begin();
 		for( ; it!=CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.end(); it++ )
 		{
 			CSecretRoomContinent* pSRCont = it->second;
@@ -9263,7 +9262,7 @@ void CDPSrvr::OnGC1to1MemberLineUp( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 	if( IsValidObj( pUser ) == FALSE )
 		return;
 
-	vector<u_long> vecMemberId;
+	std::vector<u_long> vecMemberId;
 	u_long nTemp;
 	int nSize;
 
@@ -9794,7 +9793,7 @@ void	CDPSrvr::OnNPCBuff( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 			if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_NPC_BUFF>(pUser) )
 				return;
 
-			vector<NPC_BUFF_SKILL> vecNPCBuff = lpChar->m_vecNPCBuffSkill;
+			std::vector<NPC_BUFF_SKILL> vecNPCBuff = lpChar->m_vecNPCBuffSkill;
 			for( int i=0; i<(int)( vecNPCBuff.size() ); i++ )
 			{
 				if( pUser->GetLevel() >= vecNPCBuff[i].nMinPlayerLV && pUser->GetLevel() <= vecNPCBuff[i].nMaxPlayerLV )
@@ -9971,8 +9970,8 @@ void	CDPSrvr::OnSecretRoomLineUpMember( CAr & ar, DPID dpidCache, DPID dpidUser,
 	if( IsValidObj( pUser ) == FALSE )
 		return;
 
-	set<DWORD> checker;
-	vector<DWORD> vecLineUpMember;
+	std::set<DWORD> checker;
+	std::vector<DWORD> vecLineUpMember;
 	int nSize;
 	ar >> nSize;
 

@@ -35,7 +35,7 @@ enum QUEST_ENUM
 	, QE_QUEST_END_FAIL
 };
 
-static map< string, QUEST_ENUM > g_mapKey;
+static std::map< std::string, QUEST_ENUM > g_mapKey;
 
 // 미리 정의된 키들을 위한 table을 만든다.
 void InitPredefineKey()
@@ -53,7 +53,7 @@ BOOL RunPredefineKey( LPCTSTR szKey, CNpcDialogInfo& info )
 {
 	int& nGlobal = *( info.GetGlobal() );
 
-	map< string, QUEST_ENUM >::iterator it = g_mapKey.find( szKey );
+	const auto it = g_mapKey.find( szKey );
 	if( it == g_mapKey.end() )
 		return FALSE;
 	
@@ -473,10 +473,10 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 	pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
 	
 	// 퀘스트 리스트 send
-	vector<int> vecNewQuest;
-	vector<int> vecNextQuest;
-	vector<int> vecEndQuest;
-	vector<int> vecCurrQuest;
+	std::vector<int> vecNewQuest;
+	std::vector<int> vecNextQuest;
+	std::vector<int> vecEndQuest;
+	std::vector<int> vecCurrQuest;
 	LPCHARACTER lpChar = prj.GetCharacter( pMover->m_szCharacterKey );
 	if( lpChar )
 	{
@@ -634,10 +634,10 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 		pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
 		LPQUEST lpQuestList;
 		// 퀘스트 리스트 send
-		vector<int> vecNewQuest;
-		vector<int> vecNextQuest;
-		vector<int> vecEndQuest;
-		vector<int> vecCurrQuest;
+		std::vector<int> vecNewQuest;
+		std::vector<int> vecNextQuest;
+		std::vector<int> vecEndQuest;
+		std::vector<int> vecCurrQuest;
 		LPCHARACTER lpChar = prj.GetCharacter( pMover->m_szCharacterKey );
 		if( lpChar )
 		{
@@ -803,7 +803,7 @@ void __RemoveGold( DWORD dwIdMover, int nGold )
 		pUser->SetGold( 0 );
 }
 
-void __QuestSort( vector<int> & vecQuestId )
+void __QuestSort(std::vector<int> & vecQuestId )
 {
 	QuestProp* pPrevQuestProp = NULL;
 	QuestProp* pNextQuestProp = NULL;

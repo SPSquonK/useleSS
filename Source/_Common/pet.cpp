@@ -797,7 +797,7 @@ BOOL CTransformerEgg::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
 	if( !ITransformer::IsValidStuff( pUser, stuff ) )
 		return FALSE;
 
-	set<int> setItems;
+	std::set<int> setItems;
 	for( DWORD i = 0; i < stuff.GetSize(); i++ )
 	{
 		TransformStuffComponent* pComponent		= stuff.GetComponent( i );

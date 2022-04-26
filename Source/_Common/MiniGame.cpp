@@ -296,16 +296,16 @@ int CMiniGame::Result_Alphabet( CUser* pUser, OBJID* objItemId, int nCount, int 
 	
 	CString strWord;
 	CItemElem* pItemElem;
-	map<OBJID, int> map_Item;
+	std::map<OBJID, int> map_Item;
 	for( int i=0; i<nCount; ++i )
 	{
 		pItemElem	= (CItemElem*)pUser->m_Inventory.GetAtId( objItemId[i] );
 		if( !IsUsableItem( pItemElem ) )
 			return ALPHABET_FAILED;
 		
-		map<OBJID, int>::iterator it = map_Item.find( objItemId[i] );
+		auto it = map_Item.find( objItemId[i] );
 		if( it == map_Item.end() )
-			it = map_Item.insert( make_pair( objItemId[i], 1 ) ).first;
+			it = map_Item.emplace( objItemId[i], 1 ).first;
 		else
 			it->second++;
 
@@ -553,7 +553,7 @@ int CMiniGame::Result_FiveSystem( CUser* pUser )
 		
 	if( nMaxCount == 6 )	nMaxCount = 0;
 
-	map<int, __FIVESYSTEM>::iterator it = m_mapFiveSystem.find( nMaxCount );
+	const auto it = m_mapFiveSystem.find( nMaxCount );
 	if( it == m_mapFiveSystem.end() )	return 0;
 	
 	__FIVESYSTEM prob = it->second;
@@ -622,7 +622,7 @@ CMiniGame::__KAWIBAWIBO CMiniGame::FindKawibawibo( int nWinCount )
 		if( nKawiBawiBo_MaxWin < nUserWin )
 			nUserWin = nKawiBawiBo_MaxWin;
 		
-		map<int, __KAWIBAWIBO>::iterator it = m_mapKawiBawiBo.find( nUserWin );
+		const auto it = m_mapKawiBawiBo.find( nUserWin );
 		if( it != m_mapKawiBawiBo.end() )
 			Kawibawibo = it->second;
 	}

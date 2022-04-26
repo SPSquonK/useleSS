@@ -161,7 +161,7 @@ CRangdaController::CRangdaController()
 
 CRangdaController::~CRangdaController()
 {
-	for( VR::iterator i = m_vRangda.begin(); i != m_vRangda.end(); ++i )
+	for( auto i = m_vRangda.begin(); i != m_vRangda.end(); ++i )
 		safe_delete( *i );
 	m_vRangda.clear();
 }

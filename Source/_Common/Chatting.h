@@ -47,8 +47,7 @@ public:
 #endif	// __VM_0820
 };
 
-using	namespace	std;
-typedef	map< u_long, CChatting*>	C2CharttingPtr;
+typedef	std::map< u_long, CChatting*>	C2CharttingPtr;
 
 class CChattingMng
 {

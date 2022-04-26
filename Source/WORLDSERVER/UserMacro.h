@@ -11,8 +11,8 @@
 #define	USERPTR							( _it->second )
 
 #define FOR_VISIBILITYRANGE( pCtrl )	\
-										map< DWORD, CUser* >::iterator _it  = pCtrl->m_2pc.begin(); \
-										map< DWORD, CUser* >::iterator _end = pCtrl->m_2pc.end(); \
+										auto _it  = pCtrl->m_2pc.begin(); \
+										auto _end = pCtrl->m_2pc.end(); \
 										while( _it != _end )	\
 										{
 

@@ -142,7 +142,7 @@ BOOL CUltimateWeapon::Load_UltimateWeapon()
 				infoMakeGem.dwUniqueProb = s.GetNumber();
 				infoMakeGem.nUniqueNum = s.GetNumber();
 
-				m_mapMakeGemProb.insert( map<int, __MAKEGEMPROB>::value_type( nEnchant, infoMakeGem ) );
+				m_mapMakeGemProb.emplace(nEnchant, infoMakeGem);
 				s.GetToken();
 			}
 		}
@@ -156,7 +156,7 @@ BOOL CUltimateWeapon::Load_UltimateWeapon()
 			{
 				nNum = atoi( s.Token );
 				nProb = s.GetNumber();
-				m_mapUltimateProb.insert( map<int, int>::value_type( nNum, nProb ) );
+				m_mapUltimateProb.emplace( nNum, nProb);
 				s.GetToken();
 			}
 		}
@@ -217,7 +217,7 @@ int CUltimateWeapon::MakeGem( CUser* pUser, OBJID objItemId, int & nNum )
 		return ULTIMATE_CANCEL;
 
 	int nOpt = pItemElem->GetAbilityOption();
-	map<int, __MAKEGEMPROB>::iterator it = m_mapMakeGemProb.find( nOpt );
+	const auto it = m_mapMakeGemProb.find( nOpt );
 	
 	if( it == m_mapMakeGemProb.end() )
 		return ULTIMATE_CANCEL;
@@ -391,25 +391,16 @@ int CUltimateWeapon::RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem 
 // ºû³ª´Â ¿À¸®Ä®Äñ »ý¼º - ¿À¸®Ä®Äñ 5°³, ¹®½ºÅæ 5°³ ÇÕ¼º
 int CUltimateWeapon::MakeItem( CUser* pUser, OBJID* objItemId )
 {
-	map<OBJID, int> mapObjId1;
-	map<OBJID, int> mapObjId2;
+	std::map<OBJID, int> mapObjId1;
+	std::map<OBJID, int> mapObjId2;
 	for( int i=0; i<5; i++ )
 	{
-		auto it = mapObjId1.find(objItemId[i]);
-		if( it != mapObjId1.end() )
-			++(it->second);
-		else
-			mapObjId1.insert(map<OBJID, int>::value_type( objItemId[i], 1 ));
-		
-		it = mapObjId2.find(objItemId[i+5]);
-		if( it != mapObjId2.end() )
-			++(it->second);
-		else
-			mapObjId2.insert(map<OBJID, int>::value_type( objItemId[i+5], 1 ));
+		mapObjId1[objItemId[i]] += 1;
+		mapObjId2[objItemId[i+5]] += 1;
 	}
 
 	int nItemCount = 0;
-	for( map<OBJID, int>::iterator it = mapObjId1.begin() ; it != mapObjId1.end() ; ++it )
+	for( auto it = mapObjId1.begin() ; it != mapObjId1.end() ; ++it )
 	{
 		CItemElem* pItemElem;
 		pItemElem = pUser->m_Inventory.GetAtId( it->first );
@@ -428,7 +419,7 @@ int CUltimateWeapon::MakeItem( CUser* pUser, OBJID* objItemId )
 		return ULTIMATE_CANCEL;
 
 	nItemCount = 0;
-	for( map<OBJID, int>::iterator it = mapObjId2.begin() ; it != mapObjId2.end() ; ++it )
+	for( auto it = mapObjId2.begin() ; it != mapObjId2.end() ; ++it )
 	{
 		CItemElem* pItemElem;
 		pItemElem = pUser->m_Inventory.GetAtId( it->first );
@@ -461,13 +452,13 @@ int CUltimateWeapon::MakeItem( CUser* pUser, OBJID* objItemId )
 	aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
 	
 	CItemElem* pItemElem;
-	for( map<OBJID, int>::iterator it = mapObjId1.begin() ; it != mapObjId1.end() ; ++it )
+	for( auto it = mapObjId1.begin() ; it != mapObjId1.end() ; ++it )
 	{
 		pItemElem = pUser->m_Inventory.GetAtId( it->first );
 		g_DPSrvr.OnLogItem( aLogItem, pItemElem, it->second );	
 		pUser->RemoveItem( (BYTE)( it->first ), it->second );
 	}
-	for( map<OBJID, int>::iterator it = mapObjId2.begin() ; it != mapObjId2.end() ; ++it )
+	for( auto it = mapObjId2.begin() ; it != mapObjId2.end() ; ++it )
 	{
 		pItemElem = pUser->m_Inventory.GetAtId( it->first );
 		g_DPSrvr.OnLogItem( aLogItem, pItemElem, it->second );	
@@ -670,7 +661,7 @@ int CUltimateWeapon::EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItemGe
 	pUser->RemoveItem( (BYTE)( objItemGem ), 1 );
 
 	int nRandom = xRandom( 1000000 );
-	map<int, int>::iterator it = m_mapUltimateProb.find( pAbilityOpt+1 );
+	const auto it = m_mapUltimateProb.find( pAbilityOpt+1 );
 	if( it == m_mapUltimateProb.end() )
 		return ULTIMATE_CANCEL;
 	
@@ -746,7 +737,7 @@ BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, C
 	pUser->RemoveItem( (BYTE)( pItemProtScr->m_dwObjId ), 1 );
 
 	// Á¦·Ã È®·ü
-	map<int, int>::iterator it = m_mapUltimateProb.find( pItemMain->GetAbilityOption() + 1 );
+	const auto it = m_mapUltimateProb.find( pItemMain->GetAbilityOption() + 1 );
 	if( it == m_mapUltimateProb.end() )
 		return 0;
 	

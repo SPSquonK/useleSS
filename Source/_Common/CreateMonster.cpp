@@ -48,7 +48,7 @@ void CCreateMonster::LoadScript()
 	{
 		DWORD dwItemId = static_cast<DWORD>( CScript::GetDefineNum( lua.GetFieldToString( -1, "strItemId" ) ) );
 		CREATE_MONSTER_PROP* pCreateMonsterProp = new CREATE_MONSTER_PROP;
-		m_mapCreateMonsterProp.insert( make_pair( dwItemId, pCreateMonsterProp ) );
+		m_mapCreateMonsterProp.emplace( dwItemId, pCreateMonsterProp );
 		pCreateMonsterProp->dwKeepTime = static_cast<DWORD>( lua.GetFieldToNumber( -1, "dwKeepTime" ) );
 
 		//lua_getfield( lua.GetLuaState(), -1, "tMonster" );
@@ -58,7 +58,7 @@ void CCreateMonster::LoadScript()
 		{
 			DWORD dwMonsterId = static_cast<DWORD>( CScript::GetDefineNum( lua.GetFieldToString( -1, "strMonsterId" ) ) );
 			int nProbability = static_cast<int>( lua.GetFieldToNumber( -1, "nProbability" ) );
-			pCreateMonsterProp->mapMonster.insert( make_pair( dwMonsterId, nProbability ) );
+			pCreateMonsterProp->mapMonster.emplace(dwMonsterId, nProbability);
 			lua.Pop( 1 );
 		}
 		lua.Pop( 2 );
@@ -212,7 +212,7 @@ void CCreateMonster::CreateMonster( CUser* pUser, DWORD dwObjId, D3DXVECTOR3 vPo
 		createMonsterInfo.chState = 'N';
 		createMonsterInfo.dwOwnerId = pUser->m_idPlayer;
 		createMonsterInfo.dwEndTick = pCreateMonsterProp->dwKeepTime + GetTickCount();
-		m_mapCreateMonsterInfo.insert( make_pair( ((CMover*)pObj)->GetId(), createMonsterInfo ) );
+		m_mapCreateMonsterInfo.emplace(((CMover*)pObj)->GetId(), createMonsterInfo);
 	}
 }
 

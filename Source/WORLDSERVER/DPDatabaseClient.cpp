@@ -194,13 +194,13 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID) + sizeof(DPID), dwMsgSize - ( sizeof(DPID) + sizeof(DPID) ) );
 	GETTYPE( ar );
 
-	static map<DWORD, CString> mapstrProfile;
-	map<DWORD, CString>::iterator it = mapstrProfile.find( dw );
+	static std::map<DWORD, CString> mapstrProfile;
+	auto it = mapstrProfile.find( dw );
 	if( it == mapstrProfile.end() )
 	{
 		CString strTemp;
 		strTemp.Format("CDPDatabaseClient::UserMessageHandler(0x%08x)", dw );
-		it = mapstrProfile.insert( make_pair( dw, strTemp ) ).first;
+		it = mapstrProfile.emplace( dw, strTemp ).first;
 	}
 	_PROFILE( it->second );
 
@@ -2600,7 +2600,7 @@ void CDPDatabaseClient::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID )
 				g_DPSrvr.UpdateGuildBank( pGuild, GUILD_QUERY_REMOVE_GUILD_BANK );
 				CUser* pUsertmp;
 				CGuildMember* pMember;
-				for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+				for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 				{
 					pMember		= i->second;
 					pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -2629,7 +2629,7 @@ void CDPDatabaseClient::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID )
 #endif	// _DEBUG
 					CUser* pUsertmp;
 					CGuildMember* pMember;
-					for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+					for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 					{
 						pMember		= i->second;
 						pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -2655,8 +2655,8 @@ void CDPDatabaseClient::OnEventGeneric( CAr & ar, DPID, DPID )
 	DWORD dwFlag;
 	CEventGeneric::GetInstance()->Serialize( ar );
 	ar >> dwFlag;
-	list<PEVENT_GENERIC>* pList	= CEventGeneric::GetInstance()->GetEventList();
-	for( list<PEVENT_GENERIC>::iterator i = pList->begin(); i != pList->end(); ++i )
+	std::list<PEVENT_GENERIC>* pList	= CEventGeneric::GetInstance()->GetEventList();
+	for( auto i = pList->begin(); i != pList->end(); ++i )
 	{
 		PEVENT_GENERIC pEvent	= *i;
 
@@ -2680,8 +2680,8 @@ void CDPDatabaseClient::OnEventFlag( CAr & ar, DPID, DPID )
 	sprintf( lpOutputString, "OnEventFlag: dwFlag=0x%08x", dwFlag );
 	OutputDebugString( lpOutputString );
 
-	list<PEVENT_GENERIC>* pList	= CEventGeneric::GetInstance()->GetEventList();
-	for( list<PEVENT_GENERIC>::iterator i = pList->begin(); i != pList->end(); ++i )
+	auto * pList	= CEventGeneric::GetInstance()->GetEventList();
+	for( auto i = pList->begin(); i != pList->end(); ++i )
 	{
 		PEVENT_GENERIC pEvent	= *i;
 		char lpOutputString[100]	= { 0, };
@@ -2846,7 +2846,7 @@ void CDPDatabaseClient::SendGC1to1Tender( char cGU, u_long uGuildId, int nPenya,
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendGC1to1LineUp( u_long uGuildId, vector<u_long>& vecMemberId )
+void CDPDatabaseClient::SendGC1to1LineUp( u_long uGuildId, std::vector<u_long>& vecMemberId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_LINEUPTODB, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << uGuildId;
@@ -3418,7 +3418,7 @@ void CDPDatabaseClient::SendSecretRoomClosed()
 void CDPDatabaseClient::OnSecretRoomInfoClear( CAr & ar, DPID, DPID )
 {
 	CSecretRoomMng* pSRMng = CSecretRoomMng::GetInstance();
-	map<BYTE, CSecretRoomContinent*>::iterator it = pSRMng->m_mapSecretRoomContinent.begin();
+	auto it = pSRMng->m_mapSecretRoomContinent.begin();
 	for( ; it!=pSRMng->m_mapSecretRoomContinent.end(); it++ )
 	{
    		CSecretRoomContinent* pSRCont = it->second;
@@ -3429,7 +3429,7 @@ void CDPDatabaseClient::OnSecretRoomInfoClear( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::OnSecretRoomTenderInfo( CAr & ar, DPID, DPID )
 {
 	BYTE nContinent; DWORD dwGuildId, dwMemberId; int nPenya, nSize;
-	vector<DWORD> vecMemberId;
+	std::vector<DWORD> vecMemberId;
 	ar >> nContinent >> dwGuildId >> nPenya;
 	ar >> nSize;
 	for( int i=0; i<nSize; i++ )
@@ -3442,7 +3442,7 @@ void CDPDatabaseClient::OnSecretRoomTenderInfo( CAr & ar, DPID, DPID )
 		return;
 
 	CSecretRoomMng* pSRMng = CSecretRoomMng::GetInstance();
-	map<BYTE, CSecretRoomContinent*>::iterator it = pSRMng->m_mapSecretRoomContinent.find( nContinent );
+	auto it = pSRMng->m_mapSecretRoomContinent.find( nContinent );
 	if( it!=pSRMng->m_mapSecretRoomContinent.end() )
 	{
 		CSecretRoomContinent* pSRCont = it->second;
@@ -3470,7 +3470,7 @@ void CDPDatabaseClient::OnRainbowRaceInfo( CAr & ar, DPID, DPID )
 	}
 
 	// 이전 대회 랭킹 정보를 받아온다.
-	vector<DWORD> vec_dwPrevRanking;
+	std::vector<DWORD> vec_dwPrevRanking;
 	ar >> nSize;
 	for( int i=0; i<nSize; i++ )
 	{

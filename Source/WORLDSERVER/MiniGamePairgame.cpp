@@ -67,9 +67,9 @@ struct PAIR
 	PAIR( char c ) : card(c), nSize(2) {}
 };
 
-string CMiniGamePairgame::MakeGame()
+std::string CMiniGamePairgame::MakeGame()
 {
-	vector<PAIR> vecTemp;
+	std::vector<PAIR> vecTemp;
 	for( char c=1; c<10; c++ )			// 9종류 카드 생성
 		vecTemp.push_back( PAIR(c) );
 
@@ -80,7 +80,7 @@ string CMiniGamePairgame::MakeGame()
 #endif	// __VS2003
 	for( ; vecTemp.size() > 0; )
 	{
-		vector<PAIR>::iterator it = vecTemp.begin();
+		auto it = vecTemp.begin();
 		int nNum = xRandom( vecTemp.size() );
 		it += nNum;
 		m_strCardStream += (*it).card;

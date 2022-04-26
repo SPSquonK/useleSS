@@ -54,7 +54,7 @@ void CItemUpgrade::LoadScript()
 	lua.PushNil();
 	while( lua.TableLoop( -2 ) )
 	{
-		m_mapSuitProb.insert( make_pair( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) ) );
+		m_mapSuitProb.emplace( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) );
 		lua.Pop( 1 );
 	}
 	lua.Pop(0);
@@ -64,7 +64,7 @@ void CItemUpgrade::LoadScript()
 	lua.PushNil();
 	while( lua.TableLoop( -2 ) )
 	{
-		m_mapWeaponProb.insert( make_pair( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) ) );
+		m_mapWeaponProb.emplace( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) );
 		lua.Pop( 1 );
 	}
 	lua.Pop(0);
@@ -74,7 +74,7 @@ void CItemUpgrade::LoadScript()
 	lua.PushNil();
 	while( lua.TableLoop( -2 ) )
 	{
-		m_mapGeneralEnchant.insert( make_pair( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) ) );
+		m_mapGeneralEnchant.emplace( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) );
 		lua.Pop( 1 );
 	}
 	lua.Pop(0);
@@ -89,7 +89,7 @@ void CItemUpgrade::LoadScript()
 		attrEnchant.nAddDamageRate = static_cast<int>(lua.GetFieldToNumber( -1, "nDamageRate" ));
 		attrEnchant.nDefenseRate = static_cast<int>(lua.GetFieldToNumber( -1, "nDefenseRate" ));
 		attrEnchant.nAddAtkDmgRate = static_cast<int>(lua.GetFieldToNumber( -1, "nAddAtkDmgRate" ));
-		m_mapAttributeEnchant.insert( make_pair( static_cast<int>(lua.ToNumber(-2)), attrEnchant ) );  
+		m_mapAttributeEnchant.emplace( static_cast<int>(lua.ToNumber(-2)), attrEnchant );  
 		lua.Pop( 1 );
   	}
 	lua.Pop(0);
@@ -228,7 +228,7 @@ int CItemUpgrade::GetSizeProb( CItemElem* pItemElem )
 	if( pItemElem->IsPierceAble( IK3_SOCKETCARD ) )
 	{
 		//return m_vecSuitProb.size() >= pItemElem->GetPiercingSize() ? m_vecSuitProb[pItemElem->GetPiercingSize()] : 0;
-		map<int, int>::iterator it = m_mapSuitProb.find( pItemElem->GetPiercingSize()+1 );
+		const auto it = m_mapSuitProb.find( pItemElem->GetPiercingSize()+1 );
 		if( it != m_mapSuitProb.end() )
 			return it->second;
 	}
@@ -237,7 +237,7 @@ int CItemUpgrade::GetSizeProb( CItemElem* pItemElem )
 	if( pItemElem->IsPierceAble( IK3_SOCKETCARD2 ) )
 	{
 		//return m_vecWeaponProb.size() >= pItemElem->GetPiercingSize() ? m_vecWeaponProb[pItemElem->GetPiercingSize()] : 0;
-		map<int, int>::iterator it = m_mapWeaponProb.find( pItemElem->GetPiercingSize()+1 );
+		const auto it = m_mapWeaponProb.find( pItemElem->GetPiercingSize()+1 );
 		if( it != m_mapWeaponProb.end() )
 			return it->second;
 	}
@@ -1078,7 +1078,7 @@ int		CItemUpgrade::GetGeneralEnchantProb( int nAbilityOption )
 {
 	int nProb = 0;
 	
-	map<int, int>::iterator it = m_mapGeneralEnchant.find( nAbilityOption + 1 );
+	const auto it = m_mapGeneralEnchant.find( nAbilityOption + 1 );
 	if( it != m_mapGeneralEnchant.end() )
 		nProb = it->second;
 
@@ -1300,7 +1300,7 @@ void CItemUpgrade::ChangeAttribute( CUser* pUser, OBJID dwTargetItem, OBJID dwUs
 
 int CItemUpgrade::GetAttributeEnchantProb( int nAbilityOption )
 {
-	map<int, __ATTRIBUTE_ENCHANT>::iterator it = m_mapAttributeEnchant.find( nAbilityOption + 1 );
+	const auto it = m_mapAttributeEnchant.find( nAbilityOption + 1 );
 	if( it != m_mapAttributeEnchant.end() )
 		return it->second.nProb;
 
@@ -1312,7 +1312,7 @@ int CItemUpgrade::GetAttributeDamageFactor( int nAbilityOption )
 	if( nAbilityOption > GetMaxAttributeEnchantSize() )
 		nAbilityOption = GetMaxAttributeEnchantSize();
 
-	map<int, __ATTRIBUTE_ENCHANT>::iterator it = m_mapAttributeEnchant.find( nAbilityOption );
+	const auto it = m_mapAttributeEnchant.find( nAbilityOption );
 	if( it != m_mapAttributeEnchant.end() )
 		return it->second.nAddDamageRate;
 
@@ -1324,7 +1324,7 @@ int CItemUpgrade::GetAttributeDefenseFactor( int nAbilityOption )
 	if( nAbilityOption > GetMaxAttributeEnchantSize() )
 		nAbilityOption = GetMaxAttributeEnchantSize();
 
-	map<int, __ATTRIBUTE_ENCHANT>::iterator it = m_mapAttributeEnchant.find( nAbilityOption );
+	const auto it = m_mapAttributeEnchant.find( nAbilityOption );
 	if( it != m_mapAttributeEnchant.end() )
 		return it->second.nDefenseRate;
 
@@ -1336,7 +1336,7 @@ int CItemUpgrade::GetAttributeAddAtkDmgFactor( int nAbilityOption )
 	if( nAbilityOption > GetMaxAttributeEnchantSize() )
 		nAbilityOption = GetMaxAttributeEnchantSize();
 
-	map<int, __ATTRIBUTE_ENCHANT>::iterator it = m_mapAttributeEnchant.find( nAbilityOption );
+	const auto it = m_mapAttributeEnchant.find( nAbilityOption );
 	if( it != m_mapAttributeEnchant.end() )
 		return it->second.nAddAtkDmgRate;
 

@@ -295,7 +295,7 @@ D3DXVECTOR3 CQuiz::GetTeleportPos( int nZone )
 void CQuiz::Process()
 {
 	DWORD dwTick = GetTickCount();
-	vector<QUIZLIST>::iterator it = m_vecQuizList.begin();
+	auto it = m_vecQuizList.begin();
 	
 	switch( m_nState )
 	{

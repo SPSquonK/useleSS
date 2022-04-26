@@ -482,7 +482,7 @@ void CRainbowRaceMng::SetApplication( DWORD dwPlayerId )
 	if( !g_eLocal.GetState( EVE_RAINBOWRACE ) )
 		return;
 	
-	m_mapRainbowRace.insert( make_pair( dwPlayerId, new CRainbowRace ) );
+	m_mapRainbowRace.emplace( dwPlayerId, new CRainbowRace );
 }
 
 BOOL CRainbowRaceMng::SetDropOut( DWORD dwPlayerId )
@@ -531,7 +531,7 @@ void CRainbowRaceMng::SetNPC()
 	while( m_Lua.TableLoop( -2 ) )
 	{
 		DWORD dwNPCID = CScript::GetDefineNum( m_Lua.GetFieldToString( -1, "strNPCId" ) );
-		string strCharKey = m_Lua.GetFieldToString( -1, "strCharKey" );
+		std::string strCharKey = m_Lua.GetFieldToString( -1, "strCharKey" );
 		float x = static_cast<float>( m_Lua.GetFieldToNumber( -1, "xPos" ) );
 		float y = static_cast<float>( m_Lua.GetFieldToNumber( -1, "yPos" ) );
 		float z = static_cast<float>( m_Lua.GetFieldToNumber( -1, "zPos" ) );
@@ -668,7 +668,7 @@ void CRainbowRaceMng::SetPrize()
 
 void CRainbowRaceMng::SetMiniGamePrize( DWORD dwTick )
 {
-	for( vector<MINIGMAME_PRIZE_LIST>::iterator it=m_vecMiniGamePrizeList.begin(); it!=m_vecMiniGamePrizeList.end(); )
+	for( auto it=m_vecMiniGamePrizeList.begin(); it!=m_vecMiniGamePrizeList.end(); )
 	{
 		if( (dwTick != 0) && ((*it).dwCompletedTick + SEC(15) > dwTick) )
 		{
@@ -697,7 +697,7 @@ void CRainbowRaceMng::SetMiniGamePrize( DWORD dwTick )
 	}
 }
 
-void CRainbowRaceMng::SetPrevRanking( vector<DWORD> & vecPrevRanking )
+void CRainbowRaceMng::SetPrevRanking(std::vector<DWORD> & vecPrevRanking )
 {
 	if( !g_eLocal.GetState( EVE_RAINBOWRACE ) )
 		return;
@@ -706,9 +706,9 @@ void CRainbowRaceMng::SetPrevRanking( vector<DWORD> & vecPrevRanking )
 	m_vecPrevRanking.assign( vecPrevRanking.begin(), vecPrevRanking.end() );
 }
 
-vector<DWORD>	CRainbowRaceMng::GetPrevRanking()
+std::vector<DWORD>	CRainbowRaceMng::GetPrevRanking()
 {
-	vector<DWORD> vecPrevRanking;
+	std::vector<DWORD> vecPrevRanking;
 	for( DWORD i=0; (i<5 && i<m_vecPrevRanking.size()); i++ )		// 상위 5위까지만...
 		vecPrevRanking.push_back( m_vecPrevRanking[i] );
 

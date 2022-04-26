@@ -129,11 +129,11 @@ private:
 		int		nMinLevel;
 		int		nMaxLevel;
 		DWORD	dwCoolTime;
-		map<int, D3DXVECTOR3> mapTeleportPos;
-		vector<MONSTER> vecMonster;
-		map<int, int>	mapObjCount;
+		std::map<int, D3DXVECTOR3> mapTeleportPos;
+		std::vector<MONSTER> vecMonster;
+		std::map<int, int>	mapObjCount;
 	};
-	typedef map<DWORD, DUNGEON_DATA> MAP_IDDATA;
+	typedef std::map<DWORD, DUNGEON_DATA> MAP_IDDATA;
 	MAP_IDDATA m_mapDungeonData;
 
 	int			GetState( DWORD dwWorldId, DWORD dwDungeonId );

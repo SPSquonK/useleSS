@@ -117,7 +117,7 @@ void CCtrl::AddItToGlobalId()
 	{
 		CCommonCtrl* pCommonCtrl = (CCommonCtrl*)this;
 		if( pCommonCtrl->m_CtrlElem.m_strCtrlKey[0] != '\0' )
-			g_MapStrToObjId.insert( map< string, DWORD >::value_type(pCommonCtrl->m_CtrlElem.m_strCtrlKey, pCommonCtrl->GetId() ) );
+			g_MapStrToObjId.emplace(pCommonCtrl->m_CtrlElem.m_strCtrlKey, pCommonCtrl->GetId());
 	}
 #endif // __WORLDSERVER
 }
@@ -165,10 +165,11 @@ void CCtrl::RemoveItFromView( BOOL bRemoveall )
 	if( !GetWorld() )	
 		return;
 
+	auto it = m_2pc.begin();
+
 	CUser* pUser;
 	if( GetType() == OT_MOVER && ( (CMover*)this )->IsPlayer() )
 	{
-		map<DWORD, CUser* >::iterator it = m_2pc.begin();
 		while( it != m_2pc.end() )
 		{
 			pUser = it->second;
@@ -176,13 +177,9 @@ void CCtrl::RemoveItFromView( BOOL bRemoveall )
 				pUser->AddRemoveObj( GetId() );
 			++it;
 		}
-
-		if( bRemoveall )
-			m_2pc.clear();
 	}
 	else
 	{
-		map<DWORD, CUser* >::iterator it = m_2pc.begin();
 		while( it != m_2pc.end() )
 		{
 			pUser = it->second;
@@ -191,10 +188,10 @@ void CCtrl::RemoveItFromView( BOOL bRemoveall )
 			++it;
 		}
 
-		if( bRemoveall )
-			m_2pc.clear();
 	}
 
+	if (bRemoveall)
+		m_2pc.clear();
 }
 
 BOOL CCtrl::IsNearPC( CUser* pUser )
@@ -204,7 +201,7 @@ BOOL CCtrl::IsNearPC( CUser* pUser )
 
 BOOL CCtrl::IsNearPC( OBJID objid )
 {
-	map<DWORD, CUser* >::iterator it = m_2pc.find( objid );
+	const auto it = m_2pc.find( objid );
 	return ( it != m_2pc.end() ) ;
 }
 

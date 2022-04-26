@@ -3976,7 +3976,7 @@ BOOL TextCmd_SecretRoomClose(CScanner & s, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	if( CSecretRoomMng::GetInstance()->m_nState == SRMNG_WAR )
 	{
-		map<BYTE, CSecretRoomContinent*>::iterator it = CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.begin();
+		auto it = CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.begin();
 		for( ; it!=CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.end(); it++ )
 		{
 			CSecretRoomContinent* pSRCont = it->second;

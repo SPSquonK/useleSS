@@ -15,8 +15,6 @@
 #include <vector>
 #include <map>
 
-using namespace std;
-
 
 #define MAX_CYLINDER    74
 #define MAX_ANI         100

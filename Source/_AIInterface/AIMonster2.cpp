@@ -21,11 +21,11 @@ extern	CUserMng		g_UserMng;
 // AI script related
 /////////////////////////////////////////////////////////////////////////
 
-static map< string, int > g_stringTable;
+static std::map< std::string, int > g_stringTable;
 
 int GetAIConst( const char* szString )
 {
-	map< string, int >::iterator it = g_stringTable.find( szString );
+	const auto it = g_stringTable.find( szString );
 	if( g_stringTable.end() != it )
 		return it->second;
 	ASSERT( 0 );
@@ -70,7 +70,7 @@ BOOL ReadAIScriptHelper( FILE* fp )
 {
 	READ_TYPE type;
 	char szTokens[3][64];
-	string strState;
+	std::string strState;
 	int nAI, nState;
 	int nBlock = 0;
 	CFSMstate* pState = NULL;

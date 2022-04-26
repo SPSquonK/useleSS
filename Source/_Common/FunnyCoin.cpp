@@ -110,7 +110,7 @@ void CFunnyCoin::OnFunnyCoinAckUse( CAr & ar )	// 퍼니코인 사용에 대한 응답을 Tr
 
 BOOL CFunnyCoin::IsAckWaitPlayer( DWORD dwPlayerId, BOOL bRemove )	// 퍼니코인을 사용한 후 DB응답을 기다리고 있는 플레이어 인가?
 {																	// bRemove가 TRUE이면 해당 사용자를 삭제한다.
-	for( vector<DWORD>::iterator it=m_vecAckWaitPlayer.begin(); it!=m_vecAckWaitPlayer.end(); it++ )
+	for( auto it=m_vecAckWaitPlayer.begin(); it!=m_vecAckWaitPlayer.end(); it++ )
 	{
 		if( (*it) == dwPlayerId )
 		{

@@ -29,7 +29,7 @@ private:
 	BOOL	IsUsable( CUser* pUser );		// 퍼니코인을 상용할 수 있는 Player인가?
 	BOOL	IsAckWaitPlayer( DWORD dwPlayerId, BOOL bRemove = FALSE );	// 퍼니코인을 사용한 후 DB응답을 기다리고 있는 플레이어 인가?
 																		// bRemove가 TRUE이면 해당 사용자를 리스트에서 제거한다.
-	vector<DWORD> m_vecAckWaitPlayer;				// 퍼니코인 사용 후 DB응답을 기다리는 플레이어 목록
+	std::vector<DWORD> m_vecAckWaitPlayer;				// 퍼니코인 사용 후 DB응답을 기다리는 플레이어 목록
 };
 #endif // __WORLDSERVER
 

@@ -260,7 +260,7 @@ BOOL CExchange::CheckCondition( CUser* pUser, int nMMIId, int nListNum )
 		return FALSE;
 	
 	BOOL bReturn = TRUE;
-	vector<__ITEM> vecItem = pSetList->vecSet[nListNum].vecCondItem;
+	std::vector<__ITEM> vecItem = pSetList->vecSet[nListNum].vecCondItem;
 	for( int i=0; i<(int)( vecItem.size() ); i++ )
 	{
 		int nItemCount = 0;
@@ -281,7 +281,7 @@ BOOL CExchange::CheckCondition( CUser* pUser, int nMMIId, int nListNum )
 			bReturn = FALSE;
 		}
 	}
-	vector<__POINT> vecPoint = pSetList->vecSet[nListNum].vecCondPoint;
+	std::vector<__POINT> vecPoint = pSetList->vecSet[nListNum].vecCondPoint;
 	int nPoint = 0;
 	for( int i = 0; i < (int)( vecPoint.size() ); ++i )
 	{
@@ -307,23 +307,21 @@ BOOL CExchange::CheckCondition( CUser* pUser, int nMMIId, int nListNum )
 }
 
 // 확률에 따라 정해진 갯수 만큼 지급될 아이템 목록을 만든다. vector<__ITEM>
-vector<CExchange::__ITEM>	CExchange::GetPayItemList( int nMMIId, int nListNum )
+std::vector<CExchange::__ITEM>	CExchange::GetPayItemList( int nMMIId, int nListNum )
 {
-	vector<__ITEM> vecList;
 	PSETLIST pSetList = FindExchange( nMMIId );
-	if( !pSetList )
-		return vecList;
+	if( !pSetList ) return {};
 
-	if( nListNum > (int)( pSetList->vecSet.size()-1 ) )
-		return vecList;
+	if( nListNum > (int)( pSetList->vecSet.size()-1 ) ) return {};
 
-	vector<__ITEM> payItem = pSetList->vecSet[nListNum].vecPayItem;
+	std::vector<__ITEM> payItem = pSetList->vecSet[nListNum].vecPayItem;
 	int nProb = 1000000;
 	int nRandom = xRandom( 1000000 );
 	int nSumProb = 0;
 	int nCount = 0;
 
-	for( vector<__ITEM>::iterator i = payItem.begin(); i!=payItem.end(); )
+	std::vector<__ITEM> vecList;
+	for( auto i = payItem.begin(); i!=payItem.end(); )
 	{
 		nSumProb += i->nPayProb;
 		if( nRandom < nSumProb )
@@ -347,36 +345,28 @@ vector<CExchange::__ITEM>	CExchange::GetPayItemList( int nMMIId, int nListNum )
 }
 
 // 삭제될 아이템 목록을 얻어온다. map<OBJID, int>
-vector<CExchange::__ITEM> CExchange::GetRemoveItemList( int nMMIId, int nListNum )
+std::vector<CExchange::__ITEM> CExchange::GetRemoveItemList( int nMMIId, int nListNum )
 {
-	vector<__ITEM> vecList;
 	PSETLIST pSetList = FindExchange( nMMIId );
-	if( !pSetList )
-		return vecList;
+	if( !pSetList ) return {};
 	
-	if( nListNum > (int)( pSetList->vecSet.size()-1 ) )
-		return vecList;
+	if( nListNum > (int)( pSetList->vecSet.size()-1 ) ) return {};
 
-	vecList = pSetList->vecSet[nListNum].vecRemoveItem;
-	return vecList;
+	return pSetList->vecSet[nListNum].vecRemoveItem;
 }
 
-vector<CExchange::__POINT> CExchange::GetRemovePointList( int nMMIId, int nListNum )
+std::vector<CExchange::__POINT> CExchange::GetRemovePointList( int nMMIId, int nListNum )
 {
-	vector<__POINT> vecList;
 	PSETLIST pSetList = FindExchange( nMMIId );
-	if( !pSetList )
-		return vecList;
+	if( !pSetList ) return {};
 
-	if( nListNum > (int)( pSetList->vecSet.size()-1 ) )
-		return vecList;
+	if( nListNum > (int)( pSetList->vecSet.size()-1 ) ) return {};
 
-	vecList = pSetList->vecSet[nListNum].vecRemovePoint;
-	return vecList;
+	return pSetList->vecSet[nListNum].vecRemovePoint;
 }
 
 // 인벤토리에 여유가 있는지 확인
-BOOL CExchange::IsFull( CUser* pUser, vector<__ITEM> vecRemoveItem, vector<__ITEM> vecPayItem )
+BOOL CExchange::IsFull( CUser* pUser, std::vector<__ITEM> vecRemoveItem, std::vector<__ITEM> vecPayItem )
 {
 	int nEmptyCount = pUser->m_Inventory.GetEmptyCount();
 	
@@ -424,9 +414,9 @@ int CExchange::ResultExchange( CUser* pUser, int nMMIId, int nListNum )
 	if( !CheckCondition( pUser, nMMIId, nListNum ) )
 		return EXCHANGE_CONDITION_FAILED;
 	
-	vector<__ITEM> vecRemoveItem = GetRemoveItemList( nMMIId, nListNum );
-	vector<__POINT> vecRemovePoint = GetRemovePointList( nMMIId, nListNum );
-	vector<__ITEM> vecPayItem = GetPayItemList( nMMIId, nListNum );
+	std::vector<__ITEM> vecRemoveItem = GetRemoveItemList( nMMIId, nListNum );
+	std::vector<__POINT> vecRemovePoint = GetRemovePointList( nMMIId, nListNum );
+	std::vector<__ITEM> vecPayItem = GetPayItemList( nMMIId, nListNum );
 	
 	// 인벤토리 공간 검사
 	if( IsFull( pUser, vecRemoveItem, vecPayItem ) )

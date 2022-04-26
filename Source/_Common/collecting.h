@@ -22,8 +22,8 @@ public:
 	int		GetMaxCollectorLevel( void )	{	return m_anEnchant.size();	}
 
 #ifdef __WORLDSERVER
-	vector<int>*	GetEnchantProbabilityPtr( void )	{	return &m_anEnchant;		}
-	vector<COLLECTING_ITEM>*	GetItemPtr( void )	{	return &m_aItem;	}
+	std::vector<int>*	GetEnchantProbabilityPtr( void )	{	return &m_anEnchant;		}
+	std::vector<COLLECTING_ITEM>*	GetItemPtr( void )	{	return &m_aItem;	}
 #endif	// __WORLDSERVER
 
 private:

@@ -81,7 +81,7 @@ void CMiniGameArithmetic::InitPrimeNumber()
 
 int	CMiniGameArithmetic::GetDivisor( int nDivided )
 {
-	vector<int> vDivisors;
+	std::vector<int> vDivisors;
 	vDivisors.push_back( 1 );
 	int nFound	= 0;
 	BOOL bLoop = TRUE;
@@ -112,14 +112,14 @@ int	CMiniGameArithmetic::GetDivisor( int nDivided )
 	{
 		int iIndex	= xRandom( vDivisors.size() );
 		nDivisor	*= vDivisors[iIndex];
-		vector<int>::iterator it = vDivisors.begin();
+		auto it = vDivisors.begin();
 		it += iIndex;
 		vDivisors.erase( it );
 	}
 	return nDivisor;
 }
 
-string CMiniGameArithmetic::MakeQuestion()
+std::string CMiniGameArithmetic::MakeQuestion()
 {
 	int nNum[3] = {0,};
 	int nOper[3] = {0,};

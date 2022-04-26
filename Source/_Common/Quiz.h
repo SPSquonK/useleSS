@@ -150,7 +150,7 @@ private:
 	{
 		OBJID	idNpc;
 		DWORD	dwNPCId;
-		string	strCharKey;
+		std::string	strCharKey;
 		D3DXVECTOR3	vPos;
 	};
 

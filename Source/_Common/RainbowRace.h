@@ -54,7 +54,7 @@ private:
 // CRainbowRaceMng ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 #ifdef __WORLDSERVER
-typedef map<DWORD, CRainbowRace*> MAPRR;
+typedef std::map<DWORD, CRainbowRace*> MAPRR;
 
 class CRainbowRaceMng
 {
@@ -88,8 +88,8 @@ public:
 	DWORD			GetNextTime()				{ return m_dwNextTime; }			// 다음 단계로 넘어가는 시간
 	void			OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket );	// 미니게임 패킷을 받은뒤 처리
 	void			SetRanking( CUser* pUser );	// 레이스를 종료한 캐릭터를 순위에 등록
-	void			SetPrevRanking( vector<DWORD> & vecPrevRanking );	// 지난 순위 등록
-	vector<DWORD>	GetPrevRanking();
+	void			SetPrevRanking( std::vector<DWORD> & vecPrevRanking );	// 지난 순위 등록
+	std::vector<DWORD>	GetPrevRanking();
 	
 private:
 	struct MINIGMAME_PRIZE_LIST
@@ -98,7 +98,7 @@ private:
 		MINIGMAME_PRIZE_LIST( DWORD dwPI, int nCN, DWORD dwCT )
 		: dwPlayerId( dwPI ), nCompletedNum( nCN ), dwCompletedTick( dwCT )	{}
 	};
-	vector<MINIGMAME_PRIZE_LIST>	m_vecMiniGamePrizeList;
+	std::vector<MINIGMAME_PRIZE_LIST>	m_vecMiniGamePrizeList;
 	void	SetMiniGamePrize( DWORD dwTick );	// 미니게임완료 상품지급예약된 상품을 지급
 public:
 	void	SetMiniGamePrizeList( DWORD dwPlayerId, int nCompletedNum, DWORD dwCompletedTick )// 미니게임완료 상품지급 예약
@@ -114,14 +114,14 @@ private:
 	void	SetPrize();					// 상품을 우편으로 전달한다.
 	
 	MAPRR					m_mapRainbowRace;	// 각 플레이어에 대한 상태 목록
-	vector<CMiniGameBase*>	m_vecMiniGame;		// 미니게임 목록
+	std::vector<CMiniGameBase*>	m_vecMiniGame;		// 미니게임 목록
 	CLuaBase				m_Lua;
 
 	int			m_nState;					// 현재 상태
 	DWORD		m_dwNextTime;				// 다음 상태로 넘어가는 시간
-	vector<OBJID> m_vecNPCId;				// 진행 NPC의 Id
-	vector<DWORD> m_vecdwRankingId;			// 순위별 PlayerId
-	vector<DWORD> m_vecPrevRanking;			// 지난 5위까지 순위
+	std::vector<OBJID> m_vecNPCId;				// 진행 NPC의 Id
+	std::vector<DWORD> m_vecdwRankingId;			// 순위별 PlayerId
+	std::vector<DWORD> m_vecPrevRanking;			// 지난 5위까지 순위
 };
 #endif __WORLDSERVER
 

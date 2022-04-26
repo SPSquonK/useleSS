@@ -96,10 +96,10 @@ void CGuildQuestProcessor::Process()
 							{
 								CUser* pUser;
 								CGuildMember* pMember;
-								for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+								for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 								{
 									pMember	= i->second;
-									pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+									pUser	= prj.GetUserByID( pMember->m_idPlayer );
 									if( IsValidObj( pUser ) )
 									{
 										POINT point = { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};
@@ -139,10 +139,10 @@ void CGuildQuestProcessor::Process()
 							{
 								CUser* pUser;
 								CGuildMember* pMember;
-								for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+								for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 								{
 									pMember	= i->second;
-									pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+									pUser	= prj.GetUserByID( pMember->m_idPlayer );
 									if( IsValidObj( pUser ) )
 									{
 										POINT point = { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};

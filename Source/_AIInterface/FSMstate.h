@@ -11,7 +11,7 @@ struct FSM_STATE
 class CFSMstate  
 {
 private:
-	vector< FSM_STATE* >	m_array;
+	std::vector< FSM_STATE* >	m_array;
 	int						m_nStateID;						
 	int						m_nPolling;						// 주기적 검사 갯수 
 

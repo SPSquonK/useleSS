@@ -500,7 +500,7 @@ void CCommonCtrl::_ProcessTrap()
 		// 링크된 오브젝트(컨트롤) 발동
 		if( m_CtrlElem.m_strLinkCtrlKey[0] != '\0' )
 		{
-			map<string, DWORD>::iterator i = g_MapStrToObjId.find(m_CtrlElem.m_strLinkCtrlKey);
+			const auto i = g_MapStrToObjId.find(m_CtrlElem.m_strLinkCtrlKey);
 			if( i != g_MapStrToObjId.end() )
 			{
 				OBJID objId = (*i).second;

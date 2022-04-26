@@ -179,8 +179,8 @@ void CCampusHelper::OnUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData
 	CCampus* pCampus = GetCampus( GetCampusIdByPlayerId( idPlayer ) );
 	if( pCampus )
 	{
-		vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-		for( vector<u_long>::iterator it = vecMember.begin(); it != vecMember.end(); ++it )
+		std::vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
+		for( auto it = vecMember.begin(); it != vecMember.end(); ++it )
 		{
 			CUser* pMember = g_UserMng.GetUserByPlayerID( *it );
 			if( IsValidObj( pMember ) )
@@ -216,7 +216,7 @@ void CCampusHelper::LoadScript()
 	{
 		int nLevel			=	static_cast<int>( Lua.GetFieldToNumber( -1, "nLevel" ) );
 		DWORD dwBuffId		=	static_cast<DWORD>( CScript::GetDefineNum( Lua.GetFieldToString( -1, "strBuffId" ) ) );
-		m_mapCBuff.insert( MAP_CBUFF::value_type( nLevel, dwBuffId ) );
+		m_mapCBuff.emplace(nLevel, dwBuffId);
 		Lua.Pop( 1 );
 	}
 	Lua.Pop( 0 );
@@ -230,7 +230,7 @@ void CCampusHelper::LoadScript()
 		reward.nMasterReward	=	static_cast<int>( Lua.GetFieldToNumber( -1, "nMasterReward" ) );
 		reward.nPupilReward		=	static_cast<int>( Lua.GetFieldToNumber( -1, "nPupilReward" ) );
 		
-		m_mapCReward.insert( MAP_CREWORD::value_type( nLevel, reward ) );
+		m_mapCReward.emplace(nLevel, reward);
 		Lua.Pop( 1 );
 	}
 	Lua.Pop( 0 );
@@ -352,7 +352,7 @@ BOOL CCampusHelper::IsCompleteCampusQuest( CUser* pUser )
 	if( !IsValidObj( pUser ) )
 		return FALSE;
 
-	for( vector<int>::iterator it = m_vecCQuest.begin(); it != m_vecCQuest.end(); ++it )
+	for( auto it = m_vecCQuest.begin(); it != m_vecCQuest.end(); ++it )
 	{
 		if( !pUser->IsCompleteQuest( *it ) )
 			return FALSE;
@@ -365,10 +365,9 @@ void CCampusHelper::AddAllMemberUpdateCampus( CCampus* pCampus )
 	if( !pCampus )
 		return;
 
-	vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-	for( vector<u_long>::iterator it = vecMember.begin(); it != vecMember.end(); ++it )
-	{
-		CUser* pUser = g_UserMng.GetUserByPlayerID( *it );
+	const auto & vecMember = pCampus->GetAllMemberPlayerId();
+	for(const u_long playerId : vecMember) {
+		CUser* pUser = g_UserMng.GetUserByPlayerID(playerId);
 		if( IsValidObj( pUser ) )
 			pUser->AddUpdateCampus( pCampus );
 	}
@@ -379,8 +378,8 @@ void CCampusHelper::AddAllMemberRemoveCampus( CCampus* pCampus )
 	if( !pCampus )
 		return;
 
-	vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-	for( vector<u_long>::iterator it = vecMember.begin(); it != vecMember.end(); ++it )
+	std::vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
+	for( auto it = vecMember.begin(); it != vecMember.end(); ++it )
 	{
 		RemovePlayerId2CampusId( *it );
 		CUser* pUser = g_UserMng.GetUserByPlayerID( *it );
@@ -394,7 +393,7 @@ void CCampusHelper::AddAllMemberRemoveCampus( CCampus* pCampus )
 
 DWORD CCampusHelper::GetCampusBuff( int nLevel )
 {
-	MAP_CBUFF::iterator it = m_mapCBuff.find( nLevel );
+	const auto it = m_mapCBuff.find( nLevel );
 	if( it != m_mapCBuff.end() )
 		return it->second;
 
@@ -440,7 +439,7 @@ void CCampusHelper::SetLevelUpReward( CUser* pUser )
 
 CCampusHelper::REWARD* CCampusHelper::GetReward( int nLevel )
 {
-	MAP_CREWORD::iterator it = m_mapCReward.find( nLevel );
+	const auto it = m_mapCReward.find( nLevel );
 	if( it != m_mapCReward.end() )
 		return &it->second;
 

@@ -26,7 +26,7 @@ public:
 private:
 	BOOL			IsPartyDungeon( DWORD dwWorldId ) { return CInstanceDungeonHelper::GetInstance()->IsDungeonType( dwWorldId, GetType() ); }
 	
-	typedef map<DWORD, DWORD> MAP_PLTIME;
+	typedef std::map<DWORD, DWORD> MAP_PLTIME;
 	MAP_PLTIME m_mapPLTime;
 #endif // __WORLDSERVER
 };

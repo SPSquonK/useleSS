@@ -52,7 +52,7 @@ void CMiniGameTyping::MakeQuestion()
 	m_vecTyping.clear();
 	for( int i=0; i<3; i++ )
 	{
-		string strTemp;
+		std::string strTemp;
 		for( int j=0; j<20; j++ )
 		{
 			switch( xRandom( 3 ) )

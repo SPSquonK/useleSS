@@ -6204,9 +6204,9 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				}
 				pEventItem	= CEventGeneric::GetInstance()->GetItem( &nNum );
 			}
-			map<DWORD, int> mapItemList = prj.m_EventLua.GetItem( lpMoverProp->dwLevel );
+			std::map<DWORD, int> mapItemList = prj.m_EventLua.GetItem( lpMoverProp->dwLevel );
 
-			for( map<DWORD, int>::iterator it=mapItemList.begin(); it!=mapItemList.end(); it++ )
+			for( auto it=mapItemList.begin(); it!=mapItemList.end(); it++ )
 			{
 	#ifdef __BUGFIX_0326
 				if( lpMoverProp->dwFlying )	//
@@ -8901,17 +8901,17 @@ void CMover::ProcessSFXDamage( void )
 //	int nCount	= 0;
 //#endif	// __INFINITE_0227
 
-	map<OBJID, queue<SFXHIT_INFO> >::iterator iInfo	= m_mapSFXInfo.begin();
+	auto iInfo	= m_mapSFXInfo.begin();
 	while( iInfo != m_mapSFXInfo.end() )
 	{
-		map<OBJID, queue<SFXHIT_INFO> >::iterator iInfo2	= iInfo;
+		auto iInfo2	= iInfo;
 		++iInfo;
 		OBJID idTarget	= iInfo2->first;
-		queue<SFXHIT_INFO> &qInfo	= iInfo2->second;
-		map<OBJID, queue<SFXHIT_COUNT> >::iterator iCount	= m_mapSFXCount.find( idTarget );
+		std::queue<SFXHIT_INFO> &qInfo	= iInfo2->second;
+		auto iCount	= m_mapSFXCount.find( idTarget );
 		if( iCount == m_mapSFXCount.end() )
 			continue;
-		queue<SFXHIT_COUNT> &qCount	= iCount->second;
+		std::queue<SFXHIT_COUNT> &qCount	= iCount->second;
 		// qInfo, qCount
 		while( qInfo.size() > 0 && qCount.size() > 0 )
 		{
@@ -8995,13 +8995,13 @@ void CMover::ProcessSFXExpire( void )
 //#endif	// __INFINITE_0227
 	
 	// 1.1
-	map<OBJID, queue<SFXHIT_INFO> >::iterator iInfo	= m_mapSFXInfo.begin();
+	auto iInfo	= m_mapSFXInfo.begin();
 	while( iInfo != m_mapSFXInfo.end() )
 	{
-		map<OBJID, queue<SFXHIT_INFO> >::iterator i2	= iInfo;
+		auto i2	= iInfo;
 		++iInfo;
 		OBJID idTarget	= i2->first;
-		queue<SFXHIT_INFO> &q	= i2->second;
+		std::queue<SFXHIT_INFO> &q	= i2->second;
 		
 		while( q.size() > 0 )
 		{
@@ -9025,13 +9025,13 @@ void CMover::ProcessSFXExpire( void )
 		}
 	}
 	// 1.2
-	map<OBJID, queue<SFXHIT_COUNT> >::iterator iCount	= m_mapSFXCount.begin();
+	auto iCount	= m_mapSFXCount.begin();
 	while( iCount != m_mapSFXCount.end() )
 	{
-		map<OBJID, queue<SFXHIT_COUNT> >::iterator i2	= iCount;
+		auto i2	= iCount;
 		++iCount;
 		OBJID idTarget	= i2->first;
-		queue<SFXHIT_COUNT> &q	= i2->second;
+		std::queue<SFXHIT_COUNT> &q	= i2->second;
 		
 		while( q.size() > 0 )
 		{

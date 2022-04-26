@@ -1314,7 +1314,7 @@ void CAIMonster::SubSummonProcess( CMover *pTarget )
 	// 소환 AI
 	if( pProp && pProp->m_nSummProb )	// 값이 있으면 소환 AI가 있다.
 	{
-		for( vector<OBJID>::iterator it = m_vecIdSummon.begin(); it!=m_vecIdSummon.end(); )
+		for( auto it = m_vecIdSummon.begin(); it!=m_vecIdSummon.end(); )
 		{
 			CMover *pZako = prj.GetMover( (*it) );
 			if( IsValidObj(pZako) && pZako->IsLive() )	// 그넘들이 살아있는지까지도 검사해야한다.
@@ -2117,7 +2117,7 @@ void CMonsterSkill::LoadScript()
 	while( Lua.TableLoop( -2 ) )
 	{
 		DWORD dwMonsterId = CScript::GetDefineNum( Lua.GetFieldToString( -1, "strMonsterId" ) );
-		vector<__MONSTERSKILL> vecMonsterSkill;
+		std::vector<__MONSTERSKILL> vecMonsterSkill;
 
 		//lua_getfield( Lua.GetLuaState(), -1, "tSkill" );
 		Lua.GetField( -1, "tSkill" );
@@ -2145,7 +2145,7 @@ void CMonsterSkill::LoadScript()
 			Lua.Pop( 1 );
 		}
 
-		m_mapMonsterSkill.insert( make_pair( dwMonsterId, vecMonsterSkill ) );
+		m_mapMonsterSkill.emplace(dwMonsterId, vecMonsterSkill);
 		Lua.Pop( 2 );
 	}
 
@@ -2158,7 +2158,7 @@ DWORD CMonsterSkill::GetMonsterSkillLevel( CMover* pAttacker, DWORD dwSkillId )
 	if( it == m_mapMonsterSkill.end() )
 		return 0;
 
-	vector<__MONSTERSKILL> &vecMonsterSkill	= it->second;
+	std::vector<__MONSTERSKILL> &vecMonsterSkill	= it->second;
 	for( int i=0; i<(int)( vecMonsterSkill.size() ); i++ )
 	{
 		if( vecMonsterSkill[i].dwSkillID == dwSkillId )
@@ -2177,7 +2177,7 @@ BOOL CMonsterSkill::ApplySkill( CMover* pAttacker, CMover* pTarget, DWORD dwAtkM
 	if( it == m_mapMonsterSkill.end() )
 		return FALSE;
 
-	vector<__MONSTERSKILL> &vecMonsterSkill	= it->second;
+	std::vector<__MONSTERSKILL> &vecMonsterSkill	= it->second;
 //	vecMonsterSkill.assign( it->second.begin(), it->second.end() );
 	
 	// 사용될 스킬을 결정한다.

@@ -1294,7 +1294,7 @@ void CDPClient::OnChat( OBJID objid, CAr & ar )
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 		if( pMover && pMover->IsPlayer() == TRUE )
 		{
-			set< CString >::iterator BlockedUserIterator = prj.m_setBlockedUserID.find( pMover->GetName( TRUE ) );
+			auto BlockedUserIterator = prj.m_setBlockedUserID.find( pMover->GetName( TRUE ) );
 			if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
 				return;
 		}
@@ -5282,7 +5282,7 @@ static	\
 	CMover* pMover = prj.GetMover( objid );
 	if( pMover && pMover->IsPlayer() == TRUE )
 	{
-		set< CString >::iterator BlockedUserIterator = prj.m_setBlockedUserID.find( lpName );
+		auto BlockedUserIterator = prj.m_setBlockedUserID.find( lpName );
 		if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
 			return;
 	}
@@ -6315,7 +6315,7 @@ void CDPClient::OnGCRequestStatus( CAr& ar )
 	DWORD dwRequstPenya;
 	int nSize;
 	char strGuildName[128];
-	vector<CString> vecRequestGuild;
+	std::vector<CString> vecRequestGuild;
 	time_t tNext;		// 다음에 길드대전이 시작할 시간.
 	ar >> tNext;
 	ar >> nPrizePenya;						// 총 상금액
@@ -6367,7 +6367,7 @@ void CDPClient::OnGCSelectPlayer( CAr& ar )
 	int nSize;
 	int nMaxJoinMember; // 대전에 참가할수 있는 최대 개수
 	int nMaxWarMember;	// 대전에 선수로 들어감
-	vector<u_long> vecSelectPlayer;
+	std::vector<u_long> vecSelectPlayer;
 	ar >> nMaxJoinMember;
 	ar >> nMaxWarMember;
 
@@ -6701,7 +6701,7 @@ void CDPClient::OnGCLog( CAr & ar )
 		CGuild *pPlayerGuild = g_pPlayer->GetGuild();
 
 		// 길드 순위
-		multimap< int, CString > mmapGuildRate = pWndWorld->m_mmapGuildCombat_GuildPrecedence;
+		std::multimap< int, CString > mmapGuildRate = pWndWorld->m_mmapGuildCombat_GuildPrecedence;
 
 		int nRate = 0;
 		int nPoint;
@@ -6709,7 +6709,7 @@ void CDPClient::OnGCLog( CAr & ar )
 		int nOldPoint = 0xffffffff;
 		char szBuf[MAX_NAME];
 
-		for( multimap<int, CString>::reverse_iterator i = mmapGuildRate.rbegin(); i != mmapGuildRate.rend(); ++i )
+		for( auto i = mmapGuildRate.rbegin(); i != mmapGuildRate.rend(); ++i )
 		{
 			nPoint  = i->first;
 			str		= i->second;
@@ -6753,8 +6753,8 @@ void CDPClient::OnGCLog( CAr & ar )
 		nOldPoint = 0xffffffff;
 		u_long uiPlayer;
 
-		multimap<int, u_long> mmapPersonRate = pWndWorld->m_mmapGuildCombat_PlayerPrecedence;
-		for( multimap<int, u_long>::reverse_iterator j = mmapPersonRate.rbegin(); j != mmapPersonRate.rend(); ++j )
+		std::multimap<int, u_long> mmapPersonRate = pWndWorld->m_mmapGuildCombat_PlayerPrecedence;
+		for( auto j = mmapPersonRate.rbegin(); j != mmapPersonRate.rend(); ++j )
 		{ 
 			nPoint			= j->first;
 			uiPlayer		= j->second;	
@@ -7023,8 +7023,7 @@ void CDPClient::OnGCPlayerPoint( CAr & ar )
 
 		CString str;
 		CString strFormat;
-		vector<PDVer>	vecPlayer;
-		vecPlayer.clear();
+		std::vector<PDVer> vecPlayer;
 
 		for( int i = 0 ; i < (int)( uSize ) ; ++i )
 		{
@@ -10648,7 +10647,7 @@ void CDPClient::OnReassemble_OpenWnd( CAr & ar )
 	int nCount;
 	ar >> nCount;
 
-	vector<DWORD> vecItemId;
+	std::vector<DWORD> vecItemId;
 	DWORD dwItemId;
 	for( int i=0; i<nCount; ++i )
 	{
@@ -10910,7 +10909,7 @@ CHAR	lpszPlayer[MAX_PLAYER], lpString[260];
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 	if( pMover && pMover->IsPlayer() == TRUE )
 	{
-		set< CString >::iterator BlockedUserIterator = prj.m_setBlockedUserID.find( lpszPlayer );
+		const auto BlockedUserIterator = prj.m_setBlockedUserID.find( lpszPlayer );
 		if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
 			return;
 	}
@@ -11004,7 +11003,7 @@ CHAR	sPlayerFrom[MAX_PLAYER], sPlayerTo[MAX_PLAYER], lpString[260];
 	}
 
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
-	set< CString >::iterator BlockedUserIterator = prj.m_setBlockedUserID.find( sPlayerFrom );
+	const auto BlockedUserIterator = prj.m_setBlockedUserID.find( sPlayerFrom );
 	if( ( pFriend && pFriend->bBlock ) || ( BlockedUserIterator != prj.m_setBlockedUserID.end() ) )
 #else // __YS_CHATTING_BLOCKING_SYSTEM
 	if( pFriend && pFriend->bBlock )
@@ -12000,7 +11999,7 @@ void CDPClient::OnGuildChat( CAr & ar )
 	CMover* pMover = prj.GetMover( objid );
 	if( pMover && pMover->IsPlayer() == TRUE )
 	{
-		set< CString >::iterator BlockedUserIterator = prj.m_setBlockedUserID.find( pMover->GetName( TRUE ) );
+		auto BlockedUserIterator = prj.m_setBlockedUserID.find( pMover->GetName( TRUE ) );
 		if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
 			return;
 	}
@@ -12445,11 +12444,9 @@ void CDPClient::OnGuildAddVote( CAr & ar )
 
 			pCombo->ResetContent();
 
-			list <CGuildVote*>::iterator it = pGuild->m_votes.begin();
-			
 			int nIndex = -1;
 			
-			for ( ; it != pGuild->m_votes.end() ; ++it )
+			for (auto it = pGuild->m_votes.begin(); it != pGuild->m_votes.end() ; ++it )
 			{
 				nIndex = pCombo->AddString( (*it)->GetTitle() );
 				pCombo->SetItemData( nIndex, (*it)->GetID() );
@@ -15863,7 +15860,7 @@ void CDPClient::OnGuildBankLogList( CAr & ar )
 	long nAbilityOption = 0;
 	long nItem_count = 0;
 	long nPenya = 0;
-	vector < CString >* pvString = NULL;
+	std::vector < CString >* pvString = NULL;
 
 	CWndGuildBankLog* pWndGuildBankLog = (CWndGuildBankLog*)g_WndMng.GetWndBase(APP_GUILD_BANK_LOG);
 	CGuild* pGuild = g_pPlayer->GetGuild();
@@ -16337,7 +16334,7 @@ void CDPClient::OnSecretRoomInfo( CAr & ar )
 	ar >> nContinent;
 	ar >> nType;
 	
-	map<BYTE, CSecretRoomContinent*>::iterator it = CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.find(nContinent);
+	const auto it = CSecretRoomMng::GetInstance()->m_mapSecretRoomContinent.find(nContinent);
 	CSecretRoomContinent* pSRCont = it->second;
 
 	switch( nType )
@@ -16380,7 +16377,7 @@ void CDPClient::OnSecretRoomInfo( CAr & ar )
 					int nMonsterType, nNum;
 					ar >> nMonsterType;
 					ar >> nNum;
-					CSecretRoomMng::GetInstance()->m_mapMonsterNum.insert( make_pair( nMonsterType, nNum ) );
+					CSecretRoomMng::GetInstance()->m_mapMonsterNum.emplace( nMonsterType, nNum );
 				}
 			}
 			break;
@@ -16973,7 +16970,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 					if(g_WndMng.m_pWndRRMiniGameArithmetic)
 					{
-						string strQuestion;
+						std::string strQuestion;
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
 							strQuestion = pPacket->vecszData[i];
 						
@@ -16985,7 +16982,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 				{
 					if(g_WndMng.m_pWndRRMiniGameArithmetic)
 					{
-						string strQuestion;
+						std::string strQuestion;
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
 							strQuestion = pPacket->vecszData[i];
 						
@@ -16997,7 +16994,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_REMOVE_ARITHMETIC_FAIL ) );
 					if(g_WndMng.m_pWndRRMiniGameArithmetic)
 					{
-						string strQuestion;
+						std::string strQuestion;
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
 							strQuestion = pPacket->vecszData[i];
 						
@@ -17081,7 +17078,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					{
 						g_WndMng.m_pWndRRMiniGameTyping->Initialize(NULL);
 
-						string strQuestion;
+						std::string strQuestion;
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
 						{
 							strQuestion = pPacket->vecszData[i];
@@ -17130,8 +17127,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRRMiniGameCard)
 						g_WndMng.m_pWndRRMiniGameCard->Initialize(NULL);
 
-					string strQuestion;
-					strQuestion = pPacket->vecszData[0];
+					std::string strQuestion = pPacket->vecszData[0];
 					g_WndMng.m_pWndRRMiniGameCard->SetQuestion(strQuestion.c_str());
 				}
 				else if(pMiniGamePacket->nState == MP_TRUE || pMiniGamePacket->nState == MP_FAIL || pMiniGamePacket->nState == MP_FALSE)

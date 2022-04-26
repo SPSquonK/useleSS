@@ -7,7 +7,7 @@ class CFSMstate;
 class CFSM  
 {
 private:
-	map< int, CFSMstate* >	m_map;					
+	std::map< int, CFSMstate* >	m_map;
 
 public:
 	CFSM();										

@@ -44,8 +44,8 @@ private:
 #endif // __SYS_ITEMTRANSY
 
 private:
-	map<int, int>	m_mapSuitProb;
-	map<int, int>	m_mapWeaponProb;
+	std::map<int, int>	m_mapSuitProb;
+	std::map<int, int>	m_mapWeaponProb;
 	
 private:
 	void	RefineAccessory( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial );
@@ -64,8 +64,8 @@ public:
 	
 	DWORD	WhatEleCard( DWORD dwItemType );	// °ð »èÁ¦
 
-	map<int, int>	m_mapGeneralEnchant;
-	map<int, __ATTRIBUTE_ENCHANT> m_mapAttributeEnchant;
+	std::map<int, int>	m_mapGeneralEnchant;
+	std::map<int, __ATTRIBUTE_ENCHANT> m_mapAttributeEnchant;
 
 public:
 	void	PetVisSize( CUser* pUser, OBJID objIdMaterial );

@@ -39,8 +39,8 @@ public:
 	float	GetItemDropRange();
 
 	
-	map< DWORD, __EVENTMONSTER > m_mapEventMonster;
-	map< DWORD, __EVENTMONSTER >::iterator m_it;
+	std::map< DWORD, __EVENTMONSTER > m_mapEventMonster;
+	std::map< DWORD, __EVENTMONSTER >::iterator m_it;
 };
 #endif // __EVENT_MONSTER
 

@@ -30,7 +30,7 @@
 //////////////////////////////////////////////////////////////////////
 #ifdef __WORLDSERVER
 // 1:1길드대전장 생성시 각 대전장별 저장할 정보
-CGuildCombat1to1::CGuildCombat1to1( vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild, int nStageId )
+CGuildCombat1to1::CGuildCombat1to1( std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild, int nStageId )
 {
 	ClearTime();
 	m_nState = GC1TO1WAR_CLOSE;
@@ -816,16 +816,16 @@ BOOL CGuildCombat1to1Mng::LoadScript()
 // 1:1길드대전 오픈시 각 대전장 생성
 void	CGuildCombat1to1Mng::CreateGuildCombat1to1()
 {
-	multimap<int, int> mapRandom;
+	std::multimap<int, int> mapRandom;
 
 	int	i = 0;
 	for( i=0; i<(int)( m_vecTenderGuild.size() ); i++ )
 	{
-		mapRandom.insert( make_pair( xRandom(m_vecTenderGuild.size()), i/2 ) );
+		mapRandom.emplace( xRandom(m_vecTenderGuild.size()), i/2 );
 	}
 	
 	i = 0;
-	for( multimap<int, int>::iterator it=mapRandom.begin(); it!=mapRandom.end(); it++ )
+	for( auto it=mapRandom.begin(); it!=mapRandom.end(); it++ )
 	{
 		m_vecTenderGuild[i].nStageId = it->second;
 		// 각 대전장의 WorldID를 저장
@@ -1031,10 +1031,9 @@ void	CGuildCombat1to1Mng::GuildCombat1to1Open( BOOL bGMText )
 	if( !g_eLocal.GetState( EVE_GUILDCOMBAT1TO1 ) )
 		return;
 	
-	vector<__GC1TO1TENDER>::iterator it;
 	if( !bGMText )
 	{
-		for( it=m_vecTenderFailGuild.begin(); it!=m_vecTenderFailGuild.end(); it++ )
+		for(auto it=m_vecTenderFailGuild.begin(); it!=m_vecTenderFailGuild.end(); it++ )
 		{
 			// 이전 1:1길드대전에 입찰 실패 길드가 신청금을 수령하지 않았을 경우
 			g_dpDBClient.SendGC1to1Tender( 'U', (*it).ulGuildId, (*it).nPenya, 'N' );
@@ -1065,7 +1064,7 @@ void	CGuildCombat1to1Mng::GuildCombat1to1Open( BOOL bGMText )
 
 	// 입찰 순위에 들지 못한 길드 제거
 	int nCount = 0;
-	for( it=m_vecTenderGuild.begin(); it!=m_vecTenderGuild.end(); )
+	for( auto it=m_vecTenderGuild.begin(); it!=m_vecTenderGuild.end(); )
 	{
 		nCount++;
 		if( nCount <= m_nMaxJoinGuild )
@@ -1089,7 +1088,7 @@ void	CGuildCombat1to1Mng::GuildCombat1to1Open( BOOL bGMText )
 	// 입찰 순위에는 들어갔지만 상대 길드가 없는 경우(홀수)
 	if( m_vecTenderGuild.size() % 2 != 0 )
 	{
-		it = m_vecTenderGuild.end(); it--;	// 마지막 순위		// 노트 :  rbegin()을 사용하시오.
+		auto it = m_vecTenderGuild.end(); it--;	// 마지막 순위		// 노트 :  rbegin()을 사용하시오.
 		CGuild* pGuild = g_GuildMng.GetGuild( (*it).ulGuildId );
 		if( pGuild )
 		{
@@ -1104,12 +1103,12 @@ void	CGuildCombat1to1Mng::GuildCombat1to1Open( BOOL bGMText )
 	}
 
 	// 출전 가능한 길드의 모든 길드원에게 OPEN STATE 알림(길드 마스터는 참가자 구성 시간 출력)
-	for( it=m_vecTenderGuild.begin(); it!=m_vecTenderGuild.end(); it++ )
+	for( auto it=m_vecTenderGuild.begin(); it!=m_vecTenderGuild.end(); it++ )
 	{
 		CGuild* pGuild = g_GuildMng.GetGuild( (*it).ulGuildId );
 		if( pGuild )
 		{
-			for( map<u_long, CGuildMember*>::iterator it2=pGuild->m_mapPMember.begin(); it2!=pGuild->m_mapPMember.end(); it2++ )
+			for( auto it2=pGuild->m_mapPMember.begin(); it2!=pGuild->m_mapPMember.end(); it2++ )
 			{
 				CUser* pUser = (CUser*)prj.GetUserByID( it2->first );
 				if( IsValidObj( pUser ) )
@@ -1157,7 +1156,7 @@ void	CGuildCombat1to1Mng::GuildCombat1to1AllClose()
 		CGuild* pGuild = g_GuildMng.GetGuild( m_vecTenderGuild[i].ulGuildId );
 		if( pGuild )
 		{
-			for( map<u_long, CGuildMember*>::iterator it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
+			for( auto it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
 			{
 				CUser* pUser = (CUser*)prj.GetUserByID( it->first );
 				if( IsValidObj(pUser) )
@@ -1383,7 +1382,7 @@ void	CGuildCombat1to1Mng::SetCancelTenderGuild( CUser* pUser )
 	CGuild* pGuild = pUser->GetGuild();
 	if( pGuild )
 	{
-		for( vector<__GC1TO1TENDER>::iterator it=m_vecTenderGuild.begin(); it!=m_vecTenderGuild.end(); it++ )
+		for( auto it=m_vecTenderGuild.begin(); it!=m_vecTenderGuild.end(); it++ )
 		{
 			if( (*it).ulGuildId == pGuild->GetGuildId() )
 			{
@@ -1436,7 +1435,7 @@ void	CGuildCombat1to1Mng::SetFailedTenderGuild( CUser* pUser )
 	CGuild* pGuild = pUser->GetGuild();
 	if( pGuild )
 	{
-		for( vector<__GC1TO1TENDER>::iterator it=m_vecTenderFailGuild.begin(); it!=m_vecTenderFailGuild.end(); it++ )
+		for( auto it=m_vecTenderFailGuild.begin(); it!=m_vecTenderFailGuild.end(); it++ )
 		{
 			if( (*it).ulGuildId == pGuild->GetGuildId() )
 			{
@@ -1514,7 +1513,7 @@ void	CGuildCombat1to1Mng::SendMemberLineUpOpenWnd( CUser* pUser )
 }
 
 // 참가자 구성
-void	CGuildCombat1to1Mng::SetMemberLineUp( CUser* pUser, vector<u_long>& vecMemberId )
+void	CGuildCombat1to1Mng::SetMemberLineUp( CUser* pUser, std::vector<u_long>& vecMemberId )
 {
 	if( m_nState != GC1TO1_OPEN )	// 참가자 구성 시간이 아니다.
 	{

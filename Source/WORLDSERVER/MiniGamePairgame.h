@@ -12,9 +12,9 @@ public:
 	virtual BOOL Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket );
 
 private:
-	string	MakeGame();
+	std::string	MakeGame();
 
-	string	m_strCardStream;
+	std::string	m_strCardStream;
 	int		m_nCorrectCount;
 };
 

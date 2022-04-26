@@ -208,7 +208,7 @@ public:
 
 	u_long			m_dwObjNum;
 	CCtrl*			m_apObject[MAX_DYNAMICOBJ];	// dynamic 객체를 담는다.		// 312k
-	vector< CObj* > m_vecBackground;			// static 객체를 담는다.
+	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
 
 //	CRIT_SEC		m_csModifyLink;
 	int				m_cbModifyLink;

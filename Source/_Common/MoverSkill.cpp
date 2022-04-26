@@ -3863,7 +3863,7 @@ void CMover::SetPetVisDST( CItemElem* pItemElem )
 	{
 		AddBuff( BUFF_EQUIP, (WORD)( pItemElem->m_dwItemId ), 1, 999999999 );
 		
-		vector<BYTE> vecValidTable = GetValidVisTable( pItemElem );
+		std::vector<BYTE> vecValidTable = GetValidVisTable( pItemElem );
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
 		{
 			ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );
@@ -3888,7 +3888,7 @@ void CMover::ResetPetVisDST( CItemElem* pItemElem )
 	{
 		m_buffs.RemoveBuff( BUFF_EQUIP, (WORD)( pItemElem->m_dwItemId ), FALSE );
 
-		vector<BYTE> vecValidTable = GetValidVisTable( pItemElem );
+		std::vector<BYTE> vecValidTable = GetValidVisTable( pItemElem );
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
 		{
 			ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );

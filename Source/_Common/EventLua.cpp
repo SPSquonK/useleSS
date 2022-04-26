@@ -176,7 +176,7 @@ void CEventLua::LoadScript()
 #ifdef __WORLDSERVER
 		PrepareProxy();
 #ifdef __EVENTLUA_SPAWN
-		for( map<BYTE, VECSPAWNINFO>::iterator it=m_mapSpawnList.begin(); it!=m_mapSpawnList.end(); it++ )
+		for( auto it=m_mapSpawnList.begin(); it!=m_mapSpawnList.end(); it++ )
 			m_vecEndSpawnEvent.push_back( it->first );
 		m_mapSpawnList.clear();
 #endif // __EVENTLUA_SPAWN
@@ -215,9 +215,9 @@ void CEventLua::SetState( BYTE nId, BOOL bState )
 #endif // __EVENTLUA_SPAWN
 }
 
-string CEventLua::GetDesc( BYTE nId )
+std::string CEventLua::GetDesc( BYTE nId )
 {
-	string strDesc;
+	std::string strDesc;
 
 	if( !IsPossible() )
 		return strDesc;
@@ -234,9 +234,9 @@ string CEventLua::GetDesc( BYTE nId )
 	return strDesc;
 }
 
-map<DWORD, int> CEventLua::GetItem( DWORD dwLevel )
+std::map<DWORD, int> CEventLua::GetItem( DWORD dwLevel )
 {
-	map<DWORD, int> mapItem;
+	std::map<DWORD, int> mapItem;
 
 	if( !IsPossible() )
 		return mapItem;
@@ -258,7 +258,7 @@ map<DWORD, int> CEventLua::GetItem( DWORD dwLevel )
 		{
 			DWORD dwItem = CScript::GetDefineNum( m_Lua.GetFieldToString( -1, "ItemId" ) );
 			int	nNum = (int)m_Lua.GetFieldToNumber( -1, "ItemNum" );
-			mapItem.insert( make_pair( dwItem, nNum ) );
+			mapItem.emplace( dwItem, nNum);
 			m_Lua.Pop(1);
 		}
 	}
@@ -368,9 +368,9 @@ void CEventLua::GetAllEventList( CUser* pUser )
 		m_Lua.PushNil();
 		while( m_Lua.TableLoop(-2) )
 		{
-			int nId = (int)m_Lua.GetFieldToNumber( -1, "nId" );
-			string strTitle = m_Lua.GetFieldToString( -1, "strTitle" );
-			int nState = (int)m_Lua.GetFieldToNumber( -1, "nState" );
+			const int nId = (int)m_Lua.GetFieldToNumber( -1, "nId" );
+			const std::string strTitle = m_Lua.GetFieldToString( -1, "strTitle" );
+			const int nState = (int)m_Lua.GetFieldToNumber( -1, "nState" );
 			
 			CString strTemp;
 			strTemp.Format("ID : %d,  Title : %s,  State : %d", nId, strTitle.c_str(), nState );
@@ -598,19 +598,19 @@ void CEventLua::SetSpawnEvent( BYTE nId, BOOL bState )
 				dwInterval = 86400000 / dwInterval;
 				vecTemp.push_back( __SPAWNINFO( nType, dwId, dwInterval ) );
 				if( nType == OT_MOVER )
-					m_mapMonsterId.insert( make_pair( dwId, nId ) );
+					m_mapMonsterId.emplace( dwId, nId );
 				
 				m_Lua.Pop( 1 );
 			}
 
-			map<BYTE, VECSPAWNINFO>::iterator it = m_mapSpawnList.find( nId );
+			const auto it = m_mapSpawnList.find( nId );
 			if( it == m_mapSpawnList.end() )
 				m_mapSpawnList.insert( make_pair( nId, vecTemp ) );
 			else
 				it->second.assign( vecTemp.begin(), vecTemp.end() );
 
 			// 완료 리스트에서 재적용된 이벤트를 제거한다.
-			for( vector<BYTE>::iterator itVec=m_vecEndSpawnEvent.begin(); itVec!=m_vecEndSpawnEvent.end(); )
+			for( auto itVec=m_vecEndSpawnEvent.begin(); itVec!=m_vecEndSpawnEvent.end(); )
 			{
 				if( (*itVec) == nId )
 					itVec = m_vecEndSpawnEvent.erase( itVec );
@@ -620,7 +620,7 @@ void CEventLua::SetSpawnEvent( BYTE nId, BOOL bState )
 		}
 		else
 		{
-			map<BYTE, VECSPAWNINFO>::iterator it = m_mapSpawnList.find( nId );
+			const auto it = m_mapSpawnList.find( nId );
 			if( it != m_mapSpawnList.end() )
 			{
 				m_vecEndSpawnEvent.push_back( it->first );	// 완료 리스트에 해당 이벤트 ID를 추가한다. 스폰된 몬스터들을 제거하기 위해 필요.
@@ -637,7 +637,7 @@ void CEventLua::EventSpawnProcess()
 	//if( m_mapSpawnList.size() <= 0 )
 	//	return;
 
-	for( map<BYTE, VECSPAWNINFO>::iterator itMap=m_mapSpawnList.begin(); itMap!=m_mapSpawnList.end(); itMap++ )
+	for( auto itMap=m_mapSpawnList.begin(); itMap!=m_mapSpawnList.end(); itMap++ )
 	{
 		VECSPAWNINFO* pVecSP = &itMap->second;
 		for( VECSPAWNINFO::iterator itVec=pVecSP->begin(); itVec!=pVecSP->end(); itVec++ )
@@ -692,7 +692,7 @@ void CEventLua::EventSpawnProcess()
 							pMover->UpdateLocalMatrix();
 							pMover->AddItToGlobalId();
 							pWorld->ADDOBJ( pMover, FALSE, nDefaultLayer );
-							m_mapSpawnedMonster.insert( make_pair( pMover->GetId(), itMap->first ) );
+							m_mapSpawnedMonster.emplace( pMover->GetId(), itMap->first);
 							OUTPUTDEBUGSTRING( "\nLua Spawn: type = MONSTER, index = %d, world = %d, x = %f, z = %f", pSI->dwId, pWorld->GetID(), pMover->GetPos().x, pMover->GetPos().z );
 						}
 					}
@@ -708,10 +708,10 @@ void CEventLua::EventSpawnProcess()
 void CEventLua::DeleteEndEventProcess()
 {
 	// 이벤트 완료 리스트에 있는 스폰된 몬스터들을 제거한다.(프로세스당 100개씩)
-	for( vector<BYTE>::iterator itVec=m_vecEndSpawnEvent.begin(); itVec!=m_vecEndSpawnEvent.end(); )
+	for( auto itVec=m_vecEndSpawnEvent.begin(); itVec!=m_vecEndSpawnEvent.end(); )
 	{
 		int nDelCount = 0;
-		for( map<OBJID, BYTE>::iterator itMSM=m_mapSpawnedMonster.begin(); itMSM!=m_mapSpawnedMonster.end(); )
+		for( auto itMSM=m_mapSpawnedMonster.begin(); itMSM!=m_mapSpawnedMonster.end(); )
 		{
 			if( itMSM->second == (*itVec) )
 			{
@@ -733,7 +733,7 @@ void CEventLua::DeleteEndEventProcess()
 		
 		if( nDelCount == 0 )	// 더이상 삭제될것이 없으면 이벤트 완료 목록에서 해당 ID를 제거한다.
 		{
-			for( map<DWORD, BYTE>::iterator itMId=m_mapMonsterId.begin(); itMId!=m_mapMonsterId.end(); )
+			for( auto itMId=m_mapMonsterId.begin(); itMId!=m_mapMonsterId.end(); )
 			{
 				if( itMId->second == (*itVec) )
 					m_mapMonsterId.erase( itMId++ );
@@ -810,7 +810,7 @@ void CEventLua::GetKeepConnectItem()
 		{
 			DWORD dwItemId = CScript::GetDefineNum( m_Lua.GetFieldToString( -1, "strItemId" ) );
 			int	nItemNum = (int)m_Lua.GetFieldToNumber( -1, "nItemNum" );
-			m_mapItemList.insert( map<DWORD, int>::value_type( dwItemId, nItemNum ) );
+			m_mapItemList.emplace( dwItemId, nItemNum);
 			m_Lua.Pop(1);
 		}
 	}
@@ -837,7 +837,7 @@ void CEventLua::KeepConnectEventProcess()
 		idPlayer = m_vecKeepConnectUser.back();
 		m_vecKeepConnectUser.pop_back();
 		
-		for( map<DWORD, int>::iterator it = m_mapItemList.begin(); it != m_mapItemList.end(); ++it )
+		for( auto it = m_mapItemList.begin(); it != m_mapItemList.end(); ++it )
 		{
 			CItemElem itemElem;
 			itemElem.m_dwItemId = it->first;
@@ -874,9 +874,9 @@ float CEventLua::GetWeatherEventExpFactor( BOOL bProxy )
 	return fFactor;
 }
 
-string CEventLua::GetWeatherEventTitle()
+std::string CEventLua::GetWeatherEventTitle()
 {
-	string strTitle("");
+	std::string strTitle("");
 
 	if( !IsPossible() )
 		return strTitle;

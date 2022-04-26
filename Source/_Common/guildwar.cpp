@@ -332,7 +332,7 @@ void CGuildWarMng::Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nT
 void CGuildWarMng::Process( void )
 {
 	CTime time	= CTime::GetCurrentTime();
-	for( map<u_long, CGuildWar*>::iterator i = m_mapPWar.begin(); i != m_mapPWar.end(); ++i )
+	for( auto i = m_mapPWar.begin(); i != m_mapPWar.end(); ++i )
 	{
 		CGuildWar* pWar	= i->second;
 		pWar->Process( time );

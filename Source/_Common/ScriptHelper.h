@@ -29,6 +29,6 @@ void __CreateItem( DWORD dwIdMover, int v1, int v2 );
 #endif	// __JEFF_11
 void __AddGold( DWORD dwIdMover, int nGold );
 void __RemoveGold( DWORD dwIdMover, int nGold );
-void __QuestSort( vector<int> & vecQuestId );
+void __QuestSort(std::vector<int> & vecQuestId );
 
 #endif

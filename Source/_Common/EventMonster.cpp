@@ -49,7 +49,7 @@ void CEventMonster::LoadScript()
 		EventMonster.bPet = lua.GetFieldToBool( -1, "bPet" );
 		EventMonster.bGiftBox = lua.GetFieldToBool( -1, "bGiftBox" );
 		
-		m_mapEventMonster.insert( make_pair( dwId, EventMonster ) );
+		m_mapEventMonster.emplace(dwId, EventMonster);
 		lua.Pop( 1 );
 	}
 
@@ -58,7 +58,7 @@ void CEventMonster::LoadScript()
 
 BOOL CEventMonster::IsEventMonster( DWORD dwId )
 {
-	map< DWORD, __EVENTMONSTER >::iterator it = m_mapEventMonster.find( dwId );
+	auto it = m_mapEventMonster.find( dwId );
 	if( it != m_mapEventMonster.end() )
 		return TRUE;
 	

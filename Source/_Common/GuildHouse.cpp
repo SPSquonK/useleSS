@@ -578,9 +578,9 @@ void CGuildHouseBase::SendWorldToClient( int nPacketType, GH_Fntr_Info& gfi, int
 	CGuild* pGuild = g_GuildMng.GetGuild( m_dwGuildId );
 	if( pGuild )
 	{
-		for( map<u_long, CGuildMember*>::iterator it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
+		for( auto it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
 		{
-			CUser* pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
+			CUser* pUser = prj.GetUserByID( it->first );
 			if( IsValidObj( pUser ) )
 				pUser->AddGuildHousePakcet( nPacketType, gfi, nIndex );
 		}
@@ -635,9 +635,9 @@ void CGuildHouseBase::SetDSTFunriture( ItemProp* pItemProp )
 	CGuild* pGuild = g_GuildMng.GetGuild( m_dwGuildId );
 	if( pGuild )
 	{
-		for( map<u_long, CGuildMember*>::iterator it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
+		for( auto it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
 		{
-			CUser* pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
+			CUser* pUser = prj.GetUserByID( it->first );
 			if( IsValidObj( pUser ) )
 			{
 				pUser->SetDestParam( 0, pItemProp );
@@ -656,9 +656,9 @@ void CGuildHouseBase::ResetDSTFunriture( ItemProp* pItemProp )
 	CGuild* pGuild = g_GuildMng.GetGuild( m_dwGuildId );
 	if( pGuild )
 	{
-		for( map<u_long, CGuildMember*>::iterator it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
+		for( auto it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
 		{
-			CUser* pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
+			CUser* pUser = prj.GetUserByID( it->first );
 			if( IsValidObj( pUser ) )
 			{
 				pUser->ResetDestParam( 0, pItemProp );
@@ -1265,7 +1265,7 @@ void CGuildHouseMng::OnBuyGuildHouse( CAr & ar )
 			CGuild* pGuild = g_GuildMng.GetGuild( dwGuildId );
 			if( pGuild )
 			{
-				for( map<u_long, CGuildMember*>::iterator it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
+				for( auto it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
 				{
 					pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
 					if( IsValidObj( pUser ) )
@@ -1307,9 +1307,9 @@ void CGuildHouseMng::OnRemoveGuildHouse( CAr & ar )
 	CGuild* pGuild = g_GuildMng.GetGuild( dwGuildId );
 	if( pGuild )
 	{
-		for( map<u_long, CGuildMember*>::iterator it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
+		for( auto it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
 		{
-			CUser* pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
+			CUser* pUser = prj.GetUserByID( it->first );
 			if( IsValidObj( pUser ) )
 			{
 				pUser->SetRestPoint( 0 );
@@ -1439,14 +1439,14 @@ void CGuildHouseMng::AddRestExpFactorTable( int nMinLevel, int nMaxLevel, float 
 {
 	for( int i=nMinLevel; i<=nMaxLevel; i++ )
 	{
-		if( !m_mapRestExpFactorTable.insert( make_pair( i, fFactor ) ).second )
+		if( !m_mapRestExpFactorTable.emplace( i, fFactor ).second )
 			Error( "CGuildHouseMng::AddRestExpFactorTable() Insert Failed! - [Level:%d]", i );
 	}
 }
 
 float CGuildHouseMng::GetRestExpFactor( int nLevel )
 {
-	MapRestExpFactor::iterator it = m_mapRestExpFactorTable.find( nLevel );
+	const auto it = m_mapRestExpFactorTable.find( nLevel );
 	if( it == m_mapRestExpFactorTable.end() )
 		return 0.0f;
 

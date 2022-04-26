@@ -71,7 +71,7 @@ public:
 	void RemoveFurnitureControl( int nIndex );	// 가구 컨트롤을 제거한다.
 	void AddAllFurnitureControl();				// 설치된 모든 가구 컨트롤을 생성한다.
 	void SetBuff( DWORD dwItemId, BOOL bSet );	// 가구 설치나 제거시 버프설정..
-	vector<DWORD> GetAllPaperingInfo();			// 벽지 및 장판 정보..
+	std::vector<DWORD> GetAllPaperingInfo();			// 벽지 및 장판 정보..
 	
 	void Setting( BOOL bSetting ) { m_bSetting = bSetting; }
 	BOOL m_bSetting;			// 지금 뭔가 세팅중인가?(TransServer와 타이밍 문제로..)

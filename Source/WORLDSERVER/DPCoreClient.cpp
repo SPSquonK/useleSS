@@ -170,13 +170,13 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID) + sizeof(DPID), dwMsgSize - ( sizeof(DPID) + sizeof(DPID) ) );
 	GETTYPE( ar );
 
-	static map<DWORD, CString> mapstrProfile;
-	map<DWORD, CString>::iterator it = mapstrProfile.find( dw );
+	static std::map<DWORD, CString> mapstrProfile;
+	auto it = mapstrProfile.find( dw );
 	if( it == mapstrProfile.end() )
 	{
 		CString strTemp;
 		strTemp.Format("CDPCoreClient::UserMessageHandler(0x%08x)", dw );
-		it = mapstrProfile.insert( make_pair( dw, strTemp ) ).first;
+		it = mapstrProfile.emplace( dw, strTemp ).first;
 	}
 	_PROFILE( it->second );
 
@@ -1477,12 +1477,11 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 	{
 		CUser* pUsertmp;
 		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-		i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
 
-			pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+			pUsertmp	= prj.GetUserByID( pMember->m_idPlayer );
 			if( IsValidObj( pUsertmp ) )
 			{
 				pUsertmp->SetRestPoint( 0 );
@@ -1792,20 +1791,18 @@ void CDPCoreClient::OnAcptWar( CAr & ar, DPID, DPID, OBJID )
 		pAcpt->m_idEnemyGuild	= pDecl->m_idGuild;
 
 		CUser* pUser;
-		for( map<u_long, CGuildMember*>::iterator i = pDecl->m_mapPMember.begin();
-			i != pDecl->m_mapPMember.end(); ++i )
+		for( auto i = pDecl->m_mapPMember.begin(); i != pDecl->m_mapPMember.end(); ++i )
 		{
-			pUser	= (CUser*)prj.GetUserByID( i->second->m_idPlayer );
+			pUser	= prj.GetUserByID( i->second->m_idPlayer );
 			if( IsValidObj( pUser ) )
 			{
 				pUser->m_idWar	= idWar;
 				g_UserMng.AddSetWar( pUser, idWar );
 			}
 		}
-		for( map<u_long, CGuildMember*>::iterator i = pAcpt->m_mapPMember.begin();
-			i != pAcpt->m_mapPMember.end(); ++i )
+		for( auto i = pAcpt->m_mapPMember.begin(); i != pAcpt->m_mapPMember.end(); ++i )
 		{
-			pUser	= (CUser*)prj.GetUserByID( i->second->m_idPlayer );
+			pUser	= prj.GetUserByID( i->second->m_idPlayer );
 			if( IsValidObj( pUser ) )
 			{
 				pUser->m_idWar	= idWar;
@@ -1951,12 +1948,10 @@ void CDPCoreClient::OnGuildContributionACK( CAr & ar, DPID, DPID, OBJID )
 		if( uServerID != ::g_uKey )		// 이 메세지의 원본서버가 아닌 경우만 update
 			pGuild->SetContribution( info );	
 
-		CUser* pUser;
-		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
-			pMember		= i->second;
-			pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+			CGuildMember * pMember		= i->second;
+			CUser * pUser	= prj.GetUserByID( pMember->m_idPlayer );
 		
 			if( IsValidObj( pUser ) )
 				pUser->AddContribution( info );
@@ -1984,7 +1979,7 @@ void CDPCoreClient::OnModifyVote( CAr & ar, DPID, DPID, OBJID )
 		{
 			CUser* pUser;
 			CGuildMember* pMember;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;
 				pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -2013,10 +2008,10 @@ void CDPCoreClient::OnAddVoteResultACk( CAr & ar, DPID, DPID, OBJID )
 			pGuild->AddVote( info );
 
 			CGuildMember* pMember;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;
-				pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+				pUser	= prj.GetUserByID( pMember->m_idPlayer );
 				if( IsValidObj( pUser ) ) 
 					pUser->AddInsertedVote( info );
 			}
@@ -2024,7 +2019,7 @@ void CDPCoreClient::OnAddVoteResultACk( CAr & ar, DPID, DPID, OBJID )
 		else
 		{
 			// 마스터에게 실패를 알린다.
-			pUser	= (CUser*)prj.GetUserByID( pGuild->m_idMaster );
+			pUser	= prj.GetUserByID( pGuild->m_idMaster );
 			if( IsValidObj( pUser ) ) 
 				pUser->AddInsertedVote( info );
 		}
@@ -2047,10 +2042,10 @@ void CDPCoreClient::OnGuildNoticeACk( CAr & ar, DPID, DPID, OBJID )
 
 		CUser* pUser;
 		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
-			pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+			pUser	= prj.GetUserByID( pMember->m_idPlayer );
 			if( IsValidObj(pUser) ) 
 				pUser->AddSetNotice( idGuild, szNotice );
 		}
@@ -2073,10 +2068,10 @@ void CDPCoreClient::OnGuildAuthority( CAr & ar, DPID, DPID, OBJID )
 
 		CUser* pUser;
 		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
-			pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+			pUser	= prj.GetUserByID( pMember->m_idPlayer );
 			if( IsValidObj(pUser) ) 
 				pUser->AddSetGuildAuthority( dwAuthority );
 		}
@@ -2097,10 +2092,10 @@ void CDPCoreClient::OnGuildPenya( CAr & ar, DPID, DPID, OBJID )
 		pGuild->m_adwPenya[dwType] = dwPenya;
 		CUser* pUser;
 		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
-			pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+			pUser	= prj.GetUserByID( pMember->m_idPlayer );
 			if( IsValidObj(pUser) ) 
 				pUser->AddSetGuildPenya( dwType, dwPenya );
 		}
@@ -2123,10 +2118,10 @@ void CDPCoreClient::OnGuildRealPenya( CAr & ar, DPID, DPID, OBJID )
 
 		CUser* pUser;
 		CGuildMember* pMember;
-		for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
-			pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+			pUser	= prj.GetUserByID( pMember->m_idPlayer );
 			if( IsValidObj(pUser) ) 
 			{
 				pUser->AddGuildRealPenya( nGoldGuild, pMember->m_nMemberLv );
@@ -2213,10 +2208,10 @@ void CDPCoreClient::OnGuildMsgControl( CAr & ar, DPID, DPID, OBJID )
 		{
 			CGuildMember*	pMember;
 			CUser*			pUsertmp;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();	i != pGuild->m_mapPMember.end(); ++i )
+			for( auto i = pGuild->m_mapPMember.begin();	i != pGuild->m_mapPMember.end(); ++i )
 			{
 				pMember		= i->second;
-				pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+				pUsertmp	= prj.GetUserByID( pMember->m_idPlayer );
 				if( IsValidObj( pUsertmp ) ) 
 				{
 					pUsertmp->AddGetGoldGuildBank( dwPenya, 2, pMember->m_idPlayer, cbCloak );	// 2는 업데이트 해야할 클라이게

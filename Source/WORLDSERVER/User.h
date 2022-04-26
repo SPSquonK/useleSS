@@ -65,7 +65,7 @@ public:
 	DWORD			m_dwSerial;							/// 캐쉬서버가 발급한 유저의 순차적 번호
 	BOOL			m_bValid;							/// db server에서 join packet받고, 맵에 Add된후 TRUE
 	CSnapshot		m_Snapshot;							/// SNAPSHOTTYPE_류 송신 누적 버퍼( Notify()에서 보내진다. )
-	map<DWORD, CCtrl*>	m_2npc;							/// 주변 NPC를 담고 있는 container
+	std::map<DWORD, CCtrl*>	m_2npc;							/// 주변 NPC를 담고 있는 container
 	DWORD			m_dwTickSFS;						/// SubSMMode, Finite, SavePlyer()용 타이머 
 	DWORD			m_dwTickNotify;						/// Notify()용 타이머 
 	DWORD			m_dwTimeout4Save;					/// db 저장용 타이머 
@@ -399,7 +399,7 @@ public:
 	void			AddResistSMMode( BYTE nAttackResistLeft, BYTE nAttackResistRight, BYTE nDefenceResist );
 	void			AddCommercialElem( DWORD dwItemId, int nResistSMItemId );
 	void			AddFlyffEvent();
-	void			AddEventLuaDesc( int nState, string strDesc );
+	void			AddEventLuaDesc( int nState, std::string strDesc );
 	void			AddQueryGetDestObj( OBJID objid );
 	void			AddGetDestObj( OBJID objid, OBJID objidDest, FLOAT fRange );
 //	BOOL			DoCollect( CMover *pTarget );		// 채집시작.
@@ -410,8 +410,8 @@ public:
 	void			AddRunScriptFunc( const RunScriptFunc & runScriptFunc );
 	void			AddRemoveSkillInfluence( WORD wType, WORD wID );
 	void			AddGCWindow( __int64 dwPrizePenya, DWORD dwRequstPenya, DWORD dwMinRequestPenya );
-	void			AddGCRequestStatus( __int64 nPrizePenya, vector<CGuildCombat::__REQUESTGUILD> vecRequestStatus );
-	void			AddGCSelectPlayerWindow( vector<CGuildCombat::__JOINPLAYER> &vecSelectPlayer, u_long uidDefender, BOOL bWindow, BOOL bRequestWar );
+	void			AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::__REQUESTGUILD> vecRequestStatus );
+	void			AddGCSelectPlayerWindow(std::vector<CGuildCombat::__JOINPLAYER> &vecSelectPlayer, u_long uidDefender, BOOL bWindow, BOOL bRequestWar );
 	void			AddGCJoinWarWindow( int nMap, int nTelTime );
 	void			AddGuildCombatNextTime( DWORD dwTime, DWORD dwState );
 	void			AddGuildCombatEnterTime( DWORD dwTime );
@@ -470,7 +470,7 @@ public:
 #ifdef __EVE_MINIGAME
 	void			AddKawibawiboResult( int nResult, int nWinCount, DWORD dwItemId = 0, int nItemCount = 0, DWORD dwNextItemId = 0, int nNextItemCount = 0 );
 	void			AddReassembleResult( DWORD dwItemId, int nItemCount );
-	void			AddReassembleOpenWnd( vector<DWORD> vecItemId );
+	void			AddReassembleOpenWnd( std::vector<DWORD> vecItemId );
 	void			AddAlphabetOpenWnd( int nQuestionID, int nPublicAlphabet, char chPublicChar, CString strQuestion );
 	void			AddAlphabetResult( int nResult, DWORD dwItemId = 0, int nItemCount = 0 );
 	void			AddFiveSystemOpenWnd( int nBetMinPenya, int nBetMaxPenya, int nMultiple );
@@ -521,8 +521,8 @@ public:
 #endif	// __SYS_TICKET
 
 	void	AddGC1to1TenderOpenWnd( int nPenya );
-	void	AddGC1to1TenderGuildView(  int nPenya, int nRanking, time_t t, vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild );
-	void	AddGC1to1MemberLineUpOpenWnd( vector<u_long>& vecMemberId );
+	void	AddGC1to1TenderGuildView(  int nPenya, int nRanking, time_t t, std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild );
+	void	AddGC1to1MemberLineUpOpenWnd( std::vector<u_long>& vecMemberId );
 	void	AddGC1to1NowState( int nState, int nTime, int nProgCount = 0 );
 	void	AddGC1to1WarResult( int m_nState, u_long uIdPlayer, int nWinCount0, int nWinCount1 );
 	void	RemoveAngel( void );
@@ -538,10 +538,10 @@ public:
 #endif // __EVENTLUA_COUPON
 
 	void	AddSecretRoomMngState( int nState, DWORD dwRemainTime );
-	void	AddSecretRoomContInfo( BYTE nContinent, BYTE nType, vector<__SECRETROOM_TENDER> & vecSecreetRoomTender, int nIndex );
+	void	AddSecretRoomContInfo( BYTE nContinent, BYTE nType, std::vector<__SECRETROOM_TENDER> & vecSecreetRoomTender, int nIndex );
 	void	AddSecretRoomTenderOpenWnd( int nTenderPenya );
-	void	AddSecretRoomLineUpOpenWnd( vector<DWORD>& vecLineUpMember );
-	void	AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, vector<__SECRETROOM_TENDER>& vecSRTender );
+	void	AddSecretRoomLineUpOpenWnd( std::vector<DWORD>& vecLineUpMember );
+	void	AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, std::vector<__SECRETROOM_TENDER>& vecSRTender );
 
 	void	AddLord( void );
 	void	AddLordSkillTick( CLordSkill* pSkills );
@@ -587,7 +587,7 @@ public:
 	void AddHousingSetupFurniture( HOUSINGINFO* pHousingInfo );
 	void AddHousingPaperingInfo( DWORD dwItemId, BOOL bSetup );
 	void AddHousingSetVisitAllow( DWORD dwTargetId, BOOL bAllow );
-	void AddHousingVisitableList( vector<DWORD> & vecVisitable );
+	void AddHousingVisitableList( std::vector<DWORD> & vecVisitable );
 
 	void AddNPCPos( const D3DXVECTOR3 & vPos );
 
@@ -698,7 +698,7 @@ public:
 
 private:
 	long				m_lCount;
-	map<DWORD, CUser*>	m_users;
+	std::map<DWORD, CUser*>	m_users;
 
 private:
 	void			RemoveUserFromCacheMsg( CUser *pUser );

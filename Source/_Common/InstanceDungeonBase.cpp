@@ -389,14 +389,14 @@ void CInstanceDungeonBase::LoadScript( const char* szFilename )
 	{
 		DUNGEON_DATA data;
 		for( int i=ID_NORMAL;i<=ID_BOSS; i++ )
-			data.mapObjCount.insert( map<int,int>::value_type( i, 0 ) );
+			data.mapObjCount[i] = 0;
 		
 		DWORD dwWorldId	= static_cast<DWORD>( CScript::GetDefineNum( Lua.GetFieldToString( -1, "strWorldId" ) ) );
 		data.dwClass	= static_cast<DWORD>( Lua.GetFieldToNumber( -1, "dwClass" ) );
 		data.nMinLevel	= static_cast<int>( Lua.GetFieldToNumber( -1, "nMinLevel" ) );
 		data.nMaxLevel	= static_cast<int>( Lua.GetFieldToNumber( -1, "nMaxLevel" ) );
 		data.dwCoolTime	= static_cast<DWORD>( Lua.GetFieldToNumber( -1, "dwCoolTime" ) );
-		MAP_IDDATA::iterator it = m_mapDungeonData.insert( MAP_IDDATA::value_type( dwWorldId, data ) ).first;
+		auto it = m_mapDungeonData.emplace(dwWorldId, data).first;
 
 		Lua.GetField( -1, "tTeleport" );
 		Lua.PushNil();
@@ -410,7 +410,7 @@ void CInstanceDungeonBase::LoadScript( const char* szFilename )
 			vPos.z			= static_cast<float>( Lua.GetFieldToNumber( -1, "z" ) );
 			if( !pWorld && pWorld->VecInWorld( vPos ) == FALSE )
 				Error( "Invalid World Pos! WorldId : %d, x : %f, y : %f, z : %f", dwWorldId, vPos.x, vPos.y, vPos.z );
-			it->second.mapTeleportPos.insert( map<int, D3DXVECTOR3>::value_type( nState, vPos ) );
+			it->second.mapTeleportPos.emplace(nState, vPos);
 			Lua.Pop( 1 );
 		}
 		Lua.Pop( 1 ); // tTeleport 스택에서 제거
@@ -495,11 +495,11 @@ void CInstanceDungeonBase::SetNextState( ID_INFO* pInfo, DWORD dwDungeonId )
 
 D3DXVECTOR3 CInstanceDungeonBase::GetTeleportPos( DWORD dwWorldId, DWORD dwDungeonId )
 {
-	MAP_IDDATA::iterator it = m_mapDungeonData.find( dwWorldId );
+	const auto it = m_mapDungeonData.find( dwWorldId );
 	if( it == m_mapDungeonData.end() )
 		return D3DXVECTOR3( 0, 0, 0 );
 	
-	map<int, D3DXVECTOR3>::iterator it2 = it->second.mapTeleportPos.find( GetState( dwWorldId, dwDungeonId ) );
+	const auto it2 = it->second.mapTeleportPos.find( GetState( dwWorldId, dwDungeonId ) );
 	if( it2 == it->second.mapTeleportPos.end() )
 		return D3DXVECTOR3( 0, 0, 0 );
 
@@ -508,7 +508,7 @@ D3DXVECTOR3 CInstanceDungeonBase::GetTeleportPos( DWORD dwWorldId, DWORD dwDunge
 
 BOOL CInstanceDungeonBase::CheckClassLevel( CUser* pUser, DWORD dwWorldId )
 {
-	MAP_IDDATA::iterator it = m_mapDungeonData.find( dwWorldId );
+	const auto it = m_mapDungeonData.find( dwWorldId );
 	if( it == m_mapDungeonData.end() )
 		return FALSE;
 
@@ -594,11 +594,11 @@ void CInstanceDungeonBase::CreateMonster( DWORD dwDungeonId, DWORD dwWorldId )
 	if( !pWorld || !pWorld->m_linkMap.GetLinkMap( static_cast<int>( dwDungeonId ) ) )
 		return;
 	
-	MAP_IDDATA::iterator it = m_mapDungeonData.find( pWorld->GetID() );
+	const auto it = m_mapDungeonData.find( pWorld->GetID() );
 	if( it != m_mapDungeonData.end() )
 	{
 		int nState = GetState( dwWorldId, dwDungeonId );
-		for( vector<DUNGEON_DATA::MONSTER>::iterator itVecMon=it->second.vecMonster.begin(); itVecMon!=it->second.vecMonster.end(); itVecMon++ )
+		for( auto itVecMon=it->second.vecMonster.begin(); itVecMon!=it->second.vecMonster.end(); itVecMon++ )
 		{
 			if( (*itVecMon).nState != nState )
 				continue;
@@ -740,7 +740,7 @@ void CInstanceDungeonBase::SetLeaveMarkingPos( CUser* pUser, DWORD dwWorldId, D3
 
 DWORD CInstanceDungeonBase::GetCoolTime( DWORD dwWorldId )
 {
-	MAP_IDDATA::iterator it = m_mapDungeonData.find( dwWorldId );
+	const auto it = m_mapDungeonData.find( dwWorldId );
 	if( it != m_mapDungeonData.end() )
 		return it->second.dwCoolTime;
 	
@@ -749,12 +749,12 @@ DWORD CInstanceDungeonBase::GetCoolTime( DWORD dwWorldId )
 
 BOOL CInstanceDungeonBase::IsNowStateMonster( DWORD dwWorldId, DWORD dwDungeonId, DWORD dwMonsterId )
 {
-	MAP_IDDATA::iterator it = m_mapDungeonData.find( dwWorldId );
+	const auto it = m_mapDungeonData.find( dwWorldId );
 	if( it == m_mapDungeonData.end() )
 		return FALSE;
 
 	int nNowState = GetState( dwWorldId, dwDungeonId );
-	for( vector<DUNGEON_DATA::MONSTER>::iterator i=it->second.vecMonster.begin(); i!=it->second.vecMonster.end(); i++ )
+	for( auto i=it->second.vecMonster.begin(); i!=it->second.vecMonster.end(); i++ )
 	{
 		if( (*i).nState == nNowState && (*i).dwMonsterId == dwMonsterId )
 			return TRUE;
@@ -765,11 +765,11 @@ BOOL CInstanceDungeonBase::IsNowStateMonster( DWORD dwWorldId, DWORD dwDungeonId
 
 int CInstanceDungeonBase::GetObjCount( DWORD dwWorldId, DWORD dwDungeonId )
 {
-	MAP_IDDATA::iterator it = m_mapDungeonData.find( dwWorldId );
+	const auto it = m_mapDungeonData.find( dwWorldId );
 	if( it == m_mapDungeonData.end() )
 		return 0;
 
-	map<int,int>::iterator itObjCount = it->second.mapObjCount.find( GetState( dwWorldId, dwDungeonId ) );
+	const auto itObjCount = it->second.mapObjCount.find( GetState( dwWorldId, dwDungeonId ) );
 	if( itObjCount == it->second.mapObjCount.end() )
 		return 0;
 

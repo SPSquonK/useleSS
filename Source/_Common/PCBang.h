@@ -41,7 +41,7 @@ private:
 
 
 #ifdef __WORLDSERVER
-typedef map<DWORD, CPCBangInfo> MAPPBI;
+typedef std::map<DWORD, CPCBangInfo> MAPPBI;
 
 class CPCBang  
 {
@@ -85,8 +85,8 @@ private:
 	int		GetPlayTime( DWORD dwConnectTime ) { return ( g_tmCurrent - dwConnectTime ) / MIN(60); }	// 접속이후 총 플레이 시간
 	
 	MAPPBI m_mapPCBang;	// PC방 사용자 정보
-	vector<float>	m_vecfExp;			// 시간대별 경험치
-	vector<float>	m_vecfDropRate;		// 시간대별 아이템 드롭률
+	std::vector<float>	m_vecfExp;			// 시간대별 경험치
+	std::vector<float>	m_vecfDropRate;		// 시간대별 아이템 드롭률
 	BOOL	m_bApply;
 };
 #endif // __WORLDSERVER

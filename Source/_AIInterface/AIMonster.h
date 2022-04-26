@@ -34,7 +34,7 @@ protected:
 
 	DWORD			m_dwIdTarget;
 	DWORD			m_dwAtkMethod;
-	vector<OBJID>	m_vecIdSummon;					// 소환된 몬스터는 아이디가 채워진다.
+	std::vector<OBJID>	m_vecIdSummon;					// 소환된 몬스터는 아이디가 채워진다.
 	DWORD			m_idLootItem;				// 루팅할 아이템.
 
 	DWORD			GetAtkMethod_Near();
@@ -125,8 +125,8 @@ struct __MONSTERSKILL
 	}
 };
 
-typedef map<DWORD, vector<__MONSTERSKILL> > MAPMONSTERSKILL;
-typedef map<DWORD, DWORD> MAPATKMETHOD;
+typedef std::map<DWORD, std::vector<__MONSTERSKILL> > MAPMONSTERSKILL;
+typedef std::map<DWORD, DWORD> MAPATKMETHOD;
 
 const DWORD ATK_MELEE = 1;
 const DWORD ATK_RANGE = 2;

@@ -401,9 +401,9 @@ void CHousing::SetBuff( DWORD dwItemId, BOOL bSet )
 	}
 }
 
-vector<DWORD> CHousing::GetAllPaperingInfo()
+std::vector<DWORD> CHousing::GetAllPaperingInfo()
 {
-	vector<DWORD> vecTemp;
+	std::vector<DWORD> vecTemp;
 	for( DWORD i=0; i<m_vecHousingInfo.size(); i++ )
 	{
 		ItemProp* pItemProp = prj.GetItemProp( m_vecHousingInfo[i].dwItemId );
@@ -580,23 +580,16 @@ void CHousingMng::SetAddVisitable( DWORD dwPlayerId, DWORD dwTargetId )
 	CUser* pUser = static_cast<CUser*>( prj.GetUserByID( dwPlayerId ) );
 	if( !IsValidObj( pUser ) || !pUser->m_RTMessenger.GetFriend( dwTargetId ) )
 		return;
-	MAP_VSTABLE::iterator it = m_mapVisitable.find( dwTargetId );
-	if( it != m_mapVisitable.end() )
-		it->second.push_back( dwPlayerId );
-	else
-	{
-		vector<DWORD> vecTemp;
-		vecTemp.push_back( dwPlayerId );
-		m_mapVisitable.insert( MAP_VSTABLE::value_type( dwTargetId, vecTemp ) );
-	}
+
+	m_mapVisitable[dwTargetId].push_back(dwPlayerId);
 }
 
 void CHousingMng::SetRemoveVisitable( DWORD dwPlayerId, DWORD dwTargetId )
 {
-	MAP_VSTABLE::iterator it = m_mapVisitable.find( dwTargetId );
+	auto it = m_mapVisitable.find( dwTargetId );
 	if( it != m_mapVisitable.end() )
 	{
-		for( vector<DWORD>::iterator it2=it->second.begin(); it2!=it->second.end(); it2++ )
+		for( auto it2=it->second.begin(); it2!=it->second.end(); it2++ )
 		{
 			if( (*it2) == dwPlayerId )
 			{

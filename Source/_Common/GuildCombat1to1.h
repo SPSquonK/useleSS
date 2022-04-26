@@ -125,16 +125,16 @@ public:
 	void	SetFailedTenderGuild( CUser* pUser );
 
 	void	SendMemberLineUpOpenWnd( CUser* pUser );
-	void	SetMemberLineUp( CUser* pUser, vector<u_long>& vecMemberId );
+	void	SetMemberLineUp( CUser* pUser, std::vector<u_long>& vecMemberId );
 
 	void	GuildCombat1to1EntranceWait();
 	void	GuildCombat1to1War();
 	void	SetTeleportToNPC( CUser* pUser );
 	void	SetTeleportToStage( CUser* pUser );
 	
-	vector<CGuildCombat1to1>	m_vecGuilCombat1to1;	
-	vector<__GC1TO1TENDER>		m_vecTenderGuild;		// 입찰 길드
-	vector<__GC1TO1TENDER>		m_vecTenderFailGuild;	// 입찰 실패 길드
+	std::vector<CGuildCombat1to1>	m_vecGuilCombat1to1;	
+	std::vector<__GC1TO1TENDER>		m_vecTenderGuild;		// 입찰 길드
+	std::vector<__GC1TO1TENDER>		m_vecTenderFailGuild;	// 입찰 실패 길드
 
 #endif // __WORLDSERVER
 };
@@ -152,7 +152,7 @@ public:
 	// 변경시 CGuildCombat1to1Mng Class의 값도 같이 변경하여야 한다.
 	enum {	GC1TO1WAR_CLOSE=100, GC1TO1WAR_WAIT, GC1TO1WAR_WAR,	GC1TO1WAR_FINISH, GC1TO1WAR_CLOSEWAIT };
 
-	CGuildCombat1to1( vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild, int nStageId );
+	CGuildCombat1to1( std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecTenderGuild, int nStageId );
 	virtual ~CGuildCombat1to1();
 
 	void	ClearTime();
@@ -177,7 +177,7 @@ public:
 	void	SetTeleportToWarStage( CUser* pUser );
 	void	SetTeleportToWaitStageNowPlayers();
 
-	vector<CGuildCombat1to1Mng::__GC1TO1TENDER>	m_vecTenderGuild;
+	std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>	m_vecTenderGuild;
 
 	int		m_nState;
 	int		m_nWaitTime;

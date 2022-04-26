@@ -120,7 +120,7 @@ public:
 
 	void	SendGC1to1StateToDBSrvr( void );
 	void	SendGC1to1Tender( char cGU, u_long uGuildId, int nPenya, char cState );
-	void	SendGC1to1LineUp( u_long uGuildId, vector<u_long>& vecMemberId );
+	void	SendGC1to1LineUp( u_long uGuildId, std::vector<u_long>& vecMemberId );
 	void	SendGC1to1WarPerson( u_long uGuildId, u_long uIdPlayer, char cState );
 	void	SendGC1to1WarGuild( DWORD dwWorldId, u_long uGuildId_0, u_long uGuildId_1, char cState );
 

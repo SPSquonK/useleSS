@@ -908,7 +908,7 @@ void CGuild::SetQuest( int nQuestId, int nState )
 #ifdef __WORLDSERVER
 	CUser* pUser;
 	CGuildMember* pMember;
-	for( map<u_long, CGuildMember*>::iterator i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
+	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
 	{
 		pMember	= i->second;
 		pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -928,7 +928,7 @@ BOOL CGuild::RemoveQuest( int nQuestId )
 #ifdef __WORLDSERVER
 	CUser* pUser;
 	CGuildMember* pMember;
-	for( map<u_long, CGuildMember*>::iterator i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
+	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
 	{
 		pMember	= i->second;
 		pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -959,7 +959,7 @@ void CGuild::ReplaceLodestar( const CRect &rect )
 // locked
 	CUser* pUser;
 	CGuildMember* pMember;
-	for( map<u_long, CGuildMember*>::iterator i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
+	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
 	{
 		pMember	= i->second;
 		pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
@@ -997,7 +997,7 @@ void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 			return;
 	}
 
-	for( map<u_long, CGuildMember*>::iterator i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
+	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
 	{
 		pMember	= i->second;
 
@@ -1069,14 +1069,14 @@ void CGuildMng::Process( void )
 		m_bSendPay = TRUE;
 		CGuild * pGuild;
 		DWORD dwPay;
-		for( map<u_long, CGuild*>::iterator i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
+		for( auto i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
 		{
 			pGuild = i->second;
 			if( pGuild->m_bSendPay == FALSE )
 			{
 				dwPay = 0;		
 				CGuildMember* pMember;
-				for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
+				for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 				{
 					pMember		= i->second;
 					dwPay += pGuild->m_adwPenya[ pMember->m_nMemberLv ];
@@ -1096,7 +1096,7 @@ void CGuildMng::Process( void )
 	if( m_bSendPay && nHour == 22 )//1 )
 	{
 		CGuild * pGuild;
-		for( map<u_long, CGuild*>::iterator i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
+		for( auto i = m_mapPGuild.begin(); i != m_mapPGuild.end(); ++i )
 		{
 			pGuild = i->second;
 			pGuild->m_bSendPay = FALSE;
