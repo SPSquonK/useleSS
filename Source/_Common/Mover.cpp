@@ -6406,7 +6406,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 						else
 						{
 							CUser* pLeader = g_UserMng.GetUserByPlayerID( pParty->m_aMember[0].m_uPlayerId );
-							if( IsValidObj( (CObj*)pLeader )/* && pLeader->IsNearPC( (CUser*)pAttacker ) && IsOrigin()*/ )
+							if( IsValidObj( (CObj*)pLeader ) )
 							{
 								if( pLeader->IsValidArea( pAttacker, 255.0f ) )
 								{

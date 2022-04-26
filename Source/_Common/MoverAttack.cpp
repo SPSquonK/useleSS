@@ -656,7 +656,7 @@ int CMover::CalcLinkAttackDamage( int nDamage )
 					for( int i = 0 ; i < pParty->m_nSizeofMember ; i++ )
 					{
 						pMemberUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-						if( IsValidObj( (CObj*)pMemberUser )/* && pLeader->IsNearPC( pMemberUser ) && pMemberUser->IsOrigin()*/ )
+						if( IsValidObj( (CObj*)pMemberUser ) )
 						{
 							if( pLeader->m_idSetTarget == pMemberUser->m_idSetTarget
 								&& ( pLeader->m_idSetTarget != NULL_ID && pMemberUser->m_idSetTarget != NULL_ID ) )

@@ -9952,7 +9952,7 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 
 	BOOL	bNearByLeader = false;
 	CMover *pLeader = prj.GetUserByID( g_Party.m_aMember[0].m_uPlayerId );
-	if( IsValidObj( (CObj*)pLeader )/* && pLeader->IsNearPC( (CUser*)pAttacker ) && IsOrigin()*/ )
+	if( IsValidObj( (CObj*)pLeader ) )
         bNearByLeader = true;
 
 

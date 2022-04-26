@@ -55,7 +55,7 @@ public:
 	virtual	void	Serialize( CAr & ar );
 
 	void			SetId( OBJID objid )	{ m_objid = objid;  }
-	OBJID			GetId()					{ return m_objid;   }
+	[[nodiscard]] OBJID GetId() const noexcept { return m_objid; }
 	int				TargetSelecter( CCtrl *pTarget );
 	int				ShootSkill( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp );			// 발사형태의 스킬의 발사체 생성
 	void			CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp );		// 스킬시전시 클라에서 생성되어야 할 sfx
@@ -77,8 +77,9 @@ public:
 	void			PCSetAt( OBJID objid, CCtrl* pCtrl );	
 	BOOL			PCRemoveKey( OBJID objid );	
 	void RemoveItFromPcView();
-	BOOL			IsNearPC( OBJID objid );
-	BOOL			IsNearPC( CUser* pUser );
+	[[nodiscard]] bool IsNearPC(const OBJID objid) const noexcept { return m_2pc.contains(objid); }
+	[[nodiscard]] bool IsNearPC(const CUser * const pUser) const;
+
 	LONG			GetRespawn()			{ return m_lRespawn; }
 	void			SetRespawn( LONG n, BYTE nType )	{ m_lRespawn = n; m_nRespawnType = nType; }	
 	BOOL			ProcessDeleteRespawn();

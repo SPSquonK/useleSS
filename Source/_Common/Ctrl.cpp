@@ -180,15 +180,8 @@ void CCtrl::RemoveItFromPcView() {
 	m_2pc.clear();
 }
 
-BOOL CCtrl::IsNearPC( CUser* pUser )
-{
-	return IsNearPC( pUser->GetId() );
-}
-
-BOOL CCtrl::IsNearPC( OBJID objid )
-{
-	const auto it = m_2pc.find( objid );
-	return ( it != m_2pc.end() ) ;
+bool CCtrl::IsNearPC(const CUser * const pUser ) const {
+	return IsNearPC(pUser->GetId());
 }
 
 #endif	// __WORLDSERVER
