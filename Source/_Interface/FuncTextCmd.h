@@ -16,8 +16,8 @@ struct TextCmdFunc {
 		BOOL(*m_withoutPlayer)(CScanner & scanner);
 	};
 	bool m_ignoresPlayer;
-	const TCHAR * m_pCommand;
-	const TCHAR * m_pAbbreviation;
+	CString m_pCommand;
+	CString m_pAbbreviation;
 	const TCHAR * m_pKrCommand;
 	const TCHAR * m_pKrAbbreviation;
 	DWORD m_nServer; // 0 = client, 1 = server, 2 = ตัดู 

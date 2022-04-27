@@ -4609,6 +4609,8 @@ m_pCommand(m_pCommand), m_pAbbreviation(m_pAbbreviation),
 m_pKrCommand(m_pKrCommand), m_pKrAbbreviation(m_pKrAbbreviation),
 m_nServer(m_nServer), m_dwAuthorization(m_dwAuthorization),
 m_pszDesc(m_pszDesc) {
+	this->m_pCommand.MakeLower();
+	this->m_pAbbreviation.MakeLower();
 }
 
 TextCmdFunc::TextCmdFunc(
@@ -4625,6 +4627,8 @@ m_pCommand(m_pCommand), m_pAbbreviation(m_pAbbreviation),
 m_pKrCommand(m_pKrCommand), m_pKrAbbreviation(m_pKrAbbreviation),
 m_nServer(m_nServer), m_dwAuthorization(m_dwAuthorization),
 m_pszDesc(m_pszDesc) {
+	this->m_pCommand.MakeLower();
+	this->m_pAbbreviation.MakeLower();
 }
 
 template<typename F>
@@ -4964,47 +4968,37 @@ BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CPlayer_ * pMover, B
 	scanner.GetToken(); // skip /
 	scanner.GetToken(); // get command
 
-	int nCount = 0;
+	CString commandName = scanner.Token;
+	commandName.MakeLower();
 
-
-	for (const auto & command : m_allCommands)
-	{
-		const TextCmdFunc * pTextCmdFunc = &command;			// 해외 명령어 제한 
-		if( ::GetLanguage() != LANG_KOR )
-		{
-			if( memcmp( pTextCmdFunc->m_pCommand, "open", 4 ) == 0 )
-				break;
+	for (const auto & textCmdFunc : m_allCommands) {
+		if (::GetLanguage() != LANG_KOR) {
+			if (textCmdFunc.m_pCommand == "open") break;
 		}
 
-		if( scanner.Token == pTextCmdFunc->m_pCommand || scanner.Token == pTextCmdFunc->m_pAbbreviation ||
-			scanner.Token == pTextCmdFunc->m_pKrCommand || scanner.Token == pTextCmdFunc->m_pKrAbbreviation )
+		if(commandName == textCmdFunc.m_pCommand || commandName == textCmdFunc.m_pAbbreviation ||
+			commandName == textCmdFunc.m_pKrCommand || commandName == textCmdFunc.m_pKrAbbreviation ) {
 
-		{
-
-			if( bItem == FALSE && pTextCmdFunc->m_dwAuthorization > pMover->m_dwAuthorization )
+			if( bItem == FALSE && textCmdFunc.m_dwAuthorization > pMover->m_dwAuthorization )
 				break;
 
 		#ifdef __CLIENT
-			if( pTextCmdFunc->m_nServer == TCM_CLIENT || pTextCmdFunc->m_nServer == TCM_BOTH )
-			{
-				if (pTextCmdFunc->Call(scanner, pMover)) {
-					if (pTextCmdFunc->m_nServer == TCM_BOTH) {
-						char szSendChat[MAX_PATH];
-						sprintf(szSendChat, "%s", scanner.m_pBuf);
-						g_DPlay.SendChat((LPCSTR)szSendChat);
+			if (textCmdFunc.m_nServer == TCM_CLIENT || textCmdFunc.m_nServer == TCM_BOTH) {
+				if (textCmdFunc.Call(scanner, pMover)) {
+					if (textCmdFunc.m_nServer == TCM_BOTH) {
+						g_DPlay.SendChat(lpszString);
 					}
 				}
+			} else {
+				g_DPlay.SendChat(lpszString);
 			}
-			else
-				g_DPlay.SendChat( (LPCSTR)lpszString );
 		#else	// __CLIENT
-			if (pTextCmdFunc->m_nServer == TCM_SERVER || pTextCmdFunc->m_nServer == TCM_BOTH) {
-				pTextCmdFunc->Call(scanner, pMover);
+			if (textCmdFunc.m_nServer == TCM_SERVER || textCmdFunc.m_nServer == TCM_BOTH) {
+				textCmdFunc.Call(scanner, pMover);
 			}
 		#endif	// __CLIENT
 			return TRUE;
 		}
-		nCount++;
 	}
 
 #ifdef __CLIENT
@@ -5031,9 +5025,7 @@ BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CPlayer_ * pMover, B
 		// 이모티콘 명령
 		for( int j=0; j < MAX_EMOTICON_NUM; j++ )
 		{
-			if( stricmp( &(szText[1]), g_DialogMsg.m_EmiticonCmd[ j ].m_szCommand ) == 0 )			
-	//		if( _tcsicmp( szText, g_DialogMsg.m_EmiticonCmd[ j ].m_szCommand ) == 0 )
-			{
+			if( stricmp( &(szText[1]), g_DialogMsg.m_EmiticonCmd[ j ].m_szCommand ) == 0 ) {
 				g_DPlay.SendChat( (LPCSTR)lpszString );
 				return TRUE;
 			}
