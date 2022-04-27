@@ -158,7 +158,7 @@ void CMover::AddExperienceKillMember(CMover * pDead, EXPFLOAT fExpValue, MoverPr
 
 	for (const auto & member : accumulator.m_players) {
 		const float fExpValuePerson = GetBaseExp(fExpValue, member.m_contribution, pDead->GetMaxHitPoint())
-			* CPCBang::GetInstance()->GetExpFactor(static_cast<CUser *>(this));
+			* CPCBang::GetInstance()->GetExpFactor(member.m_user);
 
 		member.m_user->AddExperienceSolo(fExpValuePerson, pMoverProp, fFxpValue, false);
 	}
