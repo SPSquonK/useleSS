@@ -1141,7 +1141,7 @@ void CDPCoreClient::OnPartyChangeTroup( CAr & ar, DPID, DPID, OBJID )
 		strcpy( pParty->m_sParty, sParty );
 
 		for (CUser * const pUser : AllMembers(*pParty)) {
-			pUser->AddPartyChangeName(pParty->m_sParty);
+			pUser->AddPartyChangeTroup(pParty->m_sParty);
 		}
 	}
 }
