@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <vector>
+#include <memory>
+
 typedef	REGIONELEM	RegionElem, *PRegionElem;
 
 typedef struct tagWORLD
@@ -30,27 +33,24 @@ class CWorldMng : public CMyMap2<CWorld*>
 {
 
 #ifdef __WORLDSERVER	//	server	--------------------------------------------
-private:
-	CWorld*		m_pFirstActive;
 public:
-	LONG		m_lCount;		// ¿ùµåÀÇ °¹¼ö 
+	std::vector<std::unique_ptr<CWorld>> m_worlds;
 
 	void		Free();
 	CWorld*		GetWorld( DWORD dwWorldID );
-	CWorld*		GetFirstActive()	{	return m_pFirstActive;	}
 	void		Add( CJurisdiction* pJurisdiction );
 	void		ReadObject();
 	void		Process();
-	BOOL		HasNobody_Replace( DWORD dwWorldId, int nLayer );
+	[[nodiscard]] bool HasNobody_Replace(DWORD dwWorldId, int nLayer) const;
 #ifdef __LAYER_1015
 	BOOL		AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId, int nLayer );
 #else	// __LAYER_1015
 	BOOL		AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId = FALSE );
 #endif	// __LAYER_1015
-	BOOL		PreremoveObj( OBJID objid );
+	bool PreremoveObj(const OBJID objid);
 	CObj*		PregetObj( OBJID objid );
 	u_long		Respawn();
-	DWORD		GetObjCount();
+	[[nodiscard]] DWORD GetObjCount() const noexcept;
 
 	CRegionElemArray	m_aRevivalPos;
 	CRegionElemArray	m_aRevivalRgn;	

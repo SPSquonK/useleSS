@@ -34,13 +34,9 @@ extern	CUserMng		g_UserMng;
 
 CWorldMng::CWorldMng()
 {
-#ifdef __WORLDSERVER
-	m_pFirstActive	= NULL;
-	m_lCount	= 0;
-#else	// __WORLDSERVER
-
+#ifdef __CLIENT
 	m_pWorld	= NULL;
-#endif	// __WORLDSERVER
+#endif
 	m_nSize = 0;
 }
 
@@ -64,42 +60,23 @@ void CWorldMng::Free()
 #endif // __WORLDSERVER
 
 #ifdef __WORLDSERVER
-void CWorldMng::Free()
-{
-	CWorld* pWorld, *pRemove;
-
-	pWorld	= GetFirstActive();
-	while( ( pRemove = pWorld ) )
-	{
-		pWorld	= pWorld->nextptr;
-		safe_delete( pRemove );
-	}
-	m_pFirstActive	= NULL;
+void CWorldMng::Free() {
+	m_worlds.clear();
 	m_aWorld.RemoveAll();
-
 }
 
-u_long	CWorldMng::Respawn()
-{
-	CWorld* pWorld;
-	u_long	uRespawned	= 0;
+u_long CWorldMng::Respawn() {
+	u_long uRespawned = 0;
 	
-	pWorld	= GetFirstActive();
-	while( pWorld )
-	{
-		uRespawned	+= pWorld->Respawn();
-		pWorld	= pWorld->nextptr;
+	for (auto & pWorld : m_worlds) {
+		uRespawned += pWorld->Respawn();
 	}
 
 	return uRespawned;
 }
 
-void CWorldMng::ReadObject()
-{
-	CWorld* pWorld;
-	pWorld	= GetFirstActive();
-	while( pWorld )
-	{
+void CWorldMng::ReadObject() {
+	for (auto & pWorld : m_worlds) {
 	#ifdef __LAYER_1021
 		pWorld->LoadObject( nDefaultLayer );
 	#else	// __LAYER_1021
@@ -109,7 +86,6 @@ void CWorldMng::ReadObject()
 		pWorld->LoadRegion();	// x
 	#endif // __S1108_BACK_END_SYSTEM
 		pWorld->LoadPatrol();
-		pWorld	= pWorld->nextptr;
 	}
 }
 
@@ -131,23 +107,18 @@ void CWorldMng::Add( CJurisdiction* pJurisdiction )
 		pWorld->OpenWorld( MakePath( DIR_WORLD, lpWorld->m_szFileName ), TRUE );
 		pWorld->ReadWorld( pJurisdiction->m_rect );
 
-		pWorld->nextptr	= m_pFirstActive;
-		m_pFirstActive	= pWorld;
-		m_lCount++;
+		m_worlds.emplace(m_worlds.begin(), pWorld); // emplace front to mimic the base flyff code
 	}
 	strcpy( pWorld->m_szWorldName, lpWorld->m_szWorldName );
 }
 
-CWorld* CWorldMng::GetWorld( DWORD dwWorldID )
-{
-	CWorld* pWorld	= GetFirstActive();
-	while( pWorld )
-	{
-		if( pWorld->GetID() == dwWorldID )
-			return( pWorld );
-		pWorld	= pWorld->nextptr;
-	}
-	return( FALSE );
+CWorld * CWorldMng::GetWorld(const DWORD dwWorldID) {
+	const auto it = std::ranges::find_if(m_worlds,
+		[dwWorldID](const auto & pWorld) {
+			return pWorld->GetID() == dwWorldID;
+		});
+
+	return it != m_worlds.end() ? it->get() : nullptr;
 }
 
 #ifdef __LAYER_1015
@@ -163,30 +134,22 @@ BOOL CWorldMng::AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId )
 	return bResult;
 }
 
-BOOL CWorldMng::PreremoveObj( OBJID objid )
-{
-	CWorld* pWorld	= GetFirstActive();
-	while( pWorld )
-	{
-		if( TRUE == pWorld->PreremoveObj( objid ) )
-			return TRUE;
-		pWorld	= pWorld->nextptr;
-	}
-	return FALSE;
+bool CWorldMng::PreremoveObj(const OBJID objid ) {
+	// find because an object is only in one place
+	const auto preremovedWorld = std::ranges::find_if(m_worlds,
+		[objid](auto & pWorld) { return pWorld->PreremoveObj(objid); }
+		);
+
+	return preremovedWorld != m_worlds.end();
 }
 
-CObj* CWorldMng::PregetObj( OBJID objid )
-{
-	CObj* pObj;
-	CWorld* pWorld	= GetFirstActive();
-	while( pWorld )
-	{
-		pObj	= pWorld->PregetObj( objid );
-		if( NULL != pObj )
-			return pObj;
-		pWorld	= pWorld->nextptr;
+CObj * CWorldMng::PregetObj(const OBJID objid) {
+	for (auto & pWorld : m_worlds) {
+		CObj * pObj = pWorld->PregetObj(objid);
+		if (pObj) return pObj;
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 #else	// __WORLDSERVER
@@ -508,12 +471,8 @@ void CWorldMng::LoadRevivalPos( DWORD dwWorldId, LPCTSTR lpszWorld )
 void CWorldMng::LoadAllMoverDialog()
 {
 #ifdef __WORLDSERVER
-	CWorld* pWorld;
-	pWorld = GetFirstActive();
-	while( pWorld )
-	{
+	for (auto & pWorld : m_worlds) {
 		pWorld->LoadAllMoverDialog();
-		pWorld = pWorld->nextptr;
 	}
 #endif //__WORLDSERVER
 }
@@ -626,49 +585,31 @@ PRegionElem CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & v
 #endif	// __WORLDSERVER
 
 #ifdef __WORLDSERVER
-void CWorldMng::Process()
-{
-	CWorld* pWorld = GetFirstActive();
-	while( pWorld )
-	{
+void CWorldMng::Process() {
+	for (auto & pWorld : m_worlds) {
 		pWorld->Process();
-		pWorld = pWorld->nextptr;
 	}
 }
 
-BOOL CWorldMng::HasNobody_Replace( DWORD dwWorldId, int nLayer )
-{
-	CWorld* pWorld = GetFirstActive();
-	while( pWorld )
-	{
-		const auto it = std::ranges::find_if(
-			pWorld->m_ReplaceObj,
-			[&](const REPLACEOBJ & replaceObj) {
-				return replaceObj.dwWorldID == dwWorldId && replaceObj.nLayer == nLayer;
-			}
-		);
+bool CWorldMng::HasNobody_Replace(const DWORD dwWorldId, const int nLayer) const {
+	const auto IsTargettedHere = [&](const REPLACEOBJ & replaceObj) {
+		return replaceObj.dwWorldID == dwWorldId && replaceObj.nLayer == nLayer;
+	};
 
-		if (it != pWorld->m_ReplaceObj.end()) {
-			return FALSE;
+	return std::ranges::all_of(m_worlds,
+		[&](const auto & pWorld) {
+			const auto it = std::ranges::find_if(pWorld->m_ReplaceObj, IsTargettedHere);
+			return it == pWorld->m_ReplaceObj.end();
 		}
-
-		pWorld = pWorld->nextptr;
-	}
-
-	return TRUE;
+	);
 }
 
 // 모든 월드의 오브젝트 카운트를 얻는다.
-DWORD CWorldMng::GetObjCount()
-{
+DWORD CWorldMng::GetObjCount() const noexcept {
 	DWORD dwCount = 0;
 
-	CWorld* pWorld = GetFirstActive();
-	while( pWorld )
-	{
-//		dwCount += pWorld->GetObjCount();
-		dwCount	+=	pWorld->GetRunnableObjectCount();
-		pWorld = pWorld->nextptr;
+	for (const auto & pWorld : m_worlds) {
+		dwCount += pWorld->GetRunnableObjectCount();
 	}
 
 	return dwCount;

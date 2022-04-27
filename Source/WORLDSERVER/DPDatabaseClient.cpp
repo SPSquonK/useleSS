@@ -1542,10 +1542,7 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 
 	if( bFirst )
 	{
-		CWorld* pWorld;
-		pWorld	= g_WorldMng.GetFirstActive();
-		while( pWorld )
-		{
+		for (auto & pWorld : g_WorldMng.m_worlds) {
 			pWorld->LoadRegion();
 #ifdef __EVENT_0117
 		#ifdef __LAYER_1021
@@ -1574,7 +1571,6 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 				}	// if
 			}	// for
 #endif	// __EVENT_0117
-			pWorld	= pWorld->nextptr;
 		}	// while
 #ifdef __EVENT_0117
 		CEventGeneric::GetInstance()->SortRegionGeneric();

@@ -99,7 +99,6 @@ m_cbRunnableObject( 0 )
 	m_cbAddObjs		= 0;
 	memset( m_lpszWorld, 0, sizeof(TCHAR) * 64 );
 	m_cbUser	= 0;
-	nextptr	= NULL;
 	m_cbModifyLink	= 0;
 	m_bLoadScriptFlag = FALSE;
 

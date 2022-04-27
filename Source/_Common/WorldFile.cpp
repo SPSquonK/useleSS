@@ -1206,10 +1206,8 @@ BOOL CWorld::HasNoObj_Add( int nLayer )
 	return TRUE;
 }
 
-BOOL CWorld::HasNobody_Replace( int nLayer )
-{
-	return g_WorldMng.HasNobody_Replace( GetID(), nLayer );
-	return TRUE;
+bool CWorld::HasNobody_Replace(const int nLayer) const {
+	return g_WorldMng.HasNobody_Replace(GetID(), nLayer);
 }
 
 BOOL CWorld::IsLayerPlayer( CObj* pObj, int nLayer )

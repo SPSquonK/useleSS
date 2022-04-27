@@ -198,7 +198,7 @@ public:
 private:
 	int		m_cbRunnableObject;
 public:
-	int		GetRunnableObjectCount()	{	return m_cbRunnableObject;	}
+	[[nodiscard]] int GetRunnableObjectCount() const noexcept { return m_cbRunnableObject; }
 	float*			m_apHeightMap;	
 	LPWATERHEIGHT	m_apWaterHeight;		
 
@@ -226,7 +226,6 @@ public:
 	TCHAR			m_lpszWorld[64];
 	CDWordStack		m_ObjStack;
 	u_long			m_cbUser;
-	CWorld*			nextptr;	// next world ptr
 #ifdef __LAYER_1021
 	CLayerdRespawner	m_respawner;
 #else	// __LAYER_1021
@@ -402,7 +401,7 @@ public:
 // World.cpp
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-	DWORD			GetID()	{ return m_dwWorldID; }
+	[[nodiscard]] DWORD GetID() const noexcept { return m_dwWorldID; }
 
 #ifdef __JEFF_11_4
 	BOOL	IsArena( void )	
@@ -591,7 +590,7 @@ public:
 private:
 	BOOL	HasNobody_Process( int nLayer );
 	BOOL	HasNoObj_Add( int nLayer );
-	BOOL	HasNobody_Replace( int nLayer );
+	[[nodiscard]] bool HasNobody_Replace(int nLayer) const;
 	BOOL	IsLayerPlayer( CObj* pObj, int nLayer );
 
 public:
