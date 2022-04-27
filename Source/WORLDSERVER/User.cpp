@@ -1139,17 +1139,6 @@ void CUser::AddSendErrorParty( DWORD dw, DWORD dwSkill )
 	
 }
 
-void CUser::AddSetPartyMemberParam( u_long idPlayer, BYTE nParam, int nVal )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM;
-	m_Snapshot.ar << idPlayer << nParam << nVal;
-	
-}
-
 void CUser::AddPartyMember( CParty *pParty, u_long idPlayer, const char* pszLeader, const char* pszMember )
 {
 	if( IsDelete() )	return;
@@ -1200,29 +1189,6 @@ void CUser::AddSetPartyMode( int nMode, BOOL bOnOff, LONG nPoint ,DWORD dwSkillT
 	}
 	
 }
-
-void CUser::AddPartyChangeItemMode( int nItemMode )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PARTYCHANGEITEMMODE;
-	m_Snapshot.ar << nItemMode;
-	
-}
-
-void CUser::AddPartyChangeExpMode( int nExpMode )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PARTYCHANGEEXPMODE;
-	m_Snapshot.ar << nExpMode;
-	
-}
-
 
 void CUser::AddPartyChangeName( const char * szPartyName )
 {
@@ -1322,17 +1288,6 @@ void CUser::AddFriendGameJoin()
 #else	// __RT_1025
 	m_Messenger.Serialize( m_Snapshot.ar );
 #endif	// __RT_1025
-}
-
-void CUser::AddPartyChangeLeader( u_long uidChangeLeader )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_ADDPARTYCHANGELEADER;
-	m_Snapshot.ar << uidChangeLeader;
-	
 }
 
 void CUser::AddCancelQuest( DWORD dwQuestCancelID )

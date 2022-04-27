@@ -302,7 +302,6 @@ public:
 	void			AddSetChangeJob( int nJob );
 	void			AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer );
 	void			AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip );
-	void			AddPartyChangeLeader( u_long uidChangeLeader );
 	void			AddCancelQuest( DWORD dwQuestCancelID );
 	void			AddRemoveQuest( DWORD dwQuestCancelID );
 	void			AddRemoveAllQuest();
@@ -324,9 +323,6 @@ public:
 	void			AddPartyChangeTroup( const char * szPartyName );
 	void			AddPartyChangeName( const char * szPartyName );
 	void			AddSetPartyMode( int nMode, BOOL bOnOff, LONG nPoint , DWORD dwSkillTime );
-	void			AddPartyChangeItemMode( int nItemMode );
-	void			AddPartyChangeExpMode( int nExpMode );
-	void			AddSetPartyMemberParam( u_long idPlayer, BYTE nParam, int nVal );
 	void			AddPartyName();
 	void			AddPartySkillCall( const D3DXVECTOR3 &vLeader );
 	void			AddPartySkillBlitz( OBJID idTarget );

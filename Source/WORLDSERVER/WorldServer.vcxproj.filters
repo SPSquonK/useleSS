@@ -1160,6 +1160,9 @@
     <ClInclude Include="..\_Common\sqktd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GroupedEmission.h">
+      <Filter>World Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldServer.rc">

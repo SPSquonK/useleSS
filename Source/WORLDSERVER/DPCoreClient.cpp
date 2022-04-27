@@ -21,6 +21,7 @@ extern  CDPDatabaseClient	g_dpDBClient;
 
 #include "Party.h"
 #include "GroupUtils.h"
+#include "GroupedEmission.h"
 extern	CPartyMng	g_PartyMng;
 #include "Environment.h"
 
@@ -893,8 +894,7 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 }
 
 void CDPCoreClient::OnAddPlayerParty(CAr & ar, DPID, DPID, OBJID) {
-	u_long idParty, idPlayer;
-	ar >> idParty >> idPlayer;
+	const auto [idParty, idPlayer] = ar.Extract<u_long, u_long>();
 
 	CParty * const pParty = g_PartyMng.GetParty(idParty);
 	if (!pParty) return;
@@ -902,11 +902,8 @@ void CDPCoreClient::OnAddPlayerParty(CAr & ar, DPID, DPID, OBJID) {
 	const int i = pParty->FindMember(idPlayer);
 	if (i < 0) return;
 
-	pParty->m_aMember[i].m_bRemove	= FALSE;
-
-	for (CUser * const pMember : AllMembers(*pParty)) {
-		pMember->AddSetPartyMemberParam(idPlayer, PP_REMOVE, 0);
-	}
+	pParty->m_aMember[i].m_bRemove = FALSE;
+	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, BOOL>(idPlayer, FALSE);
 }
 
 void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
@@ -924,10 +921,7 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 			return;
 
 		pParty->m_aMember[i].m_bRemove	= TRUE;
-
-		for (CUser * const pMember : AllMembers(*pParty)) {
-			pMember->AddSetPartyMemberParam(idPlayer, PP_REMOVE, 1);
-		}
+		pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, BOOL>(idPlayer, FALSE);
 
 		if( i == 0 )		// 극단장이 나갈경우
 		{
@@ -1023,38 +1017,24 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnPartyChangeItemMode( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long uPartyId;
-	int nMode;
-	ar >> uPartyId >> nMode;
-	
-	CParty* pParty = g_PartyMng.GetParty( uPartyId );
-	if( pParty )
-	{
-		pParty->m_nTroupeShareItem = nMode;
+void CDPCoreClient::OnPartyChangeItemMode(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uPartyId, nMode] = ar.Extract<u_long, int>();
 
-		for (CUser * const pUser : AllMembers(*pParty)) {
-			pUser->AddPartyChangeItemMode( nMode );
-		}
-	}
+	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
+	if (!pParty) return;
+
+	pParty->m_nTroupeShareItem = nMode;
+	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYCHANGEITEMMODE, int>(nMode);
 }
 
-void CDPCoreClient::OnPartyChangeExpMode( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long uPartyId;
-	int nMode;
-	ar >> uPartyId >> nMode;
-	
-	CParty* pParty = g_PartyMng.GetParty( uPartyId );
-	if( pParty )
-	{
-		pParty->m_nTroupsShareExp = nMode;
+void CDPCoreClient::OnPartyChangeExpMode(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uPartyId, nMode] = ar.Extract<u_long, int>();
 
-		for (CUser * const pUser : AllMembers(*pParty)) {
-			pUser->AddPartyChangeExpMode(nMode);
-		}
-	}
+	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
+	if (!pParty) return;
+
+	pParty->m_nTroupsShareExp = nMode;
+	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYCHANGEEXPMODE, int>(nMode);
 }
 
 
@@ -2409,22 +2389,14 @@ void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
 }
 
 
-void CDPCoreClient::OnPartyChangeLeader( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long uPartyId, idChangeLeader;
-	ar >> uPartyId >> idChangeLeader;
-	
-	CParty* pParty;
+void CDPCoreClient::OnPartyChangeLeader(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uPartyId, idChangeLeader] = ar.Extract<u_long, u_long>();
 
-	pParty	= g_PartyMng.GetParty( uPartyId );
-	if( pParty )
-	{
-		pParty->ChangeLeader( idChangeLeader );
+	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
+	if (!pParty) return;
 
-		for (CUser * const pUser : AllMembers(*pParty)) {
-			pUser->AddPartyChangeLeader(idChangeLeader);
-		}
-	}
+	pParty->ChangeLeader(idChangeLeader);
+	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_ADDPARTYCHANGELEADER, u_long>(idChangeLeader);
 }
 
 void CDPCoreClient::OnGameRate( CAr & ar, DPID, DPID, OBJID )

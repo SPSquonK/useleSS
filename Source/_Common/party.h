@@ -10,11 +10,6 @@
 #include <ranges>
 #endif
 
-//#ifdef __WORLDSERVER
-//#include "User.h"
-//extern	CUserMng	g_UserMng;
-//#endif // worldserver
-
 #include "mempooler.h"
 #include <map>
 
@@ -27,8 +22,6 @@
 
 #define PARTY_PARSKILL_MODE			4	// parskill 상태  :단장에게서 멀리떨어져도 사용가능
 #define MAX_PARTYMODE				5
-
-#define	PP_REMOVE	0
 
 #define	MAX_PTMEMBER_SIZE			15
 #define MAX_PTMEMBER_SIZE_SPECIAL	8
@@ -145,6 +138,17 @@ public:
 //	Attributes
 	int		GetSize( void );
 	int		FindMember( u_long uPlayerId );
+
+#ifdef __WORLDSERVER
+	/* Adds a new snapshot to all party members centered on no target */
+	template<WORD snapshotID, typename... Ts>
+	void SendSnapshotNoTarget(Ts ... ts) const;
+
+	/* Adds a snapshot to all party members centered on a certain object */
+	template<WORD snapshotID, typename... Ts>
+	void SendSnapshotWithTarget(DWORD targetId, Ts ... ts) const;
+#endif
+
 private:
 
 

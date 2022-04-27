@@ -4462,21 +4462,12 @@ void CDPClient::OnPartyExpLevel( CAr & ar )
 	g_Party.m_nLevel = nLevel;	
 }
 
-void CDPClient::OnPartyChangeLeader( CAr  & ar )
-{
-	u_long uidChangeLeader;
-	ar >> uidChangeLeader;
-	g_Party.ChangeLeader( uidChangeLeader );
+void CDPClient::OnPartyChangeLeader(CAr & ar) {
+	u_long uidChangeLeader; ar >> uidChangeLeader;
+	g_Party.ChangeLeader(uidChangeLeader);
 
-	CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-#ifdef __BUFF_1107	//
-	pWndWorld->m_buffs.Clear();
-#else	// __BUFF_1107
-	pWndWorld->m_partySkillState.Init();
-#endif	// __BUFF_1107
-
-	for( int i = 0 ; i < MAX_SKILL ; i++ )
-	{
+	g_WndMng.m_pWndWorld->m_buffs.Clear();
+	for (int i = 0; i < MAX_SKILL; i++) {
 		g_WndMng.m_dwSkillTime[i] = 0;
 	}
 }
@@ -4691,13 +4682,11 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 	}
 }
 
-void CDPClient::OnPartyChangeItemMode( CAr & ar )
-{
+void CDPClient::OnPartyChangeItemMode(CAr & ar) {
 	ar >> g_Party.m_nTroupeShareItem;
 }
 
-void CDPClient::OnPartyChangeExpMode( CAr & ar )
-{
+void CDPClient::OnPartyChangeExpMode(CAr & ar) {
 	ar >> g_Party.m_nTroupsShareExp;
 }
 
@@ -4766,40 +4755,32 @@ void CDPClient::OnPartyChangeTroup( CAr & ar )
 	}
 }
 
-void CDPClient::OnSetPartyMemberParam( CAr & ar )
-{
-	u_long idMember;
-	BYTE nParam;
-	int nVal;
-	ar >> idMember >> nParam >> nVal;
-	switch( nParam )
-	{
-		case PP_REMOVE:
-			{
-				int i	= g_Party.FindMember( idMember );
-				if( i >= 0 )
-					g_Party.m_aMember[i].m_bRemove	= (BOOL)nVal;
-				
-				if( nVal == 1 && i == 0 )
-				{
-					bool fRemoveParty	= true;
-					for( int j = 1; j < g_Party.m_nSizeofMember; j++ )
-					{
-						if( g_Party.m_aMember[j].m_bRemove == FALSE )
-						{
-							fRemoveParty	= false;
-							g_Party.SwapPartyMember( 0, j );
-							g_WndMng.m_pWndWorld->m_buffs.Clear();
-							for( int i = 0 ; i < MAX_SKILL ; i++ )
-								g_WndMng.m_dwSkillTime[i] = 0;
-							break;
-						}
-					}
-					if( fRemoveParty )
-						g_Party.InitParty();
-				}
-				break;
-			}
+void CDPClient::OnSetPartyMemberParam(CAr & ar) {
+	const auto [idMember, nVal] = ar.Extract<u_long, BOOL>();
+
+	const int i = g_Party.FindMember( idMember );
+	if (i < 0) return;
+
+	g_Party.m_aMember[i].m_bRemove	= nVal;
+
+	if (nVal != TRUE || i != 0) return;
+
+	bool fRemoveParty	= true;
+
+	for( int j = 1; j < g_Party.m_nSizeofMember; j++ ) {
+		if( g_Party.m_aMember[j].m_bRemove == FALSE )
+		{
+			fRemoveParty	= false;
+			g_Party.SwapPartyMember( 0, j );
+			g_WndMng.m_pWndWorld->m_buffs.Clear();
+			for( int i = 0 ; i < MAX_SKILL ; i++ )
+				g_WndMng.m_dwSkillTime[i] = 0;
+			break;
+		}
+	}
+
+	if (fRemoveParty) {
+		g_Party.InitParty();
 	}
 }
 
