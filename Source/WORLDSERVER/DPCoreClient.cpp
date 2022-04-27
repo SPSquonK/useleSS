@@ -790,8 +790,8 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 			CUser * pMember = nullptr;
 
 			for (CUser * const pUser : AllMembers(*pParty)) {
-				pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
 				pMember = pUser;
+				pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
 			}
 
 			if (pMember != nullptr) {
