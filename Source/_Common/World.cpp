@@ -102,8 +102,6 @@ m_cbRunnableObject( 0 )
 	m_cbModifyLink	= 0;
 	m_bLoadScriptFlag = FALSE;
 
-	m_cbOnDie	= 0;
-	memset( m_aOnDie, 0, sizeof(m_aOnDie) );
 #else	// __WORLDSERVER
 	m_fElapsedTime	=0;
 	m_nVisibilityLand	= (int)( m_fFarPlane / ( MAP_SIZE * MPU ) );
@@ -1877,35 +1875,30 @@ void CWorld::ProcessAllSfx( void )
 #endif	// __CLIENT
 
 #ifdef __WORLDSERVER
-void CWorld::OnDie( CMover* pDie, CMover* pAttacker )
-{
-	if( m_cbOnDie >= MAX_ON_DIE )
-		return;
-	for( int i = 0; i < m_cbOnDie; i++ )
-	{
-		if( m_aOnDie[i].pDie == pDie )
-			return;
-	}
-	m_aOnDie[m_cbOnDie].pDie	= (CUser*)pDie;
-	m_aOnDie[m_cbOnDie].pAttacker	= (CUser*)pAttacker;
-	m_cbOnDie++;
+void CWorld::OnDie(CUser * pDie, CUser * pAttacker ) {
+	const auto it = std::ranges::find_if(m_OnDie,
+		[pDie](const ON_DIE & onDie) { return onDie.pDie == pDie; }
+	);
+
+	if (it != m_OnDie.end()) return;
+
+	m_OnDie.emplace_back(ON_DIE{ pDie, pAttacker });
 }
 
-void CWorld::_OnDie( void )
-{
-	for( int i = 0; i < m_cbOnDie; i++ )
-	{
-		g_GuildCombatMng.OutWar( m_aOnDie[i].pDie, NULL );
-		g_GuildCombatMng.GetPoint( m_aOnDie[i].pAttacker, m_aOnDie[i].pDie );
-		int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser( m_aOnDie[i].pDie );
-		if( nIndex != NULL_ID )
-		{
-			int nStageId = g_GuildCombat1to1Mng.m_vecTenderGuild[nIndex].nStageId;
-			if( nStageId != NULL_ID )
-				g_GuildCombat1to1Mng.m_vecGuilCombat1to1[nStageId].SetLost( m_aOnDie[i].pDie );
+void CWorld::_OnDie() {
+	for (const auto & onDie : m_OnDie) {
+		g_GuildCombatMng.OutWar(onDie.pDie, NULL);
+		g_GuildCombatMng.GetPoint(onDie.pAttacker, onDie.pDie);
+		
+		const int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser(onDie.pDie);
+		if (nIndex != NULL_ID) {
+			const int nStageId = g_GuildCombat1to1Mng.m_vecTenderGuild[nIndex].nStageId;
+			if (nStageId != NULL_ID)
+				g_GuildCombat1to1Mng.m_vecGuilCombat1to1[nStageId].SetLost(onDie.pDie);
 		}
 	}
-	m_cbOnDie	= 0;
+
+	m_OnDie.clear();
 }
 
 CMover* CWorld::FindMover( LPCTSTR szName )

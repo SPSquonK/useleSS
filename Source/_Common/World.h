@@ -27,7 +27,6 @@
 #define	MAX_DYNAMICOBJ			81920
 //#define	MAX_BKGND				20480
 #define	MAX_MODIFYLINK			4096
-#define	MAX_REPLACEOBJ			1024
 #define	CLOSEWORKER				(DWORD)-1
 #define D3DFVF_BOUNDBOXVERTEX	(D3DFVF_XYZ|D3DFVF_DIFFUSE) 
 #define MAX_DISPLAYOBJ			5000
@@ -36,7 +35,6 @@
 #define WLD_EXTRA_WIDTH			10.0f
 #define	MAX_DELETEOBJS			4096
 #define MAX_MOVERSELECT			5
-#define	MAX_ON_DIE				1024
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // extern 
@@ -77,11 +75,11 @@ typedef struct tagLIGHTCOLOR
 } LIGHTCOLOR,* LPLIGHTCOLOR;
 
 #ifdef __WORLDSERVER
-typedef	struct	tagON_DIE
-{
-	CUser*	pDie;
-	CUser*	pAttacker;
-}	ON_DIE ;
+// GuildCombat death (GS + 1vs1)
+struct ON_DIE {
+	CUser * pDie;
+	CUser * pAttacker;
+};
 #endif	// __WORLDSERVER
 
 typedef struct tagREPLACEOBJ
@@ -216,6 +214,7 @@ public:
 	int				m_cbModifyLink;
 	CObj*			m_apModifyLink[MAX_MODIFYLINK];		// 16k
 
+	static constexpr size_t MAX_REPLACEOBJ = 1024;
 	boost::container::small_vector<REPLACEOBJ, MAX_REPLACEOBJ> m_ReplaceObj;
 
 //	CRIT_SEC		m_AddRemoveLock;
@@ -232,8 +231,9 @@ public:
 	CRespawner		m_respawner;		// 5.84m
 #endif	// __LAYER_1021
 	BOOL			m_bLoadScriptFlag;
-	int				m_cbOnDie;
-	ON_DIE			m_aOnDie[MAX_ON_DIE];	// 8k
+
+	static constexpr size_t MAX_ON_DIE = 32;
+	boost::container::small_vector<ON_DIE, MAX_ON_DIE> m_OnDie;
 
 public:
 	void			Process();
@@ -243,7 +243,7 @@ public:
 	CObj*			PregetObj( OBJID objid );
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}
 	DWORD			GetObjCount() { return m_dwObjNum; }
-	void			OnDie( CMover* pDie, CMover* pAttacker );
+	void			OnDie(CUser * pDie, CUser * pAttacker);
 	void			_OnDie( void );
 	CMover*			FindMover( LPCTSTR szName );
 private:

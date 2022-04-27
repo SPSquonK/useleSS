@@ -4904,10 +4904,13 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 		g_UserMng.AddRemoveAllSkillInfluence( this );
 	}
 
-	if( m_nGuildCombatState )
-	{
-		if( pAttacker && pAttacker->IsPlayer() && GetWorld() )
-			GetWorld()->OnDie( this, pAttacker );
+	if (m_nGuildCombatState) {
+		if (IsPlayer() && pAttacker && pAttacker->IsPlayer() && GetWorld()) {
+			CUser * thisPlayer = static_cast<CUser *>(this);
+			CUser * attackerPlayer = static_cast<CUser *>(pAttacker);
+
+			GetWorld()->OnDie(thisPlayer, attackerPlayer);
+		}
 	}
 
 	if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( this ) )
