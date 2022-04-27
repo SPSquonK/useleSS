@@ -101,7 +101,6 @@ m_cbRunnableObject( 0 )
 	m_cbUser	= 0;
 	nextptr	= NULL;
 	m_cbModifyLink	= 0;
-	m_cbReplaceObj	= 0;
 	m_bLoadScriptFlag = FALSE;
 
 	m_cbOnDie	= 0;
@@ -1501,12 +1500,12 @@ void CWorld::_delete( void )
 	{
 		pObj	= m_apDeleteObjs[i];
 
-		for( int j = 0; j < m_cbReplaceObj; j++ )
-		{
-			if( m_aReplaceObj[j].pObj == pObj )
-				m_aReplaceObj[j].pObj	= NULL;
+		for (REPLACEOBJ & replaceObj : m_ReplaceObj) {
+			if (replaceObj.pObj == pObj) {
+				replaceObj.pObj = nullptr;
+			}
 		}
-		
+
 		for( int j = 0; j < m_cbModifyLink; j++ )
 		{
 			if( m_apModifyLink[j] == pObj )
@@ -1536,22 +1535,16 @@ void CWorld::DestroyObj( CObj* pObj )
 
 void CWorld::_replace( void )
 {
-	CMover*		pMover;
-	DWORD		dwWorldID;
-	D3DXVECTOR3 vPos;
-	u_long		uIdofMulti;
-	
-	for( int i = 0; i < m_cbReplaceObj; ++i )
-	{
-		pMover	= m_aReplaceObj[i].pObj;
+	for (const auto & replaceObj : m_ReplaceObj) {
+		CMover * const pMover	= replaceObj.pObj;
 		if( ::IsInvalidObj( pMover ) )
 			continue;
 
-		dwWorldID	= m_aReplaceObj[i].dwWorldID;
-		vPos  	    = m_aReplaceObj[i].vPos;
-		uIdofMulti	= m_aReplaceObj[i].uIdofMulti;
+		const DWORD dwWorldID   = replaceObj.dwWorldID;
+		D3DXVECTOR3 vPos  = replaceObj.vPos;
+		const u_long uIdofMulti	= replaceObj.uIdofMulti;
 #ifdef __LAYER_1015
-		int nLayer	= m_aReplaceObj[i].nLayer;
+		const int nLayer	= replaceObj.nLayer;
 #endif	// __LAYER_1015
 
 		if( uIdofMulti != g_uIdofMulti )		// 현재구현에서는 보류 
@@ -1632,8 +1625,9 @@ void CWorld::_replace( void )
 			}
 		}
 	}
-	m_cbReplaceObj = 0;
+	
 
+	m_ReplaceObj.clear();
 }
 
 void CWorld::_process( void )

@@ -641,11 +641,17 @@ BOOL CWorldMng::HasNobody_Replace( DWORD dwWorldId, int nLayer )
 	CWorld* pWorld = GetFirstActive();
 	while( pWorld )
 	{
-		for( int i=0; i<pWorld->m_cbReplaceObj; ++i )
-		{
-			if( pWorld->m_aReplaceObj[i].dwWorldID == dwWorldId && pWorld->m_aReplaceObj[i].nLayer == nLayer )
-				return FALSE;
+		const auto it = std::ranges::find_if(
+			pWorld->m_ReplaceObj,
+			[&](const REPLACEOBJ & replaceObj) {
+				return replaceObj.dwWorldID == dwWorldId && replaceObj.nLayer == nLayer;
+			}
+		);
+
+		if (it != pWorld->m_ReplaceObj.end()) {
+			return FALSE;
 		}
+
 		pWorld = pWorld->nextptr;
 	}
 

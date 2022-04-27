@@ -2008,7 +2008,6 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 	if( HasActivatedEatPet() )
 		InactivateEatPet();
 
-	LPREPLACEOBJ lpReplaceObj	= NULL;
 
 	for( int i = 0; i < pWorld->m_cbModifyLink; i++ )
 	{
@@ -2020,19 +2019,16 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 		}
 	}
 
-	for( int i = 0; i < pWorld->m_cbReplaceObj; i++ )
-	{
-		if( pWorld->m_aReplaceObj[i].pObj == this )
-		{
-			lpReplaceObj = &pWorld->m_aReplaceObj[i];
-			break;
+	const auto lpReplaceObj = std::ranges::find_if(
+		pWorld->m_ReplaceObj,
+		[&](const REPLACEOBJ & replaceObj) {
+			return replaceObj.pObj == this;
 		}
-	}
-	if( lpReplaceObj == NULL )
-	{
-		ASSERT( pWorld->m_cbReplaceObj < MAX_REPLACEOBJ );
-		lpReplaceObj = &pWorld->m_aReplaceObj[pWorld->m_cbReplaceObj++];
-		lpReplaceObj->pObj	= this;
+	);
+
+	if (lpReplaceObj == pWorld->m_ReplaceObj.end()) {
+		pWorld->m_ReplaceObj.push_back(REPLACEOBJ{ });
+		lpReplaceObj->pObj = this;
 	}
 
 	lpReplaceObj->dwWorldID	 = dwWorldID;

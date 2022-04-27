@@ -1,6 +1,8 @@
 #ifndef __WORLD_2002_1_22
 #define __WORLD_2002_1_22
 
+#include <boost/container/small_vector.hpp>
+
 #ifdef __LAYER_1015
 #define	ADDOBJ( pObj, bAddItToGlobalId, nLayer )	AddObj( (pObj), (bAddItToGlobalId), (nLayer) )
 #else	// __LAYER_1015
@@ -214,9 +216,7 @@ public:
 	int				m_cbModifyLink;
 	CObj*			m_apModifyLink[MAX_MODIFYLINK];		// 16k
 
-//	CRIT_SEC		m_csReplaceObj;
-	int				m_cbReplaceObj;
-	REPLACEOBJ		m_aReplaceObj[MAX_REPLACEOBJ];		// 4k
+	boost::container::small_vector<REPLACEOBJ, MAX_REPLACEOBJ> m_ReplaceObj;
 
 //	CRIT_SEC		m_AddRemoveLock;
 	int				m_cbAddObjs;
