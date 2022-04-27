@@ -792,8 +792,10 @@ void CDialogMsg::AddEmoticonUser( CObj* pObj, int nEmoticonIdx )
 
 void CDialogMsg::AddEmoticon( CObj* pObj, int nEmoticonIdx )
 {
-	if( nEmoticonIdx < (int)( m_texEmoticon.GetNumber() ) )
-		AddTexture( pObj, m_texEmoticon.GetAt( nEmoticonIdx ) );
+	if (nEmoticonIdx < 0) return;
+	if (nEmoticonIdx >= m_texEmoticon.GetNumber()) return;
+	CTexture * const tex = m_texEmoticon.GetAt(nEmoticonIdx);
+	AddTexture( pObj, tex );
 }
 void CDialogMsg::AddTexture( CObj* pObj, CTexture* pTexture )
 {
