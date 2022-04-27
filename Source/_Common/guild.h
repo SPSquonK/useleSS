@@ -233,12 +233,8 @@ enum CONTRIBUTION_RESULT
 
 typedef	struct	_GUILD_MEMBER_INFO
 {
-	u_long	idPlayer;
-	BYTE	nMultiNo;
-	_GUILD_MEMBER_INFO() 
-	{	idPlayer	= 0;
-		nMultiNo	= 100;
-	}
+	u_long	idPlayer = 0;
+	BYTE	nMultiNo = 100;
 }
 GUILD_MEMBER_INFO, *PGUILD_MEMBER_INFO;
 
@@ -320,7 +316,7 @@ public:
 	CGuildWar* GetWar( void );
 	int		GetMaxMemberSize( void );
 
-	int		GetMemberLvSize( int nMemberLv );
+	[[nodiscard]] int GetMemberLvSize(int nMemberLv) const;
 	int		GetMaxMemberLvSize( int nMemberLv );
 
 	CGuild &	operator = ( CGuild & source );

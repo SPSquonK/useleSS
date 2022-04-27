@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-
+#include "sqktd.h"
+#include <ranges>
 
 #include "guild.h"
 #ifdef __CORESERVER
@@ -469,14 +470,11 @@ CGuildMember* CGuild::GetMember( u_long idPlayer )
 	return NULL;
 }
 
-int CGuild::GetMemberLvSize( int nMemberLv )
-{
-	int cb	= 0;
-	for( auto i	= m_mapPMember.begin(); i != m_mapPMember.end(); ++i ) {
-		if( i->second->m_nMemberLv == nMemberLv )
-			cb++;
-	}
-	return cb;
+int CGuild::GetMemberLvSize(const int nMemberLv) const {
+	return static_cast<int>(std::ranges::count_if(
+		m_mapPMember | std::views::values,
+		[nMemberLv](const CGuildMember * const gm) { return gm->m_nMemberLv == nMemberLv; }
+	));
 }
 
 int CGuild::GetMaxMemberLvSize( int nMemberLv )
@@ -611,19 +609,14 @@ void CGuild::AddVote( const VOTE_INSERTED_INFO& info, bool bCompleted, BYTE* cbC
 }
 
 // 투표 찾기 
-CGuildVote* CGuild::FindVote( u_long idVote )
-{
-	for (auto it = m_votes.begin(); it != m_votes.end() ; ++it )
-	{
-		if ( (*it)->GetID() == idVote )
-			return *it;
-	}
-	return NULL;
+CGuildVote * CGuild::FindVote(const u_long idVote) {
+	return sqktd::find_if_or_default(m_votes,
+		[idVote](const CGuildVote * const vote) { return vote->GetID() == idVote; }
+	);
 }
 
 // idVote투표의 데이타를 변경하기 
-bool CGuild::ModifyVote( u_long idVote, BYTE cbOperation, BYTE cbExtra )
-{
+bool CGuild::ModifyVote( u_long idVote, BYTE cbOperation, BYTE cbExtra ) {
 	CGuildVote* pVote = FindVote( idVote );
 	if( pVote == NULL )
 		return false;
@@ -764,20 +757,12 @@ BOOL CGuildMng::RemoveGuild( u_long idGuild )
 	return FALSE;
 }
 
-CGuild* CGuildMng::GetGuild( u_long idGuild )
-{
-	const auto i	= m_mapPGuild.find( idGuild );
-	if( i != m_mapPGuild.end() )
-		return i->second;
-	return NULL;
+CGuild * CGuildMng::GetGuild(const u_long idGuild) {
+	return sqktd::find_in_map(m_mapPGuild, idGuild);
 }
 
-CGuild* CGuildMng::GetGuild( const char* szGuild )
-{
-	const auto i	= m_mapPGuild2.find( szGuild );
-	if( i != m_mapPGuild2.end() )
-		return i->second;
-	return NULL;
+CGuild * CGuildMng::GetGuild(const char * const szGuild) {
+	return sqktd::find_in_map(m_mapPGuild2, szGuild);
 }
 
 void CGuildMng::Serialize( CAr & ar, BOOL bDesc )

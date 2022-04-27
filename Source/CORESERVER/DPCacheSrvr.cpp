@@ -931,7 +931,7 @@ void CDPCacheSrvr::OnPartyChangeName( CAr & ar, DPID dpidCache, DPID dpidUser, u
 	{	
 		if( pParty->m_nKindTroup == 1 )
 		{
-			if( g_PartyMng.IsPartyName( sParty ) == FALSE )
+			if(!g_PartyMng.IsPartyName( sParty ))
 			{
 				strcpy( pParty->m_sParty, sParty );
 				g_PartyMng.AddPartyName( pPlayer->uKey, sParty );
@@ -1083,7 +1083,7 @@ void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, 
 			}
 			else
 			{
-				if( g_PartyMng.IsPartyName( szPartyName ) == FALSE )		
+				if(!g_PartyMng.IsPartyName( szPartyName ))		
 				{
 					pParty->m_nKindTroup = 1;
 					g_dpCoreSrvr.SendPartyChangeTroup( pParty->m_uPartyId, pParty->m_sParty );						

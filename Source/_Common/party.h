@@ -160,6 +160,7 @@ public:
 #endif	// __VM_0820
 };
 
+
 typedef	std::map< u_long, CParty*>	C2PartyPtr;
 typedef std::map<u_long, std::string>	ULONG2STRING;
 typedef std::map<std::string, u_long>	STRING2ULONG;
@@ -194,7 +195,7 @@ public:
 //	Operations
 	u_long	NewParty( u_long uLeaderId, LONG nLeaderLevel, LONG nLeaderJob, BYTE nLeaderSex, LPSTR szLeaderName, u_long uMemberId, LONG nMemberLevel, LONG nMemberJob, BYTE nMemberSex, LPSTR szMembername, u_long uPartyId = 0 );
 	BOOL	DeleteParty( u_long uPartyId );
-	CParty*	GetParty( u_long uPartyId );
+	[[nodiscard]] CParty * GetParty(u_long uPartyId);
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
 	void	Lock( void )	{	m_AddRemoveLock.Enter();	}
 	void	Unlock( void )	{	m_AddRemoveLock.Leave();	}
@@ -211,10 +212,11 @@ public:
 	HANDLE	m_hCloseWorker;
 
 public:
-	BOOL	IsPartyNameId( u_long uidPlayer );
-	BOOL	IsPartyName( const char* szPartyName );
+	[[nodiscard]] bool IsPartyName(const char * szPartyName) const {
+		return m_2PartyNameStringPtr.contains(szPartyName);
+	}
 	LPCSTR  GetPartyString( u_long uidPlayer );
-	u_long  GetPartyID( const char* szPartyName );
+	[[nodiscard]] u_long  GetPartyID(const char * szPartyName) const;
 	void	AddPartyName( u_long uidPlayer, const char* szPartyName );
 	BOOL	CreateWorkers( void );
 	void	CloseWorkers( void );

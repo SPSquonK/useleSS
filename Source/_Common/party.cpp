@@ -2,6 +2,8 @@
 #include "defineText.h"
 #include "defineSkill.h"
 #include "party.h"
+#include "sqktd.h"
+
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
@@ -858,17 +860,8 @@ BOOL CPartyMng::DeleteParty( u_long uPartyId )
 	return FALSE;
 }
 
-CParty* CPartyMng::GetParty( u_long uPartyId )
-{
-//	CParty* pParty;
-//	if( m_2Party.Lookup( uPartyId, pParty ) )
-//	{
-//		return pParty;
-//	}
-	C2PartyPtr::iterator i		= m_2PartyPtr.find( uPartyId );
-	if( i != m_2PartyPtr.end() )
-		return i->second;
-	return NULL;
+CParty * CPartyMng::GetParty(const u_long uPartyId) {
+	return sqktd::find_in_map(m_2PartyPtr, uPartyId);
 }
 
 void CPartyMng::Serialize( CAr & ar )
@@ -913,23 +906,6 @@ void CPartyMng::Serialize( CAr & ar )
 }
 
 #ifdef __CORESERVER
-BOOL CPartyMng::IsPartyNameId( u_long uidPlayer )
-{
-	if( m_2PartyNameLongPtr.end() != m_2PartyNameLongPtr.find( uidPlayer ) )
-	{
-		return TRUE;
-	}
-	return FALSE;
-}
-BOOL CPartyMng::IsPartyName( const char* szPartyName )
-{
-	if( m_2PartyNameStringPtr.end() != m_2PartyNameStringPtr.find( szPartyName ) )
-	{
-		return TRUE;
-	}
-	return FALSE;
-}
-
 LPCSTR CPartyMng::GetPartyString( u_long uidPlayer )
 {
 	ULONG2STRING::iterator i	= m_2PartyNameLongPtr.find( uidPlayer );
@@ -938,15 +914,9 @@ LPCSTR CPartyMng::GetPartyString( u_long uidPlayer )
 	return NULL;
 }
 
-u_long CPartyMng::GetPartyID( const char* szPartyName )
-{
-	STRING2ULONG::iterator i	= m_2PartyNameStringPtr.find( szPartyName );
-	if( i != m_2PartyNameStringPtr.end() )
-		return( i->second );
-	return 0;
+u_long CPartyMng::GetPartyID(const char * szPartyName) const {
+	return sqktd::find_in_map(m_2PartyNameStringPtr, szPartyName, 0);
 }
-
-
 
 void CPartyMng::AddPartyName( u_long uidPlayer, const char* szPartyName )
 {
