@@ -4,7 +4,6 @@
 #include "party.h"
 #include "sqktd.h"
 
-
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
 extern	CDPCoreSrvr g_dpCoreSrvr;
@@ -891,7 +890,7 @@ void CPartyMng::Serialize( CAr & ar )
 #ifdef __CORESERVER
 LPCSTR CPartyMng::GetPartyString( u_long uidPlayer )
 {
-	ULONG2STRING::iterator i	= m_2PartyNameLongPtr.find( uidPlayer );
+	auto i	= m_2PartyNameLongPtr.find( uidPlayer );
 	if( i != m_2PartyNameLongPtr.end() )
 		return( i->second.data() );
 	return NULL;
@@ -909,8 +908,8 @@ void CPartyMng::AddPartyName( u_long uidPlayer, const char* szPartyName )
 
 void CPartyMng::RemovePartyName( u_long uidPlayer, const char* szPartyName )
 {
-	ULONG2STRING::iterator iter = m_2PartyNameLongPtr.find( uidPlayer );
-	STRING2ULONG::iterator iter1 = m_2PartyNameStringPtr.find( szPartyName );
+	auto iter = m_2PartyNameLongPtr.find( uidPlayer );
+	auto iter1 = m_2PartyNameStringPtr.find( szPartyName );
 
 	if( iter != m_2PartyNameLongPtr.end() )
 		m_2PartyNameLongPtr.erase( iter );
@@ -1151,3 +1150,5 @@ void CPartyMng::PartyMapInfo( )
 
 CPartyMng	g_PartyMng;
 #endif // not client
+
+PartyId x = PartyId(0);

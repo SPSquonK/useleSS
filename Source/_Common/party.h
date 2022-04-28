@@ -1,5 +1,4 @@
-#ifndef __PARTY_H__
-#define	__PARTY_H__
+#pragma once
 
 #ifdef __CORESERVER
 #include "Ar.h"
@@ -12,6 +11,7 @@
 
 #include "mempooler.h"
 #include <map>
+
 
 // 모드(데미지 증가, 유니크, 휴식, 아이템)
 // 1, 2, 4, 8, 10, 12
@@ -86,7 +86,7 @@ public:
 	CMover* GetLeader( void );
 #endif // __CORESERVER
 
-	void	SetPartyId( u_long uPartyId )		{	 m_uPartyId = uPartyId ;	}
+	void SetPartyId(const u_long uPartyId) { m_uPartyId = uPartyId; }
 	BOOL	NewMember( u_long uPlayerId );
 	BOOL	DeleteMember( u_long uPlayerId );
 
@@ -148,7 +148,7 @@ public:
 };
 
 
-typedef	std::map< u_long, CParty*>	C2PartyPtr;
+typedef	std::map<u_long, CParty*>	C2PartyPtr;
 typedef std::map<u_long, std::string>	ULONG2STRING;
 typedef std::map<std::string, u_long>	STRING2ULONG;
 
@@ -222,6 +222,3 @@ public:
 #if defined(__WORLDSERVER)
 extern CPartyMng g_PartyMng;
 #endif
-
-
-#endif	//	_PARTY_H

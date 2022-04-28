@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HeapMng.h"
+#include "FlyFFTypes.h"
 #include "StaticString.h"
 
 class CAr final {
@@ -78,6 +79,18 @@ static	DWORD	s_dwHdrCur;
 	template<typename ... Ts> void Accumulate(Ts ...);
 	/** Extract from the archiver one value of each specified value type */
 	template<typename ... Ts> std::tuple<Ts ...> Extract();
+
+	template<sqktd::Archivable Archivable>
+	CAr & operator<<(const Archivable & archivable) {
+		Write(&archivable, sizeof(Archivable));
+		return *this;
+	}
+
+	template<sqktd::Archivable Archivable>
+	CAr & operator>>(Archivable & archivable) {
+		Read(&archivable, sizeof(Archivable));
+		return *this;
+	}
 
 private:
 	template<size_t POS, typename TupleType> void TupleExtract(TupleType & tuple);
