@@ -1,7 +1,8 @@
-#ifndef __WORLDMNG_H__
-#define __WORLDMNG_H__
-
 #pragma once
+
+#if !defined(__WORLDSERVER) && !defined(__CLIENT)
+static_assert(false, "worldmng.h included in another project than World or Client")
+#endif
 
 #include <vector>
 #include <memory>
@@ -21,16 +22,11 @@ WORLD,* LPWORLD;
 
 class CWorld;
 
-#ifdef __WORLDSERVER
-class CWorldMng
-#else	// __WORLDSERVER
-#ifdef __STL_0402
-class CWorldMng : public std::map<std::string, CWorld*>
-#else	// __STL_0402
-class CWorldMng : public CMyMap2<CWorld*>
-#endif	// __STL_0402
-#endif	// __WORLDSERVER
-{
+class CWorldMng final {
+public:
+#ifdef __CLIENT
+	std::unique_ptr<CWorld> m_currentWorld;
+#endif
 
 #ifdef __WORLDSERVER	//	server	--------------------------------------------
 public:
@@ -56,14 +52,12 @@ public:
 	CRegionElemArray	m_aRevivalRgn;	
 #else	// __WORLDSERVER	//	not server	------------------------------------
 
-private:
-	CWorld*		m_pWorld;
 public:
 //	Constructions
 //	Operations
 	void	Free();
-	CWorld*		operator () () {	return	m_pWorld; }	
-	CWorld*		Get()	{	return	m_pWorld;	}
+	CWorld*		operator () () {	return	m_currentWorld.get(); }
+	CWorld*		Get()	{	return	m_currentWorld.get(); }
 	CWorld*		Open( LPDIRECT3DDEVICE9 pd3dDevice, LPCSTR lpszWorld );
 	CWorld*		Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld );
 	void DestroyCurrentWorld();
@@ -112,4 +106,3 @@ public:
 /*--------------------------------------------------------------------------------*/
 };
 
-#endif	// __WORLDMNG_H__

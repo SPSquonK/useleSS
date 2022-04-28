@@ -34,9 +34,6 @@ extern	CUserMng		g_UserMng;
 
 CWorldMng::CWorldMng()
 {
-#ifdef __CLIENT
-	m_pWorld	= NULL;
-#endif
 	m_nSize = 0;
 }
 
@@ -45,25 +42,19 @@ CWorldMng::~CWorldMng()
 {
 	Free();
 }
-#ifndef __WORLDSERVER
-void CWorldMng::Free()
-{
-	for( auto i = begin(); i != end(); ++i )
-	{
-		CWorld* pWorld	= i->second;
-		SAFE_DELETE( pWorld );
-	}
-	clear();
 
+void CWorldMng::Free() {
+#ifdef __WORLDSERVER
+	m_worlds.clear();
+#endif
+#ifdef __CLIENT
+	m_currentWorld.reset();
+#endif
 	m_aWorld.RemoveAll();
 }
-#endif // __WORLDSERVER
+
 
 #ifdef __WORLDSERVER
-void CWorldMng::Free() {
-	m_worlds.clear();
-	m_aWorld.RemoveAll();
-}
 
 u_long CWorldMng::Respawn() {
 	u_long uRespawned = 0;
@@ -154,73 +145,43 @@ CObj * CWorldMng::PregetObj(const OBJID objid) {
 
 #else	// __WORLDSERVER
 
-CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld )
-{
-	CWorld* pWorld	= NULL;
-	LPWORLD	lpWorld	= GetWorldStruct( idWorld );
-	if( lpWorld ) 
-	{
-		pWorld	= Open( pd3dDevice, lpWorld->m_szFileName );
-		pWorld->m_dwWorldID	= idWorld;
-		pWorld->InProcessing( );			//added by gmpbigsun
-		strcpy( pWorld->m_szWorldName, lpWorld->m_szWorldName );
-	}
+CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld ) {
+	WORLD * lpWorld = GetWorldStruct(idWorld);
+	if (!lpWorld) return nullptr;
+
+	CWorld* pWorld	= Open( pd3dDevice, lpWorld->m_szFileName );
+	pWorld->m_dwWorldID	= idWorld;
+	pWorld->InProcessing( );			//added by gmpbigsun
+	strcpy( pWorld->m_szWorldName, lpWorld->m_szWorldName );
 	return pWorld;
 }
+
 void CWorldMng::DestroyCurrentWorld()
 {
-	if( m_pWorld != NULL )
-	{
-		m_pWorld->OutProcessing( );			//added by gmpbigsun
+	if (!m_currentWorld) return;
+
+	m_currentWorld->OutProcessing( );			//added by gmpbigsun
 
 #ifdef __WINDOW_INTERFACE_BUG
-		CWndBase* pWndBase = g_WndMng.GetWndBase( APP_INVENTORY );
-		if(pWndBase != NULL)
-			((CWndInventory*)pWndBase)->BaseMouseCursor();
+	CWndBase* pWndBase = g_WndMng.GetWndBase( APP_INVENTORY );
+	if(pWndBase != NULL)
+		((CWndInventory*)pWndBase)->BaseMouseCursor();
 #endif // __WINDOW_INTERFACE_BUG
-		m_pWorld->InvalidateDeviceObjects();
-		m_pWorld->DeleteDeviceObjects();
-		g_pMoveMark = NULL;
-		g_DialogMsg.RemoveAll();
-		LPWORLD lpWorld	= g_WorldMng.GetWorldStruct( m_pWorld->m_dwWorldID );
-		if( lpWorld )
-		{
-			ASSERT( lpWorld->IsValid() );
-			erase( lpWorld->m_szFileName );
-		}
-		else
-		{
-			TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], name[ _MAX_FNAME ], ext[_MAX_EXT];
-			_splitpath( m_pWorld->m_szFileName, drive, dir, name, ext );
-			erase( name );
-		}
-		SAFE_DELETE( m_pWorld );
-	}
+	m_currentWorld->InvalidateDeviceObjects();
+	m_currentWorld->DeleteDeviceObjects();
+	g_pMoveMark = NULL;
+	g_DialogMsg.RemoveAll();
+
+	m_currentWorld.reset();
 }
-CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, LPCSTR lpszWorld )
-{
-	if( m_pWorld != NULL )
-	{
-		DestroyCurrentWorld();
-	}
-	CWorld* pWorld;
+CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, LPCSTR lpszWorld ) {
+	DestroyCurrentWorld();
 
-	auto i	= find( lpszWorld );
-	if( i == end() )
-	{
-		pWorld	= new CWorld;
-		pWorld->InitDeviceObjects( pd3dDevice );
-		pWorld->OpenWorld( MakePath( DIR_WORLD, lpszWorld ), TRUE );
-		bool bResult	= emplace( lpszWorld, pWorld ).second;
-		ASSERT( bResult );
-	}
-	else
-	{
-		pWorld	= i->second;
-		pWorld->InitDeviceObjects( pd3dDevice );
-	}
+	m_currentWorld = std::make_unique<CWorld>();
+	m_currentWorld->InitDeviceObjects( pd3dDevice );
+	m_currentWorld->OpenWorld( MakePath( DIR_WORLD, lpszWorld ), TRUE );
 
-	return( m_pWorld = pWorld );
+	return m_currentWorld.get();
 }
 #endif	// __WORLDSERVER
 
