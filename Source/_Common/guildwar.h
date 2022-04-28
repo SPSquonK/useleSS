@@ -39,18 +39,16 @@ enum
 //WR_TRUCE	 : ÈÞÀü( ºñ±è )
 //WR_DRAW	 : ½ÂÆÐ¸¦ ¸Å±æ¼ö ¾øÀ½( ºñ±è )
 
-class CGuildWar
-{
+class CGuildWar final {
 public:
-	u_long	m_idWar;
+	WarId	m_idWar = WarIdNone;
 	WAR_ENTRY	m_Decl;
 	WAR_ENTRY	m_Acpt;
-	char	m_nFlag;
+	char	m_nFlag = 0;
 	CTime	m_time;	// start
 public:
 //	Constructions
 	CGuildWar();
-	~CGuildWar();
 //	Operations
 	void	Serialize( CAr & ar );
 #ifdef __WORLDSERVER
@@ -70,25 +68,23 @@ public:
 class CMover;
 class CGuild;
 
-class CGuildWarMng
-{
+class CGuildWarMng final {
 //private:
 public:
-	u_long	m_id;
+	WarId	m_id = WarIdNone;
 public:
 //	CRIT_SEC	m_AddRemoveLock;
-	std::map<u_long, CGuildWar*>	m_mapPWar;
+	std::map<WarId, CGuildWar*>	m_mapPWar;
 //	Constructions
-	CGuildWarMng();
 	~CGuildWarMng();
 	void	Clear( void );
 //	Operations
 	void Serialize( CAr & ar );
-	u_long	AddWar( CGuildWar* pGuildWar );
-	BOOL	RemoveWar( u_long idWar );
+	WarId	AddWar( CGuildWar* pGuildWar );
+	BOOL	RemoveWar(WarId idWar);
 	void	Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nType, int nWptDecl = 0, int nWptAcpt = 0 );
 //	Attributes
-	CGuildWar*	GetWar( u_long idWar );
+	CGuildWar*	GetWar( WarId idWar );
 	int		GetSize( void )	{	return m_mapPWar.size();	}
 #ifdef __WORLDSERVER
 	void	Process( void );

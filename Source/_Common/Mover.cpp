@@ -341,7 +341,7 @@ void CMover::Init()
 	m_idGuild			= 0;
 	m_idGuildCloak		= 0;
 	m_bGuildBank		= FALSE;
-	m_idWar				= 0;
+	m_idWar				= WarIdNone;
 
 	m_nPlusMaxHitPoint = 0;
 	memset( m_dwSMTime, 0, sizeof( DWORD ) * SM_MAX );
@@ -5138,7 +5138,7 @@ PVP_MODE CMover::GetPVPCase( CMover *pAttacker )
 		return PVP_MODE_NONE;
 
 	// 이건 사람대 사람의 싸움이다!
-	if( m_idWar && pAttacker->m_idWar == m_idWar )	// 나랑 같은 전쟁에 참가중인 놈인가.
+	if( m_idWar != WarIdNone && pAttacker->m_idWar == m_idWar )	// 나랑 같은 전쟁에 참가중인 놈인가.
 	{
 		return PVP_MODE_GUILDWAR;
 	}
@@ -5779,8 +5779,7 @@ int CMover::IsPKPVPInspectionBase( DWORD dwRegionAttr, BOOL bPVP )
 
 	if( IsFly() )
 		return 1;
-	if( m_idWar > 0 )
-		return 1;
+	if (m_idWar != WarIdNone) return 1;
 
 	return 0;
 }
@@ -5812,8 +5811,8 @@ int CMover::IsPVPInspectionBase( DWORD dwRegionAttr,DWORD dwWorldID, BOOL bPVP )
 
 	if( IsFly() )
 		return 1;
-	if( m_idWar > 0 )
-		return 1;
+
+	if (m_idWar != WarIdNone) return 1;
 
 #ifdef __QUIZ
 	if( GetWorld() && GetWorld()->GetID() == WI_WORLD_QUIZ )
@@ -5854,7 +5853,7 @@ BOOL CMover::SubPKPVPInspectionBase( CMover* pMover, CMover* pMover1, DWORD dwPK
 	}
 
 #ifdef __WORLDSERVER
-	if( m_idWar )	// 전쟁중엔 듀얼, PK 못함.
+	if( m_idWar != WarIdNone )	// 전쟁중엔 듀얼, PK 못함.
 	{
 		if( g_eLocal.GetState( EVE_GUILDWAR ) )
 		{
@@ -5927,7 +5926,7 @@ int CMover::IsSteal( CMover *pTarget )
 			// 공격자가 파티가 있고 pTarget를 때렸던 사람이 같은 파티면 스틸이 아니다.
 			if( m_idparty && (pOtherPlayer->m_idparty == m_idparty) )
 				bStealCheck = FALSE;
-			if( m_idWar && m_idGuild && (pOtherPlayer->m_idGuild == m_idGuild) ) // 전쟁중에 나랑같은 길드끼리 치는건 스틸이 아니다.
+			if( m_idWar != WarIdNone && m_idGuild && (pOtherPlayer->m_idGuild == m_idGuild) ) // 전쟁중에 나랑같은 길드끼리 치는건 스틸이 아니다.
 				bStealCheck = FALSE;
 			if( g_eLocal.GetState( EVE_SCHOOL ) )
 				bStealCheck	= FALSE;

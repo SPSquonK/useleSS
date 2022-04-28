@@ -545,7 +545,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 		break;
 	case WIDC_BUTTON2:		// 로고 지정
 		{
-			if( g_pPlayer->m_idWar )
+			if( g_pPlayer->m_idWar != WarIdNone )
 			{
 				// 전쟁중엔 로고 못바꿈다.
 				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORLOGO), MB_OK, this );
@@ -573,7 +573,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			{
 				return FALSE;
 			}
-			if( g_pPlayer->m_idWar )
+			if( g_pPlayer->m_idWar != WarIdNone)
 			{
 				// 전쟁중엔 길드 못뽀갭니다.
 				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORDISBAND), MB_OK, this );

@@ -208,7 +208,7 @@ void CDPCacheSrvr::OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 
 		ar >> pPlayer->m_idWar;
 		if( NULL == g_GuildWarMng.GetWar( pPlayer->m_idWar ) )
-			pPlayer->m_idWar	= 0;
+			pPlayer->m_idWar	= WarIdNone;
 
 		g_GuildMng.m_AddRemoveLock.Leave( theLineFile );
 
@@ -2249,10 +2249,10 @@ void CDPCacheSrvr::OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 				g_GuildWarMng.Result( pWar, pDecl, pAcpt, WR_DECL_SR );
 		}
 	}
-	pPlayer->m_idWar	= 0;
+	pPlayer->m_idWar	= WarIdNone;
 }
 
-void CDPCacheSrvr::SendSurrender( u_long idWar, CGuild* pDecl, CGuild* pAcpt, u_long idPlayer, const char* sPlayer, BOOL bDecl )
+void CDPCacheSrvr::SendSurrender(WarId idWar, CGuild* pDecl, CGuild* pAcpt, u_long idPlayer, const char* sPlayer, BOOL bDecl )
 {
 	for( auto i = pDecl->m_mapPMember.begin(); i != pDecl->m_mapPMember.end(); ++i )
 	{
@@ -2268,7 +2268,7 @@ void CDPCacheSrvr::SendSurrender( u_long idWar, CGuild* pDecl, CGuild* pAcpt, u_
 	}
 }
 
-void CDPCacheSrvr::SendSurrender( u_long idWar, u_long idPlayer, const char* sPlayer, BOOL bDecl, CPlayer* pPlayer )
+void CDPCacheSrvr::SendSurrender(WarId idWar, u_long idPlayer, const char* sPlayer, BOOL bDecl, CPlayer* pPlayer )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SURRENDER, pPlayer->dpidUser );
 	ar << idWar << idPlayer;
@@ -2482,8 +2482,8 @@ void CDPCacheSrvr::OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uB
 	pWar->m_nFlag	= WF_WARTIME;
 	pWar->m_time	= CTime::GetCurrentTime();
 
-	u_long idWar	= g_GuildWarMng.AddWar( pWar );
-	if( idWar > 0 )
+	WarId idWar	= g_GuildWarMng.AddWar( pWar );
+	if( idWar != WarIdNone )
 	{
 		pDecl->m_idWar	= idWar;
 		pDecl->m_idEnemyGuild	= pAcpt->m_idGuild;
@@ -2520,21 +2520,21 @@ void CDPCacheSrvr::SendDeclWar( u_long idDecl, const char* pszMaster, CPlayer* p
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::SendAcptWar( u_long idWar, u_long idDecl, u_long idAcpt )
+void CDPCacheSrvr::SendAcptWar(WarId idWar, u_long idDecl, u_long idAcpt )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_ACPT_GUILD_WAR, DPID_ALLPLAYERS );
 	ar << idWar << idDecl << idAcpt;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCacheSrvr::SendWarEnd( u_long idWar, int nWptDecl, int nWptAcpt, int nType )
+void CDPCacheSrvr::SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_WAR_END, DPID_ALLPLAYERS );
 	ar << idWar << nWptDecl << nWptAcpt << nType;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCacheSrvr::SendWarDead( u_long idWar, const char* lpszPlayer, BOOL bDecl, CPlayer* pPlayer )
+void CDPCacheSrvr::SendWarDead(WarId idWar, const char* lpszPlayer, BOOL bDecl, CPlayer* pPlayer )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_WAR_DEAD, pPlayer->dpidUser );
 	ar << idWar;

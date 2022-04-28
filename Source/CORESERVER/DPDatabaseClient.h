@@ -45,11 +45,11 @@ public:
 	void	SendCloseVote( u_long idVote );
 	void	SendCastVote( u_long idVote, BYTE cbSelection );
 
-	void	SendAcptWar( u_long idWar, u_long idDecl, u_long idAcpt );
-	void	SendWarEnd( u_long idWar, u_long idDecl, u_long idAcpt, int nWptDecl, int nWptAcpt, int nType, CTime Time, int nWinPointDecl, int nWinPointAcpt, int nGetPointDecl, int nGetPointAcpt );
-	void	SendSurrender( u_long idWar, u_long idPlayer, u_long idGuild );
-	void	SendWarDead( u_long idWar, u_long idGuild );
-	void	SendWarMasterAbsent( u_long idWar, u_long idGuild );
+	void	SendAcptWar( WarId idWar, u_long idDecl, u_long idAcpt );
+	void	SendWarEnd(WarId idWar, u_long idDecl, u_long idAcpt, int nWptDecl, int nWptAcpt, int nType, CTime Time, int nWinPointDecl, int nWinPointAcpt, int nGetPointDecl, int nGetPointAcpt );
+	void	SendSurrender(WarId idWar, u_long idPlayer, u_long idGuild );
+	void	SendWarDead(WarId idWar, u_long idGuild );
+	void	SendWarMasterAbsent(WarId idWar, u_long idGuild );
 	void	SendSnoopGuild( u_long idGuild, u_long idPlayer, const char* lpszChat );
 	void	OnUpdateGuildRankFinish( CAr & ar );
 #ifdef __RT_1025

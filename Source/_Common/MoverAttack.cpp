@@ -1682,8 +1682,9 @@ HITTYPE	CMover::GetHitType( CMover* pMover, BOOL bTarget, int nReflect )
 			return HITTYPE_FAIL;
 		if( g_eLocal.GetState( EVE_GUILDWAR ) )			// 길드전 상태에서는 PK불가 
 		{
-			if( m_idWar > 0 || pMover->m_idWar > 0 )	
+			if (m_idWar != WarIdNone || pMover->m_idWar != WarIdNone) {
 				return HITTYPE_FAIL;
+			}
 		}
 		
 		if( g_eLocal.GetState( EVE_PK ) )
@@ -1760,7 +1761,7 @@ BOOL CMover::IsWarTarget( CMover* pMover )
 {
 	if( g_eLocal.GetState( EVE_GUILDWAR ) == 1 )
 	{
-		if( m_idWar > 0 && m_idWar == pMover->m_idWar && m_idGuild != pMover->m_idGuild )
+		if( m_idWar != WarIdNone && m_idWar == pMover->m_idWar && m_idGuild != pMover->m_idGuild )
 			return TRUE;
 	}
 	return FALSE;

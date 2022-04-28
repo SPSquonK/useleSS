@@ -1627,7 +1627,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		// 길드전시에 머리위에 뜨는 전투마크
 		if( g_eLocal.GetState( EVE_GUILDWAR ) == 1 )		// 길드전 가능한 서버인가.
 		{
-			if( m_idWar && g_pPlayer->m_idWar == m_idWar )	// 나랑 같은 전쟁에 참가중인 놈인가.
+			if( m_idWar != WarIdNone && g_pPlayer->m_idWar == m_idWar )	// 나랑 같은 전쟁에 참가중인 놈인가.
 			{
 				if( m_idGuild != g_pPlayer->m_idGuild )		// 나랑 다른길드인가(동맹인경우는 이걸로 안된다.)
 				{

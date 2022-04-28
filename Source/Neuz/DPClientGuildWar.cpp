@@ -52,7 +52,8 @@ void CDPClient::OnSurrender( CAr & ar )
 {
 	TRACE( "OnSurrender\n" );
 
-	u_long idWar, idPlayer;
+	WarId idWar;
+	u_long idPlayer;
 	char sPlayer[MAX_PLAYER]	= { 0, };
 	BOOL bDecl;
 	
@@ -132,7 +133,8 @@ void CDPClient::OnAcptWar( CAr & ar )
 {
 	TRACE( "OnAcpWar\n" );
 	
-	u_long idWar, idDecl, idAcpt;
+	WarId idWar;
+	u_long idDecl, idAcpt;
 	ar >> idWar >> idDecl >> idAcpt;
 	
 	CGuild* pDecl	= g_GuildMng.GetGuild( idDecl );
@@ -151,7 +153,7 @@ void CDPClient::OnAcptWar( CAr & ar )
 	pWar->m_time	= CTime::GetCurrentTime();
 	
 	idWar	= g_GuildWarMng.AddWar( pWar );
-	if( idWar > 0 )
+	if( idWar != WarIdNone )
 	{
 		pDecl->m_idWar	= idWar;
 		pDecl->m_idEnemyGuild	= pAcpt->m_idGuild;
@@ -180,7 +182,7 @@ void CDPClient::OnSetWar( OBJID objid, CAr & ar )
 {
 	TRACE( "OnSetWar\n" );
 	
-	u_long idWar;
+	WarId idWar;
 	ar >> idWar;
 	
 	CMover* pMover	= prj.GetMover( objid );
@@ -194,7 +196,7 @@ void CDPClient::OnWar( CAr & ar )
 {
 	TRACE( "OnWar\n" );
 
-	u_long idWar;
+	WarId idWar;
 	ar >> idWar;
 	
 	CGuildWar* pWar	= g_GuildWarMng.GetWar( idWar );
@@ -229,7 +231,7 @@ void CDPClient::OnWarDead( CAr & ar )
 {
 	TRACE( "OnWarDead\n" );
 
-	u_long idWar;
+	WarId idWar;
 	char sPlayer[MAX_PLAYER]	= { 0, };
 	BOOL bDecl;
 	ar >> idWar;
@@ -268,7 +270,7 @@ void CDPClient::OnWarEnd( CAr & ar )
 {
 	TRACE( "OnWarEnd\n" );
 
-	u_long idWar;
+	WarId idWar;
 	int nWptDecl, nWptAcpt;
 	int nType;
 	ar >> idWar >> nWptDecl >> nWptAcpt >> nType;

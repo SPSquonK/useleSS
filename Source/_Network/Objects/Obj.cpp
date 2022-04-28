@@ -173,7 +173,7 @@ CMover::CMover()
 
 	m_idparty = 0;
 	m_idGuild	= 0;
-	m_idWar	= 0;
+	m_idWar	= WarIdNone;
 	m_dwPKTime			= 0;			/// 핑크 상태 시간
 	m_nPKValue			= 0;			/// PK 수치
 	m_dwPKPropensity	= 0;			/// PK 성향

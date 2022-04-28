@@ -234,7 +234,7 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	if( qry->GetInt( "last_connect" ) == 0 )
 		mover.m_dwMode	|= EVENT_OLDBOY_MODE;
 	mover.m_idGuild		= (u_long)qry->GetInt( "m_idGuild" );
-	mover.m_idWar	= (u_long)qry->GetInt( "m_idWar" );
+	mover.m_idWar	= WarId(qry->GetInt( "m_idWar" ));
 
 #ifdef __EVENT_1101
 #ifdef __EVENT_1101_2

@@ -483,7 +483,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 	if( m_nSelect < 0 || m_nSelect >= m_nMax )
 		return FALSE;
 
-	if( g_pPlayer->m_idWar )
+	if( g_pPlayer->m_idWar != WarIdNone)
 	{
 		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDWARERRORMEMBER ) );
 		return FALSE;

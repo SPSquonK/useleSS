@@ -113,8 +113,8 @@ public:
 	void	SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pItemElem, BYTE p_Mode );
 	void	SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE p_Mode, BYTE cbCloak );
 	void	SendWarDead( u_long idPlayer );
-	void	SendWarMasterAbsent( u_long idWar, BOOL bDecl );
-	void	SendWarTimeout( u_long idWar );
+	void	SendWarMasterAbsent(WarId idWar, BOOL bDecl );
+	void	SendWarTimeout(WarId idWar );
 	void	OnWarDead( CAr & ar, DPID, DPID, OBJID );
 	void	OnWarEnd( CAr & ar, DPID, DPID, OBJID );
 	void	SendAddFriendNameReqest( u_long uLeaderid, LONG nLeaderJob, BYTE nLeaderSex, u_long uMember, const char * szLeaderName, const char * szMemberName );

@@ -1728,14 +1728,14 @@ void CDPCoreClient::SendWarDead( u_long idPlayer )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::SendWarMasterAbsent( u_long idWar, BOOL bDecl )
+void CDPCoreClient::SendWarMasterAbsent(WarId idWar, BOOL bDecl )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_WAR_MASTER_ABSENT, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idWar << bDecl;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::SendWarTimeout( u_long idWar )
+void CDPCoreClient::SendWarTimeout(WarId idWar )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_WAR_TIMEOUT, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idWar;
@@ -1744,7 +1744,8 @@ void CDPCoreClient::SendWarTimeout( u_long idWar )
 
 void CDPCoreClient::OnAcptWar( CAr & ar, DPID, DPID, OBJID )
 {
-	u_long idWar, idDecl, idAcpt;
+	WarId idWar;
+	u_long idDecl, idAcpt;
 	ar >> idWar >> idDecl >> idAcpt;
 
 	CGuild* pDecl	= g_GuildMng.GetGuild( idDecl );
@@ -1763,7 +1764,7 @@ void CDPCoreClient::OnAcptWar( CAr & ar, DPID, DPID, OBJID )
 	pWar->m_time	= CTime::GetCurrentTime();
 
 	idWar	= g_GuildWarMng.AddWar( pWar );
-	if( idWar > 0 )
+	if( idWar != WarIdNone )
 	{
 		pDecl->m_idWar	= idWar;
 		pDecl->m_idEnemyGuild	= pAcpt->m_idGuild;
@@ -1799,7 +1800,8 @@ void CDPCoreClient::OnAcptWar( CAr & ar, DPID, DPID, OBJID )
 
 void CDPCoreClient::OnSurrender( CAr & ar, DPID, DPID, OBJID )
 {
-	u_long idWar, idPlayer;
+	WarId idWar;
+	u_long idPlayer;
 	BOOL bDecl;
 	ar >> idWar >> idPlayer >> bDecl;
 
@@ -1826,15 +1828,15 @@ void CDPCoreClient::OnSurrender( CAr & ar, DPID, DPID, OBJID )
 		CUser* pUser	= g_UserMng.GetUserByPlayerID( idPlayer );
 		if( IsValidObj( (CObj*)pUser ) )
 		{
-			pUser->m_idWar	= 0;
-			g_UserMng.AddSetWar( pUser, 0 );
+			pUser->m_idWar	= WarIdNone;
+			g_UserMng.AddSetWar( pUser, WarIdNone );
 		}
 	}
 }
 
 void CDPCoreClient::OnWarDead( CAr & ar, DPID, DPID, OBJID )
 {
-	u_long idWar;
+	WarId idWar;
 	BOOL bDecl;
 	ar >> idWar >> bDecl;
 
@@ -1850,7 +1852,7 @@ void CDPCoreClient::OnWarDead( CAr & ar, DPID, DPID, OBJID )
 
 void CDPCoreClient::OnWarEnd( CAr & ar, DPID, DPID, OBJID )
 {
-	u_long idWar;
+	WarId idWar;
 	int nWptDecl, nWptAcpt;
 	int nType;
 	ar >> idWar >> nWptDecl >> nWptAcpt >> nType;

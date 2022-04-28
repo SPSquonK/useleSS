@@ -22,22 +22,12 @@ MemPooler<CPlayer>*	CPlayer::m_pPool		= new MemPooler<CPlayer>( 512 );
 
 CPlayer::CPlayer( u_long idPlayer, const CHAR* pszPlayer, const CHAR* pszAccount )
 {
-	m_dwSerial = 0;
 	dpid = dpidCache = dpidUser	= DPID_UNKNOWN;
 	uKey = idPlayer;
 	lstrcpy( lpszPlayer, pszPlayer );
 	lstrcpy( lpszAccount, pszAccount );
 	*lpAddr	= '\0';
-	m_uPartyId = 0;
-	m_idGuild = 0;
-	m_idWar	= 0;
-	m_uIdofMulti = 0;
 	m_tGuildMember = CTime::GetCurrentTime();
-	m_idSnoop = 0;
-}
-
-CPlayer::~CPlayer()
-{
 }
 
 TAG_RESULT CPlayer::IsTagSendable( u_long idTo )

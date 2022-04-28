@@ -2831,7 +2831,7 @@ void CSfxDuelParty::Process()
 		}
 	case ENEMY_WAR:
 		{
-			if( pMover->m_idWar == 0 )		// process중 src무버의 전쟁이 끝났으면 해제.
+			if( pMover->m_idWar == WarIdNone )		// process중 src무버의 전쟁이 끝났으면 해제.
 			{
 				DeleteSfx( pMover );
 			}

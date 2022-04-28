@@ -335,7 +335,6 @@ CGuild::CGuild()
 	m_nGoldGuild = 0;
 
 	m_bSendPay = FALSE;
-	m_idWar		= 0;
 	m_nWin	= 0;
 	m_nLose	= 0;
 	m_nSurrender	= 0;

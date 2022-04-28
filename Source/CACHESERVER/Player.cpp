@@ -8,28 +8,14 @@ extern	CDPCacheSrvr	g_DPCacheSrvr;
 
 CPlayer::CPlayer(  DPID dpidUser, DWORD dwSerial )
 :
-m_dwAuthKey( 0 ),
-m_bAlive( TRUE ),
 m_dpid( dpidUser ),
-m_idPlayer( 0 ),
-m_pClient( NULL ),
 m_dwSerial( dwSerial ),
-m_dwWorldId( 0 ),
-m_uChannel( 0 ),
-m_idParty( 0 ),
-m_idGuild( 0 ),
-m_idWar( 0 ),
-m_nSlot( 0 ),
 m_dwCreation( GetTickCount() )
 {
 	*m_szPlayer	= '\0';
 	*m_szAccount	= '\0';
 	*m_szPass	= '\0';
 	*m_lpAddr	= '\0';
-}
-
-CPlayer::~CPlayer()
-{
 }
 
 void CPlayer::Join( CAr & ar )

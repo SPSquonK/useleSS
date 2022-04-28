@@ -18,11 +18,10 @@ enum TAG_RESULT
 	TAG_OK
 };
 
-class CPlayer
-{
+class CPlayer final {
 public:
 	CMclCritSec		m_AccessLock;
-	DWORD			m_dwSerial;
+	DWORD			m_dwSerial = 0;
 	DPID			dpid;
 	DPID			dpidCache;
 	DPID			dpidUser;
@@ -35,16 +34,15 @@ public:
 #else	// __RT_1025
 	CMessenger		m_Messenger;
 #endif	// __RT_1025
-	u_long			m_uPartyId;	
-	u_long			m_idGuild;
-	u_long			m_idWar;
-	u_long			m_uIdofMulti;
+	u_long			m_uPartyId = 0;	
+	u_long			m_idGuild = 0;
+	WarId			m_idWar = WarIdNone;
+	u_long			m_uIdofMulti = 0;
 	CTime			m_tGuildMember;
-	u_long			m_idSnoop;
+	u_long			m_idSnoop = 0;
 
 public:
 	CPlayer( u_long idPlayer, const CHAR* pszPlayer, const CHAR* pszAccount );
-	virtual	~CPlayer();
 
 	void		Lock()		{ m_AccessLock.Enter();	}
 	void		Unlock()	{ m_AccessLock.Leave();	}

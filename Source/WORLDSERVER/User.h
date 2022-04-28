@@ -810,7 +810,7 @@ public:
 	void			AddGetItemElem( CUser* pUser, CItemElem* pItemElem );
 	void			AddPutItemElem( CUser* pUser, CItemElem* pItemElem );
 	void			AddPutItemElem( u_long uidGuild, CItemElem* pItemElem );
-	void			AddSetWar( CUser* pUser, u_long idWar );
+	void			AddSetWar( CUser* pUser, WarId idWar );
 	void			ModifyMode( DWORD dwMode );
 	void			AddSchoolReport( PSCHOOL_ENTRY pSchool, short nElapse = 0 );
 	void			AddSexChange( CMover* pMover );

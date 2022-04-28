@@ -158,14 +158,14 @@ void CDPDatabaseClient::SendChgMaster( u_long idPlayer, u_long idPlayer2 )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendAcptWar( u_long idWar, u_long idDecl, u_long idAcpt )
+void CDPDatabaseClient::SendAcptWar(const WarId idWar, u_long idDecl, u_long idAcpt )
 {
 	BEFORESEND( ar, PACKETTYPE_ACPT_GUILD_WAR );
 	ar << idWar << idDecl << idAcpt;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendWarEnd( u_long idWar, u_long idDecl, u_long idAcpt, int nWptDecl, int nWptAcpt, int nType, CTime Time, int nWinPointDecl, int nWinPointAcpt, int nGetPointDecl, int nGetPointAcpt )
+void CDPDatabaseClient::SendWarEnd(WarId idWar, u_long idDecl, u_long idAcpt, int nWptDecl, int nWptAcpt, int nType, CTime Time, int nWinPointDecl, int nWinPointAcpt, int nGetPointDecl, int nGetPointAcpt )
 {
 	char GuildWarStartTime[15] = {0,};
 	
@@ -178,21 +178,21 @@ void CDPDatabaseClient::SendWarEnd( u_long idWar, u_long idDecl, u_long idAcpt, 
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendSurrender( u_long idWar, u_long idPlayer, u_long idGuild )
+void CDPDatabaseClient::SendSurrender(WarId idWar, u_long idPlayer, u_long idGuild )
 {
 	BEFORESEND( ar, PACKETTYPE_SURRENDER );
 	ar << idWar << idPlayer << idGuild;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendWarDead( u_long idWar, u_long idGuild )
+void CDPDatabaseClient::SendWarDead(WarId idWar, u_long idGuild )
 {
 	BEFORESEND( ar, PACKETTYPE_WAR_DEAD );
 	ar << idWar << idGuild;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendWarMasterAbsent( u_long idWar, u_long idGuild )
+void CDPDatabaseClient::SendWarMasterAbsent(WarId idWar, u_long idGuild )
 {
 	BEFORESEND( ar, PACKETTYPE_WAR_MASTER_ABSENT );
 	ar << idWar << idGuild;

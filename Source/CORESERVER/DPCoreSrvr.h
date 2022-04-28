@@ -157,11 +157,11 @@ public:
 	void	SendAddCloseVote( u_long idGuild, u_long idVote );
 	void	SendAddCastVote( u_long idGuild, u_long idVote, BYTE cbSelection );
 
-	void	SendAcptWar( u_long idWar, u_long idDecl, u_long idAcpt );
-	void	SendWarDead( u_long idWar, BOOL bDecl );
-	void	SendWarEnd( u_long idWar, int nWptDecl, int nWptAcpt, int nType );
-	void	SendSurrender( u_long idWar, u_long idPlayer, BOOL bDecl );
-	void	SendWarMasterAbsent( u_long idWar, BOOL bDecl );
+	void	SendAcptWar(WarId idWar, u_long idDecl, u_long idAcpt );
+	void	SendWarDead(WarId idWar, BOOL bDecl );
+	void	SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType );
+	void	SendSurrender(WarId idWar, u_long idPlayer, BOOL bDecl );
+	void	SendWarMasterAbsent(WarId idWar, BOOL bDecl );
 	void	OnWarDead( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnWarMasterAbsent( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnWarTimeout( CAr & ar, DPID, DPID, DPID, u_long );

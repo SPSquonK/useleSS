@@ -562,7 +562,7 @@ public:
 	u_long			m_idGuild;					/// 길드 번호 
 	BOOL			m_bGuildBank;				/// 길드 뱅크를 이용중인지 확인
 	DWORD			m_idGuildCloak;				/// 망토의 길드번호를 가지고 있음
-	u_long			m_idWar;					/// 길드전 고유 번호 
+	WarId			m_idWar;					/// 길드전 고유 번호 
 
 	DWORD			m_tmActionPoint;			/// 액션포인트 자동상승 타이머(3초) 
 	DWORD			m_dwTickCheer;				/// 응원 타이머 

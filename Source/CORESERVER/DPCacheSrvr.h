@@ -130,17 +130,17 @@ public:
 
 private:
 	void	SendDeclWar( u_long idDecl, const char* pszMaster, CPlayer* pPlayer );
-	void	SendAcptWar( u_long idWar, u_long idDecl, u_long idAcpt );
-	void	SendSurrender( u_long idWar, CGuild* pDecl, CGuild* pAcpt, u_long idPlayer, const char* sPlayer, BOOL bDecl );	// 1
-	void	SendSurrender( u_long idWar, u_long idPlayer, const char* sPlayer, BOOL bDecl, CPlayer* pPlayer );	// 2
+	void	SendAcptWar(WarId idWar, u_long idDecl, u_long idAcpt );
+	void	SendSurrender(WarId idWar, CGuild* pDecl, CGuild* pAcpt, u_long idPlayer, const char* sPlayer, BOOL bDecl );	// 1
+	void	SendSurrender(WarId idWar, u_long idPlayer, const char* sPlayer, BOOL bDecl, CPlayer* pPlayer );	// 2
 	void	OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
 	void	OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
 	void	OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
 	void	OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
 	void	OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
 public:
-	void	SendWarEnd( u_long idWar, int nWptDecl, int nWptAcpt, int nType );
-	void	SendWarDead( u_long idWar, const char* lpszPlayer, BOOL bDecl, CPlayer* pPlayer );
+	void	SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType );
+	void	SendWarDead(WarId idWar, const char* lpszPlayer, BOOL bDecl, CPlayer* pPlayer );
 	void	SendQueryTruce( CPlayer* pPlayer );
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2, CPlayer* pPlayer );
 

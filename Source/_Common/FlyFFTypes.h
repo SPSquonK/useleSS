@@ -15,3 +15,9 @@ namespace sqktd {
 using PartyId = fluent::NamedType<unsigned long, struct PartyIdTag,
   fluent::Comparable, sqktd::ArchivableType
 >;
+
+using WarId = fluent::NamedType<unsigned long, struct WarIdTag,
+  fluent::Comparable, sqktd::ArchivableType
+>;
+
+static constexpr auto WarIdNone = WarId(0);

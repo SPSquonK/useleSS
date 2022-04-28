@@ -4771,7 +4771,7 @@ void CUserMng::AddSetGuild( CUser* pUser, u_long idGuild )
 	NEXT_VISIBILITYRANGE( pUser )
 }
 
-void CUserMng::AddSetWar( CUser* pUser, u_long idWar )
+void CUserMng::AddSetWar( CUser* pUser, WarId idWar )
 {
 	CAr ar;
 	ar << GETID( pUser ) << SNAPSHOTTYPE_SET_WAR;

@@ -2,6 +2,7 @@
 
 #include "guildwar.h"
 #include "guild.h"
+#include "sqktd.h"
 extern	CGuildMng	g_GuildMng;
 
 #ifdef __CORESERVER
@@ -27,15 +28,8 @@ extern	CDPCoreClient	g_DPCoreClient;
 
 CGuildWar::CGuildWar()
 {
-	m_idWar		= 0;
 	ZeroMemory( &m_Decl, sizeof(m_Decl) );
 	ZeroMemory( &m_Acpt, sizeof(m_Acpt) );
-	m_nFlag		= 0;
-}
-
-CGuildWar::~CGuildWar()
-{
-
 }
 
 void CGuildWar::Serialize( CAr & ar )
@@ -89,11 +83,6 @@ void CGuildWar::Process( CTime & time )
 }
 #endif	// __WORLDSERVER
 
-CGuildWarMng::CGuildWarMng()
-{
-	m_id	= 0;
-}
-
 CGuildWarMng::~CGuildWarMng()
 {
 	Clear();
@@ -106,34 +95,32 @@ void CGuildWarMng::Clear( void )
 	m_mapPWar.clear();
 }
 
-u_long	CGuildWarMng::AddWar( CGuildWar* pWar )
-{
-	m_id	= ( pWar->m_idWar != 0? pWar->m_idWar: m_id + 1 );
-	if( GetWar( m_id ) )
-		return 0;
+WarId	CGuildWarMng::AddWar(CGuildWar * const pWar) {
+	if (pWar->m_idWar != WarIdNone) {
+		m_id = pWar->m_idWar;
+	} else {
+		m_id = WarId(m_id.get() + 1);
+	}
+
+	if (GetWar(m_id)) return WarIdNone;
+
 	pWar->m_idWar	= m_id;
 	m_mapPWar.emplace(m_id, pWar);
 	return m_id;
 }
 
-BOOL CGuildWarMng::RemoveWar( u_long idWar )
-{
-	CGuildWar* pWar	= GetWar( idWar );
-	if( pWar )
-	{
-		m_mapPWar.erase( pWar->m_idWar );
-		safe_delete( pWar );
-		return TRUE;
-	}
-	return FALSE;
+BOOL CGuildWarMng::RemoveWar(const WarId idWar) {
+	const auto it = m_mapPWar.find(idWar);
+	if (it == m_mapPWar.end()) return FALSE;
+
+	safe_delete(it->second);
+	m_mapPWar.erase(it);
+
+	return TRUE;
 }
 
-CGuildWar* CGuildWarMng::GetWar( u_long idWar )
-{
-	const auto i		= m_mapPWar.find( idWar );
-	if( i != m_mapPWar.end() )
-		return i->second;
-	return NULL;
+CGuildWar * CGuildWarMng::GetWar(const WarId idWar) {
+	return sqktd::find_in_map(m_mapPWar, idWar);
 }
 
 void CGuildWarMng::Serialize( CAr & ar )
@@ -223,23 +210,23 @@ void CGuildWarMng::Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nT
 	}
 
 //	Clean up
-	pWin->m_idWar	= 0;
+	pWin->m_idWar	= WarIdNone;
 	pWin->m_idEnemyGuild	= 0;
-	pLose->m_idWar	= 0;
+	pLose->m_idWar	= WarIdNone;
 	pLose->m_idEnemyGuild	= 0;
 
 	for( auto i = pWin->m_mapPMember.begin(); i != pWin->m_mapPMember.end(); ++i )
 	{
 #ifdef __CORESERVER
 		CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
-		if( pPlayer )	pPlayer->m_idWar	= 0;
+		if( pPlayer )	pPlayer->m_idWar	= WarIdNone;
 #endif	// __CORESERVER
 #ifdef __WORLDSERVER
 		CUser* pUser	= g_UserMng.GetUserByPlayerID( i->second->m_idPlayer );
 		if( IsValidObj( pUser ) )
 		{
-			pUser->m_idWar	= 0;
-			g_UserMng.AddSetWar( pUser, 0 );
+			pUser->m_idWar	= WarIdNone;
+			g_UserMng.AddSetWar( pUser, WarIdNone);
 			pUser->SetPKTargetLimit( 10 );
 		}
 #endif	// __WORLDSERVER
@@ -248,14 +235,14 @@ void CGuildWarMng::Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nT
 	{
 #ifdef __CORESERVER
 		CPlayer* pPlayer	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
-		if( pPlayer )	pPlayer->m_idWar	= 0;
+		if( pPlayer )	pPlayer->m_idWar	= WarIdNone;
 #endif	// __CORESERVER
 #ifdef __WORLDSERVER
 		CUser* pUser	= g_UserMng.GetUserByPlayerID( i->second->m_idPlayer );
 		if( IsValidObj( pUser ) )
 		{
-			pUser->m_idWar	= 0;
-			g_UserMng.AddSetWar( pUser, 0 );
+			pUser->m_idWar	= WarIdNone;
+			g_UserMng.AddSetWar( pUser, WarIdNone);
 			pUser->SetPKTargetLimit( 10 );
 		}
 #endif	// __WORLDSERVER

@@ -518,7 +518,7 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 			mover.m_idPlayer	= (DWORD)qry->GetInt( "m_idPlayer" );
 			mover.m_idparty = (DWORD)qry->GetInt("m_idparty");
 			mover.m_idGuild		= (DWORD)qry->GetInt( "m_idGuild" );
-			mover.m_idWar	= (DWORD)qry->GetInt( "m_idWar" );
+			mover.m_idWar	= WarId(qry->GetInt( "m_idWar" ));
 
 			mover.m_dwSkinSet = (DWORD)qry->GetInt("m_dwSkinSet");
 			mover.m_dwHairMesh = (DWORD)qry->GetInt("m_dwHairMesh");
@@ -2571,7 +2571,7 @@ void CDbManager::OpenGuild( void )
 	while( pQuery->Fetch() )
 	{
 		CGuildWar* pWar	= new CGuildWar;
-		pWar->m_idWar	= (u_long)pQuery->GetInt( "m_idWar" );
+		pWar->m_idWar	= WarId(pQuery->GetInt( "m_idWar" ));
 		pWar->m_Decl.idGuild	= (u_long)pQuery->GetInt( "m_idGuild" );
 		pWar->m_Decl.nSize	= (u_long)pQuery->GetInt( "m_nCount" );
 		pWar->m_Decl.nSurrender	= (u_long)pQuery->GetInt( "m_nSurrender" );
@@ -2602,7 +2602,7 @@ void CDbManager::OpenGuild( void )
 		return;
 	}
 	if( pQuery->Fetch() )
-		g_GuildWarMng.m_id	= pQuery->GetInt( "Max_m_idWar" );
+		g_GuildWarMng.m_id	= WarId(pQuery->GetInt( "Max_m_idWar" ));
 
 	SAFE_DELETE( pQuery );
 }

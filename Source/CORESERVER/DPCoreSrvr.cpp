@@ -1439,28 +1439,28 @@ void CDPCoreSrvr::SendGuildMemberLogOut( u_long idGuild, u_long idPlayer )
 	SEND( ar, this, DPID_ALLPLAYERS );	
 }
 
-void CDPCoreSrvr::SendAcptWar( u_long idWar, u_long idDecl, u_long idAcpt )
+void CDPCoreSrvr::SendAcptWar(WarId idWar, u_long idDecl, u_long idAcpt )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_ACPT_GUILD_WAR, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idWar << idDecl << idAcpt;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCoreSrvr::SendWarDead( u_long idWar, BOOL bDecl )
+void CDPCoreSrvr::SendWarDead(WarId idWar, BOOL bDecl )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_WAR_DEAD, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idWar << bDecl;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCoreSrvr::SendWarEnd( u_long idWar, int nWptDecl, int nWptAcpt, int nType )
+void CDPCoreSrvr::SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_WAR_END, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idWar << nWptDecl << nWptAcpt << nType;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCoreSrvr::SendSurrender( u_long idWar, u_long idPlayer, BOOL bDecl )
+void CDPCoreSrvr::SendSurrender( WarId idWar, u_long idPlayer, BOOL bDecl )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_SURRENDER, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idWar << idPlayer << bDecl;
@@ -1524,7 +1524,7 @@ void CDPCoreSrvr::OnWarDead( CAr & ar, DPID, DPID, DPID, u_long )
 
 void CDPCoreSrvr::OnWarMasterAbsent( CAr & ar, DPID, DPID, DPID, u_long )
 {
-	u_long idWar;
+	WarId idWar;
 	BOOL bDecl;
 	ar >> idWar >> bDecl;
 	
@@ -1547,7 +1547,7 @@ void CDPCoreSrvr::OnWarMasterAbsent( CAr & ar, DPID, DPID, DPID, u_long )
 
 void CDPCoreSrvr::OnWarTimeout( CAr & ar, DPID, DPID, DPID, u_long )
 {
-	u_long idWar;
+	WarId idWar;
 	ar >> idWar;
 
 	TRACE( "OnWarTimeout, %d\n", idWar );
@@ -1596,7 +1596,7 @@ void CDPCoreSrvr::OnWarTimeout( CAr & ar, DPID, DPID, DPID, u_long )
 	}
 }
 
-void CDPCoreSrvr::SendWarMasterAbsent( u_long idWar, BOOL bDecl )
+void CDPCoreSrvr::SendWarMasterAbsent(WarId idWar, BOOL bDecl )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_WAR_MASTER_ABSENT, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idWar << bDecl;

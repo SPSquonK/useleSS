@@ -341,11 +341,12 @@ void CMover::Serialize( CAr & ar )
 		m_bPlayer	=
 		m_dwBelligerence	=
 		m_idGuild	=
-		m_idWar	=
 		m_idparty	=
 		m_idDuelParty	=
 		m_nDuel		= 
 		m_dwRideItemIdx		= 0;
+
+		m_idWar = WarIdNone;
 
 		ClearEquipInfo();
 		

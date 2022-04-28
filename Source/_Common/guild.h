@@ -312,7 +312,7 @@ public:
 	//	Attributes
 	int		GetSize( void )	{	return m_mapPMember.size();	}
 	CGuildMember*	GetMember( u_long idPlayer );
-	u_long	m_idWar;
+	WarId	m_idWar = WarIdNone;
 	CGuildWar* GetWar( void );
 	int		GetMaxMemberSize( void );
 
