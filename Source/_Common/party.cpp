@@ -39,29 +39,12 @@ extern	CDPDatabaseClient	g_dpDBClient;
 #include "InstanceDungeonParty.h"
 /*--------------------------------------------------------------------------------*/
 
-CParty::CParty()
-{
-	m_uPartyId	= 0;
-	m_nSizeofMember	= 0;
+CParty::CParty() {
 	memset( m_sParty, 0, sizeof(m_sParty) );
-	m_nLevel = 1;
-	m_nExp = m_nPoint = 0;
-	m_nTroupsShareExp = m_nTroupeShareItem = 0;
-	m_nKindTroup = 0;							// ´Ü¸·±Ø´Ü
-	m_nReferens = 0;
-	m_nGetItemPlayerId = 0;
 	for( int i = 0 ; i < MAX_PARTYMODE ; i++ )
 	{
 		m_nModeTime[i] = 0;
 	}
-	m_idDuelParty = 0;
-#ifdef __WORLDSERVER
-	m_dwWorldId = 0;
-#endif // __WORLDSERVER
-}
-
-CParty::~CParty()
-{
 }
 
 void CParty::InitParty()

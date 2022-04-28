@@ -32,44 +32,32 @@
 class CParty;
 extern	CParty		g_Party;
 
-typedef	struct	_PartyMember	// 플레이어 아이디만 가지고 있음
-{
-	u_long	m_uPlayerId;
-	CTime	m_tTime;
-	BOOL	m_bRemove;
-#if defined( __WORLDSERVER ) || defined( __CLIENT )
-	D3DXVECTOR3	m_vPos;
-#endif // defined( __WORLDSERVER ) || defined( __CLIENT )
-	_PartyMember()
-	{
-		m_uPlayerId	= 0;
-		m_tTime = CTime::GetCurrentTime();
-		m_bRemove = FALSE;
+struct PartyMember final {	// 플레이어 아이디만 가지고 있음
+	u_long	m_uPlayerId = 0;
+	CTime	m_tTime = CTime::GetCurrentTime();
+	BOOL	m_bRemove = FALSE;
+#if defined(__WORLDSERVER) || defined(__CLIENT)
+	D3DXVECTOR3	m_vPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+#endif
+};
 
-#if defined( __WORLDSERVER ) || defined( __CLIENT )
-		m_vPos = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-#endif // #if defined( __WORLDSERVER ) || defined( __CLIENT )
-	}
-}	PartyMember,	*PPartyMember;
-
-class CParty
-{
+class CParty final {
 private:
 public:
-	u_long	m_uPartyId;								// 극단 ID
+	u_long	m_uPartyId = 0;								// 극단 ID
 	TCHAR	m_sParty[33];							// 극단 명칭( 단막극단 : NO, 순회극단 : YES )
 	PartyMember	m_aMember[MAX_PTMEMBER_SIZE];		// 한개의 극단의 극단원 정보
-	int		m_nSizeofMember;						// 극단원 숫자	( 2 ~ 8 )
-	LONG	m_nLevel, m_nExp, m_nPoint;				// 극단 레벨, 경험치, 포인트
-	int		m_nTroupsShareExp, m_nTroupeShareItem;	// 경험치 분배방식, 아이템 분배방식
-	int		m_nKindTroup;							// 극단 종류 : 단막극단, 순회극단
-	int		m_nReferens;							// 극단에 포함되어 있는 상태일때 게임에 나갔을경우 10분후에 탈퇴 검색할 파티
+	int		m_nSizeofMember = 0;						// 극단원 숫자	( 2 ~ 8 )
+	LONG	m_nLevel = 1, m_nExp = 0, m_nPoint = 0;				// 극단 레벨, 경험치, 포인트
+	int		m_nTroupsShareExp = 0, m_nTroupeShareItem = 0;	// 경험치 분배방식, 아이템 분배방식
+	int		m_nKindTroup = 0;							// 극단 종류 : 단막극단, 순회극단
+	int		m_nReferens = 0;							// 극단에 포함되어 있는 상태일때 게임에 나갔을경우 10분후에 탈퇴 검색할 파티
 	int		m_nModeTime[MAX_PARTYMODE];				// 모드 시간
-	int		m_nGetItemPlayerId;						// 아이템 얻은 캐릭터
-	u_long	m_idDuelParty;							// 파티 듀얼중이면 상대방 파티의 ID, 아니면 0
+	int		m_nGetItemPlayerId = 0;						// 아이템 얻은 캐릭터
+	u_long	m_idDuelParty = 0;							// 파티 듀얼중이면 상대방 파티의 ID, 아니면 0
 
 #ifdef __WORLDSERVER
-	DWORD	m_dwWorldId;
+	DWORD	m_dwWorldId = 0;
 #endif // __WORLDSERVER
 
 public:
@@ -80,7 +68,6 @@ public:
 public:
 //	Constructions
 	CParty();
-	~CParty();
 
 //	Operations
 	void	InitParty();
@@ -98,11 +85,7 @@ public:
 #ifndef __CORESERVER
 	CMover* GetLeader( void );
 #endif // __CORESERVER
-//	CUser	*GetMember( int nIdx ) 
-//	{ 
-//		return g_UserMng.GetUserByPlayerID( m_aMember[nIdx].m_uPlayerId );
-//	}
-		
+
 	void	SetPartyId( u_long uPartyId )		{	 m_uPartyId = uPartyId ;	}
 	BOOL	NewMember( u_long uPlayerId );
 	BOOL	DeleteMember( u_long uPlayerId );
