@@ -172,7 +172,7 @@ CNeuzApp::CNeuzApp()
 	m_idPlayer	= 0;
 	m_hThread = INVALID_HANDLE_VALUE;
 	memset( m_apPlayer, 0, sizeof(m_apPlayer) );
-	memset( m_aSavedInven, 0, sizeof(m_aSavedInven) );
+	m_savedInven.fill(SavedSoldItem{});
 	for(int i = 0; i < 6; i++) m_pMasterIcon[i] = NULL;
 	m_pHeroIcon = NULL;
 	m_n2ndPasswordNumber = -1;

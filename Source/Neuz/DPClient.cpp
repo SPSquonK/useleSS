@@ -12850,15 +12850,11 @@ void CDPClient::OnUnregisterPVendorItem( OBJID objid, CAr & ar )
 	ar >> iIndex;
 
 	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) && pMover->IsActiveMover() )
-	{
-		pMover->m_vtInfo.VendorClearItem( iIndex );
+	if (IsValidObj(pMover) && pMover->IsActiveMover()) {
+		pMover->m_vtInfo.VendorClearItem(iIndex);
 	}
-	g_Neuz.m_aSavedInven[iIndex].m_dwObjId = 0;
-	g_Neuz.m_aSavedInven[iIndex].m_nCost = 0;
-	g_Neuz.m_aSavedInven[iIndex].m_nExtra = 0;
-	// 100304_mirchang vendor item check
-	g_Neuz.m_aSavedInven[iIndex].m_dwItemId = 0;
+
+	g_Neuz.m_savedInven[iIndex].Clear();
 }
 
 void CDPClient::OnRegisterPVendorItem( OBJID objid, CAr & ar )
@@ -12904,11 +12900,8 @@ void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 		}
 		pPVendor->m_vtInfo.VendorItemNum( nItem, nVend );
 	}
-	g_Neuz.m_aSavedInven[nItem].m_dwObjId = 0;
-	g_Neuz.m_aSavedInven[nItem].m_nCost = 0;
-	g_Neuz.m_aSavedInven[nItem].m_nExtra = 0;
-	// 100304_mirchang vendor item check
-	g_Neuz.m_aSavedInven[nItem].m_dwItemId = 0;
+
+	g_Neuz.m_savedInven[nItem].Clear();
 }
 
 void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )

@@ -7,6 +7,7 @@
 
 #include "dpclient.h"
 
+#include "boost/range/adaptor/indexed.hpp"
 #include "Chatting.h"
 extern	CChatting g_Chatting;
 
@@ -138,34 +139,23 @@ void CWndVendor::OnInitialUpdate()
 void CWndVendor::ReloadItemList()
 {
 	// 백업해 둔 리스트를 로드한다 	
-	if( !g_pPlayer->m_vtInfo.IsVendorOpen() )
-	{
-		for( int i = 0; i < MAX_VENDITEM; i++ )
-		{
-			for(int nIndex = 0;nIndex < g_pPlayer->m_Inventory.GetMax(); nIndex++)
-			{
-				CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId(nIndex);
-				if(pItemElem)
-				{
-					if( pItemElem->m_dwObjId == 0 ) continue;
-					// 100304_mirchang vendor item check
-					if( g_Neuz.m_aSavedInven[i].m_dwObjId == pItemElem->m_dwObjId 
-					&& g_Neuz.m_aSavedInven[i].m_dwItemId == pItemElem->m_dwItemId )
-					{
-						// 갯수가 다르면 갯수를 조정한다 	
-						if(g_Neuz.m_aSavedInven[i].m_nExtra > pItemElem->m_nItemNum)
-						{
-							//g_Neuz.m_aSavedInven[i].m_nExtra = pItemElem->m_nItemNum;
-							// 100304_mirchang vendor item check
-							g_Neuz.m_aSavedInven[i].m_dwObjId = 0;
-							g_Neuz.m_aSavedInven[i].m_nExtra = 0;
-							g_Neuz.m_aSavedInven[i].m_nCost = 0;
-							g_Neuz.m_aSavedInven[i].m_dwItemId = 0;
-						}
-						else
-							g_DPlay.SendRegisterPVendorItem(i, 0, (BYTE)( g_Neuz.m_aSavedInven[i].m_dwObjId ),
-															g_Neuz.m_aSavedInven[i].m_nExtra, g_Neuz.m_aSavedInven[i].m_nCost);
-					}
+	if (g_pPlayer->m_vtInfo.IsVendorOpen()) return;
+	
+	for (auto & [i, saved] : g_Neuz.m_savedInven | boost::adaptors::indexed(0)) {
+		if (saved.IsEmpty()) continue;
+
+		for (int nIndex = 0; nIndex < g_pPlayer->m_Inventory.GetMax(); nIndex++) {
+			CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId(nIndex);
+			if (!pItemElem) continue;
+			if (pItemElem->m_dwObjId == 0) continue;
+
+			// 100304_mirchang vendor item check
+
+			if (saved.objid == pItemElem->m_dwObjId && saved.itemId == pItemElem->m_dwItemId) {
+				if (saved.extra > pItemElem->m_nItemNum) {
+					saved.Clear();
+				} else {
+					g_DPlay.SendRegisterPVendorItem(i, 0, (BYTE)saved.objid, saved.extra, saved.cost);
 				}
 			}
 		}
@@ -386,7 +376,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 
 			// 저장버퍼도 클리어
-			memset(g_Neuz.m_aSavedInven, 0, sizeof(g_Neuz.m_aSavedInven));
+			SavedSoldItem::Clear(g_Neuz.m_savedInven);
 		}
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
@@ -411,18 +401,16 @@ void CWndVendor::OnDestroyChildWnd( CWndBase* pWndChild )
 void CWndVendor::OnDestroy( void )
 {
 	// 리스트를 백업해둔다
-	for( int i = 0; i < MAX_VENDITEM; i++ )
-	{
+	for (auto & [i, saved] : g_Neuz.m_savedInven | boost::adaptors::indexed(0)) {
 		CItemElem * pItemBase = g_pPlayer->m_vtInfo.GetItem(i);
-		if(pItemBase)
-		{
-			g_Neuz.m_aSavedInven[i].m_dwObjId = pItemBase->m_dwObjId;
-			g_Neuz.m_aSavedInven[i].m_nExtra = pItemBase->m_nExtra;
-			g_Neuz.m_aSavedInven[i].m_nCost = pItemBase->m_nCost;
-			// 100304_mirchang vendor item check
-			g_Neuz.m_aSavedInven[i].m_dwItemId = pItemBase->m_dwItemId;
-		}
+		if (!pItemBase) continue;
+
+		saved.objid  = pItemBase->m_dwObjId;
+		saved.extra  = pItemBase->m_nExtra;
+		saved.cost   = pItemBase->m_nCost;
+		saved.itemId = pItemBase->m_dwItemId;
 	}
+
 	g_DPlay.SendPVendorClose( m_pVendor->GetId() );
 
 	SAFE_DELETE( m_pWndVendorBuy );

@@ -1951,8 +1951,8 @@ void CWndMgr::OpenTitle( BOOL bFirstTime )
 void CWndMgr::OpenField()
 {
 	m_bAutoRun = FALSE;
-	
-	memset(g_Neuz.m_aSavedInven, 0, sizeof(g_Neuz.m_aSavedInven));
+	SavedSoldItem::Clear(g_Neuz.m_savedInven);
+
 	memset( g_bSlotSwitchAboutEquipItem, FALSE, sizeof( g_bSlotSwitchAboutEquipItem ) );
 #ifdef __BAN_CHATTING_SYSTEM
 	g_WndMng.SetWarningCounter( 0 );

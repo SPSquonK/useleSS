@@ -1,6 +1,8 @@
 #ifndef __NEUZAPP_H 
 #define __NEUZAPP_H
 
+#include <array>
+
 #define WM_LOGOUT ( WM_USER + 10 )
 
 
@@ -34,6 +36,18 @@ struct LOGIN_STEP_INFO
 
 #include "NeuzEnemy.h"
 
+struct SavedSoldItem {
+	using Container = std::array<SavedSoldItem, MAX_VENDITEM>;
+
+	DWORD objid  = 0;
+	int cost     = 0;
+	int extra    = 0;
+	DWORD itemId = 0;
+
+	[[nodiscard]] bool IsEmpty() const noexcept { return itemId != 0; }
+	void Clear() { *this = SavedSoldItem{}; }
+	static void Clear(Container & container) { container.fill(SavedSoldItem{}); }
+};
 
 
 class CNeuzApp : public CD3DApplication 
@@ -128,7 +142,7 @@ public:
 	CTexture*				m_pMasterIcon[6];
 	CTexture*				m_pHeroIcon;
 	CTexture				m_TexCltGauge[2];
-	CItemBase				m_aSavedInven[MAX_VENDITEM];
+	SavedSoldItem::Container m_savedInven;
 	int						m_n2ndPasswordNumber;
 
 #ifdef __GAME_GRADE_SYSTEM

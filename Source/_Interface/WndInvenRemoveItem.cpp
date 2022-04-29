@@ -113,17 +113,17 @@ BOOL CWndInvenRemoveItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			if( OnButtonOK() )
 			{
 				// 100304_mirchang vendor item check
-				for( int i = 0; i < MAX_VENDITEM; i++ )
-				{
-					if( g_Neuz.m_aSavedInven[i].m_dwObjId == m_pItemElem->m_dwObjId && g_Neuz.m_aSavedInven[i].m_dwItemId == m_pItemElem->m_dwItemId )
-					{
-						g_Neuz.m_aSavedInven[i].m_dwObjId = 0;
-						g_Neuz.m_aSavedInven[i].m_nCost = 0;
-						g_Neuz.m_aSavedInven[i].m_nExtra = 0;
-						g_Neuz.m_aSavedInven[i].m_dwItemId = 0;
-						break;
-					}
+				
+				const auto it = std::ranges::find_if(g_Neuz.m_savedInven,
+					[&](const SavedSoldItem & sold) {
+						return sold.objid == m_pItemElem->m_dwObjId
+							&& sold.itemId == m_pItemElem->m_dwItemId;
+					});
+
+				if (it != g_Neuz.m_savedInven.end()) {
+					it->Clear();
 				}
+
 				g_DPlay.SendRemoveItem( m_pItemElem, m_nRemoveNum );
 				Destroy();
 			}
