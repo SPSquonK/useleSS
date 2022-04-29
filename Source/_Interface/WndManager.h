@@ -545,6 +545,7 @@ public:
 	void PutDestParam( DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString &str );	
 	void PutDefinedString( DWORD dwText, ... );
 	void PutString( LPCTSTR lpszString, CObj* pObj = NULL, DWORD dwColor = 0xffffffff, DWORD dwChatStyle = CHATSTY_GAME, DWORD dwPStyle = 0x00000001 );
+	void PutString(DWORD textId);
 	void ParsingChat( CString string );
 	void WordChange( CString& rString );
 

@@ -2515,7 +2515,7 @@ void CMover::SetStateNotMode( DWORD dwMode, BYTE nFlag )
 #endif // __WORLDSERVER
 } 
 
-BOOL CMover::IsUseItemReadyTime( ItemProp* pItemProp, OBJID dwObjItemId )
+BOOL CMover::IsUseItemReadyTime( const ItemProp* pItemProp, OBJID dwObjItemId )
 {
 	if( m_Inventory.IsEquip( dwObjItemId ) )
 	{		

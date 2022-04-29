@@ -3846,6 +3846,10 @@ void CWndMgr::PutString( LPCTSTR lpszString, CObj* pObj, DWORD dwColor, DWORD dw
 	}
 }
 
+void CWndMgr::PutString(const DWORD textId) {
+	PutString(prj.GetText(textId), nullptr, prj.GetTextColor(textId));
+}
+
 void CWndMgr::PutToolTip_Skill( DWORD dwSkill, DWORD dwLevel, CPoint point, CRect* pRect, BOOL bActive )
 {
 	ItemProp* pSkillProp = prj.GetSkillProp( dwSkill );

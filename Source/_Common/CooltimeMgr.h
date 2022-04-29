@@ -12,7 +12,7 @@ public:
 	CCooltimeMgr();	
 	virtual ~CCooltimeMgr();	
 
-	static DWORD		GetGroup( ItemProp* pItemProp );
+	static DWORD		GetGroup( const ItemProp* pItemProp );
 
 	BOOL				CanUse( DWORD dwGroup );
 	void				SetTime( DWORD dwGroup, DWORD dwCoolTime );	

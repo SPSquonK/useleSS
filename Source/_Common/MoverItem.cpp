@@ -34,16 +34,6 @@ void CVTInfo::SetOther( CMover* pMover )
 	}
 }
 
-CItemBase* CVTInfo::GetItem( BYTE i )
-{
-	return m_apItem_VT[i];
-}
-
-void CVTInfo::SetItem( BYTE i, CItemBase* pItemBase )
-{
-	m_apItem_VT[i] = pItemBase;
-}
-
 LPCTSTR	CVTInfo::GetTitle()
 {
 	return m_strTitle.c_str();
@@ -62,7 +52,7 @@ BOOL CVTInfo::IsVendorOpen()
 void CVTInfo::Init( CMover* pOwner )
 {
 	m_pOwner = pOwner;
-	ZeroMemory( m_apItem_VT, sizeof( m_apItem_VT ) );
+	m_items_VT.fill(nullptr);
 	TradeSetGold( 0 );							// raiders.2006.11.28 
 	TradeClear();
 	m_strTitle = "";
@@ -74,14 +64,13 @@ void CVTInfo::Init( CMover* pOwner )
 void CVTInfo::TradeClear()
 {
 	SetOther( NULL );
-	for( int i = 0; i < MAX_TRADE; i++ )
-	{
-		if( m_apItem_VT[i] )
-		{
-			m_apItem_VT[i]->SetExtra( 0 );
-			m_apItem_VT[i] = NULL;
+	for (CItemElem * & item : m_items_VT) {
+		if (item) {
+			item->SetExtra(0);
+			item = nullptr;
 		}
 	}
+
 #ifdef __WORLDSERVER	
 	// raiders.2006.11.28	인벤돈 = 인벤돈 + 내 거래창 돈
 	int nGold = TradeGetGold();
@@ -106,21 +95,21 @@ int CVTInfo::TradeGetGold()
 
 void CVTInfo::TradeSetItem( BYTE nId, BYTE i, short nItemNum )
 {
-	CItemBase* pItemBase = m_pOwner->GetItemId( nId );
+	CItemElem * pItemBase = m_pOwner->GetItemId( nId );
 	if( pItemBase )
 	{
-		m_apItem_VT[i] = pItemBase;
+		m_items_VT[i] = pItemBase;
 		pItemBase->SetExtra( nItemNum );
 	}
 }
 
 BOOL CVTInfo::TradeClearItem( BYTE i )
 {
-	CItemBase* pItemBase = m_apItem_VT[i];
+	CItemElem * & pItemBase = m_items_VT[i];
 	if( IsUsingItem( pItemBase ) )
 	{
 		pItemBase->SetExtra( 0 );		// clear - using flag 
-		m_apItem_VT[i] = NULL;
+		pItemBase = nullptr;
 
 		return TRUE;
 	}
@@ -138,63 +127,60 @@ BOOL CVTInfo::TradeConsent()
 	int cbI	= 0, cbYou	= 0;
 	CItemContainer<CItemElem> a;
 	a.SetItemContainer( ITYPE_ITEM, MAX_TRADE );
-			
-	CItemBase* pItemBase;
+	
 	for( int i = 0; i < MAX_TRADE; i++ )
 	{
-		pItemBase = m_apItem_VT[i];
-		if( !pItemBase )
-			continue;
+		CItemElem * pItemElem = m_items_VT[i];
+		if (!pItemElem) continue;
 
-		m_apItem_VT[i] = NULL;
-		CItemElem* pItemElem = ( CItemElem* )pItemBase;
+		m_items_VT[i] = nullptr;
+
 		if( pItemElem->GetProp()->dwPackMax > 1 )
 		{
-			short nTradeNum = pItemElem->m_nItemNum - (short)pItemBase->GetExtra();
-			pItemElem->m_nItemNum = pItemBase->GetExtra();
+			short nTradeNum = pItemElem->m_nItemNum - (short)pItemElem->GetExtra();
+			pItemElem->m_nItemNum = pItemElem->GetExtra();
 			a.Add( pItemElem );
 			pItemElem->m_nItemNum = nTradeNum;
 			pItemElem->SetExtra( 0 );
 			if( nTradeNum == 0 )
-				m_pOwner->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );	// 제거
+				m_pOwner->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );	// 제거
 		}
 		else
 		{
 			a.Add( pItemElem );
-			m_pOwner->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );
+			m_pOwner->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );
 		}
 	}
 		
 	for( int i = 0; i < MAX_TRADE; i++ )
 	{
-		pItemBase = pTrader->m_vtInfo.GetItem( i );
-		if( pItemBase == NULL )
-			continue;
+		CItemElem * pItemElem = pTrader->m_vtInfo.GetItem( i );
+		if (!pItemElem) continue;
 
 		pTrader->m_vtInfo.SetItem( i, NULL );
-		CItemElem* pItemElem = ( CItemElem* )pItemBase;
+
 		if( pItemElem->GetProp()->dwPackMax > 1 )
 		{
-			short nTradeNum = pItemElem->m_nItemNum - (short)pItemBase->GetExtra();
-			pItemElem->m_nItemNum = pItemBase->GetExtra();
+			short nTradeNum = pItemElem->m_nItemNum - (short)pItemElem->GetExtra();
+			pItemElem->m_nItemNum = pItemElem->GetExtra();
 			m_pOwner->m_Inventory.Add( pItemElem );
 			pItemElem->m_nItemNum = nTradeNum;
 			pItemElem->SetExtra( 0 );
 			if( nTradeNum == 0 )
-				pTrader->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );	// 제거
+				pTrader->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );	// 제거
 		}
 		else
 		{
 			m_pOwner->m_Inventory.Add( pItemElem );
-			pTrader->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );
+			pTrader->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );
 		}
 	}
 
 	cbI		= a.GetCount();
 	for( int i = 0; i < cbI; i++ )
 	{
-		pItemBase	= a.GetAtId( i );
-		pTrader->m_Inventory.Add( (CItemElem*)pItemBase );
+		CItemElem * pItemBase	= a.GetAtId(i);
+		pTrader->m_Inventory.Add(pItemBase);
 	}
 	
 	// step1. 줄돈과 뺄돈을 구해둔다.
@@ -216,27 +202,27 @@ BOOL CVTInfo::TradeConsent()
 
 DWORD CVTInfo::TradeSetItem2( BYTE nId, BYTE i, short & nItemNum )
 {
-	CItemBase* pItemBase = m_pOwner->GetItemId( nId );
-	if( IsUsableItem( pItemBase ) == FALSE || m_apItem_VT[i] != NULL )  
-		return (DWORD)TID_GAME_CANNOTTRADE_ITEM;
+	CItemElem * pItemBase = m_pOwner->GetItemId( nId );
+	if( IsUsableItem( pItemBase ) == FALSE || m_items_VT[i] != nullptr)  
+		return TID_GAME_CANNOTTRADE_ITEM;
 
 	if( m_pOwner->m_Inventory.IsEquip( pItemBase->m_dwObjId ) ) 
-		return (DWORD)TID_GAME_CANNOTTRADE_ITEM;
+		return TID_GAME_CANNOTTRADE_ITEM;
 	
-	if( ( (CItemElem*)pItemBase )->IsQuest() )
-		return (DWORD)TID_GAME_CANNOTTRADE_ITEM;
+	if( pItemBase->IsQuest() )
+		return TID_GAME_CANNOTTRADE_ITEM;
 
-	if( ( (CItemElem*)pItemBase )->IsBinds() )
-		return (DWORD)TID_GAME_CANNOTTRADE_ITEM;
+	if( pItemBase->IsBinds() )
+		return TID_GAME_CANNOTTRADE_ITEM;
 
-	if( m_pOwner->IsUsing( (CItemElem*)pItemBase ) )
-		return (DWORD)TID_GAME_CANNOT_DO_USINGITEM;
+	if( m_pOwner->IsUsing(pItemBase ) )
+		return TID_GAME_CANNOT_DO_USINGITEM;
 
-	if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && ( (CItemElem*)pItemBase )->m_idGuild != 0 )
-		return (DWORD)TID_GAME_CANNOTTRADE_ITEM;
+	if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && pItemBase->m_idGuild != 0 )
+		return TID_GAME_CANNOTTRADE_ITEM;
 	
 	if( pItemBase->GetProp()->dwParts == PARTS_RIDE && pItemBase->GetProp()->dwItemJob == JOB_VAGRANT )
-		return (DWORD)TID_GAME_CANNOTTRADE_ITEM;
+		return TID_GAME_CANNOTTRADE_ITEM;
 	
 	if( nItemNum < 1)
 		nItemNum = 1;
@@ -408,21 +394,20 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 		CItemBase* pItemBase;
 		for( int i = 0; i < MAX_TRADE; i++ )
 		{
-			pItemBase = m_apItem_VT[i];
-			if( pItemBase == NULL )
-				continue;
+			CItemElem * pItemElem = m_items_VT[i];
+			if (!pItemElem) continue;
 
-			m_apItem_VT[i] = NULL;
-			CItemElem* pItemElem = ( CItemElem* )pItemBase;
+			m_items_VT[i] = NULL;
+
 			if( pItemElem->GetProp()->dwPackMax > 1 )
 			{
-				short nTradeNum = pItemElem->m_nItemNum - pItemBase->GetExtra();
-				pItemElem->m_nItemNum = pItemBase->GetExtra();
+				short nTradeNum = pItemElem->m_nItemNum - pItemElem->GetExtra();
+				pItemElem->m_nItemNum = pItemElem->GetExtra();
 				u.Add( pItemElem );
 				pItemElem->m_nItemNum = nTradeNum;
 				pItemElem->SetExtra( 0 );
 				if( nTradeNum == 0 )
-					m_pOwner->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );	// 제거
+					m_pOwner->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );	// 제거
 			}
 			else
 			{
@@ -514,29 +499,21 @@ void CVTInfo::TradeSetState( TRADE_STATE state )
 // 개인상점 
 ///////////////////////////////////////////////////////////////////////////////
 
-BOOL CVTInfo::VendorClearItem( BYTE i )
-{
-	CItemBase* pItemBase = m_apItem_VT[i];
-	if( pItemBase )
-	{
-		pItemBase->SetExtra( 0 );
-		pItemBase->m_nCost = 0;
-		m_apItem_VT[i]     = NULL;
-		return TRUE;
-	}
-	else
-	{
-		return FALSE;
-	}
+BOOL CVTInfo::VendorClearItem( BYTE i ) {
+	CItemElem * pItemBase = m_items_VT[i];
+	if (!pItemBase) return FALSE;
+
+	pItemBase->SetExtra( 0 );
+	pItemBase->m_nCost = 0;
+	m_items_VT[i] = nullptr;
+	return TRUE;
 }
 
-void CVTInfo::VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost )
-{
-	CItemBase* pItemBase = m_pOwner->GetItemId( nId );
-	if( pItemBase )
-	{
-		m_apItem_VT[i] = pItemBase;
-		pItemBase->SetExtra( nNum );
+void CVTInfo::VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost ) {
+	CItemElem * pItemBase = m_pOwner->GetItemId( nId );
+	if (pItemBase) {
+		m_items_VT[i] = pItemBase;
+		pItemBase->SetExtra(nNum);
 		pItemBase->m_nCost = nCost;
 	}
 }
@@ -544,41 +521,32 @@ void CVTInfo::VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost )
 // nNum - 남은 갯수 
 void CVTInfo::VendorItemNum( BYTE i, short nNum )
 {
-	CItemBase* pItemBase = m_apItem_VT[i];
-	if( pItemBase )
-	{
-		pItemBase->SetExtra( nNum );
-		if( nNum == 0 )
-		{
-		#ifdef __CLIENT
-			if( m_pOwner->IsActiveMover() == FALSE )
-				SAFE_DELETE( m_apItem_VT[i] );
-		#endif
-			m_apItem_VT[i] = NULL;
+	CItemElem * pItemBase = m_items_VT[i];
+	if (!pItemBase) return;
+
+	pItemBase->SetExtra( nNum );
+	if (nNum == 0) {
+#ifdef __CLIENT
+		if (!m_pOwner->IsActiveMover()) {
+			SAFE_DELETE(m_items_VT[i]);
 		}
+#endif
+		m_items_VT[i] = nullptr;
 	}
 }
 
-// 데이타 카피를 해서 보관?
-void CVTInfo::VendorCopyItems( CItemBase** ppItemVd )
-{
-	memcpy( (void*)m_apItem_VT, ppItemVd, sizeof(m_apItem_VT) );
-}
-
-
 void CVTInfo::VendorClose( BOOL bClearTitle )
 {
-	for( int i = 0; i < MAX_VENDITEM; i++ )
-	{
-		if( m_apItem_VT[i] )
-		{
-			m_apItem_VT[i]->SetExtra( 0 );
-			m_apItem_VT[i]->m_nCost	= 0;
-		#ifdef __CLIENT
-			if( FALSE == m_pOwner->IsActiveMover() )
-				SAFE_DELETE( m_apItem_VT[i] );
-		#endif	// __CLIENT
-			m_apItem_VT[i]	= NULL;
+	for (CItemElem * & item : m_items_VT) {
+		if (item) {
+			item->SetExtra(0);
+			item->m_nCost = 0;
+#ifdef __CLIENT
+			if (!m_pOwner->IsActiveMover()) {
+				SAFE_DELETE(item);
+			}
+#endif	// __CLIENT
+			item = nullptr;
 		}
 	}
 
@@ -588,27 +556,17 @@ void CVTInfo::VendorClose( BOOL bClearTitle )
 	SetOther( NULL );	
 }
 
-
 // 나는 판매자 인가? 
-BOOL CVTInfo::VendorIsVendor() 
-{
-	for( int i=0; i<MAX_VENDITEM; ++i )
-	{
-		if( m_apItem_VT[i] )	// 등록한 아이템이 있는가?
-			return TRUE;
-	}
-
-	return FALSE;
+BOOL CVTInfo::VendorIsVendor() const noexcept {
+	static constexpr auto IsNotNull = [](const auto * ptr) { return ptr; };
+	return std::ranges::any_of(m_items_VT, IsNotNull) ? TRUE : FALSE;
 }
 
-BOOL CVTInfo::IsTrading( CItemElem* pItemElem )
-{
-	for( int i = 0; i < MAX_VENDITEM; i++ )
-	{
-		if( m_apItem_VT[i] == pItemElem )
-			return TRUE;
-	}
-	return FALSE;
+BOOL CVTInfo::IsTrading(const CItemElem * const pItemElem) const noexcept {
+	const auto IsThisItem = [pItemElem](const CItemElem * const self) {
+		return pItemElem == self;
+	};
+	return std::ranges::any_of(m_items_VT, IsThisItem) ? TRUE : FALSE;
 }
 
 //CDPSrvr::OnBuyPVendorItem
@@ -621,17 +579,17 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 	if( IsVendorOpen() == FALSE )
 		return FALSE;
 
-	CItemBase* pItemBase = m_apItem_VT[i];
-	if( IsUsingItem( pItemBase ) == FALSE || pItemBase->m_dwItemId != dwItemId )
+	CItemElem * pItemElem = m_items_VT[i];
+	if( IsUsingItem(pItemElem) == FALSE || pItemElem->m_dwItemId != dwItemId )
 		return FALSE;
 
 	if( nNum < 1 )
 		nNum = 1;
-	if( nNum > pItemBase->GetExtra() )
-		nNum = (short)pItemBase->GetExtra();
+	if( nNum > pItemElem->GetExtra() )
+		nNum = (short)pItemElem->GetExtra();
 
 //	06.10.26
-	if( pItemBase->m_nCost > 0 && (float)pBuyer->GetGold() < (float)nNum * (float)pItemBase->m_nCost )
+	if(pItemElem->m_nCost > 0 && (float)pBuyer->GetGold() < (float)nNum * (float)pItemElem->m_nCost )
 	{
 		result.nErrorCode = TID_GAME_LACKMONEY;
 		return FALSE;
@@ -643,7 +601,6 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 		return FALSE;
 	}
 
-	CItemElem* pItemElem = (CItemElem*)pItemBase;
 	CItemElem itemElem;
 	itemElem	= *pItemElem;
 	itemElem.m_nItemNum	 = nNum;
@@ -655,20 +612,20 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 	}
 
 	// CItemElem의 복사 연산자에 m_nCost는 제외되어 있다.
-	int nCost	= pItemBase->m_nCost;
-	pBuyer->AddGold( -( pItemBase->m_nCost * nNum ) );
-	m_pOwner->AddGold( pItemBase->m_nCost * nNum );
+	int nCost	= pItemElem->m_nCost;
+	pBuyer->AddGold( -(pItemElem->m_nCost * nNum ) );
+	m_pOwner->AddGold(pItemElem->m_nCost * nNum );
 
-	pItemBase->SetExtra( pItemBase->GetExtra() - nNum );
-	int nRemain = pItemBase->GetExtra();
+	pItemElem->SetExtra(pItemElem->GetExtra() - nNum );
+	int nRemain = pItemElem->GetExtra();
 	if( nRemain <= 0 )
-		m_apItem_VT[i] = NULL;
+		m_items_VT[i] = nullptr;
 
 #ifdef __WORLDSERVER
 	g_UserMng.AddPVendorItemNum( (CUser*)m_pOwner, i, nRemain, pBuyer->GetName() );
 #endif	// __WORLDSERVER
 
-	m_pOwner->RemoveItem( (BYTE)pItemBase->m_dwObjId, nNum );
+	m_pOwner->RemoveItem( (BYTE)pItemElem->m_dwObjId, nNum );
 
 	result.item = itemElem;
 	result.item.m_nCost	= nCost;

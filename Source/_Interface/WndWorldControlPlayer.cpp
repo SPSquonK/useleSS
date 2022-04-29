@@ -23,8 +23,7 @@ int CWndWorld::ControlPlayer( DWORD dwMessage, CPoint point )
 //	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_LOOT)			return 0;
 	if( g_pPlayer->GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)
 		return 0;
-	if( g_pPlayer->m_vtInfo.VendorIsVendor() )
-		return 0;
+	if (g_pPlayer->m_vtInfo.VendorIsVendor()) return 0;
 #ifdef __S_SERVER_UNIFY
 	if( g_WndMng.m_bAllAction == FALSE )
 		return 0;

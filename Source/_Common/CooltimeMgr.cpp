@@ -16,7 +16,7 @@ CCooltimeMgr::~CCooltimeMgr()
 // 쿨타임 아이템의 쿨타임 그룹번호를 얻는다. 
 // 같은 그룹의 아이템은 한번 사용하면 모두 같이 쿨타임을 적용받는다.
 // 주의: 수정하려면 헤더파일에 MAX_COOLTIME_TYPE를 잘 조절할 것 
-DWORD CCooltimeMgr::GetGroup( ItemProp* pItemProp )
+DWORD CCooltimeMgr::GetGroup( const ItemProp * const pItemProp )
 {
 	DWORD dwCooltimeItemGroup = 0;
 

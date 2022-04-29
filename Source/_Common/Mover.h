@@ -301,7 +301,7 @@ class CVTInfo
 {
 private:
 	DWORD					m_dwTradeGold;					/// 거래중인 돈 
-	CItemBase*				m_apItem_VT[MAX_VENDITEM];		/// vendor and trader share pointer array
+	std::array<CItemElem *, MAX_VENDITEM> m_items_VT; /// vendor and trader share pointer array
 	OBJID					m_objId;						/// 상대방 id
 	CMover*					m_pOwner;						/// 클래스 소유자 
 	TRADE_STATE				m_state;						/// 거래상태 
@@ -312,8 +312,8 @@ public:
 	CMover*					GetOther();
 	void					SetOther( CMover* pMover );
 	void					Init( CMover* pMover );
-	CItemBase*				GetItem( BYTE i );
-	void					SetItem( BYTE i, CItemBase* pItemBase );
+	[[nodiscard]] CItemElem * GetItem(const BYTE i) { return m_items_VT[i]; }
+	void SetItem(const BYTE i, CItemElem * pItemBase) { m_items_VT[i] = pItemBase; }
 	LPCTSTR					GetTitle();
 	void					SetTitle( LPCTSTR szTitle );
 	BOOL					IsVendorOpen();
@@ -330,13 +330,18 @@ public:
 	void					TradeSetState( TRADE_STATE state );
 
 	void					VendorClose( BOOL bClearTitle = TRUE );	// 개인 상점 닫기
-	void					VendorCopyItems( CItemBase** ppItemVd );
 	void					VendorItemNum( BYTE i, short nNum );
 	void					VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost );
 	BOOL					VendorClearItem( BYTE i );
 	BOOL					VendorSellItem( CMover* pBuyer, BYTE nItem, DWORD dwItemId, short nNum, VENDOR_SELL_RESULT& result );
-	BOOL					VendorIsVendor(); 
-	BOOL				IsTrading( CItemElem* pItemElem );
+	[[nodiscard]] BOOL VendorIsVendor() const noexcept;
+	[[nodiscard]] BOOL IsTrading(const CItemElem * pItemElem) const noexcept;
+
+
+	// 데이타 카피를 해서 보관?
+	void VendorCopyItems(const std::array<CItemElem *, MAX_VENDITEM> & values) {
+		m_items_VT = values;
+	}
 };
 
 /// 서버에서 SFX해킹 때문에 생긴 자료형 
@@ -872,7 +877,7 @@ public:
 	BOOL			IsStateMode( DWORD dwMode ); 
 	void			SetStateMode( DWORD dwMode, BYTE nFlag );		// 유저상태 셑팅
 	void			SetStateNotMode( DWORD dwMode, BYTE nFlag );	// 유저상태 리셑
-	BOOL			IsUseItemReadyTime( ItemProp* pItemProp, OBJID dwObjItemId );
+	BOOL			IsUseItemReadyTime( const ItemProp* pItemProp, OBJID dwObjItemId );
 	BOOL			IsNPC()				{ return !m_bPlayer; }
 	BOOL			IsPlayer()			{ return m_bPlayer; }
 	BOOL			IsEquipableNPC()	{	return( GetCharacter() && GetCharacter()->m_nEquipNum > 0 );	}

@@ -288,8 +288,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( g_pPlayer->m_pActMover->IsFly() )
 				return TRUE;
-			if( g_pPlayer->m_vtInfo.VendorIsVendor() == FALSE )
-				return TRUE;
+			if (!g_pPlayer->m_vtInfo.VendorIsVendor()) return TRUE;
 			CWndEdit* pWndEdit	= (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 			CString strVendor	= pWndEdit->GetString();
 			strVendor.TrimLeft();

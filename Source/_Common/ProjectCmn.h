@@ -339,7 +339,7 @@ struct ItemProp : CtrlProp
 	TCHAR	szCommand[256];		// Ό³ΈνΉ® 
 #endif	// __VERIFY_0201
 
-	DWORD	GetCoolTime()  { return dwSkillReady; }
+	[[nodiscard]] DWORD GetCoolTime() const noexcept { return dwSkillReady; }
 	BOOL	IsUltimate( void )
 		{
 			return( 

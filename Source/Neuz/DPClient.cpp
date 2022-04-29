@@ -2261,21 +2261,10 @@ void CDPClient::OnTrade( OBJID objid, CAr & ar )
 	ar >> uidPlayer;
 
 	CMover* pTrader	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pTrader ) )
+	if( IsValidObj( pTrader ) )
 	{
 		pTrader->m_Inventory.Serialize( ar );
-
-		CItemBase* pItemBase;
-		for( int i = 0; i < MAX_INVENTORY; i++ )
-		{
-			pItemBase	= pTrader->m_Inventory.GetAtId( i );
-			if( pItemBase )
-			{
-//				CTexture* pTexture = CWndItemCtrl::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemBase->GetProp()->szIcon ), 0xffff00ff );
-//				pItemBase->SetTexture( pTexture );
-			}
-		}
-		
+				
 		g_pPlayer->m_vtInfo.SetOther( pTrader );
 		pTrader->m_vtInfo.SetOther( g_pPlayer );
 		
@@ -2966,11 +2955,11 @@ void CDPClient::OnUpdateItem( OBJID objid, CAr & ar )
 
 		if( pMover == pPlayer )
 		{
-			CItemBase* pItemBase	= pPlayer->GetItemId( nId );
+			CItemElem * pItemBase	= pPlayer->GetItemId( nId );
 			if( !pItemBase )	
 				return;
 
-			ItemProp* pItemProp		= pItemBase->GetProp();
+			const ItemProp * const pItemProp		= pItemBase->GetProp();
 			if( !pItemProp )	
 				return;
 
@@ -9524,13 +9513,11 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 
 	WORD dwType	= LOWORD( dwItemId );
 	WORD dwId	= HIWORD( dwItemId );
-	CItemBase* pItemBase	= pPlayer->GetItemId( dwId );
-	if( !pItemBase )	
-		return;
+	CItemElem * pItemBase	= pPlayer->GetItemId( dwId );
+	if (!pItemBase) return;
 
-	ItemProp* pItemProp		= pItemBase->GetProp();
-	if( !pItemProp )	
-		return;
+	const ItemProp * const pItemProp = pItemBase->GetProp();
+	if (!pItemProp) return;
 
 #ifdef __S_SERVER_UNIFY
 	if( g_WndMng.m_bAllAction == FALSE )
@@ -9542,7 +9529,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if(g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX ) || g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN ))
 		{
 			//헤어샵 및 메이크업 이용 중 머리에 쓰는 아이템은 사용 불가.
-			g_WndMng.PutString( prj.GetText(TID_GAME_DONOTUSE_SHOP), NULL, prj.GetTextColor(TID_GAME_DONOTUSE_SHOP) );
+			g_WndMng.PutString(TID_GAME_DONOTUSE_SHOP);
 			return;
 		}
 	}
@@ -9574,24 +9561,24 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		if( pPlayer->m_cooltimeMgr.CanUse( dwGroup ) == FALSE )
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_ATTENTIONCOOLTIME ), NULL, prj.GetTextColor( TID_GAME_ATTENTIONCOOLTIME ) );
+			g_WndMng.PutString(TID_GAME_ATTENTIONCOOLTIME);
 			return;
 		}
 	}
 
-	if( g_pPlayer->IsUseItemReadyTime( pItemProp, ((CItemElem*)pItemBase)->m_dwObjId ) == FALSE )
+	if( g_pPlayer->IsUseItemReadyTime( pItemProp, pItemBase->m_dwObjId ) == FALSE )
 		return;
 
 	if( g_pPlayer->HasBuffByIk3( IK3_TEXT_DISGUISE ) )
 	{
 		if(pItemProp->dwParts == PARTS_RIDE)
 		{
-			g_WndMng.PutString( prj.GetText( TID_QUEST_DISQUISE_NOTFLY ), NULL, prj.GetTextColor( TID_QUEST_DISQUISE_NOTFLY ) );
+			g_WndMng.PutString(TID_QUEST_DISQUISE_NOTFLY);
 			return;
 		}
 		else if(pItemProp->dwID == II_CHR_MAG_TRI_ANGELWING || pItemProp->dwID == II_SYS_SYS_EVE_WINGS) //변신중에는 날개 아이템 사용 불가.
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_DISQUISE_DNT_WING ), NULL, prj.GetTextColor( TID_GAME_DISQUISE_DNT_WING ) );
+			g_WndMng.PutString(TID_GAME_DISQUISE_DNT_WING);
 			return;
 		}
 	}
@@ -9600,7 +9587,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		if(pItemProp->dwItemKind3 == IK3_TEXT_DISGUISE)
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_DISQUISE_DNT_WING ), NULL, prj.GetTextColor( TID_GAME_DISQUISE_DNT_WING ) );
+			g_WndMng.PutString(TID_GAME_DISQUISE_DNT_WING);
 			return;
 		}
 
@@ -9618,7 +9605,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 
 		if(check) //두종의 날개 중복사용 금지.
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_NOTUSESKILL_ITEMUSE ), NULL, prj.GetTextColor( TID_GAME_NOTUSESKILL_ITEMUSE ) );
+			g_WndMng.PutString(TID_GAME_NOTUSESKILL_ITEMUSE);
 			return;
 		}
 	}
@@ -9671,7 +9658,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		if( g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_RETURN ) )
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_LIMITED_USE ), NULL, prj.GetTextColor( TID_GAME_LIMITED_USE ) );			
+			g_WndMng.PutString(TID_GAME_LIMITED_USE);
 			return;
 		}
 
@@ -9719,7 +9706,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PIEPROT )		// 보호의 두루마리(상급)
 	{
-		g_WndMng.PutString( prj.GetText( TID_GAME_ONLYPIER_USE ), NULL, prj.GetTextColor( TID_GAME_ONLYPIER_USE ) );
+		g_WndMng.PutString(TID_GAME_ONLYPIER_USE);
 		return;
 	}
 
@@ -9812,7 +9799,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			CItemElem* pArmor	= g_pPlayer->m_Inventory.GetEquip( dwParts );
 			if( pArmor )
 			{
-				g_WndMng.PutString( prj.GetText( TID_GAME_CHECK_EQUIP ), NULL, prj.GetTextColor( TID_GAME_CHECK_EQUIP ) );
+				g_WndMng.PutString(TID_GAME_CHECK_EQUIP);
 				return;
 			}			
 		}
@@ -9851,7 +9838,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		CPet* pPet	= g_pPlayer->GetPet();
 		if( !pPet )
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_PET_NOT_FOUND ), NULL, prj.GetTextColor( TID_GAME_PET_NOT_FOUND ) );
+			g_WndMng.PutString(TID_GAME_PET_NOT_FOUND);
 			return;
 		}
 	}
@@ -12832,23 +12819,12 @@ void CDPClient::OnPVendorClose( OBJID objid, CAr & ar )
 
 		BOOL bReSetVendor = FALSE;
 		CString strVendorTitle;
-		CItemBase	apItem_VT[MAX_VENDITEM];		/// vendor and trader share pointer array
-		ZeroMemory( apItem_VT, sizeof( apItem_VT ) );
+
 		if( pMover == g_pPlayer )
 		{
 			if( pMover->m_vtInfo.IsVendorOpen() )
 			{
 				bReSetVendor = TRUE;
-				for( int i = 0; i < MAX_VENDITEM; i++ )
-				{
-					CItemBase* pItemBase = pMover->m_vtInfo.GetItem(i);
-					if( pItemBase != NULL )
-					{
-						apItem_VT[i].m_dwObjId = pItemBase->m_dwObjId;
-						apItem_VT[i].m_nExtra = pItemBase->m_nExtra;
-						apItem_VT[i].m_nCost = pItemBase->m_nCost;
-					}					
-				}
 				strVendorTitle = pMover->m_vtInfo.GetTitle();
 			}
 		}
@@ -12956,7 +12932,9 @@ void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 
 void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 {
-	CItemBase* apItemVd[MAX_VENDITEM] = {NULL, };
+	std::array<CItemElem *, MAX_VENDITEM> apItemVd{ nullptr };
+	apItemVd.fill(nullptr); // Not sure if this line is necessary
+
 	BYTE nVendorItem, iIndex;
 	int nExtra;
 
@@ -12977,7 +12955,7 @@ void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 	ar >> g_Chatting.m_bState;
 
 	CMover* pPVendor	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pPVendor ) && pPVendor->IsPlayer() )
+	if( IsValidObj( pPVendor ) && pPVendor->IsPlayer() )
 	{
 		CMover::GetActiveMover()->m_vtInfo.SetOther( pPVendor );
 		pPVendor->m_vtInfo.VendorCopyItems( apItemVd );
@@ -12990,11 +12968,7 @@ void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 			if( g_Chatting.m_bState )
 			{
 				pWndVendor->m_pwndVenderMessage = new CWndVendorMessage;
-#ifdef __FIX_WND_1109
 				pWndVendor->m_pwndVenderMessage->Initialize( pWndVendor );
-#else	// __FIX_WND_1109
-				pWndVendor->m_pwndVenderMessage->Initialize();
-#endif	// __FIX_WND_1109
 			}
 
 			pWndVendor->SetVendor( pPVendor );
@@ -14950,17 +14924,16 @@ void CDPClient::OnSummonFriend( CAr & ar )
 	ar >> objid;
 
 	DWORD dwId = HIWORD( dwData );
-	CItemBase* pItemBase	= g_pPlayer->GetItemId( dwId );
-	if( pItemBase )	
+	const CItemElem * const pItemBase	= g_pPlayer->GetItemId( dwId );
+	if (!pItemBase) return;
+
+	CWndSummonFriend *pWndSummonFriend	= (CWndSummonFriend*)g_WndMng.GetWndBase( APP_SUMMON_FRIEND );
+	if( !pWndSummonFriend )
 	{
-		CWndSummonFriend *pWndSummonFriend	= (CWndSummonFriend*)g_WndMng.GetWndBase( APP_SUMMON_FRIEND );
-		if( !pWndSummonFriend )
-		{
-			pWndSummonFriend	= new CWndSummonFriend;
-			pWndSummonFriend->Initialize( &g_WndMng );
-		}
-		pWndSummonFriend->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
+		pWndSummonFriend	= new CWndSummonFriend;
+		pWndSummonFriend->Initialize( &g_WndMng );
 	}
+	pWndSummonFriend->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 }
 void CDPClient::OnSummonFriendConfirm( CAr & ar )
 {

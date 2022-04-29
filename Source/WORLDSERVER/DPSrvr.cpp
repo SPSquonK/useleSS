@@ -7759,7 +7759,7 @@ BOOL CDPSrvr::ClosePVendor( CUser* pUser, OBJID objidVendor )
 	if( pUser->GetId() == objidVendor )
 	{
 		if( pUser->m_vtInfo.IsVendorOpen() == FALSE && 
-			pUser->m_vtInfo.VendorIsVendor() == FALSE )
+			!pUser->m_vtInfo.VendorIsVendor() )
 		{
 			return FALSE;
 		}
