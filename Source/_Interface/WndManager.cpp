@@ -3998,7 +3998,7 @@ void CWndMgr::PutToolTip_Troupe( DWORD dwSkill, CPoint point, CRect* pRect )
 }
 void CWndMgr::PutToolTip_Item( DWORD dwType, DWORD dwId, CPoint point, CRect* pRect, int flag )
 {
-	CItemBase* pItemBase = g_pPlayer->GetItemId( dwId );
+	CItemElem * pItemBase = g_pPlayer->GetItemId( dwId );
 	PutToolTip_Item( pItemBase, point, pRect, flag );
 }
 
@@ -5491,7 +5491,7 @@ void CWndMgr::PutCommand( CItemElem* pItemElem, CEditString* pEdit )
 */
 }
 
-void CWndMgr::PutToolTip_Item( CItemBase* pItemBase, CPoint point, CRect* pRect, int flag )
+void CWndMgr::PutToolTip_Item(CItemElem * pItemBase, CPoint point, CRect* pRect, int flag )
 {
 	ItemProp* pItemProp = pItemBase->GetProp();
 	if( !pItemProp )		//gmpbigsun
@@ -5503,7 +5503,7 @@ void CWndMgr::PutToolTip_Item( CItemBase* pItemBase, CPoint point, CRect* pRect,
 		g_toolTip.SetUltimateToolTip( pItemBase );
 }
 
-void CWndMgr::PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, CRect* pRect, int nFlag )
+void CWndMgr::PutToolTipItemAndSubToolTip( CItemElem * pItemBase, CPoint point, CRect* pRect, int nFlag )
 {
 	// 다중 툴팁 시스템이 적용되면서 툴팁 출력 전에 툴팁 스위치를 미리 세팅해서 위치를 조정
 	g_toolTip.SetSubToolTipNumber( TOOL_TIP_SWITCH_MAIN );
@@ -5521,7 +5521,7 @@ void CWndMgr::PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, C
 	case IK2_RIDING:
 	case IK2_CLOTHWIG:
 		{
-			CItemBase* pEquipItemBase = g_pPlayer->GetEquipItem( pItemProp->dwParts );
+			CItemElem * pEquipItemBase = g_pPlayer->GetEquipItem( pItemProp->dwParts );
 			if( pEquipItemBase )
 			{
 				g_toolTip.SetSubToolTipNumber( TOOL_TIP_SWITCH_SUB1 );
@@ -5529,8 +5529,8 @@ void CWndMgr::PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, C
 			}
 			if( pItemProp->dwParts == PARTS_RWEAPON )
 			{
-				CItemBase* pRWeaponItemBase = g_pPlayer->GetEquipItem( PARTS_RWEAPON );
-				CItemBase* pLWeaponItemBase = g_pPlayer->GetEquipItem( PARTS_LWEAPON );
+				CItemElem * pRWeaponItemBase = g_pPlayer->GetEquipItem( PARTS_RWEAPON );
+				CItemElem * pLWeaponItemBase = g_pPlayer->GetEquipItem( PARTS_LWEAPON );
 				if( pRWeaponItemBase && pLWeaponItemBase )
 				{
 					g_toolTip.SetSubToolTipNumber( TOOL_TIP_SWITCH_SUB2 );
@@ -5549,8 +5549,8 @@ void CWndMgr::PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, C
 			}
 			else if( pItemProp->dwParts == PARTS_RING1 )
 			{
-				CItemBase* pRing1ItemBase = g_pPlayer->GetEquipItem( PARTS_RING1 );
-				CItemBase* pRing2ItemBase = g_pPlayer->GetEquipItem( PARTS_RING2 );
+				CItemElem * pRing1ItemBase = g_pPlayer->GetEquipItem( PARTS_RING1 );
+				CItemElem * pRing2ItemBase = g_pPlayer->GetEquipItem( PARTS_RING2 );
 				if( pRing1ItemBase && pRing2ItemBase )
 				{
 					g_toolTip.SetSubToolTipNumber( TOOL_TIP_SWITCH_SUB2 );
@@ -5569,8 +5569,8 @@ void CWndMgr::PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, C
 			}
 			else if( pItemProp->dwParts == PARTS_EARRING1 )
 			{
-				CItemBase* pEarring1ItemBase = g_pPlayer->GetEquipItem( PARTS_EARRING1 );
-				CItemBase* pEarring2ItemBase = g_pPlayer->GetEquipItem( PARTS_EARRING2 );
+				CItemElem * pEarring1ItemBase = g_pPlayer->GetEquipItem( PARTS_EARRING1 );
+				CItemElem * pEarring2ItemBase = g_pPlayer->GetEquipItem( PARTS_EARRING2 );
 				if( pEarring1ItemBase && pEarring2ItemBase )
 				{
 					g_toolTip.SetSubToolTipNumber( TOOL_TIP_SWITCH_SUB2 );
@@ -5592,10 +5592,9 @@ void CWndMgr::PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, C
 	}
 }
 
-void CWndMgr::PutToolTipParts( CItemBase* pPartsItemBase, CPoint point, CRect* pRect, const int nFlag, const int nSubToolTipFlag )
+void CWndMgr::PutToolTipParts(CItemElem * pPartsItemBase, CPoint point, CRect* pRect, const int nFlag, const int nSubToolTipFlag )
 {
-	if( pPartsItemBase == NULL )
-		return;
+	if (!pPartsItemBase) return;
 
 	ItemProp* pPartsItemProp = pPartsItemBase->GetProp();
 	CEditString strEquipItem = _T( "" );

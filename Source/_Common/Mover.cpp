@@ -4406,17 +4406,20 @@ CItemElem * CMover::GetItemId( DWORD dwId )
 	return m_Inventory.GetAtId( dwId );
 }
 
-CItemBase* CMover::GetItemBankId( int nSlot, DWORD dwId )
-{
-	CItemBase* pItemBase = NULL;
-	pItemBase = m_Bank[nSlot].GetAtId( dwId );
-	return pItemBase;
+const ItemProp * CMover::GetItemIdProp(const DWORD dwId) {
+	CItemElem * item = GetItemId(dwId);
+	if (!item) return nullptr;
+	return item->GetProp();
+}
+
+CItemElem * CMover::GetItemBankId(int nSlot, DWORD dwId) {
+	return m_Bank[nSlot].GetAtId(dwId);
 }
 
 void CMover::RemoveItemId( DWORD dwId )
 {
 	if( m_Inventory.IsEquip( dwId ) )
-		DoEquip( (CItemElem*)m_Inventory.GetAtId( dwId ), FALSE );		// 실패할 경우, 장착 해제 효과가 나타나지 않으므로 고려가 필요함.
+		DoEquip( m_Inventory.GetAtId( dwId ), FALSE );		// 실패할 경우, 장착 해제 효과가 나타나지 않으므로 고려가 필요함.
 	m_Inventory.RemoveAtId( dwId );
 }
 

@@ -585,10 +585,10 @@ public:
 	void PutToolTip_Troupe( DWORD dwSkill, CPoint point, CRect* pRect );
 	void PutToolTip_Skill( DWORD dwSkill, DWORD dwLevel, CPoint point, CRect* pRect, BOOL bActive = TRUE );
 	void PutToolTip_Item( DWORD dwType, DWORD dwId, CPoint point, CRect* pRect, int flag = 0 );
-	void PutToolTip_Item( CItemBase* pItemBase, CPoint point, CRect* pRect, int flag = 0 );
+	void PutToolTip_Item( CItemElem * pItemBase, CPoint point, CRect* pRect, int flag = 0 );
 	enum { TOOL_TIP_SWITCH_MAIN = 0, TOOL_TIP_SWITCH_SUB1 = 1, TOOL_TIP_SWITCH_SUB2 = 2 };
-	void PutToolTipItemAndSubToolTip( CItemBase* pItemBase, CPoint point, CRect* pRect, int nFlag = 0 );
-	void PutToolTipParts( CItemBase* pPartsItemBase, CPoint point, CRect* pRect, const int nFlag, const int nSubToolTipFlag );
+	void PutToolTipItemAndSubToolTip( CItemElem * pItemBase, CPoint point, CRect* pRect, int nFlag = 0 );
+	void PutToolTipParts( CItemElem * pPartsItemBase, CPoint point, CRect* pRect, const int nFlag, const int nSubToolTipFlag );
 	void MakeToolTipText( CItemBase* pItemBase, CEditString& strEdit, int flag = 0 );
 	void PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect );
 

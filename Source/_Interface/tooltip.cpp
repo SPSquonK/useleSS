@@ -713,12 +713,12 @@ void CToolTip::Paint(C2DRender* p2DRender)
 	}
 }
 
-void CToolTip::SetUltimateToolTip(CItemBase* pItemBase)
+void CToolTip::SetUltimateToolTip(CItemElem * pItemBase)
 {
 	m_nAdded = 1;
-	m_nSlot = ((CItemElem*)pItemBase)->GetUltimatePiercingSize();
+	m_nSlot = pItemBase->GetUltimatePiercingSize();
 	for(int i=0; i<m_nSlot; i++)
-		m_nAddedJewel[i] = ((CItemElem*)pItemBase)->GetUltimatePiercingItem(i);
+		m_nAddedJewel[i] = pItemBase->GetUltimatePiercingItem(i);
 
 	m_pUltimateItemBase = pItemBase;
 }

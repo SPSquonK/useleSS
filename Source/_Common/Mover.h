@@ -1153,6 +1153,7 @@ public:
 	int				RemoveAllItem( DWORD dwItemId );
 	BOOL			AddItem( CItemBase* pItemBase );
 	CItemElem *		GetItemId( DWORD dwId );
+	[[nodiscard]] const ItemProp * GetItemIdProp(DWORD dwId);
 	void			RemoveItemId( DWORD dwId  );
 	void			SetKeeptimeInven( DWORD dwItemId, DWORD dwTime );
 	void			SetKeeptimeBank( DWORD dwItemId, DWORD dwTime );
@@ -1160,7 +1161,7 @@ public:
 	void			OnTradeRemoveUser();
 	BOOL			AddItemBank( int nSlot, CItemElem* pItemElem );
 	void			UpdateItemBank( int nSlot, BYTE nId, CHAR cParam, DWORD dwValue );
-	CItemBase*		GetItemBankId( int nSlot, DWORD dwId );
+	[[nodiscard]] CItemElem * GetItemBankId( int nSlot, DWORD dwId );
 	void			RemoveItemBankId( int nSlot, DWORD dwId );
 	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor );
 	BOOL			DropItemByDied( CMover* pAttacker );		// Á×¾î¼­ ¶³¾îÆ®¸®´Â µå¶ø.

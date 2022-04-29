@@ -33,7 +33,7 @@ void CWndVendorCtrl::InitVendor( CMover* pMover )
 	m_pFocusItem = NULL;
 }
 
-CItemBase* CWndVendorCtrl::GetItem( BYTE i )
+CItemElem * CWndVendorCtrl::GetItem( BYTE i )
 {
 	ASSERT( m_pMover );
 	return m_pMover->m_vtInfo.GetItem( i );
@@ -185,9 +185,8 @@ void CWndVendorCtrl::OnDraw( C2DRender* p2DRender )
 				}
 			}
 		}			
-		CItemBase* pItemBase = GetItem( i );
-		if( pItemBase )
-		{
+		
+		if (CItemElem * pItemBase = GetItem(i)) {
 
 			// 툴팁
 			float fScal = 1.0f;
@@ -202,18 +201,18 @@ void CWndVendorCtrl::OnDraw( C2DRender* p2DRender )
 			}
 
 			// 아이템 아이콘 
-			if( ((CItemElem*)pItemBase)->IsFlag( CItemElem::expired ) )
+			if( pItemBase->IsFlag( CItemElem::expired ) )
 				pItemBase->GetTexture()->Render2( p2DRender, CPoint( nX, nY ), D3DCOLOR_XRGB( 255, 100, 100 ) );					
 			else
 				pItemBase->GetTexture()->Render2( p2DRender, CPoint( nX, nY ), D3DCOLOR_XRGB( 255, 255, 255 ), fScal, fScal );
 
 			// 아이템 이름, 판매가격
-			OnDrawItemInfo( p2DRender, ((CItemElem*)pItemBase), nX, nY );
+			OnDrawItemInfo( p2DRender, pItemBase, nX, nY );
 
 			if( i == m_nCurSel )
 				p2DRender->RenderRect( CRect( nX, nY, nX + 32, nY + 32 ), 0xff00ffff );
-			CItemElem* pItemElem	= (CItemElem*)pItemBase;
-			if( pItemElem->GetProp()->dwPackMax > 1 )
+
+			if(pItemBase->GetProp()->dwPackMax > 1 )
 			{
 				short nItemNum	= pItemBase->GetExtra();
 				TCHAR szTemp[32];

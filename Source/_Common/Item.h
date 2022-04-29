@@ -928,7 +928,7 @@ private:
 #endif // __CLIENT
 	
 public:
-	CItemBase* m_pItemBase;
+	CItemElem * m_pItemBase;
 	u_long	m_idHolder;
 	OBJID	m_idOwn;		// 누가 이아이템을 가질 권리가 있는가.
 	DWORD	m_dwDropTime;	// 드랍했을때의 시간.
@@ -944,9 +944,9 @@ public:
 
 	void SetOwner( OBJID id );
 	DWORD GetItemType() const { return 0; }
-	void SetItemBase( CItemBase* pItemBase ) { m_pItemBase = pItemBase; }
+	void SetItemBase( CItemElem * pItemBase ) { m_pItemBase = pItemBase; }
 
-	CItemBase* GetItemBase() const { return m_pItemBase; }
+	CItemElem * GetItemBase() const { return m_pItemBase; }
 	ItemProp* GetProp() { return prj.GetItemProp( GetIndex() ); }
 	
 	virtual void Serialize( CAr & ar );

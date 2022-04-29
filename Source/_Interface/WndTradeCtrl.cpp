@@ -55,10 +55,11 @@ void CWndTradeCtrl::OnDraw(C2DRender* p2DRender)
 	{
 		int x = i % 5;
 		int y = i / 5;
-		CItemBase* pItemBase = m_pMover->m_vtInfo.GetItem( i );
+
+		CItemElem * pItemBase = m_pMover->m_vtInfo.GetItem( i );
 		if( pItemBase )
 		{
-			if( ((CItemElem*)pItemBase)->IsFlag( CItemElem::expired ) )
+			if( pItemBase->IsFlag( CItemElem::expired ) )
 				pItemBase->GetTexture()->Render2( p2DRender, CPoint( x * 32, y * 32 ), D3DCOLOR_ARGB( 255, 255, 100, 100 ) );
 			else
 				pItemBase->GetTexture()->Render( p2DRender, CPoint( x * 32, y * 32 ) );
@@ -76,10 +77,9 @@ void CWndTradeCtrl::OnDraw(C2DRender* p2DRender)
 			if( i == m_nCurSelect )
 				p2DRender->RenderRect( CRect( x * 32, y * 32, x * 32 + 32 - 2, y * 32 + 32 - 2 ), 0xffffffff );
 
-			CItemElem* pItemElem = (CItemElem*)pItemBase;
-			if( pItemElem->GetProp()->dwPackMax > 1 )
+			if(pItemBase->GetProp()->dwPackMax > 1 )
 			{
-				short n	= pItemElem->m_nItemNum;
+				short n	= pItemBase->m_nItemNum;
 				if( IsUsingItem( pItemBase ) )
 					n = pItemBase->GetExtra();																		
 

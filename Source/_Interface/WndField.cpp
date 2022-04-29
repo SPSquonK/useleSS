@@ -1064,9 +1064,7 @@ void CWndInventory::OnMouseWndSurface( CPoint point )
 	int nTemp = 0;
 	for( int i=2; i<MAX_HUMAN_PARTS; i++ )
 	{
-		CItemBase* pItemBase = NULL;
-		
-		pItemBase = g_pPlayer->GetEquipItem( i );
+		CItemElem * pItemBase = g_pPlayer->GetEquipItem( i );
 		
 		CRect DrawRect = m_InvenRect[i];
 		
@@ -1229,10 +1227,10 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 	for( int i=2; i<MAX_HUMAN_PARTS; i++ )
 	{
 		DWORD dwAlpha = 255;
-		CItemBase* pItemBase = g_pPlayer->GetEquipItem( i );
+		CItemElem * pItemBase = g_pPlayer->GetEquipItem( i );
 		if( i == PARTS_LWEAPON )		// 왼손무기 그릴타이밍일때
 		{
-			CItemBase* pRWeapon = g_pPlayer->GetEquipItem( PARTS_RWEAPON );		// 오른손 무기를 꺼내보고
+			CItemElem * pRWeapon = g_pPlayer->GetEquipItem( PARTS_RWEAPON );		// 오른손 무기를 꺼내보고
 			if( pRWeapon && pRWeapon->GetProp()->dwHanded == HD_TWO )	// 투핸드 무기면
 			{
 				pItemBase = pRWeapon;	// 오른손무기랑 같은걸 그리자.
@@ -1265,7 +1263,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 		
 		if( pItemBase && pItemBase->GetTexture() )
 		{
-			if( ((CItemElem*)pItemBase)->IsFlag( CItemElem::expired ) )
+			if( pItemBase->IsFlag( CItemElem::expired ) )
 			{
 				pItemBase->GetTexture()->Render2(p2DRender, DrawRect.TopLeft()+cpAdd, D3DCOLOR_XRGB( 255, 100, 100 ), sx, sy );
 			}
@@ -1274,10 +1272,9 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 				pItemBase->GetTexture()->Render2(p2DRender, DrawRect.TopLeft()+cpAdd, D3DCOLOR_ARGB( dwAlpha, 255, 255, 255 ), sx, sy );
 			}
 
-			CItemElem *pItemElem = (CItemElem *)pItemBase;
-			if( pItemElem->GetProp()->dwPackMax > 1 )		// 묶음 아이템이냐?
+			if(pItemBase->GetProp()->dwPackMax > 1 )		// 묶음 아이템이냐?
 			{
-				short nItemNum	= pItemElem->m_nItemNum;
+				short nItemNum	= pItemBase->m_nItemNum;
 
 				TCHAR szTemp[ 32 ];
 				_stprintf( szTemp, "%d", nItemNum );
@@ -1738,7 +1735,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				else
 				{
 					SAFE_DELETE( pWndVendor->m_pWndVendorBuy );
-					pWndVendor->m_pWndVendorBuy		= new CWndVendorBuy( (CItemBase*)lpShortcut->m_dwData, lpShortcut->m_dwIndex/*nItem*/ );
+					pWndVendor->m_pWndVendorBuy		= new CWndVendorBuy( (CItemElem *)lpShortcut->m_dwData, lpShortcut->m_dwIndex/*nItem*/ );
 					pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor, APP_VENDOR_BUY );
 				}
 				bForbid		= FALSE;
@@ -2007,7 +2004,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			DWORD dwObjId = NULL_ID;
 			if( pCtrl && pCtrl->GetType() != OT_OBJ )
 				dwObjId = pCtrl->GetId();
-			CItemBase* pFocusItem = (CItemBase*) pLResult;
+			CItemElem * pFocusItem = (CItemElem *) pLResult;
 			BOOL	bAble = TRUE;
 			if( pFocusItem )
 			{
@@ -2022,10 +2019,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						if(pProp->dwID == II_GEN_MAT_ORICHALCUM01 || pProp->dwID == II_GEN_MAT_MOONSTONE ||
 							pProp->dwID == II_GEN_MAT_ORICHALCUM01_1 || pProp->dwID == II_GEN_MAT_MOONSTONE_1)
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{
 								CWndSummonAngel* pWndSummonAngel = (CWndSummonAngel*)g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
-								pWndSummonAngel->SetDie((CItemElem*)pFocusItem);
+								pWndSummonAngel->SetDie(pFocusItem);
 								return TRUE;
 							}
 						}
@@ -2571,13 +2568,11 @@ void CWndInventory::OnLButtonDown(UINT nFlags, CPoint point)
 			
 			if( DrawRect.PtInRect( point ) )
 			{
-				CItemBase* pItemBase = NULL;
-
-				pItemBase = g_pPlayer->GetEquipItem( i );
+				CItemElem * pItemBase = g_pPlayer->GetEquipItem( i );
 
 				if( pItemBase )
 				{
-					m_pSelectItem  = (CItemElem*)pItemBase;
+					m_pSelectItem  = pItemBase;
 					return;
 				}
 			} 
@@ -7861,14 +7856,13 @@ CWndTradeGold::~CWndTradeGold()
 } 
 BOOL CWndTradeGold::Process( void )
 {
-	CItemBase* pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
-	if( pItemBase == NULL )
-		return TRUE;
+	CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
+	if (!pItemBase) return TRUE;
 
-	if( ( ( CItemElem* )pItemBase)->GetExtra() > 0 )
-	{
+	if (pItemBase->GetExtra() > 0) {
 		Destroy();
 	}
+
 	return TRUE;
 }
 void CWndTradeGold::OnDraw( C2DRender* p2DRender ) 
@@ -7946,12 +7940,11 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 			else // 아이템
 			{
-				CItemBase* pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
+				CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
 				if( pItemBase )
 				{
-					if( nCost > ( (CItemElem*)pItemBase )->m_nItemNum )
-					{
-						nCost = ( (CItemElem*)pItemBase )->m_nItemNum;
+					if (nCost > pItemBase->m_nItemNum) {
+						nCost = pItemBase->m_nItemNum;
 					}
 
 					m_Shortcut.m_dwData -= 100;
@@ -7971,12 +7964,11 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 			else // 아이템
 			{
-				CItemBase* pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
+				CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
 				if( pItemBase )
 				{
-					if( nCost > ( (CItemElem*)pItemBase )->m_nItemNum )
-					{
-						nCost = ( (CItemElem*)pItemBase )->m_nItemNum;
+					if (nCost > pItemBase->m_nItemNum) {
+						nCost = pItemBase->m_nItemNum;
 					}
 					m_Shortcut.m_dwData -= 100;
 					g_DPlay.SendPutItemBank( m_nSlot, (BYTE)( m_Shortcut.m_dwId ), nCost );
@@ -8005,12 +7997,11 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( m_Shortcut.m_dwData != 0 ) // 아이템
 			{
-				CItemBase* pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
+				CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
 				if( pItemBase )
 				{
-					if( nCost > ( (CItemElem*)pItemBase )->m_nItemNum )
-					{
-						nCost = ( (CItemElem*)pItemBase )->m_nItemNum;
+					if (nCost > pItemBase->m_nItemNum) {
+						nCost = pItemBase->m_nItemNum;
 					}
 					
 					m_Shortcut.m_dwData -= 100;
@@ -8039,21 +8030,16 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else // 아이템
 				{
-					CItemBase* pItemBase = NULL;
+					CItemElem * pItemBase = nullptr;
 					if( m_Shortcut.m_dwType == ITYPE_ITEM )
 					{
 						pItemBase = g_pPlayer->GetGuild()->m_GuildBank.GetAtId( m_Shortcut.m_dwId );
 					}
-					else
-					{
-						//					assert(0);
-					}
 
 					if( pItemBase )
 					{
-						if( nCost > ( (CItemElem*)pItemBase )->m_nItemNum )
-						{
-							nCost = ( (CItemElem*)pItemBase )->m_nItemNum;
+						if (nCost > pItemBase->m_nItemNum) {
+							nCost = pItemBase->m_nItemNum;
 						}
 						
 						m_Shortcut.m_dwData -= 100;
@@ -8083,16 +8069,16 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 			else // 아이템
 			{
-				CItemBase* pItemBase = NULL;
+				CItemElem * pItemBase = NULL;
 				if( m_Shortcut.m_dwType == ITYPE_ITEM )
 				{
 					pItemBase = g_pPlayer->GetItemBankId( m_nSlot, m_Shortcut.m_dwId );
 
 					if( pItemBase )
 					{
-						if( nCost > ( (CItemElem*)pItemBase )->m_nItemNum )
+						if( nCost > pItemBase->m_nItemNum )
 						{
-							nCost = ( (CItemElem*)pItemBase )->m_nItemNum;
+							nCost = pItemBase->m_nItemNum;
 						}
 						
 						m_Shortcut.m_dwData -= 100;
@@ -8124,15 +8110,14 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 			else // 아이템
 			{
-				CItemBase* pItemBase = NULL;
+				CItemElem * pItemBase = NULL;
 				if( m_Shortcut.m_dwType == ITYPE_ITEM )
 				{
 					pItemBase = g_pPlayer->GetItemBankId( m_nPutSlot, m_Shortcut.m_dwId );
 					if( pItemBase )
 					{				
-						if( nCost > ( (CItemElem*)pItemBase )->m_nItemNum )
-						{
-							nCost = ( (CItemElem*)pItemBase )->m_nItemNum;
+						if (nCost > pItemBase->m_nItemNum) {
+							nCost = pItemBase->m_nItemNum;
 						}
 						
 						m_Shortcut.m_dwData -= 100;
@@ -8168,15 +8153,14 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 			else // 아이템
 			{
-				CItemBase* pItemBase = NULL;
+				CItemElem * pItemBase = NULL;
 				if( m_Shortcut.m_dwType == ITYPE_ITEM )
 				{
 					pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
 					if( pItemBase )
 					{				
-						if( nCost > ( (CItemElem*)pItemBase )->m_nItemNum )
-						{
-							nCost = ( (CItemElem*)pItemBase )->m_nItemNum;
+						if (nCost > pItemBase->m_nItemNum) {
+							nCost = pItemBase->m_nItemNum;
 						}
 						
 						pItemBase->SetExtra( nCost );		

@@ -265,12 +265,12 @@ void CWndGuildMeritCtrl::OnDraw( C2DRender* p2DRender )
 	{
 		int x	= ( i - pt.x ) % 6;
 		int y	= ( i - pt.y ) / 6;
-		CItemBase* pItemBase	= m_pItemContainer[i];
-		if( pItemBase )
+		
+		if (CItemElem * const pItemBase = m_pItemContainer[i])
 		{
 			pItemBase->GetTexture()->Render( p2DRender, CPoint( x * 32 + 13, y * 32 + 7 ) );
 			CRect rectHittest	= CRect( x * 32 + 13, y * 32  + 7, x * 32  + 13 + 32, y * 32 + 32 + 7 );
-			CPoint point	= GetMousePoint();
+			const CPoint point	= GetMousePoint();
 			if( rectHittest.PtInRect( point ) )
 			{
 				CPoint point2 = point;
@@ -280,8 +280,8 @@ void CWndGuildMeritCtrl::OnDraw( C2DRender* p2DRender )
 			}
 			if( i == m_nCurSel )
 				p2DRender->RenderRect( CRect( x * 32 + 7, y * 32 + 11, x * 32 + 32 + 5, y * 32 + 32 + 9 ), 0xff00ffff );
-			CItemElem* pItemElem	= (CItemElem*)pItemBase;
-			if( pItemElem->GetProp()->dwPackMax > 1 )
+
+			if(pItemBase->GetProp()->dwPackMax > 1 )
 			{
 				short nItemNum	= pItemBase->GetExtra();
 				TCHAR szTemp[32];
@@ -396,7 +396,7 @@ int CWndGuildMeritCtrl::HitTest( CPoint point )
 	return -1;
 }
 
-void CWndGuildMeritCtrl::AddItem(CItemBase *pItemContainer)
+void CWndGuildMeritCtrl::AddItem(CItemElem *pItemContainer)
 {
 	m_pItemContainer.push_back(pItemContainer);
 }

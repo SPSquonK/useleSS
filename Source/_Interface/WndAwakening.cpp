@@ -409,12 +409,9 @@ void CWndSelectAwakeCase::SetData( BYTE byObjID, DWORD dwSerialNum, __int64 n64N
 		return;
 	}
 
-	CItemBase* pItemBase = g_pPlayer->GetItemId( m_byObjID );
-	if( pItemBase )
-	{
-		ItemProp* pProp = pItemBase->GetProp( );
-		if(pProp)
-			m_dwItemIndex = pProp->dwID;
+	const ItemProp * const pProp = g_pPlayer->GetItemIdProp(m_byObjID);
+	if (pProp) {
+		m_dwItemIndex = pProp->dwID;
 	}
 }
 

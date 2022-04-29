@@ -35,7 +35,7 @@ public:
 //	void	LoadListBoxScript( LPCTSTR lpFileName );
 
 	int		HitTest( CPoint point );
-	CItemBase* GetItem( BYTE i );
+	CItemElem * GetItem( BYTE i );
 	void	OnDrawItemInfo( C2DRender* p2DRender, CItemElem* pItemElem, int nX, int nY );
 	CString GetNumberFormatSelling( LPCTSTR szNumber );
 

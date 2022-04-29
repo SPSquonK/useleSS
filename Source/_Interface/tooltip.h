@@ -28,7 +28,7 @@ class CToolTip
 	int			m_nAdded;
 	int			m_nAddedJewel[5];
 	int			m_nSlot;
-	CItemBase*	m_pUltimateItemBase;
+	CItemElem *	m_pUltimateItemBase;
 	CTexture*	m_pUltimateTexture;
 	CTexture*	m_pJewelBgTexture;
 
@@ -58,7 +58,7 @@ public:
 	void Paint( C2DRender* p2DRender );
 	void Delete();
 	void InitTexture();
-	void SetUltimateToolTip(CItemBase* pItemBase);
+	void SetUltimateToolTip(CItemElem * pItemBase);
 #ifndef __IMPROVE_MAP_SYSTEM
 	void SetWorldMapMonsterInfo(int nMonCnt, DWORD* pDwMonId);
 #endif // __IMPROVE_MAP_SYSTEM
