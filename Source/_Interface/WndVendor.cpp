@@ -374,10 +374,6 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 		else if(nID == WIDC_RESET)
 		{
-			
-			CItemBase	apItem_VT[MAX_VENDITEM];		/// vendor and trader share pointer array
-			ZeroMemory( apItem_VT, sizeof( apItem_VT ) );
-
 			for( int i = 0; i < MAX_VENDITEM; i++ )
 			{
 				// 리스트를 클리어 한다. 

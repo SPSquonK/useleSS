@@ -2422,12 +2422,11 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else
 				{
-					CItemElem* pItemElem = (CItemElem*)pFocusItem;
-					if( pItemElem->GetProp() && ( pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND ) && !pItemElem->IsFlag( CItemElem::binds ) )
+					if(pFocusItem->GetProp() && (pFocusItem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND ) && !pFocusItem->IsFlag( CItemElem::binds ) )
 					{
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK);
-						g_WndMng.m_pWndEquipBindConfirm->SetInformation(pFocusItem, dwObjId);
+						g_WndMng.m_pWndEquipBindConfirm->SetInformationDoubleClick(pFocusItem, dwObjId);
 						g_WndMng.m_pWndEquipBindConfirm->Initialize(NULL);
 					}
 					else
@@ -2742,7 +2741,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					{
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DRAG_AND_DROP);
-						g_WndMng.m_pWndEquipBindConfirm->SetInformation(pItemElem);
+						g_WndMng.m_pWndEquipBindConfirm->SetInformationDragAndDrop(pItemElem);
 						g_WndMng.m_pWndEquipBindConfirm->Initialize(NULL);
 					}
 					else
@@ -19895,20 +19894,7 @@ BOOL CWndRemoveJewelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_REMOVE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndRemoveJewelConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRemoveJewelConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRemoveJewelConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRemoveJewelConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndRemoveJewelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_YES )
@@ -19930,7 +19916,7 @@ BOOL CWndRemoveJewelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLR
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndRemoveJewelConfirm::SetItem(CItemBase*	m_pItem)
+void CWndRemoveJewelConfirm::SetItem(CItemElem *	m_pItem)
 {
 	m_pUpgradeItem = m_pItem;
 }
@@ -24154,7 +24140,7 @@ BOOL CWndEquipBindConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-void CWndEquipBindConfirm::SetInformation(CItemBase* pItemBase, DWORD dwObjId)
+void CWndEquipBindConfirm::SetInformationDoubleClick(CItemElem * pItemBase, DWORD dwObjId)
 {
 	m_eEquipAction = EQUIP_DOUBLE_CLICK;
 	m_pItemBase = pItemBase;
@@ -24162,7 +24148,7 @@ void CWndEquipBindConfirm::SetInformation(CItemBase* pItemBase, DWORD dwObjId)
 	m_dwObjId = dwObjId;
 }
 
-void CWndEquipBindConfirm::SetInformation(CItemElem* pItemElem)
+void CWndEquipBindConfirm::SetInformationDragAndDrop(CItemElem* pItemElem)
 {
 	m_eEquipAction = EQUIP_DRAG_AND_DROP;
 	m_pItemElem = pItemElem;

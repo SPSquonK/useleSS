@@ -261,7 +261,7 @@ public:
 	void			AddDiagText( LPCSTR lpszText );
 	void			AddText( LPCSTR lpszText );
 	void			AddReplace( DWORD dwWorldID, D3DXVECTOR3 & vPos );
-	void			AddCreateItem( CItemBase* pItemBase, BYTE* pnId, short* pnNum, BYTE nCount );
+	void			AddCreateItem(CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE nCount );
 	void			AddMoveItem( BYTE nItemType, BYTE nSrcIndex, BYTE nDestIndex );
 	void			AddTrade( CUser* pTrader, u_long uidPlayer );
 	void			AddComfirmTrade( OBJID objid );

@@ -587,7 +587,7 @@ public:
 	enum { TOOL_TIP_SWITCH_MAIN = 0, TOOL_TIP_SWITCH_SUB1 = 1, TOOL_TIP_SWITCH_SUB2 = 2 };
 	void PutToolTipItemAndSubToolTip( CItemElem * pItemBase, CPoint point, CRect* pRect, int nFlag = 0 );
 	void PutToolTipParts( CItemElem * pPartsItemBase, CPoint point, CRect* pRect, const int nFlag, const int nSubToolTipFlag );
-	void MakeToolTipText( CItemBase* pItemBase, CEditString& strEdit, int flag = 0 );
+	void MakeToolTipText( CItemElem * pItemBase, CEditString& strEdit, int flag = 0 );
 	void PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect );
 
 	DWORD PutItemName( CItemElem* pItemElem, CEditString* pEdit );
@@ -621,7 +621,7 @@ public:
 	void PutNeededVis( CItemElem* pItemElem, CEditString* pEdit );
 	void PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit );
 	void PutPetKind( CItemElem* pItemElem, CEditString* pEdit );
-	BOOL CheckConfirm( CItemBase* pItem );
+	BOOL CheckConfirm(CItemElem * pItem );
 
 	void PutEquipItemText( CEditString* pEdit );
 

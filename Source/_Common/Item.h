@@ -279,26 +279,6 @@ typedef struct tagSkill
 	
 } SKILL,* LPSKILL;
 
-/*
-#ifdef __XPET2
-class CPetElem : public CItemBase
-{
-	int m_nMaxLevel;	// 수명
-	int m_nLevel;		// 레벨(나이)
-	int m_dwHungry;		// 배고픈정도 -10 ~ 10		-10이하는 존내배고픔 / -10 ~ -5 배고픔 / -5 ~ 5 보통 / 5이상 배부름
-	int m_dwFeeling;	// 기분. -10 ~ 10			
-
-	void Init();
-	void Destroy();
-public:
-	CPetElem();
-	~CPetElem();
-	ItemProp* GetProp()	{	return prj.GetItemProp( m_dwItemId );	}
-	virtual	CPetElem&	operator = ( CPetElem & pe );
-	virtual void	Serialize( CAr & ar );
-};
-#endif // xPet2
-*/
 
 //////////////////////////////////////////////////////////////////////
 // 이것은 아이템 하나하나의 요소를 배열로 만들어 추가, 삭제 등의 
@@ -970,8 +950,8 @@ public:
 #endif	// __VM_0820
 };
 
-extern BOOL IsUsableItem( CItemBase* pItem );
-extern BOOL IsUsingItem( CItemBase* pItem );
+extern BOOL IsUsableItem(const CItemElem * pItem );
+extern BOOL IsUsingItem(const CItemElem * pItem );
 
 extern	BOOL	IsNeedTarget( ItemProp* pProp );
 

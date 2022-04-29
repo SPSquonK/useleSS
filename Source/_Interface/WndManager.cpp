@@ -2493,7 +2493,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 		if( CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
 			return;
 
-		CItemBase* pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( IsUsableItem( pItemBase ) )
 		{
 			CCtrl* pCtrl = (CCtrl*)g_WorldMng.Get()->GetObjFocus();
@@ -2512,12 +2512,11 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 
 			if( bAble )	// ¼º°øÆÇÁ¤ ³µÀ»¶§¸¸ º¸³¿.
 			{
-				CItemElem* pItemElem = ( CItemElem* )pItemBase;
-				if( pItemElem->GetProp() && ( pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND ) && !pItemElem->IsFlag( CItemElem::binds ) )
+				if( pItemBase->GetProp() && (pItemBase->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND ) && !pItemBase->IsFlag( CItemElem::binds ) )
 				{
 					SAFE_DELETE( g_WndMng.m_pWndEquipBindConfirm )
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm( CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK );
-					g_WndMng.m_pWndEquipBindConfirm->SetInformation( pItemElem, dwObjId );
+					g_WndMng.m_pWndEquipBindConfirm->SetInformationDoubleClick(pItemBase, dwObjId );
 					g_WndMng.m_pWndEquipBindConfirm->Initialize( NULL );
 				}
 				else
@@ -5626,7 +5625,7 @@ void CWndMgr::PutToolTipParts(CItemElem * pPartsItemBase, CPoint point, CRect* p
 	}
 }
 
-void CWndMgr::MakeToolTipText( CItemBase* pItemBase, CEditString& strEdit, int flag )
+void CWndMgr::MakeToolTipText(CItemElem * pItemBase, CEditString& strEdit, int flag )
 {
 	if( pItemBase == NULL )
 		return;
@@ -6593,7 +6592,7 @@ void CWndMgr::PutPetKind( CItemElem* pItemElem, CEditString* pEdit )
 
 }
 
-BOOL CWndMgr::CheckConfirm( CItemBase* pItem )
+BOOL CWndMgr::CheckConfirm(CItemElem * pItem )
 {
 	ItemProp* pItemProp = pItem->GetProp();
 	if( !pItemProp )

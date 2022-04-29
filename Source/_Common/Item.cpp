@@ -10,7 +10,7 @@
 #include "serialnumber.h"
 #include "definetext.h"
 
-BOOL IsUsableItem( CItemBase* pItem )
+BOOL IsUsableItem(const CItemElem * pItem )
 {
 	if( pItem == NULL )
 		return FALSE;
@@ -21,7 +21,7 @@ BOOL IsUsableItem( CItemBase* pItem )
 		return FALSE;	// 거래중이거나 개인 상점에 올린 아이템은 사용할 수 없다.
 }
 
-BOOL IsUsingItem( CItemBase* pItem )
+BOOL IsUsingItem(const CItemElem * pItem )
 {
 	if( pItem == NULL )
 		return FALSE;

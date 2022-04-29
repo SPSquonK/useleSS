@@ -655,7 +655,7 @@ void CUser::AddReplace( DWORD dwWorldID, D3DXVECTOR3 & vPos )
 	m_Snapshot.ar << vPos;
 }
 
-void CUser::AddCreateItem( CItemBase* pItemBase, BYTE* pnId, short* pnNum, BYTE nCount )
+void CUser::AddCreateItem(CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE nCount )
 {
 	if( IsDelete() )	return;
 	

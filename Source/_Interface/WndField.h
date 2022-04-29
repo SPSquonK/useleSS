@@ -190,8 +190,8 @@ public:
 	void SetEnchantCursor();
 	
 	CSfx*		m_pSfxUpgrade;
-	CItemBase*	m_pUpgradeItem;
-	CItemBase*	m_pUpgradeMaterialItem;
+	CItemElem *	m_pUpgradeItem;
+	CItemElem *	m_pUpgradeMaterialItem;
 	BOOL		m_bIsUpgradeMode;
 	DWORD		m_dwEnchantWaitTime;
 
@@ -1974,7 +1974,7 @@ class CWndRemoveJewelConfirm : public CWndNeuz
 {
 public:
 	CWndInventory* m_pInventory;
-	CItemBase*	m_pUpgradeItem;
+	CItemElem *	m_pUpgradeItem;
 
 public: 
 	CWndRemoveJewelConfirm(); 
@@ -1985,12 +1985,8 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 
-	void SetItem(CItemBase*	m_pItem);
+	void SetItem(CItemElem *	m_pItem);
 };
 
 /*******************************
@@ -2460,15 +2456,15 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 
 public:
-	void SetInformation(CItemBase* pItemBase, DWORD dwObjId);
-	void SetInformation(CItemElem* pItemElem);
+	void SetInformationDoubleClick(CItemElem * pItemBase, DWORD dwObjId);
+	void SetInformationDragAndDrop(CItemElem * pItemElem);
 
 private:
 	void EquipItem( void );
 
 private:
 	EquipAction m_eEquipAction;
-	CItemBase* m_pItemBase;
+	CItemElem * m_pItemBase;
 	DWORD m_dwObjId;
 	CItemElem* m_pItemElem;
 };
