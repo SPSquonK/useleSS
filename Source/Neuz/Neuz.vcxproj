@@ -436,8 +436,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\moverbuff.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\Particle.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\partyquest.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\PCBang.cpp">
@@ -846,7 +844,6 @@
     <ClInclude Include="..\_Common\MapMonsterInformationPack.h" />
     <ClInclude Include="..\_Common\messenger.h" />
     <ClInclude Include="..\_Common\MiniGame.h" />
-    <ClInclude Include="..\_Common\Particle.h" />
     <ClInclude Include="..\_Common\partyquest.h" />
     <ClInclude Include="..\_Common\PCBang.h" />
     <ClInclude Include="..\_Common\Piercing.h" />

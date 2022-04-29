@@ -106,7 +106,6 @@
 #include "Object3D.h"
 #include "ModelObject.h"
 #include "ModelMng.h"
-#include "Particle.h"
 
 // object
 #include "Obj.h"

@@ -631,9 +631,6 @@
     <ClCompile Include="..\_Common\moverbuff.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\Particle.cpp">
-      <Filter>Source Files\_Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\partyquest.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
@@ -1495,9 +1492,6 @@
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\MiniGame.h">
-      <Filter>Source Files\_Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\Particle.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\partyquest.h">
