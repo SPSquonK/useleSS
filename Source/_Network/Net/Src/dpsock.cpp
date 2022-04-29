@@ -179,56 +179,6 @@ void CDPSock::RemoveThread( HANDLE hThread )
 }
 
 #ifdef __CRC
-BOOL CDPSock::CreateServer( DWORD dwcrc )
-#else	// __CRC
-BOOL CDPSock::CreateServer( BUFFER_TYPE nBufferType )
-#endif	// __CRC
-{
-	Close();
-
-#ifdef __CRC
-	if( CSock::crcRead & dwcrc )
-	{
-		m_dwReadHeaderSize	= HEADERSIZE13;
-#ifdef __PACKET_REPLAY_R
-		m_dwDataSizeOffset	= sizeof(char) + sizeof(int) + sizeof(DWORD);
-#else	// __PACKET_REPLAY_R
-		m_dwDataSizeOffset	= sizeof(char) + sizeof(DWORD);
-#endif	// __PACKET_REPLAY_R
-	}
-	else
-	{
-		m_dwReadHeaderSize	= HEADERSIZE5;
-		m_dwDataSizeOffset	= sizeof(char);
-	}
-
-	CServerSock* pSock	= new CServerSock( dwcrc );
-#else	//__CRC
-	CServerSock* pSock	= new CServerSock( nBufferType );
-#endif	// __CRC
-	if( !pSock->Create( m_uPort ) )
-	{
-		SAFE_DELETE( pSock );
-		return FALSE;
-	}
-	CSystemInfo si;
-
-	CreateIoWorker( si.dwNumberOfProcessors*2 );
-
-	pSock->StartServer( m_phCompletionPort, m_uIoWorker );
-
-	if( !pSock->Listen() )
-	{
-		SAFE_DELETE( pSock );
-		return FALSE;
-	}
-	pSock->SetID( DPID_SERVERPLAYER );
-	m_pSock		= pSock;
-	m_fServer	= TRUE;
-	return TRUE;
-}
-
-#ifdef __CRC
 BOOL CDPSock::CreateServerE( DWORD dwcrc )
 #else	// __CRC
 BOOL CDPSock::CreateServerE( BUFFER_TYPE nBufferType )
@@ -266,79 +216,6 @@ BOOL CDPSock::CreateServerE( BUFFER_TYPE nBufferType )
 	pSock->SetID( DPID_SERVERPLAYER );
 	m_pSock		= pSock;
 	m_fServer	= TRUE;
-
-	return TRUE;
-}
-
-#ifdef __CRC
-BOOL CDPSock::JoinToServer( DWORD dwcrc, u_long uWaitingTime )
-#else	// __CRC
-BOOL CDPSock::JoinToServer( BUFFER_TYPE nBufferType )
-#endif	// __CRC
-{
-	Close();
-
-	CClientSock* pSock;
-#ifdef __CRC
-	if( CSock::crcRead & dwcrc )
-	{
-		m_dwReadHeaderSize	= HEADERSIZE13;
-		m_dwDataSizeOffset	= sizeof(char) + sizeof(DWORD);
-	}
-	else
-	{
-		m_dwReadHeaderSize	= HEADERSIZE5;
-		m_dwDataSizeOffset	= sizeof(char);
-	}
-
-	pSock	= new CClientSock( dwcrc );
-#else	// __CRC
-	pSock	= new CClientSock( nBufferType );
-#endif	// __CRC
-	if( !pSock->Create() )
-	{
-		SAFE_DELETE( pSock );
-		return FALSE;
-	}
-	m_fServer	= FALSE;	
-	m_pSock		= pSock;
-	pSock->SetID( pSock->GetHandle() );
-	pSock->SetPeerID( DPID_SERVERPLAYER );
-
-	if( !pSock->Connect( m_lpAddr, m_uPort ) )
-		return FALSE;
-
-	CreateIoWorker( (u_long)0x01 );
-
-	int iIoWorker	= ( pSock->GetHandle() / 4 ) % GetIoWorkerCount();
-	if( !CreateIoCompletionPort( (HANDLE)pSock->GetHandle(), m_phCompletionPort[iIoWorker], (DWORD)( pSock->GetHandle() ),  0 ) )
-	{
-		TRACE( "Can't create completion port with error %d\n", WSAGetLastError() );
-		SAFE_DELETE( pSock );
-		return FALSE;
-	}
-
-#ifdef __PROTOCOL0910
-	m_hProtocolId	= CreateEvent( NULL, FALSE, FALSE, NULL );
-#endif	// __PROTOCOL0910
-
-	int zero	= 0;
-	setsockopt( pSock->GetHandle(), SOL_SOCKET, SO_SNDBUF, (char *)&zero, sizeof(zero) );
-	setsockopt( pSock->GetHandle(), SOL_SOCKET, SO_RCVBUF, (char *)&zero, sizeof(zero) );
-
-	PostQueuedCompletionStatus( m_phCompletionPort[iIoWorker], NEWSOCKETMSG, (DWORD)pSock->GetHandle(), NULL );
-
-#ifdef __PROTOCOL0910
-	if( CSock::crcWrite & dwcrc )
-	{
-		if( WaitForSingleObject( m_hProtocolId, uWaitingTime ) == WAIT_TIMEOUT )
-		{
-			TRACE( "WAIT_TIMEOUT\n" );
-			PostQueuedCompletionStatus( m_phCompletionPort[iIoWorker], (DWORD)-4, (DWORD)pSock->GetHandle(), NULL );
-			return FALSE;
-		}
-	}
-#endif	// __PROTOCOL0910
 
 	return TRUE;
 }
