@@ -28,7 +28,7 @@ private:
 	SQLHDBC hDbc;							// 연결 핸들
 	char*	Col[MAXCOL];					// 바인딩될 컬럼 정보
 
-	int FindCol(const char *name);				// 컬럼의 이름으로부터 번호를 찾아준다.
+	[[nodiscard]] int FindCol(const char *name) const;				// 컬럼의 이름으로부터 번호를 찾아준다.
 
 public:
 	SQLHSTMT hStmt;							// 명령 핸들. 직접 사용할 수도 있으므로 public으로 정의
@@ -75,6 +75,8 @@ public:
 	char GetChar(const char *sCol);				// 실수형 컬럼 읽기
 	void GetStr(int nCol, char *buf);		// 문자열형 컬럼 읽기
 	void GetStr(const char *sCol, char *buf);		// 문자열형 컬럼 읽기
+	const char * GetStrPtr(int nCol) const;
+	const char * GetStrPtr(const char * sCol) const;
 	int ReadBlob(LPCTSTR szSQL, void *buf);
 	void WriteBlob(LPCTSTR szSQL, void *buf, int size);
 	BOOL BindParameter(SQLUSMALLINT parameterNumber,

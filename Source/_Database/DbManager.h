@@ -1116,7 +1116,7 @@ private:
 	void	ContinueGC( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
 private:
-	void	GetStrFromDBFormat( char* szDst, const char* szSrc, int& n );
+	static void	GetStrFromDBFormat( char* szDst, const char* szSrc, int& n );
 	static void SetStrDBFormat(char * szDst, const char * szSrc);
 #ifdef __PET_1024
 	void	GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );

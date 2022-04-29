@@ -88,7 +88,7 @@ inline BOOL IsPrime( u_long n )
 typedef	DWORD	SERIALNUMBER;
 
 // ',', '/', '\0' 을 만날때까지 값을 리턴하고 커서는 다음...
-inline int GetIntFromStr(char *pBuf, int *pLocation)
+inline int GetIntFromStr(const char *pBuf, int *pLocation)
 {
 	char strTemp[50];
 	int count=0;
@@ -100,7 +100,7 @@ inline int GetIntFromStr(char *pBuf, int *pLocation)
 	return atoi(strTemp);
 }
 
-inline void GetStrFromStr(char *pBuf, char *strReturn, int *pLocation)
+inline void GetStrFromStr(const char *pBuf, char *strReturn, int *pLocation)
 {
 	int count=0;
 	while(pBuf[*pLocation]!=',' && pBuf[*pLocation]!='/' && pBuf[*pLocation]!=0) {

@@ -879,58 +879,47 @@ BOOL CDbManager::GetEquipment( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 
 BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
+	static constexpr auto ReadShortcut = [](const char * serialization, int & CountStr) -> SHORTCUT {
+		SHORTCUT retval;
+		retval.m_dwShortcut = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwId = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwType = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwIndex = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwUserId = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwData = (DWORD)GetIntFromStr(serialization, &CountStr);
+		if (retval.m_dwShortcut == SHORTCUT_CHAT) {
+			GetStrFromDBFormat(retval.m_szString, serialization, CountStr);
+		} else {
+			retval.m_szString[0] = '\0';
+		}
+		return retval;
+	};
+
 	int CountStr	= 0;
-	int nIndex	= 0;
-	char AppletTaskBar[MAX_APPLETTASKBAR]	= { 0, };
-	qry->GetStr( "m_aSlotApplet", AppletTaskBar );
+	const char * AppletTaskBar = qry->GetStrPtr( "m_aSlotApplet");
 	VERIFYSTRING_RETURN( AppletTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
 	while( '$' != AppletTaskBar[CountStr] )
 	{
-		nIndex	= GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_dwShortcut	= (DWORD)GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_dwId	= (DWORD)GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_dwType	= (DWORD)GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_dwIndex	= (DWORD)GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_dwUserId	= (DWORD)GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_dwData	= (DWORD)GetIntFromStr( AppletTaskBar, &CountStr );
-		if( pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_CHAT )
-			GetStrFromDBFormat( pMover->m_UserTaskBar.m_aSlotApplet[nIndex].m_szString, AppletTaskBar, CountStr );
+		const int nIndex = GetIntFromStr( AppletTaskBar, &CountStr );
+		pMover->m_UserTaskBar.m_aSlotApplet[nIndex] = ReadShortcut(AppletTaskBar, CountStr);
 	}
 	
 	CountStr	= 0;
-	nIndex	= 0;
-	int nSlotIndex	= 0;
-	char ItemTaskBar[MAX_ITEMTASKBAR]	= { 0, };
-	qry->GetStr( "m_aSlotItem", ItemTaskBar );
+	const char * ItemTaskBar = qry->GetStrPtr("m_aSlotItem");
 	VERIFYSTRING_RETURN( ItemTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
 	while( '$' != ItemTaskBar[CountStr] )
 	{
-		nSlotIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
-		nIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut	= (DWORD)GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwId	= (DWORD)GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwType	= (DWORD)GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwIndex	= (DWORD)GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwUserId	= (DWORD)GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwData	= (DWORD)GetIntFromStr( ItemTaskBar, &CountStr );
-		if( pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut == SHORTCUT_CHAT )
-			GetStrFromDBFormat( pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_szString, ItemTaskBar, CountStr );
+		const int nSlotIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
+		const int nIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
+		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex] = ReadShortcut(ItemTaskBar, CountStr);
 	}
 	
 	CountStr	= 0;
-	nIndex	= 0;
-	char SkillTaskBar[1024]		= { 0, };
-	qry->GetStr( "m_aSlotQueue", SkillTaskBar );
+	const char * SkillTaskBar = qry->GetStrPtr("m_aSlotQueue");
 	VERIFYSTRING_RETURN( SkillTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	while( '$' != SkillTaskBar[CountStr] )
-	{
-		nIndex	= GetIntFromStr( SkillTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex].m_dwShortcut	= (DWORD)GetIntFromStr( SkillTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex].m_dwId	= (DWORD)GetIntFromStr( SkillTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex].m_dwType		= (DWORD)GetIntFromStr( SkillTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex].m_dwIndex	= (DWORD)GetIntFromStr( SkillTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex].m_dwUserId	= (DWORD)GetIntFromStr( SkillTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex].m_dwData		= (DWORD)GetIntFromStr( SkillTaskBar, &CountStr );
+	while ('$' != SkillTaskBar[CountStr]) {
+		const int nIndex = GetIntFromStr(SkillTaskBar, &CountStr);
+		pMover->m_UserTaskBar.m_aSlotQueue[nIndex] = ReadShortcut(SkillTaskBar, CountStr);
 	}
 	pMover->m_UserTaskBar.m_nActionPoint = qry->GetInt( "m_SkillBar" );
 	return TRUE;

@@ -331,7 +331,7 @@ void CQuery::Clear()
 }
 
 // 컬럼 이름으로부터 컬럼 인덱스를 찾는다. 없을 경우 -1을 리턴한다.
-int CQuery::FindCol(const char *name)
+int CQuery::FindCol(const char *name) const
 {
 	int i;
 	for (i=0;i<nCol;i++) 
@@ -481,6 +481,20 @@ void CQuery::GetStr(const char *sCol, char *buf)
 	{
 		GetStr(n, buf);
 	}
+}
+
+const char * CQuery::GetStrPtr(int nCol) const {
+	if (nCol < 0 || nCol >= this->nCol) return nullptr;
+	return Col[nCol - 1];
+}
+
+const char * CQuery::GetStrPtr(const char * sCol) const {
+	const int n = FindCol(sCol);
+	if (n == -1) {
+		Error(__FUNCTION__": column %s does not exist", sCol);
+		return nullptr;
+	}
+	return GetStrPtr(n);
 }
 
 // 에러 발생시 진단 정보를 출력해 준다.
