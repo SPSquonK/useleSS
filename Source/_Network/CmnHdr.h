@@ -222,13 +222,6 @@ inline void GetStrPaFromStr(char *pBuf, char *strReturn, int *pLocation)
 	strReturn[count]=0;(*pLocation)++;
 }
 
-inline BOOL chWindows9x( void )
-{
-	OSVERSIONINFO vi	= { sizeof(vi) };
-	GetVersionEx( &vi );
-	return( vi.dwPlatformId != VER_PLATFORM_WIN32_NT );
-}
-
 inline HANDLE CreateNewCompletionPort( DWORD dwNumberOfConcurrentThreads )
 {
 	return( CreateIoCompletionPort( INVALID_HANDLE_VALUE, NULL, 0, dwNumberOfConcurrentThreads ) );

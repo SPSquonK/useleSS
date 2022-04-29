@@ -79,11 +79,11 @@ BOOL CDPMng::InitConnection( LPVOID lpConnection, u_short uPort )
 #ifdef __CRC
 BOOL CDPMng::CreateSession( LPCSTR lpSession, DWORD dwcrc )
 {
-	if( ( chWindows9x()? m_pDPSock->CreateServerE( dwcrc ): m_pDPSock->CreateServer( dwcrc ) ) )
+	if( m_pDPSock->CreateServerE( dwcrc ))
 #else	// __CRC
 BOOL CDPMng::CreateSession( LPCSTR lpSession, BUFFER_TYPE nBufferType )
 {
-	if( ( chWindows9x()? m_pDPSock->CreateServerE( nBufferType ): m_pDPSock->CreateServer( nBufferType ) ) )
+	if(m_pDPSock->CreateServerE( nBufferType ))
 #endif	// __CRC
 	{
 		TRACE( "%s server launched.\n", lpSession );
@@ -96,11 +96,11 @@ BOOL CDPMng::CreateSession( LPCSTR lpSession, BUFFER_TYPE nBufferType )
 #ifdef __CRC
 BOOL CDPMng::JoinSession( LPCSTR lpSession, DWORD dwcrc, u_long uWaitingTime )
 {
-	if( ( chWindows9x()? m_pDPSock->JoinToServerE( dwcrc, uWaitingTime ): m_pDPSock->JoinToServer( dwcrc, uWaitingTime ) ) )
+	if( m_pDPSock->JoinToServerE( dwcrc, uWaitingTime ) )
 #else	// __CRC
 BOOL CDPMng::JoinSession( LPCSTR lpSession, BUFFER_TYPE nBufferType )
 {
-	if( ( chWindows9x()? m_pDPSock->JoinToServerE( nBufferType ): m_pDPSock->JoinToServer( nBufferType ) ) )
+	if( m_pDPSock->JoinToServerE( nBufferType ) )
 #endif	// __CRC
 	{
 		TRACE( "%s server connected.\n", lpSession );

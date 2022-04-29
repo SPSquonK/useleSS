@@ -116,13 +116,8 @@ BOOL CDPSock::CloseIoWorker( void )
 
 			lphThread[i]	= m_listthread.front();
 			m_listthread.pop_front();
-			if( !chWindows9x() )
-			{
-				PostQueuedCompletionStatus( m_phCompletionPort[i], CLOSEIOWORKERMSG, TRUE, NULL );
-			}
+			PostQueuedCompletionStatus( m_phCompletionPort[i], CLOSEIOWORKERMSG, TRUE, NULL );
 		}
-		if( chWindows9x() )
-			WSASetEvent( m_hClose );
 		WaitForMultipleObjects( cbThread, lphThread, TRUE, INFINITE );
 
 		for( DWORD i = 0; i < cbThread; i++ ) {

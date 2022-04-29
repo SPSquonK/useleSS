@@ -201,7 +201,7 @@ BOOL CDPMng<T>::InitConnection( LPVOID lpConnection, u_short uPort )
 template <class T>
 BOOL CDPMng<T>::CreateSession( LPCSTR lpSession, DWORD dwcrc )
 	{
-		if( ( chWindows9x()? m_pDPSock->CreateServerE( dwcrc ): m_pDPSock->CreateServer( dwcrc ) ) )
+		if( m_pDPSock->CreateServerE( dwcrc ) )
 		{
 			TRACE( "%s server launched.\n", lpSession );
 			return TRUE;
@@ -213,7 +213,7 @@ BOOL CDPMng<T>::CreateSession( LPCSTR lpSession, DWORD dwcrc )
 template <class T>
 BOOL CDPMng<T>::JoinSession( LPCSTR lpSession, DWORD dwcrc, u_long uWaitingTime )
 	{
-		if( ( chWindows9x()? m_pDPSock->JoinToServerE( dwcrc, uWaitingTime ): m_pDPSock->JoinToServer( dwcrc, uWaitingTime ) ) )
+		if( m_pDPSock->JoinToServerE( dwcrc, uWaitingTime ) )
 		{
 			TRACE( "%s server connected.\n", lpSession );
 			return TRUE;
