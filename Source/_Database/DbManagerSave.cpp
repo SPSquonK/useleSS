@@ -882,57 +882,58 @@ void CDbManager::SaveCardCube( CMover* pMover, char* szCard, char* szsCardIndex,
 {
 }
 
-void CDbManager::SaveTaskBar( CMover* pMover, char* szAppletTaskBar, char* szItemTaskBar, char* szSkillTaskBar )
-{
-	char OneAppletTaskBar[MAX_TASKBAR] = { 0, };
-	char OneItemTaskBar[MAX_TASKBAR] = { 0, };
-	char OneSkillTaskBar[256] = { 0, };
-	for( int ch = 0 ; ch < MAX_SLOT_APPLET ; ch++ )
-	{
-		if( pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwShortcut != SHORTCUT_NONE )
-		{
-			sprintf( OneAppletTaskBar, "%d,%d,%d,%d,%d,%d,%d", ch, 
-				pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwShortcut, pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwId, pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwType,
-				pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwIndex, pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwUserId, pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwData );
-			
-			if( pMover->m_UserTaskBar.m_aSlotApplet[ch].m_dwShortcut == SHORTCUT_CHAT)
-				SetStrDBFormat( OneAppletTaskBar, pMover->m_UserTaskBar.m_aSlotApplet[ch].m_szString );
-			
-			strncat( szAppletTaskBar, OneAppletTaskBar, sizeof(OneAppletTaskBar));
-			strcat( szAppletTaskBar, "/" );
+void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szItemTaskBar, char * szSkillTaskBar) {
+	static constexpr auto AppendNumber = [](char * destination, int value) {
+		char buffer[32] = "";
+		std::sprintf(buffer, "%d,", value);
+		std::strcat(destination, buffer);
+	};
+	
+	static constexpr auto BufferShortcut = [](char * destination, const SHORTCUT & shortcut) {
+		char buffer[MAX_TASKBAR] = "";
+
+		sprintf(buffer, "%d,%d,%d,%d,%d,%d",
+			shortcut.m_dwShortcut, shortcut.m_dwId, shortcut.m_dwType,
+			shortcut.m_dwIndex, shortcut.m_dwUserId, shortcut.m_dwData);
+
+		if (shortcut.m_dwShortcut == SHORTCUT_CHAT) {
+			CDbManager::SetStrDBFormat(buffer, shortcut.m_szString);
+		}
+
+		strncat(destination, buffer, sizeof(buffer));
+		strcat(destination, "/");
+	};
+
+	for (int ch = 0; ch < MAX_SLOT_APPLET; ch++) {
+		const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotApplet[ch];
+
+		if (shortcut.m_dwShortcut != SHORTCUT_NONE) {
+			AppendNumber(szAppletTaskBar, ch);
+			BufferShortcut(szAppletTaskBar, shortcut);
 		}
 	}
 	strcat( szAppletTaskBar, NullStr );
 	
-	for( int ch = 0; ch < MAX_SLOT_ITEM_COUNT; ch++ )
-	{
-		for( int j = 0; j < MAX_SLOT_ITEM; j++ )
-		{
-			if( pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwShortcut != SHORTCUT_NONE )
-			{
-				sprintf( OneItemTaskBar, "%d,%d,%d,%d,%d,%d,%d,%d", ch, j,
-					pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwShortcut, pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwId, pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwType,
-					pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwIndex, pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwUserId, pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwData );
-				
-				if( pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_dwShortcut == SHORTCUT_CHAT )
-					SetStrDBFormat( OneItemTaskBar, pMover->m_UserTaskBar.m_aSlotItem[ch][j].m_szString );
-				
-				strncat( szItemTaskBar, OneItemTaskBar, sizeof(OneItemTaskBar) );
-				strcat( szItemTaskBar, "/" );
+	for( int ch = 0; ch < MAX_SLOT_ITEM_COUNT; ch++ ) {
+		for( int j = 0; j < MAX_SLOT_ITEM; j++ ) {
+			const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotItem[ch][j];
+
+			if (shortcut.m_dwShortcut != SHORTCUT_NONE) {
+				AppendNumber(szItemTaskBar, ch);
+				AppendNumber(szItemTaskBar, j);
+				BufferShortcut(szItemTaskBar, shortcut);
 			}
 		}
 	}
 	strcat( szItemTaskBar, NullStr );
 	
-	for( int ch = 0; ch < MAX_SLOT_QUEUE; ch++ )
-	{
-		if( pMover->m_UserTaskBar.m_aSlotQueue[ch].m_dwShortcut != SHORTCUT_NONE )		// 값이 들어있는지 검사
-		{
-			sprintf( OneSkillTaskBar, "%d,%d,%d,%d,%d,%d,%d/", ch,
-				pMover->m_UserTaskBar.m_aSlotQueue[ch].m_dwShortcut, pMover->m_UserTaskBar.m_aSlotQueue[ch].m_dwId, pMover->m_UserTaskBar.m_aSlotQueue[ch].m_dwType,
-				pMover->m_UserTaskBar.m_aSlotQueue[ch].m_dwIndex, pMover->m_UserTaskBar.m_aSlotQueue[ch].m_dwUserId, pMover->m_UserTaskBar.m_aSlotQueue[ch].m_dwData );
-			strncat( szSkillTaskBar, OneSkillTaskBar, sizeof( OneSkillTaskBar ) );
-		}			
+	for (int ch = 0; ch < MAX_SLOT_QUEUE; ch++) {
+		const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotQueue[ch];
+
+		if (shortcut.m_dwShortcut != SHORTCUT_NONE) {
+			AppendNumber(szSkillTaskBar, ch);
+			BufferShortcut(szSkillTaskBar, shortcut);
+		}
 	}
 	strcat( szSkillTaskBar, NullStr );
 }

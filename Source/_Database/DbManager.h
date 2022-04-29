@@ -1117,7 +1117,7 @@ private:
 
 private:
 	void	GetStrFromDBFormat( char* szDst, const char* szSrc, int& n );
-	void	SetStrDBFormat( char* szDst, const char* szSrc );
+	static void SetStrDBFormat(char * szDst, const char * szSrc);
 #ifdef __PET_1024
 	void	GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
 	void	SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
