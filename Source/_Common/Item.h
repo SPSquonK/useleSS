@@ -47,8 +47,6 @@ public:
 
 	ItemProp*		GetProp(); 
 	virtual	void			Empty();
-	void			SetTexture();
-	void			SetTexture( CTexture* pTexture );
 	CTexture*		GetTexture();						
 	int				GetCost();							// 가격을 얻는다.
 	void			SetExtra( int nExtra );			// 확장 데이타를 세팅 
@@ -68,14 +66,6 @@ inline void CItemBase::SetExtra( int nExtra )
 inline int CItemBase::GetExtra()
 {
 	return m_nExtra;
-}
-
-
-inline void CItemBase::SetTexture( CTexture* pTexture )
-{
-#ifdef __CLIENT
-	m_pTexture = pTexture;
-#endif
 }
 
 inline CTexture* CItemBase::GetTexture() 
@@ -208,6 +198,14 @@ public:
 	int*		GetAbilityOptionPtr() { return &m_nAbilityOption; }
 	void		SetAbilityOption( int nAbilityOption ) { m_nAbilityOption = nAbilityOption; }
 	int			GetGold();
+
+
+	void SetTexture();
+	void SetTexture(CTexture * const pTexture) {
+#ifdef __CLIENT
+		m_pTexture = pTexture;
+#endif
+	}
 
 //	PIERCINGINFO	m_piercingInfo;
 	[[nodiscard]] SmallDstList GetPiercingAvail() const;

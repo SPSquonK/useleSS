@@ -44,7 +44,9 @@ CItemBase::CItemBase()
 	m_nCost		     = 0;
 	m_liSerialNumber	= 0;
 
-	SetTexture( NULL );	
+#ifdef __CLIENT
+	m_pTexture = nullptr;
+#endif
 }
 
 void CItemBase::Empty()
@@ -52,7 +54,10 @@ void CItemBase::Empty()
 	m_szItemText[0] = '\0';
 	m_dwItemId = 0;
 	m_nExtra   = 0;
-	SetTexture( NULL );
+
+#ifdef __CLIENT
+	m_pTexture = nullptr;
+#endif
 }
 
 ItemProp* CItemBase::GetProp() 
@@ -73,22 +78,20 @@ CItemBase& CItemBase::operator = ( CItemBase& ib )
 	return *this;
 }
 
-void CItemBase::SetTexture()
+void CItemElem::SetTexture()
 {
 #ifdef __CLIENT
-	ItemProp* pProp =GetProp();
-	if (!pProp)
-	{
-		LPCTSTR szErr = Error("CItemBase::SetTexture GetProp() NULL Return %d", m_dwItemId);
-		//ADDERRORMSG( szErr );
+	const ItemProp * const pProp =GetProp();
+	if (!pProp) {
+		Error("CItemBase::SetTexture GetProp() NULL Return %d", m_dwItemId);
+		return;
 	}
 
 	CString strIcon	= pProp->szIcon;
 	if( pProp->dwItemKind3 == IK3_EGG )
 	{
-		BYTE nLevel	= 0;
-		if( ( (CItemElem*)this )->m_pPet )
-			nLevel	= ( (CItemElem*)this )->m_pPet->GetLevel();
+		const BYTE nLevel = m_pPet ? m_pPet->GetLevel() : 0;
+
 		switch( nLevel )
 		{
 			case PL_D:

@@ -1525,7 +1525,7 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 	}
 	if( pTexture == NULL )
 	{
-		CItemBase* pItemBase;
+		CItemElem * pItemBase;
 		if( dwShortcut == SHORTCUT_APPLET ) 
 		{
 			AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( dwId );
