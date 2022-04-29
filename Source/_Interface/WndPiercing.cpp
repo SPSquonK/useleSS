@@ -184,12 +184,12 @@ BOOL CWndPiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	
 	if( g_pPlayer->m_Inventory.IsEquip( pShortcut->m_dwId ) )
 	{
-		g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor(TID_GAME_EQUIPPUT) );
+		g_WndMng.PutString(TID_GAME_EQUIPPUT);
 		SetForbid( TRUE );
 		return FALSE;
 	}
 		
-	CItemElem* pItemElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	if(pItemElem == NULL)
 		return FALSE;
 

@@ -248,7 +248,7 @@ void CWndSummonAngel::OnRButtonDblClk( UINT nFlags, CPoint point )
 BOOL CWndSummonAngel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	int isValid = ITEM_INVALID;
-	CItemElem* pItemElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	if( m_nSelecCtrl > -1 && !m_MatDie[m_nSelecCtrl].isUse)
 	{
 		if( m_nSelecCtrl < 10 && (pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01 || pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01_1))

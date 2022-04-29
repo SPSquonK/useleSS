@@ -226,33 +226,33 @@ DWORD CVTInfo::TradeSetItem2( BYTE nId, BYTE i, short & nItemNum )
 	
 	if( nItemNum < 1)
 		nItemNum = 1;
-	if( nItemNum > ( (CItemElem*)pItemBase )->m_nItemNum )
-		nItemNum = ( (CItemElem*)pItemBase )->m_nItemNum;
+	if( nItemNum > pItemBase->m_nItemNum )
+		nItemNum = pItemBase->m_nItemNum;
 	
 	TradeSetItem( nId, i, nItemNum );
 	return 0;
 }
 
-void TradeLog( CAr & ar, CItemBase* pItemBase, short nItemCount )
+void TradeLog( CAr & ar, CItemElem * pItemBase, short nItemCount )
 {
 	ar << nItemCount;
-	ar << ( (CItemElem*)pItemBase )->GetAbilityOption();
-	ar << int(( (CItemElem*)pItemBase )->m_bItemResist);
-	ar << int(( (CItemElem*)pItemBase )->m_nResistAbilityOption);
-	ar << ( (CItemElem*)pItemBase )->m_nHitPoint;
-	ar << ( (CItemElem*)pItemBase )->m_nRepair;
-	ar << ( (CItemElem*)pItemBase )->m_bCharged;
-	ar << ( (CItemElem*)pItemBase )->m_dwKeepTime;
-	ar << ( (CItemElem*)pItemBase )->GetPiercingSize();
-	for( int i=0; i<( (CItemElem*)pItemBase )->GetPiercingSize(); i++ )
-		ar << ( (CItemElem*)pItemBase )->GetPiercingItem( i );
-	ar << ( (CItemElem*)pItemBase )->GetUltimatePiercingSize();
-	for( int i=0; i<( (CItemElem*)pItemBase )->GetUltimatePiercingSize(); i++ )
-		ar << ( (CItemElem*)pItemBase )->GetUltimatePiercingItem( i );
-	ar << ( (CItemElem*)pItemBase )->GetRandomOptItemId();
-		if( ((CItemElem*)pItemBase)->m_pPet )
+	ar << pItemBase->GetAbilityOption();
+	ar << int(pItemBase->m_bItemResist);
+	ar << int(pItemBase->m_nResistAbilityOption);
+	ar << pItemBase->m_nHitPoint;
+	ar << pItemBase->m_nRepair;
+	ar << pItemBase->m_bCharged;
+	ar << pItemBase->m_dwKeepTime;
+	ar << pItemBase->GetPiercingSize();
+	for( int i=0; i< pItemBase->GetPiercingSize(); i++ )
+		ar << pItemBase->GetPiercingItem( i );
+	ar << pItemBase->GetUltimatePiercingSize();
+	for( int i=0; i< pItemBase->GetUltimatePiercingSize(); i++ )
+		ar << pItemBase->GetUltimatePiercingItem( i );
+	ar << pItemBase->GetRandomOptItemId();
+		if(pItemBase->m_pPet )
 		{
-			CPet* pPet = ((CItemElem*)pItemBase)->m_pPet;
+			CPet* pPet = pItemBase->m_pPet;
 
 			ar << pPet->GetKind();
 			ar << pPet->GetLevel();
@@ -268,7 +268,7 @@ void TradeLog( CAr & ar, CItemBase* pItemBase, short nItemCount )
 		else
 		{
 			// mirchang_100514 TransformVisPet_Log
-			if( ((CItemElem*)pItemBase)->IsTransformVisPet() == TRUE )
+			if(pItemBase->IsTransformVisPet() == TRUE )
 			{
 				ar << (BYTE)100;
 			}
@@ -391,7 +391,6 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 		ar << (DWORD)0;
 
 		// item_step1. m_pOwner->임시 
-		CItemBase* pItemBase;
 		for( int i = 0; i < MAX_TRADE; i++ )
 		{
 			CItemElem * pItemElem = m_items_VT[i];
@@ -412,14 +411,14 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 			else
 			{
 				u.Add( pItemElem );	// 임시 버퍼에 추가
-				m_pOwner->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );	// 제거
+				m_pOwner->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );	// 제거
 			}
 		}
 		
 		// item_step2. pTrader -> m_pOwner
 		for( int i = 0; i < MAX_TRADE; i++ )
 		{
-			pItemBase = pTrader->m_vtInfo.GetItem( i );
+			CItemElem * pItemBase = pTrader->m_vtInfo.GetItem( i );
 			if( pItemBase == NULL )
 				continue;
 
@@ -432,17 +431,16 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 			_stprintf( szItemId, "%d", pItemBase->GetProp()->dwID );
 			ar.WriteString( szItemId );
 
-			CItemElem* pItemElem = ( CItemElem* )pItemBase;
-			if( pItemElem->GetProp()->dwPackMax > 1 )
+			if(pItemBase->GetProp()->dwPackMax > 1 )
 			{
-				int nTradeNum = pItemElem->m_nItemNum - pItemBase->GetExtra();
-				pItemElem->m_nItemNum = pItemBase->GetExtra();
-				m_pOwner->m_Inventory.Add( pItemElem );
-				pItemElem->m_nItemNum = (short)nTradeNum;
+				int nTradeNum = pItemBase->m_nItemNum - pItemBase->GetExtra();
+				pItemBase->m_nItemNum = pItemBase->GetExtra();
+				m_pOwner->m_Inventory.Add(pItemBase);
+				pItemBase->m_nItemNum = (short)nTradeNum;
 
 				TradeLog( ar, pItemBase, pItemBase->GetExtra() );
 				
-				pItemElem->SetExtra( 0 );
+				pItemBase->SetExtra( 0 );
 				if( nTradeNum == 0 )
 					pTrader->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );	
 			}
@@ -450,7 +448,7 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 			{
 				TradeLog( ar, pItemBase, 1 );
 				
-				m_pOwner->m_Inventory.Add( pItemElem );	// pUser에 pTrader가 준 아이템을 추가
+				m_pOwner->m_Inventory.Add(pItemBase);	// pUser에 pTrader가 준 아이템을 추가
 				pTrader->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );	
 			}
 		}
@@ -459,8 +457,8 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 		nPlayers = u.GetCount();	// 합침을 고려해서 구해둔다.
 		for( int i = 0; i < nPlayers; i++ )
 		{
-			pItemBase = u.GetAtId( i );
-			pTrader->m_Inventory.Add( (CItemElem*)pItemBase );
+			CItemElem * pItemBase = u.GetAtId( i );
+			pTrader->m_Inventory.Add(pItemBase);
 			uSize2++;
 			ar << pItemBase->m_dwItemId;
 			ar << pItemBase->GetSerialNumber();
@@ -468,7 +466,7 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 			char szItemId[32] = {0, };
 			_stprintf( szItemId, "%d", pItemBase->GetProp()->dwID );
 			ar.WriteString( szItemId );
-			TradeLog( ar, pItemBase, ((CItemElem*)pItemBase)->m_nItemNum );
+			TradeLog( ar, pItemBase, pItemBase->m_nItemNum );
 		}
 
 //		GETBLOCK( ar, lpBlock, nBlockSize );

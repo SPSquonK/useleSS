@@ -1284,8 +1284,7 @@ BOOL CWndCommercialElem::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	if( pShortcut->m_dwShortcut == SHORTCUT_ITEM && pWndFrame->GetWndId() == APP_INVENTORY )
 	{
 		BOOL bbid = FALSE;
-		CItemElem* pItemElem;
-		pItemElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( pItemElem && IsRestrictionItem( pItemElem ) )
 		{
 			if( m_pItemElem[0] == NULL && PtInRect(&m_Rect[0], point) && IsUpgradeItem( pItemElem ) )

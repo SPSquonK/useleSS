@@ -50,7 +50,7 @@ void CDPAccountClient::OnQueryGlobalGiftbox( CAr & ar )
 	CUser* pUser	= (CUser*)prj.GetUserByID( idPlayer );
 	if( IsValidObj( (CObj*)pUser ) )
 	{
-		CItemElem* pItemElem	= (CItemElem*)pUser->GetItemId( dwObjId );
+		CItemElem* pItemElem	= pUser->GetItemId( dwObjId );
 		if( pItemElem && pItemElem->m_nQueryGiftbox == nQueryGiftbox )
 		{
 			pItemElem->m_nQueryGiftbox	= 0;

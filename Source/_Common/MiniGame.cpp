@@ -76,7 +76,7 @@ int CMiniGame::Result_Kawibawibo( CUser* pUser )
 	CItemElem* pItemElem;
 	if( pUser->m_nKawibawiboState != KAWIBAWIBO_DRAW && pUser->m_nKawibawiboState != KAWIBAWIBO_WIN )
 	{
-		pItemElem	= (CItemElem*)pUser->m_Inventory.GetAtItemId( II_SYS_SYS_EVE_KAWIBAWIBO );
+		pItemElem	= pUser->m_Inventory.GetAtItemId( II_SYS_SYS_EVE_KAWIBAWIBO );
 		if( IsUsableItem( pItemElem ) == FALSE )
 			return KAWIBAWIBO_FAILED;
 	}
@@ -209,7 +209,7 @@ BOOL CMiniGame::Result_Reassemble( CUser* pUser, OBJID* objItemId, int nCount )
 	// 일치하는지 검사 (인벤토리에서 검사)
 	for( DWORD i=0; i<m_vecReassembleCard.size(); ++i )
 	{
-		pItemElem[i]	= (CItemElem*)pUser->m_Inventory.GetAtId( objItemId[i] );
+		pItemElem[i]	= pUser->m_Inventory.GetAtId( objItemId[i] );
 		if( IsUsableItem( pItemElem[i] ) == FALSE )
 			return FALSE;
 
@@ -299,7 +299,7 @@ int CMiniGame::Result_Alphabet( CUser* pUser, OBJID* objItemId, int nCount, int 
 	std::map<OBJID, int> map_Item;
 	for( int i=0; i<nCount; ++i )
 	{
-		pItemElem	= (CItemElem*)pUser->m_Inventory.GetAtId( objItemId[i] );
+		pItemElem	= pUser->m_Inventory.GetAtId( objItemId[i] );
 		if( !IsUsableItem( pItemElem ) )
 			return ALPHABET_FAILED;
 		

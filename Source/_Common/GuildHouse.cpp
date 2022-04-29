@@ -2125,7 +2125,7 @@ bool CGuildHouseMng::IsTenderAble( CUser* pUser, OBJID objGHId, int nTenderPerin
 
 		if( nTenderPerin > 0 )
 		{
-			CItemElem* pItemElem = (CItemElem*)pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_PERIN );
+			CItemElem* pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_PERIN );
 			if( IsUsableItem( pItemElem ) == TRUE )
 			{
 				if( pItemElem->m_nItemNum < nTenderPerin )
@@ -2167,7 +2167,7 @@ void CGuildHouseMng::OnGuildHouseTenderJoin( CUser* pUser, OBJID objGHId, int nT
 
 		if( nTenderPerin > 0 )
 		{
-			CItemElem* pItemElem = (CItemElem*)pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_PERIN );
+			CItemElem* pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_PERIN );
 			if( IsUsableItem( pItemElem ) == TRUE && pItemElem->m_nItemNum >= nTenderPerin  )
 			{
 				LogItemInfo aLogItem;

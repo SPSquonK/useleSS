@@ -3239,7 +3239,7 @@ int CMover::GetItemEnduranceWeight( int nEndurance )
 
 void CMover::UpdateItemEx( unsigned char id, char cParam, __int64 iValue )
 {
-	CItemElem* pItemElem	= (CItemElem*)GetItemId( id );
+	CItemElem* pItemElem	= GetItemId( id );
 
 	if( pItemElem )
 	{
@@ -3267,7 +3267,7 @@ void CMover::UpdateItemEx( unsigned char id, char cParam, __int64 iValue )
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 {
-	CItemBase* pItemBase = GetItemId( nId );
+	CItemElem * pItemBase = GetItemId( nId );
 
 	if( pItemBase )
 	{
@@ -3282,28 +3282,28 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 					}
 					else 
 					{
-						( (CItemElem*)pItemBase )->m_nItemNum	= (short)( dwValue );
+						pItemBase->m_nItemNum	= (short)( dwValue );
 					}
 					break;
 				}
 			case UI_HP:
 				{
-					( (CItemElem*)pItemBase )->m_nHitPoint	= dwValue;
+				  pItemBase->m_nHitPoint = dwValue;
 					UpdateParam();
 					break;
 				}
 			case UI_REPAIR_NUM:
 				{
-					( (CItemElem*)pItemBase )->m_nRepair	= dwValue;
+				  pItemBase->m_nRepair	= dwValue;
 					break;
 				}
 			case UI_RN:
 				{
-					if( ( (CItemElem*)pItemBase )->m_nRepairNumber >= 100 )
+					if(pItemBase->m_nRepairNumber >= 100 )
 						return;
 					if( dwValue > 100 )
 						dwValue		= 100;
-					( (CItemElem*)pItemBase )->m_nRepairNumber	= (BYTE)( dwValue );
+					pItemBase->m_nRepairNumber	= (BYTE)( dwValue );
 					UpdateParam();
 				}
 				break;
@@ -3311,60 +3311,60 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 			case UI_AO: // ������ + �ø���...
 				{
 					DWORD dwMax = 20;
-					if( ( (CItemElem*)pItemBase )->IsAccessory() )
+					if(pItemBase->IsAccessory() )
 						dwMax	= 20;
-					if( ( (CItemElem*)pItemBase )->IsCollector( TRUE ) )
+					if(pItemBase->IsCollector( TRUE ) )
 						dwMax	= 5;
-					if( ( (CItemElem*)pItemBase )->GetAbilityOption() > (int)( dwMax ) )
+					if(pItemBase->GetAbilityOption() > (int)( dwMax ) )
 						return;
 					if( dwValue > dwMax )
 						dwValue		= dwMax;
 
-					( (CItemElem*)pItemBase )->SetAbilityOption( dwValue );
+					pItemBase->SetAbilityOption( dwValue );
 					UpdateParam();
 				}
 				break;
 			case UI_RAO: // ������ �Ӽ� + �ø���...
 				{
-					if( ( (CItemElem*)pItemBase )->m_nResistAbilityOption > 20 )
+					if(pItemBase->m_nResistAbilityOption > 20 )
 						return;
 					if( dwValue > 20 )
 						dwValue		= 20;
-					( (CItemElem*)pItemBase )->m_nResistAbilityOption	= dwValue;
+					pItemBase->m_nResistAbilityOption	= dwValue;
 					UpdateParam();
 				}
 				break;
 			case UI_IR:  // �����ۿ� �����Ӽ����� �ֱ�
 				{
-					( (CItemElem*)pItemBase )->m_bItemResist	= (BYTE)( dwValue );
+				  pItemBase->m_bItemResist	= (BYTE)( dwValue );
 					UpdateParam();
 				}
 				break;
 
 			case UI_PIERCING_SIZE:
-				( (CItemElem*)pItemBase )->SetPiercingSize( dwValue );
+				pItemBase->SetPiercingSize( dwValue );
 				break;
 			case UI_PIERCING:
 				{
 					WORD wIndex	= LOWORD( dwValue ), wItemId	= HIWORD( dwValue );
-					( (CItemElem*)pItemBase )->SetPiercingItem( wIndex, wItemId );
+					pItemBase->SetPiercingItem( wIndex, wItemId );
 				}
 				break;
 
 			case UI_ULTIMATE_PIERCING_SIZE:
-				( (CItemElem*)pItemBase )->SetUltimatePiercingSize( dwValue );
+				pItemBase->SetUltimatePiercingSize( dwValue );
 				break;
 			case UI_ULTIMATE_PIERCING:
 				{
 					WORD wIndex	= LOWORD( dwValue ), wItemId	= HIWORD( dwValue );
-					( (CItemElem*)pItemBase )->SetUltimatePiercingItem( wIndex, wItemId );
+					pItemBase->SetUltimatePiercingItem( wIndex, wItemId );
 				}
 				break;
 
 			case UI_PETVIS_SIZE:	
 				{
-					static_cast<CItemElem*>(pItemBase)->SetPiercingSize( dwValue );
-					static_cast<CItemElem*>(pItemBase)->SetVisKeepTimeSize( dwValue );
+				  pItemBase->SetPiercingSize(dwValue);
+				  pItemBase->SetVisKeepTimeSize( dwValue );
 
 #ifdef __CLIENT	//sun : ��ü �� ������( �����κ��� ��Ŷ�� �޾Ƽ� ó���ɶ� )�̷������ ȿ���� ��� 
 					const auto pos = g_pPlayer->GetPos();
@@ -3375,8 +3375,8 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 			case UI_PETVIS_ITEM:
 				{
 					WORD wIndex	= LOWORD( dwValue ), wItemId	= HIWORD( dwValue );
-					static_cast<CItemElem*>(pItemBase)->SetPiercingItem( wIndex, wItemId );
-					static_cast<CItemElem*>(pItemBase)->SetVisKeepTime( wIndex, ( dwTime * 60 ) + time_null() ); // �д��� �ð��� �ʴ����� ����
+					pItemBase->SetPiercingItem(wIndex, wItemId);
+					pItemBase->SetVisKeepTime( wIndex, ( dwTime * 60 ) + time_null() ); // �д��� �ð��� �ʴ����� ����
 
 #ifdef __CLIENT
 					const auto pos = g_pPlayer->GetPos();
@@ -3388,7 +3388,7 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 			case UI_PETVIS_ITEMSWAP:
 				{
 					WORD wPos1	= LOWORD( dwValue ), wPos2	= HIWORD( dwValue );
-					static_cast<CItemElem*>(pItemBase)->SetSwapVisItem( wPos1, wPos2 );
+					pItemBase->SetSwapVisItem( wPos1, wPos2 );
 
 #ifdef __CLIENT
 					const auto pos = g_pPlayer->GetPos();
@@ -3399,20 +3399,20 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 
 			case UI_TRANSFORM_VISPET:
 				{
-					static_cast<CItemElem*>(pItemBase)->m_bTranformVisPet = static_cast<BOOL>( dwValue );
-					static_cast<CItemElem*>(pItemBase)->m_bCharged = TRUE;
+				  pItemBase->m_bTranformVisPet = static_cast<BOOL>(dwValue);
+				  pItemBase->m_bCharged = TRUE;
 				}
 				break;
 
 			case UI_RANDOMOPTITEMID:
 				{
-					( (CItemElem*)pItemBase )->SetRandomOpt( dwValue );
+				  pItemBase->SetRandomOpt( dwValue );
 					break;
 				}
 			case UI_KEEPTIME:	// offset
 				{
 					CTime tm	= CTime::GetCurrentTime() + CTimeSpan( 0, 0, dwValue, 0 );
-					( (CItemElem*)pItemBase )->m_dwKeepTime	= (DWORD)( tm.GetTime() );
+					pItemBase->m_dwKeepTime	= (DWORD)( tm.GetTime() );
 					break;
 				}
 
@@ -3424,7 +3424,7 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 					int nParts	= dwObjIndex - m_Inventory.GetSize();
 					if( nParts >= 0 && nParts < MAX_HUMAN_PARTS )
 						m_aEquipInfo[nParts].byFlag	= byFlag;
-					( (CItemElem*)pItemBase )->m_byFlag		= byFlag;
+					pItemBase->m_byFlag		= byFlag;
 					UpdateParts( FALSE );
 #endif	// __CLIENT
 					UpdateParam();

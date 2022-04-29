@@ -2141,7 +2141,7 @@ BOOL CMover::IsLoot( CItem *pItem, BOOL bPet )
 			bTake = FALSE;
 #ifdef __JEFF_11
 		// 소지품이 가득 차서 해당 아이템을 획득할 수 없다
-		CItemElem* pItemElem	= (CItemElem*)pItem->m_pItemBase;
+		CItemElem* pItemElem	= pItem->m_pItemBase;
 		ItemProp* pItemProp		= pItemElem->GetProp();
 		if( pItemProp->dwItemKind3 != IK3_GOLD && m_Inventory.IsFull( pItemElem, pItemProp, pItemElem->m_nItemNum ) )
 			bTake	= FALSE;
@@ -2157,7 +2157,7 @@ BOOL CMover::SubLootDropMobSingle( CItem *pItem )
 {
 	BOOL bSuccess = TRUE;
 #ifdef __WORLDSERVER	
-	CItemBase* pItemBase = pItem->m_pItemBase;
+	CItemElem * pItemBase = pItem->m_pItemBase;
 	bSuccess	= CreateItem( pItemBase );
 	
 	if( IsPlayer() && pItemBase->GetProp() != NULL )
@@ -2174,7 +2174,7 @@ BOOL CMover::SubLootDropMobSingle( CItem *pItem )
 			((CUser*)this)->AddDefinedText( TID_GAME_LACKSPACE );
 	}
 	
-	if( ( (CItemElem*)pItemBase )->IsLogable() && bSuccess )
+	if( pItemBase->IsLogable() && bSuccess )
 	{
 		switch( pItemBase->GetProp()->dwItemKind2 ) 
 		{
@@ -2183,7 +2183,7 @@ BOOL CMover::SubLootDropMobSingle( CItem *pItem )
 		case IK2_POTION:
 		case IK2_REFRESHER:
 			{
-				if( ( (CItemElem*)pItemBase )->m_nItemNum > 9 )
+				if( pItemBase->m_nItemNum > 9 )
 				{
 					LogItemInfo aLogItem;
 					aLogItem.Action = "R";
@@ -2191,7 +2191,7 @@ BOOL CMover::SubLootDropMobSingle( CItem *pItem )
 					aLogItem.RecvName = GetName();
 					aLogItem.WorldId = GetWorld()->GetID();
 					aLogItem.Gold = aLogItem.Gold2 = GetGold();
-					g_DPSrvr.OnLogItem( aLogItem, ( (CItemElem*)pItemBase ), ( (CItemElem*)pItemBase )->m_nItemNum );
+					g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 				}
 				break;
 			}
@@ -2203,7 +2203,7 @@ BOOL CMover::SubLootDropMobSingle( CItem *pItem )
 				aLogItem.RecvName = GetName();
 				aLogItem.WorldId = GetWorld()->GetID();
 				aLogItem.Gold = aLogItem.Gold2 = GetGold();
-				g_DPSrvr.OnLogItem( aLogItem, ( (CItemElem*)pItemBase ), ( (CItemElem*)pItemBase )->m_nItemNum );
+				g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 				break;
 			}
 		}
@@ -2224,7 +2224,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 	CUser* pGetUser = NULL;
 //	float fDist;
 	D3DXVECTOR3	vDist;
-	CItemBase* pItemBase = pItem->m_pItemBase;
+	CItemElem * pItemBase = pItem->m_pItemBase;
 	
 	// 아이템줍는사람 반경안에 드는 멤버들만 추려낸다.
 	memset( pListMember, 0, sizeof(pListMember) );
@@ -2345,7 +2345,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 		}									
 	}
 	
-	if( ( (CItemElem*)pItemBase )->IsLogable() && bSuccess )
+	if( pItemBase->IsLogable() && bSuccess )
 	{
 		switch( pItemBase->GetProp()->dwItemKind2 ) 
 		{
@@ -2354,7 +2354,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 		case IK2_POTION:
 		case IK2_REFRESHER:
 			{
-				if( ( ( (CItemElem*)pItemBase )->m_nItemNum ) > 9 )
+				if( pItemBase->m_nItemNum > 9 )
 				{
 					LogItemInfo aLogItem;
 					aLogItem.Action = "R";
@@ -2362,7 +2362,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 					aLogItem.RecvName = pGetUser->GetName();
 					aLogItem.WorldId = pGetUser->GetWorld()->GetID();
 					aLogItem.Gold = aLogItem.Gold2 = pGetUser->GetGold();
-					g_DPSrvr.OnLogItem( aLogItem, ( (CItemElem*)pItemBase ), ( (CItemElem*)pItemBase )->m_nItemNum );
+					g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 				}
 				break;
 			}
@@ -2374,7 +2374,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 				aLogItem.RecvName = pGetUser->GetName();
 				aLogItem.WorldId = pGetUser->GetWorld()->GetID();
 				aLogItem.Gold = aLogItem.Gold2 = pGetUser->GetGold();
-				g_DPSrvr.OnLogItem( aLogItem, ( (CItemElem*)pItemBase ), ( (CItemElem*)pItemBase )->m_nItemNum );
+				g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 				break;
 			}
 		}
@@ -2410,7 +2410,7 @@ BOOL CMover::SubLootDropNotMob( CItem *pItem )
 {
 	BOOL bSuccess = TRUE;
 #ifdef __WORLDSERVER
-	CItemBase* pItemBase = pItem->m_pItemBase;
+	CItemElem * pItemBase = pItem->m_pItemBase;
 	
 	bSuccess	= CreateItem( pItemBase );
 	if( TRUE == IsPlayer() && pItemBase->GetProp() != NULL )
@@ -2426,7 +2426,7 @@ BOOL CMover::SubLootDropNotMob( CItem *pItem )
 			((CUser*)this)->AddDefinedText( TID_GAME_LACKSPACE );
 	}
 	
-	if( ( (CItemElem*)pItemBase )->IsLogable() && bSuccess )
+	if( pItemBase->IsLogable() && bSuccess )
 	{
 		switch( pItemBase->GetProp()->dwItemKind2 ) 
 		{
@@ -2435,7 +2435,7 @@ BOOL CMover::SubLootDropNotMob( CItem *pItem )
 		case IK2_POTION:
 		case IK2_REFRESHER:
 			{
-				if( ( (CItemElem*)pItemBase )->m_nItemNum > 9 )
+				if( pItemBase->m_nItemNum > 9 )
 				{
 					LogItemInfo aLogItem;
 					aLogItem.Action = "R";
@@ -2443,7 +2443,7 @@ BOOL CMover::SubLootDropNotMob( CItem *pItem )
 					aLogItem.RecvName = GetName();
 					aLogItem.WorldId = GetWorld()->GetID();
 					aLogItem.Gold = aLogItem.Gold2 = GetGold();
-					g_DPSrvr.OnLogItem( aLogItem, ( (CItemElem*)pItemBase ), ( (CItemElem*)pItemBase )->m_nItemNum );
+					g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 				}
 				break;
 			}
@@ -2455,7 +2455,7 @@ BOOL CMover::SubLootDropNotMob( CItem *pItem )
 				aLogItem.RecvName = GetName();
 				aLogItem.WorldId = GetWorld()->GetID();
 				aLogItem.Gold = aLogItem.Gold2 = GetGold();
-				g_DPSrvr.OnLogItem( aLogItem, ( (CItemElem*)pItemBase ), ( (CItemElem*)pItemBase )->m_nItemNum );
+				g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 				break;
 			}
 		}
@@ -2474,7 +2474,7 @@ BOOL CMover::DoLoot( CItem *pItem )
 {
 	if( IsPlayer() == FALSE )	return FALSE;
 
-	CItemBase* pItemBase = pItem->m_pItemBase;
+	CItemElem * pItemBase = pItem->m_pItemBase;
 	BOOL bSuccess = TRUE;
 
 #ifdef __CLIENT	
@@ -2484,7 +2484,7 @@ BOOL CMover::DoLoot( CItem *pItem )
 	ItemProp *pItemProp = pItem->GetProp();
 	if( pItemProp->dwItemKind1 == IK1_GOLD ) 
 	{
-		PickupGold( ((CItemElem*)pItemBase)->GetGold(), pItem->m_bDropMob );
+		PickupGold(pItemBase->GetGold(), pItem->m_bDropMob );
 	}
 	else 
 	{

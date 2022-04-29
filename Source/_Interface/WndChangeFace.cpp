@@ -507,7 +507,7 @@ BOOL CWndItemTransy::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		return FALSE;
 	}
 	
-	CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	if( pItemElem == NULL )
 	{
 		SetForbid( TRUE );

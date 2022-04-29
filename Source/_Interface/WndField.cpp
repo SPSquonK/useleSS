@@ -2082,32 +2082,32 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							if( IsUsableItem( pFocusItem ) )
 							{			
 								CWndRemoveJewel* pWndRemoveJewel = (CWndRemoveJewel*)GetWndBase( APP_SMELT_REMOVE_JEWEL );
-								pWndRemoveJewel->SetItem((CItemElem*)pFocusItem);
+								pWndRemoveJewel->SetItem(pFocusItem);
 								return TRUE;
 							}
 						}
 					}
 					if(g_WndMng.GetWndBase( APP_PET_TRANS_EGGS ))
 					{	
-						if(g_pPlayer->IsUsing((CItemElem*)pFocusItem))
+						if(g_pPlayer->IsUsing(pFocusItem))
 						{
 							g_WndMng.PutString( prj.GetText( TID_GAME_TRANS_EGGS_ERROR2 ), NULL, prj.GetTextColor( TID_GAME_TRANS_EGGS_ERROR2 ) );
 							return TRUE;
 						}
 							
-						if( (pProp->dwItemKind3 == IK3_EGG && ((CItemElem*)pFocusItem)->m_pPet == NULL) ||
-							(pProp->dwItemKind3 == IK3_EGG && ((CItemElem*)pFocusItem)->m_pPet && ((CItemElem*)pFocusItem)->m_pPet->GetLevel() == PL_EGG) )
+						if( (pProp->dwItemKind3 == IK3_EGG && pFocusItem->m_pPet == NULL) ||
+							(pProp->dwItemKind3 == IK3_EGG && pFocusItem->m_pPet && pFocusItem->m_pPet->GetLevel() == PL_EGG) )
 						{
 							if( IsUsableItem( pFocusItem ) )
 							{			
 								CWndPetTransEggs* pWndPetTransEggs = (CWndPetTransEggs*)GetWndBase( APP_PET_TRANS_EGGS );
-								pWndPetTransEggs->SetItem((CItemElem*)pFocusItem);
+								pWndPetTransEggs->SetItem(pFocusItem);
 								return TRUE;
 							}
 						}
 						else
 						{
-							g_WndMng.PutString( prj.GetText( TID_GAME_TRANS_EGGS_ERROR1 ), NULL, prj.GetTextColor( TID_GAME_TRANS_EGGS_ERROR1 ) );
+							g_WndMng.PutString(TID_GAME_TRANS_EGGS_ERROR1);
 							return TRUE;
 						}
 					}
@@ -2353,12 +2353,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						}
 					}
 				}
-#ifdef _DEBUG
-				else
-				{
-					int a = 0;
-				}
-#endif
 			}
 			if( bAble )	// ¼º°øÆÇÁ¤ ³µÀ»¶§¸¸ º¸³¿.
 			{
@@ -2699,7 +2693,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData ) // dwData°¡ 0ÀÌ¸é °ñµå
 				{
-					CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+					CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 					if( !pItemElem )
 						return FALSE;
 					if(pItemElem->GetExtra() > 0)
@@ -2710,7 +2704,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						return FALSE;
 					if( pItemElem->IsUndestructable() == TRUE )
 					{
-						g_WndMng.PutString( prj.GetText( TID_GAME_ERROR_UNDESTRUCTABLE_ITEM ), NULL, prj.GetTextColor( TID_GAME_ERROR_UNDESTRUCTABLE_ITEM ) );
+						g_WndMng.PutString(TID_GAME_ERROR_UNDESTRUCTABLE_ITEM);
 						return FALSE;
 					}
 

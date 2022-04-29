@@ -140,8 +140,7 @@ void  CWndBlessingCancel::OnLButtonDblClk( UINT nFlags, CPoint point )
 BOOL  CWndBlessingCancel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 
-	CItemElem* pTempElem;
-	pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
     if( g_xRandomOptionProperty->GetRandomOptionKind( pTempElem ) == CRandomOptionProperty::eBlessing
 		&& g_xRandomOptionProperty->GetRandomOptionSize( pTempElem->GetRandomOptItemId() ))

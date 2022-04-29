@@ -167,7 +167,7 @@ BOOL CWndSummonFriend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				{
 					WORD wId	= LOWORD( m_dwData );
 					WORD wMode	= HIWORD( m_dwData );
-					CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( wId );
+					CItemElem* pItemElem = g_pPlayer->GetItemId( wId );
 					if( pItemElem )
 					{
 						g_DPlay.SendSummonFriend( m_dwData, (LPSTR)(LPCSTR)string );
@@ -348,7 +348,7 @@ BOOL CWndSummonParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			WORD wId	= LOWORD( m_dwData );
 			WORD wMode	= HIWORD( m_dwData );
-			CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( wId );
+			CItemElem* pItemElem = g_pPlayer->GetItemId( wId );
 			if( pItemElem )
 			{
 				g_DPlay.SendSummonParty( m_dwData );

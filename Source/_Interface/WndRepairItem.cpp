@@ -156,20 +156,20 @@ BOOL CWndRepairItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 								else
 								{
 									// 수리할 필요가 없는 아이템
-									g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_FULLENDURANCE), NULL, prj.GetTextColor( TID_GAME_REPAIR_FULLENDURANCE ) );
+									g_WndMng.PutString(TID_GAME_REPAIR_FULLENDURANCE);
 								}
 							}
 							else
 							{
 								// 수리할수 없는 아이템
-								g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_DONOT), NULL, prj.GetTextColor( TID_GAME_REPAIR_DONOT ) );
+								g_WndMng.PutString(TID_GAME_REPAIR_DONOT);
 							}
 						}
 					}
 					else
 					{
 						// 장착되어 있음.
-						g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_EQUIP), NULL, prj.GetTextColor( TID_GAME_REPAIR_EQUIP ) );
+						g_WndMng.PutString(TID_GAME_REPAIR_EQUIP);
 					}
 				}
 //				if( itemElem )

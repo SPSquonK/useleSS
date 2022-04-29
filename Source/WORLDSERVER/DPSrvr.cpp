@@ -712,7 +712,7 @@ void CDPSrvr::OnDropItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 	{
 		if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
 		{
-			CItemElem* pItemElem	= (CItemElem*)pUser->GetItemId( dwItemId );
+			CItemElem* pItemElem	= pUser->GetItemId( dwItemId );
 			if( IsUsableItem( pItemElem ) && pUser->IsDropable( pItemElem, FALSE ) )
 				pUser->RemoveItem( (BYTE)dwItemId, nDropNum );
 		}
@@ -4784,7 +4784,7 @@ void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		CItemElem* pItemElem	= (CItemElem*)pUser->GetItemId( dwId );
+		CItemElem* pItemElem	= pUser->GetItemId( dwId );
 		if( !IsUsableItem( pItemElem ) )
 			return;
 		if( pItemElem->GetLevelDown() == 0 )
@@ -4805,8 +4805,8 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		CItemElem* pMaterial	= (CItemElem*)pUser->GetItemId( dwMaterial );
-		CItemElem* pTarget	= (CItemElem*)pUser->GetItemId( dwTarget );
+		CItemElem* pMaterial	= pUser->GetItemId( dwMaterial );
+		CItemElem* pTarget	= pUser->GetItemId( dwTarget );
 		if( !IsUsableItem( pMaterial ) || !IsUsableItem( pTarget ) )
 			return;
 		if( pUser->m_Inventory.IsEquip( dwTarget ) )
@@ -5859,7 +5859,7 @@ void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 			WORD wMode	= HIWORD( dwData );
 			if( (short)wId >= 0 )
 			{
-				CItemElem* pItemElem = (CItemElem*)pUser->GetItemId( wId );
+				CItemElem* pItemElem = pUser->GetItemId( wId );
 				if( IsUsableItem( pItemElem ) && pItemElem->m_dwItemId == II_SYS_SYS_SCR_CHANAM && pItemElem->m_bQuery == FALSE )
 				{
 					pItemElem->m_bQuery	= TRUE;
@@ -5896,7 +5896,7 @@ void CDPSrvr::OnQuerySetGuildName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 		if( pUser->m_bAllAction )
 #endif // __S_SERVER_UNIFY
 		{
-			CItemElem* pItemElem = (CItemElem*)pUser->GetItemId( nId );
+			CItemElem* pItemElem = pUser->GetItemId( nId );
 			if( IsUsableItem( pItemElem ) && pItemElem->m_bQuery == FALSE )
 			{
 				pItemElem->m_bQuery	= TRUE;
@@ -6801,7 +6801,7 @@ void CDPSrvr::OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 
 		WORD wId	= LOWORD( dwData );
 		WORD wMode	= HIWORD( dwData );
-		CItemElem* pItemElem = (CItemElem*)pUser->GetItemId( wId );
+		CItemElem* pItemElem = pUser->GetItemId( wId );
 		if( IsUsableItem( pItemElem ) )
 		{
 			if( pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_A && pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_B )
@@ -6951,7 +6951,7 @@ void CDPSrvr::OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 
 			WORD wId	= LOWORD( dwData );
 			WORD wMode	= HIWORD( dwData );
-			CItemElem* pItemElem = (CItemElem*)pUsertmp->GetItemId( wId );
+			CItemElem* pItemElem = pUsertmp->GetItemId( wId );
 			if( IsUsableItem( pItemElem ) )
 			{
 				if( ( pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_A && pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_B ) || pItemElem->m_bQuery == FALSE )
@@ -7016,7 +7016,7 @@ void CDPSrvr::OnSummonFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 		if( IsValidObj( (CObj*)pUsertmp ) )
 		{
 			WORD wId	= LOWORD( dwData );
-			CItemElem* pItemElem = (CItemElem*)pUsertmp->GetItemId( wId );
+			CItemElem* pItemElem = pUsertmp->GetItemId( wId );
 			if( IsUsableItem( pItemElem ) && ( pItemElem->m_dwItemId == II_SYS_SYS_SCR_FRIENDSUMMON_A || pItemElem->m_dwItemId == II_SYS_SYS_SCR_FRIENDSUMMON_B ) )
 				pItemElem->m_bQuery		= FALSE;
 			pUsertmp->AddDefinedText( TID_GAME_SUMMON_FRIEND_CANCEL, "\"%s\"", pUser->GetName() );
@@ -7068,7 +7068,7 @@ void CDPSrvr::OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		
 		WORD wId	= LOWORD( dwData );
 		WORD wMode	= HIWORD( dwData );
-		CItemElem* pItemElem = (CItemElem*)pUser->GetItemId( wId );
+		CItemElem* pItemElem = pUser->GetItemId( wId );
 		if( IsUsableItem( pItemElem ) )
 		{
 			CParty* pParty;
@@ -7450,7 +7450,7 @@ void CDPSrvr::OnTradePut( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
-		CItemElem* pItem	= (CItemElem*)pUser->GetItemId( nId );
+		CItemElem* pItem	= pUser->GetItemId( nId );
 		if( pItem && pItem->IsFlag( CItemElem::expired ) )
 			return;
 
@@ -8091,7 +8091,7 @@ void CDPSrvr::OnCreateAngel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	
 	for( int i=0; i<itemcount; i++)
 	{
-		pItemElem = (CItemElem*)pUser->GetItemId( itemset[i].itemid );
+		pItemElem = pUser->GetItemId( itemset[i].itemid );
 		if(pItemElem != NULL)
 		{
 			switch(pItemElem->GetProp()->dwID) 
@@ -8138,7 +8138,7 @@ void CDPSrvr::OnCreateAngel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		{
 			for( int i=0; i<itemcount; i++)
 			{
-				pItemElem = (CItemElem*)pUser->GetItemId( itemset[i].itemid );
+				pItemElem = pUser->GetItemId( itemset[i].itemid );
 				if( !IsUsableItem( pItemElem ) ) //소비될 아이템의 유효성 검사. 실패 시 RETURN
 					return;
 			}
@@ -8157,7 +8157,7 @@ void CDPSrvr::OnCreateAngel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
 			for( int i=0; i<itemcount; i++)
 			{
-				pItemElem = (CItemElem*)pUser->GetItemId( itemset[i].itemid );
+				pItemElem = pUser->GetItemId( itemset[i].itemid );
 				if( pItemElem->GetExtra() > 0 )
 					pItemElem->SetExtra(0);
 //#ifdef __ANGEL_LOG				
@@ -8868,10 +8868,10 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		ar >> dwMaterialId >> dwToolId >> nNum;
 
 		BOOL bTool	= FALSE;
-		CItemElem* pTool	= NULL;
+		CItemElem* pTool	= nullptr;
 		if( dwToolId != NULL_ID )
 		{
-			pTool	= (CItemElem*)pUser->GetItemId( dwToolId );
+			pTool	= pUser->GetItemId( dwToolId );
 			if( IsUsableItem( pTool ) )
 			{
 				if( pTool->m_dwItemId == II_SYS_SYS_FEED_MAKER )
@@ -8885,7 +8885,7 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( bTool == FALSE && CNpcChecker::GetInstance()->IsCloseNpc<MMI_PET_FOODMILL>(pUser) == FALSE )
 			return;
 
-		CItemElem* pMaterial	= (CItemElem*)pUser->GetItemId( dwMaterialId );
+		CItemElem* pMaterial	= pUser->GetItemId( dwMaterialId );
 		if( IsUsableItem( pMaterial ) == FALSE )
 		{
 			// error
@@ -8968,7 +8968,7 @@ void CDPSrvr::OnPetTamerMistake( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	if( IsValidObj( pUser ) )
 	{
 		ar >> dwId;
-		CItemElem* pItemElem	= (CItemElem*)pUser->GetItemId( dwId );
+		CItemElem* pItemElem	= pUser->GetItemId( dwId );
 		if( pItemElem && pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_TAMER_MISTAKE ) // m_dwItemId
 		{
 			CPet* pPet	= pUser->GetPet();
@@ -9016,7 +9016,7 @@ void CDPSrvr::OnPetTamerMiracle( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	if( IsValidObj( pUser ) )
 	{
 		ar >> dwId;
-		CItemElem* pItemElem	= (CItemElem*)pUser->GetItemId( dwId );
+		CItemElem* pItemElem	= pUser->GetItemId( dwId );
 		if( pItemElem && pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_TAMER_MIRACLE )
 		{
 			CPet* pPet	= pUser->GetPet();
@@ -9136,7 +9136,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	// 일치하는지 검사 (인벤토리에서 검사)
 	for( int i=0; i<5; i++ )
 	{
-		pItemElem[i]	= (CItemElem*)pUser->m_Inventory.GetAtId( objItemId[i] );
+		pItemElem[i]	= pUser->m_Inventory.GetAtId( objItemId[i] );
 		if( IsUsableItem( pItemElem[i] ) == FALSE )
 			return ;
 	}
@@ -9701,7 +9701,7 @@ void	CDPSrvr::OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 
 		int nItem;
 		ar >> nItem;
-		CItemElem* pItem	= (CItemElem*)pUser->GetItemId( nItem );
+		CItemElem* pItem	= pUser->GetItemId( nItem );
 		if( IsUsableItem( pItem ) )
 		{
 			if( g_xRandomOptionProperty->GetRandomOptionKind( pItem ) == CRandomOptionProperty::eBlessing
@@ -9877,7 +9877,7 @@ void	CDPSrvr::OnQuePetResurrection( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 	{
 		int nItem;
 		ar >> nItem;
-		CItemElem*	pItem	= (CItemElem*)pUser->GetItemId( nItem );
+		CItemElem*	pItem	= pUser->GetItemId( nItem );
 		if( !IsUsableItem( pItem ) )
 			return;
 
@@ -10477,9 +10477,8 @@ void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUse
 
 	DWORD dwItem;
 	ar >> dwItem;
-	CItemElem* pItem	= (CItemElem*)pUser->GetItemId( dwItem );
-	if( !IsUsableItem( pItem ) )
-		return;
+	CItemElem* pItem	= pUser->GetItemId( dwItem );
+	if (!IsUsableItem(pItem)) return;
 
 	if( DoUseItemTarget_InitializeRandomOption( pUser, pItem, CRandomOptionProperty::eEatPet,
 					TID_GAME_PICKUP_PET_AWAKENING_CANCEL_S001, TID_GAME_PICKUP_PET_AWAKENING_CANCEL_E001,

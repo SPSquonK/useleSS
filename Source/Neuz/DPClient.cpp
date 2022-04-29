@@ -9780,7 +9780,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pFunnyCoinConfirm );
 		g_WndMng.m_pFunnyCoinConfirm = new CWndFunnyCoinConfirm;
-		g_WndMng.m_pFunnyCoinConfirm->SetInfo( dwId, (CItemElem*)pItemBase );
+		g_WndMng.m_pFunnyCoinConfirm->SetInfo( dwId, pItemBase );
 		g_WndMng.m_pFunnyCoinConfirm->Initialize( &g_WndMng, APP_FUNNYCOIN_CONFIRM );
 		
 		return;
@@ -9901,25 +9901,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_CACHE_BETTERY_DESC, dwId, pItemProp->dwID );
 				return;	
-#ifndef __AZRIA_1023
-#ifdef __SYS_TICKET
-			case II_SYS_TICKET_KEBARAS01:
-			case II_SYS_TICKET_KEBARAS02:
-			case II_SYS_TICKET_KEBARAS001:
-				{
-					CItemElem* pTicket	= (CItemElem*)pItemBase;
-					if( !pTicket->IsFlag( CItemElem::expired ) && g_pPlayer && g_pPlayer->GetWorld()->GetID() == WI_WORLD_KEBARAS )		// WI_WORLD_KEBARAS
-					{
-						SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
-						g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-						g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
-						g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_TICKET_DESC, dwId,  pItemProp->dwID );
-						return;
-					}
-					break;
-				}
-#endif	// __SYS_TICKET
-#endif	// __AZRIA_1023
 			default:
 				break;
 		}
@@ -9976,7 +9957,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		{
 			pWndItemTransy	= new CWndItemTransy;
 			pWndItemTransy->Initialize( &g_WndMng );
-			pWndItemTransy->Init( (CItemElem*)pItemBase );
+			pWndItemTransy->Init( pItemBase );
 		}
 		return;
 	}
@@ -9985,7 +9966,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		if( bCreateMonster == FALSE && g_Neuz.m_pCreateMonItem == NULL )
 		{
-			g_Neuz.m_pCreateMonItem = (CItemElem*)pItemBase;
+			g_Neuz.m_pCreateMonItem = pItemBase;
 			CreateSfx( g_Neuz.m_pd3dDevice, XI_CHR_CURSOR1, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
 		}
 		return;
@@ -12907,7 +12888,7 @@ void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 	{
 		if( pPVendor->IsActiveMover() )
 		{
-			CItemElem* pItemElem	= (CItemElem*)pPVendor->m_vtInfo.GetItem( nItem );
+			CItemElem* pItemElem	= pPVendor->m_vtInfo.GetItem( nItem );
 			if( pItemElem )
 			{
 				CString strItem		= pItemElem->GetName();
@@ -15387,7 +15368,7 @@ void CDPClient::OnPetState( OBJID objid, CAr & ar )
 	CMover* pMover	= prj.GetMover( objid );
 	if( IsValidObj( pMover ) && pMover->IsActiveMover() )
 	{
-		CItemElem* pItemElem	= (CItemElem*)pMover->GetItemId( dwPetId );
+		CItemElem* pItemElem	= pMover->GetItemId( dwPetId );
 		if( pItemElem && pItemElem->IsPet() && pItemElem->m_pPet )
 		{
 			WORD wOldLife	= pItemElem->m_pPet->GetLife();

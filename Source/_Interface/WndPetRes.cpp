@@ -143,8 +143,7 @@ void CWndPetRes::OnLButtonDblClk( UINT nFlags, CPoint point )
 
 BOOL CWndPetRes::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-	CItemElem* pTempElem;
-	pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 	if(!pTempElem) return FALSE;
 	// 올릴 수 있는 아이템 거르기
@@ -171,7 +170,7 @@ BOOL CWndPetRes::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	}
 	
 	if(m_pItemElem) m_pItemElem->SetExtra(0);
-	m_pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	m_pEItemProp = m_pItemElem->GetProp();
 	m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_OK);

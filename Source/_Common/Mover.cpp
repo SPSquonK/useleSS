@@ -2049,18 +2049,18 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 	return TRUE;
 }
 
-BOOL CMover::CreateItem( CItemBase* pItemBase, BYTE* pnId, short* pnNum, BYTE nCount )
+BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE nCount )
 {
 	if( pItemBase->m_dwItemId == 0 )
 		return FALSE;
-	CItemElem* pItemElem = (CItemElem*)pItemBase;
-	if( pItemElem->m_nHitPoint == -1 )
+
+	if(pItemBase->m_nHitPoint == -1 )
 	{
-		ItemProp* pItemProp		= pItemElem->GetProp();
+		ItemProp* pItemProp		= pItemBase->GetProp();
 		if( pItemProp )
-			pItemElem->m_nHitPoint		= pItemProp->dwEndurance;
+			pItemBase->m_nHitPoint		= pItemProp->dwEndurance;
 		else
-			pItemElem->m_nHitPoint		= 0;
+			pItemBase->m_nHitPoint		= 0;
 	}
 	if( pItemBase->GetSerialNumber() == 0 )
 		pItemBase->SetSerialNumber();
@@ -2071,7 +2071,7 @@ BOOL CMover::CreateItem( CItemBase* pItemBase, BYTE* pnId, short* pnNum, BYTE nC
 		BYTE anId[MAX_INVENTORY];
 		short anNum[MAX_INVENTORY];
 		
-		fSuccess	= m_Inventory.Add( (CItemElem*)pItemBase, anId, anNum, &nCount );
+		fSuccess	= m_Inventory.Add( pItemBase, anId, anNum, &nCount );
 
 		if( fSuccess && IsPlayer() )
 		{
@@ -2084,9 +2084,8 @@ BOOL CMover::CreateItem( CItemBase* pItemBase, BYTE* pnId, short* pnNum, BYTE nC
 	}
 	else
 	{
-		CItemElem* pItemElem	= (CItemElem*)pItemBase;
 		CItemElem itemElem;
-		itemElem	= *pItemElem;
+		itemElem	= *pItemBase;
 		for( int i = 0; i < nCount; i++ )
 		{
 			itemElem.m_nItemNum		= pnNum[i];
@@ -2275,12 +2274,11 @@ CItem *CMover::_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const
 	CWorld *pWorld = GetWorld();
 	if( pWorld == NULL )	
 		return NULL;	
-	CItemBase* pItemBase = GetItemId( dwID );
-	if( NULL == pItemBase )		
-		return NULL;
+
+	CItemElem * pItemBase = GetItemId( dwID );
+	if (!pItemBase) return nullptr;
 	
-	short nNum	= 1;
-	nNum = ((CItemElem*)pItemBase)->m_nItemNum;
+	short nNum	= pItemBase->m_nItemNum;
 	if( m_Inventory.IsEquip( pItemBase->m_dwObjId ) ) 
 		return NULL;
 
@@ -2289,10 +2287,10 @@ CItem *CMover::_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const
 	else if( nNum - (int)nDropNum < 0 )
 		return NULL;
 	
-	CItem* pItem	                             = new CItem;
-	pItem->m_pItemBase	                         = new CItemElem;
-	*((CItemElem*)pItem->m_pItemBase)            = *((CItemElem*)pItemBase);
-	((CItemElem*)pItem->m_pItemBase)->m_nItemNum = nDropNum;
+	CItem* pItem	        = new CItem;
+	pItem->m_pItemBase    = new CItemElem;
+	*(pItem->m_pItemBase) = *pItemBase;
+	pItem->m_pItemBase->m_nItemNum = nDropNum;
 		
 	if( pItemBase->m_dwItemId == 0 ) 
 		Error( "_DropItemNPC SetIndex: %s \n", GetName() ); 
@@ -2363,25 +2361,25 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 	if( IsPlayer() == FALSE )	
 		return _DropItemNPC( 0, dwID, nDropNum, vPos );	// ¸÷ÀÌ ¶³¾î¶ß¸±¶© ÀÌ°É»ç¿ë.
 	
-	CItemBase* pItemBase = GetItemId( dwID );
-	if( IsDropable( (CItemElem*)pItemBase, bPK ) == FALSE )
+	CItemElem * pItemBase = GetItemId( dwID );
+	if( IsDropable( pItemBase, bPK ) == FALSE )
 		return NULL;
 
-	short nNum	= ((CItemElem*)pItemBase)->m_nItemNum;
+	short nNum	= pItemBase->m_nItemNum;
 	if( nDropNum == 0 )
 		nDropNum = nNum;
 	else if( nDropNum > nNum )
 		return NULL;
 
-	CItem* pItem	= new CItem;
+	CItem* pItem	      = new CItem;
 	pItem->m_pItemBase	= new CItemElem;
-	*( (CItemElem*)pItem->m_pItemBase )		= *( (CItemElem*)pItemBase );
-	( (CItemElem*)pItem->m_pItemBase )->m_nItemNum		= nDropNum;
+	*pItem->m_pItemBase = *pItemBase;
+	pItem->m_pItemBase->m_nItemNum		= nDropNum;
 		
 	if( pItemBase->IsQuest() )
 		pItem->m_idHolder	= m_idPlayer;
 	
-	if( ( (CItemElem*)pItemBase )->IsLogable() )
+	if( pItemBase->IsLogable() )
 	{
 		LogItemInfo aLogItem;
 		aLogItem.Action = "D";
@@ -2670,11 +2668,8 @@ CItemElem* CMover::GetLWeaponItem()
 	return GetWeaponItem( PARTS_LWEAPON );
 }
 
-CItemElem* CMover::GetWeaponItem( int nParts )
-{
-	if( IsPlayer() )
-		return (CItemElem*)m_Inventory.GetEquip( nParts );
-	return NULL;
+CItemElem * CMover::GetWeaponItem(int nParts) {
+	return IsPlayer() ? m_Inventory.GetEquip(nParts) : nullptr;
 }
 
 ItemProp* CMover::GetActiveHandItemProp( int nParts )
@@ -2697,7 +2692,7 @@ ItemProp* CMover::GetActiveHandItemProp( int nParts )
 			return prj.GetItemProp( II_WEA_HAN_HAND );
 		}
 #else	// __CLIENT
-		CItemElem* pItemElem = (CItemElem*)m_Inventory.GetEquip( nParts ); 
+		CItemElem* pItemElem = m_Inventory.GetEquip( nParts ); 
 		if( pItemElem )
 			return pItemElem->GetProp();
 		return prj.GetItemProp( II_WEA_HAN_HAND );
@@ -4391,19 +4386,16 @@ void CMover::OnArriveAtPos()
 	ClearDestPos();
 }
 
-BOOL CMover::AddItem( CItemBase* pItemBase )
-{
-	return m_Inventory.Add( (CItemElem*)pItemBase );
+BOOL CMover::AddItem(CItemElem * const pItemBase) {
+	return m_Inventory.Add(pItemBase);
 }
 
-BOOL CMover::AddItemBank( int nSlot, CItemElem* pItemElem )
-{
-	return m_Bank[nSlot].Add( pItemElem );
+BOOL CMover::AddItemBank(const int nSlot, CItemElem * const pItemElem) {
+	return m_Bank[nSlot].Add(pItemElem);
 }
 
-CItemElem * CMover::GetItemId( DWORD dwId )
-{
-	return m_Inventory.GetAtId( dwId );
+CItemElem * CMover::GetItemId(const DWORD dwId) {
+	return m_Inventory.GetAtId(dwId);
 }
 
 const ItemProp * CMover::GetItemIdProp(const DWORD dwId) {
@@ -6321,17 +6313,16 @@ BOOL CMover::DropItem( CMover* pAttacker )
 								else
 								{
 									( (CUser*)pMember )->AddDefinedText( TID_EVE_REAPITEM, "\"%s\"", prj.GetItemProp( pQuestItem->dwIndex )->szName );
-									CItemBase* pItemBase	= pMember->GetItemId( nId );
+									CItemElem * pItemBase	= pMember->GetItemId( nId );
 									if( pItemBase )
 									{
-										CItemElem* pItemElem	= (CItemElem*)pItemBase;
 										LogItemInfo aLogItem;
 										aLogItem.Action = "Q";
 										aLogItem.SendName = pMember->m_szName;
 										aLogItem.RecvName = "QUEST";
 										aLogItem.WorldId = pMember->GetWorld()->GetID();
 										aLogItem.Gold = aLogItem.Gold2 = pMember->GetGold();
-										g_DPSrvr.OnLogItem( aLogItem, pItemElem, pItemElem->m_nItemNum );
+										g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 									}
 								}
 							}
@@ -6367,17 +6358,16 @@ BOOL CMover::DropItem( CMover* pAttacker )
 						else
 						{
 							( (CUser*)pAttacker )->AddDefinedText( TID_EVE_REAPITEM, "\"%s\"", prj.GetItemProp( pQuestItem->dwIndex )->szName );
-							CItemBase* pItemBase	= pAttacker->GetItemId( nId );
+							CItemElem * pItemBase	= pAttacker->GetItemId( nId );
 							if( pItemBase )
 							{
-								CItemElem* pItemElem	= (CItemElem*)pItemBase;
 								LogItemInfo aLogItem;
 								aLogItem.Action = "Q";
 								aLogItem.SendName = pAttacker->m_szName;
 								aLogItem.RecvName = "QUEST";
 								aLogItem.WorldId = pAttacker->GetWorld()->GetID();
 								aLogItem.Gold = aLogItem.Gold2 = pAttacker->GetGold();
-								g_DPSrvr.OnLogItem( aLogItem, pItemElem, pItemElem->m_nItemNum );
+								g_DPSrvr.OnLogItem( aLogItem, pItemBase, pItemBase->m_nItemNum );
 							}
 						}
 					}

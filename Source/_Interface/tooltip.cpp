@@ -471,7 +471,7 @@ void CToolTip::Paint(C2DRender* p2DRender)
 
 		if(m_nSlot > 0)
 		{
-//			CItemElem* pItemElem = (CItemElem*)m_pUltimateItemBase;
+//			CItemElem* pItemElem = m_pUltimateItemBase;
 //			if( pItemElem->GetAbilityOption() < 10 )
 //				rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width() + 16, pt.y + m_rectRender.Height() + (m_nSlot * 26) );
 //			else

@@ -120,7 +120,7 @@ BOOL CWndPetAwakCancel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	CItemElem* pTempElem= NULL;
 
 
-	if(g_pPlayer != NULL) pTempElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	if(g_pPlayer != NULL) pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	if( pTempElem != NULL)
 	{
 		// 픽업펫 확인	// 각성 여부는 서버 검사
@@ -128,7 +128,7 @@ BOOL CWndPetAwakCancel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			return FALSE;
 		// 확인 버튼 활성
 		if(m_pItemElem) m_pItemElem->SetExtra(0);
-		m_pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		m_pEItemProp = m_pItemElem->GetProp();
 		m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
 		if(m_pEItemProp != NULL)
@@ -1029,7 +1029,7 @@ CWndFoodConfirm::~CWndFoodConfirm()
 
 void CWndFoodConfirm::SetItem(DWORD dwObjId)
 {
-	m_pItemElem = (CItemElem*)g_pPlayer->GetItemId( dwObjId );
+	m_pItemElem = g_pPlayer->GetItemId( dwObjId );
 }
 
 void CWndFoodConfirm::OnDraw( C2DRender* p2DRender ) 
@@ -1699,8 +1699,7 @@ BOOL CWndPetFoodMill::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		return FALSE;
 	}
 
-	CItemElem* pTempElem;
-	pTempElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC2 );
 	if( wndCtrl->rect.PtInRect( point ) )
@@ -1980,12 +1979,11 @@ void CWndPetTransEggs::OnMouseWndSurface(CPoint point)
 BOOL CWndPetTransEggs::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	CRect rect;
-	CItemElem* pItemElem;
-	pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 	if(g_pPlayer->IsUsing(pItemElem))
 	{
-		g_WndMng.PutString( prj.GetText( TID_GAME_TRANS_EGGS_ERROR2 ), NULL, prj.GetTextColor( TID_GAME_TRANS_EGGS_ERROR2 ) );
+		g_WndMng.PutString(TID_GAME_TRANS_EGGS_ERROR2);
 	}
 	else
 	{

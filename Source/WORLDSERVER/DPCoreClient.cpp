@@ -2138,7 +2138,7 @@ void CDPCoreClient::OnGuildSetName( CAr & ar, DPID, DPID, OBJID )
 			if( pUser->m_bAllAction )
 #endif // __S_SERVER_UNIFY
 			{
-				pItemElem	= (CItemElem*)pUser->GetItemId( nId );
+				pItemElem	= pUser->GetItemId( nId );
 				if( IsUsableItem( pItemElem ) )
 					pItemElem->m_bQuery	= FALSE;
 			}
@@ -2624,7 +2624,7 @@ void CDPCoreClient::OnSetPlayerName( CAr& ar, DPID, DPID, OBJID )
 			if( pUser->m_bAllAction )
 #endif // __S_SERVER_UNIFY
 			{
-				CItemElem* pItemElem	= (CItemElem*)pUser->GetItemId( wId );
+				CItemElem* pItemElem	= pUser->GetItemId( wId );
 				if( pItemElem )
 				{
 					ASSERT( pItemElem->m_bQuery );
@@ -2641,7 +2641,7 @@ void CDPCoreClient::OnSetPlayerName( CAr& ar, DPID, DPID, OBJID )
 			{
 				if( (int)wId >= 0 )
 				{
-					CItemElem* pItemElem	= (CItemElem*)pUser->GetItemId( wId );
+					CItemElem* pItemElem	= pUser->GetItemId( wId );
 					if( pItemElem )
 					{
 						ASSERT( pItemElem->m_bQuery );

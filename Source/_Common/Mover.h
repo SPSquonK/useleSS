@@ -1151,7 +1151,7 @@ public:
 	int				GetItemNumForClient( DWORD dwItemId ); // Client에서만 사용하는 아이템 갯수 구하기(Null check 이외의 Usable check안함)
 #endif //__CLIENT
 	int				RemoveAllItem( DWORD dwItemId );
-	BOOL			AddItem( CItemBase* pItemBase );
+	BOOL			AddItem( CItemElem * pItemBase );
 	CItemElem *		GetItemId( DWORD dwId );
 	[[nodiscard]] const ItemProp * GetItemIdProp(DWORD dwId);
 	void			RemoveItemId( DWORD dwId  );
@@ -1341,7 +1341,7 @@ public:
 	void			SubAroundExp( CMover *pAttacker, float fRange );		// this를 중심으로 fRange범위안에 있는 유저에게 경험치를 배분한다.
 	void			GetDieDecExp( int nLevel, FLOAT& fRate, FLOAT& fDecExp, BOOL& bPxpClear, BOOL& bLvDown );
 	void			GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, BOOL bResurrection );
-	BOOL			CreateItem( CItemBase* pItemBase, BYTE* pnId = NULL, short* pnNum = NULL, BYTE nCount = 0 );
+	BOOL			CreateItem( CItemElem * pItemBase, BYTE* pnId = NULL, short* pnNum = NULL, BYTE nCount = 0 );
 	void			RemoveItem( BYTE nId, short nNum );
 	int				RemoveItemA( DWORD dwItemId, short nNum );
 	void			RemoveVendorItem( CHAR chTab, BYTE nId, short nNum );

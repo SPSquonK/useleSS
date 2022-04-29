@@ -160,8 +160,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 		static int*  pAbilityOption = NULL;
 
-		CItemElem* pItemElem;
-		pItemElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 		if(pItemElem == NULL)
 			return FALSE;

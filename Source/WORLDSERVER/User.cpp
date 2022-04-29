@@ -493,7 +493,7 @@ void CUser::Process()
 				CAIPet* pAIPet	= static_cast<CAIPet*>( pEatPet->m_pAIInterface );
 				if( pAIPet )
 				{
-					CItemElem* pItemElem = (CItemElem*)GetItemId( pAIPet->GetPetItemId() );
+					CItemElem* pItemElem = GetItemId( pAIPet->GetPetItemId() );
 					InactivateEatPet();
 					if( IsUsableItem( pItemElem ) )
 						DoUseItem( MAKELONG( ITYPE_ITEM, pItemElem->m_dwObjId ), pItemElem->m_dwObjId );
@@ -8100,8 +8100,7 @@ int CUser::GetPointByType( int nType )
 //	mulcom	BEGIN100405	각성 보호의 두루마리
 void	CUser::SelectAwakeningValue( DWORD dwItemObjID, DWORD dwSerialNumber, BYTE bySelectFlag )
 {
-	CItemElem *	pItem = NULL;
-	pItem	= (CItemElem*)( GetItemId( dwItemObjID ) );
+	CItemElem * pItem = GetItemId(dwItemObjID);
 
 	if( pItem == NULL )
 	{

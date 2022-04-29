@@ -163,8 +163,7 @@ void CWndAwakening::OnLButtonDblClk( UINT nFlags, CPoint point )
 
 BOOL CWndAwakening::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-	CItemElem* pTempElem;
-	pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 	int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pTempElem );
 	if( nRandomOptionKind  != CRandomOptionProperty::eAwakening )
@@ -303,7 +302,7 @@ void CWndSelectAwakeCase::OnDraw( C2DRender* p2DRender )
 	if( !g_pPlayer )
 		return;
 
-	CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( m_byObjID );
+	CItemElem* pItemElem = g_pPlayer->GetItemId( m_byObjID );
 	if( !pItemElem )
 	{
 		assert( 0 );

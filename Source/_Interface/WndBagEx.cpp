@@ -213,8 +213,7 @@ BOOL CWndBagEx::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	LPWNDCTRL	lpWndCtrl 	= GetWndCtrl( WIDC_ICO_BAG1 );
 	CRect		DrawRect	= lpWndCtrl->rect;
 
-	CItemElem* pTempElem;
-	pTempElem	= (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	if(!pTempElem)
 		return FALSE;
 	if(pShortcut->m_pFromWnd->m_pParentWnd->m_pParentWnd->GetWndId() != APP_INVENTORY)

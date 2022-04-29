@@ -1175,6 +1175,7 @@ void CMover::OnAfterUseItem( const ItemProp* pItemProp )
 
 BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 {
+	// TODO: CMover::DoUseItem -> CUser::DoUseItem 
 #ifdef __WORLDSERVER
 	if( IsDie() )
 		return FALSE;
@@ -1186,11 +1187,10 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 	WORD dwType = LOWORD( dwData );
 	WORD dwId   = HIWORD( dwData );
 
-	CItemBase* pItemBase = GetItemId( dwId ); 
+	CItemElem * pItemBase = GetItemId( dwId ); 
 	if( IsUsableItem( pItemBase ) == FALSE )
 		return FALSE;
 
-	CItemElem* pItemElem = (CItemElem*)pItemBase;
 	ItemProp* pItemProp  = pItemBase->GetProp();
 
 	if( pItemProp->dwItemKind3 == IK3_LINK )
@@ -1222,13 +1222,13 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 		// armor, weapon
 		if( m_pActMover->IsActAttack() == FALSE )	// 공격중엔 장비 못바꿈.
 		{
-			DoUseEquipmentItem( pItemElem, dwId, nPart );
+			DoUseEquipmentItem(pItemBase, dwId, nPart );
 		}
 		// 장착 아이템은 탈착 가능해야하므로 기간 만료에 의한 사용 제한 없음.
 	}
 	else	// 일반적인 아이템 사용 
 	{
-		if( IsItemRedyTime( pItemProp, pItemElem->m_dwObjId, TRUE ) == FALSE )
+		if( IsItemRedyTime( pItemProp, pItemBase->m_dwObjId, TRUE ) == FALSE )
 			return FALSE;
 
 		DWORD dwGroup = 0;
@@ -1255,7 +1255,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 			case IK2_GUILDHOUSE_PAPERING:
 				{
 					if( GuildHouseMng->SendWorldToDatabase( static_cast<CUser*>( this ), GUILDHOUSE_PCKTTYPE_LISTUP, GH_Fntr_Info( pItemProp->dwID ) ) )
-						g_DPSrvr.PutItemLog( static_cast<CUser*>( this ), "f", "GUILDHOUSE_LISTUP", pItemElem, 1 );
+						g_DPSrvr.PutItemLog( static_cast<CUser*>( this ), "f", "GUILDHOUSE_LISTUP", pItemBase, 1 );
 					else
 						return FALSE;
 					break;
@@ -1269,7 +1269,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 			case IK2_FURNITURE:
 			case IK2_PAPERING:
 				{
-					if(	CHousingMng::GetInstance()->ReqSetFurnitureList( (CUser*)this, pItemElem->m_dwItemId ) )
+					if(	CHousingMng::GetInstance()->ReqSetFurnitureList( (CUser*)this, pItemBase->m_dwItemId ) )
 					{
 						// 하우징 리스트 추가 로그
 						LogItemInfo aLogItem;
@@ -1279,7 +1279,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 						aLogItem.Gold	= GetGold();
 						aLogItem.Gold2	= GetGold();
 						aLogItem.Action	= "f";
-						g_DPSrvr.OnLogItem( aLogItem, pItemElem );
+						g_DPSrvr.OnLogItem( aLogItem, pItemBase);
 					}
 					else
 						return FALSE;
@@ -1288,13 +1288,13 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 #ifdef __FUNNY_COIN
 			case IK2_TOCASH:
 				{
-					if( !CFunnyCoin::GetInstance()->DoUseFunnyCoin( (CUser*)this, pItemElem ) )
+					if( !CFunnyCoin::GetInstance()->DoUseFunnyCoin( (CUser*)this, pItemBase) )
 						return FALSE;
 				}
 				break;
 #endif // __FUNNY_COIN
 			case IK2_WARP:
-				return DoUseItemWarp( pItemProp, pItemElem );
+				return DoUseItemWarp( pItemProp, pItemBase);
 			case IK2_BUFF2:
 				{
 					if( IsDoUseBuff( pItemProp ) != 0 )
@@ -1303,7 +1303,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 					time_t t	= (time_t)( tm.GetTime() );
 					// wID: dwItemId
 					// dwLevel
-					AddBuff( BUFF_ITEM2, (WORD)( pItemElem->m_dwItemId ), t, 0 ); 
+					AddBuff( BUFF_ITEM2, (WORD)(pItemBase->m_dwItemId ), t, 0 );
 					break;
 				}
 #ifdef __BUFF_TOGIFT
@@ -1338,11 +1338,11 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 				break;
 			case IK2_TEXT: //텍스트 문서 처리 
 				// 퀘스트가 있으면 퀘스트 시작 
-				if( pItemProp->dwQuestId && pItemElem->m_bItemResist == FALSE )
+				if( pItemProp->dwQuestId && pItemBase->m_bItemResist == FALSE )
 				{
 					::__SetQuest( GetId(), pItemProp->dwQuestId );
-					pItemElem->m_bItemResist = TRUE;
-					UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_IR, pItemElem->m_bItemResist );	
+					pItemBase->m_bItemResist = TRUE;
+					UpdateItem( (BYTE)(pItemBase->m_dwObjId ), UI_IR, pItemBase->m_bItemResist );
 				}
 				break;
 			case IK2_SYSTEM:
@@ -1360,7 +1360,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 #endif	// __WORLDSERVER
 #endif	// __JEFF_9_20
 					int nResult = 0;
-					nResult = DoUseItemSystem( pItemProp, pItemElem, nPart );
+					nResult = DoUseItemSystem( pItemProp, pItemBase, nPart );
 					{
 						if( 0 < nResult )
 						{
@@ -1376,21 +1376,21 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 						}
 						else
 						{
-							if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE_LINK )
+							if(pItemBase->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE_LINK )
 							{
-								g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemElem, pItemProp );
+								g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemBase, pItemProp );
 							}
 
 							//////////////////////////////////////////////////////////////////////////
 							//	mulcom	BEGIN100125	이벤트용 리스킬 및 이벤트용 리스테트 사용 내역에 대한 로그 추가
 							//						( e-mail : [유럽] 아이템 로그 추가 ( 2010-01-25 17:33 ) 참고 )
-							else if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE && pItemElem->m_bCharged != TRUE )
+							else if(pItemBase->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE && pItemBase->m_bCharged != TRUE )
 							{
-								g_DPSrvr.PutItemLog( (CUser*)( this ), "w", "USE_RECCURENCE_ITEM", pItemElem, 1 );
+								g_DPSrvr.PutItemLog( (CUser*)( this ), "w", "USE_RECCURENCE_ITEM", pItemBase, 1 );
 							}
-							else if(  pItemElem->m_dwItemId == II_CHR_SYS_SCR_RESTATE && pItemElem->m_bCharged != TRUE )
+							else if(pItemBase->m_dwItemId == II_CHR_SYS_SCR_RESTATE && pItemBase->m_bCharged != TRUE )
 							{
-								g_DPSrvr.PutItemLog( (CUser*)( this ), "w", "USE_RESTATE_ITEM", pItemElem, 1 );
+								g_DPSrvr.PutItemLog( (CUser*)( this ), "w", "USE_RESTATE_ITEM", pItemBase, 1 );
 							}
 							//	mulcom	END100125	이벤트용 리스킬 및 이벤트용 리스테트 사용 내역에 대한 로그 추가
 							//////////////////////////////////////////////////////////////////////////
@@ -1400,7 +1400,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 				break;
 
 			case IK2_BLINKWING:
-				return DoUseItemBlinkWing( pItemProp, pItemElem );
+				return DoUseItemBlinkWing( pItemProp, pItemBase);
 
 			case IK2_REFRESHER:
 				{
@@ -1415,11 +1415,11 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 							((CUser*)this)->AddDefinedText( TID_GAME_LIMITED_USE, "" ); //   
 							return FALSE;
 						}
-						g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemElem, pItemProp );
+						g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemBase, pItemProp );
 					}
 					else
 					{
-						if( DoUseItemFood( pItemProp, pItemElem ) == FALSE )
+						if( DoUseItemFood( pItemProp, pItemBase) == FALSE )
 							return FALSE;
 					}
 					break;
@@ -1436,16 +1436,16 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 						((CUser*)this)->AddDefinedText( TID_GAME_LIMITED_USE, "" ); //   
 						return FALSE;
 					}
-					g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemElem, pItemProp );
+					g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemBase, pItemProp );
 				}
 				else
 				{
-					if( DoUseItemFood( pItemProp, pItemElem ) == FALSE )
+					if( DoUseItemFood( pItemProp, pItemBase) == FALSE )
 						return FALSE;
 				}
 				break;
 			case IK2_FOOD:
-				if( DoUseItemFood( pItemProp, pItemElem ) == FALSE )
+				if( DoUseItemFood( pItemProp, pItemBase) == FALSE )
 					return FALSE;
 				break;
 			case IK2_AIRFUEL:	// 비행연료류
@@ -1591,18 +1591,18 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 		switch( pItemProp->dwItemKind3 )
 		{
 			case IK3_EGG:
-				DoUseSystemPet( pItemElem );
+				DoUseSystemPet(pItemBase);
 				break;
 			case IK3_PET:
-				DoUseEatPet( pItemElem );
+				DoUseEatPet(pItemBase);
 				break;
 		}
 
 		OnAfterUseItem( pItemProp );	// raiders 06.04.20
-		pItemElem->UseItem();			// --m_nItemNum;
+		pItemBase->UseItem();			// --m_nItemNum;
 
-		if( pItemElem->m_bCharged )		// 상용화 아이템 로그
-			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemElem, pItemProp );		
+		if(pItemBase->m_bCharged )		// 상용화 아이템 로그
+			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemBase, pItemProp );
 
 		CHAR cUIParam = UI_NUM;
 		if( dwGroup )	// 쿨타임 아이템이면 사용시각을 기록한다.
@@ -1612,7 +1612,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 			cUIParam = UI_COOLTIME;
 		}
 
-		UpdateItem( (BYTE)( dwId ), cUIParam, pItemElem->m_nItemNum );	// 갯수가 0이면  아이템 삭제 , 전송 
+		UpdateItem( (BYTE)( dwId ), cUIParam, pItemBase->m_nItemNum );	// 갯수가 0이면  아이템 삭제 , 전송 
 	}
 	
 #endif // WORLDSERVER
