@@ -1125,51 +1125,22 @@ int CWndCommItemCtrl::InsertItem( const LVITEM* pItem )
 CWndCommercialElem::CWndCommercialElem() 
 { 
 	SetPutRegInfo( FALSE );
-	m_pItemElem[0] = NULL;
-	m_pItemElem[1] = NULL;
-	memset( &m_Rect, 0, sizeof(CRect)*2 );
 } 
-CWndCommercialElem::~CWndCommercialElem() 
-{ 
-	InitSetting();
-} 
-void CWndCommercialElem::OnDraw( C2DRender* p2DRender ) 
-{ 
-	for( int i=0; i<2; i++ )
-	{
-		if( m_pItemElem[i] && m_pItemElem[i]->GetTexture() )
-		{
-			m_pItemElem[i]->GetTexture()->Render( p2DRender, m_Rect[i].TopLeft(), 255 );
+CWndCommercialElem::~CWndCommercialElem() { m_slots.Clear(); }
 
-			if( m_pItemElem[i]->m_nItemNum > 1 )
-			{
-				TCHAR szTemp[32];
-				_stprintf( szTemp, "%d", m_pItemElem[i]->GetExtra() );
-				p2DRender->TextOut( m_Rect[i].right-11,  m_Rect[i].bottom-11 , szTemp, 0xff1010ff );
-			}
-			CRect hitrect = m_Rect[i];
-			CPoint point = GetMousePoint();
-			if( m_Rect[i].PtInRect( point ) )
-			{
-				CPoint point2 = point;
-				ClientToScreen( &point2 );
-				ClientToScreen( &hitrect );
-				
-				g_WndMng.PutToolTip_Item( m_pItemElem[i], point2, &hitrect );
-			}
-		}
-	}
+void CWndCommercialElem::OnDraw( C2DRender* p2DRender )  { 
+	m_slots.Draw(p2DRender, this);
 } 
+
 void CWndCommercialElem::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	InitSetting();
-	LPWNDCTRL pCustom = NULL;
-	pCustom = GetWndCtrl( WIDC_CUSTOM1 );
-	m_Rect[0] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_CUSTOM2 );
-	m_Rect[1] = pCustom->rect;	
+	m_slots.Clear();
+	m_slots.SetRects({
+		GetWndCtrl(WIDC_CUSTOM1)->rect,
+		GetWndCtrl(WIDC_CUSTOM2)->rect
+		});
 
 	// 윈도를 중앙으로 옮기는 부분.
 	CWndInventory* pWndInventory = (CWndInventory*)g_WndMng.CreateApplet( APP_INVENTORY );
@@ -1216,18 +1187,12 @@ void CWndCommercialElem::OnLButtonDown( UINT nFlags, CPoint point )
 { 
 } 
 
-void CWndCommercialElem::OnRButtonUp( UINT nFlags, CPoint point )
-{
-	if( PtInRect(&m_Rect[0], point) )
-	{
-		InitSetting();
+void CWndCommercialElem::OnRButtonUp(UINT nFlags, CPoint point) {
+	if (m_slots[0].IsIn(point)) {
+		m_slots.Clear();
+	} else if (m_slots[1].IsIn(point)) {
+		m_slots[1].Clear();
 	}
-	else
-	if( PtInRect(&m_Rect[1], point) )
-	{
-		m_pItemElem[1]->SetExtra( 0 );
-		m_pItemElem[1] = NULL;
-	}	
 }
 
 BOOL CWndCommercialElem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -1236,45 +1201,25 @@ BOOL CWndCommercialElem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 	{
 	case WIDC_ELEM_OK:
 		{
-			if( m_pItemElem[0] && m_pItemElem[1] )
-			{
-				g_DPlay.SendCommercialElem( m_pItemElem[0]->m_dwObjId, m_pItemElem[1]->m_dwObjId );
-				InitSetting();
+			if(m_slots[0] && m_slots[1]) {
+				g_DPlay.SendCommercialElem(m_slots[0]->m_dwObjId, m_slots[1]->m_dwObjId );
+				m_slots.Clear();
 				Destroy();
 			}
 		}
 		break;
 	case WIDC_ELEM_CANCEL:
-		{
-			InitSetting();
-			Destroy();
-		}
+		m_slots.Clear();
+		Destroy();
 		break;
 	case WTBID_CLOSE:
-		{
-			InitSetting();
-			Destroy();
-		}
+		m_slots.Clear();
+		Destroy();
 		break;
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndCommercialElem::InitSetting( void )
-{
-	if( m_pItemElem[0] )
-	{
-		m_pItemElem[0]->SetExtra( 0 );
-		m_pItemElem[0] = NULL;
-	}
-	if( m_pItemElem[1] )
-	{
-		m_pItemElem[1]->SetExtra( 0 );
-		m_pItemElem[1] = NULL;
-	}
-
-
-}
 
 BOOL CWndCommercialElem::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
@@ -1284,32 +1229,17 @@ BOOL CWndCommercialElem::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	if( pShortcut->m_dwShortcut == SHORTCUT_ITEM && pWndFrame->GetWndId() == APP_INVENTORY )
 	{
 		BOOL bbid = FALSE;
-		CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-		if( pItemElem && IsRestrictionItem( pItemElem ) )
-		{
-			if( m_pItemElem[0] == NULL && PtInRect(&m_Rect[0], point) && IsUpgradeItem( pItemElem ) )
-			{
-				if( m_pItemElem[1] )
-				{
-					m_pItemElem[1]->SetExtra( 0 );
-					m_pItemElem[1] = NULL;
-				}
-				pItemElem->SetExtra( 1 );
-				m_pItemElem[0] = pItemElem;
-			}
-			else
-			if( m_pItemElem[0] && m_pItemElem[1] == NULL && PtInRect(&m_Rect[1], point) && IsSMItem( pItemElem ) )
-			{
-				pItemElem->SetExtra( 1 );
-				m_pItemElem[1] = pItemElem;
-			}
-			else
-			{
+		CItemElem * pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
+		if (pItemElem && IsRestrictionItem(pItemElem)) {
+			if (!m_slots[0] && m_slots[0].IsIn(point) && IsUpgradeItem(pItemElem)) {
+				m_slots[1].Clear();
+				m_slots[0].Set(pItemElem);
+			} else if (m_slots[0] && !m_slots[1] && m_slots[1].IsIn(point) && IsSMItem(pItemElem)) {
+				m_slots[1].Set(pItemElem);
+			} else {
 				bbid = TRUE;
 			}
-		}
-		else
-		{
+		} else {
 			bbid = TRUE;
 		}
 
@@ -1322,62 +1252,57 @@ BOOL CWndCommercialElem::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	return FALSE;
 }
 
-BOOL CWndCommercialElem::IsRestrictionItem( CItemElem* pItemElem, BOOL bMessage )
-{
+bool CWndCommercialElem::IsRestrictionItem(CItemElem * pItemElem) {
 	// 장착되어 있는지? 유니크 아이템인지 검사
-	if( g_pPlayer->m_Inventory.IsEquip( pItemElem->m_dwObjId ) )
-	{
-		g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor(TID_GAME_EQUIPPUT) );
-		return FALSE;
+	if (g_pPlayer->m_Inventory.IsEquip(pItemElem->m_dwObjId)) {
+		g_WndMng.PutString(TID_GAME_EQUIPPUT);
+		return false;
 	}
 	
-	if( pItemElem->GetProp()->nLog >=2 )
-	{
-		g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOUNICK), MB_OK, this );
-		return FALSE;
+	if (pItemElem->GetProp()->nLog >= 2) {
+		g_WndMng.OpenMessageBox(prj.GetText(TID_UPGRADE_ERROR_NOUNICK), MB_OK, this);
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CWndCommercialElem::IsUpgradeItem( CItemElem* pItemElem, BOOL bMessage )
-{
+bool CWndCommercialElem::IsUpgradeItem(CItemElem * pItemElem) {
+	const ItemProp * prop = pItemElem->GetProp();
+	const auto itemKind2 = prop->dwItemKind2;
+	const auto itemKind3 = prop->dwItemKind3;
+
 	// 방어구(슈트만), 무기류가 아니면 제련불가능
-	if( !( ( pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
-		pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT ) ||
-		( ( pItemElem->GetProp()->dwItemKind2 == IK2_ARMOR || pItemElem->GetProp()->dwItemKind2 == IK2_ARMORETC ) 
-		&& pItemElem->GetProp()->dwItemKind3 == IK3_SUIT )
+	if( !( (itemKind2 == IK2_WEAPON_MAGIC ||
+		itemKind2 == IK2_WEAPON_DIRECT ) ||
+		( (itemKind2 == IK2_ARMOR || itemKind2 == IK2_ARMORETC )
+		&& itemKind3 == IK3_SUIT )
 		) )
 	{
 		CString str;
-		str.Format( prj.GetText(TID_GAME_NOTEQUALELEM), pItemElem->GetProp()->szName );
+		str.Format( prj.GetText(TID_GAME_NOTEQUALELEM), prop->szName );
 		g_WndMng.PutString( str, NULL, prj.GetTextColor(TID_GAME_NOTEQUALELEM) );
 		return FALSE;
 	}
 
-	if( pItemElem->m_bItemResist <= SAI79::NO_PROP || SAI79::END_PROP <= pItemElem->m_bItemResist )
-	{
-//		CString str;
-//		str.Format( "%s 속성값이 적용되어 있어야 합니다", pItemElem->GetProp()->szName );
-		g_WndMng.PutString( prj.GetText(TID_GAME_NOTELEMENT), NULL, prj.GetTextColor(TID_GAME_NOTELEMENT) );		
+	if (pItemElem->m_bItemResist <= SAI79::NO_PROP || SAI79::END_PROP <= pItemElem->m_bItemResist) {
+		g_WndMng.PutString(TID_GAME_NOTELEMENT);
 		return FALSE;
 	}
 
-	if( pItemElem->m_nResistSMItemId != 0 ) // 이미적용한 아이템이면 불가능
-	{
-//		CString str;
-//		str.Format( "%s 이미 적용되어 있는 아이템 이므로 적용시킬수 없습니다", pItemElem->GetProp()->szName );
-		g_WndMng.PutString( prj.GetText(TID_GAME_ALREADYELEM), NULL, prj.GetTextColor(TID_GAME_ALREADYELEM) );
+	if (pItemElem->m_nResistSMItemId != 0) { // 이미적용한 아이템이면 불가능
+		g_WndMng.PutString(TID_GAME_ALREADYELEM);
 		return FALSE;
 	}
 
 	return TRUE;
 }
 
-BOOL CWndCommercialElem::IsSMItem( CItemElem* pItemElem, BOOL bMessage )
-{
-	if( pItemElem->GetProp()->dwItemKind2 == IK2_SYSTEM )
-	{
+bool CWndCommercialElem::IsSMItem(CItemElem * pItemElem) {
+	if (pItemElem->GetProp()->dwItemKind2 != IK2_SYSTEM) {
+		return FALSE;
+	}
+
 		BYTE nResist;
 		switch( pItemElem->m_dwItemId )
 		{
@@ -1421,21 +1346,20 @@ BOOL CWndCommercialElem::IsSMItem( CItemElem* pItemElem, BOOL bMessage )
 			pItemElem->m_dwItemId == II_CHR_SYS_SCR_EARTHYSTONE ) 
 
 		{
-			if( m_pItemElem[0]->m_bItemResist == SAI79::NO_PROP )
+			if( m_slots[0]->m_bItemResist == SAI79::NO_PROP )
 			{
-				g_WndMng.PutString( prj.GetText(TID_GAME_NOTELEMENT), NULL, prj.GetTextColor(TID_GAME_NOTELEMENT) );
+				g_WndMng.PutString(TID_GAME_NOTELEMENT);
 				return FALSE;
 			}
 			
-			if( m_pItemElem[0]->GetProp()->dwItemKind2 == IK2_ARMOR ||
-				m_pItemElem[0]->GetProp()->dwItemKind2 == IK2_ARMORETC )
+			if(m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_ARMOR ||
+				m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_ARMORETC )
 			{
-				g_WndMng.PutString( prj.GetText(TID_GAME_NOTEQUALITEM), NULL, prj.GetTextColor(TID_GAME_NOTEQUALITEM) );
+				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 				return FALSE;
 			}
 
-			if( m_pItemElem[0]->m_bItemResist != nResist )
-			{
+			if(m_slots[0]->m_bItemResist != nResist ) {
 				CString str;
 				str.Format( prj.GetText(TID_GAME_NOTEQUALELEM), pItemElem->GetProp()->szName );
 				g_WndMng.PutString( str, NULL, prj.GetTextColor(TID_GAME_NOTEQUALELEM) );
@@ -1449,20 +1373,20 @@ BOOL CWndCommercialElem::IsSMItem( CItemElem* pItemElem, BOOL bMessage )
 			pItemElem->m_dwItemId == II_CHR_SYS_SCR_DELIGHTINESTONE ||
 			pItemElem->m_dwItemId == II_CHR_SYS_SCR_DEEARTHYSTONE )
 		{
-			if( m_pItemElem[0]->m_bItemResist == SAI79::NO_PROP )
+			if( m_slots[0]->m_bItemResist == SAI79::NO_PROP )
 			{
-				g_WndMng.PutString( prj.GetText(TID_GAME_NOTELEMENT), NULL, prj.GetTextColor(TID_GAME_NOTELEMENT) );
+				g_WndMng.PutString(TID_GAME_NOTELEMENT);
 				return FALSE;
 			}
 			
-			if( m_pItemElem[0]->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
-				m_pItemElem[0]->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT )
+			if( m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
+				m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT )
 			{
-				g_WndMng.PutString( prj.GetText(TID_GAME_NOTEQUALITEM), NULL, prj.GetTextColor(TID_GAME_NOTEQUALITEM) );
+				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 				return FALSE;
 			}
 
-			if( m_pItemElem[0]->m_bItemResist != nResist )
+			if( m_slots[0]->m_bItemResist != nResist )
 			{
 				CString str;
 				str.Format( prj.GetText(TID_GAME_NOTEQUALELEM), pItemElem->GetProp()->szName );
@@ -1473,14 +1397,12 @@ BOOL CWndCommercialElem::IsSMItem( CItemElem* pItemElem, BOOL bMessage )
 		else // 속성 제거
 		if( pItemElem->m_dwItemId == II_CHR_SYS_SCR_TINEINEDSTONE )
 		{
-			if( m_pItemElem[0]->m_nResistAbilityOption <= 0 )
+			if( m_slots[0]->m_nResistAbilityOption <= 0 )
 				return FALSE;
 		}
 		else
 			return FALSE;
-	}
-	else 
-		return FALSE;
+
 
 	return TRUE;
 }

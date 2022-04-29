@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClCompile Include="..\_Common\accessory.cpp">
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="CampusHelper.cpp">
     </ClCompile>
     <ClCompile Include="clord.cpp">
@@ -679,6 +680,7 @@
     <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
+    <ClInclude Include="..\_Interface\WndComponentSlots.h" />
     <ClInclude Include="CNTREVNT.h" />
     <ClInclude Include="couplehelper.h" />
     <ClInclude Include="DPCertified.h" />

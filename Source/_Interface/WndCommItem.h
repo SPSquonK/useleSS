@@ -4,6 +4,8 @@
 class C2DRender;
 class CItemElem;
 
+#include "WndComponentSlots.h"
+
 class CWndCommItemCtrl : public CWndBase
 {
 	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
@@ -91,13 +93,9 @@ public:
 class CWndCommercialElem : public CWndNeuz 
 { 
 public: 
-	CItemElem* m_pItemElem[2];
-	CRect      m_Rect[2];
+	CWndComponentSlots<2> m_slots;
 
-	void InitSetting( void );
-	BOOL IsRestrictionItem( CItemElem* pItemElem, BOOL bMessage = FALSE );
-	BOOL IsUpgradeItem( CItemElem* pItemElem, BOOL bMessage = FALSE );
-	BOOL IsSMItem( CItemElem* pItemElem, BOOL bMessage = FALSE );
+	
 	
 	
 	CWndCommercialElem(); 
@@ -113,6 +111,11 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnRButtonUp( UINT nFlags, CPoint point );
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
+
+private:
+	bool IsRestrictionItem(CItemElem * pItemElem);
+	bool IsUpgradeItem(CItemElem * pItemElem);
+	bool IsSMItem(CItemElem * pItemElem);
 }; 
 
 class CWndRemoveElem : public CWndNeuz 

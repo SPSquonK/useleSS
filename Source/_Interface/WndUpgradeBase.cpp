@@ -17,9 +17,6 @@ CWndUpgradeBase::CWndUpgradeBase()
 {
 	SetPutRegInfo( FALSE );
 
-	memset( &m_pItemElem, 0, sizeof(CItemBase*)*MAX_UPGRADE );
-	memset( &m_Rect, 0, sizeof(CRect)*MAX_UPGRADE );
-
 	m_nCost = 0;
 	m_dwReqItem[0] = 0;
 	m_dwReqItem[1] = 0;
@@ -30,39 +27,10 @@ CWndUpgradeBase::CWndUpgradeBase()
 	m_nMaxCount = 0;
 }
 
-CWndUpgradeBase::~CWndUpgradeBase()
-{
-}
+CWndUpgradeBase::~CWndUpgradeBase() { m_slots.Clear(); }
 
-void CWndUpgradeBase::OnDraw( C2DRender* p2DRender )
-{
-	for( int i=0; i<MAX_UPGRADE; i++ )
-	{
-		if( m_pItemElem[i] && m_pItemElem[i]->GetTexture() )
-		{
-			m_pItemElem[i]->GetTexture()->Render( p2DRender, m_Rect[i].TopLeft(), 255 );
-
-			if( m_pItemElem[i]->m_nItemNum > 1 )
-			{
-				TCHAR szTemp[32];
-				_stprintf( szTemp, "%d", m_pItemElem[i]->GetExtra() );
-				CSize size	= p2DRender->m_pFont->GetTextExtent( szTemp );
-				p2DRender->TextOut( m_Rect[i].right-11,  m_Rect[i].bottom-11 , szTemp, 0xff1010ff );
-			}
-			//*
-			CRect hitrect = m_Rect[i];
-			CPoint point = GetMousePoint();
-			if( m_Rect[i].PtInRect( point ) )
-			{
-				CPoint point2 = point;
-				ClientToScreen( &point2 );
-				ClientToScreen( &hitrect );
-				
-				g_WndMng.PutToolTip_Item( m_pItemElem[i], point2, &hitrect );
-			}
-			/**/
-		}
-	}
+void CWndUpgradeBase::OnDraw( C2DRender* p2DRender ) {
+	m_slots.Draw(p2DRender, this);
 }
 
 void CWndUpgradeBase::OnInitialUpdate()
@@ -84,18 +52,15 @@ void CWndUpgradeBase::OnInitialUpdate()
 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	LPWNDCTRL pCustom = NULL;
-	pCustom = GetWndCtrl( WIDC_CUSTOM3 );
-	m_Rect[0] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_CUSTOM4 );
-	m_Rect[1] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_CUSTOM1 );
-	m_Rect[2] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_CUSTOM2 );
-	m_Rect[3] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_CUSTOM5 );
-	m_Rect[4] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_CUSTOM6 );
-	m_Rect[5] = pCustom->rect;
+
+	m_slots.SetRects({
+		GetWndCtrl(WIDC_CUSTOM3)->rect,
+		GetWndCtrl(WIDC_CUSTOM4)->rect,
+		GetWndCtrl(WIDC_CUSTOM1)->rect,
+		GetWndCtrl(WIDC_CUSTOM2)->rect,
+		GetWndCtrl(WIDC_CUSTOM5)->rect,
+		GetWndCtrl(WIDC_CUSTOM6)->rect
+		});
 
 	m_nCount[0] = 0;
 	m_nCount[1] = 0;
@@ -106,16 +71,6 @@ void CWndUpgradeBase::OnInitialUpdate()
 BOOL CWndUpgradeBase::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 {
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TEST, 0, 0, pWndParent );
-}
-
-BOOL CWndUpgradeBase::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-
-void CWndUpgradeBase::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
 }
 
 void CWndUpgradeBase::OnLButtonUp( UINT nFlags, CPoint point ) 
@@ -153,12 +108,12 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	{
 		if( g_pPlayer->m_Inventory.IsEquip( pShortcut->m_dwId ) )
 		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor(TID_GAME_EQUIPPUT) );
+			g_WndMng.PutString(TID_GAME_EQUIPPUT);
 			SetForbid( TRUE );
 			return FALSE;
 		}
 
-		static int*  pAbilityOption = NULL;
+		static const int *  pAbilityOption = NULL;
 
 		CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
@@ -166,42 +121,18 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			return FALSE;
 		
 		// 아이템( 방어구, 무기구 )
-		if( PtInRect(&m_Rect[0], point) )
-		{
-			if( m_pItemElem[0] )
-				return FALSE;
-
-//			if( pItemElem->GetProp()->nLog >=2 )
-//			{
-//				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOUNICK), MB_OK, this );
-//				return FALSE;
-//			}
-			
-			if( pItemElem->m_nResistSMItemId != 0 ) // 상용화 아이템 적용중이면 불가능
-			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_NOTUPGRADE), MB_OK, this );
-				return FALSE;
-			}
-		
-			// 방어구나 무기류가 아니면 제련불가능
-			if( pItemElem->GetProp()->dwItemKind2 == IK2_ARMOR ||
-				pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
-				pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT ||
-				pItemElem->GetProp()->dwItemKind2 == IK2_ARMORETC )
-			{
-				pItemElem->SetExtra( 1 );
-				m_pItemElem[0]	= pItemElem;
-			}
+		if (m_slots[0].IsIn(point)) {
+			const bool r = DropMainItem(pItemElem);
+			if (!r) return FALSE;
 		}
 		else
 		// 아이템( 카드, 주사위 )
-		if( PtInRect(&m_Rect[1], point) )
-		{
-			if( m_pItemElem[1] )
+		if (m_slots[1].IsIn(point)) {
+			if(m_slots[1] )
 				return FALSE;
 
 			// 재련할 아이템이 없는경우 리턴
-			if( m_pItemElem[0] == NULL )
+			if(m_slots[0] == NULL )
 			{
 				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_ITEMFIRST), MB_OK, this );
 				return FALSE;
@@ -213,9 +144,10 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_ELECARD  )
 			{
-				if( ( m_pItemElem[0]->GetProp()->dwItemKind3 != IK3_SUIT && 
-					m_pItemElem[0]->GetProp()->dwItemKind2 != IK2_WEAPON_MAGIC &&
-					m_pItemElem[0]->GetProp()->dwItemKind2 != IK2_WEAPON_DIRECT )
+				const ItemProp * zeroProp = m_slots[0].m_item->GetProp();
+				if( (zeroProp->dwItemKind3 != IK3_SUIT &&
+					zeroProp->dwItemKind2 != IK2_WEAPON_MAGIC &&
+					zeroProp->dwItemKind2 != IK2_WEAPON_DIRECT )
 					)
 				{
 					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOELEUPGRADE), MB_OK, this );
@@ -225,7 +157,9 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				
 	
 			// 카드이고, 제련할 아이템의 속성이 카드의 속성과 다를경우 리턴
-			if( pItemElem->GetProp()->dwItemKind3 == IK3_ELECARD && m_pItemElem[0]->m_bItemResist != SAI79::NO_PROP && m_pItemElem[0]->m_bItemResist != pItemElem->GetProp()->eItemType )
+			if( pItemElem->GetProp()->dwItemKind3 == IK3_ELECARD
+				&& m_slots[0]->m_bItemResist != SAI79::NO_PROP
+				&& m_slots[0]->m_bItemResist != pItemElem->GetProp()->eItemType )
 			{
 				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_TWOELEMENT), MB_OK, this );
 				return FALSE;
@@ -233,14 +167,14 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_ELECARD )
 			{
-				pAbilityOption = &(m_pItemElem[0]->m_nResistAbilityOption);
+				pAbilityOption = &(m_slots[0]->m_nResistAbilityOption);
 			}
 
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_ENCHANT )
 			{
 				//*
 				// 속성레벨이 10 이상이면 제련 불가능
-				if( m_pItemElem[0]->GetAbilityOption() >= 10 )
+				if(m_slots[0]->GetAbilityOption() >= 10 )
 				{
 					CString str;
 					str.Format( prj.GetText(TID_UPGRADE_ERROR_MAXLEVEL), 10 );
@@ -250,7 +184,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				/**/
 				
 
-				pAbilityOption = m_pItemElem[0]->GetAbilityOptionPtr();
+				pAbilityOption = m_slots[0]->GetAbilityOptionPtr();
 			}
 			
 			
@@ -297,8 +231,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				m_dwReqItem[1]  = II_GEN_MAT_SUP_ERONS;
 			}
 			
-			pItemElem->SetExtra( 1 );
-			m_pItemElem[1]	= pItemElem;
+			m_slots[1].Set(pItemElem);
 			
 			//필요한 보조석 갯수 표시
 			CString str;
@@ -342,12 +275,11 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		}
 		else
 		// 보조석
-		if( PtInRect(&m_Rect[2], point) )
+		if( m_slots[2].IsIn(point) )
 		{
-			if( m_pItemElem[1] == NULL )
-				return FALSE;
+			if (!m_slots[1]) return FALSE;
 
-			if( m_pItemElem[2] || !pAbilityOption )
+			if(m_slots[2] || !pAbilityOption )
 				return FALSE;
 
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_SUPSTONE )
@@ -355,11 +287,10 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				if( m_dwReqItem[0] != pItemElem->m_dwItemId )
 				{
 					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK, this );
-					//g_WndMng.OpenMessageBox( "필요한 보조석이 아닙니다.", MB_OK, this );
 					return FALSE;
 				}
 
-				if( m_pItemElem[4] )
+				if(m_slots[4] )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[0])
 					{
@@ -379,16 +310,16 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					m_nCount[0] = 0;
 				}
 
-				m_pItemElem[2]	= pItemElem;
+				m_slots[2].m_item = pItemElem;
 			}
 		}
 		else
-		if( PtInRect(&m_Rect[4], point) )
+		if( m_slots[4].IsIn(point))
 		{
-			if( m_pItemElem[1] == NULL )
+			if(m_slots[1] == NULL )
 				return FALSE;
 
-			if( m_pItemElem[4] || !pAbilityOption )
+			if(m_slots[4] || !pAbilityOption )
 				return FALSE;
 			
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_SUPSTONE )
@@ -400,7 +331,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					return FALSE;
 				}
 
-				if( m_pItemElem[2] )
+				if(m_slots[2] )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[0])
 					{
@@ -420,16 +351,16 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					m_nCount[0] = 0;
 				}
 				
-				m_pItemElem[4]	= pItemElem;
+				m_slots[4].m_item	= pItemElem;
 			}
 		}
 		else
-		if( PtInRect(&m_Rect[3], point) )
+		if(m_slots[3].IsIn(point) )
 		{
-			if( m_pItemElem[1] == NULL )
+			if(m_slots[1] == NULL )
 				return FALSE;
 
-			if( m_pItemElem[3] || !pAbilityOption )
+			if(m_slots[3] || !pAbilityOption )
 				return FALSE;
 
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_SUPSTONE )
@@ -440,7 +371,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					return FALSE;
 				}
 
-				if( m_pItemElem[5] )
+				if(m_slots[5] )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[1])
 					{
@@ -460,16 +391,16 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					m_nCount[1] = 0;
 				}
 				
-				m_pItemElem[3]	= pItemElem;
+				m_slots[3].m_item	= pItemElem;
 			}
 		}
 		else
-		if( PtInRect(&m_Rect[5], point) )
+		if(m_slots[5].IsIn(point) )
 		{
-			if( m_pItemElem[1] == NULL )
+			if(m_slots[1] == NULL )
 				return FALSE;
 
-			if( m_pItemElem[5] || !pAbilityOption  )
+			if(m_slots[5] || !pAbilityOption  )
 				return FALSE;
 			
 			if( pItemElem->GetProp()->dwItemKind3 == IK3_SUPSTONE )
@@ -480,7 +411,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					return FALSE;
 				}
 
-				if( m_pItemElem[3] )
+				if(m_slots[3] )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[1])
 					{
@@ -500,7 +431,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					m_nCount[1] = 0;
 				}
 				
-				m_pItemElem[5]	= pItemElem;
+				m_slots[5].m_item	= pItemElem;
 			}
 		}
 	}			
@@ -508,6 +439,24 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		SetForbid( FALSE );
 
 	return FALSE;
+}
+
+bool CWndUpgradeBase::DropMainItem(CItemElem * pItemElem) {
+	if (!m_slots[0]) return false;
+
+	if (pItemElem->m_nResistSMItemId != 0) // 상용화 아이템 적용중이면 불가능
+	{
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_NOTUPGRADE), MB_OK, this);
+		return false;
+	}
+
+	// 방어구나 무기류가 아니면 제련불가능
+	if (pItemElem->GetProp()->dwItemKind2 == IK2_ARMOR ||
+		pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
+		pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT ||
+		pItemElem->GetProp()->dwItemKind2 == IK2_ARMORETC) {
+		m_slots[0].Set(pItemElem);
+	}
 }
 
 BOOL CWndUpgradeBase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -523,56 +472,27 @@ BOOL CWndUpgradeBase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				dwCount[0] = 0;
 				dwCount[1] = 0;
 
-				if( m_pItemElem[0] == NULL || m_pItemElem[1] == NULL )
+				if (!m_slots[0] || !m_slots[1])
 					break;
 
-				dwobjId[0] = m_pItemElem[0]->m_dwObjId;
-				dwobjId[1] = m_pItemElem[1]->m_dwObjId;
+				dwobjId[0] = m_slots[0]->m_dwObjId;
+				dwobjId[1] = m_slots[1]->m_dwObjId;
 				
-				if( m_pItemElem[2] == NULL ) 
-				{
-					ItemCount[2] = 0;
-					dwobjId  [2] = NULL_ID;
-				}
-				else
-				{
-					ItemCount[2] = m_pItemElem[2]->GetExtra();	
-					dwobjId  [2] = m_pItemElem[2]->m_dwObjId;
-					dwCount  [0]+= m_pItemElem[2]->GetExtra();
-				}
-				if( m_pItemElem[4] == NULL ) 
-				{
-					ItemCount[4] = 0;
-					dwobjId  [4] = NULL_ID;
-				}
-				else
-				{
-					ItemCount[4] = m_pItemElem[4]->GetExtra();	
-					dwobjId  [4] = m_pItemElem[4]->m_dwObjId;
-					dwCount  [0]+= m_pItemElem[4]->GetExtra();
-				}
-				if( m_pItemElem[3] == NULL ) 
-				{
-					ItemCount[3] = 0;
-					dwobjId  [3] = NULL_ID;
-				}
-				else
-				{
-					ItemCount[3] = m_pItemElem[3]->GetExtra();	
-					dwobjId  [3] = m_pItemElem[3]->m_dwObjId;
-					dwCount  [1]+= m_pItemElem[3]->GetExtra();	
-				}
-				if( m_pItemElem[5] == NULL ) 
-				{
-					ItemCount[5] = 0;
-					dwobjId  [5] = NULL_ID;
-				}
-				else
-				{
-					ItemCount[5] = m_pItemElem[5]->GetExtra();	
-					dwobjId  [5] = m_pItemElem[5]->m_dwObjId;
-					dwCount  [1]+= m_pItemElem[5]->GetExtra();
-				}
+				const auto ConsiderSlot = [&](const size_t pos) {
+					if (m_slots[pos] == NULL) {
+						ItemCount[pos] = 0;
+						dwobjId  [pos] = NULL_ID;
+					} else {
+						ItemCount[pos]      = m_slots[pos]->GetExtra();
+						dwobjId  [pos]      = m_slots[pos]->m_dwObjId;
+						dwCount  [pos % 2] += m_slots[pos]->GetExtra();
+					}
+				};
+
+				ConsiderSlot(2);
+				ConsiderSlot(4);
+				ConsiderSlot(3);
+				ConsiderSlot(5);
 
 				if( (int)( dwCount[0] ) < m_nMaxCount || (int)( dwCount[1] ) < m_nMaxCount )
 				{
@@ -603,101 +523,47 @@ void CWndUpgradeBase::OnDestroyChildWnd( CWndBase* pWndChild )
 {
 }
 
-void CWndUpgradeBase::OnDestroy( void )
-{
-	for( int i=0; i<MAX_UPGRADE; i++ )
-	{
-		if( m_pItemElem[i] )
-			m_pItemElem[i]->SetExtra( 0 );
-	}
+void CWndUpgradeBase::OnDestroy() {
+	m_slots.Clear();
 }
 
 
-void CWndUpgradeBase::OnRButtonUp( UINT nFlags, CPoint point )
-{
-	if( PtInRect(&m_Rect[0], point) )
-	{
-		for( int i=0; i<MAX_UPGRADE; i++ )
-		{
-			if( m_pItemElem[i] )
-			{
-				m_pItemElem[i]->SetExtra( 0 );
-				m_pItemElem[i] = NULL;
-			}
-		}
+void CWndUpgradeBase::OnRButtonUp( UINT nFlags, CPoint point ) {
+	const auto ResetAllTitles = [&]() {
 		m_nCount[0] = m_nCount[1] = 0;
 		m_dwReqItem[0] = 0;
 		m_dwReqItem[1] = 0;
 
-		CWndStatic* pWndStatic;
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC6);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC4);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC10);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC11);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC5);
-		pWndStatic->SetTitle("");
-	}
-	else
-	if( PtInRect(&m_Rect[1], point) )
-	{
-		for( int i=1; i<MAX_UPGRADE; i++ )
-		{
-			if( m_pItemElem[i] )
-			{
-				m_pItemElem[i]->SetExtra( 0 );
-				m_pItemElem[i] = NULL;
-			}
+		GetDlgItem(WIDC_STATIC6)->SetTitle("");
+		GetDlgItem(WIDC_STATIC4)->SetTitle("");
+		GetDlgItem(WIDC_STATIC10)->SetTitle("");
+		GetDlgItem(WIDC_STATIC11)->SetTitle("");
+		GetDlgItem(WIDC_STATIC5)->SetTitle("");
+	};
+
+	if (m_slots[0].IsIn(point)) {
+		m_slots.Clear();
+		ResetAllTitles();
+	} else if (m_slots[1].IsIn(point)) {
+
+		for (auto it = m_slots.values.begin() + 1; it != m_slots.values.end(); ++it) {
+			it->Clear();
 		}
-		m_nCount[0] = m_nCount[1] = 0;
-		m_dwReqItem[0] = 0;
-		m_dwReqItem[1] = 0;
-		
-		CWndStatic* pWndStatic;
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC6);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC4);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC10);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC11);
-		pWndStatic->SetTitle("");
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC5);
-		pWndStatic->SetTitle("");
+
+		ResetAllTitles();
+	} else if (m_slots[2] && m_slots[2].IsIn(point)) {
+		m_nCount[0] += m_slots[2].m_item->GetExtra();
+		m_slots[2].Clear();
+	} else if (m_slots[3] && m_slots[3].IsIn(point)) {
+		m_nCount[1] += m_slots[3].m_item->GetExtra();
+		m_slots[3].Clear();
+	} else if (m_slots[4] && m_slots[4].IsIn(point)) {
+		m_nCount[0] += m_slots[4].m_item->GetExtra();
+		m_slots[4].Clear();
+	} else if (m_slots[5] && m_slots[5].IsIn(point)) {
+		m_nCount[1] += m_slots[5].m_item->GetExtra();
+		m_slots[5].Clear();
 	}
-	else
-	if( PtInRect(&m_Rect[2], point) && m_pItemElem[2] )
-	{
-		m_nCount[0] += m_pItemElem[2]->GetExtra();
-		m_pItemElem[2]->SetExtra( 0 );
-		m_pItemElem[2] = NULL;
-	}
-	else
-	if( PtInRect(&m_Rect[3], point) && m_pItemElem[3]  )
-	{
-		m_nCount[1] += m_pItemElem[3]->GetExtra();
-		m_pItemElem[3]->SetExtra( 0 );
-		m_pItemElem[3] = NULL;
-	}
-	else
-	if( PtInRect(&m_Rect[4], point) && m_pItemElem[4]  )
-	{
-		m_nCount[0] += m_pItemElem[4]->GetExtra();
-		m_pItemElem[4]->SetExtra( 0 );
-		m_pItemElem[4] = NULL;
-	}
-	else
-	if( PtInRect(&m_Rect[5], point) && m_pItemElem[5]  )
-	{
-		m_nCount[1] += m_pItemElem[5]->GetExtra();
-		m_pItemElem[5]->SetExtra( 0 );
-		m_pItemElem[5] = NULL;
-	}
-		
-		
 }
 
 

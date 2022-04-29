@@ -50,7 +50,7 @@ public:
 	CTexture*		GetTexture();						
 	int				GetCost();							// 가격을 얻는다.
 	void			SetExtra( int nExtra );			// 확장 데이타를 세팅 
-	int				GetExtra();							// 확장 데이타를 얻기 
+	[[nodiscard]] int GetExtra() const noexcept;							// 확장 데이타를 얻기 
 	DWORD			GetChipCost();
 
 	void	SetSerialNumber( void );
@@ -63,7 +63,7 @@ inline void CItemBase::SetExtra( int nExtra )
 	m_nExtra = nExtra;
 }
 
-inline int CItemBase::GetExtra()
+inline int CItemBase::GetExtra() const noexcept
 {
 	return m_nExtra;
 }
@@ -192,10 +192,11 @@ public:
 	virtual	void			Empty();
 	ItemProp*	GetProp()	{	return prj.GetItemProp( m_dwItemId );	}
 	int			GetAttrOption();		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
-	int			GetAbilityOption() { return m_nAbilityOption; }
+	[[nodiscard]] int GetAbilityOption() const noexcept { return m_nAbilityOption; }
 	int			GetItemResist( void ) const;
 	int			GetResistAbilityOption( void ) const;
-	int*		GetAbilityOptionPtr() { return &m_nAbilityOption; }
+	int * GetAbilityOptionPtr() { return &m_nAbilityOption; }
+	const int * GetAbilityOptionPtr() const noexcept { return &m_nAbilityOption; }
 	void		SetAbilityOption( int nAbilityOption ) { m_nAbilityOption = nAbilityOption; }
 	int			GetGold();
 

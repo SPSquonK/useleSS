@@ -1,23 +1,15 @@
 #pragma once
 
+#include "WndComponentSlots.h"
+
 class CPiercingMessageBox;
 
 class CWndPiercing final : public CWndNeuz {
 public:
-	struct Slot {
-		CItemElem * m_item = nullptr;
-		CRect m_rect = CRect();
-
-		[[nodiscard]] constexpr operator bool() const noexcept { return m_item; }
-		[[nodiscard]] bool IsIn(const CPoint point) const { return PtInRect(&m_rect, point); }
-		void Clear();
-		void Set(CItemElem * item);
-	};
-
 	CSfx * m_pSfx = nullptr;
 	CPiercingMessageBox * m_pPiercingMessageBox = nullptr;
 
-	std::array<Slot, 3> m_slots;
+	CWndComponentSlots<3> m_slots;
 	
 	CWndPiercing(); 
 	~CWndPiercing(); 
@@ -37,7 +29,7 @@ class CPiercingMessageBox final : public CWndMessageBox {
 public:
 	std::array<OBJID, 3> m_Objid;
 
-	explicit CPiercingMessageBox(const std::array<CWndPiercing::Slot, 3> & slots);
+	explicit CPiercingMessageBox(const std::array<CWndComponentSlot, 3> & slots);
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };

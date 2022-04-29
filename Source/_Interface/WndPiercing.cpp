@@ -10,7 +10,7 @@
 // CPiercingMessageBox
 //////////////////////////////////////////////////////////////////////////////
 
-CPiercingMessageBox::CPiercingMessageBox(const std::array<CWndPiercing::Slot, 3> & slots) {
+CPiercingMessageBox::CPiercingMessageBox(const std::array<CWndComponentSlot, 3> & slots) {
 	m_Objid[0] = slots[0].m_item->m_dwObjId;
 	m_Objid[1] = slots[1].m_item->m_dwObjId;
 	m_Objid[2] = slots[2] ? slots[2].m_item->m_dwObjId : NULL_ID;
@@ -54,23 +54,8 @@ BOOL CPiercingMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 // CWndPiercing
 //////////////////////////////////////////////////////////////////////////////
 
-void CWndPiercing::Slot::Clear() {
-	if (m_item) {
-		m_item->SetExtra(0);
-		m_item = nullptr;
-	}
-}
-
-void CWndPiercing::Slot::Set(CItemElem * item) {
-	if (m_item) m_item->SetExtra(0);
-	m_item = item;
-	m_item->SetExtra(1);
-}
-
 CWndPiercing::CWndPiercing() {
 	SetPutRegInfo(FALSE);
-
-	m_slots.fill(Slot{ });
 }
 
 CWndPiercing::~CWndPiercing() {
@@ -80,31 +65,7 @@ CWndPiercing::~CWndPiercing() {
 }
 
 void CWndPiercing::OnDraw(C2DRender * p2DRender) {
-	for (auto & slot : m_slots) {
-		CItemElem * const pItemElem = slot.m_item;
-		const CRect rect = slot.m_rect;
-
-		if (pItemElem && pItemElem->GetTexture()) {
-			pItemElem->GetTexture()->Render(p2DRender, rect.TopLeft(), 255);
-
-			if (pItemElem->m_nItemNum > 1) {
-				TCHAR szTemp[32];
-				_stprintf(szTemp, "%d", pItemElem->GetExtra());
-				p2DRender->TextOut(rect.right - 11, rect.bottom - 11, szTemp, 0xff1010ff);
-			}
-
-			//
-			CRect hitrect = rect;
-			CPoint point = GetMousePoint();
-			if (rect.PtInRect(point)) {
-				CPoint point2 = point;
-				ClientToScreen(&point2);
-				ClientToScreen(&hitrect);
-
-				g_WndMng.PutToolTip_Item(pItemElem, point2, &hitrect);
-			}
-		}
-	}
+	m_slots.Draw(p2DRender, this);
 
 	CWndStatic * pWndFocusStatic = (CWndStatic *)GetDlgItem(WIDC_STATIC9);
 	if (m_slots[0]) {
@@ -137,16 +98,19 @@ void CWndPiercing::OnInitialUpdate()
 
 	Move( point );
 
-	m_slots[0].m_rect = GetWndCtrl(WIDC_STATIC5)->rect;
-	m_slots[1].m_rect = GetWndCtrl(WIDC_STATIC6)->rect;
-	m_slots[2].m_rect = GetWndCtrl(WIDC_STATIC7)->rect;
+	m_slots.SetRects({
+		GetWndCtrl(WIDC_STATIC5)->rect,
+		GetWndCtrl(WIDC_STATIC6)->rect,
+		GetWndCtrl(WIDC_STATIC7)->rect
+		});
 
 	CWndStatic* pGoldNum = (CWndStatic*) GetDlgItem( WIDC_STATIC9 );
 	pGoldNum->AddWndStyle( WSS_MONEY );
 	
 
-	if( g_pPlayer )
-		m_pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
+	if (g_pPlayer) {
+		m_pSfx = CreateSfx(g_Neuz.m_pd3dDevice, XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1);
+	}
 } 
 
 BOOL CWndPiercing::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
@@ -223,7 +187,7 @@ BOOL CWndPiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if (!m_slots[0] || !m_slots[1]) return FALSE;
 
 //		SAFE_DELETE( m_pPiercingMessageBox );
-			m_pPiercingMessageBox = new CPiercingMessageBox(m_slots);
+			m_pPiercingMessageBox = new CPiercingMessageBox(m_slots.values);
 			g_WndMng.OpenCustomBox("", m_pPiercingMessageBox, this);				
 			break;
 		case WIDC_CANCEL:
@@ -238,9 +202,7 @@ void CWndPiercing::OnDestroyChildWnd( CWndBase* pWndChild )
 }
 
 void CWndPiercing::OnDestroy() {
-	for (auto & slot : m_slots) {
-		slot.Clear();
-	}
+	m_slots.Clear();
 }
 
 void CWndPiercing::OnRButtonUp(UINT nFlags, CPoint point) {

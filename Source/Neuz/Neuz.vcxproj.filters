@@ -994,6 +994,9 @@
     <ClCompile Include="..\_AIInterface\ActionShip.cpp">
       <Filter>Source Files\_ObjSubClass\Action</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndComponentSlots.cpp">
+      <Filter>Source Files\_Interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h">
@@ -1849,6 +1852,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\SingleDst.h">
       <Filter>Source Files\_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndComponentSlots.h">
+      <Filter>Source Files\_Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
