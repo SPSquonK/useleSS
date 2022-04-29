@@ -91,9 +91,7 @@ class CWndAddFriend;
 class CWndCloseExistingConnection;
 class CWndMessageNote;
 class CWndMessengerNote;
-class CWndTextBook;
-class CWndTextScroll;
-class CWndTextLetter;
+class CWndTextFromItem;
 class CWndSelectVillage;
  
 #define REG_VERSION 1
@@ -514,18 +512,18 @@ public:
 	//	퀘스트 아이템 정보
 	CWndQuestItemInfo*	m_pQuestItemInfo;
 
-	void OpenQuestItemInfo(CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL);
-	void ChangeQuestItemInfo( CItemBase* pItemBase = NULL );
+	void OpenQuestItemInfo(CWndBase* pWndParent, CItemElem * pItemBase);
+	void ChangeQuestItemInfo(CItemElem * pItemBase);
 
-	CWndTextBook* m_pWndTextBook;
-	CWndTextScroll* m_pWndTextScroll;
-	CWndTextLetter* m_pWndTextLetter;
-	void OpenTextBook     ( CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL);
-	void OpenTextScroll   ( CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL);
-	void OpenTextLetter   ( CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL);
-	void ChangeTextBook   ( CItemBase* pItemBase = NULL );
-	void ChangeTextScroll ( CItemBase* pItemBase = NULL );
-	void ChangeTextLetter ( CItemBase* pItemBase = NULL );
+	CWndTextFromItem * m_pWndTextBook;
+	CWndTextFromItem * m_pWndTextScroll;
+	CWndTextFromItem * m_pWndTextLetter;
+	void OpenTextBook    (CWndBase* pWndParent, CItemElem * pItemBase);
+	void OpenTextScroll  (CWndBase* pWndParent, CItemElem * pItemBase);
+	void OpenTextLetter  (CWndBase* pWndParent, CItemElem * pItemBase);
+	void ChangeTextBook  (CItemElem * pItemBase);
+	void ChangeTextScroll(CItemElem * pItemBase);
+	void ChangeTextLetter(CItemElem * pItemBase);
 	// Field
 	CWndTaskBar*	m_pWndTaskBar;
 	CWndTaskMenu*	m_pWndMenu;

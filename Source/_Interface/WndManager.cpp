@@ -1849,45 +1849,44 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 	SAFE_DELETE( m_pWndTextScroll );
 	SAFE_DELETE( m_pWndTextLetter );
 }	
-void CWndMgr::OpenTextBook( CWndBase* pWndParent , CItemBase* pItemBase )
+void CWndMgr::OpenTextBook( CWndBase* pWndParent , CItemElem * pItemBase )
 {
 	SAFE_DELETE( m_pWndTextBook );
-	m_pWndTextBook = new CWndTextBook;
-	m_pWndTextBook->Initialize( pWndParent, pItemBase );
+	m_pWndTextBook = new CWndTextFromItem;
+	m_pWndTextBook->Initialize( pWndParent, pItemBase, APP_TEXT_BOOK );
 }
-void CWndMgr::OpenTextScroll( CWndBase* pWndParent, CItemBase* pItemBase )
+void CWndMgr::OpenTextScroll( CWndBase* pWndParent, CItemElem * pItemBase )
 {
 	SAFE_DELETE( m_pWndTextScroll );
-	m_pWndTextScroll = new CWndTextScroll;
-	m_pWndTextScroll->Initialize( pWndParent, pItemBase );
+	m_pWndTextScroll = new CWndTextFromItem;
+	m_pWndTextScroll->Initialize( pWndParent, pItemBase, APP_TEXT_SCROLL);
 }
-void CWndMgr::OpenTextLetter( CWndBase* pWndParent, CItemBase* pItemBase )
+void CWndMgr::OpenTextLetter( CWndBase* pWndParent, CItemElem * pItemBase )
 {
 	SAFE_DELETE( m_pWndTextLetter );
-	m_pWndTextLetter = new CWndTextLetter;
-	m_pWndTextLetter->Initialize( pWndParent, pItemBase );
+	m_pWndTextLetter = new CWndTextFromItem;
+	m_pWndTextLetter->Initialize( pWndParent, pItemBase, APP_TEXT_LETTER );
 }
-void CWndMgr::ChangeTextBook( CItemBase* pItemBase )
+void CWndMgr::ChangeTextBook(CItemElem * pItemBase )
 {
 	m_pWndTextBook->SetItemBase( pItemBase );
 }
-void CWndMgr::ChangeTextScroll( CItemBase* pItemBase )
+void CWndMgr::ChangeTextScroll(CItemElem * pItemBase )
 {
 	m_pWndTextScroll->SetItemBase( pItemBase );
 }
-void CWndMgr::ChangeTextLetter( CItemBase* pItemBase )
+void CWndMgr::ChangeTextLetter(CItemElem * pItemBase )
 {
 	m_pWndTextLetter->SetItemBase( pItemBase );
 }
-void CWndMgr::OpenQuestItemInfo(CWndBase* pWndParent, CItemBase *pItemBase)
+void CWndMgr::OpenQuestItemInfo(CWndBase* pWndParent, CItemElem * pItemBase)
 {
 	SAFE_DELETE(m_pQuestItemInfo);
 	m_pQuestItemInfo = new CWndQuestItemInfo;
 	m_pQuestItemInfo->Initialize(pWndParent, pItemBase);
 }
 
-void CWndMgr::ChangeQuestItemInfo(CItemBase * pItemBase)
-{
+void CWndMgr::ChangeQuestItemInfo(CItemElem * pItemBase) {
 	m_pQuestItemInfo->SetItemBase(pItemBase);
 }
 

@@ -1292,7 +1292,6 @@ public:
 	void			PutLvUpSkillName_2( DWORD dwSkill );
 	BOOL			IsRegionMove( DWORD dwOlgRegionAttr, DWORD dwRegionAttr );
 	DWORD			GetPKPVPRegionAttr();
-	CItemBase*		GetVendorItem();		
 	BOOL			IsAttackMode();
 	void			AddSkillPoint( int nPoint);
 	

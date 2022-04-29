@@ -10612,31 +10612,18 @@ void CWndStatus::OnMouseWndSurface( CPoint point )
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndQuestItemInfo::CWndQuestItemInfo() : m_pItemBase(NULL)
+BOOL CWndQuestItemInfo::Initialize( CWndBase* pWndParent, CItemElem * pItemBase )
 {
+	return Create( pItemBase, APP_QUESTITEM_INFO, pWndParent );
 }
-
-CWndQuestItemInfo::~CWndQuestItemInfo()
-{
-}
-
-BOOL CWndQuestItemInfo::Initialize( CWndBase* pWndParent, CItemBase* pItemBase )
-{
-	return Create( pItemBase, APP_QUESTITEM_INFO, pWndParent );//RUE;
-}
-BOOL CWndQuestItemInfo::Create( CItemBase* pItemBase, UINT nID, CWndBase* pWndParent )
+BOOL CWndQuestItemInfo::Create(CItemElem * pItemBase, UINT nID, CWndBase* pWndParent )
 {
 	m_pItemBase = pItemBase;
 	CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), nID, 0, m_Position, pWndParent );
-	((CWndEdit*)GetDlgItem( WIDC_EDIT1 ))->SetVisible( FALSE );
+	GetDlgItem( WIDC_EDIT1 )->SetVisible( FALSE );
 
 	MoveParentCenter();
 	return 1;
-}
-
-BOOL CWndQuestItemInfo::OnChildNotify(UINT message, UINT nID, LRESULT* pLResult)
-{
-	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
 void CWndQuestItemInfo::OnDraw(C2DRender* p2DRender)
@@ -10665,16 +10652,6 @@ void CWndQuestItemInfo::OnInitialUpdate()
 
 	if( pWndEdit )
 		pWndEdit->EnableWindow( FALSE );
-}
-
-BOOL CWndQuestItemInfo::OnCommand(UINT nID, DWORD dwMessage, CWndBase *pWndBase)
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-
-void CWndQuestItemInfo::OnSize(UINT nType, int cx, int cy)
-{
-	CWndNeuz::OnSize(nType, cx, cy);
 }
 
 void CWndQuestItemInfo::OnLButtonUp( UINT nFlags, CPoint point )

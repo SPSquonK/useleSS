@@ -131,25 +131,20 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////
 //  퀘스트 아이템 정보 창
 //
-class CWndQuestItemInfo : public CWndNeuz
-{
+class CWndQuestItemInfo final : public CWndNeuz {
 public:
-	CWndQuestItemInfo();
-	virtual ~CWndQuestItemInfo();
+	~CWndQuestItemInfo() override = default;
 
-	CItemBase*	m_pItemBase;
+	CItemElem * m_pItemBase = nullptr;
 	CPoint		m_Position;
 
-	inline void SetItemBase(CItemBase* pItemBase = NULL) { m_pItemBase = pItemBase; };
+	void SetItemBase(CItemElem * pItemBase) { m_pItemBase = pItemBase; }
 	
-	BOOL Create(CItemBase* pItemBase, UINT nID, CWndBase* pWndParent = NULL );
+	BOOL Create(CItemElem * pItemBase, UINT nID, CWndBase* pWndParent = NULL );
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
+	virtual BOOL Initialize( CWndBase* pWndParent = NULL, CItemElem * pItemBase = NULL); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };

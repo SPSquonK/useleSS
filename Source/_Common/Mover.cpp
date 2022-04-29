@@ -2098,11 +2098,11 @@ BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE n
 	return fSuccess;
 }
 
-void CMover::RemoveItem( BYTE nId, short nNum )
-{
-	CItemBase* pItemBase	= GetItemId( nId );
-	if( pItemBase )
-		UpdateItem( nId, UI_NUM, ( (CItemElem*)pItemBase )->m_nItemNum - nNum );
+void CMover::RemoveItem(BYTE nId, short nNum) {
+	CItemElem * pItemBase = GetItemId(nId);
+	if (pItemBase) {
+		UpdateItem(nId, UI_NUM, pItemBase->m_nItemNum - nNum);
+	}
 }
 
 // IK3로 삭제하기 예) IK3_CLOAK
@@ -2155,33 +2155,27 @@ void CMover::RemoveVendorItem( CHAR chTab, BYTE nId, short nNum )
 }
 #endif	// __WORLDSERVER
 
-void CMover::UpdateItemBank( int nSlot, BYTE nId, CHAR cParam, DWORD dwValue )
-{
-	CItemBase* pItemBase = GetItemBankId( nSlot, nId );
-	
-	if( pItemBase )
-	{
-		switch( cParam )
-		{
-		case UI_NUM:
+void CMover::UpdateItemBank(int nSlot, BYTE nId, CHAR cParam, DWORD dwValue) {
+	CItemElem * pItemBase = GetItemBankId(nSlot, nId);
+
+	if (pItemBase) {
+		switch (cParam) {
+			case UI_NUM:
 			{
-				if( dwValue == 0 ) 
-				{
-					RemoveItemBankId( nSlot, nId );
-				}
-				else
-				{
-					( (CItemElem*)pItemBase )->m_nItemNum	= (short)( dwValue );
+				if (dwValue == 0) {
+					RemoveItemBankId(nSlot, nId);
+				} else {
+					pItemBase->m_nItemNum = (short)(dwValue);
 				}
 				break;
 			}
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 #ifdef __WORLDSERVER
-	if( IsPlayer() )
-		( (CUser*)this )->AddUpdateBankItem( nSlot, nId, cParam, dwValue );
+	if (IsPlayer())
+		((CUser *)this)->AddUpdateBankItem(nSlot, nId, cParam, dwValue);
 #endif
 }
 
@@ -7807,11 +7801,6 @@ void CMover::ProcInstantGC()
 	}
 }
 #endif	// __WORLDSERVER
-
-CItemBase*	CMover::GetVendorItem()
-{
-	return NULL;
-}
 
 void CMover::AddSkillPoint( int nPoint )
 {

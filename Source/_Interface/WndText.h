@@ -1,5 +1,6 @@
-#ifndef __WNDTEXT__H
-#define __WNDTEXT__H
+#pragma once
+
+#include "resdata.h"
 
 class CWndTextQuest : public CWndMessageBox
 { 
@@ -10,63 +11,17 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-class CWndTextBook : public CWndNeuz 
-{ 
+class CWndTextFromItem final : public CWndNeuz { 
 public: 
-	CItemBase* m_pItemBase;
+	CItemElem * m_pItemBase = nullptr;
 
-	CWndTextBook(); 
-	~CWndTextBook(); 
+	void SetItemBase(CItemElem * pItemBase) { m_pItemBase = pItemBase; }
 
-	void SetItemBase( CItemBase* pItemBase );
+	BOOL Initialize(CWndBase * pWndParent, CItemElem * pItemBase, DWORD baseApp) {
+		m_pItemBase = pItemBase;
+		return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), baseApp, 0, CPoint(0, 0), pWndParent);
+	}
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+	void OnInitialUpdate() override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 }; 
-
-class CWndTextScroll : public CWndNeuz 
-{ 
-public: 
-	CItemBase* m_pItemBase;
-
-	CWndTextScroll(); 
-	~CWndTextScroll(); 
-
-	void SetItemBase( CItemBase* pItemBase );
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
-
-class CWndTextLetter : public CWndNeuz 
-{ 
-public: 
-	CItemBase* m_pItemBase;
-
-	CWndTextLetter(); 
-	~CWndTextLetter(); 
-
-	void SetItemBase( CItemBase* pItemBase );
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, CItemBase* pItemBase = NULL );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
-#endif
