@@ -53,8 +53,6 @@ public:
 
 	BOOL	CreateServer( DWORD dwcrc );
 	BOOL	JoinToServer( DWORD dwcrc, u_long uWaitingTime = 10000 );
-	BOOL	CreateServerE( DWORD dwcrc );
-	BOOL	JoinToServerE( DWORD dwcrc, u_long uWaitingTime = 10000 );
 
 	BOOL	Send( char* lpData, DWORD dwDataSize, DPID dpidTo );
 
@@ -197,11 +195,9 @@ BOOL CDPSock<T>::CloseIoWorker( void )
 			{
 				lphThread[i]	= m_listthread.front();
 				m_listthread.pop_front();
-				if( !chWindows9x() )
-					PostQueuedCompletionStatus( m_hCompletionPort, CLOSEIOWORKERMSG, TRUE, NULL );
+				PostQueuedCompletionStatus( m_hCompletionPort, CLOSEIOWORKERMSG, TRUE, NULL );
 			}
-			if( chWindows9x() )
-				WSASetEvent( m_hClose );
+
 			WaitForMultipleObjects( cbThread, lphThread, TRUE, INFINITE );
 			for( DWORD i = 0; i < cbThread; i++ ) {
 				CloseHandle( (HANDLE)lphThread[i] );
@@ -284,31 +280,6 @@ BOOL CDPSock<T>::CreateServer( DWORD dwcrc )
 	}
 
 template <class T>
-BOOL CDPSock<T>::CreateServerE( DWORD dwcrc )
-	{
-		Close();
-
-		CServerSockE<T>* pSock		= new CServerSockE<T>( dwcrc );
-
-		if( !pSock->Create( m_uPort ) )
-		{
-			SAFE_DELETE( pSock );
-			return FALSE;
-		}
-		pSock->StartServer( this );
-		if( !pSock->Listen() )
-		{
-			SAFE_DELETE( pSock );
-			return FALSE;
-		}
-		pSock->SetID( DPID_SERVERPLAYER );
-		m_pSock		= pSock;
-		m_fServer	= TRUE;
-
-		return TRUE;
-	}
-
-template <class T>
 BOOL CDPSock<T>::JoinToServer( DWORD dwcrc, u_long uWaitingTime )
 	{
 		Close();
@@ -343,49 +314,6 @@ BOOL CDPSock<T>::JoinToServer( DWORD dwcrc, u_long uWaitingTime )
 
 		PostQueuedCompletionStatus( m_hCompletionPort, NEWSOCKETMSG, (DWORD)pSock->GetHandle(), NULL );
 		m_fServer	= FALSE;
-		return TRUE;
-	}
-
-template <class T>
-BOOL CDPSock<T>::JoinToServerE( DWORD dwcrc, u_long uWaitingTime )
-	{
-		Close();
-
-		CClientSockE<T>* pSock	= new CClientSockE<T>( dwcrc );
-
-		if( !pSock->Create() )
-		{
-			SAFE_DELETE( pSock );
-			return FALSE;
-		}
-		
-		CreateEventWorker( (CClientSockE<T>*)pSock );
-		if( !pSock->Connect( m_lpAddr, m_uPort ) )
-		{
-			SAFE_DELETE( m_pSock );
-			return FALSE;
-		}
-
-		pSock->SetID( pSock->GetHandle() );
-		pSock->SetPeerID( DPID_SERVERPLAYER );
-		m_pSock		= pSock;
-
-		int zero	= 0;
-		setsockopt( pSock->GetHandle(), SOL_SOCKET, SO_SNDBUF, (char*)&zero, sizeof(zero) );
-		setsockopt( pSock->GetHandle(), SOL_SOCKET, SO_RCVBUF, (char*)&zero, sizeof(zero) );
-		
-		InterlockedIncrement( &pSock->m_l );
-		if( pSock->Recv() != 0 )
-		{
-			TRACE( "I/0 error %d\n", WSAGetLastError() );
-	//		if( pSock->m_l == 0 ) {
-				RemoveThread( pSock->m_hWorker );
-				CloseConnection( pSock->GetID() );
-				return FALSE;
-	//		}
-		}
-		m_fServer	= FALSE;
-
 		return TRUE;
 	}
 

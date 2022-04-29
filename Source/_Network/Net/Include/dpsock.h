@@ -66,13 +66,9 @@ public:
 #ifdef __CRC
 	BOOL	CreateServer( DWORD dwcrc );
 	BOOL	JoinToServer( DWORD dwcrc, u_long uWaitingTime = 10000 );
-	BOOL	CreateServerE( DWORD dwcrc );
-	BOOL	JoinToServerE( DWORD dwcrc, u_long uWaitingTime = 10000 );
 #else	// __CRC
 	BOOL	CreateServer( BUFFER_TYPE nBufferType );
 	BOOL	JoinToServer( BUFFER_TYPE nBufferType );
-	BOOL	CreateServerE( BUFFER_TYPE nBufferType );
-	BOOL	JoinToServerE( BUFFER_TYPE nBufferType );
 #endif	// __CRC
 	BOOL	Send( char* lpData, DWORD dwDataSize, DPID dpidTo );
 
