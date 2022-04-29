@@ -51,6 +51,8 @@ public:
 	
 	BOOL	InitializeConnection( LPVOID lpConnection, DWORD dwFlags );
 
+	BOOL	CreateServer( DWORD dwcrc );
+	BOOL	JoinToServer( DWORD dwcrc, u_long uWaitingTime = 10000 );
 	BOOL	CreateServerE( DWORD dwcrc );
 	BOOL	JoinToServerE( DWORD dwcrc, u_long uWaitingTime = 10000 );
 
@@ -195,8 +197,11 @@ BOOL CDPSock<T>::CloseIoWorker( void )
 			{
 				lphThread[i]	= m_listthread.front();
 				m_listthread.pop_front();
-				PostQueuedCompletionStatus( m_hCompletionPort, CLOSEIOWORKERMSG, TRUE, NULL );
+				if( !chWindows9x() )
+					PostQueuedCompletionStatus( m_hCompletionPort, CLOSEIOWORKERMSG, TRUE, NULL );
 			}
+			if( chWindows9x() )
+				WSASetEvent( m_hClose );
 			WaitForMultipleObjects( cbThread, lphThread, TRUE, INFINITE );
 			for( DWORD i = 0; i < cbThread; i++ ) {
 				CloseHandle( (HANDLE)lphThread[i] );
@@ -250,6 +255,35 @@ void CDPSock<T>::RemoveThread( HANDLE hThread )
 	}
 
 template <class T>
+BOOL CDPSock<T>::CreateServer( DWORD dwcrc )
+	{
+		Close();
+
+		CServerSock<T>* pSock	= new CServerSock<T>( dwcrc );
+
+		if( !pSock->Create( m_uPort ) )
+		{
+			SAFE_DELETE( pSock );
+			return FALSE;
+		}
+		CSystemInfo si;
+//		CreateIoWorker( si.dwNumberOfProcessors*2 );
+		CreateIoWorker( (u_long)0x01 );
+		pSock->StartServer( m_hCompletionPort, m_uIoWorker );
+
+		if( !pSock->Listen() )
+		{
+			SAFE_DELETE( pSock );
+			return FALSE;
+		}
+		pSock->SetID( DPID_SERVERPLAYER );
+		m_pSock		= pSock;
+		m_fServer	= TRUE;
+
+		return TRUE;
+	}
+
+template <class T>
 BOOL CDPSock<T>::CreateServerE( DWORD dwcrc )
 	{
 		Close();
@@ -271,6 +305,44 @@ BOOL CDPSock<T>::CreateServerE( DWORD dwcrc )
 		m_pSock		= pSock;
 		m_fServer	= TRUE;
 
+		return TRUE;
+	}
+
+template <class T>
+BOOL CDPSock<T>::JoinToServer( DWORD dwcrc, u_long uWaitingTime )
+	{
+		Close();
+
+		CClientSock<T>* pSock	= new CClientSock<T>( dwcrc );
+
+		if( !pSock->Create() )
+		{
+			SAFE_DELETE( pSock );
+			return FALSE;
+		}
+		CreateIoWorker( (u_long)0x01 );
+		if( !CreateIoCompletionPort( (HANDLE)pSock->GetHandle(), m_hCompletionPort, (DWORD)( pSock->GetHandle() ),  0 ) )
+		{
+			TRACE( "Can't create completion port with error %d\n", WSAGetLastError() );
+			SAFE_DELETE( pSock );
+			return FALSE;
+		}
+		if( !pSock->Connect( m_lpAddr, m_uPort ) )
+		{
+			SAFE_DELETE( pSock );
+			return FALSE;
+		}
+
+		pSock->SetID( pSock->GetHandle() );
+		pSock->SetPeerID( DPID_SERVERPLAYER );
+		m_pSock		= pSock;
+
+		int zero	= 0;
+		setsockopt( pSock->GetHandle(), SOL_SOCKET, SO_SNDBUF, (char *)&zero, sizeof(zero) );
+		setsockopt( pSock->GetHandle(), SOL_SOCKET, SO_RCVBUF, (char *)&zero, sizeof(zero) );
+
+		PostQueuedCompletionStatus( m_hCompletionPort, NEWSOCKETMSG, (DWORD)pSock->GetHandle(), NULL );
+		m_fServer	= FALSE;
 		return TRUE;
 	}
 
