@@ -1,24 +1,23 @@
-#ifndef __WNDPIERCING__H
-#define __WNDPIERCING__H
+#pragma once
 
-class CPiercingMessageBox : public CWndMessageBox
-{ 
-public: 
-	CPiercingMessageBox() {};
-	~CPiercingMessageBox() {};
-	OBJID m_Objid[3];
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-}; 
+class CPiercingMessageBox;
 
-class CWndPiercing : public CWndNeuz 
-{
-public: 
-	CSfx*      m_pSfx;
-	CItemElem* m_pItemElem[3];
-	CRect      m_Rect[3];
-	CPiercingMessageBox* m_pPiercingMessageBox;
+class CWndPiercing final : public CWndNeuz {
+public:
+	struct Slot {
+		CItemElem * m_item = nullptr;
+		CRect m_rect = CRect();
+
+		[[nodiscard]] constexpr operator bool() const noexcept { return m_item; }
+		[[nodiscard]] bool IsIn(const CPoint point) const { return PtInRect(&m_rect, point); }
+		void Clear();
+		void Set(CItemElem * item);
+	};
+
+	CSfx * m_pSfx = nullptr;
+	CPiercingMessageBox * m_pPiercingMessageBox = nullptr;
+
+	std::array<Slot, 3> m_slots;
 	
 	CWndPiercing(); 
 	~CWndPiercing(); 
@@ -29,13 +28,16 @@ public:
 	virtual BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void	OnDraw( C2DRender* p2DRender ); 
 	virtual	void	OnInitialUpdate(); 
-	virtual BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void	OnSize( UINT nType, int cx, int cy ); 
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void	OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void	OnDestroyChildWnd( CWndBase* pWndChild );
 	virtual	void	OnDestroy( void );
 	virtual void	OnRButtonUp( UINT nFlags, CPoint point );
 }; 
 
-#endif
+class CPiercingMessageBox final : public CWndMessageBox {
+public:
+	std::array<OBJID, 3> m_Objid;
+
+	explicit CPiercingMessageBox(const std::array<CWndPiercing::Slot, 3> & slots);
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+};

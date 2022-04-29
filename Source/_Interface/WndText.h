@@ -5,7 +5,7 @@
 class CWndTextQuest : public CWndMessageBox
 { 
 public: 
-	CItemBase* m_pItemBase;
+	CItemElem * m_pItemBase;
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 

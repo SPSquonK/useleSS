@@ -813,7 +813,7 @@ template <class T> void CItemContainer<T>::Serialize( CAr & ar )
 class CItem : public CCtrl
 {
 public:
-	CItemBase* m_pItemBase;
+	CItemElem * m_pItemBase;
 
 //	Constructions
 	CItem();

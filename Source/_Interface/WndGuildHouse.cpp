@@ -446,42 +446,6 @@ void CWndGHTeleporter::OnLButtonDblClk( UINT nFlags, CPoint point)
 
 void CWndGHTeleporter::OnMouseWndSurface( CPoint point )
 {
-	CRect rect;
-	LPWNDCTRL wndCtrl = NULL;
-	if( m_cWndItems.empty( ) )
-		return;
-	
-// 	for(int i=0; i<MAX_VIS; i++)
-// 	{
-// 		wndCtrl = GetWndCtrl( m_nCtrlId[i] );
-// 		rect = wndCtrl->rect;
-// 		if( rect.PtInRect( point ) )
-// 		{
-// 			ClientToScreen( &point );
-// 			ClientToScreen( &rect );
-// 
-// 			DWORD dwIndex = pItem->GetPiercingItem( i );
-// 			if(  0 != dwIndex )	
-// 			{
-// 				if( NULL == m_pItemElem[ i ] )
-// 					m_pItemElem[ i ] = new CItemElem;
-// 			
-// 				m_pItemElem[ i ]->m_dwItemId = dwIndex;
-// 
-// 				time_t endTime = pItem->GetVisKeepTime( i );
-// 				//DWORD remainTime = endTime - timeGetTime( );
-// 				m_pItemElem[ i ]->m_dwKeepTime = endTime;
-// 			
-// 			}else
-// 			{
-// 				SAFE_DELETE( m_pItemElem[ i ] );
-// 				continue;
-// 			}
-// 
-// 			g_WndMng.PutToolTip_Item( (CItemBase*)m_pItemElem[i], point, &rect );
-// 		}
-// 
-// 	}
 }
 
 GH_Fntr_Info* CWndGHTeleporter::GetInstalledItem( int& serverSlot )

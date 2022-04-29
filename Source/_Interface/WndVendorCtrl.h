@@ -10,7 +10,7 @@ class CWndVendorCtrl : public CWndBase
 {
 	CTexture*		   m_pTex;
 	void	InterpretScript( CScanner & s, CPtrArray & ptrArray );
-	CItemBase*	m_pFocusItem;
+	CItemElem *	m_pFocusItem;
 	int		m_nCurSel;
 	int		m_nFontHeight;
 	DWORD	m_nWndColor;

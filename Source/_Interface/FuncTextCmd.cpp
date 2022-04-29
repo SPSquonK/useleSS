@@ -1515,32 +1515,19 @@ BOOL TextCmd_Piercing(CScanner & scanner, CPlayer_ * pUser) {
 	}
 #else // __WORLDSEVER
 #ifdef __CLIENT
-	BYTE bPierNum = scanner.GetNumber();
+	const int bPierNum = scanner.GetNumber();
+	if (bPierNum < 0 || bPierNum > MAX_PIERCING) return FALSE;
 
-	if( bPierNum < 0 || bPierNum > MAX_PIERCING )
-	{
-		return FALSE;
-	}	
+	const CWndPiercing * const pWndPiercing = (CWndPiercing*)g_WndMng.GetWndBase(APP_PIERCING);
+	if (!pWndPiercing) return FALSE;
 
-	CWndPiercing* pWndPiercing = (CWndPiercing*)g_WndMng.GetWndBase(APP_PIERCING);
-	if( pWndPiercing )
-	{
-		if( pWndPiercing->m_pItemElem[0] )
-		{
-			DWORD dwObjId = pWndPiercing->m_pItemElem[0]->m_dwObjId;
-			char szSkillLevel[MAX_PATH];
-			sprintf( szSkillLevel, "/pier %d %d", dwObjId, bPierNum );
-			scanner.SetProg( szSkillLevel );		
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
-	else
-	{
-		return FALSE;
-	}
+	if (!pWndPiercing->m_slots[0]) return FALSE;
+
+	const DWORD dwObjId = pWndPiercing->m_slots[0].m_item->m_dwObjId;
+	char szSkillLevel[MAX_PATH];
+	sprintf(szSkillLevel, "/pier %d %d", dwObjId, bPierNum);
+	scanner.SetProg(szSkillLevel);
+
 #endif // __CLIENT
 #endif // __WORLDSERVER
 	return TRUE;

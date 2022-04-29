@@ -116,7 +116,7 @@ BOOL CWndRepairItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( pWndFrame->GetWndId() == APP_INVENTORY )
 			{
-				CItemBase* pItemBase	= g_pPlayer->GetItemId( lpShortcut->m_dwId );
+				CItemElem * pItemBase	= g_pPlayer->GetItemId( lpShortcut->m_dwId );
 				if( pItemBase )
 				{
 					if( g_pPlayer->m_Inventory.IsEquip( pItemBase->m_dwObjId ) == FALSE )
@@ -127,15 +127,14 @@ BOOL CWndRepairItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						ItemProp* pItemProp	= pItemBase->GetProp();
 						if( pItemProp )
 						{
-							if( pItemProp->dwItemKind2 >= IK2_WEAPON_HAND && pItemProp->dwItemKind2 <= IK2_ARMORETC && ((CItemElem*)pItemBase)->m_nRepair < pItemProp->nMaxRepair )
+							if( pItemProp->dwItemKind2 >= IK2_WEAPON_HAND && pItemProp->dwItemKind2 <= IK2_ARMORETC && pItemBase->m_nRepair < pItemProp->nMaxRepair )
 							{
-								CItemElem* pItemElem	= (CItemElem*)pItemBase;
-								if( pItemElem->m_nHitPoint < 0 )
-									pItemElem->m_nHitPoint = 0;
+								if(pItemBase->m_nHitPoint < 0 )
+									pItemBase->m_nHitPoint = 0;
 
-								if( pItemElem->m_nHitPoint < (int)( pItemProp->dwEndurance ) )
+								if(pItemBase->m_nHitPoint < (int)( pItemProp->dwEndurance ) )
 								{
-									int nRepair	= 100 - ( ( pItemElem->m_nHitPoint * 100 ) / pItemProp->dwEndurance );
+									int nRepair	= 100 - ( (pItemBase->m_nHitPoint * 100 ) / pItemProp->dwEndurance );
 									DWORD dwSumCost = m_dwCost + nRepair * ( pItemProp->dwCost / 1000 + 1 );
 									if( g_pPlayer->GetGold() >= (int)( dwSumCost ) )
 									{
@@ -144,13 +143,13 @@ BOOL CWndRepairItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 										sprintf( szCost, "%-d", m_dwCost );
 										pWndStaticCost->SetTitle( szCost );
 										int iIndex	= lpShortcut->m_dwData - 100;
-										m_adwIdRepair[iIndex]	= pItemElem->m_dwObjId;
-										pItemElem->m_bRepair	= TRUE;
+										m_adwIdRepair[iIndex]	= pItemBase->m_dwObjId;
+										pItemBase->m_bRepair	= TRUE;
 									}
 									else
 									{
 										// 페냐가 부족하여 수리를 할수 없습니다.
-										g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_NOTENOUGHPENYA), NULL, prj.GetTextColor( TID_GAME_REPAIR_NOTENOUGHPENYA ) );
+										g_WndMng.PutString(TID_GAME_REPAIR_NOTENOUGHPENYA);
 									}									
 								}
 								else

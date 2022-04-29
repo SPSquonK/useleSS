@@ -186,7 +186,7 @@ public:
 	void UpdateParts();
 	CModelObject* GetModel() { return m_pModel; }
 	void BaseMouseCursor();
-	void RunUpgrade( CItemBase* pItem );
+	void RunUpgrade( CItemElem * pItem );
 	void SetEnchantCursor();
 	
 	CSfx*		m_pSfxUpgrade;

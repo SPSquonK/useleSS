@@ -8,7 +8,7 @@ class CItemElem;
 class CWndGuildMeritCtrl : public CWndBase
 {
 	void	InterpretScript( CScanner & s, CPtrArray & ptrArray );
-	CItemBase*	m_pFocusItem;
+	CItemElem *	m_pFocusItem;
 	int		m_nCurSel;
 	int		m_nFontHeight;
 	DWORD	m_nWndColor;

@@ -15,17 +15,6 @@
   CtrlId : WIDC_CANCEL - Button
 */
 
-CWndVendorBuy::CWndVendorBuy( CItemBase* pItemBase, int iIndex )
-{
-	m_pItemBase		= pItemBase;
-	m_iIndex	= iIndex;
-}
-
-CWndVendorBuy::~CWndVendorBuy()
-{
-
-} 
-
 void CWndVendorBuy::OnDraw( C2DRender* p2DRender )
 {
 
@@ -68,26 +57,6 @@ void CWndVendorBuy::OnInitialUpdate()
 BOOL CWndVendorBuy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOREX_BUY, 0, CPoint( 0, 0 ), pWndParent );
-}
-
-BOOL CWndVendorBuy::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-
-void CWndVendorBuy::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-
-void CWndVendorBuy::OnLButtonUp( UINT nFlags, CPoint point )
-{
-
-}
-
-void CWndVendorBuy::OnLButtonDown( UINT nFlags, CPoint point )
-{
-
 }
 
 BOOL CWndVendorBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )

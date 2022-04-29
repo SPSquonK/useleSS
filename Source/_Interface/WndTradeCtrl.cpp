@@ -123,21 +123,13 @@ BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	}
 	else
 	{
-		CItemBase* pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( pItemBase ) 
 		{
-//			ItemProp* pItemProp = pItemBase->GetProp();
-			CItemElem* pItemElem = (CItemElem*)pItemBase;
-			if( pItemElem->IsFlag( CItemElem::expired ) )
+			if(pItemBase->IsFlag( CItemElem::expired ) )
 				return FALSE;
-/*
-			if(pItemProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet) //»ç¸ÁÇÑ ÆêÀº °Å·¡ ºÒ°¡
-			{
-				if(pItemElem->m_pPet->GetLife() <= 0)
-					return FALSE;
-			}
-*/
-			if( ( (CItemElem*)pItemBase )->m_nItemNum > 1 )
+
+			if(pItemBase->m_nItemNum > 1 )
 			{
 				for( int i = 0; i < MAX_TRADE; i++ )
 				{
@@ -147,7 +139,7 @@ BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					if( rect.PtInRect( point ) && m_pMover->m_vtInfo.GetItem( i ) == NULL )
 					{
 						pShortcut->m_dwData = i + 100;
-						CWndBase* pParent = (CWndBase*)GetParentWnd();
+						CWndBase* pParent = GetParentWnd();
 						pParent->OnChildNotify( WIN_ITEMDROP, m_nIdWnd, (LRESULT*)pShortcut ); 
 					}
 				}

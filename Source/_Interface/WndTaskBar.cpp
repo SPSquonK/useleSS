@@ -337,17 +337,15 @@ void CWndTaskBar::Serialize( CAr & ar )
 					m_aSlotApplet[nIndex].Empty();
 				}
 			}
-#ifdef __CLIENT
 			else if( m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_ITEM )
 			{
 				if( g_pPlayer )
 				{
-					CItemBase* pItemBase	= g_pPlayer->GetItemId( m_aSlotApplet[nIndex].m_dwId );
+					CItemElem * pItemBase	= g_pPlayer->GetItemId( m_aSlotApplet[nIndex].m_dwId );
 					if( pItemBase && pItemBase->GetProp()->dwPackMax > 1 )	// 병합 가능한 아이템이면?
 						m_aSlotApplet[nIndex].m_dwItemId	= pItemBase->m_dwItemId;
 				}
 			}
-#endif	// __CLIENT
 		}
 		ar >> nCount;	// slot item count
 		int nIndex2;
@@ -358,17 +356,15 @@ void CWndTaskBar::Serialize( CAr & ar )
 			ar >> m_aSlotItem[nIndex][nIndex2].m_dwIndex >> m_aSlotItem[nIndex][nIndex2].m_dwUserId >> m_aSlotItem[nIndex][nIndex2].m_dwData;
 			if( m_aSlotItem[nIndex][nIndex2].m_dwShortcut == SHORTCUT_CHAT )
 				ar.ReadString( m_aSlotItem[nIndex][nIndex2].m_szString, MAX_SHORTCUT_STRING );
-#ifdef __CLIENT
 			else if( m_aSlotItem[nIndex][nIndex2].m_dwShortcut == SHORTCUT_ITEM )
 			{
 				if( g_pPlayer )
 				{
-					CItemBase* pItemBase	= g_pPlayer->GetItemId( m_aSlotItem[nIndex][nIndex2].m_dwId );
+					CItemElem * pItemBase	= g_pPlayer->GetItemId( m_aSlotItem[nIndex][nIndex2].m_dwId );
 					if( pItemBase && pItemBase->GetProp()->dwPackMax > 1 )	// 병합 가능한 아이템이면?
 						m_aSlotItem[nIndex][nIndex2].m_dwItemId	= pItemBase->m_dwItemId;
 				}
 			}
-#endif	// __CLIENT
 			m_aSlotItem[nIndex][nIndex2].m_dwIndex = nIndex2;
 			SetTaskBarTexture( &m_aSlotItem[nIndex][nIndex2] );
 		}
@@ -408,8 +404,7 @@ void CWndTaskBar::SetTaskBarTexture( LPSHORTCUT pShortcut )
 	}
 	else if( pShortcut->m_dwShortcut == SHORTCUT_ITEM )
 	{
-		CItemBase* pItemBase;
-		pItemBase	= g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( pItemBase )
 			pShortcut->m_pTexture	= pItemBase->GetTexture();
 	}
@@ -816,8 +811,8 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 				p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
 			if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
 			{
-				CItemBase* pItemBase = g_pPlayer->GetItemId( lpShortcut->m_dwId );
-				CItemElem* pItemElem = (CItemElem*)pItemBase;
+				CItemElem * pItemElem = g_pPlayer->GetItemId( lpShortcut->m_dwId );
+
 				if( pItemElem )
 				{
 					if( pItemElem->GetProp()->dwPackMax > 1 )
@@ -915,21 +910,21 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 				p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
 			if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
 			{
-				CItemBase* pItemBase = g_pPlayer->GetItemId( lpShortcut->m_dwId );
-				CItemElem* pItemElem = (CItemElem*)pItemBase;
-				if( pItemElem  )
+				CItemElem * pItemBase = g_pPlayer->GetItemId( lpShortcut->m_dwId );
+
+				if(pItemBase)
 				{
-					if( pItemElem->GetProp()->dwPackMax > 1 )
+					if(pItemBase->GetProp()->dwPackMax > 1 )
 					{
 						TCHAR szTemp[ 32 ];
-						_stprintf( szTemp, "%d", g_pPlayer?g_pPlayer->m_Inventory.GetItemCount( pItemElem->m_dwItemId ): 0 );
+						_stprintf( szTemp, "%d", g_pPlayer?g_pPlayer->m_Inventory.GetItemCount(pItemBase->m_dwItemId ): 0 );
 						CSize size = m_p2DRender->m_pFont->GetTextExtent( szTemp );
 						p2DRender->TextOut( point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff );
 						p2DRender->TextOut( point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0 );
 					}
 				}
 
-				DWORD dwGroup = g_pPlayer->m_cooltimeMgr.GetGroup( pItemElem->GetProp() );
+				DWORD dwGroup = g_pPlayer->m_cooltimeMgr.GetGroup(pItemBase->GetProp() );
 				if( dwGroup )
 				{
 					DWORD dwEnd = g_pPlayer->m_cooltimeMgr.GetTime( dwGroup );		// 이벤트 종료 시각 
@@ -1071,8 +1066,7 @@ void CWndTaskBar::UpdateItem()
 		{
 			if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
 			{
-				CItemBase* pItemBase = g_pPlayer->GetItemId( lpShortcut->m_dwId );
-				CItemElem* pItemElem = (CItemElem*)pItemBase;
+				CItemElem * pItemElem = g_pPlayer->GetItemId( lpShortcut->m_dwId );
 
 				if( pItemElem )
 				{
@@ -1275,28 +1269,6 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 }
 BOOL CWndTaskBar::RemoveDeleteObj()
 {
-	/*
-	for( int i = 0; i < m_awndShortCut.GetSize(); i++ )
-	{
-		CWndButton* pWndButton = (CWndButton*)m_awndShortCut.GetAt( i );
-		if( pWndButton ) 
-		{
-			if( pWndButton->m_shortcut.m_dwShortcut == SHORTCUT_OBJECT )
-			{
-				CObj* pObj = (CObj*) pWndButton->m_shortcut.m_dwData;
-				if( IsValidObj( pObj ) == FALSE )
-					pWndButton->m_shortcut.m_dwData = 0;
-			}
-			else
-			if( pWndButton->m_shortcut.m_dwShortcut == SHORTCUT_ITEM )
-			{
-				CItemBase* pItemBase = (CItemBase*) pWndButton->m_shortcut.m_dwData;
-				if( pItemBase && pItemBase->IsEmpty() )
-					pWndButton->Destroy( TRUE );
-			}
-		}
-	}
-	*/
 	return TRUE;
 }
 void CWndTaskBar::SetItemSlot( int nSlot )
@@ -1596,7 +1568,7 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 
 	if( dwShortcut == SHORTCUT_ITEM )
 	{
-		CItemBase* pItemBase	= g_pPlayer->GetItemId( dwId );
+		CItemElem * pItemBase	= g_pPlayer->GetItemId( dwId );
 		if( pShortcut && pItemBase && pItemBase->GetProp()->dwPackMax > 1 )	// 병합 가능한 아이템이면?
 			pShortcut->m_dwItemId	= pItemBase->m_dwItemId;
 	}
@@ -2352,12 +2324,11 @@ BOOL CWndTaskBar::Process( void )
 						LPSHORTCUT lpShortcut = &m_paSlotItem[ i ] ;
 						if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
 						{
-							CItemBase* pItemBase = g_pPlayer->GetItemId( lpShortcut->m_dwId );
-							if( pItemBase )
-							{
-								int nPart = pItemBase->GetProp()->dwParts;
-								if( nPart != -1 )
-									g_bSlotSwitchAboutEquipItem[ i ] = TRUE;
+							if (const ItemProp * props = g_pPlayer->GetItemIdProp(lpShortcut->m_dwId)) {
+								const int nPart = props->dwParts;
+								if (nPart != -1) {
+									g_bSlotSwitchAboutEquipItem[i] = TRUE;
+								}
 							}
 						}
 						g_WndMng.ObjectExecutor( lpShortcut );	

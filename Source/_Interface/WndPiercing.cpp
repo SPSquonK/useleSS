@@ -6,13 +6,16 @@
 #include "WndPiercing.h"
 #include "DPClient.h"
 
-extern	CGuildMng	g_GuildMng;
-
-
-
 ///////////////////////////////////////////////////////////////////////////
 // CPiercingMessageBox
 //////////////////////////////////////////////////////////////////////////////
+
+CPiercingMessageBox::CPiercingMessageBox(const std::array<CWndPiercing::Slot, 3> & slots) {
+	m_Objid[0] = slots[0].m_item->m_dwObjId;
+	m_Objid[1] = slots[1].m_item->m_dwObjId;
+	m_Objid[2] = slots[2] ? slots[2].m_item->m_dwObjId : NULL_ID;
+}
+
 BOOL CPiercingMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_PIERCING_ERROR_NOTICE), 
@@ -30,9 +33,9 @@ BOOL CPiercingMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			g_DPlay.SendPiercingSize( m_Objid[0], m_Objid[1], m_Objid[2] );
 			Destroy();
 
-			CWndPiercing* pWndPiercing = (CWndPiercing*)g_WndMng.GetWndBase( APP_PIERCING );
-			if( pWndPiercing )
+			if (CWndBase * pWndPiercing = g_WndMng.GetWndBase(APP_PIERCING)) {
 				pWndPiercing->Destroy();
+			}
 		}
 		break;
 	case IDCANCEL:
@@ -51,70 +54,70 @@ BOOL CPiercingMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 // CWndPiercing
 //////////////////////////////////////////////////////////////////////////////
 
-CWndPiercing::CWndPiercing()
-{
-	SetPutRegInfo( FALSE );
-
-	memset( &m_pItemElem, 0, sizeof(CItemBase*)*3 );
-	memset( &m_Rect, 0, sizeof(CRect)*3 );
-
-	m_pPiercingMessageBox = NULL;
-	m_pSfx = NULL;
+void CWndPiercing::Slot::Clear() {
+	if (m_item) {
+		m_item->SetExtra(0);
+		m_item = nullptr;
+	}
 }
 
-CWndPiercing::~CWndPiercing()
-{
-//	SAFE_DELETE( m_pPiercingMessageBox );
-	if( m_pSfx )
-	{
+void CWndPiercing::Slot::Set(CItemElem * item) {
+	if (m_item) m_item->SetExtra(0);
+	m_item = item;
+	m_item->SetExtra(1);
+}
+
+CWndPiercing::CWndPiercing() {
+	SetPutRegInfo(FALSE);
+
+	m_slots.fill(Slot{ });
+}
+
+CWndPiercing::~CWndPiercing() {
+	if (m_pSfx) {
 		m_pSfx->Delete();
-	}			
+	}
 }
 
-void CWndPiercing::OnDraw( C2DRender* p2DRender )
-{
-	for( int i=0; i<3; i++ )
-	{
-		if( m_pItemElem[i] && m_pItemElem[i]->GetTexture() )
-		{
-			m_pItemElem[i]->GetTexture()->Render( p2DRender, m_Rect[i].TopLeft(), 255 );
+void CWndPiercing::OnDraw(C2DRender * p2DRender) {
+	for (auto & slot : m_slots) {
+		CItemElem * const pItemElem = slot.m_item;
+		const CRect rect = slot.m_rect;
 
-			if( m_pItemElem[i]->m_nItemNum > 1 )
-			{
+		if (pItemElem && pItemElem->GetTexture()) {
+			pItemElem->GetTexture()->Render(p2DRender, rect.TopLeft(), 255);
+
+			if (pItemElem->m_nItemNum > 1) {
 				TCHAR szTemp[32];
-				_stprintf( szTemp, "%d", m_pItemElem[i]->GetExtra() );
-				p2DRender->TextOut( m_Rect[i].right-11,  m_Rect[i].bottom-11 , szTemp, 0xff1010ff );
+				_stprintf(szTemp, "%d", pItemElem->GetExtra());
+				p2DRender->TextOut(rect.right - 11, rect.bottom - 11, szTemp, 0xff1010ff);
 			}
-			//*
-			CRect hitrect = m_Rect[i];
+
+			//
+			CRect hitrect = rect;
 			CPoint point = GetMousePoint();
-			if( m_Rect[i].PtInRect( point ) )
-			{
+			if (rect.PtInRect(point)) {
 				CPoint point2 = point;
-				ClientToScreen( &point2 );
-				ClientToScreen( &hitrect );
-				
-				g_WndMng.PutToolTip_Item( m_pItemElem[i], point2, &hitrect );
+				ClientToScreen(&point2);
+				ClientToScreen(&hitrect);
+
+				g_WndMng.PutToolTip_Item(pItemElem, point2, &hitrect);
 			}
-			/**/
 		}
 	}
 
-	CWndStatic* pWndFocusStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC9);		
-	if( m_pItemElem[0] )
-	{
+	CWndStatic * pWndFocusStatic = (CWndStatic *)GetDlgItem(WIDC_STATIC9);
+	if (m_slots[0]) {
 		int nCost = 0;
-		ItemProp* pItemProp = m_pItemElem[0]->GetProp();
-		if( pItemProp )
+		ItemProp * pItemProp = m_slots[0].m_item->GetProp();
+		if (pItemProp)
 			nCost = 100000;
 
 		char buff[10] = { 0 };
-		pWndFocusStatic->SetTitle( itoa( nCost, buff, 10 ) );		
+		pWndFocusStatic->SetTitle(itoa(nCost, buff, 10));
+	} else {
+		pWndFocusStatic->SetTitle("0");
 	}
-	else
-	{
-		pWndFocusStatic->SetTitle( "0" );		
-	}	
 }
 
 void CWndPiercing::OnInitialUpdate()
@@ -134,13 +137,9 @@ void CWndPiercing::OnInitialUpdate()
 
 	Move( point );
 
-	LPWNDCTRL pCustom = NULL;
-	pCustom = GetWndCtrl( WIDC_STATIC5 );
-	m_Rect[0] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_STATIC6 );
-	m_Rect[1] = pCustom->rect;
-	pCustom = GetWndCtrl( WIDC_STATIC7 );
-	m_Rect[2] = pCustom->rect;
+	m_slots[0].m_rect = GetWndCtrl(WIDC_STATIC5)->rect;
+	m_slots[1].m_rect = GetWndCtrl(WIDC_STATIC6)->rect;
+	m_slots[2].m_rect = GetWndCtrl(WIDC_STATIC7)->rect;
 
 	CWndStatic* pGoldNum = (CWndStatic*) GetDlgItem( WIDC_STATIC9 );
 	pGoldNum->AddWndStyle( WSS_MONEY );
@@ -155,25 +154,6 @@ BOOL CWndPiercing::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PIERCING, 0, 0, pWndParent );
 }
 
-BOOL CWndPiercing::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-
-void CWndPiercing::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-
-void CWndPiercing::OnLButtonUp( UINT nFlags, CPoint point ) 
-{
-
-}
-
-void CWndPiercing::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
-
-}
 BOOL CWndPiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	CWndBase* pWndFrame =  pShortcut->m_pFromWnd->GetFrameWnd();
@@ -189,80 +169,46 @@ BOOL CWndPiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		return FALSE;
 	}
 		
-	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
-	if(pItemElem == NULL)
-		return FALSE;
+	CItemElem * pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
+	if (!pItemElem) return FALSE;
 
 	// 아이템( 방어구, 무기구 )
-	if( PtInRect(&m_Rect[0], point) )
-	{
-		
+	if (m_slots[0].IsIn(point)) {
 		
 		// 4개 초과로 피어싱 할수 없음
-		if( !pItemElem->IsPierceAble( NULL_ID, TRUE ) )
-		{
-			g_WndMng.PutString( prj.GetText(TID_PIERCING_POSSIBLE), NULL, prj.GetTextColor(TID_PIERCING_POSSIBLE) );
+		if (!pItemElem->IsPierceAble(NULL_ID, TRUE)) {
+			g_WndMng.PutString(TID_PIERCING_POSSIBLE);
 			return FALSE;
 		}
 		
-		if( pItemElem->GetProp()->dwItemRare == 0xffffffff )
-		{
-			g_WndMng.PutString( prj.GetText(TID_PIERCING_POSSIBLE_ITEM), NULL, prj.GetTextColor(TID_PIERCING_POSSIBLE_ITEM) );
+		if (pItemElem->GetProp()->dwItemRare == 0xffffffff) {
+			g_WndMng.PutString(TID_PIERCING_POSSIBLE_ITEM);
 			return FALSE;
 		}
 
-		if( m_pItemElem[0] )
-			m_pItemElem[0]->SetExtra( 0 );
-
-		pItemElem->SetExtra( 1 );
-		m_pItemElem[0]	= pItemElem;	
-		
-		if( m_pItemElem[1] )
-		{
-			m_pItemElem[1]->SetExtra( 0 );
-			m_pItemElem[1] = NULL;
-		}
-		if( m_pItemElem[2] )
-		{
-			m_pItemElem[2]->SetExtra( 0 );
-			m_pItemElem[2] = NULL;
-		}
-	}
-	else
-	if( PtInRect(&m_Rect[1], point) )
-	{
+		m_slots[0].Set(pItemElem);
+		m_slots[1].Clear();
+		m_slots[2].Clear();
+	} else if (m_slots[1].IsIn(point)) {
 		// 파워다이스 8, 10만 사용할수 있음
-		if( m_pItemElem[0] )
-		{
-			if( pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE && pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE_1 )
-			{
-				g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
+		
+		if (m_slots[0]) {
+			if (pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE && pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE_1) {
+				g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				return FALSE;
 			}
-			if( m_pItemElem[1] )
-				m_pItemElem[1]->SetExtra( 0 );
 
-			pItemElem->SetExtra( 1 );
-			m_pItemElem[1]	= pItemElem;
+			m_slots[1].Set(pItemElem);
 		}
-	}
-	else
-	if( PtInRect(&m_Rect[2], point) )
-	{
-		if( m_pItemElem[0] )
-		{
+	} else if (m_slots[2].IsIn(point)) {
+		if (m_slots[0]) {
 			// 보조아이템은 상용화 아이템만 검사
-			if( pItemElem->GetProp()->dwID != II_SYS_SYS_SCR_PIEPROT )
-			{
-				g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
+			if (pItemElem->GetProp()->dwID != II_SYS_SYS_SCR_PIEPROT) {
+				g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				return FALSE;
 			}
 
-			if( m_pItemElem[2] )
-				m_pItemElem[2]->SetExtra( 0 );
-			
-			pItemElem->SetExtra( 1 );
-			m_pItemElem[2]	= pItemElem;
+			m_slots[2].Set(pItemElem);
 		}
 	}		
 
@@ -274,27 +220,14 @@ BOOL CWndPiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	switch( nID )
 	{
 		case WIDC_OK:
-			{
-				if( !m_pItemElem[0] || !m_pItemElem[1] )
-					return FALSE;
+			if (!m_slots[0] || !m_slots[1]) return FALSE;
 
-//				SAFE_DELETE( m_pPiercingMessageBox );
-				m_pPiercingMessageBox = new CPiercingMessageBox;
-				m_pPiercingMessageBox->m_Objid[0] = m_pItemElem[0]->m_dwObjId;
-				m_pPiercingMessageBox->m_Objid[1] = m_pItemElem[1]->m_dwObjId;
-
-				if( m_pItemElem[2] )
-					m_pPiercingMessageBox->m_Objid[2] = m_pItemElem[2]->m_dwObjId;
-				else
-					m_pPiercingMessageBox->m_Objid[2] = NULL_ID;
-
-				g_WndMng.OpenCustomBox( "", m_pPiercingMessageBox, this );				
-			}
+//		SAFE_DELETE( m_pPiercingMessageBox );
+			m_pPiercingMessageBox = new CPiercingMessageBox(m_slots);
+			g_WndMng.OpenCustomBox("", m_pPiercingMessageBox, this);				
 			break;
 		case WIDC_CANCEL:
-			{
-				Destroy();
-			}
+			Destroy();
 			break;
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
@@ -304,43 +237,20 @@ void CWndPiercing::OnDestroyChildWnd( CWndBase* pWndChild )
 {
 }
 
-void CWndPiercing::OnDestroy( void )
-{
-	for( int i=0; i<3; i++ )
-	{
-		if( m_pItemElem[i] )
-			m_pItemElem[i]->SetExtra( 0 );
+void CWndPiercing::OnDestroy() {
+	for (auto & slot : m_slots) {
+		slot.Clear();
 	}
 }
 
-void CWndPiercing::OnRButtonUp( UINT nFlags, CPoint point )
-{
-	if( m_pItemElem[0] && PtInRect(&m_Rect[0], point) )
-	{
-		m_pItemElem[0]->SetExtra( 0 );
-		m_pItemElem[0] = NULL;
-
-		if( m_pItemElem[1] )
-		{
-			m_pItemElem[1]->SetExtra( 0 );
-			m_pItemElem[1] = NULL;
-		}
-		if( m_pItemElem[2] )
-		{
-			m_pItemElem[2]->SetExtra( 0 );
-			m_pItemElem[2] = NULL;
-		}
-	}
-	else
-	if( m_pItemElem[1] && PtInRect(&m_Rect[1], point) )
-	{
-		m_pItemElem[1]->SetExtra( 0 );
-		m_pItemElem[1] = NULL;
-	}
-	else
-	if( m_pItemElem[2] && PtInRect(&m_Rect[2], point) )
-	{
-		m_pItemElem[2]->SetExtra( 0 );
-		m_pItemElem[2] = NULL;
+void CWndPiercing::OnRButtonUp(UINT nFlags, CPoint point) {
+	if (m_slots[0] && m_slots[0].IsIn(point)) {
+		m_slots[0].Clear();
+		m_slots[1].Clear();
+		m_slots[2].Clear();
+	} else if (m_slots[1] && m_slots[1].IsIn(point)) {
+		m_slots[1].Clear();
+	} else if (m_slots[2] && m_slots[2].IsIn(point)) {
+		m_slots[2].Clear();
 	}
 }

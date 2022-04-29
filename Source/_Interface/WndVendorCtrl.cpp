@@ -239,7 +239,7 @@ BOOL CWndVendorCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	}
 	else
 	{
-		CItemBase* pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( pItemBase )
 		{
 			for( int i = 0; i < MAX_VENDOR_REVISION; i++ )
@@ -277,7 +277,7 @@ void CWndVendorCtrl::OnMouseMove( UINT nFlags, CPoint point )
 	CPoint pt( 3, 3 );
 	CRect rect;
 
-	CItemBase* pItemBase	= m_pFocusItem;
+	CItemElem * pItemBase	= m_pFocusItem;
 	if( IsUsingItem( pItemBase ) )
 	{
 		m_GlobalShortcut.m_pFromWnd		= this;
@@ -303,7 +303,7 @@ void CWndVendorCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 	if( nItem == -1 )
 		return;
 
-	CItemBase* pItemBase	= GetItem( nItem );
+	CItemElem * pItemBase	= GetItem( nItem );
 	if( pItemBase )
 	{
 		m_pFocusItem	= pItemBase;
@@ -318,7 +318,7 @@ void CWndVendorCtrl::OnLButtonUp( UINT nFlags, CPoint point )
 	int nItem	= HitTest( point );
 	if( nItem == -1 )
 		return;
-	CItemBase* pItemBase	= GetItem( nItem );
+	CItemElem * pItemBase	= GetItem( nItem );
 	if( pItemBase )
 	{
 		if( ( GetAsyncKeyState( VK_LCONTROL ) & 0x8000 ) )
@@ -335,7 +335,7 @@ void CWndVendorCtrl::OnRButtonUp( UINT nFlags, CPoint point )
 	if( nItem == -1 )
 		return;
 
-	CItemBase* pItemBase	= GetItem( nItem );
+	CItemElem * pItemBase	= GetItem( nItem );
 	if( pItemBase )
 	{
 		{
@@ -361,7 +361,7 @@ void CWndVendorCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 	if( nItem == -1 )
 		return;
 
-	CItemBase* pItemBase	= GetItem( nItem );
+	CItemElem * pItemBase	= GetItem( nItem );
 	if( pItemBase )
 	{
 		m_pFocusItem	= pItemBase;
@@ -372,7 +372,6 @@ void CWndVendorCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 			SAFE_DELETE( pWndVendor->m_pWndVendorBuy );
 			pWndVendor->m_pWndVendorBuy		= new CWndVendorBuy( pItemBase, nItem );
 			pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor, APP_VENDOR_BUY );
-//			pParent->OnChildNotify( WIN_DBLCLK, m_nIdWnd, (LRESULT*)m_pFocusItem );
 		}
 	}
 }

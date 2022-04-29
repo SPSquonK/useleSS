@@ -3,26 +3,21 @@
 
 #include "WndRegVend.h"
 
-class CWndVendorBuy : public CWndNeuz
+class CWndVendorBuy final : public CWndNeuz
 {
-	CItemBase*	m_pItemBase;
+	CItemElem *	m_pItemBase;
 	int	m_iIndex;
 public:
-	CWndVendorBuy( CItemBase* pItemBase, int iIndex );
-	~CWndVendorBuy();
+	CWndVendorBuy(CItemElem * pItemBase, int iIndex)
+		: m_pItemBase(pItemBase), m_iIndex(iIndex) {}
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual void OnSize( UINT nType, int cx, int cy );
-	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-	DWORD			m_dwFocus;
-	CPoint			m_pt[2];
-	BOOL	        m_bIsFirst;
-	CALC_DATA       m_Calc;
+
+	BOOL	        m_bIsFirst = FALSE;
+	CALC_DATA       m_Calc{ 0, '\0' };
 	virtual	void	OnChar(UINT nChar);
 	int				ProcessCalc( CALC_DATA calc, int num );
 };

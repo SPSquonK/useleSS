@@ -16,7 +16,7 @@ class CWndTradeCtrl : public CWndBase
 {
 	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
 
-	CItemBase*    m_pFocusItem;
+	CItemElem *    m_pFocusItem;
 	int           m_nCurSelect  ;
 	int           m_nFontHeight ;
 	DWORD         m_nWndColor   ;

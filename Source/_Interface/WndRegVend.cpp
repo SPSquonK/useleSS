@@ -28,12 +28,12 @@ CWndRegVend::~CWndRegVend()
 
 }
 
-void CWndRegVend::SetItem( int iIndex, CItemBase* pItemBase )
+void CWndRegVend::SetItem( int iIndex, CItemElem * pItemBase )
 {
 	CWndStatic* pStatic = (CWndStatic*)GetDlgItem(WIDC_SELLNUM);
 
 	char str[32]	= { 0, };
-	sprintf( str, "%d", ( (CItemElem*)pItemBase )->m_nItemNum );
+	sprintf( str, "%d", pItemBase->m_nItemNum );
 	pStatic->SetTitle( str );
 	m_dwFocus = 0;
 	
@@ -44,7 +44,7 @@ void CWndRegVend::SetItem( int iIndex, CItemBase* pItemBase )
 		sprintf( str, "%d", 0 );
 		pStatic->SetTitle( str );
 
-		if(( (CItemElem*)pItemBase )->m_nItemNum <= 1 )
+		if(pItemBase->m_nItemNum <= 1 )
 			m_dwFocus = 1;
 	}
 		
@@ -95,16 +95,6 @@ void CWndRegVend::OnInitialUpdate()
 BOOL CWndRegVend::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOREX_SELL, 0, CPoint( 0, 0 ), pWndParent );
-}
-
-BOOL CWndRegVend::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-
-void CWndRegVend::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
 }
 
 void CWndRegVend::OnLButtonUp( UINT nFlags, CPoint point )
@@ -295,11 +285,11 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		int nGold = g_pPlayer->GetGold();
 		for( int iv = 0 ; iv < MAX_VENDITEM ; ++iv )
 		{
-			CItemBase *pItemBase = g_pPlayer->m_vtInfo.GetItem( iv );
+			CItemElem *pItemBase = g_pPlayer->m_vtInfo.GetItem( iv );
 			if( pItemBase == NULL )
 				continue;
 
-			nGold += ((CItemElem*)pItemBase)->m_nCost * pItemBase->GetExtra();
+			nGold += pItemBase->m_nCost * pItemBase->GetExtra();
 		}					
 		int nOldGold = nGold;
 		//nGold += (nCost * nNum);

@@ -7329,7 +7329,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			PLAYSND( SND_INF_GROUNDDROP );
 			if( pShortcut->m_dwData == 0 )
 			{
-				g_WndMng.PutString( prj.GetText(TID_GAME_CANNOT_DROPMONEY), NULL, prj.GetTextColor(TID_GAME_CANNOT_DROPMONEY) );
+				g_WndMng.PutString(TID_GAME_CANNOT_DROPMONEY);
 				SetForbid( TRUE );
 				return FALSE;
 
@@ -7337,16 +7337,16 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			}
 			else
 			{
-				CItemBase* pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
+				CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 				if( pItemBase == NULL )
 					return FALSE;
 
-				if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && ( (CItemElem*)pItemBase )->m_idGuild != 0 )
+				if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && pItemBase->m_idGuild != 0 )
 					return FALSE;
 				
-				if( ((CItemElem*)pItemBase)->IsCharged() )
+				if( pItemBase->IsCharged() )
 				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_NOTDROP ), NULL, prj.GetTextColor( TID_GAME_NOTDROP ) );
+					g_WndMng.PutString(TID_GAME_NOTDROP);
 					return FALSE;
 				}
 
@@ -7359,7 +7359,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				CItemElem* pItemElem = (CItemElem*)pShortcut->m_dwData;
 				if( pItemElem->IsUndestructable() == TRUE )
 				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_ERROR_UNDESTRUCTABLE_ITEM ), NULL, prj.GetTextColor( TID_GAME_ERROR_UNDESTRUCTABLE_ITEM ) );
+					g_WndMng.PutString(TID_GAME_ERROR_UNDESTRUCTABLE_ITEM);
 					return FALSE;
 				}
 				

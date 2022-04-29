@@ -606,8 +606,7 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 		nIndex	= pItemCtrl->GetSelectedItem( 0 );
 	if( nIndex >= 0 )
 	{
-//		CItemBase* pItemBase	= pItemCtrl->m_pArrayItemBase[nIndex];
-		CItemBase* pItemBase	= pItemCtrl->GetItemFromArr( nIndex );
+		CItemElem * pItemBase	= pItemCtrl->GetItemFromArr( nIndex );
 		if( pItemBase && m_pMover )
 		{
 			LPCHARACTER lpCharacter = m_pMover->GetCharacter();
@@ -617,7 +616,7 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 				{
 					dwCost += pItemBase->GetCost();
 					dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
-					if(CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, (CItemElem*)pItemBase ))
+					if(CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, pItemBase ))
 						dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
 				} else if (lpCharacter->m_vendor.m_type == CVendor::Type::RedChip) {
 					dwCost += pItemBase->GetChipCost();
@@ -630,7 +629,7 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 
 	if( nIndex >= 0 )
 	{
-		CItemBase* pItemBase	= pItemCtrl->GetItemFromArr( nIndex );
+		CItemElem * pItemBase	= pItemCtrl->GetItemFromArr( nIndex );
 		if( pItemBase && pItemBase->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 			dwCost = PERIN_VALUE;
 	}

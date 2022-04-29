@@ -301,7 +301,7 @@ void CWndGuildMeritCtrl::OnMouseMove( UINT nFlags, CPoint point )
 	CPoint pt( 3, 3 );
 	CRect rect;
 
-	CItemBase* pItemBase	= m_pFocusItem;
+	CItemElem * pItemBase	= m_pFocusItem;
 	if( pItemBase && pItemBase->GetExtra() > 0 )
 	{
 		m_GlobalShortcut.m_pFromWnd		= this;

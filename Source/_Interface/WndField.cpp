@@ -12506,7 +12506,7 @@ BOOL CWndChangeClass2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 } 
 
 
-void CWndInventory::RunUpgrade( CItemBase* pItem )
+void CWndInventory::RunUpgrade( CItemElem * pItem )
 {
 	if( m_bIsUpgradeMode )
 	{
@@ -12514,7 +12514,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 
 		if( pItem == NULL || m_pUpgradeMaterialItem == NULL )
 		{
-			g_WndMng.PutString( prj.GetText( TID_UPGRADE_CANCLE ), NULL, prj.GetTextColor( TID_UPGRADE_CANCLE ) );
+			g_WndMng.PutString(TID_UPGRADE_CANCLE);
 			BaseMouseCursor();
 			return;
 		}
@@ -12526,7 +12526,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 
 		if( pItemProp->dwItemKind3 == IK3_SOCKETCARD || pItemProp->dwItemKind3 == IK3_SOCKETCARD2 )
 		{
-			if( !((CItemElem*)pItem)->IsPierceAble( pItemProp->dwItemKind3 ) )
+			if( !pItem->IsPierceAble( pItemProp->dwItemKind3 ) )
 			{
 				g_WndMng.PutString( prj.GetText( TID_PIERCING_POSSIBLE_ITEM ) );
 				BaseMouseCursor();
@@ -12534,16 +12534,16 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 			}
 			
 			int nCount = 0;
-			for( int j = 0; j < ( (CItemElem*)pItem )->GetPiercingSize(); j++ )
+			for( int j = 0; j < pItem->GetPiercingSize(); j++ )
 			{
-				if( ( (CItemElem*)pItem )->GetPiercingItem( j ) != 0 )
+				if(pItem->GetPiercingItem( j ) != 0 )
 					nCount++;
 			}
 
 			// 빈곳이 없으면 중단
-			if( nCount == ( (CItemElem*)pItem )->GetPiercingSize() )
+			if( nCount == pItem->GetPiercingSize() )
 			{
-				g_WndMng.PutString( prj.GetText(TID_PIERCING_ERROR_NOPIERCING), NULL, prj.GetTextColor(TID_PIERCING_ERROR_NOPIERCING));
+				g_WndMng.PutString(TID_PIERCING_ERROR_NOPIERCING);
 				BaseMouseCursor();
 				return;
 			}
@@ -12553,24 +12553,22 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 		{
 			if( !CItemElem::IsEleRefineryAble( pItem->GetProp()) )
 			{
-				g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 				BaseMouseCursor();
 				return;
 			}
 
-			CItemElem* pItemElem = (CItemElem*)pItem;
-
-			if( pItemElem->m_bItemResist != SAI79::NO_PROP && pItemElem->m_bItemResist != pItemProp->eItemType )
+			if(pItem->m_bItemResist != SAI79::NO_PROP && pItem->m_bItemResist != pItemProp->eItemType )
 			{
-				g_WndMng.PutString( prj.GetText( TID_UPGRADE_ERROR_TWOELEMENT ), NULL, prj.GetTextColor( TID_UPGRADE_ERROR_TWOELEMENT ) );
+				g_WndMng.PutString(TID_UPGRADE_ERROR_TWOELEMENT);
 				BaseMouseCursor();
 				return;
 			}
 
 			DWORD dwWantedCard	= 0;
-			DWORD dwItemAO	= pItemElem->m_nResistAbilityOption;
+			DWORD dwItemAO	= pItem->m_nResistAbilityOption;
 
-			switch( pItemProp->eItemType )
+			switch (pItemProp->eItemType)
 			{
 			case SAI79::FIRE:
 				dwWantedCard	= II_GEN_MAT_ELE_FLAME;	break;
@@ -12588,7 +12586,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 
 			if( pItemProp->dwID != dwWantedCard )
 			{
-				g_WndMng.PutString( prj.GetText( TID_UPGRADE_ERROR_WRONGUPLEVEL ), NULL, prj.GetTextColor( TID_UPGRADE_ERROR_WRONGUPLEVEL ) );
+				g_WndMng.PutString(TID_UPGRADE_ERROR_WRONGUPLEVEL);
 				BaseMouseCursor();
 				return;					
 			}
@@ -12600,7 +12598,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 			{
 				if(m_pWndRemoveJewelConfirm->m_pUpgradeItem->m_dwObjId == pItem->m_dwObjId)
 				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 					BaseMouseCursor();
 					return;
 				}
@@ -12613,7 +12611,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 				{
 					if(pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId)
 					{
-						g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 						BaseMouseCursor();
 						return;
 					}
@@ -12621,20 +12619,17 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 			
 				if(pItem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE)
 				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 					BaseMouseCursor();
 					return;
 				}
 			}
 			else if( !CItemElem::IsDiceRefineryAble( pItem->GetProp()) )				
 			{
-				g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 				BaseMouseCursor();
 				return;
 			}
-
-			CItemElem* pItemElem = (CItemElem*)pItem;
-
 		}
 		else
 		if( pItemProp->dwItemKind3 == IK3_RANDOM_SCROLL )
@@ -12642,7 +12637,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 			if( !( pItem->GetProp()->dwItemKind1 == IK1_WEAPON || pItem->GetProp()->dwItemKind2 == IK2_ARMOR || pItem->GetProp()->dwItemKind2 == IK2_ARMORETC ) )
 			{
 				BaseMouseCursor();
-				g_WndMng.PutString( prj.GetText( TID_GAME_RANDOMSCROLL_ERROR ), NULL, prj.GetTextColor( TID_GAME_RANDOMSCROLL_ERROR ) );			
+				g_WndMng.PutString(TID_GAME_RANDOMSCROLL_ERROR);
 				return;	
 			}
 		}
@@ -12657,14 +12652,14 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 		{
 			if(m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE || m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE_1)
 			{
-				if( ( static_cast<CItemElem*>( pItem ) )->IsCollector( TRUE ) || pItem->GetProp()->dwItemKind2 == IK2_JEWELRY )
+				if(pItem->IsCollector( TRUE ) || pItem->GetProp()->dwItemKind2 == IK2_JEWELRY )
 				{
 					m_pUpgradeItem = pItem;
 					m_dwEnchantWaitTime = g_tmCurrent + SEC(4);
 					return;
 				}
 
-				g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 				BaseMouseCursor();
 				return;			
 
@@ -12672,7 +12667,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 					
 				for(int i=0; i<5; i++)
 				{
-					if(((CItemElem*)pItem)->GetUltimatePiercingItem( i ) != 0)
+					if(pItem->GetUltimatePiercingItem( i ) != 0)
 						checkJewel = TRUE;
 				}
 				CWndSmeltJewel* pWndSmeltJewel = (CWndSmeltJewel*)g_WndMng.GetWndBase( APP_SMELT_JEWEL );
@@ -12680,7 +12675,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 				{
 					if(pWndSmeltJewel->m_pItemElem && pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId)
 					{
-						g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 						BaseMouseCursor();
 						return;
 					}
@@ -12689,14 +12684,14 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 				{
 					if(m_pWndRemoveJewelConfirm->m_pUpgradeItem->m_dwObjId == pItem->m_dwObjId)
 					{
-						g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 						BaseMouseCursor();
 						return;
 					}
 				}
 				if( pItem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE )
 				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 					BaseMouseCursor();
 					return;
 				}
@@ -12704,7 +12699,7 @@ void CWndInventory::RunUpgrade( CItemBase* pItem )
 				{
 					if(!checkJewel)
 					{
-						g_WndMng.PutString( prj.GetText( TID_GAME_NOTEQUALITEM ), NULL, prj.GetTextColor( TID_GAME_NOTEQUALITEM ) );
+						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 						BaseMouseCursor();
 						return;
 					}

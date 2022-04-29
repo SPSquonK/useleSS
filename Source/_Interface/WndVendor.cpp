@@ -230,39 +230,17 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			CWndBase* pWndFrame		= pShortcut->m_pFromWnd->GetFrameWnd();
 			if( pWndFrame->GetWndId() == APP_INVENTORY )
 			{
-				CItemBase* pItemBase	= m_pVendor->GetItemId( pShortcut->m_dwId );
+				CItemElem * pItemBase	= m_pVendor->GetItemId( pShortcut->m_dwId );
 				if( pItemBase )
 				{
 					if( pItemBase->IsQuest() )
 						return FALSE;
 
-					if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && ( (CItemElem*)pItemBase )->m_idGuild != 0 )
+					if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && pItemBase->m_idGuild != 0 )
 						return FALSE;
 
-//#if __VER >= 11 // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz	
-//					if( pItemBase->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
-//						return FALSE;	// 개인상점판매허용
-//#endif // __MA_VER11_05	// 케릭터 봉인 거래 기능 world,database,neuz
-
-//					ItemProp* pItemProp = pItemBase->GetProp();
-					CItemElem* pItemElem = (CItemElem*)pItemBase;
-					if( pItemElem->IsFlag( CItemElem::expired ) )
+					if(pItemBase->IsFlag( CItemElem::expired ) )
 						return TRUE;
-					/*
-					if(pItemProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet) //사망한 펫은 거래 불가
-					{
-						if(pItemElem->m_pPet->GetLife() <= 0)
-							return FALSE;
-					}
-					*/
-
-					/*
-					if( ((CItemElem*)pItemBase)->m_bCharged == 1 )
-					{
-						g_WndMng.PutString( prj.GetText( TID_GAME_NOTTRADE ), NULL, prj.GetTextColor( TID_GAME_NOTTRADE ) );
-						return FALSE;
-					}
-					*/
 
 					int iIndex	= pShortcut->m_dwData - 100;
 					if( 0 <= iIndex && iIndex < MAX_VENDITEM )						
@@ -299,11 +277,10 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 			for( int iv = 0 ; iv < MAX_VENDITEM ; ++iv )
 			{
-				CItemBase *pItemBase = g_pPlayer->m_vtInfo.GetItem( iv );
-				if( pItemBase == NULL )
-					continue;
+				CItemElem * pItemBase = g_pPlayer->m_vtInfo.GetItem( iv );
+				if (!pItemBase) continue;
 
-				nGold += ((CItemElem*)pItemBase)->m_nCost * pItemBase->GetExtra();
+				nGold += pItemBase->m_nCost * pItemBase->GetExtra();
 			}					
 			
 			if( nGold <= 0 || 2100000000 <= nGold )
@@ -401,22 +378,19 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			CItemBase	apItem_VT[MAX_VENDITEM];		/// vendor and trader share pointer array
 			ZeroMemory( apItem_VT, sizeof( apItem_VT ) );
 
-			//if( g_pPlayer->m_vtInfo.IsVendorOpen() )
-			//{
-				for( int i = 0; i < MAX_VENDITEM; i++ )
+			for( int i = 0; i < MAX_VENDITEM; i++ )
+			{
+				// 리스트를 클리어 한다. 
+				CItemElem * pItemBase = g_pPlayer->m_vtInfo.GetItem(i);
+				if( pItemBase != NULL )
 				{
-					// 리스트를 클리어 한다. 
-					CItemBase* pItemBase = g_pPlayer->m_vtInfo.GetItem(i);
-					if( pItemBase != NULL )
-					{
-						if( pItemBase->m_dwObjId != 0 )
-							g_DPlay.SendUnregisterPVendorItem( i );
-					}
+					if( pItemBase->m_dwObjId != 0 )
+						g_DPlay.SendUnregisterPVendorItem( i );
 				}
+			}
 
-				// 저장버퍼도 클리어
-				memset(g_Neuz.m_aSavedInven, 0, sizeof(g_Neuz.m_aSavedInven));
-			//}
+			// 저장버퍼도 클리어
+			memset(g_Neuz.m_aSavedInven, 0, sizeof(g_Neuz.m_aSavedInven));
 		}
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
@@ -443,7 +417,7 @@ void CWndVendor::OnDestroy( void )
 	// 리스트를 백업해둔다
 	for( int i = 0; i < MAX_VENDITEM; i++ )
 	{
-		CItemBase* pItemBase = g_pPlayer->m_vtInfo.GetItem(i);
+		CItemElem * pItemBase = g_pPlayer->m_vtInfo.GetItem(i);
 		if(pItemBase)
 		{
 			g_Neuz.m_aSavedInven[i].m_dwObjId = pItemBase->m_dwObjId;

@@ -95,7 +95,7 @@ BOOL CWndRepairItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	}
 	else
 	{
-		CItemBase* pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if( pItemBase )
 		{
 			for( int i = 0; i < MAX_REPAIRINGITEM; i++ )
