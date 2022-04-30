@@ -169,7 +169,7 @@ void CMover::AddExperienceKillMember(CMover * pDead, EXPFLOAT fExpValue, MoverPr
 // Solo experience
 
 static constexpr float GetSoloExpDebuff(const int myLevel, const DWORD enemyLevel) {
-	if (myLevel >= enemyLevel) return 1.f;
+	if (myLevel <= enemyLevel) return 1.f;
 
 	const auto delta = myLevel - enemyLevel;
 	if (delta == 1 || delta == 2) return 0.7f;
