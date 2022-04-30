@@ -50,81 +50,60 @@ public:
 class CWndDropItem : public CWndNeuz 
 { 
 public: 
-	CItemElem* m_pItemElem;
+	CItemElem* m_pItemElem = nullptr;
 	D3DXVECTOR3 m_vPos;
-	CWndEdit* m_pEdit;
+	CWndEdit* m_pEdit = nullptr;
 
-	CWndDropItem(); 
-	virtual ~CWndDropItem(); 
+	CWndDropItem() = default;
+	~CWndDropItem() override = default;
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual BOOL Process( void );
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndDropConfirm : public CWndNeuz 
 { 
 public: 
-	CItemElem* m_pItemElem;
-	D3DXVECTOR3 m_vPos;
+	CItemElem* m_pItemElem = nullptr;
+	D3DXVECTOR3 m_vPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	
-	CWndDropConfirm(); 
-	virtual ~CWndDropConfirm(); 
+	CWndDropConfirm() = default;
+	~CWndDropConfirm() override = default;
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual BOOL Process( void );
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndRandomScrollConfirm : public CWndNeuz 
 { 
 public:
-	BOOL bFlag;
-	OBJID objid, objid1;
+	BOOL bFlag = FALSE;
+	OBJID objid = NULL_ID, objid1 = NULL_ID;
 	void SetItem( OBJID objidBuf, OBJID objid1Buf, BOOL bFlagBuf = FALSE );
 public: 
-	CWndRandomScrollConfirm(); 
-	virtual ~CWndRandomScrollConfirm(); 
+	~CWndRandomScrollConfirm() override = default;
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndQuestItemWarning : public CWndNeuz 
 { 
 public: 
-	CItemElem* m_pItemElem;
-	D3DXVECTOR3 m_vPos;
+	CItemElem* m_pItemElem = nullptr;
+	D3DXVECTOR3 m_vPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	CWndQuestItemWarning(); 
-	virtual ~CWndQuestItemWarning(); 
+	~CWndQuestItemWarning() override = default;
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 
@@ -158,8 +137,7 @@ class CWndGold : public CWndButton
 {
 public:
 	CTexture m_texture;
-	CWndGold();
-	virtual ~CWndGold();
+	~CWndGold() override = default;
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual	void OnInitialUpdate();
@@ -267,38 +245,25 @@ public:
 class CWndStateConfirm : public CWndNeuz 
 { 
 public:
-	UINT m_nId;
+	UINT m_nId = 0;
 	void OnSetState( UINT nId );
 	void SendYes( void );
 public: 
-	CWndStateConfirm(); 
-	virtual ~CWndStateConfirm(); 
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 class CWndCharacterBase : public CWndBase
 {
 	CTexture m_txInfo;
 
 public:
-	CWndCharacterBase();
-	virtual ~CWndCharacterBase();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 class CWndCharacterDetail : public CWndBase
@@ -313,16 +278,13 @@ class CWndCharacterDetail : public CWndBase
 public:
 	BOOL	m_fWaitingConfirm;
 	CWndCharacterDetail();
-	virtual ~CWndCharacterDetail();
+
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual void OnMouseWndSurface( CPoint point );
 
 protected:
@@ -344,31 +306,25 @@ public:
 	CWndEdit m_editDexCount;
 	CWndEdit m_editIntCount;
 
-	int m_nStrCount;
-	int m_nStaCount;
-	int m_nDexCount;
-	int m_nIntCount;
+	int m_nStrCount = 0;
+	int m_nStaCount = 0;
+	int m_nDexCount = 0;
+	int m_nIntCount = 0;
 
-	int m_nGpPoint;
+	int m_nGpPoint = 0;
 
-	int m_nATK;
-	int m_nDEF;
-	int m_nCritical;
-	int m_nATKSpeed;
+	int m_nATK = 0;
+	int m_nDEF = 0;
+	int m_nCritical = 0;
+	int m_nATKSpeed = 0;
 	
 public:
-	CWndCharacterDetail2();
-	virtual ~CWndCharacterDetail2();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual void OnMouseWndSurface( CPoint point );
 	virtual BOOL Process ();
 	
 	void RefreshStatPoint();
@@ -416,16 +372,10 @@ public:
 	CWndButton m_wndCancel;
 
 	CWndChangeJob( int nJob );
-	virtual ~CWndChangeJob();
-	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 );
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 };
 
 class CWndCharInfo : public CWndBase
@@ -470,12 +420,7 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual void OnMouseWndSurface( CPoint point );
 	virtual BOOL Process ();
 	void RefreshStatPoint();
 	void GetVirtualATK(int* pnMin, int* pnMax);
@@ -490,24 +435,16 @@ protected:
 class CWndHonor : public CWndNeuz
 {
 private:
-	int						m_nSelectedId;
-	int						m_nCount;
+	int						m_nSelectedId = 0;
+	int						m_nCount = 0;
 	std::vector<EarnedTitle>		m_vecTitle;
 public:
-
-	CWndHonor();
-	virtual ~CWndHonor();
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 );
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 	void RefreshList();
-
 };
 
 class CWndCharacter : public CWndNeuz
@@ -516,42 +453,26 @@ public:
 	CWndCharInfo		m_wndCharInfo;
 	CWndHonor			m_wndHonor;
 public:
-	CWndCharacter();
-	virtual ~CWndCharacter();
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 
 class CWndReSkillControl : public CWndNeuz
 {
 public:
-	CWndReSkillControl();
-	virtual ~CWndReSkillControl();
-	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 );
-	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 };
 
 class CWndReSkillWarning : public CWndNeuz
 {
 	BOOL	m_bParentDestroy;
 public:
-	CWndReSkillWarning();
 	virtual ~CWndReSkillWarning();
 
 	void InitItem( BOOL bParentDestroy );
@@ -559,11 +480,7 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 );
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void OnDestroy();
 };
 
@@ -632,7 +549,6 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);
@@ -785,10 +701,7 @@ class CWndQuit : public CWndMessageBox
 {
 	BOOL	m_bFlag;	
 public:
-	CWndQuit() { }
-	virtual ~CWndQuit() { }
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	// message
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 };	
 class CWndLogOut : public CWndMessageBox
@@ -807,8 +720,6 @@ class CWndLogOutWaitting : public CWndNeuz
 	BOOL  m_bIsLogOut;
 	DWORD dwTime;
 public:
-	CWndLogOutWaitting();
-	virtual ~CWndLogOutWaitting();
 	void	SetIsLogOut(BOOL bFlag) { m_bIsLogOut = bFlag; }
 	virtual BOOL Process ();
 	virtual BOOL Initialize( CWndBase* pWndParent );
@@ -817,57 +728,36 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 };	
 
-//DECLARE_WNDMESSAGEBOX( CWndLogOut    ) // 로그아웃 처리하는 메시지 박스 클레스 
-
-//BEGIN_WNDCLASS( CWndMacro )
-//END_WNDCLASS
-
-//BEGIN_WNDCLASS( CWndStyle )
-//END_WNDCLASS
-
 class CWndTradeGold : public CWndNeuz 
 { 
 public: 
 	UINT m_nIdWndTo;
 	SHORTCUT m_Shortcut;
 	D3DXVECTOR3 m_vPos;
-	DWORD m_dwGold;
-	CWndBase* m_pWndBase;
+	DWORD m_dwGold = 0;
+	CWndBase* m_pWndBase = nullptr;
 	CWndStatic* pStatic;
 	CWndStatic* pStaticCount;
-	char m_nSlot;
-	char m_nPutSlot;
+	char m_nSlot = 0;
+	char m_nPutSlot = 100;
 	CWndTradeGold(); 
-	virtual ~CWndTradeGold(); 
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual BOOL Process( void );
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };
 
 class CWndConfirmTrade : public CWndNeuz 
 { 
-	OBJID m_objid;
+	OBJID m_objid = 0;
 public: 
-	CWndConfirmTrade(); 
-	virtual ~CWndConfirmTrade(); 
 
 	void OnSetName( const char* szName, OBJID objid );
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndTradeConfirm : public CWndNeuz 
@@ -881,10 +771,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 BEGIN_WNDCLASS( CWndTrade )
@@ -911,30 +797,19 @@ END_WNDCLASS
 class CWndRevival : public CWndNeuz 
 { 
 public: 
-	CWndButton* m_pLodeLight;
-	CWndButton* m_pLodeStar;
-	CWndButton* m_pRevival;
-	CWndButton* m_pShop;
-	CWndRevival(); 
-	virtual ~CWndRevival(); 
-
+	CWndButton* m_pLodeLight = nullptr;
+	CWndButton* m_pLodeStar  = nullptr;
+	CWndButton* m_pRevival   = nullptr;
+	CWndButton* m_pShop      = nullptr;
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	void	EnableButton( int nButton, BOOL bEnable );
 }; 
 
 class CWndReWanted : public CWndNeuz 
 { 
-public: 
-	CWndReWanted(); 
-	virtual ~CWndReWanted(); 
-
 private:
 	CString      m_strWanted;
 	
@@ -944,47 +819,28 @@ public:
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndResurrectionConfirm : public CWndNeuz 
 { 
 public: 
-	CWndResurrectionConfirm(); 
-	virtual ~CWndResurrectionConfirm(); 
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndWantedConfirm : public CWndNeuz 
 { 
-	int		 m_nGold;
+	int		 m_nGold = 0;
 	char	 m_szName[ MAX_NAME ];
 public: 
 	CWndWantedConfirm(); 
-	virtual ~CWndWantedConfirm(); 
 	
 	void		 SetInfo( const char szName[], const int nGold );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 
@@ -1017,9 +873,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual	void OnRButtonUp( UINT nFlags, CPoint point );
 	virtual void OnRButtonDown( UINT nFlags, CPoint point );
@@ -1033,40 +886,25 @@ public:
 class CWndCommItemDlg : public CWndNeuz 
 { 
 public: 
-	CWndEdit*		m_pWndEdit;
-	DWORD			m_dwObjId;
-	DWORD			m_dwCtrlId;
+	CWndEdit*		m_pWndEdit = nullptr;
+	DWORD			m_dwObjId  = NULL_ID;
+	DWORD			m_dwCtrlId = NULL_ID;
 	void			SetItem( DWORD dwDefindText, DWORD dwObjId, DWORD dwCtrlId );
-	CWndCommItemDlg(); 
-	virtual ~CWndCommItemDlg(); 
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndChangeClass1 : public CWndNeuz 
 { 
 public: 
-	int			nJob;
+	int			nJob = 0;
 	void		SetJob();
 
-	CWndChangeClass1(); 
-	virtual ~CWndChangeClass1(); 
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndChangeClass2 : public CWndNeuz 
@@ -1075,30 +913,21 @@ public:
 	int			nJob;
 	void		SetJob();
 	
-	CWndChangeClass2(); 
-	virtual ~CWndChangeClass2(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndPostSendConfirm;
 
 class CWndPostSend : public CWndNeuz
 {
-	int		m_nCost;
-	int		m_nCount;
-	BYTE    m_nItem;
+	int		m_nCost = 0;
+	int		m_nCount = 0;
+	BYTE  m_nItem = 0xFF;
 
 public:	
 	void ClearData();
-	CWndPostSend(); 
 	virtual ~CWndPostSend(); 
 	
 	
@@ -1113,10 +942,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );		
 	virtual void OnRButtonUp( UINT nFlags, CPoint point );
 	virtual void AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
@@ -1125,21 +950,13 @@ public:
 class CWndPostItemWarning : public CWndNeuz 
 { 
 public: 
-	int	   m_nMailIndex;
-	
-	CWndPostItemWarning(); 
-	virtual ~CWndPostItemWarning(); 
+	int	   m_nMailIndex = -1;
 	
 	void	SetIndex( int nIndex ) { m_nMailIndex = nIndex; }
 	void	SetString( char* string );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndPostDeleteConfirm;
@@ -1177,13 +994,12 @@ class CWndPostReceive : public CWndNeuz
 {
 	CTexture			m_Texture[3];
 	CWndScrollBar		m_wndScrollBar;
-	int					m_nSelect;
-	int					m_nMax;
-	CWndPostRead*		m_wndPostRead;
+	int					m_nSelect = -1;
+	int					m_nMax = 0;
+	CWndPostRead*		m_wndPostRead = nullptr;
 public:	
 	void UpdateScroll();
 	
-	CWndPostReceive(); 
 	virtual ~CWndPostReceive(); 
 
 	int          GetSelectIndex( const CPoint& point );	
@@ -1191,9 +1007,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	virtual	void OnLButtonDblClk( UINT nFlags, CPoint point );
@@ -1206,17 +1019,11 @@ public:
 	CWndPostSend		m_PostTabSend;
 	CWndPostReceive		m_PostTabReceive;
 	
-	CWndPost(); 
 	virtual ~CWndPost(); 
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 
 #ifdef __MAIL_REQUESTING_BOX
 public:
@@ -1225,53 +1032,21 @@ public:
 	void CloseMailRequestingBox( void );
 
 private:
-	CWndMailRequestingBox* m_pWndMailRequestingBox;
+	CWndMailRequestingBox* m_pWndMailRequestingBox = nullptr;
 #endif // __MAIL_REQUESTING_BOX
 };
-class CWndPostSendConfirm : public CWndNeuz
-{
-protected:
-	CWndText	m_wndText;
-	
-	BYTE		m_nItem;
-	short		m_nItemNum;
-	int			m_nGold;
-	char		m_szReceiver[MAX_NAME];
-	char		m_szTitle[MAX_MAILTITLE];	
-	char		m_szText[MAX_MAILTEXT];		
-public: 
-	CWndPostSendConfirm();
-	virtual ~CWndPostSendConfirm();
-	
-	void			SetValue( BYTE nItem, short nItemNum, char* lpszReceiver, int nGold, char* lpszTitle, char* lpszText );
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
-}; 
 
 class CWndPostDeleteConfirm : public CWndNeuz
 {
 protected:
 	CWndText	m_wndText;
-	int		m_nIndex;
+	int		m_nIndex = 0;
 public: 
-	CWndPostDeleteConfirm();
-	virtual ~CWndPostDeleteConfirm();
 	
 	void			SetValue( int nIndex ) { m_nIndex = nIndex; }
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 }; 
 
 struct GUILDLIST
@@ -1284,22 +1059,14 @@ struct GUILDLIST
 class CWndGuildCombatOffer : public CWndNeuz
 {
 protected:
-	DWORD			m_dwReqGold;
-	DWORD			m_dwMinGold;
-	DWORD			m_dwBackupGold;
+	DWORD			m_dwReqGold = 0;
+	DWORD			m_dwMinGold = 0;
+	DWORD			m_dwBackupGold = 0;
 
 public: 
-	CWndGuildCombatOffer();
-	virtual ~CWndGuildCombatOffer();
-	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	void			SetGold( DWORD nCost );
 	void			SetTotalGold( __int64 nCost );
 	void			SetMinGold( DWORD dwMinGold )		{ m_dwMinGold    = dwMinGold; }
@@ -1315,16 +1082,11 @@ public:
 	int m_nCombatType;
 public: 
 	CWndGuildCombatBoard(int m_nCombatType);
-	virtual ~CWndGuildCombatBoard();
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void	PaintFrame( C2DRender* p2DRender );
 	void			SetString( CHAR* szChar );
 }; 
@@ -1344,7 +1106,6 @@ public:
 	int	m_nCombatType;
 public:
 	CGuildCombatInfoMessageBox(int nCombatType);
-	virtual ~CGuildCombatInfoMessageBox();
 	void	SetString( CHAR* szChar );
 	virtual	void OnInitialUpdate();
 	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
@@ -1356,8 +1117,6 @@ public:
 class CGuildCombatInfoMessageBox2 : public CWndNeuz
 { 
 public: 
-	CGuildCombatInfoMessageBox2();
-	virtual ~CGuildCombatInfoMessageBox2();
 	void	SetString( CHAR* szChar );
 	virtual	void OnInitialUpdate();
 	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
@@ -1384,16 +1143,11 @@ protected:
 public: 
 	void Reset();
 	CWndGuildCombatSelection();
-	virtual ~CWndGuildCombatSelection();
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	void			EnableFinish( BOOL bFlag );		
 
 	void			SetDefender( u_long uiPlayer );
@@ -1450,22 +1204,15 @@ public:
 class CWndGuildCombatJoinSelection : public CWndNeuz
 {
 protected:
-	int	   m_nMapNum;
+	int	   m_nMapNum = 99;
 	CTimer m_timerInputTimeOut;
-	DWORD  m_dwOldTime;
+	DWORD  m_dwOldTime = 0xffffffff;
 	
 public: 
-	CWndGuildCombatJoinSelection();
-	virtual ~CWndGuildCombatJoinSelection();
-	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	virtual BOOL	Process ();
 
 	void			SetTimeOut( DWORD dwSec ) { m_dwOldTime = g_tmCurrent + dwSec; }
@@ -1477,17 +1224,9 @@ class CWndGuildWarAppConfirm : public CWndNeuz
 protected:
 	CWndText	m_wndText;
 public: 
-	CWndGuildWarAppConfirm();
-	virtual ~CWndGuildWarAppConfirm();
-	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 }; 
 class CWndGuildWarCancelConfirm : public CWndNeuz
 {
@@ -1496,16 +1235,10 @@ protected:
 	int			m_nCombatType;
 public:
 	CWndGuildWarCancelConfirm(int nCombatType);
-	virtual ~CWndGuildWarCancelConfirm();
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void	PaintFrame( C2DRender* p2DRender );
 }; 
 class CWndGuildWarJoinConfirm : public CWndNeuz
@@ -1516,16 +1249,10 @@ protected:
 	CWndText	m_wndText;
 public:
 	CWndGuildWarJoinConfirm(int nCombatType);
-	virtual ~CWndGuildWarJoinConfirm();
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void	PaintFrame( C2DRender* p2DRender );
 }; 
 
@@ -1603,27 +1330,16 @@ public:
 class CWndGuildCombatTabResultRate : public CWndNeuz 
 { 
 public: 
-	CWndGuildCombatTabResultRate(); 
-	virtual ~CWndGuildCombatTabResultRate(); 
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 }; 
 // 길드 결과 로그 - 개인
 class CWndGuildCombatTabResultLog : public CWndNeuz 
 { 
 public: 
-	CWndGuildCombatTabResultLog(); 
-	virtual ~CWndGuildCombatTabResultLog(); 
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 }; 
 
 // 길드 결과 로그창

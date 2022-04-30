@@ -91,14 +91,6 @@ static D3DVIEWPORT9 BuildViewport(C2DRender * const render, WNDCTRL * const cont
 // ��Ӿ�����?
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndDropItem::CWndDropItem() 
-{ 
-	m_pItemElem = NULL;
-	m_pEdit = NULL;
-} 
-CWndDropItem::~CWndDropItem() 
-{ 
-} 
 void CWndDropItem::OnDraw( C2DRender* p2DRender ) 
 { 
 	LPCTSTR szNumber;
@@ -169,21 +161,6 @@ BOOL CWndDropItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DROP_ITEM, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndDropItem::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndDropItem::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndDropItem::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndDropItem::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
 BOOL CWndDropItem::Process( void )
 {
 	if(m_pItemElem->GetExtra() > 0)
@@ -222,18 +199,7 @@ BOOL CWndDropItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 // ����?��
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndDropConfirm::CWndDropConfirm() 
-{ 
-	m_pItemElem = NULL;
-	m_vPos = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-} 
-CWndDropConfirm::~CWndDropConfirm() 
-{ 
-} 
-void CWndDropConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
 
-} 
 void CWndDropConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -250,20 +216,6 @@ BOOL CWndDropConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DROP_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
-} 
-BOOL CWndDropConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndDropConfirm::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndDropConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndDropConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndDropConfirm::Process( void )
@@ -296,24 +248,13 @@ BOOL CWndDropConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
   CtrlId : WIDC_NO - Button
 ****************************************************/
 
-CWndRandomScrollConfirm::CWndRandomScrollConfirm() 
-{ 
-	bFlag = FALSE;
-	objid = objid1 = NULL_ID;
-} 
-CWndRandomScrollConfirm::~CWndRandomScrollConfirm() 
-{ 
-} 
 void CWndRandomScrollConfirm::SetItem( OBJID objidBuf, OBJID objid1Buf, BOOL bFlagBuf )
 {
 	objid = objidBuf;
 	objid1 = objid1Buf;
 	bFlag = bFlagBuf;
-	
 }
-void CWndRandomScrollConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndRandomScrollConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -361,20 +302,7 @@ BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
 } 
 */
-BOOL CWndRandomScrollConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRandomScrollConfirm::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRandomScrollConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRandomScrollConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndRandomScrollConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_YES )
@@ -394,17 +322,6 @@ CtrlId : WIDC_BTN_NO - Button
 CtrlId : WIDC_WARNING - Picture
 ****************************************************/
 
-CWndQuestItemWarning::CWndQuestItemWarning() 
-{ 
-	m_pItemElem = NULL;
-	m_vPos = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-} 
-CWndQuestItemWarning::~CWndQuestItemWarning() 
-{ 
-} 
-void CWndQuestItemWarning::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndQuestItemWarning::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -436,20 +353,7 @@ SetTitle( _T( "title" ) );
 return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
 } 
 */
-BOOL CWndQuestItemWarning::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndQuestItemWarning::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndQuestItemWarning::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndQuestItemWarning::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BTN_YES || message == EN_RETURN )
@@ -488,12 +392,6 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "WndShop.h"
 
-CWndGold::CWndGold()
-{
-}
-CWndGold::~CWndGold()
-{
-}
 void CWndGold::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	m_GlobalShortcut.m_dwShortcut = SHORTCUT_ITEM;
@@ -3322,13 +3220,6 @@ BOOL CWndCharInfo::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 
 }
 
-
-BOOL CWndCharInfo::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase)
-{
-	return CWndBase::OnCommand(nID,dwMessage,pWndBase);
-}
-
-
 BOOL CWndCharInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
 	int editnum = 0;
@@ -3463,30 +3354,6 @@ BOOL CWndCharInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	}
 
 	return CWndBase::OnChildNotify( message, nID, pLResult );
-}
-
-
-void CWndCharInfo::OnSize(UINT nType, int cx, int cy)
-{
-
-}
-
-
-void CWndCharInfo::OnLButtonUp(UINT nFlags, CPoint point)
-{
-
-}
-
-
-void CWndCharInfo::OnLButtonDown(UINT nFlags, CPoint point)
-{
-
-}
-
-
-void CWndCharInfo::OnMouseWndSurface( CPoint point )
-{
-
 }
 
 
@@ -3794,18 +3661,6 @@ void CWndCharInfo::RenderATK( C2DRender* p2DRender, int x, int y )
 	p2DRender->TextOut( x, y, szText, dwColor );
 }
 
-
-CWndHonor::CWndHonor()
-{
-	m_nSelectedId = 0;
-	m_vecTitle.clear();	
-}
-
-CWndHonor::~CWndHonor()
-{
-
-}
-
 void CWndHonor::OnDraw( C2DRender* p2DRender )
 {
 	CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
@@ -3860,13 +3715,6 @@ BOOL CWndHonor::Initialize( CWndBase* pWndParent,DWORD dwWndId )
 }
 
 
-BOOL CWndHonor::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase)
-{
-
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
-
-
 BOOL CWndHonor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
 	CWndButton* pWndButton1 = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
@@ -3899,26 +3747,6 @@ BOOL CWndHonor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 }
 
 
-void CWndHonor::OnSize(UINT nType, int cx, int cy)
-{
-
-	CWndNeuz::OnSize(nType,cx,cy);
-}
-
-
-void CWndHonor::OnLButtonUp( UINT nFlags, CPoint point )
-{
-
-
-}
-
-
-void CWndHonor::OnLButtonDown( UINT nFlags, CPoint point )
-{
-
-
-}
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3928,15 +3756,6 @@ void CWndHonor::OnLButtonDown( UINT nFlags, CPoint point )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndCharacter::CWndCharacter()
-{
-}
-CWndCharacter::~CWndCharacter()
-{
-}
-void CWndCharacter::OnDraw(C2DRender* p2DRender)
-{
-}
 void CWndCharacter::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 {
 	CWndNeuz::SerializeRegInfo( ar, dwVersion );
@@ -3998,27 +3817,8 @@ BOOL CWndCharacter::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	//return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint(0, 0), pWndParent );
 }
-BOOL CWndCharacter::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
-{ 
-	if( message == WNM_CLICKED )
-	{
-	/*f( nID == WTBID_EXTENSION )
-		{
-			CRect rect = GetWindowRect( TRUE ); 
-			if( m_wndTitleBar.GetTitleBarButton( WTBID_EXTENSION )->GetCheck() )
-				rect.bottom += 135ww
-			else
-				rect.bottom -= 135;
-			SetWndRect( rect );
-		}
-		*/
-	}	
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-BOOL CWndCharacter::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
+
+
 void CWndCharacter::OnSize(UINT nType, int cx, int cy)
 {
 	int x = m_rectClient.Width() / 2;
@@ -4036,26 +3836,12 @@ void CWndCharacter::OnSize(UINT nType, int cx, int cy)
 
 	CWndNeuz::OnSize(nType,cx,cy);
 }
-void CWndCharacter::OnLButtonUp(UINT nFlags, CPoint point)
-{
-}
-void CWndCharacter::OnLButtonDown(UINT nFlags, CPoint point)
-{
-}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-CWndStateConfirm::CWndStateConfirm() 
-{ 
-	m_nId = 0;
-} 
-CWndStateConfirm::~CWndStateConfirm() 
-{ 
-} 
-void CWndStateConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndStateConfirm::OnSetState( UINT nId )
 {
 	m_nId = nId;
@@ -4064,10 +3850,7 @@ void CWndStateConfirm::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-//	strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_SHELLCOST)
-	CString strMessage;
-
-	strMessage.Format( prj.GetText( TID_GAME_CHARSTATUS_APPLY_Q ) );
+	CString strMessage = prj.GetText(TID_GAME_CHARSTATUS_APPLY_Q);
 
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 
@@ -4102,20 +3885,7 @@ BOOL CWndStateConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
 } 
 */
-BOOL CWndStateConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndStateConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndStateConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndStateConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndStateConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	if( nID == WIDC_YES )
@@ -4154,13 +3924,6 @@ void CWndStateConfirm::SendYes( void )
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-
-CWndCharacterBase::CWndCharacterBase()
-{
-}
-CWndCharacterBase::~CWndCharacterBase()
-{
-}
 void CWndCharacterBase::OnDraw(C2DRender* p2DRender)
 {
 	CRect rect = GetClientRect();
@@ -4330,14 +4093,7 @@ BOOL CWndCharacterBase::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	//SetTitle( GETTEXT( TID_APP_CHARACTER )  );
 	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 }
-BOOL CWndCharacterBase::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
-{ 
-	return CWndBase::OnChildNotify( message, nID, pLResult );
-}
-BOOL CWndCharacterBase::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndBase::OnCommand(nID,dwMessage,pWndBase);
-}
+
 void CWndCharacterBase::OnSize(UINT nType, int cx, int cy)
 {
 	int x = m_rectClient.Width() / 2;
@@ -4355,12 +4111,7 @@ void CWndCharacterBase::OnSize(UINT nType, int cx, int cy)
 
 	CWndBase::OnSize(nType,cx,cy);
 }
-void CWndCharacterBase::OnLButtonUp(UINT nFlags, CPoint point)
-{
-}
-void CWndCharacterBase::OnLButtonDown(UINT nFlags, CPoint point)
-{
-}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -4371,9 +4122,6 @@ CWndCharacterDetail::CWndCharacterDetail()
 		m_fWaitingConfirm	= FALSE;
 
 	m_nCnt = 0;
-}
-CWndCharacterDetail::~CWndCharacterDetail()
-{
 }
 
 void CWndCharacterDetail::RenderATK( C2DRender* p2DRender, int x, int y )
@@ -4688,10 +4436,7 @@ BOOL CWndCharacterDetail::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	}
 	return CWndBase::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndCharacterDetail::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndBase::OnCommand(nID,dwMessage,pWndBase);
-}
+
 void CWndCharacterDetail::OnSize(UINT nType, int cx, int cy)
 {
 	int x = m_rectClient.Width() / 2;
@@ -4709,16 +4454,7 @@ void CWndCharacterDetail::OnSize(UINT nType, int cx, int cy)
 
 	CWndBase::OnSize(nType,cx,cy);
 }
-void CWndCharacterDetail::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-}
-void CWndCharacterDetail::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-}
+
 void CWndCharacterDetail::OnMouseWndSurface( CPoint point )
 {
 	// ���� ������ ��ġ�� Ŀ���� �������� ������ ������ ����(�����̸��� ��Ƽ���� ��ȣ)�� �����ش�.
@@ -4739,25 +4475,6 @@ void CWndCharacterDetail::OnMouseWndSurface( CPoint point )
 //////////////////////////////////////////////////////////////////////////
 // CWndCharacterDetail2 Class
 //////////////////////////////////////////////////////////////////////////
-	
-	
-CWndCharacterDetail2::CWndCharacterDetail2()
-{
-	m_nStrCount = 0;
-	m_nStaCount = 0;
-	m_nDexCount = 0;
-	m_nIntCount = 0;
-	m_nGpPoint = 0;
-
-	m_nATK = 0;
-	m_nDEF = 0;
-	m_nCritical = 0;
-	m_nATKSpeed = 0;
-}
-
-CWndCharacterDetail2::~CWndCharacterDetail2()
-{
-}
 
 void CWndCharacterDetail2::RenderATK( C2DRender* p2DRender, int x, int y )
 {
@@ -5506,11 +5223,6 @@ BOOL CWndCharacterDetail2::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult
 	return CWndBase::OnChildNotify( message, nID, pLResult );
 }
 
-BOOL CWndCharacterDetail2::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndBase::OnCommand(nID,dwMessage,pWndBase);
-}
-
 void CWndCharacterDetail2::OnSize(UINT nType, int cx, int cy)
 {
 	int x = m_rectClient.Width() / 2;
@@ -5529,22 +5241,6 @@ void CWndCharacterDetail2::OnSize(UINT nType, int cx, int cy)
 	CWndBase::OnSize(nType,cx,cy);
 }
 
-void CWndCharacterDetail2::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-}
-
-void CWndCharacterDetail2::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-}
-
-void CWndCharacterDetail2::OnMouseWndSurface( CPoint point )
-{
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -5556,12 +5252,7 @@ CWndChangeJob::CWndChangeJob( int nJob )
 { 
 	m_nJob = nJob;
 } 
-CWndChangeJob::~CWndChangeJob() 
-{ 
-} 
-void CWndChangeJob::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndChangeJob::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -5594,20 +5285,7 @@ BOOL CWndChangeJob::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	//SetTitle( _T( "����" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, dwWndId ); 
 } 
-BOOL CWndChangeJob::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndChangeJob::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndChangeJob::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndChangeJob::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndChangeJob::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( message == WNM_CLICKED )
@@ -7515,10 +7193,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndSkillTreeEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
+
 void CWndSkillTreeEx::SetJob( int nJob )
 {
 	m_nJob = nJob;
@@ -7814,15 +7489,9 @@ void CWndSkillTreeEx::AfterSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dF
 
 CWndTradeGold::CWndTradeGold() 
 { 
-	m_dwGold = 0;
 	m_nIdWndTo = APP_INVENTORY;
-	m_pWndBase = NULL;
-	m_nSlot = 0;
-	m_nPutSlot = 100;
 } 
-CWndTradeGold::~CWndTradeGold() 
-{ 
-} 
+
 BOOL CWndTradeGold::Process( void )
 {
 	CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
@@ -7834,9 +7503,7 @@ BOOL CWndTradeGold::Process( void )
 
 	return TRUE;
 }
-void CWndTradeGold::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndTradeGold::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -7857,20 +7524,7 @@ BOOL CWndTradeGold::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 { 
 	return InitDialog( g_Neuz.GetSafeHwnd(), APP_TRADE_GOLD, WBS_MODAL, 0, pWndParent );
 }
-BOOL CWndTradeGold::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndTradeGold::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndTradeGold::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndTradeGold::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK || message == EN_RETURN )
@@ -8170,13 +7824,6 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndConfirmTrade::CWndConfirmTrade() 
-{ 
-	m_objid = 0;
-} 
-CWndConfirmTrade::~CWndConfirmTrade() 
-{ 
-} 
 void CWndConfirmTrade::OnSetName( const char* szName, OBJID objid )
 {
 	m_objid = objid;
@@ -8186,9 +7833,7 @@ void CWndConfirmTrade::OnSetName( const char* szName, OBJID objid )
 	sName.Format( prj.GetText(TID_GAME_FROM),  szName ); // " �Կ���"
 	m_pName->SetTitle( sName );
 }
-void CWndConfirmTrade::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndConfirmTrade::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -8206,20 +7851,6 @@ BOOL CWndConfirmTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_TRADE, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndConfirmTrade::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndConfirmTrade::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndConfirmTrade::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndConfirmTrade::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndConfirmTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )
@@ -8280,20 +7911,6 @@ BOOL CWndTradeConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TRADE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndTradeConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndTradeConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndTradeConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndTradeConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndTradeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( bMsg )
@@ -10949,13 +10566,6 @@ BOOL CWndLogOut::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 }
 
 
-CWndLogOutWaitting::CWndLogOutWaitting() 
-{ 
-} 
-CWndLogOutWaitting::~CWndLogOutWaitting() 
-{ 
-} 
-
 BOOL CWndLogOutWaitting::Initialize( CWndBase* pWndParent ) 
 { 
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_MESSAGE_TEXT );
@@ -11110,16 +10720,6 @@ BOOL CWndQuit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndRevival::CWndRevival() 
-{ 
-	m_pLodeLight = NULL;
-	m_pLodeStar = NULL;
-	m_pRevival = NULL;
-	m_pShop = NULL;
-}
-CWndRevival::~CWndRevival() 
-{ 
-} 
 void CWndRevival::OnDraw( C2DRender* p2DRender ) 
 { 
 #ifdef __JEFF_11_4
@@ -11219,20 +10819,7 @@ BOOL CWndRevival::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	
 	return TRUE;
 } 
-BOOL CWndRevival::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRevival::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRevival::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRevival::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 void CWndRevival::EnableButton( int nButton, BOOL bEnable )
 {
 	switch( nButton )
@@ -11344,17 +10931,6 @@ BOOL CWantedMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 ///////////////////////////////////////////////////////////////////////////
 // CWndReWanted
 //////////////////////////////////////////////////////////////////////////////
-CWndReWanted::CWndReWanted() 
-{ 
-} 
-
-CWndReWanted::~CWndReWanted() 
-{ 
-} 
-void CWndReWanted::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-
 void CWndReWanted::SetWantedName( LPCTSTR szWanted )
 {
 	m_strWanted = szWanted;
@@ -11377,22 +10953,6 @@ BOOL CWndReWanted::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	InitDialog( g_Neuz.GetSafeHwnd(), APP_REWARD_INPUT );
 	return TRUE;
 } 
-
-void CWndReWanted::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndReWanted::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndReWanted::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-BOOL CWndReWanted::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-}
 
 BOOL CWndReWanted::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -11469,15 +11029,9 @@ BOOL CWndReWanted::CheckWantedInfo( int nGold, LPCTSTR szMsg )
 ////////////////////////////////////////////////////////////////////////////////////////
 CWndWantedConfirm::CWndWantedConfirm() 
 { 
-	m_nGold = 0;
 	memset( m_szName, 0, sizeof(m_szName) );
 } 
-CWndWantedConfirm::~CWndWantedConfirm() 
-{ 
-} 
-void CWndWantedConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndWantedConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -11490,20 +11044,7 @@ BOOL CWndWantedConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	
 	return TRUE;
 } 
-BOOL CWndWantedConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndWantedConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndWantedConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndWantedConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 void CWndWantedConfirm::SetInfo(const char szName[], const int nGold)
 {
 	m_nGold  = nGold;
@@ -11613,19 +11154,6 @@ BOOL CWndWanted::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_WANTED, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndWanted::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndWanted::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndWanted::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
 
 // ���õ� �ε����� ��´�?.
 int CWndWanted::GetSelectIndex( const CPoint& point )
@@ -11767,15 +11295,6 @@ void CWndWanted::OnDraw( C2DRender* p2DRender )
 ///////////////////////////////////////////////////////////////////////////////////////////
 // CWndResurrectionConfirm
 ///////////////////////////////////////////////////////////////////////////////////////////
-CWndResurrectionConfirm::CWndResurrectionConfirm() 
-{ 
-} 
-CWndResurrectionConfirm::~CWndResurrectionConfirm() 
-{ 
-} 
-void CWndResurrectionConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndResurrectionConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -11792,20 +11311,6 @@ BOOL CWndResurrectionConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 { 
 	InitDialog( g_Neuz.GetSafeHwnd(), APP_RESURRECTION, WBS_MODAL );
 	return TRUE;
-} 
-BOOL CWndResurrectionConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndResurrectionConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndResurrectionConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndResurrectionConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 BOOL CWndResurrectionConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -11836,18 +11341,6 @@ BOOL CWndResurrectionConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pL
   CtrlId : WIDC_BUTTON_OK - Button
 ****************************************************/
 
-CWndCommItemDlg::CWndCommItemDlg() 
-{ 
-	m_pWndEdit = NULL;
-	m_dwObjId = NULL_ID;
-	m_dwCtrlId = NULL_ID;
-} 
-CWndCommItemDlg::~CWndCommItemDlg() 
-{ 
-} 
-void CWndCommItemDlg::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndCommItemDlg::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -11872,20 +11365,6 @@ BOOL CWndCommItemDlg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COMMITEM_DIALOG, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndCommItemDlg::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndCommItemDlg::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndCommItemDlg::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndCommItemDlg::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndCommItemDlg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON_OK || message == EN_RETURN )
@@ -11959,15 +11438,6 @@ CtrlId : WIDC_BUTTON_OK - Button
 CtrlId : WIDC_BUTTON_CANCEL - 
 ****************************************************/
 
-CWndChangeClass1::CWndChangeClass1() 
-{ 
-} 
-CWndChangeClass1::~CWndChangeClass1() 
-{ 
-} 
-void CWndChangeClass1::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndChangeClass1::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -12016,20 +11486,6 @@ BOOL CWndChangeClass1::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGECLASS_1, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndChangeClass1::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndChangeClass1::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndChangeClass1::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndChangeClass1::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndChangeClass1::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON_OK || message == EN_RETURN )
@@ -12087,15 +11543,6 @@ CtrlId : WIDC_BUTTON_OK2 - Button
 CtrlId : WIDC_BUTTON_CANCEL2 - Button
 ****************************************************/
 
-CWndChangeClass2::CWndChangeClass2() 
-{ 
-} 
-CWndChangeClass2::~CWndChangeClass2() 
-{ 
-} 
-void CWndChangeClass2::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndChangeClass2::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -12158,20 +11605,7 @@ BOOL CWndChangeClass2::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGECLASS_2, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndChangeClass2::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndChangeClass2::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndChangeClass2::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndChangeClass2::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndChangeClass2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON_OK2 || message == EN_RETURN )
@@ -12474,16 +11908,7 @@ void CWndInventory::UpdateParts()
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndReSkillControl::CWndReSkillControl() 
-{ 
-} 
-CWndReSkillControl::~CWndReSkillControl() 
-{ 
-} 
-void CWndReSkillControl::OnDraw( C2DRender* p2DRender ) 
-{ 
-	
-} 
+
 void CWndReSkillControl::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -12501,20 +11926,7 @@ BOOL CWndReSkillControl::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RESKILL_CONTROL1, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndReSkillControl::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndReSkillControl::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndReSkillControl::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndReSkillControl::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndReSkillControl::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON1 )
@@ -12539,10 +11951,6 @@ BOOL CWndReSkillControl::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 } 
 
 
-
-CWndReSkillWarning::CWndReSkillWarning() 
-{ 
-} 
 CWndReSkillWarning::~CWndReSkillWarning() 
 { 
 	Destroy();	
@@ -12583,20 +11991,7 @@ BOOL CWndReSkillWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEITMWARNING, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndReSkillWarning::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndReSkillWarning::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndReSkillWarning::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndReSkillWarning::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndReSkillWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BTN_YES || message == EN_RETURN )
@@ -12627,16 +12022,6 @@ BOOL CWndSkillTreeEx::IsReSkillPointDone()
 	return FALSE;	
 }
 
-CWndPostItemWarning::CWndPostItemWarning() 
-{ 
-	m_nMailIndex = -1;
-} 
-CWndPostItemWarning::~CWndPostItemWarning() 
-{ 
-} 
-void CWndPostItemWarning::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndPostItemWarning::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -12664,20 +12049,7 @@ BOOL CWndPostItemWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	
 	return CWndNeuz::Create( WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_QUEITMWARNING ); 
 } 
-BOOL CWndPostItemWarning::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPostItemWarning::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPostItemWarning::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPostItemWarning::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndPostItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BTN_YES || message == EN_RETURN )
@@ -12697,13 +12069,6 @@ BOOL CWndPostItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 
 
-
-CWndPost::CWndPost() 
-{ 
-#ifdef __MAIL_REQUESTING_BOX
-	m_pWndMailRequestingBox = NULL;
-#endif // __MAIL_REQUESTING_BOX
-} 
 CWndPost::~CWndPost() 
 { 
 #ifdef __MAIL_REQUESTING_BOX
@@ -12711,9 +12076,7 @@ CWndPost::~CWndPost()
 	CloseMailRequestingBox();
 #endif // __MAIL_REQUESTING_BOX
 } 
-void CWndPost::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndPost::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -12769,20 +12132,6 @@ BOOL CWndPost::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndPost::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPost::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPost::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPost::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndPost::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( message == WNM_SELCHANGE )
@@ -12953,20 +12302,14 @@ BOOL CWndPostSendMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLR
 
 
 
-CWndPostSend::CWndPostSend():m_nItem(0xff), m_nCost(0), m_nCount(0)
-{ 
-//	m_pWndPostSendConfirm = NULL;
-} 
 CWndPostSend::~CWndPostSend() 
 { 
 	ClearData();
-//	SAFE_DELETE(m_pWndPostSendConfirm);	
 } 
 
 void CWndPostSend::ClearData()
 {
-	CItemElem* pItemElem;
-	pItemElem  = (CItemElem*)g_pPlayer->m_Inventory.GetAtId( m_nItem );
+	CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
 	
 	if(pItemElem)
 	{
@@ -13097,21 +12440,6 @@ void CWndPostSend::OnInitialUpdate()
 BOOL CWndPostSend::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_POST_SEND, 0, CPoint( 0, 0 ), pWndParent );
-} 
-
-BOOL CWndPostSend::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPostSend::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPostSend::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPostSend::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 void CWndPostSend::SetItemId( BYTE nId )
@@ -13772,18 +13100,6 @@ BOOL CWndPostRead::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-CWndPostDeleteConfirm::CWndPostDeleteConfirm():m_nIndex(0)
-{
-}
-
-CWndPostDeleteConfirm::~CWndPostDeleteConfirm() 
-{
-	
-}
-
-void CWndPostDeleteConfirm::OnDraw( C2DRender* p2DRender ) 
-{
-}
 void CWndPostDeleteConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -13806,24 +13122,6 @@ BOOL CWndPostDeleteConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ 
 	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
 	
 	return CWndNeuz::Create( WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_POST_DELETE_CONFIRM ); 
-} 
-
-BOOL CWndPostDeleteConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndPostDeleteConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndPostDeleteConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndPostDeleteConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndPostDeleteConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -13854,11 +13152,6 @@ BOOL CWndPostDeleteConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndPostReceive::CWndPostReceive():m_wndPostRead(NULL)
-{ 
-	m_nMax = 0;
-	m_nSelect = -1;
-} 
 CWndPostReceive::~CWndPostReceive() 
 { 
 #ifdef __FIX_WND_1109
@@ -14202,17 +13495,6 @@ BOOL CWndPostReceive::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_POST_RECEIVE, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndPostReceive::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPostReceive::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPostReceive::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
 void CWndPostReceive::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
 	if( m_nMax <= 0 )
@@ -14293,21 +13575,6 @@ BOOL CWndGuildCombatOfferMessageBox::OnChildNotify( UINT message, UINT nID, LRES
 
 
 // ���? �Ĺ� ��û�ϱ�
-CWndGuildCombatOffer::CWndGuildCombatOffer() 
-{
-	m_dwMinGold    = 0;
-	m_dwBackupGold = 0;
-	m_dwReqGold    = 0;
-}
-
-CWndGuildCombatOffer::~CWndGuildCombatOffer() 
-{
-	
-}
-
-void CWndGuildCombatOffer::OnDraw( C2DRender* p2DRender ) 
-{	
-}
 
 void CWndGuildCombatOffer::EnableAccept( BOOL bFlag )
 {
@@ -14339,24 +13606,6 @@ void CWndGuildCombatOffer::OnInitialUpdate()
 BOOL CWndGuildCombatOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_OFFER, 0, CPoint( 0, 0 ), pWndParent );
-} 
-
-BOOL CWndGuildCombatOffer::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildCombatOffer::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildCombatOffer::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombatOffer::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 void CWndGuildCombatOffer::SetGold( DWORD nCost )
@@ -14448,9 +13697,6 @@ CWndGuildCombatBoard::CWndGuildCombatBoard(int nCombatType)
 {
 	m_nCombatType = nCombatType;
 }
-CWndGuildCombatBoard::~CWndGuildCombatBoard() 
-{
-}
 
 void CWndGuildCombatBoard::PaintFrame( C2DRender* p2DRender )
 {
@@ -14499,24 +13745,6 @@ BOOL CWndGuildCombatBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_BOARD, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndGuildCombatBoard::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildCombatBoard::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildCombatBoard::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombatBoard::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
 BOOL CWndGuildCombatBoard::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON1 )
@@ -14539,10 +13767,6 @@ void CWndGuildCombatBoard::SetString( CHAR* szChar )
 CGuildCombatInfoMessageBox::CGuildCombatInfoMessageBox(int nCombatType)
 {
 	m_nCombatType = nCombatType;
-}
-
-CGuildCombatInfoMessageBox::~CGuildCombatInfoMessageBox()
-{
 }
 
 void CGuildCombatInfoMessageBox::PaintFrame( C2DRender* p2DRender )
@@ -14627,12 +13851,7 @@ void CGuildCombatInfoMessageBox::OnInitialUpdate()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // ����Ĺ�? ���� ����â...�ð��� �ߴ� �޼���â...
-CGuildCombatInfoMessageBox2::CGuildCombatInfoMessageBox2()
-{
-}
-CGuildCombatInfoMessageBox2::~CGuildCombatInfoMessageBox2()
-{
-}
+
 void CGuildCombatInfoMessageBox2::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -14718,11 +13937,6 @@ CWndGuildCombatSelection::CWndGuildCombatSelection()
 
 	nMaxJoinMember = 0;
 	nMaxWarMember  = 0;
-}
-
-CWndGuildCombatSelection::~CWndGuildCombatSelection() 
-{
-	
 }
 
 void CWndGuildCombatSelection::SetDefender( u_long uiPlayer ) 
@@ -14932,25 +14146,6 @@ BOOL CWndGuildCombatSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_SELECTION, 0, CPoint( 0, 0 ), pWndParent );
 } 
-
-BOOL CWndGuildCombatSelection::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildCombatSelection::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildCombatSelection::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombatSelection::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
 
 void CWndGuildCombatSelection::Reset()
 {
@@ -15386,16 +14581,6 @@ void CWndGuildCombatState::SetGold( int nGold )
 
 
 // �������? �������� ���� â
-CWndGuildCombatJoinSelection::CWndGuildCombatJoinSelection() 
-{
-	m_nMapNum = 99;
-	m_dwOldTime = 0xffffffff;
-}
-
-CWndGuildCombatJoinSelection::~CWndGuildCombatJoinSelection() 
-{
-	
-}
 
 void CWndGuildCombatJoinSelection::OnDraw( C2DRender* p2DRender ) 
 {
@@ -15466,24 +14651,6 @@ BOOL CWndGuildCombatJoinSelection::Initialize( CWndBase* pWndParent, DWORD /*dwW
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_SELSTART, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndGuildCombatJoinSelection::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildCombatJoinSelection::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildCombatJoinSelection::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombatJoinSelection::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
 BOOL CWndGuildCombatJoinSelection::Process ()
 {
 	if( m_dwOldTime <= g_tmCurrent )
@@ -15524,18 +14691,6 @@ BOOL CWndGuildCombatJoinSelection::OnChildNotify( UINT message, UINT nID, LRESUL
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ������ ��û
-CWndGuildWarAppConfirm::CWndGuildWarAppConfirm() 
-{
-}
-
-CWndGuildWarAppConfirm::~CWndGuildWarAppConfirm() 
-{
-}
-
-void CWndGuildWarAppConfirm::OnDraw( C2DRender* p2DRender ) 
-{
-}
-
 void CWndGuildWarAppConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -15558,24 +14713,6 @@ BOOL CWndGuildWarAppConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CLOSE_EXISTING_CONNECTION, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndGuildWarAppConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildWarAppConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildWarAppConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildWarAppConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
 BOOL CWndGuildWarAppConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_YES )
@@ -15596,10 +14733,6 @@ BOOL CWndGuildWarAppConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLR
 CWndGuildWarCancelConfirm::CWndGuildWarCancelConfirm(int nCombatType)
 {
 	m_nCombatType = nCombatType;
-}
-
-CWndGuildWarCancelConfirm::~CWndGuildWarCancelConfirm() 
-{
 }
 
 void CWndGuildWarCancelConfirm::PaintFrame( C2DRender* p2DRender )
@@ -15627,10 +14760,6 @@ void CWndGuildWarCancelConfirm::PaintFrame( C2DRender* p2DRender )
 	}
 }
 
-void CWndGuildWarCancelConfirm::OnDraw( C2DRender* p2DRender ) 
-{
-}
-
 void CWndGuildWarCancelConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -15651,24 +14780,6 @@ void CWndGuildWarCancelConfirm::OnInitialUpdate()
 BOOL CWndGuildWarCancelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_CANCEL_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
-} 
-
-BOOL CWndGuildWarCancelConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildWarCancelConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildWarCancelConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildWarCancelConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndGuildWarCancelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -15701,10 +14812,6 @@ CWndGuildWarJoinConfirm::CWndGuildWarJoinConfirm(int nCombatType)
 	m_nCombatType = nCombatType;
 }
 
-CWndGuildWarJoinConfirm::~CWndGuildWarJoinConfirm() 
-{	
-}
-
 void CWndGuildWarJoinConfirm::PaintFrame( C2DRender* p2DRender )
 {
 	CRect rect = GetWindowRect();
@@ -15730,10 +14837,6 @@ void CWndGuildWarJoinConfirm::PaintFrame( C2DRender* p2DRender )
 	}
 }
 
-void CWndGuildWarJoinConfirm::OnDraw( C2DRender* p2DRender ) 
-{
-}
-
 void CWndGuildWarJoinConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -15757,24 +14860,6 @@ void CWndGuildWarJoinConfirm::OnInitialUpdate()
 BOOL CWndGuildWarJoinConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CLOSE_EXISTING_CONNECTION, 0, CPoint( 0, 0 ), pWndParent );
-} 
-
-BOOL CWndGuildWarJoinConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildWarJoinConfirm::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildWarJoinConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildWarJoinConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndGuildWarJoinConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -16386,16 +15471,6 @@ void CWndGuildCombatResult::InsertLog(CString str)
 /****************************************************
   WndId : APP_GUILDCOMBAT_TAB_RESULT
 ****************************************************/
-CWndGuildCombatTabResultRate::CWndGuildCombatTabResultRate() 
-{ 
-} 
-CWndGuildCombatTabResultRate::~CWndGuildCombatTabResultRate() 
-{ 
-} 
-void CWndGuildCombatTabResultRate::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-
 void CWndGuildCombatTabResultRate::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -16408,28 +15483,11 @@ BOOL CWndGuildCombatTabResultRate::Initialize( CWndBase* pWndParent, DWORD /*dwW
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_TAB_RESULT, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndGuildCombatTabResultRate::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-BOOL CWndGuildCombatTabResultRate::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+
 	
 /****************************************************
   WndId : APP_GUILDCOMBAT_TAB_RESULT_LOG
 ****************************************************/
-CWndGuildCombatTabResultLog::CWndGuildCombatTabResultLog() 
-{ 
-} 
-CWndGuildCombatTabResultLog::~CWndGuildCombatTabResultLog() 
-{ 
-} 
-void CWndGuildCombatTabResultLog::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-
 void CWndGuildCombatTabResultLog::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -16441,10 +15499,7 @@ BOOL CWndGuildCombatTabResultLog::Initialize( CWndBase* pWndParent, DWORD /*dwWn
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_TAB_RESULT_LOG, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndGuildCombatTabResultLog::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
+
 BOOL CWndGuildCombatTabResultLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON1 )
