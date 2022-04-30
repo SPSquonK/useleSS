@@ -209,8 +209,7 @@ void CWndChangeSex::OnDraw( C2DRender* p2DRender )
 		else
 			D3DXMatrixTranslation(&matTrans,0.0f,-5.8f,0.0f);
 
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 		// ·£´õ¸µ 

@@ -914,9 +914,7 @@ void CMover::RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue )
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
@@ -985,9 +983,7 @@ void CMover::RenderTurboGauge( LPDIRECT3DDEVICE9 pd3dDevice, DWORD nColor, int n
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
@@ -1088,9 +1084,7 @@ void CMover::RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice )
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
@@ -1275,9 +1269,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
@@ -1707,9 +1699,7 @@ void CMover::RenderHP(LPDIRECT3DDEVICE9 pd3dDevice)
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
@@ -1777,9 +1767,7 @@ void CMover::RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice)
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x  = 0;
@@ -1826,9 +1814,7 @@ void CMover::RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice)
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	matWorld._41 = m_AngelPos.x;
 	matWorld._42 = m_AngelPos.y;
@@ -1904,9 +1890,7 @@ void CMover::RenderCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
@@ -1967,9 +1951,7 @@ void CMover::RenderCtrlCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
@@ -2040,9 +2022,7 @@ void CMover::RenderSkillCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 	D3DXMatrixIdentity(&matWorld);
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 	
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;

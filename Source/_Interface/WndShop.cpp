@@ -1008,8 +1008,7 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		else
 			D3DXMatrixTranslation(&matTrans,0.0f,-5.2f,0.0f);
 
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 		// 랜더링 
@@ -1078,9 +1077,7 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		else
 			D3DXMatrixTranslation(&matTrans,0.0f,-5.2f,0.0f);
 		
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matRot );
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matRot * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 		
 		::SetLight( FALSE );
@@ -1256,8 +1253,7 @@ void CWndBeautyShop::DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView)
 		else
 			D3DXMatrixTranslation(&matTrans,0.0f,-7.5f,-1.0f);
 		
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 		
 		::SetLight( FALSE );
@@ -2146,8 +2142,7 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 		else
 			D3DXMatrixTranslation(&matTrans,0.0f,-5.2f,0.0f);
 
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 		// 랜더링 
@@ -2209,9 +2204,7 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 		else
 			D3DXMatrixTranslation(&matTrans,0.0f,-5.2f,0.0f);
 		
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matRot );
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matRot * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 		
 		::SetLight( FALSE );
@@ -2329,8 +2322,7 @@ void CWndFaceShop::DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX ma
 		else
 			D3DXMatrixTranslation(&matTrans,0.0f,-9.5f,-1.0f);
 		
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 		
 		::SetLight( FALSE );

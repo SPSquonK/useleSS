@@ -1650,9 +1650,7 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 			D3DXMatrixScaling(&matScale,1.6f,1.6f,1.6f);
 			D3DXMatrixTranslation(&matTrans,0.0f,-1.15f,0.0f);
 
-			D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-			D3DXMatrixMultiply(&matWorld, &matWorld,&matRot);
-			D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+			matWorld = matWorld * matScale * matRot * matTrans;
 			pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 			// 랜더링 
@@ -2450,9 +2448,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	D3DXMatrixScaling(&matScale,1.4f,1.4f,1.4f);
 	D3DXMatrixTranslation(&matTrans,0.0f,-1.1f,0.0f);
 
-	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-	D3DXMatrixMultiply(&matWorld, &matWorld,&matRot);
-	D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * matScale * matRot * matTrans;
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 	// 랜더링 

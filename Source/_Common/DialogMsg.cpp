@@ -440,12 +440,7 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 				D3DXMatrixIdentity(&matWorld);
 				D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
 
-				const auto matrixScale = pObj->GetMatrixScale();
-				D3DXMatrixMultiply(&matWorld, &matWorld, &matrixScale);
-				const auto matrixRotation = pObj->GetMatrixRotation();
-				D3DXMatrixMultiply(&matWorld, &matWorld, &matrixRotation);
-
-				D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+				matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
 
 				vPosHeight = pBB->m_vPos[0];
 				vPosHeight.x = 0;
@@ -661,11 +656,7 @@ g_ShoutChat:
 			D3DXMatrixIdentity(&matWorld);
 			D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
 
-			const auto matrixScale = pObj->GetMatrixScale();
-			D3DXMatrixMultiply(&matWorld, &matWorld, &matrixScale);
-			const auto matrixRotation = pObj->GetMatrixRotation();
-			D3DXMatrixMultiply(&matWorld, &matWorld, &matrixRotation);
-			D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
+			matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
 
 			vPosHeight = pBB->m_vPos[0];
 			vPosHeight.x = 0;

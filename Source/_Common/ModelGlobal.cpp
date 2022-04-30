@@ -279,10 +279,7 @@ void SetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage, const D3
 	D3DXMatrixScaling( &scale, 0.5f, -0.5f, 1.0f );
 	D3DXMatrixTranslation( &offset, 0.5f, 0.5f, 0.0f );
 
-	D3DXMatrixMultiply( &mShadowUV, &mCameraToWorld, &g_mViewLight );
-	D3DXMatrixMultiply( &mShadowUV, &mShadowUV, &g_mShadowProj );
-	D3DXMatrixMultiply( &mShadowUV, &mShadowUV, &scale );
-	D3DXMatrixMultiply( &mShadowUV, &mShadowUV, &offset );
+	mShadowUV = mCameraToWorld * g_mViewLight * g_mShadowProj * scale * offset;
 
 	pd3dDevice->SetTexture( 0, NULL );
 //	pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_PASSTHRU );

@@ -2364,10 +2364,7 @@ void CWndWorld::RenderArrow()
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
-/*
-	pd3dDevice->SetRenderState(D3DRS_SRCBLEND,D3DBLEND_ONE);
-	pd3dDevice->SetRenderState(D3DRS_DESTBLEND,D3DBLEND_ONE);
-*/	
+
 	pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
 	pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 
@@ -2381,16 +2378,6 @@ void CWndWorld::RenderArrow()
 	matWorld._41 = g_pPlayer->GetPos().x; 
 	matWorld._42 = g_pPlayer->GetPos().y + 2.0f; 
 	matWorld._43 = g_pPlayer->GetPos().z;
-
-	/*D3DXVECTOR3 vDir = vDest - vSrc;
-	vDir.y = 0.0f;
-	D3DXVec3Normalize( &vDir, &vDir );
-
-	D3DXMATRIX matRot;
-	static float fAngle = 0.0f;
-	fAngle += 0.01f;
-	D3DXMatrixRotationAxis( &matRot, &vDir, fAngle );
-	D3DXMatrixMultiply( &matWorld, &matRot, &matWorld ); */
 
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );

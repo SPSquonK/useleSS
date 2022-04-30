@@ -136,9 +136,7 @@ void CObj::UpdateMatrix()
     // when the thing's position, orientation, or bounding box has changed
 
 	D3DXMatrixIdentity( &m_matWorld );
-	D3DXMatrixMultiply( &m_matWorld, &m_matWorld, &m_matScale );
-	D3DXMatrixMultiply( &m_matWorld, &m_matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &m_matWorld, &m_matWorld, &m_matTrans );
+	m_matWorld = m_matWorld * m_matScale * m_matRotation * m_matTrans;
 
 	if( m_pModel )
 	{

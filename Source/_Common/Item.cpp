@@ -542,16 +542,14 @@ void CItem::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwC
 	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
 	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
     D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
     pd3dDevice->GetViewport( &vp );
 	D3DXMATRIX matTrans;
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-	
+	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
+
+	const BOUND_BOX * pBB = m_pModel->GetBBVector();
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
 	vPosHeight.z = 0;

@@ -588,10 +588,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 		D3DXMATRIX matProj;
 		D3DXMatrixIdentity( &matProj );
 		FLOAT fAspect = ((FLOAT)viewport.Width) / (FLOAT)viewport.Height;
-/*
-		D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4.0f, fAspect, CWorld::m_fNearPlane - 0.01f, CWorld::m_fFarPlane );
-		pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
-*/		
+
 		FLOAT fov = D3DX_PI/4.0f;//796.0f;
 		FLOAT h = cos(fov/2) / sin(fov/2);
 		FLOAT w = h * fAspect;
@@ -608,9 +605,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 		D3DXMatrixScaling(&matScale,1.2f,1.2f,1.2f);
 		D3DXMatrixTranslation(&matTrans,0.0f,-0.6f,0.0f);
 		
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matRot );
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matRot * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 		// ������ 
@@ -1237,9 +1232,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 		D3DXMatrixScaling(&matScale,1.2f,1.2f,1.2f);
 		D3DXMatrixTranslation(&matTrans,0.0f,-0.6f,0.0f);
 		
-		D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matRot );
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+		matWorld = matWorld * matScale * matRot * matTrans;
 		pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 		// ������ 
@@ -9598,42 +9591,9 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 		D3DXMatrixRotationY( &matRot1, D3DXToRadian( -20 ) );
 	}
 	
-	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-	D3DXMatrixMultiply(&matWorld, &matWorld,&matRot1);
-	D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * matScale * matRot1 * matTrans;
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
-	/*
-	// �������� 
-	D3DXMATRIX matProj;
-	D3DXMatrixIdentity( &matProj );
-	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
-
-	// ī�޶� 
-	D3DXMATRIX  matView;
-	D3DXMatrixIdentity( &matView );
-	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
-
-	// ���� 
-	D3DXMATRIXA16 matWorld;
-	D3DXMATRIXA16 matScale;
-	D3DXMATRIXA16 matRot;
-	D3DXMATRIXA16 matTrans;
-
-	// �ʱ�ȭ 
-	D3DXMatrixIdentity(&matScale);
-	D3DXMatrixIdentity(&matRot);
-	D3DXMatrixIdentity(&matTrans);
-	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixScaling(&matScale,6.5f,6.5f,6.5f);
-	D3DXMatrixTranslation(&matTrans,0.2f,-9.7f,0.9f);
-	D3DXMatrixRotationY( &matRot, D3DXToRadian( -30 ) );
-
-	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-	D3DXMatrixMultiply(&matWorld, &matWorld,&matRot);
-	D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-*/
 	// ������ 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	
@@ -17897,9 +17857,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 	pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, 0xffa08080, 1.0f, 0 );
 
 	// Matrix Multiply
-	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-	D3DXMatrixMultiply(&matWorld, &matWorld, &matRot );
-	D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * matScale * matRot * matTrans;
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	
 	// ������ 

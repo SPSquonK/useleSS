@@ -674,9 +674,7 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 	const D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
-	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-	D3DXMatrixMultiply(&matWorld, &matWorld,&matRot1);
-	D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * matScale * matRot1 * matTrans;
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 	// 랜더링 
@@ -2342,9 +2340,7 @@ void CWndBuffPetStatus::OnDraw(C2DRender* p2DRender)
 	D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 	
-	D3DXMatrixMultiply(&matWorld,&matWorld,&matScale);
-	D3DXMatrixMultiply(&matWorld, &matWorld,&matRot1);
-	D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans );
+	matWorld = matWorld * matScale * matRot1 * matTrans;
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
 	// 랜더링 
