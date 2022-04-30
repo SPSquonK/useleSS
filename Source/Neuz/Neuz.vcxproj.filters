@@ -997,6 +997,9 @@
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp">
       <Filter>Source Files\_Interface</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\ItemElem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h">
@@ -1856,6 +1859,7 @@
     <ClInclude Include="..\_Interface\WndComponentSlots.h">
       <Filter>Source Files\_Interface</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\ItemElem.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

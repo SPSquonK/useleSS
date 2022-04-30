@@ -35,6 +35,7 @@
 #include "pet.h"
 
 #include "Piercing.h"
+#include "ItemElem.h"
 
 typedef	DWORD	OBJID;
 
@@ -132,26 +133,22 @@ public:
 };
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-class CItemElem : public CItemBase
+class CItemElem : public CItemBase,
+	public ItemElemFeatures::Piercing
 {
-private:
-	CPiercing	m_piercing;
 public:
-	void	SetPiercingSize( int nSize )	{	m_piercing.SetPiercingSize( nSize ); }
-	int		GetPiercingSize()	{	return m_piercing.GetPiercingSize();		}
-	void	SetPiercingItem( int nth, DWORD dwItem)	{	m_piercing.SetPiercingItem( nth, dwItem );	}
-	DWORD	GetPiercingItem( int nth ) const	{	return m_piercing.GetPiercingItem( nth );	}
-	void	CopyPiercing( const CPiercing & piercing )		{	m_piercing	= piercing;		}
-	void	SerializePiercing( CAr & ar )	{	m_piercing.Serialize( ar );		}
-	BOOL	IsPiercedItem()	{ return m_piercing.IsPiercedItem(); }
-#ifdef __DBSERVER
-	void	SetUltimatePiercingSize( int nSize )	{	m_piercing.SetUltimatePiercingSize( nSize );	}
-	int		GetUltimatePiercingSize()	{	return m_piercing.GetUltimatePiercingSize();		}
-	void	SetUltimatePiercingItem( int nth, DWORD dwItem )	{	m_piercing.SetUltimatePiercingItem( nth, dwItem );	}
-	DWORD	GetUltimatePiercingItem( int nth )	{	return m_piercing.GetUltimatePiercingItem( nth );	}
+	template <typename T>
+	static const CItemElem * Cast(const T * ptr) {
+		return static_cast<const CItemElem *>(ptr);
+	}
 
-	ItemProp*	GetProp()	{	return prj.GetItemProp( m_dwItemId );	}
-	BOOL	IsPierceAble( DWORD dwTargetItemKind3 = NULL_ID, BOOL bSize = FALSE );
+	template <typename T>
+	static CItemElem * Cast(T * ptr) {
+		return static_cast<CItemElem *>(ptr);
+	}
+
+#ifdef __DBSERVER
+	ItemProp*	GetProp() const	{	return prj.GetItemProp( m_dwItemId );	}
 #endif // __DBSERVER
 
 private:
