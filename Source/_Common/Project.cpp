@@ -4777,29 +4777,15 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 	{
 		if( s.Token == _T( "Accessory_Probability" ) )	// ������ ����
 		{
-			CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
-			LPDWORD ptr	= pProperty->GetProbabilityPtr();
-			int i	= 0;
-			s.GetToken();	// {
-			DWORD	dwProbability	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-				ptr[i++]	= dwProbability;
-				dwProbability	= s.GetNumber();
-			}
+			const auto probabilities = s.GetNumbers<DWORD>('}');
+			g_AccessoryProperty.ChangeProbabilities(probabilities);
 		}
 		else if( s.Token == _T( "Collecting_Enchant" ) )
 		{
 			CCollectingProperty* pProperty	= CCollectingProperty::GetInstance();
 			std::vector<int>* ptr	= pProperty->GetEnchantProbabilityPtr();
 			// 1 / 1000
-			s.GetToken();	// {
-			int nProb	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-				ptr->push_back( nProb );
-				nProb	= s.GetNumber();
-			}
+			*ptr = s.GetNumbers('}');
 		}
 		else if( s.Token == _T( "Collecting_Item" ) )
 		{
@@ -4848,13 +4834,7 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 			std::vector<WORD>* ptr	= pProperty->GetAddLifeProbabilityPtr();
 			// ���� ȸ���� Ȯ��	// �߰� �� ��� ���� 100�� �ǵ��� Ȯ��
 			// 	50	// +1
-			s.GetToken();	// {
-			WORD wProbability	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-				ptr->push_back( wProbability );
-				wProbability	= s.GetNumber();
-			}
+			*ptr = s.GetNumbers<WORD>('}');
 		}
 		s.GetToken();
 	}

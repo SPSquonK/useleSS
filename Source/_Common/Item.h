@@ -125,7 +125,7 @@ public:
 	*/
 	BOOL	IsPerin( void )		{	return m_dwItemId == II_SYS_SYS_SCR_PERIN;	}
 	BOOL	IsCollector( BOOL bRefinable = FALSE )	{	return( m_dwItemId == II_GEN_TOO_COL_NORMAL || ( !bRefinable && m_dwItemId == II_GEN_TOO_COL_EVENT ) );		}
-	BOOL	IsAccessory( void )		{	return CAccessoryProperty::GetInstance()->IsAccessory( m_dwItemId );	}
+	BOOL	IsAccessory( void )		{	return g_AccessoryProperty.IsAccessory(m_dwItemId);	}
 	BOOL	IsActiveTicket( DWORD dwItemId );
 	// 비트별 연산
 	// 8|10|8|10|8|10|8	= 64

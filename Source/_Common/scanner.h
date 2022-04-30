@@ -2,6 +2,8 @@
 #define __SCANNER_H
 
 #include "data.h"
+#include <concepts>
+#include <type_traits>
 
 #ifndef NULL_ID
 #define NULL_ID 0xffffffff
@@ -82,6 +84,27 @@ public:
 	DWORD			GetHex( BOOL bComma = FALSE );
 	SERIALNUMBER	GetSerialNumber( BOOL bComma = FALSE );
 	EXPINTEGER		GetExpInteger(  BOOL bComma = FALSE )	{ return GetInt64( bComma ); }
+
+	template<std::integral T = int>
+	std::vector<T> GetNumbers(const char terminator) {
+		return GetNumbers<std::vector<T>>(terminator);
+	}
+
+	template<typename /* VectorLike */ TS>
+	TS GetNumbers(const char terminator)
+	requires (std::is_integral<typename TS::value_type>::value) {
+		TS retval{};
+		using T = typename TS::value_type;
+
+		GetToken(); // starter ({)
+		T value = static_cast<T>(GetNumber());
+		while (*token != terminator) {
+			retval.emplace_back(value);
+			value = static_cast<T>(GetNumber());
+		}
+
+		return retval;
+	}
 };
 
 
