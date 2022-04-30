@@ -120,6 +120,7 @@ namespace {
 
 						if (partyIt == result.end()) {
 							result.emplace_back(*pParty, pDead);
+							partyIt = result.end() - 1;
 						}
 
 						partyIt->AddPlayer(*it);
