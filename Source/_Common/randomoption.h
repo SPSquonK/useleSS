@@ -1,16 +1,13 @@
-#ifndef __RANDOM_OPTION_EX_H__
-#define	__RANDOM_OPTION_EX_H__
+#pragma once
 
 #include <vector>
 
 #define	MAX_RANDOM_OPTION	3
 
-//	mulcom	BEGIN100405	각성 보호의 두루마리
 #define _AWAKE_SAFE_FLAG	0x2000000000000000
 
 #define _AWAKE_OLD_VALUE	1
 #define _AWAKE_NEW_VALUE	2
-//	mulcom	END100405	각성 보호의 두루마리
 
 
 typedef	struct	_AdjData
@@ -26,8 +23,8 @@ typedef	struct	_AdjData
 
 typedef struct	_RANDOM_OPTION
 {
-	int		nDst;	// 파라미터
-	int		nProb;	//	이 파라미터가 나올 확률
+	int		nDst;
+	int		nProb;
 	std::vector<AdjData>	aAdjData;
 	_RANDOM_OPTION()
 	{
@@ -45,10 +42,10 @@ typedef struct	_RANDOM_OPTION
 class CRandomOptionProperty
 {
 public:
-	// 시스템 펫 각성과 먹펫 각성 추가
-	enum	{	eAwakening, eBlessing,	eSystemPet, eEatPet, eMaxRandomOptionKind	};		// 랜덤 옵션 종류	// 각성: 0, 축복: 1
+	// Added system pet awakening and eating pet awakening
+	enum	{	eAwakening, eBlessing,	eSystemPet, eEatPet, eMaxRandomOptionKind	};		// Random option type
 
-	enum	{	eAwakeningExtension	= 3	};	// 0: 손, 1: 발, 2: 머리	// 각성 확장
+	enum	{	eAwakeningExtension	= 3	};	// 0: hand, 1: foot, 2: head	// Awakening Expansion
 
 	CRandomOptionProperty();
 	virtual	~CRandomOptionProperty();
@@ -57,56 +54,44 @@ public:
 	BOOL	LoadScript( LPCTSTR szFile );
 	void	LoadScriptBlock( CScript& s, int nRandomOptionKind );
 
-	// i번째 랜덤 옵션 파라미터와 값을 반환, 비어있으면 FALSE 반환
+	// Returns the i-th random option parameter and value, otherwise returns FALSE
 	BOOL	GetParam( __int64 nRandomOptItemId, int i, int* pnDst, int* pnAdj );
-	// 부여된 랜덤 옵션 파라미터의 개수 반환
+	// Returns the number of given random option parameters
 	int		GetRandomOptionSize( __int64 nRandomOptItemId );
 
-	//	mulcom	BEGIN100405	각성 보호의 두루마리
 	int		GetViewRandomOptionSize( __int64 n64RandomOptItemId );
-	//	mulcom	END100405	각성 보호의 두루마리
 
-	// 장착 부위에 따른 랜덤 옵션의 종류 반환
+	// Returns the type of random option according to the mounting part
 	int		GetRandomOptionKind( CItemElem* pItemElem );
 
-	// 랜덤 옵션 부여
-	//	mulcom	BEGIN100405	각성 보호의 두루마리
-	//BOOL	GenRandomOption( __int64* pnRandomOptItemId, int nRandomOptionKind, int nParts );
+	// give random option
 	BOOL	GenRandomOption( __int64* pnRandomOptItemId, int nRandomOptionKind, int nParts, bool bDecreaseFlag = false );
-	//	mulcom	END100405	각성 보호의 두루마리
 
-	// 랜덤 옵션 초기화
+	// Reset random option
 	void	InitializeRandomOption( __int64* pnRandomOptItemId );
 
-	// 해당 파라미터를 기존 랜덤 옵션 다음 번째에 설정	- GenRandomOption에서 호출.
+	// Set the corresponding parameter after the existing random option - Called by GenRandomOption.
 	void	SetParam( __int64* pnRandomOptItemId, int nDst, int nAdj );
 private:
 	int		DetermineRandomOptionSize( int nRandomOptionKind );
 	RANDOM_OPTION*	DetermineRandomOptionDst( int nRandomOptionKind, int nParts );
 
-	//	mulcom	BEGIN100405	각성 보호의 두루마리
-	//short DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOption );
 	short DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOption, bool bDecreaseAdj = false );
-	//	mulcom	END100405	각성 보호의 두루마리
 
 	int		GetRandomOptionKindIndex( int nRandomOptionKind, int nParts );
 	int		GetUpperProbability( int iRandomOptionKindIndex );
-	void	AwakeningExtension( void );		// 각성 축복 테이블 확장
+	void	AwakeningExtension( void );		// Awakening Blessing Table Expansion
 private:
 	int		m_anRandomOptionProb[eMaxRandomOptionKind][MAX_RANDOM_OPTION];
-	// 기본 + 확장
+	// Basic + Extended
 	std::vector<RANDOM_OPTION>	m_aRandomOption[eMaxRandomOptionKind + eAwakeningExtension];
 
 
-	//	mulcom	BEGIN100405	각성 보호의 두루마리
 public:
 	bool	IsCheckedSafeFlag( __int64 n64RandomeOption );
 	void	SetSafeFlag( __int64* pn64RandomOption );
 	void	ResetSafeFlag( __int64* pn64RandomOption );
-	//	mulcom	END100405	각성 보호의 두루마리
 };
 
 
 #define g_xRandomOptionProperty		CRandomOptionProperty::GetInstance()
-
-#endif	//__RANDOM_OPTION_EX_H__

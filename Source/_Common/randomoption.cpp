@@ -20,7 +20,7 @@ CRandomOptionProperty* CRandomOptionProperty::GetInstance()
 void CRandomOptionProperty::LoadScriptBlock( CScript & s, int nRandomOptionKind )
 {
 	int nTotalProb1		= 0;
-	for( int i = 0; i < MAX_RANDOM_OPTION; i++ )	// 3	// 랜덤 옵션이 몇개 부여될 것인가에 대한 확률
+	for( int i = 0; i < MAX_RANDOM_OPTION; i++ )	// 3	// Probability of how many random options will be given
 	{
 		m_anRandomOptionProb[nRandomOptionKind][i]	= s.GetNumber() + nTotalProb1;
 		nTotalProb1	= m_anRandomOptionProb[nRandomOptionKind][i];
@@ -66,14 +66,13 @@ BOOL CRandomOptionProperty::LoadScript( LPCTSTR szFile )
 			LoadScriptBlock( s, eAwakening );
 		else if( s.Token == _T( "Blessing" ) )
 			LoadScriptBlock( s, eBlessing );
-		// 시스템 펫 각성과 먹펫 각성 추가
 		else if( s.Token == _T( "SystemPet" ) )
 			LoadScriptBlock( s, eSystemPet );
 		else if( s.Token == _T( "EatPet" ) )
 			LoadScriptBlock( s, eEatPet );
 		s.GetToken();
 	}
-	AwakeningExtension();	// 각성, 축복 가능 파츠 추가를 위한 테이블 확장
+	AwakeningExtension();	// Table expansion to add awakening and blessing parts
 	return TRUE;
 }
 
@@ -94,14 +93,14 @@ void	CRandomOptionProperty::SetParam( __int64* pnRandomOptItemId, int nDst, int 
 
 	if( nAdj < 0 )
 	{
-		nRandomOptionItemId	|= 0x0200;	// 음수인 경우 최상위 비트 1
+		nRandomOptionItemId	|= 0x0200;	// Most significant bit 1 if negative
 		nRandomOptionItemId	= nRandomOptionItemId | ( -nAdj );
 	}
 	else
 		nRandomOptionItemId	= nRandomOptionItemId | nAdj;
 
-	nRandomOptionItemId	= nRandomOptionItemId << ( 8 + 18 * nSize );	// 해당 위치로 시프트
-	*pnRandomOptItemId	|= nRandomOptionItemId;		// 결과 값 저장
+	nRandomOptionItemId	= nRandomOptionItemId << ( 8 + 18 * nSize );	// shift to that position
+	*pnRandomOptItemId	|= nRandomOptionItemId;		// Save result value
 }
 
 int CRandomOptionProperty::GetRandomOptionKind( CItemElem* pItemElem )
@@ -112,23 +111,20 @@ int CRandomOptionProperty::GetRandomOptionKind( CItemElem* pItemElem )
 		case PARTS_UPPER_BODY:
 		case PARTS_RWEAPON:
 		case PARTS_SHIELD:
-		// 각성 가능 파츠 추가
-		case PARTS_HAND:	// 손
-		case PARTS_FOOT:	// 발
-		case PARTS_CAP:		// 머리
+		case PARTS_HAND:
+		case PARTS_FOOT:
+		case PARTS_CAP:
 			return static_cast<int>( eAwakening );
 		case PARTS_CLOTH:
 		case PARTS_CLOAK:
-		case PARTS_HAT:		// 겉옷 머리
-		case PARTS_GLOVE:	// 겉옷 손
-		case PARTS_BOOTS:	// 겉옷 발
+		case PARTS_HAT:
+		case PARTS_GLOVE:
+		case PARTS_BOOTS:
 			return static_cast<int>( eBlessing );
 		default:
 			{
-				// C급 이상의 시스템 펫인가?
 				if( pProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet && pItemElem->m_pPet->GetLevel() >= PL_C )
 					return static_cast<int>( eSystemPet );
-				// 먹펫인가?
 				else if( pProp->dwItemKind3 == IK3_PET )
 					return static_cast<int>( eEatPet );
 				break;
@@ -139,20 +135,16 @@ int CRandomOptionProperty::GetRandomOptionKind( CItemElem* pItemElem )
 
 BOOL	CRandomOptionProperty::GetParam( __int64 nRandomOptItemId, int i, int* pnDst, int* pnAdj )
 {
-//	ASSERT( i < MAX_RANDOM_OPTION );
 	if( i >= MAX_RANDOM_OPTION )
 		return FALSE;
 
-	int nRandomOption	= static_cast<int>( nRandomOptItemId >> ( 8 + i * 18 ) );	// 값을 가져오기 위하여 해당 위치로 시프트
-	*pnAdj	= nRandomOption & 0x000001FF;	// 하위 9비트 가져옴.
-	if( nRandomOption & 0x00000200 )	// 최상위 10 비트가 1이면 음수
+	int nRandomOption	= static_cast<int>( nRandomOptItemId >> ( 8 + i * 18 ) );
+	*pnAdj	= nRandomOption & 0x000001FF;
+	if( nRandomOption & 0x00000200 )
 		*pnAdj	= -*pnAdj;
-	nRandomOption	= nRandomOption >> 10;	// 10비트 밀고, 
+	nRandomOption	= nRandomOption >> 10;
 
-	//	mulcom	BEGIN100405	각성 보호의 두루마리
-	//*pnDst	= nRandomOption & 0x000000FF;	// 8비트 가져옴
-	*pnDst	= nRandomOption & 0x0000007F;	// 8비트 가져옴
-	//	mulcom	END100405	각성 보호의 두루마리
+	*pnDst	= nRandomOption & 0x0000007F;
 
 	return ( *pnDst > 0 );
 }
@@ -161,7 +153,6 @@ int CRandomOptionProperty::GetRandomOptionSize( __int64 nRandomOptItemId )
 {
 	int nSize	= 0;
 
-	//	mulcom	BEGIN100405	각성 보호의 두루마리
 	bool	bCheckedSafeFlag = false;
 	bCheckedSafeFlag	= IsCheckedSafeFlag( nRandomOptItemId );
 
@@ -169,7 +160,6 @@ int CRandomOptionProperty::GetRandomOptionSize( __int64 nRandomOptItemId )
 	{
 		return	nSize;
 	}
-	//	mulcom	END100405	각성 보호의 두루마리
 
 	__int64 i	= 0x3FFFF << 8;
 	for( int j = 0; j < MAX_RANDOM_OPTION; j++ )
@@ -186,7 +176,6 @@ int CRandomOptionProperty::GetRandomOptionSize( __int64 nRandomOptItemId )
 }
 
 
-//	mulcom	BEGIN100405		각성 보호의 두루마리
 int		CRandomOptionProperty::GetViewRandomOptionSize( __int64 n64RandomOptItemId )
 {
 	int nSize	= 0;
@@ -204,13 +193,9 @@ int		CRandomOptionProperty::GetViewRandomOptionSize( __int64 n64RandomOptItemId 
 
 	return nSize;
 }
-//	mulcom	END100405	각성 보호의 두루마리
 
 
-//	mulcom	BEGIN100405	각성 보호의 두루마리
-//BOOL	CRandomOptionProperty::GenRandomOption( __int64* pnRandomOptItemId, int nRandomOptionKind, int nParts )
 BOOL	CRandomOptionProperty::GenRandomOption( __int64* pnRandomOptItemId, int nRandomOptionKind, int nParts, bool bDecreaseFlag /* = false */ )
-//	mulcom	END100405	각성 보호의 두루마리
 { 
 	if( GetRandomOptionSize( *pnRandomOptItemId )  > 0 )
 	{
@@ -219,14 +204,12 @@ BOOL	CRandomOptionProperty::GenRandomOption( __int64* pnRandomOptItemId, int nRa
 
 	int nRandomOptionSize	= DetermineRandomOptionSize( nRandomOptionKind );
 
-	//	mulcom	BEGIN100405	각성 보호의 두루마리
 	int	nDecreaseNumber	= -1;
 
 	if( bDecreaseFlag == true )
 	{
 		nDecreaseNumber = xRandom( nRandomOptionSize );
 	}
-	//	mulcom	END100405	각성 보호의 두루마리
 
 	
 	while( nRandomOptionSize-- > 0 )
@@ -235,8 +218,6 @@ BOOL	CRandomOptionProperty::GenRandomOption( __int64* pnRandomOptItemId, int nRa
 		ASSERT( pRandomOption );
 
 
-		//	mulcom	BEGIN100405	각성 보호의 두루마리
-		//short nAdj	= DetermineRandomOptionAdj( pRandomOption );
 		bool	bDecreaseAdj	= false;
 
 		if( nRandomOptionSize == nDecreaseNumber )
@@ -249,7 +230,6 @@ BOOL	CRandomOptionProperty::GenRandomOption( __int64* pnRandomOptItemId, int nRa
 		}
 
 		short nAdj	= DetermineRandomOptionAdj( pRandomOption, bDecreaseAdj );
-		//	mulcom	END100405	각성 보호의 두루마리
 
 		SetParam( pnRandomOptItemId, pRandomOption->nDst, nAdj );
 	}
@@ -283,10 +263,7 @@ RANDOM_OPTION*	CRandomOptionProperty::DetermineRandomOptionDst( int nRandomOptio
 	return NULL;
 }
 
-//	mulcom	BEGIN100405	각성 보호의 두루마리
-//short CRandomOptionProperty::DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOption )
 short CRandomOptionProperty::DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOption, bool bDecreaseAdj /* = false */ )
-//	mulcom	END100405	각성 보호의 두루마리
 {
 	ASSERT( pRandomOption );
 	DWORD dwRand	= xRandom( 1000000000 );	// 0 - 9999999
@@ -295,8 +272,6 @@ short CRandomOptionProperty::DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOpt
 		AdjData	ad	= pRandomOption->aAdjData[i];
 		if( dwRand < ad.dwProb )
 		{
-			//	mulcom	BEGIN100405
-			//return ad.nAdj;
 			if( bDecreaseAdj == true && i > 0 )
 			{
 				return	( pRandomOption->aAdjData[i-1].nAdj );
@@ -305,7 +280,6 @@ short CRandomOptionProperty::DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOpt
 			{
 				return ad.nAdj;
 			}
-			//	mulcom	END100405
 		}
 	}
 	Error( "CRandomOptionProperty.DetermineRandomOptionAdj: 0" );
@@ -314,9 +288,9 @@ short CRandomOptionProperty::DetermineRandomOptionAdj( RANDOM_OPTION* pRandomOpt
 
 
 int	CRandomOptionProperty::GetRandomOptionKindIndex( int nRandomOptionKind, int nParts )
-{	// 각성 축복 시 참조할 테이블의 인덱스를 반환한다
+{	// Returns the index of the table to be referenced when blessing awakening
 	//PARTS_HAND: 4, PARTS_FOOT: 5, PARTS_CAP: 6
-	// 기본 테이블의 마지막 인덱스부터 확장 인덱스 시작한다
+	// The extended index starts from the last index of the base table.
 	if( nRandomOptionKind == eAwakening && ( nParts == PARTS_HAND || nParts == PARTS_FOOT || nParts == PARTS_CAP ) )
 		return eMaxRandomOptionKind + nParts - PARTS_HAND;
 	return nRandomOptionKind;
@@ -330,7 +304,6 @@ void CRandomOptionProperty::InitializeRandomOption( __int64* pnRandomOptItemId )
 
 
 
-//	mulcom	BEGIN100405	각성 보호의 두루마리
 void	CRandomOptionProperty::SetSafeFlag( __int64* pn64RandomOption )
 {
 	if( pn64RandomOption == NULL )
@@ -390,22 +363,22 @@ bool	CRandomOptionProperty::IsCheckedSafeFlag( __int64 n64RandomeOption )
 
 	return	false;
 }
-//	mulcom	END100405	각성 보호의 두루마리
 
 
 
 
 void CRandomOptionProperty::AwakeningExtension( void )
 {
-	int	anDst[eAwakeningExtension][6]	= {		// 각 부분 별 각성 가능 속성
+	// Awakenable properties for each part
+	int	anDst[eAwakeningExtension][6]	= {		
 		DST_CHR_CHANCECRITICAL, DST_ATKPOWER, DST_SPELL_RATE, DST_ATTACKSPEED, DST_MP_MAX, DST_FP_MAX,
 		DST_CRITICAL_BONUS, DST_SPEED, DST_ADJDEF, DST_HP_MAX, DST_MP_MAX, DST_FP_MAX,
 		DST_STR, DST_DEX, DST_INT, DST_STA, DST_MP_MAX, DST_FP_MAX	};
 	int anTotal[eAwakeningExtension];
 	memset( anTotal, 0, sizeof(int) * eAwakeningExtension );
 
-	// 각성 테이블에서 해당 부분에 각성 가능한 속성만을 포함하도록
-	// 각성 테이블 확장 후 구성한다
+	// To include only the attributes that can be awakened in the corresponding part of the awakening table.
+	// Configure after expanding the awakening table
 	for( DWORD i = 0; i < m_aRandomOption[eAwakening].size(); i++ )
 	{
 		RANDOM_OPTION* pRandomOption	= &m_aRandomOption[eAwakening][i];

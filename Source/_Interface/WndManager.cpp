@@ -4651,10 +4651,9 @@ void CWndMgr::PutBaseItemOpt(CItemElem * pItemElem, CEditString * pEdit) {
 		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 	}
 	
-	CAccessoryProperty* pProperty	= CAccessoryProperty::GetInstance();
 	if( pItemElem && pItemElem->IsAccessory() )		// 액세서리
 	{
-		const std::vector<SINGLE_DST>* pDst	= pProperty->GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
+		const std::vector<SINGLE_DST>* pDst	= g_AccessoryProperty.GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
 		const CString str = DstsToString(*pDst);
 		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 	}

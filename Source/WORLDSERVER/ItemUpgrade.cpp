@@ -589,7 +589,7 @@ BYTE	CItemUpgrade::SmeltSafetyAccessory(CUser* pUser, CItemElem* pItemMain, CIte
 	pUser->RemoveItem( (BYTE)( pItemProtScr->m_dwObjId ), 1 );
 
 	// 제련 확률
-	DWORD dwProbability = CAccessoryProperty::GetInstance()->GetProbability( pItemMain->GetAbilityOption() );
+	DWORD dwProbability = g_AccessoryProperty.GetProbability( pItemMain->GetAbilityOption() );
 
 	if( xRandom( 10000 ) > dwProbability )	// 실패
 	{
@@ -730,7 +730,7 @@ void	CItemUpgrade::RefineAccessory( CUser* pUser, CItemElem* pItemMain, CItemEle
 	aLogItem.Gold	= pUser->GetGold();
 	aLogItem.Gold2	= pUser->GetGold();
 
-	DWORD dwProbability		= CAccessoryProperty::GetInstance()->GetProbability( pItemMain->GetAbilityOption() );
+	DWORD dwProbability		= g_AccessoryProperty.GetProbability( pItemMain->GetAbilityOption() );
 	// 액세서리 보호의 두루마리
 	BOOL bSmelprot	= FALSE;
 	if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT4 ) )
