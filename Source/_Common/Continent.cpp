@@ -14,11 +14,6 @@ CContinent::CContinent()
 	Init();
 }
 
-CContinent::~CContinent()
-{
-
-}
-
 CContinent* CContinent::GetInstance( void )
 {
 	static CContinent sContinent;
@@ -104,17 +99,14 @@ void CContinent::Init()
 
 }
 
-BOOL CContinent::Point_In_Poly(std::vector<CPoint> vecMap, CPoint test_point )
+BOOL CContinent::Point_In_Poly(const std::vector<CPoint> & vecMap, CPoint test_point )
 {
 	int counter = 0;
-	int i;
-	double xinters;
-	CPoint p1,p2;
-	
-	p1 = vecMap[0];
-	for( i=1;i<=(int)( vecMap.size() );i++ )
+		
+	CPoint p1 = vecMap[0];
+	for(int i=1;i<=(int)( vecMap.size() );i++ )
 	{
-		p2 = vecMap[i % vecMap.size()];
+		CPoint p2 = vecMap[i % vecMap.size()];
 		
 		if (test_point.y > min_cont(p1.y,p2.y))
 		{
@@ -124,7 +116,7 @@ BOOL CContinent::Point_In_Poly(std::vector<CPoint> vecMap, CPoint test_point )
 				{
 					if (p1.y != p2.y)
 					{
-						xinters = (test_point.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
+						double xinters = (test_point.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
 						
 						if (p1.x == p2.x || test_point.x <= xinters)
 							counter++;
@@ -173,89 +165,41 @@ BOOL CContinent::IsValidObj( CMover* pMover )
 
 #endif // !__DBSERVER
 
-BYTE CContinent::GetContinent( const D3DXVECTOR3& vPos )
-{
-	CPoint  cpoint;
-	std::vector<CPoint>	vecPoint;
+BYTE CContinent::FindContInMap(const D3DXVECTOR3 & vPos, const std::map<BYTE, std::vector<CPoint>> & map) {
+	CPoint cpoint;
+	cpoint.x = (long)(vPos.x);
+	cpoint.y = (long)(vPos.z);
 
-	cpoint.x    = (long)( vPos.x );
-	cpoint.y    = (long)( vPos.z );
+	const auto townIt = std::ranges::find_if(map,
+		[&](const auto & pair) {
+			return Point_In_Poly(pair.second, cpoint);
+		}
+	);
 
-	for( auto iter = m_MapCont.begin(); iter != m_MapCont.end(); ++iter )
-	{
-		vecPoint  = iter->second;	
-		if( Point_In_Poly( vecPoint, cpoint ) )
-			return iter->first;
-	}
+	if (townIt == map.end()) return CONT_NODATA;
+	return townIt->first;
+}
+
+BYTE CContinent::GetArea(BYTE nCont) {
+	if (nCont == CONT_NODATA)    return CONT_NODATA;
+	else if (nCont <= CONT_EAST) return CONT_EAST;
+	else if (nCont >= CONT_WEST) return CONT_WEST;
 
 	return CONT_NODATA;
 }
 
-BYTE CContinent::GetTown( const D3DXVECTOR3& vPos )
-{
-	CPoint  cpoint;
-	std::vector<CPoint>	vecPoint;
-
-	cpoint.x    = (long)( vPos.x );
-	cpoint.y    = (long)( vPos.z );
-
-	for( auto iter = m_MapContTown.begin(); iter != m_MapContTown.end(); ++iter )
-	{
-		vecPoint  = iter->second;	
-		if( Point_In_Poly( vecPoint, cpoint ) )
-			return iter->first;
+const char * CContinent::GetContinentName(const BYTE nCont) {
+	switch (nCont) {
+		case CONT_FLARIS:       return prj.GetText(TID_GAME_CONT_FLARIS);
+		case CONT_SAINTMORNING: return prj.GetText(TID_GAME_CONT_SAINTMORNING);
+		case CONT_DARKON12:     return prj.GetText(TID_GAME_CONT_DARKON12);
+		case CONT_DARKON3:      return prj.GetText(TID_GAME_CONT_DARKON3);
+		case CONT_RICIS:        return prj.GetText(TID_GAME_CONT_RICIS);
+		case CONT_EAST:         return prj.GetText(TID_GAME_CONT_EAST);
+		case CONT_WEST:         return prj.GetText(TID_GAME_CONT_WEST);
+		case CONT_ALL:          return prj.GetText(TID_GAME_CONT_ALL);
+		default:                return "";
 	}
-
-	return CONT_NODATA;
-}
-
-BYTE CContinent::GetArea( BYTE nCont )
-{
-	if( nCont == CONT_NODATA )
-		return CONT_NODATA;
-	else if( nCont <= CONT_EAST )
-		return CONT_EAST;
-	else if( nCont >= CONT_WEST )
-		return CONT_WEST;
-
-	return CONT_NODATA;
-}
-
-CString CContinent::GetContinentName( BYTE nCont )
-{
-	CString strTemp;
-	
-	switch( nCont )
-	{
-		case CONT_FLARIS :
-			strTemp = prj.GetText( TID_GAME_CONT_FLARIS );
-			break;
-		case CONT_SAINTMORNING :
-			strTemp = prj.GetText( TID_GAME_CONT_SAINTMORNING );
-			break;
-		case CONT_DARKON12 :
-			strTemp = prj.GetText( TID_GAME_CONT_DARKON12 );
-			break;
-		case CONT_DARKON3 :
-			strTemp = prj.GetText( TID_GAME_CONT_DARKON3 );
-			break;
-		case CONT_RICIS :
-			strTemp = prj.GetText( TID_GAME_CONT_RICIS );
-			break;
-		
-		case CONT_EAST :
-			strTemp = prj.GetText( TID_GAME_CONT_EAST );
-			break;
-		case CONT_WEST :
-			strTemp = prj.GetText( TID_GAME_CONT_WEST );
-			break;
-
-		case CONT_ALL :
-			strTemp = prj.GetText( TID_GAME_CONT_ALL );
-			break;
-	}
-
-	return strTemp;
 }
 
 #ifdef __WORLDSERVER
