@@ -119,20 +119,25 @@ int CRandomOptionProperty::GetRandomOptionKind( CItemElem* pItemElem )
 	return -1;
 }
 
-BOOL	CRandomOptionProperty::GetParam( __int64 nRandomOptItemId, int i, int* pnDst, int* pnAdj )
-{
-	if( i >= MAX_RANDOM_OPTION )
-		return FALSE;
+__int64 CRandomOptionProperty::GetRandomOptItemId(const CItemElem & itemElem) const {
+	return itemElem.GetRandomOptItemId();
+}
 
-	int nRandomOption	= static_cast<int>( nRandomOptItemId >> ( 8 + i * 18 ) );
-	*pnAdj	= nRandomOption & 0x000001FF;
-	if( nRandomOption & 0x00000200 )
-		*pnAdj	= -*pnAdj;
-	nRandomOption	= nRandomOption >> 10;
+std::optional<SINGLE_DST> CRandomOptionProperty::GetParam(__int64 nRandomOptItemId, int i) {
+	if (i >= MAX_RANDOM_OPTION) return std::nullopt;
 
-	*pnDst	= nRandomOption & 0x0000007F;
+	int nRandomOption = static_cast<int>(nRandomOptItemId >> (8 + i * 18));
+	int adj = nRandomOption & 0x000001FF;
+	if (nRandomOption & 0x00000200) {
+		adj = -adj;
+	}
+	nRandomOption = nRandomOption >> 10;
 
-	return ( *pnDst > 0 );
+	int dst = nRandomOption & 0x0000007F;
+
+	if (dst <= 0) return std::nullopt;
+
+	return SINGLE_DST{ dst, adj };
 }
 
 int CRandomOptionProperty::GetRandomOptionSize( __int64 nRandomOptItemId )

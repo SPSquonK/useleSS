@@ -372,9 +372,11 @@ void CWndSelectAwakeCase::OutputOptionString( C2DRender* p2DRender, CItemElem* p
 	// option
 	for( int i = 0; i < nSize; i++ )
 	{
-		int nDst = 0, nAdj = 0;
-		if( !g_xRandomOptionProperty.GetParam( n64Options, i, &nDst, &nAdj ) )
-			continue;
+		const auto opt = g_xRandomOptionProperty.GetParam(n64Options, i);
+		if (!opt) continue;
+
+		const int nDst = opt->nDst;
+		const int nAdj = opt->nAdj;
 
 		if( IsDst_Rate( nDst ) )
 		{

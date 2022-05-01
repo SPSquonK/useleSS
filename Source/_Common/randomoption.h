@@ -2,6 +2,9 @@
 
 #include <array>
 #include <vector>
+#include <optional>
+#include <ranges>
+#include "SingleDst.h"
 
 #define	MAX_RANDOM_OPTION	3
 
@@ -35,7 +38,24 @@ public:
 	void	LoadScriptBlock( CScript& s, int nRandomOptionKind );
 
 	// Returns the i-th random option parameter and value, otherwise returns FALSE
-	BOOL	GetParam( __int64 nRandomOptItemId, int i, int* pnDst, int* pnAdj );
+	std::optional<SINGLE_DST> GetParam(__int64 nRandomOptItemId, int i);
+
+	auto GetParams(const CItemElem & itemElem) {
+		const __int64 randomOpt = GetRandomOptItemId(itemElem);
+		const int size = GetRandomOptionSize(randomOpt);
+
+		SmallDstList list;
+		for (int i = 0; i != size; ++i) {
+			const auto opt = GetParam(randomOpt, i);
+			if (opt) {
+				list.emplace_back(opt.value());
+			}
+		}
+		return list;
+	}
+
+	[[nodiscard]] __int64 GetRandomOptItemId(const CItemElem & itemElem) const;
+	
 	// Returns the number of given random option parameters
 	int		GetRandomOptionSize( __int64 nRandomOptItemId );
 

@@ -4398,13 +4398,8 @@ void CWndMgr::PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit )
 	}
 
 	// option
-	for( int i = 0; i < nSize; i++ )
-	{
-		int nDst, nAdj;
-		if( !g_xRandomOptionProperty.GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
-			continue;
-
-		str = SingleDstToString(SINGLE_DST{ nDst, nAdj });
+	for (const auto & dst : g_xRandomOptionProperty.GetParams(*pItemElem)) {
+		str = SingleDstToString(dst);
 
 		if( nKind == CRandomOptionProperty::eAwakening )
 		{

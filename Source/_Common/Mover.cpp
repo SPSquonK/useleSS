@@ -7668,14 +7668,9 @@ bool CMover::IsEquipedPartItem(const CSetItem::PartItem & partItem) {
 	return true;
 }
 
-void CMover::SetDestParamRandomOptExtension( CItemElem* pItemElem )
-{
-	int cbOption	= g_xRandomOptionProperty.GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
-	for( int i = 0; i < cbOption; i++ )
-	{
-		int nDst, nAdj;
-		if( g_xRandomOptionProperty.GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
-			SetDestParam( nDst, nAdj, NULL_CHGPARAM );
+void CMover::SetDestParamRandomOptExtension(CItemElem * pItemElem) {
+	for (const auto & dst : g_xRandomOptionProperty.GetParams(*pItemElem)) {
+		SetDestParam(dst.nDst, dst.nAdj, NULL_CHGPARAM);
 	}
 }
 
@@ -7703,14 +7698,9 @@ void CMover::ResetDestParamRandomOptOrigin(const CItemElem * const pItemElem) {
 	}
 }
 
-void CMover::ResetDestParamRandomOptExtension( CItemElem* pItemElem )
-{
-	int cbOption	= g_xRandomOptionProperty.GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
-	for( int i = 0; i < cbOption; i++ )
-	{
-		int nDst, nAdj;
-		if( g_xRandomOptionProperty.GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
-			ResetDestParam( nDst, nAdj, TRUE );
+void CMover::ResetDestParamRandomOptExtension(CItemElem * pItemElem) {
+	for (const auto & dst : g_xRandomOptionProperty.GetParams(*pItemElem)) {
+		ResetDestParam(dst.nDst, dst.nAdj, TRUE);
 	}
 }
 
