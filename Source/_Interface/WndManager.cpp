@@ -4352,16 +4352,16 @@ void CWndMgr::PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit )
 
 void CWndMgr::PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit )
 {
-	int nKind	= g_xRandomOptionProperty->GetRandomOptionKind( pItemElem );
+	int nKind	= g_xRandomOptionProperty.GetRandomOptionKind( pItemElem );
 	if( nKind < 0 )		// 아이템 각성, 여신의 축복 대상이 아니면,
 		return;
-	int nSize	= g_xRandomOptionProperty->GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
+	int nSize	= g_xRandomOptionProperty.GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
 
 #ifdef __PROTECT_AWAKE
 	//각성 보호 취소된 아이템인가.. 그렇다면 줄그어진 옵션을 보여줘야 한다.
-	bool bSafe = g_xRandomOptionProperty->IsCheckedSafeFlag( pItemElem->GetRandomOptItemId() );
+	bool bSafe = g_xRandomOptionProperty.IsCheckedSafeFlag( pItemElem->GetRandomOptItemId() );
 	if( bSafe )
-		nSize = g_xRandomOptionProperty->GetViewRandomOptionSize( pItemElem->GetRandomOptItemId() );
+		nSize = g_xRandomOptionProperty.GetViewRandomOptionSize( pItemElem->GetRandomOptItemId() );
 
 	assert( nSize >= 0 && nSize < 4 );
 #endif //__PROTECT_AWAKE
@@ -4401,7 +4401,7 @@ void CWndMgr::PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit )
 	for( int i = 0; i < nSize; i++ )
 	{
 		int nDst, nAdj;
-		if( !g_xRandomOptionProperty->GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
+		if( !g_xRandomOptionProperty.GetParam( pItemElem->GetRandomOptItemId(), i, &nDst, &nAdj ) )
 			continue;
 
 		str = SingleDstToString(SINGLE_DST{ nDst, nAdj });

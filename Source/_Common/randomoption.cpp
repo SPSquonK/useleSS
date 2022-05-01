@@ -1,21 +1,7 @@
 #include "stdafx.h"
 #include "randomoption.h"
 
-CRandomOptionProperty::CRandomOptionProperty()
-{
-	memset( m_anRandomOptionProb, 0, sizeof(m_anRandomOptionProb) );
-}
-
-CRandomOptionProperty::~CRandomOptionProperty()
-{
-}
-
-CRandomOptionProperty* CRandomOptionProperty::GetInstance()
-{
-	static	CRandomOptionProperty	sRandomOptionProperty;
-
-	return	&sRandomOptionProperty;
-}
+CRandomOptionProperty g_xRandomOptionProperty;
 
 void CRandomOptionProperty::LoadScriptBlock( CScript & s, int nRandomOptionKind )
 {
@@ -248,7 +234,7 @@ int	CRandomOptionProperty::DetermineRandomOptionSize( int nRandomOptionKind )
 	return 0;
 }
 
-RANDOM_OPTION*	CRandomOptionProperty::DetermineRandomOptionDst( int nRandomOptionKind, int nParts )
+CRandomOptionProperty::RANDOM_OPTION * CRandomOptionProperty::DetermineRandomOptionDst( int nRandomOptionKind, int nParts )
 {
 	int iRandomOptionKindIndex	= GetRandomOptionKindIndex( nRandomOptionKind, nParts );
 	DWORD dwRand	= xRandom( GetUpperProbability( iRandomOptionKindIndex ) );
@@ -392,7 +378,7 @@ void CRandomOptionProperty::AwakeningExtension( void )
 			for( int k = 0; k < 6; k++ )
 				if( pRandomOption->nDst == anDst[j][k] )
 				{
-					RANDOM_OPTION ro( pRandomOption );
+					RANDOM_OPTION ro( *pRandomOption );
 					ro.nProb	= anTotal[j] + nProb;
 					anTotal[j]	= ro.nProb;
 					m_aRandomOption[iRandomOptionKindIndex].push_back( ro );

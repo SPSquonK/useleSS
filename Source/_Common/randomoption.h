@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <vector>
 
 #define	MAX_RANDOM_OPTION	3
@@ -9,47 +10,26 @@
 #define _AWAKE_OLD_VALUE	1
 #define _AWAKE_NEW_VALUE	2
 
+class CRandomOptionProperty {
+public:
+	struct AdjData {
+		short	nAdj;
+		DWORD	dwProb;
 
-typedef	struct	_AdjData
-{
-	short	nAdj;
-	DWORD	dwProb;
-	_AdjData( short n, DWORD dw )
-	{
-		nAdj	= n;
-		dwProb	= dw;
-	}
-}	AdjData;
+		AdjData(const short n, const DWORD dw) : nAdj(n), dwProb(dw) {}
+	};
 
-typedef struct	_RANDOM_OPTION
-{
-	int		nDst;
-	int		nProb;
-	std::vector<AdjData>	aAdjData;
-	_RANDOM_OPTION()
-	{
-		nDst	= 0;
-		nProb	= 0;
-	}
-	_RANDOM_OPTION( _RANDOM_OPTION* pRandomOption )
-	{
-		nDst	= pRandomOption->nDst;
-		nProb	= pRandomOption->nProb;
-		aAdjData.assign( pRandomOption->aAdjData.begin(), pRandomOption->aAdjData.end() );
-	}
-}	RANDOM_OPTION;
+	struct RANDOM_OPTION {
+		int nDst = 0;
+		int nProb = 0;
+		std::vector<AdjData> aAdjData;
+	};
 
-class CRandomOptionProperty
-{
 public:
 	// Added system pet awakening and eating pet awakening
 	enum	{	eAwakening, eBlessing,	eSystemPet, eEatPet, eMaxRandomOptionKind	};		// Random option type
 
 	enum	{	eAwakeningExtension	= 3	};	// 0: hand, 1: foot, 2: head	// Awakening Expansion
-
-	CRandomOptionProperty();
-	virtual	~CRandomOptionProperty();
-	static	CRandomOptionProperty*	GetInstance();
 	
 	BOOL	LoadScript( LPCTSTR szFile );
 	void	LoadScriptBlock( CScript& s, int nRandomOptionKind );
@@ -84,8 +64,7 @@ private:
 private:
 	int		m_anRandomOptionProb[eMaxRandomOptionKind][MAX_RANDOM_OPTION];
 	// Basic + Extended
-	std::vector<RANDOM_OPTION>	m_aRandomOption[eMaxRandomOptionKind + eAwakeningExtension];
-
+	std::array<std::vector<RANDOM_OPTION>, eMaxRandomOptionKind + eAwakeningExtension> m_aRandomOption;
 
 public:
 	bool	IsCheckedSafeFlag( __int64 n64RandomeOption );
@@ -94,4 +73,4 @@ public:
 };
 
 
-#define g_xRandomOptionProperty		CRandomOptionProperty::GetInstance()
+extern CRandomOptionProperty g_xRandomOptionProperty;

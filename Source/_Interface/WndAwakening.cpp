@@ -165,7 +165,7 @@ BOOL CWndAwakening::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
-	int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pTempElem );
+	int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pTempElem );
 	if( nRandomOptionKind  != CRandomOptionProperty::eAwakening )
 	{
 		// 적절한 대상이 아닙니다.
@@ -173,7 +173,7 @@ BOOL CWndAwakening::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_INVALID_TARGET_ITEM ) );
 		return FALSE;
 	}
-	if( g_xRandomOptionProperty->GetRandomOptionSize( pTempElem->GetRandomOptItemId() ) > 0 )
+	if( g_xRandomOptionProperty.GetRandomOptionSize( pTempElem->GetRandomOptItemId() ) > 0 )
 	{
 		// 이미 각성된 아이템입니다.
 		//g_WndMng.PutString( prj.GetText( TID_GAME_AWAKE_OR_BLESSEDNESS01 ), NULL, prj.GetTextColor( TID_GAME_AWAKE_OR_BLESSEDNESS01  ) );
@@ -361,8 +361,8 @@ void CWndSelectAwakeCase::OutputOptionString( C2DRender* p2DRender, CItemElem* p
 
     int nSize = 0;
 	if( !bNew )
-		nSize = g_xRandomOptionProperty->GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
-	else nSize = g_xRandomOptionProperty->GetViewRandomOptionSize( m_n64NewOption );
+		nSize = g_xRandomOptionProperty.GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
+	else nSize = g_xRandomOptionProperty.GetViewRandomOptionSize( m_n64NewOption );
 
 	__int64 n64Options = 0;
 	n64Options = ( bNew ? m_n64NewOption : pItemElem->GetRandomOptItemId() );
@@ -373,7 +373,7 @@ void CWndSelectAwakeCase::OutputOptionString( C2DRender* p2DRender, CItemElem* p
 	for( int i = 0; i < nSize; i++ )
 	{
 		int nDst = 0, nAdj = 0;
-		if( !g_xRandomOptionProperty->GetParam( n64Options, i, &nDst, &nAdj ) )
+		if( !g_xRandomOptionProperty.GetParam( n64Options, i, &nDst, &nAdj ) )
 			continue;
 
 		if( IsDst_Rate( nDst ) )

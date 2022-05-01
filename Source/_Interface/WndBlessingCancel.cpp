@@ -142,8 +142,8 @@ BOOL  CWndBlessingCancel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
-    if( g_xRandomOptionProperty->GetRandomOptionKind( pTempElem ) == CRandomOptionProperty::eBlessing
-		&& g_xRandomOptionProperty->GetRandomOptionSize( pTempElem->GetRandomOptItemId() ))
+    if( g_xRandomOptionProperty.GetRandomOptionKind( pTempElem ) == CRandomOptionProperty::eBlessing
+		&& g_xRandomOptionProperty.GetRandomOptionSize( pTempElem->GetRandomOptItemId() ))
 	{
 		// 하락 상태가 된 아이템만 올릴 수 있다. 
 		if(pTempElem != NULL)

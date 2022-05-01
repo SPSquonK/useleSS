@@ -557,10 +557,10 @@ BOOL TextCmd_SetRandomOption(CScanner & s, CPlayer_ * pUser) {
 	CItemElem* pItemElem	= pUser->m_Inventory.GetAt( 0 );
 	if( pItemElem )
 	{
-		int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pItemElem );
+		int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pItemElem );
 		if( nRandomOptionKind >= 0 )
 		{
-			g_xRandomOptionProperty->InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
+			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
 			int nDst, nAdj;
 			int cb	= 0;
 			nDst	= s.GetNumber();
@@ -590,7 +590,7 @@ BOOL TextCmd_SetRandomOption(CScanner & s, CPlayer_ * pUser) {
 				nAdj	= s.GetNumber();
 				if( s.tok == FINISHED )
 					break;
-				g_xRandomOptionProperty->SetParam( pItemElem->GetRandomOptItemIdPtr(), nDst, nAdj );
+				g_xRandomOptionProperty.SetParam( pItemElem->GetRandomOptItemIdPtr(), nDst, nAdj );
 				cb++;
 				if( cb >= MAX_RANDOM_OPTION )
 					break;
@@ -608,11 +608,11 @@ BOOL TextCmd_GenRandomOption(CScanner &, CPlayer_ * pUser) {
 	CItemElem* pItemElem	= pUser->m_Inventory.GetAt( 0 );
 	if( pItemElem )
 	{
-		int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pItemElem );
+		int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pItemElem );
 		if( nRandomOptionKind >= 0 )	// 아이템 각성, 여신의 축복이 가능한 대상
 		{
-			g_xRandomOptionProperty->InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
-			g_xRandomOptionProperty->GenRandomOption( pItemElem->GetRandomOptItemIdPtr(), nRandomOptionKind, pItemElem->GetProp()->dwParts );
+			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
+			g_xRandomOptionProperty.GenRandomOption( pItemElem->GetRandomOptItemIdPtr(), nRandomOptionKind, pItemElem->GetProp()->dwParts );
 			pUser->UpdateItemEx( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, pItemElem->GetRandomOptItemId() );
 		}
 	}
@@ -635,10 +635,10 @@ BOOL TextCmd_InitializeRandomOption(CScanner & s, CPlayer_ * pUser) {
 	CItemElem* pItemElem	= pUser->m_Inventory.GetAt( 0 );
 	if( pItemElem )
 	{
-		int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pItemElem );
+		int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pItemElem );
 		if( nRandomOptionKind >= 0 )	// 아이템 각성, 여신의 축복이 가능한 대상
 		{
-			g_xRandomOptionProperty->InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
+			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
 			pUser->UpdateItemEx( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, pItemElem->GetRandomOptItemId() );
 		}
 	}

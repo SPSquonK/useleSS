@@ -376,8 +376,8 @@ BOOL CItemElem::IsBinds( void )
 	if( IsFlag( CItemElem::binds ) )
 		return TRUE;
 
-	if( g_xRandomOptionProperty->GetRandomOptionSize( GetRandomOptItemId() ) > 0
-		&& ( g_xRandomOptionProperty->GetRandomOptionKind( this ) == CRandomOptionProperty::eBlessing || g_xRandomOptionProperty->GetRandomOptionKind( this ) == CRandomOptionProperty::eEatPet ) )
+	if( g_xRandomOptionProperty.GetRandomOptionSize( GetRandomOptItemId() ) > 0
+		&& ( g_xRandomOptionProperty.GetRandomOptionKind( this ) == CRandomOptionProperty::eBlessing || g_xRandomOptionProperty.GetRandomOptionKind( this ) == CRandomOptionProperty::eEatPet ) )
 		return TRUE;
 	if( GetLevelDown() < 0 )
 		return TRUE;

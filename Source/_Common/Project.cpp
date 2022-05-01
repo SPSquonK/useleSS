@@ -543,7 +543,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );
 	CCollectingProperty::GetInstance()->LoadScript( "collecting.inc" );
 	g_AccessoryProperty.LoadScript( "accessory.inc" );
-	g_xRandomOptionProperty->LoadScript( "randomoption.inc" );
+	g_xRandomOptionProperty.LoadScript( "randomoption.inc" );
 
 #ifdef __SYS_TICKET
 #ifdef __AZRIA_1023

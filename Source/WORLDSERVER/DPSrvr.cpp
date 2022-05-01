@@ -9704,10 +9704,10 @@ void	CDPSrvr::OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 		CItemElem* pItem	= pUser->GetItemId( nItem );
 		if( IsUsableItem( pItem ) )
 		{
-			if( g_xRandomOptionProperty->GetRandomOptionKind( pItem ) == CRandomOptionProperty::eBlessing
-				&& g_xRandomOptionProperty->GetRandomOptionSize( pItem->GetRandomOptItemId() ) > 0 )
+			if( g_xRandomOptionProperty.GetRandomOptionKind( pItem ) == CRandomOptionProperty::eBlessing
+				&& g_xRandomOptionProperty.GetRandomOptionSize( pItem->GetRandomOptItemId() ) > 0 )
 			{
-				g_xRandomOptionProperty->InitializeRandomOption( pItem->GetRandomOptItemIdPtr() );
+				g_xRandomOptionProperty.InitializeRandomOption( pItem->GetRandomOptItemIdPtr() );
 				pUser->UpdateItemEx( (BYTE)( pItem->m_dwObjId ), UI_RANDOMOPTITEMID, pItem->GetRandomOptItemId() );
 				pUser->AddDiagText( prj.GetText( TID_GAME_BLESSEDNESS_CANCEL_INFO ) );
 				// log
@@ -9747,20 +9747,20 @@ void	CDPSrvr::OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 		CItemElem* pItem	= pUser->m_Inventory.GetAtId( nItem );
 		if( IsUsableItem( pItem ) )
 		{
-			int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pItem );
+			int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pItem );
 
 			if( nRandomOptionKind != CRandomOptionProperty::eAwakening )
 			{
 				pUser->AddDefinedText( TID_GAME_INVALID_TARGET_ITEM );
 				return;
 			}
-			if( g_xRandomOptionProperty->GetRandomOptionSize( pItem->GetRandomOptItemId() ) > 0 )
+			if( g_xRandomOptionProperty.GetRandomOptionSize( pItem->GetRandomOptItemId() ) > 0 )
 			{
 				pUser->AddDefinedText( TID_GAME_AWAKE_OR_BLESSEDNESS01 );
 				return;
 			}
-			g_xRandomOptionProperty->InitializeRandomOption( pItem->GetRandomOptItemIdPtr() );
-			g_xRandomOptionProperty->GenRandomOption( pItem->GetRandomOptItemIdPtr(), nRandomOptionKind, pItem->GetProp()->dwParts );
+			g_xRandomOptionProperty.InitializeRandomOption( pItem->GetRandomOptItemIdPtr() );
+			g_xRandomOptionProperty.GenRandomOption( pItem->GetRandomOptItemIdPtr(), nRandomOptionKind, pItem->GetProp()->dwParts );
 			pUser->UpdateItemEx( (BYTE)( pItem->m_dwObjId ), UI_RANDOMOPTITEMID, pItem->GetRandomOptItemId() );
 			pUser->AddGold( -nCost );
 			pUser->AddDefinedText( TID_GAME_AWAKENING_SUCCESS );
@@ -10272,7 +10272,7 @@ BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 											  int nOk, int nMismatchKind, int nHasOption,
 											  const char* szOperation, const char* szReceive )
 {
-	int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pTarget );
+	int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pTarget );
 	if( nRandomOptionKind != nKind || pTarget->IsFlag( CItemElem::expired ) )
 	{
 		pUser->AddDefinedText( nMismatchKind );
@@ -10282,7 +10282,7 @@ BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 	if( 
 		// 여신의 축복과 먹펫 각성은 각성 취소 없이 덮어 쓸 수 있게 한다
 		nKind != CRandomOptionProperty::eBlessing && nKind != CRandomOptionProperty::eEatPet &&
-		g_xRandomOptionProperty->GetRandomOptionSize( pTarget->GetRandomOptItemId() ) > 0
+		g_xRandomOptionProperty.GetRandomOptionSize( pTarget->GetRandomOptItemId() ) > 0
 	)
 	{
 		pUser->AddDefinedText( nHasOption );
@@ -10301,14 +10301,14 @@ BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 	//g_xRandomOptionProperty->InitializeRandomOption( pTarget->GetRandomOptItemIdPtr() );
 	//g_xRandomOptionProperty->GenRandomOption( pTarget->GetRandomOptItemIdPtr(), nRandomOptionKind, pTarget->GetProp()->dwParts );
 	bool	bCheckedSafeFlag	= false;
-	bCheckedSafeFlag	= g_xRandomOptionProperty->IsCheckedSafeFlag( pTarget->GetRandomOptItemId() );
+	bCheckedSafeFlag	= g_xRandomOptionProperty.IsCheckedSafeFlag( pTarget->GetRandomOptItemId() );
 
 	if( bCheckedSafeFlag == true )
 	{
-		g_xRandomOptionProperty->ResetSafeFlag( pTarget->GetRandomOptItemIdPtr() );
+		g_xRandomOptionProperty.ResetSafeFlag( pTarget->GetRandomOptItemIdPtr() );
 
-		g_xRandomOptionProperty->InitializeRandomOption( pTarget->GetNewRandomOptionPtr() );
-		g_xRandomOptionProperty->GenRandomOption( pTarget->GetNewRandomOptionPtr(), nRandomOptionKind, pTarget->GetProp()->dwParts, true );
+		g_xRandomOptionProperty.InitializeRandomOption( pTarget->GetNewRandomOptionPtr() );
+		g_xRandomOptionProperty.GenRandomOption( pTarget->GetNewRandomOptionPtr(), nRandomOptionKind, pTarget->GetProp()->dwParts, true );
 
 		//	mulcom	BEGIN100426	각성 보호의 두루마리 로그.
 // 		WriteLog( "UserID [%d] : ItemSerialNumber[%d] Protect GenNewRandomOption [%I64d]", (int)( pUser->GetId() ), (int)( pTarget->GetSerialNumber() ), pTarget->GetNewRandomOption() );
@@ -10324,8 +10324,8 @@ BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 	}
 	else
 	{
-		g_xRandomOptionProperty->InitializeRandomOption( pTarget->GetRandomOptItemIdPtr() );
-		g_xRandomOptionProperty->GenRandomOption( pTarget->GetRandomOptItemIdPtr(), nRandomOptionKind, pTarget->GetProp()->dwParts );
+		g_xRandomOptionProperty.InitializeRandomOption( pTarget->GetRandomOptItemIdPtr() );
+		g_xRandomOptionProperty.GenRandomOption( pTarget->GetRandomOptItemIdPtr(), nRandomOptionKind, pTarget->GetProp()->dwParts );
 	}
 	//	mulcom	END100405	각성 보호의 두루마리
 
@@ -10353,8 +10353,8 @@ BOOL CDPSrvr::DoUseItemTarget_InitializeRandomOption(
 											  int nOk, int nError,
 											  const char* szOperation, const char* szRecv )
 {
-	int nRandomOptionKind	= g_xRandomOptionProperty->GetRandomOptionKind( pTarget );
-	if( nRandomOptionKind == nKind && g_xRandomOptionProperty->GetRandomOptionSize( pTarget->GetRandomOptItemId() ) > 0 )
+	int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pTarget );
+	if( nRandomOptionKind == nKind && g_xRandomOptionProperty.GetRandomOptionSize( pTarget->GetRandomOptItemId() ) > 0 )
 	{
 		// 먹펫 또는 시스템 펫 각성 취소 후 효과 제거
 		if( pUser->IsUsing( pTarget ) 
@@ -10367,7 +10367,7 @@ BOOL CDPSrvr::DoUseItemTarget_InitializeRandomOption(
 		if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_AWAKESAFE ) == TRUE && nKind == CRandomOptionProperty::eAwakening )
 		{
 			nOk = TID_GAME_REGARDLESS_USE04;
-			g_xRandomOptionProperty->SetSafeFlag( pTarget->GetRandomOptItemIdPtr() );
+			g_xRandomOptionProperty.SetSafeFlag( pTarget->GetRandomOptItemIdPtr() );
 
 			pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_AWAKESAFE );
 
@@ -10378,7 +10378,7 @@ BOOL CDPSrvr::DoUseItemTarget_InitializeRandomOption(
 		}
 		else
 		{
-			g_xRandomOptionProperty->InitializeRandomOption( pTarget->GetRandomOptItemIdPtr() );
+			g_xRandomOptionProperty.InitializeRandomOption( pTarget->GetRandomOptItemIdPtr() );
 		}
 #else	//__PROTECT_AWAKE
 		g_xRandomOptionProperty->InitializeRandomOption( pTarget->GetRandomOptItemIdPtr() );
