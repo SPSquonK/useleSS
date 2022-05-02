@@ -1063,96 +1063,85 @@ void CDPSrvr::OnCreateGuildCloak( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )		
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );		// 어느유저로부터 날아온거냐.
-	if( IsValidObj( pUser ) )
-	{
-		CGuild *pGuild = pUser->GetGuild();
-		if( pGuild == NULL )
-			return;
-		if( pGuild->m_dwLogo == 0 ||							//  로고가 지정되어 있지 않거나
-			pGuild->IsMaster( pUser->m_idPlayer ) == FALSE )	// 마스터가 아니거나
-		{
-			if( pGuild->m_dwLogo == 0 )
-			{
-				// 로그가 지정되지 않아서 못만듬
-				pUser->AddDefinedText( TID_GAME_GUILDSETTINGLOGO, "" );
-			}
-			else
-			{
-				// 마스터가 아니므로 만들수가 없음.
-				pUser->AddDefinedText( TID_GAME_GUILDONLYMASTERLOGO, "" );
-			}
-			return;
+	CUser * const pUser = g_UserMng.GetUser(dpidCache, dpidUser);
+	if (!IsValidObj(pUser)) return;
+
+	CGuild * const pGuild = pUser->GetGuild();
+	if (!pGuild) return;
+
+	if (pGuild->m_dwLogo == 0) {
+		//  로고가 지정되어 있지 않거나
+		// 로그가 지정되지 않아서 못만듬
+		pUser->AddDefinedText(TID_GAME_GUILDSETTINGLOGO, "");
+		return;
+	}
+
+	if (!pGuild->IsMaster(pUser->m_idPlayer)) {
+		// 마스터가 아니거나
+		// 마스터가 아니므로 만들수가 없음.
+		pUser->AddDefinedText(TID_GAME_GUILDONLYMASTERLOGO, "");
+		return;
+	}
+
+	// 길드창고가 망토를 넣을 공간이 충분한지 체크한다. 물론 길드 망토를 길드 창고에 넣을때이다. 아니라면 주석처리 해주세용
+	if (pGuild->m_GuildBank.GetCount() >= MAX_BANK) {
+		pUser->AddDefinedText(TID_GAME_GUILDBANKFULL, "");		// 길드창고가 꽉찼시유~
+		return;
+	}
+
+	// 길드창고에 돈이 충분하냐?
+	if (pGuild->m_nGoldGuild < 10000) {
+		pUser->AddDefinedText(TID_GAME_GUILDNEEDGOLD, "");		// 길드창고에 돈이 엄떵!
+		return;
+	}
+
+	pGuild->m_nGoldGuild -= 10000;
+
+	// 길드창고에서 돈 지불하고, 길드 망토를 길드창고에 생성시킴.
+
+	constexpr auto GetCloakIdFromLogoId = [](const DWORD guildLogo) -> DWORD {
+		if (guildLogo == 0 || guildLogo == 999) return II_ARM_S_CLO_CLO_BLANK;
+		const DWORD cloakId = II_ARM_S_CLO_CLO_SYSCLOAK01 + guildLogo - 1;
+		if (cloakId < II_ARM_S_CLO_CLO_SYSCLOAK01 || cloakId >= II_ARM_S_CLO_CLO_SYSCLOAK20) {
+			return II_ARM_S_CLO_CLO_SYSCLOAK01;
+		} else {
+			return cloakId;
 		}
+	};
 
-		// 길드창고가 망토를 넣을 공간이 충분한지 체크한다. 물론 길드 망토를 길드 창고에 넣을때이다. 아니라면 주석처리 해주세용
-		if ( MAX_BANK <= pGuild->m_GuildBank.GetCount() )
-		{
-			pUser->AddDefinedText( TID_GAME_GUILDBANKFULL, "" );		// 길드창고가 꽉찼시유~
-			return;
-		}
+	CItemElem itemElem;
+	itemElem.m_dwItemId = GetCloakIdFromLogoId(pGuild->m_dwLogo);
 
-		if ( pGuild->m_nGoldGuild >= 10000 )	 // 길드창고에 돈이 충분하냐?
-		{
-			pGuild->m_nGoldGuild -= 10000;
-
-			// 길드창고에서 돈 지불하고, 길드 망토를 길드창고에 생성시킴.
-//			BYTE nId;
-			CItemElem itemElem;
-			if( pGuild->m_dwLogo == 999 )	// 커스텀 로고로 설정되어 있을때.
-				itemElem.m_dwItemId	= II_ARM_S_CLO_CLO_BLANK;		// 커스텀용 민짜 망토생성.
-			else
-			{
-				if(pUser->IsAuthHigher(AUTH_GAMEMASTER) && pGuild->m_dwLogo > CUSTOM_LOGO_MAX - 7) // GM Guild Logo사용 시 임의로 망토 생성
-					itemElem.m_dwItemId	= II_ARM_S_CLO_CLO_SYSCLOAK01;
-				else
-					itemElem.m_dwItemId	= II_ARM_S_CLO_CLO_SYSCLOAK01 + (pGuild->m_dwLogo - 1);
-			}
-			itemElem.m_nItemNum		= 1;
-			// 길드 아이디를 망토에 박음. 클라에선 숫자를 기반으로 커스텀 망토를 읽는다.
-			// 커스텀 망토가 아닌경우는 이번호로 길드이름을 보여준다.
-			itemElem.m_idGuild	= pGuild->m_idGuild;			
+	itemElem.m_nItemNum		= 1;
+	// 길드 아이디를 망토에 박음. 클라에선 숫자를 기반으로 커스텀 망토를 읽는다.
+	// 커스텀 망토가 아닌경우는 이번호로 길드이름을 보여준다.
+	itemElem.m_idGuild	= pGuild->m_idGuild;			
 			
 
-			// a. 요청한 클라에게 길드창고 페냐가 소모되었음을 알린다.
-			// b. 현재 같은 서버에 있는 같은 길드원인 클라이언트에게 페냐가 소모되었음을 알린다.
-			// c. 다른 멀티서버셋에 있는 같은 길드원인 클라이언트에게 페냐가 소모되었을을 알린다.
-			itemElem.SetSerialNumber();
-			ItemProp* pItemProp		= itemElem.GetProp();
-			if( pItemProp )
-				itemElem.m_nHitPoint	= pItemProp->dwEndurance;
-			else
-				itemElem.m_nHitPoint	= 0;
+	// a. 요청한 클라에게 길드창고 페냐가 소모되었음을 알린다.
+	// b. 현재 같은 서버에 있는 같은 길드원인 클라이언트에게 페냐가 소모되었음을 알린다.
+	// c. 다른 멀티서버셋에 있는 같은 길드원인 클라이언트에게 페냐가 소모되었을을 알린다.
+	itemElem.SetSerialNumber();
+	ItemProp* pItemProp		= itemElem.GetProp();
+	if( pItemProp )
+		itemElem.m_nHitPoint	= pItemProp->dwEndurance;
+	else
+		itemElem.m_nHitPoint	= 0;
 
-			pUser->AddPutItemGuildBank( &itemElem );
-			pGuild->m_GuildBank.Add( &itemElem );
-			g_UserMng.AddPutItemElem( pUser, &itemElem );
+	pUser->AddPutItemGuildBank( &itemElem );
+	pGuild->m_GuildBank.Add( &itemElem );
+	g_UserMng.AddPutItemElem( pUser, &itemElem );
 						
-			// 자신의 길드원들의 루프를 돌면서 길드망토를 사서 10000페냐가 소모되었다고 알려준다.
-			// 물론 루프에서 요청한 클라이언트에게도 메시지를 함께 보낸다.
-			CGuildMember*	pMember;
-			CUser*			pUsertmp;
-			CGuild*			pGuild = pUser->GetGuild();
-			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-			{
-				pMember		= i->second;
-				pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
-				if( IsValidObj( pUsertmp ) )
-				{
-					pUsertmp->AddGetGoldGuildBank( 10000, 2, pMember->m_idPlayer, 1 );	// 2는 업데이트 해야할 클라이게
-				}
-			}
-			// 현 멀티셋 서버에는 위 루틴이 모두 10000페냐가 소모됨을 알렸으므로 DPCoreClient로 캐시서버에 요청하여 
-			// 모든 멀티셋에 10000페냐가 소모되었다고 알린다. 물론 보내는 이 멀티셋 서버는 이 메시지를 무시해야 한다. ( 무시하게 해놨지만 잘 될런지 -_- )
-			g_DPCoreClient.SendGuildMsgControl_Bank_Penya( pUser, 10000, 2, 1 ); 	// 2는 업데이트 해야할 다른 월드서버의 클라이언트
-			UpdateGuildBank(pGuild, GUILD_CLOAK, 0, pUser->m_idPlayer, &itemElem, 10000, 1 ); // 0은 길드 페냐를 업데이트 한다는 것이다.(실은 모든것을 업데이트하지만 -_-)
-			pUser->AddDefinedText( TID_GAME_GUILDCREATECLOAK, "" );
-		} 
-		else
-		{
-			pUser->AddDefinedText( TID_GAME_GUILDNEEDGOLD, "" );		// 길드창고에 돈이 엄떵!
-		}
+	// 자신의 길드원들의 루프를 돌면서 길드망토를 사서 10000페냐가 소모되었다고 알려준다.
+	// 물론 루프에서 요청한 클라이언트에게도 메시지를 함께 보낸다.
+	for (CUser * pUsertmp : AllMembers(*pGuild)) {
+		pUsertmp->AddGetGoldGuildBank( 10000, 2, pUser->m_idPlayer, 1 );	// 2는 업데이트 해야할 클라이게
 	}
+	// 현 멀티셋 서버에는 위 루틴이 모두 10000페냐가 소모됨을 알렸으므로 DPCoreClient로 캐시서버에 요청하여 
+	// 모든 멀티셋에 10000페냐가 소모되었다고 알린다. 물론 보내는 이 멀티셋 서버는 이 메시지를 무시해야 한다. ( 무시하게 해놨지만 잘 될런지 -_- )
+	g_DPCoreClient.SendGuildMsgControl_Bank_Penya( pUser, 10000, 2, 1 ); 	// 2는 업데이트 해야할 다른 월드서버의 클라이언트
+	UpdateGuildBank(pGuild, GUILD_CLOAK, 0, pUser->m_idPlayer, &itemElem, 10000, 1 ); // 0은 길드 페냐를 업데이트 한다는 것이다.(실은 모든것을 업데이트하지만 -_-)
+	pUser->AddDefinedText( TID_GAME_GUILDCREATECLOAK, "" );
 }
 
 void CDPSrvr::OnQueryGetDestObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

@@ -1529,11 +1529,9 @@ void CDPCacheSrvr::OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 
 void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _uidPlayer, _uGuildId;
-	DWORD dwType, dwPenya;
+	const auto [_playerId, _guildId, dwType, dwPenya] = ar.Extract<u_long, u_long, DWORD, DWORD>();
 
-	ar >> _uidPlayer >> _uGuildId;
-	ar >> dwType >> dwPenya;
+	if (dwType >= MAX_GM_LEVEL) return;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );	
