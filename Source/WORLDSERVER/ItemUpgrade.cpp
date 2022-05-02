@@ -1578,11 +1578,13 @@ void CItemUpgrade::RemovePetVisItem( CUser* pUser, int nPosition, BOOL bExpired 
 	if( !IsValidObj( pUser ) )
 		return;
 
-	CItemElem* pItemElemPet = pUser->GetVisPetItem();
+	CItemElem* const pItemElemPet = pUser->GetVisPetItem();
 	if( !IsUsableItem( pItemElemPet ) )
 		return;
 
-	DWORD dwItemId = pItemElemPet->GetPiercingItem( nPosition );
+	if (nPosition < 0 || nPosition >= pItemElemPet->GetPiercingSize()) return;
+
+	const DWORD dwItemId = pItemElemPet->GetPiercingItem( nPosition );
 	if( dwItemId  == 0 )	// 이미 비어있는 슬롯
 		return;
 

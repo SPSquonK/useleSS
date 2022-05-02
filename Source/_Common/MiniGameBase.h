@@ -33,11 +33,19 @@ struct __MINIGAME_EXT_PACKET : public __MINIGAME_PACKET
 			ar << vecszData.size();
 			for( DWORD i=0; i<vecszData.size(); i++ )
 				ar.WriteString( vecszData[i].c_str() );
+
+			if (vecszData.size() >= 5) {
+				Error(__FUNCTION__ " just sent %lu elements which is not supported by reception", vecszData.size());
+			}
 		}
 		else
 		{
 			int nSize = 0; vecszData.clear();
 			ar >> nSize;
+			if (nSize >= 5) {
+				nSize = 5;
+			}
+
 			for( int i=0; i<nSize; i++ )
 			{
 				char szTemp[256] = {0,};

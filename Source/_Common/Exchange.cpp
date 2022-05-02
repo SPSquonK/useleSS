@@ -407,7 +407,7 @@ int CExchange::ResultExchange( CUser* pUser, int nMMIId, int nListNum )
 	if( !pSetList )
 		return EXCHANGE_FAILED;
 
-	if( nListNum > (int)( pSetList->vecSet.size()-1 ) )
+	if( nListNum < 0 || nListNum >= (int)( pSetList->vecSet.size()) )
 		return EXCHANGE_FAILED;
 	
 	// 조건 비교

@@ -481,15 +481,14 @@ void CMiniGame::DestroyWnd_FiveSystem( CUser* pUser )
 
 int CMiniGame::Bet_FiveSystem( CUser* pUser, int nBetNum, int nBetPenya )
 {
+	// 잘못된 입찰 번호가 들어 왔을 때
+	if (nBetNum < 0 || 5 < nBetNum) return FIVESYSTEM_FAILED;
+	// 입찰금은 0보다 작을 수 없다.
+	if (nBetPenya < 0) return FIVESYSTEM_FAILED;
+
 	// 입찰 번호에 이전 값이 0이고 현재 입찰금이 0일때 아무일도 안함(로그 X)
 	if( pUser->m_nBetFiveSystem[nBetNum] == 0 && nBetPenya == 0 )
 		return TRUE;
-	// 잘못된 입찰 번호가 들어 왔을 때
-	if( nBetNum < 0 || 5 < nBetNum )
-		return FIVESYSTEM_FAILED;
-	// 입찰금은 0보다 작을 수 없다.
-	if(nBetPenya < 0)
-		return FIVESYSTEM_FAILED;
 
 	// 최소 입찰금과 최대 입찰금의 범위를 벗어났을 경우 ( Client 에서 이미 검사.. )
 	if( ( nBetPenya < m_nBetMinPenya || nBetPenya > m_nBetMaxPenya ) && nBetPenya != 0 )
