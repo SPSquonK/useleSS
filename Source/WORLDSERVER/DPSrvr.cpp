@@ -1084,7 +1084,7 @@ void CDPSrvr::OnCreateGuildCloak( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	}
 
 	// 길드창고가 망토를 넣을 공간이 충분한지 체크한다. 물론 길드 망토를 길드 창고에 넣을때이다. 아니라면 주석처리 해주세용
-	if (pGuild->m_GuildBank.GetCount() >= MAX_BANK) {
+	if (pGuild->m_GuildBank.GetEmptyCount() == 0) {
 		pUser->AddDefinedText(TID_GAME_GUILDBANKFULL, "");		// 길드창고가 꽉찼시유~
 		return;
 	}
