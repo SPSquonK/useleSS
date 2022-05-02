@@ -756,20 +756,14 @@ BOOL CProject::LoadInvalidName( void )
 	return FALSE;
 }
 
-BOOL CProject::IsInvalidName( LPCSTR szName )
-{
-	TCHAR pszName[ 64 ];
-	strcpy( pszName, szName );
-	strlwr( pszName );
-//	string str	= pszName;
-	CString str = pszName;
-	for( auto i = m_sInvalidNames.begin(); i != m_sInvalidNames.end(); ++i )
-	{	
-//		if( str.find( *i, 0 ) != -1 )
-		if( str.Find( (*i).c_str(), 0 ) != -1 )
-			return TRUE;
-	}
-	return FALSE;
+bool CProject::IsInvalidName(LPCSTR szName) const {
+	CString str = szName;
+	str.MakeLower();
+
+	return std::ranges::any_of(m_sInvalidNames,
+		[&](const std::string & invalidName) {
+			return str.Find(invalidName.c_str()) != -1;
+		});
 }
 
 #ifdef __VENDOR_1106

@@ -5835,8 +5835,10 @@ void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 			return;
 #endif // __QUIZ
 #ifdef __RULE_0615
-		if( prj.IsInvalidName( lpszPlayer ) || prj.IsAllowedLetter( lpszPlayer ) == FALSE )
-			pUser->AddDiagText( prj.GetText( TID_DIAG_0020 ) ); 
+		if (prj.IsInvalidName(lpszPlayer) || !prj.IsAllowedLetter(lpszPlayer)) {
+			pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
+			return;
+		}
 		prj.Formalize( lpszPlayer );
 #endif	// __RULE_0615
 
@@ -5874,30 +5876,21 @@ void CDPSrvr::OnQuerySetGuildName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 	ar.ReadString( lpszGuild, MAX_G_NAME );
 
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-#ifdef __RULE_0615
-		if( prj.IsInvalidName( lpszGuild ) || prj.IsAllowedLetter( lpszGuild ) == FALSE )
-			pUser->AddDiagText( prj.GetText( TID_DIAG_0020 ) ); 
-#endif	// __RULE_0615
+	if (!IsValidObj(pUser)) return;
 
-#ifdef __S_SERVER_UNIFY
-		if( pUser->m_bAllAction )
-#endif // __S_SERVER_UNIFY
-		{
-			CItemElem* pItemElem = pUser->GetItemId( nId );
-			if( IsUsableItem( pItemElem ) && pItemElem->m_bQuery == FALSE )
-			{
-				pItemElem->m_bQuery	= TRUE;
-				g_DPCoreClient.SendQuerySetGuildName( pUser->m_idPlayer, pUser->m_idGuild, lpszGuild, nId );
-			}
+	if (prj.IsInvalidName(lpszGuild) || !prj.IsAllowedLetter(lpszGuild)) {
+		pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
+		return;
+	}
+
+	if( pUser->m_bAllAction ) {
+		CItemElem* pItemElem = pUser->GetItemId( nId );
+		if (IsUsableItem(pItemElem) && pItemElem->m_bQuery == FALSE && pItemElem->m_dwItemId == II_SYS_SYS_SCR_GCHANAM) {
+			pItemElem->m_bQuery = TRUE;
+			g_DPCoreClient.SendQuerySetGuildName(pUser->m_idPlayer, pUser->m_idGuild, lpszGuild, nId);
 		}
-#ifdef __S_SERVER_UNIFY
-		else
-		{
-			g_DPCoreClient.SendQuerySetGuildName( pUser->m_idPlayer, pUser->m_idGuild, lpszGuild, nId );
-		}
-#endif // __S_SERVER_UNIFY
+	} else {
+		g_DPCoreClient.SendQuerySetGuildName( pUser->m_idPlayer, pUser->m_idGuild, lpszGuild, nId );
 	}
 }
 
@@ -7659,7 +7652,7 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 */
 
 #ifdef __RULE_0615
-		if( prj.IsInvalidName( szPVendor ) || prj.IsAllowedLetter( szPVendor, TRUE ) == FALSE )
+		if( prj.IsInvalidName( szPVendor ) || !prj.IsAllowedLetter( szPVendor, TRUE ) )
 			pUser->AddDiagText( prj.GetText( TID_DIAG_0020 ) ); 
 #endif	// __RULE_0615
 

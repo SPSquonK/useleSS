@@ -4721,49 +4721,6 @@ int CProject::GetExpUpItem( DWORD dwItemKind3, int nOption )
 	return 0;
 }
 
-#ifdef __CLIENT
-#ifndef __RULE_0615
-BOOL CProject::LoadInvalidName( void )
-{
-	CScanner s;
-	TCHAR szName[64];
-	
-	CString strFilter;
-	strFilter	= GetLangFileName( ::GetLanguage(), FILE_INVALID );
-
-	if( s.Load( strFilter ) ) 
-	{
-		s.GetToken();
-		while( s.tok != FINISHED )
-		{
-			strcpy( szName, s.Token );
-			strlwr( szName );
-			m_sInvalidNames.insert( (LPCSTR)szName );
-			s.GetToken();
-		}
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CProject::IsInvalidName( LPCSTR szName )
-{
-	TCHAR pszName[ 64 ];
-	strcpy( pszName, szName );
-	strlwr( pszName );
-	string str	= pszName;
-	for( set<string>::iterator i = m_sInvalidNames.begin(); i != m_sInvalidNames.end(); ++i )
-	{
-		string strstr = *i;
-		
-		if( str.find( *i, 0 ) != -1 )
-			return TRUE;
-	}
-	return FALSE;
-}
-#endif	// __RULE_0615
-#endif	// __CLIENT
-
 #ifdef __WORLDSERVER
 #ifdef __JEFF_11_3
 BOOL	CProject::LoadServerScript( const char* sFile )

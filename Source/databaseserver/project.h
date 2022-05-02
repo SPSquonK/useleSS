@@ -137,7 +137,7 @@ public:
 #ifdef __RULE_0615
 	std::set<std::string>		m_sInvalidNames;
 	BOOL	LoadInvalidName( void );
-	BOOL	IsInvalidName( LPCSTR szName );
+	[[nodiscard]] bool IsInvalidName(LPCSTR szName) const;
 
 	std::set<char>	m_sAllowedLetter;
 #ifdef __VENDOR_1106
