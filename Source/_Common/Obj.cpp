@@ -679,6 +679,10 @@ void CObj::AddAngleX( FLOAT fAngle )
 
 void CObj::SetAngleX( FLOAT fAngX )
 { 
+	if (CMover * mover = ToMover(); mover && mover->IsPlayer() && !mover->IsFly()) { // Inclination fix
+		fAngX = 0.f;
+	}
+
 	m_fAngX	= fAngX;
 	
 	FLOAT fAngZ = 0.0f;
