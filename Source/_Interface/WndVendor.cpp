@@ -279,13 +279,8 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				return TRUE;
 			}
 
-			if( prj.IsInvalidName( strVendor )
-#ifdef __RULE_0615
-				|| prj.IsAllowedLetter( strVendor, TRUE ) == FALSE
-#endif	// __RULE_0615
-				)
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
+			if (prj.nameValider.IsNotAllowedVendorName(strVendor)) {
+				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
 				return TRUE;
 			}
 

@@ -77,13 +77,6 @@ CProject::~CProject()
 		if( lpText && lpText->lpszData )
 			free( lpText->lpszData ); 
 	}
-#ifdef __RULE_0615
-	m_sInvalidNames.clear();
-	m_sAllowedLetter.clear();
-#ifdef __VENDOR_1106
-	m_sAllowedLetter2.clear();
-#endif	// __VENDOR_1106
-#endif	// __RULE_0615
 }
 
 int SortJobSkill( const void *arg1, const void *arg2 )
@@ -176,11 +169,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	m_GuildCombat1to1.LoadScript();
 
 #ifdef __RULE_0615
-	LoadInvalidName();
-	LoadAllowedLetter();
-#ifdef __VENDOR_1106
-	LoadAllowedLetter( TRUE );
-#endif	// __VENDOR_1106
+	nameValider.Load();
 #endif	// __RULE_0615
 	
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );

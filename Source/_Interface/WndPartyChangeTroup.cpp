@@ -145,13 +145,8 @@ BOOL CWndPartyChangeName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 				}
 			}
 
-			if( prj.IsInvalidName( PartyName ) 
-#ifdef __RULE_0615
-				|| prj.IsAllowedLetter( PartyName ) == FALSE
-#endif	// __RULE_0615
-				)
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
+			if (prj.nameValider.IsNotAllowedName(PartyName)) {
+				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
 				return TRUE;
 			}
 

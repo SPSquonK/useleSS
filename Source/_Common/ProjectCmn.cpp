@@ -3,6 +3,8 @@
 #ifdef __LANG_1013
 #include "langman.h"
 #endif	// __LANG_1013
+#include <algorithm>
+#include <ranges>
 
 #if !( defined(__DBSERVER) || defined(__VPW) ) 
 	#include "project.h"
@@ -732,138 +734,120 @@ void CProject::LoadPreFiles()
 
 
 #ifdef __RULE_0615
-BOOL CProject::LoadInvalidName( void )
-{
-	CScanner s;
-	TCHAR szName[64];
-	
-	CString strFilter;
-	strFilter	= GetLangFileName( ::GetLanguage(), FILE_INVALID );
+#include <optional>
 
-	if( s.Load( strFilter ) ) 
-	{
+bool CNameValider::Load() {
+	constexpr auto LoadInvalidNames = []() -> std::optional<std::set<std::string>> {
+		const CString strFilter = GetLangFileName(::GetLanguage(), FILE_INVALID);
+
+		CScanner s;
+		if (!s.Load(strFilter.GetString())) return std::nullopt;
+
+		std::set<std::string> retval;
+
 		s.GetToken();
-		while( s.tok != FINISHED )
-		{
-			strcpy( szName, s.Token );
-			strlwr( szName );
-			
-			m_sInvalidNames.insert( (LPCSTR)szName );
+		while (s.tok != FINISHED) {
+			CString szName = s.Token;
+			szName.MakeLower();
+			retval.emplace(szName.GetString());
 			s.GetToken();
 		}
-		return TRUE;
+
+		return retval;
+	};
+
+	constexpr auto LoadValidLetters = [](bool isVendor) -> std::optional<std::set<char>> {
+		const auto fileId = isVendor ? FILE_ALLOWED_LETTER : FILE_ALLOWED_LETTER2;
+		const CString strFile = GetLangFileName(::GetLanguage(), fileId);
+
+		CScanner s;
+		if (!s.Load(strFile)) return std::nullopt;
+
+		std::set<char> retval;
+
+		s.GetToken();
+		while (s.tok != FINISHED) {
+			if (s.Token.GetLength()) {
+				retval.emplace(s.Token.GetAt(0));
+			}
+			s.GetToken();
+		}
+
+		return retval;
+	};
+
+	constexpr auto Arrayize = [](const std::set<char> & letters) {
+		std::array<bool, 256> retval;
+		retval.fill(false);
+
+		for (const char letter : letters) {
+			retval[static_cast<unsigned char>(letter)] = true;
+		}
+
+		return retval;
+	};
+
+	std::optional<std::set<std::string>> invalidNames = LoadInvalidNames();
+	if (!invalidNames) {
+		Error(__FUNCTION__ "() failed loading InvalidNames");
+		return false;
 	}
-	return FALSE;
+
+	std::optional<std::set<char>> allowedLetters1 = LoadValidLetters(false);
+	if (!allowedLetters1) {
+		Error(__FUNCTION__ "() failed loading allowed letters 1");
+		return false;
+	}
+
+	std::optional<std::set<char>> allowedLetters2 = LoadValidLetters(true);
+	if (!allowedLetters2) {
+		Error(__FUNCTION__ "() failed loading allowed letters 2");
+		return false;
+	}
+
+	m_invalidNames = std::vector(invalidNames->begin(), invalidNames->end());
+	m_allowedLetters          = Arrayize(allowedLetters1.value());
+	m_allowedLettersForVendor = Arrayize(allowedLetters2.value());
 }
 
-bool CProject::IsInvalidName(LPCSTR szName) const {
+bool CNameValider::IsNotAllowedName(LPCSTR name) const {
+	return IsInvalidName(name) && !AllLettersAreIn(name, m_allowedLetters);
+}
+
+bool CNameValider::IsNotAllowedVendorName(LPCSTR name) const {
+	return IsInvalidName(name) && !AllLettersAreIn(name, m_allowedLettersForVendor);
+}
+
+bool CNameValider::IsInvalidName(LPCSTR szName) const {
 	CString str = szName;
 	str.MakeLower();
 
-	return std::ranges::any_of(m_sInvalidNames,
+	return std::ranges::any_of(m_invalidNames,
 		[&](const std::string & invalidName) {
 			return str.Find(invalidName.c_str()) != -1;
 		});
 }
 
-#ifdef __VENDOR_1106
-BOOL	CProject::LoadAllowedLetter( BOOL bVendor )
-#else	// __VENDOR_1106
-BOOL	CProject::LoadAllowedLetter( void )
-#endif	// __VENDOR_1106
-{
-	CScanner s;
-	CString strFile;
-
-#ifdef __VENDOR_1106
-	std::set<char>*	ptr;
-	if( bVendor )
-	{
-		ptr		= &m_sAllowedLetter2;
-		strFile		= GetLangFileName( ::GetLanguage(), FILE_ALLOWED_LETTER2 );
-	}
-	else
-	{
-		ptr		= &m_sAllowedLetter;
-		strFile		= GetLangFileName( ::GetLanguage(), FILE_ALLOWED_LETTER );
-	}
-#else	// __VENDOR_1106
-	strFile		= GetLangFileName( ::GetLanguage(), FILE_ALLOWED_LETTER );
-	std::set<char>*	ptr		= &m_sAllowedLetter;
-#endif	// __VENDOR_1106
-	if( s.Load( strFile ) ) 
-	{
-		s.GetToken();
-		while( s.tok != FINISHED )
-		{
-			if( s.Token.GetLength() )
-				ptr->insert( s.Token.GetAt( 0 ) );
-			s.GetToken();
+bool CNameValider::AllLettersAreIn(LPCSTR name, const std::array<bool, 256> & allowed) {
+	const char * c = name;
+	while (*c != '\0') {
+		if (!allowed[static_cast<unsigned char>(*c)]) {
+			return false;
 		}
-		return TRUE;
+		++c;
 	}
-	return FALSE;
+	return true;
 }
 
-BOOL	CProject::IsAllowedLetter( LPCSTR szName, BOOL bVendor )	
-{
-#ifdef __VENDOR_1106
-	std::set<char>* ptr		= NULL;
-	if( bVendor )
-		ptr		= &m_sAllowedLetter2;
-	else
-		ptr		= &m_sAllowedLetter;
-#else	// __VENDOR_1106
-	set<char>* ptr		= &m_sAllowedLetter;
-#endif	// __VENDOR_1106
+void CNameValider::Formalize(LPSTR szName) {
+	const auto language = ::GetLanguage();
+	if (language != LANG_GER && language != LANG_FRE) return;
 
-	if( !ptr->size() )	// 규칙이 없으면 무시
-		return TRUE;
+	if (szName[0] == '\0') return;
 
-	int nLen	= lstrlen( szName );
-	for( int i = 0; i < nLen; i++ )
-	{
-		char chLetter	= szName[i];
-		auto it	= ptr->find( chLetter );
-		if( it == ptr->end() )
-		{
-#ifndef __VENDOR_1106
-			if( bVendor && ( chLetter == ' ' || chLetter == '+' ) )
-				continue;
-#endif	// __VENDOR_1106
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-void	CProject::Formalize( LPSTR szName )
-{
-	int nLen	= lstrlen( szName );
-	if( nLen == 0 )
-		return;
-
-	DWORD dwLanguage	= ::GetLanguage();
-	switch( dwLanguage )
-	{
-//		case LANG_ENG:
-		case LANG_GER:
-		case LANG_FRE:
-			{
-//				if( ::GetLanguage() == LANG_ENG && ::GetSubLanguage() == LANG_SUB_PHP )
-//					break;
-				_strlwr( szName );	// 소문자로 변경
-				char szBuffer[2];
-				szBuffer[0]	= szName[0];
-				szBuffer[1]	= '\0';
-				_strupr( szBuffer );
-				szName[0]	= szBuffer[0];
-				break;
-			}
-		default:
-			{
-				break;
-			}
-	}
+	char buffer[2] = { szName[0], '\0' }; // Copy first letter
+	_strupr(buffer);                      // Upper the first letter
+	_strlwr(szName + 1);                  // Lower after first letter
+	szName[0] = buffer[0];                // Copy back upper cased 1st letter
 }
 #endif	// __RULE_0615

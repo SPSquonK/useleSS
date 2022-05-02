@@ -5835,11 +5835,11 @@ void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 			return;
 #endif // __QUIZ
 #ifdef __RULE_0615
-		if (prj.IsInvalidName(lpszPlayer) || !prj.IsAllowedLetter(lpszPlayer)) {
+		if (prj.nameValider.IsNotAllowedName(lpszPlayer)) {
 			pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
 			return;
 		}
-		prj.Formalize( lpszPlayer );
+		prj.nameValider.Formalize( lpszPlayer );
 #endif	// __RULE_0615
 
 #ifdef __S_SERVER_UNIFY
@@ -5878,7 +5878,7 @@ void CDPSrvr::OnQuerySetGuildName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
 	if (!IsValidObj(pUser)) return;
 
-	if (prj.IsInvalidName(lpszGuild) || !prj.IsAllowedLetter(lpszGuild)) {
+	if (prj.nameValider.IsNotAllowedName(lpszGuild)) {
 		pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
 		return;
 	}
@@ -7652,8 +7652,9 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 */
 
 #ifdef __RULE_0615
-		if( prj.IsInvalidName( szPVendor ) || !prj.IsAllowedLetter( szPVendor, TRUE ) )
-			pUser->AddDiagText( prj.GetText( TID_DIAG_0020 ) ); 
+		if (prj.nameValider.IsNotAllowedVendorName(szPVendor)) {
+			pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
+		}
 #endif	// __RULE_0615
 
 		if( !( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_FONTEDIT ) ) )

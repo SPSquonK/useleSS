@@ -245,18 +245,7 @@ CProject::~CProject()
 #ifdef __CLIENT
 	m_mapHelp.RemoveAll();
 	m_mapWordToolTip.RemoveAll();
-#ifndef __RULE_0615
-	m_sInvalidNames.clear();
-#endif	// __RULE_0615
 #endif	// __CLIENT
-
-#ifdef __RULE_0615
-	m_sInvalidNames.clear();
-	m_sAllowedLetter.clear();
-#ifdef __VENDOR_1106
-	m_sAllowedLetter2.clear();
-#endif	// __VENDOR_1106
-#endif	// __RULE_0615
 
 	int i, j;
 	POSITION pos = m_mapCharacter.GetStartPosition();
@@ -527,17 +516,10 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #ifdef __CLIENT	// Ŭ���̾�Ʈ�� �ε�
 	CEventGeneric::GetInstance()->LoadScript( "propEvent.inc" );
 	LoadFilter( GetLangFileName( ::GetLanguage(), FILE_FILTER ) );
-#ifndef __RULE_0615
-	LoadInvalidName();
-#endif	// __RULE_0615
 #endif	// __CLIENT
 
 #ifdef __RULE_0615
-	LoadInvalidName();
-	LoadAllowedLetter();
-#ifdef __VENDOR_1106
-	LoadAllowedLetter( TRUE );
-#endif	// __VENDOR_1106
+	nameValider.Load();
 #endif	// __RULE_0615
 
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );

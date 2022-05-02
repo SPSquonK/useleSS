@@ -7773,11 +7773,12 @@ int CUser::DoUseItemPetNaming()
 		AddDefinedText( TID_GAME_NAME_PET_E00 );
 		return 1;
 	}
-	if( prj.IsInvalidName( GetInput() ) || !prj.IsAllowedLetter( GetInput() ) )
-	{
-		AddDefinedText( TID_GAME_NAME_PET_E01 );
+
+	if (prj.nameValider.IsNotAllowedName(GetInput())) {
+		AddDefinedText(TID_GAME_NAME_PET_E01);
 		return 1;
 	}
+
 	pPet->SetName( GetInput() );
 	g_UserMng.AddSetPetName( this, pPet->GetName() );
 	return 0;

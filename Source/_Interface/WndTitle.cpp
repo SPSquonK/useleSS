@@ -2687,7 +2687,7 @@ DWORD IsValidPlayerName( CString& strName )
 				char szLetter[2]	= { c, '\0' };
 				if( (		::GetLanguage() == LANG_GER 
 						||	::GetLanguage() == LANG_RUS
-					) && prj.IsAllowedLetter( szLetter ) )
+					) && prj.nameValider.IsAllowedLetter( szLetter ) )
 					continue;
 				return TID_DIAG_0013;
 			}
@@ -2761,13 +2761,8 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					return TRUE;
 				}
 
-				if( prj.IsInvalidName( string )
-#ifdef __RULE_0615
-					|| prj.IsAllowedLetter( string ) == FALSE
-#endif	// __RULE_0615
-					)
-				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_DIAG_0020) );	// "사용할수 없는 이름입니다"
+				if (prj.nameValider.IsNotAllowedName(string)) {
+					g_WndMng.OpenMessageBox(prj.GetText(TID_DIAG_0020));	// "사용할수 없는 이름입니다"
 					return TRUE;
 				}
 

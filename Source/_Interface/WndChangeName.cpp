@@ -97,12 +97,7 @@ BOOL CWndChangeName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			return TRUE;
 		}
 
-		if( prj.IsInvalidName( string )
-#ifdef __RULE_0615
-			|| prj.IsAllowedLetter( string ) == FALSE
-#endif	// __RULE_0615
-			)
-		{
+		if (prj.nameValider.IsNotAllowedName(string)) {
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
 			return TRUE;
 		}
@@ -207,15 +202,11 @@ BOOL CWndChangePetName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 			return TRUE;
 		}
 
-		if( prj.IsInvalidName( string )
-#ifdef __RULE_0615
-			|| prj.IsAllowedLetter( string ) == FALSE
-#endif	// __RULE_0615
-			)
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
+		if (prj.nameValider.IsNotAllowedName(string)) {
+			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
 			return TRUE;
 		}
+
 		// 펫 이름을 바꾸도록 요청하는 함수를 호출한다
 		 g_DPlay.SendDoUseItemInput(m_dwId, (LPSTR)(LPCSTR)string);
 		Destroy();

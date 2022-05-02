@@ -136,13 +136,8 @@ BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 		}
 
-		if( prj.IsInvalidName( szName ) 
-#ifdef __RULE_0615
-			|| prj.IsAllowedLetter( szName ) == FALSE
-#endif	// __RULE_0615
-			)
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
+		if (prj.nameValider.IsNotAllowedName(szName)) {
+			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
 			return TRUE;
 		}
 
@@ -295,14 +290,8 @@ BOOL CWndGuildNickName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 
 			}
 			
-			if( prj.IsInvalidName( strNickName ) 
-#ifdef __RULE_0615
-				|| prj.IsAllowedLetter( strNickName ) == FALSE
-#endif	// __RULE_0615
-				)
-			{
+			if (prj.nameValider.IsNotAllowedName(strNickName)) {
 				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
-				//				g_WndMng.OpenMessageBox( _T( "사용할수 없는 이름입니다" ) );
 				return TRUE;
 			}
 			CGuild* pGuild = g_pPlayer->GetGuild();
