@@ -1363,20 +1363,6 @@ BOOL CMover::DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart,
 	UpdateParam();
 
 	ItemProp* pProp = prj.GetItemProp( rEquipInfo.dwId );
-#ifndef __CLIENT
-	if( pProp && pProp->dwItemKind1 >= IK2_WEAPON_DIRECT && pProp->dwItemKind1 <= IK2_WEAPON_MAGIC )
-	{
-		if( bEquip ) {
-			if( !m_pActMover->IsStateFlag( OBJSTAF_COMBAT ) )
-				SendActMsg( OBJMSG_MODE_COMBAT );
-		}
-		else {
-			if( m_pActMover->IsStateFlag( OBJSTAF_COMBAT ) )
-				SendActMsg( OBJMSG_MODE_PEACE );
-		}
-	}
-#endif	// __CLIENT
-	
 	
 	if( pProp->dwParts == PARTS_RIDE )
 	{
