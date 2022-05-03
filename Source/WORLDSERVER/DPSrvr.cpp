@@ -596,77 +596,56 @@ void CDPSrvr::OnChat( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_l
 	}
 }
 
-void CDPSrvr::OnCtrlCoolTimeCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser;
-	CCommonCtrl* pCtrl;
-	pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
-	((CMover*)pUser)->m_dwCtrlReadyTime = 0xffffffff;
+void CDPSrvr::OnCtrlCoolTimeCancel(CAr &, DPID dpidCache, DPID dpidUser, LPBYTE, u_long) {
+	CUser * const pUser = g_UserMng.GetUser(dpidCache, dpidUser);
 
-	pCtrl = (CCommonCtrl*)prj.GetCtrl( ((CMover*)pUser)->m_dwCtrlReadyId );
-	if( IsValidObj( pCtrl ) == FALSE )
-		return;
+	if (!IsValidObj(pUser)) return;
 
-	((CMover*)pUser)->m_dwCtrlReadyId = NULL_ID;
+	pUser->m_dwCtrlReadyTime = 0xffffffff;
+
+	CCommonCtrl * pCtrl = (CCommonCtrl *)prj.GetCtrl(pUser->m_dwCtrlReadyId);
+	if (!IsValidObj(pCtrl)) return;
+
+	pUser->m_dwCtrlReadyId = NULL_ID;
 
 	pCtrl->m_dwCtrlReadyTime = 0xffffffff;
 	pCtrl->m_bAction         = FALSE;
 }
 
-void CDPSrvr::OnDoEquip( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	DWORD nId;
-	int nPart;
-
-	ar >> nId;
-	ar >> nPart;		
+void CDPSrvr::OnDoEquip(CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long) {
+	const auto [nId, nPart] = ar.Extract<DWORD, int>();
+	// An extra float will be extracted later for unequiped PARTS_RIDE for flight check
 	
-	if( nPart >= MAX_HUMAN_PARTS )	
-		return;
+	if (nPart >= MAX_HUMAN_PARTS) return;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
-		return;
+	CUser * const pUser = g_UserMng.GetUser(dpidCache, dpidUser);
+	if (!IsValidObj(pUser)) return;
 
 	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( nId );
-	if( IsUsableItem( pItemElem ) == FALSE )
+	if (!IsUsableItem( pItemElem )) return;
+
+
+	if (pUser->m_Inventory.IsEquip(nId)) {
+		if (nPart > 0 && pItemElem != pUser->m_Inventory.GetEquip(nPart)) {
 			return;
-	if( nPart > 0 )
-	{
-		if( pUser->m_Inventory.IsEquip( nId ) )
-		{
-			if( pItemElem != pUser->m_Inventory.GetEquip( nPart ) )
-				return;
 		}
 	}
-	else
-	{
-		if( pUser->m_Inventory.IsEquip( nId ) )
-			return;
-	}
-#ifdef __HACK_1023
-	ItemProp* pItemProp		= pItemElem->GetProp();
-	if( pItemProp && pItemProp->dwParts == PARTS_RIDE )
-	{
-		if( !pUser->m_Inventory.IsEquip( nId ) )
-		{
+
+	const ItemProp * const pItemProp = pItemElem->GetProp();
+	if (pItemProp && pItemProp->dwParts == PARTS_RIDE) {
+		if (!pUser->m_Inventory.IsEquip(nId)) {
 			FLOAT fVal;
 			ar >> fVal;
-			if( fVal != pItemProp->fFlightSpeed )
-			{
-				pUser->AddDefinedText( TID_GAME_MODIFY_FLIGHT_SPEED );
+			if (fVal != pItemProp->fFlightSpeed) {
+				pUser->AddDefinedText(TID_GAME_MODIFY_FLIGHT_SPEED);
 				return;
 			}
 		}
 	}
-#endif	// __HACK_1023
 
-	if( pUser->IsDie() == FALSE )
-		pUser->DoUseEquipmentItem( pItemElem, nId, nPart );
+	if (!pUser->IsDie()) {
+		pUser->DoUseEquipmentItem(pItemElem, nId, nPart);
+	}
 }
 
 void CDPSrvr::OnMoveItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
