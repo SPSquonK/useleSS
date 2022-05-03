@@ -6,32 +6,58 @@
 #include "DPMng.h"
 #include "MsgHdr.h"
 #include "Snapshot.h"
+#include <variant>
 
 #undef	theClass
 #define theClass	CDPSrvr
 #undef theParameters
 #define theParameters	CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize
 
+class CDPSrvr;
+class CUser;
+
+class CDPSrvrHandlers {
+public:
+	using GalaHandler = void (CDPSrvr:: *) (CAr &, DPID, DPID, LPBYTE, u_long);
+	using UserHandler = void (CDPSrvr:: *) (CAr &, CUser &);
+
+	using HandlerStruct = std::variant<GalaHandler, UserHandler>;
+private:
+
+	std::map<DWORD, HandlerStruct> m_handlers;
+
+public:
+	void AddHandler(DWORD packetId, const HandlerStruct & handler) {
+		m_handlers.emplace(packetId, handler);
+	}
+
+	bool Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpidUser);
+};
+
 class CDPSrvr : public CDPMng
 {
+	CDPSrvrHandlers m_handlers;
 public:
 	// Constructions
 	CDPSrvr();
 	virtual	~CDPSrvr();
 
+	void OnMsg(DWORD packetId, const CDPSrvrHandlers::HandlerStruct & handler) {
+		m_handlers.AddHandler(packetId, handler);
+	}
+
 	// Operations
 	virtual	void SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual void UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 
-	USES_PFNENTRIES;
-
+private:
 	// Handlers
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
 	void	OnAddUser( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
 	void	OnRemoveUser( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
 	void	OnChat( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnDoEquip( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
+	void  OnDoEquip(CAr & ar, CUser & pUser);
 	void	OnCtrlCoolTimeCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );		
 	void	OnMoveItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnDropItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
