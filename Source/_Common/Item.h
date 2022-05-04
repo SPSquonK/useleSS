@@ -20,65 +20,37 @@
 
 #include "Piercing.h"
 
-class CItemBase
-{
+class CItemElem final {
 public:
 	OBJID       m_dwObjId;		// 아이템 콘테이너 안에서의 ID (아이템의 ID로 사용)
 	DWORD		m_dwObjIndex;	// 아이템 콘테이너 안에서의 Index
 	DWORD		m_dwItemId;		// 아이템 식별 인덱스( Property에서 사용 )
 	int 		m_nExtra;		// 거래시 물품개수 or 개인상점에 등록한 갯수 
-	TCHAR       m_szItemText[ 32 ];
+	TCHAR       m_szItemText[32];
 	int			m_nCost;
 
 #ifdef __CLIENT
-	CTexture*   m_pTexture;
+	CTexture * m_pTexture;
 #endif
 
 private:
 	SERIALNUMBER		m_liSerialNumber;
 
 public:
-	CItemBase();
-	virtual ~CItemBase()	{}
-	virtual	CItemBase&	operator = ( CItemBase & ib );
-	virtual void	Serialize( CAr & ar );
+
 	BOOL			IsEmpty() { return m_dwItemId ? FALSE : TRUE; }
 	BOOL			IsQuest();
 
-	ItemProp*		GetProp(); 
-	virtual	void			Empty();
-	CTexture*		GetTexture();						
+	[[nodiscard]] ItemProp * GetProp() const { return prj.GetItemProp(m_dwItemId); }
+	CTexture * GetTexture();
 	int				GetCost();							// 가격을 얻는다.
-	void			SetExtra( int nExtra );			// 확장 데이타를 세팅 
+	void			SetExtra(int nExtra);			// 확장 데이타를 세팅 
 	[[nodiscard]] int GetExtra() const noexcept;							// 확장 데이타를 얻기 
 	DWORD			GetChipCost();
 
-	void	SetSerialNumber( void );
-	SERIALNUMBER	GetSerialNumber( void )		{	return m_liSerialNumber;	}
-	void	SetSerialNumber( SERIALNUMBER liSerialNumber )	{	m_liSerialNumber	= liSerialNumber;	}
-};
-
-inline void CItemBase::SetExtra( int nExtra )
-{
-	m_nExtra = nExtra;
-}
-
-inline int CItemBase::GetExtra() const noexcept
-{
-	return m_nExtra;
-}
-
-inline CTexture* CItemBase::GetTexture() 
-{ 
-#ifdef __CLIENT
-	return m_pTexture;
-#else
-	return NULL;
-#endif
-}
-
-class CItemElem : public CItemBase
-{
+	void	SetSerialNumber(void);
+	SERIALNUMBER	GetSerialNumber(void) { return m_liSerialNumber; }
+	void	SetSerialNumber(SERIALNUMBER liSerialNumber) { m_liSerialNumber = liSerialNumber; }
 private:
 	CPiercing	m_piercing;
 public:
@@ -186,11 +158,10 @@ public:
 public:
 //	Constructions
 	CItemElem();
-	virtual	~CItemElem();
+	~CItemElem();
 
 //	Attributes
-	virtual	void			Empty();
-	ItemProp*	GetProp()	{	return prj.GetItemProp( m_dwItemId );	}
+	void			Empty();
 	int			GetAttrOption();		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
 	[[nodiscard]] int GetAbilityOption() const noexcept { return m_nAbilityOption; }
 	int			GetItemResist( void ) const;
@@ -236,8 +207,8 @@ public:
 	
 //	Operations
 	void		UseItem();
-	virtual	CItemElem&	operator = ( CItemElem & ie );
-	virtual	void		Serialize( CAr & ar );
+	CItemElem&	operator = ( CItemElem & ie );
+	void		Serialize( CAr & ar );
 
 	BOOL	IsVisPet()	{ return ( GetProp() && GetProp()->IsVisPet() ) || IsTransformVisPet() ; }
 	void	SetSwapVisItem( int nPos1, int nPos2 );
@@ -249,6 +220,23 @@ public:
 
 	BOOL	m_bTranformVisPet;
 };
+
+
+inline void CItemElem::SetExtra(int nExtra) {
+	m_nExtra = nExtra;
+}
+
+inline int CItemElem::GetExtra() const noexcept {
+	return m_nExtra;
+}
+
+inline CTexture * CItemElem::GetTexture() {
+#ifdef __CLIENT
+	return m_pTexture;
+#else
+	return NULL;
+#endif
+}
 
 inline int CItemElem::GetAttrOption()		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
 {

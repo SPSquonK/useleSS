@@ -30,18 +30,14 @@ CCtrl::CCtrl()
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-CItemBase::CItemBase()
-{
-	memset( m_szItemText, 0, sizeof(m_szItemText) );
-	m_dwItemId = 0;
-	m_dwObjId = NULL_ID;
-	m_dwObjIndex	= NULL_ID;
-	m_liSerialNumber	= 0;
-}
-
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 CItemElem::CItemElem()
 {
+	memset(m_szItemText, 0, sizeof(m_szItemText));
+	m_dwItemId = 0;
+	m_dwObjId = NULL_ID;
+	m_dwObjIndex = NULL_ID;
+	m_liSerialNumber = 0;
+
 	m_byFlag			= 0;
 	m_nItemNum			= 1;
 	m_idGuild			= 0;
@@ -601,7 +597,10 @@ BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize )
 
 CItemElem& CItemElem::operator =( CItemElem & ie )
 {
-	CItemBase::operator =( ie );
+	_tcscpy(m_szItemText, ie.m_szItemText);
+	m_dwItemId = ie.m_dwItemId;
+	m_liSerialNumber = ie.m_liSerialNumber;
+
 	m_nItemNum				= ie.m_nItemNum;
 	m_nRepairNumber			= ie.m_nRepairNumber;
 	m_nHitPoint				= ie.m_nHitPoint;
@@ -625,14 +624,6 @@ CItemElem& CItemElem::operator =( CItemElem & ie )
 	}
 	m_bTranformVisPet		= ie.m_bTranformVisPet;
 
-	return *this;
-}
-
-CItemBase& CItemBase::operator = ( CItemBase& ib )
-{
-	_tcscpy( m_szItemText, ib.m_szItemText );
-	m_dwItemId	= ib.m_dwItemId;
-	m_liSerialNumber	= ib.m_liSerialNumber;
 	return *this;
 }
 

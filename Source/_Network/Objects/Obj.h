@@ -101,39 +101,21 @@ public:
 };
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-class CItemBase
-{
+class CItemElem final {
 public:
-	OBJID       m_dwObjId ;		// 아이템 컨테이너에서 몇번째 
+	OBJID       m_dwObjId;		// 아이템 컨테이너에서 몇번째 
 	DWORD		m_dwItemId;		// IID_ 값 
-	TCHAR       m_szItemText[ 32 ];
+	TCHAR       m_szItemText[32];
 
 	DWORD		m_dwObjIndex;	// 인벤토리에서 몇번째 
 private:
 	SERIALNUMBER	m_liSerialNumber;
 public:
-//	Constructions
-	CItemBase();
-	virtual ~CItemBase()	{}
 
-//	Operations
-	BOOL	IsEmpty()	{	return m_dwItemId ? FALSE : TRUE;	}
-	virtual	void	Empty()
-	{
-		m_szItemText[0] = '\0';
-		m_dwItemId      = 0;
-	}
-	virtual	CItemBase&	operator = ( CItemBase & ib );
-	virtual void	Serialize( CAr & ar );
+	BOOL	IsEmpty() { return m_dwItemId ? FALSE : TRUE; }
+	SERIALNUMBER	GetSerialNumber(void) { return m_liSerialNumber; }
+	void	SetSerialNumber(SERIALNUMBER liSerialNumber) { m_liSerialNumber = liSerialNumber; }
 
-	SERIALNUMBER	GetSerialNumber( void )	{	return m_liSerialNumber;	}
-	void	SetSerialNumber( SERIALNUMBER liSerialNumber )	{	m_liSerialNumber	= liSerialNumber;	}
-};
-
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-class CItemElem : public CItemBase
-{
 private:
 	CPiercing	m_piercing;
 public:
@@ -187,7 +169,7 @@ public:
 public:
 //	Constructions
 	CItemElem();
-	virtual	~CItemElem();
+	~CItemElem();
 
 //	Operations
 	int		GetOption( void )			{ return m_nAbilityOption;	}
@@ -195,14 +177,15 @@ public:
 	BOOL	IsFlag( BYTE byFlag )		{ return ( m_byFlag & byFlag ) ? TRUE : FALSE; }
 	BOOL	IsInvalid( void );
 
-	virtual	void	Empty()
+	void	Empty()
 	{
-		CItemBase::Empty();
+		m_szItemText[0] = '\0';
+		m_dwItemId = 0;
 		SAFE_DELETE( m_pPet );
 	}
 
-	virtual	CItemElem&	operator = ( CItemElem & ie );
-	virtual	void	Serialize( CAr & ar );
+	CItemElem&	operator = ( CItemElem & ie );
+	void	Serialize( CAr & ar );
 
 #ifdef __DBSERVER
 	BOOL	IsVisPet()	{ return ( GetProp() && GetProp()->IsVisPet() ) || IsTransformVisPet() ; }

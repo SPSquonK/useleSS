@@ -27,29 +27,14 @@ void CCtrl::Serialize( CAr & ar )	// 33
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-void CItemBase::Serialize( CAr & ar )	// 11	// 20
+void CItemElem::Serialize( CAr & ar )	// 18
 {
 	if( ar.IsStoring() )
 	{
 		ar << m_dwObjId << m_dwItemId;
 		ar << m_liSerialNumber;
-		ar.WriteString( m_szItemText );
-	}
-	else
-	{
-		ar >> m_dwObjId >> m_dwItemId;
-		ar >> m_liSerialNumber;
-		ar.ReadString( m_szItemText, 32 );
-	}
-}
+		ar.WriteString(m_szItemText);
 
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-void CItemElem::Serialize( CAr & ar )	// 18
-{
-	CItemBase::Serialize( ar );
-	if( ar.IsStoring() )
-	{
 		ar << m_nItemNum;
 		ar << m_nRepairNumber << m_nHitPoint;
 		ar << m_nRepair;
@@ -81,6 +66,10 @@ void CItemElem::Serialize( CAr & ar )	// 18
 	}
 	else
 	{
+		ar >> m_dwObjId >> m_dwItemId;
+		ar >> m_liSerialNumber;
+		ar.ReadString(m_szItemText, 32);
+
 		ar >> m_nItemNum;
 		ar >> m_nRepairNumber ;
 		ar >> m_nHitPoint;

@@ -34,50 +34,6 @@ BOOL IsUsingItem(const CItemElem * pItem )
 //////////////////////////////////////////////////////////////////////
 // CItemBase
 //////////////////////////////////////////////////////////////////////
-CItemBase::CItemBase() 
-{ 
-	m_szItemText[0]  = '\0';
-	m_dwItemId	     = 0;
-	m_dwObjId	     = NULL_ID;
-	m_dwObjIndex	 = NULL_ID;
-	m_nExtra	     = 0;
-	m_nCost		     = 0;
-	m_liSerialNumber	= 0;
-
-#ifdef __CLIENT
-	m_pTexture = nullptr;
-#endif
-}
-
-void CItemBase::Empty()
-{
-	m_szItemText[0] = '\0';
-	m_dwItemId = 0;
-	m_nExtra   = 0;
-
-#ifdef __CLIENT
-	m_pTexture = nullptr;
-#endif
-}
-
-ItemProp* CItemBase::GetProp() 
-{ 
-	return	prj.GetItemProp( m_dwItemId );	
-}
-
-CItemBase& CItemBase::operator = ( CItemBase& ib )
-{
-	_tcscpy( m_szItemText, ib.m_szItemText );
-	m_dwItemId	      = ib.m_dwItemId  ;
-	m_liSerialNumber	= ib.m_liSerialNumber;
-
-#ifdef __CLIENT
-	m_pTexture        = ib.m_pTexture;
-#endif
-
-	return *this;
-}
-
 void CItemElem::SetTexture()
 {
 #ifdef __CLIENT
@@ -115,7 +71,7 @@ void CItemElem::SetTexture()
 // 아이템 가격을 계산해서 리턴한다.
 // -1을 리턴하면 처리해선 안된다.
 //
-int	CItemBase::GetCost( void )
+int	CItemElem::GetCost( void )
 {
 	ItemProp *pProp = GetProp();
 	if( pProp == NULL )		
@@ -123,13 +79,11 @@ int	CItemBase::GetCost( void )
 	if( pProp->dwCost == 0xFFFFFFFF )	
 		return -1;
 		
-	CItemElem *pItemElem = (CItemElem *)this;
-
 	int nCost;
-	if( pItemElem->GetAbilityOption() )
+	if( GetAbilityOption() )
 	{		
 		//INT((아이템가격+아이템가격*(0.1+(아이템강화레벨*아이템강화레벨)/18))
-		nCost = (int)( pProp->dwCost + pProp->dwCost * ( 0.1f + ( pItemElem->GetAbilityOption() * pItemElem->GetAbilityOption() ) / 18.0f ) );
+		nCost = (int)( pProp->dwCost + pProp->dwCost * ( 0.1f + ( GetAbilityOption() * GetAbilityOption() ) / 18.0f ) );
 	}
 	else
 	{
@@ -139,7 +93,7 @@ int	CItemBase::GetCost( void )
 	return nCost;
 }
 
-DWORD CItemBase::GetChipCost()
+DWORD CItemElem::GetChipCost()
 {
 	ItemProp *pProp = GetProp();
 	if( pProp == NULL )		
@@ -151,7 +105,7 @@ DWORD CItemBase::GetChipCost()
 }
 
 // 퀘스트 아이템인가?
-BOOL CItemBase::IsQuest()
+BOOL CItemElem::IsQuest()
 {
 	ItemProp* p = GetProp();
 	if( p->dwItemKind3 == IK3_QUEST )
@@ -181,6 +135,18 @@ BOOL CItemBase::IsQuest()
 
 CItemElem::CItemElem()
 {
+	m_szItemText[0] = '\0';
+	m_dwItemId = 0;
+	m_dwObjId = NULL_ID;
+	m_dwObjIndex = NULL_ID;
+	m_nExtra = 0;
+	m_nCost = 0;
+	m_liSerialNumber = 0;
+
+#ifdef __CLIENT
+	m_pTexture = nullptr;
+#endif
+
 	m_idGuild = 0;
 	m_nItemNum = 1;
 	m_nAbilityOption = 0;
@@ -238,7 +204,14 @@ CItemElem::~CItemElem()
 
 void	CItemElem::Empty( void )
 {
-	CItemBase::Empty();
+	m_szItemText[0] = '\0';
+	m_dwItemId = 0;
+	m_nExtra = 0;
+
+#ifdef __CLIENT
+	m_pTexture = nullptr;
+#endif
+
 	SAFE_DELETE( m_pPet );
 	m_piercing.Clear();
 }
@@ -258,7 +231,13 @@ void CItemElem::UseItem()
 
 CItemElem& CItemElem::operator =( CItemElem & ie )
 {
-	CItemBase::operator =( ie );
+	_tcscpy(m_szItemText, ie.m_szItemText);
+	m_dwItemId = ie.m_dwItemId;
+	m_liSerialNumber = ie.m_liSerialNumber;
+
+#ifdef __CLIENT
+	m_pTexture = ie.m_pTexture;
+#endif
 
 	SetTexture( ie.GetTexture() );
 
@@ -563,7 +542,7 @@ void CItem::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwC
 #endif	// __WORLDSERVER
 }
 
-void	CItemBase::SetSerialNumber( void )
+void	CItemElem::SetSerialNumber( void )
 {
 	m_liSerialNumber	= CSerialNumber::GetInstance()->Get();
 }
