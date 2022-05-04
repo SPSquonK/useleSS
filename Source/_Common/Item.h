@@ -226,8 +226,8 @@ public:
 	BOOL	IsCharged();
 	BOOL	IsLogable();
 
-	static BOOL	IsDiceRefineryAble( ItemProp* pProp );
-	static BOOL	IsEleRefineryAble( ItemProp* pProp );
+	static BOOL	IsDiceRefineryAble( const ItemProp * pProp );
+	static BOOL	IsEleRefineryAble( const ItemProp * pProp );
 	static BOOL	IsElementalCard( const DWORD dwItemID );
 	
 //	Operations

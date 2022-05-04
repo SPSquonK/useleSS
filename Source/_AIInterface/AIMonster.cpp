@@ -474,7 +474,7 @@ BOOL CAIMonster::StateIdle( const AIMSG & msg )
 					{
 						if( pItem->IsDelete() )
 							return TRUE;
-						CItemElem* pItemElem = (CItemElem *)pItem->m_pItemBase;
+						CItemElem* pItemElem = pItem->m_pItemBase;
 						ItemProp *pItemProp = pItem->GetProp();
 						BOOL bSuccess = FALSE;
 						if( pItemProp->dwItemKind1 == IK1_GOLD )	// 주은아이템이 돈이냐?
@@ -596,7 +596,7 @@ BOOL CAIMonster::StateStand( const AIMSG & msg )
 					{
 						if( pItem->IsDelete() )
 							return TRUE;
-						CItemElem* pItemElem = (CItemElem *)pItem->m_pItemBase;
+						CItemElem* pItemElem = pItem->m_pItemBase;
 						ItemProp *pItemProp = pItem->GetProp();
 						BOOL bSuccess = FALSE;
 						if( pItemProp->dwItemKind1 == IK1_GOLD )	// 주은아이템이 돈이냐?

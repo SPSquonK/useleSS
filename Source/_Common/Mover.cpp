@@ -2381,7 +2381,7 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 		aLogItem.RecvName = "GROUND";
 		aLogItem.WorldId = GetWorld()->GetID();
 		aLogItem.Gold = aLogItem.Gold2 = GetGold();
-		g_DPSrvr.OnLogItem( aLogItem, ( (CItemElem*)pItemBase ), nDropNum );
+		g_DPSrvr.OnLogItem( aLogItem, pItemBase, nDropNum );
 	}
 	
 	pItem->SetIndex( D3DDEVICE, pItemBase->m_dwItemId );
@@ -2673,7 +2673,7 @@ ItemProp* CMover::GetActiveHandItemProp( int nParts )
 #ifdef __CLIENT
 		if( IsActiveMover() )
 		{
-			CItemElem* pItemElem = (CItemElem*)m_Inventory.GetEquip( nParts );
+			CItemElem* pItemElem = m_Inventory.GetEquip( nParts );
 			if( pItemElem )
 				return pItemElem->GetProp();
 			return prj.GetItemProp( II_WEA_HAN_HAND );

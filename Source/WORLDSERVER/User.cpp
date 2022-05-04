@@ -844,7 +844,7 @@ void CUser::AddPVendorItem( CUser* pUser, BOOL bState )
 	m_Snapshot.ar << (BYTE)0;	// nVendorItem
 	for( int i = 0; i < MAX_VENDITEM; i++ )
 	{
-		CItemElem* pItemElem = (CItemElem *)pUser->m_vtInfo.GetItem( i );
+		CItemElem* pItemElem = pUser->m_vtInfo.GetItem( i );
 		if( pItemElem  == NULL )
 			continue;
 

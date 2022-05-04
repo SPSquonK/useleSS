@@ -237,8 +237,7 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				ItemProp *pItemProp = m_pItemBase->GetProp();
 
-				int nValue = 0;
-				nValue = ( m_dwFocus == 0 ) ? ( (CItemElem*)m_pItemBase )->m_nItemNum: 2100000000;
+				int nValue = ( m_dwFocus == 0 ) ? m_pItemBase->m_nItemNum : 2100000000;
 				
 				CString str;
 				str.Format( "%d", nValue );
@@ -256,7 +255,7 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		LPCTSTR str	= pWndStatic->GetTitle();
 		int nNum	= 1;
 		nNum	= atoi( str );
-		CItemElem* pItemElem	= (CItemElem*)m_pItemBase;
+		CItemElem* pItemElem	= m_pItemBase;
 		if( nNum < 1 )	return TRUE;	// 개수가 너무 작습니다.
 		if( nNum > pItemElem->m_nItemNum )	nNum	= pItemElem->m_nItemNum;
 

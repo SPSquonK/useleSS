@@ -325,7 +325,7 @@ SmallDstList CItemElem::GetPiercingAvail() const {
 }
 
 // 주사위로 제련 가능한 아이템 종류
-BOOL CItemElem::IsDiceRefineryAble( ItemProp* pProp )
+BOOL CItemElem::IsDiceRefineryAble( const ItemProp* pProp )
 {
 	if( !pProp )
 		return FALSE;
@@ -340,7 +340,7 @@ BOOL CItemElem::IsDiceRefineryAble( ItemProp* pProp )
 }
 
 // 카드로 제련 가능한 아이템 종류
-BOOL CItemElem::IsEleRefineryAble( ItemProp* pProp )
+BOOL CItemElem::IsEleRefineryAble( const ItemProp* pProp )
 {
 	if( !pProp )
 		return FALSE;

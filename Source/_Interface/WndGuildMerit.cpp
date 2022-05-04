@@ -417,7 +417,7 @@ void CWndGuildMeritCtrl::RestoreItem()
 
 	for( int i=0; i<(int)( m_pItemContainer.size() ); i++ )
 	{
-		pItemElem = (CItemElem*)m_pItemContainer[i];
+		pItemElem = m_pItemContainer[i];
 
 		if( pItemElem )
 			pItemElem->SetExtra( 0 );
@@ -431,7 +431,7 @@ int CWndGuildMeritCtrl::GetTotalCount()
 	
 	for( int i=0; i<(int)( m_pItemContainer.size() ); i++ )
 	{
-		pItemElem = (CItemElem*)m_pItemContainer[i];		
+		pItemElem = m_pItemContainer[i];		
 		if( pItemElem )
 			nCount += pItemElem->GetExtra();
 	}

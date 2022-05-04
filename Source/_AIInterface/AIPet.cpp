@@ -301,8 +301,6 @@ BOOL CAIPet::StateIdle( const AIMSG & msg )
 						{
 							if( pItem->IsDelete() )
 								return TRUE;
-							CItemElem* pItemElem = (CItemElem *)pItem->m_pItemBase;
-							ItemProp *pItemProp = pItem->GetProp();
 							// 주인이 아이템을 줍는것과 같은 효과를 냄.
 							bSuccess = pOwner->DoLoot( pItem );
 						}

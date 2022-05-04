@@ -1457,10 +1457,10 @@ BOOL CWndInventory::Process()
 			m_pSfxUpgrade = NULL;
 		}
 		
-		CItemElem* pItemElem = (CItemElem*)m_pUpgradeItem;
+		CItemElem* pItemElem = m_pUpgradeItem;
 		if( pItemElem && m_pUpgradeMaterialItem )
 		{
-			CItemElem* pItemMaterialElem = (CItemElem*)m_pUpgradeMaterialItem;
+			CItemElem* pItemMaterialElem = m_pUpgradeMaterialItem;
 			// ��Ŷ ����
 			
 			if( pItemMaterialElem->GetProp() )
@@ -1899,20 +1899,20 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if(pProp->dwID >= II_SYS_SYS_EVE_A_CARD && pProp->dwID <= II_SYS_SYS_EVE_Z_CARD)
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{								
 								CWndFindWordGame* pWndFindWordGame = (CWndFindWordGame*)g_WndMng.GetWndBase( APP_MINIGAME_WORD );
-								pWndFindWordGame->SetWord((CItemElem*)pFocusItem);
+								pWndFindWordGame->SetWord(pFocusItem);
 								return TRUE;
 							}
 						}
 					}
 					if(g_WndMng.GetWndBase( APP_MINIGAME_PUZZLE ))
 					{
-						if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+						if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 						{			
 							CWndPuzzleGame* pWndPuzzleGame = (CWndPuzzleGame*)g_WndMng.GetWndBase( APP_MINIGAME_PUZZLE );
-							pWndPuzzleGame->SetPicture((CItemElem*)pFocusItem);
+							pWndPuzzleGame->SetPicture(pFocusItem);
 							return TRUE;
 						}
 					}
@@ -1921,10 +1921,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( CItemElem::IsEleRefineryAble(pProp) )
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndRemoveAttribute* pWndRemoveAttribute = (CWndRemoveAttribute*)GetWndBase( APP_REMOVE_ATTRIBUTE );
-								pWndRemoveAttribute->SetWeapon((CItemElem*)pFocusItem);
+								pWndRemoveAttribute->SetWeapon(pFocusItem);
 								return TRUE;
 							}
 						}
@@ -1933,11 +1933,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( CItemElem::IsEleRefineryAble(pProp) )
 						{
-//							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
 							if( IsUsableItem( pFocusItem ) )
 							{			
 								CWndRemovePiercing* pWndRemovePiercing = (CWndRemovePiercing*)GetWndBase( APP_SMELT_REMOVE_PIERCING_EX );
-								pWndRemovePiercing->SetItem((CItemElem*)pFocusItem);
+								pWndRemovePiercing->SetItem(pFocusItem);
 								return TRUE;
 							}
 						}
@@ -1980,10 +1979,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					}
 					if(g_WndMng.GetWndBase( APP_SMELT_SAFETY ))
 					{
-						if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+						if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 						{			
 							CWndSmeltSafety* pWndSmeltSafety = (CWndSmeltSafety*)GetWndBase( APP_SMELT_SAFETY );
-							pWndSmeltSafety->SetItem((CItemElem*)pFocusItem);
+							pWndSmeltSafety->SetItem(pFocusItem);
 							return TRUE;
 						}
 					}
@@ -1992,10 +1991,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						if(pProp->dwID == II_GEN_MAT_ORICHALCUM01 || pProp->dwID == II_GEN_MAT_MOONSTONE ||
 							pProp->dwID == II_GEN_MAT_ORICHALCUM01_1 || pProp->dwID == II_GEN_MAT_MOONSTONE_1)
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndMixJewel* pWndMixJewel = (CWndMixJewel*)GetWndBase( APP_SMELT_MIXJEWEL );
-								pWndMixJewel->SetJewel((CItemElem*)pFocusItem);
+								pWndMixJewel->SetJewel(pFocusItem);
 								return TRUE;
 							}
 						}
@@ -2009,10 +2008,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							pProp->dwID == II_GEN_MAT_RUBY ||
 							pProp->dwID == II_GEN_MAT_TOPAZ )
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndSmeltJewel* pWndSmeltJewel = (CWndSmeltJewel*)GetWndBase( APP_SMELT_JEWEL );
-								pWndSmeltJewel->SetJewel((CItemElem*)pFocusItem);
+								pWndSmeltJewel->SetJewel(pFocusItem);
 								return TRUE;
 							}
 						}
@@ -2028,10 +2027,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							pProp->dwID == II_GEN_MAT_RUBY ||
 							pProp->dwID == II_GEN_MAT_TOPAZ )
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndChangeWeapon* pWndChangeWeapon = (CWndChangeWeapon*)GetWndBase( APP_SMELT_CHANGEWEAPON );
-								pWndChangeWeapon->SetItem((CItemElem*)pFocusItem);
+								pWndChangeWeapon->SetItem(pFocusItem);
 								return TRUE;
 							}
 						}
@@ -2044,10 +2043,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							pProp->dwID == II_GEN_MAT_RUBY ||
 							pProp->dwID == II_GEN_MAT_TOPAZ )
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndHeroSkillUp* pWndHeroSkillUp = (CWndHeroSkillUp*)GetWndBase( APP_HERO_SKILLUP );
-								pWndHeroSkillUp->SetJewel((CItemElem*)pFocusItem);
+								pWndHeroSkillUp->SetJewel(pFocusItem);
 								return TRUE;
 							}
 						}
@@ -2056,16 +2055,16 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( pProp->dwItemKind1 == IK1_WEAPON )
 						{
-							if(pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum)
+							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndExtraction* pWndExtraction = (CWndExtraction*)GetWndBase( APP_SMELT_EXTRACTION );
-								pWndExtraction->SetWeapon((CItemElem*)pFocusItem);
+								pWndExtraction->SetWeapon(pFocusItem);
 								return TRUE;
 							}
 						}
 					}
 					// �Ӽ�ī�峪 �ֳ����� ����Ŭ���������? ��þƮ���� �����Ѵ�.
-					if( (pFocusItem->GetExtra() < ((CItemElem*)pFocusItem)->m_nItemNum) 
+					if( (pFocusItem->GetExtra() < pFocusItem->m_nItemNum) 
 						&& ( 
 							pProp->dwItemKind3 == IK3_ELECARD
 							|| pProp->dwItemKind3 == IK3_ENCHANT 
@@ -2115,7 +2114,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
 
 						g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
-						g_WndMng.m_pWndChangeAttribute->SetChangeItem((CItemElem*)pFocusItem);
+						g_WndMng.m_pWndChangeAttribute->SetChangeItem(pFocusItem);
 						g_WndMng.m_pWndChangeAttribute->Initialize(&g_WndMng, APP_COMMITEM_DIALOG);
 						bAble = FALSE;
 					}
@@ -2155,7 +2154,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						bAble = FALSE;
 					}
 
-					if( ((CItemElem*)pFocusItem)->m_bCharged != 1 )
+					if( pFocusItem->m_bCharged != 1 )
 					{
 						switch( pProp->dwID )
 						{
@@ -2163,7 +2162,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							{
 								if( g_pPlayer->IsSMMode( SM_REVIVAL ) )
 								{
-									g_WndMng.PutString( prj.GetText( TID_GAME_LIMITED_USE ), NULL, prj.GetTextColor(TID_GAME_LIMITED_USE) );
+									g_WndMng.PutString(TID_GAME_LIMITED_USE);
 								}
 								else
 								{
@@ -2449,9 +2448,7 @@ void CWndInventory::OnLButtonDblClk( UINT nFlags, CPoint point)
 
 		if( DrawRect.PtInRect( point ) )
 		{
-			CItemElem* pItemElem = NULL;
-
-			pItemElem = (CItemElem*)g_pPlayer->GetEquipItem( i );
+			CItemElem* pItemElem = g_pPlayer->GetEquipItem( i );
 			
 			if( pItemElem )
 			{
@@ -2591,7 +2588,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	{
 		if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData ) // dwData�� 0�̸� ���? 
 		{
-			CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+			CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 			if( pItemElem && pItemElem->GetProp()->dwParts != NULL_ID ) //&& pItemElem->GetProp()->dwParts == i * 3 + j )
 			{
 				//�κ��丮 �׵θ��� �÷����� �������� ������ ���� �ʵ��� ����.
@@ -12313,8 +12310,7 @@ void CWndPostSend::OnDraw( C2DRender* p2DRender )
 { 
 	if( m_nItem != 0xff )
 	{
-		CItemElem* pItemElem;
-		pItemElem  = (CItemElem*)g_pPlayer->m_Inventory.GetAtId( m_nItem );
+		CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
 		
 		if( pItemElem )
 		{
@@ -12407,7 +12403,7 @@ void CWndPostSend::SetItemId( BYTE nId )
 	// ���� �������� �־����� Ȯ�� ����Ÿ�� �ʱ�ȭ �Ѵ�.
 	if( nId != m_nItem && m_nItem != 0xff )
 	{
-		CItemElem* pItemElem  = (CItemElem*)g_pPlayer->m_Inventory.GetAtId( m_nItem );
+		CItemElem* pItemElem  = g_pPlayer->m_Inventory.GetAtId( m_nItem );
 		if( pItemElem )
 		{
 			pItemElem->SetExtra( 0 );				
@@ -12433,13 +12429,12 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	
 	if( g_pPlayer->m_Inventory.IsEquip( pShortcut->m_dwId ) )
 	{
-		g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor(TID_GAME_EQUIPPUT) );
+		g_WndMng.PutString(TID_GAME_EQUIPPUT);
 		SetForbid( TRUE );
 		return FALSE;
 	}
 	
-	CItemElem* pItemElem;
-	pItemElem  = (CItemElem*)g_pPlayer->m_Inventory.GetAt( pShortcut->m_dwIndex );
+	CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAt( pShortcut->m_dwIndex );
 	
 	if(pItemElem == NULL)
 		return FALSE;
@@ -12514,8 +12509,7 @@ void CWndPostSend::OnRButtonUp( UINT nFlags, CPoint point )
 	// ������( ���?, ���ⱸ )
 	if( PtInRect(&(pCustom->rect), point) )
 	{
-		CItemElem* pItemElem;
-		pItemElem  = (CItemElem*)g_pPlayer->m_Inventory.GetAtId( m_nItem );
+		CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
 		
 		if(pItemElem)
 		{
@@ -12620,8 +12614,7 @@ BOOL CWndPostSend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				g_WndMng.OpenCustomBox( "", pBox );
 				
-				CItemElem* pItemElem;
-				pItemElem  = (CItemElem*)g_pPlayer->m_Inventory.GetAtId( m_nItem );
+				CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
 				
 				if( pItemElem )
 				{
@@ -17001,7 +16994,7 @@ void CWndMixJewel::OnRButtonDblClk( UINT nFlags, CPoint point )
 BOOL CWndMixJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	int isValid = ITEM_INVALID;
-	CItemElem* pItemElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	if( m_nSelectCtrl > -1 && !m_MatJewel[m_nSelectCtrl].isUse)
 	{
 		if( m_nSelectCtrl < 5 && (pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01 || pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01_1))
@@ -17452,8 +17445,7 @@ BOOL CWndExtraction::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	{		
 		//���� �����۸� �÷����� �� �ִ�.
 		ItemProp* pItemProp;
-		CItemElem* pTempElem;
-		pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		
 		if(m_pItemElem == NULL && pTempElem != NULL)
 		{
@@ -17462,7 +17454,7 @@ BOOL CWndExtraction::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				if( (pItemProp->dwReferStat1 == WEAPON_GENERAL && pItemProp->dwLimitLevel1 >= 60) || pItemProp->dwReferStat1 == WEAPON_UNIQUE )
 				{
-					m_pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+					m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 					m_pEItemProp = m_pItemElem->GetProp();
 					m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
 					CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
@@ -17967,7 +17959,7 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_CUSTOM1 );		
 
 	//Set Weapon
-	CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 	if(pItemElem && (pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT || pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC) &&
 		pItemElem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE)
@@ -18363,8 +18355,7 @@ BOOL CWndChangeWeapon::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	//Set Weapon
 	CRect rect;
 	ItemProp* pItemProp;
-	CItemElem* pTempElem;
-	pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
 	rect = wndCtrl->rect;
@@ -18822,7 +18813,7 @@ BOOL CWndHeroSkillUp::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	int nSelect = HitTest(point);
 	if(nSelect > -1)
 	{
-		CItemElem* pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 		if(m_pItemElem[nSelect] == NULL)
 		{
@@ -19599,7 +19590,7 @@ BOOL CWndRemoveAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		//�Ӽ������� �� ���⸸ �÷����� �� �ִ�.
 		ItemProp* pItemProp;
 		CItemElem* pTempElem;
-		pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		
 		if( pTempElem != NULL && pTempElem->m_nResistAbilityOption > 0 )
 		{
@@ -19611,7 +19602,7 @@ BOOL CWndRemoveAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					if(m_pItemElem != NULL)
 						m_pItemElem->SetExtra(0);
 
-					m_pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+					m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 					m_pEItemProp = m_pItemElem->GetProp();
 					m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
 					m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
@@ -19948,15 +19939,14 @@ BOOL CWndRemovePiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	if( rect.PtInRect( point ) )
 	{		
 		ItemProp* pItemProp;
-		CItemElem* pTempElem;
-		pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		
 		if(m_pItemElem == NULL && pTempElem != NULL)
 		{
 			pItemProp = pTempElem->GetProp();
 			if( pTempElem->IsPierceAble() && pTempElem->GetPiercingItem( 0 ) != 0 )
 			{
-				m_pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+				m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 				m_pEItemProp = m_pItemElem->GetProp();
 				m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
 				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
@@ -19964,7 +19954,7 @@ BOOL CWndRemovePiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				pButton->EnableWindow(TRUE);
 			}
 			else
-				g_WndMng.PutString( prj.GetText( TID_GAME_REMOVE_PIERCING_ERROR_EX ), NULL, prj.GetTextColor( TID_GAME_REMOVE_PIERCING_ERROR_EX ) );
+				g_WndMng.PutString(TID_GAME_REMOVE_PIERCING_ERROR_EX);
 		}
 	}
 	return TRUE;
@@ -19985,7 +19975,7 @@ void CWndRemovePiercing::SetItem(CItemElem* pItemElem)
 			pButton->EnableWindow(TRUE);
 		}
 		else
-			g_WndMng.PutString( prj.GetText( TID_GAME_REMOVE_PIERCING_ERROR_EX ), NULL, prj.GetTextColor( TID_GAME_REMOVE_PIERCING_ERROR_EX ) );			
+			g_WndMng.PutString(TID_GAME_REMOVE_PIERCING_ERROR_EX);
 	}
 }
 
@@ -20282,18 +20272,16 @@ void CWndRemoveJewel::OnMouseWndSurface(CPoint point)
 BOOL CWndRemoveJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	CRect rect;
-	ItemProp* pItemProp;
-	CItemElem* pTempElem;
 
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
 	rect = wndCtrl->rect;
 	if( rect.PtInRect( point ) )
 	{		
-		pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		
 		if(m_pItemElem == NULL && pTempElem != NULL)
 		{
-			pItemProp = pTempElem->GetProp();
+			ItemProp * pItemProp = pTempElem->GetProp();
 			
 			if(pTempElem && (pItemProp->dwItemKind2 == IK2_WEAPON_DIRECT || pItemProp->dwItemKind2 == IK2_WEAPON_MAGIC) &&
 				pItemProp->dwReferStat1 == WEAPON_ULTIMATE && pTempElem->GetUltimatePiercingSize() > 0)
@@ -20321,11 +20309,11 @@ BOOL CWndRemoveJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	rect = wndCtrl->rect;
 	if( rect.PtInRect( point ) )
 	{
-		pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		
 		if(m_pMoonstone == NULL && pTempElem != NULL)
 		{
-			ItemProp* pItemProp = pTempElem->GetProp();
+			const ItemProp * pItemProp = pTempElem->GetProp();
 			if(pItemProp->dwID == II_GEN_MAT_MOONSTONE || pItemProp->dwID ==II_GEN_MAT_MOONSTONE_1)
 			{
 				m_pMoonstone = pTempElem;
@@ -20653,17 +20641,16 @@ BOOL CWndChangeAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 	CRect rect;
 	ItemProp* pItemProp;
-	CItemElem* pTempElem;
 
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
 	rect = wndCtrl->rect;
 	if( rect.PtInRect( point ) )
 	{		
-		pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		
 		if(m_pItemElem == NULL && pTempElem != NULL)
 		{
-			pItemProp = pTempElem->GetProp();
+			const ItemProp * pItemProp = pTempElem->GetProp();
 			
 			if(pTempElem && CItemElem::IsEleRefineryAble(pItemProp) && pTempElem->m_nResistAbilityOption > 0)
 			{
@@ -20672,7 +20659,7 @@ BOOL CWndChangeAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
 			}
 			else
-				g_WndMng.PutString( prj.GetText( TID_GAME_NOTELEMENT  ), NULL, prj.GetTextColor( TID_GAME_NOTELEMENT  ) );
+				g_WndMng.PutString(TID_GAME_NOTELEMENT);
 		}
 	}
 
@@ -21780,7 +21767,7 @@ BOOL CWndSmeltSafety::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	CRect WndRect = GetClientRect();
 	if(WndRect.PtInRect(point))
 	{
-		CItemElem* pTempElem = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 		if(pTempElem == NULL)
 			return TRUE;
 

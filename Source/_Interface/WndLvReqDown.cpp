@@ -116,27 +116,7 @@ BOOL CWndLvReqDown::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 		}
 	}
-	/*
-	if(message == WIN_ITEMDROP)
-	{
-		CItemElem* pTempElem;
-		LPSHORTCUT pShortCut = (LPSHORTCUT)pLResult;
-		pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortCut->m_dwId );
 
-		// 하락 상태가 된 아이템만 올릴 수 있다. 
-		if(m_pItemElem == NULL && pTempElem != NULL)
-		{
-			if(pTempElem->GetLevelDown() < 0)
-			{
-				m_pItemElem = (CItemElem*)g_pPlayer->GetItemId( pShortCut->m_dwId );
-				m_pEItemProp = m_pItemElem->GetProp();
-				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-				CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-				pButton->EnableWindow(TRUE);
-			}
-		}
-	}
-	*/
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
@@ -160,8 +140,7 @@ void CWndLvReqDown::OnLButtonDblClk( UINT nFlags, CPoint point )
 BOOL CWndLvReqDown::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	
-	CItemElem* pTempElem;
-	pTempElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 	// 하락 상태가 된 아이템만 올릴 수 있다. 
 	if( pTempElem != NULL)

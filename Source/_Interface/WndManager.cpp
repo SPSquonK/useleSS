@@ -5619,16 +5619,14 @@ void CWndMgr::PutToolTipParts(CItemElem * pPartsItemBase, CPoint point, CRect* p
 	}
 }
 
-void CWndMgr::MakeToolTipText(CItemElem * pItemBase, CEditString& strEdit, int flag )
+void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int flag )
 {
-	if( pItemBase == NULL )
-		return;
-	ItemProp *pItemProp = pItemBase->GetProp();
-	if( pItemProp == NULL )
-	{
-		LPCTSTR szErr = Error( "PutToolTip_Item : 프로퍼티가 널 %d", pItemBase->m_dwItemId );
-		//ADDERRORMSG( szErr );
-		assert( 0 );
+	if (!pItemElem) return;
+
+	ItemProp * pItemProp = pItemElem->GetProp();
+	if (!pItemProp) {
+		Error("PutToolTip_Item : Item id %lu has no props", pItemElem->m_dwItemId);
+		assert(0);
 		return;
 	}
 	
@@ -5643,14 +5641,11 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemBase, CEditString& strEdit, int f
 	if( pMover == NULL )
 		return;
 
-	CItemElem* pItemElem	= (CItemElem*)pItemBase;
-
 	CString str = _T( "" );
 	CString strTemp = _T( "" );
 	CString strEnter = '\n';
 
-	DWORD dwColorBuf;
-	dwColorBuf = PutItemName( pItemElem, &strEdit );
+	DWORD dwColorBuf = PutItemName( pItemElem, &strEdit );
 	PutItemAbilityPiercing( pItemElem, &strEdit, dwColorBuf );
 	PutPetKind( pItemElem, &strEdit );		//gmpbigsun : 아이템 명 다음줄에 펫 종류 ( 리어, 픽업, 버프 ) 삽입 
 	if( pItemElem->GetProp() && pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND )

@@ -723,7 +723,7 @@ void CWndFindWordGame::OnDraw( C2DRender* p2DRender )
 
 BOOL CWndFindWordGame::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-	CItemElem* pItemElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 	
 	if(pItemElem != NULL && (pItemElem->GetProp()->dwID >= II_SYS_SYS_EVE_A_CARD && pItemElem->GetProp()->dwID <= II_SYS_SYS_EVE_Z_CARD))
 	{
@@ -1703,7 +1703,7 @@ void CWndPuzzleGame::OnDraw( C2DRender* p2DRender )
 
 BOOL CWndPuzzleGame::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-	CItemElem* pItemElem  = (CItemElem*)g_pPlayer->GetItemId( pShortcut->m_dwId );
+	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
 	//if( ::GetLanguage() == LANG_KOR )
 	{

@@ -7942,7 +7942,7 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 		}
 #endif // __QUIZ
 
-		CItemElem* pItemElem = (CItemElem *)pUser->GetItemId( nId );
+		CItemElem* pItemElem = pUser->GetItemId( nId );
 		if( IsUsableItem( pItemElem ) )		
 		{
 			if( pItemElem->IsQuest() )
