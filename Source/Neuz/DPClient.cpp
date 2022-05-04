@@ -9866,7 +9866,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				return;	
 			case II_SYS_SYS_FEED_01:
 				{	// 별도의 개수 입력 없이 최대 사용 가능한 양을 사용하도록 수정
-					CItemElem* pItemElem	= static_cast<CItemElem*>( pItemBase );
 					SendUsePetFeed( dwId );
 					return;
 				}
@@ -9907,7 +9906,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	}
 
 #ifdef __AZRIA_1023
-	CItemElem* pItem	= static_cast<CItemElem*>( pItemBase );
+	CItemElem * pItem = pItemBase;
 	if( !pItem->IsFlag( CItemElem::expired ) )
 	{
 		const TicketProp * const pTicketProp = g_ticketProperties.GetTicketProp(pItemProp->dwID);

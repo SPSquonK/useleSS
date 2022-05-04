@@ -9326,7 +9326,7 @@ CItemElem* CMover::GetPetItem( void )
 {
 	if( HasActivatedSystemPet() )
 	{
-		CItemElem* pItemElem	= static_cast<CItemElem*>( GetItemId( m_dwPetId ) );
+		CItemElem * pItemElem = GetItemId(m_dwPetId);
 		if( pItemElem && pItemElem->IsPet() )
 			return pItemElem;
 	}
@@ -10117,7 +10117,7 @@ int CMover::GetPerinNum( void )
 	int nPerin	= 0;
 	for( int i = 0; i < m_Inventory.GetMax(); i++ )
 	{
-		CItemElem* pItem	= static_cast<CItemElem*>( GetItemId( i ) );
+		CItemElem * pItem = GetItemId(i);
 		if( pItem && pItem->IsPerin() && ::IsUsableItem( pItem ) )
 			nPerin	+= pItem->m_nItemNum;
 	}
@@ -10136,7 +10136,7 @@ int CMover::RemovePerin( int nPerin )
 	int nRest	= nPerin;
 	for( int i = 0; i < m_Inventory.GetMax() && nRest > 0; i++ )
 	{
-		CItemElem* pItem	= static_cast<CItemElem*>( GetItemId( i ) );
+		CItemElem * pItem = GetItemId(i);
 		if( pItem && pItem->IsPerin() && ::IsUsableItem( pItem ) )
 		{
 			int nRemove		= nRest >= pItem->m_nItemNum? pItem->m_nItemNum: nRest;

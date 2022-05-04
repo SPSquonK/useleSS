@@ -453,7 +453,7 @@ void CAIPet::ResetItem( void )
 	CMover* pPlayer		= prj.GetMover( m_idOwner );
 	if( IsValidObj( pPlayer ) )
 	{
-		CItemElem* pItem	= static_cast<CItemElem*>( pPlayer->GetItemId( m_idPetItem ) );
+		CItemElem * pItem = pPlayer->GetItemId(m_idPetItem);
 		if( pItem && pItem->IsEatPet() )
 		{
 			pPlayer->ResetDestParamRandomOptExtension( pItem );

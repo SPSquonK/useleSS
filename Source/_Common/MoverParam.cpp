@@ -3473,7 +3473,7 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 		if( pItemBase && cParam == UI_TRANSFORM_VISPET && HasActivatedEatPet() )
 		{
 			InactivateEatPet();
-			ActivateEatPet( static_cast<CItemElem*>( pItemBase ) );
+			ActivateEatPet(pItemBase);
 		}
 	}
 #endif // __WORLDSERVER

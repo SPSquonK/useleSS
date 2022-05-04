@@ -11364,7 +11364,7 @@ BOOL CWndCommItemDlg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else
 			{
 #ifdef __AZRIA_1023
-				CItemElem* pItem	= static_cast<CItemElem*>( g_pPlayer->GetItemId( m_dwObjId ) );
+				CItemElem * pItem = g_pPlayer->GetItemId(m_dwObjId);
 				if( pItem )
 				{
 					if( pItem->GetProp()->dwItemKind3 == IK3_TICKET )	// +

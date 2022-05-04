@@ -738,7 +738,7 @@ void ITransformer::RemoveItem( CUser* pUser, CTransformStuff & stuff )
 	for( DWORD i = 0; i < stuff.GetSize(); i++ )
 	{
 		TransformStuffComponent* pComponent	= stuff.GetComponent( i );
-		CItemElem* pItem	= static_cast<CItemElem*>( pUser->GetItemId( pComponent->nItem ) );
+		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
 		if( pItem )
 		{
 			g_DPSrvr.PutItemLog( pUser, "X", "transform-removestuff", pItem, pComponent->nNum );
@@ -770,7 +770,7 @@ BOOL ITransformer::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
 	for( DWORD i = 0; i < stuff.GetSize(); i++ )
 	{
 		TransformStuffComponent* pComponent		= stuff.GetComponent( i );
-		CItemElem* pItem	= static_cast<CItemElem*>( pUser->GetItemId( pComponent->nItem ) );
+		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
 		if( !pItem || pUser->IsUsing( pItem ) )
 			return FALSE;
 	}
@@ -804,7 +804,7 @@ BOOL CTransformerEgg::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
 		// 중복된 재료를 가지고 있다면 조작된 것이다
 		if( setItems.insert( pComponent->nItem ).second == false )
 			return FALSE;
-		CItemElem* pItem	= static_cast<CItemElem*>( pUser->GetItemId( pComponent->nItem ) );
+		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
 		ASSERT( pItem );
 		// 알이 아니면 부적합 재료
 		if( !pItem->IsEgg() )

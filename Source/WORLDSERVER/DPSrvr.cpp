@@ -8789,7 +8789,7 @@ void CDPSrvr::OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 		DWORD dwFeedId;		// ¸ÔÀÌ ½Äº°ÀÚ
 		short nNum;
 		ar >> dwFeedId;
-		CItemElem* pFeed	= static_cast<CItemElem*>( pUser->GetItemId( dwFeedId ) );
+		CItemElem * pFeed = pUser->GetItemId(dwFeedId);
 		if( IsUsableItem( pFeed ) == FALSE )
 			return;
 		if( !pFeed->IsFeed() )
