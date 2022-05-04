@@ -678,6 +678,7 @@
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h" />
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />

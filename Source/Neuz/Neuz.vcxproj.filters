@@ -1859,6 +1859,9 @@
     <ClInclude Include="..\_Common\ItemElem.h">
       <Filter>Source Files\_Common\Object</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\ItemContainer.h">
+      <Filter>Source Files\_Common\Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">
