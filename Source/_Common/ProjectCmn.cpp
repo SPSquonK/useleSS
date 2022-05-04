@@ -757,7 +757,7 @@ bool CNameValider::Load() {
 	};
 
 	constexpr auto LoadValidLetters = [](bool isVendor) -> std::optional<std::set<char>> {
-		const auto fileId = isVendor ? FILE_ALLOWED_LETTER : FILE_ALLOWED_LETTER2;
+		const auto fileId = isVendor ? FILE_ALLOWED_LETTER2 : FILE_ALLOWED_LETTER;
 		const CString strFile = GetLangFileName(::GetLanguage(), fileId);
 
 		CScanner s;

@@ -45,7 +45,7 @@ bool CAccessoryProperty::LoadScript(LPCTSTR szFile) {
 }
 
 void CAccessoryProperty::ChangeProbabilities(const std::vector<DWORD> & probabilities) {
-	if (probabilities.size() < MAX_AAO) {
+	if (probabilities.size() <= MAX_AAO) {
 		m_adwProbability.fill(0);
 		std::ranges::copy(probabilities, m_adwProbability.begin());
 	} else {
