@@ -89,7 +89,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\_Common\ItemElem.cpp" />
     <ClCompile Include="..\_Database\AccountCacheMgr.cpp">
     </ClCompile>
     <ClCompile Include="AccountTimeLimitDBCtrl.cpp">
@@ -266,7 +265,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
-    <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Database\AccountCacheMgr.h" />
     <ClInclude Include="AccountTimeLimitDBCtrl.h" />
     <ClInclude Include="CampusDBCtrl.h" />

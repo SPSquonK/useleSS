@@ -93,7 +93,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\_Common\ItemElem.cpp" />
     <ClCompile Include="AttackArbiter.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\auction.cpp">
@@ -455,7 +454,6 @@
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="..\_Common\GroupUtils.h" />
-    <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\sqktd.h" />
     <ClInclude Include="..\_Common\StaticString.h" />
     <ClInclude Include="DisplayedInfo.h" />

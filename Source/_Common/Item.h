@@ -19,7 +19,6 @@
 #include "accessory.h"
 
 #include "Piercing.h"
-#include "ItemElem.h"
 
 class CItemBase
 {
@@ -46,7 +45,7 @@ public:
 	BOOL			IsEmpty() { return m_dwItemId ? FALSE : TRUE; }
 	BOOL			IsQuest();
 
-	ItemProp*		GetProp() const; 
+	ItemProp*		GetProp(); 
 	virtual	void			Empty();
 	CTexture*		GetTexture();						
 	int				GetCost();							// 가격을 얻는다.
@@ -78,19 +77,24 @@ inline CTexture* CItemBase::GetTexture()
 #endif
 }
 
-class CItemElem : public CItemBase,
-	public ItemElemFeatures::Piercing
+class CItemElem : public CItemBase
 {
+private:
+	CPiercing	m_piercing;
 public:
-	template <typename T>
-	static const CItemElem * Cast(const T * ptr) {
-		return static_cast<const CItemElem *>(ptr);
-	}
-
-	template <typename T>
-	static CItemElem * Cast(T * ptr) {
-		return static_cast<CItemElem *>(ptr);
-	}
+	void	SetPiercingSize( int nSize )	{	m_piercing.SetPiercingSize( nSize );	}
+	int		GetPiercingSize() const	{	return m_piercing.GetPiercingSize();		}
+	void	SetPiercingItem( int nth, DWORD dwItem )	{	m_piercing.SetPiercingItem( nth, dwItem );	}
+	DWORD	GetPiercingItem( int nth ) const	{	return m_piercing.GetPiercingItem( nth );	}
+	void	CopyPiercing( const CPiercing & piercing )		{	m_piercing	= piercing;		}
+	void	SerializePiercing( CAr & ar )	{	m_piercing.Serialize( ar );		}
+	BOOL	IsPiercedItem()	{ return m_piercing.IsPiercedItem(); }
+	void	SetUltimatePiercingSize( int nSize )	{	m_piercing.SetUltimatePiercingSize( nSize );	}
+	int		GetUltimatePiercingSize()	{	return m_piercing.GetUltimatePiercingSize();		}
+	void	SetUltimatePiercingItem( int nth, DWORD dwItem )	{	m_piercing.SetUltimatePiercingItem( nth, dwItem );	}
+	DWORD	GetUltimatePiercingItem( int nth )	{	return m_piercing.GetUltimatePiercingItem( nth );	}
+	
+	BOOL	IsPierceAble( DWORD dwTargetItemKind3 = NULL_ID, BOOL bSize = FALSE );
 
 	int			m_nAbilityOption;	// 추가 능력치 가변 옵션
 
@@ -186,7 +190,7 @@ public:
 
 //	Attributes
 	virtual	void			Empty();
-	ItemProp*	GetProp() const	{	return prj.GetItemProp( m_dwItemId );	}
+	ItemProp*	GetProp()	{	return prj.GetItemProp( m_dwItemId );	}
 	int			GetAttrOption();		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
 	[[nodiscard]] int GetAbilityOption() const noexcept { return m_nAbilityOption; }
 	int			GetItemResist( void ) const;
