@@ -106,6 +106,23 @@ static	DWORD	s_dwHdrCur;
 		return *this;
 	}
 
+	template<typename T, size_t N>
+	CAr & operator<<(const std::array<T, N> & values) {
+		for (size_t i = 0; i != N; ++i) {
+			*this << values[i];
+		}
+		return *this;
+	}
+
+	template<typename T, size_t N>
+	CAr & operator>>(std::array<T, N> & values) {
+		for (size_t i = 0; i != N; ++i) {
+			*this >> values[i];
+		}
+		return *this;
+	}
+
+
 private:
 	template<size_t POS, typename TupleType> void TupleExtract(TupleType & tuple);
 

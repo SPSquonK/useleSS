@@ -15354,16 +15354,6 @@ void CDPClient::OnSetSpeedFactor( OBJID objid, CAr & ar )
 		pMover->SetSpeedFactor( fSpeedFactor );
 }
 
-void CDPClient::SendLegendSkillUp(OBJID* pdwItemId, int count)
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_LEGENDSKILLUP_START, DPID_UNKNOWN );
-	
-	for( int i=0; i<count; i++ )
-		ar << pdwItemId[i];
-	
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendModifyStatus(int nStrCount, int nStaCount, int nDexCount, int nIntCount)
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_MODIFY_STATUS, DPID_UNKNOWN );

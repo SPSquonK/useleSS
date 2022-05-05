@@ -377,7 +377,6 @@ public:
 	void	SendPetTamerMistake( DWORD dwId );
 	void	SendPetTamerMiracle( DWORD dwId );
 	void	SendFeedPocketInactive( void );
-	void	SendLegendSkillUp(OBJID* pdwItemId, int count);
 	void	SendModifyStatus(int nStrCount, int nStaCount, int nDexCount, int nIntCount);
 	void	SendRemoveQuest( DWORD dwQuest );
 	void	SendWantedGold( int nGold, LPCTSTR szMsg );

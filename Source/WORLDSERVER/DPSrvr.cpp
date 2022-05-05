@@ -9013,24 +9013,15 @@ void CDPSrvr::OnModifyStatus( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	}
 }	
 
-void CDPSrvr::OnLegendSkillStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
-	OBJID objItemId[5];
-	
-	for( int i=0; i<5; ++i )
-		ar >> objItemId[i];
+	const auto [objItemId] = ar.Extract<std::array<OBJID, 5>>();
 
-	if(pUser->IsHero() == FALSE)
-		return;
+	if(!pUser.IsHero()) return;
 
 	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
 	{				
-		LPSKILL lpSkill = &(pUser->m_aJobSkill[i]);
+		LPSKILL lpSkill = &(pUser.m_aJobSkill[i]);
 		if( lpSkill && lpSkill->dwSkill != NULL_ID )
 		{
 			ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
@@ -9040,7 +9031,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 				continue;
 			if( lpSkill->dwLevel > 4 )
 			{
-				pUser->AddLegendSkillResult(-1);
+				pUser.AddLegendSkillResult(-1);
 				return;
 			}
 		}
@@ -9050,7 +9041,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	// 일치하는지 검사 (인벤토리에서 검사)
 	for( int i=0; i<5; i++ )
 	{
-		pItemElem[i]	= pUser->m_Inventory.GetAtId( objItemId[i] );
+		pItemElem[i]	= pUser.m_Inventory.GetAtId( objItemId[i] );
 		if( IsUsableItem( pItemElem[i] ) == FALSE )
 			return ;
 	}
@@ -9067,42 +9058,39 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	{
 		LogItemInfo aLogItem;
 		aLogItem.Action = "+";
-		aLogItem.SendName = pUser->GetName();
+		aLogItem.SendName = pUser.GetName();
 		aLogItem.RecvName = "LEGENDSKILL_USE";
-		aLogItem.WorldId = pUser->GetWorld()->GetID();
+		aLogItem.WorldId = pUser.GetWorld()->GetID();
 		OnLogItem( aLogItem, pItemElem[i], 1 );
-		pUser->RemoveItem( (BYTE)( objItemId[i] ), (short)1 );
+		pUser.RemoveItem( (BYTE)( objItemId[i] ), (short)1 );
 	}
 
-	
-	if( xRandom(1000) > 766 )
-	{
-		for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-		{				
-			LPSKILL lpSkill = &(pUser->m_aJobSkill[i]);
-			if( lpSkill && lpSkill->dwSkill != NULL_ID )
-			{
-				ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
-				if( pSkillProp == NULL )
-					continue;
-				if( pSkillProp->dwItemKind1 != JTYPE_HERO)
-					continue;
-				lpSkill->dwLevel++;
+	if (xRandom(1000) <= 766) {
+		pUser.AddLegendSkillResult(FALSE);
+		return;
+	}
 
-				g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, (CMover*)pUser, &(pUser->m_aJobSkill[i]) );
-			}
-		}	
-		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_SYS_EXCHAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
-		pUser->AddDoUseSkillPoint( &(pUser->m_aJobSkill[0]), pUser->m_nSkillPoint );
+	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
+	{				
+		LPSKILL lpSkill = &(pUser.m_aJobSkill[i]);
+		if( lpSkill && lpSkill->dwSkill != NULL_ID )
+		{
+			ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
+			if( pSkillProp == NULL )
+				continue;
+			if( pSkillProp->dwItemKind1 != JTYPE_HERO)
+				continue;
+			lpSkill->dwLevel++;
+
+			g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, &pUser, &(pUser.m_aJobSkill[i]) );
+		}
+	}	
+	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01, pUser.GetPos().x, pUser.GetPos().y, pUser.GetPos().z);
+	pUser.AddDoUseSkillPoint( &(pUser.m_aJobSkill[0]), pUser.m_nSkillPoint );
 #ifdef __S_NEW_SKILL_2
-		g_dpDBClient.SaveSkill( pUser );
+	g_dpDBClient.SaveSkill( pUser );
 #endif // __S_NEW_SKILL_2
-		pUser->AddLegendSkillResult(TRUE);	
-	}
-	else
-	{
-		pUser->AddLegendSkillResult(FALSE);
-	}
+	pUser.AddLegendSkillResult(TRUE);
 }
 
 void CDPSrvr::OnGC1to1TenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

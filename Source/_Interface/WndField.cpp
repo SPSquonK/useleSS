@@ -18838,20 +18838,22 @@ BOOL CWndHeroSkillUp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		if(!m_bSendHeroSkillup)
 		{
 			//������ ������ �˸���.
-			BOOL checkall = TRUE;
-			OBJID itemobjId[5];
-			for(int i=0; i<5; i++)
-			{
-				if(m_pItemElem[i] == NULL)
-					checkall = FALSE;
-				else
-					itemobjId[i] = m_pItemElem[i]->m_dwObjId;				
+			bool isValid = true;
+			std::array<OBJID, 5> itemobjId{ 0 };
+
+			for (size_t i = 0; i != 5; ++i) {
+				if (m_pItemElem[i] == nullptr) {
+					isValid = false;
+					break;
+				}
+
+				itemobjId[i] = m_pItemElem[i]->m_dwObjId;
 			}
 
-			if(checkall)
-			{
+			if (isValid) {
 				m_bSendHeroSkillup = TRUE;
-				g_DPlay.SendLegendSkillUp(itemobjId, 5);
+
+				g_DPlay.SendPacket<PACKETTYPE_LEGENDSKILLUP_START, std::array<OBJID, 5>>(itemobjId);
 			}
 		}
 	}
