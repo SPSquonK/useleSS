@@ -85,17 +85,6 @@ void CAr::WriteString( LPCTSTR lpsz )
 	Write( lpsz, sizeof(TCHAR) * nLen );
 }
 
-LPTSTR CAr::ReadString( LPTSTR lpsz )
-{
-	// if nMax is negative (such a large number doesn't make sense given today's
-	// 2gb address space), then assume it to mean "keep the newline".
-	int nLen;
-	*this >> nLen;
-	Read( lpsz, sizeof(TCHAR) * nLen );
-	lpsz[nLen] = '\0';
-	return lpsz;
-}
-
 LPTSTR CAr::ReadString( LPTSTR lpsz, int nBufSize )
 {
 	// if nMax is negative (such a large number doesn't make sense given today's

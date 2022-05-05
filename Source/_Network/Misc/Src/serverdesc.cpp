@@ -70,7 +70,7 @@ void CServerDesc::Serialize( CAr & ar )
 			ar >> pJurisdiction->m_wRight;
 			m_lspJurisdiction.push_back( pJurisdiction );
 		}
-		ar.ReadString( m_szAddr );
+		ar.ReadString( m_szAddr, sizeof(m_szAddr));
 	}
 }
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/

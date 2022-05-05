@@ -5832,7 +5832,7 @@ void CDPClient::OnEventLuaDesc( CAr & ar )
 	char strDesc[100];
 
 	ar >> nState;
-	ar.ReadString(strDesc);
+	ar.ReadString(strDesc, sizeof(strDesc));
 
 	switch( nState )
 	{
