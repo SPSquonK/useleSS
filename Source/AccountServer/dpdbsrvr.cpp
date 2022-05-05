@@ -81,24 +81,18 @@ void CDPDBSrvr::OnRemoveConnection( DPID dpid )
 #endif	// __SERVERLIST0911
 }
 
-void CDPDBSrvr::OnRemoveAccount( CAr & ar, DPID dpid, LPBYTE, u_long )
-{
-	TCHAR lpszAccount[MAX_ACCOUNT];
-	ar.ReadString( lpszAccount, MAX_ACCOUNT );
-	g_AccountMng.RemoveAccount( lpszAccount );
+void CDPDBSrvr::OnRemoveAccount(CAr & ar, DPID dpid, LPBYTE, u_long) {
+	const auto [lpszAccount] = ar.Extract<TCHAR[MAX_ACCOUNT]>();
+	g_AccountMng.RemoveAccount(lpszAccount);
 }
 
 #ifdef __REMOVE_PLAYER_0221
 void CDPDBSrvr::OnRemovePlayer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
-	char szAccount[MAX_ACCOUNT]	= { 0,}, szTemp[255]	= { 0,};
-	ar.ReadString( szAccount, MAX_ACCOUNT );
-	ar.ReadString( szTemp, 255 );	// szPassword
-	ar.ReadString( szTemp, 255 );	// szNo
-	u_long idPlayer;
-	ar >> idPlayer;		// x
-	DWORD dwAuthKey;
-	ar>> dwAuthKey;		// o
+	const auto [szAccount, _1, _2, idPlayer, dwAuthKey] = ar.Extract<
+		char[MAX_ACCOUNT], char[255], char[255], u_long, DWORD
+	>();
+
 #ifdef __RT_1025
 	size_t nSize; u_long uTemp;
 	ar >> nSize;
@@ -116,15 +110,8 @@ void CDPDBSrvr::OnRemovePlayer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSi
 }
 #endif	// __REMOVE_PLAYER_0221
 
-void CDPDBSrvr::OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
-{
-	DWORD dwAuthKey;
-	char lpszAccount[MAX_ACCOUNT]	= { 0, };
-
-	ar >> dwAuthKey;	// o
-	u_long uIdofMulti;
-	ar >> uIdofMulti;
-	ar.ReadString( lpszAccount, MAX_ACCOUNT );	// o
+void CDPDBSrvr::OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize ) {
+	const auto [dwAuthKey, uIdofMulti, lpszAccount] = ar.Extract<DWORD, u_long, char[MAX_ACCOUNT]>();
 
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 
@@ -156,7 +143,7 @@ void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 	char lpszAccount[MAX_ACCOUNT]	= { 0, };
 
 	ar >> dwAuthKey;	// o
-	ar.ReadString( lpszAccount, MAX_ACCOUNT );	// o
+	ar.ReadString( lpszAccount );	// o
 
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 	CAccount* pAccount	= g_AccountMng.GetAccount( lpszAccount );

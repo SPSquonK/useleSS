@@ -70,6 +70,12 @@ public:
 	CAr& operator>>(char& ch);
 	CAr& operator>>(unsigned& u);
 
+	template<size_t N>
+	CAr & operator>>(char(&buffer)[N]) {
+		ReadString(buffer, N);
+		return *this;
+	}
+
 #ifdef __CLIENT
 #ifdef _DEBUG
 static	DWORD	s_dwHdrPrev;
