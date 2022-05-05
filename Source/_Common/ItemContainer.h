@@ -25,6 +25,7 @@ public:
 	CItemElem * m_apItem = nullptr;
 	DWORD	m_dwItemMax = 0;
 
+private:
 	void SetItemContainer(DWORD dwItemMax, DWORD dwExtra = NULL_ID);
 
 

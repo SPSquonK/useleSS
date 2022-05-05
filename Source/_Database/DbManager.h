@@ -493,7 +493,7 @@ inline void ACCOUNT_CACHE::Init()
 	for( int i = 0 ; i < 3 ; ++i )
 	{
 		pMover[i] = NULL;
-		m_Bank[i].SetItemContainer( ITYPE_ITEM, MAX_BANK ) ;
+		m_Bank[i].SetItemContainer( CItemContainer::ContainerTypes::BANK ) ;
 		m_dwGoldBank[i] = 0;
 		m_idPlayerBank[i] = 0;
 	}

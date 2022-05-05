@@ -3072,7 +3072,7 @@ void CDbManager::UpdateGuildBankUpdate( CQuery* pQuery, CQuery* pQueryLog, LPDB_
 	int							nAbilityOption;	// 옵션
 	SERIALNUMBER	iSerialNumber;	// 유니크 넘버
 	DWORD						dwPenya;	// 거래 페냐량
-	GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+	GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK);
 
 	ar >> nGuildId;
 	ar >> nGoldGuild;

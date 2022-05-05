@@ -2563,7 +2563,7 @@ BOOL TextCmd_CreatePc(CScanner & scanner, CPlayer_ * pUser) {
 		pMover->UpdateLocalMatrix();
 		SAFE_DELETE( pMover->m_pAIInterface );
 		pMover->SetAIInterface( AII_MONSTER );
-		pMover->m_Inventory.SetItemContainer( ITYPE_ITEM, MAX_INVENTORY, MAX_HUMAN_PARTS ); 
+		pMover->m_Inventory.SetItemContainer( CItemContainer::ContainerType::INVENTORY ); 
 
 		static DWORD adwParts[5]	= {	PARTS_CAP, PARTS_HAND, PARTS_UPPER_BODY, PARTS_FOOT, PARTS_RWEAPON };
 		for( int i = 0; i < 5; i++ )

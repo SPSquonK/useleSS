@@ -789,7 +789,7 @@ BOOL CDbManager::ConvItemStart( void )
 		CItemContainer	GuildBank;	// 길드 창고
 		int							nGuildId	= 0;
 	
-		GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+		GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK );
 		nGuildId		= pQueryChar->GetInt( "m_idGuild" );
 		GetGuildBank( &GuildBank, pQueryChar );
 		

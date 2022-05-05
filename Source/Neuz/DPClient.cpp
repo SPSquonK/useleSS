@@ -2600,7 +2600,7 @@ void CDPClient::OnOpenShopWnd( OBJID objid, CAr & ar )
 	else
 	{
 		CItemContainer dump;
-		dump.SetItemContainer( ITYPE_ITEM, MAX_VENDOR_INVENTORY );
+		dump.SetItemContainer( CItemContainer::ContainerTypes::VENDOR );
 		for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 			dump.Serialize( ar );	// waste
 	}
