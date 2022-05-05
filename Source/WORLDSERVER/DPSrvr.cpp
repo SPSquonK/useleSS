@@ -3554,9 +3554,12 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 		char[10], char[10], DWORD, DWORD
 	>();
 
-	if( strlen( szLastPass ) > 4 || strlen( szNewPass ) > 4 )
-	{
-		WriteError( "%s %d, %s, %s", __FILE__, __LINE__, szLastPass, szNewPass );
+	constexpr auto IsValidBankPassword = [](const char * const str) {
+		return std::strlen(str) == 4 && std::all_of(str, str + 4, isdigit2);
+	};
+
+	if (!IsValidBankPassword(szNewPass)) {
+		pUser.AddChangeBankPass(0, dwId, dwItemId);
 		return;
 	}
 
