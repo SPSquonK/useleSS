@@ -57,6 +57,12 @@ public:
 	CAr& operator<<(char ch);
 	CAr& operator<<(unsigned u);
 
+	template<size_t N>
+	CAr & operator<<(const char(&buffer)[N]) requires (N >= 3) {
+		WriteString(buffer);
+		return *this;
+	}
+
 	// extraction operations
 	CAr& operator>>(BYTE& by);
 	CAr& operator>>(WORD& w);
@@ -71,7 +77,7 @@ public:
 	CAr& operator>>(unsigned& u);
 
 	template<size_t N>
-	CAr & operator>>(char(&buffer)[N]) {
+	CAr & operator>>(char(&buffer)[N]) requires (N >= 3) {
 		ReadString(buffer, N);
 		return *this;
 	}
@@ -84,7 +90,7 @@ static	DWORD	s_dwHdrCur;
 #endif	// __CLIENT
 
 	/** Push into the archiver each passed value */
-	template<typename ... Ts> void Accumulate(Ts ...);
+	template<typename ... Ts> void Accumulate(const Ts & ...);
 	/** Extract from the archiver one value of each specified value type */
 	template<typename ... Ts> std::tuple<Ts ...> Extract();
 
@@ -219,7 +225,7 @@ inline u_long CAr::GetOffset( void )
 }
 
 template<typename... Ts>
-inline void CAr::Accumulate(Ts ... ts) {
+inline void CAr::Accumulate(const Ts & ... ts) {
 	((*this << ts), ...);
 }
 

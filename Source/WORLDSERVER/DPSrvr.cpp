@@ -1588,9 +1588,7 @@ void CDPSrvr::OnGuildContribution( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 // 공지사항
 void CDPSrvr::OnGuildNotice( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	char szNotice[MAX_BYTE_NOTICE];
-	ar.ReadString( szNotice, MAX_BYTE_NOTICE );
-	szNotice[MAX_BYTE_NOTICE-1] = '\0';
+	const auto [szNotice] = ar.Extract<char[MAX_BYTE_NOTICE]>();
 
 	if( strlen( szNotice ) == 0 )
 		return;
@@ -3569,39 +3567,30 @@ void CDPSrvr::OnMoveBankItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 {
 }
 
-void CDPSrvr::OnChangeBankPass( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	char szLastPass[10] ={0,};
-	char szNewPass[10] ={0,};
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
+	const auto [szLastPass, szNewPass, dwId, dwItemId] = ar.Extract<
+		char[10], char[10], DWORD, DWORD
+	>();
+
+	if( strlen( szLastPass ) > 4 || strlen( szNewPass ) > 4 )
 	{
-		ar.ReadString( szLastPass, 10 );
-		ar.ReadString( szNewPass, 10 );
+		WriteError( "%s %d, %s, %s", __FILE__, __LINE__, szLastPass, szNewPass );
+		return;
+	}
 
-		if( strlen( szLastPass ) > 4 || strlen( szNewPass ) > 4 )
-		{
-			WriteError( "%s %d, %s, %s", __FILE__, __LINE__, szLastPass, szNewPass );
-			return;
-		}
-
-		DWORD dwId, dwItemId;
-		ar >> dwId >> dwItemId;
-
-		// 여기서 비밀번호 확인작업
-		if( 0 == strcmp( szLastPass, pUser->m_szBankPass ) )
-		{
-			// 패스워드가 바꿨으므로 DB와 클라이언트에 게 바뀠다고 보내줌
-			strcpy( pUser->m_szBankPass, szNewPass );
-			g_dpDBClient.SendChangeBankPass( pUser->GetName(), szNewPass, pUser->m_idPlayer );
-			pUser->AddChangeBankPass( 1, dwId, dwItemId );
-		}
-		else
-		{
-			// 다시 입력하라고 알려줌
-			// 패스워드가 틀렸음
-			pUser->AddChangeBankPass( 0, dwId, dwItemId );
-		}
+	// 여기서 비밀번호 확인작업
+	if( 0 == strcmp( szLastPass, pUser.m_szBankPass ) )
+	{
+		// 패스워드가 바꿨으므로 DB와 클라이언트에 게 바뀠다고 보내줌
+		strcpy( pUser.m_szBankPass, szNewPass );
+		g_dpDBClient.SendChangeBankPass( pUser.GetName(), szNewPass, pUser.m_idPlayer );
+		pUser.AddChangeBankPass( 1, dwId, dwItemId );
+	}
+	else
+	{
+		// 다시 입력하라고 알려줌
+		// 패스워드가 틀렸음
+		pUser.AddChangeBankPass( 0, dwId, dwItemId );
 	}
 }
 

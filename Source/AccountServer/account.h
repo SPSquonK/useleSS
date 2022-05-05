@@ -62,7 +62,7 @@ public:
 	BYTE			m_cbAccountFlag;
 	DWORD			m_dwBillingClass;
 	CTime			m_TimeOverDays;
-	TCHAR			m_lpszAccount[MAX_ACCOUNT];
+	SAccountName m_lpszAccount;
 	BOOL			m_fRoute;
 	DWORD			m_dwPing;
 	DWORD			m_dwAuthKey;

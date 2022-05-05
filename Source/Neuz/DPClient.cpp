@@ -8953,15 +8953,6 @@ void CDPClient::SendCloseGuildBankWnd()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendChangeBankPass( const char *szLastPass, const char *szNewPass, DWORD dwId, DWORD dwItemId )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CHANGEBANKPASS, DPID_UNKNOWN );
-	ar.WriteString( szLastPass );
-	ar.WriteString( szNewPass );
-	ar << dwId << dwItemId;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendConfirmBank( const char *szPass, DWORD dwId, DWORD dwItemId )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_CONFIRMBANK, DPID_UNKNOWN );

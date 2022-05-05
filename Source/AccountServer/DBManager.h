@@ -89,7 +89,7 @@ typedef	struct tagDB_OVERLAPPED_PLUS
 	OVERLAPPED		Overlapped;
 	int				nQueryMode;
 	char			szQuery[4096];
-	char			szAccount[MAX_ACCOUNT];
+	SAccountName szAccount;
 	DWORD			dwKey;		// 요청, 로그아웃, 로그인, 응답의 케이스에 account를 구분하기 위해서 사용한다.
 	int				nExtra;
 	BYTE			lpBuf[2048];

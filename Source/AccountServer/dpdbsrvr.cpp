@@ -82,7 +82,7 @@ void CDPDBSrvr::OnRemoveConnection( DPID dpid )
 }
 
 void CDPDBSrvr::OnRemoveAccount(CAr & ar, DPID dpid, LPBYTE, u_long) {
-	const auto [lpszAccount] = ar.Extract<TCHAR[MAX_ACCOUNT]>();
+	const auto [lpszAccount] = ar.Extract<SAccountName>();
 	g_AccountMng.RemoveAccount(lpszAccount);
 }
 
@@ -90,7 +90,7 @@ void CDPDBSrvr::OnRemoveAccount(CAr & ar, DPID dpid, LPBYTE, u_long) {
 void CDPDBSrvr::OnRemovePlayer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
 	const auto [szAccount, _1, _2, idPlayer, dwAuthKey] = ar.Extract<
-		char[MAX_ACCOUNT], char[255], char[255], u_long, DWORD
+		SAccountName, char[255], char[255], u_long, DWORD
 	>();
 
 #ifdef __RT_1025
@@ -111,7 +111,7 @@ void CDPDBSrvr::OnRemovePlayer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSi
 #endif	// __REMOVE_PLAYER_0221
 
 void CDPDBSrvr::OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize ) {
-	const auto [dwAuthKey, uIdofMulti, lpszAccount] = ar.Extract<DWORD, u_long, char[MAX_ACCOUNT]>();
+	const auto [dwAuthKey, uIdofMulti, lpszAccount] = ar.Extract<DWORD, u_long, SAccountName>();
 
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 
@@ -139,11 +139,7 @@ void CDPDBSrvr::OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufS
 
 void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
-	DWORD dwAuthKey;
-	char lpszAccount[MAX_ACCOUNT]	= { 0, };
-
-	ar >> dwAuthKey;	// o
-	ar.ReadString( lpszAccount );	// o
+	const auto [dwAuthKey, lpszAccount] = ar.Extract<DWORD, SAccountName>();
 
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 	CAccount* pAccount	= g_AccountMng.GetAccount( lpszAccount );

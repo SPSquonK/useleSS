@@ -5,6 +5,7 @@
 
 #include "WndManager.h"
 #include "DPClient.h"
+#include "MsgHdr.h"
 
 
 /****************************************************
@@ -637,7 +638,9 @@ BOOL CWndBankPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 					}
 					if( bDigit )
 					{
-						g_DPlay.SendChangeBankPass( szLastPass, szNewPass, m_dwId, m_dwItemId );
+						g_DPlay.SendPacket<PACKETTYPE_CHANGEBANKPASS,
+							char[10], char[10], DWORD, DWORD
+						>(szLastPass, szNewPass, m_dwId, m_dwItemId);
 					}
 					else
 					{

@@ -241,7 +241,6 @@ public:
 	
 	void	SendMoveBankItem( BYTE nSrcIndex, BYTE nDestIndex );
 
-	void	SendChangeBankPass( const char *szLastPass, const char *szNewPass, DWORD dwId, DWORD dwItemId );
 	void	SendConfirmBank( const char *szPass, DWORD dwId, DWORD dwItemId );
 
 	void	SendCorrReq( CObj *pObj );
@@ -1099,13 +1098,13 @@ public:
 	void    OnNoDisguise( OBJID objid, CAr & ar );
 
 	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(Ts ... ts);
+	void SendPacket(const Ts & ... ts);
 private:
 	BOOL	m_bEventTextColor;
 };
 
 template<DWORD PacketId, typename ... Ts>
-void CDPClient::SendPacket(Ts ... ts) {
+void CDPClient::SendPacket(const Ts & ... ts) {
 	BEFORESENDSOLE(ar, PacketId, DPID_UNKNOWN);
 	ar.Accumulate(ts...);
 	SEND(ar, this, DPID_SERVERPLAYER);

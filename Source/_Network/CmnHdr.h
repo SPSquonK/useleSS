@@ -476,6 +476,8 @@ extern	void RemoveCRLF( char* szString );
 #define	MAX_PLAYER		42
 #define	MAX_SESSION_PWD		64
 
+using SAccountName = char[MAX_ACCOUNT];
+
 #define	CRIT_SEC	CMclCritSec
 #define	theLineFile
 
