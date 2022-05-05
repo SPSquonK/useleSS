@@ -2811,7 +2811,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 		{
 			if( pCtrl->m_dwDelete == 0xffffffff )
 			{
-				g_DPlay.SendExpBoxInfo( pCtrl->GetId() );
+				g_DPlay.SendPacket<PACKETTYPE_EXPBOXINFO, OBJID>(pCtrl->GetId());
 			}
 			
 			m_bCtrlInfo = TRUE;

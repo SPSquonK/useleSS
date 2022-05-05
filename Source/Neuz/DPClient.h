@@ -174,7 +174,6 @@ public:
 	void	SendRemovePartyMember( u_long LeaderId, u_long MemberId );
 	void	SendChangeShareItem( int nItemMode );
 	void	SendChangeShareExp( int nExpMode );
-	void	SendExpBoxInfo( OBJID objid );		
 	void	SendChangeTroup( BOOL bSendName, const char * szPartyName = "" );
 	void	SendChangePartyName( const char * szPartyName );
 	void	SendDuelRequest( CMover* pSrc, CMover* pDst );
@@ -293,15 +292,12 @@ public:
 	void	SendRandomScroll( OBJID objid, OBJID objid2 );
 	void	SendEnchant( OBJID objid, OBJID objMaterialId );
 	void	SendRemoveAttribute( OBJID objid );
-	void	SendChangeAttribute( OBJID objTargetItem, OBJID objMaterialItem, int nAttribute );
 	void	SendPiercingSize( OBJID objid1, OBJID objid2, OBJID objid3 );
 #ifdef __SYS_ITEMTRANSY
 	void	SendItemTransy( OBJID objid0, OBJID objid1, DWORD dwChangeId = NULL_ID, BOOL bCash = TRUE );
 #else // __SYS_ITEMTRANSY
 	void	SendItemTransy( OBJID objid0, OBJID objid1 );
 #endif // __SYS_ITEMTRANSY
-	void	SendPiercing( OBJID objid1, OBJID objid2 );
-	void	SendPiercingRemove( OBJID objid );
 	void	SendCommercialElem( DWORD dwItemId, DWORD dwItemId1 );
 	void	SendCreateSfxObj( DWORD dwSfxId, u_long idPlayer = NULL_ID, BOOL bFlag = FALSE );
 	void	SendSetNaviPoint( const D3DXVECTOR3 & Pos, OBJID objidTarget );

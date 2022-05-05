@@ -1488,7 +1488,9 @@ BOOL CWndInventory::Process()
 					|| pItemMaterialElem->GetProp()->dwItemKind3 == IK3_SOCKETCARD2
 					)
 				{
-					g_DPlay.SendPiercing( pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId );
+					g_DPlay.SendPacket<PACKETTYPE_PIERCING, DWORD, DWORD>(
+						pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId
+						);
 				}
 				else if( IsNeedTarget( pItemMaterialElem->GetProp() ) )
 				{
@@ -19987,11 +19989,10 @@ BOOL CWndRemovePiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 		//������ ������ �˸���.
 		if(m_pItemElem != NULL)
 		{
-			CWndButton* pButton;
-			pButton = (CWndButton*)GetDlgItem( WIDC_START );
+			CWndBase * pButton = GetDlgItem(WIDC_START);
 			pButton->EnableWindow(FALSE);
 
-			g_DPlay.SendPiercingRemove(m_pItemElem->m_dwObjId);
+			g_DPlay.SendPacket<PACKETTYPE_PIERCINGREMOVE, DWORD>(m_pItemElem->m_dwObjId);
 			Destroy();
 		}
 	}
@@ -20491,8 +20492,11 @@ BOOL CWndChangeAttribute::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 { 
 	if(nID == WIDC_OK)
 	{
-		if(m_pItemElem != NULL && m_pChangeItem != NULL && m_nAttributeNum > -1 && m_nAttributeNum < 5)
-			g_DPlay.SendChangeAttribute(m_pItemElem->m_dwObjId, m_pChangeItem->m_dwObjId, m_nAttributeNum + 1);
+		if (m_pItemElem != nullptr && m_pChangeItem != nullptr && m_nAttributeNum >= 0 && m_nAttributeNum < 5) {
+			g_DPlay.SendPacket<PACKETTYPE_CHANGE_ATTRIBUTE, OBJID, OBJID, int>(
+				m_pItemElem->m_dwObjId, m_pChangeItem->m_dwObjId, m_nAttributeNum + 1
+				);
+		}
 
 		if(m_pItemElem)
 			m_pItemElem->SetExtra(0);

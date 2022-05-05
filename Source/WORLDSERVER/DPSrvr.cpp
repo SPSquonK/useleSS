@@ -4649,47 +4649,31 @@ void CDPSrvr::OnItemTransy( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 	}
 }
 
-void CDPSrvr::OnExpBoxInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
-{
-	u_long uIdPlayer;
-	OBJID objid;
-	
-	ar >> uIdPlayer >> objid;
+void CDPSrvr::OnExpBoxInfo(CAr & ar, CUser & pUser) {
+	const auto [objid] = ar.Extract<OBJID>();
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		CCtrl* pCtrl;
+	CCtrl * pCtrl = prj.GetCtrl(objid);
+	if (!IsValidObj(pCtrl)) return;
 
-		pCtrl	= prj.GetCtrl( objid );
-		if( IsValidObj( pCtrl ) )
-			pUser->AddExpBoxInfo( objid,  ((CCommonCtrl*)pCtrl)->m_CtrlElem.m_dwSet, ((CCommonCtrl*)pCtrl)->m_dwDelete - timeGetTime(), ((CCommonCtrl*)pCtrl)->m_idExpPlayer );
-	}
+	CCommonCtrl * pCCtrl = static_cast<CCommonCtrl *>(pCtrl);
+
+	pUser.AddExpBoxInfo(
+		objid,
+		pCCtrl->m_CtrlElem.m_dwSet,
+		pCCtrl->m_dwDelete - timeGetTime(),
+		pCCtrl->m_idExpPlayer
+	);
 }
 
-void CDPSrvr::OnPiercing( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
-{
-	DWORD dwId1, dwId2;
-	
-	ar >> dwId1;
-	ar >> dwId2;
-	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		CItemUpgrade::GetInstance()->OnPiercing( pUser, dwId1, dwId2 );
+void CDPSrvr::OnPiercing(CAr & ar, CUser & pUser) {
+	const auto [weaponPos, cardPos] = ar.Extract<DWORD, DWORD>();
+	CItemUpgrade::GetInstance()->OnPiercing(&pUser, weaponPos, cardPos);
 }
 
 // 피어싱 옵션 제거(카드 제거)
-void CDPSrvr::OnPiercingRemove( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
-{
-	OBJID objId;
-	ar >> objId;
-	
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-	
-	CItemUpgrade::GetInstance()->OnPiercingRemove( pUser, objId );
+void CDPSrvr::OnPiercingRemove(CAr & ar, CUser & pUser) {
+	const auto [weaponPos] = ar.Extract<DWORD>();
+	CItemUpgrade::GetInstance()->OnPiercingRemove(&pUser, weaponPos);
 }
 
 void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
@@ -4960,16 +4944,12 @@ void CDPSrvr::OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 	}	
 }
 
-void CDPSrvr::OnRemoveAttribute( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
-{
+void CDPSrvr::OnRemoveAttribute( CAr & ar, CUser & pUser_) {
 	int nPayPenya = 100000; //속성제련 제거시 필요한 페냐
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
+	OBJID objItemId; ar >> objItemId;
 
-	OBJID objItemId;
-	ar >> objItemId;
+	CUser * pUser = &pUser_;
 
 	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( objItemId );
 
@@ -5034,19 +5014,9 @@ void CDPSrvr::OnRemoveAttribute( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	
 }
 
-void CDPSrvr::OnChangeAttribute( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpbuf, u_long uBufSize )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
-	OBJID objTargetItem, objMaterialItem;
-	int nAttribute;
-
-	ar >> objTargetItem >> objMaterialItem;
-	ar >> nAttribute;
-
-	CItemUpgrade::GetInstance()->ChangeAttribute( pUser, objTargetItem, objMaterialItem, static_cast<SAI79::ePropType>(nAttribute) );
+void CDPSrvr::OnChangeAttribute(CAr & ar, CUser & pUser) {
+	const auto [objTargetItem, objMaterialItem, nAttribute] = ar.Extract<OBJID, OBJID, int>();
+	CItemUpgrade::GetInstance()->ChangeAttribute(&pUser, objTargetItem, objMaterialItem, static_cast<SAI79::ePropType>(nAttribute));
 }
 
 void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpbuf, u_long uBufSize )
@@ -5671,14 +5641,9 @@ void CDPSrvr::OnNWWantedInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	}
 }
 
-void CDPSrvr::OnReqLeave( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
-	if( pUser->m_dwLeavePenatyTime == 0 )	// 페널티 타임을 세팅한 적이 없는가?
-		pUser->m_dwLeavePenatyTime = ::timeGetTime() + TIMEWAIT_CLOSE * 1000;	//  세팅 
+void CDPSrvr::OnReqLeave(CAr & ar, CUser & pUser) {
+	if (pUser.m_dwLeavePenatyTime == 0)	// 페널티 타임을 세팅한 적이 없는가?
+		pUser.m_dwLeavePenatyTime = ::timeGetTime() + TIMEWAIT_CLOSE * 1000;	//  세팅 
 }
 
 void CDPSrvr::OnStateMode( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

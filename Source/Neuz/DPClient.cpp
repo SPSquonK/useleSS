@@ -8731,13 +8731,6 @@ void CDPClient::SendChangeShareExp( int nExpMode )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendExpBoxInfo( OBJID objid )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_EXPBOXINFO, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << objid;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendPartyMemberRequest( CMover* pLeader, u_long uMemberId, BOOL bTroup )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_MEMBERREQUEST, DPID_UNKNOWN );
@@ -13602,33 +13595,8 @@ void CDPClient::SendEnchant( OBJID objid, OBJID objMaterialId )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendRemoveAttribute( OBJID objid )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_REMVOE_ATTRIBUTE, DPID_UNKNOWN );
-	ar << objid;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-void CDPClient::SendChangeAttribute( OBJID objTargetItem, OBJID objMaterialItem, int nAttribute )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CHANGE_ATTRIBUTE, DPID_UNKNOWN );
-	ar << objTargetItem << objMaterialItem;
-	ar << nAttribute;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-// ÇÇ¾î½ÌÇÑ ¾ÆÅÛ¿¡ Àû¿ë
-void CDPClient::SendPiercing( OBJID objid1, OBJID objid2 )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PIERCING, DPID_UNKNOWN );
-	ar << objid1;
-	ar << objid2;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendPiercingRemove( OBJID objid )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PIERCINGREMOVE, DPID_UNKNOWN );
-	ar << objid;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendRemoveAttribute(const OBJID objid) {
+	SendPacket<PACKETTYPE_REMVOE_ATTRIBUTE, OBJID>(objid);
 }
 
 // ÇÇ¾î½Ì(¶ÕÀ½)
