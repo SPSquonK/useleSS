@@ -661,28 +661,21 @@ void CDPSrvr::OnDoEquip(CAr & ar, CUser & pUser) {
 	}
 }
 
-void CDPSrvr::OnMoveItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
-{
-	BYTE nItemType, nSrcIndex, nDstIndex;
-	ar >> nItemType >> nSrcIndex >> nDstIndex;
+void CDPSrvr::OnMoveItem(CAr & ar, CUser & pUser) {
+	const auto [nSrcIndex, nDstIndex] = ar.Extract<BYTE, BYTE>();
 
-	if( nSrcIndex == nDstIndex )
-		return;
-	if( nDstIndex >= MAX_INVENTORY || nSrcIndex >= MAX_INVENTORY )
+	if (nSrcIndex == nDstIndex) return;
+	if (nDstIndex >= MAX_INVENTORY || nSrcIndex >= MAX_INVENTORY)
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
-	CItemElem* pItemSrc = pUser->m_Inventory.GetAt( nSrcIndex );
-	CItemElem* pItemDst = pUser->m_Inventory.GetAt( nDstIndex );
+	CItemElem* pItemSrc = pUser.m_Inventory.GetAt( nSrcIndex );
+	CItemElem* pItemDst = pUser.m_Inventory.GetAt( nDstIndex );
 	if( pItemDst == NULL || IsUsableItem( pItemDst ) ) // 빈 공간 or 거래중이지 않는 아이템 ?			
 	{	
 		if( IsUsableItem( pItemSrc ) )					// 거래중이지 않는 아이템 ?
 		{
-			pUser->m_Inventory.Swap( nSrcIndex, nDstIndex );
-			pUser->AddMoveItem( 0, nSrcIndex, nDstIndex );
+			pUser.m_Inventory.Swap( nSrcIndex, nDstIndex );
+			pUser.AddMoveItem( 0, nSrcIndex, nDstIndex );
 		}
 	}
 }

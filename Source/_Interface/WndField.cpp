@@ -24,6 +24,7 @@
 
 #include "GuildHouse.h"
 #include "Vector3Helper.h"
+#include "MsgHdr.h"
 
 extern int g_nSkillCurSelect;
 extern float g_fHairLight;
@@ -7914,7 +7915,7 @@ BOOL CWndTradeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	}
 	else if ( nID == WIDC_YES )
 	{
-		g_DPlay.SendTradeConfirm();
+		g_DPlay.SendPacket<PACKETTYPE_TRADECONFIRM>();
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 

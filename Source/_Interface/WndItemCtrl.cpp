@@ -1107,8 +1107,12 @@ BOOL CWndItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			else if( pWndFrame->GetWndId() == APP_INVENTORY )	// inventory -> inventory
 			{
 				CItemElem* pItemElem	= m_pItemContainer->GetAt( pShortcut->m_dwIndex );
-				if( IsUsingItem( pItemElem ) == FALSE )
-					g_DPlay.SendMoveItem( 0, (BYTE)( pShortcut->m_dwIndex ), (BYTE)( (DWORD)nDstIndex ) );
+				if (!IsUsingItem(pItemElem)) {
+					g_DPlay.SendPacket<PACKETTYPE_MOVEITEM, BYTE, BYTE>(
+						static_cast<BYTE>(pShortcut->m_dwIndex),
+						static_cast<BYTE>(static_cast<DWORD>(nDstIndex))
+						);
+				}
 			}
 		}
 		else

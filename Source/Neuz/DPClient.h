@@ -137,7 +137,6 @@ public:
 	void	SendQueryGetMailGold( u_long nMail );
 	void	SendQueryReadMail( u_long nMail );
 	void	SendQueryMailBox( void );
-	void	SendMoveItem( BYTE nItemType, BYTE nSrcIndex, BYTE nDestIndex );
 	void	SendDropItem( DWORD dwItemType, DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos );
 	void	SendDropGold( DWORD dwGold, const D3DXVECTOR3 & vPlayerPos, const D3DXVECTOR3 & vPos );
 	void	SendConfirmPKPVP( u_long uidPlayer );
@@ -153,7 +152,6 @@ public:
 	void	SendTradePull( int i );
 	void	SendTradeOk( void );//	{	SendHdr( PACKETTYPE_TRADEOK );	}
 	void	SendTradeCancel( int nMode = 0 );
-	void	SendTradeConfirm( void );
 	void	SendMessageNote( u_long uidTo, LPSTR strMessage );
 	void	SendTradePutGold( DWORD dwGold );
 //raiders.2006.11.28

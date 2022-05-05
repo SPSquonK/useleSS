@@ -8627,12 +8627,6 @@ void CDPClient::SendDoEquip( BYTE nId )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 */
-void CDPClient::SendMoveItem( BYTE nItemType, BYTE nSrcIndex, BYTE nDestIndex )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_MOVEITEM, DPID_UNKNOWN );
-	ar << nItemType << nSrcIndex << nDestIndex;	// 3/12
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
 
 void CDPClient::SendDropItem(DWORD dwItemType, DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos) {
 	if (g_WndMng.m_pWndDialog) {
@@ -8705,12 +8699,6 @@ void CDPClient::SendTradeCancel( int nMode )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_TRADECANCEL, DPID_UNKNOWN );
 	ar << nMode;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendTradeConfirm()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TRADECONFIRM, DPID_UNKNOWN );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
