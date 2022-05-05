@@ -33,6 +33,7 @@ public:
 
 	// reading and writing strings
 	void WriteString(LPCTSTR lpsz);
+	LPTSTR ReadString(LPTSTR lpsz );
 	LPTSTR ReadString( LPTSTR lpsz, int nBufSize );
 
 	LPBYTE	GetBuffer( int* pnBufSize );

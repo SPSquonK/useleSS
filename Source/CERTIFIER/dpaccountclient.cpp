@@ -220,9 +220,9 @@ void CDPAccountClient::OnDestroyPlayer( CAr & ar, DPID dpid )
 
 void CDPAccountClient::OnServersetList( CAr & ar, DPID dpid )
 {
-	ar.ReadString( g_dpCertifier.m_szVer, sizeof(g_dpCertifier.m_szVer) );
+	ar.ReadString( g_dpCertifier.m_szVer );
 #ifdef __SECURITY_0628
-	ar.ReadString( g_dpCertifier.m_szResVer, sizeof(g_dpCertifier.m_szResVer) );
+	ar.ReadString( g_dpCertifier.m_szResVer );
 #endif	// __SECURITY_0628
 	ar >> g_dpCertifier.m_dwSizeofServerset;
 	LPSERVER_DESC pServer;
