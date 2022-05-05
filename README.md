@@ -23,18 +23,17 @@ with the C++20 option for some reasons.
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
     - You can create `useless_ranking` but IFAIK, it is never used.
 
-### Boost
+## Dependencies
 
-You need to download [Boost](https://www.boost.org/) and unpack the boost folder
-in the archive in the `Source/Libraries` folder.
+For now, the project does not use vcpkg. Instead, we rely on having the user
+manually install the dependencies in the `Source/Librairies` folder.
 
-After unziping, `Source/Libraries/boost/container/small_vector.hpp` should
-exist. The currently used version of Boost is 1.79.0.
+We give here the list of dependencies with an example of a file that should exist after unzipping.
 
-Currently, Boost is used for its containers. I'm paranoid about allocating
-memory, `boost::container::small_vector` and `boost::container::static_vector`
-avoids allocating memory in most cases while providing the features of a
-`std::vector`.
+
+- [Boost v1.79.0](https://www.boost.org/) (`Source/Libraries/boost/container/small_vector.hpp`)
+- [NamedTypes](https://github.com/joboccara/NamedType/tree/020be1e934f8916a02302f4e490c461671baaccc) (`Source/Libraries/NamedType/version.hpp`)
+- [Rapidjson](https://github.com/Tencent/rapidjson/releases/tag/v1.1.0) (`Source/Libraries/rapidjson/writer.h`)
 
 
 ## About the code here
