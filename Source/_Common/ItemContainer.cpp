@@ -312,13 +312,6 @@ void CItemContainer::SetAtId(OBJID dwObjId, CItemElem * pItemElem) {
 	m_apItem[dwObjId].m_dwObjId = dwObjId;
 }
 #ifdef __CLIENT
-void CItemContainer::SetAt(DWORD dwIndex, DWORD dwItemId) {
-	// 인덱스가 비어있나?
-	CItemElem * pItemElem = &m_apItem[m_apIndex[dwIndex]];
-	pItemElem->m_dwItemId = dwItemId;
-	pItemElem->m_dwObjId = m_apIndex[dwIndex];
-	pItemElem->m_dwObjIndex = dwIndex;
-}
 void CItemContainer::SetAt(DWORD dwIndex, CItemElem * pItemElem) {
 	CItemElem * pItemElem2 = &m_apItem[m_apIndex[dwIndex]];
 	*pItemElem2 = *pItemElem;

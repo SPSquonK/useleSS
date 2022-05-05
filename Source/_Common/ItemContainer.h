@@ -62,7 +62,6 @@ public:
 
 
 #ifdef __CLIENT
-	void SetAt(DWORD dwIndex, DWORD dwItemId);
 	void SetAt(DWORD dwIndex, CItemElem * pItemElem);
 
 	DWORD	Find(DWORD dwItemId) {
