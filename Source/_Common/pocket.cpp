@@ -19,14 +19,14 @@ CPocket::~CPocket()
 
 void CPocket::Copy( CPocket & rPocket )
 {
-	CItemContainer<CItemElem>::Copy( rPocket );
+	CItemContainer::Copy( rPocket );
 	m_bExpired	= rPocket.IsExpired();
 	m_tExpirationDate	= rPocket.GetExpirationDate();
 }
 
 void CPocket::Serialize( CAr & ar )
 {
-	CItemContainer<CItemElem>::Serialize( ar );
+	CItemContainer::Serialize( ar );
 	if( ar.IsStoring() )
 	{
 		ar << m_bExpired << m_tExpirationDate;
@@ -85,7 +85,7 @@ void CPocketController::Avail( int nPocket, time_t t )
 	else
 	{
 		m_apPocket[nPocket]		= new CPocket;
-		m_apPocket[nPocket]->SetItemContainer( 0, nPocket == 0? POCKET_SLOT_SIZE_0: POCKET_SLOT_SIZE_1_2 );
+		m_apPocket[nPocket]->SetItemContainer( nPocket == 0? CItemContainer::ContainerTypes::POCKET0: CItemContainer::ContainerTypes::POCKET12);
 		m_apPocket[nPocket]->SetExpirationDate( tCurrent + t );
 	}
 	m_apPocket[nPocket]->SetExpired( FALSE );
@@ -247,7 +247,7 @@ int		CPocketController::GetCount( DWORD dwItemId )
 	for( int i = 0; i < MAX_POCKET; i++ )
 	{
 		if( IsAvailable( i ) )
-			nCount	+= m_apPocket[i]->GetCount( dwItemId );
+			nCount	+= m_apPocket[i]->GetItemCount( dwItemId );
 	}
 	return nCount;
 }

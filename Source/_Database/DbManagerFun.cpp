@@ -434,7 +434,7 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 	return TRUE;
 }
 
-void CDbManager::GetGuildBank( CItemContainer< CItemElem  >*  GuildBank, CQuery *qry )
+void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
 {
 	int CountStr		= 0;
 	int IndexItem		= 0;
@@ -1520,7 +1520,7 @@ SERIALNUMBER CDbManager::RemoveItemInventory( ItemProp* pItemProp, CMover* pMove
 		}
 
 		if( pItemElem->m_nItemNum <= nItemCount )
-			pMover->m_Inventory.RemoveAt( pItemElem->m_dwObjIndex );
+			pMover->m_Inventory.RemoveAtId( pItemElem->m_dwObjId );
 		else
 			pItemElem->m_nItemNum -= nItemCount;
 		
@@ -1544,7 +1544,7 @@ SERIALNUMBER CDbManager::RemoveItemBank( ItemProp* pItemProp, CMover* pMover, in
 		iSerialNumber	= pItemElem->GetSerialNumber();
 
 		if( pItemElem->m_nItemNum <= nItemCount )
-			pMover->m_Bank[pMover->m_nSlot].RemoveAt( pItemElem->m_dwObjIndex );
+			pMover->m_Bank[pMover->m_nSlot].RemoveAtId( pItemElem->m_dwObjId );
 		else
 			pItemElem->m_nItemNum -= nItemCount;
 
@@ -1573,7 +1573,7 @@ SERIALNUMBER CDbManager::RemoveItemPocket( ItemProp* pItemProp, CMover* pMover, 
 				iSerialNumber	= pItemElem->GetSerialNumber();
 
 				if( pItemElem->m_nItemNum <= nItemCount )
-					pPocket->RemoveAt( pItemElem->m_dwObjIndex );
+					pPocket->RemoveAtId( pItemElem->m_dwObjId);
 				else
 					pItemElem->m_nItemNum -= nItemCount;
 

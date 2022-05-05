@@ -89,6 +89,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Database\AccountCacheMgr.cpp">
     </ClCompile>
     <ClCompile Include="AccountTimeLimitDBCtrl.cpp">

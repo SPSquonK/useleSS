@@ -293,12 +293,12 @@ public:
 	int				m_nSkillPoint;						// SP
 
 	CActionMover*					m_pActMover; 
-	CItemContainer< CItemElem  >	m_Inventory ;
+	CItemContainer	m_Inventory ;
 
 	CPocketController	m_Pocket;
 
 	u_long							m_idPlayerBank[3];
-	CItemContainer< CItemElem  >	m_Bank[ 3 ] ;
+	CItemContainer	m_Bank[ 3 ] ;
 	DWORD							m_dwGoldBank[ 3 ];
 
 	D3DXVECTOR3		m_vReturnPos;						//'귀환 두루마리'관련 
@@ -406,11 +406,7 @@ public:
 
 	BOOL	RemoveQuest( int nQuestId );
 
-#ifdef __SEND_ITEM_ULTIMATE
 	BOOL	AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, int nCharged = 0, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwItemId4 = 0, DWORD dwKeepTime = 0, __int64 iRandomOptItemId = 0 );
-#else // __SEND_ITEM_ULTIMATE
-	BOOL	AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, int nCharged = 0, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwKeepTime = 0, __int64 iRandomOptItemId = 0 );
-#endif // __SEND_ITEM_ULTIMATE
 	BOOL	AddItemBank( int nSlot, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber );
 	virtual void	Serialize( CAr & ar );
 //	int		GetMaxHitPoint()	    { return( ( m_nLevel * 16 ) + ( m_nSta * 6 ) + ( m_nStr  * 3 ) );		}

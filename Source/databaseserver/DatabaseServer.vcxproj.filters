@@ -306,6 +306,9 @@
     <ClCompile Include="..\_database\Query.cpp">
       <Filter>Database Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\ItemContainer.cpp">
+      <Filter>Neuz Files\Common Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Database\AccountCacheMgr.h">

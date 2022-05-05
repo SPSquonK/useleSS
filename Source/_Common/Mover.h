@@ -620,8 +620,8 @@ public:
 #endif	// __JEFF_9_20
 
 	RESURRECTION_DATA				m_Resurrection_Data;		/// 리저렉션 스킬 정보 
-	CItemContainer< CItemElem  >*	m_ShopInventory[ MAX_VENDOR_INVENTORY_TAB ];	/// 상인NPC의 물품 정보 
-	CItemContainer< CItemElem  >	m_Inventory;				/// 인벤토리
+	CItemContainer*	m_ShopInventory[ MAX_VENDOR_INVENTORY_TAB ];	/// 상인NPC의 물품 정보 
+	CItemContainer	m_Inventory;				/// 인벤토리
 	CPocketController	m_Pocket;
 	EQUIP_INFO		m_aEquipInfo[MAX_HUMAN_PARTS];				/// 장착정보 	
 	CVTInfo			m_vtInfo;					/// 거래와 개인상점 번호 
@@ -630,7 +630,7 @@ public:
 	BOOL			m_bBank;					/// 은행 이용 중?
 	u_long			m_idPlayerBank[3];			/// 3개 캐릭터 idPlayer
 	DWORD			m_dwGoldBank[3];			/// 3개 캐릭터 길드돈 
-	CItemContainer< CItemElem >	m_Bank[3];		/// 3개 캐릭터 은행 아이템 
+	CItemContainer	m_Bank[3];		/// 3개 캐릭터 은행 아이템 
 
 	BYTE			m_nQuestKeeping;			/// 클락워크 길드 퀘스트 번호  
 	BYTE			m_nPartyQuestKeeping;		/// 거대 몬스터 퀘스트 번호 
@@ -828,8 +828,8 @@ protected:
 public:
 	static CMover*  GetActiveMover() { return (CMover*)m_pObjActive; }	// 주인공 객체 얻기 	
 	static	int		GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair );
-	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, PEQUIP_INFO pEquipInfo, CModelObject* pModel, CItemContainer< CItemElem  >* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
-	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer< CItemElem  >* pInventory, PEQUIP_INFO pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
+	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, PEQUIP_INFO pEquipInfo, CModelObject* pModel, CItemContainer* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
+	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer* pInventory, PEQUIP_INFO pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
 	static	float	GetItemEnduranceInfluence( int nEndurance );	
 	static	int		GetItemEnduranceWeight( int nEndurance );	
 
@@ -918,7 +918,7 @@ public:
 	CItemElem*		GetWeaponItem( int nParts = PARTS_RWEAPON );					// 장착한 무기 얻기 
 	CItemElem*		GetLWeaponItem();					// 왼손에 장착한 무기 얻기.
 	CItemElem*		GetEquipItem( int nParts );			// 장착한 아이템 얻기 
-	ItemProp*		GetEquipItemProp( CItemContainer<CItemElem>* pInventory, PEQUIP_INFO pEquipInfo, int nParts );
+	ItemProp*		GetEquipItemProp( CItemContainer * pInventory, PEQUIP_INFO pEquipInfo, int nParts );
 	BOOL			IsDualWeapon();
 	void			RedoEquip( BOOL fFakeParts, BOOL bDestParam = TRUE );	
 	void			UpdateParts( BOOL bFakeParts  = FALSE ); // normal or fake

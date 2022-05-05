@@ -796,7 +796,7 @@ void CDbManager::SaveEquipment( CMover* pMover, char* szEquipment )
 	strncat(szEquipment, NullStr, sizeof(NullStr));
 }
 
-void CDbManager::SaveBank( CMover* pMover, CItemContainer<CItemElem  >* pPlayerBank, ItemContainerStruct * pItemContainerStruct )
+void CDbManager::SaveBank( CMover* pMover, CItemContainer* pPlayerBank, ItemContainerStruct * pItemContainerStruct )
 {
 	ItemStruct	is;
 	char Onem_apIndex[10] = {0,};
@@ -838,7 +838,7 @@ void CDbManager::SaveBank( CMover* pMover, CItemContainer<CItemElem  >* pPlayerB
 	strcat( pItemContainerStruct->szPet, NullStr );
 }
 
-void CDbManager::SaveGuildBank( CItemContainer<CItemElem>*  pGuildBank, PItemContainerStruct pItemContainerStruct )
+void CDbManager::SaveGuildBank( CItemContainer*  pGuildBank, PItemContainerStruct pItemContainerStruct )
 {
 	ItemStruct is;
 	char Onem_apIndex[10] = {0,};

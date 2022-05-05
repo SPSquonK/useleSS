@@ -359,7 +359,7 @@ BOOL CDbManager::SaveUserInventoryBank( char* pszSQL, CMover* pMover, CQuery* pQ
 	return TRUE;
 }
 
-BOOL CDbManager::SaveConvGuildBank( char* pszSQL, int nGuildId, CItemContainer< CItemElem >* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave )
+BOOL CDbManager::SaveConvGuildBank( char* pszSQL, int nGuildId, CItemContainer* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave )
 {
 	// Guild Save
 	ItemContainerStruct	icsGuildBank;
@@ -407,7 +407,7 @@ BOOL CDbManager::SaveConvGuildBank( char* pszSQL, int nGuildId, CItemContainer< 
 	return TRUE;	
 }
 
-BOOL CDbManager::RemoveGuildBankList( char* pszSQL, int nGuildId, CItemContainer< CItemElem  >*  GuildBank, int* nCountItem0, int* nCountItem1 )
+BOOL CDbManager::RemoveGuildBankList( char* pszSQL, int nGuildId, CItemContainer*  GuildBank, int* nCountItem0, int* nCountItem1 )
 {
 	BOOL bUpdate = FALSE;
 	if( prj.IsConvMode( REMOVE_ITEM_ALL ) )
@@ -524,7 +524,7 @@ BOOL CDbManager::RemoveItemInvenBank( CMover* pMover, int* nCountItem0, int* nCo
 	return bResult;
 }
 
-BOOL CDbManager::RemoveItemGuildBank( int nGuildId, CItemContainer< CItemElem  >*  GuildBank, int* nCountItem0, int* nCountItem1 )
+BOOL CDbManager::RemoveItemGuildBank( int nGuildId, CItemContainer*  GuildBank, int* nCountItem0, int* nCountItem1 )
 {
 	BOOL bResult = FALSE;
 	SET_STRING::iterator it;
@@ -643,7 +643,7 @@ BOOL CDbManager::PiercingConfirmInventoryBank( CMover* pMover )
 	return bUpdate;
 }
 
-BOOL CDbManager::PiercingConfirmGuildBank( int nGuildId, CItemContainer< CItemElem >* GuildBank )
+BOOL CDbManager::PiercingConfirmGuildBank( int nGuildId, CItemContainer* GuildBank )
 {
 	BOOL bUpdate = FALSE;
 	if( prj.IsConvMode( PIERCING_CONFIRM ) )	
@@ -687,7 +687,7 @@ BOOL CDbManager::InventoryBankConv( char* pszSQL, CMover* pMover, CQuery* pQuery
 		return FALSE;
 }
 
-BOOL CDbManager::GuildBankConv( char* pszSQL, int nGuildId, CItemContainer< CItemElem >* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave )
+BOOL CDbManager::GuildBankConv( char* pszSQL, int nGuildId, CItemContainer* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave )
 {
 	int nCountItem0 = 0;
 	int nCountItem1 = 0;
@@ -786,7 +786,7 @@ BOOL CDbManager::ConvItemStart( void )
 		sprintf( lpString1, "%d %", int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f ) );
 		UpdateConvItemDialog( "GuildBank", lpString, lpString1, (int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f )) );
 			
-		CItemContainer<CItemElem>	GuildBank;	// 길드 창고
+		CItemContainer	GuildBank;	// 길드 창고
 		int							nGuildId	= 0;
 	
 		GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );

@@ -326,7 +326,7 @@ CGuild::CGuild()
 	*m_szNotice				= '\0';
 
 #if !defined( __CORESERVER)	
-	m_GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+	m_GuildBank.SetItemContainer(CItemContainer::ContainerTypes::GUILDBANK);
 #endif
 	
 	ZeroMemory( m_adwPower, sizeof(m_adwPower) );

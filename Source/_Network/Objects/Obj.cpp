@@ -111,12 +111,12 @@ CMover::CMover()
 	memset( m_szCharacterKey, 0, sizeof(m_szCharacterKey ) );
 	m_nHitPoint		= m_nManaPoint	= m_nFatiguePoint	= 0;
 	m_pActMover		= new CActionMover( this );
-	m_Inventory.SetItemContainer( ITYPE_ITEM, MAX_INVENTORY, MAX_HUMAN_PARTS );
+	m_Inventory.SetItemContainer( CItemContainer::ContainerTypes::INVENTORY );
 
 	m_nSlot = 0;
 	for( int i = 0 ; i < 3 ; ++i )
 	{
-		m_Bank[i].SetItemContainer( ITYPE_ITEM, MAX_BANK ) ;
+		m_Bank[i].SetItemContainer(CItemContainer::ContainerTypes::BANK) ;
 		m_dwGoldBank[i] = 0;
 		m_idPlayerBank[i] = 0;
 	}
@@ -287,29 +287,29 @@ void CMover::InitProp( void )
 	}
 #endif	// __DBSERVER
 }
-
-#ifdef __SEND_ITEM_ULTIMATE
-BOOL CMover::AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, int nCharged, int nPiercedSize, DWORD adwItemId0, DWORD adwItemId1, DWORD adwItemId2, DWORD adwItemId3, DWORD adwItemId4, DWORD m_dwKeepTime, __int64 iRandomOptItemId )
-#else // __SEND_ITEM_ULTIMATE
-BOOL CMover::AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, int nCharged, int nPiercedSize, DWORD adwItemId0, DWORD adwItemId1, DWORD adwItemId2, DWORD adwItemId3, DWORD m_dwKeepTime, __int64 iRandomOptItemId )
-#endif // __SEND_ITEM_ULTIMATE
-{
-	if( iSerialNumber == 0 )
-		iSerialNumber	= CSerialNumber::GetInstance()->Get();
-	
-#ifdef __SEND_ITEM_ULTIMATE
-	return m_Inventory.Add( dwId, (short)( dwNum ), nOption, iSerialNumber, nItemResist, nResistAbilityOption, NULL, NULL, NULL, nCharged, nPiercedSize, adwItemId0, adwItemId1, adwItemId2, adwItemId3, adwItemId4, m_dwKeepTime, iRandomOptItemId );
-#else // __SEND_ITEM_ULTIMATE
-	return m_Inventory.Add( dwId, (short)( dwNum ), nOption, iSerialNumber, nItemResist, nResistAbilityOption, NULL, NULL, NULL, nCharged, nPiercedSize, adwItemId0, adwItemId1, adwItemId2, adwItemId3, m_dwKeepTime, iRandomOptItemId );
-#endif // __SEND_ITEM_ULTIMATE
-}
+// BOOL CMover::AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist, int nResistAbilityOption, int nCharged, int nPiercedSize, DWORD adwItemId0, DWORD adwItemId1, DWORD adwItemId2, DWORD adwItemId3, DWORD adwItemId4, DWORD m_dwKeepTime, __int64 iRandomOptItemId )
+// {
+// 	if( iSerialNumber == 0 )
+// 		iSerialNumber	= CSerialNumber::GetInstance()->Get();
+// 	
+// 	CItemElem item;
+// 
+// 
+// 	return m_Inventory.Add( dwId, (short)( dwNum ), nOption, iSerialNumber, nItemResist, nResistAbilityOption, NULL, NULL, NULL, nCharged, nPiercedSize, adwItemId0, adwItemId1, adwItemId2, adwItemId3, adwItemId4, m_dwKeepTime, iRandomOptItemId );
+// }
 
 BOOL CMover::AddItemBank( int nSlot, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber )
 {
 	if( iSerialNumber == 0 )
 		iSerialNumber	= CSerialNumber::GetInstance()->Get();
+
+	CItemElem item;
+	item.m_dwItemId = dwId;
+	item.m_nItemNum = static_cast<short>(dwNum);
+	item.m_nAbilityOption = nOption;
+	item.SetSerialNumber(iSerialNumber);
 	
-	return	( m_Bank[nSlot].Add( dwId, (short)( dwNum ), nOption, iSerialNumber ) );
+	return m_Bank[nSlot].Add(&item);
 }
 
 BOOL CMover::IsAbnormalPlayerData()
@@ -487,7 +487,7 @@ BOOL CMover::RemoveItemIK3()
 						if( m_Inventory.UnEquip( pItemProp->dwParts ) ) // 장비 해제
 						{
 							m_aEquipInfo[pItemProp->dwParts].dwId	= NULL_ID;
-							m_Inventory.RemoveAt( pItemElem->m_dwObjIndex );
+							m_Inventory.RemoveAtId( pItemElem->m_dwObjId);
 							bResult	= TRUE;
 						}
 						else
@@ -497,7 +497,7 @@ BOOL CMover::RemoveItemIK3()
 					}
 					else
 					{
-						m_Inventory.RemoveAt( pItemElem->m_dwObjIndex );
+						m_Inventory.RemoveAtId( pItemElem->m_dwObjId);
 						bResult	= TRUE;
 					}
 				}

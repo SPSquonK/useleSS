@@ -2899,8 +2899,8 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 	while( bFetch = pQuery->Fetch() )
 	{
 		nCount++;
-		CItemContainer<CItemElem>	GuildBank;	// 길드 창고
-		GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+		CItemContainer	GuildBank;	// 길드 창고
+		GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK );
 //		GuildBank.Clear();
 		
 		nGuildId		= pQuery->GetInt( "m_idGuild" );
@@ -3061,7 +3061,7 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 void CDbManager::UpdateGuildBankUpdate( CQuery* pQuery, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr							ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	CItemContainer<CItemElem>	GuildBank;	// 길드 창고
+	CItemContainer	GuildBank;	// 길드 창고
 	int							nGoldGuild; // 길드 Credit
 	int							nGuildId	= 0;
 	BYTE						cbUpdateContribution;
@@ -5991,9 +5991,9 @@ BOOL CDbManager::RemoveInvalidItem( void )
 	while( pQueryLoad->Fetch() )
 	{
 		BOOL bUpdate	= FALSE;
-		CItemContainer<CItemElem>	GuildBank;
+		CItemContainer	GuildBank;
 		int	nGuildId	= 0;
-		GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+		GuildBank.SetItemContainer(CItemContainer::ContainerTypes::GUILDBANK);
 
 		int nServer	= pQueryLoad->GetInt( "serverindex" );
 		nGuildId	= pQueryLoad->GetInt( "m_idGuild" );
@@ -6346,10 +6346,10 @@ BOOL CDbManager::ConvGuildBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 	while( pQueryChar->Fetch() )
 	{
 		BOOL	bUpdate	= FALSE;
-		CItemContainer<CItemElem>	GuildBank;
+		CItemContainer	GuildBank;
 		int	nGuildId	= 0;
 		
-		GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+		GuildBank.SetItemContainer(CItemContainer::ContainerTypes::GUILDBANK);
 
 		int nServer	= pQueryChar->GetInt( "serverindex" );
 		nGuildId	= pQueryChar->GetInt( "m_idGuild" );
@@ -6588,10 +6588,10 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 	while( pQuery->Fetch() )
 	{
 		bool f	= false;
-		CItemContainer<CItemElem>	GuildBank;
+		CItemContainer	GuildBank;
 		int	nGuildId	= 0;
 		
-		GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+		GuildBank.SetItemContainer(CItemContainer::ContainerTypes::GUILDBANK);
 
 		nGuildId	= pQuery->GetInt( "m_idGuild" );
 		GetGuildBank( &GuildBank, pQuery );
@@ -7127,10 +7127,10 @@ BOOL CDbManager::RestorePetGuildBank(std::map<DWORD, int> & mRestore )
 	while( pQueryChar->Fetch() )
 	{
 		BOOL	bUpdate	= FALSE;
-		CItemContainer<CItemElem>	GuildBank;
+		CItemContainer	GuildBank;
 		int	nGuildId	= 0;
 		
-		GuildBank.SetItemContainer( ITYPE_ITEM, MAX_GUILDBANK );
+		GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK );
 
 		int nServer	= pQueryChar->GetInt( "serverindex" );
 		nGuildId	= pQueryChar->GetInt( "m_idGuild" );

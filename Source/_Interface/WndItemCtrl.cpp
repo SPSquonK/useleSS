@@ -40,7 +40,7 @@ void CWndItemCtrl::Create( DWORD dwListCtrlStyle, const RECT& rect, CWndBase* pP
 {
 	CWndBase::Create( WBS_CHILD | dwListCtrlStyle, rect, pParentWnd, nID );
 }
-void CWndItemCtrl::InitItem( CItemContainer<CItemElem>* pItemContainer, DWORD SendToId )
+void CWndItemCtrl::InitItem( CItemContainer* pItemContainer, DWORD SendToId )
 {
 	m_pItemContainer = pItemContainer;
 	m_pFocusItem	= NULL;

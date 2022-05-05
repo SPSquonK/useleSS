@@ -2599,7 +2599,7 @@ void CDPClient::OnOpenShopWnd( OBJID objid, CAr & ar )
 	}
 	else
 	{
-		CItemContainer<CItemElem> dump;
+		CItemContainer dump;
 		dump.SetItemContainer( ITYPE_ITEM, MAX_VENDOR_INVENTORY );
 		for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 			dump.Serialize( ar );	// waste
@@ -2874,8 +2874,8 @@ void CDPClient::OnVendor( OBJID objid, CAr & ar )
 	}
 	else
 	{
-		CItemContainer<CItemElem> dump;
-		dump.SetItemContainer( ITYPE_ITEM, MAX_VENDOR_INVENTORY );
+		CItemContainer dump;
+		dump.SetItemContainer( CItemContainer::ContainerTypes::VENDOR );
 		for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 			dump.Serialize( ar );	// waste
 	}

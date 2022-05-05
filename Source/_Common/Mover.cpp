@@ -877,7 +877,7 @@ void CMover::InitCharacter( LPCHARACTER lpCharacter )
 	{
 #ifdef __OPT_MEM_0811
 		if( lpCharacter->m_nEquipNum > 0 )
-			m_Inventory.SetItemContainer( ITYPE_ITEM, MAX_INVENTORY, MAX_HUMAN_PARTS );
+			m_Inventory.SetItemContainer(CItemContainer::ContainerTypes::INVENTORY);
 #endif	// __OPT_MEM_0811
 		strcpy( m_szName, lpCharacter->m_strName );
 		for( int i = 0; i < lpCharacter->m_nEquipNum; i++ )
@@ -1297,22 +1297,18 @@ void CMover::InitProp( BOOL bInitAI )
 
 	m_dwBelligerence = pProp->dwBelligerence;
 
-#ifdef __OPT_MEM_0811
 	if( IsPlayer() )
 	{
-		m_Inventory.SetItemContainer( ITYPE_ITEM, MAX_INVENTORY, MAX_HUMAN_PARTS );
+		m_Inventory.SetItemContainer( CItemContainer::ContainerTypes::INVENTORY );
 		m_Pocket.Avail( 0 );
 	}
-#else	// __OPT_MEM_0811
-	m_Inventory.SetItemContainer( ITYPE_ITEM, MAX_INVENTORY, MAX_HUMAN_PARTS );
-#endif	// __OPT_MEM_0811
 
 	m_nSlot = 0;
 	m_bBank = FALSE;
 	for( int k = 0 ; k < 3 ; ++k )
 	{
 		if( IsPlayer() )
-			m_Bank[k].SetItemContainer( ITYPE_ITEM, MAX_BANK ) ;
+			m_Bank[k].SetItemContainer(CItemContainer::ContainerTypes::BANK) ;
 		m_dwGoldBank[k] = 0;
 		m_idPlayerBank[k] = 0;
 	}
@@ -2773,7 +2769,7 @@ CItemElem * CMover::GetEquipItem(const int nParts) {
 	return m_Inventory.GetEquip(nParts);
 }
 
-ItemProp* CMover::GetEquipItemProp( CItemContainer<CItemElem>* pInventory, PEQUIP_INFO pEquipInfo, int nParts )
+ItemProp* CMover::GetEquipItemProp( CItemContainer* pInventory, PEQUIP_INFO pEquipInfo, int nParts )
 {
 	ItemProp *pItemProp = NULL;
 #if 1	
@@ -7075,10 +7071,10 @@ void CMover::AllocShopInventory( LPCHARACTER pCharacter )
 {
 	if( IsVendorNPC() )
 	{
-		m_ShopInventory[ 0 ] = new CItemContainer< CItemElem  >; m_ShopInventory[ 0 ]->SetItemContainer( ITYPE_ITEM, MAX_VENDOR_INVENTORY );
-		m_ShopInventory[ 1 ] = new CItemContainer< CItemElem  >; m_ShopInventory[ 1 ]->SetItemContainer( ITYPE_ITEM, MAX_VENDOR_INVENTORY );
-		m_ShopInventory[ 2 ] = new CItemContainer< CItemElem  >; m_ShopInventory[ 2 ]->SetItemContainer( ITYPE_ITEM, MAX_VENDOR_INVENTORY );
-		m_ShopInventory[ 3 ] = new CItemContainer< CItemElem  >; m_ShopInventory[ 3 ]->SetItemContainer( ITYPE_ITEM, MAX_VENDOR_INVENTORY );
+		m_ShopInventory[ 0 ] = new CItemContainer; m_ShopInventory[ 0 ]->SetItemContainer(CItemContainer::ContainerTypes::VENDOR);
+		m_ShopInventory[ 1 ] = new CItemContainer; m_ShopInventory[ 1 ]->SetItemContainer(CItemContainer::ContainerTypes::VENDOR);
+		m_ShopInventory[ 2 ] = new CItemContainer; m_ShopInventory[ 2 ]->SetItemContainer(CItemContainer::ContainerTypes::VENDOR);
+		m_ShopInventory[ 3 ] = new CItemContainer; m_ShopInventory[ 3 ]->SetItemContainer(CItemContainer::ContainerTypes::VENDOR);
 	}
 }
 

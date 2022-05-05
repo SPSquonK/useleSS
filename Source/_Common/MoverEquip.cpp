@@ -253,7 +253,7 @@ void CMover::UpdateParts( BOOL bFakeParts )
 	UpdateParam();
 }
 
-ItemProp* GetInventoryProp( PEQUIP_INFO pEquipInfo, CItemContainer< CItemElem  >* pInventory, int nParts )
+ItemProp* GetInventoryProp( PEQUIP_INFO pEquipInfo, CItemContainer* pInventory, int nParts )
 {
 	CItemElem* pItemElem = NULL;
 	ItemProp* pItemProp = NULL;
@@ -273,7 +273,7 @@ ItemProp* GetInventoryProp( PEQUIP_INFO pEquipInfo, CItemContainer< CItemElem  >
 	return pItemProp;
 }
 
-void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, PEQUIP_INFO pEquipInfo, CModelObject* pModel, CItemContainer< CItemElem  >* pInventory, BOOL bIfParts, CMover* pMover )
+void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, PEQUIP_INFO pEquipInfo, CModelObject* pModel, CItemContainer * pInventory, BOOL bIfParts, CMover* pMover )
 {
 	if( pModel == NULL )
 	{
@@ -454,7 +454,7 @@ void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int 
 // 장비를 장착한다. 여기서 의상 교체 작업을 해준다.
 // nOption은 Fake아이템 장착때만 쓰인다. - xuzhu -
 BOOL CMover::DoEquip( int nSex, int nSkinSet, 
-					  CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer< CItemElem  >* pInventory, 
+					  CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer * pInventory, 
 					  PEQUIP_INFO pEquipInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover ) 
 {
 	ItemProp* pItemProp = pItemElem ? pItemElem->GetProp() : prj.GetItemProp( rEquipInfo.dwId );

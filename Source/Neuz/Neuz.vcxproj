@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClCompile Include="..\_Common\accessory.cpp">
     </ClCompile>
+    <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="CampusHelper.cpp">
     </ClCompile>

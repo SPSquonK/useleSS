@@ -1749,7 +1749,7 @@ void CDbManager::ConvChangeItem050615( CMover* pMover )
 	}
 }
 
-void CDbManager::ConvChangeGuild050615( CItemContainer< CItemElem  >*  GuildBank )
+void CDbManager::ConvChangeGuild050615( CItemContainer*  GuildBank )
 {
 	for( DWORD ch = 0; ch < GuildBank->m_dwItemMax; ch++ )	// 0-504
 	{			

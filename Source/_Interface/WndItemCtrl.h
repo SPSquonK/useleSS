@@ -21,13 +21,13 @@ public:
 public:
 	union
 	{
-		CItemContainer<CItemElem>* m_pItemContainer;
+		CItemContainer* m_pItemContainer;
 	};
 
 	static CTextureMng	m_textureMng;
 
 	void	Create( DWORD m_dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
-	void	InitItem( CItemContainer<CItemElem>* pItemContainer, DWORD SendToId );
+	void	InitItem( CItemContainer* pItemContainer, DWORD SendToId );
 	CItemElem* GetItem( DWORD dwIndex );
 	COLORREF GetBkColor() const;
 	BOOL	SetBkColor(COLORREF cr);

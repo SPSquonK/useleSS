@@ -258,7 +258,7 @@ public:
 	BOOL	m_bSendPay;							// 길드 월급을 줬는지 확인
 	
 #if !defined( __CORESERVER)
-	CItemContainer<CItemElem>	m_GuildBank;	// 길드 창고
+	CItemContainer m_GuildBank;	// 길드 창고
 #endif
 	DWORD						m_nGoldGuild;	// 길드 창고 페냐 / 공헌된 페냐
 

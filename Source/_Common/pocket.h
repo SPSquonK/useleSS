@@ -7,7 +7,7 @@
 
 #include "ar.h"
 
-class CPocket : public CItemContainer<CItemElem>
+class CPocket : public CItemContainer
 {
 public:
 // Constructions

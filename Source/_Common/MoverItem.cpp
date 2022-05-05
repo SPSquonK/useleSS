@@ -125,8 +125,8 @@ BOOL CVTInfo::TradeConsent()
 		return FALSE;
 
 	int cbI	= 0, cbYou	= 0;
-	CItemContainer<CItemElem> a;
-	a.SetItemContainer( ITYPE_ITEM, MAX_TRADE );
+	CItemContainer a;
+	a.SetItemContainer( CItemContainer::ContainerTypes::TRADE );
 	
 	for( int i = 0; i < MAX_TRADE; i++ )
 	{
@@ -361,8 +361,8 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 
 	if( result == TRADE_CONFIRM_OK )
 	{
-		CItemContainer<CItemElem> u;
-		u.SetItemContainer( ITYPE_ITEM, MAX_TRADE );
+		CItemContainer u;
+		u.SetItemContainer(CItemContainer::ContainerTypes::TRADE);
 
 		// gold_step4. µ·À» ´õÇÑ´Ù.
 		m_pOwner->AddGold( nThisAdd, FALSE );						

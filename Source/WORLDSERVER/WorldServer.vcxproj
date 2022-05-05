@@ -93,6 +93,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="AttackArbiter.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\auction.cpp">

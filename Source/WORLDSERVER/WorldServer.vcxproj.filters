@@ -594,6 +594,9 @@
     <ClCompile Include="MoverExp.cpp">
       <Filter>World Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\ItemContainer.cpp">
+      <Filter>Neuz Common Files\Common Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">
