@@ -33,8 +33,10 @@ public:
 
 	// reading and writing strings
 	void WriteString(LPCTSTR lpsz);
-	LPTSTR ReadString(LPTSTR lpsz );
 	LPTSTR ReadString( LPTSTR lpsz, int nBufSize );
+
+	template<size_t N>
+	LPTSTR ReadString(char (&buffer)[N]) { return ReadString(buffer, N); }
 
 	LPBYTE	GetBuffer( int* pnBufSize );
 	u_long	GetOffset( void );
