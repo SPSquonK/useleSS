@@ -238,9 +238,6 @@ public:
 	void	SendPutGoldBankToBank( BYTE nPutSlot, BYTE nSlot, DWORD dwGold );
 	void	SendStateModeCancel( DWORD dwStateMode, BYTE nFlag );
 
-	
-	void	SendMoveBankItem( BYTE nSrcIndex, BYTE nDestIndex );
-
 	void	SendConfirmBank( const char *szPass, DWORD dwId, DWORD dwItemId );
 
 	void	SendCorrReq( CObj *pObj );

@@ -8633,38 +8633,20 @@ void CDPClient::SendMoveItem( BYTE nItemType, BYTE nSrcIndex, BYTE nDestIndex )
 	ar << nItemType << nSrcIndex << nDestIndex;	// 3/12
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-void CDPClient::SendMoveBankItem( BYTE nSrcIndex, BYTE nDestIndex )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_MOVEBANKITEM, DPID_UNKNOWN );
-	ar << nSrcIndex << nDestIndex;	// 3/12
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
 
-void CDPClient::SendDropItem( DWORD dwItemType, DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos )
-{
-/*
-D3DXVECTOR3* D3DXVec3Normalize(
-  D3DXVECTOR3* pOut,
-  CONST D3DXVECTOR3* pV
-); 
-*/
-//	D3DXVECTOR3 vOut, v	= vPos - vPlayerPos;	// 이것은 CWndWorld::OnDropIcon에서 미리 계산해서 오게 했기에 삭제.
-//	D3DXVec3Normalize( &vOut, &v );
-//	v	= vPlayerPos + vOut;
-	if( g_WndMng.m_pWndDialog )
-	{
-		//g_WndMng.PutString( "대화중에는 아이템을 버릴수가 없어요", NULL, 0xffffff00 );
-		g_WndMng.PutString( prj.GetText( TID_GAME_DIALOGNODROPITEM ), NULL, prj.GetTextColor( TID_GAME_DIALOGNODROPITEM ) );
+void CDPClient::SendDropItem(DWORD dwItemType, DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos) {
+	if (g_WndMng.m_pWndDialog) {
+		g_WndMng.PutString(TID_GAME_DIALOGNODROPITEM);
 		return;
 	}
 
-	BEFORESENDSOLE( ar, PACKETTYPE_DROPITEM, DPID_UNKNOWN );
-	ar << dwItemType << dwItemId << nITemNum << vPos;		// 14/20
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_DROPITEM, DWORD, DWORD, short, D3DXVECTOR3>(
+		dwItemType, dwItemId, nITemNum, vPos
+		);
 
-	CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	if( pWndWorld )
-		pWndWorld->m_dwDropTime	= GetTickCount();
+	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
+	if (pWndWorld)
+		pWndWorld->m_dwDropTime = GetTickCount();
 }
 
 void CDPClient::SendDropGold( DWORD dwGold, const D3DXVECTOR3 & vPlayerPos, const D3DXVECTOR3 & vPos )

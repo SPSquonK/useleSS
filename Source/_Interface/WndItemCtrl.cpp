@@ -9,6 +9,7 @@
 #include "WndManager.h"
 
 #include "WndText.h"
+#include "MsgHdr.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndItemCtrl
@@ -1098,7 +1099,10 @@ BOOL CWndItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			CWndBase* pWndFrame =  pShortcut->m_pFromWnd->GetFrameWnd();
 			if( pWndFrame->GetWndId() == APP_BANK ) // 42 // Bank
 			{
-				g_DPlay.SendMoveBankItem( (BYTE)( pShortcut->m_dwIndex ), (BYTE)( (DWORD)nDstIndex ) );
+				g_DPlay.SendPacket<PACKETTYPE_MOVEBANKITEM, BYTE, BYTE>(
+					static_cast<BYTE>(pShortcut->m_dwIndex),
+					static_cast<BYTE>(static_cast<DWORD>(nDstIndex))
+					);
 			}
 			else if( pWndFrame->GetWndId() == APP_INVENTORY )	// inventory -> inventory
 			{

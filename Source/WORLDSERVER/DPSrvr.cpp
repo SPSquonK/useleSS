@@ -687,31 +687,20 @@ void CDPSrvr::OnMoveItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 	}
 }
 
-void CDPSrvr::OnDropItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	DWORD dwItemType;
-	DWORD dwItemId;
-	short nDropNum;
-	D3DXVECTOR3 vPos;
+void CDPSrvr::OnDropItem(CAr & ar, CUser & pUser) {
+	const auto [dwItemType, dwItemId, nDropNum, vPos] = ar.Extract<
+		DWORD, DWORD, short, D3DXVECTOR3
+	>();
 
-	ar >> dwItemType >> dwItemId >> nDropNum >> vPos;
+	if (nDropNum <= 0) return;
 
-	if( nDropNum <= 0 )
-		return;
-
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) )
-	{
-		if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
-		{
-			CItemElem* pItemElem	= pUser->GetItemId( dwItemId );
-			if( IsUsableItem( pItemElem ) && pUser->IsDropable( pItemElem, FALSE ) )
-				pUser->RemoveItem( (BYTE)dwItemId, nDropNum );
+	if (g_eLocal.GetState(EVE_DROPITEMREMOVE)) {
+		CItemElem * pItemElem = pUser.GetItemId(dwItemId);
+		if (IsUsableItem(pItemElem) && pUser.IsDropable(pItemElem, FALSE)) {
+			pUser.RemoveItem((BYTE)dwItemId, nDropNum);
 		}
-		else
-		{
-			pUser->DropItem( (DWORD)dwItemId, nDropNum, vPos );
-		}
+	} else {
+		pUser.DropItem(dwItemId, nDropNum, vPos);
 	}
 }
 
