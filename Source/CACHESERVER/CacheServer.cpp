@@ -205,7 +205,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 #ifdef __CRASH_0404
 						CCrashStatus::GetInstance()->SetMainThreadTask( 1 );
 #endif	// __CRASH_0404
-						CPlayerMng::Instance()->DestroyGarbage();
+						g_CachePlayerMng.DestroyGarbage();
 #ifdef __CRASH_0404
 						CCrashStatus::GetInstance()->SetMainThreadTask( 0 );
 #endif	// __CRASH_0404

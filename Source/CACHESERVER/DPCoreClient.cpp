@@ -78,7 +78,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 			case PACKETTYPE_MODIFYMODE:
 			case PACKETTYPE_BUYING_INFO:
 				{
-					CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
+					CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
 					g_DPClientArray.SendToServer( dpidUser, lpMsg, dwMsgSize );
 					break;
 				}
@@ -141,14 +141,14 @@ void CDPCoreClient::OnProcServer( CAr & ar, DPID )
 
 void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
 {
-	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
+	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
 
 	DWORD dwSerial;
 	BYTE byData;
 	ar >> dwSerial;
 	ar >> byData;	// 사용하지 않는다.
 
-	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );
+	CCachePlayer * pPlayer	= g_CachePlayerMng.GetPlayerBySerial( dwSerial );
 	if( pPlayer == NULL )
 	{
 		WriteLog( "CDPCoreClient::OnJoin - player not found" );
@@ -171,17 +171,17 @@ void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
 
 void CDPCoreClient::OnLeave( CAr & ar, DPID dpid )
 {
-	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
+	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
 
 	DWORD dwSerial;
 	ar >> dwSerial;
-	CCachePlayer * pPlayer = CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );  // dpid가 serial번호이다.
+	CCachePlayer * pPlayer = g_CachePlayerMng.GetPlayerBySerial( dwSerial );  // dpid가 serial번호이다.
 	if (pPlayer) g_DPCacheSrvr.DestroyPlayer(dpid);
 }
 
 void CDPCoreClient::OnDestroyAllPlayers( CAr & ar, DPID dpid )
 {
-	CPlayerMng::Instance()->DestroyPlayer( NULL );
+	g_CachePlayerMng.DestroyPlayer( NULL );
 }
 
 void CDPCoreClient::OnKillPlayer( CAr & ar, DPID dpid )
@@ -191,7 +191,7 @@ void CDPCoreClient::OnKillPlayer( CAr & ar, DPID dpid )
 
 void CDPCoreClient::SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize )
 {
-	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpidUser );
+	CCachePlayer * pPlayer	= g_CachePlayerMng.GetPlayer( dpidUser );
 	if (!pPlayer) return;
 
 	*reinterpret_cast<UNALIGNED DPID*>( lpMsg )		= pPlayer->GetSerial();

@@ -47,7 +47,7 @@ void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 #endif	// __CRASH_0404
 				LPDPMSG_CREATEPLAYERORGROUP lpCreatePlayer	= (LPDPMSG_CREATEPLAYERORGROUP)lpMsg;
 				g_MyTrace.Add( CMyTrace::Key( "so" ), FALSE, "//%04d//", ++cbPlayer );
-				CPlayerMng::Instance()->AddPlayer( lpCreatePlayer->dpId );
+				g_CachePlayerMng.AddPlayer(lpCreatePlayer->dpId);
 				break;
 			}
 		case DPSYS_DESTROYPLAYERORGROUP:
@@ -150,29 +150,30 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 
 void CDPCacheSrvr::OnAddConnection( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
-	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
-	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
-	if( pPlayer )
-	{
-		pPlayer->SetAddr( this );
-		pPlayer->Join( ar );
-		CRTMessenger rtmessenger;
-		int nSize	= rtmessenger.Serialize( ar );
-		if (nSize) {
-			Error("CRTMessenger.Serialize: %s(%d)", pPlayer->GetAddr(), nSize);
-			DestroyPlayer(dpid);
-		} else
-			g_DPCoreClient.SendAddPlayer(*pPlayer, rtmessenger);
+	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
+	CCachePlayer * pPlayer	= g_CachePlayerMng.GetPlayer( dpid );
+	if (!pPlayer) {
+		DestroyPlayer(dpid);
+		return;
 	}
-	else
-		DestroyPlayer( dpid );
+
+	pPlayer->SetAddr( this );
+	pPlayer->Join( ar );
+	CRTMessenger rtmessenger;
+	int nSize	= rtmessenger.Serialize( ar );
+	if (nSize) {
+		Error("CRTMessenger.Serialize: %s(%d)", pPlayer->GetAddr(), nSize);
+		DestroyPlayer(dpid);
+	} else {
+		g_DPCoreClient.SendAddPlayer(*pPlayer, rtmessenger);
+	}
 }
 
 void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
 {
-	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
+	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock);
 	
-	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
+	CCachePlayer * pPlayer	= g_CachePlayerMng.GetPlayer( dpid );
 	if( pPlayer )
 	{
 		if( pPlayer->GetClient() )	// JOIN패킷을 보낸 플레이어만 LEAVE패킷을 보낸다.
@@ -182,7 +183,8 @@ void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
 			LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );
 			g_DPClientArray.SendToServer( dpid, lpBuf, nBufSize );
 		}
-		CPlayerMng::Instance()->RemovePlayer( dpid );
+
+		g_CachePlayerMng.RemovePlayer( dpid );
 	}
 	else
 	{
@@ -192,8 +194,8 @@ void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
 
 void CDPCacheSrvr::OnKeepAlive( CAr & ar, DPID dpid, LPBYTE, u_long )
 {
-	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
-	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
+	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock);
+	CCachePlayer * pPlayer = g_CachePlayerMng.GetPlayer(dpid);
 	if (pPlayer) pPlayer->SetAlive(true);
 }
 

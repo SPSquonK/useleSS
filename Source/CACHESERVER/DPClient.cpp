@@ -109,9 +109,9 @@ void CDPClient::OnQueryDestroyPlayer( CAr & ar, DPID dpid, LPVOID lpBuffer, u_lo
 	u_long idPlayer;
 	ar >> idPlayer;
 
-	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
+	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock);
 
-	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );
+	CCachePlayer * pPlayer	= g_CachePlayerMng.GetPlayerBySerial( dwSerial );
 	if( pPlayer )
 	{
 		// 성공적으로 찾았으니까 접속을 끊는다. 
@@ -207,7 +207,7 @@ void CDPClientArray::Add( CDPClient* pClient )
 
 BOOL CDPClientArray::Remove( CDPClient* pClient )
 {
-	CPlayerMng::Instance()->DestroyPlayer( pClient );
+	g_CachePlayerMng.DestroyPlayer( pClient );
 	CDPClient *pCur, *pPrev		= NULL;
 	CMclAutoLock Lock( m_AddRemoveLock );
 
@@ -265,7 +265,7 @@ void CDPClientArray::SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize 
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-	CCachePlayer * pPlayer = CPlayerMng::Instance()->GetPlayer( dpidUser );
+	CCachePlayer * pPlayer = g_CachePlayerMng.GetPlayer( dpidUser );
 	if( pPlayer )
 	{
 		if( pPlayer->GetClient() )

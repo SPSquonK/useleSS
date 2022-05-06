@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include "dpclient.h"
 
 class CCachePlayer final {
@@ -56,29 +57,31 @@ private:
 	bool        m_bAlive  = true;
 };
 
-class CPlayerMng
-{
+class CCachePlayerMng final {
 public:
 	CMclCritSec	m_AddRemoveLock;
 
 public:
-	CPlayerMng();
-	virtual	~CPlayerMng();
-	void	Clear( void );
-	BOOL	AddPlayer( DPID dpid );
-	BOOL	RemovePlayer( DPID dpid );
-	CCachePlayer *	GetPlayer( DPID dpid );
+	// Locks the mutex
+	~CCachePlayerMng() { Clear(); }
+	void Clear();
+	bool AddPlayer(DPID dpid);
+	bool RemovePlayer(DPID dpid);
+	
 	CCachePlayer *	GetPlayerBySerial( DWORD dwSerial );
 	int		GetCount( void )	{	return m_mapPlayers.size();		}
-	void	DestroyPlayer( CDPClient* pClient );
+	void	DestroyPlayer(const CDPClient * pClient);
 	void	DestroyGarbage( void );
-	static	CPlayerMng*	Instance( void );
+
+	// Does not lock the mutex
+	CCachePlayer * GetPlayer(DPID dpid);
+
 private:
-	void	DestroyPlayersOnChannel( CDPClient* pClient );
-	void	DestroyAllPlayers( void );
-	void	DestroyGarbagePlayer(CCachePlayer * pPlayer );
-	void	SendKeepAlive(CCachePlayer * pPlayer );
+	void	DestroyGarbagePlayer(CCachePlayer * pPlayer);
+	void	SendKeepAlive(CCachePlayer * pPlayer);
 private:
-	long	m_lSerial;
-	std::map<DPID, CCachePlayer *> m_mapPlayers;
+	long	m_lSerial = 0;
+	std::map<DPID, std::unique_ptr<CCachePlayer>> m_mapPlayers; // never points to null
 };
+
+extern CCachePlayerMng g_CachePlayerMng;
