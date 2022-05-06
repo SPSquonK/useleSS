@@ -14,7 +14,7 @@ public:
 	BOOL	m_bValid;
 
 public:
-	CCertUser(DPID dpid);
+	explicit CCertUser(DPID dpid);
 
 	void SetAccount(const char * const szAccount ) {
 		strncpy(m_pszAccount, szAccount, MAX_ACCOUNT);
