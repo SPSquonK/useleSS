@@ -5309,146 +5309,97 @@ void CDPSrvr::OnBuyingInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 	return;
 }
 
-void CDPSrvr::OnEnterChattingRoom( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	u_long uidChattingRoom;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		BOOL bChatting = FALSE;
-		if( pUser->m_idChatting == 0 )
-		{
-			ar >> uidChattingRoom;
+void CDPSrvr::OnEnterChattingRoom(CAr & ar, CUser & pUser) {
+	u_long uidChattingRoom; ar >> uidChattingRoom;
 
-			CChatting* pChatting = g_ChattingMng.GetChttingRoom( uidChattingRoom );
-			if( pChatting )
-			{
-				if( pChatting->AddChattingMember( pUser->m_idPlayer ) )
-				{
-					CUser*			pUsertmp;
-					pUser->m_idChatting = uidChattingRoom;
+	if (pUser.m_idChatting != 0) return;
 
-					for( int i = 0 ; i < pChatting->GetChattingMember() - 1 ; ++i )
-					{
-						pUsertmp	= (CUser*)prj.GetUserByID( pChatting->m_idMember[i] );
-						if( IsValidObj( pUsertmp ) )
-							pUsertmp->AddEnterChatting( pUser );
-					}
+	CChatting * pChatting = g_ChattingMng.GetChttingRoom(uidChattingRoom);
+	if (!pChatting) return;
 
-					pUser->AddNewChatting( pChatting );
-				}
-				else
-				{
-					bChatting	= TRUE;
-				}
-			}
+	// > mfw no range check of the user with the owner of the chatting room
+	// > mfw no face
 
-		}
-		else
-		{
-			bChatting	= TRUE;
+	const bool added = pChatting->AddChattingMember(pUser.m_idPlayer);
+	if (!added) return;
+
+	pUser.m_idChatting = uidChattingRoom;
+
+
+	for (const auto & member : pChatting->GetMembers()) {
+		if (member.m_playerId == pUser.m_idPlayer) break;
+
+		CUser * pUsertmp = prj.GetUserByID(member.m_playerId);
+		if (IsValidObj(pUsertmp)) {
+			pUsertmp->AddEnterChatting(&pUser);
 		}
 	}
+
+	pUser.AddNewChatting(pChatting);
 }
 
-void CDPSrvr::OnChatting( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	static	TCHAR	sChat[1024];
-	ar.ReadString( sChat, 1024 );
+void CDPSrvr::OnChatting( CAr & ar, CUser & pUser ) {
+	TCHAR	sChat[1024];
+	ar.ReadString(sChat);
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 #ifdef __JEFF_9_20
-		int nText	= pUser->GetMuteText();
-		if(  nText )
-		{
-			pUser->AddDefinedText( nText );
-			return;
-		}
+	int nText	= pUser.GetMuteText();
+	if (nText) {
+		pUser.AddDefinedText(nText);
+		return;
+	}
 #endif	// __JEFF_9_20
 
-		if( !( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_FONTEDIT)))
-			ParsingEffect( sChat, strlen(sChat) );
+	if (!(pUser.HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_FONTEDIT)))
+		ParsingEffect(sChat, strlen(sChat));
 
-		RemoveCRLF( sChat );
+	RemoveCRLF(sChat);
 
-		CChatting* pChatting = g_ChattingMng.GetChttingRoom( pUser->m_idChatting );
-		if( pChatting )
-		{
-			int nFind = pChatting->FindChattingMember( pUser->m_idPlayer );
-			if( nFind != -1 )
-			{
-				CUser* pUsertmp;
-				for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
-				{
-					pUsertmp	= (CUser*)prj.GetUserByID( pChatting->m_idMember[i] );
-					if( IsValidObj( pUsertmp ) )
-						pUsertmp->AddChatting( pUser->m_idPlayer, sChat );
-				}
-			}
-			else
-			{
-				// 채팅멤버가 아님
-				pUser->m_idChatting = 0;
-				pUser->AddDeleteChatting();
-			}
+	CChatting * pChatting = g_ChattingMng.GetChttingRoom(pUser.m_idChatting);
+	if (!pChatting) {
+		// 채팅방이 없음.
+		pUser.m_idChatting = 0;
+		pUser.AddDeleteChatting();
+		return;
+	}
+
+	if (!pChatting->IsChattingMember(pUser.m_idPlayer)) {
+		// 채팅멤버가 아님
+		pUser.m_idChatting = 0;
+		pUser.AddDeleteChatting();
+		return;
+	}
+
+	for (const auto & member : pChatting->GetMembers()) {
+		CUser * pUsertmp = prj.GetUserByID(member.m_playerId);
+		if (IsValidObj(pUsertmp)) {
+			pUsertmp->AddChatting(pUser.m_idPlayer, sChat);
 		}
-		else
-		{
-			// 채팅방이 없음.
-			pUser->m_idChatting = 0;
-			pUser->AddDeleteChatting();
-		}
-
 	}
 }
 
+static void OnUpdateChattingRoomStatus(CUser & pUser, BOOL newState) {
+	CChatting * pChatting = g_ChattingMng.GetChttingRoom(pUser.m_idChatting);
+	if (!pChatting) return;
 
-void CDPSrvr::OnOpenChattingRoom( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+	pChatting->m_bState = newState;
 
-		CChatting* pChatting	= g_ChattingMng.GetChttingRoom( pUser->m_idChatting );
-		if( pChatting )
-		{
-			pChatting->m_bState		= TRUE;
-			CUser* pUsertmp;
-			for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
-			{
-				pUsertmp	= (CUser*)prj.GetUserByID( pChatting->m_idMember[i] );
-				if( IsValidObj( pUsertmp ) && pUser->m_idPlayer != pUsertmp->m_idPlayer )
-					pUsertmp->AddChttingRoomState( pChatting->m_bState );
+	for (const auto & member : pChatting->GetMembers()) {
+		CUser * pUsertmp = prj.GetUserByID(member.m_playerId);
+		if (IsValidObj(pUsertmp)) {
+			if (member.m_playerId != pUser.m_idPlayer) {
+				pUsertmp->AddChttingRoomState(newState);
 			}
 		}
 	}
 }
 
-void CDPSrvr::OnCloseChattingRoom( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+void CDPSrvr::OnOpenChattingRoom(CAr & ar, CUser & pUser) {
+	OnUpdateChattingRoomStatus(pUser, TRUE);
+}
 
-		CChatting* pChatting = g_ChattingMng.GetChttingRoom( pUser->m_idChatting );
-		if( pChatting )
-		{
-			pChatting->m_bState = FALSE;
-			CUser*			pUsertmp;
-			
-			for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
-			{
-				pUsertmp	= (CUser*)prj.GetUserByID( pChatting->m_idMember[i] );
-				if( IsValidObj( pUsertmp ) && pUser->m_idPlayer != pUsertmp->m_idPlayer )
-				{
-					pUsertmp->AddChttingRoomState( pChatting->m_bState );
-				}						
-			}
-		}
-
-	}
+void CDPSrvr::OnCloseChattingRoom(CAr & ar, CUser & pUser) {
+	OnUpdateChattingRoomStatus(pUser, FALSE);
 }
 
 void CDPSrvr::OnCommonPlace( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -7694,14 +7645,12 @@ BOOL CDPSrvr::ClosePVendor( CUser* pUser, OBJID objidVendor )
 		CChatting* pChatting = g_ChattingMng.GetChttingRoom( pUser->m_idChatting );
 		if( pChatting )
 		{
-			for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
-			{
-				CUser* pUserBuf = (CUser*)prj.GetUserByID( pChatting->m_idMember[i] );
-				if( IsValidObj( pUserBuf ) )
-				{
+			for (const auto & m : pChatting->GetMembers()) {
+				CUser * pUserBuf = prj.GetUserByID(m.m_playerId);
+				if (IsValidObj(pUserBuf)) {
 					// 채팅방이 없어짐
 					pUserBuf->AddDeleteChatting();
-					pUserBuf->m_idChatting	= 0;
+					pUserBuf->m_idChatting = 0;
 				}
 			}
 		}
@@ -7718,14 +7667,14 @@ BOOL CDPSrvr::ClosePVendor( CUser* pUser, OBJID objidVendor )
 			CChatting* pChatting	= g_ChattingMng.GetChttingRoom( pUser->m_idChatting );
 			if( pChatting )
 			{
-				for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
-				{
-					CUser* pUserBuf = (CUser*)prj.GetUserByID( pChatting->m_idMember[i] );
+				for (const auto & m : pChatting->GetMembers()) {
+					CUser * pUserBuf = prj.GetUserByID(m.m_playerId);
 					if( IsValidObj( pUserBuf ) )		// 채팅에서 나감
 					{							
 						pUserBuf->AddRemoveChatting( pUser->m_idPlayer );
 					}
 				}
+
 				pChatting->RemoveChattingMember( pUser->m_idPlayer );
 				pUser->m_idChatting		= 0;
 			}

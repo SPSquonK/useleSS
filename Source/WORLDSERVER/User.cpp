@@ -3623,20 +3623,17 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 		}
 	}
 
-	CChatting* pChatting = g_ChattingMng.GetChttingRoom( pUser->m_idChatting );
-	if( pChatting )
-	{
-		CUser * pUserBuf;
-		for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
-		{
-			pUserBuf = (CUser*)prj.GetUserByID( pChatting->m_idMember[i] );
-			if( ::IsValidObj( pUserBuf ) )
-			{
+	
+	if (CChatting * pChatting = g_ChattingMng.GetChttingRoom(pUser->m_idChatting)) {
+		for (const auto & member : pChatting->GetMembers()) {
+			CUser * pUserBuf = prj.GetUserByID(member.m_playerId);
+			if (::IsValidObj(pUserBuf)) {
 				// 채팅에서 나감
-				pUserBuf->AddRemoveChatting( pUser->m_idPlayer );
+				pUserBuf->AddRemoveChatting(pUser->m_idPlayer);
 			}
 		}
-		pChatting->RemoveChattingMember( pUser->m_idPlayer );
+
+		pChatting->RemoveChattingMember(pUser->m_idPlayer);
 		pUser->m_idChatting = 0;
 	}	
 
@@ -5685,27 +5682,26 @@ void CUser::AddEnterChatting( CUser* pUser )
 	
 }
 
-void CUser::AddNewChatting( CChatting* pChatting )
-{
-	if( IsDelete() )	return;
-	
+void CUser::AddNewChatting(CChatting * pChatting) {
+	if (IsDelete())	return;
+
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_CHATTING;
 	m_Snapshot.ar << CHATTING_NEWCHATTING;
-	m_Snapshot.ar << pChatting->GetChattingMember();
-	for( int i = 0 ; i < pChatting->GetChattingMember() ; ++i )
-	{
-		m_Snapshot.ar << pChatting->m_idMember[i];
-		if( NULL == CPlayerDataCenter::GetInstance()->GetPlayerString( pChatting->m_idMember[i] ) )
-		{
-			Error( "AddNewChatting : MAX_ChattingMember = %d, GetMember = %d", pChatting->GetChattingMember(), pChatting->m_idMember[i] );
-			m_Snapshot.ar.WriteString( "" );
+	m_Snapshot.ar << pChatting->m_members.size();
+	for (const auto & member : pChatting->m_members) {
+		m_Snapshot.ar << member.m_playerId;
+
+		const char * playerString = CPlayerDataCenter::GetInstance()->GetPlayerString(member.m_playerId);
+		if (playerString == nullptr) {
+			playerString = "";
+			Error("AddNewChatting : MAX_ChattingMember = %lu, GetMember = %lu",
+				pChatting->m_members.size(), member.m_playerId
+			);
 		}
-		else
-		{
-			m_Snapshot.ar.WriteString( CPlayerDataCenter::GetInstance()->GetPlayerString( pChatting->m_idMember[i] ) );
-		}
+
+		m_Snapshot.ar.WriteString(playerString);
 	}
 }
 

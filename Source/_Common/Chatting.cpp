@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Chatting.h"
 
+#ifdef __CLIENT
+CChatting g_Chatting;
+#endif
+
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 	#ifdef __VM_0819
@@ -11,114 +15,51 @@
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
-CChatting::CChatting()
-{
-	ZeroMemory( m_sChatting, sizeof( m_sChatting ) );
-	ZeroMemory( m_idMember, sizeof( u_long ) * MAX_CHATTINGMEMBER );
-	m_nSizeofMember = 0;
-	m_idChatting = 0;
-#ifdef __CLIENT
-	ZeroMemory( m_szName, sizeof( m_szName ) );
-#endif // __CLIENT
+bool CChatting::AddChattingMember(const ChatMember & newMember) {
+	if (IsChattingMember(newMember.m_playerId)) return false;
+	
+	m_members.emplace_back(newMember);
+	return true;
 }
 
-CChatting::~CChatting()
-{
+bool CChatting::RemoveChattingMember(u_long uidPlayer) {
+	const auto it = std::ranges::find_if(m_members,
+		[uidPlayer](const ChatMember & member) {
+			return member.m_playerId == uidPlayer;
+		});
 
+	if (it == m_members.end()) return false;
+
+	m_members.erase(it);
+	return true;
 }
 
-#ifdef __CLIENT
-BOOL CChatting::AddChattingMember( u_long uidPlayer, char * szName )
-{
-	if( IsChattingMember( uidPlayer ) == FALSE && m_nSizeofMember < MAX_CHATTINGMEMBER )
-	{
-		m_idMember[m_nSizeofMember] = uidPlayer;
-		strcpy( m_szName[m_nSizeofMember], szName );
-		m_nSizeofMember++;
-		return TRUE;
-	}
-	return FALSE;
+bool CChatting::IsChattingMember(const u_long uidPlayer) const noexcept {
+	const auto it = std::ranges::find_if(m_members,
+		[uidPlayer](const ChatMember & member) {
+			return member.m_playerId == uidPlayer;
+		});
+	
+	return it != m_members.end();
 }
-#else // __CLIENT
-BOOL CChatting::AddChattingMember( u_long uidPlayer )
-{
-	if( IsChattingMember( uidPlayer ) == FALSE && m_nSizeofMember < MAX_CHATTINGMEMBER )
-	{
-		m_idMember[m_nSizeofMember] = uidPlayer;
-		m_nSizeofMember++;
-		return TRUE;
-	}
-	return FALSE;
-}
-#endif // __CLIENT
 
 #ifdef __CLIENT
-BOOL CChatting::RemoveChattingMember( u_long uidPlayer )
-{
-	int nFindMember = FindChattingMember( uidPlayer );
-	if( nFindMember >= 0 )
-	{
-		for( int i = nFindMember ; i < m_nSizeofMember-1 ; ++i )
-		{
-			m_idMember[i] = m_idMember[i+1];
-			strcpy( m_szName[i], m_szName[i+1] );
-		}
-		m_nSizeofMember--;
-		return TRUE;
-	}
-	return FALSE;
-}
-#else // __CLIENT
-BOOL CChatting::RemoveChattingMember( u_long uidPlayer )
-{
-	int nFindMember = FindChattingMember( uidPlayer );
-	if( nFindMember >= 0 )
-	{
-		for( int i = nFindMember ; i < m_nSizeofMember-1 ; ++i )
-		{
-			m_idMember[i] = m_idMember[i+1];
-		}
-		m_nSizeofMember--;
-		return TRUE;
-	}
-	return FALSE;
-}
-#endif // __CLIENT
+const CChatting::ChatMember * CChatting::GetMember(u_long uIdPlayer) const noexcept {
+	const auto it = std::ranges::find_if(m_members,
+		[uIdPlayer](const ChatMember & member) {
+			return member.m_playerId == uIdPlayer;
+		});
 
-int CChatting::FindChattingMember( u_long uidPlayer )
-{
-	for( int i = 0 ; i < m_nSizeofMember ; ++i )
-	{
-		if( m_idMember[i] == uidPlayer )
-		{
-			return i;
-		}
-	}
-	return -1;
+	if (it == m_members.end()) return nullptr;
+	return &*it;
+}
+#endif
+
+void CChatting::ClearMember() {
+	m_sChatting[0] = '\0';
+	m_members.clear();
 }
 
-void CChatting::ClearMember()
-{
-	ZeroMemory( m_sChatting, sizeof( m_sChatting ) );
-	ZeroMemory( m_idMember, sizeof( u_long ) * MAX_CHATTINGMEMBER );
-	m_nSizeofMember = 0;
-#ifdef __CLIENT
-	ZeroMemory( m_szName, sizeof( m_szName ) );
-#endif // __CLIENT
-}
-
-void CChatting::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-	}
-	else
-	{
-
-	}
-}
-
-CChatting g_Chatting;
 
 
 

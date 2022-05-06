@@ -13841,14 +13841,14 @@ void CDPClient::OnChatting( OBJID objid, CAr & ar )
 	{
 	case CHATTING_NEWCHATTING:
 		{
-			g_Chatting.m_nSizeofMember = 0;
+		  g_Chatting.m_members.clear();
 			int nSize;
 			ar >> nSize;
 			for( int i = 0 ; i < nSize ; ++i )
 			{
 				ar >> uidPlayer;
 				ar.ReadString( szName, MAX_NAME );
-				g_Chatting.AddChattingMember( uidPlayer, szName );
+				g_Chatting.AddChattingMember(CChatting::ChatMember(uidPlayer, szName));
 			}
 		}		
 		break;
@@ -13856,26 +13856,20 @@ void CDPClient::OnChatting( OBJID objid, CAr & ar )
 		{
 			ar >> uidPlayer;
 			ar.ReadString( szName, MAX_NAME );
-			g_Chatting.AddChattingMember( uidPlayer, szName );
+			const bool ok = g_Chatting.AddChattingMember(CChatting::ChatMember(uidPlayer, szName));
 
-			CWndVendor* pWndVendor = (CWndVendor*)g_WndMng.GetWndVendorBase();
-			
-			if(pWndVendor)
-			{
-				for( int i = 0 ; i < g_Chatting.GetChattingMember() ; ++i )
-				{
-					if( uidPlayer == g_Chatting.m_idMember[i] )
-					{
-						if( pWndVendor->m_pwndVenderMessage )
-							pWndVendor->m_pwndVenderMessage->AddChattingMemver( g_Chatting.m_szName[i] );
-					}
+			if (ok) {
+				CWndVendor * pWndVendor = (CWndVendor *)g_WndMng.GetWndVendorBase();
+
+				if (pWndVendor && pWndVendor->m_pwndVenderMessage) {
+					pWndVendor->m_pwndVenderMessage->AddChattingMemver(szName);
 				}
-			}				
+			}
 		}
 		break;
 	case CHATTING_DELETECHATTING:
 		{
-			g_Chatting.m_nSizeofMember = 0;
+		g_Chatting.m_members.clear();
 		}
 		break;
 	case CHATTING_REMOVEMEMBER:
@@ -13884,17 +13878,12 @@ void CDPClient::OnChatting( OBJID objid, CAr & ar )
 
 			CWndVendor* pWndVendor = (CWndVendor*)g_WndMng.GetWndVendorBase();
 			
-			if(pWndVendor)
-			{
-				for( int i = 0 ; i < g_Chatting.GetChattingMember() ; ++i )
-				{
-					if( uidPlayer == g_Chatting.m_idMember[i] )
-					{
-						if( pWndVendor->m_pwndVenderMessage )
-							pWndVendor->m_pwndVenderMessage->RemoveChattingMemver( g_Chatting.m_szName[i] );
-					}
+			if (pWndVendor && pWndVendor->m_pwndVenderMessage) {
+				const auto member = g_Chatting.GetMember(uidPlayer);
+				if (member) {
+					pWndVendor->m_pwndVenderMessage->RemoveChattingMemver(member->m_szName);
 				}
-			}		
+			}
 			
 			g_Chatting.RemoveChattingMember( uidPlayer );
 		}
@@ -13908,17 +13897,11 @@ void CDPClient::OnChatting( OBJID objid, CAr & ar )
 			
 			CWndVendor* pWndVendor = (CWndVendor*)g_WndMng.GetWndVendorBase();
 
-			if(pWndVendor)
-			{
-				for( int i = 0 ; i < g_Chatting.GetChattingMember() ; ++i )
-				{
-					if( uidPlayer == g_Chatting.m_idMember[i] )
-					{
-						if( pWndVendor->m_pwndVenderMessage )
-							pWndVendor->m_pwndVenderMessage->AddMessage( g_Chatting.m_szName[i], sChat );
-					}
+			if (pWndVendor && pWndVendor->m_pwndVenderMessage) {
+				const auto member = g_Chatting.GetMember(uidPlayer);
+				if (member) {
+					pWndVendor->m_pwndVenderMessage->AddMessage(member->m_szName, sChat);
 				}
-				
 			}
 			// Ã¤ÆÃ 
 		}
@@ -14387,8 +14370,8 @@ void CDPClient::OnSetPlayerName( CAr & ar )
 	UpdateGuildWnd();
 	// Messenger
 	// Chat
-	if( g_Chatting.RemoveChattingMember( idPlayer ) )
-		g_Chatting.AddChattingMember( idPlayer, lpszPlayer );
+	if (g_Chatting.RemoveChattingMember(idPlayer))
+		g_Chatting.AddChattingMember(CChatting::ChatMember(idPlayer, lpszPlayer));
 
 	CMover* pMover	= prj.GetUserByID( idPlayer );
 	if( IsValidObj( (CObj*)pMover ) )

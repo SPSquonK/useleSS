@@ -434,9 +434,8 @@ void CWndVendorMessage::OnDraw( C2DRender* p2DRender )
 	
 	pWndList->ResetContent();
 
-	for( int i = 0 ; i < g_Chatting.GetChattingMember(); ++i )
-	{
-		pWndList->AddString( g_Chatting.m_szName[i] );
+	for (const auto & member : g_Chatting.GetMembers()) {
+		pWndList->AddString(member.m_szName);
 	}
 } 
 void CWndVendorMessage::OnInitialUpdate() 
