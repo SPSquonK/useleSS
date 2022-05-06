@@ -89,7 +89,7 @@ void CDPClient::OnReplace( CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBuf
 {
 }
 
-void CDPClient::SendJoin( CPlayer* pPlayer )
+void CDPClient::SendJoin(CCachePlayer * pPlayer )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_JOIN, pPlayer->GetSerial() );
 	ar << pPlayer->GetAuthKey();
@@ -111,13 +111,13 @@ void CDPClient::OnQueryDestroyPlayer( CAr & ar, DPID dpid, LPVOID lpBuffer, u_lo
 
 	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
 
-	CPlayer* pPlayer	= CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );
+	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );
 	if( pPlayer )
 	{
 		// 성공적으로 찾았으니까 접속을 끊는다. 
 		g_DPCacheSrvr.DestroyPlayer( pPlayer->GetNetworkId() );	// 소켓연결이 끊기고, PACKETTYPE_LEAVE가 월드서버로 간다.
 #ifdef __MA_VER11_07	// cache 서버에서 loginserver로 유저접속끊낌을 알려주는 부분
-		g_DPCoreClient.SendDestroyPlayer( pPlayer );// coresvr를 통해 loginsvr 에도 끊낌을 알려준다
+		g_DPCoreClient.SendDestroyPlayer(*pPlayer);// coresvr를 통해 loginsvr 에도 끊낌을 알려준다
 #endif // __MA_VER11_07	// cache 서버에서 loginserver로 유저접속끊낌을 알려주는 부분
 		return;	
 	}
@@ -265,7 +265,7 @@ void CDPClientArray::SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize 
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-	CPlayer* pPlayer = CPlayerMng::Instance()->GetPlayer( dpidUser );
+	CCachePlayer * pPlayer = CPlayerMng::Instance()->GetPlayer( dpidUser );
 	if( pPlayer )
 	{
 		if( pPlayer->GetClient() )

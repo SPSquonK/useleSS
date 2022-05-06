@@ -1,6 +1,3 @@
-#ifndef __DPCORECLIENT_H__
-#define __DPCORECLIENT_H__
-
 #pragma once
 
 #include "DPMng.h"
@@ -12,7 +9,7 @@
 #undef theParameters
 #define theParameters	CAr & ar, DPID dpidUser
 
-class CPlayer;
+class CCachePlayer;
 class CDPCoreClient : public CDPMng
 {
 public:
@@ -24,8 +21,8 @@ public:
 	virtual void UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 //	Operations
 	void	SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize );
-	void	SendAddPlayer( CPlayer* pPlayer, CRTMessenger & rtmessenger );
-	void	SendDestroyPlayer( CPlayer* pPlayer );
+	void	SendAddPlayer(const CCachePlayer & pPlayer, CRTMessenger & rtmessenger );
+	void	SendDestroyPlayer(const CCachePlayer & pPlayer );
 // Handlers
 	USES_PFNENTRIES;
 protected:
@@ -38,6 +35,3 @@ protected:
 	void	OnSay( CAr & ar, DPID dpid );
 	void	OnKillPlayer( CAr & ar, DPID dpid );
 };
-
-
-#endif	// __DPCORECLIENT_H__

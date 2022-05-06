@@ -92,26 +92,24 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 #endif	// __CRASH_0404
 }
 
-void CDPCoreClient::SendDestroyPlayer( CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DESTROY_PLAYER, pPlayer->GetSerial() );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPCoreClient::SendDestroyPlayer(const CCachePlayer & pPlayer) {
+	BEFORESENDSOLE(ar, PACKETTYPE_DESTROY_PLAYER, pPlayer.GetSerial());
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
-void CDPCoreClient::SendAddPlayer( CPlayer* pPlayer, CRTMessenger & rtmessenger )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_JOIN, pPlayer->GetSerial() );
-	ar << pPlayer->GetAuthKey();
-	ar << pPlayer->GetPlayerId();
-	ar << pPlayer->GetNetworkId();
-	ar << pPlayer->GetParty();
-	ar << pPlayer->GetGuild();
-	ar << pPlayer->GetWar();
-	ar << pPlayer->GetChannel();
-	rtmessenger.Serialize( ar );
-	ar.WriteString( pPlayer->GetPlayer() );
-	ar.WriteString( pPlayer->GetAddr() );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPCoreClient::SendAddPlayer(const CCachePlayer & pPlayer, CRTMessenger & rtmessenger) {
+	BEFORESENDSOLE(ar, PACKETTYPE_JOIN, pPlayer.GetSerial());
+	ar << pPlayer.GetAuthKey();
+	ar << pPlayer.GetPlayerId();
+	ar << pPlayer.GetNetworkId();
+	ar << pPlayer.GetParty();
+	ar << pPlayer.GetGuild();
+	ar << pPlayer.GetWar();
+	ar << pPlayer.GetChannel();
+	rtmessenger.Serialize(ar);
+	ar.WriteString(pPlayer.GetPlayer());
+	ar.WriteString(pPlayer.GetAddr());
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
 void CDPCoreClient::OnProcServerList( CAr & ar, DPID )
@@ -150,7 +148,7 @@ void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
 	ar >> dwSerial;
 	ar >> byData;	// 사용하지 않는다.
 
-	CPlayer* pPlayer	= CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );
+	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );
 	if( pPlayer == NULL )
 	{
 		WriteLog( "CDPCoreClient::OnJoin - player not found" );
@@ -177,9 +175,8 @@ void CDPCoreClient::OnLeave( CAr & ar, DPID dpid )
 
 	DWORD dwSerial;
 	ar >> dwSerial;
-	CPlayer* pPlayer = CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );  // dpid가 serial번호이다.
-	if( pPlayer )
-		g_DPCacheSrvr.DestroyPlayer( dpid );
+	CCachePlayer * pPlayer = CPlayerMng::Instance()->GetPlayerBySerial( dwSerial );  // dpid가 serial번호이다.
+	if (pPlayer) g_DPCacheSrvr.DestroyPlayer(dpid);
 }
 
 void CDPCoreClient::OnDestroyAllPlayers( CAr & ar, DPID dpid )
@@ -194,9 +191,9 @@ void CDPCoreClient::OnKillPlayer( CAr & ar, DPID dpid )
 
 void CDPCoreClient::SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize )
 {
-	CPlayer* pPlayer	= CPlayerMng::Instance()->GetPlayer( dpidUser );
-	if( !pPlayer )
-		return;
+	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpidUser );
+	if (!pPlayer) return;
+
 	*reinterpret_cast<UNALIGNED DPID*>( lpMsg )		= pPlayer->GetSerial();
 	Send( lpMsg, dwMsgSize, DPID_SERVERPLAYER );
 }

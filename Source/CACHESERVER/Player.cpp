@@ -2,23 +2,19 @@
 #include "Player.h"
 #include "dpcachesrvr.h"
 #include "dpcoreclient.h"
+#include "sqktd.h"
 
 extern	CDPCoreClient	g_DPCoreClient;
 extern	CDPCacheSrvr	g_DPCacheSrvr;
 
-CPlayer::CPlayer(  DPID dpidUser, DWORD dwSerial )
-:
-m_dpid( dpidUser ),
-m_dwSerial( dwSerial ),
-m_dwCreation( GetTickCount() )
-{
-	*m_szPlayer	= '\0';
-	*m_szAccount	= '\0';
-	*m_szPass	= '\0';
-	*m_lpAddr	= '\0';
+CCachePlayer::CCachePlayer(DPID dpidUser, DWORD dwSerial)
+	:
+	m_dpid(dpidUser),
+	m_dwSerial(dwSerial),
+	m_dwCreation(GetTickCount()) {
 }
 
-void CPlayer::Join( CAr & ar )
+void CCachePlayer::Join( CAr & ar )
 {
 	ar >> m_dwWorldId >> m_idPlayer >> m_dwAuthKey;
 	ar >> m_idParty >> m_idGuild >> m_idWar >> m_uChannel >> m_nSlot;
@@ -50,19 +46,15 @@ void CPlayerMng::Clear( void )
 BOOL CPlayerMng::AddPlayer( DPID dpid )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
-	CPlayer* pPlayer	= new CPlayer( dpid, InterlockedIncrement( &m_lSerial ) );
+	CCachePlayer * pPlayer	= new CCachePlayer( dpid, InterlockedIncrement( &m_lSerial ) );
 	bool bResult	= m_mapPlayers.emplace(dpid, pPlayer).second;
 	if( !bResult )
 		safe_delete( pPlayer );
 	return bResult;
 }
 
-CPlayer* CPlayerMng::GetPlayer( DPID dpid )
-{
-	const auto i	= m_mapPlayers.find( dpid );
-	if( i != m_mapPlayers.end() )
-		return i->second;
-	return NULL;
+CCachePlayer * CPlayerMng::GetPlayer(const DPID dpid) {
+	return sqktd::find_in_map(m_mapPlayers, dpid);
 }
 
 BOOL CPlayerMng::RemovePlayer( DPID dpid )
@@ -87,16 +79,16 @@ void CPlayerMng::DestroyPlayer( CDPClient* pClient )
 		DestroyAllPlayers();
 }
 
-void CPlayerMng::DestroyPlayersOnChannel( CDPClient* pClient )
-{
-	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
-	{
-		CPlayer* pPlayer	= i->second;
-		if( pPlayer->GetClient() == pClient )
-		{
-			g_DPCoreClient.SendDestroyPlayer( pPlayer );
-			g_DPCacheSrvr.DestroyPlayer( pPlayer->GetNetworkId() );
-		}
+void CPlayerMng::DestroyPlayersOnChannel(CDPClient * pClient) {
+	const auto it = std::ranges::find_if(m_mapPlayers,
+		[&](const auto & pair) {
+			return pair.second->GetClient() == pClient;
+		});
+
+	if (it != m_mapPlayers.end()) {
+		CCachePlayer * pPlayer = it->second;
+		g_DPCoreClient.SendDestroyPlayer(*pPlayer);
+		g_DPCacheSrvr.DestroyPlayer(pPlayer->GetNetworkId());
 	}
 }
 
@@ -106,13 +98,13 @@ void CPlayerMng::DestroyAllPlayers( void )
 		g_DPCacheSrvr.DestroyPlayer( i->second->GetNetworkId() );
 }
 
-CPlayer* CPlayerMng::GetPlayerBySerial( DWORD dwSerial )
+CCachePlayer * CPlayerMng::GetPlayerBySerial( DWORD dwSerial )
 {
 	CMclAutoLock	Lock( m_AddRemoveLock );
 
 	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
 	{
-		CPlayer* pPlayer	= i->second;
+		CCachePlayer * pPlayer	= i->second;
 		if( pPlayer->GetSerial() == dwSerial )
 			return pPlayer;
 	}
@@ -126,7 +118,7 @@ void CPlayerMng::DestroyGarbage( void )
 
 	for( auto i = m_mapPlayers.begin(); i != m_mapPlayers.end(); ++i )
 	{
-		CPlayer* pPlayer	= i->second;
+		CCachePlayer * pPlayer	= i->second;
 		if( pPlayer->IsTimeover( dwTick ) )
 			g_DPCacheSrvr.DestroyPlayer( pPlayer->GetNetworkId() );
 #ifndef _DEBUG
@@ -138,16 +130,16 @@ void CPlayerMng::DestroyGarbage( void )
 	}
 }
 
-void CPlayerMng::DestroyGarbagePlayer( CPlayer* pPlayer )
+void CPlayerMng::DestroyGarbagePlayer(CCachePlayer * pPlayer )
 {
-	pPlayer->SetAlive( TRUE );
+	pPlayer->SetAlive(true);
 	g_DPCacheSrvr.DestroyPlayer( pPlayer->GetNetworkId() );
 }
 
-void CPlayerMng::SendKeepAlive( CPlayer* pPlayer )
+void CPlayerMng::SendKeepAlive(CCachePlayer * pPlayer )
 {
 	BEFORESEND( ar, PACKETTYPE_KEEP_ALIVE );
-	pPlayer->SetAlive( FALSE );
+	pPlayer->SetAlive(false);
 	SEND( ar, &g_DPCacheSrvr, pPlayer->GetNetworkId() );
 }
 

@@ -151,20 +151,18 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 void CDPCacheSrvr::OnAddConnection( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
 	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
-	CPlayer* pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
+	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
 	if( pPlayer )
 	{
 		pPlayer->SetAddr( this );
 		pPlayer->Join( ar );
 		CRTMessenger rtmessenger;
 		int nSize	= rtmessenger.Serialize( ar );
-		if( nSize )
-		{
-			Error( "CRTMessenger.Serialize: %s(%d)", pPlayer->GetAddr(), nSize ); 
-			DestroyPlayer( dpid );
-		}
-		else
-			g_DPCoreClient.SendAddPlayer( pPlayer, rtmessenger );
+		if (nSize) {
+			Error("CRTMessenger.Serialize: %s(%d)", pPlayer->GetAddr(), nSize);
+			DestroyPlayer(dpid);
+		} else
+			g_DPCoreClient.SendAddPlayer(*pPlayer, rtmessenger);
 	}
 	else
 		DestroyPlayer( dpid );
@@ -174,7 +172,7 @@ void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
 {
 	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
 	
-	CPlayer* pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
+	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
 	if( pPlayer )
 	{
 		if( pPlayer->GetClient() )	// JOIN패킷을 보낸 플레이어만 LEAVE패킷을 보낸다.
@@ -195,9 +193,8 @@ void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
 void CDPCacheSrvr::OnKeepAlive( CAr & ar, DPID dpid, LPBYTE, u_long )
 {
 	CMclAutoLock	Lock( CPlayerMng::Instance()->m_AddRemoveLock );
-	CPlayer* pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
-	if( pPlayer )
-		pPlayer->SetAlive( TRUE );
+	CCachePlayer * pPlayer	= CPlayerMng::Instance()->GetPlayer( dpid );
+	if (pPlayer) pPlayer->SetAlive(true);
 }
 
 CDPCacheSrvr	g_DPCacheSrvr;

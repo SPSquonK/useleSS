@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{c7bcfb9f-9bad-46c9-b473-38e135e30ce4}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{ba9a8c60-9388-4557-97e3-3720e694f1a2}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{fcda8952-379f-4107-a015-ae3530ff2bee}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
@@ -34,46 +26,50 @@
     <Filter Include="Neuz Common Files\Common Files">
       <UniqueIdentifier>{0a109433-82a3-4796-bf3d-a758e3a7854e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Cache Files">
+      <UniqueIdentifier>{c7bcfb9f-9bad-46c9-b473-38e135e30ce4}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CacheServer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="crashstatus.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="DPCacheSrvr.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="DPClient.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="DPCoreClient.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\memtrace.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\messenger.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="packetlog.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\rtmessenger.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\speedhackchecker.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_common\vutil.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Network\Net\Src\crc.cpp">
       <Filter>Network Files</Filter>
@@ -138,49 +134,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CacheServer.rc">
-      <Filter>Source Files</Filter>
+      <Filter>Cache Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CacheServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="crashstatus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPCacheSrvr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPCoreClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\memtrace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\messenger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="packetlog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\misc\include\speedhackchecker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VersionCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\_network\CmnHdr.h">
       <Filter>Network Files</Filter>
     </ClInclude>
@@ -286,8 +243,47 @@
     <ClInclude Include="..\_common\xutil.h">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
+    <ClInclude Include="VersionCommon.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CacheServer.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\_Common\CommonHeader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="crashstatus.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DPCacheSrvr.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DPClient.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DPCoreClient.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\memtrace.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\messenger.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="packetlog.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_network\misc\include\speedhackchecker.h">
+      <Filter>Cache Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Cache Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

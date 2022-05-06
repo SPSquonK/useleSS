@@ -11,7 +11,7 @@
 #undef theParameters
 #define theParameters	CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize
 
-class CPlayer;
+class CCachePlayer;
 class CDPClient : public CDPMng
 {
 public:
@@ -33,14 +33,12 @@ public:
 			Send( pData, dwDataSize, DPID_SERVERPLAYER );
 		}
 
-	void	SendJoin( CPlayer* pPlayer );
+	void	SendJoin(CCachePlayer * pPlayer );
 
 	USES_PFNENTRIES;
 
 	// Handlers
-//	void	OnControl( CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize );
 	void	OnReplace( CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize);
-//	void	OnDestroyPlayer( CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize);
 	void	OnQueryDestroyPlayer( CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize);
 };
 
