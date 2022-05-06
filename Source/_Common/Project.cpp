@@ -519,7 +519,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #endif	// __CLIENT
 
 #ifdef __RULE_0615
-	nameValider.Load();
+	if (!nameValider.Load()) return FALSE;
 #endif	// __RULE_0615
 
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );

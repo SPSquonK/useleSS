@@ -776,12 +776,17 @@ bool CNameValider::Load() {
 		return retval;
 	};
 
-	constexpr auto Arrayize = [](const std::set<char> & letters) {
+	constexpr auto Arrayize = [](const std::optional<std::set<char>> & letters) {
 		std::array<bool, 256> retval;
-		retval.fill(false);
 
-		for (const char letter : letters) {
-			retval[static_cast<unsigned char>(letter)] = true;
+		if (!letters) {
+			retval.fill(true);
+		} else {
+			retval.fill(false);
+
+			for (const char letter : letters.value()) {
+				retval[static_cast<unsigned char>(letter)] = true;
+			}
 		}
 
 		return retval;
@@ -794,28 +799,19 @@ bool CNameValider::Load() {
 	}
 
 	std::optional<std::set<char>> allowedLetters1 = LoadValidLetters(false);
-	if (!allowedLetters1) {
-		Error(__FUNCTION__ "() failed loading allowed letters 1");
-		return false;
-	}
-
 	std::optional<std::set<char>> allowedLetters2 = LoadValidLetters(true);
-	if (!allowedLetters2) {
-		Error(__FUNCTION__ "() failed loading allowed letters 2");
-		return false;
-	}
 
 	m_invalidNames = std::vector(invalidNames->begin(), invalidNames->end());
-	m_allowedLetters          = Arrayize(allowedLetters1.value());
-	m_allowedLettersForVendor = Arrayize(allowedLetters2.value());
+	m_allowedLetters          = Arrayize(allowedLetters1);
+	m_allowedLettersForVendor = Arrayize(allowedLetters2);
 }
 
 bool CNameValider::IsNotAllowedName(LPCSTR name) const {
-	return IsInvalidName(name) && !AllLettersAreIn(name, m_allowedLetters);
+	return IsInvalidName(name) || !AllLettersAreIn(name, m_allowedLetters);
 }
 
 bool CNameValider::IsNotAllowedVendorName(LPCSTR name) const {
-	return IsInvalidName(name) && !AllLettersAreIn(name, m_allowedLettersForVendor);
+	return IsInvalidName(name) || !AllLettersAreIn(name, m_allowedLettersForVendor);
 }
 
 bool CNameValider::IsInvalidName(LPCSTR szName) const {

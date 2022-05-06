@@ -957,8 +957,8 @@ class CNameValider {
 
 private:
 	std::vector<std::string> m_invalidNames;
-	std::array<bool, 256> m_allowedLetters;
-	std::array<bool, 256> m_allowedLettersForVendor;
+	std::array<bool, 256> m_allowedLetters{ false, };
+	std::array<bool, 256> m_allowedLettersForVendor{ false, };
 	static_assert(sizeof(char) == 1, "char should be on only one byte so its value goes from 0 included to 256 excluded");
 
 public:

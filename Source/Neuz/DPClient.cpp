@@ -12859,8 +12859,7 @@ void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 
 void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 {
-	std::array<CItemElem *, MAX_VENDITEM> apItemVd{ nullptr };
-	apItemVd.fill(nullptr); // Not sure if this line is necessary
+	std::array<CItemElem *, MAX_VENDITEM> apItemVd = { nullptr };
 
 	BYTE nVendorItem, iIndex;
 	int nExtra;

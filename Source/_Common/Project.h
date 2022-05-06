@@ -687,7 +687,7 @@ public:
 private:
 	boost::container::small_vector<RandomOptItem, 256> m_aRandomOptItem;
 	std::map<int, int> m_mapid;
-	std::array<int, MAX_MONSTER_LEVEL> m_anIndex;
+	std::array<int, MAX_MONSTER_LEVEL> m_anIndex = {};
 
 public:
 	void AddRandomOption(const RandomOptItem & pRandomOptItem);

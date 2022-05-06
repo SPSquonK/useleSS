@@ -301,7 +301,7 @@ class CVTInfo
 {
 private:
 	DWORD					m_dwTradeGold;					/// 거래중인 돈 
-	std::array<CItemElem *, MAX_VENDITEM> m_items_VT; /// vendor and trader share pointer array
+	std::array<CItemElem *, MAX_VENDITEM> m_items_VT = {}; /// vendor and trader share pointer array
 	OBJID					m_objId;						/// 상대방 id
 	CMover*					m_pOwner;						/// 클래스 소유자 
 	TRADE_STATE				m_state;						/// 거래상태 
