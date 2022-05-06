@@ -44,7 +44,6 @@ extern	CGuildMng	g_GuildMng;
 extern	CGuildWarMng	g_GuildWarMng;
 
 #include "Chatting.h"
-extern	CChattingMng	g_ChattingMng;
 
 #include "Party.h"
 extern	CPartyMng			g_PartyMng;

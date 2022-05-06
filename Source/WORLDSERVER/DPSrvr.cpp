@@ -68,7 +68,6 @@ extern	CUserMng			g_UserMng;
 extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPCoreClient		g_DPCoreClient;
 extern	CWorldMng			g_WorldMng;
-extern	CChattingMng		g_ChattingMng;
 extern	CGuildCombat		g_GuildCombatMng;
 
 

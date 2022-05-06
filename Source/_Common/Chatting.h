@@ -1,10 +1,9 @@
-#ifndef __CHATTING_H__
-#define	__CHATTING_H__
+#pragma once
 
-#include "mempooler.h"
 #include <map>
+#include <memory>
+#include <boost/container/small_vector.hpp>
 
-#define MAX_CHATTINGMEMBER	512
 
 class CChatting final {
 public:
@@ -23,10 +22,10 @@ public:
 	};
 
 private:
-
 	TCHAR	m_sChatting[33] = "";					// ChattingRoom Name
 	u_long	m_idChatting  = 0;
 public:
+	static constexpr size_t MAX_CHATTINGMEMBER = 32;
 	boost::container::small_vector<ChatMember, MAX_CHATTINGMEMBER> m_members;
 
 	BOOL	m_bState;
@@ -36,38 +35,25 @@ public:
 	bool RemoveChattingMember(u_long uidPlayer);
 	[[nodiscard]] bool IsChattingMember(u_long uidPlayer) const noexcept;
 
-	void	ClearMember( void );
+	void ClearMember( void );
 	const auto & GetMembers() const { return m_members; }
 
 #ifdef __CLIENT
 	const ChatMember * GetMember(u_long uIdPlayer) const noexcept;
 #endif
-	
-public:
-#ifndef __VM_0820
-#ifndef __MEM_TRACE
-	static	MemPooler<CChatting>*	m_pPool;
-	void*	operator new( size_t nSize )	{	return CChatting::m_pPool->Alloc();	}
-	void*	operator new( size_t nSize, LPCSTR lpszFileName, int nLine )	{	return CChatting::m_pPool->Alloc();	}
-	void	operator delete( void* lpMem )	{	CChatting::m_pPool->Free( (CChatting*)lpMem );	}
-	void	operator delete( void* lpMem, LPCSTR lpszFileName, int nLine )	{	CChatting::m_pPool->Free( (CChatting*)lpMem );	}
-#endif	// __MEM_TRACE
-#endif	// __VM_0820
 };
 
-typedef	std::map< u_long, CChatting*>	C2CharttingPtr;
+#ifdef __WORLDSERVER
 
-class CChattingMng
-{
-	C2CharttingPtr	m_2ChatPtr;
+class CChattingMng final {
+	std::map<u_long, std::unique_ptr<CChatting>> m_2ChatPtr;
 public:
-	CChattingMng();
-	~CChattingMng();
-
-	void	Clear( void );
-	u_long	NewChattingRoom( u_long uChattingId );
-	BOOL	DeleteChattingRoom( u_long uChattingId );
+	void Clear() { m_2ChatPtr.clear(); }
+	CChatting * NewChattingRoom(u_long uChattingId);
+	bool DeleteChattingRoom(u_long uChattingId);
 	CChatting* GetChttingRoom( u_long uidChtting );
 };
 
-#endif	//	_CHATTING_H
+extern CChattingMng g_ChattingMng;
+
+#endif

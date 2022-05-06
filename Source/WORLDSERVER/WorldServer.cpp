@@ -72,7 +72,6 @@ static char  		g_szINI[] = "WorldServer.ini";
 
 extern	CGuildMng			g_GuildMng;
 extern	CGuildWarMng		g_GuildWarMng;
-extern	CChattingMng		g_ChattingMng;
 extern	CPartyMng			g_PartyMng;
 extern	char				g_szDBAddr[16];
 extern	char				g_sHeartbeat[32];

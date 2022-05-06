@@ -5,15 +5,11 @@
 CChatting g_Chatting;
 #endif
 
-#ifndef __VM_0820
-#ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CChatting>*	CChatting::m_pPool		= new MemPooler<CChatting>( 512, "CChatting" );
-	#else	// __VM_0819
-	MemPooler<CChatting>*	CChatting::m_pPool		= new MemPooler<CChatting>( 512 );
-	#endif	// __VM_0819
-#endif	// __MEM_TRACE
-#endif	// __VM_0820
+#ifdef __WORLDSERVER
+CChattingMng g_ChattingMng;
+#endif
+
+#pragma region Chatting
 
 bool CChatting::AddChattingMember(const ChatMember & newMember) {
 	if (IsChattingMember(newMember.m_playerId)) return false;
@@ -60,73 +56,35 @@ void CChatting::ClearMember() {
 	m_members.clear();
 }
 
+#pragma endregion
 
 
 
 
+#pragma region ChattingMng
 
-
-
-
-
-
-
-
+#ifdef __WORLDSERVER
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //		ChattingMng
 //////////////////////////////////////////////////////////////////////////////////////////////////
-CChattingMng::CChattingMng()
-{
+
+CChatting * CChattingMng::NewChattingRoom(const u_long uChattingId) {
+	const auto p = m_2ChatPtr.insert_or_assign(uChattingId, std::make_unique<CChatting>());
+	return p.first->second.get();
 }
 
-CChattingMng::~CChattingMng()
-{
-	Clear();
+bool CChattingMng::DeleteChattingRoom(const u_long uChattingId) {
+	return m_2ChatPtr.erase(uChattingId) > 0;
 }
 
-void CChattingMng::Clear( void )
-{
-	for( C2CharttingPtr::iterator i	= m_2ChatPtr.begin(); i != m_2ChatPtr.end(); ++i )
-		safe_delete( i->second );
-	
-	m_2ChatPtr.clear();
+CChatting * CChattingMng::GetChttingRoom(const u_long uidChtting) {
+	const auto i = m_2ChatPtr.find(uidChtting);
+	if (i == m_2ChatPtr.end()) return nullptr;
+	return i->second.get();
 }
 
-u_long CChattingMng::NewChattingRoom( u_long uChattingId )
-{
-	CChatting* pChatting = GetChttingRoom( uChattingId );
-	if( pChatting )
-	{
-		pChatting->ClearMember();		
-	}
-	else
-	{
-		CChatting* pChatting = new CChatting;
-		m_2ChatPtr.insert( C2CharttingPtr::value_type( uChattingId, pChatting ) );
-	}
-	return uChattingId;
-}
+#endif
 
-BOOL CChattingMng::DeleteChattingRoom( u_long uChattingId )
-{
-	CChatting* pChatting = GetChttingRoom( uChattingId );
-	if( pChatting )
-	{
-		safe_delete( pChatting );
-		m_2ChatPtr.erase( uChattingId );
-		return TRUE;
-	}
-	return FALSE;
-}
-
-CChatting* CChattingMng::GetChttingRoom( u_long uidChtting )
-{
-	C2CharttingPtr::iterator i = m_2ChatPtr.find( uidChtting );
-	if( i != m_2ChatPtr.end() )
-		return i->second;
-	return NULL;
-}
-
-CChattingMng	g_ChattingMng;
+#pragma endregion
 
