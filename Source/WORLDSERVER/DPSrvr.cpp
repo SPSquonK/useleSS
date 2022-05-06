@@ -7585,6 +7585,7 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 #ifdef __RULE_0615
 		if (prj.nameValider.IsNotAllowedVendorName(szPVendor)) {
 			pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
+			return;
 		}
 #endif	// __RULE_0615
 
