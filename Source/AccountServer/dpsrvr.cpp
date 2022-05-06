@@ -99,7 +99,7 @@ void CDPSrvr::DestroyPlayer( DPID dpid1, DPID dpid2 )
 
 void CDPSrvr::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 {
-	const auto [lpszAccount, lpAddr, cbAccountFlag] = ar.Extract<SAccountName, char[16], BYTE>();
+	const auto [lpAddr, lpszAccount, cbAccountFlag] = ar.Extract<SAccountName, char[16], BYTE>();
 	DWORD dwAuthKey = 0;
 	int		fCheck = 0;
 #ifdef __BILLING0712
