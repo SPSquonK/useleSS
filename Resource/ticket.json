@@ -1,0 +1,21 @@
+[
+  {
+    "world": "WI_WORLD_KEBARAS",
+    "position": { "x": 1271, "y": 114, "z": 1326 },
+    "nExpand": 1,
+    "items": [
+      "II_SYS_TICKET_KEBARAS01",
+      "II_SYS_TICKET_KEBARAS02",
+      "II_SYS_TICKET_KEBARAS001"
+    ]
+  },
+  {
+    "world": "WI_WORLD_CISLAND",
+    "position": { "x": 2002, "y": 120, "z": 855 },
+    "nExpand": 1,
+    "items": [
+      "II_SYS_TICKET_CISLAND01",
+      "II_SYS_TICKET_CISLAND02"
+    ]   
+  }
+]

@@ -85,8 +85,7 @@ resource 1 "..\ResClient\dataSub1.res"
 	file	"lordskill.txt.txt"
 	file	"lordevent.inc"
 	file	"couple.inc"
-	file	"ticket.inc"
-	file	"layer.inc"
+	file	"ticket.json"
 }
 
 resource 1 "..\ResClient\dataSub2.res"

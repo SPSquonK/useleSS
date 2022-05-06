@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include <algorithm>
 #include "ticket.h"
+#include "sqktd.h"
+#include <rapidjson/document.h>
 
 CTicketProperty g_ticketProperties;
 
@@ -16,59 +18,72 @@ BOOL CTicketProperty::IsTarget(DWORD dwWorldId) const {
 }
 
 const TicketProp * CTicketProperty::GetTicketProp(DWORD dwItemId) const {
-	auto i = m_mapTicketProp.find(dwItemId);
+	const auto i = m_mapTicketProp.find(dwItemId);
 	return i != m_mapTicketProp.end() ? &i->second : nullptr;
 }
 
-
-BOOL	CTicketProperty::LoadScript()
-{
-	CScript s;
-	if( s.Load( "ticket.inc" ) == FALSE )
-		return FALSE;
-
-	DWORD dwItemId	= s.GetNumber();
-	while( s.tok != FINISHED )
-	{
-		TicketProp	tp;
-		tp.dwWorldId	= s.GetNumber();
-		tp.vPos.x	= s.GetFloat();
-		tp.vPos.y	= s.GetFloat();
-		tp.vPos.z	= s.GetFloat();
-		bool b	= m_mapTicketProp.emplace( dwItemId, tp ).second;
-		ASSERT( b );
-		dwItemId	= s.GetNumber();
-	}
-#ifdef __AZRIA_1023
-	return m_lp.LoadScript();
-#endif	// __AZRIA_1023
+unsigned int CTicketProperty::GetExpandedLayer(DWORD dwWorldId) const {
+	return sqktd::find_in_map(m_expandedLayers, dwWorldId, 0);
 }
 
-#ifdef __AZRIA_1023
-BOOL CLayerProperty::LoadScript()
-{
+BOOL CTicketProperty::LoadScript() {
 	CScript s;
-	if( s.Load( "layer.inc" ) == FALSE )
-		return FALSE;
-	DWORD dwWorldId	= s.GetNumber();
-	while( s.tok != FINISHED )
-	{
-		LayerStruct ls;
-		ls.dwWorldId	= dwWorldId;
-		ls.nExpand	= s.GetNumber();
-		m_vLayers.push_back( ls );
-		dwWorldId	= s.GetNumber();
-	}
-	return TRUE;
-}
+	if (!s.Load( "ticket.json" )) return FALSE;
 
-int CLayerProperty::GetExpanedLayer(DWORD dwWorldId) const {
-	const auto it = std::find_if(m_vLayers.begin(), m_vLayers.end(),
-		[dwWorldId](const LayerStruct & layerStruct) {
-			return layerStruct.dwWorldId == dwWorldId;
+	rapidjson::Document document;
+	document.Parse(s.m_pProg);
+
+	m_mapTicketProp.clear();
+
+	try {
+		for (const auto & ticket_ : document.GetArray()) {
+			// == Read JSON
+			const auto & ticketObj = ticket_.GetObject();
+
+			const auto maybeWorld = CScript::GetDefineNumOpt(
+				ticketObj.FindMember("world")->value.GetString()
+			);
+			if (!maybeWorld) throw std::exception("Unknown world");
+
+			const DWORD worldId = maybeWorld.value();
+
+			const auto & positionJson = ticketObj.FindMember("position")->value.GetObject();
+			const D3DXVECTOR3 position(
+				positionJson.FindMember("x")->value.GetFloat(),
+				positionJson.FindMember("y")->value.GetFloat(),
+				positionJson.FindMember("z")->value.GetFloat()
+			);
+
+			const unsigned int nExpand = ([](const auto & ticketObj) -> unsigned int {
+				if (ticketObj.HasMember("nExpand")) {
+					return ticketObj.FindMember("nExpand")->value.GetUint();
+				} else {
+					return 0;
+				}
+			})(ticketObj);
+			
+			std::vector<DWORD> items;
+			for (const auto & itemJson : ticketObj.FindMember("items")->value.GetArray()) {
+				const char * itemStr = itemJson.GetString();
+				const int id = CScript::GetDefineNum(itemStr);
+				if (id == -1) throw std::exception("Item not found");
+				items.push_back(static_cast<DWORD>(id));
+			}
+
+			// == Add data
+
+			const TicketProp tp{ worldId, position };
+
+			for (const auto itemId : items) {
+				const bool ok = m_mapTicketProp.emplace(itemId, tp).second;
+				if (!ok) throw std::exception("An item is mapped to multiple tickets");
+			}
+
+			const bool ok = m_expandedLayers.emplace(worldId, nExpand).second;
+			if (!ok) throw std::exception("A world has several expansions value");
 		}
-	);
-
-	return it != m_vLayers.end() ? it->nExpand : 0;
+	} catch (std::exception e) {
+		Error(__FUNCTION__"(): Invalid ticket.json file - %s", e.what());
+		return FALSE;
+	}
 }
-#endif	// __AZRIA_1023

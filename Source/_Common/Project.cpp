@@ -527,15 +527,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	g_AccessoryProperty.LoadScript( "accessory.inc" );
 	g_xRandomOptionProperty.LoadScript( "randomoption.inc" );
 
-#ifdef __SYS_TICKET
-#ifdef __AZRIA_1023
-	g_ticketProperties.LoadScript();
-#else	// __AZRIA_1023
-	#ifdef __WORLDSERVER
-	g_ticketProperties.LoadScript();
-	#endif	// __WORLDSERVER
-#endif	// __AZRIA_1023
-#endif	// __SYS_TICKET
+	if (!g_ticketProperties.LoadScript()) return FALSE;
 
 	m_aPropQuest.Optimize();
 

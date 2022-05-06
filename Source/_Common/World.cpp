@@ -1923,9 +1923,11 @@ void CWorld::Expand()
 {
 	m_respawner.Expand( nDefaultLayer );
 #ifdef __AZRIA_1023
-	const int nExpand = g_ticketProperties.GetExpanedLayer(GetID());
-	for( int nLayer = -1, i = 0; i < nExpand; i++, nLayer-- )
-		CreateLayer( nLayer );
+	const unsigned int nExpand = g_ticketProperties.GetExpandedLayer(GetID());
+	for (unsigned int i = 0; i != nExpand; ++i) {
+		const int nLayer = -static_cast<int>(i + 1);
+		CreateLayer(nLayer);
+	}
 #endif	// __AZRIA_1023
 }
 #endif	// __LAYER_1021

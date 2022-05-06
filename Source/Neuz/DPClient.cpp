@@ -9877,7 +9877,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			else
 			{
 				// 확장 레이어 개수
-				const int nExpand	= g_ticketProperties.GetExpanedLayer( pTicketProp->dwWorldId );
+				const unsigned int nExpand	= g_ticketProperties.GetExpandedLayer( pTicketProp->dwWorldId );
 				/*
 				1. 개요
 					입장권 아이템에 정의된 레이어 선택 창을 출력한다.(CDPClient::SendDoUseItem에서 __AZRIA_1023이 있는 곳에서)

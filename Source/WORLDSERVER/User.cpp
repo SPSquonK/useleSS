@@ -2978,20 +2978,14 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 		}
 		
 		const TicketProp * const pTicketProp = g_ticketProperties.GetTicketProp(pItemElem->m_dwItemId);
-		if( pTicketProp )
-		{
-#ifdef __AZRIA_1023
-			int nLayer	= ::atoi( GetInput() );
-			int nExpand	= g_ticketProperties.GetExpanedLayer( pTicketProp->dwWorldId );
-			if( nLayer <= 0 && nLayer >= -nExpand )
-			{
-				DoApplySkill( (CCtrl*)this, pItemProp, NULL );
-				REPLACE( g_uIdofMulti, pTicketProp->dwWorldId, pTicketProp->vPos, REPLACE_NORMAL, nLayer );
+		if (pTicketProp) {
+			unsigned int channel = -::atoi(GetInput());
+			unsigned int nExpand = g_ticketProperties.GetExpandedLayer(pTicketProp->dwWorldId);
+			if (channel <= nExpand) {
+				DoApplySkill(this, pItemProp, nullptr);
+				const int nLayer = -static_cast<int>(channel);
+				REPLACE(g_uIdofMulti, pTicketProp->dwWorldId, pTicketProp->vPos, REPLACE_NORMAL, nLayer);
 			}
-#else	// __AZRIA_1023
-			DoApplySkill( (CCtrl*)this, pItemProp, NULL );
-			REPLACE( g_uIdofMulti, pTicketProp->dwWorldId, pTicketProp->vPos, REPLACE_NORMAL, nTempLayer );
-#endif	// __AZRIA_1023
 		}
 	}
 }

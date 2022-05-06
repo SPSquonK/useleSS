@@ -2,7 +2,7 @@
 #define __SMC_H
 
 #include "scanner.h"
-
+#include <optional>
  
 #define NUM_FUNC 	  	10 
 #define NUM_GLOBAL_VARS 10 
@@ -203,6 +203,12 @@ public:
 	static BOOL		LookupDefine( LPCTSTR lpszString, int& rValue );
 	static void		GetFindIdToArray ( LPCTSTR strDef, CStringArray* pStrArray );
 	static int		GetDefineNum( LPCTSTR lpStr );
+
+	static std::optional<DWORD> GetDefineNumOpt(LPCTSTR lpStr) {
+		const auto v = GetDefineNum(lpStr);
+		if (v == -1) return std::nullopt;
+		return static_cast<DWORD>(v);
+	}
 
 	virtual void	SntxErr( LPCTSTR lpszHeader, int error);
 	virtual void	SetMark();
