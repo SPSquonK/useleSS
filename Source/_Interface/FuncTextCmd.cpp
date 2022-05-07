@@ -4973,7 +4973,7 @@ BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CPlayer_ * pMover, B
 			if (textCmdFunc.m_nServer == TCM_CLIENT || textCmdFunc.m_nServer == TCM_BOTH) {
 				if (textCmdFunc.Call(scanner, pMover)) {
 					if (textCmdFunc.m_nServer == TCM_BOTH) {
-						g_DPlay.SendChat(lpszString);
+						g_DPlay.SendChat(scanner.m_pBuf);
 					}
 				}
 			} else {
