@@ -442,7 +442,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 }
 
 bool CWndUpgradeBase::DropMainItem(CItemElem * pItemElem) {
-	if (!m_slots[0]) return false;
+	if (m_slots[0]) return false;
 
 	if (pItemElem->m_nResistSMItemId != 0) // 상용화 아이템 적용중이면 불가능
 	{
