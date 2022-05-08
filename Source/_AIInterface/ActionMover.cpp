@@ -6,7 +6,6 @@
 #ifdef __CLIENT
 #include "DialogMsg.h"
 #include "DPClient.h"
-extern CDialogMsg	g_DialogMsg;
 #endif
 
 #ifdef __WORLDSERVER
@@ -14,7 +13,6 @@ extern CDialogMsg	g_DialogMsg;
 #include "DPCoreClient.h"
 #include "DPDatabaseClient.h"
 #include "DPSrvr.h"
-extern	CDPSrvr g_DPSrvr;
 #endif
 
 #include "party.h"

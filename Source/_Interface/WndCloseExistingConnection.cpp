@@ -3,9 +3,7 @@
 #include "AppDefine.h"
 #include "WndCloseExistingConnection.h"
 #include "WndManager.h"
-
 #include "dpcertified.h"
-extern	CDPCertified	g_dpCertified;
 
 
 /****************************************************

@@ -25,6 +25,7 @@ public:
 	void	SetAction( BOOL bAction );
 };
 
+extern CFLASH g_Flash;
 
 BOOL		IsForceAttack();
 int			Point_In_Poly( std::vector<CPoint> vecMap, CPoint test_point );

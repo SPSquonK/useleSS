@@ -4,10 +4,6 @@
 
 #ifdef __JEFF_11
 #include "environment.h"
-
-#ifndef __ENVIRONMENT_EFFECT
-extern	CEnvironment	g_Environment;
-#endif // __ENVIRONMENT_EFFECT
 #endif	// __JEFF_11
 
 #include "Vector3Helper.h"

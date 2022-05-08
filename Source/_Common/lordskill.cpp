@@ -9,7 +9,6 @@
 #include "slord.h"
 #include "user.h"
 #include "dpsrvr.h"
-extern	CDPSrvr		g_DPSrvr;
 #endif	// __WORLDSERVER
 
 CLordSkillComponent::CLordSkillComponent()

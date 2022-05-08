@@ -13,7 +13,6 @@
 #include "Resource.h"
 
 extern	CProject			prj;
-extern	APP_INFO			g_appInfo;
 
 void FILEOUT2(LPCTSTR lpszFileName,LPCTSTR lpszFormat, ...)
 {

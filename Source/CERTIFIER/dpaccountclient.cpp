@@ -11,8 +11,6 @@
 
 #include "user.h"
 
-extern	CDPCertifier	g_dpCertifier;
-
 CDPAccountClient::CDPAccountClient()
 {
 	BEGIN_MSG;

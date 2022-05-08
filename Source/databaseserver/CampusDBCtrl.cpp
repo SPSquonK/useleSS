@@ -6,7 +6,6 @@
 #include "CampusDBCtrl.h"
 
 #include "dptrans.h"
-extern	APP_INFO	g_appInfo;
 #include "DPCoreSrvr.h"
 
 //////////////////////////////////////////////////////////////////////

@@ -15,15 +15,13 @@
 class CLoginLimit
 {
 private:
-	int		m_nLimitation;
-	DWORD	m_dwTick;
-	int		m_nRequestPerSecond;
+	int		m_nLimitation       = INT_MAX;
+	DWORD	m_dwTick            = 0;
+	int		m_nRequestPerSecond = 0;
 
 public:
-	CLoginLimit();
 	bool	Check();
-	void	SetLimitation( int nLimitation )
-	{
+	void	SetLimitation(int nLimitation) {
 		m_nLimitation = nLimitation;
 	}
 };
@@ -77,6 +75,8 @@ public:
 	void	OnKeepAlive( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnError( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 };
+
+extern CDPCertifier g_dpCertifier;
 
 inline void CDPCertifier::SendHdr( DWORD dwHdr, DPID dpid )
 {

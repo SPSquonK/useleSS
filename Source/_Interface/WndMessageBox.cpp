@@ -1,13 +1,7 @@
-// WndMessageBox.cpp: implementation of the CWndNeuz class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "defineText.h"
 #include "AppDefine.h"
-
 #include "dploginclient.h"
-extern	CDPLoginClient	g_dpLoginClient;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,26 +35,6 @@ CWndMessageBox::~CWndMessageBox()
 }
 void CWndMessageBox::OnDraw( C2DRender* p2DRender )
 {
-	/*
-	p2DRender->SetTextColor( D3DCOLOR_TEMP( 255, 30>>3, 30>>3, 30>>3 ));
-	if(m_strArray.GetSize() == 0)
-	{
-		CPoint pt = GetStrCenter(p2DRender,m_strMessage);
-		p2DRender->TextOut(pt.x,35,m_strMessage,D3DCOLOR_TEMP( 255, 100, 100, 250));
-	}
-	else
-	{
-		CRect rect = GetClientRect();
-		rect.top += 20; rect.left += 40; rect.right -= 70; rect.bottom -= 50;
-		int y = (rect.top + rect.Height() / 2)  - ((m_strArray.GetSize() * 18) / 2);
-		CString string;
-		for(int i = 0; i < m_strArray.GetSize(); i++)
-		{
-			string = m_strArray.GetAt(i);
-			p2DRender->TextOut(50,y+i*18,string);
-		}
-	}
-	*/
 }
 void CWndMessageBox::OnInitialUpdate()
 {
@@ -165,24 +139,7 @@ BOOL CWndMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		GetParentWnd()->OnCommand( nID, message, this );
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-/*
-BOOL CWndMessageBox::OnCommand( UINT nID, DWORD dwMessage )
-{
-	switch(nID)
-	{
-		case IDABORT: 
-		case IDCANCEL:   
-		case IDIGNORE:   
-		case IDNO:       
-		case IDOK:       
-		case IDRETRY:    
-		case IDYES:   
-			Destroy(); 
-			break;
-	}
-	return CWndNeuz::OnCommand( nID, dwMessage );
-}
-*/
+
 BOOL CWndMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
 	return TRUE;
@@ -230,26 +187,6 @@ CWndMessageBoxUpper::~CWndMessageBoxUpper()
 }
 void CWndMessageBoxUpper::OnDraw( C2DRender* p2DRender )
 {
-	/*
-	p2DRender->SetTextColor( D3DCOLOR_TEMP( 255, 30>>3, 30>>3, 30>>3 ));
-	if(m_strArray.GetSize() == 0)
-	{
-		CPoint pt = GetStrCenter(p2DRender,m_strMessage);
-		p2DRender->TextOut(pt.x,35,m_strMessage,D3DCOLOR_TEMP( 255, 100, 100, 250));
-	}
-	else
-	{
-		CRect rect = GetClientRect();
-		rect.top += 20; rect.left += 40; rect.right -= 70; rect.bottom -= 50;
-		int y = (rect.top + rect.Height() / 2)  - ((m_strArray.GetSize() * 18) / 2);
-		CString string;
-		for(int i = 0; i < m_strArray.GetSize(); i++)
-		{
-			string = m_strArray.GetAt(i);
-			p2DRender->TextOut(50,y+i*18,string);
-		}
-	}
-	*/
 }
 void CWndMessageBoxUpper::OnInitialUpdate()
 {
@@ -349,24 +286,6 @@ BOOL CWndMessageBoxUpper::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-/*
-BOOL CWndMessageBox::OnCommand( UINT nID, DWORD dwMessage )
-{
-	switch(nID)
-	{
-		case IDABORT: 
-		case IDCANCEL:   
-		case IDIGNORE:   
-		case IDNO:       
-		case IDOK:       
-		case IDRETRY:    
-		case IDYES:   
-			Destroy(); 
-			break;
-	}
-	return CWndNeuz::OnCommand( nID, dwMessage );
-}
-*/
 BOOL CWndMessageBoxUpper::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
 	return TRUE;

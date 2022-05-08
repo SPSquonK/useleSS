@@ -6,8 +6,6 @@
 #include "definetext.h"
 #include "post.h"
 
-extern	APP_INFO	g_appInfo;
-
 CCoupleController::CCoupleController( CCoupleHelper* pHelper )
 :
 m_pHelper( pHelper ),

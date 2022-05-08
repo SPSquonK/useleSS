@@ -67,6 +67,8 @@ typedef	struct	AppInfo
 	DWORD	dwId;		// server id
 }	APP_INFO, *LPAPP_INFO;
 
+extern APP_INFO g_appInfo;
+
 extern	char	DSN_NAME_CHARACTER01[260];
 extern	char	DB_ADMIN_ID_CHARACTER01[260];
 extern	char	DSN_NAME_LOG[260];

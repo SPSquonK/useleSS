@@ -12,8 +12,6 @@ extern char	g_szVersion[];
 #include "Network.h"
 #include "Wnd2ndPassword.h"
 
-extern	CDPLoginClient	g_dpLoginClient;
- 
 CDPLoginClient::CDPLoginClient()
 {
 	m_timer.Set( SEC( 10 ) );

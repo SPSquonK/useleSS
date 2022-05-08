@@ -16,7 +16,6 @@
 #include "dpdatabaseclient.h"
 #ifdef __BUFF_TOGIFT
 #include "DPSrvr.h"
-extern	CDPSrvr		g_DPSrvr;
 #endif // __BUFF_TOGIFT
 #endif	// __WORLDSERVER
 

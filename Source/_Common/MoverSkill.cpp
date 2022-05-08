@@ -37,8 +37,6 @@
 #endif // __FUNNY_COIN
 
 #ifdef __WORLDSERVER
-	extern	CWorldMng			g_WorldMng;
-	extern	CDPSrvr				g_DPSrvr;
 #include "GuildHouse.h"
 #endif
 

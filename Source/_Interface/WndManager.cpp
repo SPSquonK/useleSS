@@ -44,21 +44,12 @@
 #include "definelordskill.h"
 #include "SecretRoom.h"
 #include "webbox.h"
-
-
-extern	CDPLoginClient	g_dpLoginClient;
-extern	CDPCertified	g_dpCertified;
-
 #include "dpclient.h"
-
 #include "guild.h"
 #include "guildwar.h"
-
 #include "Tax.h"
-
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
-
 #include "WndQuest.h"
 
 #ifdef __CERTIFIER_COLLECTING_SYSTEM

@@ -6,10 +6,6 @@
 #include "BillingMgr.h"
 #include "dbmanager.h"
 
-extern	CDbManager	g_DbManager;
-extern	CDPSrvr		g_dpSrvr;
-extern	CDPDBSrvr	g_dpDbSrvr;
-
 CAccountMng			g_AccountMng;
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifndef __VM_0820

@@ -127,6 +127,8 @@ public:
 	void	PostQ( LPDB_OVERLAPPED_PLUS pData );
 };
 
+extern CDbManager g_DbManager;
+
 u_int	__stdcall	DbWorkerThread( LPVOID lpDbManager );	// DbWorkerThread
 #ifdef __GPAUTH
 void	GetGPAuthResult( const char* szUrl, int nMode, int nGameMode, const char* sAccount, const char* sPassword, const char* sAddr, GPAUTH_RESULT & result );

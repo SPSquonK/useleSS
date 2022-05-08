@@ -52,10 +52,6 @@
 	#include "DPCoreClient.h"
 	#include "dpdatabaseclient.h"
 	#include "spevent.h"
-
-	extern	CWorldMng	g_WorldMng;
-	extern	CDPSrvr		g_DPSrvr;
-
 #endif	// __CLIENT
 
 	#include "..\_AIInterface\AIInterface.h"

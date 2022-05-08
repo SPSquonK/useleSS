@@ -19,8 +19,6 @@
 	#include "DPSrvr.h"
 	#include "AttackArbiter.h"
 
-	extern	CDPSrvr		g_DPSrvr;
-
 	#include "eveschool.h"
 	#include "ItemUpgrade.h"
 #endif	// __WORLDSERVER

@@ -26,8 +26,6 @@
 #ifdef __WORLDSERVER
 CWorldMng	g_WorldMng;
 #endif	// __WORLDSERVER
-
-extern	CDPSrvr			g_DPSrvr;
 #endif	// __WORLDSERVER
 
 CWorldMng::CWorldMng()

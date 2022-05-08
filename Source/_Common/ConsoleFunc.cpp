@@ -340,7 +340,6 @@ void RandomMoving( DWORD dt )
 	}
 }
 
-extern	CDPCertified	g_dpCertified;
 void _auto_login( )
 {
 	CScanner s;

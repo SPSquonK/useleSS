@@ -4,7 +4,6 @@
 
 #include "defineText.h"
 #include "DPSrvr.h"
-extern CDPSrvr g_DPSrvr;
 
 CCreateMonster::CCreateMonster()
 :

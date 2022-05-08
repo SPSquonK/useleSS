@@ -14,10 +14,6 @@
 
 			// nprotect관련 _Network폴더에 
 
-
-extern	CDPCoreClient		g_dpCoreClient;
-
-
 #define MAX_LOADSTRING 100
 
 HINSTANCE	hInst;	// current instance

@@ -1,12 +1,5 @@
-// MainFrm.cpp : implementation of the CMainFrame class
-//
-
 #include "stdafx.h" 
-
-
 #include "DialogMsg.h"
-extern CDialogMsg g_DialogMsg;
-
 #include "defineText.h"
 
 CToolTip::CToolTip() : 

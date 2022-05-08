@@ -106,3 +106,6 @@ public:
 /*--------------------------------------------------------------------------------*/
 };
 
+#ifdef __WORLDSERVER
+extern CWorldMng g_WorldMng;
+#endif

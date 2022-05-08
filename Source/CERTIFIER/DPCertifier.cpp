@@ -4,21 +4,7 @@
 #include "dbmanager.h"
 #include "..\Resource\Lang.h"
 
-#ifdef __TRACE1027
-
-#endif	// __TRACE1027
-
 #include "user.h"
-
-extern	CDPAccountClient	g_dpAccountClient;
-extern	CDbManager			g_DbManager;
-
-CLoginLimit::CLoginLimit()
-{
-	m_nLimitation		= INT_MAX;
-	m_dwTick			= 0;
-	m_nRequestPerSecond	= 0;
-}
 
 // 초당 login시도가 제한을 넘는지 체크한다.  ( true - 제한을 넘는다 )
 bool CLoginLimit::Check()

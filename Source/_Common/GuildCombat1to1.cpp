@@ -17,8 +17,6 @@
 	#include "defineText.h"
 	#include "DPDatabaseClient.h"
 	#include "DPSrvr.h"
-	extern	CWorldMng	g_WorldMng;
-	extern	CDPSrvr		g_DPSrvr;
 #endif // __WORLDSERVER
 //////////////////////////////////////////////////////////////////////
 //// CGuildCombat1To1 ////////////////////////////////////////////////

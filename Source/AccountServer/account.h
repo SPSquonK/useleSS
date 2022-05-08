@@ -148,4 +148,6 @@ private:
 	std::map<DWORD, DWORD>	m_mapPCBang;
 };
 
+extern CAccountMng g_AccountMng;
+
 #endif	// __ACCOUNT_H__

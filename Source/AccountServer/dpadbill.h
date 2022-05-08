@@ -4,7 +4,6 @@
 #include "dpmng.h"
 
 #include "dbmanager.h"
-extern	CDbManager	g_DbManager;
 
 
 class CDPAdbill : public CDPMng<CBuffer3>

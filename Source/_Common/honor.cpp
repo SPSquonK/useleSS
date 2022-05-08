@@ -1,9 +1,5 @@
-
 #include "stdafx.h"
 #include "..\_Common\honor.h"
-
-//#include "DPSrvr.h"
-//extern CDPSrvr g_DPSrvr;
 
 
 CTitleManager::CTitleManager()

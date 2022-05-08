@@ -32,10 +32,7 @@
 extern	char				g_szDBAddr[16];
 extern	char				g_szCoreAddr[16];
 
-extern	CWorldMng			g_WorldMng;
-extern	CDPSrvr				g_DPSrvr;
 extern  DWORD				g_tmCurrent;
-//extern	time_t	g_tCurrent;
 extern	char				g_sHeartbeat[32];
 
 extern  BOOL LoadAIScript();		// aimonster2.cpp

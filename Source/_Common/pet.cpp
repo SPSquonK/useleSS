@@ -5,7 +5,6 @@
 #ifdef __WORLDSERVER
 #include "user.h"
 #include "dpsrvr.h"
-extern	CDPSrvr	g_DPSrvr;
 #include "definetext.h"
 #endif	// __WORLDSERVER
 

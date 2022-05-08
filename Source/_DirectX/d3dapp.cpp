@@ -1572,8 +1572,6 @@ int g_nCounter = 0;
 #ifdef __CLIENT
 #include "DPLoginClient.h"
 #include "dpcertified.h"
-extern	CDPLoginClient	g_dpLoginClient;
-extern	CDPCertified	g_dpCertified;
 #endif
 HRESULT CD3DApplication::Render3DEnvironment()
 {

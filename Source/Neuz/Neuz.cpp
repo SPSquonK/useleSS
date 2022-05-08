@@ -39,8 +39,6 @@
 // global variable
 //////////////////////////////////////////////////////////////////////////////
 
-extern	CDPLoginClient	g_dpLoginClient;
-extern	CDPCertified	g_dpCertified;
 extern CSfxTexture      g_SfxTex;
 extern CSfxMng          g_SfxMng;
 extern CSfxObjMng       g_SfxObjMng;

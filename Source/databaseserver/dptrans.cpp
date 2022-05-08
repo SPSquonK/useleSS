@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "dpcoresrvr.h"
 #include "dpaccountclient.h"
-extern	CDPAccountClient	g_dpAccountClient;
 #include "dptrans.h"
 
 #include "..\_network\objects\Obj.h"
@@ -11,9 +10,6 @@ extern	CDPAccountClient	g_dpAccountClient;
 
 #include "tlord.h"
 #include "couplehelper.h"
-
-extern	APP_INFO	g_appInfo;
-
 #include "SecretRoomDBMng.h"
 #include "Tax.h"
 #include "RainbowRaceDBCtrl.h"

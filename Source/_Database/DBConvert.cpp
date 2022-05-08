@@ -14,7 +14,6 @@
 #include "Resource.h"
 
 extern	CProject			prj;
-extern	APP_INFO			g_appInfo;
 
 #ifdef __CONV_SKILL_11_MONTH_JOB1
 void CDbManager::ConvSkill_11_MONTH_POINT( void )

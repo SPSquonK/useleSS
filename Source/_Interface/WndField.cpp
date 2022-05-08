@@ -30,9 +30,7 @@ extern int g_nSkillCurSelect;
 extern float g_fHairLight;
 
 #include "eveschool.h"
-
 #include "dpcertified.h"
-extern	CDPCertified	g_dpCertified;
 
 #ifdef __NEW_WEB_BOX
 #include "WndHelperWebBox.h"

@@ -4,9 +4,6 @@
 #include "DPBillingTH.h"
 #include "BillingMgr.h"
 
-extern	CDPSrvr			g_dpSrvr;
-extern	CAccountMng		g_AccountMng;
-
 const DWORD	MAX_ID_LENGTH	= 30;
 const DWORD	MAX_IP_LENGTH	= 16;
 

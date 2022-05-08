@@ -12,11 +12,9 @@
 #endif // __CLIENT
 #ifdef __WORLDSERVER
 #include "WorldMng.h"
-extern CWorldMng g_WorldMng;
 #include "guild.h"
 #include "user.h"
 #include "DPSrvr.h"
-extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
 #include "npchecker.h"
 #ifdef __GUILD_HOUSE_MIDDLE
@@ -1451,7 +1449,6 @@ float CGuildHouseMng::GetRestExpFactor( int nLevel )
 #endif // __WORLDSERVER
 
 #ifdef __DBSERVER
-extern	APP_INFO	g_appInfo;
 void CGuildHouseMng::ProcessExpired()
 {
 	for( MapGuildHouse::iterator it=m_mapGuildHouse.begin(); it!=m_mapGuildHouse.end(); it++ )

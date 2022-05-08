@@ -43,6 +43,10 @@ public:
 #endif
 };
 
+#ifdef __CLIENT
+extern CChatting g_Chatting;
+#endif
+
 #ifdef __WORLDSERVER
 
 class CChattingMng final {

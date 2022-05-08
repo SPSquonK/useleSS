@@ -22,9 +22,6 @@
 	#include "DPCoreClient.h"
 	#include "dpdatabaseclient.h"
 	#include "ItemScript.h"
-
-	extern	CWorldMng			g_WorldMng;
-	extern	CDPSrvr				g_DPSrvr;
 #endif	// __CLIENT
 
 #include "accessory.h"

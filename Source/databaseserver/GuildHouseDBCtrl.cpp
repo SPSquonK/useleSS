@@ -1,13 +1,7 @@
-// GuildHouseDBCtrl.cpp: implementation of the CGuildHouseDBCtrl class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "GuildHouseDBCtrl.h"
-
 #include "MsgHdr.h"
 #include "dptrans.h"
-extern AppInfo g_appInfo;
 
 //////////////////////////////////////////////////////////////////////
 // CGuildHouseDBCtrl::CDbController

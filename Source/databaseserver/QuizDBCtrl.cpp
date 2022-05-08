@@ -10,7 +10,6 @@
 #include "Quiz.h"
 #include "post.h"
 #include "definetext.h"
-extern	APP_INFO	g_appInfo;
 
 //////////////////////////////////////////////////////////////////////
 // CQuizDBCtrl		Construction/Destruction

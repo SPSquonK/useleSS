@@ -22,10 +22,6 @@ extern int			g_nFlySpeed;
 extern int			g_nDrift;
 #endif // CLIENT
 
-#ifdef __WORLDSERVER
-extern	CDPSrvr				g_DPSrvr;
-#endif // __WORLDSERVER
-
 #ifdef __CLIENT
 void CActionMover::PresupposePos2( D3DXVECTOR3* pv, D3DXVECTOR3* pvd, float* pf, float* pfAngleX, float* pfAccPower, u_long uTickCount )
 {

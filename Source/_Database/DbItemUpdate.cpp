@@ -10,7 +10,6 @@
 #include "lang.h"
 
 extern	CProject			prj;
-extern	APP_INFO			g_appInfo;
 
 
 void CDbManager::ItemUpdateThread( void )

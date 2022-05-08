@@ -42,8 +42,6 @@
 #include "eveschool.h"
 #include "CommonCtrl.h"
 #include "yUtil.h"
-extern CFLASH g_Flash;
-
 #include "party.h"
 #include "wndpartyconfirm.h"
 #include "WndDuelConfirm.h"
@@ -57,21 +55,12 @@ extern CFLASH g_Flash;
 #include "guildwar.h"
 #include "Wndguildvote.h"
 #include "eveschool.h"
-
 #include "Chatting.h"
-extern	CChatting g_Chatting;
 
 #include "WndFriendConfirm.h"
 #include "WndPartyChangeTroup.h"
 #include "Network.h"
 #include "WndSelectVillage.h"
-
-#ifndef __ENVIRONMENT_EFFECT
-extern	CEnvironment	g_Environment;
-#endif // __ENVIRONMENT_EFFECT
-
-extern	CDPCertified	g_dpCertified;
-extern	CDPLoginClient	g_dpLoginClient;
 
 #include "post.h"
 #include "spevent.h"

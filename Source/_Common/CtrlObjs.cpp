@@ -6,10 +6,6 @@
 #include "Party.h"
 #include "dpDatabaseClient.h"
 
- 
-extern	CDPSrvr		g_DPSrvr;
-
-
 void CContDamageCtrl::Init( void )
 {
 	m_tmStart = m_tmUpdate = timeGetTime();

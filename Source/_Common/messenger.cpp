@@ -8,7 +8,6 @@
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
 #include "player.h"
-extern	CPlayerMng	g_ONLINEerMng;
 #endif // __CORESERVER
 
 CMessenger::CMessenger()

@@ -2,8 +2,6 @@
 #include "dpdbsrvr.h"
 #include "dpadbill.h"
 
-extern	CDPDBSrvr	g_dpDbSrvr;
-
 CDPAdbill::CDPAdbill()
 {
 	m_dwKey	= 0;

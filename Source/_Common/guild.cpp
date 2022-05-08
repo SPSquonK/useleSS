@@ -14,7 +14,6 @@
 #include "DPCoreClient.h"
 #include "user.h"
 #include "worldmng.h"
-extern	CWorldMng	g_WorldMng;
 #include "defineQuest.h"
 #endif // __WORLDSERVER
 

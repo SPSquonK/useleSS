@@ -9,7 +9,6 @@
 
 #include "boost/range/adaptor/indexed.hpp"
 #include "Chatting.h"
-extern	CChatting g_Chatting;
 
 
 

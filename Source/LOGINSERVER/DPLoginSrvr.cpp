@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "DPDatabaseClient.h"
 #include "dpcoreclient.h"
-extern	CDPCoreClient	g_dpCoreClient;
 #include "DPLoginSrvr.h"
 #include "User.h"
 #include "LoginProtect.h"

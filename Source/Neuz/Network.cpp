@@ -5,9 +5,6 @@
 #include "dploginclient.h"
 #include "dpclient.h"
 
-extern	CDPCertified	g_dpCertified;
-extern	CDPLoginClient	g_dpLoginClient;
-
 static const char* g_szText[] = 
 { 
 	"CERT_CONNECTED",		

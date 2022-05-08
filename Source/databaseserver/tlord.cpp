@@ -9,8 +9,6 @@
 #include "definetext.h"
 #include "playerdata.h"
 
-extern	AppInfo		g_appInfo;
-
 #pragma warning ( disable : 4355 )
 
 ////////////////////////////////////////////////////////////////////////////////

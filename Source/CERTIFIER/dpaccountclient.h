@@ -45,4 +45,6 @@ public:
 	void	OnEnableServer( CAr & ar, DPID dpid );
 };
 
+extern CDPAccountClient g_dpAccountClient;
+
 #endif	// __DPACCOUNTCLIENT_H__

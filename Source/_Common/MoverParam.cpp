@@ -32,7 +32,6 @@
 
 #ifdef __WORLDSERVER
 #include "DPSrvr.h"
-extern	CDPSrvr		g_DPSrvr;
 #endif // __WORLDSERVER
 
 #include "Project.h"
@@ -40,29 +39,9 @@ extern	CDPSrvr		g_DPSrvr;
 
 
 #ifdef __WORLDSERVER
-
-#ifdef __ENVIRONMENT_EFFECT
-
 #include "Environment.h"
-
-#else // __ENVIRONMENT_EFFECT
-
-#if defined(__EVENTLUA_RAIN) || defined(__EVENTLUA_SNOW)
-#include "Environment.h"
-extern CEnvironment g_Environment;
-#else // __EVENTLUA_RAIN || __EVENTLUA_SNOW
-#ifdef __RAIN_EVENT
-#include "Environment.h"
-extern CEnvironment g_Environment;
-#endif // __RAIN_EVENT
-#endif// __EVENTLUA_RAIN || __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
-
 #include "PCBang.h"
-
 #include "GuildHouse.h"
-
 #include "CampusHelper.h"
 #endif // __WORLDSERVER
 

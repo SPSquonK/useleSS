@@ -8,7 +8,6 @@
 #ifdef __WORLDSERVER
 #include "User.h"
 #include "worldmng.h"
-extern CWorldMng g_WorldMng;
 #include "DPCoreClient.h"
 #include "DPDatabaseClient.h"
 #include "party.h"

@@ -426,5 +426,6 @@ private:
 	DPID	m_dpidCache;		// 캐쉬서버 DPID
 };
 
+extern CDPSrvr g_DPSrvr;
 
 #endif // __DPSRVR_H__

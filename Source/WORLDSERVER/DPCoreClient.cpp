@@ -9,22 +9,11 @@
 #include "WorldMng.h"
 #include "DisplayedInfo.h"
 #include "playerdata.h"
-
 #include "eveschool.h"
-
-extern	CWorldMng	g_WorldMng;
-extern	CDPSrvr		g_DPSrvr;
-
-
 #include "Party.h"
 #include "GroupUtils.h"
 #include "GroupedEmission.h"
 #include "Environment.h"
-
-#ifndef __ENVIRONMENT_EFFECT
-extern	CEnvironment	g_Environment;
-#endif // __ENVIRONMENT_EFFECT
-
 #include "guild.h"
 #include "guildwar.h"
 #include "WantedListSnapshot.h"

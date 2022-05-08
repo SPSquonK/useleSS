@@ -12,7 +12,6 @@
 #ifdef __WORLDSERVER
 #include "worldmng.h"
 #include "User.h"
-extern CWorldMng   g_WorldMng;
 #include "dpcoreclient.h"
 #include "dpdatabaseclient.h"
 #include "slord.h"

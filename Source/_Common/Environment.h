@@ -64,4 +64,6 @@ public:
 #endif // __CORESERVER
 };
 
+extern CEnvironment g_Environment;
+
 #endif	//	__ENVIRONMENT_H__

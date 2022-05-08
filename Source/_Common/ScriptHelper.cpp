@@ -13,10 +13,6 @@
 #include "ScriptHelper.h"
 #include "WorldDialog.h"
 
-extern	CWorldMng			g_WorldMng;
-extern	CDPSrvr				g_DPSrvr;
-
-
 #if defined(__REMOVE_SCIRPT_060712)
 
 enum QUEST_ENUM

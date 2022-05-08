@@ -11,10 +11,6 @@
 #include "eveschool.h"
 #include "definetext.h"
 #include "eveschool.h"
-
-extern	CDPSrvr		g_DPSrvr;
-extern	CWorldMng	g_WorldMng;
-
 #include "party.h"
 #include "guild.h"
 

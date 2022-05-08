@@ -8,7 +8,6 @@
 #include "DPDatabaseClient.h"
 #include "User.h"
 #include "worldmng.h"
-extern CWorldMng g_WorldMng;
 #include "npchecker.h"
 #endif // __WORLDSERVER
 

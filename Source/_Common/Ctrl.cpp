@@ -20,10 +20,8 @@
 #include "user.h"
 #include "dpcoreclient.h"
 #include "dpsrvr.h"
-
- extern	CDPSrvr		g_DPSrvr;
- #include "Party.h"
- #include "dpDatabaseClient.h"
+#include "Party.h"
+#include "dpDatabaseClient.h"
 #endif
 
 #include "commonctrl.h"

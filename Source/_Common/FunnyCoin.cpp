@@ -17,7 +17,6 @@ const int FC_SAMEUNIQUENO = -2;
 #include "User.h"
 #include "defineText.h"
 #include "DPSrvr.h"
-extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
 
 CFunnyCoin::CFunnyCoin()
@@ -156,7 +155,6 @@ BOOL CFunnyCoin::IsUsable( CUser* pUser )
 // CFunnyCoinDbCtrl //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 #include "dptrans.h"
-extern AppInfo g_appInfo;
 
 CFunnyCoinDbCtrl::CFunnyCoinDbCtrl()
 {

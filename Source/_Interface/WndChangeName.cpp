@@ -185,8 +185,6 @@ void CWndChangePetName::SetData( WORD wId, WORD wReset )
 	m_dwData	= MAKELONG( wId, wReset );
 }
 
-//extern DWORD IsValidPlayerName( CString& strName );
-
 BOOL CWndChangePetName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )

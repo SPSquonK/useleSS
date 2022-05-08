@@ -18,11 +18,6 @@
 #include "guildwar.h"
 #include "party.h"
 #include "Environment.h"
-
-#ifndef __ENVIRONMENT_EFFECT
-extern	CEnvironment	g_Environment;
-#endif // __ENVIRONMENT_EFFECT
-
 #include "player.h"
 
 #ifdef __EVENT0913

@@ -8,7 +8,6 @@
 #include "Ship.h"
 #ifdef __WORLDSERVER
 #include "worldmng.h"
-extern	CWorldMng	g_WorldMng;
 #endif	// __WORLDSERVER
 
 #include "guild.h"

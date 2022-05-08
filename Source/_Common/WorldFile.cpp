@@ -10,7 +10,6 @@
 #include "user.h"
 #endif	// __WORLDSERVER
 
-extern	CWorldMng	g_WorldMng;
 #ifdef	__YENV	
 extern float s_fFogStart;
 extern float s_fFogEnd;

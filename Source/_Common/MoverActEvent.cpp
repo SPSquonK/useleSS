@@ -29,12 +29,6 @@
 #endif // __EVENT_MONSTER
 
 
-
-#ifdef __WORLDSERVER
-	extern	CWorldMng			g_WorldMng;
-	extern	CDPSrvr				g_DPSrvr;
-#endif	// not __CLIENT
-
 BOOL IsLootSendText( ItemProp* pItemProp )
 {
 	if( pItemProp == NULL )

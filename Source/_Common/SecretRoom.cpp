@@ -11,10 +11,8 @@
 #include "DPCoreClient.h"
 #include "DPDatabaseClient.h"
 #include "worldmng.h"
-extern	CWorldMng	g_WorldMng;
 #include "Tax.h"
 #include "DPSrvr.h"
-extern CDPSrvr g_DPSrvr;
 #endif // __WORLDSERVER
 
 

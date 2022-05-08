@@ -99,17 +99,13 @@ typedef struct	__PARTYQUESTRECT
 PARTYQUESTRECT, *PPARTYQUESTRECT;
 
 //class CGuild;
-class CPartyQuestProcessor
+class CPartyQuestProcessor final
 {
 private:
 	PARTYQUESTELEM	m_pElem[MAX_PARTY_QUEST];
 	PARTYQUESTRECT	m_pRect[MAX_PARTY_QUEST];
-	int		m_nRect;
+	int		m_nRect = 0;
 public:
-//	Constructions
-	CPartyQuestProcessor();
-	~CPartyQuestProcessor();
-
 //	Operations
 	void	Process();
 

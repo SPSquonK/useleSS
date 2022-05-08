@@ -15,8 +15,6 @@
   #include "DPSrvr.h"
   #include "DPCoreClient.h"
   #include "dpdatabaseclient.h"
-  extern	CWorldMng	g_WorldMng;
-  extern	CDPSrvr		g_DPSrvr;
 #endif	// __CLIENT
 
 

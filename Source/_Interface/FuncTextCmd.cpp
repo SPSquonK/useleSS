@@ -63,11 +63,6 @@
 #include "CampusHelper.h"
 #endif // __WORLDSERVER
 
-#ifdef __WORLDSERVER
-extern  CWorldMng			g_WorldMng;
-extern	CDPSrvr				g_DPSrvr;
-#endif
-
 CmdFunc::AllCommands g_textCmdFuncs;
 
 #include "definesound.h"

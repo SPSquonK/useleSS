@@ -7,8 +7,6 @@
 #include "messenger.h"
 #include "WndFriendConFirm.h"
 #include "dpcertified.h"
-extern	CDPCertified	g_dpCertified;
-
 #include "WndManager.h"
 
 #include "DPClient.h"

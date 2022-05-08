@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "dpaccountclient.h"
-extern	CDPAccountClient	g_dpAccountClient;
 #include "dpcoresrvr.h"
 
 #include "guild.h"

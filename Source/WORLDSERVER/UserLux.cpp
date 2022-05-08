@@ -13,10 +13,6 @@
 
 #include "UserMacro.h"
 
-extern	CDPSrvr		g_DPSrvr;
-extern	CWorldMng	g_WorldMng;
-
-
 /*  
 //
 // 자원 채집 시작

@@ -8,8 +8,6 @@
 #include "defineText.h"
 #include "User.h"
 #include "DPSrvr.h"
-
-extern	CDPSrvr		g_DPSrvr;
 #include "DPDatabaseClient.h"
 #endif // __WORLDSERVER
 

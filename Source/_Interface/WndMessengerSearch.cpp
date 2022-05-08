@@ -2,9 +2,7 @@
 #include "defineText.h"
 #include "AppDefine.h"
 #include "WndMessengerSearch.h"
-
 #include "dpCertified.h"
-extern	CDPCertified	g_dpCertified;
 
 /****************************************************
   WndId : APP_MESSENGER_SEARCH - 사용자검색

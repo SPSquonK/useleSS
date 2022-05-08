@@ -9,18 +9,10 @@
 #include "user.h"
 #include "worldmng.h"
 #include "misc.h"
-
 #include "guild.h"
-
-
 #include "..\_Common\Ship.h"
-
-
 #include "..\_aiinterface\AIPet.h"
-
 #include "Party.h"
-extern	CWorldMng			g_WorldMng;
-
 #include "..\_Network\ErrorCode.h"
 
 

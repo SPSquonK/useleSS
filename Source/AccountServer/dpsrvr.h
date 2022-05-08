@@ -81,4 +81,6 @@ public:
 	void	OnCloseExistingConnection( CAr & ar, DPID dpid1, DPID dpid2 );
 };
 
+extern CDPSrvr g_dpSrvr;
+
 #endif	// __DPCRTFRSRVR_H__

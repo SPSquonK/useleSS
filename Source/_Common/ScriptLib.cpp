@@ -13,13 +13,6 @@
 #include "ScriptHelper.h"
 #if defined(__REMOVE_SCIRPT_060712)
 	#include "WorldDialog.h"
-#endif
-
-extern	CWorldMng			g_WorldMng;
-extern	CDPSrvr				g_DPSrvr;
-
-
-#if defined(__REMOVE_SCIRPT_060712)
 
 Functions		g_functions;
 

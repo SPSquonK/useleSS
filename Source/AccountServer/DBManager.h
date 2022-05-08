@@ -145,6 +145,8 @@ public:
 	*/
 };
 
+extern CDbManager g_DbManager;
+
 u_int	__stdcall	DbWorkerThread( LPVOID lpDbManager );	// DbWorkerThread
 
 #endif	// __DBMANAGER_H__

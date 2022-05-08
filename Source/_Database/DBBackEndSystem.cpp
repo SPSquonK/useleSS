@@ -9,7 +9,6 @@
 #include "mytrace.h"
 
 extern	CProject			prj;
-extern	APP_INFO			g_appInfo;
 
 const int MAX_BACKENDSYSTEM = 2;
 

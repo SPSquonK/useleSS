@@ -4,8 +4,6 @@
 #include "dpcoreclient.h"
 #include "dploginsrvr.h"
 
-extern	CDPCoreClient		g_dpCoreClient;
-
 #ifndef __VM_0820
 MemPooler<CLoginUser>*	CLoginUser::m_pPool	= new MemPooler<CLoginUser>( 1024 );
 #endif	// __VM_0820

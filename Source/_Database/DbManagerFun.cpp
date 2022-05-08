@@ -31,7 +31,6 @@ BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPAR
 #endif	// __VERIFY_PLAYER OR __PROVIDE
 
 extern	CProject			prj;
-extern	APP_INFO			g_appInfo;
 
 #define	VERIFYSTRING( lpString, lpszPlayer )	\
 		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return;

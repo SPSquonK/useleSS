@@ -35,4 +35,6 @@ public:
 	void	OnQueryRemovePlayer( CAr & ar );
 };
 
+extern CDPCoreClient g_dpCoreClient;
+
 #endif	// __DPCORECLIENT_H__

@@ -15,11 +15,7 @@
 #include "mover.h"
 #include "Ship.h"
 
-
-
 #include "..\_Network\ErrorCode.h"
-
-extern	CDPLoginClient	g_dpLoginClient;
 
 #include "guild.h"
 #include "guildwar.h"

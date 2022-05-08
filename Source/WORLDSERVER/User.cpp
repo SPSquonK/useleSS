@@ -23,19 +23,10 @@
 #include "SecretRoom.h"
 
 #include "Tax.h"
-
 #include "slord.h"
 #include "lordskillexecutable.h"
-
 #include "ItemUpgrade.h"
-
-
 #include "Environment.h"
-
-#ifndef __ENVIRONMENT_EFFECT
-extern	CEnvironment	g_Environment;
-#endif // __ENVIRONMENT_EFFECT
-
 #include "guild.h"
 #include "guildwar.h"
 #include "Chatting.h"
@@ -52,11 +43,6 @@ extern	CEnvironment	g_Environment;
 #include "post.h"
 
 #include "couplehelper.h"
-
-/*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-extern	CDPSrvr		g_DPSrvr;
-extern	CWorldMng	g_WorldMng;
-/*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 #ifndef __VM_0820
 #ifndef __MEM_TRACE

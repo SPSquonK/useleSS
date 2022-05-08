@@ -14,10 +14,6 @@
 #include "Environment.h"
 extern	DWORD				s_dwEvent;
 
-#ifndef __ENVIRONMENT_EFFECT
-extern	CEnvironment		g_Environment;
-#endif // __ENVIRONMENT_EFFECT
-
 #ifdef __EVENT0913
 extern	BOOL	s_bEvent0913;
 #endif	// __EVENT0913

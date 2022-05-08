@@ -3,7 +3,6 @@
 #include "rangda.h"
 #include "worldmng.h"
 #include "lord.h"
-extern	CWorldMng	g_WorldMng;
 
 CRangda::CRangda( DWORD dwMonster )
 :

@@ -5,8 +5,6 @@
 #include "BillingMgr.h"
 // TODO_BILLING : KEEPALIVE 5분마다 보내기만 한다. 이를 개선해야 
 
-extern	CDPSrvr			g_dpSrvr;
-extern	CAccountMng		g_AccountMng;
 static char				g_szServerName[] = "AccountServer";
 
 const DWORD				MAX_ID_LENGTH	= 30;

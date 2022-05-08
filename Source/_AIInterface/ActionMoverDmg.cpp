@@ -13,8 +13,6 @@
 #include "DPDatabaseClient.h"
 #include "DPSrvr.h"
 #include "guild.h"
-
-extern	CDPSrvr				g_DPSrvr;
 #endif // __WORLDSERVER
 
 #include "defineitem.h"

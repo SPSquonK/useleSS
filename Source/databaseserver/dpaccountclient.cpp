@@ -1,10 +1,6 @@
 #include "StdAfx.h"
 #include "dploginsrvr.h"
-
 #include "dpcoresrvr.h"
-
-extern	APP_INFO	g_appInfo;
-
 #include "dpaccountclient.h"
 #include "serialnumber.h"
 

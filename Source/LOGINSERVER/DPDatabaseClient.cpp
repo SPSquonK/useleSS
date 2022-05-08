@@ -5,7 +5,6 @@
 #include "mytrace.h"
 #include "user.h"
 #include "LoginProtect.h"
-extern	CDPCoreClient	g_dpCoreClient;
 
 extern	char	g_lpDBAddr[16];
 

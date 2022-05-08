@@ -114,8 +114,6 @@
     </ClCompile>
     <ClCompile Include="DPClientGuildWar.cpp">
     </ClCompile>
-    <ClCompile Include="DPClientLux.cpp">
-    </ClCompile>
     <ClCompile Include="DPCollectClient.cpp" />
     <ClCompile Include="DPLoginClient.cpp">
     </ClCompile>

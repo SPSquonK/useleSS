@@ -10,10 +10,8 @@
 #include "User.h"
 #include "DPSrvr.h"
 #include "DPDatabaseClient.h"
-extern	CDPSrvr				g_DPSrvr;
 #ifdef __EVENTLUA_SPAWN
 #include "worldmng.h"
-extern	CWorldMng	g_WorldMng;
 #endif // __EVENTLUA_SPAWN
 #endif // __WORLDSERVER
 #ifdef __VTN_TIMELIMIT

@@ -11,7 +11,6 @@
 
 #include "User.h"
 #include "DPSrvr.h"
-extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
 
 #include "AIPet.h"

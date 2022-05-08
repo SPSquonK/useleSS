@@ -29,12 +29,8 @@
 #endif	// __LANG_1013
 
 #include "yUtil.h"
-extern CFLASH g_Flash;
-
 #include "defineskill.h"
-
 #include "playerdata.h"
-
 #include "honor.h"
 
 #ifdef __SYS_ITEMTRANSY

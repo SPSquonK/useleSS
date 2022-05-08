@@ -7,11 +7,7 @@
 #include "guild.h"
 #include "dpdatabaseclient.h"
 #include "user.h"
-extern	CDPSrvr		g_DPSrvr;
-
 #include "WorldMng.h"
-extern CWorldMng g_WorldMng;
-
 #include "definetext.h"
 #include "defineobj.h"
 #include "definesound.h"

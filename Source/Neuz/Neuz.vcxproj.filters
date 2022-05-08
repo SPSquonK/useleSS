@@ -130,9 +130,6 @@
     <ClCompile Include="DPClientGuildWar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DPClientLux.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DPCollectClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

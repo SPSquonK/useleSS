@@ -18,9 +18,6 @@
 #include "Network.h"
 #include "Vector3Helper.h"
 
-extern	CDPLoginClient	g_dpLoginClient;
-extern	CDPCertified	g_dpCertified;
-
 extern BYTE  nMaleHairColor[10][3];
 extern BYTE  nFeMaleHairColor[10][3];
 

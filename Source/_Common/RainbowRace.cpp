@@ -19,10 +19,8 @@
 #include "defineText.h"
 #include "DPCoreClient.h"
 #include "worldmng.h"
-extern CWorldMng g_WorldMng;
 #include "User.h"
 #include "DPSrvr.h"
-extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
 #endif // __WORLDSERVER
 

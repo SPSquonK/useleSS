@@ -58,4 +58,6 @@ public:
 */
 };
 
+extern CDPAccountClient g_dpAccountClient;
+
 #endif	// __DPACCOUNTCLIENT_H__

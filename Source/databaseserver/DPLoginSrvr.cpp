@@ -6,10 +6,6 @@
 #include "misc.h"
 #include <mmsystem.h>
 
-extern	CProject	prj;
-extern	APP_INFO	g_appInfo;
-extern	CDPAccountClient	g_dpAccountClient;
-
 CDPLoginSrvr::CDPLoginSrvr()
 {
 	BEGIN_MSG;

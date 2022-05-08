@@ -60,4 +60,7 @@ public:
 */
 };
 
+extern CDPDBSrvr g_dpDbSrvr;
+
+
 #endif	// __DPDBSRVR_H__

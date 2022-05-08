@@ -72,8 +72,6 @@ static char  		g_szINI[] = "WorldServer.ini";
 
 extern	char				g_szDBAddr[16];
 extern	char				g_sHeartbeat[32];
-extern	CDPSrvr				g_DPSrvr;
-extern	CWorldMng			g_WorldMng;
 
 
 #if defined(__LUASCRIPT060908)

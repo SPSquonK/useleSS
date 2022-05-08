@@ -85,4 +85,7 @@ inline void CDPLoginClient::Ping( void )
 		m_fDestroy	= FALSE;
 	}
 }
+
+extern CDPLoginClient g_dpLoginClient;
+
 #endif	// __DPLOGINCLIENT_H__

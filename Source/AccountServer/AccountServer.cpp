@@ -16,11 +16,6 @@
 #include "..\Resource\Lang.h"
 
 #include "dbmanager.h"
-extern	CDbManager	g_DbManager;
-
-extern	CDPSrvr		g_dpSrvr;
-extern	CDPDBSrvr	g_dpDbSrvr;
-extern	CAccountMng	g_AccountMng;
 
 #define MAX_LOADSTRING 100
 

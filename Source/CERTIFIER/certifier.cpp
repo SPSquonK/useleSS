@@ -8,8 +8,6 @@
 #include "dpaccountclient.h"
 #include "mytrace.h"
 #include "dbmanager.h"
-extern	CDbManager	g_DbManager;
-
 #include "user.h"
 
 #define MAX_LOADSTRING 100
@@ -35,8 +33,6 @@ TCHAR szTitle[MAX_LOADSTRING];	// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];	// The title bar text
 HWND	hMainWnd;
 char	lpConnection[16];
-extern	CDPCertifier	g_dpCertifier;
-extern	CDPAccountClient	g_dpAccountClient;
 #ifdef __JAPAN_AUTH
 extern	string	g_strWebCertURL;
 #endif // __JAPAN_AUTH

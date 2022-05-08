@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "dpdbsrvr.h"
-extern	CDPDBSrvr	g_dpDbSrvr;
 
 #ifdef __GPAUTH_01
 #include "lang.h"
@@ -12,11 +11,8 @@ extern	CDPDBSrvr	g_dpDbSrvr;
 #include "mytrace.h"
 
 #include "dbmanager.h"
-extern	CDbManager	g_DbManager;
 
 const int MAX_CONN = 50000;
-
-extern	CAccountMng		g_AccountMng;
 
 CDPSrvr::CDPSrvr()
 {

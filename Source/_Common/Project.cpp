@@ -7,11 +7,10 @@
 
 #include "couplehelper.h"
 #include "couple.h"
-	#ifdef __WORLDSERVER
-		#include "dpdatabaseclient.h"
-		#include "dpsrvr.h"
-		extern	CDPSrvr	g_DPSrvr;
-	#endif	// __WORLDSERVER
+#ifdef __WORLDSERVER
+#include "dpdatabaseclient.h"
+#include "dpsrvr.h"
+#endif	// __WORLDSERVER
 
 #ifdef __WORLDSERVER
 #include "rangda.h"
@@ -88,8 +87,6 @@
 #endif // __ENVIRONMENT_EFFECT
 
 #endif // __WORLDSERVER
-
-extern	CWorldMng	g_WorldMng;
 
 FLOAT	CProject::m_fItemDropRate = 1.0f;		// ���� ������ ��ӷ�
 FLOAT	CProject::m_fGoldDropRate = 1.0f;		// ���� ��� ��ӷ�

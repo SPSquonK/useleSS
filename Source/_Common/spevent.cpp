@@ -6,7 +6,6 @@
 #ifdef __EVENT_0117
 #include "respawn.h"
 #include "worldmng.h"
-extern	CWorldMng	g_WorldMng;
 #endif	// __EVENT_0117
 #endif	// __WORLDSERVER
 

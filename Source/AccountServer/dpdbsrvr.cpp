@@ -4,12 +4,7 @@
 #include "dpdbsrvr.h"
 #include "account.h"
 #include "misc.h"
-
 #include "dbmanager.h"
-
-extern	CDbManager	g_DbManager;
-extern	CDPSrvr		g_dpSrvr;
-extern	CAccountMng	g_AccountMng;
 
 
 CDPDBSrvr::CDPDBSrvr()

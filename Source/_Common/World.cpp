@@ -22,9 +22,6 @@
 #include "worldmng.h"
 #include "guild.h"
 #include "eveschool.h"
-
-extern	CDPSrvr			g_DPSrvr;
-extern	CWorldMng		g_WorldMng;
 #endif	// __WORLDSERVER
 
 #ifdef __CLIENT

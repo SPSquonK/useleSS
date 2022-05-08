@@ -25,7 +25,6 @@
 
 #include "dbcontroller.h"
 
-extern	CDPAccountClient	g_dpAccountClient;
 extern	CProject	prj;
 
 #include "DPCoreSrvr.h"
@@ -36,10 +35,7 @@ extern	CProject	prj;
 
 #define MAX_LOADSTRING 100
 
-extern	APP_INFO	g_appInfo;
-
 #include "dpaccountclient.h"
-extern	CDPAccountClient	g_dpAccountClient;
 char	lpConnection[16];
 
 BOOL	m_bBankToItemSendTbl	= FALSE;

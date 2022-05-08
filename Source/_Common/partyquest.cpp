@@ -7,18 +7,6 @@
 #include "dpdatabaseclient.h"
 #include "worldmng.h"
 
-extern	CWorldMng	g_WorldMng;
-
-CPartyQuestProcessor::CPartyQuestProcessor()
-{
-	m_nRect	= 0;
-}
-
-CPartyQuestProcessor::~CPartyQuestProcessor()
-{
-
-}
-
 void CPartyQuestProcessor::Process()
 {
 	DWORD dwTickCount	= GetTickCount();

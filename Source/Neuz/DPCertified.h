@@ -74,4 +74,6 @@ inline BOOL CDPCertified::IsConnected( void )
 	return m_fConn;	
 }
 
+extern CDPCertified g_dpCertified;
+
 #endif	// __DPCERTIFIED_H__
