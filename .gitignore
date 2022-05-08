@@ -16,6 +16,7 @@ Resource/- Change IP of Neuz here.cmd
 Resource/**/*.exe
 Resource/**/*.dll
 Resource/**/*.asi
+Resource/regInfo.dat
 Source/**/*.i
 **/error*.log
 **/*.plg
