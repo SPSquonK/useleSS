@@ -494,17 +494,6 @@ CWndTaskBar::CWndTaskBar()
 //	m_nMaxSlotApplet = 5;
 }
 
-CWndTaskBar::~CWndTaskBar()
-{
-	/*
-	for( int i = 0; i < m_awndShortCut.GetSize(); i++ )
-	{
-		CWndButton* pButton = (CWndButton*)m_awndShortCut.GetAt( i );
-		SAFE_DELETE( pButton );
-	}
-	*/
-}
-
 void CWndTaskBar::InitTaskBar()
 {
 	m_nCurQueue = -1;

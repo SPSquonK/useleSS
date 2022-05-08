@@ -267,7 +267,6 @@ public:
 	ToolTipItemTextColor	dwItemColor[MAX_TC];
 
 
-	CPtrArray	m_awndShortCut;
 	BOOL	m_bTitle        ;
 	std::unordered_map<DWORD, AppletFunc *> m_mapAppletFunc;
 	std::list<int> m_tempWndId;
@@ -642,9 +641,9 @@ public:
 	virtual void	OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual	BOOL	OnCommand(UINT nID,DWORD dwMessage);
 	virtual	void	OnSize(UINT nType, int cx, int cy);
-	virtual BOOL    OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
+	virtual BOOL    OnDropIcon(LPSHORTCUT pShortcut, CPoint point = 0) { return TRUE; }
 	virtual	BOOL	OnEraseBkgnd(C2DRender* p2DRender);
-	virtual	BOOL	OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
+	virtual	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) { return TRUE; }
 
 	DWORD	GetAppletId( TCHAR* lpszAppletName );
 	CWndBase* GetApplet( DWORD dwIdApplet );

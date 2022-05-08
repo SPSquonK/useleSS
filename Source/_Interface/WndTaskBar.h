@@ -126,7 +126,6 @@ public:
 	void InitTaskBar();
 
 	CWndTaskBar();
-	virtual ~CWndTaskBar();
 //	virtual CItem* GetFocusItem() { return NULL; }
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();

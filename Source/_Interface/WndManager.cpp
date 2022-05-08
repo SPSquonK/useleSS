@@ -2851,37 +2851,6 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 	}
 
 }
-BOOL CWndMgr::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	return TRUE;
-	//CRect rect = GetClientRect();
-	//rect.DeflateRect( 5, 5);
-	for( int i = 0; i < m_awndShortCut.GetSize(); i++)
-	{
-		if( ((CWndBase*)m_awndShortCut.GetAt( i ))->GetWndId() == pShortcut->m_dwIndex )
-		{
-
-			((CWndBase*)m_awndShortCut.GetAt( i ))->Move( CPoint( point.x - 12, point.y - 12 ) );
-			return TRUE;
-		}
-	}
-	CWndButton* pWndButton = new CWndButton;
-	pWndButton->Create( pShortcut->m_szString,WBS_MENUITEM,CRect( point.x - 10, point.y - 10, point.x + 10, point.y + 10),this, pShortcut->m_dwIndex);
-	pWndButton->m_shortcut.m_dwShortcut = pShortcut->m_dwShortcut;
-	pWndButton->AddWndStyle( WBS_MOVE );
-	m_awndShortCut.Add( pWndButton );
-	pWndButton->m_strToolTip = pWndButton->GetTitle();
-	return TRUE;
-}
-BOOL CWndMgr::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
-{
-	if( message == WNM_CLICKED )
-	{
-	//	CWndButton* pWndButton = (CWndButton*)pLResult;
-	//	ObjectExecutor( pWndButton->m_n,  nID );
-	}
-	return TRUE;
-}
 
 /*
 BOOL CWndMgr::WndMessageBoxToTitle(CString strMessage) 
