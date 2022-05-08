@@ -6629,58 +6629,39 @@ void CWndMgr::ClearAllWnd()
 	m_clearFlag = TRUE;
 }
 
-void CWndMgr::RestoreWnd()
-{
-	CWndNeuz* pWndBase;
-	DWORD dwIdApplet;
-	BOOL stopFlag = TRUE;
-	int wndId;
+void CWndMgr::RestoreWnd() {
+	if (!m_clearFlag) return;
 
-	if(m_clearFlag)
-	{
-		std::list<int>::iterator it = m_tempWndId.begin();
-		while(it !=  m_tempWndId.end())
+	for (const int wndId : m_tempWndId) {
+		POSITION pos = m_mapWndApplet.GetStartPosition();
+		while( pos )
 		{
-			POSITION pos = m_mapWndApplet.GetStartPosition();
-			while( pos && stopFlag)
+			DWORD dwIdApplet;
+			CWndBase * pWndBase;
+			m_mapWndApplet.GetNextAssoc( pos, dwIdApplet, (void*&)pWndBase );
+
+			if(wndId == pWndBase->GetWndId())
 			{
-				m_mapWndApplet.GetNextAssoc( pos, dwIdApplet, (void*&)pWndBase );
-				wndId = *it;
-				if(wndId == pWndBase->GetWndId())
-				{
-					pWndBase->SetVisible(TRUE);
-					stopFlag = FALSE;
-				}
+				pWndBase->SetVisible(TRUE);
+				break;
 			}
-			it++;
-			stopFlag = TRUE;
 		}
-		m_tempWndId.clear();
-		CWndChat* pWndChat = (CWndChat*)g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );
-		if(pWndChat != NULL && pWndChat->m_bChatLog)
-			m_pWndChatLog->SetVisible(TRUE);
-		
-		CWndPetStatus* pWndPetStatus = (CWndPetStatus*)g_WndMng.GetWndBase( APP_PET_STATUS );
-		if(pWndPetStatus != NULL)
-			pWndPetStatus->SetVisible(TRUE);
-
-		CWndBuffPetStatus* pWndBuffPetStatus = (CWndBuffPetStatus*)g_WndMng.GetWndBase( APP_BUFFPET_STATUS );
-		if(pWndBuffPetStatus != NULL)
-			pWndBuffPetStatus->SetVisible(TRUE);
-
-		CWndSecretRoomQuick* pWndSecretRoomQuick = (CWndSecretRoomQuick*)g_WndMng.GetWndBase( APP_SECRETROOM_QUICK );
-		if(pWndSecretRoomQuick != NULL)
-			pWndSecretRoomQuick->SetVisible(TRUE);
-
-		CWndGHMainMenu* pWndGHMain = (CWndGHMainMenu*)g_WndMng.GetWndBase( APP_GH_MAIN );
-		if(pWndGHMain != NULL)
-			pWndGHMain->SetVisible(TRUE);
-
-		CWndQuestQuickInfo* pWndQuestQuickInfo = ( CWndQuestQuickInfo* )g_WndMng.GetWndBase( APP_QUEST_QUICK_INFO );
-		if( pWndQuestQuickInfo )
-			pWndQuestQuickInfo->SetVisible( TRUE );
 	}
-	m_clearFlag = FALSE;
+	m_tempWndId.clear();
+
+	CWndChat* pWndChat = (CWndChat*)g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );
+	if(pWndChat != NULL && pWndChat->m_bChatLog)
+		m_pWndChatLog->SetVisible(TRUE);
+
+	static constexpr std::initializer_list<UINT> windowsToShow = {
+		APP_PET_STATUS, APP_BUFFPET_STATUS,
+		APP_SECRETROOM_QUICK, APP_GH_MAIN, APP_QUEST_QUICK_INFO
+	};
+
+	for (const auto appId : windowsToShow) {
+		CWndBase * window = GetWndBase(appId);
+		if (window) window->SetVisible(TRUE);
+	}
 }
 
 CWndBase* CWndMgr::GetWndVendorBase( void )

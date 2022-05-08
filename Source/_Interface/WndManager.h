@@ -210,6 +210,8 @@ enum
 class CWndGHMainMenu;
 class CWndGHUpkeep;
 
+class CWndVendor;
+
 class CWndMgr : public CWndBase
 { 
 	CString m_strChatBackup;
@@ -269,7 +271,7 @@ public:
 
 	BOOL	m_bTitle        ;
 	std::unordered_map<DWORD, AppletFunc *> m_mapAppletFunc;
-	std::list<int> m_tempWndId;
+	std::vector<int> m_tempWndId;
 	BOOL m_clearFlag;
 
 	AppletFunc*		GetAppletFunc( DWORD dwIdApplet );
