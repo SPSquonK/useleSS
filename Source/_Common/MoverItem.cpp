@@ -202,7 +202,7 @@ BOOL CVTInfo::TradeConsent()
 DWORD CVTInfo::TradeSetItem2( BYTE nId, BYTE i, short & nItemNum )
 {
 	CItemElem * pItemBase = m_pOwner->GetItemId( nId );
-	if( IsUsableItem( pItemBase ) == FALSE || m_items_VT[i] != nullptr)  
+	if( !IsUsableItem( pItemBase ) || m_items_VT[i] != nullptr)  
 		return TID_GAME_CANNOTTRADE_ITEM;
 
 	if( m_pOwner->m_Inventory.IsEquip( pItemBase->m_dwObjId ) ) 
@@ -577,7 +577,7 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 		return FALSE;
 
 	CItemElem * pItemElem = m_items_VT[i];
-	if( IsUsingItem(pItemElem) == FALSE || pItemElem->m_dwItemId != dwItemId )
+	if( !IsUsingItem(pItemElem) || pItemElem->m_dwItemId != dwItemId )
 		return FALSE;
 
 	if( nNum < 1 )

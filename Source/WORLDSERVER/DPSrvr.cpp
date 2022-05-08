@@ -1525,7 +1525,7 @@ void CDPSrvr::OnGuildContribution( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 		for( int i=0; i< pUser->m_Inventory.GetMax(); ++i )
 		{
 			CItemElem* pItemElem = pUser->m_Inventory.GetAtId( i );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				continue;
 
 			if( pItemElem->GetProp()->dwItemKind3 != IK3_GEM )
@@ -2277,7 +2277,7 @@ void CDPSrvr::OnDoUseItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 	if( nPart > 0 )
 	{
 		CItemElem* pItemElem	= pUser->m_Inventory.GetAtId( nId );
-		if( IsUsableItem( pItemElem ) == FALSE )
+		if( !IsUsableItem( pItemElem ) )
 			return;
 		if( pUser->m_Inventory.IsEquip( nId ) )
 		{
@@ -2719,7 +2719,7 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 			return;
 
 		CItemElem* pItemElem = pUser->m_Inventory.GetAtId( nId );		
-		if( IsUsableItem( pItemElem ) == FALSE )
+		if( !IsUsableItem( pItemElem ) )
 			return;
 
 		ItemProp* pProp	= pItemElem->GetProp();
@@ -3046,7 +3046,7 @@ void CDPSrvr::OnPutItemBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( pUser->m_nSlot == nSlot || ( pUser->m_idPlayerBank[nSlot] != 0 && pUser->IsCommBank() ) )
 		{
 			CItemElem* pItemElem = pUser->m_Inventory.GetAtId( nId );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				return;
 
 			if( nSlot != pUser->m_nSlot )
@@ -3141,7 +3141,7 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 			return;
 
 		CItemElem* pItemElem = pUser->m_Inventory.GetAtId( nId );		
-		if( IsUsableItem( pItemElem ) == FALSE )
+		if( !IsUsableItem( pItemElem ) )
 			return;
 
 		if( pItemElem->IsQuest() )
@@ -4129,7 +4129,7 @@ void CDPSrvr::OnChangeFace( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 		{
 			CItemElem* pItemElem = NULL;
 			pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_FACEOFFFREE );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 			{
 				pUser->AddDefinedText( TID_GAME_WARNNING_COUPON, "" );
 				return;
@@ -4239,7 +4239,7 @@ void	CDPSrvr::OnChangeJob( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 		else
 		{
 			CItemElem* pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_CHACLA );
-			if( IsUsableItem( pItemElem ) == FALSE || pUser->IsBaseJob() || pUser->GetJob() == nJob ) 
+			if( !IsUsableItem( pItemElem ) || pUser->IsBaseJob() || pUser->GetJob() == nJob ) 
 			{	// 인벤토리에 아이템이 없거나 방랑자거나 같은 직업을 바구려면 리턴
 				return;
 			}
@@ -4494,7 +4494,7 @@ void CDPSrvr::OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		{
 			CItemElem* pItemElem = NULL;
 			pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_HAIRCHANGE );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 			{
 				pUser->AddDefinedText( TID_GAME_WARNNING_COUPON, "" );
 				return;
@@ -4581,7 +4581,7 @@ void CDPSrvr::OnItemTransy( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 		CItemElem* pItemElemTransy = pUser->m_Inventory.GetAtId( objidTransy );
 
 		// 사용중인 아이템인지 검사
-		if( IsUsableItem( pItemElemTarget ) == FALSE || IsUsableItem( pItemElemTransy ) == FALSE )
+		if( !IsUsableItem( pItemElemTarget ) || !IsUsableItem( pItemElemTransy ) )
 			return;
 
 		// 장착되어 있는 아이템이면 리턴( 오라이~~~ ㅋㅋ )
@@ -4872,7 +4872,7 @@ void CDPSrvr::OnSmeltSafety( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 				return;
 		}
 
-		if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE || IsUsableItem( pItemElem2 ) == FALSE )
+		if( !IsUsableItem( pItemElem0 ) || !IsUsableItem( pItemElem1 ) || !IsUsableItem( pItemElem2 ) )
 		{
 			pUser->AddSmeltSafety( 0 );
 			return;
@@ -4922,7 +4922,7 @@ void CDPSrvr::OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwItemId );
 		CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwItemMaterialId );		
 
-		if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE )
+		if( !IsUsableItem( pItemElem0 ) || !IsUsableItem( pItemElem1 ) )
 			return;
 
 		if( pItemElem0->m_nResistSMItemId != 0 ) // 상용화 아이템 적용중이면 불가능
@@ -4945,7 +4945,7 @@ void CDPSrvr::OnRemoveAttribute( CAr & ar, CUser & pUser_) {
 
 	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( objItemId );
 
-	if( IsUsableItem( pItemElem ) == FALSE )
+	if( !IsUsableItem( pItemElem ) )
 	{
 		pUser->AddRemoveAttribute( FALSE );
 		return;
@@ -5024,7 +5024,7 @@ void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 		// 인벤토리에 있는지 장착되어 있는지 확인을 해야 함
 		CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwId1 );
 		CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwId2 );
-		if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE )
+		if( !IsUsableItem( pItemElem0 ) || !IsUsableItem( pItemElem1 ) )
 		{
 			return;
 		}
@@ -5146,8 +5146,8 @@ void CDPSrvr::OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 		CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwItemId0 );
 		CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwItemId1 );
 
-		if( IsUsableItem( pItemElem0 ) == FALSE || 
-			IsUsableItem( pItemElem1 ) == FALSE || 
+		if( !IsUsableItem( pItemElem0 ) || 
+			!IsUsableItem( pItemElem1 ) || 
 			pItemElem0->GetProp()->nLog >=2 || 
 			pItemElem1->GetProp()->nLog >=2 )
 		{
@@ -6013,7 +6013,7 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 			CItemElem* pItemElem	= pUser->m_Inventory.GetAtId( nItem );
 			if( pItemElem )
 			{
-				if( IsUsableItem( pItemElem ) == FALSE )
+				if( !IsUsableItem( pItemElem ) )
 				{
 					pUser->AddDiagText( prj.GetText( TID_GAME_CANNOT_POST ) );
 					return;
@@ -7121,7 +7121,7 @@ void CDPSrvr::OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		return;
 	
 	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
-	if( IsUsableItem( pItemElem ) == FALSE )
+	if( !IsUsableItem( pItemElem ) )
 		return;
 
 	if( pUser->m_Inventory.IsEquip( dwId ) )
@@ -8671,7 +8671,7 @@ void CDPSrvr::OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 		short nNum;
 		ar >> dwFeedId;
 		CItemElem * pFeed = pUser->GetItemId(dwFeedId);
-		if( IsUsableItem( pFeed ) == FALSE )
+		if( !IsUsableItem( pFeed ) )
 			return;
 		if( !pFeed->IsFeed() )
 			return;
@@ -8742,7 +8742,7 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			return;
 
 		CItemElem* pMaterial	= pUser->GetItemId( dwMaterialId );
-		if( IsUsableItem( pMaterial ) == FALSE )
+		if( !IsUsableItem( pMaterial ) )
 		{
 			// error
 			return;
@@ -8984,7 +8984,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 	for( int i=0; i<5; i++ )
 	{
 		pItemElem[i]	= pUser.m_Inventory.GetAtId( objItemId[i] );
-		if( IsUsableItem( pItemElem[i] ) == FALSE )
+		if( !IsUsableItem( pItemElem[i] ) )
 			return ;
 	}
 
@@ -9239,7 +9239,7 @@ void CDPSrvr::OnSealCharReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		for( int i=0; i< pUser->m_Inventory.GetMax(); ++i )
 		{
 			CItemElem* pItemElem = pUser->m_Inventory.GetAtId( i );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				continue;
 			if( pItemElem->m_nItemNum > 0 )
 				nSize++;
@@ -9252,9 +9252,8 @@ void CDPSrvr::OnSealCharReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		}
 		else
 		{
-			CItemElem* pItemElem = NULL;
-			pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_SEAL );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			CItemElem* pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_SEAL );
+			if( !IsUsableItem( pItemElem ) )
 			{
 				pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANINVEN );
 				return;
@@ -9275,7 +9274,7 @@ void CDPSrvr::OnSealCharReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		for( int i=0; i< pUser->m_Bank[pUser->m_nSlot].GetMax(); ++i )
 		{
 			CItemElem* pItemElem = pUser->m_Bank[pUser->m_nSlot].GetAtId( i );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				continue;
 			if( pItemElem->m_nItemNum > 0 )
 				nBankSize++;
@@ -9312,7 +9311,7 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		for( int i=0; i< pUser->m_Inventory.GetMax(); ++i )
 		{
 			CItemElem* pItemElem = pUser->m_Inventory.GetAtId( i );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				continue;
 			if( pItemElem->m_nItemNum > 0 )
 				nSize++;
@@ -9329,7 +9328,7 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		else
 		{
 			pItemElemTrue = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_SEAL );
-			if( IsUsableItem( pItemElemTrue ) == FALSE )
+			if( !IsUsableItem( pItemElemTrue ) )
 			{
 				pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANINVEN );
 				return;
@@ -9351,7 +9350,7 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		for( int i=0; i< pUser->m_Bank[pUser->m_nSlot].GetMax(); ++i )
 		{
 			CItemElem* pItemElem = pUser->m_Bank[pUser->m_nSlot].GetAtId( i );
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				continue;
 			if( pItemElem->m_nItemNum > 0 )
 				nBankSize++;

@@ -723,7 +723,7 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 	if( pItemElem )
 	{
 		if( (pItemElem->m_nItemNum != pItemElem->GetExtra() && m_useDieFlag) || 
-			( IsUsingItem( pItemElem ) == FALSE && pItemElem->m_bRepair == FALSE) )
+			( !IsUsingItem( pItemElem ) && pItemElem->m_bRepair == FALSE) )
 		{
 			if( m_useDieFlag || IsSelectedItem( nItem ) == FALSE )
 			{

@@ -3087,7 +3087,7 @@ int CMover::GetItemNum( DWORD dwItemId )
 		if( pItemElem )
 		{
 			//raiders.06.05.02 (prevent abuse quest ending condition : trade & quest )
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				return 0;
 			if( pItemElem->m_dwItemId == dwItemId )
 				nNum	+= pItemElem->m_nItemNum;

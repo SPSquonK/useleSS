@@ -135,8 +135,8 @@ public:
 #endif	// __VM_0820
 };
 
-extern BOOL IsUsableItem(const CItemElem * pItem );
-extern BOOL IsUsingItem(const CItemElem * pItem );
+bool IsUsableItem(const CItemElem * pItem);
+bool IsUsingItem(const CItemElem * pItem);
 
 extern	BOOL	IsNeedTarget( ItemProp* pProp );
 

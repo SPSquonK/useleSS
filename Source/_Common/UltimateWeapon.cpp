@@ -482,9 +482,9 @@ int CUltimateWeapon::TransWeapon( CUser* pUser, OBJID objItem, OBJID objGem1, OB
 	CItemElem* pItemElemWeapon	= pUser->m_Inventory.GetAtId( objItem );
 	CItemElem* pItemElemGem1	= pUser->m_Inventory.GetAtId( objGem1 );
 	CItemElem* pItemElemGem2	= pUser->m_Inventory.GetAtId( objGem2 );
-	if( IsUsableItem( pItemElemWeapon ) == FALSE
-		|| IsUsableItem( pItemElemGem1 ) == FALSE
-		|| IsUsableItem( pItemElemGem2 ) == FALSE )
+	if( !IsUsableItem( pItemElemWeapon )
+		|| !IsUsableItem( pItemElemGem1 )
+		|| !IsUsableItem( pItemElemGem2 ) )
 		return ULTIMATE_CANCEL;
 	
 	// ÀåÂøÇÏ°í ÀÖÀ¸¸é Ãë¼Ò
@@ -615,7 +615,7 @@ int CUltimateWeapon::EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItemGe
 {
 	CItemElem* pItemElemWeapon	= pUser->m_Inventory.GetAtId( objItem );
 	CItemElem* pItemElemGem	= pUser->m_Inventory.GetAtId( objItemGem );
-	if( IsUsableItem( pItemElemWeapon ) == FALSE || IsUsableItem( pItemElemGem ) == FALSE )
+	if( !IsUsableItem( pItemElemWeapon ) || !IsUsableItem( pItemElemGem ) )
 		return ULTIMATE_CANCEL;
 
 	//¾óÅÍ¸Ú ¿þÆùÀÌ ¾Æ´Ï°Å³ª ºû³ª´Â ¿À¸®Ä®ÄñÀÌ ¾Æ´Ï¸é Ãë¼Ò

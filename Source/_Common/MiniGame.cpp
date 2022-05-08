@@ -76,7 +76,7 @@ int CMiniGame::Result_Kawibawibo( CUser* pUser )
 	if( pUser->m_nKawibawiboState != KAWIBAWIBO_DRAW && pUser->m_nKawibawiboState != KAWIBAWIBO_WIN )
 	{
 		pItemElem	= pUser->m_Inventory.GetAtItemId( II_SYS_SYS_EVE_KAWIBAWIBO );
-		if( IsUsableItem( pItemElem ) == FALSE )
+		if( !IsUsableItem( pItemElem ) )
 			return KAWIBAWIBO_FAILED;
 	}
 
@@ -209,7 +209,7 @@ BOOL CMiniGame::Result_Reassemble( CUser* pUser, OBJID* objItemId, int nCount )
 	for( DWORD i=0; i<m_vecReassembleCard.size(); ++i )
 	{
 		pItemElem[i]	= pUser->m_Inventory.GetAtId( objItemId[i] );
-		if( IsUsableItem( pItemElem[i] ) == FALSE )
+		if( !IsUsableItem( pItemElem[i] ) )
 			return FALSE;
 
 		if( pItemElem[i]->GetProp()->dwID != m_vecReassembleCard[i] )

@@ -1182,7 +1182,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 	WORD dwId   = HIWORD( dwData );
 
 	CItemElem * pItemBase = GetItemId( dwId ); 
-	if( IsUsableItem( pItemBase ) == FALSE )
+	if( !IsUsableItem( pItemBase ) )
 		return FALSE;
 
 	ItemProp* pItemProp  = pItemBase->GetProp();
@@ -1674,7 +1674,7 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 		// lodestar
 		if( bUse )
 		{
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				return FALSE;
 
 			pItemElem->UseItem();
@@ -1720,7 +1720,7 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 		// remove & transfer
 		if( bUse )
 		{
-			if( IsUsableItem( pItemElem ) == FALSE )
+			if( !IsUsableItem( pItemElem ) )
 				return FALSE;
 
 			pItemElem->UseItem();

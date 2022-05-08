@@ -238,7 +238,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						if( m_pVendor->m_vtInfo.GetItem( iIndex ) != NULL )
 							return FALSE;
 						
-						if( IsUsingItem( pItemBase ) == FALSE && m_pVendor->IsActiveMover() && !m_pVendor->m_vtInfo.IsVendorOpen() )
+						if( !IsUsingItem( pItemBase ) && m_pVendor->IsActiveMover() && !m_pVendor->m_vtInfo.IsVendorOpen() )
 						{
 							SAFE_DELETE( m_pWndRegVend );
 							m_pWndRegVend	= new CWndRegVend;

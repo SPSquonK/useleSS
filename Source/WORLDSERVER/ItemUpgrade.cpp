@@ -105,7 +105,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 	CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwId2 );
 	CItemElem* pItemElem2	= pUser->m_Inventory.GetAtId( dwId3 );
 
-	if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE )
+	if( !IsUsableItem( pItemElem0 ) || !IsUsableItem( pItemElem1 ) )
 		return;
 
 	if( pUser->m_vtInfo.GetOther() || pUser->m_vtInfo.VendorIsVendor() ) // 거래 중이면...
@@ -248,7 +248,7 @@ void CItemUpgrade::OnPiercing( CUser* pUser, DWORD dwItemId, DWORD dwSocketCard 
 	// 인벤토리에 있는지 장착되어 있는지 확인을 해야 함
 	CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwItemId );
 	CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwSocketCard );
-	if( IsUsableItem( pItemElem0 ) == FALSE || IsUsableItem( pItemElem1 ) == FALSE )
+	if( !IsUsableItem( pItemElem0 ) || !IsUsableItem( pItemElem1 ) )
 		return;
 
 	// 장착되어 있는 아이템은 피어싱 못함
