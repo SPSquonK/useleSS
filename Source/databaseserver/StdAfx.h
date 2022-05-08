@@ -61,11 +61,10 @@
 extern	HWND	hMainWnd;
 extern	HINSTANCE	hInst;
 
-typedef	struct	AppInfo
-{
+struct APP_INFO {
 	DWORD	dwSys;
 	DWORD	dwId;		// server id
-}	APP_INFO, *LPAPP_INFO;
+};
 
 extern APP_INFO g_appInfo;
 
