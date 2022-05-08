@@ -27,6 +27,7 @@
 #include "eveschool.h"
 #include "post.h"
 #include "wndbagex.h"
+#include "sqktd.h"
 
 #include "couplehelper.h"
 #include "FuncTextCmd.h"
@@ -547,19 +548,13 @@ void CWndMgr::InitSetItemTextColor( )
 	dwItemColor[SECOND_TC].dwBlessingWarning	= D3DCOLOR_XRGB( 255, 0, 0 );			// 여신의 축복 경고
 }
 
-CWndMgr::~CWndMgr()
-{
-	AppletFunc* pApplet;
-	DWORD dwIdApplet;
-	POSITION pos = m_mapAppletFunc.GetStartPosition();
-	while( pos )
-	{
-		m_mapAppletFunc.GetNextAssoc( pos, dwIdApplet, (void*&)pApplet );
-		SAFE_DELETE( pApplet );
+CWndMgr::~CWndMgr() {
+	for (AppletFunc *& pApplet : m_mapAppletFunc | std::views::values) {
+		SAFE_DELETE(pApplet);
 	}
 	Free();
-	
-	SAFE_DELETE( m_pWndMenu );
+
+	SAFE_DELETE(m_pWndMenu);
 }
 
 void CWndMgr::AlighWindow( CRect rcOld, CRect rcNew )
@@ -2175,42 +2170,16 @@ HRESULT CWndMgr::RestoreDeviceObjects()
 	
 	return 0;
 }
-AppletFunc* CWndMgr::GetAppletFunc( DWORD dwIdApplet )
-{
-	AppletFunc* pApplet;
-	if( m_mapAppletFunc.Lookup( dwIdApplet, (void*&) pApplet ) == TRUE)
-		return pApplet;
-	/*
-	int nCount = 0;
-	while( m_appletFunc[ nCount ].m_pFunc )
-	{
-		if( m_appletFunc[nCount].m_dwIdApplet == dwIdApplet )
-			return &m_appletFunc[nCount];
-		nCount++;
-	}
-	*/
-	return NULL;
+AppletFunc * CWndMgr::GetAppletFunc(DWORD dwIdApplet) {
+	return sqktd::find_in_map(m_mapAppletFunc, dwIdApplet);
 }
-DWORD CWndMgr::GetAppletId( TCHAR* lpszAppletName )
-{
-	AppletFunc* pApplet;
-	DWORD dwIdApplet;
-	POSITION pos = m_mapAppletFunc.GetStartPosition();
-	while( pos )
-	{
-		m_mapAppletFunc.GetNextAssoc( pos, dwIdApplet, (void*&)pApplet );
-		if( !_tcscmp( pApplet->m_pAppletName, lpszAppletName ) )
-			return pApplet->m_dwIdApplet;
+
+DWORD CWndMgr::GetAppletId( TCHAR* lpszAppletName ) {
+	for (const auto & [dwIdApplet, pApplet] : m_mapAppletFunc) {
+		if (!_tcscmp(pApplet->m_pAppletName, lpszAppletName)) {
+			return dwIdApplet;
+		}
 	}
-	/*
-	int nCount = 0;
-	while( m_appletFunc[ nCount ].m_pFunc )
-	{
-		if( !strcmp( m_appletFunc[nCount].m_pAppletName, lpszAppletName ) )
-			return m_appletFunc[nCount].m_dwIdApplet;
-		nCount++;
-	}
-	*/
 	return 0xffffffff;
 }
 CWndBase* CWndMgr::GetApplet( DWORD dwIdApplet )
@@ -2246,10 +2215,10 @@ void CWndMgr::__HotKeyChange(DWORD dwId, char *pch)
 	}	
 }
 
-void CWndMgr::AddAppletFunc( LPVOID pAppletFunc, DWORD dwIdApplet, LPCTSTR lpszAppletName, LPCTSTR pszIconName, LPCTSTR lpszAppletDesc, CHAR cHotkey )
+void CWndMgr::AddAppletFunc(CWndNeuz * (*pAppletFunc)(), DWORD dwIdApplet, LPCTSTR lpszAppletName, LPCTSTR pszIconName, LPCTSTR lpszAppletDesc, CHAR cHotkey )
 {
 	AppletFunc* pApplet = new AppletFunc;
-	pApplet->m_pFunc       = (CWndBase* (*)()) pAppletFunc;
+	pApplet->m_pFunc       = pAppletFunc;
 	pApplet->m_dwIdApplet  = dwIdApplet ;
 	pApplet->m_pAppletName = lpszAppletName;
 	pApplet->m_pAppletDesc = lpszAppletDesc;
@@ -2258,56 +2227,53 @@ void CWndMgr::AddAppletFunc( LPVOID pAppletFunc, DWORD dwIdApplet, LPCTSTR lpszA
 	__HotKeyChange( dwIdApplet, &cHotkey );
 #endif //__Y_INTERFACE_VER3
 	pApplet->m_cHotkey = cHotkey; 
-	m_mapAppletFunc.SetAt( dwIdApplet, pApplet );
+	m_mapAppletFunc.emplace(dwIdApplet, pApplet);
 }
-CWndBase* CWndMgr::CreateApplet( DWORD dwIdApplet )
-{
-	CWndNeuz* pWndBase = NULL;
-	AppletFunc* pAppletFunc = NULL;
-	if( m_mapAppletFunc.Lookup( dwIdApplet, (void*&)pAppletFunc ) == FALSE )
-	{
-		// Applet이 존재하지 않을 경우 생성 
-		pAppletFunc = GetAppletFunc( dwIdApplet );
+CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
+	const auto it = m_mapAppletFunc.find(dwIdApplet);
+	if (it == m_mapAppletFunc.end()) return nullptr;
+
+	const AppletFunc * const pAppletFunc = it->second;
+
+	CWndWorld* pWndWorld = (CWndWorld*)GetWndBase( APP_WORLD );
+	CWndGuideSystem* pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
+	if (pWndGuide && pWndGuide->IsVisible()) {
+		if (pWndGuide->m_CurrentGuide.m_nVicCondition == OPEN_WINDOW && pWndGuide->m_CurrentGuide.m_nInput == (int)dwIdApplet)
+			pWndGuide->m_Condition.nOpenedWindowID = 1;
 	}
-	if( pAppletFunc )
-	{
-		CWndWorld* pWndWorld = (CWndWorld*)GetWndBase( APP_WORLD );
-		CWndGuideSystem* pWndGuide = NULL;
-		pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
-		if(pWndGuide && pWndGuide->IsVisible()) 
-		{
-			if(pWndGuide->m_CurrentGuide.m_nVicCondition == OPEN_WINDOW && pWndGuide->m_CurrentGuide.m_nInput == (int)dwIdApplet)
-				pWndGuide->m_Condition.nOpenedWindowID = 1;
-		}
-		pWndBase = (CWndNeuz*)GetWndBase( pAppletFunc->m_dwIdApplet );
-		if( pWndBase == NULL )
-		{
-			pWndBase = (CWndNeuz*)(*pAppletFunc->m_pFunc)();
-			if( pWndBase )
-			{
-				if( pWndBase->Initialize( this, dwIdApplet ) == FALSE )  
-				{
-					SAFE_DELETE( pWndBase );
-					return pWndBase;
-				}
-				LPWNDREGINFO pWndRegInfo;
+
+	CWndNeuz * pWndBase = (CWndNeuz *)GetWndBase(pAppletFunc->m_dwIdApplet);
+	if (pWndBase) {
+		pWndBase->SetFocus();
+		return pWndBase;
+	}
+
+	pWndBase = (*pAppletFunc->m_pFunc)();
+	if (!pWndBase) return pWndBase;
+
+	if (!pWndBase->Initialize(this, dwIdApplet)) {
+		SAFE_DELETE(pWndBase);
+		return pWndBase;
+	}
+
+				WNDREGINFO * pWndRegInfo;
 				if( m_mapWndRegInfo.Lookup( dwIdApplet, (void*&)pWndRegInfo ) == TRUE )
 				{
 					if( pWndRegInfo->dwSize )
 					{
 						// load
 						CAr ar( pWndRegInfo->lpArchive, pWndRegInfo->dwSize );
-						((CWndNeuz*)pWndBase)->SerializeRegInfo( ar, pWndRegInfo->dwVersion );
+						pWndBase->SerializeRegInfo( ar, pWndRegInfo->dwVersion );
 					}
 					if( pWndBase->IsWndStyle( WBS_THICKFRAME ) )
 					{
 						if( pWndRegInfo->dwWndSize == WSIZE_WINDOW )
 						{
-							((CWndNeuz*)pWndBase)->SetSizeWnd();
+							pWndBase->SetSizeWnd();
 							pWndBase->SetWndRect( pWndRegInfo->rect );
 						}								
 						if( pWndRegInfo->dwWndSize == WSIZE_MAX )
-							((CWndNeuz*)pWndBase)->SetSizeMax();
+							pWndBase->SetSizeMax();
 					}
 					else
 					{
@@ -2327,12 +2293,8 @@ CWndBase* CWndMgr::CreateApplet( DWORD dwIdApplet )
 				//	pWndBase->SetToolTip( m_resMng.GetAt( dwIdApplet )->strToolTip );
 				//pWndBase->SetToolTip( pAppletFunc->m_pAppletDesc );
 				m_mapWndApplet.SetAt( dwIdApplet, pWndBase );
-			}
-		}
-		else
-			pWndBase->SetFocus();
-	}
-	return pWndBase;
+
+
 }
 void CWndMgr::ObjectExecutor( DWORD dwShortcut, DWORD dwId, DWORD dwType )
 {

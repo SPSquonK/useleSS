@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <unordered_map>
+
 #ifdef __RT_1025
 #include "rtmessenger.h"
 #else	// __RT_1025
@@ -73,7 +75,7 @@
 typedef CMap<DWORD, DWORD, void *, void *> CMapDWordToPtr;
 
 
-#define DECLAREAPPLET( AddMain_Func, AllocClass) CWndBase* AddMain_Func() { return AllocClass; }
+#define DECLAREAPPLET( AddMain_Func, AllocClass) CWndNeuz* AddMain_Func() { return AllocClass; }
 
 class CWndMessage;
 class CWndInstantMsg;
@@ -142,7 +144,7 @@ typedef struct tagWNDREGINFO
 
 struct AppletFunc
 {
-	CWndBase* (*m_pFunc)();
+	CWndNeuz* (*m_pFunc)();
 	DWORD m_dwIdApplet;
 	LPCTSTR m_pAppletName;
 	LPCTSTR m_pAppletDesc;
@@ -267,7 +269,7 @@ public:
 
 	CPtrArray	m_awndShortCut;
 	BOOL	m_bTitle        ;
-	CMapDWordToPtr	m_mapAppletFunc ;
+	std::unordered_map<DWORD, AppletFunc *> m_mapAppletFunc;
 	std::list<int> m_tempWndId;
 	BOOL m_clearFlag;
 
@@ -647,7 +649,7 @@ public:
 	DWORD	GetAppletId( TCHAR* lpszAppletName );
 	CWndBase* GetApplet( DWORD dwIdApplet );
 	CWndBase* CreateApplet( DWORD dwIdApplet );
-	void	AddAppletFunc( LPVOID pAppletFunc, DWORD dwIdApplet, LPCTSTR lpszKeyword, LPCTSTR pszIconName, LPCTSTR lpszAppletDesc = NULL, CHAR cHotkey = 0 );
+	void	AddAppletFunc(CWndNeuz * (*pAppletFunc)(), DWORD dwIdApplet, LPCTSTR lpszKeyword, LPCTSTR pszIconName, LPCTSTR lpszAppletDesc = NULL, CHAR cHotkey = 0 );
 
 	HRESULT	RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();

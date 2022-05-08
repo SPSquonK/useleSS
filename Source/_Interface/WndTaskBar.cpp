@@ -2267,13 +2267,10 @@ BOOL CWndTaskBar::Process( void )
 		}
 		else
 		{
-			AppletFunc* pApplet;
-			DWORD dwIdApplet;
-			POSITION pos = g_WndMng.m_mapAppletFunc.GetStartPosition();
 			BOOL bKey = FALSE;
-			while( pos )
+
+			for (const auto & [dwIdApplet, pApplet] : g_WndMng.m_mapAppletFunc)
 			{
-				g_WndMng.m_mapAppletFunc.GetNextAssoc( pos, dwIdApplet, (void*&)pApplet );
 				
 #ifdef __XKEYEDGE
 				bKey = g_bKeyTable[ pApplet->m_cHotkey ];
