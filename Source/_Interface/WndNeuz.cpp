@@ -208,11 +208,9 @@ void CWndNeuz::OnInitialUpdate()
 		m_strTexture = lpWndApplet->strTexture;
 		m_d3dFormat = lpWndApplet->d3dFormat;
 
-		for( int i = 0; i < lpWndApplet->ptrCtrlArray.GetSize(); i++ )
-		{
-			m_wndArrayTemp.Add(
-				CreateControl( m_pApp->GetSafeHwnd(), (LPWNDCTRL)lpWndApplet->ptrCtrlArray.GetAt( i ) )
-			);
+
+		for (WNDCTRL * pWndCtrl : lpWndApplet->ptrCtrlArray) {
+			m_wndArrayTemp.Add(CreateControl(m_pApp->GetSafeHwnd(), pWndCtrl));
 		}
 	}
 

@@ -1,46 +1,27 @@
 #include "stdafx.h"
+#include "sqktd.h"
+#include <ranges>
+#include <memory>
 #include "ResManager.h"
 
-LPWNDCTRL WNDAPPLET::GetAt( DWORD dwWndId )
-{
-	LPWNDCTRL pWndCtrl = NULL;
-	for( int i = 0; i < ptrCtrlArray.GetSize(); i++ )
-	{
-		pWndCtrl = (LPWNDCTRL) ptrCtrlArray.GetAt( i );
-		if( pWndCtrl->dwWndId == dwWndId )
-			return pWndCtrl;
-	}
-	return NULL;
+LPWNDCTRL WNDAPPLET::GetAt( DWORD dwWndId ) {
+	return sqktd::find_if_or_default(ptrCtrlArray,
+		[&](const WNDCTRL * pWndCtrl) {
+		return pWndCtrl->dwWndId == dwWndId;
+		});
 }
 
-CResManager::CResManager()
-{
-}
-
-CResManager::~CResManager()
-{
-	Free();
-}
-
-void CResManager::Free()
-{
-	DWORD dwAppletId;
-	LPWNDAPPLET LPWNDAPPLET;
-	POSITION pos = m_mapWndApplet.GetStartPosition();
-	while(pos)
-	{ 
-		m_mapWndApplet.GetNextAssoc( pos, (void*&)dwAppletId, (void*&)LPWNDAPPLET );
-		for( int i = 0; i < LPWNDAPPLET->ptrCtrlArray.GetSize(); i++ )
-			safe_delete( (LPWNDCTRL)LPWNDAPPLET->ptrCtrlArray.GetAt( i ) );
-		SAFE_DELETE( LPWNDAPPLET );
+CResManager::~CResManager() {
+	for (WNDAPPLET *& pWndApplet : m_mapWndApplet | std::views::values) {
+		for (WNDCTRL *& pWndCtrl : pWndApplet->ptrCtrlArray) {
+			safe_delete(pWndCtrl);
+		}
+		SAFE_DELETE(pWndApplet);
 	}
 }
 
-LPWNDAPPLET CResManager::GetAt( DWORD dwAppletId )
-{
-	LPWNDAPPLET LPWNDAPPLET = NULL;
-	m_mapWndApplet.Lookup( (void*)dwAppletId, (void*&) LPWNDAPPLET );
-	return LPWNDAPPLET;
+LPWNDAPPLET CResManager::GetAt( DWORD dwAppletId ) {
+	return sqktd::find_in_map(m_mapWndApplet, dwAppletId);
 }
 
 LPWNDCTRL CResManager::GetAtControl( DWORD dwAppletId, DWORD dwCtrlId )
@@ -51,7 +32,7 @@ LPWNDCTRL CResManager::GetAtControl( DWORD dwAppletId, DWORD dwCtrlId )
 	return NULL;
 }
 
-CString CResManager::GetLangApplet( CScript& scanner, LPWNDAPPLET lpWndApplet, BOOL bToolTip )
+CString CResManager::GetLangApplet( CScript& scanner )
 {
 	CString string;
 	scanner.GetToken();	// {
@@ -61,7 +42,7 @@ CString CResManager::GetLangApplet( CScript& scanner, LPWNDAPPLET lpWndApplet, B
 
 	return string;
 }
-CString CResManager::GetLangCtrl( CScript& scanner, LPWNDCTRL lpWndCtrl, BOOL bToolTip )
+CString CResManager::GetLangCtrl( CScript& scanner )
 {
 
 	CString string;
@@ -85,7 +66,6 @@ BOOL CResManager::Load( LPCTSTR lpszName )
 	while( scanner.tok != FINISHED )
 	{
 		LPWNDAPPLET pWndApplet = new WNDAPPLET;
-		pWndApplet->pWndBase = NULL;
 		pWndApplet->strDefine = scanner.token;
 		pWndApplet->dwWndId = CScript::GetDefineNum( scanner.token );
 
@@ -99,13 +79,13 @@ BOOL CResManager::Load( LPCTSTR lpszName )
 		pWndApplet->d3dFormat = (D3DFORMAT)scanner.GetNumber();
 
 		// 타이틀 
-		pWndApplet->strTitle = GetLangApplet( scanner, pWndApplet, FALSE );
+		pWndApplet->strTitle = GetLangApplet( scanner );
 		// 핼프 키 
-		pWndApplet->strToolTip = GetLangApplet( scanner, pWndApplet, TRUE );
+		pWndApplet->strToolTip = GetLangApplet( scanner );
 
 		
 		// HelpKey
-		m_mapWndApplet.SetAt( (void*)pWndApplet->dwWndId, pWndApplet );
+		m_mapWndApplet.emplace( pWndApplet->dwWndId, pWndApplet );
 		scanner.GetToken(); // skip {
 		dwWndType = scanner.GetNumber(); 
 		while( *scanner.token != '}' )
@@ -114,15 +94,18 @@ BOOL CResManager::Load( LPCTSTR lpszName )
 			pWndCtrl->dwWndType = dwWndType;
 			scanner.GetToken_NoDef();
 			pWndCtrl->strDefine = scanner.token;///Char;
-			for( int z = 0; z < pWndApplet->ptrCtrlArray.GetSize(); z++ )
-			{
-				if( ((LPWNDCTRL)pWndApplet->ptrCtrlArray.GetAt( z ) )->strDefine == pWndCtrl->strDefine )
-				{
-					CString string;
-					string.Format( "%s에서 ID 충돌 %s ", pWndApplet->strDefine, pWndCtrl->strDefine );
-					AfxMessageBox( string );
-				}
+			
+			const auto it = std::ranges::find_if(
+				pWndApplet->ptrCtrlArray,
+				[&](WNDCTRL * existingCtrl) { return existingCtrl->strDefine == pWndCtrl->strDefine; }
+			);
+
+			if (it != pWndApplet->ptrCtrlArray.end()) {
+				CString string;
+				string.Format( "%s에서 ID 충돌 %s ", pWndApplet->strDefine, pWndCtrl->strDefine );
+				AfxMessageBox( string );
 			}
+
 			pWndCtrl->dwWndId = CScript::GetDefineNum( scanner.token );
 			scanner.GetToken();
 			pWndCtrl->strTexture = scanner.token;//token;
@@ -140,11 +123,11 @@ BOOL CResManager::Load( LPCTSTR lpszName )
 			pWndCtrl->m_bTabStop = scanner.GetNumber();
 			
 			// 타이틀 
-			pWndCtrl->strTitle = GetLangCtrl( scanner, pWndCtrl, FALSE );
+			pWndCtrl->strTitle = GetLangCtrl( scanner );
 			// 핼프 키 
-			pWndCtrl->strToolTip = GetLangCtrl( scanner, pWndCtrl, TRUE );
+			pWndCtrl->strToolTip = GetLangCtrl( scanner );
 			
-			pWndApplet->ptrCtrlArray.Add( pWndCtrl );
+			pWndApplet->ptrCtrlArray.emplace_back( pWndCtrl );
 			dwWndType = scanner.GetNumber(); 
 		} 
 		scanner.GetToken_NoDef();

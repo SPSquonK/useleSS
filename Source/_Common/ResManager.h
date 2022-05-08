@@ -32,7 +32,6 @@ typedef struct tagWndCtrl
 
 typedef struct tagWndApplet
 {
-	CWndBase* pWndBase;
 	DWORD dwWndId;
 	DWORD dwWndStyle;
 	BOOL bTile;
@@ -42,31 +41,28 @@ typedef struct tagWndApplet
 	D3DFORMAT d3dFormat;
 	CString strDefine;
 	CString strTexture;
-	CPtrArray ptrCtrlArray;
+	std::vector<WNDCTRL *> ptrCtrlArray;
 	CSize size;
 
 	LPWNDCTRL GetAt( DWORD dwWndId );
 
 } WNDAPPLET,* LPWNDAPPLET;
 
-class CResManager
-{
+class CResManager final {
 public:
-	CResManager();
 	~CResManager();
 		
 private:
-	CMapPtrToPtr m_mapWndApplet;
+	std::map<DWORD, WNDAPPLET *> m_mapWndApplet;
 
 public:
-	void Free();
 	BOOL Load( LPCTSTR lpszName );
 	LPWNDAPPLET GetAt( DWORD dwAppletId );
 	LPWNDCTRL GetAtControl( DWORD dwAppletId, DWORD dwCtrlId );
 
 private:
-	CString GetLangApplet( CScript& scanner, LPWNDAPPLET lpWndApplet, BOOL bToolTip );
-	CString GetLangCtrl( CScript& scanner, LPWNDCTRL lpWndCtrl, BOOL bToolTip );
+	CString GetLangApplet( CScript& scanner );
+	CString GetLangCtrl( CScript& scanner );
 };
 
 
