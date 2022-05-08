@@ -80,6 +80,8 @@ BOOL CTicketProperty::LoadScript() {
 			const bool ok = m_expandedLayers.emplace(worldId, nExpand).second;
 			if (!ok) throw std::exception("A world has several expansions value");
 		}
+
+		return TRUE;
 	} catch (std::exception e) {
 		Error(__FUNCTION__"(): Invalid ticket.json file - %s", e.what());
 		return FALSE;
