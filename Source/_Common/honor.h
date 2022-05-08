@@ -45,8 +45,6 @@ public:
 
 	int		m_nCurrentTitleCount;
 	BOOL	LoadTitle(LPCTSTR lpszFileName);
-//	BOOL	IsQualified(int nId, int nGroup);
-//	BOOL	Reset(int nId, int nGroup, int nNew);
 	char*	GetTitle(int nId);
 	int		GetNeedCount(int nId,int nGroup);
 	int		GetIdxType(int nId);
