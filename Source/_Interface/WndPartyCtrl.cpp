@@ -8,10 +8,7 @@
 #include "Party.h"
 #include "WndPartyCtrl.h"
 #include "WndMessenger.h"
-extern CParty g_Party;
-
 #include "WndManager.h"
-
 #include "playerdata.h"
 
 

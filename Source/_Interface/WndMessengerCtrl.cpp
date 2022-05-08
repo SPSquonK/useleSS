@@ -13,7 +13,6 @@
 #include "CampusHelper.h"
 #include "FuncTextCmd.h"
 
-extern CParty		g_Party;
 
 //////////////////////////////////////////////////////////////////////////
 // Common Local Func.

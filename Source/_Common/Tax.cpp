@@ -11,14 +11,11 @@
 #ifdef __WORLDSERVER
 #include "User.h"
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 #include "DPCoreClient.h"
-extern CDPCoreClient	g_DPCoreClient;
 #endif // __WORLDSERVER
 
 #include "defineText.h"
 #include "guild.h"
-extern CGuildMng g_GuildMng;
 
 CTax::CTax(void)
 {

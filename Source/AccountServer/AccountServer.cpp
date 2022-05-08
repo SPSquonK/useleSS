@@ -20,7 +20,6 @@ extern	CDbManager	g_DbManager;
 
 extern	CDPSrvr		g_dpSrvr;
 extern	CDPDBSrvr	g_dpDbSrvr;
-extern	CMyTrace	g_MyTrace;
 extern	CAccountMng	g_AccountMng;
 
 #define MAX_LOADSTRING 100

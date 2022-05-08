@@ -11,10 +11,6 @@
 
 
 
-extern	CUserMng		g_UserMng;
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CPartyMng		g_PartyMng;
-
 #define RANGE_CANCEL	120.0f
 #define RANGE_MOVE	30.0f
 #define	RANGE_RETURN_TO_BEGIN	120.0F

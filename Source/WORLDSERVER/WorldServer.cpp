@@ -70,17 +70,10 @@ static char			s_szAccountAddr[16];
 static char  		g_szINI[] = "WorldServer.ini";
 
 
-extern	CGuildMng			g_GuildMng;
-extern	CGuildWarMng		g_GuildWarMng;
-extern	CPartyMng			g_PartyMng;
 extern	char				g_szDBAddr[16];
 extern	char				g_sHeartbeat[32];
 extern	CDPSrvr				g_DPSrvr;
-extern	CDPCoreClient		g_DPCoreClient;
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CUserMng			g_UserMng;
 extern	CWorldMng			g_WorldMng;
-extern CGuildCombat			g_GuildCombatMng;
 
 
 #if defined(__LUASCRIPT060908)

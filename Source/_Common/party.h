@@ -29,9 +29,6 @@
 #define PARTY_MAP_SEC	10
 #define PARTY_MAP_LENGTH	10
 
-class CParty;
-extern	CParty		g_Party;
-
 struct PartyMember final {	// 플레이어 아이디만 가지고 있음
 	u_long	m_uPlayerId = 0;
 	CTime	m_tTime = CTime::GetCurrentTime();
@@ -219,6 +216,10 @@ public:
 #endif // __WORLDSERVER
 };
 
-#if defined(__WORLDSERVER)
+#if defined(__WORLDSERVER) || defined(__CORESERVER)
 extern CPartyMng g_PartyMng;
+#endif
+
+#ifdef __CLIENT
+extern CParty g_Party;
 #endif

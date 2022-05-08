@@ -20,17 +20,10 @@
 	#include "AttackArbiter.h"
 
 	extern	CDPSrvr		g_DPSrvr;
-	extern	CUserMng			g_UserMng;
-	extern	CDPCoreClient		g_DPCoreClient;
-	extern	CDPDatabaseClient	g_dpDBClient;
-	extern	CDPCoreClient		g_DPCoreClient;
 
 	#include "eveschool.h"
-	extern	CGuildCombat	g_GuildCombatMng;
 	#include "ItemUpgrade.h"
 #endif	// __WORLDSERVER
-
-extern	CPartyMng				g_PartyMng;
 
 
 const int MIN_HR = 20;

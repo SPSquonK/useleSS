@@ -13,11 +13,8 @@
 
 #include "Resource.h"
 
-extern  CDPCoreSrvr			g_dpCoreSrvr;
-extern	CDPLoginSrvr		g_dpLoginSrvr;
 extern	CProject			prj;
 extern	APP_INFO			g_appInfo;
-extern	CMyTrace			g_MyTrace;
 
 #ifdef __CONV_SKILL_11_MONTH_JOB1
 void CDbManager::ConvSkill_11_MONTH_POINT( void )

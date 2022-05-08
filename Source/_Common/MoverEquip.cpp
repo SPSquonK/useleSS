@@ -23,19 +23,11 @@
 	#include "dpdatabaseclient.h"
 	#include "ItemScript.h"
 
-	extern	CUserMng			g_UserMng;
 	extern	CWorldMng			g_WorldMng;
 	extern	CDPSrvr				g_DPSrvr;
-	extern	CDPDatabaseClient	g_dpDBClient;
-	extern	CDPCoreClient		g_DPCoreClient;
 #endif	// __CLIENT
 
 #include "accessory.h"
-
-extern	CPartyMng		g_PartyMng;
-extern	CGuildMng		g_GuildMng;
-extern	CGuildWarMng	g_GuildWarMng;
-
 
 BYTE  nMaleHairColor[10][3] = { 
 	{ 144,  99,  101 },

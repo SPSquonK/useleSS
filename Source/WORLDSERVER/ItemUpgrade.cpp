@@ -10,11 +10,9 @@
 #include "defineitem.h"
 
 #include "User.h"
-extern CUserMng g_UserMng;
 #include "DPSrvr.h"
 extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 
 #include "AIPet.h"
 

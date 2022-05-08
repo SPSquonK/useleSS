@@ -94,5 +94,6 @@ public:
 	void	Logout( CPlayer* pPlayer );
 };
 
+extern CPlayerMng g_PlayerMng;
 
 #endif	// __PLAYER_H__

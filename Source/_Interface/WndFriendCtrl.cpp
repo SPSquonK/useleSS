@@ -9,9 +9,6 @@
 #include "party.h"
 #include "WndFriendCtrl.h"
 #include "WndMessenger.h"
-//#include "company.h"
-extern CParty g_Party;
-//extern	CCompanyMng		g_CompanyMng;
 #include "FuncTextCmd.h"
 
 #include "WndManager.h"

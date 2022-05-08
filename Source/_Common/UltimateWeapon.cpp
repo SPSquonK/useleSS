@@ -10,14 +10,12 @@
 #include "DPSrvr.h"
 #include "dpdatabaseclient.h"
 #include "definetext.h"
-extern CUserMng g_UserMng;
 #include "defineSound.h"
 #include "defineObj.h"
 #endif // __WORLDSERVER
 
 #ifdef __WORLDSERVER
 extern	CDPSrvr		g_DPSrvr;
-extern	CDPDatabaseClient	g_dpDBClient;
 #endif // __WORDLSERVER
 
 //////////////////////////////////////////////////////////////////////

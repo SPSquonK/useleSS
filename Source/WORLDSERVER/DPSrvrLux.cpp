@@ -11,7 +11,6 @@
 #include "misc.h"
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 
 
 #include "..\_Common\Ship.h"
@@ -20,10 +19,6 @@ extern	CGuildMng	g_GuildMng;
 #include "..\_aiinterface\AIPet.h"
 
 #include "Party.h"
-extern	CPartyMng			g_PartyMng;
-extern	CUserMng			g_UserMng;
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CDPCoreClient		g_DPCoreClient;
 extern	CWorldMng			g_WorldMng;
 
 #include "..\_Network\ErrorCode.h"

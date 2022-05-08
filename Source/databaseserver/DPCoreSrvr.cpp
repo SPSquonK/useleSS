@@ -4,10 +4,7 @@ extern	CDPAccountClient	g_dpAccountClient;
 #include "dpcoresrvr.h"
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
-
 #include "project.h"
 extern	CProject	prj;
 

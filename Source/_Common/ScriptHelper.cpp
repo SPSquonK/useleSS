@@ -13,13 +13,8 @@
 #include "ScriptHelper.h"
 #include "WorldDialog.h"
 
-extern	CPartyMng			g_PartyMng;
 extern	CWorldMng			g_WorldMng;
-extern	CDPCoreClient		g_DPCoreClient;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPSrvr				g_DPSrvr;
-extern	CGuildMng			g_GuildMng;
-extern	CUserMng			g_UserMng;
 
 
 #if defined(__REMOVE_SCIRPT_060712)

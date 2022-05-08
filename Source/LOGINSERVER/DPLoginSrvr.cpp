@@ -6,8 +6,6 @@ extern	CDPCoreClient	g_dpCoreClient;
 #include "User.h"
 #include "LoginProtect.h"
 
-extern	CDPLoginSrvr		g_dpLoginSrvr;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern  char				g_szMSG_VER[];
 
 CDPLoginSrvr::CDPLoginSrvr()

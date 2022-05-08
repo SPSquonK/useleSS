@@ -11,7 +11,6 @@
 
 extern	CDPSrvr		g_DPSrvr;
 #include "DPDatabaseClient.h"
-extern	CDPDatabaseClient	g_dpDBClient;
 #endif // __WORLDSERVER
 
 //////////////////////////////////////////////////////////////////////

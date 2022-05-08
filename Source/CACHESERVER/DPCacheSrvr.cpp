@@ -11,11 +11,6 @@
 #include "packetlog.h"
 #endif	// __PL_0917
 #include "mytrace.h"
-extern	CMyTrace	g_MyTrace;
-
-extern	CDPClientArray	g_DPClientArray;
-extern	CDPCoreClient	g_DPCoreClient;
-
 #include "messenger.h"
 
 #ifdef __CRASH_0404

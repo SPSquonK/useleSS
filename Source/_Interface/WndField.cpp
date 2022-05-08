@@ -30,7 +30,6 @@ extern int g_nSkillCurSelect;
 extern float g_fHairLight;
 
 #include "eveschool.h"
-extern CGuildCombat g_GuildCombatMng;
 
 #include "dpcertified.h"
 extern	CDPCertified	g_dpCertified;

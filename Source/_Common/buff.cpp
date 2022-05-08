@@ -14,8 +14,6 @@
 #ifdef __WORLDSERVER
 #include "user.h"
 #include "dpdatabaseclient.h"
-extern	CUserMng	g_UserMng;
-extern	CDPDatabaseClient	g_dpDBClient;
 #ifdef __BUFF_TOGIFT
 #include "DPSrvr.h"
 extern	CDPSrvr		g_DPSrvr;

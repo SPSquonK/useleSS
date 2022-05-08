@@ -11,18 +11,14 @@
 #include "playerdata.h"
 
 #include "eveschool.h"
-extern	CGuildCombat	g_GuildCombatMng;
 
-extern	CUserMng	g_UserMng;
 extern	CWorldMng	g_WorldMng;
 extern	CDPSrvr		g_DPSrvr;
 
-extern  CDPDatabaseClient	g_dpDBClient;
 
 #include "Party.h"
 #include "GroupUtils.h"
 #include "GroupedEmission.h"
-extern	CPartyMng	g_PartyMng;
 #include "Environment.h"
 
 #ifndef __ENVIRONMENT_EFFECT
@@ -30,10 +26,7 @@ extern	CEnvironment	g_Environment;
 #endif // __ENVIRONMENT_EFFECT
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
-
 #include "WantedListSnapshot.h"
 
 #ifndef __MEM_TRACE

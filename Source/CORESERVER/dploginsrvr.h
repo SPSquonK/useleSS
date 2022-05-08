@@ -1,6 +1,3 @@
-#ifndef __DPLOGINSRVR_H__
-#define __DPLOGINSRVR_H__
-
 #pragma once
 
 #include "DPMng.h"
@@ -33,4 +30,4 @@ public:
 	void	OnLeave( CAr & ar );
 };
 
-#endif	// __DPLOGINSRVR_H__
+extern	CDPLoginSrvr	g_dpLoginSrvr;

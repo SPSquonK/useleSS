@@ -6,14 +6,8 @@
 #include "defineitem.h"
 #include "AttackArbiter.h"
 #include "guild.h"
-extern	CGuildMng			g_GuildMng;
-
-extern	CUserMng			g_UserMng;
 #include "party.h"
-extern	CPartyMng	g_PartyMng;
-
 #include "dpdatabaseclient.h"
-extern	CDPDatabaseClient	g_dpDBClient;
 
 #ifdef __EVENT_MONSTER
 #include "EventMonster.h"

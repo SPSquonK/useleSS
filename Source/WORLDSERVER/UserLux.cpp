@@ -5,8 +5,6 @@
 #include "DPSrvr.h"
 #include "WorldMng.h"
 
-extern	CUserMng	g_UserMng;
-
 #ifndef __MEM_TRACE
 #ifdef _DEBUG
 #define new new( __FILE__, __LINE__ )

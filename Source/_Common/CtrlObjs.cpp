@@ -7,10 +7,7 @@
 #include "dpDatabaseClient.h"
 
  
-extern	CUserMng	g_UserMng;
 extern	CDPSrvr		g_DPSrvr;
-extern	CPartyMng	g_PartyMng;
-extern	CDPDatabaseClient	g_dpDBClient;
 
 
 void CContDamageCtrl::Init( void )

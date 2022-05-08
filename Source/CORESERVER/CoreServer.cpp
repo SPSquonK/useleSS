@@ -11,26 +11,12 @@
 #include "dploginsrvr.h"
 #include "msghdr.h"
 #include "MyTrace.h"
-
 #include "xutil.h"
 #include "dpdatabaseclient.h"
-extern	CDPDatabaseClient g_dpDatabaseClient;
-
 #include "lang.h"
-
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
-
-extern	CDPCoreSrvr		g_dpCoreSrvr;
-extern	CDPCacheSrvr	g_DPCacheSrvr;
-extern	CDPLoginSrvr	g_dpLoginSrvr;
-extern	CMyTrace	g_MyTrace;
-
 #include "party.h"
-extern	CPartyMng	g_PartyMng;
-
 #include "Environment.h"
 
 #ifndef __ENVIRONMENT_EFFECT
@@ -38,7 +24,6 @@ extern	CEnvironment	g_Environment;
 #endif // __ENVIRONMENT_EFFECT
 
 #include "player.h"
-extern	CPlayerMng	g_PlayerMng;
 
 #ifdef __EVENT0913
 extern	BOOL	s_bEvent0913;

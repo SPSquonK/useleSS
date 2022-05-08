@@ -159,4 +159,6 @@ inline void CDPCacheSrvr::SendHdr( DWORD dwHdr, DPID dpidCache, DPID dpidUser )
 	SEND( ar, this, dpidCache );
 }
 
+extern CDPCacheSrvr g_DPCacheSrvr;
+
 #endif	// __DPCACHESRVR_H__

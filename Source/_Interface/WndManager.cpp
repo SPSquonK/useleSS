@@ -25,7 +25,6 @@
 #include "yUtil.h"
 #include "worldmap.h"
 #include "eveschool.h"
-extern CGuildCombat g_GuildCombatMng;
 #include "post.h"
 #include "wndbagex.h"
 
@@ -46,7 +45,6 @@ extern CGuildCombat g_GuildCombatMng;
 #include "SecretRoom.h"
 #include "webbox.h"
 
-extern	CParty	g_Party;
 
 extern	CDPLoginClient	g_dpLoginClient;
 extern	CDPCertified	g_dpCertified;
@@ -54,9 +52,7 @@ extern	CDPCertified	g_dpCertified;
 #include "dpclient.h"
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
 
 #include "Tax.h"
 

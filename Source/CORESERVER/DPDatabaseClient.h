@@ -1,5 +1,4 @@
-#ifndef __DPDATABASECLIENT_H__
-#define	__DPDATABASECLIENT_H__
+#pragma once
 
 #include "DPMng.h"
 #include "msghdr.h"
@@ -82,5 +81,4 @@ public:
 #endif // __AUTO_NOTICE
 };
 
-
-#endif	// __DPDATABASECLIENT_H__
+extern CDPDatabaseClient g_dpDatabaseClient;

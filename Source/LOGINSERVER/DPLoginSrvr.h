@@ -1,5 +1,4 @@
-#ifndef __DPLOGINSRVR_H__
-#define __DPLOGINSRVR_H__
+#pragma once
 
 #include "DPMng.h"
 #include "MsgHdr.h"
@@ -53,4 +52,4 @@ public:
 	void	SendLoginProtect( BOOL bLogin, DPID dpid );
 };
 
-#endif	// __DPLOGINSRVR_H__
+extern CDPLoginSrvr g_dpLoginSrvr;

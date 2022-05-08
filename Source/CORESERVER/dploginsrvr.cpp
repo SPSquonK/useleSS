@@ -4,9 +4,6 @@
 #include "msghdr.h"
 #include "player.h"
 
-extern	CDPCacheSrvr	g_DPCacheSrvr;
-extern	CPlayerMng	g_PlayerMng;
-
 // %Y%m%d%H%M%S
 
 CDPLoginSrvr::CDPLoginSrvr() 

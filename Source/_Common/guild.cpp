@@ -6,19 +6,13 @@
 #include "guild.h"
 #ifdef __CORESERVER
 #include "player.h"
-extern	CPlayerMng	g_PlayerMng;
 #include "dpcachesrvr.h"
-extern	CDPCacheSrvr	g_DPCacheSrvr;
 #include "DPCoreSrvr.h"
-extern  CDPCoreSrvr		g_dpCoreSrvr;
 #endif	// __CORESERVER
 #ifdef __WORLDSERVER
 #include "DPDatabaseClient.h"
-extern	CDPDatabaseClient	g_dpDBClient;
 #include "DPCoreClient.h"
-extern  CDPCoreClient	g_DPCoreClient;
 #include "user.h"
-extern	CUserMng	g_UserMng;
 #include "worldmng.h"
 extern	CWorldMng	g_WorldMng;
 #include "defineQuest.h"
@@ -26,7 +20,6 @@ extern	CWorldMng	g_WorldMng;
 
 
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
 
 //________________________________________________________________________________
 CAr&  operator<<(CAr& ar, VOTE_INSERTED_INFO& info)

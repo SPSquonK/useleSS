@@ -304,4 +304,6 @@ public:
 #endif // __WORLDSERVER
 };
 
+extern CGuildCombat g_GuildCombatMng;
+
 #endif	// __EVE_SCHOOL_H__

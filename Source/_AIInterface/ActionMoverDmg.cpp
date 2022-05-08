@@ -14,11 +14,7 @@
 #include "DPSrvr.h"
 #include "guild.h"
 
-extern	CUserMng		g_UserMng;
-extern	CDPCoreClient		g_DPCoreClient;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPSrvr				g_DPSrvr;
-extern	CGuildMng			g_GuildMng;
 #endif // __WORLDSERVER
 
 #include "defineitem.h"
@@ -27,8 +23,6 @@ extern	CGuildMng			g_GuildMng;
 #include "AttackArbiter.h"
 #endif
 
-
-extern	CPartyMng	g_PartyMng;
 
 
 /////////////////////////////////////////////////////////////////////////////////////

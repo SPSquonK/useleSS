@@ -4,7 +4,6 @@
 #include "WndGuildVote.h"
 #include "DPClient.h"
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 
 
 

@@ -21,13 +21,9 @@
 #include "dpcoreclient.h"
 #include "dpsrvr.h"
 
- extern	CUserMng	g_UserMng;
- extern	CDPCoreClient	g_DPCoreClient;
  extern	CDPSrvr		g_DPSrvr;
  #include "Party.h"
- extern	CPartyMng	g_PartyMng;
  #include "dpDatabaseClient.h"
- extern	CDPDatabaseClient	g_dpDBClient;
 #endif
 
 #include "commonctrl.h"

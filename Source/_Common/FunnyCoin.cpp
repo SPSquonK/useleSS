@@ -19,7 +19,6 @@ const int FC_SAMEUNIQUENO = -2;
 #include "DPSrvr.h"
 extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 
 CFunnyCoin::CFunnyCoin()
 {

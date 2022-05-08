@@ -63,20 +63,9 @@
 #include "CampusHelper.h"
 #endif // __WORLDSERVER
 
-extern	CPartyMng			g_PartyMng;
-extern	CGuildMng			g_GuildMng;
-
-#ifdef __CLIENT
-extern	CParty				g_Party;
-#endif // __CLITEM
-
 #ifdef __WORLDSERVER
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CDPCoreClient		g_DPCoreClient;
-extern	CUserMng			g_UserMng;
 extern  CWorldMng			g_WorldMng;
 extern	CDPSrvr				g_DPSrvr;
-extern	CGuildCombat		g_GuildCombatMng;
 #endif
 
 CmdFunc::AllCommands g_textCmdFuncs;

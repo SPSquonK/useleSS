@@ -11,7 +11,6 @@
 
 
 #include "party.h"
-extern	CParty g_Party;
 
 
 #ifndef __VM_0820

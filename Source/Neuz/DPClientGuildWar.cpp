@@ -23,8 +23,6 @@ extern	CDPLoginClient	g_dpLoginClient;
 
 #include "guild.h"
 #include "guildwar.h"
-extern	CGuildMng	g_GuildMng;
-extern	CGuildWarMng	g_GuildWarMng;
 
 void CDPClient::SendDeclWar( u_long idMaster, const char* szGuild )
 {

@@ -5,15 +5,9 @@
 #include "AppDefine.h"
 #include "sfx.h"
 #include "party.h"
-
-
-extern	CPartyMng	g_PartyMng;
-
 #include "eveschool.h"
 #include "defineskill.h"
 #include "commonctrl.h"
-
-extern CGuildCombat g_GuildCombatMng;
 
 
 #ifndef __WORLDSERVER

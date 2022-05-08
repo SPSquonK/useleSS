@@ -8,10 +8,6 @@
 #include "dpcoreclient.h"
 #include "Party.h"
 
-extern	CUserMng		g_UserMng;
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CPartyMng		g_PartyMng;
-
 
 #define RANGE_MOVE   15.0f
 

@@ -8,7 +8,6 @@
 #include "user.h"
 #include "randomoption.h"
 #include "slord.h"
-extern	CUserMng	g_UserMng;
 
 void CLordSkillComponentItemBuf::Execute( u_long idPlayer, u_long idTarget, VOID* pParam )
 {

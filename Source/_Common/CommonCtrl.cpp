@@ -8,8 +8,6 @@
 #ifdef __WORLDSERVER
 #include "dpdatabaseclient.h"
 #include "user.h"
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CUserMng			g_UserMng;
 #endif	// __WORLDSERVER
 
 

@@ -27,9 +27,7 @@
 CWorldMng	g_WorldMng;
 #endif	// __WORLDSERVER
 
-extern	CDPCoreClient	g_DPCoreClient;
 extern	CDPSrvr			g_DPSrvr;
-extern	CUserMng		g_UserMng;
 #endif	// __WORLDSERVER
 
 CWorldMng::CWorldMng()

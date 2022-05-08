@@ -41,4 +41,6 @@ public:
 inline void CDPDatabaseClient::SendToServer( DPID idFrom, LPVOID lpMsg, DWORD dwMsgSize )
 	{	*(UNALIGNED DPID*)lpMsg		= idFrom;	Send( lpMsg, dwMsgSize, DPID_SERVERPLAYER );	}
 
+extern CDPDatabaseClient g_dpDBClient;
+
 #endif	// __DPDATABASECLIENT_H__

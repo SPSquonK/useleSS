@@ -4,8 +4,6 @@
 #include "dpcoreclient.h"
 #include "dploginsrvr.h"
 
-extern	CDPLoginSrvr		g_dpLoginSrvr;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPCoreClient		g_dpCoreClient;
 
 #ifndef __VM_0820

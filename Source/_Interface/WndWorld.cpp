@@ -20,14 +20,8 @@
 #include "SecretRoom.h"
 #include "Vector3Helper.h"
 
-extern	CGuildMng	g_GuildMng;
-
 #include "party.h"
-extern	CParty		g_Party;
-extern	CPartyMng	g_PartyMng;
-
 #include "eveschool.h"
-extern CGuildCombat g_GuildCombatMng;
 #include "WndSummonFriend.h"
 
 #ifdef __LANG_1013

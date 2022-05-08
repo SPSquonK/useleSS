@@ -5,8 +5,6 @@
 #include "WndUpgradeBase.h"
 #include "DPClient.h"
 
-extern	CGuildMng	g_GuildMng;
-
 
 
 /****************************************************

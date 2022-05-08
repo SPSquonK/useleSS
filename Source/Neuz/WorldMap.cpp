@@ -7,17 +7,12 @@
 #include "resData.h"
 #include "party.h"
 #include "defineText.h"
-
 #include "defineSound.h"
 #include "DPClient.h"
-
 #include "playerdata.h"
-
 #include "RainbowRace.h"
-
 #include "Continent.h"
 
-extern	CParty g_Party;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

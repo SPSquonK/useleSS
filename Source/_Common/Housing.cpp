@@ -6,9 +6,7 @@
 
 #ifdef __WORLDSERVER
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 #include "User.h"
-extern CUserMng g_UserMng;
 #include "worldmng.h"
 extern CWorldMng g_WorldMng;
 #include "npchecker.h"

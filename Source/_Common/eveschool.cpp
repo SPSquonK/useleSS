@@ -8,12 +8,6 @@
 #include "dpdatabaseclient.h"
 #include "user.h"
 extern	CDPSrvr		g_DPSrvr;
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CGuildMng	g_GuildMng;
-
-extern	CDPDatabaseClient	g_dpDBClient;
-
-extern	CUserMng	g_UserMng;
 
 #include "WorldMng.h"
 extern CWorldMng g_WorldMng;

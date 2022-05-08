@@ -4,7 +4,6 @@
 #include <ranges>
 #ifdef _DEBUG
 #include "mytrace.h"
-extern	CMyTrace	g_MyTrace;
 #endif	// _DEBUG
 
 CCertUserMng g_CertUserMng;

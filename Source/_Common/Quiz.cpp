@@ -8,13 +8,10 @@
 #ifdef __QUIZ
 #ifdef __WORLDSERVER
 #include "User.h"
-extern CUserMng g_UserMng;
 #include "worldmng.h"
 extern CWorldMng g_WorldMng;
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 #include "DPCoreClient.h"
-extern CDPCoreClient g_DPCoreClient;
 #include "defineobj.h"
 #endif // __WORLDSERVER
 //////////////////////////////////////////////////////////////////////

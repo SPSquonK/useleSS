@@ -57,4 +57,6 @@ public:
 	static	u_long	Key( LPCSTR szKey );
 };
 
+extern	CMyTrace	g_MyTrace;
+
 #endif	// __MYTRACE_H__

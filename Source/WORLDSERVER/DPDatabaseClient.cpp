@@ -11,17 +11,12 @@
 #include "eveschool.h"
 #include "definetext.h"
 #include "eveschool.h"
-extern	CGuildCombat	g_GuildCombatMng;
 
 extern	CDPSrvr		g_DPSrvr;
-extern	CUserMng	g_UserMng;
 extern	CWorldMng	g_WorldMng;
-extern	CDPCoreClient	g_DPCoreClient;
 
 #include "party.h"
-extern	CPartyMng	g_PartyMng;
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 
 #include "post.h"
 extern	BOOL CanAdd( DWORD dwGold, int nPlus );

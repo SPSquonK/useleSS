@@ -10,10 +10,6 @@
 #include "dpcoreclient.h"
 #include "dpdatabaseclient.h"
 #include "..\_AIInterface\AIInterface.h"
-
-extern	CUserMng			g_UserMng;
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CDPCoreClient		g_DPCoreClient;
 #endif	// __WORLDSERVER
 
 

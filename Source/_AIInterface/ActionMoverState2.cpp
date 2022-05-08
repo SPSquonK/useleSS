@@ -23,9 +23,6 @@ extern int			g_nDrift;
 #endif // CLIENT
 
 #ifdef __WORLDSERVER
-extern	CUserMng			g_UserMng;
-extern	CDPCoreClient		g_DPCoreClient;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPSrvr				g_DPSrvr;
 #endif // __WORLDSERVER
 

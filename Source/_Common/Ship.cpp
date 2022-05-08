@@ -3,7 +3,6 @@
 
 #ifdef __WORLDSERVER
 #include "User.h"
-extern	CUserMng	g_UserMng;
 #endif
 
 

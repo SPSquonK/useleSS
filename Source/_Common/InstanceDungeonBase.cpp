@@ -7,19 +7,14 @@
 
 #ifdef __WORLDSERVER
 #include "User.h"
-extern CUserMng g_UserMng;
 #include "worldmng.h"
 extern CWorldMng g_WorldMng;
 #include "DPCoreClient.h"
-extern CDPCoreClient g_DPCoreClient;
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 #include "party.h"
-extern	CPartyMng g_PartyMng;
 #endif // __WORLDSERVER
 #ifdef __CORESERVER
 #include "DPCoreSrvr.h"
-extern CDPCoreSrvr g_dpCoreSrvr;
 #endif // __CORESERVER
 
 //////////////////////////////////////////////////////////////////////

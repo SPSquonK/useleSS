@@ -11,10 +11,7 @@
 
 #include "party.h"
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
-
 #include "dpaccountclient.h"
 extern	CDPAccountClient	g_dpAccountClient;
 
@@ -39,11 +36,8 @@ extern	CDPAccountClient	g_dpAccountClient;
 BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam );
 #endif	// __VERIFY_PLAYER OR __PROVIDE
 
-extern  CDPCoreSrvr			g_dpCoreSrvr;
-extern	CDPLoginSrvr		g_dpLoginSrvr;
 extern	CProject			prj;
 extern	APP_INFO			g_appInfo;
-extern	CMyTrace			g_MyTrace;
 
 #define	VERIFYSTRING( lpString, lpszPlayer )	\
 		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return;

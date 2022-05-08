@@ -17,16 +17,6 @@
 
 #include "CreateMonster.h"
 
-
-
-extern	CPartyMng	g_PartyMng;
-
-#ifdef __WORLDSERVER
-	extern	CUserMng			g_UserMng;
-	extern	CDPDatabaseClient	g_dpDBClient;
-	extern	CDPCoreClient		g_DPCoreClient;
-#endif 
-
 // 현재 상태를 무시하고 새로운 동작으로 강제 세팅.
 // 서버와 동기화 할때외엔 사용하지 말것.
 void	CActionMover::ForcedSet( D3DXVECTOR3 &vDelta, DWORD dwState, DWORD dwStateFlag, int nMotionEx )

@@ -6,7 +6,6 @@
 #include "definelordskill.h"
 #include "definetext.h"
 #include "user.h"
-extern	CUserMng	g_UserMng;
 
 ////////////////////////////////////////////////////////////////////////////////
 CSLord::CSLord()

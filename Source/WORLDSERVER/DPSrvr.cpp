@@ -62,14 +62,7 @@ struct ItemCountSet{
 #define	MAX_RANGE_ASYNC			1024
 #define	MAX_RANGE_NPC_MENU		1024
 
-extern	CGuildMng			g_GuildMng;
-extern	CPartyMng			g_PartyMng;
-extern	CUserMng			g_UserMng;
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CDPCoreClient		g_DPCoreClient;
 extern	CWorldMng			g_WorldMng;
-extern	CGuildCombat		g_GuildCombatMng;
-
 
 CCommonCtrl* CreateExpBox( CUser* pUser );
 CDPSrvr		g_DPSrvr;

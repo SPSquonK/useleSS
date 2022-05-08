@@ -1,5 +1,4 @@
-#ifndef __DPDATABASECLIENT_H__
-#define __DPDATABASECLIENT_H__
+#pragma once
 
 #include "DPMng.h"
 #include "MsgHdr.h"
@@ -300,4 +299,4 @@ public:
 	void	SendUpdateCampusPoint( u_long idPlayer, int nCampusPoint, BOOL bAdd, char chState );
 };
 
-#endif	// __DPDATABASECLIENT_H__
+extern CDPDatabaseClient g_dpDBClient;

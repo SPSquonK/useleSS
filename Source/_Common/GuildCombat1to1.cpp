@@ -19,11 +19,6 @@
 	#include "DPSrvr.h"
 	extern	CWorldMng	g_WorldMng;
 	extern	CDPSrvr		g_DPSrvr;
-	extern	CGuildMng	g_GuildMng;
-	extern	CUserMng	g_UserMng;
-	extern  CDPCoreClient g_DPCoreClient;
-	extern	CGuildCombat g_GuildCombatMng;
-	extern  CDPDatabaseClient g_dpDBClient;
 #endif // __WORLDSERVER
 //////////////////////////////////////////////////////////////////////
 //// CGuildCombat1To1 ////////////////////////////////////////////////

@@ -65,4 +65,6 @@ public:
 	void	SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize );
 };
 
+extern CDPClientArray g_DPClientArray;
+
 #endif	// __DPCLIENT_H__

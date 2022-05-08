@@ -2,7 +2,6 @@
 #define __WNDGUILD_TAB_APP__H
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 
 class CWndGuildPayConfirm : public CWndNeuz 
 { 

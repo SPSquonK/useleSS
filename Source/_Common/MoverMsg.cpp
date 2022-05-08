@@ -15,10 +15,8 @@
 #include "WorldMng.h"
 #include "DPSrvr.h"
 #include "DPCoreClient.h"
-extern	CUserMng	g_UserMng;
 extern	CWorldMng	g_WorldMng;
 extern	CDPSrvr		g_DPSrvr;
-extern	CDPCoreClient	g_DPCoreClient;
 #endif	// __WORLDSERVER
 #endif	// __CLIENT
 

@@ -9,10 +9,7 @@
 #include "playerdata.h"
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
-
 #include "eveschool.h"
-extern CGuildCombat g_GuildCombatMng;
 
 /****************************************************
   WndId : APP_GUILD_DISMISS

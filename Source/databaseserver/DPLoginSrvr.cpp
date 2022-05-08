@@ -6,7 +6,6 @@
 #include "misc.h"
 #include <mmsystem.h>
 
-extern	CMyTrace	g_MyTrace;
 extern	CProject	prj;
 extern	APP_INFO	g_appInfo;
 extern	CDPAccountClient	g_dpAccountClient;

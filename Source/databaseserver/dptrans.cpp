@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "dpcoresrvr.h"
-extern	CDPCoreSrvr	g_dpCoreSrvr;
 #include "dpaccountclient.h"
 extern	CDPAccountClient	g_dpAccountClient;
 #include "dptrans.h"

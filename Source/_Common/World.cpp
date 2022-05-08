@@ -24,11 +24,7 @@
 #include "eveschool.h"
 
 extern	CDPSrvr			g_DPSrvr;
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CUserMng		g_UserMng;
 extern	CWorldMng		g_WorldMng;
-extern	CGuildMng		g_GuildMng;
-extern	CGuildCombat	g_GuildCombatMng;
 #endif	// __WORLDSERVER
 
 #ifdef __CLIENT

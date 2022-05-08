@@ -8,7 +8,6 @@
 #include "definetext.h"
 #include "slord.h"
 #include "user.h"
-extern	 CUserMng	g_UserMng;
 #include "dpsrvr.h"
 extern	CDPSrvr		g_DPSrvr;
 #endif	// __WORLDSERVER

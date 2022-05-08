@@ -7,8 +7,6 @@
 #include "User.h"
 #include "dpcoreclient.h"
 
-extern	CUserMng		g_UserMng;
-extern	CDPCoreClient	g_DPCoreClient;
 
 enum
 {

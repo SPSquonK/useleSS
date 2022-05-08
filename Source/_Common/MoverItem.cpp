@@ -3,7 +3,6 @@
 #include "defineText.h"
 #ifdef __WORLDSERVER
 #include "user.h"
-extern	CUserMng			g_UserMng;
 #endif	// WORLDSERVER
 
 

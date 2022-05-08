@@ -2,7 +2,6 @@
 #include "dpcoresrvr.h"
 #include "dpdatabaseclient.h"
 #include "dploginsrvr.h"
-extern	CDPLoginSrvr	g_dpLoginSrvr;
 #include "dpcachesrvr.h"
 #include "msghdr.h"
 #include "mytrace.h"
@@ -10,18 +9,8 @@ extern	CDPLoginSrvr	g_dpLoginSrvr;
 #include "misc.h"
 #include "party.h"
 #include "definetext.h"
-
-extern	CPlayerMng	g_PlayerMng;
-extern	CDPCoreSrvr	g_dpCoreSrvr;
-extern	CDPDatabaseClient	g_dpDatabaseClient;
-extern	CMyTrace	g_MyTrace;
-extern	CPartyMng	g_PartyMng;
-
 #include "guild.h"
 #include "guildwar.h"
-extern	CGuildMng	g_GuildMng;
-extern	CGuildWarMng	g_GuildWarMng;
-
 #include "lang.h"
 
 // %Y%m%d%H%M%S

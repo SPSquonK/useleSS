@@ -17,12 +17,6 @@
 #include "crashstatus.h"
 #endif	// __CRASH_0404
 
-#ifdef __MA_VER11_07	// cache 서버에서 loginserver로 유저접속끊낌을 알려주는 부분
-extern	CDPCoreClient	g_DPCoreClient;
-#endif // __MA_VER11_07	// cache 서버에서 loginserver로 유저접속끊낌을 알려주는 부분
-
-extern	CDPCacheSrvr		g_DPCacheSrvr;
-extern	CMyTrace	g_MyTrace;
 
 CDPClientArray	g_DPClientArray;
 

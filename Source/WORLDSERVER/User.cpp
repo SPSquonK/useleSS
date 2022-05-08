@@ -29,8 +29,6 @@
 
 #include "ItemUpgrade.h"
 
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CDPCoreClient	g_DPCoreClient;
 
 #include "Environment.h"
 
@@ -39,15 +37,10 @@ extern	CEnvironment	g_Environment;
 #endif // __ENVIRONMENT_EFFECT
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
-
 #include "Chatting.h"
 
 #include "Party.h"
-extern	CPartyMng			g_PartyMng;
-extern CGuildCombat g_GuildCombatMng;
 
 #ifndef __MEM_TRACE
 #ifdef _DEBUG
@@ -63,7 +56,6 @@ extern CGuildCombat g_GuildCombatMng;
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 extern	CDPSrvr		g_DPSrvr;
 extern	CWorldMng	g_WorldMng;
-extern	CUserMng	g_UserMng;
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 #ifndef __VM_0820

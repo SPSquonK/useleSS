@@ -11,7 +11,6 @@
 #include "DPSrvr.h"
 #include "DPDatabaseClient.h"
 extern	CDPSrvr				g_DPSrvr;
-extern	CDPDatabaseClient	g_dpDBClient;
 #ifdef __EVENTLUA_SPAWN
 #include "worldmng.h"
 extern	CWorldMng	g_WorldMng;

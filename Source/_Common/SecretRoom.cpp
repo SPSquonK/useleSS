@@ -9,10 +9,7 @@
 #include "User.h"
 #include "defineText.h"
 #include "DPCoreClient.h"
-extern  CDPCoreClient g_DPCoreClient;
 #include "DPDatabaseClient.h"
-extern	CDPDatabaseClient g_dpDBClient;
-extern	CGuildMng	g_GuildMng;
 #include "worldmng.h"
 extern	CWorldMng	g_WorldMng;
 #include "Tax.h"

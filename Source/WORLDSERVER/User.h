@@ -902,7 +902,7 @@ public:
 
 };
 
-
+extern CUserMng g_UserMng;
 
 #pragma region SqKsEmission
 
@@ -935,4 +935,3 @@ void CUser::SendSnapshotWithTarget(DWORD targetId, Ts ... ts) {
 
 #pragma endregion
 
-extern	CUserMng	g_UserMng;

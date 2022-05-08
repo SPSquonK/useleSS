@@ -1,9 +1,7 @@
 #include "StdAfx.h"
 #include "dploginsrvr.h"
-extern	CDPLoginSrvr	g_dpLoginSrvr;
 
 #include "dpcoresrvr.h"
-extern	CDPCoreSrvr		g_dpCoreSrvr;
 
 extern	APP_INFO	g_appInfo;
 

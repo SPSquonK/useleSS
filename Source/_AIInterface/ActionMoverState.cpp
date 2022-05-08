@@ -12,13 +12,11 @@
 #ifdef __WORLDSERVER
 #include "User.h"
 #include "..\_AIInterface\AIInterface.h"
-extern	CUserMng			g_UserMng;
 #endif
 
 	#include "honor.h"
 
 #include "party.h"
-extern	CParty g_Party;
 
 
 

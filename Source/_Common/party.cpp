@@ -6,20 +6,15 @@
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
-extern	CDPCoreSrvr g_dpCoreSrvr;
 #include "player.h"
-extern	CPlayerMng	g_PlayerMng;
 #endif // __CORESERVER
 
 #ifdef __WORLDSERVER
 #include "worldmng.h"
 #include "User.h"
-extern	CUserMng	g_UserMng;
 extern CWorldMng   g_WorldMng;
 #include "dpcoreclient.h"
-extern	CDPCoreClient	g_DPCoreClient;
 #include "dpdatabaseclient.h"
-extern	CDPDatabaseClient	g_dpDBClient;
 #include "slord.h"
 #endif	// __WORLDSERVER
 

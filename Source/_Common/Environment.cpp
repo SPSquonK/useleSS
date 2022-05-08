@@ -3,7 +3,6 @@
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
-extern	CDPCoreSrvr g_dpCoreSrvr;
 #endif // __CORESERVER
 
 /*--------------------------------------------------------------------------------*/

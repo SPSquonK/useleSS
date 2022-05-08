@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "user.h"
 #include "dploginsrvr.h"
-extern	CDPLoginSrvr	g_dpLoginSrvr;
 #include "dpcoreclient.h"
 #include "msghdr.h"
 

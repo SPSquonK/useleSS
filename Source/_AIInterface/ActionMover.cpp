@@ -14,14 +14,10 @@ extern CDialogMsg	g_DialogMsg;
 #include "DPCoreClient.h"
 #include "DPDatabaseClient.h"
 #include "DPSrvr.h"
-extern	CUserMng	g_UserMng;
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CDPDatabaseClient g_dpDBClient;
 extern	CDPSrvr g_DPSrvr;
 #endif
 
 #include "party.h"
-extern	CPartyMng	g_PartyMng;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

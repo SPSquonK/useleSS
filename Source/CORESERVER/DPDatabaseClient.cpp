@@ -6,18 +6,10 @@
 
 
 #include "party.h"
-extern	CPartyMng	g_PartyMng;
 
 #include "guild.h"
-extern	CGuildMng			g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
-
 #include "WantedList.h"
-
-extern	CPlayerMng			g_PlayerMng;
-extern	CDPCacheSrvr		g_DPCacheSrvr;
-extern  CDPCoreSrvr			g_dpCoreSrvr;
 
 CDPDatabaseClient::CDPDatabaseClient()
 {

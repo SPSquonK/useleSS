@@ -1,6 +1,5 @@
 #include "stdafx.H"
 
-
 #include "couplehelper.h"
 #include "user.h"
 #include "dpdatabaseclient.h"
@@ -9,9 +8,8 @@
 #include "definetext.h"
 #include "lord.h"
 #include "defineobj.h"
-extern	CUserMng	g_UserMng;
 
-	#include "honor.h"
+#include "honor.h"
 
 CCoupleHelper::CCoupleHelper()
 {

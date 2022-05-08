@@ -7,7 +7,6 @@
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
-extern	CDPCoreSrvr g_dpCoreSrvr;
 #include "player.h"
 extern	CPlayerMng	g_ONLINEerMng;
 #endif // __CORESERVER

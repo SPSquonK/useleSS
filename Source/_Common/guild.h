@@ -1,5 +1,4 @@
-#ifndef __GUILD_H__
-#define	__GUILD_H__
+#pragma once
 
 #include "mempooler.h"
 #include <map>
@@ -392,7 +391,7 @@ public:
 	int		GetSize( void )	{	return m_mapPGuild.size();	}
 };
 
-
+extern CGuildMng g_GuildMng;
 
 enum {	GUILD_PENYA_MINE_UPDATE, GUILD_ITEM_MINE_UPDATE, GUILD_PENYA_ALL_UPDATE, GUILD_ITEM_ALL_UPDATE };
 enum { GUILD_PUT_ITEM, GUILD_GET_ITEM, GUILD_PUT_PENYA, GUILD_GET_PENYA, GUILD_CLOAK, GUILD_QUERY_REMOVE_GUILD_BANK };
@@ -561,5 +560,3 @@ public:
 #endif	// __WORLDSERVER
 	}
 };
-
-#endif	// __GUILD_H__

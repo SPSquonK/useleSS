@@ -8,7 +8,6 @@
 #include "dptrans.h"
 extern	APP_INFO	g_appInfo;
 #include "DPCoreSrvr.h"
-extern	CDPCoreSrvr	g_dpCoreSrvr;
 
 //////////////////////////////////////////////////////////////////////
 // CCampusDBCtrl Construction/Destruction

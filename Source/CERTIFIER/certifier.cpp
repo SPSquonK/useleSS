@@ -12,8 +12,6 @@ extern	CDbManager	g_DbManager;
 
 #include "user.h"
 
-extern	CMyTrace	g_MyTrace;
-
 #define MAX_LOADSTRING 100
 
 ////////////////////////////////////////////////////////////////////////////////

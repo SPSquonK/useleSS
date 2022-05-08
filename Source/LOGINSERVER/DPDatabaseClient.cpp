@@ -7,8 +7,6 @@
 #include "LoginProtect.h"
 extern	CDPCoreClient	g_dpCoreClient;
 
-extern	CDPLoginSrvr	g_dpLoginSrvr;
-extern	CMyTrace	g_MyTrace;
 extern	char	g_lpDBAddr[16];
 
 CDPDatabaseClient::CDPDatabaseClient()

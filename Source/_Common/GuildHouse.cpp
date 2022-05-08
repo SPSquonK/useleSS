@@ -14,13 +14,10 @@
 #include "WorldMng.h"
 extern CWorldMng g_WorldMng;
 #include "guild.h"
-extern CGuildMng g_GuildMng;
 #include "user.h"
-extern CUserMng g_UserMng;
 #include "DPSrvr.h"
 extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 #include "npchecker.h"
 #ifdef __GUILD_HOUSE_MIDDLE
 #include "post.h"
@@ -31,7 +28,6 @@ extern CDPDatabaseClient g_dpDBClient;
 #ifdef __GUILD_HOUSE_MIDDLE
 #include "dptrans.h"
 #include "DPCoreSrvr.h"
-extern	CDPCoreSrvr	g_dpCoreSrvr;
 #endif // __GUILD_HOUSE_MIDDLE
 #endif // __DBSERVER
 //////////////////////////////////////////////////////////////////////

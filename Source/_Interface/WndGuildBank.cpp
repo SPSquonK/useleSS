@@ -7,7 +7,6 @@
 
 #include "DPClient.h"
 #include "eveschool.h"
-extern	CGuildCombat	g_GuildCombatMng;
 
 
 /****************************************************

@@ -37,16 +37,10 @@
 #endif // __FUNNY_COIN
 
 #ifdef __WORLDSERVER
-	extern	CUserMng			g_UserMng;
 	extern	CWorldMng			g_WorldMng;
 	extern	CDPSrvr				g_DPSrvr;
-	extern	CDPCoreClient		g_DPCoreClient;
-	extern	CDPDatabaseClient	g_dpDBClient;
 #include "GuildHouse.h"
 #endif
-
-extern	CPartyMng				g_PartyMng;
-extern	CGuildCombat			g_GuildCombatMng;
 
 extern void __SetQuest( DWORD dwIdMover, int nQuest );
 

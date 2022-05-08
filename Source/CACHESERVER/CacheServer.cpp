@@ -24,11 +24,6 @@
 
 #define MAX_LOADSTRING 100
 
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CDPClientArray	g_DPClientArray;
-extern	CDPCacheSrvr	g_DPCacheSrvr;
-extern	CMyTrace		g_MyTrace;
-
 HINSTANCE				hInst;
 TCHAR					szTitle[MAX_LOADSTRING];
 TCHAR					szWindowClass[MAX_LOADSTRING];

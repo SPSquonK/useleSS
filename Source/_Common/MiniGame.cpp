@@ -13,7 +13,6 @@
 
 #ifdef __WORLDSERVER
 extern	CDPSrvr		g_DPSrvr;
-extern	CDPDatabaseClient	g_dpDBClient;
 #endif // __WORLDSERVER
 
 //////////////////////////////////////////////////////////////////////

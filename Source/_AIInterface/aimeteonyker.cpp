@@ -4,10 +4,8 @@
 
 #include "user.h"
 #include "dialogmsg.h"
-extern	CUserMng	g_UserMng;
 #include "definetext.h"
 #include "dpcoreclient.h"
-extern	CDPCoreClient	g_DPCoreClient;
 
 enum
 {

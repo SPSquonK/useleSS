@@ -14,7 +14,6 @@
 #include "eveschool.h"
 #include <ranges>
 
-extern	CGuildCombat	g_GuildCombatMng;
 #include "..\_aiinterface\aipet.h"
 
 #include "pet.h"
@@ -56,8 +55,6 @@ extern	CGuildCombat	g_GuildCombatMng;
 
 	extern	CWorldMng	g_WorldMng;
 	extern	CDPSrvr		g_DPSrvr;
-	extern	CDPDatabaseClient	g_dpDBClient;
-	extern	CDPCoreClient	g_DPCoreClient;
 
 #endif	// __CLIENT
 
@@ -69,9 +66,7 @@ extern	CGuildCombat	g_GuildCombatMng;
 #endif
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 #include "guildwar.h"
-extern	CGuildWarMng	g_GuildWarMng;
 
 #include "definequest.h"
 #include "Ship.h"

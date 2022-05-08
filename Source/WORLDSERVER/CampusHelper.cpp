@@ -6,9 +6,7 @@
 #include "CampusHelper.h"
 
 #include "User.h"
-extern CUserMng				g_UserMng;
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient	g_dpDBClient;
 #include "defineText.h"
 
 //////////////////////////////////////////////////////////////////////

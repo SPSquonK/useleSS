@@ -39,8 +39,6 @@
 // global variable
 //////////////////////////////////////////////////////////////////////////////
 
-extern	CGuildWarMng	g_GuildWarMng;
-extern	CGuildMng		g_GuildMng;
 extern	CDPLoginClient	g_dpLoginClient;
 extern	CDPCertified	g_dpCertified;
 extern CSfxTexture      g_SfxTex;

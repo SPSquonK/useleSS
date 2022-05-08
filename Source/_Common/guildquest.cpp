@@ -5,8 +5,6 @@
 #include "guild.h"
 #include "user.h"
 #include "dpdatabaseclient.h"
-extern	CGuildMng	g_GuildMng;
-extern	CDPDatabaseClient	g_dpDBClient;
 
 CGuildQuestProcessor::CGuildQuestProcessor()
 {

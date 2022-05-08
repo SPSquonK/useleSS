@@ -7,8 +7,6 @@
 #include "couplehelper.h"
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
-//extern	CCompanyMng		g_CompanyMng;
 #include "Tax.h"
 
 #ifdef __LANG_1013

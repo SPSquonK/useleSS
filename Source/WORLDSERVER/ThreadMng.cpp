@@ -9,19 +9,11 @@
 #include "guildquest.h"
 #include "DisplayedInfo.h"
 #include "eveschool.h"
-extern	CGuildCombat	g_GuildCombatMng;
-
-
 #include "SecretRoom.h"
-
 #include "CreateMonster.h"
-
 #include "rangda.h"
-
 #include "RainbowRace.h"
-
 #include "PCBang.h"
-
 #include "InstanceDungeonParty.h"
 
 #ifdef __QUIZ
@@ -37,20 +29,14 @@ extern	CGuildCombat	g_GuildCombatMng;
 #include "spevent.h"
 #include "guild.h"
 #include "guildwar.h"
-extern	CDPCoreClient		g_DPCoreClient;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern	char				g_szDBAddr[16];
 extern	char				g_szCoreAddr[16];
-extern	CGuildMng			g_GuildMng;
-extern	CGuildWarMng		g_GuildWarMng;
 
 extern	CWorldMng			g_WorldMng;
 extern	CDPSrvr				g_DPSrvr;
-extern	CUserMng			g_UserMng;
 extern  DWORD				g_tmCurrent;
 //extern	time_t	g_tCurrent;
 extern	char				g_sHeartbeat[32];
-extern	CPartyMng			g_PartyMng;
 
 extern  BOOL LoadAIScript();		// aimonster2.cpp
 

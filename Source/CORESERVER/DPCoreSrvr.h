@@ -197,6 +197,8 @@ private:
 #endif // __QUIZ
 };
 
+extern CDPCoreSrvr g_dpCoreSrvr;
+
 inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uWorldSrvr )
 {
 #ifdef __STL_0402

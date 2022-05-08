@@ -7,8 +7,6 @@
 #include "dpdatabaseclient.h"
 #include "worldmng.h"
 
-extern	CPartyMng	g_PartyMng;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern	CWorldMng	g_WorldMng;
 
 CPartyQuestProcessor::CPartyQuestProcessor()

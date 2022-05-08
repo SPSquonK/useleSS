@@ -8,10 +8,6 @@
 #include "Party.h"
 #include "definetext.h"
 
-extern	CUserMng		g_UserMng;
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CPartyMng		g_PartyMng;
-
 // Event Pattern Type
 #define		EPT_READY			0		// 아무것도 안하고 있음.
 #define		EPT_MOVING			1		// 감시/이동

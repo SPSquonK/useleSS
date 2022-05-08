@@ -91,4 +91,6 @@ public:
 #endif	// __WORLDSERVER
 };
 
+extern	CGuildWarMng	g_GuildWarMng;
+
 #endif	// __GUILDWAR_H__

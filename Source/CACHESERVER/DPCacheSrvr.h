@@ -30,5 +30,6 @@ public:
 	void	OnKeepAlive( CAr & ar, DPID dpid, LPBYTE, u_long );
 };
 
+extern CDPCacheSrvr g_DPCacheSrvr;
 
 #endif

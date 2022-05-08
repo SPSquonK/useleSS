@@ -12,13 +12,6 @@
 #include "guildwar.h"
 #include "WantedList.h"
 #include "Environment.h"
-extern	CPlayerMng			g_PlayerMng;
-extern	CDPCacheSrvr		g_DPCacheSrvr;
-extern	CDPDatabaseClient	g_dpDatabaseClient;
-extern	CMyTrace			g_MyTrace;
-extern	CPartyMng			g_PartyMng;
-extern	CGuildMng			g_GuildMng;
-extern	CGuildWarMng		g_GuildWarMng;
 extern	DWORD				s_dwEvent;
 
 #ifndef __ENVIRONMENT_EFFECT

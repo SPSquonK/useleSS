@@ -45,4 +45,6 @@ public:
 	void	SendLoginProtect( const char* lpszAccount, const char* lpszPlayer, u_long idPlayer, BOOL bLogin, DPID dpId );
 };
 
+extern CDPLoginSrvr g_dpLoginSrvr;
+
 #endif	// __DPLOGINSRVR_H__

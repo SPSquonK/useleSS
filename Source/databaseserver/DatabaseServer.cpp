@@ -14,7 +14,6 @@
 
 #include "xutil.h"
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 
 #ifdef __PROVIDE
 #include "defineitem.h"
@@ -26,13 +25,10 @@ extern	CGuildMng	g_GuildMng;
 
 #include "dbcontroller.h"
 
-extern	CDPLoginSrvr	g_dpLoginSrvr;
 extern	CDPAccountClient	g_dpAccountClient;
-extern	CMyTrace	g_MyTrace;
 extern	CProject	prj;
 
 #include "DPCoreSrvr.h"
-extern	CDPCoreSrvr	g_dpCoreSrvr;
 
 #include "spevent.h"
 

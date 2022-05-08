@@ -10,7 +10,6 @@
 	#ifdef __WORLDSERVER
 		#include "dpdatabaseclient.h"
 		#include "dpsrvr.h"
-		extern	CDPDatabaseClient	g_dpDBClient;
 		extern	CDPSrvr	g_DPSrvr;
 	#endif	// __WORLDSERVER
 

@@ -4,9 +4,7 @@
 #include "WndPartyChangeTroup.h"
 #include "WndManager.h"
 #include "DPClient.h"
-
 #include "party.h"
-extern	CParty g_Party;
 
 
 

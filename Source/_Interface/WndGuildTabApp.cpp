@@ -6,7 +6,6 @@
 
 #include "DPClient.h"
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 
 
 

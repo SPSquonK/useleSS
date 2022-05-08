@@ -17,7 +17,6 @@ extern	CDbManager	g_DbManager;
 const int MAX_CONN = 50000;
 
 extern	CAccountMng		g_AccountMng;
-extern	CMyTrace		g_MyTrace;
 
 CDPSrvr::CDPSrvr()
 {

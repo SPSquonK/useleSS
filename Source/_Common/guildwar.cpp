@@ -3,23 +3,16 @@
 #include "guildwar.h"
 #include "guild.h"
 #include "sqktd.h"
-extern	CGuildMng	g_GuildMng;
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
 #include "dpcachesrvr.h"
 #include "dpdatabaseclient.h"
 #include "player.h"
-extern	CPlayerMng	g_PlayerMng;
-extern	CDPCoreSrvr	g_dpCoreSrvr;
-extern	CDPCacheSrvr	g_DPCacheSrvr;
-extern	CDPDatabaseClient	g_dpDatabaseClient;
 #endif	// __CORESERVER
 #ifdef __WORLDSERVER
 #include "user.h"
 #include "dpcoreclient.h"
-extern	CUserMng	g_UserMng;
-extern	CDPCoreClient	g_DPCoreClient;
 #endif	// __WORLDSERVER
 
 #ifdef __CLIENT

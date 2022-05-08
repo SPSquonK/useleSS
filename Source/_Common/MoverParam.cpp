@@ -21,12 +21,7 @@
 #include "wndfield.h"
 #endif	// __CLIENT
 
-extern	CUserMng	g_UserMng;
-extern	CDPCoreClient	g_DPCoreClient;
-
 #include "dpdatabaseclient.h"
-extern	CDPDatabaseClient	g_dpDBClient;
-extern	CDPCoreClient	g_DPCoreClient;
 #endif	// __WORLDSERVER
 
 #ifdef __CLIENT			
@@ -34,7 +29,6 @@ extern	CDPCoreClient	g_DPCoreClient;
 #endif
 
 #include "Party.h"
-extern	CPartyMng	g_PartyMng;
 
 #ifdef __WORLDSERVER
 #include "DPSrvr.h"

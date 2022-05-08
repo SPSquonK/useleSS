@@ -18,15 +18,12 @@
 #include "defineObj.h"
 #include "defineText.h"
 #include "DPCoreClient.h"
-extern CDPCoreClient g_DPCoreClient;
 #include "worldmng.h"
 extern CWorldMng g_WorldMng;
 #include "User.h"
-extern CUserMng g_UserMng;
 #include "DPSrvr.h"
 extern CDPSrvr g_DPSrvr;
 #include "DPDatabaseClient.h"
-extern CDPDatabaseClient g_dpDBClient;
 #endif // __WORLDSERVER
 
 

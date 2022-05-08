@@ -45,7 +45,6 @@
 extern CFLASH g_Flash;
 
 #include "party.h"
-extern	CParty g_Party;
 #include "wndpartyconfirm.h"
 #include "WndDuelConfirm.h"
 #include "Environment.h"
@@ -54,15 +53,10 @@ extern	CParty g_Party;
 
 #include "RainbowRace.h"
 #include "PCBang.h"
-
 #include "guild.h"
 #include "guildwar.h"
 #include "Wndguildvote.h"
-extern	CGuildMng	g_GuildMng;
-extern	CGuildWarMng	g_GuildWarMng;
-
 #include "eveschool.h"
-extern CGuildCombat g_GuildCombatMng;
 
 #include "Chatting.h"
 extern	CChatting g_Chatting;

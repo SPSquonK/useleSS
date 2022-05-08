@@ -10,10 +10,8 @@
 #include "playerdata.h"
 
 #include "guild.h"
-extern	CGuildMng	g_GuildMng;
 
 #include "eveschool.h"
-extern CGuildCombat g_GuildCombatMng;
 
 
 /****************************************************

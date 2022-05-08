@@ -15,10 +15,7 @@
 			// nprotect관련 _Network폴더에 
 
 
-extern	CDPLoginSrvr		g_dpLoginSrvr;
-extern	CDPDatabaseClient	g_dpDBClient;
 extern	CDPCoreClient		g_dpCoreClient;
-extern	CMyTrace			g_MyTrace;
 
 
 #define MAX_LOADSTRING 100

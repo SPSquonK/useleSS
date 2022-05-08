@@ -15,14 +15,9 @@
   #include "DPSrvr.h"
   #include "DPCoreClient.h"
   #include "dpdatabaseclient.h"
-  extern	CUserMng	g_UserMng;
   extern	CWorldMng	g_WorldMng;
   extern	CDPSrvr		g_DPSrvr;
-  extern	CDPDatabaseClient	g_dpDBClient;
-  extern	CDPCoreClient	g_DPCoreClient;
 #endif	// __CLIENT
-
-extern	CPartyMng	g_PartyMng;
 
 
 #ifdef __CLIENT

@@ -88,4 +88,6 @@ private:
 #endif	// __SERVERLIST0911
 };
 
+extern CDPCoreSrvr g_dpCoreSrvr;
+
 #endif	// __DPLOGINSRVR_H__

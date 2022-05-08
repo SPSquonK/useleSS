@@ -8,12 +8,6 @@
 #include "dpdatabaseclient.h"
 #include "dpcoresrvr.h"
 
-extern	CDPCacheSrvr		g_DPCacheSrvr;
-extern	CDPLoginSrvr		g_dpLoginSrvr;
-extern	CGuildMng			g_GuildMng;
-extern	CPartyMng			g_PartyMng;
-extern	CDPDatabaseClient	g_dpDatabaseClient;
-extern CDPCoreSrvr			g_dpCoreSrvr;
 CPlayerMng	g_PlayerMng;
 
 #ifndef __VM_0820

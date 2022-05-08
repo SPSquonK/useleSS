@@ -14,10 +14,6 @@
 #include "crashstatus.h"
 #endif	// __CRASH_0404
 
-extern CDPCacheSrvr		g_DPCacheSrvr;
-extern	CDPClientArray	g_DPClientArray;
-extern	CMyTrace	g_MyTrace;
-
 CDPCoreClient::CDPCoreClient()
 {
 	BEGIN_MSG;

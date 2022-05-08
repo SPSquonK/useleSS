@@ -35,3 +35,5 @@ protected:
 	void	OnSay( CAr & ar, DPID dpid );
 	void	OnKillPlayer( CAr & ar, DPID dpid );
 };
+
+extern CDPCoreClient g_DPCoreClient;

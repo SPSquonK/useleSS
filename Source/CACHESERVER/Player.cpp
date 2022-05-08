@@ -5,8 +5,6 @@
 #include <ranges>
 #include "sqktd.h"
 
-extern	CDPCoreClient	g_DPCoreClient;
-extern	CDPCacheSrvr	g_DPCacheSrvr;
 CCachePlayerMng g_CachePlayerMng;
 
 CCachePlayer::CCachePlayer(DPID dpidUser, DWORD dwSerial)

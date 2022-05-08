@@ -9,8 +9,6 @@
 #include "User.h"
 #include "definetext.h"							// 대사 때문에 
 
-extern	CUserMng		g_UserMng;
-
 #define		CAT_NONE					0
 #define		CAT_NORMAL					1		// 기본공격
 #define		CAT_NORMAL2					2

@@ -3,7 +3,6 @@
 #include "script.h"
 #ifdef __WORLDSERVER
 #include "user.h"
-extern	CUserMng	g_UserMng;
 #ifdef __EVENT_0117
 #include "respawn.h"
 #include "worldmng.h"

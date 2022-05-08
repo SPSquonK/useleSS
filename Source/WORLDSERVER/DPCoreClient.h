@@ -227,4 +227,6 @@ protected:
 	void	OnPing( CAr & ar, DPID, DPID, DPID );
 };
 
+extern CDPCoreClient g_DPCoreClient;
+
 #endif	// __DPCORECLIENT_H__

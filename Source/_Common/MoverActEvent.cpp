@@ -31,12 +31,8 @@
 
 
 #ifdef __WORLDSERVER
-	extern	CUserMng			g_UserMng;
 	extern	CWorldMng			g_WorldMng;
 	extern	CDPSrvr				g_DPSrvr;
-	extern	CDPDatabaseClient	g_dpDBClient;
-	extern	CDPCoreClient		g_DPCoreClient;
-	extern	CPartyMng			g_PartyMng;
 #endif	// not __CLIENT
 
 BOOL IsLootSendText( ItemProp* pItemProp )
