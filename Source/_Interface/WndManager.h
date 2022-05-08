@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <unordered_map>
+#include <boost/container/flat_map.hpp>
 
 #ifdef __RT_1025
 #include "rtmessenger.h"
@@ -74,8 +74,6 @@
 #endif //__GUILD_HOUSE_MIDDLE
 typedef CMap<DWORD, DWORD, void *, void *> CMapDWordToPtr;
 
-
-#define DECLAREAPPLET( AddMain_Func, AllocClass) CWndNeuz* AddMain_Func() { return AllocClass; }
 
 class CWndMessage;
 class CWndInstantMsg;
@@ -210,7 +208,7 @@ enum
 class CWndGHMainMenu;
 class CWndGHUpkeep;
 
-class CWndVendor;
+class CWndMap;
 
 class CWndMgr : public CWndBase
 { 
@@ -252,7 +250,7 @@ public:
 #else	//__RT_1025
 	CMessenger m_Messenger;
 #endif	// __RT_1025
-	CMapStringToPtr m_mapMap;
+	boost::container::flat_map<std::string, std::unique_ptr<CWndMap>> m_mapMap;
 	CMapStringToPtr m_mapInstantMsg;
 	CMapStringToPtr m_mapMessage;
 	CEditString m_ChatString;
@@ -270,7 +268,7 @@ public:
 
 
 	BOOL	m_bTitle        ;
-	std::unordered_map<DWORD, AppletFunc *> m_mapAppletFunc;
+	boost::container::flat_map<DWORD, AppletFunc *> m_mapAppletFunc;
 	std::vector<int> m_tempWndId;
 	BOOL m_clearFlag;
 

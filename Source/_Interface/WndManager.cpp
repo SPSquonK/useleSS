@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ranges>
 #include "boost/container/small_vector.hpp"
 #include "defineSkill.h"
 #include "defineItem.h"
@@ -717,6 +718,7 @@ SAFE_DELETE(m_pWndChangePetName);
 	SAFE_DELETE( m_pWndAddFriend );
 	SAFE_DELETE( m_pWndStateConfirm );
 	CString strTemp;
+	
 	CWndBase* pWndBaseTemp;
 	pos = m_mapMessage.GetStartPosition();
 	while( pos )
@@ -735,13 +737,7 @@ SAFE_DELETE(m_pWndChangePetName);
 	}
 	m_mapInstantMsg.RemoveAll();
 	
-	pos = m_mapMap.GetStartPosition();
-	while( pos )
-	{
-		m_mapMap.GetNextAssoc( pos, strTemp, (void*&)pWndBaseTemp );
-		SAFE_DELETE( pWndBaseTemp );
-	}
-	m_mapMap.RemoveAll();
+	m_mapMap.clear();
 
 	SAFE_DELETE( m_pQuestItemInfo );
 	SAFE_DELETE( m_pWndTextBook );
@@ -1766,13 +1762,10 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 #ifndef __IMPROVE_MAP_SYSTEM
 		if( pWndChild->GetWndId() == APP_MAP_EX )
 		{
-			CWndMap* pWndMap = (CWndMap*) pWndChild;
-			if( m_mapMap.Lookup( pWndMap->m_szMapFile, (void*&) pWndMap ) == TRUE )
-			{
-				m_mapMap.RemoveKey( pWndMap->m_szMapFile );
-				SAFE_DELETE( pWndMap );
-				//return;
-			}
+			CWndMap * pWndMap = (CWndMap *)pWndChild;
+			m_mapMap.erase(pWndMap->m_szMapFile);
+			pWndMap = nullptr;
+			pWndChild = nullptr;
 		}
 		else
 #endif // __IMPROVE_MAP_SYSTEM
@@ -5944,16 +5937,15 @@ BOOL CWndMgr::SaveBitmap( LPCTSTR lpszName )
 	SAFE_DELETE_ARRAY( lpData );
 	return bResult;
 }
-CWndMap* CWndMgr::OpenMap( LPCTSTR lpszMapFileName )
-{
-	CWndMap* pWndMap = NULL;
-	if( m_mapMap.Lookup( lpszMapFileName, (void*&)pWndMap ) == FALSE )
-	{
-		pWndMap = new CWndMap;
-		strcpy( pWndMap->m_szMapFile, lpszMapFileName );
-		pWndMap->Initialize();
-		m_mapMap.SetAt( lpszMapFileName, pWndMap );
-	}
+CWndMap* CWndMgr::OpenMap(LPCTSTR lpszMapFileName) {
+	const auto it = m_mapMap.find(lpszMapFileName);
+	if (it != m_mapMap.end()) return it->second.get();
+
+	CWndMap * pWndMap = new CWndMap;
+	strcpy( pWndMap->m_szMapFile, lpszMapFileName );
+	pWndMap->Initialize();
+	m_mapMap.emplace(lpszMapFileName, pWndMap);
+
 	return pWndMap;
 }
 
