@@ -48,154 +48,87 @@
 
 	 Step. 3 - map에 Add하기. 마지막 필드의 툴팁 세팅은 Resource\textClient.inc를 참고. 
 */
-   
 
+template <typename T> CWndNeuz * WindowBuilder()
+requires std::derived_from<T, CWndNeuz> {
+	return new T();
+}
 
-
-DECLAREAPPLET( AppMain_WndNavigator    , new CWndNavigator   );
-DECLAREAPPLET( AppMain_WndCharacter    , new CWndCharacter   );
-DECLAREAPPLET( AppMain_WndSkill2       , new CWndSkillTreeEx );
-DECLAREAPPLET( AppMain_WndEmotion      , new CWndEmotion     );
-DECLAREAPPLET( AppMain_WndMotion       , new CWndMotion      );
-DECLAREAPPLET( AppMain_WndTrade        , new CWndTrade       );
-DECLAREAPPLET( AppMain_WndVendor       , new CWndVendor );
-DECLAREAPPLET( AppMain_WndQuest        , new CWndQuest       );
-DECLAREAPPLET( AppMain_WndPvp          , new CWndPvp       );
-DECLAREAPPLET( AppMain_WndInventory    , new CWndInventory   );
-DECLAREAPPLET( AppMain_WndWebBox       , new CWndWebBox  );
-DECLAREAPPLET( AppMain_WndWebBox2      , new CWndWebBox2 );
-DECLAREAPPLET( AppMain_WndParty        , new CWndParty  );
-DECLAREAPPLET( AppMain_WndGuild        , new CWndGuild  );
-DECLAREAPPLET( AppMain_WndCommItem     , new CWndCommItem  );
-DECLAREAPPLET( AppMain_WndUpgradeBase  , new CWndUpgradeBase  );
-DECLAREAPPLET( AppMain_WndPiercing     , new CWndPiercing  );
-DECLAREAPPLET( AppMain_WndChat         , new CWndChat    );
-DECLAREAPPLET( AppMain_WndMessenger    , new CWndMessengerEx );
-DECLAREAPPLET( AppMain_WndOptSound     , new CWndOptSound    );
-DECLAREAPPLET( AppMain_WndOptWindow    , new CWndOptWindow   );
-DECLAREAPPLET( AppMain_WndOptMyInfo    , new CWndOptMyInfo   );
-DECLAREAPPLET( AppMain_WndOption       , new CWndTotalOption );
-DECLAREAPPLET( AppMain_WndInfoNotice   , new CWndInfoNotice  );
-DECLAREAPPLET( AppMain_WndHelpHelp     , new CWndHelp        );
-DECLAREAPPLET( AppMain_WndHelpTip      , new CWndHelpTip     );
-DECLAREAPPLET( AppMain_WndHelpFAQ      , new CWndHelpFAQ     );
-DECLAREAPPLET( AppMain_WndLogOut       , new CWndLogOut      );
-DECLAREAPPLET( AppMain_WndQuit         , new CWndQuit        );
-DECLAREAPPLET( AppMain_WndWorld        , new CWndWorld       );
-DECLAREAPPLET( AppMain_WndDebugInfo    , new CWndDebugInfo   );
-DECLAREAPPLET( AppMain_WndStatus       , new CWndStatus       );
-DECLAREAPPLET( AppMain_WndLogin        , new CWndLogin        );
-DECLAREAPPLET( AppMain_WndSelectServer , new CWndSelectServer );
-DECLAREAPPLET( AppMain_WndCreateChar   , new CWndCreateChar   );
-DECLAREAPPLET( AppMain_WndSelectChar   , new CWndSelectChar   );
-
-#ifdef __IMPROVE_MAP_SYSTEM
-DECLAREAPPLET( AppMain_WndMap   , new CWndMapEx   );
-#else // __IMPROVE_MAP_SYSTEM
-DECLAREAPPLET( AppMain_WndMap   , new CWndMap   );
-#endif // __IMPROVE_MAP_SYSTEM
-DECLAREAPPLET( AppMain_LordSkill, new CWndLordSkill  );
-DECLAREAPPLET( AppMain_WndPartyQuick   , new CWndPartyQuick   );
-DECLAREAPPLET( AppMain_WndBuffStatus   , new CWndBuffStatus   );
-
-#ifdef __GUILDVOTE
-DECLAREAPPLET( AppMain_WndGuildVote   , new CWndGuildVote  );
-#endif
-DECLAREAPPLET( AppMain_WndInvenRemoveItem, new CWndInvenRemoveItem );
-#ifndef __TMP_POCKET
-DECLAREAPPLET( AppMain_BagEx    , new CWndBagEx   );
-#endif
-
-DECLAREAPPLET( AppMain_InfoPang    , new CWndInfoPang   );
-DECLAREAPPLET( AppMain_Housing    , new CWndHousing   );
-
-DECLAREAPPLET( AppMain_GuildHousing    , new CWndGuildHousing   );
-
-DECLAREAPPLET( AppMain_Couple    , new CWndCoupleManager );
-
-DECLAREAPPLET( AppMain_Wnd2ndPassword  , new CWnd2ndPassword );
-
-#ifdef __NEW_WEB_BOX
-DECLAREAPPLET( AppMain_WndHelperWebBox , new CWndHelperWebBox  );
-#endif // __NEW_WEB_BOX
-
-void CWndMgr::AddAllApplet()
-{
+void CWndMgr::AddAllApplet() {
 	//             생성자                    ID                            타이틀                    아이콘                          툴팁 텍스트 
-	AddAppletFunc( AppMain_WndNavigator    , APP_NAVIGATOR               , _T( "WndNavigator" )    , _T( "Icon_Navigator.dds" )    , GETTEXT( TID_TIP_NAVIGATOR      ),  'N'  );	
-	AddAppletFunc( AppMain_WndStatus       , APP_STATUS1                 , _T( "WndStatus" )       , _T( "Icon_Status.dds"    )    , GETTEXT( TID_TIP_STATUS         ), 'T' );
+	AddAppletFunc(WindowBuilder<CWndNavigator>    , APP_NAVIGATOR               , _T( "WndNavigator" )    , _T( "Icon_Navigator.dds" )    , GETTEXT( TID_TIP_NAVIGATOR      ),  'N'  );
+	AddAppletFunc(WindowBuilder<CWndStatus>       , APP_STATUS1                 , _T( "WndStatus" )       , _T( "Icon_Status.dds"    )    , GETTEXT( TID_TIP_STATUS         ), 'T' );
 #ifdef __IMPROVE_MAP_SYSTEM
-	AddAppletFunc( AppMain_WndMap       , APP_MAP_EX              , _T( "WndMap" )       , _T( "Icon_Applet.dds"    )    , GETTEXT(TID_TIP_MAP), 'M' );
+	AddAppletFunc(WindowBuilder<CWndMapEx>        , APP_MAP_EX              , _T( "WndMap" )       , _T( "Icon_Applet.dds"    )    , GETTEXT(TID_TIP_MAP), 'M' );
 #else // __IMPROVE_MAP_SYSTEM
-	AddAppletFunc( AppMain_WndMap       , APP_MAP                 , _T( "WndMap" )       , _T( "Icon_Applet.dds"    )    , GETTEXT(TID_TIP_MAP), 'M' );
+	AddAppletFunc(WindowBuilder<CWndMap>          , APP_MAP                 , _T( "WndMap" )       , _T( "Icon_Applet.dds"    )    , GETTEXT(TID_TIP_MAP), 'M' );
 #endif // __IMPROVE_MAP_SYSTEM
-	if( ::GetLanguage() == LANG_FRE )
-		AddAppletFunc( AppMain_LordSkill       , APP_LORD_SKILL             , _T( "WndLordSkill" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), 'A' );
-	else
-		AddAppletFunc( AppMain_LordSkill       , APP_LORD_SKILL             , _T( "WndLordSkill" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), 'L' );
-	AddAppletFunc( AppMain_InfoPang       , APP_INFOPANG                , _T( "WndInfoPang" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), 0 );
-	AddAppletFunc( AppMain_Housing       , APP_HOUSING                , _T( "WndHousing" )       , _T( "Icon_Housing.dds"    )    , GETTEXT(TID_GAME_HOUSING_BOX), 'Y' );
-
-	AddAppletFunc( AppMain_GuildHousing     , APP_GH_FURNITURE_STORAGE, _T( "WndGuildHousing" )     , _T( "Icon_Housing.dds"    )    , GETTEXT(TID_GAME_HOUSING_BOX), 'R' );
-	AddAppletFunc( AppMain_WndCharacter    , APP_CHARACTER3               , _T( "WndCharacter" )    , _T( "Icon_Character.dds" )    , GETTEXT( TID_TIP_CHARACTER      ), 'H' );
-	AddAppletFunc( AppMain_WndInventory    , APP_INVENTORY               , _T( "WndInventory" )    , _T( "Icon_Inventory.dds" )    , GETTEXT( TID_TIP_INVENTORY      ), 'I' );
 	
-	AddAppletFunc( AppMain_WndWebBox       , APP_WEBBOX                  , _T( "WebBox" )          , _T( "Icon_CitemMall.dds" )    , GETTEXT( TID_TIP_ITEMMALL       ), 0 );
-	AddAppletFunc( AppMain_WndSkill2       , APP_SKILL3                  , _T( "WndSkill"     )    , _T( "Icon_Skill.dds"     )    , GETTEXT( TID_TIP_SKILL          ), 'K' );
+	const char lordSkillPosition = ::GetLanguage() == LANG_FRE ? 'A' : 'L';
+	AddAppletFunc(WindowBuilder<CWndLordSkill>    , APP_LORD_SKILL             , _T( "WndLordSkill" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), lordSkillPosition);
 
-	AddAppletFunc( AppMain_WndMotion       , APP_MOTION                  , _T( "WndMotion"    )    , _T( "Icon_Motion.dds"   )     , GETTEXT( TID_TIP_MOTION         ),  'O'  );
-	AddAppletFunc( AppMain_WndTrade        , APP_TRADE                   , _T( "WndTrade"     )    , _T( "Icon_Trade.dds"     )    , GETTEXT( TID_TIP_TRADE          ),  0  );
+	AddAppletFunc(WindowBuilder<CWndInfoPang>     , APP_INFOPANG                , _T( "WndInfoPang" )       , _T( "Icon_Infopang.dds"    )    , GETTEXT(TID_TIP_INFOPANG), 0 );
+	AddAppletFunc(WindowBuilder<CWndHousing>      , APP_HOUSING                , _T( "WndHousing" )       , _T( "Icon_Housing.dds"    )    , GETTEXT(TID_GAME_HOUSING_BOX), 'Y' );
 
-	AddAppletFunc( AppMain_WndVendor	   , APP_VENDOR_REVISION         , _T( "WndVendor" )	   , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_VENDOR ), 0 );
+	AddAppletFunc(WindowBuilder<CWndGuildHousing> , APP_GH_FURNITURE_STORAGE, _T( "WndGuildHousing" )     , _T( "Icon_Housing.dds"    )    , GETTEXT(TID_GAME_HOUSING_BOX), 'R' );
+	AddAppletFunc(WindowBuilder<CWndCharacter>    , APP_CHARACTER3               , _T( "WndCharacter" )    , _T( "Icon_Character.dds" )    , GETTEXT( TID_TIP_CHARACTER      ), 'H' );
+	AddAppletFunc(WindowBuilder<CWndInventory>    , APP_INVENTORY               , _T( "WndInventory" )    , _T( "Icon_Inventory.dds" )    , GETTEXT( TID_TIP_INVENTORY      ), 'I' );
+	
+	AddAppletFunc(WindowBuilder<CWndWebBox>       , APP_WEBBOX                  , _T( "WebBox" )          , _T( "Icon_CitemMall.dds" )    , GETTEXT( TID_TIP_ITEMMALL       ), 0 );
+	AddAppletFunc(WindowBuilder<CWndSkillTreeEx>  , APP_SKILL3                  , _T( "WndSkill"     )    , _T( "Icon_Skill.dds"     )    , GETTEXT( TID_TIP_SKILL          ), 'K' );
 
-	AddAppletFunc( AppMain_WndQuest        , APP_QUEST_EX_LIST           , _T( "WndQuest"     )    , _T( "Icon_Quest.dds"     )    , GETTEXT( TID_TIP_QUEST          ), g_Neuz.Key.chQuest );
-	AddAppletFunc( AppMain_WndParty        , APP_PARTY                   , _T( "WndParty"     )    , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  'P' );
+	AddAppletFunc(WindowBuilder<CWndMotion>       , APP_MOTION                  , _T( "WndMotion"    )    , _T( "Icon_Motion.dds"   )     , GETTEXT( TID_TIP_MOTION         ),  'O'  );
+	AddAppletFunc(WindowBuilder<CWndTrade>        , APP_TRADE                   , _T( "WndTrade"     )    , _T( "Icon_Trade.dds"     )    , GETTEXT( TID_TIP_TRADE          ),  0  );
 
-	AddAppletFunc( AppMain_WndGuild        , APP_GUILD                   , _T( "WndGuild"     )    , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_COMPANY          ),  'G' );
+	AddAppletFunc(WindowBuilder<CWndVendor>	      , APP_VENDOR_REVISION         , _T( "WndVendor" )	   , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_VENDOR ), 0 );
+
+	AddAppletFunc(WindowBuilder<CWndQuest>        , APP_QUEST_EX_LIST           , _T( "WndQuest"     )    , _T( "Icon_Quest.dds"     )    , GETTEXT( TID_TIP_QUEST          ), g_Neuz.Key.chQuest );
+	AddAppletFunc(WindowBuilder<CWndParty>        , APP_PARTY                   , _T( "WndParty"     )    , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  'P' );
+
+	AddAppletFunc(WindowBuilder<CWndGuild>        , APP_GUILD                   , _T( "WndGuild"     )    , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_COMPANY          ),  'G' );
 
 #ifdef __GUILDVOTE
-	AddAppletFunc( AppMain_WndGuildVote    , APP_GUILD_VOTE              , _T( "WndGuildVote")     , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_COMPANY          ),  'V' );
+	AddAppletFunc(WindowBuilder<CWndGuildVote>    , APP_GUILD_VOTE              , _T( "WndGuildVote")     , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_COMPANY          ),  'V' );
 #endif
 	
 	#ifndef __TMP_POCKET
-	AddAppletFunc( AppMain_BagEx       , APP_BAG_EX                , _T( "WndBagEx" )       , _T( "Icon_BagBag.tga"    )    , GETTEXT(TID_APP_BAG_EX), 'B' );
+	AddAppletFunc(WindowBuilder<CWndBagEx>        , APP_BAG_EX                , _T( "WndBagEx" )       , _T( "Icon_BagBag.tga"    )    , GETTEXT(TID_APP_BAG_EX), 'B' );
 	#endif
-	AddAppletFunc( AppMain_WndCommItem    , APP_COMM_ITEM                , _T( "WndCommItem"  )    , _T( "Icon_CItemTime.dds" )    , GETTEXT( TID_TIP_ITEMTIME   ),  'J' );
-	AddAppletFunc( AppMain_WndUpgradeBase    , APP_TEST                  , _T( "WndUpgradeBase" )  , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  0 );
-	AddAppletFunc( AppMain_WndPiercing    , APP_PIERCING                 , _T( "WndPiercing"     ) , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  0 );
-	AddAppletFunc( AppMain_WndChat         , APP_COMMUNICATION_CHAT      , _T( "WndChat"      )    , _T( "Icon_Chat.dds"      )    , GETTEXT( TID_TIP_COMMUNICATION_CHAT    ),  0 );
-	AddAppletFunc( AppMain_WndMessenger    , APP_MESSENGER_              , _T( "WndMessenger" )    , _T( "Icon_Messenger.dds"   )  , GETTEXT( TID_TIP_MESSENGER ),  'E'  );
+	AddAppletFunc(WindowBuilder<CWndCommItem>     , APP_COMM_ITEM                , _T( "WndCommItem"  )    , _T( "Icon_CItemTime.dds" )    , GETTEXT( TID_TIP_ITEMTIME   ),  'J' );
+	AddAppletFunc(WindowBuilder<CWndUpgradeBase>  , APP_TEST                  , _T( "WndUpgradeBase" )  , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  0 );
+	AddAppletFunc(WindowBuilder<CWndPiercing>     , APP_PIERCING                 , _T( "WndPiercing"     ) , _T( "Icon_Troupe.dds"    )    , GETTEXT( TID_TIP_PARTY          ),  0 );
+	AddAppletFunc(WindowBuilder<CWndChat>         , APP_COMMUNICATION_CHAT      , _T( "WndChat"      )    , _T( "Icon_Chat.dds"      )    , GETTEXT( TID_TIP_COMMUNICATION_CHAT    ),  0 );
+	AddAppletFunc(WindowBuilder<CWndMessenger>    , APP_MESSENGER_              , _T( "WndMessenger" )    , _T( "Icon_Messenger.dds"   )  , GETTEXT( TID_TIP_MESSENGER ),  'E'  );
 
-	AddAppletFunc( AppMain_WndOptSound     , APP_OPTION_SOUND            , _T( "WndOptSound" )     , _T( "Icon_OptSound.dds" )     , GETTEXT( TID_TIP_OPTION_SOUND          ),  0  );
-	AddAppletFunc( AppMain_WndOptWindow    , APP_OPTION_WINDOW           , _T( "WndOptWindow" )    , _T( "Icon_Applet.dds"      )  , GETTEXT( TID_TIP_OPTION_WINDOW         ),  0  );
-	AddAppletFunc( AppMain_WndOptMyInfo    , APP_OPTION_MYINFO           , _T( "WndOptMyInfo" )    , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_OPTION_MYINFO         ),  0  );
-	AddAppletFunc( AppMain_WndOption	   , APP_OPTIONEX				 , _T( "WndOption" )	   , _T( "Icon_Applet.dds" )	   , GETTEXT( TID_APP_OPTION				),	0  );			
+	AddAppletFunc(WindowBuilder<CWndOptSound>     , APP_OPTION_SOUND            , _T( "WndOptSound" )     , _T( "Icon_OptSound.dds" )     , GETTEXT( TID_TIP_OPTION_SOUND          ),  0  );
+	AddAppletFunc(WindowBuilder<CWndOptWindow>    , APP_OPTION_WINDOW           , _T( "WndOptWindow" )    , _T( "Icon_Applet.dds"      )  , GETTEXT( TID_TIP_OPTION_WINDOW         ),  0  );
+	AddAppletFunc(WindowBuilder<CWndOptMyInfo>    , APP_OPTION_MYINFO           , _T( "WndOptMyInfo" )    , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_OPTION_MYINFO         ),  0  );
+	AddAppletFunc(WindowBuilder<CWndOption>       , APP_OPTIONEX				 , _T( "WndOption" )	   , _T( "Icon_Applet.dds" )	   , GETTEXT( TID_APP_OPTION				),	0  );			
 
-	AddAppletFunc( AppMain_WndInfoNotice   , APP_INFO_NOTICE             , _T( "WndInfoNotice" )   , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_INFO_NOTICE           ),  0  );
-	AddAppletFunc( AppMain_WndHelpHelp     , APP_HELPER_HELP             , _T( "WndHelpHelp" )     , _T( "Icon_HelperHelp.dds" )   , GETTEXT( TID_TIP_HELPER_HELP           ),  0  );
-	AddAppletFunc( AppMain_WndHelpTip      , APP_HELPER_TIP              , _T( "WndHelpTip" )      , _T( "Icon_HelperTip.dds" )    , GETTEXT( TID_TIP_HELPER_TIP            ),  0  );
-	AddAppletFunc( AppMain_WndHelpFAQ      , APP_HELPER_FAQ              , _T( "WndHelpFAQ" )      , _T( "Icon_HelperFAQ.dds" )    , GETTEXT( TID_TIP_HELPER_FAQ            ),  0  );
+	AddAppletFunc(WindowBuilder<CWndInfoNotice>   , APP_INFO_NOTICE             , _T( "WndInfoNotice" )   , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_INFO_NOTICE           ),  0  );
+	AddAppletFunc(WindowBuilder<CWndHelp>         , APP_HELPER_HELP             , _T( "WndHelpHelp" )     , _T( "Icon_HelperHelp.dds" )   , GETTEXT( TID_TIP_HELPER_HELP           ),  0  );
+	AddAppletFunc(WindowBuilder<CWndHelpTip>      , APP_HELPER_TIP              , _T( "WndHelpTip" )      , _T( "Icon_HelperTip.dds" )    , GETTEXT( TID_TIP_HELPER_TIP            ),  0  );
+	AddAppletFunc(WindowBuilder<CWndHelpFAQ>      , APP_HELPER_FAQ              , _T( "WndHelpFAQ" )      , _T( "Icon_HelperFAQ.dds" )    , GETTEXT( TID_TIP_HELPER_FAQ            ),  0  );
 
-	AddAppletFunc( AppMain_WndLogOut       , APP_LOGOUT                  , _T( "WndLogout"   )     , _T( "Icon_Logout.dds"   )     , GETTEXT( TID_TIP_LOGOUT              ),  0  );
-	AddAppletFunc( AppMain_WndQuit         , APP_QUIT                    , _T( "WndQuit"      )    , _T( "Icon_Quit.dds"      )    , GETTEXT( TID_TIP_QUIT                  ),  0  );
-//	if( GetLanguage() == LANG_TWN )
-		AddAppletFunc( AppMain_WndWebBox2  , APP_WEBBOX2                 , _T( "WebBox2" )         , _T( "QOODO.dds" )             , GETTEXT( TID_TIP_QOODO	    ), 0 );
+	AddAppletFunc(WindowBuilder<CWndLogOut>       , APP_LOGOUT                  , _T( "WndLogout"   )     , _T( "Icon_Logout.dds"   )     , GETTEXT( TID_TIP_LOGOUT              ),  0  );
+	AddAppletFunc(WindowBuilder<CWndQuit>         , APP_QUIT                    , _T( "WndQuit"      )    , _T( "Icon_Quit.dds"      )    , GETTEXT( TID_TIP_QUIT                  ),  0  );
+	AddAppletFunc(WindowBuilder<CWndWebBox2>      , APP_WEBBOX2                 , _T( "WebBox2" )         , _T( "QOODO.dds" )             , GETTEXT( TID_TIP_QOODO	    ), 0 );
 
-	AddAppletFunc( AppMain_WndWorld        , APP_WORLD                   , _T( "WndWorld" )        , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_WORLD     ),  0  );
-	AddAppletFunc( AppMain_WndDebugInfo    , APP_DEBUGINFO               , _T( "WndDebugInfo" )    , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_DEBUGINFO ),  0  );
-	AddAppletFunc( AppMain_WndLogin        , APP_LOGIN                   , _T( "WndLogin"      )   , _T( "Icon_Login.dds"      )   , GETTEXT( TID_TIP_APPLET    ),  0  );
-	AddAppletFunc( AppMain_WndSelectServer , APP_SELECT_SERVER           , _T( "WndSelectServer")  , _T( "Icon_SelectServer.dds")  , GETTEXT( TID_TIP_WORLD     ),  0  );
-	AddAppletFunc( AppMain_WndCreateChar   , APP_CREATE_CHAR             , _T( "WndCreateChar" )   , _T( "Icon_CreateChar.dds" )   , GETTEXT( TID_TIP_WORLD     ),  0  );
-	AddAppletFunc( AppMain_WndSelectChar   , APP_SELECT_CHAR             , _T( "WndSelectChar" )   , _T( "Icon_SelectChar.dds" )   , GETTEXT( TID_TIP_DIALOG    ),  0  );
+	AddAppletFunc(WindowBuilder<CWndWorld>        , APP_WORLD                   , _T( "WndWorld" )        , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_WORLD     ),  0  );
+	AddAppletFunc(WindowBuilder<CWndDebugInfo>    , APP_DEBUGINFO               , _T( "WndDebugInfo" )    , _T( "Icon_Applet.dds" )       , GETTEXT( TID_TIP_DEBUGINFO ),  0  );
+	AddAppletFunc(WindowBuilder<CWndLogin>        , APP_LOGIN                   , _T( "WndLogin"      )   , _T( "Icon_Login.dds"      )   , GETTEXT( TID_TIP_APPLET    ),  0  );
+	AddAppletFunc(WindowBuilder<CWndSelectServer> , APP_SELECT_SERVER           , _T( "WndSelectServer")  , _T( "Icon_SelectServer.dds")  , GETTEXT( TID_TIP_WORLD     ),  0  );
+	AddAppletFunc(WindowBuilder<CWndCreateChar>   , APP_CREATE_CHAR             , _T( "WndCreateChar" )   , _T( "Icon_CreateChar.dds" )   , GETTEXT( TID_TIP_WORLD     ),  0  );
+	AddAppletFunc(WindowBuilder<CWndSelectChar>   , APP_SELECT_CHAR             , _T( "WndSelectChar" )   , _T( "Icon_SelectChar.dds" )   , GETTEXT( TID_TIP_DIALOG    ),  0  );
 
-	AddAppletFunc( AppMain_WndPartyQuick   , APP_PARTY_QUICK             , _T( "WndPartyQuick" )   , NULL   , GETTEXT( TID_TIP_DIALOG    ),  0  );
-	AddAppletFunc( AppMain_WndBuffStatus   , APP_BUFF_STATUS             , _T( "WndBuffStatus" )   , NULL   , GETTEXT( TID_TIP_DIALOG    ),  0  );
-	if( ::GetLanguage() == LANG_FRE )
-		AddAppletFunc( AppMain_Couple   , APP_COUPLE_MAIN             , _T( "WndCoupleManager" )   , _T( "Icon_Couple.dds" )   , GETTEXT( TID_GAME_COUPLE ),  'X' );
-	else
-		AddAppletFunc( AppMain_Couple   , APP_COUPLE_MAIN             , _T( "WndCoupleManager" )   , _T( "Icon_Couple.dds" )   , GETTEXT( TID_GAME_COUPLE ),  'F' );
-	AddAppletFunc( AppMain_Wnd2ndPassword  , APP_2ND_PASSWORD_NUMBERPAD  , _T( "Wnd2ndPassword" )   , _T( "Icon_Applet.dds" )   , GETTEXT( TID_2ND_PASSWORD_WINDOW_OPEN ),  0  );
+	AddAppletFunc(WindowBuilder<CWndPartyQuick>   , APP_PARTY_QUICK             , _T( "WndPartyQuick" )   , NULL   , GETTEXT( TID_TIP_DIALOG    ),  0  );
+	AddAppletFunc(WindowBuilder<CWndBuffStatus>   , APP_BUFF_STATUS             , _T( "WndBuffStatus" )   , NULL   , GETTEXT( TID_TIP_DIALOG    ),  0  );
+
+	const char theFrenchAreBack = ::GetLanguage() == LANG_FRE ? 'X' : 'F';
+	AddAppletFunc(WindowBuilder<CWndCoupleManager>, APP_COUPLE_MAIN             , _T( "WndCoupleManager" )   , _T( "Icon_Couple.dds" )   , GETTEXT( TID_GAME_COUPLE ), theFrenchAreBack);
+
+	AddAppletFunc(WindowBuilder<CWnd2ndPassword>  , APP_2ND_PASSWORD_NUMBERPAD  , _T( "Wnd2ndPassword" )   , _T( "Icon_Applet.dds" )   , GETTEXT( TID_2ND_PASSWORD_WINDOW_OPEN ),  0  );
 #ifdef __NEW_WEB_BOX
-	AddAppletFunc( AppMain_WndHelperWebBox , APP_WEBBOX2              , _T( "HelperWebBox" )       , _T( "Icon_HelperHelp.dds" ) , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TOOLTIP ), 0 );
+	AddAppletFunc(WindowBuilder<CWndHelperWebBox> , APP_WEBBOX2              , _T( "HelperWebBox" )       , _T( "Icon_HelperHelp.dds" ) , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TOOLTIP ), 0 );
 #endif // __NEW_WEB_BOX
 }
