@@ -40,30 +40,28 @@ BOOL CTicketProperty::LoadScript() {
 			// == Read JSON
 			const auto & ticketObj = ticket_.GetObject();
 
-			const auto maybeWorld = CScript::GetDefineNumOpt(
-				ticketObj.FindMember("world")->value.GetString()
-			);
+			const auto maybeWorld = CScript::GetDefineNumOpt(ticketObj["world"].GetString());
 			if (!maybeWorld) throw std::exception("Unknown world");
 
 			const DWORD worldId = maybeWorld.value();
 
-			const auto & positionJson = ticketObj.FindMember("position")->value.GetObject();
+			const auto & positionJson = ticketObj["position"].GetObject();
 			const D3DXVECTOR3 position(
-				positionJson.FindMember("x")->value.GetFloat(),
-				positionJson.FindMember("y")->value.GetFloat(),
-				positionJson.FindMember("z")->value.GetFloat()
+				positionJson["x"].GetFloat(),
+				positionJson["y"].GetFloat(),
+				positionJson["z"].GetFloat()
 			);
 
 			const unsigned int nExpand = ([](const auto & ticketObj) -> unsigned int {
 				if (ticketObj.HasMember("nExpand")) {
-					return ticketObj.FindMember("nExpand")->value.GetUint();
+					return ticketObj["nExpand"].GetUint();
 				} else {
 					return 0;
 				}
 			})(ticketObj);
 			
 			std::vector<DWORD> items;
-			for (const auto & itemJson : ticketObj.FindMember("items")->value.GetArray()) {
+			for (const auto & itemJson : ticketObj["items"].GetArray()) {
 				const char * itemStr = itemJson.GetString();
 				const int id = CScript::GetDefineNum(itemStr);
 				if (id == -1) throw std::exception("Item not found");
