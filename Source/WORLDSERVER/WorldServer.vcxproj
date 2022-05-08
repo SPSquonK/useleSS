@@ -94,6 +94,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
+    <ClCompile Include="..\_Interface\FuncTextCmd_ItemEnchant.cpp" />
     <ClCompile Include="AttackArbiter.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\auction.cpp">

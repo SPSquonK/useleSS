@@ -1474,6 +1474,22 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
+#ifdef __WORLDSERVER
+namespace SqKItemEnchant {
+	void ItemEnchant(CScanner & scanner, CUser * user, CItemElem * item);
+}
+#endif
+
+BOOL TextCmd_ItemEnchant(CScanner & scanner, CPlayer_ * pUser) {
+#ifdef __WORLDSERVER
+	CItemElem * pItemElem = pUser->m_Inventory.GetAt(0);
+	if (!pItemElem) return TRUE;
+
+	SqKItemEnchant::ItemEnchant(scanner, pUser, pItemElem);
+#endif
+	return TRUE;
+}
+
 BOOL TextCmd_CommercialElem( CScanner& )
 {
 #ifdef __CLIENT
@@ -4732,6 +4748,7 @@ CmdFunc::AllCommands::AllCommands() {
 	// GM_LEVEL_4
 	ON_TEXTCMDFUNC( TextCmd_Disguise,				"disguise",           "dis",            "변신",           "변",      TCM_SERVER, AUTH_ADMINISTRATOR   , "변신" )
 	ON_TEXTCMDFUNC( TextCmd_NoDisguise,				"noDisguise",         "nodis",          "변신해제",       "변해",    TCM_SERVER, AUTH_ADMINISTRATOR   , "변신 해제" )
+	ON_TEXTCMDFUNC( TextCmd_ItemEnchant, "itemenchant", "ie", "ie", "ie", TCM_SERVER, AUTH_ADMINISTRATOR, "Change various item enchants")
 	ON_TEXTCMDFUNC( TextCmd_ResistItem,				"ResistItem",         "ritem",          "속성아이템",     "속아",    TCM_BOTH  , AUTH_ADMINISTRATOR, "속성아이템" )
 	ON_TEXTCMDFUNC( TextCmd_JobName,				"jobname",            "jn",             "직업이름",       "직이",    TCM_CLIENT, AUTH_ADMINISTRATOR   , "직업이름 보기" )
 	ON_TEXTCMDFUNC( TextCmd_GetGold,				"getgold",            "gg",             "돈줘",           "돈",      TCM_SERVER, AUTH_ADMINISTRATOR, "돈 얻기" )
