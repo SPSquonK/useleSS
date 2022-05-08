@@ -720,23 +720,9 @@ SAFE_DELETE(m_pWndChangePetName);
 	CString strTemp;
 	
 	CWndBase* pWndBaseTemp;
-	pos = m_mapMessage.GetStartPosition();
-	while( pos )
-	{
-		m_mapMessage.GetNextAssoc( pos, strTemp, (void*&)pWndBaseTemp );
-		SAFE_DELETE( pWndBaseTemp );//	요 라인에서 뒤지니까 함 확인해보셈. -xuzhu-
-	}
-	
-	m_mapMessage.RemoveAll();
 
-	pos = m_mapInstantMsg.GetStartPosition();
-	while( pos )
-	{
-		m_mapInstantMsg.GetNextAssoc( pos, strTemp, (void*&)pWndBaseTemp );
-		SAFE_DELETE( pWndBaseTemp );
-	}
-	m_mapInstantMsg.RemoveAll();
-	
+	m_mapMessage.clear();
+	m_mapInstantMsg.clear();
 	m_mapMap.clear();
 
 	SAFE_DELETE( m_pQuestItemInfo );
@@ -1764,7 +1750,6 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 		{
 			CWndMap * pWndMap = (CWndMap *)pWndChild;
 			m_mapMap.erase(pWndMap->m_szMapFile);
-			pWndMap = nullptr;
 			pWndChild = nullptr;
 		}
 		else
@@ -1789,30 +1774,27 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 		if( pWndChild->GetWndId() == APP_MESSAGE )
 		{
 			CWndMessage* pWndMessage = (CWndMessage*) pWndChild;
-			if( m_mapMessage.Lookup( pWndMessage->m_strPlayer, (void*&) pWndBase ) == TRUE )
-			{
-				if( pWndBase != pWndMessage )
-					//ADDERRORMSG( "APP_MESSAGE_Vampyre" );
-				m_mapMessage.RemoveKey( pWndMessage->m_strPlayer );
-				SAFE_DELETE( pWndBase );
-				pWndMessage = NULL;
-				//SAFE_DELETE( pWndMessage );
-				//return;
+			const auto it = m_mapMessage.find(pWndMessage->m_strPlayer);
+			if (it != m_mapMessage.end()) {
+				if (it->second.get() != pWndMessage) { /* wtf??? */ }
+
+				m_mapMessage.erase(it);
+				pWndChild = nullptr;
+			} else {
+				// Maybe we should panic because it means we do not know the owner of pWndChild?
 			}
 		}
 		else
 		if( pWndChild->GetWndId() == APP_INSTANTMSG )
 		{
+			// yay code duplication is awesome.
 			CWndInstantMsg* pWndMessage = (CWndInstantMsg*) pWndChild;
-			if( m_mapInstantMsg.Lookup( pWndMessage->m_strPlayer, (void*&) pWndBase ) == TRUE )
-			{
-				if( pWndBase != pWndMessage )
-					//ADDERRORMSG( "APP_INSTANTMSG_Vampyre" );
-				m_mapInstantMsg.RemoveKey( pWndMessage->m_strPlayer );
-				SAFE_DELETE( pWndBase );
-				pWndMessage = NULL;
-				//SAFE_DELETE( pWndMessage );
-				//return;
+			const auto it = m_mapInstantMsg.find(pWndMessage->m_strPlayer);
+			if (it != m_mapInstantMsg.end()) {
+				if (it->second.get() != pWndMessage) { /* again? */ }
+
+				m_mapInstantMsg.erase(it);
+				pWndChild = nullptr;
 			}
 		}
 	}
@@ -5977,95 +5959,69 @@ BOOL CWndMgr::CloseCollecting()
 }
 
 
-CWndMessage* CWndMgr::GetMessage( LPCTSTR lpszFrom )
-{
-	CString string;
-	CWndMessage* pWndMessage = NULL;
-	m_mapMessage.Lookup( lpszFrom, (void*&)pWndMessage );
-	return pWndMessage;
+CWndMessage* CWndMgr::GetMessage( LPCTSTR lpszFrom ) {
+	return sqktd::find_in_unique_map(m_mapMessage, lpszFrom);
 }
-CWndMessage* CWndMgr::OpenMessage( LPCTSTR lpszFrom )
-{
-	CString string;
-	CWndMessage* pWndMessage = NULL;
-	if( m_mapMessage.Lookup( lpszFrom, (void*&)pWndMessage ) == FALSE )
-	{
-		pWndMessage = new CWndMessage;
-		pWndMessage->Initialize();
-		m_mapMessage.SetAt( lpszFrom, pWndMessage );
-		string = pWndMessage->GetTitle();
-		string += " - ";
-		string += lpszFrom;
-		pWndMessage->SetTitle( string );
-		pWndMessage->m_strPlayer = lpszFrom;
-	}
-	else
-	{
+CWndMessage* CWndMgr::OpenMessage( LPCTSTR lpszFrom ) {
+	CWndMessage * pWndMessage = GetMessage(lpszFrom);
+	if (pWndMessage) {
 		pWndMessage->InitSize();
+		return pWndMessage;
 	}
-	return pWndMessage;
+
+	pWndMessage = new CWndMessage;
+	pWndMessage->Initialize();
+	m_mapMessage.emplace( lpszFrom, pWndMessage );
+	const CString string = pWndMessage->GetTitle() + " - " + lpszFrom;
+	pWndMessage->SetTitle( string );
+	pWndMessage->m_strPlayer = lpszFrom;
 }
 
-void CWndMessage::OnDestroy()
-{
-	g_WndMng.m_mapMessage.RemoveKey(m_strPlayer);
+BOOL CWndMgr::UpdateMessage( LPCTSTR pszOld, LPCTSTR pszNew ) {
+	const auto it = m_mapMessage.find(pszOld);
+	if (it == m_mapMessage.end()) return FALSE;
+
+	CWndMessage * pWndMessage = it->second.release(); // pWndMessage owns the pointer [1]
+	m_mapMessage.erase(it); // m_mapMessage does not own the pointer so the window is not deleted
+	m_mapMessage.emplace(pszNew, pWndMessage); // m_mapMessage owns the pointer again
+
+	// [1] Because we did not use std::unique_ptr<CWndMessage> pWndMessage = std::move(it->second)
+	// at this line code, pWndMessage is still an observing pointer to the window
+
+	CString string	= pWndMessage->GetTitle();
+	string.Replace( pszOld, pszNew );
+	pWndMessage->SetTitle( string );
+	pWndMessage->m_strPlayer	= pszNew;
+	return TRUE;
 }
 
-BOOL CWndMgr::UpdateMessage( LPCTSTR pszOld, LPCTSTR pszNew )
-{
-	CWndMessage* pWndMessage	= NULL;
-	if( m_mapMessage.Lookup( pszOld, (void*&)pWndMessage ) )
-	{
-		m_mapMessage.RemoveKey( pWndMessage->m_strPlayer );
-		m_mapMessage.SetAt( pszNew, pWndMessage );
-		CString string	= pWndMessage->GetTitle();
-		string.Replace( pszOld, pszNew );
-		pWndMessage->SetTitle( string );
-		pWndMessage->m_strPlayer	= pszNew;
-		return TRUE;
-	}
-	return FALSE;
-}
-
-CWndInstantMsg* CWndMgr::GetInstantMsg( LPCTSTR lpszFrom )
-{
-	CString string;
-	CWndInstantMsg* pWndMessage = NULL;
-	m_mapInstantMsg.Lookup( lpszFrom, (void*&)pWndMessage );
-	return pWndMessage;
-}
-
-void CWndInstantMsg::OnDestroy()
-{
-	g_WndMng.m_mapInstantMsg.RemoveKey(m_strPlayer);
+CWndInstantMsg* CWndMgr::GetInstantMsg( LPCTSTR lpszFrom ) {
+	return sqktd::find_in_unique_map(m_mapInstantMsg, lpszFrom);
 }
 
 CWndInstantMsg* CWndMgr::OpenInstantMsg( LPCTSTR lpszFrom )
 {
-	CString string;
-	CWndInstantMsg* pWndMessage = NULL;
-	if( m_mapInstantMsg.Lookup( lpszFrom, (void*&)pWndMessage ) == FALSE )
-	{
-		CWndBase* pWndFocus = GetFocusWnd();
-		pWndMessage = new CWndInstantMsg;
-		pWndMessage->Initialize();
-		pWndFocus->SetFocus();
-		pWndMessage->m_strPlayer = lpszFrom;
-		int nNumber = m_mapInstantMsg.GetCount();
-		CRect rcMsg = pWndMessage->GetWindowRect();
-		CRect rcWnd = GetLayoutRect();
+	CWndInstantMsg * alreadyHere = GetInstantMsg(lpszFrom);
+	if (alreadyHere) return alreadyHere;
 
-		int nNumHeight = rcWnd.Height() / rcMsg.Height();
-		int nNumWidth = rcWnd.Width() / rcMsg.Width();
+	CWndBase* pWndFocus = GetFocusWnd();
+	CWndInstantMsg * pWndMessage = new CWndInstantMsg;
+	pWndMessage->Initialize();
+	pWndFocus->SetFocus();
+	pWndMessage->m_strPlayer = lpszFrom;
+	const int nNumber = static_cast<int>(m_mapInstantMsg.size());
+	const CRect rcMsg = pWndMessage->GetWindowRect();
+	const CRect rcWnd = GetLayoutRect();
 
-		int nCount = ( nNumber / nNumHeight ) + 1; // +1안해주면 화면을 벗어난 곳에 열림 
-		int nCount2 = ( nNumber % nNumHeight ) + 1;
+	const int nNumHeight = rcWnd.Height() / rcMsg.Height();
 
-		CPoint pt( rcWnd.right - ( rcMsg.Width() * nCount ) , rcWnd.bottom - ( rcMsg.Height() * nCount2 ) );
- 		pWndMessage->Move( pt );
-		m_mapInstantMsg.SetAt( lpszFrom, pWndMessage );
-		
-	}
+	const int nCount = ( nNumber / nNumHeight ) + 1; // +1안해주면 화면을 벗어난 곳에 열림 
+	const int nCount2 = ( nNumber % nNumHeight ) + 1;
+
+	const CPoint pt( rcWnd.right - ( rcMsg.Width() * nCount ) , rcWnd.bottom - ( rcMsg.Height() * nCount2 ) );
+ 	pWndMessage->Move( pt );
+	m_mapInstantMsg.emplace( lpszFrom, pWndMessage );
+
 	return pWndMessage;
 }
 // 레지스트 인포를 얻는다.

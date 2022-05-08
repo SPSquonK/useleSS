@@ -88,7 +88,6 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnDestroy();
 }; 
 class CWndMessage : public CWndNeuz 
 { 
@@ -111,7 +110,6 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnDestroy();
 }; 
 
 class CWndMessageNote : public CWndNeuz 

@@ -250,9 +250,9 @@ public:
 #else	//__RT_1025
 	CMessenger m_Messenger;
 #endif	// __RT_1025
-	boost::container::flat_map<std::string, std::unique_ptr<CWndMap>> m_mapMap;
-	CMapStringToPtr m_mapInstantMsg;
-	CMapStringToPtr m_mapMessage;
+	boost::container::flat_map<std::string, std::unique_ptr<CWndMap>>        m_mapMap;
+	boost::container::flat_map<CString, std::unique_ptr<CWndInstantMsg>> m_mapInstantMsg;
+	boost::container::flat_map<CString, std::unique_ptr<CWndMessage>>    m_mapMessage;
 	CEditString m_ChatString;
 
 	BOOL m_bAutoRun;
