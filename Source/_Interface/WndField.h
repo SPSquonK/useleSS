@@ -19,30 +19,6 @@ const int MAX_WANTED_LIST =	100;
 #ifdef __MAIL_REQUESTING_BOX
 #include "WndMailRequestingBox.h"
 #endif // __MAIL_REQUESTING_BOX
-//////////////////////////////////////////////////////////////////////////////////////
-// 애플랫 윈도 
-//
-class CWndApplet : public CWndNeuz
-{
-public:
-	CWndListBox m_wndList;
-	CWndButton m_wndButton1;
-	CWndButton m_wndButton2;
-	CWndButton m_wndButton3;
-
-	CWndApplet();
-	virtual ~CWndApplet();
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
-	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-
-};
 
 //////////////////////////////////////////////////////////////////////////////////////
 // 드롭아이템 

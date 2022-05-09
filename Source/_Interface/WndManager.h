@@ -677,7 +677,6 @@ public:
 	void CloseBoundWindow(void); // 아이템이 걸려 있거나, 아이템을 조작할 가능성이 있는 모든 창을 강제로 닫는다.
 #endif // __WINDOW_INTERFACE_BUG
 
-	friend CWndApplet;
 protected:
 	void __HotKeyChange( DWORD dwId, char* pch );
 	void	FormalizeChatString( CString & str );
