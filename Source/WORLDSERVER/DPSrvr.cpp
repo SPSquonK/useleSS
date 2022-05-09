@@ -433,29 +433,30 @@ bool CDPSrvrHandlers::Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpid
 
 	const auto handler = m_handlers.find(packetId);
 
-	if (handler != m_handlers.end()) {
-		const HandlerStruct & pfn = handler->second;
+	if (handler == m_handlers.end()) return false;
 
-		struct Visitor {
-			CDPSrvr & self; CAr & ar;
-			DPID dpidCache; DPID dpidUser;
+	const HandlerStruct & pfn = handler->second;
 
-			void operator()(const GalaHandler & gala) const {
-				int size;
-				BYTE * buffer = ar.GetBuffer(&size);
-				(self.*(gala)) (ar, dpidCache, dpidUser, buffer, size);
-			}
+	struct Visitor {
+		CDPSrvr & self; CAr & ar;
+		DPID dpidCache; DPID dpidUser;
 
-			void operator()(const UserHandler & userHandler) const {
-				CUser * const user = g_UserMng.GetUser(dpidCache, dpidUser);
-				if (!IsValidObj(user)) return;
+		void operator()(const GalaHandler & gala) const {
+			int size;
+			BYTE * buffer = ar.GetBuffer(&size);
+			(self.*(gala)) (ar, dpidCache, dpidUser, buffer, size);
+		}
 
-				(self.*(userHandler)) (ar, *user);
-			}
-		};
+		void operator()(const UserHandler & userHandler) const {
+			CUser * const user = g_UserMng.GetUser(dpidCache, dpidUser);
+			if (!IsValidObj(user)) return;
 
-		std::visit(Visitor{ self, ar, dpidCache, dpidUser }, pfn);
-	}
+			(self.*(userHandler)) (ar, *user);
+		}
+	};
+
+	std::visit(Visitor{ self, ar, dpidCache, dpidUser }, pfn);
+	return true;
 }
 
 

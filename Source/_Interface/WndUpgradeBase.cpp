@@ -455,6 +455,8 @@ bool CWndUpgradeBase::DropMainItem(CItemElem * pItemElem) {
 		pItemElem->GetProp()->dwItemKind2 == IK2_ARMORETC) {
 		m_slots[0].Set(pItemElem);
 	}
+
+	return true;
 }
 
 BOOL CWndUpgradeBase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 

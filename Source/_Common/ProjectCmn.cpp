@@ -804,6 +804,8 @@ bool CNameValider::Load() {
 	m_invalidNames = std::vector(invalidNames->begin(), invalidNames->end());
 	m_allowedLetters          = Arrayize(allowedLetters1);
 	m_allowedLettersForVendor = Arrayize(allowedLetters2);
+
+	return true;
 }
 
 bool CNameValider::IsNotAllowedName(LPCSTR name) const {

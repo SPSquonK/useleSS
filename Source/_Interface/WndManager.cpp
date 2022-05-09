@@ -2269,7 +2269,7 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 				//pWndBase->SetToolTip( pAppletFunc->m_pAppletDesc );
 				m_mapWndApplet.SetAt( dwIdApplet, pWndBase );
 
-
+	return pWndBase;
 }
 void CWndMgr::ObjectExecutor( DWORD dwShortcut, DWORD dwId, DWORD dwType )
 {
@@ -5975,6 +5975,8 @@ CWndMessage* CWndMgr::OpenMessage( LPCTSTR lpszFrom ) {
 	const CString string = pWndMessage->GetTitle() + " - " + lpszFrom;
 	pWndMessage->SetTitle( string );
 	pWndMessage->m_strPlayer = lpszFrom;
+
+	return pWndMessage;
 }
 
 BOOL CWndMgr::UpdateMessage( LPCTSTR pszOld, LPCTSTR pszNew ) {
