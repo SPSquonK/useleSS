@@ -1,36 +1,42 @@
-#ifndef	__COOLTIMEMGR_H__
-#define __COOLTIMEMGR_H__
+#pragma once
 
-const int MAX_COOLTIME_TYPE = 3;
+#include <array>
 
 struct ItemProp;
 
-// 쿨타임 정보를 관리하는 클래스 
-class CCooltimeMgr 
-{
+// Class that manages cooldown information
+class CCooltimeMgr {
 public:
-	CCooltimeMgr();	
-	virtual ~CCooltimeMgr();	
+	static constexpr size_t MAX_COOLTIME_TYPE = 3;
+	
+	struct Cooldown {
+		DWORD time = 0;	// End of cooldown
+		DWORD base = 0; // Event occurrence time (time the item was eaten)
+	};
 
-	static DWORD		GetGroup( const ItemProp* pItemProp );
-
-	BOOL				CanUse( DWORD dwGroup );
-	void				SetTime( DWORD dwGroup, DWORD dwCoolTime );	
-	DWORD				GetTime( DWORD dwGroup ) 
-	{ 
-		ASSERT( dwGroup > 0 );
-		return m_times[ dwGroup - 1];
+public:
+	static DWORD GetGroup(const ItemProp * pItemProp);
+	
+	[[nodiscard]] bool CanUse(const ItemProp & itemProp, DWORD * groupPtr = nullptr) const {
+		const auto group = GetGroup(&itemProp);
+		if (groupPtr) *groupPtr = group;
+		return group == 0 || CanUse(group);
 	}
 
-	DWORD				GetBase( DWORD dwGroup ) 
-	{ 
-		ASSERT( dwGroup > 0 );
-		return m_bases[ dwGroup - 1];
+	void SetTime(DWORD dwGroup, DWORD dwCoolTime);
+	
+	[[nodiscard]] DWORD GetTime(const DWORD dwGroup) const {
+		ASSERT(dwGroup > 0);
+		return m_cds[dwGroup - 1].time;
 	}
 
-protected:
-	DWORD				m_times[MAX_COOLTIME_TYPE];		// 최종 사용가능 시각 	
-	DWORD				m_bases[MAX_COOLTIME_TYPE];		// 이벤트 발생 시각 ( 아이템을 먹은 시각 ) 
+	[[nodiscard]] DWORD GetBase(const DWORD dwGroup) const {
+		ASSERT(dwGroup > 0);
+		return m_cds[dwGroup - 1].base;
+	}
+
+private:
+	[[nodiscard]] bool CanUse(DWORD dwGroup) const;
+
+	std::array<Cooldown, MAX_COOLTIME_TYPE> m_cds = {};
 };
-
-#endif	__COOLTIMEMGR_H__

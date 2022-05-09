@@ -9493,14 +9493,9 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		}
 	}
 	
-	DWORD dwGroup = pPlayer->m_cooltimeMgr.GetGroup( pItemProp );
-	if( dwGroup )
-	{
-		if( pPlayer->m_cooltimeMgr.CanUse( dwGroup ) == FALSE )
-		{
-			g_WndMng.PutString(TID_GAME_ATTENTIONCOOLTIME);
-			return;
-		}
+	if (!pPlayer->m_cooltimeMgr.CanUse(*pItemProp)) {
+		g_WndMng.PutString(TID_GAME_ATTENTIONCOOLTIME);
+		return;
 	}
 
 	if( g_pPlayer->IsUseItemReadyTime( pItemProp, pItemBase->m_dwObjId ) == FALSE )

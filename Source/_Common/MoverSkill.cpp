@@ -1229,13 +1229,8 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 		{
 			CUser* pUser = (CUser*)this;
 
-			dwGroup = pUser->m_cooltimeMgr.GetGroup( pItemProp );
-			if( dwGroup )
-			{
-				if( pUser->m_cooltimeMgr.CanUse( dwGroup ) == FALSE )
-				{
-					return FALSE;
-				}
+			if (!pUser->m_cooltimeMgr.CanUse(*pItemProp, &dwGroup)) {
+				return FALSE;
 			}
 		}
 
@@ -1351,8 +1346,7 @@ BOOL CMover::DoUseItem( DWORD dwData, DWORD dwFocusId, int nPart  )
 					}
 #endif	// __WORLDSERVER
 #endif	// __JEFF_9_20
-					int nResult = 0;
-					nResult = DoUseItemSystem( pItemProp, pItemBase, nPart );
+					int nResult = DoUseItemSystem( pItemProp, pItemBase, nPart );
 					{
 						if( 0 < nResult )
 						{
