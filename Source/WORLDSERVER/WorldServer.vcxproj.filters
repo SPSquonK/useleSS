@@ -600,6 +600,9 @@
     <ClCompile Include="..\_Interface\FuncTextCmd_ItemEnchant.cpp">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClCompile>
+    <ClCompile Include="MoverUser.cpp">
+      <Filter>World Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">

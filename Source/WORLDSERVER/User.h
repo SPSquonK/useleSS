@@ -226,6 +226,11 @@ public:
 
 #pragma endregion
 
+#pragma region MoverItem
+	bool DoUseItem(DWORD dwItemId, DWORD dwFocusId, int nPart = -1);
+
+#pragma endregion
+
 public:
 
 	void			AddPostMail( CMail* pMail );

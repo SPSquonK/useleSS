@@ -687,7 +687,7 @@ public:
 #endif	// __WORLDSERVER
 
 #ifdef __WORLDSERVER
-private:
+protected:
 	void	DoUseEatPet( CItemElem* PitemElem );
 	void	DoUseSystemPet( CItemElem* pItemElem );
 public:
@@ -1198,7 +1198,6 @@ public:
 	void			EquipItem( CItemElem *pItemElem, BOOL bEquip, int nPart );
 	BOOL			DoUseEquipmentItem( CItemElem* pItemElem, DWORD dwId, int nPart );
 	BOOL			DoUseItemVirtual( DWORD dwItemId, BOOL bEffectSkip );
-	BOOL			DoUseItem( DWORD dwItemId, DWORD dwFocusId, int nPart = -1 );
 	BOOL			DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL bUes = TRUE );
 	BOOL			DoUseItemFood_SM( ItemProp *pItemProp, CItemElem* pItemElem );
 	BOOL			DoUseItemFood( ItemProp *pItemProp, CItemElem* pItemElem );
