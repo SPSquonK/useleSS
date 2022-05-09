@@ -773,25 +773,38 @@ public:
 	virtual	void OnInitialUpdate(); 
 }; 
 
-BEGIN_WNDCLASS( CWndTrade )
-
+class CWndTrade : public CWndNeuz {
+public:
 	CWndTradeCtrl m_wndItemCtrlYou;
-	CWndTradeCtrl m_wndItemCtrlI  ;
-	CWndStatic    m_wndGold       ;
+	CWndTradeCtrl m_wndItemCtrlI;
+	CWndStatic    m_wndGold;
 	int           m_nGoldI, m_nGoldYou;
+
+	CWndTrade();
+	~CWndTrade() override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnSize(UINT nType, int cx, int cy) override;
+
 
 	void DoCancel();
 
-END_WNDCLASS
+};
 
 //////////
 
-BEGIN_WNDCLASS( CWndEmotion )
+class CWndEmotion : public CWndNeuz {
 	CWndTreeCtrl  m_wndViewCtrl;
 	CWndEdit      m_wndEdit;
 	CWndButton    m_wndDefault;
-	LPTREEELEM    m_lpSelectTreeElem;
-END_WNDCLASS
+	LPTREEELEM    m_lpSelectTreeElem = nullptr;
+public:
+	void OnDraw(C2DRender * p2DRender) override;
+	BOOL Initialize(CWndBase * pWndParent, DWORD dwWndId) override;
+	void OnSize(UINT nType, int cx, int cy) override;
+};
 
 
 class CWndRevival : public CWndNeuz 

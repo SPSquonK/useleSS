@@ -274,21 +274,6 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case WIDC_ATTRIBUTE: g_WorldMng()->m_bViewHeightAttribute = !g_WorldMng()->m_bViewHeightAttribute; break;
 		case WIDC_HIDE: g_pPlayer->SetVisible( !g_pPlayer->IsVisible() ); break;
 		//case WIDC_114: m_pTheme->m_bNudeSkin = !m_pTheme->m_bNudeSkin; break;
-			/*
-		case 115: 
-			if( g_Neuz.m_bCapture == FALSE )
-			{
-				m_wndDebug[ 15 ].SetCheck( !m_wndDebug[ 15 ].GetCheck() );
-				m_pWndCapture = new CWndCapture;
-				m_pWndCapture->Initialize( this, 100000 );
-			} 
-			else
-			{
-				g_Neuz.m_bCapture = FALSE;
-				m_wndDebug[ 15 ].SetCheck( g_Neuz.m_bCapture );
-			}
-			break;
-			*/
 		case WIDC_BOUNDBOX: 
 //			g_World.m_bViewBoundBox = !g_World.m_bViewBoundBox;
 			g_WorldMng()->m_bViewBoundBox = !g_WorldMng()->m_bViewBoundBox;

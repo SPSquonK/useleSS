@@ -9,12 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-BEGIN_WNDCLASS( CWndCapture )
-	CWndEdit      m_wndEdit;
-	CWndButton    m_wndYes;
-	CWndButton    m_wndNo;
-	CWndButton    m_wndCancel;
-END_WNDCLASS
 
 //////////////////////////////////////////////////////////////////////////////////////
 // DebugInfo

@@ -8118,11 +8118,6 @@ void CWndTrade::DoCancel()
 	Destroy();
 }
 
-BOOL CWndTrade::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
-
 void CWndTrade::OnSize(UINT nType, int cx, int cy)
 {
 	int x = m_rectClient.Width() / 2;
@@ -8139,16 +8134,6 @@ void CWndTrade::OnSize(UINT nType, int cx, int cy)
 	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
 
 	CWndNeuz::OnSize(nType,cx,cy);
-}
-void CWndTrade::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-}
-void CWndTrade::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10125,13 +10110,6 @@ BOOL CWndOptMyInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndEmotion::CWndEmotion() 
-{ 
-	m_lpSelectTreeElem = NULL;
-} 
-CWndEmotion::~CWndEmotion() 
-{ 
-} 
 void CWndEmotion::OnDraw( C2DRender* p2DRender ) 
 { 
 	CRect rect = GetClientRect();
@@ -10149,53 +10127,12 @@ void CWndEmotion::OnDraw( C2DRender* p2DRender )
 	*/
 	p2DRender->TextOut( 5, rect.Height() - 50, _T( "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?" ) );
 } 
-void CWndEmotion::OnInitialUpdate() 
-{ 
-/*
-	m_wndViewCtrl.Create( WBS_CHILD, CRect( 5, 5, m_rectClient.Width() - 5,m_rectClient.Height() - 60 ), this, 1005 );//,m_pSprPack,-1);//m_pSprPack,16);
-
-	PropMotion* pProp;
-	for( int i = 0; i < prj.m_aPropMotion.GetSize(); i++ )
-	{
-		pProp = prj.GetPropMotion( i );
-		if( pProp && pProp->dwRequireLv )
-		{
-			LPTREEELEM lpTreeElem = m_wndViewCtrl.FindTreeElem( pProp->szRoot );
-			if( lpTreeElem == NULL )
-			{
-				lpTreeElem = m_wndViewCtrl.InsertItem( NULL, pProp->szRoot, 0 ); // root
-				m_wndViewCtrl.InsertItem( lpTreeElem, pProp->szName, pProp->dwID ) ;
-			}
-			else
-				m_wndViewCtrl.InsertItem( lpTreeElem, pProp->szName, pProp->dwID );
-		}
-	}
-	CRect rect = GetClientRect();
-	rect.top = rect.bottom - 55;
-	rect.bottom = rect.top + 20;
-	rect.left = 70;
-	rect.right -= 5;
-	m_wndEdit.Create( g_Neuz.GetSafeHwnd(), 0, rect, this, 1001 );
-
-	rect = GetClientRect();
-	rect.top = rect.bottom - 30;
-	rect.bottom = rect.top + 25;
-	rect.left = rect.right - 80;
-	rect.right -= 5;
-	m_wndDefault.Create( _T( "Default" ), 0, rect, this, 1002 );
-*/
-	CWndNeuz::OnInitialUpdate(); 
-} 
 BOOL CWndEmotion::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
 	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	//SetTitle( _T( "ï¿½ï¿½ï¿½ï¿½Ç¥ï¿½ï¿½" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-BOOL CWndEmotion::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
 } 
 void CWndEmotion::OnSize( UINT nType, int cx, int cy ) 
 { 
@@ -10216,44 +10153,6 @@ void CWndEmotion::OnSize( UINT nType, int cx, int cy )
 	m_wndDefault.SetWndRect( rect );
 
 	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndEmotion::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndEmotion::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndEmotion::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	/*
-	switch( nID )
-	{
-	case 1001:
-		if( message == EN_CHANGE && m_lpSelectTreeElem )
-		{
-			_tcscpy( prj.GetPropMotion( m_lpSelectTreeElem->m_dwData )->szLink, m_wndEdit.m_string );
-		}
-	case 1005: // view ctrl
-		{
-			if( message == WNM_DBLCLK )
-			{
-				LPTREEELEM lpTreeElem = (LPTREEELEM)pLResult;
-				if( lpTreeElem )
-				{
-					if( lpTreeElem->m_dwData )
-					{
-						g_pPlayer->SendActMsg( OBJMSG_MOTION, lpTreeElem->m_dwData );
-						m_wndEdit.SetString( prj.GetPropMotion( lpTreeElem->m_dwData )->szLink );
-						m_lpSelectTreeElem = lpTreeElem;
-					}
-					else
-						;//g_pPlayer->SetMotion( lpTreeElem->m_dwData );
-				}
-			}
-		}
-	}
-	*/
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -623,11 +623,6 @@ CWndSelectServer::~CWndSelectServer()
 		SAFE_DELETE( m_atexPannel );
 	}
 }
-void CWndSelectServer::OnDraw( C2DRender* p2DRender )
-{
-	//p2DRender->TextOut( 5, 225, _T( "URL" ) );
-	//p2DRender->TextOut( 5,  5, _T( "Clockworks Server List" ) );
-}
 
 void CWndSelectServer::OnInitialUpdate()
 {
@@ -1066,98 +1061,9 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-BOOL CWndSelectServer::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	/*
-	switch(nID)
-	{
-	case 100:
-		g_WndMng.OpenField();
-		break;
-	case 101:
-		break;
-	case 102:
-		//g_WndMng.OpenCustomBox("종료하시겠습니까?",new CWndExitBox);
-		break;
-	case 1000:
-		break;
-	case 1001:
-		if(dwMessage == WM_KEYDOWN)
-		{
-			m_wndText.m_string += g_Neuz.m_pPlayer->m_szName;
-			m_wndText.m_string += " :\n  ";
-			m_wndText.m_string += m_wndChat.m_string;
-			m_wndText.m_string += '\n';
-			m_wndText.m_string.Reset( g_2DRender.m_pFont, &m_wndText.GetClientRect() );
-			m_wndText.UpdateScrollBar();
-			m_wndText.m_wndScrollBar.SetMaxScrollPos();
-			m_wndChat.Empty();
-		}
-		break;
-	}
-	*/
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
-void CWndSelectServer::OnSize(UINT nType, int cx, int cy)
-{
-	/*
-	CRect rect = GetClientRect();
-	rect.bottom = rect.bottom - 40; //20;
-	rect.right -= 50; 
-	rect.DeflateRect( 1, 1 );
-	m_wndText.SetWndRect( rect );
-
-	rect = GetClientRect();
-	rect.top = rect.bottom - 37; //20;
-	rect.right -= 50; 
-	rect.DeflateRect( 1, 1 );
-	m_wndChat.SetWndRect( rect );
-
-	rect = GetClientRect();
-	rect.left = rect.right - 47; rect.right -= 3;	rect.top += 3; rect.bottom = rect.top + 20;
-	m_wndLogin.SetWndRect( rect ); rect.OffsetRect( 0, 25 );
-	m_wndRegist.SetWndRect( rect ); rect.OffsetRect( 0, 25 );
-	m_wndQuit.SetWndRect( rect );
-*/
-	CWndNeuz::OnSize(nType,cx,cy);
-}
-void CWndSelectServer::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-
-	//if(IsWndStyle(WBS_CAPTION) && m_bPickup)
-	{//
-	//	m_wndTitleBar.m_wndMinimize.SetVisible(TRUE);
-		//m_wndTitleBar.m_wndMaximize.SetVisible(TRUE);
-	}
-}
-void CWndSelectServer::OnLButtonDown(UINT nFlags, CPoint point)
-{
-//	CWndBase::OnLButtonDown(nFlags,point
-	if(IsWndRoot())
-		return;
-//	return;
-
-}
-
 /////////////////////////////////////////////////////////////////////////////////////
 // Delete Character
 /////////////////////////////////////////////////////////////////////////////////////
-
-CWndDeleteChar::CWndDeleteChar() 
-{ 
-} 
-CWndDeleteChar::~CWndDeleteChar() 
-{ 
-} 
-void CWndDeleteChar::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndDeleteChar::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-}
 
 void CWndDeleteChar::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat )
 {
@@ -1236,24 +1142,6 @@ BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	return TRUE;
 }
-
-BOOL CWndDeleteChar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndDeleteChar::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndDeleteChar::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndDeleteChar::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 
 void CWndDeleteChar::DeletePlayer( int nSelect, LPCTSTR szNo )
 {
@@ -1899,13 +1787,9 @@ void CWndSelectChar::OnInitialUpdate()
 
 BOOL CWndSelectChar::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 {
-	//CRect rect = m_pWndRoot->MakeCenterRect(250,130);
 	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
 	SetTitle( _T( "Select Character" ) );
-	//return CWndNeuz::Create( WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_THICKFRAME | WBS_MAXIMIZEBOX, rect, pWndParent, APP_SELECT_CHAR );
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SELECT_CHAR, WBS_KEY, CPoint( 0, 0 ), pWndParent );
-
-	//return CWndNeuz::Create(dwStyle|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MAXIMIZEBOX,rect,pWndParent,10);
 }
 
 void CWndSelectChar::Connected()
@@ -2081,61 +1965,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndSelectChar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	/*
-	switch(nID)
-	{
-	case 100:
-		g_WndMng.OpenField();
-		break;
-	case 101:
-		break;
-	case 102:
-		//g_WndMng.OpenCustomBox("종료하시겠습니까?",new CWndExitBox);
-		break;
-	case 1000:
-		break;
-	case 1001:
-		if(dwMessage == WM_KEYDOWN)
-		{
-			m_wndText.m_string += g_Neuz.m_pPlayer->m_szName;
-			m_wndText.m_string += " :\n  ";
-			m_wndText.m_string += m_wndChat.m_string;
-			m_wndText.m_string += '\n';
-			m_wndText.m_string.Reset( g_2DRender.m_pFont, &m_wndText.GetClientRect() );
-			m_wndText.UpdateScrollBar();
-			m_wndText.m_wndScrollBar.SetMaxScrollPos();
-			m_wndChat.Empty();
-		}
-		break;
-	}
-	*/
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-void CWndSelectChar::OnSize(UINT nType, int cx, int cy)
-{
-	/*
-	CRect rect = GetClientRect();
-	rect.bottom = rect.bottom - 40; //20;
-	rect.right -= 50; 
-	rect.DeflateRect( 1, 1 );
-	m_wndText.SetWndRect( rect );
 
-	rect = GetClientRect();
-	rect.top = rect.bottom - 37; //20;
-	rect.right -= 50; 
-	rect.DeflateRect( 1, 1 );
-	m_wndChat.SetWndRect( rect );
-
-	rect = GetClientRect();
-	rect.left = rect.right - 47; rect.right -= 3;	rect.top += 3; rect.bottom = rect.top + 20;
-	m_wndLogin.SetWndRect( rect ); rect.OffsetRect( 0, 25 );
-	m_wndRegist.SetWndRect( rect ); rect.OffsetRect( 0, 25 );
-	m_wndQuit.SetWndRect( rect );
-*/
-	CWndNeuz::OnSize(nType,cx,cy);
-}
 BOOL CWndSelectChar::SetMotion( CModelObject* pModel, DWORD dwIndex, DWORD dwMotion, int nLoop, DWORD dwOption )
 {
 	//CModelObject* pModel = (CModelObject*)pModel;
@@ -2216,9 +2046,6 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 //pMover->SetMotion( MTI_STAND );
 
 
-void CWndSelectChar::OnLButtonDown(UINT nFlags, CPoint point)
-{
-}
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Select Character
@@ -2830,39 +2657,6 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndCreateChar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
-void CWndCreateChar::OnSize(UINT nType, int cx, int cy)
-{
-
-	CWndNeuz::OnSize(nType,cx,cy);
-}
-void CWndCreateChar::OnLButtonUp(UINT nFlags, CPoint point)
-{
-}
-void CWndCreateChar::OnLButtonDown(UINT nFlags, CPoint point)
-{
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
