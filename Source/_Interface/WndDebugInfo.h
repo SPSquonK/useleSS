@@ -21,28 +21,6 @@ END_WNDCLASS
 //
 class CWndDebugInfo : public CWndNeuz
 {
-	/*
-	CWndButton m_wndExtend;
-	//CWndButton m_wndDebug[ 30 ];
-	CWndEdit   m_wndEditExp;
-	CWndButton m_wndButtonExp;
-
-	CWndButton m_wndSetSkinSet;
-	CWndButton m_wndSetHair;
-	CWndButton m_wndSetColor;
-	CWndButton m_wndSetFace;
-	
-	CWndButton m_wndViewGrid;
-	CWndButton m_wndViewWireframe;
-	CWndButton m_wndViewSkybox;
-	CWndButton m_wndViewTerrain;
-	CWndButton m_wndViewObject;
-	CWndButton m_wndViewFog;
-	CWndButton m_wndViewLOD;
-	CWndButton m_wndViewWater;
-	CWndButton m_wndViewName;
-*/
-//	CWndCapture* m_pWndCapture;
 
 public:
 	CWndDebugInfo(); 
@@ -58,7 +36,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 
-//friend CWndCapture;
 };
 // Control 테스트 윈도 
 

@@ -129,45 +129,5 @@ public:
 		virtual void OnLButtonUp( UINT nFlags, CPoint point ); \
 		virtual void OnLButtonDown( UINT nFlags, CPoint point ); }; \
 
-#define EMPTY_WNDCLASSMEMBER( class_name, title ) \
-	class_name::class_name() \
-	{ \
-	} \
-	class_name::~class_name() \
-	{ \
-	} \
-	void class_name::OnDraw( C2DRender* p2DRender ) \
-	{ \
-	} \
-	void class_name::OnInitialUpdate() \
-	{ \
-		CWndNeuz::OnInitialUpdate(); \
-	} \
-	BOOL class_name::Initialize( CWndBase* pWndParent, DWORD dwWndId ) \
-	{ \
-		CRect rectWindow = m_pWndRoot->GetWindowRect(); \
-		CRect rect( 50 ,50, 300, 300 ); \
-		SetTitle( _T( title ) ); \
-		return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); \
-	} \
-	BOOL class_name::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) \
-	{ \
-		return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); \
-	} \
-	void class_name::OnSize( UINT nType, int cx, int cy ) \
-	{ \
-		CWndNeuz::OnSize( nType, cx, cy ); \
-	} \
-	void class_name::OnLButtonUp( UINT nFlags, CPoint point ) \
-	{ \
-	} \
-	void class_name::OnLButtonDown( UINT nFlags, CPoint point ) \
-	{ \
-	} \
-	BOOL class_name::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) \
-	{ \
-		return CWndNeuz::OnChildNotify( message, nID, pLResult ); \
-	} \
-
 
 #endif // !defined(AFX_WNDNEUZ_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)

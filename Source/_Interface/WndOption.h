@@ -153,48 +153,5 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };
 
-//BEGIN_WNDCLASS( CWndOptVideo )
-//END_WNDCLASS
 
-//BEGIN_WNDCLASS( CWndOptTheme )
-//	CWndButton    m_wndPaper1;
-//	CWndButton    m_wndPaper2;
-//	CWndButton    m_wndPaper3;
-//	CWndButton    m_wndPaper4;
-//	CWndButton    m_wndPaper5;
-//END_WNDCLASS
-
-//BEGIN_WNDCLASS( CWndOptSound )
-//END_WNDCLASS
-
-//BEGIN_WNDCLASS( CWndOptMusic )
-//END_WNDCLASS
-
-
-//BEGIN_WNDCLASS( CWndOptMouse )
-//END_WNDCLASS
-
-//BEGIN_WNDCLASS( CWndOptHotkey )
-//END_WNDCLASS
-
-/*
-class CWndSound : public CWndNeuz
-{
-	CWndButton m_wndMusic;
-	CWndButton m_wndSound;
-public:
-	CWndSound(); 
-	virtual ~CWndSound();
-//	virtual CItem* GetFocusItem() { return NULL; }
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
-	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-};
-
-*/
 #endif // !defined(AFX_WNDOPTION_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)

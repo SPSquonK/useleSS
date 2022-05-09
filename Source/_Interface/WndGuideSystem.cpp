@@ -903,20 +903,6 @@ BOOL CWndGuideTextMgr::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUIDE_TEXT, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndGuideTextMgr::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuideTextMgr::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuideTextMgr::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuideTextMgr::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuideTextMgr::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	GUIDE_STRUCT guide;
@@ -1103,14 +1089,6 @@ void CWndGuideTextMgr::UpDate()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndGuideSelection::CWndGuideSelection()
-{
-}
-
-CWndGuideSelection::~CWndGuideSelection()
-{
-}
-
 BOOL CWndGuideSelection::Initialize( CWndBase* pWndParent, DWORD nType )
 {	
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUIDE_SELECTION, 0, CPoint( 0, 0 ), pWndParent );
@@ -1156,10 +1134,6 @@ BOOL CWndGuideSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-void CWndGuideSelection::OnDraw( C2DRender* p2DRender )
-{
-
-}
 void CWndGuideSelection::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
@@ -1176,23 +1150,6 @@ void CWndGuideSelection::OnInitialUpdate()
 	*g_Option.m_pGuide = 0;
 	
 	MoveParentCenter();
-}
-BOOL CWndGuideSelection::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-void CWndGuideSelection::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-void CWndGuideSelection::OnLButtonUp( UINT nFlags, CPoint point )
-{
-}
-void CWndGuideSelection::OnLButtonDown( UINT nFlags, CPoint point )
-{
-}
-void CWndGuideSelection::OnRButtonDown( UINT nFlags, CPoint point )
-{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
