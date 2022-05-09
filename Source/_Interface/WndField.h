@@ -452,7 +452,6 @@ public:
 	virtual ~CWndReSkillWarning();
 
 	void InitItem( BOOL bParentDestroy );
-	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 );
 	// message
@@ -700,8 +699,6 @@ public:
 	virtual BOOL Process ();
 	virtual BOOL Initialize( CWndBase* pWndParent );
 	virtual	void OnInitialUpdate();
-	// message
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 };	
 
 class CWndTradeGold : public CWndNeuz 
@@ -859,15 +856,9 @@ public:
 	void		 Init( time_t lTime );
 	void		 InsertWanted( const char szName[], __int64 nGold,  int nTime, const char szMsg[] );	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual	void OnRButtonUp( UINT nFlags, CPoint point );
-	virtual void OnRButtonDown( UINT nFlags, CPoint point );
-	virtual void OnMouseMove(UINT nFlags, CPoint point );
-	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
-	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);	
 }; 
 

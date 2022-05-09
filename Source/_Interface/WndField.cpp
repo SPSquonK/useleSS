@@ -9949,159 +9949,6 @@ void CWndQuestItemInfo::OnLButtonDown( UINT nFlags, CPoint point )
 {
 }
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// ��ũ��
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-CWndMacro::CWndMacro()
-{
-}
-CWndMacro::~CWndMacro()
-{
-}
-void CWndMacro::OnDraw( C2DRender* p2DRender )
-{
-
-}
-void CWndMacro::OnInitialUpdate()
-{
-	CWndNeuz::OnInitialUpdate();
-}
-BOOL CWndMacro::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 50 ,50, 300, 300 );
-	//SetTitle( GETTEXT( TID_APP_MACRO )  );
-	return CWndNeuz::Create( 0 | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId );
-}
-BOOL CWndMacro::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-void CWndMacro::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-void CWndMacro::OnLButtonUp( UINT nFlags, CPoint point )
-{
-}
-void CWndMacro::OnLButtonDown( UINT nFlags, CPoint point )
-{
-}
-BOOL CWndMacro::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-*/
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// ��Ÿ��
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-CWndStyle::CWndStyle()
-{
-}
-CWndStyle::~CWndStyle()
-{
-}
-void CWndStyle::OnDraw( C2DRender* p2DRender )
-{
-
-}
-void CWndStyle::OnInitialUpdate()
-{
-	CWndNeuz::OnInitialUpdate();
-}
-BOOL CWndStyle::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 50 ,50, 300, 300 );
-	//SetTitle( GETTEXT( TID_APP_STYLE )  );
-	return CWndNeuz::Create( 0 | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId );
-}
-BOOL CWndStyle::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-void CWndStyle::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-void CWndStyle::OnLButtonUp( UINT nFlags, CPoint point )
-{
-}
-void CWndStyle::OnLButtonDown( UINT nFlags, CPoint point )
-{
-}
-BOOL CWndStyle::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-*/
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// ������
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-CWndOptMyInfo::CWndOptMyInfo()
-{
-}
-CWndOptMyInfo::~CWndOptMyInfo()
-{
-}
-void CWndOptMyInfo::OnDraw( C2DRender* p2DRender )
-{
-
-}
-void CWndOptMyInfo::OnInitialUpdate()
-{
-	CWndNeuz::OnInitialUpdate();
-}
-BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 50 ,50, 300, 300 );
-	SetTitle( GETTEXT( TID_APP_OPTION_MYINFO )  );
-	return CWndNeuz::Create( 0 | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId );
-}
-BOOL CWndOptMyInfo::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-void CWndOptMyInfo::OnSize( UINT nType, int cx, int cy )
-{
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-void CWndOptMyInfo::OnLButtonUp( UINT nFlags, CPoint point )
-{
-}
-void CWndOptMyInfo::OnLButtonDown( UINT nFlags, CPoint point )
-{
-}
-BOOL CWndOptMyInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-*/
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// ����Ű
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -10274,10 +10121,6 @@ BOOL CWndLogOutWaitting::Process()
 	return TRUE;
 }
 
-BOOL CWndLogOutWaitting::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
 void CWndLogOutWaitting::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate(); 
@@ -10677,7 +10520,6 @@ BOOL CWndReWanted::CheckWantedInfo( int nGold, LPCTSTR szMsg )
 	if( nGold < MIN_INPUT_REWARD || nGold > MAX_INPUT_REWARD )			// �������? �ּ� 1000�гĿ��� �ִ� 2�� �гı��� �� �� �ִ�. 
 	{
 		char szWarning[256];
-//		wsprintf( szWarning, "�Է��� �ݾ��� ����(%d - %d)�� ������ϴ�.", MIN_INPUT_REWARD, MAX_INPUT_REWARD );		
 		wsprintf( szWarning, prj.GetText(TID_PK_MONEY_RANGE), MIN_INPUT_REWARD, MAX_INPUT_REWARD );		
 		g_WndMng.OpenMessageBoxUpper( szWarning );
 		return FALSE;
@@ -10861,32 +10703,6 @@ void CWndWanted::OnLButtonDblClk( UINT nFlags, CPoint point)
 		// ǥ���� �̸�, ���������? ����
 		m_pWantedConfirm->SetInfo( m_aList[m_nSelect].szName, (int)( m_aList[m_nSelect].nGold ) );
 	}
-}
-
-void CWndWanted::OnRButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndWanted::OnRButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-BOOL CWndWanted::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
-void CWndWanted::OnMouseMove(UINT nFlags, CPoint point )
-{
-}
-
-void CWndWanted::OnMouseWndSurface( CPoint point )
-{
-}	
-
-BOOL CWndWanted::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
-{
-	return TRUE;
 }
 
 void CWndWanted::InsertWanted( const char szName[], __int64 nGold, int nTime, const char szMsg[] )
@@ -11281,7 +11097,7 @@ BOOL CWndChangeClass2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	{
 		if( g_pPlayer->GetJob() == nJob )
 		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_EQUALJOB), NULL, prj.GetTextColor(TID_GAME_EQUALJOB) );
+			g_WndMng.PutString(TID_GAME_EQUALJOB);
 		}
 		else
 		{
@@ -11636,9 +11452,6 @@ void CWndReSkillWarning::OnDestroy()
 		pWndBase1->Destroy();
 	}
 }
-void CWndReSkillWarning::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndReSkillWarning::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
