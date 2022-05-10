@@ -492,16 +492,9 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 						m_p2DRender->TextOut( x * 32 + 31 - size.cx, y * 32 + 31 - size.cy, szTemp, 0xffb0b0f0 );
 					}
 
-					DWORD dwGroup = g_pPlayer->m_cooltimeMgr.GetGroup( pItemElem->GetProp() );
-					if( dwGroup )
-					{
-						DWORD dwEnd = g_pPlayer->m_cooltimeMgr.GetTime( dwGroup );		// 이벤트 종료 시각 
-						if( dwEnd != 0 && dwEnd > dwCur )
-						{
-							DWORD dwBase = g_pPlayer->m_cooltimeMgr.GetBase( dwGroup );	// 이벤트 시작 시각 
-							CPoint pt( x * 32, y * 32 );
-							RenderRadar( p2DRender, pt, dwCur - dwBase, dwEnd - dwBase );
-						}
+					if (const auto cooldown = g_pPlayer->m_cooltimeMgr.GetElapsedTime(*pItemElem->GetProp())) {
+						const CPoint pt(x * 32, y * 32);
+						RenderRadar(p2DRender, pt, cooldown->elapsedTime, cooldown->totalWait);
 					}
 
 					CWndInventory* pWndInventory	= (CWndInventory*)GetWndBase( APP_INVENTORY );

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <optional>
 
 struct ItemProp;
 
@@ -14,28 +15,31 @@ public:
 		DWORD base = 0; // Event occurrence time (time the item was eaten)
 	};
 
+	struct RemainingCooldown {
+		DWORD elapsedTime;
+		DWORD totalWait;
+	};
+
 public:
-	static DWORD GetGroup(const ItemProp * pItemProp);
-	
-	[[nodiscard]] bool CanUse(const ItemProp & itemProp, DWORD * groupPtr = nullptr) const {
-		const auto group = GetGroup(&itemProp);
-		if (groupPtr) *groupPtr = group;
-		return group == 0 || CanUse(group);
+	enum class CooldownType { NoCooldownAtAll, OnCooldown, Available };
+
+	[[nodiscard]] CooldownType CanUse(const ItemProp & itemProp) const {
+		const auto group = GetGroup(itemProp);
+		if (group == 0) return CooldownType::NoCooldownAtAll;
+		if (!CanUse(group)) return CooldownType::OnCooldown;
+		return CooldownType::Available;
 	}
 
-	void SetTime(DWORD dwGroup, DWORD dwCoolTime);
-	
-	[[nodiscard]] DWORD GetTime(const DWORD dwGroup) const {
-		ASSERT(dwGroup > 0);
-		return m_cds[dwGroup - 1].time;
-	}
+	void StartCooldown(const ItemProp & itemProp);
 
-	[[nodiscard]] DWORD GetBase(const DWORD dwGroup) const {
-		ASSERT(dwGroup > 0);
-		return m_cds[dwGroup - 1].base;
-	}
+	[[nodiscard]] std::optional<RemainingCooldown>
+		GetElapsedTime(const ItemProp & itemProp) const;
+
+	[[nodiscard]] DWORD GetRemainingTime(const ItemProp & itemProp) const;
 
 private:
+	static DWORD GetGroup(const ItemProp & pItemProp);
+
 	[[nodiscard]] bool CanUse(DWORD dwGroup) const;
 
 	std::array<Cooldown, MAX_COOLTIME_TYPE> m_cds = {};

@@ -2916,39 +2916,26 @@ void CDPClient::OnUpdateItemEx( OBJID objid, CAr & ar )
 	pMover->UpdateItemEx( id, cParam, iValue );
 }
 
-void CDPClient::OnUpdateItem( OBJID objid, CAr & ar )
-{
-	CHAR cType, cParam;
-	BYTE nId;
-	DWORD dwValue;
-
-	ar >> cType >> nId >> cParam >> dwValue;
-	DWORD dwTime;
-	ar >> dwTime;
+void CDPClient::OnUpdateItem( OBJID objid, CAr & ar ) {
+	const auto [_cType, nId, cParam, dwValue, dwTime] = ar.Extract<
+		CHAR, BYTE, CHAR, DWORD, DWORD
+	>();
 
 	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) == FALSE )
-		return;
+	if (!IsValidObj(pMover)) return;
 
-	if( cParam == UI_COOLTIME )
-	{
+	if (cParam == UI_COOLTIME) {
 		CMover* pPlayer	= CMover::GetActiveMover();
-		if( !pPlayer ) 
-			return;
+		if (!pPlayer)  return;
 
-		if( pMover == pPlayer )
-		{
+		if (pMover == pPlayer) {
 			CItemElem * pItemBase	= pPlayer->GetItemId( nId );
-			if( !pItemBase )	
-				return;
+			if (!pItemBase) return;
 
-			const ItemProp * const pItemProp		= pItemBase->GetProp();
-			if( !pItemProp )	
-				return;
+			const ItemProp * const pItemProp = pItemBase->GetProp();
+			if (!pItemProp) return;
 
-			DWORD dwGroup = g_pPlayer->m_cooltimeMgr.GetGroup( pItemProp );
-			if( dwGroup )
-				pPlayer->m_cooltimeMgr.SetTime( dwGroup, pItemProp->GetCoolTime() );	
+			g_pPlayer->m_cooltimeMgr.StartCooldown(*pItemProp);
 		}
 	}
 
@@ -9493,7 +9480,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		}
 	}
 	
-	if (!pPlayer->m_cooltimeMgr.CanUse(*pItemProp)) {
+	if (pPlayer->m_cooltimeMgr.CanUse(*pItemProp) == CCooltimeMgr::CooldownType::OnCooldown) {
 		g_WndMng.PutString(TID_GAME_ATTENTIONCOOLTIME);
 		return;
 	}

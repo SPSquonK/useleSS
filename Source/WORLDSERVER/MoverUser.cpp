@@ -60,11 +60,8 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 	// 일반적인 아이템 사용 
 	if (!IsItemRedyTime(pItemProp, pItemBase->m_dwObjId, TRUE)) return false;
 
-	DWORD dwGroup = 0;
-
-	if (!m_cooltimeMgr.CanUse(*pItemProp, &dwGroup)) {
-		return false;
-	}
+	const auto cooldownType = m_cooltimeMgr.CanUse(*pItemProp);
+	if (cooldownType == CCooltimeMgr::CooldownType::OnCooldown) return false;
 
 	// 비 상용화 아이템
 	switch (dwItemKind2) {
@@ -374,9 +371,9 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 		g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
 
 	CHAR cUIParam = UI_NUM;
-	if (dwGroup != 0)	// 쿨타임 아이템이면 사용시각을 기록한다.
+	if (cooldownType == CCooltimeMgr::CooldownType::Available)	// 쿨타임 아이템이면 사용시각을 기록한다.
 	{
-		m_cooltimeMgr.SetTime(dwGroup, pItemProp->GetCoolTime());
+		m_cooltimeMgr.StartCooldown(*pItemProp);
 		cUIParam = UI_COOLTIME;
 	}
 

@@ -5062,24 +5062,16 @@ void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pE
 	}
 }
 
-void CWndMgr::PutCoolTime( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
-{
+void CWndMgr::PutCoolTime(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const {
+	const auto remainingCd = pMover.m_cooltimeMgr.GetRemainingTime(itemProp);
+	if (remainingCd == 0) return;
+
+	CTimeSpan ct((remainingCd + 500) / 1000); // 남은시간을 초단위로 변환해서 넘겨줌, +500 반올림 
+	
 	CString strTemp;
-	DWORD dwGroup = pMover->m_cooltimeMgr.GetGroup( pItemElem->GetProp() );
-	if( dwGroup )
-	{
-		DWORD dwCur = g_tmCurrent;
-		DWORD dwEnd = pMover->m_cooltimeMgr.GetTime( dwGroup );		// 이벤트 종료 시각 
-		if( dwEnd != 0 && dwEnd > dwCur )
-		{
-			DWORD dwBase = pMover->m_cooltimeMgr.GetBase( dwGroup );	// 이벤트 시작 시각 
-			
-			CTimeSpan ct( (dwEnd - dwCur + 500) / 1000 );		// 남은시간을 초단위로 변환해서 넘겨줌, +500 반올림 
-			strTemp.Format( prj.GetText(TID_TOOLTIP_COOLTIME), ct.GetMinutes(), ct.GetSeconds() );		// 남은시간을 분/초 형태로 출력.
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );	
-		}
-	}
+	strTemp.Format( prj.GetText(TID_TOOLTIP_COOLTIME), ct.GetMinutes(), ct.GetSeconds() );		// 남은시간을 분/초 형태로 출력.
+	pEdit.AddString( "\n" );
+	pEdit.AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );	
 }
 
 void CWndMgr::PutKeepTime( CItemElem* pItemElem, CEditString* pEdit )
@@ -5656,7 +5648,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 		PutVisPetInfo( pItemElem, &strEdit );
 	}
 
-	PutCoolTime( pMover, pItemElem, &strEdit );			// 쿨타임
+	PutCoolTime( *pMover, *pItemProp, strEdit );			// 쿨타임
 	PutEndurance( pItemElem, &strEdit, flag );			// 내구력
 	PutKeepTime( pItemElem, &strEdit );					// 사용할수 있는 시간
 	PutJob( pMover, pItemElem, &strEdit );

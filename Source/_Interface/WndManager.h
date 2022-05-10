@@ -605,7 +605,7 @@ public:
 	void PutMedicine( CItemElem* pItemElem, DWORD dwParam, LONG nParamVal, CEditString* pEdit );
 	void PutBaseResist( CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag );
-	void PutCoolTime( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
+	void PutCoolTime(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
 	void PutKeepTime( CItemElem* pItemElem, CEditString* pEdit );
 	void PutCommand( CItemElem* pItemElem, CEditString* pEdit );
 	void PutEndurance( CItemElem* pItemElem, CEditString* pEdit, int flag );

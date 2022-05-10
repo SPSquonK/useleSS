@@ -812,15 +812,9 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 						p2DRender->TextOut( point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff );
 						p2DRender->TextOut( point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0 );
 					}
-					DWORD dwGroup = g_pPlayer->m_cooltimeMgr.GetGroup( pItemElem->GetProp() );
-					if( dwGroup )
-					{
-						DWORD dwEnd = g_pPlayer->m_cooltimeMgr.GetTime( dwGroup );		// 이벤트 종료 시각 
-						if( dwEnd != 0 && dwEnd > dwCur )  
-						{
-							DWORD dwBase = g_pPlayer->m_cooltimeMgr.GetBase( dwGroup );	// 이벤트 시작 시각 
-							RenderRadar( p2DRender, point, dwCur - dwBase, dwEnd - dwBase );
-						}
+
+					if (const auto cooldown = g_pPlayer->m_cooltimeMgr.GetElapsedTime(*pItemElem->GetProp())) {
+						RenderRadar(p2DRender, point, cooldown->elapsedTime, cooldown->totalWait);
 					}
 				}
 				else
@@ -913,15 +907,8 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 					}
 				}
 
-				DWORD dwGroup = g_pPlayer->m_cooltimeMgr.GetGroup(pItemBase->GetProp() );
-				if( dwGroup )
-				{
-					DWORD dwEnd = g_pPlayer->m_cooltimeMgr.GetTime( dwGroup );		// 이벤트 종료 시각 
-					if( dwEnd != 0 && dwEnd > dwCur )
-					{
-						DWORD dwBase = g_pPlayer->m_cooltimeMgr.GetBase( dwGroup );	// 이벤트 시작 시각 
-						RenderRadar( p2DRender, point, dwCur - dwBase, dwEnd - dwBase );
-					}
+				if (const auto cooldown = g_pPlayer->m_cooltimeMgr.GetElapsedTime(*pItemBase->GetProp())) {
+					RenderRadar(p2DRender, point, cooldown->elapsedTime, cooldown->totalWait);
 				}
 			} 
 			else if( lpShortcut->m_dwShortcut == SHORTCUT_SKILL && lpShortcut->m_dwType != 2 ) //극단스킬은 쿨타임 관련 Render를 하지 않는다.
