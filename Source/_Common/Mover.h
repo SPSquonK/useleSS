@@ -1193,14 +1193,11 @@ public:
 	void			CMD_SetMoveToObj( OBJID idObj );
 	void			CMD_SetUseItem( CCtrl *pCtrl );
 //	void			CMD_SetCollect( CObj *pObj );
-	void			OnAfterUseItem( const ItemProp* pItemProp );
 	void			UnequipRide();		
 	void			EquipItem( CItemElem *pItemElem, BOOL bEquip, int nPart );
 	BOOL			DoUseEquipmentItem( CItemElem* pItemElem, DWORD dwId, int nPart );
 	BOOL			DoUseItemVirtual( DWORD dwItemId, BOOL bEffectSkip );
 	BOOL			DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL bUes = TRUE );
-	BOOL			DoUseItemFood_SM( ItemProp *pItemProp, CItemElem* pItemElem );
-	BOOL			DoUseItemFood( ItemProp *pItemProp, CItemElem* pItemElem );
 	BOOL			DoUseItemWarp( ItemProp* pItemProp, CItemElem* pItemElem );
 	int				DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPart = -1 );
 	void			DoPickupItemAround();

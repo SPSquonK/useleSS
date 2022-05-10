@@ -7,6 +7,7 @@
 #include "DPDatabaseClient.h"
 #include "InstanceDungeonBase.h"
 #include "FuncTextCmd.h"
+#include "honor.h"
 
 static ItemProp * GetDevirtualizedItemPropOf(const CItemElem & pItemBase) {
 	ItemProp * pItemProp = pItemBase.GetProp();
@@ -30,6 +31,9 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 
 	ItemProp * const pItemProp = GetDevirtualizedItemPropOf(*pItemBase);
 	if (!pItemProp) return false;
+
+	CItemElem & itemBase = *pItemBase;
+	const ItemProp & itemProp = *pItemProp;
 
 	const DWORD dwItemKind2 = pItemProp->dwItemKind2;
 	const DWORD dwItemKind3 = pItemProp->dwItemKind3;
@@ -211,8 +215,7 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 				}
 				g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
 			} else {
-				if (DoUseItemFood(pItemProp, pItemBase) == FALSE)
-					return false;
+				if (!DoUseItemFood(*pItemProp)) return false;
 			}
 			break;
 		}
@@ -227,13 +230,11 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 				}
 				g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
 			} else {
-				if (DoUseItemFood(pItemProp, pItemBase) == FALSE)
-					return FALSE;
+				if (!DoUseItemFood(*pItemProp)) return false;
 			}
 			break;
 		case IK2_FOOD:
-			if (DoUseItemFood(pItemProp, pItemBase) == FALSE)
-				return FALSE;
+			if (!DoUseItemFood(*pItemProp)) return false;
 			break;
 		case IK2_AIRFUEL:	// 비행연료류
 		{
@@ -382,3 +383,133 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 	return true;
 }
 
+
+// IK2_FOOD / IK2_REFRESHER
+bool CUser::DoUseItemFood(ItemProp & pItemProp) {
+	if (pItemProp.dwID == II_GEN_FOO_INS_SUPERHOTDOG) {
+		SetPointParam(DST_HP, GetMaxHitPoint());
+		SetPointParam(DST_MP, GetMaxManaPoint());
+		SetPointParam(DST_FP, GetMaxFatiguePoint());
+		return true;
+	}
+
+	for (int i = 0; i < ItemProp::NB_PROPS; i++) {
+		if (pItemProp.dwDestParam[i] == static_cast<DWORD>(-1)) continue;
+
+		int nHP = GetPointParam(pItemProp.dwDestParam[i]);
+		int nPoint = pItemProp.nAdjParamVal[i];
+		const int nHPMax = GetMaxPoint(pItemProp.dwDestParam[i]);
+		const int nMax = pItemProp.dwAbilityMin;
+
+		if (pItemProp.dwCircleTime != -1) { // 유료아이템만 dwCircleTime으로 다 썼더라....
+			const BOOL bRet = DoUseItemFood_SM(pItemProp);
+			if (!bRet) return false;
+		}
+		
+		const bool isHpMpFp = pItemProp.dwDestParam[i] == DST_HP
+			|| pItemProp.dwDestParam[i] == DST_MP
+			|| pItemProp.dwDestParam[i] == DST_FP;
+
+		if (!isHpMpFp) {
+			DoApplySkill(this, &pItemProp, nullptr);
+			continue;
+		}
+
+		if (nPoint != -1) {
+			if (nHP >= nMax) {
+				if (nHP + (nPoint * 0.3f) >= nHPMax) {
+					nHP = nHPMax;
+				} else {
+					DWORD dwParam = 0;
+					switch (pItemProp.dwDestParam[i]) {
+						case DST_HP:	dwParam = TID_GAME_LIMITHP;		break;
+						case DST_MP:	dwParam = TID_GAME_LIMITMP;		break;
+						case DST_FP:	dwParam = TID_GAME_LIMITFP;		break;
+					}
+
+					AddDefinedText(dwParam, "");
+					
+					nPoint = (int)(nPoint * 0.3f);
+					nHP = nHP + nPoint;
+				}
+			} else {
+				if (nHP + nPoint >= nHPMax)	// 포인트 더했을때 오바되는걸 처리.
+					nHP = nHPMax;
+				else
+					nHP = nHP + nPoint;
+			}
+		}
+
+		SetPointParam(pItemProp.dwDestParam[i], nHP);
+	}
+
+	return true;
+}
+
+// 소스보기 헷갈리니까 유료아이템만 따로 뺏다.
+bool CUser::DoUseItemFood_SM(const ItemProp & pItemProp) {
+	if (IsSMMode(SM_MAX_HP) || IsSMMode(SM_MAX_HP50)) {
+		AddDefinedText(TID_GAME_LIMITED_USE, "");	// 사용중인 상용 아이템
+		return false;
+	}
+
+	// MAXHP 버프가 없을때만 사용됨.
+	
+	DWORD nAdjParamVal;
+	int nType;
+	if (pItemProp.dwID == II_CHR_FOO_COO_BULLHAMS) {
+		nAdjParamVal = pItemProp.nAdjParamVal[1];
+		nType = SM_MAX_HP;
+	} else if (pItemProp.dwID == II_CHR_FOO_COO_GRILLEDEEL) {
+		nAdjParamVal = int(GetMaxOriginHitPoint() / (100 / pItemProp.nAdjParamVal[0]));
+		m_nPlusMaxHitPoint = nAdjParamVal;
+		nType = SM_MAX_HP50;
+	} else {
+		return false;
+	}
+
+	SetDestParam(pItemProp.dwDestParam[0], nAdjParamVal, nAdjParamVal);
+	SetSMMode(nType, pItemProp.dwCircleTime);
+
+	return true;
+}
+
+
+
+// 아이템을 사용하는 시점에 호출된다. 
+void CUser::OnAfterUseItem(const ItemProp * pItemProp) {
+	if (!pItemProp) return;
+
+	D3DXVECTOR3 sPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	const DWORD dwSfxID = pItemProp->dwSfxObj3;		// 아이템 사용시에 생성될 이펙트
+
+	if (pItemProp->dwItemKind3 == IK3_MAGICTRICK) // 이펙트 아이템류
+	{
+		float	fTheta = D3DXToRadian(GetAngle());
+		switch (pItemProp->dwID) {
+			case II_GEN_MAG_TRI_FIRESHOWER:
+			case II_GEN_MAG_TRI_HWFIREWORKS:
+			case II_CHR_MAG_TRI_ROCKETBOMB:
+			case II_CHR_MAG_TRI_HEARTBOMB:
+			case II_CHR_MAG_TRI_TWISTERBOMB:
+				sPos.x = GetPos().x + sinf(fTheta) * 3.0f;			// 바라보는 방향 1미터 앞에다 발생시킴.
+				sPos.z = GetPos().z + -cosf(fTheta) * 3.0f;
+				sPos.y = GetPos().y + 1.5f;
+				sPos.y = GetWorld()->GetUnderHeight(D3DXVECTOR3(sPos.x, sPos.y, sPos.z));
+				break;
+			case II_GEN_MAG_TRI_NEWYEARBOMB:
+			case II_GEN_MAG_TRI_SULNALBOMB:
+			case II_GEN_MAG_TRI_GOODBYEBOMB:
+				sPos.x = GetPos().x;
+				sPos.z = GetPos().z;
+				sPos.y = GetPos().y + 3.0f;
+				break;
+		}
+	}
+
+	if (dwSfxID != NULL_ID) {
+		g_UserMng.AddCreateSfxObj(this, dwSfxID, sPos.x, sPos.y, sPos.z);	// 절대좌표로 하자.
+	}
+
+	SetHonorAdd(pItemProp->dwID, HI_USE_ITEM);
+}

@@ -211,6 +211,12 @@ enum IP_TYPE
 
 struct ItemProp : CtrlProp
 {
+#ifdef __PROP_0827
+	static constexpr size_t NB_PROPS = 3;
+#else
+	static constexpr size_t NB_PROPS = 2;
+#endif
+
 	DWORD	dwMotion;			// 동작 
 	DWORD	dwNum;				// 기본생성개수	
 	DWORD	dwPackMax;			// 최대곂침개수	
@@ -266,16 +272,10 @@ struct ItemProp : CtrlProp
 	DWORD	dwDmgShift;			// 타격시 반동	
 	DWORD	dwAttackRange;		// 공격범위	
 	int		nProbability;		// 적용확률
-#ifndef __PROP_0827
-	DWORD	dwDestParam[2];		// 적용대상1	
-	LONG	nAdjParamVal[2];	// 적용값1	
-	DWORD	dwChgParamVal[2];	// 적용변화값1	
-#else	// __PROP_0827
-	DWORD	dwDestParam[3];		// 적용대상1	
-	LONG	nAdjParamVal[3];	// 적용값1	
-	DWORD	dwChgParamVal[3];	// 적용변화값1	
-#endif	// __PROP_0827
-	int		nDestData1[3];		// 적용데이타값 3개, destParam1에만 해당됨.
+	DWORD	dwDestParam[NB_PROPS];		// 적용대상1	
+	LONG	nAdjParamVal[NB_PROPS];	// 적용값1	
+	DWORD	dwChgParamVal[NB_PROPS];	// 적용변화값1	
+	int		nDestData1[NB_PROPS];		// 적용데이타값 3개, destParam1에만 해당됨.
 	DWORD	dwActiveSkill;		// 발동 마법
 	DWORD	dwActiveSkillRate;	// 발동 마법 확률.
 	DWORD	dwReqMp;			// 필요MP	

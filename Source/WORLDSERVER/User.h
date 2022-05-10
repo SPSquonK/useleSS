@@ -228,7 +228,9 @@ public:
 
 #pragma region MoverItem
 	bool DoUseItem(DWORD dwItemId, DWORD dwFocusId, int nPart = -1);
-
+	bool DoUseItemFood(ItemProp & pItemProp);
+	bool DoUseItemFood_SM(const ItemProp & pItemProp);
+	void OnAfterUseItem(const ItemProp * pItemProp);
 #pragma endregion
 
 public:
