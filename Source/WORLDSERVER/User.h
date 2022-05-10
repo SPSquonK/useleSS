@@ -228,8 +228,19 @@ public:
 
 #pragma region MoverItem
 	bool DoUseItem(DWORD dwItemId, DWORD dwFocusId, int nPart = -1);
+	enum class DoUseSystemAnswer {
+		Ok = 0,
+		SilentError = 1,
+		LimitedUse = 2,
+		NoOverlap = 3,
+		SilentError4 = 4,
+		SilentError99 = 99
+	};
+	DoUseSystemAnswer DoUseItemSystem(ItemProp * pItemProp, CItemElem * pItemElem, int nPart = -1);
 	bool DoUseItemFood(ItemProp & pItemProp);
 	bool DoUseItemFood_SM(const ItemProp & pItemProp);
+	DoUseSystemAnswer DoUseItemPetTonic(CItemElem * pItemElem);	// 펫 영양제 사용
+	DoUseSystemAnswer DoUseItemFeedPocket(CItemElem * pItemElem);
 	void OnAfterUseItem(const ItemProp * pItemProp);
 #pragma endregion
 
@@ -509,11 +520,11 @@ public:
 	void	ResetInput()	{	m_szInput[0]	= '\0';	}
 	void	SetInput( char* szInput )		{	strncpy( m_szInput, szInput, MAX_INPUT_LEN );	m_szInput[MAX_INPUT_LEN-1]	= '\0';		}
 	char*	GetInput()	{	return m_szInput;	}
-	int		DoUseItemInput( ItemProp* pProp, CItemElem* pItem );
+	DoUseSystemAnswer DoUseItemInput(ItemProp * pProp, CItemElem * pItem);
 #endif	// __AZRIA_1023
 
 #ifdef __PET_1024
-	int		DoUseItemPetNaming();
+	CUser::DoUseSystemAnswer DoUseItemPetNaming();
 #endif	// __PET_1024
 
 #ifdef __SYS_TICKET

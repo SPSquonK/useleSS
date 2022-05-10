@@ -708,9 +708,8 @@ public:
 	void	SetEatPetId( OBJID oiEatPet )		{	m_oiEatPet	= oiEatPet;	}
 	DWORD	GetPetId( void )	{	return m_dwPetId;	}
 	void	SetPetId( DWORD dwPetId )		{	m_dwPetId	= dwPetId;	}
-private:
+protected:
 	DWORD	m_dwPetId;	// º“»Ø¡ﬂ¿Ã ∆Í¿« ¿Œ∫•≈‰∏Æ ¿ßƒ°(Ìª), º“»Ø¡ﬂ¿Œ ∆Í ¿Œµ¶Ω∫(ˆ‚)
-	int		DoUseItemPetTonic( CItemElem* pItemElem );	// ∆Í øµæÁ¡¶ ªÁøÎ
 private:
 	BOOL	SetValidNeedVis( CItemElem* pItemElem, int nPos, std::vector<BYTE> & vecValid );
 public:
@@ -738,7 +737,6 @@ public:
 	void	ProcessPetAvail( void );
 	void	ProcessPetEnergy( void );
 	void	ProcessPetExp( void );
-	int		DoUseItemFeedPocket( CItemElem* pItemElem );
 #endif	// __CLIENT
 
 #ifdef __SYS_TICKET
@@ -1199,7 +1197,6 @@ public:
 	BOOL			DoUseItemVirtual( DWORD dwItemId, BOOL bEffectSkip );
 	BOOL			DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL bUes = TRUE );
 	BOOL			DoUseItemWarp( ItemProp* pItemProp, CItemElem* pItemElem );
-	int				DoUseItemSystem( ItemProp *pItemProp, CItemElem* pItemElem, int nPart = -1 );
 	void			DoPickupItemAround();
 	int				DoAttackMagic( CObj *pTargetObj, int nMagicPower,int idSfxHit = 0 );
 	int				DoAttackRange( CObj *pTargetObj, DWORD dwItemID, int idSfxHit );

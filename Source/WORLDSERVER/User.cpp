@@ -7709,46 +7709,39 @@ BOOL CUser::IsGuildMaster()
 }
 
 #ifdef __AZRIA_1023
-int CUser::DoUseItemInput( ItemProp* pProp, CItemElem* pItem )
+CUser::DoUseSystemAnswer CUser::DoUseItemInput( ItemProp* pProp, CItemElem* pItem )
 {
-	switch( pProp->dwItemKind3 )
-	{
-		case IK3_TICKET:
-			DoUseItemTicket( pItem );
-			return 0;
-		default:	break;
+	if (pProp->dwItemKind3 == IK3_TICKET) {
+		DoUseItemTicket(pItem);
+		return DoUseSystemAnswer::Ok;
 	}
-	switch( pProp->dwID )
-	{
+
 #ifdef __PET_1024
-		case II_SYS_SYS_SCR_PET_NAMING:
-			return DoUseItemPetNaming();
-#endif	// __PET_1024
-		default:
-			return 1;
+	if (pProp->dwID == II_SYS_SYS_SCR_PET_NAMING) {
+		return DoUseItemPetNaming();
 	}
-	return 1;
+#endif	// __PET_1024
+
+	return DoUseSystemAnswer::SilentError;
 }
 #endif	// __AZRIA_1023
 
 #ifdef __PET_1024
-int CUser::DoUseItemPetNaming()
-{
-	CPet* pPet	= GetPet();
-	if( !pPet )
-	{
-		AddDefinedText( TID_GAME_NAME_PET_E00 );
-		return 1;
+CUser::DoUseSystemAnswer CUser::DoUseItemPetNaming() {
+	CPet * pPet = GetPet();
+	if (!pPet) {
+		AddDefinedText(TID_GAME_NAME_PET_E00);
+		return DoUseSystemAnswer::SilentError;
 	}
 
 	if (prj.nameValider.IsNotAllowedName(GetInput())) {
 		AddDefinedText(TID_GAME_NAME_PET_E01);
-		return 1;
+		return DoUseSystemAnswer::SilentError;
 	}
 
-	pPet->SetName( GetInput() );
-	g_UserMng.AddSetPetName( this, pPet->GetName() );
-	return 0;
+	pPet->SetName(GetInput());
+	g_UserMng.AddSetPetName(this, pPet->GetName());
+	return DoUseSystemAnswer::Ok;
 }
 #endif	// __PET_1024
 
