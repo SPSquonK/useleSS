@@ -615,17 +615,13 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 		case II_SYS_SYS_SCR_SELPAR:
 		{
 			CParty * pParty = g_PartyMng.GetParty(GetPartyId());
-			if (pParty) {
-				if (pParty->m_nLevel < MAX_PARTYLEVEL)	// 단막극단일때만 사용가능
+			if (pParty && pParty->m_nLevel < MAX_PARTYLEVEL) {
+				// 단막극단일때만 사용가능
 					pParty->SetPartyLevel(this, 10, 180, 0);
-				else
-					nResult = DoUseSystemAnswer::SilentError;
 			} else {
-				nResult = DoUseSystemAnswer::LimitedUse;
-			}
-
-			if (nResult == DoUseSystemAnswer::SilentError)
+				nResult = DoUseSystemAnswer::SilentError;
 				AddDefinedText(TID_GAME_NTROUPEO10, "");
+			}
 		}
 		break;
 		case II_SYS_SYS_SCR_HOLY:
