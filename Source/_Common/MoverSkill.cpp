@@ -1415,58 +1415,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 }
 #endif // __WORLDSERVER
 
-#ifdef __WORLDSERVER
-BOOL CMover::DoUseItemSexChange( int nFace )
-{
-	// 1.
-	for( DWORD dwParts = 0; dwParts < MAX_HUMAN_PARTS; dwParts++ )
-	{
-		if( dwParts == PARTS_HEAD || dwParts == PARTS_HAIR || dwParts == PARTS_LWEAPON
-			|| dwParts == PARTS_RWEAPON || dwParts == PARTS_SHIELD || dwParts == PARTS_RIDE
-			|| ( dwParts >= PARTS_NECKLACE1 && dwParts <= PARTS_BULLET ) )
-			continue;
-		
-		CItemElem* pArmor	= m_Inventory.GetEquip( dwParts );
-		if( pArmor )
-		{
-			((CUser*)this)->AddDefinedText( TID_GAME_CHECK_EQUIP, "" );
-				return FALSE;
-		}
-	}
-
-	// 2.
-	DWORD dwIndex;
-	if( GetSex() == SEX_MALE )
-	{
-		dwIndex		= MI_FEMALE;
-		SetSex( SEX_FEMALE );
-	}
-	else
-	{
-		dwIndex	= MI_MALE;
-		SetSex( SEX_MALE );
-	}
-
-	SetTypeIndex( D3DDEVICE, OT_MOVER, dwIndex );
-	ResetScale();
-	SetMotion( MTI_WALK );
-	//RedoEquip( FALSE );		// chipi_091125 제거
-	RedoEquip( FALSE, FALSE );	// chipi_091125 추가 - 악세사리, 무기 등의 아이템은 착용 상태로 트랜지가 가능한데 능력치를 다시(중복) 적용시키는 문제가 있었다.
-	UpdateLocalMatrix();
-
-	// 3.
-	g_UserMng.AddSexChange( this );
-
-	// 4.
-	m_dwHeadMesh	= (DWORD)nFace;
-	g_UserMng.AddChangeFace( m_idPlayer, (DWORD)nFace );
-
-	g_dpDBClient.SendUpdatePlayerData( static_cast<CUser*>(this) );
-
-	return TRUE;
-}
-#endif	// __WORLDSERVER
-
 /*--------------------------------------------------------------------------------------------------------
 
 

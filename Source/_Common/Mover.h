@@ -1338,7 +1338,6 @@ public:
 	int				RemoveItemA( DWORD dwItemId, short nNum );
 	void			RemoveVendorItem( CHAR chTab, BYTE nId, short nNum );
 	void			RemoveItemIK3( DWORD dwItemKind3 );
-	BOOL			DoUseItemSexChange( int nFace );
 	BOOL			ReplaceInspection( REGIONELEM* pPortkey );
 #ifdef __LAYER_1015
 	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );

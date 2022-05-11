@@ -114,8 +114,6 @@ BOOL CWndChangeFace::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 } 
 
 
-#define MAX_FACE 5
-
 CWndChangeSex::CWndChangeSex() 
 { 
 	m_nSelectFace = 0;
@@ -310,7 +308,7 @@ BOOL CWndChangeSex::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 		if( m_nSelectFace < 0 )
 		{
-			m_nSelectFace = MAX_FACE-1;
+			m_nSelectFace = MAX_DEFAULT_HEAD -1;
 		}
 		CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh, m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );		
 	}
@@ -319,7 +317,7 @@ BOOL CWndChangeSex::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 		m_nSelectFace++;
 		
-		if( m_nSelectFace >= MAX_FACE )
+		if( m_nSelectFace >= MAX_DEFAULT_HEAD)
 		{
 			m_nSelectFace = 0;
 		}
