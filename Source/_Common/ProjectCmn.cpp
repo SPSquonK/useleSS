@@ -593,9 +593,8 @@ CString CProject::GetLangScript( CScript& script )
 	return string;
 }
 
-void CProject::LoadStrings()
-{
-	const char* lpszFiles[] = {
+void CProject::LoadStrings() {
+	static constexpr std::initializer_list<const char *> lpszFiles = {
 		"character.txt.txt",
 		"character-etc.txt.txt",
 		"character-school.txt.txt",
@@ -669,20 +668,18 @@ void CProject::LoadStrings()
 #endif // __IMPROVE_MAP_SYSTEM
 	};
 
-	int n = sizeof(lpszFiles) / sizeof(lpszFiles[0]);
-	for( int i=0; i<n; ++i )
-	{
+	for (const char * const fileName : lpszFiles) {
 		CScript s;
-		if( s.Load( lpszFiles[i] ) == TRUE )
+		if (s.Load(fileName)) {
 			s.LoadString();
-	}		
+		}
+	}
 
 	LoadText( "textClient.inc" );
 }
 
-void CProject::LoadDefines()
-{
-	const char* lpszDefines[] = {
+void CProject::LoadDefines() {
+	static constexpr std::initializer_list<const char *> lpszDefines = {
 		"define.h",
 		"defineNeuz.h",
 		"defineQuest.h",
@@ -705,14 +702,12 @@ void CProject::LoadDefines()
 		, "defineMapComboBoxData.h"
 #endif // __IMPROVE_MAP_SYSTEM
 	};
-	int n, i;
-
-	n = sizeof(lpszDefines) / sizeof(lpszDefines[0]);
-	for( i=0; i<n; ++i )
-	{
+	
+	for (const char * const lpszDefine : lpszDefines) {
 		CScript script;
-		if( script.Load( lpszDefines[i] ) == TRUE )
+		if (script.Load(lpszDefine)) {
 			script.PreScan();
+		}
 	}	
 }
 
