@@ -114,7 +114,7 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 		break;
 #endif // __FUNNY_COIN
 		case IK2_WARP:
-			return DoUseItemWarp(pItemProp, pItemBase);
+			return DoUseItemWarp(*pItemProp, *pItemBase);
 		case IK2_BUFF2:
 		{
 			if (IsDoUseBuff(pItemProp) != 0)
@@ -1331,6 +1331,85 @@ bool CUser::DoUseItemSexChange(int nFace) {
 	g_dpDBClient.SendUpdatePlayerData(this);
 
 	return true;
+}
+
+bool CUser::DoUseItemWarp(const ItemProp & pItemProp, CItemElem & pItemElem) {
+	if (pItemProp.dwID != II_GEN_WARP_COUPLERING
+		&& pItemProp.dwID != II_GEN_WARP_WEDDING_BAND
+		&& pItemProp.dwID != II_GEN_WARP_COUPLERING01) {
+		return false;
+	}
+
+	if (IsFly()) return false;
+
+	const u_long idCouple = (u_long)(pItemElem.GetRandomOptItemId());
+
+	if (idCouple == m_idPlayer) {
+		AddDefinedText(TID_GAME_COUPLERING_ERR01, "%s", GetName());
+		return false;
+	}
+
+	if (idCouple == 0) {
+		// carve
+		UpdateItemEx((BYTE)(pItemElem.m_dwObjId), UI_RANDOMOPTITEMID, (__int64)m_idPlayer);
+		if (II_GEN_WARP_COUPLERING == pItemProp.dwID)
+			UpdateItem((BYTE)(pItemElem.m_dwObjId), UI_KEEPTIME, 21600);	// 15 days
+		
+		AddDefinedText(TID_GAME_COUPLERING_CARVE, "%s", GetName());
+		return true;
+	} else {
+		// teleport
+		const char * lpszPlayer = CPlayerDataCenter::GetInstance()->GetPlayerString(idCouple);
+		if (!lpszPlayer) {
+			AddDefinedText(TID_DIAG_0061, "%s", lpszPlayer);
+			return false;
+		}
+
+		CUser * pUser = prj.GetUserByID(idCouple);
+		if (!IsValidObj(pUser)) {
+			AddDefinedText(TID_DIAG_0061, "%s", lpszPlayer);
+			return false;
+		}
+
+		if (pUser->IsFly()) {
+			AddDefinedText(TID_GAME_COUPLERING_ERR03);
+			return false;
+		}
+		
+		static constexpr auto IsTeleportable = [](CUser * user) {
+			const CWorld * world = user->GetWorld();
+			if (!world) return false;
+
+			const DWORD worldId = world->GetID();
+			if (worldId == WI_WORLD_GUILDWAR) return false;
+			if (worldId == WI_WORLD_QUIZ) return false;
+			if (worldId >= WI_WORLD_GUILDWAR1TO1_0 && worldId <= WI_WORLD_GUILDWAR1TO1_L) return false;
+
+
+			if (prj.IsGuildQuestRegion(user->GetPos())) return false;
+
+			return true;
+		};
+
+		if (!IsTeleportable(this) || !IsTeleportable(pUser)) {
+			AddDefinedText(TID_GAME_COUPLERING_ERR02, "%s", lpszPlayer);
+			return false;
+		}
+
+		if (CRainbowRaceMng::GetInstance()->IsEntry(((CUser *)this)->m_idPlayer)
+			|| CRainbowRaceMng::GetInstance()->IsEntry(idCouple)) {
+			AddDefinedText(TID_GAME_RAINBOWRACE_NOTELEPORT);
+			return false;
+		}
+
+		if (GetWorld() != pUser->GetWorld() || GetLayer() != pUser->GetLayer()) {
+			AddDefinedText(TID_GAME_COUPLERING_ERR02, "%s", lpszPlayer);
+			return false;
+		}
+
+		Replace(*pUser, REPLACE_FORCE);
+		return true;
+	}
 }
 
 // 아이템을 사용하는 시점에 호출된다. 

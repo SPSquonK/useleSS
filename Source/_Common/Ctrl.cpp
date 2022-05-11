@@ -748,14 +748,14 @@ BOOL CCtrl::ApplySkillHardCoding( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillPro
 				{
 					g_dpDBClient.SendLogLevelUp( pTarget, 10 );	// 부활 스킬 로그
 
-					if( ((CUser *)this)->m_Resurrection_Data.bUseing != TRUE )
-					{
-						((CUser *)this)->AddResurrectionMessage();
-					
-						((CUser *)this)->m_Resurrection_Data.bUseing        = TRUE;
-						((CUser *)this)->m_Resurrection_Data.dwPlayerID     = ((CMover*)pSrc)->m_idPlayer;
-						((CUser *)this)->m_Resurrection_Data.pSkillProp     = pSkillProp;
-						((CUser *)this)->m_Resurrection_Data.pAddSkillProp  = pAddSkillProp;
+					CUser * self = static_cast<CUser *>(this);
+
+					if (!self->m_Resurrection_Data) {
+						self->m_Resurrection_Data = RESURRECTION_DATA{
+							((CMover *)pSrc)->m_idPlayer, pSkillProp, pAddSkillProp
+						};
+
+						self->AddResurrectionMessage();
 					}
 
 					break;
@@ -1138,7 +1138,7 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 					return;
 
 				// 부활스킬셋팅이 되어있다면 아랫것들 무시
-				if( ((CMover *)this)->m_Resurrection_Data.bUseing )
+				if( ((CMover *)this)->m_Resurrection_Data )
 					return;
 
 				// 데미지도 주면서 파라메터도 변하는 스킬이 있기땜에 데미지랑 따로 처리.

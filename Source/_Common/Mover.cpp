@@ -375,7 +375,7 @@ void CMover::Init()
 	m_dwTickEndDuel = ::timeGetTime() + NEXT_TICK_ENDDUEL;
 	m_nDuelState = 0;
 	
-	memset( &m_Resurrection_Data, 0, sizeof(m_Resurrection_Data) );
+	m_Resurrection_Data = std::nullopt;
 
 	m_bRegenItem		= TRUE;
 	m_bActiveAttack		= FALSE;
@@ -1951,6 +1951,17 @@ BOOL CMover::ReplaceInspection( REGIONELEM* pPortkey )
 	}	
 
 	return bResult;
+}
+
+bool CMover::Replace(const CMover & pTarget, REPLACE_TYPE replaceType) {
+	CWorld * world = pTarget.GetWorld();
+	if (!world) return false;
+
+	Replace(
+		g_uIdofMulti, world->GetID(), pTarget.GetPos(),
+		replaceType, pTarget.GetLayer()
+	);
+	return true;
 }
 
 // default type =  REPLACE_NORMAL

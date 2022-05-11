@@ -783,7 +783,7 @@ void CDPSrvr::OnRevival( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) )
 	{
-		pUser->m_Resurrection_Data.bUseing = FALSE;
+		pUser->m_Resurrection_Data = std::nullopt;
 
 		if( pUser->IsDie() == FALSE )
 		{
@@ -856,7 +856,7 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) )
 	{
-		pUser->m_Resurrection_Data.bUseing = FALSE;
+		pUser->m_Resurrection_Data = std::nullopt;
 
 		if( pUser->IsDie() == FALSE )
 		{
@@ -5615,50 +5615,40 @@ void CDPSrvr::OnStateMode( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 void CDPSrvr::OnResurrectionCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) && pUser->m_Resurrection_Data.bUseing )
+	if( IsValidObj(pUser) && pUser->m_Resurrection_Data )
 	{	
-		pUser->m_Resurrection_Data.bUseing = FALSE;
+		pUser->m_Resurrection_Data = std::nullopt;
 	}
 }
 
 // 사용자가 OK하면 부활을 쓰게 한다
-void CDPSrvr::OnResurrectionOK( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-
+void CDPSrvr::OnResurrectionOK(CAr & ar, CUser & pUser) {
 	// 서버에서 부활모드인가??
-	if( IsValidObj(pUser) && pUser->m_Resurrection_Data.bUseing )
-	{	
-		if( pUser->IsDie() == FALSE )
-		{
-			pUser->m_Resurrection_Data.bUseing = FALSE;
-			return;
-		}
-		// 약간의 에너지를 채워주자
-		if( pUser->GetType() == OT_MOVER )	// 타겟이 무버일때만.
-		{		
-			RESURRECTION_DATA* pData = &(((CMover *)pUser)->m_Resurrection_Data);
-			CUser* pSrc	= (CUser*)prj.GetUserByID( pData->dwPlayerID );
+	if (!pUser.m_Resurrection_Data) return;
 
-			if( IsValidObj(pSrc) )
-			{
-				// 부활 SFX효과
-				g_UserMng.AddCreateSfxObj( pUser, XI_SKILL_ASS_HEAL_RESURRECTION01 );
-				
-				// 부활하기
-				g_UserMng.AddHdr( pUser, SNAPSHOTTYPE_RESURRECTION );
-				pUser->m_pActMover->SendActMsg( OBJMSG_RESURRECTION );
-				pUser->m_Resurrection_Data.bUseing = FALSE;
-				
-				pUser->ApplyParam( (CMover *)pSrc, pData->pSkillProp, pData->pAddSkillProp, TRUE , 0 );
-				
-				if( pData->pAddSkillProp->dwDestParam2 == DST_RECOVERY_EXP )
-					pUser->SubDieDecExp(TRUE, pData->pAddSkillProp->nAdjParamVal2 );	// 부활이 되면서 겸치가 조금 깎임.			
-			}	
-			else
-				pUser->m_Resurrection_Data.bUseing = FALSE;
+	if (!pUser.IsDie()) {
+		pUser.m_Resurrection_Data = std::nullopt;
+		return;
+	}
 
-		}
+	// 약간의 에너지를 채워주자
+	RESURRECTION_DATA pData = pUser.m_Resurrection_Data.value();
+	pUser.m_Resurrection_Data = std::nullopt;
+
+	CUser * pSrc = prj.GetUserByID(pData.dwPlayerID);
+	if (!IsValidObj(pSrc)) return;
+
+	// 부활 SFX효과
+	g_UserMng.AddCreateSfxObj(&pUser, XI_SKILL_ASS_HEAL_RESURRECTION01);
+
+	// 부활하기
+	g_UserMng.AddHdr(&pUser, SNAPSHOTTYPE_RESURRECTION);
+	pUser.m_pActMover->SendActMsg(OBJMSG_RESURRECTION);
+
+	pUser.ApplyParam(pSrc, pData.pSkillProp, pData.pAddSkillProp, TRUE, 0);
+
+	if (pData.pAddSkillProp->dwDestParam2 == DST_RECOVERY_EXP) {
+		pUser.SubDieDecExp(TRUE, pData.pAddSkillProp->nAdjParamVal2);	// 부활이 되면서 겸치가 조금 깎임.			
 	}
 }
 

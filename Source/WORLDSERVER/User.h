@@ -242,6 +242,7 @@ public:
 	DoUseSystemAnswer DoUseItemPetTonic(CItemElem * pItemElem);	// 펫 영양제 사용
 	DoUseSystemAnswer DoUseItemFeedPocket(CItemElem * pItemElem);
 	bool DoUseItemSexChange(int nFace);
+	bool DoUseItemWarp(const ItemProp & pItemProp, CItemElem & pItemElem);
 	void OnAfterUseItem(const ItemProp * pItemProp);
 #pragma endregion
 

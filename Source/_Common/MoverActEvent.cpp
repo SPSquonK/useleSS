@@ -167,7 +167,7 @@ DWORD CMover::GetReferTime(const DWORD referTarget, const DWORD referStat, const
 // SetDestParam을 일괄적으로 하는 부분.
 // m_SkillState.Serialize()후에도 이게 수행된다.
 // pSrc는 시전자.
-BOOL	CMover::ApplyParam( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, BOOL bSend, int nDamage )
+BOOL	CMover::ApplyParam( CCtrl *pSrc, const ItemProp *pSkillProp, const AddSkillProp *pAddSkillProp, BOOL bSend, int nDamage )
 {
 	int		i;
 	CMover *pTarget = (CMover *)this;

@@ -4109,6 +4109,7 @@ const char * CRandomOptItemGen::GetRandomOptItemString(int nId) const {
 
 BOOL CProject::IsGuildQuestRegion( const D3DXVECTOR3 & vPos )
 {
+	// That's broken, should require world
 	CRect rect;
 	POINT point;
 	for( int i = 0; i < m_aPropGuildQuest.GetSize(); i++ )

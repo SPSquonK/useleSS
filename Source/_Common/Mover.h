@@ -12,6 +12,7 @@
 #endif	// __BUFF_1107
 
 #include <array>
+#include <optional>
 
 #include "Ctrl.h"
 #include "..\_AIInterface\ActionMover.h"
@@ -279,14 +280,11 @@ enum HITTYPE
 };
 
 /// 리저렉션 데이타 구조체 
-typedef struct RESURRECTION_DATA
-{
-	u_long		  dwPlayerID;
-	BOOL		  bUseing;
-	ItemProp	 *pSkillProp;
-	AddSkillProp *pAddSkillProp;
-	int			  nDamage;
-} RESURRECTION_DATA;
+struct RESURRECTION_DATA {
+	u_long               dwPlayerID;
+	const ItemProp *     pSkillProp;
+	const AddSkillProp * pAddSkillProp;
+};
 
 /// 거래후 결과 구조체 
 struct VENDOR_SELL_RESULT
@@ -619,7 +617,7 @@ public:
 	DWORD		m_dwMute;
 #endif	// __JEFF_9_20
 
-	RESURRECTION_DATA				m_Resurrection_Data;		/// 리저렉션 스킬 정보 
+	std::optional<RESURRECTION_DATA> m_Resurrection_Data;		/// 리저렉션 스킬 정보 
 	CItemContainer*	m_ShopInventory[ MAX_VENDOR_INVENTORY_TAB ];	/// 상인NPC의 물품 정보 
 	CItemContainer	m_Inventory;				/// 인벤토리
 	CPocketController	m_Pocket;
@@ -1196,7 +1194,6 @@ public:
 	BOOL			DoUseEquipmentItem( CItemElem* pItemElem, DWORD dwId, int nPart );
 	BOOL			DoUseItemVirtual( DWORD dwItemId, BOOL bEffectSkip );
 	BOOL			DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL bUes = TRUE );
-	BOOL			DoUseItemWarp( ItemProp* pItemProp, CItemElem* pItemElem );
 	void			DoPickupItemAround();
 	int				DoAttackMagic( CObj *pTargetObj, int nMagicPower,int idSfxHit = 0 );
 	int				DoAttackRange( CObj *pTargetObj, DWORD dwItemID, int idSfxHit );
@@ -1217,7 +1214,7 @@ public:
 	void			SetJJim( CMover *pJJimer );		// this를 pJJimer가 찜했다는걸 표시.
 	void			SubReferTime(DWORD & pTime1, DWORD & pTime2, const ItemProp & pSkillProp, const AddSkillProp * pAddSkillProp) const;
 	[[nodiscard]] DWORD GetReferTime(DWORD referTarget, DWORD referStat, DWORD referValue, DWORD skillLevel) const;
-	BOOL			ApplyParam( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, BOOL bSend = TRUE, int nDamage = 0 );	// this에게 파라메터를 적용. pSrc는 시전자.
+	BOOL			ApplyParam( CCtrl *pSrc, const ItemProp *pSkillProp, const AddSkillProp *pAddSkillProp, BOOL bSend = TRUE, int nDamage = 0 );	// this에게 파라메터를 적용. pSrc는 시전자.
 	BOOL			ApplyMagicSkill( CMover *pMover, DWORD dwSkill, DWORD dwLevel, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp );	// pMover에게 스킬효과를 적용함.
 	BOOL			GetSkillProp( ItemProp **ppSkillProp, AddSkillProp **ppAddSkillProp, int nSkill, DWORD dwLevel, LPCTSTR szErr );
 	BOOL			CreateSkillEffect( OBJID idTarget, int nSkill, DWORD dwLevel );		// 실제 스킬 발동.
@@ -1344,6 +1341,7 @@ public:
 #else	// __LAYER_1015
 	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type );
 #endif	// __LAYER_1015
+	bool Replace(const CMover & pTarget, REPLACE_TYPE replaceType = REPLACE_TYPE::REPLACE_NORMAL);
 	BOOL			IsLoot( CItem *pItem, BOOL bPet = FALSE );
 	void			ProcInstantBanker();
 	void			ProcInstantGC();
