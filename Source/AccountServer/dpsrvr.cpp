@@ -89,7 +89,7 @@ void CDPSrvr_AccToCert::DestroyPlayer( DPID dpid1, DPID dpid2 )
 
 void CDPSrvr_AccToCert::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 {
-	const auto [lpAddr, lpszAccount, cbAccountFlag] = ar.Extract<SAccountName, char[16], BYTE>();
+	const auto [lpAddr, lpszAccount, cbAccountFlag] = ar.Extract<char[16], SAccountName, BYTE>();
 	DWORD dwAuthKey = 0;
 	int		fCheck = 0;
 #ifdef __BILLING0712
