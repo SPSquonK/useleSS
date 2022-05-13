@@ -14,22 +14,29 @@ class CDPAccountClient : public CDPMng
 public:
 //	Constructions
 	CDPAccountClient();
-	virtual	~CDPAccountClient();
 //	Overrides
-	virtual	void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
+	void SysMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom) override {}
 	virtual	void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 //	Operations
 
-#ifdef __GPAUTH_02
-#ifdef __EUROPE_0514
-	void SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck, const char* szCheck, const char* szBak, DWORD dwPCBangClass );
-#else	// __EUROPE_0514
-	void	SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE b18, DPID idFrom, int fCheck, const char* szCheck );
-#endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-	void	SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE b18, DPID idFrom, int fCheck );
-#endif	// __GPAUTH_02
 
+	struct CDPAccountClient_SendAddAccount_Params {
+		char * lpAddr;
+		LPCTSTR lpszAccount;
+		BYTE cbAccountFlag;
+		DPID idFrom;
+		int fCheck;
+
+#ifdef __GPAUTH_02
+		const char * szCheck;
+#ifdef __EUROPE_0514
+		const char * szBak;
+		DWORD dwPCBangClass;
+#endif	// __EUROPE_0514
+#endif	// __GPAUTH_02
+	};
+
+	void SendAddAccount(DPID idFrom, const CDPAccountClient_SendAddAccount_Params & params);
 	void	SendRemoveAccount( DPID idFrom );
 	void	SendRoute( DWORD dwIdofServer, u_long uIdofMulti, DPID idFrom );
 	void	SendPing( DPID idFrom );

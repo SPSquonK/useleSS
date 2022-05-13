@@ -176,15 +176,20 @@ void CDbManager::OnCertifyQueryOK( CQuery & query, LPDB_OVERLAPPED_PLUS pData, c
 	char lpAddr[16]	= { 0, };
 	g_dpCertifier.GetPlayerAddr( pData->dpId, lpAddr );				
 
+	g_dpAccountClient.SendAddAccount(pData->dpId,
+		{
+			.lpAddr = lpAddr,
+			.lpszAccount = pData->AccountInfo.szAccount,
+			.cbAccountFlag = cbAccountFlag,
+			.fCheck = fCheck,
 #ifdef __GPAUTH_02
+			.szCheck = szCheck,
 #ifdef __EUROPE_0514
-	g_dpAccountClient.SendAddAccount( lpAddr, pData->AccountInfo.szAccount, cbAccountFlag, pData->dpId, fCheck, szCheck, pData->AccountInfo.szBak, pData->AccountInfo.dwPCBangClass );
-#else	// __EUROPE_0514
-	g_dpAccountClient.SendAddAccount( lpAddr, pData->AccountInfo.szAccount, cbAccountFlag, pData->dpId, fCheck, szCheck );
+			.szBak = pData->AccountInfo.szBak,
+			.dwPCBangClass = pData->AccountInfo.dwPCBangClass
 #endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-	g_dpAccountClient.SendAddAccount( lpAddr, pData->AccountInfo.szAccount, cbAccountFlag, pData->dpId, fCheck );
 #endif	// __GPAUTH_02
+		});
 }
 
 void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMgr& accountMgr )

@@ -5,10 +5,6 @@
 #include "lang.h"
 #endif	// __GPAUTH_01
 
-#ifdef __TRACE1027
-
-#endif	// __TRACE1027
-
 #include "user.h"
 
 CDPAccountClient::CDPAccountClient()
@@ -19,19 +15,6 @@ CDPAccountClient::CDPAccountClient()
 	ON_MSG( PACKETTYPE_SRVR_LIST, &CDPAccountClient::OnServersetList );
 	ON_MSG( PACKETTYPE_PLAYER_COUNT, &CDPAccountClient::OnPlayerCount );
 	ON_MSG( PACKETTYPE_ENABLE_SERVER, &CDPAccountClient::OnEnableServer );
-}
-
-CDPAccountClient::~CDPAccountClient()
-{
-}
-
-void CDPAccountClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
-{
-	switch( lpMsg->dwType )
-	{
-		case DPSYS_DESTROYPLAYERORGROUP:
-			break;
-	}
 }
 
 void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
@@ -52,34 +35,28 @@ void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 		( this->*( pfn ) )( ar, dpid2 );
 }
 
-#ifdef __GPAUTH_02
-#ifdef __EUROPE_0514
-void CDPAccountClient::SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck, const char* szCheck, const char* szBak, DWORD dwPCBangClass )
-#else	// __EUROPE_0514
-void CDPAccountClient::SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck, const char* szCheck )
-#endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-void CDPAccountClient::SendAddAccount( char* lpAddr, LPCTSTR lpszAccount, BYTE cbAccountFlag, DPID idFrom, int fCheck )
-#endif	// __GPAUTH_02
-{
+
+
+void CDPAccountClient::SendAddAccount(DPID idFrom, const CDPAccountClient_SendAddAccount_Params & params) {
 	BEFORESENDSOLE( ar, PACKETTYPE_ADD_ACCOUNT, idFrom );
-	ar.WriteString( lpAddr );
-	ar.WriteString( lpszAccount );
-	ar << cbAccountFlag;
+	
+	ar.WriteString( params.lpAddr );
+	ar.WriteString( params.lpszAccount );
+	ar << params.cbAccountFlag;
 
 #ifdef __BILLING0712
-	ar << fCheck;
+	ar << params.fCheck;
 #endif//__BILLING0712
 
 #ifdef __GPAUTH_02
 	BOOL bGPotatoAuth	= ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;
 	if( bGPotatoAuth )
-		ar.WriteString( szCheck );
+		ar.WriteString( params.szCheck );
 #endif	// __GPAUTH_02
 #ifdef __EUROPE_0514
-	ar.WriteString( szBak );
+	ar.WriteString( params.szBak );
 #endif	// __EUROPE_0514
-	ar << dwPCBangClass;
+	ar << params.dwPCBangClass;
 
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
