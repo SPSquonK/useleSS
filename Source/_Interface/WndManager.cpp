@@ -3895,12 +3895,6 @@ void CWndMgr::PutToolTip_Item( DWORD dwType, DWORD dwId, CPoint point, CRect* pR
 	PutToolTip_Item( pItemBase, point, pRect, flag );
 }
 
-struct DST_STRING
-{
-	int nDstParam;		// ex) DST_STR
-	int nNameIndex;
-};
-
 static boost::container::flat_map<DWORD, DWORD> g_DstString = {
 	{ DST_STR                     , TID_TOOLTIP_STR },
 	{ DST_DEX                     , TID_TOOLTIP_DEX },
