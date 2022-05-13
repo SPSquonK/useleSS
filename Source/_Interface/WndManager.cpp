@@ -6604,6 +6604,8 @@ void CWndMgr::RestoreWnd() {
 		CWndBase * window = GetWndBase(appId);
 		if (window) window->SetVisible(TRUE);
 	}
+
+	m_clearFlag = FALSE;
 }
 
 CWndBase* CWndMgr::GetWndVendorBase( void )
