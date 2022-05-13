@@ -44,7 +44,7 @@ struct SavedSoldItem {
 	int extra    = 0;
 	DWORD itemId = 0;
 
-	[[nodiscard]] bool IsEmpty() const noexcept { return itemId != 0; }
+	[[nodiscard]] bool IsEmpty() const noexcept { return itemId == 0; }
 	void Clear() { *this = SavedSoldItem{}; }
 	static void Clear(Container & container) { container.fill(SavedSoldItem{}); }
 };

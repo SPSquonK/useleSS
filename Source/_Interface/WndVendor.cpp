@@ -146,7 +146,7 @@ void CWndVendor::ReloadItemList()
 		for (int nIndex = 0; nIndex < g_pPlayer->m_Inventory.GetMax(); nIndex++) {
 			CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId(nIndex);
 			if (!pItemElem) continue;
-			if (pItemElem->m_dwObjId == 0) continue;
+			if (pItemElem->IsEmpty()) continue;
 
 			// 100304_mirchang vendor item check
 
