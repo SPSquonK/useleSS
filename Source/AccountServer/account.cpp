@@ -93,18 +93,21 @@ void CAccount::SendBillingResult( BILLING_INFO* pResult )
 			}
 		}
 		
-	#ifdef __GPAUTH_02
+
+		g_dpSrvr.OnAfterChecking(m_dpid1, m_dpid2,
+			{
+			.f = cbResult,
+			.lpszAccount = pResult->szAccount,
+			.dwAuthKey = m_dwAuthKey,
+			.cbAccountFlag = m_cbAccountFlag,
+			.lTimeSpan = lTimeSpan,
+#ifdef __GPAUTH_02
+			.szCheck = "",
 #ifdef __EUROPE_0514
-		g_dpSrvr.OnAfterChecking( cbResult, pResult->szAccount, m_dpid1, m_dpid2, 
-								  m_dwAuthKey, m_cbAccountFlag, lTimeSpan, "", "" );
-#else	// __EUROPE_0514
-		g_dpSrvr.OnAfterChecking( cbResult, pResult->szAccount, m_dpid1, m_dpid2, 
-								  m_dwAuthKey, m_cbAccountFlag, lTimeSpan, "" );
-#endif	// __EUROPE_0514
-	#else	// __GPAUTH_02
-		g_dpSrvr.OnAfterChecking( cbResult, pResult->szAccount, m_dpid1, m_dpid2, 
-								  m_dwAuthKey, m_cbAccountFlag, lTimeSpan );
-	#endif	// __GPAUTH_02
+			.szBak = ""
+#endif
+#endif
+			});
 	}
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

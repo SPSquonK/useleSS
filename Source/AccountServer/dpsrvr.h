@@ -1,5 +1,4 @@
-#ifndef __DPSRVR_H__
-#define	__DPSRVR_H__
+#pragma once
 
 #include "dpmng.h"
 #include "msghdr.h"
@@ -7,17 +6,17 @@
 #include <map>
 
 #undef	theClass
-#define theClass	CDPSrvr
+#define theClass	CDPSrvr_AccToCert
 #undef theParameters
 #define theParameters	CAr & ar, DPID, DPID
 
-#define MAX_IP 10240
-
 typedef std::map<std::string, int>	STRING2INT;
 
-class CDPSrvr : public CDPMng<CBuffer>
+class CDPSrvr_AccToCert : public CDPMng<CBuffer>
 {
 public:
+	static constexpr size_t MAX_IP = 10240;
+
 	bool	m_bCheckAddr;		// 접속하는 account의 address를 검사해야 하는가?
 	int		m_nMaxConn;
 	BOOL	m_bReloadPro;
@@ -41,8 +40,7 @@ public:
 
 public:
 //	Constructions
-	CDPSrvr();
-	virtual	~CDPSrvr();
+	CDPSrvr_AccToCert();
 //	Overrides
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
@@ -60,16 +58,22 @@ public:
 
 	BOOL	EnableServer( DWORD dwParent, DWORD dwID, long lEnable );
 	void	SendEnableServer( u_long uId, long lEnable );
+	
+	struct OnAfterCheckingParams {
+		BYTE f;
+		LPCTSTR lpszAccount;
+		DWORD dwAuthKey;
+		BYTE cbAccountFlag;
+		long lTimeSpan;
 #ifdef __GPAUTH_02
+		const char * szCheck;
 #ifdef __EUROPE_0514
-	void	OnAfterChecking( BYTE f, LPCTSTR lpszAccount, DPID dpid1, DPID dpid2, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szCheck, const char* szBak );
-#else	// __EUROPE_0514
-	void	OnAfterChecking( BYTE f, LPCTSTR lpszAccount, DPID dpid1, DPID dpid2, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szCheck );
-#endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-	void	OnAfterChecking( BYTE f, LPCTSTR lpszAccount, DPID dpid1, DPID dpid2, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan );
-#endif	// __GPAUTH_02
+		const char * szBak;
+#endif
+#endif
+	};
 
+	void OnAfterChecking(DPID dpid1, DPID dpid2, const OnAfterCheckingParams & params);
 	BOOL	IsABClass( LPCSTR lpszIP );
 	void	GetABCClasstoString( LPCSTR lpszIP, char * lpABClass, int &nCClass );
 	void	InitIPCut( void );
@@ -81,6 +85,5 @@ public:
 	void	OnCloseExistingConnection( CAr & ar, DPID dpid1, DPID dpid2 );
 };
 
-extern CDPSrvr g_dpSrvr;
+extern CDPSrvr_AccToCert g_dpSrvr;
 
-#endif	// __DPCRTFRSRVR_H__

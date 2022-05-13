@@ -14,7 +14,7 @@
 
 const int MAX_CONN = 50000;
 
-CDPSrvr::CDPSrvr()
+CDPSrvr_AccToCert::CDPSrvr_AccToCert()
 {
 	m_bCheckAddr	= true;
 	m_nMaxConn		=	MAX_CONN;
@@ -31,18 +31,13 @@ CDPSrvr::CDPSrvr()
 	strcpy( m_szVer, "20040706" );	// default value
 
 	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_ADD_ACCOUNT, &CDPSrvr::OnAddAccount );
-	ON_MSG( PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr::OnRemoveAccount );
-	ON_MSG( PACKETTYPE_PING, &CDPSrvr::OnPing );
-	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPSrvr::OnCloseExistingConnection );
+	ON_MSG( PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount );
+	ON_MSG( PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount );
+	ON_MSG( PACKETTYPE_PING, &CDPSrvr_AccToCert::OnPing );
+	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPSrvr_AccToCert::OnCloseExistingConnection );
 }
 
-CDPSrvr::~CDPSrvr()
-{
-
-}
-
-void CDPSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
+void CDPSrvr_AccToCert::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	switch( lpMsg->dwType )
 	{
@@ -61,7 +56,7 @@ void CDPSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID id
 	}
 }
 
-void CDPSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
+void CDPSrvr_AccToCert::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	static size_t	nSize	= sizeof(DPID);
 	
@@ -75,24 +70,24 @@ void CDPSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID i
 	( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg );
 }
 
-void CDPSrvr::OnAddConnection( DPID dpid )
+void CDPSrvr_AccToCert::OnAddConnection( DPID dpid )
 {
 	g_AccountMng.AddConnection( dpid );
 	SendServersetList( dpid );
 }
 
-void CDPSrvr::OnRemoveConnection( DPID dpid )
+void CDPSrvr_AccToCert::OnRemoveConnection( DPID dpid )
 {
 	g_AccountMng.RemoveConnection( dpid );
 }
 
-void CDPSrvr::DestroyPlayer( DPID dpid1, DPID dpid2 )
+void CDPSrvr_AccToCert::DestroyPlayer( DPID dpid1, DPID dpid2 )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_DESTROY_PLAYER, dpid2 );
 	SEND( ar, this, dpid1 );
 }
 
-void CDPSrvr::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
+void CDPSrvr_AccToCert::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 {
 	const auto [lpAddr, lpszAccount, cbAccountFlag] = ar.Extract<SAccountName, char[16], BYTE>();
 	DWORD dwAuthKey = 0;
@@ -162,68 +157,61 @@ void CDPSrvr::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 	}
 #endif
 
+	OnAfterChecking(dpid1, dpid2, {
+		.f = cbResult,
+		.lpszAccount = lpszAccount,
+		.dwAuthKey = dwAuthKey,
+		.cbAccountFlag = cbAccountFlag,
+		.lTimeSpan = 0,
 #ifdef __GPAUTH_02
+		.szCheck = szCheck,
 #ifdef __EUROPE_0514
-	OnAfterChecking( cbResult, lpszAccount, dpid1, dpid2, dwAuthKey, cbAccountFlag, 0, szCheck, szBak );
-#else	// __EUROPE_0514
-	OnAfterChecking( cbResult, lpszAccount, dpid1, dpid2, dwAuthKey, cbAccountFlag, 0, szCheck );
-#endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-	OnAfterChecking( cbResult, lpszAccount, dpid1, dpid2, dwAuthKey, cbAccountFlag, 0 );
-#endif	// __GPAUTH_02
+		.szBak = szBak
+#endif
+#endif
+		});
 }
 
-#ifdef __GPAUTH_02
-#ifdef __EUROPE_0514
-void CDPSrvr::OnAfterChecking( BYTE cbResult, LPCTSTR lpszAccount, DPID dpid1, DPID dpid2, 
-							   DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szCheck, const char* szBak )
-#else	// __EUROPE_0514
-void CDPSrvr::OnAfterChecking( BYTE cbResult, LPCTSTR lpszAccount, DPID dpid1, DPID dpid2, 
-							   DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szCheck )
-#endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-void CDPSrvr::OnAfterChecking( BYTE cbResult, LPCTSTR lpszAccount, DPID dpid1, DPID dpid2, 
-							   DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan )
-#endif	// __GPAUTH_02
-{
-	if( cbResult == ACCOUNT_CHECK_OK )
+
+void CDPSrvr_AccToCert::OnAfterChecking(DPID dpid1, DPID dpid2, const OnAfterCheckingParams & params) {
+	if( params.f == ACCOUNT_CHECK_OK )
 	{
-		g_DbManager.UpdateTracking( TRUE, lpszAccount );  // 유저가 login 했음을 디비에 쓴다.
+		g_DbManager.UpdateTracking( TRUE, params.lpszAccount );  // 유저가 login 했음을 디비에 쓴다.
 	}
 
 	BEFORESENDSOLE( ar, PACKETTYPE_ADD_ACCOUNT, dpid2 );
-	ar << cbResult;
-	ar << dwAuthKey;
-	ar << cbAccountFlag;
+	ar << params.f;
+	ar << params.dwAuthKey;
+	ar << params.cbAccountFlag;
 
 #ifdef __BILLING0712
-	ar << lTimeSpan;
+	ar << params.lTimeSpan;
 #endif	// __BILLING0712
 
 #ifdef __GPAUTH_01
 	BOOL bGPotatoAuth	= ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;
 	if( bGPotatoAuth )
 	{
-		ar.WriteString( lpszAccount );
+		ar.WriteString(params.lpszAccount );
 #ifdef __GPAUTH_02
-		ar.WriteString( szCheck );
+		ar.WriteString(params.szCheck );
 #endif	// __GPAUTH_02
 	}
 #ifdef __EUROPE_0514
-	ar.WriteString( szBak );
+	ar.WriteString(params.szBak );
 #endif	// __EUROPE_0514
 #endif	// __GPAUTH_01
 
 	SEND( ar, this, dpid1 );
 }
 
-void CDPSrvr::OnRemoveAccount( CAr & ar, DPID dpid1, DPID dpid2 )
+void CDPSrvr_AccToCert::OnRemoveAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 {
 	g_AccountMng.RemoveAccount( dpid1, dpid2 );
 }
 
 
-void CDPSrvr::OnPing( CAr & ar, DPID dpid1, DPID dpid2 )
+void CDPSrvr_AccToCert::OnPing( CAr & ar, DPID dpid1, DPID dpid2 )
 {
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 
@@ -232,7 +220,7 @@ void CDPSrvr::OnPing( CAr & ar, DPID dpid1, DPID dpid2 )
 		pAccount->m_dwPing	= timeGetTime();
 }
 
-bool CDPSrvr::LoadAddrPmttd( LPCTSTR lpszFileName )
+bool CDPSrvr_AccToCert::LoadAddrPmttd( LPCTSTR lpszFileName )
 {
 	CMclAutoLock	Lock( m_csAddrPmttd );
 
@@ -254,7 +242,7 @@ bool CDPSrvr::LoadAddrPmttd( LPCTSTR lpszFileName )
 }
 
 
-BOOL CDPSrvr::LoadIPCut( LPCSTR lpszFileName )
+BOOL CDPSrvr_AccToCert::LoadIPCut( LPCSTR lpszFileName )
 {
 	CMclAutoLock	Lock( m_csIPCut );
 
@@ -303,7 +291,7 @@ BOOL CDPSrvr::LoadIPCut( LPCSTR lpszFileName )
 	return FALSE;
 }
 
-BOOL CDPSrvr::IsABClass( LPCSTR lpszIP )
+BOOL CDPSrvr_AccToCert::IsABClass( LPCSTR lpszIP )
 {
 	char strABClass[MAX_PATH] = {0,};
 	int nCClass = 0;
@@ -329,7 +317,7 @@ BOOL CDPSrvr::IsABClass( LPCSTR lpszIP )
 	return FALSE;
 }
 
-void CDPSrvr::GetABCClasstoString( LPCSTR lpszIP, char * lpABClass, int &nCClass )
+void CDPSrvr_AccToCert::GetABCClasstoString( LPCSTR lpszIP, char * lpABClass, int &nCClass )
 {
 	int nFindAB, nFindC;
 	CString strBuf1;
@@ -355,10 +343,10 @@ void CDPSrvr::GetABCClasstoString( LPCSTR lpszIP, char * lpABClass, int &nCClass
 }
 
 
-void CDPSrvr::InitIPCut( void )
+void CDPSrvr_AccToCert::InitIPCut( void )
 {
 	m_nSizeofIPCut = 0;
-	for( int i = 0 ; i < MAX_IP ; ++i )
+	for( size_t i = 0 ; i < MAX_IP ; ++i )
 	{
 		m_nIPCut[i][0] = 0;
 		m_nIPCut[i][1] = 0;
@@ -367,7 +355,7 @@ void CDPSrvr::InitIPCut( void )
 	m_sIPCut.clear();
 }
 
-void CDPSrvr::SendServersetList( DPID dpid )
+void CDPSrvr_AccToCert::SendServersetList( DPID dpid )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SRVR_LIST, DPID_UNKNOWN );
 	ar.WriteString( m_szVer );
@@ -391,21 +379,21 @@ void CDPSrvr::SendServersetList( DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-void CDPSrvr::SendPlayerCount( u_long uId, long lCount )
+void CDPSrvr_AccToCert::SendPlayerCount( u_long uId, long lCount )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_PLAYER_COUNT, DPID_UNKNOWN );
 	ar << uId << lCount;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPSrvr::SendEnableServer( u_long uId, long lEnable )
+void CDPSrvr_AccToCert::SendEnableServer( u_long uId, long lEnable )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_ENABLE_SERVER, DPID_UNKNOWN );
 	ar << uId << lEnable;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-BOOL CDPSrvr::EnableServer( DWORD dwParent, DWORD dwID, long lEnable )
+BOOL CDPSrvr_AccToCert::EnableServer( DWORD dwParent, DWORD dwID, long lEnable )
 {
 //	if( dwParent != NULL_ID )
 	{
@@ -422,7 +410,7 @@ BOOL CDPSrvr::EnableServer( DWORD dwParent, DWORD dwID, long lEnable )
 	return FALSE;
 }
 
-void CDPSrvr::OnCloseExistingConnection( CAr & ar, DPID dpid1, DPID dpid2 )
+void CDPSrvr_AccToCert::OnCloseExistingConnection( CAr & ar, DPID dpid1, DPID dpid2 )
 {
 	char lpszAccount[MAX_ACCOUNT]	= { 0, };
 	ar.ReadString( lpszAccount, MAX_ACCOUNT );
@@ -432,7 +420,7 @@ void CDPSrvr::OnCloseExistingConnection( CAr & ar, DPID dpid1, DPID dpid2 )
 // 현재 접속한 어카운트를 끊는다.
 // 접속은 2가지 경우가 있다. - 접속 후 플레이를 하는 경우 
 //                           - 접속 과정 
-void CDPSrvr::CloseExistingConnection( LPCTSTR lpszAccount, LONG lError )
+void CDPSrvr_AccToCert::CloseExistingConnection( LPCTSTR lpszAccount, LONG lError )
 {
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 	CAccount* pAccount	= g_AccountMng.GetAccount( lpszAccount );
@@ -450,4 +438,4 @@ void CDPSrvr::CloseExistingConnection( LPCTSTR lpszAccount, LONG lError )
 	}
 }
 
-CDPSrvr		g_dpSrvr;
+CDPSrvr_AccToCert		g_dpSrvr;
