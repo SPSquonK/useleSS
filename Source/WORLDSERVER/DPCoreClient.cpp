@@ -903,7 +903,7 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 			return;
 
 		pParty->m_aMember[i].m_bRemove	= TRUE;
-		pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, BOOL>(idPlayer, FALSE);
+		pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, BOOL>(idPlayer, TRUE);
 
 		if( i == 0 )		// 극단장이 나갈경우
 		{
