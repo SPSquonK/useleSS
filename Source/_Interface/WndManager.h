@@ -670,7 +670,7 @@ public:
 	void ClearAllWnd();
 	void RestoreWnd();
 
-	DWORD GetDSTStringId(int nDstParam);
+	[[nodiscard]] static DWORD GetDSTStringId(int nDstParam);
 	BOOL IsDstRate(int nDstParam);
 
 #ifdef __WINDOW_INTERFACE_BUG
