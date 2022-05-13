@@ -351,7 +351,7 @@ void CWndSelectAwakeCase::OnDraw( C2DRender* p2DRender )
 		m_pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
 } 
 
-extern BOOL IsDst_Rate( int nDstParam );
+extern bool IsDst_Rate(int nDstParam);
 extern const char *FindDstString( int nDstParam );
 void CWndSelectAwakeCase::OutputOptionString( C2DRender* p2DRender, CItemElem* pItemElem, BOOL bNew )
 {

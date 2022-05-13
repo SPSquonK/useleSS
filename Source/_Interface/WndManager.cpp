@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include <ranges>
 #include "boost/container/small_vector.hpp"
+#include <boost/container/flat_map.hpp>
+#include <array>
 #include "defineSkill.h"
 #include "defineItem.h"
 #include "defineSound.h"
@@ -72,7 +74,7 @@ CPtrArray      m_wndOrder;
 
 CWndMgr          g_WndMng;
 
-BOOL IsDst_Rate(int nDstParam);
+bool IsDst_Rate(int nDstParam);
 const char * FindDstString(int nDstParam);
 
 static CString SingleDstToString(const SINGLE_DST & singleDst) {
@@ -3899,8 +3901,6 @@ struct DST_STRING
 	int nNameIndex;
 };
 
-#include <boost/container/flat_map.hpp>
-
 static boost::container::flat_map<DWORD, DWORD> g_DstString = {
 	{ DST_STR                     , TID_TOOLTIP_STR },
 	{ DST_DEX                     , TID_TOOLTIP_DEX },
@@ -4004,14 +4004,9 @@ static boost::container::flat_map<DWORD, DWORD> g_DstString = {
 	{ DST_IMMUNITY,					TID_GAME_TOOLTIP_IMMUNITY1 },
 };
 
-
-BOOL IsDst_Rate( int nDstParam )
-{
-	static int nDstRate[] = {
-			0, 
-			0, 
+bool IsDst_Rate(int nDstParam) {
+	static constexpr std::initializer_list<int> nDstRate = {
 			DST_ADJ_HITRATE,
-			0, 
 			DST_ATKPOWER_RATE,
 			DST_ADJDEF_RATE,
 			DST_DEFHITRATE_DOWN,
@@ -4051,21 +4046,13 @@ BOOL IsDst_Rate( int nDstParam )
 			DST_HAWKEYE_RATE,
 			DST_RESIST_MAGIC_RATE,
 			DST_SPEED,
-			DST_REFLECT_DAMAGE
-			, DST_RESTPOINT_RATE
-			, DST_MONSTER_DMG
-			, DST_PVP_DMG
+			DST_REFLECT_DAMAGE,
+			DST_RESTPOINT_RATE,
+			DST_MONSTER_DMG,
+			DST_PVP_DMG
 	};
 	
-	int n = sizeof( nDstRate ) / sizeof( nDstRate[0] );
-	
-	for( int i=0; i<n; ++i )
-	{
-		if( nDstRate[i] == nDstParam )
-			return TRUE;
-	}
-
-	return FALSE;
+	return std::ranges::find(nDstRate, nDstParam) != nDstRate.end();
 }
 
 // dst 파라메터이름을 스트링으로 리턴.
