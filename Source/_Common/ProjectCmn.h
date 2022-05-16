@@ -343,16 +343,10 @@ struct ItemProp : CtrlProp
 #endif	// __VERIFY_0201
 
 	[[nodiscard]] DWORD GetCoolTime() const noexcept { return dwSkillReady; }
-	BOOL	IsUltimate( void )
-		{
-			return( 
-					(
-						dwItemKind2 == IK2_WEAPON_DIRECT
-						|| dwItemKind2 == IK2_WEAPON_MAGIC
-					)
-				&& dwReferStat1 == WEAPON_ULTIMATE
-			);
-		}
+	[[nodiscard]] bool IsUltimate() const noexcept {
+		return (dwItemKind2 == IK2_WEAPON_DIRECT || dwItemKind2 == IK2_WEAPON_MAGIC)
+			&& dwReferStat1 == WEAPON_ULTIMATE;
+	}
 	BOOL	IsVisPet()	{ return (dwItemKind3 == IK3_PET) && (dwReferStat1 == PET_VIS); }
 	BOOL	IsVis()		{ return (dwItemKind3 == IK3_VIS ); }
 #ifdef __CLIENT

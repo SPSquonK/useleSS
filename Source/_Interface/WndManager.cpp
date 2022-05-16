@@ -4064,28 +4064,34 @@ DWORD CWndMgr::GetDSTStringId(int nDstParam) {
 // 아이템 툴립 출력할것
 // 랜덤 옵션 이름, 아이템 이름( 길드 망토면 길드 이름 ), (세트)
 // 예 ) 곰의 코튼 슈트(세트)
-DWORD CWndMgr::PutItemName( CItemElem* pItemElem, CEditString* pEdit )
+DWORD CWndMgr::PutItemName( CItemElem * pItemElem, const ItemProp & itemProp, CEditString* pEdit )
 {
-	CString str;
 	CString strTemp;
-	DWORD dwColorbuf = dwItemColor[g_Option.m_nToolTipText].dwName0;
+	if (itemProp.IsUltimate()) //Ultimate 아이콘이 들어가기 위한 여백
+		strTemp = "             ";
 
-	if( pItemElem->GetProp()->dwReferStat1 == WEAPON_GENERAL )
-		dwColorbuf = dwItemColor[g_Option.m_nToolTipText].dwName0;
-	else if( pItemElem->GetProp()->dwReferStat1 == WEAPON_UNIQUE )
-		dwColorbuf = dwItemColor[g_Option.m_nToolTipText].dwName1;
-	else if( pItemElem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE )
-		dwColorbuf = dwItemColor[g_Option.m_nToolTipText].dwName3;
-	else if( pItemElem->GetProp()->dwReferStat1 == ARMOR_SET )
-		dwColorbuf = dwItemColor[g_Option.m_nToolTipText].dwName1;	
+	CString str;
+
+	static constexpr auto GetColorFromRefer1 = [&](DWORD refer1, const ToolTipItemTextColor & colorSet) {
+		switch (refer1) {
+			case WEAPON_GENERAL:  return colorSet.dwName0;
+			case WEAPON_UNIQUE:   return colorSet.dwName1;
+			case WEAPON_ULTIMATE: return colorSet.dwName3;
+			case ARMOR_SET:       return colorSet.dwName1;
+			default:              return colorSet.dwName0;
+		}
+	};
+
+	const DWORD dwColorbuf = GetColorFromRefer1(itemProp.dwReferStat1, dwItemColor[g_Option.m_nToolTipText]);
+
 	if( pItemElem->IsFlag( CItemElem::binds ) 
 		&& (pItemElem->m_dwItemId != II_GEN_MAT_ORICHALCUM01_1 && pItemElem->m_dwItemId != II_GEN_MAT_MOONSTONE_1)
-		&& pItemElem->GetProp()->dwFlag != IP_FLAG_EQUIP_BIND 
+		&& itemProp.dwFlag != IP_FLAG_EQUIP_BIND
 		)
 		strTemp.Format( "%s ", prj.GetText( TID_GAME_TOOLTIP_ITEM_BINDS ) );
 
 	// 랜덤 옵션
-	if( pItemElem->GetProp()->dwParts != (DWORD)-1 )
+	if(itemProp.dwParts != (DWORD)-1 )
 	{
 		if (const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(pItemElem->GetRandomOpt())) {
 			strTemp += pRandomOptItem->pszString;
@@ -4093,33 +4099,26 @@ DWORD CWndMgr::PutItemName( CItemElem* pItemElem, CEditString* pEdit )
 		}
 	}
 
-	BOOL bGuildCombatCloak = FALSE;
+	const bool bGuildCombatCloak = (
+		pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON1 || pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON2 ||
+		pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON3 || pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON4
+		);
 
-	if( pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON1 || pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON2 ||
-		pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON3 || pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON4 )
-		bGuildCombatCloak  = TRUE;
-
-	if( pItemElem->GetProp()->dwItemKind3 == IK3_CLOAK && pItemElem->m_idGuild )	// 길드번호가 박혀있으면.
+	if(itemProp.dwItemKind3 == IK3_CLOAK && pItemElem->m_idGuild )	// 길드번호가 박혀있으면.
 	{
 		CGuild *pGuild = g_GuildMng.GetGuild( pItemElem->m_idGuild );
-		if( pGuild && bGuildCombatCloak == FALSE )
-			str.Format( prj.GetText( TID_GUILD_CLOAK ), pGuild->m_szGuild );
+		if (pGuild && bGuildCombatCloak == false)
+			str.Format(prj.GetText(TID_GUILD_CLOAK), pGuild->m_szGuild);
 		else
-			str.Format( "%s", pItemElem->GetProp()->szName );
+			str += pItemElem->GetProp()->szName;
 	}
 	else
 	{
 		str	= pItemElem->GetName();
 	}
-	CString stredit;
 	strTemp += str;
 
-	if( pItemElem->GetProp()->IsUltimate() ) //Ultimate 아이콘이 들어가기 위한 여백
-		stredit.Format("             %s", strTemp);
-	else
-		stredit.Format("%s", strTemp);
-
-	pEdit->AddString( stredit, dwColorbuf, ESSTY_BOLD );
+	pEdit->AddString(strTemp, dwColorbuf, ESSTY_BOLD );
 	
 	return dwColorbuf;
 }
@@ -5509,10 +5508,10 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	CString strTemp = _T( "" );
 	CString strEnter = '\n';
 
-	DWORD dwColorBuf = PutItemName( pItemElem, &strEdit );
+	DWORD dwColorBuf = PutItemName( pItemElem, *pItemProp, &strEdit );
 	PutItemAbilityPiercing( pItemElem, &strEdit, dwColorBuf );
 	PutPetKind( pItemElem, &strEdit );		//gmpbigsun : 아이템 명 다음줄에 펫 종류 ( 리어, 픽업, 버프 ) 삽입 
-	if( pItemElem->GetProp() && pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND )
+	if( pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND )
 	{
 		strEdit.AddString( "\n" );
 		if(pItemElem->IsFlag( CItemElem::binds ) )

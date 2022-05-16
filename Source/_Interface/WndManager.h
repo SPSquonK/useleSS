@@ -591,7 +591,7 @@ public:
 	void MakeToolTipText( CItemElem * pItemBase, CEditString& strEdit, int flag = 0 );
 	void PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect );
 
-	DWORD PutItemName( CItemElem* pItemElem, CEditString* pEdit );
+	DWORD PutItemName( CItemElem * pItemElem, const ItemProp & itemProp, CEditString* pEdit );
 	void PutItemAbilityPiercing( CItemElem* pItemElem, CEditString* pEdit, DWORD dwColorBuf );
 	void PutItemResist( CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit );
