@@ -169,27 +169,6 @@ void InitGlobalVars( HINSTANCE hInstance )
 	}
 }
 
-void DisableTaskSwitching( HINSTANCE hInstance )
-{
-#ifndef _DEBUG	
-	OSVERSIONINFO versionInformation;
-	versionInformation.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	if( GetVersionEx( &versionInformation ) )
-	{
-		if( versionInformation.dwPlatformId == VER_PLATFORM_WIN32_NT )		// NT계열이면 키보드를 후킹하고
-		{
-			g_hHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)::LowLevelKeyboardProc, hInstance, 0);
-		} 
-		else
-		{
-			// Disables task switching
-			UINT nPreviousState;
-			::SystemParametersInfo(SPI_SCREENSAVERRUNNING, 1, &nPreviousState, 0);		// 95, 98, Me면 API를 쓴다.
-		}
-	}
-#endif	
-}
-
 void GetIPFromFile( TCHAR* szArg1, TCHAR* szArg2 )
 {
 #ifdef _DEBUG
@@ -420,7 +399,6 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
 	SkipPatch();
 	InitGlobalVars( hInstance );
-	DisableTaskSwitching( hInstance );	
 
 	if( ParseCmdLine( lpCmdLine ) == FALSE )
 		return 0;
