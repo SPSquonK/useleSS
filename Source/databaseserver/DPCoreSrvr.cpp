@@ -111,12 +111,14 @@ void CDPCoreSrvr::SendPartyName( DPID dpid )
 {
 	BEFORESEND( ar, PACKETTYPE_PARTYNAME );
 
-	ar << (u_long)g_DbManager.m_2PartyNamePtr.size();
-	for( ULONG2STRING::iterator i = g_DbManager.m_2PartyNamePtr.begin(); i != g_DbManager.m_2PartyNamePtr.end(); ++i )
-	{
-		ar << (*i).first;
-		ar.WriteString( (*i).second.data() );
-	}
+	g_DbManager.m_2PartyNamePtr.Access([&ar](ULONG2STRING & map) {
+		ar << (u_long)map.size();
+		for (const auto & [partyId, partyName] : map) {
+			ar << partyId;
+			ar.WriteString(partyName.c_str());
+		}
+		});
+
 	SEND( ar, this, dpid );
 }
 

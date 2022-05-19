@@ -869,12 +869,14 @@ BOOL CDbManager::GetPartyName( void )
 		return FALSE;
 	}
 	
-	while( qry.Fetch() )
-	{
-		qry.GetStr( "partyname", szPartyName );
-		id	= qry.GetInt( "m_idPlayer" );
-		m_2PartyNamePtr.emplace(id, szPartyName );
-	}
+	m_2PartyNamePtr.Access([&](ULONG2STRING & map) {
+		while (qry.Fetch()) {
+			qry.GetStr("partyname", szPartyName);
+			id = qry.GetInt("m_idPlayer");
+			map.emplace(id, szPartyName);
+		}
+		});
+
 	m_idPlayer	= id;
 	return TRUE;	
 }
@@ -1018,11 +1020,10 @@ void CDbManager::AddPartyName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 		return;
 	}
 	
-	ULONG2STRING::iterator iter = m_2PartyNamePtr.find( uidPlayer );
-	if( iter != m_2PartyNamePtr.end() )
-		m_2PartyNamePtr.erase( iter );
+	m_2PartyNamePtr.Access([&](ULONG2STRING & map) {
+		map.insert_or_assign(uidPlayer, sParty);
+		});
 
-	m_2PartyNamePtr.emplace(uidPlayer, sParty);
 	FreeRequest( lpDbOverlappedPlus );
 }
 

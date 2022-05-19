@@ -21,6 +21,7 @@
 #include "misc.h"
 #include "..\_Network\Objects\Obj.h"
 #include "AccountCacheMgr.h"
+#include "MutexedObject.h"
 
 #ifdef __TRANS_0413
 	const int	MAX_GETTHREAD_SIZE		= 8;
@@ -662,7 +663,7 @@ public:
 
 	CAccountCacheMgr m_AccountCacheMgr;
 	CMclCritSec		m_AddRemoveLock;
-	ULONG2STRING	m_2PartyNamePtr;
+	CMutexedObject<ULONG2STRING> m_2PartyNamePtr;
 	CMclCritSec		m_joinLock;
 	char			m_aszJoin[MAX_JOIN_SIZE][MAX_PLAYER];
 	int				m_nJoin;

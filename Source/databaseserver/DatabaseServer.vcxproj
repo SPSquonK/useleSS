@@ -266,6 +266,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Common\MutexedObject.h" />
     <ClInclude Include="..\_Database\AccountCacheMgr.h" />
     <ClInclude Include="AccountTimeLimitDBCtrl.h" />
     <ClInclude Include="CampusDBCtrl.h" />
