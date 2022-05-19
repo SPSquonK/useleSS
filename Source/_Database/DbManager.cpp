@@ -331,10 +331,8 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 }
 
 
-void CDbManager::ChangeBankPass( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	
+void CDbManager::ChangeBankPass( CQuery *qry, CAr & arRead)
+{	
 	char szName[33];
 	char szNewPass[5];
 	u_long uidPlayer;
@@ -350,10 +348,8 @@ void CDbManager::ChangeBankPass( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 	if( FALSE == qry->Exec( szQuery ) )
 	{
 		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 // 플레이어 리스트를 보냄(한계정에 있는 모든 플레이어)
@@ -944,9 +940,7 @@ BOOL CDbManager::GetMyPartyName( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 //Return : N/N
 
 
-void CDbManager::LogPlayConnect( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus)
-{
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
+void CDbManager::LogPlayConnect(CQuery *qry, CAr & arRead) {
 
 	int		iServer_No;				// 서버 번호
 	DWORD	iMap_No;				// 맵 번호
@@ -992,17 +986,13 @@ void CDbManager::LogPlayConnect( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 	if ( FALSE == qry->Exec( szQuery ) )
 	{
 		WriteLog( "%s, %d\t%d, %s", __FILE__, __LINE__, uidPlayer, szQuery );
-		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 
-void CDbManager::AddPartyName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+void CDbManager::AddPartyName( CQuery* pQuery, CAr & arRead)
 {
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-
 	u_long uidPlayer;
 	TCHAR	sParty[33];		
 	arRead >> uidPlayer;
@@ -1016,22 +1006,17 @@ void CDbManager::AddPartyName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 	if( FALSE == pQuery->Exec( szQuery ) )
 	{
 		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
 	
 	m_2PartyNamePtr.Access([&](ULONG2STRING & map) {
 		map.insert_or_assign(uidPlayer, sParty);
 		});
-
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 #ifndef __RT_1025
-void CDbManager::RemoveFriend( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+void CDbManager::RemoveFriend( CQuery* pQuery, CAr & arRead)
 {
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	
 	u_long uidPlayer, uidFriend;		
 	arRead >> uidPlayer >> uidFriend;
 
@@ -1046,10 +1031,8 @@ void CDbManager::RemoveFriend( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 	if( FALSE == pQuery->Exec( szQuery ) )
 	{
 		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 void CDbManager::GetMessengerFriend( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
@@ -1846,179 +1829,76 @@ void CDbManager::PutThread( void )	// log
 	while( true )
 	{
 		bReturnValue	= GetQueuedCompletionStatus( m_hIOCPPut, &dwBytesTransferred, &dwCompletionKey, (LPOVERLAPPED*)&lpDbOverlappedPlus, INFINITE );
-		if( FALSE == bReturnValue )
-		{
-			ASSERT( 0 );
+		if (FALSE == bReturnValue) {
+			ASSERT(0);
 		}
-		if( dwBytesTransferred == 0 )
-		{
-			SAFE_DELETE( pQueryChar );
+
+		if (dwBytesTransferred == 0) {
+			SAFE_DELETE(pQueryChar);
 #ifndef __NOLOG
-			SAFE_DELETE( pQueryLog );
+			SAFE_DELETE(pQueryLog);
 #endif	// __NOLOG
 			return;
 		}
 
-		switch( lpDbOverlappedPlus->nQueryMode )
-		{
+		CAr ar(lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize);
+
+		switch (lpDbOverlappedPlus->nQueryMode) {
 #ifndef __NOLOG
-			case SAVECONCURRENTUSERNUMBER:
-				LogConcurrentUserNumber( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_PLAY_CONNECT:
-				LogPlayConnect( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_ITEM:
-				LogItem( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_PLAY_DEATH:
-				LogPlayDeath( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_LEVELUP:
-				LogLevelUp( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_SERVER_DEATH:
-				LogServerDeath( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_UNIQUEITEM:
-				LogUniqueItem( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_QUEST:
-				LogQuest( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case GAMEMA_CHAT:
-				Gamema_Chat( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_PK_PVP:
-				LogPkPvp( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_SCHOOL:
-				LogSchool( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
-			case LOG_SKILLPOINT:
-				LogSkillPoint( pQueryLog, lpDbOverlappedPlus );
-				break;
-
+			case SAVECONCURRENTUSERNUMBER: LogConcurrentUserNumber(pQueryLog, ar); break;
+			case LOG_PLAY_CONNECT:         LogPlayConnect         (pQueryLog, ar); break;
+			case LOG_ITEM:                 LogItem                (pQueryLog, ar); break;
+			case LOG_PLAY_DEATH:           LogPlayDeath           (pQueryLog, ar); break;
+			case LOG_LEVELUP:              LogLevelUp             (pQueryLog, ar); break;
+			case LOG_SERVER_DEATH:         LogServerDeath         (pQueryLog, ar); break;
+			case LOG_UNIQUEITEM:           LogUniqueItem          (pQueryLog, ar); break;
+			case LOG_QUEST:                LogQuest               (pQueryLog, ar); break;
+			case GAMEMA_CHAT:              Gamema_Chat            (pQueryLog, ar); break;
+			case LOG_PK_PVP:               LogPkPvp               (pQueryLog, ar); break;
+			case LOG_SCHOOL:               LogSchool              (pQueryLog, ar); break;
+			case LOG_SKILLPOINT:           LogSkillPoint          (pQueryLog, ar); break;
 #endif	// __NOLOG
+			case LOG_GETHONORTIME:         LogGetHonorTime        (pQueryLog, ar); break;
+			case QM_LOG_EXPBOX:            LogExpBox              (pQueryLog, ar); break;
+			case QM_CALL_USP_PET_LOG:      CalluspPetLog          (pQueryLog, ar); break;
+			case LOG_INSTANCEDUNGEON:      LogInstanceDungeon     (pQueryLog, ar); break;
+#ifdef __ERROR_LOG_TO_DB
+			case LOG_ERROR:                LogError               (pQueryLog, ar); break;
+#endif // __ERROR_LOG_TO_DB
+			case LOG_GUILDFURNITURE:       LogGuildFurniture      (pQueryChar, ar); break;
 
-			case QM_SET_PLAYER_NAME:
-				SetPlayerName( pQueryChar, pQueryLog, lpDbOverlappedPlus );
-				break;
-
-			case QM_SNOOPGUILD:
-				SnoopGuild( pQueryLog, lpDbOverlappedPlus );
-				break;
+			case QM_SET_PLAYER_NAME: SetPlayerName(pQueryChar, pQueryLog, ar); break;
+			case QM_SNOOPGUILD: SnoopGuild(pQueryLog, ar); break;
 
 			case SAVE_PLAY_TIME:
-				SavePlayTime( pQueryChar, lpDbOverlappedPlus );
+				SavePlayTime(pQueryChar, ar, lpDbOverlappedPlus->AccountInfo.szPlayer);
 				break;
-#ifdef __S_NEW_SKILL_2
-			case SAVE_SKILL: 
-				AllSaveSkill( pQueryChar, lpDbOverlappedPlus );
-				break;
-#endif // __S_NEW_SKILL_2
 
-			case LOG_GETHONORTIME: 
-				LogGetHonorTime( pQueryLog, lpDbOverlappedPlus );
-				break;
 #ifdef __RT_1025
-			case QM_ADD_MESSENGER:
-				AddMessenger( pQueryChar, lpDbOverlappedPlus );
-				break;
-			case QM_DELETE_MESSENGER:
-				DeleteMessenger( pQueryChar, lpDbOverlappedPlus );
-				break;
-			case QM_UPDATE_MESSENGER:
-				UpdateMessenger( pQueryChar, lpDbOverlappedPlus );
-				break;
+			case QM_ADD_MESSENGER:    AddMessenger   (pQueryChar, ar); break;
+			case QM_DELETE_MESSENGER: DeleteMessenger(pQueryChar, ar); break;
+			case QM_UPDATE_MESSENGER: UpdateMessenger(pQueryChar, ar); break;
 #else	// __RT_1025
-			case REMOVE_FRIEND:
-				RemoveFriend( pQueryChar, lpDbOverlappedPlus );
-				break;
+			case REMOVE_FRIEND:       RemoveFriend   (pQueryChar, ar); break;
 #endif	// __RT_1025
-			case ADD_PARTYNAME:
-				AddPartyName( pQueryChar, lpDbOverlappedPlus );
-				break;
-			case CHANGE_BANKPASS:
-				ChangeBankPass( pQueryChar, lpDbOverlappedPlus );
-				break;
 
-			case INSERT_TAG:
-				InsertTag( pQueryChar, lpDbOverlappedPlus );
-				break;
+			case ADD_PARTYNAME:   AddPartyName(pQueryChar, ar); break;
+			case CHANGE_BANKPASS: ChangeBankPass(pQueryChar, ar); break;
+			case INSERT_TAG:      InsertTag(pQueryChar, ar); break;
 #ifndef __NOLOG
-			case SCHOOL_REPORT:
-				SchoolReport( pQueryLog, lpDbOverlappedPlus );
-#ifdef __TOOMANY_PENDINGLOG1115
-				CDbManager::ReleasePending();
-#endif	// __TOOMANY_PENDINGLOG1115
-				break;
+			case SCHOOL_REPORT:   SchoolReport(pQueryLog, ar); break;
 #endif	// __NOLOG
-			case QM_DELETE_REMOVE_GUILD_BANK_TBL:
-				DeleteRemoveGuildBankTbl( pQueryChar, lpDbOverlappedPlus );
-				break;
-			case QM_CALL_USPLOGGINGQUEST:
-				call_uspLoggingQuest( pQueryLog, lpDbOverlappedPlus );
-				break;
-			case QM_CALL_XXX_MULTI_SERVER:
-				call_uspXXXMultiServer( pQueryChar, lpDbOverlappedPlus );
-				break;
-			case QM_LOG_EXPBOX:
-				LogExpBox( pQueryLog, lpDbOverlappedPlus );
-				break;
-			case QM_CALL_USP_PET_LOG:
-				CalluspPetLog( pQueryLog, lpDbOverlappedPlus );
-				break;
-			case LOG_INSTANCEDUNGEON:
-				LogInstanceDungeon( pQueryLog, lpDbOverlappedPlus );
-				break;
-#ifdef __ERROR_LOG_TO_DB
-			case LOG_ERROR:
-				LogError( pQueryLog, lpDbOverlappedPlus );
-				break;
-#endif // __ERROR_LOG_TO_DB
-			case LOG_GUILDFURNITURE:
-				LogGuildFurniture(pQueryChar, lpDbOverlappedPlus );
-				break;
+			case QM_DELETE_REMOVE_GUILD_BANK_TBL: DeleteRemoveGuildBankTbl(pQueryChar, ar); break;
+			case QM_CALL_USPLOGGINGQUEST:         call_uspLoggingQuest(pQueryLog, ar); break;
+			case QM_CALL_XXX_MULTI_SERVER:        call_uspXXXMultiServer(pQueryChar, ar); break;
+			
 			default:
 				WriteLog( "%s, %d\t%d", __FILE__, __LINE__, lpDbOverlappedPlus->nQueryMode );
-				FreeRequest( lpDbOverlappedPlus );
 				break;
-		} // end of switch 
-	} // end of while
+		}
+
+		FreeRequest(lpDbOverlappedPlus);
+	}
 }
 
 void CDbManager::UpdateThread( void )
@@ -3514,10 +3394,8 @@ int CDbManager::SelectTag( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus,
 	return count;
 }
 
-void CDbManager::InsertTag( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 {
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-
 	u_long idFrom;
 	u_long idTo;
 	char szString[256];
@@ -3534,7 +3412,6 @@ void CDbManager::InsertTag( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus
 	SQLINTEGER cbLen = SQL_NTS;
 	if( qry->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 256, 0, szString, 0, &cbLen ) == FALSE )
 	{
-		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
 
@@ -3542,7 +3419,6 @@ void CDbManager::InsertTag( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus
 	{
 		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
 		TRACE("CDbManager::InsertTag -> qry->Exec %s\n", szQuery);
-		FreeRequest( lpDbOverlappedPlus );
 		return;
 	}
 
@@ -3554,7 +3430,6 @@ void CDbManager::InsertTag( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus
 		else
 			g_dpCoreSrvr.SendTagResult(idFrom, 1);	// 성공 
 	}
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 #ifdef __S_RECOMMEND_EVE
@@ -3593,10 +3468,9 @@ void CDbManager::RecommendEve( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 }
 #endif // __S_RECOMMEND_EVE
 
-void CDbManager::SchoolReport( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+void CDbManager::SchoolReport( CQuery* pQuery, CAr & ar)
 {
 	TRACE( "SCHOOL_REPORT\n" );
-	CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
 	SCHOOL_ENTRY school[MAX_SCHOOL];
 	ar.Read( &school, sizeof(SCHOOL_ENTRY) * MAX_SCHOOL );
 /*
@@ -3617,7 +3491,6 @@ void CDbManager::SchoolReport( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 				WriteLog( "%s", szQuery );
 		}
 	}
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 // szDst에 comma를 붙이고 16진수로 변환된 문자열을 붙인다.
@@ -4797,10 +4670,8 @@ void CDbManager::PutExpLog( CQuery* pQueryLog, CMover* pMover, char ch )
 	}
 }
 
-void CDbManager::SetPlayerName( CQuery* pQueryChar, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+void CDbManager::SetPlayerName( CQuery* pQueryChar, CQuery* pQueryLog, CAr & ar)
 {
-	CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-
 	u_long idPlayer;
 	DWORD dwData;
 	char lpszPlayer[MAX_PLAYER];
@@ -4847,13 +4718,10 @@ void CDbManager::SetPlayerName( CQuery* pQueryChar, CQuery* pQueryLog, LPDB_OVER
 		#endif	// __NOLOG
 	}
 	g_dpCoreSrvr.SendSetPlayerName( idPlayer, lpszPlayer, dwData, f );
-
-	FreeRequest( lpDbOverlappedPlus );
 }
 
-void CDbManager::SnoopGuild( CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+void CDbManager::SnoopGuild( CQuery* pQueryLog, CAr & ar )
 {
-	CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
 	u_long idGuild, idPlayer;
 	char lpszChat[1024]		= { 0, };
 	ar >> idGuild >> idPlayer;
@@ -4871,8 +4739,6 @@ void CDbManager::SnoopGuild( CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlap
 	sprintf( szQuery, "LOG_GAMEMASTER_STR  '@im_idPlayer=%07d',@iserverindex='%02d',@iszWords='%s',@im_idGuild='%06d'", idPlayer, g_appInfo.dwSys, strChat, idGuild );
 	if ( FALSE == pQueryLog->Exec( szQuery ) )
 		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 void CDbManager::DBQryCharacter( char* qryCharacter, const char* Gu, u_long idPlaeyr, int nserverindex, const char* szAccount, const char* szName,
@@ -6758,11 +6624,10 @@ BOOL CDbManager::QueryRemoveGuildBankTbl( void )
 	return TRUE;
 }
 
-void CDbManager::DeleteRemoveGuildBankTbl( CQuery* pQueryChar, LPDB_OVERLAPPED_PLUS lpov )
+void CDbManager::DeleteRemoveGuildBankTbl( CQuery* pQueryChar, CAr & ar )
 {
 	int nNo;
 	DWORD dwRemoved;
-	CAr ar( lpov->lpBuf, lpov->uBufSize );
 	ar >> nNo >> dwRemoved;
 /*
 	uspRemoveItemFromGuildBank:
@@ -6780,15 +6645,13 @@ void CDbManager::DeleteRemoveGuildBankTbl( CQuery* pQueryChar, LPDB_OVERLAPPED_P
 #endif	// _DEBUG
 	if( FALSE == pQueryChar->Exec( szQuery ) )
 		Error( "%s", szQuery );
-	FreeRequest( lpov );
 }
 
-void CDbManager::call_uspLoggingQuest( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
+void CDbManager::call_uspLoggingQuest( CQuery* pQuery, CAr & ar )
 {
 	u_long idPlayer;
 	int nQuest, nState;
 	char pszComment[100]	= { 0, };
-	CAr ar( pov->lpBuf, pov->uBufSize );
 	ar >> idPlayer >> nQuest >> nState;
 	ar.ReadString( pszComment, 100 );
 /*
@@ -6808,13 +6671,11 @@ void CDbManager::call_uspLoggingQuest( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov 
 #endif	// _DEBUG
 	if( FALSE == pQuery->Exec( szQuery ) )
 		Error( "%s", szQuery );
-	FreeRequest( pov );
 }
 
-void CDbManager::call_uspXXXMultiServer( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
+void CDbManager::call_uspXXXMultiServer( CQuery* pQuery, CAr & ar )
 {
 	u_long uKey, idPlayer;
-	CAr ar( pov->lpBuf, pov->uBufSize );
 	ar >> uKey >> idPlayer;
 
 	char szQuery[QUERY_SIZE]	= { 0,};
@@ -6837,7 +6698,6 @@ void CDbManager::call_uspXXXMultiServer( CQuery* pQuery, LPDB_OVERLAPPED_PLUS po
 #endif	// _DEBUG
 	if( FALSE == pQuery->Exec( szQuery ) )
 		Error( "%s", szQuery );
-	FreeRequest( pov );
 }
 
 DB_OVERLAPPED_PLUS*		CDbManager::AllocRequest( void )
@@ -6889,9 +6749,8 @@ void	CDbManager::MakeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus,  LPBYTE lpBuf
 	return;
 }
 
-void CDbManager::CalluspPetLog( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
+void CDbManager::CalluspPetLog( CQuery* pQuery, CAr & ar )
 {
-	CAr ar( pov->lpBuf, pov->uBufSize );
 	
 	u_long idPlayer;
 	SERIALNUMBER iSerial;
@@ -6916,8 +6775,6 @@ void CDbManager::CalluspPetLog( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 #endif	// _DEBUG
 
 	pQuery->Exec( szQuery );
-
-	FreeRequest( pov );
 }
 
 BOOL CDbManager::RestorePetInventory(std::map<DWORD, int> & mRestore )
@@ -7175,10 +7032,9 @@ void	CDbManager::LoadMessenger( CMover* pMover, CQuery* pQuery )
 	}
 }
 
-void CDbManager::AddMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
+void CDbManager::AddMessenger( CQuery* pQuery, CAr & ar)
 {
 	u_long idPlayer, idFriend;
-	CAr ar( pov->lpBuf, pov->uBufSize );
 	ar >> idPlayer >> idFriend;
 	// uspAddMessenger '01', '0000001', '0000002'
 
@@ -7188,13 +7044,11 @@ void CDbManager::AddMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		// error
 	}
-	FreeRequest( pov );
 }
 
-void CDbManager::DeleteMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
+void CDbManager::DeleteMessenger( CQuery* pQuery, CAr & ar)
 {
 	u_long idPlayer, idFriend;
-	CAr ar( pov->lpBuf, pov->uBufSize );
 	ar >> idPlayer >> idFriend;
 	// uspDeleteMessenger '01', '0000001', '0000002'
 
@@ -7204,14 +7058,12 @@ void CDbManager::DeleteMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		// error
 	}
-	FreeRequest( pov );
 }
 
-void CDbManager::UpdateMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
+void CDbManager::UpdateMessenger( CQuery* pQuery, CAr & ar)
 {
 	u_long idPlayer, idFriend;
 	BOOL bBlock;
-	CAr ar( pov->lpBuf, pov->uBufSize );
 	ar >> idPlayer >> idFriend >> bBlock;
 	// uspUpdateMessenger '01', '0000001', '0000002, %d'
 
@@ -7221,7 +7073,6 @@ void CDbManager::UpdateMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		// error
 	}
-	FreeRequest( pov );
 }
 #endif	// __RT_1025
 

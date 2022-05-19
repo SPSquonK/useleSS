@@ -721,11 +721,7 @@ public:
 
 	void	PostSavePlayer( u_long idPlayer, BYTE nSlot );
 	void	SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, char* szQuery );
-	void	SavePlayTime( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );	
-#ifdef __S_NEW_SKILL_2
-	void	AllSaveSkill( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __S_NEW_SKILL_2	
-
+	void	SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer);
 	void	SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery );
 
 #ifdef __SKILL_0205
@@ -756,8 +752,8 @@ public:
 	void	Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	ChangeBankPass( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	Gamema_Chat( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	ChangeBankPass( CQuery *qry, CAr & arRead);
+	void	Gamema_Chat( CQuery *qry, CAr & arRead);
 
 
 //	u_long	GetPlayerID( LPCSTR lpszPlayer );
@@ -776,8 +772,8 @@ public:
 #endif	// __POST_1204
 	CQuery*	m_apQuery[MAX_QUERY_RESERVED];
 	BOOL	QueryRemoveGuildBankTbl( void );
-	void	DeleteRemoveGuildBankTbl( CQuery* pQueryChar, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	call_uspLoggingQuest( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
+	void	DeleteRemoveGuildBankTbl( CQuery* pQueryChar, CAr & ar );
+	void	call_uspLoggingQuest( CQuery* pQuery, CAr & ar );
 #ifdef __GETMAILREALTIME
 	BOOL	QueryGetMailRealTime( CQuery* pQuery );
 #endif // __GETMAILREALTIME
@@ -795,7 +791,7 @@ public:
 	void	SealCharGet( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	SealCharSet( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
-	void	CalluspPetLog( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
+	void	CalluspPetLog( CQuery* pQuery, CAr & ar );
 
 	BOOL	GetMyPartyName( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, u_long uidPlayer, char * szPartyName );
 	BOOL	BankToItemSendTbl( LPCSTR lpFileName );
@@ -826,13 +822,6 @@ public:
 	void	UpdateGuildNickName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	UpdateGuildMaster( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
-#ifdef __TOOMANY_PENDINGLOG1115
-	static	LONG	m_lPending;
-	static	BOOL	IsTooManyPending( void );
-	static	void	AddPending( void )	{	InterlockedIncrement( &m_lPending );	}
-	static	void	ReleasePending( void )	{	InterlockedDecrement( &m_lPending );	}
-#endif	// __TOOMANY_PENDINGLOG1115
-
 	void	UpdateGuildLogo( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	UpdateGuildContribution( CQuery* pQuery, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	UpdateGuildNotice( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
@@ -859,12 +848,12 @@ public:
 	void	UpdateGuildRanking( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	UpdateGuildRankingDB( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
-	void	AddPartyName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	AddPartyName( CQuery* pQuery, CAr & arRead);
 
 	BOOL	call_uspLoggingTrade( CQuery* pQuery, int nFlag, int nTradeID,  DWORD dwWorldID = 0, u_long idPlayer = 0, DWORD dwTradeGold = 0, const char* lpAddr = "", int nLevel = 0, int nJob = 0, int nItemIndex = 0, SERIALNUMBER iItemSerialNum = 0, int nItemCnt = 0, int nAbilityOpt = 0, int nItemResist = 0, int nResistAbilityOpt = 0, __int64 iRandomOpt=0 );
 	LONG	m_cbTrade;
 	int		GetTradeNo( void );
-	void	call_uspXXXMultiServer( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
+	void	call_uspXXXMultiServer( CQuery* pQuery, CAr & ar);
 
 	BOOL	CreateDbWorkers( void );
 	void	CloseDbWorkers( void );
@@ -1012,44 +1001,44 @@ private:
 			CDbManager();
 #ifdef __RT_1025
 	void	LoadMessenger( CMover* pMover, CQuery* pQuery );
-	void	AddMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
-	void	DeleteMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
-	void	UpdateMessenger( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
+	void	AddMessenger( CQuery* pQuery, CAr & ar);
+	void	DeleteMessenger( CQuery* pQuery, CAr & ar);
+	void	UpdateMessenger( CQuery* pQuery, CAr & ar);
 #else	// __RT_1025
 	void	SaveMessengerFriend( CQuery *qry, CMover* pMover, char* szQuery );
 public:
 	BOOL	SetMessenger( void );
 private:
 	void	GetMessengerFriend( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	RemoveFriend( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	RemoveFriend( CQuery* pQuery, CAr & arRead);
 #endif	// __RT_1025
 	BOOL	IsAbnormalPlayerData( CMover* pMover );
 	BOOL	NormalizePlayerData( CMover* pMover );
 	int		SelectTag( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, u_long uidPlayer, TAG_ENTRY* tags );
 	void	WriteTag( CAr &ar, int count, const TAG_ENTRY* tags );
-	void	InsertTag( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	InsertTag( CQuery *qry, CAr & arRead);
 	void	GetStrTime( CTime *time, const char *strbuf );
 	BOOL	VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = NULL );
 	BOOL	SN( void );
-	void	LogPlayConnect(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-	void	LogPlayDeath(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-	void	LogLevelUp(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-	void	LogServerDeath(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-	void	LogUniqueItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-	void	LogQuest(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-	void	LogPkPvp( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	LogSchool( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	LogSkillPoint( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	LogItem(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
-	void	LogConcurrentUserNumber( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	LogInstanceDungeon( CQuery *pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	LogPlayConnect(CQuery *qry, CAr & arRead);
+	void	LogPlayDeath(CQuery *qry, CAr & arRead);
+	void	LogLevelUp(CQuery *qry, CAr & arRead);
+	void	LogServerDeath(CQuery *qry, CAr & arRead);
+	void	LogUniqueItem(CQuery *qry, CAr & arRead);
+	void	LogQuest(CQuery *qry, CAr & arRead);
+	void	LogPkPvp( CQuery* qry, CAr & arRead);
+	void	LogSchool( CQuery* pQuery, CAr & arRead);
+	void	LogSkillPoint( CQuery* pQuery, CAr & arRead);
+	void	LogItem(CQuery *qry, CAr & arRead);
+	void	LogConcurrentUserNumber( CQuery *qry, CAr & ar );
+	void	LogInstanceDungeon( CQuery *pQuery, CAr & arRead );
 #ifdef __ERROR_LOG_TO_DB
-	void	LogError( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	LogError( CQuery* pQuery, CAr & arRead );
 #endif // __ERROR_LOG_TO_DB
-	void	LogGuildFurniture( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	LogGuildFurniture( CQuery* pQuery, CAr & arRead );
 
-	void	SetPlayerName( CQuery* pQueryChar, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	SnoopGuild( CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	void	SetPlayerName( CQuery* pQueryChar, CQuery* pQueryLog, CAr & ar);
+	void	SnoopGuild( CQuery* pQueryLog, CAr & ar );
 
 	void	PutExpLog( CQuery* pQueryLog, CMover* pMover, char ch );
 	void	QueryGuildQuest( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
@@ -1065,7 +1054,7 @@ private:
 	SERIALNUMBER	RemoveItemPocket( ItemProp* pItemProp, CMover* pMover, int nAbilityOption, int nItemResist, int nResistAbilityOption, int nItemCount );
 #endif // __REMOVEITEM_POCKET
 
-	void	SchoolReport( CQuery* pQuery, LPDB_OVERLAPPED_PLUS po );
+	void	SchoolReport( CQuery* pQuery, CAr & ar);
 
 	BOOL	GetSendItem( CQuery *pQry, __SendItemContents * pSendItemContents );
 	SERIALNUMBER	SendItem( CQuery *pQry, char* szSql, CMover* pMover, __SendItemContents& SendItemContents );
@@ -1081,7 +1070,7 @@ private:
 	void	RecommendEve( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 #endif // __S_RECOMMEND_EVE
 
-	void	LogGetHonorTime(CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus);
+	void	LogGetHonorTime(CQuery *qry, CAr & arRead);
 	CQuery	m_qryPostProc;
 	void	AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	RemoveMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
@@ -1089,7 +1078,7 @@ private:
 	void	RemoveMailGold( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	ReadMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	DbQryMail( char* szSql, const MAIL_QUERYINFO & info );
-	void	LogExpBox( CQuery *pQuery, LPDB_OVERLAPPED_PLUS pov );
+	void	LogExpBox( CQuery *pQuery, CAr & ar );
 
 #ifdef __S1108_BACK_END_SYSTEM
 	void	GetGemeSettingtime( CQuery* pQuery, int nChat = 0 );

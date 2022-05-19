@@ -440,86 +440,6 @@ int MAX_SAVEPARAM = 88;
 	SAFE_DELETE_ARRAY( bOK );
 }
 
-#ifdef __S_NEW_SKILL_2
-void CDbManager::AllSaveSkill( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	
-	u_long			uidPlayer;
-	EXPINTEGER		nSkillExp = 0;						// 스킬경험치
-	int				nSkillPoint;					// SP
-	int				nSkillLevel = 0;					// 지금까지 올린 스킬레벨
-	SKILL			aJobSkill[ MAX_SKILL_JOB ];
-	BYTE			abUpdateSkill[MAX_SKILL_JOB];
-	BOOL			bSaveSkillState = FALSE;
-	
-	arRead >> uidPlayer;
-	arRead >> nSkillLevel;
-	arRead >> nSkillPoint;
-	arRead.Read( (void*)aJobSkill, sizeof(SKILL) * ( MAX_SKILL_JOB ) );
-	
-	ACCOUNT_CACHE* pAccount		= NULL;
-	g_DbManager.m_AddRemoveLock.Enter();
-	pAccount = m_AccountCacheMgr.Find( lpDbOverlappedPlus->AccountInfo.szAccount );
-	int nRefreshSlot = 100;
-	if( pAccount )
-	{
-		for( int i = 0; i < 3; i++ )
-		{
-			if( pAccount->pMover[i] && pAccount->pMover[i]->m_idPlayer == uidPlayer )
-			{
-				nRefreshSlot = i;
-				break;
-			}
-		}
-	}
-	if( nRefreshSlot != 100 )
-	{
-		if( pAccount->pMover[nRefreshSlot]->m_nSkillLevel != nSkillLevel ||
-			pAccount->pMover[nRefreshSlot]->m_nSkillPoint != nSkillPoint )
-		{
-			bSaveSkillState = TRUE;	
-			pAccount->pMover[nRefreshSlot]->m_nSkillLevel = nSkillLevel;
-			pAccount->pMover[nRefreshSlot]->m_nSkillPoint = nSkillPoint;
-		}
-
-#ifdef __SKILL_0205
-		for( int k = 0 ; k < MAX_SKILL_JOB; k++)
-			abUpdateSkill[k]	= (BOOL)( memcmp( &pAccount->pMover[nRefreshSlot]->m_aJobSkill[k], &aJobSkill[k], sizeof(SKILL) ) != 0 );
-#endif	// __SKILL_0205
-		
-		memcpy( pAccount->pMover[nRefreshSlot]->m_aJobSkill, &aJobSkill, sizeof(aJobSkill) );				
-	}
-	g_DbManager.m_AddRemoveLock.Leave();
-
-	char szQuery[QUERY_SIZE]	= { 0,};
-
-	if( nRefreshSlot != 100 )
-	{
-		if( bSaveSkillState )
-		{
-			sprintf( szQuery,
-				"uspLearnSkillCharacter @serverindex='%02d',@pPlayerID='%07d',@im_SkillExp=%I64d,@im_SkillPoint=%d,@im_SkillLv=%d",
-				g_appInfo.dwSys, uidPlayer, nSkillExp, nSkillPoint, nSkillLevel ); 
-			
-			if( FALSE == pQuery->Exec( szQuery ) )
-			{
-				WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-				FreeRequest( lpDbOverlappedPlus );
-				return;
-			}
-		}
-#ifdef __SKILL_0205
-		SaveSkill( pQuery, uidPlayer, aJobSkill, abUpdateSkill, szQuery );
-#else	// __SKILL_0205
-		SaveSkill( pQuery, uidPlayer, aJobSkill, szQuery );
-#endif // __SKILL_0205
-	}
-				
-	FreeRequest( lpDbOverlappedPlus );
-}
-#endif // __S_NEW_SKIL_2
-
 void	CDbManager::SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery )
 {
 	int	aHonorEtc[50] = {0,};
@@ -992,12 +912,12 @@ void CDbManager::SaveSkillInfluence( CMover* pMover, char* szszSkillInfluence )
 #endif	// __BUFF_1107
 }
 
-void CDbManager::SavePlayTime( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+void CDbManager::SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer)
 {
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	
+	SAccountName szAccount;
+	arRead >> szAccount;
+
 	DWORD dwTime;
-	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szAccount, MAX_ACCOUNT );
 	u_long idPlayer;
 	arRead >> idPlayer;
 	arRead >> dwTime; // 시각
@@ -1008,10 +928,8 @@ void CDbManager::SavePlayTime( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	
 	if( FALSE == qry->Exec( szQuery ) )
 	{
-		WriteLog( "%s, %d\t%s\r\n\t%s", __FILE__, __LINE__, szQuery, lpDbOverlappedPlus->AccountInfo.szPlayer );
+		WriteLog( "%s, %d\t%s\r\n\t%s", __FILE__, __LINE__, szQuery, szPlayer );
 	}
-	
-	FreeRequest( lpDbOverlappedPlus );
 }
 
 void CDbManager::DBQryAddBankSave( char* szSql, const ADDBANK_QUERYINFO & info )
