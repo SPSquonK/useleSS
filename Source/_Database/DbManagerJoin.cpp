@@ -26,12 +26,6 @@ BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPAR
 
 extern	CProject			prj;
 
-#define	VERIFYSTRING( lpString, lpszPlayer )	\
-		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDBOP ) )		return;
-
-#define	VERIFY_GUILD_STRING( lpString, lpszGuild )	\
-if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszGuild ) )		return;
-
 void CDbManager::SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dwAuthKey, 
 						  DWORD dwBillingClass, LPCTSTR szPartyName, LPCTSTR szBankPass, 
 						  DWORD dwPlayTime, DWORD dwFlyTime, int nMaximumLevel, int nTags, TAG_ENTRY* tags,
@@ -174,16 +168,6 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	if( qry->GetInt( "m_idCompany" ) > 0 )
 		bRefresh	= TRUE;
 
-	/*GetInventory( &mover, qry, lpDBOP );
-	GetEquipment( &mover, qry, lpDBOP );
-	GetTaskBar( &mover, qry, lpDBOP );
-	GetCardCube( &mover, qry, lpDBOP );
-	GetBaseCharacter( &mover, qry, lpDBOP );
-	GetJobLv( &mover, qry, lpDBOP );
-	GetQuest( &mover, qry, lpDBOP );
-	GetSMMode( &mover, qry, lpDBOP );
-	GetSKillInfluence( &mover, qry, lpDBOP );*/
-	// mirchang_100416 VERIFYSTRING use return value
 	GetBaseCharacter( &mover, qry, lpDBOP );
 	if( GetInventory( &mover, qry, lpDBOP ) == FALSE
 		|| GetEquipment( &mover, qry, lpDBOP ) == FALSE
@@ -270,26 +254,21 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 		int nPlayerSlot = qry->GetInt( "playerslot" );
 		if( nSlot == nPlayerSlot )
 			qry->GetStr( "m_BankPw", szBankPass );
-		//GetBank( &mover, qry, lpDBOP, nPlayerSlot );
-		// mirchang_100416 VERIFYSTRING use return value
+		
 		if( GetBank( &mover, qry, lpDBOP, nPlayerSlot ) == FALSE )
 		{
 			return;
 		}
-		// mirchang_100416
 	}
 
 	if( qry->MoreResults() )
 	{
 		while( qry->Fetch() )
 		{
-			//GetPocket( &mover, qry, lpDBOP );
-			// mirchang_100416 VERIFYSTRING use return value
 			if( GetPocket( &mover, qry, lpDBOP ) == FALSE )
 			{
 				return;
 			}
-			// mirchang_100416
 		}
 	}
 

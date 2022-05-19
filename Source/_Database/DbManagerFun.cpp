@@ -32,19 +32,11 @@ BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPAR
 
 extern	CProject			prj;
 
-#define	VERIFYSTRING( lpString, lpszPlayer )	\
-		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return;
-
-#define	VERIFY_GUILD_STRING( lpString, lpszGuild )	\
-if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszGuild ) )		return;
-
-// mirchang_100416 VERIFYSTRING use return value
 #define	VERIFYSTRING_RETURN( lpString, lpszPlayer )	\
 	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return FALSE;
 
 #define	VERIFYSTRING_BANK( lpString, lpszPlayer )	\
 	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return FALSE;
-// mirchang_100416
 
 void CDbManager::GetStrTime( CTime *time, const char *strbuf )
 {
@@ -1760,15 +1752,13 @@ BOOL CDbManager::RemoveQuest( void )
 	{
 		CMover	mover;
 		mover.m_idPlayer	= pQuery->GetInt( "m_idPlayer" );
-		//GetQuest( &mover, pQuery, NULL );
-		// mirchang_100416 VERIFYSTRING use return value
+		
 		if( GetQuest( &mover, pQuery, NULL ) == FALSE )
 		{
 			SAFE_DELETE_ARRAY( pSql );
 			SAFE_DELETE( pQuery );
 			return FALSE;
 		}
-		// mirchang_100416
 
 		BOOL bRemove	= FALSE;
 		for( DWORD i = 0; i < vecRemoveQuestId.size(); i++ )

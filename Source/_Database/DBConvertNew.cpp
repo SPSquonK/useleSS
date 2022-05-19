@@ -255,15 +255,12 @@ BOOL CDbManager::GetUserInventoryBank( CMover* pMover, CQuery* pQueryChar )
 	
 	// GetItem
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus	= NULL;
-	//GetInventory( pMover, pQueryChar, lpDbOverlappedPlus );
 	//GetBankMover( pMover, pQueryChar, 0 );
-	// mirchang_100416 VERIFYSTRING use return value
 	if( GetInventory( pMover, pQueryChar, lpDbOverlappedPlus ) == FALSE || GetBankMover( pMover, pQueryChar, 0 ) == FALSE )
 	{
 		return FALSE;
 	}
 	return TRUE;
-	// mirchang_100416
 }
 
 BOOL CDbManager::SaveUserInventoryBank( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave )
@@ -739,14 +736,11 @@ BOOL CDbManager::ConvItemStart( void )
 		UpdateConvItemDialog( "Inventory, Bank", lpString, lpString1, (int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f )) );
 		
 		CMover* pMover	= new CMover;
-		//GetUserInventoryBank( pMover, pQueryChar );
-		// mirchang_100416 VERIFYSTRING use return value
 		if( GetUserInventoryBank( pMover, pQueryChar ) == FALSE )
 		{
 			safe_delete( pMover );
 			return FALSE;
 		}
-		// mirchang_100416
 
 		if( InventoryBankConv( szSQL, pMover, pQueryChar, pQuerySave ) ) // SaveItem
 		{

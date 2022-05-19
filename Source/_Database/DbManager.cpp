@@ -5192,8 +5192,6 @@ BOOL CDbManager::InventoryToItemSendTbl( LPCSTR lpFileName )
 
 
 			LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus	= NULL;
-			//GetInventory( pMover, pQueryLoad, lpDbOverlappedPlus );
-			// mirchang_100416 VERIFYSTRING use return value
 			if( GetInventory( pMover, pQueryLoad, lpDbOverlappedPlus ) == FALSE )
 			{
 				SAFE_DELETE( pQueryLoad );
@@ -5202,7 +5200,6 @@ BOOL CDbManager::InventoryToItemSendTbl( LPCSTR lpFileName )
 				AfxMessageBox( "insert ITEM_SEND_TBL", MB_OK );
 				return FALSE;
 			}
-			// mirchang_100416
 
 			int cbInventory	= pMover->m_Inventory.m_dwItemMax;
 			for( int i = 0; i < cbInventory; i++ )
@@ -5888,15 +5885,12 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		BOOL bUpdate	= FALSE;
 		CMover* pMover	= new CMover;
 		pMover->m_idPlayer	= pQueryLoad->GetInt( "m_idPlayer" );
-		//GetInventory( pMover, pQueryLoad, NULL );
-		// mirchang_100416 VERIFYSTRING use return value
 		if( GetInventory( pMover, pQueryLoad, NULL ) == FALSE )
 		{
 			safe_delete( pMover );
 			safe_delete( pQueryLoad );
 			return FALSE;
 		}
-		// mirchang_100416
 
 		for( DWORD i = 0; i < pMover->m_Inventory.m_dwItemMax; i++ )
 		{
@@ -6034,15 +6028,13 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		CMover* pMover	= new CMover;
 		pMover->m_idPlayer	= pQueryLoad->GetInt( "idPlayer" );
 		int nPocket		= pQueryLoad->GetInt( "nPocket" );
-		//GetPocket( pMover, pQueryLoad, NULL );
-		// mirchang_100416 VERIFYSTRING use return value
 		if( GetPocket( pMover, pQueryLoad, NULL ) == FALSE )
 		{
 			safe_delete( pMover );
 			safe_delete( pQueryLoad );
 			return FALSE;
 		}
-		// mirchang_100416
+		
 		CPocket* pPocket	= pMover->m_Pocket.GetPocket( nPocket );
 		if( !pPocket )
 		{
@@ -6116,15 +6108,13 @@ BOOL CDbManager::ConvertPocket( MDC & mConv )
 		CMover* pMover	= new CMover;
 		pMover->m_idPlayer	= pQuery->GetInt( "idPlayer" );
 		int nPocket		= pQuery->GetInt( "nPocket" );
-		//GetPocket( pMover, pQuery, NULL );
-		// mirchang_100416 VERIFYSTRING use return value
 		if( GetPocket( pMover, pQuery, NULL ) == FALSE )
 		{
 			safe_delete( pMover );
 			safe_delete( pQuery );
 			return FALSE;
 		}
-		// mirchang_100416
+		
 		CPocket* pPocket	= pMover->m_Pocket.GetPocket( nPocket );
 		if( !pPocket )
 		{
@@ -6193,15 +6183,12 @@ BOOL CDbManager::ConvInventory(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 		CMover* pMover	= new CMover;
 		pMover->m_idPlayer	= pQueryLoad->GetInt( "m_idPlayer" );
 
-		//GetInventory( pMover, pQueryLoad, NULL );
-		// mirchang_100416 VERIFYSTRING use return value
 		if( GetInventory( pMover, pQueryLoad, NULL ) == FALSE )
 		{
 			SAFE_DELETE( pMover );
 			SAFE_DELETE( pQueryLoad );
 			return FALSE;
 		}
-		// mirchang_100416
 
 		for( DWORD i = 0; i < pMover->m_Inventory.m_dwItemMax; i++ )
 		{
@@ -6439,8 +6426,6 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		pMover->m_idPlayer	= pQuery->GetInt( "m_idPlayer" );
 			
 		LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus	= NULL;
-		//GetInventory( pMover, pQuery, lpDbOverlappedPlus );
-		// mirchang_100416 VERIFYSTRING use return value
 		if( GetInventory( pMover, pQuery, lpDbOverlappedPlus ) == FALSE )
 		{
 			SAFE_DELETE( pMover );
@@ -6448,7 +6433,6 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 			SAFE_DELETE_ARRAY( szSql );
 			return FALSE;
 		}
-		// mirchang_100416
 
 		int cbInventory	= pMover->m_Inventory.m_dwItemMax;
 		for( int i = 0; i < cbInventory; i++ )
@@ -6966,15 +6950,12 @@ BOOL CDbManager::RestorePetInventory(std::map<DWORD, int> & mRestore )
 		CMover* pMover	= new CMover;
 		pMover->m_idPlayer	= pQueryLoad->GetInt( "m_idPlayer" );
 
-		//GetInventory( pMover, pQueryLoad, NULL );
-		// mirchang_100416 VERIFYSTRING use return value
 		if( GetInventory( pMover, pQueryLoad, NULL ) == FALSE )
 		{
 			SAFE_DELETE( pMover );
 			SAFE_DELETE( pQueryLoad );
 			return FALSE;
 		}
-		// mirchang_100416
 
 		for( DWORD i = 0; i < pMover->m_Inventory.m_dwItemMax; i++ )
 		{

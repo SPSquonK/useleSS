@@ -29,12 +29,6 @@ BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPAR
 
 extern	CProject			prj;
 
-#define	VERIFYSTRING( lpString, lpszPlayer )	\
-	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return;
-
-#define	VERIFY_GUILD_STRING( lpString, lpszGuild )	\
-	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszGuild ) )		return;
-
 void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, char* szQuery )
 {
 	szQuery[0] = '\0';
