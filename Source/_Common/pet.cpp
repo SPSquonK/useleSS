@@ -7,6 +7,9 @@
 #include "dpsrvr.h"
 #include "definetext.h"
 #endif	// __WORLDSERVER
+#ifdef __CLIENT
+#include "definetext.h"
+#endif
 
 #include "xutil.h"
 
@@ -285,6 +288,28 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 	return TRUE;
 }
 
+#ifdef __CLIENT
+DWORD CPetProperty::GetTIdOfLevel(PETLEVEL petLevel) {
+	switch (petLevel) {
+		case PL_EGG: return TID_GAME_PETGRADE_E;
+		case PL_D:   return TID_GAME_PETGRADE_D;
+		case PL_C:   return TID_GAME_PETGRADE_C;
+		case PL_B:   return TID_GAME_PETGRADE_B;
+		case PL_A:   return TID_GAME_PETGRADE_A;
+		case PL_S:   return TID_GAME_PETGRADE_S;
+		default:     return 0;
+	}
+}
+
+DWORD CPetProperty::GetTIdOfDst(const SINGLE_DST & dst, bool shortenHpMax) {
+	if (shortenHpMax && dst.nDst == DST_HP_MAX) {
+		return CWndMgr::GetDSTStringId(DST_HP);
+	}
+	return CWndMgr::GetDSTStringId(dst.nDst);
+}
+
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
 CPet::CPet()
@@ -371,16 +396,16 @@ BYTE CPet::GetAvailLevel( BYTE nLevel )
 #include "defineattribute.h"
 #endif	// _DEBUG
 
-void CPet::GetAvailDestParam( DWORD & dwDestParam, int & nParam )
-{
-	dwDestParam	= nParam	= 0;
-	PPETAVAILPARAM pAvailParam	= CPetProperty::GetInstance()->GetAvailParam( m_nKind );
-	if( pAvailParam )
-	{
-		dwDestParam	= pAvailParam->dwDstParam;
-		for( int i = PL_D; i <= m_nLevel; i++ )
-			nParam += pAvailParam->m_anParam[m_anAvailLevel[i-1] - 1];
-	}
+SINGLE_DST CPet::GetAvailDestParam() const {
+	PETAVAILPARAM * pAvailParam	= CPetProperty::GetInstance()->GetAvailParam( m_nKind );
+	if (!pAvailParam) return { 0, 0 };
+
+	int dst = static_cast<int>(pAvailParam->dwDstParam);
+	int nParam = 0;
+	for( int i = PL_D; i <= m_nLevel; i++ )
+		nParam += pAvailParam->m_anParam[m_anAvailLevel[i-1] - 1];
+
+	return SINGLE_DST{ dst, nParam };
 }
 
 DWORD CPet::GetIndex( void )

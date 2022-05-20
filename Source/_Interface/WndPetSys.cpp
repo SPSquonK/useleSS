@@ -385,67 +385,19 @@ void CWndPetStatus::DrawPetInformation(C2DRender* p2DRender)
 	
 	if(m_pPetElem->m_pPet)
 	{
-		int nLevel = m_pPetElem->m_pPet->GetLevel();
-		CString strTemp;
-		DWORD dwLevelText;
-		switch(nLevel) 
-		{
-			case PL_EGG:
-				dwLevelText = TID_GAME_PETGRADE_E;
-				break;
-			case PL_D:
-				dwLevelText = TID_GAME_PETGRADE_D;
-				break;
-			case PL_C:
-				dwLevelText = TID_GAME_PETGRADE_C;
-				break;
-			case PL_B:
-				dwLevelText = TID_GAME_PETGRADE_B;
-				break;
-			case PL_A:
-				dwLevelText = TID_GAME_PETGRADE_A;
-				break;
-			case PL_S:
-				dwLevelText = TID_GAME_PETGRADE_S;
-				break;
-		}
-		strTemp.Format( "%s", prj.GetText(dwLevelText) );
-		p2DRender->TextOut( 112, 4, strTemp, dwColor);
+		const PETLEVEL nLevel = m_pPetElem->m_pPet->GetPetLevel();
+		const DWORD dwLevelText = CPetProperty::GetTIdOfLevel(nLevel);
+		const char * szLevelText = prj.GetText(dwLevelText);
+		p2DRender->TextOut( 112, 4, szLevelText, dwColor);
 		
-		DWORD dwDstParam;
-		int nParam;
-		DWORD dwTooltip;
-		m_pPetElem->m_pPet->GetAvailDestParam(dwDstParam, nParam);
-		
-		switch(dwDstParam) 
-		{
-			case DST_STR:
-				dwTooltip = TID_TOOLTIP_STR;
-				break;
-			case DST_DEX:
-				dwTooltip = TID_TOOLTIP_DEX;
-				break;
-			case DST_INT:
-				dwTooltip = TID_TOOLTIP_INT;
-				break;
-			case DST_STA:
-				dwTooltip = TID_TOOLTIP_STA;
-				break;
-			case DST_ATKPOWER:
-				dwTooltip = TID_TOOLTIP_ATKPOWER_VALUE;
-				break;
-			case DST_ADJDEF:
-				dwTooltip = TID_TOOLTIP_DEFENCE;
-				break;
-			case DST_HP_MAX:
-				dwTooltip = TID_TOOLTIP_HP;
-				break;
-		}
-		
-		CSize size = g_Neuz.m_2DRender.m_pFont->GetTextExtent( prj.GetText(TID_GAME_PET_STATUS_ABILITY) );
+		const SINGLE_DST dst = m_pPetElem->m_pPet->GetAvailDestParam();
+		const DWORD dwTooltip = CPetProperty::GetTIdOfDst(dst, true);
+				
+		const CSize size = g_Neuz.m_2DRender.m_pFont->GetTextExtent( prj.GetText(TID_GAME_PET_STATUS_ABILITY) );
 
-		if(dwDstParam != 0 && nParam != 0)
-			strTemp.Format("%s +%d", prj.GetText(dwTooltip), nParam);
+		CString strTemp;
+		if(dst.nDst != 0 && dst.nAdj != 0)
+			strTemp.Format("%s +%d", prj.GetText(dwTooltip), dst.nAdj);
 		else
 			strTemp.Format("%s", prj.GetText(TID_GAME_PET_EGG_ABILITY));
 

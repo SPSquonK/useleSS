@@ -1,6 +1,7 @@
 #ifndef __PET_H__
 #define	__PET_H__
 
+#include "SingleDst.h"
 
 #ifdef __CLIENT
 #include "..\_AIInterface\AIInterface.h"
@@ -69,6 +70,12 @@ public:
 	BOOL	LoadScript( LPCTSTR szFile );
 	BYTE	Hatch( void );
 	PPETPENALTY		GetPenalty( BYTE nLevel );
+
+#ifdef __CLIENT
+	[[nodiscard]] static DWORD GetTIdOfLevel(PETLEVEL petLevel);
+	[[nodiscard]] static DWORD GetTIdOfDst(const SINGLE_DST & dst, bool shortenHpMax = false);
+#endif
+
 private:
 	PETAVAILPARAM	m_aPetAvailParam[PK_MAX];
 	BYTE	m_anLevelupAvailLevelMax[PL_MAX];
@@ -121,10 +128,11 @@ public:
 	BYTE	GetAvailLevel( BYTE nLevel );
 	LPBYTE	GetAvailLevel( void )	{	return m_anAvailLevel;	}
 
-	void	GetAvailDestParam( DWORD & dwDestParam, int & nParam );
+	[[nodiscard]] SINGLE_DST GetAvailDestParam() const;
 	BYTE	GetKind( void )	{	return m_nKind;	}
 	void	SetKind( BYTE nKind )	{	m_nKind	= nKind;	}
 	BYTE	GetLevel( void )	{	return m_nLevel;	}
+	[[nodiscard]] PETLEVEL GetPetLevel() const { return static_cast<PETLEVEL>(m_nLevel); }
 	void	IncLevel( void )		{	m_nLevel++;	}
 	void	SetLevel( BYTE nLevel )	{	m_nLevel	= nLevel;	}
 	DWORD	GetExp( void )	{	return m_dwExp;		}

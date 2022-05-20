@@ -4605,33 +4605,11 @@ void CWndMgr::PutPetInfo( CItemElem* pItemElem, CEditString* pEdit )
 	}
 
 	//Level
-	int nLevel = PL_EGG;
 	if( pItemElem->m_pPet )
 	{
-		nLevel	= pItemElem->m_pPet->GetLevel();
-
-		DWORD dwLevelText;
-		switch(nLevel)
-		{
-			case PL_EGG:
-				dwLevelText = TID_GAME_PETGRADE_E;
-				break;
-			case PL_D:
-				dwLevelText = TID_GAME_PETGRADE_D;
-				break;
-			case PL_C:
-				dwLevelText = TID_GAME_PETGRADE_C;
-				break;
-			case PL_B:
-				dwLevelText = TID_GAME_PETGRADE_B;
-				break;
-			case PL_A:
-				dwLevelText = TID_GAME_PETGRADE_A;
-				break;
-			case PL_S:
-				dwLevelText = TID_GAME_PETGRADE_S;
-				break;
-		}
+		const PETLEVEL nLevel	= pItemElem->m_pPet->GetPetLevel();
+		const DWORD dwLevelText = CPetProperty::GetTIdOfLevel(nLevel);
+		
 		strTemp.Format( "%s : %s", prj.GetText(TID_GAME_CHARACTER_02), prj.GetText(dwLevelText) );
 		pEdit->AddString( "\n" );
 		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistSM );
@@ -4639,41 +4617,14 @@ void CWndMgr::PutPetInfo( CItemElem* pItemElem, CEditString* pEdit )
 		//Ability value
 		if(nLevel != PL_EGG)
 		{
-			DWORD dwDstParam;
-			int nParam;
-			DWORD dwTooltip;
-			pItemElem->m_pPet->GetAvailDestParam(dwDstParam, nParam);
-			
-			switch(dwDstParam) 
-			{
-				case DST_STR:
-					dwTooltip = TID_TOOLTIP_STR;
-					break;
-				case DST_DEX:
-					dwTooltip = TID_TOOLTIP_DEX;
-					break;
-				case DST_INT:
-					dwTooltip = TID_TOOLTIP_INT;
-					break;
-				case DST_STA:
-					dwTooltip = TID_TOOLTIP_STA;
-					break;
-				case DST_ATKPOWER:
-					dwTooltip	= TID_TOOLTIP_ATKPOWER_VALUE;
-					break;
-				case DST_ADJDEF:
-					dwTooltip = TID_TOOLTIP_DEFENCE;
-					break;
-				case DST_HP_MAX:
-					dwTooltip = TID_TOOLTIP_DST_HP_MAX;
-					break;
-			}
-			strTemp.Format( "%s : %s +%d", prj.GetText(TID_GAME_ABILITY), prj.GetText(dwTooltip), nParam );
+			const SINGLE_DST dst = pItemElem->m_pPet->GetAvailDestParam();
+			const DWORD dwTooltip = CPetProperty::GetTIdOfDst(dst);
+
+			strTemp.Format( "%s : %s +%d", prj.GetText(TID_GAME_ABILITY), prj.GetText(dwTooltip), dst.nAdj );
 			pEdit->AddString( "\n" );
 			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistSM1 );
 		}
 		//Level History
-		int nLevel = pItemElem->m_pPet->GetLevel();
 		if(nLevel > PL_EGG)
 		{
 			pEdit->AddString( "\n" );

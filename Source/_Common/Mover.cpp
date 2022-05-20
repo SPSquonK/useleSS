@@ -9385,15 +9385,13 @@ void CMover::ProcessPetAvail( void )
 		if( HasPet() == FALSE )
 		{
 			CItemElem* pItemElem	= GetPetItem();
-			DWORD dwDestParam;
-			int nParam;
-			pPet->GetAvailDestParam( dwDestParam, nParam );
-			if( dwDestParam > 0 )
+			const SINGLE_DST dst = pPet->GetAvailDestParam();
+			if( dst.nDst > 0 )
 			{
 				// wID: dwItemId
 				// dwLevel: dwDestParam(H) + nParam(L)
-				AddBuff( BUFF_PET, (WORD)( pItemElem->m_dwItemId ), MAKELONG( (WORD)nParam, (WORD)dwDestParam ), 0 ); 
-				SetDestParam( dwDestParam, nParam, NULL_CHGPARAM, TRUE );
+				AddBuff( BUFF_PET, (WORD)( pItemElem->m_dwItemId ), MAKELONG( (WORD)dst.nAdj, (WORD)dst.nDst), 0 ); 
+				SetDestParam(dst.nDst, dst.nAdj, NULL_CHGPARAM, TRUE);
 			}
 			SetDestParamRandomOptExtension( pItemElem );
 		}
