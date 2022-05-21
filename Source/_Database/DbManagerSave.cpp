@@ -166,6 +166,7 @@ int MAX_SAVEPARAM = 88;
 	SQLINTEGER cbLen = SQL_NTS;
 	BOOL* bOK = new BOOL[MAX_SAVEPARAM];
 //	BOOL bOK[MAX_SAVEPARAM];
+//	qry->StartLogBindedParameters();
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  32, 0, pMover->m_szName, 0, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nSlot, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwWorldID, 0, 0 );

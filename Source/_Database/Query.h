@@ -3,6 +3,7 @@
 
 #include <sql.h>
 #include <sqlext.h>
+#include <optional>
 
 struct QUERY_BINDINFO
 {
@@ -30,6 +31,8 @@ private:
 
 	[[nodiscard]] int FindCol(const char *name) const;				// 컬럼의 이름으로부터 번호를 찾아준다.
 
+	std::optional<CString> m_storeBindedParameters = std::nullopt;
+
 public:
 	SQLHSTMT hStmt;							// 명령 핸들. 직접 사용할 수도 있으므로 public으로 정의
 	SQLSMALLINT nCol;						// 컬럼 개수
@@ -40,11 +43,13 @@ public:
 	~CQuery();								// 파괴자:연결 핸들을 해제한다.
 
 	void PrintDiag( LPCTSTR szSQL, SQLSMALLINT type = SQL_HANDLE_DBC );						// 진단 정보 출력
+	void PrintQuery(const char * query);
 	BOOL Connect(int Type, const char *ConStr, const char *UID=NULL, const char *PWD=NULL);	// 데이터 소스에 연결한다.
 	void DisConnect();						// 데이터 소스 연결을 끊는다
 	BOOL Exec(LPCTSTR szSQL);				// SQL문을 실행한다.
 	BOOL Exec(LPCTSTR szSQL, int nCount, QUERY_BINDINFO info[]);
 	BOOL PrepareFetch();
+	void StartLogBindedParameters() { m_storeBindedParameters = CString(); }
 
 	BOOL	Execute( LPCTSTR lpszFormat, ... );
 

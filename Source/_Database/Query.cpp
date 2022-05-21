@@ -188,7 +188,6 @@ BOOL CQuery::Connect(int Type, const char *ConStr, const char *UID, const char *
 	return TRUE;
 }
 
-
 BOOL CQuery::BindParameter(SQLUSMALLINT parameterNumber,
                            SQLSMALLINT inputOutputType,
                            SQLSMALLINT valueType,
@@ -206,9 +205,28 @@ BOOL CQuery::BindParameter(SQLUSMALLINT parameterNumber,
 		TRACE( "CQuery::BindParameter\n" );
 		WriteLog( "CQuery::BindParameter - result : %d, ThreadID : %d", result, ::GetCurrentThreadId() );
 		return FALSE;
-	}
-	else
+	} else {
+		if (m_storeBindedParameters) {
+			switch (parameterType) {
+				case SQL_VARCHAR:
+				case SQL_CHAR:
+					if (columnSize > 2) {
+						m_storeBindedParameters->AppendFormat("%d = (char) %s", parameterNumber, reinterpret_cast<const char *>(parameterValuePtr));
+					}
+					break;
+				case SQL_INTEGER:
+				case SQL_BIGINT:
+				case SQL_SMALLINT:
+					m_storeBindedParameters->AppendFormat("%d = (number) %d", parameterNumber, *(reinterpret_cast<int *>(parameterValuePtr)));
+					break;
+				case SQL_REAL:
+					m_storeBindedParameters->AppendFormat("%d = (number) %f", parameterNumber, *(reinterpret_cast<float *>(parameterValuePtr)));
+					break;
+			}
+		}
+		
 		return TRUE;
+	}
 }
 
 // SQL문을 실행한다. 실패시 진단 정보를 출력하고 FALSE를 리턴한다.
@@ -241,6 +259,8 @@ BOOL CQuery::Exec(LPCTSTR szSQL)
 				return FALSE;
 		}
 	}
+
+	m_storeBindedParameters = std::nullopt;
 
 	return PrepareFetch();
 }
@@ -534,13 +554,32 @@ void CQuery::PrintDiag( LPCTSTR szSQL, SQLSMALLINT type )
 		{
 			if( szSQL )
 				WriteLogFile("query:%s\nSQLSTATE:%s error:%s", szSQL, (LPCTSTR)szState,(LPCTSTR)szMsg );
-			else
-				WriteLogFile("SQLSTATE:%s error:%s", (LPCTSTR)szState,(LPCTSTR)szMsg );
+			else {
+				WriteLogFile("SQLSTATE:%s error:%s", (LPCTSTR)szState, (LPCTSTR)szMsg);
+
+				if (LPCTSTR(szState) == std::string_view("22001 NativeError : 0,")) {
+					PrintQuery(szSQL);
+				}
+			}
 			nIndex++;
 		}
 		else
 			break;	
 	}
+}
+
+void CQuery::PrintQuery(const char * const query) {
+	CString str = "Query= ";
+	str += query;
+	str += "\n";
+	if (!m_storeBindedParameters) {
+		str += "Binded parameters were not stored";
+	} else {
+		str += "Binded parameters=\n";
+		str += m_storeBindedParameters.value();
+	}
+
+	WriteLogFile("%s", str.GetString());
 }
 
 // BLOB 데이터를 buf에 채워준다. 이때 buf는 충분한 크기의 메모리를 미리 할당해 
