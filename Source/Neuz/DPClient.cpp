@@ -2256,65 +2256,41 @@ void CDPClient::OnTrade( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnConfirmTrade( OBJID objid, CAr & ar )
-{
+void CDPClient::OnConfirmTrade( OBJID objid, CAr & ar ) {
 	CMover* pTrader	= prj.GetMover( objid );
-	if( pTrader != NULL )
-	{ 
-		// 신청하는 형태의 매시지 박스는 여러개가 날아올 수 있고, 내 의지와는 관계가 없다.
-		// 이런 경우 CWndDuelConfirm::OnChildNotify에서 윈도를 닫을 때 Destroy( TRUE )로 해서
-		// 메모리에서 완전히 파괴하도록 한다. 안하면 리크로 남던지, ALT+ENTER, ALT+TAB할 때 다운됨.
-		//SAFE_DELETE( g_WndMng.m_pWndConfirmTrade );
-		if( g_Option.m_bTrade == FALSE )
-		{
-			SendBlock( 3, g_pPlayer->GetName(), pTrader->GetName() );
-			return;
-		}
+	if (!pTrader) return;
 
-		CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_REPAIR );
-		
-		if( pWndBaseBuf )
-		{
-			SendBlock( 4, g_pPlayer->GetName(), pTrader->GetName() );
-			return;
-		}
-		
-		pWndBaseBuf = g_WndMng.GetWndBase( APP_TRADE );
-		if( pWndBaseBuf )
-		{
-			SendBlock( 5, g_pPlayer->GetName(), pTrader->GetName() );
-			return;
-		}
-
-		pWndBaseBuf = g_WndMng.GetWndBase( APP_CONFIRM_TRADE );
-		if( pWndBaseBuf )
-		{
-			SendBlock( 5, g_pPlayer->GetName(), pTrader->GetName() );
-			return;
-		}
-
-		pWndBaseBuf = g_WndMng.GetWndBase( APP_GUILD_BANK );
-		if( pWndBaseBuf )
-		{
-			SendBlock( 8, g_pPlayer->GetName(), pTrader->GetName() );
-			return;
-		}
-		pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
-		if( pWndBaseBuf )
-		{
-			SendBlock( 8, g_pPlayer->GetName(), pTrader->GetName() );
-			return;
-		}		
-		
-		g_WndMng.m_pWndConfirmTrade = new CWndConfirmTrade;
-		g_WndMng.m_pWndConfirmTrade->Initialize( NULL, APP_CONFIRM_TRADE );			
-		g_WndMng.m_pWndConfirmTrade->OnSetName( pTrader->GetName(), objid );
+	// 신청하는 형태의 매시지 박스는 여러개가 날아올 수 있고, 내 의지와는 관계가 없다.
+	// 이런 경우 CWndDuelConfirm::OnChildNotify에서 윈도를 닫을 때 Destroy( TRUE )로 해서
+	// 메모리에서 완전히 파괴하도록 한다. 안하면 리크로 남던지, ALT+ENTER, ALT+TAB할 때 다운됨.
+	//SAFE_DELETE( g_WndMng.m_pWndConfirmTrade );
+	if (g_Option.m_bTrade == FALSE) {
+		SendBlock(3, g_pPlayer->GetName(), pTrader->GetName());
+		return;
 	}
+
+	if (Windows::IsOpen(APP_REPAIR)) {
+		SendBlock(4, g_pPlayer->GetName(), pTrader->GetName());
+		return;
+	}
+		
+	if (Windows::IsOpen(APP_TRADE, APP_CONFIRM_TRADE)) {
+		SendBlock(5, g_pPlayer->GetName(), pTrader->GetName());
+		return;
+	}
+
+	if (Windows::IsOpen(APP_GUILD_BANK, APP_SUMMON_ANGEL)) {
+		SendBlock(8, g_pPlayer->GetName(), pTrader->GetName());
+		return;
+	}
+		
+	g_WndMng.m_pWndConfirmTrade = new CWndConfirmTrade;
+	g_WndMng.m_pWndConfirmTrade->Initialize( NULL, APP_CONFIRM_TRADE );			
+	g_WndMng.m_pWndConfirmTrade->OnSetName( pTrader->GetName(), objid );
 }
 
-void CDPClient::OnConfirmTradeCancel( OBJID objid, CAr & ar )
-{
-	g_WndMng.PutString( prj.GetText( TID_GAME_TRADECANCEL ), NULL, prj.GetTextColor( TID_GAME_TRADECANCEL  ) );
+void CDPClient::OnConfirmTradeCancel(OBJID objid, CAr & ar) {
+	g_WndMng.PutString(TID_GAME_TRADECANCEL);
 }
 
 
@@ -2333,10 +2309,8 @@ void CDPClient::OnTradePut( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnTradePutError( OBJID objid, CAr & ar )
-{
-	g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0054) ) );
-//	g_WndMng.OpenMessageBox( "확인이 되었으므로 더이상 거래목록를 추가나 제거할수가 없습니다." );
+void CDPClient::OnTradePutError(OBJID objid, CAr & ar) {
+	g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0054)));
 }
 
 void CDPClient::OnTradePull( OBJID objid, CAr & ar )
@@ -2401,16 +2375,15 @@ void CDPClient::OnTradeClearGold( OBJID objid )
 }
 */
 
-void CDPClient::SendTradeOk( void )	
-{	
-	SendHdr( PACKETTYPE_TRADEOK );	
+void CDPClient::SendTradeOk() {
+	SendHdr(PACKETTYPE_TRADEOK);
 }
 
 void CDPClient::SendChangeFace( u_long objid, DWORD dwFaceNum, int cost )
 {
 	if(g_pPlayer->HasBuffByIk3(IK3_TEXT_DISGUISE))
 	{
-		g_WndMng.PutString( prj.GetText( TID_GAME_ERROR_BEAUTYSHOP_DISGUISE ), NULL, prj.GetTextColor( TID_GAME_ERROR_BEAUTYSHOP_DISGUISE  ) );
+		g_WndMng.PutString(TID_GAME_ERROR_BEAUTYSHOP_DISGUISE);
 	}
 	else
 	{
@@ -2457,17 +2430,11 @@ void CDPClient::OnTradeCancel( OBJID objid, CAr & ar )
 	{
 		if( uidPlayer != g_pPlayer->m_idPlayer )
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0002) ) );
-//			g_WndMng.OpenMessageBox( "거래 거절상태입니다." );
 	}
 	else
 	{
 		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0003) ) );
-//		g_WndMng.OpenMessageBox( "거래가 취소 되었습니다." );
-		CWndTradeConfirm* pWndTradeConfirm = (CWndTradeConfirm*)g_WndMng.GetWndBase( APP_TRADE_CONFIRM );
-		if( pWndTradeConfirm )
-		{
-			pWndTradeConfirm->Destroy();
-		}
+		Windows::DestroyIfOpened(APP_TRADE_CONFIRM);
 	}
 
 	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
@@ -2520,29 +2487,15 @@ void CDPClient::OnTradeOk( OBJID objid, CAr & ar )
 			pWndOkYou->EnableWindow( FALSE );
 			if( g_pPlayer->m_vtInfo.GetOther() )
 			{
-				CString str;
-				str.Format( prj.GetText( TID_GAME_TRADEACCPET ), g_pPlayer->m_vtInfo.GetOther()->GetName() );
-				g_WndMng.PutString( str, NULL, prj.GetTextColor( TID_GAME_TRADEACCPET ) );  // 상대방이 거래를 확인하였습니다.
+				g_WndMng.PutString(TID_GAME_TRADEACCPET, g_pPlayer->m_vtInfo.GetOther()->GetName());
 			}
 		}
 	}
 }
 
-void CDPClient::OnTradeConsent( void )
-{
-	if( g_pPlayer->m_vtInfo.TradeConsent() )
-	{
-		CWndTrade* pWndTrade	= (CWndTrade*)g_WndMng.GetApplet( APP_TRADE );
-		if( pWndTrade )
-		{
-			pWndTrade->Destroy();
-		}
-
-		CWndTradeConfirm* pWndTradeConfirm = (CWndTradeConfirm*)g_WndMng.GetWndBase( APP_TRADE_CONFIRM );
-		if( pWndTradeConfirm )
-		{
-			pWndTradeConfirm->Destroy();
-		}
+void CDPClient::OnTradeConsent() {
+	if (g_pPlayer->m_vtInfo.TradeConsent()) {
+		Windows::DestroyIfOpened(APP_TRADE, APP_TRADE_CONFIRM);
 	}
 }
 
