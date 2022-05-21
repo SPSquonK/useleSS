@@ -8286,7 +8286,7 @@ BOOL CWndWorld::Process()
 		{
 			m_pWndBuffStatus ->Destroy();
 			m_pWndBuffStatus = NULL;
-			CWndBase* pWndBaseFocus = (CWndBase*) g_WndMng.GetFocusWnd();
+			CWndBase* pWndBaseFocus = CWndBase::GetFocusWnd();
 			if(pWndBaseFocus && pWndBaseFocus->GetWndApplet() && pWndBaseFocus->GetWndApplet()->dwWndId != APP_COMMUNICATION_CHAT)
 				SetFocus();
 		}	

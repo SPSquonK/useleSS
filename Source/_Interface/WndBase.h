@@ -202,18 +202,20 @@ static void FreeTileTexture();
 #ifndef __VS2003
 	BOOL IsOpenAnywnd() { return m_wndOrder.GetSize() ? TRUE : FALSE; }
 #endif
-	BOOL IsOpenModalWnd();
+	[[nodiscard]] static bool IsOpenModalWnd() { return m_pWndFocus && m_pWndFocus->IsWndStyle(WBS_MODAL); }
 	CWndBase* GetFocusChild() { return m_pWndFocusChild; }
-	CWndBase* GetFocusWnd() { return m_pWndFocus; }
+	[[nodiscard]] static CWndBase * GetFocusWnd() { return m_pWndFocus; }
 	void GetLogFont(C2DRender* p2DRender,LOGFONT* pLogFont);
 	int  GetFontHeight();
-	[[nodiscard]] BOOL IsWndStyle(DWORD dwStyle) const { return (m_dwStyle & dwStyle) ? TRUE : FALSE; }
-	int  GetWndStyle() { return m_dwStyle; }
+	
+	[[nodiscard]] bool IsWndStyle(DWORD dwStyle) const { return m_dwStyle & dwStyle; }
+	[[nodiscard]] int  GetWndStyle() const { return m_dwStyle; }
 	void SetWndStyle(DWORD dwStyle) { m_dwStyle = dwStyle; }
-	int  GetWndId() { return m_nIdWnd; }
-	void SetWndId( DWORD dwWndId ) { m_nIdWnd = dwWndId; }
 	void AddWndStyle(DWORD dwStyle) { m_dwStyle |= dwStyle; }
 	void DelWndStyle(DWORD dwStyle) { m_dwStyle &= ~dwStyle; }
+
+	[[nodiscard]] int GetWndId() const { return m_nIdWnd; }
+
 	CWndBase* GetWndBase( UINT idWnd );
 	CWndBase* GetWndBase();
 	CWndBase* FindWnd(UINT idWnd) { return GetWndBase( idWnd ); }

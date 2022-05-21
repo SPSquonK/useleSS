@@ -233,7 +233,7 @@ void CWndBase::AddWnd( CWndBase* pWndBase )
 	}
 	else
 	{
-		if( GetFrameWnd()->IsWndStyle( WBS_NOFOCUS ) == FALSE )
+		if( !GetFrameWnd()->IsWndStyle( WBS_NOFOCUS ) )
 		{
 			if(pWndBase) pWndBase->SetFocus();
 			else m_pWndFocusChild->OnKillFocus(NULL);
@@ -320,7 +320,7 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 
 	SetWndRect( rect, FALSE );
 	/*
-	if(IsWndRoot() == FALSE && IsWndStyle(WBS_CHILD) == FALSE)
+	if(IsWndRoot() == FALSE && !IsWndStyle(WBS_CHILD) )
 	{
 		m_rectClient.top    += 20;
 		m_rectClient.bottom -=  3;
@@ -339,7 +339,7 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 	  //PLAYSND( m_strSndEffect, NULL );
 
 	/*
-	if( IsWndStyle( WBS_CHILD ) == FALSE )
+	if( !IsWndStyle( WBS_CHILD ) )
 	{
 		LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( m_nIdWnd );
 		SetTitle( lpWndApplet->strTitle );
@@ -542,9 +542,9 @@ void CWndBase::Paint(C2DRender* p2DRender, BOOL bPaintChild)
 	// rectNew를 rectOld로 클리핑 한다.
 	if( rectOld.Clipping( rectNew ) )
 	{
-		//if( !IsWndStyle( WBS_NODRAWFRAME ) && ( IsWndStyle(WBS_CHILD) == FALSE || IsWndStyle(WBS_DOCKED) == TRUE ) )
+		//if( !IsWndStyle( WBS_NODRAWFRAME ) && ( !IsWndStyle(WBS_CHILD) || IsWndStyle(WBS_DOCKED) ) )
 		//if( !IsWndStyle( WBS_NODRAWFRAME ) ) 
-		if( IsWndStyle(WBS_CHILD) == FALSE )
+		if( !IsWndStyle(WBS_CHILD) )
 		{
 			p2DRender->SetViewportOrg( m_rectCurrentClient.TopLeft() );
 			p2DRender->SetViewport( rectNew );
@@ -1609,7 +1609,7 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 					else
 					if(wParam == VK_ESCAPE)
 					{
-//						if(IsWndRoot() == FALSE && IsWndStyle(WBS_MANAGER) == FALSE)
+//						if(!IsWndRoot() && IsWndStyle(WBS_MANAGER) == FALSE)
 //							;//PostMessage(WM_CLOSE);
 					}
 				}
@@ -1732,7 +1732,7 @@ void CWndBase::DestroyAllWnd(CWndBase* pWndRoot)
 		CWndBase* pWndBase 
 			= (CWndBase*)m_wndArray.GetAt(i);
 		pWndBase->m_pParentWnd = pWndBase->m_pParentWnd;
-		if(pWndBase && pWndBase->IsWndStyle(WBS_CHILD) == FALSE)
+		if(pWndBase && !pWndBase->IsWndStyle(WBS_CHILD))
 		{
 			pWndBase->DestroyAllWnd(this);
 			safe_delete( pWndBase );
@@ -1836,7 +1836,7 @@ void CWndBase::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	m_rectLayout = m_rectClient;
 	if( IsWndRoot() == FALSE && !IsWndStyle( WBS_NOFRAME ) )
 	{
-		if( IsWndStyle( WBS_CAPTION ) == TRUE )
+		if( IsWndStyle( WBS_CAPTION ) )
 			m_rectClient.top += 18;
 		m_rectClient.DeflateRect( 4, 4, 8, 10 );
 		m_rectLayout = m_rectClient;
@@ -2090,17 +2090,11 @@ CWndBase* CWndBase::GetFrameWnd()
 	CWndBase* pWndCur = this;
 	while( pWndCur )
 	{
-		if( pWndCur->IsWndStyle( WBS_CHILD ) == FALSE )
+		if( !pWndCur->IsWndStyle( WBS_CHILD ) )
 			return pWndCur;
 		pWndCur = pWndCur->GetParentWnd();
 	}
 	return pWndCur;
-}
-BOOL CWndBase::IsOpenModalWnd() 
-{ 
-	if(m_pWndFocus)
-		return m_pWndFocus->IsWndStyle(WBS_MODAL);
-	return FALSE;
 }
 BOOL CWndBase::IsOpenWnd(UINT nId) 
 { 

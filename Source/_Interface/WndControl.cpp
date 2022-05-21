@@ -233,7 +233,7 @@ void CWndStatic::OnLButtonDown(UINT nFlags, CPoint point)
 }
 void CWndStatic::PaintFrame( C2DRender* p2DRender )
 {
-	if( m_strTexture.IsEmpty() == FALSE || IsWndStyle( WSS_PICTURE ) == FALSE )
+	if( m_strTexture.IsEmpty() == FALSE || !IsWndStyle( WSS_PICTURE ) )
 		return;
 	CRect rect = GetWindowRect();
 	p2DRender->RenderRect( rect, 0xff000000 );
@@ -305,7 +305,7 @@ void CWndButton::FitTextureSize()
 	if( m_pTexture )
 	{
 		CRect rect = GetWindowRect( TRUE );
-		if( IsWndStyle( WBS_RADIO ) | IsWndStyle( WBS_CHECK ) )
+		if( IsWndStyle( WBS_RADIO ) || IsWndStyle( WBS_CHECK ) )
 			rect.right = rect.left + ( m_pTexture->m_size.cx / 6 );
 		else
 			rect.right = rect.left + ( m_pTexture->m_size.cx / 4 );
@@ -3401,7 +3401,7 @@ void CWndMenu::OnKillFocus(CWndBase* pNewWnd)
 	if( pNewWnd == NULL )
 		SetVisibleAllMenu( FALSE );
 	else
-	if( pNewWnd->IsWndStyle( WBS_POPUP ) == FALSE )
+	if( !pNewWnd->IsWndStyle( WBS_POPUP ) )
 		SetVisibleAllMenu( FALSE );
 }
 

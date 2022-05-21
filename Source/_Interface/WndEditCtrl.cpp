@@ -1259,7 +1259,7 @@ void CWndEdit::OnDestroyChildWnd( CWndBase* pWndChild )
 }
 void CWndEdit::OnSetFocus(CWndBase* pOldWnd)
 {
-	if( IsWndStyle( EBS_READONLY ) == TRUE )
+	if( IsWndStyle( EBS_READONLY ) )
 		return;
 	// Edit창에 포커스가 올 경우 눌린 이동키에 대한 해제를 하자.
 	g_bKeyTable[g_Neuz.Key.chUp] = FALSE;
@@ -1328,7 +1328,7 @@ void CWndEdit::PaintFrame(C2DRender* p2DRender)
 }
 BOOL CWndEdit::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 {
-	if( IsWndStyle( EBS_READONLY ) == FALSE )
+	if( !IsWndStyle( EBS_READONLY ) )
 		m_pApp->SetDeviceCursor( m_hEditCursor );
 	return TRUE;
 }
@@ -1336,7 +1336,7 @@ BOOL CWndEdit::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 // 이는 조합시 다른 오동작을 방지하기 위해 클릭하면 무조건 조합을 완료하게 한 것이다.
 void CWndEdit::OnLButtonDown( UINT nFlags, CPoint point )
 {
-	if( IsWndStyle( EBS_READONLY ) == TRUE )
+	if( IsWndStyle( EBS_READONLY ) )
 		return;
 	// 조합 완료 매지시를 ime에게 보낸다.
 	g_imeMgr.CompleteComposition(m_hWnd);
@@ -1434,7 +1434,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 		if(GetParentWnd()->GetFocusChild() != this)
 			return FALSE;
 	}
-	if(IsWndStyle(EBS_NUMBER) == TRUE)
+	if(IsWndStyle(EBS_NUMBER))
 	{
 		switch(msg)
 		{

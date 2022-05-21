@@ -830,7 +830,7 @@ BOOL CWndChat::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					m_wndEdit.Empty();
 					if( m_bChatLock == FALSE ) 
 					{
-						if( IsWndStyle( WBS_MODAL ) == TRUE )
+						if( IsWndStyle( WBS_MODAL ) )
 						{
 							DelWndStyle( WBS_MODAL );
 							if( g_Neuz.pOldModalWindow )

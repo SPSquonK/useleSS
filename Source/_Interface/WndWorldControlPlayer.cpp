@@ -130,7 +130,7 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 	}
 	
 	// 전진/후진/스톱
-	CWndBase* pWndBaseFocus = (CWndBase*) g_WndMng.GetFocusWnd();
+	CWndBase* pWndBaseFocus = CWndBase::GetFocusWnd();
 	if( g_Neuz.m_bActiveNeuz == FALSE || ( pWndChat && pWndBaseFocus && pWndBaseFocus == pWndChat ) )
 	{
 		g_bKeyTable[g_Neuz.Key.chUp] = FALSE;// | m_bRButtonDown;

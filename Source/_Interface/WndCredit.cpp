@@ -421,7 +421,7 @@ void CWndCredit::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	m_rectLayout = m_rectClient;
 	if( IsWndRoot() == FALSE && !IsWndStyle( WBS_NOFRAME ) )
 	{
-		if( IsWndStyle( WBS_CAPTION ) == TRUE )
+		if( IsWndStyle( WBS_CAPTION ) )
 			m_rectClient.top += 17;
 		m_rectClient.DeflateRect( 2, 2, 6, 8 );
 		m_rectLayout = m_rectClient;

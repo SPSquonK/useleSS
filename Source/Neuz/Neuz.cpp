@@ -1184,7 +1184,7 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 		g_WndMng.WindowRootProc( msg, wParam, lParam );
 
 	//gmpbigsun(100308): here is stop if activated modal window
-	if( g_WndMng.IsOpenModalWnd() == TRUE && msg != WM_LOGOUT )
+	if( CWndBase::IsOpenModalWnd() && msg != WM_LOGOUT )
 	{
 		switch( msg )
 		{
