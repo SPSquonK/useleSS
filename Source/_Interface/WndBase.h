@@ -76,7 +76,7 @@ static CWndBase* m_pWndCapture;
 	//void RemoveWnd(CWndBase* pWnd);
 	void DestroyAllWnd(CWndBase* pWndRoot); // 모든 윈도를 강제 삭제 ; 종료할때 호출 
 	void SetChildFocus( CWndBase* pWndBase, POINT point );
-	CWndBase* GetChildFocus( CWndBase* pWndBase, POINT point );
+	static CWndBase* GetChildFocus( CWndBase* pWndBase, POINT point );
 //protected:
 public:
 static CResManager m_resMng;
