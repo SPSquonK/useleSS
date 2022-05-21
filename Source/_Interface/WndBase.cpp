@@ -23,7 +23,7 @@ CPtrArray CWndBase::m_wndOrder;
 #endif
 
 std::vector<CWndBase *> CWndBase::m_wndRemove;
-CPtrArray CWndBase::m_postMessage;
+std::vector<WNDMESSAGE> CWndBase::m_postMessage;
 SHORTCUT  CWndBase::m_GlobalShortcut;
 //CWndBase* CWndBase::m_pWndWorld = NULL;
 CTexture* CWndBase::m_pTexForbid = NULL;
@@ -838,15 +838,8 @@ LRESULT CWndBase::SendMessage(UINT message,WPARAM wParam,LPARAM lParam)
 {
 	return WindowProc(message,wParam,lParam);
 }
-BOOL CWndBase::PostMessage(UINT message,WPARAM wParam,LPARAM lParam)
-{
-	LPWNDMESSAGE lpWndMessage = new WNDMESSAGE;
-	lpWndMessage->m_pWndBase = this;
-	lpWndMessage->m_message = message;
-	lpWndMessage->m_wParam = wParam;
-	lpWndMessage->m_lParam = lParam;
-	m_postMessage.Add(lpWndMessage);
-	return TRUE;
+void CWndBase::PostMessage(UINT message,WPARAM wParam,LPARAM lParam) {
+	m_postMessage.emplace_back(this, message, wParam, lParam);
 }
 void CWndBase::SetChildFocus( CWndBase* pWndBase, POINT point )
 {
@@ -1276,19 +1269,18 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			//m_pointOld = point;
 		}
 	}
+
 	if( IsWndRoot() )
 	{
 		// 윈도 파괴 
 		RemoveDestroyWnd();
 		// 포스트 메시지 처리 
-		for( i = 0; i < m_postMessage.GetSize(); i++ )
-		{
-			LPWNDMESSAGE lpWndMessage = (LPWNDMESSAGE)m_postMessage.GetAt(i);
-			lpWndMessage->m_pWndBase->WindowProc(lpWndMessage->m_message,lpWndMessage->m_wParam,lpWndMessage->m_lParam);
-			//lpWndMessage->m_pWndBase->DefWindowProc(lpWndMessage->m_message,lpWndMessage->m_wParam,lpWndMessage->m_lParam);
-			safe_delete( lpWndMessage );
-			m_postMessage.RemoveAt( i-- );
+		for (auto lpWndMessage = m_postMessage.begin(); lpWndMessage != m_postMessage.end(); ++lpWndMessage) {
+			// Iterator based loop because some WindowProc may add new messages
+			lpWndMessage->m_pWndBase->WindowProc(lpWndMessage->m_message, lpWndMessage->m_wParam, lpWndMessage->m_lParam);
 		}
+
+		m_postMessage.clear();
 	}
 	//SetWndRect( rectWnd, FALSE);
 	//WndMsgProc( message, wParam, lParam );

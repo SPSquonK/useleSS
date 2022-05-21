@@ -42,13 +42,15 @@ class C2DRender;
 //_CHILD   
 class CWndBase;
  
-typedef struct tagWNDMESSAGE
-{
+struct WNDMESSAGE {
+	WNDMESSAGE(CWndBase * pWndBase, UINT message, WPARAM wParam, LPARAM lParam)
+	: m_pWndBase(pWndBase), m_message(message), m_wParam(wParam), m_lParam(lParam) {}
+
 	CWndBase* m_pWndBase ;
 	UINT      m_message  ;
 	WPARAM    m_wParam   ;
 	LPARAM    m_lParam   ;
-} WNDMESSAGE,* LPWNDMESSAGE;
+};
 
 //////////////////////////////////////////////////////////////////////////////
 // CWndBase 
@@ -132,7 +134,7 @@ static CPtrArray      m_wndOrder        ;
 #endif
 
 static std::vector<CWndBase *> m_wndRemove;
-static CPtrArray      m_postMessage     ;
+static std::vector<WNDMESSAGE> m_postMessage;
 //static CTexturePack   m_texturePack     ;
 static CTexture*      m_pTexForbid;
 static CTimer         m_timerForbid;
@@ -237,7 +239,7 @@ static void FreeTileTexture();
 	BOOL IsWindowEnabled() const { return m_bEnable; }
 	void EnableWindow(BOOL bEnable = TRUE) { m_bEnable = (bEnable != FALSE ); }
 	LRESULT SendMessage(UINT message,WPARAM wParam = 0, LPARAM lParam = 0);
-	BOOL PostMessage(UINT message,WPARAM wParam = 0, LPARAM lParam = 0);
+	void PostMessage(UINT message,WPARAM wParam = 0, LPARAM lParam = 0);
 	void  SetToolTip(LPCTSTR lpszToolTip,int nPos = 0) { m_strToolTip = lpszToolTip; m_nToolTipPos = nPos; }
 	void SetTabStop(BOOL bTabStop) { m_bTabStop = (bTabStop != FALSE); }
 	virtual void SetFocus();
