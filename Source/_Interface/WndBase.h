@@ -16,10 +16,6 @@
 #endif
 */
 
-#define LAYOUT_NONE    0
-#define LAYOUT_RULERS  1
-#define LAYOUT_GRID    2
-
 #define WSIZE_WINDOW   0
 #define WSIZE_MIN      1
 #define WSIZE_MAX      2
@@ -31,9 +27,6 @@
 
 // 클라이언트의 좌표 얻기 
 #define GET_CLIENT_POINT( hwnd, pt ) CPoint pt; ::GetCursorPos( &pt ); ::ScreenToClient( hwnd, &pt );
-
-// 좌표를 맞추기 위한 다이얼로그 : 사용하면 아주 유용함 
-#define COORDI_DLG(c,x1,y1,x2,y2)	static CCoordiDlg c(x1,y1,x2,y2); if(c.m_hWnd == NULL) c.Create(CCoordiDlg::IDD);
 
 class C2DRender;
 
@@ -351,5 +344,38 @@ public:
 	
 friend class CWndButton;
 };
+
+namespace Windows {
+	template <typename ... Ts>
+	bool IsOpen(UINT windowId, Ts ... ts) {
+		if (CWndBase::GetWndBase(windowId)) return true;
+
+		if constexpr (sizeof...(Ts) == 0) {
+			return false;
+		} else {
+			return IsOpen(ts...);
+		}
+	}
+
+	/// Closes all the windows with the passed ids if opened.
+	/// At least one app ID must be passed.
+	/// Returns true if at least one window has been closed.
+	template <typename ...Ts>
+	bool DestroyIfOpened(UINT firstWindowToClose, Ts... otherWindowsToClose) {
+		bool closedOne = false;
+
+		if (CWndBase * const window = GetWndBase(firstWindowToClose)) {
+			window->Destroy();
+			closedOne = true;
+		}
+
+		if constexpr (sizeof...(otherWindowsToClose) != 0) {
+			closedOne |= DestroyIfOpened(otherWindowsToClose...);
+		}
+
+		return closedOne;
+	}
+}
+
 #endif // !defined(AFX_WNDBASE_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_)
 
