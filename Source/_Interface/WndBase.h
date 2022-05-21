@@ -197,8 +197,7 @@ static void FreeTileTexture();
 	CRect GetWindowRect( BOOL bParent = FALSE );
 	CRect GetLayoutRect( BOOL bParent = FALSE );
 	CRect GetWndRect() { return m_rectWindow; }
-	BOOL IsWndRoot() { return this == m_pWndRoot; }
-	BOOL IsOnWndBase(CPoint pt);  // 포인트가 윈도 위에 있는가?
+	[[nodiscard]] bool IsWndRoot() const { return this == m_pWndRoot; }
 	[[nodiscard]] static bool IsOpenModalWnd() { return m_pWndFocus && m_pWndFocus->IsWndStyle(WBS_MODAL); }
 	CWndBase* GetFocusChild() { return m_pWndFocusChild; }
 	[[nodiscard]] static CWndBase * GetFocusWnd() { return m_pWndFocus; }
@@ -223,9 +222,7 @@ static void FreeTileTexture();
 			Error( "GetDlgItem : nID=%d not Found.", nID );
 		return pWnd; 
 	}
-	BOOL IsOpenWnd(UINT nId);
-	BOOL IsOpenWnd(CWndBase* pWnd);
-	BOOL IsOpenWnd() { return m_nIdWnd ? TRUE : FALSE; }
+
 	BOOL IsFocusWnd() { return m_pWndFocus == this; }
 	BOOL IsFocusChild() { return m_pParentWnd ? m_pParentWnd->m_pWndFocusChild == this : FALSE; }
 	CPoint GetMousePoint() { return m_ptMouse; } 

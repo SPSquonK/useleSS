@@ -419,7 +419,7 @@ void CWndCredit::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	m_rectWindow = rectWnd;
 	m_rectClient = m_rectWindow;
 	m_rectLayout = m_rectClient;
-	if( IsWndRoot() == FALSE && !IsWndStyle( WBS_NOFRAME ) )
+	if( !IsWndRoot() && !IsWndStyle( WBS_NOFRAME ) )
 	{
 		if( IsWndStyle( WBS_CAPTION ) )
 			m_rectClient.top += 17;

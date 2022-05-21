@@ -320,7 +320,7 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 
 	SetWndRect( rect, FALSE );
 	/*
-	if(IsWndRoot() == FALSE && !IsWndStyle(WBS_CHILD) )
+	if(!IsWndRoot() && !IsWndStyle(WBS_CHILD) )
 	{
 		m_rectClient.top    += 20;
 		m_rectClient.bottom -=  3;
@@ -1834,7 +1834,7 @@ void CWndBase::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	m_rectWindow = rectWnd;
 	m_rectClient = m_rectWindow;
 	m_rectLayout = m_rectClient;
-	if( IsWndRoot() == FALSE && !IsWndStyle( WBS_NOFRAME ) )
+	if( !IsWndRoot() && !IsWndStyle( WBS_NOFRAME ) )
 	{
 		if( IsWndStyle( WBS_CAPTION ) )
 			m_rectClient.top += 18;
@@ -2011,20 +2011,6 @@ BOOL CWndBase::IsPickupSpace(CPoint ptWindow)
 	}
 	return FALSE;
 }
-BOOL CWndBase::IsOnWndBase(CPoint pt)
-{
-	for(int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder[i];
-		if(pWnd->IsVisible() && pWnd != m_pWndRoot)
-		{
-			CRect rect = pWnd->GetScreenRect();
-			if(rect.PtInRect(pt))
-				return TRUE;
-		}
-	}
-	return FALSE;
-}
 CWndBase* CWndBase::GetWndBase(UINT idWnd) 
 { 
 	for(int i = 0; i < m_wndOrder.GetSize(); i++)
@@ -2095,26 +2081,6 @@ CWndBase* CWndBase::GetFrameWnd()
 		pWndCur = pWndCur->GetParentWnd();
 	}
 	return pWndCur;
-}
-BOOL CWndBase::IsOpenWnd(UINT nId) 
-{ 
-	for(int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder.GetAt(i);
-		if(nId == pWnd->GetWndId())
-			return TRUE;
-	}
-	return FALSE;
-}
-BOOL CWndBase::IsOpenWnd(CWndBase* pWndBase) 
-{ 
-	for(int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder.GetAt(i);
-		if(pWndBase == pWnd)
-			return TRUE;
-	}
-	return FALSE;
 }
 BOOL CWndBase::IsParentWnd(CWndBase* pParentWnd) 
 { 
