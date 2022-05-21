@@ -545,6 +545,13 @@ public:
 	void PutDefinedString( DWORD dwText, ... );
 	void PutString( LPCTSTR lpszString, CObj* pObj = NULL, DWORD dwColor = 0xffffffff, DWORD dwChatStyle = CHATSTY_GAME, DWORD dwPStyle = 0x00000001 );
 	void PutString(DWORD textId);
+	template<typename ... Ts>
+	void PutString(DWORD textId, const Ts & ... ts) requires (sizeof...(Ts) > 0) {
+		const char * textBase = prj.GetText(textId);
+		CString text;
+		text.Format(textBase, ts...);
+		PutString(text.GetString(), nullptr, prj.GetTextColor(textId));
+	}
 	void ParsingChat( CString string );
 	void WordChange( CString& rString );
 

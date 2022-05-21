@@ -7605,65 +7605,25 @@ void CDPClient::OnOneFriendState( CAr & ar )
 		pWndMessengerEx->UpdateFriendList();
 }
 
-void CDPClient::OnBlock( CAr & ar )
-{
-	BYTE nGu;
-	char szName[MAX_NAME] = {0,};
-	ar >> nGu;
-	ar.ReadString( szName, MAX_NAME );
-	
+void CDPClient::OnBlock(CAr & ar) {
+	const auto [nGu, szName] = ar.Extract<BYTE, char[MAX_NAME]>();
+
 	CString szMessage;
-	if( nGu == 1 )
-	{
-		CWndMessage* pWndMessage =	g_WndMng.GetMessage( szName );
-		if( pWndMessage ) 
-		{
+	if (nGu == 1) {
+		if (CWndMessage * pWndMessage = g_WndMng.GetMessage(szName)) {
 			pWndMessage->Destroy();
 		}
-		szMessage.Format( prj.GetText(TID_GAME_MSGCHATDENY ), szName );
-		g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_MSGCHATDENY ));
 	}
-	else
-	if( nGu == 2 )
-	{
-		szMessage.Format( prj.GetText(TID_GAME_MSGDENY), szName );
-		g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_MSGDENY));
-	}
-	else
-	if( nGu == 3 )
-	{
-		szMessage.Format( prj.GetText(TID_GAME_TRADEDENY), szName );
-		g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_TRADEDENY));
-	}
-	else
-	if( nGu == 4 )
-	{
-		szMessage.Format( prj.GetText(TID_GAME_REPAIR_NOTTRADE), szName );
-		g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_TRADEDENY));
-	}
-	else
-	if( nGu == 5 )
-	{
-		// 이미 거래 신청
-		g_WndMng.PutString( prj.GetText( TID_GAME_YETTRADE ), NULL, prj.GetTextColor( TID_GAME_YETTRADE ) );		
-	}
-	else
-	if( nGu == 6 )
-	{
-		// 이미 친구 참가 신청
-		g_WndMng.PutString( prj.GetText( TID_GAME_YETFRIEND ), NULL, prj.GetTextColor( TID_GAME_YETFRIEND ) );		
-	}
-	else
-	if( nGu == 7 )
-	{
-		// 이미 극단 참가 신청
-		g_WndMng.PutString( prj.GetText( TID_GAME_YETPARTY ), NULL, prj.GetTextColor( TID_GAME_YETPARTY ) );		
-	}
-	else
-	if( nGu == 8 )
-	{
-		// 길드창고 이용중
-		g_WndMng.PutString( prj.GetText( TID_GAME_TRADELIMITPC ), NULL, prj.GetTextColor( TID_GAME_TRADELIMITPC ) );		
+
+	switch (nGu) {
+		case 1: g_WndMng.PutString(TID_GAME_MSGCHATDENY, szName);     break;
+		case 2: g_WndMng.PutString(TID_GAME_MSGDENY, szName);         break;
+		case 3: g_WndMng.PutString(TID_GAME_TRADEDENY, szName);       break;
+		case 4: g_WndMng.PutString(TID_GAME_REPAIR_NOTTRADE, szName); break;
+		case 5: g_WndMng.PutString(TID_GAME_YETTRADE);                break;
+		case 6: g_WndMng.PutString(TID_GAME_YETFRIEND);               break;
+		case 7: g_WndMng.PutString(TID_GAME_YETPARTY);                break;
+		case 8: g_WndMng.PutString(TID_GAME_TRADELIMITPC);            break;
 	}
 }
 

@@ -213,9 +213,8 @@ static void FreeTileTexture();
 
 	[[nodiscard]] int GetWndId() const { return m_nIdWnd; }
 
-	CWndBase* GetWndBase( UINT idWnd );
-	CWndBase* GetWndBase();
-	CWndBase* FindWnd(UINT idWnd) { return GetWndBase( idWnd ); }
+	static CWndBase* GetWndBase( UINT idWnd );
+	static CWndBase* GetWndBase();
 	CWndBase* GetChildWnd( UINT nID );
 	CWndBase* GetDlgItem( UINT nID ) 
 	{ 
