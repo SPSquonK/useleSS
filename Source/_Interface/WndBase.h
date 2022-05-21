@@ -76,7 +76,7 @@ static CWndBase* m_pWndCapture;
 	//void RemoveWnd(CWndBase* pWnd);
 	void DestroyAllWnd(CWndBase* pWndRoot); // 모든 윈도를 강제 삭제 ; 종료할때 호출 
 	void SetChildFocus( CWndBase* pWndBase, POINT point );
-	static CWndBase* GetChildFocus( CWndBase* pWndBase, POINT point );
+	[[nodiscard]] CWndBase * GetChildFocus(POINT point);
 //protected:
 public:
 static CResManager m_resMng;
@@ -181,7 +181,7 @@ static void FreeTileTexture();
 	void MovePointCenter(CPoint pt); // 윈도를 pt의 중앙으로 옮긴다.
 	void Move( CPoint pt ); // 왼도의 left,top을 pt로 
 	void Move( int x, int y ) { Move( CPoint( x, y ) ); } // 왼도의 left,top을 pt로 
-	BOOL IsVisible() { return m_bVisible; } // 윈도가 보이는 상태인가.
+	[[nodiscard]] BOOL IsVisible() const { return m_bVisible; } // 윈도가 보이는 상태인가.
 	void SetVisible(BOOL bVisible) { m_bVisible = ( bVisible != FALSE ); } // 윈도를 보이거나 감춘다.
 	void SetCapture();
 	void ReleaseCapture();
@@ -207,7 +207,7 @@ static void FreeTileTexture();
 	CWndBase* GetFocusWnd() { return m_pWndFocus; }
 	void GetLogFont(C2DRender* p2DRender,LOGFONT* pLogFont);
 	int  GetFontHeight();
-	BOOL IsWndStyle(DWORD dwStyle) { return (m_dwStyle & dwStyle) ? TRUE : FALSE; }
+	[[nodiscard]] BOOL IsWndStyle(DWORD dwStyle) const { return (m_dwStyle & dwStyle) ? TRUE : FALSE; }
 	int  GetWndStyle() { return m_dwStyle; }
 	void SetWndStyle(DWORD dwStyle) { m_dwStyle = dwStyle; }
 	int  GetWndId() { return m_nIdWnd; }

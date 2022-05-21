@@ -851,26 +851,22 @@ void CWndBase::SetChildFocus( CWndBase* pWndBase, POINT point )
 		}
 	}
 }
-CWndBase* CWndBase::GetChildFocus( CWndBase* pWndBase, POINT point )
+CWndBase* CWndBase::GetChildFocus( POINT point )
 {
-	CWndBase* pWndSelect = pWndBase;
-	CWndBase* pWndTemp = NULL;
-	for( int i = 0; i < pWndBase->m_wndArray.GetSize(); i++ )
+	CWndBase* pWndSelect = this;
+	CWndBase* pWndTemp = nullptr;
+	for( int i = 0; i < m_wndArray.GetSize(); i++ )
 	{
-		CWndBase* pWndCur = (CWndBase*)pWndBase->m_wndArray.GetAt( i );
+		CWndBase* pWndCur = (CWndBase*)m_wndArray.GetAt( i );
 		if( pWndCur->IsWndStyle( WBS_CHILD ) && pWndCur->IsVisible() && pWndCur->IsWindowEnabled() )
 		{
 			CPoint ptWindow = point;
 			pWndCur->ScreenToWindow( &ptWindow );
-			//if( pWndCur->IsWndStyle( WBS_CHILD ) )
-			//{
-				if( pWndCur->IsPickupSpace( ptWindow ) )
-					pWndSelect = pWndCur;
-			//}
-			//else
-			//if( pWndCur->GetWindowRect().PtInRect( ptWindow ) )
-			//	pWndSelect = pWndCur;
-			pWndTemp = GetChildFocus( pWndCur, point );
+
+			if( pWndCur->IsPickupSpace( ptWindow ) )
+				pWndSelect = pWndCur;
+
+			pWndTemp = pWndCur->GetChildFocus( point );
 			if( pWndTemp != pWndCur )
 				pWndSelect = pWndTemp;
 		}
@@ -933,7 +929,7 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 				if( m_pWndCapture == NULL )
 				{
 					// 차일드, 차일드프레임 모두 포함 
-					CWndBase* pWndChild = GetChildFocus( pWndBase, ptClient );
+					CWndBase* pWndChild = pWndBase->GetChildFocus( ptClient );
 					if( pWndBase != pWndChild )
 					{
 						pWndBase = pWndChild;
@@ -958,7 +954,7 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 		// 지금 포커스가 BWS_MODAL 스타일이라면 포커스와 순서를 변경하지 않는다.
 		if( m_pWndFocus && m_pWndFocus->m_dwStyle & WBS_MODAL )
 		{
-			GetChildFocus( m_pWndFocus, ptClient )->SetFocus();
+			m_pWndFocus->GetChildFocus( ptClient )->SetFocus();
 			break;
 		}
 		if( pWndOnMouseMain )
@@ -977,7 +973,7 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 				if( rect.PtInRect( ptClient ) ) 
 				{
 					pWnd->SetFocus(); // 현재 윈도에 포커스 주기 
-					CWndBase* pWndChild = GetChildFocus( pWnd, ptClient );
+					CWndBase* pWndChild = pWnd->GetChildFocus( ptClient );
 					if( pWnd != pWndChild )
 						pWndChild->SetFocus(); // 현재 윈도의 차이들중에 차일드 포커스 주기 
 					break;
@@ -1013,7 +1009,7 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 				{
 					if( pWndBase->GetScreenRect().PtInRect( ptClient ) ) 
 					{
-						CWndBase* pWndFocus = GetChildFocus( pWndBase, ptClient );
+						CWndBase* pWndFocus = pWndBase->GetChildFocus( ptClient );
 						pWndFocus->OnDropIcon( &m_GlobalShortcut, pWndFocus->GetMousePoint() );
 						// 지금 포커스가 매뉴라면 매뉴의 페어런트에 포커스를 옮긴다.(결과 매뉴를 닫게 된다.)
 						if( m_pWndFocus->IsWndStyle( WBS_POPUP ) ) 
