@@ -199,9 +199,6 @@ static void FreeTileTexture();
 	CRect GetWndRect() { return m_rectWindow; }
 	BOOL IsWndRoot() { return this == m_pWndRoot; }
 	BOOL IsOnWndBase(CPoint pt);  // 포인트가 윈도 위에 있는가?
-#ifndef __VS2003
-	BOOL IsOpenAnywnd() { return m_wndOrder.GetSize() ? TRUE : FALSE; }
-#endif
 	[[nodiscard]] static bool IsOpenModalWnd() { return m_pWndFocus && m_pWndFocus->IsWndStyle(WBS_MODAL); }
 	CWndBase* GetFocusChild() { return m_pWndFocusChild; }
 	[[nodiscard]] static CWndBase * GetFocusWnd() { return m_pWndFocus; }
