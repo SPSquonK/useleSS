@@ -22,7 +22,7 @@ CWndBase* CWndBase::m_pCurFocus = NULL;
 CPtrArray CWndBase::m_wndOrder;
 #endif
 
-CPtrArray CWndBase::m_wndRemove;
+std::vector<CWndBase *> CWndBase::m_wndRemove;
 CPtrArray CWndBase::m_postMessage;
 SHORTCUT  CWndBase::m_GlobalShortcut;
 //CWndBase* CWndBase::m_pWndWorld = NULL;
@@ -160,17 +160,25 @@ CWndBase::CWndBase()
 	m_bTile = FALSE;
 	m_bNoCloseButton = FALSE;
 }
-CWndBase::~CWndBase()
-{
-	if(m_GlobalShortcut.m_pFromWnd == this) m_GlobalShortcut.m_pFromWnd = NULL;
-	if(m_pParentWnd && m_pParentWnd->m_pWndFocusChild == this)
-		m_pParentWnd->m_pWndFocusChild = NULL;
-	if(m_pParentWnd)
-		m_pParentWnd->RemoveWnd(this);
-	for(int i = 0; i < m_wndRemove.GetSize(); i++)
-		if(m_wndRemove.GetAt(i) == this)
-			m_wndRemove.SetAt(i,NULL);
+CWndBase::~CWndBase() {
+	if (m_GlobalShortcut.m_pFromWnd == this) {
+		m_GlobalShortcut.m_pFromWnd = nullptr;
+	}
 
+	// Tell parent we do not exist anymore
+	if (m_pParentWnd) {
+		if (m_pParentWnd->m_pWndFocusChild == this) {
+			m_pParentWnd->m_pWndFocusChild = nullptr;
+		}
+
+		m_pParentWnd->RemoveWnd(this);
+	}
+
+	// Actually removed
+	const auto itRemove = std::ranges::find(m_wndRemove, this);
+	if (itRemove != m_wndRemove.end()) *itRemove = nullptr;
+
+	// Root kills everybody with itself
 	if(IsWndRoot())
 	{
 		// Destroy 설정된 것 모두 제거 
@@ -178,6 +186,8 @@ CWndBase::~CWndBase()
 		// 나머지 파괴 안된 윈도 삭제 
 		DestroyAllWnd(this);
 	}
+
+	// DeleteDeviceObjects
 	m_pParentWnd = NULL;
 	DeleteDeviceObjects();
 }
@@ -1698,32 +1708,28 @@ void CWndBase::KillFocus( CWndBase* pNewFrame, CWndBase* pNewChild )
 	}
 }
 */
-void CWndBase::RemoveDestroyWnd()
-{
-	for(int i = 0; i < m_wndRemove.GetSize(); i++)
-	{
-		CWndBase* pWndBase = (CWndBase*)m_wndRemove.GetAt(i);
+void CWndBase::RemoveDestroyWnd() {
+	// Precondition: The caller IsWndRoot()
+	// TODO: Is m_wndRemove modified during the call of this function?
 
-		if(pWndBase)
-		{
-			pWndBase->OnDestroy();
-			//pWndBase->m_nIdWnd = 0;
+	for (int i = 0; i < static_cast<int>(m_wndRemove.size()); i++) {
+		CWndBase * pWndBase = m_wndRemove[i];
+		if (!pWndBase) continue;
+
+		pWndBase->OnDestroy();
 			
-			if( pWndBase->m_pParentWnd )
-				pWndBase->m_pParentWnd->RemoveWnd(pWndBase);
+		if (pWndBase->m_pParentWnd) {
+			pWndBase->m_pParentWnd->RemoveWnd(pWndBase);
+		}
 
-			if(pWndBase->IsAutoFree())
-			{
-				safe_delete( pWndBase );
-			}
-			else
-			{
-				if( pWndBase->m_pParentWnd )
-					pWndBase->m_pParentWnd->OnDestroyChildWnd(pWndBase);
-			}
+		if(pWndBase->IsAutoFree()) {
+			safe_delete(pWndBase);
+		} else if (pWndBase->m_pParentWnd) {
+			pWndBase->m_pParentWnd->OnDestroyChildWnd(pWndBase);
 		}
 	}
-	m_wndRemove.RemoveAll();
+
+	m_wndRemove.clear();
 }
 void CWndBase::DestroyAllWnd(CWndBase* pWndRoot)
 {
@@ -1741,22 +1747,18 @@ void CWndBase::DestroyAllWnd(CWndBase* pWndRoot)
 	}
 	m_wndArray.RemoveAll();
 }
-BOOL CWndBase::IsDestroy()
-{
-	for(int i = 0; i < m_wndRemove.GetSize(); i++)
-		if(this == m_wndRemove[i])
-			return TRUE;
-	return FALSE;
+BOOL CWndBase::IsDestroy() const {
+	return std::ranges::find(m_wndRemove, this) != m_wndRemove.end();
 }
 
 void CWndBase::Destroy(BOOL bAutoFree)
 {
 	if(bAutoFree == TRUE)
 		m_bAutoFree = true;
-	for(int i = 0; i < m_wndRemove.GetSize(); i++)
-		if(this == m_wndRemove[i])
-			return;
-	m_wndRemove.Add( this );
+	
+	if (IsDestroy()) return;
+	m_wndRemove.push_back(this);
+
 	EnableWindow( FALSE );
 	SetVisible( FALSE );
 }

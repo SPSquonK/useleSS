@@ -3047,9 +3047,9 @@ BOOL CWndMgr::Process()
 					}
 				}
 			}
-			if(m_wndRemove.GetSize() > 0)
-			{
-				CWndBase* pWndBase = (CWndBase*)m_wndRemove.GetAt(0);
+
+			if (!m_wndRemove.empty()) {
+				CWndBase * pWndBase = m_wndRemove.front();
 
 				if(pWndBase && pWndBase->GetWndApplet()->dwWndId == APP_SECRETROOM_GUILDMEMBER)
 					pWndBase->Destroy(TRUE);

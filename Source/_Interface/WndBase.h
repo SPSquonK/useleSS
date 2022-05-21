@@ -131,7 +131,7 @@ static CWndBase*      m_pCurFocus       ; // 다이얼로그, 차일드 중 최종 현재 포�
 static CPtrArray      m_wndOrder        ;
 #endif
 
-static CPtrArray      m_wndRemove       ;
+static std::vector<CWndBase *> m_wndRemove;
 static CPtrArray      m_postMessage     ;
 //static CTexturePack   m_texturePack     ;
 static CTexture*      m_pTexForbid;
@@ -175,7 +175,7 @@ static void FreeTileTexture();
 	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
 	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpKey, CTexture* m_pTexture );
 
-	void RemoveDestroyWnd();
+	static void RemoveDestroyWnd();
 	void MoveParentCenter(); // 윈도를 부모 윈도의 중앙으로 옮긴다.
 	void MoveRectCenter(CRect rect); // 윈도를 rect의 중앙으로 옮긴다.
 	void MovePointCenter(CPoint pt); // 윈도를 pt의 중앙으로 옮긴다.
@@ -270,7 +270,7 @@ static void ClipStrArray(C2DRender* p2DRender,CRect rect,int nLineSpace,
 
 virtual void AlighWindow( CRect rcOld, CRect rcNew );
  
-	BOOL IsDestroy();
+	BOOL IsDestroy() const;
 	void Destroy(BOOL bAutoFree = FALSE); // 윈도를 파괴한다.
 	void PaintChild(C2DRender* p2DRender);
 	void Paint(C2DRender* p2DRender, BOOL bPaintChild = TRUE );
