@@ -1,9 +1,4 @@
-#if !defined(AFX_MOVER_H__4B7B21D7_A2D3_4115_946C_68DC9045A845__INCLUDED_)
-#define AFX_MOVER_H__4B7B21D7_A2D3_4115_946C_68DC9045A845__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "pocket.h"
 
@@ -43,18 +38,18 @@ typedef	MemPooler<CMover>	CMoverPool;
 
 /// SetMotion() option
 #define	MOP_NONE				0x00000000
-#define	MOP_SWDFORCE			0x00000001		/// 검광 생성하게
-#define	MOP_FIXED				0x00000002		/// dwMotion값을 그대로 로딩하게 ( +100 안하게.. )
-#define	MOP_NO_TRANS			0x00000004		/// 모션 트랜지션 하지않음.
-#define	MOP_HITSLOW				0x00000008		/// 타점이후부터 슬로우.
+#define	MOP_SWDFORCE			0x00000001		/// Sword trailing(?)
+#define	MOP_FIXED				0x00000002		/// Load the dwMotion value as it is (not +100..)
+#define	MOP_NO_TRANS			0x00000004		/// No motion transition.
+#define	MOP_HITSLOW				0x00000008		/// Slow after RBI.
 
-#define	REQ_USESKILL			0x00000001		/// 응답요청 플래그 - 스킬사용 응답
-#define	REQ_MOTION				0x00000002		/// 응답요청 플래그 - 모션 응답
+#define	REQ_USESKILL			0x00000001		/// Response request flag - skill use response
+#define	REQ_MOTION				0x00000002		/// Response Request Flag - Motion Response
 
 #define	OBJTYPE_PLAYER			0x00000001		
 #define	OBJTYPE_MONSTER			0x00000002		
 #define OBJTYPE_CTRL			0x00000004		
-#define	OBJTYPE_FLYING			0x00010000		/// m_dwTypeFlag에서 사용.
+#define	OBJTYPE_FLYING			0x00010000		/// Used by m_dwTypeFlag.
 
 #define	CRITICAL_PROBABILITY	3
 #define	CRITICAL_BERSERK_HP		30
@@ -115,55 +110,55 @@ const DWORD NEXT_TICK_RECOVERYSTAND = SEC(3);
 
 
 
-/// Replace함수에서 사용하는 타입 	
+/// Type used in Replace function
 enum REPLACE_TYPE
 {
-	REPLACE_NORMAL,				/// 비행체 타고 인벤이 차면 막음 
-	REPLACE_FORCE,				/// 무조건 이동 
+	REPLACE_NORMAL,				/// Block when the vehicle is full and the inventory is full
+	REPLACE_FORCE,				/// Move unconditionally
 };
 
-/// 스킬 사용 타입
+/// skill use type
 enum SKILLUSETYPE
 {
-	SUT_NORMAL,			/// 단축키에 넣고 사용하는 일반적인 방식.
-	SUT_QUEUESTART,		/// 스킬큐로 처음 시작하는 스킬이다.(캐스팅을 몰아서함)
-	SUT_QUEUEING,		/// 스킬큐의 연속발사중 스킬이다.(캐스팅동작없이 바로 발사)
+	SUT_NORMAL,			/// The usual way to put it in a shortcut and use it.
+	SUT_QUEUESTART,		/// This is a skill that starts with a skill cue.
+	SUT_QUEUEING,		/// It is a skill during continuous firing of skill cue. (Fire directly without casting action)
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // PVP 관련 
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Player vs Player의 모드 
+/// Player vs Player mode
 enum PVP_MODE
 {
-	PVP_MODE_NONE,				/// PVP불가 	
-	PVP_MODE_GUILDWAR,			/// 길드워 
-	PVP_MODE_PK,				/// PK
-	PVP_MODE_DUEL				/// 듀얼 
+	PVP_MODE_NONE,
+	PVP_MODE_GUILDWAR,
+	PVP_MODE_PK,
+	PVP_MODE_DUEL
 };
 
 
-/// 거래 확인 타입 
+/// Transaction Confirmation Type
 enum TRADE_CONFIRM_TYPE
 {
-	TRADE_CONFIRM_ERROR,		/// 인벤에 여유가 없거나, GOLD가 OVERFLOW나는 경우 
-	TRADE_CONFIRM_OK,			/// 상대도 ok(최종 거래)
+	TRADE_CONFIRM_ERROR,		/// If there is no room in the inventory, or if GOLD is OVERFLOW
+	TRADE_CONFIRM_OK,			/// Opponent also ok (final transaction)
 };
 
-/// 거래상태 
+/// Transaction status
 enum TRADE_STATE
 {
-	TRADE_STEP_ITEM,			/// 아이템 단계 - 아이템을 올리고 내리고  
-	TRADE_STEP_OK,			    /// OK누른 단계 - ok버튼을 눌렸다.        
-	TRADE_STEP_CONFIRM,			/// CONFIRM단계 - 최종확인단계            
+	TRADE_STEP_ITEM,			/// Item proposal stage
+	TRADE_STEP_OK,			    /// Step by pressing OK - The ok button was pressed.
+	TRADE_STEP_CONFIRM,			/// CONFIRM stage - final confirmation stage
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // struct
 ////////////////////////////////////////////////////////////////////////////////
 
-/// 장착 정보 구조체 
+/// Equipment information structure
 typedef	struct	_EQUIP_INFO
 {
 	DWORD	dwId;
@@ -171,11 +166,10 @@ typedef	struct	_EQUIP_INFO
 	BYTE	byFlag;
 }	EQUIP_INFO,	*PEQUIP_INFO;
 
-/// 장착 추가 정보 구조체 
+/// Mounting Additional Information Structure
 typedef	struct	_EQUIP_INFO_ADD
 {
 	__int64		iRandomOptItemId;
-//	PIERCINGINFO	piercingInfo;
 	CPiercing	piercing;
 
 	BYTE			bItemResist;
@@ -193,20 +187,10 @@ typedef	struct	_EQUIP_INFO_ADD
 		pTexture	= NULL;
 #endif	// __CLIENT
 	}
-	_EQUIP_INFO_ADD& operator=( const _EQUIP_INFO_ADD& e )
-	{
-		iRandomOptItemId	= e.iRandomOptItemId;
-		piercing	= e.piercing;
-		bItemResist		= e.bItemResist;
-		nResistAbilityOption	= e.nResistAbilityOption;
-#ifdef __CLIENT
-		pTexture	= e.pTexture;
-#endif	// __CLIENT
-		return *this;
-	}
+	
 }	EQUIP_INFO_ADD, *PEQUIP_INFO_ADD;
 
-/// 플레이어 외양 구조체 
+/// Player appearance struct
 typedef struct tagPLAYER
 {
 	EQUIP_INFO	m_aEquipInfo[MAX_HUMAN_PARTS];
@@ -221,14 +205,13 @@ typedef struct tagPLAYER
 	u_short		m_uSlot;
 } PLAYER,* LPPLAYER;
 
-/// 퀘스트 구조체 
+/// Quest structure
 typedef struct tagQuest
 {
 	BYTE		m_nState;
 	WORD		m_wTime;
 	WORD		m_wId;
-//	BYTE		m_nKillNPCNum[ 2 ];	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
-	WORD		m_nKillNPCNum[ 2 ];	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
+	WORD		m_nKillNPCNum[ 2 ];
 	BYTE		m_bPatrol   : 1;
 	BYTE		m_bDialog   : 1;
 	BYTE		m_bReserve3 : 1;
@@ -242,7 +225,7 @@ typedef struct tagQuest
 
 } QUEST,* LPQUEST;
 
-/// 동기화에서 사용하는 구조체 
+/// Structs used in synchronization
 typedef	struct tagCORR_ACTION
 {
 	float		f;
@@ -265,7 +248,7 @@ typedef	struct tagCORR_ACTION
 
 using MoverEnnemies = std::map<OBJID, unsigned int>;
 
-/// 공격의 타입 
+/// Type of attack
 enum HITTYPE
 {
 	HITTYPE_FAIL	= 0,
@@ -280,31 +263,31 @@ enum HITTYPE
 #endif	// __JEFF_11_4
 };
 
-/// 리저렉션 데이타 구조체 
+/// Resurrection information
 struct RESURRECTION_DATA {
 	u_long               dwPlayerID;
 	const ItemProp *     pSkillProp;
 	const AddSkillProp * pAddSkillProp;
 };
 
-/// 거래후 결과 구조체 
+/// Post-transaction result structure
 struct VENDOR_SELL_RESULT
 {
-	CItemElem	item;			/// 팔린 아이템 
-	int			nRemain;		/// 팔리고 남은 갯수 
-	int			nErrorCode;		/// 에러코드 
+	CItemElem	item;			/// Sold item
+	int			nRemain;		/// Number of sold
+	int			nErrorCode;		/// Error code
 };
 
-/// 개인상점(Vendor)과 거래(Trade) 클래스 
+/// Vendor and Trade class
 class CVTInfo
 {
 private:
-	DWORD					m_dwTradeGold;					/// 거래중인 돈 
+	DWORD					m_dwTradeGold;					/// Money in trade
 	std::array<sqktd::maybe_owned_ptr<CItemElem>, MAX_VENDITEM> m_items_VT = {}; /// vendor and trader share pointer array
-	OBJID					m_objId;						/// 상대방 id
-	CMover*					m_pOwner;						/// 클래스 소유자 
-	TRADE_STATE				m_state;						/// 거래상태 
-	std::string					m_strTitle;						/// 개인상점의 타이틀 
+	OBJID					m_objId;						/// Counterparty id
+	CMover*					m_pOwner;						/// Class owner
+	TRADE_STATE				m_state;						/// transaction status
+	std::string					m_strTitle;						/// Personal store title
 
 public:
 	OBJID					GetOtherID() { return m_objId; }
@@ -329,7 +312,7 @@ public:
 	TRADE_STATE				TradeGetState();
 	void					TradeSetState( TRADE_STATE state );
 
-	void					VendorClose( BOOL bClearTitle = TRUE );	// 개인 상점 닫기
+	void					VendorClose( BOOL bClearTitle = TRUE );	// Close Private Store
 	void					VendorItemNum( BYTE i, short nNum );
 	void					VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost );
 	BOOL					VendorClearItem( BYTE i );
@@ -337,8 +320,6 @@ public:
 	[[nodiscard]] BOOL VendorIsVendor() const noexcept;
 	[[nodiscard]] BOOL IsTrading(const CItemElem * pItemElem) const noexcept;
 
-
-	// 데이타 카피를 해서 보관?
 	void VendorCopyItems(const std::array<CItemElem *, MAX_VENDITEM> & values) {
 		for (size_t i = 0; i != MAX_VENDITEM; ++i) {
 			m_items_VT[i] = values[i];
@@ -1591,5 +1572,3 @@ extern int __IsEndQuestCondition( CMover* pMover, int nQuestId );
 extern int __IsBeginQuestCondition( CMover* pMover, int nQuestId );
 extern int __IsNextLevelQuest( CMover* pMover, int nQuestId );
 extern	BOOL AttackBySFX( CMover* pAttacker, SFXHIT_INFO & info );
-
-#endif // !defined(AFX_MOVER_H__4B7B21D7_A2D3_4115_946C_68DC9045A845__INCLUDED_)
