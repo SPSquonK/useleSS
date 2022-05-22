@@ -270,14 +270,6 @@ struct RESURRECTION_DATA {
 	const AddSkillProp * pAddSkillProp;
 };
 
-/// Post-transaction result structure
-struct VENDOR_SELL_RESULT
-{
-	CItemElem	item;			/// Sold item
-	int			nRemain;		/// Number of sold
-	int			nErrorCode;		/// Error code
-};
-
 /// Vendor and Trade class
 class CVTInfo
 {
@@ -316,7 +308,19 @@ public:
 	void					VendorItemNum( BYTE i, short nNum );
 	void					VendorSetItem( BYTE nId, BYTE i, short nNum, int nCost );
 	BOOL					VendorClearItem( BYTE i );
-	BOOL					VendorSellItem( CMover* pBuyer, BYTE nItem, DWORD dwItemId, short nNum, VENDOR_SELL_RESULT& result );
+
+	/// Post-transaction result structure
+	struct VENDOR_SELL_RESULT {
+		bool isOk;
+		CItemElem	item;			/// Sold item
+		int			nRemain = 0;		/// Number of sold
+		int			nErrorCode = 0;	/// Error code
+
+		explicit(false) VENDOR_SELL_RESULT(int errorCode) : isOk(false), nErrorCode(errorCode) {}
+		VENDOR_SELL_RESULT(CItemElem & itemElem, int nCost, int remain);
+	};
+	VENDOR_SELL_RESULT VendorSellItem( CMover* pBuyer, BYTE nItem, DWORD dwItemId, short nNum );
+
 	[[nodiscard]] BOOL VendorIsVendor() const noexcept;
 	[[nodiscard]] BOOL IsTrading(const CItemElem * pItemElem) const noexcept;
 

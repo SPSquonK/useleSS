@@ -573,17 +573,12 @@ BOOL CVTInfo::IsTrading(const CItemElem * const pItemElem) const noexcept {
 
 //CDPSrvr::OnBuyPVendorItem
 #ifdef __WORLDSERVER
-BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum, VENDOR_SELL_RESULT& result )
-{
-	result.nRemain    = 0;
-	result.nErrorCode = 0;
-
-	if( IsVendorOpen() == FALSE )
-		return FALSE;
+CVTInfo::VENDOR_SELL_RESULT CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum ) {
+	if (!IsVendorOpen()) return 0;
 
 	CItemElem * pItemElem = m_items_VT[i];
 	if( !IsUsingItem(pItemElem) || pItemElem->m_dwItemId != dwItemId )
-		return FALSE;
+		return 0;
 
 	if( nNum < 1 )
 		nNum = 1;
@@ -591,26 +586,20 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 		nNum = (short)pItemElem->GetExtra();
 
 //	06.10.26
-	if(pItemElem->m_nCost > 0 && (float)pBuyer->GetGold() < (float)nNum * (float)pItemElem->m_nCost )
-	{
-		result.nErrorCode = TID_GAME_LACKMONEY;
-		return FALSE;
+	if (pItemElem->m_nCost > 0 && (float)pBuyer->GetGold() < (float)nNum * (float)pItemElem->m_nCost) {
+		return TID_GAME_LACKMONEY;
 	}
 	
-	if( nNum == 0 )
-	{
-		result.nErrorCode = TID_GAME_LACKMONEY;
-		return FALSE;
+	if (nNum == 0) {
+		return TID_GAME_LACKMONEY;
 	}
 
 	CItemElem itemElem;
 	itemElem	= *pItemElem;
 	itemElem.m_nItemNum	 = nNum;
 
-	if( pBuyer->CreateItem( &itemElem ) == FALSE )
-	{
-		result.nErrorCode = TID_GAME_LACKSPACE;
-		return FALSE;
+	if (pBuyer->CreateItem(&itemElem) == FALSE) {
+		return TID_GAME_LACKSPACE;
 	}
 
 	// CItemElem의 복사 연산자에 m_nCost는 제외되어 있다.
@@ -628,10 +617,14 @@ BOOL CVTInfo::VendorSellItem( CMover* pBuyer, BYTE i, DWORD dwItemId, short nNum
 #endif	// __WORLDSERVER
 
 	m_pOwner->RemoveItem( (BYTE)pItemElem->m_dwObjId, nNum );
+	
+	return VENDOR_SELL_RESULT(itemElem, nCost, nRemain);
+}
 
-	result.item = itemElem;
-	result.item.m_nCost	= nCost;
-	result.nRemain = nRemain;
-	return TRUE;
+CVTInfo::VENDOR_SELL_RESULT::VENDOR_SELL_RESULT(CItemElem & itemElem, int nCost, int remain)
+	: isOk(true) {
+	item.operator=(itemElem); // This is not constructed from itemElem
+	item.m_nCost = nCost;
+	nRemain = nRemain;
 }
 #endif // __WORLDSERVER

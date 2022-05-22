@@ -7665,55 +7665,43 @@ BOOL CDPSrvr::ClosePVendor( CUser* pUser, OBJID objidVendor )
 	return TRUE;
 }
 
-void CDPSrvr::OnBuyPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	OBJID objidVendor;
-	BYTE nItem;
-	DWORD dwItemId;
-	short nNum;
-
-	ar >> objidVendor >> nItem >> dwItemId >> nNum;
+void CDPSrvr::OnBuyPVendorItem(CAr & ar, CUser & pUser) {
+	const auto [objidVendor, nItem, dwItemId, nNum] = ar.Extract<OBJID, BYTE, DWORD, short>();
+	
 	if( nItem >= MAX_VENDITEM || nNum <= 0 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	CUser* pPVendor	= prj.GetUser( objidVendor );
-	if( IsValidObj( pPVendor ) )
-	{
-		VENDOR_SELL_RESULT result;
-		BOOL bOK = pPVendor->m_vtInfo.VendorSellItem( pUser, nItem, dwItemId, nNum, result );
-		if( bOK )
-		{
+	if (!IsValidObj(pPVendor)) return;
 
-			LogItemInfo info;
-
-			info.Action = "Z";
-			info.SendName = pUser->GetName();
-			info.RecvName = pPVendor->GetName();
-			info.WorldId = pUser->GetWorld()->GetID();
-			info.Gold = pUser->GetGold() + ( result.item.m_nCost * nNum );
-			info.Gold2 = pUser->GetGold();
-			info.Gold_1 = pPVendor->GetGold();
-			OnLogItem( info, &result.item, nNum );
-
-			info.Action = "X";
-			info.SendName = pPVendor->GetName();
-			info.RecvName = pUser->GetName();
-			info.WorldId = pPVendor->GetWorld()->GetID();
-			info.Gold = pPVendor->GetGold() - ( result.item.m_nCost * nNum );
-			info.Gold2 = pPVendor->GetGold();
-			info.Gold_1 = pUser->GetGold();
-			OnLogItem( info, &result.item, nNum );
+	CVTInfo::VENDOR_SELL_RESULT result = pPVendor->m_vtInfo.VendorSellItem( &pUser, nItem, dwItemId, nNum );
+	if (!result.isOk) {
+		if (result.nErrorCode) {
+			pUser.AddDefinedText(result.nErrorCode, "");
 		}
-		else
-		{
-			if( result.nErrorCode )
-				pUser->AddDefinedText( result.nErrorCode, "" );
-		}
+
+		return;
 	}
+
+	LogItemInfo info;
+
+	info.Action = "Z";
+	info.SendName = pUser.GetName();
+	info.RecvName = pPVendor->GetName();
+	info.WorldId = pUser.GetWorld()->GetID();
+	info.Gold = pUser.GetGold() + ( result.item.m_nCost * nNum );
+	info.Gold2 = pUser.GetGold();
+	info.Gold_1 = pPVendor->GetGold();
+	OnLogItem( info, &result.item, nNum );
+
+	info.Action = "X";
+	info.SendName = pPVendor->GetName();
+	info.RecvName = pUser.GetName();
+	info.WorldId = pPVendor->GetWorld()->GetID();
+	info.Gold = pPVendor->GetGold() - ( result.item.m_nCost * nNum );
+	info.Gold2 = pPVendor->GetGold();
+	info.Gold_1 = pUser.GetGold();
+	OnLogItem( info, &result.item, nNum );
 }
 
 void CDPSrvr::OnQueryPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
