@@ -7305,8 +7305,8 @@ void CDPSrvr::OnTradePut( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 			DWORD dwText	= pUser->m_vtInfo.TradeSetItem2( nId, i, nItemNumResult );
 			if( dwText == 0 )
 			{
-				pUser->AddTradePut( pUser->GetId(), i, nItemType, nId, nItemNumResult );
-				( (CUser*)pTrader )->AddTradePut( pUser->GetId(), i, nItemType, nId, nItemNumResult );
+				pUser->AddTradePut_Me( i, nItemType, nId, nItemNumResult );
+				( (CUser*)pTrader )->AddTradePut_Them( pUser->GetId(), i, pItem, nItemNumResult );
 			}
 			else
 			{

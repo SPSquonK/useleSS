@@ -286,7 +286,8 @@ public:
 	void			AddTrade( CUser* pTrader, u_long uidPlayer );
 	void			AddComfirmTrade( OBJID objid );
 	void			AddComfirmTradeCancel( OBJID objid );
-	void			AddTradePut( OBJID objid, BYTE i, BYTE nItemType, BYTE nId, short nItemNum = 1 );
+	void			AddTradePut_Them(OBJID trader, BYTE i, CItemElem * item, short nItemNum);
+	void			AddTradePut_Me(BYTE i, BYTE nItemType, BYTE nId, short nItemNum);
 	void			AddTradePutError();
 	void			AddTradePull( OBJID objid, BYTE i );
 	void			AddTradePutGold( OBJID objid, DWORD dwGold );

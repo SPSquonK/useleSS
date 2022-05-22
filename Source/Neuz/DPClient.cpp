@@ -2244,16 +2244,13 @@ void CDPClient::OnTrade( OBJID objid, CAr & ar )
 	ar >> uidPlayer;
 
 	CMover* pTrader	= prj.GetMover( objid );
-	if( IsValidObj( pTrader ) )
-	{
-		pTrader->m_Inventory.Serialize( ar );
-				
-		g_pPlayer->m_vtInfo.SetOther( pTrader );
-		pTrader->m_vtInfo.SetOther( g_pPlayer );
+	if (!IsValidObj(pTrader)) return;
+
+	g_pPlayer->m_vtInfo.SetOther( pTrader );
+	pTrader->m_vtInfo.SetOther( g_pPlayer );
 		
-		g_WndMng.CreateApplet( APP_INVENTORY );
-		g_WndMng.CreateApplet( APP_TRADE );
-	}
+	g_WndMng.CreateApplet( APP_INVENTORY );
+	g_WndMng.CreateApplet( APP_TRADE );
 }
 
 void CDPClient::OnConfirmTrade( OBJID objid, CAr & ar ) {
@@ -2296,16 +2293,26 @@ void CDPClient::OnConfirmTradeCancel(OBJID objid, CAr & ar) {
 
 void CDPClient::OnTradePut( OBJID objid, CAr & ar )
 {
-	BYTE i, nItemType, nId;
-	short nItemNum;
-	
-	ar >> i >> nItemType >> nId >> nItemNum;
+	// BYTE i, nItemType, nId;
+	// short nItemNum;
+	// ar >> i >> nItemType >> nId >> nItemNum;
 
 	CMover* pOther = g_pPlayer->m_vtInfo.GetOther();
-	if( pOther && pOther->m_vtInfo.GetOther() == g_pPlayer )
-	{
-		CMover* pPlayer		= ( objid == g_pPlayer->GetId() ? g_pPlayer : g_pPlayer->m_vtInfo.GetOther() );
-		pPlayer->m_vtInfo.TradeSetItem( nId, i, nItemNum );
+	if (!pOther) return;
+	if (pOther->m_vtInfo.GetOther() != g_pPlayer) return;
+
+	if (objid == NULL_ID) {
+		const auto [i, _, nId, nItemNum] = ar.Extract<
+			BYTE, BYTE, BYTE, short
+		>();
+
+		g_pPlayer->m_vtInfo.TradeSetItem(nId, i, nItemNum);
+	} else {
+		const auto [i, nItemNum] = ar.Extract<BYTE, short>();
+		CItemElem item;
+		item.Serialize(ar);
+
+		pOther->m_vtInfo.TradeSetItem(item, i, nItemNum);
 	}
 }
 

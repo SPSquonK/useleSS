@@ -664,8 +664,6 @@ void CUser::AddTrade( CUser* pTrader, u_long uidPlayer )
 	m_Snapshot.ar << GETID( pTrader );
 	m_Snapshot.ar << SNAPSHOTTYPE_TRADE;
 	m_Snapshot.ar << uidPlayer;
-
-	pTrader->m_Inventory.Serialize( m_Snapshot.ar );
 }
 
 void CUser::AddComfirmTrade( OBJID objid )
@@ -708,12 +706,22 @@ void CUser::AddCommonSkill( DWORD dwSkill, DWORD dwLevel )
 	m_Snapshot.ar << dwSkill << dwLevel;
 }
 
-void CUser::AddTradePut( OBJID objid, BYTE i , BYTE nItemType, BYTE nId, short nItemNum )
+void CUser::AddTradePut_Them(OBJID trader, BYTE i, CItemElem * item, short nItemNum)
 {
 	if( IsDelete() )	return;
 
 	m_Snapshot.cb++;
-	m_Snapshot.ar << objid;
+	m_Snapshot.ar << trader;
+	m_Snapshot.ar << SNAPSHOTTYPE_TRADEPUT;
+	m_Snapshot.ar << i << nItemNum;
+	item->Serialize(m_Snapshot.ar);
+}
+
+void CUser::AddTradePut_Me(BYTE i, BYTE nItemType, BYTE nId, short nItemNum) {
+	if (IsDelete())	return;
+
+	m_Snapshot.cb++;
+	m_Snapshot.ar << NULL_ID;
 	m_Snapshot.ar << SNAPSHOTTYPE_TRADEPUT;
 	m_Snapshot.ar << i << nItemType << nId << nItemNum;
 }

@@ -51,7 +51,7 @@ BOOL CVTInfo::IsVendorOpen()
 void CVTInfo::Init( CMover* pOwner )
 {
 	m_pOwner = pOwner;
-	m_items_VT.fill(nullptr);
+	std::ranges::generate(m_items_VT, [] { return nullptr; });
 	TradeSetGold( 0 );							// raiders.2006.11.28 
 	TradeClear();
 	m_strTitle = "";
@@ -63,7 +63,7 @@ void CVTInfo::Init( CMover* pOwner )
 void CVTInfo::TradeClear()
 {
 	SetOther( NULL );
-	for (CItemElem * & item : m_items_VT) {
+	for (auto & item : m_items_VT) {
 		if (item) {
 			item->SetExtra(0);
 			item = nullptr;
@@ -102,9 +102,14 @@ void CVTInfo::TradeSetItem( BYTE nId, BYTE i, short nItemNum )
 	}
 }
 
+void CVTInfo::TradeSetItem(const CItemElem & item, BYTE i, short nItemNum) {
+	m_items_VT[i] = std::make_unique<CItemElem>(item);
+}
+
+
 BOOL CVTInfo::TradeClearItem( BYTE i )
 {
-	CItemElem * & pItemBase = m_items_VT[i];
+	auto & pItemBase = m_items_VT[i];
 	if( IsUsingItem( pItemBase ) )
 	{
 		pItemBase->SetExtra( 0 );		// clear - using flag 
@@ -534,7 +539,7 @@ void CVTInfo::VendorItemNum( BYTE i, short nNum )
 
 void CVTInfo::VendorClose( BOOL bClearTitle )
 {
-	for (CItemElem * & item : m_items_VT) {
+	for (auto & item : m_items_VT) {
 		if (item) {
 			item->SetExtra(0);
 			item->m_nCost = 0;
@@ -555,12 +560,12 @@ void CVTInfo::VendorClose( BOOL bClearTitle )
 
 // 나는 판매자 인가? 
 BOOL CVTInfo::VendorIsVendor() const noexcept {
-	static constexpr auto IsNotNull = [](const auto * ptr) { return ptr; };
+	static constexpr auto IsNotNull = [](const auto & ptr) { return static_cast<bool>(ptr); };
 	return std::ranges::any_of(m_items_VT, IsNotNull) ? TRUE : FALSE;
 }
 
 BOOL CVTInfo::IsTrading(const CItemElem * const pItemElem) const noexcept {
-	const auto IsThisItem = [pItemElem](const CItemElem * const self) {
+	const auto IsThisItem = [pItemElem](const auto & self) {
 		return pItemElem == self;
 	};
 	return std::ranges::any_of(m_items_VT, IsThisItem) ? TRUE : FALSE;

@@ -13,6 +13,7 @@
 
 #include <array>
 #include <optional>
+#include "sqktd_maybe_owned_ptr.h"
 
 #include "Ctrl.h"
 #include "..\_AIInterface\ActionMover.h"
@@ -299,7 +300,7 @@ class CVTInfo
 {
 private:
 	DWORD					m_dwTradeGold;					/// 거래중인 돈 
-	std::array<CItemElem *, MAX_VENDITEM> m_items_VT = {}; /// vendor and trader share pointer array
+	std::array<sqktd::maybe_owned_ptr<CItemElem>, MAX_VENDITEM> m_items_VT = {}; /// vendor and trader share pointer array
 	OBJID					m_objId;						/// 상대방 id
 	CMover*					m_pOwner;						/// 클래스 소유자 
 	TRADE_STATE				m_state;						/// 거래상태 
@@ -318,6 +319,7 @@ public:
 
 	void					TradeClear();
 	void					TradeSetItem( BYTE nId, BYTE i, short nItemNum );
+	void					TradeSetItem( const CItemElem & item, BYTE i, short nItemNum);
 	BOOL					TradeClearItem( BYTE i );
 	void					TradeSetGold( DWORD dwGold );
 	int						TradeGetGold();
@@ -338,7 +340,9 @@ public:
 
 	// 데이타 카피를 해서 보관?
 	void VendorCopyItems(const std::array<CItemElem *, MAX_VENDITEM> & values) {
-		m_items_VT = values;
+		for (size_t i = 0; i != MAX_VENDITEM; ++i) {
+			m_items_VT[i] = values[i];
+		}
 	}
 };
 

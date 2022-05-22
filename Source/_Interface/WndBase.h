@@ -364,7 +364,7 @@ namespace Windows {
 	bool DestroyIfOpened(UINT firstWindowToClose, Ts... otherWindowsToClose) {
 		bool closedOne = false;
 
-		if (CWndBase * const window = GetWndBase(firstWindowToClose)) {
+		if (CWndBase * const window = CWndBase::GetWndBase(firstWindowToClose)) {
 			window->Destroy();
 			closedOne = true;
 		}
