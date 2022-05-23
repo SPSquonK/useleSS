@@ -7026,7 +7026,7 @@ void CMover::ProcessRecovery()
 				}
 				if( nMItem )
 				{
-					if( IsValidObj( pLeader ) && ( pLeader->GetJob() == JOB_ASSIST || pLeader->GetJob() == JOB_RINGMASTER || pLeader->GetJob() == JOB_BILLPOSTER ) )
+					if( IsValidObj( pLeader ) && pLeader->IsInteriorityJob(JOB_ASSIST) )
 						fRecovery = 1.8f;
 					else
 						fRecovery = 1.5f;
