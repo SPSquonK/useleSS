@@ -191,9 +191,9 @@ public:
 #else // __MAP_SECURITY
 	void			Open();
 #endif // __MAP_SECURITY
-//	void			Notify();
+
 	int		Notify( void );
-//	void			Flush()	{	Notify();	m_Snapshot.Flush();		}
+
 #ifdef __S_SERVER_UNIFY
 	void			SetAllAction();
 #endif // __S_SERVER_UNIFY

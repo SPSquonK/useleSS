@@ -16,6 +16,12 @@ public:
 	enum	{ store = 0, load = 1 };
 	enum	{ nGrowSize = 16384 };
 
+	enum class GoToOffsetAnswer {
+		SamePlace,
+		NotAllConsumed,
+		TooFar
+	};
+
 	static CHeapMng*	m_pHeapMng;
 
 
@@ -122,6 +128,26 @@ static	DWORD	s_dwHdrCur;
 		return *this;
 	}
 
+	GoToOffsetAnswer GoToOffset(const u_long expectedOffset) {
+		BYTE * target = m_lpBufStart + expectedOffset;
+
+		if (target == m_lpBufCur) {
+			return GoToOffsetAnswer::SamePlace;
+		}
+
+		const GoToOffsetAnswer answer = target > m_lpBufCur ?
+			GoToOffsetAnswer::NotAllConsumed :
+			GoToOffsetAnswer::TooFar;
+		
+		m_lpBufCur = target;
+
+		if (m_lpBufMax > target) [[unlikely]] {
+			Error("CAr::GoToOffset - Target is out of bound");
+			m_lpBufCur = m_lpBufMax;
+		}
+
+		return answer;
+	}
 
 private:
 	template<size_t POS, typename TupleType> void TupleExtract(TupleType & tuple);

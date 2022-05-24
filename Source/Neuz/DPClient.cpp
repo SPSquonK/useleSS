@@ -303,6 +303,8 @@ BYTE g_hdr, g_Prev;
 // Receiver
 void CDPClient::OnSnapshot( CAr & ar )
 {
+	std::set<WORD> glitchedSnapshotsId;
+
 	OBJID objid, objidPlayer;
 	short cb;
 //	BYTE hdr, prev	= 0x00;
@@ -311,7 +313,9 @@ void CDPClient::OnSnapshot( CAr & ar )
 	ar >> objidPlayer >> cb;
 	while( cb-- )
 	{
-		ar >> objid >> hdr;
+		const u_long startedAt = ar.GetOffset();
+		const auto [packetSize, objid, hdr] = ar.Extract<u_long, OBJID, WORD>();
+
 #ifdef __TRAFIC_1218
 		m_traficLog.Add( (BYTE)( hdr ) );
 #endif	// __TRAFIC_1218
@@ -741,6 +745,15 @@ void CDPClient::OnSnapshot( CAr & ar )
 		}
 		prev	= hdr;
 		g_Prev	= (BYTE)( prev );
+
+		const u_long endedAt = ar.GetOffset();
+
+		if (ar.GoToOffset(startedAt + packetSize) == CAr::GoToOffsetAnswer::TooFar) {
+			if (!glitchedSnapshotsId.contains(hdr)) {
+				Error("Snapshot %x went too far", hdr);
+				glitchedSnapshotsId.emplace(hdr);
+			}
+		}
 	}
 }
 

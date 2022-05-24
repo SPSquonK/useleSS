@@ -2,25 +2,19 @@
 #include "Snapshot.h"
 
 CSnapshot::CSnapshot()
-{
+	: cb(this) {
 	dpidCache	= dpidUser	= DPID_UNKNOWN;
-	cb	= 0;
 }
 
 CSnapshot::CSnapshot( DPID idCache, DPID idUser, OBJID objid, DWORD dwHdr )
-{
+	: cb(this) {
 	SetSnapshot( objid, dwHdr );	
-}
-
-CSnapshot::~CSnapshot()
-{
-	ar.Flush();
 }
 
 void CSnapshot::SetSnapshot( OBJID objid, DWORD dwHdr )
 {
 	ASSERT( DPID_UNKNOWN != dpidUser );
-	cb	= 0;
+	cb_	= 0;
 	ar.Flush();
-	ar << dpidUser << dwHdr << objid << cb;
+	ar << dpidUser << dwHdr << objid << cb_;
 }

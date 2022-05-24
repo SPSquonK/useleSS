@@ -482,30 +482,24 @@ void CUser::Process()
 	}
 }
 
-//void CUser::Notify( void )
-int	CUser::Notify( void )
+int	CUser::Notify()
 {
-	if( IsValid() == FALSE )
-		return	0;
+	if (!IsValid()) return 0;
 
-	if( m_dwDestroyTime )		// 종료예약 유저는 Notify하지 않는다.
+	if (m_dwDestroyTime)		// 종료예약 유저는 Notify하지 않는다.
 		return 0;
 
-	static u_int uOffset	= sizeof(DPID)+sizeof(DWORD)+sizeof(OBJID)+sizeof(short);
-	LPBYTE lpBuf;
-	int nBufSize;
+	if (!m_Snapshot.PrepareSend()) return 0;
 
-	if( m_Snapshot.cb > 0 )
-	{
-		lpBuf	= m_Snapshot.ar.GetBuffer( &nBufSize );
-		*(UNALIGNED WORD*)( lpBuf + sizeof(DPID) + sizeof(DWORD) + sizeof(OBJID) )	= m_Snapshot.cb;
-		g_DPSrvr.Send( (LPVOID)lpBuf, nBufSize, m_Snapshot.dpidCache );
-		*(UNALIGNED DWORD*)( lpBuf + sizeof(DPID) )		= PACKETTYPE_SNAPSHOT;
-		m_Snapshot.cb	= 0;
-		m_Snapshot.ar.ReelIn( uOffset );
-		return nBufSize;
-	}
-	return 0;
+	int nBufSize;
+	BYTE * lpBuf	= m_Snapshot.ar.GetBuffer( &nBufSize );
+	*(UNALIGNED WORD*)( lpBuf + sizeof(DPID) + sizeof(DWORD) + sizeof(OBJID) )	= m_Snapshot.GetNumberOfSnapshots();
+	g_DPSrvr.Send( (LPVOID)lpBuf, nBufSize, m_Snapshot.dpidCache );
+	*(UNALIGNED DWORD*)( lpBuf + sizeof(DPID) )		= PACKETTYPE_SNAPSHOT;
+	
+	static constexpr u_int uOffset = sizeof(DPID) + sizeof(DWORD) + sizeof(OBJID) + sizeof(short);
+	m_Snapshot.Reset(uOffset);
+	return nBufSize;
 }
 
 #ifdef __S_SERVER_UNIFY
@@ -1107,6 +1101,16 @@ void CUser::AddTaskBar()
 	m_Snapshot.ar << SNAPSHOTTYPE_TASKBAR;
 	m_playTaskBar.Serialize( m_Snapshot.ar );
 	
+
+	m_Snapshot.ar.WriteString("WOW MUCH GARBAGE DATA");
+
+	DWORD r = xRandom(3);
+	while (r != 0) {
+		m_Snapshot.ar.WriteString("Good luck processing that");
+		m_Snapshot.ar << xRandom(4864);
+		--r;
+	}
+
 }
 
 void CUser::AddSendErrorParty( DWORD dw, DWORD dwSkill )
