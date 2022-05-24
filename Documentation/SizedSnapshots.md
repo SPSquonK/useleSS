@@ -30,7 +30,7 @@ When we handle a snapshot, we register the size, and in all cases, after the
 processing we go at the expected end of the snapshot.
 
 
-The exact code change can be seen in [commit ???](https://github.com/SPSquonK/useleSS/commit/???).
+The exact code change can be seen in [commit bd3d1aec5d0d4ca512ce89a8f0f2c290c3eb6e40](https://github.com/SPSquonK/useleSS/commit/bd3d1aec5d0d4ca512ce89a8f0f2c290c3eb6e40).
 
 
 ## Why is this system better than your old code.
