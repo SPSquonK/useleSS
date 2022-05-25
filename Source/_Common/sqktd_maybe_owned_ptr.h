@@ -34,6 +34,8 @@ namespace sqktd {
 		maybe_owned_ptr & operator=(const maybe_owned_ptr &) = delete;
 		maybe_owned_ptr(maybe_owned_ptr && other) { operator=(std::move(other)); }
 		maybe_owned_ptr & operator=(maybe_owned_ptr && other) {
+			if (*this == &other) return *this;
+
 			ensure_owns_nothing();
 
 			m_rawPtr = other.m_rawPtr;
