@@ -15135,9 +15135,7 @@ void CDPClient::OnPet( OBJID objid, CAr & ar )
 {
 	CPet pet;
 	BYTE nPetLevelup;
-
-	pet.Serialize( ar );
-	ar >> nPetLevelup;
+	ar >> pet >> nPetLevelup;
 
 	CMover* pMover	= prj.GetMover( objid );
 	if( IsValidObj( pMover ) && pMover->IsActiveMover() )

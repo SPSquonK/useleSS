@@ -2727,8 +2727,7 @@ void CUser::AddPet( CPet* pPet, BYTE nPetLevelup )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GETID( this );
 	m_Snapshot.ar << SNAPSHOTTYPE_PET;
-	pPet->Serialize( m_Snapshot.ar );
-	m_Snapshot.ar << nPetLevelup;
+	m_Snapshot.ar << *pPet << nPetLevelup;
 }
 
 void CUser::AddPetFoodMill(int nResult, int nCount)

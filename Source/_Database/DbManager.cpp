@@ -6758,8 +6758,7 @@ void CDbManager::CalluspPetLog( CQuery* pQuery, CAr & ar )
 	int nType;
 	CPet pet;
 
-	ar >> idPlayer >> iSerial >> dwData >> nType;
-	pet.Serialize( ar );
+	ar >> idPlayer >> iSerial >> dwData >> nType >> pet;
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	sprintf( szQuery, "uspPetLog "

@@ -1,6 +1,7 @@
 #ifndef __PET_H__
 #define	__PET_H__
 
+#include <array>
 #include "SingleDst.h"
 
 #ifdef __CLIENT
@@ -111,22 +112,18 @@ private:
 #define	MAX_PET_NAME	17	// 한글 8자
 #endif	// __PET_1024
 
-class CPet
-{
-public:
-//	Constructions
-	CPet();
-	virtual	~CPet();
-
+class CPet final {
+private:
 //	Operations
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CPet & pet);
+	friend CAr & operator>>(CAr & ar, CPet & pet);
 
+public:
 //	Attributions
 	void	SetAvailLevel( BYTE nLevel, BYTE nAvailLevel );
 
 	DWORD	GetIndex( void );
 	BYTE	GetAvailLevel( BYTE nLevel );
-	LPBYTE	GetAvailLevel( void )	{	return m_anAvailLevel;	}
 
 	[[nodiscard]] SINGLE_DST GetAvailDestParam() const;
 	BYTE	GetKind( void )	{	return m_nKind;	}
@@ -157,16 +154,16 @@ public:
 				return II_PET_EGG;
 			return( CPetProperty::GetInstance()->GetAvailParam( m_nKind )->m_dwItemId );
 		}
-	CPet&	operator=( CPet & pet );
+
 private:
-	BYTE	m_nKind;	// 종류 : 0~6
-	BYTE	m_nLevel;	// 레벨 : e		// e = 0, d = 1, c = 2, b = 3, a = 4, s = 5
-	DWORD	m_dwExp;	// 경험치 : 0
-	WORD	m_wEnergy;		// 기력 : 0
-	WORD	m_wLife;	// 생명 :  0 ~ 99	// 디폴트 : 1	// 생명이 0인 상태에서 사망 시 객체 제거
-	BYTE	m_anAvailLevel[PL_MAX];	// 능력치
+	BYTE	m_nKind = 0;	// 종류 : 0~6
+	BYTE	m_nLevel = PL_EGG;	// 레벨 : e		// e = 0, d = 1, c = 2, b = 3, a = 4, s = 5
+	DWORD	m_dwExp = 0;	// 경험치 : 0
+	WORD	m_wEnergy = 0;		// 기력 : 0
+	WORD	m_wLife = 0;	// 생명 :  0 ~ 99	// 디폴트 : 1	// 생명이 0인 상태에서 사망 시 객체 제거
+	std::array<BYTE, PL_MAX> m_anAvailLevel = { 0, 0, 0, 0, 0, 0 };	// 능력치
 #ifdef __PET_1024
-	char	m_szName[MAX_PET_NAME];
+	char	m_szName[MAX_PET_NAME] = "";
 #endif	// __PET_1024
 };
 

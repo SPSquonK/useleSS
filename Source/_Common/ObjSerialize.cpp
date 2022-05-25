@@ -56,7 +56,7 @@ void CItemElem::Serialize( CAr & ar )	// 18
 		if( m_pPet )
 		{
 			ar << (BYTE)0x01;
-			m_pPet->Serialize( ar );
+			ar << *m_pPet;
 		}
 		else
 		{
@@ -100,7 +100,7 @@ void CItemElem::Serialize( CAr & ar )	// 18
 		if( bPet )
 		{
 			m_pPet	= new CPet;
-			m_pPet->Serialize( ar );
+			ar >> *m_pPet;
 		}
 		ar >> m_bTranformVisPet;
 

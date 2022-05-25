@@ -312,51 +312,30 @@ DWORD CPetProperty::GetTIdOfDst(const SINGLE_DST & dst, bool shortenHpMax) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CPet::CPet()
-{
-	m_nKind	= 0;
-	m_nLevel	= PL_EGG;
-	m_dwExp	= 0;
-	m_wEnergy	= 0;
-	m_wLife	= 0;
-	memset( (void*)m_anAvailLevel, 0, sizeof(BYTE) * PL_MAX );
+CAr & operator<<(CAr & ar, const CPet & pet) {
+	ar << pet.m_nKind;
+	ar << pet.m_nLevel;
+	ar << pet.m_dwExp;
+	ar << pet.m_wEnergy;
+	ar << pet.m_wLife;
+	ar << pet.m_anAvailLevel;
 #ifdef __PET_1024
-	m_szName[0]	= '\0';
+	ar.WriteString(pet.m_szName);
 #endif	// __PET_1024
+	return ar;
 }
 
-CPet::~CPet()
-{
-}
-
-void CPet::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_nKind;
-		ar << (BYTE)m_nLevel;
-		ar << m_dwExp;
-		ar << m_wEnergy;
-		ar << m_wLife;
-		ar.Write( (const void*)m_anAvailLevel, sizeof(BYTE) * PL_MAX );
+CAr & operator>>(CAr & ar, CPet & pet) {
+	ar >> pet.m_nKind;
+	ar >> pet.m_nLevel;
+	ar >> pet.m_dwExp;
+	ar >> pet.m_wEnergy;
+	ar >> pet.m_wLife;
+	ar >> pet.m_anAvailLevel;
 #ifdef __PET_1024
-		ar.WriteString( m_szName );
+	ar.ReadString(pet.m_szName, MAX_PET_NAME);
 #endif	// __PET_1024
-	}
-	else
-	{
-		m_nKind	= PK_TIGER;
-		m_nLevel	= PL_EGG;
-		ar >> m_nKind;
-		ar >> (BYTE &)m_nLevel;
-		ar >> m_dwExp;
-		ar >> m_wEnergy;
-		ar >> m_wLife;
-		ar.Read( (void *)m_anAvailLevel, sizeof(BYTE) * PL_MAX );
-#ifdef __PET_1024
-		ar.ReadString( m_szName, MAX_PET_NAME );
-#endif	// __PET_1024
-	}
+	return ar;
 }
 
 void CPet::SetEnergy( WORD wEnergy )
@@ -425,20 +404,6 @@ void CPet::InitEgg( void )
 {
 	SetLife( nDefaultLife );
 	SetEnergy( GetMaxEnergy() );
-}
-
-CPet& CPet::operator=( CPet& pet )
-{
-	m_nKind		= pet.GetKind();
-	m_nLevel	= pet.GetLevel();
-	m_dwExp		= pet.GetExp();
-	m_wEnergy	= pet.GetEnergy();
-	m_wLife		= pet.GetLife();
-	memcpy( m_anAvailLevel, pet.m_anAvailLevel, sizeof(BYTE) * PL_MAX );
-#ifdef __PET_1024
-	strcpy( m_szName, pet.GetName() );
-#endif	// __PET_1024
-	return *this;
 }
 
 #ifdef __CLIENT

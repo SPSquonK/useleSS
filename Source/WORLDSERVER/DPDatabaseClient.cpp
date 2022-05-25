@@ -2808,8 +2808,7 @@ void CDPDatabaseClient::CalluspPetLog( u_long idPlayer, SERIALNUMBER iSerial, DW
 	if( pPet == NULL )
 		return;
 	BEFORESENDDUAL( ar, PACKETTYPE_CALL_USP_PET_LOG, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << iSerial << dwData << nType;
-	pPet->Serialize( ar );
+	ar << idPlayer << iSerial << dwData << nType << *pPet;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
