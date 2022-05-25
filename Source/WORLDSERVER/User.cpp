@@ -2676,7 +2676,7 @@ void CUser::OnDoUseItem( DWORD dwData, OBJID objid, int nPart )
 
 		dwItemId = pItemElem->m_dwItemId;
 	
-		if (const CPackItem::PACKITEMELEM * pPackItemElem = CPackItem::GetInstance()->Open(dwItemId)) {
+		if (const CPackItem::PACKITEMELEM * pPackItemElem = g_PackItem.Open(dwItemId)) {
 			DoUsePackItem(pItemElem, *pPackItemElem);
 			return;
 		}

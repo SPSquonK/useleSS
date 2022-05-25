@@ -497,7 +497,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	LoadDropEvent( "propDropEvent.inc" );
 	LoadGiftbox( "propGiftbox.inc" );
 	
-	CPackItem::GetInstance()->Load("propPackItem.inc");
+	g_PackItem.Load("propPackItem.inc");
 
 		LoadScriptDiePenalty( "DiePenalty.inc" );
 #endif // __WORLDSERVER
@@ -3699,10 +3699,7 @@ void CGiftboxMan::Restore( CDPMng* pdp, DWORD dwGiftbox, DWORD dwItem )
 */
 #endif	// __WORLDSERVER
 
-CPackItem * CPackItem::GetInstance(void) {
-	static CPackItem sPackItem;
-	return &sPackItem;
-}
+CPackItem g_PackItem;
 
 void CPackItem::AddItem(DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum) {
 	const auto i = m_mapIdx.find(dwPackItem);

@@ -8,6 +8,7 @@ static_assert(false, "Project.h was included")
 #include <memory>
 #include <set>
 #include "boost/container/static_vector.hpp"
+#include <boost/container/flat_map.hpp>
 #include "StaticString.h"
 
 #include "SingleDst.h"
@@ -578,18 +579,18 @@ public:
 
 private:
 	std::vector<PACKITEMELEM> m_packitems;
-	std::map<DWORD, size_t> m_mapIdx;
+	boost::container::flat_map<DWORD, size_t> m_mapIdx;
 
 	void AddItem(DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum);
 
 	PACKITEMELEM * Open_(DWORD dwPackItem);
 
 public:
-	static CPackItem * GetInstance();
 	void Load(LPCTSTR lpszFileName) noexcept(false);
-
 	const PACKITEMELEM * Open(DWORD dwPackItem) const;
 };
+
+extern CPackItem g_PackItem;
 
 
 
