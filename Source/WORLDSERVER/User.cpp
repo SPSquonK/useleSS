@@ -2444,50 +2444,39 @@ D3DXVECTOR3& CUser::GetReturnPos( DWORD* pdwWorldID )
 
 // pItemElem을 사용하는데 과련 정보는 PACKITEMELEM을 참조한다.
 // pItemElem은 사용한 아이템 
-void CUser::DoUsePackItem( CItemElem* pItemElem, PPACKITEMELEM pPackItemElem )
+void CUser::DoUsePackItem( CItemElem* pItemElem, const CPackItem::PACKITEMELEM & pPackItemElem )
 {
 	time_t t	= 0;
-	if( pPackItemElem->nSpan )	// minutes
-	{
-		CTime time	= CTime::GetCurrentTime() + CTimeSpan( 0, 0, pPackItemElem->nSpan, 0 );
-		t	= (time_t)( time.GetTime() );
+	if (pPackItemElem.nSpan) { // minutes
+		const CTime time = CTime::GetCurrentTime() + CTimeSpan(0, 0, pPackItemElem.nSpan, 0);
+		t = (time_t)(time.GetTime());
 	}
 
-	if( m_Inventory.GetEmptyCount() >= pPackItemElem->nSize )
-	{
-		for( int i = 0; i < pPackItemElem->nSize; i++ )
-		{
-			CItemElem itemElem;
-			itemElem.m_dwItemId	= pPackItemElem->adwItem[i];
-			itemElem.SetAbilityOption( pPackItemElem->anAbilityOption[i] );
-			itemElem.m_nItemNum	= pPackItemElem->anNum[i];
-			itemElem.m_bCharged		= itemElem.GetProp()->bCharged;
-			itemElem.m_dwKeepTime	= (DWORD)t;
+	if (m_Inventory.GetEmptyCount() < pPackItemElem.aItems.size()) {
+		AddDefinedText(TID_GAME_LACKSPACE);
+		return;
+	}
 
-//			if( pItemElem->IsFlag( CItemElem::binds ) )
-			if( pItemElem->IsBinds() )
-				itemElem.SetFlag( CItemElem::binds );
+	for (const CPackItem::PackedItem & item : pPackItemElem.aItems) {
+		CItemElem itemElem;
+		itemElem.m_dwItemId = item.dwItem;
+		itemElem.SetAbilityOption(item.nAbilityOption);
+		itemElem.m_nItemNum	= item.nNum;
+		itemElem.m_bCharged		= itemElem.GetProp()->bCharged;
+		itemElem.m_dwKeepTime	= (DWORD)t;
 
-			if( CreateItem( &itemElem ) )
-			{
-				AddDefinedText( TID_GAME_REAPITEM, "\"%s\"", itemElem.GetProp()->szName );
-				g_DPSrvr.PutCreateItemLog( this, &itemElem , "E", "PACK" );
-//				ItemProp* pItemProp		= itemElem.GetProp();
-//				if( pItemProp->dwSfxObj3 != -1 )
-//					g_UserMng.AddCreateSfxObj( this, pItemProp->dwSfxObj3, GetPos().x, GetPos().y, GetPos().z );
-			}
-			else
-			{
-				// critical err
-			}
+		if (pItemElem->IsBinds()) itemElem.SetFlag(CItemElem::binds);
+
+		if (CreateItem(&itemElem)) {
+			AddDefinedText(TID_GAME_REAPITEM, "\"%s\"", itemElem.GetProp()->szName);
+			g_DPSrvr.PutCreateItemLog(this, &itemElem, "E", "PACK");
+		} else {
+			// critical err
 		}
-		OnAfterUseItem( pItemElem->GetProp() );
-		UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
 	}
-	else
-	{
-		AddDefinedText( TID_GAME_LACKSPACE );			
-	}
+
+	OnAfterUseItem(pItemElem->GetProp());
+	UpdateItem((BYTE)(pItemElem->m_dwObjId), UI_NUM, pItemElem->m_nItemNum - 1);
 }
 
 BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, DWORD dwItemId )
@@ -2687,10 +2676,8 @@ void CUser::OnDoUseItem( DWORD dwData, OBJID objid, int nPart )
 
 		dwItemId = pItemElem->m_dwItemId;
 	
-		PPACKITEMELEM pPackItemElem	= CPackItem::GetInstance()->Open( dwItemId );
-		if( pPackItemElem )
-		{
-			DoUsePackItem( pItemElem, pPackItemElem );
+		if (const CPackItem::PACKITEMELEM * pPackItemElem = CPackItem::GetInstance()->Open(dwItemId)) {
+			DoUsePackItem(pItemElem, *pPackItemElem);
 			return;
 		}
 	}

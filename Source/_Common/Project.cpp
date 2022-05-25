@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "sqktd.h"
 #include "defineItem.h"
 #include "lang.h"
 #include "Ship.h"
@@ -495,7 +496,8 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 
 	LoadDropEvent( "propDropEvent.inc" );
 	LoadGiftbox( "propGiftbox.inc" );
-	LoadPackItem( "propPackItem.inc" );
+	
+	CPackItem::GetInstance()->Load("propPackItem.inc");
 
 		LoadScriptDiePenalty( "DiePenalty.inc" );
 #endif // __WORLDSERVER
@@ -3697,69 +3699,44 @@ void CGiftboxMan::Restore( CDPMng* pdp, DWORD dwGiftbox, DWORD dwItem )
 */
 #endif	// __WORLDSERVER
 
-CPackItem::CPackItem()
-{
-	m_nSize	= 0;
-	memset( &m_packitem, 0, sizeof(m_packitem) );
-}
-
-CPackItem* CPackItem::GetInstance( void )
-{
+CPackItem * CPackItem::GetInstance(void) {
 	static CPackItem sPackItem;
 	return &sPackItem;
 }
 
-BOOL CPackItem::AddItem( DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum )
-{
-	const auto i	= m_mapIdx.find( dwPackItem );
-	int nIdx1	= 0;
-	if( i != m_mapIdx.end() )
-	{
-		nIdx1	= i->second;
-	}
-	else
-	{
-		nIdx1	= m_nSize++;
-		m_mapIdx.emplace( dwPackItem, nIdx1 );
+void CPackItem::AddItem(DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum) {
+	const auto i = m_mapIdx.find(dwPackItem);
+	size_t nIdx1;
+	if (i != m_mapIdx.end()) {
+		nIdx1 = i->second;
+	} else {
+		nIdx1 = m_packitems.size();
+		m_mapIdx.emplace(dwPackItem, nIdx1);
+		m_packitems.emplace_back(dwPackItem);
 	}
 
-	if( m_nSize >= MAX_PACKITEM )
-	{
-		OutputDebugString( "TOO MANY PACKITEM\n" );
-		return FALSE;
-	}
-
-	if( m_packitem[nIdx1].nSize == MAX_ITEM_PER_PACK )
-	{
-		OutputDebugString( "TOO MANY ITEM PER PACK\n" );
-		return FALSE;
-	}
-
-	m_packitem[nIdx1].dwPackItem	= dwPackItem;
-	int nIdx2	= m_packitem[nIdx1].nSize++;
-	m_packitem[nIdx1].adwItem[nIdx2]	= dwItem;
-	m_packitem[nIdx1].anAbilityOption[nIdx2]	= nAbilityOption;
-	m_packitem[nIdx1].anNum[nIdx2]	= nNum;
-	return TRUE;
+	m_packitems[nIdx1].aItems.emplace_back(
+		CPackItem::PackedItem{ dwItem, nAbilityOption, nNum }
+	);
 }
 
-PPACKITEMELEM CPackItem::Open( DWORD dwPackItem )
-{
-	const auto i		= m_mapIdx.find( dwPackItem );
-	if( i != m_mapIdx.end() )
-		return &m_packitem[i->second];	
-	return NULL;
+const CPackItem::PACKITEMELEM * CPackItem::Open(const DWORD dwPackItem) const {
+	const auto i = m_mapIdx.find( dwPackItem );
+	if (i == m_mapIdx.end()) return nullptr;
+	return &m_packitems[i->second];
 }
 
-BOOL CProject::LoadPackItem( LPCTSTR lpszFileName )
-{
+CPackItem::PACKITEMELEM * CPackItem::Open_(const DWORD dwPackItem) {
+	const auto i = m_mapIdx.find(dwPackItem);
+	if (i == m_mapIdx.end()) return nullptr;
+	return &m_packitems[i->second];
+}
+
+void CPackItem::Load(LPCTSTR lpszFileName) noexcept(false) {
 	CScript s;
-	if( s.Load( lpszFileName ) == FALSE )
-		return FALSE;
-
-	DWORD dwPackItem, dwItem;
-	int nAbilityOption, nNum;
-	int	nSpan;
+	if (!s.Load(lpszFileName)) {
+		throw ProjectLoadError(__FUNCTION__"(): file not found", lpszFileName);
+	}
 
 	char lpOutputString[100]	= { 0, };
 	OutputDebugString( "packItem\n" );
@@ -3769,29 +3746,28 @@ BOOL CProject::LoadPackItem( LPCTSTR lpszFileName )
 	{
 		if( s.Token == _T( "PackItem" ) )
 		{
-			dwPackItem	= s.GetNumber();
-			nSpan	= s.GetNumber();
+			const DWORD dwPackItem	= s.GetNumber();
+			const int nSpan	= s.GetNumber();
 			s.GetToken();	// {
-			dwItem	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-				nAbilityOption	= s.GetNumber();
-				nNum	= s.GetNumber();
-				
-				sprintf( lpOutputString, "%d\n", dwPackItem );
-				OutputDebugString( lpOutputString );
-				if( !CPackItem::GetInstance()->AddItem( dwPackItem, dwItem, nAbilityOption, nNum ) )
-					return FALSE;
-				dwItem	= s.GetNumber();
+			DWORD dwItem	= s.GetNumber();
+			while (*s.token != '}') {
+				const int nAbilityOption = s.GetNumber();
+				const int nNum = s.GetNumber();
+
+				std::sprintf(lpOutputString, "%d\n", dwPackItem);
+				OutputDebugString(lpOutputString);
+
+				AddItem(dwPackItem, dwItem, nAbilityOption, nNum);
+				dwItem = s.GetNumber();
 			}
-			PPACKITEMELEM pPackItemElem	= CPackItem::GetInstance()->Open( dwPackItem );
-			if( pPackItemElem )
-				pPackItemElem->nSpan	= nSpan;
+			
+			if (PACKITEMELEM * const pPackItemElem = Open_(dwPackItem)) {
+				pPackItemElem->nSpan = nSpan;
+			}
 		}
 		s.GetToken();
 	}
 	OutputDebugString( "----------------------------------------\n" );
-	return TRUE;
 }
 
 PSETITEMAVAIL CProject::GetSetItemAvail( int nAbilityOption )

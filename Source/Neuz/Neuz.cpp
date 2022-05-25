@@ -1438,7 +1438,12 @@ BOOL CNeuzApp::KillWindow( int wParam )
 
 void __cdecl LoadProperty( void* p )
 { 
-	prj.OpenProject( "Masquerade.prj" );
+	try {
+		prj.OpenProject("Masquerade.prj");
+	} catch (ProjectLoadError & e) {
+		Error("OpenProject ERROR: %s", e.what());
+		throw e;
+	}
 	CNeuzApp* pApp = (CNeuzApp*) p;
 	pApp->m_hThread = INVALID_HANDLE_VALUE;
 }

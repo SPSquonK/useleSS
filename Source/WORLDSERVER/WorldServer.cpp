@@ -277,10 +277,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	if( Script( g_szINI ) == TRUE )
 	{
-		if( !prj.OpenProject( "Masquerade.prj" ) ) 
-		{
-			Error( "OpenProject ERROR check Masquerade.prj" );
-			return FALSE;
+		try {
+			if (!prj.OpenProject("Masquerade.prj")) {
+				Error("OpenProject ERROR check Masquerade.prj");
+				return FALSE;
+			}
+		} catch (ProjectLoadError & e) {
+			Error("OpenProject ERROR: %s", e.what());
+			throw e;
 		}
 
 		g_DisplayedInfo.Redraw();

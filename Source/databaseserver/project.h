@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <map>
+#include <exception>
 #include "Mymap.h"
 #include "EventLua.h"
 #include "GuildCombat1to1.h"

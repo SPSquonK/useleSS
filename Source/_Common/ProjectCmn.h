@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <exception>
 
 #define	MAX_OBJARRAY			8
 #define	MAX_QUICKSLOT			21
@@ -968,3 +969,21 @@ private:
 	[[nodiscard]] static bool AllLettersAreIn(LPCSTR name, const std::array<bool, 256> & allowed);
 };
 #endif	// __RULE_0615
+
+class ProjectLoadError : public std::exception {
+	const char * m_errorMessage;
+	char m_fullMessage[512] = "Error when loading a file: ";
+public:
+	ProjectLoadError(const char * errorMessage, const char * fileName)
+		: m_errorMessage(errorMessage) {
+		if (errorMessage != nullptr && std::strlen(errorMessage) < 400) {
+			std::strcat(m_fullMessage, errorMessage);
+		}
+		if (fileName != nullptr && std::strlen(fileName) < 70) {
+			std::strcat(m_fullMessage, " - Filename= ");
+			std::strcat(m_fullMessage, fileName);
+		}
+	}
+
+	[[nodiscard]] const char * what() const { return m_fullMessage; }
+};

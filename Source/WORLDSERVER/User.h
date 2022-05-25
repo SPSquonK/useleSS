@@ -269,7 +269,7 @@ public:
 	BOOL			IsPosting( void )	{	return m_bPosting;	}
 	BOOL			IsUsableState( DWORD dwId );
 	void			OnDoUseItem( DWORD dwData, OBJID objid, int nPart );
-	void			DoUsePackItem( CItemElem* pItemElem, PPACKITEMELEM pPackItemElem );
+	void			DoUsePackItem( CItemElem* pItemElem, const CPackItem::PACKITEMELEM & pPackItemElem );
 	BOOL			DoUseGiftbox( CItemElem* pItemElem, DWORD dwItemId );
 	void			DoUseEveFBOX( CItemElem* pItemElem );
 	void			OnMsgArrival( DWORD dwParam );

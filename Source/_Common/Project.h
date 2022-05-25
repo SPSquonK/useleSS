@@ -560,34 +560,35 @@ public:
 };
 #endif	// __WORLDSERVER
 
-#define	MAX_ITEM_PER_PACK	16
-#define	MAX_PACKITEM		512
+class CPackItem final {
+public:
+	struct PackedItem {
+		DWORD dwItem;
+		int nAbilityOption;
+		int nNum;
+	};
 
-typedef	struct	_PACKITEMELEM
-{
-	DWORD dwPackItem;
-	int		nSize;
-	int		nSpan;
-	DWORD	adwItem[MAX_ITEM_PER_PACK];
-	int		anAbilityOption[MAX_ITEM_PER_PACK];
-	int		anNum[MAX_ITEM_PER_PACK];
-}	PACKITEMELEM,	*PPACKITEMELEM;
+	struct PACKITEMELEM {
+		DWORD dwPackItem;
+		int		nSpan = 0;
+		std::vector<PackedItem> aItems;
 
-class CPackItem
-{
+		PACKITEMELEM(DWORD packItem) : dwPackItem(packItem) {}
+	};
+
 private:
-	int		m_nSize;
-	PACKITEMELEM	m_packitem[MAX_PACKITEM];
-	std::map<DWORD, int>	m_mapIdx;
+	std::vector<PACKITEMELEM> m_packitems;
+	std::map<DWORD, size_t> m_mapIdx;
+
+	void AddItem(DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum);
+
+	PACKITEMELEM * Open_(DWORD dwPackItem);
 
 public:
-	CPackItem();
-	virtual	~CPackItem()	{}
+	static CPackItem * GetInstance();
+	void Load(LPCTSTR lpszFileName) noexcept(false);
 
-	static	CPackItem*	GetInstance( void );
-
-	BOOL	AddItem( DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum );
-	PPACKITEMELEM	Open( DWORD dwPackItem );
+	const PACKITEMELEM * Open(DWORD dwPackItem) const;
 };
 
 
@@ -920,7 +921,6 @@ public:
 	BOOL			LoadPropPartyQuest( LPCTSTR szFilename );
 	BOOL			LoadDropEvent( LPCTSTR lpszFileName );
 	BOOL			LoadGiftbox( LPCTSTR lpszFileName );
-	BOOL			LoadPackItem( LPCTSTR lpszFileName );
 	BOOL			LoadPiercingAvail( LPCTSTR lpszFileName );
 	DWORD			GetTextColor( DWORD dwIndex ); 
 	LPCTSTR			GetText( DWORD dwIndex );
