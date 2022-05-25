@@ -21,9 +21,7 @@ namespace SqKItemEnchant {
  *
  * Original author: SquonK, 2021-03
  * Link: https://gist.github.com/SPSquonK/595c0dfa7d97f180a381c480c57f59f1
- * License: I don't care about what you are doing with this, but I must be
- * cited as the original author of the snipper in some way in the code (for
- * example by keeping the line Original author as a comment here).
+ * License: http://squonk.fr/SquonK-Hidden-Boss-License.txt
  */
 namespace SqKItemEnchant {
   /** Subcommand Handler Manager */

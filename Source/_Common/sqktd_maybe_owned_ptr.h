@@ -11,8 +11,7 @@ namespace sqktd {
 	/// remember to release the data.
 	/// 
 	/// @SPSquonK, 2022-05
-	/// the "if your code is released, I want to be able to see my name near this
-	/// class" license.
+	/// License: https://squonk.fr/SquonK-Hidden-Boss-License.txt
 	template<typename T>
 	class maybe_owned_ptr final {
 		T * m_rawPtr = nullptr; // The raw pointer

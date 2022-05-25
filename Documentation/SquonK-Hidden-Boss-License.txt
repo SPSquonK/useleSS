@@ -1,0 +1,14 @@
+The "SquonK Hidden Boss License" (SKHBL)
+
+Code released under the "SquonK Hidden Boss License" can be freely used /
+copied / modified / even sold to other people with the only condition to keep a
+reference to the original author of the code in the code or in some place.
+
+The purpose of this license is so if your source code leak, or if you distribute
+the release, the original author is still credited in reputation.
+
+The easiest way to comply with the SKHBL is to let the comment that the mentions
+the author where it is located.
+
+No guarantee at all is given about the correctness of the code distributed under
+the SKHBL.

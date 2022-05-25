@@ -44,3 +44,9 @@ in your project code.
 
 This repository does not provide a production ready version of a FlyFF server.
 
+In particular, specific code that is explicitely commented with a reference to
+the
+[SquonK Hidden Boss License](http://squonk.fr/SquonK-Hidden-Boss-License.txt)
+should keep their comments.
+
+

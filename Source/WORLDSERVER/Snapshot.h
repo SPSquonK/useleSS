@@ -51,7 +51,7 @@ public:
 	// @SPSquonK, 2019-08~2022-05
 	// - Sized snapshot to let the client only parse partially the received snapshots
 	// and detect more easily programming errors.
-	// - The famous "let this comment that mentions the original author" license.
+	// - License: http://squonk.fr/SquonK-Hidden-Boss-License.txt
 
 	// Declares a new snapshot, registering the size of the previous one if any
 	void OnNewSnapshot() {
