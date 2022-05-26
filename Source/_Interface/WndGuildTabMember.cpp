@@ -546,7 +546,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 
 		case MGI_GUILD_LEAVE:	// 탈퇴
 			{
-				if(  pGuild->GetQuest( QUEST_WARMON_LV1 ) != NULL && pGuild->GetQuest( QUEST_WARMON_LV1 )->nState == QS_BEGIN )	// 클락워크 퀘스트면 길드 해체 안됨
+				if(  pGuild->GetStateOfQuest( QUEST_WARMON_LV1 ) == QS_BEGIN )	// 클락워크 퀘스트면 길드 해체 안됨
 				{
 					QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( QUEST_WARMON_LV1 );
 					if( pQuestProp )

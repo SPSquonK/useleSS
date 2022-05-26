@@ -3673,56 +3673,39 @@ void CDbManager::DBQryWar( char* szSql, const WAR_QUERYINFO & info )
 }
 
 
-void CDbManager::QueryGuildQuest( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	TRACE( "PACKETTYPE_QUERYGUILDQUEST\n" );
-//	GUILD_QUEST_STR 'S1', @im_idGuild,@iserverindex
+void CDbManager::QueryGuildQuest(CQuery * pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus) {
+	TRACE("PACKETTYPE_QUERYGUILDQUEST\n");
+	//	GUILD_QUEST_STR 'S1', @im_idGuild,@iserverindex
 	char	pszSql[128];
-	sprintf( pszSql, "GUILD_QUEST_STR 'S1', @im_idGuild = '', @iserverindex = '%02d'", g_appInfo.dwSys );
-	if( !pQuery->Exec( pszSql ) )
-	{
-		FreeRequest( lpDbOverlappedPlus );
+	sprintf(pszSql, "GUILD_QUEST_STR 'S1', @im_idGuild = '', @iserverindex = '%02d'", g_appInfo.dwSys);
+	if (!pQuery->Exec(pszSql)) {
+		FreeRequest(lpDbOverlappedPlus);
 		return;
 	}
 
-	int nCount	= 0;
-	u_long idGuild	= 0, idCurr;
-	GUILDQUEST pQuest[MAX_GUILD_QUEST];
-	BYTE nQuestSize;
+	std::map<u_long, std::map<int, int>> guildToQuestToState;
 
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYGUILDQUEST, DPID_UNKNOWN, DPID_UNKNOWN );
-	u_long uOffset	= ar.GetOffset();
-	ar << static_cast<int>( 0 );	// nCount
+	while (pQuery->Fetch()) {
+		const u_long idGuild = (u_long)pQuery->GetInt("m_idGuild");
+		const int nId        = pQuery->GetInt("n_Id");
+		const int nState     = pQuery->GetInt("nState");
+		guildToQuestToState[idGuild][nId] = nState;
+	}
 
-	while( pQuery->Fetch() )
-	{
-		idCurr	= (u_long)pQuery->GetInt( "m_idGuild" );
-		if( idCurr != idGuild )
-		{
-			if( idGuild != 0 )
-			{
-				ar << idGuild << nQuestSize;
-				ar.Write( (void*)pQuest, sizeof(GUILDQUEST) * nQuestSize );
-				nCount++;
-			}
-			nQuestSize	= 0;
-			idGuild		= idCurr;
+
+	BEFORESENDDUAL(ar, PACKETTYPE_QUERYGUILDQUEST, DPID_UNKNOWN, DPID_UNKNOWN);
+	
+	ar << guildToQuestToState.size();
+
+	for (const auto & [guildId, quests] : guildToQuestToState) {
+		ar << guildId;
+
+		ar << quests.size();
+		for (const std::pair<int, int> & quest : quests) {
+			ar << quest.first << quest.second;
 		}
-		pQuest[nQuestSize].nId	= pQuery->GetInt( "n_Id" );
-		pQuest[nQuestSize].nState	= pQuery->GetInt( "nState" );
-		nQuestSize++;
 	}
 
-	if( idGuild != 0 )
-	{
-		ar << idGuild << nQuestSize;
-		ar.Write( (void*)pQuest, sizeof(GUILDQUEST) * nQuestSize );
-		nCount++;
-	}
-
-	int nBufferSize;
-	BYTE* pBuffer	= ar.GetBuffer( &nBufferSize );
-	*(UNALIGNED int*)( pBuffer + uOffset )	= nCount;
 	SEND( ar, CDPTrans::GetInstance(), lpDbOverlappedPlus->dpid );
 
 	FreeRequest( lpDbOverlappedPlus );

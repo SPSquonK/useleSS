@@ -2116,28 +2116,22 @@ void CDPDatabaseClient::SendUpdateGuildQuest( u_long idGuild, int nId, int nStat
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::OnQueryGuildQuest( CAr & ar, DPID, DPID )
-{
-	int nCount;
-	u_long idGuild;
-	CGuild* pGuild;
+void CDPDatabaseClient::OnQueryGuildQuest( CAr & ar, DPID, DPID ) {
+	size_t nCount; ar >> nCount;
 
-	ar >> nCount;
-
-	for( int i = 0; i < nCount; i++ )
+	for( size_t i = 0; i < nCount; i++ )
 	{
-		ar >> idGuild;
-		pGuild	= g_GuildMng.GetGuild( idGuild );	
-		if( pGuild )
-		{
-			ar >> pGuild->m_nQuestSize;
-			ar.Read( (void*)pGuild->m_aQuest, sizeof(GUILDQUEST) * pGuild->m_nQuestSize );
+		u_long idGuild; ar >> idGuild;
+
+		boost::container::flat_map<int, int> quests;
+		size_t s; ar >> s;
+		for (size_t i = 0; i != s; ++i) {
+			const auto [a, b] = ar.Extract<int, int>();
+			quests.emplace(a, b);
 		}
-		else
-		{
-			CGuild waste;
-			ar >> waste.m_nQuestSize;
-			ar.Read( (void*)waste.m_aQuest, sizeof(GUILDQUEST) * waste.m_nQuestSize );
+
+		if (CGuild * pGuild = g_GuildMng.GetGuild(idGuild)) {
+			pGuild->m_quests = std::move(quests);
 		}
 	}
 }

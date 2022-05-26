@@ -385,30 +385,17 @@ int APIENTRY IsGuildQuest( NPCDIALOG_INFO* pInfo, int nQuest )
 {
 	CUser* pUser = prj.GetUser( pInfo->GetPcId() );
 
-	CGuild* pGuild	= pUser->GetGuild();
-	if( pGuild )
-	{
-		PGUILDQUEST pQuest = pGuild->GetQuest( nQuest );
-		if( pQuest )
-			return TRUE;
-	}
-	return FALSE;
+	CGuild * pGuild	= pUser->GetGuild();
+	if (!pGuild) return FALSE;
+	return pGuild->GetStateOfQuest(nQuest).has_value() ? TRUE : FALSE;
 }
 
 int APIENTRY GetGuildQuestState( NPCDIALOG_INFO* pInfo, int nQuest )
 {
 	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
 	CGuild* pGuild	= pUser->GetGuild();
-	if( pGuild )
-	{
-		PGUILDQUEST pQuest	= pGuild->GetQuest( nQuest );
-		if( pQuest )
-		{
-			int nState = pQuest->nState;
-			return nState;
-		}
-	}
-	return -1;
+	if (!pGuild) return -1;
+	return pGuild->GetStateOfQuest(nQuest).value_or(-1);
 }
 
 int APIENTRY IsWormonServer( NPCDIALOG_INFO* pInfo )

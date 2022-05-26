@@ -11,6 +11,7 @@
 #endif
 
 #include "guildquest.h"
+#include <boost/container/flat_map.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // 길드관련 상수 
@@ -320,13 +321,11 @@ public:
 
 	CGuild &	operator = ( CGuild & source );
 
-	GUILDQUEST	m_aQuest[MAX_GUILD_QUEST];
-	BYTE	m_nQuestSize;
-	PGUILDQUEST		m_pQuest;
-	PGUILDQUEST		FindQuest( int nQuestId );
-	PGUILDQUEST		GetQuest( int nQuestId )	{	return FindQuest( nQuestId );	}
-	BOOL	RemoveQuest( int nQuestId );
-	void	SetQuest( int nQuestId, int nState );
+	boost::container::flat_map<int /* QuestId */, int /* nState */> m_quests;
+	std::optional<int> GetStateOfQuest(int nQuestId) const;
+	BOOL	RemoveQuest(int nQuestId);
+	void	SetQuest(int nQuestId, int nState);
+
 #ifdef __WORLDSERVER
 	void	ReplaceLodestar( const CRect & rect );
 	void	Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround = FALSE );

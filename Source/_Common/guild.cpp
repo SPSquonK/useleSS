@@ -334,10 +334,6 @@ CGuild::CGuild()
 	m_nWinPoint = 0;
 	m_nDead		= 0;
 
-	ZeroMemory( m_aQuest, sizeof(m_aQuest) );
-	m_nQuestSize	= 0;
-	m_pQuest	= NULL;	
-
 #ifdef __CORESERVER
 	m_bLog	= FALSE;
 #endif	// __CORESERVER
@@ -407,8 +403,11 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			ar << (short)m_votes.size();
 			for ( auto it = m_votes.begin(); it!=m_votes.end(); ++it )
 				(*it)->Serialize( ar );
-			ar << m_nQuestSize;
-			ar.Write( (const void*)m_aQuest, sizeof(GUILDQUEST) * m_nQuestSize );
+
+			ar << m_quests.size();
+			for (const std::pair<int, int> & p : m_quests) {
+				ar << p.first << p.second;
+			}
 		}
 	}
 	else
@@ -446,9 +445,15 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 				pVote->Serialize( ar );
 				m_votes.push_back( pVote );
 			}
-
-			ar >> m_nQuestSize;
-			ar.Read( (void*)m_aQuest, sizeof(GUILDQUEST) * m_nQuestSize );
+			
+			m_quests.clear();
+			size_t questSize;
+			ar >> questSize;
+			for (size_t i = 0; i != questSize; ++i) {
+				int a, b;
+				ar >> a >> b;
+				m_quests.emplace(a, b);
+			}
 		}
 	}
 }
@@ -857,30 +862,20 @@ void CGuildMng::RemoveConnection( CPlayer* pPlayer )
 }
 #endif	// __CORESERVER
 
-void CGuild::SetQuest( int nQuestId, int nState )
-{
-	PGUILDQUEST pQuest	= FindQuest( nQuestId );
-	if( !pQuest )
-	{
-		if( m_nQuestSize >= MAX_GUILD_QUEST )
-		{
-			Error( "OVER MAX_GUILD_QUEST" );
+void CGuild::SetQuest( int nQuestId, int nState ) {
+	const auto it = m_quests.find(nQuestId);
+
+	if (it != m_quests.end()) {
+		it->second = nState;
+	} else {
+		if (m_quests.size() >= MAX_GUILD_QUEST) {
+			Error("OVER MAX_GUILD_QUEST");
 			return;
 		}
-		for( int i = 0; i < m_nQuestSize; i++ )
-		{
-			if( m_aQuest[i].nId == -1 )
-			{
-				pQuest	= m_pQuest	= &m_aQuest[i];
-				break;
-			}
-		}
-		if( !pQuest )
-			pQuest	= m_pQuest	= &m_aQuest[m_nQuestSize++];
+
+		m_quests[nQuestId] = nState;
 	}
-	
-	pQuest->nState	= nState;
-	pQuest->nId		= nQuestId;
+
 #ifdef __WORLDSERVER
 	CUser* pUser;
 	CGuildMember* pMember;
@@ -896,11 +891,10 @@ void CGuild::SetQuest( int nQuestId, int nState )
 
 BOOL CGuild::RemoveQuest( int nQuestId )
 {
-	PGUILDQUEST pQuest	= FindQuest( nQuestId );
-	if( !pQuest )
-		return FALSE;
-	pQuest->nId	= -1;
-	return TRUE;
+	const auto it = m_quests.find(nQuestId);
+	if (it == m_quests.end()) return FALSE;
+
+	m_quests.erase(it);
 #ifdef __WORLDSERVER
 	CUser* pUser;
 	CGuildMember* pMember;
@@ -912,21 +906,13 @@ BOOL CGuild::RemoveQuest( int nQuestId )
 			pUser->AddRemoveGuildQuest( nQuestId );
 	}
 #endif	// __WORLDSERVER
+	return TRUE;
 }
 
-PGUILDQUEST CGuild::FindQuest( int nQuestId )
-{
-	if( m_pQuest && m_pQuest->nId == nQuestId )
-		return m_pQuest;
-	for( int i = 0; i < m_nQuestSize; i++ )
-	{
-		if( m_aQuest[i].nId == nQuestId )
-		{
-			m_pQuest	= &m_aQuest[i];
-			return m_pQuest;
-		}
-	}
-	return NULL;
+std::optional<int> CGuild::GetStateOfQuest( int nQuestId ) const {
+	const auto itQuest = m_quests.find(nQuestId);
+	if (itQuest == m_quests.end()) return std::nullopt;
+	return itQuest->second;
 }
 
 #ifdef __WORLDSERVER
@@ -980,7 +966,7 @@ void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 			if( pMaster && !pMaster->IsNearPC( pUser->GetId() ) )
 				continue;
 
-			if( GetQuest( QUEST_WARMON_LV1 ) != NULL ) // 클락워크 퀘스트면 비행 해제
+			if( GetStateOfQuest( QUEST_WARMON_LV1 ) ) // 클락워크 퀘스트면 비행 해제
 				pUser->UnequipRide();
 			pUser->REPLACE( g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nTempLayer );
 		}
