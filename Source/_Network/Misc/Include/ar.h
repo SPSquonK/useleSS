@@ -83,6 +83,19 @@ public:
 	CAr& operator>>(char& ch);
 	CAr& operator>>(unsigned& u);
 
+	template <typename E>
+	CAr & operator<<(E e) requires (std::is_scoped_enum_v<E>) {
+		return *this << std::to_underlying(e);
+	}
+
+	template <typename E>
+	CAr & operator>>(E & e) requires (std::is_scoped_enum_v<E>) {
+		std::underlying_type_t<E> v;
+		*this >> v;
+		e = static_cast<E>(v);
+		return *this;
+	}
+
 	template<size_t N>
 	CAr & operator>>(char(&buffer)[N]) requires (N >= 3) {
 		ReadString(buffer, N);
