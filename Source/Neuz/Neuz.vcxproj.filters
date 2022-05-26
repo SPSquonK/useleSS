@@ -628,9 +628,6 @@
     <ClCompile Include="..\_Common\moverbuff.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\partyquest.cpp">
-      <Filter>Source Files\_Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\PCBang.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
@@ -829,9 +826,6 @@
     <ClCompile Include="..\_common\guild.cpp">
       <Filter>Source Files\_Common\Contents</Filter>
     </ClCompile>
-    <ClCompile Include="..\_common\guildquest.cpp">
-      <Filter>Source Files\_Common\Contents</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\GuildRender.cpp">
       <Filter>Source Files\_Common\Contents</Filter>
     </ClCompile>
@@ -996,9 +990,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\ItemContainer.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Common\groupquest.cpp">
-      <Filter>Source Files\_Common\Contents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

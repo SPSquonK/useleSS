@@ -45,6 +45,7 @@ GUILDQUESTRECT, *PGUILDQUESTRECT;
 class CGuild;
 
 
+#ifdef __WORLDSERVER
 class CGuildQuestProcessor final : public GroupQuest::CQuestProcessor {
 public:
 	static CGuildQuestProcessor * GetInstance();
@@ -55,3 +56,4 @@ public:
 
 	void Process();
 };
+#endif

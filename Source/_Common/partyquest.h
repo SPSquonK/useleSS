@@ -57,6 +57,9 @@ typedef struct	__PARTYQUESTRECT
 }
 PARTYQUESTRECT, *PPARTYQUESTRECT;
 
+
+#ifdef __WORLDSERVER
+
 class CPartyQuestProcessor final : public GroupQuest::CQuestProcessor {
 public:
 	static CPartyQuestProcessor * GetInstance();
@@ -77,3 +80,4 @@ private:
 	void Boom(int nQuestId, CRect rect, DWORD dwWorldId);
 };
 
+#endif

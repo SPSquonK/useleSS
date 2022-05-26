@@ -96,7 +96,6 @@
   <ItemGroup>
     <ClCompile Include="..\_Common\accessory.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\groupquest.cpp" />
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="CampusHelper.cpp">
@@ -437,8 +436,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\moverbuff.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\partyquest.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\PCBang.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\piercing.cpp">
@@ -565,8 +562,6 @@
     <ClCompile Include="..\_Common\Script.cpp">
     </ClCompile>
     <ClCompile Include="..\_common\guild.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_common\guildquest.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\GuildRender.cpp">
     </ClCompile>

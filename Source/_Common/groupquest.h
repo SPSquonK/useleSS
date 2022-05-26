@@ -31,6 +31,7 @@ namespace GroupQuest {
   };
 
 
+#ifdef __WORLDSERVER
   class CQuestProcessor {
   protected:
     std::array<QuestElem, MaxQuest> m_pElem;
@@ -52,6 +53,7 @@ namespace GroupQuest {
     [[nodiscard]] const CRect * GetQuestRect(int nId) const;
     [[nodiscard]] const QuestRect * GetQuestQuestRect(int nId) const;
   };
+#endif
 
 }
 
