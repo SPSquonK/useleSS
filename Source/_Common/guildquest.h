@@ -35,16 +35,6 @@ struct	GUILDQUESTPROP
 		};
 };
 
-typedef struct	__GUILDQUESTRECT
-{
-	int nId;
-	CRect rect;
-}
-GUILDQUESTRECT, *PGUILDQUESTRECT;
-
-class CGuild;
-
-
 #ifdef __WORLDSERVER
 class CGuildQuestProcessor final : public GroupQuest::CQuestProcessor {
 public:

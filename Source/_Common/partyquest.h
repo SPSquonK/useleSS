@@ -49,15 +49,6 @@ struct	PARTYQUESTPROP
 		};
 };
 
-typedef struct	__PARTYQUESTRECT
-{
-	int nId;
-	DWORD	dwWorldId;
-	CRect rect;
-}
-PARTYQUESTRECT, *PPARTYQUESTRECT;
-
-
 #ifdef __WORLDSERVER
 
 class CPartyQuestProcessor final : public GroupQuest::CQuestProcessor {
