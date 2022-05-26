@@ -36,7 +36,7 @@ void CGuildQuestProcessor::Process()
 			{
 				switch( pElem->nProcess )
 				{
-					case GQP_WORMON:
+					case GroupQuest::ProcessState::Wormon:
 						{
 							TRACE( "GQP_WORMON - r\n" );
 
@@ -56,7 +56,7 @@ void CGuildQuestProcessor::Process()
 							RemoveGuildQuest( pElem->nId );
 						}
 						break;
-					case GQP_GETITEM:
+					case GroupQuest::ProcessState::GetItem:
 						{
 							TRACE( "GQP_GETITEM - r\n" );
 
@@ -79,7 +79,7 @@ void CGuildQuestProcessor::Process()
 			{
 				switch( pElem->nProcess )
 				{
-					case GQP_WORMON:
+					case GroupQuest::ProcessState::Wormon:
 						{
 							TRACE( "GQP_WORMON - p\n" );
 							
@@ -126,7 +126,7 @@ void CGuildQuestProcessor::Process()
 							}
 						}
 						break;
-					case GQP_GETITEM:
+					case GroupQuest::ProcessState::GetItem:
 						{
 							TRACE( "GQP_GETITEM - p\n" );
 							CRect rect;
@@ -198,7 +198,7 @@ void CGuildQuestProcessor::SetGuildQuest( int nQuestId, int nState, int ns, int 
 	pElem->dwEndTime	= GetTickCount() + MIN( 60 );
 //#endif	// __INTERNALSERVER
 	
-	pElem->nProcess		= GQP_WORMON;
+	pElem->nProcess		= GroupQuest::ProcessState::Wormon;
 	pElem->ns	= ns;
 	pElem->nf	= nf;
 	pElem->objidWormon	= objidWormon;
@@ -228,13 +228,7 @@ void CGuildQuestProcessor::RemoveGuildQuest( int nQuestId )
 
 	TRACE( "REMOVE_GUILD_QUEST, %d\n", nQuestId );
 
-	PGUILDQUESTELEM pElem	= &m_pElem[nQuestId];
-	pElem->nId		= -1;
-	pElem->nState	= 0;
-	pElem->idGuild		= 0;
-	pElem->nProcess	= GQP_READY;
-	pElem->dwEndTime	= 0;
-	pElem->nCount	= 0;
+	m_pElem[nQuestId] = GUILDQUESTELEM();
 }
 
 BOOL CGuildQuestProcessor::IsQuesting( int nQuestId )

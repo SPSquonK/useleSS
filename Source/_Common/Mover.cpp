@@ -6083,7 +6083,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				{
 					pGuild->SetQuest( pElem->nId, pElem->ns );
 					g_dpDBClient.SendUpdateGuildQuest( pGuild->m_idGuild, pElem->nId, pElem->ns );
-					pElem->nProcess	= GQP_GETITEM;
+					pElem->nProcess	= GroupQuest::ProcessState::GetItem;
 					pElem->dwEndTime	= GetTickCount() + MIN( 20 );
 					pElem->ns	= pElem->nf	= 0;
 					pElem->nState	= 0;
@@ -6101,13 +6101,13 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				CParty* pParty	= g_PartyMng.GetParty( pAttacker->m_idparty );				
 				if( pParty )
 				{
-					pElem->nProcess	= PQP_GETITEM;
+					pElem->nProcess	= GroupQuest::ProcessState::GetItem;
 					pElem->dwEndTime	= GetTickCount() + MIN( 20 );
 					pElem->ns	= pElem->nf	= 0;
 					pElem->nState	= 0;
 					pElem->objidWormon	= NULL_ID;
 					
-					pProcessor->SendQuestLimitTime( PQP_GETITEM, MIN( 20 ), pAttacker->m_idparty );
+					pProcessor->SendQuestLimitTime(GroupQuest::ProcessState::GetItem, MIN( 20 ), pAttacker->m_idparty );
 				}
 			
 			}

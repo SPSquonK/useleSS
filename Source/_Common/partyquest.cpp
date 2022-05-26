@@ -28,7 +28,7 @@ void CPartyQuestProcessor::Process()
 			{
 				switch( pElem->nProcess )
 				{
-					case PQP_WORMON:
+					case GroupQuest::ProcessState::Wormon:
 						{
 							TRACE( "PQP_WORMON - r\n" );
 
@@ -55,7 +55,7 @@ void CPartyQuestProcessor::Process()
 							RemovePartyQuest( pElem->nId );
 						}
 						break;
-					case PQP_GETITEM:
+					case GroupQuest::ProcessState::GetItem:
 						{
 							TRACE( "PQP_GETITEM - r\n" );
 
@@ -86,7 +86,7 @@ void CPartyQuestProcessor::Process()
 			{
 				switch( pElem->nProcess )
 				{
-					case PQP_WORMON:
+					case GroupQuest::ProcessState::Wormon:
 						{
 							TRACE( "PQP_WORMON - p\n" );
 							
@@ -115,7 +115,7 @@ void CPartyQuestProcessor::Process()
 										}
 										else
 										{
-											pUser->AddQuestTextTime( 0, 0, 0xffffffff );											
+											pUser->AddQuestTextTime( 0, GroupQuest::ProcessState::Ready, 0xffffffff );
 										}
 									}
 								}
@@ -129,7 +129,7 @@ void CPartyQuestProcessor::Process()
 										POINT point = { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};
 										if( !rect.PtInRect( point ) )
 										{
-											pUser->AddQuestTextTime( 0, 0, 0xffffffff );											
+											pUser->AddQuestTextTime( 0, GroupQuest::ProcessState::Ready, 0xffffffff );
 										}
 									}
 								}
@@ -159,7 +159,7 @@ void CPartyQuestProcessor::Process()
 							}
 						}
 						break;
-					case PQP_GETITEM:
+					case GroupQuest::ProcessState::GetItem:
 						{
 							TRACE( "PQP_GETITEM - p\n" );
 							CRect rect;
@@ -194,7 +194,7 @@ void CPartyQuestProcessor::Process()
 										POINT point = { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};
 										if( !rect.PtInRect( point ) )
 										{
-											pUser->AddQuestTextTime( 0, 0, 0xffffffff );											
+											pUser->AddQuestTextTime( 0, GroupQuest::ProcessState::Ready, 0xffffffff );
 										}
 									}
 								}
@@ -254,7 +254,7 @@ void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPo
 		if( pObj )
 		{
 			CUser* pUser = (CUser*)pObj;
-			pUser->AddQuestTextTime( 0, 0, 0xffffffff );			
+			pUser->AddQuestTextTime( 0, GroupQuest::ProcessState::Ready, 0xffffffff );			
 			( (CUser*)pObj )->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, vPos2, REPLACE_NORMAL, nDefaultLayer );
 		}
 	}
@@ -283,14 +283,14 @@ void CPartyQuestProcessor::SetPartyQuest( int nQuestId, int nState, int ns, int 
 	pElem->idParty	= idParty;
 	pElem->dwEndTime	= GetTickCount() + MIN( 60 );
 	
-	pElem->nProcess		= PQP_WORMON;
+	pElem->nProcess		= GroupQuest::ProcessState::Wormon;
 	pElem->ns	= ns;
 	pElem->nf	= nf;
 	pElem->objidWormon	= objidWormon;
 	pElem->nCount	= 0;
 
 	// 유저에게 공략시간을 넘겨준다...
-	SendQuestLimitTime( PQP_WORMON, MIN( 60 ), idParty );
+	SendQuestLimitTime(GroupQuest::ProcessState::Wormon, MIN( 60 ), idParty );
 
 	// 파티퀘스트시작시 정보를 파일에 기록한다.
 	CString strFileName = "StartPartyQuestInfo.txt";
@@ -320,7 +320,7 @@ void CPartyQuestProcessor::SetPartyQuest( int nQuestId, int nState, int ns, int 
 	////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-void CPartyQuestProcessor::SendQuestLimitTime( int nState, DWORD dwTime, u_long idParty )
+void CPartyQuestProcessor::SendQuestLimitTime(GroupQuest::ProcessState nState, DWORD dwTime, u_long idParty )
 {
 	CParty* pParty	= g_PartyMng.GetParty( idParty );
 	if( pParty )
@@ -376,13 +376,7 @@ void CPartyQuestProcessor::RemovePartyQuest( int nQuestId )
 
 	TRACE( "REMOVE_PARTY_QUEST, %d\n", nQuestId );
 
-	PPARTYQUESTELEM pElem	= &m_pElem[nQuestId];
-	pElem->nId		= -1;
-	pElem->nState	= 0;
-	pElem->idParty		= 0;
-	pElem->nProcess	= PQP_READY;
-	pElem->dwEndTime	= 0;
-	pElem->nCount	= 0;
+	m_pElem[nQuestId] = PARTYQUESTELEM();
 }
 
 BOOL CPartyQuestProcessor::IsQuesting( int nQuestId )

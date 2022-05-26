@@ -6087,7 +6087,7 @@ void CDPClient::OnChangeFace( CAr & ar )
 void CDPClient::OnQuestTextTime( CAr & ar )
 {
 	BOOL  bFlag;
-	int   nState;
+	GroupQuest::ProcessState   nState;
 	DWORD dwTime;
 
 	ar >> bFlag;

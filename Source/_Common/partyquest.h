@@ -4,6 +4,7 @@
 #pragma once
 
 #include "projectcmn.h"
+#include "groupquest.h"
 
 #define	MAX_PARTY_QUEST_TITLE_LEN		32
 #define	MAX_PARTY_QUEST_STATE		16
@@ -65,15 +66,10 @@ typedef	struct	_PARTYQUEST
 }
 PARTYQUEST,	*PPARTYQUEST;
 
-enum
-{
-	PQP_READY,	PQP_WORMON,	PQP_GETITEM,
-};
-
 typedef struct	_PARTYQUESTELEM : public _PARTYQUEST
 {
 	DWORD	dwEndTime;
-	BYTE	nProcess;
+	GroupQuest::ProcessState	nProcess;
 	BYTE	ns;
 	BYTE	nf;
 	OBJID	objidWormon;
@@ -82,7 +78,7 @@ typedef struct	_PARTYQUESTELEM : public _PARTYQUEST
 	_PARTYQUESTELEM() : _PARTYQUEST()
 	{
 		dwEndTime	= 0;
-		nProcess	= PQP_READY;
+		nProcess	= GroupQuest::ProcessState::Ready;
 		ns	= nf	= 0;
 		objidWormon		= NULL_ID;
 		nCount	= 0;
@@ -99,6 +95,8 @@ typedef struct	__PARTYQUESTRECT
 PARTYQUESTRECT, *PPARTYQUESTRECT;
 
 //class CGuild;
+#include <boost/container/flat_map.hpp>
+
 class CPartyQuestProcessor final
 {
 private:
@@ -116,7 +114,7 @@ public:
 	BOOL	IsQuesting( int nQuestId );
 	static	CPartyQuestProcessor* GetInstance( void );
 	void	RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPos, int nRange );
-	void	SendQuestLimitTime( int nState, DWORD dwTime, u_long idParty );
+	void	SendQuestLimitTime(GroupQuest::ProcessState nState, DWORD dwTime, u_long idParty );
 	void	AddQuestRect( int nId, DWORD dwWorldId, int x1, int y1, int x2, int y2 );
 	int		PtInQuestRect( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
 };

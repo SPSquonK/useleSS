@@ -6246,7 +6246,7 @@ void CUser::AddGCPlayerPoint( void )
 		m_Snapshot.ar << GCPlayerPoint.nPoint;
 	}	
 }
-void CUser::AddQuestTextTime( BOOL bFlag, int nState, DWORD dwTime )
+void CUser::AddQuestTextTime( BOOL bFlag, GroupQuest::ProcessState nState, DWORD dwTime )
 {
 	if( IsDelete() )	return;
 	

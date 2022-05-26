@@ -162,12 +162,11 @@ typedef struct __GCWARSTATE
 	BOOL   m_bWar;
 } __GCWARSTATE;
 
-typedef struct __PGUEST_TIME_TEXT
-{
+struct __PGUEST_TIME_TEXT {
 	BOOL bFlag;
-	int  nState;
+	GroupQuest::ProcessState  nState;
 	DWORD dwQuestTime;
-} __PGUEST_TIME_TEXT;
+};
 
 typedef struct __SRGUILDINFO
 {

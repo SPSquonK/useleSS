@@ -4,6 +4,7 @@
 #pragma once
 
 #include "projectcmn.h"
+#include "groupquest.h"
 
 #define	MAX_GUILD_QUEST_TITLE_LEN		32
 #define	MAX_GUILD_QUEST_STATE		16
@@ -52,15 +53,10 @@ typedef	struct	_GUILDQUEST
 }
 GUILDQUEST,	*PGUILDQUEST;
 
-enum
-{
-	GQP_READY,	GQP_WORMON,	GQP_GETITEM,
-};
-
 typedef struct	_GUILDQUESTELEM : public _GUILDQUEST
 {
 	DWORD	dwEndTime;
-	BYTE	nProcess;
+	GroupQuest::ProcessState	nProcess;
 	BYTE	ns;
 	BYTE	nf;
 	OBJID	objidWormon;
@@ -69,7 +65,7 @@ typedef struct	_GUILDQUESTELEM : public _GUILDQUEST
 	_GUILDQUESTELEM() : _GUILDQUEST()
 	{
 		dwEndTime	= 0;
-		nProcess	= GQP_READY;
+		nProcess	= GroupQuest::ProcessState::Ready;
 		ns	= nf	= 0;
 		objidWormon		= NULL_ID;
 		nCount	= 0;

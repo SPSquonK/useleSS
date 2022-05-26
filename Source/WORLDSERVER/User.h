@@ -442,7 +442,7 @@ public:
 	void			AddGCWarPlayerlist( void );
 	void			AddCtrlCoolTimeCancel( void );
 	void			AddGuildCombatState( void );
-	void			AddQuestTextTime( BOOL bFlag, int nState, DWORD dwTime );
+	void			AddQuestTextTime( BOOL bFlag, GroupQuest::ProcessState nState, DWORD dwTime );
 	void			AddGCLog( void );
 	void			AddGCPlayerPoint( void );
 	void			AddFocusObj(OBJID objid);
