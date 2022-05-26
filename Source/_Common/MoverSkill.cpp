@@ -1185,26 +1185,12 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum );
 		}
 		
-		PRegionElem pRgnElem	= NULL;
 		CWorld* pWorld	= GetWorld();
 		if( !pWorld )
 			return FALSE;
 
-		if( IsChaotic() )
-		{
-			if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-				pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-			if( NULL == pRgnElem )	// Find near revival pos
-				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
-		}
-		else
+		const RegionElem * pRgnElem = g_WorldMng.GetRevival(*pWorld, GetPos(), IsChaotic());
 
-		{
-			if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-				pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-			if( NULL == pRgnElem )	// Find near revival pos
-				pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), GetPos() );
-		}
 		if( NULL != pRgnElem )
 			REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, type, nRevivalLayer );
 		else
@@ -1236,7 +1222,7 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 			CWorld* pWorld = g_WorldMng.GetWorld( pItemProp->dwWeaponType );
 			if( pWorld )
 				pRgnElem	= g_WorldMng.GetRevivalPosChao( pItemProp->dwWeaponType, pItemProp->szTextFileName );
-			if( NULL == pRgnElem )	// Find near revival pos
+			if( NULL == pRgnElem && pWorld )	// Find near revival pos
 				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
 
 			if( pRgnElem )

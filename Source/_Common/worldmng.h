@@ -21,6 +21,7 @@ WORLD,* LPWORLD;
 #define MAX_WORLD	256
 
 class CWorld;
+class CMover;
 
 class CWorldMng final {
 public:
@@ -74,6 +75,9 @@ public:
 	PRegionElem		GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
 	PRegionElem		GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey );
 	PRegionElem		GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
+
+	const RegionElem * GetRevival(CMover * pUser);
+	const RegionElem * GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, bool isChaotic);
 #endif	// __WORLDSERVER
 public:
 

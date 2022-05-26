@@ -947,11 +947,8 @@ void CGuild::ReplaceLodestar( const CRect &rect )
 				POINT point	= { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};
 				if( rect.PtInRect( point ) )
 				{
-					PRegionElem pRgnElem	= NULL;
-					if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-						pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-					if( !pRgnElem )	// Find near revival pos
-						pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), pUser->GetPos() );
+					const RegionElem * pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), true);
+
 					if( pRgnElem )
 						pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
 				}

@@ -1479,7 +1479,7 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 				if( pUserIk3[cou]->GetWorld() )
 				{
 					////
-					PRegionElem pRgnElem	= NULL;
+					const RegionElem * pRgnElem	= NULL;
 					DWORD dwWorldID	= pUserIk3[cou]->GetWorld()->GetID();
 					CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
 					int nId	= pProcessor->PtInQuestRect( pUserIk3[cou]->GetPos() );
@@ -1488,24 +1488,7 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 						PGUILDQUESTELEM pElem	= pProcessor->GetGuildQuest( nId );
 						if( !pElem || pElem->idGuild != pUserIk3[cou]->m_idGuild )
 						{
-							CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldID );
-							if( pWorld )
-							{
-								if( pUserIk3[cou]->IsChaotic() )
-								{
-									if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-										pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-									if( !pRgnElem )	// Find near revival pos
-										pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUserIk3[cou]->GetPos() );
-								}
-								else
-								{
-									if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-										pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-									if( !pRgnElem )	// Find near revival pos
-										pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), pUserIk3[cou]->GetPos() );
-								}
-							}
+							pRgnElem = g_WorldMng.GetRevival(pUserIk3[cou]);
 						}
 					}
 					////
@@ -1591,7 +1574,7 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 			if( pUser->GetWorld() )
 			{
 				////
-				PRegionElem pRgnElem	= NULL;
+				const RegionElem * pRgnElem	= NULL;
 				DWORD dwWorldID	= pUser->GetWorld()->GetID();
 				CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
 				int nId	= pProcessor->PtInQuestRect( pUser->GetPos() );
@@ -1600,24 +1583,7 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 					PGUILDQUESTELEM pElem	= pProcessor->GetGuildQuest( nId );
 					if( !pElem || pElem->idGuild != pUser->m_idGuild )
 					{
-						CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldID );
-						if( pWorld )
-						{
-							if( pUser->IsChaotic() )
-							{
-								if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-									pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-								if( !pRgnElem )	// Find near revival pos
-									pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );
-							}
-							else
-							{
-								if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-									pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-								if( !pRgnElem )	// Find near revival pos
-									pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), pUser->GetPos() );
-							}
-						}
+						pRgnElem = g_WorldMng.GetRevival(pUser);
 					}
 				}
 				////

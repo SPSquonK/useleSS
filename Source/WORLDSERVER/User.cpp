@@ -3184,25 +3184,12 @@ void CUser::AdjustGuildQuest( DWORD dwWorldId )
 		if( !pElem || pElem->idGuild != m_idGuild )
 		{
 			CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
-			if( pWorld )
+			if( pWorld && pWorld == GetWorld())
 			{
-				PRegionElem pRgnElem	= NULL;
-				if( IsChaotic() )
-				{
-					if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-						pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-					if( !pRgnElem )	// Find near revival pos
-						pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
+				const RegionElem * pRgnElem = g_WorldMng.GetRevival(this);
+				if (pRgnElem) {
+					SetPos(pRgnElem->m_vPos);
 				}
-				else
-				{
-					if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-						pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-					if( !pRgnElem )	// Find near revival pos
-						pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), GetPos() );
-				}
-				if( pRgnElem )
-					SetPos( pRgnElem->m_vPos );
 			}
 		}
 	}
@@ -3543,23 +3530,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 				pUser->SetFatiguePoint( nVal );
 			
 
-			PRegionElem pRgnElem	= NULL;
-			if( pUser->IsChaotic() )
-			{
-				if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-					pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-				
-				if( NULL == pRgnElem )
-					pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );
-			}
-			else
-			{
-				if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-					pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-				
-				if( NULL == pRgnElem )
-					pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), pUser->GetPos() );
-			}
+			const RegionElem * pRgnElem = g_WorldMng.GetRevival(pUser);
 
 			if( pRgnElem )
 			{

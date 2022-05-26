@@ -519,26 +519,12 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 			{
 				REPLACE_TYPE type = REPLACE_NORMAL;
 
-				PRegionElem pRgnElem	= NULL;
 				CWorld* pWorld	= GetWorld();
 				if( !pWorld )
 					return FALSE;
 
-				if( IsChaotic() )
-				{
-					if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-						pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-					if( NULL == pRgnElem )	// Find near revival pos
-						pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
-				}
-				else
+				const RegionElem * pRgnElem = g_WorldMng.GetRevival(this);
 
-				{
-					if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-						pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-					if( NULL == pRgnElem )	// Find near revival pos
-						pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), GetPos() );
-				}
 				if( NULL != pRgnElem )
 					REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, type, nRevivalLayer );
 				else

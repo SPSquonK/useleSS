@@ -925,26 +925,11 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 			return;
 		}
 
-		PRegionElem	pRgnElem	= NULL;
-		if( pUser->IsChaotic()
-#ifdef __JEFF_11_4
-			&& !pWorld->IsArena()
-#endif	// __JEFF_11_4
-			)
-		{
-			if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-				pRgnElem	= g_WorldMng.GetRevivalPosChao( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-			if( NULL == pRgnElem )	// Find near revival pos
-				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), pUser->GetPos() );	
-		}
-		else
-		{
-			if( pWorld->GetID() != pWorld->m_dwIdWorldRevival && pWorld->m_dwIdWorldRevival != 0 )
-				pRgnElem	= g_WorldMng.GetRevivalPos( pWorld->m_dwIdWorldRevival, pWorld->m_szKeyRevival );
-			
-			if( NULL == pRgnElem )	// Find near revival pos
-				pRgnElem	= g_WorldMng.GetNearRevivalPos( pWorld->GetID(), pUser->GetPos() );	
-		}
+		const RegionElem * pRgnElem = g_WorldMng.GetRevival(
+			*pWorld,
+			pUser->GetPos(),
+			pUser->IsChaotic() && !pWorld->IsArena()
+		);
 
 		if( pRgnElem ) 
 			pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_FORCE, nRevivalLayer );

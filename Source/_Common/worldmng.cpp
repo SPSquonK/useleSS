@@ -539,6 +539,36 @@ PRegionElem CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & v
 	}
 	return ptr;
 }
+
+const RegionElem * CWorldMng::GetRevival(CMover * pUser) {
+	const CWorld * pWorld = pUser->GetWorld();
+	if (!pWorld) return nullptr;
+	return GetRevival(*pWorld, pUser->GetPos(), pUser->IsChaotic());
+}
+
+const RegionElem * CWorldMng::GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, const bool isChaotic) {
+	const RegionElem * retval = nullptr;
+
+	const bool differentWorldRevival =
+		world.GetID() != world.m_dwIdWorldRevival
+		&& world.m_dwIdWorldRevival != 0;
+
+	if (isChaotic) {
+		retval = GetRevivalPosChao(world.m_dwIdWorldRevival, world.m_szKeyRevival);
+	} else {
+		retval = GetRevivalPos(world.m_dwIdWorldRevival, world.m_szKeyRevival);
+	}
+
+	if (!retval) {
+		if (isChaotic) {
+			retval = GetNearRevivalPosChao(world.GetID(), vPos);
+		} else {
+			retval = GetNearRevivalPos(world.GetID(), vPos);
+		}
+	}
+
+	return retval;
+}
 #endif	// __WORLDSERVER
 
 #ifdef __WORLDSERVER
