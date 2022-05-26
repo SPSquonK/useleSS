@@ -2861,14 +2861,21 @@ bool MoverSub::Quests::IsCompletedQuest(const int questId) const {
 	return it != completed.end();
 }
 
-BOOL CMover::MakeCompleteQuest(int nQuestId, QUEST * lpQuest) {
-	if (!m_quests) return FALSE;
-	if (!m_quests->IsCompletedQuest(nQuestId)) return FALSE;
+std::optional<BYTE> CMover::GetQuestState(const int nQuestId) const {
+	if (!m_quests) return std::nullopt;
 
-	ZeroMemory(lpQuest, sizeof(QUEST));
-	lpQuest->m_wId = nQuestId;
-	lpQuest->m_nState = QS_END;
-	return true;
+	const auto inCurrent = std::ranges::find_if(
+		m_quests->current, MoverSub::Quests::ById(nQuestId)
+	);
+	if (inCurrent != m_quests->current.end()) {
+		return inCurrent->m_nState;
+	}
+
+	if (m_quests->IsCompletedQuest(nQuestId)) {
+		return QS_END;
+	}
+
+	return std::nullopt;
 }
 
 void MoverSub::Quests::Clear() {

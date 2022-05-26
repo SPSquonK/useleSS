@@ -263,13 +263,7 @@ int APIENTRY GetEmptyInventoryNum( NPCDIALOG_INFO* pInfo )
 int APIENTRY GetQuestState( NPCDIALOG_INFO* pInfo, int nQuest )
 {
 	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
-	LPQUEST pQuest = pUser->GetQuest( nQuest );
-	if( pQuest ) 
-		return pQuest->m_nState;
-	QUEST quest;
-	if( pUser->MakeCompleteQuest( nQuest, &quest ) )
-		return quest.m_nState;
-	return -1;
+	return pUser->GetQuestState(nQuest).value_or(-1);
 }
 int APIENTRY IsSetQuest( NPCDIALOG_INFO* pInfo, int nQuest )
 {

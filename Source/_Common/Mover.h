@@ -920,7 +920,7 @@ public:
 	LPQUEST			GetQuest( int nQuestId );
 	BOOL			RemoveQuest( int nQuestId );
 	BOOL			IsCompleteQuest( int nQuestId );
-	BOOL			MakeCompleteQuest( int nQuestId, LPQUEST lpQuest );
+	[[nodiscard]] std::optional<BYTE> GetQuestState(int nQuestId) const;
 	BOOL			SetQuest( int nQuestId, int nState, LPQUEST lpReturnQuest );
 	BOOL			SetQuest( LPQUEST lpQuest );
 	void			RemoveAllQuest();

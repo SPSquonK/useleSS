@@ -530,34 +530,26 @@ void CWndQuest::InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQu
 				lpTreeElem = pQuestTreeCtrl->FindTreeElem( dwNowHeadQuestID );
 
 			CString strFullQuestTitle = _T( "" );
-			QUEST oCompleteQuest;
-			LPQUEST lpQuest = g_pPlayer->GetQuest( dwQuestID );
-			if( lpQuest == NULL )
-			{
-				if( g_pPlayer->IsCompleteQuest( dwQuestID ) )
-				{
-					g_pPlayer->MakeCompleteQuest( dwQuestID, &oCompleteQuest );
-					lpQuest = &oCompleteQuest;
-				}
-			}
-			if( lpQuest )
-			{
+
+			const auto questState = g_pPlayer->GetQuestState(dwQuestID);
+			if(questState.has_value()) {
 				CString strState = _T( "" );
 				if( g_Option.m_bOperator || g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-					strState.Format( "(%d, %d)", lpQuest->m_nState, lpQuest->m_wId );
-				strFullQuestTitle.Format( "%s%s", strQuestTitle, strState );
-				if( bCompleteQuest )
-					pQuestTreeCtrl->InsertItem( lpTreeElem, strFullQuestTitle, dwQuestID, TRUE )->m_dwColor = 0xffc0c0c0;
-				else
-				{
-					if( g_QuestTreeInfoManager.GetTreeInformation( dwQuestID ) == NULL )
-						g_QuestTreeInfoManager.InsertTreeInformation( dwQuestID, TRUE );
-					pQuestTreeCtrl->InsertItem( lpTreeElem, strFullQuestTitle, dwQuestID, FALSE, IsCheckedQuestID( dwQuestID ) );
+					strState.Format( "(%d, %ul)", static_cast<int>(questState.value()), dwQuestID);
+				strFullQuestTitle = strQuestTitle + strState;
+				
+				if (bCompleteQuest) {
+					TREEELEM * elem = pQuestTreeCtrl->InsertItem(lpTreeElem, strFullQuestTitle, dwQuestID, TRUE);
+					elem->m_dwColor = 0xffc0c0c0;
+				} else {
+					if (g_QuestTreeInfoManager.GetTreeInformation(dwQuestID) == NULL)
+						g_QuestTreeInfoManager.InsertTreeInformation(dwQuestID, TRUE);
+					pQuestTreeCtrl->InsertItem(lpTreeElem, strFullQuestTitle, dwQuestID, FALSE, IsCheckedQuestID(dwQuestID));
 				}
 			}
 			else
 			{
-				strFullQuestTitle.Format( "%s", strQuestTitle );
+				strFullQuestTitle = strQuestTitle;
 				LPTREEELEM pFolderTreeElem = pQuestTreeCtrl->InsertItem( lpTreeElem, strFullQuestTitle, dwQuestID );
 				if( nNewQuestId != -1 && prj.m_aPropQuest.GetAt( nNewQuestId )->m_nHeadQuest == dwQuestID )
 				{
