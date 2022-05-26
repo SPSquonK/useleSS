@@ -916,8 +916,8 @@ public:
 	int				SumEquipDefenseAbility( LONG* pnMin, LONG* pnMax );
 	void			SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL bIgnoreSetItem = FALSE );
 	void			ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem );
-	LPQUEST			FindQuest( int nQuestId );
-	LPQUEST			GetQuest( int nQuestId );
+	[[nodiscard]] QUEST *			FindQuest( int nQuestId );
+	[[nodiscard]] QUEST *			GetQuest(int nQuestId) { return FindQuest(nQuestId); }
 	BOOL			RemoveQuest( int nQuestId );
 	BOOL			IsCompleteQuest( int nQuestId );
 	[[nodiscard]] std::optional<BYTE> GetQuestState(int nQuestId) const;

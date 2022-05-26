@@ -3564,10 +3564,10 @@ BOOL TextCmd_RemoveQuest(CScanner & s, CPlayer_ * pAdmin) {
 		pUser	= pAdmin;
 	}
 
-	LPQUEST pQuest	= pUser->GetQuest(nQuest );
+	const auto questState = pUser->GetQuestState(nQuest);
 	char pszComment[100]	= { 0, };
-	sprintf( pszComment, "%s %d", pAdmin->GetName(), ( pQuest? pQuest->m_nState: -1 ) );
-	g_dpDBClient.CalluspLoggingQuest(  pUser->m_idPlayer, nQuest, 40, pszComment );
+	sprintf(pszComment, "%s %d", pAdmin->GetName(), questState.value_or(-1));
+	g_dpDBClient.CalluspLoggingQuest(pUser->m_idPlayer, nQuest, 40, pszComment);
 
 	pUser->RemoveQuest( nQuest );
 	pUser->AddRemoveQuest( nQuest );

@@ -3025,11 +3025,6 @@ BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 	return TRUE;
 }
 
-LPQUEST CMover::GetQuest( int nQuestId )
-{
-	return FindQuest( nQuestId );
-}
-
 int CMover::GetItemNum( DWORD dwItemId )
 {
 	int nNum	= 0;

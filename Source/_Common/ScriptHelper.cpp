@@ -146,7 +146,7 @@ int __RemoveQuest( int nPcId, int nQuest )
 		CUser* pUser	= prj.GetUser( nPcId );
 		LPQUEST pQuest	= pUser->GetQuest( nQuest );
 
-		if( pQuest && pQuest->m_nState < 14 ) 
+		if( pQuest && pQuest->m_nState < QS_END ) 
 			pUser->AddDefinedText( TID_EVE_CANCELQUEST, "\"%s\"", pQuestProp->m_szTitle );
 		pUser->RemoveQuest( nQuest );
 		pUser->AddRemoveQuest( nQuest );
