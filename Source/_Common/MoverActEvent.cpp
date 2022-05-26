@@ -1092,13 +1092,13 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 					int nId	= pProc->PtInQuestRect( pWorld->GetID(), GetPos() );
 					if( nId > -1 )
 					{
-						PPARTYQUESTELEM pElem	= pProc->GetPartyQuest( nId );
+						GroupQuest::QuestElem * pElem	= pProc->GetPartyQuest( nId );
 						PPARTYQUESTRECT pRect	= pProc->GetPartyQuestRect( nId );
 						if( pElem && pRect )
 #ifdef __LAYER_1015
-							g_UserMng.ReplaceWorldArea( pElem->idParty, pRect->dwWorldId, pRect->dwWorldId, vLocal.x, vLocal.z, 0.5f, TRUE, GetLayer() );
+							g_UserMng.ReplaceWorldArea( pElem->idGroup, pRect->dwWorldId, pRect->dwWorldId, vLocal.x, vLocal.z, 0.5f, TRUE, GetLayer() );
 #else	// __LAYER_1015
-							g_UserMng.ReplaceWorldArea( pElem->idParty, pRect->dwWorldId, pRect->dwWorldId, vLocal.x, vLocal.z, 0.5f, TRUE );
+							g_UserMng.ReplaceWorldArea( pElem->idGroup, pRect->dwWorldId, pRect->dwWorldId, vLocal.x, vLocal.z, 0.5f, TRUE );
 #endif	// __LAYER_1015
 					}
 				}

@@ -3180,8 +3180,8 @@ void CUser::AdjustGuildQuest( DWORD dwWorldId )
 
 	if( nId > -1 )
 	{
-		PGUILDQUESTELEM pElem	= pProcessor->GetGuildQuest( nId );
-		if( !pElem || pElem->idGuild != m_idGuild )
+		GroupQuest::QuestElem * pElem	= pProcessor->GetGuildQuest( nId );
+		if( !pElem || pElem->idGroup != m_idGuild )
 		{
 			CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 			if( pWorld && pWorld == GetWorld())
@@ -3217,13 +3217,13 @@ void CUser::AdjustPartyQuest( DWORD dwWorldId )
 	int nId		= pProc->PtInQuestRect( dwWorldId, GetPos() );
 	if( nId > -1 )
 	{
-		PPARTYQUESTELEM pElem	= pProc->GetPartyQuest( nId );
-		if( pElem && pElem->idParty == m_idparty )
+		GroupQuest::QuestElem * pElem	= pProc->GetPartyQuest( nId );
+		if( pElem && pElem->idGroup == m_idparty )
 		{
 			DWORD dwTime	= pElem->dwEndTime - GetTickCount();
 			AddQuestTextTime( TRUE, pElem->nProcess , dwTime );
 		}
-		else if( !pElem || pElem->idParty != m_idparty )
+		else if( !pElem || pElem->idGroup != m_idparty )
 		{
 			SetMode( MODE_OUTOF_PARTYQUESTRGN );
 		}

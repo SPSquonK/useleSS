@@ -6,25 +6,15 @@
 #include "user.h"
 #include "dpdatabaseclient.h"
 
-CGuildQuestProcessor::CGuildQuestProcessor()
-{
-	m_nRect	= 0;
-}
-
-CGuildQuestProcessor::~CGuildQuestProcessor()
-{
-
-}
-
 void CGuildQuestProcessor::Process()
 {
 	DWORD dwTickCount	= GetTickCount();
 	for( int i = 0; i < MAX_GUILD_QUEST; i++ )
 	{
-		PGUILDQUESTELEM pElem = &m_pElem[i];
+		GroupQuest::QuestElem * pElem = &m_pElem[i];
 		if( pElem->nId == i )
 		{
-			CGuild* pGuild	= g_GuildMng.GetGuild( pElem->idGuild );
+			CGuild* pGuild	= g_GuildMng.GetGuild( pElem->idGroup );
 //			if( !pGuild )
 //				continue;
 
@@ -186,17 +176,12 @@ void CGuildQuestProcessor::SetGuildQuest( int nQuestId, int nState, int ns, int 
 	}
 
 	TRACE( "SET_GUILD_QUEST, %d, %d, %d\n", nQuestId, idGuild, objidWormon );
-	PGUILDQUESTELEM	pElem	= &m_pElem[nQuestId];
+	GroupQuest::QuestElem *	pElem	= &m_pElem[nQuestId];
 	pElem->nId	= nQuestId;
 	pElem->nState	= nState;
-	pElem->idGuild	= idGuild;
-//	pElem->dwEndTime	= GetTickCount() + pProp->dwTime;
-//	pElem->nProcess		=  nProcess;
-//#ifdef __INTERNALSERVER
-//	pElem->dwEndTime	= GetTickCount() + MIN( 10 );
-//#else	// __INTERNALSERVER
+	pElem->idGroup	= idGuild;
+
 	pElem->dwEndTime	= GetTickCount() + MIN( 60 );
-//#endif	// __INTERNALSERVER
 	
 	pElem->nProcess		= GroupQuest::ProcessState::Wormon;
 	pElem->ns	= ns;
@@ -205,7 +190,7 @@ void CGuildQuestProcessor::SetGuildQuest( int nQuestId, int nState, int ns, int 
 	pElem->nCount	= 0;
 }
 
-PGUILDQUESTELEM CGuildQuestProcessor::GetGuildQuest( int nQuestId )
+GroupQuest::QuestElem * CGuildQuestProcessor::GetGuildQuest( int nQuestId )
 {
 	if( nQuestId >= MAX_GUILD_QUEST )
 	{
@@ -228,7 +213,7 @@ void CGuildQuestProcessor::RemoveGuildQuest( int nQuestId )
 
 	TRACE( "REMOVE_GUILD_QUEST, %d\n", nQuestId );
 
-	m_pElem[nQuestId] = GUILDQUESTELEM();
+	m_pElem[nQuestId] = GroupQuest::QuestElem();
 }
 
 BOOL CGuildQuestProcessor::IsQuesting( int nQuestId )

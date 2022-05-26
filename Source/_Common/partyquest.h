@@ -1,6 +1,3 @@
-#ifndef __PARTYQUEST_H__
-#define	__PARTYQUEST_H__
-
 #pragma once
 
 #include "projectcmn.h"
@@ -51,41 +48,6 @@ struct	PARTYQUESTPROP
 		};
 };
 
-typedef	struct	_PARTYQUEST
-{
-	int		nId;
-	int		nState;
-	u_long	idParty;
-
-	_PARTYQUEST()
-		{
-			nId		= -1;
-			nState	= 0;
-			idParty		= 0;
-		};
-}
-PARTYQUEST,	*PPARTYQUEST;
-
-typedef struct	_PARTYQUESTELEM : public _PARTYQUEST
-{
-	DWORD	dwEndTime;
-	GroupQuest::ProcessState	nProcess;
-	BYTE	ns;
-	BYTE	nf;
-	OBJID	objidWormon;
-	short	nCount;
-
-	_PARTYQUESTELEM() : _PARTYQUEST()
-	{
-		dwEndTime	= 0;
-		nProcess	= GroupQuest::ProcessState::Ready;
-		ns	= nf	= 0;
-		objidWormon		= NULL_ID;
-		nCount	= 0;
-	};
-}
-PARTYQUESTELEM, *PPARTYQUESTELEM;
-
 typedef struct	__PARTYQUESTRECT
 {
 	int nId;
@@ -100,7 +62,7 @@ PARTYQUESTRECT, *PPARTYQUESTRECT;
 class CPartyQuestProcessor final
 {
 private:
-	PARTYQUESTELEM	m_pElem[MAX_PARTY_QUEST];
+	GroupQuest::QuestElem	m_pElem[MAX_PARTY_QUEST];
 	PARTYQUESTRECT	m_pRect[MAX_PARTY_QUEST];
 	int		m_nRect = 0;
 public:
@@ -108,7 +70,7 @@ public:
 	void	Process();
 
 	void	SetPartyQuest( int nQuestId, int nState, int ns, int nf, u_long idParty, OBJID objidWormon );
-	PPARTYQUESTELEM GetPartyQuest( int nQuestId );
+	GroupQuest::QuestElem * GetPartyQuest( int nQuestId );
 	PPARTYQUESTRECT	GetPartyQuestRect( int nQuestId );
 	void	RemovePartyQuest( int nQuestId );
 	BOOL	IsQuesting( int nQuestId );
@@ -119,5 +81,3 @@ public:
 	int		PtInQuestRect( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
 };
 
-
-#endif	// __PARTYQUEST_H__

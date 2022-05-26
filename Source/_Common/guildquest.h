@@ -1,6 +1,3 @@
-#ifndef __GUILDQUEST_H__
-#define	__GUILDQUEST_H__
-
 #pragma once
 
 #include "projectcmn.h"
@@ -38,41 +35,6 @@ struct	GUILDQUESTPROP
 		};
 };
 
-typedef	struct	_GUILDQUEST
-{
-	int		nId;
-	int		nState;
-	u_long	idGuild;
-
-	_GUILDQUEST()
-		{
-			nId		= -1;
-			nState	= 0;
-			idGuild		= 0;
-		};
-}
-GUILDQUEST,	*PGUILDQUEST;
-
-typedef struct	_GUILDQUESTELEM : public _GUILDQUEST
-{
-	DWORD	dwEndTime;
-	GroupQuest::ProcessState	nProcess;
-	BYTE	ns;
-	BYTE	nf;
-	OBJID	objidWormon;
-	short	nCount;
-
-	_GUILDQUESTELEM() : _GUILDQUEST()
-	{
-		dwEndTime	= 0;
-		nProcess	= GroupQuest::ProcessState::Ready;
-		ns	= nf	= 0;
-		objidWormon		= NULL_ID;
-		nCount	= 0;
-	};
-}
-GUILDQUESTELEM, *PGUILDQUESTELEM;
-
 typedef struct	__GUILDQUESTRECT
 {
 	int nId;
@@ -81,22 +43,18 @@ typedef struct	__GUILDQUESTRECT
 GUILDQUESTRECT, *PGUILDQUESTRECT;
 
 class CGuild;
-class CGuildQuestProcessor
+class CGuildQuestProcessor final
 {
 private:
-	GUILDQUESTELEM	m_pElem[MAX_GUILD_QUEST];
+	GroupQuest::QuestElem	m_pElem[MAX_GUILD_QUEST];
 	GUILDQUESTRECT	m_pRect[MAX_GUILD_QUEST];
-	int		m_nRect;
+	int		m_nRect = 0;
 public:
-//	Constructions
-	CGuildQuestProcessor();
-	~CGuildQuestProcessor();
-
 //	Operations
 	void	Process();
 
 	void	SetGuildQuest( int nQuestId, int nState, int ns, int nf, u_long idGuild, OBJID objidWormon );
-	PGUILDQUESTELEM GetGuildQuest( int nQuestId );
+	GroupQuest::QuestElem * GetGuildQuest( int nQuestId );
 	void	RemoveGuildQuest( int nQuestId );
 	BOOL	IsQuesting( int nQuestId );
 	static	CGuildQuestProcessor* GetInstance( void );
@@ -105,4 +63,3 @@ public:
 	int		PtInQuestRect( const D3DXVECTOR3 & vPos );
 	CRect* GetQuestRect( int nId );
 };
-#endif	// __GUILDQUEST_H__

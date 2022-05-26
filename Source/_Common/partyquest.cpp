@@ -12,10 +12,10 @@ void CPartyQuestProcessor::Process()
 	DWORD dwTickCount	= GetTickCount();
 	for( int i = 0; i < MAX_GUILD_QUEST; i++ )
 	{
-		PPARTYQUESTELEM pElem = &m_pElem[i];
+		GroupQuest::QuestElem * pElem = &m_pElem[i];
 		if( pElem->nId == i )
 		{
-			CParty* pParty	= g_PartyMng.GetParty( pElem->idParty );
+			CParty* pParty	= g_PartyMng.GetParty( pElem->idGroup );
 //			if( !pGuild )
 //				continue;
 
@@ -277,10 +277,10 @@ void CPartyQuestProcessor::SetPartyQuest( int nQuestId, int nState, int ns, int 
 	}
 
 	TRACE( "SET_PARTY_QUEST, %d, %d, %d\n", nQuestId, idParty, objidWormon );
-	PPARTYQUESTELEM	pElem	= &m_pElem[nQuestId];
+	GroupQuest::QuestElem *	pElem	= &m_pElem[nQuestId];
 	pElem->nId	= nQuestId;
 	pElem->nState	= nState;
-	pElem->idParty	= idParty;
+	pElem->idGroup	= idParty;
 	pElem->dwEndTime	= GetTickCount() + MIN( 60 );
 	
 	pElem->nProcess		= GroupQuest::ProcessState::Wormon;
@@ -336,7 +336,7 @@ void CPartyQuestProcessor::SendQuestLimitTime(GroupQuest::ProcessState nState, D
 	}
 }
 
-PPARTYQUESTELEM CPartyQuestProcessor::GetPartyQuest( int nQuestId )
+GroupQuest::QuestElem * CPartyQuestProcessor::GetPartyQuest( int nQuestId )
 {
 	if( nQuestId >= MAX_PARTY_QUEST )
 	{
@@ -376,7 +376,7 @@ void CPartyQuestProcessor::RemovePartyQuest( int nQuestId )
 
 	TRACE( "REMOVE_PARTY_QUEST, %d\n", nQuestId );
 
-	m_pElem[nQuestId] = PARTYQUESTELEM();
+	m_pElem[nQuestId] = GroupQuest::QuestElem();
 }
 
 BOOL CPartyQuestProcessor::IsQuesting( int nQuestId )

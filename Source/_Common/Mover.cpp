@@ -6075,7 +6075,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		if( m_nQuestKeeping > 0 )
 		{
 			CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-			GUILDQUESTELEM* pElem	= pProcessor->GetGuildQuest( m_nQuestKeeping );
+			GroupQuest::QuestElem * pElem	= pProcessor->GetGuildQuest( m_nQuestKeeping );
 			if( pElem && pElem->objidWormon == GetId() )
 			{
 				CGuild* pGuild	= pAttacker->GetGuild();
@@ -6095,7 +6095,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		if( m_nPartyQuestKeeping > 0 )
 		{
 			CPartyQuestProcessor* pProcessor	= CPartyQuestProcessor::GetInstance();
-			PARTYQUESTELEM* pElem	= pProcessor->GetPartyQuest( m_nPartyQuestKeeping );
+			GroupQuest::QuestElem * pElem	= pProcessor->GetPartyQuest( m_nPartyQuestKeeping );
 			if( pElem && pElem->objidWormon == GetId() )
 			{
 				CParty* pParty	= g_PartyMng.GetParty( pAttacker->m_idparty );				
