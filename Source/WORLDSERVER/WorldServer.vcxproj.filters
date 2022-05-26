@@ -603,6 +603,9 @@
     <ClCompile Include="UserDoUseItem.cpp">
       <Filter>World Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\groupquest.cpp">
+      <Filter>Neuz Common Files\Common Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">
@@ -1171,6 +1174,9 @@
     </ClInclude>
     <ClInclude Include="GroupedEmission.h">
       <Filter>World Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\groupquest.h">
+      <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

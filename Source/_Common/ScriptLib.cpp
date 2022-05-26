@@ -448,7 +448,7 @@ int APIENTRY  MonHuntStart( NPCDIALOG_INFO* pInfo, int nQuest, int nState, int n
 						else
 							g_dpDBClient.SendUpdateGuildQuest( pGuild->m_idGuild, nQuest, nState );
 
-						pProcessor->SetGuildQuest( nQuest, nState, nState2, n, pGuild->m_idGuild, pWormon->GetId() );
+						pProcessor->SetQuest( nQuest, nState, nState2, n, pGuild->m_idGuild, pWormon->GetId() );
 						D3DXVECTOR3 vPos( pProp->vPos.x, pProp->vPos.y, ( ( pProp->vPos.z * 2 ) + pProp->y2 ) / 3 );
 						pGuild->Replace( pProp->dwWorldId, vPos, TRUE );
 						return 1;
@@ -526,7 +526,7 @@ int APIENTRY  MonHuntStartParty( NPCDIALOG_INFO*  pInfo, int nQuest, int nState,
 				
 				if( bSuccess )
 				{
-					pProcessor->SetPartyQuest( nQuest, nState, nState2, n, pUser->GetPartyId(), 0 );
+					pProcessor->SetQuest( nQuest, nState, nState2, n, pUser->GetPartyId(), 0 );
 					pParty->Replace( pProp->dwWorldId, pProp->szWorldKey );
 									
 					return 1;

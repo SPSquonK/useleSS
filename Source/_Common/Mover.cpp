@@ -6075,19 +6075,14 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		if( m_nQuestKeeping > 0 )
 		{
 			CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-			GroupQuest::QuestElem * pElem	= pProcessor->GetGuildQuest( m_nQuestKeeping );
-			if( pElem && pElem->objidWormon == GetId() )
-			{
-				CGuild* pGuild	= pAttacker->GetGuild();
-				if( pGuild )
-				{
-					pGuild->SetQuest( pElem->nId, pElem->ns );
-					g_dpDBClient.SendUpdateGuildQuest( pGuild->m_idGuild, pElem->nId, pElem->ns );
-					pElem->nProcess	= GroupQuest::ProcessState::GetItem;
-					pElem->dwEndTime	= GetTickCount() + MIN( 20 );
-					pElem->ns	= pElem->nf	= 0;
-					pElem->nState	= 0;
-					pElem->objidWormon	= NULL_ID;
+			GroupQuest::QuestElem * pElem	= pProcessor->GetQuest( m_nQuestKeeping );
+			if (pElem && pElem->objidWormon == GetId()) {
+				CGuild * pGuild = pAttacker->GetGuild();
+				if (pGuild) {
+					g_dpDBClient.SendUpdateGuildQuest(pGuild->m_idGuild, pElem->nId, pElem->ns);
+
+					pGuild->SetQuest(pElem->nId, pElem->ns);
+					pElem->SetGetItemState();
 				}
 			}
 		}
@@ -6095,21 +6090,13 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		if( m_nPartyQuestKeeping > 0 )
 		{
 			CPartyQuestProcessor* pProcessor	= CPartyQuestProcessor::GetInstance();
-			GroupQuest::QuestElem * pElem	= pProcessor->GetPartyQuest( m_nPartyQuestKeeping );
-			if( pElem && pElem->objidWormon == GetId() )
-			{
-				CParty* pParty	= g_PartyMng.GetParty( pAttacker->m_idparty );				
-				if( pParty )
-				{
-					pElem->nProcess	= GroupQuest::ProcessState::GetItem;
-					pElem->dwEndTime	= GetTickCount() + MIN( 20 );
-					pElem->ns	= pElem->nf	= 0;
-					pElem->nState	= 0;
-					pElem->objidWormon	= NULL_ID;
-					
-					pProcessor->SendQuestLimitTime(GroupQuest::ProcessState::GetItem, MIN( 20 ), pAttacker->m_idparty );
+			GroupQuest::QuestElem * pElem	= pProcessor->GetQuest( m_nPartyQuestKeeping );
+			if (pElem && pElem->objidWormon == GetId()) {
+				CParty * pParty = g_PartyMng.GetParty(pAttacker->m_idparty);
+				if (pParty) {
+					pElem->SetGetItemState();
+					pProcessor->SendQuestLimitTime(GroupQuest::ProcessState::GetItem, MIN(20), pAttacker->m_idparty);
 				}
-			
 			}
 		}
 

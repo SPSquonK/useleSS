@@ -3174,22 +3174,19 @@ void CUser::ValidateItem( void )
 void CUser::AdjustGuildQuest( DWORD dwWorldId )
 {
 	CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-	int nId = -1;
-	if( dwWorldId == WI_WORLD_MADRIGAL )
-		nId = pProcessor->PtInQuestRect( GetPos() );
+	int nId = pProcessor->PtInQuestRect(dwWorldId, GetPos());
+	if (nId == -1) return;
 
-	if( nId > -1 )
-	{
-		GroupQuest::QuestElem * pElem	= pProcessor->GetGuildQuest( nId );
-		if( !pElem || pElem->idGroup != m_idGuild )
+	GroupQuest::QuestElem * pElem	= pProcessor->GetQuest( nId );
+	if (pElem && pElem->idGroup == m_idGuild) {
+
+	} else  {
+		CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
+		if( pWorld && pWorld == GetWorld())
 		{
-			CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
-			if( pWorld && pWorld == GetWorld())
-			{
-				const RegionElem * pRgnElem = g_WorldMng.GetRevival(this);
-				if (pRgnElem) {
-					SetPos(pRgnElem->m_vPos);
-				}
+			const RegionElem * pRgnElem = g_WorldMng.GetRevival(this);
+			if (pRgnElem) {
+				SetPos(pRgnElem->m_vPos);
 			}
 		}
 	}
@@ -3215,18 +3212,17 @@ void CUser::AdjustPartyQuest( DWORD dwWorldId )
 {
 	CPartyQuestProcessor* pProc		= CPartyQuestProcessor::GetInstance();
 	int nId		= pProc->PtInQuestRect( dwWorldId, GetPos() );
-	if( nId > -1 )
+	if (nId == -1) return;
+
+	GroupQuest::QuestElem * pElem	= pProc->GetQuest( nId );
+	if( pElem && pElem->idGroup == m_idparty )
 	{
-		GroupQuest::QuestElem * pElem	= pProc->GetPartyQuest( nId );
-		if( pElem && pElem->idGroup == m_idparty )
-		{
-			DWORD dwTime	= pElem->dwEndTime - GetTickCount();
-			AddQuestTextTime( TRUE, pElem->nProcess , dwTime );
-		}
-		else if( !pElem || pElem->idGroup != m_idparty )
-		{
-			SetMode( MODE_OUTOF_PARTYQUESTRGN );
-		}
+		DWORD dwTime	= pElem->dwEndTime - GetTickCount();
+		AddQuestTextTime( TRUE, pElem->nProcess , dwTime );
+	}
+	else
+	{
+		SetMode( MODE_OUTOF_PARTYQUESTRGN );
 	}
 }
 

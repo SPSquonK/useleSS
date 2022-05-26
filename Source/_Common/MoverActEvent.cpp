@@ -1085,15 +1085,15 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 				vLocal.y = fHeight;
 				
 		#ifdef __WORLDSERVER
-				CPartyQuestProcessor* pProc	= CPartyQuestProcessor::GetInstance();
 				CWorld* pWorld	= GetWorld();
 				if( pWorld )
 				{
+					CPartyQuestProcessor * pProc = CPartyQuestProcessor::GetInstance();
 					int nId	= pProc->PtInQuestRect( pWorld->GetID(), GetPos() );
 					if( nId > -1 )
 					{
-						GroupQuest::QuestElem * pElem	= pProc->GetPartyQuest( nId );
-						PPARTYQUESTRECT pRect	= pProc->GetPartyQuestRect( nId );
+						GroupQuest::QuestElem * pElem	= pProc->GetQuest( nId );
+						const GroupQuest::QuestRect * pRect	= pProc->GetQuestQuestRect( nId );
 						if( pElem && pRect )
 #ifdef __LAYER_1015
 							g_UserMng.ReplaceWorldArea( pElem->idGroup, pRect->dwWorldId, pRect->dwWorldId, vLocal.x, vLocal.z, 0.5f, TRUE, GetLayer() );

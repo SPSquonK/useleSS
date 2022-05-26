@@ -43,23 +43,15 @@ typedef struct	__GUILDQUESTRECT
 GUILDQUESTRECT, *PGUILDQUESTRECT;
 
 class CGuild;
-class CGuildQuestProcessor final
-{
-private:
-	GroupQuest::QuestElem	m_pElem[MAX_GUILD_QUEST];
-	GUILDQUESTRECT	m_pRect[MAX_GUILD_QUEST];
-	int		m_nRect = 0;
+
+
+class CGuildQuestProcessor final : public GroupQuest::CQuestProcessor {
 public:
-//	Operations
-	void	Process();
+	static CGuildQuestProcessor * GetInstance();
 
-	void	SetGuildQuest( int nQuestId, int nState, int ns, int nf, u_long idGuild, OBJID objidWormon );
-	GroupQuest::QuestElem * GetGuildQuest( int nQuestId );
-	void	RemoveGuildQuest( int nQuestId );
-	BOOL	IsQuesting( int nQuestId );
-	static	CGuildQuestProcessor* GetInstance( void );
+	void SetQuest(int nQuestId, int nState, int ns, int nf, u_long idParty, OBJID objidWormon) {
+		_SetQuest(nQuestId, nState, ns, nf, idParty, objidWormon);
+	}
 
-	void	AddQuestRect( int nId, int x1, int y1, int x2, int y2 );
-	int		PtInQuestRect( const D3DXVECTOR3 & vPos );
-	CRect* GetQuestRect( int nId );
+	void Process();
 };

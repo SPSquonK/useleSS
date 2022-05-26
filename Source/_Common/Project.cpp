@@ -1098,7 +1098,9 @@ BOOL CProject::LoadPropGuildQuest( LPCTSTR lpszFilename )
 				s.GetToken();	// ,
 				prop.y2	= s.GetNumber();
 			#ifdef __WORLDSERVER
-				pProcessor->AddQuestRect( nQuestId, prop.x1, prop.y1, prop.x2, prop.y2 );
+				pProcessor->AddQuestRect(GroupQuest::QuestRect{
+					nQuestId, WI_WORLD_MADRIGAL, CRect(prop.x1, prop.y2, prop.x2, prop.y1)
+					});
 			#endif	// __WORLDSERVER
 			}
 			else if( s.Token == "State" )
@@ -1207,7 +1209,9 @@ BOOL CProject::LoadPropPartyQuest( LPCTSTR lpszFilename )
 				s.GetToken();	// ,
 				prop.y2	= s.GetNumber();
 #ifdef __WORLDSERVER
-				pProcessor->AddQuestRect( nQuestId, prop.dwWorldId, prop.x1, prop.y1, prop.x2, prop.y2 );
+				pProcessor->AddQuestRect(GroupQuest::QuestRect{
+					nQuestId, prop.dwWorldId, CRect(prop.x1, prop.y2, prop.x2, prop.y1)
+					});
 #endif	// __WORLDSERVER
 			}
 			else if( s.Token == "State" )

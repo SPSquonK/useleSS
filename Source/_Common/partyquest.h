@@ -2,6 +2,7 @@
 
 #include "projectcmn.h"
 #include "groupquest.h"
+#include <boost/container/flat_map.hpp>
 
 #define	MAX_PARTY_QUEST_TITLE_LEN		32
 #define	MAX_PARTY_QUEST_STATE		16
@@ -56,28 +57,23 @@ typedef struct	__PARTYQUESTRECT
 }
 PARTYQUESTRECT, *PPARTYQUESTRECT;
 
-//class CGuild;
-#include <boost/container/flat_map.hpp>
-
-class CPartyQuestProcessor final
-{
-private:
-	GroupQuest::QuestElem	m_pElem[MAX_PARTY_QUEST];
-	PARTYQUESTRECT	m_pRect[MAX_PARTY_QUEST];
-	int		m_nRect = 0;
+class CPartyQuestProcessor final : public GroupQuest::CQuestProcessor {
 public:
-//	Operations
-	void	Process();
+	static CPartyQuestProcessor * GetInstance();
+	
+	void Process();
 
-	void	SetPartyQuest( int nQuestId, int nState, int ns, int nf, u_long idParty, OBJID objidWormon );
-	GroupQuest::QuestElem * GetPartyQuest( int nQuestId );
-	PPARTYQUESTRECT	GetPartyQuestRect( int nQuestId );
-	void	RemovePartyQuest( int nQuestId );
-	BOOL	IsQuesting( int nQuestId );
-	static	CPartyQuestProcessor* GetInstance( void );
-	void	RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPos, int nRange );
-	void	SendQuestLimitTime(GroupQuest::ProcessState nState, DWORD dwTime, u_long idParty );
-	void	AddQuestRect( int nId, DWORD dwWorldId, int x1, int y1, int x2, int y2 );
-	int		PtInQuestRect( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
+	void SetQuest(int nQuestId, int nState, int ns, int nf, u_long idParty, OBJID objidWormon) {
+		_SetQuest(nQuestId, nState, ns, nf, idParty, objidWormon);
+		SetQuestParty_Log(nQuestId, idParty, objidWormon);
+	}
+
+	void SendQuestLimitTime(GroupQuest::ProcessState nState, DWORD dwTime, u_long idParty);
+
+private:
+	void SetQuestParty_Log(int nQuestId, u_long idParty, OBJID objidWormon);
+	void RemoveAllDynamicObj(DWORD dwWorldID, D3DXVECTOR3 vPos, int nRange);
+
+	void Boom(int nQuestId, CRect rect, DWORD dwWorldId);
 };
 

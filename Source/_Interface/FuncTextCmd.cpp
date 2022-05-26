@@ -2732,7 +2732,7 @@ BOOL TextCmd_CTD(CScanner & s, CPlayer_ * pUser) {
 	if( g_eLocal.GetState( EVE_WORMON ) == 0 )
 	{
 		CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-		CRect* pRect	= pProcessor->GetQuestRect( QUEST_WARMON_LV1 );
+		const CRect * pRect	= pProcessor->GetQuestRect( QUEST_WARMON_LV1 );
 		if( pRect )
 		{
 			OutputDebugString( "recv /ctd" );
@@ -2750,7 +2750,7 @@ BOOL TextCmd_CTD(CScanner & s, CPlayer_ * pUser) {
 			re.m_dwIdMusic	= 121;
 			re.m_bDirectMusic	= TRUE;
 			re.m_dwIdTeleWorld	= 0;
-			re.m_rect.SetRect( pRect->TopLeft(), pRect->BottomRight() );
+			re.m_rect = *pRect;
 			lstrcpy( re.m_szTitle, "Duel Zone" );
 
 			CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );

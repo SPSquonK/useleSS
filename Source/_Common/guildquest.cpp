@@ -30,8 +30,7 @@ void CGuildQuestProcessor::Process()
 						{
 							TRACE( "GQP_WORMON - r\n" );
 
-							CRect rect;
-							rect.SetRect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
+							CRect rect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
 
 							if( pGuild )
 							{
@@ -43,22 +42,21 @@ void CGuildQuestProcessor::Process()
 							CMover* pWormon	= prj.GetMover( pElem->objidWormon );
 							if( pWormon )
 								pWormon->Delete();
-							RemoveGuildQuest( pElem->nId );
+							RemoveQuest( pElem->nId );
 						}
 						break;
 					case GroupQuest::ProcessState::GetItem:
 						{
 							TRACE( "GQP_GETITEM - r\n" );
 
-							CRect rect;
-							rect.SetRect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
+							CRect rect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
 
 							if( pGuild )
 							{
 								pGuild->ReplaceLodestar( rect );
 							}
 
-							RemoveGuildQuest( pElem->nId );
+							RemoveQuest( pElem->nId );
 						}
 						break;
 					default:
@@ -76,8 +74,7 @@ void CGuildQuestProcessor::Process()
 							if( ++pElem->nCount < 10 )
 								continue;
 
-							CRect rect;
-							rect.SetRect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
+							CRect rect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
 							BOOL bsurvivor	= FALSE;	// is survivor exists?
 
 							if( pGuild )
@@ -112,7 +109,7 @@ void CGuildQuestProcessor::Process()
 								CMover* pWormon	= prj.GetMover( pElem->objidWormon );
 								if( pWormon )
 									pWormon->Delete();
-								RemoveGuildQuest( pElem->nId );
+								RemoveQuest( pElem->nId );
 							}
 						}
 						break;
@@ -149,7 +146,7 @@ void CGuildQuestProcessor::Process()
 								{
 									pGuild->ReplaceLodestar( rect );
 								}
-								RemoveGuildQuest( pElem->nId );
+								RemoveQuest( pElem->nId );
 							}
 						}
 						break;
@@ -161,112 +158,10 @@ void CGuildQuestProcessor::Process()
 	}
 }
 
-void CGuildQuestProcessor::SetGuildQuest( int nQuestId, int nState, int ns, int nf, u_long idGuild, OBJID objidWormon )
-{
-	if( nQuestId >= MAX_GUILD_QUEST )
-	{
-		Error( "" );
-		return;
-	}
-	GUILDQUESTPROP* pProp	= prj.GetGuildQuestProp( nQuestId );
-	if( !pProp )
-	{
-		Error( "" );
-		return;
-	}
-
-	TRACE( "SET_GUILD_QUEST, %d, %d, %d\n", nQuestId, idGuild, objidWormon );
-	GroupQuest::QuestElem *	pElem	= &m_pElem[nQuestId];
-	pElem->nId	= nQuestId;
-	pElem->nState	= nState;
-	pElem->idGroup	= idGuild;
-
-	pElem->dwEndTime	= GetTickCount() + MIN( 60 );
-	
-	pElem->nProcess		= GroupQuest::ProcessState::Wormon;
-	pElem->ns	= ns;
-	pElem->nf	= nf;
-	pElem->objidWormon	= objidWormon;
-	pElem->nCount	= 0;
-}
-
-GroupQuest::QuestElem * CGuildQuestProcessor::GetGuildQuest( int nQuestId )
-{
-	if( nQuestId >= MAX_GUILD_QUEST )
-	{
-		Error( "" );
-		return NULL;
-	}
-	if( m_pElem[nQuestId].nId == -1 )
-		return NULL;
-
-	return &m_pElem[nQuestId];
-}
-
-void CGuildQuestProcessor::RemoveGuildQuest( int nQuestId )
-{
-	if( nQuestId >= MAX_GUILD_QUEST )
-	{
-		Error( "" );
-		return;
-	}
-
-	TRACE( "REMOVE_GUILD_QUEST, %d\n", nQuestId );
-
-	m_pElem[nQuestId] = GroupQuest::QuestElem();
-}
-
-BOOL CGuildQuestProcessor::IsQuesting( int nQuestId )
-{
-	if( nQuestId >= MAX_GUILD_QUEST )
-	{
-		Error( "" );
-		return FALSE;
-	}
-
-	if( m_pElem[nQuestId].nId != -1 )
-		return TRUE;
-	return FALSE;
-}
-
 CGuildQuestProcessor* CGuildQuestProcessor::GetInstance( void )
 {
 	static CGuildQuestProcessor sGuildQuestProcessor;
 	return &sGuildQuestProcessor;
 }
 
-void CGuildQuestProcessor::AddQuestRect( int nId, int x1, int y1, int x2, int y2 )
-{
-	if( m_nRect >= MAX_GUILD_QUEST )
-	{
-		Error( "" );
-		return;
-	}
-
-	m_pRect[m_nRect].nId	= nId;
-	m_pRect[m_nRect].rect.SetRect( x1, y2, x2, y1 );
-	m_nRect++;
-}
-
-int CGuildQuestProcessor::PtInQuestRect( const D3DXVECTOR3 & vPos )
-{
-	POINT point	= { (int)vPos.x, (int)vPos.z	};
-	for( int i = 0; i < m_nRect; i++ )
-	{
-		
-		if( m_pRect[i].rect.PtInRect( point ) )
-			return m_pRect[i].nId;
-	}
-	return -1;
-}
-
-CRect* CGuildQuestProcessor::GetQuestRect( int nId )
-{
-	for( int i = 0; i < m_nRect; i++ )
-	{
-		if( m_pRect[i].nId == nId )
-			return &m_pRect[i].rect;
-	}
-	return NULL;
-}
 #endif	// __WORLDSERVER

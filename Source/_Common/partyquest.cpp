@@ -6,6 +6,8 @@
 #include "user.h"
 #include "dpdatabaseclient.h"
 #include "worldmng.h"
+#include "GroupUtils.h"
+
 
 void CPartyQuestProcessor::Process()
 {
@@ -32,49 +34,18 @@ void CPartyQuestProcessor::Process()
 						{
 							TRACE( "PQP_WORMON - r\n" );
 
-							CRect rect;
-							rect.SetRect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
+							CRect rect(pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
 
-//							if( pParty )
-//							{
-//								pParty->ReplaceLodestar( rect );
-//							}
-/*
-							CMover* pWormon	= prj.GetMover( pElem->objidWormon );
-							if( pWormon )
-								pWormon->Delete();
-*/
-							CPoint		point;
-							D3DXVECTOR3 vPos;
-							point  = rect.CenterPoint();
-							vPos.x = (float)( point.x );
-							vPos.z = (float)( point.y );
-							vPos.y = 100.0f;
-							RemoveAllDynamicObj( pProp->dwWorldId, vPos, 500 );
-
-							RemovePartyQuest( pElem->nId );
+							Boom(pElem->nId, rect, pProp->dwWorldId);
 						}
 						break;
 					case GroupQuest::ProcessState::GetItem:
 						{
 							TRACE( "PQP_GETITEM - r\n" );
 
-							CRect rect;
-							rect.SetRect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
+							CRect rect( pProp->x1, pProp->y2, pProp->x2, pProp->y1 );
 
-//							if( pParty )
-//							{
-//								pParty->ReplaceLodestar( rect );
-//							}
-							CPoint		point;
-							D3DXVECTOR3 vPos;
-							point  = rect.CenterPoint();
-							vPos.x = (float)( point.x );
-							vPos.z = (float)( point.y );
-							vPos.y = 100.0f;
-							RemoveAllDynamicObj( pProp->dwWorldId, vPos, 500 );
-
-							RemovePartyQuest( pElem->nId );
+							Boom(pElem->nId, rect, pProp->dwWorldId);
 						}
 						break;
 					default:
@@ -138,24 +109,7 @@ void CPartyQuestProcessor::Process()
 
 							if( !bsurvivor  )
 							{
-//								if( pParty )
-//								{
-//									pParty->ReplaceLodestar( rect );
-//								}
-/*
-								CMover* pWormon	= prj.GetMover( pElem->objidWormon );
-								if( pWormon )
-									pWormon->Delete();
-*/
-								CPoint		point;
-								D3DXVECTOR3 vPos;
-								point  = rect.CenterPoint();
-								vPos.x = (float)( point.x );
-								vPos.z = (float)( point.y );
-								vPos.y = 100.0f;
-								RemoveAllDynamicObj( pProp->dwWorldId, vPos, 500 );
-								
-								RemovePartyQuest( pElem->nId );
+								Boom(pElem->nId, rect, pProp->dwWorldId);
 							}
 						}
 						break;
@@ -202,19 +156,8 @@ void CPartyQuestProcessor::Process()
 
 							if( !bexist )
 							{
-//								if( pParty )
-//								{
-//									pParty->ReplaceLodestar( rect );
-//								}
-								CPoint		point;
-								D3DXVECTOR3 vPos;
-								point  = rect.CenterPoint();
-								vPos.x = (float)( point.x );
-								vPos.z = (float)( point.y );
-								vPos.y = 100.0f;
-								RemoveAllDynamicObj( pProp->dwWorldId, vPos, 500 );
+								Boom(pElem->nId, rect, pProp->dwWorldId);
 
-								RemovePartyQuest( pElem->nId );
 							}
 						}
 						break;
@@ -224,6 +167,18 @@ void CPartyQuestProcessor::Process()
 			}
 		}
 	}
+}
+
+void CPartyQuestProcessor::Boom(int nQuestId, CRect rect, DWORD dwWorldId) {
+	CPoint		point;
+	D3DXVECTOR3 vPos;
+	point = rect.CenterPoint();
+	vPos.x = (float)(point.x);
+	vPos.z = (float)(point.y);
+	vPos.y = 100.0f;
+	RemoveAllDynamicObj(dwWorldId, vPos, 500);
+
+	RemoveQuest(nQuestId);
 }
 
 void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPos, int nRange  )
@@ -262,33 +217,7 @@ void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPo
 }
 
 
-void CPartyQuestProcessor::SetPartyQuest( int nQuestId, int nState, int ns, int nf, u_long idParty, OBJID objidWormon )
-{
-	if( nQuestId >= MAX_PARTY_QUEST )
-	{
-		Error( "" );
-		return;
-	}
-	PARTYQUESTPROP* pProp	= prj.GetPartyQuestProp( nQuestId );
-	if( !pProp )
-	{
-		Error( "" );
-		return;
-	}
-
-	TRACE( "SET_PARTY_QUEST, %d, %d, %d\n", nQuestId, idParty, objidWormon );
-	GroupQuest::QuestElem *	pElem	= &m_pElem[nQuestId];
-	pElem->nId	= nQuestId;
-	pElem->nState	= nState;
-	pElem->idGroup	= idParty;
-	pElem->dwEndTime	= GetTickCount() + MIN( 60 );
-	
-	pElem->nProcess		= GroupQuest::ProcessState::Wormon;
-	pElem->ns	= ns;
-	pElem->nf	= nf;
-	pElem->objidWormon	= objidWormon;
-	pElem->nCount	= 0;
-
+void CPartyQuestProcessor::SetQuestParty_Log(int nQuestId, u_long idParty, OBJID objidWormon) {
 	// 유저에게 공략시간을 넘겨준다...
 	SendQuestLimitTime(GroupQuest::ProcessState::Wormon, MIN( 60 ), idParty );
 
@@ -307,7 +236,7 @@ void CPartyQuestProcessor::SetPartyQuest( int nQuestId, int nState, int ns, int 
 	{
 		for( int i = 0 ; i < pParty->GetSizeofMember() ; ++i )
 		{
-			CUser* pUsertmp = (CUser *)prj.GetUserByID( pParty->GetPlayerId( i ) );
+			CUser* pUsertmp = prj.GetUserByID( pParty->GetPlayerId( i ) );
 			if( IsValidObj( pUsertmp ) )
 			{
 				strMemberName += pUsertmp->GetName();
@@ -320,105 +249,19 @@ void CPartyQuestProcessor::SetPartyQuest( int nQuestId, int nState, int ns, int 
 	////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-void CPartyQuestProcessor::SendQuestLimitTime(GroupQuest::ProcessState nState, DWORD dwTime, u_long idParty )
-{
-	CParty* pParty	= g_PartyMng.GetParty( idParty );
-	if( pParty )
-	{
-		for( int i = 0 ; i < pParty->GetSizeofMember() ; ++i )
-		{
-			CUser* pUsertmp = (CUser *)prj.GetUserByID( pParty->GetPlayerId( i ) );
-			if( IsValidObj( pUsertmp ) )
-			{
-				pUsertmp->AddQuestTextTime( 1, nState, dwTime );
-			}
-		}
+void CPartyQuestProcessor::SendQuestLimitTime(GroupQuest::ProcessState nState, DWORD dwTime, u_long idParty ) {
+	CParty * pParty = g_PartyMng.GetParty(idParty);
+	if (!pParty) return;
+
+	for (CUser * pUsertmp : AllMembers(*pParty)) {
+		pUsertmp->AddQuestTextTime(1, nState, dwTime);
 	}
-}
-
-GroupQuest::QuestElem * CPartyQuestProcessor::GetPartyQuest( int nQuestId )
-{
-	if( nQuestId >= MAX_PARTY_QUEST )
-	{
-		Error( "" );
-		return NULL;
-	}
-	if( m_pElem[nQuestId].nId == -1 )
-		return NULL;
-
-	return &m_pElem[nQuestId];
-}
-
-
-PPARTYQUESTRECT CPartyQuestProcessor::GetPartyQuestRect( int nQuestId )
-{
-	if( nQuestId >= MAX_PARTY_QUEST )
-		return NULL;
-	if( m_pElem[nQuestId].nId == -1 )
-		return NULL;
-	for( int i = 0; i < m_nRect; i++ )
-	{
-		if( m_pRect[i].nId == nQuestId )
-			return &m_pRect[i];
-	}
-	return NULL;
-//	return &m_pRect[nQuestId];
-}
-
-
-void CPartyQuestProcessor::RemovePartyQuest( int nQuestId )
-{
-	if( nQuestId >= MAX_PARTY_QUEST )
-	{
-		Error( "" );
-		return;
-	}
-
-	TRACE( "REMOVE_PARTY_QUEST, %d\n", nQuestId );
-
-	m_pElem[nQuestId] = GroupQuest::QuestElem();
-}
-
-BOOL CPartyQuestProcessor::IsQuesting( int nQuestId )
-{
-	if( nQuestId >= MAX_PARTY_QUEST )
-	{
-		Error( "" );
-		return FALSE;
-	}
-
-	if( m_pElem[nQuestId].nId != -1 )
-		return TRUE;
-	return FALSE;
 }
 
 CPartyQuestProcessor* CPartyQuestProcessor::GetInstance( void )
 {
 	static CPartyQuestProcessor sPartyQuestProcessor;
 	return &sPartyQuestProcessor;
-}
-
-void CPartyQuestProcessor::AddQuestRect( int nId, DWORD dwWorldId, int x1, int y1, int x2, int y2 )
-{
-	if( m_nRect >= MAX_PARTY_QUEST )
-		return;
-
-	m_pRect[m_nRect].nId	= nId;
-	m_pRect[m_nRect].dwWorldId	= dwWorldId;
-	m_pRect[m_nRect].rect.SetRect( x1, y2, x2, y1 );
-	m_nRect++;
-}
-
-int CPartyQuestProcessor::PtInQuestRect( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
-{
-	POINT point	= { (int)vPos.x, (int)vPos.z	};
-	for( int i = 0; i < m_nRect; i++ )
-	{
-		
-		if( m_pRect[i].dwWorldId == dwWorldId && m_pRect[i].rect.PtInRect( point ) )
-			return m_pRect[i].nId;
-	}
-	return -1;
 }
 
 

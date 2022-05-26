@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClCompile Include="..\_Common\accessory.cpp">
     </ClCompile>
+    <ClCompile Include="..\_Common\groupquest.cpp" />
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="CampusHelper.cpp">
@@ -677,6 +678,7 @@
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h" />
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Common\groupquest.h" />
     <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />

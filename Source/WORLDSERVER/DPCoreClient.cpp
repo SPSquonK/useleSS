@@ -1482,10 +1482,10 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 					const RegionElem * pRgnElem	= NULL;
 					DWORD dwWorldID	= pUserIk3[cou]->GetWorld()->GetID();
 					CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-					int nId	= pProcessor->PtInQuestRect( pUserIk3[cou]->GetPos() );
+					int nId	= pProcessor->PtInQuestRect( WI_WORLD_MADRIGAL, pUserIk3[cou]->GetPos() );
 					if( nId > -1 )
 					{
-						GroupQuest::QuestElem * pElem	= pProcessor->GetGuildQuest( nId );
+						const GroupQuest::QuestElem * pElem	= pProcessor->GetQuest( nId );
 						if( !pElem || pElem->idGroup != pUserIk3[cou]->m_idGuild )
 						{
 							pRgnElem = g_WorldMng.GetRevival(pUserIk3[cou]);
@@ -1577,10 +1577,10 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 				const RegionElem * pRgnElem	= NULL;
 				DWORD dwWorldID	= pUser->GetWorld()->GetID();
 				CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-				int nId	= pProcessor->PtInQuestRect( pUser->GetPos() );
+				const int nId	= pProcessor->PtInQuestRect( WI_WORLD_MADRIGAL, pUser->GetPos() );
 				if( nId > -1 )
 				{
-					GroupQuest::QuestElem * pElem	= pProcessor->GetGuildQuest( nId );
+					GroupQuest::QuestElem * pElem	= pProcessor->GetQuest( nId );
 					if( !pElem || pElem->idGroup != pUser->m_idGuild )
 					{
 						pRgnElem = g_WorldMng.GetRevival(pUser);
