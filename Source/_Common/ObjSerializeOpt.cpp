@@ -499,10 +499,8 @@ void CMover::Serialize( CAr & ar )
 				ar >> m_idMarkingWorld;
 				ar >> m_vMarkingPos;
 				
-				
-				MoverSub::Quests q;
-				ar >> q;
-				m_quests = std::make_unique<MoverSub::Quests>(q);
+				m_quests = std::make_unique<MoverSub::Quests>();
+				ar >> *m_quests;
 
 				ar >> m_idMurderer;
 				short n1, n2;		// n2는 사용하지 않는다.
