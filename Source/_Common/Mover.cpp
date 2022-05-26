@@ -174,10 +174,6 @@ CMover::~CMover()
 	#endif
 	}
 
-	SAFE_DELETE_ARRAY( m_aQuest );
-	SAFE_DELETE_ARRAY( m_aCompleteQuest );
-	SAFE_DELETE_ARRAY( m_aCheckedQuest );
-
 #ifdef __CLIENT
 	m_pSfxWing = NULL;
 	m_pSfxBuffPet = NULL;
@@ -268,12 +264,7 @@ void CMover::Init()
 	m_fHairColorG		= 1.0f;
 	m_fHairColorB		= 1.0f;
 	m_dwHairColor		= D3DCOLOR_COLORVALUE( 1.0f, 1.0f, 1.0f, 1.0f );
-	m_nQuestSize		= 0;
-	m_aQuest	        = NULL;
-	m_aCompleteQuest    = NULL; 
-	m_nCompleteQuestSize = 0; 
-	m_aCheckedQuest		= NULL;
-	m_nCheckedQuestSize = 0;
+	m_quests = nullptr;
 #ifdef __WORLDSERVER
 	m_timerQuestLimitTime.Set( MIN( 1 ) );
 	m_dwPKTargetLimit = 0;
@@ -922,53 +913,38 @@ void CMover::ProcessQuest()
 		m_timerQuestLimitTime.Reset();
 		bTimer = TRUE;
 	}
-	for( int i = 0; i < m_nQuestSize; i++ )
-	{
-		LPQUEST lpQuest = (LPQUEST) &m_aQuest[ i ];
-		if( lpQuest )
-		{
-			QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( lpQuest->m_wId );
-			if( pQuestProp )
-			{
-				D3DXVECTOR3 vPos = GetPos();
-				// 퀘스트 리전안으로 들어가면 페트롤 임무 성공 플렉 세팅 
-				if( pQuestProp->m_dwEndCondPatrolWorld == GetWorld()->m_dwWorldID && pQuestProp->m_rectEndCondPatrol.PtInRect( CPoint( (int) vPos.x, (int) vPos.z ) ) )
-				{
-					if( lpQuest->m_bPatrol == FALSE )
-					{
-						lpQuest->m_bPatrol = TRUE;
-						// 여기서 클라에 매시지도 하나 보내자. 
-						// 탐사를 완료했습니다.
-						// 20 마리중 2마리를 퇴치했습니다.
-						((CUser*)this)->AddSetQuest( lpQuest ); 
-					}
-				}
-				// 시간 제한 퀘스트 시간 카운트 
-				if( pQuestProp->m_nEndCondLimitTime && bTimer )
-				{
-					if( lpQuest->m_wTime && !(lpQuest->m_wTime & 0x8000) ) 
-					{
-						lpQuest->m_wTime--;
-						((CUser*)this)->AddSetQuest( lpQuest ); 
-					}
-				}
-			}
-			else
-			{
-				//WriteError( "ProcessQuest : pQuestProp NULL이다." );
-				//CString string;
-				//string.Format( "CMover::ProcessQuest : %s의 Quest %d의 pQuestProp NULL이다.", m_szName, lpQuest->m_wId );
-				//OutputDebugString( string );
+	if (!m_quests) return;
+
+	for (QUEST & quest : m_quests->current) {
+		const QuestProp * pQuestProp = quest.GetProp();
+		if (!pQuestProp) {
+			//WriteError( "ProcessQuest : pQuestProp NULL이다." );
+			//CString string;
+			//string.Format( "CMover::ProcessQuest : %s의 Quest %d의 pQuestProp NULL이다.", m_szName, lpQuest->m_wId );
+			//OutputDebugString( string );
+			continue;
+		}
+
+		const D3DXVECTOR3 vPos = GetPos();
+		// 퀘스트 리전안으로 들어가면 페트롤 임무 성공 플렉 세팅 
+		if (pQuestProp->m_dwEndCondPatrolWorld == GetWorld()->m_dwWorldID && pQuestProp->m_rectEndCondPatrol.PtInRect(CPoint((int)vPos.x, (int)vPos.z))) {
+			if (quest.m_bPatrol == FALSE) {
+				quest.m_bPatrol = TRUE;
+				// 여기서 클라에 매시지도 하나 보내자. 
+				// 탐사를 완료했습니다.
+				// 20 마리중 2마리를 퇴치했습니다.
+				((CUser *)this)->AddSetQuest(&quest);
 			}
 		}
-		else
-		{
-			//WriteError( "ProcessQuest : lpQuest가 NULL이다." );
-			//CString string;
-			//string.Format( "CMover::ProcessQuest : %s의 lpQuest가 NULL이다.", m_szName );
-			//OutputDebugString( string );
+		// 시간 제한 퀘스트 시간 카운트 
+		if (pQuestProp->m_nEndCondLimitTime && bTimer) {
+			if (quest.m_wTime && !(quest.m_wTime & 0x8000)) {
+				quest.m_wTime--;
+				((CUser *)this)->AddSetQuest(&quest);
+			}
 		}
 	}
+
 #else // __WORLDSERVER
 	if( IsPlayer()  ) 
 		return;
@@ -1372,11 +1348,10 @@ void CMover::InitProp( BOOL bInitAI )
 //	m_nResource = pProp->dwMaterialAmount;		// 자원량.
 //#endif
 
-	if( IsPlayer() )
-	{
-		m_aQuest = new QUEST[ MAX_QUEST ]; 
-		m_aCompleteQuest = new WORD[ MAX_COMPLETE_QUEST ]; 
-		m_aCheckedQuest = new WORD[ MAX_CHECKED_QUEST ];
+	if (IsPlayer()) {
+		m_quests = std::make_unique<MoverSub::Quests>();
+	} else {
+		m_quests = nullptr;
 	}
 }
 
@@ -4829,49 +4804,41 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 	// 몬스터를 죽이면 몬스터가 퀘스트가 요구하는 것인지 판단해서 킬 카운트 증가 
 	if( IsPlayer() == FALSE && pAttacker && pAttacker->IsPlayer() )
 	{
-		for( int i = 0; i < pAttacker->m_nQuestSize; i++ )
-		{
-			LPQUEST lpQuest = (LPQUEST) &pAttacker->m_aQuest[ i ]; 
-			if( !lpQuest )	continue;
-			QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( lpQuest->m_wId );
-			if( !pQuestProp )	continue;
-			
-			for( int j = 0; j < 2; ++j )
-			{
-				// 진행 중인 퀘스트의 종료 조건과 같은 NPC인가?
-				if( pQuestProp->m_nEndCondKillNPCIdx[ j ] != GetIndex() )	continue;
+		if (pAttacker->m_quests) {
+			for (QUEST & quest : pAttacker->m_quests->current) {
+				const QuestProp * pQuestProp = quest.GetProp();
+				if (!pQuestProp) continue;
 
-				// 극단 퀘스트인 경우
-				if( pQuestProp->m_nBeginCondParty == 2 )
-				{
-					CParty* pParty	= g_PartyMng.GetParty( pAttacker->m_idparty );
-					// 극단원중에 해당 퀘스트를 진행하고 있으면..
-					if( pParty && pParty->IsMember( pAttacker->m_idPlayer ) )
-					{
-						for( int k = 0; k < pParty->GetSizeofMember(); ++k )
-						{
-							PartyMember* pPartyMember	= &pParty->m_aMember[k];
-							CMover* pMember		= prj.GetUserByID( pPartyMember->m_uPlayerId );
-							if( IsValidObj( pMember ) && IsValidArea( pMember, 64.0f ) )
-							{
-								LPQUEST pMemberQuest	= pMember->GetQuest( lpQuest->m_wId );
-								if( pMemberQuest && pMemberQuest->m_nKillNPCNum[j]  < pQuestProp->m_nEndCondKillNPCNum[j] )
-								{
-									++pMemberQuest->m_nKillNPCNum[j];
-									( (CUser*)pMember )->AddSetQuest( pMemberQuest ); 
+				for (int j = 0; j < 2; ++j) {
+					// 진행 중인 퀘스트의 종료 조건과 같은 NPC인가?
+					if (pQuestProp->m_nEndCondKillNPCIdx[j] != GetIndex())	continue;
+
+					// 극단 퀘스트인 경우
+					if (pQuestProp->m_nBeginCondParty == 2) {
+						CParty * pParty = g_PartyMng.GetParty(pAttacker->m_idparty);
+						// 극단원중에 해당 퀘스트를 진행하고 있으면..
+						if (pParty && pParty->IsMember(pAttacker->m_idPlayer)) {
+							for (int k = 0; k < pParty->GetSizeofMember(); ++k) {
+								PartyMember * pPartyMember = &pParty->m_aMember[k];
+								CMover * pMember = prj.GetUserByID(pPartyMember->m_uPlayerId);
+								if (IsValidObj(pMember) && IsValidArea(pMember, 64.0f)) {
+									LPQUEST pMemberQuest = pMember->GetQuest(quest.m_wId);
+									if (pMemberQuest && pMemberQuest->m_nKillNPCNum[j] < pQuestProp->m_nEndCondKillNPCNum[j]) {
+										++pMemberQuest->m_nKillNPCNum[j];
+										((CUser *)pMember)->AddSetQuest(pMemberQuest);
+									}
 								}
 							}
 						}
-					}
-				}
-				else
-				if( lpQuest->m_nKillNPCNum[ j ]  < pQuestProp->m_nEndCondKillNPCNum[ j ] )
-				{
-					++lpQuest->m_nKillNPCNum[ j ];
-					( (CUser*)pAttacker )->AddSetQuest( lpQuest );
+					} else
+						if (quest.m_nKillNPCNum[j] < pQuestProp->m_nEndCondKillNPCNum[j]) {
+							++quest.m_nKillNPCNum[j];
+							((CUser *)pAttacker)->AddSetQuest(&quest);
+						}
 				}
 			}
 		}
+
 	}
 
 #else // WORLDSERVER

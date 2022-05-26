@@ -3,6 +3,7 @@
 #include "HeapMng.h"
 #include "FlyFFTypes.h"
 #include "StaticString.h"
+#include <boost/container/static_vector.hpp>
 
 class CAr final {
 public:
@@ -124,6 +125,30 @@ static	DWORD	s_dwHdrCur;
 	CAr & operator>>(std::array<T, N> & values) {
 		for (size_t i = 0; i != N; ++i) {
 			*this >> values[i];
+		}
+		return *this;
+	}
+
+	template<typename T, size_t N>
+	CAr & operator<<(const boost::container::static_vector<T, N> & values) {
+		*this << values.size();
+		for (const auto & value : values) {
+			*this << value;
+		}
+		return *this;
+	}
+
+	template<typename T, size_t N>
+	CAr & operator>>(boost::container::static_vector<T, N> & values) {
+		values.clear();
+
+		size_t size;
+		*this >> size;
+		if (size > N) { size = 0; }
+		T value{};
+		for (size_t i = 0; i != N; ++i) {
+			*this >> value;
+			values.push_back(value);
 		}
 		return *this;
 	}

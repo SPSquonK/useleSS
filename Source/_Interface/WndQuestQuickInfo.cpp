@@ -256,7 +256,7 @@ BOOL CWndQuestQuickInfo::Process( void )
 		MakeTextColor( NO_SURFACE_SELECTED_CATEGORY_TEXT_COLOR, SURFACE_SELECTED_CATEGORY_TEXT_COLOR, m_nAlphaCount, m_nAlpha ), 
 		MakeTextColor( NO_SURFACE_SELECTED_TEXT_COLOR, SURFACE_SELECTED_TEXT_COLOR, m_nAlphaCount, m_nAlpha ) );
 
-	const int nCheckedQuestSize = g_pPlayer->m_nCheckedQuestSize;
+	const int nCheckedQuestSize = g_pPlayer->m_quests ? g_pPlayer->m_quests->checked.size() : 0;
 	if( nCheckedQuestSize != m_nTreeInformationListSize || m_bUpdateText == TRUE )
 	{
 		m_bUpdateText = FALSE;
@@ -264,12 +264,10 @@ BOOL CWndQuestQuickInfo::Process( void )
 
 		if( nCheckedQuestSize > 0 )
 		{
-			for( int i = 0; i < nCheckedQuestSize; ++i )
-			{
+			for (const DWORD dwQuestID : g_pPlayer->m_quests->checked) {
 				if( IsVisible() != TRUE )
 					SetVisible( TRUE );
 
-				DWORD dwQuestID = g_pPlayer->m_aCheckedQuest[ i ];
 				QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuestID );
 				if( pQuestProp == NULL )
 					continue;

@@ -92,6 +92,15 @@ void CMover::OnApplySM()
 }
 #endif // __WORLDSERVER __CLIENT
 
+
+CAr & operator<<(CAr & ar, const MoverSub::Quests & quests) {
+	return ar << quests.current << quests.checked << quests.completed;
+}
+
+CAr & operator>>(CAr & ar, MoverSub::Quests & quests) {
+	return ar >> quests.current >> quests.checked >> quests.completed;
+}
+
 void CMover::Serialize( CAr & ar )
 {
 	CCtrl::Serialize( ar );	//	25
@@ -202,13 +211,12 @@ void CMover::Serialize( CAr & ar )
 				ar.Write( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
 				ar << m_idMarkingWorld;
 				ar << m_vMarkingPos;
-				ar << m_nQuestSize;
-				ar.Write( m_aQuest, sizeof(QUEST) * m_nQuestSize );
-				ar << m_nCompleteQuestSize;
-				ar.Write( m_aCompleteQuest, sizeof(WORD) * m_nCompleteQuestSize ); 
-
-				ar << m_nCheckedQuestSize;
-				ar.Write( m_aCheckedQuest, sizeof(WORD) * m_nCheckedQuestSize ); 
+				
+				if (m_quests) {
+					ar << *m_quests;
+				} else {
+					ar << size_t(0) << size_t(0) << size_t(0);
+				}
 
 				ar << m_idMurderer;
 				ar << (short)m_nRemainGP;
@@ -490,13 +498,11 @@ void CMover::Serialize( CAr & ar )
 				ar.Read( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
 				ar >> m_idMarkingWorld;
 				ar >> m_vMarkingPos;
-				ar >> m_nQuestSize;
-				ar.Read( m_aQuest, sizeof(QUEST) * m_nQuestSize ); 
-				ar >> m_nCompleteQuestSize;
-				ar.Read( m_aCompleteQuest, sizeof(WORD) * m_nCompleteQuestSize ); 
-
-				ar >> m_nCheckedQuestSize;
-				ar.Read( m_aCheckedQuest, sizeof(WORD) * m_nCheckedQuestSize );
+				
+				
+				MoverSub::Quests q;
+				ar >> q;
+				m_quests = std::make_unique<MoverSub::Quests>(q);
 
 				ar >> m_idMurderer;
 				short n1, n2;		// n2는 사용하지 않는다.

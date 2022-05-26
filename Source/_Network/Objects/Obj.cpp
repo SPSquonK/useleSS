@@ -157,15 +157,7 @@ CMover::CMover()
 	m_dwUseItemId = 0;
 	m_nRemainGP	= 0;
 
-	m_aQuest = new QUEST[ MAX_QUEST ]; 
-	m_aCompleteQuest = new WORD[ MAX_COMPLETE_QUEST ];
-	m_nQuestSize = 0;
-	m_nCompleteQuestSize = 0;
-	memset( m_aQuest, 0, sizeof(QUEST) * MAX_QUEST );
-	memset( m_aCompleteQuest, 0, sizeof(WORD) * MAX_COMPLETE_QUEST );
-	m_aCheckedQuest = new WORD[ MAX_CHECKED_QUEST ];
-	m_nCheckedQuestSize = 0;
-	memset( m_aCheckedQuest, 0, sizeof(WORD) * MAX_CHECKED_QUEST );
+	m_quests = std::make_unique<MoverSub::Quests>();
 
 	m_idparty = 0;
 	m_idGuild	= 0;
@@ -245,10 +237,6 @@ CMover::CMover()
 CMover::~CMover()
 {
 	SAFE_DELETE( m_pActMover );
-
-	SAFE_DELETE_ARRAY( m_aQuest ); 
-	SAFE_DELETE_ARRAY( m_aCompleteQuest );
-	SAFE_DELETE_ARRAY( m_aCheckedQuest );
 }
 
 void CMover::InitProp( void )
@@ -733,12 +721,12 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 #ifdef __SKILL_0205
 		memcpy( m_abUpdateSkill, pMover->m_abUpdateSkill, sizeof(m_abUpdateSkill) );
 #endif	// __SKILL_0205
-		memcpy( m_aQuest, pMover->m_aQuest, sizeof(QUEST) * MAX_QUEST );
-		m_nQuestSize	= pMover->m_nQuestSize;
-		memcpy( m_aCompleteQuest, pMover->m_aCompleteQuest, sizeof(WORD) * MAX_COMPLETE_QUEST );
-		m_nCompleteQuestSize	= pMover->m_nCompleteQuestSize;
-		memcpy( m_aCheckedQuest, pMover->m_aCheckedQuest, sizeof(WORD) * MAX_CHECKED_QUEST );
-		m_nCheckedQuestSize	= pMover->m_nCheckedQuestSize;
+		if (pMover->m_quests) {
+			m_quests = std::make_unique<MoverSub::Quests>(*pMover->m_quests);
+		} else {
+			m_quests = nullptr;
+		}
+
 		memcpy( m_dwSMTime, pMover->m_dwSMTime, sizeof(m_dwSMTime) );
 		m_nPlusMaxHitPoint	= pMover->m_nPlusMaxHitPoint;
 		m_nAttackResistLeft	= pMover->m_nAttackResistLeft;
@@ -808,40 +796,35 @@ void CMover::PeriodTick( void )
 
 BOOL CMover::RemoveQuest( int nQuestId )
 {
+	if (!m_quests) return FALSE;
+
 	BOOL	bRemove	= FALSE;
-	for( int i = 0; i < m_nQuestSize; i++ )
-	{
-		if( m_aQuest[ i ].m_wId == nQuestId )
-		{
-			for( ; i < m_nQuestSize - 1; i++ )
-				m_aQuest[ i ] = m_aQuest[ i + 1 ];
-			m_nQuestSize--;
-			bRemove	= TRUE;
-			break;
-		}
+
+	const auto i1 = std::ranges::find_if(
+		m_quests->current,
+		MoverSub::Quests::ById(nQuestId)
+	);
+	if (i1 != m_quests->current.end()) {
+		bRemove = TRUE;
+		m_quests->current.erase(i1);
 	}
-	for( int i = 0; i < m_nCompleteQuestSize; i++ )
-	{
-		if( m_aCompleteQuest[ i ] == nQuestId )
-		{
-			for( ; i < m_nCompleteQuestSize - 1; i++ )
-				m_aCompleteQuest[ i ] = m_aCompleteQuest[ i + 1 ];
-			m_nCompleteQuestSize--;
-			bRemove	= TRUE;
-			break;
-		}
+
+	const auto i2 = std::ranges::find(
+		m_quests->completed, nQuestId
+	);
+	if (i2 != m_quests->completed.end()) {
+		bRemove = TRUE;
+		m_quests->completed.erase(i2);
 	}
-	for( int i = 0; i < m_nCheckedQuestSize; ++i )
-	{
-		if( m_aCheckedQuest[ i ] == nQuestId )
-		{
-			for( ; i < m_nCheckedQuestSize - 1; ++i )
-				m_aCheckedQuest[ i ] = m_aCheckedQuest[ i + 1 ];
-			m_aCheckedQuest[ --m_nCheckedQuestSize ] = 0;
-			bRemove	= TRUE;
-			break;
-		}
+
+	const auto i3 = std::ranges::find(
+		m_quests->checked, nQuestId
+	);
+	if (i3 != m_quests->checked.end()) {
+		bRemove = TRUE;
+		m_quests->checked.erase(i3);
 	}
+
 	return bRemove;
 }
 

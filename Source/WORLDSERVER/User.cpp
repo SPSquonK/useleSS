@@ -7958,9 +7958,12 @@ void CUser::AddCheckedQuest()
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_QUEST_CHECKED;
-	m_Snapshot.ar << this->m_nCheckedQuestSize;
-	if( this->m_nCheckedQuestSize )
-		m_Snapshot.ar.Write( this->m_aCheckedQuest, sizeof(WORD) * this->m_nCheckedQuestSize ); 
+
+	if (m_quests) {
+		m_Snapshot.ar << m_quests->checked;
+	} else {
+		m_Snapshot.ar << (size_t)0;
+	}
 }
 
 void CUser::AddInviteCampusMember( CUser* pRequest )

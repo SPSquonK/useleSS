@@ -925,7 +925,7 @@ public:
 
 	int		GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation );
 	void	GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation );
-	void	GetOneQuest( LPQUEST pQuest, char* pstrQuest, int *pLocation );
+	QUEST GetOneQuest( const char* pstrQuest, int *pLocation );
 
 #ifdef __CONV_SKILL
 	void	ConvSkill( void );

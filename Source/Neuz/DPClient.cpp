@@ -3742,21 +3742,20 @@ void CDPClient::OnGameJoin( CAr & ar )
 	CString strMessage;
 //	strMessage.Format( prj.GetText( TID_GAME_TOOLTIP_PLAYTIME ), dwSavePlayerTime / 60, dwSavePlayerTime % 60 );
 //	g_WndMng.PutString( strMessage, NULL, 0xff0000 );
-	for( int i = 0; i < g_pPlayer->m_nQuestSize; i++ )
-	{
-		if( g_pPlayer->m_aQuest[ i ].m_wId != 0xffff && g_pPlayer->m_aQuest[ i ].m_wId != 0xff )
-		{
-			if( g_pPlayer->m_aQuest[ i ].m_nState != 14 )
-			{
-				QuestProp * pQestProp = prj.m_aPropQuest.GetAt( g_pPlayer->m_aQuest[ i ].m_wId );
-				if( pQestProp )
-				{
-					strMessage.Format( prj.GetText(  TID_GAME_TOOLTIP_ROLEQUEST ) , pQestProp->m_szTitle );
-					g_WndMng.PutString( strMessage, NULL, 0xffff0000 );
-				}
-			}
+
+	if (g_pPlayer->m_quests) {
+		for (const QUEST & quest : g_pPlayer->m_quests->current) {
+			if (quest.m_wId == 0xffff || quest.m_wId == 0xff) continue;
+			if (quest.m_nState == QS_END) continue;
+
+			const QuestProp * pQestProp = quest.GetProp();
+			if (!pQestProp) continue;
+
+			strMessage.Format(prj.GetText(TID_GAME_TOOLTIP_ROLEQUEST), pQestProp->m_szTitle);
+			g_WndMng.PutString(strMessage, NULL, 0xffff0000);
 		}
 	}
+	
 	strMessage.Format( prj.GetText( TID_GAME_TOOLTIP_PRELEVEL ) , g_pPlayer->GetLevel() );
 	g_WndMng.PutString( strMessage, NULL, 0xffff0000 );	
 }
@@ -17568,11 +17567,10 @@ void CDPClient::SendTeleporterReq( const char* szCharKey, int nIndex )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::OnCheckedQuest( CAr & ar )
-{
-	ar >> g_pPlayer->m_nCheckedQuestSize;
-	if( g_pPlayer->m_nCheckedQuestSize )
-		ar.Read( g_pPlayer->m_aCheckedQuest, sizeof(WORD) * g_pPlayer->m_nCheckedQuestSize );
+void CDPClient::OnCheckedQuest(CAr & ar) {
+	if (g_pPlayer && g_pPlayer->m_quests) {
+		ar >> g_pPlayer->m_quests->checked;
+	}
 }
 
 void CDPClient::SendCheckedQuestId( int nQuestId, BOOL bCheck )

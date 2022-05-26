@@ -457,7 +457,6 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 	CMover* pMover = prj.GetMover( nNpcId );
 	CUser* pUser = prj.GetUser( nPcId );
 
-	LPQUEST lpQuest;
 	BOOL bNewQuest = FALSE;
 
 	__RemoveAllKey( nPcId );
@@ -474,7 +473,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 		for( int i = 0; i < lpChar->m_awSrcQuest.GetSize(); i++ )
 		{
 			int nQuest = lpChar->m_awSrcQuest.GetAt( i );
-			lpQuest = pUser->GetQuest( nQuest );
+			QUEST * lpQuest = pUser->GetQuest( nQuest );
 
 			// new quest
 			if( lpQuest == NULL && pUser->IsCompleteQuest( nQuest ) == FALSE )
@@ -523,7 +522,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 	
 	if( nQuestId )
 	{
-		lpQuest = pUser->GetQuest( nQuestId );
+		QUEST * lpQuest = pUser->GetQuest( nQuestId );
 		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
 		if( lpQuest && lpQuest->m_nState != QS_END && pQuestProp )	// 진행중인 퀘스트 선택 시
 		{
@@ -552,30 +551,25 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 	// 완료 가능한 퀘스트가 있는지 검사
 	if( bCompleteCheck )
 	{
-		for( int i = 0; i < pUser->m_nQuestSize; ++i )
-		{
-			lpQuest = &pUser->m_aQuest[i];
-			if( lpQuest )
-			{
-				QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( lpQuest->m_wId );
-				if( pQuestProp )
-				{
-					if( strcmpi( pQuestProp->m_szEndCondCharacter, pMover->m_szCharacterKey ) == 0 && lpQuest->m_nState != QS_END )
-					{
-						if( __IsEndQuestCondition( pUser, lpQuest->m_wId ) )
-						{
-							__SayQuest( nPcId, lpQuest->m_wId, QSAY_END_COMPLETE1 );
-							__SayQuest( nPcId, lpQuest->m_wId, QSAY_END_COMPLETE2 );
-							__SayQuest( nPcId, lpQuest->m_wId, QSAY_END_COMPLETE3 );
-							__AddAnswer( nPcId,"__OK__", "QUEST_END_COMPLETE", 0, lpQuest->m_wId );
-							bDialogText = FALSE;
-							break;
-						}
+		if (pUser->m_quests) {
+			for (QUEST & quest : pUser->m_quests->current) {
+				const QuestProp * pQuestProp = quest.GetProp();
+				if (!pQuestProp) {
+					WriteError("__QuestEnd quest(%d) property null", quest.m_wId);
+					continue;
+				}
+
+				if (strcmpi(pQuestProp->m_szEndCondCharacter, pMover->m_szCharacterKey) == 0 && quest.m_nState != QS_END) {
+					if (__IsEndQuestCondition(pUser, quest.m_wId)) {
+						__SayQuest(nPcId, quest.m_wId, QSAY_END_COMPLETE1);
+						__SayQuest(nPcId, quest.m_wId, QSAY_END_COMPLETE2);
+						__SayQuest(nPcId, quest.m_wId, QSAY_END_COMPLETE3);
+						__AddAnswer(nPcId, "__OK__", "QUEST_END_COMPLETE", 0, quest.m_wId);
+						bDialogText = FALSE;
+						break;
 					}
 				}
-				else	WriteError( "__QuestEnd quest(%d) property null", lpQuest->m_wId );
 			}
-			else	WriteError( "__QuestEnd : user member quest(%d) null", i  );
 		}
 	}
 

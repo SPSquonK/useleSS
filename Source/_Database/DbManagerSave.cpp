@@ -558,36 +558,48 @@ void CDbManager::SaveJobLv( CMover* pMover, char* szJobLv )
 
 void CDbManager::SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest )
 {
-	char sPerQuest[128];
-	char OneCompleteQuest[20] = {0,};
-	char OneCheckedQuest[20] = {0, };
+	if (!pMover->m_quests) {
+		std::strcpy(szQuestCnt, NullStr);
+		std::strcpy(szm_aCompleteQuest, NullStr);
+		std::strcpy(szCheckedQuest, NullStr);
+		return;
+	}
 
-	for( int i = 0; i < pMover->m_nQuestSize; i++ )
-	{
-		sprintf( sPerQuest, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
-			pMover->m_aQuest[i].m_wId, pMover->m_aQuest[i].m_nState, pMover->m_aQuest[i].m_wTime,
-			pMover->m_aQuest[i].m_nKillNPCNum[0], pMover->m_aQuest[i].m_nKillNPCNum[1],
-			pMover->m_aQuest[i].m_bPatrol, pMover->m_aQuest[i].m_bReserve2,	pMover->m_aQuest[i].m_bReserve3, pMover->m_aQuest[i].m_bReserve4,
-			pMover->m_aQuest[i].m_bReserve5, pMover->m_aQuest[i].m_bReserve6, pMover->m_aQuest[i].m_bReserve7, pMover->m_aQuest[i].m_bReserve8
+	constexpr auto SaveQuest_ = [](
+		const MoverSub::Quests & quests,
+		char * szQuestCnt, char * szm_aCompleteQuest, char * szCheckedQuest
+		) {
+
+		char buffer[128];
+
+		szQuestCnt[0] = '\0';
+		for (const QUEST & quest : quests.current) {
+			sprintf(buffer, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
+				quest.m_wId, quest.m_nState, quest.m_wTime,
+				quest.m_nKillNPCNum[0], quest.m_nKillNPCNum[1],
+				quest.m_bPatrol  , quest.m_bReserve2, quest.m_bReserve3, quest.m_bReserve4,
+				quest.m_bReserve5, quest.m_bReserve6, quest.m_bReserve7, quest.m_bReserve8
 			);
-		strncat( szQuestCnt, sPerQuest, sizeof(sPerQuest) );
-	}
-	
-	for( int i = 0; i < pMover->m_nCompleteQuestSize; i++ )
-	{
-		sprintf(OneCompleteQuest, "%d/", pMover->m_aCompleteQuest[i]);
-		strncat( szm_aCompleteQuest, OneCompleteQuest, sizeof(OneCompleteQuest) );
-	}
+			strncat(szQuestCnt, buffer, sizeof(buffer));
+		}
+		strcat(szQuestCnt, NullStr);
 
-	strcat( szQuestCnt, NullStr );
-	strcat( szm_aCompleteQuest, NullStr );
+		szm_aCompleteQuest[0] = '\0';
+		for (const auto questId : quests.completed) {
+			sprintf(buffer, "%d/", questId);
+			strncat(szm_aCompleteQuest, buffer, sizeof(buffer));
+		}
+		strcat(szm_aCompleteQuest, NullStr);
 
-	for( int i = 0; i < pMover->m_nCheckedQuestSize; ++i )
-	{
-		sprintf( OneCheckedQuest, "%d/", pMover->m_aCheckedQuest[i]);
-		strncat( szCheckedQuest, OneCheckedQuest, sizeof( OneCheckedQuest ) );
-	}
-	strcat( szCheckedQuest, NullStr );
+		szCheckedQuest[0] = '\0';
+		for (const auto questId : quests.checked) {
+			sprintf(buffer, "%d/", questId);
+			strncat(szCheckedQuest, buffer, sizeof(buffer));
+		}
+		strcat(szCheckedQuest, NullStr);
+	};
+
+	SaveQuest_(*pMover->m_quests, szQuestCnt, szm_aCompleteQuest, szCheckedQuest);
 }
 
 void	CDbManager::SavePocket( CMover* pMover, PPocketStruct pPocketStruct )

@@ -103,38 +103,38 @@ int APIENTRY AddKey( NPCDIALOG_INFO* pInfo, LPCTSTR szWord, LPCTSTR szKey, DWORD
 int APIENTRY AddCondKey( NPCDIALOG_INFO* pInfo, LPCTSTR szWord, LPCTSTR szKey, DWORD dwParam )
 {
 	dwParam = 0;
-	CString strWord, strKey;
+	const char * strWord = szWord;
+	const char * strKey = szKey;
 
-	strWord = szWord;
-	strKey = szKey;
-
-	if( strKey.IsEmpty() )	
+	if (strKey[0] == '\0') {
 		strKey = strWord;
+	}
 
-	if( HasKey( pInfo, strKey ) == FALSE ) 
-	{
-		Error( "key error %s %s", pInfo->GetName(), strKey );
+	if (!HasKey(pInfo, strKey)) {
+		Error("key error %s %s", pInfo->GetName(), strKey);
 		return 1;
 	}
+
 	CUser* pUser = prj.GetUser( pInfo->GetPcId() );
 	CMover* pMover = prj.GetMover( pInfo->GetNpcId() );
 
-	for( int i = 0; i < pUser->m_nQuestSize; i++ )
-	{
-		QuestProp* pQuestProp = pUser->m_aQuest[ i ].GetProp();
-		if( pQuestProp )
-		{
-			if( strcmp( pQuestProp->m_szEndCondDlgCharKey, pMover->m_szCharacterKey ) == 0 )
-			{
-				if( strcmp( pQuestProp->m_szEndCondDlgAddKey, strKey ) == 0 )
-				{
-					__AddKey( pInfo->GetPcId(), strWord, strKey, dwParam );
-					return 1;
-				}
-			}
+	if (!pUser->m_quests) return 0;
+
+	const auto itCurrent = std::ranges::find_if(
+		pUser->m_quests->current,
+		[&](const QUEST & quest) {
+			const QuestProp * pQuestProp = quest.GetProp();
+			if (!pQuestProp) return false;
+
+			return (strcmp(pQuestProp->m_szEndCondDlgCharKey, pMover->m_szCharacterKey) == 0)
+				&& (strcmp(pQuestProp->m_szEndCondDlgAddKey, strKey) == 0);
 		}
-	}
-	return 0;
+	);
+
+	if (itCurrent == pUser->m_quests->current.end()) return 0;
+
+	__AddKey(pInfo->GetPcId(), strWord, strKey, dwParam);
+	return 1;
 }
 
 int APIENTRY AddAnswer( NPCDIALOG_INFO*  pInfo, LPCTSTR szWord, LPCTSTR szKey, DWORD dwParam )

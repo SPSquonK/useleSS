@@ -136,22 +136,20 @@ void CWndQuest::Update( int nNewQuestId )
 	CDWordArray aOldHeadData;
 	if( CTreeInformationManager::m_eQuestListGroup != CTreeInformationManager::COMPLETE_QUEST_LIST )
 	{
-		for( int i = 0; i < g_pPlayer->m_nQuestSize; ++i )
-		{
-			LPQUEST lpQuest = &g_pPlayer->m_aQuest[ i ];
-			if( lpQuest->m_wId == 0xffff )
-				continue;
-			InsertQuestItem( lpQuest->m_wId, aOldHeadData, FALSE );
+		if (g_pPlayer->m_quests) {
+			for (const QUEST & quest : g_pPlayer->m_quests->current) {
+				if (quest.m_wId == 0xffff) continue;
+				InsertQuestItem(quest.m_wId, aOldHeadData, FALSE);
+			}
 		}
 	}
 	if( CTreeInformationManager::m_eQuestListGroup != CTreeInformationManager::CURRENT_QUEST_LIST )
 	{
-		for( int i = 0; i < g_pPlayer->m_nCompleteQuestSize; ++i )
-		{
-			WORD wQuest = g_pPlayer->m_aCompleteQuest[ i ];
-			if( wQuest == 0xffff )
-				continue;
-			InsertQuestItem( wQuest, aOldHeadData, TRUE, nNewQuestId );
+		if (g_pPlayer->m_quests) {
+			for (const auto wQuest : g_pPlayer->m_quests->completed) {
+				if (wQuest == 0xffff) continue;
+				InsertQuestItem(wQuest, aOldHeadData, TRUE, nNewQuestId);
+			}
 		}
 	}
 	if( nNewQuestId != -1 )
@@ -588,15 +586,10 @@ DWORD CWndQuest::FindOldHeadQuest( const CDWordArray& raOldHeadQuestID, const DW
 	return 0;
 }
 
-BOOL CWndQuest::IsCheckedQuestID( DWORD dwQuestID )
-{
-	for( int i = 0; i < g_pPlayer->m_nCheckedQuestSize; ++i )
-	{
-		DWORD dwCheckedQuestID = g_pPlayer->m_aCheckedQuest[ i ];
-		if( dwCheckedQuestID == dwQuestID )
-			return TRUE;
-	}
-	return FALSE;
+BOOL CWndQuest::IsCheckedQuestID(DWORD dwQuestID) {
+	if (!g_pPlayer->m_quests) return FALSE;
+	const auto it = std::ranges::find(g_pPlayer->m_quests->checked, dwQuestID);
+	return (it != g_pPlayer->m_quests->checked.end()) ? TRUE : FALSE;
 }
 
 CWndQuestTreeCtrl::CWndQuestTreeCtrl( void )
@@ -625,7 +618,7 @@ BOOL CWndQuestTreeCtrl::OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult )
 					{
 						if( pWndCheckBox->GetCheck() == TRUE )
 						{
-							if( g_pPlayer->m_nCheckedQuestSize >= GetMaxCheckNumber() )
+							if( static_cast<int>(g_pPlayer->m_quests->checked.size()) >= GetMaxCheckNumber())
 							{
 								pWndCheckBox->SetCheck( FALSE );
 								g_WndMng.PutString( prj.GetText( TID_GAME_ERROR_DONT_CHECK ), NULL, prj.GetTextColor( TID_GAME_ERROR_DONT_CHECK ) );

@@ -8,6 +8,7 @@
 
 #include <array>
 #include <optional>
+#include <boost/container/static_vector.hpp>
 #include "sqktd_maybe_owned_ptr.h"
 
 #include "Ctrl.h"
@@ -208,6 +209,8 @@ typedef struct tagPLAYER
 /// Quest structure
 typedef struct tagQuest
 {
+	static constexpr bool Archivable = true;
+
 	BYTE		m_nState;
 	WORD		m_wTime;
 	WORD		m_wId;
@@ -221,7 +224,7 @@ typedef struct tagQuest
 	BYTE		m_bReserve7 : 1;
 	BYTE		m_bReserve8 : 1;
 
-	QuestProp* GetProp() { return prj.m_aPropQuest.GetAt( m_wId ); }
+	QuestProp* GetProp() const { return prj.m_aPropQuest.GetAt( m_wId ); }
 
 } QUEST,* LPQUEST;
 
@@ -391,6 +394,7 @@ private:
 };
 #endif	// __CLIENT
 
+#include "MoverCommon.h"
 
 /// 플레이어와 NPC
 class CMover : public CCtrl
@@ -621,12 +625,8 @@ public:
 
 	BYTE			m_nQuestKeeping;			/// 클락워크 길드 퀘스트 번호  
 	BYTE			m_nPartyQuestKeeping;		/// 거대 몬스터 퀘스트 번호 
-	BYTE			m_nQuestSize;				/// 퀘스트 갯수 
-	LPQUEST			m_aQuest;					/// 현재 진행중인 퀘스트 배열 
-	BYTE			m_nCompleteQuestSize;		/// 완료된 퀘스트 갯수 
-	LPWORD   		m_aCompleteQuest;			/// 완료된 퀘스트 배열 	
-	BYTE			m_nCheckedQuestSize;
-	LPWORD			m_aCheckedQuest;
+
+	std::unique_ptr<MoverSub::Quests> m_quests;
 
 	int				m_nDead;					/// 죽은 후 5초간은 무적
 	int				m_nGuildCombatState;		/// 길드 대전 상태 

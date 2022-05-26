@@ -176,6 +176,8 @@ public:
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 typedef struct tagQuest
 {
+	static constexpr bool Archivable = true;
+
 	BYTE		m_nState;
 	WORD		m_wTime;
 	WORD		m_wId;
@@ -205,6 +207,7 @@ typedef	struct	_EQUIP_INFO
 }	EQUIP_INFO,	*PEQUIP_INFO;
 
 #include "pocket.h"
+#include "MoverCommon.h"
 
 class CMover: public CCtrl
 {
@@ -369,16 +372,13 @@ public:
 	
 	DWORD			m_dwStateMode;
 	OBJID			m_dwUseItemId;					// 비행 시전 시간
-	LPQUEST			m_aQuest;
-	LPWORD			m_aCompleteQuest; 
-	BYTE			m_nQuestSize;
-	BYTE			m_nCompleteQuestSize;
+	
+	std::unique_ptr<MoverSub::Quests> m_quests;
+
 	DWORD			m_dwPeriodicTick;
 	DWORD			m_dwTickCheer;
 	int				m_nCheerPoint;
 	DWORD			m_dwPCBangClass;
-	LPWORD			m_aCheckedQuest;
-	BYTE			m_nCheckedQuestSize;
 private:
 	u_long	m_idCampus;
 	int		m_nCampusPoint;

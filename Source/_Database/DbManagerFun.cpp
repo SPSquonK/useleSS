@@ -1117,100 +1117,70 @@ void CDbManager::GetJobLv( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 
 BOOL CDbManager::GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
-	int CountStr	= 0;
-	int IndexQuest	= 0;
-	char QuestCnt[3072]		= {0,};
-	qry->GetStr( "m_lpQuestCntArray", QuestCnt );
-	VERIFYSTRING_RETURN( QuestCnt, pMover->m_szName );
-	while( '$' != QuestCnt[CountStr] )
-	{
-		QUEST BufQuest;
-		GetOneQuest( &BufQuest, QuestCnt, &CountStr );
-		pMover->m_aQuest[IndexQuest] = BufQuest;
-		IndexQuest++;
-	}
-	pMover->m_nQuestSize = IndexQuest;
+	pMover->m_quests = std::make_unique<MoverSub::Quests>();
 
-	int nQuestSize = IndexQuest;
-	CountStr	= 0;
-	IndexQuest	= 0;
-	char CompleteQuest[1024]		= {0,};
-	qry->GetStr( "m_aCompleteQuest", CompleteQuest );
-	VERIFYSTRING_RETURN( CompleteQuest, pMover->m_szName );
-	while( '$' != CompleteQuest[CountStr] )
-	{
-		pMover->m_aCompleteQuest[IndexQuest] = (WORD)GetIntFromStr( CompleteQuest, &CountStr ); 
-		IndexQuest++;
+	int CountStr	= 0;
+	const char * QuestCnt = qry->GetStrPtr( "m_lpQuestCntArray");
+	VERIFYSTRING_RETURN(QuestCnt, pMover->m_szName);
+	while ('$' != QuestCnt[CountStr]) {
+		const QUEST BufQuest = GetOneQuest(QuestCnt, &CountStr);
+		pMover->m_quests->current.emplace_back(BufQuest);
 	}
-	pMover->m_nCompleteQuestSize = IndexQuest;
+
+	CountStr	= 0;
+	const char * CompleteQuest = qry->GetStrPtr("m_aCompleteQuest");
+	VERIFYSTRING_RETURN(CompleteQuest, pMover->m_szName);
+	while ('$' != CompleteQuest[CountStr]) {
+		const WORD id = (WORD)GetIntFromStr(CompleteQuest, &CountStr);
+		pMover->m_quests->completed.emplace_back(id);
+	}
 
 	CountStr = 0;
-	IndexQuest = 0;
-	char CheckedQuest[100] = {0, };
-	qry->GetStr( "m_aCheckedQuest", CheckedQuest );
+	const char * CheckedQuest = qry->GetStrPtr("m_aCheckedQuest");
 	VERIFYSTRING_RETURN( CheckedQuest, pMover->m_szName );
 	while( '$' != CheckedQuest[CountStr] )
 	{
-		pMover->m_aCheckedQuest[IndexQuest] = (WORD)GetIntFromStr( CheckedQuest, &CountStr ); 
-		IndexQuest++;
+		const WORD id = (WORD)GetIntFromStr( CheckedQuest, &CountStr ); 
+		pMover->m_quests->checked.emplace_back(id);
 	}
-	pMover->m_nCheckedQuestSize = IndexQuest;
 
 	// 기존 것중에 완료된것을 완료 배열에 넣는다.
-	for( int i = 0; i < nQuestSize; i++ )
-	{
-		if( pMover->m_aQuest[ i ].m_nState == QS_END )
-		{
-			int j = NULL;
-			for( ; j < pMover->m_nCompleteQuestSize; j++ )
-			{
-				if( pMover->m_aCompleteQuest[ j ] == pMover->m_aQuest[ i ].m_wId )
-					break;
-			}
-			if( j == pMover->m_nCompleteQuestSize )
-			{
-				pMover->m_aCompleteQuest[ pMover->m_nCompleteQuestSize ] = pMover->m_aQuest[ i ].m_wId;
-				pMover->m_nCompleteQuestSize++;
-			}
-			for( j = i; j < nQuestSize - 1; j++ )
-			{
-				pMover->m_aQuest[ j ] = pMover->m_aQuest[ j + 1 ];
-			}
-			for( int k = 0; k < pMover->m_nCheckedQuestSize; ++k )
-			{
-				if( pMover->m_aCheckedQuest[ k ] == pMover->m_aQuest[ i ].m_wId )
-				{
-					for( int l = k; l < pMover->m_nCheckedQuestSize - 1; ++l )
-						pMover->m_aCheckedQuest[ k ] = pMover->m_aCheckedQuest[ k + 1 ];
-					pMover->m_aCheckedQuest[ --pMover->m_nCheckedQuestSize ] = 0;
-					break;
+	constexpr auto Normalize = [](MoverSub::Quests & quests) {
+		for (auto lpQuest = quests.current.begin();
+			lpQuest != quests.current.end();
+			) {
+
+			if (lpQuest->m_nState == QS_END) {
+				// Ensure is in completed, remove from current and checked
+				const auto itCompleted = std::ranges::find(quests.completed, lpQuest->m_wId);
+
+				if (itCompleted == quests.completed.end()) {
+					quests.completed.emplace_back(lpQuest->m_wId);
 				}
+
+				const auto itChecked = std::ranges::find(quests.checked, lpQuest->m_wId);
+				if (itChecked != quests.checked.end()) {
+					quests.checked.erase(itChecked);
+				}
+
+				lpQuest = quests.current.erase(lpQuest);
+			} else {
+				// Ensure no dupes
+				quests.current.erase(
+					std::remove_if(
+						lpQuest + 1, quests.current.end(),
+						MoverSub::Quests::ById(lpQuest->m_wId)
+					),
+					quests.current.end()
+				);
+
+				++lpQuest;
 			}
-			nQuestSize--;
-			i--;
 		}
-		else
-		{
-			int j = 0;
-			do
-			{
-				for( j = i + 1; j < nQuestSize; j++ )
-				{
-					if( pMover->m_aQuest[ j ].m_wId == pMover->m_aQuest[ i ].m_wId )
-						break;
-				}
-				if( j != nQuestSize )
-				{
-					for( int k = j; k < nQuestSize - 1; k++ )
-					{
-						pMover->m_aQuest[ k ] = pMover->m_aQuest[ k + 1 ];
-					}
-					nQuestSize--;
-				}
-			} while( j != nQuestSize );
-		}
-	}
-	pMover->m_nQuestSize = nQuestSize;
+	};
+	
+	Normalize(*pMover->m_quests);
+
 	return TRUE;
 }
 
@@ -1342,26 +1312,26 @@ void CDbManager::GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation )
 	++*pLocation;
 }
 
-void CDbManager::GetOneQuest( LPQUEST pQuest, char* pstrQuest, int *pLocation )
+QUEST CDbManager::GetOneQuest( const char* pstrQuest, int *pLocation )
 {
-	pQuest->m_wId				= (WORD)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_nState			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_wTime				= (WORD)GetIntPaFromStr( pstrQuest, pLocation );
+	QUEST pQuest;
+	pQuest.m_wId				= (WORD)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_nState			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_wTime				= (WORD)GetIntPaFromStr( pstrQuest, pLocation );
 
-//	pQuest->m_nKillNPCNum[0]	= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
-//	pQuest->m_nKillNPCNum[1]	= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
-	pQuest->m_nKillNPCNum[0]	= (WORD)GetIntPaFromStr( pstrQuest, pLocation );	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
-	pQuest->m_nKillNPCNum[1]	= (WORD)GetIntPaFromStr( pstrQuest, pLocation );	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
-	pQuest->m_bPatrol			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_bReserve2			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_bReserve3			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_bReserve4			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_bReserve5			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_bReserve6			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_bReserve7			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
-	pQuest->m_bReserve8			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_nKillNPCNum[0]	= (WORD)GetIntPaFromStr( pstrQuest, pLocation );	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
+	pQuest.m_nKillNPCNum[1]	= (WORD)GetIntPaFromStr( pstrQuest, pLocation );	// chipi_091015 - NPC Kill Quest 갯수 확장( BYTE -> WORD )
+	pQuest.m_bPatrol			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_bReserve2			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_bReserve3			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_bReserve4			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_bReserve5			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_bReserve6			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_bReserve7			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_bReserve8			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
 
 	++*pLocation;
+	return pQuest;
 }
 
 

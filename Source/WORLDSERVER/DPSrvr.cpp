@@ -755,21 +755,20 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 				pMover->m_pNpcProperty->RunDialog( lpKey, NULL, nGlobal1, (int)pMover->GetId(), (int)pUser->GetId(), nGlobal2 );
 
 				// 퀘스트 조건 대화에 맞는 키일 경우는 대화 성공 플렉을 세팅하고 퀘스트 정보를 클라이언트에 보내준다.
-				for( int i = 0; i < pUser->m_nQuestSize; i++ )
-				{
-					LPQUEST lpQuest = &pUser->m_aQuest[ i ];
-					QuestProp* pQuestProp = pUser->m_aQuest[ i ].GetProp();
-					if( pQuestProp )
-					{
-						if( strcmp( pQuestProp->m_szEndCondDlgCharKey, pMover->m_szCharacterKey ) == 0 )
-						{
-							if( strcmp( pQuestProp->m_szEndCondDlgAddKey, lpKey ) == 0 )
-							{
-								lpQuest->m_bDialog = TRUE;
-								pUser->AddSetQuest( lpQuest );
-								break;
-							}
+				if (pUser->m_quests) {
+					const auto lpQuest = std::ranges::find_if(
+						pUser->m_quests->current,
+						[&](const QUEST & quest) {
+							const QuestProp * pQuestProp = quest.GetProp();
+							return pQuestProp
+								&& (strcmp(pQuestProp->m_szEndCondDlgCharKey, pMover->m_szCharacterKey) == 0)
+								&& (strcmp(pQuestProp->m_szEndCondDlgAddKey, lpKey) == 0);
 						}
+					);
+
+					if (lpQuest != pUser->m_quests->current.end()) {
+						lpQuest->m_bDialog = TRUE;
+						pUser->AddSetQuest(&*lpQuest);
 					}
 				}
 			}
@@ -10642,49 +10641,29 @@ void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, 
 	}
 }
 
-void CDPSrvr::OnCheckedQuest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
-{
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		int nQuestid;
-		BOOL bCheck;
-		ar >> nQuestid >> bCheck;
-		if( bCheck )
-		{
-			if( pUser->m_nCheckedQuestSize >= MAX_CHECKED_QUEST )
-				return;
+void CDPSrvr::OnCheckedQuest( CAr & ar, CUser & pUser ) {
+	if (!pUser.m_quests) return;
 
-			for( int i = 0; i < pUser->m_nCheckedQuestSize; ++i )
-			{
-				if( pUser->m_aCheckedQuest[ i ] == nQuestid )
-				{
-					for( int j = i; j < pUser->m_nCheckedQuestSize -1; ++j )
-						pUser->m_aCheckedQuest[ j ] = pUser->m_aCheckedQuest[ j+1 ];
-					pUser->m_aCheckedQuest[ --pUser->m_nCheckedQuestSize ] = 0;
-					break;
-				}
-			}
-			pUser->m_aCheckedQuest[ pUser->m_nCheckedQuestSize++ ] = nQuestid;
-		}
-		else
-		{
-			if( pUser->m_nCheckedQuestSize <= 0 )
-				return;
+	const auto [nQuestid, bCheck] = ar.Extract<int, BOOL>();
 
-			for( int i = 0; i < pUser->m_nCheckedQuestSize; ++i )
-			{
-				if( pUser->m_aCheckedQuest[ i ] == nQuestid )
-				{
-					for( int j = i; j < pUser->m_nCheckedQuestSize -1; ++j )
-						pUser->m_aCheckedQuest[ j ] = pUser->m_aCheckedQuest[ j+1 ];
-					pUser->m_aCheckedQuest[ --pUser->m_nCheckedQuestSize ] = 0;
-					break;
-				}
-			}
-		}
-		pUser->AddCheckedQuest();
+	bool stable = true;
+
+	auto & checked = pUser.m_quests->checked;
+
+	const auto itCurrentlyChecked = std::ranges::find(checked, nQuestid);
+	if (itCurrentlyChecked != checked.end()) {
+		checked.erase(itCurrentlyChecked);
+		stable = false;
 	}
+
+	if (bCheck) {
+		if (checked.size() < checked.max_size()) {
+			checked.emplace_back(nQuestid);
+			stable = false;
+		}
+	}
+
+	if (!stable) pUser.AddCheckedQuest();
 }
 
 void CDPSrvr::OnInviteCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )

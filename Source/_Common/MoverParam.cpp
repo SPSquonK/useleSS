@@ -2852,94 +2852,66 @@ void CMover::HalfForceSet( D3DXVECTOR3 & vPos, D3DXVECTOR3 & vd, float fAngle, f
 	m_pActMover->HalfForcedSet( vd, fAccPower, fTurnAngle );
 }
 
-BOOL CMover::IsCompleteQuest( int nQuestId )
-{
-	for( int i = 0; i < m_nCompleteQuestSize; i++ )
-	{
-		if( m_aCompleteQuest[ i ] == nQuestId )
-		{
-			return TRUE;
-		}
-	}
-	return FALSE;
+BOOL CMover::IsCompleteQuest( int nQuestId ) {
+	return (m_quests && m_quests->IsCompletedQuest(nQuestId)) ? TRUE : FALSE;
 }
 
-BOOL CMover::MakeCompleteQuest( int nQuestId, LPQUEST lpQuest )
-{
-	for( int i = 0; i < m_nCompleteQuestSize; i++ )
-	{
-		if( m_aCompleteQuest[ i ] == nQuestId )
-		{
-			ZeroMemory( lpQuest, sizeof( QUEST ) );
-			lpQuest->m_wId = nQuestId;
-			lpQuest->m_nState = QS_END;
-			return TRUE;
-		}
-	}
-	return FALSE;
+bool MoverSub::Quests::IsCompletedQuest(const int questId) const {
+	const auto it = std::ranges::find(completed, questId);
+	return it != completed.end();
 }
-void CMover::RemoveAllQuest()
-{
-	m_nQuestSize = 0;
-	m_nCompleteQuestSize = 0;
-	m_nCheckedQuestSize = 0;
+
+BOOL CMover::MakeCompleteQuest(int nQuestId, QUEST * lpQuest) {
+	if (!m_quests) return FALSE;
+	if (!m_quests->IsCompletedQuest(nQuestId)) return FALSE;
+
+	ZeroMemory(lpQuest, sizeof(QUEST));
+	lpQuest->m_wId = nQuestId;
+	lpQuest->m_nState = QS_END;
+	return true;
 }
-void CMover::RemoveCompleteQuest()
-{
-	m_nCompleteQuestSize = 0;
+
+void MoverSub::Quests::Clear() {
+	current.clear();
+	completed.clear();
+	checked.clear();
+}
+
+void CMover::RemoveAllQuest() {
+	if (m_quests) m_quests->Clear();
+}
+
+void CMover::RemoveCompleteQuest() {
+	if (m_quests) m_quests->completed.clear();
 }
 
 
-LPQUEST CMover::FindQuest( int nQuestId )
-{
-	for( int i = 0; i < m_nQuestSize; i++ )
-	{
-		if( m_aQuest[ i ].m_wId == nQuestId )
-		{
-			return &m_aQuest[ i ];
-		}
-	}
-
-	return NULL;
+QUEST * CMover::FindQuest( int nQuestId ) {
+	if (!m_quests) return nullptr;
+	return m_quests->FindQuest(nQuestId);
 }
-BOOL CMover::RemoveQuest( int nQuestId )
-{
-	QuestProp* pProp = prj.m_aPropQuest.GetAt( nQuestId );
 
-	for( int i = 0; i < m_nQuestSize; i++ )
-	{
-		if( m_aQuest[ i ].m_wId == nQuestId )
-		{
-			for( ; i < m_nQuestSize - 1; i++ )
-			{
-				m_aQuest[ i ] = m_aQuest[ i + 1 ];
-			}
-			m_nQuestSize--;
-			break;
-		}
-	}
-	for( int i = 0; i < m_nCompleteQuestSize; i++ )
-	{
-		if( m_aCompleteQuest[ i ] == nQuestId )
-		{
-			for( ; i < m_nCompleteQuestSize - 1; i++ )
-			{
-				m_aCompleteQuest[ i ] = m_aCompleteQuest[ i + 1 ];
-			}
-			m_nCompleteQuestSize--;
-			break;
-		}
-	}
-	for( int i = 0; i < m_nCheckedQuestSize; ++i )
-	{
-		if( m_aCheckedQuest[ i ] == nQuestId )
-		{
-			for( ; i < m_nCheckedQuestSize -1; ++i )
-				m_aCheckedQuest[ i ] = m_aCheckedQuest[ i + 1 ];
-			m_aCheckedQuest[ --m_nCheckedQuestSize ] = 0;
-			break;
-		}
-	}
+QUEST * MoverSub::Quests::FindQuest(const int questId) {
+	const auto it = std::ranges::find_if(current, QuestSearcherById(questId));
+	if (it == current.end()) return nullptr;
+	return &*it;
+}
+
+void MoverSub::Quests::RemoveQuest(int questId) {
+	const auto itCurrent = std::ranges::find_if(current,
+		[&](const QUEST & quest) { return quest.m_wId == questId; }
+	);
+	if (itCurrent != current.end()) current.erase(itCurrent);
+
+	const auto itCompleted = std::ranges::find(completed, questId);
+	if (itCompleted != completed.end()) completed.erase(itCompleted);
+
+	const auto itChecked = std::ranges::find(checked, questId);
+	if (itChecked != checked.end()) checked.erase(itChecked);
+}
+
+BOOL CMover::RemoveQuest( int nQuestId ) {
+	if (m_quests) m_quests->RemoveQuest(nQuestId);
 
 #ifdef __CLIENT
 	PlayMusic( BGM_EV_END );
@@ -2972,10 +2944,12 @@ BOOL CMover::SetQuest( LPQUEST lpNewQuest )
 }
 BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 {
+	if (!m_quests) return FALSE;
+
 	// ����Ʈ�� �߰� �������� ���� �߰��Ѵ�.
 	if( lpQuest == NULL )
 	{
-		if( m_nQuestSize >= MAX_QUEST )
+		if( m_quests->current.size() >= MAX_QUEST)
 		{
 			Error("SetQuestCnt : ����Ʈ �ʰ�");
 			return FALSE;
@@ -2983,10 +2957,10 @@ BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 #ifdef __CLIENT
 		PlayMusic( BGM_EV_START );
 #endif
-		if( m_nCompleteQuestSize < MAX_COMPLETE_QUEST ) 
-			lpQuest = &m_aQuest[ m_nQuestSize++ ];
-		else
+		if( m_quests->completed.size()  >= MAX_COMPLETE_QUEST)
 			return FALSE;
+
+		lpQuest = &m_quests->current.emplace_back();
 
 		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( lpNewQuest->m_wId );
 		if( pQuestProp && pQuestProp->m_nEndCondLimitTime  )
@@ -3001,51 +2975,45 @@ BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 	if( lpNewQuest->m_nState == QS_END )
 	{
 		// ���, �Ϸ� �˽�Ʈ �迭�� �־� �����Ѵ�.
-		if( m_nCompleteQuestSize < MAX_COMPLETE_QUEST ) 
-		{
-			for( int i = 0; i < m_nQuestSize; i++ )
-			{
-				if( m_aQuest[ i ].m_wId == lpNewQuest->m_wId )
-				{
-					for( ; i < m_nQuestSize - 1; i++ )
-					{
-						m_aQuest[ i ] = m_aQuest[ i + 1 ];
-					}
-					m_nQuestSize--;
-					break;
-				}
-			}
-			for( int i = 0; i < m_nCheckedQuestSize; ++i )
-			{
-				if( m_aCheckedQuest[ i ] == lpNewQuest->m_wId )
-				{
-					for( ; i < m_nCheckedQuestSize - 1; ++i )
-						m_aCheckedQuest[ i ] = m_aCheckedQuest[ i + 1 ];
-					m_aCheckedQuest[--m_nCheckedQuestSize] = 0;
-					break;
-				}
-			}
-			QuestProp* pProp = prj.m_aPropQuest.GetAt( lpNewQuest->m_wId );
-			// ����Ʈ Ÿ���� �ǷڼҶ�� �Ϸ� �迭�� ���� �ʴ´�. 
-			//if( pProp->m_nQuestType != QT_REQUEST && pProp->m_bRepeat == FALSE )
-			if( pProp && pProp->m_bRepeat == FALSE )
-				m_aCompleteQuest[ m_nCompleteQuestSize++ ] = lpNewQuest->m_wId; 
-			lpQuest = NULL;
+		if (m_quests->completed.size() >= MAX_COMPLETE_QUEST) {
+			return FALSE;
+		}
+
+		const auto itCurrent = std::ranges::find_if(m_quests->current,
+			MoverSub::Quests::QuestSearcherById(lpNewQuest->m_wId)
+			);
+		if (itCurrent != m_quests->current.end()) {
+			m_quests->current.erase(itCurrent);
+		}
+
+		const auto itChecked = std::ranges::find(m_quests->checked,
+			lpNewQuest->m_wId
+		);
+		if (itChecked != m_quests->checked.end()) {
+			m_quests->checked.erase(itChecked);
+		}
+
+		// ����Ʈ Ÿ���� �ǷڼҶ�� �Ϸ� �迭�� ���� �ʴ´�. 
+		const QuestProp * pProp = lpNewQuest->GetProp();
+		if (pProp && !pProp->m_bRepeat) {
+			m_quests->completed.emplace_back(lpNewQuest->m_wId);
+		}
+		
+		lpQuest = nullptr;
 #if defined( __CLIENT )
 			g_QuestTreeInfoManager.DeleteTreeInformation( lpNewQuest->m_wId );
 			D3DXVECTOR3& rDestinationArrow = g_WndMng.m_pWndWorld->m_vDestinationArrow;
 			rDestinationArrow = D3DXVECTOR3( -1.0F, 0.0F, -1.0F );
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
-		}
-		else
-			return FALSE;
+		
 	}
-	if( lpQuest )
-		memcpy( lpQuest, lpNewQuest, sizeof( QUEST ) );
+
+	if (lpQuest) memcpy(lpQuest, lpNewQuest, sizeof(QUEST));
 
 #ifdef __CLIENT
-	if( lpNewQuest->m_nState == QS_END )
-		PlayMusic( BGM_EV_END );
+	if (lpNewQuest->m_nState == QS_END) {
+		PlayMusic(BGM_EV_END);
+	}
 #endif
 	return TRUE;
 }

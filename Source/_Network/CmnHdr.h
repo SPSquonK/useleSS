@@ -140,7 +140,7 @@ inline	__int64 GetInt64PaFromStr( char *pBuf, int *pLocation )
 
 // ',', '\0' 을 만날때까지 값을 리턴하고 커서는 다음...
 // '/' 를 만나면 값을 리턴하고 커서는 현재('/')...
-inline int GetIntPaFromStr(char *pBuf, int *pLocation )
+inline int GetIntPaFromStr(const char *pBuf, int *pLocation )
 {
 	char strTemp[50];
 	int count=0;
