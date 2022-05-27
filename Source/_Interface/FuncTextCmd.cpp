@@ -4961,7 +4961,7 @@ BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CPlayer_ * pMover, B
 
 	for (const auto & textCmdFunc : m_allCommands) {
 		if (::GetLanguage() != LANG_KOR) {
-			if (textCmdFunc.m_pCommand == "open") break;
+			//if (textCmdFunc.m_pCommand == "open") break;
 		}
 
 		if(commandName == textCmdFunc.m_pCommand || commandName == textCmdFunc.m_pAbbreviation ||

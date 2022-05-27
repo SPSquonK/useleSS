@@ -299,7 +299,6 @@ public:
 	CWndDropItem*  m_pWndDropItem;
 	CWndConfirmTrade * m_pWndConfirmTrade;
 	CWndTradeConfirm * m_pWndTradeConfirm;
-	CWndQuickList* m_pWndQuickList;
 	CWndCommand*   m_pWndCommand;
 	CWndBank*	   m_pWndBank;
 	CWndWorld*     m_pWndWorld;

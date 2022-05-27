@@ -1,7 +1,3 @@
-// WndArcane.cpp: implementation of the CWndNeuz class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "defineText.h"
 #include "AppDefine.h"
@@ -15,163 +11,9 @@
 
 _ERROR_STATE g_Error_State;
 
-
 #define WND_WIDTH 210
 #define TASKBAR_HEIGHT 48
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// 작업 윈도 
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndShortcut::CWndShortcut()
-{
-}
-CWndShortcut::~CWndShortcut()
-{
-}
-void CWndShortcut::OnDraw(C2DRender* p2DRender)
-{
-	CWndButton::OnDraw( p2DRender );
-}
-BOOL CWndShortcut::Process()
-{
-	return CWndButton::Process();
-}
-void CWndShortcut::PaintFrame( C2DRender* p2DRender ) 
-{
-	CWndButton::PaintFrame( p2DRender );
-} 
-void CWndShortcut::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	CWndButton::OnLButtonUp( nFlags, point );
-}
-void CWndShortcut::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	CWndButton::OnLButtonDown( nFlags, point );
-}
-void CWndShortcut::OnRButtonUp(UINT nFlags, CPoint point)
-{
-	CWndButton::OnRButtonUp( nFlags, point );
-}
-void CWndShortcut::OnRButtonDown(UINT nFlags, CPoint point)
-{
-	CWndButton::OnRButtonDown( nFlags, point );
-}
-void CWndShortcut::OnLButtonDblClk(UINT nFlags, CPoint point)
-{
-	CWndButton::OnLButtonDblClk( nFlags, point );
-}
-void CWndShortcut::OnRButtonDblClk(UINT nFlags, CPoint point)
-{
-	CWndButton::OnRButtonDblClk( nFlags, point );
-}
-void CWndShortcut::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-	CWndButton::OnKeyDown( nChar, nRepCnt, nFlags );
-}
-void CWndShortcut::OnMouseMove(UINT nFlags, CPoint point)
-{
-	CWndButton::OnMouseMove( nFlags, point );
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// 퀵 리스트 
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-CWndQuickList::CWndQuickList() 
-{ 
-} 
-CWndQuickList::~CWndQuickList() 
-{ 
-} 
-void CWndQuickList::OnDraw( C2DRender* p2DRender ) 
-{
-	CWndTaskBar* pWndTaskBar = (CWndTaskBar*)m_pParentWnd;
-	// 아이템 아이콘 출력 
-	CPoint point = CPoint( 0, 0);//POINT_ITEM;
-	for( int y = 0; y < 4; y++ )
-	{
-		for( int i = 0; i < MAX_SLOT_ITEM; i++ )
-		{
-			point = CPoint( i * 32 + 32 , y * 38 + 6 );
-			LPSHORTCUT lpShortcut = &pWndTaskBar->m_aSlotItem[ y ][ i ] ;
-			if( !lpShortcut->IsEmpty() )
-			{
-				if( lpShortcut->m_pTexture )
-					p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
-				if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
-				{
-					CItemElem * pItemElem = g_pPlayer->GetItemId( lpShortcut->m_dwId );
-
-					if( pItemElem  )
-					{
-						if( pItemElem->GetProp()->dwPackMax > 1 )
-						{
-							TCHAR szTemp[ 32 ];
-							_stprintf( szTemp, "%d", pItemElem->m_nItemNum );
-							CSize size = m_p2DRender->m_pFont->GetTextExtent( szTemp );
-							p2DRender->TextOut( point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff );
-							p2DRender->TextOut( point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0 );
-						}
-					}
-					else
-						lpShortcut->m_dwShortcut = SHORTCUT_NONE; 				
-				}
-			}
-		}
-	}
-} 
-void CWndQuickList::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
-	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndQuickList::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUICKLIST, 0, CPoint( 0, 0 ), pWndParent );
-	
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndQuickList::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndQuickList::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndQuickList::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndQuickList::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndQuickList::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndQuickList::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
 //#ifdef __NEWINTERFACE
 
 //#define TASKSHORTCUT 45
@@ -238,11 +80,6 @@ DWORD   POINT_QUEUE_Y  ;
 
 #endif
   */
-void CWndTaskBar::OnDestroyChildWnd( CWndBase* pWndChild )
-{
-	if( m_pWndQuickList == pWndChild )
-		SAFE_DELETE( m_pWndQuickList );
-}
 
 void CWndTaskBar::Serialize( CAr & ar )
 {
@@ -481,7 +318,6 @@ CWndTaskBar::CWndTaskBar()
 	memset( m_aSlotQueue , 0, sizeof( m_aSlotQueue ) );
 	memset( &m_aSlotSkill, 0, sizeof( m_aSlotSkill ) );
 
-	m_pWndQuickList = NULL;
 	m_pSelectShortcut = NULL;
 	m_bStartTimeBar = FALSE;
 	m_nSkillBar = 0;
@@ -504,7 +340,6 @@ void CWndTaskBar::InitTaskBar()
 	memset( m_aSlotItem  , 0, sizeof( m_aSlotItem ) );
 	memset( m_aSlotQueue , 0, sizeof( m_aSlotQueue ) );
 	
-	m_pWndQuickList = NULL;
 	m_pSelectShortcut = NULL;
 	m_bStartTimeBar = FALSE;
 	m_nSkillBar = 0;
@@ -541,14 +376,8 @@ void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
 				string.Format( "[%s %c]", prj.GetText( TID_GAME_TOOLTIP_HOTKEY ), pAppletFunc->m_cHotkey );
 				strEdit.AddString( string, 0xff0000ff );
 			}
-			//CEditString strEdit;
-			//strEdit.SetParsingString( string );
-			//strEdit.SetAt( 0, (CHAR)(aaa >> 8) );
-			//strEdit.SetAt( 1, (CHAR)(aaa & 0xff00) );
-			//aaa++;
-			//TRACE( "aaa %x\n", aaa );
+
 			g_toolTip.PutToolTip( pShortcut->m_dwId, strEdit, *pRect, point, 0 );
-			//} while( aaa < 0xffff );
 		}
 	}
 	else	
@@ -608,9 +437,7 @@ void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
 		if(!pMotionProp)		//061206 ma	8차에 들어갈 모션관리를 위해 버전 추가	propMotion.txt
 			return;
 
-		CString string;
-
-		string.Format( "%s", pMotionProp->szDesc );
+		CString string = pMotionProp->szDesc;
 		
 		if( pMotionProp->dwID == MOT_BASE_CHEER )
 		{
@@ -703,8 +530,11 @@ void CWndTaskBar::OnMouseWndSurface( CPoint point )
 	}
 }
 
-#define DRAW_HOTKEY( p2DRender, point, cHotkey ) { CString string; string.Format( "%c", cHotkey ); \
-					p2DRender->TextOut( point.x - 0 + 2, point.y - 0 - 4, string, 0xffffffff ); }
+static void DRAW_HOTKEY(C2DRender * p2DRender, CPoint point, char cHotkey) {
+	CString string;
+	string.Format( "%c", cHotkey );
+	p2DRender->TextOut( point.x - 0 + 2, point.y - 0 - 4, string, 0xffffffff );
+}
 					
 					
 /*
@@ -1425,7 +1255,6 @@ void CWndTaskBar::OnRButtonUp( UINT nFlags, CPoint point )
 BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD dwId, CTexture* pTexture, int nWhere )
 {
 	LPSHORTCUT pShortcut = NULL;
-	//CWndShortcut* pWndButton = new CWndShortcut;
 //	pWndButton->Create( _T( "" ), 0, CRect( 65 + nIndex * 32, 3, 65 + nIndex * 32 + 32 , 3 + 32), this, dwId );
 
 	//pShortcut = m_aSlotApplet[ nIndex ];

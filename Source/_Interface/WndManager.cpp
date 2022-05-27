@@ -250,7 +250,6 @@ CWndMgr::CWndMgr()
 	m_pWndChangeClass2 = NULL;
 	m_pWndTradeGold = NULL;
 	m_pWndDropItem = NULL;
-	m_pWndQuickList = NULL;
 	m_pWndCommand = NULL;
 	m_pWndTaskBar = NULL;
 	m_pWndTrade = NULL;
@@ -630,7 +629,6 @@ void CWndMgr::Free()
 	SAFE_DELETE( m_pWndChangeClass2 );
 	
 	SAFE_DELETE( m_pWndTradeGold );
-	SAFE_DELETE( m_pWndQuickList );
 	SAFE_DELETE( m_pWndMessageBox );
 	SAFE_DELETE( m_pWndMessageBoxUpper );
 	
@@ -1270,11 +1268,6 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 	if( m_pWndDropItem == pWndChild )
 	{
 		SAFE_DELETE( m_pWndDropItem );
-		pWndChild = NULL;
-	} else
-	if( m_pWndQuickList == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQuickList );
 		pWndChild = NULL;
 	} else
 	if( m_pWndCommand == pWndChild )

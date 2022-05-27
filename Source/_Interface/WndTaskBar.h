@@ -1,76 +1,4 @@
-// WndArcane.h: interface for the CWndNeuz class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_WNDTASKBAR_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)
-#define AFX_WNDTASKBAR_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
-class CWndShortcut : public CWndButton
-{
-public:
-	CWndShortcut();
-	~CWndShortcut();
-
-	//BOOL Create(LPCTSTR lpszCaption,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID,CSprPack* pSprPack,int nSprIdx,int nColorTable = 0);
-	//BOOL Create(LPCTSTR lpszCaption,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);// { return Create(lpszCaption,dwStyle,rect,pParentWnd,nID,NULL,0); }
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual	BOOL Process();
-	virtual	void PaintFrame( C2DRender* p2DRender );
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual void OnRButtonUp(UINT nFlags, CPoint point);
-	virtual void OnRButtonDown(UINT nFlags, CPoint point);
-	virtual void OnLButtonDblClk(UINT nFlags, CPoint point);
-	virtual void OnRButtonDblClk(UINT nFlags, CPoint point);
-	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	virtual void OnMouseMove(UINT nFlags, CPoint point);
-
-/*
-	void SetMenu(CWndMenu* pWndMenu);
-
-	// Attributes
-	//BOOL IsButtonStyle( DWORD dwStyle ) { return ( m_dwButtonStyle & dwStyle ) ? TRUE : FALSE; }
-	void SetPushTime(int nTime); // 버튼을 누르고 nTime이후에 계속 OnCommand를 패어런트에게 보낸다.
-	UINT GetState() const; // Retrieves the check state, highlight state, and focus state of a button control.
-	void SetState(BOOL bHighlight); // Sets the highlighting state of a button control
-	int  GetCheck() const; // Retrieves the check state of a button control.
-	void SetCheck(int nCheck); // Sets the check state of a button control.
-	//UINT GetButtonStyle() const; // Retrieves information about the button control style.
-	//void SetButtonStyle(UINT nStyle, BOOL bRedraw = TRUE); // Changes the style of a button.
-	void SetString(CString strSndEffect); 
-	BOOL IsHighLight() { return m_bHighLight; }
-	void SetFontColor     (DWORD dwColor) { m_nFontColor      = (DWORD)dwColor; }
-	void SetPushColor     (DWORD dwColor) { m_nPushColor      = (DWORD)dwColor; }
-	void SetDisableColor  (DWORD dwColor) { m_nDisableColor   = (DWORD)dwColor; }
-	void SetHighLightColor(DWORD dwColor) { m_nHighlightColor = (DWORD)dwColor; }
-	DWORD GetFontColor     () { return m_nFontColor     ; }
-	DWORD GetPushColor     () { return m_nPushColor     ; }
-	DWORD GetDisableColor  () { return m_nDisableColor  ; }
-	DWORD GetHighLightColor() { return m_nHighlightColor; }
-	void SetWndExecute(CWndBase* pWndBase);
-	CWndBase* GetWndExecute() { return m_pWndExecute; }
-	void SetPushPoint(int x,int y) { m_ptPush = CPoint(x,y); }
-	*/
-};
-class CWndQuickList : public CWndNeuz 
-{ 
-public: 
-	CWndQuickList(); 
-	~CWndQuickList(); 
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-};
 
 //////////////////////////////////////////////////////////////////////////////////////
 // 작업 윈도 
@@ -83,7 +11,6 @@ class CWndTaskBar : public CWndNeuz
 public:
 	BOOL		   IsShortcut( LPSHORTCUT lpShortcut, DWORD dwShortcut, DWORD dwId );
 	CWndMenu       m_menuShortcut;
-	CWndQuickList* m_pWndQuickList;
 	CTexturePack   m_texPack;
 	CWndButton     m_wndMenu;
 	CWndButton     m_wndQuickList;
@@ -144,7 +71,6 @@ public:
 	virtual BOOL Process();
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	virtual	void OnDestroyChildWnd( CWndBase* pWndChild );
 	void	Serialize( CAr & ar );
 	void	SetTaskBarTexture( LPSHORTCUT pShortcut );
 	
@@ -194,6 +120,4 @@ private:
 	std::vector<std::unique_ptr<CWndMenu>> m_menus;
 
 };
- 
-#endif // !defined(AFX_WNDTASKBAR_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)
 
