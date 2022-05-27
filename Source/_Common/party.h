@@ -107,10 +107,10 @@ public:
 	void	DoDuelPartyStart( CParty *pDst );
 	void	DoDuelResult( CParty *pParty, BOOL bWin, int nAddFame, float fSubFameRatio );
 	void	DoUsePartyReCall( u_long uPartyId, u_long nLeaderid, int nSkill );
-	void	Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround );
-	void	Replace( DWORD dwWorldId, LPCTSTR sKey );
-	BOOL	ReplaceChkLv( int Lv );
-	void	ReplaceLodestar( const CRect &rect );
+	void	Replace(DWORD dwWorldId, const D3DXVECTOR3 & vPos, BOOL) const;
+	void	Replace(DWORD dwWorldId, LPCTSTR sKey) const;
+	[[nodiscard]] bool ReplaceChkLv(int Lv) const;
+	void	ReplaceLodestar(const CRect & rect) const;
 #endif
 
 	void	DoDuelPartyCancel( CParty* pDuelParty );

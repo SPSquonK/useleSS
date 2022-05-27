@@ -478,8 +478,7 @@ int APIENTRY  MonHuntStartParty( NPCDIALOG_INFO*  pInfo, int nQuest, int nState,
 			PARTYQUESTPROP* pProp	= prj.GetPartyQuestProp( nQuest );
 			if( pProp )
 			{				
-				if( pParty->ReplaceChkLv( pProp->nLevel+5 ) == FALSE )
-				{
+				if (!pParty->ReplaceChkLv( pProp->nLevel+5 )) {
 					CString str;
 					str.Format( prj.GetText(TID_GAME_PARTYQUEST_NOT_JOIN), pProp->nLevel+5 );
 					pUser->AddDiagText( str );

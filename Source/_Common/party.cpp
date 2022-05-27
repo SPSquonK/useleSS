@@ -15,6 +15,7 @@
 #include "dpcoreclient.h"
 #include "dpdatabaseclient.h"
 #include "slord.h"
+#include "GroupUtils.h"
 #endif	// __WORLDSERVER
 
 #include "playerdata.h"
@@ -617,94 +618,46 @@ void CParty::DoDuelPartyCancel( CParty* pDuelParty )
 }	
 
 #ifdef __WORLDSERVER
-void CParty::ReplaceLodestar( const CRect &rect )
-{
-	// locked
-	CUser* pUser;
-	for( int i = 0; i < m_nSizeofMember; i ++ )		// 극단원 모두에게 듀얼 해제를 세팅하고 클라에도 알림.
-	{
-		pUser	= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
+void CParty::ReplaceLodestar(const CRect & rect) const {
+	for (CUser * pUser : AllMembers(*this)) {
+		CWorld * pWorld = pUser->GetWorld();
+		if (!pWorld) continue;
 
-		if( IsValidObj( pUser ) )
-		{
-			CWorld* pWorld	= pUser->GetWorld();
-			if( pWorld )
-			{
-				POINT point	= { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};
-				if( rect.PtInRect( point ) )
-				{
-					const RegionElem * pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), false);
+		const POINT point = { (int)pUser->GetPos().x, (int)pUser->GetPos().z };
+		if (!rect.PtInRect(point)) continue;
 
-					if( pRgnElem )
-						pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
-				}
-			}
+		const RegionElem * const pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), false);
+
+		if (pRgnElem) {
+			pUser->REPLACE(g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer);
 		}
 	}
 }
 
-void CParty::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
-{
-	CUser *pMember;
-	for( int i = 0; i < m_nSizeofMember; i ++ )		// 극단원 모두에게 듀얼 해제를 세팅하고 클라에도 알림.
-	{
-		pMember	= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-
-		if( IsValidObj( pMember ) )
-		{
-			/*
-			if( GetQuest( QUEST_BOSS_LV1 ) != NULL )
-				pMember->UnequipRide();
-			
-			if( GetQuest( QUEST_BOSS_LV2 ) != NULL )
-				pMember->UnequipRide();
-			
-			if( GetQuest( QUEST_BOSS_LV3 ) != NULL )
-				pMember->UnequipRide();
-			*/			
-			pMember->REPLACE( g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nTempLayer );
-#ifdef __BUFF_1107
-			pMember->m_buffs.RemoveBuffs( RBF_COMMON, 0 );
-#else	// __BUFF_1107
-			pMember->m_SkillState.RemoveAllSkillInfluence();
-#endif	// __BUFF_1107
-		}
+void CParty::Replace(DWORD dwWorldId, const D3DXVECTOR3 & vPos, BOOL) const {
+	for (CUser * pMember : AllMembers(*this)) {
+		pMember->REPLACE(g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nTempLayer);
+		pMember->m_buffs.RemoveBuffs(RBF_COMMON, 0);
 	}
 }
 
-void CParty::Replace( DWORD dwWorldId, LPCTSTR sKey )
-{
-	CUser *pMember;
-	for( int i = 0; i < m_nSizeofMember; i ++ )		// 극단원 모두에게 듀얼 해제를 세팅하고 클라에도 알림.
-	{
-		pMember	= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-		
-		if( IsValidObj( pMember ) )
-		{
-			PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( dwWorldId, sKey );
-			if( NULL != pRgnElem )
-				pMember->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
-		}
+void CParty::Replace( DWORD dwWorldId, LPCTSTR sKey ) const {
+	const RegionElem * const pRgnElem = g_WorldMng.GetRevivalPos(dwWorldId, sKey);
+	if (!pRgnElem) return;
+
+	for (CUser * pMember : AllMembers(*this)) {
+		pMember->REPLACE(g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer);
 	}
 }
 
-BOOL CParty::ReplaceChkLv( int Lv )
-{
-	CUser *pMember;
-	for( int i = 0; i < m_nSizeofMember; i ++ )		// 극단원 모두에게 듀얼 해제를 세팅하고 클라에도 알림.
-	{
-		pMember	= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-		
-		if( IsValidObj( pMember ) )
-		{
-			if( pMember->GetLevel() > Lv )
-			{
-				return FALSE;
-			}
-		}
-	}
+bool CParty::ReplaceChkLv(const int Lv) const {
+	auto range = AllMembers(*this);
 
-	return TRUE;
+	return std::all_of(range.begin(), range.end(),
+		[Lv](const CUser * const pMember) {
+			return pMember->GetLevel() <= Lv;
+		}
+	);
 }
 #endif //__WORLDSERVER
 
@@ -1142,4 +1095,3 @@ void CPartyMng::PartyMapInfo( )
 CPartyMng	g_PartyMng;
 #endif // not client
 
-PartyId x = PartyId(0);
