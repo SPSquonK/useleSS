@@ -160,11 +160,9 @@ protected:
 class CWndTaskMenu : public CWndMenu //Neuz
 {
 public:
-	CWndTaskMenu();
-	virtual ~CWndTaskMenu();
-	void SetTexture( CWndButton* pWndButton );
+	// static void SetTexture( CWndButton* pWndButton );
 //	virtual CItem* GetFocusItem() { return NULL; }
-	virtual CWndButton* AppendMenu( CWndMenu* pWndMenu, UINT nFlags, UINT nIDNewItem, LPCTSTR lpszNewItem );
+	static CWndButton * MakeButton(CWndMenu * pWndMenu, UINT nFlags, UINT nIDNewItem, LPCTSTR lpszNewItem);
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual void PaintFrame(C2DRender* p2DRender);
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
@@ -172,20 +170,29 @@ public:
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual BOOL Process();
 	virtual void OnKillFocus(CWndBase* pNewWnd);
 private:
-	CWndMenu* m_pMenu1;
-	CWndMenu* m_pMenu2;
-	CWndMenu* m_pMenu3;
-	CWndMenu* m_pMenu4;
-	CWndMenu* m_pMenu5;
-	CWndMenu* m_pMenu6;
-	CWndMenu* m_pMenu7;
+	class FolderAdder {
+	private:
+		CWndMenu * m_self;
+	public:
+		FolderAdder(CWndMenu * self) : m_self(self) {}
+		
+		FolderAdder AddApplet(DWORD appId, DWORD textId) const {
+			CWndTaskMenu::MakeButton(m_self, 0, appId, prj.GetText(textId));
+			return *this;
+		}
+	};
+
+	void AddApplet(DWORD appId, DWORD textId);
+	FolderAdder AddFolder(DWORD textId);
+
+	std::vector<std::unique_ptr<CWndMenu>> m_menus;
+
 };
  
 #endif // !defined(AFX_WNDTASKBAR_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)

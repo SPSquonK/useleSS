@@ -2344,27 +2344,6 @@ void CWndTaskBar::OnEndSkill( void )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndTaskMenu::CWndTaskMenu()
-{
-	m_pMenu1 = NULL;
-	m_pMenu2 = NULL;
-	m_pMenu3 = NULL;
-	m_pMenu4 = NULL;
-	m_pMenu5 = NULL;
-	m_pMenu6 = NULL;
-	m_pMenu7 = NULL;
-}
-
-CWndTaskMenu::~CWndTaskMenu()
-{
-	SAFE_DELETE( m_pMenu1 );
-	SAFE_DELETE( m_pMenu2 );
-	SAFE_DELETE( m_pMenu3 );
-	SAFE_DELETE( m_pMenu4 );
-	SAFE_DELETE( m_pMenu5 );
-	SAFE_DELETE( m_pMenu6 );
-	SAFE_DELETE( m_pMenu7 );
-}
 void CWndTaskMenu::OnDraw(C2DRender* p2DRender)
 {
 	return;
@@ -2457,162 +2436,121 @@ BOOL CWndTaskMenu::Process()
 	}
 	return CWndBase::Process();
 }
-void CWndTaskMenu::SetTexture( CWndButton* pWndButton )
-{
-	pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, g_WndMng.GetAppletFunc( pWndButton->GetWndId() )->m_pszIconName ) );
-}
 
 void CWndTaskMenu::OnInitialUpdate()
 {
 	CWndMenu::OnInitialUpdate();
 
-	CWndButton* pWndButton;
-	// 0 ~ 9¹ø 
-	if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-	{
-		pWndButton = AppendMenu( this, 0, APP_DEBUGINFO     , GETTEXT( TID_APP_DEBUGINFO     ) ); 
+	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		// TODO: it should not be required to pass the TID to AddApplet
+		AddApplet(APP_DEBUGINFO, TID_APP_DEBUGINFO);
 	}
 
-	pWndButton = AppendMenu( this, 0, APP_STATUS1    , GETTEXT( TID_APP_STATUS        ) );
-	pWndButton = AppendMenu( this, 0, APP_NAVIGATOR , GETTEXT( TID_APP_NAVIGATOR     ) );
-	pWndButton = AppendMenu( this, 0, APP_CHARACTER3 , GETTEXT( TID_APP_CHARACTER     ) );
-	pWndButton = AppendMenu( this, 0, APP_INVENTORY , GETTEXT( TID_APP_INVENTORY     ) );
+	AddApplet(APP_STATUS1   , TID_APP_STATUS);
+	AddApplet(APP_NAVIGATOR , TID_APP_NAVIGATOR);
+	AddApplet(APP_CHARACTER3, TID_APP_CHARACTER);
+	AddApplet(APP_INVENTORY , TID_APP_INVENTORY);
+
 #ifndef __TMP_POCKET
-	pWndButton = AppendMenu( this, 0, APP_BAG_EX , GETTEXT( TID_APP_BAG_EX     ) );
+	AddApplet(APP_BAG_EX         , TID_APP_BAG_EX);
 #endif
-	pWndButton = AppendMenu( this, 0, APP_HOUSING, GETTEXT(TID_GAME_HOUSING_BOX));
-	pWndButton = AppendMenu( this, 0, APP_VENDOR_REVISION , GETTEXT( TID_APP_VENDOR     ) );
-	pWndButton = AppendMenu( this, 0, APP_SKILL3     , GETTEXT( TID_APP_SKILL         ) );
-	pWndButton = AppendMenu( this, 0, APP_QUEST_EX_LIST     , GETTEXT( TID_APP_QUEST         ) );
-	pWndButton = AppendMenu( this, 0, APP_MOTION   , GETTEXT( TID_APP_MOTION       ) );
+	AddApplet(APP_HOUSING        , TID_GAME_HOUSING_BOX);
+	AddApplet(APP_VENDOR_REVISION, TID_APP_VENDOR);
+	AddApplet(APP_SKILL3         , TID_APP_SKILL);
+	AddApplet(APP_QUEST_EX_LIST  , TID_APP_QUEST);
+	AddApplet(APP_MOTION         , TID_APP_MOTION);
 
 #ifdef __IMPROVE_MAP_SYSTEM
-	pWndButton = AppendMenu( this, 0, APP_MAP_EX, GETTEXT( TID_APP_MAP ) );
+	AddApplet(APP_MAP_EX         , TID_APP_MAP);
 #else // __IMPROVE_MAP_SYSTEM
-	pWndButton = AppendMenu( this, 0, APP_MAP, GETTEXT( TID_APP_MAP));//GETTEXT( TID_APP_MAP));
+	AddApplet(APP_MAP            , TID_APP_MAP);
 #endif // __IMPROVE_MAP_SYSTEM
-	CWndButton* pWndButton7 = NULL;
-	pWndButton7 = AppendMenu( this, 0, 0 , GETTEXT( TID_APP_COMMITEM  ) ); pWndButton7->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) ); 
 
-	CWndButton* pWndButton1 = AppendMenu( this, 0, 0 , GETTEXT( TID_APP_COMMUNICATION ) ); pWndButton1->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) );
-	CWndButton* pWndButton2 = AppendMenu( this, 0, 0 , GETTEXT( TID_APP_COMMUNITY     ) ); pWndButton2->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) );
-//	CWndButton* pWndButton3 = AppendMenu( this, 0, 0 , GETTEXT( TID_APP_FIND          ) ); pWndButton3->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) );
-	CWndButton* pWndButton5 = AppendMenu( this, 0, 0 , GETTEXT( TID_APP_INFOMATION    ) ); pWndButton5->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) );
-	CWndButton* pWndButton6 = AppendMenu( this, 0, 0 , GETTEXT( TID_APP_HELPER        ) ); pWndButton6->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) ); // »ç¿ëÀÚ, ½Ã³À½º
-	CWndButton* pWndButton4 = AppendMenu( this, 0, APP_OPTIONEX, GETTEXT(TID_APP_OPTION) );
+	// Note: pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_APPLET; SetTexture(pWndButton);
+	// is it required for these applets?
+	AddFolder(TID_APP_COMMITEM)
+		.AddApplet(APP_WEBBOX, TID_APP_ITEMMALL)
+		.AddApplet(APP_COMM_ITEM, TID_APP_ITEMTIME);
 
-	pWndButton = AppendMenu( this, 0, APP_LOGOUT    , GETTEXT( TID_APP_LOGOUT      ) );
-	pWndButton = AppendMenu( this, 0, APP_QUIT      , GETTEXT( TID_APP_QUIT          ) );
-
-//	if( GetLanguage() == LANG_TWN )
-//		pWndButton	= AppendMenu( this, 0, APP_WEBBOX2	, GETTEXT( TID_TIP_QOODO	) );
-
-	CWndBase::SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTaskMenu.tga" ) ), TRUE );
-
-	for(int i = 0; i < m_awndMenuItem.GetSize(); i++)
-	{
-		CWndButton* pWndButton = GetMenuItem( i );
-		pWndButton->SetWndRect( CRect(  10, 50 + ( i * 22 ), m_pTexture->m_size.cx - 20, 50 + 20 + ( i * 22 ) ) );
-	}
-	SetWndRect( CRect( 0, 0, m_pTexture->m_size.cx, m_pTexture->m_size.cy ) );
-
-//	CRect rect = g_WndMng.m_pWndTaskBar->m_wndMenu.GetScreenRect();
-//	Move( CPoint( 0, rect.top - GetWindowRect().Height() ) );
-
-	m_pMenu1 = new CWndMenu;
-	m_pMenu1->CreateMenu( this );
-	pWndButton = AppendMenu( m_pMenu1, 0, APP_COMMUNICATION_CHAT , GETTEXT( TID_APP_COMMUNICATION_CHAT    ) );
-	pWndButton = AppendMenu( m_pMenu1, 0, APP_MESSENGER_         , GETTEXT( TID_APP_MESSENGER ) );
-	pWndButton = AppendMenu( m_pMenu1, 0, APP_COUPLE_MAIN        , GETTEXT( TID_GAME_COUPLE ) );
-	pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_APPLET; SetTexture( pWndButton );
-	pWndButton1->SetMenu( m_pMenu1 );
-
-	m_pMenu2 = new CWndMenu;
-	m_pMenu2->CreateMenu( this );
-	pWndButton = AppendMenu( m_pMenu2, 0, APP_PARTY      , GETTEXT( TID_APP_PARTY          ) ) ;
-	pWndButton = AppendMenu( m_pMenu2, 0, APP_GUILD      , GETTEXT( TID_APP_COMPANY         ) ) ;
+	AddFolder(TID_APP_COMMUNICATION)
+		.AddApplet(APP_COMMUNICATION_CHAT, TID_APP_COMMUNICATION_CHAT)
+		.AddApplet(APP_MESSENGER_, TID_APP_MESSENGER)
+		.AddApplet(APP_COUPLE_MAIN, TID_GAME_COUPLE);
 	
+
+	AddFolder(TID_APP_COMMUNITY)
+		.AddApplet(APP_PARTY, TID_APP_PARTY)
+		.AddApplet(APP_GUILD, TID_APP_COMPANY)
 #ifdef __GUILDVOTE
-	pWndButton = AppendMenu( m_pMenu2, 0, APP_GUILD_VOTE      , GETTEXT( TID_GAME_TOOLTIP_GUILDVOTE     ) ) ;
-#endif	
-	pWndButton2->SetMenu( m_pMenu2 );
+		.AddApplet(APP_GUILD_VOTE, TID_GAME_TOOLTIP_GUILDVOTE)
+#endif
+		;
 
-	m_pMenu5 = new CWndMenu;
-	m_pMenu5->CreateMenu( this );
-	pWndButton = AppendMenu( m_pMenu5, 0, APP_INFO_NOTICE   , GETTEXT( TID_APP_INFO_NOTICE   ) ); 
-	pWndButton5->SetMenu( m_pMenu5 );
+	AddFolder(TID_APP_INFOMATION)
+		.AddApplet(APP_INFO_NOTICE, TID_APP_INFO_NOTICE);
 
-	m_pMenu6 = new CWndMenu;
-	m_pMenu6->CreateMenu( this );
-	pWndButton = AppendMenu( m_pMenu6, 0, APP_HELPER_HELP , GETTEXT( TID_APP_HELPER_HELP ) );
-	pWndButton = AppendMenu( m_pMenu6, 0, APP_HELPER_TIP  , GETTEXT( TID_APP_HELPER_TIP  ) );
-	pWndButton = AppendMenu( m_pMenu6, 0, APP_HELPER_FAQ  , GETTEXT( TID_APP_HELPER_FAQ  ) );
-	pWndButton = AppendMenu( m_pMenu6, 0, APP_INFOPANG , GETTEXT( TID_APP_INFOPANG ) );
-	//pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "icon_Folder.dds" ) ) );
+	const auto adderForHelp = AddFolder(TID_APP_HELPER)
+		.AddApplet(APP_HELPER_HELP, TID_APP_HELPER_HELP)
+		.AddApplet(APP_HELPER_TIP, TID_APP_HELPER_TIP)
+		.AddApplet(APP_HELPER_FAQ, TID_APP_HELPER_FAQ)
+		.AddApplet(APP_INFOPANG, TID_APP_INFOPANG);
+
 #ifdef __NEW_WEB_BOX
 #ifdef __INTERNALSERVER
-	pWndButton = AppendMenu( m_pMenu6, 0, APP_WEBBOX2 , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TITLE ) );
+	adderForHelp.AddApplet(APP_WEBBOX2, TID_GAME_HELPER_WEB_BOX_ICON_TITLE);
 #else // __INTERNALSERVER
-	if( ( GetLanguage() == LANG_ENG && GetSubLanguage() == LANG_SUB_USA ) )
-	{
-		pWndButton = AppendMenu( m_pMenu6, 0, APP_WEBBOX2 , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TITLE ) );
+	if ((GetLanguage() == LANG_ENG && GetSubLanguage() == LANG_SUB_USA)) {
+		adderForHelp.AddApplet(APP_WEBBOX2, TID_GAME_HELPER_WEB_BOX_ICON_TITLE);
 	}
 #endif // __INTERNALSERVER
 #endif // __NEW_WEB_BOX
-	pWndButton6->SetMenu( m_pMenu6 );
-	
-	m_pMenu7 = new CWndMenu;
-	m_pMenu7->CreateMenu( this );
-	pWndButton = AppendMenu( m_pMenu7, 0, APP_WEBBOX, GETTEXT( TID_APP_ITEMMALL ) ); pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_APPLET; SetTexture( pWndButton );
-	pWndButton = AppendMenu( m_pMenu7, 0, APP_COMM_ITEM , GETTEXT( TID_APP_ITEMTIME ) ); pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_APPLET; SetTexture( pWndButton );
-	pWndButton7->SetMenu( m_pMenu7 );
+
+	AddApplet(APP_OPTIONEX, TID_APP_OPTION);
+	AddApplet(APP_LOGOUT  , TID_APP_LOGOUT);
+	AddApplet(APP_QUIT    , TID_APP_QUIT);
+
+	CWndBase::SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTaskMenu.tga" ) ), TRUE );
+
+	for (int i = 0; i < m_awndMenuItem.GetSize(); i++) {
+		CWndButton * pWndButton = GetMenuItem(i);
+		pWndButton->SetWndRect(CRect(10, 50 + (i * 22), m_pTexture->m_size.cx - 20, 50 + 20 + (i * 22)));
+	}
+
+	SetWndRect( CRect( 0, 0, m_pTexture->m_size.cx, m_pTexture->m_size.cy ) );	
 }
-CWndButton* CWndTaskMenu::AppendMenu( CWndMenu* pWndMenu, UINT nFlags, UINT nIDNewItem,	LPCTSTR lpszNewItem )
+
+void CWndTaskMenu::AddApplet(DWORD appId, DWORD textId) {
+	MakeButton(this, 0, appId, prj.GetText(textId));
+}
+
+CWndTaskMenu::FolderAdder CWndTaskMenu::AddFolder(DWORD textId) {
+	CWndButton * menuButton = MakeButton(this, 0, 0, prj.GetText(textId));
+	menuButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_Folder.dds")));
+
+	CWndMenu * menu = new CWndMenu;
+	menu->CreateMenu(this);
+	m_menus.emplace_back(menu);
+	menuButton->SetMenu(menu);
+	return FolderAdder(menu);
+}
+
+CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nFlags, UINT nIDNewItem,	LPCTSTR lpszNewItem )
 {
 	CWndButton* pWndButton = (CWndButton*)pWndMenu->AppendMenu( nFlags, nIDNewItem, lpszNewItem );
-	AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( nIDNewItem ); 
-	if( pAppletFunc )
-	{
-		pWndButton->m_cHotkey = pAppletFunc->m_cHotkey;
-		CString string;
-		if( pAppletFunc->m_cHotkey == 0 )
-			string.Format( "%s", pAppletFunc->m_pAppletDesc );
-		else
-			string.Format( "%s\n[%s %c]", pAppletFunc->m_pAppletDesc,  prj.GetText( TID_GAME_TOOLTIP_HOTKEY ), pAppletFunc->m_cHotkey );
-		pWndButton->m_strToolTip = string;
-		pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_APPLET; 
-		SetTexture( pWndButton );
-	}
 	
-//	SetWndRect( CRect( 0, 0, 180, 50 + 5 + 5 + ( m_awndMenuItem.GetSize() * 22 ) ) );
+	const AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( nIDNewItem ); 
+	if (!pAppletFunc) return pWndButton;
 
-	return pWndButton;
-	/*
-
-  CString string;
-  if( pAppletFunc->m_cHotkey == 0 )
-  string.Format( "¾ÖÇÃ·¿\n%s", pAppletFunc->m_pAppletDesc );
-  else
-  string.Format( "¾ÖÇÃ·¿\n%s\n[´ÜÃàÅ° %c]", pAppletFunc->m_pAppletDesc, pAppletFunc->m_cHotkey );
-  g_toolTip.PutToolTip( pShortcut->m_dwId , string, *pRect, point, 0 );
-  
-	CWndButton* pWndButton = new CWndButton;
-	int nCount = m_awndMenuItem.GetSize();
-	CSize size = m_pFont->GetTextExtent( lpszNewItem );
-	if( size.cx > m_nLargeWidth )
-		m_nLargeWidth = size.cx + 60;
-	pWndButton->Create(lpszNewItem, WBS_MENUITEM | WBS_HIGHLIGHT, CRect( 2, 2 + ( nCount * 22 ), m_nLargeWidth, 2 + ( nCount * 22 ) + 20 ), this, nIDNewItem );
-	m_awndMenuItem.Add( pWndButton );
-	for( int i = 0; i < m_awndMenuItem.GetSize(); i++ )
-	{
-		pWndButton = (CWndButton*)m_awndMenuItem.GetAt( i );
-		CRect rect = pWndButton->GetWindowRect( TRUE );
-		rect.right = rect.left + m_nLargeWidth; 
-		pWndButton->SetWndRect( rect );
+	pWndButton->m_cHotkey = pAppletFunc->m_cHotkey;
+	CString string = pAppletFunc->m_pAppletDesc;
+	if (pAppletFunc->m_cHotkey != 0) {
+		string.AppendFormat("\n[%s %c]", pAppletFunc->m_pAppletDesc, prj.GetText(TID_GAME_TOOLTIP_HOTKEY), pAppletFunc->m_cHotkey);
 	}
-	SetWndRect( CRect( 0, 0, m_nLargeWidth + 10, 5 + 5 + ( ( nCount + 1 ) * 22 ) ) );
+	pWndButton->m_strToolTip = string;
+	pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_APPLET; 
+	pWndButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, g_WndMng.GetAppletFunc(pWndButton->GetWndId())->m_pszIconName));
+	
 	return pWndButton;
-	*/
 }
 
 BOOL CWndTaskMenu::Initialize(CWndBase* pWndParent,DWORD dwWndId)
@@ -2630,7 +2568,6 @@ void CWndTaskMenu::OnKillFocus(CWndBase* pNewWnd)
 
 BOOL CWndTaskMenu::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 {
-//	g_WndMng.ObjectExecutor( SHORTCUT_APPLET, nID );
 	return TRUE;
 }
 BOOL CWndTaskMenu::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
@@ -2639,38 +2576,20 @@ BOOL CWndTaskMenu::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		g_WndMng.ObjectExecutor( SHORTCUT_APPLET, nID );
 	return TRUE;
 }
-void CWndTaskMenu::OnSize(UINT nType, int cx, int cy)
-{
-	CWndMenu::OnSize( nType, cx, cy );
-}
+
 void CWndTaskMenu::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	//if(IsWndStyle(WBS_CAPTION) && m_bPickup)
-	{//
-	//	m_wndTitleBar.m_wndMinimize.SetVisible(TRUE);
-		//m_wndTitleBar.m_wndMaximize.SetVisible(TRUE);
-	}
 }
 void CWndTaskMenu::OnLButtonDown(UINT nFlags, CPoint point)
 {
-//	CWndBase::OnLButtonDown(nFlags,point
-	if(IsWndRoot())
-		return;
-//	return;
-
 }
 
 void CWndTaskMenu::PaintFrame( C2DRender* p2DRender )
 {
-//	p2DRender->RenderFillRect( GetWindowRect(), D3DCOLOR_ARGB( 255, 76,124,193 ) );
-//	p2DRender->RenderRect( GetWindowRect(), D3DCOLOR_ARGB( 255, 36,74,100 ) );
 	CWndBase::PaintFrame( p2DRender );
 }
 BOOL CWndTaskMenu::OnEraseBkgnd( C2DRender* p2DRender )
 {
-	CRect rect = GetWindowRect();
-	rect.top += 50;
-//	p2DRender->RenderFillRect(rect, D3DCOLOR_ARGB( 255, 255,255,255 ) );
 	return CWndBase::OnEraseBkgnd( p2DRender );
 }
 
