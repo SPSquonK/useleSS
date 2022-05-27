@@ -839,6 +839,11 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 			return 0;
 	}
 
+	if (!IsUsableItem(pItemProtScr)) return 0;
+	const ItemProp * const scrollProp = pItemProtScr->GetProp();
+	if (!scrollProp) return 0;
+	if (scrollProp->dwID != II_SYS_SYS_SCR_SMELPROT) return 0;
+
 	// 속성 당 하나의 속성 제련 카드를 사용하도록 수정
 	if( pItemMaterial->GetProp()->dwID != WhatEleCard( pItemMaterial->GetProp()->eItemType ) )
 		return 0;
