@@ -181,7 +181,7 @@ static	DWORD	s_dwHdrCur;
 		
 		m_lpBufCur = target;
 
-		if (m_lpBufMax > target) [[unlikely]] {
+		if (target > m_lpBufMax) [[unlikely]] {
 			Error("CAr::GoToOffset - Target is out of bound");
 			m_lpBufCur = m_lpBufMax;
 		}
