@@ -489,10 +489,7 @@ void CWndTaskBar::OnMouseWndSurface( CPoint point )
 		LPSHORTCUT lpShortcut = &m_aSlotApplet[ i ] ;
 		if( !lpShortcut->IsEmpty() && rect.PtInRect( point) )
 		{
-			MotionProp* pMotionProp = prj.GetMotionProp( lpShortcut->m_dwId );
-			
-			if( !IsShortcut( lpShortcut, SHORTCUT_MOTION, MOT_BASE_CHEER ) )
-				PutTooTip( lpShortcut, point, &rect );
+			PutTooTip( lpShortcut, point, &rect );
 		}
 		rect += CPoint( ICON_SIZE, 0 );
 	}
@@ -503,8 +500,7 @@ void CWndTaskBar::OnMouseWndSurface( CPoint point )
 		LPSHORTCUT lpShortcut = &m_paSlotItem[ i ] ;
 		if( !lpShortcut->IsEmpty() && rect.PtInRect( point)  )
 		{
-			if( !IsShortcut( lpShortcut, SHORTCUT_MOTION, MOT_BASE_CHEER ) )
-				PutTooTip( lpShortcut, point,&rect );
+			PutTooTip( lpShortcut, point,&rect );
 		}
 		rect += CPoint( ICON_SIZE, 0 );
 	}
@@ -514,8 +510,7 @@ void CWndTaskBar::OnMouseWndSurface( CPoint point )
 		LPSHORTCUT lpShortcut = &m_aSlotQueue[ i ] ;
 		if( !lpShortcut->IsEmpty() && rect.PtInRect( point)  )
 		{
-			if( !IsShortcut( lpShortcut, SHORTCUT_MOTION, MOT_BASE_CHEER ) )
-				PutTooTip( lpShortcut, point,&rect );
+			PutTooTip( lpShortcut, point,&rect );
 		}
 		rect += CPoint( SKILL_SIZE, 0 );
 	}
@@ -1990,45 +1985,6 @@ BOOL CWndTaskBar::UseSkillQueue( CCtrl* pTargetObj )
 BOOL CWndTaskBar::Process( void )
 {
 	// 툴팁 계속 갱신해야하는것들은 여기서...
-	CPoint point = GetMousePoint();
-
-	CRect rect = CRect( POINT_APPLET_X, POINT_APPLET_Y, POINT_APPLET_X + ICON_SIZE, POINT_APPLET_Y + ICON_SIZE );
-	for( int i = 0; i < m_nMaxSlotApplet; i++ )
-	{
-		LPSHORTCUT lpShortcut = &m_aSlotApplet[ i ] ;
-		if( !lpShortcut->IsEmpty() && rect.PtInRect( point) )
-		{
-			MotionProp* pMotionProp = prj.GetMotionProp( lpShortcut->m_dwId );
-			
-			if( IsShortcut( lpShortcut, SHORTCUT_MOTION, MOT_BASE_CHEER ) )
-				PutTooTip( lpShortcut, point, &rect );
-		}
-		rect += CPoint( ICON_SIZE, 0 );
-	}
-	
-	rect = CRect( POINT_ITEM_X, POINT_ITEM_Y, POINT_ITEM_X + ICON_SIZE, POINT_ITEM_Y + ICON_SIZE );
-	for( int i = 0; i < MAX_SLOT_ITEM; i++ )
-	{
-		LPSHORTCUT lpShortcut = &m_paSlotItem[ i ] ;
-		if( !lpShortcut->IsEmpty() && rect.PtInRect( point)  )
-		{
-			if( IsShortcut( lpShortcut, SHORTCUT_MOTION, MOT_BASE_CHEER ) )
-				PutTooTip( lpShortcut, point,&rect );
-		}
-		rect += CPoint( ICON_SIZE, 0 );
-	}
-	rect = CRect( POINT_QUEUE_X, POINT_QUEUE_Y, POINT_QUEUE_X + SKILL_SIZE, POINT_QUEUE_Y + SKILL_SIZE );
-	for( int i = 0; i < MAX_SLOT_QUEUE; i++ )
-	{
-		LPSHORTCUT lpShortcut = &m_aSlotQueue[ i ] ;
-		if( !lpShortcut->IsEmpty() && rect.PtInRect( point)  )
-		{
-			if( IsShortcut( lpShortcut, SHORTCUT_MOTION, MOT_BASE_CHEER ) )
-				PutTooTip( lpShortcut, point,&rect );
-		}
-		rect += CPoint( SKILL_SIZE, 0 );
-	}
-
 	if( m_nExecute )
 	{
 		if( m_idTarget != NULL_ID )		// m_idTarget이 NULL_ID인경우는 자기 자신에게 쓴경우기땜에 캔슬시켜선 안된다.
@@ -2499,38 +2455,4 @@ void CWndTaskBar::RenderOutLineLamp(int x, int y, int num, DWORD size)
 	
 	m_p2DRender->RenderFillRect( CRect( (Point.x+Rect.left), (Point.y+Rect.bottom), (Point.x+Rect.right), (Point.y+Rect.bottom)+thick ),
 		dwColor2, dwColor2, dwColor1, dwColor1 );
-}
-
-BOOL CWndTaskBar::IsShortcut( LPSHORTCUT lpShortcut, DWORD dwShortcut, DWORD dwId )
-{
-	if( lpShortcut->m_dwShortcut == SHORTCUT_APPLET )
-	{
-	}
-	else
-	if( lpShortcut->m_dwShortcut == SHORTCUT_SKILL )
-	{
-	}
-	else
-	if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
-	{
-	}
-	else
-	if( lpShortcut->m_dwShortcut == SHORTCUT_CHAT )
-	{
-	}
-	else
-	if( lpShortcut->m_dwShortcut == SHORTCUT_MOTION )
-	{
-		if( lpShortcut->m_dwShortcut == dwShortcut )
-		{
-			MotionProp* pMotionProp = prj.GetMotionProp( dwId );
-		
-			if( pMotionProp )
-			{
-				return TRUE;
-			}
-		}
-	}
-	
-	return FALSE;
 }

@@ -9,7 +9,6 @@ class CWndTaskBar : public CWndNeuz
 	DWORD m_dwHighAlpha;
 
 public:
-	BOOL		   IsShortcut( LPSHORTCUT lpShortcut, DWORD dwShortcut, DWORD dwId );
 	CWndMenu       m_menuShortcut;
 	CTexturePack   m_texPack;
 	CWndButton     m_wndMenu;
