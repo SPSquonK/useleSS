@@ -80,7 +80,7 @@ public:
 	void	SetPos( int i, D3DXVECTOR3 vPos )	{ m_aMember[i].m_vPos = vPos; }
 #endif // #if defined( __WORLDSERVER ) || defined( __CLIENT )
 #ifndef __CORESERVER
-	CMover* GetLeader( void );
+	CMover * GetLeader( void );
 #endif // __CORESERVER
 
 	void SetPartyId(const u_long uPartyId) { m_uPartyId = uPartyId; }

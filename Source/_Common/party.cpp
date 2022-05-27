@@ -1,8 +1,12 @@
 #include "stdafx.h"
 #include "defineText.h"
 #include "defineSkill.h"
+#include "defineItem.h"
 #include "party.h"
 #include "sqktd.h"
+
+#define II_SYS_SYS_SCR_PARTYEXPUP01_01 20296
+#define II_SYS_SYS_SCR_PARTYSKILLUP01_01 20297
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
@@ -60,15 +64,9 @@ void CParty::InitParty()
 }
 
 #ifndef __CORESERVER
-CMover* CParty::GetLeader( void ) 
+CMover * CParty::GetLeader() 
 { 
-#ifdef __WORLDSERVER
-	CMover *pLeader = (CMover *)g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-	return pLeader;
-#else
-	CMover *pLeader = (CMover *)prj.GetUserByID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-	return pLeader;
-#endif
+	return prj.GetUserByID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
 }
 #endif // __CORESERVER
 
@@ -148,7 +146,7 @@ void CParty::Serialize( CAr & ar )
 			ar >> m_nModeTime[i];
 		}
 		if( m_nKindTroup )
-			ar.ReadString( m_sParty, 33 );
+			ar.ReadString( m_sParty );
 		for( int i = 0 ; i < m_nSizeofMember ; i++ )
 		{
 			ar >> m_aMember[i].m_uPlayerId;
@@ -157,13 +155,8 @@ void CParty::Serialize( CAr & ar )
 	}
 }
 
-void CParty::SwapPartyMember( int first, int Second )
-{
-	PartyMember PartyMemberBuf;
-
-	memcpy( &PartyMemberBuf, &m_aMember[first], sizeof(PartyMember) );
-	memcpy( &m_aMember[first], &m_aMember[Second], sizeof(PartyMember) );
-	memcpy( &m_aMember[Second], &PartyMemberBuf, sizeof(PartyMember) );
+void CParty::SwapPartyMember(int first, int Second) {
+	std::swap(m_aMember[first], m_aMember[Second]);
 }
 
 int CParty::GetPartyModeTime( int nMode )
@@ -173,7 +166,7 @@ int CParty::GetPartyModeTime( int nMode )
 void CParty::SetPartyMode( int nMode, DWORD dwSkillTime ,int nCachMode )
 {
 	if( nCachMode == 1)
-        m_nModeTime[nMode] += (int)dwSkillTime;	
+		m_nModeTime[nMode] += (int)dwSkillTime;	
 	else
 		m_nModeTime[nMode] = (int)dwSkillTime;	
 }
@@ -188,272 +181,164 @@ void CParty::SetPartyLevel( CUser* pUser, DWORD dwLevel, DWORD dwPoint, DWORD dw
 void CParty::GetPoint( int nTotalLevel, int nMemberSize, int nDeadLeavel )
 {
 #ifdef __WORLDSERVER
-#ifndef __PARTYDEBUG
-	if( (nTotalLevel / nMemberSize) - nDeadLeavel < 5 )
-#endif // __PARTYDEBUG
-	{
-		BOOL bExpResult = TRUE;
-		BOOL bSuperLeader = FALSE;
-		BOOL bLeaderSMExpUp = FALSE;
-		if( m_nKindTroup == 0 && m_nLevel >= MAX_PARTYLEVEL )
-			bExpResult = FALSE;
+	if ((nTotalLevel / nMemberSize) - nDeadLeavel >= 5) return;
 
-		CMover* pMover = GetLeader();
-		if( pMover && pMover->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SUPERLEADERPARTY ) )
-		{
-			bSuperLeader = TRUE;
-		}
-		#define II_SYS_SYS_SCR_PARTYEXPUP01_01 20296
-		#define II_SYS_SYS_SCR_PARTYSKILLUP01_01 20297
-		if( pMover && ( pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP01 ) || pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP02 )
-			 || pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP01_01 ) ) )
-		{
-			bLeaderSMExpUp = TRUE;
-		}
+	if (m_nKindTroup == 0 && m_nLevel >= MAX_PARTYLEVEL) return;
 
-		if( bExpResult )
-			g_DPCoreClient.SendAddPartyExp( m_uPartyId, nDeadLeavel, bSuperLeader , bLeaderSMExpUp );
+	CMover* pMover = GetLeader();
+
+	BOOL bSuperLeader = FALSE;
+	if (pMover && pMover->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SUPERLEADERPARTY)) {
+		bSuperLeader = TRUE;
 	}
+
+	BOOL bLeaderSMExpUp = FALSE;
+	if( pMover && ( pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP01 ) || pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP02 )
+			|| pMover->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYEXPUP01_01 ) ) )
+	{
+		bLeaderSMExpUp = TRUE;
+	}
+
+	g_DPCoreClient.SendAddPartyExp( m_uPartyId, nDeadLeavel, bSuperLeader , bLeaderSMExpUp );
+	
 #endif // __WORLDSERVER
 }
 
 void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 {
 #ifdef __WORLDSERVER
-	CUser* pMember	= NULL;
-	int		i;
-	
-	if( IsLeader( uLeaderid ) && m_nKindTroup == 1 )
-	{
-		ItemProp* pItemProp =  prj.GetPartySkill( nSkill );
-		if( pItemProp )
-		{
-#ifndef __PARTYDEBUG
-			if( int( GetLevel() - pItemProp->dwReqDisLV ) >= 0 )
-#endif // __PARTYDEBUG
-			{
-#ifndef __PARTYDEBUG
-				CUser *pLeadertmp = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-				if( IsValidObj( pLeadertmp ) == FALSE )
-					return;
-				int nHasCashSkill = 0,nFPoint = 0;
-				if( pLeadertmp->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01 ) 
-					|| pLeadertmp->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP02 )
-					|| pLeadertmp->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01_01 ) )
-				{
-					if( nSkill == ST_LINKATTACK 
-						|| nSkill == ST_FORTUNECIRCLE 
-						|| nSkill == ST_STRETCHING
-						|| nSkill == ST_GIFTBOX )
-						nHasCashSkill = 1;
-				}
+	if (!IsLeader(uLeaderid) || m_nKindTroup != 1) {
+		// 리더가 아니거나 순회극단이 아닌경우
+		return;
+	}
 
-				DWORD dwSkillTime	= pItemProp->dwSkillTime;
-				int nRemovePoint	= pItemProp->dwExp;
+	const ItemProp * const pItemProp = prj.GetPartySkill(nSkill);
+	if (!pItemProp) return;
 
-				nFPoint	= int( GetPoint() - pItemProp->dwExp);
-				// 군주의 극단
-				// 군주가 극단장 으로써 극단스킬 사용 시,
-				// 지속시간 4배 증가(소모 포인트는 동일)
-				if( CSLord::Instance()->IsLord( uLeaderid ) )
-					dwSkillTime		*= 4;
+	CUser * pLeader = g_UserMng.GetUserByPlayerID(uLeaderid);	// 리더의 포인터
 
-				if( nFPoint >= 0 )
-#endif // __PARTYDEBUG
-				{
-					switch( nSkill )
-					{
-					case ST_CALL:
-						{
-							g_DPCoreClient.SendRemovePartyPoint( uPartyId, pItemProp->dwExp );
-							CUser *pLeader = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-							if( IsValidObj( pLeader ) == FALSE )
-								break;
+	if (GetLevel() < static_cast<int>(pItemProp->dwReqDisLV)) {
+		if (IsValidObj(pLeader)) {
+			pLeader->AddSendErrorParty(ERROR_NOTPARTYSKILL);
+		}
+		//이 스킬은 배우지를 못했습니다.
+		return;
+	}
 
-							// 단장 중심으로 모여달라는 표시
-							for( i = 0; i < m_nSizeofMember; i ++ )		// 단장(0)에게는 보낼필요 없다.
-							{
-								pMember		= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-								// 단장 어라운드 지역에 있는 사람에게만 보낸다
-								if( IsValidObj( (CObj*)pMember ) )
-									pMember->AddPartySkillCall( pLeader->GetPos() );		// 각 멤버들에게 단장이 좌표를 전송함.
-							}
-						}
-						break;
-					case ST_BLITZ:
-						{
-							CUser *pLeader = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-							if( IsValidObj( pLeader ) == FALSE )
-								break;
+	if (!IsValidObj(pLeader)) return;
 
-							if( pLeader->m_idSetTarget != NULL_ID )
-							{
-								CMover *pT = prj.GetMover( pLeader->m_idSetTarget );
-								if( pT && !pT->IsPlayer() )
-								{
-									g_DPCoreClient.SendRemovePartyPoint( uPartyId, pItemProp->dwExp );
-									// 단장이 타겟으로 집중공격 표시
-									for( i = 0; i < m_nSizeofMember; i ++ )
-									{
-										pMember		= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-										if( IsValidObj( (CObj*)pMember ) )
-										{
-											if( m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE] )
-											{
-												pMember->AddPartySkillBlitz( pLeader->m_idSetTarget );		// 각 멤버들에게 단장타겟으로 잡은 무버의 아이디를 보냄.
-											}
-											else
-											{
-												if( pLeader->IsNearPC( pMember ) )
-													pMember->AddPartySkillBlitz( pLeader->m_idSetTarget );		// 각 멤버들에게 단장타겟으로 잡은 무버의 아이디를 보냄.
-											}
-										}
-									}
-								}
-								else
-								{
-									pLeader->AddSendErrorParty( ERROR_NOTTARGET, ST_BLITZ );
-								}
-							}
-							else
-							{
-								pLeader->AddSendErrorParty( ERROR_NOTTARGET, ST_BLITZ );
-								// 타겟을 안잡았다.
-							}
-						}
-						break;
-					case ST_RETREAT:
-						{
-							g_DPCoreClient.SendRemovePartyPoint( uPartyId, pItemProp->dwExp );
-							// 후퇴 표시
-							CUser *pLeader = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-							if( IsValidObj( pLeader ) == FALSE )
-								break;
+	BOOL nHasCashSkill = FALSE;
 
-							for( i = 0; i < m_nSizeofMember; i ++ )
-							{
-								pMember		= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-								if( IsValidObj( (CObj*)pMember ) )
-								{
-									if( m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE] )
-									{
-										pMember->AddHdr( pMember->GetId(), SNAPSHOTTYPE_PARTYSKILL_RETREAT );
-									}
-									else
-									{
-										if( pLeader->IsNearPC( pMember ) )
-											pMember->AddHdr( pMember->GetId(), SNAPSHOTTYPE_PARTYSKILL_RETREAT );
-									}
-								}
-							}
-						}
-						break;
-					case ST_SPHERECIRCLE:
-						{
-							// 크리티컬 확률
-							CUser *pLeader = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-							if( IsValidObj( pLeader ) == FALSE )
-								break;
-							
-							if( pLeader->m_idSetTarget != NULL_ID )
-							{
-								CMover * pT = prj.GetMover( pLeader->m_idSetTarget );
-								if( pT && !pT->IsPlayer() )
-								{
-									g_DPCoreClient.SendRemovePartyPoint( uPartyId, pItemProp->dwExp );
-									for( i = 0; i < m_nSizeofMember; i ++ )
-									{
-										pMember		= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-										if( IsValidObj( (CObj*)pMember ) )
-										{
-											if( m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE] )
-											{
-												pMember->AddHdr( pLeader->m_idSetTarget, SNAPSHOTTYPE_PARTYSKILL_SPHERECIRCLE );
-												pMember->m_dwFlag |= MVRF_CRITICAL;
-											}
-											else
-											{
-												if( pLeader->IsNearPC( pMember ) )
-												{
-													pMember->AddHdr( pLeader->m_idSetTarget, SNAPSHOTTYPE_PARTYSKILL_SPHERECIRCLE );
-													pMember->m_dwFlag |= MVRF_CRITICAL;
-												}
-											}
-										}
-									}
-								}
-								else
-								{
-									pLeader->AddSendErrorParty( ERROR_NOTTARGET, ST_SPHERECIRCLE );
-									// 타겟이 몬스터가 아니다
-								}
-							}
-							else
-							{
-								pLeader->AddSendErrorParty( ERROR_NOTTARGET, ST_SPHERECIRCLE );
-								// 타겟을 안잡았다.
-							}
-//							g_DPCoreClient.SendSetPartyExp( uLeaderid, m_nPoint );
-						}
-						break;
+	if (pLeader->HasBuff(BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01)
+		|| pLeader->HasBuff(BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP02)
+		|| pLeader->HasBuff(BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01_01)) {
 
-					case ST_LINKATTACK:
-						{
-							// 데미지 증가
-							g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_LINKATTACK_MODE, dwSkillTime, nRemovePoint, nHasCashSkill );
-						}
-						break;
-					case ST_FORTUNECIRCLE:
-						{
-							// 유니크 아이템 발생확률 증가
-								g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_FORTUNECIRCLE_MODE, dwSkillTime, nRemovePoint, nHasCashSkill );
-						}
-						break;
-					case ST_STRETCHING:
-						{
-							// 쉬는경우 회복속도 높여줌
-							g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_STRETCHING_MODE, dwSkillTime, nRemovePoint, nHasCashSkill );
-						}
-						break;
-					case ST_GIFTBOX:
-						{
-							// 아이템 양이 두배
-							g_DPCoreClient.SendUserPartySkill( uLeaderid, PARTY_GIFTBOX_MODE, dwSkillTime, nRemovePoint, nHasCashSkill );
-						}
-						break;
-					default:
-						break;
-					}
-				}
-#ifndef __PARTYDEBUG
-				else
-				{
-					CUser *pLeader = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-					if( IsValidObj( pLeader ) )
-					{
-						pLeader->AddSendErrorParty( ERROR_NOTPARTYPOINT );
-					}
-					//포인트가 모자라 스킬을사용할수 없습니다.
-					
-				}
-#endif // __PARTYDEBUG
-			}
-#ifndef __PARTYDEBUG
-			else
-			{
-				CUser *pLeader = g_UserMng.GetUserByPlayerID( m_aMember[0].m_uPlayerId );	// 리더의 포인터
-				if( IsValidObj( pLeader ) )
-				{
-					pLeader->AddSendErrorParty( ERROR_NOTPARTYSKILL );
-				}
-				//이 스킬은 배우지를 못했습니다.
-			}
-#endif // __PARTYDEBUG
+		if (nSkill == ST_LINKATTACK
+			|| nSkill == ST_FORTUNECIRCLE
+			|| nSkill == ST_STRETCHING
+			|| nSkill == ST_GIFTBOX) {
+			nHasCashSkill = TRUE;
 		}
 	}
-	else
-	{
-		// 리더가 아니거나 순회극단이 아닌경우
+
+	DWORD dwSkillTime	= pItemProp->dwSkillTime;
+	const int nRemovePoint	= pItemProp->dwExp;
+	const int nFPoint	= int( GetPoint() - pItemProp->dwExp);
+
+	// 군주의 극단
+	// 군주가 극단장 으로써 극단스킬 사용 시,
+	// 지속시간 4배 증가(소모 포인트는 동일)
+	if( CSLord::Instance()->IsLord( uLeaderid ) )
+		dwSkillTime		*= 4;
+
+	if (nFPoint < 0) {
+		pLeader->AddSendErrorParty(ERROR_NOTPARTYPOINT);
+		return;
+	}
+
+	// TODO: remove capture from those lambdas
+
+	const auto useStCall = [&]() {
+		g_DPCoreClient.SendRemovePartyPoint(uPartyId, pItemProp->dwExp);
+
+		for (CUser * pMember : AllMembers(*this)) {
+			pMember->AddPartySkillCall(pLeader->GetPos());		// 각 멤버들에게 단장이 좌표를 전송함.
+		}
+	};
+
+	const auto useStBlitz = [&]() {
+		if (pLeader->m_idSetTarget == NULL_ID) {
+			pLeader->AddSendErrorParty(ERROR_NOTTARGET, ST_BLITZ);
+			return;
+		}
+
+		CMover * pT = prj.GetMover(pLeader->m_idSetTarget);
+		if (!pT || pT->IsPlayer()) {
+			pLeader->AddSendErrorParty(ERROR_NOTTARGET, ST_BLITZ);
+			return;
+		}
+
+		g_DPCoreClient.SendRemovePartyPoint(uPartyId, pItemProp->dwExp);
+		// 단장이 타겟으로 집중공격 표시
+		// TODO: why PartyGiftBox and ForturneTeller? It doesn't make any sense
+		const bool skipNearCheck = m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE];
+		for (CUser * pMember : AllMembers(*this)) {
+			if (skipNearCheck || pLeader->IsNearPC(pMember)) {
+				// 각 멤버들에게 단장타겟으로 잡은 무버의 아이디를 보냄.
+				pMember->AddPartySkillBlitz(pLeader->m_idSetTarget);
+			}
+		}
+	};
+	
+	const auto useStRetreat = [&]() {
+		g_DPCoreClient.SendRemovePartyPoint(uPartyId, pItemProp->dwExp);
+
+		const bool skipNearCheck = m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE];
+
+		for (CUser * pMember : AllMembers(*this)) {
+			if (skipNearCheck || pLeader->IsNearPC(pMember)) {
+				pMember->AddHdr(pMember->GetId(), SNAPSHOTTYPE_PARTYSKILL_RETREAT);
+			}
+		}
+	};
+
+	const auto useStSphereCircle = [&]() {
+		if (pLeader->m_idSetTarget == NULL_ID) {
+			pLeader->AddSendErrorParty(ERROR_NOTTARGET, ST_SPHERECIRCLE);
+			return;
+		}
+
+		CMover * pT = prj.GetMover(pLeader->m_idSetTarget);
+		if (!pT || pT->IsPlayer()) {
+			pLeader->AddSendErrorParty(ERROR_NOTTARGET, ST_SPHERECIRCLE);
+			return;
+		}
+
+		const bool skipNearCheck = m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE];
+
+		g_DPCoreClient.SendRemovePartyPoint(uPartyId, pItemProp->dwExp);
+
+		for (CUser * pMember : AllMembers(*this)) {
+			if (skipNearCheck || pLeader->IsNearPC(pMember)) {
+				pMember->AddHdr(pLeader->m_idSetTarget, SNAPSHOTTYPE_PARTYSKILL_SPHERECIRCLE);
+				pMember->m_dwFlag |= MVRF_CRITICAL;
+			}
+		}
+	};
+
+	const auto transmitToCore = [&](int nMode) {
+		g_DPCoreClient.SendUserPartySkill(uLeaderid, nMode, dwSkillTime, nRemovePoint, nHasCashSkill);
+	};
+
+	switch (nSkill) {
+		case ST_CALL:          useStCall();                              break;
+		case ST_BLITZ:         useStBlitz();                             break;
+		case ST_RETREAT:       useStRetreat();                           break;
+		case ST_SPHERECIRCLE:  useStSphereCircle();                      break;
+		case ST_LINKATTACK:    transmitToCore(PARTY_LINKATTACK_MODE);    break;
+		case ST_FORTUNECIRCLE: transmitToCore(PARTY_FORTUNECIRCLE_MODE); break;
+		case ST_STRETCHING:    transmitToCore(PARTY_STRETCHING_MODE);    break;
+		case ST_GIFTBOX:       transmitToCore(PARTY_GIFTBOX_MODE);       break;
 	}
 #endif	// __WORLDSERVER
 }
@@ -464,14 +349,9 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 #ifdef __WORLDSERVER
 void CParty::DoDuelPartyStart( CParty *pDst )
 {
-	int		i, j;
-	OBJID	pDstMember[ MAX_PTMEMBER_SIZE ];
-	memset( pDstMember, 0xff, sizeof(pDstMember) );
 	
 	m_idDuelParty = pDst->m_uPartyId;		// this파티의 상대
 	
-	CMover *pMember, *pMember2;
-
 	LPCSTR pszLeader;
 	if( pDst->m_nKindTroup )	// 순회극단 극단 이름 보냄
 	{
@@ -488,24 +368,24 @@ void CParty::DoDuelPartyStart( CParty *pDst )
 		return;
 	}
 
-	for( i = 0; i < m_nSizeofMember; i ++ )		// 극단원들 루프.
-	{
-		pMember	= (CMover *)g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-		if( IsValidObj( pMember ) )
+	for (CUser * pMember : AllMembers(*this)) {
+
+		pMember->m_nDuel = 2;		// 2는 파티듀얼중.
+		pMember->m_idDuelParty = m_idDuelParty;
+		pMember->m_nDuelState = 104;
+		// 상대방 파티의 멤버아이디를 다 꺼냄.
+
+		OBJID	pDstMember[MAX_PTMEMBER_SIZE];
+		memset(pDstMember, 0xff, sizeof(pDstMember));
+
+		for(int j = 0; j < pDst->m_nSizeofMember; j ++ )
 		{
-			pMember->m_nDuel = 2;		// 2는 파티듀얼중.
-			pMember->m_idDuelParty = m_idDuelParty;
-			pMember->m_nDuelState = 104;
-			// 상대방 파티의 멤버아이디를 다 꺼냄.
-			for( j = 0; j < pDst->m_nSizeofMember; j ++ )
-			{
-				pMember2 = (CMover *)g_UserMng.GetUserByPlayerID( pDst->m_aMember[j].m_uPlayerId );
-				if( IsValidObj(pMember2) )
-					pDstMember[j] = pMember2->GetId();
-			}
-			// 상대 파티에 대한 정보를 우리멤버들에게 보냄
-			((CUser *)pMember)->AddDuelPartyStart( pszLeader , pDst->m_nSizeofMember, pDstMember, pDst->m_uPartyId );		// 상대방 멤버의 ID를 다보낸다.
+			CUser * pMember2 = g_UserMng.GetUserByPlayerID( pDst->m_aMember[j].m_uPlayerId );
+			if( IsValidObj(pMember2) )
+				pDstMember[j] = pMember2->GetId();
 		}
+		// 상대 파티에 대한 정보를 우리멤버들에게 보냄
+		pMember->AddDuelPartyStart( pszLeader , pDst->m_nSizeofMember, pDstMember, pDst->m_uPartyId );		// 상대방 멤버의 ID를 다보낸다.
 	}
 }	
 
@@ -514,67 +394,52 @@ void CParty::DoDuelPartyStart( CParty *pDst )
 //
 void CParty::DoDuelResult( CParty *pDuelOther, BOOL bWin, int nAddFame, float fSubFameRatio )
 {
-	CUser *pMember;
-	int		i;
-	
-	for( i = 0; i < m_nSizeofMember; i ++ )
-	{
-		pMember = g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-		if( IsValidObj( pMember ) )
-		{
-			pMember->AddDuelPartyResult( pDuelOther, bWin );		// 각 멤버들에게 승/패 사실을 알림. / 상대파티원 리스트도 보냄.
-			pMember->ClearDuelParty();
+	for (CUser * pMember : AllMembers(*this)) {
+		pMember->AddDuelPartyResult( pDuelOther, bWin );		// 각 멤버들에게 승/패 사실을 알림. / 상대파티원 리스트도 보냄.
+		pMember->ClearDuelParty();
 
-			if( bWin )
-			{
-				pMember->m_nFame += nAddFame;	// 이긴측이면 명성 증가
-				pMember->AddDefinedText( TID_GAME_GETFAMEPOINT, "%d", nAddFame );	// xxx 명성 포인트가 증가
+		if( bWin )
+		{
+			pMember->m_nFame += nAddFame;	// 이긴측이면 명성 증가
+			pMember->AddDefinedText( TID_GAME_GETFAMEPOINT, "%d", nAddFame );	// xxx 명성 포인트가 증가
 #ifdef __WORLDSERVER
-				g_dpDBClient.SendLogPkPvp( pMember, NULL, nAddFame, 'E' );
+			g_dpDBClient.SendLogPkPvp( pMember, NULL, nAddFame, 'E' );
 #endif // __WORLDSERVER
-			} 
-			else
-			{
-				int nDecVal;
-				fSubFameRatio = fSubFameRatio / 100.0f;	// 비율로 환산.
-				nDecVal = (int)(pMember->m_nFame * fSubFameRatio);
-				if( nDecVal == 0 )	nDecVal = 1;
-				pMember->m_nFame -= nDecVal;
-				if( pMember->m_nFame < 0 )	pMember->m_nFame = 0;
-				pMember->AddDefinedText( TID_GAME_DECFAMEPOINT, "%d", nDecVal );	// xxx 명성 포인트가 감소.
+		} 
+		else
+		{
+			int nDecVal;
+			fSubFameRatio = fSubFameRatio / 100.0f;	// 비율로 환산.
+			nDecVal = (int)(pMember->m_nFame * fSubFameRatio);
+			if( nDecVal == 0 )	nDecVal = 1;
+			pMember->m_nFame -= nDecVal;
+			if( pMember->m_nFame < 0 )	pMember->m_nFame = 0;
+			pMember->AddDefinedText( TID_GAME_DECFAMEPOINT, "%d", nDecVal );	// xxx 명성 포인트가 감소.
 #ifdef __WORLDSERVER
-				g_dpDBClient.SendLogPkPvp( NULL, pMember, nAddFame, 'E' );
+			g_dpDBClient.SendLogPkPvp( NULL, pMember, nAddFame, 'E' );
 #endif // __WORLDSERVER
-			}
-			
-			// 바뀐 명성치를 pMember의 주위에 날려줌.
-			g_UserMng.AddSetFame( pMember, pMember->m_nFame );
 		}
+			
+		// 바뀐 명성치를 pMember의 주위에 날려줌.
+		g_UserMng.AddSetFame( pMember, pMember->m_nFame );
+		
 	}
 	m_idDuelParty = 0;
 }
 
 
-void CParty::DoUsePartyReCall( u_long uPartyId, u_long uLeaderid, int nSkill )
-{
-	CUser* pMember	= NULL;
-	int		i;
-
-	CUser* pUser    = NULL;
-	pUser = g_UserMng.GetUserByPlayerID( uLeaderid );
-	if( !IsValidObj( (CObj*)pUser ) )
-		return;
+void CParty::DoUsePartyReCall( u_long uPartyId, u_long uLeaderid, int nSkill ) {
+	// TODO: Why is it a dead function?
+	CUser* pUser = g_UserMng.GetUserByPlayerID( uLeaderid );
+	if (!IsValidObj(pUser)) return;
 	
-	for( i = 0; i < m_nSizeofMember; i ++ )		// 단장(0)에게는 보낼필요 없다.
-	{
-		pMember		= g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-		if( IsValidObj( (CObj*)pMember ) )
-		{
-			if(pMember->m_idPlayer != pUser->m_idPlayer)
+	for (CUser * pMember : AllMembers(*this)) {
+		if (pMember->m_idPlayer != pUser->m_idPlayer) {
+			// TODO: Why does it goes to the core?
 #ifdef __LAYER_1015
-				g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), pMember->m_idPlayer, pUser->GetLayer() );
+			g_DPCoreClient.SendSummonPlayer(pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), pMember->m_idPlayer, pUser->GetLayer());
 #else	// __LAYER_1015
-				g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), pMember->m_idPlayer );
+			g_DPCoreClient.SendSummonPlayer(pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), pMember->m_idPlayer);
 #endif	// __LAYER_1015
 		}
 	}
@@ -585,36 +450,22 @@ void CParty::DoUsePartyReCall( u_long uPartyId, u_long uLeaderid, int nSkill )
 //
 // 극단 듀얼 해제
 // 
-void CParty::DoDuelPartyCancel( CParty* pDuelParty )
-{
-#ifndef __CORESERVER
-	int		i;
-	
-	CMover *pMember;
-	for( i = 0; i < m_nSizeofMember; i ++ )		// 극단원 모두에게 듀얼 해제를 세팅하고 클라에도 알림.
-	{
+void CParty::DoDuelPartyCancel( CParty* pDuelParty ) {
+	// pDuelParty may be nullptr and it is ok
+
 #ifdef __WORLDSERVER
-		pMember	= (CMover *)g_UserMng.GetUserByPlayerID( m_aMember[i].m_uPlayerId );
-#else
-#ifdef __CLIENT
-		pMember	= prj.GetUserByID( m_aMember[i].m_uPlayerId );
-#endif
-#endif // worldserver
-		if( IsValidObj( pMember ) )
-		{
-#ifdef __WORLDSERVER
-			if( pDuelParty )
-				((CUser *)pMember)->AddDuelPartyCancel( pDuelParty );		// 각 멤버들에게 듀얼이 취소되었다고 알림.
-			else
-				((CUser *)pMember)->AddDuelPartyCancel( NULL );		// 각 멤버들에게 듀얼이 취소되었다고 알림.
-			if( pMember->m_idDuelParty != m_idDuelParty )
-				Error( "CParty::DoDuelPartyCancel : 파티멤버 %s의 정보이상. %d %d", pMember->GetName(), pMember->m_idDuelParty, m_idDuelParty );
-			pMember->ClearDuelParty();
-#endif // worldserver
-		}
+	for (CUser * pMember : AllMembers(*this)) {
+		pMember->AddDuelPartyCancel(pDuelParty);		// 각 멤버들에게 듀얼이 취소되었다고 알림.
+		
+		if (pMember->m_idDuelParty != m_idDuelParty)
+			Error("CParty::DoDuelPartyCancel : 파티멤버 %s의 정보이상. %d %d", pMember->GetName(), pMember->m_idDuelParty, m_idDuelParty);
+		pMember->ClearDuelParty();
 	}
-	m_idDuelParty = 0;		// 파티 해제
 #endif	// __CORESERVER
+
+#ifndef __CORESERVER
+	m_idDuelParty = 0;		// 파티 해제
+#endif
 }	
 
 #ifdef __WORLDSERVER
