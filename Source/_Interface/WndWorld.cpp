@@ -5586,7 +5586,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				{
 					pWndItemTransy = new CWndItemTransy;
 					pWndItemTransy->Initialize( &g_WndMng );
-					pWndItemTransy->Init( NULL, TRUE );
+					pWndItemTransy->Init( nullptr );
 				}
 			}
 			break;

@@ -991,6 +991,9 @@
     <ClCompile Include="..\_Common\ItemContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndItemDisplayer.cpp">
+      <Filter>Source Files\_Interface\WndBase</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h">
@@ -1858,6 +1861,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\groupquest.h">
       <Filter>Source Files\_Common\Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndItemDisplayer.h">
+      <Filter>Source Files\_Interface\WndBase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

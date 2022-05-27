@@ -336,85 +336,49 @@ BOOL CWndChangeSex::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
   CtrlId : WIDC_CANCEL - Button
 ****************************************************/
 
-CWndItemTransy::CWndItemTransy() 
-{ 
-} 
-CWndItemTransy::~CWndItemTransy() 
-{ 
-}
-
-#ifdef __SYS_ITEMTRANSY
-void CWndItemTransy::Init( CItemElem* pItemElem, BOOL bMenu )
-#else //__SYS_ITEMTRANSY
-void CWndItemTransy::Init( CItemElem* pItemElem )
-#endif //__SYS_ITEMTRANSY
-{
-#ifdef __SYS_ITEMTRANSY
-	m_bMenu = bMenu;
-#endif // __SYS_ITEMTRANSY
-	for( int i = 0 ; i < 2 ; ++i )
-		m_pItemElem[i] = NULL;
-	 	
-	LPWNDCTRL pWndCtrl = NULL;
-	pWndCtrl = GetWndCtrl( WIDC_STATIC1 );
-	m_Rect[0] = pWndCtrl->rect;
-
-	pWndCtrl = GetWndCtrl( WIDC_STATIC4 );
-	m_Rect[1] = pWndCtrl->rect;
-
-	if( pItemElem )
-	{
-		m_pItemElem[1] = pItemElem;
-		m_pItemElem[1]->SetExtra( 1 );
+void CWndItemTransy::Init(CItemElem * pItemElem) {
+	m_pItemElemPut = nullptr;
+	m_scroll = pItemElem;
+	if (m_scroll) {
+		m_scroll->SetExtra(1);
 	}
+
+	WNDCTRL * pWndCtrl = GetWndCtrl(WIDC_STATIC1);
+	m_RectPut = pWndCtrl->rect;
 }
-void CWndItemTransy::OnDestroy( void )
-{
-	if( m_pItemElem[0] )
-		m_pItemElem[0]->SetExtra( 0 );	
-	if( m_pItemElem[1] )
-		m_pItemElem[1]->SetExtra( 0 );	
+
+void CWndItemTransy::OnDestroy( void ) {
+	if (m_pItemElemPut) m_pItemElemPut->SetExtra(0);
+	if (m_scroll) m_scroll->SetExtra(0);
 }
+
 void CWndItemTransy::OnDraw( C2DRender* p2DRender ) 
 { 
-	if( m_pItemElem[0] )
-	{
-		if( m_pItemElem[0]->GetTexture() )
-			m_pItemElem[0]->GetTexture()->Render( p2DRender, m_Rect[0].TopLeft(), 255 );
-
-		CTexture			Texture1;
-		Texture1.LoadTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pItemElemChange.GetProp()->szIcon ), 0xffff00ff );
-		Texture1.Render( p2DRender, m_Rect[1].TopLeft(), 255 );
+	if (m_pItemElemPut && m_pItemElemPut->GetTexture()) {
+		m_pItemElemPut->GetTexture()->Render(p2DRender, m_RectPut.TopLeft(), 255);
 	}
 
 	CPoint	Point = GetMousePoint();
-	CRect HitRect = m_Rect[0];
+	CRect HitRect = m_RectPut;
 	CPoint Point2 = Point;
-	if( m_Rect[0].PtInRect( Point ) )
+	if(m_RectPut.PtInRect( Point ) )
 	{
 		ClientToScreen( &Point2 );
 		ClientToScreen( &HitRect );
-		if( m_pItemElem[0] )
-			g_WndMng.PutToolTip_Item( m_pItemElem[0], Point2, &HitRect );
+		if(m_pItemElemPut)
+			g_WndMng.PutToolTip_Item(m_pItemElemPut, Point2, &HitRect );
 		else
 			g_toolTip.PutToolTip( 100, prj.GetText( TID_GAME_TRANSITEM_PUT ), *HitRect, Point2, 0 );
-	}
-	
-	HitRect = m_Rect[1];
-	if( m_Rect[1].PtInRect( Point ) )
-	{
-		ClientToScreen( &Point2 );
-		ClientToScreen( &HitRect );
-		if( m_pItemElem[0] )
-			g_WndMng.PutToolTip_Item( &m_pItemElemChange, Point2, &HitRect );
-		else
-			g_toolTip.PutToolTip( 100, prj.GetText( TID_GAME_TRANSITEM_PUT1 ), *HitRect, Point2, 0 );
 	}
 } 
 void CWndItemTransy::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
+
+	WNDCTRL * pWndCtrl = GetWndCtrl(WIDC_STATIC4);
+	m_itemDisplayer.Create(0, pWndCtrl->rect, this, 500);
+	m_itemDisplayer.SetTooltipId(TID_GAME_TRANSITEM_PUT1);
 
 	// 윈도를 중앙으로 옮기는 부분.
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
@@ -429,55 +393,36 @@ BOOL CWndItemTransy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_ITEM_TRANSY, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndItemTransy::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndItemTransy::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndItemTransy::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndItemTransy::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndItemTransy::OnRButtonUp( UINT nFlags, CPoint point )
-{
-	if( m_pItemElem[0] && PtInRect( &m_Rect[0], point ) )
-	{
-		m_pItemElem[0]->SetExtra( 0 );
-		m_pItemElem[0] = NULL;
+
+void CWndItemTransy::OnRButtonUp(UINT nFlags, CPoint point) {
+	if (m_pItemElemPut && PtInRect(m_RectPut, point)) {
+		m_pItemElemPut->SetExtra(0);
+		m_pItemElemPut = nullptr;
+
+		m_itemDisplayer.ResetItem();
 	}
 }
+
 BOOL CWndItemTransy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	switch( nID )
 	{
 	case WIDC_OK:
-		{
-#ifdef __SYS_ITEMTRANSY
-			if(m_bMenu)
-			{
-				if(m_pItemElem[0])
-					g_DPlay.SendItemTransy( m_pItemElem[0]->m_dwObjId, NULL_ID, m_pItemElemChange.m_dwItemId, FALSE );
-			}
-			else
-			{
-				if(m_pItemElem[0] && m_pItemElem[1])
-					g_DPlay.SendItemTransy( m_pItemElem[0]->m_dwObjId, m_pItemElem[1]->m_dwObjId, m_pItemElemChange.m_dwItemId, TRUE );
-			}
+	{
+		if (m_pItemElemPut) {
+
+			OBJID scrollPos = m_scroll ? m_scroll->m_dwObjId : NULL_ID;
+
+			g_DPlay.SendItemTransy(
+				m_pItemElemPut->m_dwObjId,
+				scrollPos,
+				m_itemDisplayer.GetItemId(),
+				m_scroll ? TRUE : FALSE
+			);
 
 			Destroy();
-#else //__SYS_ITEMTRANSY
-			if( m_pItemElem[0] && m_pItemElem[1] )
-			{
-				g_DPlay.SendItemTransy( m_pItemElem[0]->m_dwObjId, m_pItemElem[1]->m_dwObjId );
-				Destroy();
-			}
-#endif //__SYS_ITEMTRANSY
 		}
+	}
 		break;
 	case WIDC_CANCEL:
 		{
@@ -511,7 +456,7 @@ BOOL CWndItemTransy::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		return FALSE;
 	}
 	
-	if( PtInRect( &m_Rect[0], point ) )
+	if(m_RectPut.PtInRect( point ) )
 	{
 		ItemProp* pItemPropChange = NULL;
 		// 성별이 있는 아이템 인지 검사
@@ -525,17 +470,13 @@ BOOL CWndItemTransy::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			return FALSE;
 		}
 
-#ifdef __SYS_ITEMTRANSY
-		if(!m_bMenu)
+		if(m_scroll)
 		{
-#endif //__SYS_ITEMTRANSY
-			if( m_pItemElem[1]->GetProp()->dwID == II_CHR_SYS_SCR_ITEMTRANSY_A )
+			if(m_scroll->GetProp()->dwID == II_CHR_SYS_SCR_ITEMTRANSY_A )
 			{
 				if( 61 <= pItemElem->GetProp()->dwLimitLevel1 )
 				{
-					CString strMsg;
-					strMsg.Format( prj.GetText( TID_GAME_ITEM_TRANSY_NOT_LEVEL_0 ), m_pItemElem[1]->GetProp()->szName );
-					g_WndMng.PutString( strMsg, NULL, prj.GetTextColor(TID_GAME_ITEM_TRANSY_NOT_LEVEL_0) );
+					g_WndMng.PutString(TID_GAME_ITEM_TRANSY_NOT_LEVEL_0, m_scroll->GetProp()->szName);
 					SetForbid( TRUE );
 					return FALSE;
 				}
@@ -544,27 +485,24 @@ BOOL CWndItemTransy::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				if( pItemElem->GetProp()->dwLimitLevel1 < 61 )
 				{
-					CString strMsg;
-					strMsg.Format( prj.GetText( TID_GAME_ITEM_TRANSY_NOT_LEVEL_1 ), m_pItemElem[1]->GetProp()->szName );
-					g_WndMng.PutString( strMsg, NULL, prj.GetTextColor(TID_GAME_ITEM_TRANSY_NOT_LEVEL_1) );
+					g_WndMng.PutString(TID_GAME_ITEM_TRANSY_NOT_LEVEL_1, m_scroll->GetProp()->szName);
 					SetForbid( TRUE );
 					return FALSE;
 				}
 			}
-#ifdef __SYS_ITEMTRANSY
 		}
-#endif //__SYS_ITEMTRANSY
-		if( m_pItemElem[0] )
-		{
-			m_pItemElem[0]->SetExtra( 0 );	
+
+		if (m_pItemElemPut) {
+			m_pItemElemPut->SetExtra(0);
 		}
 		
 		pItemElem->SetExtra( 1 );
-		m_pItemElem[0] = pItemElem;
+		m_pItemElemPut = pItemElem;
 
-		m_pItemElemChange = *m_pItemElem[0];
-		m_pItemElemChange.m_dwItemId = pItemPropChange->dwID;
-		m_pItemElemChange.m_nHitPoint	= pItemPropChange->dwEndurance;
+		CItemElem copy = *m_pItemElemPut;
+		copy.m_dwItemId = pItemPropChange->dwID;
+		copy.m_nHitPoint	= pItemPropChange->dwEndurance;
+		m_itemDisplayer.SetItem(copy);
 	}
 	
 	return TRUE;
