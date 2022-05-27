@@ -157,9 +157,11 @@ static	DWORD	s_dwHdrCur;
 
 		size_t size;
 		*this >> size;
-		if (size > N) { size = 0; }
+		if (size > N) {
+			size = 0;
+		}
 		T value{};
-		for (size_t i = 0; i != N; ++i) {
+		for (size_t i = 0; i != size; ++i) {
 			*this >> value;
 			values.push_back(value);
 		}
