@@ -3,10 +3,32 @@
 #include <boost/container/static_vector.hpp>
 
 namespace GroupQuest {
+  static constexpr size_t MaxQuestTitleLen = 32;
+  static constexpr size_t MaxState = 16;
+  static constexpr size_t MaxQuestDescLen = 260;
   static constexpr size_t MaxQuest = 256;
 
   enum class ProcessState : BYTE {
     Ready = 0, Wormon = 1, GetItem = 2
+  };
+
+  struct QuestProp {
+  protected:
+    QuestProp() {
+      ZeroMemory(szDesc, sizeof(szDesc));
+    }
+  public:
+
+    char	szTitle[MaxQuestTitleLen] = "";
+    int		nLevel = 0;
+    char	szDesc[MaxState][MaxQuestDescLen];
+    DWORD	dwWorldId = 0;
+    int	x1 = 0;
+    int y1 = 0;
+    int x2 = 0;
+    int y2 = 0;
+
+
   };
 
   struct QuestElem {
@@ -28,6 +50,11 @@ namespace GroupQuest {
     int nId;
     DWORD dwWorldId;
     CRect rect;
+  };
+
+  struct WORMON {
+    DWORD       dwWormon = 0;
+    D3DXVECTOR3 vPos = D3DXVECTOR3(0.f, 0.f, 0.f);
   };
 
 

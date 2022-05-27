@@ -210,9 +210,6 @@
     <ClCompile Include="..\_Common\GuildHouse.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_common\guildquest.cpp">
-      <Filter>Neuz Files\Common Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_common\guildwar.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>

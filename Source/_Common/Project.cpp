@@ -1071,7 +1071,7 @@ BOOL CProject::LoadPropGuildQuest( LPCTSTR lpszFilename )
 			else if( s.Token == "Wormon" )
 			{
 				s.GetToken();	// =
-				prop.dwWormon	= s.GetNumber();
+				prop.wormon.dwWormon = s.GetNumber();
 			}
 			else if( s.Token == "World" )
 			{
@@ -1081,11 +1081,11 @@ BOOL CProject::LoadPropGuildQuest( LPCTSTR lpszFilename )
 			else if( s.Token == "Position" )
 			{
 				s.GetToken();	// =
-				prop.vPos.x		= s.GetFloat();
+				prop.wormon.vPos.x		= s.GetFloat();
 				s.GetToken();	// ,
-				prop.vPos.y		= s.GetFloat();
+				prop.wormon.vPos.y		= s.GetFloat();
 				s.GetToken();	// ,
-				prop.vPos.z		= s.GetFloat();
+				prop.wormon.vPos.z		= s.GetFloat();
 			}
 			else if( s.Token == "Region" )
 			{
@@ -1162,11 +1162,10 @@ BOOL CProject::LoadPropPartyQuest( LPCTSTR lpszFilename )
 			{
 				prop.vecWormon.clear();
 				int nErrCnt = 0;
-				WORMON WorMon;
+				GroupQuest::WORMON WorMon;
 				s.GetToken();
 				while( s.Token[0] != '}' )
 				{
-					memset( &WorMon, 0, sizeof(WORMON) );
 					nErrCnt++;
 
 					WorMon.dwWormon = s.GetNumber();

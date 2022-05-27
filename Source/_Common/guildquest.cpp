@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#ifdef __WORLDSERVER
 #include "guildquest.h"
 #include "guild.h"
 #include "user.h"
@@ -9,7 +8,8 @@
 void CGuildQuestProcessor::Process()
 {
 	DWORD dwTickCount	= GetTickCount();
-	for( int i = 0; i < MAX_GUILD_QUEST; i++ )
+
+	for( int i = 0; i < m_pElem.size(); i++)
 	{
 		GroupQuest::QuestElem * pElem = &m_pElem[i];
 		if( pElem->nId == i )
@@ -164,4 +164,3 @@ CGuildQuestProcessor* CGuildQuestProcessor::GetInstance( void )
 	return &sGuildQuestProcessor;
 }
 
-#endif	// __WORLDSERVER

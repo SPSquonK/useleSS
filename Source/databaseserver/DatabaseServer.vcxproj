@@ -197,8 +197,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\GuildHouse.cpp">
     </ClCompile>
-    <ClCompile Include="..\_common\guildquest.cpp">
-    </ClCompile>
     <ClCompile Include="..\_common\guildwar.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\honor.cpp">

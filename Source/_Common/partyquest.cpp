@@ -12,7 +12,7 @@
 void CPartyQuestProcessor::Process()
 {
 	DWORD dwTickCount	= GetTickCount();
-	for( int i = 0; i < MAX_GUILD_QUEST; i++ )
+	for( int i = 0; i < m_pElem.size(); i++)
 	{
 		GroupQuest::QuestElem * pElem = &m_pElem[i];
 		if( pElem->nId == i )

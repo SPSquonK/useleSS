@@ -318,8 +318,6 @@ public:
 	void			AddGoldText( int nPlus );
 	void			AddExpBoxInfo( OBJID objid, DWORD dwSet, DWORD dwTime, u_long idPlayer );
 	void			AddSetQuest( LPQUEST lpQuest );
-	void			AddSetGuildQuest( int nQuestId, int nState );
-	void			AddRemoveGuildQuest( int nQuestId );
 	void			AddSetChangeJob( int nJob );
 	void			AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer );
 	void			AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip );

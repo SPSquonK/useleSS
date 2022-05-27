@@ -426,10 +426,10 @@ int APIENTRY  MonHuntStart( NPCDIALOG_INFO* pInfo, int nQuest, int nState, int n
 			GUILDQUESTPROP* pProp	= prj.GetGuildQuestProp( nQuest );
 			if( pProp )
 			{
-				CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, pProp->dwWormon );
+				CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, pProp->wormon.dwWormon );
 				if( pWormon )
 				{
-					pWormon->SetPos( pProp->vPos );
+					pWormon->SetPos( pProp->wormon.vPos );
 					pWormon->InitMotion( MTI_STAND );
 					pWormon->UpdateLocalMatrix();
 					pWormon->m_nQuestKeeping	= nQuest;
@@ -449,7 +449,7 @@ int APIENTRY  MonHuntStart( NPCDIALOG_INFO* pInfo, int nQuest, int nState, int n
 							g_dpDBClient.SendUpdateGuildQuest( pGuild->m_idGuild, nQuest, nState );
 
 						pProcessor->SetQuest( nQuest, nState, nState2, n, pGuild->m_idGuild, pWormon->GetId() );
-						D3DXVECTOR3 vPos( pProp->vPos.x, pProp->vPos.y, ( ( pProp->vPos.z * 2 ) + pProp->y2 ) / 3 );
+						D3DXVECTOR3 vPos( pProp->wormon.vPos.x, pProp->wormon.vPos.y, ( ( pProp->wormon.vPos.z * 2 ) + pProp->y2 ) / 3 );
 						pGuild->Replace( pProp->dwWorldId, vPos, TRUE );
 						return 1;
 					}
@@ -492,15 +492,12 @@ int APIENTRY  MonHuntStartParty( NPCDIALOG_INFO*  pInfo, int nQuest, int nState,
 
 				BOOL bSuccess = FALSE;
 
-				for( DWORD i=0; i<pProp->vecWormon.size(); i++ )
-				{
-					WORMON* WorMon;
-					WorMon = &(pProp->vecWormon[i]);
-					CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, WorMon->dwWormon );
+				for (const GroupQuest::WORMON & WorMon : pProp->vecWormon) {
+					CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, WorMon.dwWormon );
 
 					if( pWormon )
 					{
-						pWormon->SetPos( WorMon->vPos );
+						pWormon->SetPos( WorMon.vPos );
 						pWormon->InitMotion( MTI_STAND );
 						pWormon->UpdateLocalMatrix();
 						pWormon->m_nPartyQuestKeeping = nQuest;

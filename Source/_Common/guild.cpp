@@ -15,6 +15,7 @@
 #include "user.h"
 #include "worldmng.h"
 #include "defineQuest.h"
+#include "GroupedEmission.h"
 #endif // __WORLDSERVER
 
 
@@ -868,24 +869,11 @@ void CGuild::SetQuest( int nQuestId, int nState ) {
 	if (it != m_quests.end()) {
 		it->second = nState;
 	} else {
-		if (m_quests.size() >= MAX_GUILD_QUEST) {
-			Error("OVER MAX_GUILD_QUEST");
-			return;
-		}
-
 		m_quests[nQuestId] = nState;
 	}
 
 #ifdef __WORLDSERVER
-	CUser* pUser;
-	CGuildMember* pMember;
-	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
-	{
-		pMember	= i->second;
-		pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
-		if( IsValidObj( pUser ) )
-			pUser->AddSetGuildQuest( nQuestId, nState );
-	}
+	SendSnapshotNoTarget<SNAPSHOTTYPE_SETGUILDQUEST, int, int>(nQuestId, nState);
 #endif	// __WORLDSERVER
 }
 
@@ -896,15 +884,7 @@ BOOL CGuild::RemoveQuest( int nQuestId )
 
 	m_quests.erase(it);
 #ifdef __WORLDSERVER
-	CUser* pUser;
-	CGuildMember* pMember;
-	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
-	{
-		pMember	= i->second;
-		pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
-		if( IsValidObj( pUser ) )
-			pUser->AddRemoveGuildQuest( nQuestId );
-	}
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REMOVEGUILDQUEST, int>(nQuestId);
 #endif	// __WORLDSERVER
 	return TRUE;
 }

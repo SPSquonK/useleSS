@@ -7615,39 +7615,30 @@ void CDPClient::OnTagResult( CAr & ar )
 	}
 }
 
-void CDPClient::OnSetGuildQuest( CAr & ar )
-{
-	int nQuestId, nState;
-	ar >> nQuestId >> nState;
-	CMover* pPlayer;
+void CDPClient::OnSetGuildQuest(CAr & ar) {
+	const auto [nQuestId, nState] = ar.Extract<int, int>();
 
-	if( pPlayer = CMover::GetActiveMover() )
-	{
-		CGuild* pGuild	= pPlayer->GetGuild();
-		if( pGuild )
-		{
-			TRACE( "SNAPSHOTTYPE_SETGUILDQUEST\n" );
-			pGuild->SetQuest( nQuestId, nState );
-		}
-	}
+	CMover * pPlayer = CMover::GetActiveMover();
+	if (!pPlayer) return;
+
+	CGuild * pGuild = pPlayer->GetGuild();
+	if (!pGuild) return;
+	
+	TRACE("SNAPSHOTTYPE_SETGUILDQUEST\n");
+	pGuild->SetQuest(nQuestId, nState);
 }
 
-void CDPClient::OnRemoveGuildQuest( CAr & ar )
-{
-	int nQuestId;
-	ar >> nQuestId;
-	
-	CMover* pPlayer;
-	
-	if( pPlayer = CMover::GetActiveMover() )
-	{
-		CGuild* pGuild	= pPlayer->GetGuild();
-		if( pGuild )
-		{
-			TRACE( "SNAPSHOTTYPE_REMOVEGUILDQUEST\n" );
-			pGuild->RemoveQuest( nQuestId );
-		}
-	}
+void CDPClient::OnRemoveGuildQuest(CAr & ar) {
+	int nQuestId; ar >> nQuestId;
+
+	CMover * pPlayer = CMover::GetActiveMover();
+	if (!pPlayer) return;
+
+	CGuild * pGuild = pPlayer->GetGuild();
+	if (!pGuild) return;
+
+	TRACE("SNAPSHOTTYPE_REMOVEGUILDQUEST\n");
+	pGuild->RemoveQuest(nQuestId);
 }
 
 

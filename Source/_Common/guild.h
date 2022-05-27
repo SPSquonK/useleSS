@@ -348,6 +348,15 @@ public:
 	void	operator delete( void* lpMem, LPCSTR lpszFileName, int nLine )	{	CGuild::sm_pPool->Free( (CGuild*)lpMem );	}
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
+
+#ifdef __WORLDSERVER
+public:
+	template<WORD SnapshotId, typename... Ts>
+	void SendSnapshotNoTarget(const Ts & ... ts) const;
+
+	template<WORD SnapshotId, typename... Ts>
+	void SendSnapshotWithTarget(DWORD targetId, const Ts & ... ts) const;
+#endif
 };
 
 ////////////////////////////////////////////////////////////////////////////////

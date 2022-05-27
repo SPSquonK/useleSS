@@ -2034,28 +2034,6 @@ void CUser::AddDefinedCaption( BOOL bSmall, int dwText, LPCSTR lpszFormat, ... )
 	
 }
 
-void CUser::AddSetGuildQuest( int nQuestId, int nState )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SETGUILDQUEST;
-	m_Snapshot.ar << nQuestId << nState;
-	
-}
-
-void CUser::AddRemoveGuildQuest( int nQuestId )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_REMOVEGUILDQUEST;
-	m_Snapshot.ar << nQuestId;
-	
-}
-
 void CUser::AddSetQuest( LPQUEST lpQuest )
 {
 	if( IsDelete() )	return;

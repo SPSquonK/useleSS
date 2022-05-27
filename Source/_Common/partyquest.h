@@ -10,43 +10,9 @@
 #define	MAX_PARTY_QUEST_DESC_LEN	260
 
 
-typedef struct WORMON
-{
-	DWORD	dwWormon;
-	D3DXVECTOR3		vPos;	
-} WORMON, *PWORMON;
-
-
-
-struct	PARTYQUESTPROP
-{
-	char	szTitle[MAX_PARTY_QUEST_TITLE_LEN];
-	int		nLevel;
-	char	szDesc[MAX_PARTY_QUEST_STATE][MAX_PARTY_QUEST_DESC_LEN];
-//	DWORD	dwWormon;
-	DWORD	dwWorldId;
-	char    szWorldKey[32];
-//	D3DXVECTOR3		vPos;
-	std::vector< WORMON > vecWormon;	
-	int	x1;
-	int y1;
-	int x2;
-	int y2;
-//	DWORD	dwTime;
-	
-	PARTYQUESTPROP()
-		{
-			ZeroMemory( szTitle, sizeof(szTitle) );
-			nLevel	= 0;
-//			dwTime	= 0;
-			ZeroMemory( szDesc, sizeof(szDesc) );
-//			dwWormon	= 0;
-			dwWorldId	= 0;
-//			vPos	= D3DXVECTOR3( 0, 0, 0 );
-			vecWormon.clear();
-			x1	= y1	= x2	= y2	= 0;
-			ZeroMemory( szWorldKey, sizeof(szWorldKey) );		
-		};
+struct PARTYQUESTPROP : GroupQuest::QuestProp {
+	char szWorldKey[32] = "";
+	std::vector<GroupQuest::WORMON> vecWormon;	
 };
 
 #ifdef __WORLDSERVER
