@@ -3762,6 +3762,7 @@ void CDPClient::OnGameJoin( CAr & ar )
 
 void CDPClient::OnTaskBar(CAr & ar) {
 	ar >> (*g_WndMng.m_pWndTaskBar);
+	g_WndMng.m_pWndTaskBar->UpdateAllTaskbarTexture();
 }
 
 void CDPClient::OnErrorParty( CAr & ar )

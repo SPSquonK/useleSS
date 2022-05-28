@@ -49,6 +49,8 @@ public:
 	void OnCancelSkill( void );
 	LPSHORTCUT Select( CPoint point );
 	void RemoveSkillQueue( int nIndex, BOOL bSend = TRUE );
+	void UpdateAllTaskbarTexture();
+	
 
 	CWndTaskBar();
 //	virtual CItem* GetFocusItem() { return NULL; }
@@ -69,13 +71,16 @@ public:
 	virtual BOOL Process();
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	void	SetTaskBarTexture( LPSHORTCUT pShortcut );
 	
 	HRESULT	RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 protected:
 	void RenderOutLineLamp(int x, int y, int num, DWORD size);
+	bool RenderShortcut(C2DRender * p2DRender, const SHORTCUT & shortcut, CPoint point, bool drawLetter);
+
+	void FindNewStackForShortcut(std::optional<int> where, int i);
+	void SetTaskBarTexture(SHORTCUT & shortcut);
 };
 //////////////////////////////////////////////////////////////////////////////////////
 // 태스크바의 매뉴 

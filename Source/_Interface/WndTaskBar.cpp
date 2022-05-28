@@ -31,75 +31,108 @@ DWORD   POINT_QUEUE_Y  ;
 #define POINT_ITEM   CPoint( POINT_ITEM_X  , POINT_ITEM_Y   )
 #define POINT_QUEUE  CPoint( POINT_QUEUE_X , POINT_QUEUE_Y  )
 
-void CWndTaskBar::SetTaskBarTexture( LPSHORTCUT pShortcut )
+void CWndTaskBar::UpdateAllTaskbarTexture() {
+	const auto EnsureCorrectness = [&](SHORTCUT & shortcut) {
+		SetTaskBarTexture(shortcut);
+
+		if (!g_pPlayer) return;
+
+		if (shortcut.m_dwShortcut == SHORTCUT_ITEM) {
+			CItemElem * pItemBase = g_pPlayer->GetItemId(shortcut.m_dwId);
+			if (pItemBase && pItemBase->GetProp()->dwPackMax > 1) {
+				shortcut.m_dwItemId = pItemBase->m_dwItemId;
+			}
+
+			if (!pItemBase) {
+				shortcut.Empty();
+			}
+		}
+	};
+
+	for (SHORTCUT & shortcut : m_aSlotApplet) {
+		EnsureCorrectness(shortcut);
+	}
+
+	for (auto & bar : m_aSlotItem) {
+		for (SHORTCUT & shortcut : bar) {
+			EnsureCorrectness(shortcut);
+		}
+	}
+
+	for (SHORTCUT & shortcut : m_aSlotQueue) {
+		EnsureCorrectness(shortcut);
+	}
+}
+
+void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 {
-	if( pShortcut->m_dwShortcut == SHORTCUT_APPLET )
+	if( shortcut.m_dwShortcut == SHORTCUT_APPLET )
 	{
-		AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( pShortcut->m_dwId );
+		AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( shortcut.m_dwId );
 		if( pAppletFunc )
 		{
-			pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, pAppletFunc->m_pszIconName ), 0xffff00ff );
+			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, pAppletFunc->m_pszIconName ), 0xffff00ff );
 		} else
 		{
 #ifndef __BS_CONSOLE
-			Error( "CWndTaskBar::SetTaskBarTexture : %s %d", g_pPlayer->GetName(), pShortcut->m_dwId );
+			Error( "CWndTaskBar::SetTaskBarTexture : %s %d", g_pPlayer->GetName(), shortcut.m_dwId );
 #endif
 		}
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_ITEM )
+	else if( shortcut.m_dwShortcut == SHORTCUT_ITEM )
 	{
-		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
+		CItemElem * pItemBase = g_pPlayer->GetItemId( shortcut.m_dwId );
 		if( pItemBase )
-			pShortcut->m_pTexture	= pItemBase->GetTexture();
+			shortcut.m_pTexture	= pItemBase->GetTexture();
 	}
-	else if ( pShortcut->m_dwShortcut == SHORTCUT_SKILL)
+	else if ( shortcut.m_dwShortcut == SHORTCUT_SKILL)
 	{
-		if( pShortcut->m_dwType == 2 )
+		if( shortcut.m_dwType == 2 )
 		{
-			ItemProp* pProp =  prj.GetPartySkill( pShortcut->m_dwId );
-			pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff );
+			ItemProp* pProp =  prj.GetPartySkill( shortcut.m_dwId );
+			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff );
 		}
 		else
 		{	
-			LPSKILL lpSkill = g_pPlayer->GetSkill( pShortcut->m_dwType, pShortcut->m_dwId );
+			LPSKILL lpSkill = g_pPlayer->GetSkill( shortcut.m_dwType, shortcut.m_dwId );
 			ItemProp* pSkillProp = prj.m_aPropSkill.GetAt( lpSkill->dwSkill );
 			if( pSkillProp )
-				pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
+				shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
 		}
 	}
-	else if ( pShortcut->m_dwShortcut == SHORTCUT_LORDSKILL)
+	else if ( shortcut.m_dwShortcut == SHORTCUT_LORDSKILL)
 	{
 		CCLord* pLord									= CCLord::Instance();
-		CLordSkillComponentExecutable* pComponent		= pLord->GetSkills()->GetSkill(pShortcut->m_dwId);	
-		if(pComponent) pShortcut->m_pTexture							= pComponent->GetTexture();
+		CLordSkillComponentExecutable* pComponent		= pLord->GetSkills()->GetSkill(shortcut.m_dwId);	
+		if(pComponent) shortcut.m_pTexture							= pComponent->GetTexture();
 	}
-	else if ( pShortcut->m_dwShortcut == SHORTCUT_MOTION )
+	else if ( shortcut.m_dwShortcut == SHORTCUT_MOTION )
 	{
-		MotionProp* pMotionProp = prj.GetMotionProp( pShortcut->m_dwId );
+		MotionProp* pMotionProp = prj.GetMotionProp( shortcut.m_dwId );
 		if(pMotionProp)			//061206 ma	8차에 들어갈 모션관리를 위해 버전 추가	propMotion.txt
 		{
 			pMotionProp->pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp->szIconName ), 0xffff00ff );
-			pShortcut->m_pTexture = pMotionProp->pTexture;
+			shortcut.m_pTexture = pMotionProp->pTexture;
 		}
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_CHAT )
+	else if( shortcut.m_dwShortcut == SHORTCUT_CHAT )
 	{
-		pShortcut->m_pTexture	= m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
+		shortcut.m_pTexture	= m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_EMOTICON )
+	else if( shortcut.m_dwShortcut == SHORTCUT_EMOTICON )
 	{
-		if( pShortcut->m_dwId >= 0 && pShortcut->m_dwId < MAX_EMOTICON_NUM  )
+		if( shortcut.m_dwId >= 0 && shortcut.m_dwId < MAX_EMOTICON_NUM  )
 		{
 			TCHAR buffer[MAX_SHORTCUT_STRING] = { 0 };
 			_tcscat( buffer, "/" );
-			_tcscat( buffer, g_DialogMsg.m_EmiticonCmd[pShortcut->m_dwId].m_szCommand );
-			_tcscpy( pShortcut->m_szString, buffer );
-			pShortcut->m_pTexture =	g_DialogMsg.m_texEmoticonUser.GetAt(pShortcut->m_dwId);
+			_tcscat( buffer, g_DialogMsg.m_EmiticonCmd[shortcut.m_dwId].m_szCommand );
+			_tcscpy( shortcut.m_szString, buffer );
+			shortcut.m_pTexture =	g_DialogMsg.m_texEmoticonUser.GetAt(shortcut.m_dwId);
 		}
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_SKILLFUN )
+	else if( shortcut.m_dwShortcut == SHORTCUT_SKILLFUN )
 	{
-		pShortcut->m_pTexture	= m_pTexture;
+		shortcut.m_pTexture	= m_pTexture;
 	}
 }
 
@@ -399,159 +432,26 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 	CPoint point = POINT_APPLET;
 	for( int i = 0; i < m_nMaxSlotApplet; i++ )
 	{
-		LPSHORTCUT lpShortcut = &m_aSlotApplet[ i ] ;
-		if( !lpShortcut->IsEmpty() )
-		{
-			if( lpShortcut->m_pTexture )
-				p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
-			if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
-			{
-				CItemElem * pItemElem = g_pPlayer->GetItemId( lpShortcut->m_dwId );
+		SHORTCUT & lpShortcut = m_aSlotApplet[i];
+		const bool isMissingItem = RenderShortcut(p2DRender, lpShortcut, point, true);
 
-				if( pItemElem )
-				{
-					if( pItemElem->GetProp()->dwPackMax > 1 )
-					{
-						TCHAR szTemp[ 32 ];
-						_stprintf( szTemp, "%d", g_pPlayer?g_pPlayer->m_Inventory.GetItemCount( pItemElem->m_dwItemId ): 0 );
-						CSize size = m_p2DRender->m_pFont->GetTextExtent( szTemp );
-						p2DRender->TextOut( point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff );
-						p2DRender->TextOut( point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0 );
-					}
-
-					if (const auto cooldown = g_pPlayer->m_cooltimeMgr.GetElapsedTime(*pItemElem->GetProp())) {
-						RenderRadar(p2DRender, point, cooldown->elapsedTime, cooldown->totalWait);
-					}
-				}
-				else
-				{
-					ItemProp* pItemProp	= prj.GetItemProp( lpShortcut->m_dwItemId );
-					if( pItemProp && pItemProp->dwPackMax > 1 )	// 병합 가능한 아이템이면?
-					{
-						DWORD dwId	= g_pPlayer->m_Inventory.Find( lpShortcut->m_dwItemId );
-						if( dwId != NULL_ID )	// 같은 종류의 아이템이 있다면?
-						{
-							lpShortcut->m_dwId	= dwId;
-							g_DPlay.SendAddAppletTaskBar( i, lpShortcut );
-						}
-						else
-						{
-							lpShortcut->Empty();
-							g_DPlay.SendRemoveAppletTaskBar( i );
-						}
-					}
-					else
-					{
-						lpShortcut->Empty();
-						g_DPlay.SendRemoveAppletTaskBar( i );
-					}
-				}
-			}
-			else
-			if( lpShortcut->m_dwShortcut == SHORTCUT_APPLET )
-			{
-				AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( lpShortcut->m_dwId ); 
-				if( pAppletFunc && pAppletFunc->m_cHotkey )
-				{
-					CPoint ptHotkey( point.x + 8, point.y - 9 );
-					DRAW_HOTKEY( p2DRender, ptHotkey, pAppletFunc->m_cHotkey );
-				}
-			}
-			else if( lpShortcut->m_dwShortcut == SHORTCUT_SKILL && lpShortcut->m_dwType != 2 ) //극단스킬은 쿨타임 관련 Render를 하지 않는다.
-			{
-				RenderCollTime( point, lpShortcut->m_dwId, p2DRender );
-			}
-			else if( lpShortcut->m_dwShortcut == SHORTCUT_LORDSKILL)
-			{
-					RenderLordCollTime( point, lpShortcut->m_dwId, p2DRender );
-			}
-			else
-			if( lpShortcut->m_dwShortcut == SHORTCUT_MOTION )
-			{
-				if( lpShortcut->m_dwId == MOT_BASE_ESCAPE )
-				{
-					ItemProp* pItem = prj.GetItemProp( g_AddSMMode.dwSMItemID[SM_ESCAPE] );
-					
-					if( pItem && g_pPlayer )
-					{
-						CTimeSpan ct( g_pPlayer->m_dwSMTime[SM_ESCAPE] );
-						
-						if( ct.GetTotalSeconds() )
-						{
-							point.y -= 1;
-							point.x += 1;
-							RenderRadar( m_p2DRender, point, (DWORD)( pItem->dwCircleTime - ct.GetTotalSeconds() ), pItem->dwCircleTime );
-						}
-					}
-				}
-			}	
+		if (isMissingItem) {
+			FindNewStackForShortcut(std::nullopt, i);
 		}
+
 		point += CPoint( ICON_SIZE, 0 );
 	}
 	// 아이템 아이콘 출력 
 	point = POINT_ITEM;
 	for( int i = 0; i < MAX_SLOT_ITEM; i++ )
 	{
-		LPSHORTCUT lpShortcut = &m_paSlotItem()[i];
-		if( !lpShortcut->IsEmpty() )
-		{
-			if( lpShortcut->m_pTexture )
-				p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
-			if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
-			{
-				CItemElem * pItemBase = g_pPlayer->GetItemId( lpShortcut->m_dwId );
+		const SHORTCUT & lpShortcut = m_paSlotItem()[i];
+		RenderShortcut(p2DRender, lpShortcut, point, false);
 
-				if(pItemBase)
-				{
-					if(pItemBase->GetProp()->dwPackMax > 1 )
-					{
-						TCHAR szTemp[ 32 ];
-						_stprintf( szTemp, "%d", g_pPlayer?g_pPlayer->m_Inventory.GetItemCount(pItemBase->m_dwItemId ): 0 );
-						CSize size = m_p2DRender->m_pFont->GetTextExtent( szTemp );
-						p2DRender->TextOut( point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff );
-						p2DRender->TextOut( point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0 );
-					}
-				}
-
-				if (const auto cooldown = g_pPlayer->m_cooltimeMgr.GetElapsedTime(*pItemBase->GetProp())) {
-					RenderRadar(p2DRender, point, cooldown->elapsedTime, cooldown->totalWait);
-				}
-			} 
-			else if( lpShortcut->m_dwShortcut == SHORTCUT_SKILL && lpShortcut->m_dwType != 2 ) //극단스킬은 쿨타임 관련 Render를 하지 않는다.
-			{
-				RenderCollTime( point, lpShortcut->m_dwId, p2DRender );
-			}
-			else if( lpShortcut->m_dwShortcut == SHORTCUT_LORDSKILL)
-			{
-					RenderLordCollTime( point, lpShortcut->m_dwId, p2DRender );
-			}
-			else
-			if( lpShortcut->m_dwShortcut == SHORTCUT_MOTION )
-			{
-				if( lpShortcut->m_dwId == MOT_BASE_ESCAPE )
-				{
-					ItemProp* pItem = prj.GetItemProp( g_AddSMMode.dwSMItemID[SM_ESCAPE] );
-
-					if( pItem && g_pPlayer )
-					{
-						CTimeSpan ct( g_pPlayer->m_dwSMTime[SM_ESCAPE] );
-						
-						if( ct.GetTotalSeconds() )
-						{
-							point.y -= 1;
-							point.x += 1;
-							RenderRadar( m_p2DRender, point, (DWORD)( pItem->dwCircleTime - ct.GetTotalSeconds() ), pItem->dwCircleTime );
-						}
-					}
-				}
-			}
-
-				
-		}
 		// hotkey 출력 
 		CHAR cHotkey = ( i == 9 ) ? '0' : '1' + i;
 		CPoint ptHotkey( point.x + 8, point.y - 9 );
-		//DRAW_HOTKEY( p2DRender, ptHotkey, cHotkey );
+
 		point += CPoint( ICON_SIZE, 0 );
 	}
 	
@@ -560,21 +460,14 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 
 	// 스킬 큐 
 	point = POINT_QUEUE;
-	//p2DRender->TextOut( point.x - 5, point.y - 16, "ACTION SLOT" );
 	for( int i = 0; i < m_nCurQueueNum; i++ )
 	{
 		LPSHORTCUT lpShortcut = &m_aSlotQueue[ i ] ;
-		if( !lpShortcut->IsEmpty() )
+		if( !lpShortcut->IsEmpty() && lpShortcut->m_pTexture)
 		{
-			if( lpShortcut->m_pTexture )
-			{
-				p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
-//				LPSKILL pSkill = g_pPlayer->GetSkill( lpShortcut->m_dwType, lpShortcut->m_dwId );
-//				if( g_pPlayer->m_nReUseDelay[ lpShortcut->m_dwId ] > 0 )
-//					p2DRender->TextOut( point.x, point.y, g_pPlayer->m_nReUseDelay[ lpShortcut->m_dwId ] );
-
-			}
+			p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
 		}
+
 		point += CPoint( SKILL_SIZE, 0 );
 	}
 
@@ -636,6 +529,75 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 	p2DRender->SetFont( pOldFont );
 }
 
+bool CWndTaskBar::RenderShortcut(
+	C2DRender * p2DRender, const SHORTCUT & shortcut, CPoint point,
+	bool drawLetter
+) {
+	if (shortcut.IsEmpty()) return true;
+
+	if (shortcut.m_pTexture) {
+		p2DRender->RenderTexture(point, shortcut.m_pTexture);
+	}
+
+	switch (shortcut.m_dwShortcut) {
+		case SHORTCUT_ITEM: {
+			CItemElem * const pItemBase = g_pPlayer->GetItemId(shortcut.m_dwId);
+			if (!pItemBase) return false;
+
+			const ItemProp & itemProp = *pItemBase->GetProp();
+
+			if (itemProp.dwPackMax > 1) {
+				TCHAR szTemp[32];
+				_stprintf(szTemp, "%d", g_pPlayer ? g_pPlayer->m_Inventory.GetItemCount(pItemBase->m_dwItemId) : 0);
+				CSize size = m_p2DRender->m_pFont->GetTextExtent(szTemp);
+				p2DRender->TextOut(point.x + 32 - size.cx, point.y + 32 - size.cy, szTemp, 0xff0000ff);
+				p2DRender->TextOut(point.x + 31 - size.cx, point.y + 31 - size.cy, szTemp, 0xffb0b0f0);
+			}
+
+			if (g_pPlayer) {
+				if (const auto cooldown = g_pPlayer->m_cooltimeMgr.GetElapsedTime(itemProp)) {
+					RenderRadar(p2DRender, point, cooldown->elapsedTime, cooldown->totalWait);
+				}
+			}
+			break;
+		}
+		case SHORTCUT_APPLET: {
+			AppletFunc * pAppletFunc = g_WndMng.GetAppletFunc(shortcut.m_dwId);
+			if (pAppletFunc && pAppletFunc->m_cHotkey) {
+				CPoint ptHotkey(point.x + 8, point.y - 9);
+				DRAW_HOTKEY(p2DRender, ptHotkey, pAppletFunc->m_cHotkey);
+			}
+			break;
+		}
+		case SHORTCUT_SKILL: {
+			if (shortcut.m_dwType != 2) {
+				RenderCollTime(point, shortcut.m_dwId, p2DRender);
+			}
+			break;
+		}
+		case SHORTCUT_LORDSKILL:
+			RenderLordCollTime(point, shortcut.m_dwId, p2DRender);
+			break;
+		case SHORTCUT_MOTION: {
+			if (shortcut.m_dwId == MOT_BASE_ESCAPE) {
+				ItemProp * pItem = prj.GetItemProp(g_AddSMMode.dwSMItemID[SM_ESCAPE]);
+
+				if (pItem && g_pPlayer) {
+					CTimeSpan ct(g_pPlayer->m_dwSMTime[SM_ESCAPE]);
+
+					if (ct.GetTotalSeconds()) {
+						point.y -= 1;
+						point.x += 1;
+						RenderRadar(m_p2DRender, point, (DWORD)(pItem->dwCircleTime - ct.GetTotalSeconds()), pItem->dwCircleTime);
+					}
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
 void CWndTaskBar::UpdateItem() {
 	if (!g_pPlayer) return;
 
@@ -652,25 +614,51 @@ void CWndTaskBar::UpdateItem() {
 			continue;
 		}
 
-		// The full stack has been consumed: find another or clear the slot
-
-		const ItemProp * const pItemProp = prj.GetItemProp(shortcut.m_dwItemId);
-		if (!pItemProp || pItemProp->dwPackMax <= 1) {
-			shortcut.Empty();
-			g_DPlay.SendRemoveItemTaskBar(m_nSlotIndex, i);
-			continue;
-		}
-
-		const DWORD dwId = g_pPlayer->m_Inventory.Find(shortcut.m_dwItemId);
-		if (dwId == NULL_ID) {
-			shortcut.Empty();
-			g_DPlay.SendRemoveItemTaskBar(m_nSlotIndex, i);
-			continue;
-		}
-
-		shortcut.m_dwId = dwId;
-		g_DPlay.SendAddItemTaskBar(m_nSlotIndex, i, &shortcut);
+		FindNewStackForShortcut(m_nSlotIndex, i);
 	}
+}
+
+void CWndTaskBar::FindNewStackForShortcut(std::optional<int> where, int i) {
+	if (where && where < 0 || where >= MAX_SLOT_ITEM_COUNT) {
+		where = 0;
+	}
+
+	SHORTCUT & shortcut = where ? m_aSlotItem[*where][i] : m_aSlotApplet[i];
+
+	const auto SendRemove = [&]() {
+		shortcut.Empty();
+		if (where) {
+			g_DPlay.SendRemoveItemTaskBar(*where, i);
+		} else {
+			g_DPlay.SendRemoveAppletTaskBar(i);
+		}
+	};
+
+	const auto SendAdd = [&](DWORD dwId) {
+		shortcut.m_dwId = dwId;
+		if (where) {
+			g_DPlay.SendAddItemTaskBar(*where, i, &shortcut);
+		} else {
+			g_DPlay.SendAddAppletTaskBar(i, &shortcut);
+		}
+	};
+
+	CItemElem * pItemElem = g_pPlayer->GetItemId(shortcut.m_dwId);
+	if (pItemElem) return;
+
+	const ItemProp * const pItemProp = prj.GetItemProp(shortcut.m_dwItemId);
+	if (!pItemProp || pItemProp->dwPackMax <= 1) {
+		SendRemove();
+		return;
+	}
+
+	const DWORD dwId = g_pPlayer->m_Inventory.Find(shortcut.m_dwItemId);
+	if (dwId == NULL_ID) {
+		SendRemove();
+		return;
+	}
+
+	SendAdd(dwId);
 }
 
 void CWndTaskBar::OnKeyUp( UINT nChar, UINT nRepCnt, UINT nFlags )
