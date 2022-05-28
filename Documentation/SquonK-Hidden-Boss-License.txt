@@ -1,4 +1,5 @@
 The "SquonK Hidden Boss License" (SKHBL)
+(This license is basically the Boost license)
 
 Code released under the "SquonK Hidden Boss License" can be freely used /
 copied / modified / even sold to other people with the only condition to keep a
