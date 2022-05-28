@@ -11,36 +11,17 @@
 
 _ERROR_STATE g_Error_State;
 
-#define WND_WIDTH 210
 #define TASKBAR_HEIGHT 48
 
-//#ifdef __NEWINTERFACE
-
-//#define TASKSHORTCUT 45
 #define ICON_SIZE    32
 #define SKILL_SIZE   28
 
-/*
-#define POINT_APPLET_X  87
-#define POINT_APPLET_Y   9
-#define POINT_ITEM_X   295
-#define POINT_ITEM_Y     9
-#define POINT_QUEUE_X  649
-#define POINT_QUEUE_Y    9
-*/
 DWORD   POINT_APPLET_X ;
 DWORD   POINT_APPLET_Y ;
 DWORD   POINT_ITEM_X   ;
 DWORD   POINT_ITEM_Y   ;
 DWORD   POINT_QUEUE_X  ;
 DWORD   POINT_QUEUE_Y  ;
-
-#define HORIRC_APPLET( nIndex ) CRect( POINT_APPLET_X + nIndex * ICON_SIZE, 6, POINT_APPLET_X + nIndex * ICON_SIZE + ICON_SIZE , 6 + ICON_SIZE )
-#define VERTRC_APPLET( nIndex ) CRect( 6, POINT_APPLET_X + nIndex * ICON_SIZE, 3 + ICON_SIZE, POINT_APPLET_X + nIndex * ICON_SIZE + ICON_SIZE )
-#define HORIRC_ITEM( nIndex )   CRect( POINT_ITEM_X + nIndex * ICON_SIZE, 6, POINT_ITEM_X + nIndex * ICON_SIZE + ICON_SIZE , 6 + ICON_SIZE )
-#define VERTRC_ITEM( nIndex )   CRect( 6, POINT_ITEM_X + nIndex * ICON_SIZE, 3 + ICON_SIZE, POINT_ITEM_X + nIndex * ICON_SIZE + ICON_SIZE )
-#define HORIRC_QUEUE( nIndex )  CRect( POINT_QUEUE_X + nIndex * SKILL_SIZE, 6, POINT_QUEUE_X + nIndex * SKILL_SIZE + SKILL_SIZE, 7 + SKILL_SIZE )
-#define VERTRC_QUEUE( nIndex )  CRect( 6, POINT_QUEUE_X + nIndex * SKILL_SIZE, 6 + SKILL_SIZE, POINT_QUEUE_X + nIndex * SKILL_SIZE + SKILL_SIZE )
 
 #define RECT_APPLET CRect( POINT_APPLET_X, POINT_APPLET_Y, POINT_APPLET_X + m_nMaxSlotApplet * ICON_SIZE , POINT_APPLET_Y + ICON_SIZE  )
 #define RECT_ITEM   CRect( POINT_ITEM_X  , POINT_ITEM_Y  , POINT_ITEM_X   + MAX_SLOT_ITEM   * ICON_SIZE , POINT_ITEM_Y   + ICON_SIZE  )
@@ -49,37 +30,6 @@ DWORD   POINT_QUEUE_Y  ;
 #define POINT_APPLET CPoint( POINT_APPLET_X, POINT_APPLET_Y )
 #define POINT_ITEM   CPoint( POINT_ITEM_X  , POINT_ITEM_Y   )
 #define POINT_QUEUE  CPoint( POINT_QUEUE_X , POINT_QUEUE_Y  )
-
-//#else
-/*
-#define TASKSHORTCUT 45
-#define ICON_SIZE    32
-#define SKILL_SIZE   28
-
-#define POINT_APPLET_X  89
-#define POINT_APPLET_Y   8
-#define POINT_ITEM_X   306
-#define POINT_ITEM_Y     8
-#define POINT_QUEUE_X  648
-#define POINT_QUEUE_Y    6
-
-#define HORIRC_APPLET( nIndex ) CRect( 89 + nIndex * ICON_SIZE, 6, 89 + nIndex * ICON_SIZE + ICON_SIZE , 6 + ICON_SIZE )
-#define VERTRC_APPLET( nIndex ) CRect( 6, 89 + nIndex * ICON_SIZE, 3 + ICON_SIZE, 292 + nIndex * ICON_SIZE + ICON_SIZE )
-#define HORIRC_ITEM( nIndex )   CRect( 306 + nIndex * ICON_SIZE, 6, 306 + nIndex * ICON_SIZE + ICON_SIZE , 6 + ICON_SIZE )
-#define VERTRC_ITEM( nIndex )   CRect( 6, 292 + nIndex * ICON_SIZE, 3 + ICON_SIZE, 292 + nIndex * ICON_SIZE + ICON_SIZE )
-#define HORIRC_QUEUE( nIndex )  CRect( 648 + nIndex * SKILL_SIZE, 6, 648 + nIndex * SKILL_SIZE + SKILL_SIZE, 7 + SKILL_SIZE )
-#define VERTRC_QUEUE( nIndex )  CRect( 6, 648 + nIndex * SKILL_SIZE, 6 + 32, 648 + nIndex * SKILL_SIZE + SKILL_SIZE )
-
-#define RECT_APPLET CRect(  89, 6, 280, 38 )
-#define RECT_ITEM   CRect( 306, 6, 612, 38 )
-#define RECT_QUEUE  CRect( 648, 6, 790, 38 )
-
-#define POINT_APPLET CPoint( POINT_APPLET_X, POINT_APPLET_Y )
-#define POINT_ITEM   CPoint( POINT_ITEM_X  , POINT_ITEM_Y   )
-#define POINT_QUEUE  CPoint( POINT_QUEUE_X , POINT_QUEUE_Y  )
-
-#endif
-  */
 
 void CWndTaskBar::SetTaskBarTexture( LPSHORTCUT pShortcut )
 {
@@ -168,8 +118,7 @@ CWndTaskBar::CWndTaskBar()
 {
 	m_nCurQueue = -1;
 	m_nCurQueueNum = 0;
-	//m_nPosition = TASKBAR_RIGHT;//LEFT;//TASKBAR_TOP;
-	m_nPosition = TASKBAR_BOTTOM;//LEFT;//TASKBAR_TOP;
+	m_nPosition = TASKBAR_BOTTOM;
 	memset( &m_aSlotSkill, 0, sizeof( m_aSlotSkill ) );
 
 	m_pSelectShortcut = NULL;
@@ -180,27 +129,6 @@ CWndTaskBar::CWndTaskBar()
 	m_nSlotIndex = 0;
 	m_nActionPoint = 0;
 	m_dwHighAlpha = 0;
-//	m_nMaxSlotApplet = 5;
-}
-
-void CWndTaskBar::InitTaskBar()
-{
-	m_nCurQueue = -1;
-	m_nCurQueueNum = 0;
-	//m_nPosition = TASKBAR_RIGHT;//LEFT;//TASKBAR_TOP;
-	m_nPosition = TASKBAR_BOTTOM;//LEFT;//TASKBAR_TOP;
-	
-	*static_cast<CTaskbar *>(this) = CTaskbar();
-
-	m_pSelectShortcut = NULL;
-	m_bStartTimeBar = FALSE;
-	m_nSkillBar = 0;
-	m_nUsedSkillQueue = 0;
-	m_nExecute = 0;
-	m_nSlotIndex = 0;
-	m_nActionPoint = 0;
-	m_dwHighAlpha = 0;
-	//m_nMaxSlotApplet = 5;
 }
 
 std::array<SHORTCUT, MAX_SLOT_ITEM> & CWndTaskBar::m_paSlotItem() {
@@ -228,16 +156,10 @@ void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
 		AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( pShortcut->m_dwId ); 
 		if( pAppletFunc )
 		{
-			//do 
-		//	{
 			
-			//CString string;
-			CEditString strEdit;
-			if( pAppletFunc->m_cHotkey == 0 )
-				strEdit.AddString( pAppletFunc->m_pAppletDesc );
-			else
+			CEditString strEdit = pAppletFunc->m_pAppletDesc;
+			if( pAppletFunc->m_cHotkey != 0 )
 			{
-				strEdit.AddString( pAppletFunc->m_pAppletDesc );
 				strEdit.AddString( "\n" );
 				CString string;
 				string.Format( "[%s %c]", prj.GetText( TID_GAME_TOOLTIP_HOTKEY ), pAppletFunc->m_cHotkey );
@@ -397,14 +319,6 @@ static void DRAW_HOTKEY(C2DRender * p2DRender, CPoint point, char cHotkey) {
 	string.Format( "%c", cHotkey );
 	p2DRender->TextOut( point.x - 0 + 2, point.y - 0 - 4, string, 0xffffffff );
 }
-					
-					
-/*
-#define DRAW_HOTKEY( p2DRender, point, cHotkey ) {  \
-	if( cHotkey >= 'A' && cHotkey <= 'Z' ) m_texPack.GetAt( cHotkey - 'A' )->Render( p2DRender, point, m_nAlphaCount );  \
-	if( cHotkey >= '0' && cHotkey <= '9' ) m_texPack.GetAt( cHotkey - '0' + 26 )->Render( p2DRender, point, m_nAlphaCount ); }
-*/
-
 
 void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 {
@@ -722,50 +636,40 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 	p2DRender->SetFont( pOldFont );
 }
 
-void CWndTaskBar::UpdateItem()
-{
-	if( g_pPlayer == NULL )
-		return;
-	
-	for( int i = 0; i < MAX_SLOT_ITEM; i++ )
-	{
-		LPSHORTCUT lpShortcut = &m_paSlotItem()[i];
-		if( !lpShortcut->IsEmpty() )
-		{
-			if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
-			{
-				CItemElem * pItemElem = g_pPlayer->GetItemId( lpShortcut->m_dwId );
+void CWndTaskBar::UpdateItem() {
+	if (!g_pPlayer) return;
 
-				if( pItemElem )
-				{
-					if( lpShortcut->m_pTexture != pItemElem->GetTexture() )
-						lpShortcut->m_pTexture = pItemElem->GetTexture();
-				}
-				else
-				{
-					ItemProp* pItemProp	= prj.GetItemProp( lpShortcut->m_dwItemId );
-					if( pItemProp && pItemProp->dwPackMax > 1 )	// 병합 가능한 아이템이면?
-					{
-						DWORD dwId	= g_pPlayer->m_Inventory.Find( lpShortcut->m_dwItemId );
-						if( dwId != NULL_ID )	// 같은 종류의 아이템이 있다면?
-						{
-							lpShortcut->m_dwId	= dwId;
-							g_DPlay.SendAddItemTaskBar( m_nSlotIndex, i, lpShortcut );
-						}
-						else
-						{
-							lpShortcut->Empty(); 				
-							g_DPlay.SendRemoveItemTaskBar( m_nSlotIndex, i );
-						}
-					}
-					else
-					{
-						lpShortcut->Empty(); 				
-						g_DPlay.SendRemoveItemTaskBar( m_nSlotIndex, i );
-					}
-				}
+	for (int i = 0; i < m_paSlotItem().size(); ++i) {
+		SHORTCUT & shortcut = m_paSlotItem()[i];
+		if (shortcut.m_dwShortcut != SHORTCUT_ITEM) continue;
+		
+		CItemElem * pItemElem = g_pPlayer->GetItemId(shortcut.m_dwId);
+
+		if (pItemElem) {
+			if (shortcut.m_pTexture != pItemElem->GetTexture()) {
+				shortcut.m_pTexture = pItemElem->GetTexture();
 			}
+			continue;
 		}
+
+		// The full stack has been consumed: find another or clear the slot
+
+		const ItemProp * const pItemProp = prj.GetItemProp(shortcut.m_dwItemId);
+		if (!pItemProp || pItemProp->dwPackMax <= 1) {
+			shortcut.Empty();
+			g_DPlay.SendRemoveItemTaskBar(m_nSlotIndex, i);
+			continue;
+		}
+
+		const DWORD dwId = g_pPlayer->m_Inventory.Find(shortcut.m_dwItemId);
+		if (dwId == NULL_ID) {
+			shortcut.Empty();
+			g_DPlay.SendRemoveItemTaskBar(m_nSlotIndex, i);
+			continue;
+		}
+
+		shortcut.m_dwId = dwId;
+		g_DPlay.SendAddItemTaskBar(m_nSlotIndex, i, &shortcut);
 	}
 }
 
@@ -935,10 +839,7 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	return bResult;
 	
 }
-BOOL CWndTaskBar::RemoveDeleteObj()
-{
-	return TRUE;
-}
+
 void CWndTaskBar::SetItemSlot( int nSlot )
 {
 	if (nSlot >= 0 && nSlot < MAX_SLOT_ITEM_COUNT) {
@@ -961,17 +862,6 @@ BOOL CWndTaskBar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	else
 	switch( nID )
 	{
-		case 101:
-			/*
-			if( m_pWndQuickList )
-				m_pWndQuickList->Destroy();
-			else
-			{
-				m_pWndQuickList = new CWndQuickList;
-				m_pWndQuickList->Initialize( this );//&g_WndMng );
-			}
-			*/
-			break;
 		case WIDC_UP:
 			m_nSlotIndex--;
 			if( m_nSlotIndex < 0 ) m_nSlotIndex = MAX_SLOT_ITEM_COUNT-1;
@@ -1026,24 +916,6 @@ BOOL CWndTaskBar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 void CWndTaskBar::OnSize(UINT nType, int cx, int cy)
 {
 	CWndNeuz::OnSize( nType, cx, cy );
-//	CRect rect = GetClientRect();
-//	rect.DeflateRect( 5, 5);
-//	rect.right = 37;
-	//ect rect( 5, 5, 44, 40 );//GetClientRect();
-	//wndMenu.SetWndRect( rect );
-
-//ect = GetClientRect();
-
-	// Create Command button
-	//for(int i = 0; i < 10; i++)
-		//m_pWndCommand[i].SetWndRect(CRect(60+i*18,3,76+i*18,21));
-
-	//int i;
-	// Create Tray button
-	//int nMax = 3;
-	//int nStart = (rect.Width() - nMax * 26);
-	//for(i = 0; i < nMax; i++)
-//		m_pWndTray[i].SetWndRect(CRect(nStart + i * 25, 6, nStart + 24 + i * 25, 30));
 }
 void CWndTaskBar::RemoveSkillQueue( int nIndex, BOOL bSend )
 {
@@ -1122,22 +994,11 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 	// Chat Shortcut 10개로 제한
 	if(dwShortcut == SHORTCUT_CHAT)
 	{
-		int nchatshortcut = 0;
-		for( int i=0; i<MAX_SLOT_ITEM_COUNT; i++ )
-		{
-			for( int j=0; j<MAX_SLOT_ITEM; j++ )
-			{
-				if( m_aSlotItem[i][j].m_dwShortcut == SHORTCUT_CHAT )
-					nchatshortcut++;
-			}
-		}
-		for( int k = 0; k < m_nMaxSlotApplet; ++k )
-			if( m_aSlotApplet[ k ].m_dwShortcut == SHORTCUT_CHAT )
-				++nchatshortcut;
+		int nchatshortcut = CountNumberOfChats();
 
 		if(nchatshortcut > 9)
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_MAX_SHORTCUT_CHAT ), NULL, prj.GetTextColor( TID_GAME_MAX_SHORTCUT_CHAT ) );
+			g_WndMng.PutString(TID_GAME_MAX_SHORTCUT_CHAT);
 			return FALSE;
 		}
 	}
@@ -1749,17 +1610,6 @@ void CWndTaskBar::OnLButtonUp(UINT nFlags, CPoint point)
 		g_WndMng.ObjectExecutor( pShortcut );
 	}
 
-}
-
-BOOL CWndTaskBar::OnEraseBkgnd(C2DRender* p2DRender)
-{
-	return TRUE;
-}
-void CWndTaskBar::PaintFrame( C2DRender* p2DRender )
-{
-	CRect rect = GetWindowRect();
-	//m_pTheme->RenderWndTaskBar( p2DRender, &rect );
-	CWndBase::PaintFrame( p2DRender );
 }
 
 LPSKILL CWndTaskBar::GetCurrentSkillQueue()

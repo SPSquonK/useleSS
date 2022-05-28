@@ -49,8 +49,6 @@ public:
 	void OnCancelSkill( void );
 	LPSHORTCUT Select( CPoint point );
 	void RemoveSkillQueue( int nIndex, BOOL bSend = TRUE );
-	BOOL RemoveDeleteObj();
-	void InitTaskBar();
 
 	CWndTaskBar();
 //	virtual CItem* GetFocusItem() { return NULL; }
@@ -66,8 +64,8 @@ public:
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual	void PaintFrame( C2DRender* p2DRender );
-	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
+	void PaintFrame(C2DRender * p2DRender) override { CWndBase::PaintFrame(p2DRender); }
+	BOOL OnEraseBkgnd(C2DRender * p2DRender) override { return TRUE; }
 	virtual BOOL Process();
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnMouseMove(UINT nFlags, CPoint point);

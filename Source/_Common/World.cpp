@@ -822,8 +822,6 @@ void CWorld::Process()
 	CHECK2("    prc");
 	g_DialogMsg.RemoveDeleteObjMsg();
 	CWndTaskBar* pWndTaskBar = g_WndMng.m_pWndTaskBar;
-	if( pWndTaskBar )
-		pWndTaskBar->RemoveDeleteObj();
 
 	// Delete Obj 
 #ifdef __BS_SAFE_WORLD_DELETE 
