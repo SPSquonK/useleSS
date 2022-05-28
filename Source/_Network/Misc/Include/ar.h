@@ -38,6 +38,37 @@ public:
 	void	Flush( void );
 	void	ReelIn( u_int uOffset );
 
+	void IsUnsafe() {
+		// TODO: throw if this is a CAr received from client
+	}
+
+
+	template<typename T> friend class PushBacker;
+
+	template<typename T> class PushBacker {
+	private:
+		CAr * m_self;
+		u_long offset;
+
+	public:
+		explicit(false) PushBacker(CAr & self) : m_self(&self), offset(self.GetOffset()) {}
+
+		[[nodiscard]] T & operator*() const {
+			return *reinterpret_cast<T *>(m_self->m_lpBufStart + offset);
+		}
+
+		[[nodiscard]] T * operator->() const {
+			return reinterpret_cast<T *>(m_self->m_lpBufStart + offset);
+		}
+	};
+
+	template<typename T>
+	PushBacker<T> PushBack(const T & value) {
+		PushBacker<T> lookBack = *this;
+		*this << value;
+		return lookBack;
+	}
+
 	// reading and writing strings
 	void WriteString(LPCTSTR lpsz);
 	LPTSTR ReadString( LPTSTR lpsz, int nBufSize );

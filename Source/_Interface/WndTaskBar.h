@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Taskbar.h"
+
 //////////////////////////////////////////////////////////////////////////////////////
 // 작업 윈도 
 // 메뉴 버튼, 명령 아이콘, 단축 아이콘, 활성화 기능 등등
 //
-class CWndTaskBar : public CWndNeuz
+class CWndTaskBar : public CWndNeuz, public CTaskbar
 {
 	DWORD m_dwHighAlpha;
 
@@ -15,10 +17,9 @@ public:
 	CWndButton     m_wndQuickList;
 	CWndButton     m_wndQuickListUp;
 	CWndButton     m_wndQuickListDn;
-	SHORTCUT       m_aSlotApplet[ MAX_SLOT_APPLET ]; // 1 ~ 20
-	SHORTCUT       m_aSlotItem  [ MAX_SLOT_ITEM_COUNT ][ MAX_SLOT_ITEM ]; // 1 ~ 0(10)
-	SHORTCUT       m_aSlotQueue [ MAX_SLOT_QUEUE  ];
-	LPSHORTCUT     m_paSlotItem;
+
+	std::array<SHORTCUT, MAX_SLOT_ITEM> & m_paSlotItem();
+	const std::array<SHORTCUT, MAX_SLOT_ITEM> & m_paSlotItem() const;
 	LPSHORTCUT     m_pSelectShortcut;
 	SHORTCUT       m_aSlotSkill;
 	CTexture*      m_pTexture;
@@ -33,7 +34,7 @@ public:
 	int			   m_nExecute;		// 0: 실행중이지 않음 1:실행대기중(스킬쓰러 달려가는중) 2:실행중.
 	OBJID		   m_idTarget;		// 스킬사용대상.
 	int            m_nSlotIndex;
-	int		       m_nActionPoint;		// 액션 포인트 - 시리얼라이즈 대상.
+	
 	void RenderLordCollTime( CPoint pt, DWORD dwSkillId, C2DRender* p2DRender );
 	void RenderCollTime( CPoint pt, DWORD dwSkillId, C2DRender* p2DRender );
 	void UpdateItem();
@@ -70,7 +71,6 @@ public:
 	virtual BOOL Process();
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	void	Serialize( CAr & ar );
 	void	SetTaskBarTexture( LPSHORTCUT pShortcut );
 	
 	HRESULT	RestoreDeviceObjects();

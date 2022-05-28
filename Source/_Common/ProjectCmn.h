@@ -894,7 +894,7 @@ typedef struct tagSHORTCUT
 	DWORD     m_dwUserId   ; 
 	DWORD     m_dwData     ; 
 	TCHAR     m_szString[MAX_SHORTCUT_STRING]; // SHORTCUT_CHAT일 경우 저장.
-	BOOL IsEmpty() { return m_dwShortcut == SHORTCUT_NONE; }
+	BOOL IsEmpty() const { return m_dwShortcut == SHORTCUT_NONE; }
 	void Empty() { m_dwShortcut = SHORTCUT_NONE; }
 } SHORTCUT,* LPSHORTCUT;
 

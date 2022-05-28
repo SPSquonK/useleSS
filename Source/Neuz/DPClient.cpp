@@ -3760,9 +3760,8 @@ void CDPClient::OnGameJoin( CAr & ar )
 	g_WndMng.PutString( strMessage, NULL, 0xffff0000 );	
 }
 
-void CDPClient::OnTaskBar( CAr & ar )
-{
-	g_WndMng.m_pWndTaskBar->Serialize( ar );
+void CDPClient::OnTaskBar(CAr & ar) {
+	ar >> (*g_WndMng.m_pWndTaskBar);
 }
 
 void CDPClient::OnErrorParty( CAr & ar )

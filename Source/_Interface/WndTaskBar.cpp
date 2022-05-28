@@ -81,149 +81,6 @@ DWORD   POINT_QUEUE_Y  ;
 #endif
   */
 
-void CWndTaskBar::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		int nCount	= 0;
-		u_long uOffset	= ar.GetOffset();
-		ar << nCount;
-		for( int i = 0; i < MAX_SLOT_APPLET; i++ )
-		{
-			if( m_aSlotApplet[i].m_dwShortcut == SHORTCUT_NONE )		// 값이 들어있는지 검사
-			{
-				ar << i;
-				ar << m_aSlotApplet[i].m_dwShortcut <<	m_aSlotApplet[i].m_dwId << m_aSlotApplet[i].m_dwType;
-				ar << m_aSlotApplet[i].m_dwIndex <<	m_aSlotApplet[i].m_dwUserId << m_aSlotApplet[i].m_dwData;
-				if( m_aSlotApplet[i].m_dwShortcut == SHORTCUT_CHAT )
-					ar.WriteString( m_aSlotApplet[i].m_szString );
-				nCount++;
-			}
-		}
-		int nBufSize;
-		LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );
-		*(UNALIGNED int*)( lpBuf + uOffset )	= nCount;
-
-		nCount	= 0;
-		uOffset	= ar.GetOffset();
-		ar << nCount;
-		for( int i = 0; i < MAX_SLOT_ITEM_COUNT; i++ )
-		{
-			for( int j = 0; j < MAX_SLOT_ITEM; j++ )
-			{
-				if( m_aSlotItem[i][j].m_dwShortcut == SHORTCUT_NONE )		// 값이 들어있는지 검사
-				{
-					ar << i << j;
-					ar << m_aSlotItem[i][j].m_dwShortcut <<	m_aSlotItem[i][j].m_dwId << m_aSlotItem[i][j].m_dwType;
-					ar << m_aSlotItem[i][j].m_dwIndex << m_aSlotItem[i][j].m_dwUserId << m_aSlotItem[i][j].m_dwData;
-					if( m_aSlotItem[i][j].m_dwShortcut == SHORTCUT_CHAT)
-						ar.WriteString( m_aSlotItem[i][j].m_szString );
-					nCount++;
-					
-				}
-			}
-		}
-		lpBuf	= ar.GetBuffer( &nBufSize );
-		*(UNALIGNED int*)( lpBuf + uOffset )	= nCount;
-
-		nCount	= 0;
-		uOffset	= ar.GetOffset();
-		ar << nCount;
-		for( int i = 0; i < MAX_SLOT_QUEUE; i++ )
-		{
-			if( m_aSlotQueue[i].m_dwShortcut == SHORTCUT_NONE )		// 값이 들어있는지 검사
-			{
-				ar << i;
-				ar << m_aSlotQueue[i].m_dwShortcut << m_aSlotQueue[i].m_dwId << m_aSlotQueue[i].m_dwType;
-				ar << m_aSlotQueue[i].m_dwIndex << m_aSlotQueue[i].m_dwUserId << m_aSlotQueue[i].m_dwData;
-				nCount++;
-			}
-		}
- 		ar << m_nActionPoint;
-
-		lpBuf	= ar.GetBuffer( &nBufSize );
-		*(UNALIGNED int*)( lpBuf + uOffset )	= nCount;
-	}
-	else
-	{
-		InitTaskBar();
-		int nCount, nIndex;
-		ar >> nCount;	// applet count
-		for( int i = 0; i < nCount; i++ )
-		{
-			ar >> nIndex;
-			ar >> m_aSlotApplet[nIndex].m_dwShortcut >>	m_aSlotApplet[nIndex].m_dwId >> m_aSlotApplet[nIndex].m_dwType;
-			ar >> m_aSlotApplet[nIndex].m_dwIndex >> m_aSlotApplet[nIndex].m_dwUserId >> m_aSlotApplet[nIndex].m_dwData;
-			if( m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_CHAT)
-				ar.ReadString( m_aSlotApplet[nIndex].m_szString, MAX_SHORTCUT_STRING );
-			m_aSlotApplet[nIndex].m_dwIndex = nIndex;
-			SetTaskBarTexture( &m_aSlotApplet[nIndex] );
-
-			if( m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_SKILL )	
-			{
-				ItemProp* pProp;
-				if( m_aSlotApplet[nIndex].m_dwType == 2 )
-					pProp =  prj.GetPartySkill( m_aSlotApplet[nIndex].m_dwId );
-				else
-				{
-					LPSKILL pSkill = g_pPlayer->GetSkill( 0, m_aSlotApplet[nIndex].m_dwId );
-					pProp = prj.GetSkillProp( pSkill->dwSkill );	
-				}
-				if( pProp == NULL || (pProp->dwComboStyle != CT_STEP && pProp->dwComboStyle != CT_GENERAL) )	
-				{
-					m_aSlotApplet[nIndex].Empty();
-				}
-			}
-			else if( m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_ITEM )
-			{
-				if( g_pPlayer )
-				{
-					CItemElem * pItemBase	= g_pPlayer->GetItemId( m_aSlotApplet[nIndex].m_dwId );
-					if( pItemBase && pItemBase->GetProp()->dwPackMax > 1 )	// 병합 가능한 아이템이면?
-						m_aSlotApplet[nIndex].m_dwItemId	= pItemBase->m_dwItemId;
-				}
-			}
-		}
-		ar >> nCount;	// slot item count
-		int nIndex2;
-		for( int i = 0; i < nCount; i++ )
-		{
-			ar >> nIndex >> nIndex2;	// index
-			ar >> m_aSlotItem[nIndex][nIndex2].m_dwShortcut >>	m_aSlotItem[nIndex][nIndex2].m_dwId >> m_aSlotItem[nIndex][nIndex2].m_dwType;
-			ar >> m_aSlotItem[nIndex][nIndex2].m_dwIndex >> m_aSlotItem[nIndex][nIndex2].m_dwUserId >> m_aSlotItem[nIndex][nIndex2].m_dwData;
-			if( m_aSlotItem[nIndex][nIndex2].m_dwShortcut == SHORTCUT_CHAT )
-				ar.ReadString( m_aSlotItem[nIndex][nIndex2].m_szString, MAX_SHORTCUT_STRING );
-			else if( m_aSlotItem[nIndex][nIndex2].m_dwShortcut == SHORTCUT_ITEM )
-			{
-				if( g_pPlayer )
-				{
-					CItemElem * pItemBase	= g_pPlayer->GetItemId( m_aSlotItem[nIndex][nIndex2].m_dwId );
-					if( pItemBase && pItemBase->GetProp()->dwPackMax > 1 )	// 병합 가능한 아이템이면?
-						m_aSlotItem[nIndex][nIndex2].m_dwItemId	= pItemBase->m_dwItemId;
-				}
-			}
-			m_aSlotItem[nIndex][nIndex2].m_dwIndex = nIndex2;
-			SetTaskBarTexture( &m_aSlotItem[nIndex][nIndex2] );
-		}
-
-		ar >> nCount;
-		for( int i = 0; i < nCount; i++ )
-		{
-			ar >> nIndex;
-			ar >> m_aSlotQueue[nIndex].m_dwShortcut >> m_aSlotQueue[nIndex].m_dwId >> m_aSlotQueue[nIndex].m_dwType;
-			ar >> m_aSlotQueue[nIndex].m_dwIndex >> m_aSlotQueue[nIndex].m_dwUserId >> m_aSlotQueue[nIndex].m_dwData;
-
-			m_aSlotQueue[nIndex].m_dwIndex = nIndex;
-
-			LPSKILL lpSkill = g_pPlayer->GetSkill( m_aSlotQueue[nIndex].m_dwType, m_aSlotQueue[nIndex].m_dwId );
-			//pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon ) );
-			m_aSlotQueue[nIndex].m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff, FALSE );
-		}
-		ar >> m_nActionPoint;
-		m_nCurQueueNum = nCount;
-	}
-}
-
 void CWndTaskBar::SetTaskBarTexture( LPSHORTCUT pShortcut )
 {
 	if( pShortcut->m_dwShortcut == SHORTCUT_APPLET )
@@ -313,9 +170,6 @@ CWndTaskBar::CWndTaskBar()
 	m_nCurQueueNum = 0;
 	//m_nPosition = TASKBAR_RIGHT;//LEFT;//TASKBAR_TOP;
 	m_nPosition = TASKBAR_BOTTOM;//LEFT;//TASKBAR_TOP;
-	memset( m_aSlotApplet, 0, sizeof( m_aSlotApplet ) );
-	memset( m_aSlotItem  , 0, sizeof( m_aSlotItem ) );
-	memset( m_aSlotQueue , 0, sizeof( m_aSlotQueue ) );
 	memset( &m_aSlotSkill, 0, sizeof( m_aSlotSkill ) );
 
 	m_pSelectShortcut = NULL;
@@ -324,7 +178,6 @@ CWndTaskBar::CWndTaskBar()
 	m_nUsedSkillQueue = 0;
 	m_nExecute = 0;
 	m_nSlotIndex = 0;
-	m_paSlotItem = m_aSlotItem[ m_nSlotIndex ];
 	m_nActionPoint = 0;
 	m_dwHighAlpha = 0;
 //	m_nMaxSlotApplet = 5;
@@ -336,20 +189,34 @@ void CWndTaskBar::InitTaskBar()
 	m_nCurQueueNum = 0;
 	//m_nPosition = TASKBAR_RIGHT;//LEFT;//TASKBAR_TOP;
 	m_nPosition = TASKBAR_BOTTOM;//LEFT;//TASKBAR_TOP;
-	memset( m_aSlotApplet, 0, sizeof( m_aSlotApplet ) );
-	memset( m_aSlotItem  , 0, sizeof( m_aSlotItem ) );
-	memset( m_aSlotQueue , 0, sizeof( m_aSlotQueue ) );
 	
+	*static_cast<CTaskbar *>(this) = CTaskbar();
+
 	m_pSelectShortcut = NULL;
 	m_bStartTimeBar = FALSE;
 	m_nSkillBar = 0;
 	m_nUsedSkillQueue = 0;
 	m_nExecute = 0;
 	m_nSlotIndex = 0;
-	m_paSlotItem = m_aSlotItem[ m_nSlotIndex ];
 	m_nActionPoint = 0;
 	m_dwHighAlpha = 0;
 	//m_nMaxSlotApplet = 5;
+}
+
+std::array<SHORTCUT, MAX_SLOT_ITEM> & CWndTaskBar::m_paSlotItem() {
+	if (m_nSlotIndex < 0 && m_nSlotIndex >= MAX_SLOT_ITEM) {
+		m_nSlotIndex = 0;
+	}
+
+	return m_aSlotItem[m_nSlotIndex];
+}
+
+const std::array<SHORTCUT, MAX_SLOT_ITEM> & CWndTaskBar::m_paSlotItem() const {
+	if (m_nSlotIndex < 0 && m_nSlotIndex >= MAX_SLOT_ITEM) {
+		return m_aSlotItem[0];
+	}
+
+	return m_aSlotItem[m_nSlotIndex];
 }
 
 void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
@@ -497,7 +364,7 @@ void CWndTaskBar::OnMouseWndSurface( CPoint point )
 	rect = CRect( POINT_ITEM_X, POINT_ITEM_Y, POINT_ITEM_X + ICON_SIZE, POINT_ITEM_Y + ICON_SIZE );
 	for( int i = 0; i < MAX_SLOT_ITEM; i++ )
 	{
-		LPSHORTCUT lpShortcut = &m_paSlotItem[ i ] ;
+		LPSHORTCUT lpShortcut = &m_paSlotItem()[i];
 		if( !lpShortcut->IsEmpty() && rect.PtInRect( point)  )
 		{
 			PutTooTip( lpShortcut, point,&rect );
@@ -711,7 +578,7 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 	point = POINT_ITEM;
 	for( int i = 0; i < MAX_SLOT_ITEM; i++ )
 	{
-		LPSHORTCUT lpShortcut = &m_paSlotItem[ i ] ;
+		LPSHORTCUT lpShortcut = &m_paSlotItem()[i];
 		if( !lpShortcut->IsEmpty() )
 		{
 			if( lpShortcut->m_pTexture )
@@ -862,7 +729,7 @@ void CWndTaskBar::UpdateItem()
 	
 	for( int i = 0; i < MAX_SLOT_ITEM; i++ )
 	{
-		LPSHORTCUT lpShortcut = &m_paSlotItem[ i ] ;
+		LPSHORTCUT lpShortcut = &m_paSlotItem()[i];
 		if( !lpShortcut->IsEmpty() )
 		{
 			if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
@@ -1074,8 +941,9 @@ BOOL CWndTaskBar::RemoveDeleteObj()
 }
 void CWndTaskBar::SetItemSlot( int nSlot )
 {
-	if( nSlot >= 0 && nSlot < MAX_SLOT_ITEM_COUNT)
-		m_paSlotItem = m_aSlotItem[ m_nSlotIndex = nSlot ];
+	if (nSlot >= 0 && nSlot < MAX_SLOT_ITEM_COUNT) {
+		m_nSlotIndex = nSlot;
+	}
 }
 BOOL CWndTaskBar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
@@ -1107,12 +975,10 @@ BOOL CWndTaskBar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case WIDC_UP:
 			m_nSlotIndex--;
 			if( m_nSlotIndex < 0 ) m_nSlotIndex = MAX_SLOT_ITEM_COUNT-1;
-			m_paSlotItem = m_aSlotItem[ m_nSlotIndex ];
 			break;
 		case WIDC_DOWN:
 			m_nSlotIndex++;
 			if( m_nSlotIndex > MAX_SLOT_ITEM_COUNT-1 ) m_nSlotIndex = 0;
-			m_paSlotItem = m_aSlotItem[ m_nSlotIndex ];
 			break;
 		case WIDC_BUTTON1: // Menu
 		{
@@ -1230,9 +1096,9 @@ void CWndTaskBar::OnRButtonUp( UINT nFlags, CPoint point )
 		point.x -= rect.left;
 
 		point.x /= ICON_SIZE;
-		if( FALSE == m_paSlotItem[ point.x ].IsEmpty() )
+		if( FALSE == m_paSlotItem()[point.x].IsEmpty())
 		{
-			m_paSlotItem[ point.x ].Empty();
+			m_paSlotItem()[point.x].Empty();
 			g_DPlay.SendRemoveItemTaskBar( (BYTE)( m_nSlotIndex ), (BYTE)( point.x ) );	// 아이템 삭제 서버로 전송			
 		}
 
@@ -1276,25 +1142,12 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD
 		}
 	}
 
-	switch( m_nPosition )
-	{
-	case TASKBAR_TOP:
-	case TASKBAR_BOTTOM:
-		if( nWhere == 0 )
-			pShortcut = &m_aSlotApplet[ nIndex ];
-		else
-		if( nWhere == 1 )
-			pShortcut = &m_paSlotItem[ nIndex ];
-		break;
-	case TASKBAR_LEFT:
-	case TASKBAR_RIGHT:
-		if( nWhere == 0 )
-			pShortcut = &m_aSlotApplet[ nIndex ];
-		else
-		if( nWhere == 1 )
-			pShortcut = &m_paSlotItem[ nIndex ];
-		break;
-	}
+	if( nWhere == 0 )
+		pShortcut = &m_aSlotApplet[ nIndex ];
+	else
+	if( nWhere == 1 )
+		pShortcut = &m_paSlotItem()[nIndex];
+
 	if( pTexture == NULL )
 	{
 		CItemElem * pItemBase;
@@ -1825,7 +1678,7 @@ LPSHORTCUT CWndTaskBar::Select( CPoint point )
 		point.x -= rect.left;
 		point.y -= rect.top;
 		point.x /= ICON_SIZE;
-		pShortcut = &m_paSlotItem[ point.x ];
+		pShortcut = &m_paSlotItem()[point.x];
 		if( !pShortcut->IsEmpty() )
 			return pShortcut;
 	}
@@ -2079,7 +1932,7 @@ BOOL CWndTaskBar::Process( void )
 				{
 					if( g_bKeyTable[ dwHotkey[i] ] && g_bSlotSwitchAboutEquipItem[ i ] == FALSE )
 					{
-						LPSHORTCUT lpShortcut = &m_paSlotItem[ i ] ;
+						LPSHORTCUT lpShortcut = &m_paSlotItem()[i];
 						if( lpShortcut->m_dwShortcut == SHORTCUT_ITEM )
 						{
 							if (const ItemProp * props = g_pPlayer->GetItemIdProp(lpShortcut->m_dwId)) {
