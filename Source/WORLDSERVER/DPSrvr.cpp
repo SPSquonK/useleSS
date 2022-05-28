@@ -1822,57 +1822,37 @@ void CDPSrvr::OnRemoveAppletTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 		pUser->m_playTaskBar.m_aSlotApplet[nIndex].Empty();
 	}
 }
-void CDPSrvr::OnAddItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnAddItemTaskBar( CAr & ar, CUser & pUser )
 {
-	BYTE nSlotIndex, nIndex;
-	ar >> nSlotIndex >> nIndex;
+	BYTE nSlotIndex, nIndex; ar >> nSlotIndex >> nIndex;
 
-	if( nSlotIndex >= MAX_SLOT_ITEM_COUNT || nIndex >= MAX_SLOT_ITEM )
+	if (nSlotIndex >= MAX_SLOT_ITEM_COUNT || nIndex >= MAX_SLOT_ITEM) {
 		return;
+	}
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+	SHORTCUT shortcut; ar >> shortcut;
+
+	// Chat Shortcut 10개로 제한
+	if(shortcut.m_dwShortcut == ShortcutType::Chat)
 	{
-		SHORTCUT shortcut;
-		ar >> shortcut;
-
-		// Chat Shortcut 10개로 제한
-		if(shortcut.m_dwShortcut == ShortcutType::Chat)
-		{
-
-			int nchatshortcut = 0;
-			for( int i=0; i<MAX_SLOT_ITEM_COUNT; i++ )
-			{
-				for( int j=0; j<MAX_SLOT_ITEM; j++ )
-				{
-					if( pUser->m_playTaskBar.m_aSlotItem[i][j].m_dwShortcut == ShortcutType::Chat)
-						nchatshortcut++;
-				}
-			}
-
-			if(nchatshortcut > 9)
-			{
-				pUser->AddDefinedText( TID_GAME_MAX_SHORTCUT_CHAT );
-				return;
-			}
+		const auto nchatshortcut = pUser.m_playTaskBar.CountNumberOfChats();
+		if (nchatshortcut > 9) {
+			pUser.AddDefinedText(TID_GAME_MAX_SHORTCUT_CHAT);
+			return;
 		}
-
-		pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex] = shortcut;
 	}
+
+	pUser.m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex] = shortcut;
 }
-void CDPSrvr::OnRemoveItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	BYTE nSlotIndex, nIndex;
-	ar >> nSlotIndex >> nIndex;
 
-	if( nSlotIndex >= MAX_SLOT_ITEM_COUNT || nIndex >= MAX_SLOT_ITEM )
+void CDPSrvr::OnRemoveItemTaskBar(CAr & ar, CUser & pUser) {
+	BYTE nSlotIndex, nIndex; ar >> nSlotIndex >> nIndex;
+
+	if (nSlotIndex >= MAX_SLOT_ITEM_COUNT || nIndex >= MAX_SLOT_ITEM) {
 		return;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].Empty();
 	}
+
+	pUser.m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].Empty();
 }
 
 
