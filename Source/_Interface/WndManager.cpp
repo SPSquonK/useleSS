@@ -1888,7 +1888,7 @@ void CWndMgr::OpenTitle( BOOL bFirstTime )
 	g_WndMng.SetWndRect( CRect( 0, 0, CLIENT_WIDTH, CLIENT_HEIGHT ) );
 	m_bTitle = TRUE;
 
-	ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
+	ObjectExecutor( ShortcutType::Applet, APP_LOGIN );
 
 	// Delete 
 	//CloseTitle();
@@ -1934,14 +1934,14 @@ void CWndMgr::OpenField()
 	m_aChatStyle.RemoveAll();
 
 	LoadRegInfo( "regInfo.dat" );
-	ObjectExecutor( SHORTCUT_APPLET, APP_COMMUNICATION_CHAT );
-	ObjectExecutor( SHORTCUT_APPLET, APP_NAVIGATOR );
-	ObjectExecutor( SHORTCUT_APPLET, APP_STATUS1 );
-	ObjectExecutor( SHORTCUT_APPLET, APP_WORLD );
+	ObjectExecutor(ShortcutType::Applet, APP_COMMUNICATION_CHAT );
+	ObjectExecutor(ShortcutType::Applet, APP_NAVIGATOR );
+	ObjectExecutor(ShortcutType::Applet, APP_STATUS1 );
+	ObjectExecutor(ShortcutType::Applet, APP_WORLD );
 
 	// 공지가 enable이라면?
 	if( g_Option.m_bNotice )
-		ObjectExecutor( SHORTCUT_APPLET, APP_INFO_NOTICE );
+		ObjectExecutor(ShortcutType::Applet, APP_INFO_NOTICE );
 	else
 	// 공지가 열지 않음으로 되어있어도 날짜가 갱신되었다면 강제 오픈
 	{
@@ -1956,7 +1956,7 @@ void CWndMgr::OpenField()
 			{
 				g_Option.m_tNoticeTime = (time_t)( fileStatus.m_mtime.GetTime() );
 				g_Option.m_bNotice = TRUE;
-				ObjectExecutor( SHORTCUT_APPLET, APP_INFO_NOTICE );
+				ObjectExecutor(ShortcutType::Applet, APP_INFO_NOTICE );
 			}
 		}
 	}
@@ -2266,7 +2266,7 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 
 	return pWndBase;
 }
-void CWndMgr::ObjectExecutor( DWORD dwShortcut, DWORD dwId, DWORD dwType )
+void CWndMgr::ObjectExecutor(ShortcutType dwShortcut, DWORD dwId, DWORD dwType )
 {
 	SHORTCUT shortcut;
 	ZeroMemory( &shortcut, sizeof( shortcut ) );
@@ -2277,7 +2277,7 @@ void CWndMgr::ObjectExecutor( DWORD dwShortcut, DWORD dwId, DWORD dwType )
 }
 void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 {
-	if( pShortcut->m_dwShortcut == SHORTCUT_APPLET )
+	if( pShortcut->m_dwShortcut == ShortcutType::Applet)
 	{
 		CWndBase* pWndBase = (CWndBase*)g_WndMng.GetWndBase( APP_DIALOG_EX );
 		if( pWndBase )
@@ -2379,7 +2379,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 				CWndBase* pWndBaseBuf = g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
 				if( pWndBaseBuf )
 				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_SUMMONANGELUSING ), NULL, prj.GetTextColor( TID_GAME_SUMMONANGELUSING ) );
+					g_WndMng.PutString(TID_GAME_SUMMONANGELUSING);
 				}
 				else
 					CreateApplet( pShortcut->m_dwId );
@@ -2389,7 +2389,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			}
 		}
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_CHAT )
+	else if( pShortcut->m_dwShortcut == ShortcutType::Chat )
 	{
 		{
 		//	m_timerDobe.Reset();
@@ -2400,14 +2400,14 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			g_WndMng.ParsingChat( pShortcut->m_szString );
 		}
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_EMOTICON )
+	else if( pShortcut->m_dwShortcut == ShortcutType::Emoticon )
 	{
 		TCHAR szCmd[1024] = { 0 };
 		_tcscat( szCmd, "/" );
 		_tcscat( szCmd, g_DialogMsg.m_EmiticonCmd[pShortcut->m_dwId].m_szCommand );
 		g_WndMng.ParsingChat( szCmd );
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_ITEM  )
+	else if( pShortcut->m_dwShortcut == ShortcutType::Item  )
 	{
 		if( CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
 			return;
@@ -2453,7 +2453,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			}
 		}
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_SKILL )
+	else if( pShortcut->m_dwShortcut == ShortcutType::Skill )
 	{
 		if( CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
 			return;
@@ -2552,7 +2552,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			UseSkillShortCut( pShortcut->m_dwType, pShortcut->m_dwId );
 		}
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_LORDSKILL )
+	else if( pShortcut->m_dwShortcut == ShortcutType::Lord )
 	{
 		// 군주스킬을 실행한다
 		CCtrl* pCtrl = (CCtrl*)g_WorldMng.Get()->GetObjFocus();
@@ -2572,7 +2572,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 				}
 				else
 				{
-					PutString(prj.GetText(TID_GAME_STILLNOTUSE), NULL, prj.GetTextColor(TID_GAME_STILLNOTUSE));
+					PutString(TID_GAME_STILLNOTUSE);
 				}
 				break;
 
@@ -2590,7 +2590,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 		};
 		
 	}
-	else if( pShortcut->m_dwShortcut == SHORTCUT_MOTION )
+	else if( pShortcut->m_dwShortcut == ShortcutType::Motion )
 	{
 		{
 			CWndBase* pWndBase	= GetWndVendorBase();
@@ -2765,7 +2765,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			g_DPlay.SendPlayerBehavior();
 	}
 	else
-	if( pShortcut->m_dwShortcut == SHORTCUT_OBJECT )
+	if( pShortcut->m_dwShortcut == ShortcutType::Object )
 	{
 		CMover* CMover = prj.GetMover( pShortcut->m_dwId );
 		if( CMover )
@@ -2815,7 +2815,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 		}
 	}
 	else
-	if( pShortcut->m_dwShortcut == SHORTCUT_SKILLFUN )
+	if( pShortcut->m_dwShortcut == ShortcutType::SkillFun )
 	{
 		g_WndMng.m_pWndWorld->UseSkill();
 	}
@@ -3186,7 +3186,7 @@ BOOL CWndMgr::Process()
 			if( g_bKeyTable[ '1' ] )
 			{
 				g_bKeyTable[ '1' ] = 0;
-				ObjectExecutor( SHORTCUT_APPLET, APP_HELPER_HELP );
+				ObjectExecutor( ShortcutType::Applet, APP_HELPER_HELP );
 			}
 			if( g_bKeyTable[ '0' ] )
 			{

@@ -833,7 +833,7 @@ void CWndLordSkill::OnMouseMove(UINT nFlags, CPoint point)
 		CLordSkillComponentExecutable* pComponent		= pLord->GetSkills()->GetSkill(m_nCurSelect - 1);
 		m_bDrag = FALSE;
 		m_GlobalShortcut.m_pFromWnd    = this;
-		m_GlobalShortcut.m_dwShortcut  = SHORTCUT_LORDSKILL;
+		m_GlobalShortcut.m_dwShortcut  = ShortcutType::Lord;
 		m_GlobalShortcut.m_dwType	   = 0;
 		m_GlobalShortcut.m_dwIndex	   = 0;//dwSkill;
 		m_GlobalShortcut.m_dwData	   = 0;

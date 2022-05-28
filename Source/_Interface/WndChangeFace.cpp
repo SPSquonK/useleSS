@@ -438,13 +438,13 @@ BOOL CWndItemTransy::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	CWndBase* pWndFrame = pShortcut->m_pFromWnd->GetFrameWnd();
 	
 	// 인벤토리에서 온것인지 검사
-	if( !(pShortcut->m_dwShortcut == SHORTCUT_ITEM) && !(pWndFrame->GetWndId() == APP_INVENTORY) )
+	if( !(pShortcut->m_dwShortcut == ShortcutType::Item) && !(pWndFrame->GetWndId() == APP_INVENTORY) )
 		return FALSE;
 	
 	// 장착되어있는지 검사
 	if( g_pPlayer->m_Inventory.IsEquip( pShortcut->m_dwId ) )
 	{
-		g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor(TID_GAME_EQUIPPUT) );
+		g_WndMng.PutString(TID_GAME_EQUIPPUT);
 		SetForbid( TRUE );
 		return FALSE;
 	}

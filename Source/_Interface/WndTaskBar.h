@@ -44,7 +44,7 @@ public:
 	BOOL UseSkillQueue( CCtrl* pTargetObj );
 	LPSKILL GetCurrentSkillQueue();
 	BOOL SetSkillQueue( int nIndex, DWORD dwType, DWORD dwId, CTexture* pTexture = NULL );
-	BOOL SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD dwId, CTexture* pTexture = NULL, int nWhere = 0 );
+	BOOL SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType, DWORD dwId, CTexture* pTexture = NULL, int nWhere = 0 );
 	void OnEndSkill( void );
 	void OnCancelSkill( void );
 	LPSHORTCUT Select( CPoint point );

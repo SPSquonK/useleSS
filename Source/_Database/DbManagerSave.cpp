@@ -814,10 +814,10 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 		char buffer[MAX_TASKBAR] = "";
 
 		sprintf(buffer, "%d,%d,%d,%d,%d,%d",
-			shortcut.m_dwShortcut, shortcut.m_dwId, shortcut.m_dwType,
+			static_cast<int>(shortcut.m_dwShortcut), shortcut.m_dwId, shortcut.m_dwType,
 			shortcut.m_dwIndex, shortcut.m_dwUserId, shortcut.m_dwData);
 
-		if (shortcut.m_dwShortcut == SHORTCUT_CHAT) {
+		if (shortcut.m_dwShortcut == ShortcutType::Chat) {
 			CDbManager::SetStrDBFormat(buffer, shortcut.m_szString);
 		}
 
@@ -828,7 +828,7 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 	for (int ch = 0; ch < MAX_SLOT_APPLET; ch++) {
 		const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotApplet[ch];
 
-		if (shortcut.m_dwShortcut != SHORTCUT_NONE) {
+		if (shortcut.m_dwShortcut != ShortcutType::None) {
 			AppendNumber(szAppletTaskBar, ch);
 			BufferShortcut(szAppletTaskBar, shortcut);
 		}
@@ -839,7 +839,7 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 		for( int j = 0; j < MAX_SLOT_ITEM; j++ ) {
 			const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotItem[ch][j];
 
-			if (shortcut.m_dwShortcut != SHORTCUT_NONE) {
+			if (shortcut.m_dwShortcut != ShortcutType::None) {
 				AppendNumber(szItemTaskBar, ch);
 				AppendNumber(szItemTaskBar, j);
 				BufferShortcut(szItemTaskBar, shortcut);
@@ -851,7 +851,7 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 	for (int ch = 0; ch < MAX_SLOT_QUEUE; ch++) {
 		const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotQueue[ch];
 
-		if (shortcut.m_dwShortcut != SHORTCUT_NONE) {
+		if (shortcut.m_dwShortcut != ShortcutType::None) {
 			AppendNumber(szSkillTaskBar, ch);
 			BufferShortcut(szSkillTaskBar, shortcut);
 		}

@@ -859,44 +859,47 @@ BEGINPOSARR, *LPBEGINPOSARR;
 #define MAX_SLOT_QUEUE			5
 #define	MAX_SLOT_ITEM_COUNT		8
 
-
-#define	SHORTCUT_NONE    0
-#define	SHORTCUT_ETC     1
-#define	SHORTCUT_APPLET  2
-#define	SHORTCUT_MOTION  3
-#define	SHORTCUT_SCRIPT  4
-#define	SHORTCUT_ITEM    5
-//#define	SHORTCUT_CARD    5
-//#define	SHORTCUT_JACKBOX 6
-#define	SHORTCUT_SKILL   6
-#define SHORTCUT_OBJECT  7
-#define SHORTCUT_CHAT    8
-#define SHORTCUT_SKILLFUN 9
-#define SHORTCUT_EMOTICON 10
-#define SHORTCUT_LORDSKILL	 11
-
+enum class ShortcutType {
+	None = 0,
+	Etc = 1,
+	Applet = 2,
+	Motion = 3,
+	Script = 4,
+	Item = 5,
+	Skill = 6,
+	Object = 7,
+	Chat = 8,
+	SkillFun = 9,
+	Emoticon = 10,
+	Lord = 11
+};
 
 #if defined ( __CLIENT )
 class CWndBase;
 #endif	// __CLIENT
 
-typedef struct tagSHORTCUT
-{
+class CAr;
+
+struct SHORTCUT {
 #if defined ( __CLIENT )
-	CWndBase* m_pFromWnd   ;
-	CTexture* m_pTexture   ;
-	DWORD	m_dwItemId;
+	CWndBase * m_pFromWnd = nullptr;
+	CTexture * m_pTexture = nullptr;
+	DWORD	m_dwItemId = 0;
 #endif	// __CLIENT
-	DWORD     m_dwShortcut ; 
-	DWORD     m_dwId       ; 
-	DWORD     m_dwType     ; 
-	DWORD     m_dwIndex    ; 
-	DWORD     m_dwUserId   ; 
-	DWORD     m_dwData     ; 
-	TCHAR     m_szString[MAX_SHORTCUT_STRING]; // SHORTCUT_CHAT老 版快 历厘.
-	BOOL IsEmpty() const { return m_dwShortcut == SHORTCUT_NONE; }
-	void Empty() { m_dwShortcut = SHORTCUT_NONE; }
-} SHORTCUT,* LPSHORTCUT;
+	ShortcutType m_dwShortcut = ShortcutType::None;
+	DWORD     m_dwId = 0;
+	DWORD     m_dwType = 0;
+	DWORD     m_dwIndex = 0;
+	DWORD     m_dwUserId = 0;
+	DWORD     m_dwData = NULL;
+	TCHAR     m_szString[MAX_SHORTCUT_STRING] = ""; // SHORTCUT_CHAT老 版快 历厘.
+	BOOL IsEmpty() const { return m_dwShortcut == ShortcutType::None; }
+	void Empty() { m_dwShortcut = ShortcutType::None; }
+
+	friend CAr & operator<<(CAr & ar, const SHORTCUT & self);
+	friend CAr & operator>>(CAr & ar, SHORTCUT & self);
+};
+using LPSHORTCUT = SHORTCUT *;
 
 typedef struct tagEXPPARTY
 {

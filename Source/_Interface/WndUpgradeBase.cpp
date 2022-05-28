@@ -102,7 +102,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	CWndBase* pWndFrame =  pShortcut->m_pFromWnd->GetFrameWnd();
 
 	// 아이템이 인벤토리에서 왔는가?
-	if( pShortcut->m_dwShortcut == SHORTCUT_ITEM && pWndFrame->GetWndId() == APP_INVENTORY )
+	if( pShortcut->m_dwShortcut == ShortcutType::Item && pWndFrame->GetWndId() == APP_INVENTORY )
 	{
 		if( g_pPlayer->m_Inventory.IsEquip( pShortcut->m_dwId ) )
 		{

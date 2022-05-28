@@ -177,7 +177,7 @@ void CCElection::DoEndVoteComplete( void )
 		{
 			for(int nIndex = 0; nIndex < MAX_SLOT_ITEM; ++nIndex)
 			{
-				if(pTaskBar->m_aSlotItem[nSlot][nIndex].m_dwShortcut == SHORTCUT_LORDSKILL)
+				if(pTaskBar->m_aSlotItem[nSlot][nIndex].m_dwShortcut == ShortcutType::Lord)
 				{
 					g_DPlay.SendRemoveItemTaskBar( nSlot, nIndex );
 					pTaskBar->m_aSlotItem[nSlot][nIndex].Empty();
@@ -188,7 +188,7 @@ void CCElection::DoEndVoteComplete( void )
 		// ±ºÁÖ°ü·Ã ¼ôÄÆÁ¦°Å - Äü½½·Ô
 		for( int nSlot = 0; nSlot < MAX_SLOT_APPLET; ++nSlot)
 		{
-			if(pTaskBar->m_aSlotApplet[nSlot].m_dwShortcut == SHORTCUT_LORDSKILL)
+			if(pTaskBar->m_aSlotApplet[nSlot].m_dwShortcut == ShortcutType::Lord)
 			{
 				g_DPlay.SendRemoveAppletTaskBar(nSlot);
 				pTaskBar->m_aSlotApplet[nSlot].Empty();

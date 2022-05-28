@@ -21,7 +21,7 @@ CTaskbar::CTaskbar() {
 
 size_t CTaskbar::CountNumberOfChats() const {
   constexpr auto IsChat = [](const SHORTCUT & shortcut) {
-    return shortcut.m_dwShortcut == SHORTCUT_CHAT;
+    return shortcut.m_dwShortcut == ShortcutType::Chat;
   };
 
   constexpr auto NbOfChats = []<size_t N>(const std::array<SHORTCUT, N> &shortcuts) {
@@ -40,7 +40,7 @@ CAr & operator<<(CAr & ar, const CTaskbar & self) {
     ((ar << extra), ...);
     ar << shortcut.m_dwShortcut << shortcut.m_dwId << shortcut.m_dwType;
     ar << shortcut.m_dwIndex << shortcut.m_dwUserId << shortcut.m_dwData;
-    if (shortcut.m_dwShortcut == SHORTCUT_CHAT) {
+    if (shortcut.m_dwShortcut == ShortcutType::Chat) {
       ar.WriteString(shortcut.m_szString);
     }
 
@@ -80,7 +80,7 @@ CAr & operator>>(CAr & ar, CTaskbar & self) {
   constexpr auto ExtractShortcut = [](CAr & ar, SHORTCUT & shortcut) {
     ar >> shortcut.m_dwShortcut >> shortcut.m_dwId >> shortcut.m_dwType;
     ar >> shortcut.m_dwIndex >> shortcut.m_dwUserId >> shortcut.m_dwData;
-    if (shortcut.m_dwShortcut == SHORTCUT_CHAT) {
+    if (shortcut.m_dwShortcut == ShortcutType::Chat) {
       ar.ReadString(shortcut.m_szString);
     }
   };

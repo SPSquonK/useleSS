@@ -10015,56 +10015,28 @@ void CDPClient::SendCtrlCoolTimeCancel( void )
 void CDPClient::SendSkillTaskBar( void )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SKILLTASKBAR, DPID_UNKNOWN );
-	int nCount	= 0;
-	u_long uOffset	= ar.GetOffset();
-	ar << nCount;
-	for( int i = 0 ; i < MAX_SLOT_QUEUE ; i++ )
-	{
-		ar << (BYTE)i << g_WndMng.m_pWndTaskBar->m_aSlotQueue[i].m_dwShortcut << g_WndMng.m_pWndTaskBar->m_aSlotQueue[i].m_dwId << g_WndMng.m_pWndTaskBar->m_aSlotQueue[i].m_dwType;
-		ar << g_WndMng.m_pWndTaskBar->m_aSlotQueue[i].m_dwIndex << g_WndMng.m_pWndTaskBar->m_aSlotQueue[i].m_dwUserId << g_WndMng.m_pWndTaskBar->m_aSlotQueue[i].m_dwData;
-	}
-	nCount = MAX_SLOT_QUEUE;
-	int nBufSize1;
-	LPBYTE lpBuf1	= ar.GetBuffer( &nBufSize1 );
-	*(UNALIGNED int*)( lpBuf1 + uOffset )	= nCount;
-	
+	ar << g_WndMng.m_pWndTaskBar->m_aSlotQueue;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-void CDPClient::SendRemoveAppletTaskBar( BYTE nIndex )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_REMOVEAPPLETTASKBAR, DPID_UNKNOWN );
-	ar << nIndex;
-	SEND( ar, this, DPID_SERVERPLAYER );	
+
+void CDPClient::SendRemoveAppletTaskBar(BYTE nIndex) {
+	SendPacket<PACKETTYPE_REMOVEAPPLETTASKBAR, BYTE>(nIndex);
 }
-void CDPClient::SendAddAppletTaskBar( BYTE nIndex, LPSHORTCUT pAppletShortcut )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ADDAPPLETTASKBAR, DPID_UNKNOWN );
-	ar << nIndex;
-	ar << pAppletShortcut->m_dwShortcut << pAppletShortcut->m_dwId << pAppletShortcut->m_dwType;
-	ar << pAppletShortcut->m_dwIndex << pAppletShortcut->m_dwUserId << pAppletShortcut->m_dwData;
-	if( pAppletShortcut->m_dwShortcut == SHORTCUT_CHAT )
-	{
-		ar.WriteString( pAppletShortcut->m_szString );
-	}
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPClient::SendAddAppletTaskBar(BYTE nIndex, LPSHORTCUT pAppletShortcut) {
+	SendPacket<PACKETTYPE_ADDAPPLETTASKBAR, BYTE, SHORTCUT>(
+		nIndex, *pAppletShortcut
+		);
 }
-void CDPClient::SendRemoveItemTaskBar( BYTE nSlotIndex, BYTE nIndex )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_REMOVEITEMTASKBAR, DPID_UNKNOWN );
-	ar << nSlotIndex << nIndex;
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPClient::SendRemoveItemTaskBar(BYTE nSlotIndex, BYTE nIndex) {
+	SendPacket<PACKETTYPE_REMOVEITEMTASKBAR, BYTE, BYTE>(nSlotIndex, nIndex);
 }
-void CDPClient::SendAddItemTaskBar( BYTE nSlotIndex, BYTE nIndex, LPSHORTCUT pItemShortcut )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ADDITEMTASKBAR, DPID_UNKNOWN );
-	ar << nSlotIndex << nIndex;
-	ar << pItemShortcut->m_dwShortcut << pItemShortcut->m_dwId << pItemShortcut->m_dwType;
-	ar << pItemShortcut->m_dwIndex << pItemShortcut->m_dwUserId << pItemShortcut->m_dwData ;
-	if( pItemShortcut->m_dwShortcut == SHORTCUT_CHAT )
-	{
-		ar.WriteString( pItemShortcut->m_szString );
-	}
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPClient::SendAddItemTaskBar(BYTE nSlotIndex, BYTE nIndex, LPSHORTCUT pItemShortcut) {
+	SendPacket<PACKETTYPE_ADDITEMTASKBAR, BYTE, BYTE, SHORTCUT>(
+		nSlotIndex, nIndex, *pItemShortcut
+		);
 }
 
 void CDPClient::SendAddFriend( u_long uidPlayer, LONG nJob, BYTE nSex )
@@ -13913,26 +13885,6 @@ void CDPClient::OnCommonSkill( OBJID objid, CAr & ar )
 	}
 }
 
-/*
-#ifdef __S0114_RELOADPRO
-void	CDPClient::OnReloadProject( CAr & ar )
-{
-	g_WndMng.CloseMessageBox();
-	g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DB_INSPECTION) ) );
-	g_dpLoginClient.DeleteDPObject();
-
-	CWndSelectChar* pWndSelectChar 
-		= (CWndSelectChar*)g_WndMng.GetWndBase( APP_SELECT_CHAR );
-	if( pWndSelectChar )
-	{
-		pWndSelectChar->Destroy();
-	}
-	g_dpCertified.SendCertify();
-	GetNProtect()->Send( (LPCSTR)g_Neuz.m_szAccount );
-	g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
-}
-#endif // __S0114_RELOADPRO
-*/
 // Mover를 밀게 하다.
 void	CDPClient::OnPushPower( OBJID objid, CAr & ar )
 {

@@ -246,15 +246,13 @@ void CDPLoginClient::OnError( CAr & ar )
 				CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CREATE_CHAR );
 				if( pWndBase )
 					( (CWndCreateChar*)pWndBase )->Destroy();
-				g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SELECT_CHAR );
+				g_WndMng.ObjectExecutor( ShortcutType::Applet, APP_SELECT_CHAR );
 				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0018) ) );
-//				g_WndMng.OpenMessageBox( _T( "사용중인 슬롯 입니다." ) );
 				break;
 			}
 		case ERROR_ILLEGAL_VER:
 			{
 				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0035) ) );
-//				g_WndMng.OpenMessageBox( _T( "이전 버전의 클라이언트입니다" ) );
 				break;
 			}
 		case ERROR_INVALID_NAME_CHARACTER:
@@ -360,7 +358,7 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 	if( ( pWndBase = g_WndMng.GetWndBase( APP_CREATE_CHAR ) ) )
 	{
 		( (CWndCreateChar*)pWndBase )->Destroy();
-		g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SELECT_CHAR );
+		g_WndMng.ObjectExecutor( ShortcutType::Applet, APP_SELECT_CHAR );
 	}
 	if( ( pWndBase = g_WndMng.GetWndBase( APP_DELETE_CHAR ) ) )
 	{

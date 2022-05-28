@@ -865,13 +865,13 @@ BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS l
 {
 	static constexpr auto ReadShortcut = [](const char * serialization, int & CountStr) -> SHORTCUT {
 		SHORTCUT retval;
-		retval.m_dwShortcut = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwShortcut = static_cast<ShortcutType>(GetIntFromStr(serialization, &CountStr));
 		retval.m_dwId = (DWORD)GetIntFromStr(serialization, &CountStr);
 		retval.m_dwType = (DWORD)GetIntFromStr(serialization, &CountStr);
 		retval.m_dwIndex = (DWORD)GetIntFromStr(serialization, &CountStr);
 		retval.m_dwUserId = (DWORD)GetIntFromStr(serialization, &CountStr);
 		retval.m_dwData = (DWORD)GetIntFromStr(serialization, &CountStr);
-		if (retval.m_dwShortcut == SHORTCUT_CHAT) {
+		if (retval.m_dwShortcut == ShortcutType::Chat) {
 			GetStrFromDBFormat(retval.m_szString, serialization, CountStr);
 		} else {
 			retval.m_szString[0] = '\0';

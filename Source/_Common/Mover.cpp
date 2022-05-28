@@ -1579,7 +1579,7 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 		g_UserMng.AddSetLevel( this, (WORD)m_nLevel );
 		( (CUser*)this )->AddSetGrowthLearningPoint( m_nRemainGP );
 		( (CUser*)this )->AddSetExperience( GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel );
-		( (CUser*)this )->m_playTaskBar.InitTaskBarShorcutKind( SHORTCUT_SKILL );
+		( (CUser*)this )->m_playTaskBar.RemoveAllSkills();
 		( (CUser*)this )->AddTaskBar();
 		((CUser*)this)->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
 		((CUser*)this)->CheckHonorStat();
@@ -1647,7 +1647,7 @@ BOOL CMover::InitSkillExp()
 		m_nSkillPoint = nMaxPoint;
 
 #ifdef __WORLDSERVER
-	( (CUser*)this )->m_playTaskBar.InitTaskBarShorcutKind( SHORTCUT_SKILL );
+	( (CUser*)this )->m_playTaskBar.RemoveAllSkills();
 	( (CUser*)this )->AddTaskBar();
 #endif //__WORLDSERVER
 	return TRUE;

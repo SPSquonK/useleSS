@@ -103,7 +103,7 @@ void CWndMacroChat::OnLButtonDown(UINT nFlags, CPoint point)
 	if( pWndEdit->m_string.IsEmpty() == FALSE )
 	{
 		CWndChat* pWndChat = (CWndChat*)g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );
-		m_GlobalShortcut.m_dwShortcut = SHORTCUT_CHAT;
+		m_GlobalShortcut.m_dwShortcut = ShortcutType::Chat;
 		m_GlobalShortcut.m_pFromWnd = this;
 		m_GlobalShortcut.m_pTexture = m_pTexMacro; //.m_pFromWnd   = this;
 		m_GlobalShortcut.m_dwData = 0;

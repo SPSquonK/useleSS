@@ -27,9 +27,8 @@ public:
 
 public:
 	void	Serialize(CAr &ar);
-	void	SetShortcut( int nIndex, DWORD dwShortcut, DWORD dwType, DWORD dwIndex, DWORD dwId, DWORD dwData = 0, int nWhere = 0 );
 	void	InitTaskBar();
-	void	InitTaskBarShorcutKind( DWORD dwShortcutKind );
+	void	RemoveAllSkills();
 #ifdef __WORLDSERVER
 	int		SetNextSkill( CUser *pUser );
 	void	OnEndSkillQueue( CUser *pUser );

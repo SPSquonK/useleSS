@@ -229,7 +229,7 @@ void CWndInfoNotice::OnLButtonDown( UINT nFlags, CPoint point )
 		pCustom = GetWndCtrl( WIDC_COMMER_BANNER1 );
 		if( PtInRect(&pCustom->rect, point) )
 		{
-			g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_WEBBOX );
+			g_WndMng.ObjectExecutor(ShortcutType::Applet, APP_WEBBOX );
 		}	
 	}
 } 

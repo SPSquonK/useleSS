@@ -562,8 +562,9 @@ public:
 	BOOL	OpenTaskBar();
 	BOOL	OpenMenu();
 
-	void	ObjectExecutor( DWORD dwShortcut, DWORD dwId, DWORD dwType = 0 );
+	void	ObjectExecutor(ShortcutType dwShortcut, DWORD dwId, DWORD dwType = 0 );
 	void	ObjectExecutor( LPSHORTCUT lpShortcut );
+	void OpenApplet(DWORD dwId) { return ObjectExecutor(ShortcutType::Applet, dwId); }
 	void	UseSkillShortCut( DWORD dwType, DWORD dwSkillIdx );
 		
 	// map

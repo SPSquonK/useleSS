@@ -942,7 +942,7 @@ void CWndItemCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		if(IsUsableItem( pItemElem ))
 		{
 			m_GlobalShortcut.m_pFromWnd   = this;
-			m_GlobalShortcut.m_dwShortcut = SHORTCUT_ITEM;
+			m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 			m_GlobalShortcut.m_dwIndex    = m_nCurSelect;// pItemElem->m_dwItemId; //m_nCurSelect;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
 			m_GlobalShortcut.m_dwType     = 0;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
 			m_GlobalShortcut.m_dwId       = pItemElem->m_dwObjId;//(DWORD)pItemElem;
@@ -962,7 +962,7 @@ void CWndItemCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	if( ((pItemElem != NULL && m_useDieFlag) || IsUsableItem( pItemElem )) && !pWndInventory->m_bRemoveJewel)
 	{
 		m_GlobalShortcut.m_pFromWnd   = this;
-		m_GlobalShortcut.m_dwShortcut = SHORTCUT_ITEM;
+		m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 		m_GlobalShortcut.m_dwIndex    = m_nCurSelect;// pItemElem->m_dwItemId; //m_nCurSelect;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
 		m_GlobalShortcut.m_dwType     = 0;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
 		m_GlobalShortcut.m_dwId       = pItemElem->m_dwObjId;//(DWORD)pItemElem;
@@ -1080,7 +1080,7 @@ BOOL CWndItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	if( !m_pItemContainer )
 		return FALSE;
 
-	if( pShortcut->m_dwShortcut == SHORTCUT_ITEM )
+	if( pShortcut->m_dwShortcut == ShortcutType::Item)
 	{
 		int nDstIndex = HitTest( point );//
 		if( nDstIndex == -1 ) nDstIndex = m_pItemContainer->m_dwIndexNum;

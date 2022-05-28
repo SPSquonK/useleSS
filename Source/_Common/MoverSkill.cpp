@@ -82,13 +82,12 @@ int		CMover::GetQueueCastingTime()
 		return 0;
 
 	CUser *pUser = (CUser *)this;
-	int		i;
 	SHORTCUT *pSlotQueue = pUser->m_playTaskBar.m_aSlotQueue;
 	int		nTotalTime = 0;
 
-	for( i = 0; i < MAX_SLOT_QUEUE; i ++ )
+	for(int i = 0; i < MAX_SLOT_QUEUE; i ++ )
 	{
-		if( pSlotQueue[i].m_dwShortcut )
+		if( pSlotQueue[i].m_dwShortcut != ShortcutType::None )
 		{
 			LPSKILL pSkill = GetSkill( 0, pSlotQueue[i].m_dwId );
 			

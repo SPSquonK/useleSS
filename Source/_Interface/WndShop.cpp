@@ -563,7 +563,7 @@ CWndItemCtrlVendor::~CWndItemCtrlVendor()
 }
 BOOL CWndItemCtrlVendor::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-	if( pShortcut->m_dwShortcut == SHORTCUT_ITEM  )
+	if( pShortcut->m_dwShortcut == ShortcutType::Item)
 		GetParentWnd()->OnChildNotify( WIN_ITEMDROP, m_nIdWnd, (LRESULT*)pShortcut ); 
 	return TRUE;
 }

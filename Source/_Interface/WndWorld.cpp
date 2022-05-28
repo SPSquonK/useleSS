@@ -7285,7 +7285,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	}
 
 	
-	if( pShortcut->m_dwShortcut == SHORTCUT_ITEM ) //&& pWndFrame->GetWndId() == APP_INVENTORY )
+	if( pShortcut->m_dwShortcut == ShortcutType::Item ) //&& pWndFrame->GetWndId() == APP_INVENTORY )
 	{
 		CRect rect = GetClientRect();
 		CWorld* pWorld	= g_WorldMng.Get();
@@ -10455,27 +10455,23 @@ void CAdvMgr::AddAdvButton( DWORD dwid )
 // 해당버튼을 눌렀을경우 연결된 창을 화면에 띄운후 버튼은 삭제된다.
 BOOL CAdvMgr::RunButton( DWORD dwID )
 {
-	auto i = m_vecButton.begin();
-	for( ; i != m_vecButton.end(); ++i )
-	{
-		BUTTON_INFO* vecButton	= &(*i);
-		
-		if( vecButton->m_pwndButton && vecButton->m_pwndButton->m_nIdWnd == dwID )
-		{
-			vecButton->m_pwndButton->DeleteDeviceObjects();
-			vecButton->m_pwndButton->Destroy();
-			vecButton->m_pwndButton = NULL;
+	const auto it = std::ranges::find_if(m_vecButton,
+		[&](const BUTTON_INFO & vecButton) {
+			return vecButton.m_pwndButton && vecButton.m_pwndButton->m_nIdWnd == dwID;
+		});
 
-			g_WndMng.ObjectExecutor( SHORTCUT_APPLET, vecButton->m_dwRunWindow );		
-			
-			m_vecButton.erase( i );
-			
-			SortButton();
-			return TRUE;
-		}
-	}
+	if (it == m_vecButton.end()) return FALSE;
 
-	return FALSE;
+	it->m_pwndButton->DeleteDeviceObjects();
+	it->m_pwndButton->Destroy();
+	it->m_pwndButton = NULL;
+
+	g_WndMng.OpenApplet(it->m_dwRunWindow);
+			
+	m_vecButton.erase(it);
+			
+	SortButton();
+	return TRUE;
 }
 
 // 버튼의 실행할 창을 검색한다.

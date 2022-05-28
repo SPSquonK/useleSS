@@ -120,7 +120,7 @@ BOOL CWndAllCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 					pWndSelectChar->Destroy();
 				}
 				g_dpCertified.SendCertify();
-				g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
+				g_WndMng.OpenApplet( APP_LOGIN );
 				CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_LOGIN );
 			}
 			//Destroy(); 
@@ -423,7 +423,7 @@ BOOL CWndLogin::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 void CWndLogin::Connected( long lTimeSpan )
 {
 	g_WndMng.CloseMessageBox();
-	g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SELECT_SERVER );
+	g_WndMng.OpenApplet( APP_SELECT_SERVER );
 #ifdef __BILLING0712
 	if( lTimeSpan )	// 1ÀÏ ¹Ì¸¸?
 	{
@@ -868,7 +868,7 @@ void CWndSelectServer::Connected()
 #endif
 
 	g_WndMng.CloseMessageBox();
-	g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SELECT_CHAR );
+	g_WndMng.OpenApplet(APP_SELECT_CHAR);
 	Destroy();
 }
 
@@ -949,7 +949,7 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	{
 		case 10000: // close msg
 		case WIDC_BACK: // Back
-			g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
+			g_WndMng.OpenApplet(APP_LOGIN);
 			Destroy();
 			g_dpCertified.DeleteDPObject();
 			break;
@@ -987,7 +987,7 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			{
 				CNetwork::GetInstance().OnEvent( LOGIN_CONNECT_STEP_ERROR );
 
-				g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
+				g_WndMng.OpenApplet(APP_LOGIN);
 				Destroy();
 				g_dpCertified.DeleteDPObject();
 				g_dpLoginClient.DeleteDPObject();	// 2004^04^19
@@ -1412,7 +1412,7 @@ BOOL CWndSelectChar::Process()
 		Destroy();
 		g_WndMng.CloseMessageBox();
 		g_dpCertified.SendCertify();
-		g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
+		g_WndMng.OpenApplet(APP_LOGIN);
 		CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_LOGIN );
 		return 0;	
 	}
@@ -1855,7 +1855,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				Destroy();
 				g_dpCertified.SendCertify();
 
-				g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
+				g_WndMng.OpenApplet(APP_LOGIN);
 				CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_LOGIN );
 //				pWndBase->SetVisible( FALSE );
 				break;
@@ -1867,7 +1867,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				{	
 					u_short uSlot	= (u_short)m_nSelectCharacter;
 					Destroy();
-					g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_CREATE_CHAR );
+					g_WndMng.OpenApplet(APP_CREATE_CHAR);
 					CWndCreateChar* pWndCreateChar	= (CWndCreateChar*)g_WndMng.GetWndBase( APP_CREATE_CHAR );
 					if( pWndCreateChar ) {
 						pWndCreateChar->m_Player.m_uSlot	= uSlot;
@@ -1921,7 +1921,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				{
 					CNetwork::GetInstance().OnEvent( CACHE_CONNECT_STEP_ERROR );
 
-					g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_LOGIN );
+					g_WndMng.OpenApplet(APP_LOGIN);
 					Destroy();
 					g_dpLoginClient.DeleteDPObject();
 					break;
@@ -2565,7 +2565,7 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		case WIDC_CANCEL: // Cancel 
 			{
 				Destroy();
-				g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SELECT_CHAR );
+				g_WndMng.OpenApplet(APP_SELECT_CHAR);
 				CWndSelectChar* pWndSelectChar 
 					= (CWndSelectChar*)g_WndMng.GetWndBase( APP_SELECT_CHAR );
 				if( pWndSelectChar )

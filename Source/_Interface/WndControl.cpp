@@ -360,45 +360,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 			return;
 	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
 	CString string;
-#ifdef __CLIENT
-/*	
-	if(	CWndBase::m_GlobalShortcut.m_dwShortcut == SHORTCUT_NONE )	  
-	{
-		// 툴립 출력 
-		switch( m_shortcut.m_dwShortcut )
-		{
-		case SHORTCUT_NONE   : 
-			if( m_strToolTip.IsEmpty() == FALSE )
-				g_toolTip.PutToolTip( m_nIdWnd, m_strToolTip, m_rectCurrentWindow, point, m_nToolTipPos );
-			break;
-		case SHORTCUT_APPLET :
-			{
-				AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( m_nIdWnd ); 
-				if( pAppletFunc )
-				{
-					CString string;
-					if( pAppletFunc->m_cHotkey == 0 )
-						string.Format( "애플렛\n%s", pAppletFunc->m_pAppletDesc );
-					else
-						string.Format( "애플렛\n%s\n[단축키 %c]", pAppletFunc->m_pAppletDesc, pAppletFunc->m_cHotkey );
-					g_toolTip.PutToolTip( m_nIdWnd, string, m_rectCurrentWindow, point, m_nToolTipPos );
-				}
-			}
-			break;
-		case SHORTCUT_MOTION :
-		case SHORTCUT_SCRIPT :
-		case SHORTCUT_ITEM   :
-		case SHORTCUT_SKILL  :
-		case SHORTCUT_OBJECT :
-			{
-				string.Format( "오브젝트\n%s", GetTitle() );
-				g_toolTip.PutToolTip( m_nIdWnd, string, m_rectCurrentWindow, point, m_nToolTipPos );
-			}
-			break;
-		}
-	}
-*/	
-#endif
+
 	DWORD dwColor = D3DCOLOR_TEMP( 200, 240, 240, 240 );
 	m_bHighLight = FALSE;
 	int nFontHeight = GetFontHeight();
@@ -407,7 +369,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 	//m_strTitle = "Button";
 
 
-	if( ( m_dwStyle & WBS_HIGHLIGHT ) && m_GlobalShortcut.m_dwShortcut == SHORTCUT_NONE )
+	if( ( m_dwStyle & WBS_HIGHLIGHT ) && m_GlobalShortcut.IsEmpty() )
 	{
 		if( GetClientRect().PtInRect( m_ptMouse ) && m_bEnable == TRUE )
 		{
@@ -476,9 +438,6 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 			}
 			else
 			{
-				//DRender->RenderFillRect( rect, dwColor1, dwColor1, dwColor1, dwColor1 );
-				//DRender->RenderRoundRect( rect, dwColor );
-
 				if( m_pWndMenu->IsVisible() )
 				{
 					dwColor1 = 	D3DCOLOR_TEMP( 155, 200, 200, 200 );
@@ -533,46 +492,16 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 				p2DRender->TextOut( m_rectClient.right - 32, pt.y + 4, strHotkey, 0xff000000 );
 			}
 		}
-		//if( IsButtonStyle( WBS_NOMENUICON ) )
-		//	p2DRender->TextOut( pt.x + 4, pt.y + 4, m_strTitle, dwColor );
-		//else
 
 	}
 	else
 	// 표준 버튼 
 	{
-		/*
-		if( m_pTexture )
-		{
-			m_pTexture->m_size.cx / 3
-			p2DRender->RenderTexture( CPoint( 0, 0), m_pTexture );
-		}
-		else
-		*/
 			m_pTheme->RenderWndButton( p2DRender, this );
 	}
-	/*
-	p2DRender->SetTextColor( D3DCOLOR_TEMP( 255, 255, 255, 255 ) );
-	rect = GetClientRect();
-	if( m_shortcut.m_dwShortcut && !( m_dwStyle & WBS_MENUITEM ) )
-	{
-		switch( m_shortcut.m_dwShortcut )
-		{
-		case SHORTCUT_NONE   : break; 
-		case SHORTCUT_APPLET : p2DRender->RenderRect( rect, D3DCOLOR_ARGB( 255,   0, 255, 255)  ); break;
-		case SHORTCUT_MOTION : p2DRender->RenderRect( rect, D3DCOLOR_ARGB( 255, 255, 255, 0  )  ); break;
-		case SHORTCUT_SCRIPT : p2DRender->RenderRect( rect, D3DCOLOR_ARGB( 255,   0, 255, 0  )  ); break;
-		case SHORTCUT_ITEM   : p2DRender->RenderRect( rect, D3DCOLOR_ARGB( 255, 255,   0, 255)  ); break;
-		case SHORTCUT_SKILL  : p2DRender->RenderRect( rect, D3DCOLOR_ARGB( 255,   0,   0,  0 )  ); break;
-		case SHORTCUT_OBJECT : p2DRender->RenderRect( rect, D3DCOLOR_ARGB( 255, 255, 255,  0 )  ); break;
-		}
-	}
-	*/
 }
 BOOL CWndButton::Process()
 {
-	//if(m_nTimePush && m_timerPush.Over() && IsPush())
-		//m_pParentWnd->OnCommand(m_nIdWnd,0);
 	return CWndBase::Process();
 }
 void CWndButton::SetPushTime(int nTime) 

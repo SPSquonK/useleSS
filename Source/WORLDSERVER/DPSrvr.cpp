@@ -1786,30 +1786,15 @@ void CDPSrvr::OnMoverFocus( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 	}
 }
 
-void CDPSrvr::OnSkillTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	int nCount;
-	ar >> nCount;
+void CDPSrvr::OnSkillTaskBar(CAr & ar, CUser & pUser) {
+	std::array<SHORTCUT, MAX_SLOT_QUEUE> values;
+	ar >> values;
 
-	if( nCount > MAX_SLOT_QUEUE )
-		return;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		for( int i = 0 ; i < nCount ; i++)
-		{
-			BYTE nIndex;
-			ar >> nIndex;
-
-			if( nIndex >= MAX_SLOT_QUEUE )
-				return;
-
-			ar >> pUser->m_playTaskBar.m_aSlotQueue[nIndex].m_dwShortcut >> pUser->m_playTaskBar.m_aSlotQueue[nIndex].m_dwId >> pUser->m_playTaskBar.m_aSlotQueue[nIndex].m_dwType;
-			ar >> pUser->m_playTaskBar.m_aSlotQueue[nIndex].m_dwIndex >> pUser->m_playTaskBar.m_aSlotQueue[nIndex].m_dwUserId >> pUser->m_playTaskBar.m_aSlotQueue[nIndex].m_dwData;
-		}
+	for (size_t i = 0; i != MAX_SLOT_QUEUE; ++i) {
+		pUser.m_playTaskBar.m_aSlotQueue[i] = values[i];
 	}
 }
+
 void CDPSrvr::OnAddAppletTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	BYTE nIndex;
@@ -1821,13 +1806,7 @@ void CDPSrvr::OnAddAppletTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		ar >> pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwShortcut >> pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwId >> pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwType;
-		ar >> pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwIndex >> pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwUserId >> pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwData;
-		if( pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_CHAT )
-		{
-			ar.ReadString( pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_szString, MAX_SHORTCUT_STRING );
-			pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_szString[MAX_SHORTCUT_STRING-1] = '\0';
-		}
+		ar >> pUser->m_playTaskBar.m_aSlotApplet[nIndex];
 	}
 }
 void CDPSrvr::OnRemoveAppletTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1839,13 +1818,8 @@ void CDPSrvr::OnRemoveAppletTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 		return;
 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwShortcut == SHORTCUT_CHAT )
-		{
-			memset( pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_szString, 0, sizeof( pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_szString ) );
-		}
-		pUser->m_playTaskBar.m_aSlotApplet[nIndex].m_dwShortcut = SHORTCUT_NONE;
+	if (IsValidObj(pUser)) {
+		pUser->m_playTaskBar.m_aSlotApplet[nIndex].Empty();
 	}
 }
 void CDPSrvr::OnAddItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1859,18 +1833,19 @@ void CDPSrvr::OnAddItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		DWORD dwShortCut;
-		ar >> dwShortCut;
+		SHORTCUT shortcut;
+		ar >> shortcut;
 
 		// Chat Shortcut 10개로 제한
-		if(dwShortCut == SHORTCUT_CHAT)
+		if(shortcut.m_dwShortcut == ShortcutType::Chat)
 		{
+
 			int nchatshortcut = 0;
 			for( int i=0; i<MAX_SLOT_ITEM_COUNT; i++ )
 			{
 				for( int j=0; j<MAX_SLOT_ITEM; j++ )
 				{
-					if( pUser->m_playTaskBar.m_aSlotItem[i][j].m_dwShortcut == SHORTCUT_CHAT )
+					if( pUser->m_playTaskBar.m_aSlotItem[i][j].m_dwShortcut == ShortcutType::Chat)
 						nchatshortcut++;
 				}
 			}
@@ -1882,14 +1857,7 @@ void CDPSrvr::OnAddItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 			}
 		}
 
-		pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut = dwShortCut;
-	 	ar >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwId >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwType;
-		ar >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwIndex >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwUserId >> pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwData;
-		if( pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut == SHORTCUT_CHAT )
-		{
-			ar.ReadString( pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_szString, MAX_SHORTCUT_STRING );
-			pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_szString[MAX_SHORTCUT_STRING-1] = '\0';
-		}
+		pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex] = shortcut;
 	}
 }
 void CDPSrvr::OnRemoveItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1903,11 +1871,7 @@ void CDPSrvr::OnRemoveItemTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		if( pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut == SHORTCUT_CHAT )
-		{
-			memset( pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_szString, 0, sizeof( pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_szString ) );
-		}
-		pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].m_dwShortcut = SHORTCUT_NONE;
+		pUser->m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].Empty();
 	}
 }
 

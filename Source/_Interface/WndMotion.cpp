@@ -158,7 +158,7 @@ void CWndMotion1::OnSize(UINT nType, int cx, int cy)
 void CWndMotion1::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if( m_pSelectMotion )
-		g_WndMng.ObjectExecutor( SHORTCUT_MOTION, m_pSelectMotion->dwID );
+		g_WndMng.ObjectExecutor(ShortcutType::Motion, m_pSelectMotion->dwID );
 			
 }
 void CWndMotion1::OnLButtonDown(UINT nFlags, CPoint point)
@@ -303,7 +303,7 @@ void CWndMotion1::OnMouseMove( UINT nFlags, CPoint point )
 	if( m_pSelectMotion && IsPush())
 	{
 		m_GlobalShortcut.m_pFromWnd   = this;
-		m_GlobalShortcut.m_dwShortcut = SHORTCUT_MOTION;
+		m_GlobalShortcut.m_dwShortcut = ShortcutType::Motion;
 		m_GlobalShortcut.m_dwIndex    = m_nSelect;
 		m_GlobalShortcut.m_dwType     = 0;
 		m_GlobalShortcut.m_dwId       = m_pSelectMotion->dwID;
@@ -360,7 +360,7 @@ void CWndEmoticon::OnSize(UINT nType, int cx, int cy)
 void CWndEmoticon::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if( m_pSelectTexture )
-		g_WndMng.ObjectExecutor( SHORTCUT_EMOTICON, m_nSelect );	
+		g_WndMng.ObjectExecutor(ShortcutType::Emoticon, m_nSelect );
 }
 void CWndEmoticon::OnLButtonDown(UINT nFlags, CPoint point)
 {
@@ -435,7 +435,7 @@ void CWndEmoticon::OnMouseMove( UINT nFlags, CPoint point )
 	if( m_pSelectTexture && IsPush())
 	{
 		m_GlobalShortcut.m_pFromWnd   = this;
-		m_GlobalShortcut.m_dwShortcut = SHORTCUT_EMOTICON;
+		m_GlobalShortcut.m_dwShortcut = ShortcutType::Emoticon;
 		m_GlobalShortcut.m_dwIndex    = m_nSelect;
 		m_GlobalShortcut.m_dwType     = 0;
 		m_GlobalShortcut.m_dwId       = m_nSelect;

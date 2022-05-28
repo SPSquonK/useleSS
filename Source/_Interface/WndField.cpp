@@ -392,7 +392,7 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 
 void CWndGold::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	m_GlobalShortcut.m_dwShortcut = SHORTCUT_ITEM;
+	m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 	m_GlobalShortcut.m_pFromWnd = this;
 	m_GlobalShortcut.m_pTexture = &m_texture; //.m_pFromWnd   = this;
 	m_GlobalShortcut.m_dwData = 0;
@@ -2506,7 +2506,7 @@ void CWndInventory::OnMouseMove(UINT nFlags, CPoint point)
 		if( m_pSelectItem && m_pSelectItem->GetProp() )
 		{
 			m_GlobalShortcut.m_pFromWnd   = this;
-			m_GlobalShortcut.m_dwShortcut = SHORTCUT_ITEM;
+			m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 			m_GlobalShortcut.m_dwIndex    = 0xffffffff;
 			m_GlobalShortcut.m_dwType     = ITYPE_ITEM;
 			m_GlobalShortcut.m_dwId       = m_pSelectItem->m_dwObjId;//(DWORD)pItemElem;
@@ -2584,7 +2584,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		}
 	}
 	
-	if( pShortcut->m_dwShortcut == SHORTCUT_ITEM && pShortcut->m_pFromWnd != this && pWndFrame->GetWndId() == APP_INVENTORY )
+	if( pShortcut->m_dwShortcut == ShortcutType::Item && pShortcut->m_pFromWnd != this && pWndFrame->GetWndId() == APP_INVENTORY )
 	{
 		if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData ) // dwData�� 0�̸� ���? 
 		{
@@ -6539,7 +6539,7 @@ void CWndSkillTreeEx::OnMouseMove(UINT nFlags, CPoint point)
 		ItemProp* pSkillProp = prj.GetSkillProp( dwSkill );
 		
 		m_GlobalShortcut.m_pFromWnd    = this;
-		m_GlobalShortcut.m_dwShortcut  = SHORTCUT_SKILL;
+		m_GlobalShortcut.m_dwShortcut  = ShortcutType::Skill;
 		m_GlobalShortcut.m_dwType  = 0;
 		m_GlobalShortcut.m_dwIndex = dwSkill;
 		m_GlobalShortcut.m_dwData = 0;
@@ -8973,7 +8973,7 @@ BOOL CWndNavigator::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 						FOR_OBJ( pLand, pObj, OT_MOVER )
 						{
 							pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
-							pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_OBJECT;
+							pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Object;
 						}
 						END_OBJ
 					}
@@ -9050,18 +9050,6 @@ BOOL CWndNavigator::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			g_WndMng.m_pWndWorld->m_vDestinationArrow = pMover->m_vPos;
 		}
 	}
-	/*
-	CRect rect = GetWindowRect( TRUE );
-	
-	switch(nID)
-	{
-		case 100: // wnd1 
-			m_wndMenu.Move( CPoint( rect.right, rect.top ) );
-			m_wndMenu.SetVisible( !m_wndMenu.IsVisible() );
-			m_wndMenu.SetFocus();
-			break;
-	}
-	*/
 	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
 }
 void CWndNavigator::SetWndRect( CRect rectWnd, BOOL bOnSize )
@@ -9100,7 +9088,7 @@ void CWndNavigator::OnRButtonDown(UINT nFlags, CPoint point)
 			if( !pMover->IsPlayer( ) && pMover->GetCharacter( ) )		//NPC�ΰ��? 
 			{
 				pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
-				pWndButton->m_shortcut.m_dwShortcut = SHORTCUT_OBJECT;
+				pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Object;
 				++nTarget;
 			}
 		}
@@ -10390,7 +10378,7 @@ BOOL CWndRevival::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		case WIDC_REVIVAL_SHOP:
 			{
 				bClose = FALSE;
-				g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_WEBBOX );
+				g_WndMng.ObjectExecutor( ShortcutType::Applet, APP_WEBBOX );
 				break;
 			}
 	}	
@@ -11943,7 +11931,7 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	CWndBase* pWndFrame =  pShortcut->m_pFromWnd->GetFrameWnd();
 	
 	// �������� �κ��丮���� �Դ°�?
-	if( !(pShortcut->m_dwShortcut == SHORTCUT_ITEM) && !(pWndFrame->GetWndId() == APP_INVENTORY) )
+	if( !(pShortcut->m_dwShortcut == ShortcutType::Item) && !(pWndFrame->GetWndId() == APP_INVENTORY) )
 		return FALSE;
 
 	if( pShortcut->m_dwData == 0 )
@@ -11972,7 +11960,7 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	{
 		if( pItemElem->IsCharged() )//&& pItemElem->GetProp()->dwItemRare == 200 || pItemElem->GetProp()->dwItemRare == 300 )
 		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_CHARGED_NOTUSE), NULL, prj.GetTextColor(TID_GAME_CHARGED_NOTUSE) );
+			g_WndMng.PutString(TID_GAME_CHARGED_NOTUSE);
 			pItemElem = NULL;
 			return FALSE;
 		}
@@ -12393,7 +12381,7 @@ void CWndPostRead::OnMouseMove(UINT nFlags, CPoint point )
 		if( pMail && pMail->m_pItemElem && pMail->m_pItemElem->GetProp() )
 		{
 			m_GlobalShortcut.m_pFromWnd   = this;
-			m_GlobalShortcut.m_dwShortcut = SHORTCUT_ITEM;
+			m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 			m_GlobalShortcut.m_dwIndex    = 0xffffffff;
 			m_GlobalShortcut.m_dwType     = ITYPE_ITEM;
 			m_GlobalShortcut.m_dwId       = pMail->m_pItemElem->m_dwObjId;

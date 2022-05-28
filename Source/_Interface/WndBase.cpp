@@ -986,7 +986,7 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 		*/
 		break;
 	case WM_LBUTTONUP: //  case WM_RBUTTONDOWN: case WM_MBUTTONDOWN: case WM_RBUTTONDBLCLK: case WM_LBUTTONDBLCLK:
-		if( m_GlobalShortcut.m_dwShortcut != SHORTCUT_NONE )
+		if( !m_GlobalShortcut.IsEmpty() )
 		{
 			if( pWndOnMouseChild == NULL )
 				pWndOnMouseChild = pWndOnMouseMain;
