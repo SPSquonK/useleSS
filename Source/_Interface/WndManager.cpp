@@ -2266,13 +2266,12 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 
 	return pWndBase;
 }
-void CWndMgr::ObjectExecutor(ShortcutType dwShortcut, DWORD dwId, DWORD dwType )
+void CWndMgr::ObjectExecutor(ShortcutType dwShortcut, DWORD dwId )
 {
 	SHORTCUT shortcut;
 	ZeroMemory( &shortcut, sizeof( shortcut ) );
 	shortcut.m_dwShortcut = dwShortcut;
 	shortcut.m_dwId = dwId;
-	shortcut.m_dwType = dwType;
 	ObjectExecutor( &shortcut);
 }
 void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
@@ -2453,12 +2452,13 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			}
 		}
 	}
-	else if( pShortcut->m_dwShortcut == ShortcutType::Skill )
-	{
-		if( CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
-			return;
-		if( pShortcut->m_dwType == 2 )
-		{
+	else if (pShortcut->m_dwShortcut == ShortcutType::Skill) {
+	  if (CMover::GetActiveMover()->m_vtInfo.VendorIsVendor()) return;
+
+		UseSkillShortCut(0, pShortcut->m_dwId);
+
+	} else if ( pShortcut->m_dwShortcut == ShortcutType::PartySkill) {
+
 			if( g_Party.m_nSizeofMember >= 2 && g_Party.m_nKindTroup == 1 )
 			{
 				ItemProp* pItemProp =  prj.GetPartySkill( pShortcut->m_dwId );
@@ -2476,7 +2476,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 							{
 								// 스킬사용
 								ItemProp* pItemProp = prj.GetPartySkill( pShortcut->m_dwId );
-				#ifdef __BUFF_1107
+
 								DWORD	dwSkillTimeTmp = 0;
 								CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
 								for( MAPBUFF::iterator i = pWndWorld->m_buffs.m_mapBuffs.begin(); i != pWndWorld->m_buffs.m_mapBuffs.end(); ++i )
@@ -2491,21 +2491,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 									|| g_pPlayer->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01 )
 									|| g_pPlayer->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP02 )
 									|| g_pPlayer->HasBuff( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01_01 ) )
-				#else // __BUFF_1107
-								SKILLINFLUENCE* pSkilltmp;
-								DWORD	dwSkillTimeTmp = 0;
-								CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-								for( int i=0; i<MAX_SKILLINFLUENCE; i++)
-								{
-									pSkilltmp = pWndWorld->m_partySkillState.Get(i);
-									if( pSkilltmp->wID == pShortcut->m_dwId )	
-										dwSkillTimeTmp = pSkilltmp->tmCount;
-								}
-								if( dwSkillTimeTmp == 0 
-									|| g_pPlayer->m_SkillState.HasSkill( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01 )
-									|| g_pPlayer->m_SkillState.HasSkill( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP02 )
-									|| g_pPlayer->m_SkillState.HasSkill( BUFF_ITEM2, II_SYS_SYS_SCR_PARTYSKILLUP01_01 ) )
-				#endif // __BUFF_1107
+
 								{
 									g_DPlay.SendPartySkillUse( pShortcut->m_dwId );
 									m_dwSkillTime[pShortcut->m_dwId] = g_tmCurrent;
@@ -2546,11 +2532,8 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 						g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0047) ) );
 				}
 			}
-		}
-		else
-		{	// 숏컷이 스킬일 경우
-			UseSkillShortCut( pShortcut->m_dwType, pShortcut->m_dwId );
-		}
+
+
 	}
 	else if( pShortcut->m_dwShortcut == ShortcutType::Lord )
 	{
@@ -5651,9 +5634,9 @@ void CWndMgr::PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pR
 }
 
 // 숏컷으로 스킬 실행하기.
-void CWndMgr::UseSkillShortCut( DWORD dwType, DWORD dwSkillIdx )
+void CWndMgr::UseSkillShortCut( DWORD, DWORD dwSkillIdx )
 {
-	LPSKILL lpSkill = g_pPlayer->GetSkill( dwType, dwSkillIdx );
+	LPSKILL lpSkill = g_pPlayer->GetSkill( 0, dwSkillIdx );
 	if( lpSkill )
 	{
 		CCtrl* pCtrl = (CCtrl*)g_WorldMng.Get()->GetObjFocus();

@@ -813,8 +813,8 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 	static constexpr auto BufferShortcut = [](char * destination, const SHORTCUT & shortcut) {
 		char buffer[MAX_TASKBAR] = "";
 
-		sprintf(buffer, "%d,%d,%d,%d,%d,%d",
-			static_cast<int>(shortcut.m_dwShortcut), shortcut.m_dwId, shortcut.m_dwType,
+		sprintf(buffer, "%d,%d,%d,0,%d,%d",
+			static_cast<int>(shortcut.m_dwShortcut), shortcut.m_dwId,
 			shortcut.m_dwIndex, shortcut.m_dwUserId, shortcut.m_dwData);
 
 		if (shortcut.m_dwShortcut == ShortcutType::Chat) {

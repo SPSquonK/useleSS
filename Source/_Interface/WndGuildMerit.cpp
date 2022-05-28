@@ -307,7 +307,6 @@ void CWndGuildMeritCtrl::OnMouseMove( UINT nFlags, CPoint point )
 		m_GlobalShortcut.m_pFromWnd		= this;
 		m_GlobalShortcut.m_dwShortcut	= ShortcutType::Item;
 		m_GlobalShortcut.m_dwIndex	= m_nCurSel;
-		m_GlobalShortcut.m_dwType	= 0;
 		m_GlobalShortcut.m_dwId		= pItemBase->m_dwObjId;
 		m_GlobalShortcut.m_pTexture		= pItemBase->GetTexture();
 		m_GlobalShortcut.m_dwData	= (DWORD)pItemBase;

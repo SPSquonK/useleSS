@@ -725,7 +725,7 @@ BOOL CWndShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		CWndBase* pWndFrame = lpShortcut->m_pFromWnd->GetFrameWnd();
 		
 		BOOL bForbid = TRUE;
-		if( lpShortcut->m_dwType == ITYPE_ITEM && lpShortcut->m_dwData != 0 )
+		if( lpShortcut->m_dwData != 0 )
 		{
 			if( nID == 10 || nID == 11 || nID == 12 || nID == 13) // item
 			{
@@ -785,8 +785,7 @@ BOOL CWndShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					}
 					else
 					{
-						g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPTRADE), NULL, prj.GetTextColor(TID_GAME_EQUIPTRADE) );
-//						 g_WndMng.PutString( "장착된아이템은 팔수 없습니다.", NULL, 0xffff0000 );
+						g_WndMng.PutString(TID_GAME_EQUIPTRADE);
 					}
 				}
 			}

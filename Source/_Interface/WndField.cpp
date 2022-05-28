@@ -2508,7 +2508,6 @@ void CWndInventory::OnMouseMove(UINT nFlags, CPoint point)
 			m_GlobalShortcut.m_pFromWnd   = this;
 			m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 			m_GlobalShortcut.m_dwIndex    = 0xffffffff;
-			m_GlobalShortcut.m_dwType     = ITYPE_ITEM;
 			m_GlobalShortcut.m_dwId       = m_pSelectItem->m_dwObjId;//(DWORD)pItemElem;
 			m_GlobalShortcut.m_pTexture   = m_pSelectItem->GetTexture();
 			m_GlobalShortcut.m_dwData     = (DWORD) m_pSelectItem;
@@ -2554,7 +2553,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			LPWNDCTRL lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM21 );
 			if( lpWndCtrl1->rect.PtInRect( point ) )
 			{
-				if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData ) // dwDataï¿½ï¿½ 0ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿?
+				if( pShortcut->m_dwData ) // dwDataï¿½ï¿½ 0ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿?
 				{
 					CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 					if( !pItemElem )
@@ -2586,7 +2585,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	
 	if( pShortcut->m_dwShortcut == ShortcutType::Item && pShortcut->m_pFromWnd != this && pWndFrame->GetWndId() == APP_INVENTORY )
 	{
-		if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData ) // dwDataï¿½ï¿½ 0ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿? 
+		if( pShortcut->m_dwData ) // dwDataï¿½ï¿½ 0ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿? 
 		{
 			CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 			if( pItemElem && pItemElem->GetProp()->dwParts != NULL_ID ) //&& pItemElem->GetProp()->dwParts == i * 3 + j )
@@ -6540,7 +6539,6 @@ void CWndSkillTreeEx::OnMouseMove(UINT nFlags, CPoint point)
 		
 		m_GlobalShortcut.m_pFromWnd    = this;
 		m_GlobalShortcut.m_dwShortcut  = ShortcutType::Skill;
-		m_GlobalShortcut.m_dwType  = 0;
 		m_GlobalShortcut.m_dwIndex = dwSkill;
 		m_GlobalShortcut.m_dwData = 0;
 		m_GlobalShortcut.m_dwId       = g_nSkillCurSelect; // ï¿½Ã·ï¿½Æ® ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ IDï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
@@ -7561,7 +7559,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					}
 
 					m_Shortcut.m_dwData -= 100;
-					g_DPlay.SendTradePut( (BYTE)( m_Shortcut.m_dwData ), (BYTE)( m_Shortcut.m_dwType ), (BYTE)( m_Shortcut.m_dwId ), nCost );
+					g_DPlay.SendTradePut( (BYTE)( m_Shortcut.m_dwData ), 0, (BYTE)( m_Shortcut.m_dwId ), nCost );
 				}
 			}
 		}
@@ -7644,10 +7642,8 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				else // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CItemElem * pItemBase = nullptr;
-					if( m_Shortcut.m_dwType == ITYPE_ITEM )
-					{
 						pItemBase = g_pPlayer->GetGuild()->m_GuildBank.GetAtId( m_Shortcut.m_dwId );
-					}
+
 
 					if( pItemBase )
 					{
@@ -7683,8 +7679,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			{
 				CItemElem * pItemBase = NULL;
-				if( m_Shortcut.m_dwType == ITYPE_ITEM )
-				{
+
 					pItemBase = g_pPlayer->GetItemBankId( m_nSlot, m_Shortcut.m_dwId );
 
 					if( pItemBase )
@@ -7697,11 +7692,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						m_Shortcut.m_dwData -= 100;
 						g_DPlay.SendGetItemBank( m_nSlot, (BYTE)( m_Shortcut.m_dwId ), nCost );
 					}
-				}
-				else
-				{
-					//					assert(0);
-				}
+
 			}
 		}
 		else
@@ -7724,8 +7715,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			{
 				CItemElem * pItemBase = NULL;
-				if( m_Shortcut.m_dwType == ITYPE_ITEM )
-				{
+
 					pItemBase = g_pPlayer->GetItemBankId( m_nPutSlot, m_Shortcut.m_dwId );
 					if( pItemBase )
 					{				
@@ -7736,11 +7726,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						m_Shortcut.m_dwData -= 100;
 						g_DPlay.SendPutItemBankToBank( m_nPutSlot, m_nSlot, (BYTE)( m_Shortcut.m_dwId ), nCost );
 					}
-				}
-				else
-				{
-					//					assert(0);
-				}
+
 			}
 		}
 		else
@@ -7767,8 +7753,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			{
 				CItemElem * pItemBase = NULL;
-				if( m_Shortcut.m_dwType == ITYPE_ITEM )
-				{
+
 					pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
 					if( pItemBase )
 					{				
@@ -7786,11 +7771,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							g_WndMng.m_pWndPost->m_PostTabSend.SetCount(nCost);
 						}						
 					}
-				}
-				else
-				{
-					//					assert(0);
-				}
+
 			}
 		}			
 		Destroy();
@@ -12383,7 +12364,6 @@ void CWndPostRead::OnMouseMove(UINT nFlags, CPoint point )
 			m_GlobalShortcut.m_pFromWnd   = this;
 			m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 			m_GlobalShortcut.m_dwIndex    = 0xffffffff;
-			m_GlobalShortcut.m_dwType     = ITYPE_ITEM;
 			m_GlobalShortcut.m_dwId       = pMail->m_pItemElem->m_dwObjId;
 			m_GlobalShortcut.m_pTexture   = pMail->m_pItemElem->GetTexture();
 			m_GlobalShortcut.m_dwData     = (DWORD) pMail->m_pItemElem;

@@ -562,10 +562,10 @@ public:
 	BOOL	OpenTaskBar();
 	BOOL	OpenMenu();
 
-	void	ObjectExecutor(ShortcutType dwShortcut, DWORD dwId, DWORD dwType = 0 );
+	void	ObjectExecutor(ShortcutType dwShortcut, DWORD dwId );
 	void	ObjectExecutor( LPSHORTCUT lpShortcut );
 	void OpenApplet(DWORD dwId) { return ObjectExecutor(ShortcutType::Applet, dwId); }
-	void	UseSkillShortCut( DWORD dwType, DWORD dwSkillIdx );
+	void	UseSkillShortCut( DWORD, DWORD dwSkillIdx );
 		
 	// map
 	CWndMap* OpenMap( LPCTSTR lpszMapFileName );

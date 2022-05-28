@@ -859,8 +859,7 @@ void CWndPartySkill::OnMouseMove(UINT nFlags, CPoint point)
 		if( int(g_Party.GetLevel() - pItemProp->dwReqDisLV) >= 0 )
 		{
 			//CItemElem* pItemElem = &m_pItemContainer->m_apItem[ m_pItemContainer->m_apIndex[ m_nCurSelect ] ] ;
-			m_GlobalShortcut.m_dwShortcut  = ShortcutType::Skill;
-			m_GlobalShortcut.m_dwType  = 2;//m_nJob;//(DWORD)pItemElem;//->m_dwItemId;
+			m_GlobalShortcut.m_dwShortcut  = ShortcutType::PartySkill;
 			m_GlobalShortcut.m_dwIndex = m_nSkillSelect + 1;//m_nSkillSelect;//m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
 			m_GlobalShortcut.m_dwData  = 0;//pItemElem->m_dwObjId;//(DWORD)pItemElem;
 			m_GlobalShortcut.m_dwId     = m_nSkillSelect + 1; // 컬런트 셀렉트가 곧 ID나 마찬가지임.
@@ -920,7 +919,7 @@ void CWndPartySkill::OnLButtonDblClk( UINT nFlags, CPoint point)
 		ItemProp* pItemProp =  prj.GetPartySkill( nSkill + 1 );
 		if( pItemProp )
 		{
-			g_WndMng.ObjectExecutor( ShortcutType::Skill, nSkill + 1, 2 );
+			g_WndMng.ObjectExecutor( ShortcutType::PartySkill, nSkill + 1 );
 		}
 	}
 }

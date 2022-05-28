@@ -867,7 +867,7 @@ BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS l
 		SHORTCUT retval;
 		retval.m_dwShortcut = static_cast<ShortcutType>(GetIntFromStr(serialization, &CountStr));
 		retval.m_dwId = (DWORD)GetIntFromStr(serialization, &CountStr);
-		retval.m_dwType = (DWORD)GetIntFromStr(serialization, &CountStr);
+		const int type = GetIntFromStr(serialization, &CountStr);
 		retval.m_dwIndex = (DWORD)GetIntFromStr(serialization, &CountStr);
 		retval.m_dwUserId = (DWORD)GetIntFromStr(serialization, &CountStr);
 		retval.m_dwData = (DWORD)GetIntFromStr(serialization, &CountStr);
@@ -876,6 +876,11 @@ BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS l
 		} else {
 			retval.m_szString[0] = '\0';
 		}
+
+		if (retval.m_dwShortcut == ShortcutType::Skill && type == 2) {
+			retval.m_dwShortcut = ShortcutType::PartySkill;
+		}
+
 		return retval;
 	};
 

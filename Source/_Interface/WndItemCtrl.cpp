@@ -944,7 +944,6 @@ void CWndItemCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			m_GlobalShortcut.m_pFromWnd   = this;
 			m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 			m_GlobalShortcut.m_dwIndex    = m_nCurSelect;// pItemElem->m_dwItemId; //m_nCurSelect;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
-			m_GlobalShortcut.m_dwType     = 0;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
 			m_GlobalShortcut.m_dwId       = pItemElem->m_dwObjId;//(DWORD)pItemElem;
 			m_GlobalShortcut.m_pTexture   = pItemElem->GetTexture();
 			m_GlobalShortcut.m_dwData     = (DWORD) pItemElem;
@@ -964,7 +963,6 @@ void CWndItemCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		m_GlobalShortcut.m_pFromWnd   = this;
 		m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
 		m_GlobalShortcut.m_dwIndex    = m_nCurSelect;// pItemElem->m_dwItemId; //m_nCurSelect;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
-		m_GlobalShortcut.m_dwType     = 0;// m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
 		m_GlobalShortcut.m_dwId       = pItemElem->m_dwObjId;//(DWORD)pItemElem;
 		m_GlobalShortcut.m_pTexture   = pItemElem->GetTexture();
 		m_GlobalShortcut.m_dwData     = (DWORD) pItemElem;

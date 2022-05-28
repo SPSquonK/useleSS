@@ -115,7 +115,7 @@ BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	int nHeight = rect.Height() / 32;
 	CPoint pt( 3, 3 );
 
-	if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData == 0 )
+	if( pShortcut->m_dwData == 0 )
 	{
 		CWndBase* pParent = (CWndBase*)GetParentWnd();
 		pParent->OnChildNotify( WIN_ITEMDROP, m_nIdWnd, (LRESULT*)pShortcut ); 
@@ -155,7 +155,7 @@ BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		rect.SetRect( x * 32, y * 32, x * 32 + 32, y * 32 + 32 );
 		if( rect.PtInRect( point ) && m_pMover->m_vtInfo.GetItem( i ) == NULL )
 		{
-			g_DPlay.SendTradePut( i, (BYTE)( pShortcut->m_dwType ), (BYTE)( pShortcut->m_dwId ) );
+			g_DPlay.SendTradePut( i, 0, (BYTE)( pShortcut->m_dwId ) );
 			return TRUE;
 		}
 	}

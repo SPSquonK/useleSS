@@ -89,7 +89,7 @@ BOOL CWndRepairItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	int nWidth	= rect.Width() / 32;
 	int nHeight		= rect.Height() / 32;
 	CPoint pt( 3, 3 );
-	if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData == 0 )
+	if( pShortcut->m_dwData == 0 )
 	{
 		return TRUE;
 	}

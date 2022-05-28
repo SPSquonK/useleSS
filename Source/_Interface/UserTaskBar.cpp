@@ -33,7 +33,7 @@ void CUserTaskBar::InitTaskBar()
 
 void CUserTaskBar::RemoveAllSkills() {
 	constexpr auto IsASkill = [](const SHORTCUT & shortcut) {
-		return shortcut.m_dwShortcut == ShortcutType::Skill && shortcut.m_dwType == 2;
+		return shortcut.m_dwShortcut == ShortcutType::Skill;
 	};
 
 	constexpr auto RemoveIfSkill = [](SHORTCUT & shortcut) {

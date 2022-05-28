@@ -305,7 +305,6 @@ void CWndMotion1::OnMouseMove( UINT nFlags, CPoint point )
 		m_GlobalShortcut.m_pFromWnd   = this;
 		m_GlobalShortcut.m_dwShortcut = ShortcutType::Motion;
 		m_GlobalShortcut.m_dwIndex    = m_nSelect;
-		m_GlobalShortcut.m_dwType     = 0;
 		m_GlobalShortcut.m_dwId       = m_pSelectMotion->dwID;
 		m_GlobalShortcut.m_pTexture   = m_pSelectMotion->pTexture;
 		m_GlobalShortcut.m_dwData     = (DWORD) m_pSelectMotion;
@@ -437,7 +436,6 @@ void CWndEmoticon::OnMouseMove( UINT nFlags, CPoint point )
 		m_GlobalShortcut.m_pFromWnd   = this;
 		m_GlobalShortcut.m_dwShortcut = ShortcutType::Emoticon;
 		m_GlobalShortcut.m_dwIndex    = m_nSelect;
-		m_GlobalShortcut.m_dwType     = 0;
 		m_GlobalShortcut.m_dwId       = m_nSelect;
 		m_GlobalShortcut.m_pTexture   = m_pSelectTexture;
 		m_GlobalShortcut.m_dwData     = (DWORD) m_pSelectTexture;

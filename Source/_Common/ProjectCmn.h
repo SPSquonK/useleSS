@@ -871,7 +871,8 @@ enum class ShortcutType {
 	Chat = 8,
 	SkillFun = 9,
 	Emoticon = 10,
-	Lord = 11
+	Lord = 11,
+	PartySkill = 12
 };
 
 #if defined ( __CLIENT )
@@ -888,7 +889,6 @@ struct SHORTCUT {
 #endif	// __CLIENT
 	ShortcutType m_dwShortcut = ShortcutType::None;
 	DWORD     m_dwId = 0;
-	DWORD     m_dwType = 0;
 	DWORD     m_dwIndex = 0;
 	DWORD     m_dwUserId = 0;
 	DWORD     m_dwData = NULL;

@@ -85,20 +85,16 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 		if( pItemBase )
 			shortcut.m_pTexture	= pItemBase->GetTexture();
 	}
+	else if (shortcut.m_dwShortcut == ShortcutType::PartySkill) {
+		ItemProp * pProp = prj.GetPartySkill(shortcut.m_dwId);
+		shortcut.m_pTexture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
+	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Skill)
 	{
-		if( shortcut.m_dwType == 2 )
-		{
-			ItemProp* pProp =  prj.GetPartySkill( shortcut.m_dwId );
-			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff );
-		}
-		else
-		{	
-			LPSKILL lpSkill = g_pPlayer->GetSkill( shortcut.m_dwType, shortcut.m_dwId );
-			ItemProp* pSkillProp = prj.m_aPropSkill.GetAt( lpSkill->dwSkill );
-			if( pSkillProp )
-				shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
-		}
+		LPSKILL lpSkill = g_pPlayer->GetSkill( 0, shortcut.m_dwId );
+		ItemProp* pSkillProp = prj.m_aPropSkill.GetAt( lpSkill->dwSkill );
+		if( pSkillProp )
+			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
 	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Lord)
 	{
@@ -215,21 +211,13 @@ void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
 	else	
 	if( pShortcut->m_dwShortcut == ShortcutType::Item)
 	{
-		g_WndMng.PutToolTip_Item( pShortcut->m_dwType, pShortcut->m_dwId, point, pRect );
+		g_WndMng.PutToolTip_Item( 0, pShortcut->m_dwId, point, pRect );
 	}
-	else	
-	if( pShortcut->m_dwShortcut == ShortcutType::Skill)
-	{
-		if( pShortcut->m_dwType == 2 )
-		{
-			g_WndMng.PutToolTip_Troupe( pShortcut->m_dwId, point, pRect );
-		}
-		else
-//		if( pShortcut->m_dwType == 0 || pShortcut->m_dwType == 1 || pShortcut->m_dwType == 3 )
-		{
-			LPSKILL lpSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
-			g_WndMng.PutToolTip_Skill( lpSkill->dwSkill, lpSkill->dwLevel, point, pRect );
-		}
+	else if (pShortcut->m_dwShortcut == ShortcutType::PartySkill) {
+		g_WndMng.PutToolTip_Troupe(pShortcut->m_dwId, point, pRect);
+	} else if( pShortcut->m_dwShortcut == ShortcutType::Skill) {
+		const SKILL * const lpSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
+		g_WndMng.PutToolTip_Skill( lpSkill->dwSkill, lpSkill->dwLevel, point, pRect );
 	}
 	else	
 	if( pShortcut->m_dwShortcut == ShortcutType::Lord)
@@ -414,7 +402,6 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 				p2DRender->RenderFillRect( rectItem, dwColor );
 				break;
 			case ShortcutType::Skill:
-				if( m_GlobalShortcut.m_dwType == 0 )
 				{
 					DWORD dwSkill = g_pPlayer->GetSkill( 0, m_GlobalShortcut.m_dwId )->dwSkill;
 					DWORD dwComboStyleSrc = prj.GetSkillProp( dwSkill )->dwComboStyle;
@@ -422,8 +409,8 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 						p2DRender->RenderFillRect( rectItem, dwColor );		
 					p2DRender->RenderFillRect( rectSkill, dwColor );
 				}
-				else
-					p2DRender->RenderFillRect( rectItem, dwColor );
+			case ShortcutType::PartySkill:
+				p2DRender->RenderFillRect( rectItem, dwColor );
 				break;
 		}		
 	}
@@ -569,12 +556,9 @@ bool CWndTaskBar::RenderShortcut(
 			}
 			break;
 		}
-		case ShortcutType::Skill: {
-			if (shortcut.m_dwType != 2) {
-				RenderCollTime(point, shortcut.m_dwId, p2DRender);
-			}
+		case ShortcutType::Skill:
+			RenderCollTime(point, shortcut.m_dwId, p2DRender);
 			break;
-		}
 		case ShortcutType::Lord:
 			RenderLordCollTime(point, shortcut.m_dwId, p2DRender);
 			break;
@@ -1047,18 +1031,12 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType
 		else
 		if( dwShortcut == ShortcutType::Skill)
 		{
-			if( pShortcut->m_dwType == 2 )
-			{
-				ItemProp* pProp =  prj.GetPartySkill( pShortcut->m_dwId );
-				pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff );
-			}
-			else
-			{	
-				LPSKILL lpSkill = g_pPlayer->GetSkill( dwType, dwId );
-				//pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon ) );
-				pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, lpSkill->GetProp()->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff, TRUE );
-			}
-		}	
+			LPSKILL lpSkill = g_pPlayer->GetSkill( dwType, dwId );
+			pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, lpSkill->GetProp()->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff, TRUE );
+		} else if (dwShortcut == ShortcutType::PartySkill) {
+			ItemProp * pProp = prj.GetPartySkill(pShortcut->m_dwId);
+			pShortcut->m_pTexture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
+		}
 		else
 		if( dwShortcut == ShortcutType::SkillFun)
 			pShortcut->m_pTexture = pTexture;
@@ -1075,7 +1053,6 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType
 	}
 
 	pShortcut->m_dwShortcut = dwShortcut   ;
-	pShortcut->m_dwType     = dwType;
 	pShortcut->m_dwIndex    = nIndex;//0;//dwIndex;
 	pShortcut->m_dwId       = dwId;
 	pShortcut->m_dwUserId   = 0 ;
@@ -1214,7 +1191,7 @@ BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
 	}
 	return FALSE;
 }
-BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD dwType, DWORD dwId, CTexture* pTexture )
+BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD , DWORD dwId, CTexture* pTexture )
 {
 	if( m_nExecute )		return FALSE;		// 스킬큐 실행중엔 등록 안됨.
 	if( m_nCurQueueNum >= 5 )
@@ -1279,14 +1256,13 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD dwType, DWORD dwId, CTexture*
 	m_nCurQueue = -1;
 	if( pTexture == NULL )
 	{
-		LPSKILL lpSkill = g_pPlayer->GetSkill( dwType, dwId );
+		LPSKILL lpSkill = g_pPlayer->GetSkill( 0, dwId );
 		pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon), 0xff000000, FALSE );
 	}
 	else pShortcut->m_pTexture = pTexture;
 
 
 	pShortcut->m_dwShortcut = ShortcutType::Skill;
-	pShortcut->m_dwType     = dwType; // 직업 
 	pShortcut->m_dwIndex    = nIndex;//dwIndex; // 스킬 콘트롤에서의 순서 
 	pShortcut->m_dwId       = dwId; // 스킬 인덱스 
 	pShortcut->m_dwUserId   = 0 ;
@@ -1335,7 +1311,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		return FALSE;
 	}
 	
-	if( pShortcut->m_dwShortcut == ShortcutType::Skill && pShortcut->m_dwType != 2 ) // 극단스킬은 안들어감
+	if( pShortcut->m_dwShortcut == ShortcutType::Skill ) // 극단스킬은 안들어감
 	{
 		LPSKILL pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
 		if( pSkill && (pSkill->dwLevel <= 0 || g_pPlayer->CheckSkill( pSkill->dwSkill ) == FALSE) )
@@ -1377,32 +1353,14 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			}
 			if( pShortcut->m_dwShortcut == ShortcutType::Skill)
 			{
-				ItemProp* pProp;
-				if( pShortcut->m_dwType == 2 )
-					pProp =  prj.GetPartySkill( pShortcut->m_dwId );
-				else
-				{
-					LPSKILL pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
-					pProp = prj.GetSkillProp( pSkill->dwSkill );	
-				}
+				const SKILL * const pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
+				const ItemProp * const pProp = prj.GetSkillProp( pSkill->dwSkill );	
+
 				if( pProp->dwComboStyle != CT_STEP && pProp->dwComboStyle != CT_GENERAL )	
 				{
 					SetForbid( TRUE );
 					return FALSE;	// 퀵슬롯에 등록하려는 스킬이 스텝기술이 아닌건 등록 못함.
 				}
-/*				
-				ItemProp *pProp = prj.GetSkillProp( pShortcut->m_dwId );	
-				if( pProp->dwComboStyle != CT_STEP && pProp->dwComboStyle != CT_GENERAL )	
-				{
-					SetForbid( TRUE );
-					return FALSE;	// 퀵슬롯에 등록하려는 스킬이 스텝기술이 아닌건 등록 못함.
-				}				
-				*/
-				//if( pProp->dwComboStyle != CT_STEP )
-				//{
-				//	SetForbid( TRUE );
-				//	return FALSE;	// 퀵슬롯에 등록하려는 스킬이 스텝기술이 아닌건 등록 못함.
-				//}
 			}
 
 #ifdef __MAINSERVER
@@ -1410,7 +1368,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				return FALSE;
 #endif //__MAINSERVER
 				
-			SetShortcut( point.x, pShortcut->m_dwShortcut, pShortcut->m_dwType, pShortcut->m_dwId, pShortcut->m_pTexture, 0 );
+			SetShortcut( point.x, pShortcut->m_dwShortcut, 0, pShortcut->m_dwId, pShortcut->m_pTexture, 0 );
 			bForbid = FALSE;
 		}
 		rect = RECT_ITEM;
@@ -1441,27 +1399,22 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			}
 			else if( pShortcut->m_dwShortcut == ShortcutType::Skill)
 			{
-				ItemProp* pProp;
-				if( pShortcut->m_dwType == 2 )
-					pProp =  prj.GetPartySkill( pShortcut->m_dwId );
-				else
-				{
-					LPSKILL pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
-					pProp = prj.GetSkillProp( pSkill->dwSkill );	
-				}
+				const SKILL * const pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
+				const ItemProp * const pProp = prj.GetSkillProp( pSkill->dwSkill );
+
 				if( pProp->dwComboStyle != CT_STEP && pProp->dwComboStyle != CT_GENERAL )	
 				{
 					SetForbid( TRUE );
 					return FALSE;	// 퀵슬롯에 등록하려는 스킬이 스텝기술이 아닌건 등록 못함.
 				}
 			}
-			SetShortcut( point.x, pShortcut->m_dwShortcut, pShortcut->m_dwType, pShortcut->m_dwId, pShortcut->m_pTexture, 1 );
+			SetShortcut( point.x, pShortcut->m_dwShortcut, 0, pShortcut->m_dwId, pShortcut->m_pTexture, 1 );
 			bForbid = FALSE;
 		}
 		rect = RECT_QUEUE;
 		if( rect.PtInRect( point ) )
 		{
-			if( pShortcut->m_dwShortcut == ShortcutType::Skill && pShortcut->m_dwType == 0 )		// 스킬일경우만 등록
+			if( pShortcut->m_dwShortcut == ShortcutType::Skill )		// 스킬일경우만 등록
 			{
 				point.x -= rect.left;
 				point.y -= rect.top;
@@ -1473,11 +1426,11 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					if( lpShortcut->m_dwData == 2 )
 					{
 						RemoveSkillQueue( lpShortcut->m_dwIndex, FALSE );
-						SetSkillQueue( point.x, pShortcut->m_dwType, pShortcut->m_dwId, pShortcut->m_pTexture );// == FALSE )
+						SetSkillQueue( point.x, 0, pShortcut->m_dwId, pShortcut->m_pTexture );// == FALSE )
 						return TRUE;
 					}
 				}
-				if( SetSkillQueue( point.x, pShortcut->m_dwType, pShortcut->m_dwId, pShortcut->m_pTexture ) == FALSE )
+				if( SetSkillQueue( point.x, 0, pShortcut->m_dwId, pShortcut->m_pTexture ) == FALSE )
 					SetForbid( TRUE );
 				bForbid = FALSE;
 			}

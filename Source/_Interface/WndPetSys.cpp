@@ -2647,7 +2647,6 @@ void CWndBuffPetStatus::OnLButtonDown( UINT nFlags, CPoint point )
 	
 	m_GlobalShortcut.m_pFromWnd = this;
 	m_GlobalShortcut.m_dwShortcut = ShortcutType::Item;
-	m_GlobalShortcut.m_dwType     = ITYPE_ITEM;
 	m_GlobalShortcut.m_dwId       = 0;
 	m_GlobalShortcut.m_dwIndex    = dwItemIndex;
 	m_GlobalShortcut.m_pTexture   = m_pTexture[ selectedSlot ];

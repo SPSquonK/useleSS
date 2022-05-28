@@ -38,11 +38,7 @@ CAr & operator<<(CAr & ar, const CTaskbar & self) {
     if (shortcut.IsEmpty()) return false;
     
     ((ar << extra), ...);
-    ar << shortcut.m_dwShortcut << shortcut.m_dwId << shortcut.m_dwType;
-    ar << shortcut.m_dwIndex << shortcut.m_dwUserId << shortcut.m_dwData;
-    if (shortcut.m_dwShortcut == ShortcutType::Chat) {
-      ar.WriteString(shortcut.m_szString);
-    }
+    ar << shortcut;
 
     return true;
   };
@@ -77,14 +73,6 @@ CAr & operator<<(CAr & ar, const CTaskbar & self) {
 CAr & operator>>(CAr & ar, CTaskbar & self) {
   ar.IsUnsafe();
 
-  constexpr auto ExtractShortcut = [](CAr & ar, SHORTCUT & shortcut) {
-    ar >> shortcut.m_dwShortcut >> shortcut.m_dwId >> shortcut.m_dwType;
-    ar >> shortcut.m_dwIndex >> shortcut.m_dwUserId >> shortcut.m_dwData;
-    if (shortcut.m_dwShortcut == ShortcutType::Chat) {
-      ar.ReadString(shortcut.m_szString);
-    }
-  };
-
   self = CTaskbar();
 
   size_t nbShortcut;
@@ -92,21 +80,20 @@ CAr & operator>>(CAr & ar, CTaskbar & self) {
   ar >> nbShortcut;
   for (size_t i = 0; i != nbShortcut; ++i) {
     int nIndex; ar >> nIndex;
-    ExtractShortcut(ar, self.m_aSlotApplet[i]);
+    ar >> self.m_aSlotApplet[nIndex];
   }
 
   ar >> nbShortcut;
   for (size_t i = 0; i != nbShortcut; ++i) {
     int nIndex1, nIndex2;
     ar >> nIndex1 >> nIndex2;
-
-    ExtractShortcut(ar, self.m_aSlotItem[nIndex1][nIndex2]);
+    ar >> self.m_aSlotItem[nIndex1][nIndex2];
   }
 
   ar >> nbShortcut;
   for (size_t i = 0; i != nbShortcut; ++i) {
     int nIndex; ar >> nIndex;
-    ExtractShortcut(ar, self.m_aSlotQueue[i]);
+    ar >> self.m_aSlotQueue[nIndex];
   }
 
   ar >> self.m_nActionPoint;

@@ -231,7 +231,7 @@ BOOL CWndVendorCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	int nWidth	= rect.Width() / 32;
 	int nHeight		= rect.Height() / 32;
 	CPoint pt( 3, 3 );
-	if( pShortcut->m_dwType == ITYPE_ITEM && pShortcut->m_dwData == 0 )
+	if( pShortcut->m_dwData == 0 )
 	{
 		//		CWndBase* pParent	= (CWndBase*)GetParentWnd();
 		//		pParent->OnChildNotify( WIN_ITEMDROP, m_nIdWnd, (LRESULT*)pShortcut );
@@ -283,7 +283,6 @@ void CWndVendorCtrl::OnMouseMove( UINT nFlags, CPoint point )
 		m_GlobalShortcut.m_pFromWnd		= this;
 		m_GlobalShortcut.m_dwShortcut	= ShortcutType::Item;
 		m_GlobalShortcut.m_dwIndex	= m_nCurSel;
-		m_GlobalShortcut.m_dwType	= 0;
 		m_GlobalShortcut.m_dwId		= pItemBase->m_dwObjId;
 		m_GlobalShortcut.m_pTexture		= pItemBase->GetTexture();
 		m_GlobalShortcut.m_dwData	= (DWORD)pItemBase;

@@ -846,7 +846,7 @@ void CNameValider::Formalize(LPSTR szName) {
 #endif	// __RULE_0615
 
 CAr & operator<<(CAr & ar, const SHORTCUT & self) {
-	ar << self.m_dwShortcut << self.m_dwId << self.m_dwType
+	ar << self.m_dwShortcut << self.m_dwId
 		<< self.m_dwIndex << self.m_dwUserId << self.m_dwData;
 
 	if (self.m_dwShortcut == ShortcutType::Chat) {
@@ -857,7 +857,7 @@ CAr & operator<<(CAr & ar, const SHORTCUT & self) {
 }
 
 CAr & operator>>(CAr & ar, SHORTCUT & self) {
-	ar >> self.m_dwShortcut >> self.m_dwId >> self.m_dwType
+	ar >> self.m_dwShortcut >> self.m_dwId
 		>> self.m_dwIndex >> self.m_dwUserId >> self.m_dwData;
 
 	if (self.m_dwShortcut == ShortcutType::Chat) {

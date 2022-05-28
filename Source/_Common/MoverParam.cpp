@@ -45,7 +45,7 @@
 #include "CampusHelper.h"
 #endif // __WORLDSERVER
 
-LPSKILL CMover::GetSkill( int nType, int nIdx )
+LPSKILL CMover::GetSkill( int , int nIdx )
 {
 	// nType == 0�̸� ���� ��ų
 	// nType == 1�̸� ���̼��� ��ų 

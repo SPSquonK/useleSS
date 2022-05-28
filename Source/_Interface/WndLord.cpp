@@ -834,7 +834,6 @@ void CWndLordSkill::OnMouseMove(UINT nFlags, CPoint point)
 		m_bDrag = FALSE;
 		m_GlobalShortcut.m_pFromWnd    = this;
 		m_GlobalShortcut.m_dwShortcut  = ShortcutType::Lord;
-		m_GlobalShortcut.m_dwType	   = 0;
 		m_GlobalShortcut.m_dwIndex	   = 0;//dwSkill;
 		m_GlobalShortcut.m_dwData	   = 0;
 		m_GlobalShortcut.m_dwId        = m_nCurSelect; // 컬런트 셀렉트가 곧 ID나 마찬가지임.
