@@ -232,8 +232,7 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 	pUser->Serialize( ar );
 	pUser->AddGold( -nTrade, FALSE );
 	//
-
-	pUser->m_playTaskBar.Serialize( ar );
+	ar << pUser->m_playTaskBar;
 #ifdef __RT_1025
 	ar << pUser->m_RTMessenger.GetState();
 #else	// __RT_1025
@@ -674,7 +673,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		nOnError	= 2;
 #endif	// __ON_ERROR
 
-		pUser->m_playTaskBar.Serialize( ar );
+		ar >> pUser->m_playTaskBar;
 
 #ifdef __ON_ERROR
 		nOnError	= 3; 

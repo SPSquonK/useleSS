@@ -5881,11 +5881,8 @@ void CDPSrvr::OnReturnScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	}
 }
 
-void CDPSrvr::OnEndSkillQueue( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		pUser->m_playTaskBar.OnEndSkillQueue( pUser );
+void CDPSrvr::OnEndSkillQueue(CAr & ar, CUser & pUser) {
+	pUser.m_playTaskBar.OnEndSkillQueue(&pUser);
 }
 
 void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

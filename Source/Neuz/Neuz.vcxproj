@@ -97,7 +97,7 @@
     <ClCompile Include="..\_Common\accessory.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
-    <ClCompile Include="..\_Common\Taskbar.cpp" />
+    <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="..\_Interface\WndItemDisplayer.cpp" />
     <ClCompile Include="CampusHelper.cpp">
@@ -679,8 +679,8 @@
     <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />
-    <ClInclude Include="..\_Common\Taskbar.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
+    <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
     <ClInclude Include="..\_Interface\WndItemDisplayer.h" />
     <ClInclude Include="CNTREVNT.h" />

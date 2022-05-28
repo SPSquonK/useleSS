@@ -1577,13 +1577,14 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 		SetFatiguePoint( GetMaxFatiguePoint() );
 	
 		g_UserMng.AddSetLevel( this, (WORD)m_nLevel );
-		( (CUser*)this )->AddSetGrowthLearningPoint( m_nRemainGP );
-		( (CUser*)this )->AddSetExperience( GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel );
-		( (CUser*)this )->m_playTaskBar.RemoveAllSkills();
-		( (CUser*)this )->AddTaskBar();
-		((CUser*)this)->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
-		((CUser*)this)->CheckHonorStat();
-		((CUser*)this)->AddHonorListAck();
+		CUser * self = static_cast<CUser *>(this);
+		self->AddSetGrowthLearningPoint( m_nRemainGP );
+		self->AddSetExperience( GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel );
+		self->m_playTaskBar.RemoveAllSkills();
+		self->AddTaskBar();
+		self->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
+		self->CheckHonorStat();
+		self->AddHonorListAck();
 		g_UserMng.AddHonorTitleChange( this, m_nHonor);
 	}
 #endif // __WORLDSERVER

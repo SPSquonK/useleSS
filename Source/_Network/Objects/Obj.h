@@ -270,7 +270,8 @@ public:
 	DWORD			m_dwAuthorization;
 	DWORD			m_dwMode;
 
-	CUserTaskBar	m_UserTaskBar;
+	CTaskbar	m_UserTaskBar;
+	int			m_nUsedSkillQueue;
 #ifdef __RT_1025
 	CRTMessenger	m_RTMessenger;
 #else	// __RT_1025

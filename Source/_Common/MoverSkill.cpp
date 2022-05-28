@@ -76,51 +76,44 @@ void	CMover::SetMasterSkillPointUp()
 }
 
 // 스킬큐에 들어 있는 마법들의 총 캐스팅 시간을 계산.
-int		CMover::GetQueueCastingTime()
-{
-	if( IsNPC() )	
-		return 0;
+int CMover::GetQueueCastingTime() {
+	if (IsNPC()) return 0;
 
-	CUser *pUser = (CUser *)this;
-	SHORTCUT *pSlotQueue = pUser->m_playTaskBar.m_aSlotQueue;
+	const CUser * pUser = (const CUser *)this;
+	const auto & slotQueue = pUser->m_playTaskBar.m_aSlotQueue;
 	int		nTotalTime = 0;
 
-	for(int i = 0; i < MAX_SLOT_QUEUE; i ++ )
-	{
-		if( pSlotQueue[i].m_dwShortcut != ShortcutType::None )
-		{
-			LPSKILL pSkill = GetSkill( 0, pSlotQueue[i].m_dwId );
-			
-			ItemProp *pSkillProp;
-			if( !( pSkillProp = pSkill->GetProp() ) )					// JobSkill 리스트에서 꺼낸 스킬의 프로퍼티를 꺼냄.
-			{
-				Error( "CMover::GetQueueCastingTime : %s. 스킬(%d)의 프로퍼티가 없다.", m_szName, pSkill->dwSkill );
-				return FALSE;	// property not found
-			}
-			
-			AddSkillProp* pAddSkillProp;
-			
-		#ifdef __SKILL0517
-			if( !( pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, GetSkillLevel( pSkill ) ) ) )					// JobSkill 리스트에서 꺼낸 스킬의 프로퍼티를 꺼냄.
-		#else	// __SKILL0517
-			if( !( pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, pSkill->dwLevel ) ) )					// JobSkill 리스트에서 꺼낸 스킬의 프로퍼티를 꺼냄.
-		#endif	// __SKILL0517
-			{
-				Error( "CMover::GetQueueCastingTime : %s. 애드스킬(%d)의 프로퍼티가 없다.", m_szName, pSkill->dwSkill );
-				return FALSE;	// property not found
-			}
+	// TODO: all these return FALSE are shaddy as they overlap with a time of 0. Check it
 
-		#ifdef _DEBUG
-			if( (int)pAddSkillProp->dwCastingTime <= 0 )
-				Error( "GetQueueCastingTime : %s의 addProp dwCastingTime이 %d", pSkillProp->szName, pAddSkillProp->dwCastingTime );
-		#endif
-			nTotalTime += (int)pAddSkillProp->dwCastingTime;
+	for (const SHORTCUT & shortcut : slotQueue) {
+		if (shortcut.IsEmpty()) continue;
+
+		SKILL * const pSkill = GetSkill(0, shortcut.m_dwId);
+			
+		const ItemProp * const pSkillProp = pSkill->GetProp();
+		if (!pSkillProp) {
+			Error("CMover::GetQueueCastingTime : %s. 스킬(%d)의 프로퍼티가 없다.", m_szName, pSkill->dwSkill);
+			return FALSE;
 		}
+
+		const AddSkillProp * pAddSkillProp = prj.GetAddSkillProp(pSkillProp->dwSubDefine, pSkill->dwLevel);
+		if (!pAddSkillProp) {				// JobSkill 리스트에서 꺼낸 스킬의 프로퍼티를 꺼냄.
+			Error("CMover::GetQueueCastingTime : %s. 애드스킬(%d)의 프로퍼티가 없다.", m_szName, pSkill->dwSkill);
+			return FALSE;
+		}
+
+	#ifdef _DEBUG
+		if ((int)pAddSkillProp->dwCastingTime <= 0) {
+			Error("GetQueueCastingTime : %s의 addProp dwCastingTime이 %d", pSkillProp->szName, pAddSkillProp->dwCastingTime);
+		}
+	#endif
+		
+		nTotalTime += (int)pAddSkillProp->dwCastingTime;
 	}
 
 	nTotalTime = (int)(nTotalTime * 0.7f);		// 70프로 적용한후.
 	nTotalTime = (int)( (nTotalTime / 1000.0f) * SEC1 );	// 캐스팅단위 시간으로 변환.
-	nTotalTime	= GetCastingTime( nTotalTime );
+	nTotalTime = GetCastingTime( nTotalTime );
 
 	return nTotalTime;
 }

@@ -64,7 +64,7 @@ void CDPSrvr::OnUseSkill( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 		{
 			if( nUseType == SUT_QUEUESTART )	// 스킬큐로 실행하라고 한거였다.
 			{
-				pUser->m_playTaskBar.m_nUsedSkillQueue = 0;		// 스킬큐 실행중인 표시 남김.
+				pUser->m_nUsedSkillQueue = 0;		// 스킬큐 실행중인 표시 남김.
 			}
 		}
 

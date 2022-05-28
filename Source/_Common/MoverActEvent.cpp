@@ -1937,7 +1937,7 @@ void	CMover::OnActEndMeleeSkill()
 #ifdef __WORLDSERVER
 	if( IsPlayer() )
 	{
-		if( ((CUser *)this)->m_playTaskBar.m_nUsedSkillQueue != -1 )
+		if( ((CUser *)this)->m_nUsedSkillQueue != -1 )
 		{
 			((CUser *)this)->m_playTaskBar.SetNextSkill( (CUser *)this );
 		}
@@ -1954,7 +1954,7 @@ void	CMover::OnActEndMagicSkill()
  #ifdef __WORLDSERVER
 	if( IsPlayer() )
 	{
-		if( ((CUser *)this)->m_playTaskBar.m_nUsedSkillQueue != -1 )
+		if( ((CUser *)this)->m_nUsedSkillQueue != -1 )
 		{
 			((CUser *)this)->m_playTaskBar.SetNextSkill( (CUser *)this );
 		}

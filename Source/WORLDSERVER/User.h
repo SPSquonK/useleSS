@@ -74,7 +74,8 @@ public:
 
 	DWORD			m_dwAuthKey;						/// 인증용 key
 	PLAY_ACCOUNT	m_playAccount;						/// Account정보 
-	CUserTaskBar	m_playTaskBar;						/// player의 taskbar class(큇슬롯)
+	CTaskbar	m_playTaskBar;						/// player의 taskbar class(큇슬롯)
+	int			m_nUsedSkillQueue;
 	OBJID			m_idSetTarget;						/// 이 유저가 잡고있는 타겟
 #ifdef __RT_1025
 	CRTMessenger	m_RTMessenger;

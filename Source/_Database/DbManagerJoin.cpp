@@ -47,7 +47,7 @@ void CDbManager::SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dw
 #endif	// __LAYER_1015
 	ar << pMover->m_dwIndex;
 	pMover->Serialize( ar );			
-	pMover->m_UserTaskBar.Serialize( ar );
+	ar << pMover->m_UserTaskBar;
 #ifdef __RT_1025
 	pMover->m_RTMessenger.Serialize( ar );
 #else	// __RT_1025

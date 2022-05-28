@@ -550,7 +550,7 @@ void CDPTrans::OnSavePlayer( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser,
 	pMover->Lock();
 	pMover->Serialize( ar );
 	pMover->m_fAngle	= 0.0f;
-	pMover->m_UserTaskBar.Serialize( ar );
+	ar >> pMover->m_UserTaskBar;
 #ifdef __RT_1025
 	DWORD dwState;
 	ar >> dwState;

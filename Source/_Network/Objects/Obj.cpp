@@ -232,6 +232,7 @@ CMover::CMover()
 	m_nCampusPoint = 0;
 	m_nRestPoint = 0;
 	m_tLogOut = 0;
+	m_nUsedSkillQueue = -1;
 }
 
 CMover::~CMover()
@@ -660,10 +661,7 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_Inventory.Copy( pMover->m_Inventory );
 		m_Pocket.Copy( pMover->m_Pocket );
 		memcpy( m_aEquipInfo, pMover->m_aEquipInfo, sizeof(EQUIP_INFO) * MAX_HUMAN_PARTS );
-		memcpy( m_UserTaskBar.m_aSlotApplet, pMover->m_UserTaskBar.m_aSlotApplet, sizeof(m_UserTaskBar.m_aSlotApplet) );
-		memcpy( m_UserTaskBar.m_aSlotItem, pMover->m_UserTaskBar.m_aSlotItem, sizeof(m_UserTaskBar.m_aSlotItem) );
-		memcpy( m_UserTaskBar.m_aSlotQueue, pMover->m_UserTaskBar.m_aSlotQueue, sizeof(m_UserTaskBar.m_aSlotQueue) );
-		m_UserTaskBar.m_nActionPoint	= pMover->m_UserTaskBar.m_nActionPoint;
+		m_UserTaskBar = pMover->m_UserTaskBar;
 		lstrcpy( m_szName, pMover->m_szName );
 		m_vScale	= pMover->m_vScale;
 		m_dwMotion	= pMover->m_dwMotion;

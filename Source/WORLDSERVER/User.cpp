@@ -97,6 +97,7 @@ void CUser::Init( DPID dpidCache, DPID dpidUser )
 	m_dwTickFromClient = 0;
 	//////////////////////////////////////////////////////////////////////////
 
+	m_nUsedSkillQueue = -1;
 
 	m_dwSerial = 0;	
 	m_bValid = FALSE;
@@ -1092,25 +1093,8 @@ void CUser::AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip )
 	
 }
 
-void CUser::AddTaskBar()
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_TASKBAR;
-	m_playTaskBar.Serialize( m_Snapshot.ar );
-	
-
-	m_Snapshot.ar.WriteString("WOW MUCH GARBAGE DATA");
-
-	DWORD r = xRandom(3);
-	while (r != 0) {
-		m_Snapshot.ar.WriteString("Good luck processing that");
-		m_Snapshot.ar << xRandom(4864);
-		--r;
-	}
-
+void CUser::AddTaskBar() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_TASKBAR, CTaskbar>(m_playTaskBar);
 }
 
 void CUser::AddSendErrorParty( DWORD dw, DWORD dwSkill )

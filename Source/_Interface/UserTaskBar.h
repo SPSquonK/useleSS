@@ -1,38 +1,54 @@
-// UserTaskBar.h: interface for the CUserTaskBar class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_USERTASKBAR_H__FBB0414C_20FE_4032_9180_1F9559FAA4A8__INCLUDED_)
-#define AFX_USERTASKBAR_H__FBB0414C_20FE_4032_9180_1F9559FAA4A8__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
-#include "Ar.h"
-//#include "User.h"
+#include "ar.h"
+#include <array>
 
-class CUserTaskBar  
-{
-public:
-	CUserTaskBar();
-	virtual ~CUserTaskBar();
-
-public:
-	SHORTCUT	m_aSlotApplet[ MAX_SLOT_APPLET ]; // 1 ~ 20
-	SHORTCUT	m_aSlotItem  [ MAX_SLOT_ITEM_COUNT ][ MAX_SLOT_ITEM   ]; // 1 ~ 0(10)
-	SHORTCUT	m_aSlotQueue [ MAX_SLOT_QUEUE  ];
-	int			m_nActionPoint;
-	int			m_nUsedSkillQueue;	// -1:실행중이지 않음 0~4:현재 실행중인 스킬큐 인덱스.
-
-public:
-	void	Serialize(CAr &ar);
-	void	InitTaskBar();
-	void	RemoveAllSkills();
 #ifdef __WORLDSERVER
-	int		SetNextSkill( CUser *pUser );
-	void	OnEndSkillQueue( CUser *pUser );
+class CUser;
+#endif
+
+class CTaskbar {
+public:
+  std::array<SHORTCUT, MAX_SLOT_APPLET> m_aSlotApplet;
+  std::array<
+    std::array<SHORTCUT, MAX_SLOT_ITEM>,
+    MAX_SLOT_ITEM_COUNT
+  > m_aSlotItem;
+  std::array<SHORTCUT, MAX_SLOT_QUEUE> m_aSlotQueue;
+
+  int m_nActionPoint; // 액션 포인트 - 시리얼라이즈 대상.
+
+public:
+  CTaskbar();
+  // As there are no dynamic allocation, we don't really need a virtual destructor
+
+  friend CAr & operator<<(CAr & ar, const CTaskbar & self);
+  friend CAr & operator>>(CAr & ar, CTaskbar & self);
+
+  [[nodiscard]] size_t CountNumberOfChats() const;
+
+  
+
+#ifdef __WORLDSERVER
+  void RemoveAllSkills();
+  int  SetNextSkill(CUser * pUser);
+  void OnEndSkillQueue(CUser * pUser);
 #endif // __WORLDSERVER
+
 };
 
-#endif // !defined(AFX_USERTASKBAR_H__FBB0414C_20FE_4032_9180_1F9559FAA4A8__INCLUDED_)
+//
+//class CUserTaskBar final : public CTaskbar {
+//	// TODO: do we want to have a CUserTaskBar class
+//	// that only adds m_nusedKSillQueue or should this field
+//	// be moved out?
+//public:
+//	CUserTaskBar();
+//
+//public:
+//	int			m_nUsedSkillQueue;	// -1:실행중이지 않음 0~4:현재 실행중인 스킬큐 인덱스.
+//
+//public:
+//	void	Serialize(CAr &ar);
+//};
+//
