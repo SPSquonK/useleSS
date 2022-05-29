@@ -145,7 +145,6 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 
 CWndTaskBar::CWndTaskBar()
 {
-	m_nCurQueue = -1;
 	m_nCurQueueNum = 0;
 	m_nPosition = TASKBAR_BOTTOM;
 	memset( &m_aSlotSkill, 0, sizeof( m_aSlotSkill ) );
@@ -1243,7 +1242,7 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD , DWORD dwId, CTexture* pText
 		nIndex = m_nCurQueueNum;
 		m_nCurQueueNum++;
 	}
-	m_nCurQueue = -1;
+	
 	if( pTexture == NULL )
 	{
 		LPSKILL lpSkill = g_pPlayer->GetSkill( 0, dwId );

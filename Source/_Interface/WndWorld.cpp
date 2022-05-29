@@ -1048,11 +1048,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	D3DXVECTOR3 vRayEnd;
 	
 	g_DamageNumMng.Render();
-	if( g_WndMng.m_pWndTaskBar->m_nCurQueue >= 0 )
-	{
-		int nCount = 5 - g_WndMng.m_pWndTaskBar->m_nCurQueue % 5;
-		g_DamageNumMng.m_textPackNum.Render( p2DRender, CPoint( rectClient.Width() - 20, rectClient.Height() - 20 ), nCount );
-	}
+		
 	CHECK2( "Render WndWorld" );
 	RenderArrow();
 

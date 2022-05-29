@@ -29,7 +29,6 @@ public:
 	int            m_nPosition;
 	int            m_nSkillBar;
 	int            m_nCurQueueNum;
-	int            m_nCurQueue;
 	CTimer         m_timer;
 	int			   m_nExecute;		// 0: 실행중이지 않음 1:실행대기중(스킬쓰러 달려가는중) 2:실행중.
 	OBJID		   m_idTarget;		// 스킬사용대상.
