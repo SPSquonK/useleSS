@@ -40,19 +40,3 @@ public:
 #endif // __WORLDSERVER
 
 };
-
-//
-//class CUserTaskBar final : public CTaskbar {
-//	// TODO: do we want to have a CUserTaskBar class
-//	// that only adds m_nusedKSillQueue or should this field
-//	// be moved out?
-//public:
-//	CUserTaskBar();
-//
-//public:
-//	int			m_nUsedSkillQueue;	// -1:실행중이지 않음 0~4:현재 실행중인 스킬큐 인덱스.
-//
-//public:
-//	void	Serialize(CAr &ar);
-//};
-//
