@@ -10359,7 +10359,7 @@ BOOL CWndRevival::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		case WIDC_REVIVAL_SHOP:
 			{
 				bClose = FALSE;
-				g_WndMng.ObjectExecutor( ShortcutType::Applet, APP_WEBBOX );
+				g_WndMng.OpenApplet( APP_WEBBOX );
 				break;
 			}
 	}	

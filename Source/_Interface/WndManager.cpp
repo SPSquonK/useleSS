@@ -1888,7 +1888,7 @@ void CWndMgr::OpenTitle( BOOL bFirstTime )
 	g_WndMng.SetWndRect( CRect( 0, 0, CLIENT_WIDTH, CLIENT_HEIGHT ) );
 	m_bTitle = TRUE;
 
-	ObjectExecutor( ShortcutType::Applet, APP_LOGIN );
+	OpenApplet(APP_LOGIN);
 
 	// Delete 
 	//CloseTitle();
@@ -1934,14 +1934,14 @@ void CWndMgr::OpenField()
 	m_aChatStyle.RemoveAll();
 
 	LoadRegInfo( "regInfo.dat" );
-	ObjectExecutor(ShortcutType::Applet, APP_COMMUNICATION_CHAT );
-	ObjectExecutor(ShortcutType::Applet, APP_NAVIGATOR );
-	ObjectExecutor(ShortcutType::Applet, APP_STATUS1 );
-	ObjectExecutor(ShortcutType::Applet, APP_WORLD );
+	OpenApplet(APP_COMMUNICATION_CHAT);
+	OpenApplet(APP_NAVIGATOR);
+	OpenApplet(APP_STATUS1);
+	OpenApplet(APP_WORLD);
 
 	// 공지가 enable이라면?
 	if( g_Option.m_bNotice )
-		ObjectExecutor(ShortcutType::Applet, APP_INFO_NOTICE );
+		OpenApplet(APP_INFO_NOTICE );
 	else
 	// 공지가 열지 않음으로 되어있어도 날짜가 갱신되었다면 강제 오픈
 	{
@@ -1956,7 +1956,7 @@ void CWndMgr::OpenField()
 			{
 				g_Option.m_tNoticeTime = (time_t)( fileStatus.m_mtime.GetTime() );
 				g_Option.m_bNotice = TRUE;
-				ObjectExecutor(ShortcutType::Applet, APP_INFO_NOTICE );
+				OpenApplet(APP_INFO_NOTICE);
 			}
 		}
 	}
@@ -3169,7 +3169,7 @@ BOOL CWndMgr::Process()
 			if( g_bKeyTable[ '1' ] )
 			{
 				g_bKeyTable[ '1' ] = 0;
-				ObjectExecutor( ShortcutType::Applet, APP_HELPER_HELP );
+				OpenApplet(APP_HELPER_HELP);
 			}
 			if( g_bKeyTable[ '0' ] )
 			{

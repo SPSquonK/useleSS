@@ -3,6 +3,9 @@
 #ifdef __WORLDSERVER
 #include "User.h"
 #endif // __WORLDSERVER
+#ifdef __CLIENT
+#include "DPClient.h"
+#endif
 
 #include <ranges>
 #include <numeric>
@@ -34,6 +37,37 @@ size_t CTaskbar::CountNumberOfChats() const {
 	auto ChatsInEachItems = m_aSlotItem | std::views::transform(NbOfChats);
 
 	return NbOfChats(m_aSlotApplet) + std::reduce(ChatsInEachItems.begin(), ChatsInEachItems.end());
+}
+
+void CTaskbar::RemoveAll(const ShortcutType type) {
+	for (int nSlot = 0; nSlot < MAX_SLOT_APPLET; ++nSlot) {
+		if (m_aSlotApplet[nSlot].m_dwShortcut == type) {
+#ifdef __CLIENT
+			g_DPlay.SendRemoveAppletTaskBar(nSlot);
+#endif
+			m_aSlotApplet[nSlot].Empty();
+		}
+	}
+
+	for (int nSlot = 0; nSlot < MAX_SLOT_ITEM_COUNT; ++nSlot) {
+		for (int nIndex = 0; nIndex < MAX_SLOT_ITEM; ++nIndex) {
+			if (m_aSlotItem[nSlot][nIndex].m_dwShortcut == type) {
+#ifdef __CLIENT
+				g_DPlay.SendRemoveItemTaskBar(nSlot, nIndex);
+#endif
+				m_aSlotItem[nSlot][nIndex].Empty();
+			}
+		}
+	}
+
+	if (type == ShortcutType::Skill) {
+		if (!m_aSlotQueue[0].IsEmpty()) {
+			memset(&m_aSlotQueue, 0, sizeof(m_aSlotQueue));
+#ifdef __CLIENT
+			g_DPlay.SendSkillTaskBar();
+#endif
+		}
+	}
 }
 
 CAr & operator<<(CAr & ar, const CTaskbar & self) {
@@ -105,29 +139,6 @@ CAr & operator>>(CAr & ar, CTaskbar & self) {
 
 
 #ifdef __WORLDSERVER
-
-void CTaskbar::RemoveAllSkills() {
-	constexpr auto IsASkill = [](const SHORTCUT & shortcut) {
-		return shortcut.m_dwShortcut == ShortcutType::Skill;
-	};
-
-	constexpr auto RemoveIfSkill = [](SHORTCUT & shortcut) {
-		if (IsASkill(shortcut)) shortcut.Empty();
-	};
-
-	for (int i = 0; i < MAX_SLOT_APPLET; i++) {
-		RemoveIfSkill(m_aSlotApplet[i]);
-	}
-
-	for (int i = 0; i < MAX_SLOT_ITEM_COUNT; i++) {
-		for (int j = 0; j < MAX_SLOT_ITEM; j++) {
-			RemoveIfSkill(m_aSlotItem[i][j]);
-		}
-	}
-
-	// By definition, slot queue is full of skills
-	memset(&m_aSlotQueue, 0, sizeof(m_aSlotQueue));
-}
 
 // 스킬바 사용이 완전히 끝났을때
 void CTaskbar::OnEndSkillQueue(CUser * pUser) {

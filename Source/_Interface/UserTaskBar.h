@@ -36,7 +36,8 @@ public:
 
   [[nodiscard]] size_t CountNumberOfChats() const;
 
-  
+  void RemoveAll(ShortcutType type);
+
 
 #ifdef __WORLDSERVER
   void RemoveAllSkills();

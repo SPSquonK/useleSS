@@ -1580,7 +1580,7 @@ void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
 		CUser * self = static_cast<CUser *>(this);
 		self->AddSetGrowthLearningPoint( m_nRemainGP );
 		self->AddSetExperience( GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel );
-		self->m_playTaskBar.RemoveAllSkills();
+		self->m_playTaskBar.RemoveAll(ShortcutType::Skill);
 		self->AddTaskBar();
 		self->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
 		self->CheckHonorStat();
@@ -1648,7 +1648,7 @@ BOOL CMover::InitSkillExp()
 		m_nSkillPoint = nMaxPoint;
 
 #ifdef __WORLDSERVER
-	( (CUser*)this )->m_playTaskBar.RemoveAllSkills();
+	( (CUser*)this )->m_playTaskBar.RemoveAll(ShortcutType::Skill);
 	( (CUser*)this )->AddTaskBar();
 #endif //__WORLDSERVER
 	return TRUE;

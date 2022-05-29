@@ -173,31 +173,10 @@ void CCElection::DoEndVoteComplete( void )
 	{
 		// 군주관련 숏컷제거 - 단축키
 		CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
-		for(int nSlot = 0; nSlot < MAX_SLOT_ITEM_COUNT; ++nSlot)
-		{
-			for(int nIndex = 0; nIndex < MAX_SLOT_ITEM; ++nIndex)
-			{
-				if(pTaskBar->m_aSlotItem[nSlot][nIndex].m_dwShortcut == ShortcutType::Lord)
-				{
-					g_DPlay.SendRemoveItemTaskBar( nSlot, nIndex );
-					pTaskBar->m_aSlotItem[nSlot][nIndex].Empty();
+		pTaskBar->RemoveAll(ShortcutType::Lord);
 
-				}
-			}
-		}
-		// 군주관련 숏컷제거 - 퀵슬롯
-		for( int nSlot = 0; nSlot < MAX_SLOT_APPLET; ++nSlot)
-		{
-			if(pTaskBar->m_aSlotApplet[nSlot].m_dwShortcut == ShortcutType::Lord)
-			{
-				g_DPlay.SendRemoveAppletTaskBar(nSlot);
-				pTaskBar->m_aSlotApplet[nSlot].Empty();
-			}
-			
-		}
 		// 군주 스킬 창 제거
-		CWndLordSkill* pWndLordSkill = (CWndLordSkill*)g_WndMng.GetWndBase( APP_LORD_SKILL );
-		if(pWndLordSkill) pWndLordSkill->Destroy();
+		Windows::DestroyIfOpened(APP_LORD_SKILL);
 		// 군주 이벤트 창 제거
 		if(g_WndMng.m_pWndLordEvent) g_WndMng.m_pWndLordEvent->Destroy();
 	}

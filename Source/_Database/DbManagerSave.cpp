@@ -828,7 +828,7 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 	for (int ch = 0; ch < MAX_SLOT_APPLET; ch++) {
 		const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotApplet[ch];
 
-		if (shortcut.m_dwShortcut != ShortcutType::None) {
+		if (!shortcut.IsEmpty()) {
 			AppendNumber(szAppletTaskBar, ch);
 			BufferShortcut(szAppletTaskBar, shortcut);
 		}
@@ -839,7 +839,7 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 		for( int j = 0; j < MAX_SLOT_ITEM; j++ ) {
 			const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotItem[ch][j];
 
-			if (shortcut.m_dwShortcut != ShortcutType::None) {
+			if (!shortcut.IsEmpty()) {
 				AppendNumber(szItemTaskBar, ch);
 				AppendNumber(szItemTaskBar, j);
 				BufferShortcut(szItemTaskBar, shortcut);
@@ -851,7 +851,7 @@ void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szI
 	for (int ch = 0; ch < MAX_SLOT_QUEUE; ch++) {
 		const SHORTCUT & shortcut = pMover->m_UserTaskBar.m_aSlotQueue[ch];
 
-		if (shortcut.m_dwShortcut != ShortcutType::None) {
+		if (!shortcut.IsEmpty()) {
 			AppendNumber(szSkillTaskBar, ch);
 			BufferShortcut(szSkillTaskBar, shortcut);
 		}
