@@ -1822,9 +1822,9 @@ void CDPSrvr::OnModifyTaskBar(CAr & ar, CUser & pUser) {
 		SHORTCUT replacement; ar >> replacement;
 		SHORTCUT & destination = shortcutBar[slot];
 
-		const bool canAdd = replacement.m_dwShortcut != ShortcutType::Chat
-			|| destination.m_dwShortcut == ShortcutType::Chat
-			|| pUser.m_playTaskBar.CountNumberOfChats() <= 9;
+		const bool canAdd = pUser.m_playTaskBar.CanAddShortcut(
+			replacement.m_dwShortcut, destination
+		);
 
 		if (!canAdd) {
 			pUser.AddDefinedText(TID_GAME_MAX_SHORTCUT_CHAT);

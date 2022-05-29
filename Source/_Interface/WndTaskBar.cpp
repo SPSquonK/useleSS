@@ -956,119 +956,42 @@ void CWndTaskBar::OnRButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType, DWORD dwId, CTexture* pTexture, int nWhere )
-{
-	LPSHORTCUT pShortcut = NULL;
-//	pWndButton->Create( _T( "" ), 0, CRect( 65 + nIndex * 32, 3, 65 + nIndex * 32 + 32 , 3 + 32), this, dwId );
+void CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType, DWORD dwId, CTexture* pTexture, CTaskbar::BarName nWhere) {
+	SHORTCUT & pShortcut = nWhere == CTaskbar::BarName::Applet ? m_aSlotApplet[nIndex] : m_paSlotItem()[nIndex];
 
-	//pShortcut = m_aSlotApplet[ nIndex ];
-	// Chat Shortcut 10개로 제한
-	if(dwShortcut == ShortcutType::Chat)
-	{
-		int nchatshortcut = CountNumberOfChats();
+	if (!CanAddShortcut(dwShortcut, pShortcut)) {
+		g_WndMng.PutString(TID_GAME_MAX_SHORTCUT_CHAT);
+		return;
+	}
 
-		if(nchatshortcut > 9)
-		{
-			g_WndMng.PutString(TID_GAME_MAX_SHORTCUT_CHAT);
-			return FALSE;
+	pShortcut.m_dwShortcut = dwShortcut;
+	pShortcut.m_dwIndex = nIndex;
+	pShortcut.m_dwId = dwId;
+	pShortcut.m_dwUserId = 0;
+	pShortcut.m_dwData = nWhere == CTaskbar::BarName::Applet ? 0 : 1;
+	strcpy(pShortcut.m_szString, m_GlobalShortcut.m_szString);
+
+	if (dwShortcut == ShortcutType::Lord)
+		pShortcut.m_dwId--;
+
+	if (dwShortcut == ShortcutType::Item) {
+		CItemElem * pItemBase = g_pPlayer->GetItemId(dwId);
+		if (pItemBase && pItemBase->GetProp()->dwPackMax > 1) {
+			pShortcut.m_dwItemId = pItemBase->m_dwItemId;
 		}
 	}
 
-	if( nWhere == 0 )
-		pShortcut = &m_aSlotApplet[ nIndex ];
-	else
-	if( nWhere == 1 )
-		pShortcut = &m_paSlotItem()[nIndex];
-
-	if( pTexture == NULL )
-	{
-		CItemElem * pItemBase;
-		if( dwShortcut == ShortcutType::Applet ) 
-		{
-			AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( dwId );
-			pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, pAppletFunc->m_pszIconName ), 0xffff00ff );
-				//pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pAppletFunc->m_pszIconName ) );
-			//pCardElem->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pCardElem->GetProp()->szIcon), 0xff000000 );
-
-		}
-		else
-		if( dwShortcut == ShortcutType::Item)
-		{
-			pItemBase = g_pPlayer->GetItemId( dwId );
-			CTexture* pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemBase->GetProp()->szIcon), 0xffff00ff );
-			pItemBase->SetTexture( pTexture ); 
-			pShortcut->m_pTexture = pTexture ;
-		}
-		else
-		if( dwShortcut == ShortcutType::Motion)
-		{
-			MotionProp* pMotionProp = prj.GetMotionProp( dwId );
-			if(pMotionProp)		//061206 ma	8차에 들어갈 모션관리를 위해 버전 추가	propMotion.txt
-			{
-				pMotionProp->pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp->szIconName ), 0xffff00ff );
-				pShortcut->m_pTexture = pMotionProp->pTexture;
-				//pWndButton->SetTexture( g_Neuz.m_pd3dDevice, pItemBase->m_pTexture );
-			}
-			else
-				return FALSE;
-		}
-		/*
-		else
-		if( dwShortcut == SHORTCUT_CARD ) 
-		{
-			pItemBase = g_pPlayer->m_Card.GetAt( dwId );//m_apItem[ i ] ;
-			pItemBase->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemBase->GetProp()->szIcon), 0xff000000 );
-			pWndButton->SetTexture( g_Neuz.m_pd3dDevice, pItemBase->m_pTexture );
-		}
-		else
-		if( dwShortcut == SHORTCUT_JACKBOX ) 
-		{
-			pItemBase = g_pPlayer->m_Cube.GetAt( dwId );//m_apItem[ i ] ;
-			pItemBase->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemBase->GetProp()->szIcon), 0xff000000 );
-			pWndButton->SetTexture( g_Neuz.m_pd3dDevice, pItemBase->m_pTexture );
-		}
-		*/
-		else
-		if( dwShortcut == ShortcutType::Skill)
-		{
-			LPSKILL lpSkill = g_pPlayer->GetSkill( dwType, dwId );
-			pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, lpSkill->GetProp()->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff, TRUE );
-		} else if (dwShortcut == ShortcutType::PartySkill) {
-			ItemProp * pProp = prj.GetPartySkill(pShortcut->m_dwId);
-			pShortcut->m_pTexture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
-		}
-		else
-		if( dwShortcut == ShortcutType::SkillFun)
-			pShortcut->m_pTexture = pTexture;
-			
-	}
-	else 
-		pShortcut->m_pTexture = pTexture;
-
-	if( dwShortcut == ShortcutType::Item)
-	{
-		CItemElem * pItemBase	= g_pPlayer->GetItemId( dwId );
-		if( pShortcut && pItemBase && pItemBase->GetProp()->dwPackMax > 1 )	// 병합 가능한 아이템이면?
-			pShortcut->m_dwItemId	= pItemBase->m_dwItemId;
+	if (pTexture) {
+		pShortcut.m_pTexture = pTexture;
+	} else {
+		SetTaskBarTexture(pShortcut);
 	}
 
-	pShortcut->m_dwShortcut = dwShortcut   ;
-	pShortcut->m_dwIndex    = nIndex;//0;//dwIndex;
-	pShortcut->m_dwId       = dwId;
-	pShortcut->m_dwUserId   = 0 ;
-	pShortcut->m_dwData     = nWhere;
-	strcpy( pShortcut->m_szString, m_GlobalShortcut.m_szString );//, sizeof(pShortcut->m_szString) );
-	//pWndButton->SetTitle( m_GlobalShortcut.m_szString );
-	if( dwShortcut == ShortcutType::Lord)
-		pShortcut->m_dwId--;
-	
 	std::optional<unsigned int> where;
-	if (nWhere == 0) where = std::nullopt;
+	if (nWhere == CTaskbar::BarName::Applet) where = std::nullopt;
 	else where = m_nSlotIndex;
 
-	g_DPlay.SendAddInTaskbar(where, nIndex, *pShortcut);
-
-	return TRUE;
+	g_DPlay.SendAddInTaskbar(where, nIndex, pShortcut);
 }
 BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
 {
@@ -1366,7 +1289,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				return FALSE;
 #endif //__MAINSERVER
 				
-			SetShortcut( point.x, pShortcut->m_dwShortcut, 0, pShortcut->m_dwId, pShortcut->m_pTexture, 0 );
+			SetShortcut( point.x, pShortcut->m_dwShortcut, 0, pShortcut->m_dwId, pShortcut->m_pTexture, CTaskbar::BarName::Applet );
 			bForbid = FALSE;
 		}
 		rect = RECT_ITEM;
@@ -1406,7 +1329,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					return FALSE;	// 퀵슬롯에 등록하려는 스킬이 스텝기술이 아닌건 등록 못함.
 				}
 			}
-			SetShortcut( point.x, pShortcut->m_dwShortcut, 0, pShortcut->m_dwId, pShortcut->m_pTexture, 1 );
+			SetShortcut( point.x, pShortcut->m_dwShortcut, 0, pShortcut->m_dwId, pShortcut->m_pTexture, CTaskbar::BarName::Item);
 			bForbid = FALSE;
 		}
 		rect = RECT_QUEUE;

@@ -43,7 +43,7 @@ public:
 	BOOL UseSkillQueue( CCtrl* pTargetObj );
 	LPSKILL GetCurrentSkillQueue();
 	BOOL SetSkillQueue( int nIndex, DWORD dwType, DWORD dwId, CTexture* pTexture = NULL );
-	BOOL SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType, DWORD dwId, CTexture* pTexture = NULL, int nWhere = 0 );
+
 	void OnEndSkill( void );
 	void OnCancelSkill( void );
 	LPSHORTCUT Select( CPoint point );
@@ -80,6 +80,7 @@ protected:
 
 	void FindNewStackForShortcut(std::optional<int> where, int i);
 	void SetTaskBarTexture(SHORTCUT & shortcut);
+	void SetShortcut(int nIndex, ShortcutType dwShortcut, DWORD dwType, DWORD dwId, CTexture * pTexture, CTaskbar::BarName nWhere);
 };
 //////////////////////////////////////////////////////////////////////////////////////
 // 태스크바의 매뉴 

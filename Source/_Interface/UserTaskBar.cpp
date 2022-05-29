@@ -25,6 +25,13 @@ CTaskbar::CTaskbar() {
 	m_nActionPoint = 0;
 }
 
+
+bool CTaskbar::CanAddShortcut(ShortcutType type, const SHORTCUT & const atPlace) {
+	if (type != ShortcutType::Chat) return true;
+	if (atPlace.m_dwShortcut == ShortcutType::Chat) return true;
+	return CountNumberOfChats() <= 9;
+}
+
 size_t CTaskbar::CountNumberOfChats() const {
 	constexpr auto IsChat = [](const SHORTCUT & shortcut) {
 		return shortcut.m_dwShortcut == ShortcutType::Chat;

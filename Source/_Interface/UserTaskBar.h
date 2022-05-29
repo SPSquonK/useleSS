@@ -34,8 +34,7 @@ public:
   friend CAr & operator<<(CAr & ar, const CTaskbar & self);
   friend CAr & operator>>(CAr & ar, CTaskbar & self);
 
-  [[nodiscard]] size_t CountNumberOfChats() const;
-
+  bool CanAddShortcut(ShortcutType type, const SHORTCUT & atPlace);
   void RemoveAll(ShortcutType type);
 
 
@@ -44,5 +43,8 @@ public:
   int  SetNextSkill(CUser * pUser);
   void OnEndSkillQueue(CUser * pUser);
 #endif // __WORLDSERVER
+
+private:
+  [[nodiscard]] size_t CountNumberOfChats() const;
 
 };
