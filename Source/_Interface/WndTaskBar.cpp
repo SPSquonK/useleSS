@@ -618,15 +618,6 @@ void CWndTaskBar::FindNewStackForShortcut(std::optional<int> where, int i) {
 		}
 	};
 
-	const auto SendAdd = [&](DWORD dwId) {
-		shortcut.m_dwId = dwId;
-		if (where) {
-			g_DPlay.SendAddItemTaskBar(*where, i, &shortcut);
-		} else {
-			g_DPlay.SendAddAppletTaskBar(i, &shortcut);
-		}
-	};
-
 	CItemElem * pItemElem = g_pPlayer->GetItemId(shortcut.m_dwId);
 	if (pItemElem) return;
 
@@ -642,7 +633,8 @@ void CWndTaskBar::FindNewStackForShortcut(std::optional<int> where, int i) {
 		return;
 	}
 
-	SendAdd(dwId);
+	shortcut.m_dwId = dwId;
+	g_DPlay.SendAddInTaskbar(where, i, shortcut);
 }
 
 void CWndTaskBar::OnKeyUp( UINT nChar, UINT nRepCnt, UINT nFlags )
@@ -1061,15 +1053,13 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType
 	//pWndButton->SetTitle( m_GlobalShortcut.m_szString );
 	if( dwShortcut == ShortcutType::Lord)
 		pShortcut->m_dwId--;
-	if( nWhere == 0 ) //m_aSlotApplet
-	{
-		g_DPlay.SendAddAppletTaskBar( nIndex, pShortcut );
-	}
-	else
-	if( nWhere == 1 ) //m_paSlotItem
-	{
-		g_DPlay.SendAddItemTaskBar( m_nSlotIndex, nIndex, pShortcut );
-	}
+	
+	std::optional<unsigned int> where;
+	if (nWhere == 0) where = std::nullopt;
+	else nWhere = m_nSlotIndex;
+
+	g_DPlay.SendAddInTaskbar(where, nIndex, *pShortcut);
+
 	return TRUE;
 }
 BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )

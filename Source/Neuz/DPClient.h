@@ -266,10 +266,10 @@ public:
 	void	SendQueryGetDestObj( CMover* pMover );
 	void	SendGetDestObj( OBJID objid, OBJID objidDest );
 	void	SendSkillTaskBar( void );
+
+	void SendAddInTaskbar(std::optional<unsigned int> where, unsigned int nIndex, const SHORTCUT & shortcut);
 	void	SendRemoveAppletTaskBar( BYTE nIndex );
-	void	SendAddAppletTaskBar( BYTE nIndex, LPSHORTCUT pAppletShortcut );
 	void	SendRemoveItemTaskBar( BYTE nSlotIndex, BYTE nIndex );
-	void	SendAddItemTaskBar( BYTE nSlotIndex, BYTE nIndex, LPSHORTCUT pItemShortcut );
 	void	SendAddFriend( u_long uidPlayer, LONG nJob, BYTE nSex );
 	void	SendAddFriendReqest( u_long uidPlayer );
 	void	SendAddFriendNameReqest( const char * szName );
