@@ -9,6 +9,10 @@ class CUser;
 
 class CTaskbar {
 public:
+  enum class Operation : bool { Add = true, Remove = false };
+  enum class BarName : bool { Applet = true, Item = false };
+
+public:
   std::array<SHORTCUT, MAX_SLOT_APPLET> m_aSlotApplet;
   std::array<
     std::array<SHORTCUT, MAX_SLOT_ITEM>,

@@ -114,6 +114,9 @@ public:
 	CAr& operator>>(char& ch);
 	CAr& operator>>(unsigned& u);
 
+	CAr & operator<<(bool b) { return *this << static_cast<BYTE>(b ? 1 : 0); }
+	CAr & operator>>(bool & b) { BYTE bb; *this >> bb; b = bb != 0; return *this; }
+
 	template <typename E>
 	CAr & operator<<(E e) requires (std::is_scoped_enum_v<E>) {
 		return *this << std::to_underlying(e);

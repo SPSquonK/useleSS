@@ -175,10 +175,7 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_SETTARGET, &CDPSrvr::OnSetTarget );	// Core에 보내야 하는지 확인해 줄것.
 	OnMsg( PACKETTYPE_TELESKILL, &CDPSrvr::OnTeleSkill );	
 	OnMsg( PACKETTYPE_SKILLTASKBAR, &CDPSrvr::OnSkillTaskBar );
-	OnMsg( PACKETTYPE_ADDAPPLETTASKBAR, &CDPSrvr::OnAddAppletTaskBar );
-	OnMsg( PACKETTYPE_REMOVEAPPLETTASKBAR, &CDPSrvr::OnRemoveAppletTaskBar );
-	OnMsg( PACKETTYPE_ADDITEMTASKBAR, &CDPSrvr::OnAddItemTaskBar );
-	OnMsg( PACKETTYPE_REMOVEITEMTASKBAR, &CDPSrvr::OnRemoveItemTaskBar );
+	OnMsg( PACKETTYPE_MODIFYTASKBAR, &CDPSrvr::OnModifyTaskBar);
 	OnMsg( PACKETTYPE_QUERYGETPOS, &CDPSrvr::OnQueryGetPos );
 	OnMsg( PACKETTYPE_GETPOS, &CDPSrvr::OnGetPos );
 	OnMsg( PACKETTYPE_QUERYGETDESTOBJ, &CDPSrvr::OnQueryGetDestObj );
@@ -1795,64 +1792,51 @@ void CDPSrvr::OnSkillTaskBar(CAr & ar, CUser & pUser) {
 	}
 }
 
-void CDPSrvr::OnAddAppletTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	BYTE nIndex;
-	ar >> nIndex;
+void CDPSrvr::OnModifyTaskBar(CAr & ar, CUser & pUser) {
+	// Operation, BarName, unsigned int?, unsigned int, SHORTCUT?
+	using Operation = CTaskbar::Operation;
+	using BarName = CTaskbar::BarName;
 
-	if( nIndex >= MAX_SLOT_APPLET )
-		return;
+	const auto [operation, onApplet] = ar.Extract<Operation, BarName>();
+	
+	std::span<SHORTCUT> shortcutBar;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		ar >> pUser->m_playTaskBar.m_aSlotApplet[nIndex];
+	if (onApplet == BarName::Applet) {
+		shortcutBar = std::span<SHORTCUT>(pUser.m_playTaskBar.m_aSlotApplet);
+	} else {
+		unsigned int barId; ar >> barId;
+		if (barId >= pUser.m_playTaskBar.m_aSlotItem.size()) {
+			return;
+		}
+
+		shortcutBar = std::span<SHORTCUT>(pUser.m_playTaskBar.m_aSlotItem[barId]);
 	}
-}
-void CDPSrvr::OnRemoveAppletTaskBar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	BYTE nIndex;
-	ar >> nIndex;
 
-	if( nIndex >= MAX_SLOT_APPLET )
-		return;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if (IsValidObj(pUser)) {
-		pUser->m_playTaskBar.m_aSlotApplet[nIndex].Empty();
-	}
-}
-void CDPSrvr::OnAddItemTaskBar( CAr & ar, CUser & pUser )
-{
-	BYTE nSlotIndex, nIndex; ar >> nSlotIndex >> nIndex;
-
-	if (nSlotIndex >= MAX_SLOT_ITEM_COUNT || nIndex >= MAX_SLOT_ITEM) {
+	unsigned int slot; ar >> slot;
+	if (slot >= shortcutBar.size()) {
 		return;
 	}
 
-	SHORTCUT shortcut; ar >> shortcut;
+	if (operation == Operation::Remove) {
+		shortcutBar[slot].Empty();
+	} else {
+		// We do not really care about the validity of shortcuts. Nothing bad can
+		// happen for the server. If the client sends a bad shortcut, it is their
+		// problem.
+		SHORTCUT replacement; ar >> replacement;
+		SHORTCUT & destination = shortcutBar[slot];
 
-	// Chat Shortcut 10개로 제한
-	if(shortcut.m_dwShortcut == ShortcutType::Chat)
-	{
-		const auto nchatshortcut = pUser.m_playTaskBar.CountNumberOfChats();
-		if (nchatshortcut > 9) {
+		const bool canAdd = replacement.m_dwShortcut != ShortcutType::Chat
+			|| destination.m_dwShortcut == ShortcutType::Chat
+			|| pUser.m_playTaskBar.CountNumberOfChats() <= 9;
+
+		if (!canAdd) {
 			pUser.AddDefinedText(TID_GAME_MAX_SHORTCUT_CHAT);
 			return;
 		}
+
+		destination = replacement;
 	}
-
-	pUser.m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex] = shortcut;
-}
-
-void CDPSrvr::OnRemoveItemTaskBar(CAr & ar, CUser & pUser) {
-	BYTE nSlotIndex, nIndex; ar >> nSlotIndex >> nIndex;
-
-	if (nSlotIndex >= MAX_SLOT_ITEM_COUNT || nIndex >= MAX_SLOT_ITEM) {
-		return;
-	}
-
-	pUser.m_playTaskBar.m_aSlotItem[nSlotIndex][nIndex].Empty();
 }
 
 

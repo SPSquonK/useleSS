@@ -10020,22 +10020,46 @@ void CDPClient::SendSkillTaskBar( void )
 }
 
 void CDPClient::SendRemoveAppletTaskBar(BYTE nIndex) {
-	SendPacket<PACKETTYPE_REMOVEAPPLETTASKBAR, BYTE>(nIndex);
+	using Operation = CTaskbar::Operation;
+	using BarName = CTaskbar::BarName;
+
+	SendPacket<PACKETTYPE_MODIFYTASKBAR,
+		Operation, BarName, unsigned int
+	>(
+		Operation::Remove, BarName::Applet, nIndex
+		);
 }
 
 void CDPClient::SendAddAppletTaskBar(BYTE nIndex, LPSHORTCUT pAppletShortcut) {
-	SendPacket<PACKETTYPE_ADDAPPLETTASKBAR, BYTE, SHORTCUT>(
-		nIndex, *pAppletShortcut
+	using Operation = CTaskbar::Operation;
+	using BarName = CTaskbar::BarName;
+
+	SendPacket<PACKETTYPE_MODIFYTASKBAR,
+		Operation, BarName, unsigned int, SHORTCUT
+	>(
+		Operation::Add, BarName::Applet, nIndex, *pAppletShortcut
 		);
 }
 
 void CDPClient::SendRemoveItemTaskBar(BYTE nSlotIndex, BYTE nIndex) {
-	SendPacket<PACKETTYPE_REMOVEITEMTASKBAR, BYTE, BYTE>(nSlotIndex, nIndex);
+	using Operation = CTaskbar::Operation;
+	using BarName = CTaskbar::BarName;
+
+	SendPacket<PACKETTYPE_MODIFYTASKBAR,
+		Operation, BarName, unsigned int, unsigned int
+	>(
+		Operation::Remove, BarName::Item, nSlotIndex, nIndex
+		);
 }
 
 void CDPClient::SendAddItemTaskBar(BYTE nSlotIndex, BYTE nIndex, LPSHORTCUT pItemShortcut) {
-	SendPacket<PACKETTYPE_ADDITEMTASKBAR, BYTE, BYTE, SHORTCUT>(
-		nSlotIndex, nIndex, *pItemShortcut
+	using Operation = CTaskbar::Operation;
+	using BarName = CTaskbar::BarName;
+
+	SendPacket<PACKETTYPE_MODIFYTASKBAR,
+		Operation, BarName, unsigned int, unsigned int, SHORTCUT
+	>(
+		Operation::Add, BarName::Item, nSlotIndex, nIndex, *pItemShortcut
 		);
 }
 
