@@ -70,7 +70,10 @@ void CWndItemReceiver::OnMouseWndSurface(CPoint point) {
 	}
 }
 
-void CWndItemReceiver::OnRButtonUp(UINT, CPoint) {
+void CWndItemReceiver::OnRButtonUp(UINT, CPoint) { ResetItemWithNotify(); }
+void CWndItemReceiver::OnLButtonDblClk(UINT, CPoint) { ResetItemWithNotify(); }
+
+void CWndItemReceiver::ResetItemWithNotify() {
 	if (m_removableItem && m_item) {
 		ResetItem();
 		NotifyChange();
@@ -103,16 +106,33 @@ BOOL CWndItemReceiver::OnDropIcon(SHORTCUT * pShortcut, CPoint) {
 		return FALSE;
 	}
 
-	if (!CanReceiveItem(*pItemElem, true)) {
+	const bool b = SetAnItem(pItemElem, SetMode::Verbose);
+	if (!b) {
 		SetForbid(TRUE);
-		return FALSE;
 	}
-	
+	return b ? TRUE : FALSE;
+}
+
+bool CWndItemReceiver::SetAnItem(CItemElem * itemElem, SetMode setMode) {
+	if (itemElem == nullptr) {
+		if (m_item) {
+			ResetItem();
+			NotifyChange();
+		}
+		return true;
+	}
+
+	if (setMode != SetMode::NeverFail) {
+		if (!CanReceiveItem(*itemElem, setMode == SetMode::Verbose)) {
+			return false;
+		}
+	}
+
 	ResetItem();
-	m_item = pItemElem;
-	pItemElem->SetExtra(pItemElem->GetExtra() + 1);
+	m_item = itemElem;
+	itemElem->SetExtra(itemElem->GetExtra() + 1);
 	NotifyChange();
-	return TRUE;
+	return true;
 }
 
 void CWndItemReceiver::ResetItem() {

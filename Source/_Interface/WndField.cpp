@@ -18977,44 +18977,15 @@ BOOL CWndHeavenTowerEntranceConfirm::OnChildNotify( UINT message, UINT nID, LRES
 
 CWndRemoveAttribute::CWndRemoveAttribute() 
 {
-	m_pItemElem = NULL;
-	m_pEItemProp = NULL;
 	m_pWndConfirm = NULL;
-	m_pTexture = NULL;
 }
 
 CWndRemoveAttribute::~CWndRemoveAttribute() 
 {
-	if(m_pItemElem != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem ) )
-			m_pItemElem->SetExtra(0);
-	}
-
 	if(m_pWndConfirm != NULL)
 		m_pWndConfirm->Destroy();
 
 	SAFE_DELETE(m_pWndConfirm);
-}
-
-void CWndRemoveAttribute::OnDestroy()
-{
-}
-
-void CWndRemoveAttribute::OnDraw( C2DRender* p2DRender ) 
-{
-	ItemProp* pItemProp;
-	
-	if(m_pItemElem != NULL)
-	{
-		pItemProp = m_pItemElem->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-		if(pItemProp != NULL)
-		{
-			if(m_pTexture != NULL)
-				m_pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-		}
-	} 
 }
 
 void CWndRemoveAttribute::OnInitialUpdate() 
@@ -19030,6 +19001,9 @@ void CWndRemoveAttribute::OnInitialUpdate()
 	pButton->EnableWindow(FALSE);
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 
+	const WNDCTRL * const wndCtrl = GetWndCtrl(WIDC_PIC_SLOT);
+	m_receiver.Create(0, wndCtrl->rect, this, WIDC_PIC_SLOT + 1);
+
 	SetDescription(NULL);
 
 	MoveParentCenter();
@@ -19041,102 +19015,21 @@ BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_REMOVE_ATTRIBUTE, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-BOOL CWndRemoveAttribute::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRemoveAttribute::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
+bool CWndRemoveAttribute::CWndAttributedItem::CanReceiveItem(const CItemElem & itemElem, bool verbose) {
+	if (itemElem.m_nResistAbilityOption <= 0) {
+		if (verbose) g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_REMOVE_ERROR));
+		return false;
+	}
 
-void CWndRemoveAttribute::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
+	const ItemProp * pItemProp = itemElem.GetProp();
+	if (!pItemProp) return false;
 
-void CWndRemoveAttribute::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
+	// TODO: why tf isn't IsEleRefineryAble a method of pItemProp?
+	return CItemElem::IsEleRefineryAble(pItemProp);
 }
 
-void CWndRemoveAttribute::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	if(!m_pItemElem) return;
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		m_pItemElem->SetExtra(0);
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-		pButton->EnableWindow(FALSE);
-		m_pItemElem = NULL;
-		m_pEItemProp = NULL;
-		m_pTexture = NULL;
-	}
-}
-
-BOOL CWndRemoveAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{		
-		//�Ӽ������� �� ���⸸ �÷����� �� �ִ�.
-		ItemProp* pItemProp;
-		CItemElem* pTempElem;
-		pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
-		
-		if( pTempElem != NULL && pTempElem->m_nResistAbilityOption > 0 )
-		{
-			pItemProp = pTempElem->GetProp();
-			if( CItemElem::IsEleRefineryAble(pItemProp) )
-			{
-//				if( pItemProp->dwReferStat1 == WEAPON_GENERAL )
-//				{
-					if(m_pItemElem != NULL)
-						m_pItemElem->SetExtra(0);
-
-					m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-					m_pEItemProp = m_pItemElem->GetProp();
-					m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-					m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-					CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-					pButton->EnableWindow(TRUE);
-//				}
-			}
-		}
-		else
-			g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_REMOVE_ERROR ) ); //Error Message
-	}
-	return TRUE;
-}
-
-void CWndRemoveAttribute::SetWeapon(CItemElem* pItemElem)
-{
-	if( pItemElem != NULL && pItemElem->m_nResistAbilityOption > 0 )
-	{
-		ItemProp* pProp = pItemElem->GetProp();
-
-//		if( pProp->dwItemKind1 == IK1_WEAPON )
-		if( CItemElem::IsEleRefineryAble(pProp) )
-		{
-//			if( pProp->dwReferStat1 == WEAPON_GENERAL )
-//			{
-				if(m_pItemElem != NULL)
-					m_pItemElem->SetExtra(0);
-
-				m_pItemElem = pItemElem;
-				m_pEItemProp = m_pItemElem->GetProp();
-				m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-				CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-				pButton->EnableWindow(TRUE);
-//			}
-		}
-	}
-	else
-		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_REMOVE_ERROR ) ); //Error Message
+void CWndRemoveAttribute::SetWeapon(CItemElem* pItemElem) {
+	m_receiver.SetAnItem(pItemElem, CWndItemReceiver::SetMode::Verbose);
 }
 
 BOOL CWndRemoveAttribute::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -19148,6 +19041,9 @@ BOOL CWndRemoveAttribute::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			m_pWndConfirm = new CWndRemoveAttributeConfirm;
 			m_pWndConfirm->Initialize(this);
 		}
+	} else if (nID == WIDC_PIC_SLOT + 1) {
+		CWndBase * pButton = GetDlgItem(WIDC_START);
+		pButton->EnableWindow(m_receiver.GetItem() ? TRUE : FALSE);
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
@@ -19229,9 +19125,12 @@ BOOL CWndRemoveAttributeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT*
 
 	if( nID == WIDC_YES )
 	{
-		//SEND to Server
-		if(pParentwnd && pParentwnd->m_pItemElem)
-			g_DPlay.SendRemoveAttribute(pParentwnd->m_pItemElem->m_dwObjId);
+		if (pParentwnd) {
+			CItemElem * item = pParentwnd->m_receiver.GetItem();
+			if (item) {
+				g_DPlay.SendRemoveAttribute(item->m_dwObjId);
+			}
+		}
 	}
 	else if( nID == WIDC_NO || nID == WTBID_CLOSE )
 	{

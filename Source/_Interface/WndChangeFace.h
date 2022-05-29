@@ -50,18 +50,13 @@ public:
 
 	class CWndEquipementReceiver : public CWndItemReceiver {
 	public:
-		CWndEquipementReceiver(CWndItemReceiver::Removable r) : CWndItemReceiver(r) {}
+		CWndEquipementReceiver() : CWndItemReceiver(CWndItemReceiver::Removable::Yes) {}
 		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
 	};
 
 	CWndEquipementReceiver m_itemReceiver;
 	CWndItemDisplayer      m_itemDisplayer;
 	CItemElem * m_scroll = nullptr;
-
-	CWndItemTransy() :
-		CWndNeuz(),
-		m_itemReceiver(CWndItemReceiver::Removable::Yes) {
-	}
 
 	void Init( CItemElem* pItemElem );
 

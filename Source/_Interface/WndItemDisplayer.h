@@ -43,6 +43,7 @@ private:
 
 public:
   enum class Removable { Yes, No };
+  enum class SetMode { Verbose, Silent, NeverFail };
 
   CWndItemReceiver(Removable removableItem = Removable::No)
     : m_removableItem(removableItem == Removable::Yes) {
@@ -55,17 +56,21 @@ public:
   void SetTooltipId(const DWORD tooltip) { m_defaultTooltip = tooltip; }
 
   virtual bool CanReceiveItem(const CItemElem & itemElem, bool verbose = true) = 0;
+  bool SetAnItem(CItemElem * itemElem, SetMode setMode);
 
   void OnDraw(C2DRender * p2DRender) override;
   void OnMouseWndSurface(CPoint point) override;
   BOOL OnDropIcon(LPSHORTCUT pShortcut, CPoint point) override;
   void OnRButtonUp(UINT, CPoint) override;
+  void OnLButtonDblClk(UINT, CPoint) override;
 
   CItemElem * GetItem() { return m_item; }
 
 private:
   void NotifyChange();
   void ResetItem();
+
+  void ResetItemWithNotify();
 };
 
 
