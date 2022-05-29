@@ -46,6 +46,8 @@ class C2DRender;
 #define WIN_DBLCLK              40
 #define WIN_ITEMDROP            41   
 
+// ItemReceiver
+#define WNM_ItemReceiver_Changed 42
 
 //NM_CLICK
 //WNM_BEGINRDRAG

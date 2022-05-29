@@ -1,5 +1,4 @@
-#ifndef __WNDCHANGEFACE__H
-#define __WNDCHANGEFACE__H
+#pragma once
 
 class CWndChangeFace : public CWndNeuz 
 { 
@@ -46,20 +45,28 @@ public:
 
 class CWndItemTransy : public CWndNeuz 
 { 
-public: 
-	CRect m_RectPut;
-	CItemElem * m_pItemElemPut = nullptr;
+public:
+	static constexpr UINT WIDC_Receiver = 501;
+
+	class CWndEquipementReceiver : public CWndItemReceiver {
+	public:
+		CWndEquipementReceiver(CWndItemReceiver::Removable r) : CWndItemReceiver(r) {}
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
+
+	CWndEquipementReceiver m_itemReceiver;
+	CWndItemDisplayer      m_itemDisplayer;
 	CItemElem * m_scroll = nullptr;
-	CWndItemDisplayer m_itemDisplayer;
+
+	CWndItemTransy() :
+		CWndNeuz(),
+		m_itemReceiver(CWndItemReceiver::Removable::Yes) {
+	}
 
 	void Init( CItemElem* pItemElem );
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual void OnRButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnDestroy( void );
-	virtual	BOOL OnDropIcon( LPSHORTCUT	pShortcut, CPoint point );
 }; 
-#endif	// __WNDCHANGEFACE__H

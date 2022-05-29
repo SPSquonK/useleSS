@@ -337,49 +337,29 @@ BOOL CWndChangeSex::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 ****************************************************/
 
 void CWndItemTransy::Init(CItemElem * pItemElem) {
-	m_pItemElemPut = nullptr;
 	m_scroll = pItemElem;
 	if (m_scroll) {
 		m_scroll->SetExtra(1);
 	}
-
-	WNDCTRL * pWndCtrl = GetWndCtrl(WIDC_STATIC1);
-	m_RectPut = pWndCtrl->rect;
 }
 
 void CWndItemTransy::OnDestroy( void ) {
-	if (m_pItemElemPut) m_pItemElemPut->SetExtra(0);
 	if (m_scroll) m_scroll->SetExtra(0);
 }
 
-void CWndItemTransy::OnDraw( C2DRender* p2DRender ) 
-{ 
-	if (m_pItemElemPut && m_pItemElemPut->GetTexture()) {
-		m_pItemElemPut->GetTexture()->Render(p2DRender, m_RectPut.TopLeft(), 255);
-	}
-
-	CPoint	Point = GetMousePoint();
-	CRect HitRect = m_RectPut;
-	CPoint Point2 = Point;
-	if(m_RectPut.PtInRect( Point ) )
-	{
-		ClientToScreen( &Point2 );
-		ClientToScreen( &HitRect );
-		if(m_pItemElemPut)
-			g_WndMng.PutToolTip_Item(m_pItemElemPut, Point2, &HitRect );
-		else
-			g_toolTip.PutToolTip( 100, prj.GetText( TID_GAME_TRANSITEM_PUT ), *HitRect, Point2, 0 );
-	}
-} 
 void CWndItemTransy::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 
-	WNDCTRL * pWndCtrl = GetWndCtrl(WIDC_STATIC4);
+	const WNDCTRL * const pWndCtrl = GetWndCtrl(WIDC_STATIC4);
 	m_itemDisplayer.Create(0, pWndCtrl->rect, this, 500);
 	m_itemDisplayer.SetTooltipId(TID_GAME_TRANSITEM_PUT1);
 
+	const WNDCTRL * const receiverCtrl = GetWndCtrl(WIDC_STATIC1);
+	m_itemReceiver.Create(0, receiverCtrl->rect, this, WIDC_Receiver);
+	m_itemReceiver.SetTooltipId(TID_GAME_TRANSITEM_PUT);
+	
 	// 윈도를 중앙으로 옮기는 부분.
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
@@ -394,116 +374,94 @@ BOOL CWndItemTransy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_ITEM_TRANSY, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-void CWndItemTransy::OnRButtonUp(UINT nFlags, CPoint point) {
-	if (m_pItemElemPut && PtInRect(m_RectPut, point)) {
-		m_pItemElemPut->SetExtra(0);
-		m_pItemElemPut = nullptr;
-
-		m_itemDisplayer.ResetItem();
-	}
-}
-
 BOOL CWndItemTransy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	switch( nID )
-	{
-	case WIDC_OK:
-	{
-		if (m_pItemElemPut) {
+	switch (nID) {
+		case WIDC_OK: {
+			if (CItemElem * toTransform = m_itemReceiver.GetItem()) {
 
-			OBJID scrollPos = m_scroll ? m_scroll->m_dwObjId : NULL_ID;
+				const OBJID scrollPos = m_scroll ? m_scroll->m_dwObjId : NULL_ID;
 
-			g_DPlay.SendItemTransy(
-				m_pItemElemPut->m_dwObjId,
-				scrollPos,
-				m_itemDisplayer.GetItemId(),
-				m_scroll ? TRUE : FALSE
-			);
+				g_DPlay.SendItemTransy(
+					toTransform->m_dwObjId,
+					scrollPos,
+					m_itemDisplayer.GetItemId(),
+					m_scroll ? TRUE : FALSE
+				);
 
-			Destroy();
+				Destroy();
+			}
 		}
-	}
 		break;
-	case WIDC_CANCEL:
+		case WIDC_CANCEL:
 		{
 			Destroy();
+		}
+		break;
+		case WIDC_Receiver: {
+			if (message == WNM_ItemReceiver_Changed) {
+				CItemElem * put = m_itemReceiver.GetItem();
+				if (!put) {
+					m_itemDisplayer.ResetItem();
+				} else {
+					CItemElem copy = *put;
+
+					      ItemProp * const myItemProp = copy.GetProp();
+					const ItemProp * const transyProp = myItemProp ? g_pPlayer->GetTransyItem(myItemProp) : nullptr;
+					if (transyProp) {
+						copy.m_dwItemId = transyProp->dwID;
+						copy.m_nHitPoint = transyProp->dwEndurance;
+					}
+
+					m_itemDisplayer.SetItem(copy);
+				}
+			}
 		}
 		break;
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-BOOL CWndItemTransy::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	CWndBase* pWndFrame = pShortcut->m_pFromWnd->GetFrameWnd();
-	
-	// 인벤토리에서 온것인지 검사
-	if( !(pShortcut->m_dwShortcut == ShortcutType::Item) && !(pWndFrame->GetWndId() == APP_INVENTORY) )
-		return FALSE;
-	
-	// 장착되어있는지 검사
-	if( g_pPlayer->m_Inventory.IsEquip( pShortcut->m_dwId ) )
-	{
-		g_WndMng.PutString(TID_GAME_EQUIPPUT);
-		SetForbid( TRUE );
-		return FALSE;
-	}
-	
-	CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-	if( pItemElem == NULL )
-	{
-		SetForbid( TRUE );
-		return FALSE;
-	}
-	
-	if(m_RectPut.PtInRect( point ) )
-	{
-		ItemProp* pItemPropChange = NULL;
-		// 성별이 있는 아이템 인지 검사
-		ItemProp* pItemProp = pItemElem->GetProp();
-		
-		pItemPropChange = g_pPlayer->GetTransyItem( pItemProp );
-		if( pItemPropChange == NULL )
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_ITEM_TRANSY), NULL, prj.GetTextColor(TID_GAME_ITEM_TRANSY) );
-			SetForbid( TRUE );
-			return FALSE;
-		}
+bool CWndItemTransy::CWndEquipementReceiver::CanReceiveItem(
+	const CItemElem & itemElem, bool verbose
+) {
+	ItemProp * pItemProp = itemElem.GetProp();
+	if (!pItemProp) return false;
 
-		if(m_scroll)
-		{
-			if(m_scroll->GetProp()->dwID == II_CHR_SYS_SCR_ITEMTRANSY_A )
-			{
-				if( 61 <= pItemElem->GetProp()->dwLimitLevel1 )
-				{
-					g_WndMng.PutString(TID_GAME_ITEM_TRANSY_NOT_LEVEL_0, m_scroll->GetProp()->szName);
-					SetForbid( TRUE );
-					return FALSE;
-				}
+	// == Transable?
+	// TODO: why isn't CMover::GetTransyItem static?
+	if (!g_pPlayer) return false;
+	const ItemProp * pItemPropChange = g_pPlayer->GetTransyItem(pItemProp);
+
+	if (!pItemPropChange) {
+		if (verbose) g_WndMng.PutString(TID_GAME_ITEM_TRANSY);
+		return false;
+	}
+
+
+	// == Right scroll?
+	const CWndItemTransy * parent = dynamic_cast<CWndItemTransy *>(m_pParentWnd);
+	if (!parent) {
+		return false;
+	}
+
+	if (parent->m_scroll) {
+		const CItemElem * const scroll = parent->m_scroll;
+		const ItemProp * const scrollProp = scroll->GetProp();
+		if (!scrollProp) return false;
+
+		if (scrollProp->dwID == II_CHR_SYS_SCR_ITEMTRANSY_A) {
+			if (pItemProp->dwLimitLevel1 >= 61) {
+				if (verbose) g_WndMng.PutString(TID_GAME_ITEM_TRANSY_NOT_LEVEL_0, scrollProp->szName);
+				return false;
 			}
-			else
-			{
-				if( pItemElem->GetProp()->dwLimitLevel1 < 61 )
-				{
-					g_WndMng.PutString(TID_GAME_ITEM_TRANSY_NOT_LEVEL_1, m_scroll->GetProp()->szName);
-					SetForbid( TRUE );
-					return FALSE;
-				}
+		} else {
+			if (pItemProp->dwLimitLevel1 < 61) {
+				if (verbose) g_WndMng.PutString(TID_GAME_ITEM_TRANSY_NOT_LEVEL_1, scrollProp->szName);
+				return false;
 			}
 		}
-
-		if (m_pItemElemPut) {
-			m_pItemElemPut->SetExtra(0);
-		}
-		
-		pItemElem->SetExtra( 1 );
-		m_pItemElemPut = pItemElem;
-
-		CItemElem copy = *m_pItemElemPut;
-		copy.m_dwItemId = pItemPropChange->dwID;
-		copy.m_nHitPoint	= pItemPropChange->dwEndurance;
-		m_itemDisplayer.SetItem(copy);
 	}
-	
-	return TRUE;
+
+	return true;
 }

@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "ResData.h"
+#include "defineText.h"
 #include "WndItemDisplayer.h"
 
 void CWndItemDisplayer::SetItem(/* const */ CItemElem & item) {
@@ -35,4 +37,103 @@ void CWndItemDisplayer::OnDraw(C2DRender * const p2DRender) {
 
 DWORD CWndItemDisplayer::GetItemId() const {
 	return m_item ? m_item->m_dwItemId : NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+CWndItemReceiver::~CWndItemReceiver() {
+	ResetItem();
+}
+
+void CWndItemReceiver::OnInitialUpdate() {
+	CWndBase::OnInitialUpdate();
+	m_item = nullptr;
+}
+
+void CWndItemReceiver::OnDraw(C2DRender * p2DRender) {
+	if (!m_item) return;
+
+	CTexture * const texture = m_item->GetTexture();
+	if (!texture) return;
+
+	texture->Render(p2DRender, GetWindowRect().TopLeft());
+}
+
+void CWndItemReceiver::OnMouseWndSurface(CPoint point) {
+	CRect rect = GetWindowRect();
+	ClientToScreen(&point);
+	ClientToScreen(&rect);
+	if (m_item) {
+		g_WndMng.PutToolTip_Item(m_item, point, &rect);
+	} else if (m_defaultTooltip != 0) {
+		g_toolTip.PutToolTip(100, prj.GetText(m_defaultTooltip), rect, point, 0);
+	}
+}
+
+void CWndItemReceiver::OnRButtonUp(UINT, CPoint) {
+	if (m_removableItem && m_item) {
+		ResetItem();
+		NotifyChange();
+	}
+}
+
+BOOL CWndItemReceiver::OnDropIcon(SHORTCUT * pShortcut, CPoint) {
+	if (pShortcut->m_dwShortcut != ShortcutType::Item) {
+		return FALSE;
+	}
+	
+	CWndBase * pWndFrame = pShortcut->m_pFromWnd->GetFrameWnd();
+	if (pWndFrame->GetWndId() != APP_INVENTORY) {
+		return FALSE;
+	}
+	
+	if (!g_pPlayer) {
+		return FALSE;
+	}
+
+	if (g_pPlayer->m_Inventory.IsEquip(pShortcut->m_dwId)) {
+		g_WndMng.PutString(TID_GAME_EQUIPPUT);
+		SetForbid(TRUE);
+		return FALSE;
+	}
+
+	CItemElem * pItemElem = g_pPlayer->GetItemId(pShortcut->m_dwId);
+	if (!pItemElem) {
+		SetForbid(TRUE);
+		return FALSE;
+	}
+
+	if (!CanReceiveItem(*pItemElem, true)) {
+		SetForbid(TRUE);
+		return FALSE;
+	}
+	
+	ResetItem();
+	m_item = pItemElem;
+	pItemElem->SetExtra(pItemElem->GetExtra() + 1);
+	NotifyChange();
+	return TRUE;
+}
+
+void CWndItemReceiver::ResetItem() {
+	if (!g_pPlayer) {
+		m_item = nullptr;
+		return;
+	}
+
+	if (!m_item) return;
+
+	const auto currentExtra = m_item->GetExtra();
+	if (currentExtra != 0) {
+		m_item->SetExtra(currentExtra - 1);
+	}
+
+	m_item = nullptr;
+}
+
+void CWndItemReceiver::NotifyChange() {
+	m_pParentWnd->OnChildNotify(
+		WNM_ItemReceiver_Changed, m_nIdWnd,
+		reinterpret_cast<LRESULT *>(m_item)
+	);
 }
