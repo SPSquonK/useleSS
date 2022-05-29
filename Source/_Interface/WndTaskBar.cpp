@@ -408,6 +408,7 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 						p2DRender->RenderFillRect( rectItem, dwColor );		
 					p2DRender->RenderFillRect( rectSkill, dwColor );
 				}
+				break;
 			case ShortcutType::PartySkill:
 				p2DRender->RenderFillRect( rectItem, dwColor );
 				break;
@@ -460,10 +461,6 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 	
 	if( !( g_pPlayer->IsSMMode( SM_ACTPOINT ) ) )
 	{
-	#define LV2MAXAP	10		// 2단계 스킬이 다차는데 필요한 action point
-	#define LV3MAXAP	25		
-	#define LV4MAXAP	50
-	#define LV5MAXAP	100
 
 		point = POINT_QUEUE;
 		point.x += SKILL_SIZE;	// 스킬 2번째칸부터 쉐이드된다.
@@ -1055,7 +1052,7 @@ BOOL CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType
 	
 	std::optional<unsigned int> where;
 	if (nWhere == 0) where = std::nullopt;
-	else nWhere = m_nSlotIndex;
+	else where = m_nSlotIndex;
 
 	g_DPlay.SendAddInTaskbar(where, nIndex, *pShortcut);
 

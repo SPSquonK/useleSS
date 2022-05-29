@@ -12,6 +12,11 @@ public:
   enum class Operation : bool { Add = true, Remove = false };
   enum class BarName : bool { Applet = true, Item = false };
 
+  static constexpr int LV2MAXAP =  10; // 2단계 스킬이 다차는데 필요한 action point
+  static constexpr int LV3MAXAP =  25;
+  static constexpr int LV4MAXAP =  50;
+  static constexpr int LV5MAXAP = 100;
+
 public:
   std::array<SHORTCUT, MAX_SLOT_APPLET> m_aSlotApplet;
   std::array<
