@@ -65,7 +65,7 @@ CAr & operator<<(CAr & ar, const CTaskbar & self) {
 	const auto queueSize = ar.PushBack<size_t>(0);
 	for (int i = 0; i < MAX_SLOT_QUEUE; ++i) {
 		if (PushShortcut(ar, self.m_aSlotQueue[i], i)) {
-			++(*appletsSize);
+			++(*queueSize);
 		}
 	}
 

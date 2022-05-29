@@ -1784,12 +1784,8 @@ void CDPSrvr::OnMoverFocus( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 }
 
 void CDPSrvr::OnSkillTaskBar(CAr & ar, CUser & pUser) {
-	std::array<SHORTCUT, MAX_SLOT_QUEUE> values;
-	ar >> values;
-
-	for (size_t i = 0; i != MAX_SLOT_QUEUE; ++i) {
-		pUser.m_playTaskBar.m_aSlotQueue[i] = values[i];
-	}
+	ar >> pUser.m_playTaskBar.m_aSlotQueue;
+	// TODO: maybe sanitize a bit?
 }
 
 void CDPSrvr::OnModifyTaskBar(CAr & ar, CUser & pUser) {

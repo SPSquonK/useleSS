@@ -32,6 +32,7 @@ DWORD   POINT_QUEUE_Y  ;
 #define POINT_QUEUE  CPoint( POINT_QUEUE_X , POINT_QUEUE_Y  )
 
 void CWndTaskBar::UpdateAllTaskbarTexture() {
+	// Ensure has texture and no invalid item shortcut
 	const auto EnsureCorrectness = [&](SHORTCUT & shortcut) {
 		SetTaskBarTexture(shortcut);
 
@@ -61,6 +62,13 @@ void CWndTaskBar::UpdateAllTaskbarTexture() {
 
 	for (SHORTCUT & shortcut : m_aSlotQueue) {
 		EnsureCorrectness(shortcut);
+	}
+
+	// Update m_nCurQueueNum
+	for (m_nCurQueueNum = 0; m_nCurQueueNum != m_aSlotQueue.size(); ++m_nCurQueueNum) {
+		if (m_aSlotQueue[m_nCurQueueNum].m_dwShortcut != ShortcutType::Skill) {
+			break;
+		}
 	}
 }
 
@@ -453,6 +461,10 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 		if( !lpShortcut->IsEmpty() && lpShortcut->m_pTexture)
 		{
 			p2DRender->RenderTexture( point, lpShortcut->m_pTexture );
+
+//				LPSKILL pSkill = g_pPlayer->GetSkill( lpShortcut->m_dwType, lpShortcut->m_dwId );
+//				if( g_pPlayer->m_nReUseDelay[ lpShortcut->m_dwId ] > 0 )
+//					p2DRender->TextOut( point.x, point.y, g_pPlayer->m_nReUseDelay[ lpShortcut->m_dwId ] );
 		}
 
 		point += CPoint( SKILL_SIZE, 0 );
