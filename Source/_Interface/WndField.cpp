@@ -19148,38 +19148,15 @@ BOOL CWndRemoveAttributeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT*
 // CWndRemovePiercing Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndRemovePiercing::CWndRemovePiercing() 
-{
-	m_pItemElem = NULL;
-	m_pEItemProp = NULL;
-	m_pTexture = NULL;
-}
-
-CWndRemovePiercing::~CWndRemovePiercing() 
-{ 
-} 
-
-void CWndRemovePiercing::OnDestroy()
-{
-	if(m_pItemElem != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem ) )
-			m_pItemElem->SetExtra(0);
-	}
-}
 
 void CWndRemovePiercing::OnDraw( C2DRender* p2DRender ) 
 {
-	ItemProp* pItemProp;
-	
-	if(m_pItemElem != NULL)
-	{
-		pItemProp = m_pItemElem->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-		if(pItemProp != NULL)
-		{	
-			if(m_pTexture != NULL)
-				m_pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
+	CItemElem * item = m_receiver.GetItem();
+	if (!item) return;
+
+	ItemProp* pItemProp = item->GetProp();
+	if (!pItemProp) return;
+
 			int nMaxPiercing;
 			CRect rect;
 			LPWNDCTRL lpWndCtrl;
@@ -19204,14 +19181,14 @@ void CWndRemovePiercing::OnDraw( C2DRender* p2DRender )
 			CString textOpt;
 			CString strTemp;
 
-			int nPiercingSize = m_pItemElem->GetPiercingSize();
+			int nPiercingSize = item->GetPiercingSize();
 
 			for(int i=0; i<nPiercingSize; i++)
 			{
 				if(nPiercingSize > nMaxPiercing)
 					break;
 
-				const PIERCINGAVAIL * ptr = g_PiercingAvail.GetPiercingAvail(m_pItemElem->GetPiercingItem(i));
+				const PIERCINGAVAIL * ptr = g_PiercingAvail.GetPiercingAvail(item->GetPiercingItem(i));
 
 				if(ptr != NULL)
 				{
@@ -19239,8 +19216,7 @@ void CWndRemovePiercing::OnDraw( C2DRender* p2DRender )
 					strTemp = "";
 				}
 			}
-		}
-	} 
+	 
 }
 
 void CWndRemovePiercing::OnInitialUpdate() 
@@ -19269,6 +19245,10 @@ void CWndRemovePiercing::OnInitialUpdate()
 	m_nInfoSlot[8] = WIDC_STATIC_PIERCING9;
 	m_nInfoSlot[9] = WIDC_STATIC_PIERCING10;
 
+	const WNDCTRL * const wndCtrl = GetWndCtrl(WIDC_PIC_SLOT);
+	m_receiver.Create(0, wndCtrl->rect, this, WIDC_PIC_SLOT + 1);
+	m_receiver.SetTooltipId(TID_GAME_TOOLTIP_PIERCINGITEM);
+
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
@@ -19277,100 +19257,26 @@ BOOL CWndRemovePiercing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_REMOVE_PIERCING_EX, 0, CPoint( 0, 0 ), pWndParent );
 } 
-BOOL CWndRemovePiercing::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRemovePiercing::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRemovePiercing::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRemovePiercing::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
+
+
+bool CWndRemovePiercing::CWndPiercedItemReceiver::CanReceiveItem(
+	const CItemElem & itemElem, bool verbose
+) {
+	const ItemProp * itemProp = itemElem.GetProp();
+	if (!itemProp) return false;
+
+	if (!itemElem.IsPierceAble()
+		|| itemElem.GetPiercingItem(0) == 0
+		) {
+		if (verbose) g_WndMng.PutString(TID_GAME_REMOVE_PIERCING_ERROR_EX);
+		return false;
+	}
+
+	return true;
 }
 
-void CWndRemovePiercing::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	if(!m_pItemElem) return;
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(m_pItemElem)
-		{
-			m_pItemElem->SetExtra(0);
-			CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-			pButton->EnableWindow(FALSE);
-			m_pItemElem = NULL;
-			m_pEItemProp = NULL;
-			m_pTexture = NULL;
-		}
-	}
-}
-
-void CWndRemovePiercing::OnMouseWndSurface(CPoint point)
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		ClientToScreen( &point );
-		ClientToScreen( &rect );
-		g_toolTip.PutToolTip( (DWORD)this, prj.GetText(TID_GAME_TOOLTIP_PIERCINGITEM), rect, point );
-	}
-}
-
-BOOL CWndRemovePiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{		
-		ItemProp* pItemProp;
-		CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-		
-		if(m_pItemElem == NULL && pTempElem != NULL)
-		{
-			pItemProp = pTempElem->GetProp();
-			if( pTempElem->IsPierceAble() && pTempElem->GetPiercingItem( 0 ) != 0 )
-			{
-				m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-				m_pEItemProp = m_pItemElem->GetProp();
-				m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-				CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-				pButton->EnableWindow(TRUE);
-			}
-			else
-				g_WndMng.PutString(TID_GAME_REMOVE_PIERCING_ERROR_EX);
-		}
-	}
-	return TRUE;
-}
-
-void CWndRemovePiercing::SetItem(CItemElem* pItemElem)
-{
-	if(m_pItemElem == NULL && pItemElem != NULL)
-	{
-		ItemProp* pProp = pItemElem->GetProp();
-		if( pItemElem->IsPierceAble() && pItemElem->GetPiercingItem( 0 ) != 0 )
-		{
-			m_pItemElem = pItemElem;
-			m_pEItemProp = m_pItemElem->GetProp();
-			m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-			m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-			CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-			pButton->EnableWindow(TRUE);
-		}
-		else
-			g_WndMng.PutString(TID_GAME_REMOVE_PIERCING_ERROR_EX);
-	}
+void CWndRemovePiercing::SetItem(CItemElem* pItemElem) {
+	m_receiver.SetAnItem(pItemElem, CWndItemReceiver::SetMode::Verbose);
 }
 
 BOOL CWndRemovePiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -19378,14 +19284,17 @@ BOOL CWndRemovePiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 	if( nID == WIDC_START )
 	{
 		//������ ������ �˸���.
-		if(m_pItemElem != NULL)
+		if(CItemElem * equipement = m_receiver.GetItem())
 		{
 			CWndBase * pButton = GetDlgItem(WIDC_START);
 			pButton->EnableWindow(FALSE);
 
-			g_DPlay.SendPacket<PACKETTYPE_PIERCINGREMOVE, DWORD>(m_pItemElem->m_dwObjId);
+			g_DPlay.SendPacket<PACKETTYPE_PIERCINGREMOVE, DWORD>(equipement->m_dwObjId);
 			Destroy();
 		}
+	} else if (nID == WIDC_PIC_SLOT) {
+		CWndBase * pButton = GetDlgItem(WIDC_START);
+		pButton->EnableWindow(m_receiver.GetItem() ? TRUE : FALSE);
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 

@@ -113,7 +113,7 @@ public:
 	void	SetUltimatePiercingItem(int nth, DWORD dwItem) { m_piercing.SetUltimatePiercingItem(nth, dwItem); }
 	DWORD	GetUltimatePiercingItem(int nth) { return m_piercing.GetUltimatePiercingItem(nth); }
 
-	BOOL	IsPierceAble(DWORD dwTargetItemKind3 = NULL_ID, BOOL bSize = FALSE);
+	BOOL	IsPierceAble(DWORD dwTargetItemKind3 = NULL_ID, BOOL bSize = FALSE) const;
 #endif
 
 
@@ -176,11 +176,11 @@ public:
 
 
 #ifndef __CORESERVER
-	BOOL	IsVisPet() { return (GetProp() && GetProp()->IsVisPet()) || IsTransformVisPet(); }
+	BOOL	IsVisPet() const { return (GetProp() && GetProp()->IsVisPet()) || IsTransformVisPet(); }
 	void	SetVisKeepTimeSize(int nSize) { m_piercing.SetVisKeepTimeSize(nSize); }
 	void	SetVisKeepTime(int nth, time_t tmKeep) { m_piercing.SetVisKeepTime(nth, tmKeep); }
 	time_t	GetVisKeepTime(int nth) { return m_piercing.GetVisKeepTime(nth); }
-	BOOL	IsTransformVisPet() { return GetProp() && GetProp()->dwItemKind3 == IK3_PET && m_bTranformVisPet; }
+	BOOL	IsTransformVisPet() const { return GetProp() && GetProp()->dwItemKind3 == IK3_PET && m_bTranformVisPet; }
 #endif
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)

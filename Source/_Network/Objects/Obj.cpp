@@ -546,7 +546,7 @@ int CMover::InitSkillExp()
 
 // bSize는 피어싱 사이즈를 늘릴 수 있는지 검사할 때 TRUE값을 setting 한다.
 // bSize를 TRUE로 할 경우 dwTagetItemKind3는 NULL_ID로 한다.
-BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize )
+BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize ) const
 {
 	if( !GetProp() )
 		return FALSE;
