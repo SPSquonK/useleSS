@@ -141,8 +141,9 @@ public:
 	int HitTest( CPoint point );
 	void SetFirstWord(int nPublic, char nChar);
 	void SetWord(CItemElem* pItemElem);
-	void SetDescription(CHAR* szChar);
 	void ReceiveResult(int nResult, DWORD dwItemId, int nItemCount);
+
+	void SetQuestion(const CHAR * question);
 }; 
 
 class CWndDiceGameTender;
@@ -204,7 +205,6 @@ public:
 	void CheckPenyaUsuable(int nPenya, int nSelect);	//입찰되는 금액이 가능한 금액인지를 확인
 	void SetTenderPenya(int nSelect, int nPenya);		//가능한 금액이라면 적용한다.
 	void ReceiveResult(int nDiceNum, int nPenya);		//서버로 부터 주사위의 결과 값을 받음
-	void SetDescription(CHAR* szChar);
 	void RefreshCtrl();
 	void ResetPenya();
 }; 
@@ -292,7 +292,6 @@ public:
 	void SetPuzzle(std::vector<DWORD> vPuzzle);
 	void SetPicture(CItemElem* pItemElem);
 	void ReceiveResult();
-	void SetDescription(CHAR* szChar);
 }; 
 
 #endif //__WNDMINIGAME__H

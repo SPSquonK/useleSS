@@ -779,14 +779,13 @@ void CWndFindWordGame::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT_DESC );
+	CWndText::SetupDescription(m_pText, _T("MiniGameFindWordDesc.inc"));
 
 	m_nQuestionID = 0;
 
 	CWndButton* pButton;
 	pButton = (CWndButton*)GetDlgItem( WIDC_BTN_START );
 	pButton->EnableWindow(FALSE);
-
-	SetDescription(NULL);
 
 	g_DPlay.SendAlphabetOpenWnd();
 	
@@ -865,22 +864,10 @@ int CWndFindWordGame::HitTest( CPoint point )
 	return rtn_val;
 }
 
-void CWndFindWordGame::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	if( szChar == NULL )
-	{
-		checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "MiniGameFindWordDesc.inc" ) ));
-		szChar = scanner.m_pProg;
-	}
-	else
-		checkflag = TRUE;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
+void CWndFindWordGame::SetQuestion(const CHAR * szChar) {
+	if (m_pText) {
+		m_pText->m_string.AddParsingString(szChar);
+		m_pText->ResetString();
 	}
 }
 
@@ -1099,7 +1086,7 @@ void CWndDiceGame::OnInitialUpdate()
 	}
 
 	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT_DESC );
-	SetDescription(NULL);
+	CWndText::SetupDescription(m_pText, _T("MiniGameDiceDesc.inc"));
 
 	CWndButton* pButton;
 	pButton = (CWndButton*)GetDlgItem( WIDC_BTN_START );
@@ -1362,20 +1349,6 @@ BOOL CWndDiceGame::Process()
 	}
 	
 	return TRUE;
-}
-
-void CWndDiceGame::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "MiniGameDiceDesc.inc" ) ));
-	szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
 }
 
 void CWndDiceGame::ResetPenya()
@@ -1840,12 +1813,12 @@ void CWndPuzzleGame::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT_DESC );
+	CWndText::SetupDescription(m_pText, _T("MiniGamePuzzleDesc.inc"));
 	
 	CWndButton* pButton;
 	pButton = (CWndButton*)GetDlgItem( WIDC_BTN_START );
 	pButton->EnableWindow(FALSE);
 
-	SetDescription(NULL);
 	g_DPlay.SendReassembleOpenWnd();
 	
 	MoveParentCenter();
@@ -1931,20 +1904,6 @@ void CWndPuzzleGame::ReceiveResult()
 	PlayMusic( BGM_IN_FITUP );
 	
 	Destroy();
-}
-
-void CWndPuzzleGame::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "MiniGamePuzzleDesc.inc" ) ));
-	szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
 }
 
 #endif //__EVE_MINIGAME

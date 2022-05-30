@@ -16406,7 +16406,7 @@ void CWndMixJewel::OnInitialUpdate()
 		m_ItemInfo[i].itemid = -1;
 	}
 
-	SetDescription(NULL);
+	CWndText::SetupDescription(m_pText, _T("SmeltMixJewel.inc"));
 
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
@@ -16420,20 +16420,6 @@ void CWndMixJewel::OnInitialUpdate()
 		m_pWndInventory->m_wndItemCtrl.SetDieFlag(TRUE);
 	
 	MoveParentCenter();
-}
-
-void CWndMixJewel::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SmeltMixJewel.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
@@ -16863,31 +16849,10 @@ void CWndExtraction::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
+
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
+	CWndText::SetupDescription(m_pText, _T("SmeltExtraction.inc"));
 
-	SetDescription(NULL);
-
-	//Window Position
-/*	CWndInventory* pWndInventory;
-	pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
-	CRect rectInventory;
-	if(pWndInventory != NULL)
-	{
-		pWndInventory->m_wndItemCtrl.SetDieFlag(TRUE);
-		rectInventory = pWndInventory->GetWindowRect( TRUE );
-	}
-	CPoint ptInventory = rectInventory.TopLeft();
-	CPoint ptMove;
-	
-	CRect rect = GetWindowRect( TRUE );
-	
-	if( ptInventory.x > rect.Width() / 2 )
-		ptMove = ptInventory - CPoint( rect.Width(), 0 );
-	else
-		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
-	
-	Move( ptMove );
-*/
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
@@ -16995,20 +16960,6 @@ BOOL CWndExtraction::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-
-void CWndExtraction::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SmeltExtraction.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-}
 
 void CWndExtraction::ReceiveResult(int result, int nCount)
 {
@@ -17126,8 +17077,7 @@ void CWndSmeltJewel::OnInitialUpdate()
 	pButton->EnableWindow(FALSE);
 
 	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-
-	SetDescription(NULL);
+	CWndText::SetupDescription(m_pText, _T("SmeltJewel.inc"));
 
 	MoveParentCenter();
 } 
@@ -17541,20 +17491,6 @@ void CWndSmeltJewel::OnLButtonDblClk( UINT nFlags, CPoint point )
 	}
 }
 
-void CWndSmeltJewel::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SmeltJewel.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-}
-
 BOOL CWndSmeltJewel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	if(message == WNM_CLICKED)
@@ -17723,36 +17659,30 @@ void CWndChangeWeapon::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
-	m_pText1 = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	m_pText2 = (CWndText*)GetDlgItem( WIDC_TEXT2 );
+	
+	m_pText1 = (CWndText *)GetDlgItem(WIDC_TEXT1);
+	m_pText2 = (CWndText *)GetDlgItem(WIDC_TEXT2);
 
-	SetDescription(NULL);
+	const auto SetupText = [&](const char * text1File, const char * text2File, DWORD titleTId) {
+		CWndText::SetupDescription(m_pText1, text1File);
+		CWndText::SetupDescription(m_pText2, text2File);
+		SetTitle(prj.GetText(titleTId));
+	};
 
-	//Set Caption
-	if(m_nWeaponType  == WEAPON_GENERAL)
-		SetTitle(prj.GetText(TID_GAME_CHANGEWEAPON_UNIQUE));
-	else if(m_nWeaponType  == WEAPON_UNIQUE)
-		SetTitle(prj.GetText(TID_GAME_CHANGEWEAPON_ULTIMATE));
+	if (m_nWeaponType == WEAPON_GENERAL) {
+		SetupText(
+			_T("SmeltChangeUniqueWeapon.inc"),
+			_T("ChangeUniqueWeaponInfo.inc"),
+			TID_GAME_CHANGEWEAPON_UNIQUE
+		);
+	} else /* if (m_nWeaponType == WEAPON_UNIQUE) */ {
+		SetupText(
+			_T("SmeltChangeUltimateWeapon.inc"),
+			_T("ChangeUltimateWeaponInfo.inc"),
+			TID_GAME_CHANGEWEAPON_ULTIMATE
+		);
+	}
 	
-	//Window Position
-/*	CWndInventory* pWndInventory;
-	pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
-	CRect rectInventory;
-	if(pWndInventory != NULL)
-		rectInventory = pWndInventory->GetWindowRect( TRUE );
-
-	CPoint ptInventory = rectInventory.TopLeft();
-	CPoint ptMove;
-	
-	CRect rect = GetWindowRect( TRUE );
-	
-	if( ptInventory.x > rect.Width() / 2 )
-		ptMove = ptInventory - CPoint( rect.Width(), 0 );
-	else
-		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
-	
-	Move( ptMove );
-*/
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
@@ -17988,39 +17918,6 @@ BOOL CWndChangeWeapon::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndChangeWeapon::SetDescription( CHAR* szChar )
-{
-	CScript scanner1, scanner2;
-	BOOL checkflag;
-	CHAR* szInfo;
-
-	if(m_nWeaponType == WEAPON_GENERAL)
-	{
-		checkflag = scanner1.Load( MakePath( DIR_CLIENT,  _T( "SmeltChangeUniqueWeapon.inc" ) ));
-		checkflag = scanner2.Load( MakePath( DIR_CLIENT,  _T( "ChangeUniqueWeaponInfo.inc" ) ));
-	}
-	else if(m_nWeaponType == WEAPON_UNIQUE)
-	{
-		checkflag = scanner1.Load( MakePath( DIR_CLIENT,  _T( "SmeltChangeUltimateWeapon.inc" ) ));
-		checkflag = scanner2.Load( MakePath( DIR_CLIENT,  _T( "ChangeUltimateWeaponInfo.inc" ) ));
-	}
-
-	szChar = scanner1.m_pProg;
-	szInfo = scanner2.m_pProg;
-
-	if(m_pText1 != NULL && checkflag)
-	{
-		m_pText1->m_string.AddParsingString( szChar );
-		m_pText1->ResetString();	
-	}
-
-	if(m_pText2 != NULL && checkflag)
-	{
-		m_pText2->m_string.AddParsingString( szInfo );
-		m_pText2->ResetString();	
-	}
-}
-
 void CWndChangeWeapon::ReceiveResult(int result)
 {
 	//���? ���� ���� ó��
@@ -18229,7 +18126,7 @@ void CWndHeroSkillUp::OnInitialUpdate()
 	pButton->EnableWindow(FALSE);
 
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	SetDescription(NULL);
+	CWndText::SetupDescription(m_pText, _T("HeroSkillUp.inc"));
 
 	m_SlotID[0] = WIDC_PIC_SLOT1;
 	m_SlotID[1] = WIDC_PIC_SLOT2;
@@ -18368,20 +18265,6 @@ int CWndHeroSkillUp::HitTest( CPoint point )
 		}
 	}
 	return rtn_val;
-}
-
-void CWndHeroSkillUp::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "HeroSkillUp.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
 }
 
 void CWndHeroSkillUp::SetJewel(CItemElem* pItemElem)
@@ -18999,12 +18882,12 @@ void CWndRemoveAttribute::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
+
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
+	CWndText::SetupDescription(m_pText, _T("RemoveAttribute.inc"));
 
 	const WNDCTRL * const wndCtrl = GetWndCtrl(WIDC_PIC_SLOT);
 	m_receiver.Create(0, wndCtrl->rect, this, WIDC_PIC_SLOT + 1);
-
-	SetDescription(NULL);
 
 	MoveParentCenter();
 } 
@@ -19048,20 +18931,6 @@ BOOL CWndRemoveAttribute::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-
-void CWndRemoveAttribute::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RemoveAttribute.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-}
 
 void CWndRemoveAttribute::ReceiveResult(BOOL result)
 {
@@ -19230,9 +19099,10 @@ void CWndRemovePiercing::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
+	
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
+	CWndText::SetupDescription(m_pText, _T("SmeltRemovePiercing.inc"));
 
-	SetDescription(NULL);
 
 	m_nInfoSlot[0] = WIDC_STATIC_PIERCING1;
 	m_nInfoSlot[1] = WIDC_STATIC_PIERCING2;
@@ -19298,20 +19168,6 @@ BOOL CWndRemovePiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-
-void CWndRemovePiercing::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SmeltRemovePiercing.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndRemoveJewel Class
@@ -19462,6 +19318,7 @@ void CWndRemoveJewel::OnInitialUpdate()
 
 	pButton->EnableWindow(FALSE);
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
+	CWndText::SetupDescription(m_pText, _T("SmeltRemoveJewel.inc"));
 
 	m_nJewelSlot[0] = WIDC_JEWEL_SLOT1;
 	m_nJewelSlot[1] = WIDC_JEWEL_SLOT2;
@@ -19474,8 +19331,6 @@ void CWndRemoveJewel::OnInitialUpdate()
 	m_nInfoSlot[2] = WIDC_JEWEL_SLOT_INFO3;
 	m_nInfoSlot[3] = WIDC_JEWEL_SLOT_INFO4;
 	m_nInfoSlot[4] = WIDC_JEWEL_SLOT_INFO5;
-
-	SetDescription(NULL);
 
 	MoveParentCenter();
 } 
@@ -19699,20 +19554,6 @@ BOOL CWndRemoveJewel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-
-void CWndRemoveJewel::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SmeltRemoveJewel.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-}
 
 void CWndRemoveJewel::ResetJewel()
 {

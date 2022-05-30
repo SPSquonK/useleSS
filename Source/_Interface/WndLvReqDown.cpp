@@ -45,9 +45,10 @@ void CWndLvReqDown::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
+	
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-
-	SetDescription();
+	CWndText::SetupDescription(m_pText, _T("ReqLvDown.inc"));
+	
 	/*
 	// 윈도를 중앙으로 옮기는 부분.
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
@@ -163,20 +164,3 @@ BOOL CWndLvReqDown::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	return TRUE;
 }
 
-void CWndLvReqDown::SetDescription()
-{
-
-	CScript scanner;
-	BOOL checkflag;
-	CHAR* szChar;
-
-
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "ReqLvDown.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-}

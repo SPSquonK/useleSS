@@ -36,8 +36,6 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-
-	void SetDescription();
 }; 
 
 class CWndPetStatus : public CWndNeuz
@@ -258,7 +256,6 @@ public:
 	void ReceiveResult(int nPreLevel, int nCurLevel);		//서버로 부터 결과 값을 받음
 	void PreLevelImgProcess();
 	void CurLevelImgProcess();
-	void SetDescription(CHAR* szChar);
 	void SetItem(DWORD dwObjId);
 }; 
 
@@ -338,7 +335,6 @@ public:
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	virtual void OnMouseWndSurface(CPoint point);
 
-	void SetDescription(CHAR* szChar);
 	void SetItem(CItemElem* pItemElem);
 
 private:

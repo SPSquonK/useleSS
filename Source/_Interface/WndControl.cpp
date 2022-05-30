@@ -3122,6 +3122,16 @@ void CWndText::ResetString()
 	UpdateScrollBar();
 }
 
+void CWndText::SetupDescription(CWndText * self, LPCTSTR filename) {
+	if (!self) return;
+
+	CScript scanner;
+	BOOL isLoaded = scanner.Load(MakePath(DIR_CLIENT, filename));
+	if (!isLoaded) return;
+	self->m_string.AddParsingString(scanner.m_pProg);
+	self->ResetString();
+}
+
 ////////////////////////////
 
 // 매뉴는 생성시 m_wndArray에 들어가지만 화면 좌표는 전역 좌표다. 

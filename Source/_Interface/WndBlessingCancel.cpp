@@ -45,8 +45,7 @@ void CWndBlessingCancel::OnInitialUpdate()
 
 	pButton->EnableWindow(FALSE);
 	m_pText = (CWndText*)GetDlgItem( WIDC_DESC );
-
-	SetDescription();
+	CWndText::SetupDescription(m_pText, _T("ItemBlessingCancel.inc"));
 
 	// 윈도를 중앙으로 옮기는 부분.
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
@@ -171,23 +170,3 @@ BOOL  CWndBlessingCancel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	return TRUE;
 
 }
-
-void  CWndBlessingCancel::SetDescription()
-{
-
-	CScript scanner;
-	BOOL checkflag;
-	CHAR* szChar;
-
-
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "ItemBlessingCancel.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-
-}
-

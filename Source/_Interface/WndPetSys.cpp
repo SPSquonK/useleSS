@@ -43,9 +43,9 @@ void CWndPetAwakCancel::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
+	
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-
-	SetDescription();
+	CWndText::SetupDescription(m_pText, _T("PetAwakCancel.inc"));
 	
 	MoveParentCenter();
 } 
@@ -142,25 +142,6 @@ BOOL CWndPetAwakCancel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 	return TRUE;
 }
-
-void CWndPetAwakCancel::SetDescription()
-{
-
-	CScript scanner;
-	BOOL checkflag;
-	CHAR* szChar;
-
-
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "PetAwakCancel.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // CWndPetStatus
@@ -1301,7 +1282,7 @@ void CWndPetMiracle::OnInitialUpdate()
 			m_nCurLvCount = m_nMiracleLv[1] - 1;
 
 			m_pText = (CWndText *)GetDlgItem( WIDC_TEXT_DESC );
-			SetDescription(NULL);
+			CWndText::SetupDescription(m_pText, _T("PetMiracle.inc"));
 
 			CWndButton* pButton;
 			pButton = (CWndButton*)GetDlgItem( WIDC_OK );
@@ -1517,20 +1498,6 @@ void CWndPetMiracle::CurLevelImgProcess()
 			m_nCount[1] = 0;
 		}
 		m_nCount[1]++;
-	}
-}
-
-void CWndPetMiracle::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "PetMiracle.inc" ) ));
-	szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
 	}
 }
 
@@ -1869,7 +1836,7 @@ void CWndPetTransEggs::OnInitialUpdate()
 	if(pItemProp)
 		m_pEggTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 
-	SetDescription(NULL);
+	CWndText::SetupDescription(m_pText, _T("PetTransEggs.inc"));
 
 	MoveParentCenter();
 } 
@@ -2012,20 +1979,6 @@ BOOL CWndPetTransEggs::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-
-void CWndPetTransEggs::SetDescription( CHAR* szChar )
-{
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "PetTransEggs.inc" ) ));
-	szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();
-	}
-}
 
 void CWndPetTransEggs::ResetEgg()
 {

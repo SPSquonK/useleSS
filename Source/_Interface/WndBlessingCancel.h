@@ -23,7 +23,5 @@ public:
 	virtual void OnDestroy();
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-
-	void SetDescription();
 }; 
 #endif

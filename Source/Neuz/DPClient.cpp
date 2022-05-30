@@ -10482,7 +10482,7 @@ void CDPClient::OnAlphabet_OpenWnd( CAr & ar )
 	{
 		pWndGame->m_nQuestionID = nQuestionID;
 		pWndGame->SetFirstWord(nPublic, chPublicChar);
-		pWndGame->SetDescription( szQuestion );
+		pWndGame->SetQuestion( szQuestion );
 	}
 }
 

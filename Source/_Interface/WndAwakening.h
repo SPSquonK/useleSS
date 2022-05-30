@@ -25,8 +25,6 @@ public:
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	virtual BOOL process();
-
-	void SetDescription();
 }; 
 
 #ifdef __PROTECT_AWAKE
