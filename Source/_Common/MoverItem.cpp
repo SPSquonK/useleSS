@@ -177,8 +177,8 @@ BOOL CVTInfo::TradeConsent()
 		}
 	}
 
-	m_items_VT.fill(nullptr);
-	pTrader->m_vtInfo.m_items_VT.fill(nullptr);
+	std::ranges::generate(m_items_VT, [] { return nullptr; });
+	std::ranges::generate(pTrader->m_vtInfo.m_items_VT, [] { return nullptr; });
 
 	cbI		= a.GetCount();
 	for( int i = 0; i < cbI; i++ )
@@ -454,8 +454,8 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 			}
 		}
 
-		m_items_VT.fill(nullptr);
-		pTrader->m_vtInfo.m_items_VT.fill(nullptr);
+		std::ranges::generate(m_items_VT, [] { return nullptr; });
+		std::ranges::generate(pTrader->m_vtInfo.m_items_VT, [] { return nullptr; });
 
 		// item_step3. 임시 -> pTrader
 		nPlayers = u.GetCount();	// 합침을 고려해서 구해둔다.
