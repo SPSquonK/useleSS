@@ -1849,6 +1849,7 @@ public:
 class CWndRemovePiercing : public CWndNeuz
 {
 public:
+	static constexpr UINT WIDC_Receiver = 901;
 	CWndText*	m_pText;
 
 	class CWndPiercedItemReceiver : public CWndItemReceiver {

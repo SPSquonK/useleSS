@@ -19246,7 +19246,7 @@ void CWndRemovePiercing::OnInitialUpdate()
 	m_nInfoSlot[9] = WIDC_STATIC_PIERCING10;
 
 	const WNDCTRL * const wndCtrl = GetWndCtrl(WIDC_PIC_SLOT);
-	m_receiver.Create(0, wndCtrl->rect, this, WIDC_PIC_SLOT + 1);
+	m_receiver.Create(0, wndCtrl->rect, this, WIDC_Receiver);
 	m_receiver.SetTooltipId(TID_GAME_TOOLTIP_PIERCINGITEM);
 
 	MoveParentCenter();
@@ -19292,7 +19292,7 @@ BOOL CWndRemovePiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 			g_DPlay.SendPacket<PACKETTYPE_PIERCINGREMOVE, DWORD>(equipement->m_dwObjId);
 			Destroy();
 		}
-	} else if (nID == WIDC_PIC_SLOT) {
+	} else if (nID == WIDC_Receiver) {
 		CWndBase * pButton = GetDlgItem(WIDC_START);
 		pButton->EnableWindow(m_receiver.GetItem() ? TRUE : FALSE);
 	}
