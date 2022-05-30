@@ -1822,7 +1822,6 @@ class CWndRemoveAttribute : public CWndNeuz
 public:
 	class CWndAttributedItem : public CWndItemReceiver {
 	public:
-		CWndAttributedItem() : CWndItemReceiver(CWndItemReceiver::Removable::Yes) {}
 		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
 	};
 	
@@ -1854,7 +1853,6 @@ public:
 
 	class CWndPiercedItemReceiver : public CWndItemReceiver {
 	public:
-		CWndPiercedItemReceiver() : CWndItemReceiver(CWndItemReceiver::Removable::Yes) {}
 		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
 	};
 

@@ -50,7 +50,6 @@ public:
 
 	class CWndEquipementReceiver : public CWndItemReceiver {
 	public:
-		CWndEquipementReceiver() : CWndItemReceiver(CWndItemReceiver::Removable::Yes) {}
 		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
 	};
 

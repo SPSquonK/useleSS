@@ -47,7 +47,7 @@ public:
   enum class Removable { Yes, No };
   enum class SetMode { Verbose, Silent, NeverFail };
 
-  CWndItemReceiver(Removable removableItem = Removable::No)
+  CWndItemReceiver(Removable removableItem = Removable::Yes)
     : m_removableItem(removableItem == Removable::Yes) {
     m_dwStyle |= WBS_NOFRAME | WBS_CHILD | WBS_NODRAWFRAME;
   }
