@@ -104,6 +104,7 @@ void CVTInfo::TradeSetItem( BYTE nId, BYTE i, short nItemNum )
 
 void CVTInfo::TradeSetItem(const CItemElem & item, BYTE i, short nItemNum) {
 	m_items_VT[i] = std::make_unique<CItemElem>(item);
+	m_items_VT[i]->SetExtra(nItemNum);
 }
 
 
@@ -137,8 +138,6 @@ BOOL CVTInfo::TradeConsent()
 		CItemElem * pItemElem = m_items_VT[i];
 		if (!pItemElem) continue;
 
-		m_items_VT[i] = nullptr;
-
 		if( pItemElem->GetProp()->dwPackMax > 1 )
 		{
 			short nTradeNum = pItemElem->m_nItemNum - (short)pItemElem->GetExtra();
@@ -154,14 +153,14 @@ BOOL CVTInfo::TradeConsent()
 			a.Add( pItemElem );
 			m_pOwner->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );
 		}
+
+		m_items_VT[i] = nullptr;
 	}
 		
 	for( int i = 0; i < MAX_TRADE; i++ )
 	{
 		CItemElem * pItemElem = pTrader->m_vtInfo.GetItem( i );
 		if (!pItemElem) continue;
-
-		pTrader->m_vtInfo.SetItem( i, NULL );
 
 		if( pItemElem->GetProp()->dwPackMax > 1 )
 		{
@@ -178,6 +177,8 @@ BOOL CVTInfo::TradeConsent()
 			m_pOwner->m_Inventory.Add( pItemElem );
 			pTrader->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );
 		}
+
+		pTrader->m_vtInfo.m_items_VT[i] = nullptr;
 	}
 
 	cbI		= a.GetCount();
