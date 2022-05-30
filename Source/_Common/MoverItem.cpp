@@ -153,8 +153,6 @@ BOOL CVTInfo::TradeConsent()
 			a.Add( pItemElem );
 			m_pOwner->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );
 		}
-
-		m_items_VT[i] = nullptr;
 	}
 		
 	for( int i = 0; i < MAX_TRADE; i++ )
@@ -177,9 +175,10 @@ BOOL CVTInfo::TradeConsent()
 			m_pOwner->m_Inventory.Add( pItemElem );
 			pTrader->m_Inventory.RemoveAtId(pItemElem->m_dwObjId );
 		}
-
-		pTrader->m_vtInfo.m_items_VT[i] = nullptr;
 	}
+
+	m_items_VT.fill(nullptr);
+	pTrader->m_vtInfo.m_items_VT.fill(nullptr);
 
 	cbI		= a.GetCount();
 	for( int i = 0; i < cbI; i++ )
@@ -401,8 +400,6 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 			CItemElem * pItemElem = m_items_VT[i];
 			if (!pItemElem) continue;
 
-			m_items_VT[i] = NULL;
-
 			if( pItemElem->GetProp()->dwPackMax > 1 )
 			{
 				short nTradeNum = pItemElem->m_nItemNum - pItemElem->GetExtra();
@@ -427,7 +424,6 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 			if( pItemBase == NULL )
 				continue;
 
-			pTrader->m_vtInfo.SetItem( i, NULL );
 			uSize1++;
 			ar << pItemBase->m_dwItemId;
 			ar << pItemBase->GetSerialNumber();
@@ -457,6 +453,9 @@ TRADE_CONFIRM_TYPE CVTInfo::TradeLastConfirm( CAr & ar )
 				pTrader->m_Inventory.RemoveAtId( pItemBase->m_dwObjId );	
 			}
 		}
+
+		m_items_VT.fill(nullptr);
+		pTrader->m_vtInfo.m_items_VT.fill(nullptr);
 
 		// item_step3. 임시 -> pTrader
 		nPlayers = u.GetCount();	// 합침을 고려해서 구해둔다.
