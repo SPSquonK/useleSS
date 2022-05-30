@@ -991,7 +991,7 @@
     <ClCompile Include="..\_Common\ItemContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndItemDisplayer.cpp">
+    <ClCompile Include="..\_Interface\WndSqKComponents.cpp">
       <Filter>Source Files\_Interface\WndBase</Filter>
     </ClCompile>
     <ClCompile Include="..\_Interface\UserTaskBar.cpp">
@@ -1865,7 +1865,7 @@
     <ClInclude Include="..\_Common\groupquest.h">
       <Filter>Source Files\_Common\Contents</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\WndItemDisplayer.h">
+    <ClInclude Include="..\_Interface\WndSqKComponents.h">
       <Filter>Source Files\_Interface\WndBase</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\UserTaskBar.h">

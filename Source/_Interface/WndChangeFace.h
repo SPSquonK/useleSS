@@ -1,5 +1,7 @@
 #pragma once
 
+#include "WndSqKComponents.h"
+
 class CWndChangeFace : public CWndNeuz 
 { 
 public: 
@@ -40,8 +42,6 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
-
-#include "WndItemDisplayer.h"
 
 class CWndItemTransy : public CWndNeuz 
 { 

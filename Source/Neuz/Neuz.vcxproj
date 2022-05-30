@@ -99,7 +99,7 @@
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
-    <ClCompile Include="..\_Interface\WndItemDisplayer.cpp" />
+    <ClCompile Include="..\_Interface\WndSqKComponents.cpp" />
     <ClCompile Include="CampusHelper.cpp">
     </ClCompile>
     <ClCompile Include="clord.cpp">
@@ -682,7 +682,7 @@
     <ClInclude Include="..\_Common\Vector3Helper.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
-    <ClInclude Include="..\_Interface\WndItemDisplayer.h" />
+    <ClInclude Include="..\_Interface\WndSqKComponents.h" />
     <ClInclude Include="CNTREVNT.h" />
     <ClInclude Include="couplehelper.h" />
     <ClInclude Include="DPCertified.h" />

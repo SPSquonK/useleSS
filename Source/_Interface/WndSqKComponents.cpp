@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "ResData.h"
 #include "defineText.h"
-#include "WndItemDisplayer.h"
+#include "WndSqKComponents.h"
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 void CWndItemDisplayer::SetItem(/* const */ CItemElem & item) {
 	// Ensure that we trigger operator=
@@ -38,6 +41,7 @@ void CWndItemDisplayer::OnDraw(C2DRender * const p2DRender) {
 DWORD CWndItemDisplayer::GetItemId() const {
 	return m_item ? m_item->m_dwItemId : NULL;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

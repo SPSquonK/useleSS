@@ -15,7 +15,7 @@ extern 	int g_nSkillCurSelect;
 const int MAX_WANTED_LIST =	100;
 
 #include "honor.h"
-#include "WndItemDisplayer.h"
+#include "WndSqKComponents.h"
 
 #ifdef __MAIL_REQUESTING_BOX
 #include "WndMailRequestingBox.h"
