@@ -7,23 +7,17 @@
 class CWndHelp : public CWndNeuz
 {
 public:
-	//CWndText      m_wndText;
-	CString       m_strKeyword;
-	//CWndTreeCtrl  m_wndViewCtrl;
-	//CStringArray  m_strArray;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 
-	CWndHelp();
-	virtual ~CWndHelp();
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
-	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
+private:
+	CString m_strKeyword;
+
+	void ChangeDisplayedHelp(TREEELEM & treeElem);
 };
+
 class CWndHelpFAQ : public CWndNeuz
 {
 public:

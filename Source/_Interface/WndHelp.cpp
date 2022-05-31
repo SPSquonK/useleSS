@@ -10,176 +10,49 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndHelp::CWndHelp()
-{
+void CWndHelp::OnDraw(C2DRender* p2DRender) {
+	const DWORD dwLeft = m_rectClient.Width() * 50 / 100;
+	const CRect rect(dwLeft + 5, 5, m_rectClient.Width() - 5, 23);
+	p2DRender->TextOut(rect.left + 10, rect.top + 8, m_strKeyword, 0xff000000);
 }
-CWndHelp::~CWndHelp()
-{
-}
-void CWndHelp::OnDraw(C2DRender* p2DRender)
-{
-	DWORD dwLeft = m_rectClient.Width() * 50 / 100;
-	CRect rect;
 
-	rect.SetRect( dwLeft + 5, 5, m_rectClient.Width() - 5, 23 );
-
-//	p2DRender->RenderFillRect ( rect, D3DCOLOR_ARGB(255,150,150,200), D3DCOLOR_ARGB(255,100,100,150), D3DCOLOR_ARGB(255,150,150,200), D3DCOLOR_ARGB(255,100,100,150));
-	//p2DRender->RenderRoundRect( rect, D3DCOLOR_ARGB(255,200,200,250) );
-
-	p2DRender->TextOut( rect.left + 10, rect.top + 8, m_strKeyword, 0xff000000 );
-	/*
-
-	rect.SetRect( dwLeft + 5, 25, m_rectClient.Width() - 5, m_rectClient.Height() - 5 );
-
-	p2DRender->RenderFillRect ( rect, D3DCOLOR_ARGB(255,170,170,230) );
-	p2DRender->RenderRoundRect( rect, D3DCOLOR_ARGB(255,200,200,250) );
-
-	CStringArray* pStrArray = prj.GetHelp(m_strKeyword);
-	if(pStrArray)
-	{
-		m_strArray.RemoveAll();
-		ClipStrArray(&g_Neuz.m_2DRender,rect,0,pStrArray,&m_strArray);
-		CString string;
-		for(int i = 0; i < m_strArray.GetSize(); i++)
-		{
-			string = m_strArray.GetAt(i);
-			p2DRender->TextOut(rect.left + 5, rect.top + 5 + i * 16, string);
-		}
-	}
-	*/
-}
-void CWndHelp::OnInitialUpdate()
-{
+void CWndHelp::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 
-	DWORD dwRight = m_rectClient.Width() * 50 / 100;
-	//m_wndViewCtrl.Create( WBS_CHILD, CRect( 5, 5, dwRight,m_rectClient.Height() - 5 ), this, 1005 );//,m_pSprPack,-1);//m_pSprPack,16);
+	CWndTreeCtrl * pWndTreeCtrl = (CWndTreeCtrl *)GetDlgItem(WIDC_TREE1);
+	pWndTreeCtrl->LoadTreeScript(MakePath(DIR_CLIENT, _T("treeHelp.inc")));
+	
+	CWndText * pWndText = (CWndText *)GetDlgItem(WIDC_TEXT1);
+	pWndText->AddWndStyle(WBS_VSCROLL);
 
-	CWndTreeCtrl* pWndTreeCtrl = (CWndTreeCtrl*)GetDlgItem( WIDC_TREE1 );
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	pWndText->AddWndStyle( WBS_VSCROLL );
-	pWndTreeCtrl->LoadTreeScript( MakePath( DIR_CLIENT,  _T( "treeHelp.inc" ) ) );
-	CRect rect( 210, 0, 300, 100 );
-	//m_wndText.AddWndStyle( WBS_VSCROLL );
-	//m_wndText.Create( 0, rect, this, 10 );
-	//rect = m_wndText.GetClientRect();
-
-	//m_wndText.m_string.SetString( _T("나는\n 자랑스러운\n 태극기 앞에 조국과 민족의 무궁한 영광을 위하여 몸과 마음을 바쳐 충성을 다할 것을 굳게 다짐합니다.\n 할랠루야 ") );
-	//m_wndText.m_string.Reset( m_pFont, &rect );
 	MoveParentCenter();
-
-	//SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndHelp.bmp" ), TRUE );
-	//FitTextureSize();
-}
-BOOL CWndHelp::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rect = m_pWndRoot->MakeCenterRect(400,350);
-//etTitle( GETTEXT( TID_APP_HELPER_HELP ) );
-	//return CWndNeuz::Create(0|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME,rect,pWndParent,dwWndId);
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_HELPER_HELP, 0, CPoint( 0, 0 ), pWndParent );
-
 }
 
-BOOL CWndHelp::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	/*
-	switch(nID)
-	{
-		case 0: // wnd1 
-			g_WndMng.OpenWnd1();
-			break;
-		case 1: // wnd2
-			g_WndMng.OpenCharacter();
-			break;
-		case 2: // 챗 
-			g_WndMng.OpenChat();
-			break;
-		case 3:
-			g_clientMsg.PutMessage(&g_Neuz.m_2DRender,0xffffffff,"fuck");
-			break;
-		case 9:
-			g_WndMng.OpenCustomBox("종료하시겠습니까?",new CWndExitBox);
-			break;
-	}
-	*/
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
+BOOL CWndHelp::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), APP_HELPER_HELP, 0, CPoint(0, 0), pWndParent);
 }
-void CWndHelp::OnSize(UINT nType, int cx, int cy)
-{
-	DWORD dwRight = m_rectClient.Width() * 50 / 100;
-	//m_wndViewCtrl.SetWndRect( CRect( 5, 5, dwRight,m_rectClient.Height() - 5 ) );
 
-	//DWORD dwLeft = m_rectClient.Width() * 50 / 100;
-	CRect rect;
-	//rect.SetRect( dwRight + 5, 25, m_rectClient.Width() - 5, m_rectClient.Height() - 5 );
-	//m_wndText.SetWndRect( rect );
-
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-void CWndHelp::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-
-	//if(IsWndStyle(WBS_CAPTION) && m_bPickup)
-	{//
-	//	m_wndTitleBar.m_wndMinimize.SetVisible(TRUE);
-		//m_wndTitleBar.m_wndMaximize.SetVisible(TRUE);
-	}
-}
-void CWndHelp::OnLButtonDown(UINT nFlags, CPoint point)
-{
-//	CWndBase::OnLButtonDown(nFlags,point
-	if(IsWndRoot())
-		return;
-//	return;
-}
 BOOL CWndHelp::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
-	switch(nID)
-	{
-		case WIDC_TREE1: // view ctrl
-			{
-				LPTREEELEM lpTreeElem = (LPTREEELEM)pLResult;
-				if(lpTreeElem)
-				{
-					//m_strArray.RemoveAll();
-					m_strKeyword = lpTreeElem->m_strKeyword;
-
-					CString string = prj.GetHelp( m_strKeyword );
-
-					CWndTreeCtrl* pWndTreeCtrl = (CWndTreeCtrl*)GetDlgItem( WIDC_TREE1 );
-					CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-					pWndText->SetString( string );
-					//pWndText->m_string.SetString( string );
-					//pWndText->m_string.Reset( m_pFont, &pWndText->GetClientRect() );
-					pWndText->UpdateScrollBar();
-					//m_wndText.m_string.SetString( string );
-					//m_wndText.m_string.Reset( m_pFont, &m_wndText.GetClientRect() );
-					//m_wndText.UpdateScrollBar();
-
-					/*
-					CStringArray* pStrArray = prj.GetHelp(lpTreeElem->m_strKeyword);
-					if(pStrArray)
-					{
-						CRect rect = GetClientRect();
-						rect.left = 220;
-						rect.top = 60;
-						rect.right -= 50;
-						rect.bottom -= 100;
-						//CFont* pOldFont =
-							//m_pMemDC->SelectObject(&g_pMainFrame->m_fontStatus);
-						ClipStrArray(&g_Neuz.m_2DRender,rect,0,pStrArray,&m_strArray);
-						//m_pMemDC->SelectObject(pOldFont);
-						//ClipStrArray(m_pMemDC,rect,0,pStrArray,&m_strArray);
-					}
-					*/
-				}
-			}
-			break;
+	if (nID == WIDC_TREE1) {
+		TREEELEM * lpTreeElem = reinterpret_cast<TREEELEM *>(pLResult);
+		if (lpTreeElem) ChangeDisplayedHelp(*lpTreeElem);
 	}
+
 	return CWndNeuz::OnChildNotify(message,nID,pLResult);
 }
+
+void CWndHelp::ChangeDisplayedHelp(TREEELEM & treeElem) {
+	m_strKeyword = treeElem.m_strKeyword;
+
+	const CString string = prj.GetHelp(m_strKeyword);
+
+	CWndText * pWndText = (CWndText *)GetDlgItem(WIDC_TEXT1);
+	pWndText->SetString(string);
+	pWndText->UpdateScrollBar();
+}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //

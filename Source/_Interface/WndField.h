@@ -769,18 +769,6 @@ public:
 
 //////////
 
-class CWndEmotion : public CWndNeuz {
-	CWndTreeCtrl  m_wndViewCtrl;
-	CWndEdit      m_wndEdit;
-	CWndButton    m_wndDefault;
-	LPTREEELEM    m_lpSelectTreeElem = nullptr;
-public:
-	void OnDraw(C2DRender * p2DRender) override;
-	BOOL Initialize(CWndBase * pWndParent, DWORD dwWndId) override;
-	void OnSize(UINT nType, int cx, int cy) override;
-};
-
-
 class CWndRevival : public CWndNeuz 
 { 
 public: 

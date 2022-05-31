@@ -9921,59 +9921,6 @@ void CWndQuestItemInfo::OnLButtonDown( UINT nFlags, CPoint point )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// �׸�
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void CWndEmotion::OnDraw( C2DRender* p2DRender ) 
-{ 
-	CRect rect = GetClientRect();
-/*
-	CD3DFont* pFont = p2DRender->m_pFont;//GetFont();
-	p2DRender->m_pFont = m_pTheme->m_pFontGameTitle;
-	p2DRender->TextOut( 5, 10, _T( "Lv.0 �⺻ ������" ) );
-	p2DRender->TextOut( 5, 40, _T( "Lv.1 ��Ȱ ǥ��" ) );
-	p2DRender->TextOut( 5, 70, _T( "Lv.2 ����" ) );
-	p2DRender->TextOut( 5,100, _T( "Lv.3 ��" ) );
-	p2DRender->TextOut( 5,130, _T( "Lv.4 �" ) );
-	p2DRender->TextOut( 5,160, _T( "Lv.5 ����" ) );
-
-	p2DRender->m_pFont = pFont;
-	*/
-	p2DRender->TextOut( 5, rect.Height() - 50, _T( "���� ���?" ) );
-} 
-BOOL CWndEmotion::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	//SetTitle( _T( "����ǥ��" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-void CWndEmotion::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	m_wndViewCtrl.SetWndRect( CRect( 5, 5, m_rectClient.Width() - 5, m_rectClient.Height() - 60 ) );
-
-	CRect rect = GetClientRect();
-	rect.top = rect.bottom - 55;
-	rect.bottom = rect.top + 20;
-	rect.left = 70;
-	rect.right -= 5;
-	m_wndEdit.SetWndRect( rect );
-
-	rect = GetClientRect();
-	rect.top = rect.bottom - 30;
-	rect.bottom = rect.top + 25;
-	rect.left = rect.right - 80;
-	rect.right -= 5;
-	m_wndDefault.SetWndRect( rect );
-
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 // CWndLogOut : ���� ȭ������, ĳ���� ���� ȭ������ 
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
