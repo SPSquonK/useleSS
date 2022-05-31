@@ -4,14 +4,8 @@
 #include <format>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// 도움말
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CWndHelp::OnDraw(C2DRender* p2DRender) {
+void CWndHelp::OnDraw(C2DRender * const p2DRender) {
 	const DWORD dwLeft = m_rectClient.Width() * 50 / 100;
 	const CRect rect(dwLeft + 5, 5, m_rectClient.Width() - 5, 23);
 	p2DRender->TextOut(rect.left + 10, rect.top + 8, m_strKeyword, 0xff000000);
@@ -33,8 +27,7 @@ BOOL CWndHelp::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), APP_HELPER_HELP, 0, CPoint(0, 0), pWndParent);
 }
 
-BOOL CWndHelp::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
-{
+BOOL CWndHelp::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult) {
 	if (nID == WIDC_TREE1) {
 		TREEELEM * lpTreeElem = reinterpret_cast<TREEELEM *>(pLResult);
 		if (lpTreeElem) ChangeDisplayedHelp(*lpTreeElem);
@@ -54,12 +47,6 @@ void CWndHelp::ChangeDisplayedHelp(TREEELEM & treeElem) {
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// 도움말
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CWndHelpFAQ::OnInitialUpdate() {
@@ -126,17 +113,17 @@ void CWndHelpFAQ::OnChangedSelection(const std::string & question) {
 	pWndText->UpdateScrollBar();
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CWndHelpTip::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 
+	LoadTips();
+
 	CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT);
 	pWndText->AddWndStyle(WBS_NOFRAME);
 	pWndText->AddWndStyle(WBS_NODRAWFRAME);
-
-	LoadTips();
-
 	pWndText->SetString(m_aString[0].GetString(), 0xff000000);
 
 	MoveParentCenter();
@@ -186,83 +173,25 @@ BOOL CWndHelpTip::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-/****************************************************
-  WndId : APP_HELP_INSTANT - Instant Help
-  CtrlId : WIDC_TEXT1 - 
-  CtrlId : WIDC_BUTTON1 - Button
-****************************************************/
 
-CWndHelpInstant::CWndHelpInstant() 
-{ 
-} 
-CWndHelpInstant::~CWndHelpInstant() 
-{ 
-} 
-void CWndHelpInstant::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndHelpInstant::OnInitialUpdate() 
-{ 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CWndHelpInstant::OnInitialUpdate()  {
 	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
 
-
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	pWndText->SetString( prj.GetHelp( m_strHelpKey ) );
+	CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT1);
+	pWndText->SetString(prj.GetHelp(m_strHelpKey));
 	
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndHelpInstant::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_HELP_INSTANT, 0, CPoint( 0, 0 ), pWndParent );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndHelpInstant::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndHelpInstant::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndHelpInstant::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndHelpInstant::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndHelpInstant::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndHelpInstant::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_CLOSE )
-	{
-#ifdef __HELP_BUG_FIX
+
+BOOL CWndHelpInstant::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), APP_HELP_INSTANT, 0, CPoint(0, 0), pWndParent);
+}
+
+BOOL CWndHelpInstant::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_CLOSE) {
 		Destroy();
-#else //__HELP_BUG_FIX
-		// 헬프 이중생성 방지
-		vector<CString>::iterator where = find(g_vecHelpInsKey.begin(), g_vecHelpInsKey.end(), m_strHelpKey );
-
-		if(where != g_vecHelpInsKey.end())
-			g_vecHelpInsKey.erase(where);
-
-		Destroy( TRUE );		
-#endif //__HELP_BUG_FIX
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}

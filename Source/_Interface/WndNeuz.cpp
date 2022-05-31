@@ -298,32 +298,13 @@ BOOL CWndNeuz::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			case WTBID_HELP: // 핼프 버튼
 				{
-#ifdef __CLIENT					
 					LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( GetWndId() );
-#ifdef __HELP_BUG_FIX
+
 					if(g_WndMng.m_pWndHelpInstant)
 						SAFE_DELETE(g_WndMng.m_pWndHelpInstant);
 
-					g_WndMng.m_pWndHelpInstant = new CWndHelpInstant;
-					g_WndMng.m_pWndHelpInstant->m_strHelpKey = lpWndApplet->strToolTip;
+					g_WndMng.m_pWndHelpInstant = new CWndHelpInstant(lpWndApplet->strToolTip);
 					g_WndMng.m_pWndHelpInstant->Initialize();
-#else //__HELP_BUG_FIX
-					// 헬프 이중생성 방지
-					for( int i=0; i<g_vecHelpInsKey.size(); i++ )
-					{
-						if( g_vecHelpInsKey[i] == lpWndApplet->strToolTip )
-							return FALSE;
-					}
-
-					CWndHelpInstant* pHelpInstant = new CWndHelpInstant;
-					pHelpInstant->m_strHelpKey = lpWndApplet->strToolTip;
-
-					// 헬프 이중생성 방지
-					g_vecHelpInsKey.push_back( pHelpInstant->m_strHelpKey );
-
-					pHelpInstant->Initialize();
-#endif //__HELP_BUG_FIX
-#endif
 				}
 				break;
 			case WTBID_MIN: // 최소화 
