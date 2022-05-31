@@ -2266,10 +2266,7 @@ void CWndBase::OnKillFocus(CWndBase* pNewWnd)
 	if( IsWndStyle( WBS_POPUP ) )
 		SetVisible( FALSE );
 }
-BOOL CWndBase::Initialize(CWndBase* pWndParent,DWORD dwStyle)
-{
-	return TRUE;
-}
+
 BOOL CWndBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	SetForbid( TRUE );

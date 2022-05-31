@@ -91,8 +91,10 @@ public:
 	BOOL InitDialog( HWND hWnd, DWORD dwWID, DWORD dwStyle = 0, CPoint ptLeftTop = 0, CWndBase* pWndParent = NULL );
 	CWndBase* CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl );
 	//CWndBase* GetDlgItem( UINT nID )
+protected:
 	CWndNeuz();
-	virtual ~CWndNeuz();
+public:
+	~CWndNeuz() override;
 
 	D3DFORMAT m_d3dFormat;
 	void AdjustWndBase( D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );

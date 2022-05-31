@@ -109,7 +109,6 @@ protected:
 	int       m_nTimePush;
 	BOOL      m_bHighLight;
 	CPoint    m_ptPush;
-	CWndBase* m_pWndExecute; // 이 버튼을 누르므로서 실행될 윈도. 
 //	CTimer m_timerPush;
 
 	//DWORD     m_dwButtonStyle;
@@ -160,8 +159,6 @@ public:
 	DWORD GetPushColor     () { return m_nPushColor     ; }
 	DWORD GetDisableColor  () { return m_nDisableColor  ; }
 	DWORD GetHighLightColor() { return m_nHighlightColor; }
-	void SetWndExecute(CWndBase* pWndBase);
-	CWndBase* GetWndExecute() { return m_pWndExecute; }
 	void SetPushPoint(int x,int y) { m_ptPush = CPoint(x,y); }
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);

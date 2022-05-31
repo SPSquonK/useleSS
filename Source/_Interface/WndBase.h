@@ -56,7 +56,12 @@ class CWndBase
 static CPoint    m_pointOld;
 static CRect     m_rectOld;
 
+protected:
+	// CWndBases are boring: only classes that inherit from it should be
+	// instancied.
+	CWndBase();
 public:
+	virtual ~CWndBase();
 	CWndBase(const CWndBase &) = delete;
 	CWndBase(CWndBase &&) = delete;
 	CWndBase & operator=(const CWndBase &) = delete;
@@ -164,8 +169,6 @@ static SHORTCUT       m_GlobalShortcut;
 	void FitTextureSize();
 static void FreeTileTexture();
 	
-	CWndBase();
-	virtual ~CWndBase();
 	BOOL Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
 	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
 	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpKey, CTexture* m_pTexture );
@@ -316,7 +319,6 @@ public:
 	virtual BOOL OnParentNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual BOOL OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult );
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0);
 	///virtual LRESULT WndMsgProc( UINT message, WPARAM wParam, LPARAM lParam );
 
 	LRESULT WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam );

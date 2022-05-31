@@ -276,7 +276,6 @@ CWndButton::CWndButton()
 	m_bHighLight      = FALSE;
 	m_bGroup          = FALSE;
 	m_ptPush          = CPoint(1,1);
-	m_pWndExecute     = NULL;
 	m_pWndMenu        = NULL;
 	m_bTopDown        = FALSE;
 	m_byWndType       = WTYPE_BUTTON;
@@ -316,12 +315,6 @@ void CWndButton::SetMenu(CWndMenu* pWndMenu)
 {
 	m_pWndMenu = pWndMenu;
 }
-void CWndButton::SetWndExecute(CWndBase* pWndBase) 
-{ 
-	m_pWndExecute = pWndBase; 
-	m_pWndExecute->Initialize(this);
-	m_pWndExecute->SetVisible(FALSE);
-}
 
 BOOL CWndButton::Create(LPCTSTR lpszCaption,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID)
 {
@@ -355,9 +348,6 @@ void CWndButton::OnDraw( C2DRender* p2DRender )
 void CWndButton::PaintFrame( C2DRender* p2DRender )
 {
 	CRect rect = GetWindowRect();
-	if(m_pWndExecute)
-		if(m_pWndExecute->OnDrawIcon(this,p2DRender))
-			return;
 	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
 	CString string;
 
@@ -567,9 +557,7 @@ void CWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 			m_bPush = FALSE;
 			return;
 		}
-		if( m_pWndExecute )
-			m_pWndExecute->OnSystemNotify( WM_LBUTTONUP, 0, NULL );
-
+		
 		if( m_dwStyle & WBS_CHECK )
 			m_bCheck = !m_bCheck;
 
