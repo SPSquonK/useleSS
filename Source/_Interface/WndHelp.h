@@ -1,46 +1,32 @@
-#ifndef __WNDHELP_H
-#define __WNDHELP_H
+#pragma once
+
+#include <unordered_map>
 
 //////////////////////////////////////////////////////////////////////////////////////
 // µµ¿ò¸»
 //
-class CWndHelp : public CWndNeuz
-{
+class CWndHelp : public CWndNeuz {
+	CString m_strKeyword;
+	void ChangeDisplayedHelp(TREEELEM & treeElem);
+
 public:
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
-
-private:
-	CString m_strKeyword;
-
-	void ChangeDisplayedHelp(TREEELEM & treeElem);
 };
 
-class CWndHelpFAQ : public CWndNeuz
-{
+class CWndHelpFAQ : public CWndNeuz {
+	std::unordered_map<std::string, std::string> m_mapFAQ;
+	bool LoadFAQ(LPCTSTR lpszFileName);
+	void OnChangedSelection(const std::string & question);
 public:
-	CMapStringToString m_mapFAQ;
 
-	//CWndText      m_wndText;
-	CString       m_strKeyword;
-	//CWndTreeCtrl  m_wndViewCtrl;
-	//CStringArray  m_strArray;
-	BOOL LoadFAQ( LPCTSTR lpszFileName );
-
-	CWndHelpFAQ();
-	virtual ~CWndHelpFAQ();
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
-	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
+	void OnInitialUpdate() override;
+	BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0) override;
+	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult) override;
 };
+
 class CWndHelpTip : public CWndNeuz 
 { 
 	CStringArray m_aString;
@@ -76,4 +62,3 @@ public:
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
-#endif
