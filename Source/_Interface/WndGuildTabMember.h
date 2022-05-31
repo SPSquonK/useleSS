@@ -22,7 +22,6 @@ struct MEMBERLIST
 
 class CWndGuildTabMember : public CWndNeuz 
 { 
-//	CWndListCtrl *m_pListCtrl;
 	int		m_nCurrentList;			// 출력될 멤버리스트의 시작 인덱스.
 	int		m_nSelect;
 
@@ -42,7 +41,6 @@ public:
 	MEMBERLIST	m_aList[ MAX_MEMBER ];
 
 	CWndGuildTabMember(); 
-	~CWndGuildTabMember(); 
 
 	CRect	m_rectParent;			// 길드창의 좌상귀 좌표.
 	

@@ -630,12 +630,6 @@ void CWndSelectServer::OnInitialUpdate()
 
 	CRect rect = GetClientRect();
 
-	//m_wndURL.Create( g_Neuz.GetSafeHwnd(), 0, CRect( 30, 220, 230, 240 ), this, 1000);
-	//m_wndSearch.Create( _T( "Search" ), 0,  CRect( 235, 220, 290, 240 ), this, 100 ); 
-
-	//m_wndServerList.Create( 0, CRect( rect.left + 5, rect.top + 40, rect.right - 5, rect.bottom - 35), this, 200 );
-
-
 	CWndButton* pNext = (CWndButton*)GetDlgItem( WIDC_NEXT );
 	pNext->SetDefault( TRUE );
 
@@ -668,8 +662,6 @@ void CWndSelectServer::OnInitialUpdate()
 	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
 	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
 	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-//	m_wndServerList.Create( WLVS_REPORT, CRect( rect.left + 5, rect.top + 20, rect.right - 5, rect.bottom - 65), this, 11 );
 
 	TCHAR szTitle[3][10] = {_T("Server"), _T("Ping"), _T("Max") };
 	
@@ -901,9 +893,6 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		{
 			case 11:
 				{
-					TCHAR szTemp[32];// =  _T( "nnp://" );
-					_tcscpy( szTemp, m_wndServerList.GetItemText( m_wndServerList.GetCurSel(), 0 ) );
-					m_wndURL.SetString( szTemp );
 					break;
 				}
 			case 188:

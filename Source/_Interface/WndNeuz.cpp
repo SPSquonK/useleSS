@@ -560,7 +560,7 @@ CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl )
 	case WTYPE_LISTCTRL:
 		pWndBase = new CWndListCtrl;
 		((CWndListCtrl*)pWndBase)->Create( dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
-		//((CWndButton*)pWndBase)->Create( _T( "Button" ), 0, CRect( 0, 0, 100, 20), &m_dialogWnd, 10 );
+		
 		if( lpWndCtrl->strTexture.IsEmpty() == FALSE )
 			((CWndStatic*)pWndBase)->m_strTexture = lpWndCtrl->strTexture;
 		pWndBase->m_bTile = (lpWndCtrl->bTile != FALSE);

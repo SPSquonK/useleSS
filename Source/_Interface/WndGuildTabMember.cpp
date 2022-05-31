@@ -188,7 +188,6 @@ bool prAliasDesc(MEMBERLIST player1, MEMBERLIST player2)
 
 CWndGuildTabMember::CWndGuildTabMember() 
 { 
-//	m_pListCtrl = NULL;
 	m_nMax = 0;
 	m_nCurrentList = 0;
 	m_nSelect = 0;
@@ -199,11 +198,6 @@ CWndGuildTabMember::CWndGuildTabMember()
 	m_bSortbyJob = TRUE;
 	m_bSortbyName = TRUE;
 	m_bSortbyAlias = TRUE;
-} 
-
-CWndGuildTabMember::~CWndGuildTabMember() 
-{ 
-//	SAFE_DELETE( m_pListCtrl );
 } 
 
 void CWndGuildTabMember::OnDraw( C2DRender* p2DRender ) 

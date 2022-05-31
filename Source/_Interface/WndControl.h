@@ -834,13 +834,10 @@ class CWndEdit;
 class CWndListCtrl : public CWndBase
 {
 	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
-	//void PaintListBox(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray);
 	LVITEM*       m_pFocusItem;
 	int           m_nCurSelect  ;
 	int           m_nFontHeight ;
 	DWORD         m_nWndColor   ;
-//	DWORD         m_nFontColor  ; 
-//	DWORD         m_nSelectColor;
 	CWndScrollBar m_wndScrollBar;
 	CPtrArray     m_aItems;
 	CPtrArray     m_aColumns;
@@ -850,10 +847,7 @@ public:
 	int           m_nLineSpace  ;
 	DWORD         m_nFontColor  ; 
 	DWORD         m_nSelectColor;
-	//	DWORD         m_dwListCtrlStyle;
 
-	//CWndListCtrl();
-	//BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
 	CWndListCtrl();
 	~CWndListCtrl();
 
@@ -865,8 +859,7 @@ public:
 	int   SetCurSel(int nSelect);
 	COLORREF GetBkColor() const;
 	BOOL SetBkColor(COLORREF cr);
-	//CImageList* GetImageList(int nImageList) const;
-	//CImageList* SetImageList(CImageList* pImageList, int nImageListType);
+
 	int GetItemCount() const;
 	BOOL GetItem(LVITEM* pItem) const;
 	BOOL SetItem(const LVITEM* pItem);
@@ -908,9 +901,7 @@ public:
 	BOOL GetColumnOrderArray(LPINT piArray, int iCount = -1);
 	CSize SetIconSpacing(CSize size);
 	CSize SetIconSpacing(int cx, int cy);
-	//CHeaderCtrl* GetHeaderCtrl();
-	//HCURSOR GetHotCursor();
-	//HCURSOR SetHotCursor(HCURSOR hc);
+
 	BOOL GetSubItemRect(int iItem, int iSubItem, int nArea, CRect& ref);
 	int GetHotItem();
 	int SetHotItem(int iIndex);
@@ -951,12 +942,9 @@ public:
 	int InsertColumn(int nCol, LPCTSTR lpszColumnHeading,
 		int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1);
 	BOOL DeleteColumn(int nCol);
-//	CImageList* CreateDragImage(int nItem, LPPOINT lpPoint);
 	BOOL Update(int nItem);
-	//BOOL SortItems(PFNLVCOMPARE pfnCompare, DWORD dwData);
 
 // Overridables
-	//virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -973,15 +961,10 @@ public:
 public:
 	int InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem, UINT nState,
 		UINT nStateMask, int nImage, LPARAM lParam);
-	//virtual ~CWndListCtrl();
+
 protected:
 	void RemoveImageList(int nImageList);
-//	virtual BOOL OnChildNotify(UINT, WPARAM, LPARAM, LRESULT*);
 protected:
-	////{{AFX_MSG(CListCtrl)
-	//afx_msg void OnNcDestroy();
-	////}}AFX_MSG
-	//DECLARE_MESSAGE_MAP()
 };
 
 

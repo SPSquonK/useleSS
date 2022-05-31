@@ -56,9 +56,6 @@ public:
 	DWORD		 m_dwChangeBannerTime;
 	LPIMAGE		 m_atexPannel;
 
-	CWndEdit     m_wndURL;
-	CWndButton   m_wndSearch;
-	CWndListCtrl	m_wndServerList;
 	CWndButton   m_wndBack;
 	CWndButton   m_wndAccept;
 
