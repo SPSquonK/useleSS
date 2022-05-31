@@ -126,82 +126,66 @@ void CWndHelpFAQ::OnChangedSelection(const std::string & question) {
 	pWndText->UpdateScrollBar();
 }
 
-CWndHelpTip::CWndHelpTip() 
-{ 
-} 
-CWndHelpTip::~CWndHelpTip() 
-{ 
-} 
-void CWndHelpTip::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndHelpTip::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
-	pWndText->AddWndStyle( WBS_NOFRAME );
-	pWndText->AddWndStyle( WBS_NODRAWFRAME );
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CWndHelpTip::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
+	CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT);
+	pWndText->AddWndStyle(WBS_NOFRAME);
+	pWndText->AddWndStyle(WBS_NODRAWFRAME);
+
+	LoadTips();
+
+	pWndText->SetString(m_aString[0].GetString(), 0xff000000);
+
+	MoveParentCenter();
+}
+
+bool CWndHelpTip::LoadTips() {
+	m_aString.clear();
+	m_current = 0;
+
 	CScript s;
-	if( s.Load( MakePath( DIR_CLIENT, _T("tip.inc" ) ) ) == FALSE )
-		return;
+	if (!s.Load(MakePath(DIR_CLIENT, _T("tip.inc")))) {
+		m_aString.emplace_back("");
+		return false;
+	}
+
 	s.GetToken();
-	while( s.tok != FINISHED )
-	{
-		CString string = "    " + s.Token;
-		m_aString.Add( string );
+	while (s.tok != FINISHED) {
+		m_aString.emplace_back("    " + s.Token);
 		s.GetToken();
 	}
-	m_nPosString = 0;
-	pWndText->SetString( m_aString.GetAt( 0 ), 0xff000000 );
-} 
-BOOL CWndHelpTip::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_HELPER_TIP );
-	MoveParentCenter();
-	return TRUE;
-} 
-BOOL CWndHelpTip::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	switch( nID )
-	{
-	case WIDC_NEXT:
-		{
-			m_nPosString++;
-			if( m_nPosString == m_aString.GetSize() )
-				m_nPosString = 0;
-			CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
-			pWndText->SetString( m_aString.GetAt( m_nPosString ), 0xff000000 );
-		}
-		break;
-	case WIDC_CLOSE:
-		Destroy();
+
+	if (m_aString.empty()) {
+		m_aString.emplace_back("");
 	}
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndHelpTip::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndHelpTip::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndHelpTip::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndHelpTip::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	switch( nID )
-	{
-	case WIDC_CHECK1:
-		g_Option.m_bTip = !g_Option.m_bTip;
-		Destroy();
-		break;
-	//case WIDC_CLOSE:
-	//	Destroy();
-	//	return TRUE;
+
+	return true;
+}
+
+BOOL CWndHelpTip::Initialize(CWndBase * pWndParent, DWORD) {
+	return InitDialog(g_Neuz.GetSafeHwnd(), APP_HELPER_TIP);
+}
+
+BOOL CWndHelpTip::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_CHECK1:
+			g_Option.m_bTip = !g_Option.m_bTip;
+			Destroy();
+			break;
+		case WIDC_NEXT:
+			m_current = (m_current + 1) % m_aString.size();
+			GetDlgItem<CWndText>(WIDC_TEXT)->SetString(m_aString[m_current], 0xff000000);
+			break;
+		case WIDC_CLOSE:
+			Destroy();
+			break;
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
 /****************************************************
   WndId : APP_HELP_INSTANT - Instant Help
   CtrlId : WIDC_TEXT1 - 

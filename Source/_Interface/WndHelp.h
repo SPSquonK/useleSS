@@ -27,22 +27,16 @@ public:
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult) override;
 };
 
-class CWndHelpTip : public CWndNeuz 
-{ 
-	CStringArray m_aString;
-	int m_nPosString;
-public: 
-	CWndHelpTip(); 
-	~CWndHelpTip(); 
+class CWndHelpTip : public CWndNeuz {
+	std::vector<CString> m_aString;
+	size_t m_current = 0;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+	bool LoadTips();
+public: 
+
+	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void OnInitialUpdate() override;
 }; 
 
 
