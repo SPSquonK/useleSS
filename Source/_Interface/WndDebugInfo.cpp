@@ -17,10 +17,7 @@ CWndDebugInfo::CWndDebugInfo()
 	SetPutRegInfo( FALSE );
 }
 
-CWndDebugInfo::~CWndDebugInfo()
-{
 
-}
 void CWndDebugInfo::OnDraw(C2DRender* p2DRender)
 {
     // Show frame rate
@@ -97,90 +94,13 @@ void CWndDebugInfo::OnInitialUpdate()
 	Move( point );
 	MoveParentCenter();
 } 
-/*
-void CWndDebugInfo::OnInitialUpdate()
-{
-	CRect rectClient = GetClientRect();
-	rectClient.top = 80;
 
-#define MAX_COMMAND 18
-
-	static TCHAR aszCommand[MAX_COMMAND][30] = 
-	{ 
-		_T( "Grid" ), _T( "Wireframe" ), _T( "Skybox" ), _T( "Terrain" ), _T( "Object" ), _T( "Fog" ), _T( "LOD" ), 
-		_T( "Water" ), _T( "Name" ), _T( "Animation" ), _T( "FrameSkip" ), _T( "CullObj" ), _T( "Light" ), 
-		_T( "Weather" ), _T( "NudeSkin" ), _T( "Capture" ), _T( "BoundBox" ), _T( "Collision" )
-	};
-
-	for( int i = 0, i3 = 0; i < 6; i++ )
-	{
-		for( int i2 = 0; i2 < 3; i2++, i3++)
-		{
-			if( i3 < MAX_COMMAND )
-			{
-				m_wndDebug[ i3 ].Create( aszCommand[ i3], WBS_CHECK, CRect( rectClient.left + 2, rectClient.top, rectClient.left + 100, rectClient.top + 20 ), this, 100 + i3 ); 
-				//m_wndDebug[ i3 ].SetPushColor( D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
-				//m_wndDebug[ i3 ].SetFontColor( D3DCOLOR_ARGB( 255, 000, 000, 255 ) );
-			}
-			rectClient.left += 100;
-		}
-		rectClient.left = 0;
-		rectClient.top += 20;
-	}
-	m_wndEditExp.Create   ( g_Neuz.GetSafeHwnd(), 0, CRect( 5, 200, 100, 220 ), this, 1001 );
-	m_wndButtonExp.Create ( _T( "Exp Up!" ), 0, CRect( 105, 200, 160, 220 ), this, 1002 ); 
-	m_wndSetSkinSet.Create( _T( "SkinSet" ), 0, CRect(   5, 230,  60, 250 ), this, 1003 ); 
-	m_wndSetHair.Create   ( _T( "Hair"    ), 0, CRect(  75, 230, 130, 250 ), this, 1004 ); 
-	m_wndSetColor.Create  ( _T( "Color"   ), 0, CRect( 135, 230, 190, 250 ), this, 1005 ); 
-	m_wndSetFace.Create   ( _T( "Face"    ), 0, CRect( 195, 230, 250, 250 ), this, 1006 ); 
-
-//	m_wndDebug[ 0  ].SetCheck( g_World.m_bViewGrid      );
-//	m_wndDebug[ 1  ].SetCheck( g_World.m_bViewWireframe );
-//	m_wndDebug[ 2  ].SetCheck( g_World.m_bViewSkybox    );
-//	m_wndDebug[ 3  ].SetCheck( g_World.m_bViewTerrain   );
-//	m_wndDebug[ 4  ].SetCheck( g_World.m_bViewObject    );
-//	m_wndDebug[ 5  ].SetCheck( g_World.m_bViewFog       );
-//	m_wndDebug[ 6  ].SetCheck( g_World.m_bViewLOD       );
-//	m_wndDebug[ 7  ].SetCheck( g_World.m_bViewWater     );
-//	m_wndDebug[ 8  ].SetCheck( g_World.m_bViewName      );
-	m_wndDebug[ 0  ].SetCheck( g_WorldMng()->m_bViewGrid      );
-	m_wndDebug[ 1  ].SetCheck( g_WorldMng()->m_bViewWireframe );
-	m_wndDebug[ 2  ].SetCheck( g_WorldMng()->m_bViewSkybox    );
-	m_wndDebug[ 3  ].SetCheck( g_WorldMng()->m_bViewTerrain   );
-	m_wndDebug[ 4  ].SetCheck( g_WorldMng()->m_bViewAllObjects   );
-	m_wndDebug[ 5  ].SetCheck( g_WorldMng()->m_bViewFog       );
-	m_wndDebug[ 6  ].SetCheck( g_WorldMng()->m_bViewLOD       );
-	m_wndDebug[ 7  ].SetCheck( g_WorldMng()->m_bViewWater     );
-	m_wndDebug[ 8  ].SetCheck( g_WorldMng()->m_bViewName      );
-
-	m_wndDebug[ 9  ].SetCheck( CObj::IsAnimate()  );
-	m_wndDebug[ 10 ].SetCheck( GetFrameSkip() );
-//	m_wndDebug[ 11 ].SetCheck( g_World.m_bCullObj );
-//	m_wndDebug[ 12 ].SetCheck( g_World.m_bViewLight );
-//	m_wndDebug[ 13 ].SetCheck( g_World.m_bViewWeather );
-	m_wndDebug[ 11 ].SetCheck( g_WorldMng()->m_bCullObj );
-	m_wndDebug[ 12 ].SetCheck( g_WorldMng()->m_bViewLight );
-	m_wndDebug[ 13 ].SetCheck( g_WorldMng()->m_bViewWeather );
-	m_wndDebug[ 14 ].SetCheck( m_pTheme->m_bNudeSkin );
-	m_wndDebug[ 15 ].SetCheck( g_Neuz.m_bCapture );
-//	m_wndDebug[ 16 ].SetCheck( g_World.m_bViewBoundBox );
-	m_wndDebug[ 16 ].SetCheck( g_WorldMng()->m_bViewBoundBox );
-	m_wndDebug[ 17 ].SetCheck( CObj::m_bCollision );
-	
-	CWndNeuz::OnInitialUpdate();
-}
-*/
 BOOL CWndDebugInfo::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DEBUGINFO, 0, CPoint( 0, 0 ), pWndParent );
-/*	
-//	CRect rect(0,0,280,190);
-	CRect rect(0,0,280,270);
-	SetTitle("디버그 정보");
-	return CWndNeuz::Create( 0 | WBS_MOVE | WBS_SOUND | WBS_THICKFRAME | WBS_CAPTION, rect, &g_WndMng, dwWndId);
-	*/
 }
+
 BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
 	CWndButton* pWndButton = (CWndButton*)*pLResult;
@@ -318,22 +238,7 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndDebugInfo::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-void CWndDebugInfo::OnSize(UINT nType, int cx, int cy)
-{
-	CWndNeuz::OnSize(nType,cx,cy);
-}
-void CWndDebugInfo::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	CWndNeuz::OnLButtonUp(nFlags,point);
-}
-void CWndDebugInfo::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	CWndNeuz::OnLButtonDown(nFlags,point);
-}
+
 void CWndDebugInfo::OnDestroyChildWnd(CWndBase* pWndChild)
 {
 	if( m_pWndCapture == pWndChild )
