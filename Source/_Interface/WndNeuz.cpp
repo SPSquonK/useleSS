@@ -16,28 +16,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
-#define WTBID_CLOSE  100
-#define WTBID_MAX    101
-#define WTBID_MIN    102
-#define WTBID_HELP   103
-#define WTBID_REPORT 104
-#define WTBID_PIN    105
-*/
-
-CWndTitleBar::CWndTitleBar()
-{
-}
-
-CWndTitleBar::~CWndTitleBar()
-{
-
-}
-void CWndTitleBar::OnDraw(C2DRender* p2DRender)
-{
-}
-void CWndTitleBar::OnInitialUpdate()
-{
+void CWndTitleBar::OnInitialUpdate() {
 	CWndBase::OnInitialUpdate();
 
 	m_nButtonMax = 0;
@@ -53,10 +32,8 @@ void CWndTitleBar::OnInitialUpdate()
 	if(m_pParentWnd->IsWndStyle( WBS_HELP ) )
 	{
 		m_awndButton[ WTBID_HELP - 10000 ].Create( _T( "?" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax * 16 + 16, 20), this, WTBID_HELP ), m_nButtonMax++;
-//#ifdef __CLIENT
 		m_awndButton[ WTBID_HELP - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndHelp.tga" ), TRUE );
 		m_awndButton[ WTBID_HELP - 10000 ].FitTextureSize();
-//#endif
 	}
 	if(m_pParentWnd->IsWndStyle( WBS_MINIMIZEBOX ) )
 		m_awndButton[ WTBID_MIN - 10000 ].Create( _T( "_" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax* 16 + 16, 20), this, WTBID_MIN ), m_nButtonMax++;
@@ -66,11 +43,10 @@ void CWndTitleBar::OnInitialUpdate()
 	if(m_pParentWnd->IsWndStyle( WBS_MAXIMIZEBOX ) )
 	{
 		m_awndButton[ WTBID_MAX - 10000 ].Create( _T( "|" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax* 16 + 16, 20), this, WTBID_MAX ), m_nButtonMax++;
-//#ifdef __CLIENT
 		m_awndButton[ WTBID_MAX - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndMax.tga" ), TRUE );
 		m_awndButton[ WTBID_MAX - 10000 ].FitTextureSize();
-//#endif
 	}
+
 	if(m_pParentWnd->IsWndStyle( WBS_CAPTION ) )
 	{
 		if( m_pParentWnd->m_bNoCloseButton == FALSE )
@@ -82,39 +58,23 @@ void CWndTitleBar::OnInitialUpdate()
 	}
 	
 	CRect rect( 0, 4, m_nButtonMax * 16, 20 ); 
-
 	SetWndRect( rect );
-
-		///wndTitleBar.Create( WBS_CHILD | WBS_DOCKING | WBS_NOFRAME, CRect(0,0,48,20), this, 100000);// ,m_pSprPack,9);
-		//m_wndTitleBar.SetTitle("fuck");
-		//m_wndTitleBar.Move(CPoint(GetWindowRect().Width()-52,3)); //SetWndRect(rect);
-
 }
+
 void CWndTitleBar::Replace()
 {
 	if( m_pParentWnd )
 		Move( CPoint( m_pParentWnd->GetWindowRect().Width() - m_nButtonMax * 16 - 7, 4 ) ); 
 }
-BOOL CWndTitleBar::Initialize(CWndBase* pWndParent,DWORD dwStyle)
-{
-	return TRUE;
-}
-BOOL CWndTitleBar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	//if(m_pParentWnd) m_pParentWnd->OnCommand(nID,dwMessage);
-	return TRUE;
-}
+
 BOOL CWndTitleBar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
 	if(m_pParentWnd) m_pParentWnd->OnChildNotify( message, nID, pLResult );
 	return TRUE;
 }
-void CWndTitleBar::OnSize(UINT nType, int cx, int cy)
-{
-}
-BOOL CWndTitleBar::OnEraseBkgnd(C2DRender* p2DRender)
-{
-	return 1;
+
+BOOL CWndTitleBar::OnEraseBkgnd(C2DRender* p2DRender) {
+	return TRUE;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +87,6 @@ BOOL CWndTitleBar::OnEraseBkgnd(C2DRender* p2DRender)
 CWndNeuz::CWndNeuz()
 {
 	m_bFullMax = FALSE;	
-	m_dwWID = 0;
 	m_ptMouseCenter = CPoint( -1, -1 );
 //	m_bWndTile = FALSE;//TRUE;
 	m_dwColor = 0xffffffff;

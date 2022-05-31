@@ -1,13 +1,5 @@
-// WndArcane.h: interface for the CWndNeuz class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_WNDNEUZ_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)
-#define AFX_WNDNEUZ_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // 윈도의 타이틀 바 
@@ -29,63 +21,44 @@
 #define WBS_EXTENSION   0x00000020L // 확장 버튼 
 #define WBS_THICKFRAME  0x00000040L // 리사이즈 가능 윈도
 
-class CWndTitleBar : public CWndBase
-{
-	CWndButton m_awndButton[ 7 ];
-
-public:
+class CWndTitleBar final : public CWndBase {
+	std::array<CWndButton, 7> m_awndButton;
 	int m_nButtonMax;
 
-	/*
-	CWndButton m_wndClose;
-	CWndButton m_wndMaximize;
-	CWndButton m_wndMinimize;
-	CWndButton m_wndHelp;
-	CWndButton m_wndReport;
-	*/
+public:
+	void OnInitialUpdate() override;
+	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult) override;
+	BOOL OnEraseBkgnd(C2DRender* p2DRender) override;
 
-	CWndButton* GetTitleBarButton( int nID ) { return &m_awndButton[ nID - 10000 ]; }
-
-	CWndTitleBar();
-	virtual ~CWndTitleBar();
+	/// Moves this to the top right of the window
 	void Replace();
-//	virtual CItem* GetFocusItem() { return NULL; }
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwStyle = 0);
-	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
 };
+
 //////////////////////////////////////////////////////////////////////////////////////
 // 작업 윈도 
 // 메뉴 버튼, 명령 아이콘, 단축 아이콘, 활성화 기능 등등
 //
 class CWndNeuz : public CWndBase  
 {
-	CWndButton m_wndButton;
 	BOOL m_bFullMax;
-	DWORD m_dwWID;
+	// TODO: It is unclear why this boolean exists. If a window does not want to be registered,
+	// it could juste keep an empty SerializeRegInfo implementation
 	BOOL m_bPutRegInfo;
 	
 protected:
 	CWndTitleBar m_wndTitleBar;
-	std::vector< CWndBase* > m_aryDlgItem;
 	CRect m_rectBackup;
-	CPtrArray m_wndArrayTemp;
+	CPtrArray m_wndArrayTemp; // List of created controls (to be able to release them only)
 
 public:
 	CPoint m_ptMouseCenter;
-	int m_nWndType; // nomal wnd, tool wnd, 
 
 	// 윈도 정보 저장 관련 
 	void SetPutRegInfo( BOOL bPutRegInfo ) { m_bPutRegInfo = bPutRegInfo; }
-	BOOL IsPutRegInfo() { return m_bPutRegInfo; }
-#ifdef __CLIENT
+	[[nodiscard]] bool IsPutRegInfo() const noexcept { return m_bPutRegInfo; }
+
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-#endif
+
 	// 윈도 정보 저장 관련 끝 
 
 	BOOL InitDialog( HWND hWnd, DWORD dwWID, DWORD dwStyle = 0, CPoint ptLeftTop = 0, CWndBase* pWndParent = NULL );
@@ -118,5 +91,3 @@ public:
 	void SetSizeMax();
 	void SetSizeWnd();
 };
-
-#endif // !defined(AFX_WNDNEUZ_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)

@@ -842,7 +842,7 @@ void CWndMgr::DestroyApplet()
 		// 이제 여기서 임의로 오픈되어 있다고 저장하자.
 		//PutRegInfo( dwIdApplet, pWndBase->GetWindowRect( TRUE), TRUE );
 		if( pWndBase->IsPutRegInfo() )
-			PutRegInfo( (CWndNeuz*)pWndBase, TRUE );//dwIdApplet, pWndBase->GetWindowRect( TRUE), TRUE );
+			PutRegInfo( pWndBase, TRUE );//dwIdApplet, pWndBase->GetWindowRect( TRUE), TRUE );
 		// 이제 다 끝났다. 파괴하자.
 		safe_delete( pWndBase );
 	}
