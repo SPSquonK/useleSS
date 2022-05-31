@@ -23,7 +23,7 @@ void CWndAdminCreateItem::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-	CWndListBox* pListBox = (CWndListBox*)GetDlgItem( WIDC_CONTROL1 );
+	CWndListBox * pListBox = GetDlgItem<CWndListBox>(WIDC_CONTROL1);
 	for( int i = 0; i < prj.m_aPropItem.GetSize(); i++ )
 	{
 		ItemProp* pItemProp =  prj.GetItemProp( i );

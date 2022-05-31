@@ -21,6 +21,7 @@
 #define WSIZE_MAX      2
 
 #include "WndStyle.h"
+#include <typeinfo>
 
 #define D3DCOLOR_TEMP(a,b,g,r) \
     ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff))) 
@@ -213,13 +214,9 @@ static void FreeTileTexture();
 	static CWndBase* GetWndBase( UINT idWnd );
 	static CWndBase* GetWndBase();
 	CWndBase* GetChildWnd( UINT nID );
-	CWndBase* GetDlgItem( UINT nID ) 
-	{ 
-		CWndBase *pWnd = GetChildWnd( nID );
-		if( pWnd == NULL )
-			Error( "GetDlgItem : nID=%d not Found.", nID );
-		return pWnd; 
-	}
+
+	template<std::derived_from<CWndBase> CWndClass = CWndBase>
+	CWndClass * GetDlgItem(const UINT nID);
 
 	BOOL IsFocusWnd() { return m_pWndFocus == this; }
 	BOOL IsFocusChild() { return m_pParentWnd ? m_pParentWnd->m_pWndFocusChild == this : FALSE; }
@@ -346,6 +343,30 @@ public:
 	
 friend class CWndButton;
 };
+
+template<std::derived_from<CWndBase> CWndClass>
+inline CWndClass * CWndBase::GetDlgItem(const UINT nID) {
+	CWndBase * const pWnd = GetChildWnd(nID);
+	if (!pWnd) {
+		Error("GetDlgItem : nID=%d not Found.", nID);
+	}
+
+	if constexpr (std::is_same<CWndClass, CWndBase>::value) {
+		return pWnd;
+	}
+
+	static constexpr bool weLiveDangerouslyHere = false;
+	if constexpr (weLiveDangerouslyHere) {
+		return reinterpret_cast<CWndClass *>(pWnd);
+	}
+
+	CWndClass * const ptr = dynamic_cast<CWndClass *>(pWnd);
+	if (!ptr) {
+		Error("GetDlgItem : nID=%d is not a %s", nID, typeid(CWndClass).name());
+	}
+
+	return ptr;
+}
 
 namespace Windows {
 	template <typename ... Ts>
