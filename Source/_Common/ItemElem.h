@@ -151,7 +151,7 @@ public:
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
 	BOOL	IsPet() { return GetProp()->dwItemKind3 == IK3_EGG; }
-	BOOL	IsEatPet() { return GetProp()->dwItemKind3 == IK3_PET; }
+	[[nodiscard]] BOOL	IsEatPet() const { return GetProp()->dwItemKind3 == IK3_PET; }
 	BOOL	IsFeed() { return GetProp()->dwItemKind3 == IK3_FEED; }
 	BOOL	IsEgg();
 	CString	GetName();

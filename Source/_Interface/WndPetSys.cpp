@@ -9,30 +9,10 @@
 #include "definesound.h"
 #include "Vector3Helper.h"
 
-CWndPetAwakCancel::CWndPetAwakCancel() 
-{ 
+bool CWndPetAwakCancel::CEatPetReceiver::CanReceiveItem(const CItemElem & itemElem, bool) {
+	return itemElem.IsEatPet();
+}
 
-	m_pItemElem  = NULL;
-	m_pEItemProp = NULL;
-	m_pTexture   = NULL;
-	
-} 
-CWndPetAwakCancel::~CWndPetAwakCancel() 
-{ 
-} 
-void CWndPetAwakCancel::OnDraw( C2DRender* p2DRender ) 
-{ 
-	ItemProp* pItemProp;
-	
-	if(m_pItemElem != NULL)
-	{
-		pItemProp = m_pItemElem->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-		
-		if(m_pTexture != NULL)
-			m_pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-	} 
-} 
 void CWndPetAwakCancel::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -46,6 +26,9 @@ void CWndPetAwakCancel::OnInitialUpdate()
 	
 	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 	CWndText::SetupDescription(m_pText, _T("PetAwakCancel.inc"));
+
+	LPWNDCTRL wndctrl = GetWndCtrl(WIDC_STATIC1);
+	m_receiver.Create(0, wndctrl->rect, this, WIDC_Receiver);
 	
 	MoveParentCenter();
 } 
@@ -56,92 +39,18 @@ BOOL CWndPetAwakCancel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PET_AWAK_CANCEL, 0, CPoint( 0, 0 ), pWndParent );
 } 
 
-
-void CWndPetAwakCancel::OnDestroy()
-{
-	if(m_pItemElem != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem ) )
-			m_pItemElem->SetExtra(0);
-	}
-}
-
-BOOL CWndPetAwakCancel::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPetAwakCancel::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPetAwakCancel::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPetAwakCancel::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndPetAwakCancel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	if( nID == WIDC_BUTTON1 )
-	{
-		if(m_pItemElem != NULL)
-		{
-			CWndButton* pButton;
-			pButton = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
-			pButton->EnableWindow(FALSE);
-			g_DPlay.SendPickupPetAwakeningCancel( m_pItemElem->m_dwObjId );
+	if (nID == WIDC_BUTTON1) {
+		if (const CItemElem * item = m_receiver.GetItem()) {
+			GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(FALSE);
+			g_DPlay.SendPickupPetAwakeningCancel(item->m_dwObjId);
 			Destroy();
 		}
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-
-void CWndPetAwakCancel::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	if(!m_pItemElem) return;
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		m_pItemElem->SetExtra(0);
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
-		pButton->EnableWindow(FALSE);
-		m_pItemElem = NULL;
-		m_pEItemProp = NULL;
-		m_pTexture	= NULL;
-	}
-}
-
-BOOL CWndPetAwakCancel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	
-	CItemElem* pTempElem= NULL;
-
-
-	if(g_pPlayer != NULL) pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-	if( pTempElem != NULL)
-	{
-		// 픽업펫 확인	// 각성 여부는 서버 검사
-		if( !pTempElem->IsEatPet() )	
-			return FALSE;
-		// 확인 버튼 활성
-		if(m_pItemElem) m_pItemElem->SetExtra(0);
-		m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-		m_pEItemProp = m_pItemElem->GetProp();
-		m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-		if(m_pEItemProp != NULL)
-		{
-			m_pTexture = m_pItemElem->m_pTexture;
-			//m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-		}
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
-		pButton->EnableWindow(TRUE);
-	}
-
-	return TRUE;
-}
 
 //////////////////////////////////////////////////////////////////////////
 // CWndPetStatus
