@@ -1,27 +1,18 @@
-#ifndef __WNDBLESSINGCANCEL__H
-#define __WNDBLESSINGCANCEL__H
-class CWndBlessingCancel : public CWndNeuz 
-{ 
-public: 
+#pragma once
 
-	CWndText*  m_pText;
-	CItemElem* m_pItemElem;
-	ItemProp*  m_pEItemProp;
-	CTexture*  m_pTexture;
+#include "WndSqKComponents.h"
 
-	CWndBlessingCancel(); 
-	~CWndBlessingCancel(); 
+class CWndBlessingCancel : public CWndNeuz {
+	class CFashionReceiver : public CWndItemReceiver {
+	public:
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnDestroy();
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
+	static constexpr UINT WIDC_Receiver = 900;
+	CFashionReceiver m_receiver;
+
+public:
+	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void OnInitialUpdate() override; 
 }; 
-#endif
