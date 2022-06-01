@@ -211,12 +211,21 @@ static void FreeTileTexture();
 
 	[[nodiscard]] int GetWndId() const { return m_nIdWnd; }
 
-	static CWndBase* GetWndBase( UINT idWnd );
-	static CWndBase* GetWndBase();
-	CWndBase* GetChildWnd( UINT nID );
+private:
+	static CWndBase* GetWndBase_Sub( UINT idWnd );
+	CWndBase * GetChildWnd(UINT nID);
+	
+	template<std::derived_from<CWndBase> CWndClass>
+	static CWndClass * ConvertWndBaseToWndClass(CWndBase * pWindow, const char * caller);
+public:
+	template<std::derived_from<CWndBase> CWndClass = CWndBase>
+	static CWndClass * GetWndBase(UINT idWnd);
 
 	template<std::derived_from<CWndBase> CWndClass = CWndBase>
 	CWndClass * GetDlgItem(const UINT nID);
+
+	static CWndBase* GetWndBase();
+
 
 	BOOL IsFocusWnd() { return m_pWndFocus == this; }
 	BOOL IsFocusChild() { return m_pParentWnd ? m_pParentWnd->m_pWndFocusChild == this : FALSE; }
@@ -345,27 +354,39 @@ friend class CWndButton;
 };
 
 template<std::derived_from<CWndBase> CWndClass>
+static CWndClass * CWndBase::GetWndBase(const UINT idWnd) {
+	CWndBase * const pWnd = GetWndBase_Sub(idWnd);
+	return ConvertWndBaseToWndClass<CWndClass>(pWnd, "GetDlgItem");
+}
+
+template<std::derived_from<CWndBase> CWndClass>
 inline CWndClass * CWndBase::GetDlgItem(const UINT nID) {
 	CWndBase * const pWnd = GetChildWnd(nID);
 	if (!pWnd) {
 		Error("GetDlgItem : nID=%d not Found.", nID);
 	}
+	return ConvertWndBaseToWndClass<CWndClass>(pWnd, "GetDlgItem");
+}
+
+template<std::derived_from<CWndBase> CWndClass>
+inline CWndClass * CWndBase::ConvertWndBaseToWndClass(CWndBase * pWindow, const char * caller) {
+	static constexpr bool WeLiveDangerously = false;
 
 	if constexpr (std::is_same<CWndClass, CWndBase>::value) {
 		return pWnd;
-	}
-
-	static constexpr bool weLiveDangerouslyHere = false;
-	if constexpr (weLiveDangerouslyHere) {
+	} else if constexpr (WeLiveDangerously) {
 		return reinterpret_cast<CWndClass *>(pWnd);
-	}
+	} else {
+		if (!pWnd) return pWnd;
 
-	CWndClass * const ptr = dynamic_cast<CWndClass *>(pWnd);
-	if (!ptr) {
-		Error("GetDlgItem : nID=%d is not a %s", nID, typeid(CWndClass).name());
-	}
+		CWndClass * const ptr = dynamic_cast<CWndClass *>(pWnd);
 
-	return ptr;
+		if (!ptr) {
+			Error("%s : nID=%d is not a %s", caller, nID, typeid(CWndClass).name());
+		}
+
+		return ptr;
+	}
 }
 
 namespace Windows {

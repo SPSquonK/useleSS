@@ -2005,7 +2005,7 @@ BOOL CWndBase::IsPickupSpace(CPoint ptWindow)
 	}
 	return FALSE;
 }
-CWndBase* CWndBase::GetWndBase(UINT idWnd) 
+CWndBase* CWndBase::GetWndBase_Sub(UINT idWnd) 
 { 
 	for(int i = 0; i < m_wndOrder.GetSize(); i++)
 	{

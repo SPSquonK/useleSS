@@ -95,14 +95,8 @@ public:
 	CWndTextChat m_wndText;
 	CStringArray m_strArray;
 	CWndCommand* m_pWndCommand;
-//	CWndButton m_wndMenu;
-	//CWndText m_wndText;
-	//CWndEdit m_wndBeginning;
-	CWndEditChat m_wndEdit;
-	//CWndText m_wndReceiver;
 
-//	CWndButton m_wndShout;
-	//CWndButton m_wndParty;
+	CWndEditChat m_wndEdit;
 
 	CWndChat();   
 	virtual ~CWndChat(); 

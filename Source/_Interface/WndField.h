@@ -751,7 +751,6 @@ class CWndTrade : public CWndNeuz {
 public:
 	CWndTradeCtrl m_wndItemCtrlYou;
 	CWndTradeCtrl m_wndItemCtrlI;
-	CWndStatic    m_wndGold;
 	int           m_nGoldI, m_nGoldYou;
 
 	CWndTrade();

@@ -81,7 +81,6 @@ public:
 
 	CMover* m_pMover;
 	CWndItemCtrlVendor m_wndItemCtrl[ MAX_VENDOR_INVENTORY_TAB ];
-	CWndStatic m_static;
 	CWndShop(); 
 	~CWndShop(); 
 

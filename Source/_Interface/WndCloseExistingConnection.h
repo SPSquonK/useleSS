@@ -1,21 +1,12 @@
-#ifndef __WNDCLOSEEXISTINGCONNECTION__H
-#define __WNDCLOSEEXISTINGCONNECTION__H
+#pragma once
 
-class CWndCloseExistingConnection : public CWndNeuz
-{
-protected:
+class CWndCloseExistingConnection : public CWndNeuz {
+private:
 	CWndText	m_wndText;
-public: 
-	CWndCloseExistingConnection();
-	~CWndCloseExistingConnection();
 
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
+	void EnableLoginAndDestroy();
+public:
+	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void OnInitialUpdate() override;
 }; 
-#endif	// __WNDCLOSEEXISTINGCONNECTION__H
