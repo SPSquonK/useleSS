@@ -89,9 +89,9 @@ void	CRandomOptionProperty::SetParam( __int64* pnRandomOptItemId, int nDst, int 
 	*pnRandomOptItemId	|= nRandomOptionItemId;		// Save result value
 }
 
-int CRandomOptionProperty::GetRandomOptionKind( CItemElem* pItemElem )
+int CRandomOptionProperty::GetRandomOptionKind(const CItemElem* pItemElem )
 {
-	ItemProp* pProp		= pItemElem->GetProp();
+	const ItemProp* pProp		= pItemElem->GetProp();
 	switch( pProp->dwParts )
 	{
 		case PARTS_UPPER_BODY:

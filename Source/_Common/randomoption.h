@@ -62,7 +62,7 @@ public:
 	int		GetViewRandomOptionSize( __int64 n64RandomOptItemId );
 
 	// Returns the type of random option according to the mounting part
-	int		GetRandomOptionKind( CItemElem* pItemElem );
+	int		GetRandomOptionKind(const CItemElem* pItemElem );
 
 	// give random option
 	BOOL	GenRandomOption( __int64* pnRandomOptItemId, int nRandomOptionKind, int nParts, bool bDecreaseFlag = false );

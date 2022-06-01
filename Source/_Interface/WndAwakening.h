@@ -1,73 +1,52 @@
-#ifndef __WND__H
-#define __WND__H
+#pragma once 
 
-class CWndAwakening : public CWndNeuz 
-{ 
-public: 
+#include "WndSqKComponents.h"
 
-	CWndText*  m_pText;
-	CItemElem* m_pItemElem;
-	ItemProp*  m_pEItemProp;
-	CTexture*  m_pTexture;
+class CWndAwakening : public CWndNeuz {
+public:
+	class CAwakenableItemReceiver : public CWndItemReceiver {
+	public:
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
 
-	CWndAwakening(); 
-	~CWndAwakening(); 
+private:
+	static constexpr UINT WIDC_Receiver = 900;
+	CAwakenableItemReceiver m_receiver;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual void OnDestroy();
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-	virtual BOOL process();
+public:
+	BOOL Initialize(CWndBase * pWndParent, DWORD) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
 }; 
 
-#ifdef __PROTECT_AWAKE
-class CWndSelectAwakeCase : public CWndNeuz
-{
-	// 각성 보호 선택창 ( 두가지중에 하나 고름 < 각성전, 각성후 > 0
+class CWndSelectAwakeCase : public CWndNeuz {
 public:
+	static constexpr DWORD AWAKE_KEEP_TIME = SEC(60);
 
-	CWndSelectAwakeCase( );
-	virtual ~CWndSelectAwakeCase( );
+	CWndSelectAwakeCase(BYTE byObjID, DWORD dwSerialNum, __int64 n64NewOption);
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-//	virtual void OnDestroy();
-//	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-//	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-//	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-	virtual BOOL process();
+
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 
-	void SetItemIndex( const DWORD index )			{ m_dwItemIndex = index; }
-	void SetData( BYTE byObjID, DWORD dwSerialNum, __int64 n64NewOption );
-	void OutputOptionString( C2DRender* p2DRender, CItemElem* pItemElem, BOOL bNew = FALSE );
+private:
+	void OutputOptionString(C2DRender * p2DRender, CItemElem * pItemElem, BOOL bNew = FALSE);
 
-protected:
 	DWORD m_dwOldTime;
-	DWORD m_dwDeltaTime;
+	DWORD m_dwDeltaTime = 0;
 
-	DWORD m_dwItemIndex;
-	CTexture*  m_pTexture;
+	DWORD m_dwItemIndex = 0;
+	CTexture*  m_pTexture = nullptr;
 
-	BYTE m_byObjID;
-	DWORD m_dwSerialNum;
-	__int64 m_n64NewOption;
+	BYTE m_byObjID = 0;
+	DWORD m_dwSerialNum = 0;
+	__int64 m_n64NewOption = 0;
 
-	CTexture* m_pTexGuage;
-	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferGauge;
+	CTexture* m_pTexGuage = nullptr;
+	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferGauge = nullptr;
 };
-
-#endif //__PROTECT_AWAKE
-
-#endif

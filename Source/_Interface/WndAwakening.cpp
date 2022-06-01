@@ -15,64 +15,25 @@
 ****************************************************/
 
 // gmpbigsun ( 10_04_05 ) : CWndAwakening class는 현재 쓰이지 않음
-CWndAwakening::CWndAwakening() 
-{
-	m_pItemElem  = NULL;
-	m_pEItemProp = NULL;
-	m_pText		 = NULL;
-	m_pTexture	 = NULL;
-} 
-CWndAwakening::~CWndAwakening() 
-{ 
-} 
-void CWndAwakening::OnDraw( C2DRender* p2DRender ) 
-{ 
-
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-			
-	if(m_pTexture)
-		m_pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-		
-} 
-
-BOOL CWndAwakening::process()
-{
-/*
-	ItemProp* pItemProp;
-	
-	if(m_pItemElem != NULL)
-	{
-		pItemProp = m_pItemElem->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-		if(pItemProp != NULL)
-		{
-			m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-		}
-	} 
-*/
-	return TRUE;
-
-}
 
 void CWndAwakening::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	
 	// 여기에 코딩하세요
-	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
+	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_BUTTON1);
 
 	if(::GetLanguage() == LANG_FRE)
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
-	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText::SetupDescription(m_pText, _T("ItemAwakening.inc"));
 
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	CWndText * pText = GetDlgItem<CWndText>(WIDC_TEXT1);
+	CWndText::SetupDescription(pText, _T("ItemAwakening.inc"));
+
+	LPWNDCTRL wndCtrl = GetWndCtrl(WIDC_STATIC1);
+	m_receiver.Create(0, wndCtrl->rect, this, 900);
+
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -81,144 +42,60 @@ BOOL CWndAwakening::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_AWAKENING, 0, CPoint( 0, 0 ), pWndParent );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWnd::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
 
-void CWndAwakening::OnDestroy()
-{
-	if(m_pItemElem != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem ) )
-			m_pItemElem->SetExtra(0);
-	}
-}
-
-BOOL CWndAwakening::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndAwakening::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndAwakening::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndAwakening::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-BOOL CWndAwakening::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-
+BOOL CWndAwakening::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) {
 	if( nID == WIDC_BUTTON1 )
 	{
 		//서버로 시작을 알린다.
-		if(m_pItemElem != NULL)
-		{
-			CWndButton* pButton;
-			pButton = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
+		if (CItemElem * item = m_receiver.GetItem()) {
+			CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_BUTTON1);
 			pButton->EnableWindow(FALSE);
 
 			// 서버에 처리 요청하는 함수 호출해야함
-			if(m_pItemElem)
-			{
-				g_DPlay.SendAwakening(m_pItemElem->m_dwObjId);
-				Destroy();
-			}
+			g_DPlay.SendAwakening(item->m_dwObjId);
+			Destroy();
 		}
+	} else if (nID == WIDC_Receiver) {
+		GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(
+			m_receiver.GetItem() ? TRUE : FALSE
+		);
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndAwakening::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	if(!m_pItemElem) return;
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		m_pItemElem->SetExtra(0);
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
-		pButton->EnableWindow(FALSE);
-		m_pItemElem = NULL;
-		m_pEItemProp = NULL;
-		m_pTexture	= NULL;
+bool CWndAwakening::CAwakenableItemReceiver::CanReceiveItem(const CItemElem & itemElem, bool verbose) {
+	const int nRandomOptionKind = g_xRandomOptionProperty.GetRandomOptionKind(&itemElem);
+	if (nRandomOptionKind != CRandomOptionProperty::eAwakening) {
+		if (verbose) g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_INVALID_TARGET_ITEM));
+		return false;
 	}
+
+	if (g_xRandomOptionProperty.GetRandomOptionSize(itemElem.GetRandomOptItemId()) > 0) {
+		if (verbose) g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_AWAKE_OR_BLESSEDNESS01));
+		return false;
+	}
+
+	return true;
 }
 
-BOOL CWndAwakening::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
 
-	int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pTempElem );
-	if( nRandomOptionKind  != CRandomOptionProperty::eAwakening )
-	{
-		// 적절한 대상이 아닙니다.
-		//g_WndMng.PutString( prj.GetText( TID_GAME_INVALID_TARGET_ITEM ), NULL, prj.GetTextColor( TID_GAME_INVALID_TARGET_ITEM  ) );
-		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_INVALID_TARGET_ITEM ) );
-		return FALSE;
-	}
-	if( g_xRandomOptionProperty.GetRandomOptionSize( pTempElem->GetRandomOptItemId() ) > 0 )
-	{
-		// 이미 각성된 아이템입니다.
-		//g_WndMng.PutString( prj.GetText( TID_GAME_AWAKE_OR_BLESSEDNESS01 ), NULL, prj.GetTextColor( TID_GAME_AWAKE_OR_BLESSEDNESS01  ) );
-		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_AWAKE_OR_BLESSEDNESS01 ) );
-		return FALSE;
-	}
-	
-	if(pTempElem != NULL)
-	{
-		if(m_pItemElem) m_pItemElem->SetExtra(0);
-		m_pItemElem = pTempElem;
-		m_pEItemProp = m_pItemElem->GetProp();
-		m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
-		pButton->EnableWindow(TRUE);
-		
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-		if(m_pEItemProp != NULL)
-		{
-			m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-		}
-	}
-
-	return TRUE;
-
-}
-
-#ifdef __PROTECT_AWAKE
-CWndSelectAwakeCase::CWndSelectAwakeCase( )
-: m_dwDeltaTime( 0 ),
-m_dwItemIndex( 0 ),
-m_pTexture( NULL ),
-m_pVertexBufferGauge(NULL), 
-m_pTexGuage( NULL )
-{
+CWndSelectAwakeCase::CWndSelectAwakeCase(BYTE byObjID, DWORD dwSerialNum, __int64 n64NewOption) {
 	m_dwOldTime = g_tmCurrent;
 
-	m_byObjID = 0;
-	m_dwSerialNum = 0;
-	m_n64NewOption = 0;
+	//server로 전송할 데이터를 유지하고, 아이템 Index를 뽑아서 아이콘을 그려줄 준비
+	m_byObjID = byObjID;
+	m_dwSerialNum = dwSerialNum;
+	m_n64NewOption = n64NewOption;
+
+	if (!g_pPlayer) return;
+	
+	const ItemProp * const pProp = g_pPlayer->GetItemIdProp(m_byObjID);
+	if (pProp) {
+		m_dwItemIndex = pProp->dwID;
+	}
 }
 
-CWndSelectAwakeCase::~CWndSelectAwakeCase( )
-{
-	DeleteDeviceObjects();
-}
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndSelectAwakeCase::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
@@ -230,27 +107,21 @@ void CWndSelectAwakeCase::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	
-	// 여기에 코딩하세요
-
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 
-	ItemProp* pProp = (ItemProp*)prj.GetItemProp( m_dwItemIndex );
-	if( pProp )
-		m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon ), 0xffff00ff );
+	const ItemProp * pProp = prj.GetItemProp( m_dwItemIndex );
+	if (pProp) {
+		m_pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pProp->szIcon), 0xffff00ff);
+	}
 	
 	m_pTexGuage = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Wndguage.tga"   ), 0xffff00ff );
+	if (!m_pTexGuage) {
+		Error("CWndSelectAwakeCase::OnInitialUpdate m_pTexGuage(Wndguage.tga) is NULL");
+	}
 
-	if( !m_pTexGuage )
-		Error( "CWndSelectAwakeCase::OnInitialUpdate m_pTexGuage(Wndguage.tga) is NULL" );
+	AddWndStyle(WBS_MODAL);
 
-	AddWndStyle( WBS_MODAL );
-
-	RestoreDeviceObjects( );
+	RestoreDeviceObjects();
 } 
 
 
@@ -271,13 +142,6 @@ BOOL CWndSelectAwakeCase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-
-const static DWORD AWAKE_KEEP_TIME = 60000;	//60초
-
-BOOL CWndSelectAwakeCase::process()
-{
-	return TRUE;
-}
 
 void CWndSelectAwakeCase::OnDraw( C2DRender* p2DRender ) 
 { 
@@ -320,17 +184,15 @@ void CWndSelectAwakeCase::OnDraw( C2DRender* p2DRender )
 	rect.right = LONG(( rect.left + (AWAKE_KEEP_TIME - m_dwDeltaTime) / 100 ) * 0.6f) ;		//귀찮으니 걍 바의 길이를 최대초로...
 	rect.bottom = rect.top + 20;
 
-//	if( m_pTexGuage )
-//		p2DRender->RenderFillRect( rect, 0xffff0000, m_pTexGuage->m_pTexture  );
-
 	m_pTheme->RenderGauge(p2DRender, &rect, 0xffffffff, m_pVertexBufferGauge, m_pTexGuage);
 
 	// draw icon
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
 	assert( wndCtrl );
 			
-	if(m_pTexture)
-		m_pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
+	if (m_pTexture) {
+		m_pTexture->Render(p2DRender, CPoint(wndCtrl->rect.left, wndCtrl->rect.top));
+	}
 } 
 
 extern bool IsDst_Rate(int nDstParam);
@@ -379,25 +241,6 @@ void CWndSelectAwakeCase::OutputOptionString( C2DRender* p2DRender, CItemElem* p
 	}
 }
 
-void CWndSelectAwakeCase::SetData( BYTE byObjID, DWORD dwSerialNum, __int64 n64NewOption ) 
-{ 
-	//server로 전송할 데이터를 유지하고, 아이템 Index를 뽑아서 아이콘을 그려줄 준비
-	m_byObjID = byObjID;
-	m_dwSerialNum = dwSerialNum;
-	m_n64NewOption = n64NewOption; 
-
-	if( !g_pPlayer )
-	{
-		assert( 0 );
-		return;
-	}
-
-	const ItemProp * const pProp = g_pPlayer->GetItemIdProp(m_byObjID);
-	if (pProp) {
-		m_dwItemIndex = pProp->dwID;
-	}
-}
-
 HRESULT CWndSelectAwakeCase::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
@@ -424,5 +267,3 @@ HRESULT CWndSelectAwakeCase::DeleteDeviceObjects()
 	SAFE_RELEASE( m_pVertexBufferGauge );
 	return S_OK;
 }
-
-#endif	//__PROTECT_AWAKE

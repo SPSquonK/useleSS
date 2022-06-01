@@ -17623,18 +17623,12 @@ void CDPClient::SendSelectedAwakeningValue( DWORD dwObjID, DWORD dwSerialNum, BY
 void CDPClient::OnSafeAwakening( CAr& ar )
 {
 	//각성 취소보호중 각성을 시도했다. 옵션 선택창을 띄운다.
-	BYTE byItemObjID = 0;
-	DWORD dwSerialNumber = 0;
-	__int64 n64NewRandomOption = 0;
-
-	ar >> byItemObjID >> dwSerialNumber >> n64NewRandomOption ;
-
-	if( !g_pPlayer )
-		return;
+	const auto [byItemObjID, dwSerialNumber, n64NewRandomOption] = ar.Extract<BYTE, DWORD, __int64>();
 	
-	g_WndMng.m_pWndSelectAwakeCase = new CWndSelectAwakeCase;
-	g_WndMng.m_pWndSelectAwakeCase->SetData( byItemObjID, dwSerialNumber, n64NewRandomOption );
-	g_WndMng.m_pWndSelectAwakeCase->Initialize( &g_WndMng, APP_AWAKE_SELECTCASE );
+	if( !g_pPlayer ) return;
+	
+	g_WndMng.m_pWndSelectAwakeCase = new CWndSelectAwakeCase(byItemObjID, dwSerialNumber, n64NewRandomOption);
+	g_WndMng.m_pWndSelectAwakeCase->Initialize(&g_WndMng, APP_AWAKE_SELECTCASE);
 }
 
 #endif //__PROTECT_AWAKE
