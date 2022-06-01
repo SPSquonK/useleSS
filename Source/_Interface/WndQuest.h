@@ -5,26 +5,19 @@
 
 extern CTreeInformationManager g_QuestTreeInfoManager;
 
-class CWndQuestTreeCtrl : public CWndTreeCtrl
-{
+class CWndQuestTreeCtrl : public CWndTreeCtrl {
 public:
-	CWndQuestTreeCtrl( void );
-	virtual ~CWndQuestTreeCtrl( void );
-
-public:
-	virtual BOOL OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult );
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
+	BOOL OnChildNotify(UINT nCode, UINT nID, LRESULT * pLResult) override;
+	void OnLButtonDown(UINT nFlags, CPoint point) override;
 };
 
-class CWndRemoveQuest : public CWndMessageBox
-{
+class CWndRemoveQuest : public CWndMessageBox {
+	int m_nRemoveQuestId = -1;
 public:
-	int m_nRemoveQuestId;
-	CWndRemoveQuest() { m_nRemoveQuestId = -1; }
-	virtual ~CWndRemoveQuest() { }
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	// message
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
+	CWndRemoveQuest(int nRemoveQuestId) : m_nRemoveQuestId(nRemoveQuestId) {}
+	
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };
 
 class CWndQuest : public CWndNeuz 
@@ -69,21 +62,15 @@ private:
 	CWndQuestTreeCtrl m_WndEvent;
 }; 
 
-class CWndQConditionTreeCtrl : public CWndTreeCtrl
-{
-public:
-	CWndQConditionTreeCtrl( void );
-	virtual ~CWndQConditionTreeCtrl( void );
-
-public:
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-};
-
 class CWndQuestDetail : public CWndNeuz
 {
 public:
+	class CWndQConditionTreeCtrl : public CWndTreeCtrl {
+	public:
+		void OnLButtonDown(UINT nFlags, CPoint point) override;
+	};
+
 	CWndQuestDetail( DWORD dwQuestID = -1 );
-	virtual ~CWndQuestDetail( void );
 
 public:
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );

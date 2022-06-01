@@ -390,8 +390,7 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( g_WndMng.m_pWndQuestDetail )
 							SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
-						CWndRemoveQuest* pWndRemoveQuest = new CWndRemoveQuest;
-						pWndRemoveQuest->m_nRemoveQuestId = nQuestID;
+						CWndRemoveQuest* pWndRemoveQuest = new CWndRemoveQuest(nQuestID);
 						g_WndMng.OpenCustomBox( NULL, pWndRemoveQuest );
 					}
 					break;
@@ -584,13 +583,6 @@ BOOL CWndQuest::IsCheckedQuestID(DWORD dwQuestID) {
 	return (it != g_pPlayer->m_quests->checked.end()) ? TRUE : FALSE;
 }
 
-CWndQuestTreeCtrl::CWndQuestTreeCtrl( void )
-{
-}
-
-CWndQuestTreeCtrl::~CWndQuestTreeCtrl( void )
-{
-}
 
 BOOL CWndQuestTreeCtrl::OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult )
 {
@@ -672,15 +664,8 @@ void CWndQuestTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 	}
 }
 //-----------------------------------------------------------------------------
-CWndQConditionTreeCtrl::CWndQConditionTreeCtrl( void )
-{
-}
-//-----------------------------------------------------------------------------
-CWndQConditionTreeCtrl::~CWndQConditionTreeCtrl( void )
-{
-}
-//-----------------------------------------------------------------------------
-void CWndQConditionTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
+
+void CWndQuestDetail::CWndQConditionTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 {
 	LPTREEITEM pTreeItem = NULL;
 	for( int i = 0; i < GetTreeItemArray()->GetSize(); ++i )
@@ -712,10 +697,7 @@ CWndQuestDetail::CWndQuestDetail( DWORD dwQuestID ) :
 m_dwQuestID( dwQuestID )
 {
 }
-//-----------------------------------------------------------------------------
-CWndQuestDetail::~CWndQuestDetail( void )
-{
-}
+
 //-----------------------------------------------------------------------------
 BOOL CWndQuestDetail::Initialize( CWndBase* pWndParent, DWORD nType )
 {
