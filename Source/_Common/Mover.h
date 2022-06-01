@@ -297,7 +297,7 @@ public:
 
 	void					TradeClear();
 	void					TradeSetItem( BYTE nId, BYTE i, short nItemNum );
-	void					TradeSetItem( const CItemElem & item, BYTE i, short nItemNum);
+	void					TradeSetItem( CItemElem & item, BYTE i, short nItemNum);
 	BOOL					TradeClearItem( BYTE i );
 	void					TradeSetGold( DWORD dwGold );
 	int						TradeGetGold();

@@ -102,8 +102,9 @@ void CVTInfo::TradeSetItem( BYTE nId, BYTE i, short nItemNum )
 	}
 }
 
-void CVTInfo::TradeSetItem(const CItemElem & item, BYTE i, short nItemNum) {
-	m_items_VT[i] = std::make_unique<CItemElem>(item);
+void CVTInfo::TradeSetItem(CItemElem & item, BYTE i, short nItemNum) {
+	m_items_VT[i] = std::make_unique<CItemElem>();
+	(*m_items_VT[i]) = item;
 	m_items_VT[i]->SetExtra(nItemNum);
 }
 
