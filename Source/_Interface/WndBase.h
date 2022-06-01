@@ -373,16 +373,16 @@ inline CWndClass * CWndBase::ConvertWndBaseToWndClass(CWndBase * pWindow, const 
 	static constexpr bool WeLiveDangerously = false;
 
 	if constexpr (std::is_same<CWndClass, CWndBase>::value) {
-		return pWnd;
+		return pWindow;
 	} else if constexpr (WeLiveDangerously) {
-		return reinterpret_cast<CWndClass *>(pWnd);
+		return reinterpret_cast<CWndClass *>(pWindow);
 	} else {
-		if (!pWnd) return pWnd;
+		if (!pWindow) return nullptr;
 
-		CWndClass * const ptr = dynamic_cast<CWndClass *>(pWnd);
+		CWndClass * const ptr = dynamic_cast<CWndClass *>(pWindow);
 
 		if (!ptr) {
-			Error("%s : nID=%d is not a %s", caller, nID, typeid(CWndClass).name());
+			Error("%s : nID=%d is not a %s", caller, pWindow->GetWndId(), typeid(CWndClass).name());
 		}
 
 		return ptr;
