@@ -331,10 +331,9 @@ typedef struct tagCHARACTER
 	RANDOM_ITEM		m_randomItem;
 	BOOL			m_abMoverMenu[ MAX_MOVER_MENU ];
 
-	CWordArray		m_awSrcQuest; // 이 캐릭터가 소유한 퀘스트 아이디 목록 
-	CWordArray		m_awDstQuest; // 이 캐릭터가 소유한 퀘스트 아이디 목록 
-	CUIntArray		m_anSrcQuestItem; 
-	CUIntArray		m_anDstQuestItem; 
+	std::vector<std::pair<QuestId, DWORD>> m_srcQuests;
+	std::vector<std::pair<QuestId, DWORD>> m_dstQuests;
+
 	void Clear();
 
 	CVendor m_vendor;

@@ -464,36 +464,34 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 	pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
 	
 	// 퀘스트 리스트 send
-	std::vector<int> vecNewQuest;
-	std::vector<int> vecNextQuest;
-	std::vector<int> vecEndQuest;
-	std::vector<int> vecCurrQuest;
+	std::vector<QuestId> vecNewQuest;
+	std::vector<QuestId> vecNextQuest;
+	std::vector<QuestId> vecEndQuest;
+	std::vector<QuestId> vecCurrQuest;
 	LPCHARACTER lpChar = prj.GetCharacter( pMover->m_szCharacterKey );
 	if( lpChar )
 	{
-		for( int i = 0; i < lpChar->m_awSrcQuest.GetSize(); i++ )
-		{
-			int nQuest = lpChar->m_awSrcQuest.GetAt( i );
-			QUEST * lpQuest = pUser->GetQuest( QuestId(nQuest) );
+		for (const auto & [nQuest, _ ] : lpChar->m_srcQuests) {
+			QUEST * lpQuest = pUser->GetQuest( nQuest );
 
 			// new quest
-			if( lpQuest == NULL && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE )
+			if( lpQuest == NULL && !pUser->IsCompleteQuest( nQuest ) )
 			{
 				// now
-				if( __IsBeginQuestCondition( pUser, nQuest ) )
+				if( __IsBeginQuestCondition( pUser, nQuest.get() ) )
 				{
 					bNewQuest = TRUE;
 					vecNewQuest.push_back( nQuest );
 				}
 				// next
-				else if( __IsNextLevelQuest( pUser, nQuest ) )
+				else if( __IsNextLevelQuest( pUser, nQuest.get() ) )
 					vecNextQuest.push_back( nQuest );
 			}
 			// current quest
 			else if( lpQuest && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE && lpQuest->m_nState != QS_END )
 			{
 				// complete
-				if( __IsEndQuestCondition( pUser, nQuest ) )
+				if( __IsEndQuestCondition( pUser, nQuest.get() ) )
 					vecEndQuest.push_back( nQuest );
 				// running
 				else
@@ -509,13 +507,13 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 
 		// send
 		for( DWORD i = 0; i < vecNewQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecNewQuest[ i ], "QUEST_BEGIN", 0, TRUE );
+			__AddQuestKey( nPcId, vecNewQuest[ i ].get(), "QUEST_BEGIN", 0, TRUE);
 		for( DWORD i = 0; i < vecNextQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecNextQuest[ i ], "QUEST_NEXT_LEVEL", 0, TRUE );
+			__AddQuestKey( nPcId, vecNextQuest[ i ].get(), "QUEST_NEXT_LEVEL", 0, TRUE );
 		for( DWORD i = 0; i < vecEndQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecEndQuest[ i ], "QUEST_END", 0, FALSE );
+			__AddQuestKey( nPcId, vecEndQuest[ i ].get(), "QUEST_END", 0, FALSE );
 		for( DWORD i = 0; i < vecCurrQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecCurrQuest[ i ], "QUEST_END", 0, FALSE );
+			__AddQuestKey( nPcId, vecCurrQuest[ i ].get(), "QUEST_END", 0, FALSE );
 	}
 	
 	BOOL bDialogText = TRUE;
@@ -579,7 +577,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 		if( bNewQuest )
 		{
 			if( vecNewQuest.size() == 1 && bCompleteCheck )	// 진행가능한 퀘스트가 하나면 바로 퀘스트 수락창 표시
-				__QuestBegin( nPcId, nNpcId, vecNewQuest[ 0 ] );
+				__QuestBegin( nPcId, nNpcId, vecNewQuest[ 0 ].get() );
 			else
 				pMover->m_pNpcProperty->RunDialog( "#yesQuest", NULL, 0, nNpcId, nPcId, 0 ); // 준비된 퀘스트가 있을 때의 인사말
 		}
@@ -620,33 +618,31 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 		pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
 		LPQUEST lpQuestList;
 		// 퀘스트 리스트 send
-		std::vector<int> vecNewQuest;
-		std::vector<int> vecNextQuest;
-		std::vector<int> vecEndQuest;
-		std::vector<int> vecCurrQuest;
+		std::vector<QuestId> vecNewQuest;
+		std::vector<QuestId> vecNextQuest;
+		std::vector<QuestId> vecEndQuest;
+		std::vector<QuestId> vecCurrQuest;
 		LPCHARACTER lpChar = prj.GetCharacter( pMover->m_szCharacterKey );
 		if( lpChar )
 		{
-			for( int i = 0; i < lpChar->m_awSrcQuest.GetSize(); i++ )
-			{
-				int nQuest = lpChar->m_awSrcQuest.GetAt( i );
-				lpQuestList = pUser->GetQuest( QuestId(nQuest) );
+			for (const auto & [nQuest, _] : lpChar->m_srcQuests) {
+				lpQuestList = pUser->GetQuest( nQuest );
 				
 				// new quest
-				if( lpQuestList == NULL && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE )
+				if( lpQuestList == NULL && !pUser->IsCompleteQuest( nQuest ) )
 				{
 					// now
-					if( __IsBeginQuestCondition( pUser, nQuest ) )
+					if( __IsBeginQuestCondition( pUser, nQuest.get() ) )
 						vecNewQuest.push_back( nQuest );
 					// next
-					else if( __IsNextLevelQuest( pUser, nQuest ) )
+					else if( __IsNextLevelQuest( pUser, nQuest.get() ) )
 						vecNextQuest.push_back( nQuest );
 				}
 				// current quest
-				else if( lpQuestList && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE )
+				else if( lpQuestList && !pUser->IsCompleteQuest( nQuest ) )
 				{
 					// complete
-					if( __IsEndQuestCondition( pUser, nQuest ) )
+					if( __IsEndQuestCondition( pUser, nQuest.get() ) )
 						vecEndQuest.push_back( nQuest );
 					// running
 					else
@@ -662,13 +658,13 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 			
 			// send
 			for( DWORD i = 0; i < vecNewQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecNewQuest[ i ], "QUEST_BEGIN", 0, TRUE );
+				__AddQuestKey( nPcId, vecNewQuest[ i ].get(), "QUEST_BEGIN", 0, TRUE);
 			for( DWORD i = 0; i < vecNextQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecNextQuest[ i ], "QUEST_NEXT_LEVEL", 0, TRUE );
+				__AddQuestKey( nPcId, vecNextQuest[ i ].get(), "QUEST_NEXT_LEVEL", 0, TRUE);
 			for( DWORD i = 0; i < vecEndQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecEndQuest[ i ], "QUEST_END", 0, FALSE );
+				__AddQuestKey( nPcId, vecEndQuest[ i ].get(), "QUEST_END", 0, FALSE);
 			for( DWORD i = 0; i < vecCurrQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecCurrQuest[ i ], "QUEST_END", 0, FALSE );
+				__AddQuestKey( nPcId, vecCurrQuest[ i ].get(), "QUEST_END", 0, FALSE);
 		}
 		pMover->m_pNpcProperty->RunDialog( "#questBeginYes", NULL, 0, nNpcId, nPcId, nQuestId );
 	}
@@ -791,38 +787,19 @@ void __RemoveGold( DWORD dwIdMover, int nGold )
 		pUser->SetGold( 0 );
 }
 
-void __QuestSort(std::vector<int> & vecQuestId )
-{
-	QuestProp* pPrevQuestProp = NULL;
-	QuestProp* pNextQuestProp = NULL;
-	int nTmpQuestId;
-	for( DWORD i = 0; i < vecQuestId.size(); ++i )
-	{
-		for( DWORD j = i + 1; j < vecQuestId.size(); ++j )
-		{
-			pPrevQuestProp = prj.m_aPropQuest.GetAt( vecQuestId[ i ] );
-			pNextQuestProp = prj.m_aPropQuest.GetAt( vecQuestId[ j ] );
-			if( pPrevQuestProp->m_nBeginCondLevelMin < pNextQuestProp->m_nBeginCondLevelMin )
-			{
-				nTmpQuestId = vecQuestId[ i ];
-				vecQuestId[ i ] = vecQuestId[ j ];
-				vecQuestId[ j ] = nTmpQuestId;
-			}
-			else if( pPrevQuestProp->m_nBeginCondLevelMin == pNextQuestProp->m_nBeginCondLevelMin )
-			{
-				if( pPrevQuestProp->m_nBeginCondLevelMax < pNextQuestProp->m_nBeginCondLevelMax )
-				{
-					nTmpQuestId = vecQuestId[ i ];
-					vecQuestId[ i ] = vecQuestId[ j ];
-					vecQuestId[ j ] = nTmpQuestId;
-				}
-				else if( pPrevQuestProp->m_nBeginCondLevelMax == pNextQuestProp->m_nBeginCondLevelMax && vecQuestId[ i ] < vecQuestId[ j ] )
-				{
-					nTmpQuestId = vecQuestId[ i ];
-					vecQuestId[ i ] = vecQuestId[ j ];
-					vecQuestId[ j ] = nTmpQuestId;
-				}
-			}
+void __QuestSort(std::vector<QuestId> & vecQuestId) {
+	std::ranges::sort(vecQuestId,
+		[](const QuestId lhs, const QuestId rhs) {
+			const QuestProp * const pPrevQuestProp = lhs.GetProp();
+			const QuestProp * const pNextQuestProp = rhs.GetProp();
+
+			if (pPrevQuestProp->m_nBeginCondLevelMin < pNextQuestProp->m_nBeginCondLevelMin) return false;
+			if (pPrevQuestProp->m_nBeginCondLevelMin > pNextQuestProp->m_nBeginCondLevelMin) return true;
+
+			if (pPrevQuestProp->m_nBeginCondLevelMax < pNextQuestProp->m_nBeginCondLevelMax) return false;
+			if (pPrevQuestProp->m_nBeginCondLevelMax > pNextQuestProp->m_nBeginCondLevelMax) return true;
+
+			return lhs > rhs;
 		}
-	}
+	);
 }

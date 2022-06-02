@@ -1319,9 +1319,8 @@ void MakeQuestConditionItems( const QuestId dwQuestID, CWndTreeCtrl* pWndTreeCtr
 					LPCHARACTER lpCharacter = prj.GetCharacter( lpszChar );
 					if( lpCharacter )
 					{
-						for( int j = 0; j < lpCharacter->m_anDstQuestItem.GetSize(); j++ )
-						{
-							if( g_pPlayer->GetItemNum( lpCharacter->m_anDstQuestItem.GetAt( j ) ) )
+						for (const auto & [_, itemId] : lpCharacter->m_dstQuests) {
+							if( g_pPlayer->GetItemNum( itemId ) )
 							{
 								strTemp.Format( GETTEXT( TID_QUEST_DESTINATION ), lpCharacter->m_strName );
 								i = 10;

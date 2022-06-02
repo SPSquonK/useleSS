@@ -954,40 +954,35 @@ void CMover::ProcessQuest()
 		CMover* pMover = GetActiveMover();
 		m_nQuestEmoticonIndex = -1;
 		// NPC 퀘스트 이모티콘 우선순위 변경 - 완료 > 신규 > 진행 > 근레벨
-		for( int i = 0; i < lpCharacter->m_awSrcQuest.GetSize() ; i++ )
-		{
-			int nQuest = lpCharacter->m_awSrcQuest.GetAt( i );
-			int nItem = lpCharacter->m_anSrcQuestItem.GetAt( i );
-			LPQUEST lpQuest = pMover->GetQuest( QuestId(nQuest) );
+		for (const auto & [nQuest, nItem] : lpCharacter->m_srcQuests) {
+			LPQUEST lpQuest = pMover->GetQuest( nQuest );
 
 			// 새로운 퀘스트일 경우
-			if( lpQuest == NULL && !pMover->IsCompleteQuest(QuestId(nQuest)) )
+			if( lpQuest == NULL && !pMover->IsCompleteQuest(nQuest) )
 			{
 				// 내가 퀘스트 시작 조건인가?
-				if( __IsBeginQuestCondition( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
+				if( __IsBeginQuestCondition( pMover, nQuest.get() ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
 					m_nQuestEmoticonIndex = 1;
 				// 새로운 퀘스트가 없고 근레벨에 받을 수 있는 퀘스트가 존재한다면..
-				else if( m_nQuestEmoticonIndex != 1 && __IsNextLevelQuest( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
+				else if( m_nQuestEmoticonIndex != 1 && __IsNextLevelQuest( pMover, nQuest.get() ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
 					m_nQuestEmoticonIndex = 4;
 			}
 			// 진행중인 퀘스트일 경우
-			if( lpQuest && lpQuest->m_wId.GetProp() && !pMover->IsCompleteQuest(QuestId(nQuest)) && lpQuest->m_nState != QS_END )
+			if( lpQuest && lpQuest->m_wId.GetProp() && !pMover->IsCompleteQuest(nQuest) && lpQuest->m_nState != QS_END )
 			{
 				if( m_nQuestEmoticonIndex != 1 && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
 					m_nQuestEmoticonIndex = 2;
 			}
 		}
-		for( int i = 0; i < lpCharacter->m_awDstQuest.GetSize(); i++ )
-		{
-			int nQuest = lpCharacter->m_awDstQuest.GetAt( i );
-			int nItem = lpCharacter->m_anDstQuestItem.GetAt( i );
-			LPQUEST lpQuest = pMover->GetQuest(QuestId(nQuest));
+
+		for (const auto & [nQuest, nItem] : lpCharacter->m_dstQuests) {
+			LPQUEST lpQuest = pMover->GetQuest(nQuest);
 			
 			// 퀘스트가 진행 중인 경우 
-			if( lpQuest && lpQuest->GetProp() && pMover->IsCompleteQuest(QuestId(nQuest)) == FALSE && lpQuest->m_nState != QS_END)
+			if( lpQuest && lpQuest->GetProp() && !pMover->IsCompleteQuest(nQuest) && lpQuest->m_nState != QS_END)
 			{
 				// 내가 퀘스트 종료 조건인가?
-				if( __IsEndQuestCondition( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
+				if( __IsEndQuestCondition( pMover, nQuest.get() ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
 					m_nQuestEmoticonIndex = 3;
 				// 내가 퀘스트 종료 조건이 아니고 새로운 퀘스트가 존재하지 않으면..
 				else if( m_nQuestEmoticonIndex != 3 && m_nQuestEmoticonIndex != 1 && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )

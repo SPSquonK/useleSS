@@ -1348,8 +1348,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ szLinkCharNum++ ] );
 				if( lpCharacter ) 
 				{
-					lpCharacter->m_awSrcQuest.Add( nQuest );
-					lpCharacter->m_anSrcQuestItem.Add( 0 );
+					lpCharacter->m_srcQuests.emplace_back(QuestId(nQuest), 0);
 				}
 			}
 			else
@@ -1366,8 +1365,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 					LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ szLinkCharNum ] );
 					if( lpCharacter ) 
 					{
-						lpCharacter->m_awSrcQuest.Add( nQuest );
-						lpCharacter->m_anSrcQuestItem.Add( nItem );
+						lpCharacter->m_srcQuests.emplace_back(QuestId(nQuest), nItem);
 					}
 					else
 					{
@@ -1774,8 +1772,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				LPCHARACTER lpCharacter = GetCharacter( propQuest.m_szEndCondCharacter );
 				if( lpCharacter ) 
 				{
-					lpCharacter->m_awDstQuest.Add( nQuest );
-					lpCharacter->m_anDstQuestItem.Add( 0 );
+					lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), 0);
 				}
 				bEndCondCharacter = TRUE;
 				script.GetToken(); // , or )
@@ -1808,8 +1805,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 					LPCHARACTER lpCharacter = GetCharacter( &propQuest.m_lpszEndCondMultiCharacter[ szEndCondCharNum * 64 ] );
 					if( lpCharacter ) 
 					{
-						lpCharacter->m_awDstQuest.Add( nQuest );
-						lpCharacter->m_anDstQuestItem.Add( nItem );
+						lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), nItem);
 					}
 					else
 					{
@@ -2225,8 +2221,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ 0 ] );
 				if( lpCharacter ) 
 				{
-					lpCharacter->m_awDstQuest.Add( nQuest );
-					lpCharacter->m_anDstQuestItem.Add( lpCharacter->m_anSrcQuestItem.GetAt( 0 ) );
+					lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), lpCharacter->m_srcQuests[0].second);
 				}
 				strcpy( propQuest.m_szEndCondCharacter, szLinkChar[ 0 ] );
 			}
@@ -2241,8 +2236,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 					LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ i ] );
 					if( lpCharacter )
 					{
-						lpCharacter->m_awDstQuest.Add( nQuest );
-						lpCharacter->m_anDstQuestItem.Add( lpCharacter->m_anSrcQuestItem.GetAt( i ) );
+						lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), lpCharacter->m_srcQuests[i].second);
 					}
 				}
 			}
