@@ -159,7 +159,7 @@ BOOL CWndBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 		if(pWndGuide->m_CurrentGuide.m_nVicCondition == OPEN_WINDOW && pWndGuide->m_CurrentGuide.m_nInput == APP_COMMON_BANK)
 			pWndGuide->m_Condition.nOpenedWindowID = 1;
 	}
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COMMON_BANK, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_COMMON_BANK, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndBank::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -440,7 +440,7 @@ void CWndConfirmBank::OnInitialUpdate()
 BOOL CWndConfirmBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_BANK, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CONFIRM_BANK, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -578,7 +578,7 @@ void CWndBankPassword::OnInitialUpdate()
 BOOL CWndBankPassword::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_BANK_PASSWORD, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_BANK_PASSWORD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 

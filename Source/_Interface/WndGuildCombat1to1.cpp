@@ -243,7 +243,7 @@ void CWndGuildCombat1to1Selection::OnInitialUpdate()
 
 BOOL CWndGuildCombat1to1Selection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_1TO1_SELECTION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombat1to1Selection::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -571,7 +571,7 @@ void CWndGuildCombat1to1Offer::OnInitialUpdate()
 
 BOOL CWndGuildCombat1to1Offer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_1TO1_OFFER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombat1to1Offer::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

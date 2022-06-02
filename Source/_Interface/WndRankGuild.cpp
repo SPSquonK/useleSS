@@ -130,7 +130,7 @@ void CWndRankTabBest::OnInitialUpdate()
 BOOL CWndRankTabBest::Initialize( CWndBase* pWndParent, DWORD ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_GUILDTABBEST, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_GUILDTABBEST, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndRankTabBest::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -331,7 +331,7 @@ void CWndRankTabUnited::OnInitialUpdate()
 BOOL CWndRankTabUnited::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_GUILDTABUNITED, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_GUILDTABUNITED, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndRankTabUnited::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -525,7 +525,7 @@ void CWndRankTabPenya::OnInitialUpdate()
 BOOL CWndRankTabPenya::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_GUILDTABPENYA, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_GUILDTABPENYA, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndRankTabPenya::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -654,7 +654,7 @@ void CWndRankGuild::OnInitialUpdate()
 BOOL CWndRankGuild::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_GUILD, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_GUILD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndRankGuild::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

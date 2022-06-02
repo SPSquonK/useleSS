@@ -64,7 +64,7 @@ void CWndGuildTabApp::OnInitialUpdate()
 } 
 BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent, DWORD ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_TABAPPELLATION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_TABAPPELLATION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildTabApp::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

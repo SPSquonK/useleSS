@@ -90,7 +90,7 @@ BOOL CWndWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
 
 	CWebBox::GetInstance()->SetItemShop( TRUE );
 	
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_WEBBOX, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return InitDialog( APP_WEBBOX, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 }
 BOOL CWndWebBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
@@ -241,7 +241,7 @@ BOOL CWndWebBox2::Initialize( CWndBase* pWndParent, DWORD nType )
 
 	CWebBox::GetInstance()->SetItemShop( FALSE );
 	
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_WEBBOX2, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return InitDialog( APP_WEBBOX2, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 }
 BOOL CWndWebBox2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {

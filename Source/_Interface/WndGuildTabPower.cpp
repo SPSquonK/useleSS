@@ -42,7 +42,7 @@ void CWndGuildTabPower::OnInitialUpdate()
 
 BOOL CWndGuildTabPower::Initialize( CWndBase* pWndParent, DWORD ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_TAPPOWER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_TAPPOWER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildTabPower::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

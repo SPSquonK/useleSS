@@ -767,44 +767,44 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	if( g_Option.m_nResWidth == 800 )
 	{
 		m_nMaxSlotApplet = 5;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR800, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR800, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}
 	else
 	if( g_Option.m_nResWidth == 1024 )
 	{
 		m_nMaxSlotApplet = 10;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1024, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR1024, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}
 	else
 	if( g_Option.m_nResWidth == 1280 )
 	{
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1280, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR1280, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}
 	else if( g_Option.m_nResWidth == 1360 )
 	{
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1360W, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR1360W, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}
 	else if( g_Option.m_nResWidth == 1400 )
 	{
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1400, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR1400, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}
 	else if( g_Option.m_nResWidth == 1440 )
 	{
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1440W, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR1440W, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}
 	else if( g_Option.m_nResWidth == 1600 )
 	{
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1600, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR1600, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}
 	else if( g_Option.m_nResWidth == 1680 )
 	{
 		m_nMaxSlotApplet = MAX_SLOT_APPLET;
-		bResult = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TASKBAR1680W, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ), pWndParent );
+		bResult = CWndNeuz::InitDialog( APP_TASKBAR1680W, pWndParent, WBS_MANAGER | WBS_SOUND, CPoint( 0, 0 ) );
 	}	
 	
 	DelWndStyle( WBS_MOVE );

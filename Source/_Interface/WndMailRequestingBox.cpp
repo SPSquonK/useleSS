@@ -19,7 +19,7 @@ CWndMailRequestingBox::~CWndMailRequestingBox( void )
 //-----------------------------------------------------------------------------
 BOOL CWndMailRequestingBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_REQUESTING_POST, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_REQUESTING_POST, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 void CWndMailRequestingBox::OnInitialUpdate( void )

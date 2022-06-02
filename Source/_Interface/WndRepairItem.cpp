@@ -86,7 +86,7 @@ void CWndRepairItem::OnInitialUpdate()
 
 BOOL CWndRepairItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_REPAIR, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_REPAIR, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndRepairItem::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

@@ -52,7 +52,7 @@ void CWndChangeName::OnInitialUpdate()
 
 BOOL CWndChangeName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGENAME, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndChangeName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -157,7 +157,7 @@ void CWndChangePetName::OnInitialUpdate()
 
 BOOL CWndChangePetName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGENAME, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndChangePetName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

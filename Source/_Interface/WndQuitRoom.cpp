@@ -29,7 +29,7 @@ void CWndQuitRoom::OnInitialUpdate()
 BOOL CWndQuitRoom::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUIT_ROOM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUIT_ROOM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndQuitRoom::OnLButtonUp( UINT nFlags, CPoint point ) 

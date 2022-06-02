@@ -20,7 +20,7 @@ CWndHelperWebBox::~CWndHelperWebBox( void )
 //-----------------------------------------------------------------------------
 BOOL CWndHelperWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_WEBBOX2, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_WEBBOX2, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 void CWndHelperWebBox::OnInitialUpdate( void )

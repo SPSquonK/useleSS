@@ -211,7 +211,7 @@ void CWndSecretRoomSelection::OnInitialUpdate()
 
 BOOL CWndSecretRoomSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_SELECTION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSecretRoomSelection::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -445,7 +445,7 @@ void CWndSecretRoomOffer::OnInitialUpdate()
 
 BOOL CWndSecretRoomOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_OFFER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSecretRoomOffer::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -597,7 +597,7 @@ void CWndSecretRoomChangeTaxRate::OnInitialUpdate()
 
 BOOL CWndSecretRoomChangeTaxRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_TAXRATE_CHANGE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_TAXRATE_CHANGE, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndSecretRoomChangeTaxRate::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -797,7 +797,7 @@ void CWndSecretRoomCheckTaxRate::OnInitialUpdate()
 
 BOOL CWndSecretRoomCheckTaxRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_TAXRATE_CHECK, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_TAXRATE_CHECK, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndSecretRoomCheckTaxRate::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -876,7 +876,7 @@ void CWndSecretRoomOfferState::InsertTitle( const char szTitle[] )
 
 BOOL CWndSecretRoomOfferState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_OFFERSTATE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSecretRoomOfferState::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1049,7 +1049,7 @@ CWndSecretRoomInfoMsgBox::~CWndSecretRoomInfoMsgBox()
 
 BOOL CWndSecretRoomInfoMsgBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_MSG, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_MSG, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndSecretRoomInfoMsgBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -1163,7 +1163,7 @@ void CWndSecretRoomCancelConfirm::OnInitialUpdate()
 
 BOOL CWndSecretRoomCancelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_CANCEL_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_CANCEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSecretRoomCancelConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1228,7 +1228,7 @@ void CWndSecretRoomBoard::OnInitialUpdate()
 
 BOOL CWndSecretRoomBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_BOARD, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_BOARD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSecretRoomBoard::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1356,7 +1356,7 @@ void CWndSecretRoomGuildMemMng::OnInitialUpdate()
 
 BOOL CWndSecretRoomGuildMemMng::Initialize( CWndBase* pWndParent, DWORD ) 
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_GUILDMEM_MNG, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_GUILDMEM_MNG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSecretRoomGuildMemMng::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -1807,7 +1807,7 @@ void CWndSecretRoomGuildMember::OnLButtonUp( UINT nFlags, CPoint point )
 
 BOOL CWndSecretRoomGuildMember::Initialize( CWndBase* pWndParent, DWORD ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_GUILDMEMBER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_GUILDMEMBER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSecretRoomGuildMember::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -2067,7 +2067,7 @@ void CWndSecretRoomQuick::OnInitialUpdate()
 BOOL CWndSecretRoomQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SECRETROOM_QUICK, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SECRETROOM_QUICK, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndSecretRoomQuick::OnLButtonUp( UINT nFlags, CPoint point ) 

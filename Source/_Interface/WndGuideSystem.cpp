@@ -43,7 +43,7 @@ CWndGuideSystem::~CWndGuideSystem()
 
 BOOL CWndGuideSystem::Initialize( CWndBase* pWndParent, DWORD nType )
 {	
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUIDE, WBS_TOPMOST, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUIDE, pWndParent, WBS_TOPMOST, CPoint( 0, 0 ) );
 }
 
 void CWndGuideSystem::OnDraw( C2DRender* p2DRender )
@@ -312,7 +312,7 @@ void CWndInfoPang::OnDraw( C2DRender* p2DRender )
 BOOL CWndInfoPang::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_INFOPANG, 0, CPoint( 0, 0 ), pWndParent );
+	CWndNeuz::InitDialog( APP_INFOPANG, pWndParent, 0, CPoint( 0, 0 ) );
 	SetVisible(FALSE);
 	return TRUE;
 } 
@@ -901,7 +901,7 @@ void CWndGuideTextMgr::OnInitialUpdate()
 
 BOOL CWndGuideTextMgr::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUIDE_TEXT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUIDE_TEXT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndGuideTextMgr::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -1091,7 +1091,7 @@ void CWndGuideTextMgr::UpDate()
 
 BOOL CWndGuideSelection::Initialize( CWndBase* pWndParent, DWORD nType )
 {	
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUIDE_SELECTION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUIDE_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
 }
 BOOL CWndGuideSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {

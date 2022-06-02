@@ -15,7 +15,7 @@ CWndUserMarkNameChanger::~CWndUserMarkNameChanger( void )
 //-----------------------------------------------------------------------------
 BOOL CWndUserMarkNameChanger::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_USER_MARK_NAME_CHANGER, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_USER_MARK_NAME_CHANGER, pWndParent, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 void CWndUserMarkNameChanger::OnInitialUpdate( void )

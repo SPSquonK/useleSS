@@ -156,7 +156,7 @@ void CWndDropItem::OnInitialUpdate()
 BOOL CWndDropItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DROP_ITEM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_DROP_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndDropItem::Process( void )
@@ -213,7 +213,7 @@ void CWndDropConfirm::OnInitialUpdate()
 BOOL CWndDropConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DROP_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_DROP_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndDropConfirm::Process( void )
@@ -288,7 +288,7 @@ void CWndRandomScrollConfirm::OnInitialUpdate()
 BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANDOMSCROLL_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANDOMSCROLL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   ���� ������ ���� ���? 
@@ -339,7 +339,7 @@ void CWndQuestItemWarning::OnInitialUpdate()
 BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEITMWARNING, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUEITMWARNING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
 ���� ������ ���� ���? 
@@ -825,7 +825,7 @@ BOOL CWndQueryEquip::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	// �κ��丮 ���? ��ġ ����
 	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 792, 130 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
 }
 
 
@@ -1436,7 +1436,7 @@ BOOL CWndInventory::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	// �κ��丮 ���? ��ġ ����
 	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 792, 130 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
 //	return CWndNeuz::Create( WBS_VIEW | WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_THICKFRAME, rect, pWndParent, dwWndId );
 }
 
@@ -3700,7 +3700,7 @@ void CWndHonor::RefreshList()
 BOOL CWndHonor::Initialize( CWndBase* pWndParent,DWORD dwWndId )
 {
 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_HONOR, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_HONOR, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 
@@ -3804,7 +3804,7 @@ BOOL CWndCharacter::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	//CRect rect( 50, 50, 50+210, 50+300 );
 	//SetTitle( GETTEXT( TID_APP_CHARACTER )  );
 	//return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint(0, 0), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint(0, 0) );
 }
 
 
@@ -3862,7 +3862,7 @@ void CWndStateConfirm::OnInitialUpdate()
 BOOL CWndStateConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_STATE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_STATE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   ���� ������ ���� ���? 
@@ -7105,7 +7105,7 @@ void CWndSkillTreeEx::OnInitialUpdate()
 BOOL CWndSkillTreeEx::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
 	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 792, 130 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
 }
 BOOL CWndSkillTreeEx::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
@@ -7510,7 +7510,7 @@ void CWndTradeGold::OnInitialUpdate()
 
 BOOL CWndTradeGold::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_TRADE_GOLD, WBS_MODAL, 0, pWndParent );
+	return InitDialog( APP_TRADE_GOLD, pWndParent, WBS_MODAL, 0 );
 }
 
 BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -7819,7 +7819,7 @@ BOOL CWndConfirmTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	m_objid = 0;
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_TRADE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CONFIRM_TRADE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndConfirmTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -7879,7 +7879,7 @@ void CWndTradeConfirm::OnInitialUpdate()
 BOOL CWndTradeConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TRADE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_TRADE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndTradeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -8008,7 +8008,7 @@ BOOL CWndTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	CWorld* pWorld = g_WorldMng.Get();
 	CMover* pMover	= g_pPlayer->m_vtInfo.GetOther();
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TRADE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_TRADE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -8874,7 +8874,7 @@ BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	m_GuildCombatTextureMask.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_WORLD_GUILDCOMBAT, "WdGuildWar_Mask.dds" ), 0  );
 	
 	SetTitle( GETTEXT( TID_APP_NAVIGATOR ) );
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 792, 130 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
 
 //	return CWndNeuz::Create( WBS_MOVE|WBS_SOUND|WBS_CAPTION, rect, &g_WndMng, dwWndId );
 }
@@ -9785,7 +9785,7 @@ void CWndStatus::OnInitialUpdate()
 
 BOOL CWndStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_STATUS1 );
+	return InitDialog( APP_STATUS1 );
 }
 
 BOOL CWndStatus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
@@ -9875,7 +9875,7 @@ BOOL CWndQuestItemInfo::Initialize( CWndBase* pWndParent, CItemElem * pItemBase 
 BOOL CWndQuestItemInfo::Create(CItemElem * pItemBase, UINT nID, CWndBase* pWndParent )
 {
 	m_pItemBase = pItemBase;
-	CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), nID, 0, m_Position, pWndParent );
+	CWndNeuz::InitDialog( nID, pWndParent, 0, m_Position );
 	GetDlgItem( WIDC_EDIT1 )->SetVisible( FALSE );
 
 	MoveParentCenter();
@@ -10238,7 +10238,7 @@ void CWndRevival::OnInitialUpdate()
 } 
 BOOL CWndRevival::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_REVIVAL, WBS_MODAL );
+	InitDialog( APP_REVIVAL, pWndParent, WBS_MODAL );
 
 	if( g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1 )	// FPS����϶�?
 	{
@@ -10378,7 +10378,7 @@ void CWndReWanted::OnInitialUpdate()
 
 BOOL CWndReWanted::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_REWARD_INPUT );
+	InitDialog( APP_REWARD_INPUT );
 	return TRUE;
 } 
 
@@ -10467,7 +10467,7 @@ void CWndWantedConfirm::OnInitialUpdate()
 } 
 BOOL CWndWantedConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_WANTED_CONFIRM, WBS_MODAL );
+	InitDialog( APP_WANTED_CONFIRM, nullptr, WBS_MODAL );
 	
 	return TRUE;
 } 
@@ -10578,7 +10578,7 @@ void CWndWanted::OnInitialUpdate()
 
 BOOL CWndWanted::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_WANTED, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_WANTED, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 
@@ -10710,7 +10710,7 @@ void CWndResurrectionConfirm::OnInitialUpdate()
 } 
 BOOL CWndResurrectionConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_RESURRECTION, WBS_MODAL );
+	InitDialog( APP_RESURRECTION, nullptr, WBS_MODAL );
 	return TRUE;
 } 
 BOOL CWndResurrectionConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -10763,7 +10763,7 @@ void CWndCommItemDlg::SetItem( DWORD dwDefindText, DWORD dwObjId, DWORD dwCtrlId
 BOOL CWndCommItemDlg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COMMITEM_DIALOG, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_COMMITEM_DIALOG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndCommItemDlg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -10884,7 +10884,7 @@ void CWndChangeClass1::SetJob()
 BOOL CWndChangeClass1::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGECLASS_1, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGECLASS_1, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndChangeClass1::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -11004,7 +11004,7 @@ void CWndChangeClass2::SetJob()
 BOOL CWndChangeClass2::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGECLASS_2, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGECLASS_2, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndChangeClass2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -11325,7 +11325,7 @@ void CWndReSkillControl::OnInitialUpdate()
 BOOL CWndReSkillControl::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RESKILL_CONTROL1, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RESKILL_CONTROL1, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndReSkillControl::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -11387,7 +11387,7 @@ void CWndReSkillWarning::OnInitialUpdate()
 } 
 BOOL CWndReSkillWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEITMWARNING, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUEITMWARNING, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndReSkillWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -11527,7 +11527,7 @@ void CWndPost::OnInitialUpdate()
 // ó�� �� �Լ��� �θ��� ������ ������.
 BOOL CWndPost::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndPost::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -11836,7 +11836,7 @@ void CWndPostSend::OnInitialUpdate()
 // ó�� �� �Լ��� �θ��� ������ ������.
 BOOL CWndPostSend::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_POST_SEND, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_POST_SEND, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndPostSend::SetItemId( BYTE nId )
@@ -12885,7 +12885,7 @@ void CWndPostReceive::OnInitialUpdate()
 // ó�� �� �Լ��� �θ��� ������ ������.
 BOOL CWndPostReceive::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_POST_RECEIVE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_POST_RECEIVE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndPostReceive::OnLButtonDown( UINT nFlags, CPoint point ) 
@@ -12998,7 +12998,7 @@ void CWndGuildCombatOffer::OnInitialUpdate()
 
 BOOL CWndGuildCombatOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_OFFER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndGuildCombatOffer::SetGold( DWORD nCost )
@@ -13135,7 +13135,7 @@ void CWndGuildCombatBoard::OnInitialUpdate()
 
 BOOL CWndGuildCombatBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_BOARD, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_BOARD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombatBoard::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -13189,7 +13189,7 @@ void CGuildCombatInfoMessageBox::PaintFrame( C2DRender* p2DRender )
 
 BOOL CGuildCombatInfoMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_MSG, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_MSG, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CGuildCombatInfoMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -13254,7 +13254,7 @@ void CGuildCombatInfoMessageBox2::OnInitialUpdate()
 
 BOOL CGuildCombatInfoMessageBox2::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_MSG2, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_MSG2, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CGuildCombatInfoMessageBox2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -13537,7 +13537,7 @@ void CWndGuildCombatSelection::OnInitialUpdate()
 
 BOOL CWndGuildCombatSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_SELECTION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndGuildCombatSelection::Reset()
@@ -13836,7 +13836,7 @@ void CWndGuildCombatState::InsertTitle( const char szTitle[] )
 
 BOOL CWndGuildCombatState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_1TO1_OFFERSTATE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombatState::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -14041,7 +14041,7 @@ void CWndGuildCombatJoinSelection::OnInitialUpdate()
 
 BOOL CWndGuildCombatJoinSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_SELSTART, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_SELSTART, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombatJoinSelection::Process ()
@@ -14103,7 +14103,7 @@ void CWndGuildWarAppConfirm::OnInitialUpdate()
 
 BOOL CWndGuildWarAppConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CLOSE_EXISTING_CONNECTION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildWarAppConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -14172,7 +14172,7 @@ void CWndGuildWarCancelConfirm::OnInitialUpdate()
 
 BOOL CWndGuildWarCancelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_CANCEL_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_CANCEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildWarCancelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -14252,7 +14252,7 @@ void CWndGuildWarJoinConfirm::OnInitialUpdate()
 
 BOOL CWndGuildWarJoinConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CLOSE_EXISTING_CONNECTION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildWarJoinConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -14346,7 +14346,7 @@ void CWndGuildWarState::InsertTitle( const char szTitle[] )
 
 BOOL CWndGuildWarState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_WAR_STATE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_WAR_STATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildWarState::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -14558,7 +14558,7 @@ void CWndGuildCombatRanking::OnInitialUpdate()
 
 BOOL CWndGuildCombatRanking::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_RANKING, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANKING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombatRanking::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -14813,7 +14813,7 @@ void CWndGuildCombatResult::OnInitialUpdate()
 } 
 BOOL CWndGuildCombatResult::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_RESULT_POINT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RESULT_POINT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndGuildCombatResult::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -14874,7 +14874,7 @@ void CWndGuildCombatTabResultRate::OnInitialUpdate()
 } 
 BOOL CWndGuildCombatTabResultRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_TAB_RESULT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 	
@@ -14890,7 +14890,7 @@ void CWndGuildCombatTabResultLog::OnInitialUpdate()
 } 
 BOOL CWndGuildCombatTabResultLog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_TAB_RESULT_LOG, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT_LOG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombatTabResultLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -14984,7 +14984,7 @@ void CWndGuildCombatRank_Person::OnInitialUpdate()
 } 
 BOOL CWndGuildCombatRank_Person::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_RANK_P, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANK_P, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndGuildCombatRank_Person::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -15338,7 +15338,7 @@ void CWndGuildCombatRank_Class::OnInitialUpdate()
 } 
 BOOL CWndGuildCombatRank_Class::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILDCOMBAT_RANKINGCLASS, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANKINGCLASS, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndGuildCombatRank_Class::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -15427,7 +15427,7 @@ void CWndFontEdit::OnInitialUpdate()
 } 
 BOOL CWndFontEdit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_FONTEDIT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_FONTEDIT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndFontEdit::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -15626,7 +15626,7 @@ void CWndBuffStatus::OnInitialUpdate()
 } 
 BOOL CWndBuffStatus::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_BUFF_STATUS, WBS_NOFOCUS, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_BUFF_STATUS, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndBuffStatus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -16373,7 +16373,7 @@ void CWndMixJewel::OnInitialUpdate()
 BOOL CWndMixJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_MIXJEWEL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndMixJewel::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -16720,7 +16720,7 @@ void CWndMixJewelConfirm::OnInitialUpdate()
 BOOL CWndMixJewelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_MIXJEWEL_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndMixJewelConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -16806,7 +16806,7 @@ void CWndExtraction::OnInitialUpdate()
 BOOL CWndExtraction::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_EXTRACTION, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_EXTRACTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndExtraction::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -17033,7 +17033,7 @@ void CWndSmeltJewel::OnInitialUpdate()
 BOOL CWndSmeltJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_JEWEL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 
@@ -17636,7 +17636,7 @@ void CWndChangeWeapon::OnInitialUpdate()
 BOOL CWndChangeWeapon::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_CHANGEWEAPON, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_CHANGEWEAPON, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndChangeWeapon::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -17947,7 +17947,7 @@ BOOL CWndRemoveJewelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/
 {
 	m_pInventory = (CWndInventory*)pWndParent;
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_REMOVE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndRemoveJewelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -18118,7 +18118,7 @@ void CWndHeroSkillUp::OnInitialUpdate()
 BOOL CWndHeroSkillUp::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_HERO_SKILLUP, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_HERO_SKILLUP, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndHeroSkillUp::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -18352,7 +18352,7 @@ void CWndDialogEvent::OnInitialUpdate()
 BOOL CWndDialogEvent::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DIALOG_EVENT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_DIALOG_EVENT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndDialogEvent::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -18652,7 +18652,7 @@ void CWndHeavenTower::OnInitialUpdate()
 BOOL CWndHeavenTower::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_HEAVEN_TOWER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_HEAVEN_TOWER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndHeavenTower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -18842,7 +18842,7 @@ void CWndRemoveAttribute::OnInitialUpdate()
 BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_REMOVE_ATTRIBUTE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_REMOVE_ATTRIBUTE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 bool CWndRemoveAttribute::CWndAttributedItem::CanReceiveItem(const CItemElem & itemElem, bool verbose) {
@@ -18919,7 +18919,7 @@ void CWndRemoveAttributeConfirm::OnInitialUpdate()
 BOOL CWndRemoveAttributeConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 {
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_REMOVE_ATTRIBUTE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_REMOVE_ATTRIBUTE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndRemoveAttributeConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -19072,7 +19072,7 @@ void CWndRemovePiercing::OnInitialUpdate()
 BOOL CWndRemovePiercing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_REMOVE_PIERCING_EX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_PIERCING_EX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 
@@ -19285,7 +19285,7 @@ void CWndRemoveJewel::OnInitialUpdate()
 BOOL CWndRemoveJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_REMOVE_JEWEL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndRemoveJewel::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -19573,7 +19573,7 @@ void CWndChangeAttribute::OnInitialUpdate()
 BOOL CWndChangeAttribute::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGE_ATTRIBUTE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGE_ATTRIBUTE, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndChangeAttribute::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -19892,7 +19892,7 @@ void CWndCoupleTabInfo::OnInitialUpdate()
 BOOL CWndCoupleTabInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COUPLE_TAB_INFO, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_COUPLE_TAB_INFO, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndCoupleTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -20080,7 +20080,7 @@ void CWndCoupleTabSkill::OnInitialUpdate()
 BOOL CWndCoupleTabSkill::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COUPLE_TAB_SKILL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_COUPLE_TAB_SKILL, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndCoupleTabSkill::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -20202,7 +20202,7 @@ void CWndCoupleManager::OnInitialUpdate()
 BOOL CWndCoupleManager::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COUPLE_MAIN, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_COUPLE_MAIN, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndCoupleManager::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -20251,7 +20251,7 @@ void CWndFunnyCoinConfirm::OnInitialUpdate()
 BOOL CWndFunnyCoinConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_FUNNYCOIN_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_FUNNYCOIN_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndFunnyCoinConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -20341,7 +20341,7 @@ CWndSmeltSafety::~CWndSmeltSafety()
 BOOL CWndSmeltSafety::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 {
 	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_SAFETY, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_SAFETY, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndSmeltSafety::OnInitialUpdate()
@@ -21799,7 +21799,7 @@ CWndSmeltSafetyConfirm::~CWndSmeltSafetyConfirm()
 
 BOOL CWndSmeltSafetyConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SMELT_SAFETY_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SMELT_SAFETY_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndSmeltSafetyConfirm::OnInitialUpdate()
@@ -21880,7 +21880,7 @@ CWndEquipBindConfirm::~CWndEquipBindConfirm(void)
 
 BOOL CWndEquipBindConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_EQUIP_BIND_CONFIRM, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_EQUIP_BIND_CONFIRM, pWndParent, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ) );
 }
 
 void CWndEquipBindConfirm::OnInitialUpdate( void )
@@ -21989,7 +21989,7 @@ CWndRestateConfirm::~CWndRestateConfirm(void)
 
 BOOL CWndRestateConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RESTATE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RESTATE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndRestateConfirm::OnInitialUpdate( void )
@@ -22096,7 +22096,7 @@ CWndCampusInvitationConfirm::~CWndCampusInvitationConfirm( void )
 //-----------------------------------------------------------------------------
 BOOL CWndCampusInvitationConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_ENTER, WBS_KEY, 0, pWndParent );
+	return CWndNeuz::InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0 );
 }
 //-----------------------------------------------------------------------------
 void CWndCampusInvitationConfirm::OnInitialUpdate( void )
@@ -22162,7 +22162,7 @@ CWndCampusSeveranceConfirm::~CWndCampusSeveranceConfirm( void )
 //-----------------------------------------------------------------------------
 BOOL CWndCampusSeveranceConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_ENTER, WBS_KEY, 0, pWndParent );
+	return CWndNeuz::InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0 );
 }
 //-----------------------------------------------------------------------------
 void CWndCampusSeveranceConfirm::OnInitialUpdate( void )

@@ -17,7 +17,7 @@ CWndChattingBlockingList::~CWndChattingBlockingList( void )
 //-----------------------------------------------------------------------------
 BOOL CWndChattingBlockingList::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHATTING_BLOCKING_LIST, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHATTING_BLOCKING_LIST, pWndParent, 0, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 void CWndChattingBlockingList::OnInitialUpdate( void )

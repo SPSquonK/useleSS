@@ -116,7 +116,7 @@ void CWndGuildBank::OnInitialUpdate()
 BOOL CWndGuildBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_BANK, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_BANK, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -411,7 +411,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 BOOL CWndGuildBankLog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_BANK_LOG, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_BANK_LOG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildBankLog::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

@@ -58,7 +58,7 @@ void CWndPartyChangeName::OnInitialUpdate()
 BOOL CWndPartyChangeName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PARTYCHANGENAME, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PARTYCHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndPartyChangeName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -219,7 +219,7 @@ void CWndPartyChangeTroup::OnInitialUpdate()
 BOOL CWndPartyChangeTroup::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGETROUP, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGETROUP, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndPartyChangeTroup::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -308,7 +308,7 @@ void CWndPartyLeaveConfirm::OnInitialUpdate()
 BOOL CWndPartyLeaveConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PARTYLEAVE_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PARTYLEAVE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
 직접 윈도를 열때 사용 

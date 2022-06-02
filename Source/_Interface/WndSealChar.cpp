@@ -52,7 +52,7 @@ void CWndSealChar::OnInitialUpdate()
 BOOL CWndSealChar::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SEAL_CHAR, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SEAL_CHAR, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
  
@@ -142,7 +142,7 @@ void CWndSealCharSelect::OnInitialUpdate()
 BOOL CWndSealCharSelect::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SEAL_CHAR_SELECT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SEAL_CHAR_SELECT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
  
@@ -264,7 +264,7 @@ void CWndSealCharSend::OnInitialUpdate()
 BOOL CWndSealCharSend::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SEAL_CHAR_SEND, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SEAL_CHAR_SEND, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
  
@@ -359,7 +359,7 @@ void CWndSealCharSet::OnInitialUpdate()
 BOOL CWndSealCharSet::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SEAL_CHAR_SET, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SEAL_CHAR_SET, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
  

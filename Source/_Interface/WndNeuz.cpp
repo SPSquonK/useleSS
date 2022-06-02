@@ -582,25 +582,28 @@ BOOL CWndNeuz::InitDialog( HWND hWnd, LPWNDAPPLET LPWNDAPPLET )
 	return bResult;
 }
 */
-BOOL CWndNeuz::InitDialog( HWND hWnd, DWORD dwWID, DWORD dwStyle, CPoint ptLeftTop, CWndBase* pWndParent )
+BOOL CWndNeuz::InitDialog( DWORD dwWID, CWndBase * pWndParent, DWORD dwStyle, CPoint ptLeftTop )
 {
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( dwWID );
 
-	CRect rect;
-	if(dwWID == APP_LOGIN)
-		rect = CRect( ptLeftTop.x, ptLeftTop.y, ptLeftTop.x + lpWndApplet->size.cx, ptLeftTop.y + 200 );
-	else
-		rect = CRect( ptLeftTop.x, ptLeftTop.y, ptLeftTop.x + lpWndApplet->size.cx, ptLeftTop.y + lpWndApplet->size.cy );
+	CRect rect = CRect(ptLeftTop.x, ptLeftTop.y, ptLeftTop.x + lpWndApplet->size.cx, ptLeftTop.y + lpWndApplet->size.cy);
+
+	if (dwWID == APP_LOGIN) {
+		rect.bottom = rect.top + 200;
+	}
 
 	if( m_ptMouseCenter.x != -1 )
 	{
+		HWND hWnd = g_Neuz.GetSafeHwnd();
 		GET_CLIENT_POINT( hWnd, point );
 		rect.OffsetRect( -point );
 	}
-	//m_strToolTip = lpWndApplet->strToolTip;
-	if( lpWndApplet->strToolTip.IsEmpty() )
-		return CWndNeuz::Create( lpWndApplet->dwWndStyle | dwStyle, rect, pWndParent, lpWndApplet->dwWndId );
-	return CWndNeuz::Create( lpWndApplet->dwWndStyle | dwStyle | WBS_HELP, rect, pWndParent, lpWndApplet->dwWndId );
+
+	if (!lpWndApplet->strToolTip.IsEmpty()) {
+		dwStyle |= WBS_HELP;
+	}
+
+	return CWndNeuz::Create( lpWndApplet->dwWndStyle | dwStyle, rect, pWndParent, lpWndApplet->dwWndId );
 }  
 
 BOOL CWndNeuz::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )

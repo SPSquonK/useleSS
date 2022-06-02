@@ -24,7 +24,7 @@ void CWndHelp::OnInitialUpdate() {
 }
 
 BOOL CWndHelp::Initialize(CWndBase * pWndParent, DWORD) {
-	return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), APP_HELPER_HELP, 0, CPoint(0, 0), pWndParent);
+	return CWndNeuz::InitDialog( APP_HELPER_HELP, pWndParent, 0, CPoint(0, 0) );
 }
 
 BOOL CWndHelp::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult) {
@@ -56,7 +56,7 @@ void CWndHelpFAQ::OnInitialUpdate() {
 }
 
 BOOL CWndHelpFAQ::Initialize(CWndBase * pWndParent, DWORD) {
-	return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), APP_HELPER_FAQ, 0, CPoint(0, 0), pWndParent);
+	return CWndNeuz::InitDialog( APP_HELPER_FAQ, pWndParent, 0, CPoint(0, 0) );
 }
 
 bool CWndHelpFAQ::LoadFAQ(LPCTSTR lpszFileName) {
@@ -153,7 +153,7 @@ bool CWndHelpTip::LoadTips() {
 }
 
 BOOL CWndHelpTip::Initialize(CWndBase * pWndParent, DWORD) {
-	return InitDialog(g_Neuz.GetSafeHwnd(), APP_HELPER_TIP);
+	return InitDialog( APP_HELPER_TIP );
 }
 
 BOOL CWndHelpTip::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
@@ -186,7 +186,7 @@ void CWndHelpInstant::OnInitialUpdate()  {
 } 
 
 BOOL CWndHelpInstant::Initialize(CWndBase * pWndParent, DWORD) {
-	return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), APP_HELP_INSTANT, 0, CPoint(0, 0), pWndParent);
+	return CWndNeuz::InitDialog( APP_HELP_INSTANT, pWndParent, 0, CPoint(0, 0) );
 }
 
 BOOL CWndHelpInstant::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {

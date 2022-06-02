@@ -44,7 +44,7 @@ void CWndSummonFriendMsg::OnInitialUpdate()
 BOOL CWndSummonFriendMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSAGEBOX_SUMMONFRINED, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSAGEBOX_SUMMONFRINED, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 void CWndSummonFriendMsg::SetData( OBJID objid, DWORD dwData, char* szName, char* szWorldName )
 {
@@ -133,7 +133,7 @@ void CWndSummonFriend::OnInitialUpdate()
 BOOL CWndSummonFriend::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SUMMON_FRIEND, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SUMMON_FRIEND, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 void CWndSummonFriend::SetData( WORD wId, WORD wReset )
 {
@@ -245,7 +245,7 @@ void CWndSummonPartyMsg::OnInitialUpdate()
 BOOL CWndSummonPartyMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSAGEBOX_SUMMONPARTY, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSAGEBOX_SUMMONPARTY, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndSummonPartyMsg::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -324,7 +324,7 @@ void CWndSummonParty::OnInitialUpdate()
 BOOL CWndSummonParty::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SUMMON_PARTY, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SUMMON_PARTY, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndSummonParty::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -421,7 +421,7 @@ void CWndSummonPartyUse::OnInitialUpdate()
 BOOL CWndSummonPartyUse::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SUMMON_PARTY_USE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SUMMON_PARTY_USE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
 직접 윈도를 열때 사용 

@@ -186,7 +186,7 @@ BOOL CWndVendor::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 		return FALSE;
 	}
 
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOR_REVISION, 0, 0, pWndParent );
+	return InitDialog( APP_VENDOR_REVISION, pWndParent, 0, 0 );
 }
 
 BOOL CWndVendor::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -488,7 +488,7 @@ void CWndVendorMessage::InitSize( void )
 BOOL CWndVendorMessage::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOREX_CHAT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_VENDOREX_CHAT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndVendorMessage::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 

@@ -83,7 +83,7 @@ void CWndSelectVillage::OnInitialUpdate()
 
 BOOL CWndSelectVillage::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COMM_SELECTVIL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_COMM_SELECTVIL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSelectVillage::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

@@ -98,7 +98,7 @@ void CWndDebugInfo::OnInitialUpdate()
 BOOL CWndDebugInfo::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DEBUGINFO, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_DEBUGINFO, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)

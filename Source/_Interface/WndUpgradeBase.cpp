@@ -68,7 +68,7 @@ void CWndUpgradeBase::OnInitialUpdate()
 
 BOOL CWndUpgradeBase::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TEST, 0, 0, pWndParent );
+	return CWndNeuz::InitDialog( APP_TEST, pWndParent, 0, 0 );
 }
 
 void CWndUpgradeBase::OnLButtonUp( UINT nFlags, CPoint point ) 

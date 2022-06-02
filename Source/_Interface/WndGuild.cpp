@@ -106,7 +106,7 @@ BOOL CWndGuild::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	Error( "CWndGuild::Initialize() - IN" );
-	BOOL bFlag = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD, 0, CPoint( 0, 0 ), pWndParent );
+	BOOL bFlag = CWndNeuz::InitDialog( APP_GUILD, pWndParent, 0, CPoint( 0, 0 ) );
 	Error( "CWndGuild::Initialize() - OUT" );
 
 	return bFlag;
@@ -194,7 +194,7 @@ void CWndGuildConfirm::OnInitialUpdate()
 BOOL CWndGuildConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_INVATE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_INVATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndGuildConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 

@@ -417,7 +417,7 @@ void CWndLogin::OnInitialUpdate()
 }
 BOOL CWndLogin::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LOGIN, WBS_KEY, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LOGIN, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 
 void CWndLogin::Connected( long lTimeSpan )
@@ -836,7 +836,7 @@ BOOL CWndSelectServer::Process()
 }
 BOOL CWndSelectServer::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SELECT_SERVER, WBS_KEY, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SELECT_SERVER, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 
 void CWndSelectServer::AfterSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat )
@@ -1078,7 +1078,7 @@ void CWndDeleteChar::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3D
 
 BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_DELETE_CHAR, WBS_MODAL );
+	InitDialog( APP_DELETE_CHAR, nullptr, WBS_MODAL );
 	CWndEdit *WndEdit   = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 	if( WndEdit )
 	{
@@ -1778,7 +1778,7 @@ BOOL CWndSelectChar::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 {
 	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
 	SetTitle( _T( "Select Character" ) );
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SELECT_CHAR, WBS_KEY, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SELECT_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 
 void CWndSelectChar::Connected()
@@ -2404,7 +2404,7 @@ void CWndCreateChar::SetSex( int nSex )
 BOOL CWndCreateChar::Initialize( CWndBase* pWndParent, DWORD dwStyle )
 {
 	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CREATE_CHAR, WBS_KEY, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CREATE_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 
 

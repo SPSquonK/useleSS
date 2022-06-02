@@ -305,7 +305,7 @@ void CWndHousing::OnInitialUpdate()
 BOOL CWndHousing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_HOUSING, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_HOUSING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -560,7 +560,7 @@ CWndGuildHousing::~CWndGuildHousing( )
 BOOL CWndGuildHousing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GH_FURNITURE_STORAGE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GH_FURNITURE_STORAGE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndGuildHousing::OnInitialUpdate() 
@@ -1437,7 +1437,7 @@ CWndGHouseShowOneUnit::~CWndGHouseShowOneUnit( )
 BOOL CWndGHouseShowOneUnit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GH_SHOWONE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GH_SHOWONE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndGHouseShowOneUnit::OnInitialUpdate() 
@@ -1530,7 +1530,7 @@ CWndGuildHouseBid::~CWndGuildHouseBid( )
 BOOL CWndGuildHouseBid::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GH_BID, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GH_BID, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndGuildHouseBid::OnInitialUpdate() 

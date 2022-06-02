@@ -380,7 +380,7 @@ void CWndCredit::LoadScreenShot()
 BOOL CWndCredit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CREDIT, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CREDIT, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -477,7 +477,7 @@ void CWndAbout::OnInitialUpdate()
 BOOL CWndAbout::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_ABOUT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_ABOUT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndAbout::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 

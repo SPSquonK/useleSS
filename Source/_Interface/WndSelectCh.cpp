@@ -42,7 +42,7 @@ void CWndSelectCh::OnInitialUpdate()
 BOOL CWndSelectCh::Initialize( CWndBase* pWndParent, DWORD  ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_SELECT_CHANNEL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_SELECT_CHANNEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndSelectCh::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 

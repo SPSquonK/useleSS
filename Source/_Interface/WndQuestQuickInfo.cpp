@@ -193,7 +193,7 @@ CWndQuestQuickInfo::~CWndQuestQuickInfo( void )
 //-----------------------------------------------------------------------------
 BOOL CWndQuestQuickInfo::Initialize( CWndBase* pWndParent, DWORD dwType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEST_QUICK_INFO, WBS_MANAGER, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUEST_QUICK_INFO, pWndParent, WBS_MANAGER, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 void CWndQuestQuickInfo::OnInitialUpdate( void )

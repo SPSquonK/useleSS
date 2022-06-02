@@ -115,7 +115,7 @@ void CWndPiercing::OnInitialUpdate()
 
 BOOL CWndPiercing::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PIERCING, 0, 0, pWndParent );
+	return CWndNeuz::InitDialog( APP_PIERCING, pWndParent, 0, 0 );
 }
 
 BOOL CWndPiercing::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )

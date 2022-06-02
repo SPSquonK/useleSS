@@ -29,7 +29,7 @@ void CWndQuizEventConfirm::OnDraw( C2DRender* p2DRender )
 
 BOOL CWndQuizEventConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUIZ_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUIZ_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndQuizEventConfirm::OnInitialUpdate( void )
@@ -84,7 +84,7 @@ CWndQuizEventQuestionOX::~CWndQuizEventQuestionOX()
 
 BOOL CWndQuizEventQuestionOX::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUIZ_QUESTION_OX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUIZ_QUESTION_OX, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndQuizEventQuestionOX::OnInitialUpdate( void )
@@ -166,7 +166,7 @@ CWndQuizEventQuestion4C::~CWndQuizEventQuestion4C()
 
 BOOL CWndQuizEventQuestion4C::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUIZ_QUESTION_4C, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUIZ_QUESTION_4C, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndQuizEventQuestion4C::OnInitialUpdate( void )
@@ -414,7 +414,7 @@ BOOL CWndQuizEventButton::Process()
 BOOL CWndQuizEventButton::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUIZ_BUTTON, WBS_NOFOCUS, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUIZ_BUTTON, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
 }
 
 void CWndQuizEventButton::OnDraw( C2DRender* p2DRender )

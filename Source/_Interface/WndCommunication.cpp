@@ -544,7 +544,7 @@ BOOL CWndChat::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	CRect rectWindow = m_pWndRoot->GetWindowRect();
 	CRect rect( 154, rectWindow.Height() - 100, 154 + rectWindow.Width() - 300, rectWindow.Height() );
 	SetTitle( GETTEXT( TID_APP_COMMUNICATION_CHAT ) );
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, WBS_KEY| WBS_THICKFRAME, CPoint( 792, 130 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, WBS_KEY| WBS_THICKFRAME, CPoint( 792, 130 ) );
 	//return CWndNeuz::Create( 0|WBS_MOVE|/*WBS_DOCKABLE|*/WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MAXIMIZEBOX, rect, &g_WndMng, dwWndId);
 }
 
@@ -1332,8 +1332,8 @@ BOOL CWndChatLog::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	CRect rectWindow = m_pWndRoot->GetWindowRect();
 	CRect rect( 154, rectWindow.Height() - 100, 154 + rectWindow.Width() - 300, rectWindow.Height() );
 	SetTitle( GETTEXT( TID_APP_COMMUNICATION_CHAT ) );
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, WBS_THICKFRAME, CPoint( 792, 130 ), pWndParent );
-//	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 792, 130 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, WBS_THICKFRAME, CPoint( 792, 130 ) );
+//	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
 }
 
 void CWndChatLog::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)

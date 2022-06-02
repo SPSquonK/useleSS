@@ -36,7 +36,7 @@ void CWndBlessingCancel::OnInitialUpdate()
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndBlessingCancel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CANCEL_BLESSING, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CANCEL_BLESSING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndBlessingCancel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) { 

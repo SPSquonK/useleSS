@@ -125,7 +125,7 @@ void CWndRankWarTabGiveUp::OnInitialUpdate()
 BOOL CWndRankWarTabGiveUp::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_WARTABGIVEUP, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_WARTABGIVEUP, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 
@@ -326,7 +326,7 @@ void CWndRankWarTabLose::OnInitialUpdate()
 BOOL CWndRankWarTabLose::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_WARTABLOSE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_WARTABLOSE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndRankWarTabLose::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -527,7 +527,7 @@ void CWndRankWarTabWin::OnInitialUpdate()
 BOOL CWndRankWarTabWin::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_WARTABWIN, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_WARTABWIN, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndRankWarTabWin::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -656,7 +656,7 @@ void CWndRankWar::OnInitialUpdate()
 BOOL CWndRankWar::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_RANK_WAR, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_RANK_WAR, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndRankWar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 

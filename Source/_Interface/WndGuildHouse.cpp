@@ -36,7 +36,7 @@ CWndGHMainMenu::~CWndGHMainMenu( )
 
 BOOL CWndGHMainMenu::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GH_MAIN, 0, CPoint( 0, 0 ), NULL );
+	return CWndNeuz::InitDialog( APP_GH_MAIN, nullptr, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndGHMainMenu::OnInitialUpdate()
@@ -255,7 +255,7 @@ HRESULT CWndGHTeleporter::DeleteDeviceObjects()
 
 BOOL CWndGHTeleporter::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GH_TELEPORTER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GH_TELEPORTER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndGHTeleporter::OnInitialUpdate()	
@@ -666,7 +666,7 @@ void CWndGHUpkeep::OnChangeBuyCount( DWORD dwBuy )
 
 BOOL CWndGHUpkeep::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_BUY_, 0, 0, pWndParent );
+	InitDialog( APP_CONFIRM_BUY_, pWndParent, 0, 0 );
 	MoveParentCenter();
 
 	SetTitle( GETTEXT( TID_GAME_GUILDHOUSE_TAXUI01 ) );					//À¯Áöºñ 

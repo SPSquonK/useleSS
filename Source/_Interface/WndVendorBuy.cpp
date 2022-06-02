@@ -56,7 +56,7 @@ void CWndVendorBuy::OnInitialUpdate()
 
 BOOL CWndVendorBuy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOREX_BUY, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_VENDOREX_BUY, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndVendorBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )

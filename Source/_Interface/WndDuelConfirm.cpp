@@ -64,7 +64,7 @@ void CWndDuelConfirm::OnInitialUpdate()
 BOOL CWndDuelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DUEL_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_DUEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -378,7 +378,7 @@ void CWndDuelResult::OnInitialUpdate()
 BOOL CWndDuelResult::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DUEL_RESULT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_DUEL_RESULT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 

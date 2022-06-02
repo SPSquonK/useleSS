@@ -307,7 +307,7 @@ void CWndDialog::OnInitialUpdate()
 BOOL CWndDialog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_DIALOG_EX, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_DIALOG_EX, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndDialog::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

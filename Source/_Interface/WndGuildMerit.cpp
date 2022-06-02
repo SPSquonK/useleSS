@@ -58,7 +58,7 @@ void CWndGuildMerit::OnInitialUpdate()
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndGuildMerit::Initialize( CWndBase* pWndParent, DWORD ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_MERIT1, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_MERIT1, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndGuildMerit::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 

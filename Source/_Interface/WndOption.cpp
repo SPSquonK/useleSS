@@ -58,7 +58,7 @@ void CWndTotalOption::OnInitialUpdate()
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndTotalOption::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndTotalOption::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -181,7 +181,7 @@ void CWndOption::OnInitialUpdate()
 BOOL CWndOption::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_OPTION_ETC, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_OPTION_ETC, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -396,7 +396,7 @@ void CWndOptSound::OnInitialUpdate()
 BOOL CWndOptSound::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_OPTEX_SOUND, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_OPTEX_SOUND, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -829,7 +829,7 @@ void CWndOptVideo::OnInitialUpdate()
 BOOL CWndOptVideo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_OPTION_VIDEO, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_OPTION_VIDEO, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -1268,7 +1268,7 @@ void CWndOptWindow::OnInitialUpdate()
 BOOL CWndOptWindow::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_OPTION_WINDOW, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_OPTION_WINDOW, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -1333,7 +1333,7 @@ void CWndOptMyInfo::OnInitialUpdate()
 BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_OPTION_MYINFO, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_OPTION_MYINFO, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 

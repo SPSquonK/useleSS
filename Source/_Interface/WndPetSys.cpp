@@ -36,7 +36,7 @@ void CWndPetAwakCancel::OnInitialUpdate()
 BOOL CWndPetAwakCancel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PET_AWAK_CANCEL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PET_AWAK_CANCEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndPetAwakCancel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -726,7 +726,7 @@ void CWndPetStatus::SetExtension(BOOL eflag)
 
 BOOL CWndPetStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_PET_STATUS );
+	return InitDialog( APP_PET_STATUS );
 }
 
 BOOL CWndPetStatus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
@@ -963,7 +963,7 @@ void CWndFoodConfirm::OnInitialUpdate()
 BOOL CWndFoodConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PET_ITEM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PET_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndFoodConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1219,7 +1219,7 @@ void CWndPetMiracle::OnInitialUpdate()
 BOOL CWndPetMiracle::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PET_MIRACLE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PET_MIRACLE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndPetMiracle::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -1477,7 +1477,7 @@ void CWndPetFoodMill::OnInitialUpdate()
 
 BOOL CWndPetFoodMill::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_PET_FOODMILL );
+	return InitDialog( APP_PET_FOODMILL );
 }
 
 BOOL CWndPetFoodMill::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -1650,7 +1650,7 @@ void CWndPetLifeConfirm::OnInitialUpdate()
 BOOL CWndPetLifeConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSAGEBOX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSAGEBOX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndPetLifeConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -1753,7 +1753,7 @@ void CWndPetTransEggs::OnInitialUpdate()
 BOOL CWndPetTransEggs::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PET_TRANS_EGGS, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PET_TRANS_EGGS, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndPetTransEggs::OnLButtonDblClk( UINT nFlags, CPoint point )
@@ -2012,7 +2012,7 @@ void CWndBuffPetStatus::OnInitialUpdate()
 
 BOOL CWndBuffPetStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_BUFFPET_STATUS, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_BUFFPET_STATUS, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 /*void CWndBuffPetStatus::PaintFrame( C2DRender* p2DRender )
@@ -2674,7 +2674,7 @@ void CWndConfirmVis::OnInitialUpdate()
 
 BOOL CWndConfirmVis::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_ENTER, WBS_KEY, 0, pWndParent );
+	InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0);
 	MoveParentCenter();
 	return TRUE;
 }

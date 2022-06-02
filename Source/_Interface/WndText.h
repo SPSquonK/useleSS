@@ -19,7 +19,7 @@ public:
 
 	BOOL Initialize(CWndBase * pWndParent, CItemElem * pItemBase, DWORD baseApp) {
 		m_pItemBase = pItemBase;
-		return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), baseApp, 0, CPoint(0, 0), pWndParent);
+		return CWndNeuz::InitDialog( baseApp, pWndParent, 0, CPoint(0, 0) );
 	}
 
 	void OnInitialUpdate() override;

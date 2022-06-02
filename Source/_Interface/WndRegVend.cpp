@@ -94,7 +94,7 @@ void CWndRegVend::OnInitialUpdate()
 
 BOOL CWndRegVend::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_VENDOREX_SELL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_VENDOREX_SELL, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 void CWndRegVend::OnLButtonUp( UINT nFlags, CPoint point )

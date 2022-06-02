@@ -40,7 +40,7 @@ void CWndAwakening::OnInitialUpdate()
 BOOL CWndAwakening::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_AWAKENING, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_AWAKENING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndAwakening::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) {
@@ -100,7 +100,7 @@ CWndSelectAwakeCase::CWndSelectAwakeCase(BYTE byObjID, DWORD dwSerialNum, __int6
 BOOL CWndSelectAwakeCase::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_AWAKE_SELECTCASE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_AWAKE_SELECTCASE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndSelectAwakeCase::OnInitialUpdate() 

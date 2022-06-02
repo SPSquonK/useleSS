@@ -75,7 +75,7 @@ CWndMapEx::~CWndMapEx( void )
 //-----------------------------------------------------------------------------
 BOOL CWndMapEx::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MAP_EX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MAP_EX, pWndParent, 0, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 void CWndMapEx::OnInitialUpdate( void )

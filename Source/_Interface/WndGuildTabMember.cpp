@@ -454,7 +454,7 @@ void CWndGuildTabMember::OnInitialUpdate()
 BOOL CWndGuildTabMember::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_GUILD_TABMEMBER_EX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_GUILD_TABMEMBER_EX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 

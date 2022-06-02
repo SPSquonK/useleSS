@@ -77,7 +77,7 @@ void CWndRoomList::OnInitialUpdate()
 BOOL CWndRoomList::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MINIROOM_LIST, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MINIROOM_LIST, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 

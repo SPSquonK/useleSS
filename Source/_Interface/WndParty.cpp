@@ -254,7 +254,7 @@ void CWndParty::OnInitialUpdate()
 BOOL CWndParty::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	Error( "CWndParty::Initialize() - IN" );
-	BOOL bFlag = CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PARTY, 0, CPoint( 0, 0 ), pWndParent );
+	BOOL bFlag = CWndNeuz::InitDialog( APP_PARTY, pWndParent, 0, CPoint( 0, 0 ) );
 	Error( "CWndParty::Initialize() - OUT" );
 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
@@ -671,7 +671,7 @@ void CWndPartyInfo::OnInitialUpdate()
 BOOL CWndPartyInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PARTY_INFO, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PARTY_INFO, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -885,7 +885,7 @@ void CWndPartySkill::OnInitialUpdate()
 BOOL CWndPartySkill::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_PARTY_SKILL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_PARTY_SKILL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 

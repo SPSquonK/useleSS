@@ -59,7 +59,7 @@ void CWndChangeFace::OnInitialUpdate()
 BOOL CWndChangeFace::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGEFACE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGEFACE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -265,7 +265,7 @@ void CWndChangeSex::OnInitialUpdate()
 BOOL CWndChangeSex::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_CHANGESEX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_CHANGESEX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndChangeSex::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -371,7 +371,7 @@ void CWndItemTransy::OnInitialUpdate()
 BOOL CWndItemTransy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_ITEM_TRANSY, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_ITEM_TRANSY, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndItemTransy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 

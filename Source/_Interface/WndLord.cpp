@@ -125,7 +125,7 @@ void CWndLordState::OnInitialUpdate()
 BOOL CWndLordState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_STATE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_STATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -220,7 +220,7 @@ void CWndLordPledge::OnInitialUpdate()
 BOOL CWndLordPledge::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_PLEDGE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_PLEDGE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndLordPledge::SetPledge(LPCTSTR strPledge)
@@ -394,7 +394,7 @@ void CWndLordTender::OnInitialUpdate()
 BOOL CWndLordTender::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_TENDER, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_TENDER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -519,7 +519,7 @@ void CWndLordVote::OnInitialUpdate()
 BOOL CWndLordVote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_VOTE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_VOTE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -612,7 +612,7 @@ BOOL CWndLordEvent::Initialize( CWndBase* pWndParent, DWORD nType)
 		Destroy();
 		return FALSE;
 	}
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_EVENT, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_EVENT, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndLordEvent::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -738,7 +738,7 @@ BOOL CWndLordSkill::Initialize( CWndBase* pWndParent, DWORD nType)
 		Destroy();
 		return FALSE;
 	}
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_SKILL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_SKILL, pWndParent, 0, CPoint( 0, 0 ) );
 
 }
 
@@ -871,7 +871,7 @@ void CWndLordSkill::OnMouseWndSurface( CPoint point )
 BOOL CWndLordConfirm::Initialize( CWndBase* pWndParent, DWORD nType)
 {
 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndLordConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -939,7 +939,7 @@ void CWndLordConfirm::OnLButtonDown( UINT nFlags, CPoint point )
 BOOL CWndLordSkillConfirm::Initialize( CWndBase* pWndParent, DWORD nType)
 {
 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_SKILL_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_SKILL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndLordSkillConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -1007,7 +1007,7 @@ void CWndLordSkillConfirm::OnSize( UINT nType, int cx, int cy )
 BOOL CWndLordInfo::Initialize( CWndBase* pWndParent, DWORD nType)
 {
 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_INFO, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_INFO, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndLordInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -1116,7 +1116,7 @@ void CWndLordInfo::OnSize( UINT nType, int cx, int cy )
 BOOL CWndLordRPInfo::Initialize( CWndBase* pWndParent, DWORD nType)
 {
 
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_LORD_INFO2, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_LORD_INFO2, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
 BOOL CWndLordRPInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )

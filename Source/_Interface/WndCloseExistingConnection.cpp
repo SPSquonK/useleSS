@@ -31,7 +31,7 @@ void CWndCloseExistingConnection::OnInitialUpdate()
 } 
 
 BOOL CWndCloseExistingConnection::Initialize(CWndBase * pWndParent, DWORD) {
-	return CWndNeuz::InitDialog(g_Neuz.GetSafeHwnd(), APP_CLOSE_EXISTING_CONNECTION, 0, CPoint(0, 0), pWndParent);
+	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint(0, 0) );
 }
 
 BOOL CWndCloseExistingConnection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) { 

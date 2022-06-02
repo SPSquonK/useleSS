@@ -189,7 +189,7 @@ void CWndKawiBawiBoGame::OnInitialUpdate()
 BOOL CWndKawiBawiBoGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MINIGAME_KAWIBAWIBO, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MINIGAME_KAWIBAWIBO, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndKawiBawiBoGame::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -455,7 +455,7 @@ BOOL CWndKawiBawiBoGameWin::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ 
 { 
 	m_pWndGame  = (CWndKawiBawiBoGame*)pWndParent;	
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MINIGAME_KAWIBAWIBO_WIN, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MINIGAME_KAWIBAWIBO_WIN, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndKawiBawiBoGameWin::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -573,7 +573,7 @@ void CWndKawiBawiBoGameConfirm::OnInitialUpdate()
 BOOL CWndKawiBawiBoGameConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSAGEBOX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSAGEBOX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndKawiBawiBoGameConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -799,7 +799,7 @@ void CWndFindWordGame::OnInitialUpdate()
 BOOL CWndFindWordGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MINIGAME_WORD, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MINIGAME_WORD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndFindWordGame::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1103,7 +1103,7 @@ void CWndDiceGame::OnInitialUpdate()
 BOOL CWndDiceGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MINIGAME_DICE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MINIGAME_DICE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndDiceGame::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1398,7 +1398,7 @@ BOOL CWndDiceGameTender::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	m_pDiceGame = (CWndDiceGame*)pWndParent;
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_TRADE_GOLD, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_TRADE_GOLD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndDiceGameTender::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1531,7 +1531,7 @@ BOOL CWndDiceGameMessage::Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent,
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	m_strText = lpszMessage;
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSAGEBOX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSAGEBOX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndDiceGameMessage::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -1827,7 +1827,7 @@ void CWndPuzzleGame::OnInitialUpdate()
 BOOL CWndPuzzleGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MINIGAME_PUZZLE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MINIGAME_PUZZLE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndPuzzleGame::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

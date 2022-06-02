@@ -156,7 +156,7 @@ BOOL CWndMessageBox::Create( LPCTSTR lpszMessage, UINT nType, const RECT& rect, 
 {
 	m_nType = nType;
 	SetTitle( lpszMessage );
-	CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), nID, WBS_MODAL, CPoint( -1, -1 ), pWndParent );
+	CWndNeuz::InitDialog( nID, pWndParent, WBS_MODAL, CPoint( -1, -1 ) );
 	m_wndText.SetString( lpszMessage, 0xff000000 );
 	m_wndText.ResetString();
 	return 1;
@@ -305,7 +305,7 @@ BOOL CWndMessageBoxUpper::Create( LPCTSTR lpszMessage, UINT nType, const RECT& r
 {
 	m_nType = nType;
 	SetTitle( lpszMessage );
-	CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), nID, WBS_MODAL, CPoint( -1, -1 ), pWndParent );
+	CWndNeuz::InitDialog( nID, pWndParent, WBS_MODAL, CPoint( -1, -1 ) );
 	m_wndText.SetString( lpszMessage, 0xff000000 );
 	m_wndText.ResetString();
 	return 1;

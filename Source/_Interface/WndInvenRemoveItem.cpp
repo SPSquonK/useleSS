@@ -63,7 +63,7 @@ void CWndInvenRemoveItem::OnInitialUpdate()
 BOOL CWndInvenRemoveItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_INVEN_REMOVE_ITEM, WBS_MODAL, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_INVEN_REMOVE_ITEM, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 

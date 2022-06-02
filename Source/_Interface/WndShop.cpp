@@ -32,12 +32,9 @@ CWndWarning::~CWndWarning()
 
 BOOL CWndWarning::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), dwWndId, WBS_KEY, 0, pWndParent );
+	InitDialog( dwWndId, pWndParent, WBS_KEY, 0 );
 	MoveParentCenter();
-//	CWndStatic* pLabel  = (CWndStatic  *)GetDlgItem( WIDC_STATIC1 );
-//	pLabel->m_dwColor = 0xffff0000;
-//	pLabel  = (CWndStatic  *)GetDlgItem( WIDC_STATIC2 );
-//	pLabel->m_dwColor = 0xffff0000;
+
 	return TRUE;
 }
 
@@ -155,7 +152,7 @@ void CWndConfirmSell::OnInitialUpdate()
 } 
 BOOL CWndConfirmSell::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_SELL, WBS_KEY, 0, pWndParent );
+	InitDialog( APP_CONFIRM_SELL, pWndParent, WBS_KEY, 0 );
 	MoveParentCenter();
 
 	CWndStatic* pLabel  = (CWndStatic  *)GetDlgItem( WIDC_STATIC );
@@ -322,7 +319,7 @@ void CWndConfirmBuy::OnChangeBuyCount( DWORD dwBuy )
 
 BOOL CWndConfirmBuy::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	InitDialog( g_Neuz.GetSafeHwnd(), APP_CONFIRM_BUY_, 0, 0, pWndParent );
+	InitDialog( APP_CONFIRM_BUY_, pWndParent, 0, 0 );
 	MoveParentCenter();
 
 	if( m_pItemElem )
@@ -694,7 +691,7 @@ void CWndShop::OnInitialUpdate()
 
 BOOL CWndShop::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_SHOP_, 0, 0, pWndParent );
+	return InitDialog( APP_SHOP_, pWndParent, 0, 0 );
 } 
 
 BOOL CWndShop::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -1398,7 +1395,7 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	m_nHairColorCost = 0;	
 	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
 
-	return InitDialog( g_Neuz.GetSafeHwnd(), APP_BEAUTY_SHOP_EX, 0, 0, pWndParent );
+	return InitDialog( APP_BEAUTY_SHOP_EX, pWndParent, 0, 0 );
 }
 
 void CWndBeautyShop::SetRGBToEdit(float color, int editnum)
@@ -1808,7 +1805,7 @@ void CWndUseCouponConfirm::OnInitialUpdate()
 BOOL CWndUseCouponConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_BEAUTY_SHOP_EX_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_BEAUTY_SHOP_EX_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndUseCouponConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -1953,7 +1950,7 @@ void CWndBeautyShopConfirm::OnInitialUpdate()
 BOOL CWndBeautyShopConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_BEAUTY_SHOP_EX_CONFIRM, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_BEAUTY_SHOP_EX_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 BOOL CWndBeautyShopConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
@@ -2428,7 +2425,7 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pNewFace, &g_pPlayer->m_Inventory );
 	m_pNewFace->InitDeviceObjects( g_Neuz.GetDevice() );
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_BEAUTY_SHOP_SKIN, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_BEAUTY_SHOP_SKIN, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndFaceShop::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 

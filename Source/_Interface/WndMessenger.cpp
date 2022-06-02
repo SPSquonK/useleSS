@@ -239,7 +239,7 @@ BOOL CWndMessenger::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 		return FALSE;
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSENGER_, WBS_THICKFRAME, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSENGER_, pWndParent, WBS_THICKFRAME, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -706,7 +706,7 @@ BOOL CWndMessengerEx::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 		return FALSE;
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSENGER_EX, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSENGER_EX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndMessengerEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -924,7 +924,7 @@ void CWndInstantMsg::OnInitialUpdate()
 BOOL CWndInstantMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_INSTANTMSG, WBS_NOFOCUS, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_INSTANTMSG, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -1049,7 +1049,7 @@ void CWndMessage::InitSize( void )
 BOOL CWndMessage::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSAGE, WBS_THICKFRAME, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSAGE, pWndParent, WBS_THICKFRAME, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 
@@ -1218,7 +1218,7 @@ void CWndMessageNote::OnInitialUpdate()
 BOOL CWndMessageNote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSAGE_NOTE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSAGE_NOTE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
 직접 윈도를 열때 사용 
@@ -1309,7 +1309,7 @@ void CWndMessengerNote::OnInitialUpdate()
 BOOL CWndMessengerNote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSENGER_NOTE, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSENGER_NOTE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
 직접 윈도를 열때 사용 

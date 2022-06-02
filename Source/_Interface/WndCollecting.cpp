@@ -231,7 +231,7 @@ void CCollectingWnd::OnInitialUpdate()
 BOOL CCollectingWnd::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 		// Daisy에서 설정한 리소스로 윈도를 연다.
-		return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_COLLECTING, 0, CPoint( 0, 0 ), pWndParent );
+		return CWndNeuz::InitDialog( APP_COLLECTING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 /*
   직접 윈도를 열때 사용 

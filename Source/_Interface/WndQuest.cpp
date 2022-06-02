@@ -299,7 +299,7 @@ void CWndQuest::OnInitialUpdate()
 BOOL CWndQuest::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEST_EX_LIST, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUEST_EX_LIST, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndQuest::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
@@ -701,7 +701,7 @@ m_dwQuestID( dwQuestID )
 //-----------------------------------------------------------------------------
 BOOL CWndQuestDetail::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_QUEST_EX_DETAIL, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_QUEST_EX_DETAIL, pWndParent, 0, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 void CWndQuestDetail::OnInitialUpdate( void )

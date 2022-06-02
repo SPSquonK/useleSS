@@ -1458,7 +1458,7 @@ CWndCampus::~CWndCampus( void )
 //-----------------------------------------------------------------------------
 BOOL CWndCampus::Initialize( CWndBase* pWndParent, DWORD nType )
 {
-	return CWndNeuz::InitDialog( g_Neuz.GetSafeHwnd(), APP_MESSENGER_TAB_CAMPUS, 0, CPoint( 0, 0 ), pWndParent );
+	return CWndNeuz::InitDialog( APP_MESSENGER_TAB_CAMPUS, pWndParent, 0, CPoint( 0, 0 ) );
 }
 //-----------------------------------------------------------------------------
 BOOL CWndCampus::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
