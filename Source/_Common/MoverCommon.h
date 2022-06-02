@@ -5,10 +5,10 @@
 namespace MoverSub {
 
 	struct Quests {
-		// TODO: what are quest ids ? WORDs, BYTEs or DWORDs?
+		// TODO: what are quest ids ? WORDs or DWORDs?
 		boost::container::static_vector<QUEST, MAX_QUEST> current;
-		boost::container::static_vector<BYTE, MAX_COMPLETE_QUEST> completed;
-		boost::container::static_vector<BYTE, MAX_CHECKED_QUEST> checked;
+		boost::container::static_vector<WORD, MAX_COMPLETE_QUEST> completed;
+		boost::container::static_vector<WORD, MAX_CHECKED_QUEST> checked;
 
 		struct QuestSearcherById {
 			int questId;
