@@ -2764,10 +2764,10 @@ void CDPDatabaseClient::OnGC1to1TenderGuildFromDB( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::CalluspLoggingQuest( u_long idPlayer, int nQuest, int nState, const char* pszComment )
+void CDPDatabaseClient::CalluspLoggingQuest( u_long idPlayer, QuestId nQuest, int nState, const char* pszComment )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_CALL_USPLOGGINGQUEST, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << nQuest << nState;
+	ar << idPlayer << static_cast<int>(nQuest.get()) << nState;
 	ar.WriteString( pszComment );
 	SEND( ar, this, DPID_SERVERPLAYER );
 }

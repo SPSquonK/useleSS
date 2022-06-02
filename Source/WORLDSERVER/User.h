@@ -322,8 +322,8 @@ public:
 	void			AddSetChangeJob( int nJob );
 	void			AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer );
 	void			AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip );
-	void			AddCancelQuest( DWORD dwQuestCancelID );
-	void			AddRemoveQuest( DWORD dwQuestCancelID );
+	void			AddCancelQuest(QuestId dwQuestCancelID );
+	void			AddRemoveQuest(QuestId dwQuestCancelID );
 	void			AddRemoveAllQuest();
 	void			AddRemoveCompleteQuest();
 	void			AddGetItemBank( CItemElem* pItemElem );	

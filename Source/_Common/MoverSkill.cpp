@@ -1254,7 +1254,7 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 			{
 				if( 0 >= GetPKValue() )
 					nResult = 2;
-				if( GetQuest( QUEST_PKMINUS ) == NULL )
+				if( GetQuest( QuestId(QUEST_PKMINUS) ) == NULL )
 					nResult = 3;
 				if( m_Inventory.GetAtItemId( II_SYS_SYS_QUE_ANGEL_RED100 ) != NULL 
 					|| m_Inventory.GetAtItemId( II_SYS_SYS_QUE_ANGEL_BLUE100 ) != NULL 

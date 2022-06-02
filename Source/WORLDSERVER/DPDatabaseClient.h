@@ -102,7 +102,7 @@ public:
 	void	OnGetMailGold( CAr & ar, DPID, DPID );
 	void	OnReadMail( CAr & ar, DPID, DPID );
 	void	OnAllMail( CAr & ar, DPID, DPID );
-	void	CalluspLoggingQuest( u_long idPlayer, int nQuest, int nState, const char* pszComment = "" );
+	void	CalluspLoggingQuest( u_long idPlayer, QuestId nQuest, int nState, const char* pszComment = "" );
 	void	SendPreventLogin( LPCTSTR szAccount, DWORD dwPreventTime );
 	void	SendSchoolReport( PSCHOOL_ENTRY pSchool );
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2, SERIALNUMBER iSerialNumber );

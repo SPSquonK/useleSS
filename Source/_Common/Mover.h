@@ -213,7 +213,7 @@ typedef struct tagQuest
 
 	BYTE		m_nState;
 	WORD		m_wTime;
-	WORD		m_wId;
+	QuestId		m_wId;
 	WORD		m_nKillNPCNum[ 2 ];
 	BYTE		m_bPatrol   : 1;
 	BYTE		m_bDialog   : 1;
@@ -224,7 +224,7 @@ typedef struct tagQuest
 	BYTE		m_bReserve7 : 1;
 	BYTE		m_bReserve8 : 1;
 
-	QuestProp* GetProp() const { return prj.m_aPropQuest.GetAt( m_wId ); }
+	QuestProp* GetProp() const { return prj.m_aPropQuest.GetAt( m_wId.get() ); }
 
 } QUEST,* LPQUEST;
 
@@ -916,12 +916,12 @@ public:
 	int				SumEquipDefenseAbility( LONG* pnMin, LONG* pnMax );
 	void			SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL bIgnoreSetItem = FALSE );
 	void			ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem );
-	[[nodiscard]] QUEST *			FindQuest( int nQuestId );
-	[[nodiscard]] QUEST *			GetQuest(int nQuestId) { return FindQuest(nQuestId); }
-	BOOL			RemoveQuest( int nQuestId );
-	BOOL			IsCompleteQuest( int nQuestId );
-	[[nodiscard]] std::optional<BYTE> GetQuestState(int nQuestId) const;
-	BOOL			SetQuest( int nQuestId, int nState, LPQUEST lpReturnQuest );
+	[[nodiscard]] QUEST *			FindQuest(QuestId nQuestId );
+	[[nodiscard]] QUEST *			GetQuest(QuestId nQuestId) { return FindQuest(nQuestId); }
+	BOOL			RemoveQuest(QuestId nQuestId );
+	[[nodiscard]] BOOL			IsCompleteQuest(QuestId nQuestId ) const;
+	[[nodiscard]] std::optional<BYTE> GetQuestState(QuestId nQuestId) const;
+	BOOL			SetQuest( QuestId nQuestId, int nState, LPQUEST lpReturnQuest );
 	BOOL			SetQuest( LPQUEST lpQuest );
 	void			RemoveAllQuest();
 	void			RemoveCompleteQuest();

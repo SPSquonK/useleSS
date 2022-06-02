@@ -1320,7 +1320,7 @@ void CDbManager::GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation )
 QUEST CDbManager::GetOneQuest( const char* pstrQuest, int *pLocation )
 {
 	QUEST pQuest;
-	pQuest.m_wId				= (WORD)GetIntPaFromStr( pstrQuest, pLocation );
+	pQuest.m_wId				= QuestId(GetIntPaFromStr( pstrQuest, pLocation ));
 	pQuest.m_nState			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
 	pQuest.m_wTime				= (WORD)GetIntPaFromStr( pstrQuest, pLocation );
 
@@ -1686,11 +1686,11 @@ BOOL CDbManager::RemoveQuest( void )
 	OutputDebugString( "call BOOL CDbManager::RemoveQuest" );
 	if( FALSE == s.Load( "removequest.txt" ) )
 		return FALSE;
-	std::vector<int>	vecRemoveQuestId;
+	std::vector<QuestId>	vecRemoveQuestId;
 	int	nQuestId	= s.GetNumber();
 	while( s.tok != FINISHED )
 	{
-		vecRemoveQuestId.push_back( nQuestId );
+		vecRemoveQuestId.push_back( QuestId(nQuestId) );
 		nQuestId	= s.GetNumber();
 	}
 
@@ -1736,10 +1736,10 @@ BOOL CDbManager::RemoveQuest( void )
 		}
 
 		BOOL bRemove	= FALSE;
-		for( DWORD i = 0; i < vecRemoveQuestId.size(); i++ )
-		{
-			if( mover.RemoveQuest( vecRemoveQuestId[i] ) )
-				bRemove	= TRUE;
+		for (const QuestId questId : vecRemoveQuestId) {
+			if (mover.RemoveQuest(questId)) {
+				bRemove = TRUE;
+			}
 		}
 		memset( aQuest, 0, sizeof(aQuest) );
 		memset( aCompleteQuest, 0, sizeof(aCompleteQuest) );

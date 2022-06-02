@@ -10,6 +10,7 @@ static_assert(false, "Project.h was included")
 #include "boost/container/static_vector.hpp"
 #include <boost/container/flat_map.hpp>
 #include "StaticString.h"
+#include "FlyFFTypes.h"
 
 #include "SingleDst.h"
 
@@ -209,6 +210,8 @@ struct QuestProp
 	CHAR*		m_apQuestDialog[ 32 ];
 #endif
 	QuestState*	m_questState[ 16 ];
+
+	[[nodiscard]] static const QuestProp * Get(const QuestId questId);
 };
 
 struct FILTER {
@@ -1142,3 +1145,8 @@ public:
 	ItemProp*	GetItemProp( int nSex, int nParts );
 };
 #endif	// __PERF_0226
+
+inline const QuestProp * QuestProp::Get(const QuestId questId) {
+	return prj.m_aPropQuest.GetAt(questId.get());
+}
+

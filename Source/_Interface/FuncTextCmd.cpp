@@ -3490,7 +3490,7 @@ BOOL TextCmd_IgnoreList( CScanner & scanner )
 BOOL TextCmd_QuestState(CScanner & s, CPlayer_ * pAdmin) {
 #ifdef __WORLDSERVER
 	CUser* pUser	= NULL;
-	int nQuest	= s.GetNumber();
+	QuestId nQuest	= QuestId(s.GetNumber());
 	int nState = s.GetNumber();
 	s.GetToken();
 	if( s.tok != FINISHED )
@@ -3517,7 +3517,7 @@ BOOL TextCmd_QuestState(CScanner & s, CPlayer_ * pAdmin) {
 
 			char pszComment[100]	= { 0, };
 			sprintf( pszComment, "%s %d", pAdmin->GetName(), nState );
-			g_dpDBClient.CalluspLoggingQuest(  pUser->m_idPlayer, nQuest, 11, pszComment );
+			g_dpDBClient.CalluspLoggingQuest(  pUser->m_idPlayer, nQuest, 11, pszComment);
 		}
 	}
 #endif	// __WORLDSERVER
@@ -3526,7 +3526,7 @@ BOOL TextCmd_QuestState(CScanner & s, CPlayer_ * pAdmin) {
 
 BOOL TextCmd_BeginQuest(CScanner & s, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	int nQuest = s.GetNumber();
+	const QuestId nQuest = QuestId(s.GetNumber());
 	QUEST quest;
 	if( pUser->SetQuest( nQuest, 0, &quest ) )
 		pUser->AddSetQuest( &quest );
@@ -3535,7 +3535,7 @@ BOOL TextCmd_BeginQuest(CScanner & s, CPlayer_ * pUser) {
 }
 BOOL TextCmd_EndQuest(CScanner & s, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	int nQuest = s.GetNumber();
+	const QuestId nQuest = QuestId(s.GetNumber());
 	QUEST quest;
 	if( pUser->SetQuest( nQuest, QS_END, &quest ) )
 		pUser->AddSetQuest( &quest );
@@ -3546,7 +3546,7 @@ BOOL TextCmd_EndQuest(CScanner & s, CPlayer_ * pUser) {
 BOOL TextCmd_RemoveQuest(CScanner & s, CPlayer_ * pAdmin) {
 #ifdef __WORLDSERVER
 	CUser* pUser	= NULL;
-	int nQuest	= s.GetNumber();
+	const QuestId nQuest	= QuestId(s.GetNumber());
 	s.GetToken();
 	if( s.tok != FINISHED )
 	{

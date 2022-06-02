@@ -263,16 +263,15 @@ int APIENTRY GetEmptyInventoryNum( NPCDIALOG_INFO* pInfo )
 int APIENTRY GetQuestState( NPCDIALOG_INFO* pInfo, int nQuest )
 {
 	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
-	return pUser->GetQuestState(nQuest).value_or(-1);
+	return pUser->GetQuestState(QuestId(nQuest)).value_or(-1);
 }
 int APIENTRY IsSetQuest( NPCDIALOG_INFO* pInfo, int nQuest )
 {
 	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
-	LPQUEST pQuest = pUser->GetQuest( nQuest );
-	if( pQuest ) return TRUE;
-	if( pUser->IsCompleteQuest( nQuest ) )
-		return TRUE;
-	return FALSE;
+	const auto questId = QuestId(nQuest);
+	LPQUEST pQuest = pUser->GetQuest( questId);
+
+	return (pQuest && pUser->IsCompleteQuest(questId)) ? TRUE : FALSE;
 }
 
 int APIENTRY SetMark( NPCDIALOG_INFO* pInfo )

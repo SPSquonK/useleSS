@@ -202,7 +202,7 @@ void CCampusHelper::LoadScript()
 	Lua.PushNil();
 	while( Lua.TableLoop( -2 ) )
 	{
-		int nQuestId		=	static_cast<int>( CScript::GetDefineNum( Lua.GetFieldToString( -1, "strQuestId" ) ) );
+		const QuestId nQuestId		= QuestId( CScript::GetDefineNum( Lua.GetFieldToString( -1, "strQuestId" ) ) );
 		m_vecCQuest.push_back( nQuestId );
 		Lua.Pop( 1 );
 	}
@@ -345,17 +345,11 @@ int CCampusHelper::GetMaxPupilNum( CUser* pUser )
 	return 0;
 }
 
-BOOL CCampusHelper::IsCompleteCampusQuest( CUser* pUser )
-{
-	if( !IsValidObj( pUser ) )
-		return FALSE;
-
-	for( auto it = m_vecCQuest.begin(); it != m_vecCQuest.end(); ++it )
-	{
-		if( !pUser->IsCompleteQuest( *it ) )
-			return FALSE;
-	}
-	return TRUE;
+bool CCampusHelper::IsCompleteCampusQuest(const CUser * const pUser) const {
+	return IsValidObj(pUser)
+		&& std::ranges::all_of(m_vecCQuest,
+			[pUser](const QuestId questId) { return pUser->IsCompleteQuest(questId); }
+	);
 }
 
 void CCampusHelper::AddAllMemberUpdateCampus( CCampus* pCampus )

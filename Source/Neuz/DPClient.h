@@ -378,7 +378,7 @@ public:
 	void	SendPetTamerMiracle( DWORD dwId );
 	void	SendFeedPocketInactive( void );
 	void	SendModifyStatus(int nStrCount, int nStaCount, int nDexCount, int nIntCount);
-	void	SendRemoveQuest( DWORD dwQuest );
+	void	SendRemoveQuest( QuestId dwQuest );
 	void	SendWantedGold( int nGold, LPCTSTR szMsg );
 	void	SendWantedList();
 	void	SendWantedName();
@@ -1046,7 +1046,7 @@ public:
 	void	SendTeleporterReq( const char* szCharKey, int nIndex );
 
 	void	OnCheckedQuest( CAr & ar );
-	void	SendCheckedQuestId( int nQuestId, BOOL bCheck );
+	void	SendCheckedQuestId( QuestId nQuestId, BOOL bCheck );
 
 	void	OnInviteCampusMember( CAr & ar );
 	void	OnUpdateCampus( CAr & ar );

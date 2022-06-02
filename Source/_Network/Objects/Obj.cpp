@@ -792,7 +792,7 @@ void CMover::PeriodTick( void )
 }
 
 
-BOOL CMover::RemoveQuest( int nQuestId )
+BOOL CMover::RemoveQuest( QuestId nQuestId )
 {
 	if (!m_quests) return FALSE;
 

@@ -1338,8 +1338,7 @@ void CDPSrvr::OnActionPoint( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 
 void CDPSrvr::OnRemoveQuest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	DWORD dwQuestCancelID;
-	ar >> dwQuestCancelID;
+	QuestId dwQuestCancelID; ar >> dwQuestCancelID;
 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
@@ -1355,7 +1354,7 @@ void CDPSrvr::OnRemoveQuest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		{
 			if( lpQuest->m_nState != QS_END )
 			{
-				QuestProp* pQuestProp	= prj.m_aPropQuest.GetAt( lpQuest->m_wId );
+				const QuestProp * pQuestProp = lpQuest->GetProp();
 				if( pQuestProp && pQuestProp->m_bNoRemove == FALSE )
 				{
 					pUser->RemoveQuest( dwQuestCancelID );
@@ -10550,7 +10549,7 @@ void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, 
 void CDPSrvr::OnCheckedQuest( CAr & ar, CUser & pUser ) {
 	if (!pUser.m_quests) return;
 
-	const auto [nQuestid, bCheck] = ar.Extract<int, BOOL>();
+	const auto [nQuestid, bCheck] = ar.Extract<QuestId, BOOL>();
 
 	bool stable = true;
 

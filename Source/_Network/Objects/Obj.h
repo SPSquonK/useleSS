@@ -12,6 +12,7 @@
 
 #include "SkillInfluence.h"
 #include "UserTaskBar.h"
+#include "FlyFFTypes.h"
 
 #if defined(__DBSERVER) || defined(__VPW)
   #include "..\DatabaseServer\Project.h"
@@ -180,7 +181,7 @@ typedef struct tagQuest
 
 	BYTE		m_nState;
 	WORD		m_wTime;
-	WORD		m_wId;
+	QuestId		m_wId;
 	// Ãß°¡ 
 	//BYTE		m_nKillNPCNum[ 2 ];	// chipi_091015 - NPC Kill Quest °¹¼ö È®Àå( BYTE -> WORD )
 	WORD		m_nKillNPCNum[ 2 ];	// chipi_091015 - NPC Kill Quest °¹¼ö È®Àå( BYTE -> WORD )
@@ -405,7 +406,7 @@ public:
 	MoverProp*	GetProp( void )		{	return( prj.GetMoverProp( m_dwIndex ) );	}
 #endif	// __DBSERVER
 
-	BOOL	RemoveQuest( int nQuestId );
+	BOOL	RemoveQuest( QuestId nQuestId );
 
 	BOOL	AddItem( DWORD dwItemType, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber, int nItemResist = 0, int nResistAbilityOption = 0, int nCharged = 0, int nPiercedSize = 0, DWORD dwItemId0 = 0, DWORD dwItemId1 = 0, DWORD dwItemId2 = 0, DWORD dwItemId3 = 0, DWORD dwItemId4 = 0, DWORD dwKeepTime = 0, __int64 iRandomOptItemId = 0 );
 	BOOL	AddItemBank( int nSlot, DWORD dwId, DWORD dwNum, int nOption, SERIALNUMBER iSerialNumber );

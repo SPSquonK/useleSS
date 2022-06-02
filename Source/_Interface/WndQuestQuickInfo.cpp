@@ -66,8 +66,8 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 					SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
 					g_WndMng.m_pWndQuestDetail = new CWndQuestDetail( dwQuestID );
 					g_WndMng.m_pWndQuestDetail->Initialize( NULL );
-					LPQUEST lpQuest = g_pPlayer->FindQuest( dwQuestID );
-					BOOL bComplete = dwQuestID != -1 && g_pPlayer->IsCompleteQuest( dwQuestID );
+					LPQUEST lpQuest = g_pPlayer->FindQuest( QuestId(dwQuestID) );
+					BOOL bComplete = dwQuestID != -1 && g_pPlayer->IsCompleteQuest( QuestId(dwQuestID) );
 					g_WndMng.m_pWndQuestDetail->UpdateQuestDetailText( dwQuestID, lpQuest, bComplete );
 				}
 				SetQuestDestinationInformation( dwQuestID, 0 );
@@ -264,16 +264,16 @@ BOOL CWndQuestQuickInfo::Process( void )
 
 		if( nCheckedQuestSize > 0 )
 		{
-			for (const DWORD dwQuestID : g_pPlayer->m_quests->checked) {
+			for (const QuestId dwQuestID : g_pPlayer->m_quests->checked) {
 				if( IsVisible() != TRUE )
 					SetVisible( TRUE );
 
-				QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuestID );
-				if( pQuestProp == NULL )
-					continue;
+				const QuestProp * pQuestProp = dwQuestID.GetProp();
+				if (!pQuestProp) continue;
+
 				LPTREEELEM lpTreeElem = pWndTreeCtrl->InsertItem( NULL, 
 																  pQuestProp->m_szTitle, 
-																  dwQuestID, 
+																  dwQuestID.get(),
 																  TRUE, 
 																  FALSE, 
 																  MakeTextColor( NO_SURFACE_CATEGORY_TEXT_COLOR, SURFACE_CATEGORY_TEXT_COLOR, m_nAlphaCount, m_nAlpha ), 
@@ -286,7 +286,7 @@ BOOL CWndQuestQuickInfo::Process( void )
 										 MakeTextColor( NO_SURFACE_NORMAL_TEXT_COLOR, SURFACE_NORMAL_TEXT_COLOR, m_nAlphaCount, m_nAlpha ), 
 										 MakeTextColor( NO_SURFACE_SELECTED_TEXT_COLOR, SURFACE_SELECTED_TEXT_COLOR, m_nAlphaCount, m_nAlpha ) );
 
-				CTreeInformation* pTreeInformation = g_QuestTreeInfoManager.GetTreeInformation( dwQuestID );
+				CTreeInformation* pTreeInformation = g_QuestTreeInfoManager.GetTreeInformation( dwQuestID.get() );
 				lpTreeElem->m_bOpen = pTreeInformation ? pTreeInformation->GetOpen() : TRUE;
 			}
 

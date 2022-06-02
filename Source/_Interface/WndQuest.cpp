@@ -12,6 +12,7 @@
 
 CTreeInformationManager g_QuestTreeInfoManager;
 
+// TODO: remove all conversions to QuestId here and expect to received some QuestIds
 
 BOOL CWndRemoveQuest::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
@@ -37,9 +38,10 @@ BOOL CWndRemoveQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				break;
 			case IDOK:       
 			{
-				LPQUEST lpQuest = g_pPlayer->FindQuest( m_nRemoveQuestId );
-				if( lpQuest )
-					g_DPlay.SendRemoveQuest( m_nRemoveQuestId );
+				const QuestId questId = QuestId(m_nRemoveQuestId);
+				if (g_pPlayer->FindQuest(questId)) {
+
+				}
 				Destroy(); 
 			}
 			break;
@@ -138,8 +140,7 @@ void CWndQuest::Update( int nNewQuestId )
 	{
 		if (g_pPlayer->m_quests) {
 			for (const QUEST & quest : g_pPlayer->m_quests->current) {
-				if (quest.m_wId == 0xffff) continue;
-				InsertQuestItem(quest.m_wId, aOldHeadData, FALSE);
+				InsertQuestItem(quest.m_wId.get(), aOldHeadData, FALSE);
 			}
 		}
 	}
@@ -147,8 +148,7 @@ void CWndQuest::Update( int nNewQuestId )
 	{
 		if (g_pPlayer->m_quests) {
 			for (const auto wQuest : g_pPlayer->m_quests->completed) {
-				if (wQuest == 0xffff) continue;
-				InsertQuestItem(wQuest, aOldHeadData, TRUE, nNewQuestId);
+				InsertQuestItem(wQuest.get(), aOldHeadData, TRUE, nNewQuestId);
 			}
 		}
 	}
@@ -184,9 +184,9 @@ void CWndQuest::RemoveQuest( void )
 	if( lpTreeElem )
 	{
 		nQuest = lpTreeElem->m_dwData ;
-		lpQuest = g_pPlayer->FindQuest( nQuest );
+		lpQuest = g_pPlayer->FindQuest( QuestId(nQuest) );
 	}
-	BOOL bComplete = nQuest != -1 && g_pPlayer->IsCompleteQuest( nQuest ); 
+	BOOL bComplete = nQuest != -1 && g_pPlayer->IsCompleteQuest( QuestId(nQuest) ); 
 	if( lpQuest || bComplete )
 	{
 		CWndDialog* pWndDialog = (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG_EX );
@@ -530,7 +530,7 @@ void CWndQuest::InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQu
 
 			CString strFullQuestTitle = _T( "" );
 
-			const auto questState = g_pPlayer->GetQuestState(dwQuestID);
+			const auto questState = g_pPlayer->GetQuestState(QuestId(dwQuestID));
 			if(questState.has_value()) {
 				CString strState = _T( "" );
 				if( g_Option.m_bOperator || g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
@@ -579,7 +579,7 @@ DWORD CWndQuest::FindOldHeadQuest( const CDWordArray& raOldHeadQuestID, const DW
 
 BOOL CWndQuest::IsCheckedQuestID(DWORD dwQuestID) {
 	if (!g_pPlayer->m_quests) return FALSE;
-	const auto it = std::ranges::find(g_pPlayer->m_quests->checked, dwQuestID);
+	const auto it = std::ranges::find(g_pPlayer->m_quests->checked, QuestId(dwQuestID));
 	return (it != g_pPlayer->m_quests->checked.end()) ? TRUE : FALSE;
 }
 
@@ -611,12 +611,12 @@ BOOL CWndQuestTreeCtrl::OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult )
 
 							if( g_QuestTreeInfoManager.GetTreeInformation( dwQuestID ) == NULL )
 								g_QuestTreeInfoManager.InsertTreeInformation( dwQuestID, TRUE );
-							g_DPlay.SendCheckedQuestId( dwQuestID, TRUE );
+							g_DPlay.SendCheckedQuestId( QuestId(dwQuestID), TRUE );
 						}
 						else
 						{
 							g_QuestTreeInfoManager.DeleteTreeInformation( dwQuestID );
-							g_DPlay.SendCheckedQuestId( dwQuestID, FALSE );
+							g_DPlay.SendCheckedQuestId( QuestId(dwQuestID), FALSE );
 						}
 					}
 				}
@@ -775,8 +775,8 @@ void CWndQuestDetail::UpdateQuestText( BOOL bClick )
 	pWndQuestConditionTree->DeleteAllItems();
 	CWndText* pTextReward = (CWndText*)GetDlgItem( WIDC_TEXT_REWARD );
 
-	LPQUEST lpQuest = g_pPlayer->FindQuest( m_dwQuestID );
-	BOOL bComplete = m_dwQuestID != -1 && g_pPlayer->IsCompleteQuest( m_dwQuestID );
+	LPQUEST lpQuest = g_pPlayer->FindQuest( QuestId(m_dwQuestID) );
+	BOOL bComplete = m_dwQuestID != -1 && g_pPlayer->IsCompleteQuest( QuestId(m_dwQuestID) );
 
 	if( lpQuest || bComplete )
 		UpdateQuestDetailText( m_dwQuestID, lpQuest, bComplete, bClick );
@@ -830,7 +830,7 @@ void CWndQuestDetail::UpdateQuestDetailText( DWORD dwQuestID, LPQUEST lpQuest, B
 	if( bComplete )
 		pWndQuestConditionTree->InsertItem( NULL, GETTEXT( TID_QUEST_COMPLETED ), 0 );
 	else
-		MakeQuestConditionItems( dwQuestID, pWndQuestConditionTree, bClick );
+		MakeQuestConditionItems( QuestId(dwQuestID), pWndQuestConditionTree, bClick );
 
 	//////////////////////////////////////////////////////////////////////////////////
 	// 보상 아이템 목록
@@ -914,11 +914,11 @@ DWORD CWndQuestDetail::GetQuestID( void ) const
 	return m_dwQuestID;
 }
 //-----------------------------------------------------------------------------
-void MakeQuestConditionItems( DWORD dwQuestID, CWndTreeCtrl* pWndTreeCtrl, BOOL bClick, LPTREEELEM lpTreeElem, DWORD dwStartColor, DWORD dwEndColor, DWORD dwSelectColor )
+void MakeQuestConditionItems( const QuestId dwQuestID, CWndTreeCtrl* pWndTreeCtrl, BOOL bClick, LPTREEELEM lpTreeElem, DWORD dwStartColor, DWORD dwEndColor, DWORD dwSelectColor )
 {
 	CString strTemp = _T( "" );
 	LPQUEST lpQuest = g_pPlayer->FindQuest( dwQuestID );
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuestID );
+	const QuestProp * pQuestProp = dwQuestID.GetProp();
 
 	int i = NULL;
 	for( ; i < 14; i++ )

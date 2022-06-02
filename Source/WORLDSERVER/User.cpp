@@ -1263,47 +1263,20 @@ void CUser::AddFriendGameJoin()
 #endif	// __RT_1025
 }
 
-void CUser::AddCancelQuest( DWORD dwQuestCancelID )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_REMOVEQUEST;
-	m_Snapshot.ar << (int)-1 << dwQuestCancelID;
-	
+void CUser::AddCancelQuest(const QuestId dwQuestCancelID) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REMOVEQUEST, int, QuestId>(-1, dwQuestCancelID);
 }
 
-void CUser::AddRemoveQuest( DWORD dwQuestCancelID )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_REMOVEQUEST;
-	m_Snapshot.ar << (int)0 << dwQuestCancelID;
-	
+void CUser::AddRemoveQuest(const QuestId dwQuestCancelID ) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REMOVEQUEST, int, QuestId>(0, dwQuestCancelID);
 }
 
-void CUser::AddRemoveAllQuest()
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_REMOVEQUEST;
-	m_Snapshot.ar << (int)1 << (DWORD)0;
-	
+void CUser::AddRemoveAllQuest() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REMOVEQUEST, int>(1);
 }
-void CUser::AddRemoveCompleteQuest()
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_REMOVEQUEST;
-	m_Snapshot.ar << (int)2 << (DWORD)0;
-	
+
+void CUser::AddRemoveCompleteQuest() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REMOVEQUEST, int>(2);
 }
 
 void CUser::ADDGameJoin( void )
@@ -2018,15 +1991,8 @@ void CUser::AddDefinedCaption( BOOL bSmall, int dwText, LPCSTR lpszFormat, ... )
 	
 }
 
-void CUser::AddSetQuest( LPQUEST lpQuest )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SETQUEST;
-	m_Snapshot.ar.Write( lpQuest, sizeof( QUEST ) );//ar << nQuestIdx << nState;
-	
+void CUser::AddSetQuest(LPQUEST lpQuest) {
+	SendSnapshotThisId<SNAPSHOTTYPE_SETQUEST, QUEST>(*lpQuest);
 }
 
 void CUser::AddQueryGetDestObj( OBJID idFrom )
@@ -6335,13 +6301,13 @@ void CUser::OnMsgArrival( DWORD dwParam )
 			}
 			if( pCommonCtrl->m_CtrlElem.m_dwSet & UA_QUEST )
 			{
-				LPQUEST pQuest = GetQuest( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum );
+				const QUEST * pQuest = GetQuest( QuestId(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum) );
 
 				if( pQuest )
 				{
 					if( pQuest->m_nState != pCommonCtrl->m_CtrlElem.m_dwSetFlagNum )
 					{
-						QuestProp * pQuestPorp = prj.m_aPropQuest.GetAt( pQuest->m_wId );
+						const QuestProp * pQuestPorp = pQuest->GetProp();
 						if( pQuestPorp )
 							AddDefinedText( TID_ITEMBOX_MESSAGE4, "\"%s\"", pQuestPorp->m_szTitle );
 
@@ -6351,7 +6317,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 				}
 				else
 				{
-						QuestProp * pQuestPorp = prj.m_aPropQuest.GetAt( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum );
+						const QuestProp * pQuestPorp = prj.m_aPropQuest.GetAt( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum );
 						if( pQuestPorp )
 							AddDefinedText( TID_ITEMBOX_MESSAGE4, "\"%s\"", pQuestPorp->m_szTitle );
 
@@ -6398,7 +6364,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 			{
 				if( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum1 != 0 )
 				{
-					LPQUEST pQuest = GetQuest( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum1 );
+					LPQUEST pQuest = GetQuest( QuestId(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum1) );
 					if( pQuest )
 					{
 						QUEST quest;
@@ -6410,7 +6376,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 				}
 				if( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum2 != 0 )
 				{
-					LPQUEST pQuest = GetQuest( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum2 );
+					LPQUEST pQuest = GetQuest(QuestId(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum2 ));
 					if( pQuest )
 					{
 						QUEST quest;

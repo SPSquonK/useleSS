@@ -188,7 +188,7 @@ CMover* CAIInterface::ScanTarget( CObj* pObjCenter, int nRangeMeter, int nJobCon
 			// 3. 퀘스트 조건 체크 
 			if( dwQuest == 0 )
 				nAble++;
-			else if( pTarget->GetQuest( dwQuest ) != NULL )
+			else if( pTarget->GetQuest( QuestId(dwQuest) ) != NULL )
 				nAble++;	
 			//4. 카오 조건 체크  
 			if( nChao == 0 )

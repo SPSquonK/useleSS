@@ -54,7 +54,7 @@ typedef std::map<int, DWORD> MAP_CBUFF;
 	BOOL	IsMasterLevel( CUser* pUser );
 	BOOL	IsPupilLevel( CUser* pUser );
 	int		GetMaxPupilNum( CUser* pUser );
-	BOOL	IsCompleteCampusQuest( CUser* pUser );
+	[[nodiscard]] bool	IsCompleteCampusQuest(const CUser * pUser) const;
 	void	AddAllMemberUpdateCampus( CCampus* pCampus );
 	void	AddAllMemberRemoveCampus( CCampus* pCampus );
 	DWORD	GetCampusBuff( int nLevel );
@@ -70,7 +70,7 @@ private:
 	CCampusMng* m_pCampusMng;
 	DWORD		m_dwRecoveryTime;
 	int			m_nRecoveryPoint;
-	std::vector<int>	m_vecCQuest;
+	std::vector<QuestId>	m_vecCQuest;
 	MAP_CBUFF	m_mapCBuff;
 	MAP_CREWORD	m_mapCReward;
 };

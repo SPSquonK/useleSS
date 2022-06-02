@@ -1,7 +1,7 @@
-#ifndef __PROJECT_H__
-#define __PROJECT_H__
+#pragma once
 
 #include "ProjectCmn.h"
+#include "FlyFFTypes.h"
 
 #include <vector>
 #include <map>
@@ -233,5 +233,3 @@ inline ItemProp* CProject::GetItemProp( LPCTSTR lpszItem )
 		return GetItemProp( i->second );
 	return NULL;
 }
-
-#endif	// __PROJECT_H__

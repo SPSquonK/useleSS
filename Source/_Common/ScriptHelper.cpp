@@ -138,9 +138,10 @@ int __AddAnswer( int nPcId, LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam1, i
 	return 1;
 }
 
-int __RemoveQuest( int nPcId, int nQuest )      
+int __RemoveQuest( int nPcId, int nQuest_ )      
 {
-	QuestProp* pQuestProp	= prj.m_aPropQuest.GetAt( nQuest );
+	QuestId nQuest = QuestId(nQuest_);
+	const QuestProp * pQuestProp = nQuest.GetProp();
 	if( pQuestProp )
 	{
 		CUser* pUser	= prj.GetUser( nPcId );
@@ -473,10 +474,10 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 		for( int i = 0; i < lpChar->m_awSrcQuest.GetSize(); i++ )
 		{
 			int nQuest = lpChar->m_awSrcQuest.GetAt( i );
-			QUEST * lpQuest = pUser->GetQuest( nQuest );
+			QUEST * lpQuest = pUser->GetQuest( QuestId(nQuest) );
 
 			// new quest
-			if( lpQuest == NULL && pUser->IsCompleteQuest( nQuest ) == FALSE )
+			if( lpQuest == NULL && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE )
 			{
 				// now
 				if( __IsBeginQuestCondition( pUser, nQuest ) )
@@ -489,7 +490,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 					vecNextQuest.push_back( nQuest );
 			}
 			// current quest
-			else if( lpQuest && pUser->IsCompleteQuest( nQuest ) == FALSE && lpQuest->m_nState != QS_END )
+			else if( lpQuest && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE && lpQuest->m_nState != QS_END )
 			{
 				// complete
 				if( __IsEndQuestCondition( pUser, nQuest ) )
@@ -522,7 +523,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 	
 	if( nQuestId )
 	{
-		QUEST * lpQuest = pUser->GetQuest( nQuestId );
+		QUEST * lpQuest = pUser->GetQuest( QuestId(nQuestId) );
 		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
 		if( lpQuest && lpQuest->m_nState != QS_END && pQuestProp )	// 진행중인 퀘스트 선택 시
 		{
@@ -560,11 +561,11 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 				}
 
 				if (strcmpi(pQuestProp->m_szEndCondCharacter, pMover->m_szCharacterKey) == 0 && quest.m_nState != QS_END) {
-					if (__IsEndQuestCondition(pUser, quest.m_wId)) {
-						__SayQuest(nPcId, quest.m_wId, QSAY_END_COMPLETE1);
-						__SayQuest(nPcId, quest.m_wId, QSAY_END_COMPLETE2);
-						__SayQuest(nPcId, quest.m_wId, QSAY_END_COMPLETE3);
-						__AddAnswer(nPcId, "__OK__", "QUEST_END_COMPLETE", 0, quest.m_wId);
+					if (__IsEndQuestCondition(pUser, quest.m_wId.get())) {
+						__SayQuest(nPcId, quest.m_wId.get(), QSAY_END_COMPLETE1);
+						__SayQuest(nPcId, quest.m_wId.get(), QSAY_END_COMPLETE2);
+						__SayQuest(nPcId, quest.m_wId.get(), QSAY_END_COMPLETE3);
+						__AddAnswer(nPcId, "__OK__", "QUEST_END_COMPLETE", 0, quest.m_wId.get());
 						bDialogText = FALSE;
 						break;
 					}
@@ -607,10 +608,10 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 	//	mulcom	END100315	베트남 시간 제한
 #endif // __VTN_TIMELIMIT
 
-	LPQUEST lpQuest		= pUser->GetQuest( nQuestId );
+	LPQUEST lpQuest		= pUser->GetQuest( QuestId(nQuestId) );
 	if( __IsBeginQuestCondition( pUser, nQuestId )
 		&& lpQuest == NULL
-		&& pUser->IsCompleteQuest( nQuestId ) == FALSE )
+		&& pUser->IsCompleteQuest( QuestId(nQuestId) ) == FALSE )
 	{
 		__SayQuest( nPcId, nQuestId, QSAY_BEGIN_YES );
 		__RunQuest( nPcId, nNpcId, nQuestId );
@@ -629,10 +630,10 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 			for( int i = 0; i < lpChar->m_awSrcQuest.GetSize(); i++ )
 			{
 				int nQuest = lpChar->m_awSrcQuest.GetAt( i );
-				lpQuestList = pUser->GetQuest( nQuest );
+				lpQuestList = pUser->GetQuest( QuestId(nQuest) );
 				
 				// new quest
-				if( lpQuestList == NULL && pUser->IsCompleteQuest( nQuest ) == FALSE )
+				if( lpQuestList == NULL && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE )
 				{
 					// now
 					if( __IsBeginQuestCondition( pUser, nQuest ) )
@@ -642,7 +643,7 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 						vecNextQuest.push_back( nQuest );
 				}
 				// current quest
-				else if( lpQuestList && pUser->IsCompleteQuest( nQuest ) == FALSE )
+				else if( lpQuestList && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE )
 				{
 					// complete
 					if( __IsEndQuestCondition( pUser, nQuest ) )
@@ -682,7 +683,7 @@ void __QuestBeginNo( int nPcId, int nNpcId, int nQuestId )
 void __QuestEndComplete( int nPcId, int nNpcId, int& nGlobal, int nVal, int nQuestId )
 {
 	CUser* pUser	= prj.GetUser( nPcId );
-	LPQUEST lpQuest		= pUser->GetQuest( nQuestId );
+	LPQUEST lpQuest		= pUser->GetQuest( QuestId(nQuestId) );
 
 #ifdef __VTN_TIMELIMIT
 	//	mulcom	BEGIN100315	베트남 시간 제한
@@ -701,7 +702,7 @@ void __QuestEndComplete( int nPcId, int nNpcId, int& nGlobal, int nVal, int nQue
 #endif // __VTN_TIMELIMIT
 
 	// 퀘스트가 진행 중인 경우 
-	if( lpQuest && pUser->IsCompleteQuest( nQuestId ) == FALSE
+	if( lpQuest && pUser->IsCompleteQuest( QuestId(nQuestId) ) == FALSE
 		&& __IsEndQuestCondition( pUser, nQuestId ) )
 	{
 		CMover* pMover = prj.GetMover( nNpcId );
@@ -710,15 +711,16 @@ void __QuestEndComplete( int nPcId, int nNpcId, int& nGlobal, int nVal, int nQue
 		__QuestEnd( nPcId, nNpcId, nGlobal, nQuestId, TRUE );
 	}	
 }
-int __SetQuestState( DWORD dwIdMover, int nQuest, int nState )
+int __SetQuestState( DWORD dwIdMover, int nQuest_, int nState )
 {
+	const QuestId nQuest = QuestId(nQuest_);
 	CUser* pUser	= prj.GetUser( dwIdMover );
 	if( nState == QS_END )
 	{
-		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuest );
+		const QuestProp * pQuestProp = nQuest.GetProp();
 		if( pQuestProp )
 		{
-			if( nQuest !=  QUEST_CREGUILD )
+			if( nQuest !=  QuestId(QUEST_CREGUILD) )
 				pUser->AddDefinedText( TID_EVE_ENDQUEST, "\"%s\"", pQuestProp->m_szTitle );
 		}
 		g_dpDBClient.CalluspLoggingQuest( pUser->m_idPlayer, nQuest, 20 );
@@ -734,9 +736,10 @@ int __SetQuestState( DWORD dwIdMover, int nQuest, int nState )
 	return 1;
 }
 
-void __SetQuest( DWORD dwIdMover, int nQuest )
+void __SetQuest( DWORD dwIdMover, int nQuest_ )
 {
-	QuestProp* pQuestProp	= prj.m_aPropQuest.GetAt( nQuest );
+	QuestId nQuest = QuestId(nQuest_);
+	const QuestProp * pQuestProp = nQuest.GetProp();
 	CUser* pUser	= prj.GetUser( dwIdMover );
 	if( pQuestProp )
 		pUser->AddDefinedText( TID_EVE_STARTQUEST, "\"%s\"", pQuestProp->m_szTitle );

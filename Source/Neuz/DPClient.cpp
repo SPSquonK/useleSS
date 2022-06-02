@@ -3745,7 +3745,6 @@ void CDPClient::OnGameJoin( CAr & ar )
 
 	if (g_pPlayer->m_quests) {
 		for (const QUEST & quest : g_pPlayer->m_quests->current) {
-			if (quest.m_wId == 0xffff || quest.m_wId == 0xff) continue;
 			if (quest.m_nState == QS_END) continue;
 
 			const QuestProp * pQestProp = quest.GetProp();
@@ -7642,11 +7641,8 @@ void CDPClient::OnRemoveGuildQuest(CAr & ar) {
 }
 
 
-void CDPClient::OnSetQuest( OBJID objid, CAr & ar )
-{
-
-	QUEST quest;
-	ar.Read( &quest, sizeof( quest ) );
+void CDPClient::OnSetQuest( OBJID objid, CAr & ar ) {
+	QUEST quest; ar >> quest;
 	
 	CString strTemp;
 	CMover* pMover	= prj.GetMover( objid );
@@ -7656,7 +7652,7 @@ void CDPClient::OnSetQuest( OBJID objid, CAr & ar )
 		CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
 		LPQUEST lpCurQuest = pMover->GetQuest( quest.m_wId );
-		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( quest.m_wId );
+		const QuestProp * pQuestProp = quest.GetProp();
 		// 기존 내용 수정 
 		if( lpCurQuest && quest.m_nState != QS_END )
 		{
@@ -7678,7 +7674,7 @@ void CDPClient::OnSetQuest( OBJID objid, CAr & ar )
 				{
 					g_WndMng.PutString( GETTEXT( TID_QUEST_LIMIT_TIMEOUT ) );
 					g_WndMng.PutString( GETTEXT( TID_QUEST_FAILURE ) ); 
-					SendRemoveQuest( quest.m_wId );
+					SendRemoveQuest(quest.m_wId);
 				}
 			}
 			// 정찰 지역 
@@ -7717,7 +7713,7 @@ void CDPClient::OnSetQuest( OBJID objid, CAr & ar )
 		{
 			pMover->SetQuest( &quest );
 			if( pWndQuestDetail )
-				pWndQuestDetail->UpdateQuestText( quest.m_wId ); 
+				pWndQuestDetail->UpdateQuestText( quest.m_wId.get() ); 
 
 			CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
 			if( pWndQuestQuickInfo )
@@ -7736,7 +7732,7 @@ void CDPClient::OnSetQuest( OBJID objid, CAr & ar )
 			else 
 			if( quest.m_nState == QS_END ) // VHOME
 			{
-				if( quest.m_wId !=  QUEST_CREGUILD )
+				if( quest.m_wId != QuestId(QUEST_CREGUILD))
 					g_WndMng.PutDefinedString( TID_EVE_ENDJOB1, ""  );
 			}
 				//g_WndMng.PutString( prj.GetText( TID_EVE_ENDJOB1 ), NULL, prj.GetTextColor( TID_EVE_ENDJOB1 ) );
@@ -10242,12 +10238,10 @@ void CDPClient::SendSfxClear( int idSfxHit, OBJID idMover )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendRemoveQuest( DWORD dwQuest )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_REMOVEQUEST, DPID_UNKNOWN );
-	ar << dwQuest;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendRemoveQuest(const QuestId dwQuest) {
+	SendPacket<PACKETTYPE_REMOVEQUEST, QuestId>(dwQuest);
 }
+
 void CDPClient::SendHdr( DWORD dwHdr )
 {
 	BEFORESENDSOLE( ar, dwHdr, DPID_UNKNOWN );
@@ -13350,44 +13344,28 @@ void CDPClient::OnSchoolReport( CAr & ar )
 }
 
 
-void CDPClient::OnRemoveQuest( CAr & ar )
-{
-	int nRemoveType;
-	DWORD dwQuestCancelID;
-	ar >> nRemoveType >> dwQuestCancelID;
+void CDPClient::OnRemoveQuest( CAr & ar ) {
+	int nRemoveType; ar >> nRemoveType;
 
-	if( nRemoveType == -1 )
-	{
-		//LPQUEST lpQuest = g_pPlayer->GetQuest( dwQuestCancelID );
-		QuestProp * pQuestPorp = prj.m_aPropQuest.GetAt( dwQuestCancelID );//lpQuest->m_wId );
+	if (nRemoveType == -1 || nRemoveType == 0) {
+		QuestId dwQuestCancelID; ar >> dwQuestCancelID;
 
-		CString str;
-		str.Format( prj.GetText(TID_GAME_REMOVEQUEST), pQuestPorp->m_szTitle );
-		g_WndMng.PutString( str, NULL, prj.GetTextColor( TID_GAME_REMOVEQUEST ) );
+		if (nRemoveType == -1) {
+			const QuestProp * pQuestPorp = dwQuestCancelID.GetProp();
+			g_WndMng.PutString(TID_GAME_REMOVEQUEST, pQuestPorp->m_szTitle);
+		}
 
-		g_pPlayer->RemoveQuest( dwQuestCancelID );
-		g_QuestTreeInfoManager.DeleteTreeInformation( dwQuestCancelID );
-	}
-	else
-	if( nRemoveType == 0 )
-	{
-		g_pPlayer->RemoveQuest( dwQuestCancelID );
-		g_QuestTreeInfoManager.DeleteTreeInformation( dwQuestCancelID );
-	}
-	else
-	if( nRemoveType == 1 )
-	{
+		g_pPlayer->RemoveQuest( QuestId(dwQuestCancelID) );
+		g_QuestTreeInfoManager.DeleteTreeInformation(dwQuestCancelID.get());
+	} else if (nRemoveType == 1) {
 		g_pPlayer->RemoveAllQuest();
 		g_QuestTreeInfoManager.DeleteAllTreeInformation();
-	}
-	else
-	if( nRemoveType == 2 )
+	} else if (nRemoveType == 2) {
 		g_pPlayer->RemoveCompleteQuest();
+	}
 
-	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetApplet( APP_QUEST_EX_LIST );
-	if( pWndQuest )
-	{
-		pWndQuest->Update();	
+	if (CWndQuest * pWndQuest = (CWndQuest *)g_WndMng.GetApplet(APP_QUEST_EX_LIST)) {
+		pWndQuest->Update();
 	}
 }
 
@@ -17537,7 +17515,7 @@ void CDPClient::OnCheckedQuest(CAr & ar) {
 	}
 }
 
-void CDPClient::SendCheckedQuestId( int nQuestId, BOOL bCheck )
+void CDPClient::SendCheckedQuestId( QuestId nQuestId, BOOL bCheck )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_QUEST_CHECK, DPID_UNKNOWN );
 	ar << nQuestId << bCheck;

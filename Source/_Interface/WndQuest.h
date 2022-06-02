@@ -90,7 +90,7 @@ private:
 	CWndQConditionTreeCtrl m_WndQConditionTreeCtrl;
 };
 
-void MakeQuestConditionItems( DWORD dwQuestID, 
+void MakeQuestConditionItems( QuestId dwQuestID, 
 						      CWndTreeCtrl* pWndTreeCtrl, 
 							  BOOL bClick = FALSE, 
 							  LPTREEELEM lpTreeElem = NULL, 

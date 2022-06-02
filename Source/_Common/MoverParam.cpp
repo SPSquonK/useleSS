@@ -2852,16 +2852,16 @@ void CMover::HalfForceSet( D3DXVECTOR3 & vPos, D3DXVECTOR3 & vd, float fAngle, f
 	m_pActMover->HalfForcedSet( vd, fAccPower, fTurnAngle );
 }
 
-BOOL CMover::IsCompleteQuest( int nQuestId ) {
+BOOL CMover::IsCompleteQuest(const QuestId nQuestId) const {
 	return (m_quests && m_quests->IsCompletedQuest(nQuestId)) ? TRUE : FALSE;
 }
 
-bool MoverSub::Quests::IsCompletedQuest(const int questId) const {
+bool MoverSub::Quests::IsCompletedQuest(const QuestId questId) const {
 	const auto it = std::ranges::find(completed, questId);
 	return it != completed.end();
 }
 
-std::optional<BYTE> CMover::GetQuestState(const int nQuestId) const {
+std::optional<BYTE> CMover::GetQuestState(const QuestId nQuestId) const {
 	if (!m_quests) return std::nullopt;
 
 	const auto inCurrent = std::ranges::find_if(
@@ -2893,21 +2893,19 @@ void CMover::RemoveCompleteQuest() {
 }
 
 
-QUEST * CMover::FindQuest( int nQuestId ) {
+QUEST * CMover::FindQuest(const QuestId nQuestId) {
 	if (!m_quests) return nullptr;
 	return m_quests->FindQuest(nQuestId);
 }
 
-QUEST * MoverSub::Quests::FindQuest(const int questId) {
-	const auto it = std::ranges::find_if(current, QuestSearcherById(questId));
+QUEST * MoverSub::Quests::FindQuest(const QuestId questId) {
+	const auto it = std::ranges::find_if(current, ById(questId));
 	if (it == current.end()) return nullptr;
 	return &*it;
 }
 
-void MoverSub::Quests::RemoveQuest(int questId) {
-	const auto itCurrent = std::ranges::find_if(current,
-		[&](const QUEST & quest) { return quest.m_wId == questId; }
-	);
+void MoverSub::Quests::RemoveQuest(const QuestId questId) {
+	const auto itCurrent = std::ranges::find_if(current, ById(questId));
 	if (itCurrent != current.end()) current.erase(itCurrent);
 
 	const auto itCompleted = std::ranges::find(completed, questId);
@@ -2917,7 +2915,7 @@ void MoverSub::Quests::RemoveQuest(int questId) {
 	if (itChecked != checked.end()) checked.erase(itChecked);
 }
 
-BOOL CMover::RemoveQuest( int nQuestId ) {
+BOOL CMover::RemoveQuest(const QuestId nQuestId ) {
 	if (m_quests) m_quests->RemoveQuest(nQuestId);
 
 #ifdef __CLIENT
@@ -2926,7 +2924,7 @@ BOOL CMover::RemoveQuest( int nQuestId ) {
 	return TRUE;
 }
 
-BOOL CMover::SetQuest( int nQuestId, int nState, LPQUEST lpReturnQuest )
+BOOL CMover::SetQuest(const QuestId nQuestId, int nState, LPQUEST lpReturnQuest )
 {
 	QUEST newQuest;
 	ZeroMemory( &newQuest, sizeof( QUEST ) );
@@ -2969,7 +2967,7 @@ BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 
 		lpQuest = &m_quests->current.emplace_back();
 
-		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( lpNewQuest->m_wId );
+		const QuestProp * pQuestProp = lpNewQuest->GetProp();
 		if( pQuestProp && pQuestProp->m_nEndCondLimitTime  )
 			lpNewQuest->m_wTime = pQuestProp->m_nEndCondLimitTime;
 #ifdef __WORLDSERVER
@@ -2987,7 +2985,7 @@ BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 		}
 
 		const auto itCurrent = std::ranges::find_if(m_quests->current,
-			MoverSub::Quests::QuestSearcherById(lpNewQuest->m_wId)
+			MoverSub::Quests::ById(lpNewQuest->m_wId)
 			);
 		if (itCurrent != m_quests->current.end()) {
 			m_quests->current.erase(itCurrent);
@@ -3008,7 +3006,7 @@ BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 		
 		lpQuest = nullptr;
 #if defined( __CLIENT )
-			g_QuestTreeInfoManager.DeleteTreeInformation( lpNewQuest->m_wId );
+			g_QuestTreeInfoManager.DeleteTreeInformation( lpNewQuest->m_wId.get() );
 			D3DXVECTOR3& rDestinationArrow = g_WndMng.m_pWndWorld->m_vDestinationArrow;
 			rDestinationArrow = D3DXVECTOR3( -1.0F, 0.0F, -1.0F );
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
