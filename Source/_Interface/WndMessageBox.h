@@ -11,9 +11,7 @@
 
 class CWndMessageBox : public CWndNeuz
 {
-	CWndButton m_wndButton1;
-	CWndButton m_wndButton2;
-	CWndButton m_wndButton3;
+	std::array<CWndButton, 3> m_wndButtons;
 
 protected:
 	CWndText   m_wndText   ;
@@ -37,14 +35,12 @@ public:
 class CWndMessageBoxUpper : public CWndNeuz
 {
 protected:
+	std::array<CWndButton, 3> m_wndButtons;
 	CWndText   m_wndText   ;
 	UINT       m_nType     ;
 	BOOL	   m_bPostLogoutMsg	= FALSE;
 
 public:
-	CWndButton m_wndButton1;
-	CWndButton m_wndButton2;
-	CWndButton m_wndButton3;
 	
 	BOOL Create(LPCTSTR lpszMessage,UINT nType,const RECT& rect,UINT nID, CWndBase* pWndParent = NULL );
 	

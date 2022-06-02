@@ -27,69 +27,76 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+static void SetupWindowsStyleDialog(
+	CWndBase * self, const UINT type,
+	std::array<CWndButton, 3> & buttons, CWndText & wndText
+) {
+	const int x = self->m_rectClient.Width() / 2;
+	const int y = self->m_rectClient.Height() - 30;
+	const CSize size = CSize(60, 25);
+
+	const CRect rect1_1(x - (size.cx / 2), y, (x - (size.cx / 2)) + size.cx, y + size.cy);
+
+	const CRect rect2_1(x - size.cx - 10, y, (x - size.cx - 10) + size.cx, y + size.cy);
+	const CRect rect2_2(x + 10, y, (x + 10) + size.cx, y + size.cy);
+
+	const CRect rect3_1(x - (size.cx / 2) - size.cx - 10, y, (x - (size.cx / 2) - size.cx - 10) + size.cx, y + size.cy);
+	const CRect rect3_2(x - (size.cx / 2), y, (x - (size.cx / 2)) + size.cx, y + size.cy);
+	const CRect rect3_3(x + (size.cx / 2) + 10, y, (x + (size.cx / 2) + 10) + size.cx, y + size.cy);
+
+	CRect rect = self->GetClientRect();
+	rect.DeflateRect(10, 10, 10, 35);
+	wndText.AddWndStyle(WBS_VSCROLL);
+	wndText.Create(WBS_NODRAWFRAME, rect, self, 0);
+
+	switch (type) {
+		case MB_ABORTRETRYIGNORE:
+			buttons[0].Create("ABORT", 0, rect3_1, self, IDABORT);
+			buttons[1].Create("RETRY", 0, rect3_1, self, IDRETRY);
+			buttons[2].Create("IGNORE", 0, rect3_1, self, IDIGNORE);
+			break;
+		case MB_OK:
+			buttons[0].Create("OK", 0, rect1_1, self, IDOK);
+			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtOk.tga"));
+			buttons[0].FitTextureSize();
+			break;
+		case MB_CANCEL:
+			buttons[0].Create("CANCEL", 0, rect1_1, self, IDCANCEL);
+			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtCancel.tga"));
+			buttons[0].FitTextureSize();
+			break;
+		case MB_OKCANCEL:
+			buttons[0].Create("OK", 0, rect2_1, self, IDOK);
+			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtOk.tga"));
+			buttons[0].FitTextureSize();
+			buttons[1].Create("CANCEL", 0, rect2_2, self, IDCANCEL);
+			buttons[1].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtCancel.tga"));
+			buttons[1].FitTextureSize();
+			break;
+		case MB_RETRYCANCEL:
+			buttons[0].Create("RETRY", 0, rect2_1, self, IDRETRY);
+			buttons[1].Create("CANCEL", 0, rect2_2, self, IDCANCEL);
+			break;
+		case MB_YESNO:
+			buttons[0].Create("YES", 0, rect2_1, self, IDYES);
+			buttons[1].Create("NO", 0, rect2_2, self, IDNO);
+			break;
+		case MB_YESNOCANCEL:
+			buttons[0].Create("YES", 0, rect3_1, self, IDYES);
+			buttons[1].Create("NO", 0, rect3_2, self, IDNO);
+			buttons[2].Create("CANCEL", 0, rect3_3, self, IDCANCEL);
+			break;
+	}
+	buttons[0].SetDefault(TRUE);
+}
+
+
 void CWndMessageBox::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
+	
+	SetupWindowsStyleDialog(this, m_nType, m_wndButtons, m_wndText);
 
-	CRect rect = GetClientRect();
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize(60,25);//m_pSprPack->GetAt(9)->GetSize();
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	rect.DeflateRect( 10, 10, 10, 35 );
-	m_wndText.AddWndStyle( WBS_VSCROLL );
-	//m_wndText.AddWndStyle( WBS_NOFRAME );
-	m_wndText.Create( WBS_NODRAWFRAME, rect, this, 0 );
-
-	switch(m_nType)
-	{
-		case MB_ABORTRETRYIGNORE:
-			m_wndButton1.Create( "중단"  , 0, rect3_1, this, IDABORT );
-			m_wndButton2.Create( "재시도", 0, rect3_1, this, IDRETRY );
-			m_wndButton3.Create( "무시"  , 0, rect3_1, this, IDIGNORE);
-			break;
-		case MB_OK:
-			m_wndButton1.Create("OK", 0, rect1_1, this, IDOK);
-			m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtOk.tga" ) );
-			m_wndButton1.FitTextureSize();
-			break;
-		case MB_CANCEL:
-			m_wndButton1.Create("CANCEL", 0, rect1_1, this, IDCANCEL);
-			m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtCancel.tga" ) );
-			m_wndButton1.FitTextureSize();
-			break;
-		case MB_OKCANCEL:
-			m_wndButton1.Create("OK"    , 0, rect2_1, this, IDOK    );
-			m_wndButton2.Create("CANCEL", 0, rect2_2, this, IDCANCEL);
-			m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtOk.tga" ) );
-			m_wndButton2.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtCancel.tga" ) );
-			m_wndButton1.FitTextureSize();
-			m_wndButton2.FitTextureSize();
-			break;
-		case MB_RETRYCANCEL:
-			m_wndButton1.Create("재시도", 0, rect2_1, this, IDRETRY );
-			m_wndButton2.Create("CANCEL", 0, rect2_2, this, IDCANCEL);
-			break;
-		case MB_YESNO:
-			m_wndButton1.Create("예"    ,0, rect2_1,this,IDYES);
-			m_wndButton2.Create("아니오",0, rect2_2,this,IDNO );
-			break;
-		case MB_YESNOCANCEL:
-			m_wndButton1.Create("예"    ,0, rect3_1,this,IDYES);//   ,m_pSprPack,9);
-			m_wndButton2.Create("아니오",0, rect3_2,this,IDNO);//    ,m_pSprPack,9);
-			m_wndButton3.Create("CANCEL",0, rect3_3,this,IDCANCEL);//,m_pSprPack,9);
-			break;
-	}
-	m_wndButton1.SetDefault( TRUE );
 	MoveParentCenter();
 }
 void CWndMessageBox::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -170,65 +177,7 @@ void CWndMessageBoxUpper::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
 
-	CRect rect = GetClientRect();
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize(60,25);//m_pSprPack->GetAt(9)->GetSize();
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	rect.DeflateRect( 10, 10, 10, 35 );
-	m_wndText.AddWndStyle( WBS_VSCROLL );
-	//m_wndText.AddWndStyle( WBS_NOFRAME );
-	m_wndText.Create( WBS_NODRAWFRAME, rect, this, 0 );
-
-	switch(m_nType)
-	{
-		case MB_ABORTRETRYIGNORE:
-			m_wndButton1.Create( "중단"  , 0, rect3_1, this, IDABORT );
-			m_wndButton2.Create( "재시도", 0, rect3_1, this, IDRETRY );
-			m_wndButton3.Create( "무시"  , 0, rect3_1, this, IDIGNORE);
-			break;
-		case MB_OK:
-			m_wndButton1.Create("OK", 0, rect1_1, this, IDOK);
-			m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtOk.tga" ) );
-			m_wndButton1.FitTextureSize();
-			break;
-		case MB_CANCEL:
-			m_wndButton1.Create("CANCEL", 0, rect1_1, this, IDCANCEL);
-			m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtCancel.tga" ) );
-			m_wndButton1.FitTextureSize();
-			break;
-		case MB_OKCANCEL:
-			m_wndButton1.Create("OK"    , 0, rect2_1, this, IDOK    );
-			m_wndButton2.Create("CANCEL", 0, rect2_2, this, IDCANCEL);
-			m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtOk.tga" ) );
-			m_wndButton2.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtCancel.tga" ) );
-			m_wndButton1.FitTextureSize();
-			m_wndButton2.FitTextureSize();
-			break;
-		case MB_RETRYCANCEL:
-			m_wndButton1.Create("재시도", 0, rect2_1, this, IDRETRY );
-			m_wndButton2.Create("CANCEL", 0, rect2_2, this, IDCANCEL);
-			break;
-		case MB_YESNO:
-			m_wndButton1.Create("예"    ,0, rect2_1,this,IDYES);
-			m_wndButton2.Create("아니오",0, rect2_2,this,IDNO );
-			break;
-		case MB_YESNOCANCEL:
-			m_wndButton1.Create("예"    ,0, rect3_1,this,IDYES);//   ,m_pSprPack,9);
-			m_wndButton2.Create("아니오",0, rect3_2,this,IDNO);//    ,m_pSprPack,9);
-			m_wndButton3.Create("CANCEL",0, rect3_3,this,IDCANCEL);//,m_pSprPack,9);
-			break;
-	}
-	m_wndButton1.SetDefault( TRUE );
+	SetupWindowsStyleDialog(this, m_nType, m_wndButtons, m_wndText);
 
 	// 게이지 위쪽으로 나오게 하기
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
