@@ -7,8 +7,6 @@
 #define _HAS_STD_BYTE 0
 
 #pragma warning(disable:4786)
-#pragma comment(linker, "/subsystem:Windows,5")
-#pragma comment(linker, "/version:5")
 
 #include <afxwin.h>
 

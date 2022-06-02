@@ -719,8 +719,6 @@ SAFE_DELETE(m_pWndChangePetName);
 	SAFE_DELETE( m_pWndStateConfirm );
 	CString strTemp;
 	
-	CWndBase* pWndBaseTemp;
-
 	m_mapMessage.clear();
 	m_mapInstantMsg.clear();
 	m_mapMap.clear();

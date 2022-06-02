@@ -305,10 +305,10 @@ void CDPClient::OnSnapshot( CAr & ar )
 {
 	std::set<WORD> glitchedSnapshotsId;
 
-	OBJID objid, objidPlayer;
+	OBJID objidPlayer;
 	short cb;
 //	BYTE hdr, prev	= 0x00;
-	WORD	hdr, prev	= 0x0000;
+	WORD	prev	= 0x0000;
 
 	ar >> objidPlayer >> cb;
 	while( cb-- )

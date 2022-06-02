@@ -26,7 +26,7 @@ CTaskbar::CTaskbar() {
 }
 
 
-bool CTaskbar::CanAddShortcut(ShortcutType type, const SHORTCUT & const atPlace) {
+bool CTaskbar::CanAddShortcut(ShortcutType type, const SHORTCUT & atPlace) {
 	if (type != ShortcutType::Chat) return true;
 	if (atPlace.m_dwShortcut == ShortcutType::Chat) return true;
 	return CountNumberOfChats() <= 9;

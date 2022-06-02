@@ -3743,7 +3743,7 @@ void CWndListCtrl::PaintFrame( C2DRender* p2DRender )
 
 	//if( IsWndStyle( WLVS_REPORT ) )
 	{
-		int i, x = NULL;
+		int x = 0;
 		for(int i = 0 ; i < m_aColumns.GetSize(); i++ )
 		{
 			LVCOLUMN* pColumn = (LVCOLUMN*)m_aColumns.GetAt( i );
@@ -3755,6 +3755,7 @@ void CWndListCtrl::PaintFrame( C2DRender* p2DRender )
 				D3DCOLOR_ARGB( 50, 000, 000, 000 ), 20 );
 			x += pColumn->cx + 6;
 		}
+
 		const auto gradRect = CRect(x, 0, rect.Width(), 20);
 		m_pTheme->GradationRect( p2DRender, &gradRect,
 			D3DCOLOR_ARGB( 50, 100, 100, 100 ),
