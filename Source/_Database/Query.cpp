@@ -504,7 +504,7 @@ void CQuery::GetStr(const char *sCol, char *buf)
 }
 
 const char * CQuery::GetStrPtr(int nCol) const {
-	if (nCol < 0 || nCol >= this->nCol) return nullptr;
+	if (nCol <= 0 || nCol > this->nCol) return nullptr;
 	return Col[nCol - 1];
 }
 
