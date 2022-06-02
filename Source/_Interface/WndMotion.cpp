@@ -128,32 +128,8 @@ BOOL CWndMotion1::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
 	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 }
-BOOL CWndMotion1::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
-{ 
-	return CWndBase::OnChildNotify( message, nID, pLResult );
-}
-BOOL CWndMotion1::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndBase::OnCommand(nID,dwMessage,pWndBase);
-}
 void CWndMotion1::OnSize(UINT nType, int cx, int cy)
 {
-	/*
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25);
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	CWndBase::OnSize(nType,cx,cy);
-	*/
 }
 void CWndMotion1::OnLButtonUp(UINT nFlags, CPoint point)
 {

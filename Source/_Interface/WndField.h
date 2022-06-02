@@ -164,8 +164,6 @@ public:
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);
@@ -239,8 +237,6 @@ public:
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
-	// message
-	virtual void OnSize(UINT nType, int cx, int cy);
 };
 
 class CWndCharacterDetail : public CWndBase
@@ -261,7 +257,6 @@ public:
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual void OnMouseWndSurface( CPoint point );
 
 protected:
@@ -301,7 +296,6 @@ public:
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL Process ();
 	
 	void RefreshStatPoint();
@@ -333,11 +327,7 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 class CWndChangeJob : public CWndNeuz
@@ -433,8 +423,6 @@ public:
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
-	// message
-	virtual void OnSize(UINT nType, int cx, int cy);
 };
 
 
@@ -516,7 +504,6 @@ public:
 
 	void AfterSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
 	void SetJob( int nJob );
-	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL Process ();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
@@ -759,7 +746,6 @@ public:
 	void OnInitialUpdate() override;
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
-	void OnSize(UINT nType, int cx, int cy) override;
 
 
 	void DoCancel();

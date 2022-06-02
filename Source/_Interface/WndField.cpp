@@ -2347,62 +2347,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndInventory::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	/*
-	switch(nID)
-	{
-		case 0: // wnd1 
-			g_WndMng.OpenWnd1();
-			break;
-		case 1: // wnd2
-			g_WndMng.OpenCharacter();
-			break;
-		case 2: // ê 
-			g_WndMng.OpenChat();
-			break;
-		case 3:
-			g_clientMsg.PutMessage(&g_Neuz.m_2DRender,0xffffffff,"fuck");
-			break;
-		case 9:
-			g_WndMng.OpenCustomBox("�����Ͻðڽ��ϱ�?",new CWndExitBox);
-			break;
-	}
-	*/
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
-void CWndInventory::OnSize(UINT nType, int cx, int cy)
-{
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 50;
-	CSize size = CSize(70,25);//m_pSprPack->GetAt(9)->GetSize();
 
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	//m_wndButton1.SetWndRect( rect3_1 );
-	//m_wndButton2.SetWndRect( rect3_2 );
-	//m_wndButton3.SetWndRect( rect3_3 );
-
-	CRect rect = GetClientRect();
-	rect.DeflateRect( 5, 5 );
-	rect.top    += 187;//203;
-	rect.bottom -= 20;
-	//rect.bottom -= 2;//40;
-	//m_wndListCtrl.SetWndRect( rect );
-//	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*) GetDlgItem( WIDC_INVENTORY );
-
-	//rect.bottom += 20;
-//	pTabCtrl->SetWndRect( rect );
-
-	CWndNeuz::OnSize(nType,cx,cy);
-}
 void CWndInventory::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	m_bLButtonDownRot = FALSE;
@@ -3108,24 +3053,7 @@ void CWndCharInfo::OnInitialUpdate()
 	
 	CWndBase::OnInitialUpdate();
 	SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndNewCharacter01.tga" ) ), TRUE );
-	//FitTextureSize();
-/*
-	//SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndCharacter2_2.tga" ) ), TRUE );
-	//FitTextureSize();
-	
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25);
-	
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-	
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-	
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-*/
+
 	// �Ʒ����� �ɷ�ġ ���� 
 	int nyAdd = 121;
 	int posY = 49 + nyAdd;
@@ -3798,33 +3726,9 @@ void CWndCharacter::OnInitialUpdate()
 }
 BOOL CWndCharacter::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	//CRect rect( 240, 0, 240 + 260, 255 - 105 + 20 ); 
-	CRect rect( 0, 90, WND_WIDTH, 260 );//255 - 105 + 20 ); 
-	//CRect rect( 50, 50, 50+210, 50+300 );
-	//SetTitle( GETTEXT( TID_APP_CHARACTER )  );
-	//return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint(0, 0) );
 }
 
-
-void CWndCharacter::OnSize(UINT nType, int cx, int cy)
-{
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25 );
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	CWndNeuz::OnSize(nType,cx,cy);
-}
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -4077,28 +3981,8 @@ void CWndCharacterBase::OnInitialUpdate()
 
 BOOL CWndCharacterBase::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
 	CRect rect( 240, 0, 240 + 330, 255 - 135 );
-	//SetTitle( GETTEXT( TID_APP_CHARACTER )  );
 	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
-}
-
-void CWndCharacterBase::OnSize(UINT nType, int cx, int cy)
-{
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25);
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	CWndBase::OnSize(nType,cx,cy);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -4369,19 +4253,7 @@ void CWndCharacterDetail::OnInitialUpdate()
 	SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "wndCharacter2.tga" ) ), TRUE );
 	FitTextureSize();
 
-	int x = m_rectClient.Width() / 2;
 	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25);
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
 
 	// �Ʒ����� �ɷ�ġ ���� 
 #ifdef _KWCSC_UPDATE
@@ -4424,24 +4296,6 @@ BOOL CWndCharacterDetail::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		}
 	}
 	return CWndBase::OnChildNotify( message, nID, pLResult );
-}
-
-void CWndCharacterDetail::OnSize(UINT nType, int cx, int cy)
-{
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25 );
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	CWndBase::OnSize(nType,cx,cy);
 }
 
 void CWndCharacterDetail::OnMouseWndSurface( CPoint point )
@@ -4765,19 +4619,6 @@ void CWndCharacterDetail2::OnInitialUpdate()
 
 	SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndCharacter2_2.tga" ) ), TRUE );
 	FitTextureSize();
-	
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25);
-	
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-	
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-	
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
 
 	// �Ʒ����� �ɷ�ġ ���� 
 	int posY = 49;
@@ -5210,24 +5051,6 @@ BOOL CWndCharacterDetail2::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult
 		}
 	}
 	return CWndBase::OnChildNotify( message, nID, pLResult );
-}
-
-void CWndCharacterDetail2::OnSize(UINT nType, int cx, int cy)
-{
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize( 70, 25 );
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	CWndBase::OnSize(nType,cx,cy);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5738,36 +5561,6 @@ LPSKILL CWndSkillTreeEx::GetSkill( int i )
 	
 	DWORD dwReqDislLV = pSkill->GetProp()->dwReqDisLV;
 	return pSkill;
-}
-void CWndSkillTreeEx::OnSize(UINT nType, int cx, int cy)
-{
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 50;
-	CSize size = CSize(70,25);//m_pSprPack->GetAt(9)->GetSize();
-	
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-	
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-	
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-	
-	CRect rect = GetClientRect();
-	rect.DeflateRect( 4, 4 );
-	//rect.top += 40;
-	//m_wndListCtrl.SetWndRect( rect );
-	//	CWndTabCtrl* lpTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	
-	//rect.bottom += 20;
-	//	lpTabCtrl->SetWndRect( rect );
-	
-	//for( int i = 0; i < 2; i++ )
-	//{
-	//	m_wndSkillCtrl[ i ].SetWndRect( rect );
-	//}
-	CWndNeuz::OnSize(nType,cx,cy);
 }
 
 BOOL CWndSkillTreeEx::CheckSkill( int i )
@@ -8097,24 +7890,6 @@ void CWndTrade::DoCancel()
 	g_pPlayer->m_vtInfo.TradeClear();
 	
 	Destroy();
-}
-
-void CWndTrade::OnSize(UINT nType, int cx, int cy)
-{
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize(70,25);
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
-
-	CWndNeuz::OnSize(nType,cx,cy);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

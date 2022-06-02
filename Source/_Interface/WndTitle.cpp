@@ -576,16 +576,6 @@ void CWndSelectServer::OnInitialUpdate()
 
 	int x = m_rectClient.Width() / 2;
 	int y = m_rectClient.Height() - 30;
-	CSize size = CSize(70,25);//m_pSprPack->GetAt(9)->GetSize();
-
-	CRect rect1_1( x - ( size.cx / 2), y, ( x - ( size.cx / 2 ) ) + size.cx, y + size.cy );
-
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-
-	CRect rect3_1( x - ( size.cx / 2) - size.cx - 10, y, (x - ( size.cx / 2) - size.cx - 10) + size.cx, y + size.cy );
-	CRect rect3_2( x - ( size.cx / 2)               , y, (x - ( size.cx / 2)               ) + size.cx, y + size.cy );
-	CRect rect3_3( x + ( size.cx / 2) + 10          , y, (x + ( size.cx / 2) + 10          ) + size.cx, y + size.cy );
 
 	TCHAR szTitle[3][10] = {_T("Server"), _T("Ping"), _T("Max") };
 	
