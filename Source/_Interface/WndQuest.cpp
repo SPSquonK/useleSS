@@ -509,9 +509,9 @@ void CWndQuest::InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQu
 	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuestID );
  	if( pQuestProp == NULL )
 		return;
-	if( pQuestProp->m_nHeadQuest > 0 )
+	if( pQuestProp->m_nHeadQuest != QuestIdNone )
 	{
-		DWORD dwNowHeadQuestID = pQuestProp->m_nHeadQuest;
+		DWORD dwNowHeadQuestID = pQuestProp->m_nHeadQuest.get();
 		CString strQuestTitle = pQuestProp->m_szTitle;
 		if( dwNowHeadQuestID > 0 )
 		{
@@ -550,7 +550,7 @@ void CWndQuest::InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQu
 			{
 				strFullQuestTitle = strQuestTitle;
 				LPTREEELEM pFolderTreeElem = pQuestTreeCtrl->InsertItem( lpTreeElem, strFullQuestTitle, dwQuestID );
-				if( nNewQuestId != -1 && prj.m_aPropQuest.GetAt( nNewQuestId )->m_nHeadQuest == dwQuestID )
+				if( nNewQuestId != -1 && prj.m_aPropQuest.GetAt( nNewQuestId )->m_nHeadQuest == QuestId(dwQuestID) )
 				{
 					pFolderTreeElem->m_bOpen = TRUE;
 					m_aOpenTree.Add( (WORD)( dwQuestID ) );
@@ -1403,7 +1403,7 @@ DWORD MakeTextColor( DWORD dwStartColor, DWORD dwEndColor, int nCurrentNumber, i
 DWORD GetRootHeadQuest( DWORD dwHeadQuest )
 {
 	QuestProp* pHeadQuestProp = prj.m_aPropQuest.GetAt( dwHeadQuest );
-	return ( pHeadQuestProp->m_nHeadQuest > 0 ) ? GetRootHeadQuest( pHeadQuestProp->m_nHeadQuest ) : dwHeadQuest;
+	return ( pHeadQuestProp->m_nHeadQuest != QuestIdNone ) ? GetRootHeadQuest( pHeadQuestProp->m_nHeadQuest.get() ) : dwHeadQuest;
 }
 //-----------------------------------------------------------------------------
 DWORD SetQuestDestinationInformation( DWORD dwQuestID, DWORD dwGoalIndex )

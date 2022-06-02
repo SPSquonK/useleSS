@@ -1246,7 +1246,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 	TCHAR szLinkChar[ 10 ][ 64 ];
 	int szLinkCharNum;
 	int szEndCondCharNum;
-	int nQuest = script.GetNumber();  // id
+	QuestId nQuest = QuestId(script.GetNumber());  // id
 	static DWORD dwGoalIndex = 0;
 
 	while( script.tok != FINISHED )
@@ -1470,7 +1470,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				int nCnt = 0;
 				do
 				{
-					propQuest.m_anBeginCondPreviousQuest[ nCnt++ ] = script.GetNumber();
+					propQuest.m_anBeginCondPreviousQuest[ nCnt++ ] = QuestId(script.GetNumber());
 					script.GetToken(); // , or )
 				} while( *script.token != ')' && nCnt < 6 );
 			}
@@ -1481,7 +1481,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				int nCnt = 0;
 				do
 				{
-					propQuest.m_anBeginCondExclusiveQuest[ nCnt++ ] = script.GetNumber();
+					propQuest.m_anBeginCondExclusiveQuest[ nCnt++ ] = QuestId(script.GetNumber());
 					script.GetToken(); // , or )
 				} while( *script.token != ')' && nCnt < 6 );
 			}
@@ -2047,7 +2047,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				QUESTITEM qi;
 				script.GetToken();	// (
 				DWORD dwMoverIdx = script.GetNumber();
-				qi.dwQuest	= nQuest;//script.GetNumber();
+				qi.dwQuest	= nQuest.get();
 				qi.dwState	= 0;//script.GetNumber();
 				script.GetToken();	// ,
 				qi.dwIndex	= script.GetNumber();
@@ -2103,41 +2103,31 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 			if( script.Token == "SetHeadQuest" )
 			{
 				script.GetToken(); // (
-				propQuest.m_nHeadQuest = script.GetNumber();
-				if( propQuest.m_nHeadQuest >= 1800 && propQuest.m_nHeadQuest <= 1999 )
-				{
-					switch( propQuest.m_nHeadQuest )
-					{
-					case 1992:
-						{
-							propQuest.m_nHeadQuest = QUEST_KIND_EVENT;
-							break;
+
+				static constexpr auto ComputeHeadQuest = [](const int headQuest) -> QuestId {
+					if (headQuest >= 1800 && headQuest <= 1999) {
+						switch (headQuest) {
+							case 1992:
+								return QuestId(QUEST_KIND_EVENT);
+							case 1993:
+							case 1994:
+							case 1995:
+							case 1997:
+							case 1998:
+								return QuestId(QUEST_KIND_NORMAL);
+							case 1996:
+								return QuestId(QUEST_KIND_SCENARIO);
+							case 1999:
+								return QuestId(QUEST_KIND_REQUEST);
+							default:
+								return QuestId(QUEST_KIND_SCENARIO);
 						}
-					case 1993:
-					case 1994:
-					case 1995:
-					case 1997:
-					case 1998:
-						{
-							propQuest.m_nHeadQuest = QUEST_KIND_NORMAL;
-							break;
-						}
-					case 1996:
-						{
-							propQuest.m_nHeadQuest = QUEST_KIND_SCENARIO;
-							break;
-						}
-					case 1999:
-						{
-							propQuest.m_nHeadQuest = QUEST_KIND_REQUEST;
-							break;
-						}
-					default:
-						{
-							propQuest.m_nHeadQuest = QUEST_KIND_SCENARIO;
-						}
+					} else {
+						return QuestId(headQuest);
 					}
-				}
+				};
+
+				propQuest.m_nHeadQuest = ComputeHeadQuest(script.GetNumber());
 			}
 			else
 			if( script.Token == "SetQuestType" )
@@ -2173,7 +2163,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 						QUESTITEM qi;
 						script.GetToken();	// (
 						DWORD dwMoverIdx = script.GetNumber();
-						qi.dwQuest	= nQuest;//script.GetNumber();
+						qi.dwQuest	= nQuest.get();//script.GetNumber();
 						qi.dwState	= nState;//script.GetNumber();
 						script.GetToken();	// ,
 						qi.dwIndex	= script.GetNumber();
@@ -2275,14 +2265,14 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 
 		BOOL bAdd	= TRUE;
 		// ���� ���� �� ����Ʈ�� �븸�� ����	// ����Ʈ ����
-		if( //::GetLanguage() != LANG_TWN && 
-			nQuest == QUEST_KAWIBAWIBO01 )
+		if( nQuest == QuestId(QUEST_KAWIBAWIBO01) )
 			bAdd	= FALSE;
 		if( bAdd )
-			m_aPropQuest.SetAtGrow( nQuest, &propQuest );
+			m_aPropQuest.SetAtGrow( nQuest.get(), &propQuest);
 
-		nQuest = script.GetNumber();  // id
+		nQuest = QuestId(script.GetNumber());  // id
 	}
+
 	if( bOptimize )
 		m_aPropQuest.Optimize();
 

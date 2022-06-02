@@ -94,18 +94,18 @@ struct QuestPropItem
 
 struct QuestProp
 {
-	WORD	m_wId;
+	QuestId	m_wId;
 	TCHAR	m_szTitle[ 64 ];
 	TCHAR	m_szNpcName[ 32 ];
-	WORD	m_nHeadQuest;
+	QuestId	m_nHeadQuest;
 	CHAR	m_nQuestType;
 	bool	m_bNoRemove; // TRUE일 경우 삭제 불가 
 
 	// 시작 - 조건 
 	int		m_nParam[ 4 ];
 	char    m_nBeginCondPreviousQuestType;
-	WORD	m_anBeginCondPreviousQuest[ 6 ];
-	WORD	m_anBeginCondExclusiveQuest[ 6 ];
+	QuestId	m_anBeginCondPreviousQuest[ 6 ];
+	QuestId	m_anBeginCondExclusiveQuest[ 6 ];
 	char	m_nBeginCondJob[ MAX_JOB ];
 	char	m_nBeginCondJobNum;
 	BYTE	m_nBeginCondLevelMax;

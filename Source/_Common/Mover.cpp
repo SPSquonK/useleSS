@@ -8153,12 +8153,12 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 		// 이전 퀘스트 1,2,3,4,5,6
 		for( int i = 0; i < 6; i++ )
 		{
-			if( pQuestProp->m_anBeginCondPreviousQuest[ i ] == 0 ) 
+			if( pQuestProp->m_anBeginCondPreviousQuest[ i ] == QuestIdNone ) 
 				nResult++;
 			else
 			{
-				LPQUEST pPreQuest = pMover->GetQuest( QuestId(pQuestProp->m_anBeginCondPreviousQuest[ i ]) );
-				BOOL bPreComplete = pMover->IsCompleteQuest( QuestId(pQuestProp->m_anBeginCondPreviousQuest[ i ]) );
+				LPQUEST pPreQuest = pMover->GetQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
+				BOOL bPreComplete = pMover->IsCompleteQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
 				if( pQuestProp->m_nBeginCondPreviousQuestType == 0 )
 				{
 					if( pPreQuest || bPreComplete )
@@ -8181,12 +8181,12 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 		// 이전 퀘스트 7,8,9,10,11,12
 		for( int i = 0; i < 6; i++ )
 		{
-			if( pQuestProp->m_anBeginCondExclusiveQuest[ i ] == 0 ) 
+			if( pQuestProp->m_anBeginCondExclusiveQuest[ i ] == QuestIdNone)
 				nResult++;
 			else
 			{
-				LPQUEST pPreQuest = pMover->GetQuest( QuestId(pQuestProp->m_anBeginCondExclusiveQuest[ i ]) );
-				BOOL bPreComplete = pMover->IsCompleteQuest( QuestId(pQuestProp->m_anBeginCondPreviousQuest[ i ]) );
+				LPQUEST pPreQuest = pMover->GetQuest( pQuestProp->m_anBeginCondExclusiveQuest[ i ] );
+				BOOL bPreComplete = pMover->IsCompleteQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
 				if( pPreQuest == NULL && bPreComplete == FALSE )
 					nResult++;
 			}
@@ -8468,7 +8468,7 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 		// 이전 퀘스트 1,2,3,4,5,6
 		for( int i = 0; i < 6; i++ )
 		{
-			if( pQuestProp->m_anBeginCondPreviousQuest[ i ] == 0 ) 
+			if( pQuestProp->m_anBeginCondPreviousQuest[ i ] == QuestIdNone ) 
 				nResult++;
 			else
 			{
@@ -8496,7 +8496,7 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 		// 이전 퀘스트 7,8,9,10,11,12
 		for( int i = 0; i < 6; i++ )
 		{
-			if( pQuestProp->m_anBeginCondExclusiveQuest[ i ] == 0 ) 
+			if( pQuestProp->m_anBeginCondExclusiveQuest[ i ] == QuestIdNone ) 
 				nResult++;
 			else
 			{
