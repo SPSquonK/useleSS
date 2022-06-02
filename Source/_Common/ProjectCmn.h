@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <exception>
+#include "FlyFFTypes.h"
 
 #define	MAX_OBJARRAY			8
 #define	MAX_QUICKSLOT			21
@@ -329,7 +330,7 @@ struct ItemProp : CtrlProp
 	int		nReflect;			// 리플렉션 옵션.
 	DWORD	dwSndAttack1;		// 효과음 : 공격 1
 	DWORD	dwSndAttack2;		// 효과음 : 공격 2
-	DWORD	dwQuestId;
+	QuestId	dwQuestId;
 	TCHAR	szTextFileName[64];	// item에 GM command에 넣는 것에 사용
 
 #ifdef __CLIENT

@@ -467,7 +467,7 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 		scanner.GetToken();
 
 		// dwQuestId
-		prop.dwQuestId	= scanner.GetNumber(  );
+		prop.dwQuestId	= QuestId(scanner.GetNumber(  ));
 
 		// szTextFileName 
 		scanner.GetToken();

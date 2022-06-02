@@ -30,27 +30,24 @@ void CWndTextFromItem::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 	// 여기에 코딩하세요
 
-	CWndButton * pWndAccept = (CWndButton *)GetDlgItem(WIDC_ACCEPT);
-	CWndText * pWndText = (CWndText *)GetDlgItem(WIDC_TEXT1);
-	ItemProp * pItemProp = m_pItemBase->GetProp();
+	const ItemProp * const pItemProp = m_pItemBase->GetProp();
 
-	if (pItemProp->dwQuestId == 0 || m_pItemBase->m_bItemResist == TRUE)
+	if (pItemProp->dwQuestId == QuestIdNone || m_pItemBase->m_bItemResist == TRUE) {
+		CWndButton * pWndAccept = GetDlgItem<CWndButton>(WIDC_ACCEPT);
 		pWndAccept->EnableWindow(FALSE);
+	}
 
 	CFileIO file;
 	if (file.Open(MakePath(DIR_TEXT, pItemProp->szTextFileName), "rb")) {
-		CHAR * pText = new CHAR[file.GetLength() + 1];
-		file.Read(pText, file.GetLength());
+		std::unique_ptr<CHAR[]> pText = std::make_unique<CHAR[]>(file.GetLength() + 1);
+		file.Read(pText.get(), file.GetLength());
 		pText[file.GetLength()] = 0;
-		pWndText->SetString(pText);
-		safe_delete(pText);
+
+		CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT1);
+		pWndText->SetString(pText.get());
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point(rectRoot.right - rectWindow.Width(), 110);
-	Move(point);
 	MoveParentCenter();
 }
 
