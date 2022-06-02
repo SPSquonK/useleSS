@@ -1,7 +1,6 @@
 #pragma once
 
 DECLARE_WNDMESSAGEBOX( CWndConnectingBox ) 
-DECLARE_WNDMESSAGEBOX( CWndDisconnectedBox ) 
 DECLARE_WNDMESSAGEBOX( CWndCharBlockBox )
 DECLARE_WNDMESSAGEBOX( CWndAllCharBlockBox )
 
@@ -34,16 +33,11 @@ public:
 
 	CWndLogin();
 	virtual ~CWndLogin();
-	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwStyle = 0);
 	virtual BOOL Process ();
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 
 #ifdef __CON_AUTO_LOGIN
 	void SetAccountAndPassword( const CString& account, const CString& pass );

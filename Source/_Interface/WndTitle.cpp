@@ -50,10 +50,7 @@ BOOL GetIePath( LPSTR lpPath )
 BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
 {
 	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
-/*
-	Create( _T( "매시지 박스" ), MB_CANCEL, rect, APP_MESSAGEBOX );
-	m_wndText.SetString( _T( "접속중입니다. 잠시만 기다려 주십시오." ) );
-*/
+
 	Create( _T( prj.GetText(TID_DIAG_0068) ), /*MB_CANCEL*/0xFFFFFFFF, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0064) ) );
 	
@@ -68,10 +65,7 @@ BOOL CWndConnectingBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
 {
 	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
-/*
-	Create( _T( "매시지 박스" ), MB_CANCEL, rect, APP_MESSAGEBOX );
-	m_wndText.SetString( _T( "사용할수 없는 캐릭터 입니다" ) );
-*/
+
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0073) ) );
 
@@ -80,24 +74,12 @@ BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  )
 }
 BOOL CWndCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
-	if( message == WNM_CLICKED  )
-	{
-		switch(nID)
-		{
-		case IDCANCEL:   
-			//Destroy(); 
-			break;
-		}
-	}
 	return CWndMessageBox::OnChildNotify( message, nID, pLResult );
 }
 BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
 {
     CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
-/*
-	Create( _T( "매시지 박스" ), MB_CANCEL, rect, APP_MESSAGEBOX );
-	m_wndText.SetString( _T( "접속할수 없는 계정입니다" ) );
-*/
+
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0074) ) );
 
@@ -113,17 +95,10 @@ BOOL CWndAllCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 		case IDCANCEL:   
 			{
 				g_dpLoginClient.DeleteDPObject();
-				CWndSelectChar* pWndSelectChar 
-					= (CWndSelectChar*)g_WndMng.GetWndBase( APP_SELECT_CHAR );
-				if( pWndSelectChar )
-				{
-					pWndSelectChar->Destroy();
-				}
+				Windows::DestroyIfOpened(APP_SELECT_CHAR);
 				g_dpCertified.SendCertify();
-				g_WndMng.OpenApplet( APP_LOGIN );
-				CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_LOGIN );
+				g_WndMng.OpenApplet(APP_LOGIN);
 			}
-			//Destroy(); 
 			break;
 		}
 	}
@@ -217,38 +192,6 @@ CWndLogin::~CWndLogin()
 	if( m_hKCrypt > 0 )
 		NPKCloseDriver( m_hKCrypt );
 #endif	// __NPKCRYPT
-}
-void CWndLogin::OnDraw( C2DRender* p2DRender )
-{
-	//CRect rect = GetClientRect();
-	//CSize size = m_pTheme->m_pFontGameTitle->GetTextExtent( _T( "CLOCKWORKS" ) );
-	//p2DRender->m_pFont = m_pTheme->m_pFontGameTitle;
-	//p2DRender->TextOut( rect.Width() / 2 - size.cx / 2,20, "CLOCKWORKS", 0xffffffff );
-
-	//p2DRender->RenderTexture( CPoint( 120, 0 ), &m_Texture );
-
-	//size = m_pTheme->m_pFontText->GetTextExtent( _T( "Copyright (C) 2002~2003 Allrights Reserved AEONSOFT Inc." ) );
-	//p2DRender->m_pFont = m_pTheme->m_pFontText;
-	//p2DRender->TextOut( rect.Width() / 2 - size.cx / 2, rect.top + 120,"Copyright (C) 2002~2003 Allrights Reserved AEONSOFT Inc.", 0xffffffff  );
-	//p2DRender->RenderLine( CPoint( 5, 140 ), CPoint( rect.right - 5, 140 ), 0x70ffffff);
-
-	//p2DRender->TextOut( 105, 160, _T( "Account" ) );
-	//p2DRender->TextOut( 105, 185, _T( "Password" ) );
-
-
-	//p2DRender->RenderRoundRect(CRect(4,     4,128*2+6,       96+6),D3DCOLOR_TEMP(255,150,150,250));
-/*
-	CRect rect = CRect( 4, 96 + 6 + 4, 128 * 2 + 6, 96 + 6 + 4 + 96 + 6 );
-	p2DRender->RenderRoundRect( rect, D3DCOLOR_TEMP( 255, 150, 150, 250 ) );
-	rect.DeflateRect( 1, 1 );
-	p2DRender->RenderFillRect( rect, D3DCOLOR_TEMP( 255, 200, 200, 240 ) );
-
-	CRect rect = CRect( 4, 96 + 6 + 4, 128 * 2 + 6, 96 + 6 + 4 + 96 + 6 );
-	p2DRender->RenderRoundRect( rect, D3DCOLOR_TEMP( 255, 150, 150, 250 ) );
-	rect.DeflateRect( 1, 1 );
-	p2DRender->RenderFillRect( rect, D3DCOLOR_TEMP( 255, 200, 200, 240 ) );
-*/
-	//p2DRender->TextOut(10,60,"aaaa",D3DCOLOR_TEMP(255,100,100,200));
 }
 
 BOOL CWndLogin::Process()
@@ -570,25 +513,6 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			break;
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-BOOL CWndLogin::OnCommand(UINT nID,DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase );
-}
-void CWndLogin::OnSize(UINT nType, int cx, int cy)
-{
-	CWndNeuz::OnSize(nType,cx,cy);
-}
-void CWndLogin::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
-}
-
-void CWndLogin::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if(IsWndRoot())
-		return;
 }
 
 #ifdef __CON_AUTO_LOGIN

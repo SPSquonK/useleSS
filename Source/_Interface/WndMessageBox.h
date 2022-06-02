@@ -20,15 +20,10 @@ protected:
 	UINT       m_nType     ;
 
 public:
-	CWndMessageBox();
-	virtual ~CWndMessageBox();
-
 	BOOL Create(LPCTSTR lpszMessage,UINT nType,const RECT& rect,UINT nID, CWndBase* pWndParent = NULL );
 	virtual void OnEnter( UINT nChar );
-	BOOL IsDisable();
 
 	
-	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
@@ -44,19 +39,15 @@ class CWndMessageBoxUpper : public CWndNeuz
 protected:
 	CWndText   m_wndText   ;
 	UINT       m_nType     ;
-	BOOL	   m_bPostLogoutMsg	;
+	BOOL	   m_bPostLogoutMsg	= FALSE;
 
 public:
 	CWndButton m_wndButton1;
 	CWndButton m_wndButton2;
 	CWndButton m_wndButton3;
-
-	CWndMessageBoxUpper();
-	~CWndMessageBoxUpper();
 	
 	BOOL Create(LPCTSTR lpszMessage,UINT nType,const RECT& rect,UINT nID, CWndBase* pWndParent = NULL );
 	
-	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
 	virtual BOOL Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType = MB_OK, BOOL bPostLogoutMsg = FALSE );
@@ -69,7 +60,6 @@ public:
 #define DECLARE_WNDMESSAGEBOX( class_name ) \
 	class class_name : public CWndMessageBox \
 	{ \
-		public: class_name() { } ~class_name() { } \
 		virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); \
 		BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult); \
 	}; 

@@ -27,15 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndMessageBox::CWndMessageBox()
-{
-}
-CWndMessageBox::~CWndMessageBox()
-{
-}
-void CWndMessageBox::OnDraw( C2DRender* p2DRender )
-{
-}
 void CWndMessageBox::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
@@ -162,32 +153,19 @@ BOOL CWndMessageBox::Create( LPCTSTR lpszMessage, UINT nType, const RECT& rect, 
 	return 1;
 }
 
-void CWndMessageBox::OnEnter( UINT nChar )
-{
-	if( IsDisable() )
-		Destroy(); 
-}
+void CWndMessageBox::OnEnter(const UINT nChar) {
+	constexpr auto IsDisable = [](CWndMessageBox & self) {
+		const CWndButton * const pWndButton = self.GetDlgItem<CWndButton>(IDOK);
+		return pWndButton && pWndButton->IsWindowEnabled();
+	};
 
-BOOL CWndMessageBox::IsDisable( )
-{
-	CWndButton * pWndButton = (CWndButton*)GetDlgItem(IDOK);
-	if( pWndButton && pWndButton->IsWindowEnabled( ) )
-		return TRUE;
-
-	return FALSE;
+	if (IsDisable(*this)) {
+		Destroy();
+	}
 }
 
 
-CWndMessageBoxUpper::CWndMessageBoxUpper()
-{
-	m_bPostLogoutMsg = FALSE;
-}
-CWndMessageBoxUpper::~CWndMessageBoxUpper()
-{
-}
-void CWndMessageBoxUpper::OnDraw( C2DRender* p2DRender )
-{
-}
+
 void CWndMessageBoxUpper::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
