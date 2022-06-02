@@ -6181,18 +6181,17 @@ BOOL CMover::DropItem( CMover* pAttacker )
 			}
 		}
 
-		QUESTITEM* pQuestItem;
 		short nNum;
 		u_long uSizeOfQuestItem	= lpMoverProp->m_QuestItemGenerator.GetSize();
 		for( u_long i = 0; i < uSizeOfQuestItem; i++ ) 
 		{
-			pQuestItem	= lpMoverProp->m_QuestItemGenerator.GetAt( i );
-			LPQUEST lpQuest = pAttacker->GetQuest( QuestId(pQuestItem->dwQuest) );
+			QUESTITEM * pQuestItem	= lpMoverProp->m_QuestItemGenerator.GetAt( i );
+			LPQUEST lpQuest = pAttacker->GetQuest( pQuestItem->dwQuest );
 			if( lpQuest && lpQuest->m_nState == pQuestItem->dwState ) 
 			{
 				DWORD dwProbability	= pQuestItem->dwProbability;
 
-				if( pQuestItem->dwQuest == QUEST_VALENTINE || pQuestItem->dwQuest == QUEST_WHITEDAY )
+				if( pQuestItem->dwQuest == QuestId(QUEST_VALENTINE) || pQuestItem->dwQuest == QuestId(QUEST_WHITEDAY) )
 				{
 					float f;
 					int  d	= pAttacker->m_nLevel - (int)lpMoverProp->dwLevel;
@@ -6224,7 +6223,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							if( !IsValidObj( pMember ) || !IsValidArea( pMember, 64.0f ) )
 								continue;
 							
-							LPQUEST pMemberQuest	= pMember->GetQuest( QuestId(pQuestItem->dwQuest) );
+							LPQUEST pMemberQuest	= pMember->GetQuest( pQuestItem->dwQuest );
 							if( pMemberQuest && pMemberQuest->m_nState == pQuestItem->dwState )
 							{
 								BYTE nId;
@@ -7906,7 +7905,7 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 			int i = NULL;
 			for( ; i < 6; i++ )
 			{
-				if( pMover->IsCompleteQuest( QuestId(pQuestProp->m_nEndCondCompleteQuest[ i ]) ) )
+				if( pMover->IsCompleteQuest( pQuestProp->m_nEndCondCompleteQuest[ i ] ) )
 					break;
 			}
 			if( i != 6 )
@@ -7917,7 +7916,7 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 		{
 			for( int i = 0; i < 6; i++ )
 			{
-				if( pQuestProp->m_nEndCondCompleteQuest[ i ] == 0 || pMover->IsCompleteQuest( QuestId(pQuestProp->m_nEndCondCompleteQuest[ i ]) ) )
+				if( pQuestProp->m_nEndCondCompleteQuest[ i ] == QuestIdNone || pMover->IsCompleteQuest( pQuestProp->m_nEndCondCompleteQuest[ i ] ) )
 					nResult++;
 			}
 		}
@@ -8472,8 +8471,8 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 				nResult++;
 			else
 			{
-				LPQUEST pPreQuest = pMover->GetQuest( QuestId(pQuestProp->m_anBeginCondPreviousQuest[ i ]) );
-				BOOL bPreComplete = pMover->IsCompleteQuest( QuestId(pQuestProp->m_anBeginCondPreviousQuest[ i ]) );
+				LPQUEST pPreQuest = pMover->GetQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
+				BOOL bPreComplete = pMover->IsCompleteQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
 				if( pQuestProp->m_nBeginCondPreviousQuestType == 0 )
 				{
 					if( pPreQuest || bPreComplete )
@@ -8500,8 +8499,8 @@ int __IsNextLevelQuest( CMover* pMover, int nQuestId )
 				nResult++;
 			else
 			{
-				LPQUEST pPreQuest = pMover->GetQuest( QuestId(pQuestProp->m_anBeginCondExclusiveQuest[ i ]) );
-				BOOL bPreComplete = pMover->IsCompleteQuest( QuestId(pQuestProp->m_anBeginCondPreviousQuest[ i ]) );
+				LPQUEST pPreQuest = pMover->GetQuest( pQuestProp->m_anBeginCondExclusiveQuest[ i ] );
+				BOOL bPreComplete = pMover->IsCompleteQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
 				if( pPreQuest == NULL && bPreComplete == FALSE )
 					nResult++;
 			}

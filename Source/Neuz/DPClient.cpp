@@ -13355,7 +13355,7 @@ void CDPClient::OnRemoveQuest( CAr & ar ) {
 			g_WndMng.PutString(TID_GAME_REMOVEQUEST, pQuestPorp->m_szTitle);
 		}
 
-		g_pPlayer->RemoveQuest( QuestId(dwQuestCancelID) );
+		g_pPlayer->RemoveQuest( dwQuestCancelID );
 		g_QuestTreeInfoManager.DeleteTreeInformation(dwQuestCancelID.get());
 	} else if (nRemoveType == 1) {
 		g_pPlayer->RemoveAllQuest();

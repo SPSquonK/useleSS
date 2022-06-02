@@ -451,15 +451,13 @@ typedef	struct	tagDROPKIND
 }
 DROPKIND,	*LPDROPKIND;
 
-typedef	struct	tagQUESTITEM
-{
-	DWORD	dwQuest;
+struct QUESTITEM {
+	QuestId	dwQuest;
 	DWORD   dwState;
 	DWORD	dwIndex;
 	DWORD	dwProbability;
 	DWORD	dwNumber; 
-}
-QUESTITEM,	*PQUESTITEM;
+};
 
 typedef struct tagEVENTITEM
 {
@@ -468,7 +466,6 @@ typedef struct tagEVENTITEM
 }
 EVENTITEM,	*PEVENTITEM;
 
-#define MAX_QUESTITEM	16
 #define	MAX_DROPKIND	80
 
 class CDropItemGenerator
@@ -507,18 +504,13 @@ public:
 	LPDROPKIND	GetAt( int nIndex );
 };
 
-class CQuestItemGenerator
-{
+class CQuestItemGenerator {
 private:
-	u_long	m_uSize;
-	QUESTITEM	m_pQuestItem[MAX_QUESTITEM];
+	std::vector<QUESTITEM> m_pQuestItem;
 public:
-	CQuestItemGenerator()
-		{	m_uSize	= 0;	}
-	~CQuestItemGenerator()	{}
-	void	AddTail( const QUESTITEM & rQuestItem );
-	u_long	GetSize( void )	{	return m_uSize;	}
-	QUESTITEM*	GetAt( int nIndex );
+	void AddTail(const QUESTITEM & rQuestItem);
+	[[nodiscard]] u_long GetSize() const noexcept { return m_pQuestItem.size(); }
+	[[nodiscard]] QUESTITEM * GetAt(int nIndex);
 };
 
 struct MonsterTransform

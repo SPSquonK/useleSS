@@ -40,7 +40,7 @@ BOOL CWndRemoveQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				const QuestId questId = QuestId(m_nRemoveQuestId);
 				if (g_pPlayer->FindQuest(questId)) {
-
+					g_DPlay.SendRemoveQuest(questId);
 				}
 				Destroy(); 
 			}

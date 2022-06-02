@@ -171,14 +171,12 @@ void CDropItemGenerator::AddTail( CONST DROPITEM & rDropItem, const char* s )
 // CQuestItemGenerator
 QUESTITEM* CQuestItemGenerator::GetAt( int nIndex )
 {
-	ASSERT( nIndex < (int)( m_uSize ) );
+	ASSERT( nIndex < (int)(m_pQuestItem.size()));
 	return &m_pQuestItem[nIndex];
 }
 
-void CQuestItemGenerator::AddTail( const QUESTITEM & rQuestItem )
-{
-	ASSERT( m_uSize < MAX_QUESTITEM );
-	memcpy( &m_pQuestItem[m_uSize++], &rQuestItem, sizeof(QUESTITEM) );
+void CQuestItemGenerator::AddTail(const QUESTITEM & rQuestItem) {
+	m_pQuestItem.emplace_back(rQuestItem);
 }
 
 void CDropKindGenerator::AddTail( const DROPKIND & rDropKind )
@@ -1348,7 +1346,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ szLinkCharNum++ ] );
 				if( lpCharacter ) 
 				{
-					lpCharacter->m_srcQuests.emplace_back(QuestId(nQuest), 0);
+					lpCharacter->m_srcQuests.emplace_back(nQuest, 0);
 				}
 			}
 			else
@@ -1365,7 +1363,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 					LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ szLinkCharNum ] );
 					if( lpCharacter ) 
 					{
-						lpCharacter->m_srcQuests.emplace_back(QuestId(nQuest), nItem);
+						lpCharacter->m_srcQuests.emplace_back(nQuest, nItem);
 					}
 					else
 					{
@@ -1604,7 +1602,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				int nIdx = 0;
 				while( *script.token != ')' )
 				{
-					propQuest.m_nEndCondCompleteQuest[ nIdx++ ] = script.GetNumber();
+					propQuest.m_nEndCondCompleteQuest[ nIdx++ ] = QuestId(script.GetNumber());
 					script.GetToken(); // ,
 				}
 			}
@@ -1772,7 +1770,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				LPCHARACTER lpCharacter = GetCharacter( propQuest.m_szEndCondCharacter );
 				if( lpCharacter ) 
 				{
-					lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), 0);
+					lpCharacter->m_dstQuests.emplace_back(nQuest, 0);
 				}
 				bEndCondCharacter = TRUE;
 				script.GetToken(); // , or )
@@ -1805,7 +1803,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 					LPCHARACTER lpCharacter = GetCharacter( &propQuest.m_lpszEndCondMultiCharacter[ szEndCondCharNum * 64 ] );
 					if( lpCharacter ) 
 					{
-						lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), nItem);
+						lpCharacter->m_dstQuests.emplace_back(nQuest, nItem);
 					}
 					else
 					{
@@ -2047,7 +2045,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				QUESTITEM qi;
 				script.GetToken();	// (
 				DWORD dwMoverIdx = script.GetNumber();
-				qi.dwQuest	= nQuest.get();
+				qi.dwQuest	= nQuest;
 				qi.dwState	= 0;//script.GetNumber();
 				script.GetToken();	// ,
 				qi.dwIndex	= script.GetNumber();
@@ -2163,8 +2161,8 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 						QUESTITEM qi;
 						script.GetToken();	// (
 						DWORD dwMoverIdx = script.GetNumber();
-						qi.dwQuest	= nQuest.get();//script.GetNumber();
-						qi.dwState	= nState;//script.GetNumber();
+						qi.dwQuest	= nQuest;
+						qi.dwState	= nState;
 						script.GetToken();	// ,
 						qi.dwIndex	= script.GetNumber();
 						script.GetToken();	// ,
@@ -2211,7 +2209,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ 0 ] );
 				if( lpCharacter ) 
 				{
-					lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), lpCharacter->m_srcQuests[0].second);
+					lpCharacter->m_dstQuests.emplace_back(nQuest, lpCharacter->m_srcQuests[0].second);
 				}
 				strcpy( propQuest.m_szEndCondCharacter, szLinkChar[ 0 ] );
 			}
@@ -2226,7 +2224,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 					LPCHARACTER lpCharacter = GetCharacter( szLinkChar[ i ] );
 					if( lpCharacter )
 					{
-						lpCharacter->m_dstQuests.emplace_back(QuestId(nQuest), lpCharacter->m_srcQuests[i].second);
+						lpCharacter->m_dstQuests.emplace_back(nQuest, lpCharacter->m_srcQuests[i].second);
 					}
 				}
 			}

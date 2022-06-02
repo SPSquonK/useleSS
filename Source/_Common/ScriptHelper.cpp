@@ -488,7 +488,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 					vecNextQuest.push_back( nQuest );
 			}
 			// current quest
-			else if( lpQuest && pUser->IsCompleteQuest( QuestId(nQuest) ) == FALSE && lpQuest->m_nState != QS_END )
+			else if( lpQuest && !pUser->IsCompleteQuest( nQuest ) && lpQuest->m_nState != QS_END )
 			{
 				// complete
 				if( __IsEndQuestCondition( pUser, nQuest.get() ) )
@@ -609,7 +609,7 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 	LPQUEST lpQuest		= pUser->GetQuest( QuestId(nQuestId) );
 	if( __IsBeginQuestCondition( pUser, nQuestId )
 		&& lpQuest == NULL
-		&& pUser->IsCompleteQuest( QuestId(nQuestId) ) == FALSE )
+		&& !pUser->IsCompleteQuest( QuestId(nQuestId) ) )
 	{
 		__SayQuest( nPcId, nQuestId, QSAY_BEGIN_YES );
 		__RunQuest( nPcId, nNpcId, nQuestId );

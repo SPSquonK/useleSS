@@ -3490,8 +3490,8 @@ BOOL TextCmd_IgnoreList( CScanner & scanner )
 BOOL TextCmd_QuestState(CScanner & s, CPlayer_ * pAdmin) {
 #ifdef __WORLDSERVER
 	CUser* pUser	= NULL;
-	QuestId nQuest	= QuestId(s.GetNumber());
-	int nState = s.GetNumber();
+	const QuestId nQuest	= QuestId(s.GetNumber());
+	const int nState = s.GetNumber();
 	s.GetToken();
 	if( s.tok != FINISHED )
 	{

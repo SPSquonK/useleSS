@@ -174,7 +174,7 @@ struct QuestProp
 	char	m_nEndCondGuildLeader; 
 	BYTE	m_nEndCondState; // 스테이트 여부  
 	BYTE    m_nEndCondCompleteQuestOper; // 0 = or, 1 = and
-	WORD	m_nEndCondCompleteQuest[ 6 ]; // 완료 퀘스트 여부. 시나리오 퀘스트에 필요 
+	QuestId	m_nEndCondCompleteQuest[ 6 ]; // 완료 퀘스트 여부. 시나리오 퀘스트에 필요 
 	CHAR    m_szEndCondDlgCharKey[ 64 ];
 	QuestGoalData m_DialogCharacterGoalData; // 대화해야 할 캐릭터 목표 데이터
 	CHAR    m_szEndCondDlgAddKey[ 64 ];
