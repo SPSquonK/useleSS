@@ -4613,60 +4613,6 @@ using COUCOU = std::variant<One, Two_, Strings>;
 
 #include <format>
 
-template<size_t Index, typename ... Ts>
-void VariantPush(CAr & ar, const std::variant<Ts ...> & variant)
-requires (Index <= sizeof...(Ts)) {
-	if constexpr (sizeof...(Ts) == Index) {
-		ar << std::variant_npos;
-		// end
-	} else {
-		if (const auto * const ptr = std::get_if<Index>(&variant)) {
-			ar << Index << *ptr;
-		} else {
-			VariantPush<Index + 1, Ts ...>(ar, variant);
-		}
-	}
-}
-
-template<size_t Index, typename ... Ts>
-void VariantPull(CAr & ar, size_t index, std::variant<Ts ...> & variant) {
-	if constexpr (sizeof...(Ts) == Index) {
-		// We have no really good option here
-
-		// - You may consider throwing:
-		// throw std::exception("Bad variant received in CAr");
-		// - Or we can do some hacky thing to try to initialize the struct
-		// to valueless
-
-		using _Index_t = std::_Variant_index_t<sizeof...(Ts)>;
-		using VariantType = std::variant<Ts ...>;
-		// Destroy currently stored data
-		variant.~VariantType();
-		// Variant is now in "valueless_by_exception" state
-		memset(&variant, 0xFFFFFFFF, sizeof(variant));
-	} else {
-		if (index == Index) {
-			variant.emplace<Index>();
-			ar >> std::get<Index>(variant);
-		} else {
-			VariantPull<Index + 1, Ts ...>(ar, index, variant);
-		}
-	}
-}
-
-template<typename ... Ts>
-CAr & operator<<(CAr & ar, const std::variant<Ts ...> & variant) {
-	VariantPush<0, Ts ...>(ar, variant);
-	return ar;
-}
-
-template<typename ... Ts>
-CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant) {
-	size_t index; ar >> index;
-	VariantPull<0, Ts ...>(ar, index, variant);
-	return ar;
-}
-
 
 BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __CLIENT

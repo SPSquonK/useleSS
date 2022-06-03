@@ -4,6 +4,7 @@
 #include "FlyFFTypes.h"
 #include "StaticString.h"
 #include <boost/container/static_vector.hpp>
+#include <variant>
 
 class CAr final {
 public:
@@ -202,6 +203,12 @@ static	DWORD	s_dwHdrCur;
 		return *this;
 	}
 
+
+	template<typename ... Ts> friend CAr & operator<<(CAr & ar, const std::variant<Ts ...> & variant);
+
+	template<typename ... Ts> friend CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant);
+
+
 	GoToOffsetAnswer GoToOffset(const u_long expectedOffset) {
 		BYTE * target = m_lpBufStart + expectedOffset;
 
@@ -225,6 +232,12 @@ static	DWORD	s_dwHdrCur;
 
 private:
 	template<size_t POS, typename TupleType> void TupleExtract(TupleType & tuple);
+
+	template<size_t Index, typename ... Ts>
+	void VariantPull(size_t index, std::variant<Ts ...> & variant);
+	
+	template<size_t Index, typename ... Ts>
+	void VariantPush(const std::variant<Ts ...> & variant);
 
 protected:
 	BYTE	m_nMode;	// read or write
@@ -374,5 +387,58 @@ inline CAr & operator<<(CAr & ar, const StaticString<N> & str) {
 template<size_t N>
 inline CAr & operator>>(CAr & ar, StaticString<N> & str) {
 	ar.ReadString(str.buffer.data(), N);
+	return ar;
+}
+
+
+template<size_t Index, typename ... Ts>
+void CAr::VariantPush(const std::variant<Ts ...> & variant) {
+	if constexpr (sizeof...(Ts) == Index) {
+		*this << std::variant_npos;
+		// end
+	} else {
+		if (const auto * const ptr = std::get_if<Index>(&variant)) {
+			*this << Index << *ptr;
+		} else {
+			VariantPush<Index + 1, Ts ...>(variant);
+		}
+	}
+}
+
+template<size_t Index, typename ... Ts>
+void CAr::VariantPull(size_t index, std::variant<Ts ...> & variant) {
+	if constexpr (sizeof...(Ts) == Index) {
+		// We have no really good option here
+
+		// - You may consider throwing:
+		// throw std::exception("Bad variant received in CAr");
+		// - Or we can do some hacky thing to try to initialize the struct
+		// to valueless
+
+		using VariantType = std::variant<Ts ...>;
+		// Destroy currently stored data
+		variant.~VariantType();
+		// Variant is now in "valueless_by_exception" state
+		memset(&variant, 0xFFFFFFFF, sizeof(variant));
+	} else {
+		if (index == Index) {
+			variant.emplace<Index>();
+			*this >> std::get<Index>(variant);
+		} else {
+			VariantPull<Index + 1, Ts ...>(index, variant);
+		}
+	}
+}
+
+template<typename ... Ts>
+CAr & operator<<(CAr & ar, const std::variant<Ts ...> & variant) {
+	ar.VariantPush<0, Ts ...>(variant);
+	return ar;
+}
+
+template<typename ... Ts>
+CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant) {
+	size_t index; ar >> index;
+	ar.VariantPull<0, Ts ...>(index, variant);
 	return ar;
 }
