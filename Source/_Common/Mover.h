@@ -78,7 +78,6 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define UI_PETVIS_SIZE			15
 #define UI_PETVIS_ITEM			16
 #define UI_PETVIS_ITEMSWAP		17
-#define UI_TRANSFORM_VISPET		18
 
 #include "UpdateItem.h"
 

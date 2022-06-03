@@ -20,11 +20,15 @@ namespace UI {
     void operator()(CItemElem & itemElem) const;
   };
 
+  struct TransformToVisPet {
+    static constexpr bool Archivable = true;
+    void operator()(CItemElem & itemElem) const;
+  };
 
 
   using Variant = std::variant<
-    RandomOptItem
-  
+    RandomOptItem,
+    TransformToVisPet
   >;
 }
 

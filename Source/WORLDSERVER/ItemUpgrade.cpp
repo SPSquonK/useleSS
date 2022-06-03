@@ -1663,7 +1663,7 @@ void CItemUpgrade::TransFormVisPet( CUser* pUser, OBJID objIdMaterial )
 				if( pItemMaterial->m_bCharged )		// 상용화 아이템 로그
 					g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemMaterial, pItemMaterial->GetProp() );
 				pUser->RemoveItem( (BYTE)( objIdMaterial ), 1 );
-				pUser->UpdateItem( (BYTE)( pItemEatPet->m_dwObjId ), UI_TRANSFORM_VISPET, TRUE );
+				pUser->UpdateItem(*pItemEatPet, UI::TransformToVisPet());
 				g_DPSrvr.PutItemLog( pUser, "!", "TRANSFORM_VISPET", pItemEatPet );
 				pUser->AddDefinedText( TID_GAME_PET_TRAN_SUCCESS, "\"%s\"", pItemEatPet->GetProp()->szName );
 			}

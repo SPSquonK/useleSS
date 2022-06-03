@@ -3194,6 +3194,8 @@ void CMover::UpdateItem(CItemElem & itemElem, const UI::Variant & operation) {
 
 template<class> inline constexpr bool always_false_v = false;
 void CMover::UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & operation) {
+	// In WorldServer: assert(itemElem);
+
 	if (itemElem) {
 		std::visit(
 			[&](auto && arg) {
@@ -3219,6 +3221,13 @@ void CMover::UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & 
 		static_cast<CUser *>(this)->SendSnapshotThisId<
 			SNAPSHOTTYPE_UPDATE_ITEM_VARIANT, ItemPos, UI::Variant
 		>(dwId, operation);
+
+		if (std::holds_alternative<UI::TransformToVisPet>(operation)) {
+			if (HasActivatedEatPet()) {
+				InactivateEatPet();
+				ActivateEatPet(itemElem);
+			}
+		}
 	}
 #endif
 }
@@ -3226,6 +3235,11 @@ void CMover::UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & 
 namespace UI {
 	void RandomOptItem::operator()(CItemElem & itemElem) const {
 		itemElem.SetRandomOptItemId(value);
+	}
+
+	void TransformToVisPet::operator()(CItemElem & itemElem) const {
+		itemElem.m_bTranformVisPet = TRUE;
+		itemElem.m_bCharged = TRUE;
 	}
 
 }
@@ -3362,13 +3376,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 				}
 				break;
 
-			case UI_TRANSFORM_VISPET:
-				{
-				  pItemBase->m_bTranformVisPet = static_cast<BOOL>(dwValue);
-				  pItemBase->m_bCharged = TRUE;
-				}
-				break;
-
 			case UI_RANDOMOPTITEMID:
 				{
 				  pItemBase->SetRandomOpt( dwValue );
@@ -3435,11 +3442,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 	if( IsPlayer() )
 	{
 		static_cast<CUser*>( this )->AddUpdateItem( 0, nId, cParam, dwValue, dwTime );
-		if( pItemBase && cParam == UI_TRANSFORM_VISPET && HasActivatedEatPet() )
-		{
-			InactivateEatPet();
-			ActivateEatPet(pItemBase);
-		}
 	}
 #endif // __WORLDSERVER
 }
