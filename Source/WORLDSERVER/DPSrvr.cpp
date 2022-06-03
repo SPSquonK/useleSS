@@ -423,6 +423,8 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_GUILDHOUSE_TENDER_INFOWND, &CDPSrvr::OnGuildHouseTenderInfoWnd );
 	OnMsg( PACKETTYPE_GUILDHOUSE_TENDER_JOIN, &CDPSrvr::OnGuildHouseTenderJoin );
 #endif // __GUILD_HOUSE_MIDDLE
+
+	OnMsg(PACKETTYPE_SQUONK_ARBITRARY_PACKET, &CDPSrvr::OnSquonKArbitraryPacket);
 }
 
 bool CDPSrvrHandlers::Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpidUser) {

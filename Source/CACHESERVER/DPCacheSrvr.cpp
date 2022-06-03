@@ -131,6 +131,14 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 			case PACKETTYPE_SENDTAG:
 				g_DPCoreClient.SendToServer( idFrom, lpMsg, dwMsgSize );
 				break;
+			case PACKETTYPE_SQUONK_ARBITRARY_PACKET:
+			{
+				// SquonK Arbitrary Packet can only be used from localhost
+				CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock);
+				CCachePlayer * pPlayer = g_CachePlayerMng.GetPlayer(idFrom);
+				if (!pPlayer) break;
+				if (pPlayer->GetAddr() != std::string_view("127.0.0.1")) break;
+			}
 			default:
 				g_DPClientArray.SendToServer( idFrom, lpMsg, dwMsgSize );
 				break;

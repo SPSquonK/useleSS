@@ -4579,6 +4579,160 @@ BOOL TextCmd_InvenRemove(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
+#include <variant>
+#include "ar.h"
+struct One { int x; };
+CAr & operator<<(CAr & ar, One one) {
+	return ar << one.x;
+}
+CAr & operator>>(CAr & ar, One & one) {
+	return ar >> one.x;
+}
+
+struct Two_ { int x; int y; };
+CAr & operator<<(CAr & ar, Two_ one) {
+	return ar << one.x << one.y;
+}
+CAr & operator>>(CAr & ar, Two_ & one) {
+	return ar >> one.x >> one.y;
+}
+
+struct Strings { std::string str; };
+CAr & operator<<(CAr & ar, const Strings & one) {
+	ar.WriteString(one.str.c_str());
+	return ar;
+}
+CAr & operator>>(CAr & ar, Strings & one) {
+	char xxx[256];
+	ar.ReadString(xxx);
+	one.str = xxx;
+	return ar;
+}
+
+using COUCOU = std::variant<One, Two_, Strings>;
+
+#include <format>
+
+template<size_t Index, typename ... Ts>
+void VariantPush(CAr & ar, const std::variant<Ts ...> & variant)
+requires (Index <= sizeof...(Ts)) {
+	if constexpr (sizeof...(Ts) == Index) {
+		ar << std::variant_npos;
+		// end
+	} else {
+		if (const auto * const ptr = std::get_if<Index>(&variant)) {
+			ar << Index << *ptr;
+		} else {
+			VariantPush<Index + 1, Ts ...>(ar, variant);
+		}
+	}
+}
+
+template<size_t Index, typename ... Ts>
+void VariantPull(CAr & ar, size_t index, std::variant<Ts ...> & variant) {
+	if constexpr (sizeof...(Ts) == Index) {
+		// We have no really good option here
+
+		// - You may consider throwing:
+		// throw std::exception("Bad variant received in CAr");
+		// - Or we can do some hacky thing to try to initialize the struct
+		// to valueless
+
+		using _Index_t = std::_Variant_index_t<sizeof...(Ts)>;
+		using VariantType = std::variant<Ts ...>;
+		// Destroy currently stored data
+		variant.~VariantType();
+		// Variant is now in "valueless_by_exception" state
+		memset(&variant, 0xFFFFFFFF, sizeof(variant));
+	} else {
+		if (index == Index) {
+			variant.emplace<Index>();
+			ar >> std::get<Index>(variant);
+		} else {
+			VariantPull<Index + 1, Ts ...>(ar, index, variant);
+		}
+	}
+}
+
+template<typename ... Ts>
+CAr & operator<<(CAr & ar, const std::variant<Ts ...> & variant) {
+	VariantPush<0, Ts ...>(ar, variant);
+	return ar;
+}
+
+template<typename ... Ts>
+CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant) {
+	size_t index; ar >> index;
+	VariantPull<0, Ts ...>(ar, index, variant);
+	return ar;
+}
+
+
+BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
+#ifdef __CLIENT
+	scanner.GetToken();
+	CString type = scanner.Token;
+
+	COUCOU v;
+	if (type == "One") {
+		int x = scanner.GetNumber();
+		v = One{ x };
+	} else if (type == "Two") {
+		int x = scanner.GetNumber();
+		int y = scanner.GetNumber();
+		v = Two_{ x, y };
+	} else if (type == "Strings") {
+		scanner.GetToken();
+		CString content = scanner.Token;
+		v = Strings{ std::string(content.GetString()) };
+	} else if (type == "hack") {
+
+		g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET,
+			std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t
+		>(15, 15, 15, 15);
+
+		return TRUE;
+
+	} else {
+		g_WndMng.PutString("You're drunk");
+		return TRUE;
+	}
+
+	g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET>(v);
+		
+#endif
+	return TRUE;
+}
+
+#ifndef __CLIENT
+void CDPSrvr::OnSquonKArbitraryPacket(CAr & ar, CUser & thisIsMe) {
+	COUCOU v; ar >> v;
+
+	if (v.valueless_by_exception()) {
+		thisIsMe.AddText("Mistakes were made");
+		return;
+	}
+
+	struct Visitor {
+		std::string operator()(One one) {
+			return std::format("One= {}", one.x);
+		}
+
+		std::string operator()(Two_ one) {
+			return std::format("Two= {} {}", one.x, one.y);
+		}
+		std::string operator()(Strings one) {
+			return std::format("Strings= {}", one.str);
+		}
+	};
+
+	std::string x = std::visit(Visitor{}, v);
+
+	thisIsMe.AddText(x.c_str());
+}
+#endif
+
+
 #define ON_TEXTCMDFUNC( a, b, c, d, e, f, g, h ) AddCommand(m_allCommands, a, b, c, d, e, f, g, h);
 
 
@@ -4773,7 +4927,7 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_HonorTitleSet,			"HonorTitleSet", "hts", "달인세팅", "달세", TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 
 
-
+	ON_TEXTCMDFUNC(TextCmd_Arbitrary, "sqk", "sqk", "sqk", "sqk", TCM_CLIENT, AUTH_ADMINISTRATOR, "");
 
 // 여기부터 국내만 
 	ON_TEXTCMDFUNC( TextCmd_Open,                  "open",               "open",           "열기",           "열기",    TCM_CLIENT, AUTH_ADMINISTRATOR   , "" )

@@ -419,6 +419,8 @@ private:
 	void	OnGuildHouseTenderInfoWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
 	void	OnGuildHouseTenderJoin( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
 #endif // __GUILD_HOUSE_MIDDLE
+
+	void OnSquonKArbitraryPacket(CAr & ar, CUser & pUser);
 private:
 	DPID	m_dpidCache;		// 캐쉬서버 DPID
 };

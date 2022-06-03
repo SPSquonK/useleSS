@@ -842,6 +842,7 @@
 #define PACKETTYPE_QUERYMAILBOX_REQ					(DWORD)0x88100240
 #define PACKETTYPE_QUERYMAILBOX_COUNT				(DWORD)0x88100241
 
+#define PACKETTYPE_SQUONK_ARBITRARY_PACKET (DWORD)0x88100242
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
