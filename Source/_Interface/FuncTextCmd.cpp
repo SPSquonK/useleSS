@@ -538,51 +538,36 @@ BOOL TextCmd_RefineAccessory(CScanner & s, CPlayer_ * pUser) {
 
 BOOL TextCmd_SetRandomOption(CScanner & s, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	CItemElem* pItemElem	= pUser->m_Inventory.GetAt( 0 );
-	if( pItemElem )
-	{
-		int nRandomOptionKind	= g_xRandomOptionProperty.GetRandomOptionKind( pItemElem );
-		if( nRandomOptionKind >= 0 )
-		{
-			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
-			int nDst, nAdj;
-			int cb	= 0;
-			nDst	= s.GetNumber();
-			while( s.tok != FINISHED )
-			{
-				switch( nDst )
-				{
-					case 1:
-					case 2:
-					case 3:
-					case 4:
-					case 9:
-					case 11:
-					case 24:
-					case 26:
-					case 35:
-					case 36:
-					case 37:
-					case 75:
-					case 77:
-					case 83:
-						break;
-					default:
-						pUser->UpdateItemEx( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, pItemElem->GetRandomOptItemId() );
-						return TRUE;
-				}
-				nAdj	= s.GetNumber();
-				if( s.tok == FINISHED )
-					break;
-				g_xRandomOptionProperty.SetParam( pItemElem->GetRandomOptItemIdPtr(), nDst, nAdj );
-				cb++;
-				if( cb >= MAX_RANDOM_OPTION )
-					break;
-				nDst	= s.GetNumber();
-			}
-			pUser->UpdateItemEx( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, pItemElem->GetRandomOptItemId() );
+	CItemElem * const pItemElem = pUser->m_Inventory.GetAt( 0 );
+	if (!pItemElem) return TRUE;
+	
+	const int nRandomOptionKind = g_xRandomOptionProperty.GetRandomOptionKind(pItemElem);
+	if (nRandomOptionKind <= 0) return TRUE;
+
+	g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
+	int cb	= 0;
+	int nDst	= s.GetNumber();
+	while (s.tok != FINISHED) {
+		const int nAdj = s.GetNumber();
+		if (s.tok == FINISHED) break;
+
+		const bool isInvalid =
+			// Bad DST
+			nDst == 48 || nDst < 1 || nDst >= MAX_ADJPARAMARY
+			// ADJ over the capacity of a 9 bits unsigned int
+			|| nAdj < -512 || nAdj >= 512;
+
+		if (!isInvalid) {
+			g_xRandomOptionProperty.SetParam(pItemElem->GetRandomOptItemIdPtr(), nDst, nAdj);
+			cb++;
 		}
+
+		if (cb >= MAX_RANDOM_OPTION) break;
+		nDst = s.GetNumber();
 	}
+
+	pUser->UpdateItem(pItemElem, UI::RandomOptItem(pItemElem->GetRandomOpt()));
+
 #endif	// __WORLDSERVER
 	return TRUE;
 }
@@ -597,7 +582,7 @@ BOOL TextCmd_GenRandomOption(CScanner &, CPlayer_ * pUser) {
 		{
 			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
 			g_xRandomOptionProperty.GenRandomOption( pItemElem->GetRandomOptItemIdPtr(), nRandomOptionKind, pItemElem->GetProp()->dwParts );
-			pUser->UpdateItemEx( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, pItemElem->GetRandomOptItemId() );
+			pUser->UpdateItem(pItemElem, UI::RandomOptItem(pItemElem->GetRandomOpt()));
 		}
 	}
 #endif	// __WORLDSERVER
@@ -623,7 +608,7 @@ BOOL TextCmd_InitializeRandomOption(CScanner & s, CPlayer_ * pUser) {
 		if( nRandomOptionKind >= 0 )	// 아이템 각성, 여신의 축복이 가능한 대상
 		{
 			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
-			pUser->UpdateItemEx( (BYTE)( pItemElem->m_dwObjId ), UI_RANDOMOPTITEMID, pItemElem->GetRandomOptItemId() );
+			pUser->UpdateItem(pItemElem, UI::RandomOptItem(pItemElem->GetRandomOpt()));
 		}
 	}
 #endif	// __WORLDSERVER
@@ -642,7 +627,7 @@ BOOL TextCmd_ItemLevel(CScanner & s, CPlayer_ * pUser) {
 		if( pProp->dwParts != NULL_ID && pProp->dwLimitLevel1 != 0xFFFFFFFF )
 		{
 			pTarget->SetLevelDown( i );
-			pUser->UpdateItemEx( (BYTE)( pTarget->m_dwObjId ), UI_RANDOMOPTITEMID, pTarget->GetRandomOptItemId() );
+			pUser->UpdateItem(pTarget, UI::RandomOptItem(pTarget->GetRandomOpt()));
 		}
 	}
 #endif	// __WORLDSERVER

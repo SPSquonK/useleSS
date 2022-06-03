@@ -490,7 +490,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_VENDOR:	OnVendor( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_VENDOR:	OnUpdateVendor( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_ITEM:	OnUpdateItem( objid, ar );	break;
-			case SNAPSHOTTYPE_UPDATE_ITEM_EX:	OnUpdateItemEx( objid, ar );	break;
+			case SNAPSHOTTYPE_UPDATE_ITEM_VARIANT:	OnUpdateItemVariant( objid, ar );	break;
 			case SNAPSHOTTYPE_POCKET_ATTRIBUTE:	OnPocketAttribute( ar );	break;
 			case SNAPSHOTTYPE_POCKET_ADD_ITEM:	OnPocketAddItem( ar );	break;
 			case SNAPSHOTTYPE_POCKET_REMOVE_ITEM:	OnPocketRemoveItem( ar );	break;
@@ -2874,19 +2874,26 @@ void CDPClient::OnUpdateVendor( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnUpdateItemEx( OBJID objid, CAr & ar )
-{
-	unsigned char id;
-	char cParam;
-	__int64 iValue;
+void CDPClient::OnUpdateItemVariant(const OBJID objid, CAr & ar) {
+	// ~~ Update memory
+	const auto [dwId, operation] = ar.Extract<ItemPos, UI::Variant>();
 
-	ar >> id >> cParam >> iValue;
-
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) == FALSE )
+	if (operation.valueless_by_exception()) {
+		Error(__FUNCTION__"(): Invalid variant received");
 		return;
+	}
 
-	pMover->UpdateItemEx( id, cParam, iValue );
+	CMover * const pMover = prj.GetMover( objid );
+	if (!IsValidObj(pMover)) return;
+
+	pMover->UpdateItem(dwId, operation);
+
+	// ~~ Update user interface
+	if (std::holds_alternative<UI::RandomOptItem>(operation)) {
+		if (CWndInventory * pWnd = (CWndInventory *)g_WndMng.GetWndBase(APP_INVENTORY)) {
+			pWnd->UpdateTooltip();
+		}
+	}
 }
 
 void CDPClient::OnUpdateItem( OBJID objid, CAr & ar ) {

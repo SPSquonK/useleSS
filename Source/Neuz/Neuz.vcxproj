@@ -679,6 +679,7 @@
     <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />
+    <ClInclude Include="..\_Common\UpdateItem.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />

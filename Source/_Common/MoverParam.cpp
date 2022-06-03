@@ -3178,32 +3178,48 @@ int CMover::GetItemEnduranceWeight( int nEndurance )
 */	return 1 * nMinusMultyPly;
 }
 
-void CMover::UpdateItemEx( unsigned char id, char cParam, __int64 iValue )
-{
-	CItemElem* pItemElem	= GetItemId( id );
+template<class> inline constexpr bool always_false_v = false;
 
-	if( pItemElem )
-	{
-		switch( cParam )
-		{
-			case UI_RANDOMOPTITEMID:
-				{
-					pItemElem->SetRandomOptItemId( iValue );
-					break;
-				}
-			default:
-				break;
-		}
-#ifdef __CLIENT
-		CWndInventory* pWnd		= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
-		if( pWnd )
-			pWnd->UpdateTooltip();
-#endif	// __CLIENT
-	}
+void CMover::UpdateItem(const ItemPos dwId, const UI::Variant & operation) {
+	CItemElem * const itemElem = GetItemId(dwId);
+	UpdateItem(itemElem, operation);
+}
+
+void CMover::UpdateItem(CItemElem * itemElem, const UI::Variant & operation) {
+	if (itemElem) UpdateItem(*itemElem, operation);
+}
+
+void CMover::UpdateItem(CItemElem & itemElem, const UI::Variant & operation) {
+	const ItemPos dwId = itemElem.m_dwObjId;
+	
+	std::visit(
+		[&](auto && arg) {
+			using T = std::decay_t<decltype(arg)>;
+
+			if constexpr (std::is_invocable_v<T, CItemElem &, CMover &>) {
+				arg(itemElem, *this);
+			} else if constexpr (std::is_invocable_v<T, CItemElem &>) {
+				arg(itemElem);
+			} else {
+				static_assert(always_false_v<T>, "Did not found an operator()(CItemElem &)");
+			}
+		}, operation
+	);
+
 #ifdef __WORLDSERVER
-	if( IsPlayer() )
-		( (CUser*)this )->AddUpdateItemEx( id, cParam, iValue );
+	if (IsPlayer()) {
+		static_cast<CUser *>(this)->SendSnapshotThisId<
+			SNAPSHOTTYPE_UPDATE_ITEM_VARIANT, ItemPos, UI::Variant
+		>(dwId, operation);
+	}
 #endif
+}
+
+namespace UI {
+	void RandomOptItem::operator()(CItemElem & itemElem) const {
+		itemElem.SetRandomOptItemId(value);
+	}
+
 }
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )

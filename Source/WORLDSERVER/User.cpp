@@ -984,16 +984,6 @@ void CUser::AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId )
 	m_Snapshot.ar << dwId << dwItemId;
 }
 
-void CUser::AddUpdateItemEx( unsigned char id, char cParam, __int64 iValue )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_UPDATE_ITEM_EX;
-	m_Snapshot.ar << id << cParam << iValue;
-}
-
 void CUser::AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 {
 	if( IsDelete() )	return;
@@ -7989,7 +7979,7 @@ void	CUser::SelectAwakeningValue( DWORD dwItemObjID, DWORD dwSerialNumber, BYTE 
 
 	if( bRetValue == true )
 	{
-		UpdateItemEx( (BYTE)( pItem->m_dwObjId ), UI_RANDOMOPTITEMID, pItem->GetRandomOptItemId() );
+		UpdateItem(pItem, UI::RandomOptItem(pItem->GetRandomOptItemId()));
 
 		//	mulcom	BEGIN100426	각성 보호의 두루마리 로그.
 		//WriteLog( "UserID [%d] : ItemSerialNumber[%d] SelectAwakeningValue bySelectFlag[%d]", (int)( GetId() ), (int)( pItem->GetSerialNumber() ), (int)( bySelectFlag ) );

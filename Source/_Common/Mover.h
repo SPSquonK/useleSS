@@ -80,6 +80,8 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define UI_PETVIS_ITEMSWAP		17
 #define UI_TRANSFORM_VISPET		18
 
+#include "UpdateItem.h"
+
 const int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
 
 #ifdef __ADD_RESTATE_LOW
@@ -1127,7 +1129,9 @@ public:
  	BOOL			IsDropableState( BOOL bPK );
 	CItem*			DropGold( DWORD dwGold, const D3DXVECTOR3& vPos, BOOL bPK = FALSE );
 	void			UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime = 0 );
-	void		UpdateItemEx( unsigned char id, char cParam, __int64 iValue );
+	void UpdateItem(ItemPos dwId, const UI::Variant & operation);
+	void UpdateItem(CItemElem * itemElem, const UI::Variant & operation);
+	void UpdateItem(CItemElem & itemElem, const UI::Variant & operation);
 	CItem*			_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos );
 	CItem*			DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BOOL bPlayer = FALSE );
 	int				DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyEquip = FALSE );

@@ -1871,6 +1871,9 @@
     <ClInclude Include="..\_Interface\UserTaskBar.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\UpdateItem.h">
+      <Filter>Source Files\_Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

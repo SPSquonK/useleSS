@@ -13,7 +13,7 @@ static_assert(false, "ItemContainer.h should only be included in Client, World, 
 #include <algorithm>
 
 
-typedef BYTE ItemPos;
+typedef DWORD ItemPos;
 
 class CItemContainer {
 public:

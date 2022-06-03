@@ -1351,7 +1351,7 @@ bool CUser::DoUseItemWarp(const ItemProp & pItemProp, CItemElem & pItemElem) {
 
 	if (idCouple == 0) {
 		// carve
-		UpdateItemEx((BYTE)(pItemElem.m_dwObjId), UI_RANDOMOPTITEMID, (__int64)m_idPlayer);
+		UpdateItem(pItemElem, UI::RandomOptItem(m_idPlayer));
 		if (II_GEN_WARP_COUPLERING == pItemProp.dwID)
 			UpdateItem((BYTE)(pItemElem.m_dwObjId), UI_KEEPTIME, 21600);	// 15 days
 		
