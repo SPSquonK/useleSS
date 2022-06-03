@@ -3242,6 +3242,49 @@ namespace UI {
 		itemElem.m_bCharged = TRUE;
 	}
 
+	namespace PetVis {
+		// == Size
+
+		Size Size::DefaultVis() {
+			return Size { .newSize = PETVIS_DEFAULT_VIS_SLOT_SZIE };
+		}
+
+		Size Size::Increase(CItemElem & itemElem) {
+			return Size{ .newSize = itemElem.GetPiercingSize() + 1 };
+		}
+
+		void Size::operator()(CItemElem & itemElem) const {
+			itemElem.SetPiercingSize(newSize);
+			itemElem.SetVisKeepTimeSize(newSize);
+
+#ifdef __CLIENT
+			const auto pos = g_pPlayer->GetPos();
+			PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
+#endif // __CLIENT
+		}
+
+
+		// Items
+
+		void Item::operator()(CItemElem & itemElem) const {
+			itemElem.SetPiercingItem(position, itemId);
+			itemElem.SetVisKeepTime(position, (time * 60) + time_null());
+
+#ifdef __CLIENT
+			const auto pos = g_pPlayer->GetPos();
+			PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
+#endif // __CLIENT
+		}
+
+		void ItemSwap::operator()(CItemElem & itemElem) const {
+			itemElem.SetSwapVisItem(from, to);
+
+#ifdef __CLIENT
+			const auto pos = g_pPlayer->GetPos();
+			PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
+#endif // __CLIENT
+		}
+	}
 }
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
@@ -3337,42 +3380,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 				{
 					WORD wIndex	= LOWORD( dwValue ), wItemId	= HIWORD( dwValue );
 					pItemBase->SetUltimatePiercingItem( wIndex, wItemId );
-				}
-				break;
-
-			case UI_PETVIS_SIZE:	
-				{
-				  pItemBase->SetPiercingSize(dwValue);
-				  pItemBase->SetVisKeepTimeSize( dwValue );
-
-#ifdef __CLIENT	//sun : ��ü �� ������( �����κ��� ��Ŷ�� �޾Ƽ� ó���ɶ� )�̷������ ȿ���� ��� 
-					const auto pos = g_pPlayer->GetPos();
-					PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
-#endif // __CLIENT
-				}
-				break;
-			case UI_PETVIS_ITEM:
-				{
-					WORD wIndex	= LOWORD( dwValue ), wItemId	= HIWORD( dwValue );
-					pItemBase->SetPiercingItem(wIndex, wItemId);
-					pItemBase->SetVisKeepTime( wIndex, ( dwTime * 60 ) + time_null() ); // �д��� �ð��� �ʴ����� ����
-
-#ifdef __CLIENT
-					const auto pos = g_pPlayer->GetPos();
-					PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
-#endif // __CLIENT
-				}
-				break;
-
-			case UI_PETVIS_ITEMSWAP:
-				{
-					WORD wPos1	= LOWORD( dwValue ), wPos2	= HIWORD( dwValue );
-					pItemBase->SetSwapVisItem( wPos1, wPos2 );
-
-#ifdef __CLIENT
-					const auto pos = g_pPlayer->GetPos();
-					PLAYSND(SND_INF_EQUIPACCESSORY, &pos);
-#endif // __CLIENT
 				}
 				break;
 

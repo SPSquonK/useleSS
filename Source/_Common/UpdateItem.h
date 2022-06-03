@@ -25,10 +25,44 @@ namespace UI {
     void operator()(CItemElem & itemElem) const;
   };
 
+  namespace PetVis {
+    struct Size {
+      static constexpr bool Archivable = true;
+      
+      int newSize;
+      [[nodiscard]] static Size DefaultVis();
+      [[nodiscard]] static Size Increase(CItemElem & itemElem);
+      
+      void operator()(CItemElem & itemElem) const;
+    };
+
+    struct Item {
+      static constexpr bool Archivable = true;
+
+      int position;
+      DWORD itemId;
+      DWORD time;
+
+      [[nodiscard]] static Item Empty(const int position) {
+        return Item{ .position = position, .itemId = 0, .time = 0 };
+      }
+
+      void operator()(CItemElem & itemElem) const;
+    };
+
+    struct ItemSwap {
+      static constexpr bool Archivable = true;
+      int from, to;
+
+      void operator()(CItemElem & itemElem) const;
+    };
+  }
+
 
   using Variant = std::variant<
     RandomOptItem,
-    TransformToVisPet
+    TransformToVisPet,
+    PetVis::Size, PetVis::Item, PetVis::ItemSwap
   >;
 }
 

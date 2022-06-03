@@ -2102,8 +2102,9 @@ void CMover::ActivateEatPet( CItemElem* pItemElem )
 			pAIPet->SetItem( this, pItemElem );		// 먹펫 활성화 시 각성 효과 적용
 			if( pItemElem->IsVisPet() )
 			{
-				if( pItemElem->GetPiercingSize() <= 0 )	// 첫 소환시 비스펫이면 비스 슬롯 2개(기본) 뚫어줌
-					UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_PETVIS_SIZE, PETVIS_DEFAULT_VIS_SLOT_SZIE );
+				if (pItemElem->GetPiercingSize() <= 0) { // 첫 소환시 비스펫이면 비스 슬롯 2개(기본) 뚫어줌
+					UpdateItem(*pItemElem, UI::PetVis::Size::DefaultVis());
+				}
 
 				SetVisPetItem( pItemElem->m_dwObjId );	// 해당 먹펫이 비스펫이면 비스의 능력치를 적용하고 이펙트를 지정한다.
 				SetPetVisDST( pItemElem );

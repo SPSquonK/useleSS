@@ -75,13 +75,9 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define UI_ULTIMATE_PIERCING_SIZE	13
 #define UI_ULTIMATE_PIERCING		14
 
-#define UI_PETVIS_SIZE			15
-#define UI_PETVIS_ITEM			16
-#define UI_PETVIS_ITEMSWAP		17
-
 #include "UpdateItem.h"
 
-const int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
+static constexpr int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
 
 #ifdef __ADD_RESTATE_LOW
 #define RESTATE_LOW				50

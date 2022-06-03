@@ -1508,7 +1508,7 @@ void CItemUpgrade::PetVisSize( CUser* pUser, OBJID objIdMaterial )
 	g_DPSrvr.PutItemLog( pUser, "!", "VIS_SLOT_MATERIAL", pItemElemMaterial );
 	if( pItemElemMaterial->m_bCharged )
 		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemMaterial, pItemElemMaterial->GetProp() );	
-	pUser->UpdateItem( (BYTE)( pItemElemPet->m_dwObjId ), UI_PETVIS_SIZE, pItemElemPet->GetPiercingSize() + 1 );
+	pUser->UpdateItem(*pItemElemPet, UI::PetVis::Size::Increase(*pItemElemPet));
 	g_DPSrvr.PutItemLog( pUser, "#", "VIS_SLOT_SIZE", pItemElemPet );
 	pUser->RemoveItem( (BYTE)( objIdMaterial ), 1 );
 }
@@ -1565,7 +1565,13 @@ void CItemUpgrade::SetPetVisItem( CUser* pUser, OBJID objIdVis )
 
 	
 	pUser->ResetPetVisDST( pItemElemPet );
-	pUser->UpdateItem( (BYTE)( pItemElemPet->m_dwObjId ), UI_PETVIS_ITEM, MAKELONG( nFirstEmptySlot, pItemElemVis->m_dwItemId ), pVisProp->dwAbilityMin );
+	pUser->UpdateItem(*pItemElemPet,
+		UI::PetVis::Item{
+			.position = nFirstEmptySlot,
+			.itemId = pItemElemVis->m_dwItemId,
+			.time = pVisProp->dwAbilityMin
+		}
+	);
 	PutPetVisItemLog( pUser, "!", "VIS_MATERIAL", pItemElemPet, nFirstEmptySlot );
 	if( pItemElemVis->m_bCharged )		// 상용화 아이템 로그
 		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemVis, pVisProp );		
@@ -1595,7 +1601,7 @@ void CItemUpgrade::RemovePetVisItem( CUser* pUser, int nPosition, BOOL bExpired 
 		PutPetVisItemLog( pUser, "$", "VIS_REMOVE_EXPIRED", pItemElemPet, nPosition );
 	else
 		PutPetVisItemLog( pUser, "$", "VIS_REMOVE_BYUSER", pItemElemPet, nPosition );
-	pUser->UpdateItem( (BYTE)( pItemElemPet->m_dwObjId ), UI_PETVIS_ITEM, MAKELONG( nPosition, 0 ), 0 ); // 해당 슬롯을 비운다.
+	pUser->UpdateItem(*pItemElemPet, UI::PetVis::Item::Empty(nPosition));
 	ItemProp* pItemProp = prj.GetItemProp( dwItemId );
 	if( pItemProp )
 		pUser->AddDefinedText( TID_GAME_BUFFPET_REMOVEVIS, "\"%s\"", pItemProp->szName );
@@ -1615,16 +1621,13 @@ void CItemUpgrade::PutPetVisItemLog( CUser* pUser, const char* szAction, const c
 	g_DPSrvr.OnLogItem( log, pItem, pItem->m_nItemNum );
 }
 
-void CItemUpgrade::SwapVis( CUser* pUser, int nPos1, int nPos2 )
-{
-	if( !IsValidObj( pUser ) )
-		return;
+void CItemUpgrade::SwapVis(CUser * pUser, int nPos1, int nPos2) {
+	if (!IsValidObj(pUser)) return;
 
-	CItemElem* pItemElemPet = pUser->GetVisPetItem();
-	if( !IsUsableItem( pItemElemPet ) )
-		return;
-	
-	pUser->UpdateItem( (BYTE)( pItemElemPet->m_dwObjId ), UI_PETVIS_ITEMSWAP, MAKELONG( nPos1, nPos2 ) );
+	CItemElem * pItemElemPet = pUser->GetVisPetItem();
+	if (!IsUsableItem(pItemElemPet)) return;
+
+	pUser->UpdateItem(*pItemElemPet, UI::PetVis::ItemSwap{ nPos1, nPos2 });
 }
 
 // 최고레벨 비스에 변화가 생긴 경우 SFX를 변화시킨다.
