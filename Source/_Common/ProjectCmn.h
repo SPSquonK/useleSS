@@ -29,7 +29,6 @@
 #define	MAX_COMPLETE_QUEST		300 
 #define MAX_CHECKED_QUEST		5
 #define MAX_PARTYLEVEL			10
-#define MAX_ADDEXPPARTY			16
 #define MAX_RENEWEVENT			8000
 #define MAX_REALITEM			8			// 이벤트 상품 아이템
 #define MAX_EVENTREALITEM		4096

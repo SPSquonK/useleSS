@@ -246,10 +246,6 @@ struct ATKSTYLE {
 	DWORD dwParam2;
 };
 
-struct ADDEXPPARTY {
-	DWORD	Exp, Level;	//  협동 추가 경험치 / 제공레벨
-};
-
 
 
 struct MotionProp
@@ -792,7 +788,6 @@ public:
 	DWORD						m_aExpLPPoint[ MAX_EXPLPPOINT ];
 	DWORD						m_aExpSkill[ MAX_EXPSKILL ];
 	EXPPARTY					m_aExpParty[MAX_PARTYLEVEL];
-	ADDEXPPARTY					m_aAddExpParty[ MAX_ADDEXPPARTY ];
 	CPtrArray					m_itemKindAry[ MAX_ITEM_KIND3 ];
 	int							m_aExpUpItem[6][11];	// +0 ~ +10까지의 추가능력치.
 	DWORD						m_adwExpDropLuck[122][11];

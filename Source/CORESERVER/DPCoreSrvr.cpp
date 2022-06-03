@@ -713,77 +713,45 @@ void CDPCoreSrvr::OnGetCorePlayer( CAr & ar, DPID, DPID, DPID, u_long )
 
 void CDPCoreSrvr::OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long )
 {
-	u_long uPartyId;
-	int nMonLv;
-	BOOL bSuperLeader = FALSE;
-	BOOL bLeaderSMPartyExpUp = FALSE;
-
-	ar >> uPartyId;
-	ar >> nMonLv;
-	ar >> bSuperLeader;
-	ar >> bLeaderSMPartyExpUp;
+	const auto [uPartyId, nMonLv, bSuperLeader, bLeaderSMPartyExpUp] = ar.Extract<u_long, int, BOOL, BOOL>();
 	
 	CMclAutoLock	Lock( g_PartyMng.m_AddRemoveLock );
 	CParty* pParty	= g_PartyMng.GetParty( uPartyId );
-	if( pParty )
-	{
-		if( pParty->m_nKindTroup == 0 )
-		{
-			if( pParty->m_nLevel < MAX_PARTYLEVEL )
-			{
-				int nAddExp	= (int)( (nMonLv / 25 + 1) * 10 );
-				nAddExp		= (int)( nAddExp * s_fPartyExpRate );
-				if( bSuperLeader )
-					nAddExp		*= 2;
-				if( bLeaderSMPartyExpUp )
-					nAddExp	= (int)( nAddExp * 1.5 );
+	if (!pParty) return;
 
-				pParty->m_nExp += nAddExp;
+	bool stable = true;
+	while (true) {
+		const bool canLevelUp = pParty->m_nKindTroup != 0 || pParty->m_nLevel < MAX_PARTYLEVEL;
+		if (!canLevelUp) break;
 
-				if( pParty->m_nExp >= (int)( g_PartyMng.m_aExpParty[pParty->m_nLevel].Exp ) )
-				{
-					pParty->m_nExp	-= g_PartyMng.m_aExpParty[pParty->m_nLevel].Exp;
-					pParty->m_nPoint	+= g_PartyMng.m_aExpParty[pParty->m_nLevel].Point;
-					pParty->m_nLevel++;
-				}
-			}
-		}
-		else
-		{
-			int nAddExp	= (int)( (nMonLv / 25 + 1 ) * 10 );
-			nAddExp		= (int)( nAddExp * s_fPartyExpRate );
+		stable = false;
 
-			if( bSuperLeader )
-				nAddExp		*= 2;
-			if( bLeaderSMPartyExpUp )
-				nAddExp		= (int)( nAddExp * 1.5 );
+		int nAddExp = (int)((nMonLv / 25 + 1) * 10);
+		nAddExp = (int)(nAddExp * s_fPartyExpRate);
+		if (bSuperLeader) nAddExp *= 2;
+		if (bLeaderSMPartyExpUp) nAddExp = (int)(nAddExp * 1.5);
 
-			pParty->m_nExp += nAddExp;
-			
-			if( pParty->m_nExp >= int( ( ( 50 + pParty->GetLevel() ) * pParty->GetLevel() / 13 ) * 10 ) )
-			{
-				pParty->m_nExp	-= int( ( ( 50 + pParty->GetLevel() ) * pParty->GetLevel() / 13 ) * 10 );
-				pParty->m_nLevel++;
-#ifdef __MA_VER11_01	// 극단레벨업포인트변경
-				pParty->m_nPoint	+= 15;
-#else	//__MA_VER11_01	// 극단레벨업포인트변경
-				if( 11 <= pParty->m_nLevel && pParty->m_nLevel <= 40 )
-				{
-					pParty->m_nPoint	+= 15;//2;//g_PartyMng.m_aExpParty[nIndex].Point;
-				}
-				else
-				if( 40 < pParty->m_nLevel )
-				{
-					pParty->m_nPoint	+= 10;//g_PartyMng.m_aExpParty[nIndex].Point;
-				}
-#endif	//__MA_VER11_01	// 극단레벨업포인트변경
+		pParty->m_nExp += nAddExp;
 
-			}
+		EXPPARTY expParty;
+		if (pParty->m_nKindTroup == 0) {
+			expParty = g_PartyMng.m_aExpParty[pParty->m_nLevel];
+		} else {
+			expParty.Exp = static_cast<int>(((50 + pParty->GetLevel()) * pParty->GetLevel() / 13) * 10);
+			expParty.Point = 15;
 		}
 
-		BEFORESENDDUAL( ar, PACKETTYPE_SETPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN );
+		if (pParty->m_nExp >= expParty.Exp) {
+			pParty->m_nExp -= expParty.Exp;
+			pParty->m_nPoint += expParty.Point;
+			++pParty->m_nLevel;
+		}
+	}
+
+	if (!stable) {
+		BEFORESENDDUAL(ar, PACKETTYPE_SETPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN);
 		ar << uPartyId << pParty->m_nExp << pParty->m_nPoint << pParty->m_nLevel;
-		SEND( ar, this, DPID_ALLPLAYERS );
+		SEND(ar, this, DPID_ALLPLAYERS);
 	}
 }
 

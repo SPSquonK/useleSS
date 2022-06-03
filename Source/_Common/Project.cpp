@@ -3052,14 +3052,11 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 		else
 		if( script.Token == _T( "expPartySkill" ) )
 		{
-			ZeroMemory( m_aAddExpParty, sizeof( m_aAddExpParty ) );
 			script.GetToken(); // { 
-			dwVal = script.GetNumber();
-			while( *script.token != '}' )
-			{
-				m_aAddExpParty[ i ].Exp = dwVal;
-				m_aAddExpParty[ i++ ].Level = script.GetNumber();
-				dwVal = script.GetNumber();
+			/* Exp */ script.GetNumber();
+			while (*script.token != '}') {
+				/* Level */ script.GetNumber();
+				/* Next iteration Exp */ script.GetNumber();
 			}
 		}
 		else if( script.Token == _T( "expCompanyTest" ) )
