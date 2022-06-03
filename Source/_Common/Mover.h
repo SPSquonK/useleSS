@@ -1129,9 +1129,17 @@ public:
  	BOOL			IsDropableState( BOOL bPK );
 	CItem*			DropGold( DWORD dwGold, const D3DXVECTOR3& vPos, BOOL bPK = FALSE );
 	void			UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime = 0 );
+
+public:
+#ifdef __CLIENT
 	void UpdateItem(ItemPos dwId, const UI::Variant & operation);
-	void UpdateItem(CItemElem * itemElem, const UI::Variant & operation);
+#endif
+#ifdef __WORLDSERVER
 	void UpdateItem(CItemElem & itemElem, const UI::Variant & operation);
+#endif
+private:
+	void UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & operation);
+public:
 	CItem*			_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos );
 	CItem*			DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BOOL bPlayer = FALSE );
 	int				DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyEquip = FALSE );

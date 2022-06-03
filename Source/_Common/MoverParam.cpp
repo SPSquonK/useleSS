@@ -3178,33 +3178,41 @@ int CMover::GetItemEnduranceWeight( int nEndurance )
 */	return 1 * nMinusMultyPly;
 }
 
-template<class> inline constexpr bool always_false_v = false;
-
+#ifdef __CLIENT
 void CMover::UpdateItem(const ItemPos dwId, const UI::Variant & operation) {
-	CItemElem * const itemElem = GetItemId(dwId);
-	UpdateItem(itemElem, operation);
+	// Client updates comes from DPSrvr, item may not exist
+	UpdateItem(GetItemId(dwId), dwId, operation);
 }
+#endif
 
-void CMover::UpdateItem(CItemElem * itemElem, const UI::Variant & operation) {
-	if (itemElem) UpdateItem(*itemElem, operation);
-}
-
+#ifdef __WORLDSERVER
 void CMover::UpdateItem(CItemElem & itemElem, const UI::Variant & operation) {
-	const ItemPos dwId = itemElem.m_dwObjId;
-	
-	std::visit(
-		[&](auto && arg) {
-			using T = std::decay_t<decltype(arg)>;
+	// WorldServer must know the item it wants to edit
+	UpdateItem(&itemElem, itemElem.m_dwObjId, operation);
+}
+#endif
 
-			if constexpr (std::is_invocable_v<T, CItemElem &, CMover &>) {
-				arg(itemElem, *this);
-			} else if constexpr (std::is_invocable_v<T, CItemElem &>) {
-				arg(itemElem);
-			} else {
-				static_assert(always_false_v<T>, "Did not found an operator()(CItemElem &)");
-			}
-		}, operation
-	);
+template<class> inline constexpr bool always_false_v = false;
+void CMover::UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & operation) {
+	if (itemElem) {
+		std::visit(
+			[&](auto && arg) {
+				using T = std::decay_t<decltype(arg)>;
+
+				if constexpr (std::is_invocable_v<T, CItemElem &, CMover &>) {
+					arg(*itemElem, *this);
+				} else if constexpr (std::is_invocable_v<T, CItemElem &>) {
+					arg(*itemElem);
+				} else {
+					static_assert(always_false_v<T>, "Did not found an operator()(CItemElem &)");
+				}
+			}, operation
+		);
+	} else {
+#ifdef __CLIENT
+		// UI_Flag
+#endif
+	}
 
 #ifdef __WORLDSERVER
 	if (IsPlayer()) {

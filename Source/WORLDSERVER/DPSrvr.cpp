@@ -4636,7 +4636,7 @@ void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 		}
 		PutItemLog( pUser, "v", "OnRemoveItemLevelDown", pItemElem );
 		pItemElem->SetLevelDown();
-		pUser->UpdateItem(pItemElem, UI::RandomOptItem(pItemElem->GetRandomOptItemId()));
+		pUser->UpdateItem(*pItemElem, UI::RandomOptItem(pItemElem->GetRandomOptItemId()));
 	}
 }
 
@@ -9437,7 +9437,7 @@ void	CDPSrvr::OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 				&& g_xRandomOptionProperty.GetRandomOptionSize( pItem->GetRandomOptItemId() ) > 0 )
 			{
 				g_xRandomOptionProperty.InitializeRandomOption( pItem->GetRandomOptItemIdPtr() );
-				pUser->UpdateItem(pItem, UI::RandomOptItem(pItem->GetRandomOptItemId()));
+				pUser->UpdateItem(*pItem, UI::RandomOptItem(pItem->GetRandomOptItemId()));
 				pUser->AddDiagText( prj.GetText( TID_GAME_BLESSEDNESS_CANCEL_INFO ) );
 				// log
 				LogItemInfo	log;
@@ -9490,7 +9490,7 @@ void	CDPSrvr::OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 			}
 			g_xRandomOptionProperty.InitializeRandomOption( pItem->GetRandomOptItemIdPtr() );
 			g_xRandomOptionProperty.GenRandomOption( pItem->GetRandomOptItemIdPtr(), nRandomOptionKind, pItem->GetProp()->dwParts );
-			pUser->UpdateItem(pItem, UI::RandomOptItem(pItem->GetRandomOptItemId()));
+			pUser->UpdateItem(*pItem, UI::RandomOptItem(pItem->GetRandomOptItemId()));
 			pUser->AddGold( -nCost );
 			pUser->AddDefinedText( TID_GAME_AWAKENING_SUCCESS );
 			// log
@@ -10058,7 +10058,7 @@ BOOL CDPSrvr::DoUseItemTarget_GenRandomOption(
 	}
 	//	mulcom	END100405	각성 보호의 두루마리
 
-	pUser->UpdateItem(pTarget, UI::RandomOptItem(pTarget->GetRandomOptItemId()));
+	pUser->UpdateItem(*pTarget, UI::RandomOptItem(pTarget->GetRandomOptItemId()));
 
 	// 활성화 된 픽업펫 또는 리어펫 각성 직 후 효과 적용
 	if( pUser->IsUsing( pTarget ) 
@@ -10114,7 +10114,7 @@ BOOL CDPSrvr::DoUseItemTarget_InitializeRandomOption(
 #endif	//__PROTECT_AWAKE
 		//	mulcom	END100405	각성 보호의 두루마리
 
-		pUser->UpdateItem(pTarget, UI::RandomOptItem(pTarget->GetRandomOptItemId()));
+		pUser->UpdateItem(*pTarget, UI::RandomOptItem(pTarget->GetRandomOptItemId()));
 		pUser->AddDiagText( prj.GetText( nOk ) );
 		// log
 		LogItemInfo	log;
@@ -10144,7 +10144,7 @@ BOOL CDPSrvr::DoUseItemTarget_ItemLevelDown( CUser* pUser, CItemElem* pMaterial,
 	if( nLevelDown == 0 || ( nLevelDown == -5 && pMaterial->m_dwItemId == II_SYS_SYS_SCR_LEVELDOWN02 ) )
 	{
 		pTarget->SetLevelDown( pMaterial->m_dwItemId == II_SYS_SYS_SCR_LEVELDOWN01? CItemElem::e5LevelDown: CItemElem::e10LevelDown );
-		pUser->UpdateItem(pTarget, UI::RandomOptItem(pTarget->GetRandomOptItemId()));
+		pUser->UpdateItem(*pTarget, UI::RandomOptItem(pTarget->GetRandomOptItemId()));
 		// log
 		LogItemInfo	log;
 		log.Action	= "r";

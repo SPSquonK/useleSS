@@ -7979,7 +7979,7 @@ void	CUser::SelectAwakeningValue( DWORD dwItemObjID, DWORD dwSerialNumber, BYTE 
 
 	if( bRetValue == true )
 	{
-		UpdateItem(pItem, UI::RandomOptItem(pItem->GetRandomOptItemId()));
+		UpdateItem(*pItem, UI::RandomOptItem(pItem->GetRandomOptItemId()));
 
 		//	mulcom	BEGIN100426	각성 보호의 두루마리 로그.
 		//WriteLog( "UserID [%d] : ItemSerialNumber[%d] SelectAwakeningValue bySelectFlag[%d]", (int)( GetId() ), (int)( pItem->GetSerialNumber() ), (int)( bySelectFlag ) );
