@@ -131,7 +131,7 @@ public:
 	TCHAR	m_apszWorld[MAX_WORLD][64];
 	TCHAR	m_apszWorldName[MAX_WORLD][64];
 	std::vector<BEGINITEM>	m_aryBeginItem;
-	CMapStrToPtr	m_mapBeginPos;
+	std::map<std::string, std::vector<D3DXVECTOR3>> m_mapBeginPos;
 	JOBITEM		m_jobItem[MAX_JOBITEM];
 //	DWORD	m_aExpJobLevel[MAX_EXPJOBLEVEL + 1];
 
@@ -147,8 +147,7 @@ public:
 	int		GetBeginItemSize( void );
 	LPBEGINITEM	GetBeginItem( int nIndex );
 	void	LoadBeginPos( void );
-	void	AddBeginPos( const char* lpszWorld, const D3DXVECTOR3 & vPos );
-	BOOL	GetRandomBeginPos( DWORD dwWorldID, LPD3DXVECTOR3 pvOut );
+	std::optional<D3DXVECTOR3> GetRandomBeginPos(DWORD dwWorldID) const;
 	BOOL	LoadPropMover( LPCTSTR lpszFileName );
 	BOOL	LoadPropItem( LPCTSTR lpszFileName, CFixedArray<ItemProp>* apObjProp );
 	BOOL	LoadDefOfWorld( LPCTSTR lpszFileName );

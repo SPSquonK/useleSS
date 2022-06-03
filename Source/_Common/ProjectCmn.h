@@ -832,15 +832,6 @@ typedef struct tagJOBITEM
 
 } JOBITEM,* LPJOBITEM;
 
-#define	MAX_BEGINPOS	16
-
-typedef	struct tagBEGINPOSARR
-{
-	u_long	uSize;
-	D3DXVECTOR3 avPos[MAX_BEGINPOS];
-}
-BEGINPOSARR, *LPBEGINPOSARR;
-
 #define TASKBAR_TOP    0
 #define TASKBAR_BOTTOM 1
 #define TASKBAR_LEFT   2

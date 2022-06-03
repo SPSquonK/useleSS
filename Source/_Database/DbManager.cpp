@@ -148,14 +148,14 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	DWORD dwAuthKey;
 	arRead >> dwAuthKey;
 	DWORD dwIndex	= ( nSex == SEX_FEMALE ? MI_FEMALE : MI_MALE );
-	D3DXVECTOR3	vPos;
 	DWORD dwWorldID	= WI_WORLD_MADRIGAL;
 	if( !g_appInfo.dwSys )
 		dwWorldID	= WI_WORLD_EVENT01;
 
-	if( prj.GetRandomBeginPos( dwWorldID, &vPos ) == FALSE ) {
-		ASSERT( 0 );
-	}
+	const auto startingPosOpt = prj.GetRandomBeginPos(dwWorldID);
+	if (!startingPosOpt) { ASSERT(0); }
+
+	D3DXVECTOR3 vPos = startingPosOpt.value();
 
 	if( nSex != SEX_FEMALE && nSex != SEX_MALE )
 	{

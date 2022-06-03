@@ -64,8 +64,6 @@ CProject::CProject()
 
 CProject::~CProject()
 {
-	for( CMapStrToPtr::iterator i	= m_mapBeginPos.begin(); i != m_mapBeginPos.end(); ++i )
-		safe_delete( (BEGINPOSARR*)i->second );
 //	if( m_pPropMover )
 //		::VirtualFree( m_pPropMover, sizeof(MoverProp) * MAX_PROPMOVER, MEM_DECOMMIT );
 	SAFE_DELETE_ARRAY( m_pPropMover );
@@ -189,14 +187,11 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
-void CProject::LoadBeginPos( void )
-{
+void CProject::LoadBeginPos() {
 	WIN32_FIND_DATA ffdFoundData; 
-	HANDLE hFound;
-	CHAR lpFileName[MAX_PATH];
-
+	
 	BOOL bDoneWithHandle	= FALSE;
-	hFound	= FindFirstFile( MakePath( DIR_WORLD, "*.*" ), (LPWIN32_FIND_DATA)&ffdFoundData );
+	HANDLE hFound	= FindFirstFile( MakePath( DIR_WORLD, "*.*" ), (LPWIN32_FIND_DATA)&ffdFoundData );
 	
 	if( (HANDLE)( -1 ) == hFound )
 		bDoneWithHandle	= TRUE;
@@ -208,6 +203,7 @@ void CProject::LoadBeginPos( void )
 	{
 		if( ( FILE_ATTRIBUTE_DIRECTORY & ffdFoundData.dwFileAttributes ) && ( 0 != strcmp( ".", ffdFoundData.cFileName ) ) && ( 0 != strcmp( "..", ffdFoundData.cFileName ) ) )
 		{
+			CHAR lpFileName[MAX_PATH];
 			sprintf( lpFileName, "%s%s\\%s.rgn", DIR_WORLD, ffdFoundData.cFileName, ffdFoundData.cFileName );
 			CScanner s;
 			if( s.Load( lpFileName ) == TRUE )
@@ -275,7 +271,10 @@ void CProject::LoadBeginPos( void )
 						if( RI_BEGIN == dwIndex ) 
 						{
 							strlwr( ffdFoundData.cFileName );
-							AddBeginPos( ffdFoundData.cFileName, vPos );
+							const char * worldName = ffdFoundData.cFileName;
+							
+							// 맵이름으로 배열 찾기, 맵이름 없으면, 생성해서 넣은뒤, 첫번째 포스 배열에 좌표 넣기,
+							m_mapBeginPos[worldName].emplace_back(vPos);
 						}
 					}
 					else if( s.Token == _T( "respawn" ) )
@@ -295,38 +294,14 @@ void CProject::LoadBeginPos( void )
 	FindClose( hFound );
 }
 
-void CProject::AddBeginPos( const CHAR* lpszWorld, const D3DXVECTOR3 & vPos )
-{
-	// 맵이름으로 배열 찾기, 맵이름 없으면, 생성해서 넣은뒤, 첫번째 포스 배열에 좌표 넣기,
+std::optional<D3DXVECTOR3> CProject::GetRandomBeginPos(const DWORD dwWorldID) const {
+	const TCHAR * worldName = m_apszWorld[dwWorldID];
 
-	CMapStrToPtr::iterator i	= m_mapBeginPos.find( lpszWorld );
-	if( i == m_mapBeginPos.end() )
-	{
-		LPBEGINPOSARR lpBeginPosArr	= new BEGINPOSARR;
-		lpBeginPosArr->uSize	= 0;
-		lpBeginPosArr->avPos[lpBeginPosArr->uSize++]	= vPos;
-		m_mapBeginPos[lpszWorld]	= (void*)lpBeginPosArr;
-	}
-	else
-	{
-		LPBEGINPOSARR lpBeginPosArr		= (LPBEGINPOSARR)i->second;
-		lpBeginPosArr->avPos[lpBeginPosArr->uSize++]	= vPos;
-	}
-}
+	const auto it = m_mapBeginPos.find(worldName);
+	if (it == m_mapBeginPos.end()) return std::nullopt;
+	if (it->second.empty()) return std::nullopt;
 
-BOOL CProject::GetRandomBeginPos( DWORD dwWorldID, D3DXVECTOR3* pvOut )
-{
-	char* lpszWorld
-		= m_apszWorld[dwWorldID];
-
-	CMapStrToPtr::iterator i	= m_mapBeginPos.find( lpszWorld );
-	if( i != m_mapBeginPos.end() )
-	{
-		LPBEGINPOSARR lpBeginPosArr		= (LPBEGINPOSARR)i->second;
-		*pvOut	= lpBeginPosArr->avPos[xRandom( lpBeginPosArr->uSize )];
-		return TRUE;
-	}
-	return FALSE;
+	return it->second[xRandom(it->second.size())];
 }
 
 BOOL CProject::LoadDefOfWorld( LPCTSTR lpszFileName )
