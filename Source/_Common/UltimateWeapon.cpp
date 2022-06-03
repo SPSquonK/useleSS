@@ -315,7 +315,7 @@ int CUltimateWeapon::SetGem( CUser* pUser, OBJID objItemId, OBJID objGemItemId )
 	if( nRandom < m_nSetGemProb )
 	{
 		// 보석 합성
-		pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_ULTIMATE_PIERCING, MAKELONG( nCount, dwSetItemId ) );
+		pUser->UpdateItem(*pItemElem, UI::Piercing::Item{ UI::Piercing::Kind::Ultimate, nCount, dwSetItemId });
 		aLogItem.RecvName = "ULTIMATE_PIERCING_SUCCESS";
 		g_DPSrvr.OnLogItem( aLogItem, pItemElem, 1 );
 		return ULTIMATE_SUCCESS;	
@@ -369,7 +369,7 @@ int CUltimateWeapon::RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem 
 		{
 			if( pItemElem->GetUltimatePiercingItem( i ) != 0 )
 			{
-				pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_ULTIMATE_PIERCING, MAKELONG( i, 0 ) );
+				pUser->UpdateItem(*pItemElem, UI::Piercing::Item{ UI::Piercing::Kind::Ultimate, i, 0 });
 				aLogItem.RecvName = "ULTIMATE_PIERCING_REMOVE_SUC";
 				g_DPSrvr.OnLogItem( aLogItem, pItemElem, 1 );
 				break;
@@ -663,7 +663,7 @@ int CUltimateWeapon::EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItemGe
 	{
 		pUser->UpdateItem( (BYTE)pItemElemWeapon->m_dwObjId, UI_AO, ++pAbilityOpt );
 		if( pAbilityOpt > 5 )
-			pUser->UpdateItem( (BYTE)pItemElemWeapon->m_dwObjId, UI_ULTIMATE_PIERCING_SIZE, pAbilityOpt - 5 );
+			pUser->UpdateItem( *pItemElemWeapon, UI::Piercing::Size::Ultimate(*pItemElemWeapon) );
 		aLogItem.RecvName = "ULTIMATE_ENCHANT_SUCCESS";
 		g_DPSrvr.OnLogItem( aLogItem, pItemElemWeapon, 1 );
 		return ULTIMATE_SUCCESS;
@@ -755,8 +755,9 @@ BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, C
 			g_UserMng.AddCreateSfxObj( ( CMover * )pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 		
 		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO, pItemMain->GetAbilityOption() + 1 );
-		if( pItemMain->GetAbilityOption() > 5 )
-			pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_ULTIMATE_PIERCING_SIZE, pItemMain->GetAbilityOption() - 5 );
+		if (pItemMain->GetAbilityOption() > 5) {
+			pUser->UpdateItem(*pItemMain, UI::Piercing::Size::Ultimate(*pItemMain));
+		}
 		
 		aLogItem.RecvName = "ULTIMATE_ENC_SUC_SMELTSAFETY";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );

@@ -64,16 +64,11 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define	UI_AO					3
 #define	UI_RAO					4
 #define	UI_IR					5
-#define	UI_PIERCING_SIZE		6
-#define	UI_PIERCING				7
 #define UI_COOLTIME				8
 #define	UI_FLAG					9
 #define	UI_RANDOMOPTITEMID		10
 #define	UI_KEEPTIME				11
 #define UI_REPAIR_NUM			12
-
-#define UI_ULTIMATE_PIERCING_SIZE	13
-#define UI_ULTIMATE_PIERCING		14
 
 #include "UpdateItem.h"
 
@@ -1097,7 +1092,9 @@ public:
 	void			SetSetItemAvail( int nAbilityOption );
 	void			ResetSetItemAvail( int nAbilityOption );
 	void			DestParamPiercingAvail( CItemElem* pItemElem, BOOL bSET = TRUE );
+#ifdef __WORLDSERVER
 	BOOL			Pierce( CItemElem *pSuit, DWORD dwItemId );
+#endif
 	void			SetDestParamSetItem( CItemElem* pItemElem );
 	void			ResetDestParamSetItem( CItemElem* pItemElem );
 	[[nodiscard]] int GetEquipedSetItemNumber(const CSetItem & pSetItem);

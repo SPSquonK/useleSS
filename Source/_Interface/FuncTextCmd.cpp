@@ -1391,8 +1391,9 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_IR,  bItemResist );
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_RAO,  nResistAbilityOption );
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_AO,  nAbilityOption );
-	if( nAbilityOption > 5 && pItemElem0->GetProp()->dwReferStat1 == WEAPON_ULTIMATE )
-		pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_ULTIMATE_PIERCING_SIZE, nAbilityOption - 5 );
+	if (nAbilityOption > 5 && pItemElem0->GetProp()->dwReferStat1 == WEAPON_ULTIMATE) {
+		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::Ultimate(*pItemElem0));
+	}
 #else // __WORLDSEVER
 #ifdef __CLIENT
 	if( g_WndMng.m_pWndUpgradeBase == NULL )
@@ -1472,7 +1473,7 @@ BOOL TextCmd_CommercialElem( CScanner& )
 BOOL TextCmd_Piercing(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwObjId	= scanner.GetNumber();
-	BYTE bPierNum = scanner.GetNumber();
+	int bPierNum = scanner.GetNumber();
 
 	CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwObjId );
 	if( NULL == pItemElem0 )
@@ -1489,14 +1490,14 @@ BOOL TextCmd_Piercing(CScanner & scanner, CPlayer_ * pUser) {
 
 	if( bPierNum < pItemElem0->GetPiercingSize() )
 	{
-		pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_PIERCING_SIZE, bPierNum );
+		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size{ UI::Piercing::Kind::Regular, bPierNum });
 		return TRUE;
 	}
 
 	for( int i=1; i<=bPierNum; i++ )
 	{
 		if( pItemElem0->IsPierceAble( NULL_ID, TRUE ) )
-			pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_PIERCING_SIZE, i );
+			pUser->UpdateItem(*pItemElem0, UI::Piercing::Size{ UI::Piercing::Kind::Regular, i });
 	}
 #else // __WORLDSEVER
 #ifdef __CLIENT

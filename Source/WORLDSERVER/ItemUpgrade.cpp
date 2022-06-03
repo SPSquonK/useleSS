@@ -191,7 +191,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 	{	// 성공			
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
 		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
-		pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_PIERCING_SIZE, pItemElem0->GetPiercingSize() + 1 );
+		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::IncrementRegular(*pItemElem0));
 		pUser->AddDefinedText( TID_MMI_PIERCINGSUCCESS , "" );
 
 		aLogItem.Action = "#";
@@ -345,7 +345,7 @@ void CItemUpgrade::OnPiercingRemove( CUser* pUser, DWORD objId )
 		{
 			pUser->AddGold( -nPayPenya );	// 페냐 지불
 			pUser->AddDefinedText( TID_GAME_REMOVE_PIERCING_SUCCESS );
-			pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_PIERCING, MAKELONG( i, 0 ) );
+			pUser->UpdateItem(*pItemElem, UI::Piercing::Item{ UI::Piercing::Kind::Regular, i, 0 });
 
 			LogItemInfo aLogItem;
 			aLogItem.Action = "$";
@@ -695,7 +695,7 @@ BYTE	CItemUpgrade::SmeltSafetyPiercingSize(CUser* pUser, CItemElem* pItemMain, C
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_PIERCING_SIZE, pItemMain->GetPiercingSize() + 1 );
+		pUser->UpdateItem(*pItemMain, UI::Piercing::Size::IncrementRegular(*pItemMain));
 
 		aLogItem.Action = "#";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );

@@ -3242,6 +3242,38 @@ namespace UI {
 		itemElem.m_bCharged = TRUE;
 	}
 
+	namespace Piercing {
+
+		Size Size::IncrementRegular(const CItemElem & itemElem) {
+			Size p;
+			p.kind = Kind::Regular;
+			p.newSize = itemElem.GetPiercingSize() + 1;
+			return p;
+		}
+
+		Size Size::Ultimate(const CItemElem & itemElem) {
+			return Size{
+				.kind = Kind::Ultimate,
+				.newSize = itemElem.GetAbilityOption() - 5
+			};
+		}
+
+
+		void Size::operator()(CItemElem & itemElem) const {
+			switch (kind) {
+				case Kind::Regular : itemElem.SetPiercingSize(newSize);         break;
+				case Kind::Ultimate: itemElem.SetUltimatePiercingSize(newSize); break;
+			}
+		}
+
+		void Item::operator()(CItemElem & itemElem) const {
+			switch (kind) {
+				case Kind::Regular : itemElem.SetPiercingItem(position, itemId);         break;
+				case Kind::Ultimate: itemElem.SetUltimatePiercingItem(position, itemId); break;
+			}
+		}
+	}
+
 	namespace PetVis {
 		// == Size
 
@@ -3360,26 +3392,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 				{
 				  pItemBase->m_bItemResist	= (BYTE)( dwValue );
 					UpdateParam();
-				}
-				break;
-
-			case UI_PIERCING_SIZE:
-				pItemBase->SetPiercingSize( dwValue );
-				break;
-			case UI_PIERCING:
-				{
-					WORD wIndex	= LOWORD( dwValue ), wItemId	= HIWORD( dwValue );
-					pItemBase->SetPiercingItem( wIndex, wItemId );
-				}
-				break;
-
-			case UI_ULTIMATE_PIERCING_SIZE:
-				pItemBase->SetUltimatePiercingSize( dwValue );
-				break;
-			case UI_ULTIMATE_PIERCING:
-				{
-					WORD wIndex	= LOWORD( dwValue ), wItemId	= HIWORD( dwValue );
-					pItemBase->SetUltimatePiercingItem( wIndex, wItemId );
 				}
 				break;
 

@@ -49,10 +49,10 @@ namespace SqKItemEnchant {
       handlers["element"] = Handler{ "[elementname|none] [level]?", ElementHandler };
 
       handlers["piercing"] = Handler{ "[quantity] [Item Name]...",
-          PiercingHandler<UI_PIERCING_SIZE, UI_PIERCING, MAX_PIERCING_WEAPON>
+          PiercingHandler<UI::Piercing::Kind::Regular, MAX_PIERCING_WEAPON>
       };
       handlers["jewel"] = Handler{ "[quantity] [Item Name]...",
-          PiercingHandler<UI_ULTIMATE_PIERCING_SIZE, UI_ULTIMATE_PIERCING, MAX_PIERCING_ULTIMATE>
+          PiercingHandler<UI::Piercing::Kind::Ultimate, MAX_PIERCING_ULTIMATE>
       };
     }
 
@@ -100,7 +100,7 @@ namespace SqKItemEnchant {
       return true;
     }
 
-    template<size_t SIZE_UI, size_t SLOT_UI, size_t MAX_SLOTS>
+    template<UI::Piercing::Kind kind, size_t MAX_SLOTS>
     static bool PiercingHandler(Parameters p) {
       // Transform parameters to the list of items to socket
       std::vector<DWORD> newPiercings;
@@ -134,9 +134,18 @@ namespace SqKItemEnchant {
         return false;
       }
 
-      p.user.UpdateItem(p.item.m_dwObjId, SIZE_UI, newPiercings.size());
+      p.user.UpdateItem(p.item, UI::Piercing::Size{
+        .kind = kind,
+        .newSize = static_cast<int>(newPiercings.size())
+        });
+
       for (size_t i = 0; i != newPiercings.size(); ++i) {
-        p.user.UpdateItem(p.item.m_dwObjId, SLOT_UI, MAKELONG(i, newPiercings[i]));
+        p.user.UpdateItem(p.item,
+          UI::Piercing::Item{
+            .kind = kind,
+            .position = static_cast<int>(i),
+            .itemId = newPiercings[i]
+          });
       }
 
       return true;

@@ -25,6 +25,27 @@ namespace UI {
     void operator()(CItemElem & itemElem) const;
   };
 
+  namespace Piercing {
+    enum class Kind { Regular, Ultimate };
+
+    struct Size {
+      static constexpr bool Archivable = true;
+      Kind kind;
+      int newSize;
+      [[nodiscard]] static Size IncrementRegular(const CItemElem & itemElem);
+      [[nodiscard]] static Size Ultimate(const CItemElem & itemElem);
+      void operator()(CItemElem & itemElem) const;
+    };
+
+    struct Item {
+      static constexpr bool Archivable = true;
+      Kind kind;
+      int position;
+      DWORD itemId;
+      void operator()(CItemElem & itemElem) const;
+    };
+  }
+
   namespace PetVis {
     struct Size {
       static constexpr bool Archivable = true;
@@ -61,8 +82,8 @@ namespace UI {
 
   using Variant = std::variant<
     RandomOptItem,
-    TransformToVisPet,
-    PetVis::Size, PetVis::Item, PetVis::ItemSwap
+    Piercing::Size, Piercing::Item, 
+    PetVis::Size, PetVis::Item, PetVis::ItemSwap, TransformToVisPet
   >;
 }
 

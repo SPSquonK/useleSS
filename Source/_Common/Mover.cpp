@@ -7431,20 +7431,21 @@ void CMover::DestParamPiercingAvail( CItemElem* pItemElem, BOOL bSET )
 	}
 }
 
+#ifdef __WORLDSERVER
 BOOL CMover::Pierce( CItemElem *pSuit, DWORD dwItemId )
 {
 	for( int i = 0; i < pSuit->GetPiercingSize(); i++ )
 	{
 		if( pSuit->GetPiercingItem( i ) == 0 )
 		{
-			//pSuit->SetPiercingItem( i, dwItemId ); - 중복 실행
-			UpdateItem( (BYTE)( pSuit->m_dwObjId ), UI_PIERCING, MAKELONG( i, dwItemId ) );
+			UpdateItem(*pSuit, UI::Piercing::Item{ UI::Piercing::Kind::Regular, i, dwItemId });
 			return TRUE;
 		}
 
 	}
 	return FALSE;
 }
+#endif
 
 #ifdef __WORLDSERVER
 void CMover::CheckTickCheer()
