@@ -669,17 +669,20 @@ void CDPSrvr::OnMoveItem(CAr & ar, CUser & pUser) {
 }
 
 void CDPSrvr::OnDropItem(CAr & ar, CUser & pUser) {
-	const auto [dwItemType, dwItemId, nDropNum, vPos] = ar.Extract<
-		DWORD, DWORD, short, D3DXVECTOR3
+	const auto [dwItemId, nDropNum, vPos] = ar.Extract<
+		DWORD, short, D3DXVECTOR3
 	>();
 
 	if (nDropNum <= 0) return;
 
 	if (g_eLocal.GetState(EVE_DROPITEMREMOVE)) {
 		CItemElem * pItemElem = pUser.GetItemId(dwItemId);
-		if (IsUsableItem(pItemElem) && pUser.IsDropable(pItemElem, FALSE)) {
-			pUser.RemoveItem((BYTE)dwItemId, nDropNum);
-		}
+
+		if (!IsUsableItem(pItemElem)) return;
+		if (!pUser.IsDropable(pItemElem, FALSE)) return;
+		if (nDropNum > pItemElem->m_nItemNum) return;
+
+		pUser.RemoveItem((BYTE)dwItemId, nDropNum);
 	} else {
 		pUser.DropItem(dwItemId, nDropNum, vPos);
 	}

@@ -180,7 +180,7 @@ BOOL CWndDropItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 		if( DropNum != 0 )
 		{
-			g_DPlay.SendDropItem( 0, m_pItemElem->m_dwObjId, DropNum, m_vPos );
+			g_DPlay.SendDropItem( m_pItemElem->m_dwObjId, DropNum, m_vPos );
 		}
 
 		Destroy();
@@ -229,7 +229,7 @@ BOOL CWndDropConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 { 
 	if( nID == WIDC_YES || message == EN_RETURN )
 	{
-		g_DPlay.SendDropItem( 0, m_pItemElem->m_dwObjId, 1, m_vPos );
+		g_DPlay.SendDropItem( m_pItemElem->m_dwObjId, 1, m_vPos );
 		Destroy();
 	}
 	else if( nID == WIDC_NO )

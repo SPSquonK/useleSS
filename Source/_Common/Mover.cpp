@@ -2362,7 +2362,6 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 		pItem->SetPos( v );
 		pItem->SetAngle( (float)( xRandom( 360 ) ) );
 		pItem->m_dwDropTime = timeGetTime();	// ¶³¾îÆ®·ÈÀ»¶§ÀÇ ½Ã°£.
-		UNUSED_ALWAYS( bPK );
 		GetWorld()->ADDOBJ( (CObj*)pItem, TRUE, GetLayer() );
 
 		RemoveItem( (BYTE)( dwID ), nDropNum );

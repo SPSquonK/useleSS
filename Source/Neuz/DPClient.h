@@ -137,7 +137,7 @@ public:
 	void	SendQueryGetMailGold( u_long nMail );
 	void	SendQueryReadMail( u_long nMail );
 	void	SendQueryMailBox( void );
-	void	SendDropItem( DWORD dwItemType, DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos );
+	void	SendDropItem( DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos );
 	void	SendDropGold( DWORD dwGold, const D3DXVECTOR3 & vPlayerPos, const D3DXVECTOR3 & vPos );
 	void	SendConfirmPKPVP( u_long uidPlayer );
 	void	OnSetDuel( OBJID objid, CAr & ar );

@@ -8517,15 +8517,15 @@ void CDPClient::SendDoEquip( BYTE nId )
 }
 */
 
-void CDPClient::SendDropItem(DWORD dwItemType, DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos) {
+void CDPClient::SendDropItem(DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos) {
 	if (g_WndMng.m_pWndDialog) {
 		g_WndMng.PutString(TID_GAME_DIALOGNODROPITEM);
 		return;
 	}
 
-	SendPacket<PACKETTYPE_DROPITEM, DWORD, DWORD, short, D3DXVECTOR3>(
-		dwItemType, dwItemId, nITemNum, vPos
-		);
+	SendPacket<PACKETTYPE_DROPITEM, DWORD, short, D3DXVECTOR3>(
+		dwItemId, nITemNum, vPos
+	);
 
 	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 	if (pWndWorld)
