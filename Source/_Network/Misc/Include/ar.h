@@ -391,6 +391,9 @@ inline CAr & operator>>(CAr & ar, StaticString<N> & str) {
 }
 
 
+// std::variant send / receive
+// - Original author: @SPSquonK 2022-06, released under the Boost License
+
 template<size_t Index, typename ... Ts>
 void CAr::VariantPush(const std::variant<Ts ...> & variant) {
 	if constexpr (sizeof...(Ts) == Index) {

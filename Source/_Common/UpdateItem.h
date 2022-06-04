@@ -7,6 +7,31 @@ class CItemElem;
 class CMover;
 
 namespace UI {
+  // 2 meta for me ~ SquonK Hidden Boss License on Synchronizer class
+  template<auto Field>
+    requires requires(CItemElem & itemElem) { itemElem.*Field; }
+  struct Synchronizer {
+    using SynchronizedType = decltype(CTtemElem().*Field);
+    SynchronizedType synchronizedValue;
+
+    static Synchronizer Sync(const CItemElem & itemElem) {
+      return Synchronizer{ itemElem.*Field };
+    }
+
+
+
+
+
+    friend CAr & operator<<(CAr & ar, const Synchronizer & sync) {
+      return ar << sync.value;
+    }
+
+    friend CAr & operator>>(CAr & ar, Synchronizer & sync) {
+      return ar >> sync.value;
+    }
+
+  };
+
 
   // Changes in the RandomOpt field
   // TODO: Current API is weird. This struct should manage the change
