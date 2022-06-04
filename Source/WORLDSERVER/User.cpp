@@ -2675,13 +2675,9 @@ void	CUser::ProcessCollecting( void )
 			&& !HasBuff( BUFF_ITEM2, II_GEN_TOO_COL_GOLDBATTERY ) 
 			&& !HasBuff( BUFF_ITEM2, II_GEN_TOO_COL_BATTERY001 ) )
 		{
-			if( --pCol->m_nHitPoint < 0 )
-				pCol->m_nHitPoint	= 0;
+			UpdateItem(*pCol, UI::HitPoint::Decrement);
 
-			UpdateItem( (BYTE)( pCol->m_dwObjId ), UI_HP, pCol->m_nHitPoint );
-
-			if( pCol->m_nHitPoint == 0 )
-			{
+			if (pCol->m_nHitPoint == 0) {
 				StopCollecting();
 				return;
 			}
@@ -2784,8 +2780,8 @@ BOOL CUser::DoUseItemBattery( void )
 	CItemElem* pCol		= GetCollector();
 	if( pCol == NULL || m_pActMover->GetActionState() == OBJSTA_COLLECT )
 		return FALSE;
-	UpdateItem( (BYTE)( pCol->m_dwObjId ), UI_HP, CCollectingProperty::GetInstance()->GetMaxBattery() );
 
+	UpdateItem(*pCol, CCollectingProperty::SetToMaxBattery());
 	return TRUE;
 }
 

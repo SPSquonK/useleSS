@@ -16,7 +16,7 @@ public:
 	BOOL	LoadScript( LPCTSTR szFile );
 
 	int		GetCool( int nAbilityOption );
-	int		GetMaxBattery( void )	{	return m_nMaxBattery;	}
+	int		GetMaxBattery( void ) const	{	return m_nMaxBattery;	}
 	DWORD	GetItem( void );
 	int		GetEnchantProbability( int nAbilityOption );
 	int		GetMaxCollectorLevel( void )	{	return m_anEnchant.size();	}
@@ -24,6 +24,8 @@ public:
 #ifdef __WORLDSERVER
 	std::vector<int>*	GetEnchantProbabilityPtr( void )	{	return &m_anEnchant;		}
 	std::vector<COLLECTING_ITEM>*	GetItemPtr( void )	{	return &m_aItem;	}
+
+	[[nodiscard]] static UI::HitPoint SetToMaxBattery();
 #endif	// __WORLDSERVER
 
 private:

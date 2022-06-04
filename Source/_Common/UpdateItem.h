@@ -158,9 +158,35 @@ namespace UI {
     void operator()(CItemElem & itemElem, CMover & mover) const;
   };
 
+  struct HitPoint {
+    static constexpr bool Archivable = true;
+    int newQuantity;
+
+    static HitPoint Decrement(const CItemElem & itemElem);
+
+    void operator()(CItemElem & itemElem, CMover & mover) const;
+  };
+
+  struct Repair {
+    static constexpr bool Archivable = true;
+    int newHitPoint;
+    int repairNumber;
+
+    static auto From(int nRepair) {
+      return [nRepair](const CItemElem & itemElem) {
+        return Repair{
+          .newHitPoint = static_cast<int>(itemElem.GetProp()->dwEndurance),
+          .repairNumber = itemElem.m_nRepairNumber + nRepair
+        };
+      };
+    }
+
+    void operator()(CItemElem & itemElem, CMover & mover) const;
+  };
+
   using Variant = std::variant<
-    Num, 
-    AbilityOption,
+    Num, AbilityOption,
+    HitPoint, Repair, 
     RandomOptItem, KeepTime, 
     Piercing::Size, Piercing::Item, 
     PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet

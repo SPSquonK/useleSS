@@ -106,3 +106,10 @@ int CCollectingProperty::GetEnchantProbability( int nAbilityOption )
 {
 	return	( nAbilityOption < (int)( m_anEnchant.size() ) ? m_anEnchant[nAbilityOption]: 0 );
 }
+
+#ifdef __WORLDSERVER
+UI::HitPoint CCollectingProperty::SetToMaxBattery() {
+	return UI::HitPoint{ .newQuantity = GetInstance()->GetMaxBattery() };
+}
+#endif
+

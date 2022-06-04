@@ -4353,14 +4353,12 @@ void CDPSrvr::OnRepairItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 		if( pUser->GetGold() < nCost )
 			return;
 
-		for( int i = 0; i < c; i++ )
-		{
-			if( apItemRepair[i] )
-			{
-				pUser->UpdateItem( (BYTE)apItemRepair[i]->m_dwObjId, UI_HP, apItemRepair[i]->GetProp()->dwEndurance );
-				pUser->UpdateItem( (BYTE)apItemRepair[i]->m_dwObjId, UI_RN, apItemRepair[i]->m_nRepairNumber + anRepair[i] );
+		for (int i = 0; i < c; i++) {
+			if (apItemRepair[i]) {
+				pUser->UpdateItem(*apItemRepair[i], UI::Repair::From(anRepair[i]));
 			}
 		}
+
 		pUser->AddDefinedText( TID_GAME_REPAIRITEM );
 	}
 }

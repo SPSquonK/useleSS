@@ -3372,6 +3372,23 @@ namespace UI {
 			itemElem.m_nItemNum = newQuantity;
 		}
 	}
+
+
+	HitPoint HitPoint::Decrement(const CItemElem & itemElem) {
+		const auto target = itemElem.m_nHitPoint > 0 ? itemElem.m_nHitPoint - 1 : 0;
+		return HitPoint{ .newQuantity = target };
+	}
+
+	void HitPoint::operator()(CItemElem & itemElem, CMover & mover) const {
+		itemElem.m_nHitPoint = newQuantity;
+		mover.UpdateParam();
+	}
+
+	void Repair::operator()(CItemElem & itemElem, CMover & mover) const {
+		itemElem.m_nHitPoint = newHitPoint;
+		itemElem.m_nRepairNumber = repairNumber > 100 ? 100 : repairNumber;
+		mover.UpdateParam();
+	}
 }
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
@@ -3382,23 +3399,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 	{
 		switch( cParam )
 		{
-			case UI_HP:
-				{
-				  pItemBase->m_nHitPoint = dwValue;
-					UpdateParam();
-					break;
-				}
-			case UI_RN:
-				{
-					if(pItemBase->m_nRepairNumber >= 100 )
-						return;
-					if( dwValue > 100 )
-						dwValue		= 100;
-					pItemBase->m_nRepairNumber	= (BYTE)( dwValue );
-					UpdateParam();
-				}
-				break;
-				
 			case UI_RAO: // ������ �Ӽ� + �ø���...
 				{
 					if(pItemBase->m_nResistAbilityOption > 20 )
