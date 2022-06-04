@@ -3222,7 +3222,7 @@ void CMover::UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & 
 			SNAPSHOTTYPE_UPDATE_ITEM_VARIANT, ItemPos, UI::Variant
 		>(dwId, operation);
 
-		if (std::holds_alternative<UI::TransformToVisPet>(operation)) {
+		if (std::holds_alternative<UI::PetVis::TransformToVisPet>(operation)) {
 			if (HasActivatedEatPet()) {
 				InactivateEatPet();
 				ActivateEatPet(itemElem);
@@ -3233,14 +3233,9 @@ void CMover::UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & 
 }
 
 namespace UI {
-	void RandomOptItem::operator()(CItemElem & itemElem) const {
-		itemElem.SetRandomOptItemId(value);
-	}
-
-	void TransformToVisPet::operator()(CItemElem & itemElem) const {
-		itemElem.m_bTranformVisPet = TRUE;
-		itemElem.m_bCharged = TRUE;
-	}
+	//void RandomOptItem::operator()(CItemElem & itemElem) const {
+	//	itemElem.SetRandomOptItemId(value);
+	//}
 
 	namespace Piercing {
 
@@ -3275,6 +3270,11 @@ namespace UI {
 	}
 
 	namespace PetVis {
+		void TransformToVisPet::operator()(CItemElem & itemElem) const {
+			itemElem.m_bTranformVisPet = TRUE;
+			itemElem.m_bCharged = TRUE;
+		}
+
 		// == Size
 
 		Size Size::DefaultVis() {

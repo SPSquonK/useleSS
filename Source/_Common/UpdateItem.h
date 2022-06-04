@@ -6,49 +6,58 @@
 class CItemElem;
 class CMover;
 
+// == Variant UI API
+// @SPSquonK 2022-06
+// Under the Boost License
+
+namespace sqktd {
+  namespace _ {
+    template<typename AnyType> struct PointerToMemberInfo{};
+
+    template<typename TheClass, typename TheMember>
+    struct PointerToMemberInfo<TheMember TheClass:: *> {
+      using Class = TheClass;
+      using Member = TheMember;
+    };
+  }
+}
+
 namespace UI {
-  // 2 meta for me ~ SquonK Hidden Boss License on Synchronizer class
+  /// The generic Synchronizer class aims to synchronize values from World to
+  /// Neuz.
+  /// 
+  /// Usage of Synchronizer is actually a code smell: it should be possible to
+  /// generate an UI component that will update the values both for server and
+  /// client, instead of relying on modifying first the data and then sending it
+  /// to the client.
   template<auto Field>
     requires requires(CItemElem & itemElem) { itemElem.*Field; }
   struct Synchronizer {
-    using SynchronizedType = decltype(CTtemElem().*Field);
-    SynchronizedType synchronizedValue;
+    using SynchronizedType = typename sqktd::_::PointerToMemberInfo<decltype(Field)>::Member;
+    SynchronizedType synchronizedValue{};
 
-    static Synchronizer Sync(const CItemElem & itemElem) {
-      return Synchronizer{ itemElem.*Field };
+    Synchronizer() = default;
+    explicit Synchronizer(SynchronizedType initial) : synchronizedValue(initial) {};
+
+    static Synchronizer<Field> Sync(const CItemElem & itemElem) {
+      return Synchronizer<Field>(itemElem.*Field);
     }
 
-
-
-
-
-    friend CAr & operator<<(CAr & ar, const Synchronizer & sync) {
-      return ar << sync.value;
+    void operator()(CItemElem & itemElem) const {
+      itemElem.*Field = synchronizedValue;
     }
-
-    friend CAr & operator>>(CAr & ar, Synchronizer & sync) {
-      return ar >> sync.value;
-    }
-
   };
 
-
-  // Changes in the RandomOpt field
-  // TODO: Current API is weird. This struct should manage the change
-  // server side
-  struct RandomOptItem {
-    static constexpr bool Archivable = true;
-    __int64 value = 0;
-    RandomOptItem() = default;
-    RandomOptItem(__int64 value) : value(value) {}
-
-    void operator()(CItemElem & itemElem) const;
-  };
-
-  struct TransformToVisPet {
-    static constexpr bool Archivable = true;
-    void operator()(CItemElem & itemElem) const;
-  };
+  using RandomOptItem = Synchronizer<&CItemElem::m_iRandomOptItemId>;
+    
+//  struct RandomOptItem {
+//    static constexpr bool Archivable = true;
+//    __int64 value = 0;
+//    RandomOptItem() = default;
+//    RandomOptItem(__int64 value) : value(value) {}
+//
+//    void operator()(CItemElem & itemElem) const;
+//  };
 
   namespace Piercing {
     enum class Kind { Regular, Ultimate };
@@ -72,6 +81,11 @@ namespace UI {
   }
 
   namespace PetVis {
+    struct TransformToVisPet {
+      static constexpr bool Archivable = true;
+      void operator()(CItemElem & itemElem) const;
+    };
+
     struct Size {
       static constexpr bool Archivable = true;
       
@@ -106,9 +120,19 @@ namespace UI {
 
 
   using Variant = std::variant<
-    RandomOptItem,
+    RandomOptItem,  
     Piercing::Size, Piercing::Item, 
-    PetVis::Size, PetVis::Item, PetVis::ItemSwap, TransformToVisPet
+    PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet
   >;
+}
+
+template<auto T2>
+CAr & operator<<(CAr & ar, const UI::Synchronizer<T2> & sync) {
+  return ar << sync.synchronizedValue;
+}
+
+template<auto T2>
+CAr & operator>>(CAr & ar, UI::Synchronizer<T2> & sync) {
+  return ar >> sync.synchronizedValue;
 }
 

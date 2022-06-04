@@ -566,7 +566,7 @@ BOOL TextCmd_SetRandomOption(CScanner & s, CPlayer_ * pUser) {
 		nDst = s.GetNumber();
 	}
 
-	pUser->UpdateItem(*pItemElem, UI::RandomOptItem(pItemElem->GetRandomOpt()));
+	pUser->UpdateItem(*pItemElem, UI::RandomOptItem::Sync);
 
 #endif	// __WORLDSERVER
 	return TRUE;
@@ -582,7 +582,7 @@ BOOL TextCmd_GenRandomOption(CScanner &, CPlayer_ * pUser) {
 		{
 			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
 			g_xRandomOptionProperty.GenRandomOption( pItemElem->GetRandomOptItemIdPtr(), nRandomOptionKind, pItemElem->GetProp()->dwParts );
-			pUser->UpdateItem(*pItemElem, UI::RandomOptItem(pItemElem->GetRandomOpt()));
+			pUser->UpdateItem(*pItemElem, UI::RandomOptItem::Sync);
 		}
 	}
 #endif	// __WORLDSERVER
@@ -608,7 +608,7 @@ BOOL TextCmd_InitializeRandomOption(CScanner & s, CPlayer_ * pUser) {
 		if( nRandomOptionKind >= 0 )	// 아이템 각성, 여신의 축복이 가능한 대상
 		{
 			g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
-			pUser->UpdateItem(*pItemElem, UI::RandomOptItem(pItemElem->GetRandomOpt()));
+			pUser->UpdateItem(*pItemElem, UI::RandomOptItem::Sync);
 		}
 	}
 #endif	// __WORLDSERVER
@@ -627,7 +627,7 @@ BOOL TextCmd_ItemLevel(CScanner & s, CPlayer_ * pUser) {
 		if( pProp->dwParts != NULL_ID && pProp->dwLimitLevel1 != 0xFFFFFFFF )
 		{
 			pTarget->SetLevelDown( i );
-			pUser->UpdateItem(*pTarget, UI::RandomOptItem(pTarget->GetRandomOpt()));
+			pUser->UpdateItem(*pTarget, UI::RandomOptItem::Sync);
 		}
 	}
 #endif	// __WORLDSERVER
