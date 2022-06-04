@@ -184,9 +184,28 @@ namespace UI {
     void operator()(CItemElem & itemElem, CMover & mover) const;
   };
 
+  struct Flag {
+    static constexpr bool Archivable = true;
+  private:
+    DWORD m_objIndex;
+    decltype(CItemElem::m_byFlag) m_flags;
+
+    explicit Flag(const CItemElem & itemElem);
+
+  public:
+    Flag() = default;
+
+    [[nodiscard]] static Flag Sync(const CItemElem & itemElem) { return Flag(itemElem); }
+
+    void operator()(CItemElem & itemElem, CMover & mover) const;
+#ifdef __CLIENT
+    void operator()(CMover & mover) const;
+#endif
+  };
+
   using Variant = std::variant<
-    Num, AbilityOption,
-    HitPoint, Repair, 
+    Num, AbilityOption, 
+    HitPoint, Repair, Flag, 
     RandomOptItem, KeepTime, 
     Piercing::Size, Piercing::Item, 
     PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet

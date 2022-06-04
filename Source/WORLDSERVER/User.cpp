@@ -6424,7 +6424,8 @@ void CUser::CheckFiniteItem()
 #endif	//__BLADELWEAPON0608	//	9th 블레이드 양손에 무기를 착용 시 추가 옵션은 오른손에 들고 있는 무기의 것만 적용이 되도록 수정
 
 				pItemElem->SetFlag( CItemElem::expired );
-				UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_FLAG, MAKELONG( pItemElem->m_dwObjIndex, pItemElem->m_byFlag ) );
+				UpdateItem(*pItemElem, UI::Flag::Sync);
+
 				// 먹이 주머니 기간 만료이고, 활성화 되어있는 경우에는 비 활성화 처리한다.
 				if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_FEED_POCKET && pItemElem->m_dwKeepTime > 0 && HasBuff( BUFF_ITEM, (WORD)( pItemElem->m_dwItemId ) ) )
 					RemoveBuff( BUFF_ITEM, (WORD)( pItemElem->m_dwItemId ) );

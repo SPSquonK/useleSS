@@ -61,7 +61,6 @@ typedef	MemPooler<CMover>	CMoverPool;
 // UPDATEITEM
 #define	UI_RAO					4
 #define	UI_IR					5
-#define	UI_FLAG					9
 #define	UI_RANDOMOPTITEMID		10
 
 

@@ -4751,7 +4751,7 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 						pPet->SetEnergy( 0 );
 						pPet->SetExp( 0 );
 						pItemElem->SetFlag( CItemElem::expired );
-						UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_FLAG, MAKELONG( pItemElem->m_dwObjIndex, pItemElem->m_byFlag ) );
+						UpdateItem(*pItemElem, UI::Flag::Sync);
 
 						g_dpDBClient.CalluspPetLog( m_idPlayer, pItemElem->GetSerialNumber(), 0, PETLOGTYPE_DEATH, pPet );
 					}
@@ -9413,7 +9413,7 @@ void CMover::ProcessPetEnergy( void )
 			pPet->SetExp( 0 );
 			// 만료 아이템의 경우, 알이면 사망이라고 표시
 			pItemElem->SetFlag( CItemElem::expired );
-			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_FLAG, MAKELONG( pItemElem->m_dwObjIndex, pItemElem->m_byFlag ) );
+			UpdateItem(*pItemElem, UI::Flag::Sync);
 
 			g_dpDBClient.CalluspPetLog( m_idPlayer, pItemElem->GetSerialNumber(), 0, PETLOGTYPE_DEATH, pPet );
 

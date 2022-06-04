@@ -4683,7 +4683,7 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 							PutItemLog( pUser, "r", "::PetResurrection", pTarget );
 
 							pTarget->ResetFlag( CItemElem::expired );
-							pUser->UpdateItem( (BYTE)( pTarget->m_dwObjId ), UI_FLAG, MAKELONG( pTarget->m_dwObjIndex, pTarget->m_byFlag ) );
+							pUser->UpdateItem(*pTarget, UI::Flag::Sync);
 							pPet->SetLife( 0 );
 							pPet->SetEnergy( pPet->GetMaxEnergy() / 2 );
 							pUser->AddPetState( pTarget->m_dwObjId, pPet->GetLife(), pPet->GetEnergy(), pPet->GetExp() );

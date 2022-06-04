@@ -3212,7 +3212,9 @@ void CMover::UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & 
 		);
 	} else {
 #ifdef __CLIENT
-		// UI_Flag
+		if (const UI::Flag * const flagOp = std::get_if<UI::Flag>(&operation)) {
+			(*flagOp)(*this);
+		}
 #endif
 	}
 
@@ -3389,6 +3391,33 @@ namespace UI {
 		itemElem.m_nRepairNumber = repairNumber > 100 ? 100 : repairNumber;
 		mover.UpdateParam();
 	}
+
+	Flag::Flag(const CItemElem & itemElem) {
+		m_objIndex = itemElem.m_dwObjIndex;
+		m_flags = itemElem.m_byFlag;
+	}
+
+	void Flag::operator()(CItemElem & itemElem, CMover & mover) const {
+#ifdef __CLIENT
+		int nParts = m_objIndex - mover.m_Inventory.GetSize();
+		if (nParts >= 0 && nParts < MAX_HUMAN_PARTS)
+			mover.m_aEquipInfo[nParts].byFlag = m_flags;
+		itemElem.m_byFlag = m_flags;
+		mover.UpdateParts(FALSE);
+#endif
+		mover.UpdateParam();
+	}
+
+#ifdef __CLIENT
+	void Flag::operator()(CMover & mover) const {
+		int nParts = m_objIndex - mover.m_Inventory.GetSize();
+		if (nParts >= 0 && nParts < MAX_HUMAN_PARTS) {
+			mover.m_aEquipInfo[nParts].byFlag = m_flags;
+			mover.UpdateParts(TRUE);
+		}
+	}
+#endif
+
 }
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
@@ -3421,20 +3450,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 				  pItemBase->SetRandomOpt( dwValue );
 					break;
 				}
-			case UI_FLAG:
-				{
-#ifdef __CLIENT
-					DWORD dwObjIndex	= (DWORD)(short)LOWORD( dwValue );
-					BYTE byFlag		= (BYTE)HIWORD( dwValue );
-					int nParts	= dwObjIndex - m_Inventory.GetSize();
-					if( nParts >= 0 && nParts < MAX_HUMAN_PARTS )
-						m_aEquipInfo[nParts].byFlag	= byFlag;
-					pItemBase->m_byFlag		= byFlag;
-					UpdateParts( FALSE );
-#endif	// __CLIENT
-					UpdateParam();
-					break;
-				}
 
 			default:
 				break;
@@ -3451,25 +3466,7 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 	}
 	else
 	{
-		switch( cParam )
-		{
-			case UI_FLAG:
-				{
-#ifdef __CLIENT
-					DWORD dwObjIndex	= (DWORD)(short)LOWORD( dwValue );
-					BYTE byFlag		= (BYTE)HIWORD( dwValue );
-					int nParts	= dwObjIndex - m_Inventory.GetSize();
-					if( nParts >= 0 && nParts < MAX_HUMAN_PARTS )
-					{
-						m_aEquipInfo[nParts].byFlag	= byFlag;
-						UpdateParts( TRUE );
-					}
-#endif	// __CLIENT
-					break;
-				}
-			default:
-				break;
-		}
+
 	}
 #ifdef __WORLDSERVER
 	if( IsPlayer() )
