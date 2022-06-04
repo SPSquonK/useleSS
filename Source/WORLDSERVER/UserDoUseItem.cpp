@@ -159,8 +159,7 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 			// 퀘스트가 있으면 퀘스트 시작 
 			if (pItemProp->dwQuestId != QuestIdNone && pItemBase->m_bItemResist == FALSE) {
 				::__SetQuest(GetId(), pItemProp->dwQuestId.get());
-				pItemBase->m_bItemResist = TRUE;
-				UpdateItem((BYTE)(pItemBase->m_dwObjId), UI_IR, pItemBase->m_bItemResist);
+				UpdateItem(*pItemBase, UI::Element::ActivatedQuest);
 			}
 			break;
 		case IK2_SYSTEM:

@@ -90,13 +90,13 @@ namespace SqKItemEnchant {
         return false;
       }
 
-      p.user.UpdateItem(p.item.m_dwObjId, UI_IR, static_cast<DWORD>(element));
-
       if (element == SAI79::ePropType::NO_PROP) {
-        p.user.UpdateItem(p.item.m_dwObjId, UI_RAO, 0);
+        p.user.UpdateItem(p.item, UI::Element::None());
+      } else if (p.args.size() == 1) {
+        p.user.UpdateItem(p.item, UI::Element::Change(element));
       } else if (p.args.size() == 2) {
-        const DWORD level = std::stoul(p.args[1].GetString());
-        p.user.UpdateItem(p.item.m_dwObjId, UI_RAO, level);
+        const int level = std::stoi(p.args[1].GetString());
+        p.user.UpdateItem(p.item, UI::Element{ .kind = static_cast<BYTE>(element), .abilityOption = level });
       }
 
       return true;

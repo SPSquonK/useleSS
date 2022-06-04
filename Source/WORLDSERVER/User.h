@@ -300,7 +300,6 @@ public:
 	void			AddTradelastConfirm()	{	AddHdr( NULL_ID, SNAPSHOTTYPE_TRADELASTCONFIRM );	}
 	void			AddTradelastConfirmOk( OBJID objid )	{	AddHdr( objid, SNAPSHOTTYPE_TRADELASTCONFIRMOK );	}
 	void			AddOpenShopWnd( CMover* pVendor );
-	void			AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime );
 #ifdef __JEFF_11
 	void			AddQuePetResurrectionResult( BOOL bResult );
 #endif	// __JEFF_11

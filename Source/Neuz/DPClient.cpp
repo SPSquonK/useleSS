@@ -489,7 +489,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_REQUEST_GUILDRANK:	OnRequestGuildRank( ar );	break;
 			case SNAPSHOTTYPE_VENDOR:	OnVendor( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_VENDOR:	OnUpdateVendor( objid, ar );	break;
-			case SNAPSHOTTYPE_UPDATE_ITEM:	OnUpdateItem( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_ITEM_VARIANT:	OnUpdateItemVariant( objid, ar );	break;
 			case SNAPSHOTTYPE_POCKET_ATTRIBUTE:	OnPocketAttribute( ar );	break;
 			case SNAPSHOTTYPE_POCKET_ADD_ITEM:	OnPocketAddItem( ar );	break;
@@ -2910,26 +2909,6 @@ void CDPClient::OnUpdateItemVariant(const OBJID objid, CAr & ar) {
 		}
 	}
 }
-
-void CDPClient::OnUpdateItem( OBJID objid, CAr & ar ) {
-	const auto [_cType, nId, cParam, dwValue, dwTime] = ar.Extract<
-		CHAR, BYTE, CHAR, DWORD, DWORD
-	>();
-
-	CMover* pMover	= prj.GetMover( objid );
-	if (!IsValidObj(pMover)) return;
-
-	pMover->UpdateItem( nId, cParam, dwValue, dwTime );
-
-	CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
-	if( pWndQuestDetail )
-		pWndQuestDetail->UpdateQuestText();
-
-	CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
-	if( pWndQuestQuickInfo )
-		pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
-}
-
 
 void CDPClient::OnSetDestParam( OBJID objid, CAr & ar )
 {

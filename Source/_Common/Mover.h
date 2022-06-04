@@ -58,12 +58,6 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define	CRITICAL_BERSERK_PROB	22
 #define	CRITICAL_AFTER_DEATH	22
 
-// UPDATEITEM
-#define	UI_RAO					4
-#define	UI_IR					5
-#define	UI_RANDOMOPTITEMID		10
-
-
 #include "UpdateItem.h"
 
 #ifdef __WORLDSERVER
@@ -1133,7 +1127,6 @@ public:
 	BOOL			IsDropable( CItemElem* pItemElem, BOOL bPK );
  	BOOL			IsDropableState( BOOL bPK );
 	CItem*			DropGold( DWORD dwGold, const D3DXVECTOR3& vPos, BOOL bPK = FALSE );
-	void			UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime = 0 );
 
 public:
 #ifdef __CLIENT

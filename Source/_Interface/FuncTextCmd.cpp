@@ -1387,9 +1387,11 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 		pUser->AddDefinedText( TID_GAME_EQUIPPUT , "" );
 		return FALSE;
 	}
+
+	pUser->UpdateItem(*pItemElem0,
+		UI::Element{ .kind = bItemResist, .abilityOption = nResistAbilityOption }
+	);
 	
-	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_IR,  bItemResist );
-	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_RAO,  nResistAbilityOption );
 	pUser->UpdateItem(*pItemElem0, UI::AbilityOption::Set(nAbilityOption));
 	if (nAbilityOption > 5 && pItemElem0->GetProp()->dwReferStat1 == WEAPON_ULTIMATE) {
 		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::Ultimate);

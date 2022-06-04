@@ -984,17 +984,6 @@ void CUser::AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId )
 	m_Snapshot.ar << dwId << dwItemId;
 }
 
-void CUser::AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_UPDATE_ITEM;
-	m_Snapshot.ar << cType << nId << cParam << dwValue;
-	m_Snapshot.ar << dwTime;
-}
-
 void CUser::AddUpdateBankItem( BYTE nSlot, BYTE nId, short newQuantity ) {
 	SendSnapshotThisId<SNAPSHOTTYPE_UPDATE_BANKITEM, BYTE, BYTE, short>(nSlot, nId, newQuantity);
 }

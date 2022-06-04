@@ -538,7 +538,6 @@ public:
 	void	OnConfirmBankPass( OBJID objid, CAr & ar );
 	void	OnVendor( OBJID objid, CAr & ar );
 	void	OnUpdateVendor( OBJID objid, CAr & ar );
-	void	OnUpdateItem( OBJID objid, CAr & ar );
 	void	OnUpdateItemVariant( OBJID objid, CAr & ar );
 	void	OnPocketAttribute( CAr & ar );
 	void	OnPocketAddItem( CAr & ar );

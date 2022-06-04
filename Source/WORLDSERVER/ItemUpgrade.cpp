@@ -922,8 +922,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 		if( !pUser->IsMode( TRANSPARENT_MODE ) )
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_IR, dwValue );
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_RAO,  pItemMain->m_nResistAbilityOption + 1 );
+		pUser->UpdateItem(*pItemMain, UI::Element::Increase);
 		aLogItem.Action = "O";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 
@@ -1200,7 +1199,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 #ifdef __SM_ITEM_2ND_EX
 				if( bSmelprot2  )
 				{
-					pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_RAO, pItemMain->m_nResistAbilityOption - 1 );
+					pUser->UpdateItem(*pItemMain, UI::Element::Decrease);
 					aLogItem.Action = "8";
 					g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 				}
@@ -1228,8 +1227,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_IR,  pItemMaterial->GetProp()->eItemType );
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_RAO,  pItemMain->m_nResistAbilityOption+1 );
+		pUser->UpdateItem(*pItemMain, UI::Element::Increase);
 		aLogItem.Action = "O";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 	}
@@ -1280,7 +1278,8 @@ void CItemUpgrade::ChangeAttribute( CUser* pUser, OBJID dwTargetItem, OBJID dwUs
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( ( pUser->IsMode( TRANSPARENT_MODE ) ) == 0 )
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
-		pUser->UpdateItem( (BYTE)pTargetItemElem->m_dwObjId, UI_IR,  nAttribute );	// 속성 변경
+		
+		pUser->UpdateItem(*pTargetItemElem, UI::Element::Change(nAttribute));	// 속성 변경
 
 		// 속성제련 변경 성공 로그
 		LogItemInfo aLogItem;

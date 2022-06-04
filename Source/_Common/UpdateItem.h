@@ -49,7 +49,33 @@ namespace UI {
   };
 
   using RandomOptItem = Synchronizer<&CItemElem::m_iRandomOptItemId>;
-    
+   
+
+  struct RandomOptItemFromRandomScroll {
+    static constexpr bool Archivable = true;
+    std::uint8_t nKind;
+
+    explicit RandomOptItemFromRandomScroll(std::uint8_t nKind = 0) : nKind(nKind) {}
+
+    void operator()(CItemElem & itemElem) const;
+  };
+
+  struct Element {
+    static constexpr bool Archivable = true;
+    static constexpr int DoNotChangeAO = INT_MIN;
+    BYTE kind;
+    int abilityOption;
+
+    [[nodiscard]] static Element None();
+    [[nodiscard]] static Element Increase(const CItemElem & itemElem);
+    [[nodiscard]] static Element Decrease(const CItemElem & itemElem);
+    [[nodiscard]] static Element Change(SAI79::ePropType target);
+
+    [[nodiscard]] static Element ActivatedQuest(const CItemElem & itemElem);
+
+    void operator()(CItemElem & itemElem, CMover & mover) const;
+  };
+
 //  struct RandomOptItem {
 //    static constexpr bool Archivable = true;
 //    __int64 value = 0;
@@ -204,9 +230,9 @@ namespace UI {
   };
 
   using Variant = std::variant<
-    Num, AbilityOption, 
+    Num, AbilityOption, Element, 
     HitPoint, Repair, Flag, 
-    RandomOptItem, KeepTime, 
+    RandomOptItem, RandomOptItemFromRandomScroll, KeepTime,
     Piercing::Size, Piercing::Item, 
     PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet
   >;

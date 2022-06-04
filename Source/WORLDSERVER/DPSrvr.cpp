@@ -4896,8 +4896,7 @@ void CDPSrvr::OnRemoveAttribute( CAr & ar, CUser & pUser_) {
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 	
-		pUser->UpdateItem( (BYTE)pItemElem->m_dwObjId, UI_IR,  SAI79::NO_PROP );
-		pUser->UpdateItem( (BYTE)pItemElem->m_dwObjId, UI_RAO,  0 );
+		pUser->UpdateItem(*pItemElem, UI::Element::None());
 		pUser->AddRemoveAttribute( TRUE );
 		
 		// 加己力访 力芭 己傍 肺弊
@@ -4956,10 +4955,10 @@ void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 			return;
 		}
 
-		int nSTR[4] = { 1,  9, 21, 37 };
-		int nDEX[4] = { 2, 10, 22, 38 };
-		int nINT[4] = { 3, 11, 23, 39 };
-		int nSTA[4] = { 4, 12, 24, 40 };
+		std::uint8_t nSTR[4] = { 1,  9, 21, 37 };
+		std::uint8_t nDEX[4] = { 2, 10, 22, 38 };
+		std::uint8_t nINT[4] = { 3, 11, 23, 39 };
+		std::uint8_t nSTA[4] = { 4, 12, 24, 40 };
 
 		int nValue = 0;
 		int nRandom = xRandom( 100 );
@@ -4974,7 +4973,7 @@ void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 
 		if( 0 < nValue )
 		{
-			int nKind = 0;
+			std::uint8_t nKind = 0;
 			int nToolKind = 0;
 			if( pItemElem1->GetProp()->dwID == II_SYS_SYS_SCR_RANDOMSTR )
 			{
@@ -4997,7 +4996,7 @@ void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 				nToolKind = DST_STA;
 			}
 
-			pUser->UpdateItem( (BYTE)pItemElem0->m_dwObjId, UI_RANDOMOPTITEMID, nKind );
+			pUser->UpdateItem(*pItemElem0, UI::RandomOptItemFromRandomScroll(nKind));
 
 			LogItemInfo aLogItem;
 			aLogItem.SendName = pUser->GetName();

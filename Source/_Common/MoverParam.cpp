@@ -3239,6 +3239,55 @@ namespace UI {
 	//	itemElem.SetRandomOptItemId(value);
 	//}
 
+	void RandomOptItemFromRandomScroll::operator()(CItemElem & itemElem) const {
+		itemElem.SetRandomOpt(nKind);
+  }
+
+	Element Element::None() {
+		return Element{ .kind = SAI79::ePropType::NO_PROP, .abilityOption = 0 };
+	}
+
+	Element Element::Increase(const CItemElem & itemElem) {
+		return Element{
+			.kind = itemElem.m_bItemResist,
+			.abilityOption = itemElem.m_nResistAbilityOption + 1
+		};
+	}
+
+	Element Element::Decrease(const CItemElem & itemElem) {
+		return Element{
+			.kind = itemElem.m_bItemResist,
+			.abilityOption = itemElem.m_nResistAbilityOption - 1
+		};
+	}
+
+	Element Element::Change(SAI79::ePropType target) {
+		return Element{
+			.kind = static_cast<BYTE>(target),
+			.abilityOption = DoNotChangeAO
+		};
+	}
+
+	Element Element::ActivatedQuest(const CItemElem & itemElem) {
+		return Element{
+			.kind = TRUE,
+			.abilityOption = itemElem.m_nResistAbilityOption
+		};
+	}
+
+	void Element::operator()(CItemElem & itemElem, CMover & mover) const {
+		itemElem.m_bItemResist = kind;
+
+		if (abilityOption != DoNotChangeAO) {
+			int targetRAO = abilityOption;
+			if (targetRAO < 0) targetRAO = 0;
+			if (targetRAO > 20) targetRAO = 20;
+			itemElem.m_nResistAbilityOption = targetRAO;
+		}
+
+		mover.UpdateParam();
+	}
+
 	namespace Piercing {
 
 		Size Size::IncrementRegular(const CItemElem & itemElem) {
@@ -3418,62 +3467,6 @@ namespace UI {
 	}
 #endif
 
-}
-
-void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
-{
-	CItemElem * pItemBase = GetItemId( nId );
-
-	if( pItemBase )
-	{
-		switch( cParam )
-		{
-			case UI_RAO: // ������ �Ӽ� + �ø���...
-				{
-					if(pItemBase->m_nResistAbilityOption > 20 )
-						return;
-					if( dwValue > 20 )
-						dwValue		= 20;
-					pItemBase->m_nResistAbilityOption	= dwValue;
-					UpdateParam();
-				}
-				break;
-			case UI_IR:  // �����ۿ� �����Ӽ����� �ֱ�
-				{
-				  pItemBase->m_bItemResist	= (BYTE)( dwValue );
-					UpdateParam();
-				}
-				break;
-
-			case UI_RANDOMOPTITEMID:
-				{
-				  pItemBase->SetRandomOpt( dwValue );
-					break;
-				}
-
-			default:
-				break;
-		}
-#ifdef __CLIENT
-		CWndInventory* pWnd	= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
-		if( pWnd )
-			pWnd->UpdateTooltip();
-
-// 		CWndInventory* pWnd	= (CWndInventory*)g_WndMng.GetWndBase( );		
-// 		if( pWnd )
-// 			pWnd->UpdateTooltip();
-#endif	// __CLIENT
-	}
-	else
-	{
-
-	}
-#ifdef __WORLDSERVER
-	if( IsPlayer() )
-	{
-		static_cast<CUser*>( this )->AddUpdateItem( 0, nId, cParam, dwValue, dwTime );
-	}
-#endif // __WORLDSERVER
 }
 
 float CMover::GetItemDropRateFactor( CMover* pAttacker )
