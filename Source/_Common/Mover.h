@@ -60,16 +60,18 @@ typedef	MemPooler<CMover>	CMoverPool;
 
 // UPDATEITEM
 #define	UI_NUM					0
+#define UI_COOLTIME				8
+
 #define	UI_HP					1
 #define	UI_RN					2
 #define	UI_AO					3
 #define	UI_RAO					4
 #define	UI_IR					5
-#define UI_COOLTIME				8
+
 #define	UI_FLAG					9
+
 #define	UI_RANDOMOPTITEMID		10
-#define	UI_KEEPTIME				11
-#define UI_REPAIR_NUM			12
+
 
 #include "UpdateItem.h"
 

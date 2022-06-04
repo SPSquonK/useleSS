@@ -3317,6 +3317,21 @@ namespace UI {
 #endif // __CLIENT
 		}
 	}
+
+	KeepTime KeepTime::FromProp(const CItemElem & itemElem) {
+		const ItemProp * prop = itemElem.GetProp();
+		if (!prop) {
+			Error("Item %lu has no props", itemElem.m_dwItemId);
+			return KeepTime{ .minutes = 1 };
+		}
+		return KeepTime{ .minutes = prop->dwAbilityMin };
+	}
+
+	void KeepTime::operator()(CItemElem & itemElem) const {
+		const CTime tm = CTime::GetCurrentTime() + CTimeSpan(0, 0, minutes, 0);
+		itemElem.m_dwKeepTime = static_cast<DWORD>(tm.GetTime());
+	}
+
 }
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
@@ -3344,11 +3359,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 				{
 				  pItemBase->m_nHitPoint = dwValue;
 					UpdateParam();
-					break;
-				}
-			case UI_REPAIR_NUM:
-				{
-				  pItemBase->m_nRepair	= dwValue;
 					break;
 				}
 			case UI_RN:
@@ -3400,13 +3410,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 				  pItemBase->SetRandomOpt( dwValue );
 					break;
 				}
-			case UI_KEEPTIME:	// offset
-				{
-					CTime tm	= CTime::GetCurrentTime() + CTimeSpan( 0, 0, dwValue, 0 );
-					pItemBase->m_dwKeepTime	= (DWORD)( tm.GetTime() );
-					break;
-				}
-
 			case UI_FLAG:
 				{
 #ifdef __CLIENT

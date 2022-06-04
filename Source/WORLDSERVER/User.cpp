@@ -2858,7 +2858,7 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 			}
 			else
 			{
-				UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_KEEPTIME, pItemElem->GetProp()->dwAbilityMin );
+				UpdateItem(*pItemElem, UI::KeepTime::FromProp);
 				// log
 				LogItemInfo	log;
 				log.Action	= "e";

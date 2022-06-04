@@ -1278,7 +1278,7 @@ CUser::DoUseSystemAnswer CUser::DoUseItemFeedPocket(CItemElem * pPocket) {
 			}
 		}
 		ASSERT(pProp->dwAbilityMin < 259200);
-		UpdateItem((BYTE)(pPocket->m_dwObjId), UI_KEEPTIME, pProp->dwAbilityMin);	// 1440	// 1 days
+		UpdateItem(*pPocket, UI::KeepTime::FromProp);
 	}
 	DoApplySkill(this, pProp, nullptr);
 	
@@ -1352,8 +1352,9 @@ bool CUser::DoUseItemWarp(const ItemProp & pItemProp, CItemElem & pItemElem) {
 	if (idCouple == 0) {
 		// carve
 		UpdateItem(pItemElem, UI::RandomOptItem(m_idPlayer));
-		if (II_GEN_WARP_COUPLERING == pItemProp.dwID)
-			UpdateItem((BYTE)(pItemElem.m_dwObjId), UI_KEEPTIME, 21600);	// 15 days
+		if (II_GEN_WARP_COUPLERING == pItemProp.dwID) {
+			UpdateItem(pItemElem, UI::KeepTime::FromDays(15));
+		}
 		
 		AddDefinedText(TID_GAME_COUPLERING_CARVE, "%s", GetName());
 		return true;

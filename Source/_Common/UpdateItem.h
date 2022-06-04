@@ -118,9 +118,17 @@ namespace UI {
     };
   }
 
+  struct KeepTime {
+    static constexpr bool Archivable = true;
+    DWORD minutes;
+
+    static KeepTime FromProp(const CItemElem & itemElem);
+    static KeepTime FromDays(const DWORD days) { return KeepTime{ .minutes = days * 24 * 60 }; }
+    void operator()(CItemElem & itemElem) const;
+  };
 
   using Variant = std::variant<
-    RandomOptItem,  
+    RandomOptItem, KeepTime, 
     Piercing::Size, Piercing::Item, 
     PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet
   >;
