@@ -995,14 +995,8 @@ void CUser::AddUpdateItem( CHAR cType, BYTE nId, CHAR cParam, DWORD dwValue, DWO
 	m_Snapshot.ar << dwTime;
 }
 
-void CUser::AddUpdateBankItem( BYTE nSlot, BYTE nId, CHAR cParam, DWORD dwValue )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_UPDATE_BANKITEM;
-	m_Snapshot.ar << nSlot << nId << cParam << dwValue;
+void CUser::AddUpdateBankItem( BYTE nSlot, BYTE nId, short newQuantity ) {
+	SendSnapshotThisId<SNAPSHOTTYPE_UPDATE_BANKITEM, BYTE, BYTE, short>(nSlot, nId, newQuantity);
 }
 
 void CUser::AddSetExperience( EXPINTEGER nExp1, WORD wLevel, int nSkillPoint, int nSkillLevel, EXPINTEGER nDeathExp, WORD wDeathLevel )
@@ -2394,7 +2388,7 @@ void CUser::DoUsePackItem( CItemElem* pItemElem, const CPackItem::PACKITEMELEM &
 	}
 
 	OnAfterUseItem(pItemElem->GetProp());
-	UpdateItem((BYTE)(pItemElem->m_dwObjId), UI_NUM, pItemElem->m_nItemNum - 1);
+	UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 }
 
 BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, DWORD dwItemId )
@@ -2419,7 +2413,7 @@ BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, DWORD dwItemId )
 		if( pItemElem )
 		{
 			OnAfterUseItem( pItemElem->GetProp() );
-			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+			UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 		}
 
 		CItemElem itemElem;
@@ -2465,7 +2459,7 @@ void CUser::DoUseEveFBOX( CItemElem* pItemElem )
 	if( pItemElem )
 	{
 		OnAfterUseItem( pItemElem->GetProp() );
-		UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+		UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 	}
 
 	int nRand	= xRandom( 1, 1000 );
@@ -6418,7 +6412,8 @@ void CUser::CheckFiniteItem()
 			{
 				if( IsUsingEatPet( pItemElem ) )
 					InactivateEatPet();
-				UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, 0 );
+
+				UpdateItem(*pItemElem, UI::Num::RemoveAll());
 			}
 			else
 			{

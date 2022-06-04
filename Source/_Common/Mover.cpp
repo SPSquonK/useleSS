@@ -2070,7 +2070,7 @@ BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE n
 void CMover::RemoveItem(BYTE nId, short nNum) {
 	CItemElem * pItemBase = GetItemId(nId);
 	if (pItemBase) {
-		UpdateItem(nId, UI_NUM, pItemBase->m_nItemNum - nNum);
+		UpdateItem(*pItemBase, UI::Num::Consume(nNum));
 	}
 }
 
@@ -2091,7 +2091,7 @@ void CMover::RemoveItemIK3( DWORD dwItemKind3 )
 				if( DoEquip( pItemElem, FALSE ) )
 				{
 					g_UserMng.AddDoEquip( this, -1, pItemElem, FALSE );
-					UpdateItem( i, UI_NUM, 0 );		// remove
+					UpdateItem(*pItemElem, UI::Num::RemoveAll());		// remove
 				}
 				else
 				{
@@ -2102,7 +2102,7 @@ void CMover::RemoveItemIK3( DWORD dwItemKind3 )
 			}
 			else
 			{
-				UpdateItem( i, UI_NUM, 0 );		// remove
+				UpdateItem(*pItemElem, UI::Num::RemoveAll());		// remove
 			}
 		}
 	}
@@ -2124,27 +2124,19 @@ void CMover::RemoveVendorItem( CHAR chTab, BYTE nId, short nNum )
 }
 #endif	// __WORLDSERVER
 
-void CMover::UpdateItemBank(int nSlot, BYTE nId, CHAR cParam, DWORD dwValue) {
+void CMover::UpdateItemBank(int nSlot, BYTE nId, short newQuantity) {
 	CItemElem * pItemBase = GetItemBankId(nSlot, nId);
 
 	if (pItemBase) {
-		switch (cParam) {
-			case UI_NUM:
-			{
-				if (dwValue == 0) {
-					RemoveItemBankId(nSlot, nId);
-				} else {
-					pItemBase->m_nItemNum = (short)(dwValue);
-				}
-				break;
-			}
-			default:
-				break;
+		if (newQuantity == 0) {
+			RemoveItemBankId(nSlot, nId);
+		} else {
+			pItemBase->m_nItemNum = newQuantity;
 		}
 	}
 #ifdef __WORLDSERVER
 	if (IsPlayer())
-		((CUser *)this)->AddUpdateBankItem(nSlot, nId, cParam, dwValue);
+		((CUser *)this)->AddUpdateBankItem(nSlot, nId, newQuantity);
 #endif
 }
 
@@ -7137,7 +7129,7 @@ void CMover::ArrowDown( int nCount )
 				pItemElem->m_nItemNum -= nCount;
 				nCount = 0;
 			}
-			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum );
+			UpdateItem(*pItemElem, UI::Num::Sync);
 			if( bGetItem )
 			{
 				bDoEquip = FALSE;
@@ -9392,7 +9384,7 @@ void CMover::ProcessPetEnergy( void )
 			if( IsUsableItem( ptr ) && ptr->m_dwItemId == II_SYS_SYS_FEED_01 )	// 사용 가능한 먹이면
 			{
 				if( ( m_nCount & 0X1F ) == 0 )	// 2초당 먹이 1소모		// 0723
-					UpdateItem( (BYTE)( ptr->m_dwObjId ), UI_NUM, ptr->m_nItemNum - 1 );
+					UpdateItem(*ptr, UI::Num::ConsumeOne);
 				return;
 			}
 		}
@@ -10085,7 +10077,7 @@ int CMover::RemovePerin( int nPerin )
 		if( pItem && pItem->IsPerin() && ::IsUsableItem( pItem ) )
 		{
 			int nRemove		= nRest >= pItem->m_nItemNum? pItem->m_nItemNum: nRest;
-			UpdateItem( i, UI_NUM, pItem->m_nItemNum - nRemove );
+			UpdateItem(*pItem, UI::Num::Consume(nRemove));
 			nRest	-= nRemove;
 		}
 	}

@@ -374,14 +374,14 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 	if (pItemBase->m_bCharged)		// 상용화 아이템 로그
 		g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
 
-	CHAR cUIParam = UI_NUM;
+	UI::Num operation = UI::Num::Sync(*pItemBase);
 	if (cooldownType == CCooltimeMgr::CooldownType::Available)	// 쿨타임 아이템이면 사용시각을 기록한다.
 	{
 		m_cooltimeMgr.StartCooldown(*pItemProp);
-		cUIParam = UI_COOLTIME;
+		operation.startCooldown = true;
 	}
 
-	UpdateItem((BYTE)(dwId), cUIParam, pItemBase->m_nItemNum);	// 갯수가 0이면  아이템 삭제 , 전송 
+	UpdateItem(*pItemBase, operation);	// 갯수가 0이면  아이템 삭제 , 전송 
 	
 	return true;
 }

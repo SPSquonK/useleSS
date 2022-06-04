@@ -392,7 +392,7 @@ public:
 	void			AddMotionError();
 	void			AddPutItemBank( BYTE nSlot, CItemElem* pItemElem );
 	void			AddPutGoldBank( BYTE nSlot, DWORD dwGold, DWORD dwGoldBank );
-	void			AddUpdateBankItem( BYTE nSlot, BYTE nId, CHAR cParam, DWORD dwValue );
+	void			AddUpdateBankItem( BYTE nSlot, BYTE nId, short newQuantity );
 	void			AddGuildBankWindow(int nMode);
 	void			AddPutItemGuildBank(CItemElem* pItemElem);
 	void			AddGetItemGuildBank( CItemElem* pItemElem );

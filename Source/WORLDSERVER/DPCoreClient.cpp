@@ -2110,7 +2110,7 @@ void CDPCoreClient::OnGuildSetName( CAr & ar, DPID, DPID, OBJID )
 #endif // __S_SERVER_UNIFY
 					{
 						if( IsUsableItem( pItemElem ) )
-							pUser->UpdateItem( nId, UI_NUM, pItemElem->m_nItemNum - 1 );
+							pUser->UpdateItem( *pItemElem, UI::Num::ConsumeOne );
 					}
 					break;
 			}
@@ -2577,7 +2577,7 @@ void CDPCoreClient::OnSetPlayerName( CAr& ar, DPID, DPID, OBJID )
 				{
 					ASSERT( pItemElem->m_bQuery );
 					pItemElem->m_bQuery	= FALSE;
-					pUser->UpdateItem( (BYTE)( wId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+					pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 				}
 			}
 		}

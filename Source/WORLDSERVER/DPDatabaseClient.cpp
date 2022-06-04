@@ -3018,13 +3018,8 @@ void CDPDatabaseClient::OnSealCharGetFromDB( CAr & ar, DPID, DPID )
 				ItemProp* pItemProp  = pItemElem->GetProp();
 		
 				g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElem, pItemProp );		
-//				pItemElem->UseItem();
 				OBJID       dwTmpObjId = pItemElem->m_dwObjId;
-				pUser->RemoveItem( (BYTE)( dwTmpObjId ), (short)1 );
-//		pUser->UpdateItem( pItemElemtmp->m_dwObjId, UI_NUM, pItemElemtmp->m_nItemNum );
-//		g_UserMng.DestroyPlayer( pUser );
-//		g_UserMng.RemoveUser( pUser->m_dwSerial );
-//		g_DPCoreClient.SendKillPlayer( pUser->m_idPlayer, pUser->m_idPlayer );
+				pUser->RemoveItem( (BYTE)( dwTmpObjId ), 1 );
 				g_DPSrvr.QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer ); // pUser->m_Snapshot.dpidUser에는 소켓번호가 들어가 있다.
 			}
 		}

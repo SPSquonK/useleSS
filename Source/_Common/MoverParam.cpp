@@ -3083,19 +3083,18 @@ int CMover::RemoveItemA( DWORD dwItemId, short nNum )
 		{
 			if( nRemnant > pItemElem->m_nItemNum )
 			{
-				UpdateItem( i, UI_NUM, 0 );	// remove
+				UpdateItem( *pItemElem, UI::Num::RemoveAll() );	// remove
 				nRemnant	-= pItemElem->m_nItemNum;
 			}
 			else
 			{
-				UpdateItem( i, UI_NUM, pItemElem->m_nItemNum - nRemnant );
+				UpdateItem(*pItemElem, UI::Num::Consume(nRemnant));
 				nRemnant	= 0;
 			}
 		}
 	}
 	return ( nNum - nRemnant );
 }
-#endif	// __WORLDSERVER
 
 // ��ũ��Ʈ���� ����ϴ� �Լ� 
 int CMover::RemoveAllItem( DWORD dwItemId )
@@ -3109,11 +3108,12 @@ int CMover::RemoveAllItem( DWORD dwItemId )
 		if( pItemElem && pItemElem->m_dwItemId == dwItemId )
 		{
 			nNum += pItemElem->m_nItemNum;
-			UpdateItem( i, UI_NUM, 0 );		// remove
+			UpdateItem(*pItemElem, UI::Num::RemoveAll);		// remove
 		}
 	}
 	return nNum;
 }
+#endif	// __WORLDSERVER
 
 void CMover::OnTradeRemoveUser()
 {
@@ -3351,7 +3351,27 @@ namespace UI {
 		mover.UpdateParam();
 	}
 
+	Num Num::ConsumeOne(const CItemElem & itemElem) {
+		return Num{
+			.newQuantity = static_cast<short>(itemElem.m_nItemNum - 1),
+			.startCooldown = false
+		};
+	}
 
+	Num Num::Sync(const CItemElem & itemElem) {
+		return Num{
+			.newQuantity = itemElem.m_nItemNum,
+			.startCooldown = false
+		};
+	}
+
+	void Num::operator()(CItemElem & itemElem, CMover & mover) const {
+		if (newQuantity <= 0) {
+			mover.RemoveItemId(itemElem.m_dwObjId);
+		} else {
+			itemElem.m_nItemNum = newQuantity;
+		}
+	}
 }
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
@@ -3362,19 +3382,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 	{
 		switch( cParam )
 		{
-			case UI_COOLTIME:
-			case UI_NUM:
-				{
-					if( (int)dwValue <= 0 ) 
-					{
-						RemoveItemId( nId );
-					}
-					else 
-					{
-						pItemBase->m_nItemNum	= (short)( dwValue );
-					}
-					break;
-				}
 			case UI_HP:
 				{
 				  pItemBase->m_nHitPoint = dwValue;

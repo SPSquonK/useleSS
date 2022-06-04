@@ -59,7 +59,7 @@ void CDPAccountClient::OnQueryGlobalGiftbox( CAr & ar )
 					return;
 				}
 			}
-			pUser->UpdateItem( pItemElem->m_dwObjId, UI_NUM, pItemElem->m_nItemNum - 1 );
+			pUser->UpdateItem( *pItemElem, UI::Num::ConsumeOne );
 			CItemElem itemElem;
 			itemElem.m_dwItemId	= dwItem;
 			itemElem.m_nItemNum	= nNum;

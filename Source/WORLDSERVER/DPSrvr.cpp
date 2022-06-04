@@ -2883,7 +2883,7 @@ void CDPSrvr::OnBankToBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 					itemElem.m_nItemNum		= nItemNum;
 					pUser->AddPutItemBank( nSlot, &itemElem );
 					pUser->m_Bank[nSlot].Add( &itemElem );
-					pUser->UpdateItemBank( nPutSlot, nId, UI_NUM, pItemElem->m_nItemNum - nItemNum );		// 은행에 빼기및 전송
+					pUser->UpdateItemBank( nPutSlot, nId, pItemElem->m_nItemNum - nItemNum );		// 은행에 빼기및 전송
 
 					LogItemInfo aLogItem;
 					aLogItem.Action = "A";
@@ -3334,7 +3334,7 @@ void CDPSrvr::OnGetItemBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 				aLogItem.Gold_1 = pUser->m_dwGoldBank[pUser->m_nSlot];
 				aLogItem.nSlot = nSlot;
 				OnLogItem( aLogItem, pItemElem, nItemNum );
-				pUser->UpdateItemBank( nSlot, nId, UI_NUM, pItemElem->m_nItemNum - nItemNum );		// 은행에 빼기및 전송
+				pUser->UpdateItemBank( nSlot, nId, pItemElem->m_nItemNum - nItemNum );		// 은행에 빼기및 전송
 			}
 			else
 			{
@@ -4045,7 +4045,8 @@ void CDPSrvr::OnChangeFace( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 				pUser->AddDefinedText( TID_GAME_WARNNING_COUPON, "" );
 				return;
 			}
-			pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+
+			pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 		}
 		pUser->SetHead(dwFaceNum);
 #else //__NEWYEARDAY_EVENT_COUPON
@@ -4410,7 +4411,7 @@ void CDPSrvr::OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 				pUser->AddDefinedText( TID_GAME_WARNNING_COUPON, "" );
 				return;
 			}
-			pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+			pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 		}
 #else //__NEWYEARDAY_EVENT_COUPON
 		pUser->AddGold( -( nCost ) );
@@ -4741,7 +4742,7 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 
 			PutItemLog( pUser, "u", "OnDoUseItemTarget", pMaterial );
 
-			pUser->UpdateItem( (BYTE)( pMaterial->m_dwObjId ), UI_NUM, pMaterial->m_nItemNum - 1 );	
+			pUser->UpdateItem(*pMaterial, UI::Num::ConsumeOne);
 		}
 	}
 }
@@ -8590,7 +8591,7 @@ void CDPSrvr::OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 			pPet->SetEnergy( pPet->GetEnergy() + nNum * 2 );	// 먹이 1당 기력 2회복	// 0723
 			g_UserMng.AddPetFeed( pUser, pPet->GetEnergy() );
 		}
-		pUser->UpdateItem( (BYTE)( pFeed->m_dwObjId ), UI_NUM, pFeed->m_nItemNum - nNum );
+		pUser->UpdateItem(*pFeed, UI::Num::Consume(nNum));
 		pUser->AddDefinedText( TID_GAME_PETFEED_S01, "%d", nNum );
 
 		// log
@@ -8695,9 +8696,8 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			aLogItem.RecvName = "PET_FOOD_CREATE";
 			OnLogItem( aLogItem, &itemElem, itemElem.m_nItemNum );
 
-			pUser->UpdateItem( (BYTE)( pMaterial->m_dwObjId ), UI_NUM, pMaterial->m_nItemNum - nNum );
-			if( bTool )
-				pUser->UpdateItem( (BYTE)( pTool->m_dwObjId ), UI_NUM, pTool->m_nItemNum - 1 );
+			pUser->UpdateItem(*pMaterial, UI::Num::Consume(nNum));
+			if (bTool) pUser->UpdateItem(*pTool, UI::Num::ConsumeOne);
 		}
 		pUser->AddPetFoodMill(nResult, itemElem.m_nItemNum);
 	}
@@ -8728,7 +8728,7 @@ void CDPSrvr::OnPetTamerMistake( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 						pUser->RemovePet();
 					pUser->AddPet( pPet, PF_PET_LEVEL_DOWN );	// 自
 					g_UserMng.AddPetLevelup( pUser, MAKELONG( (WORD)pPet->GetIndex(), (WORD)pPet->GetLevel() ) );	// 他
-					pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+					pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 
 					// log
 					CItemElem* pPetItem		= pUser->GetPetItem();
@@ -8780,7 +8780,7 @@ void CDPSrvr::OnPetTamerMiracle( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 						pUser->RemovePet();
 					pUser->AddPet( pPet, PF_PET_GET_AVAIL );	// 自	// PF_PET_GET_AVAIL 
 					g_UserMng.AddPetLevelup( pUser, MAKELONG( (WORD)pPet->GetIndex(), (WORD)pPet->GetLevel() ) );	// 他
-					pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+					pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 
 					// log
 					CItemElem* pPetItem		= pUser->GetPetItem();
@@ -9295,17 +9295,13 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemtmp, pItemProp );		
 //		pItemElemtmp->UseItem();
 		OBJID       dwTmpObjId = pItemElemtmp->m_dwObjId;
-		pUser->RemoveItem( (BYTE)( dwTmpObjId ), (short)1 );
+		pUser->RemoveItem( (BYTE)( dwTmpObjId ), 1 );
 
 		pUser->ClearAllSMMode();
 		pUser->RemoveAllBuff();
 
 		g_dpDBClient.SendQueryGetSealCharConm( pUser->m_idPlayer);
 
-//		pUser->UpdateItem( pItemElemtmp->m_dwObjId, UI_NUM, pItemElemtmp->m_nItemNum );
-//		g_UserMng.DestroyPlayer( pUser );
-//		g_UserMng.RemoveUser( pUser->m_dwSerial );
-//		g_DPCoreClient.SendKillPlayer( pUser->m_idPlayer, pUser->m_idPlayer );
 		QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer ); // pUser->m_Snapshot.dpidUser에는 소켓번호가 들어가 있다.
 	}
 }
@@ -9410,7 +9406,7 @@ void	CDPSrvr::OnAvailPocket( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 					log.Gold2	= pUser->GetGold();
 					log.Gold_1	= nPocket;
 					OnLogItem( log, pItemElem, 1 );
-					pUser->UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum - 1 );
+					pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 #ifdef __INTERNALSERVER
 					pUser->AddPocketView();
 #endif	// __INTERNALSERVER

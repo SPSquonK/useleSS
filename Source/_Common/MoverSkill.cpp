@@ -1174,7 +1174,7 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 				return FALSE;
 
 			pItemElem->UseItem();
-			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum );
+			UpdateItem(*pItemElem, UI::Num::Sync);
 		}
 		
 		CWorld* pWorld	= GetWorld();
@@ -1206,7 +1206,7 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 				return FALSE;
 
 			pItemElem->UseItem();
-			UpdateItem( (BYTE)( pItemElem->m_dwObjId ), UI_NUM, pItemElem->m_nItemNum );
+			UpdateItem(*pItemElem, UI::Num::Sync);
 		}
 		if( IsChaotic() )
 		{

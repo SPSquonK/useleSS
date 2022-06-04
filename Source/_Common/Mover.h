@@ -59,9 +59,6 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define	CRITICAL_AFTER_DEATH	22
 
 // UPDATEITEM
-#define	UI_NUM					0
-#define UI_COOLTIME				8
-
 #define	UI_HP					1
 #define	UI_RN					2
 #define	UI_RAO					4
@@ -1169,7 +1166,9 @@ public:
 #ifdef __CLIENT
 	int				GetItemNumForClient( DWORD dwItemId ); // Client에서만 사용하는 아이템 갯수 구하기(Null check 이외의 Usable check안함)
 #endif //__CLIENT
+#ifdef __WORLDSERVER
 	int				RemoveAllItem( DWORD dwItemId );
+#endif
 	BOOL			AddItem( CItemElem * pItemBase );
 	CItemElem *		GetItemId( DWORD dwId );
 	[[nodiscard]] const ItemProp * GetItemIdProp(DWORD dwId);
@@ -1179,7 +1178,7 @@ public:
 	void			SetKeeptimeItem( CItemElem* pItemElem, DWORD dwTime );
 	void			OnTradeRemoveUser();
 	BOOL			AddItemBank( int nSlot, CItemElem* pItemElem );
-	void			UpdateItemBank( int nSlot, BYTE nId, CHAR cParam, DWORD dwValue );
+	void			UpdateItemBank( int nSlot, BYTE nId, short newQuantity );
 	[[nodiscard]] CItemElem * GetItemBankId( int nSlot, DWORD dwId );
 	void			RemoveItemBankId( int nSlot, DWORD dwId );
 	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor );

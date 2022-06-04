@@ -89,7 +89,7 @@ BOOL TextCmd_InvenClear(CScanner & scanner, CPlayer_ * pUser) {
 			CItemElem* pItemElem = pUser->m_Inventory.GetAtId( i );
 			if( pItemElem )
 			{
-				pUser->UpdateItem( i, UI_NUM, 0 );		// remove
+				pUser->UpdateItem(*pItemElem, UI::Num::RemoveAll());
 			}
 		}
 	}
@@ -4558,7 +4558,7 @@ BOOL TextCmd_InvenRemove(CScanner & scanner, CPlayer_ * pUser) {
 		{
 			CItemElem* pItemElem = pUser->m_Inventory.GetAtId( i );
 			if( IsUsableItem( pItemElem ) && !pUser->m_Inventory.IsEquip( pItemElem->m_dwObjId ) && !pItemElem->IsPet() && !pItemElem->IsEatPet() )
-				pUser->UpdateItem( i, UI_NUM, 0 );
+				pUser->UpdateItem(*pItemElem, UI::Num::RemoveAll());
 		}
 	}
 #endif	// __WORLDSERVER

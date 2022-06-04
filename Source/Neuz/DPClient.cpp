@@ -2681,18 +2681,10 @@ void CDPClient::OnGetItemBank( OBJID objid, CAr & ar )
 	g_pPlayer->m_Inventory.Add( &itemElem );
 }
 
-void CDPClient::OnUpdateBankItem( OBJID objid, CAr & ar )
-{
-	CHAR cParam;
-	BYTE nSlot, nId;
-	DWORD dwValue;
+void CDPClient::OnUpdateBankItem( OBJID objid, CAr & ar ) {
+	const auto [nSlot, nId, newQuantity] = ar.Extract<BYTE, BYTE, short>();
 	
-	ar >> nSlot >> nId >> cParam >> dwValue;
-	
-	if( g_pPlayer)
-	{
-		g_pPlayer->UpdateItemBank( nSlot, nId, cParam, dwValue );
-	}
+	if (g_pPlayer) g_pPlayer->UpdateItemBank(nSlot, nId, newQuantity);
 }
 void CDPClient::OnPutGoldBank( OBJID objid, CAr & ar )
 {
@@ -2886,6 +2878,21 @@ void CDPClient::OnUpdateItemVariant(const OBJID objid, CAr & ar) {
 	CMover * const pMover = prj.GetMover( objid );
 	if (!IsValidObj(pMover)) return;
 
+	if (const UI::Num * uiNum = std::get_if<UI::Num>(&operation); uiNum && uiNum->startCooldown) {
+		CMover * pPlayer = CMover::GetActiveMover();
+		if (!pPlayer)  return;
+
+		if (pMover == pPlayer) {
+			const CItemElem * const pItemBase = pPlayer->GetItemId(dwId);
+			if (!pItemBase) return;
+
+			const ItemProp * const pItemProp = pItemBase->GetProp();
+			if (!pItemProp) return;
+
+			g_pPlayer->m_cooltimeMgr.StartCooldown(*pItemProp);
+		}
+	}
+
 	pMover->UpdateItem(dwId, operation);
 
 	// ~~ Update user interface
@@ -2911,22 +2918,6 @@ void CDPClient::OnUpdateItem( OBJID objid, CAr & ar ) {
 
 	CMover* pMover	= prj.GetMover( objid );
 	if (!IsValidObj(pMover)) return;
-
-	if (cParam == UI_COOLTIME) {
-		CMover* pPlayer	= CMover::GetActiveMover();
-		if (!pPlayer)  return;
-
-		if (pMover == pPlayer) {
-			CItemElem * pItemBase	= pPlayer->GetItemId( nId );
-			if (!pItemBase) return;
-
-			const ItemProp * const pItemProp = pItemBase->GetProp();
-			if (!pItemProp) return;
-
-			g_pPlayer->m_cooltimeMgr.StartCooldown(*pItemProp);
-		}
-	}
-
 
 	pMover->UpdateItem( nId, cParam, dwValue, dwTime );
 

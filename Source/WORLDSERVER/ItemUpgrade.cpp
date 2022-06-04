@@ -765,13 +765,13 @@ void	CItemUpgrade::RefineAccessory( CUser* pUser, CItemElem* pItemMain, CItemEle
 			{
 				aLogItem.Action	= "L";
 				g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
-				pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_NUM, 0 );
+				pUser->UpdateItem(*pItemMain, UI::Num::RemoveAll);
 			}
 		}
 	}
 	aLogItem.Action	= "N";
 	g_DPSrvr.OnLogItem( aLogItem, pItemMaterial, pItemMaterial->m_nItemNum );
-	pUser->UpdateItem( (BYTE)pItemMaterial->m_dwObjId, UI_NUM, pItemMaterial->m_nItemNum - 1 );
+	pUser->UpdateItem(*pItemMaterial, UI::Num::ConsumeOne);
 }
 
 void	CItemUpgrade::RefineCollector( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial )
@@ -823,7 +823,7 @@ void	CItemUpgrade::RefineCollector( CUser* pUser, CItemElem* pItemMain, CItemEle
 	}
 	aLogItem.Action	= "N";
 	g_DPSrvr.OnLogItem( aLogItem, pItemMaterial, pItemMaterial->m_nItemNum );
-	pUser->UpdateItem( (BYTE)pItemMaterial->m_dwObjId, UI_NUM, pItemMaterial->m_nItemNum - 1 );
+	pUser->UpdateItem(*pItemMaterial, UI::Num::ConsumeOne);
 }
 
 BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr, CItemElem* pItemSmeltScr )

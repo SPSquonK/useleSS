@@ -137,7 +137,29 @@ namespace UI {
     void operator()(CItemElem & itemElem, CMover & mover) const;
   };
 
+  struct Num {
+    static constexpr bool Archivable = true;
+    short newQuantity = 0;
+    bool startCooldown = false;
+
+    static Num RemoveAll() { return Num{ 0, false }; }
+    static Num ConsumeOne(const CItemElem & itemElem);
+    static Num Sync(const CItemElem & itemElem);
+
+    static auto Consume(const short quantity) {
+      return [quantity](const CItemElem & itemElem) {
+        return Num{
+          .newQuantity = static_cast<short>(itemElem.m_nItemNum - quantity),
+          .startCooldown = false
+        };
+      };
+    }
+
+    void operator()(CItemElem & itemElem, CMover & mover) const;
+  };
+
   using Variant = std::variant<
+    Num, 
     AbilityOption,
     RandomOptItem, KeepTime, 
     Piercing::Size, Piercing::Item, 
