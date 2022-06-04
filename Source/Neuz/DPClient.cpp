@@ -2889,7 +2889,7 @@ void CDPClient::OnUpdateItemVariant(const OBJID objid, CAr & ar) {
 	pMover->UpdateItem(dwId, operation);
 
 	// ~~ Update user interface
-	if (std::holds_alternative<UI::RandomOptItem>(operation)) {
+	if (pMover == g_pPlayer) {
 		if (CWndInventory * pWnd = (CWndInventory *)g_WndMng.GetWndBase(APP_INVENTORY)) {
 			pWnd->UpdateTooltip();
 		}
