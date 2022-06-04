@@ -2893,6 +2893,14 @@ void CDPClient::OnUpdateItemVariant(const OBJID objid, CAr & ar) {
 		if (CWndInventory * pWnd = (CWndInventory *)g_WndMng.GetWndBase(APP_INVENTORY)) {
 			pWnd->UpdateTooltip();
 		}
+
+		if (g_WndMng.m_pWndQuestDetail) {
+			g_WndMng.m_pWndQuestDetail->UpdateQuestText();
+		}
+
+		if (g_WndMng.m_pWndQuestQuickInfo) {
+			g_WndMng.m_pWndQuestQuickInfo->SetUpdateTextSwitch(TRUE);
+		}
 	}
 }
 
