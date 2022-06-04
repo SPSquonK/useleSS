@@ -8,6 +8,7 @@
 
 #include <array>
 #include <optional>
+#include <type_traits>
 #include <boost/container/static_vector.hpp>
 #include "sqktd_maybe_owned_ptr.h"
 
@@ -71,6 +72,25 @@ typedef	MemPooler<CMover>	CMoverPool;
 #define UI_REPAIR_NUM			12
 
 #include "UpdateItem.h"
+
+#ifdef __WORLDSERVER
+namespace sqktd {
+	template<typename F>
+	concept UIGenerator =
+		(
+		std::invocable<F, const CItemElem &>
+		&& requires (const F & f, const CItemElem & e) { std::is_constructible_v<decltype(f(e)), UI::Variant>; }
+	) || (
+		std::invocable<F>
+		&& requires (const F & f) { std::is_constructible_v<decltype(f()), UI::Variant>; }
+		)
+	;
+}
+#endif
+
+namespace sqktd {
+	template<class> inline constexpr bool always_false_v = false;
+}
 
 static constexpr int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
 
@@ -1128,6 +1148,17 @@ public:
 #endif
 #ifdef __WORLDSERVER
 	void UpdateItem(CItemElem & itemElem, const UI::Variant & operation);
+
+	template <sqktd::UIGenerator Generator>
+	void UpdateItem(CItemElem & itemElem, Generator generator) {
+		if constexpr (std::is_invocable_v<Generator, const CItemElem &>) {
+			UpdateItem(itemElem, generator(itemElem));
+		} else if constexpr (std::is_invocable_v<Generator>) {
+			UpdateItem(itemElem, generator());
+		} else {
+			static_assert(sqktd::always_false_v<Generator>, "Could not find a valid invocation");
+		}
+	}
 #endif
 private:
 	void UpdateItem(CItemElem * itemElem, ItemPos dwId, const UI::Variant & operation);

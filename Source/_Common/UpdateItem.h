@@ -52,7 +52,7 @@ namespace UI {
       
       int newSize;
       [[nodiscard]] static Size DefaultVis();
-      [[nodiscard]] static Size Increase(CItemElem & itemElem);
+      [[nodiscard]] static Size Increase(const CItemElem & itemElem);
       
       void operator()(CItemElem & itemElem) const;
     };

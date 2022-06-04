@@ -1392,7 +1392,7 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_RAO,  nResistAbilityOption );
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_AO,  nAbilityOption );
 	if (nAbilityOption > 5 && pItemElem0->GetProp()->dwReferStat1 == WEAPON_ULTIMATE) {
-		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::Ultimate(*pItemElem0));
+		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::Ultimate);
 	}
 #else // __WORLDSEVER
 #ifdef __CLIENT

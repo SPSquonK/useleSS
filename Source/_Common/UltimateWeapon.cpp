@@ -663,7 +663,7 @@ int CUltimateWeapon::EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItemGe
 	{
 		pUser->UpdateItem( (BYTE)pItemElemWeapon->m_dwObjId, UI_AO, ++pAbilityOpt );
 		if( pAbilityOpt > 5 )
-			pUser->UpdateItem( *pItemElemWeapon, UI::Piercing::Size::Ultimate(*pItemElemWeapon) );
+			pUser->UpdateItem( *pItemElemWeapon, UI::Piercing::Size::Ultimate );
 		aLogItem.RecvName = "ULTIMATE_ENCHANT_SUCCESS";
 		g_DPSrvr.OnLogItem( aLogItem, pItemElemWeapon, 1 );
 		return ULTIMATE_SUCCESS;
@@ -756,7 +756,7 @@ BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, C
 		
 		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO, pItemMain->GetAbilityOption() + 1 );
 		if (pItemMain->GetAbilityOption() > 5) {
-			pUser->UpdateItem(*pItemMain, UI::Piercing::Size::Ultimate(*pItemMain));
+			pUser->UpdateItem(*pItemMain, UI::Piercing::Size::Ultimate);
 		}
 		
 		aLogItem.RecvName = "ULTIMATE_ENC_SUC_SMELTSAFETY";

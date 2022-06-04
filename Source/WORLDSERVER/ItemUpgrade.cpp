@@ -191,7 +191,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 	{	// ¼º°ø			
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
 		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
-		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::IncrementRegular(*pItemElem0));
+		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::IncrementRegular);
 		pUser->AddDefinedText( TID_MMI_PIERCINGSUCCESS , "" );
 
 		aLogItem.Action = "#";
@@ -695,7 +695,7 @@ BYTE	CItemUpgrade::SmeltSafetyPiercingSize(CUser* pUser, CItemElem* pItemMain, C
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
-		pUser->UpdateItem(*pItemMain, UI::Piercing::Size::IncrementRegular(*pItemMain));
+		pUser->UpdateItem(*pItemMain, UI::Piercing::Size::IncrementRegular);
 
 		aLogItem.Action = "#";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -1508,7 +1508,7 @@ void CItemUpgrade::PetVisSize( CUser* pUser, OBJID objIdMaterial )
 	g_DPSrvr.PutItemLog( pUser, "!", "VIS_SLOT_MATERIAL", pItemElemMaterial );
 	if( pItemElemMaterial->m_bCharged )
 		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemMaterial, pItemElemMaterial->GetProp() );	
-	pUser->UpdateItem(*pItemElemPet, UI::PetVis::Size::Increase(*pItemElemPet));
+	pUser->UpdateItem(*pItemElemPet, UI::PetVis::Size::Increase);
 	g_DPSrvr.PutItemLog( pUser, "#", "VIS_SLOT_SIZE", pItemElemPet );
 	pUser->RemoveItem( (BYTE)( objIdMaterial ), 1 );
 }

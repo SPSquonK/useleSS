@@ -2103,7 +2103,7 @@ void CMover::ActivateEatPet( CItemElem* pItemElem )
 			if( pItemElem->IsVisPet() )
 			{
 				if (pItemElem->GetPiercingSize() <= 0) { // 첫 소환시 비스펫이면 비스 슬롯 2개(기본) 뚫어줌
-					UpdateItem(*pItemElem, UI::PetVis::Size::DefaultVis());
+					UpdateItem(*pItemElem, UI::PetVis::Size::DefaultVis);
 				}
 
 				SetVisPetItem( pItemElem->m_dwObjId );	// 해당 먹펫이 비스펫이면 비스의 능력치를 적용하고 이펙트를 지정한다.

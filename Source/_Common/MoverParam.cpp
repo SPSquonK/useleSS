@@ -3281,7 +3281,7 @@ namespace UI {
 			return Size { .newSize = PETVIS_DEFAULT_VIS_SLOT_SZIE };
 		}
 
-		Size Size::Increase(CItemElem & itemElem) {
+		Size Size::Increase(const CItemElem & itemElem) {
 			return Size{ .newSize = itemElem.GetPiercingSize() + 1 };
 		}
 
