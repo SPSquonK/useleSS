@@ -661,8 +661,8 @@ int CUltimateWeapon::EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItemGe
 	
 	if( nRandom < it->second )
 	{
-		pUser->UpdateItem( (BYTE)pItemElemWeapon->m_dwObjId, UI_AO, ++pAbilityOpt );
-		if( pAbilityOpt > 5 )
+		pUser->UpdateItem(*pItemElemWeapon, UI::AbilityOption::Up);
+		if( pAbilityOpt >= 5 )
 			pUser->UpdateItem( *pItemElemWeapon, UI::Piercing::Size::Ultimate );
 		aLogItem.RecvName = "ULTIMATE_ENCHANT_SUCCESS";
 		g_DPSrvr.OnLogItem( aLogItem, pItemElemWeapon, 1 );
@@ -754,7 +754,7 @@ BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, C
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0 )
 			g_UserMng.AddCreateSfxObj( ( CMover * )pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 		
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO, pItemMain->GetAbilityOption() + 1 );
+		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		if (pItemMain->GetAbilityOption() > 5) {
 			pUser->UpdateItem(*pItemMain, UI::Piercing::Size::Ultimate);
 		}

@@ -127,7 +127,18 @@ namespace UI {
     void operator()(CItemElem & itemElem) const;
   };
 
+  struct AbilityOption {
+    static constexpr bool Archivable = true;
+    int newLevel;
+
+    static AbilityOption Up(const CItemElem & itemElem);
+    static AbilityOption Down(const CItemElem & itemElem);
+    static AbilityOption Set(int newLevel) { return AbilityOption{ .newLevel = newLevel }; }
+    void operator()(CItemElem & itemElem, CMover & mover) const;
+  };
+
   using Variant = std::variant<
+    AbilityOption,
     RandomOptItem, KeepTime, 
     Piercing::Size, Piercing::Item, 
     PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet

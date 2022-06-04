@@ -3332,6 +3332,26 @@ namespace UI {
 		itemElem.m_dwKeepTime = static_cast<DWORD>(tm.GetTime());
 	}
 
+	AbilityOption AbilityOption::Up(const CItemElem & itemElem) {
+		return AbilityOption{ .newLevel = itemElem.GetAbilityOption() + 1 };
+	}
+
+	AbilityOption AbilityOption::Down(const CItemElem & itemElem) {
+		return AbilityOption{ .newLevel = itemElem.GetAbilityOption() - 1 };
+	}
+
+	void AbilityOption::operator()(CItemElem & itemElem, CMover & mover) const {
+		int dwMax = 20;
+		if (itemElem.IsAccessory()) dwMax = 20;
+		if (itemElem.IsCollector(TRUE)) dwMax = 5;
+		if (itemElem.GetAbilityOption() > dwMax) return;
+
+		const int target = newLevel <= dwMax ? newLevel : dwMax;
+		itemElem.SetAbilityOption(target);
+		mover.UpdateParam();
+	}
+
+
 }
 
 void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
@@ -3372,22 +3392,6 @@ void CMover::UpdateItem( BYTE nId, CHAR cParam, DWORD dwValue, DWORD dwTime )
 				}
 				break;
 				
-			case UI_AO: // ������ + �ø���...
-				{
-					DWORD dwMax = 20;
-					if(pItemBase->IsAccessory() )
-						dwMax	= 20;
-					if(pItemBase->IsCollector( TRUE ) )
-						dwMax	= 5;
-					if(pItemBase->GetAbilityOption() > (int)( dwMax ) )
-						return;
-					if( dwValue > dwMax )
-						dwValue		= dwMax;
-
-					pItemBase->SetAbilityOption( dwValue );
-					UpdateParam();
-				}
-				break;
 			case UI_RAO: // ������ �Ӽ� + �ø���...
 				{
 					if(pItemBase->m_nResistAbilityOption > 20 )

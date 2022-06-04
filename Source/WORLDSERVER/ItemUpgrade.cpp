@@ -535,7 +535,7 @@ BYTE	CItemUpgrade::SmeltSafetyGeneral( CUser* pUser, CItemElem* pItemMain, CItem
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 		
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO,  pItemMain->GetAbilityOption() + 1 );
+		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		aLogItem.Action = "H";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 
@@ -606,7 +606,7 @@ BYTE	CItemUpgrade::SmeltSafetyAccessory(CUser* pUser, CItemElem* pItemMain, CIte
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO,  pItemMain->GetAbilityOption()+1 );
+		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 
 		aLogItem.Action		= "H";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -747,7 +747,7 @@ void	CItemUpgrade::RefineAccessory( CUser* pUser, CItemElem* pItemMain, CItemEle
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO,  pItemMain->GetAbilityOption()+1 );
+		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 
 		aLogItem.Action		= "H";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -809,7 +809,7 @@ void	CItemUpgrade::RefineCollector( CUser* pUser, CItemElem* pItemMain, CItemEle
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO,  pItemMain->GetAbilityOption()+1 );
+		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		aLogItem.Action		= "H";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 	}
@@ -1037,7 +1037,7 @@ void	CItemUpgrade::EnchantGeneral( CUser* pUser, CItemElem* pItemMain, CItemElem
 #ifdef __SM_ITEM_2ND_EX
 				if( bSmelprot2 )
 				{
-					pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO,  pItemMain->GetAbilityOption() - 1 );
+					pUser->UpdateItem(*pItemMain, UI::AbilityOption::Down);
 					aLogItem.Action = "9";
 					g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 				}
@@ -1065,7 +1065,7 @@ void	CItemUpgrade::EnchantGeneral( CUser* pUser, CItemElem* pItemMain, CItemElem
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 
-		pUser->UpdateItem( (BYTE)pItemMain->m_dwObjId, UI_AO,  pItemMain->GetAbilityOption()+1 );
+		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		aLogItem.Action = "H";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 	}

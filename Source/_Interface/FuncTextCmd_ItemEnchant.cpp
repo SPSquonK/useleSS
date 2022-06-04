@@ -58,7 +58,9 @@ namespace SqKItemEnchant {
 
     static bool LevelHandler(Parameters p) {
       if (p.args.size() != 1) return false;
-      p.user.UpdateItem(p.item.m_dwObjId, UI_AO, std::atoi(p.args[0].GetString()));
+      const char * asString = p.args[0].GetString();
+      const int targetLevel = std::atoi(asString);
+      p.user.UpdateItem(p.item, UI::AbilityOption::Set(targetLevel));
       return true;
     }
 

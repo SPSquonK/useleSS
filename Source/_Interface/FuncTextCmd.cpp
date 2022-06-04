@@ -496,7 +496,7 @@ BOOL TextCmd_RefineCollector(CScanner & s, CPlayer_ * pUser) {
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
 			g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
-		pUser->UpdateItem( (BYTE)( pTarget->m_dwObjId ), UI_AO,  nAbilityOption );
+		pUser->UpdateItem(*pTarget, UI::AbilityOption::Set(nAbilityOption));
 	}
 #endif	// __WORLDSERVER
 	return TRUE;
@@ -531,7 +531,7 @@ BOOL TextCmd_RefineAccessory(CScanner & s, CPlayer_ * pUser) {
 		nAbilityOption	= 0;
 	CItemElem* pTarget	= pUser->m_Inventory.GetAt( 0 );
 	if( pTarget && pTarget->IsAccessory() )
-		pUser->UpdateItem( (BYTE)( pTarget->m_dwObjId ), UI_AO,  nAbilityOption );
+		pUser->UpdateItem(*pTarget, UI::AbilityOption::Set(nAbilityOption));
 #endif	// __WORLDSERVER
 	return TRUE;
 }
@@ -1390,7 +1390,7 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 	
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_IR,  bItemResist );
 	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_RAO,  nResistAbilityOption );
-	pUser->UpdateItem( (BYTE)( pItemElem0->m_dwObjId ), UI_AO,  nAbilityOption );
+	pUser->UpdateItem(*pItemElem0, UI::AbilityOption::Set(nAbilityOption));
 	if (nAbilityOption > 5 && pItemElem0->GetProp()->dwReferStat1 == WEAPON_ULTIMATE) {
 		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::Ultimate);
 	}
