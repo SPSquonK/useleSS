@@ -25,8 +25,6 @@ CItemUpgrade::CItemUpgrade(void)
 
 CItemUpgrade::~CItemUpgrade(void)
 {
-	m_mapSuitProb.clear();
-	m_mapWeaponProb.clear();
 	m_mapGeneralEnchant.clear();
 	m_mapAttributeEnchant.clear();
 }
@@ -46,25 +44,7 @@ void CItemUpgrade::LoadScript()
 		ASSERT(0);
 	}
 
-	// 방어구 피어싱
-	lua.GetGloabal( "tSuitProb" );
-	lua.PushNil();
-	while( lua.TableLoop( -2 ) )
-	{
-		m_mapSuitProb.emplace( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) );
-		lua.Pop( 1 );
-	}
-	lua.Pop(0);
-
-	// 무기 피어싱
-	lua.GetGloabal( "tWeaponProb" );
-	lua.PushNil();
-	while( lua.TableLoop( -2 ) )
-	{
-		m_mapWeaponProb.emplace( static_cast<int>(lua.ToNumber(-2)), static_cast<int>(lua.ToNumber(-1)) );
-		lua.Pop( 1 );
-	}
-	lua.Pop(0);
+	m_piercing.LoadScript(lua);
 	
 	// 일반제련
 	lua.GetGloabal( "tGeneral" );
@@ -95,6 +75,26 @@ void CItemUpgrade::LoadScript()
 	m_nItemTransyHighLevel = static_cast<int>( lua.GetGlobalNumber( "nItemTransyHighLevel" ) );
 	lua.Pop(0);
 #endif // __SYS_ITEMTRANSY
+}
+
+void CItemUpgrade::PiercingUpgrade::LoadScript(CLuaBase & lua) {
+	// 방어구 피어싱
+	lua.GetGloabal("tSuitProb");
+	lua.PushNil();
+	while (lua.TableLoop(-2)) {
+		m_mapSuitProb.emplace(static_cast<int>(lua.ToNumber(-2)), static_cast<unsigned int>(lua.ToNumber(-1)));
+		lua.Pop(1);
+	}
+	lua.Pop(0);
+
+	// 무기 피어싱
+	lua.GetGloabal("tWeaponProb");
+	lua.PushNil();
+	while (lua.TableLoop(-2)) {
+		m_mapWeaponProb.emplace(static_cast<int>(lua.ToNumber(-2)), static_cast<unsigned int>(lua.ToNumber(-1)));
+		lua.Pop(1);
+	}
+	lua.Pop(0);
 }
 
 bool CItemUpgrade::IsInTrade(const CUser & pUser) {
@@ -154,7 +154,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 
 	int nCost = 100000;
 
-	if( 0 < nCost )
+	if( nCost > 0 )
 	{
 		if( pUser->GetGold() < nCost )
 		{
@@ -181,7 +181,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 	int nPersent = 0;
 	if( pItemElem1->GetProp()->dwID == II_GEN_MAT_MOONSTONE
 		|| pItemElem1->GetProp()->dwID == II_GEN_MAT_MOONSTONE_1 )
-		nPersent = GetSizeProb( pItemElem0 );
+		nPersent = m_piercing.GetSizeProb( *pItemElem0 );
 
 	if( nPersent < (int)( xRandom( 10000 ) ) )
 	{	// 실패
@@ -192,7 +192,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 		aLogItem.RecvName = "PIERCING";
 
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
-		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+		g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 		pUser->AddDefinedText( TID_MMI_PIERCINGFAIL , "" );
 		
 		if( pItemElem2 == NULL )								// 상용화 아이템을 사용하지 않았다면 
@@ -201,7 +201,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 	else
 	{	// 성공			
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
+		g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
 		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::IncrementRegular);
 		pUser->AddDefinedText( TID_MMI_PIERCINGSUCCESS , "" );
 
@@ -230,27 +230,24 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 	}
 }
 
-int CItemUpgrade::GetSizeProb( CItemElem* pItemElem )
-{
-	// 편법으로...IK3_SOCKETCARD가 정상이면 슈트...
-	if( pItemElem->IsPierceAble( IK3_SOCKETCARD ) )
-	{
-		//return m_vecSuitProb.size() >= pItemElem->GetPiercingSize() ? m_vecSuitProb[pItemElem->GetPiercingSize()] : 0;
-		const auto it = m_mapSuitProb.find( pItemElem->GetPiercingSize()+1 );
-		if( it != m_mapSuitProb.end() )
-			return it->second;
-	}
-	
-	// 편법으로...IK3_SOCKETCARD2가 정상이면 무기쪽...
-	if( pItemElem->IsPierceAble( IK3_SOCKETCARD2 ) )
-	{
-		//return m_vecWeaponProb.size() >= pItemElem->GetPiercingSize() ? m_vecWeaponProb[pItemElem->GetPiercingSize()] : 0;
-		const auto it = m_mapWeaponProb.find( pItemElem->GetPiercingSize()+1 );
-		if( it != m_mapWeaponProb.end() )
-			return it->second;
+unsigned int CItemUpgrade::PiercingUpgrade::GetSizeProb(const CItemElem & pItemElem) const {
+	using namespace ItemProps;
+	const PiercingType piercingType = pItemElem.GetPiercingType();
+
+	const std::map<int, unsigned int> * probsMap = nullptr;
+
+	if (piercingType == PiercingType::LetterCard) {
+		probsMap = &m_mapWeaponProb;
+	} else if (piercingType == PiercingType::NumericCard) {
+		probsMap = &m_mapSuitProb;
 	}
 
-	return 0;
+	if (!probsMap) return 0;
+
+	const auto it = probsMap->find(pItemElem.GetPiercingSize() + 1);
+	if (it == probsMap->end()) return 0;
+
+	return it->second;
 }
 
 void CItemUpgrade::OnPiercing( CUser* pUser, DWORD dwItemId, DWORD dwSocketCard )
@@ -696,14 +693,14 @@ BYTE	CItemUpgrade::SmeltSafetyPiercingSize(CUser* pUser, CItemElem* pItemMain, C
 	}
 	pUser->RemoveItem( (BYTE)( pItemProtScr->m_dwObjId ), 1 );
 	
-	int nPercent = GetSizeProb( pItemMain );
+	int nPercent = m_piercing.GetSizeProb( *pItemMain );
 
-	if( nPercent < (int)( xRandom( 10000 ) ) )
+	if( nPercent < xRandom( 10000 ) )
 	{	// 실패
 		//pUser->AddDefinedText( TID_MMI_PIERCINGFAIL );
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj( pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 		
 		aLogItem.Action = "!";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -715,7 +712,7 @@ BYTE	CItemUpgrade::SmeltSafetyPiercingSize(CUser* pUser, CItemElem* pItemMain, C
 		//pUser->AddDefinedText( TID_MMI_PIERCINGSUCCESS );
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 		pUser->UpdateItem(*pItemMain, UI::Piercing::Size::IncrementRegular);
 
 		aLogItem.Action = "#";

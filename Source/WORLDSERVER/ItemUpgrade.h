@@ -15,8 +15,21 @@ struct __ATTRIBUTE_ENCHANT
 	}
 };
 
-class CItemUpgrade
-{
+class CItemUpgrade {
+public:
+	struct PiercingUpgrade {
+	public:
+		[[nodiscard]] unsigned int GetSizeProb(const CItemElem & pItemElem) const;
+		void LoadScript(CLuaBase & lua);
+
+	private:
+		std::map<int, unsigned int>	m_mapSuitProb;
+		std::map<int, unsigned int>	m_mapWeaponProb;
+	};
+
+private:
+	PiercingUpgrade m_piercing;
+
 public:
 	CItemUpgrade(void);
 	~CItemUpgrade(void);
@@ -27,7 +40,6 @@ public:
 
 	void	LoadScript();
 	void	OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD dwId3 );
-	int		GetSizeProb( CItemElem* pItemElem );
 	void	OnPiercing( CUser* pUser, DWORD dwItemId, DWORD dwSocketCard );
 	static void OnPiercingRemove(CUser & pUser, DWORD objId);
 
@@ -47,8 +59,6 @@ private:
 #endif // __SYS_ITEMTRANSY
 
 private:
-	std::map<int, int>	m_mapSuitProb;
-	std::map<int, int>	m_mapWeaponProb;
 	
 private:
 	void	RefineAccessory( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial );
@@ -78,5 +88,8 @@ public:
 	void	SwapVis( CUser* pUser, int nPos1, int nPos2 );
 	void	ChangeVisPetSfx( CUser* pUser, CItemElem* pItemElemPet );
 	void	TransFormVisPet( CUser* pUser, OBJID objIdMaterial );
+
+private:
+
 };
 
