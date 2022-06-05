@@ -611,6 +611,25 @@ BOOL CItemElem::IsLimitLevel( CMover* pMover )
 }
 
 
+ItemProps::PiercingType CItemElem::GetPiercingType() const {
+	using namespace ItemProps;
+
+	const ItemProp * itemProp = GetProp();
+	if (!itemProp) return PiercingType::None;
+
+	if (itemProp->dwItemKind3 == IK3_SUIT) return PiercingType::NumericCard;
+	
+	if (itemProp->dwItemKind3 == IK3_SHIELD
+		|| itemProp->dwItemKind2 == IK2_WEAPON_DIRECT
+		|| itemProp->dwItemKind2 == IK2_WEAPON_MAGIC) {
+		return PiercingType::LetterCard;
+	}
+
+	if (IsVisPet()) return PiercingType::Vis;
+	
+	return PiercingType::None;
+}
+
 // bSize는 피어싱 사이즈를 늘릴 수 있는지 검사할 때 TRUE값을 setting 한다.
 // bSize를 TRUE로 할 경우 dwTagetItemKind3는 NULL_ID로 한다.
 BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize ) const

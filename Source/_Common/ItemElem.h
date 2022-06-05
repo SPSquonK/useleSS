@@ -155,6 +155,8 @@ public:
 	BOOL	IsFeed() { return GetProp()->dwItemKind3 == IK3_FEED; }
 	BOOL	IsEgg();
 	CString	GetName();
+
+	[[nodiscard]] ItemProps::PiercingType GetPiercingType() const;
 #endif
 
 

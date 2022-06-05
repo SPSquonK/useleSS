@@ -4575,7 +4575,7 @@ void CDPSrvr::OnPiercing(CAr & ar, CUser & pUser) {
 // 피어싱 옵션 제거(카드 제거)
 void CDPSrvr::OnPiercingRemove(CAr & ar, CUser & pUser) {
 	const auto [weaponPos] = ar.Extract<DWORD>();
-	CItemUpgrade::GetInstance()->OnPiercingRemove(&pUser, weaponPos);
+	CItemUpgrade::OnPiercingRemove(pUser, weaponPos);
 }
 
 void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)

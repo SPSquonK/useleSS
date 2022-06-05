@@ -331,6 +331,10 @@ public:
 			m_items_VT[i] = values[i];
 		}
 	}
+
+	[[nodiscard]] bool IsInSomeKindOfTrade() const noexcept {
+		return m_objId != NULL_ID || VendorIsVendor();
+	}
 };
 
 /// 서버에서 SFX해킹 때문에 생긴 자료형 

@@ -356,6 +356,25 @@ struct ItemProp : CtrlProp
 #endif //__CLIENT
 };
 
+namespace ItemProps {
+	class PiercingType {
+		enum class V { None, LetterCard, NumericCard, Vis };
+	public:
+		using enum V;
+
+		constexpr PiercingType(const V value) : m_value(value) {}
+		constexpr operator V() const { return m_value; }
+
+		constexpr bool IsOnEquipement() const {
+			return m_value == V::LetterCard || m_value == V::NumericCard;
+		}
+
+	private:
+		V m_value;
+	};
+
+}
+
 
 // 직업에 따른 factor ENUM
 enum JOB_PROP_TYPE

@@ -22,11 +22,14 @@ public:
 	~CItemUpgrade(void);
 	static CItemUpgrade*	GetInstance( void );
 
+	static bool IsInTrade(const CUser & pUser);
+	static CItemElem * GetModifiableItem(CUser & pUser, DWORD dwId);
+
 	void	LoadScript();
 	void	OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD dwId3 );
 	int		GetSizeProb( CItemElem* pItemElem );
 	void	OnPiercing( CUser* pUser, DWORD dwItemId, DWORD dwSocketCard );
-	void	OnPiercingRemove( CUser* pUser, DWORD objId );
+	static void OnPiercingRemove(CUser & pUser, DWORD objId);
 
 	BYTE	OnSmeltSafety( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr, CItemElem* pItemSmeltScr );
 	void	OnEnchant( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial );

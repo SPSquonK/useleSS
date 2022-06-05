@@ -97,6 +97,17 @@ void CItemUpgrade::LoadScript()
 #endif // __SYS_ITEMTRANSY
 }
 
+bool CItemUpgrade::IsInTrade(const CUser & pUser) {
+	return pUser.m_vtInfo.IsInSomeKindOfTrade();
+}
+
+CItemElem * CItemUpgrade::GetModifiableItem(CUser & pUser, DWORD dwId) {
+	CItemElem * pItemElem = pUser.m_Inventory.GetAtId(dwId);
+	if (!pItemElem) return nullptr;
+	if (!IsUsableItem(pItemElem)) return nullptr;
+	if (pUser.m_Inventory.IsEquip(dwId)) return nullptr;
+	return pItemElem;
+}
 
 void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD dwId3 )
 {
@@ -316,49 +327,59 @@ void CItemUpgrade::OnPiercing( CUser* pUser, DWORD dwItemId, DWORD dwSocketCard 
 
 }
 
-void CItemUpgrade::OnPiercingRemove( CUser* pUser, DWORD objId )
-{
-	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( objId );
-	if( !IsUsableItem( pItemElem ) || !pItemElem->IsPierceAble() )
-		return;
+void CItemUpgrade::OnPiercingRemove(CUser & pUser, DWORD objId) {
+	static constexpr int PiercingRemovalCost = 1000000;
 
-	if( pUser->m_Inventory.IsEquip( objId ) )
-		return;
+	// User input sanitization
+	if (IsInTrade(pUser)) return;
 
-	// 피어싱 옵션이 없는 경우
-	if( pItemElem->GetPiercingSize() == 0 || pItemElem->GetPiercingItem( 0 ) == 0 )
-	{
-		pUser->AddDefinedText( TID_GAME_REMOVE_PIERCING_ERROR );
-		return;
-	}
+	CItemElem * pItemElem = GetModifiableItem(pUser, objId);
+	if (!pItemElem) return;
 
-	int nPayPenya = 1000000; // 지불할 페냐
-	if( pUser->GetGold() < nPayPenya )	// 페냐가 부족하다.
-	{
-		pUser->AddDefinedText( TID_GAME_LACKMONEY );
+	const ItemProps::PiercingType piercingType = pItemElem->GetPiercingType();
+
+	if (!piercingType.IsOnEquipement()) return;
+
+	// Is rich enough?
+	if (pUser.GetGold() < PiercingRemovalCost) {
+		pUser.AddDefinedText(TID_GAME_LACKMONEY);
 		return;
 	}
 
-	for( int i=pItemElem->GetPiercingSize()-1; i>=0; i-- )
-	{
-		if( pItemElem->GetPiercingItem( i ) != 0 )
-		{
-			pUser->AddGold( -nPayPenya );	// 페냐 지불
-			pUser->AddDefinedText( TID_GAME_REMOVE_PIERCING_SUCCESS );
-			pUser->UpdateItem(*pItemElem, UI::Piercing::Item{ UI::Piercing::Kind::Regular, i, 0 });
-
-			LogItemInfo aLogItem;
-			aLogItem.Action = "$";
-			aLogItem.SendName = pUser->GetName();
-			aLogItem.RecvName = "PIERCING_REMOVE";
-			aLogItem.WorldId = pUser->GetWorld()->GetID();
-			aLogItem.Gold = pUser->GetGold() + nPayPenya;
-			aLogItem.Gold2 = pUser->GetGold();
-			aLogItem.Gold_1 = -nPayPenya;
-			g_DPSrvr.OnLogItem( aLogItem, pItemElem, 1 );
-			break;
+	// Find card to remove
+	static constexpr auto FindSlotToRemove = [](const CItemElem & itemElem) -> std::optional<int> {
+		for (int i = itemElem.GetPiercingSize() - 1; i >= 0; --i) {
+			if (itemElem.GetPiercingItem(i) != 0) {
+				return i;
+			}
 		}
+
+		return std::nullopt;
+	};
+
+	const auto toRemove = FindSlotToRemove(*pItemElem);
+	if (!toRemove) {
+		pUser.AddDefinedText(TID_GAME_REMOVE_PIERCING_ERROR);
+		return;
 	}
+	
+	const int i = toRemove.value();
+
+	// Apply change
+	pUser.AddGold(-PiercingRemovalCost);
+	pUser.AddDefinedText(TID_GAME_REMOVE_PIERCING_SUCCESS);
+	pUser.UpdateItem(*pItemElem, UI::Piercing::Item{ UI::Piercing::Kind::Regular, i, 0 });
+
+	// Log
+	LogItemInfo aLogItem;
+	aLogItem.Action = "$";
+	aLogItem.SendName = pUser.GetName();
+	aLogItem.RecvName = "PIERCING_REMOVE";
+	aLogItem.WorldId = pUser.GetWorld()->GetID();
+	aLogItem.Gold = pUser.GetGold() + PiercingRemovalCost;
+	aLogItem.Gold2 = pUser.GetGold();
+	aLogItem.Gold_1 = -PiercingRemovalCost;
+	g_DPSrvr.OnLogItem(aLogItem, pItemElem, 1);
 }
 
 void	CItemUpgrade::OnEnchant( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial )
