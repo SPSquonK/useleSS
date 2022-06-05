@@ -8149,8 +8149,10 @@ void CDPSrvr::OnFiveSystemDestroyWnd( CAr & ar, DPID dpidCache, DPID dpidUser, L
 void CDPSrvr::OnUltimateMakeItem(CAr & ar, CUser & pUser) {
 	std::array<OBJID, MAX_JEWEL> objItemId; ar >> objItemId;
 
-	const int nResult = prj.m_UltimateWeapon.MakeOrichalcum2(pUser, objItemId);
-	pUser.AddUltimateMakeItem(nResult);
+	const CUltimateWeapon::Result nResult = prj.m_UltimateWeapon.MakeOrichalcum2(pUser, objItemId);
+	pUser.SendSnapshotThisId<SNAPSHOTTYPE_ULTIMATE, BYTE, CUltimateWeapon::Result>(
+		ULTIMATE_MAKEITEM, nResult
+		);
 }
 
 void CDPSrvr::OnUltimateMakeGem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

@@ -10546,9 +10546,14 @@ void CDPClient::OnUltimateWeapon( OBJID objid, CAr & ar )
 	ar >> nState;
 	switch( nState )
 	{
-	case ULTIMATE_MAKEITEM: 
-		OnUltimateMakeItem( objid, ar );
-		break;
+		case ULTIMATE_MAKEITEM: {
+			CUltimateWeapon::Result nResult; ar >> nResult;
+
+			if (CWndMixJewel * pWndMixJewel = g_WndMng.GetWndBase<CWndMixJewel>(APP_SMELT_MIXJEWEL)) {
+				pWndMixJewel->ReceiveResult(nResult);
+			}
+			break;
+		}
 	case ULTIMATE_TRANSWEAPON:
 		OnUltimateTransWeapon( objid, ar );
 		break;
@@ -10565,16 +10570,6 @@ void CDPClient::OnUltimateWeapon( OBJID objid, CAr & ar )
 		OnUltimateEnchantWeapon( objid, ar );
 		break;		
 	}
-}
-
-void CDPClient::OnUltimateMakeItem( OBJID objid, CAr & ar )
-{
-	int nResult;
-	ar >> nResult;
-	
-	CWndMixJewel* pWndMixJewel = (CWndMixJewel*)g_WndMng.GetWndBase( APP_SMELT_MIXJEWEL );
-	if(pWndMixJewel != NULL)
-		pWndMixJewel->ReceiveResult(nResult);
 }
 
 void CDPClient::OnUltimateTransWeapon( OBJID objid, CAr & ar )
@@ -14859,18 +14854,6 @@ void CDPClient::SendFiveSystemDestroyWnd()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 #endif // __EVE_MINIGAME
-
-
-void CDPClient::SendUltimateMakeItem( OBJID* pdwItemId )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ULTIMATE_MAKEITEM, DPID_UNKNOWN );
-	
-//	for( int i=0; i<10; i++ )
-//		ar << pdwItemId[i];
-	ar.Write( pdwItemId, sizeof(OBJID) * MAX_JEWEL );
-	
-	SEND( ar, this, DPID_SERVERPLAYER );
-}	
 
 void CDPClient::SendUltimateMakeGem( OBJID objItemId )
 {

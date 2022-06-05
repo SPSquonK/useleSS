@@ -16008,14 +16008,12 @@ CWndMixJewel::CWndMixJewel()
 	m_nOrichalcum = 0;
 	m_nMoonstone = 0;
 	m_pText = NULL;
-	m_nitemcount = 0;
 	m_pWndInventory = NULL;
 	m_pConfirm = NULL;
 	m_bStart = FALSE;
 
 	// cr : uw : initialize
 	memset( m_MatJewel, 0, sizeof(GENMATDIEINFO) * MAX_JEWEL );
-	memset( m_ItemInfo, 0, sizeof(ItemCountSet) * MAX_JEWEL );
 }
 
 CWndMixJewel::~CWndMixJewel() 
@@ -16124,8 +16122,6 @@ void CWndMixJewel::OnInitialUpdate()
 		m_MatJewel[i].staticNum = StaticID[i];
 		m_MatJewel[i].isUse = FALSE;
 		m_MatJewel[i].pItemElem = NULL;
-		m_ItemInfo[i].extracount = 0;
-		m_ItemInfo[i].itemid = -1;
 	}
 
 	CWndText::SetupDescription(m_pText, _T("SmeltMixJewel.inc"));
@@ -16338,48 +16334,26 @@ BOOL CWndMixJewel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 		else
 		{	
-			m_bStart = TRUE;
-			
-			m_nitemcount = 0;
-			for(int i=0; i<MAX_JEWEL; i++)
-			{
-				if(m_MatJewel[i].isUse)
-				{
-					if(m_MatJewel[i].pItemElem != NULL && m_MatJewel[i].pItemElem->GetExtra() > 0)
-					{
-						BOOL equalflag = FALSE;
-						for(int j=0; j<m_nitemcount; j++)
-						{
-							if(m_ItemInfo[j].itemid == m_MatJewel[i].pItemElem->m_dwObjId)
-							{
-								m_ItemInfo[j].extracount++;
-								equalflag = TRUE;
-							}
-						}
-						if(!equalflag)
-						{
-							m_ItemInfo[m_nitemcount].itemid = m_MatJewel[i].pItemElem->m_dwObjId;
-							m_ItemInfo[m_nitemcount].extracount++;
-							m_nitemcount++;
-						}
-					}
-				}		
-			}
-			
-			CString sendstr;
-			OBJID itemobjid[MAX_JEWEL];
-			int index = 0;
+			std::array<OBJID, MAX_JEWEL> itemobjid = { 0, };
 
-			for( int i=0; i<m_nitemcount; i++)
-			{
-				for(int j=0; j<m_ItemInfo[i].extracount; j++)
-				{
-					itemobjid[index] = m_ItemInfo[i].itemid;
-					index++;
+			bool isBad = false;
+			for (size_t i = 0; i != MAX_JEWEL; ++i) {
+				const GENMATDIEINFO matJewel = m_MatJewel[i];
+				
+				if (matJewel.isUse
+					&& matJewel.pItemElem
+					&& matJewel.pItemElem->GetExtra() > 0) {
+					itemobjid[i] = matJewel.pItemElem->m_dwObjId;
+				} else {
+					isBad = true;
+					break;
 				}
 			}
 
-			g_DPlay.SendUltimateMakeItem(itemobjid);
+			if (!isBad) {
+				m_bStart = TRUE;
+				g_DPlay.SendPacket<PACKETTYPE_ULTIMATE_MAKEITEM, std::array<OBJID, MAX_JEWEL>>(itemobjid);
+			}
 		}
 	}
 	
@@ -16402,7 +16376,7 @@ int CWndMixJewel::HitTest( CPoint point )
 	return rtn_val;
 }
 
-void CWndMixJewel::ReceiveResult(int nResult)
+void CWndMixJewel::ReceiveResult(const CUltimateWeapon::Result nResult)
 {
 	//Server���� �����? ������ �ʱ�ȭ�� �����ϰ� â�� ����.
 	//�ʱ�ȭ
@@ -16411,26 +16385,23 @@ void CWndMixJewel::ReceiveResult(int nResult)
 		m_MatJewel[i].isUse = FALSE;
 		m_MatJewel[i].pItemElem->SetExtra(0);
 		m_MatJewel[i].pItemElem = NULL;
-		m_ItemInfo[i].extracount = 0;
-		m_ItemInfo[i].itemid = -1;
 	}
 	m_bStart = FALSE;
 	
 	switch(nResult) 
 	{
-		case CUltimateWeapon::ULTIMATE_SUCCESS:
+		case CUltimateWeapon::Result::Success:
 			{
 				SetStartBtn(FALSE);
-				SAFE_DELETE( m_pConfirm );	// cr : uw : leak
+				SAFE_DELETE( m_pConfirm );
 				m_pConfirm = new CWndMixJewelConfirm();
-				m_pConfirm->Initialize( this );		// cr : uw : 
+				m_pConfirm->Initialize( this );
 			}
 			break;
-		case CUltimateWeapon::ULTIMATE_FAILED:
-		case CUltimateWeapon::ULTIMATE_CANCEL:
+		case CUltimateWeapon::Result::Cancel:
 			Destroy();
 			break;
-		case CUltimateWeapon::ULTIMATE_INVENTORY:
+		case CUltimateWeapon::Result::Inventory:
 			g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_EXTRACTION_ERROR ) );
 			break;			
 	}

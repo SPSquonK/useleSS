@@ -1492,9 +1492,7 @@ class CWndMixJewel : public CWndNeuz
 public:
 	CWndText* m_pText;
 	GENMATDIEINFO m_MatJewel[MAX_JEWEL];	// cr : uw :
-	ItemCountSet m_ItemInfo[MAX_JEWEL];		// cr : uw :
-	
-	int m_nitemcount;
+		
 	int m_nSelectCtrl;
 	int m_nOrichalcum;
 	int m_nMoonstone;
@@ -1526,7 +1524,7 @@ public:
 	
 	void SetDescription( CHAR* szChar );		
 	int HitTest( CPoint point );
-	void ReceiveResult(int nResult);
+	void ReceiveResult(CUltimateWeapon::Result nResult);
 	void SetJewel(CItemElem* pItemElem);
 	void SetStartBtn(BOOL buse);
 	void SetConfirmInit();

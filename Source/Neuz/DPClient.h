@@ -424,14 +424,12 @@ public:
 #endif // __EVE_MINIGAME
 
 	void OnUltimateWeapon( OBJID objid, CAr & ar );
-	void OnUltimateMakeItem( OBJID objid, CAr & ar );
 	void OnUltimateTransWeapon( OBJID objid, CAr & ar );
 	void OnUltimateMakeGem( OBJID objid, CAr & ar );
 	void OnUltimateSetGem( OBJID objid, CAr & ar );
 	void OnUltimateRemoveGem( OBJID objid, CAr & ar );
 	void OnUltimateEnchantWeapon( OBJID objid, CAr & ar );
 
-	void SendUltimateMakeItem( OBJID* pdwItemId );
 	void SendUltimateMakeGem( OBJID objItemId );
 	void SendUltimateTransWeapon( OBJID objItemWeapon, OBJID objItemGem1, OBJID objItemGem2 );
 	void SendUltimateSetGem( OBJID objItemWeapon, OBJID objItemGem );

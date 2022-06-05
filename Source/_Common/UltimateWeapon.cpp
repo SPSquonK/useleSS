@@ -383,7 +383,7 @@ int CUltimateWeapon::RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem 
 }
 
 // 빛나는 오리칼쿰 생성 - 오리칼쿰 5개, 문스톤 5개 합성
-int CUltimateWeapon::MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_JEWEL> & objItemId) {
+CUltimateWeapon::Result CUltimateWeapon::MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_JEWEL> & objItemId) {
 	// ~~ Transform into a map the array
 	std::map<OBJID, unsigned int> mapObjId;
 
@@ -405,11 +405,11 @@ int CUltimateWeapon::MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_
 	for (const auto & [objid, quantity] : mapObjId) {
 		const CItemElem * const pItemElem = pUser.m_Inventory.GetAtId(objid);
 		if (!IsUsableItem(pItemElem)) {
-			return ULTIMATE_CANCEL;
+			return Result::Cancel;
 		}
 
 		if (quantity > pItemElem->m_nItemNum) {
-			return ULTIMATE_CANCEL;
+			return Result::Cancel;
 		}
 
 		if (IsOrichalcum(*pItemElem)) {
@@ -417,19 +417,19 @@ int CUltimateWeapon::MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_
 		} else if (IsMoonstone(*pItemElem)) {
 			numberOfMoonstone += quantity;
 		} else {
-			return ULTIMATE_CANCEL;
+			return Result::Cancel;
 		}
 	}
 
 	if (numberOfOrichalcum != 5 || numberOfMoonstone != 5) {
-		return ULTIMATE_CANCEL;
+		return Result::Cancel;
 	}
 	
 	// ~~ Create Orichalcum2
 	CItemElem itemElemTemp;
 	itemElemTemp.m_dwItemId = II_GEN_MAT_ORICHALCUM02;
 	if( !itemElemTemp.GetProp() || pUser.m_Inventory.IsFull( &itemElemTemp, itemElemTemp.GetProp(), 1 ) )
-		return ULTIMATE_INVENTORY;
+		return Result::Inventory;
 	
 	LogItemInfo aLogItem;
 	aLogItem.Action = "-";
@@ -455,7 +455,7 @@ int CUltimateWeapon::MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_
 	aLogItem.RecvName = "ULTIMATE_MAKEITEM_SUCCESS";
 	g_DPSrvr.OnLogItem(aLogItem, &itemElem, 1);
 	
-	return ULTIMATE_SUCCESS;
+	return Result::Success;
 }
 
 // 무기변환(일반->유니크, 유니크->얼터멋)
@@ -488,9 +488,6 @@ int CUltimateWeapon::TransWeapon( CUser* pUser, OBJID objItem, OBJID objGem1, OB
 	// 타겟 ID 가 없을 때
 	if( pItemElemWeapon->GetProp()->dwReferTarget1 == NULL_ID )
 	{
-#ifdef __INTERNALSERVER
-		pUser->AddText( "dwReferTarget1 에 변환될 아이템 ID가 없음." );
-#endif // __INTERNALSERVER
 		return ULTIMATE_CANCEL;	
 	}
 	
@@ -498,9 +495,6 @@ int CUltimateWeapon::TransWeapon( CUser* pUser, OBJID objItem, OBJID objGem1, OB
 	if( pItemElemWeapon->GetProp()->dwReferStat1 != WEAPON_GENERAL &&
 		  pItemElemWeapon->GetProp()->dwReferStat1 != WEAPON_UNIQUE )
 	{
-#ifdef __INTERNALSERVER
-		pUser->AddText( "dwReferStat1 값이 WEAPON_GENERAL, WEAPON_UNIQUE 가 아님." );
-#endif // __INTERNALSERVER
 		return ULTIMATE_CANCEL;
 	}
 
