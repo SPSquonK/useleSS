@@ -8146,20 +8146,11 @@ void CDPSrvr::OnFiveSystemDestroyWnd( CAr & ar, DPID dpidCache, DPID dpidUser, L
 }
 #endif // __EVE_MINIGAME
 
-void CDPSrvr::OnUltimateMakeItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
+void CDPSrvr::OnUltimateMakeItem(CAr & ar, CUser & pUser) {
+	std::array<OBJID, MAX_JEWEL> objItemId; ar >> objItemId;
 
-	OBJID objItemId[MAX_JEWEL];
-//	for( int i=0; i<MAX_JEWEL; i++ )
-//		ar >> objItemId[i];
-	ar.Read( objItemId, sizeof(OBJID) * MAX_JEWEL );
-
-	int nResult = prj.m_UltimateWeapon.MakeItem( pUser, objItemId );
-	pUser->AddUltimateMakeItem( nResult );
+	const int nResult = prj.m_UltimateWeapon.MakeOrichalcum2(pUser, objItemId);
+	pUser.AddUltimateMakeItem(nResult);
 }
 
 void CDPSrvr::OnUltimateMakeGem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

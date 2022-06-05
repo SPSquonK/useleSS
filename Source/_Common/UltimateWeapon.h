@@ -55,7 +55,7 @@ public:
 	int MakeGem( CUser* pUser, OBJID objItemId, int & nNum );
 	int SetGem( CUser* pUser, OBJID objItemId, OBJID objGemItemId );
 	int RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem );
-	int MakeItem( CUser* pUser, OBJID* objItemId );
+	int MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_JEWEL> & objItemId);
 	int  TransWeapon( CUser* pUser, OBJID objItem, OBJID objGem1, OBJID objGem2 );
 	int  EnchantWeapon( CUser* pUser, OBJID objItem, OBJID objItem2 );
 	BYTE SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr );

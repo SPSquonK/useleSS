@@ -383,80 +383,66 @@ int CUltimateWeapon::RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem 
 }
 
 // ºû³ª´Â ¿À¸®Ä®Äñ »ý¼º - ¿À¸®Ä®Äñ 5°³, ¹®½ºÅæ 5°³ ÇÕ¼º
-int CUltimateWeapon::MakeItem( CUser* pUser, OBJID* objItemId )
-{
-	std::map<OBJID, int> mapObjId1;
-	std::map<OBJID, int> mapObjId2;
-	for( int i=0; i<5; i++ )
-	{
-		mapObjId1[objItemId[i]] += 1;
-		mapObjId2[objItemId[i+5]] += 1;
+int CUltimateWeapon::MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_JEWEL> & objItemId) {
+	// ~~ Transform into a map the array
+	std::map<OBJID, unsigned int> mapObjId;
+
+	for (const OBJID objid : objItemId) {
+		++mapObjId[objid];
 	}
 
-	int nItemCount = 0;
-	for( auto it = mapObjId1.begin() ; it != mapObjId1.end() ; ++it )
-	{
-		CItemElem* pItemElem;
-		pItemElem = pUser->m_Inventory.GetAtId( it->first );
-		if( !IsUsableItem( pItemElem ) )
-			return ULTIMATE_CANCEL;
-		
-		if( pItemElem->GetProp()->dwID != II_GEN_MAT_ORICHALCUM01
-			&& pItemElem->GetProp()->dwID != II_GEN_MAT_ORICHALCUM01_1 )
-			return ULTIMATE_CANCEL;
-		if( it->second > pItemElem->m_nItemNum )
-			return ULTIMATE_CANCEL;
+	// ~~ Check number of orichalcum and moonstones
+	static constexpr auto IsOrichalcum = [](const CItemElem & item) {
+		return item.m_dwItemId == II_GEN_MAT_ORICHALCUM01 || item.m_dwItemId == II_GEN_MAT_ORICHALCUM01_1;
+	};
+	static constexpr auto IsMoonstone = [](const CItemElem & item) {
+		return item.m_dwItemId == II_GEN_MAT_MOONSTONE || item.m_dwItemId == II_GEN_MAT_MOONSTONE_1;
+	};
 
-		nItemCount += it->second;
+	unsigned int numberOfOrichalcum = 0;
+	unsigned int numberOfMoonstone = 0;
+
+	for (const auto & [objid, quantity] : mapObjId) {
+		const CItemElem * const pItemElem = pUser.m_Inventory.GetAtId(objid);
+		if (!IsUsableItem(pItemElem)) {
+			return ULTIMATE_CANCEL;
+		}
+
+		if (quantity > pItemElem->m_nItemNum) {
+			return ULTIMATE_CANCEL;
+		}
+
+		if (IsOrichalcum(*pItemElem)) {
+			numberOfOrichalcum += quantity;
+		} else if (IsMoonstone(*pItemElem)) {
+			numberOfMoonstone += quantity;
+		} else {
+			return ULTIMATE_CANCEL;
+		}
 	}
-	if( nItemCount != 5 )
+
+	if (numberOfOrichalcum != 5 || numberOfMoonstone != 5) {
 		return ULTIMATE_CANCEL;
-
-	nItemCount = 0;
-	for( auto it = mapObjId2.begin() ; it != mapObjId2.end() ; ++it )
-	{
-		CItemElem* pItemElem;
-		pItemElem = pUser->m_Inventory.GetAtId( it->first );
-		if( !IsUsableItem( pItemElem ) )
-			return ULTIMATE_CANCEL;
-		
-		if( pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE
-			&& pItemElem->GetProp()->dwID != II_GEN_MAT_MOONSTONE_1 )
-			return ULTIMATE_CANCEL;
-		if( it->second > pItemElem->m_nItemNum )
-			return ULTIMATE_CANCEL;
-		
-		nItemCount += it->second;
 	}
-
-	if( nItemCount != 5 )
-		return ULTIMATE_CANCEL;
 	
-	//ÀÎº¥Åä¸®°¡ ºÎÁ·ÇÒ ¶§ - Ãë¼Ò
+	// ~~ Create Orichalcum2
 	CItemElem itemElemTemp;
 	itemElemTemp.m_dwItemId = II_GEN_MAT_ORICHALCUM02;
-	if( !itemElemTemp.GetProp() || pUser->m_Inventory.IsFull( &itemElemTemp, itemElemTemp.GetProp(), 1 ) )
+	if( !itemElemTemp.GetProp() || pUser.m_Inventory.IsFull( &itemElemTemp, itemElemTemp.GetProp(), 1 ) )
 		return ULTIMATE_INVENTORY;
 	
 	LogItemInfo aLogItem;
 	aLogItem.Action = "-";
-	aLogItem.SendName = pUser->GetName();
+	aLogItem.SendName = pUser.GetName();
 	aLogItem.RecvName = "ULTIMATE_MAKEITEM";
-	aLogItem.WorldId = pUser->GetWorld()->GetID();
-	aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
+	aLogItem.WorldId = pUser.GetWorld()->GetID();
+	aLogItem.Gold = aLogItem.Gold2 = pUser.GetGold();
 	
-	CItemElem* pItemElem;
-	for( auto it = mapObjId1.begin() ; it != mapObjId1.end() ; ++it )
-	{
-		pItemElem = pUser->m_Inventory.GetAtId( it->first );
-		g_DPSrvr.OnLogItem( aLogItem, pItemElem, it->second );	
-		pUser->RemoveItem( (BYTE)( it->first ), it->second );
-	}
-	for( auto it = mapObjId2.begin() ; it != mapObjId2.end() ; ++it )
-	{
-		pItemElem = pUser->m_Inventory.GetAtId( it->first );
-		g_DPSrvr.OnLogItem( aLogItem, pItemElem, it->second );	
-		pUser->RemoveItem( (BYTE)( it->first ), it->second );
+
+	for (const auto & [objid, quantity] : mapObjId) {
+		CItemElem * pItemElem = pUser.m_Inventory.GetAtId(objid);
+		g_DPSrvr.OnLogItem(aLogItem, pItemElem, quantity);
+		pUser.RemoveItem(objid, quantity);
 	}
 
 	CItemElem itemElem;
@@ -465,9 +451,9 @@ int CUltimateWeapon::MakeItem( CUser* pUser, OBJID* objItemId )
 	itemElem.SetSerialNumber();
 	itemElem.m_nHitPoint	= 0;
 	
-	pUser->CreateItem( &itemElem );
+	pUser.CreateItem(&itemElem);
 	aLogItem.RecvName = "ULTIMATE_MAKEITEM_SUCCESS";
-	g_DPSrvr.OnLogItem( aLogItem, &itemElem, 1 );
+	g_DPSrvr.OnLogItem(aLogItem, &itemElem, 1);
 	
 	return ULTIMATE_SUCCESS;
 }
