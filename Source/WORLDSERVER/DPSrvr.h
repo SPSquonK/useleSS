@@ -255,7 +255,7 @@ private:
 
 	void	OnBuyingInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	
-	void	OnCreateAngel(CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
+	void	OnCreateAngel(CAr & ar, CUser & pUser);
 	void	OnAngleBuff(CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	
 #ifdef __EVE_MINIGAME

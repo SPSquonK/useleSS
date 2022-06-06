@@ -10246,10 +10246,12 @@ void CDPClient::SendScriptReplaceKey( DWORD dwWorld, LPCSTR lpszKey )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendCreateAngel(CString sendstr)
-{
+void CDPClient::SendCreateAngel(const std::vector<ItemPos> & items) {
 	BEFORESENDSOLE( ar, PACKETTYPE_CREATEANGEL, DPID_UNKNOWN );
-	ar.WriteString( sendstr );
+	ar << items.size();
+	for (const ItemPos objid : items) {
+		ar << objid;
+	}
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 void CDPClient::SendAngelBuff()

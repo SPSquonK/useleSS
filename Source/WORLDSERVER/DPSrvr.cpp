@@ -7757,170 +7757,122 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 	}
 }
 
-void CDPSrvr::OnCreateAngel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnCreateAngel( CAr & ar, CUser & pUser )
 {
-	int nOrichalcum, nMoonstone;
-	ItemCountSet itemset[20];
-	float greenAngelRate, whiteAngelRate, blueAngelRate, redAngelRate;
-	FLOAT fRate[4];
-	static DWORD adwItemId[4]	= { II_SYS_SYS_QUE_ANGEL_RED, II_SYS_SYS_QUE_ANGEL_BLUE, II_SYS_SYS_QUE_ANGEL_GREEN,  II_SYS_SYS_QUE_ANGEL_WHITE };
+	// $
+	if (CNpcChecker::GetInstance()->IsCloseNpc<MMI_SUMMON_ANGEL>(&pUser)) return;
+	if (CItemUpgrade::IsInTrade(pUser)) return;
 
-	BOOL isSummonWhite = FALSE;
-	BOOL isSummonSuccess = FALSE;
-	TCHAR sendstr[1024];
-	TCHAR tempchr[10];
-	CHAR temp[2];
-//	TCHAR createAngel[12];
-	int j, k, itemcount;
-	CItemElem* pItemElem;
+	static constexpr size_t MAX_SENT_ITEMS = 20;
 
-	ar.ReadString( sendstr, 1024 );
-	CString infostr = sendstr;
-	
-	int strlen = infostr.GetLength();
-	j = 0;
-	k = 0;
-	itemcount = 0;
-	memset(tempchr, 0, sizeof(TCHAR)*10);
-	
-	for(int i=0; i<strlen; i++)
-	{
-		temp[0] = infostr.GetAt(i);
-		temp[1] = NULL;
-		if(strcmp(temp, "D") == 0)
-		{
-			CString tempstr;
-			tempstr.Format("%s", tempchr);
-			
-			temp[0] = infostr.GetAt(i+1);
-			temp[1] = NULL;
-			if(strcmp(temp, "D") == 0)
-			{
-				if(k <= 20)
-				{
-					itemset[k].extracount = atoi(tempstr);
-					memset(tempchr, 0, sizeof(TCHAR)*10);
-					k++;
-					i++;
-					itemcount++;
-					j = 0;
-				}
-				else
-					return; //k값은 MAX인 20을 넘을 수 없다.
-			}
-			else
-			{
-				itemset[k].itemid = atoi(tempstr);
-				memset(tempchr, 0, sizeof(TCHAR)*10);
-				j = 0;
-			}
-		}
-		else
-		{
-			tempchr[j] = temp[0];
-			j++;
+	// ~~ Receive input
+	size_t numberOfValues; ar >> numberOfValues;
+	if (numberOfValues > MAX_SENT_ITEMS) return;
+
+	boost::container::static_vector<ItemPos, MAX_SENT_ITEMS> sentItems;
+	for (size_t i = 0; i != numberOfValues; ++i) {
+		ItemPos pos; ar >> pos;
+		sentItems.emplace_back(pos);
+	}
+
+
+	// ~~ What was sent?
+	struct Detail { CItemElem * item; unsigned int quantity; };
+	boost::container::flat_map<ItemPos, Detail> quantityPerPos;
+
+	for (const ItemPos pos : sentItems) {
+		const auto it = quantityPerPos.find(pos);
+		if (it == quantityPerPos.end()) {
+			CItemElem * item = CItemUpgrade::GetModifiableItem(pUser, pos); // $
+			if (!item) return;
+
+			quantityPerPos[pos] = Detail{ item, 1 };
+		} else {
+			++quantityPerPos[pos].quantity;
 		}
 	}
-	
-	nOrichalcum = 0;
-	nMoonstone = 0;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-	
-	for( int i=0; i<itemcount; i++)
-	{
-		pItemElem = pUser->GetItemId( itemset[i].itemid );
-		if(pItemElem != NULL)
-		{
-			switch(pItemElem->GetProp()->dwID) 
-			{
-				case II_GEN_MAT_ORICHALCUM01:
-				case II_GEN_MAT_ORICHALCUM01_1:
-					nOrichalcum += itemset[i].extracount;
-					break;
-				case II_GEN_MAT_MOONSTONE:
-				case II_GEN_MAT_MOONSTONE_1:
-					nMoonstone += itemset[i].extracount;
-					break;
-			};
+	unsigned int nOrichalcum = 0;
+	unsigned int nMoonstone = 0;
+	for (const auto & [_, details] : quantityPerPos) {
+		if (ItemProps::IsOrichalcum(*details.item)) {
+			nOrichalcum += details.quantity;
+		} else if (ItemProps::IsMoonstone(*details.item)) {
+			nMoonstone += details.quantity;
+		} else {
+			return; // $
 		}
-		else
+
+		if (details.item->m_nItemNum < details.quantity) { // $
 			return;
+		}
 	}
 
-	// R/B/G/W
-	greenAngelRate = (nOrichalcum * 1.0f) + (nMoonstone * 1.0f);
-	whiteAngelRate = greenAngelRate / 10.0f;
-	blueAngelRate = greenAngelRate * 2.0f;
-	redAngelRate = 100.0f - ( whiteAngelRate + greenAngelRate + blueAngelRate );
-	
-	fRate[0]	= redAngelRate;
-	fRate[1]	= fRate[0] + blueAngelRate;
-	fRate[2]	= fRate[1] + greenAngelRate;
-	fRate[3]	= fRate[2] + whiteAngelRate;
 
-	float rand = xRandom(1000) / 10.0f;
-	DWORD dwItemId	= 0;
-	for( int i = 0; i < 4; i++ )
+	// ~~ Will be able to add the angel?
+
+	if (pUser.m_Inventory.GetEmptyCount() < 1) {
+		pUser.AddDiagText(prj.GetText(TID_GAME_LACKSPACE));
+		return;
+	}
+
+	// Determine kind of angels
+	static constexpr std::array</* ItemId */ DWORD, 4> angelKinds = {
+		II_SYS_SYS_QUE_ANGEL_WHITE,
+		II_SYS_SYS_QUE_ANGEL_GREEN,
+		II_SYS_SYS_QUE_ANGEL_BLUE,
+		II_SYS_SYS_QUE_ANGEL_RED
+	};
+
+	std::array<DWORD, 3> rates = { // Over 1000
+		nOrichalcum + nMoonstone,
+		(nOrichalcum + nMoonstone) * 10,
+		(nOrichalcum + nMoonstone) * 20,
+		// Red angel = the rest
+	};
+
+	static_assert(rates.size() + 1 == angelKinds.size());
+
+	DWORD roll = xRandom(1000);
+
+	size_t i = 0;
+	while (i < rates.size() && roll >= rates[i]) {
+		roll -= rates[i];
+	}
+
+	const DWORD angelId = angelKinds[i];
+
+	// ~~ Remove materials
 	{
-		if( rand <= fRate[i] )
-		{
-			dwItemId = adwItemId[i];
-			break;
-		}
-	}	
+		LogItemInfo aLogItem;
+		aLogItem.Action = "&";
+		aLogItem.SendName = pUser.GetName();
+		aLogItem.RecvName = "ANGEL_MATERIAL";
+		aLogItem.WorldId = pUser.GetWorld()->GetID();
+		aLogItem.Gold = aLogItem.Gold2 = pUser.GetGold();
 
-	if( dwItemId > 0 )
+
+		for (const auto & [position, details] : quantityPerPos) {
+			details.item->SetExtra(0);
+			OnLogItem(aLogItem, details.item, details.quantity);
+			pUser.RemoveItem(position, details.quantity);
+		}
+	}
+
+	// ~~ Add angel
 	{
-		if( IsValidObj(pUser) )
-		{
-			for( int i=0; i<itemcount; i++)
-			{
-				pItemElem = pUser->GetItemId( itemset[i].itemid );
-				if( !IsUsableItem( pItemElem ) ) //소비될 아이템의 유효성 검사. 실패 시 RETURN
-					return;
-			}
-
-			if( pUser->m_Inventory.GetEmptyCount() < 1 )
-			{
-				pUser->AddDiagText(  prj.GetText( TID_GAME_LACKSPACE ) );
-				return;
-			}
-
-			LogItemInfo aLogItem;
-			aLogItem.Action = "&";
-			aLogItem.SendName = pUser->GetName();
-			aLogItem.RecvName = "ANGEL_MATERIAL";
-			aLogItem.WorldId = pUser->GetWorld()->GetID();
-			aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
-			for( int i=0; i<itemcount; i++)
-			{
-				pItemElem = pUser->GetItemId( itemset[i].itemid );
-				if( pItemElem->GetExtra() > 0 )
-					pItemElem->SetExtra(0);
-//#ifdef __ANGEL_LOG				
-				OnLogItem( aLogItem, pItemElem, itemset[i].extracount );	
-//#endif // __ANGEL_LOG
-				pUser->RemoveItem( (BYTE)( pItemElem->m_dwObjId ), itemset[i].extracount );	
-			}
-
-		}
 		CItemElem itemElem;
-		itemElem.m_dwItemId	= dwItemId;
-		itemElem.m_nItemNum	= 1;
-		if( pUser->CreateItem( &itemElem ) )
-		{
-//#ifdef __ANGEL_LOG
+		itemElem.m_dwItemId = angelId;
+		itemElem.m_nItemNum = 1;
+		if (pUser.CreateItem(&itemElem)) {
+
 			LogItemInfo aLogItem;
 			aLogItem.Action = "&";
-			aLogItem.SendName = pUser->GetName();
+			aLogItem.SendName = pUser.GetName();
 			aLogItem.RecvName = "ANGEL_CREATE";
-			aLogItem.WorldId = pUser->GetWorld()->GetID();
-			aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
-			OnLogItem( aLogItem, &itemElem, 1 );
-//#endif // __ANGEL_LOG
+			aLogItem.WorldId = pUser.GetWorld()->GetID();
+			aLogItem.Gold = aLogItem.Gold2 = pUser.GetGold();
+			OnLogItem(aLogItem, &itemElem, 1);
 		}
 	}
 }

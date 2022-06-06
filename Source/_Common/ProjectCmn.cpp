@@ -867,3 +867,24 @@ CAr & operator>>(CAr & ar, SHORTCUT & self) {
 	return ar;
 }
 
+
+namespace ItemProps {
+	bool IsOrichalcum(const CItemElem & item) {
+		return item.m_dwItemId == II_GEN_MAT_ORICHALCUM01 || item.m_dwItemId == II_GEN_MAT_ORICHALCUM01_1;
+	}
+
+	bool IsOrichalcum(const ItemProp & item) {
+		return item.dwID == II_GEN_MAT_ORICHALCUM01 || item.dwID == II_GEN_MAT_ORICHALCUM01_1;
+	}
+
+	bool IsMoonstone(const CItemElem & item) {
+		return item.m_dwItemId == II_GEN_MAT_MOONSTONE || item.m_dwItemId == II_GEN_MAT_MOONSTONE_1;
+	}
+
+	bool IsMoonstone(const ItemProp & item) {
+		return item.dwID == II_GEN_MAT_MOONSTONE || item.dwID == II_GEN_MAT_MOONSTONE_1;
+	}
+
+
+
+}

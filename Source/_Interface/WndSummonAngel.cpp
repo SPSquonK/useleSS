@@ -434,6 +434,7 @@ BOOL CWndSummonAngel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{	
 			if(!m_nowStarting)
 			{
+				std::vector<ItemPos> sentItems;
 				m_nowStarting = TRUE;
 				m_nitemcount = 0;
 				for(int i=0; i<MAX_MATDIE; i++)
@@ -442,36 +443,13 @@ BOOL CWndSummonAngel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if(m_MatDie[i].pItemElem != NULL && m_MatDie[i].pItemElem->GetExtra() > 0)
 						{
-							BOOL equalflag = FALSE;
-
-							for(int j=0; j<m_nitemcount; j++)
-							{
-								if(m_ItemInfo[j].itemid == m_MatDie[i].pItemElem->m_dwObjId)
-								{
-									m_ItemInfo[j].extracount++;
-									equalflag = TRUE;
-								}
-							}
-
-							if(!equalflag)
-							{
-								m_ItemInfo[m_nitemcount].itemid = m_MatDie[i].pItemElem->m_dwObjId;
-								m_ItemInfo[m_nitemcount].extracount++;
-								m_nitemcount++;
-							}
+							sentItems.emplace_back(m_MatDie[i].pItemElem->m_dwObjId);
 						}
 					}		
 				}
-				CString sendstr;
-				
-				for( int i=0; i<m_nitemcount; i++)
-				{
-					CString tempstr;
-					tempstr.Format("%dD%dDD", m_ItemInfo[i].itemid, m_ItemInfo[i].extracount);
-					sendstr = sendstr + tempstr;
-				}
+
 				//Angel Create
-				g_DPlay.SendCreateAngel(sendstr);
+				g_DPlay.SendCreateAngel(sentItems);
 				ReFreshAll(TRUE);
 			}
 		}

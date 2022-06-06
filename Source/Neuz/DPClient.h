@@ -475,7 +475,7 @@ public:
 	void	OnHonorListAck( CAr & ar ); 
 	void	OnHonorChangeAck( OBJID objid,CAr & ar ); 
 
-	void SendCreateAngel(CString sendstr);
+	void SendCreateAngel(const std::vector<ItemPos> & items);
 	void SendAngelBuff();
 	void OnAngel( OBJID objid, CAr& ar );
 	void OnCreateAngel( OBJID objid, CAr & ar );

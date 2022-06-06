@@ -356,6 +356,8 @@ struct ItemProp : CtrlProp
 #endif //__CLIENT
 };
 
+class CItemElem;
+
 namespace ItemProps {
 	class PiercingType {
 		enum class V { None, LetterCard, NumericCard, Vis };
@@ -372,6 +374,12 @@ namespace ItemProps {
 	private:
 		V m_value;
 	};
+
+	[[nodiscard]] bool IsOrichalcum(const CItemElem & item);
+	[[nodiscard]] bool IsOrichalcum(const ItemProp & item);
+
+	[[nodiscard]] bool IsMoonstone(const CItemElem & item);
+	[[nodiscard]] bool IsMoonstone(const ItemProp & item);
 
 }
 
