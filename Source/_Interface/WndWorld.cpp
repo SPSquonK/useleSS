@@ -6360,7 +6360,7 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	if( GetBuffIconRect( II_SYS_SYS_SCR_PARTYSUMMON, point ) )	// 귀환의 두루마리 아이콘을 클릭하면 더블클릭까지 검사 
 		return;
-#ifdef __PKSERVER_USE_ANGEL
+
 	if(g_eLocal.GetState( EVE_PK ))
 	{
 		if( GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_RED, point) ||
@@ -6369,21 +6369,11 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 			GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_WHITE, point) )
 		{
 			//Create 100 % Angel Item.
-			g_DPlay.SendAngelBuff();
+			g_DPlay.SendPacket<PACKETTYPE_ANGELBUFF>();
 			return;
 		}
 	}
-#else //__PKSERVER_USE_ANGEL
-	if( GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_RED, point) ||
-		GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_GREEN, point) ||
-		GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_BLUE, point) ||
-		GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_WHITE, point) )
-	{
-		//Create 100 % Angel Item.
-		g_DPlay.SendAngelBuff();
-		return;
-	}
-#endif //__PKSERVER_USE_ANGEL
+
 
 	if( GetBuffIconRect(II_SYS_SYS_SCR_PET_FEED_POCKET, point) )
 		return;		
@@ -10614,7 +10604,7 @@ BOOL CWndWorld::MenuException( CPoint point )
 		return FALSE;
 	if( GetBuffIconRect( II_SYS_SYS_SCR_PARTYSUMMON, point ) )	// 귀환의 두루마리 아이콘을 클릭하면 더블클릭까지 검사
 		return FALSE;
-#ifdef __PKSERVER_USE_ANGEL
+
 	if(g_eLocal.GetState( EVE_PK ))
 	{
 		if( GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_RED, point) ||
@@ -10623,21 +10613,11 @@ BOOL CWndWorld::MenuException( CPoint point )
 			GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_WHITE, point) )
 		{
 			//Create 100 % Angel Item.
-			g_DPlay.SendAngelBuff();
+			g_DPlay.SendPacket<PACKETTYPE_ANGELBUFF>();
 			return FALSE;
 		}
 	}
-#else //__PKSERVER_USE_ANGEL
-	if( GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_RED, point) ||
-		GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_GREEN, point) ||
-		GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_BLUE, point) ||
-		GetBuffIconRect(II_SYS_SYS_QUE_ANGEL_WHITE, point) )
-	{
-		//Create 100 % Angel Item.
-		g_DPlay.SendAngelBuff();
-		return FALSE;
-	}
-#endif //__PKSERVER_USE_ANGEL
+
 	if( GetBuffIconRect(II_SYS_SYS_SCR_PET_FEED_POCKET, point) )
 		return FALSE;
 	if( g_WndMng.GetWndBase(APP_WEBBOX) || g_WndMng.GetWndBase(APP_WEBBOX2) )

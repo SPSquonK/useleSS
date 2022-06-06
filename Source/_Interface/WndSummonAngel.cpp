@@ -13,20 +13,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CWndSummonAngel::CWndSummonAngel() 
 {
-	m_nSelecCtrl = -1;
-	m_nOrichalcum = 0;
-	m_nMoonstone = 0;
-	m_WhiteAngelRate = 0.0f;
-	m_RedAngelRate = 0.0f;
-	m_BlueAngelRate = 0.0f;
-	m_GreenAngelRate = 0.0f;
-	m_pText = NULL;
-	m_pStatic[0] = NULL;
-	m_pStatic[1] = NULL;
-	m_pStatic[2] = NULL;
-	m_nitemcount = 0;
 	m_nowStarting = FALSE;
-//	m_isCreateSuccess = FALSE;
 }
 
 CWndSummonAngel::~CWndSummonAngel() 
@@ -44,8 +31,10 @@ void CWndSummonAngel::OnDestroy()
 				m_MatDie[i].pItemElem->SetExtra(0);
 		}
 	}
-	if(m_pWndInventory != NULL)
+
+	if (CWndInventory * m_pWndInventory = (CWndInventory *)GetWndBase(APP_INVENTORY)) {
 		m_pWndInventory->m_wndItemCtrl.SetDieFlag(FALSE);
+	}
 }
 
 void CWndSummonAngel::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
@@ -142,8 +131,6 @@ void CWndSummonAngel::OnInitialUpdate()
 		m_MatDie[i].staticNum = StaticID[i];
 		m_MatDie[i].isUse = FALSE;
 		m_MatDie[i].pItemElem = NULL;
-		m_ItemInfo[i].extracount = 0;
-		m_ItemInfo[i].itemid = -1;
 	}
 	
 	//Text Setting
@@ -167,7 +154,7 @@ void CWndSummonAngel::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	//Window Position
-	m_pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
+	CWndInventory * m_pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
 	CRect rectInventory;
 	if(m_pWndInventory != NULL)
 	{
@@ -203,26 +190,6 @@ BOOL CWndSummonAngel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_SUMMON_ANGEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndSummonAngel::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndSummonAngel::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndSummonAngel::OnMouseMove( UINT nFlags, CPoint point )
-{
-}
-
-void CWndSummonAngel::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndSummonAngel::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-}
 
 void CWndSummonAngel::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
@@ -241,9 +208,6 @@ void CWndSummonAngel::OnLButtonDblClk( UINT nFlags, CPoint point )
 	}
 }
 
-void CWndSummonAngel::OnRButtonDblClk( UINT nFlags, CPoint point )
-{
-}
 
 BOOL CWndSummonAngel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
@@ -407,16 +371,9 @@ void CWndSummonAngel::ReFreshAll(BOOL extracheck)
 		}
 	}
 
-	for( int i=0; i<m_nitemcount; i++)
-	{
-		m_ItemInfo[i].itemid = -1;
-		m_ItemInfo[i].extracount = 0;
-	}
 	m_nOrichalcum = 0;
 	m_nMoonstone = 0;
-	m_nitemcount = 0;
 	m_nowStarting = FALSE;
-//	m_isCreateSuccess = FALSE;
 	SummonRateRefresh();
 }
 
@@ -494,43 +451,3 @@ void CWndSummonAngel::SummonRateRefresh()
 		m_pStatic[2]->SetTitle(tempString);
 	}
 }
-
-/*
-void CWndSummonAngel::CreateAngelIs(BOOL isSuccess, char* createAngel)
-{
-//	m_isCreateSuccess = isSuccess;
-	m_CreateAngel.Format("%s", createAngel);
-	SummonAngel();
-}
-
-void CWndSummonAngel::SummonAngel()
-{
-	CString strCommand;
-
-	if(m_isCreateSuccess && m_CreateAngel.GetLength() != 0)
-	{
-		if(m_CreateAngel.Compare("WHITEANGEL") == 0)
-		{
-			strCommand.Format( "/ci %s", "\"È­ÀÌÆ®¿£Á©\"" );
-			g_DPlay.SendChat( strCommand );
-		}
-		else if(m_CreateAngel.Compare("GREENANGEL") == 0)
-		{
-			strCommand.Format( "/ci %s", "\"±×¸°¿£Á©\"" );
-			g_DPlay.SendChat( strCommand );
-		}
-		else if(m_CreateAngel.Compare("BLUEANGEL") == 0)
-		{
-			strCommand.Format( "/ci %s", "\"ºí·ç¿£Á©\"" );
-			g_DPlay.SendChat( strCommand );
-		}
-		else if(m_CreateAngel.Compare("REDANGEL") == 0)
-		{
-			strCommand.Format( "/ci %s", "\"·¹µå¿£Á©\"" );
-			g_DPlay.SendChat( strCommand );
-		}
-
-		ReFreshAll(TRUE);
-	}
-}
-*/

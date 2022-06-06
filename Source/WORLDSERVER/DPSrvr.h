@@ -256,7 +256,7 @@ private:
 	void	OnBuyingInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	
 	void	OnCreateAngel(CAr & ar, CUser & pUser);
-	void	OnAngleBuff(CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
+	void	OnAngleBuff(CAr & ar, CUser & pUser);
 	
 #ifdef __EVE_MINIGAME
 	void OnKawibawiboStart( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );

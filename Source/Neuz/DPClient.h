@@ -476,7 +476,6 @@ public:
 	void	OnHonorChangeAck( OBJID objid,CAr & ar ); 
 
 	void SendCreateAngel(const std::vector<ItemPos> & items);
-	void SendAngelBuff();
 	void OnAngel( OBJID objid, CAr& ar );
 	void OnCreateAngel( OBJID objid, CAr & ar );
 	void OnAngelInfo( OBJID objid, CAr & ar );

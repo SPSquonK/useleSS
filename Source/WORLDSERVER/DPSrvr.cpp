@@ -54,11 +54,6 @@
 #include "FuncTextCmd.h"
 #include "GroupUtils.h"
 
-struct ItemCountSet{
-	OBJID itemid;
-	int extracount;
-};
-
 #define	MAX_RANGE_ASYNC			1024
 #define	MAX_RANGE_NPC_MENU		1024
 
@@ -7808,6 +7803,10 @@ void CDPSrvr::OnCreateAngel( CAr & ar, CUser & pUser )
 		}
 	}
 
+	if (nOrichalcum + nMoonstone < 3) return;
+	if (nOrichalcum > 10) return;
+	if (nMoonstone > 10) return;
+
 
 	// ~~ Will be able to add the angel?
 
@@ -7865,7 +7864,6 @@ void CDPSrvr::OnCreateAngel( CAr & ar, CUser & pUser )
 		itemElem.m_dwItemId = angelId;
 		itemElem.m_nItemNum = 1;
 		if (pUser.CreateItem(&itemElem)) {
-
 			LogItemInfo aLogItem;
 			aLogItem.Action = "&";
 			aLogItem.SendName = pUser.GetName();
@@ -7877,75 +7875,56 @@ void CDPSrvr::OnCreateAngel( CAr & ar, CUser & pUser )
 	}
 }
 
-void CDPSrvr::OnAngleBuff( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
+void CDPSrvr::OnAngleBuff(CAr & ar, CUser & pUser) {
 	// 엘젤을 없애고 아이템화 인벤 자리가 없다면 메세지 처리
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
+	IBuff * const pBuff = pUser.m_buffs.GetBuffByIk3(IK3_ANGEL_BUFF);
+	if (!pBuff) return;
+	if (pBuff->GetRemove()) return;
+			
+	const ItemProp * const pItemProp = pBuff->GetProp();
+	if (!pItemProp) return;
 
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->HasBuffByIk3( IK3_ANGEL_BUFF ) == FALSE )
-			return;
+	long nAngel = pItemProp->nAdjParamVal[0];
+	if (nAngel <= 0 || nAngel > 100) nAngel = 100;
 
-#ifdef __BUFF_1107
-		IBuff* pBuff	= pUser->m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
-		if( !pBuff )
-			return;
-		ItemProp* pItemProp	= pBuff->GetProp();
-#else	// __BUFF_1107
-		LPSKILLINFLUENCE lpSkillIn = pUser->m_SkillState.GetItemBuf( IK3_ANGEL_BUFF );
-		if( lpSkillIn == NULL )
-			return;
-		ItemProp* pItemProp = prj.GetItemProp( lpSkillIn->wID );
-#endif	// __BUFF_1107
-		if( pItemProp == NULL )
-			return;
 
-		int nAngel = (int)( (float)pItemProp->nAdjParamVal1 );
-		if( nAngel <= 0 || 100 < nAngel  )
-			nAngel = 100;
+	const EXPINTEGER nMaxAngelExp = prj.m_aExpCharacter[pUser.m_nAngelLevel].nExp1 / 100 * nAngel;
+	if (pUser.m_nAngelExp < nMaxAngelExp) return;
 
-		EXPINTEGER nMaxAngelExp = prj.m_aExpCharacter[pUser->m_nAngelLevel].nExp1 / 100 * nAngel;
-		if( pUser->m_nAngelExp < nMaxAngelExp )
-			return;
-
-		CItemElem itemElem;
-		switch( pItemProp->dwID )
-		{
-		case II_SYS_SYS_QUE_ANGEL_RED:
-			itemElem.m_dwItemId	= II_SYS_SYS_QUE_ANGEL_RED100;						
-			break;
-		case II_SYS_SYS_QUE_ANGEL_BLUE:
-			itemElem.m_dwItemId	= II_SYS_SYS_QUE_ANGEL_BLUE100;
-			break;
-		case II_SYS_SYS_QUE_ANGEL_GREEN:
-			itemElem.m_dwItemId	= II_SYS_SYS_QUE_ANGEL_GREEN100;
-			break;
-		default:
-			itemElem.m_dwItemId	= II_SYS_SYS_QUE_ANGEL_WHITE100;
-			break;
+	constexpr auto Get100VersionOfAngel = [](const DWORD id) -> std::optional<DWORD> {
+		switch (id) {
+			case II_SYS_SYS_QUE_ANGEL_RED:   return II_SYS_SYS_QUE_ANGEL_RED100;
+			case II_SYS_SYS_QUE_ANGEL_BLUE:  return II_SYS_SYS_QUE_ANGEL_BLUE100;
+			case II_SYS_SYS_QUE_ANGEL_GREEN: return II_SYS_SYS_QUE_ANGEL_GREEN100;
+			case II_SYS_SYS_QUE_ANGEL_WHITE: return II_SYS_SYS_QUE_ANGEL_WHITE100;
+			default:                         return std::nullopt;
 		}
+	};
+	const auto itemId = Get100VersionOfAngel(pItemProp->dwID);
+	if (!itemId) return;
 
-		itemElem.m_nItemNum		= 1;
-		if( pUser->CreateItem( &itemElem ) )
-		{
-			pUser->RemoveIk3Buffs( IK3_ANGEL_BUFF );
+	CItemElem itemElem;
+	itemElem.m_dwItemId = itemId.value();
+	itemElem.m_nItemNum		= 1;
 
-			LogItemInfo aLogItem;
-			aLogItem.Action = "&";
-			aLogItem.SendName = pUser->GetName();
-			aLogItem.RecvName = "ANGEL_CREATE_COMPLETED";
-			aLogItem.WorldId = pUser->GetWorld()->GetID();
-			aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
-			OnLogItem( aLogItem, &itemElem, 1 );
-
-			char szMessage[512] = {0,};
-			sprintf( szMessage, prj.GetText( TID_EVE_REAPITEM ), itemElem.GetProp()->szName );
-			pUser->AddText( szMessage );			
-		}
-		else
-			pUser->AddDefinedText( TID_GAME_NOT_INVEN_ANGEL, "" );
+	if (!pUser.CreateItem(&itemElem)) {
+		pUser.AddDefinedText(TID_GAME_NOT_INVEN_ANGEL, "");
+		return;
 	}
+
+	pUser.RemoveIk3Buffs( IK3_ANGEL_BUFF );
+
+	LogItemInfo aLogItem;
+	aLogItem.Action = "&";
+	aLogItem.SendName = pUser.GetName();
+	aLogItem.RecvName = "ANGEL_CREATE_COMPLETED";
+	aLogItem.WorldId = pUser.GetWorld()->GetID();
+	aLogItem.Gold = aLogItem.Gold2 = pUser.GetGold();
+	OnLogItem( aLogItem, &itemElem, 1 );
+
+	char szMessage[512] = {0,};
+	sprintf(szMessage, prj.GetText(TID_EVE_REAPITEM), itemElem.GetProp()->szName);
+	pUser.AddText(szMessage);
 }
 
 #ifdef __EVE_MINIGAME
