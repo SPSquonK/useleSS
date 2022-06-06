@@ -2054,7 +2054,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndExtraction* pWndExtraction = (CWndExtraction*)GetWndBase( APP_SMELT_EXTRACTION );
-								pWndExtraction->SetWeapon(pFocusItem);
+								pWndExtraction->SetWeapon(*pFocusItem);
 								return TRUE;
 							}
 						}
@@ -16237,41 +16237,15 @@ BOOL CWndMixJewelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 // CWndExtraction Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndExtraction::CWndExtraction() 
-{
-	m_pItemElem = NULL;
-	m_pEItemProp = NULL;
-}
+bool CWndExtraction::Receiver::CanReceiveItem(const CItemElem & itemElem, bool) {
+	const ItemProp * pItemProp = itemElem.GetProp();
+	if (!pItemProp) return false;
 
-CWndExtraction::~CWndExtraction() 
-{ 
-} 
-
-void CWndExtraction::OnDestroy()
-{
-	if(m_pItemElem != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem ) )
-			m_pItemElem->SetExtra(0);
-	}
-}
-
-void CWndExtraction::OnDraw( C2DRender* p2DRender ) 
-{
-	ItemProp* pItemProp;
-	CTexture* pTexture;
-	
-	if(m_pItemElem != NULL)
-	{
-		pItemProp = m_pItemElem->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-		if(pItemProp != NULL)
-		{
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-			if(pTexture != NULL)
-				pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-		}
-	} 
+	return pItemProp->dwItemKind1 == IK1_WEAPON
+		&& (
+			(pItemProp->dwReferStat1 == WEAPON_GENERAL && pItemProp->dwLimitLevel1 >= 60)
+			|| pItemProp->dwReferStat1 == WEAPON_UNIQUE
+		);
 }
 
 void CWndExtraction::OnInitialUpdate() 
@@ -16279,15 +16253,16 @@ void CWndExtraction::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
 	
-	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
+	m_receiver.Create(0, GetWndCtrl(WIDC_PIC_SLOT)->rect, this, WIDC_Receiver);
+
+	CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
-	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText::SetupDescription(m_pText, _T("SmeltExtraction.inc"));
+	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("SmeltExtraction.inc"));
 
 	MoveParentCenter();
 } 
@@ -16297,87 +16272,9 @@ BOOL CWndExtraction::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_EXTRACTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndExtraction::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndExtraction::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndExtraction::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndExtraction::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
-}
 
-void CWndExtraction::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(m_pItemElem)
-		{
-			m_pItemElem->SetExtra(0);
-			CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-			pButton->EnableWindow(FALSE);
-			m_pItemElem = NULL;
-			m_pEItemProp = NULL;
-		}
-	}
-}
-
-BOOL CWndExtraction::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{		
-		//���� �����۸� �÷����� �� �ִ�.
-		ItemProp* pItemProp;
-		CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-		
-		if(m_pItemElem == NULL && pTempElem != NULL)
-		{
-			pItemProp = pTempElem->GetProp();
-			if( pItemProp->dwItemKind1 == IK1_WEAPON )
-			{
-				if( (pItemProp->dwReferStat1 == WEAPON_GENERAL && pItemProp->dwLimitLevel1 >= 60) || pItemProp->dwReferStat1 == WEAPON_UNIQUE )
-				{
-					m_pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-					m_pEItemProp = m_pItemElem->GetProp();
-					m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-					CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-					pButton->EnableWindow(TRUE);
-				}
-			}
-		}
-	}
-	return TRUE;
-}
-
-void CWndExtraction::SetWeapon(CItemElem* pItemElem)
-{
-	if(m_pItemElem == NULL && pItemElem != NULL)
-	{
-		ItemProp* pProp = pItemElem->GetProp();
-		
-		if( pProp->dwItemKind1 == IK1_WEAPON )
-		{
-			if( (pProp->dwReferStat1 == WEAPON_GENERAL && pProp->dwLimitLevel1 >= 60) || pProp->dwReferStat1 == WEAPON_UNIQUE )
-			{
-				m_pItemElem = pItemElem;
-				m_pEItemProp = m_pItemElem->GetProp();
-				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-				CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-				pButton->EnableWindow(TRUE);
-			}
-		}
-	}
+void CWndExtraction::SetWeapon(CItemElem & pItemElem) {
+	m_receiver.SetAnItem(&pItemElem, CWndItemReceiver::SetMode::Silent);
 }
 
 BOOL CWndExtraction::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -16385,15 +16282,18 @@ BOOL CWndExtraction::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	if( nID == WIDC_START )
 	{
 		//������ ������ �˸���.
-		if(m_pItemElem != NULL)
-		{
-			CWndButton* pButton;
-			pButton = (CWndButton*)GetDlgItem( WIDC_START );
+		if(CItemElem * item = m_receiver.GetItem()) {
+			CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
 			pButton->EnableWindow(FALSE);
 
-			g_DPlay.SendUltimateMakeGem(m_pItemElem->m_dwObjId);
+			g_DPlay.SendUltimateMakeGem(item->m_dwObjId);
 		}
+	} else if (nID == WIDC_Receiver) {
+		const bool hasItem = m_receiver.GetItem();
+		CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
+		pButton->EnableWindow(hasItem ? TRUE : FALSE);
 	}
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
