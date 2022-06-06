@@ -425,7 +425,7 @@ public:
 
 	void OnUltimateWeapon( OBJID objid, CAr & ar );
 	void OnUltimateTransWeapon( OBJID objid, CAr & ar );
-	void OnUltimateMakeGem( OBJID objid, CAr & ar );
+	void OnUltimateMakeGem( CAr & ar );
 	void OnUltimateSetGem( OBJID objid, CAr & ar );
 	void OnUltimateRemoveGem( OBJID objid, CAr & ar );
 	void OnUltimateEnchantWeapon( OBJID objid, CAr & ar );

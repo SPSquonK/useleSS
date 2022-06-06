@@ -16297,8 +16297,7 @@ BOOL CWndExtraction::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndExtraction::ReceiveResult(int result, int nCount)
-{
+void CWndExtraction::ReceiveResult(const CUltimateWeapon::MakeGemAnswer result) {
 	//���? ���� ���� ó��
 	//1. ���� : Destroy Window
 	//2. ���� : Destroy Window
@@ -16311,31 +16310,32 @@ void CWndExtraction::ReceiveResult(int result, int nCount)
 	// ULTIMATE_INVENTORY : �κ��丮�� ���� �� ��
 	// ULTIMATE_ISNOTULTIMATE : ���͸� ������ �ƴ� ��
 
-	
-	switch(result) 
-	{
-		case CUltimateWeapon::ULTIMATE_SUCCESS:
-			{
-				CString message;
-				ItemProp* pItemProp = prj.GetItemProp( prj.m_UltimateWeapon.GetGemKind(m_pEItemProp->dwLimitLevel1) );
-				message.Format(prj.GetText( TID_GAME_EXTRACTION_SUCCESS ), pItemProp->szName, nCount);
-				g_WndMng.OpenMessageBox( message );
-				m_pItemElem = NULL;
-			}
-			break;
-		case CUltimateWeapon::ULTIMATE_FAILED:
-		case CUltimateWeapon::ULTIMATE_CANCEL:
-			g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_EXTRACTION_FAILED ) );
-			Destroy();
-			break;
-		case CUltimateWeapon::ULTIMATE_INVENTORY:
-			g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_EXTRACTION_ERROR ) );
+	std::visit(std_::overloaded{
+		[&](CUltimateWeapon::MakeGemSuccess makeGem) {
+			const ItemProp * pItemProp = prj.GetItemProp(makeGem.createdItem);
 
-			CWndButton* pButton;
-			pButton = (CWndButton*)GetDlgItem( WIDC_START );
-			pButton->EnableWindow(TRUE);
-			break;			
-	}
+			CString message;
+			message.Format(prj.GetText(TID_GAME_EXTRACTION_SUCCESS), pItemProp->szName, makeGem.createdQuantity);
+			g_WndMng.OpenMessageBox(message);
+
+			m_receiver.ResetItemWithNotify();
+		},
+
+		[&](CUltimateWeapon::Answer::Fail) {
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_EXTRACTION_FAILED));
+			Destroy();
+		},
+
+		[&](CUltimateWeapon::Answer::Cancel) {
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_EXTRACTION_FAILED));
+			Destroy();
+		},
+
+		[&](CUltimateWeapon::Answer::Inventory) {
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_EXTRACTION_ERROR));
+			GetDlgItem(WIDC_START)->EnableWindow(TRUE);
+		}
+	}, result);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

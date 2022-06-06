@@ -11,6 +11,13 @@ namespace sqktd {
 
   template <typename T> concept Archivable = T::Archivable;
 
+  struct IsEmptyClass {};
+  
+  template <typename T>
+  concept EmptyArchivable = 
+    std::derived_from<T, IsEmptyClass>
+    && (sizeof(T) == sizeof(IsEmptyClass));
+
   template <typename PropType>
   struct HasProjProp {
     template<typename T>

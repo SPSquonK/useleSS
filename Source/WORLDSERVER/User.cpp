@@ -6866,18 +6866,6 @@ void CUser::AddUltimateMakeItem( int nResult )
 	m_Snapshot.ar << nResult;
 }
 
-void CUser::AddUltimateMakeGem( int nResult, int nNum)
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_ULTIMATE;
-	m_Snapshot.ar << ULTIMATE_MAKEGEM;
-	m_Snapshot.ar << nResult;
-	m_Snapshot.ar << nNum;
-}
-
 void CUser::AddUltimateWeapon( BYTE state, int nResult )
 {
 	if( IsDelete() )	return;

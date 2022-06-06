@@ -8086,19 +8086,14 @@ void CDPSrvr::OnUltimateMakeItem(CAr & ar, CUser & pUser) {
 		);
 }
 
-void CDPSrvr::OnUltimateMakeGem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
+void CDPSrvr::OnUltimateMakeGem(CAr & ar, CUser & pUser) {
+	OBJID objItemId; ar >> objItemId;
 	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
-	OBJID objItemId;
-	ar >> objItemId;
+	const CUltimateWeapon::MakeGemAnswer nResult = prj.m_UltimateWeapon.MakeGem(pUser, objItemId);
 
-	int nNum;
-	int nResult = prj.m_UltimateWeapon.MakeGem( pUser, objItemId, nNum );
-	pUser->AddUltimateMakeGem( nResult, nNum );
+	pUser.SendSnapshotThisId<
+		SNAPSHOTTYPE_ULTIMATE, BYTE, CUltimateWeapon::MakeGemAnswer
+	>(ULTIMATE_MAKEGEM, nResult);
 }
 
 void CDPSrvr::OnUltimateTransWeapon( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

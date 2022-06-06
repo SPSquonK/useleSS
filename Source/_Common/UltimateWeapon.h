@@ -11,13 +11,19 @@
 
 #define MAX_JEWEL 10
 
+#include <variant>
+
 class CItemElem;
 class CUltimateWeapon  
 {
 public:
-	enum class Result {
-		Success, Cancel, Inventory
+	struct Answer {
+		struct Fail : sqktd::IsEmptyClass {};
+		struct Cancel : sqktd::IsEmptyClass {};
+		struct Inventory : sqktd::IsEmptyClass {};
 	};
+public:
+	enum class Result { Success, Cancel, Inventory };
 	enum { ULTIMATE_SUCCESS, ULTIMATE_FAILED, ULTIMATE_CANCEL, ULTIMATE_ISULTIMATE,
 			ULTIMATE_INVENTORY, ULTIMATE_ISNOTULTIMATE };
 	
@@ -49,13 +55,21 @@ public:
 		int						nAbility;
 		std::vector<__GEMABILITY>	vecAbilityKind;
 	};
+
+	struct MakeGemSuccess {
+		static constexpr bool Archivable = true;
+		DWORD createdItem = 0;
+		int createdQuantity = 0;
+	};
+
+	using MakeGemAnswer = std::variant<MakeGemSuccess, Answer::Fail, Answer::Cancel, Answer::Inventory>;
 		
 	BOOL Load_GemAbility();
 	DWORD GetGemKind( DWORD dwItemLV );
 #ifdef __WORLDSERVER
 	BOOL Load_UltimateWeapon();
 	DWORD GetGemAbilityKindRandom( DWORD dwGemItemid );
-	int MakeGem( CUser* pUser, OBJID objItemId, int & nNum );
+	MakeGemAnswer MakeGem(CUser & pUser, OBJID objItemId);
 	int SetGem( CUser* pUser, OBJID objItemId, OBJID objGemItemId );
 	int RemoveGem( CUser* pUser, OBJID objItemId, OBJID objItemGem );
 	Result MakeOrichalcum2(CUser & pUser, const std::array<OBJID, MAX_JEWEL> & objItemId);

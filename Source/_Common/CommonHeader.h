@@ -19,3 +19,10 @@
 // string / CString / string_view instead of C style functions anyway
 #pragma warning(disable: 4996)
 
+namespace std_ {
+  // Overloaded helper for std::visit. Should be in std but for some reason
+  // it is not there
+  template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+
+  template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+}

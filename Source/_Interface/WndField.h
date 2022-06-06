@@ -1557,6 +1557,8 @@ private:
 
 };
 
+#include "UltimateWeapon.h"
+
 class CWndExtraction : public CWndNeuz {
 public:
 	class Receiver : public CWndItemReceiver {
@@ -1573,7 +1575,7 @@ public:
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 	
-	void ReceiveResult(int result, int nCount);
+	void ReceiveResult(CUltimateWeapon::MakeGemAnswer result);
 	void SetWeapon(CItemElem & pItemElem);
 };
 

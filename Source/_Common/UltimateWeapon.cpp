@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "UltimateWeapon.h"
 #ifdef __WORLDSERVER
+#include "ItemUpgrade.h"
 #include "User.h"
 
 #include "DPSrvr.h"
@@ -176,45 +177,37 @@ DWORD CUltimateWeapon::GetGemAbilityKindRandom( DWORD dwGemItemid )
 }
 
 // 보석 생성 - 무기 아이템 파괴
-int CUltimateWeapon::MakeGem( CUser* pUser, OBJID objItemId, int & nNum )
-{
-	CItemElem* pItemElem	= pUser->m_Inventory.GetAtId( objItemId );
-	if( !IsUsableItem( pItemElem ) )
-		return ULTIMATE_CANCEL;
+CUltimateWeapon::MakeGemAnswer CUltimateWeapon::MakeGem(CUser & pUser, OBJID objItemId) {
+	if (CItemUpgrade::IsInTrade(pUser)) return Answer::Cancel{};
+	
+	CItemElem * pItemElem = pUser.m_Inventory.GetAtId(objItemId);
+	if (!IsUsableItem(pItemElem)) return Answer::Cancel{};
+	if (pUser.m_Inventory.IsEquip(objItemId)) {
+		pUser.AddDefinedText(TID_GAME_ULTIMATE_ISEQUIP, "");
+		return Answer::Cancel{};
+	}
+
 	// 무기가 아닐 때
-	if( pItemElem->GetProp()->dwItemKind1 != IK1_WEAPON )
-	{
-#ifdef __INTERNALSERVER
-		pUser->AddText( "무기가 아님." );
-#endif // __INTERNALSERVER
-		return ULTIMATE_CANCEL;
+	if (pItemElem->GetProp()->dwItemKind1 != IK1_WEAPON) {
+		return Answer::Cancel{};
 	}
 	// 일반무기나 유니크 아이템이 아닐 때
 	if(	pItemElem->GetProp()->dwReferStat1 != WEAPON_GENERAL &&
 		pItemElem->GetProp()->dwReferStat1 != WEAPON_UNIQUE )
 	{
-#ifdef __INTERNALSERVER
-	pUser->AddText( "dwReferStat1 값이 WEAPON_GENERAL, WEAPON_UNIQUE 가 아님." );
-#endif // __INTERNALSERVER
-		return ULTIMATE_CANCEL;
+		return Answer::Cancel{};
 	}
 	
-	// 장착되어 있으면 취소
-	if( pUser->m_Inventory.IsEquip( objItemId ) )
-	{
-		pUser->AddDefinedText( TID_GAME_ULTIMATE_ISEQUIP , "" );
-		return ULTIMATE_CANCEL;
-	}
 	// 레벨에 해당하는 보석 
-	DWORD dwItemId = GetGemKind( pItemElem->GetProp()->dwLimitLevel1 );
+	const DWORD dwItemId = GetGemKind( pItemElem->GetProp()->dwLimitLevel1 );
 	if( dwItemId == NULL_ID )
-		return ULTIMATE_CANCEL;
+		return Answer::Cancel{};
 
-	int nOpt = pItemElem->GetAbilityOption();
-	const auto it = m_mapMakeGemProb.find( nOpt );
+	const int nOpt = pItemElem->GetAbilityOption();
+	const auto it = m_mapMakeGemProb.find(nOpt);
 	
 	if( it == m_mapMakeGemProb.end() )
-		return ULTIMATE_CANCEL;
+		return Answer::Cancel{};
 
 	DWORD dwProb = it->second.dwGeneralProb;
 	int nItemNum = it->second.nGeneralNum;
@@ -228,41 +221,40 @@ int CUltimateWeapon::MakeGem( CUser* pUser, OBJID objItemId, int & nNum )
 	itemElemTemp.m_dwItemId = dwItemId;
 	ItemProp* pItemprop = itemElemTemp.GetProp();
 	if( !pItemprop )
-		return ULTIMATE_CANCEL;
+		return Answer::Cancel{};
 
 	// 무기를 삭제되서 1칸이 생기므로 2칸이상 일때만 검사
 	if( (DWORD)( nItemNum ) > pItemprop->dwPackMax 
-		&& pUser->m_Inventory.IsFull( &itemElemTemp, pItemprop, (short)( nItemNum - pItemprop->dwPackMax ) ) )
-		return ULTIMATE_INVENTORY;
+		&& pUser.m_Inventory.IsFull( &itemElemTemp, pItemprop, (short)( nItemNum - pItemprop->dwPackMax ) ) )
+		return Answer::Inventory{};
 	
 	LogItemInfo aLogItem;
 	aLogItem.Action = "-";
-	aLogItem.SendName = pUser->GetName();
+	aLogItem.SendName = pUser.GetName();
 	aLogItem.RecvName = "ULTIMATE_MAKEGEM";
-	aLogItem.WorldId = pUser->GetWorld()->GetID();
-	aLogItem.Gold = aLogItem.Gold2 = pUser->GetGold();
+	aLogItem.WorldId = pUser.GetWorld()->GetID();
+	aLogItem.Gold = aLogItem.Gold2 = pUser.GetGold();
 	g_DPSrvr.OnLogItem( aLogItem, pItemElem, 1 );	
-	pUser->RemoveItem( (BYTE)( objItemId ), 1 );
+	pUser.RemoveItem( (BYTE)( objItemId ), 1 );
 	
-	nNum = 0;
-	int nRandom = xRandom( 1000000 );
-	if( (DWORD)( nRandom ) < dwProb )
-	{
-		nNum = nItemNum;
-		CItemElem itemElem;
-		itemElem.m_dwItemId = dwItemId;
-		itemElem.m_nItemNum	= nItemNum;
-		itemElem.SetSerialNumber();
-		itemElem.m_nHitPoint	= 0;
+	const DWORD nRandom = xRandom( 1000000 );
 
-		pUser->CreateItem( &itemElem );
-		aLogItem.RecvName = "ULTIMATE_MAKEGEM_SUCCESS";
-		g_DPSrvr.OnLogItem( aLogItem, &itemElem, nItemNum );
-		return ULTIMATE_SUCCESS;
+	if (nRandom >= dwProb) {
+		aLogItem.RecvName = "ULTIMATE_MAKEGEM_FAILED";
+		g_DPSrvr.OnLogItem(aLogItem);
+		return Answer::Fail{};
 	}
-	aLogItem.RecvName = "ULTIMATE_MAKEGEM_FAILED";
-	g_DPSrvr.OnLogItem( aLogItem );
-	return ULTIMATE_FAILED;
+
+	CItemElem itemElem;
+	itemElem.m_dwItemId = dwItemId;
+	itemElem.m_nItemNum	= nItemNum;
+	itemElem.SetSerialNumber();
+	itemElem.m_nHitPoint	= 0;
+
+	pUser.CreateItem( &itemElem );
+	aLogItem.RecvName = "ULTIMATE_MAKEGEM_SUCCESS";
+	g_DPSrvr.OnLogItem( aLogItem, &itemElem, nItemNum );
+	return MakeGemSuccess{ dwItemId, nItemNum };
 }
 
 // 무기에 보석 합성

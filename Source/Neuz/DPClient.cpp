@@ -10555,9 +10555,7 @@ void CDPClient::OnUltimateWeapon( OBJID objid, CAr & ar )
 	case ULTIMATE_TRANSWEAPON:
 		OnUltimateTransWeapon( objid, ar );
 		break;
-	case ULTIMATE_MAKEGEM:
-		OnUltimateMakeGem( objid, ar );
-		break;
+	case ULTIMATE_MAKEGEM: OnUltimateMakeGem(ar); break;
 	case ULTIMATE_SETGEM:
 		OnUltimateSetGem( objid, ar );
 		break;
@@ -10580,15 +10578,12 @@ void CDPClient::OnUltimateTransWeapon( OBJID objid, CAr & ar )
 		pWndChangeWeapon->ReceiveResult(nResult);	
 }
 
-void CDPClient::OnUltimateMakeGem( OBJID objid, CAr & ar )
-{
-	int nResult, nCount;
-	ar >> nResult;
-	ar >> nCount;
+void CDPClient::OnUltimateMakeGem(CAr & ar) {
+	CUltimateWeapon::MakeGemAnswer nResult; ar >> nResult;
 
-	CWndExtraction* pWndExtraction = (CWndExtraction*)g_WndMng.GetWndBase( APP_SMELT_EXTRACTION );
-	if(pWndExtraction != NULL)
-		pWndExtraction->ReceiveResult(nResult, nCount);
+	if (CWndExtraction * pWndExtraction = g_WndMng.GetWndBase<CWndExtraction>(APP_SMELT_EXTRACTION)) {
+		pWndExtraction->ReceiveResult(nResult);
+	}
 }
 
 void CDPClient::OnUltimateSetGem( OBJID objid, CAr & ar )

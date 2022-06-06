@@ -492,7 +492,6 @@ public:
 #endif // __EVE_MINIGAME
 
 	void			AddUltimateMakeItem( BOOL bResult );
-	void			AddUltimateMakeGem( int nResult, int nNum );
 	void			AddUltimateWeapon( BYTE state, int nResult );
 
 #ifdef __TRADESYS

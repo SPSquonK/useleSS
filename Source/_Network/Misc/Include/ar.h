@@ -161,6 +161,12 @@ static	DWORD	s_dwHdrCur;
 		return *this;
 	}
 
+	template<sqktd::EmptyArchivable EmptyArchivable>
+	CAr & operator<<(const EmptyArchivable & e) { return *this; }
+
+	template<sqktd::EmptyArchivable EmptyArchivable>
+	CAr & operator>>(EmptyArchivable & e) { return *this; }
+
 	template<typename T, size_t N>
 	CAr & operator<<(const std::array<T, N> & values) {
 		for (size_t i = 0; i != N; ++i) {
