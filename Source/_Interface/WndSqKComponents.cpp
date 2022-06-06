@@ -66,14 +66,8 @@ void CWndItemReceiver::OnDraw(C2DRender * p2DRender) {
 	}
 
 	if (!m_item) {
-		if (m_features.shadow) {
-			if (!m_shadowTexture) {
-				m_shadowTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, m_features.shadow->first->szIcon), 0xffff00ff);
-			}
-
-			if (m_shadowTexture) {
-				m_shadowTexture->Render(p2DRender, GetWindowRect().TopLeft(), m_features.shadow->second);
-			}
+		if (m_shadow) {
+			m_shadow->first->Render(p2DRender, GetWindowRect().TopLeft(), m_shadow->second);
 		}
 
 		return;
@@ -83,6 +77,26 @@ void CWndItemReceiver::OnDraw(C2DRender * p2DRender) {
 	if (!texture) return;
 
 	texture->Render(p2DRender, GetWindowRect().TopLeft());
+}
+
+void CWndItemReceiver::ChangeShadowTexture(const ItemProp * itemProp, std::optional<DWORD> opacity) {
+	if (!itemProp) {
+		m_shadow = std::nullopt;
+		return;
+	}
+
+	if (!m_shadow && !opacity) {
+		opacity = 50;
+	}
+	
+	CTexture * texture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, itemProp->szIcon), 0xffff00ff);
+	if (!texture) return;
+
+	if (!opacity) { // By construction, m_shadow is not nullopt
+		m_shadow->first = texture;
+	} else {
+		m_shadow = std::make_pair(texture, opacity.value());
+	}
 }
 
 void CWndItemReceiver::OnMouseWndSurface(CPoint point) {

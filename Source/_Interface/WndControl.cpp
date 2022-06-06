@@ -3116,6 +3116,7 @@ void CWndText::SetupDescription(CWndText * self, LPCTSTR filename) {
 	CScript scanner;
 	BOOL isLoaded = scanner.Load(MakePath(DIR_CLIENT, filename));
 	if (!isLoaded) return;
+	self->m_string.SetString("");
 	self->m_string.AddParsingString(scanner.m_pProg);
 	self->ResetString();
 }

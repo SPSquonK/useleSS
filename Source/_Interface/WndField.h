@@ -1629,34 +1629,45 @@ public:
 class CWndChangeWeapon : public CWndNeuz
 {
 public:
-	CWndText* m_pText1;
-	CWndText* m_pText2;
-	CItemElem* m_pWItemElem;
-	CItemElem* m_pJItemElem[2];
+	class CWeaponReceiver : public CWndItemReceiver {
+	public:
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
+
+	class COrichalcum2Receiver : public CWndItemReceiver {
+	public:
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
+
+	class CJewelReceiver : public CWndItemReceiver {
+	public:
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
+
+	static constexpr UINT WIDC_WeaponReceiver = 1500;
+	static constexpr UINT WIDC_OrichalcumReceiver = 1501;
+	static constexpr UINT WIDC_JewelReceiver = 1502;
+
+	CWeaponReceiver m_weaponReceiver;
+	COrichalcum2Receiver m_orichalcumReceiver;
+	CJewelReceiver m_jewelReceiver;
+
 	int m_nWeaponType;
-	BOOL m_bIsSendChange;
+	bool m_bIsSendChange;
 	
 public:
 	CWndChangeWeapon(int nType);
-	virtual ~CWndChangeWeapon(); 
 	
-	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual void OnMouseWndSurface( CPoint point );	
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-	virtual BOOL Process ();
+	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
+	void OnInitialUpdate() override; 
 	
-	void SetDescription(CHAR* szChar);
 	void ReceiveResult(int result);
-	void SetItem(CItemElem* pItemElem);
+	void SetItem(CItemElem & pItemElem);
+
+private:
+	void SetupText();
+	void UpdateStartButtonStatus();
 };
 
 class CWndRemoveJewelConfirm : public CWndNeuz 

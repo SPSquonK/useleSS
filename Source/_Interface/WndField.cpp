@@ -2026,7 +2026,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
 							{			
 								CWndChangeWeapon* pWndChangeWeapon = (CWndChangeWeapon*)GetWndBase( APP_SMELT_CHANGEWEAPON );
-								pWndChangeWeapon->SetItem(pFocusItem);
+								pWndChangeWeapon->SetItem(*pFocusItem);
 								return TRUE;
 							}
 						}
@@ -16912,76 +16912,8 @@ void CWndSmeltJewel::InitializeJewel(CItemElem* pItemElem)
 
 CWndChangeWeapon::CWndChangeWeapon(int nType) 
 {
-	m_pWItemElem = NULL;
-	m_pJItemElem[0] = NULL;
-	m_pJItemElem[1] = NULL;
 	m_nWeaponType = nType;
 	m_bIsSendChange = FALSE;
-}
-
-CWndChangeWeapon::~CWndChangeWeapon() 
-{ 
-} 
-
-void CWndChangeWeapon::OnDestroy()
-{
-	if(m_pWItemElem != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pWItemElem ) )
-			m_pWItemElem->SetExtra(0);
-	}
-	if(m_pJItemElem[0] != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pJItemElem[0] ) )
-			m_pJItemElem[0]->SetExtra(0);
-	}
-	if(m_pJItemElem[1] != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pJItemElem[1] ) )
-			m_pJItemElem[1]->SetExtra(0);
-	}
-}
-
-void CWndChangeWeapon::OnDraw( C2DRender* p2DRender ) 
-{
-	ItemProp* pItemProp;
-	CTexture* pTexture;
-	
-	if(m_pWItemElem != NULL)
-	{
-		pItemProp = m_pWItemElem->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-		if(pItemProp != NULL)
-		{
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-			if(pTexture != NULL)
-				pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-		}
-	} 
-	
-	if(m_pJItemElem[0] != NULL)
-	{
-		pItemProp = m_pJItemElem[0]->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC2 );
-		if(pItemProp != NULL)
-		{
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-			if(pTexture != NULL)
-				pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-		}
-	} 
-	
-	if(m_pJItemElem[1] != NULL)
-	{
-		pItemProp = m_pJItemElem[1]->GetProp();
-		LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC3 );
-		if(pItemProp != NULL)
-		{
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-			if(pTexture != NULL)
-				pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-		}
-	} 
 }
 
 void CWndChangeWeapon::OnInitialUpdate() 
@@ -16996,28 +16928,14 @@ void CWndChangeWeapon::OnInitialUpdate()
 
 	pButton->EnableWindow(FALSE);
 	
-	m_pText1 = (CWndText *)GetDlgItem(WIDC_TEXT1);
-	m_pText2 = (CWndText *)GetDlgItem(WIDC_TEXT2);
+	SetupText();
 
-	const auto SetupText = [&](const char * text1File, const char * text2File, DWORD titleTId) {
-		CWndText::SetupDescription(m_pText1, text1File);
-		CWndText::SetupDescription(m_pText2, text2File);
-		SetTitle(prj.GetText(titleTId));
-	};
-
-	if (m_nWeaponType == WEAPON_GENERAL) {
-		SetupText(
-			_T("SmeltChangeUniqueWeapon.inc"),
-			_T("ChangeUniqueWeaponInfo.inc"),
-			TID_GAME_CHANGEWEAPON_UNIQUE
-		);
-	} else /* if (m_nWeaponType == WEAPON_UNIQUE) */ {
-		SetupText(
-			_T("SmeltChangeUltimateWeapon.inc"),
-			_T("ChangeUltimateWeaponInfo.inc"),
-			TID_GAME_CHANGEWEAPON_ULTIMATE
-		);
-	}
+	m_weaponReceiver    .Create(0, GetWndCtrl(WIDC_STATIC1)->rect, this, WIDC_WeaponReceiver);
+	m_orichalcumReceiver.Create(0, GetWndCtrl(WIDC_STATIC2)->rect, this, WIDC_OrichalcumReceiver);
+	m_orichalcumReceiver.SetTooltipId(TID_TOOLTIP_CHANGEW_ORICALCUM);
+	m_orichalcumReceiver.ChangeShadowTexture(prj.GetItemProp(II_GEN_MAT_ORICHALCUM02), 50);
+	m_jewelReceiver     .Create(0, GetWndCtrl(WIDC_STATIC3)->rect, this, WIDC_JewelReceiver);
+	m_jewelReceiver     .SetTooltipId(TID_TOOLTIP_CHANGEW_JEWEL);
 	
 	MoveParentCenter();
 } 
@@ -17026,215 +16944,88 @@ BOOL CWndChangeWeapon::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_CHANGEWEAPON, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndChangeWeapon::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndChangeWeapon::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndChangeWeapon::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndChangeWeapon::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
 }
 
-void CWndChangeWeapon::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(m_pWItemElem)m_pWItemElem->SetExtra(0);
-		m_pWItemElem = NULL;
-	}
+void CWndChangeWeapon::SetupText() {
+	CWndText * pText1 = GetDlgItem<CWndText>(WIDC_TEXT1);
+	CWndText * pText2 = GetDlgItem<CWndText>(WIDC_TEXT2);
 
-	wndCtrl = GetWndCtrl( WIDC_STATIC2 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(m_pJItemElem[0]) m_pJItemElem[0]->SetExtra(0);
-		m_pJItemElem[0] = NULL;
-	}
+	const auto Inner = [&](
+		const char * text1File, const char * text2File,
+		DWORD titleTId, DWORD weaponReceiverTooltip) {
+		CWndText::SetupDescription(pText1, text1File);
+		CWndText::SetupDescription(pText2, text2File);
+		SetTitle(prj.GetText(titleTId));
+		m_weaponReceiver.SetTooltipId(weaponReceiverTooltip);
+	};
 
-	wndCtrl = GetWndCtrl( WIDC_STATIC3 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(m_pJItemElem[1])m_pJItemElem[1]->SetExtra(0);
-		m_pJItemElem[1] = NULL;
+	if (m_nWeaponType == WEAPON_GENERAL) {
+		Inner(
+			_T("SmeltChangeUniqueWeapon.inc"),
+			_T("ChangeUniqueWeaponInfo.inc"),
+			TID_GAME_CHANGEWEAPON_UNIQUE,
+			TID_TOOLTIP_CHANGEW_GENERAL
+		);
+	} else /* if (m_nWeaponType == WEAPON_UNIQUE) */ {
+		Inner(
+			_T("SmeltChangeUltimateWeapon.inc"),
+			_T("ChangeUltimateWeaponInfo.inc"),
+			TID_GAME_CHANGEWEAPON_ULTIMATE,
+			TID_TOOLTIP_CHANGEW_UNIQUE
+		);
 	}
 }
 
-void CWndChangeWeapon::OnMouseWndSurface(CPoint point)
-{
-	CRect rect1, rect2, rect3;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-	rect1 = wndCtrl->rect;
-	wndCtrl = GetWndCtrl( WIDC_STATIC2 );
-	rect2 = wndCtrl->rect;
-	wndCtrl = GetWndCtrl( WIDC_STATIC3 );
-	rect3 = wndCtrl->rect;
+bool CWndChangeWeapon::CWeaponReceiver::CanReceiveItem(const CItemElem & itemElem, bool) {
+	const ItemProp * const pItemProp = itemElem.GetProp();
+	if (!pItemProp) return false;
 
-	if( rect1.PtInRect( point ) )
-	{
-		ClientToScreen( &point );
-		ClientToScreen( &rect1 );
-		CString tooltip;
-		if(m_nWeaponType  == WEAPON_GENERAL)
-			tooltip.Format( "%s", prj.GetText( TID_TOOLTIP_CHANGEW_GENERAL ) );
-		else if(m_nWeaponType  == WEAPON_UNIQUE)
-			tooltip.Format( "%s", prj.GetText( TID_TOOLTIP_CHANGEW_UNIQUE ) );		
-		g_toolTip.PutToolTip( (DWORD)this, tooltip, rect1, point );
+	if (pItemProp->dwItemKind1 != IK1_WEAPON) return false;
+	if (pItemProp->dwLimitLevel1 < 60) return false;
+
+	if (pItemProp->dwReferStat1 != WEAPON_UNIQUE && pItemProp->dwReferStat1 != WEAPON_GENERAL) {
+		return false;
 	}
-	else if(rect2.PtInRect( point ))
-	{
-		ClientToScreen( &point );
-		ClientToScreen( &rect2 );
-		CString tooltip;
-		tooltip.Format( "%s", prj.GetText( TID_TOOLTIP_CHANGEW_ORICALCUM ) );
-		g_toolTip.PutToolTip( (DWORD)this, tooltip, rect2, point );
-	}
-	else if(rect3.PtInRect( point ))
-	{
-		ClientToScreen( &point );
-		ClientToScreen( &rect3 );
-		CString tooltip;
-		tooltip.Format( "%s", prj.GetText( TID_TOOLTIP_CHANGEW_JEWEL ) );
-		g_toolTip.PutToolTip( (DWORD)this, tooltip, rect3, point );
-	}
+
+	if (pItemProp->dwReferStat1 == WEAPON_UNIQUE && itemElem.GetAbilityOption() < 10) return false;
+
+	return true;
 }
 
-BOOL CWndChangeWeapon::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	//Set Weapon
-	CRect rect;
-	ItemProp* pItemProp;
-	CItemElem* pTempElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(pTempElem != NULL && m_pWItemElem == NULL)
-		{
-			pItemProp = pTempElem->GetProp();
-
-			if( pItemProp->dwItemKind1 == IK1_WEAPON && pItemProp->dwLimitLevel1 >= 60 ) //60���� ���� �̻� ���⸸ ����
-			{
-				if(m_nWeaponType == pItemProp->dwReferStat1) //â�� ���� ����ũ���� �Ϲ������� Ȯ���Ѵ�.
-				{
-					if(m_nWeaponType == WEAPON_UNIQUE)
-					{
-						if(pTempElem->GetAbilityOption() >= 10) //����ũ ������ ���? +10 �̻������� Ȯ�� �Ѵ�.
-						{
-							m_pWItemElem = pTempElem;
-							m_pWItemElem->SetExtra(m_pWItemElem->GetExtra()+1);
-						}
-					}
-					else if(m_nWeaponType == WEAPON_GENERAL)
-					{
-						m_pWItemElem = pTempElem;
-						m_pWItemElem->SetExtra(m_pWItemElem->GetExtra()+1);
-					}
-				}
-			}
-		}
-	}
-	
-	//Set Ligthing Oricalcum
-	wndCtrl = GetWndCtrl( WIDC_STATIC2 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(pTempElem && (pTempElem->m_dwItemId == II_GEN_MAT_ORICHALCUM02))
-		{
-			m_pJItemElem[0] = pTempElem;
-			m_pJItemElem[0]->SetExtra(m_pJItemElem[0]->GetExtra()+1);
-		}
-	}
-	
-	//Set Jewel
-	wndCtrl = GetWndCtrl( WIDC_STATIC3 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{	
-		if((pTempElem != NULL && m_pWItemElem != NULL) &&
-			(pTempElem->m_dwItemId == prj.m_UltimateWeapon.GetGemKind(m_pWItemElem->GetProp()->dwLimitLevel1)))
-		{
-			m_pJItemElem[1] = pTempElem;
-			m_pJItemElem[1]->SetExtra(m_pJItemElem[1]->GetExtra()+1);
-		}
-	}
-
-	return TRUE;
+bool CWndChangeWeapon::COrichalcum2Receiver::CanReceiveItem(const CItemElem & itemElem, bool) {
+	return itemElem.m_dwItemId == II_GEN_MAT_ORICHALCUM02;
 }
 
-void CWndChangeWeapon::SetItem(CItemElem* pItemElem)
-{
-	if(pItemElem != NULL)
-	{
-		ItemProp* pProp = pItemElem->GetProp();
-		
-		if(m_pWItemElem == NULL && pProp->dwItemKind1 == IK1_WEAPON)
-		{
-			if(pProp->dwLimitLevel1 >= 60) //60���� ���� �̻� ���⸸ ����
-			{
-				if(m_nWeaponType == pProp->dwReferStat1) //â�� ���� ����ũ���� �Ϲ������� Ȯ���Ѵ�.
-				{
-					if(m_nWeaponType == WEAPON_UNIQUE)
-					{
-						if(pItemElem->GetAbilityOption() >= 10) //����ũ ������ ���? +10 �̻������� Ȯ�� �Ѵ�.
-						{
-							m_pWItemElem = pItemElem;
-							m_pWItemElem->SetExtra(m_pWItemElem->GetExtra()+1);
-						}
-					}
-					else if(m_nWeaponType == WEAPON_GENERAL)
-					{
-						m_pWItemElem = pItemElem;
-						m_pWItemElem->SetExtra(m_pWItemElem->GetExtra()+1);
-					}
-				}
-			}
-		}
-		else if(m_pJItemElem[0] == NULL && pProp->dwID == II_GEN_MAT_ORICHALCUM02)
-		{
-			m_pJItemElem[0] = pItemElem;
-			m_pJItemElem[0]->SetExtra(m_pJItemElem[0]->GetExtra()+1);
-		}
-		else if( m_pJItemElem[1] == NULL )
-		{
-			if(m_pWItemElem != NULL)
-			{
-				if(pItemElem->m_dwItemId == prj.m_UltimateWeapon.GetGemKind(m_pWItemElem->GetProp()->dwLimitLevel1) )
-				{
-					m_pJItemElem[1] = pItemElem;
-					m_pJItemElem[1]->SetExtra(m_pJItemElem[1]->GetExtra()+1);
-				}
-			}
-		}
-	}
+bool CWndChangeWeapon::CJewelReceiver::CanReceiveItem(const CItemElem & itemElem, bool) {
+	CWndChangeWeapon * parent = dynamic_cast<CWndChangeWeapon *>(m_pParentWnd);
+	if (!parent) return false;
+
+	CItemElem * weapon = parent->m_weaponReceiver.GetItem();
+	if (!weapon) return false;
+
+	const DWORD rightGemKind = prj.m_UltimateWeapon.GetGemKind(weapon->GetProp()->dwLimitLevel1);
+	return itemElem.m_dwItemId == rightGemKind;
 }
 
-BOOL CWndChangeWeapon::Process()
-{
-	if(!m_bIsSendChange && m_pWItemElem != NULL && m_pJItemElem[0] != NULL && m_pJItemElem[1] != NULL)
-	{
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
+void CWndChangeWeapon::SetItem(CItemElem & pItemElem) {
+	std::array<CWndItemReceiver *, 3> receivers {
+		&m_weaponReceiver, &m_orichalcumReceiver, &m_jewelReceiver
+	};
+
+	CWndItemReceiver::TryReceiveIndependant(receivers, pItemElem);
+}
+
+void CWndChangeWeapon::UpdateStartButtonStatus() {
+	CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
+
+	if (!m_bIsSendChange
+		&& m_weaponReceiver.GetItem()
+		&& m_orichalcumReceiver.GetItem()
+		&& m_jewelReceiver.GetItem()) {
 		pButton->EnableWindow(TRUE);
-	}
-	else
-	{
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
+	} else {
 		pButton->EnableWindow(FALSE);
 	}
-
-	return TRUE;
 }
 
 BOOL CWndChangeWeapon::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -17242,15 +17033,41 @@ BOOL CWndChangeWeapon::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	if( nID == WIDC_START )
 	{
 		//������ ������ �˸���.
-		if(!m_bIsSendChange && m_pWItemElem != NULL && m_pJItemElem[0] != NULL && m_pJItemElem[1] != NULL)
+		CItemElem * w = m_weaponReceiver.GetItem();
+		CItemElem * o = m_orichalcumReceiver.GetItem();
+		CItemElem * j = m_jewelReceiver.GetItem();
+		
+		if(!m_bIsSendChange && w && o && j)
 		{
 			CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 			pButton->EnableWindow(FALSE);
 			m_bIsSendChange = TRUE;
 			
-			g_DPlay.SendUltimateTransWeapon(m_pWItemElem->m_dwObjId, m_pJItemElem[1]->m_dwObjId, m_pJItemElem[0]->m_dwObjId);
+			g_DPlay.SendUltimateTransWeapon(w->m_dwObjId, o->m_dwObjId, j->m_dwObjId);
+			UpdateStartButtonStatus();
 		}
+	} else if (nID == WIDC_WeaponReceiver) {
+		const CItemElem * w = m_weaponReceiver.GetItem();
+
+		if (w) {
+			const ItemProp * prop = w->GetProp();
+			m_nWeaponType = prop->dwReferStat1;
+			SetupText();
+
+			const DWORD rightGemKind = prj.m_UltimateWeapon.GetGemKind(prop->dwLimitLevel1);
+			const ItemProp * itemProp = prj.GetItemProp(rightGemKind);
+			m_jewelReceiver.ChangeShadowTexture(itemProp, 50);
+		}
+
+		const CItemElem * j = m_jewelReceiver.GetItem();
+		if (w && j && !m_jewelReceiver.CanReceiveItem(*j, false)) {
+			m_jewelReceiver.ResetItemWithNotify();
+		}
+		UpdateStartButtonStatus();
+	} else if (nID == WIDC_OrichalcumReceiver || nID == WIDC_JewelReceiver) {
+		UpdateStartButtonStatus();
 	}
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
@@ -17283,17 +17100,12 @@ void CWndChangeWeapon::ReceiveResult(int result)
 			break;			
 	}
 
-	if(m_pJItemElem[0] != NULL)
-		m_pJItemElem[0]->SetExtra(0);
-	if(m_pJItemElem[1] != NULL)
-		m_pJItemElem[1]->SetExtra(0);
-	if(m_pWItemElem != NULL)
-		m_pWItemElem->SetExtra(0);
-	
-	m_pJItemElem[0] = NULL;
-	m_pJItemElem[1] = NULL;
-	m_pWItemElem = NULL;
 	m_bIsSendChange = FALSE;
+
+	m_weaponReceiver.ResetItemWithNotify();
+	m_orichalcumReceiver.ResetItemWithNotify();
+	m_jewelReceiver.ResetItemWithNotify();
+	UpdateStartButtonStatus();
 }
 
 //////////////////////////////////////////////////////////////////////////

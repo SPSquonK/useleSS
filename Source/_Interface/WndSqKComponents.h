@@ -49,7 +49,7 @@ private:
   CItemElem * m_item = nullptr;
   DWORD m_defaultTooltip = 0;
   Features m_features;
-  CTexture * m_shadowTexture = nullptr;
+  std::optional<std::pair<CTexture *, DWORD>> m_shadow = std::nullopt;
 
 public:
   enum class SetMode { Verbose, Silent, NeverFail };
@@ -57,6 +57,10 @@ public:
   CWndItemReceiver(const Features & features = Features{})
     : m_features(features) {
     m_dwStyle |= WBS_NOFRAME | WBS_CHILD | WBS_NODRAWFRAME;
+
+    if (features.shadow) {
+      ChangeShadowTexture(features.shadow->first, features.shadow->second);
+    }
   }
   ~CWndItemReceiver() override;
 
@@ -69,6 +73,8 @@ public:
   
   /// Changes the tooltip displayed when hovering the slot
   void SetTooltipId(const DWORD tooltip) { m_defaultTooltip = tooltip; }
+
+  void ChangeShadowTexture(const ItemProp * itemProp, std::optional<DWORD> opacity = std::nullopt);
 
   // CWndBase functions
 
@@ -93,12 +99,24 @@ private:
 public:
 
   template<typename Receivers>
-  requires (std::derived_from<typename Receivers::value_type, CWndItemReceiver>)
+    requires (std::derived_from<std::remove_cvref_t<typename Receivers::value_type>, CWndItemReceiver>)
   static bool TryReceiveIn(Receivers & receivers, CItemElem & itemElem) {
     for (auto & receiver : receivers) {
       if (!receiver.GetItem()) {
         receiver.SetAnItem(&itemElem, CWndItemReceiver::SetMode::Silent);
         return true;
+      }
+    }
+
+    return false;
+  }
+
+  template<typename Receivers>
+  static bool TryReceiveIndependant(Receivers & receivers, CItemElem & itemElem) {
+    for (CWndItemReceiver * const receiver : receivers) {
+      if (!receiver->GetItem()) {
+        const bool b = receiver->SetAnItem(&itemElem, CWndItemReceiver::SetMode::Silent);
+        if (b) return true;
       }
     }
 
