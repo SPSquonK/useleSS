@@ -1502,44 +1502,59 @@ struct GENMATDIEINFO {
 class CWndMixJewel : public CWndNeuz 
 { 
 public:
-	CWndText* m_pText;
-	GENMATDIEINFO m_MatJewel[MAX_JEWEL];	// cr : uw :
-		
-	int m_nSelectCtrl;
-	int m_nOrichalcum;
-	int m_nMoonstone;
+	static constexpr unsigned int MaxSlotPerItem = 5;
+	static constexpr UINT StartOffsetWidcSlots = 1500;
+
+	class CWndOrichalcumReceiver : public CWndItemReceiver {
+	public:
+		CWndOrichalcumReceiver();
+
+		bool CanReceiveItem(const CItemElem & itemElem, bool) override {
+			return ItemProps::IsOrichalcum(itemElem);
+		}
+	};
+
+	class CWndMoonstoneReceiver : public CWndItemReceiver {
+	public:
+		CWndMoonstoneReceiver();
+
+		bool CanReceiveItem(const CItemElem & itemElem, bool) override {
+			return ItemProps::IsMoonstone(itemElem);
+		}
+	};
+
+	CWndText* m_pText = nullptr;
+	std::array<CWndOrichalcumReceiver, MaxSlotPerItem> m_oriReceivers;
+	std::array<CWndMoonstoneReceiver, MaxSlotPerItem> m_moonReceivers;
 	
-	BOOL m_bStart;
+
+	BOOL m_bStart = FALSE;
 	
-	CWndInventory* m_pWndInventory;
-	CWndMixJewelConfirm* m_pConfirm;
+	CWndInventory* m_pWndInventory = nullptr;
+	std::unique_ptr<CWndMixJewelConfirm> m_pConfirm = nullptr;
 public: 
+
+	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void OnInitialUpdate() override;
+	void OnDestroy() override;
+	void OnDestroyChildWnd( CWndBase * pWndChild ) override;	// cr : uw :
 	
-	CWndMixJewel(); 
-	~CWndMixJewel(); 
-	
-	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual void OnRButtonDblClk( UINT nFlags, CPoint point );
-	virtual	void OnMouseMove( UINT nFlags, CPoint point );
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-	virtual void OnDestroy( void );
-	virtual	void	OnDestroyChildWnd( CWndBase * pWndChild );	// cr : uw :
-	
-	void SetDescription( CHAR* szChar );		
-	int HitTest( CPoint point );
 	void ReceiveResult(CUltimateWeapon::Result nResult);
 	void SetJewel(CItemElem* pItemElem);
-	void SetStartBtn(BOOL buse);
 	void SetConfirmInit();
+
+private:
+
+	template <typename F> void ForEachReceiver(F f) {
+		for (auto & receiver : m_oriReceivers) { f(receiver); }
+		for (auto & receiver : m_moonReceivers) { f(receiver); }
+	}
+
+	[[nodiscard]] std::optional<std::array<OBJID, MAX_JEWEL>> GetAllObjidIfFilled() const;
+	
+	void UpdateStartButton();
+
 };
 
 class CWndExtraction : public CWndNeuz

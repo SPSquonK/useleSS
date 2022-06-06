@@ -42,13 +42,14 @@ public:
   struct Features {
     bool removable = true;
     std::optional<std::uint32_t> colorWhenHoverWithItem = std::nullopt;
+    std::optional<std::pair<const ItemProp *, DWORD>> shadow = std::nullopt;
   };
 
 private:
   CItemElem * m_item = nullptr;
   DWORD m_defaultTooltip = 0;
   Features m_features;
-  bool m_removableItem;
+  CTexture * m_shadowTexture = nullptr;
 
 public:
   enum class SetMode { Verbose, Silent, NeverFail };
@@ -88,6 +89,21 @@ public:
 private:
   void NotifyChange();
   void ResetItem();
+
+public:
+
+  template<typename Receivers>
+  requires (std::derived_from<typename Receivers::value_type, CWndItemReceiver>)
+  static bool TryReceiveIn(Receivers & receivers, CItemElem & itemElem) {
+    for (auto & receiver : receivers) {
+      if (!receiver.GetItem()) {
+        receiver.SetAnItem(&itemElem, CWndItemReceiver::SetMode::Silent);
+        return true;
+      }
+    }
+
+    return false;
+  }
 };
 
 

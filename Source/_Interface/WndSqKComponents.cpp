@@ -61,11 +61,23 @@ void CWndItemReceiver::OnDraw(C2DRender * p2DRender) {
 		const CPoint point = GetMousePoint();
 		const CRect window = GetWindowRect();
 		if (window.PtInRect(point)) {
-			p2DRender->RenderFillRect(window, 0x60ffff00);
+			p2DRender->RenderFillRect(window, *m_features.colorWhenHoverWithItem);
 		}
 	}
 
-	if (!m_item) return;
+	if (!m_item) {
+		if (m_features.shadow) {
+			if (!m_shadowTexture) {
+				m_shadowTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, m_features.shadow->first->szIcon), 0xffff00ff);
+			}
+
+			if (m_shadowTexture) {
+				m_shadowTexture->Render(p2DRender, GetWindowRect().TopLeft(), m_features.shadow->second);
+			}
+		}
+
+		return;
+	}
 
 	CTexture * const texture = m_item->GetTexture();
 	if (!texture) return;
@@ -88,7 +100,7 @@ void CWndItemReceiver::OnRButtonUp(UINT, CPoint) { ResetItemWithNotify(); }
 void CWndItemReceiver::OnLButtonDblClk(UINT, CPoint) { ResetItemWithNotify(); }
 
 void CWndItemReceiver::ResetItemWithNotify() {
-	if (m_removableItem && m_item) {
+	if (m_features.removable && m_item) {
 		ResetItem();
 		NotifyChange();
 	}

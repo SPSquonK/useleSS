@@ -15998,108 +15998,46 @@ void CWndBuffStatus::RenderOptBuffTime(C2DRender *p2DRender, CPoint& point, CTim
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndMixJewel
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndMixJewel::CWndMixJewel() 
-{
-	m_nSelectCtrl = -1;
-	m_nOrichalcum = 0;
-	m_nMoonstone = 0;
-	m_pText = NULL;
-	m_pWndInventory = NULL;
-	m_pConfirm = NULL;
-	m_bStart = FALSE;
 
-	// cr : uw : initialize
-	memset( m_MatJewel, 0, sizeof(GENMATDIEINFO) * MAX_JEWEL );
+CWndMixJewel::CWndOrichalcumReceiver::CWndOrichalcumReceiver()
+	: CWndItemReceiver(
+		CWndItemReceiver::Features{
+			.colorWhenHoverWithItem = 0x60FFFF00,
+			.shadow = std::pair<const ItemProp *, DWORD>(prj.GetItemProp(II_GEN_MAT_ORICHALCUM01), 50)
+		}
+	) {
 }
 
-CWndMixJewel::~CWndMixJewel() 
-{ 
-	DeleteDeviceObjects();
-	SAFE_DELETE(m_pConfirm);	// if(m_pConfirm != NULL)
-} 
-
-void CWndMixJewel::OnDestroy()
-{
-	for(int i=0; i<MAX_JEWEL; i++)
-	{
-		if(m_MatJewel[i].pItemElem != NULL)
-		{
-			if( !g_pPlayer->m_vtInfo.IsTrading( m_MatJewel[i].pItemElem ) )
-				m_MatJewel[i].pItemElem->SetExtra(0);
+CWndMixJewel::CWndMoonstoneReceiver::CWndMoonstoneReceiver()
+	: CWndItemReceiver(
+		CWndItemReceiver::Features{
+			.colorWhenHoverWithItem = 0x60FFFF00,
+			.shadow = std::pair<const ItemProp *, DWORD>(prj.GetItemProp(II_GEN_MAT_MOONSTONE), 50)
 		}
-	}
-	if(m_pWndInventory != NULL)
+	) {
+}
+
+void CWndMixJewel::OnDestroy() {
+	if (CWndInventory * pWnd = GetWndBase<CWndInventory>(APP_INVENTORY)) {
 		m_pWndInventory->m_wndItemCtrl.SetDieFlag(FALSE);
-}
-
-void CWndMixJewel::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
-{
-	CWndNeuz::SerializeRegInfo( ar, dwVersion );
-}
-
-void CWndMixJewel::OnDestroyChildWnd( CWndBase* pWndChild )
-{
-	if( m_pConfirm == pWndChild )
-		SAFE_DELETE( m_pConfirm );
-}
-
-void CWndMixJewel::OnDraw( C2DRender* p2DRender ) 
-{ 
-	//Render Icon
-	ItemProp* pItemProp;
-	CTexture* pTexture;
-	BOOL bCheckSlot = TRUE;
-	
-	CPoint point = GetMousePoint();
-	int testnum = HitTest( point );
-	if( testnum != -1)
-	{
-		if( CWndBase::m_GlobalShortcut.m_dwData )
-		{
-			m_nSelectCtrl = testnum;
-			CRect rect;
-			rect = m_MatJewel[m_nSelectCtrl].wndCtrl->rect;
-			p2DRender->RenderFillRect( rect, 0x60ffff00 );
-		}
 	}
-	else
-		m_nSelectCtrl = -1;
-	
-	for(int i=0; i<MAX_JEWEL; i++)
-	{
-		if(m_MatJewel[i].isUse)
-		{
-			if(m_MatJewel[i].pItemElem)
-			{
-				pItemProp = prj.GetItemProp( m_MatJewel[i].pItemElem->GetProp()->dwID );
-				if(pItemProp != NULL)
-				{
-					pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-					if(pTexture != NULL)
-						pTexture->Render( p2DRender, CPoint( m_MatJewel[i].wndCtrl->rect.left, m_MatJewel[i].wndCtrl->rect.top ) );
-				}
-			}
-		}
-		else
-		{
-			if( i < 5 )
-				pItemProp = prj.GetItemProp( II_GEN_MAT_ORICHALCUM01 );
-			else 
-				pItemProp = prj.GetItemProp( II_GEN_MAT_MOONSTONE );
-			if(pItemProp != NULL)
-			{
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-				if(pTexture != NULL)
-					pTexture->Render( p2DRender, CPoint( m_MatJewel[i].wndCtrl->rect.left, m_MatJewel[i].wndCtrl->rect.top ), 50 );
-				bCheckSlot = FALSE;
-			}
-		}
-	}
+}
 
-	if(!m_bStart)
-		SetStartBtn(bCheckSlot);
-	else
-		SetStartBtn(FALSE);
+void CWndMixJewel::OnDestroyChildWnd(CWndBase * pWndChild) {
+	if (m_pConfirm.get() == pWndChild) {
+		m_pConfirm = nullptr;
+	}
+}
+
+void CWndMixJewel::UpdateStartButton() {
+	CWndButton * button = GetDlgItem<CWndButton>(WIDC_START);
+
+	if (m_bStart) {
+		button->EnableWindow(FALSE);
+	} else {
+		const BOOL startable = GetAllObjidIfFilled() ? TRUE : FALSE;
+		button->EnableWindow(startable);
+	}
 }
 
 void CWndMixJewel::OnInitialUpdate() 
@@ -16107,22 +16045,23 @@ void CWndMixJewel::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
 	//Ctrl Initialize.
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
 
-	int StaticID[20] = {WIDC_PIC_SLOT1, WIDC_PIC_SLOT2, WIDC_PIC_SLOT3, WIDC_PIC_SLOT4, WIDC_PIC_SLOT5, 
-						WIDC_PIC_SLOT6,	WIDC_PIC_SLOT7, WIDC_PIC_SLOT8, WIDC_PIC_SLOT9, WIDC_PIC_SLOT10};
+	int StaticID[/* 10 */] = {
+		WIDC_PIC_SLOT1, WIDC_PIC_SLOT2, WIDC_PIC_SLOT3, WIDC_PIC_SLOT4, WIDC_PIC_SLOT5,
+		WIDC_PIC_SLOT6,	WIDC_PIC_SLOT7, WIDC_PIC_SLOT8, WIDC_PIC_SLOT9, WIDC_PIC_SLOT10
+	};
 
-	for(int i=0; i<MAX_JEWEL; i++)
-	{
-		m_MatJewel[i].wndCtrl = GetWndCtrl( StaticID[i] );
-		m_MatJewel[i].staticNum = StaticID[i];
-		m_MatJewel[i].isUse = FALSE;
-		m_MatJewel[i].pItemElem = NULL;
+	static_assert(MaxSlotPerItem * 2 == (sizeof(StaticID) / sizeof(StaticID[0])));
+
+	for (unsigned int i = 0; i != MaxSlotPerItem; ++i) {
+		m_oriReceivers [i].Create(0, GetWndCtrl(StaticID[i                 ])->rect, this, StartOffsetWidcSlots + i                 );
+		m_moonReceivers[i].Create(0, GetWndCtrl(StaticID[i + MaxSlotPerItem])->rect, this, StartOffsetWidcSlots + i + MaxSlotPerItem);
 	}
 
+	m_pText = GetDlgItem<CWndText>(WIDC_TEXT1);
 	CWndText::SetupDescription(m_pText, _T("SmeltMixJewel.inc"));
 
-	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
+	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
@@ -16143,254 +16082,68 @@ BOOL CWndMixJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndMixJewel::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndMixJewel::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndMixJewel::OnMouseMove( UINT nFlags, CPoint point )
-{
-}
-
-void CWndMixJewel::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndMixJewel::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-}
-
-void CWndMixJewel::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	int choicenum = HitTest( point );
-	if(choicenum > -1 && m_MatJewel[choicenum].isUse)
-	{
-		m_MatJewel[choicenum].isUse = FALSE;
-
-		if(choicenum >= 0 && choicenum < 10)
-			m_nOrichalcum--;
-		else if(choicenum > 9 && choicenum < 20)
-			m_nMoonstone--;
-
-		m_MatJewel[choicenum].pItemElem->SetExtra(m_MatJewel[choicenum].pItemElem->GetExtra()-1);
+void CWndMixJewel::SetJewel(CItemElem * pItemElem) {
+	if (ItemProps::IsOrichalcum(*pItemElem)) {
+		CWndItemReceiver::TryReceiveIn(m_oriReceivers, *pItemElem);
+	} else if (ItemProps::IsMoonstone(*pItemElem)) {
+		CWndItemReceiver::TryReceiveIn(m_moonReceivers, *pItemElem);
 	}
 }
 
-void CWndMixJewel::OnRButtonDblClk( UINT nFlags, CPoint point )
-{
-}
+std::optional<std::array<OBJID, MAX_JEWEL>> CWndMixJewel::GetAllObjidIfFilled() const {
+	std::array<OBJID, MAX_JEWEL> itemobjid = { 0, };
 
-BOOL CWndMixJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	int isValid = ITEM_INVALID;
-	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
-	if( m_nSelectCtrl > -1 && !m_MatJewel[m_nSelectCtrl].isUse)
-	{
-		if( m_nSelectCtrl < 5 && (pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01 || pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01_1))
-		{
-			if( pItemElem->m_nItemNum > pItemElem->GetExtra() )
-				isValid = ITEM_VALID;
-			else
-				isValid = ITEM_MAX_OVERFLOW;
-		}
-		else if( m_nSelectCtrl > 4 && m_nSelectCtrl < 10 && (pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE || pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE_1))
-		{
-			if( pItemElem->m_nItemNum > pItemElem->GetExtra() )
-				isValid = ITEM_VALID;
-			else
-				isValid = ITEM_MAX_OVERFLOW;
-		}
+	for (unsigned int i = 0; i != MaxSlotPerItem; ++i) {
+		CItemElem * ori = m_oriReceivers[i].GetItem();
+		CItemElem * moon = m_moonReceivers[i].GetItem();
 
-	}	
-	switch (isValid)
-	{
-		case ITEM_VALID:
-			SetJewel(pItemElem);
-			break;					
-		case ITEM_MAX_OVERFLOW:
-			// Max overflow Error Msg.
-			g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_SUMMONANGEL_ERROR1 ) );
-			break;
-		case ITEM_INVALID:
-			break;
+		if (!ori || !moon) return std::nullopt;
+
+		itemobjid[i] = ori->m_dwObjId;
+		itemobjid[i + MaxSlotPerItem] = moon->m_dwObjId;
 	}
-	return TRUE;
-}
 
-void CWndMixJewel::SetJewel(CItemElem* pItemElem)
-{
-	int ptcount, extslotcount, usableitemnum, insertnum, i;
-	int slotnum[10];
-	ptcount = 0;
-	extslotcount = 0;
-	usableitemnum = 0;
-	insertnum = 0;
-
-	if(pItemElem != NULL)
-	{
-		if(m_nSelectCtrl > -1)
-		{
-			if(m_nSelectCtrl >=0 && m_nSelectCtrl < 5)
-				ptcount = 0;
-			else if(m_nSelectCtrl >= 5 && m_nSelectCtrl < 10)
-				ptcount = 5;
-
-			if(g_WndMng.m_pWndWorld->m_bShiftPushed)
-			{
-				int maxcount = ptcount + 5;
-				for(i=ptcount; i<maxcount; i++)
-				{
-					if(!m_MatJewel[i].isUse)
-					{
-						slotnum[extslotcount] = i;
-						extslotcount++;
-					}
-				}
-				usableitemnum = pItemElem->m_nItemNum - pItemElem->GetExtra();
-				
-				if(extslotcount > 0 && usableitemnum > 0)
-				{
-					if(extslotcount > usableitemnum) //���� Slot�� ��밡����? Item�� ���� �ľ��Ͽ� �ѹ��� ���� �� ���� ����.
-						insertnum = usableitemnum;
-					else
-						insertnum = extslotcount;
-
-					for(i=0; i<insertnum; i++)
-					{
-						m_MatJewel[slotnum[i]].isUse = TRUE;
-						m_MatJewel[slotnum[i]].pItemElem = pItemElem;
-					}
-					pItemElem->SetExtra(pItemElem->GetExtra()+insertnum);
-				}
-			}
-			else
-			{
-				insertnum++;
-				m_MatJewel[m_nSelectCtrl].isUse = TRUE;
-				m_MatJewel[m_nSelectCtrl].pItemElem = pItemElem;
-				pItemElem->SetExtra(pItemElem->GetExtra()+insertnum);	
-			}
-
-			switch(ptcount)
-			{
-			case 0:
-				m_nOrichalcum += insertnum;
-				break;
-			case 5:
-				m_nMoonstone += insertnum;
-				break;
-			}
-		}
-		else //Inventory Dbl Clk...
-		{
-			int nSelect = -1;
-			int count = 0;
-			BOOL stopcheck = FALSE;
-			if(pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01 || pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01_1)
-				ptcount = 0;
-			else if(pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE || pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE_1)
-				ptcount = 5;
-
-			count += ptcount;
-			while(!stopcheck && count < ptcount + 5)
-			{
-				if(!m_MatJewel[count].isUse)
-				{
-					stopcheck = TRUE;
-					nSelect = count;
-				}
-				count++;					
-			}
-			
-			if(nSelect > -1)
-			{
-				m_MatJewel[nSelect].isUse = TRUE;
-				m_MatJewel[nSelect].pItemElem = pItemElem;
-				pItemElem->SetExtra(pItemElem->GetExtra()+1);
-				if(ptcount == 0)
-					m_nOrichalcum++;
-				else if(ptcount == 5)
-					m_nMoonstone++;
-			}
-		}
-	}
+	return itemobjid;
 }
 
 BOOL CWndMixJewel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	if( nID == WIDC_START )
-	{
-		if(	m_nOrichalcum + m_nMoonstone < 10 )
-		{
-			g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_SUMMONANGEL_ERROR2 ) );
-		}
-		else
-		{	
-			std::array<OBJID, MAX_JEWEL> itemobjid = { 0, };
+	if (nID == WIDC_START) {
+		static_assert(MaxSlotPerItem * 2 == MAX_JEWEL);
 
-			bool isBad = false;
-			for (size_t i = 0; i != MAX_JEWEL; ++i) {
-				const GENMATDIEINFO matJewel = m_MatJewel[i];
-				
-				if (matJewel.isUse
-					&& matJewel.pItemElem
-					&& matJewel.pItemElem->GetExtra() > 0) {
-					itemobjid[i] = matJewel.pItemElem->m_dwObjId;
-				} else {
-					isBad = true;
-					break;
-				}
-			}
+		const auto maybeItemObjid = GetAllObjidIfFilled();
 
-			if (!isBad) {
-				m_bStart = TRUE;
-				g_DPlay.SendPacket<PACKETTYPE_ULTIMATE_MAKEITEM, std::array<OBJID, MAX_JEWEL>>(itemobjid);
-			}
+		if (maybeItemObjid) {
+			m_bStart = TRUE;
+			g_DPlay.SendPacket<PACKETTYPE_ULTIMATE_MAKEITEM, std::array<OBJID, MAX_JEWEL>>(
+				maybeItemObjid.value()
+			);
+			UpdateStartButton();
+		} else {
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_SUMMONANGEL_ERROR2));
 		}
+	} else if (nID >= StartOffsetWidcSlots && nID < StartOffsetWidcSlots + 2 * MaxSlotPerItem) {
+		UpdateStartButton();
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-}
-
-int CWndMixJewel::HitTest( CPoint point )
-{
-	int rtn_val = -1;
-	CRect rect;
-	for(int i=0; i<MAX_JEWEL; i++)
-	{
-		rect = m_MatJewel[i].wndCtrl->rect;
-		if( rect.PtInRect( point ) )
-		{
-			rtn_val = i;
-			i = MAX_JEWEL;
-		}
-	}
-	return rtn_val;
 }
 
 void CWndMixJewel::ReceiveResult(const CUltimateWeapon::Result nResult)
 {
 	//Server���� �����? ������ �ʱ�ȭ�� �����ϰ� â�� ����.
 	//�ʱ�ȭ
-	for(int i=0; i<MAX_JEWEL; i++)
-	{
-		m_MatJewel[i].isUse = FALSE;
-		m_MatJewel[i].pItemElem->SetExtra(0);
-		m_MatJewel[i].pItemElem = NULL;
-	}
+	
+	ForEachReceiver([](auto & receiver) { receiver.ResetItemWithNotify(); });
+	
 	m_bStart = FALSE;
+	UpdateStartButton();
 	
 	switch(nResult) 
 	{
 		case CUltimateWeapon::Result::Success:
 			{
-				SetStartBtn(FALSE);
-				SAFE_DELETE( m_pConfirm );
-				m_pConfirm = new CWndMixJewelConfirm();
+				m_pConfirm = std::make_unique<CWndMixJewelConfirm>();
 				m_pConfirm->Initialize( this );
 			}
 			break;
@@ -16403,15 +16156,9 @@ void CWndMixJewel::ReceiveResult(const CUltimateWeapon::Result nResult)
 	}
 }
 
-void CWndMixJewel::SetStartBtn(BOOL buse)
-{
-	CWndButton* pbutton = (CWndButton*)GetDlgItem(WIDC_START);
-	pbutton->EnableWindow(buse);		
-}
-
-void CWndMixJewel::SetConfirmInit()
-{
-	m_pConfirm = NULL;
+void CWndMixJewel::SetConfirmInit() {
+	// TODO: isn't that a memory leak ?
+	[[maybe_unused]] CWndBase * thing = m_pConfirm.release();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
