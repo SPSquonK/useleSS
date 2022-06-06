@@ -38,17 +38,23 @@ public:
 /// - May notify with (WNM_ItemReceiver_Changed, new item)
 /// - User must derive it to define the CanReceiveItem() method
 class CWndItemReceiver : public CWndBase {
+public:
+  struct Features {
+    bool removable = true;
+    std::optional<std::uint32_t> colorWhenHoverWithItem = std::nullopt;
+  };
+
 private:
   CItemElem * m_item = nullptr;
   DWORD m_defaultTooltip = 0;
+  Features m_features;
   bool m_removableItem;
 
 public:
-  enum class Removable { Yes, No };
   enum class SetMode { Verbose, Silent, NeverFail };
 
-  CWndItemReceiver(Removable removableItem = Removable::Yes)
-    : m_removableItem(removableItem == Removable::Yes) {
+  CWndItemReceiver(const Features & features = Features{})
+    : m_features(features) {
     m_dwStyle |= WBS_NOFRAME | WBS_CHILD | WBS_NODRAWFRAME;
   }
   ~CWndItemReceiver() override;
@@ -58,7 +64,8 @@ public:
   virtual bool CanReceiveItem(const CItemElem & itemElem, bool verbose = true) = 0;
 
   /// Return the item cointained in the receiver
-  CItemElem * GetItem() { return m_item; }
+  CItemElem * GetItem() const { return m_item; }
+  
   /// Changes the tooltip displayed when hovering the slot
   void SetTooltipId(const DWORD tooltip) { m_defaultTooltip = tooltip; }
 
@@ -76,11 +83,11 @@ public:
 
   bool SetAnItem(CItemElem * itemElem, SetMode setMode);
 
+  void ResetItemWithNotify();
+
 private:
   void NotifyChange();
   void ResetItem();
-
-  void ResetItemWithNotify();
 };
 
 

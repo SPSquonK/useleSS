@@ -1,56 +1,70 @@
 #pragma once
 
-struct GENMATDIEINFO{
-	LPWNDCTRL wndCtrl;
-	BOOL isUse;
-	int staticNum;
-	CItemElem* pItemElem;
+#include "WndSqKComponents.h"
+
+class CWndOrichalcumReceiver : public CWndItemReceiver {
+public:
+	CWndOrichalcumReceiver()
+		: CWndItemReceiver(Features{ .colorWhenHoverWithItem = 0x60FFFF00 }) {
+	}
+
+	bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override {
+		return ItemProps::IsOrichalcum(itemElem);
+	}
 };
 
-#define MAX_MATDIE	20
-#define ITEM_VALID			0
-#define ITEM_MAX_OVERFLOW	1
-#define ITEM_INVALID		2
-
-class CWndSummonAngel : public CWndNeuz 
-{ 
+class CWndMoonstoneReceiver : public CWndItemReceiver {
 public:
-	CWndText* m_pText = nullptr;
-	CWndStatic * m_pStatic[3] = { nullptr, nullptr, nullptr };
-	GENMATDIEINFO m_MatDie[MAX_MATDIE];
+	CWndMoonstoneReceiver()
+		: CWndItemReceiver(Features{ .colorWhenHoverWithItem = 0x60FFFF00 }) {
+	}
 
-	int m_nitemcount  = 0;
-	int m_nSelecCtrl  = -1;
+	bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override {
+		return ItemProps::IsMoonstone(itemElem);
+	}
+};
+
+class CWndSummonAngel : public CWndNeuz { 
+private:
+	static constexpr unsigned int MaxSlotPerItem = 10;
+	static constexpr UINT StartOffsetWidcSlots = 1500;
+
+	CWndText * m_pText = nullptr;
+	CWndStatic * m_pStatic[3] = { nullptr, nullptr, nullptr };
+	
+	std::array<CWndOrichalcumReceiver, MaxSlotPerItem> m_oriReceivers;
+	std::array<CWndMoonstoneReceiver, MaxSlotPerItem> m_moonReceivers;
+
+	bool m_nowStarting = false;
+
 	int m_nOrichalcum = 0;
 	int m_nMoonstone  = 0;
 
-	float m_WhiteAngelRate = 0.f;
 	float m_RedAngelRate   = 0.f;
 	float m_BlueAngelRate  = 0.f;
 	float m_GreenAngelRate = 0.f;
 
-	BOOL m_nowStarting = FALSE;
 	
-public: 
-	
-	CWndSummonAngel(); 
-	~CWndSummonAngel(); 
-	
-	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-	virtual void OnDestroy( void );
+public:
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
+	void OnDestroy() override;
 
-	void SetQuestText( CHAR* szChar );
-	int HitTest( CPoint point );
+	void SetQuestText(const CHAR * szChar);
+	void SetDieFromInventory(CItemElem & pItemElem);
+
+private:
+	
+	void OnChangedItems();
+	void ReFreshAll();
 	void SummonRateRefresh();
-	void ReFreshAll(BOOL extracheck);
 
-	void SetDie(CItemElem* pItemElem);
+	template <typename F> void ForEachReceiver(F f) {
+		for (auto & receiver : m_oriReceivers)  { f(receiver); }
+		for (auto & receiver : m_moonReceivers) { f(receiver); }
+	}
 }; 
 
 

@@ -55,6 +55,16 @@ void CWndItemReceiver::OnInitialUpdate() {
 }
 
 void CWndItemReceiver::OnDraw(C2DRender * p2DRender) {
+	if (m_features.colorWhenHoverWithItem
+		&& CWndBase::m_GlobalShortcut.m_dwShortcut == ShortcutType::Item) {
+
+		const CPoint point = GetMousePoint();
+		const CRect window = GetWindowRect();
+		if (window.PtInRect(point)) {
+			p2DRender->RenderFillRect(window, 0x60ffff00);
+		}
+	}
+
 	if (!m_item) return;
 
 	CTexture * const texture = m_item->GetTexture();

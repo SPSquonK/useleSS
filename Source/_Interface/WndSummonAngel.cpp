@@ -11,89 +11,26 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndSummonAngel
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndSummonAngel::CWndSummonAngel() 
-{
-	m_nowStarting = FALSE;
-}
 
-CWndSummonAngel::~CWndSummonAngel() 
-{ 
-	DeleteDeviceObjects();
-} 
-
-void CWndSummonAngel::OnDestroy()
-{
-	for(int i=0; i<MAX_MATDIE; i++)
-	{
-		if(m_MatDie[i].pItemElem != NULL)
-		{
-			if( !g_pPlayer->m_vtInfo.IsTrading( m_MatDie[i].pItemElem ) )
-				m_MatDie[i].pItemElem->SetExtra(0);
-		}
-	}
-
-	if (CWndInventory * m_pWndInventory = (CWndInventory *)GetWndBase(APP_INVENTORY)) {
+void CWndSummonAngel::OnDestroy() {
+	if (CWndInventory * m_pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY)) {
 		m_pWndInventory->m_wndItemCtrl.SetDieFlag(FALSE);
 	}
-}
-
-void CWndSummonAngel::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
-{
-	CWndNeuz::SerializeRegInfo( ar, dwVersion );
 }
 
 void CWndSummonAngel::OnDraw( C2DRender* p2DRender ) 
 { 
 	//Render Icon
-	ItemProp* pItemProp;
-	CTexture* pTexture;
-	
-	pItemProp = prj.GetItemProp( II_GEN_MAT_ORICHALCUM01 );
-	if(pItemProp != NULL)
-	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+	if (const ItemProp * const pItemProp = prj.GetItemProp(II_GEN_MAT_ORICHALCUM01)) {
+		CTexture * pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( 30, 218 ) );
 	}
 
-	pItemProp = prj.GetItemProp( II_GEN_MAT_MOONSTONE );
-	if(pItemProp != NULL)
-	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+	if (const ItemProp * pItemProp = prj.GetItemProp(II_GEN_MAT_MOONSTONE)) {
+		CTexture * pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( 30, 306 ) );
-	}
-	
-	CPoint point = GetMousePoint();
-	int testnum = HitTest( point );
-	if( testnum != -1)
-	{
-		if( CWndBase::m_GlobalShortcut.m_dwData )
-		{
-			m_nSelecCtrl = testnum;
-			CRect rect;
-			rect = m_MatDie[m_nSelecCtrl].wndCtrl->rect;
-			p2DRender->RenderFillRect( rect, 0x60ffff00 );
-		}
-	}
-	else
-		m_nSelecCtrl = -1;
-	
-	for(int i=0; i<MAX_MATDIE; i++)
-	{
-		if(m_MatDie[i].isUse)
-		{
-			if(m_MatDie[i].pItemElem)
-			{
-				pItemProp = prj.GetItemProp( m_MatDie[i].pItemElem->GetProp()->dwID );
-				if(pItemProp != NULL)
-				{
-					pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-					if(pTexture != NULL)
-						pTexture->Render( p2DRender, CPoint( m_MatDie[i].wndCtrl->rect.left, m_MatDie[i].wndCtrl->rect.top ) );
-				}
-			}
-		}
 	}
 
 	// '%'
@@ -113,48 +50,41 @@ void CWndSummonAngel::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	//Ctrl Initialize.
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
+	m_pText = GetDlgItem<CWndText>(WIDC_TEXT1);
 
-	m_pStatic[0] = (CWndStatic *)GetDlgItem( WIDC_STATIC_RED );
-	m_pStatic[1] = (CWndStatic *)GetDlgItem( WIDC_STATIC_BLUE );
-	m_pStatic[2] = (CWndStatic *)GetDlgItem( WIDC_STATIC_GREEN );
+	m_pStatic[0] = GetDlgItem<CWndStatic>(WIDC_STATIC_RED);
+	m_pStatic[1] = GetDlgItem<CWndStatic>(WIDC_STATIC_BLUE);
+	m_pStatic[2] = GetDlgItem<CWndStatic>(WIDC_STATIC_GREEN);
 	SummonRateRefresh();
 	
-	int StaticID[20] = {WIDC_STATIC11, WIDC_STATIC12, WIDC_STATIC13, WIDC_STATIC14, WIDC_STATIC15, WIDC_STATIC16,
+	int StaticID[/* 20 */] = {WIDC_STATIC11, WIDC_STATIC12, WIDC_STATIC13, WIDC_STATIC14, WIDC_STATIC15, WIDC_STATIC16,
 						WIDC_STATIC17, WIDC_STATIC18, WIDC_STATIC19, WIDC_STATIC20, WIDC_STATIC21, WIDC_STATIC22,
 						WIDC_STATIC23, WIDC_STATIC24, WIDC_STATIC25, WIDC_STATIC26, WIDC_STATIC27, WIDC_STATIC28,
 						WIDC_STATIC29, WIDC_STATIC30};
 
-	for(int i=0; i<MAX_MATDIE; i++)
-	{
-		m_MatDie[i].wndCtrl = GetWndCtrl( StaticID[i] );
-		m_MatDie[i].staticNum = StaticID[i];
-		m_MatDie[i].isUse = FALSE;
-		m_MatDie[i].pItemElem = NULL;
+	static_assert(MaxSlotPerItem * 2 == (sizeof(StaticID) / sizeof(StaticID[0])));
+
+	for (unsigned int i = 0; i != MaxSlotPerItem; ++i) {
+		m_oriReceivers[i] .Create(0, GetWndCtrl(StaticID[i                 ])->rect, this, StartOffsetWidcSlots                  + i);
+		m_moonReceivers[i].Create(0, GetWndCtrl(StaticID[i + MaxSlotPerItem])->rect, this, StartOffsetWidcSlots + MaxSlotPerItem + i);
 	}
 	
 	//Text Setting
-	CWndStatic* pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC3 );
-	pStatic->SetTitle(prj.GetText(TID_GAME_REDANGEL_RATE));
-	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC4 );
-	pStatic->SetTitle(prj.GetText(TID_GAME_BLUEANGEL_RATE));
-	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC5 );
-	pStatic->SetTitle(prj.GetText(TID_GAME_GREENANGEL_RATE));
+	GetDlgItem(WIDC_STATIC3)->SetTitle(prj.GetText(TID_GAME_REDANGEL_RATE));
+	GetDlgItem(WIDC_STATIC4)->SetTitle(prj.GetText(TID_GAME_BLUEANGEL_RATE));
+	GetDlgItem(WIDC_STATIC5)->SetTitle(prj.GetText(TID_GAME_GREENANGEL_RATE));
 
-	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC6 );
-	pStatic->SetTitle(prj.GetText(TID_GAME_WHITEANGEL_INFO1));
-	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC1 );
-	pStatic->SetTitle(prj.GetText(TID_GAME_WHITEANGEL_INFO2));
-	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC7 );
-	pStatic->SetTitle(prj.GetText(TID_GAME_WHITEANGEL_INFO3));
+	GetDlgItem(WIDC_STATIC6)->SetTitle(prj.GetText(TID_GAME_WHITEANGEL_INFO1));
+	GetDlgItem(WIDC_STATIC1)->SetTitle(prj.GetText(TID_GAME_WHITEANGEL_INFO2));
+	GetDlgItem(WIDC_STATIC7)->SetTitle(prj.GetText(TID_GAME_WHITEANGEL_INFO3));
 
 	//France Button Image
-	CWndButton* pButton = (CWndButton*)GetDlgItem( WIDC_START );
+	CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
 	if(::GetLanguage() == LANG_FRE)
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	//Window Position
-	CWndInventory * m_pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
+	CWndInventory * m_pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY);
 	CRect rectInventory;
 	if(m_pWndInventory != NULL)
 	{
@@ -174,12 +104,10 @@ void CWndSummonAngel::OnInitialUpdate()
 	Move( ptMove );
 }
 
-void CWndSummonAngel::SetQuestText( CHAR* szChar )
-{
-	if(m_pText != NULL)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
+void CWndSummonAngel::SetQuestText(const CHAR * szChar) {
+	if (m_pText != NULL) {
+		m_pText->m_string.AddParsingString(szChar);
+		m_pText->ResetString();
 	}
 }
 
@@ -190,253 +118,85 @@ BOOL CWndSummonAngel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_SUMMON_ANGEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
+void CWndSummonAngel::SetDieFromInventory(CItemElem & pItemElem) {
+	constexpr auto TryReceiveIn = [](auto & receivers, CItemElem & itemElem) {
+		for (auto & receiver : receivers) {
+			if (!receiver.GetItem()) {
+				receiver.SetAnItem(&itemElem, CWndItemReceiver::SetMode::Silent);
+				return;
+			}
+		}
+	};
 
-void CWndSummonAngel::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	int choicenum = HitTest( point );
-	if(choicenum > -1 && m_MatDie[choicenum].isUse)
-	{
-		m_MatDie[choicenum].isUse = FALSE;
-
-		if(choicenum >= 0 && choicenum < 10)
-			m_nOrichalcum--;
-		else if(choicenum > 9 && choicenum < 20)
-			m_nMoonstone--;
-
-		m_MatDie[choicenum].pItemElem->SetExtra(m_MatDie[choicenum].pItemElem->GetExtra()-1);
-		SummonRateRefresh();
+	if (ItemProps::IsOrichalcum(pItemElem)) {
+		TryReceiveIn(m_oriReceivers, pItemElem);
+	} else if (ItemProps::IsMoonstone(pItemElem)) {
+		TryReceiveIn(m_moonReceivers, pItemElem);
 	}
 }
 
-
-BOOL CWndSummonAngel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	int isValid = ITEM_INVALID;
-	CItemElem* pItemElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
-	if( m_nSelecCtrl > -1 && !m_MatDie[m_nSelecCtrl].isUse)
-	{
-		if( m_nSelecCtrl < 10 && (pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01 || pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01_1))
-		{
-			if( pItemElem->m_nItemNum > pItemElem->GetExtra() )
-				isValid = ITEM_VALID;
-			else
-				isValid = ITEM_MAX_OVERFLOW;
-		}
-		else if( m_nSelecCtrl > 9 && m_nSelecCtrl < 20 && (pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE || pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE_1))
-		{
-			if( pItemElem->m_nItemNum > pItemElem->GetExtra() )
-				isValid = ITEM_VALID;
-			else
-				isValid = ITEM_MAX_OVERFLOW;
-		}
-
-	}	
-	switch (isValid)
-	{
-		case ITEM_VALID:
-			{
-				SetDie(pItemElem);
-				break;					
-			}
-		case ITEM_MAX_OVERFLOW:
-			{
-				// Max overflow Error Msg.
-				g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_SUMMONANGEL_ERROR1 ) );
-				break;
-			}
-		case ITEM_INVALID:
-			{
-				// Invalid Item Error Msg.
-				break;
-			}
-	}
-	return TRUE;
-}
-
-void CWndSummonAngel::SetDie(CItemElem* pItemElem)
-{
-	int ptcount, extslotcount, usableitemnum, insertnum, i;
-	int slotnum[10];
-	ptcount = 0;
-	extslotcount = 0;
-	usableitemnum = 0;
-	insertnum = 0;
-
-	if(pItemElem != NULL)
-	{
-		if(m_nSelecCtrl > -1)
-		{
-			if(m_nSelecCtrl >=0 && m_nSelecCtrl < 10)
-				ptcount = 0;
-			else if(m_nSelecCtrl > 9 && m_nSelecCtrl < 20)
-				ptcount = 10;
-
-			if(g_WndMng.m_pWndWorld->m_bShiftPushed)
-			{
-				int maxcount = ptcount + 10;
-				for(i=ptcount; i<maxcount; i++)
-				{
-					if(!m_MatDie[i].isUse)
-					{
-						slotnum[extslotcount] = i;
-						extslotcount++;
-					}
-				}
-				usableitemnum = pItemElem->m_nItemNum - pItemElem->GetExtra();
-				
-				if(extslotcount > 0 && usableitemnum > 0)
-				{
-					if(extslotcount > usableitemnum) //남은 Slot과 사용가능한 Item갯 수를 파악하여 한번에 넣을 갯 수를 지정.
-						insertnum = usableitemnum;
-					else
-						insertnum = extslotcount;
-
-					for(i=0; i<insertnum; i++)
-					{
-						m_MatDie[slotnum[i]].isUse = TRUE;
-						m_MatDie[slotnum[i]].pItemElem = pItemElem;
-					}
-					pItemElem->SetExtra(pItemElem->GetExtra()+insertnum);
-				}
-			}
-			else
-			{
-				insertnum++;
-				m_MatDie[m_nSelecCtrl].isUse = TRUE;
-				m_MatDie[m_nSelecCtrl].pItemElem = pItemElem;
-				pItemElem->SetExtra(pItemElem->GetExtra()+insertnum);	
-			}
-
-			switch(ptcount)
-			{
-			case 0:
-				m_nOrichalcum += insertnum;
-				break;
-			case 10:
-				m_nMoonstone += insertnum;
-				break;
-			}
-		}
-		else //Inventory Dbl Clk...
-		{
-			int nSelect = -1;
-			int count = 0;
-			BOOL stopcheck = FALSE;
-			if(pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01 || pItemElem->GetProp()->dwID == II_GEN_MAT_ORICHALCUM01_1)
-				ptcount = 0;
-			else if(pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE || pItemElem->GetProp()->dwID == II_GEN_MAT_MOONSTONE_1)
-				ptcount = 10;
-
-			count += ptcount;
-			while(!stopcheck && count < ptcount + 10)
-			{
-				if(!m_MatDie[count].isUse)
-				{
-					stopcheck = TRUE;
-					nSelect = count;
-				}
-				count++;					
-			}
-			
-			if(nSelect > -1)
-			{
-				m_MatDie[nSelect].isUse = TRUE;
-				m_MatDie[nSelect].pItemElem = pItemElem;
-				pItemElem->SetExtra(pItemElem->GetExtra()+1);
-				if(ptcount == 0)
-					m_nOrichalcum++;
-				else if(ptcount == 10)
-					m_nMoonstone++;
-			}
-		} //Inventory Dbl Clk...
-		
-		SummonRateRefresh();		
-	}
-}
-
-void CWndSummonAngel::ReFreshAll(BOOL extracheck)
-{
-	for(int i=0; i<MAX_MATDIE; i++)
-	{
-		m_MatDie[i].isUse = FALSE;
-		if(m_MatDie[i].pItemElem != NULL)
-		{
-			if(extracheck)
-			{
-				m_MatDie[i].pItemElem->SetExtra(0);
-				m_MatDie[i].pItemElem = NULL;
-			}
-			else
-				m_MatDie[i].pItemElem = NULL;
-		}
-	}
+void CWndSummonAngel::ReFreshAll() {
+	ForEachReceiver([](auto & receiver) { receiver.ResetItemWithNotify(); });
 
 	m_nOrichalcum = 0;
 	m_nMoonstone = 0;
-	m_nowStarting = FALSE;
+	m_nowStarting = false;
 	SummonRateRefresh();
 }
 
 BOOL CWndSummonAngel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	if( nID == WIDC_RESET )
-		ReFreshAll(TRUE);
-	else if( nID == WIDC_START )
-	{
-		if(	m_nOrichalcum + m_nMoonstone < 3 )
-		{
+	if (nID == WIDC_RESET) {
+		ReFreshAll();
+	} else if (nID == WIDC_START) {
+		if(	m_nOrichalcum + m_nMoonstone < 3 ) {
 			g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_SUMMONANGEL_ERROR2 ) );
-		}
-		else
-		{	
-			if(!m_nowStarting)
-			{
-				std::vector<ItemPos> sentItems;
-				m_nowStarting = TRUE;
-				m_nitemcount = 0;
-				for(int i=0; i<MAX_MATDIE; i++)
-				{
-					if(m_MatDie[i].isUse)
-					{
-						if(m_MatDie[i].pItemElem != NULL && m_MatDie[i].pItemElem->GetExtra() > 0)
-						{
-							sentItems.emplace_back(m_MatDie[i].pItemElem->m_dwObjId);
-						}
-					}		
-				}
+		} else if (!m_nowStarting) {
+			std::vector<ItemPos> sentItems;
+			m_nowStarting = true;
 
-				//Angel Create
-				g_DPlay.SendCreateAngel(sentItems);
-				ReFreshAll(TRUE);
-			}
+			ForEachReceiver([&](auto & receiver) {
+				if (CItemElem * item = receiver.GetItem()) {
+					sentItems.emplace_back(item->m_dwObjId);
+				}
+				});
+
+			//Angel Create
+			g_DPlay.SendCreateAngel(sentItems);
+			ReFreshAll();
 		}
-	}
-	else if( nID == WIDC_CANCEL )
+	} else if (nID == WIDC_CANCEL) {
 		Destroy();
-	
+	} else if (nID >= StartOffsetWidcSlots && nID < StartOffsetWidcSlots + 2 * MaxSlotPerItem) {
+		OnChangedItems();
+	}
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
 
-int CWndSummonAngel::HitTest( CPoint point )
-{
-	int rtn_val = -1;
-	CRect rect;
-	for(int i=0; i<MAX_MATDIE; i++)
-	{
-		rect = m_MatDie[i].wndCtrl->rect;
-		if( rect.PtInRect( point ) )
-		{
-			rtn_val = i;
-			i = MAX_MATDIE;
+void CWndSummonAngel::OnChangedItems() {
+
+	m_nOrichalcum = 0;
+	m_nMoonstone  = 0;
+
+	for (const auto & oriReceiver : m_oriReceivers) {
+		if (oriReceiver.GetItem()) {
+			++m_nOrichalcum;
 		}
 	}
-	return rtn_val;
+
+	for (const auto & moonReceiver : m_moonReceivers) {
+		if (moonReceiver.GetItem()) {
+			++m_nMoonstone;
+		}
+	}
+
+	SummonRateRefresh();
 }
 
 void CWndSummonAngel::SummonRateRefresh()
 {
 	m_GreenAngelRate = (m_nOrichalcum * 1.0f) + (m_nMoonstone * 1.0f);
-	m_WhiteAngelRate = m_GreenAngelRate / 10.0f;
 	m_BlueAngelRate = m_GreenAngelRate * 2.0f;
 	m_RedAngelRate = 100.0f - ( m_GreenAngelRate + m_BlueAngelRate );
 

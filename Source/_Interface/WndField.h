@@ -1487,6 +1487,18 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };
 
+#define ITEM_VALID			0
+#define ITEM_MAX_OVERFLOW	1
+#define ITEM_INVALID		2
+
+struct GENMATDIEINFO {
+	LPWNDCTRL wndCtrl;
+	BOOL isUse;
+	int staticNum;
+	CItemElem * pItemElem;
+};
+
+
 class CWndMixJewel : public CWndNeuz 
 { 
 public:

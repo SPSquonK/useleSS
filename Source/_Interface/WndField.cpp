@@ -1881,17 +1881,13 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				// ������Ƽ�� �εǼ� �״´�.
 				if( pProp )
 				{					
-					if(g_WndMng.GetWndBase( APP_SUMMON_ANGEL ))
-					{
-						if(pProp->dwID == II_GEN_MAT_ORICHALCUM01 || pProp->dwID == II_GEN_MAT_MOONSTONE ||
-							pProp->dwID == II_GEN_MAT_ORICHALCUM01_1 || pProp->dwID == II_GEN_MAT_MOONSTONE_1)
-						{
-							if(pFocusItem->GetExtra() < pFocusItem->m_nItemNum)
-							{
-								CWndSummonAngel* pWndSummonAngel = (CWndSummonAngel*)g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
-								pWndSummonAngel->SetDie(pFocusItem);
-								return TRUE;
-							}
+					if (CWndSummonAngel * pWndSummonAngel = (CWndSummonAngel *)g_WndMng.GetWndBase(APP_SUMMON_ANGEL)) {
+						const bool isRightMaterial = ItemProps::IsOrichalcum(*pProp) || ItemProps::IsMoonstone(*pProp);
+						const bool andCanBeUsed = isRightMaterial && (pFocusItem->GetExtra() < pFocusItem->m_nItemNum);
+
+						if (andCanBeUsed) {
+							pWndSummonAngel->SetDieFromInventory(*pFocusItem);
+							return TRUE;
 						}
 					}
 #ifdef __EVE_MINIGAME
