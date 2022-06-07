@@ -127,9 +127,7 @@ void CWndNeuz::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 	}
 }
 #endif
-void CWndNeuz::OnDraw(C2DRender* p2DRender)
-{
-}
+
 void CWndNeuz::PaintFrame( C2DRender* p2DRender )
 {
 	if( IsFullMax() && m_nWinSize == WSIZE_MAX )
@@ -286,10 +284,7 @@ BOOL CWndNeuz::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 	//SetTitle("메지시 윈도");
 	return CWndBase::Create(dwStyle | WBS_MOVE|/*WBS_MODAL|*/WBS_SOUND|WBS_CAPTION,rect,m_pWndRoot,10);
 }
-BOOL CWndNeuz::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return TRUE;
-}
+
 BOOL CWndNeuz::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
 	if( message == WNM_CLICKED )
@@ -349,19 +344,15 @@ void CWndNeuz::SetSizeMax()
 		{
 			m_rectBackup = GetWindowRect(TRUE);
 			CRect rect;
-			CWndBase* pWndFull 
-				= m_pWndRoot->FindFullWnd();
+			CWndBase * pWndFull = m_pWndRoot->FindFullWnd();
 			if(pWndFull)
 				rect = pWndFull->GetWindowRect(TRUE);
-			//rect = pWndFull->GetLayoutRect( TRUE );
 			else
 				if(IsWndStyle(WBS_CHILD))
 					rect = m_pParentWnd->GetClientRect(TRUE);
 				else
 				{
-					//rect = m_pWndRoot->GetWindowRect();
 					rect = m_pWndRoot->GetLayoutRect();
-					//rect.left = rect.Width() - 200;
 				}
 				m_wndTitleBar.GetDlgItem( WTBID_MAX )->SetTitle( _T( "#" ) );
 				m_bFullWnd = TRUE;

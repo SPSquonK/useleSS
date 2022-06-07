@@ -77,11 +77,9 @@ public:
 	BOOL IsFullMax() { return m_bFullMax; }
 //	virtual CItem* GetFocusItem() { return NULL; }
 	virtual	void PaintFrame( C2DRender* p2DRender );
-	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwStyle = 0 );
 	// message
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
 	virtual BOOL OnChildNotify( UINT message,UINT nID,LRESULT* pLResult );
 	virtual void OnSize( UINT nType, int cx, int cy );
 	virtual void OnNonClientLButtonDblClk( UINT nFlags, CPoint point );
