@@ -542,7 +542,7 @@ BOOL TextCmd_SetRandomOption(CScanner & s, CPlayer_ * pUser) {
 	if (!pItemElem) return TRUE;
 	
 	const int nRandomOptionKind = g_xRandomOptionProperty.GetRandomOptionKind(pItemElem);
-	if (nRandomOptionKind <= 0) return TRUE;
+	if (nRandomOptionKind < 0) return TRUE;
 
 	g_xRandomOptionProperty.InitializeRandomOption( pItemElem->GetRandomOptItemIdPtr() );
 	int cb	= 0;
