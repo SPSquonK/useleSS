@@ -118,7 +118,7 @@ void CPiercing::SetUltimatePiercingSize( int nSize )
 	m_vUltimatePiercing.resize( nSize, 0 );
 }
 
-int CPiercing::GetUltimatePiercingSize()
+int CPiercing::GetUltimatePiercingSize() const
 {
 	return m_vUltimatePiercing.size();
 }
@@ -131,7 +131,7 @@ void CPiercing::SetUltimatePiercingItem( int nth, DWORD dwItem )
 	m_vUltimatePiercing[nth]	= dwItem;
 }
 
-DWORD CPiercing::GetUltimatePiercingItem( int nth )
+DWORD CPiercing::GetUltimatePiercingItem( int nth ) const
 {
 	if( nth >= GetUltimatePiercingSize()  )
 		return 0;

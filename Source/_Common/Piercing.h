@@ -25,9 +25,9 @@ private:
 
 public:
 	void	SetUltimatePiercingSize( int nSize );
-	int		GetUltimatePiercingSize();
+	int		GetUltimatePiercingSize() const;
 	void	SetUltimatePiercingItem( int nth, DWORD dwItem );
-	DWORD	GetUltimatePiercingItem( int nth );
+	DWORD	GetUltimatePiercingItem( int nth ) const;
 
 private:
 	std::vector<DWORD> m_vUltimatePiercing;

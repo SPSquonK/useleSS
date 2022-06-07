@@ -1907,40 +1907,51 @@ public:
 class CWndRemoveJewel : public CWndNeuz
 {
 public:
-	CWndText*	m_pText;
-	CItemElem*	m_pItemElem;
-	CItemElem*	m_pMoonstone;
-	ItemProp*	m_pEItemProp;
-	CTexture*	m_pTexture;
-	CTexture*	m_pMoonstoneTex;
-	int			m_nJewelCount;
-	int			m_nJewelID[5];
-	CTexture*	m_pJewelTex[5];
-	int			m_nJewelSlot[5];
-	int			m_nInfoSlot[5];
+	class CWndJeweledItem : public CWndItemReceiver {
+	public:
+		static bool IsAWeapon(const ItemProp * itemProp);
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
+
+	class CWndMoonstoneReceiver : public CWndItemReceiver {
+	public:
+		CWndMoonstoneReceiver();
+		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
+	};
+
+	struct DisplayedJewel {
+		UINT slotWID;
+		UINT infoWID;
+
+		DWORD jewelItemID;
+		CTexture * texture;
+	};
+
+private:
+	static constexpr UINT WIDC_Weapon = 1500;
+	static constexpr UINT WIDC_Moon = 1501;
+
+	CWndJeweledItem m_weaponReceiver;
+	CWndMoonstoneReceiver m_moonstoneReceiver;
+
+	std::array<DisplayedJewel, 5> m_displayed;
 	
 public: 
 	CWndRemoveJewel(); 
-	virtual ~CWndRemoveJewel(); 
-	
-	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
-	virtual void OnMouseWndSurface( CPoint point );
 
-	void SetDescription(CHAR* szChar);
-	void SetItem(CItemElem* pItemElem);
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void OnDraw( C2DRender* p2DRender ) override;
+	void OnInitialUpdate() override;
+	void OnMouseWndSurface(CPoint point) override;
+
+	void SetItem(CItemElem * pItemElem);
 
 private:
 	void ResetJewel();
+	[[nodiscard]] static std::pair<DWORD, DWORD> GetTextAndColorOfJewel(DWORD jewelId);
+	void UpdateDisplayedJewel();
+	void UpdateStartButtonStatus();
 };
 
 class CWndChangeAttribute : public CWndNeuz 

@@ -109,9 +109,9 @@ public:
 
 #ifndef __CORESERVER
 	void	SetUltimatePiercingSize(int nSize) { m_piercing.SetUltimatePiercingSize(nSize); }
-	int		GetUltimatePiercingSize() { return m_piercing.GetUltimatePiercingSize(); }
+	int		GetUltimatePiercingSize() const { return m_piercing.GetUltimatePiercingSize(); }
 	void	SetUltimatePiercingItem(int nth, DWORD dwItem) { m_piercing.SetUltimatePiercingItem(nth, dwItem); }
-	DWORD	GetUltimatePiercingItem(int nth) { return m_piercing.GetUltimatePiercingItem(nth); }
+	DWORD	GetUltimatePiercingItem(int nth) const { return m_piercing.GetUltimatePiercingItem(nth); }
 
 	BOOL	IsPierceAble(DWORD dwTargetItemKind3 = NULL_ID, BOOL bSize = FALSE) const;
 #endif

@@ -17943,143 +17943,104 @@ BOOL CWndRemovePiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResul
 // CWndRemoveJewel Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndRemoveJewel::CWndRemoveJewel() 
-{
-	m_pItemElem = NULL;
-	m_pMoonstone = NULL;
-	m_pEItemProp = NULL;
-	m_pTexture = NULL;
-	m_pMoonstoneTex = NULL;
+////// Components of CWndRemoveJewel
 
-	ResetJewel();
+bool CWndRemoveJewel::CWndJeweledItem::IsAWeapon(const ItemProp * itemProp) {
+	if (!itemProp) return false;
+
+	return itemProp->dwItemKind2 == IK2_WEAPON_DIRECT || itemProp->dwItemKind2 == IK2_WEAPON_MAGIC;
 }
 
-CWndRemoveJewel::~CWndRemoveJewel() 
-{ 
-} 
+bool CWndRemoveJewel::CWndJeweledItem::CanReceiveItem(const CItemElem & itemElem, bool verbose) {
+	const ItemProp * prop = itemElem.GetProp();
+	if (!IsAWeapon(itemElem.GetProp())) return false;
 
-void CWndRemoveJewel::OnDestroy()
-{
-	if(m_pItemElem != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem ) )
-			m_pItemElem->SetExtra(0);
+	const bool ok = prop->dwReferStat1 == WEAPON_ULTIMATE && itemElem.GetUltimatePiercingSize() > 0;
+
+	if (!ok && verbose) {
+		g_WndMng.PutString(TID_GAME_REMOVE_JEWEL_ERROR2);
 	}
 
-	if(m_pMoonstone != NULL)
-	{
-		if( !g_pPlayer->m_vtInfo.IsTrading( m_pMoonstone ) )
-			m_pMoonstone->SetExtra(0);
-	}
+	return ok;
 }
 
-void CWndRemoveJewel::OnDraw( C2DRender* p2DRender ) 
-{
-	ItemProp* pItemProp;
-	LPWNDCTRL wndCtrl;
-	
-	// Render Moonstone Bg
-	if(m_pMoonstone != NULL)
-	{
-		wndCtrl = GetWndCtrl( WIDC_PIC_SLOT1 );
-		m_pMoonstoneTex->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
+CWndRemoveJewel::CWndMoonstoneReceiver::CWndMoonstoneReceiver()
+	: CWndItemReceiver(
+		CWndItemReceiver::Features{
+			.shadow = std::pair(prj.GetItemProp(II_GEN_MAT_MOONSTONE), 50)
+		}
+	) {
+}
+
+bool CWndRemoveJewel::CWndMoonstoneReceiver::CanReceiveItem(const CItemElem & itemElem, bool verbose) {
+	if (!ItemProps::IsMoonstone(itemElem)) {
+		if (verbose) g_WndMng.PutString(TID_GAME_REMOVE_JEWEL_ERROR1);
+		return false;
 	}
-	else
-	{
-		wndCtrl = GetWndCtrl( WIDC_PIC_SLOT1 );
-		m_pMoonstoneTex->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ), 50 );
-	}
-	
-	// Render Item
-	if(m_pItemElem != NULL)
-	{
-		pItemProp = m_pItemElem->GetProp();
-		wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-		if(pItemProp != NULL)
-		{	
-			if(m_pTexture != NULL)
-				m_pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
+
+	return true;
+}
+
+
+////// CWndRemoveJewel
+
+CWndRemoveJewel::CWndRemoveJewel() { ResetJewel(); }
+
+void CWndRemoveJewel::OnDraw( C2DRender* p2DRender )  {
+	const CItemElem * weapon = m_weaponReceiver.GetItem();
+	if (!weapon) return;
+
+	const ItemProp * const pItemProp = weapon->GetProp();
+
+	for (DisplayedJewel & displayedJewel : m_displayed) {
+		if (displayedJewel.jewelItemID == 0) continue;
+
+		// Icon
+		LPWNDCTRL slotWndCtrl = GetWndCtrl(displayedJewel.slotWID);
+
+		if (slotWndCtrl && displayedJewel.texture) {
+			displayedJewel.texture->Render(p2DRender, slotWndCtrl->rect.TopLeft());
 		}
 
-		// Render Jewel Opt
-		for(int i=0; i<m_nJewelCount; i++)
-		{
-			if(m_nJewelCount > 5)
-				break;
-			
-			//Jewel Render
-			if(m_nJewelID[i] != 0)
-			{
-				wndCtrl = GetWndCtrl( m_nJewelSlot[i] );
+		// Info
+		const auto [color, textId] = GetTextAndColorOfJewel(displayedJewel.jewelItemID);
+		const char * dstText = textId ? prj.GetText(textId) : "???";
 
-				if(m_pJewelTex[i])
-					m_pJewelTex[i]->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-
-				//Text Render
-				CString DstText;
-				DWORD dwColorbuf;
-				
-				if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND01 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ01) //HP ���?
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt1;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_HP_MAX) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND02 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ02) //���ݷ� ���?
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt2;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_ATKPOWER) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND03 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ03) //���� ���?
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt3;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_ADJDEF) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND04 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ04) //����
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt4;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_MELEE_STEALHP) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND05 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ05) //PvP�� �����? ����
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt5;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DST_PVP_DMG) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND06 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ06) //������
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt6;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_STR) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND07 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ07) //ü������
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt7;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_STA) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND08 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ08) //��ø����
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt8;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_DEX) );
-				}
-				else if(m_nJewelID[i] >= II_GEN_MAT_DIAMOND09 && m_nJewelID[i] <= II_GEN_MAT_TOPAZ09) //��������
-				{
-					dwColorbuf = g_WndMng.dwItemColor[g_Option.m_nToolTipText].dwAddedOpt9;
-					DstText.Format( "%s", prj.GetText(TID_TOOLTIP_INT) );
-				}
-
-				wndCtrl = GetWndCtrl( m_nInfoSlot[i] );
-				p2DRender->TextOut( wndCtrl->rect.left + 10, wndCtrl->rect.top + 10, DstText, dwColorbuf );					
-			}
-		}
+		LPWNDCTRL infoWndCtrl = GetWndCtrl(displayedJewel.infoWID);
+		p2DRender->TextOut(infoWndCtrl->rect.left + 10, infoWndCtrl->rect.top + 10, dstText, color);
 	}
 }
 
-void CWndRemoveJewel::OnInitialUpdate() 
-{ 
+std::pair<DWORD, DWORD> CWndRemoveJewel::GetTextAndColorOfJewel(const DWORD jewelId) {
+	const ToolTipItemTextColor & theme = g_WndMng.dwItemColor[g_Option.m_nToolTipText];
+
+	// DiamondItemId, TopazItemId, color position in ToolTipItemTextColor::dwAddedOpt, tooltip id
+	using JewelLine = std::tuple<DWORD, DWORD, size_t, DWORD>;
+
+	constexpr static std::array<JewelLine, 9> lines = {
+		JewelLine(II_GEN_MAT_DIAMOND01, II_GEN_MAT_TOPAZ01, 0, TID_TOOLTIP_DST_HP_MAX),
+		JewelLine(II_GEN_MAT_DIAMOND02, II_GEN_MAT_TOPAZ02, 1, TID_TOOLTIP_DST_ATKPOWER),
+		JewelLine(II_GEN_MAT_DIAMOND03, II_GEN_MAT_TOPAZ03, 2, TID_TOOLTIP_DST_ADJDEF),
+		JewelLine(II_GEN_MAT_DIAMOND04, II_GEN_MAT_TOPAZ04, 3, TID_TOOLTIP_DST_MELEE_STEALHP),
+		JewelLine(II_GEN_MAT_DIAMOND05, II_GEN_MAT_TOPAZ05, 4, TID_TOOLTIP_DST_PVP_DMG),
+		JewelLine(II_GEN_MAT_DIAMOND06, II_GEN_MAT_TOPAZ06, 5, TID_TOOLTIP_STR),
+		JewelLine(II_GEN_MAT_DIAMOND07, II_GEN_MAT_TOPAZ07, 6, TID_TOOLTIP_STA),
+		JewelLine(II_GEN_MAT_DIAMOND08, II_GEN_MAT_TOPAZ08, 7, TID_TOOLTIP_DEX),
+		JewelLine(II_GEN_MAT_DIAMOND09, II_GEN_MAT_TOPAZ09, 8, TID_TOOLTIP_INT),
+	};
+
+	for (const auto & [diamondId, topazId, addedOptIndex, tooltipId] : lines) {
+		if (jewelId >= diamondId && jewelId <= topazId) {
+			return std::pair<DWORD, DWORD>(theme.dwAddedOpt[addedOptIndex], tooltipId);
+		}
+	}
+
+	return std::pair<DWORD, DWORD>(0, 0);
+}
+
+void CWndRemoveJewel::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-
-	ItemProp* pItemProp = prj.GetItemProp( II_GEN_MAT_MOONSTONE );
-	if(pItemProp)
-		m_pMoonstoneTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
@@ -18087,255 +18048,104 @@ void CWndRemoveJewel::OnInitialUpdate()
 		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
-	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText::SetupDescription(m_pText, _T("SmeltRemoveJewel.inc"));
+	
+	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("SmeltRemoveJewel.inc"));
 
-	m_nJewelSlot[0] = WIDC_JEWEL_SLOT1;
-	m_nJewelSlot[1] = WIDC_JEWEL_SLOT2;
-	m_nJewelSlot[2] = WIDC_JEWEL_SLOT3;
-	m_nJewelSlot[3] = WIDC_JEWEL_SLOT4;
-	m_nJewelSlot[4] = WIDC_JEWEL_SLOT5;
+	m_displayed[0].slotWID = WIDC_JEWEL_SLOT1; m_displayed[0].infoWID = WIDC_JEWEL_SLOT_INFO1;
+	m_displayed[1].slotWID = WIDC_JEWEL_SLOT2; m_displayed[1].infoWID = WIDC_JEWEL_SLOT_INFO2;
+	m_displayed[2].slotWID = WIDC_JEWEL_SLOT3; m_displayed[2].infoWID = WIDC_JEWEL_SLOT_INFO3;
+	m_displayed[3].slotWID = WIDC_JEWEL_SLOT4; m_displayed[3].infoWID = WIDC_JEWEL_SLOT_INFO4;
+	m_displayed[4].slotWID = WIDC_JEWEL_SLOT5; m_displayed[4].infoWID = WIDC_JEWEL_SLOT_INFO5;
 
-	m_nInfoSlot[0] = WIDC_JEWEL_SLOT_INFO1;
-	m_nInfoSlot[1] = WIDC_JEWEL_SLOT_INFO2;
-	m_nInfoSlot[2] = WIDC_JEWEL_SLOT_INFO3;
-	m_nInfoSlot[3] = WIDC_JEWEL_SLOT_INFO4;
-	m_nInfoSlot[4] = WIDC_JEWEL_SLOT_INFO5;
+	m_weaponReceiver.Create(0, GetWndCtrl(WIDC_PIC_SLOT)->rect, this, WIDC_Weapon);
+	m_weaponReceiver.SetTooltipId(TID_GAME_TOOLTIP_REMOVEJEWEL1);
+	m_moonstoneReceiver.Create(0, GetWndCtrl(WIDC_PIC_SLOT1)->rect, this, WIDC_Moon);
+	m_moonstoneReceiver.SetTooltipId(TID_GAME_TOOLTIP_REMOVEJEWEL2);
 
 	MoveParentCenter();
 } 
-// ó�� �� �Լ��� �θ��� ������ ������.
+
 BOOL CWndRemoveJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndRemoveJewel::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRemoveJewel::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRemoveJewel::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRemoveJewel::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
-}
 
-void CWndRemoveJewel::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(m_pItemElem)
-		{
-			m_pItemElem->SetExtra(0);
-			m_pItemElem = NULL;
-			m_pEItemProp = NULL;
-			m_pTexture = NULL;
+void CWndRemoveJewel::OnMouseWndSurface(CPoint point) {
+	const CPoint topLeft = GetWndCtrl(WIDC_JEWEL_SLOT1)->rect.TopLeft();
+	const CPoint bottomRight = GetWndCtrl(WIDC_JEWEL_SLOT_INFO5)->rect.BottomRight();
 
-			ResetJewel();
-		}
-	}
+	CRect rect(topLeft, bottomRight);
 
-	wndCtrl = GetWndCtrl( WIDC_PIC_SLOT1 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		if(m_pMoonstone)
-		{
-			m_pMoonstone->SetExtra(0);
-			m_pMoonstone = NULL;
-		}
-	}
-
-	if(m_pItemElem == NULL || m_pMoonstone == NULL)
-	{
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-		pButton->EnableWindow(FALSE);
+	if (rect.PtInRect(point)) {
+		ClientToScreen(&point);
+		ClientToScreen(&rect);
+		g_toolTip.PutToolTip((DWORD)this, prj.GetText(TID_GAME_TOOLTIP_REMOVEJEWEL3), rect, point);
 	}
 }
 
-void CWndRemoveJewel::OnMouseWndSurface(CPoint point)
-{
-	CRect rect;
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		ClientToScreen( &point );
-		ClientToScreen( &rect );
-		g_toolTip.PutToolTip( (DWORD)this, prj.GetText(TID_GAME_TOOLTIP_REMOVEJEWEL1), rect, point );
-	}
+void CWndRemoveJewel::SetItem(CItemElem* pItemElem) {
+	if (!pItemElem) return;
 
-	wndCtrl = GetWndCtrl( WIDC_PIC_SLOT1 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		ClientToScreen( &point );
-		ClientToScreen( &rect );
-		g_toolTip.PutToolTip( (DWORD)this, prj.GetText(TID_GAME_TOOLTIP_REMOVEJEWEL2), rect, point );
-	}
-
-	wndCtrl = GetWndCtrl( WIDC_JEWEL_SLOT1 );
-	rect.left = wndCtrl->rect.left;
-	rect.top = wndCtrl->rect.top;
-	wndCtrl = GetWndCtrl( WIDC_JEWEL_SLOT_INFO5 );
-	rect.right = wndCtrl->rect.right;
-	rect.bottom = wndCtrl->rect.bottom;
-	if( rect.PtInRect( point ) )
-	{		
-		ClientToScreen( &point );
-		ClientToScreen( &rect );
-		g_toolTip.PutToolTip( (DWORD)this, prj.GetText(TID_GAME_TOOLTIP_REMOVEJEWEL3), rect, point );
+	if (ItemProps::IsMoonstone(*pItemElem)) {
+		if (!m_moonstoneReceiver.GetItem()) {
+			m_moonstoneReceiver.SetAnItem(pItemElem, CWndItemReceiver::SetMode::Verbose);
+		}
+	} else if (CWndJeweledItem::IsAWeapon(pItemElem->GetProp())) {
+		if (!m_weaponReceiver.GetItem()) {
+			m_weaponReceiver.SetAnItem(pItemElem, CWndItemReceiver::SetMode::Verbose);
+		}
 	}
 }
 
-BOOL CWndRemoveJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	CRect rect;
-
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{		
-		CItemElem * pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
-		
-		if(m_pItemElem == NULL && pTempElem != NULL)
-		{
-			ItemProp * pItemProp = pTempElem->GetProp();
-			
-			if(pTempElem && (pItemProp->dwItemKind2 == IK2_WEAPON_DIRECT || pItemProp->dwItemKind2 == IK2_WEAPON_MAGIC) &&
-				pItemProp->dwReferStat1 == WEAPON_ULTIMATE && pTempElem->GetUltimatePiercingSize() > 0)
-			{
-				m_pItemElem = pTempElem;
-				m_pEItemProp = pItemProp;
-				m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-
-				m_nJewelCount = pTempElem->GetUltimatePiercingSize();
-				for(int i=0; i<m_nJewelCount; i++)
-				{
-					m_nJewelID[i] = m_pItemElem->GetUltimatePiercingItem(i);
-					pItemProp = prj.GetItemProp( m_nJewelID[i] );
-					if(pItemProp != NULL)
-						m_pJewelTex[i] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-				}
-			}
-			else
-				g_WndMng.PutString( prj.GetText( TID_GAME_REMOVE_JEWEL_ERROR2 ), NULL, prj.GetTextColor( TID_GAME_REMOVE_JEWEL_ERROR2 ) );
-		}
-	}
-
-	wndCtrl = GetWndCtrl( WIDC_PIC_SLOT1 );
-	rect = wndCtrl->rect;
-	if( rect.PtInRect( point ) )
-	{
-		CItemElem * pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
-		
-		if(m_pMoonstone == NULL && pTempElem != NULL)
-		{
-			const ItemProp * pItemProp = pTempElem->GetProp();
-			if(pItemProp->dwID == II_GEN_MAT_MOONSTONE || pItemProp->dwID ==II_GEN_MAT_MOONSTONE_1)
-			{
-				m_pMoonstone = pTempElem;
-				m_pMoonstone->SetExtra(m_pMoonstone->GetExtra()+1);
-			}
-			else
-				g_WndMng.PutString( prj.GetText( TID_GAME_REMOVE_JEWEL_ERROR1 ), NULL, prj.GetTextColor( TID_GAME_REMOVE_JEWEL_ERROR1 ) );
-		}
-	}
-
-	if(m_pItemElem && m_pMoonstone)
-	{
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-		pButton->EnableWindow(TRUE);
-	}
-
-	return TRUE;
-}
-
-void CWndRemoveJewel::SetItem(CItemElem* pItemElem)
-{
-	if(pItemElem != NULL)
-	{
-		ItemProp* pItemProp = pItemElem->GetProp();
-
-		if(m_pMoonstone == NULL && pItemProp->dwItemKind2 == IK2_MATERIAL)
-		{
-			if(pItemProp->dwID == II_GEN_MAT_MOONSTONE || pItemProp->dwID ==II_GEN_MAT_MOONSTONE_1)
-			{
-				m_pMoonstone = pItemElem;
-				m_pMoonstone->SetExtra(m_pMoonstone->GetExtra()+1);
-			}
-			else
-				g_WndMng.PutString( prj.GetText( TID_GAME_REMOVE_JEWEL_ERROR1 ), NULL, prj.GetTextColor( TID_GAME_REMOVE_JEWEL_ERROR1 ) );
-		}
-		else if(m_pItemElem == NULL)
-		{
-			if(pItemElem && (pItemProp->dwItemKind2 == IK2_WEAPON_DIRECT || pItemProp->dwItemKind2 == IK2_WEAPON_MAGIC) &&
-				pItemProp->dwReferStat1 == WEAPON_ULTIMATE && pItemElem->GetUltimatePiercingSize() > 0)
-			{
-				m_pItemElem = pItemElem;
-				m_pEItemProp = pItemProp;
-				m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
-				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
-
-				m_nJewelCount = pItemElem->GetUltimatePiercingSize();
-				for(int i=0; i<m_nJewelCount; i++)
-				{
-					m_nJewelID[i] = m_pItemElem->GetUltimatePiercingItem(i);
-					pItemProp = prj.GetItemProp( m_nJewelID[i] );
-					if(pItemProp != NULL)
-						m_pJewelTex[i] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-				}
-			}
-			else
-				g_WndMng.PutString( prj.GetText( TID_GAME_REMOVE_JEWEL_ERROR2 ), NULL, prj.GetTextColor( TID_GAME_REMOVE_JEWEL_ERROR2 ) );			
-		}
-	}
-	
-	if(m_pItemElem && m_pMoonstone)
-	{
-		CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
-		pButton->EnableWindow(TRUE);
-	}
-}
-
-BOOL CWndRemoveJewel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_START )
-	{
-		//������ ������ �˸���.
-		if(m_pItemElem != NULL && m_pMoonstone != NULL)
-		{
-			CWndButton* pButton;
-			pButton = (CWndButton*)GetDlgItem( WIDC_START );
-			pButton->EnableWindow(FALSE);
-
-			g_DPlay.SendUltimateRemoveGem( m_pItemElem->m_dwObjId, m_pMoonstone->m_dwObjId );
+BOOL CWndRemoveJewel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult) {
+	if (nID == WIDC_START) {
+		CItemElem * weapon = m_weaponReceiver.GetItem();
+		CItemElem * moon = m_moonstoneReceiver.GetItem();
+		if (weapon && moon) {
+			GetDlgItem<CWndButton>(WIDC_START)->EnableWindow(FALSE);
+			g_DPlay.SendUltimateRemoveGem(weapon->m_dwObjId, moon->m_dwObjId);
 			Destroy();
 		}
+	} else if (nID == WIDC_Weapon) {
+		UpdateDisplayedJewel();
+		UpdateStartButtonStatus();
+	} else if (nID == WIDC_Moon) {
+		UpdateStartButtonStatus();
 	}
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndRemoveJewel::ResetJewel()
-{
-	m_nJewelCount = 0;
-
-	for(int i=0; i<5; i++)
-	{
-		m_nJewelID[i] = 0;
-		m_pJewelTex[i] = NULL;
+void CWndRemoveJewel::ResetJewel() {
+	for (DisplayedJewel & displayed : m_displayed) {
+		displayed.jewelItemID = NULL;
+		displayed.texture = nullptr;
 	}
 }
 
+void CWndRemoveJewel::UpdateDisplayedJewel() {
+	const CItemElem * weapon = m_weaponReceiver.GetItem();
+
+	int actualSize = weapon ? weapon->GetUltimatePiercingSize() : 0;
+	if (actualSize > m_displayed.size()) actualSize = m_displayed.size();
+
+	for (int i = 0; i < std::tuple_size<decltype(m_displayed)>::value; ++i) {
+		if (i < actualSize) {
+			m_displayed[i].jewelItemID = weapon->GetUltimatePiercingItem(i);
+			m_displayed[i].texture = ItemProps::GetItemIconTexture(m_displayed[i].jewelItemID);
+		} else {
+			m_displayed[i].jewelItemID = 0;
+			m_displayed[i].texture = nullptr;
+		}
+	}
+}
+
+void CWndRemoveJewel::UpdateStartButtonStatus() {
+	GetDlgItem(WIDC_START)->EnableWindow(
+		(m_weaponReceiver.GetItem() && m_moonstoneReceiver.GetItem()) ? TRUE : FALSE
+	);
+}
 
 
 

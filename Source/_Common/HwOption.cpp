@@ -489,63 +489,63 @@ int COption::LoadToolTip( LPCTSTR szFileName )
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt1 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记1				
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[0] = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记1				
 		}
 		else if( scan.Token == _T( "公扁眠啊可记2" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt2 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记2
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[1] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记2
 		}
 		else if( scan.Token == _T( "公扁眠啊可记3" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt3 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记3
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[2] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记3
 		}
 		else if( scan.Token == _T( "公扁眠啊可记4" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt4 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记4
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[3] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记4
 		}
 		else if( scan.Token == _T( "公扁眠啊可记5" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt5 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记5
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[4] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记5
 		}
 		else if( scan.Token == _T( "公扁眠啊可记6" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt6 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记6
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[5] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记6
 		}
 		else if( scan.Token == _T( "公扁眠啊可记7" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt7 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记7
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[6] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记7
 		}
 		else if( scan.Token == _T( "公扁眠啊可记8" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt8 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记8
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[7] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记8
 		}
 		else if( scan.Token == _T( "公扁眠啊可记9" ) )
 		{
 			nR = scan.GetNumber();			
 			nG = scan.GetNumber();
 			nB = scan.GetNumber();
-			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt9 = D3DCOLOR_ARGB( 255, nR, nG, nB );			// 公扁眠啊可记9
+			g_WndMng.dwItemColor[m_nToolTipText].dwAddedOpt[8] = D3DCOLOR_ARGB(255, nR, nG, nB);			// 公扁眠啊可记9
 		}
 		else if( scan.Token == _T( "酒捞袍阿己" ) )
 		{

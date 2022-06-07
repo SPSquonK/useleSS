@@ -387,6 +387,10 @@ namespace ItemProps {
 	[[nodiscard]] bool IsMoonstone(const CItemElem & item);
 	[[nodiscard]] bool IsMoonstone(const ItemProp & item);
 
+#ifdef __CLIENT
+	[[nodiscard]] CTexture * GetItemIconTexture(DWORD itemId);
+#endif
+
 }
 
 

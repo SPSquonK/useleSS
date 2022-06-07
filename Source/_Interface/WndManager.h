@@ -183,15 +183,7 @@ struct ToolTipItemTextColor
 	DWORD dwGold;				// 가격
 	DWORD dwCommand;			// 설명
 	DWORD dwNotUse;				// 사용못함
-	DWORD dwAddedOpt1;		//무기추가옵션1
-	DWORD dwAddedOpt2;		//무기추가옵션2
-	DWORD dwAddedOpt3;		//무기추가옵션3
-	DWORD dwAddedOpt4;		//무기추가옵션4
-	DWORD dwAddedOpt5;		//무기추가옵션5
-	DWORD dwAddedOpt6;		//무기추가옵션6
-	DWORD dwAddedOpt7;		//무기추가옵션7
-	DWORD dwAddedOpt8;		//무기추가옵션8
-	DWORD dwAddedOpt9;		//무기추가옵션9
+	std::array<DWORD, 9> dwAddedOpt; // Jewel bonus color
 	DWORD dwAwakening;	// 아이템 각성
 	DWORD dwBlessing;	// 여신의 축복
 	DWORD dwBlessingWarning;	// 여신의 축복 경고

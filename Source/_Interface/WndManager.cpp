@@ -520,15 +520,17 @@ void CWndMgr::InitSetItemTextColor( )
 	dwItemColor[FIRST_TC].dwGold				= D3DCOLOR_XRGB(   0,   0,   0 );			// 가격
 	dwItemColor[FIRST_TC].dwCommand				= D3DCOLOR_XRGB(   0,   0,   0 );			// 설명
 	dwItemColor[FIRST_TC].dwNotUse				= D3DCOLOR_XRGB( 255,  66,   0 );			// 사용못함
-	dwItemColor[FIRST_TC].dwAddedOpt1			= D3DCOLOR_XRGB( 127, 255,   0 );			//얼터멋 웨폰 추가 옵션 "경험치 상승"
-	dwItemColor[FIRST_TC].dwAddedOpt2			= D3DCOLOR_XRGB(   0, 255, 255 );			//얼터멋 웨폰 추가 옵션 "데미지 반사"
-	dwItemColor[FIRST_TC].dwAddedOpt3			= D3DCOLOR_XRGB( 140,  23,  23 );			//얼터멋 웨폰 추가 옵션 "흡혈"
-	dwItemColor[FIRST_TC].dwAddedOpt4			= D3DCOLOR_XRGB( 255, 127,   0 );			//얼터멋 웨폰 추가 옵션 "사냥 데미지 증가"
-	dwItemColor[FIRST_TC].dwAddedOpt5			= D3DCOLOR_XRGB( 255, 110, 199 );			//얼터멋 웨폰 추가 옵션 "PvP 데미지 증가"
-	dwItemColor[FIRST_TC].dwAddedOpt6			= D3DCOLOR_XRGB( 205, 127,  50 );			//얼터멋 웨폰 추가 옵션 "힘 증가"
-	dwItemColor[FIRST_TC].dwAddedOpt7			= D3DCOLOR_XRGB( 255,   0,   0 );			//얼터멋 웨폰 추가 옵션 "체력 증가"
-	dwItemColor[FIRST_TC].dwAddedOpt8			= D3DCOLOR_XRGB(  50,  50, 255 );			//얼터멋 웨폰 추가 옵션 "민첩 증가"
-	dwItemColor[FIRST_TC].dwAddedOpt9			= D3DCOLOR_XRGB( 147, 112, 219 );			//얼터멋 웨폰 추가 옵션 "지능 증가"
+	dwItemColor[FIRST_TC].dwAddedOpt = {
+		D3DCOLOR_XRGB( 127, 255,   0 ),			//얼터멋 웨폰 추가 옵션 "경험치 상승"
+		D3DCOLOR_XRGB(   0, 255, 255 ),			//얼터멋 웨폰 추가 옵션 "데미지 반사"
+		D3DCOLOR_XRGB( 140,  23,  23 ),			//얼터멋 웨폰 추가 옵션 "흡혈"
+		D3DCOLOR_XRGB( 255, 127,   0 ),			//얼터멋 웨폰 추가 옵션 "사냥 데미지 증가"
+		D3DCOLOR_XRGB( 255, 110, 199 ),			//얼터멋 웨폰 추가 옵션 "PvP 데미지 증가"
+		D3DCOLOR_XRGB( 205, 127,  50 ),			//얼터멋 웨폰 추가 옵션 "힘 증가"
+		D3DCOLOR_XRGB( 255,   0,   0 ),			//얼터멋 웨폰 추가 옵션 "체력 증가"
+		D3DCOLOR_XRGB(  50,  50, 255 ),			//얼터멋 웨폰 추가 옵션 "민첩 증가"
+		D3DCOLOR_XRGB( 147, 112, 219 )      //얼터멋 웨폰 추가 옵션 "지능 증가"
+	};			
 	dwItemColor[FIRST_TC].dwAwakening	= D3DCOLOR_XRGB( 0, 0, 255 );			// 아이템 각성
 	dwItemColor[FIRST_TC].dwBlessing	= D3DCOLOR_XRGB( 0, 0, 255 );			// 여신의 축복
 	dwItemColor[FIRST_TC].dwBlessingWarning	= D3DCOLOR_XRGB( 255, 0, 0 );			// 여신의 축복 경고
@@ -4556,7 +4558,7 @@ void CWndMgr::PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit )
 			const int nAdj = nAddedValue[i];
 
 			const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwAddedOpt7 );
+			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwAddedOpt[6]);
 		}			
 	}			
 }

@@ -898,6 +898,13 @@ namespace ItemProps {
 				return 0;
 		}
 	}
+
+#ifdef __CLIENT
+	CTexture * GetItemIconTexture(const DWORD itemId) {
+		const ItemProp * itemProp = prj.GetItemProp(itemId);
+		return itemProp ? itemProp->GetTexture() : nullptr;
+	}
+#endif
 }
 
 #ifdef __CLIENT
