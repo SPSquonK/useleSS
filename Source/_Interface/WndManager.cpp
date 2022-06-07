@@ -604,7 +604,7 @@ void CWndMgr::Free()
 //	AppletFunc* pApplet;
 //	DWORD dwIdApplet;
 	POSITION pos = m_mapWndRegInfo.GetStartPosition();
-	LPWNDREGINFO pWndRegInfo;
+	WNDREGINFO * pWndRegInfo;
 	DWORD dwWndId;
 	while( pos )
 	{
@@ -5928,17 +5928,11 @@ CWndInstantMsg* CWndMgr::OpenInstantMsg( LPCTSTR lpszFrom )
 
 	return pWndMessage;
 }
-// 레지스트 인포를 얻는다.
-LPWNDREGINFO CWndMgr::GetRegInfo( DWORD dwWndId  )
-{
-	LPWNDREGINFO pWndRegInfo = NULL;
-	m_mapWndRegInfo.Lookup( dwWndId, (void*&)pWndRegInfo );
-	return pWndRegInfo;
-}		
+
 // 컬런트 윈도가 닫힐 때 호출 됨 
 BOOL CWndMgr::PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen )
 {
-	LPWNDREGINFO pWndRegInfo = NULL;
+	WNDREGINFO * pWndRegInfo = NULL;
 	BOOL bLookup = FALSE;
 	if( m_mapWndRegInfo.Lookup( pWndNeuz->GetWndId(), (void*&)pWndRegInfo ) == TRUE )
 	{
@@ -5975,9 +5969,9 @@ BOOL CWndMgr::PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen )
 	return TRUE;
 }
 // 로드한 레지스트리인포를 세트할때 
-BOOL CWndMgr::PutRegInfo( LPWNDREGINFO lpRegInfo )
+BOOL CWndMgr::PutRegInfo(WNDREGINFO * lpRegInfo )
 {
-	LPWNDREGINFO pWndRegInfo = NULL;
+	WNDREGINFO * pWndRegInfo = NULL;
 	if( m_mapWndRegInfo.Lookup( lpRegInfo->dwWndId, (void*&)pWndRegInfo ) == TRUE )
 	{
 		// 갱신 
@@ -6010,7 +6004,7 @@ BOOL CWndMgr::SaveRegInfo( LPCTSTR lpszFileName )
 	if( file.Open( lpszFileName, "wb" ) == FALSE )
 		return FALSE;
 	POSITION pos = m_mapWndRegInfo.GetStartPosition();
-	LPWNDREGINFO pWndRegInfo = NULL;
+	WNDREGINFO * pWndRegInfo = NULL;
 	//CRect* pRect;
 	DWORD dwWndId;
 	file.PutDW( REG_VERSION );

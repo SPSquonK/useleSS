@@ -129,7 +129,7 @@ class CWndSelectVillage;
 #define PS_NOT_MACRO     0x00000002
 
 
-typedef struct tagWNDREGINFO
+struct WNDREGINFO
 {
 	DWORD dwWndId;
 	CRect rect;
@@ -138,7 +138,7 @@ typedef struct tagWNDREGINFO
 	DWORD dwWndSize;
 	DWORD dwSize;
 	BYTE* lpArchive;
-} WNDREGINFO,* LPWNDREGINFO;
+};
 
 struct AppletFunc
 {
@@ -658,9 +658,8 @@ public:
 
 	BOOL LoadRegInfo( LPCTSTR lpszFileName );
 	BOOL SaveRegInfo( LPCTSTR lpszFileName );
-	LPWNDREGINFO GetRegInfo( DWORD dwWndId );
 	BOOL PutRegInfo( DWORD dwWndId, CRect rect, BOOL bOpen );
-	BOOL PutRegInfo( LPWNDREGINFO lpRegInfo );
+	BOOL PutRegInfo(WNDREGINFO * lpRegInfo );
 	BOOL PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen );
 
 
