@@ -9662,12 +9662,14 @@ void CWndQuestItemInfo::OnDraw(C2DRender* p2DRender)
 	rectCtrl.right -= 10;
 	rectCtrl.bottom -= 10;
 
+	const ItemProp * itemProp = m_pItemBase->GetProp();
+
 	m_pItemBase->GetTexture()->Render(p2DRender, rectCtrl.TopLeft(), 200);
-	p2DRender->TextOut(rectCtrl.left + 34, rectCtrl.top + 16 - 5, 1, 1, m_pItemBase->GetProp()->szName, 0xff0000ff);
+	p2DRender->TextOut(rectCtrl.left + 34, rectCtrl.top + 16 - 5, 1, 1, itemProp->szName, 0xff0000ff);
 
 	CEditString	string = "";
 	string.Init( m_pFont, &rectCtrl );
-	string = m_pItemBase->GetProp()->szCommand;
+	string = itemProp->szCommand;
 	p2DRender->TextOut_EditString( rectCtrl.left , rectCtrl.top + 40/* '+40'�� �ǹ̴� �������ִ� ������ ���� �Ʒ��� ��ڴٴ�? �ǹ� */, string);
 }
 
@@ -9675,18 +9677,9 @@ void CWndQuestItemInfo::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
 
-	CWndEdit* pWndEdit	= (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-
-	if( pWndEdit )
-		pWndEdit->EnableWindow( FALSE );
-}
-
-void CWndQuestItemInfo::OnLButtonUp( UINT nFlags, CPoint point )
-{
-}
-
-void CWndQuestItemInfo::OnLButtonDown( UINT nFlags, CPoint point )
-{
+	if (CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1)) {
+		pWndEdit->EnableWindow(FALSE);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9700,10 +9693,7 @@ void CWndQuestItemInfo::OnLButtonDown( UINT nFlags, CPoint point )
 BOOL CWndLogOut::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
 	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
-/*
-	Create( _T( "�Ž��� �ڽ�" ), MB_OKCANCEL, rect, APP_MESSAGEBOX );//dwWndId );
-	m_wndText.SetString( _T( "������ �����Ͻðڽ��ϱ�?" ) );
-*/
+
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_OKCANCEL, rect, APP_MESSAGEBOX );//dwWndId );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0069) ) );
 	m_wndText.ResetString();
@@ -9752,11 +9742,7 @@ BOOL CWndLogOut::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if( g_WndMng.m_pLogOutWaitting == NULL )
 					{
 						g_WndMng.m_pLogOutWaitting = new CWndLogOutWaitting;
-#ifdef __FIX_WND_1109
-						g_WndMng.m_pLogOutWaitting->Initialize( NULL );	// ˬ
-#else	// __FIX_WND_1109
-						g_WndMng.m_pLogOutWaitting->Initialize( this );	// ˬ
-#endif	// __FIX_WND_1109
+						g_WndMng.m_pLogOutWaitting->Initialize( NULL );
 						g_WndMng.m_pLogOutWaitting->SetIsLogOut(TRUE);
 						SetVisible(FALSE);
 					}
