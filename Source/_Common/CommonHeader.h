@@ -11,13 +11,16 @@
 // Disables things like int `int & const x`
 #pragma warning(error: 4227)
 
-// Unused local variables = error
-#pragma warning(error: 311)
+// Unused unitialized local variables = error
+#pragma warning(error: 4101)
 
 // We prefer POSIX functions rather than the ISO C++ variants
 // If we want to do something safe, we use
 // string / CString / string_view instead of C style functions anyway
 #pragma warning(disable: 4996)
+
+// Other things
+#pragma warning(error: 4045 4098 4138 4146 4156 4179 )
 
 namespace std_ {
   // Overloaded helper for std::visit. Should be in std but for some reason

@@ -18365,11 +18365,8 @@ BOOL CWndChangeAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		return FALSE;
 	}
 
-	CRect rect;
-	ItemProp* pItemProp;
-
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
-	rect = wndCtrl->rect;
+	CRect rect = wndCtrl->rect;
 	if( rect.PtInRect( point ) )
 	{		
 		CItemElem * pTempElem  = g_pPlayer->GetItemId( pShortcut->m_dwId );
