@@ -1,13 +1,10 @@
-// WndBase.h: interface for the CWndBase class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_WNDBASE_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_)
-#define AFX_WNDBASE_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include <exception>
+#include <format>
+#include <source_location>
+#include <typeinfo>
+
 /*
 #ifdef __CLIENT
 #define CLIENT_WIDTH  ( g_Neuz.m_d3dsdBackBuffer.Width )
@@ -21,7 +18,6 @@
 #define WSIZE_MAX      2
 
 #include "WndStyle.h"
-#include <typeinfo>
 
 #define D3DCOLOR_TEMP(a,b,g,r) \
     ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff))) 
@@ -419,7 +415,27 @@ namespace Windows {
 
 		return closedOne;
 	}
-}
 
-#endif // !defined(AFX_WNDBASE_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_)
+	class CWndNeuzBadAppId : public std::exception {
+		UINT m_appId;
+		char m_message[512];
+
+	public:
+		explicit CWndNeuzBadAppId(
+			UINT appId,
+			const std::source_location location = std::source_location::current()
+			) : m_appId(appId) {
+			std::format_to_n(
+				m_message, 512,
+				"Bad APP ID {} used in {}",
+				appId, location.function_name()
+			);
+		}
+
+		[[nodiscard]] const char * what() const {
+			return m_message;
+		}
+	};
+
+}
 

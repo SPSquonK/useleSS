@@ -585,7 +585,8 @@ BOOL CWndNeuz::InitDialog( HWND hWnd, LPWNDAPPLET LPWNDAPPLET )
 BOOL CWndNeuz::InitDialog( DWORD dwWID, CWndBase * pWndParent, DWORD dwStyle, CPoint ptLeftTop )
 {
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( dwWID );
-
+	if (!lpWndApplet) throw Windows::CWndNeuzBadAppId(dwWID);
+	
 	CRect rect = CRect(ptLeftTop.x, ptLeftTop.y, ptLeftTop.x + lpWndApplet->size.cx, ptLeftTop.y + lpWndApplet->size.cy);
 
 	if (dwWID == APP_LOGIN) {
