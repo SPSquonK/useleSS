@@ -530,7 +530,7 @@ public:
 	CWndChangeClass2*	m_pWndChangeClass2;
 
 	CMapDWordToPtr	m_mapWndApplet ;
-	CMapDWordToPtr  m_mapWndRegInfo;
+	std::map<DWORD, WNDREGINFO *>  m_mapWndRegInfo;
 
 	void PutDestParam( DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString &str );	
 	void PutDefinedString( DWORD dwText, ... );
