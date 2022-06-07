@@ -16084,9 +16084,9 @@ BOOL CWndMixJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 
 void CWndMixJewel::SetJewel(CItemElem * pItemElem) {
 	if (ItemProps::IsOrichalcum(*pItemElem)) {
-		CWndItemReceiver::TryReceiveIn(m_oriReceivers, *pItemElem);
+		CWndItemReceiver::TryReceiveIn(*pItemElem, m_oriReceivers);
 	} else if (ItemProps::IsMoonstone(*pItemElem)) {
-		CWndItemReceiver::TryReceiveIn(m_moonReceivers, *pItemElem);
+		CWndItemReceiver::TryReceiveIn(*pItemElem, m_moonReceivers);
 	}
 }
 
@@ -17008,11 +17008,7 @@ bool CWndChangeWeapon::CJewelReceiver::CanReceiveItem(const CItemElem & itemElem
 }
 
 void CWndChangeWeapon::SetItem(CItemElem & pItemElem) {
-	std::array<CWndItemReceiver *, 3> receivers {
-		&m_weaponReceiver, &m_orichalcumReceiver, &m_jewelReceiver
-	};
-
-	CWndItemReceiver::TryReceiveIndependant(receivers, pItemElem);
+	CWndItemReceiver::TryReceiveIn(pItemElem, m_weaponReceiver, m_orichalcumReceiver, m_jewelReceiver);
 }
 
 void CWndChangeWeapon::UpdateStartButtonStatus() {
@@ -17185,84 +17181,20 @@ void CWndRemoveJewelConfirm::SetItem(CItemElem *	m_pItem)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CWndHeroSkillUp::CWndHeroSkillUp() 
+	: m_rDiamond(II_GEN_MAT_DIAMOND, GetDrawFeatures()),
+	m_rEmerald(II_GEN_MAT_EMERALD, GetDrawFeatures()),
+	m_rSapphire(II_GEN_MAT_SAPPHIRE, GetDrawFeatures()),
+	m_rRuby(II_GEN_MAT_RUBY, GetDrawFeatures()),
+	m_rTopaz(II_GEN_MAT_TOPAZ, GetDrawFeatures())
 {
-	for(int i=0; i<5; i++)
-	{
-		m_pItemElem[i] = NULL;
-		m_JewelID[i] = -1;
-		m_SlotID[i] = -1;
-		m_PicJewel[i] = -1;
-	}
-
-	m_bSendHeroSkillup = FALSE;
 }
 
-CWndHeroSkillUp::~CWndHeroSkillUp() 
-{ 
-} 
-
-void CWndHeroSkillUp::OnDestroy()
-{
-	for(int i=0; i<5; i++)
-	{
-		if(m_pItemElem[i] != NULL)
-		{
-			if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem[i] ) )
-				m_pItemElem[i]->SetExtra(0);
+void CWndHeroSkillUp::OnDraw(C2DRender * const p2DRender) {
+	for (const IconDraw & legend : m_legend) {
+		if (legend.texture) {
+			legend.texture->Render(p2DRender, legend.topLeft);
 		}
 	}
-}
-
-void CWndHeroSkillUp::OnDraw( C2DRender* p2DRender )
-{
-	//Render Icon
-	ItemProp* pItemProp;
-	CTexture* pTexture;
-	BOOL bCheckSlot = TRUE;
-	
-	CPoint point = GetMousePoint();
-	int testnum = HitTest( point );
-	if( testnum != -1)
-	{
-		if( CWndBase::m_GlobalShortcut.m_dwData )
-		{
-			CRect rect;
-			LPWNDCTRL wndCtrl = GetWndCtrl( m_SlotID[testnum] );
-			rect = wndCtrl->rect;
-			p2DRender->RenderFillRect( rect, 0x60ffff00 );
-		}
-	}
-	
-	for(int i=0; i<5; i++)
-	{
-		//Default Jewel
-		pItemProp = prj.GetItemProp( m_JewelID[i] );
-		LPWNDCTRL wndCtrl = GetWndCtrl( m_PicJewel[i] );
-		if(pItemProp != NULL)
-		{
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-			if(pTexture != NULL)
-				pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-		}
-		
-		//Slot Jewel
-		if(m_pItemElem[i] != NULL)
-		{
-			pItemProp = m_pItemElem[i]->GetProp();
-			wndCtrl = GetWndCtrl( m_SlotID[i] );
-			if(pItemProp != NULL)
-			{
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-				if(pTexture != NULL)
-					pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
-			}
-		}
-		else
-			bCheckSlot = FALSE;	
-	}
-
-	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_OK);
-	pButton->EnableWindow(bCheckSlot);
 }
 
 void CWndHeroSkillUp::OnInitialUpdate() 
@@ -17270,101 +17202,39 @@ void CWndHeroSkillUp::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
 	
-	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_OK);
-	pButton->EnableWindow(FALSE);
+	GetDlgItem<CWndButton>(WIDC_OK)->EnableWindow(FALSE);
 
-	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText::SetupDescription(m_pText, _T("HeroSkillUp.inc"));
+	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("HeroSkillUp.inc"));
 
-	m_SlotID[0] = WIDC_PIC_SLOT1;
-	m_SlotID[1] = WIDC_PIC_SLOT2;
-	m_SlotID[2] = WIDC_PIC_SLOT3;
-	m_SlotID[3] = WIDC_PIC_SLOT4;
-	m_SlotID[4] = WIDC_PIC_SLOT5;
+	using InitData = std::tuple<UINT, CWndOnlyOneItemReceiver *, UINT, DWORD>;
 
-	m_PicJewel[0] = WIDC_CUSTOM1;
-	m_PicJewel[1] = WIDC_CUSTOM2;
-	m_PicJewel[2] = WIDC_CUSTOM3;
-	m_PicJewel[3] = WIDC_CUSTOM4;
-	m_PicJewel[4] = WIDC_CUSTOM5;
+	std::array<InitData, 5> list {
+		InitData( WIDC_PIC_SLOT1, &m_rDiamond,  WIDC_CUSTOM1, II_GEN_MAT_DIAMOND ),
+		InitData( WIDC_PIC_SLOT2, &m_rEmerald,  WIDC_CUSTOM2, II_GEN_MAT_EMERALD ),
+		InitData( WIDC_PIC_SLOT3, &m_rSapphire, WIDC_CUSTOM3, II_GEN_MAT_SAPPHIRE),
+		InitData( WIDC_PIC_SLOT4, &m_rRuby,     WIDC_CUSTOM4, II_GEN_MAT_RUBY    ),
+		InitData( WIDC_PIC_SLOT5, &m_rTopaz,    WIDC_CUSTOM5, II_GEN_MAT_TOPAZ   )
+	};
 
-	m_JewelID[0] = II_GEN_MAT_DIAMOND;
-	m_JewelID[1] = II_GEN_MAT_EMERALD;
-	m_JewelID[2] = II_GEN_MAT_SAPPHIRE;
-	m_JewelID[3] = II_GEN_MAT_RUBY;
-	m_JewelID[4] = II_GEN_MAT_TOPAZ;
-	
-	//Window Position
-/*	CWndInventory* pWndInventory;
-	pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
-	CRect rectInventory;
-	if(pWndInventory != NULL)
-		rectInventory = pWndInventory->GetWindowRect( TRUE );
+	for (size_t i = 0; i != 5; ++i) {
+		const auto & [slotId, pReceiver,  customId, itemId] = list[i];
 
-	CPoint ptInventory = rectInventory.TopLeft();
-	CPoint ptMove;
-	
-	CRect rect = GetWindowRect( TRUE );
-	
-	if( ptInventory.x > rect.Width() / 2 )
-		ptMove = ptInventory - CPoint( rect.Width(), 0 );
-	else
-		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
-	
-	Move( ptMove );
-*/
+		LPWNDCTRL slot = GetWndCtrl(slotId);
+		pReceiver->Create(0, slot->rect, this, WIDC_Receivers + i);
+
+		LPWNDCTRL custom = GetWndCtrl(customId);
+		const ItemProp * itemProp = prj.GetItemProp(itemId);
+		m_legend[i].topLeft = custom->rect.TopLeft();
+		m_legend[i].texture = itemProp->GetTexture();
+	}
+
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
 BOOL CWndHeroSkillUp::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
-	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_HERO_SKILLUP, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndHeroSkillUp::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndHeroSkillUp::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndHeroSkillUp::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndHeroSkillUp::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
-}
-
-void CWndHeroSkillUp::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	int choicenum = HitTest( point );
-	if(choicenum > -1 && m_pItemElem[choicenum] != NULL)
-	{
-		m_pItemElem[choicenum]->SetExtra(0);
-		m_pItemElem[choicenum] = NULL;
-	}
-}
-
-BOOL CWndHeroSkillUp::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	int nSelect = HitTest(point);
-	if(nSelect > -1)
-	{
-		CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
-
-		if(m_pItemElem[nSelect] == NULL)
-		{
-			if(pItemElem->GetProp()->dwID == m_JewelID[nSelect])
-			{
-				m_pItemElem[nSelect] = pItemElem;
-				m_pItemElem[nSelect]->SetExtra(m_pItemElem[nSelect]->GetExtra()+1);
-			}
-		}
-	}
-	
-	return TRUE;
-}
 
 BOOL CWndHeroSkillUp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -17372,84 +17242,54 @@ BOOL CWndHeroSkillUp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 		if(!m_bSendHeroSkillup)
 		{
-			//������ ������ �˸���.
-			bool isValid = true;
-			std::array<OBJID, 5> itemobjId{ 0 };
-
-			for (size_t i = 0; i != 5; ++i) {
-				if (m_pItemElem[i] == nullptr) {
-					isValid = false;
-					break;
-				}
-
-				itemobjId[i] = m_pItemElem[i]->m_dwObjId;
-			}
-
-			if (isValid) {
-				m_bSendHeroSkillup = TRUE;
-
-				g_DPlay.SendPacket<PACKETTYPE_LEGENDSKILLUP_START, std::array<OBJID, 5>>(itemobjId);
+			const auto objids = ReceiversToObjid();
+			
+			if (objids) {
+				m_bSendHeroSkillup = true;
+				g_DPlay.SendPacket<PACKETTYPE_LEGENDSKILLUP_START, std::array<OBJID, 5>>(objids.value());
 			}
 		}
-	}
-	else if( nID == WIDC_CANCEL )
+	} else if (nID == WIDC_CANCEL) {
 		Destroy();
+	} else if (nID >= WIDC_Receivers && nID < WIDC_Receivers + 5) {
+		UpdateOkButton();
+	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-int CWndHeroSkillUp::HitTest( CPoint point )
-{
-	int rtn_val = -1;
-	CRect rect;
-	for(int i=0; i<5; i++)
-	{
-		LPWNDCTRL wndCtrl = GetWndCtrl( m_SlotID[i] );		
-		rect = wndCtrl->rect;
-		if( rect.PtInRect( point ) )
-		{
-			rtn_val = i;
-			i = MAX_JEWEL;
-		}
+void CWndHeroSkillUp::UpdateOkButton() {
+	BOOL value;
+	if (!m_bSendHeroSkillup && ReceiversToObjid().has_value()) {
+		value = TRUE;
+	} else {
+		value = FALSE;
 	}
-	return rtn_val;
+
+	GetDlgItem<CWndButton>(WIDC_OK)->EnableWindow(value);
 }
 
-void CWndHeroSkillUp::SetJewel(CItemElem* pItemElem)
-{
-	ItemProp* pProp = pItemElem->GetProp();
-	int nSelect = -1;
-
-	switch(pProp->dwID) 
-	{
-		case II_GEN_MAT_DIAMOND:
-			nSelect = 0;
-			break;
-		case II_GEN_MAT_EMERALD:
-			nSelect = 1;
-			break;
-		case II_GEN_MAT_SAPPHIRE:
-			nSelect = 2;
-			break;
-		case II_GEN_MAT_RUBY:
-			nSelect = 3;
-			break;
-		case II_GEN_MAT_TOPAZ:
-			nSelect = 4;
-			break;
+std::optional<std::array<OBJID, 5>> CWndHeroSkillUp::ReceiversToObjid() const {
+	std::array<const CWndOnlyOneItemReceiver *, 5> receivers = {
+		&m_rDiamond, &m_rEmerald, &m_rSapphire, &m_rRuby, &m_rTopaz
+	};
+	
+	std::array<OBJID, 5> values = { 0, };
+	for (size_t i = 0; i != 5; ++i) {
+		const CWndOnlyOneItemReceiver * const receiver = receivers[i];
+		const CItemElem * const item = receiver->GetItem();
+		if (!item) return std::nullopt;
+		
+		values[i] = item->m_dwObjId;
 	}
+	
+	return values;
+}
 
-	if(nSelect > -1)
-	{
-		if(m_pItemElem[nSelect] == NULL)
-		{
-			if(pItemElem->GetProp()->dwID == m_JewelID[nSelect])
-			{
-				m_pItemElem[nSelect] = pItemElem;
-				m_pItemElem[nSelect]->SetExtra(m_pItemElem[nSelect]->GetExtra()+1);
-			}
-		}
-	}
+void CWndHeroSkillUp::SetJewel(CItemElem * pItemElem) {
+	CWndItemReceiver::TryReceiveIn(*pItemElem,
+		m_rDiamond, m_rEmerald, m_rSapphire, m_rRuby, m_rTopaz
+	);
 }
 
 void CWndHeroSkillUp::ReceiveResult(int nresult)

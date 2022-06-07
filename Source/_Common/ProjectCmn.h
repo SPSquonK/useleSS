@@ -354,6 +354,10 @@ struct ItemProp : CtrlProp
 	BOOL	IsVisKey()	{ return (II_SYS_SYS_VIS_KEY01 == dwID ); }
 	BOOL	IsPickupToBuff( ) { return ( II_SYS_SYS_SCR_PET_MAGIC == dwID ); }
 #endif //__CLIENT
+
+#ifdef __CLIENT
+	[[nodiscard]] CTexture * GetTexture() const;
+#endif
 };
 
 class CItemElem;

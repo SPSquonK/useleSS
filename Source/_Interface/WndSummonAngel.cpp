@@ -120,9 +120,9 @@ BOOL CWndSummonAngel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 
 void CWndSummonAngel::SetDieFromInventory(CItemElem & pItemElem) {
 	if (ItemProps::IsOrichalcum(pItemElem)) {
-		CWndItemReceiver::TryReceiveIn(m_oriReceivers, pItemElem);
+		CWndItemReceiver::TryReceiveIn(pItemElem, m_oriReceivers);
 	} else if (ItemProps::IsMoonstone(pItemElem)) {
-		CWndItemReceiver::TryReceiveIn(m_moonReceivers, pItemElem);
+		CWndItemReceiver::TryReceiveIn(pItemElem, m_moonReceivers);
 	}
 }
 

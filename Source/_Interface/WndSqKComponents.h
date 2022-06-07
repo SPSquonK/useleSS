@@ -98,9 +98,11 @@ private:
 
 public:
 
+  // TODO: merge these two functions
+
   template<typename Receivers>
     requires (std::derived_from<std::remove_cvref_t<typename Receivers::value_type>, CWndItemReceiver>)
-  static bool TryReceiveIn(Receivers & receivers, CItemElem & itemElem) {
+  static bool TryReceiveIn(CItemElem & itemElem, Receivers & receivers) {
     for (auto & receiver : receivers) {
       if (!receiver.GetItem()) {
         receiver.SetAnItem(&itemElem, CWndItemReceiver::SetMode::Silent);
@@ -111,16 +113,14 @@ public:
     return false;
   }
 
-  template<typename Receivers>
-  static bool TryReceiveIndependant(Receivers & receivers, CItemElem & itemElem) {
-    for (CWndItemReceiver * const receiver : receivers) {
-      if (!receiver->GetItem()) {
-        const bool b = receiver->SetAnItem(&itemElem, CWndItemReceiver::SetMode::Silent);
-        if (b) return true;
-      }
-    }
+  template<std::derived_from<CWndItemReceiver> ... Receivers>
+  static bool TryReceiveIn(CItemElem & itemElem, Receivers & ... receivers) {
+    constexpr auto TryOn = [](CItemElem & itemElem, auto & receiver) -> bool {
+      return !receiver.GetItem()
+        && receiver.SetAnItem(&itemElem, CWndItemReceiver::SetMode::Silent);
+    };
 
-    return false;
+    return ((TryOn(itemElem, receivers)) || ...);
   }
 };
 

@@ -21,6 +21,31 @@ const int MAX_WANTED_LIST =	100;
 #include "WndMailRequestingBox.h"
 #endif // __MAIL_REQUESTING_BOX
 
+///////////////////////////////////////////////////////////////////////////////
+
+class CWndOnlyOneItemReceiver : public CWndItemReceiver {
+private:
+	DWORD m_itemId;
+
+public:
+	CWndOnlyOneItemReceiver(DWORD itemId, DWORD shadow, CWndItemReceiver::Features features = {})
+		: CWndItemReceiver(), m_itemId(itemId) {
+		ChangeShadowTexture(prj.GetItemProp(itemId), shadow);
+	}
+
+	CWndOnlyOneItemReceiver(DWORD itemId, CWndItemReceiver::Features features = {})
+		: CWndItemReceiver(features), m_itemId(itemId) {
+		if (features.shadow) {
+			ChangeShadowTexture(prj.GetItemProp(itemId));
+		}
+	}
+
+	bool CanReceiveItem(const CItemElem & itemElem, bool) override {
+		return itemElem.m_dwItemId == m_itemId;
+	}
+};
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 // 드롭아이템 
 //
@@ -1692,34 +1717,43 @@ public:
 /*******************************
 	전승 시스템 관련 Window
 ********************************/
-class CWndHeroSkillUp : public CWndNeuz
-{
+
+class CWndHeroSkillUp : public CWndNeuz {
 public:
-	CWndText* m_pText;
-	CItemElem* m_pItemElem[5];
-	int m_JewelID[5];
-	int m_SlotID[5];
-	int m_PicJewel[5];
-	BOOL m_bSendHeroSkillup;
+	static constexpr UINT WIDC_Receivers = 1500;
+
+	struct IconDraw {
+		CPoint topLeft = CPoint(0, 0);
+		CTexture * texture = nullptr;
+	};
+
+private:
+	CWndOnlyOneItemReceiver m_rDiamond;
+	CWndOnlyOneItemReceiver m_rEmerald;
+	CWndOnlyOneItemReceiver m_rSapphire;
+	CWndOnlyOneItemReceiver m_rRuby;
+	CWndOnlyOneItemReceiver m_rTopaz;
+	std::array<IconDraw, 5> m_legend;
+
+	bool m_bSendHeroSkillup = false;
+
+	[[nodiscard]] static CWndItemReceiver::Features GetDrawFeatures() {
+		return CWndItemReceiver::Features{
+			.colorWhenHoverWithItem = 0x60ffff00
+		};
+	}
+
+	[[nodiscard]] std::optional<std::array<OBJID, 5>> ReceiversToObjid() const;
+	void UpdateOkButton();
 	
-public: 
-	CWndHeroSkillUp(); 
-	virtual ~CWndHeroSkillUp(); 
+public:
+	CWndHeroSkillUp();
 	
-	virtual void OnDestroy();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	
-	int HitTest( CPoint point );
-	void SetDescription(CHAR* szChar);
 	void ReceiveResult(int nresult);
 	void SetJewel(CItemElem* pItemElem);
 };
