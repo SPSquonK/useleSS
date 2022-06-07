@@ -17705,11 +17705,6 @@ BOOL CWndHeavenTowerEntranceConfirm::OnChildNotify( UINT message, UINT nID, LRES
 // CWndRemoveAttribute Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndRemoveAttribute::CWndRemoveAttribute() 
-{
-	m_pWndConfirm = NULL;
-}
-
 CWndRemoveAttribute::~CWndRemoveAttribute() 
 {
 	if(m_pWndConfirm != NULL)
@@ -17730,8 +17725,7 @@ void CWndRemoveAttribute::OnInitialUpdate()
 
 	pButton->EnableWindow(FALSE);
 
-	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText::SetupDescription(m_pText, _T("RemoveAttribute.inc"));
+	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("RemoveAttribute.inc"));
 
 	const WNDCTRL * const wndCtrl = GetWndCtrl(WIDC_PIC_SLOT);
 	m_receiver.Create(0, wndCtrl->rect, this, WIDC_PIC_SLOT + 1);
@@ -17739,7 +17733,7 @@ void CWndRemoveAttribute::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent, DWORD) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_REMOVE_ATTRIBUTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -17762,13 +17756,10 @@ void CWndRemoveAttribute::SetWeapon(CItemElem* pItemElem) {
 	m_receiver.SetAnItem(pItemElem, CWndItemReceiver::SetMode::Verbose);
 }
 
-BOOL CWndRemoveAttribute::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_START )
-	{
-		if(m_pWndConfirm == NULL)
-		{
-			m_pWndConfirm = new CWndRemoveAttributeConfirm;
+BOOL CWndRemoveAttribute::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_START) {
+		if (!m_pWndConfirm) {
+			m_pWndConfirm = new CWndConfirm;
 			m_pWndConfirm->Initialize(this);
 		}
 	} else if (nID == WIDC_PIC_SLOT + 1) {
@@ -17776,13 +17767,13 @@ BOOL CWndRemoveAttribute::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 		pButton->EnableWindow(m_receiver.GetItem() ? TRUE : FALSE);
 	}
 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
-void CWndRemoveAttribute::ReceiveResult(BOOL result)
-{
-	if(result)
-		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_REMOVE_ATTRIBUTE_CONFIRM ) );
+void CWndRemoveAttribute::ReceiveResult(BOOL result) {
+	if (result) {
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_REMOVE_ATTRIBUTE_CONFIRM));
+	}
 
 	Destroy();
 }
@@ -17791,71 +17782,39 @@ void CWndRemoveAttribute::ReceiveResult(BOOL result)
 //	CWndRemoveAttributeConfirm
 //////////////////////////////////////////////////////////////////////////
 
-CWndRemoveAttributeConfirm::CWndRemoveAttributeConfirm() 
-{
-}
- 
-CWndRemoveAttributeConfirm::~CWndRemoveAttributeConfirm() 
-{
-} 
-
-void CWndRemoveAttributeConfirm::OnDestroy()
-{
-}
-
-void CWndRemoveAttributeConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndRemoveAttributeConfirm::OnInitialUpdate() 
+void CWndRemoveAttribute::CWndConfirm::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	CWndText* pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	pText->m_string.AddParsingString( prj.GetText( TID_GAME_REMOVE_ATTRIBUTE ) );
-	pText->ResetString();	
+
+	CWndText * pText = GetDlgItem<CWndText>(WIDC_TEXT1);
+	pText->m_string.AddParsingString(prj.GetText(TID_GAME_REMOVE_ATTRIBUTE));
+	pText->ResetString();
+
 	MoveParentCenter();
 } 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemoveAttributeConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_REMOVE_ATTRIBUTE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndRemoveAttributeConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRemoveAttributeConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRemoveAttributeConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRemoveAttributeConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndRemoveAttributeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{
-	 CWndRemoveAttribute* pParentwnd = (CWndRemoveAttribute*)this->m_pParentWnd;
 
-	if( nID == WIDC_YES )
-	{
+BOOL CWndRemoveAttribute::CWndConfirm::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_REMOVE_ATTRIBUTE_CONFIRM, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndRemoveAttribute::CWndConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	CWndRemoveAttribute * pParentwnd = dynamic_cast<CWndRemoveAttribute *>(m_pParentWnd);
+
+	if (nID == WIDC_YES) {
 		if (pParentwnd) {
 			CItemElem * item = pParentwnd->m_receiver.GetItem();
 			if (item) {
 				g_DPlay.SendRemoveAttribute(item->m_dwObjId);
 			}
 		}
-	}
-	else if( nID == WIDC_NO || nID == WTBID_CLOSE )
-	{
-		pParentwnd->m_pWndConfirm = NULL;
+	} else if (nID == WIDC_NO || nID == WTBID_CLOSE) {
+		// TODO: isn't that a memory leak?
+		pParentwnd->m_pWndConfirm = nullptr;
 		Destroy();
 	}
 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
 
 
@@ -17864,75 +17823,52 @@ BOOL CWndRemoveAttributeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT*
 // CWndRemovePiercing Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void CWndRemovePiercing::OnDraw(C2DRender * p2DRender) {
+	static constexpr std::array<UINT, 10> WIDOfStatics = {
+		WIDC_STATIC_PIERCING1, WIDC_STATIC_PIERCING2, WIDC_STATIC_PIERCING3,
+		WIDC_STATIC_PIERCING4, WIDC_STATIC_PIERCING5, WIDC_STATIC_PIERCING6,
+		WIDC_STATIC_PIERCING7, WIDC_STATIC_PIERCING8, WIDC_STATIC_PIERCING9,
+		WIDC_STATIC_PIERCING10
+	};
 
-void CWndRemovePiercing::OnDraw( C2DRender* p2DRender ) 
-{
 	CItemElem * item = m_receiver.GetItem();
 	if (!item) return;
 
 	ItemProp* pItemProp = item->GetProp();
 	if (!pItemProp) return;
 
-			int nMaxPiercing;
-			CRect rect;
-			LPWNDCTRL lpWndCtrl;
 
-			// Suit - 4 Slot Use
-			if(pItemProp->dwItemKind3 == IK3_SUIT)
-			{
-				nMaxPiercing = 4;
-				D3DXCOLOR color =  D3DCOLOR_ARGB( 60, 240, 0, 0 );
+	// Render greyed out slots
+	const ItemProps::PiercingType piercingType = item->GetPiercingType();
 
-				for(int i=4; i<10; i++)
-				{
-					lpWndCtrl = GetWndCtrl( m_nInfoSlot[i] );
-					rect = lpWndCtrl->rect;
-					p2DRender->RenderFillRect( rect, color );
-				}
-			}
-			else
-				nMaxPiercing = 10;
+	unsigned int uiMax = piercingType.GetNumberOfPiercings();
+	if (uiMax > WIDOfStatics.size()) uiMax = WIDOfStatics.size();
 
-			// Render Piercing Options
-			CString textOpt;
-			CString strTemp;
+	const D3DXCOLOR irrelevantSlotColor = D3DCOLOR_ARGB(60, 240, 0, 0);
+	for (unsigned int i = 0; i != uiMax; ++i) {
+		LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDOfStatics[i]);
+		CRect rect = lpWndCtrl->rect;
+		p2DRender->RenderFillRect(rect, irrelevantSlotColor);
+	}
+	
+	// Render Piercing Options
+	const unsigned int nPiercingSize = static_cast<unsigned int>(item->GetPiercingSize());
 
-			int nPiercingSize = item->GetPiercingSize();
+	for (int i = 0; i < nPiercingSize; i++) {
+		if (nPiercingSize > uiMax) break;
 
-			for(int i=0; i<nPiercingSize; i++)
-			{
-				if(nPiercingSize > nMaxPiercing)
-					break;
+		const PIERCINGAVAIL * ptr = g_PiercingAvail.GetPiercingAvail(item->GetPiercingItem(i));
 
-				const PIERCINGAVAIL * ptr = g_PiercingAvail.GetPiercingAvail(item->GetPiercingItem(i));
+		if (!ptr) continue;
 
-				if(ptr != NULL)
-				{
-					for (const auto & singleDst : ptr->params) {
-						const int nDst = singleDst.nDst;
-						const int nAdj = singleDst.nAdj;
-						
-						if( g_WndMng.IsDstRate(nDst) )
-						{
-							if( nDst == DST_ATTACKSPEED )
-								strTemp.Format( "%s%+d%%  ", prj.GetText(g_WndMng.GetDSTStringId( nDst )), nAdj / 2 / 10 );
-							else
-								strTemp.Format( "%s%+d%%  ", prj.GetText(g_WndMng.GetDSTStringId( nDst )), nAdj );
-						}
-						else
-							strTemp.Format( "%s+%d  ", prj.GetText(g_WndMng.GetDSTStringId( nDst )), nAdj );
+		CString textOpt;
+		for (const auto & singleDst : ptr->params) {
+			textOpt = singleDst.ToString() + "  ";
+		}
 
-						textOpt += strTemp;
-					}
-					
-					lpWndCtrl = GetWndCtrl( m_nInfoSlot[i] );
-					p2DRender->TextOut( lpWndCtrl->rect.left + 10, lpWndCtrl->rect.top + 8, textOpt, D3DCOLOR_ARGB(255,0,0,0) );
-					
-					textOpt = "";
-					strTemp = "";
-				}
-			}
-	 
+		LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDOfStatics[i]);
+		p2DRender->TextOut(lpWndCtrl->rect.left + 10, lpWndCtrl->rect.top + 8, textOpt, D3DCOLOR_ARGB(255, 0, 0, 0));
+	}
 }
 
 void CWndRemovePiercing::OnInitialUpdate() 
@@ -17947,23 +17883,10 @@ void CWndRemovePiercing::OnInitialUpdate()
 
 	pButton->EnableWindow(FALSE);
 	
-	m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText::SetupDescription(m_pText, _T("SmeltRemovePiercing.inc"));
+	
+	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("SmeltRemovePiercing.inc"));
 
-
-	m_nInfoSlot[0] = WIDC_STATIC_PIERCING1;
-	m_nInfoSlot[1] = WIDC_STATIC_PIERCING2;
-	m_nInfoSlot[2] = WIDC_STATIC_PIERCING3;
-	m_nInfoSlot[3] = WIDC_STATIC_PIERCING4;
-	m_nInfoSlot[4] = WIDC_STATIC_PIERCING5;
-	m_nInfoSlot[5] = WIDC_STATIC_PIERCING6;
-	m_nInfoSlot[6] = WIDC_STATIC_PIERCING7;
-	m_nInfoSlot[7] = WIDC_STATIC_PIERCING8;
-	m_nInfoSlot[8] = WIDC_STATIC_PIERCING9;
-	m_nInfoSlot[9] = WIDC_STATIC_PIERCING10;
-
-	const WNDCTRL * const wndCtrl = GetWndCtrl(WIDC_PIC_SLOT);
-	m_receiver.Create(0, wndCtrl->rect, this, WIDC_Receiver);
+	m_receiver.Create(0, GetWndCtrl(WIDC_PIC_SLOT)->rect, this, WIDC_Receiver);
 	m_receiver.SetTooltipId(TID_GAME_TOOLTIP_PIERCINGITEM);
 
 	MoveParentCenter();
@@ -17982,9 +17905,9 @@ bool CWndRemovePiercing::CWndPiercedItemReceiver::CanReceiveItem(
 	const ItemProp * itemProp = itemElem.GetProp();
 	if (!itemProp) return false;
 
-	if (!itemElem.IsPierceAble()
-		|| itemElem.GetPiercingItem(0) == 0
-		) {
+	const ItemProps::PiercingType piercingType = itemElem.GetPiercingType();
+
+	if (!piercingType.IsOnEquipement() || itemElem.GetPiercingItem(0) == 0) {
 		if (verbose) g_WndMng.PutString(TID_GAME_REMOVE_PIERCING_ERROR_EX);
 		return false;
 	}

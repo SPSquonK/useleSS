@@ -77,6 +77,7 @@ CWndMgr          g_WndMng;
 bool IsDst_Rate(int nDstParam);
 const char * FindDstString(int nDstParam);
 
+
 static CString SingleDstToString(const SINGLE_DST & singleDst) {
 	if (singleDst.nDst == DST_STAT_ALLUP) {
 		CString str;
@@ -86,22 +87,26 @@ static CString SingleDstToString(const SINGLE_DST & singleDst) {
 		str.AppendFormat("\n%s%+d", FindDstString(DST_STA), singleDst.nAdj);
 		return str;
 	} else {
-		const char * dstName = FindDstString(singleDst.nDst);
-
-		CString strTemp;
-
-		if (IsDst_Rate(singleDst.nDst)) {
-			if (singleDst.nDst == DST_ATTACKSPEED) {
-				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj / 2 / 10);
-			} else {
-				strTemp.Format("\n%s%+d%%", dstName, singleDst.nAdj);
-			}
-		} else {
-			strTemp.Format("\n%s%+d", dstName, singleDst.nAdj);
-		}
-
-		return strTemp;
+		return "\n" + singleDst.ToString();
 	}
+}
+
+CString SINGLE_DST::ToString() const {
+	CString retval;
+
+	const char * const dstName = FindDstString(nDst);
+
+	if (IsDst_Rate(nDst)) {
+		if (nDst == DST_ATTACKSPEED) {
+			retval.Format("\n%s%+d%%", dstName, nAdj / 2 / 10);
+		} else {
+			retval.Format("\n%s%+d%%", dstName, nAdj);
+		}
+	} else {
+		retval.Format("\n%s%+d", dstName, nAdj);
+	}
+
+	return retval;
 }
 
 template<MultipleDsts DstList>

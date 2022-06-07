@@ -375,6 +375,8 @@ namespace ItemProps {
 			return m_value == V::LetterCard || m_value == V::NumericCard;
 		}
 
+		[[nodiscard]] unsigned int GetNumberOfPiercings() const;
+
 	private:
 		V m_value;
 	};

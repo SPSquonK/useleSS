@@ -1848,22 +1848,6 @@ public:
 
 
 
-class CWndRemoveAttributeConfirm : public CWndNeuz 
-{
-public: 
-	CWndRemoveAttributeConfirm(); 
-	virtual ~CWndRemoveAttributeConfirm(); 
-	
-	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-};
 
 class CWndRemoveAttribute : public CWndNeuz
 {
@@ -1872,15 +1856,19 @@ public:
 	public:
 		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
 	};
-	
-	CWndText* m_pText;
-	
-	CWndAttributedItem m_receiver;
 
-	CWndRemoveAttributeConfirm* m_pWndConfirm;
+	class CWndConfirm : public CWndNeuz {
+	public:
+		BOOL Initialize(CWndBase * pWndParent, DWORD _ = MB_OK) override;
+		BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+		void OnInitialUpdate() override;
+	};
+	
+public:
+	CWndAttributedItem m_receiver;
+	CWndConfirm * m_pWndConfirm = nullptr;
 
 public: 
-	CWndRemoveAttribute(); 
 	~CWndRemoveAttribute() override; 
 	
 	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
@@ -1897,7 +1885,6 @@ class CWndRemovePiercing : public CWndNeuz
 {
 public:
 	static constexpr UINT WIDC_Receiver = 901;
-	CWndText*	m_pText;
 
 	class CWndPiercedItemReceiver : public CWndItemReceiver {
 	public:
@@ -1905,8 +1892,6 @@ public:
 	};
 
 	CWndPiercedItemReceiver m_receiver;
-
-	int			m_nInfoSlot[10];
 	
 public: 
 	

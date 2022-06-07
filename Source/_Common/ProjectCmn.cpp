@@ -885,8 +885,19 @@ namespace ItemProps {
 		return item.dwID == II_GEN_MAT_MOONSTONE || item.dwID == II_GEN_MAT_MOONSTONE_1;
 	}
 
-
-
+	unsigned int PiercingType::GetNumberOfPiercings() const {
+		switch (m_value) {
+			case V::LetterCard:
+				return MAX_PIERCING_WEAPON;
+			case V::NumericCard:
+				return MAX_PIERCING_SUIT;
+			case V::Vis:
+				return MAX_VIS;
+			case V::None:
+			default:
+				return 0;
+		}
+	}
 }
 
 #ifdef __CLIENT

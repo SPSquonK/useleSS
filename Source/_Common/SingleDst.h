@@ -6,6 +6,10 @@
 struct SINGLE_DST {
 	int	nDst;
 	int	nAdj;
+
+#ifdef __CLIENT
+	[[nodiscard]] CString ToString() const;
+#endif
 };
 
 template<typename T>
