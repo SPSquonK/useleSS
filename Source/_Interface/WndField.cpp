@@ -10596,94 +10596,73 @@ CtrlId : WIDC_BUTTON_OK - Button
 CtrlId : WIDC_BUTTON_CANCEL - 
 ****************************************************/
 
-void CWndChangeClass1::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	nJob = g_pPlayer->GetJob();
-	SetJob();
-
-	CWndButton* pWndButton;
-	int nJobBuf = nJob - 1;
-	if( nJobBuf == 0 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_MER );
-	else if( nJobBuf == 1 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_ACR );
-	else if( nJobBuf == 2 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_ASS );
-	else if( nJobBuf == 3 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_MAG );
-
-	pWndButton->EnableWindow( FALSE );
-	
-	// ������ �߾����� �ű��? �κ�.
-	MoveParentCenter();
-} 
-
-void CWndChangeClass1::SetJob()
-{
-	CWndButton* pWndButton;
-
-	BOOL bJob[MAX_EXPERT - MAX_JOBBASE];
-	memset( bJob, 0, sizeof( bJob ) );
-	bJob[nJob - 1] = TRUE;
- 
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_MER );
-	pWndButton->SetCheck( bJob[0] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_ACR );
-	pWndButton->SetCheck( bJob[1] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_ASS );
-	pWndButton->SetCheck( bJob[2] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_MAG );
-	pWndButton->SetCheck( bJob[3] );
-}
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndChangeClass1::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_CHANGECLASS_1, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-
-BOOL CWndChangeClass1::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_BUTTON_OK || message == EN_RETURN )
-	{
-		if( g_pPlayer->GetJob() == nJob )
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_EQUALJOB), NULL, prj.GetTextColor(TID_GAME_EQUALJOB) );
-		}
-		else
-		{
-			g_DPlay.SendChangeJob( nJob, FALSE );
+BOOL CWndChangeClassGeneric::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_BUTTON_OK || nID == WIDC_BUTTON_OK2 || message == EN_RETURN) {
+		if (g_pPlayer->GetJob() == m_currentJobId) {
+			g_WndMng.PutString(TID_GAME_EQUALJOB);
+		} else {
+			g_DPlay.SendChangeJob(m_currentJobId, FALSE);
 			Destroy();
 		}
-	}
-	else if( nID == WIDC_BUTTON_CANCEL || nID == WTBID_CLOSE )
-	{
+	} else if (nID == WIDC_BUTTON_CANCEL || nID == WIDC_BUTTON_CANCEL2 || nID == WTBID_CLOSE) {
 		Destroy();
+	} else {
+		for (const auto & [widgetId, jobId] : m_allJobs) {
+			if (nID == widgetId) {
+				m_currentJobId = jobId;
+				OnModifiedJob();
+				break;
+			}
+		}
 	}
-	else if( nID == WIDC_RADIO_MER )
-	{
-		nJob = JOB_MERCENARY;
-		SetJob();
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+void CWndChangeClassGeneric::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
+	// Set current job to player's current job
+	const int currentJob = g_pPlayer->GetJob();
+	m_currentJobId = currentJob;
+	OnModifiedJob();
+
+	// Disable the player's current job
+	const auto itJob = std::ranges::find_if(m_allJobs,
+		[currentJob](const PossibleJob & possibleJob) {
+			return possibleJob.jobId == currentJob;
+		});
+
+	if (itJob != m_allJobs.end()) {
+		CWndBase * const widget = GetDlgItem(itJob->widgetId);
+		widget->EnableWindow(FALSE);
 	}
-	else if( nID == WIDC_RADIO_ACR )
-	{
-		nJob = JOB_ACROBAT;
-		SetJob();
+
+	// Ok
+	MoveParentCenter();
+}
+
+void CWndChangeClassGeneric::OnModifiedJob() {
+	for (const auto & [widgetId, jobId] : m_allJobs) {
+		CWndButton * const widget = GetDlgItem<CWndButton>(widgetId);
+		widget->SetCheck(m_currentJobId == jobId ? TRUE : FALSE);
 	}
-	else if( nID == WIDC_RADIO_ASS )
-	{
-		nJob = JOB_ASSIST;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_MAG )
-	{
-		nJob = JOB_MAGICIAN;
-		SetJob();
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+}
+
+CWndChangeClass1::CWndChangeClass1()
+	: CWndChangeClassGeneric(
+		{
+			PossibleJob{ WIDC_RADIO_MER, JOB_MERCENARY },
+			PossibleJob{ WIDC_RADIO_ACR, JOB_ACROBAT },
+			PossibleJob{ WIDC_RADIO_ASS, JOB_ASSIST },
+			PossibleJob{ WIDC_RADIO_MAG, JOB_MAGICIAN }
+		}
+	) {
+}
+
+BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_CHANGECLASS_1, pWndParent, 0, CPoint(0, 0));
+}
 
 /****************************************************
 WndId : APP_CHANGECLASS_2 - ��������(2��)
@@ -10701,130 +10680,24 @@ CtrlId : WIDC_BUTTON_OK2 - Button
 CtrlId : WIDC_BUTTON_CANCEL2 - Button
 ****************************************************/
 
-void CWndChangeClass2::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	nJob = g_pPlayer->GetJob();
-	SetJob();
-
-	CWndButton* pWndButton;
-	int nJobBuf = nJob - 6;
-	if( ( nJobBuf ) == 0 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_KNI );
-	else if( nJobBuf == 1 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_BLA );
-	else if( nJobBuf == 2 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_JES );
-	else if( nJobBuf == 3 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_RAN );
-	else if( nJobBuf == 4 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_RIN );
-	else if( nJobBuf == 5 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_BIL );
-	else if( nJobBuf == 6 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_PSY );
-	else if( nJobBuf == 7 )
-		pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_ELE );	
-	
-	pWndButton->EnableWindow( FALSE );
-	
-	// ������ �߾����� �ű��? �κ�.
-	MoveParentCenter();
-} 
-void CWndChangeClass2::SetJob()
-{
-	CWndButton* pWndButton;
-
-	BOOL bJob[MAX_PROFESSIONAL - MAX_EXPERT];
-	memset( bJob, 0, sizeof( bJob ) );
-	bJob[nJob - 6] = TRUE;
-
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_KNI );
-	pWndButton->SetCheck( bJob[0] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_BLA );
-	pWndButton->SetCheck( bJob[1] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_JES );
-	pWndButton->SetCheck( bJob[2] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_RAN );
-	pWndButton->SetCheck( bJob[3] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_RIN );
-	pWndButton->SetCheck( bJob[4] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_BIL );
-	pWndButton->SetCheck( bJob[5] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_PSY );
-	pWndButton->SetCheck( bJob[6] );
-	pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO_ELE );
-	pWndButton->SetCheck( bJob[7] );	
+CWndChangeClass2::CWndChangeClass2()
+	: CWndChangeClassGeneric(
+		{
+			PossibleJob{ WIDC_RADIO_KNI, JOB_KNIGHT },
+			PossibleJob{ WIDC_RADIO_BLA, JOB_BLADE },
+			PossibleJob{ WIDC_RADIO_JES, JOB_JESTER },
+			PossibleJob{ WIDC_RADIO_RAN, JOB_RANGER },
+			PossibleJob{ WIDC_RADIO_RIN, JOB_RINGMASTER },
+			PossibleJob{ WIDC_RADIO_BIL, JOB_BILLPOSTER },
+			PossibleJob{ WIDC_RADIO_PSY, JOB_PSYCHIKEEPER },
+			PossibleJob{ WIDC_RADIO_ELE, JOB_ELEMENTOR }
+		}
+	) {
 }
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndChangeClass2::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_CHANGECLASS_2, pWndParent, 0, CPoint( 0, 0 ) );
-} 
 
-BOOL CWndChangeClass2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_BUTTON_OK2 || message == EN_RETURN )
-	{
-		if( g_pPlayer->GetJob() == nJob )
-		{
-			g_WndMng.PutString(TID_GAME_EQUALJOB);
-		}
-		else
-		{
-			g_DPlay.SendChangeJob( nJob, FALSE );
-			Destroy();
-		}
-	}
-	else if( nID == WIDC_BUTTON_CANCEL2 || nID == WTBID_CLOSE )
-	{
-		Destroy();
-	}
-	else if( nID == WIDC_RADIO_KNI )
-	{
-		nJob = JOB_KNIGHT;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_BLA )
-	{
-		nJob = JOB_BLADE;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_JES )
-	{
-		nJob = JOB_JESTER;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_RAN )
-	{
-		nJob = JOB_RANGER;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_RIN )
-	{
-		nJob = JOB_RINGMASTER;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_BIL )
-	{
-		nJob = JOB_BILLPOSTER;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_PSY )
-	{
-		nJob = JOB_PSYCHIKEEPER;
-		SetJob();
-	}
-	else if( nID == WIDC_RADIO_ELE )
-	{
-		nJob = JOB_ELEMENTOR;
-		SetJob();
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
+BOOL CWndChangeClass2::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_CHANGECLASS_2, pWndParent, 0, CPoint(0, 0));
+}
 
 void CWndInventory::RunUpgrade( CItemElem * pItem )
 {

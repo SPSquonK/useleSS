@@ -126,8 +126,6 @@ public:
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, CItemElem * pItemBase = NULL); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -875,27 +873,40 @@ public:
 	virtual	void OnInitialUpdate(); 
 }; 
 
-class CWndChangeClass1 : public CWndNeuz 
-{ 
-public: 
-	int			nJob = 0;
-	void		SetJob();
+class CWndChangeClassGeneric : public CWndNeuz {
+public:
+	struct PossibleJob {
+		UINT widgetId;
+		int jobId;
+	};
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
-}; 
+private:
+	int m_currentJobId;
+	std::vector<PossibleJob> m_allJobs;
 
-class CWndChangeClass2 : public CWndNeuz 
-{ 
-public: 
-	int			nJob;
-	void		SetJob();
+	void OnModifiedJob();
 	
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
-}; 
+protected:
+	CWndChangeClassGeneric(std::vector<PossibleJob> allJobs)
+		: m_currentJobId(0), m_allJobs(allJobs) {
+	}
+
+public:
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
+
+class CWndChangeClass1 : public CWndChangeClassGeneric {
+public:
+	CWndChangeClass1();
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+};
+
+class CWndChangeClass2 : public CWndChangeClassGeneric {
+public:
+	CWndChangeClass2();
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+};
 
 class CWndPostSendConfirm;
 
