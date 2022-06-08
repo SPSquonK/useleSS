@@ -31,7 +31,7 @@ manually install the dependencies in the `Source/Librairies` folder.
 We give here the list of dependencies with an example of a file that should exist after unzipping.
 
 
-- [Boost v1.79.0](https://www.boost.org/) (`Source/Libraries/boost/container/small_vector.hpp`)
+- [Boost v1.79.0](https://www.boost.org/) (`Source/Libraries/boost/container/small_vector.hpp`) (Do not overwrite this repository copy of the common files)
 - [NamedTypes](https://github.com/joboccara/NamedType/tree/020be1e934f8916a02302f4e490c461671baaccc) (`Source/Libraries/NamedType/version.hpp`)
 - [Rapidjson](https://github.com/Tencent/rapidjson/releases/tag/v1.1.0) (`Source/Libraries/rapidjson/writer.h`)
 
@@ -50,3 +50,5 @@ the
 should keep their comments.
 
 
+
+The [Source/Libraries/boost/pfr/detail/core17_generated.hpp file](Source/Libraries/boost/pfr/detail/core17_generated.hpp) is licensied under the Boost License by its author. It is included in the project to break through the 100 limit.
