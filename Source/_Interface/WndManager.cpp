@@ -100,12 +100,12 @@ CString SINGLE_DST::ToString() const {
 
 	if (IsDst_Rate(nDst)) {
 		if (nDst == DST_ATTACKSPEED) {
-			retval.Format("\n%s%+d%%", dstName, nAdj / 2 / 10);
+			retval.Format("%s%+d%%", dstName, nAdj / 2 / 10);
 		} else {
-			retval.Format("\n%s%+d%%", dstName, nAdj);
+			retval.Format("%s%+d%%", dstName, nAdj);
 		}
 	} else {
-		retval.Format("\n%s%+d", dstName, nAdj);
+		retval.Format("%s%+d", dstName, nAdj);
 	}
 
 	return retval;
