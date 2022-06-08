@@ -56,6 +56,8 @@
 #include "WndGuildHouse.h"
 #include "WndQuest.h"
 
+#include "boost/pfr.hpp"
+
 #ifdef __CERTIFIER_COLLECTING_SYSTEM
 #include "DPCollectClient.h"
 #endif // __CERTIFIER_COLLECTING_SYSTEM
@@ -322,91 +324,21 @@ CWndMgr::CWndMgr()
 {
 	m_bTitle = FALSE;
 	m_pWndActiveDesktop = NULL;
-	m_pWndShop = NULL;
-	m_pWndDialog = NULL;
-	m_pWndRevival = NULL;
-	m_pReWanted		  = NULL;
-	m_pWanted		  = NULL;
-	m_pWndResurrectionConfirm = NULL;
-	m_pLogOutWaitting = NULL;
-	m_pWndCommItemDlg = NULL;
-	m_pWndChangeClass1 = NULL;
-	m_pWndChangeClass2 = NULL;
-	m_pWndTradeGold = NULL;
-	m_pWndDropItem = NULL;
-	m_pWndCommand = NULL;
 	m_pWndTaskBar = NULL;
-	m_pWndTrade = NULL;
 	//m_pWndNotice = NULL;
 	////m_pWndTip = NULL;
 	//m_bTitle = TRUE;
-	m_pWndBeautyShop = NULL;
-	m_pWndFaceShop = NULL;
-#ifdef __NEWYEARDAY_EVENT_COUPON
-	m_pWndUseCouponConfirm = NULL;
-#endif //__NEWYEARDAY_EVENT_COUPON
-	m_pWndSummonAngel = NULL;
-	m_pWndDropConfirm = NULL;
 	m_nAlphaCount = m_nAlpha;
 	m_pWndBank = NULL;
-	m_pWndConfirmBank = NULL;
-	m_pWndBankPassword = NULL;
-	m_pWndConfirmTrade = NULL;
 
-#ifdef __EVE_MINIGAME
-	m_pWndKawiBawiBoGame = NULL;
-	m_pWndKawiBawiBoGameConfirm = NULL;
-	m_pWndFindWordGame = NULL;
-	m_pWndDiceGame = NULL;
-	m_pWndPuzzleGame = NULL;
-#endif //__EVE_MINIGAME
-
-	m_pWndSmeltMixJewel = NULL;
-	m_pWndSmeltJewel = NULL;
-	m_pWndExtraction = NULL;
-	m_pWndChangeWeapon = NULL;
-	m_pWndPetStatus = NULL;
-
-	m_pWndBuffPetStatus = NULL;
-	m_pWndConfirmVis = NULL;
-
-//	m_pWndPetFood = NULL;
-	m_pWndFoodConfirm = NULL;
-	m_pWndPetMiracle = NULL;
-	m_pWndPetFoodMill = NULL;
-	m_pWndPetLifeConfirm = NULL;
-	m_pWndHeroSkillUp = NULL;
-	m_pWndRemovePiercing = NULL;
-	m_pWndRemoveJewel = NULL;
-	m_pWndPetTransEggs = NULL;
-#ifdef __TRADESYS
-	m_pWndDialogEvent = NULL;
-#endif //__TRADESYS
-	m_pWndHeavenTower = NULL;
-	m_pWndRemoveAttribute = NULL;
-	m_pWndPost = NULL;
-	m_pWndQueryEquip = NULL;
 	m_pWndSelectVillage = NULL;
-	m_pWndQuestItemWarning = NULL;
-	m_pWndPenaltyPK = NULL;
-	m_pWndPartyChangeName = NULL;
-	m_pWndPartyConfirm = NULL;
-	m_pWndFriendConfirm = NULL;
-	m_pWndDuelConfirm = NULL;
-
-	m_pWndDuelConfirm = NULL;
-
-	m_pWndMessageNote = NULL;
-	m_pWndMessengerNote = NULL;
 	
-	m_pWndRandomScrollConfirm = NULL;
 	
 #ifdef __S_SERVER_UNIFY
 	m_bAllAction = TRUE;
 #endif // __S_SERVER_UNIFY
 	
 //	m_pWndMessengerSearch	= NULL;
-	m_pWndStateConfirm		= NULL;
 
 	m_szTimerChat[ 0 ] = 0;
 	m_timerChat.Set( 0 );
@@ -418,117 +350,17 @@ CWndMgr::CWndMgr()
 		m_dwSkillTime[i] = 0;
 	}
 	
-	m_pWndCollecting = NULL;
-	m_pWndRankGuild = NULL;
-	m_pWndRankInfo = NULL;
-	m_pWndRankWar = NULL;
 	m_pWndGuildBank = NULL;
-	m_pWndGuildBankLog = NULL;
-	m_pWndGuildConfirm = NULL;
-	m_pWndGuildWarPeaceConfirm = NULL;
-	m_pWndGuildWarRequest = NULL;
-	m_pWndGuildWarState = NULL;
-	m_pWndGuildCombatRanking = NULL;
 
-	m_pWndFontEdit = NULL;
-	
-	m_pWndReSkillWarning = NULL;
-	m_pWndGuildCombatBoard      = NULL;	
-	m_pWndGuildCombatOffer		= NULL;
-	m_pWndGuildCombatSelection	= NULL;
-	m_pWndGuildCombatJoinSelection = NULL;
-	m_pWndGuildCombatInfoMessageBox2 = NULL;
-	m_pWndGuildCombatInfoMessageBox = NULL;
-	n_pWndGuildCombatResult = NULL;
-	m_pWndGuildCombat1to1Selection = NULL;
-	m_pWndGuildCombat1to1Offer = NULL;
-	m_pWndChatLog = NULL;
-
-	m_pWndSecretRoomMsg = NULL;
-	m_pWndSecretRoomSelection = NULL;
-	m_pWndSecretRoomOffer = NULL;
-	m_pWndSecretRoomOfferState = NULL;
-	m_pWndSecretRoomChangeTaxRate = NULL;
-	m_pWndSecretRoomCheckTaxRate = NULL;
-	m_pWndSecretRoomBoard = NULL;
-	m_pWndSecretRoomQuick = NULL;
-
-	m_pWndRainbowRaceOffer = NULL;
-	m_pWndRainbowRaceInfo = NULL;
-	m_pWndRainbowRaceRule = NULL;
-	m_pWndRainbowRaceRanking = NULL;
-	m_pWndRainbowRacePrize = NULL;
-	m_pWndRainbowRaceMiniGameButton = NULL;
-	m_pWndRainbowRaceMiniGame = NULL;
-	m_pWndRainbowRaceMiniGameEnd = NULL;
-	m_pWndRRMiniGameKawiBawiBo = NULL;
-	m_pWndRRMiniGameDice = NULL;
-	m_pWndRRMiniGameArithmetic = NULL;
-	m_pWndRRMiniGameStopWatch = NULL;
-	m_pWndRRMiniGameTyping = NULL;
-	m_pWndRRMiniGameCard = NULL;
-	m_pWndRRMiniGameLadder = NULL;
-	m_pWndCoupleMessage = NULL;
-	m_pWndChangeAttribute = NULL;
-	m_pWndLordState = NULL;
-	m_pWndLordTender = NULL;
-	m_pWndLordVote = NULL;
-	m_pWndLordEvent = NULL;
-	m_pWndLordSkillConfirm = NULL;
-	m_pWndLordInfo		= NULL;
-	m_pWndLordRPInfo	= NULL;
 	m_bIsOpenLordSkill = false;
-	m_pWndPetAwakCancel = NULL;
-#ifdef __AZRIA_1023
-	m_pWndSelectCh = NULL;
-#endif
-m_pWndRoomList = NULL;
-m_pWndQuitRoom = NULL;
-#ifdef __PET_1024
-m_pWndChangePetName = NULL;
-#endif
 
-	m_pWndUpgradeBase = NULL;
-	m_pWndPiercing = NULL;
-	m_pWndInvenRemoveItem = NULL;
-	m_pWndCommerialElem = NULL;
-	m_pRemoveElem = NULL;
 	m_pQuestItemInfo = NULL;
 	m_pWndTextBook = NULL;
 	m_pWndTextScroll = NULL;
 	m_pWndTextLetter = NULL;
-	m_pWndMessageBox = NULL;
-	m_pWndMessageBoxUpper = NULL;
 	m_dwSavePlayerTime = 0;
 	m_bAutoRun = FALSE;
-	m_pWndChangeName			= NULL;
-	m_pWndSealChar			= NULL;
-	m_pWndSealCharSelect			= NULL;
-	m_pWndSealCharSend			= NULL;
-	m_pWndSealCharSet			= NULL;
-	m_pWndAwakening		= NULL;
-	m_pPetRes			= NULL;
-	m_pWndBlessingCancel = NULL;
-#ifdef __FUNNY_COIN
-	m_pFunnyCoinConfirm = NULL;
-#endif //__FUNNY_COIN
-	m_pWndSmeltSafety = NULL;
-	m_pWndSmeltSafetyConfirm = NULL;
-	m_pWndEquipBindConfirm = NULL;
-	m_pWndRestateConfirm = NULL;
-#ifdef __QUIZ
-	m_pWndQuizEventConfirm = NULL;
-	m_pWndQuizEventQuestionOX = NULL;
-	m_pWndQuizEventQuestion4C = NULL;
-	m_pWndQuizEventButton = NULL;
-#endif // __QUIZ
-	m_pWndQuestQuickInfo = NULL;
-	m_pWndQuestDetail = NULL;
-	m_pWndCampusInvitationConfirm = NULL;
-	m_pWndCampusSeveranceConfirm = NULL;
-#ifdef __HELP_BUG_FIX
-	m_pWndHelpInstant = NULL;
-#endif //__HELP_BUG_FIX
+
 	m_clearFlag = FALSE;
 	InitSetItemTextColor();
 
@@ -537,7 +369,6 @@ m_pWndChangePetName = NULL;
 	memset(g_pCoolTexArry, 0, sizeof(CTexture*) * 128);
 
 	m_pWndGHMain = NULL;
-	m_pWndUpkeep = NULL;
 
 #ifdef __BAN_CHATTING_SYSTEM
 	m_nWarningCounter = 0;
@@ -548,14 +379,6 @@ m_pWndChangePetName = NULL;
 #ifdef __PROTECT_AWAKE
 	m_pWndSelectAwakeCase = NULL;
 #endif
-
-#ifdef __YS_CHATTING_BLOCKING_SYSTEM
-	m_pWndChattingBlockingList = NULL;
-#endif // __YS_CHATTING_BLOCKING_SYSTEM
-
-#ifdef __GUILD_HOUSE_MIDDLE
-	m_pWndGHBid = NULL;
-#endif //__GUILD_HOUSE_MIDDLE
 
 #ifdef __MAIL_REQUESTING_BOX
 	m_bWaitRequestMail = FALSE;
@@ -680,117 +503,17 @@ void CWndMgr::AlighWindow( CRect rcOld, CRect rcNew )
 void CWndMgr::Free()
 {
 	m_mapWndRegInfo.clear();
+
+	SafeDeleteAll();
 	
-	SAFE_DELETE(m_pWndCollecting);
-	SAFE_DELETE(m_pWndAwakening);
-	SAFE_DELETE(m_pWndBlessingCancel);
-	SAFE_DELETE(m_pWndLvReqDown);
-#ifdef __JEFF_11
-	SAFE_DELETE(m_pPetRes);
-#endif
 	SAFE_DELETE( m_pWndTaskBar );
 	SAFE_DELETE( m_pWndActiveDesktop );
-	SAFE_DELETE( m_pWndDialog );
-	SAFE_DELETE( m_pWndShop );
-	SAFE_DELETE( m_pWndRevival );
-
-	SAFE_DELETE(m_pReWanted);
-	SAFE_DELETE(m_pWanted);
-	SAFE_DELETE(m_pWndResurrectionConfirm);
-	SAFE_DELETE(m_pLogOutWaitting);
-	SAFE_DELETE( m_pWndCommItemDlg );
-	SAFE_DELETE( m_pWndChangeClass1 );
-	SAFE_DELETE( m_pWndChangeClass2 );
 	
-	SAFE_DELETE( m_pWndTradeGold );
-	SAFE_DELETE( m_pWndMessageBox );
-	SAFE_DELETE( m_pWndMessageBoxUpper );
-	
-	SAFE_DELETE( m_pWndCommand );
-	SAFE_DELETE( m_pWndTrade );
 	m_pWndWorld = NULL;
-	SAFE_DELETE( m_pWndBeautyShop );
 
-	SAFE_DELETE( m_pWndFaceShop );
-#ifdef __NEWYEARDAY_EVENT_COUPON
-	SAFE_DELETE( m_pWndUseCouponConfirm );
-#endif //__NEWYEARDAY_EVENT_COUPON
-	SAFE_DELETE( m_pWndSummonAngel );
-
-#ifdef __EVE_MINIGAME
-	SAFE_DELETE( m_pWndKawiBawiBoGame );
-	SAFE_DELETE( m_pWndKawiBawiBoGameConfirm );
-	SAFE_DELETE( m_pWndFindWordGame );
-	SAFE_DELETE( m_pWndDiceGame );
-	SAFE_DELETE( m_pWndPuzzleGame );
-#endif //__EVE_MINIGAME
-
-	SAFE_DELETE( m_pWndSmeltMixJewel );
-	SAFE_DELETE( m_pWndSmeltJewel );
-	SAFE_DELETE( m_pWndExtraction );
-	SAFE_DELETE( m_pWndChangeWeapon );
-	SAFE_DELETE( m_pWndPetStatus );
-	SAFE_DELETE( m_pWndBuffPetStatus );
-	SAFE_DELETE( m_pWndConfirmVis );
-
-//	SAFE_DELETE( m_pWndPetFood );
-	SAFE_DELETE( m_pWndFoodConfirm );
-	SAFE_DELETE( m_pWndPetMiracle );
-	SAFE_DELETE( m_pWndPetFoodMill );
-	SAFE_DELETE( m_pWndPetLifeConfirm );
-	SAFE_DELETE( m_pWndHeroSkillUp );
-	SAFE_DELETE( m_pWndRemovePiercing );
-	SAFE_DELETE( m_pWndRemoveJewel );
-	SAFE_DELETE( m_pWndPetTransEggs );
-#ifdef __TRADESYS
-	SAFE_DELETE( m_pWndDialogEvent );
-#endif //__TRADESYS
-	SAFE_DELETE( m_pWndHeavenTower );
-	SAFE_DELETE( m_pWndRemoveAttribute );
-	SAFE_DELETE(m_pWndLordState);
-	SAFE_DELETE(m_pWndLordTender);
-	SAFE_DELETE(m_pWndLordVote);
-	SAFE_DELETE(m_pWndLordEvent);
-	SAFE_DELETE(m_pWndLordSkillConfirm);
-	SAFE_DELETE(m_pWndLordInfo);
-	SAFE_DELETE(m_pWndLordRPInfo);
-	SAFE_DELETE(m_pWndRoomList);
-	SAFE_DELETE(m_pWndQuitRoom);
-#ifdef __PET_1024
-SAFE_DELETE(m_pWndChangePetName);
-#endif
-	SAFE_DELETE(m_pWndPetAwakCancel);
-#ifdef __AZRIA_1023
-	SAFE_DELETE(m_pWndSelectCh);
-#endif
-	SAFE_DELETE( m_pWndPost );
 	SAFE_DELETE( m_pWndBank );
-	SAFE_DELETE( m_pWndDropItem );
-	SAFE_DELETE(m_pWndQueryEquip);
-	SAFE_DELETE( m_pWndDropConfirm );
 
-	SAFE_DELETE( m_pWndPenaltyPK );
-	SAFE_DELETE( m_pWndConfirmBank );
-	SAFE_DELETE( m_pWndBankPassword );
-	SAFE_DELETE( m_pWndPartyChangeName );
-	SAFE_DELETE( m_pWndDuelConfirm );
-
-	SAFE_DELETE( m_pWndDuelConfirm );
-
-#ifdef __HELP_BUG_FIX
-	SAFE_DELETE( m_pWndHelpInstant );
-#endif //__HELP_BUG_FIX
-
-	SAFE_DELETE( m_pWndConfirmTrade );
-	SAFE_DELETE( m_pWndRandomScrollConfirm );
 	SAFE_DELETE( m_pWndSelectVillage );
-	SAFE_DELETE( m_pWndQuestItemWarning );
-	SAFE_DELETE( m_pWndPartyConfirm );
-	SAFE_DELETE( m_pWndFriendConfirm );
-	SAFE_DELETE( m_pWndMessageNote );
-	SAFE_DELETE( m_pWndMessengerNote );
-	SAFE_DELETE( m_pWndAddFriend );
-	SAFE_DELETE( m_pWndStateConfirm );
 	CString strTemp;
 	
 	m_mapMessage.clear();
@@ -802,103 +525,58 @@ SAFE_DELETE(m_pWndChangePetName);
 	SAFE_DELETE( m_pWndTextScroll );
 	SAFE_DELETE( m_pWndTextLetter );
 
-	SAFE_DELETE(m_pWndRankGuild);
-	SAFE_DELETE(m_pWndRankInfo);
-	SAFE_DELETE(m_pWndRankWar);
 	SAFE_DELETE(m_pWndGuildBank);
-	SAFE_DELETE(m_pWndGuildBankLog);
-	SAFE_DELETE(m_pWndGuildConfirm);
-	SAFE_DELETE(m_pWndGuildWarPeaceConfirm);
-	SAFE_DELETE( m_pWndGuildWarRequest );
-	SAFE_DELETE(m_pWndGuildCombatRanking);
-	SAFE_DELETE(m_pWndGuildWarState);
-	SAFE_DELETE(n_pWndGuildCombatResult);
-	SAFE_DELETE(m_pWndGuildCombatBoard);
-	SAFE_DELETE(m_pWndGuildCombatOffer);
-	SAFE_DELETE(m_pWndGuildCombatSelection);
-	SAFE_DELETE(m_pWndGuildCombatJoinSelection);
-	SAFE_DELETE(m_pWndGuildCombatInfoMessageBox2);
-	SAFE_DELETE(m_pWndGuildCombatInfoMessageBox);	
-	SAFE_DELETE( m_pWndUpgradeBase );
-	SAFE_DELETE(m_pWndGuildCombat1to1Selection);
-	SAFE_DELETE(m_pWndGuildCombat1to1Offer);
-	SAFE_DELETE(m_pWndChatLog);
-
-	SAFE_DELETE(m_pWndSecretRoomMsg);
-	SAFE_DELETE(m_pWndSecretRoomSelection);
-	SAFE_DELETE(m_pWndSecretRoomOffer);
-	SAFE_DELETE(m_pWndSecretRoomOfferState);
-	SAFE_DELETE(m_pWndSecretRoomChangeTaxRate);
-	SAFE_DELETE(m_pWndSecretRoomCheckTaxRate);
-	SAFE_DELETE(m_pWndSecretRoomBoard);
-	SAFE_DELETE(m_pWndSecretRoomQuick);
-
-	SAFE_DELETE(m_pWndRainbowRaceOffer);
-	SAFE_DELETE(m_pWndRainbowRaceInfo);
-	SAFE_DELETE(m_pWndRainbowRaceRule);
-	SAFE_DELETE(m_pWndRainbowRaceRanking);
-	SAFE_DELETE(m_pWndRainbowRacePrize);
-	SAFE_DELETE(m_pWndRainbowRaceMiniGameButton);
-	SAFE_DELETE(m_pWndRainbowRaceMiniGame);
-	SAFE_DELETE(m_pWndRainbowRaceMiniGameEnd);
-	SAFE_DELETE(m_pWndRRMiniGameKawiBawiBo);
-	SAFE_DELETE(m_pWndRRMiniGameDice);
-	SAFE_DELETE(m_pWndRRMiniGameArithmetic);
-	SAFE_DELETE(m_pWndRRMiniGameStopWatch);
-	SAFE_DELETE(m_pWndRRMiniGameTyping);
-	SAFE_DELETE(m_pWndRRMiniGameCard);
-	SAFE_DELETE(m_pWndRRMiniGameLadder);
-	SAFE_DELETE(m_pWndCoupleMessage);
-	SAFE_DELETE(m_pWndChangeAttribute);
-	SAFE_DELETE( m_pWndPiercing );
-
-	SAFE_DELETE(m_pWndFontEdit);
-
-	SAFE_DELETE(m_pWndInvenRemoveItem);
-
-	SAFE_DELETE(m_pWndReSkillWarning);
-	
-	SAFE_DELETE( m_pWndCommerialElem );
-	SAFE_DELETE( m_pRemoveElem );
-
-	SAFE_DELETE( m_pWndChangeName );
-#ifdef __FUNNY_COIN
-	SAFE_DELETE(m_pFunnyCoinConfirm);
-#endif //__FUNNY_COIN
-	SAFE_DELETE(m_pWndSmeltSafety);
-	SAFE_DELETE(m_pWndSmeltSafetyConfirm);
-	SAFE_DELETE(m_pWndEquipBindConfirm);
-	SAFE_DELETE(m_pWndRestateConfirm);
-#ifdef __QUIZ
-	SAFE_DELETE( m_pWndQuizEventConfirm );
-	SAFE_DELETE( m_pWndQuizEventQuestionOX );
-	SAFE_DELETE( m_pWndQuizEventQuestion4C );
-	SAFE_DELETE( m_pWndQuizEventButton );
-#endif // __QUIZ
-	SAFE_DELETE( m_pWndQuestQuickInfo );
-	SAFE_DELETE( m_pWndQuestDetail );
-	SAFE_DELETE( m_pWndCampusInvitationConfirm );
-	SAFE_DELETE( m_pWndCampusSeveranceConfirm );
-	SAFE_DELETE( m_pWndSealChar );
-	SAFE_DELETE( m_pWndSealCharSelect );
-	SAFE_DELETE( m_pWndSealCharSend );
-	SAFE_DELETE( m_pWndSealCharSet );
 
 	SAFE_DELETE( m_pWndGHMain );
-	SAFE_DELETE( m_pWndUpkeep );
 
 #ifdef __PROTECT_AWAKE
 	SAFE_DELETE( m_pWndSelectAwakeCase );
 #endif
-
-#ifdef __YS_CHATTING_BLOCKING_SYSTEM
-	SAFE_DELETE( m_pWndChattingBlockingList );
-#endif // __YS_CHATTING_BLOCKING_SYSTEM
-
-#ifdef __GUILD_HOUSE_MIDDLE
-	SAFE_DELETE( m_pWndGHBid );
-#endif //__GUILD_HOUSE_MIDDLE
 }
+
+template<typename Ptr>
+void SafeDeleteWindowBase(Ptr *& ptr) {
+	static_assert(std::derived_from<Ptr, CWndBase>);
+
+	if (ptr) {
+		delete ptr;
+		ptr = nullptr;
+	}
+}
+
+// If you have an error near here saying "hey this window is not a CWndBase"
+// it means you have to include the .h with the window class definition.
+template<size_t N>
+void CWndMgr_WindowShortcuts_SafeDeleteAllFrom(CWndMgr_WindowShortcuts & self) {
+	if constexpr (N != boost::pfr::tuple_size_v<CWndMgr_WindowShortcuts>) {
+		SafeDeleteWindowBase(boost::pfr::get<N>(self));
+		CWndMgr_WindowShortcuts_SafeDeleteAllFrom<N + 1>(self);
+	}
+}
+
+void CWndMgr_WindowShortcuts::SafeDeleteAll() {
+	CWndMgr_WindowShortcuts_SafeDeleteAllFrom<0>(*this);
+}
+
+template<size_t N>
+bool CWndMgr_WindowShortcuts_DeleteChild(CWndMgr_WindowShortcuts & self, CWndBase * window) {
+	if constexpr (N != boost::pfr::tuple_size_v<CWndMgr_WindowShortcuts>) {
+		if (window == boost::pfr::get<N>(self)) {
+			SafeDeleteWindowBase(boost::pfr::get<N>(self));
+			return true;
+		}
+
+		return CWndMgr_WindowShortcuts_DeleteChild<N + 1>(self, window);
+	}
+
+	return false;
+}
+
+bool CWndMgr_WindowShortcuts::DeleteChild(CWndBase * window) {
+	return CWndMgr_WindowShortcuts_DeleteChild<0>(*this, window);
+}
+
+
 void CWndMgr::DestroyApplet()
 {
 	CWndNeuz* pWndBase;
@@ -973,253 +651,16 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 	if( pWndChild && pWndChild->IsWndStyle( WBS_NOFOCUS ) )
 		bFocus = FALSE;
 
+	if (DeleteChild(pWndChild)) {
+		pWndChild = nullptr;
+	}
+
 	if( m_pWndWorld == pWndChild )
 	{
 		SAFE_DELETE( m_pWndWorld );
 		pWndChild = NULL;
-	} else
-	if( m_pWndBeautyShop == pWndChild )
-	{
-		SAFE_DELETE( m_pWndBeautyShop );
-		pWndChild = NULL;
 	}
-	else if( m_pWndFaceShop == pWndChild )
-	{
-		SAFE_DELETE( m_pWndFaceShop );
-//		m_pWndFaceShop = NULL;
-		pWndChild = NULL;
-	}
-#ifdef __NEWYEARDAY_EVENT_COUPON
-	else if( m_pWndUseCouponConfirm == pWndChild )
-	{
-		SAFE_DELETE(m_pWndUseCouponConfirm);
-		pWndChild = NULL;
-	}
-#endif //__NEWYEARDAY_EVENT_COUPON
-	else if(m_pWndSummonAngel == pWndChild)
-	{
-		SAFE_DELETE( m_pWndSummonAngel );
-//		m_pWndSummonAngel = NULL;
-		pWndChild = NULL;
-	}
-#ifdef __EVE_MINIGAME
-	else if(m_pWndKawiBawiBoGame == pWndChild)
-	{
-		SAFE_DELETE( m_pWndKawiBawiBoGame );
-		pWndChild = NULL;
-	}
-	else if(m_pWndKawiBawiBoGameConfirm == pWndChild)
-	{
-		SAFE_DELETE( m_pWndKawiBawiBoGameConfirm );
-		pWndChild = NULL;
-	}
-	else if(m_pWndFindWordGame == pWndChild)
-	{
-		SAFE_DELETE( m_pWndFindWordGame );
-		pWndChild = NULL;
-	}
-	else if(m_pWndDiceGame == pWndChild)
-	{
-		SAFE_DELETE( m_pWndDiceGame );
-		pWndChild = NULL;
-	}
-	else if(m_pWndPuzzleGame == pWndChild)
-	{
-		SAFE_DELETE( m_pWndPuzzleGame );
-		pWndChild = NULL;
-	}	
-#endif //__EVE_MINIGAME
-	else if(m_pWndSmeltMixJewel == pWndChild)
-	{
-		SAFE_DELETE( m_pWndSmeltMixJewel );
-		pWndChild = NULL;
-	}
-	else if(m_pWndSmeltJewel == pWndChild)
-	{
-		SAFE_DELETE( m_pWndSmeltJewel );
-		pWndChild = NULL;
-	}	
-	else if(m_pWndExtraction == pWndChild)
-	{
-		SAFE_DELETE( m_pWndExtraction );
-		pWndChild = NULL;
-	}	
-	else if(m_pWndChangeWeapon == pWndChild)
-	{
-		SAFE_DELETE( m_pWndChangeWeapon );
-		pWndChild = NULL;
-	}	
-	else if(m_pWndPetStatus == pWndChild)
-	{
-		SAFE_DELETE( m_pWndPetStatus );
-		pWndChild = NULL;
-	}
-//#endif
-//	else if(m_pWndPetFood == pWndChild)
-//	{
-//		SAFE_DELETE( m_pWndPetFood );
-//		pWndChild = NULL;
-//	}
-	else if(m_pWndFoodConfirm == pWndChild)
-	{
-		SAFE_DELETE( m_pWndFoodConfirm );
-		pWndChild = NULL;
-	}	
-	else if(m_pWndPetMiracle == pWndChild)
-	{
-		SAFE_DELETE( m_pWndPetMiracle );
-		pWndChild = NULL;
-	}
-	else if(m_pWndPetFoodMill == pWndChild)
-	{
-		SAFE_DELETE( m_pWndPetFoodMill );
-		pWndChild = NULL;
-	}
-	else if(m_pWndPetLifeConfirm == pWndChild)
-	{
-		SAFE_DELETE( m_pWndPetLifeConfirm );
-		pWndChild = NULL;
-	}
-	else if(m_pWndHeroSkillUp == pWndChild)
-	{
-		SAFE_DELETE( m_pWndHeroSkillUp );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRemovePiercing == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRemovePiercing );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRemoveJewel == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRemoveJewel );
-		pWndChild = NULL;
-	}
-	else if(m_pWndPetTransEggs == pWndChild)
-	{
-		SAFE_DELETE( m_pWndPetTransEggs );
-		pWndChild = NULL;
-	}
-#ifdef __TRADESYS
-	else if(m_pWndDialogEvent == pWndChild)
-	{
-		SAFE_DELETE( m_pWndDialogEvent );
-		pWndChild = NULL;
-	}
-#endif //__TRADESYS
-	else if( m_pWndHeavenTower == pWndChild )
-	{
-		SAFE_DELETE( m_pWndHeavenTower );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRemoveAttribute == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRemoveAttribute );
-		pWndChild = NULL;
-	}
-	else if(m_pWndLordState == pWndChild)
-	{
-		SAFE_DELETE(m_pWndLordState);
-		pWndChild = NULL;
-	}
-	else if(m_pWndLordTender == pWndChild)
-	{
-		SAFE_DELETE(m_pWndLordTender);
-		pWndChild = NULL;
-	}
-	else if(m_pWndLordVote == pWndChild)
-	{
-		SAFE_DELETE(m_pWndLordVote);
-		pWndChild = NULL;
-	}
-	else if(m_pWndLordEvent == pWndChild)
-	{
-		SAFE_DELETE(m_pWndLordEvent);
-		pWndChild = NULL;
-	}
-	else if(m_pWndLordInfo == pWndChild)
-	{
-		SAFE_DELETE(m_pWndLordInfo);
-		pWndChild = NULL;
-	}
-	else if(m_pWndLordRPInfo == pWndChild)
-	{
-		SAFE_DELETE(m_pWndLordRPInfo);
-		pWndChild = NULL;
-	}
-	else if(m_pWndLordSkillConfirm == pWndChild)
-	{
-		SAFE_DELETE(m_pWndLordSkillConfirm);
-		pWndChild = NULL;
-	}
-	else if(m_pWndRoomList == pWndChild)
-	{
-		SAFE_DELETE(m_pWndRoomList);
-		pWndChild = NULL;
-	}
-	else if(m_pWndQuitRoom == pWndChild)
-	{
-		SAFE_DELETE(m_pWndQuitRoom);
-		pWndChild = NULL;
-	}
-#ifdef __PET_1024
-	else if(m_pWndChangePetName == pWndChild)
-	{
-		SAFE_DELETE(m_pWndChangePetName);
-		pWndChild = NULL;
-	}
-#endif
-	else if(m_pWndPetAwakCancel == pWndChild)
-	{
-		SAFE_DELETE(m_pWndPetAwakCancel);
-		pWndChild = NULL;
-	}
-#ifdef __AZRIA_1023
-	else if(m_pWndSelectCh == pWndChild)
-	{
-		SAFE_DELETE(m_pWndSelectCh);
-		pWndChild = NULL;
-	}
-#endif
-#ifdef __HELP_BUG_FIX
-	else if(m_pWndHelpInstant == pWndChild)
-	{
-		SAFE_DELETE(m_pWndHelpInstant);
-		pWndChild = NULL;
-	}
-#endif //__HELP_BUG_FIX
 	else
-	if( m_pWndPartyConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndPartyConfirm );
-		pWndChild = NULL;
-	} else
-	if( m_pWndFriendConfirm == pWndChild )
-	{
-		SAFE_DELETE(m_pWndFriendConfirm);
-		pWndChild = NULL;
-	} else
-	if( m_pWndConfirmTrade == pWndChild )
-	{
-		SAFE_DELETE(m_pWndConfirmTrade);
-		pWndChild = NULL;
-	} else
-	if( m_pWndPost == pWndChild )
-	{
-		SAFE_DELETE( m_pWndPost );
-		pWndChild = NULL;
-	} else
-	if( m_pWndQuestItemWarning == pWndChild )
-	{
-//		SAFE_DELETE(m_pWndQuestItemWarning);
-		SAFE_DELETE(m_pWndQuestItemWarning);
-		pWndChild = NULL;
-	} else
-	if( m_pWndPartyChangeName == pWndChild )
-	{
-		SAFE_DELETE( m_pWndPartyChangeName );
-		pWndChild = NULL;
-	} else
 	if( m_pWndBank == pWndChild )
 	{
 		SAFE_DELETE( m_pWndBank );
@@ -1227,141 +668,6 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 		if( m_pWndTradeGold )
 			m_pWndTradeGold->Destroy();
 	} else
-	if( m_pWndMessageNote == pWndChild )
-	{
-		SAFE_DELETE( m_pWndMessageNote );
-		pWndChild = NULL;
-	} else
-	if( m_pWndMessengerNote == pWndChild )
-	{
-		SAFE_DELETE( m_pWndMessengerNote );
-		pWndChild = NULL;
-	} else
-	if( m_pWndAddFriend == pWndChild )
-	{
-		SAFE_DELETE( m_pWndAddFriend );
-		pWndChild = NULL;
-	} else
-	if( m_pWndStateConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndStateConfirm );
-		pWndChild = NULL;
-	} else
-	if( m_pWndConfirmBank == pWndChild )
-	{
-		SAFE_DELETE( m_pWndConfirmBank );
-		pWndChild = NULL;
-	} else
-	if( m_pWndPenaltyPK == pWndChild )
-	{
-		SAFE_DELETE( m_pWndPenaltyPK );
-		pWndChild = NULL;
-	} else
-	if( m_pWndBankPassword == pWndChild )
-	{
-		SAFE_DELETE( m_pWndBankPassword );
-		pWndChild = NULL;
-	} else
-	if( m_pWndMessageBox == pWndChild )
-	{
-		SAFE_DELETE( m_pWndMessageBox );
-		pWndChild = NULL;
-	} else
-	if( m_pWndMessageBoxUpper == pWndChild )
-	{
-		SAFE_DELETE( m_pWndMessageBoxUpper );
-		pWndChild = NULL;
-	} else
-	if( m_pWndRevival == pWndChild )
-	{
-		SAFE_DELETE( m_pWndRevival );
-		pWndChild = NULL;
-	} else
-	if( m_pLogOutWaitting == pWndChild )
-	{
-		SAFE_DELETE( m_pLogOutWaitting );
-		pWndChild = NULL;
-	} else
-	if( m_pWndResurrectionConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndResurrectionConfirm );
-		pWndChild = NULL;
-	} else
-	if( m_pReWanted == pWndChild )
-	{
-		SAFE_DELETE( m_pReWanted );
-		pWndChild = NULL;
-	} else
-	if( m_pWanted == pWndChild )
-	{
-		SAFE_DELETE( m_pWanted );
-		pWndChild = NULL;
-	} else
-	if( m_pWndCommItemDlg == pWndChild )
-	{
-		SAFE_DELETE( m_pWndCommItemDlg );
-		pWndChild = NULL;
-	} else
-	if( m_pWndChangeClass1 == pWndChild )
-	{
-		SAFE_DELETE( m_pWndChangeClass1 );
-		pWndChild = NULL;
-	}else
-	if( m_pWndChangeClass2 == pWndChild )
-	{
-		SAFE_DELETE( m_pWndChangeClass2 );
-		pWndChild = NULL;
-	}else		
-	if( m_pWndChangeName == pWndChild )
-	{
-		SAFE_DELETE( m_pWndChangeName );
-		pWndChild = NULL;
-	} else
-	if( m_pWndDialog == pWndChild )
-	{
-		SAFE_DELETE( m_pWndDialog );
-		pWndChild = NULL;
-	} else
-	if( m_pWndShop == pWndChild )
-	{
-		SAFE_DELETE( m_pWndShop );
-		pWndChild = NULL;
-	} else
-	if( m_pWndTrade == pWndChild )
-	{
-		SAFE_DELETE( m_pWndTrade );
-		pWndChild = NULL;
-	} else
-	if( m_pWndTradeGold == pWndChild )
-	{
-		SAFE_DELETE( m_pWndTradeGold );
-		pWndChild = NULL;
-	} else
-	if( m_pWndDropItem == pWndChild )
-	{
-		SAFE_DELETE( m_pWndDropItem );
-		pWndChild = NULL;
-	} else
-	if( m_pWndCommand == pWndChild )
-	{
-		SAFE_DELETE( m_pWndCommand );
-		pWndChild = NULL;
-	} else
-	if( m_pWndRankGuild == pWndChild )
-	{
-		SAFE_DELETE( m_pWndRankGuild );
-		pWndChild = NULL;
-	}else
-	if( m_pWndRankInfo == pWndChild )
-	{
-		SAFE_DELETE( m_pWndRankInfo );
-		pWndChild = NULL;
-	}else
-	if( m_pWndRankWar == pWndChild )
-	{
-		SAFE_DELETE( m_pWndRankWar );
-		pWndChild = NULL;
-	}else
 	if( m_pWndGuildBank == pWndChild )
 	{
 		g_DPlay.SendCloseGuildBankWnd();
@@ -1370,442 +676,6 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 		if( m_pWndTradeGold )
 			m_pWndTradeGold->Destroy();
 	}
-	else if( m_pWndGuildBankLog == pWndChild )
-	{
-		SAFE_DELETE(m_pWndGuildBankLog);
-		pWndChild = NULL;
-	}
-	else if( m_pWndSealChar == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSealChar );
-		pWndChild = NULL;
-	}
-	else if( m_pWndSealCharSelect == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSealCharSelect );
-		pWndChild = NULL;
-	}
-	else if( m_pWndSealCharSend == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSealCharSend );
-		pWndChild = NULL;
-	}
-	else if( m_pWndSealCharSet == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSealCharSet );
-		pWndChild = NULL;
-	}
-	else if( m_pWndGuildConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildConfirm );
-		pWndChild = NULL;
-	}else
-	if( m_pWndGuildWarPeaceConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildWarPeaceConfirm );
-		pWndChild = NULL;
-	} else
-	if( m_pWndGuildWarRequest == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildWarRequest );
-		pWndChild = NULL;
-	} else
-	if( m_pWndDuelConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndDuelConfirm );
-		pWndChild = NULL;
-	}	
-	else
-	if( m_pWndDuelResult == pWndChild )
-	{
-		SAFE_DELETE( m_pWndDuelResult );
-		pWndChild = NULL;
-	}	
-	else
-	if( m_pWndRandomScrollConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndRandomScrollConfirm );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildCombatRanking == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombatRanking );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildWarState == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildWarState );
-		pWndChild = NULL;
-	}
-	else	
-	if( n_pWndGuildCombatResult == pWndChild )
-	{
-		SAFE_DELETE( n_pWndGuildCombatResult );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildCombatBoard == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombatBoard );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildCombatInfoMessageBox2 == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombatInfoMessageBox2 );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildCombatInfoMessageBox == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombatInfoMessageBox );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildCombatOffer == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombatOffer );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildCombatSelection == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombatSelection );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndGuildCombatJoinSelection == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombatJoinSelection );
-		pWndChild = NULL;
-	}
-	else		
-	if( m_pWndUpgradeBase == pWndChild )
-	{
-		SAFE_DELETE( m_pWndUpgradeBase );
-		pWndChild = NULL;
-	}
-	else		
-	if( m_pWndPiercing == pWndChild )
-	{
-		SAFE_DELETE( m_pWndPiercing );
-		pWndChild = NULL;
-	}
-	else if( m_pWndGuildCombat1to1Selection == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGuildCombat1to1Selection );
-		pWndChild = NULL;
-	}
-	else if(m_pWndGuildCombat1to1Offer == pWndChild)
-	{
-		SAFE_DELETE( m_pWndGuildCombat1to1Offer );
-		pWndChild = NULL;
-	}
-	else		
-	if( m_pWndChatLog == pWndChild )
-	{
-		SAFE_DELETE( m_pWndChatLog );
-		pWndChild = NULL;
-	}
-	else if( m_pWndSecretRoomMsg == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSecretRoomMsg );
-		pWndChild = NULL;
-	}
-	else if( m_pWndSecretRoomSelection == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSecretRoomSelection );
-		pWndChild = NULL;
-	}
-	else if(m_pWndSecretRoomOffer == pWndChild)
-	{
-		SAFE_DELETE( m_pWndSecretRoomOffer );
-		pWndChild = NULL;
-	}
-	else if(m_pWndSecretRoomOfferState == pWndChild)
-	{
-		SAFE_DELETE( m_pWndSecretRoomOfferState );
-		pWndChild = NULL;
-	}
-	else if(m_pWndSecretRoomChangeTaxRate == pWndChild)
-	{
-		SAFE_DELETE( m_pWndSecretRoomChangeTaxRate );
-		pWndChild = NULL;
-	}
-	else if(m_pWndSecretRoomCheckTaxRate == pWndChild)
-	{
-		SAFE_DELETE( m_pWndSecretRoomCheckTaxRate );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndFontEdit == pWndChild )
-	{
-		SAFE_DELETE( m_pWndFontEdit );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndInvenRemoveItem == pWndChild )
-	{
-		SAFE_DELETE( m_pWndInvenRemoveItem );
-		pWndChild = NULL;
-	}
-	else	
-	if( m_pWndReSkillWarning == pWndChild )
-	{
-		SAFE_DELETE( m_pWndReSkillWarning );
-		pWndChild = NULL;
-	}
-	else
-	if( m_pWndQueryEquip == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQueryEquip );
-		pWndChild = NULL;
-	}
-	else		
-	if( m_pWndCommerialElem == pWndChild )
-	{
-		SAFE_DELETE( m_pWndCommerialElem );
-		pWndChild = NULL;
-	}
-	else		
-	if( m_pRemoveElem == pWndChild )
-	{
-		SAFE_DELETE( m_pRemoveElem );
-		pWndChild = NULL;
-	}
-	else		
-	if( m_pWndDropConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndDropConfirm );
-		pWndChild = NULL;
-	} 
-	else
-	if( m_pWndCollecting == pWndChild )
-	{
-		SAFE_DELETE( m_pWndCollecting );
-		m_pWndCollecting = NULL;
-	}
-	else
-	if( m_pWndSecretRoomBoard == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSecretRoomBoard );
-		m_pWndSecretRoomBoard = NULL;
-	}
-	else
-	if( m_pWndSecretRoomQuick == pWndChild )
-	{
-		SAFE_DELETE( m_pWndSecretRoomQuick );
-		m_pWndSecretRoomQuick = NULL;
-	}
-	else
-	if( m_pWndLvReqDown == pWndChild )
-	{
-		SAFE_DELETE(m_pWndLvReqDown);
-	}
-	else
-	if( m_pWndAwakening == pWndChild )
-	{
-		SAFE_DELETE(m_pWndAwakening);
-	}
-	else
-	if( m_pWndBlessingCancel == pWndChild )
-	{
-		SAFE_DELETE(m_pWndBlessingCancel);
-	}
-#ifdef __JEFF_11
-	else
-	if( m_pPetRes == pWndChild )
-	{
-		SAFE_DELETE(m_pPetRes);
-	}
-#endif
-
-	if(m_pWndRainbowRaceOffer == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRainbowRaceOffer );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRainbowRaceInfo == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRainbowRaceInfo );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRainbowRaceRule == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRainbowRaceRule );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRainbowRaceRanking == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRainbowRaceRanking );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRainbowRacePrize == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRainbowRacePrize );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRainbowRaceMiniGameButton == pWndChild)
-	{
-		SAFE_DELETE(m_pWndRainbowRaceMiniGameButton);
-		pWndChild = NULL;
-	}
-	else if(m_pWndRainbowRaceMiniGame == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRainbowRaceMiniGame );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRainbowRaceMiniGameEnd == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRainbowRaceMiniGameEnd );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRRMiniGameKawiBawiBo == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRRMiniGameKawiBawiBo );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRRMiniGameDice == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRRMiniGameDice );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRRMiniGameArithmetic == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRRMiniGameArithmetic );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRRMiniGameStopWatch == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRRMiniGameStopWatch );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRRMiniGameTyping == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRRMiniGameTyping );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRRMiniGameCard == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRRMiniGameCard );
-		pWndChild = NULL;
-	}
-	else if(m_pWndRRMiniGameLadder == pWndChild)
-	{
-		SAFE_DELETE( m_pWndRRMiniGameLadder );
-		pWndChild = NULL;
-	}
-	else if(m_pWndCoupleMessage == pWndChild)
-	{
-		SAFE_DELETE( m_pWndCoupleMessage );
-		pWndChild = NULL;
-	}
-	else if(m_pWndChangeAttribute == pWndChild)
-	{
-		SAFE_DELETE( m_pWndChangeAttribute );
-		pWndChild = NULL;
-	}
-#ifdef __FUNNY_COIN
-	else if(m_pFunnyCoinConfirm == pWndChild)
-	{
-		SAFE_DELETE(m_pFunnyCoinConfirm);
-		pWndChild = NULL;
-	}
-#endif //__FUNNY_COIN
-	else if(m_pWndSmeltSafety == pWndChild)
-	{
-		SAFE_DELETE(m_pWndSmeltSafety);
-		pWndChild = NULL;
-	}
-	else if(m_pWndSmeltSafetyConfirm == pWndChild)
-	{
-		SAFE_DELETE(m_pWndSmeltSafetyConfirm);
-		pWndChild = NULL;
-	}
-	else if(m_pWndEquipBindConfirm == pWndChild)
-	{
-		SAFE_DELETE(m_pWndEquipBindConfirm);
-		pWndChild = NULL;
-	}
-	else if(m_pWndRestateConfirm == pWndChild)
-	{
-		SAFE_DELETE(m_pWndRestateConfirm);
-		pWndChild = NULL;
-	}
-	else if( m_pWndBuffPetStatus == pWndChild )
-	{
-		SAFE_DELETE( m_pWndBuffPetStatus );
-		pWndChild = NULL;
-	}
-	else if( m_pWndConfirmVis == pWndChild )
-	{
-		SAFE_DELETE( m_pWndConfirmVis );
-		pWndChild = NULL;
-	}
-#ifdef __QUIZ
-	else if( m_pWndQuizEventConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQuizEventConfirm );
-		pWndChild = NULL;
-	}
-	else if( m_pWndQuizEventQuestionOX == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQuizEventQuestionOX );
-		pWndChild = NULL;
-	}
-	else if( m_pWndQuizEventQuestion4C == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQuizEventQuestion4C );
-		pWndChild = NULL;
-	}
-	else if( m_pWndQuizEventButton == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQuizEventButton );
-		pWndChild = NULL;
-	}
-#endif // __QUIZ
-	else if( m_pWndQuestQuickInfo == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQuestQuickInfo );
-		pWndChild = NULL;
-	}
-	else if( m_pWndQuestDetail == pWndChild )
-	{
-		SAFE_DELETE( m_pWndQuestDetail );
-		pWndChild = NULL;
-	}
-	else if( m_pWndCampusInvitationConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndCampusInvitationConfirm );
-		pWndChild = NULL;
-	}
-	else if( m_pWndCampusSeveranceConfirm == pWndChild )
-	{
-		SAFE_DELETE( m_pWndCampusSeveranceConfirm );
-		pWndChild = NULL;
-	}
-	else if( m_pWndUpkeep == pWndChild )
-	{
-		SAFE_DELETE( m_pWndUpkeep );
-		pWndChild = NULL;
-	}
-#ifdef __YS_CHATTING_BLOCKING_SYSTEM
-	else if( m_pWndChattingBlockingList == pWndChild )
-	{
-		SAFE_DELETE( m_pWndChattingBlockingList );
-		pWndChild = NULL;
-	}
-#endif // __YS_CHATTING_BLOCKING_SYSTEM
-
-#ifdef __GUILD_HOUSE_MIDDLE
-	else if( m_pWndGHBid == pWndChild )
-	{
-		SAFE_DELETE( m_pWndGHBid );
-		pWndChild = NULL;
-	}
-#endif //__GUILD_HOUSE_MIDDLE
 
 //#endif
 	//else
