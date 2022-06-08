@@ -229,6 +229,145 @@ void RenderRadar( C2DRender* p2DRender, CPoint pt, DWORD dwValue, DWORD dwDiviso
 				
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CWndMgr::WNDREGINFO::WNDREGINFO(const WNDREGINFO & other) {
+	dwSize = 0;
+	lpArchive = nullptr;
+	operator=(other);
+}
+
+CWndMgr::WNDREGINFO::WNDREGINFO(WNDREGINFO && other) noexcept {
+	dwSize = 0;
+	lpArchive = nullptr;
+	operator=(std::move(other));
+}
+
+void CWndMgr::WNDREGINFO::EnsureNoData() {
+	if (dwSize != 0) {
+		delete[] lpArchive;
+		lpArchive = nullptr;
+		dwSize = 0;
+	}
+}
+
+CWndMgr::WNDREGINFO & CWndMgr::WNDREGINFO::operator=(const WNDREGINFO & other) {
+	if (this == &other) return *this;
+
+	EnsureNoData();
+
+	dwWndId = other.dwWndId;
+	rect = other.rect;
+	bOpen = other.bOpen;
+	dwVersion = other.dwVersion;
+	dwWndSize = other.dwWndSize;
+	dwSize = other.dwSize;
+	if (dwSize != 0) {
+		lpArchive = new BYTE[dwSize];
+		std::memcpy(lpArchive, other.lpArchive, dwSize);
+	} else {
+		lpArchive = nullptr;
+	}
+
+	return *this;
+}
+
+CWndMgr::WNDREGINFO & CWndMgr::WNDREGINFO::operator=(WNDREGINFO && other) noexcept {
+	if (this == &other) return *this;
+	
+	dwWndId = other.dwWndId;
+	rect = other.rect;
+	bOpen = other.bOpen;
+	dwVersion = other.dwVersion;
+	dwWndSize = other.dwWndSize;
+	std::swap(dwSize, other.dwSize);
+	std::swap(lpArchive, other.lpArchive);
+
+	return *this;
+}
+
+CWndMgr::WNDREGINFO::~WNDREGINFO() {
+	if (lpArchive) delete lpArchive;
+}
+
+CWndMgr::WNDREGINFO::WNDREGINFO(CFileIO & file) {
+	file.Read(&dwWndId, sizeof(dwWndId));
+	file.Read(&rect, sizeof(rect));
+	file.Read(&dwWndSize, sizeof(dwWndSize));
+	file.Read(&bOpen, sizeof(bOpen));
+	file.Read(&dwVersion, sizeof(dwVersion));
+	file.Read(&dwSize, sizeof(dwSize));
+
+	if (dwSize != 0) {
+		lpArchive = new BYTE[dwSize];
+		file.Read(lpArchive, dwSize);
+	} else {
+		lpArchive = nullptr;
+	}
+
+	if (rect.left < 0) rect.left = 0;
+	if (rect.top < 0) rect.top = 0;
+}
+
+void CWndMgr::WNDREGINFO::StoreIn(CFileIO & file) const {
+	file.Write(&dwWndId, sizeof(dwWndId));
+	file.Write(&rect, sizeof(rect));
+	file.Write(&dwWndSize, sizeof(dwWndSize));
+	file.Write(&bOpen, sizeof(bOpen));
+	file.Write(&dwVersion, sizeof(dwVersion));
+	file.Write(&dwSize, sizeof(dwSize));
+	if (dwSize != 0) {
+		file.Write(lpArchive, dwSize);
+	}
+}
+
+CWndMgr::WNDREGINFO::WNDREGINFO(CWndNeuz & pWndNeuz, BOOL bOpen) {
+	dwWndId = pWndNeuz.GetWndId();
+	rect = pWndNeuz.GetWindowRect(TRUE);
+	bOpen = bOpen;
+	dwVersion = 0;
+	dwWndSize = pWndNeuz.m_nWinSize;
+
+	// Write
+	CAr ar;
+	pWndNeuz.SerializeRegInfo(ar, dwVersion);
+
+	int nSize;
+	BYTE * lpData = ar.GetBuffer(&nSize);
+	if (nSize != 0) {
+		lpArchive = new BYTE[nSize];
+		dwSize = nSize;
+		memcpy(lpArchive, lpData, nSize);
+	} else {
+		lpArchive = nullptr;
+		dwSize = 0;
+	}
+}
+
+void CWndMgr::WNDREGINFO::RestoreParameters(CWndNeuz & pWndBase) const {
+	if (dwSize) {
+		// load
+		CAr ar(lpArchive, dwSize);
+		DWORD dwVersion = this->dwVersion;
+		pWndBase.SerializeRegInfo(ar, dwVersion);
+	}
+
+	if (pWndBase.IsWndStyle(WBS_THICKFRAME)) {
+		if (dwWndSize == WSIZE_WINDOW) {
+			pWndBase.SetSizeWnd();
+			pWndBase.SetWndRect(rect);
+		}
+
+		if (dwWndSize == WSIZE_MAX) {
+			pWndBase.SetSizeMax();
+		}
+	} else {
+		const CRect wndRect = pWndBase.GetWindowRect();
+		pWndBase.SetWndRect(CRect(rect.TopLeft(), wndRect.Size()));
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -600,11 +739,6 @@ void CWndMgr::AlighWindow( CRect rcOld, CRect rcNew )
 
 void CWndMgr::Free()
 {
-
-	for (WNDREGINFO * pWndRegInfo : m_mapWndRegInfo | std::views::values) {
-		SAFE_DELETE(pWndRegInfo->lpArchive);
-		delete pWndRegInfo;
-	}
 	m_mapWndRegInfo.clear();
 	
 	SAFE_DELETE(m_pWndCollecting);
@@ -838,9 +972,9 @@ void CWndMgr::DestroyApplet()
 		// 내부에서 파괴되면 크로즈로 판단하기 때문에 재실행시 윈도가 열리지 않게 된다.
 		//pWndBase->SetPutRegInfo( FALSE );
 		// 이제 여기서 임의로 오픈되어 있다고 저장하자.
-		//PutRegInfo( dwIdApplet, pWndBase->GetWindowRect( TRUE), TRUE );
 		if( pWndBase->IsPutRegInfo() )
-			PutRegInfo( pWndBase, TRUE );//dwIdApplet, pWndBase->GetWindowRect( TRUE), TRUE );
+			PutRegInfo( pWndBase, TRUE );
+
 		// 이제 다 끝났다. 파괴하자.
 		safe_delete( pWndBase );
 	}
@@ -2227,27 +2361,7 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 	const auto itWndRegInfo = m_mapWndRegInfo.find(dwIdApplet);
 
 	if (itWndRegInfo != m_mapWndRegInfo.end()) {
-		WNDREGINFO * const pWndRegInfo = itWndRegInfo->second;
-
-		if (pWndRegInfo->dwSize) {
-			// load
-			CAr ar(pWndRegInfo->lpArchive, pWndRegInfo->dwSize);
-			pWndBase->SerializeRegInfo(ar, pWndRegInfo->dwVersion);
-		}
-
-		if (pWndBase->IsWndStyle(WBS_THICKFRAME)) {
-			if (pWndRegInfo->dwWndSize == WSIZE_WINDOW) {
-				pWndBase->SetSizeWnd();
-				pWndBase->SetWndRect(pWndRegInfo->rect);
-			}
-
-			if (pWndRegInfo->dwWndSize == WSIZE_MAX) {
-				pWndBase->SetSizeMax();
-			}
-		} else {
-			const CRect wndRect = pWndBase->GetWindowRect();
-			pWndBase->SetWndRect(CRect(pWndRegInfo->rect.TopLeft(), wndRect.Size()));
-		}
+		itWndRegInfo->second.RestoreParameters(*pWndBase);
 	}
 
 	m_mapWndApplet.SetAt( dwIdApplet, pWndBase );
@@ -5913,74 +6027,10 @@ CWndInstantMsg* CWndMgr::OpenInstantMsg( LPCTSTR lpszFrom )
 }
 
 // 컬런트 윈도가 닫힐 때 호출 됨 
-BOOL CWndMgr::PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen )
-{
-	WNDREGINFO * pWndRegInfo = NULL;
-
-	if (auto it = m_mapWndRegInfo.find(pWndNeuz->GetWndId()); it != m_mapWndRegInfo.end()) {
-		SAFE_DELETE(pWndRegInfo->lpArchive);
-		pWndRegInfo->dwSize = 0;
-	} else {
-		pWndRegInfo = new WNDREGINFO;
-		m_mapWndRegInfo.emplace(pWndNeuz->GetWndId(), pWndRegInfo);
-	}
-
-	pWndRegInfo->dwWndId = pWndNeuz->GetWndId();
-	pWndRegInfo->rect = pWndNeuz->GetWindowRect( TRUE );
-	pWndRegInfo->bOpen = bOpen;
-	pWndRegInfo->dwWndSize = pWndNeuz->m_nWinSize;
-	pWndRegInfo->dwVersion = 0;
-	CAr ar;
-	// Write
-	pWndNeuz->SerializeRegInfo( ar, pWndRegInfo->dwVersion );
-
-	int nSize;
-	BYTE * lpData = ar.GetBuffer( &nSize );
-	if( nSize )
-	{
-		pWndRegInfo->lpArchive = new BYTE[ nSize ];
-		pWndRegInfo->dwSize = nSize;
-		memcpy( pWndRegInfo->lpArchive, lpData, nSize );
-	}
-	else
-	{
-		pWndRegInfo->lpArchive = NULL;
-		pWndRegInfo->dwSize = 0;
-	}
-
-	return TRUE;
+void CWndMgr::PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen ) {
+	m_mapWndRegInfo.insert_or_assign(pWndNeuz->GetWndId(), WNDREGINFO(*pWndNeuz, bOpen));
 }
-// 로드한 레지스트리인포를 세트할때 
-BOOL CWndMgr::PutRegInfo(WNDREGINFO * lpRegInfo )
-{
-	if (const auto it = m_mapWndRegInfo.find(lpRegInfo->dwWndId); it != m_mapWndRegInfo.end()) {
-		// 갱신 
-		WNDREGINFO * pWndRegInfo = it->second;
-		
-		SAFE_DELETE( pWndRegInfo->lpArchive );
-		memcpy( pWndRegInfo, lpRegInfo, sizeof( WNDREGINFO ) );
-		if( lpRegInfo->dwSize )
-		{
-			pWndRegInfo->lpArchive = new BYTE[ lpRegInfo->dwSize ];
-			memcpy( pWndRegInfo->lpArchive, lpRegInfo->lpArchive, lpRegInfo->dwSize );
-		}
-		else
-			pWndRegInfo->lpArchive = NULL;
-		return FALSE;
-	}
-	
-	WNDREGINFO * pWndRegInfo = new WNDREGINFO;
-	memcpy( pWndRegInfo, lpRegInfo, sizeof( WNDREGINFO ) );
-	if( lpRegInfo->dwSize )
-	{
-		pWndRegInfo->lpArchive = new BYTE[ lpRegInfo->dwSize ];
-		memcpy( pWndRegInfo->lpArchive, lpRegInfo->lpArchive, lpRegInfo->dwSize );
-	}
-	else
-		pWndRegInfo->lpArchive = NULL;
-	m_mapWndRegInfo.emplace( lpRegInfo->dwWndId, pWndRegInfo );
-	return TRUE;
-}
+
 BOOL CWndMgr::SaveRegInfo( LPCTSTR lpszFileName )
 {
 	CFileIO file;
@@ -5990,15 +6040,8 @@ BOOL CWndMgr::SaveRegInfo( LPCTSTR lpszFileName )
 	file.PutDW( REG_VERSION );
 	file.PutDW( m_mapWndRegInfo.size() );
 
-	for (const auto & [dwWndId, pWndRegInfo] : m_mapWndRegInfo) {
-		file.Write( &pWndRegInfo->dwWndId, sizeof( pWndRegInfo->dwWndId ) );
-		file.Write( &pWndRegInfo->rect, sizeof( pWndRegInfo->rect ) );
-		file.Write( &pWndRegInfo->dwWndSize, sizeof( pWndRegInfo->dwWndSize ) );
-		file.Write( &pWndRegInfo->bOpen, sizeof( pWndRegInfo->bOpen ) );
-		file.Write( &pWndRegInfo->dwVersion, sizeof( pWndRegInfo->dwVersion ) );
-		file.Write( &pWndRegInfo->dwSize, sizeof( pWndRegInfo->dwSize ) );
-		if( pWndRegInfo->dwSize )
-			file.Write( pWndRegInfo->lpArchive, pWndRegInfo->dwSize );
+	for (const auto & pWndRegInfo : m_mapWndRegInfo | std::views::values) {
+		pWndRegInfo.StoreIn(file);
 	}
 	file.Close();
 	// resolution 파일 만들기. 현재 사이즈로 저장
@@ -6028,66 +6071,13 @@ BOOL CWndMgr::LoadRegInfo( LPCTSTR lpszFileName )
 			DWORD dwRegVersion = file.GetDW();
 			if( dwRegVersion != REG_VERSION )
 				return FALSE;
-			WNDREGINFO wndRegInfo;
-			//CWndBase* pWndBase; 
+
 			int nNum = file.GetDW();
-			for( int i = 0; i < nNum; i++ )
-			{
-				file.Read( &wndRegInfo.dwWndId, sizeof( wndRegInfo.dwWndId ) );
-				file.Read( &wndRegInfo.rect, sizeof( wndRegInfo.rect ) );
-				file.Read( &wndRegInfo.dwWndSize, sizeof( wndRegInfo.dwWndSize ) );
-				file.Read( &wndRegInfo.bOpen, sizeof( wndRegInfo.bOpen ) );
-				file.Read( &wndRegInfo.dwVersion, sizeof( wndRegInfo.dwVersion ) );
-				file.Read( &wndRegInfo.dwSize, sizeof( wndRegInfo.dwSize ) );
-				if( wndRegInfo.dwSize )
-				{
-					wndRegInfo.lpArchive = new BYTE[ wndRegInfo.dwSize ];
-					file.Read( wndRegInfo.lpArchive, wndRegInfo.dwSize );
-				}
-				else
-					wndRegInfo.lpArchive = NULL;
-				if(wndRegInfo.rect.left < 0 )
-					wndRegInfo.rect.left = 0;
-				if(wndRegInfo.rect.top < 0)
-					wndRegInfo.rect.top = 0;
-				/*if( wndRegInfo.bOpen )
-				{
-					pWndBase = CreateApplet( wndRegInfo.dwWndId );
-					if( pWndBase )
-					{
-						if( wndRegInfo.dwSize )
-						{
-							// load
-							CAr ar( wndRegInfo.lpArchive, wndRegInfo.dwSize );
-							((CWndNeuz*)pWndBase)->SerializeRegInfo( ar, wndRegInfo.dwVersion );
-						}
-						if( pWndBase->IsWndStyle( WBS_THICKFRAME ) )
-						{
-							if( wndRegInfo.dwWndSize == WSIZE_WINDOW )
-							{
-								((CWndNeuz*)pWndBase)->SetSizeWnd();
-								pWndBase->SetWndRect( wndRegInfo.rect );
-							}								
-							if( wndRegInfo.dwWndSize == WSIZE_MAX )
-								((CWndNeuz*)pWndBase)->SetSizeMax();
-						}
-						else
-						{
-							CRect wndRect = pWndBase->GetWindowRect();	
-							pWndBase->SetWndRect( 
-								CRect( 
-								wndRegInfo.rect.left, 
-								wndRegInfo.rect.top, 
-								wndRegInfo.rect.left + wndRect.Width(), 
-								wndRegInfo.rect.top + wndRect.Height() 
-								) );
-						}							
-					}
-				}*/
-				PutRegInfo( &wndRegInfo );//.dwWndId, wndRegInfo.rect, wndRegInfo.bOpen );
-				SAFE_DELETE( wndRegInfo.lpArchive );
-				//PutRegInfo( wndRegInfo.dwWndId, wndRegInfo.rect, wndRegInfo.bOpen );
+			for (int i = 0; i < nNum; i++) {
+				WNDREGINFO wndRegInfo(file);
+				m_mapWndRegInfo.insert_or_assign(wndRegInfo.GetWndId(), std::move(wndRegInfo));
 			}
+
 			file.Close();
 		}
 	}

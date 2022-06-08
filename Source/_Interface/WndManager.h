@@ -128,18 +128,6 @@ class CWndSelectVillage;
 #define PS_USE_MACRO     0x00000001
 #define PS_NOT_MACRO     0x00000002
 
-
-struct WNDREGINFO
-{
-	DWORD dwWndId;
-	CRect rect;
-	BOOL  bOpen;
-	DWORD dwVersion;
-	DWORD dwWndSize;
-	DWORD dwSize;
-	BYTE* lpArchive;
-};
-
 struct AppletFunc
 {
 	CWndNeuz* (*m_pFunc)();
@@ -204,6 +192,39 @@ class CWndMap;
 
 class CWndMgr : public CWndBase
 { 
+private:
+	class WNDREGINFO {
+	private:
+		DWORD dwWndId;
+		CRect rect;
+		BOOL  bOpen;
+		DWORD dwVersion;
+		DWORD dwWndSize;
+		DWORD dwSize;
+		BYTE * lpArchive;
+
+	public:
+		// CWndNeuz
+		WNDREGINFO(CWndNeuz & pWndNeuz, BOOL bOpen);
+		void RestoreParameters(CWndNeuz & pWndBase) const;
+
+		// CFileIO
+		explicit WNDREGINFO(CFileIO & file);
+		void StoreIn(CFileIO & file) const;
+
+		// It works
+		WNDREGINFO(const WNDREGINFO &);
+		WNDREGINFO(WNDREGINFO &&) noexcept;
+		WNDREGINFO & operator=(const WNDREGINFO &);
+		WNDREGINFO & operator=(WNDREGINFO &&) noexcept;
+		~WNDREGINFO();
+
+		// Everybody likes getters
+		[[nodiscard]] DWORD GetWndId() const noexcept { return dwWndId; }
+	private:
+		void EnsureNoData();
+	};
+
 	CString m_strChatBackup;
 	CTimer m_timerDobe;
 #ifdef __BAN_CHATTING_SYSTEM
@@ -530,7 +551,7 @@ public:
 	CWndChangeClass2*	m_pWndChangeClass2;
 
 	CMapDWordToPtr	m_mapWndApplet ;
-	std::map<DWORD, WNDREGINFO *>  m_mapWndRegInfo;
+	std::map<DWORD, WNDREGINFO>  m_mapWndRegInfo;
 
 	void PutDestParam( DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString &str );	
 	void PutDefinedString( DWORD dwText, ... );
@@ -658,9 +679,8 @@ public:
 
 	BOOL LoadRegInfo( LPCTSTR lpszFileName );
 	BOOL SaveRegInfo( LPCTSTR lpszFileName );
-	BOOL PutRegInfo( DWORD dwWndId, CRect rect, BOOL bOpen );
-	BOOL PutRegInfo(WNDREGINFO * lpRegInfo );
-	BOOL PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen );
+	void PutRegInfo(const WNDREGINFO * lpRegInfo );
+	void PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen );
 
 
 	CWndBase* GetWndVendorBase( void );

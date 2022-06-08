@@ -99,11 +99,6 @@ CWndNeuz::~CWndNeuz()
 	// PLAYSND( SND_INF_CLOSE );
 	for( int i = 0; i < m_wndArrayTemp.GetSize(); i++ )
 		safe_delete( (CWndBase*)m_wndArrayTemp.GetAt( i ) );
-#ifdef __CLIENT
-	// 애플렛으로 등록된 윈도만 파괴할 때 윈도의 정보를 저장한다. 
-	//if( g_WndMng.GetAppletFunc( GetWndId() ) && m_bPutRegInfo )
-	//	g_WndMng.PutRegInfo( this, 1, FALSE );
-	//	g_WndMng.PutRegInfo( GetWndId(), GetWindowRect( TRUE ), FALSE );
 	// 타일 형태의 윈도는 윈도가 종료할 때 텍스춰를 파괴해야한다.
 	if( m_strTexture.IsEmpty() == FALSE )
 	{
@@ -112,7 +107,6 @@ CWndNeuz::~CWndNeuz()
 		strTextureId.Format( "%p", this );
 		m_textureMng.RemoveTexture( strTextureId );
 	}
-#endif
 }
 #ifdef __CLIENT
 void CWndNeuz::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
