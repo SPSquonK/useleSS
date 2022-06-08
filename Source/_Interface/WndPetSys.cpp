@@ -2217,8 +2217,14 @@ BOOL CWndBuffPetStatus::Process()
 
 void CWndBuffPetStatus::UpdateVisState( )
 {
-	if( g_pPlayer )
-		m_cVisStates = g_pPlayer->GetValidVisTable( g_pPlayer->GetVisPetItem( ) );
+	if (g_pPlayer) {
+		const CItemElem * pet = g_pPlayer->GetVisPetItem();
+		if (pet) {
+			m_cVisStates = CMover::GetValidVisTable(*pet);
+		} else {
+			m_cVisStates.clear();
+		}
+	}
 }
 
 
@@ -2431,7 +2437,7 @@ void CWndBuffPetStatus::DrawSlotItems( C2DRender* p2DRender )
 			if(m_pTexture[ i ] != NULL)
 			{
 				
-				DWORD color = ( m_cVisStates[i] == SUCCSESS_NEEDVIS ? 0xffffffff : 0x4fffffff );
+				DWORD color = ( m_cVisStates[i] == NeedVis::Success ? 0xffffffff : 0x4fffffff );
 
 				wndCtrl = GetWndCtrl( m_nCtrlId[i] );
 				if( wndCtrl )

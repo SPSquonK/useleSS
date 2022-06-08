@@ -179,7 +179,7 @@ protected:
 
 	CWndConfirmVis* m_pWndConfirmVis;
 
-	std::vector<BYTE> m_cVisStates;
+	boost::container::small_vector<NeedVis, MAX_VIS> m_cVisStates;
 	CTexture* m_pTexPetStatusBg;
 
 	float	m_fRadius;

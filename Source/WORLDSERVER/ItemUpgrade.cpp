@@ -1574,9 +1574,8 @@ void CItemUpgrade::SetPetVisItem( CUser* pUser, OBJID objIdVis )
 		return;
 	}
 
-	if( pUser->IsSatisfyNeedVis( pItemElemPet, pVisProp ) != SUCCSESS_NEEDVIS )
-	{
-		pUser->AddDefinedText( TID_GAME_BUFFPET_REQVIS );
+	if (pUser->IsSatisfyNeedVis(*pItemElemPet, *pVisProp) != NeedVis::Success) {
+		pUser->AddDefinedText(TID_GAME_BUFFPET_REQVIS);
 		return;
 	}
 

@@ -4942,16 +4942,16 @@ void CWndMgr::PutNeededVis( CItemElem* pItemElem, CEditString* pEdit )
 	CString strTemp;
 	DWORD color = 0xffffffff;
 
-	BYTE byState = 0;
+	NeedVis byState;
 	CItemElem* pPetItem = g_pPlayer->GetVisPetItem( );
 	if( !pPetItem )
 	{
 		//버프펫이 활성화가 안되어있따면, 필요비스 걍 빨간색으로 출력 
-		byState = FAILED_BOTH_NEEDVIS;
+		byState = NeedVis::FailedBoth;
 	}
 	else
 	{
-		byState = g_pPlayer->IsSatisfyNeedVis( pPetItem, pItemPropVis );
+		byState = CMover::IsSatisfyNeedVis( *pPetItem, *pItemPropVis );
 	}
 
 	if( NULL_ID != dwNeeds[0] && 0 != dwNeeds[ 0 ] )
@@ -4960,7 +4960,7 @@ void CWndMgr::PutNeededVis( CItemElem* pItemElem, CEditString* pEdit )
 		strTemp.Format( "\n%s: %s", GETTEXT( TID_GAME_BUFFPET_REQUIRE ), pProp->szName ); //필요비스
 
 		color = 0xff000000;
-		if( FAILED_BOTH_NEEDVIS == byState || FAILED_1ST_NEEDVIS == byState )
+		if(NeedVis::FailedBoth == byState || NeedVis::Failed1st == byState )
 			color = 0xffff0000;
 
 		pEdit->AddString( strTemp, color );
@@ -4972,7 +4972,7 @@ void CWndMgr::PutNeededVis( CItemElem* pItemElem, CEditString* pEdit )
 		strTemp.Format( "\n%s: %s", GETTEXT( TID_GAME_BUFFPET_REQUIRE), pProp->szName );
 
 		color = 0xff000000;
-		if( FAILED_BOTH_NEEDVIS == byState || FAILED_2ND_NEEDVIS == byState )
+		if(NeedVis::FailedBoth == byState || NeedVis::Failed2nd == byState )
 			color = 0xffff0000;
 		
 		pEdit->AddString( strTemp, color );
@@ -5005,9 +5005,9 @@ void CWndMgr::PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit )
 		if( time_null() >= pItemElem->GetVisKeepTime( ia ) )
 			continue;
 
-		BOOL bOK = g_pPlayer->IsSatisfyNeedVis( pItemElem, pProp );		
+		NeedVis bOK = CMover::IsSatisfyNeedVis( *pItemElem, *pProp );
 
-		if( SUCCSESS_NEEDVIS == bOK )		//OK 활성중임.
+		if(NeedVis::Success == bOK )		//OK 활성중임.
 		{
 			for( int iaa = 0; iaa < MAX_PROP; ++iaa )
 			{

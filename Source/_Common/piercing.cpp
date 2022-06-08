@@ -147,7 +147,7 @@ void CPiercing::SetVisKeepTime( int nth, time_t tmKeep )
 	m_vtmPetVis[nth] = tmKeep;
 }
 
-time_t CPiercing::GetVisKeepTime( int nth )
+time_t CPiercing::GetVisKeepTime( int nth ) const
 {
 	if( nth >= GetPiercingSize() || nth >= (int)( m_vtmPetVis.size() ) )
 		return 0;

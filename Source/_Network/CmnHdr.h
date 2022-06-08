@@ -558,11 +558,7 @@ ADDSMMODE, *PADDSMMODE;
 #define	MAX_PIERCING			10
 #define MAX_VIS					9
 
-#define	FAILED_BOTH_NEEDVIS	0
-#define	FAILED_1ST_NEEDVIS	1
-#define	FAILED_2ND_NEEDVIS	2
-#define SUCCSESS_NEEDVIS	3
-#define UNDEFINED_NEEDVIS	4
+enum class NeedVis { FailedBoth, Failed1st, Failed2nd, Success, Undefined };
 
 typedef	struct	_LogItemInfo	// ItemLogæ≤¿”
 {

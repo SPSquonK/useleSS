@@ -2145,11 +2145,11 @@ void CMover::SetPetVisDST( CItemElem* pItemElem )
 	{
 		AddBuff( BUFF_EQUIP, (WORD)( pItemElem->m_dwItemId ), 1, 999999999 );
 		
-		std::vector<BYTE> vecValidTable = GetValidVisTable( pItemElem );
+		const auto vecValidTable = GetValidVisTable(*pItemElem);
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
 		{
 			ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );
-			if( vecValidTable[i] == SUCCSESS_NEEDVIS && pItemProp )
+			if( vecValidTable[i] == NeedVis::Success && pItemProp )
 			{
 				SetDestParam( 0, pItemProp );
 				SetDestParam( 1, pItemProp );
@@ -2170,11 +2170,11 @@ void CMover::ResetPetVisDST( CItemElem* pItemElem )
 	{
 		m_buffs.RemoveBuff( BUFF_EQUIP, (WORD)( pItemElem->m_dwItemId ), FALSE );
 
-		std::vector<BYTE> vecValidTable = GetValidVisTable( pItemElem );
+		const auto vecValidTable = GetValidVisTable( *pItemElem );
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
 		{
 			ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );
-			if( vecValidTable[i] == SUCCSESS_NEEDVIS && pItemProp )
+			if( vecValidTable[i] == NeedVis::Success && pItemProp )
 			{
 				ResetDestParam( 0, pItemProp );
 				ResetDestParam( 1, pItemProp );
@@ -2207,91 +2207,100 @@ void CMover::ProcessVisPet()
 
 #endif	// __WORLDSERVER
 
-std::vector<BYTE> CMover::GetValidVisTable( CItemElem* pItemElem )
-{
-	std::vector<BYTE> vecTemp;
-	vecTemp.resize( pItemElem->GetPiercingSize(), UNDEFINED_NEEDVIS );
+boost::container::small_vector<NeedVis, MAX_VIS> CMover::GetValidVisTable(const CItemElem & pItemElem ) {
+	using VisAvailibity = boost::container::small_vector<NeedVis, MAX_VIS>;
 
-	for( DWORD i=0; i<vecTemp.size(); i++ )
-		if( pItemElem->GetPiercingItem( i ) == 0 )
-			vecTemp[i] = FAILED_BOTH_NEEDVIS;
-	
-	for( DWORD i=0; i<vecTemp.size(); i++ )
-		if( vecTemp[i] == UNDEFINED_NEEDVIS )
-			SetValidNeedVis( pItemElem, i, vecTemp );
+	struct Util {
+		// Using a struct and not a lambda because recursive lambda are hard
+		Util() = default;
 
-	return vecTemp;
-}
+		/// Compute the status of vecValid[nPos]
+		static bool SetValidNeedVis(const CItemElem & pItemElem, int nPos, VisAvailibity & vecValid) {
+			// Already computed
+			if (vecValid[nPos] != NeedVis::Undefined) {
+				return vecValid[nPos] == NeedVis::Success;
+			}
 
-BOOL CMover::SetValidNeedVis( CItemElem* pItemElem, int nPos, std::vector<BYTE> & vecValid )
-{
-	if( vecValid[nPos] != UNDEFINED_NEEDVIS )
-		return ( vecValid[nPos] == SUCCSESS_NEEDVIS );
-	
-	ItemProp* pPropVis = prj.GetItemProp( pItemElem->GetPiercingItem( nPos ) );
-	if( !pPropVis )
-	{
-		vecValid[nPos] = FAILED_BOTH_NEEDVIS;
-		return FALSE;
+			// Unknown
+			const ItemProp * pPropVis = prj.GetItemProp(pItemElem.GetPiercingItem(nPos));
+			if (!pPropVis) {
+				vecValid[nPos] = NeedVis::FailedBoth;
+				return false;
+			}
+
+			// No requirement
+			if (pPropVis->dwReferTarget1 == NULL_ID && pPropVis->dwReferTarget2 == NULL_ID) {
+				vecValid[nPos] = NeedVis::Success;
+				return true;
+			}
+
+			bool bResult1 = false;
+			bool bResult2 = false;
+			if (pPropVis->dwReferTarget1 == NULL_ID) bResult1 = true;
+			if (pPropVis->dwReferTarget2 == NULL_ID) bResult2 = true;
+
+			for (int i = 0; i < pItemElem.GetPiercingSize(); i++) {
+				if (pPropVis->dwReferTarget1 == pItemElem.GetPiercingItem(i))
+					bResult1 = SetValidNeedVis(pItemElem, i, vecValid);
+
+				if (pPropVis->dwReferTarget2 == pItemElem.GetPiercingItem(i))
+					bResult2 = SetValidNeedVis(pItemElem, i, vecValid);
+
+				if (bResult1 && bResult2) {
+					vecValid[nPos] = NeedVis::Success;
+					return true;
+				}
+			}
+
+			if (!bResult1 && bResult2)
+				vecValid[nPos] = NeedVis::Failed1st;
+			else if (bResult1 && !bResult2)
+				vecValid[nPos] = NeedVis::Failed2nd;
+			else
+				vecValid[nPos] = NeedVis::FailedBoth;
+
+			return false;
+		}
+	};
+
+	VisAvailibity retval;
+	retval.resize(pItemElem.GetPiercingSize(), NeedVis::Undefined);
+
+	for (size_t i = 0; i != retval.size(); ++i) {
+		if (pItemElem.GetPiercingItem(i) == 0) {
+			retval[i] = NeedVis::FailedBoth;
+		}
 	}
-
-	if( pPropVis->dwReferTarget1 == NULL_ID && pPropVis->dwReferTarget2 == NULL_ID )
-	{
-		vecValid[nPos] = SUCCSESS_NEEDVIS;
-		return TRUE;
-	}
-
-	BOOL bResult1 = FALSE, bResult2 = FALSE;
-	if( pPropVis->dwReferTarget1 == NULL_ID ) bResult1 = TRUE;
-	if( pPropVis->dwReferTarget2 == NULL_ID ) bResult2 = TRUE;
-
-	for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
-	{
-		if( pPropVis->dwReferTarget1 == pItemElem->GetPiercingItem( i ) )
-			bResult1 = SetValidNeedVis( pItemElem, i, vecValid );
-
-		if( pPropVis->dwReferTarget2 == pItemElem->GetPiercingItem( i ) )
-			bResult2 = SetValidNeedVis( pItemElem, i, vecValid );
-
-		if( bResult1 && bResult2 )
-		{
-			vecValid[nPos] = SUCCSESS_NEEDVIS;
-			return TRUE;
+	
+	for (size_t i = 0; i != retval.size(); ++i) {
+		if (retval[i] == NeedVis::Undefined) {
+			Util::SetValidNeedVis(pItemElem, i, retval);
 		}
 	}
 
-	if( !bResult1 && bResult2 )
-		vecValid[nPos] = FAILED_1ST_NEEDVIS;
-	else if( bResult1 && !bResult2 )
-		vecValid[nPos] = FAILED_2ND_NEEDVIS;
-	else
-		vecValid[nPos] = FAILED_BOTH_NEEDVIS;
-	return FALSE;
+	return retval;
 }
 
-BYTE CMover::IsSatisfyNeedVis( CItemElem* pItemElemVisPet, ItemProp* pItemPropVis )
-{
-	if( pItemPropVis )
-	{
-		DWORD	dwNeeds[2] = { pItemPropVis->dwReferTarget1, pItemPropVis->dwReferTarget2 };
-		if( dwNeeds[0] == NULL_ID && dwNeeds[1] == NULL_ID )
-			return SUCCSESS_NEEDVIS;
+NeedVis CMover::IsSatisfyNeedVis(const CItemElem & pItemElemVisPet, const ItemProp & pItemPropVis) {
+	DWORD	dwNeeds[2] = { pItemPropVis.dwReferTarget1, pItemPropVis.dwReferTarget2 };
+
+	if( dwNeeds[0] == NULL_ID && dwNeeds[1] == NULL_ID ) return NeedVis::Success;
 		
-		std::vector<BYTE> vecValidTable = GetValidVisTable( pItemElemVisPet );
-		for( int i=0; i<pItemElemVisPet->GetPiercingSize(); i++ )	// 필요 비스가 충족되지 않은 경우는 능력치가 적용되지 않았으므로 능력치를 빼면 안된다.
-		{
-			DWORD dwVis = pItemElemVisPet->GetPiercingItem( i );
-			if( dwNeeds[0] == dwVis && vecValidTable[i] == SUCCSESS_NEEDVIS && time_null() < pItemElemVisPet->GetVisKeepTime( i ) )	dwNeeds[0] = NULL_ID;
-			if( dwNeeds[1] == dwVis && vecValidTable[i] == SUCCSESS_NEEDVIS && time_null() < pItemElemVisPet->GetVisKeepTime( i ) )	dwNeeds[1] = NULL_ID;
-			if( dwNeeds[0] == NULL_ID && dwNeeds[1] == NULL_ID )
-				return SUCCSESS_NEEDVIS;
-		}
+	const auto vecValidTable = GetValidVisTable( pItemElemVisPet );
+
+	for( int i=0; i<pItemElemVisPet.GetPiercingSize(); i++ )	// 필요 비스가 충족되지 않은 경우는 능력치가 적용되지 않았으므로 능력치를 빼면 안된다.
+	{
+		DWORD dwVis = pItemElemVisPet.GetPiercingItem( i );
+		if( dwNeeds[0] == dwVis && vecValidTable[i] == NeedVis::Success && time_null() < pItemElemVisPet.GetVisKeepTime( i ) )	dwNeeds[0] = NULL_ID;
+		if( dwNeeds[1] == dwVis && vecValidTable[i] == NeedVis::Success && time_null() < pItemElemVisPet.GetVisKeepTime( i ) )	dwNeeds[1] = NULL_ID;
+		if( dwNeeds[0] == NULL_ID && dwNeeds[1] == NULL_ID )
+			return NeedVis::Success;
+	}
 			
 		if( dwNeeds[0] != NULL_ID && dwNeeds[1] == NULL_ID )
-			return FAILED_1ST_NEEDVIS;
+			return NeedVis::Failed1st;
 		else if( dwNeeds[0] == NULL_ID && dwNeeds[1] != NULL_ID )
-			return FAILED_2ND_NEEDVIS;
-	}
+			return NeedVis::Failed2nd;
 
-	return FAILED_BOTH_NEEDVIS;
+	return NeedVis::FailedBoth;
 }

@@ -36,5 +36,5 @@ private:
 public:
 	void	SetVisKeepTimeSize( int nSize )	{ m_vtmPetVis.resize( min( nSize, MAX_VIS ), 0 ); }
 	void	SetVisKeepTime( int nth, time_t tmKeep );
-	time_t	GetVisKeepTime( int nth );
+	time_t	GetVisKeepTime( int nth ) const;
 };

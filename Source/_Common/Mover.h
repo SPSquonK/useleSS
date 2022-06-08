@@ -700,11 +700,9 @@ public:
 	void	SetPetId( DWORD dwPetId )		{	m_dwPetId	= dwPetId;	}
 protected:
 	DWORD	m_dwPetId;	// º“»Ø¡ﬂ¿Ã ∆Í¿« ¿Œ∫•≈‰∏Æ ¿ßƒ°(Ìª), º“»Ø¡ﬂ¿Œ ∆Í ¿Œµ¶Ω∫(ˆ‚)
-private:
-	BOOL	SetValidNeedVis( CItemElem* pItemElem, int nPos, std::vector<BYTE> & vecValid );
 public:
-	std::vector<BYTE>	GetValidVisTable( CItemElem* pItemElem );
-	BYTE		IsSatisfyNeedVis( CItemElem* pItemElemVisPet, ItemProp* pItemPropVis );			
+	[[nodiscard]] static boost::container::small_vector<NeedVis, MAX_VIS>	GetValidVisTable(const CItemElem & petItem);
+	[[nodiscard]] static NeedVis IsSatisfyNeedVis(const CItemElem & petItem, const ItemProp & pItemPropVis);
 	CItemElem*	GetVisPetItem( void )	{ return m_Inventory.GetAtId( m_objIdVisPet ); }
 	void		SetVisPetItem( OBJID objId )	{ m_objIdVisPet = objId; }
 	BOOL		HasActivatedVisPet()	{ return m_objIdVisPet != NULL_ID; }
