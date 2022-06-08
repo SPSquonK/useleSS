@@ -200,8 +200,7 @@ private:
 		BOOL  bOpen;
 		DWORD dwVersion;
 		DWORD dwWndSize;
-		DWORD dwSize;
-		BYTE * lpArchive;
+		std::vector<BYTE> lpArchive;
 
 	public:
 		// CWndNeuz
@@ -212,17 +211,8 @@ private:
 		explicit WNDREGINFO(CFileIO & file);
 		void StoreIn(CFileIO & file) const;
 
-		// It works
-		WNDREGINFO(const WNDREGINFO &);
-		WNDREGINFO(WNDREGINFO &&) noexcept;
-		WNDREGINFO & operator=(const WNDREGINFO &);
-		WNDREGINFO & operator=(WNDREGINFO &&) noexcept;
-		~WNDREGINFO();
-
 		// Everybody likes getters
 		[[nodiscard]] DWORD GetWndId() const noexcept { return dwWndId; }
-	private:
-		void EnsureNoData();
 	};
 
 	CString m_strChatBackup;

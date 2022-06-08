@@ -232,78 +232,19 @@ void RenderRadar( C2DRender* p2DRender, CPoint pt, DWORD dwValue, DWORD dwDiviso
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndMgr::WNDREGINFO::WNDREGINFO(const WNDREGINFO & other) {
-	dwSize = 0;
-	lpArchive = nullptr;
-	operator=(other);
-}
-
-CWndMgr::WNDREGINFO::WNDREGINFO(WNDREGINFO && other) noexcept {
-	dwSize = 0;
-	lpArchive = nullptr;
-	operator=(std::move(other));
-}
-
-void CWndMgr::WNDREGINFO::EnsureNoData() {
-	if (dwSize != 0) {
-		delete[] lpArchive;
-		lpArchive = nullptr;
-		dwSize = 0;
-	}
-}
-
-CWndMgr::WNDREGINFO & CWndMgr::WNDREGINFO::operator=(const WNDREGINFO & other) {
-	if (this == &other) return *this;
-
-	EnsureNoData();
-
-	dwWndId = other.dwWndId;
-	rect = other.rect;
-	bOpen = other.bOpen;
-	dwVersion = other.dwVersion;
-	dwWndSize = other.dwWndSize;
-	dwSize = other.dwSize;
-	if (dwSize != 0) {
-		lpArchive = new BYTE[dwSize];
-		std::memcpy(lpArchive, other.lpArchive, dwSize);
-	} else {
-		lpArchive = nullptr;
-	}
-
-	return *this;
-}
-
-CWndMgr::WNDREGINFO & CWndMgr::WNDREGINFO::operator=(WNDREGINFO && other) noexcept {
-	if (this == &other) return *this;
-	
-	dwWndId = other.dwWndId;
-	rect = other.rect;
-	bOpen = other.bOpen;
-	dwVersion = other.dwVersion;
-	dwWndSize = other.dwWndSize;
-	std::swap(dwSize, other.dwSize);
-	std::swap(lpArchive, other.lpArchive);
-
-	return *this;
-}
-
-CWndMgr::WNDREGINFO::~WNDREGINFO() {
-	if (lpArchive) delete lpArchive;
-}
-
 CWndMgr::WNDREGINFO::WNDREGINFO(CFileIO & file) {
 	file.Read(&dwWndId, sizeof(dwWndId));
 	file.Read(&rect, sizeof(rect));
 	file.Read(&dwWndSize, sizeof(dwWndSize));
 	file.Read(&bOpen, sizeof(bOpen));
 	file.Read(&dwVersion, sizeof(dwVersion));
+	size_t dwSize;
 	file.Read(&dwSize, sizeof(dwSize));
 
+	lpArchive.resize(dwSize);
+
 	if (dwSize != 0) {
-		lpArchive = new BYTE[dwSize];
-		file.Read(lpArchive, dwSize);
-	} else {
-		lpArchive = nullptr;
+		file.Read(lpArchive.data(), dwSize);
 	}
 
 	if (rect.left < 0) rect.left = 0;
@@ -316,9 +257,11 @@ void CWndMgr::WNDREGINFO::StoreIn(CFileIO & file) const {
 	file.Write(&dwWndSize, sizeof(dwWndSize));
 	file.Write(&bOpen, sizeof(bOpen));
 	file.Write(&dwVersion, sizeof(dwVersion));
+	
+	const size_t dwSize = lpArchive.size();
 	file.Write(&dwSize, sizeof(dwSize));
 	if (dwSize != 0) {
-		file.Write(lpArchive, dwSize);
+		file.Write(lpArchive.data(), dwSize);
 	}
 }
 
@@ -335,20 +278,17 @@ CWndMgr::WNDREGINFO::WNDREGINFO(CWndNeuz & pWndNeuz, BOOL bOpen) {
 
 	int nSize;
 	BYTE * lpData = ar.GetBuffer(&nSize);
+
+	lpArchive.resize(nSize);
 	if (nSize != 0) {
-		lpArchive = new BYTE[nSize];
-		dwSize = nSize;
-		memcpy(lpArchive, lpData, nSize);
-	} else {
-		lpArchive = nullptr;
-		dwSize = 0;
+		memcpy(lpArchive.data(), lpData, nSize);
 	}
 }
 
 void CWndMgr::WNDREGINFO::RestoreParameters(CWndNeuz & pWndBase) const {
-	if (dwSize) {
+	if (!lpArchive.empty()) {
 		// load
-		CAr ar(lpArchive, dwSize);
+		CAr ar(const_cast<BYTE *>(lpArchive.data()), lpArchive.size());
 		DWORD dwVersion = this->dwVersion;
 		pWndBase.SerializeRegInfo(ar, dwVersion);
 	}
