@@ -904,6 +904,7 @@ public:
 	CItemElem*		GetWeaponItem( int nParts = PARTS_RWEAPON );					// 장착한 무기 얻기 
 	CItemElem*		GetLWeaponItem();					// 왼손에 장착한 무기 얻기.
 	CItemElem*		GetEquipItem( int nParts );			// 장착한 아이템 얻기 
+	[[nodiscard]] const CItemElem * GetEquipItem(int nParts) const;
 	ItemProp*		GetEquipItemProp( CItemContainer * pInventory, PEQUIP_INFO pEquipInfo, int nParts );
 	BOOL			IsDualWeapon();
 	void			RedoEquip( BOOL fFakeParts, BOOL bDestParam = TRUE );	
@@ -1108,8 +1109,8 @@ public:
 #endif
 	void			SetDestParamSetItem( CItemElem* pItemElem );
 	void			ResetDestParamSetItem( CItemElem* pItemElem );
-	[[nodiscard]] int GetEquipedSetItemNumber(const CSetItem & pSetItem);
-	[[nodiscard]] bool IsEquipedPartItem(const CSetItem::PartItem & partItem);
+	[[nodiscard]] int GetEquipedSetItemNumber(const CSetItem & pSetItem) const;
+	[[nodiscard]] bool IsEquipedPartItem(const CSetItem::PartItem & partItem) const;
 
 	void			SetDestParamRandomOpt( CItemElem* pItemElem );
 	void			ResetDestParamRandomOpt( CItemElem* pItemElem );

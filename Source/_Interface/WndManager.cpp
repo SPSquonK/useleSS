@@ -3249,40 +3249,6 @@ void CWndMgr::PutEnchantOpt( CMover* pMover, CItemElem* pItemElem, CEditString* 
 	}			
 }
 
-void CWndMgr::PutSetItemOpt(CMover* pMover, CItemElem* pItemElem, CEditString* pEdit) {
-	// 2. 세트 아이템의 구성 요소 인가?
-	const CSetItem * const pSetItem = g_SetItemFinder.GetSetItemByItemId( pItemElem->m_dwItemId );
-	if (!pSetItem) return;
-
-	// 해당 세트 아이템의 구성 요소를 모두 출력 하되 장착 된 것과 안된 것을 색으로 구별하여 출력한다.
-	// 3. 세트아이템 타이틀 출력
-
-	const int nEquiped = pMover->GetEquipedSetItemNumber(*pSetItem);
-
-	CString strTemp;
-	strTemp.Format( "\n\n%s (%d/%lu)", pSetItem->GetString(), nEquiped, pSetItem->m_components.size());
-	pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetName );
-		
-	for (const CSetItem::PartItem & partItem : pSetItem->m_components) {
-		const ItemProp * pItemProp = prj.GetItemProp(partItem.itemId);
-		if (!pItemProp) continue;
-
-		strTemp.Format("\n   %s", pItemProp->szName);
-
-		// 장착되어있는 세트 아이템
-		const DWORD color = pMover->IsEquipedPartItem(partItem)
-			? dwItemColor[g_Option.m_nToolTipText].dwSetItem1
-			: dwItemColor[g_Option.m_nToolTipText].dwSetItem0;
-
-		pEdit->AddString(strTemp, color);
-	}
-
-	// 4. 추가 능력치 출력
-	const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, true);
-	const CString strDsts = DstsToString(itemAvail);
-	pEdit->AddString(strDsts, dwItemColor[g_Option.m_nToolTipText].dwSetEffect);
-}
-
 void CWndMgr::PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
 {
 	pEdit->AddString( "\n" );
@@ -3751,8 +3717,8 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	PutLevel( *pMover, *pItemElem, strEdit );	
 	PutCommand( *pItemElem, strEdit );					// 용도 
 	PutItemGold( pMover, pItemElem, &strEdit, flag );	// 가격
-	PutSetItemOpt( pMover, pItemElem, &strEdit );
-	if( pItemProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet )//&& pItemElem->m_pPet->GetLevel() != PL_EGG )
+	PutSetItemOpt(*pMover, pItemElem->m_dwItemId, strEdit);
+	if( pItemProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet )
 		PutPetInfo( *pItemElem, strEdit );
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET ) //먹이 주머니 툴팁
 		PutPetFeedPocket( *pItemElem, *pItemProp, strEdit );

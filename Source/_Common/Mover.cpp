@@ -2733,6 +2733,10 @@ CItemElem * CMover::GetEquipItem(const int nParts) {
 	return m_Inventory.GetEquip(nParts);
 }
 
+const CItemElem * CMover::GetEquipItem(const int nParts) const {
+	return m_Inventory.GetEquip(nParts);
+}
+
 ItemProp* CMover::GetEquipItemProp( CItemContainer* pInventory, PEQUIP_INFO pEquipInfo, int nParts )
 {
 	ItemProp *pItemProp = NULL;
@@ -7587,7 +7591,7 @@ void CMover::ResetDestParamSetItem( CItemElem* pItemElem )
 	}
 }
 
-int CMover::GetEquipedSetItemNumber(const CSetItem & pSetItem) {
+int CMover::GetEquipedSetItemNumber(const CSetItem & pSetItem) const {
 	int nEquiped = 0;
 
 	for (const CSetItem::PartItem & partItem : pSetItem.m_components) {
@@ -7599,7 +7603,7 @@ int CMover::GetEquipedSetItemNumber(const CSetItem & pSetItem) {
 	return nEquiped;
 }
 
-bool CMover::IsEquipedPartItem(const CSetItem::PartItem & partItem) {
+bool CMover::IsEquipedPartItem(const CSetItem::PartItem & partItem) const {
 	const CItemElem * const pItemElem = GetEquipItem(partItem.part);
 	if (!pItemElem) return false;
 	if (pItemElem->m_dwItemId != partItem.itemId) return false;

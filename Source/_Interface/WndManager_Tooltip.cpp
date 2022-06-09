@@ -16,12 +16,46 @@ static CString DstsToString(const DstList & dstList) {
 
 namespace WndMgr {
 
-	DWORD CTooltipBuilder::GetOkOrErrorColor(bool isOk) const {
+	DWORD CTooltipBuilder::GetOkOrErrorColor(const bool isOk) const {
 		if (isOk) {
 			return dwItemColor[g_Option.m_nToolTipText].dwGeneral;
 		} else {
 			return dwItemColor[g_Option.m_nToolTipText].dwNotUse;
 		}
+	}
+
+	void CTooltipBuilder::PutSetItemOpt(const CMover & pMover, const DWORD itemId, CEditString & pEdit) const {
+		// 2. 세트 아이템의 구성 요소 인가?
+		const CSetItem * const pSetItem = g_SetItemFinder.GetSetItemByItemId(itemId);
+		if (!pSetItem) return;
+
+		// 해당 세트 아이템의 구성 요소를 모두 출력 하되 장착 된 것과 안된 것을 색으로 구별하여 출력한다.
+		// 3. 세트아이템 타이틀 출력
+
+		const int nEquiped = pMover.GetEquipedSetItemNumber(*pSetItem);
+
+		CString strTemp;
+		strTemp.Format("\n\n%s (%d/%lu)", pSetItem->GetString(), nEquiped, pSetItem->m_components.size());
+		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwSetName);
+
+		for (const CSetItem::PartItem & partItem : pSetItem->m_components) {
+			const ItemProp * pItemProp = prj.GetItemProp(partItem.itemId);
+			if (!pItemProp) continue;
+
+			strTemp.Format("\n   %s", pItemProp->szName);
+
+			// 장착되어있는 세트 아이템
+			const DWORD color = pMover.IsEquipedPartItem(partItem)
+				? dwItemColor[g_Option.m_nToolTipText].dwSetItem1
+				: dwItemColor[g_Option.m_nToolTipText].dwSetItem0;
+
+			pEdit.AddString(strTemp, color);
+		}
+
+		// 4. 추가 능력치 출력
+		const ITEMAVAIL itemAvail = pSetItem->GetItemAvail(nEquiped, true);
+		const CString strDsts = DstsToString(itemAvail);
+		pEdit.AddString(strDsts, dwItemColor[g_Option.m_nToolTipText].dwSetEffect);
 	}
 
 	void CTooltipBuilder::PutBaseItemOpt(
