@@ -8949,7 +8949,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 			// 각성 정보 출력 
 			CItemElem* pItemElem = g_pPlayer->GetVisPetItem( );
 			if( pItemElem && ( pItemElem->m_dwItemId == pItem->dwID ) )
-				g_WndMng.PutAwakeningBlessing( pItemElem, &strEdit );
+				g_WndMng.PutAwakeningBlessing( *pItemElem, strEdit );
 		}
 
 		g_toolTip.PutToolTip( wID, strEdit, rectHittest, ptMouse, 1 );	

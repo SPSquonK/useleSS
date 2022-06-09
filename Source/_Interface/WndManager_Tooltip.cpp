@@ -3,6 +3,7 @@
 #include "defineText.h"
 #include "playerdata.h"
 #include "AppDefine.h"
+#include "randomoption.h"
 
 CString SingleDstToString(const SINGLE_DST & singleDst);
 const char * FindDstString(int nDstParam);
@@ -24,6 +25,79 @@ namespace WndMgr {
 		} else {
 			return dwItemColor[g_Option.m_nToolTipText].dwNotUse;
 		}
+	}
+
+	void CTooltipBuilder::PutRandomOpt(const CItemElem & pItemElem, CEditString & pEdit) const {
+		if (pItemElem.GetProp()->dwParts == NULL_ID) return;
+
+		const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(pItemElem.GetRandomOpt());
+		if (!pRandomOptItem) return; // 2. 랜덤 옵션의 내용을 출력한다.
+		
+		const CString strTemp = DstsToString(pRandomOptItem->ia);
+		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwRandomOption);
+	}
+
+	void CTooltipBuilder::PutAwakeningBlessing(const CItemElem & pItemElem, CEditString & pEdit) const {
+		int nKind = g_xRandomOptionProperty.GetRandomOptionKind(&pItemElem);
+		if (nKind < 0)		// 아이템 각성, 여신의 축복 대상이 아니면,
+			return;
+		int nSize = g_xRandomOptionProperty.GetRandomOptionSize(pItemElem.GetRandomOptItemId());
+
+#ifdef __PROTECT_AWAKE
+		//각성 보호 취소된 아이템인가.. 그렇다면 줄그어진 옵션을 보여줘야 한다.
+		bool bSafe = g_xRandomOptionProperty.IsCheckedSafeFlag(pItemElem.GetRandomOptItemId());
+		if (bSafe)
+			nSize = g_xRandomOptionProperty.GetViewRandomOptionSize(pItemElem.GetRandomOptItemId());
+
+		assert(nSize >= 0 && nSize < 4);
+#endif //__PROTECT_AWAKE
+
+		CString	str;
+
+		bool bBlessing = false;
+		// title
+		if (nKind == CRandomOptionProperty::eAwakening) {
+			if (nSize == 0) {
+				str.Format("\n\"%s\"", prj.GetText(TID_GAME_AWAKENING));	// "각성할 수 있는 아이템"
+				pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwAwakening);
+			}
+		} else if (nKind == CRandomOptionProperty::eBlessing) {
+			if (nSize > 0) {
+				str.Format("\n%s", prj.GetText(TID_GAME_BLESSING_CAPTION));	// 축복받은 옵션
+				pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwBlessing);
+				bBlessing = true;
+			}
+		} else if (nKind == CRandomOptionProperty::eSystemPet || nKind == CRandomOptionProperty::eEatPet) {	// 시스템 펫과 먹펫의 툴팁에 각성과 관련된 내용을 추가한다
+			if (nSize == 0) {
+				str.Format("\n\"%s\"", prj.GetText(TID_GAME_AWAKENNIG_PET_00));	// "각성할 수 있는 아이템"
+				pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwAwakening);
+			}
+		}
+
+		// option
+		for (const auto & dst : g_xRandomOptionProperty.GetParams(pItemElem)) {
+			str = SingleDstToString(dst);
+
+			if (nKind == CRandomOptionProperty::eAwakening) {
+				DWORD dwStyle = 0;
+#ifdef __PROTECT_AWAKE
+				dwStyle = (bSafe ? ESSTY_STRIKETHROUGH : 0);		//줄 그어버릴까?
+#endif //__PROTECT_AWAKE
+				pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwAwakening, dwStyle);
+			} else
+				pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwBlessing);
+		}
+		if (bBlessing) {
+			str.Format("\n%s", prj.GetText(TID_GAME_BLESSING_WARNING));
+			pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwBlessingWarning);
+		}
+	}
+
+
+	void CTooltipBuilder::PutPiercingOpt(const CItemElem & pItemElem, CEditString & pEdit) const {
+		const auto multipleDsts = pItemElem.GetPiercingAvail();
+		const CString strTemp = DstsToString(multipleDsts);
+		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing);
 	}
 
 	void CTooltipBuilder::PutEnchantOpt(

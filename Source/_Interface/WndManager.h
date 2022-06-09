@@ -416,6 +416,9 @@ namespace WndMgr {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
 		
+		void PutRandomOpt(const CItemElem & pItemElem, CEditString & pEdit) const;
+		void PutAwakeningBlessing(const CItemElem & pItemElem, CEditString & pEdit) const;
+		void PutPiercingOpt(const CItemElem & pItemElem, CEditString & pEdit) const;
 		void PutEnchantOpt(const CMover & pMover, const CItemElem & pItemElem, CEditString & pEdit, int fromApp) const;
 		void PutSetItemOpt(const CMover & pMover, DWORD itemId, CEditString & pEdit) const;
 		void PutBaseItemOpt(const CItemElem & pItemElem, const ItemProp & pItemProp, CEditString & pEdit) const;
@@ -680,9 +683,6 @@ public:
 	void PutItemResist( CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
-	void PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit );
-	void	PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit );
-	void PutPiercingOpt(const CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag );
 
 	BOOL CheckConfirm(CItemElem * pItem );

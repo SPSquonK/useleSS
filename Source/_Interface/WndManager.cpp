@@ -3109,94 +3109,6 @@ void CWndMgr::PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit )
 	}
 }
 
-void CWndMgr::PutAwakeningBlessing( CItemElem* pItemElem, CEditString* pEdit )
-{
-	int nKind	= g_xRandomOptionProperty.GetRandomOptionKind( pItemElem );
-	if( nKind < 0 )		// 아이템 각성, 여신의 축복 대상이 아니면,
-		return;
-	int nSize	= g_xRandomOptionProperty.GetRandomOptionSize( pItemElem->GetRandomOptItemId() );
-
-#ifdef __PROTECT_AWAKE
-	//각성 보호 취소된 아이템인가.. 그렇다면 줄그어진 옵션을 보여줘야 한다.
-	bool bSafe = g_xRandomOptionProperty.IsCheckedSafeFlag( pItemElem->GetRandomOptItemId() );
-	if( bSafe )
-		nSize = g_xRandomOptionProperty.GetViewRandomOptionSize( pItemElem->GetRandomOptItemId() );
-
-	assert( nSize >= 0 && nSize < 4 );
-#endif //__PROTECT_AWAKE
-
-	CString	str;
-
-	BOOL bBlessing	= FALSE;
-	// title
-	if( nKind == CRandomOptionProperty::eAwakening )
-	{
-		if( nSize == 0 )
-		{
-			str.Format( "\n\"%s\"", prj.GetText( TID_GAME_AWAKENING ) );	// "각성할 수 있는 아이템"
-			pEdit->AddString( str, dwItemColor[g_Option.m_nToolTipText].dwAwakening );
-		}
-
-	}
-	else if( nKind == CRandomOptionProperty::eBlessing )
-	{
-		if( nSize > 0 )
-		{
-			str.Format( "\n%s", prj.GetText( TID_GAME_BLESSING_CAPTION ) );	// 축복받은 옵션
-			pEdit->AddString( str, dwItemColor[g_Option.m_nToolTipText].dwBlessing );
-			bBlessing	= TRUE;
-		}
-	}
-	else if( nKind == CRandomOptionProperty::eSystemPet || nKind == CRandomOptionProperty::eEatPet )
-	{	// 시스템 펫과 먹펫의 툴팁에 각성과 관련된 내용을 추가한다
-		if( nSize == 0 )
-		{
-			str.Format( "\n\"%s\"", prj.GetText( TID_GAME_AWAKENNIG_PET_00 ) );	// "각성할 수 있는 아이템"
-			pEdit->AddString( str, dwItemColor[g_Option.m_nToolTipText].dwAwakening );
-		}
-	}
-
-	// option
-	for (const auto & dst : g_xRandomOptionProperty.GetParams(*pItemElem)) {
-		str = SingleDstToString(dst);
-
-		if( nKind == CRandomOptionProperty::eAwakening )
-		{
-			DWORD dwStyle = 0;
-#ifdef __PROTECT_AWAKE
-			dwStyle = ( bSafe ? ESSTY_STRIKETHROUGH : 0 );		//줄 그어버릴까?
-#endif //__PROTECT_AWAKE
-			pEdit->AddString( str, dwItemColor[g_Option.m_nToolTipText].dwAwakening, dwStyle );
-		}
-		else
-			pEdit->AddString( str, dwItemColor[g_Option.m_nToolTipText].dwBlessing );
-	}
-	if( bBlessing )
-	{
-		str.Format( "\n%s", prj.GetText( TID_GAME_BLESSING_WARNING ) );
-		pEdit->AddString( str, dwItemColor[g_Option.m_nToolTipText].dwBlessingWarning );
-	}
-}
-
-void CWndMgr::PutRandomOpt( CItemElem* pItemElem, CEditString* pEdit )
-{
-	if( pItemElem->GetProp()->dwParts == (DWORD)-1 )
-		return;
-
-	const auto * const pRandomOptItem	= g_RandomOptItemGen.GetRandomOptItem(pItemElem->GetRandomOpt());
-	if( pRandomOptItem ) // 2. 랜덤 옵션의 내용을 출력한다.
-	{
-		const CString strTemp = DstsToString(pRandomOptItem->ia);
-		pEdit->AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwRandomOption);
-	}
-}
-
-void CWndMgr::PutPiercingOpt(const CItemElem * const pItemElem, CEditString * pEdit) {
-	const auto multipleDsts = pItemElem->GetPiercingAvail();
-	const CString strTemp = DstsToString(multipleDsts);
-	pEdit->AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing);
-}
-
 void CWndMgr::PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
 {
 	pEdit->AddString( "\n" );
@@ -3576,7 +3488,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 			PutBaseResist( *pItemProp, strEdit );	// 속성 저항력
 			
 			PutBaseItemOpt(*pItemElem, *pItemProp, strEdit);
-			PutRandomOpt( pItemElem, &strEdit );			
+			PutRandomOpt(*pItemElem, strEdit);
 			PutEnchantOpt( *pMover, *pItemElem, strEdit, flag );
 			break;
 		}
@@ -3670,8 +3582,8 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 		PutPetInfo( *pItemElem, strEdit );
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET ) //먹이 주머니 툴팁
 		PutPetFeedPocket( *pItemElem, *pItemProp, strEdit );
-	PutPiercingOpt( pItemElem, &strEdit );
-	PutAwakeningBlessing( pItemElem, &strEdit );
+	PutPiercingOpt(*pItemElem, strEdit);
+	PutAwakeningBlessing(*pItemElem, strEdit);
 	if( (pItemProp->dwItemKind2 == IK2_WEAPON_DIRECT || pItemProp->dwItemKind2 == IK2_WEAPON_MAGIC) && 
 		pItemElem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE )
 		PutAddedOpt( *pItemElem, strEdit );
