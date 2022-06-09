@@ -463,14 +463,14 @@ int CMover::GetItemAbility( int nItem )
 	return nAbilityMin + ( xRand() % (nAbilityMax - nAbilityMin ) );
 }
 // �������� �ּ� ������ ��´�.
-int CMover::GetItemAbilityMin( int nItem )
+int CMover::GetItemAbilityMin( int nItem ) const
 {
 	ItemProp* pItemProp = prj.GetItemProp( nItem );
 	int nAbilityMin = GetParam( DST_ABILITY_MIN, pItemProp->dwAbilityMin );
 	return nAbilityMin;
 }
 // �������� �ִ� ������ ��´�.
-int CMover::GetItemAbilityMax( int nItem )
+int CMover::GetItemAbilityMax( int nItem ) const
 {
 	ItemProp* pItemProp = prj.GetItemProp( nItem );
 	int nAbilityMax = GetParam( DST_ABILITY_MAX, pItemProp->dwAbilityMax );

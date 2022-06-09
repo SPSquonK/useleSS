@@ -3109,75 +3109,6 @@ void CWndMgr::PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit )
 	}
 }
 
-void CWndMgr::PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
-{
-	pEdit->AddString( "\n" );
-	CString strTemp;
-	if( pItemElem->GetProp()->dwAbilityMin != 0xffffffff && pItemElem->GetProp()->dwAbilityMax != 0xffffffff 
-		&& pItemElem->GetProp()->dwEndurance != 0xffffffff )
-	{	
-		DWORD dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective3;	// 회색
-		float f = pMover->GetItemMultiplier( pItemElem );
-		
-		int nMin	= (int)( pMover->GetItemAbilityMin( pItemElem->GetProp()->dwID ) * f );
-		int nMax	= (int)( pMover->GetItemAbilityMax( pItemElem->GetProp()->dwID ) * f );
-		if( 1.0f <= f )
-			dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective0;		// 검정
-		else if( 0.8f <= f)
-			dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective1;		// 노랑
-		else if( 0.6f <= f )
-			dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective2;		// 적색
-		
-		if( pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT || pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC )
-		{	// 공격력
-			int nOpt = 0;
-			if( pItemElem->GetAbilityOption() > 0 )
-			{
-				int nAdd = (int)pow( (float)( pItemElem->GetAbilityOption() ), 1.5f );
-
-				nMin += nAdd;
-				nMax += nAdd;
-			}
-			if( nOpt )
-			{
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ATTACKRANGE1) );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-				strTemp.Format( " (%d ~ %d)+%d", nMin, nMax, nOpt );
-			}
-			else
-			{
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ATTACKRANGE2) );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-				strTemp.Format( " %d ~ %d", nMin, nMax );
-			}
-		}
-		else
-		{	// 방어력
-			int nOpt = 0;			
-			if( pItemElem->GetAbilityOption() > 0 )
-			{
-				int nAdd = (int)pow( (float)( pItemElem->GetAbilityOption() ), 1.5f );
-
-				nMin += nAdd;
-				nMax += nAdd;
-			}
-			if( nOpt )
-			{	
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_DEFENSE_A) );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-				strTemp.Format( " (%d ~ %d)+%d", nMin, nMax, nOpt );
-			}
-			else
-			{
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_DEFENSE_B) );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-				strTemp.Format( " %d ~ %d", nMin, nMax );
-			}
-		}
-		pEdit->AddString( strTemp, dwColorMinMax );
-	}
-}
-
 void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag )
 {
 	CString str;
@@ -3478,7 +3409,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 		case IK2_CLOTH:
 		case IK2_BLINKWING:
 		{
-			PutItemMinMax( pMover, pItemElem, &strEdit );
+			PutItemMinMax(*pMover, *pItemElem, *pItemProp, strEdit);
 			PutItemSpeed( pItemElem, &strEdit );
 			if( pItemProp->dwItemKind3 == IK3_ELECARD )
 				PutItemResist( pItemElem, &strEdit );

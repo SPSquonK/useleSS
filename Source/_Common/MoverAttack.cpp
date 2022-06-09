@@ -1832,28 +1832,24 @@ void CMover::SetDamagedMotion( CMover* pAttacker, DWORD dwAtkFlags )
 
 
 // 아이템의 효능 곱하기 팩터를 구한다.
-float CMover::GetItemMultiplier( CItemElem* pItemElem )
-{
+float CMover::GetItemMultiplier(const CItemElem * pItemElem) const {
+	if (pItemElem->IsFlag(CItemElem::expired)) return 0.0f;
 
-	if( pItemElem->IsFlag( CItemElem::expired ) )
-		return 0.0f;
+	const ItemProp * const pItemProp = pItemElem->GetProp();
+	ASSERT(pItemProp);
 
-	ItemProp* pItemProp = pItemElem->GetProp();
-	ASSERT( pItemProp );
+	// 康 - 2007-08-27
+	int nOption = pItemElem->GetAbilityOption();
+	if (pItemProp->dwReferStat1 == WEAPON_ULTIMATE) {
+		nOption = 10;
+	}
 
 	float fValue = 1.0f;
-	
-	// 康 - 2007-08-27
-	int nOption		= pItemElem->GetAbilityOption();
-	if( pItemProp->dwReferStat1 == WEAPON_ULTIMATE )
-		nOption	= 10;
-
-	if( nOption )
-	{
-		int nValue = prj.GetExpUpItem( pItemProp->dwItemKind3, nOption );
-		nValue += 100;
+	if (nOption != 0) {
+		int nValue = 100 + prj.GetExpUpItem(pItemProp->dwItemKind3, nOption);
 		fValue = fValue * nValue / 100.0f;		// 제련수치가 곱해진다.
 	}
+
 	return fValue;
 }
 

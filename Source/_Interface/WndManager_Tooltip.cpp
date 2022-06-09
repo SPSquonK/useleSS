@@ -27,6 +27,64 @@ namespace WndMgr {
 		}
 	}
 
+	void CTooltipBuilder::PutItemMinMax(
+		const CMover & pMover,
+		const CItemElem & pItemElem, const ItemProp & itemProp,
+		CEditString & pEdit
+	) const {
+		pEdit.AddString("\n");
+
+		if (itemProp.dwAbilityMin == NULL_ID
+			|| itemProp.dwAbilityMax == NULL_ID
+			|| itemProp.dwEndurance == NULL_ID) {
+			return;
+		}
+
+		const float f = pMover.GetItemMultiplier(&pItemElem);
+
+		DWORD dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective3;	// 회색
+		if (1.0f <= f) {
+			dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective0;		// 검정
+		} else if (0.8f <= f) {
+			dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective1;		// 노랑
+		} else if (0.6f <= f) {
+			dwColorMinMax = dwItemColor[g_Option.m_nToolTipText].dwEffective2;		// 적색
+		}
+
+		int nMin = static_cast<int>(pMover.GetItemAbilityMin(pItemElem.m_dwItemId) * f);
+		int nMax = static_cast<int>(pMover.GetItemAbilityMax(pItemElem.m_dwItemId) * f);
+
+		const bool isWeapon = itemProp.dwItemKind2 == IK2_WEAPON_DIRECT
+			|| itemProp.dwItemKind2 == IK2_WEAPON_MAGIC;
+
+		int nOpt = 0;
+
+		if (pItemElem.GetAbilityOption() > 0) {
+			const int nAdd = (int)pow((float)(pItemElem.GetAbilityOption()), 1.5f);
+			
+			if constexpr (false) {
+				nOpt = nAdd;
+			} else {
+				nMin += nAdd;
+				nMax += nAdd;
+			}
+		}
+
+		const DWORD tooltipA = isWeapon ? TID_GAME_TOOLTIP_ATTACKRANGE1 : TID_GAME_TOOLTIP_DEFENSE_A;
+		const DWORD tooltipB = isWeapon ? TID_GAME_TOOLTIP_ATTACKRANGE2 : TID_GAME_TOOLTIP_DEFENSE_B;
+
+		CString strTemp;
+		if (nOpt) {
+			pEdit.AddString(prj.GetText(tooltipA), dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+			strTemp.Format(" (%d ~ %d)+%d", nMin, nMax, nOpt);
+		} else {
+			pEdit.AddString(prj.GetText(tooltipB), dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+			strTemp.Format(" %d ~ %d", nMin, nMax);
+		}
+
+		pEdit.AddString(strTemp, dwColorMinMax);
+	}
+
 	void CTooltipBuilder::PutRandomOpt(const CItemElem & pItemElem, CEditString & pEdit) const {
 		if (pItemElem.GetProp()->dwParts == NULL_ID) return;
 

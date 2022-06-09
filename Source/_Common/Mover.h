@@ -1080,8 +1080,8 @@ public:
 	int				GetMeleeSkillPower( ATTACK_INFO* pInfo );	// 근접공격 스킬데미지
 	int				GetMagicHitPower( int nMagicPower );			// 완드공격 데미지
 	int				GetItemAbility( int nItem );
-	int				GetItemAbilityMin( int nItem );
-	int				GetItemAbilityMax( int nItem );
+	[[nodiscard]] int GetItemAbilityMin(int nItem) const;
+	[[nodiscard]] int GetItemAbilityMax(int nItem) const;
 	void			GetHitMinMax( int* pnMin, int* pnMax, ATTACK_INFO *pInfo = NULL );
 	BOOL			IsAfterDeath();
 	BOOL			IsDie() { return m_pActMover->IsDie() || m_nHitPoint == 0; }
@@ -1121,7 +1121,7 @@ public:
 	void	ResetDestParamRandomOptExtension( CItemElem* pItemElem );
 
 	void			GetItemATKPower( int *pnMin, int *pnMax, ItemProp* pItemProp, CItemElem *pWeapon ); 
-	float			GetItemMultiplier( CItemElem* pItemElem );
+	[[nodiscard]] float GetItemMultiplier(const CItemElem * pItemElem) const;
 	BOOL			SubLootDropNotMob( CItem *pItem );
 	BOOL			SubLootDropMobSingle( CItem *pItem );
 	BOOL			SubLootDropMobParty( CItem *pItem, CParty *pParty );
