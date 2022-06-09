@@ -958,13 +958,15 @@ public:
 	void			SetSkinSet( int nSkinSet );
 	void			SetName( const char* lpszName )		{	lstrcpy( m_szName, lpszName );	}
 	LPCTSTR			GetName( BOOL bNickname = FALSE );	// 객체의 이름 얻기
-	BYTE			GetSex() { return m_bySex; }
+	[[nodiscard]] BYTE GetSex() const { return m_bySex; }
 	void			SetSex( BYTE bySex ) { m_bySex = bySex; }
 	BOOL			IsPeaceful() { return m_dwBelligerence == BELLI_PEACEFUL; }
 	BOOL			IsBaseJob();
 	BOOL			IsExpert();
-	BOOL			IsPro();
-	BOOL			IsInteriorityJob( int nJob );
+	[[nodiscard]] bool IsPro() const;
+	[[nodiscard]] bool IsMaster() const;
+	[[nodiscard]] bool IsHero() const;
+	[[nodiscard]] bool IsInteriorityJob(int nJob) const;
 	BOOL			SetExpert( int nExpert );
 	BOOL			AddChangeJob( int nJob );
 	int				GetJob();
@@ -1305,11 +1307,13 @@ public:
 
 	BYTE			GetLegendChar()	;
 	void			SetLegendChar(	BYTE	nLegend	)	{	m_nLegend	=	nLegend;	}
-	BOOL			IsMaster();
-	BOOL			IsHero();
 	void			SetMasterSkillPointUp();
 
-	DWORD			GetJobType( int nJob = NULL_ID )	{	if( nJob == NULL_ID ) nJob = m_nJob;	return prj.m_aJob[ nJob ].dwJobType;	}	// 직업 타입
+	// 직업 타입
+	[[nodiscard]] DWORD GetJobType(int nJob = NULL_ID) const {
+		if (nJob == NULL_ID) nJob = m_nJob;
+		return prj.m_aJob[nJob].dwJobType;
+	}
 
 
 	void			AngelMoveProcess();

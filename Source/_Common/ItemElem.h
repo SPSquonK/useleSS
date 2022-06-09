@@ -141,10 +141,10 @@ public:
 
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
-	int		GetLevelDown();	// 64|63
+	[[nodiscard]] int GetLevelDown() const;	// 64|63
 	void	SetLevelDown(int i = eNoLevelDown);
-	DWORD	GetLimitLevel();
-	BOOL	IsLimitLevel(CMover * pMover);
+	[[nodiscard]] DWORD	GetLimitLevel() const;
+	[[nodiscard]] bool IsLimitLevel(const CMover * pMover) const;
 #endif
 
 	CPet * m_pPet;

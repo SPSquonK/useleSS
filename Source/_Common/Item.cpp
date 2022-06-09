@@ -568,8 +568,7 @@ enum	{	eNoLevelDown, e5LevelDown, e10LevelDown,	};
 	void	SetLevelDown( int i );
 
 
-int	CItemElem::GetLevelDown( void )
-{
+int	CItemElem::GetLevelDown() const {
 	if( m_iRandomOptItemId & 0x8000000000000000 )
 		return -10;
 	else if( m_iRandomOptItemId & 0x4000000000000000 )
@@ -588,7 +587,7 @@ void CItemElem::SetLevelDown( int i )
 		m_iRandomOptItemId	|= 0x8000000000000000;
 }
 
-DWORD CItemElem::GetLimitLevel( void )
+DWORD CItemElem::GetLimitLevel() const
 {
 	if( GetProp()->dwLimitLevel1 == 0xFFFFFFFF ) 
 		return 0xFFFFFFFF;
@@ -599,15 +598,18 @@ DWORD CItemElem::GetLimitLevel( void )
 	return (DWORD)nLimitLevel;
 }
 
-BOOL CItemElem::IsLimitLevel( CMover* pMover )
-{
-	if( pMover->GetJobType() >= JTYPE_MASTER && pMover->GetJobType() > pMover->GetJobType( GetProp()->dwItemJob ) )
-		return FALSE;
+bool CItemElem::IsLimitLevel(const CMover * pMover) const {
+	// TODO: expect const ref instead of const ptr
+	if (pMover->GetJobType() >= JTYPE_MASTER
+		&& pMover->GetJobType() > pMover->GetJobType(GetProp()->dwItemJob)) {
+		return false;
+	}
 
-	if( (DWORD)( pMover->GetLevel() ) >= GetLimitLevel() )
-		return FALSE;
+	if ((DWORD)(pMover->GetLevel()) >= GetLimitLevel()) {
+		return false;
+	}
 
-	return TRUE;
+	return true;
 }
 
 

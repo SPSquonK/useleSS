@@ -318,10 +318,10 @@ BOOL CMover::IsExpert()
 {
 	return prj.m_aJob[ m_nJob ].dwJobType == JTYPE_EXPERT;
 }
-BOOL CMover::IsPro()
-{
-	return prj.m_aJob[ m_nJob ].dwJobType == JTYPE_PRO;
-}
+
+bool CMover::IsPro()    const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_PRO; }
+bool CMover::IsMaster() const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_MASTER; }
+bool CMover::IsHero()   const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_HERO; }
 
 BYTE	CMover::GetLegendChar()
 {
@@ -333,21 +333,12 @@ BYTE	CMover::GetLegendChar()
 		return LEGEND_CLASS_NORMAL;
 }
 
-BOOL	CMover::IsMaster()
-{
-	return prj.m_aJob[ m_nJob ].dwJobType == 5;//temp JTYPE_MASTER;
-}
-
-BOOL	CMover::IsHero()
-{
-	return prj.m_aJob[ m_nJob ].dwJobType == 6;//temp JTYPE_HERO;
-}
 
 
-BOOL CMover::IsInteriorityJob( int nJob )
-{
-	if( nJob == JOB_VAGRANT || nJob == m_nJob )
-		return TRUE;
+
+bool CMover::IsInteriorityJob(const int nJob) const {
+	// TODO: replace job arithmetic with something less magic
+	if (nJob == JOB_VAGRANT || nJob == m_nJob) return true;
 
 	if( IsPro() && JOB_VAGRANT < nJob && nJob < MAX_EXPERT )
 	{

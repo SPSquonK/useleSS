@@ -416,6 +416,9 @@ namespace WndMgr {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
 		
+		void PutSex(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
+		void PutJob(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
+		void PutLevel(const CMover & pMover, const CItemElem & pItemElem, CEditString & pEdit) const;
 		void PutWeapon(const ItemProp & pItemProp, CEditString & pEdit) const;
 		void PutAddedOpt(const CItemElem & pItemElem, CEditString & pEdit) const;
 
@@ -432,6 +435,7 @@ namespace WndMgr {
 	private:
 		static CString TimeAsStrWithOneNumberPrecision(time_t t);
 
+		[[nodiscard]] DWORD GetOkOrErrorColor(bool isOk) const;
 	};
 
 }
@@ -680,9 +684,6 @@ public:
 	void PutKeepTime( CItemElem* pItemElem, CEditString* pEdit );
 	void PutCommand( CItemElem* pItemElem, CEditString* pEdit );
 	void PutEndurance( CItemElem* pItemElem, CEditString* pEdit, int flag );
-	void PutSex( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
-	void PutJob( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
-	void PutLevel( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 
 	BOOL CheckConfirm(CItemElem * pItem );
 

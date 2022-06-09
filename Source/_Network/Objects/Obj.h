@@ -417,7 +417,7 @@ public:
 	BOOL	IsAbnormalPlayerData();
 	BOOL	NormalizePlayerData();
 	BOOL	RemoveItemIK3();
-	BYTE	GetSex() { return m_bySex; }
+	BYTE	GetSex() const { return m_bySex; }
 	void	SetSex( BYTE bySex ) { m_bySex = bySex; }
 	int		GetGold();
 	void	SetGold( int nGold );

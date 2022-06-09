@@ -1110,7 +1110,7 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 	// 방어구 입을때 직업확인.
 	if( pItemProp->dwItemKind1 != IK1_WEAPON )
 	{
-		if( pItemProp->dwItemJob != NULL_ID && FALSE == IsInteriorityJob( pItemProp->dwItemJob ) ) {
+		if( pItemProp->dwItemJob != NULL_ID && !IsInteriorityJob( pItemProp->dwItemJob ) ) {
 #ifdef __WORLDSERVER
 			if( TRUE == IsPlayer() )
 				( (CUser*)this )->AddDefinedText( TID_GAME_WRONGJOB, "\"%s\"", pItemProp->szName );
@@ -1122,7 +1122,7 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 	// 아이템 필요직업검사.
 	if( pItemProp->dwItemKind1 == IK1_WEAPON )		// 무기류를 장착하려할때
 	{
-		if( pItemProp->dwItemJob != NULL_ID && FALSE == IsInteriorityJob( pItemProp->dwItemJob ) )	// 아이템에 필요직업이 지정되어 있고
+		if( pItemProp->dwItemJob != NULL_ID && !IsInteriorityJob( pItemProp->dwItemJob ) )	// 아이템에 필요직업이 지정되어 있고
 		{
 #ifdef __WORLDSERVER
 			if( TRUE == IsPlayer() )

@@ -6,6 +6,102 @@ CString SingleDstToString(const SINGLE_DST & singleDst);
 
 namespace WndMgr {
 
+	DWORD CTooltipBuilder::GetOkOrErrorColor(bool isOk) const {
+		if (isOk) {
+			return dwItemColor[g_Option.m_nToolTipText].dwGeneral;
+		} else {
+			return dwItemColor[g_Option.m_nToolTipText].dwNotUse;
+		}
+	}
+
+
+	void CTooltipBuilder::PutSex(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const {
+		// TODO: maybe add automorph? Gendered items are super inconvenient and
+		// bring no value to the gameplay.
+		if (itemProp.dwItemSex == NULL_ID) return;
+
+		LPCTSTR sexText;
+		if (itemProp.dwItemSex == SEX_MALE) {
+			sexText = prj.GetText(TID_GAME_TOOLTIP_SEXMALE);
+		} else {
+			sexText = prj.GetText(TID_GAME_TOOLTIP_SEXFEMALE);
+		}
+
+		// TODO: itemProp.dwItemSex and pMover.GetSex() should have the same type
+
+		const DWORD sexColor = GetOkOrErrorColor(itemProp.dwItemSex == pMover.GetSex());
+
+		pEdit.AddString("\n");
+		pEdit.AddString(sexText, sexColor);
+	}
+
+	void CTooltipBuilder::PutJob(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const {
+		if (itemProp.dwItemJob == NULL_ID) return;
+
+		constexpr auto GetTooltipIdForJob = [](const DWORD jobId) {
+			switch (jobId) {
+				case JOB_VAGRANT:             return TID_GAME_TOOLTIP_REGVANG;
+				case JOB_MERCENARY:           return TID_GAME_TOOLTIP_REGMERSER;
+				case JOB_ACROBAT:             return TID_GAME_TOOLTIP_ACRO;
+				case JOB_ASSIST:              return TID_GAME_TOOLTIP_ASSIST;
+				case JOB_MAGICIAN:            return TID_GAME_TOOLTIP_MAG;
+				case JOB_PUPPETEER:           return TID_GAME_TOOLTIP_PUPPET;
+				case JOB_KNIGHT:              return TID_GAME_TOOLTIP_KNIGHT;
+				case JOB_BLADE:               return TID_GAME_TOOLTIP_BLADE;
+				case JOB_JESTER:              return TID_GAME_TOOLTIP_JASTER;
+				case JOB_RANGER:              return TID_GAME_TOOLTIP_RANGER;
+				case JOB_RINGMASTER:          return TID_GAME_TOOLTIP_RINGMAS;
+				case JOB_BILLPOSTER:          return TID_GAME_TOOLTIP_BILLPOS;
+				case JOB_PSYCHIKEEPER:        return TID_GAME_TOOLTIP_PSYCHIKEEPER;
+				case JOB_ELEMENTOR:           return TID_GAME_TOOLTIP_ELEMENTOR;
+				case JOB_GATEKEEPER:          return TID_GAME_TOOLTIP_GATE;
+				case JOB_DOPPLER:             return TID_GAME_TOOLTIP_DOPPLER;
+				case JOB_KNIGHT_MASTER:       return TID_GAME_TOOLTIP_KNIGHT_MASTER;
+				case JOB_BLADE_MASTER:        return TID_GAME_TOOLTIP_BLADE_MASTER;
+				case JOB_JESTER_MASTER:       return TID_GAME_TOOLTIP_JESTER_MASTER;
+				case JOB_RANGER_MASTER:       return TID_GAME_TOOLTIP_RANGER_MASTER;
+				case JOB_RINGMASTER_MASTER:   return TID_GAME_TOOLTIP_RINGMASTER_MASTER;
+				case JOB_BILLPOSTER_MASTER:   return TID_GAME_TOOLTIP_BILLPOSTER_MASTER;
+				case JOB_PSYCHIKEEPER_MASTER: return TID_GAME_TOOLTIP_PSYCHIKEEPER_MASTER;
+				case JOB_ELEMENTOR_MASTER:    return TID_GAME_TOOLTIP_ELEMENTOR_MASTER;
+				case JOB_KNIGHT_HERO:         return TID_GAME_TOOLTIP_KNIGHT_HERO;
+				case JOB_BLADE_HERO:          return TID_GAME_TOOLTIP_BLADE_HERO;
+				case JOB_JESTER_HERO:         return TID_GAME_TOOLTIP_JESTER_HERO;
+				case JOB_RANGER_HERO:         return TID_GAME_TOOLTIP_RANGER_HERO;
+				case JOB_RINGMASTER_HERO:     return TID_GAME_TOOLTIP_RINGMASTER_HERO;
+				case JOB_BILLPOSTER_HERO:     return TID_GAME_TOOLTIP_BILLPOSTER_HERO;
+				case JOB_PSYCHIKEEPER_HERO:   return TID_GAME_TOOLTIP_PSYCHIKEEPER_HERO;
+				case JOB_ELEMENTOR_HERO:      return TID_GAME_TOOLTIP_ELEMENTOR_HERO;
+				default: return 0;
+			}
+		};
+
+		const DWORD tooltipId = GetTooltipIdForJob(itemProp.dwItemJob);
+		const LPCTSTR tooltipText = tooltipId != 0 ? prj.GetText(tooltipId) : "Unknown job";
+
+		const DWORD tooltipColor = GetOkOrErrorColor(pMover.IsInteriorityJob(itemProp.dwItemJob));
+
+		pEdit.AddString("\n");
+		pEdit.AddString(tooltipText, tooltipColor);
+	}
+
+	void CTooltipBuilder::PutLevel(const CMover & pMover, const CItemElem & pItemElem, CEditString & pEdit) const {
+		const DWORD limitLevel1 = pItemElem.GetProp()->dwLimitLevel1;
+		if (limitLevel1 == NULL_ID) return;
+		
+		CString strTemp;
+		strTemp.Format(prj.GetText(TID_GAME_TOOLTIP_REQLEVEL), limitLevel1);
+
+		pEdit.AddString("\n");
+		
+		const DWORD limitLevelColor = GetOkOrErrorColor(!pItemElem.IsLimitLevel(&pMover));
+		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwNotUse);
+
+		if (pItemElem.GetLevelDown() != 0) {
+			strTemp.Format("(%d)", pItemElem.GetLevelDown());
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwNotUse);
+		}
+	}
 
 	void CTooltipBuilder::PutWeapon(const ItemProp & pItemProp, CEditString & pEdit) const {
 		if (pItemProp.dwItemKind3 == IK3_SHIELD) return;

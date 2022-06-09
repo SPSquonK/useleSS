@@ -3663,157 +3663,6 @@ void CWndMgr::PutEndurance( CItemElem* pItemElem, CEditString* pEdit, int flag )
 {
 }
 
-void CWndMgr::PutSex( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
-{
-	if( pItemElem->GetProp()->dwItemSex != 0xffffffff )
-	{	// 성별
-		CString strTemp;
-		if( pItemElem->GetProp()->dwItemSex == 0 )	// 남
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_SEXMALE) );
-		else	// 여
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_SEXFEMALE) );
-		pEdit->AddString( "\n" );
-		if( pItemElem->GetProp()->dwItemSex == pMover->GetSex() )
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral ); 
-		else
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwNotUse ); 
-	}
-}
-
-void CWndMgr::PutJob( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
-{
-	if( pItemElem->GetProp()->dwItemJob != 0xffffffff )
-	{	// 직업
-		CString strTemp;
-		switch( pItemElem->GetProp()->dwItemJob )
-		{
-		case JOB_VAGRANT:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_REGVANG) );
-			break;
-		case JOB_MERCENARY:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_REGMERSER) );
-			break;
-		case JOB_ACROBAT:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ACRO) );
-			break;
-		case JOB_ASSIST:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ASSIST) );
-			break;
-		case JOB_MAGICIAN:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_MAG) );
-			break;
-		case JOB_PUPPETEER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_PUPPET) );
-			break;
-
-		case JOB_KNIGHT:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_KNIGHT) );
-			break;
-		case JOB_BLADE: 
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_BLADE) );
-			break;
-		case JOB_JESTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_JASTER) );
-			break;
-		case JOB_RANGER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RANGER) );
-			break;
-		case JOB_RINGMASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RINGMAS) );
-			break;
-		case JOB_BILLPOSTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_BILLPOS) );
-			break;
-		case JOB_PSYCHIKEEPER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_PSYCHIKEEPER) );
-			break;
-		case JOB_ELEMENTOR:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ELEMENTOR) );
-			break;
-		case JOB_GATEKEEPER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_GATE) );
-			break;
-		case JOB_DOPPLER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_DOPPLER) );
-			break;
-		case JOB_KNIGHT_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_KNIGHT_MASTER) );
-			break;
-		case JOB_BLADE_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_BLADE_MASTER) );
-			break;
-		case JOB_JESTER_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_JESTER_MASTER) );
-			break;
-		case JOB_RANGER_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RANGER_MASTER) );
-			break;
-		case JOB_RINGMASTER_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RINGMASTER_MASTER) );
-			break;
-		case JOB_BILLPOSTER_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_BILLPOSTER_MASTER) );
-			break;
-		case JOB_PSYCHIKEEPER_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_PSYCHIKEEPER_MASTER) );
-			break;
-		case JOB_ELEMENTOR_MASTER:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ELEMENTOR_MASTER) );
-			break;
-
-		case JOB_KNIGHT_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_KNIGHT_HERO) );
-			break;
-		case JOB_BLADE_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_BLADE_HERO) );
-			break;
-		case JOB_JESTER_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_JESTER_HERO) );
-			break;
-		case JOB_RANGER_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RANGER_HERO) );
-			break;
-		case JOB_RINGMASTER_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RINGMASTER_HERO) );
-			break;
-		case JOB_BILLPOSTER_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_BILLPOSTER_HERO) );
-			break;
-		case JOB_PSYCHIKEEPER_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_PSYCHIKEEPER_HERO) );
-			break;
-		case JOB_ELEMENTOR_HERO:
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ELEMENTOR_HERO) );
-			break;
-
-		} // switch
-		pEdit->AddString( "\n" );
-		if( pMover->IsInteriorityJob( pItemElem->GetProp()->dwItemJob ) )
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-		else 
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwNotUse );
-	}
-}
-
-void CWndMgr::PutLevel( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
-{
-	if( pItemElem->GetProp()->dwLimitLevel1 != 0xffffffff ) 
-	{
-		CString strTemp;
-		strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_REQLEVEL), pItemElem->GetProp()->dwLimitLevel1 );
-		pEdit->AddString( "\n" );
-		if( pItemElem->IsLimitLevel( pMover ) )
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwNotUse );
-		else
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-		if( pItemElem->GetLevelDown() != 0 )
-		{
-			strTemp.Format( "(%d)", pItemElem->GetLevelDown() );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwNotUse );
-		}
-	}
-}
-
 void CWndMgr::PutCommand( CItemElem* pItemElem, CEditString* pEdit )
 {
 	CString strTemp;
@@ -4021,7 +3870,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 			strEdit.AddString( GETTEXT( TID_TOOLTIP_EQUIPBIND_BEFORE ), GETTEXTCOLOR( TID_TOOLTIP_EQUIPBIND_BEFORE ) );
 	}
 	PutWeapon( *pItemProp, strEdit );
-	PutSex( pMover, pItemElem, &strEdit );
+	PutSex( *pMover, *pItemProp, strEdit );
 	
 	switch( pItemProp->dwItemKind2 )
 	{
@@ -4130,8 +3979,8 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	PutCoolTime( *pMover, *pItemProp, strEdit );			// 쿨타임
 	PutEndurance( pItemElem, &strEdit, flag );			// 내구력
 	PutKeepTime( pItemElem, &strEdit );					// 사용할수 있는 시간
-	PutJob( pMover, pItemElem, &strEdit );
-	PutLevel( pMover, pItemElem, &strEdit );	
+	PutJob( *pMover, *pItemProp, strEdit );
+	PutLevel( *pMover, *pItemElem, strEdit );	
 	PutCommand( pItemElem, &strEdit );					// 용도 
 	PutItemGold( pMover, pItemElem, &strEdit, flag );	// 가격
 	PutSetItemOpt( pMover, pItemElem, &strEdit );
