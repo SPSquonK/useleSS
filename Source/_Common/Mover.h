@@ -845,7 +845,7 @@ public:
 	void			InitNPCProperty();							// NPC관련 스크립트 초기화 	
 	BOOL			LoadDialog();								// dialog 스크립트 로드 
 	void			ProcessRecovery();							// HP, MP, FP회복을 처리한다.
-	BOOL			IsActiveMover() { return m_pObjActive == this; }	// 내가 주인공 객체인가?
+	[[nodiscard]] BOOL IsActiveMover() const { return m_pObjActive == this; }	// 내가 주인공 객체인가?
 	int				IsSteal( CMover *pTarget );		// pTarget을 스틸하려 하는가.
 	int				IsSteal( OBJID idTaget );		// id로 검사하는 버전.
 	u_long			GetPartyId() { return m_idparty; }
@@ -1097,10 +1097,10 @@ public:
 	DWORD			GetPKPropensity( void ) { return m_dwPKPropensity; }
 	DWORD			NextPKPropensity( int nPKValue );
 	float			GetResist(SAI79::ePropType p_PropType);
-	int				GetSetItemParts(DWORD dwParts);
-	int				GetSetItemClient();
+	[[nodiscard]] int GetSetItemParts(DWORD dwParts) const;
+	[[nodiscard]] int GetSetItemClient() const;
 	int				GetSetItem( CItemElem* pItemElem = NULL );
-	BOOL			IsSetItemPart( DWORD dwParts );
+	[[nodiscard]] static bool IsSetItemPart(DWORD dwParts);
 	void			SetSetItemAvail( int nAbilityOption );
 	void			ResetSetItemAvail( int nAbilityOption );
 	void			DestParamPiercingAvail( CItemElem* pItemElem, BOOL bSET = TRUE );

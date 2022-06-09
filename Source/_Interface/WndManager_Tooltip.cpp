@@ -2,8 +2,10 @@
 #include "WndManager.h"
 #include "defineText.h"
 #include "playerdata.h"
+#include "AppDefine.h"
 
 CString SingleDstToString(const SINGLE_DST & singleDst);
+const char * FindDstString(int nDstParam);
 
 template<MultipleDsts DstList>
 static CString DstsToString(const DstList & dstList) {
@@ -21,6 +23,53 @@ namespace WndMgr {
 			return dwItemColor[g_Option.m_nToolTipText].dwGeneral;
 		} else {
 			return dwItemColor[g_Option.m_nToolTipText].dwNotUse;
+		}
+	}
+
+	void CTooltipBuilder::PutEnchantOpt(
+		const CMover & pMover, const CItemElem & pItemElem,
+		CEditString & pEdit, int fromApp
+	) const {
+		const int nAbilityOption = pMover.GetSetItemClient();
+
+		bool bPSetItem;
+		if (pMover.IsActiveMover()) {
+			bPSetItem = fromApp == APP_INVENTORY
+				&& pMover.m_Inventory.IsEquip(pItemElem.m_dwObjId)
+				&& pMover.IsSetItemPart(pItemElem.GetProp()->dwParts)
+				&& nAbilityOption > 0;
+		} else {
+			bPSetItem = fromApp == APP_QUERYEQUIP
+				&& pMover.IsSetItemPart(pItemElem.GetProp()->dwParts)
+				&& nAbilityOption > 0;
+		}
+
+		if (!bPSetItem) return;
+
+		const SETITEMAVAIL * psa = prj.GetSetItemAvail(nAbilityOption);
+		if (!psa) return;
+
+		CString strTemp;
+		if (psa->nHitRate > 0) {
+			strTemp.Format("\n%s+%d%%", FindDstString(DST_ADJ_HITRATE), psa->nHitRate);
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption);
+		}
+		if (psa->nBlock > 0) {
+			const char * str = prj.GetText(TID_GAME_TOOLTIPBLOCKRATE);
+			strTemp.Format("\n%s+%d%%", str, psa->nBlock);
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption);
+		}
+		if (psa->nMaxHitPointRate > 0) {
+			strTemp.Format("\n%s+%d%%", FindDstString(DST_HP_MAX_RATE), psa->nMaxHitPointRate);
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption);
+		}
+		if (psa->nAddMagic > 0) {
+			strTemp.Format("\n%s+%d", FindDstString(DST_ADDMAGIC), psa->nAddMagic);
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption);
+		}
+		if (psa->nAdded > 0) {
+			strTemp.Format("\n%s+%d", FindDstString(DST_STAT_ALLUP), psa->nAdded);
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption);
 		}
 	}
 

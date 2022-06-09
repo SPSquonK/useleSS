@@ -7306,57 +7306,42 @@ int CMover::GetSetItem( CItemElem* pItemElem )
 	return nAbilityOption;
 }
 
-int CMover::GetSetItemParts(DWORD dwParts)
-{
-	CItemElem* pItemElem = NULL;
-	ItemProp * pItemProp = NULL;
-	
-	pItemElem = GetEquipItem( dwParts );
+int CMover::GetSetItemParts(DWORD dwParts) const {
+	const CItemElem * const pItemElem = GetEquipItem(dwParts);
 	
 	int nAbilityOption = 0;
 	
-	if( pItemElem )
-	{
+	if (pItemElem) {
 		nAbilityOption = pItemElem->GetAbilityOption();
-	} else
-	{
-		if( IsActiveMover() )
-			return 0;
-		nAbilityOption	= (m_aEquipInfo[dwParts].nOption & 0xFF );
+	} else {
+		if (IsActiveMover()) return 0;
+		nAbilityOption	= (m_aEquipInfo[dwParts].nOption & 0xFF);
 	}
 
 	return nAbilityOption;
 }
 		
-int CMover::GetSetItemClient()
-{
-	static	DWORD adwParts[4]	= { PARTS_UPPER_BODY, PARTS_HAND, PARTS_FOOT, PARTS_CAP	};
+int CMover::GetSetItemClient() const {
+	static constexpr auto adwParts = {
+		PARTS_UPPER_BODY, PARTS_HAND, PARTS_FOOT, PARTS_CAP
+	};
 
-	int nAbilityOption	= 10;
+	int nAbilityOption = 10;
 	
-	for( int i = 0; i < 4; i++ )
-	{
-		int nValue	= GetSetItemParts( adwParts[i] );
-		if( nValue == 0 )
-			return 0;
-		if( nAbilityOption > nValue )
-			nAbilityOption	= nValue;
+	for (const auto part : adwParts) {
+		int nValue = GetSetItemParts(part);
+		if (nValue == 0) return 0;
+		if (nAbilityOption > nValue) nAbilityOption = nValue;
 	}
 
 	return nAbilityOption;
 }
 
-BOOL CMover::IsSetItemPart( DWORD dwParts )
-{
-	switch( dwParts )
-	{
-		case PARTS_UPPER_BODY:
-		case PARTS_HAND:
-		case PARTS_FOOT:
-		case PARTS_CAP:
-			return TRUE;
-	}
-	return FALSE;
+bool CMover::IsSetItemPart(const DWORD dwParts) {
+	return dwParts == PARTS_UPPER_BODY
+		|| dwParts == PARTS_HAND
+		|| dwParts == PARTS_FOOT
+		|| dwParts == PARTS_CAP;
 }
 
 void CMover::SetSetItemAvail( int nAbilityOption )

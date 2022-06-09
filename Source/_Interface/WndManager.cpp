@@ -3197,58 +3197,6 @@ void CWndMgr::PutPiercingOpt(const CItemElem * const pItemElem, CEditString * pE
 	pEdit->AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing);
 }
 
-void CWndMgr::PutEnchantOpt( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag )
-{
-	CString str;
-	CString strTemp;
-	BOOL bPSetItem = FALSE;
-	int nAbilityOption	= pMover->GetSetItemClient();
-	if( pMover->IsActiveMover() )
-	{
-		if( flag == APP_INVENTORY && pMover->m_Inventory.IsEquip(pItemElem->m_dwObjId) && pMover->IsSetItemPart( pItemElem->GetProp()->dwParts )
-			&& nAbilityOption > 0 )
-			bPSetItem = TRUE;
-	}
-	else
-	{
-		if( flag == APP_QUERYEQUIP && pMover->IsSetItemPart( pItemElem->GetProp()->dwParts ) && nAbilityOption > 0 )
-			bPSetItem = TRUE;
-	}
-	if( bPSetItem ) // Ãâ·Â
-	{	
-		PSETITEMAVAIL psa = prj.GetSetItemAvail( nAbilityOption );
-		if( psa ) // DST_MAX_HITRATE
-		{					
-			if( psa->nHitRate > 0 )
-			{
-				strTemp.Format( "\n%s+%d%%", FindDstString( (int)DST_ADJ_HITRATE ), (int)psa->nHitRate );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption );
-			}
-			if( psa->nBlock > 0 )
-			{
-				str = prj.GetText( TID_GAME_TOOLTIPBLOCKRATE );
-				strTemp.Format( "\n%s+%d%%", str, (int)psa->nBlock );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption );
-			}
-			if( psa->nMaxHitPointRate > 0 )
-			{
-				strTemp.Format( "\n%s+%d%%", FindDstString( (int)DST_HP_MAX_RATE ), (int)psa->nMaxHitPointRate );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption );
-			}
-			if( psa->nAddMagic > 0 )
-			{
-				strTemp.Format( "\n%s+%d", FindDstString( (int)DST_ADDMAGIC ), (int)psa->nAddMagic );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption );
-			}
-			if( psa->nAdded > 0 )
-			{
-				strTemp.Format( "\n%s+%d", FindDstString( (int)DST_STAT_ALLUP ), (int)psa->nAdded );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwEnchantOption );
-			}
-		}
-	}			
-}
-
 void CWndMgr::PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit )
 {
 	pEdit->AddString( "\n" );
@@ -3629,7 +3577,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 			
 			PutBaseItemOpt(*pItemElem, *pItemProp, strEdit);
 			PutRandomOpt( pItemElem, &strEdit );			
-			PutEnchantOpt( pMover, pItemElem, &strEdit, flag );
+			PutEnchantOpt( *pMover, *pItemElem, strEdit, flag );
 			break;
 		}
 	case IK2_REFRESHER:
