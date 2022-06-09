@@ -8706,7 +8706,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 			CItemElem* pItemElem = g_pPlayer->GetVisPetItem( );
 			if( pItemElem && ( pItemElem->m_dwItemId == pItem->dwID ) )
 			{
-				g_WndMng.PutVisPetInfo( pItemElem, &strEdit );
+				g_WndMng.PutVisPetInfo( *pItemElem, strEdit );
 				bItemKind3 = TRUE;
 			}
 		}

@@ -80,7 +80,7 @@ bool IsDst_Rate(int nDstParam);
 const char * FindDstString(int nDstParam);
 
 
-static CString SingleDstToString(const SINGLE_DST & singleDst) {
+CString SingleDstToString(const SINGLE_DST & singleDst) {
 	if (singleDst.nDst == DST_STAT_ALLUP) {
 		CString str;
 		str.AppendFormat("\n%s%+d", FindDstString(DST_STR), singleDst.nAdj);
@@ -3470,224 +3470,6 @@ void CWndMgr::PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit )
 	}			
 }
 
-void CWndMgr::PutPetInfo( CItemElem* pItemElem, CEditString* pEdit )
-{
-	if(pItemElem == NULL || pEdit == NULL)
-		return;
-	
-	CString strTemp;
-	pEdit->Empty();
-	//Name
-//	strTemp.Format( "%s", pItemElem->GetProp()->szName );
-	strTemp	= pItemElem->GetName();
-	pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwName0, ESSTY_BOLD );
-
-	PutPetKind( pItemElem, pEdit );
-
-//	int nLife = pItemElem->m_pPet->GetLife();
-//	if(nLife <= 0)
-	if( pItemElem->IsFlag( CItemElem::expired ) )
-	{
-		strTemp.Format(" %s", prj.GetText(TID_GAME_PETINFO_DEAD));
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistSM1, ESSTY_BOLD );
-	}
-
-	//Level
-	if( pItemElem->m_pPet )
-	{
-		const PETLEVEL nLevel	= pItemElem->m_pPet->GetPetLevel();
-		const DWORD dwLevelText = CPetProperty::GetTIdOfLevel(nLevel);
-		
-		strTemp.Format( "%s : %s", prj.GetText(TID_GAME_CHARACTER_02), prj.GetText(dwLevelText) );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistSM );
-
-		//Ability value
-		if(nLevel != PL_EGG)
-		{
-			const SINGLE_DST dst = pItemElem->m_pPet->GetAvailDestParam();
-			const DWORD dwTooltip = CPetProperty::GetTIdOfDst(dst);
-
-			strTemp.Format( "%s : %s +%d", prj.GetText(TID_GAME_ABILITY), prj.GetText(dwTooltip), dst.nAdj );
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistSM1 );
-		}
-		//Level History
-		if(nLevel > PL_EGG)
-		{
-			pEdit->AddString( "\n" );
-			pEdit->AddString( "(", D3DCOLOR_XRGB(0, 200, 255) );
-			for(int i=PL_D; i<=nLevel; i++)
-			{
-				BYTE bLevel = pItemElem->m_pPet->GetAvailLevel(i);
-				strTemp.Format(prj.GetText(TID_GAME_PET_TOOLTIP_LEVEL), bLevel);
-				pEdit->AddString( strTemp, D3DCOLOR_XRGB(0, 127, 255) );
-				if(i != nLevel)
-					pEdit->AddString( "/", D3DCOLOR_XRGB(0, 200, 255) );
-			}
-			pEdit->AddString( ")", D3DCOLOR_XRGB(0, 200, 255) );
-
-			//Pet Experience
-			EXPINTEGER	nExpResult = pItemElem->m_pPet->GetExp() * (EXPINTEGER)10000 / pItemElem->m_pPet->GetMaxExp();
-			float fExp = (float)nExpResult / 100.0f;
-
-			if( fExp >= 99.99f )
-				strTemp.Format(prj.GetText(TID_GAME_PET_TOOLTIP_EXP_MAX));
-			else
-				strTemp.Format(prj.GetText(TID_GAME_PET_TOOLTIP_EXP), fExp);
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB(120, 120, 220) );
-
-			//Pet Energy
-			int nMaxEnergy = pItemElem->m_pPet->GetMaxEnergy();
-			int nEnergy = pItemElem->m_pPet->GetEnergy();
-			int nLife = pItemElem->m_pPet->GetLife();
-			pEdit->AddString( "\n" );
-			strTemp.Format(prj.GetText(TID_GAME_PET_TOOLTIP_LIFE), nLife);
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB(255, 100, 100) );
-			pEdit->AddString( "\n" );
-			strTemp.Format(prj.GetText(TID_GAME_PET_TOOLTIP_HP), nEnergy, nMaxEnergy);
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB(255, 10, 10) );
-		}
-		else
-		{
-			//Pet Experience
-			EXPINTEGER	nExpResult = pItemElem->m_pPet->GetExp() * (EXPINTEGER)10000 / pItemElem->m_pPet->GetMaxExp();
-			float fExp = (float)nExpResult / 100.0f;
-
-			if( fExp >= 99.99f )
-				strTemp.Format(prj.GetText(TID_GAME_PET_TOOLTIP_EXP_MAX));
-			else
-				strTemp.Format(prj.GetText(TID_GAME_PET_TOOLTIP_EXP), fExp);
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB(120, 120, 220) );
-		}
-
-		//Description
-		strTemp.Format( "%s", pItemElem->GetProp()->szCommand );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );
-	}
-}
-
-void CWndMgr::PutPetFeedPocket( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString strTemp, str;
-	pEdit->Empty();
-
-	if(pItemElem->m_dwKeepTime > 0) //유료아이템이 사용된 상태인가?
-	{
-		//Name
-		strTemp.Format( "%s", pItemElem->GetProp()->szName );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwName0, ESSTY_BOLD );
-
-		if(g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_FEED_POCKET )) //활성화
-		{
-			strTemp.Format( " %s", prj.GetText(TID_GAME_POCKETUSING) );
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB( 255, 0, 0 ) );
-
-			//사용 제한 시한
-			time_t t = pItemElem->m_dwKeepTime - time_null();
-			if( pItemElem->m_dwKeepTime && !pItemElem->IsFlag( CItemElem::expired ) )
-			{
-				if( t > 0 )
-				{
-					CTimeSpan time( t );
-					if( time.GetDays() )
-						str.Format( prj.GetText(TID_PK_LIMIT_DAY), static_cast<int>(time.GetDays()+1) );
-					else if( time.GetHours() )
-						str.Format( prj.GetText(TID_PK_LIMIT_HOUR), time.GetHours() );
-					else if( time.GetMinutes() )
-						str.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
-					else
-						str.Format( prj.GetText(TID_PK_LIMIT_SECOND), time.GetSeconds() );
-				}
-				strTemp = str + prj.GetText(TID_TOOLTIP_PERIOD);	
-				pEdit->AddString( "\n" );
-				pEdit->AddString( strTemp, D3DCOLOR_XRGB( 255, 20, 20 ) );
-			}
-			
-			//사료 개수
-			pEdit->AddString( "\n" );
-			strTemp.Format( "%s %d", prj.GetText( TID_GAME_PET_FEED_COUNT ), g_pPlayer->GetItemNumForClient( II_SYS_SYS_FEED_01 ) );
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB( 50, 50, 205 ) ); 
-			
-			//지속 가능 시한
-/*
-			CTimeSpan time( g_pPlayer->GetItemNum( II_SYS_SYS_FEED_01 ) * 2 );
-			pEdit->AddString( "\n" );
-			strTemp.Format( "%s : ", prj.GetText( TID_TOOLTIP_ITEMTIME ) );
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB( 107, 35, 142 ) );
-
-			if(time.GetDays())
-			{
-				strTemp.Format( prj.GetText( TID_GAME_LIMIT_DAY ), time.GetDays() );	
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime );
-				pEdit->AddString( " " );
-			}
-			if(time.GetHours())
-			{
-				strTemp.Format( prj.GetText( TID_GAME_LIMIT_HOUR ), time.GetHours() );	
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime );
-				pEdit->AddString( " " );
-			}
-			if(time.GetMinutes())
-			{
-				strTemp.Format( prj.GetText( TID_GAME_LIMIT_MINUTE ), time.GetMinutes() );	
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime );
-				pEdit->AddString( " " );
-			}
-			if(time.GetSeconds())
-			{
-				strTemp.Format( prj.GetText( TID_GAME_LIMIT_SECOND ), time.GetSeconds() );	
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime );
-			}
-*/
-		}
-		else //비활성화
-		{
-			strTemp.Format( " %s", prj.GetText(TID_GAME_POCKET_NOTUSING) );
-			pEdit->AddString( strTemp, D3DCOLOR_XRGB( 255, 0, 0 ) );
-
-			//사용 제한 시한
-			time_t t = pItemElem->m_dwKeepTime - time_null();
-			if( pItemElem->m_dwKeepTime && !pItemElem->IsFlag( CItemElem::expired ) )
-			{
-				if( t > 0 )
-				{
-					CTimeSpan time( t );
-					if( time.GetDays() )
-						str.Format( prj.GetText(TID_PK_LIMIT_DAY), static_cast<int>(time.GetDays()+1) );
-					else if( time.GetHours() )
-						str.Format( prj.GetText(TID_PK_LIMIT_HOUR), time.GetHours() );
-					else if( time.GetMinutes() )
-						str.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
-					else
-						str.Format( prj.GetText(TID_PK_LIMIT_SECOND), time.GetSeconds() );
-				}
-				strTemp = str + prj.GetText(TID_TOOLTIP_PERIOD);	
-				pEdit->AddString( "\n" );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime );
-			}		
-		}
-		
-		//Description
-		strTemp.Format( "%s", prj.GetText(TID_GAME_PET_FEEDPOCKET) );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );
-	}
-	else
-	{
-		//Name
-		strTemp.Format( "%s", pItemElem->GetProp()->szName );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwName0, ESSTY_BOLD );
-		//Description
-		strTemp.Format( "%s", prj.GetText(TID_GAME_PET_FEEDPOCKET_USE) );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );				
-	}
-}
-
 void CWndMgr::PutBaseResist( CItemElem* pItemElem, CEditString* pEdit )
 {
 	CString strTemp;
@@ -4307,7 +4089,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 
 	DWORD dwColorBuf = PutItemName( pItemElem, *pItemProp, &strEdit );
 	PutItemAbilityPiercing( pItemElem, &strEdit, dwColorBuf );
-	PutPetKind( pItemElem, &strEdit );		//gmpbigsun : 아이템 명 다음줄에 펫 종류 ( 리어, 픽업, 버프 ) 삽입 
+	PutPetKind( *pItemElem, strEdit );		//gmpbigsun : 아이템 명 다음줄에 펫 종류 ( 리어, 픽업, 버프 ) 삽입 
 	if( pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND )
 	{
 		strEdit.AddString( "\n" );
@@ -4360,7 +4142,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 		{
 			if( pItemProp->dwItemKind3 == IK3_VIS )
 			{
-				PutNeededVis( pItemElem, &strEdit );
+				PutNeededVis( *pItemProp, strEdit );
 				PutBaseItemOpt( pItemElem, &strEdit );
 			}
 			
@@ -4420,7 +4202,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	
 	if( pItemElem->IsVisPet( ) )
 	{
-		PutVisPetInfo( pItemElem, &strEdit );
+		PutVisPetInfo( *pItemElem, strEdit );
 	}
 
 	PutCoolTime( *pMover, *pItemProp, strEdit );			// 쿨타임
@@ -4432,9 +4214,9 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	PutItemGold( pMover, pItemElem, &strEdit, flag );	// 가격
 	PutSetItemOpt( pMover, pItemElem, &strEdit );
 	if( pItemProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet )//&& pItemElem->m_pPet->GetLevel() != PL_EGG )
-		PutPetInfo( pItemElem, &strEdit );
+		PutPetInfo( *pItemElem, strEdit );
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET ) //먹이 주머니 툴팁
-		PutPetFeedPocket( pItemElem, &strEdit );
+		PutPetFeedPocket( *pItemElem, *pItemProp, strEdit );
 	PutPiercingOpt( pItemElem, &strEdit );
 	PutAwakeningBlessing( pItemElem, &strEdit );
 	if( (pItemProp->dwItemKind2 == IK2_WEAPON_DIRECT || pItemProp->dwItemKind2 == IK2_WEAPON_MAGIC) && 
@@ -4887,200 +4669,6 @@ void CWndMgr::PutDestParam( DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAd
 }
 
 BOOL IsEquipedVis( CItemElem* pPetItem, DWORD visIndex );
-BOOL IsEquipedRequireVis( CItemElem* pPetItem, DWORD visIndex, BOOL bSelfCheck );
-
-void CWndMgr::PutNeededVis( CItemElem* pItemElem, CEditString* pEdit )
-{
-	//gmpbigsun: 해당 비스를 착용하기 위해 필요한 비스 정보 출력 
-	ItemProp* pItemPropVis = pItemElem->GetProp();
-	assert( pItemPropVis );
-		
-	DWORD dwNeeds[2] = { pItemPropVis->dwReferTarget1, pItemPropVis->dwReferTarget2 };
-
-	CString strTemp;
-	DWORD color = 0xffffffff;
-
-	NeedVis byState;
-	CItemElem* pPetItem = g_pPlayer->GetVisPetItem( );
-	if( !pPetItem )
-	{
-		//버프펫이 활성화가 안되어있따면, 필요비스 걍 빨간색으로 출력 
-		byState = NeedVis::FailedBoth;
-	}
-	else
-	{
-		byState = CMover::IsSatisfyNeedVis( *pPetItem, *pItemPropVis );
-	}
-
-	if( NULL_ID != dwNeeds[0] && 0 != dwNeeds[ 0 ] )
-	{
-		ItemProp* pProp = prj.GetItemProp( dwNeeds[ 0 ] );		//sun!!
-		strTemp.Format( "\n%s: %s", GETTEXT( TID_GAME_BUFFPET_REQUIRE ), pProp->szName ); //필요비스
-
-		color = 0xff000000;
-		if(NeedVis::FailedBoth == byState || NeedVis::Failed1st == byState )
-			color = 0xffff0000;
-
-		pEdit->AddString( strTemp, color );
-	}
-
-	if( NULL_ID != dwNeeds[1] && 0 != dwNeeds[ 1 ] )
-	{
-		ItemProp* pProp = prj.GetItemProp( dwNeeds[ 1 ] );
-		strTemp.Format( "\n%s: %s", GETTEXT( TID_GAME_BUFFPET_REQUIRE), pProp->szName );
-
-		color = 0xff000000;
-		if(NeedVis::FailedBoth == byState || NeedVis::Failed2nd == byState )
-			color = 0xffff0000;
-		
-		pEdit->AddString( strTemp, color );
-	}
-
-}
-
-BOOL IsEquipedRequireVis( CItemElem* pItemElem, DWORD index, BOOL bSelfCheck );
-void CWndMgr::PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit )
-{
-	if( !pItemElem )
-		return;
-
-	//펫의 정보 (비스들의 총합 )
-	std::map< int, int > cTotalOpt;
-	CString strTemp, strTemp2;
-	
-	static const int MAX_PROP = 3;
-
-	int availableSlot = pItemElem->GetPiercingSize( );
-	
-	// 장착된 모든 비스의 능력치 더하기 
-	for( int ia = 0; ia < availableSlot; ++ia )
-	{
-		DWORD index = pItemElem->GetPiercingItem( ia );
-		ItemProp* pProp = prj.GetItemProp( index );
-		if( !pProp )
-			continue;
-
-		if( time_null() >= pItemElem->GetVisKeepTime( ia ) )
-			continue;
-
-		NeedVis bOK = CMover::IsSatisfyNeedVis( *pItemElem, *pProp );
-
-		if(NeedVis::Success == bOK )		//OK 활성중임.
-		{
-			for( int iaa = 0; iaa < MAX_PROP; ++iaa )
-			{
-				int nDst	= (int)pProp->dwDestParam[iaa];
-				if( NULL_ID == nDst )
-					continue;
-
-				int nVal	= (int)pProp->nAdjParamVal[iaa];
-
-				cTotalOpt[nDst] += nVal;
-			}
-		}
-	}
-
-	//전부 더해진 옵션에 대해서 출력 
-	for (const auto & [nDst, nVal] : cTotalOpt) {
-		const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nVal });
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );
-	}
-
-	//장착된 비스 이름 + 남은 시간 출력 
-	for( int ib = 0; ib < MAX_VIS; ++ib )
-	{
-		DWORD index = pItemElem->GetPiercingItem( ib );
-		if( 0 != index && NULL_ID != index )
-		{
-			ItemProp* pProp = prj.GetItemProp( index );
-			if( !pProp )
-				continue;
-
-			DWORD dwKeepTime = pItemElem->GetVisKeepTime( ib );
-
-			time_t t = dwKeepTime - time_null();
-			CTimeSpan ct( t );
-
-			//strTemp2.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	// 지속시간 : 
-			
-		//	strTemp2.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	// 지속시간 : 
-			LONG nDay	= (LONG)( ct.GetDays() );
-			LONG nHour	= ct.GetHours();
-			LONG nMin	= ct.GetMinutes();
-			LONG nSec	= ct.GetSeconds();
-
-			CString strDays, strHours, strMinutes, strSeconds;
-			if( nDay > 0 )
-			{
-				strDays.Format( prj.GetText(TID_PK_LIMIT_DAY), static_cast<int>(nDay) );
-				strHours.Format( prj.GetText( TID_PK_LIMIT_HOUR ), nHour );
-				strMinutes.Format( prj.GetText(TID_PK_LIMIT_MINUTE), nMin );
-
-				strTemp2 = strDays + strHours + strMinutes;
-			}
-			else if( nHour > 0 )
-			{
-				strHours.Format( prj.GetText(TID_PK_LIMIT_HOUR), nHour );
-				strMinutes.Format( prj.GetText(TID_PK_LIMIT_MINUTE), nMin );
-
-				strTemp2 = strHours + strMinutes;
-			}else if( nMin > 0 )
-			{
-				strMinutes.Format( prj.GetText( TID_PK_LIMIT_MINUTE ), nMin );
-				strSeconds.Format( prj.GetText( TID_PK_LIMIT_SECOND ), nSec );
-
-				strTemp2 = strMinutes + strSeconds;
-			}
-			else if( nSec >= 0 )
-			{
-				strTemp2.Format( prj.GetText( TID_PK_LIMIT_SECOND ), nSec );
-			}
-			else 
-			{
-				strTemp2.Format( GETTEXT( TID_GAME_TOOLTIP_TIMEOUT ) ); //"시간 만료" 
-			}
-
-			strTemp = pProp->szName + CString(" (") + strTemp2 + CString(")");
-
-			pEdit->AddString( "\n" );
-
-			if( t > 0 )
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime );
-			else 
-				pEdit->AddString( strTemp, 0xffff0000 );
-	
-		}
-	}
-}
-
-void CWndMgr::PutPetKind( CItemElem* pItemElem, CEditString* pEdit )
-{
-	// PET 종류 입력 
-	CString strTemp;
-	
-	if( pItemElem->IsEatPet() )
-	{
-		if( pItemElem->IsVisPet( ) )
-		{
-			strTemp.Format( "\n%s", GETTEXT(TID_TOOLTIP_PET_BUFF) );		//버프펫 
-		//	pEdit->AddString( strTemp, GETTEXTCOLOR(TID_TOOLTIP_PET_BUFF) );
-		}
-		else 
-		{
-			strTemp.Format( "\n%s", GETTEXT(TID_TOOLTIP_PET_PICKUP) );	// 픽업펫
-		//	pEdit->AddString( strTemp, GETTEXTCOLOR(TID_TOOLTIP_PET_PICKUP) );
-		}
-	}
-
-	if( pItemElem->IsEgg( ) )
-	{
-		strTemp.Format( "\n%s", GETTEXT(TID_TOOLTIP_PET_REAR) );	//리어펫 
-		//pEdit->AddString( strTemp, GETTEXTCOLOR(TID_TOOLTIP_PET_REAR) );
-	}
-
-	pEdit->AddString( strTemp );
-
-}
 
 BOOL CWndMgr::CheckConfirm(CItemElem * pItem )
 {

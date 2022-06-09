@@ -534,9 +534,9 @@ void	CItemElem::SetSerialNumber( void )
 	m_liSerialNumber	= CSerialNumber::GetInstance()->Get();
 }
 
-CString CItemElem::GetName( void )
+CString CItemElem::GetName() const
 {
-	ItemProp* pProp	= GetProp();
+	const ItemProp* pProp	= GetProp();
 	CString strName		= pProp->szName;
 	if( pProp->dwItemKind3 == IK3_EGG && m_pPet /*&& m_pPet->GetLevel() > PL_EGG*/ )
 	{
@@ -699,7 +699,7 @@ BOOL	IsNeedTarget( ItemProp* pProp )
 	return( pProp->dwExeTarget == EXT_ITEM );
 }
 
-BOOL CItemElem::IsEgg()
+bool CItemElem::IsEgg() const
 {
 	if( !IsPet() )
 		return FALSE;

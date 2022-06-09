@@ -416,11 +416,19 @@ namespace WndMgr {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
 
-
+		void PutPetInfo(const CItemElem & pItemElem, CEditString & pEdit) const;
+		void PutPetFeedPocket(const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
+		void PutNeededVis(const ItemProp & pItemPropVis, CEditString & pEdit) const;
+		void PutVisPetInfo(const CItemElem & pItemElem, CEditString & pEdit) const;
+		void PutPetKind(const CItemElem & pItemElem, CEditString & pEdit) const;
 
 		void PutSealChar(const CItemElem & pItemElem, CEditString & pEdit) const;
 
 		void PutEquipItemText(CEditString & pEdit) const;
+
+	private:
+		static CString TimeAsStrWithOneNumberPrecision(time_t t);
+
 	};
 
 }
@@ -674,12 +682,7 @@ public:
 	void PutLevel( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutWeapon( CItemElem* pItemElem, CEditString* pEdit );
 	void PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit );
-	void PutPetInfo( CItemElem* pItemElem, CEditString* pEdit );
-	void PutPetFeedPocket( CItemElem* pItemElem, CEditString* pEdit );
 
-	void PutNeededVis( CItemElem* pItemElem, CEditString* pEdit );
-	void PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit );
-	void PutPetKind( CItemElem* pItemElem, CEditString* pEdit );
 	BOOL CheckConfirm(CItemElem * pItem );
 
 	CWndMgr();
