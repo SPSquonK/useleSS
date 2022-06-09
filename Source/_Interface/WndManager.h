@@ -411,7 +411,23 @@ struct CWndMgr_WindowShortcuts {
 
 };
 
-class CWndMgr : public CWndBase, public CWndMgr_WindowShortcuts
+namespace WndMgr {
+	class CTooltipBuilder {
+	public:
+		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
+
+
+
+
+		void PutEquipItemText(CEditString & pEdit) const;
+	};
+
+}
+
+class CWndMgr :
+	public CWndBase,
+	public CWndMgr_WindowShortcuts,
+	public WndMgr::CTooltipBuilder
 { 
 private:
 	class WNDREGINFO {
@@ -488,7 +504,6 @@ public:
 	
 	BOOL   m_bConnect;
 	CTimer m_timerMessenger;
-	ToolTipItemTextColor	dwItemColor[MAX_TC];
 
 
 	BOOL	m_bTitle        ;
@@ -667,8 +682,6 @@ public:
 	void PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit );
 	void PutPetKind( CItemElem* pItemElem, CEditString* pEdit );
 	BOOL CheckConfirm(CItemElem * pItem );
-
-	void PutEquipItemText( CEditString* pEdit );
 
 	CWndMgr();
 	virtual	~CWndMgr();

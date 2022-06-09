@@ -4292,8 +4292,8 @@ void CWndMgr::PutToolTipParts(CItemElem * pPartsItemBase, CPoint point, CRect* p
 
 	ItemProp* pPartsItemProp = pPartsItemBase->GetProp();
 	CEditString strEquipItem = _T( "" );
-	if( nSubToolTipFlag != 0 )
-		PutEquipItemText( &strEquipItem );
+	if (nSubToolTipFlag != 0)
+		PutEquipItemText(strEquipItem);
 	MakeToolTipText( pPartsItemBase, strEquipItem, nFlag );
 	switch( nSubToolTipFlag )
 	{
@@ -5203,12 +5203,6 @@ BOOL CWndMgr::CheckConfirm(CItemElem * pItem )
 	return FALSE;
 }
 
-void CWndMgr::PutEquipItemText( CEditString* pEdit )
-{
-	CString strEdit = _T( "" );
-	strEdit.Format( "[ %s ]\n", prj.GetText( TID_GAME_EQUIPED_ITEM ) );
-	pEdit->AddString( strEdit, 0xff000000, ESSTY_BOLD );
-}
 
 void CWndMgr::ClearAllWnd()
 {

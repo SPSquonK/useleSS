@@ -997,6 +997,9 @@
     <ClCompile Include="..\_Interface\UserTaskBar.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp">
+      <Filter>Source Files\_Interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h">
