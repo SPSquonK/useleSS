@@ -416,6 +416,8 @@ namespace WndMgr {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
 		
+		void PutCoolTime(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
+		void PutKeepTime(CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutCommand(const CItemElem & pItemElem, CEditString & pEdit) const;
 		void PutSex(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutJob(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
@@ -681,8 +683,6 @@ public:
 	void PutMedicine( CItemElem* pItemElem, DWORD dwParam, LONG nParamVal, CEditString* pEdit );
 	void PutBaseResist( CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag );
-	void PutCoolTime(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
-	void PutKeepTime( CItemElem* pItemElem, CEditString* pEdit );
 
 	BOOL CheckConfirm(CItemElem * pItem );
 

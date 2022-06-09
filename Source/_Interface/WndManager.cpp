@@ -3562,103 +3562,6 @@ void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pE
 	}
 }
 
-void CWndMgr::PutCoolTime(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const {
-	const auto remainingCd = pMover.m_cooltimeMgr.GetRemainingTime(itemProp);
-	if (remainingCd == 0) return;
-
-	CTimeSpan ct((remainingCd + 500) / 1000); // 남은시간을 초단위로 변환해서 넘겨줌, +500 반올림 
-	
-	CString strTemp;
-	strTemp.Format( prj.GetText(TID_TOOLTIP_COOLTIME), ct.GetMinutes(), ct.GetSeconds() );		// 남은시간을 분/초 형태로 출력.
-	pEdit.AddString( "\n" );
-	pEdit.AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );	
-}
-
-void CWndMgr::PutKeepTime( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString str, strTemp;
-	if( pItemElem->GetProp()->dwCircleTime != 0xffffffff )
-	{
-		pEdit->AddString( "\n" );
-		if( pItemElem->GetProp()->dwCircleTime == 1 )
-		{
-			pEdit->AddString( prj.GetText( TID_GAME_COND_USE ), dwItemColor[g_Option.m_nToolTipText].dwTime ); // 사망시 효과 적용
-		}
-		else
-		{
-			CTimeSpan ct( pItemElem->GetProp()->dwCircleTime );
-			strTemp.Format( "%s : ", prj.GetText( TID_TOOLTIP_ITEMTIME ) );	// 지속시간 : 
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime ); 
-			strTemp.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	// 지속시간 : 
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime ); 
-		}
-	}
-
-	time_t t	= pItemElem->m_dwKeepTime - time_null();
-
-	//비스 남은 시간 표시( 인벤에 있는,, 아직 사용전이므로 서버데이터가 없다. Prop에서 가져다 쓴다 ( 단위는 분 ) 2009_11_10 
-	if( t <= 0  && pItemElem->GetProp()->IsVis( ) )		// 장착된 비스만 유지시간을 받게 되고, 인벤에 위치한 비스는 Prop에서 가져다 써야 함.
-	{
-		pItemElem->m_dwKeepTime = pItemElem->GetProp()->dwAbilityMin;
-		t = (time_t)( pItemElem->m_dwKeepTime * 60.0f );		//분단위 로 바뀜 
-	}
-
-	if( pItemElem->m_dwKeepTime && !pItemElem->IsFlag( CItemElem::expired ) )
-	{
-		if( t > 0 )
-		{
-			CTimeSpan time( t );
-			if( pItemElem->GetProp()->dwItemKind3 == IK3_TICKET )
-			{
-				str.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes(), time.GetSeconds() );
-			}
-			else
-			{
-				if( pItemElem->GetProp()->IsVis( ) )		// gmpbigsun : 일, 시간, 분, 초 의 텍스트를 읽어서 알맞게 조합해준다.
-				{
-					CString strDays, strHours, strMinutes, strSeconds;
-					if( time.GetDays() )
-					{
-						strDays.Format( prj.GetText(TID_PK_LIMIT_DAY), static_cast<int>(time.GetDays()) );
-						strHours.Format( prj.GetText( TID_PK_LIMIT_HOUR ), time.GetHours() );
-						strMinutes.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
-
-						str = strDays + strHours + strMinutes;
-					}
-					else if( time.GetHours() )
-					{
-						strHours.Format( prj.GetText(TID_PK_LIMIT_HOUR), time.GetHours() );
-						strMinutes.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
-
-						str = strHours + strMinutes;
-					}else if( time.GetMinutes() )
-					{
-						strMinutes.Format( prj.GetText( TID_PK_LIMIT_MINUTE ), time.GetMinutes() );
-						strSeconds.Format( prj.GetText( TID_PK_LIMIT_SECOND ), time.GetSeconds() );
-
-						str = strMinutes + strSeconds;
-					}
-					else
-					{
-						str.Format( prj.GetText( TID_PK_LIMIT_SECOND ), time.GetSeconds() );
-					}
-				}
-				else if( time.GetDays() )
-					str.Format( prj.GetText(TID_PK_LIMIT_DAY), static_cast<int>(time.GetDays()+1) );
-				else if( time.GetHours() )
-					str.Format( prj.GetText(TID_PK_LIMIT_HOUR), time.GetHours() );
-				else if( time.GetMinutes() )
-					str.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
-				else
-					str.Format( prj.GetText(TID_PK_LIMIT_SECOND), time.GetSeconds() );
-			}
-		}
-		strTemp = str + prj.GetText(TID_TOOLTIP_PERIOD);	
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwTime );
-	}
-}
-
 void CWndMgr::PutToolTip_Item(CItemElem * pItemBase, CPoint point, CRect* pRect, int flag )
 {
 	ItemProp* pItemProp = pItemBase->GetProp();
@@ -3940,7 +3843,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	}
 
 	PutCoolTime( *pMover, *pItemProp, strEdit );			// 쿨타임
-	PutKeepTime( pItemElem, &strEdit );					// 사용할수 있는 시간
+	PutKeepTime( *pItemElem, *pItemProp, strEdit );					// 사용할수 있는 시간
 	PutJob( *pMover, *pItemProp, strEdit );
 	PutLevel( *pMover, *pItemElem, strEdit );	
 	PutCommand( *pItemElem, strEdit );					// 용도 

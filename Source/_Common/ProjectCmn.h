@@ -349,7 +349,7 @@ struct ItemProp : CtrlProp
 			&& dwReferStat1 == WEAPON_ULTIMATE;
 	}
 	BOOL	IsVisPet()	{ return (dwItemKind3 == IK3_PET) && (dwReferStat1 == PET_VIS); }
-	BOOL	IsVis()		{ return (dwItemKind3 == IK3_VIS ); }
+	[[nodiscard]] bool IsVis() const noexcept { return dwItemKind3 == IK3_VIS; }
 #ifdef __CLIENT
 	BOOL	IsVisKey()	{ return (II_SYS_SYS_VIS_KEY01 == dwID ); }
 	BOOL	IsPickupToBuff( ) { return ( II_SYS_SYS_SCR_PET_MAGIC == dwID ); }
