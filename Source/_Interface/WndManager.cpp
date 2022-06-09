@@ -3413,41 +3413,6 @@ void CWndMgr::PutBaseItemOpt(CItemElem * pItemElem, CEditString * pEdit) {
 	}
 }
 
-void CWndMgr::PutBaseResist( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString strTemp;
-	if( pItemElem->GetProp()->nItemResistElecricity )
-	{
-		strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ELEC_RES), pItemElem->GetProp()->nItemResistElecricity );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistElectricity );
-	}
-	if( pItemElem->GetProp()->nItemResistFire )
-	{
-		strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_FIRE_RES), pItemElem->GetProp()->nItemResistFire );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistFire );
-	}
-	if( pItemElem->GetProp()->nItemResistWater )
-	{
-		strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_WATER_RES), pItemElem->GetProp()->nItemResistWater );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistWater );
-	}
-	if( pItemElem->GetProp()->nItemResistWind )
-	{
-		strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_WIND_RES), pItemElem->GetProp()->nItemResistWind );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistWind );
-	}
-	if( pItemElem->GetProp()->nItemResistEarth )
-	{
-		strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_EARTH_RES), pItemElem->GetProp()->nItemResistEarth );
-		pEdit->AddString( "\n" );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwResistEarth );
-	}
-}
-
 void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag )
 {
 	CString str;
@@ -3755,7 +3720,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 			else if( pItemElem->m_nResistAbilityOption && ( pItemProp->dwItemKind1 == IK1_WEAPON  || pItemProp->dwItemKind1 == IK1_ARMOR ) )
 				PutItemResist( pItemElem, &strEdit );
 
-			PutBaseResist( pItemElem, &strEdit );	// 加己 历亲仿
+			PutBaseResist( *pItemProp, strEdit );	// 加己 历亲仿
 			
 			PutBaseItemOpt( pItemElem, &strEdit );
 			PutRandomOpt( pItemElem, &strEdit );			
