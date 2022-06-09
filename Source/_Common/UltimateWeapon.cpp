@@ -756,12 +756,11 @@ void CUltimateWeapon::SetDestParamUltimate( CMover* pMover, CItemElem* pItemElem
 }
 
 // 합성된 보석들의 종류 및 능력
-std::map<int, int> CUltimateWeapon::GetDestParamUltimate( CItemElem* pItemElem )
-{
+std::map<int, int> CUltimateWeapon::GetDestParamUltimate(const CItemElem * pItemElem) const {
 	if( !pItemElem || pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE )
 		return {};
 	
-	std::map<DWORD, int> mapItem;		
+	boost::container::small_flat_map<DWORD, int, 10> mapItem;
 	for (int i=0; i<pItemElem->GetUltimatePiercingSize(); i++) {
 		const DWORD piercingItem = pItemElem->GetUltimatePiercingItem(i);
 		if (piercingItem != 0) {
@@ -779,7 +778,7 @@ std::map<int, int> CUltimateWeapon::GetDestParamUltimate( CItemElem* pItemElem )
 }
 
 // 합성된 보석의 종류와 갯수에 따른 능력치
-int CUltimateWeapon::GetDST( DWORD dwItemId, int nItemNum, int nDSTInfo )
+int CUltimateWeapon::GetDST( DWORD dwItemId, int nItemNum, int nDSTInfo ) const
 {
 	int nResultDST = 0;
 	__GEMABILITYKIND	GemAbilityKind;

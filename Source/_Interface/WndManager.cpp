@@ -3413,63 +3413,6 @@ void CWndMgr::PutBaseItemOpt(CItemElem * pItemElem, CEditString * pEdit) {
 	}
 }
 
-void CWndMgr::PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString str;
-	CString strTemp;
-	int i;
-	int nCount = 0;
-	
-	int nAddedOptDST[9];
-	int nAddedOpt[5];
-	int nAddedValue[5];
-	
-	for(i=0; i<5; i++)
-	{
-		nAddedOpt[i] = -1;
-		nAddedValue[i] = -1;
-	}
-
-	//DST 정의되는대로 아래 수정.
-	nAddedOptDST[0] = DST_HP_MAX;
-	nAddedOptDST[1] = DST_ATKPOWER;
-	nAddedOptDST[2] = DST_ADJDEF;
-	nAddedOptDST[3] = DST_MELEE_STEALHP;
-	nAddedOptDST[4] = DST_PVP_DMG;
-	nAddedOptDST[5] = DST_STR;
-	nAddedOptDST[6] = DST_STA;
-	nAddedOptDST[7] = DST_DEX;
-	nAddedOptDST[8] = DST_INT;
-
-	std::map<int, int> mapDst = prj.m_UltimateWeapon.GetDestParamUltimate( pItemElem );
-
-	for( auto it=mapDst.begin(); it!=mapDst.end(); it++ )
-	{
-		for(i=0; i<9; i++)
-		{
-			if( nAddedOptDST[i] == it->first )
-			{
-				nAddedOpt[nCount] = i;
-				nAddedValue[nCount] = it->second;
-				nCount++;
-			}
-		}
-	}
-
-	for(i=0; i<nCount; i++)
-	{
-		//추가 옵션을 툴팁에 추가.
-		if(nAddedOpt[i] >= 0)
-		{
-			const int nDst = nAddedOptDST[nAddedOpt[i]];
-			const int nAdj = nAddedValue[i];
-
-			const CString strTemp = SingleDstToString(SINGLE_DST{ nDst, nAdj });
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwAddedOpt[6]);
-		}			
-	}			
-}
-
 void CWndMgr::PutBaseResist( CItemElem* pItemElem, CEditString* pEdit )
 {
 	CString strTemp;
@@ -3871,27 +3814,6 @@ void CWndMgr::PutLevel( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit
 	}
 }
 
-void CWndMgr::PutWeapon( CItemElem* pItemElem, CEditString* pEdit )
-{
-	if( pItemElem->GetProp()->dwItemKind3 != IK3_SHIELD )
-	{
-		if( pItemElem->GetProp()->dwHanded != 0xffffffff )
-		{ // 한손무기용 / 양손무기용
-			CString strTemp;
-			if( HD_ONE == pItemElem->GetProp()->dwHanded )
-			{
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ONEHANDWEAPON) );
-			}
-			else if( HD_TWO == pItemElem->GetProp()->dwHanded )
-			{
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_TWOHANDWEAPON) );
-			}
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral ); 
-		}
-	}
-}
-
 void CWndMgr::PutCommand( CItemElem* pItemElem, CEditString* pEdit )
 {
 	CString strTemp;
@@ -4098,7 +4020,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 		else
 			strEdit.AddString( GETTEXT( TID_TOOLTIP_EQUIPBIND_BEFORE ), GETTEXTCOLOR( TID_TOOLTIP_EQUIPBIND_BEFORE ) );
 	}
-	PutWeapon( pItemElem, &strEdit );
+	PutWeapon( *pItemProp, strEdit );
 	PutSex( pMover, pItemElem, &strEdit );
 	
 	switch( pItemProp->dwItemKind2 )
@@ -4221,7 +4143,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	PutAwakeningBlessing( pItemElem, &strEdit );
 	if( (pItemProp->dwItemKind2 == IK2_WEAPON_DIRECT || pItemProp->dwItemKind2 == IK2_WEAPON_MAGIC) && 
 		pItemElem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE )
-		PutAddedOpt( pItemElem, &strEdit );
+		PutAddedOpt( *pItemElem, strEdit );
 }
 
 void CWndMgr::PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect )

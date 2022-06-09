@@ -415,6 +415,9 @@ namespace WndMgr {
 	class CTooltipBuilder {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
+		
+		void PutWeapon(const ItemProp & pItemProp, CEditString & pEdit) const;
+		void PutAddedOpt(const CItemElem & pItemElem, CEditString & pEdit) const;
 
 		void PutPetInfo(const CItemElem & pItemElem, CEditString & pEdit) const;
 		void PutPetFeedPocket(const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
@@ -680,8 +683,6 @@ public:
 	void PutSex( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutJob( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
 	void PutLevel( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit );
-	void PutWeapon( CItemElem* pItemElem, CEditString* pEdit );
-	void PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit );
 
 	BOOL CheckConfirm(CItemElem * pItem );
 

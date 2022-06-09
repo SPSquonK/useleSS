@@ -78,8 +78,8 @@ public:
 	BYTE SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial, CItemElem* pItemProtScr );
 #endif //__WORLDSERVER
 	void SetDestParamUltimate( CMover* pMover, CItemElem* pItemElem, BOOL bEquip, DWORD dwParts );
-	std::map<int, int> GetDestParamUltimate( CItemElem* pItemElem );
-	int GetDST( DWORD dwItemId, int nItemNum, int nDSTInfo );
+	[[nodiscard]] std::map<int, int> GetDestParamUltimate(const CItemElem * pItemElem) const;
+	int GetDST( DWORD dwItemId, int nItemNum, int nDSTInfo ) const;
 	CUltimateWeapon();
 	virtual ~CUltimateWeapon();
 

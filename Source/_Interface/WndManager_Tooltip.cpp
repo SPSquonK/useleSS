@@ -7,6 +7,30 @@ CString SingleDstToString(const SINGLE_DST & singleDst);
 namespace WndMgr {
 
 
+	void CTooltipBuilder::PutWeapon(const ItemProp & pItemProp, CEditString & pEdit) const {
+		if (pItemProp.dwItemKind3 == IK3_SHIELD) return;
+		if (pItemProp.dwHanded == NULL_ID) return;
+		
+		LPCTSTR strTemp = "";
+		if (pItemProp.dwHanded == HD_ONE) {
+			strTemp = prj.GetText(TID_GAME_TOOLTIP_ONEHANDWEAPON);
+		} else if (pItemProp.dwHanded == HD_TWO) {
+			strTemp = prj.GetText(TID_GAME_TOOLTIP_TWOHANDWEAPON);
+		}
+
+		pEdit.AddString("\n");
+		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+	}
+
+	void CTooltipBuilder::PutAddedOpt(const CItemElem & pItemElem, CEditString & pEdit) const {
+		const std::map<int, int> mapDst = prj.m_UltimateWeapon.GetDestParamUltimate(&pItemElem);
+
+		for (const auto & [nDst, nAdj] : mapDst) {
+			const CString strTemp = "\n" + SINGLE_DST{nDst, nAdj}.ToString();
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwAddedOpt[6]);
+		}
+	}
+
 	void CTooltipBuilder::PutPetInfo(const CItemElem & pItemElem, CEditString & pEdit) const {
 		pEdit.Empty();
 
