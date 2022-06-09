@@ -120,22 +120,6 @@ static CString DstsToString(const DstList & dstList) {
 	return res;
 }
 
-const char* GetATKSpeedString( float fSpeed )
-{
-	if( fSpeed < 0.035 )
-		return prj.GetText(TID_GAME_VERYSLOW);  // "아주 느림"
-	else if( fSpeed < 0.050 )
-		return prj.GetText(TID_GAME_SLOW);		//"느림";
-	else if( fSpeed < 0.070 )
-		return prj.GetText(TID_GAME_NORMALS);	// "보통";
-	else if( fSpeed < 0.080 )
-		return prj.GetText(TID_GAME_FAST);		//"빠름";
-	else if( fSpeed < 0.17 )
-		return prj.GetText(TID_GAME_VERYFAST);	//"아주 빠름";
-	else
-		return prj.GetText(TID_GAME_FASTEST);	//"아주 빠름";
-}
-
 CTexture*	   g_pCoolTexArry[128];
 
 CTexture*	   g_pEnchantTexArry[11];
@@ -2949,166 +2933,6 @@ DWORD CWndMgr::GetDSTStringId(int nDstParam) {
 	return sqktd::find_in_map(g_DstString, nDstParam, 0);
 }
 
-// 아이템 툴립 출력할것
-// 랜덤 옵션 이름, 아이템 이름( 길드 망토면 길드 이름 ), (세트)
-// 예 ) 곰의 코튼 슈트(세트)
-DWORD CWndMgr::PutItemName( CItemElem * pItemElem, const ItemProp & itemProp, CEditString* pEdit )
-{
-	CString strTemp;
-	if (itemProp.IsUltimate()) //Ultimate 아이콘이 들어가기 위한 여백
-		strTemp = "             ";
-
-	CString str;
-
-	static constexpr auto GetColorFromRefer1 = [&](DWORD refer1, const ToolTipItemTextColor & colorSet) {
-		switch (refer1) {
-			case WEAPON_GENERAL:  return colorSet.dwName0;
-			case WEAPON_UNIQUE:   return colorSet.dwName1;
-			case WEAPON_ULTIMATE: return colorSet.dwName3;
-			case ARMOR_SET:       return colorSet.dwName1;
-			default:              return colorSet.dwName0;
-		}
-	};
-
-	const DWORD dwColorbuf = GetColorFromRefer1(itemProp.dwReferStat1, dwItemColor[g_Option.m_nToolTipText]);
-
-	if( pItemElem->IsFlag( CItemElem::binds ) 
-		&& (pItemElem->m_dwItemId != II_GEN_MAT_ORICHALCUM01_1 && pItemElem->m_dwItemId != II_GEN_MAT_MOONSTONE_1)
-		&& itemProp.dwFlag != IP_FLAG_EQUIP_BIND
-		)
-		strTemp.Format( "%s ", prj.GetText( TID_GAME_TOOLTIP_ITEM_BINDS ) );
-
-	// 랜덤 옵션
-	if(itemProp.dwParts != (DWORD)-1 )
-	{
-		if (const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(pItemElem->GetRandomOpt())) {
-			strTemp += pRandomOptItem->pszString;
-			strTemp += " ";
-		}
-	}
-
-	const bool bGuildCombatCloak = (
-		pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON1 || pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON2 ||
-		pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON3 || pItemElem->m_dwItemId == II_ARM_S_CLO_CLO_DRAGON4
-		);
-
-	if(itemProp.dwItemKind3 == IK3_CLOAK && pItemElem->m_idGuild )	// 길드번호가 박혀있으면.
-	{
-		CGuild *pGuild = g_GuildMng.GetGuild( pItemElem->m_idGuild );
-		if (pGuild && bGuildCombatCloak == false)
-			str.Format(prj.GetText(TID_GUILD_CLOAK), pGuild->m_szGuild);
-		else
-			str += pItemElem->GetProp()->szName;
-	}
-	else
-	{
-		str	= pItemElem->GetName();
-	}
-	strTemp += str;
-
-	pEdit->AddString(strTemp, dwColorbuf, ESSTY_BOLD );
-	
-	return dwColorbuf;
-}
-
-void CWndMgr::PutItemAbilityPiercing( CItemElem* pItemElem, CEditString* pEdit, DWORD dwColorBuf )
-{
-	CString strTemp;
-	if( pItemElem->GetAbilityOption() )
-	{
-		strTemp.Format( " %+d", pItemElem->GetAbilityOption() );
-		pEdit->AddString( strTemp, dwColorBuf, ESSTY_BOLD );
-	}
-	
-	int nCount = 0;
-	for( int j = 0; j < pItemElem->GetPiercingSize(); j++ )
-	{
-		if( pItemElem->GetPiercingItem( j ) != 0 )
-			nCount++;
-	}
-	if( pItemElem->GetPiercingSize() > 0 && pItemElem->m_dwItemId != II_SYS_SYS_SCR_SEALCHARACTER )
-	{
-		strTemp.Format( "    (%d/%d)", nCount, pItemElem->GetPiercingSize() );
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing );
-	}
-}
-
-void CWndMgr::PutItemResist( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString str;
-	CString strTemp;
-	DWORD dwResistColor = dwItemColor[g_Option.m_nToolTipText].dwResist;
-	str = "";
-	switch( pItemElem->m_bItemResist )
-	{
-	case SAI79::FIRE:
-		{
-			str = prj.GetText(TID_UPGRADE_FIRE);
-			dwResistColor = dwItemColor[g_Option.m_nToolTipText].dwResistFire;
-		}					
-		break;
-	case SAI79::WATER:
-		{
-			str = prj.GetText(TID_UPGRADE_WATER);
-			dwResistColor = dwItemColor[g_Option.m_nToolTipText].dwResistWater;
-		}					
-		break;
-	case SAI79::EARTH:
-		{
-			str = prj.GetText(TID_UPGRADE_EARTH);
-			dwResistColor = dwItemColor[g_Option.m_nToolTipText].dwResistEarth;
-		}
-		break;
-	case SAI79::ELECTRICITY:
-		{
-			str = prj.GetText(TID_UPGRADE_ELECTRICITY);
-			dwResistColor = dwItemColor[g_Option.m_nToolTipText].dwResistElectricity;
-		}					
-		break;
-	case SAI79::WIND:
-		{
-			str = prj.GetText(TID_UPGRADE_WIND);
-			dwResistColor = dwItemColor[g_Option.m_nToolTipText].dwResistWind;
-		}					
-		break;
-	}
-	
-	if( pItemElem->GetProp()->dwItemKind1 == IK1_WEAPON  || pItemElem->GetProp()->dwItemKind1 == IK1_ARMOR )
-	{
-		if( !str.IsEmpty() )
-		{
-			BOOL bBold = FALSE;
-			strTemp.Format( "\n%s%+d", str, pItemElem->m_nResistAbilityOption );
-			if( pItemElem->m_nResistSMItemId != 0 )
-				bBold = TRUE;
-
-			if( bBold )
-				pEdit->AddString( strTemp, dwResistColor, ESSTY_BOLD );
-			else
-				pEdit->AddString( strTemp, dwResistColor );
-		}
-	}
-	else
-	{
-		strTemp.Format( "\n%s Lv%d", str,  pItemElem->GetProp()->dwItemLV );
-		pEdit->AddString( strTemp, dwResistColor );
-	}
-}
-
-void CWndMgr::PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString strTemp;
-	if( pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT || pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC )
-	{	// 무기
-		if( pItemElem->GetProp()->fAttackSpeed != 0xffffffff ) // 공격속도
-		{
-			pEdit->AddString( "\n" );
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_ATTACKSPEED), GetATKSpeedString( pItemElem->GetProp()->fAttackSpeed ) );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral ); 
-		}
-	}
-}
-
 void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag )
 {
 	CString str;
@@ -3385,8 +3209,8 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	CString strTemp = _T( "" );
 	CString strEnter = '\n';
 
-	DWORD dwColorBuf = PutItemName( pItemElem, *pItemProp, &strEdit );
-	PutItemAbilityPiercing( pItemElem, &strEdit, dwColorBuf );
+	DWORD dwColorBuf = PutItemName(*pItemElem, *pItemProp, strEdit);
+	PutItemAbilityPiercing( *pItemElem, strEdit, dwColorBuf );
 	PutPetKind( *pItemElem, strEdit );		//gmpbigsun : 아이템 명 다음줄에 펫 종류 ( 리어, 픽업, 버프 ) 삽입 
 	if( pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND )
 	{
@@ -3410,11 +3234,11 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 		case IK2_BLINKWING:
 		{
 			PutItemMinMax(*pMover, *pItemElem, *pItemProp, strEdit);
-			PutItemSpeed( pItemElem, &strEdit );
+			PutItemSpeed(*pItemProp, strEdit);
 			if( pItemProp->dwItemKind3 == IK3_ELECARD )
-				PutItemResist( pItemElem, &strEdit );
+				PutItemResist( *pItemElem, *pItemProp, strEdit );
 			else if( pItemElem->m_nResistAbilityOption && ( pItemProp->dwItemKind1 == IK1_WEAPON  || pItemProp->dwItemKind1 == IK1_ARMOR ) )
-				PutItemResist( pItemElem, &strEdit );
+				PutItemResist( *pItemElem, *pItemProp, strEdit );
 
 			PutBaseResist( *pItemProp, strEdit );	// 속성 저항력
 			

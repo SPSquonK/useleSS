@@ -416,6 +416,10 @@ namespace WndMgr {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
 		
+		[[nodiscard]] DWORD PutItemName(const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
+		void PutItemAbilityPiercing(const CItemElem & pItemElem, CEditString & pEdit, DWORD dwColorBuf) const;
+		void PutItemResist(const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
+		void PutItemSpeed(const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutItemMinMax(const CMover & pMover, const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutRandomOpt(const CItemElem & pItemElem, CEditString & pEdit) const;
 		void PutAwakeningBlessing(const CItemElem & pItemElem, CEditString & pEdit) const;
@@ -679,10 +683,6 @@ public:
 	void MakeToolTipText( CItemElem * pItemBase, CEditString& strEdit, int flag = 0 );
 	void PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect );
 
-	DWORD PutItemName( CItemElem * pItemElem, const ItemProp & itemProp, CEditString* pEdit );
-	void PutItemAbilityPiercing( CItemElem* pItemElem, CEditString* pEdit, DWORD dwColorBuf );
-	void PutItemResist( CItemElem* pItemElem, CEditString* pEdit );
-	void PutItemSpeed( CItemElem* pItemElem, CEditString* pEdit );
 	void PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag );
 
 	BOOL CheckConfirm(CItemElem * pItem );

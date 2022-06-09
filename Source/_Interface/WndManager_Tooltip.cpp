@@ -17,6 +17,21 @@ static CString DstsToString(const DstList & dstList) {
 	return res;
 }
 
+static const char * GetATKSpeedString(const float fSpeed) {
+	if (fSpeed < 0.035)
+		return prj.GetText(TID_GAME_VERYSLOW);  // "아주 느림"
+	else if (fSpeed < 0.050)
+		return prj.GetText(TID_GAME_SLOW);		//"느림";
+	else if (fSpeed < 0.070)
+		return prj.GetText(TID_GAME_NORMALS);	// "보통";
+	else if (fSpeed < 0.080)
+		return prj.GetText(TID_GAME_FAST);		//"빠름";
+	else if (fSpeed < 0.17)
+		return prj.GetText(TID_GAME_VERYFAST);	//"아주 빠름";
+	else
+		return prj.GetText(TID_GAME_FASTEST);	//"아주 빠름";
+}
+
 namespace WndMgr {
 
 	DWORD CTooltipBuilder::GetOkOrErrorColor(const bool isOk) const {
@@ -25,6 +40,139 @@ namespace WndMgr {
 		} else {
 			return dwItemColor[g_Option.m_nToolTipText].dwNotUse;
 		}
+	}
+
+	// 아이템 툴립 출력할것
+	// 랜덤 옵션 이름, 아이템 이름( 길드 망토면 길드 이름 ), (세트)
+	// 예 ) 곰의 코튼 슈트(세트)
+	DWORD CTooltipBuilder::PutItemName(
+		const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit
+	) const {
+		CString strTemp;
+		if (itemProp.IsUltimate()) //Ultimate 아이콘이 들어가기 위한 여백
+			strTemp = "             ";
+
+		static constexpr auto GetColorFromRefer1 = [&](DWORD refer1, const ToolTipItemTextColor & colorSet) {
+			switch (refer1) {
+				case WEAPON_GENERAL:  return colorSet.dwName0;
+				case WEAPON_UNIQUE:   return colorSet.dwName1;
+				case WEAPON_ULTIMATE: return colorSet.dwName3;
+				case ARMOR_SET:       return colorSet.dwName1;
+				default:              return colorSet.dwName0;
+			}
+		};
+
+		const DWORD dwColorbuf = GetColorFromRefer1(itemProp.dwReferStat1, dwItemColor[g_Option.m_nToolTipText]);
+
+		if (pItemElem.IsFlag(CItemElem::binds)
+			&& (ItemProps::IsOrichalcum(pItemElem) || ItemProps::IsMoonstone(pItemElem))
+			&& itemProp.dwFlag != IP_FLAG_EQUIP_BIND
+			)
+			strTemp.Format("%s ", prj.GetText(TID_GAME_TOOLTIP_ITEM_BINDS));
+
+		// 랜덤 옵션
+		if (itemProp.dwParts != (DWORD)-1) {
+			if (const auto * const pRandomOptItem = g_RandomOptItemGen.GetRandomOptItem(pItemElem.GetRandomOpt())) {
+				strTemp += pRandomOptItem->pszString;
+				strTemp += " ";
+			}
+		}
+
+		const bool bGuildCombatCloak = (
+			pItemElem.m_dwItemId == II_ARM_S_CLO_CLO_DRAGON1 || pItemElem.m_dwItemId == II_ARM_S_CLO_CLO_DRAGON2 ||
+			pItemElem.m_dwItemId == II_ARM_S_CLO_CLO_DRAGON3 || pItemElem.m_dwItemId == II_ARM_S_CLO_CLO_DRAGON4
+			);
+
+		CString str;
+		if (itemProp.dwItemKind3 == IK3_CLOAK && pItemElem.m_idGuild)	// 길드번호가 박혀있으면.
+		{
+			CGuild * pGuild = g_GuildMng.GetGuild(pItemElem.m_idGuild);
+			if (pGuild && bGuildCombatCloak == false)
+				str.Format(prj.GetText(TID_GUILD_CLOAK), pGuild->m_szGuild);
+			else
+				str = itemProp.szName;
+		} else {
+			str = pItemElem.GetName();
+		}
+		strTemp += str;
+
+		pEdit.AddString(strTemp, dwColorbuf, ESSTY_BOLD);
+
+		return dwColorbuf;
+	}
+
+	void CTooltipBuilder::PutItemAbilityPiercing(
+		const CItemElem & pItemElem, CEditString & pEdit, const DWORD dwColorBuf
+	) const {
+		CString strTemp;
+		if (pItemElem.GetAbilityOption() != 0) {
+			strTemp.Format(" %+d", pItemElem.GetAbilityOption());
+			pEdit.AddString(strTemp, dwColorBuf, ESSTY_BOLD);
+		}
+
+		int nCount = 0;
+		for (int j = 0; j < pItemElem.GetPiercingSize(); j++) {
+			if (pItemElem.GetPiercingItem(j) != 0) {
+				nCount++;
+			}
+		}
+
+		if (pItemElem.GetPiercingSize() > 0 && pItemElem.m_dwItemId != II_SYS_SYS_SCR_SEALCHARACTER) {
+			strTemp.Format("    (%d/%d)", nCount, pItemElem.GetPiercingSize());
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwPiercing);
+		}
+	}
+
+	void CTooltipBuilder::PutItemResist(
+		const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit
+	) const {
+		const ToolTipItemTextColor & color = dwItemColor[g_Option.m_nToolTipText];
+
+		const auto [tooltipId, dwResistColor] = ([&color](BYTE itemResist) -> std::pair<DWORD, DWORD> {
+			switch (itemResist) {
+				case SAI79::FIRE:        return { TID_UPGRADE_FIRE       , color.dwResistFire        };
+				case SAI79::WATER:       return { TID_UPGRADE_WATER      , color.dwResistWater       };
+				case SAI79::EARTH:       return { TID_UPGRADE_EARTH      , color.dwResistEarth       };
+				case SAI79::ELECTRICITY: return { TID_UPGRADE_ELECTRICITY, color.dwResistElectricity };
+				case SAI79::WIND:        return { TID_UPGRADE_WIND       , color.dwResistWind        };
+				default:                 return { 0                      , color.dwResist            };
+			}
+		})(pItemElem.m_bItemResist);
+
+		const LPCTSTR str = tooltipId != 0 ? prj.GetText(tooltipId) : nullptr;
+		if (!str) return;
+
+
+		CString strTemp;
+		if (itemProp.dwItemKind1 == IK1_WEAPON || itemProp.dwItemKind1 == IK1_ARMOR) {
+			strTemp.Format("\n%s%+d", str, pItemElem.m_nResistAbilityOption);
+
+			const bool bBold = pItemElem.m_nResistSMItemId != 0;
+
+			if (bBold) {
+				pEdit.AddString(strTemp, dwResistColor, ESSTY_BOLD);
+			} else {
+				pEdit.AddString(strTemp, dwResistColor);
+			}
+		} else {
+			strTemp.Format("\n%s Lv%d", str, itemProp.dwItemLV);
+			pEdit.AddString(strTemp, dwResistColor);
+		}
+	}
+
+	void CTooltipBuilder::PutItemSpeed(const ItemProp & itemProp, CEditString & pEdit) const {
+		if (itemProp.dwItemKind2 != IK2_WEAPON_DIRECT
+			&& itemProp.dwItemKind2 != IK2_WEAPON_MAGIC) {
+			return;
+		}
+
+		if (itemProp.fAttackSpeed == 0xffffffff) return;
+		
+		pEdit.AddString("\n");
+
+		CString strTemp;
+		strTemp.Format(prj.GetText(TID_GAME_TOOLTIP_ATTACKSPEED), GetATKSpeedString(itemProp.fAttackSpeed));
+		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 	}
 
 	void CTooltipBuilder::PutItemMinMax(
