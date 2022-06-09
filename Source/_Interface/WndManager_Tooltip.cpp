@@ -5,6 +5,15 @@
 
 CString SingleDstToString(const SINGLE_DST & singleDst);
 
+template<MultipleDsts DstList>
+static CString DstsToString(const DstList & dstList) {
+	CString res;
+	for (const auto & dst : dstList) {
+		res += SingleDstToString(dst);
+	}
+	return res;
+}
+
 namespace WndMgr {
 
 	DWORD CTooltipBuilder::GetOkOrErrorColor(bool isOk) const {
@@ -12,6 +21,69 @@ namespace WndMgr {
 			return dwItemColor[g_Option.m_nToolTipText].dwGeneral;
 		} else {
 			return dwItemColor[g_Option.m_nToolTipText].dwNotUse;
+		}
+	}
+
+	void CTooltipBuilder::PutBaseItemOpt(
+		const CItemElem & pItemElem, const ItemProp & itemProp,
+		CEditString & pEdit
+	) const {
+		boost::container::small_vector<SINGLE_DST, ItemProp::NB_PROPS> itemParams;
+
+		for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+			if (itemProp.dwDestParam[i] != 0xffffffff) {
+				const int nDst = static_cast<int>(itemProp.dwDestParam[i]);
+				const int nAdj = itemProp.nAdjParamVal[i];
+
+				itemParams.push_back(SINGLE_DST{ nDst, nAdj });
+			}
+		}
+
+		const CString str = DstsToString(itemParams);
+		pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+
+		if (pItemElem.IsAccessory()) {		// 액세서리
+			const std::vector<SINGLE_DST> * pDst = g_AccessoryProperty.GetDst(pItemElem.m_dwItemId, pItemElem.GetAbilityOption());
+			if (pDst) {
+				const CString str = DstsToString(*pDst);
+				pEdit.AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+			}
+		}
+	}
+
+	void CTooltipBuilder::PutMedicine(const ItemProp & pItemProp, CEditString & pEdit) const {
+		const auto params = {
+			std::pair(pItemProp.dwDestParam[0], pItemProp.nAdjParamVal[0]),
+			std::pair(pItemProp.dwDestParam[1], pItemProp.nAdjParamVal[1]),
+		};
+
+		bool showMaxRecover = false;
+
+		CString strTemp;
+		for (const auto & [dwParam, nParamVal] : params) {
+			if (dwParam == NULL_ID || nParamVal == NULL_ID) continue;
+
+			if (DST_MP == dwParam) { // MP 치료량
+				strTemp.Format(prj.GetText(TID_GAME_TOOLTIP_RECOVMP), nParamVal);
+				pEdit.AddString("\n");
+				pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+			} else if (DST_HP == dwParam) { // HP 치료량
+				strTemp.Format(prj.GetText(TID_GAME_TOOLTIP_RECOVHP), nParamVal);
+				pEdit.AddString("\n");
+				pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+			} else if (DST_FP == dwParam) { // FP 치료량
+				strTemp.Format(prj.GetText(TID_GAME_TOOLTIP_RECOVFP), nParamVal);
+				pEdit.AddString("\n");
+				pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
+			}
+
+			showMaxRecover = true;
+		}
+
+		if (showMaxRecover && pItemProp.dwAbilityMin != NULL_ID) {
+			strTemp.Format(prj.GetText(TID_GAME_TOOLTIP_MAXRECOVER), pItemProp.dwAbilityMin);
+			pEdit.AddString("\n");
+			pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
 		}
 	}
 

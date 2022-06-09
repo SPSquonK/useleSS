@@ -3352,67 +3352,6 @@ void CWndMgr::PutItemMinMax( CMover* pMover, CItemElem* pItemElem, CEditString* 
 	}
 }
 
-void CWndMgr::PutMedicine( CItemElem* pItemElem, DWORD dwParam, LONG nParamVal, CEditString* pEdit )
-{
-	CString strTemp;
-	if( dwParam != 0xffffffff )
-	{	//  치료량
-		if( nParamVal != 0xffffffff )
-		{
-			if( DST_MP == dwParam )
-			{ // MP 치료량
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RECOVMP), nParamVal );
-				pEdit->AddString( "\n" );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-			}
-			else if( DST_HP == dwParam )
-			{ // HP 치료량
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RECOVHP), nParamVal );
-				pEdit->AddString( "\n" );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-			}
-			else if( DST_FP == dwParam )
-			{ // FP 치료량
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_RECOVFP), nParamVal );
-				pEdit->AddString( "\n" );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-			}
-		}
-
-		if( pItemElem->GetProp()->dwAbilityMin != 0xffffffff )
-		{	// 최대회복량
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_MAXRECOVER), pItemElem->GetProp()->dwAbilityMin );
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGeneral );
-		}
-	}
-}
-
-void CWndMgr::PutBaseItemOpt(CItemElem * pItemElem, CEditString * pEdit) {
-	if (const ItemProp * itemProp = pItemElem->GetProp()) {
-		boost::container::small_vector<SINGLE_DST, 3> itemParams;
-
-		for (int i = 0; i != 3; ++i) {
-			if (itemProp->dwDestParam[i] != 0xffffffff) {
-				const int nDst = static_cast<int>(itemProp->dwDestParam[i]);
-				const int nAdj = itemProp->nAdjParamVal[i];
-
-				itemParams.push_back(SINGLE_DST{ nDst, nAdj });
-			}
-		}
-
-		const CString str = DstsToString(itemParams);
-		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
-	}
-	
-	if( pItemElem && pItemElem->IsAccessory() )		// 액세서리
-	{
-		const std::vector<SINGLE_DST>* pDst	= g_AccessoryProperty.GetDst( pItemElem->m_dwItemId, pItemElem->GetAbilityOption() );
-		const CString str = DstsToString(*pDst);
-		pEdit->AddString(str, dwItemColor[g_Option.m_nToolTipText].dwGeneral);
-	}
-}
-
 void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag )
 {
 	CString str;
@@ -3722,7 +3661,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 
 			PutBaseResist( *pItemProp, strEdit );	// 속성 저항력
 			
-			PutBaseItemOpt( pItemElem, &strEdit );
+			PutBaseItemOpt(*pItemElem, *pItemProp, strEdit);
 			PutRandomOpt( pItemElem, &strEdit );			
 			PutEnchantOpt( pMover, pItemElem, &strEdit, flag );
 			break;
@@ -3731,13 +3670,12 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	case IK2_FOOD:
 	case IK2_POTION:
 		{
-			PutMedicine( pItemElem, pItemElem->GetProp()->dwDestParam1,  pItemProp->nAdjParamVal1, &strEdit );
-			PutMedicine( pItemElem, pItemElem->GetProp()->dwDestParam2,  pItemProp->nAdjParamVal2, &strEdit );
+		PutMedicine(*pItemProp, strEdit);
 			break;
 		}
 	case IK2_JEWELRY:
 		{
-			PutBaseItemOpt( pItemElem, &strEdit );
+		PutBaseItemOpt(*pItemElem, *pItemProp, strEdit);
 			break;
 		}
 	case IK2_SYSTEM:
@@ -3745,7 +3683,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 			if( pItemProp->dwItemKind3 == IK3_VIS )
 			{
 				PutNeededVis( *pItemProp, strEdit );
-				PutBaseItemOpt( pItemElem, &strEdit );
+				PutBaseItemOpt(*pItemElem, *pItemProp, strEdit);
 			}
 			
 			if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )

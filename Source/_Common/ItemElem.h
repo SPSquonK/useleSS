@@ -120,7 +120,7 @@ public:
 #if defined(__CLIENT) || defined(__WORLDSERVER)
 	BOOL	IsPerin(void) { return m_dwItemId == II_SYS_SYS_SCR_PERIN; }
 	BOOL	IsCollector(BOOL bRefinable = FALSE) { return(m_dwItemId == II_GEN_TOO_COL_NORMAL || (!bRefinable && m_dwItemId == II_GEN_TOO_COL_EVENT)); }
-	BOOL	IsAccessory(void) { return g_AccessoryProperty.IsAccessory(m_dwItemId); }
+	[[nodiscard]] bool IsAccessory() const { return g_AccessoryProperty.IsAccessory(m_dwItemId); }
 	BOOL	IsActiveTicket(DWORD dwItemId);
 #endif
 
