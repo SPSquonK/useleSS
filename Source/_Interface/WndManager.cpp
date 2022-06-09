@@ -3688,48 +3688,6 @@ void CWndMgr::PutPetFeedPocket( CItemElem* pItemElem, CEditString* pEdit )
 	}
 }
 
-void CWndMgr::PutSealChar( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString str,strTemp,strTemp2,strTemp3;
-
-	str.Format( "\n%s\n%s", prj.GetText(TID_TOOLTIP_CHARNAME), pItemElem->m_szItemText );
-	strTemp = str;
-
-	int	nJob = (int)pItemElem->m_nRepair;
-	int nLevel =  (int)pItemElem->m_nRepairNumber;
-
-	if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
-		strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
-	else if( MAX_MASTER <= nJob )
-		strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-	else 
-		strTemp2.Format( "%d", nLevel );
-
-	str.Format( "\n%s%s", prj.GetText(TID_TOOLTIP_CHARLEVEL), strTemp2 );
-	strTemp += str;
-	
-	strTemp3.Format("%s",prj.m_aJob[nJob].szName);
-
-	str.Format( "\n%s%s", prj.GetText(TID_TOOLTIP_CHARJOB), strTemp3 );
-	strTemp += str;
-	str.Format( "\n%s", prj.GetText(TID_TOOLTIP_CHARSTAT) );
-	strTemp += str;
-
-	
-	str.Format( "\n%s%d", prj.GetText(TID_TOOLTIP_CHARSTA), (int)pItemElem->GetPiercingItem( 0 ) );
-	strTemp += str;
-	str.Format( "\n%s%d", prj.GetText(TID_TOOLTIP_CHARSTR), (int)pItemElem->GetPiercingItem( 1 ) );
-	strTemp += str;
-	str.Format( "\n%s%d", prj.GetText(TID_TOOLTIP_CHARDEX), (int)pItemElem->GetPiercingItem( 2 ) );
-	strTemp += str;
-	str.Format( "\n%s%d", prj.GetText(TID_TOOLTIP_CHARINT), (int)pItemElem->GetPiercingItem( 3 ) );
-	strTemp += str;
-	str.Format( "\n%s%d", prj.GetText(TID_TOOLTIP_CHARPOINT), (int)pItemElem->m_nResistAbilityOption );
-	strTemp += str;
-
-	pEdit->AddString( strTemp, D3DCOLOR_XRGB( 255, 20, 20 ) );
-}
-
 void CWndMgr::PutBaseResist( CItemElem* pItemElem, CEditString* pEdit )
 {
 	CString strTemp;
@@ -4408,7 +4366,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 			
 			if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
 			{
-				PutSealChar( pItemElem, &strEdit );
+				PutSealChar(*pItemElem, strEdit);
 			}
 			break;
 		}

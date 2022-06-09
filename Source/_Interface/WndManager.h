@@ -418,6 +418,7 @@ namespace WndMgr {
 
 
 
+		void PutSealChar(const CItemElem & pItemElem, CEditString & pEdit) const;
 
 		void PutEquipItemText(CEditString & pEdit) const;
 	};
@@ -675,8 +676,6 @@ public:
 	void PutAddedOpt( CItemElem* pItemElem, CEditString* pEdit );
 	void PutPetInfo( CItemElem* pItemElem, CEditString* pEdit );
 	void PutPetFeedPocket( CItemElem* pItemElem, CEditString* pEdit );
-
-	void	PutSealChar( CItemElem* pItemElem, CEditString* pEdit );
 
 	void PutNeededVis( CItemElem* pItemElem, CEditString* pEdit );
 	void PutVisPetInfo( CItemElem* pItemElem, CEditString* pEdit );
