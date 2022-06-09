@@ -3659,43 +3659,6 @@ void CWndMgr::PutKeepTime( CItemElem* pItemElem, CEditString* pEdit )
 	}
 }
 
-void CWndMgr::PutEndurance( CItemElem* pItemElem, CEditString* pEdit, int flag )
-{
-}
-
-void CWndMgr::PutCommand( CItemElem* pItemElem, CEditString* pEdit )
-{
-	CString strTemp;
-	if( strlen( pItemElem->GetProp()->szCommand ) )
-	{
-		pEdit->AddString( "\n" );
-
-		if( ( pItemElem->m_dwItemId == II_GEN_WARP_COUPLERING || pItemElem->m_dwItemId == II_GEN_WARP_WEDDING_BAND || pItemElem->m_dwItemId == II_GEN_WARP_COUPLERING01 )
-			&& pItemElem->GetRandomOptItemId() > 0 )
-		{
-			u_long idPlayer	= (u_long)( pItemElem->GetRandomOptItemId() );
-			const char* pszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer );
-			CString strDesc;
-			strDesc.Format( prj.GetText( TID_ITEM_COUPLERING_DESC ), pszPlayer? pszPlayer: "" );
-			strTemp.Format( prj.GetText( TID_ITEM_INFO ), strDesc );	// 설명 :
-		}
-		else
-		{
-			strTemp.Format( prj.GetText( TID_ITEM_INFO ), pItemElem->GetProp()->szCommand );	// 설명 :
-		}
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwCommand );
-	}
-
-/*	if( pItemElem->GetProp()->dwID == II_SYS_SYS_SCR_AMPESA || pItemElem->GetProp()->dwID == II_SYS_SYS_SCR_AMPESB
-		|| pItemElem->GetProp()->dwID == II_SYS_SYS_SCR_AMPESC || pItemElem->GetProp()->dwID == II_SYS_SYS_SCR_AMPESD )
-	{
-		pEdit->AddString( "\n" );
-		strTemp.Format( prj.GetText( TID_GAME_EXP_LEVELUSE ) );	// 레벨에 따라 중복 가능
-		pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwCommand );
-	}
-*/
-}
-
 void CWndMgr::PutToolTip_Item(CItemElem * pItemBase, CPoint point, CRect* pRect, int flag )
 {
 	ItemProp* pItemProp = pItemBase->GetProp();
@@ -3977,11 +3940,10 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	}
 
 	PutCoolTime( *pMover, *pItemProp, strEdit );			// 쿨타임
-	PutEndurance( pItemElem, &strEdit, flag );			// 내구력
 	PutKeepTime( pItemElem, &strEdit );					// 사용할수 있는 시간
 	PutJob( *pMover, *pItemProp, strEdit );
 	PutLevel( *pMover, *pItemElem, strEdit );	
-	PutCommand( pItemElem, &strEdit );					// 용도 
+	PutCommand( *pItemElem, strEdit );					// 용도 
 	PutItemGold( pMover, pItemElem, &strEdit, flag );	// 가격
 	PutSetItemOpt( pMover, pItemElem, &strEdit );
 	if( pItemProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet )//&& pItemElem->m_pPet->GetLevel() != PL_EGG )

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "WndManager.h"
 #include "defineText.h"
+#include "playerdata.h"
 
 CString SingleDstToString(const SINGLE_DST & singleDst);
 
@@ -14,6 +15,32 @@ namespace WndMgr {
 		}
 	}
 
+	void CTooltipBuilder::PutCommand(const CItemElem & pItemElem, CEditString & pEdit) const {
+		const ItemProp * itemProp = pItemElem.GetProp();
+		assert(itemProp);
+
+		if (std::strlen(itemProp->szCommand) == 0) return;
+
+		pEdit.AddString("\n");
+
+		static constexpr auto CoupleRingIds = {
+			II_GEN_WARP_COUPLERING, II_GEN_WARP_WEDDING_BAND, II_GEN_WARP_COUPLERING01
+		};
+
+		CString strTemp;
+		if (std::ranges::find(CoupleRingIds, pItemElem.m_dwItemId) != CoupleRingIds.end()
+			&& pItemElem.GetRandomOptItemId() > 0) {
+			u_long idPlayer = (u_long)(pItemElem.GetRandomOptItemId());
+			const char * pszPlayer = CPlayerDataCenter::GetInstance()->GetPlayerString(idPlayer);
+			CString strDesc;
+			strDesc.Format(prj.GetText(TID_ITEM_COUPLERING_DESC), pszPlayer ? pszPlayer : "");
+			strTemp.Format(prj.GetText(TID_ITEM_INFO), strDesc);	// 설명 :
+		} else {
+			strTemp.Format(prj.GetText(TID_ITEM_INFO), itemProp->szCommand);	// 설명 :
+		}
+
+		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwCommand);
+	}
 
 	void CTooltipBuilder::PutSex(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const {
 		// TODO: maybe add automorph? Gendered items are super inconvenient and
