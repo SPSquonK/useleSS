@@ -415,7 +415,15 @@ namespace WndMgr {
 	class CTooltipBuilder {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
+	public:
+
+
+		void MakeToolTipText_(CMover & pMover, CItemElem & pItemElem, const ItemProp & itemProp, CEditString & strEdit, int fromApp) const;
 		
+	public:
+		void PutDestParam(DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString & str) const;
+		void PutDestParam(SINGLE_DST dst, CEditString & str) const;
+
 		[[nodiscard]] DWORD PutItemName(const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutItemAbilityPiercing(const CItemElem & pItemElem, CEditString & pEdit, DWORD dwColorBuf) const;
 		void PutItemResist(const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
@@ -625,7 +633,6 @@ public:
 	CMapDWordToPtr	m_mapWndApplet ;
 	std::map<DWORD, WNDREGINFO>  m_mapWndRegInfo;
 
-	void PutDestParam( DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString &str );	
 	void PutDefinedString( DWORD dwText, ... );
 	void PutString( LPCTSTR lpszString, CObj* pObj = NULL, DWORD dwColor = 0xffffffff, DWORD dwChatStyle = CHATSTY_GAME, DWORD dwPStyle = 0x00000001 );
 	void PutString(DWORD textId);

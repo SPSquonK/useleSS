@@ -43,6 +43,154 @@ namespace WndMgr {
 		}
 	}
 
+	void CTooltipBuilder::MakeToolTipText_(
+		CMover & pMover, CItemElem & pItemElem, const ItemProp & pItemProp,
+		CEditString & strEdit, const int fromApp
+	) const {
+		const DWORD dwColorBuf = PutItemName(pItemElem, pItemProp, strEdit);
+		PutItemAbilityPiercing(pItemElem, strEdit, dwColorBuf);
+		PutPetKind(pItemElem, strEdit);		//gmpbigsun : 아이템 명 다음줄에 펫 종류 ( 리어, 픽업, 버프 ) 삽입 
+		if (pItemProp.dwFlag & IP_FLAG_EQUIP_BIND) {
+			strEdit.AddString("\n");
+
+			const DWORD bindTextId = pItemElem.IsFlag(CItemElem::binds) ? TID_TOOLTIP_EQUIPBIND_AFTER : TID_TOOLTIP_EQUIPBIND_BEFORE;
+			strEdit.AddString(prj.GetText(bindTextId), prj.GetTextColor(bindTextId));
+		}
+
+		PutWeapon(pItemProp, strEdit);
+		PutSex(pMover, pItemProp, strEdit);
+
+		switch (pItemProp.dwItemKind2) {
+			case IK2_WEAPON_DIRECT:
+			case IK2_WEAPON_MAGIC:
+			case IK2_ARMORETC:
+			case IK2_CLOTHETC:
+			case IK2_ARMOR:
+			case IK2_CLOTH:
+			case IK2_BLINKWING:
+			{
+				PutItemMinMax(pMover, pItemElem, pItemProp, strEdit);
+				PutItemSpeed(pItemProp, strEdit);
+				if (pItemProp.dwItemKind3 == IK3_ELECARD)
+					PutItemResist(pItemElem, pItemProp, strEdit);
+				else if (pItemElem.m_nResistAbilityOption && (pItemProp.dwItemKind1 == IK1_WEAPON || pItemProp.dwItemKind1 == IK1_ARMOR))
+					PutItemResist(pItemElem, pItemProp, strEdit);
+
+				PutBaseResist(pItemProp, strEdit);	// 속성 저항력
+
+				PutBaseItemOpt(pItemElem, pItemProp, strEdit);
+				PutRandomOpt(pItemElem, strEdit);
+				PutEnchantOpt(pMover, pItemElem, strEdit, fromApp);
+				break;
+			}
+			case IK2_REFRESHER:
+			case IK2_FOOD:
+			case IK2_POTION:
+				PutMedicine(pItemProp, strEdit);
+				break;
+			case IK2_JEWELRY:
+				PutBaseItemOpt(pItemElem, pItemProp, strEdit);
+				break;
+			case IK2_SYSTEM:
+				if (pItemProp.dwItemKind3 == IK3_VIS) {
+					PutNeededVis(pItemProp, strEdit);
+					PutBaseItemOpt(pItemElem, pItemProp, strEdit);
+				}
+
+				if (pItemElem.m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER) {
+					PutSealChar(pItemElem, strEdit);
+				}
+				break;
+			case IK2_GMTEXT: {
+				if (pItemProp.dwItemKind3 == IK3_TEXT_DISGUISE) {
+					PutDestParam(
+						pItemProp.dwDestParam[0], pItemProp.dwDestParam[1],
+						pItemProp.nAdjParamVal[0], pItemProp.nAdjParamVal[1],
+						strEdit
+					);
+
+					if (pItemProp.dwActiveSkill != NULL_ID) {
+						ItemProp * pSkillProp;
+						AddSkillProp * pAddSkillProp;
+						pMover.GetSkillProp(&pSkillProp, &pAddSkillProp, pItemProp.dwActiveSkill, 1, "CWndMgr::PutToolTip_Item");
+
+						if (pAddSkillProp) {
+							PutDestParam(pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
+								pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit);
+						}
+					}
+				}
+				break;
+			}
+			default:
+				break;
+		}
+
+		if (pItemElem.IsEatPet()) {
+			if (pItemProp.dwActiveSkill != NULL_ID) {
+				ItemProp * pSkillProp;
+				AddSkillProp * pAddSkillProp;
+				pMover.GetSkillProp(&pSkillProp, &pAddSkillProp, pItemProp.dwActiveSkill, 1, "CWndMgr::PutToolTip_Item");
+
+				if (pAddSkillProp) {
+					PutDestParam(
+						pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
+						pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1],
+						strEdit
+					);
+				}
+			}
+		}
+
+
+		if (pItemElem.IsVisPet()) {
+			PutVisPetInfo(pItemElem, strEdit);
+		}
+
+		PutCoolTime(pMover, pItemProp, strEdit);			// 쿨타임
+		PutKeepTime(pItemElem, pItemProp, strEdit);					// 사용할수 있는 시간
+		PutJob(pMover, pItemProp, strEdit);
+		PutLevel(pMover, pItemElem, strEdit);
+		PutCommand(pItemElem, strEdit);					// 용도 
+		PutItemGold(pItemElem, strEdit, fromApp);	// 가격
+		PutSetItemOpt(pMover, pItemElem.m_dwItemId, strEdit);
+		if (pItemProp.dwItemKind3 == IK3_EGG && pItemElem.m_pPet)
+			PutPetInfo(pItemElem, strEdit);
+		if (pItemProp.dwID == II_SYS_SYS_SCR_PET_FEED_POCKET) //먹이 주머니 툴팁
+			PutPetFeedPocket(pItemElem, pItemProp, strEdit);
+		PutPiercingOpt(pItemElem, strEdit);
+		PutAwakeningBlessing(pItemElem, strEdit);
+		if ((pItemProp.dwItemKind2 == IK2_WEAPON_DIRECT || pItemProp.dwItemKind2 == IK2_WEAPON_MAGIC)
+			&& pItemProp.dwReferStat1 == WEAPON_ULTIMATE) {
+			PutAddedOpt(pItemElem, strEdit);
+		}
+	}
+
+
+	void CTooltipBuilder::PutDestParam(
+		DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString & str
+	) const {
+		const SINGLE_DST a = {
+			.nDst = static_cast<int>(dwDst1),
+			.nAdj = static_cast<int>(dwAdj1)
+		};
+
+		const SINGLE_DST b = {
+			.nDst = static_cast<int>(dwDst2),
+			.nAdj = static_cast<int>(dwAdj2)
+		};
+
+		PutDestParam(a, str);
+		PutDestParam(b, str);
+	}
+
+	void CTooltipBuilder::PutDestParam(const SINGLE_DST dst, CEditString & str) const {
+		if (dst.nDst != NULL_ID && dst.nDst != 0 && dst.nDst != DST_CHRSTATE) {
+			const CString strTemp = SingleDstToString(dst);
+			str.AddString(strTemp, D3DCOLOR_XRGB(0, 0, 255));
+		}
+	}
+
 	// 아이템 툴립 출력할것
 	// 랜덤 옵션 이름, 아이템 이름( 길드 망토면 길드 이름 ), (세트)
 	// 예 ) 곰의 코튼 슈트(세트)
