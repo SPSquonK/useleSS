@@ -858,10 +858,8 @@ void CWndMgr::OpenField()
 	//CloseField();
 	// Open
 	OpenTaskBar();
-	
-	m_aChatString.RemoveAll();
-	m_aChatColor.RemoveAll();
-	m_aChatStyle.RemoveAll();
+
+	m_aChat.clear();
 
 	LoadRegInfo( "regInfo.dat" );
 	OpenApplet(APP_COMMUNICATION_CHAT);
@@ -2565,17 +2563,11 @@ void CWndMgr::PutString( LPCTSTR lpszString, CObj* pObj, DWORD dwColor, DWORD dw
 	if( bRecord )
 	{
 		// 글 내용이 1000줄을 넘어가면 500라인을 잘라낸다.
-		if( m_aChatString.GetSize() > 500 )
-		{
-			m_aChatString.RemoveAt( 0, 250 );
-			m_aChatColor.RemoveAt( 0, 250 );
-			m_aChatStyle.RemoveAt( 0, 250 );
+		if (m_aChat.size() >= 500) {
+			m_aChat.erase(m_aChat.begin(), m_aChat.begin() + 250);
 		}
-		
-		m_aChatString.Add( strChat );
-//		m_aChatString.Add( lpszString );
-		m_aChatColor.Add( dwColor );
-		m_aChatStyle.Add( dwChatStyle );
+
+		m_aChat.push_back(WndMgr::StoredChatMessage{ strChat, dwColor, dwChatStyle });
 	}
 	if( dwStyle & TMS_CHAT )
 	{

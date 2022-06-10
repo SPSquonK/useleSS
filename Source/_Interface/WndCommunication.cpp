@@ -519,15 +519,13 @@ void CWndChat::SetChannel()
 	}
 	DWORD dwChatFilter = g_Option.m_dwChatFilterEtc | g_Option.m_dwChatFilter[ nChannel ];
 
-	for( int i = 0; i < g_WndMng.m_aChatString.GetSize(); i++ )
-	{
-		if( g_WndMng.m_aChatStyle.GetAt( i ) & dwChatFilter ) 
-		{
-			CString string = g_WndMng.m_aChatString.GetAt( i );
-			m_wndText.m_string.AddParsingString( string, g_WndMng.m_aChatColor.GetAt( i ), 0x00000000, 0, PS_NOT_MACRO );
-			m_wndText.m_string.AddString( "\n" );
+	for (const WndMgr::StoredChatMessage & chatMessage : g_WndMng.m_aChat) {
+		if (chatMessage.style & dwChatFilter) {
+			m_wndText.m_string.AddParsingString(chatMessage.message.GetString(), chatMessage.color, 0x00000000, 0, PS_NOT_MACRO);
+			m_wndText.m_string.AddString("\n");
 		}
 	}
+
 	m_wndText.ResetString();
 	m_wndText.m_wndScrollBar.SetMaxScrollPos();
 }

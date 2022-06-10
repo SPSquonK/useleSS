@@ -498,6 +498,11 @@ namespace WndMgr {
 		[[nodiscard]] DWORD GetWndId() const noexcept { return dwWndId; }
 	};
 
+	struct StoredChatMessage {
+		CString message;
+		DWORD color;
+		DWORD style;
+	};
 }
 
 class CWndMgr :
@@ -537,9 +542,8 @@ private:
 #endif // __BAN_CHATTING_SYSTEM
 
 public:
-	CStringArray m_aChatString;
-	CUIntArray   m_aChatColor ;
-	CUIntArray   m_aChatStyle ;
+	std::vector<WndMgr::StoredChatMessage> m_aChat;
+
 #ifdef __RT_1025
 	CRTMessenger	m_RTMessenger;
 #else	//__RT_1025
