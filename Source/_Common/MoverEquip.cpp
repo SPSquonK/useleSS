@@ -1172,26 +1172,25 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 //
 //
 // pItemElem이 벗는게 가능한가를 검사.
-BOOL CMover::IsUnEquipAble( ItemProp *pItemProp )
-{
-	if( pItemProp->dwParts == PARTS_RIDE )
-	{
-		if( m_pActMover->IsSit() )	// 빗자루는 앉은 상태에서는 탈착 금지
-			return FALSE;
+bool CMover::IsUnEquipAble(const ItemProp & pItemProp) const {
+	if (pItemProp.dwParts == PARTS_RIDE) {
+		if (m_pActMover->IsSit()) {	// 빗자루는 앉은 상태에서는 탈착 금지
+			return false;
+		}
 
-		if( GetWorld() )	// RedoEquip에서 불렀을때 NULL인경우 있음. NULL이면 걍 벗김
-		{
-			int nAttr = GetWorld()->GetHeightAttribute( GetPos().x, GetPos().z );		// 이동할 위치의 속성 읽음.
+		if (GetWorld()) {	// RedoEquip에서 불렀을때 NULL인경우 있음. NULL이면 걍 벗김
+			const int nAttr = GetWorld()->GetHeightAttribute(GetPos().x, GetPos().z);		// 이동할 위치의 속성 읽음.
 			// 비행금지 or 걷기금지 or 이동금지 지역에서 는 못내림.
-			if( (nAttr == HATTR_NOFLY || nAttr == HATTR_NOWALK || nAttr == HATTR_NOMOVE ) )		
-				return FALSE;
+			if ((nAttr == HATTR_NOFLY || nAttr == HATTR_NOWALK || nAttr == HATTR_NOMOVE)) {
+				return false;
+			}
 		}
 	}
 
-	if( g_eLocal.GetState( EVE_SCHOOL ) && pItemProp->dwItemKind3 == IK3_CLOAK )
-		return FALSE;
-	
-	return TRUE;
+	if (g_eLocal.GetState(EVE_SCHOOL) && pItemProp.dwItemKind3 == IK3_CLOAK)
+		return false;
+
+	return true;
 }
 
 //
@@ -1199,7 +1198,9 @@ BOOL CMover::IsUnEquipAble( ItemProp *pItemProp )
 // 정상적인 아이템 장착, 탈착 
 BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 {
-	ItemProp* pItemProp = pItemElem->GetProp();
+	if (!pItemElem) return FALSE;
+	const ItemProp * pItemProp = pItemElem->GetProp();
+	if (!pItemProp) return FALSE;
 	
 	if( IsDie() )	// 죽은 상태에서는 장/탈착 금지
 	{
@@ -1217,8 +1218,7 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 	}
 	else
 	{
-		if( IsUnEquipAble( pItemProp ) == FALSE )
-			return FALSE;
+		if (IsUnEquipAble(*pItemProp)) return FALSE;
 	}
 
 	EQUIP_INFO equipInfo;

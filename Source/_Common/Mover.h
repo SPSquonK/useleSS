@@ -912,7 +912,7 @@ public:
 	int				InvalidEquipOff( BOOL fFakeparts );		// 거시기한 장비를 벗김.
 	BOOL			DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart = -1 ); // for normal
 	BOOL			IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel = FALSE );		// 장착가능한가?
-	BOOL			IsUnEquipAble( ItemProp *pItemProp );					// 벗는게 가능한가?
+	[[nodiscard]] bool IsUnEquipAble(const ItemProp & pItemProp) const; // Check if the current situation blocks equiping the item
 	void			SetEquipDstParam();
 	void			SumEquipAdjValue( int* pnAdjHitRate, int* pnAdjParray );
 	int				SumEquipDefenseAbility( LONG* pnMin, LONG* pnMax );
