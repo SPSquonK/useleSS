@@ -1346,7 +1346,7 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 					CPoint point2 = point;
 					ClientToScreen( &point2 );
 					ClientToScreen( rectHittest );
-					g_WndMng.PutToolTip_Character( i, point2, &rectHittest );
+					WndMgr::CTooltipBuilder::PutToolTip_Character(i, point2, rectHittest);
 				}
 			}
 			if( m_nSelectCharacter == i )

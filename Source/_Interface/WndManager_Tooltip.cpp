@@ -43,6 +43,327 @@ namespace WndMgr {
 		}
 	}
 
+	void CTooltipBuilder::PutToolTip_Troupe(const DWORD dwSkill, const CPoint point, const CRect pRect) const {
+		const ItemProp * const pSkillProp = prj.GetPartySkill(dwSkill);
+		if (!pSkillProp) return;
+
+		CString string;
+		string.Format("#b#cff2fbe6d%s#nb#nc", pSkillProp->szName);
+
+		char statebuf[30] = { 0, };
+		if (pSkillProp->dwReqMp != NULL_ID) {
+			sprintf(statebuf, "\nMP : %d", pSkillProp->dwReqMp);
+			string += statebuf;
+		}
+		if (pSkillProp->dwReqFp != NULL_ID) {
+			sprintf(statebuf, "\nFP : %d", pSkillProp->dwReqFp);
+			string += statebuf;
+		}
+		if (pSkillProp->szCommand == std::string_view("=")) {
+			string += "\n";
+			string += pSkillProp->szCommand;
+		}
+
+		CEditString strEdit;
+		strEdit.SetParsingString(string);
+
+		g_toolTip.PutToolTip(dwSkill, strEdit, *pRect, point, 0);
+	}
+
+	void CTooltipBuilder::PutToolTip_Skill(
+		const DWORD dwSkill, const DWORD dwSkillLevel,
+		const CPoint point, const CRect pRect,
+		const BOOL bActive
+	) const {
+		ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		if (pSkillProp == NULL) {
+			Error("CWndMgr::PutToolTip_Skill : 스킬(%d)의 프로퍼티가 업다.", dwSkill);
+			return;	// property not found
+		}
+
+		AddSkillProp * pAddSkillProp = prj.GetAddSkillProp(pSkillProp->dwSubDefine, dwSkillLevel);
+		if (pAddSkillProp == NULL) {
+			Error("CWndMgr::PutToolTip_Skill : add스킬(%d)의 프로퍼티가 업다.", dwSkill);
+			return;	// property not found
+		}
+
+		const DWORD dwaf = D3DCOLOR_XRGB(199, 155, 0);
+		CString string;
+		if (bActive)
+			string.Format("#b#cff2fbe6d%s   Lv %d#nb#nc", pSkillProp->szName, dwSkillLevel);
+		else
+			string.Format("#b#cff2fbe6d%s#nb#nc", pSkillProp->szName);
+		char statebuf[30] = { 0, };
+		if (pAddSkillProp->nReqMp != 0xffffffff) {
+			sprintf(statebuf, "\nMP : %d", g_pPlayer->GetReqMp(pAddSkillProp->nReqMp));
+			string += statebuf;
+		}
+		if (pAddSkillProp->nReqFp != 0xffffffff) {
+			sprintf(statebuf, "\nFP : %d", g_pPlayer->GetReqFp(pAddSkillProp->nReqFp));
+			string += statebuf;
+		}
+
+
+		CString str;
+		CString strstr;
+		if (pSkillProp->dwReSkill1 != -1) {
+			LPSKILL pskill = g_pPlayer->GetSkill(pSkillProp->dwReSkill1);
+
+			if (pskill) {
+				strstr.Format(prj.GetText(TID_GAME_SKILLDIS), pskill->GetProp()->szName, pSkillProp->dwReSkillLevel1);
+				if (pskill->dwLevel < pSkillProp->dwReSkillLevel1)
+					str.Format("\n#cffff0000%s#nc", strstr);
+				else
+					str.Format("\n%s#nc", strstr);
+				string += str;
+			}
+		}
+		if (pSkillProp->dwReSkill2 != -1) {
+			LPSKILL pskill = g_pPlayer->GetSkill(pSkillProp->dwReSkill2);
+
+			if (pskill) {
+				strstr.Format(prj.GetText(TID_GAME_SKILLDIS), pskill->GetProp()->szName, pSkillProp->dwReSkillLevel2);
+				if (pskill->dwLevel < pSkillProp->dwReSkillLevel2)
+					str.Format("\n#cffff0000%s#nc", strstr);
+				else
+					str.Format("\n%s#nc", strstr);
+				string += str;
+			}
+		}
+
+		strstr.Format(prj.GetText(TID_GAME_BASESKILLLEVEL), pSkillProp->dwReqDisLV);
+
+		if (g_pPlayer->GetLevel() < (int)(pSkillProp->dwReqDisLV) && !g_pPlayer->IsMaster() && !g_pPlayer->IsHero())
+			str.Format("\n#cffff0000%s#nc", strstr);
+		else
+			str.Format("\n%s", strstr);
+		string += str;
+
+		if (strcmp(pSkillProp->szCommand, "=")) {
+			string += "\n";
+			string += pSkillProp->szCommand;
+		}
+
+		int nSkillIdx = g_pPlayer->GetSkillIdx(dwSkill);
+
+		if (nSkillIdx != -1) {
+			DWORD dwDelay = g_pPlayer->GetReuseDelay(nSkillIdx);
+			if (dwDelay > 0) {
+				CTimeSpan ct((long)(dwDelay / 1000.0f));		// 남은시간을 초단위로 변환해서 넘겨줌
+				str.Format(prj.GetText(TID_TOOLTIP_COOLTIME), ct.GetMinutes(), ct.GetSeconds());		// 남은시간을 분/초 형태로 출력.
+				string += "\n";
+				string += str;
+			}
+		}
+
+		CEditString strEdit;
+		strEdit.SetParsingString(string);
+
+		g_toolTip.PutToolTip(dwSkill, strEdit, *pRect, point, 0);
+	}
+
+
+	void CTooltipBuilder::PutToolTip_Item(
+		const DWORD, const DWORD dwId,
+		const CPoint point, const CRect * pRect, const int flag
+	) const {
+		CItemElem * pItemBase = g_pPlayer->GetItemId(dwId);
+		PutToolTip_Item(pItemBase, point, pRect, flag);
+	}
+
+	void CTooltipBuilder::PutToolTip_Item(
+		CItemElem * pItemBase,
+		const CPoint point, const CRect * pRect, const int flag
+	) const {
+		const ItemProp * pItemProp = pItemBase->GetProp();
+		if (!pItemProp) return;
+
+		CEditString strItem = _T("");
+		MakeToolTipText(pItemBase, strItem, flag);
+		g_toolTip.PutToolTip(pItemBase->m_dwItemId, strItem, *pRect, point, 0);
+		if (pItemProp->IsUltimate()) {
+			g_toolTip.SetUltimateToolTip(pItemBase);
+		}
+	}
+
+	void CTooltipBuilder::PutToolTipItemAndSubToolTip(CItemElem * pItemBase, CPoint point, const CRect * pRect, int nFlag) const {
+		static constexpr auto TOOL_TIP_SWITCH_MAIN = CWndMgr::TOOL_TIP_SWITCH_MAIN;
+		static constexpr auto TOOL_TIP_SWITCH_SUB1 = CWndMgr::TOOL_TIP_SWITCH_SUB1;
+		static constexpr auto TOOL_TIP_SWITCH_SUB2 = CWndMgr::TOOL_TIP_SWITCH_SUB2;
+		
+		// 다중 툴팁 시스템이 적용되면서 툴팁 출력 전에 툴팁 스위치를 미리 세팅해서 위치를 조정
+		g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_MAIN);
+		PutToolTipParts(pItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_MAIN);
+		const ItemProp * const pItemProp = pItemBase->GetProp();
+		switch (pItemProp->dwItemKind2) {
+			case IK2_WEAPON_DIRECT:
+			case IK2_WEAPON_MAGIC:
+			case IK2_ARMOR:
+			case IK2_ARMORETC:
+			case IK2_CLOTH:
+			case IK2_CLOTHETC:
+			case IK2_JEWELRY:
+			case IK2_RIDING:
+			case IK2_CLOTHWIG:
+			{
+				CItemElem * pEquipItemBase = g_pPlayer->GetEquipItem(pItemProp->dwParts);
+				if (pEquipItemBase) {
+					g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB1);
+					PutToolTipParts(pEquipItemBase, point, pRect, nFlag, TOOL_TIP_SWITCH_SUB1);
+				}
+				if (pItemProp->dwParts == PARTS_RWEAPON) {
+					CItemElem * pRWeaponItemBase = g_pPlayer->GetEquipItem(PARTS_RWEAPON);
+					CItemElem * pLWeaponItemBase = g_pPlayer->GetEquipItem(PARTS_LWEAPON);
+					if (pRWeaponItemBase && pLWeaponItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB2);
+						PutToolTipParts(pLWeaponItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB2);
+					} else if (pRWeaponItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB1);
+						PutToolTipParts(pRWeaponItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB1);
+					} else if (pLWeaponItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB1);
+						PutToolTipParts(pLWeaponItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB1);
+					}
+				} else if (pItemProp->dwParts == PARTS_RING1) {
+					CItemElem * pRing1ItemBase = g_pPlayer->GetEquipItem(PARTS_RING1);
+					CItemElem * pRing2ItemBase = g_pPlayer->GetEquipItem(PARTS_RING2);
+					if (pRing1ItemBase && pRing2ItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB2);
+						PutToolTipParts(pRing2ItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB2);
+					} else if (pRing1ItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB1);
+						PutToolTipParts(pRing1ItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB1);
+					} else if (pRing2ItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB1);
+						PutToolTipParts(pRing2ItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB1);
+					}
+				} else if (pItemProp->dwParts == PARTS_EARRING1) {
+					CItemElem * pEarring1ItemBase = g_pPlayer->GetEquipItem(PARTS_EARRING1);
+					CItemElem * pEarring2ItemBase = g_pPlayer->GetEquipItem(PARTS_EARRING2);
+					if (pEarring1ItemBase && pEarring2ItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB2);
+						PutToolTipParts(pEarring2ItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB2);
+					} else if (pEarring1ItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB1);
+						PutToolTipParts(pEarring1ItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB1);
+					} else if (pEarring2ItemBase) {
+						g_toolTip.SetSubToolTipNumber(TOOL_TIP_SWITCH_SUB1);
+						PutToolTipParts(pEarring2ItemBase, point, *pRect, nFlag, TOOL_TIP_SWITCH_SUB1);
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	void CTooltipBuilder::PutToolTipParts(
+		CItemElem * pPartsItemBase,
+		CPoint point, const CRect pRect,
+		const int nFlag, const int nSubToolTipFlag
+	) const {
+		if (!pPartsItemBase) return;
+
+		CEditString strEquipItem = _T("");
+		if (nSubToolTipFlag != 0) PutEquipItemText(strEquipItem);
+		MakeToolTipText(pPartsItemBase, strEquipItem, nFlag);
+
+		CToolTip * ptoolTip = nullptr;
+		switch (nSubToolTipFlag) {
+			case 0: ptoolTip = &g_toolTip;     break;
+			case 1: ptoolTip = &g_toolTipSub1; break;
+			case 2: ptoolTip = &g_toolTipSub2; break;
+		}
+
+		if (ptoolTip) {
+			const ItemProp * const pPartsItemProp = pPartsItemBase->GetProp();
+
+			ptoolTip->PutToolTipEx(pPartsItemBase->m_dwItemId, strEquipItem, pRect, point, 0, nSubToolTipFlag);
+			if (pPartsItemProp->IsUltimate()) {
+				ptoolTip->SetUltimateToolTip(pPartsItemBase);
+			}
+		}
+	}
+
+	void CTooltipBuilder::MakeToolTipText(
+		CItemElem * const pItemElem, CEditString & strEdit, const int flag
+	) const {
+		if (!pItemElem) return;
+
+		ItemProp * pItemProp = pItemElem->GetProp();
+		if (!pItemProp) {
+			Error("PutToolTip_Item : Item id %lu has no props", pItemElem->m_dwItemId);
+			assert(0);
+			return;
+		}
+
+		CMover * pMover = g_pPlayer;
+		if (flag == APP_QUERYEQUIP) {
+			if (CWndQueryEquip * const pWndQueryEquip = CWndBase::GetWndBase<CWndQueryEquip>(APP_QUERYEQUIP)) {
+				pMover = pWndQueryEquip->GetMover();
+			}
+		}
+
+		if (!pMover) return;
+
+		MakeToolTipText_(*pMover, *pItemElem, *pItemProp, strEdit, flag);
+	}
+
+	void CTooltipBuilder::PutToolTip_Character(const int SelectCharacter, const CPoint point, const CRect pRect) {
+		CString string;
+		// 블록 상태( 블록상태면 빨간색 )
+		if (g_Neuz.m_nCharacterBlock[SelectCharacter])
+			string.Format("#b#cff0000ff%s#nc#nb", g_Neuz.m_apPlayer[SelectCharacter]->GetName());
+		else
+			string.Format("#b#cffff0000%s\nConnet Cut#nc#nb", g_Neuz.m_apPlayer[SelectCharacter]->GetName());
+		
+		// 성별
+		const char * sexText;
+		if (g_Neuz.m_apPlayer[SelectCharacter]->GetSex())
+			sexText = prj.GetText(TID_GAME_TOOLTIP_SEXFEMALE);
+		else
+			sexText = prj.GetText(TID_GAME_TOOLTIP_SEXMALE);
+		string += '\n'; string += sexText;
+
+		// 레벨
+		char statebuf[30] = { 0, };
+		if (g_Neuz.m_apPlayer[SelectCharacter]->IsMaster()) {
+			sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_LEVEL), g_Neuz.m_apPlayer[SelectCharacter]->m_nLevel);
+			string += '\n'; string += statebuf;
+			string += prj.GetText(TID_GAME_TOOLTIP_MARK_MASTER);
+		} else if (g_Neuz.m_apPlayer[SelectCharacter]->IsHero()) {
+			sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_LEVEL), g_Neuz.m_apPlayer[SelectCharacter]->m_nLevel);
+			string += '\n'; string += statebuf;
+			string += prj.GetText(TID_GAME_TOOLTIP_MARK_HERO);
+		} else {
+			sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_LEVEL), g_Neuz.m_apPlayer[SelectCharacter]->m_nLevel);
+			string += '\n'; string += statebuf;
+		}
+
+		// Str
+		sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_STR), g_Neuz.m_apPlayer[SelectCharacter]->m_nStr);
+		string += '\n'; string += statebuf;
+
+		// Sta 
+		sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_STA), g_Neuz.m_apPlayer[SelectCharacter]->m_nSta);
+		string += '\n'; string += statebuf;
+
+		// Dex
+		sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_DEX), g_Neuz.m_apPlayer[SelectCharacter]->m_nDex);
+		string += '\n'; string += statebuf;
+
+		// Int
+		sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_INT), g_Neuz.m_apPlayer[SelectCharacter]->m_nInt);
+		string += '\n'; string += statebuf;
+
+		// 직업
+		sprintf(statebuf, "%s : %s", prj.GetText(TID_APP_CHARACTER_JOB), prj.m_aJob[g_Neuz.m_apPlayer[SelectCharacter]->m_nJob].szName);
+		string += '\n'; string += statebuf;
+
+		CEditString strEdit;
+		strEdit.SetParsingString(string);
+		g_toolTip.PutToolTip(SelectCharacter, strEdit, pRect, point, 3);
+	}
+
 	void CTooltipBuilder::MakeToolTipText_(
 		CMover & pMover, CItemElem & pItemElem, const ItemProp & pItemProp,
 		CEditString & strEdit, const int fromApp

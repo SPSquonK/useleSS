@@ -415,9 +415,18 @@ namespace WndMgr {
 	class CTooltipBuilder {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
+
 	public:
+		void PutToolTip_Troupe(DWORD dwSkill, CPoint point, CRect pRect) const;
+		void PutToolTip_Skill(DWORD dwSkill, DWORD dwLevel, CPoint point, CRect pRect, BOOL bActive = TRUE) const;
+		void PutToolTip_Item(DWORD dwType, DWORD dwId, CPoint point, const CRect * pRect, int flag = 0) const;
+		void PutToolTip_Item(CItemElem * pItemBase, CPoint point, const CRect * pRect, int flag = 0) const;
+		void PutToolTipItemAndSubToolTip(CItemElem * pItemBase, CPoint point, const CRect * pRect, int nFlag = 0) const;
+		void MakeToolTipText(CItemElem * pItemBase, CEditString & strEdit, int flag = 0) const;
+		static void PutToolTip_Character(int SelectCharacter, CPoint point, CRect pRect);
 
-
+	private:
+		void PutToolTipParts(CItemElem * pPartsItemBase, CPoint point, CRect pRect, int nFlag, int nSubToolTipFlag) const;
 		void MakeToolTipText_(CMover & pMover, CItemElem & pItemElem, const ItemProp & itemProp, CEditString & strEdit, int fromApp) const;
 		
 	public:
@@ -680,15 +689,7 @@ public:
 	void	CloseMessageBox();
 
 	// tooltip
-	void PutToolTip_Troupe( DWORD dwSkill, CPoint point, CRect* pRect );
-	void PutToolTip_Skill( DWORD dwSkill, DWORD dwLevel, CPoint point, CRect* pRect, BOOL bActive = TRUE );
-	void PutToolTip_Item( DWORD dwType, DWORD dwId, CPoint point, CRect* pRect, int flag = 0 );
-	void PutToolTip_Item( CItemElem * pItemBase, CPoint point, CRect* pRect, int flag = 0 );
 	enum { TOOL_TIP_SWITCH_MAIN = 0, TOOL_TIP_SWITCH_SUB1 = 1, TOOL_TIP_SWITCH_SUB2 = 2 };
-	void PutToolTipItemAndSubToolTip( CItemElem * pItemBase, CPoint point, CRect* pRect, int nFlag = 0 );
-	void PutToolTipParts( CItemElem * pPartsItemBase, CPoint point, CRect* pRect, const int nFlag, const int nSubToolTipFlag );
-	void MakeToolTipText( CItemElem * pItemBase, CEditString& strEdit, int flag = 0 );
-	void PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect );
 
 
 	BOOL CheckConfirm(CItemElem * pItem );
