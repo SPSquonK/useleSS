@@ -2519,7 +2519,6 @@ void CWndMgr::PutString( LPCTSTR lpszString, CObj* pObj, DWORD dwColor, DWORD dw
 	BOOL bRecord = TRUE; // 무조건 기록. 나중에 이 변수 없애자.
 
 	CWndChat* pWndChat = (CWndChat*)g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
-	CEditString* pChatString = &m_ChatString;
 
 	//
 	//  예외 상황 처리(가능상황에서 정해진것이 여기서 무효가 될 수도 있다.)
@@ -2573,11 +2572,6 @@ void CWndMgr::PutString( LPCTSTR lpszString, CObj* pObj, DWORD dwColor, DWORD dw
 	{
 		if( pWndChat )
 			pWndChat->PutString( strChat, dwColor, dwPStyle );
-		//else
-		//{
-		//	m_ChatString.AddString( lpszString, dwColor );
-		//	m_ChatString.AddString( "\n", dwColor );// += '\n';
-		//}
 	}		
 	// 캡션 매시지 
 	if( dwStyle & TMS_CAPTION )

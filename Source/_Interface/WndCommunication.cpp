@@ -395,8 +395,7 @@ void CWndChat::OnInitialUpdate()
 	if( m_nChatChannel == CHATSTY_SHOUT   ) pWndRadio3->SetCheck( TRUE );	else
 	if( m_nChatChannel == CHATSTY_PARTY   ) pWndRadio4->SetCheck( TRUE );	else
 	if( m_nChatChannel == CHATSTY_GUILD   ) pWndRadio5->SetCheck( TRUE );
-	//pWndText->m_string.Init(
-	//pWndText->m_string = g_WndMng.m_ChatString;
+
 	pWndText->m_nLineSpace = 2;
 	//pWndText->m_string.Reset( m_pFont, &pWndText->GetClientRect() );
 	
@@ -974,8 +973,6 @@ void CWndChat::PutString( LPCTSTR lpszString, DWORD dwColor, DWORD dwPStyle )
 }
 void CWndChat::OnDestroy()
 {
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
-	g_WndMng.m_ChatString = pWndText->m_string;
 }
 void CWndChat::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {

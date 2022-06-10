@@ -552,7 +552,6 @@ public:
 	boost::container::flat_map<std::string, std::unique_ptr<CWndMap>>        m_mapMap;
 	boost::container::flat_map<CString, std::unique_ptr<CWndInstantMsg>> m_mapInstantMsg;
 	boost::container::flat_map<CString, std::unique_ptr<CWndMessage>>    m_mapMessage;
-	CEditString m_ChatString;
 
 	BOOL m_bAutoRun;
 	

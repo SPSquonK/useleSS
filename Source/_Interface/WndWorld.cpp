@@ -3548,10 +3548,6 @@ void CWndWorld::OnInitialUpdate()
 	g_DialogMsg.ClearVendorObjMsg();
 	
 	Projection( D3DDEVICE );
-	
-	g_WndMng.m_ChatString = "";
-
-	
 
 	SAFE_DELETE(m_pWndGuideSystem);
 	m_pWndGuideSystem = new CWndGuideSystem;
