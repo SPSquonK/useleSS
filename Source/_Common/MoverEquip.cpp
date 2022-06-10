@@ -1119,22 +1119,8 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 		}
 	}
 
-	// 아이템 필요직업검사.
-	if( pItemProp->dwItemKind1 == IK1_WEAPON )		// 무기류를 장착하려할때
-	{
-		if( pItemProp->dwItemJob != NULL_ID && !IsInteriorityJob( pItemProp->dwItemJob ) )	// 아이템에 필요직업이 지정되어 있고
-		{
-#ifdef __WORLDSERVER
-			if( TRUE == IsPlayer() )
-				( (CUser*)this )->AddDefinedText( TID_GAME_WRONGJOB, "\"%s\"", pItemProp->szName );
-#endif	// __WORLDSERVER
-			return FALSE;
-		}
-	}
-
 	if( !g_eLocal.GetState( EVE_SCHOOL ) && !bIgnoreLevel )
 	{
-
 		// 아이템 필요레벨 검사.
 		if( pItemProp->dwLimitLevel1 != 0xffffffff )	// 필요레벨이 지정되어 있고
 		{
