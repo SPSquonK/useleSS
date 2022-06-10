@@ -218,79 +218,81 @@ void RenderRadar( C2DRender* p2DRender, CPoint pt, DWORD dwValue, DWORD dwDiviso
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndMgr::WNDREGINFO::WNDREGINFO(CFileIO & file) {
-	file.Read(&dwWndId, sizeof(dwWndId));
-	file.Read(&rect, sizeof(rect));
-	file.Read(&dwWndSize, sizeof(dwWndSize));
-	file.Read(&bOpen, sizeof(bOpen));
-	file.Read(&dwVersion, sizeof(dwVersion));
-	size_t dwSize;
-	file.Read(&dwSize, sizeof(dwSize));
+namespace WndMgr {
+	RegInfo::RegInfo(CFileIO & file) {
+		file.Read(&dwWndId, sizeof(dwWndId));
+		file.Read(&rect, sizeof(rect));
+		file.Read(&dwWndSize, sizeof(dwWndSize));
+		file.Read(&bOpen, sizeof(bOpen));
+		file.Read(&dwVersion, sizeof(dwVersion));
+		size_t dwSize;
+		file.Read(&dwSize, sizeof(dwSize));
 
-	lpArchive.resize(dwSize);
+		lpArchive.resize(dwSize);
 
-	if (dwSize != 0) {
-		file.Read(lpArchive.data(), dwSize);
-	}
-
-	if (rect.left < 0) rect.left = 0;
-	if (rect.top < 0) rect.top = 0;
-}
-
-void CWndMgr::WNDREGINFO::StoreIn(CFileIO & file) const {
-	file.Write(&dwWndId, sizeof(dwWndId));
-	file.Write(&rect, sizeof(rect));
-	file.Write(&dwWndSize, sizeof(dwWndSize));
-	file.Write(&bOpen, sizeof(bOpen));
-	file.Write(&dwVersion, sizeof(dwVersion));
-	
-	const size_t dwSize = lpArchive.size();
-	file.Write(&dwSize, sizeof(dwSize));
-	if (dwSize != 0) {
-		file.Write(lpArchive.data(), dwSize);
-	}
-}
-
-CWndMgr::WNDREGINFO::WNDREGINFO(CWndNeuz & pWndNeuz, BOOL bOpen) {
-	dwWndId = pWndNeuz.GetWndId();
-	rect = pWndNeuz.GetWindowRect(TRUE);
-	bOpen = bOpen;
-	dwVersion = 0;
-	dwWndSize = pWndNeuz.m_nWinSize;
-
-	// Write
-	CAr ar;
-	pWndNeuz.SerializeRegInfo(ar, dwVersion);
-
-	int nSize;
-	BYTE * lpData = ar.GetBuffer(&nSize);
-
-	lpArchive.resize(nSize);
-	if (nSize != 0) {
-		memcpy(lpArchive.data(), lpData, nSize);
-	}
-}
-
-void CWndMgr::WNDREGINFO::RestoreParameters(CWndNeuz & pWndBase) const {
-	if (!lpArchive.empty()) {
-		// load
-		CAr ar(const_cast<BYTE *>(lpArchive.data()), lpArchive.size());
-		DWORD dwVersion = this->dwVersion;
-		pWndBase.SerializeRegInfo(ar, dwVersion);
-	}
-
-	if (pWndBase.IsWndStyle(WBS_THICKFRAME)) {
-		if (dwWndSize == WSIZE_WINDOW) {
-			pWndBase.SetSizeWnd();
-			pWndBase.SetWndRect(rect);
+		if (dwSize != 0) {
+			file.Read(lpArchive.data(), dwSize);
 		}
 
-		if (dwWndSize == WSIZE_MAX) {
-			pWndBase.SetSizeMax();
+		if (rect.left < 0) rect.left = 0;
+		if (rect.top < 0) rect.top = 0;
+	}
+
+	void RegInfo::StoreIn(CFileIO & file) const {
+		file.Write(&dwWndId, sizeof(dwWndId));
+		file.Write(&rect, sizeof(rect));
+		file.Write(&dwWndSize, sizeof(dwWndSize));
+		file.Write(&bOpen, sizeof(bOpen));
+		file.Write(&dwVersion, sizeof(dwVersion));
+
+		const size_t dwSize = lpArchive.size();
+		file.Write(&dwSize, sizeof(dwSize));
+		if (dwSize != 0) {
+			file.Write(lpArchive.data(), dwSize);
 		}
-	} else {
-		const CRect wndRect = pWndBase.GetWindowRect();
-		pWndBase.SetWndRect(CRect(rect.TopLeft(), wndRect.Size()));
+	}
+
+	RegInfo::RegInfo(CWndNeuz & pWndNeuz, BOOL bOpen) {
+		dwWndId = pWndNeuz.GetWndId();
+		rect = pWndNeuz.GetWindowRect(TRUE);
+		bOpen = bOpen;
+		dwVersion = 0;
+		dwWndSize = pWndNeuz.m_nWinSize;
+
+		// Write
+		CAr ar;
+		pWndNeuz.SerializeRegInfo(ar, dwVersion);
+
+		int nSize;
+		BYTE * lpData = ar.GetBuffer(&nSize);
+
+		lpArchive.resize(nSize);
+		if (nSize != 0) {
+			memcpy(lpArchive.data(), lpData, nSize);
+		}
+	}
+
+	void RegInfo::RestoreParameters(CWndNeuz & pWndBase) const {
+		if (!lpArchive.empty()) {
+			// load
+			CAr ar(const_cast<BYTE *>(lpArchive.data()), lpArchive.size());
+			DWORD dwVersion = this->dwVersion;
+			pWndBase.SerializeRegInfo(ar, dwVersion);
+		}
+
+		if (pWndBase.IsWndStyle(WBS_THICKFRAME)) {
+			if (dwWndSize == WSIZE_WINDOW) {
+				pWndBase.SetSizeWnd();
+				pWndBase.SetWndRect(rect);
+			}
+
+			if (dwWndSize == WSIZE_MAX) {
+				pWndBase.SetSizeMax();
+			}
+		} else {
+			const CRect wndRect = pWndBase.GetWindowRect();
+			pWndBase.SetWndRect(CRect(rect.TopLeft(), wndRect.Size()));
+		}
 	}
 }
 
@@ -518,48 +520,50 @@ void CWndMgr::Free()
 #endif
 }
 
-template<typename Ptr>
-void SafeDeleteWindowBase(Ptr *& ptr) {
-	static_assert(std::derived_from<Ptr, CWndBase>);
+namespace WndMgr {
+	// If you have an error near here saying "hey this window is not a CWndBase"
+	// it means you have to include the .h with the window class definition.
 
-	if (ptr) {
-		delete ptr;
-		ptr = nullptr;
+	template<typename Ptr>
+	static void Impl_SafeDeleteWindowBase(Ptr *& ptr) {
+		static_assert(std::derived_from<Ptr, CWndBase>);
+
+		if (ptr) {
+			delete ptr;
+			ptr = nullptr;
+		}
 	}
-}
-
-// If you have an error near here saying "hey this window is not a CWndBase"
-// it means you have to include the .h with the window class definition.
-template<size_t N>
-void CWndMgr_WindowShortcuts_SafeDeleteAllFrom(CWndMgr_WindowShortcuts & self) {
-	if constexpr (N != boost::pfr::tuple_size_v<CWndMgr_WindowShortcuts>) {
-		SafeDeleteWindowBase(boost::pfr::get<N>(self));
-		CWndMgr_WindowShortcuts_SafeDeleteAllFrom<N + 1>(self);
+	
+	template<size_t I>
+	static void Impl_SafeDeleteAll(COwnedChildren & self) {
+		if constexpr (I != boost::pfr::tuple_size_v<COwnedChildren>) {
+			Impl_SafeDeleteWindowBase(boost::pfr::get<I>(self));
+			Impl_SafeDeleteAll<I + 1>(self);
+		}
 	}
-}
 
-void CWndMgr_WindowShortcuts::SafeDeleteAll() {
-	CWndMgr_WindowShortcuts_SafeDeleteAllFrom<0>(*this);
-}
+	void COwnedChildren::SafeDeleteAll() {
+		Impl_SafeDeleteAll<0>(*this);
+	}
 
-template<size_t N>
-bool CWndMgr_WindowShortcuts_DeleteChild(CWndMgr_WindowShortcuts & self, CWndBase * window) {
-	if constexpr (N != boost::pfr::tuple_size_v<CWndMgr_WindowShortcuts>) {
-		if (window == boost::pfr::get<N>(self)) {
-			SafeDeleteWindowBase(boost::pfr::get<N>(self));
-			return true;
+	template<size_t I>
+	static bool Impl_DeleteChild(COwnedChildren & self, CWndBase * window) {
+		if constexpr (I != boost::pfr::tuple_size_v<COwnedChildren>) {
+			if (window == boost::pfr::get<I>(self)) {
+				Impl_SafeDeleteWindowBase(boost::pfr::get<I>(self));
+				return true;
+			}
+
+			return Impl_DeleteChild<I + 1>(self, window);
 		}
 
-		return CWndMgr_WindowShortcuts_DeleteChild<N + 1>(self, window);
+		return false;
 	}
 
-	return false;
+	bool COwnedChildren::DeleteChild(CWndBase * window) {
+		return Impl_DeleteChild<0>(*this, window);
+	}
 }
-
-bool CWndMgr_WindowShortcuts::DeleteChild(CWndBase * window) {
-	return CWndMgr_WindowShortcuts_DeleteChild<0>(*this, window);
-}
-
 
 void CWndMgr::DestroyApplet()
 {
@@ -3075,7 +3079,7 @@ CWndInstantMsg* CWndMgr::OpenInstantMsg( LPCTSTR lpszFrom )
 
 // ÄÃ·±Æ® À©µµ°¡ ´ÝÈú ¶§ È£Ãâ µÊ 
 void CWndMgr::PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen ) {
-	m_mapWndRegInfo.insert_or_assign(pWndNeuz->GetWndId(), WNDREGINFO(*pWndNeuz, bOpen));
+	m_mapWndRegInfo.insert_or_assign(pWndNeuz->GetWndId(), WndMgr::RegInfo(*pWndNeuz, bOpen));
 }
 
 BOOL CWndMgr::SaveRegInfo( LPCTSTR lpszFileName )
@@ -3121,7 +3125,7 @@ BOOL CWndMgr::LoadRegInfo( LPCTSTR lpszFileName )
 
 			int nNum = file.GetDW();
 			for (int i = 0; i < nNum; i++) {
-				WNDREGINFO wndRegInfo(file);
+				WndMgr::RegInfo wndRegInfo(file);
 				m_mapWndRegInfo.insert_or_assign(wndRegInfo.GetWndId(), std::move(wndRegInfo));
 			}
 

@@ -1,13 +1,4 @@
-// WndArcane.h: interface for the CWndNeuz class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_WNDMANAGER_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)
-#define AFX_WNDMANAGER_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <boost/container/flat_map.hpp>
 
@@ -84,15 +75,16 @@ class CWndPartyConfirm;
 class CWndPartyLeaveConfirm;
 class CWndFriendConFirm;
 class CWndDuelConfirm;
-
 class CWndDuelResult;
-
 class CWndAddFriend;
 class CWndCloseExistingConnection;
 class CWndMessageNote;
 class CWndMessengerNote;
 class CWndTextFromItem;
 class CWndSelectVillage;
+class CWndGHMainMenu;
+class CWndGHUpkeep;
+class CWndMap;
  
 #define REG_VERSION 1
 
@@ -185,233 +177,241 @@ enum
 	MAX_TC
 };
 
-class CWndGHMainMenu;
-class CWndGHUpkeep;
 
-class CWndMap;
+/// Subclasses of CWndMgr
+///
+/// Because a Mixin is better than a single class with tons of methods
+namespace WndMgr {
+	/// List of all children CWndBase whose memory is managed by a CWndMgr class.
+	///
+	/// /!\ This class does not "behave like an int"
+	/// 
+	/// How to use:
+	/// - Add the line `CWndMyWindow * m_myWindow = nullptr;`
+	/// - That's it. The memory will be correctly managed thanks to the reflection
+	/// used in SafeDeleteAll and DeleteChild implementations.
+	struct COwnedChildren {
+		void SafeDeleteAll();
+		bool DeleteChild(CWndBase * window);
 
-struct CWndMgr_WindowShortcuts {
-	void SafeDeleteAll();
-	bool DeleteChild(CWndBase * window);
-
-	CWndBeautyShop * m_pWndBeautyShop = nullptr;
-	CWndFaceShop * m_pWndFaceShop = nullptr;
+		CWndBeautyShop * m_pWndBeautyShop = nullptr;
+		CWndFaceShop * m_pWndFaceShop = nullptr;
 
 #ifdef __NEWYEARDAY_EVENT_COUPON
-	CWndUseCouponConfirm * m_pWndUseCouponConfirm = nullptr;
+		CWndUseCouponConfirm * m_pWndUseCouponConfirm = nullptr;
 #endif //__NEWYEARDAY_EVENT_COUPON
 
-	CWndSummonAngel * m_pWndSummonAngel = nullptr;
-	CWndDialog * m_pWndDialog = nullptr;
-	CWndShop * m_pWndShop = nullptr;
-	CWndTrade * m_pWndTrade = nullptr;
-	CWndTradeGold * m_pWndTradeGold = nullptr;
-	CWndDropItem * m_pWndDropItem = nullptr;
-	CWndConfirmTrade * m_pWndConfirmTrade = nullptr;
-	CWndCommand * m_pWndCommand = nullptr;
+		CWndSummonAngel * m_pWndSummonAngel = nullptr;
+		CWndDialog * m_pWndDialog = nullptr;
+		CWndShop * m_pWndShop = nullptr;
+		CWndTrade * m_pWndTrade = nullptr;
+		CWndTradeGold * m_pWndTradeGold = nullptr;
+		CWndDropItem * m_pWndDropItem = nullptr;
+		CWndConfirmTrade * m_pWndConfirmTrade = nullptr;
+		CWndCommand * m_pWndCommand = nullptr;
 #ifdef __JEFF_11
-	CWndPetRes * m_pPetRes = nullptr;
+		CWndPetRes * m_pPetRes = nullptr;
 #endif
 
 #ifdef __EVE_MINIGAME
-	CWndKawiBawiBoGame * m_pWndKawiBawiBoGame = nullptr;
-	CWndKawiBawiBoGameConfirm * m_pWndKawiBawiBoGameConfirm = nullptr;
-	CWndFindWordGame * m_pWndFindWordGame = nullptr;
-	CWndDiceGame * m_pWndDiceGame = nullptr;
-	CWndPuzzleGame * m_pWndPuzzleGame = nullptr;
+		CWndKawiBawiBoGame * m_pWndKawiBawiBoGame = nullptr;
+		CWndKawiBawiBoGameConfirm * m_pWndKawiBawiBoGameConfirm = nullptr;
+		CWndFindWordGame * m_pWndFindWordGame = nullptr;
+		CWndDiceGame * m_pWndDiceGame = nullptr;
+		CWndPuzzleGame * m_pWndPuzzleGame = nullptr;
 #endif //__EVE_MINIGAME
 
 
-	CWndMixJewel * m_pWndSmeltMixJewel = nullptr;
-	CWndSmeltJewel * m_pWndSmeltJewel = nullptr;
-	CWndExtraction * m_pWndExtraction = nullptr;
-	CWndChangeWeapon * m_pWndChangeWeapon = nullptr;
-	CWndPetStatus * m_pWndPetStatus = nullptr;
+		CWndMixJewel * m_pWndSmeltMixJewel = nullptr;
+		CWndSmeltJewel * m_pWndSmeltJewel = nullptr;
+		CWndExtraction * m_pWndExtraction = nullptr;
+		CWndChangeWeapon * m_pWndChangeWeapon = nullptr;
+		CWndPetStatus * m_pWndPetStatus = nullptr;
 
-	CWndFoodConfirm * m_pWndFoodConfirm = nullptr;
-	CWndPetMiracle * m_pWndPetMiracle = nullptr;
-	CWndPetFoodMill * m_pWndPetFoodMill = nullptr;
-	CWndPetLifeConfirm * m_pWndPetLifeConfirm = nullptr;
+		CWndFoodConfirm * m_pWndFoodConfirm = nullptr;
+		CWndPetMiracle * m_pWndPetMiracle = nullptr;
+		CWndPetFoodMill * m_pWndPetFoodMill = nullptr;
+		CWndPetLifeConfirm * m_pWndPetLifeConfirm = nullptr;
 
-	CWndHeroSkillUp * m_pWndHeroSkillUp = nullptr;
-	CWndRemovePiercing * m_pWndRemovePiercing = nullptr;
-	CWndRemoveJewel * m_pWndRemoveJewel = nullptr;
-	CWndPetTransEggs * m_pWndPetTransEggs = nullptr;
+		CWndHeroSkillUp * m_pWndHeroSkillUp = nullptr;
+		CWndRemovePiercing * m_pWndRemovePiercing = nullptr;
+		CWndRemoveJewel * m_pWndRemoveJewel = nullptr;
+		CWndPetTransEggs * m_pWndPetTransEggs = nullptr;
 
 #ifdef __TRADESYS
-	CWndDialogEvent * m_pWndDialogEvent = nullptr;
+		CWndDialogEvent * m_pWndDialogEvent = nullptr;
 #endif //__TRADESYS
 
-	CWndHeavenTower * m_pWndHeavenTower = nullptr;
-	CWndRemoveAttribute * m_pWndRemoveAttribute = nullptr;
-	CWndPost * m_pWndPost = nullptr;
-	CWndQueryEquip * m_pWndQueryEquip = nullptr;
-	CWndChatLog * m_pWndChatLog = nullptr;
-	CWndQuestItemWarning * m_pWndQuestItemWarning = nullptr;
-	CWndChangeName * m_pWndChangeName = nullptr;
-	CWndDropConfirm * m_pWndDropConfirm = nullptr;
-	CWndUpgradeBase * m_pWndUpgradeBase = nullptr;
-	CWndPiercing * m_pWndPiercing = nullptr;
+		CWndHeavenTower * m_pWndHeavenTower = nullptr;
+		CWndRemoveAttribute * m_pWndRemoveAttribute = nullptr;
+		CWndPost * m_pWndPost = nullptr;
+		CWndQueryEquip * m_pWndQueryEquip = nullptr;
+		CWndChatLog * m_pWndChatLog = nullptr;
+		CWndQuestItemWarning * m_pWndQuestItemWarning = nullptr;
+		CWndChangeName * m_pWndChangeName = nullptr;
+		CWndDropConfirm * m_pWndDropConfirm = nullptr;
+		CWndUpgradeBase * m_pWndUpgradeBase = nullptr;
+		CWndPiercing * m_pWndPiercing = nullptr;
 
-	CWndSealChar * m_pWndSealChar = nullptr;
-	CWndSealCharSelect * m_pWndSealCharSelect = nullptr;
-	CWndSealCharSend * m_pWndSealCharSend = nullptr;
-	CWndSealCharSet * m_pWndSealCharSet = nullptr;
+		CWndSealChar * m_pWndSealChar = nullptr;
+		CWndSealCharSelect * m_pWndSealCharSelect = nullptr;
+		CWndSealCharSend * m_pWndSealCharSend = nullptr;
+		CWndSealCharSet * m_pWndSealCharSet = nullptr;
 
-	CWndInvenRemoveItem * m_pWndInvenRemoveItem = nullptr;
-	CWndCommercialElem * m_pWndCommerialElem = nullptr;
-	CWndRemoveElem * m_pRemoveElem = nullptr;
-	CWndConfirmBank * m_pWndConfirmBank = nullptr;
-	CWndBankPassword * m_pWndBankPassword = nullptr;
+		CWndInvenRemoveItem * m_pWndInvenRemoveItem = nullptr;
+		CWndCommercialElem * m_pWndCommerialElem = nullptr;
+		CWndRemoveElem * m_pRemoveElem = nullptr;
+		CWndConfirmBank * m_pWndConfirmBank = nullptr;
+		CWndBankPassword * m_pWndBankPassword = nullptr;
 
-	CWndPenaltyPK * m_pWndPenaltyPK = nullptr;
-	CWndRankGuild * m_pWndRankGuild = nullptr;
-	CWndRankInfo * m_pWndRankInfo = nullptr;
-	CWndRankWar * m_pWndRankWar = nullptr;
+		CWndPenaltyPK * m_pWndPenaltyPK = nullptr;
+		CWndRankGuild * m_pWndRankGuild = nullptr;
+		CWndRankInfo * m_pWndRankInfo = nullptr;
+		CWndRankWar * m_pWndRankWar = nullptr;
 
 #ifdef __FUNNY_COIN
-	CWndFunnyCoinConfirm * m_pFunnyCoinConfirm = nullptr;
+		CWndFunnyCoinConfirm * m_pFunnyCoinConfirm = nullptr;
 #endif //__FUNNY_COIN
 
-	CWndGuildBankLog * m_pWndGuildBankLog = nullptr;
-	CWndGuildConfirm * m_pWndGuildConfirm = nullptr;
-	CWndGuildWarPeaceConfirm * m_pWndGuildWarPeaceConfirm = nullptr;
-	CWndGuildWarRequest * m_pWndGuildWarRequest = nullptr;
-	CWndGuildCombatRank_Person * m_pWndGuildCombatRanking = nullptr;
-	CWndGuildCombatState * m_pWndGuildWarState = nullptr;
+		CWndGuildBankLog * m_pWndGuildBankLog = nullptr;
+		CWndGuildConfirm * m_pWndGuildConfirm = nullptr;
+		CWndGuildWarPeaceConfirm * m_pWndGuildWarPeaceConfirm = nullptr;
+		CWndGuildWarRequest * m_pWndGuildWarRequest = nullptr;
+		CWndGuildCombatRank_Person * m_pWndGuildCombatRanking = nullptr;
+		CWndGuildCombatState * m_pWndGuildWarState = nullptr;
 
-	CWndGuildCombat1to1Offer * m_pWndGuildCombatOffer = nullptr;
-	CWndGuildCombatSelection * m_pWndGuildCombatSelection = nullptr;
-	CWndGuildCombatJoinSelection * m_pWndGuildCombatJoinSelection = nullptr;
-	CWndGuildCombatBoard * m_pWndGuildCombatBoard = nullptr;
-	CGuildCombatInfoMessageBox2 * m_pWndGuildCombatInfoMessageBox2 = nullptr;
-	CGuildCombatInfoMessageBox * m_pWndGuildCombatInfoMessageBox = nullptr;
-	CWndGuildCombatResult * n_pWndGuildCombatResult = nullptr;
-	CWndGuildCombat1to1Selection * m_pWndGuildCombat1to1Selection = nullptr;
-	CWndGuildCombat1to1Offer * m_pWndGuildCombat1to1Offer = nullptr;
+		CWndGuildCombat1to1Offer * m_pWndGuildCombatOffer = nullptr;
+		CWndGuildCombatSelection * m_pWndGuildCombatSelection = nullptr;
+		CWndGuildCombatJoinSelection * m_pWndGuildCombatJoinSelection = nullptr;
+		CWndGuildCombatBoard * m_pWndGuildCombatBoard = nullptr;
+		CGuildCombatInfoMessageBox2 * m_pWndGuildCombatInfoMessageBox2 = nullptr;
+		CGuildCombatInfoMessageBox * m_pWndGuildCombatInfoMessageBox = nullptr;
+		CWndGuildCombatResult * n_pWndGuildCombatResult = nullptr;
+		CWndGuildCombat1to1Selection * m_pWndGuildCombat1to1Selection = nullptr;
+		CWndGuildCombat1to1Offer * m_pWndGuildCombat1to1Offer = nullptr;
 
-	CCollectingWnd * m_pWndCollecting = nullptr;
-	CWndLvReqDown * m_pWndLvReqDown = nullptr;
-	CWndBlessingCancel * m_pWndBlessingCancel = nullptr;
-	CWndAwakening * m_pWndAwakening = nullptr;
+		CCollectingWnd * m_pWndCollecting = nullptr;
+		CWndLvReqDown * m_pWndLvReqDown = nullptr;
+		CWndBlessingCancel * m_pWndBlessingCancel = nullptr;
+		CWndAwakening * m_pWndAwakening = nullptr;
 
-	CWndLordTender * m_pWndLordTender = nullptr;
-	CWndLordVote * m_pWndLordVote = nullptr;
-	CWndLordState * m_pWndLordState = nullptr;
-	CWndLordEvent * m_pWndLordEvent = nullptr;
-	CWndLordSkillConfirm * m_pWndLordSkillConfirm = nullptr;
-	CWndLordInfo * m_pWndLordInfo = nullptr;
-	CWndLordRPInfo * m_pWndLordRPInfo = nullptr;
+		CWndLordTender * m_pWndLordTender = nullptr;
+		CWndLordVote * m_pWndLordVote = nullptr;
+		CWndLordState * m_pWndLordState = nullptr;
+		CWndLordEvent * m_pWndLordEvent = nullptr;
+		CWndLordSkillConfirm * m_pWndLordSkillConfirm = nullptr;
+		CWndLordInfo * m_pWndLordInfo = nullptr;
+		CWndLordRPInfo * m_pWndLordRPInfo = nullptr;
 
-	CWndSecretRoomInfoMsgBox * m_pWndSecretRoomMsg = nullptr;
-	CWndSecretRoomSelection * m_pWndSecretRoomSelection = nullptr;
-	CWndSecretRoomOffer * m_pWndSecretRoomOffer = nullptr;
-	CWndSecretRoomOfferState * m_pWndSecretRoomOfferState = nullptr;
-	CWndSecretRoomChangeTaxRate * m_pWndSecretRoomChangeTaxRate = nullptr;
-	CWndSecretRoomCheckTaxRate * m_pWndSecretRoomCheckTaxRate = nullptr;
-	CWndSecretRoomBoard * m_pWndSecretRoomBoard = nullptr;
-	CWndSecretRoomQuick * m_pWndSecretRoomQuick = nullptr;
+		CWndSecretRoomInfoMsgBox * m_pWndSecretRoomMsg = nullptr;
+		CWndSecretRoomSelection * m_pWndSecretRoomSelection = nullptr;
+		CWndSecretRoomOffer * m_pWndSecretRoomOffer = nullptr;
+		CWndSecretRoomOfferState * m_pWndSecretRoomOfferState = nullptr;
+		CWndSecretRoomChangeTaxRate * m_pWndSecretRoomChangeTaxRate = nullptr;
+		CWndSecretRoomCheckTaxRate * m_pWndSecretRoomCheckTaxRate = nullptr;
+		CWndSecretRoomBoard * m_pWndSecretRoomBoard = nullptr;
+		CWndSecretRoomQuick * m_pWndSecretRoomQuick = nullptr;
 
 #ifdef __AZRIA_1023
-	CWndSelectCh * m_pWndSelectCh = nullptr;
+		CWndSelectCh * m_pWndSelectCh = nullptr;
 #endif
 
-	CWndPetAwakCancel * m_pWndPetAwakCancel = nullptr;
+		CWndPetAwakCancel * m_pWndPetAwakCancel = nullptr;
 
-	CWndRainbowRaceOffer * m_pWndRainbowRaceOffer = nullptr;
-	CWndRainbowRaceInfo * m_pWndRainbowRaceInfo = nullptr;
-	CWndRainbowRaceRule * m_pWndRainbowRaceRule = nullptr;
-	CWndRainbowRaceRanking * m_pWndRainbowRaceRanking = nullptr;
-	CWndRainbowRacePrize * m_pWndRainbowRacePrize = nullptr;
-	CWndRainbowRaceMiniGameButton * m_pWndRainbowRaceMiniGameButton = nullptr;
-	CWndRainbowRaceMiniGame * m_pWndRainbowRaceMiniGame = nullptr;
-	CWndRainbowRaceMiniGameEnd * m_pWndRainbowRaceMiniGameEnd = nullptr;
-	CWndRRMiniGameKawiBawiBo * m_pWndRRMiniGameKawiBawiBo = nullptr;
-	CWndRRMiniGameDice * m_pWndRRMiniGameDice = nullptr;
-	CWndRRMiniGameArithmetic * m_pWndRRMiniGameArithmetic = nullptr;
-	CWndRRMiniGameStopWatch * m_pWndRRMiniGameStopWatch = nullptr;
-	CWndRRMiniGameTyping * m_pWndRRMiniGameTyping = nullptr;
-	CWndRRMiniGameCard * m_pWndRRMiniGameCard = nullptr;
-	CWndRRMiniGameLadder * m_pWndRRMiniGameLadder = nullptr;
+		CWndRainbowRaceOffer * m_pWndRainbowRaceOffer = nullptr;
+		CWndRainbowRaceInfo * m_pWndRainbowRaceInfo = nullptr;
+		CWndRainbowRaceRule * m_pWndRainbowRaceRule = nullptr;
+		CWndRainbowRaceRanking * m_pWndRainbowRaceRanking = nullptr;
+		CWndRainbowRacePrize * m_pWndRainbowRacePrize = nullptr;
+		CWndRainbowRaceMiniGameButton * m_pWndRainbowRaceMiniGameButton = nullptr;
+		CWndRainbowRaceMiniGame * m_pWndRainbowRaceMiniGame = nullptr;
+		CWndRainbowRaceMiniGameEnd * m_pWndRainbowRaceMiniGameEnd = nullptr;
+		CWndRRMiniGameKawiBawiBo * m_pWndRRMiniGameKawiBawiBo = nullptr;
+		CWndRRMiniGameDice * m_pWndRRMiniGameDice = nullptr;
+		CWndRRMiniGameArithmetic * m_pWndRRMiniGameArithmetic = nullptr;
+		CWndRRMiniGameStopWatch * m_pWndRRMiniGameStopWatch = nullptr;
+		CWndRRMiniGameTyping * m_pWndRRMiniGameTyping = nullptr;
+		CWndRRMiniGameCard * m_pWndRRMiniGameCard = nullptr;
+		CWndRRMiniGameLadder * m_pWndRRMiniGameLadder = nullptr;
 
-	CWndCoupleMessage * m_pWndCoupleMessage = nullptr;
-	CWndChangeAttribute * m_pWndChangeAttribute = nullptr;
-	
-	CWndReSkillWarning * m_pWndReSkillWarning = nullptr;
-	
-	CWndPartyChangeName * m_pWndPartyChangeName = nullptr;
-	CWndPartyConfirm * m_pWndPartyConfirm = nullptr;
+		CWndCoupleMessage * m_pWndCoupleMessage = nullptr;
+		CWndChangeAttribute * m_pWndChangeAttribute = nullptr;
 
-	CWndMessageNote * m_pWndMessageNote = nullptr;
-	CWndMessengerNote * m_pWndMessengerNote = nullptr;
-	
-	CWndFontEdit * m_pWndFontEdit = nullptr;
-	CWndFriendConFirm * m_pWndFriendConfirm = nullptr;
-	CWndDuelConfirm * m_pWndDuelConfirm = nullptr;
-	CWndDuelResult * m_pWndDuelResult = nullptr;
-	CWndAddFriend * m_pWndAddFriend = nullptr;
-	
-	CWndStateConfirm * m_pWndStateConfirm = nullptr;
-	CWndRandomScrollConfirm * m_pWndRandomScrollConfirm = nullptr;
+		CWndReSkillWarning * m_pWndReSkillWarning = nullptr;
+
+		CWndPartyChangeName * m_pWndPartyChangeName = nullptr;
+		CWndPartyConfirm * m_pWndPartyConfirm = nullptr;
+
+		CWndMessageNote * m_pWndMessageNote = nullptr;
+		CWndMessengerNote * m_pWndMessengerNote = nullptr;
+
+		CWndFontEdit * m_pWndFontEdit = nullptr;
+		CWndFriendConFirm * m_pWndFriendConfirm = nullptr;
+		CWndDuelConfirm * m_pWndDuelConfirm = nullptr;
+		CWndDuelResult * m_pWndDuelResult = nullptr;
+		CWndAddFriend * m_pWndAddFriend = nullptr;
+
+		CWndStateConfirm * m_pWndStateConfirm = nullptr;
+		CWndRandomScrollConfirm * m_pWndRandomScrollConfirm = nullptr;
 
 #ifdef __HELP_BUG_FIX
-	CWndHelpInstant * m_pWndHelpInstant = nullptr;
+		CWndHelpInstant * m_pWndHelpInstant = nullptr;
 #endif //__HELP_BUG_FIX
 
-	CWndRoomList * m_pWndRoomList = nullptr;
-	CWndQuitRoom * m_pWndQuitRoom = nullptr;
+		CWndRoomList * m_pWndRoomList = nullptr;
+		CWndQuitRoom * m_pWndQuitRoom = nullptr;
 
 #ifdef __PET_1024
-	CWndChangePetName * m_pWndChangePetName = nullptr;
+		CWndChangePetName * m_pWndChangePetName = nullptr;
 #endif
-	CWndSmeltSafety * m_pWndSmeltSafety = nullptr;
-	CWndSmeltSafetyConfirm * m_pWndSmeltSafetyConfirm = nullptr;
-	CWndEquipBindConfirm * m_pWndEquipBindConfirm = nullptr;
-	CWndRestateConfirm * m_pWndRestateConfirm = nullptr;
+		CWndSmeltSafety * m_pWndSmeltSafety = nullptr;
+		CWndSmeltSafetyConfirm * m_pWndSmeltSafetyConfirm = nullptr;
+		CWndEquipBindConfirm * m_pWndEquipBindConfirm = nullptr;
+		CWndRestateConfirm * m_pWndRestateConfirm = nullptr;
 
 #ifdef __QUIZ
-	CWndQuizEventConfirm * m_pWndQuizEventConfirm = nullptr;
-	CWndQuizEventQuestionOX * m_pWndQuizEventQuestionOX = nullptr;
-	CWndQuizEventQuestion4C * m_pWndQuizEventQuestion4C = nullptr;
-	CWndQuizEventButton * m_pWndQuizEventButton = nullptr;
+		CWndQuizEventConfirm * m_pWndQuizEventConfirm = nullptr;
+		CWndQuizEventQuestionOX * m_pWndQuizEventQuestionOX = nullptr;
+		CWndQuizEventQuestion4C * m_pWndQuizEventQuestion4C = nullptr;
+		CWndQuizEventButton * m_pWndQuizEventButton = nullptr;
 #endif // __QUIZ
 
-	CWndQuestQuickInfo * m_pWndQuestQuickInfo = nullptr;
-	CWndQuestDetail * m_pWndQuestDetail = nullptr;
+		CWndQuestQuickInfo * m_pWndQuestQuickInfo = nullptr;
+		CWndQuestDetail * m_pWndQuestDetail = nullptr;
 
-	CWndCampusInvitationConfirm * m_pWndCampusInvitationConfirm = nullptr;
-	CWndCampusSeveranceConfirm * m_pWndCampusSeveranceConfirm = nullptr;
+		CWndCampusInvitationConfirm * m_pWndCampusInvitationConfirm = nullptr;
+		CWndCampusSeveranceConfirm * m_pWndCampusSeveranceConfirm = nullptr;
 
-	CWndBuffPetStatus * m_pWndBuffPetStatus = nullptr;
-	CWndConfirmVis * m_pWndConfirmVis = nullptr;
-	
-	CWndGHUpkeep * m_pWndUpkeep = nullptr;
+		CWndBuffPetStatus * m_pWndBuffPetStatus = nullptr;
+		CWndConfirmVis * m_pWndConfirmVis = nullptr;
+
+		CWndGHUpkeep * m_pWndUpkeep = nullptr;
 
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
-	CWndChattingBlockingList * m_pWndChattingBlockingList = nullptr;
+		CWndChattingBlockingList * m_pWndChattingBlockingList = nullptr;
 #endif // __YS_CHATTING_BLOCKING_SYSTEM
 
 #ifdef __GUILD_HOUSE_MIDDLE
-	CWndGuildHouseBid * m_pWndGHBid = nullptr;
+		CWndGuildHouseBid * m_pWndGHBid = nullptr;
 #endif //__GUILD_HOUSE_MIDDLE
 
-	CWndMessageBox * m_pWndMessageBox = nullptr;
-	CWndMessageBoxUpper * m_pWndMessageBoxUpper = nullptr;
+		CWndMessageBox * m_pWndMessageBox = nullptr;
+		CWndMessageBoxUpper * m_pWndMessageBoxUpper = nullptr;
 
-	CWndRevival * m_pWndRevival = nullptr;
-	CWndResurrectionConfirm * m_pWndResurrectionConfirm = nullptr;
+		CWndRevival * m_pWndRevival = nullptr;
+		CWndResurrectionConfirm * m_pWndResurrectionConfirm = nullptr;
 
-	CWndReWanted * m_pReWanted = nullptr;
-	CWndWanted * m_pWanted = nullptr;
+		CWndReWanted * m_pReWanted = nullptr;
+		CWndWanted * m_pWanted = nullptr;
 
-	CWndLogOutWaitting * m_pLogOutWaitting = nullptr;
-	CWndCommItemDlg * m_pWndCommItemDlg = nullptr;
-	CWndChangeClass1 * m_pWndChangeClass1 = nullptr;
-	CWndChangeClass2 * m_pWndChangeClass2 = nullptr;
+		CWndLogOutWaitting * m_pLogOutWaitting = nullptr;
+		CWndCommItemDlg * m_pWndCommItemDlg = nullptr;
+		CWndChangeClass1 * m_pWndChangeClass1 = nullptr;
+		CWndChangeClass2 * m_pWndChangeClass2 = nullptr;
+	};
 
-};
-
-namespace WndMgr {
+	/// List of all functions formely in CWndMgr that are used to update the
+	/// current tooltip and decide the text to display in tooltips
 	class CTooltipBuilder {
 	public:
 		std::array<ToolTipItemTextColor, MAX_TC> dwItemColor;
@@ -474,13 +474,9 @@ namespace WndMgr {
 
 }
 
-class CWndMgr :
-	public CWndBase,
-	public CWndMgr_WindowShortcuts,
-	public WndMgr::CTooltipBuilder
-{ 
-private:
-	class WNDREGINFO {
+/// Utility classes intended to be used by CWndMgr
+namespace WndMgr {
+	class RegInfo {
 	private:
 		DWORD dwWndId;
 		CRect rect;
@@ -491,16 +487,25 @@ private:
 
 	public:
 		// CWndNeuz
-		WNDREGINFO(CWndNeuz & pWndNeuz, BOOL bOpen);
+		RegInfo(CWndNeuz & pWndNeuz, BOOL bOpen);
 		void RestoreParameters(CWndNeuz & pWndBase) const;
 
 		// CFileIO
-		explicit WNDREGINFO(CFileIO & file);
+		explicit RegInfo(CFileIO & file);
 		void StoreIn(CFileIO & file) const;
 
 		// Everybody likes getters
 		[[nodiscard]] DWORD GetWndId() const noexcept { return dwWndId; }
 	};
+
+}
+
+class CWndMgr :
+	public CWndBase,
+	public WndMgr::COwnedChildren,
+	public WndMgr::CTooltipBuilder
+{ 
+private:
 
 	CString m_strChatBackup;
 	CTimer m_timerDobe;
@@ -640,7 +645,7 @@ public:
 	// Field
 
 	CMapDWordToPtr	m_mapWndApplet ;
-	std::map<DWORD, WNDREGINFO>  m_mapWndRegInfo;
+	std::map<DWORD, WndMgr::RegInfo>  m_mapWndRegInfo;
 
 	void PutDefinedString( DWORD dwText, ... );
 	void PutString( LPCTSTR lpszString, CObj* pObj = NULL, DWORD dwColor = 0xffffffff, DWORD dwChatStyle = CHATSTY_GAME, DWORD dwPStyle = 0x00000001 );
@@ -727,7 +732,6 @@ public:
 
 	BOOL LoadRegInfo( LPCTSTR lpszFileName );
 	BOOL SaveRegInfo( LPCTSTR lpszFileName );
-	void PutRegInfo(const WNDREGINFO * lpRegInfo );
 	void PutRegInfo( CWndNeuz* pWndNeuz, BOOL bOpen );
 
 
@@ -748,14 +752,10 @@ protected:
 	void	FormalizeChatString( CString & str );
 };
 
-#ifdef __VS2003
 extern CPtrArray      m_wndOrder;
-#endif
-
 extern CWndMgr          g_WndMng; // 윈도 매니저 클래스 
 
 extern void RenderEnchant( C2DRender* p2DRender, CPoint pt );
 extern void RenderRadar( C2DRender* p2DRender, CPoint pt, DWORD dwValue, DWORD dwDivisor );
 #define WID_MESSAGEBOX        10
 
-#endif // !defined(AFX_WNDMANAGER_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)
