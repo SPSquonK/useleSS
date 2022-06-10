@@ -1569,7 +1569,7 @@ int	CMover::InvalidEquipOff( BOOL bFakeParts )
 	return FALSE;
 }
 
-void CMover::SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL bIgnoreSetItem )
+void CMover::SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem, BOOL bIgnoreSetItem )
 {
 	if( pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 		return;
@@ -1578,14 +1578,9 @@ void CMover::SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL 
 	RunItemScript( this, pItemProp->dwID, ITEM_OP_EQUIP, NULL );
 #endif // __WORLDSERVER
 
-	if( pItemProp->dwDestParam[0] != -1 )
-		SetDestParam( 0, pItemProp, 1 );
-	if( pItemProp->dwDestParam[1] != -1 )
-		SetDestParam( 1, pItemProp );
-#ifdef __PROP_0827
-	if( pItemProp->dwDestParam[2] != -1 )
-		SetDestParam( 2, pItemProp );
-#endif	// __PROP_0827
+	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+		SetDestParam(i, *pItemProp, TRUE);
+	}
 	
 	// 원소별 속성이 붙은 아이템일경우 세팅함.
 	
@@ -1646,7 +1641,7 @@ void CMover::SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL 
 	}
 }
 
-void CMover::ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem )
+void CMover::ResetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem )
 {
 	if( pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 		return;

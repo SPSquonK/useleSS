@@ -916,8 +916,8 @@ public:
 	void			SetEquipDstParam();
 	void			SumEquipAdjValue( int* pnAdjHitRate, int* pnAdjParray );
 	int				SumEquipDefenseAbility( LONG* pnMin, LONG* pnMax );
-	void			SetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem, BOOL bIgnoreSetItem = FALSE );
-	void			ResetDestParamEquip( ItemProp* pItemProp, CItemElem* pItemElem );
+	void			SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem, BOOL bIgnoreSetItem = FALSE );
+	void			ResetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem );
 	[[nodiscard]] QUEST *			FindQuest(QuestId nQuestId );
 	[[nodiscard]] QUEST *			GetQuest(QuestId nQuestId) { return FindQuest(nQuestId); }
 	BOOL			RemoveQuest(QuestId nQuestId );
@@ -936,12 +936,12 @@ public:
 	[[nodiscard]] int GetParam(int nDestParameter, int nParam) const;
 	void			SetDestParam( int nDstParameter, int nAdjParameterValue, int nChgParameterValue, BOOL fSend = TRUE );
 	void			SetDestParam( int nItemIdx2, BOOL fSend = TRUE );
-	void			SetDestParam( int nIdx, ItemProp *pProp, BOOL bSend = TRUE );
+	void			SetDestParam( int nIdx, const ItemProp & pProp, BOOL bSend = TRUE );
 	void			ResetDestParam( int nDstParameter, int nAdjParameterValue, BOOL fSend = TRUE );
 #ifdef __SPEED_SYNC_0108		// ResetDestParam speed 수정
 	void			ResetDestParamSync( int nDstParameter,int nAdjParameterValue, int nParameterValue, BOOL fSend = TRUE );
 #endif // __SPEED_SYNC_0108		// ResetDestParam speed 수정
-	void			ResetDestParam( int nIdx, ItemProp *pProp, BOOL bSend = TRUE );
+	void			ResetDestParam( int nIdx, const ItemProp & pProp, BOOL bSend = TRUE );
 	[[nodiscard]] int GetAdjParam(int nDestParameter) const;
 	[[nodiscard]] int	GetChgParam(int nDestParameter) const;
 	int				GetPointParam( int nDstParameter );

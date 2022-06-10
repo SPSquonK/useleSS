@@ -593,9 +593,9 @@ void CGuildHouseBase::SetApplyDST( CUser* pUser )
 			ItemProp* pItemProp = prj.GetItemProp( m_vecFntInfo[i].dwItemId );
 			if( pItemProp )
 			{
-				pUser->SetDestParam( 0, pItemProp );
-				pUser->SetDestParam( 1, pItemProp );
-				pUser->SetDestParam( 2, pItemProp );
+				pUser->SetDestParam( 0, *pItemProp );
+				pUser->SetDestParam( 1, *pItemProp );
+				pUser->SetDestParam( 2, *pItemProp );
 			}
 		}
 	}
@@ -610,12 +610,12 @@ void CGuildHouseBase::ResetApplyDST( CUser* pUser )
 	{
 		if( m_vecFntInfo[i].bSetup )
 		{
-			ItemProp* pItemProp = prj.GetItemProp( m_vecFntInfo[i].dwItemId );
+			const ItemProp * pItemProp = prj.GetItemProp( m_vecFntInfo[i].dwItemId );
 			if( pItemProp )
 			{
-				pUser->ResetDestParam( 0, pItemProp );
-				pUser->ResetDestParam( 1, pItemProp );
-				pUser->ResetDestParam( 2, pItemProp );
+				pUser->ResetDestParam( 0, *pItemProp );
+				pUser->ResetDestParam( 1, *pItemProp );
+				pUser->ResetDestParam( 2, *pItemProp );
 			}
 		}
 	}
@@ -634,9 +634,9 @@ void CGuildHouseBase::SetDSTFunriture( ItemProp* pItemProp )
 			CUser* pUser = prj.GetUserByID( it->first );
 			if( IsValidObj( pUser ) )
 			{
-				pUser->SetDestParam( 0, pItemProp );
-				pUser->SetDestParam( 1, pItemProp );
-				pUser->SetDestParam( 2, pItemProp );
+				pUser->SetDestParam( 0, *pItemProp );
+				pUser->SetDestParam( 1, *pItemProp );
+				pUser->SetDestParam( 2, *pItemProp );
 			}
 		}
 	}
@@ -655,9 +655,9 @@ void CGuildHouseBase::ResetDSTFunriture( ItemProp* pItemProp )
 			CUser* pUser = prj.GetUserByID( it->first );
 			if( IsValidObj( pUser ) )
 			{
-				pUser->ResetDestParam( 0, pItemProp );
-				pUser->ResetDestParam( 1, pItemProp );
-				pUser->ResetDestParam( 2, pItemProp );
+				pUser->ResetDestParam( 0, *pItemProp );
+				pUser->ResetDestParam( 1, *pItemProp );
+				pUser->ResetDestParam( 2, *pItemProp );
 			}
 		}
 	}

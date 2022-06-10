@@ -2151,9 +2151,9 @@ void CMover::SetPetVisDST( CItemElem* pItemElem )
 			ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );
 			if( vecValidTable[i] == NeedVis::Success && pItemProp )
 			{
-				SetDestParam( 0, pItemProp );
-				SetDestParam( 1, pItemProp );
-				SetDestParam( 2, pItemProp );
+				SetDestParam( 0, *pItemProp );
+				SetDestParam( 1, *pItemProp );
+				SetDestParam( 2, *pItemProp );
 			}
 			else
 			{
@@ -2173,12 +2173,12 @@ void CMover::ResetPetVisDST( CItemElem* pItemElem )
 		const auto vecValidTable = GetValidVisTable( *pItemElem );
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
 		{
-			ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );
+			const ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );
 			if( vecValidTable[i] == NeedVis::Success && pItemProp )
 			{
-				ResetDestParam( 0, pItemProp );
-				ResetDestParam( 1, pItemProp );
-				ResetDestParam( 2, pItemProp );
+				ResetDestParam( 0, *pItemProp );
+				ResetDestParam( 1, *pItemProp );
+				ResetDestParam( 2, *pItemProp );
 			}
 		}
 	}

@@ -1755,28 +1755,21 @@ void CMover::RemoveBuffAll( void )
 ///////////////////////////////////////////////////////////////////////////////
 // 
 // ��, ����� �߰��ɷ�ġ�� ������ �̰ɷ� ����.
-void CMover::SetDestParam( int nIdx, ItemProp *pProp, BOOL bSend )
-{
-	SetDestParam( pProp->dwDestParam[nIdx], pProp->nAdjParamVal[nIdx], pProp->dwChgParamVal[nIdx], bSend );
+void CMover::SetDestParam(const int nIdx, const ItemProp & pProp, const BOOL bSend) {
+	SetDestParam(pProp.dwDestParam[nIdx], pProp.nAdjParamVal[nIdx], pProp.dwChgParamVal[nIdx], bSend);
 }
 
-void CMover::ResetDestParam( int nIdx, ItemProp *pProp, BOOL bSend )
-{
-	ResetDestParam( pProp->dwDestParam[nIdx], pProp->nAdjParamVal[nIdx], bSend );
+void CMover::ResetDestParam(const int nIdx, const ItemProp & pProp, const BOOL bSend) {
+	ResetDestParam(pProp.dwDestParam[nIdx], pProp.nAdjParamVal[nIdx], bSend);
 }
 
 // ��ǥ �Ķ���͸� ���Ѵ�.
-void CMover::SetDestParam( int nItemIdx, BOOL bSend )
-{
-	ItemProp* pItemProp = prj.GetItemProp( nItemIdx );
-	if( pItemProp->dwDestParam1 != -1 )
-		SetDestParam( pItemProp->dwDestParam1, pItemProp->nAdjParamVal1, pItemProp->dwChgParamVal1, bSend );
-	if( pItemProp->dwDestParam2 != -1 )
-		SetDestParam( pItemProp->dwDestParam2, pItemProp->nAdjParamVal2, pItemProp->dwChgParamVal2, bSend );
-#ifdef __PROP_0827
-	if( pItemProp->dwDestParam3 != -1 )
-		SetDestParam( pItemProp->dwDestParam3, pItemProp->nAdjParamVal3, pItemProp->dwChgParamVal3, bSend );
-#endif	// __PROP_0827
+void CMover::SetDestParam(int nItemIdx, BOOL bSend) {
+	const ItemProp * const pItemProp = prj.GetItemProp(nItemIdx);
+
+	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+		SetDestParam(pItemProp->dwDestParam[i], pItemProp->nAdjParamVal[i], pItemProp->dwChgParamVal[i], bSend);
+	}
 }
 
 //--------------------------------------------------------------------------
