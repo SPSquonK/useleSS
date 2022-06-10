@@ -127,12 +127,12 @@ public:
 #endif // __DBSERVER
 
 #ifndef __DBSERVER
-	BYTE GetContinent( CMover* pMover );
+	BYTE GetContinent( const CMover* pMover ) const;
 	float GetSalesTaxRate( BYTE nContinent );
 	float GetSalesTaxRate( CMover* pMover );
 	float GetPurchaseTaxRate( BYTE nContinent );
 	float GetPurchaseTaxRate( CMover* pMover );
-	BOOL IsApplyTaxRate( CMover* pMover, CItemElem* pItemElem );	// 세율적용이 가능한 아이템인가?
+	BOOL IsApplyTaxRate( const CMover* pMover, const CItemElem* pItemElem ) const;	// 세율적용이 가능한 아이템인가?
 #endif // __DBSERVER
 
 #ifdef __OCCUPATION_SHOPITEM

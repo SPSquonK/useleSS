@@ -13,9 +13,9 @@ public:
 
 	static CContinent*	GetInstance( void );
 #ifndef __DBSERVER	
-	BYTE GetContinent( CMover* pMover );	// 현재 캐릭터가 위치하고 있는 대륙
-	BYTE GetArea( CMover* pMover );			// 현재 캐릭터가 위치하고 있는 대륙의 지역(동부, 서부...)
-	static BOOL	IsValidObj( CMover* pMover );
+	BYTE GetContinent( const CMover* pMover );	// 현재 캐릭터가 위치하고 있는 대륙
+	BYTE GetArea( const CMover* pMover );			// 현재 캐릭터가 위치하고 있는 대륙의 지역(동부, 서부...)
+	static BOOL	IsValidObj( const CMover* pMover );
 #endif // !__DBSERVER
 	[[nodiscard]] static const char * GetContinentName(BYTE nCont);
 #ifdef __WORLDSERVER

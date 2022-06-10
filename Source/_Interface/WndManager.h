@@ -429,7 +429,7 @@ namespace WndMgr {
 		void PutBaseItemOpt(const CItemElem & pItemElem, const ItemProp & pItemProp, CEditString & pEdit) const;
 		void PutMedicine(const ItemProp & pItemProp, CEditString & pEdit) const;
 		void PutBaseResist(const ItemProp & pItemProp, CEditString & pEdit) const;
-		// PutItemGold
+		void PutItemGold(const CItemElem & pItemElem, CEditString & pEdit, int fromApp) const;
 		void PutCoolTime(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutKeepTime(CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutCommand(const CItemElem & pItemElem, CEditString & pEdit) const;
@@ -683,7 +683,6 @@ public:
 	void MakeToolTipText( CItemElem * pItemBase, CEditString& strEdit, int flag = 0 );
 	void PutToolTip_Character( int SelectCharacter, CPoint point, CRect* pRect );
 
-	void PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag );
 
 	BOOL CheckConfirm(CItemElem * pItem );
 

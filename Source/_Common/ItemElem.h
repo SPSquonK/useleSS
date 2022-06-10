@@ -84,8 +84,8 @@ public:
 	[[nodiscard]] BOOL IsQuest();
 	CTexture * GetTexture();
 
-	[[nodiscard]] int GetCost();
-	[[nodiscard]] DWORD GetChipCost();
+	[[nodiscard]] int GetCost() const;
+	[[nodiscard]] DWORD GetChipCost() const;
 
 	void SetExtra(int nExtra);
 	[[nodiscard]] int GetExtra() const noexcept;

@@ -89,9 +89,8 @@ __TAXINFO* CTax::GetTaxInfo( BYTE nContinent )	// 해당 대륙의 세율 정보
 }
 
 #ifndef __DBSERVER
-BYTE CTax::GetContinent( CMover* pMover )
-{
-	return CContinent::GetInstance()->GetArea( pMover );
+BYTE CTax::GetContinent(const CMover * pMover) const {
+	return CContinent::GetInstance()->GetArea(pMover);
 }
 
 float CTax::GetSalesTaxRate( BYTE nContinent )	// 해당 대륙의 판매 세율
@@ -135,7 +134,7 @@ float CTax::GetPurchaseTaxRate( CMover* pMover )
 }
 
 // 세율적용이 가능한 아이템인가?
-BOOL CTax::IsApplyTaxRate( CMover* pMover, CItemElem* pItemElem )
+BOOL CTax::IsApplyTaxRate( const CMover* pMover, const CItemElem* pItemElem ) const
 {
 	if( !CContinent::IsValidObj( pMover ) || GetContinent( pMover ) == CONT_NODATA || !pItemElem )
 		return FALSE;

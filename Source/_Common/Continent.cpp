@@ -134,7 +134,7 @@ BOOL CContinent::Point_In_Poly(const std::vector<CPoint> & vecMap, CPoint test_p
 }
 
 #ifndef __DBSERVER
-BYTE CContinent::GetContinent( CMover* pMover )
+BYTE CContinent::GetContinent( const CMover* pMover )
 {
 	if( !CContinent::IsValidObj( pMover ) )
 		return CONT_NODATA;
@@ -149,7 +149,7 @@ BYTE CContinent::GetContinent( CMover* pMover )
 	return CONT_NODATA;
 }
 
-BYTE CContinent::GetArea( CMover* pMover )
+BYTE CContinent::GetArea( const CMover* pMover )
 {
 	if( !CContinent::IsValidObj( pMover ) )
 		return CONT_NODATA;
@@ -158,7 +158,7 @@ BYTE CContinent::GetArea( CMover* pMover )
 	return GetArea( GetContinent(pMover) );	
 }
 
-BOOL CContinent::IsValidObj( CMover* pMover )
+BOOL CContinent::IsValidObj( const CMover* pMover )
 {
 	return ( ::IsValidObj( pMover ) && pMover->GetWorld() );
 }

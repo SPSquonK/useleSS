@@ -58,35 +58,26 @@ void CItemElem::SetTexture()
 // 아이템 가격을 계산해서 리턴한다.
 // -1을 리턴하면 처리해선 안된다.
 //
-int	CItemElem::GetCost( void )
-{
-	ItemProp *pProp = GetProp();
-	if( pProp == NULL )		
-		return -1;
-	if( pProp->dwCost == 0xFFFFFFFF )	
-		return -1;
+int	CItemElem::GetCost() const {
+	const ItemProp * const pProp = GetProp();
+	if (!pProp) return -1;
+	if (pProp->dwCost == NULL_ID) return -1;
 		
-	int nCost;
-	if( GetAbilityOption() )
+	if( GetAbilityOption() != 0 )
 	{		
 		//INT((아이템가격+아이템가격*(0.1+(아이템강화레벨*아이템강화레벨)/18))
-		nCost = (int)( pProp->dwCost + pProp->dwCost * ( 0.1f + ( GetAbilityOption() * GetAbilityOption() ) / 18.0f ) );
+		return static_cast<int>( pProp->dwCost + pProp->dwCost * ( 0.1f + ( GetAbilityOption() * GetAbilityOption() ) / 18.0f ) );
 	}
 	else
 	{
-		nCost = (int)pProp->dwCost;
+		return static_cast<int>(pProp->dwCost);
 	}
-	
-	return nCost;
 }
 
-DWORD CItemElem::GetChipCost()
-{
-	ItemProp *pProp = GetProp();
-	if( pProp == NULL )		
-		return -1;
-	if( pProp->dwReferValue1 == 0xFFFFFFFF )	
-		return -1;
+DWORD CItemElem::GetChipCost() const {
+	const ItemProp * const pProp = GetProp();
+	if (!pProp) return -1;
+	if (pProp->dwReferValue1 == NULL_ID) return -1;
 
 	return pProp->dwReferValue1;
 }

@@ -2933,120 +2933,6 @@ DWORD CWndMgr::GetDSTStringId(int nDstParam) {
 	return sqktd::find_in_map(g_DstString, nDstParam, 0);
 }
 
-void CWndMgr::PutItemGold( CMover* pMover, CItemElem* pItemElem, CEditString* pEdit, int flag )
-{
-	CString str;
-	CString strTemp;
-	if( flag == APP_SHOP_ ) // 가격은 나는 안나오게 하고 상점 인터페이스에서는 나오게함 42은 상점의 Invantory 개수
-	{	// 상점
-		if( pItemElem->GetCost() != 0xffffffff ) 
-		{	// 가격
-			CWndShop* pWndShop	= (CWndShop*)GetWndBase( APP_SHOP_ );
-			LPCHARACTER lpCharacter = pWndShop->m_pMover->GetCharacter();
-			int nCost = 0;
-			int nBeforeTax = 0;
-			if(lpCharacter)
-			{
-				if(lpCharacter->m_vendor.m_type == CVendor::Type::Penya)
-				{
-					nCost = pItemElem->GetCost();
-					nCost = (int)( prj.m_fShopBuyRate * nCost );
-					nBeforeTax = nCost;
-					if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, pItemElem ) )
-						nCost += ( static_cast<int>(nCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-				}
-				else if(lpCharacter->m_vendor.m_type == CVendor::Type::RedChip)
-					nCost = pItemElem->GetChipCost();
-			}
-			nCost = (int)(nCost * prj.m_fShopCost );
-			if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
-				nCost = PERIN_VALUE;
-			
-			if( nCost <= 0 )
-			{
-				nCost = 1;
-				nBeforeTax = 1;
-			}
-			
-			char szbuffer[1024];
-			_itoa( nCost, szbuffer, 10 );
-			str = GetNumberFormatEx(szbuffer);
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_COST2), str );
-			if(lpCharacter && lpCharacter->m_vendor.m_type == CVendor::Type::RedChip)
-			{
-				strTemp += " ";
-				strTemp += prj.GetText(TID_GAME_REDCHIP);
-			}
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGold );
-			if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, pItemElem )
-				&& lpCharacter->m_vendor.m_type == CVendor::Type::Penya
-				)
-			{
-				_itoa( nBeforeTax, szbuffer, 10 );
-				str = GetNumberFormatEx(szbuffer);
-				strTemp.Format( prj.GetText( TID_GAME_TAX_RATE ), str );
-				pEdit->AddString( "\n" );
-				pEdit->AddString( strTemp, prj.GetTextColor( TID_GAME_TAX_RATE ) );
-			}
-		}
-	}
-	else if( flag == APP_INVENTORY )	// 인벤토리 / 뱅크 툴팁?
-	{
-		CWndShop* pWndShop	= (CWndShop*)GetWndBase( APP_SHOP_ );
-		if( pWndShop )	// 상점을 열엇을때 파는가격도 나와야함
-		{
-			if( pItemElem->GetCost() != 0xffffffff )
-			{	//	파는가격
-				char szbuffer[1024];
-				DWORD dwCostTem = 0;
-				dwCostTem = pItemElem->GetCost() / 4;
-#ifdef __SHOP_COST_RATE
-				dwCostTem = (DWORD)( prj.m_fShopSellRate * dwCostTem );
-#endif // __SHOP_COST_RATE
-				DWORD dwBeforeTax = dwCostTem;
-				if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, pItemElem ) )
-					dwCostTem -= ( static_cast<DWORD>(dwCostTem * CTax::GetInstance()->GetSalesTaxRate( g_pPlayer )) );
-				
-				if( dwCostTem < 1 )
-				{				
-					dwCostTem = 1;
-					dwBeforeTax = 1;
-				}
-
-				_itoa( dwCostTem, szbuffer, 10 );
-				str = GetNumberFormatEx(szbuffer);
-				strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_SHELLCOST2), str );
-				pEdit->AddString( "\n" );
-				pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGold );
-				if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, pItemElem ) )
-				{
-					_itoa( dwBeforeTax, szbuffer, 10 );
-					str = GetNumberFormatEx(szbuffer);
-					strTemp.Format( prj.GetText( TID_GAME_TAX_RATE ), str );
-					pEdit->AddString( "\n" );
-					pEdit->AddString( strTemp, prj.GetTextColor( TID_GAME_TAX_RATE ) );	
-				}
-			}
-		}
-	}
-	else if( flag == APP_VENDOR )
-	{
-		if( pItemElem->m_nCost != 0xffffffff )
-		{	// 파는가격
-			char szbuffer[1024];
-			DWORD dwCostTem = 0;
-			dwCostTem = pItemElem->m_nCost;
-			_itoa( dwCostTem, szbuffer, 10 );
-			str = GetNumberFormatEx(szbuffer);
-			
-			strTemp.Format( prj.GetText(TID_GAME_TOOLTIP_SHELLCOST2), str );
-			pEdit->AddString( "\n" );
-			pEdit->AddString( strTemp, dwItemColor[g_Option.m_nToolTipText].dwGold );
-		}
-	}
-}
-
 void CWndMgr::PutToolTip_Item(CItemElem * pItemBase, CPoint point, CRect* pRect, int flag )
 {
 	ItemProp* pItemProp = pItemBase->GetProp();
@@ -3331,7 +3217,7 @@ void CWndMgr::MakeToolTipText(CItemElem * pItemElem, CEditString& strEdit, int f
 	PutJob( *pMover, *pItemProp, strEdit );
 	PutLevel( *pMover, *pItemElem, strEdit );	
 	PutCommand( *pItemElem, strEdit );					// 용도 
-	PutItemGold( pMover, pItemElem, &strEdit, flag );	// 가격
+	PutItemGold( *pItemElem, strEdit, flag );	// 가격
 	PutSetItemOpt(*pMover, pItemElem->m_dwItemId, strEdit);
 	if( pItemProp->dwItemKind3 == IK3_EGG && pItemElem->m_pPet )
 		PutPetInfo( *pItemElem, strEdit );
