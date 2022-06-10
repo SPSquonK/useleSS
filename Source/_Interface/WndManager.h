@@ -515,28 +515,28 @@ private:
 	CString m_strChatBackup;
 	CTimer m_timerDobe;
 #ifdef __BAN_CHATTING_SYSTEM
-	int m_nWarningCounter;
-	int m_nWarning2Counter;
+	int m_nWarningCounter = 0;
+	int m_nWarning2Counter = 0;
 	CTimer m_timerWarning;
 	CTimer m_timerWarning2;
 	CTimer m_timerShortcutWarning;
 	CTimer m_timerBanning;
-	BOOL m_bShortcutCommand;
+	BOOL m_bShortcutCommand = FALSE;
 
 public:
 	enum { BANNING_POINT = 5, BANNING_2_POINT = 2 };
 	enum { WARNING_MILLISECOND = 700, WARNING_2_MILLISECOND = 1000, SHORTCUT_WARNING_MILLISECOND = 3000, BANNING_MILLISECOND = 180000 };
 
 public:
-	void SetWarningCounter( int nWarningCounter );
-	void SetWarning2Counter( int nWarning2Counter );
-	int GetWarningCounter( void ) const;
-	int GetWarning2Counter( void ) const;
-	CTimer& GetWarningTimer( void );
-	CTimer& GetWarning2Timer( void );
-	CTimer& GetShortcutWarningTimer( void );
-	CTimer& GetBanningTimer( void );
-	BOOL IsShortcutCommand( void ) const;
+	void SetWarningCounter(int nWarningCounter) { m_nWarningCounter = nWarningCounter; }
+	void SetWarning2Counter(int nWarning2Counter) { m_nWarning2Counter = nWarning2Counter; }
+	[[nodiscard]] int GetWarningCounter() const { return m_nWarningCounter; }
+	[[nodiscard]] int GetWarning2Counter() const { return m_nWarning2Counter; }
+	CTimer & GetWarningTimer() { return m_timerWarning; }
+	CTimer & GetWarning2Timer() { return m_timerWarning2; };
+	CTimer & GetShortcutWarningTimer() { return m_timerShortcutWarning; }
+	CTimer & GetBanningTimer() { return m_timerBanning; }
+	[[nodiscard]] BOOL IsShortcutCommand() const { return m_bShortcutCommand; };
 
 private:
 #endif // __BAN_CHATTING_SYSTEM

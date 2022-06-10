@@ -356,12 +356,6 @@ CWndMgr::CWndMgr()
 
 	m_pWndGHMain = NULL;
 
-#ifdef __BAN_CHATTING_SYSTEM
-	m_nWarningCounter = 0;
-	m_nWarning2Counter = 0;
-	m_bShortcutCommand = FALSE;
-#endif // __BAN_CHATTING_SYSTEM
-
 #ifdef __PROTECT_AWAKE
 	m_pWndSelectAwakeCase = NULL;
 #endif
@@ -2264,12 +2258,13 @@ void CWndMgr::WordChange( CString& rString )
 // 챗에서 또는 매크로로 입력된 텍스트가 이 함수를 용도에 맞게 분류된다.
 void CWndMgr::ParsingChat( CString string )
 {
-	CWndGuideSystem* pWndGuide = NULL;
-	pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
-	if(pWndGuide && pWndGuide->IsVisible()) pWndGuide->m_Condition.strInput.Format("%s", string); 
+	CWndGuideSystem* pWndGuide = GetWndBase<CWndGuideSystem>( APP_GUIDE );
+	if (pWndGuide && pWndGuide->IsVisible()) {
+		pWndGuide->m_Condition.strInput = string;
+	}
 	string.TrimLeft( ' ' );
-	if( string.IsEmpty() == TRUE )
-		return;
+	if (string.IsEmpty()) return;
+
 	// 문장길이가 너무 길면 64바이트로 줄임.
 	SetStrNull( string, 120 );
 
@@ -3348,52 +3343,3 @@ void CWndMgr::CloseBoundWindow(void) // 아이템이 걸려 있거나, 아이템을 조작할 가
 	SAFE_DELETE( m_pWndEquipBindConfirm ); // 귀속 확인
 }
 #endif // __WINDOW_INTERFACE_BUG
-
-#ifdef __BAN_CHATTING_SYSTEM
-//-----------------------------------------------------------------------------
-void CWndMgr::SetWarningCounter( int nWarningCounter )
-{
-	m_nWarningCounter = nWarningCounter;
-}
-//-----------------------------------------------------------------------------
-void CWndMgr::SetWarning2Counter( int nWarning2Counter )
-{
-	m_nWarning2Counter = nWarning2Counter;
-}
-//-----------------------------------------------------------------------------
-int CWndMgr::GetWarningCounter( void ) const
-{
-	return m_nWarningCounter;
-}
-//-----------------------------------------------------------------------------
-int CWndMgr::GetWarning2Counter( void ) const
-{
-	return m_nWarning2Counter;
-}
-//-----------------------------------------------------------------------------
-CTimer& CWndMgr::GetWarningTimer( void )
-{
-	return m_timerWarning;
-}
-//-----------------------------------------------------------------------------
-CTimer& CWndMgr::GetWarning2Timer( void )
-{
-	return m_timerWarning2;
-}
-//-----------------------------------------------------------------------------
-CTimer& CWndMgr::GetShortcutWarningTimer( void )
-{
-	return m_timerShortcutWarning;
-}
-//-----------------------------------------------------------------------------
-CTimer& CWndMgr::GetBanningTimer( void )
-{
-	return m_timerBanning;
-}
-//-----------------------------------------------------------------------------
-BOOL CWndMgr::IsShortcutCommand( void ) const
-{
-	return m_bShortcutCommand;
-}
-//-----------------------------------------------------------------------------
-#endif // __BAN_CHATTING_SYSTEM
