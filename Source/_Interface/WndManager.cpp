@@ -594,10 +594,7 @@ void CWndMgr::OnInitialUpdate()
 {
 	m_timerDobe.Set( SEC( 2 ) );
 #ifdef __BAN_CHATTING_SYSTEM
-	m_timerWarning.Set( WARNING_MILLISECOND, TRUE );
-	m_timerWarning2.Set( WARNING_2_MILLISECOND, TRUE );
-	m_timerShortcutWarning.Set( SHORTCUT_WARNING_MILLISECOND, TRUE );
-	m_timerBanning.Set( BANNING_MILLISECOND, TRUE );
+	InitializeTimers();
 #endif // __BAN_CHATTING_SYSTEM
 	AddAllApplet();
 
@@ -2290,124 +2287,124 @@ void CWndMgr::ParsingChat( CString string )
 		else 
 		{
 #ifdef __BAN_CHATTING_SYSTEM
-			if( m_timerBanning.IsTimeOut() == FALSE )
-			{
-				CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
-				if( pWndChat )
-				{
-					int nOriginalSecond = static_cast< int >( BANNING_MILLISECOND - static_cast< int >( m_timerBanning.GetLeftTime() ) ) / 1000;
-					int nMinute = static_cast< int >( nOriginalSecond / 60 );
-					int nSecond = static_cast< int >( nOriginalSecond % 60 );
-					CString strMessage = _T( "" );
-					// 현재 채팅 금지 페널티를 받고 있습니다. (남은 시간: %d분 %d초)
-					strMessage.Format( prj.GetText( TID_GAME_ERROR_CHATTING_3 ), nMinute, nSecond );
-					pWndChat->PutString( strMessage, 0xffff0000 );
-					return;
-				}
-			}
+	if( m_timerBanning.IsTimeOut() == FALSE )
+	{
+		CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
+		if( pWndChat )
+		{
+			int nOriginalSecond = static_cast< int >( BANNING_MILLISECOND - static_cast< int >( m_timerBanning.GetLeftTime() ) ) / 1000;
+			int nMinute = static_cast< int >( nOriginalSecond / 60 );
+			int nSecond = static_cast< int >( nOriginalSecond % 60 );
+			CString strMessage = _T( "" );
+			// 현재 채팅 금지 페널티를 받고 있습니다. (남은 시간: %d분 %d초)
+			strMessage.Format( prj.GetText( TID_GAME_ERROR_CHATTING_3 ), nMinute, nSecond );
+			pWndChat->PutString( strMessage, 0xffff0000 );
+			return;
+		}
+	}
+	else
+	{
+		if( string != m_strChatBackup || m_timerDobe.IsTimeOut() || g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
+		{
+			m_timerDobe.Reset();
+			m_strChatBackup = string;
+			WordChange( string );
+			SetStrNull( string, 120 );
+			if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
+				g_DPlay.SendChat( ( LPCSTR )string );
 			else
 			{
-				if( string != m_strChatBackup || m_timerDobe.IsTimeOut() || g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
+				if( m_bShortcutCommand == TRUE )
 				{
-					m_timerDobe.Reset();
-					m_strChatBackup = string;
-					WordChange( string );
-					SetStrNull( string, 120 );
-					if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
+					if( m_timerShortcutWarning.IsTimeOut() == FALSE )
+					{
+						++m_nWarningCounter;
+						CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
+						if( pWndChat )
+						{
+							if( m_nWarningCounter >= BANNING_POINT )
+							{
+								// 과도한 채팅으로 인하여 %d분 동안 채팅 금지 페널티를 받으셨습니다.
+								CString strChattingError1 = _T( "" );
+								strChattingError1.Format( prj.GetText( TID_GAME_ERROR_CHATTING_2 ), BANNING_MILLISECOND / 1000 / 60 );
+								pWndChat->PutString( strChattingError1, prj.GetTextColor( TID_GAME_ERROR_CHATTING_2 ) );
+								m_nWarningCounter = 0;
+								m_timerBanning.Reset();
+							}
+							else
+							{
+								// 연속 채팅으로 인하여 메시지가 출력되지 않았습니다.
+								pWndChat->PutString( prj.GetText( TID_GAME_ERROR_CHATTING_1 ), 0xffff0000 );
+							}
+						}
+					}
+					else
 						g_DPlay.SendChat( ( LPCSTR )string );
+					m_timerShortcutWarning.Reset();
+				}
+				else
+				{
+					if( m_timerWarning.IsTimeOut() == FALSE )
+					{
+						++m_nWarningCounter;
+						CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
+						if( pWndChat )
+						{
+							if( m_nWarningCounter >= BANNING_POINT )
+							{
+								// 과도한 채팅으로 인하여 %d분 동안 채팅 금지 페널티를 받으셨습니다.
+								CString strChattingError1 = _T( "" );
+								strChattingError1.Format( prj.GetText( TID_GAME_ERROR_CHATTING_2 ), BANNING_MILLISECOND / 1000 / 60 );
+								pWndChat->PutString( strChattingError1, prj.GetTextColor( TID_GAME_ERROR_CHATTING_2 ) );
+								m_nWarningCounter = 0;
+								m_timerBanning.Reset();
+							}
+							else
+							{
+								// 연속 채팅으로 인하여 메시지가 출력되지 않았습니다.
+								pWndChat->PutString( prj.GetText( TID_GAME_ERROR_CHATTING_1 ), 0xffff0000 );
+							}
+						}
+					}
 					else
 					{
-						if( m_bShortcutCommand == TRUE )
+						if( m_timerWarning2.IsTimeOut() == FALSE )
 						{
-							if( m_timerShortcutWarning.IsTimeOut() == FALSE )
+							++m_nWarning2Counter;
+							CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
+							if( pWndChat )
 							{
-								++m_nWarningCounter;
-								CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
-								if( pWndChat )
+								if( m_nWarning2Counter >= BANNING_2_POINT )
 								{
-									if( m_nWarningCounter >= BANNING_POINT )
-									{
-										// 과도한 채팅으로 인하여 %d분 동안 채팅 금지 페널티를 받으셨습니다.
-										CString strChattingError1 = _T( "" );
-										strChattingError1.Format( prj.GetText( TID_GAME_ERROR_CHATTING_2 ), BANNING_MILLISECOND / 1000 / 60 );
-										pWndChat->PutString( strChattingError1, prj.GetTextColor( TID_GAME_ERROR_CHATTING_2 ) );
-										m_nWarningCounter = 0;
-										m_timerBanning.Reset();
-									}
-									else
-									{
-										// 연속 채팅으로 인하여 메시지가 출력되지 않았습니다.
-										pWndChat->PutString( prj.GetText( TID_GAME_ERROR_CHATTING_1 ), 0xffff0000 );
-									}
-								}
-							}
-							else
-								g_DPlay.SendChat( ( LPCSTR )string );
-							m_timerShortcutWarning.Reset();
-						}
-						else
-						{
-							if( m_timerWarning.IsTimeOut() == FALSE )
-							{
-								++m_nWarningCounter;
-								CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
-								if( pWndChat )
-								{
-									if( m_nWarningCounter >= BANNING_POINT )
-									{
-										// 과도한 채팅으로 인하여 %d분 동안 채팅 금지 페널티를 받으셨습니다.
-										CString strChattingError1 = _T( "" );
-										strChattingError1.Format( prj.GetText( TID_GAME_ERROR_CHATTING_2 ), BANNING_MILLISECOND / 1000 / 60 );
-										pWndChat->PutString( strChattingError1, prj.GetTextColor( TID_GAME_ERROR_CHATTING_2 ) );
-										m_nWarningCounter = 0;
-										m_timerBanning.Reset();
-									}
-									else
-									{
-										// 연속 채팅으로 인하여 메시지가 출력되지 않았습니다.
-										pWndChat->PutString( prj.GetText( TID_GAME_ERROR_CHATTING_1 ), 0xffff0000 );
-									}
-								}
-							}
-							else
-							{
-								if( m_timerWarning2.IsTimeOut() == FALSE )
-								{
-									++m_nWarning2Counter;
-									CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
-									if( pWndChat )
-									{
-										if( m_nWarning2Counter >= BANNING_2_POINT )
-										{
-											// 과도한 채팅으로 인하여 %d분 동안 채팅 금지 페널티를 받으셨습니다.
-											CString strChattingError1 = _T( "" );
-											strChattingError1.Format( prj.GetText( TID_GAME_ERROR_CHATTING_2 ), BANNING_MILLISECOND / 1000 / 60 );
-											pWndChat->PutString( strChattingError1, prj.GetTextColor( TID_GAME_ERROR_CHATTING_2 ) );
-											m_nWarning2Counter = 0;
-											m_timerBanning.Reset();
-										}
-										else
-											g_DPlay.SendChat( ( LPCSTR )string );
-									}
+									// 과도한 채팅으로 인하여 %d분 동안 채팅 금지 페널티를 받으셨습니다.
+									CString strChattingError1 = _T( "" );
+									strChattingError1.Format( prj.GetText( TID_GAME_ERROR_CHATTING_2 ), BANNING_MILLISECOND / 1000 / 60 );
+									pWndChat->PutString( strChattingError1, prj.GetTextColor( TID_GAME_ERROR_CHATTING_2 ) );
+									m_nWarning2Counter = 0;
+									m_timerBanning.Reset();
 								}
 								else
 									g_DPlay.SendChat( ( LPCSTR )string );
 							}
-							m_timerWarning.Reset();
-							m_timerWarning2.Reset();
 						}
+						else
+							g_DPlay.SendChat( ( LPCSTR )string );
 					}
-				}
-				else
-				{
-					CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
-					if( pWndChat )
-					{
-						// 연속으로 같은 내용을 입력할 수 없습니다.
-						pWndChat->PutString( prj.GetText( TID_GAME_CHATSAMETEXT ), prj.GetTextColor( TID_GAME_CHATSAMETEXT ) );
-					}
+					m_timerWarning.Reset();
+					m_timerWarning2.Reset();
 				}
 			}
+		}
+		else
+		{
+			CWndChat* pWndChat = ( CWndChat* )g_WndMng.GetWndBase( APP_COMMUNICATION_CHAT );
+			if( pWndChat )
+			{
+				// 연속으로 같은 내용을 입력할 수 없습니다.
+				pWndChat->PutString( prj.GetText( TID_GAME_CHATSAMETEXT ), prj.GetTextColor( TID_GAME_CHATSAMETEXT ) );
+			}
+		}
+	}
 #else // __BAN_CHATTING_SYSTEM
 			// 문자중에 /가 포함되어 있으면 영자 명령일 수 있다.
 			// 영자 명령의 누수를 막기 위해 /가 포함되어 있으면 전송하지 않는다.
@@ -3343,3 +3340,18 @@ void CWndMgr::CloseBoundWindow(void) // 아이템이 걸려 있거나, 아이템을 조작할 가
 	SAFE_DELETE( m_pWndEquipBindConfirm ); // 귀속 확인
 }
 #endif // __WINDOW_INTERFACE_BUG
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+namespace WndMgr {
+	void CBanningSystem::InitializeTimers() {
+		m_timerWarning.Set(WARNING_MILLISECOND, TRUE);
+		m_timerWarning2.Set(WARNING_2_MILLISECOND, TRUE);
+		m_timerShortcutWarning.Set(SHORTCUT_WARNING_MILLISECOND, TRUE);
+		m_timerBanning.Set(BANNING_MILLISECOND, TRUE);
+	}
+
+}
+
+

@@ -1703,8 +1703,7 @@ BOOL TextCmd_shout(CScanner & scanner, CPlayer_ * pUser) {
 				}
 				else
 				{
-					CString strCommand = _T( "" );
-					strCommand.Format( "/s %s", string );
+					CString strCommand = _T( "/s " ) + string;
 					g_DPlay.SendChat( strCommand );
 				}
 				g_WndMng.GetShortcutWarningTimer().Reset();

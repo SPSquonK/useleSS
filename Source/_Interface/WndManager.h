@@ -472,6 +472,39 @@ namespace WndMgr {
 		[[nodiscard]] DWORD GetOkOrErrorColor(bool isOk) const;
 	};
 
+
+	class CBanningSystem {
+	protected:
+		int m_nWarningCounter = 0;
+		int m_nWarning2Counter = 0;
+		CTimer m_timerWarning;
+		CTimer m_timerWarning2;
+		CTimer m_timerShortcutWarning;
+		CTimer m_timerBanning;
+		BOOL m_bShortcutCommand = FALSE;
+
+	public:
+		enum { BANNING_POINT = 5, BANNING_2_POINT = 2 };
+		enum { WARNING_MILLISECOND = 700, WARNING_2_MILLISECOND = 1000, SHORTCUT_WARNING_MILLISECOND = 3000, BANNING_MILLISECOND = 180000 };
+
+	public:
+		// Getters and setters
+		void SetWarningCounter(int nWarningCounter) { m_nWarningCounter = nWarningCounter; }
+		void SetWarning2Counter(int nWarning2Counter) { m_nWarning2Counter = nWarning2Counter; }
+		[[nodiscard]] int GetWarningCounter() const { return m_nWarningCounter; }
+		[[nodiscard]] int GetWarning2Counter() const { return m_nWarning2Counter; }
+		CTimer & GetWarningTimer() { return m_timerWarning; }
+		CTimer & GetWarning2Timer() { return m_timerWarning2; };
+		CTimer & GetShortcutWarningTimer() { return m_timerShortcutWarning; }
+		CTimer & GetBanningTimer() { return m_timerBanning; }
+		[[nodiscard]] BOOL IsShortcutCommand() const { return m_bShortcutCommand; };
+
+	public:
+		// Actual OOP methods
+
+		void InitializeTimers();
+
+	};
 }
 
 /// Utility classes intended to be used by CWndMgr
@@ -509,37 +542,14 @@ class CWndMgr :
 	public CWndBase,
 	public WndMgr::COwnedChildren,
 	public WndMgr::CTooltipBuilder
-{ 
+#ifdef __BAN_CHATTING_SYSTEM
+	, public WndMgr::CBanningSystem
+#endif
+{
 private:
 
 	CString m_strChatBackup;
 	CTimer m_timerDobe;
-#ifdef __BAN_CHATTING_SYSTEM
-	int m_nWarningCounter = 0;
-	int m_nWarning2Counter = 0;
-	CTimer m_timerWarning;
-	CTimer m_timerWarning2;
-	CTimer m_timerShortcutWarning;
-	CTimer m_timerBanning;
-	BOOL m_bShortcutCommand = FALSE;
-
-public:
-	enum { BANNING_POINT = 5, BANNING_2_POINT = 2 };
-	enum { WARNING_MILLISECOND = 700, WARNING_2_MILLISECOND = 1000, SHORTCUT_WARNING_MILLISECOND = 3000, BANNING_MILLISECOND = 180000 };
-
-public:
-	void SetWarningCounter(int nWarningCounter) { m_nWarningCounter = nWarningCounter; }
-	void SetWarning2Counter(int nWarning2Counter) { m_nWarning2Counter = nWarning2Counter; }
-	[[nodiscard]] int GetWarningCounter() const { return m_nWarningCounter; }
-	[[nodiscard]] int GetWarning2Counter() const { return m_nWarning2Counter; }
-	CTimer & GetWarningTimer() { return m_timerWarning; }
-	CTimer & GetWarning2Timer() { return m_timerWarning2; };
-	CTimer & GetShortcutWarningTimer() { return m_timerShortcutWarning; }
-	CTimer & GetBanningTimer() { return m_timerBanning; }
-	[[nodiscard]] BOOL IsShortcutCommand() const { return m_bShortcutCommand; };
-
-private:
-#endif // __BAN_CHATTING_SYSTEM
 
 public:
 	std::vector<WndMgr::StoredChatMessage> m_aChat;
