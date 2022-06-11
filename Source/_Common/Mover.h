@@ -909,7 +909,9 @@ public:
 	BOOL			IsDualWeapon();
 	void			RedoEquip( BOOL fFakeParts, BOOL bDestParam = TRUE );	
 	void			UpdateParts( BOOL bFakeParts  = FALSE ); // normal or fake
-	int				InvalidEquipOff( BOOL fFakeparts );		// 거시기한 장비를 벗김.
+#ifdef __WORLDSERVER
+	void InvalidEquipOff(BOOL fFakeparts);		// 거시기한 장비를 벗김.
+#endif
 	BOOL			DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart = -1 ); // for normal
 	BOOL			IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel = FALSE );		// 장착가능한가?
 	[[nodiscard]] bool IsUnEquipAble(const ItemProp & pItemProp) const; // Check if the current situation blocks equiping the item

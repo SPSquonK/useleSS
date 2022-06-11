@@ -1521,53 +1521,27 @@ void CMover::RedoEquip( BOOL fFakeParts, BOOL bDestParam )
 	}
 }
 
+#ifdef __WORLDSERVER
 // 장착되어설 안될 장비가 장착되어 있다면 벗김
-int	CMover::InvalidEquipOff( BOOL bFakeParts )
-{
-	CItemElem* pItemElem = NULL;
-	ItemProp* pItemProp	= NULL;
-	int		i;
+void CMover::InvalidEquipOff(BOOL bFakeParts) {
+	if (bFakeParts) return;
 
-	for( i = 0; i < MAX_HUMAN_PARTS; i ++ )
-	{
-		pItemElem = NULL;		
-		pItemProp = NULL;
-
+	for (int i = 0; i < MAX_HUMAN_PARTS; i++) {
 		// 장착된 아이템의 프로퍼티 꺼냄.
-		if( bFakeParts )	// Fake 장비
-		{
-			if( m_aEquipInfo[i].dwId	== NULL_ID )	continue;
-			pItemProp	= prj.GetItemProp( m_aEquipInfo[i].dwId );
-		}
-		else
-		{
-			pItemElem = m_Inventory.GetEquip( i );
-			if( pItemElem )
-				pItemProp  = pItemElem->GetProp();	
-		}
+		CItemElem * const pItemElem = m_Inventory.GetEquip(i);
 
-		if( pItemProp == NULL )	
-			continue;	// 프로퍼티 없으면 실패.
+		const ItemProp * pItemProp = pItemElem ? pItemElem->GetProp() : nullptr;
+		if (!pItemProp) continue;	// 프로퍼티 없으면 실패.
 
-		if( IsEquipAble( pItemElem,TRUE ) == FALSE )	// 장착할 수 없는 아이템이다.
-		{
-			if( pItemElem )
-			{
-				if( DoEquip( pItemElem, FALSE ) == FALSE )		// 벗김.
-				{
-				#ifdef __WORLDSERVER
-					// 벗기는데 실패함. 인벤이 꽉찼다거나 기타등등 이유
-					#ifndef _DEBUG
-						Error( "아템 벗기는데 실패:%s", GetName() );
-					#endif
-				#endif
-				}
-			} 
+		if (!IsEquipAble(pItemElem, TRUE)) {	// 장착할 수 없는 아이템이다.
+			if (!DoEquip(pItemElem, FALSE)) {	// 벗김.
+				// 벗기는데 실패함. 인벤이 꽉찼다거나 기타등등 이유
+				Error("아템 벗기는데 실패:%s", GetName());
+			}
 		}
-	} // for
-	
-	return FALSE;
+	}
 }
+#endif
 
 void CMover::SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem, BOOL bIgnoreSetItem )
 {
