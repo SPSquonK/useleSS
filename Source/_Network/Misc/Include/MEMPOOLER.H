@@ -8,11 +8,9 @@
 
 template <class T>	class MemPooler
 {
-	struct	BlockNode
-	{
-		BlockNode* pNext;
-		BlockNode()
-			{	pNext	= NULL;	}
+	struct	BlockNode {
+		BlockNode *pNext = nullptr;
+		bool isFreed = true;
 	};
 
 protected:
@@ -70,6 +68,7 @@ public:
 			pNode	= m_pFreeList;
 			m_pFreeList		= m_pFreeList->pNext;
 			m_nAllocCount++;
+			pNode->isFreed = false;
 			lpMem	= reinterpret_cast<T*>( pNode + 1 );
 
 			LeaveCriticalSection( &m_cs );
@@ -89,16 +88,21 @@ public:
 			EnterCriticalSection( &m_cs );
 
 			pNode	= ( reinterpret_cast<BlockNode*>( lpMem ) ) - 1;
-			if( m_nAllocCount > 0 )
-			{
-				pNode->pNext	= m_pFreeList;
-				m_pFreeList		= pNode;
-				m_nAllocCount--;
-			}
 
-			//	mulcom	BEGIN100422	메모리풀 초기화
-			::memset( lpMem, 0, sizeof(T) );
-			//	mulcom	END100422	메모리풀 초기화
+			if (!pNode->isFreed) {
+				pNode->isFreed = true;
+
+				if( m_nAllocCount > 0 )
+				{
+					pNode->pNext	= m_pFreeList;
+					m_pFreeList		= pNode;
+					m_nAllocCount--;
+				}
+
+				//	mulcom	BEGIN100422	메모리풀 초기화
+				::memset( lpMem, 0, sizeof(T) );
+				//	mulcom	END100422	메모리풀 초기화
+			}
 
 			LeaveCriticalSection( &m_cs );
 
@@ -136,6 +140,7 @@ protected:
 			for( int i = m_nNumOfBlock - 1; i >= 0; i-- )
 			{
 				pNode->pNext	= m_pFreeList;
+				pNode->isFreed = true;
 				m_pFreeList	= pNode;
 				pNode	= reinterpret_cast<BlockNode*>( ( reinterpret_cast<DWORD>( pNode ) ) - m_nListBlockSize );	// set pNode to previous
 			}
