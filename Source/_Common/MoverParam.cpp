@@ -1772,6 +1772,20 @@ void CMover::SetDestParam(int nItemIdx, BOOL bSend) {
 	}
 }
 
+#ifdef __WORLDSERVER
+void CMover::SetDestParam(const ItemProp & itemProp) {
+	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+		SetDestParam(itemProp.dwDestParam[i], itemProp.nAdjParamVal[i], itemProp.dwChgParamVal[i], TRUE);
+	}
+}
+
+void CMover::ResetDestParam(const ItemProp & itemProp) {
+	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+		ResetDestParam(itemProp.dwDestParam[i], itemProp.nAdjParamVal[i], TRUE);
+	}
+}
+#endif
+
 //--------------------------------------------------------------------------
 //
 // ��ǥ �Ķ��Ÿ�� ���Ѵ�.

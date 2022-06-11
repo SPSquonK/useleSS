@@ -934,6 +934,10 @@ public:
 	DWORD			IsAuthHigher( DWORD dwAuthorization ) { return dwAuthorization <= m_dwAuthorization; }
 	void			UpdateParam();		
 	[[nodiscard]] int GetParam(int nDestParameter, int nParam) const;
+#ifdef __WORLDSERVER
+	void SetDestParam(const ItemProp & itemProp);
+	void ResetDestParam(const ItemProp & itemProp);
+#endif	
 	void			SetDestParam( int nDstParameter, int nAdjParameterValue, int nChgParameterValue, BOOL fSend = TRUE );
 	void			SetDestParam( int nItemIdx2, BOOL fSend = TRUE );
 	void			SetDestParam( int nIdx, const ItemProp & pProp, BOOL bSend = TRUE );

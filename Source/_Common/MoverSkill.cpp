@@ -2151,9 +2151,7 @@ void CMover::SetPetVisDST( CItemElem* pItemElem )
 			ItemProp* pItemProp = prj.GetItemProp( pItemElem->GetPiercingItem( i ) );
 			if( vecValidTable[i] == NeedVis::Success && pItemProp )
 			{
-				SetDestParam( 0, *pItemProp );
-				SetDestParam( 1, *pItemProp );
-				SetDestParam( 2, *pItemProp );
+				SetDestParam(*pItemProp);
 			}
 			else
 			{
