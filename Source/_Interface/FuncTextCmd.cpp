@@ -51,6 +51,8 @@
 #include "couplehelper.h"
 #include "couple.h"
 
+#include "ItemMorph.h"
+
 #ifdef __QUIZ
 #ifdef __WORLDSERVER
 #include "Quiz.h"
@@ -3614,23 +3616,21 @@ BOOL TextCmd_PKParam(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-#ifdef _DEBUG
-BOOL TextCmd_TransyItemList( CScanner& scanner )
+BOOL TextCmd_TransyItemList( CScanner& scanner, CPlayer_ * pUser )
 {
 #ifdef __CLIENT
 	CString szMsg;
 	scanner.GetToken();
 	if( scanner.tokenType == STRING )
 	{
-		szMsg.Format( "Wait : Write %s", scanner.Token );
+		szMsg = "Wait : Write " + scanner.Token;
 		g_WndMng.PutString( szMsg );
 
-		for( int i = 0; i < prj.m_aPropItem.GetSize(); i++ )
-		{
-			ItemProp* pItemProp =  prj.GetItemProp( i );
-			g_pPlayer->GetTransyItem( pItemProp, TRUE, scanner.Token );
-		}
-		szMsg.Format( "Finish : Finish %s", scanner.Token );
+		std::string toOutput = ItemMorph::BuildListOfExistingMorphs();
+
+		FILEOUT(scanner.Token.GetString(), "%s", toOutput.c_str());
+
+		szMsg = "Finish : Finish " + scanner.Token;
 		g_WndMng.PutString( szMsg );
 	}
 	else
@@ -3641,6 +3641,7 @@ BOOL TextCmd_TransyItemList( CScanner& scanner )
 	return TRUE;
 }
 
+#ifdef _DEBUG
 BOOL TextCmd_LoadToolTipColor( CScanner& scanner )
 {
 #ifdef __CLIENT

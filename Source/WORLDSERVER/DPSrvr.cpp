@@ -4465,85 +4465,11 @@ void CDPSrvr::OnPiercingSize( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 		CItemUpgrade::GetInstance()->OnPiercingSize( pUser, dwId1, dwId2, dwId3 );
 }
 
-void CDPSrvr::OnItemTransy( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	OBJID objidTarget, objidTransy;
-	ar >> objidTarget;
-	ar >> objidTransy;
-#ifdef __SYS_ITEMTRANSY
-	DWORD dwChangeId;
-	BOOL bCash;
-	ar >> dwChangeId;
-	ar >> bCash;
-#endif // __SYS_ITEMTRANSY
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-#ifdef __SYS_ITEMTRANSY
-		CItemUpgrade::GetInstance()->OnItemTransy( pUser, objidTarget, objidTransy, dwChangeId, bCash );
-#else // __SYS_ITEMTRANSY
-		CItemElem* pItemElemTarget = pUser->m_Inventory.GetAtId( objidTarget );
-		CItemElem* pItemElemTransy = pUser->m_Inventory.GetAtId( objidTransy );
+void CDPSrvr::OnItemTransy(CAr & ar, CUser & pUser) {
+	const auto [objidTarget, objidTransy, dwChangeId, bCash]
+		= ar.Extract<OBJID, OBJID, DWORD, BOOL>();
 
-		// 사용중인 아이템인지 검사
-		if( !IsUsableItem( pItemElemTarget ) || !IsUsableItem( pItemElemTransy ) )
-			return;
-
-		// 장착되어 있는 아이템이면 리턴( 오라이~~~ ㅋㅋ )
-		if( pUser->m_Inventory.IsEquip( objidTarget ) || pUser->m_Inventory.IsEquip( objidTransy ) )
-		{
-			pUser->AddDefinedText( TID_GAME_EQUIPPUT , "" );
-			return;
-		}
-		
-		// 재료가 트랜지(ITM)인지 검사
-		if( !(pItemElemTransy->GetProp()->dwID == II_CHR_SYS_SCR_ITEMTRANSY_A || pItemElemTransy->GetProp()->dwID == II_CHR_SYS_SCR_ITEMTRANSY_B) )
-			return;
-		
-		// 레벨 검사
-		if( pItemElemTransy->GetProp()->dwID == II_CHR_SYS_SCR_ITEMTRANSY_A )
-		{
-			if( 61 <= pItemElemTarget->GetProp()->dwLimitLevel1 )
-				return;
-		}
-		else
-		{
-			if( pItemElemTarget->GetProp()->dwLimitLevel1 < 61 )
-				return;
-		}
-
-		// 성별이 있는 아이템 인지 검사
-		ItemProp* pItemPropChange = NULL;
-		ItemProp* pItemProp = pItemElemTarget->GetProp();
-		
-		pItemPropChange = pUser->GetTransyItem( pItemProp );
-
-		if( pItemPropChange == NULL )
-			return;
-
-		// 아이템 트랜지 성공
-		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
-
-		// 기존 아이템의 Elem 정보를 저장 하고 잇음...
-		CItemElem ItemElemSend;
-		ItemElemSend = *pItemElemTarget;
-		ItemElemSend.m_dwItemId = pItemPropChange->dwID;
-		ItemElemSend.m_nHitPoint	= pItemPropChange->dwEndurance;		// 내구력 100%
-
-		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemTransy, pItemElemTransy->GetProp() );
-		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemTarget, pItemElemTarget->GetProp(), "RemoveItem" );	
-		g_dpDBClient.SendLogSMItemUse( "1", pUser, &ItemElemSend, ItemElemSend.GetProp(), "CreateItem" );	
-		pUser->AddDefinedText( TID_GAME_ITEM_TRANSY_SUCCESS, "\"%s\" \"%s\"", pItemElemTarget->GetProp()->szName, ItemElemSend.GetProp()->szName );
-
-		// 기존 아이템 재료 삭제
-		pUser->RemoveItem( objidTarget, (short)1 );
-		pUser->RemoveItem( objidTransy, (short)1 );		
-
-		// 새로운 아이템 지급
-		pUser->CreateItem( &ItemElemSend );
-#endif // __SYS_ITEMTRANSY
-	}
+	CItemUpgrade::GetInstance()->OnItemTransy(&pUser, objidTarget, objidTransy, dwChangeId, bCash);
 }
 
 void CDPSrvr::OnExpBoxInfo(CAr & ar, CUser & pUser) {

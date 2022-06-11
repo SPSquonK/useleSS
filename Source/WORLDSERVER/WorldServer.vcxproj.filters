@@ -55,6 +55,9 @@
     <Filter Include="World Files">
       <UniqueIdentifier>{f8dc7f37-f7df-4398-a748-5ba314c6de0b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ItemProps">
+      <UniqueIdentifier>{1a8e00f9-9ad1-4cab-9797-7a32f4866116}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AttackArbiter.cpp">
@@ -605,6 +608,9 @@
     </ClCompile>
     <ClCompile Include="..\_Common\groupquest.cpp">
       <Filter>Neuz Common Files\Common Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\ItemMorph.cpp">
+      <Filter>ItemProps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1177,6 +1183,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\groupquest.h">
       <Filter>Neuz Common Files\Common Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ItemMorph.h">
+      <Filter>ItemProps</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

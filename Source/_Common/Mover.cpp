@@ -2665,69 +2665,6 @@ ItemProp* CMover::GetActiveHandItemProp( int nParts )
 	}
 	return NULL;
 }
-ItemProp* CMover::GetTransyItem( ItemProp* pItemProp, BOOL bCheck, LPCTSTR lpszFileName )
-{
-	ItemProp* pItemPropChange = NULL;
-	CString szMsg;
-	int nCount = 0;
-	BOOL bSetIteFirst = FALSE;
-
-	if( pItemProp && ( pItemProp->dwItemKind2 == IK2_ARMOR || pItemProp->dwItemKind2 == IK2_ARMORETC ) 
-		&& ( pItemProp->dwItemSex == SEX_MALE || pItemProp->dwItemSex == SEX_FEMALE ) )
-	{
-		for( int j = 0; j < prj.m_aPropItem.GetSize(); j++ )
-		{
-			BOOL bSetIteSecond = FALSE;
-			
-			ItemProp* pItemProp1 =  prj.GetItemProp( j );
-			if( pItemProp1 && pItemProp->dwID != pItemProp1->dwID 
-				&& ( pItemProp1->dwItemKind2 == IK2_ARMOR || pItemProp1->dwItemKind2 == IK2_ARMORETC )
-				&& ( pItemProp1->dwItemSex == SEX_MALE || pItemProp1->dwItemSex == SEX_FEMALE )
-				&& pItemProp->dwItemSex != pItemProp1->dwItemSex )
-			{
-				if( pItemProp->dwItemKind1 == pItemProp1->dwItemKind1 && pItemProp->dwItemKind2 == pItemProp1->dwItemKind2 && pItemProp->dwItemKind3 == pItemProp1->dwItemKind3
-					&& pItemProp->dwItemJob == pItemProp1->dwItemJob && pItemProp->dwHanded == pItemProp1->dwHanded && pItemProp->dwParts == pItemProp1->dwParts  
-					&& pItemProp->dwItemLV == pItemProp1->dwItemLV //&& pItemProp->dwCost == pItemProp1->dwCost//&& pItemProp->dwItemRare == pItemProp1->dwItemRare								
-					&& pItemProp->dwAbilityMin == pItemProp1->dwAbilityMin && pItemProp->dwAbilityMax == pItemProp1->dwAbilityMax && pItemProp->fAttackSpeed == pItemProp1->fAttackSpeed
-					)
-				{
-					if(g_SetItemFinder.GetSetItemByItemId( pItemProp->dwID ) )
-						bSetIteFirst = TRUE;
-					
-					if(g_SetItemFinder.GetSetItemByItemId( pItemProp1->dwID ) )
-						bSetIteSecond = TRUE;
-
-					// 같은 종류 인지? ( 세트? 일반? )
-					if( bSetIteFirst == bSetIteSecond )
-					{
-						pItemPropChange = pItemProp1;
-						++nCount;
-
-						if( bCheck )
-						{
-							if( 0 < nCount )
-								szMsg.Format( "%s -> %s (%d)", pItemProp->szName, pItemProp1->szName, nCount );
-							else
-								szMsg.Format( "%s -> %s", pItemProp->szName, pItemProp1->szName );
-							FILEOUT( lpszFileName, szMsg );
-						}
-						else
-						{
-							break;
-						}
-					}
-				}
-			}
-		}
-		if( bCheck && nCount == 0 )
-		{
-			szMsg.Format( "%s -> %s", pItemProp->szName, "NULL" );
-			FILEOUT( lpszFileName, szMsg );
-		}
-	}
-
-	return pItemPropChange;
-}
 
 CItemElem * CMover::GetEquipItem(const int nParts) {
 	return m_Inventory.GetEquip(nParts);

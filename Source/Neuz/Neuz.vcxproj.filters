@@ -101,11 +101,11 @@
     <Filter Include="Resource Data\Music">
       <UniqueIdentifier>{1e377eb5-65c5-4d5d-9704-43314ae612a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ItemProps">
+      <UniqueIdentifier>{b0f5ffd2-6b9c-490e-aa4b-b33b7082e243}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\_Common\accessory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CampusHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -631,9 +631,6 @@
     <ClCompile Include="..\_Common\PCBang.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\piercing.cpp">
-      <Filter>Source Files\_Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\post.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
@@ -673,9 +670,6 @@
     <ClCompile Include="..\_Common\SecretRoom.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\serialnumber.cpp">
-      <Filter>Source Files\_Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\spevent.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
@@ -694,9 +688,6 @@
     <ClCompile Include="..\_Common\TreeInformation.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\UltimateWeapon.cpp">
-      <Filter>Source Files\_Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\UserMarkPositionInfo.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
@@ -713,9 +704,6 @@
       <Filter>Source Files\_Common\Object</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\Ctrl.cpp">
-      <Filter>Source Files\_Common\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Common\Item.cpp">
       <Filter>Source Files\_Common\Object</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\Light.cpp">
@@ -761,9 +749,6 @@
       <Filter>Source Files\_Common\Object</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\PathObj.cpp">
-      <Filter>Source Files\_Common\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Common\pet.cpp">
       <Filter>Source Files\_Common\Object</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\Region.cpp">
@@ -1000,11 +985,29 @@
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp">
       <Filter>Source Files\_Interface</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\UltimateWeapon.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\serialnumber.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\Item.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\pet.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\piercing.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\accessory.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\ItemMorph.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\_Common\accessory.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="CNTREVNT.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -1506,9 +1509,6 @@
     <ClInclude Include="..\_Common\PCBang.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\Piercing.h">
-      <Filter>Source Files\_Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\post.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
@@ -1539,9 +1539,6 @@
     <ClInclude Include="..\_Common\SecretRoom.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\serialnumber.h">
-      <Filter>Source Files\_Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\spevent.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
@@ -1558,9 +1555,6 @@
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\TreeInformation.h">
-      <Filter>Source Files\_Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\UltimateWeapon.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\UserMarkPositionInfo.h">
@@ -1582,9 +1576,6 @@
       <Filter>Source Files\_Common\Object</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\Ctrl.h">
-      <Filter>Source Files\_Common\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\Item.h">
       <Filter>Source Files\_Common\Object</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\Light.h">
@@ -1859,12 +1850,6 @@
     <ClInclude Include="..\_Interface\WndComponentSlots.h">
       <Filter>Source Files\_Interface</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\ItemElem.h">
-      <Filter>Source Files\_Common\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\ItemContainer.h">
-      <Filter>Source Files\_Common\Object</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\groupquest.h">
       <Filter>Source Files\_Common\Contents</Filter>
     </ClInclude>
@@ -1874,8 +1859,32 @@
     <ClInclude Include="..\_Interface\UserTaskBar.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\ItemMorph.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
     <ClInclude Include="..\_Common\UpdateItem.h">
-      <Filter>Source Files\_Common</Filter>
+      <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\UltimateWeapon.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\serialnumber.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\Item.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ItemContainer.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ItemElem.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\Piercing.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\accessory.h">
+      <Filter>ItemProps</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

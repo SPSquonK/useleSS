@@ -871,7 +871,6 @@ public:
 	BOOL			IsFly();
 	MoverProp*		GetProp() { return prj.GetMoverProp( m_dwIndex ); }	// 객체의 프로퍼티 얻기 	
 	ItemProp*		GetActiveHandItemProp( int nParts = PARTS_RWEAPON );							// 손에 들려진 아이템의 프로퍼티를 얻기 
-	ItemProp*		GetTransyItem( ItemProp* pItemProp, BOOL bCheck = FALSE, LPCTSTR lpszFileName = NULL );
 	OBJID			GetDestId()			{ return m_idDest; }
 	CCtrl*			GetDestObj()		{ return prj.GetCtrl( m_idDest ); }
 	void			SetDestObj( CCtrl* pObj, float fRange = 0.0f )	{	SetDestObj( pObj->GetId(), fRange );	}

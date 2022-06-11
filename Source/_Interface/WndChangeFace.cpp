@@ -7,6 +7,7 @@
 #include "dpclient.h"
 #endif
 #include "Vector3Helper.h"
+#include "ItemMorph.h"
 
 
 /****************************************************
@@ -407,7 +408,7 @@ BOOL CWndItemTransy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					CItemElem copy = *put;
 
 					      ItemProp * const myItemProp = copy.GetProp();
-					const ItemProp * const transyProp = myItemProp ? g_pPlayer->GetTransyItem(myItemProp) : nullptr;
+					const ItemProp * const transyProp = myItemProp ? ItemMorph::GetTransyItem(*myItemProp) : nullptr;
 					if (transyProp) {
 						copy.m_dwItemId = transyProp->dwID;
 						copy.m_nHitPoint = transyProp->dwEndurance;
@@ -431,7 +432,7 @@ bool CWndItemTransy::CWndEquipementReceiver::CanReceiveItem(
 	// == Transable?
 	// TODO: why isn't CMover::GetTransyItem static?
 	if (!g_pPlayer) return false;
-	const ItemProp * pItemPropChange = g_pPlayer->GetTransyItem(pItemProp);
+	const ItemProp * pItemPropChange = ItemMorph::GetTransyItem(*pItemProp);
 
 	if (!pItemPropChange) {
 		if (verbose) g_WndMng.PutString(TID_GAME_ITEM_TRANSY);

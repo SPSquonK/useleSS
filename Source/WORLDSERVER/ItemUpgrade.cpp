@@ -15,6 +15,8 @@
 
 #include "AIPet.h"
 
+#include "ItemMorph.h"
+
 CItemUpgrade::CItemUpgrade(void)
 #ifdef __SYS_ITEMTRANSY
 : m_nItemTransyLowLevel(1000000), m_nItemTransyHighLevel(2000000)
@@ -1383,8 +1385,12 @@ DWORD CItemUpgrade::WhatEleCard( DWORD dwItemType )
 }
 
 #ifdef __SYS_ITEMTRANSY
-void CItemUpgrade::OnItemTransy( CUser* pUser, OBJID objidTarget, OBJID objidTransy, DWORD dwChangeId, BOOL bCash )
-{
+void CItemUpgrade::OnItemTransy( CUser* pUser, OBJID objidTarget, OBJID objidTransy, DWORD dwChangeId, BOOL bCash ) {
+	if (IsInTrade(*pUser)) return;
+
+
+
+
 	CItemElem* pItemElemTarget = pUser->m_Inventory.GetAtId( objidTarget );	
 	if( !IsUsableItem( pItemElemTarget ) )
 		return;
@@ -1452,28 +1458,16 @@ void CItemUpgrade::OnItemTransy( CUser* pUser, OBJID objidTarget, OBJID objidTra
 
 BOOL CItemUpgrade::RunItemTransy( CUser* pUser, CItemElem* pItemElemTarget, DWORD dwChangeId )
 {
-	ItemProp* pItemProp = pItemElemTarget->GetProp();
-	ItemProp* pItemPropChange = prj.GetItemProp( dwChangeId );
-	
-	// 변경될 아이템의 조건이 맞는지 검사.
-	if( !pItemProp || !pItemPropChange || pItemProp->dwID == pItemPropChange->dwID 
-		|| ( pItemProp->dwItemKind2 != IK2_ARMOR && pItemProp->dwItemKind2 != IK2_ARMORETC )
-		|| ( pItemProp->dwItemSex != SEX_MALE && pItemProp->dwItemSex != SEX_FEMALE )
-		|| ( pItemPropChange->dwItemKind2 != IK2_ARMOR && pItemPropChange->dwItemKind2 != IK2_ARMORETC )
-		|| ( pItemPropChange->dwItemSex != SEX_MALE && pItemPropChange->dwItemSex != SEX_FEMALE )
-		|| pItemProp->dwItemSex == pItemPropChange->dwItemSex
-		|| pItemProp->dwItemKind1 != pItemPropChange->dwItemKind1 || pItemProp->dwItemKind2 != pItemPropChange->dwItemKind2
-		|| pItemProp->dwItemKind3 != pItemPropChange->dwItemKind3 || pItemProp->dwItemJob != pItemPropChange->dwItemJob 
-		|| pItemProp->dwHanded != pItemPropChange->dwHanded || pItemProp->dwParts != pItemPropChange->dwParts  
-		|| pItemProp->dwItemLV != pItemPropChange->dwItemLV || pItemProp->dwAbilityMin != pItemPropChange->dwAbilityMin
-		|| pItemProp->dwAbilityMax != pItemPropChange->dwAbilityMax || pItemProp->fAttackSpeed != pItemPropChange->fAttackSpeed
-		)
-		return FALSE;
+	const ItemProp * pItemProp = pItemElemTarget->GetProp();
+	const ItemProp * pItemPropChange = prj.GetItemProp( dwChangeId );
 
+	// 변경될 아이템의 조건이 맞는지 검사.
+	if (!pItemProp || !pItemPropChange) return FALSE;
+	if (!ItemMorph::IsMorphableTo(*pItemProp, *pItemPropChange)) return FALSE;
 
 	// 아이템 트랜지 성공
 	pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-	g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
+	g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
 
 	// 기존 아이템의 Elem 정보를 저장 하고 잇음...
 	CItemElem ItemElemSend;

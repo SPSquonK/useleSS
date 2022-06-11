@@ -3465,6 +3465,18 @@ namespace UI {
 	}
 #endif
 
+	void ChangeItemId::operator()(CItemElem & itemElem, CMover & mover) const {
+		// TODO: in WS, if the item is equiped, stats should be removed
+		
+		itemElem.m_dwItemId = m_newItemId;
+
+#ifdef __CLIENT
+		itemElem.SetTexture();
+		// TODO: update taskbar
+#endif
+
+		// TODO: in WS, if the item is equiped, stats should be applied again
+	}
 }
 
 float CMover::GetItemDropRateFactor( CMover* pAttacker )

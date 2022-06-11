@@ -229,12 +229,28 @@ namespace UI {
 #endif
   };
 
+  struct ChangeItemId {
+    static constexpr bool Archivable = true;
+  private:
+    DWORD m_newItemId;
+
+    explicit ChangeItemId(DWORD newId) : m_newItemId(newId) {}
+
+  public:
+    ChangeItemId() = default;
+
+    [[nodiscard]] static std::optional<ChangeItemId> MorphItem(const CItemElem & itemElem);
+    
+    void operator()(CItemElem & itemElem, CMover & mover) const;
+  };
+
   using Variant = std::variant<
     Num, AbilityOption, Element, 
     HitPoint, Repair, Flag, 
     RandomOptItem, RandomOptItemFromRandomScroll, KeepTime,
     Piercing::Size, Piercing::Item, 
-    PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet
+    PetVis::Size, PetVis::Item, PetVis::ItemSwap, PetVis::TransformToVisPet,
+    ChangeItemId
   >;
 }
 
