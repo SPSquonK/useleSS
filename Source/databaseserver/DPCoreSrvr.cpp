@@ -74,6 +74,12 @@ void CDPCoreSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPI
 	}
 }
 
+#include "LastPackets.hpp"
+
+CLastReceivedPackets<100, 100> packetReminder;
+
+static constexpr auto theInfo = sizeof(packetReminder);
+
 void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
@@ -81,6 +87,8 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	void ( theClass::*pfn )( theParameters )
 		=	GetHandler( dw );
 	//	ASSERT( pfn );
+
+	packetReminder.Push("coucou", dw, reinterpret_cast<BYTE *>(lpMsg), dwMsgSize);
 	if( pfn )
 		( this->*( pfn ) )( ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
 }
