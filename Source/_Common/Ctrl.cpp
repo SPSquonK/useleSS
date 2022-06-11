@@ -328,7 +328,7 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 				if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 					bApply = TRUE;
 				CMover *pAttacker = (CMover *)pSrc;
-				if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
+				if( pAttacker->IsPlayer() && !pAttacker->IsChaotic() && pTarget->GetProp()->dwClass == RANK_GUARD )
 					bApply = FALSE;
 			} else
 			// 대상이 컨트롤이면.
@@ -482,7 +482,7 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 				if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 					bApply = TRUE;
 				CMover *pAttacker = (CMover *)pSrc;
-				if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
+				if( pAttacker->IsPlayer() && !pAttacker->IsChaotic() && pTarget->GetProp()->dwClass == RANK_GUARD )
 					bApply = FALSE;
 			} else
 			// 대상이 컨트롤이면.
@@ -637,7 +637,7 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 				if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 					bApply = TRUE;
 				CMover *pAttacker = (CMover *)this;
-				if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
+				if( pAttacker->IsPlayer() && !pAttacker->IsChaotic() && pTarget->GetProp()->dwClass == RANK_GUARD )
 					bApply = FALSE;
 			} else
 			// 대상이 컨트롤이면

@@ -19,8 +19,7 @@ void CMover::RemoveBuff( WORD wType, WORD wId )
 #endif	// __BUFF_1107
 }
 
-BOOL CMover::HasBuffByIk3( DWORD dwIk3 )
-{
+bool CMover::HasBuffByIk3(const DWORD dwIk3) const {
 #ifdef __BUFF_1107
 	return m_buffs.HasBuffByIk3( dwIk3 );
 #else	// __BUFF_1107

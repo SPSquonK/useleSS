@@ -447,7 +447,7 @@ public:
 
 	BOOL	HasBuff( WORD wType, WORD wId );
 	void	RemoveBuff( WORD wType, WORD wId );
-	BOOL	HasBuffByIk3( DWORD dwIk3 );
+	[[nodiscard]] bool HasBuffByIk3(DWORD dwIk3) const;
 	BOOL	HasPet();
 #ifdef __WORLDSERVER
 	void	RemovePet();
@@ -484,8 +484,8 @@ public:
 private:
 	int		m_nTutorialState;
 public:
-	LONG	GetFlightLv( void )	{	return ( GetLevel() >= 20? 1: 0 );		}
-	void	SetFlightLv( LONG nFlightLv )	{}
+	[[nodiscard]] LONG	GetFlightLv() const	{	return ( GetLevel() >= 20? 1: 0 );		}
+	[[depecrated]] void	SetFlightLv( LONG nFlightLv )	{}
 	int		GetTutorialState( void )	{	return m_nTutorialState;	}
 	void	SetTutorialState( int nTutorialState )	{	m_nTutorialState	= nTutorialState;	}
 
@@ -692,8 +692,8 @@ public:
 #endif	// __WORLDSERVER
 	BOOL	IsUsingEatPet( CItemElem* pItemElem );	// 사용중인 먹펫인가?
 
-	BOOL	HasActivatedEatPet( void )		{	return m_oiEatPet != NULL_ID;	}
-	BOOL	HasActivatedSystemPet( void )	{	return m_dwPetId != NULL_ID;	}
+	[[nodiscard]] bool HasActivatedEatPet() const noexcept    { return m_oiEatPet != NULL_ID; }
+	[[nodiscard]] bool HasActivatedSystemPet() const noexcept { return m_dwPetId != NULL_ID; }
 	OBJID	GetEatPetId( void )		{	return m_oiEatPet;		}
 	void	SetEatPetId( OBJID oiEatPet )		{	m_oiEatPet	= oiEatPet;	}
 	DWORD	GetPetId( void )	{	return m_dwPetId;	}
@@ -913,7 +913,31 @@ public:
 	void InvalidEquipOff(BOOL fFakeparts);		// 거시기한 장비를 벗김.
 #endif
 	BOOL			DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart = -1 ); // for normal
-	BOOL			IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel = FALSE );		// 장착가능한가?
+	
+	struct EquipAble {
+		struct Yes { Yes() = default; };
+		struct No {
+		private:
+			std::optional<DWORD> tooltip;
+			CString andString;
+
+		public:
+			No() : tooltip(std::nullopt) {}
+			No(DWORD tooltip) : tooltip(tooltip) {}
+
+			template<typename ... Ts>
+			No(DWORD tooltip, const char * format, const Ts & ... ts)
+				: tooltip(tooltip) {
+				andString.Format(format, ts...);
+			}
+
+			void Display(CMover & mover) const;
+		};
+
+		using Result = std::variant<Yes, No>;
+	};
+	
+	[[nodiscard]] EquipAble::Result IsEquipAble(const CItemElem & pItem, bool bIgnoreLevel = false) const;		// 장착가능한가?
 	[[nodiscard]] bool IsUnEquipAble(const ItemProp & pItemProp) const; // Check if the current situation blocks equiping the item
 	void			SetEquipDstParam();
 	void			SumEquipAdjValue( int* pnAdjHitRate, int* pnAdjParray );
@@ -1096,11 +1120,11 @@ public:
 	void			SetPKPink( DWORD dwTime ) { if( dwTime == 0 || m_dwPKTime < dwTime ) m_dwPKTime = dwTime; }
 	DWORD			GetPKPink( void ) { return m_dwPKTime; }
 	BOOL			IsPKPink( void )	{ return m_dwPKTime > 0; }			/// PK 핑크 모드인지
-	BOOL			IsChaotic( void ) { return m_dwPKPropensity > 0; }	/// 카오인지
+	[[nodiscard]] BOOL IsChaotic() const { return m_dwPKPropensity > 0; }	/// 카오인지
 	void			SetPKValue( int nValue );
 	int				GetPKValue( void ) { return m_nPKValue; }
 	void			SetPKPropensity( DWORD dwValue );
-	DWORD			GetPKPropensity( void ) { return m_dwPKPropensity; }
+	[[nodiscard]] DWORD GetPKPropensity() const noexcept { return m_dwPKPropensity; }
 	DWORD			NextPKPropensity( int nPKValue );
 	float			GetResist(SAI79::ePropType p_PropType);
 	[[nodiscard]] int GetSetItemParts(DWORD dwParts) const;

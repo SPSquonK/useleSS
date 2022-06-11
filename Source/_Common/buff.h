@@ -220,7 +220,7 @@ public:
 	BOOL	HasBuff( WORD wType, WORD wId );
 	void	RemoveBuff( IBuff* pBuff, BOOL bFake );
 	void	RemoveBuff( WORD wType, WORD wId, BOOL bFake = TRUE );
-	BOOL	HasBuffByIk3( DWORD dwIk3 );
+	[[nodiscard]] bool HasBuffByIk3(DWORD dwIk3) const;
 	BOOL	HasPet()	{	return GetBuffPet() != NULL;	}
 	void	RemoveBuffPet();
 	IBuff*	GetBuffPet();

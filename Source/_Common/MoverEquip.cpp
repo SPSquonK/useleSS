@@ -1009,13 +1009,37 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 	return TRUE;
 }
 
+
+void CMover::EquipAble::No::Display(CMover & mover) const {
+	if (!tooltip) return;
+
+#ifdef __WORLDSERVER
+	if (mover.IsPlayer()) {
+		CUser & user = static_cast<CUser &>(mover);
+
+		if (andString.GetLength() == 0) {
+			user.AddDefinedText(tooltip.value());
+		} else {
+			static_cast<CUser &>(mover).SendSnapshotThisId<
+				SNAPSHOTTYPE_DEFINEDTEXT, DWORD, const char *
+			>(
+				tooltip.value(), andString.GetString()
+				);
+		}
+	}
+#endif
+#ifdef __CLIENT
+	if (andString.GetLength() == 0) {
+		g_WndMng.PutString(tooltip.value());
+	}
+#endif
+}
+
 // 장착 가능한가를 검사.
-BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
-{
-	if( !pItem )
-		return FALSE;
-	ItemProp* pItemProp	= pItem->GetProp();
-	OBJID dwObjid	= pItem->m_dwObjId;
+CMover::EquipAble::Result CMover::IsEquipAble(const CItemElem & pItem, bool bIgnoreLevel) const {
+	const ItemProp * const pItemProp	= pItem.GetProp();
+	const OBJID dwObjid	= pItem.m_dwObjId;
+
 	// 빗자루류 검사.
 	if( pItemProp->dwParts == PARTS_RIDE )
 	{
@@ -1032,64 +1056,42 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 		{
 			int nAttr	= pWorld->GetHeightAttribute( GetPos().x, GetPos().z );
 			
-			if( GetFlightLv() < nLimitLv )		// 비행레벨이 안되면 못탄다.
-			{
-#ifdef __WORLDSERVER
-				if( TRUE == IsPlayer() )
-					( (CUser*)this )->AddDefinedText( TID_GAME_USEAIRCRAFT, "" );	// 잠시만 기다려주세요.
-#else // __WORLDSERVER
-				g_WndMng.PutString( prj.GetText( TID_GAME_USEAIRCRAFT ), NULL, prj.GetTextColor( TID_GAME_USEAIRCRAFT ) );
-#endif // __WORLDSERVER
-				return FALSE;
+			if (GetFlightLv() < nLimitLv) {		// 비행레벨이 안되면 못탄다.
+				return EquipAble::No(TID_GAME_USEAIRCRAFT);
 			}
 			
-			if( !pWorld->m_bFly )
-			{
-#ifdef __WORLDSERVER
-				( (CUser*)this )->AddDefinedText( TID_ERROR_NOFLY, "" );	// 비행금지구역입니다.
-#else // __WORLDSERVER
-				g_WndMng.PutString( prj.GetText( TID_ERROR_NOFLY ), NULL, prj.GetTextColor( TID_ERROR_NOFLY ) );
-#endif // __WORLDSERVER
-				return FALSE;
+			if (!pWorld->m_bFly) {
+				// 비행금지구역입니다.
+				return EquipAble::No(TID_ERROR_NOFLY);
 			}
 
-			if( HasBuffByIk3( IK3_TEXT_DISGUISE ) )
-			{
-#ifdef __WORLDSERVER
-				( (CUser*)this )->AddDefinedText( TID_QUEST_DISQUISE_NOTFLY, "" );	// 변신중에는 비행을 할수 없습니다
-#else // __WORLDSERVER
-				g_WndMng.PutString( prj.GetText( TID_QUEST_DISQUISE_NOTFLY ), NULL, prj.GetTextColor( TID_QUEST_DISQUISE_NOTFLY ) );
-#endif // __WORLDSERVER
-				return FALSE;
+			if (HasBuffByIk3(IK3_TEXT_DISGUISE)) {
+				// 변신중에는 비행을 할수 없습니다
+				return EquipAble::No(TID_QUEST_DISQUISE_NOTFLY);
 			}
 			
 			// 장착 이전에 검사하여야 한다.
 			if( nAttr == HATTR_NOFLY )		// 비행금지구역에선 못탄다.
-				return FALSE;
+				return EquipAble::No();
 			
 		#ifdef __WORLDSERVER
 			if( m_pActMover->IsState( OBJSTA_STAND ) == FALSE )
-				return FALSE;
+				return EquipAble::No();
 		#endif 
 		}
 
 #ifdef __WORLDSERVER
-		if( IsChaotic() )
-		{
-			CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( GetPKPropensity() );
-			if( !Propensity.nFly )
-			{
-				((CUser*)this)->AddDefinedText( TID_GAME_CHAOTIC_NOT_FLY );
-				return FALSE;
+		if (IsChaotic()) {
+			CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty(GetPKPropensity());
+			if (!Propensity.nFly) {
+				return EquipAble::No(TID_GAME_CHAOTIC_NOT_FLY);
 			}
 		}
 #endif // __WORLDSERVER
 
 #ifdef __WORLDSERVER
-		if( HasActivatedEatPet() || HasActivatedSystemPet() )	// 펫이 소환된 상태라면 비행 불가
-		{
-			( (CUser*)this )->AddDefinedText( TID_GAME_CANNOT_FLY_WITH_PET );
-			return FALSE;
+		if (HasActivatedEatPet() || HasActivatedSystemPet()) { // 펫이 소환된 상태라면 비행 불가
+			return EquipAble::No(TID_GAME_CANNOT_FLY_WITH_PET);
 		}
 #endif	// __WORLDSERVER
 	}
@@ -1099,11 +1101,7 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 		// 성별 확인( 무기는 빠짐 )
 		if( pItemProp->dwItemSex != NULL_ID && pItemProp->dwItemSex != GetSex() )
 		{
-#ifdef __WORLDSERVER
-			if( TRUE == IsPlayer() )
-				( (CUser*)this )->AddDefinedText( TID_GAME_WRONGSEX, "\"%s\"", pItemProp->szName );
-#endif	// __WORLDSERVER
-			return FALSE;
+			return EquipAble::No(TID_GAME_WRONGSEX, "\"%s\"", pItemProp->szName);
 		} // 성별
 	}// 무기
 	
@@ -1111,11 +1109,7 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 	if( pItemProp->dwItemKind1 != IK1_WEAPON )
 	{
 		if( pItemProp->dwItemJob != NULL_ID && !IsInteriorityJob( pItemProp->dwItemJob ) ) {
-#ifdef __WORLDSERVER
-			if( TRUE == IsPlayer() )
-				( (CUser*)this )->AddDefinedText( TID_GAME_WRONGJOB, "\"%s\"", pItemProp->szName );
-#endif	// __WORLDSERVER
-			return FALSE;
+			return EquipAble::No(TID_GAME_WRONGJOB, "\"%s\"", pItemProp->szName);
 		}
 	}
 
@@ -1124,49 +1118,26 @@ BOOL CMover::IsEquipAble( CItemElem* pItem,BOOL bIgnoreLevel )
 		// 아이템 필요레벨 검사.
 		if( pItemProp->dwLimitLevel1 != 0xffffffff )	// 필요레벨이 지정되어 있고
 		{
-			if( pItem->IsLimitLevel( this ) )	// 레벨이 안되면 못참.
+			if( pItem.IsLimitLevel( this ) )	// 레벨이 안되면 못참.
 			{
-#	ifdef __WORLDSERVER
-				if( TRUE == IsPlayer() )
-				{
-					( (CUser*)this )->AddDefinedText( TID_GAME_REQLEVEL, "\"%d\"", pItem->GetLimitLevel() );
-				}
-#	endif	// __WORLDSERVER
-				return FALSE;
-			}
-		}
-		// 보석류를 장착
-		if( pItemProp->dwItemKind2 == IK2_JEWELRY )
-		{
-			if( pItemProp->dwLimitLevel1 != 0xffffffff )	// 제한레벨이 걸려있고
-			{
-				if( pItem->IsLimitLevel( this ) )	// 레벨이 안되면 못참.
-				{
-#	ifdef __WORLDSERVER
-					if( TRUE == IsPlayer() )
-					{
-						( (CUser*)this )->AddDefinedText( TID_GAME_REQLEVEL, "\"%d\"", pItem->GetLimitLevel() );
-					}
-#	endif	// __WORLDSERVER
-					return FALSE;
-				}
+				return EquipAble::No(TID_GAME_REQLEVEL, "\"%d\"", pItem.GetLimitLevel());
 			}
 		}
 
 	}
 
-	ItemProp *pHandItemProp	= NULL;
+	const ItemProp * pHandItemProp	= NULL;
 	
 	// 들고있는 무기 프로퍼티 꺼냄.
-	CItemElem *pItemElem = m_Inventory.GetEquip( PARTS_RWEAPON );		
+	const CItemElem * pItemElem = m_Inventory.GetEquip( PARTS_RWEAPON );		
 	if( pItemElem )
 		pHandItemProp = pItemElem->GetProp();
 
 	// 화살을 착용하려 했을때 보우일때만 착용돼야 함
 	if( pItemProp->dwItemKind3 == IK3_ARROW && ( pHandItemProp == NULL || pHandItemProp->dwItemKind3 != IK3_BOW ) )
-		return FALSE;			
+		return EquipAble::No();
 
-	return TRUE;
+	return EquipAble::Yes();
 }
 
 //
@@ -1213,8 +1184,14 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 			return FALSE;
 		if( pItemProp->dwParts == PARTS_RIDE && pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 			return FALSE;
-		if( IsEquipAble( pItemElem ) == FALSE )
+
+		const EquipAble::Result result = IsEquipAble(*pItemElem);
+		if (const EquipAble::No * const no = std::get_if<EquipAble::No>(&result)) {
+			no->Display(*this);
 			return FALSE;
+		}
+
+		static_assert(std::variant_size_v<EquipAble::Result> == 2);
 	}
 	else
 	{
@@ -1533,7 +1510,7 @@ void CMover::InvalidEquipOff(BOOL bFakeParts) {
 		const ItemProp * pItemProp = pItemElem ? pItemElem->GetProp() : nullptr;
 		if (!pItemProp) continue;	// 프로퍼티 없으면 실패.
 
-		if (!IsEquipAble(pItemElem, TRUE)) {	// 장착할 수 없는 아이템이다.
+		if (!std::holds_alternative<EquipAble::Yes>(IsEquipAble(*pItemElem, true))) {	// 장착할 수 없는 아이템이다.
 			if (!DoEquip(pItemElem, FALSE)) {	// 벗김.
 				// 벗기는데 실패함. 인벤이 꽉찼다거나 기타등등 이유
 				Error("아템 벗기는데 실패:%s", GetName());

@@ -699,9 +699,11 @@ IBuff* CBuffMgr::GetBuffByIk3( DWORD dwIk3 )
 	return NULL;
 }
 
-BOOL CBuffMgr::HasBuffByIk3( DWORD dwIk3 )
-{
-	return GetBuffByIk3( dwIk3 ) != NULL;
+bool CBuffMgr::HasBuffByIk3(const DWORD dwIk3) const {
+	return std::ranges::any_of(
+		m_mapBuffs | std::views::values,
+		[dwIk3](IBuff * pBuff) { return pBuff->IsIk3(dwIk3); }
+	);
 }
 
 BOOL CBuffMgr::AddBuff( WORD wType, WORD wId, DWORD dwLevel, DWORD tmTotal, OBJID oiAttacker )

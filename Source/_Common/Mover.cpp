@@ -3282,7 +3282,7 @@ void CMover::Process()
 	}
 
 #ifdef __EVE_BALLOON
-	if( IsPlayer() != FALSE && HasBuffByIk3( IK3_BALLOON ) != FALSE )
+	if( IsPlayer() != FALSE && !HasBuffByIk3( IK3_BALLOON ) )
 	{
 		if( m_pBalloon == NULL )
 		{
@@ -5478,9 +5478,9 @@ BOOL CMover::IsAttackAbleNPC( CMover* pNPC )
 		{
 			if( pMoverProp->dwClass == RANK_GUARD )					// 가드일때만 성향을 비교한다.  
 			{
-				if( pMoverProp->nChaotic < 0 && IsChaotic() == TRUE )			// 성향이 서로 같으면 공격못함.
+				if( pMoverProp->nChaotic < 0 && IsChaotic() )			// 성향이 서로 같으면 공격못함.
 					bAble = FALSE;
-				else if( pMoverProp->nChaotic > 0 && IsChaotic() == FALSE )		// 성향이 서로 같으면 공격못함.
+				else if( pMoverProp->nChaotic > 0 && !IsChaotic() )		// 성향이 서로 같으면 공격못함.
 					bAble = FALSE;
 			}
 
@@ -8966,7 +8966,7 @@ void CMover::ProcessSFXExpire( void )
 #ifdef __CLIENT
 void CMover::ProcessEyeFlash()
 {
-	if( IsPlayer() && m_pModel && HasBuffByIk3(IK3_TEXT_DISGUISE) == FALSE && IsDisguise() == FALSE )
+	if( IsPlayer() && m_pModel && !HasBuffByIk3(IK3_TEXT_DISGUISE) && IsDisguise() == FALSE )
 	{
 		CModelObject* pModelObj = (CModelObject*)m_pModel;
 		

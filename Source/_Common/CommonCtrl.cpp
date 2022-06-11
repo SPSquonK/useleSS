@@ -183,7 +183,7 @@ void CCommonCtrl::_ProcessWall( void )
 			CMover *pTarget = (CMover *)pObj;
 			if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
 				bApply = TRUE;
-			if( pAttacker->IsPlayer() && pAttacker->IsChaotic() == FALSE && pTarget->GetProp()->dwClass == RANK_GUARD )
+			if( pAttacker->IsPlayer() && !pAttacker->IsChaotic() && pTarget->GetProp()->dwClass == RANK_GUARD )
 				bApply = FALSE;
 			if( bApply )
 			{

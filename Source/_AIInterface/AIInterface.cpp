@@ -137,7 +137,7 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 				if( D3DXVec3LengthSq( &vDist ) < fRadius && pTarget->m_idparty == uParty )
 				{
 					if( pTarget->IsMode( TRANSPARENT_MODE ) == FALSE )
-						if( pTarget->HasBuffByIk3( IK3_TEXT_DISGUISE ) == FALSE )
+						if( !pTarget->HasBuffByIk3( IK3_TEXT_DISGUISE ) )
 							return pTarget;
 				}
 			}
@@ -219,7 +219,7 @@ CMover* CAIInterface::ScanTarget( CObj* pObjCenter, int nRangeMeter, int nJobCon
 				if( D3DXVec3LengthSq( &vDist ) < fRadius )	// 두 객체간의 거리가 범위 이내이면 
 				{
 					if( pTarget->IsMode( TRANSPARENT_MODE ) == FALSE )
-						if( pTarget->HasBuffByIk3( IK3_TEXT_DISGUISE ) == FALSE )
+						if( !pTarget->HasBuffByIk3( IK3_TEXT_DISGUISE ) )
 							return pTarget;
 				}
 			}

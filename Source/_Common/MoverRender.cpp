@@ -750,7 +750,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	if( m_pModel->m_nNoEffect == 0 )
 		RenderQuestEmoticon( pd3dDevice );
 
-	if( IsActiveMover() && m_pModel && IsDie() && HasBuffByIk3(IK3_TEXT_DISGUISE) == FALSE )
+	if( IsActiveMover() && m_pModel && IsDie() && !HasBuffByIk3(IK3_TEXT_DISGUISE) )
 	{
 		CModelObject* pModelObj = (CModelObject*)m_pModel;
 		
