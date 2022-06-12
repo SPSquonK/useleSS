@@ -3,6 +3,7 @@
 #include "ar.h"
 #include <mutex>
 #include <limits>
+#include <span>
 
 /// @SPSquonK, 2022-06, Last received packets memorizer
 ///
@@ -31,9 +32,8 @@ namespace sqk {
 					char hexaContent[LengthOfPackets * 2 + 1] = { '\0' };
 					bool inEdition = false;
 
-					void Change(const char * context, DWORD packetId, const BYTE * lpByte, DWORD dwMsgSize);
+					void Change(const char * context, DWORD packetId, std::span<const BYTE> bytes);
 				};
-
 
 				bool m_isEnabled = true;
 				std::mutex m_mutex;
@@ -52,31 +52,38 @@ namespace sqk {
 			if (!m_isEnabled) return;
 
 			PacketStorage & placeholder = FindNextPacket();
-			placeholder.Change(context, packetId, lpByte, dwMsgSize);
+			std::span span(lpByte, dwMsgSize);
+			placeholder.Change(context, packetId, span);
 			placeholder.inEdition = false;
 		}
 
 		template<size_t NbOfPackets, size_t LengthOfPackets>
 			requires (_::LastReceivedPacketsOk(NbOfPackets, LengthOfPackets))
-			void CLastReceivedPackets<NbOfPackets, LengthOfPackets>::PacketStorage::Change(const char * context, DWORD packetId, const BYTE * lpByte, DWORD dwMsgSize) {
+			void CLastReceivedPackets<NbOfPackets, LengthOfPackets>::PacketStorage::Change(
+				const char * const context,
+				const DWORD packetId,
+				std::span<const BYTE> bytes
+			) {
 			this->context = context;
 			this->packetId = packetId;
 			this->hexaContent[0] = '\0';
 			this->length = static_cast<size_t>(-1);
 
-			size_t until = dwMsgSize;
-			if (until >= LengthOfPackets) dwMsgSize = LengthOfPackets;
+			const size_t originalSize = bytes.size();
+			if (bytes.size() > LengthOfPackets) {
+				bytes = std::span<const BYTE>(bytes.begin(), bytes.begin() + LengthOfPackets);
+			}
 
 			static constexpr const char * const valueToHex = "0123456789ABCDEF";
 
+			const size_t until = bytes.size();
 			for (size_t i = 0; i != until; ++i) {
-				this->hexaContent[i * 2 + 0] = valueToHex[(lpByte[i] >> 4) & 0xF];
-				this->hexaContent[i * 2 + 1] = valueToHex[lpByte[i] & 0xF];
+				this->hexaContent[i * 2 + 0] = valueToHex[(bytes[i] >> 4) & 0xF];
+				this->hexaContent[i * 2 + 1] = valueToHex[ bytes[i]       & 0xF];
 			}
 			this->hexaContent[until * 2] = '\0';
-			this->length = dwMsgSize;
+			this->length = originalSize;
 		}
-
 
 		template<size_t NbOfPackets, size_t LengthOfPackets>
 			requires (_::LastReceivedPacketsOk(NbOfPackets, LengthOfPackets))
