@@ -10,7 +10,7 @@
 #include <optional>
 #include <type_traits>
 #include <boost/container/static_vector.hpp>
-#include "sqktd_maybe_owned_ptr.h"
+#include "sqktd/maybe_owned_ptr.hpp"
 
 #include "Ctrl.h"
 #include "..\_AIInterface\ActionMover.h"
