@@ -366,9 +366,6 @@
   <ItemGroup>
     <ResourceCompile Include="DatabaseServer.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\_Common\LastPackets.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
