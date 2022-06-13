@@ -81,6 +81,7 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	void ( theClass::*pfn )( theParameters )
 		=	GetHandler( dw );
 	//	ASSERT( pfn );
+
 	if( pfn )
 		( this->*( pfn ) )( ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
 }
