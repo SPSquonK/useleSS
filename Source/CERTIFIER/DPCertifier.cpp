@@ -265,7 +265,7 @@ void CDPCertifier::OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 	}
 #endif	// __EUROPE_0514
 
-	LPDB_OVERLAPPED_PLUS pData	= g_DbManager.m_pDbIOData->Alloc();
+	DB_OVERLAPPED_PLUS * pData = g_DbManager.Alloc();
 	memset( &pData->AccountInfo, 0, sizeof(ACCOUNT_INFO) );
 	strcpy( pData->AccountInfo.szAccount, pszAccount );
 	strcpy( pData->AccountInfo.szPassword, pszPwd );
@@ -296,7 +296,7 @@ void CDPCertifier::OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE lpBuf,
 	if( pszAccount[0] == '\0' )
 		return;
 
-	LPDB_OVERLAPPED_PLUS pData	= g_DbManager.m_pDbIOData->Alloc();
+	DB_OVERLAPPED_PLUS * pData = g_DbManager.Alloc();
 	strcpy( pData->AccountInfo.szAccount, pszAccount );
 	strcpy( pData->AccountInfo.szPassword, pszPwd );
 	_tcslwr( pData->AccountInfo.szAccount );

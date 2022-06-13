@@ -1,5 +1,6 @@
-#ifndef __DBMANAGER_H__
-#define	__DBMANAGER_H__
+#pragma once
+
+#include <boost/pool/object_pool.hpp>
 
 #include "query.h"
 #include "ar.h"
@@ -18,8 +19,7 @@ enum QUERYMODE
 	CLOSE_EXISTING_CONNECTION,	
 };
 
-typedef	struct	tagACCOUNT_INFO
-{
+struct ACCOUNT_INFO {
 	char	szAccount[MAX_ACCOUNT];
 	char	szPassword[MAX_PASSWORD];
 #ifdef __TWN_LOGIN0816
@@ -29,7 +29,7 @@ typedef	struct	tagACCOUNT_INFO
 	char	szBak[MAX_ACCOUNT];
 #endif	// __EUROPE_0514
 	DWORD	dwPCBangClass;
-}	ACCOUNT_INFO, *LPACCOUNT_INFO;
+};
 
 typedef	struct tagDB_OVERLAPPED_PLUS
 {
@@ -42,30 +42,17 @@ typedef	struct tagDB_OVERLAPPED_PLUS
 class CAccountMgr;
 
 #ifdef __GPAUTH
-typedef	struct	_GPAUTH_RESULT
-{
-	int		nResult;
-	char	szResult[256];
-	char	szGPotatoID[20];
-	int		nGPotatoNo;
-	char	szNickName[20];
-	BOOL	bGM;
+struct GPAUTH_RESULT {
+	int		nResult         = -1;
+	char	szResult[256]   = "";
+	char	szGPotatoID[20] = "";
+	int		nGPotatoNo      = 0;
+	char	szNickName[20]  = "";
+	BOOL	bGM             = FALSE;
 #ifdef __GPAUTH_02
-	char	szCheck[255];
+	char	szCheck[255]    = "";
 #endif	// __GPAUTH_02
-	_GPAUTH_RESULT()
-	{
-		nResult	= -1;
-		*szResult	= '\0';
-		*szGPotatoID	= '\0';
-		nGPotatoNo	= 0;
-		*szNickName		= '\0';
-		bGM	= 0;
-		#ifdef __GPAUTH_02
-		*szCheck	= '\0';
-		#endif	// __GPAUTH_02
-	}
-}	GPAUTH_RESULT;
+};
 #endif	// __GPAUTH
 
 #ifdef __JAPAN_AUTH
@@ -90,10 +77,12 @@ protected:
 	HANDLE	m_hDbWorkerThreadTerminate[DEFAULT_DB_WORKER_THREAD_NUM];
 	HANDLE	m_hIOCP[DEFAULT_DB_WORKER_THREAD_NUM];
 
+private:
+	boost::object_pool<DB_OVERLAPPED_PLUS> m_memoryPool;
+
 public:
-	CMemPool<DB_OVERLAPPED_PLUS>*	m_pDbIOData;
 	std::set<std::string>						m_eveSchoolAccount;
-	char							m_szLoginPWD[256];
+	char							m_szLoginPWD[256] = "";
 
 public:
 	CDbManager();
@@ -120,11 +109,14 @@ public:
 #endif // __JAPAN_AUTH
 	void	DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData );
 	BOOL	LoadEveSchoolAccount( void );
-	BOOL	IsEveSchoolAccount( const char* pszAccount );
+	[[nodiscard]] bool IsEveSchoolAccount(const char * pszAccount) const;
 	BYTE	GetAccountFlag( int f18, LPCTSTR szAccount );
 	void	OnCertifyQueryOK( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, const char* szCheck = "" );
 	HANDLE	GetIOCPHandle( int n );
 	void	PostQ( LPDB_OVERLAPPED_PLUS pData );
+
+	[[nodiscard]] DB_OVERLAPPED_PLUS * Alloc() { return m_memoryPool.construct(); }
+	void DeAlloc(DB_OVERLAPPED_PLUS * const overlappedPlus) { m_memoryPool.destroy(overlappedPlus); }
 };
 
 extern CDbManager g_DbManager;
@@ -139,4 +131,3 @@ u_int __stdcall		JapanAuthWorker( LPVOID pParam );
 JAPAN_AUTH_RESULT	GetJapanAuthResult( LPDB_OVERLAPPED_PLUS pov );
 #endif // __JAPAN_AUTH
 
-#endif	// __DBMANAGER_H__
