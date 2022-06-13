@@ -26,14 +26,12 @@ string	g_strWebCertURL;
 #endif // __JAPAN_AUTH
 /////////////////////////////////////////////////////////////////////////////////////////////////
 CDbManager::CDbManager()
+	: m_memoryPool(512)
 {
-	m_pDbIOData		= new CMemPool<DB_OVERLAPPED_PLUS>(512);
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ )
-	{
-		m_hIOCP[i]	= NULL;
-		m_hDbWorkerThreadTerminate[i] = NULL;
+	for (int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++) {
+		m_hIOCP[i] = nullptr;
+		m_hDbWorkerThreadTerminate[i] = nullptr;
 	}
-	m_szLoginPWD[0] = '\0';
 }
 
 CDbManager::~CDbManager()
@@ -49,8 +47,6 @@ CDbManager::~CDbManager()
 	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ ) {
 		CLOSE_HANDLE( m_hDbWorkerThreadTerminate[i] );
 	}
-
-	SAFE_DELETE( m_pDbIOData );
 }
 
 BOOL CDbManager::CreateDbWorkers()
@@ -132,8 +128,9 @@ BYTE CDbManager::GetAccountFlag( int f18, LPCTSTR szAccount )
 			cbAccountFlag |= ACCOUNT_FLAG_18;
 	}
 
-	if( IsEveSchoolAccount( szAccount ) )
+	if (IsEveSchoolAccount(szAccount)) {
 		cbAccountFlag |= ACCOUNT_FLAG_SCHOOLEVENT;
+	}
 
 //	char szBuffer[256];
 //	sprintf( szBuffer, "%s - f18:%02x cbAccountFlag:%02x\n", szAccount, cb18, cbAccountFlag );
@@ -202,11 +199,9 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 		{
 		case CHECK_1TIMES_ERROR:
 			g_dpCertifier.SendError( ERROR_15SEC_PREVENT, pData->dpId );
-			m_pDbIOData->Free( pData );
 			return;
 		case CHECK_3TIMES_ERROR:
 			g_dpCertifier.SendError( ERROR_15MIN_PREVENT, pData->dpId );
-			m_pDbIOData->Free( pData );
 			return;
 		}
 	}
@@ -233,7 +228,6 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 				lstrcpy( pData->AccountInfo.szBak, pData->AccountInfo.szAccount );
 #endif	// __EUROPE_0514
 				OnCertifyQueryOK( query, pData );
-				m_pDbIOData->Free( pData );
 				return;
 			case 1:	// ��ȣƲ��
 				if( pData->dwIP )
@@ -269,7 +263,6 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 	}
 
 	g_dpCertifier.SendError( nCode, pData->dpId );
-	m_pDbIOData->Free( pData );
 }
 
 void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS pData )
@@ -287,7 +280,6 @@ void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS p
 				g_dpAccountClient.SendCloseExistingConnection( pData->AccountInfo.szAccount );
 		}
 	}
-	m_pDbIOData->Free( pData );
 }
 
 u_int __stdcall DbWorkerThread( LPVOID nIndex )
@@ -333,8 +325,11 @@ u_int __stdcall DbWorkerThread( LPVOID nIndex )
 				g_DbManager.CloseExistingConnection( query, pData );
 				break;
 		}
+
+		g_DbManager.DeAlloc(pData);
 	}
-	return( 0 );
+
+	return 0;
 }
 
 void CDbManager::GetStrTime( CTime *pTime, char *strbuf )
@@ -370,10 +365,8 @@ BOOL CDbManager::LoadEveSchoolAccount( void )
 	return FALSE;
 }
 
-BOOL CDbManager::IsEveSchoolAccount( const char* pszAccount )
-{
-	auto i	= m_eveSchoolAccount.find( pszAccount );
-	return( i != m_eveSchoolAccount.end() );
+bool CDbManager::IsEveSchoolAccount(const char * const pszAccount) const {
+	return m_eveSchoolAccount.contains(pszAccount);
 }
 
 void CDbManager::PostQ( LPDB_OVERLAPPED_PLUS pData )
@@ -431,8 +424,11 @@ u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 				g_DbManager.CloseExistingConnection2( query, pov );
 				break;
 		}
+
+		g_DbManager.DeAlloc(pov);
 	}
-	return( 0 );
+
+	return 0;
 }
 
 void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr & mgr )
@@ -445,11 +441,9 @@ void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr
 		{
 			case CHECK_1TIMES_ERROR:
 				g_dpCertifier.SendError( ERROR_15SEC_PREVENT, pov->dpId );
-				m_pDbIOData->Free( pov );
 				return;
 			case CHECK_3TIMES_ERROR:
 				g_dpCertifier.SendError( ERROR_15MIN_PREVENT, pov->dpId );
-				m_pDbIOData->Free( pov );
 				return;
 		}
 	}
@@ -493,7 +487,6 @@ void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr
 	{
 		g_dpCertifier.SendErrorString( r.szResult, pov->dpId );
 	}
-	m_pDbIOData->Free( pov );
 }
 
 void CDbManager::CloseExistingConnection2( CQuery & query, LPDB_OVERLAPPED_PLUS pov )
@@ -517,7 +510,6 @@ void CDbManager::CloseExistingConnection2( CQuery & query, LPDB_OVERLAPPED_PLUS 
 		SQLAddAccount( query, pov->AccountInfo.szAccount, pov->AccountInfo.szPassword );
 #endif	// __GPAUTH_03
 	}
-	m_pDbIOData->Free( pov );
 }
 
 #ifdef __GPAUTH_03
