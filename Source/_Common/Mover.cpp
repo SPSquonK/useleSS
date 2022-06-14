@@ -3219,7 +3219,7 @@ void CMover::Process()
 	}
 
 #ifdef __EVE_BALLOON
-	if( IsPlayer() != FALSE && !HasBuffByIk3( IK3_BALLOON ) )
+	if( IsPlayer() != FALSE && HasBuffByIk3( IK3_BALLOON ) )
 	{
 		if( m_pBalloon == NULL )
 		{
