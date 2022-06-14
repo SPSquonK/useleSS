@@ -193,33 +193,17 @@ void CDPAccountClient::OnDestroyPlayer( CAr & ar, DPID dpid )
 	g_dpCertifier.DestroyPlayer( dpid );
 }
 
+#include <span>
+
 void CDPAccountClient::OnServersetList( CAr & ar, DPID dpid )
 {
 	ar.ReadString( g_dpCertifier.m_szVer );
 #ifdef __SECURITY_0628
 	ar.ReadString( g_dpCertifier.m_szResVer );
 #endif	// __SECURITY_0628
-	ar >> g_dpCertifier.m_dwSizeofServerset;
-	LPSERVER_DESC pServer;
 
-	for( DWORD i = 0; i < g_dpCertifier.m_dwSizeofServerset; i++ )
-	{
-		pServer		= g_dpCertifier.m_aServerset + i;
-		ar >> pServer->dwParent;
-		ar >> pServer->dwID;
-		ar.ReadString( pServer->lpName, 36 );
-		ar.ReadString( pServer->lpAddr, 16 );
-		ar >> pServer->b18;
-		ar >> pServer->lCount;
-		ar >> pServer->lEnable;
-		ar >> pServer->lMax;
-
-//		if( pServer->dwParent != NULL_ID )
-		{
-			u_long uId	= pServer->dwParent * 100 + pServer->dwID;
-			g_dpCertifier.m_2ServersetPtr.emplace(uId, pServer);
-		}
-	}
+	ar >> g_dpCertifier.m_servers;
+	g_dpCertifier.m_2ServersetPtr = GetUpdatedServerSet(g_dpCertifier.m_servers);
 }
 
 void CDPAccountClient::OnPlayerCount( CAr & ar, DPID dpid )

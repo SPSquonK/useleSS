@@ -5,29 +5,24 @@
 #include "ar.h"
 #endif	// __TRAFIC_1218 
 
-typedef	struct	tagSERVER_DESC
-{
-	DWORD	dwParent;
-	long	lCount;
-	DWORD	dwID;
-	char	lpName[36];
-	char	lpAddr[16];
-	BOOL	b18;
-	long	lEnable;
-	long	lMax;
-	tagSERVER_DESC()
-		{
-			dwParent	= NULL_ID;
-			lCount	= 0;
-			dwID	= NULL_ID;
-			*lpName		= '\0';
-			*lpAddr		= '\0';
-			b18	= 0x00;
-			lEnable		= 0;
-			lMax	= 0;
-		}
-}
-SERVER_DESC, *LPSERVER_DESC;
+
+class CAr;
+
+struct SERVER_DESC {
+	DWORD	dwParent = NULL_ID;
+	long	lCount = 0;
+	DWORD	dwID = NULL_ID;
+	char	lpName[36] = "";
+	char	lpAddr[16] = "";
+	BOOL	b18 = FALSE;
+	long	lEnable = 0;
+	long	lMax = 0;
+
+	friend CAr & operator<<(CAr & ar, const SERVER_DESC & self);
+	friend CAr & operator>>(CAr & ar,       SERVER_DESC & self);
+};
+
+using LPSERVER_DESC = SERVER_DESC *;
 
 // 쪽지 기능관련 스트럭쳐 
 struct TAG_ENTRY

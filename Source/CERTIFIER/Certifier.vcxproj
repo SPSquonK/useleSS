@@ -87,6 +87,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\_Network\Misc\Src\Misc.cpp" />
     <ClCompile Include="IpAddressRecentFailChecker.cpp">
     </ClCompile>
     <ClCompile Include="certifier.cpp">

@@ -6,14 +6,19 @@
 
 #include "user.h"
 
+std::map<u_long, SERVER_DESC *> GetUpdatedServerSet(std::span<SERVER_DESC> servers) {
+	std::map<u_long, SERVER_DESC *> retval;
+
+	for (SERVER_DESC & server : servers) {
+		const u_long uId = server.dwParent * 100 + server.dwID;
+		retval.emplace(uId, &server);
+	}
+
+	return retval;
+}
+
 CDPCertifier::CDPCertifier()
 {
-	m_dwSizeofServerset		= 0;
-	*m_szVer	= '\0';
-#ifdef __SECURITY_0628
-	*m_szResVer		= '\0';
-#endif	// __SECURITY_0628
-
 	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_CERTIFY, &CDPCertifier::OnCertify );
 	ON_MSG( PACKETTYPE_PING, &CDPCertifier::OnPing );
@@ -138,20 +143,7 @@ void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFla
 		ar << lTimeLeft;
 	}
 
-	ar << m_dwSizeofServerset;
-	for( DWORD i = 0; i < m_dwSizeofServerset; i++ )
-	{
-		LPSERVER_DESC pServer = m_aServerset + i;
-
-		ar << pServer->dwParent;
-		ar << pServer->dwID;
-		ar.WriteString( pServer->lpName );
-		ar.WriteString( pServer->lpAddr );
-		ar << pServer->b18;
-		ar << pServer->lCount;
-		ar << pServer->lEnable;
-		ar << pServer->lMax;
-	}
+	ar << m_servers;
 	SEND( ar, this, dpId );
 }
 

@@ -135,6 +135,9 @@
     <ClCompile Include="..\_database\Query.cpp">
       <Filter>ODBC Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Network\Misc\Src\Misc.cpp">
+      <Filter>Network Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="certifier.rc">

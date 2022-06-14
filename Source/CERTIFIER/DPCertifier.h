@@ -1,26 +1,27 @@
-#ifndef __DPCERTIFIER_H__
-#define	__DPCERTIFIER_H__
+#pragma once 
 
 #include "dpmng.h"
 #include "msghdr.h"
 #include "misc.h"
 #include <map>
+#include <span>
 
 #undef	theClass
 #define theClass	CDPCertifier
 #undef theParameters
 #define theParameters	CAr & ar, DPID, LPBYTE, u_long
 
+
 class CDPCertifier : public CDPMng
 {
 public:
-	DWORD			m_dwSizeofServerset;
-	SERVER_DESC		m_aServerset[128];
-	char	m_szVer[32];
-#ifdef __SECURITY_0628
-	char	m_szResVer[100];
-#endif	// __SECURITY_0628
+	boost::container::static_vector<SERVER_DESC, 128> m_servers;
 	std::map<u_long, SERVER_DESC *>	m_2ServersetPtr;
+
+	char	m_szVer[32]     = "";
+#ifdef __SECURITY_0628
+	char	m_szResVer[100] = "";
+#endif	// __SECURITY_0628
 public:
 //	Constructions
 	CDPCertifier();
@@ -67,4 +68,5 @@ inline void CDPCertifier::SendHdr( DWORD dwHdr, DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-#endif	// __DPCERTIFIER_H__
+
+std::map<u_long, SERVER_DESC *> GetUpdatedServerSet(std::span<SERVER_DESC> servers);
