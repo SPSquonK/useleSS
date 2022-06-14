@@ -6,19 +6,6 @@
 
 #include "user.h"
 
-// 초당 login시도가 제한을 넘는지 체크한다.  ( true - 제한을 넘는다 )
-bool CLoginLimit::Check()
-{
-	m_nRequestPerSecond++;
-	if( GetTickCount() > m_dwTick )
-	{
-		m_dwTick = GetTickCount() + 1000;
-		m_nRequestPerSecond = 1;
-	}
-
-	return ( m_nRequestPerSecond > m_nLimitation );
-}
-
 CDPCertifier::CDPCertifier()
 {
 	m_dwSizeofServerset		= 0;
@@ -33,20 +20,6 @@ CDPCertifier::CDPCertifier()
 	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPCertifier::OnCloseExistingConnection );
 	ON_MSG( PACKETTYPE_KEEP_ALIVE, &CDPCertifier::OnKeepAlive );
 	ON_MSG( PACKETTYPE_ERROR, &CDPCertifier::OnError );
-}
-
-CDPCertifier::~CDPCertifier()
-{
-
-}
-
-void CDPCertifier::SetLimitation( int nLimit )
-{
-//	if( ::GetLanguage() == LANG_JAP )
-//	{
-//		if( nLimit > 0 )
-//			m_limit.SetLimitation( nLimit );
-//	}
 }
 
 void CDPCertifier::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid )

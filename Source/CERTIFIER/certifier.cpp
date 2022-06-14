@@ -202,7 +202,7 @@ BOOL Script( LPCTSTR lpszFileName )
 			}
 			else if( s.Token == "LIMIT" )
 			{
-				g_dpCertifier.SetLimitation( s.GetNumber() );
+				s.GetNumber();
 			}
 			else if( s.Token == "DB_PWD_LOGIN" )
 			{

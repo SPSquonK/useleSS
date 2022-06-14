@@ -11,25 +11,9 @@
 #undef theParameters
 #define theParameters	CAr & ar, DPID, LPBYTE, u_long
 
-// 초당 접속자를 제한한다.
-class CLoginLimit
-{
-private:
-	int		m_nLimitation       = INT_MAX;
-	DWORD	m_dwTick            = 0;
-	int		m_nRequestPerSecond = 0;
-
-public:
-	bool	Check();
-	void	SetLimitation(int nLimitation) {
-		m_nLimitation = nLimitation;
-	}
-};
-
 class CDPCertifier : public CDPMng
 {
 public:
-	CLoginLimit		m_limit;
 	DWORD			m_dwSizeofServerset;
 	SERVER_DESC		m_aServerset[128];
 	char	m_szVer[32];
@@ -40,7 +24,7 @@ public:
 public:
 //	Constructions
 	CDPCertifier();
-	virtual	~CDPCertifier();
+	~CDPCertifier() override = default;
 // Operations
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid );
@@ -62,7 +46,6 @@ public:
 	void	SendErrorString( const char* szError, DPID dpid );
 #endif	// __GPAUTH
 	void	SendHdr( DWORD dwHdr, DPID dpid );
-	void	SetLimitation( int nLimit );
 
 	USES_PFNENTRIES;
 
