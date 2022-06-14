@@ -8,8 +8,14 @@
 #include "mempool.h"
 #include <dplay.h>
 #include <map>
+#include <mutex>
+#include <memory>
 #include <string>
 #include <set>
+
+namespace sqktd {
+	using shared_ptr_timed_mutex = std::shared_ptr<std::timed_mutex>;
+}
 
 enum QUERYMODE
 {	
@@ -105,10 +111,10 @@ public:
 
 extern CDbManager g_DbManager;
 
-void	DbWorkerThread(HANDLE hIOCP);
+void	DbWorkerThread(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex);
 
 #ifdef __GPAUTH
 void	GetGPAuthResult( const char* szUrl, int nMode, int nGameMode, const char* sAccount, const char* sPassword, const char* sAddr, GPAUTH_RESULT & result );
-void GPotatoAuthWorker(HANDLE hIOCP);
+void GPotatoAuthWorker(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex);
 #endif	// __GPAUTH
 

@@ -1,7 +1,12 @@
 #include "stdafx.h"
 #include "dbmanager.h"
-
+#include <chrono>
+#include <mutex>
 #include <string_view>
+
+// Disable mutex related warnings
+#pragma warning(disable: 26111)
+
 
 #ifdef __GPAUTH
 #include "afxinet.h"
@@ -24,14 +29,14 @@ CDbManager	g_DbManager;
 CDbManager::~CDbManager() {
 	// End all workers through completition port
 	for (auto & worker : m_workers) {
-		PostQueuedCompletionStatus(worker.ioCompletionPort, 0, NULL, NULL);
-		CLOSE_HANDLE(worker.ioCompletionPort);
+		if (worker.ioCompletionPort) {
+			PostQueuedCompletionStatus(worker.ioCompletionPort, 0, NULL, NULL);
+			CLOSE_HANDLE(worker.ioCompletionPort);
+		}
 	}
 
 	// Waiting for actual stop is performed by the destructor of std::jthread
 }
-
-HANDLE		s_hHandle = (HANDLE)NULL;
 
 BOOL CDbManager::CreateDbWorkers()
 {
@@ -43,7 +48,8 @@ BOOL CDbManager::CreateDbWorkers()
 #endif // __INTERNALSERVER
 #endif	// __GPAUTH
 	
-	s_hHandle = CreateEvent( NULL, FALSE, FALSE, NULL );
+	sqktd::shared_ptr_timed_mutex loadedDatabase = std::make_shared<std::timed_mutex>();
+	loadedDatabase->lock();
 
 	for (auto & [thread, ioCompletionPort] : m_workers) {
 		ioCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
@@ -51,18 +57,21 @@ BOOL CDbManager::CreateDbWorkers()
 
 #ifdef __GPAUTH
 		if (bGPAuth)
-			thread = std::jthread(GPotatoAuthWorker, ioCompletionPort);
+			thread = std::jthread(GPotatoAuthWorker, ioCompletionPort, loadedDatabase);
 		else
 #endif	// __GPAUTH
-			thread = std::jthread(DbWorkerThread, ioCompletionPort);
+			thread = std::jthread(DbWorkerThread, ioCompletionPort, loadedDatabase);
 		
-		if (WaitForSingleObject(s_hHandle, SEC(10)) == WAIT_TIMEOUT) {
+		// Wait for the thread to unlock the mutex
+		using namespace std::chrono_literals;
+		if (!loadedDatabase->try_lock_for(10s)) {
 			OutputDebugString("CERTIFIER.EXE\t// TIMEOUT\t// ODBC");
 			return FALSE;
 		}
 	}
 
-	CloseHandle( s_hHandle );
+	loadedDatabase->unlock();
+
 	return TRUE;
 }
 
@@ -254,7 +263,7 @@ void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS p
 	}
 }
 
-void DbWorkerThread(HANDLE hIOCP) {
+void DbWorkerThread(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex) {
 	IpAddressRecentFailChecker mgr;
 
 	CQuery query;
@@ -262,7 +271,8 @@ void DbWorkerThread(HANDLE hIOCP) {
 		AfxMessageBox("Error : Not Connect useless_account DB");
 	}
 
-	SetEvent(s_hHandle);
+	mutex->unlock();
+	mutex.reset();
 
 	DWORD dwBytesTransferred	= 0;
 	LPDWORD lpCompletionKey		= NULL;
@@ -343,14 +353,15 @@ void CDbManager::PostQ(DB_OVERLAPPED_PLUS * pData) {
 }
 
 #ifdef __GPAUTH
-void GPotatoAuthWorker(HANDLE hIOCP) {
+void GPotatoAuthWorker(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex) {
 	IpAddressRecentFailChecker mgr;
 
 	CQuery query;
 	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
 		AfxMessageBox( "can't connect to database : useless_account" );
 
-	SetEvent( s_hHandle );
+	mutex->unlock();
+	mutex.reset();
 
 	DWORD dwBytesTransferred	= 0;
 	LPDWORD lpCompletionKey		= NULL;
