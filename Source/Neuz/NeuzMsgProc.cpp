@@ -270,15 +270,6 @@ BOOL ParseCmdLine( LPCTSTR lpCmdLine )
 	{
 		g_Neuz.m_bThroughPortal		= TRUE;
 
-		//	mulcom	BEGIN100323	일본 인증관련
-#ifdef __JAPAN_AUTH
-		if( ::GetLanguage() == LANG_JAP  && lstrcmpi( szArg2, "hangame.co.jp" ) != 0 )
-		{
-			g_Neuz.m_bEncryptPWD = FALSE;
-		}
-#endif // __JAPAN_AUTH
-		//	mulcom	END100323	일본 인증관련
-
 #ifdef __TWN_LOGIN0816
 		g_Neuz.SetAccountInfo( szArg3, szArg4, szArg5 );
 #else	// __TWN_LOGIN0816

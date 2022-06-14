@@ -27,9 +27,7 @@ UINT HashKey(const char * key) {
 // global
 CDbManager	g_DbManager;
 HANDLE		s_hHandle	= (HANDLE)NULL;
-#ifdef __JAPAN_AUTH
-string	g_strWebCertURL;
-#endif // __JAPAN_AUTH
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 CDbManager::CDbManager()
 	: m_memoryPool(512)
@@ -74,10 +72,6 @@ BOOL CDbManager::CreateDbWorkers()
 		HANDLE hThread;
 		if( bGPAuth )
 			hThread	= chBEGINTHREADEX( NULL, 0, GPotatoAuthWorker, (LPVOID)i, 0, NULL );
-#ifdef __JAPAN_AUTH
-		else if( ::GetLanguage() == LANG_JAP && !g_strWebCertURL.empty() )
-			hThread	= chBEGINTHREADEX( NULL, 0, JapanAuthWorker, (LPVOID)i, 0, NULL );
-#endif // __JAPAN_AUTH
 		else
 			hThread	= chBEGINTHREADEX( NULL, 0, DbWorkerThread, (LPVOID)i, 0, NULL );
 #else	// __GPAUTH
@@ -148,10 +142,6 @@ BYTE CDbManager::GetAccountFlag( int f18, LPCTSTR szAccount )
 void CDbManager::OnCertifyQueryOK( CQuery & query, LPDB_OVERLAPPED_PLUS pData, const char* szCheck )
 {
 	BOOL bGPotatoAuth	= ::GetLanguage() == LANG_FRE; // ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;
-#ifdef __JAPAN_AUTH
-	if( !bGPotatoAuth && ::GetLanguage() == LANG_JAP )
-		bGPotatoAuth = TRUE;
-#endif // __JAPAN_AUTH
 	int n18	= 1;
 	if( !bGPotatoAuth )
 		n18	= query.GetInt( "f18" );
@@ -688,179 +678,3 @@ DONE:
 	}
 }
 #endif	// __GPAUTH
-
-#ifdef __JAPAN_AUTH
-u_int __stdcall JapanAuthWorker( LPVOID pParam )
-{
-	CAccountMgr mgr;
-
-	CQuery query;
-	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
-		AfxMessageBox( "can't connect to database : useless_account" );
-
-	SetEvent( s_hHandle );
-
-	HANDLE hIOCP	= g_DbManager.GetIOCPHandle( (int)pParam );
-	DWORD dwBytesTransferred	= 0;
-	LPDWORD lpCompletionKey		= NULL;
-	LPDB_OVERLAPPED_PLUS pov	= NULL;
-
-	while( 1 )
-	{
-		BOOL fOk = GetQueuedCompletionStatus( hIOCP,
-										 &dwBytesTransferred,
-										(LPDWORD)&lpCompletionKey,
-										(LPOVERLAPPED*)&pov,
-										INFINITE );
-
-		if( fOk == FALSE ) 
-		{	
-			ASSERT( 0 );				// fatal error
-			continue;
-		}
-
-		if( dwBytesTransferred == 0 )	// terminate
-			return( 0 );
-		
-		switch( pov->nQueryMode )
-		{
-			case CERTIFY:
-				g_DbManager.Certify_Japan( query, pov, mgr );
-				break;
-			case CLOSE_EXISTING_CONNECTION:
-				g_DbManager.CloseExistingConnection_Japan( query, pov );
-				break;
-		}
-	}
-	return( 0 );
-}
-
-void CDbManager::Certify_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr & mgr )
-{
-	ACCOUNT_CHECK result	= CHECK_OK;
-	if( pov->dwIP )
-	{
-		result	= mgr.Check( pov->dwIP );
-		switch( result )
-		{
-			case CHECK_1TIMES_ERROR:
-				g_dpCertifier.SendError( ERROR_15SEC_PREVENT, pov->dpId );
-				m_pDbIOData->Free( pov );
-				return;
-			case CHECK_3TIMES_ERROR:
-				g_dpCertifier.SendError( ERROR_15MIN_PREVENT, pov->dpId );
-				m_pDbIOData->Free( pov );
-				return;
-		}
-	}
-	
-	JAPAN_AUTH_RESULT r = GetJapanAuthResult( pov );
-	if( r.nResult == JAPAN_AUTH_RESULT_AGREE )
-	{
-		if( pov->dwIP )
-			mgr.SetError( 0 );
-
-#ifdef __EUROPE_0514
-		lstrcpy( pov->AccountInfo.szBak, pov->AccountInfo.szAccount );
-#endif	// __EUROPE_0514
-		OnCertifyQueryOK( query, pov );
-	}
-	else
-	{
-		g_dpCertifier.SendErrorString( r.szResultMsg, pov->dpId );
-	}
-	m_pDbIOData->Free( pov );
-}
-
-void CDbManager::CloseExistingConnection_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov )
-{
-	JAPAN_AUTH_RESULT r = GetJapanAuthResult( pov );
-
-	if( r.nResult == JAPAN_AUTH_RESULT_AGREE )
-		g_dpAccountClient.SendCloseExistingConnection( pov->AccountInfo.szAccount );
-
-	m_pDbIOData->Free( pov );
-}
-
-JAPAN_AUTH_RESULT GetJapanAuthResult( LPDB_OVERLAPPED_PLUS pov )
-{
-	JAPAN_AUTH_RESULT result;
-	
-	CInternetSession	session( _T( "Japan_Auth" ) );
-	CHttpConnection*	pServer		= NULL;
-
-	CHttpFile*	pFile	= NULL;
-	char pszSendMsg[255]	= { 0,};
-	char pszHeader[255]	= { 0,};
-	CString strHeaders, strResult;
-	int nReadSize	= 0;
-	char szHeader[256] = "X-RESULT";
-	DWORD dwHeaderSize = 255;
-	
-	char sAddr[16]	= { 0,};
-	g_dpCertifier.GetPlayerAddr( pov->dpId, sAddr );
-	
-	sprintf( pszSendMsg, "/api/aeonsoft/auth.asp?ID=%s&PW=%s&IP=%s", pov->AccountInfo.szAccount, pov->AccountInfo.szPassword, sAddr );
-	strHeaders	= "Content-Type: application/x-www-form-urlencoded";
-
-	try
-	{
-		pServer		= session.GetHttpConnection( g_strWebCertURL.c_str() );
-		if( !pServer )
-		{
-			Error( "\"%s\" Connection Failed!", g_strWebCertURL.c_str() );
-			goto DONE;
-		}
-		
-		pFile	= pServer->OpenRequest( CHttpConnection::HTTP_VERB_GET, pszSendMsg );
-		if( !pFile  )
-		{
-			Error( "OpenRequest Failed!" );
-			goto DONE;
-		}
-
-		if( !( pFile->SendRequest() ) )
-		{
-			Error( "SendRequest Failed! -> Msg : %s", pszSendMsg );
-			goto DONE;
-		}
-	}
-	catch( CInternetException* e )
-	{
-		TCHAR	szError[255]	= { 0,};
-		e->GetErrorMessage( szError, 255 );
-		goto DONE;
-	}
-
-	::HttpQueryInfo( *pFile, HTTP_QUERY_CUSTOM, (LPVOID)szHeader, &dwHeaderSize, NULL );
-	if( lstrcmp( szHeader, "agree" ) == 0 )
-		result.nResult = JAPAN_AUTH_RESULT_AGREE;
-	else if( lstrcmp( szHeader, "reject" ) == 0 )
-		result.nResult = JAPAN_AUTH_RESULT_REJECT;
-
-	nReadSize	= (int)pFile->Read( strResult.GetBuffer( (int)( pFile->GetLength() ) ), (UINT)( pFile->GetLength() ) );
-
-	strResult.ReleaseBuffer();
-	if( nReadSize == strResult.GetLength() )
-	{
-		lstrcpy( result.szResultMsg, (LPCSTR)strResult );
-	}
-
-DONE:
-	if( pFile )
-	{
-		pFile->Close();
-		safe_delete( pFile );
-		pFile	= NULL;
-	}
-	if( pServer )
-	{
-		pServer->Close();
-		safe_delete( pServer );
-		pServer		= NULL;
-	}
-	session.Close();
-	
-	return result;
-}
-#endif // __JAPAN_AUTH

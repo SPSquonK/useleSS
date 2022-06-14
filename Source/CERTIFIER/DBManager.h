@@ -55,21 +55,6 @@ struct GPAUTH_RESULT {
 };
 #endif	// __GPAUTH
 
-#ifdef __JAPAN_AUTH
-#define JAPAN_AUTH_RESULT_FAIL		0
-#define JAPAN_AUTH_RESULT_AGREE		1
-#define JAPAN_AUTH_RESULT_REJECT	2
-typedef	struct	_JAPAN_AUTH_RESULT
-{
-	int		nResult;
-	char	szResultMsg[256];
-	_JAPAN_AUTH_RESULT()
-	{
-		nResult = JAPAN_AUTH_RESULT_FAIL;
-		memset( szResultMsg, 0, sizeof( szResultMsg ) );
-	}
-}	JAPAN_AUTH_RESULT;
-#endif // __JAPAN_AUTH
 
 class CDbManager
 {
@@ -103,10 +88,8 @@ public:
 	#endif	// __GPAUTH_03
 
 #endif	// __GPAUTH
-#ifdef __JAPAN_AUTH
-	void	Certify_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov, IpAddressRecentFailChecker & mgr );
-	void	CloseExistingConnection_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov );
-#endif // __JAPAN_AUTH
+
+
 	void	DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData );
 	BOOL	LoadEveSchoolAccount( void );
 	[[nodiscard]] bool IsEveSchoolAccount(const char * pszAccount) const;
@@ -126,8 +109,4 @@ u_int	__stdcall	DbWorkerThread( LPVOID lpDbManager );	// DbWorkerThread
 void	GetGPAuthResult( const char* szUrl, int nMode, int nGameMode, const char* sAccount, const char* sPassword, const char* sAddr, GPAUTH_RESULT & result );
 u_int	__stdcall	GPotatoAuthWorker( LPVOID pParam );
 #endif	// __GPAUTH
-#ifdef __JAPAN_AUTH
-u_int __stdcall		JapanAuthWorker( LPVOID pParam );
-JAPAN_AUTH_RESULT	GetJapanAuthResult( LPDB_OVERLAPPED_PLUS pov );
-#endif // __JAPAN_AUTH
 

@@ -374,7 +374,6 @@
 	#define		__BS_ADJUST_COLLISION		// 충돌 루틴 개선 ( 2009. 07. 28 )
 //	#define		__BS_PUTNAME_QUESTARROW		// 퀘스트 클릭시 보상 NPC 화살표 표현중 이름 추가			( 09_1228 제거 )
 
-	#define		__JAPAN_AUTH				// 일본 인증 변경(웹인증)
 	#define		__IMPROVE_MAP_SYSTEM		// 향상된 지도 시스템
 
 //	#define		__BS_NO_CREATION_POST		// 임시 : 우체통 생성 무시

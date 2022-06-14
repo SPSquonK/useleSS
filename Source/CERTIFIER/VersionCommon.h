@@ -37,7 +37,6 @@
 
 #if	  defined(__INTERNALSERVER)		// 내부 사무실 테스트서버 
 	#define	__SECURITY_0628
-	#define __JAPAN_AUTH			// 일본 인증 변경(웹인증)
 #elif defined(__TESTSERVER)			// 외부 유저 테스트서버
 
 

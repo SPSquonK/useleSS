@@ -33,9 +33,6 @@ TCHAR szTitle[MAX_LOADSTRING];	// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];	// The title bar text
 HWND	hMainWnd;
 char	lpConnection[16];
-#ifdef __JAPAN_AUTH
-extern	string	g_strWebCertURL;
-#endif // __JAPAN_AUTH
 
 ATOM	MyRegisterClass(HINSTANCE hInstance);
 BOOL	InitInstance(HINSTANCE, int);
@@ -217,13 +214,6 @@ BOOL Script( LPCTSTR lpszFileName )
 			{
 				hb.Init();
 			}
-#ifdef __JAPAN_AUTH
-			else if( s.Token == "WebCertURL" )
-			{
-				s.GetToken();
-				g_strWebCertURL = s.Token;
-			}
-#endif // __JAPAN_AUTH
 			s.GetToken();
 		}
 		return TRUE;

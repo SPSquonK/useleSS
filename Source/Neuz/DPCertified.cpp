@@ -272,10 +272,6 @@ void CDPCertified::OnSrvrList( CAr & ar, DPID )
 #ifdef __GPAUTH
 void CDPCertified::OnErrorString( CAr & ar, DPID dpid )
 {
-#ifdef __JAPAN_AUTH
-	g_Neuz.m_dwTimeOutDis = 0xffffffff;			// 타임 아웃 메세지 박스 표시를 막는다.
-#endif // __JAPAN_AUTH
-
 	char szError[256]	= { 0,};
 	ar.ReadString( szError, 256 );
 
