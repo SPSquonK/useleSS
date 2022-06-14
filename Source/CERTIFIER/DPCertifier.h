@@ -5,6 +5,8 @@
 #include "misc.h"
 #include <map>
 #include <span>
+#include "ListedServer.h"
+#include "MutexedObject.h"
 
 #undef	theClass
 #define theClass	CDPCertifier
@@ -15,8 +17,7 @@
 class CDPCertifier : public CDPMng
 {
 public:
-	boost::container::static_vector<SERVER_DESC, 128> m_servers;
-	std::map<u_long, SERVER_DESC *>	m_2ServersetPtr;
+	CMutexedObject<CListedServers> m_servers;
 
 	char	m_szVer[32]     = "";
 #ifdef __SECURITY_0628
@@ -67,6 +68,3 @@ inline void CDPCertifier::SendHdr( DWORD dwHdr, DPID dpid )
 	BEFORESEND( ar, dwHdr );
 	SEND( ar, this, dpid );
 }
-
-
-std::map<u_long, SERVER_DESC *> GetUpdatedServerSet(std::span<SERVER_DESC> servers);

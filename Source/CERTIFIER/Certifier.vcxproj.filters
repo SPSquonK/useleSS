@@ -135,8 +135,8 @@
     <ClCompile Include="..\_database\Query.cpp">
       <Filter>ODBC Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Network\Misc\Src\Misc.cpp">
-      <Filter>Network Files\Misc</Filter>
+    <ClCompile Include="..\_Network\ListedServer.cpp">
+      <Filter>Network Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -282,6 +282,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\CommonHeader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\ListedServer.h">
+      <Filter>Network Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -143,7 +143,8 @@ void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFla
 		ar << lTimeLeft;
 	}
 
-	ar << m_servers;
+	m_servers.Access([&ar](CListedServers & servers) { ar << servers; });
+
 	SEND( ar, this, dpId );
 }
 

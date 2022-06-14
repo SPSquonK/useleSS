@@ -87,7 +87,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\_Network\Misc\Src\Misc.cpp" />
+    <ClCompile Include="..\_Network\ListedServer.cpp" />
     <ClCompile Include="IpAddressRecentFailChecker.cpp">
     </ClCompile>
     <ClCompile Include="certifier.cpp">
@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Network\ListedServer.h" />
     <ClInclude Include="IpAddressRecentFailChecker.h" />
     <ClInclude Include="certifier.h" />
     <ClInclude Include="DBManager.h" />

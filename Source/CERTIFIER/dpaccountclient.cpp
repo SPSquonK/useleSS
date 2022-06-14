@@ -195,37 +195,33 @@ void CDPAccountClient::OnDestroyPlayer( CAr & ar, DPID dpid )
 
 #include <span>
 
-void CDPAccountClient::OnServersetList( CAr & ar, DPID dpid )
-{
-	ar.ReadString( g_dpCertifier.m_szVer );
+void CDPAccountClient::OnServersetList(CAr & ar, DPID) {
+	ar.ReadString(g_dpCertifier.m_szVer);
 #ifdef __SECURITY_0628
-	ar.ReadString( g_dpCertifier.m_szResVer );
+	ar.ReadString(g_dpCertifier.m_szResVer);
 #endif	// __SECURITY_0628
 
-	ar >> g_dpCertifier.m_servers;
-	g_dpCertifier.m_2ServersetPtr = GetUpdatedServerSet(g_dpCertifier.m_servers);
+	g_dpCertifier.m_servers.Access([&](auto & servers) { ar >> servers; });
 }
 
-void CDPAccountClient::OnPlayerCount( CAr & ar, DPID dpid )
-{
-	u_long uId;
-	long lCount;
-	ar >> uId >> lCount;
+void CDPAccountClient::OnPlayerCount(CAr & ar, DPID ) {
+	const auto [uId, lCount] = ar.Extract<u_long, long>();
 
-	const auto i2	= g_dpCertifier.m_2ServersetPtr.find( uId );
-	if( i2 != g_dpCertifier.m_2ServersetPtr.end() )
-		InterlockedExchange( &i2->second->lCount, lCount );
+	g_dpCertifier.m_servers.Access([&](CListedServers & servers) {
+		if (SERVER_DESC * server = servers.GetFromUId(uId)) {
+			server->lCount = lCount;
+		}
+		});
 }
 
-void CDPAccountClient::OnEnableServer( CAr & ar, DPID dpid )
-{
-	u_long uId;
-	long lEnable;
-	ar >> uId >> lEnable;
+void CDPAccountClient::OnEnableServer(CAr & ar, DPID) {
+	const auto [uId, lEnable] = ar.Extract<u_long, long>();
 
-	const auto i2	= g_dpCertifier.m_2ServersetPtr.find( uId );
-	if( i2 != g_dpCertifier.m_2ServersetPtr.end() )
-		InterlockedExchange( &i2->second->lEnable, lEnable );
+	g_dpCertifier.m_servers.Access([&](CListedServers & servers) {
+		if (SERVER_DESC * server = servers.GetFromUId(uId)) {
+			server->lEnable = lEnable;
+		}
+		});
 }
 
 CDPAccountClient	g_dpAccountClient;
