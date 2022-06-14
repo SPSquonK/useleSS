@@ -663,7 +663,7 @@ public:
 
 	CAccountCacheMgr m_AccountCacheMgr;
 	CMclCritSec		m_AddRemoveLock;
-	CMutexedObject<ULONG2STRING> m_2PartyNamePtr;
+	sqktd::mutexed_object<ULONG2STRING> m_2PartyNamePtr;
 	CMclCritSec		m_joinLock;
 	char			m_aszJoin[MAX_JOIN_SIZE][MAX_PLAYER];
 	int				m_nJoin;

@@ -201,13 +201,13 @@ void CDPAccountClient::OnServersetList(CAr & ar, DPID) {
 	ar.ReadString(g_dpCertifier.m_szResVer);
 #endif	// __SECURITY_0628
 
-	g_dpCertifier.m_servers.Access([&](auto & servers) { ar >> servers; });
+	g_dpCertifier.m_servers.write([&](auto & servers) { ar >> servers; });
 }
 
 void CDPAccountClient::OnPlayerCount(CAr & ar, DPID ) {
 	const auto [uId, lCount] = ar.Extract<u_long, long>();
 
-	g_dpCertifier.m_servers.Access([&](CListedServers & servers) {
+	g_dpCertifier.m_servers.write([&](CListedServers & servers) {
 		if (SERVER_DESC * server = servers.GetFromUId(uId)) {
 			server->lCount = lCount;
 		}
@@ -217,7 +217,7 @@ void CDPAccountClient::OnPlayerCount(CAr & ar, DPID ) {
 void CDPAccountClient::OnEnableServer(CAr & ar, DPID) {
 	const auto [uId, lEnable] = ar.Extract<u_long, long>();
 
-	g_dpCertifier.m_servers.Access([&](CListedServers & servers) {
+	g_dpCertifier.m_servers.write([&](CListedServers & servers) {
 		if (SERVER_DESC * server = servers.GetFromUId(uId)) {
 			server->lEnable = lEnable;
 		}

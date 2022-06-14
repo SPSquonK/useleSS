@@ -17,7 +17,7 @@
 class CDPCertifier : public CDPMng
 {
 public:
-	CMutexedObject<CListedServers> m_servers;
+	sqktd::mutexed_on_write_object<CListedServers> m_servers;
 
 	char	m_szVer[32]     = "";
 #ifdef __SECURITY_0628

@@ -112,7 +112,7 @@ void CDPCoreSrvr::SendPartyName( DPID dpid )
 {
 	BEFORESEND( ar, PACKETTYPE_PARTYNAME );
 
-	g_DbManager.m_2PartyNamePtr.Access([&ar](ULONG2STRING & map) {
+	g_DbManager.m_2PartyNamePtr.access([&ar](const ULONG2STRING & map) {
 		ar << (u_long)map.size();
 		for (const auto & [partyId, partyName] : map) {
 			ar << partyId;

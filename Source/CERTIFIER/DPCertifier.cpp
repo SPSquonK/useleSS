@@ -6,17 +6,6 @@
 
 #include "user.h"
 
-std::map<u_long, SERVER_DESC *> GetUpdatedServerSet(std::span<SERVER_DESC> servers) {
-	std::map<u_long, SERVER_DESC *> retval;
-
-	for (SERVER_DESC & server : servers) {
-		const u_long uId = server.dwParent * 100 + server.dwID;
-		retval.emplace(uId, &server);
-	}
-
-	return retval;
-}
-
 CDPCertifier::CDPCertifier()
 {
 	BEGIN_MSG;
@@ -143,7 +132,7 @@ void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFla
 		ar << lTimeLeft;
 	}
 
-	m_servers.Access([&ar](CListedServers & servers) { ar << servers; });
+	m_servers.read([&ar](const CListedServers & servers) { ar << servers; });
 
 	SEND( ar, this, dpId );
 }

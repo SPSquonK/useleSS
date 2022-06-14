@@ -865,7 +865,7 @@ BOOL CDbManager::GetPartyName( void )
 		return FALSE;
 	}
 	
-	m_2PartyNamePtr.Access([&](ULONG2STRING & map) {
+	m_2PartyNamePtr.access([&](ULONG2STRING & map) {
 		while (qry.Fetch()) {
 			qry.GetStr("partyname", szPartyName);
 			id = qry.GetInt("m_idPlayer");
@@ -1009,7 +1009,7 @@ void CDbManager::AddPartyName( CQuery* pQuery, CAr & arRead)
 		return;
 	}
 	
-	m_2PartyNamePtr.Access([&](ULONG2STRING & map) {
+	m_2PartyNamePtr.access([&](ULONG2STRING & map) {
 		map.insert_or_assign(uidPlayer, sParty);
 		});
 }
