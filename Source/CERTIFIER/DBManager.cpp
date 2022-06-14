@@ -7,14 +7,7 @@
 // Disable mutex related warnings
 #pragma warning(disable: 26111)
 
-
-#ifdef __GPAUTH
 #include "afxinet.h"
-#define		s_sUrl	"spe.gpotato.eu"
-#define	VALID_CRLF( n, r, s )	if( ( n ) < 0 )	{	r.nResult	= -1;	*r.szResult	= '\0';	OutputDebugString( (LPCTSTR)s );	return;		}
-#define	VALID_STR( len, max, r, s )		if( ( len ) > ( max ) )	{	r.nResult	= -1;	*r.szResult	= '\0';	OutputDebugString( (LPCTSTR)s );	return;		}
-#endif	// __GPAUTH
-
 #include "dpcertifier.h"
 #include "dpaccountclient.h"
 #include "IpAddressRecentFailChecker.h"
@@ -40,27 +33,14 @@ CDbManager::~CDbManager() {
 
 BOOL CDbManager::CreateDbWorkers()
 {
-#ifdef __GPAUTH
-//	BOOL bGPAuth	= TRUE;
-	BOOL bGPAuth	= ( ::GetLanguage() == LANG_FRE ); // ( ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE )
-#ifdef __INTERNALSERVER
-	bGPAuth = FALSE;
-#endif // __INTERNALSERVER
-#endif	// __GPAUTH
-	
 	sqktd::shared_ptr_timed_mutex loadedDatabase = std::make_shared<std::timed_mutex>();
 	loadedDatabase->lock();
 
 	for (auto & [thread, ioCompletionPort] : m_workers) {
 		ioCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 		ASSERT(ioCompletionPort);
-
-#ifdef __GPAUTH
-		if (bGPAuth)
-			thread = std::jthread(GPotatoAuthWorker, ioCompletionPort, loadedDatabase);
-		else
-#endif	// __GPAUTH
-			thread = std::jthread(DbWorkerThread, ioCompletionPort, loadedDatabase);
+		
+		thread = std::jthread(DbWorkerThread, ioCompletionPort, loadedDatabase);
 		
 		// Wait for the thread to unlock the mutex
 		using namespace std::chrono_literals;
@@ -75,19 +55,22 @@ BOOL CDbManager::CreateDbWorkers()
 	return TRUE;
 }
 
-void CDbManager::DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData )
-{
-	char lpAddr[16] = {0,};
-	g_dpCertifier.GetPlayerAddr( pData->dpId, lpAddr );
+StaticString<256> CDbManager::DBQryAccount(const DB_OVERLAPPED_PLUS & pData) {
+	char lpAddr[16] = { 0, };
+	g_dpCertifier.GetPlayerAddr(pData.dpId, lpAddr);
 
-	if( GetLanguage() == LANG_TWN )
-		wsprintf( qryAccount, "LOGIN_STR @iaccount='%s', @ipassword='%s', @isession='%s', @i_IPAddress='%s'", 
-					pData->AccountInfo.szAccount, pData->AccountInfo.szPassword, pData->AccountInfo.szSessionPwd, lpAddr );
-//		wsprintf( qryAccount, "LOGIN_STR @iaccount='%s', @ipassword='%s', @isession='%s'", 
-//					pData->AccountInfo.szAccount, pData->AccountInfo.szPassword, pData->AccountInfo.szSessionPwd );
-	else
-		wsprintf( qryAccount, "LOGIN_STR '%s', '%s', '%s'", pData->AccountInfo.szAccount, pData->AccountInfo.szPassword, lpAddr );
-//		wsprintf( qryAccount, "LOGIN_STR '%s', '%s'", pData->AccountInfo.szAccount, pData->AccountInfo.szPassword );
+	StaticString<256> qryAccount;
+	if (GetLanguage() == LANG_TWN) {
+		qryAccount.Format("LOGIN_STR @iaccount='%s', @ipassword='%s', @isession='%s', @i_IPAddress='%s'",
+			pData.AccountInfo.szAccount, pData.AccountInfo.szPassword, pData.AccountInfo.szSessionPwd, lpAddr
+		);
+	} else {
+		qryAccount.Format("LOGIN_STR '%s', '%s', '%s'",
+			pData.AccountInfo.szAccount, pData.AccountInfo.szPassword, lpAddr
+		);
+	}
+
+	return qryAccount;
 }
 
 // AccountFlag�� ��´�.
@@ -189,8 +172,7 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, IpAddressR
 
 	query.Clear();
 
-	char	szQuery[256];
-	DBQryAccount( szQuery, pData );
+	const StaticString<256> szQuery = DBQryAccount(*pData);
 
 	int nCode = ERROR_CERT_GENERAL;		
 
@@ -250,8 +232,7 @@ void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS p
 {
 	query.Clear();
 
-	char	szQuery[128];
-	DBQryAccount( szQuery, pData );
+	const StaticString<256> szQuery = DBQryAccount(*pData);
 
 	if( query.Exec( szQuery ) )
 	{
@@ -352,300 +333,17 @@ void CDbManager::PostQ(DB_OVERLAPPED_PLUS * pData) {
 	::PostQueuedCompletionStatus(m_workers[nIOCP].ioCompletionPort, 1, NULL, (LPOVERLAPPED)pData);
 }
 
-#ifdef __GPAUTH
-void GPotatoAuthWorker(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex) {
-	IpAddressRecentFailChecker mgr;
 
-	CQuery query;
-	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
-		AfxMessageBox( "can't connect to database : useless_account" );
-
-	mutex->unlock();
-	mutex.reset();
-
-	DWORD dwBytesTransferred	= 0;
-	LPDWORD lpCompletionKey		= NULL;
-	LPDB_OVERLAPPED_PLUS pov	= NULL;
-
-	while( 1 )
-	{
-		BOOL fOk = GetQueuedCompletionStatus( hIOCP,
-										 &dwBytesTransferred,
-										(LPDWORD)&lpCompletionKey,
-										(LPOVERLAPPED*)&pov,
-										INFINITE );
-
-		if( fOk == FALSE ) 
-		{	
-			ASSERT( 0 );				// fatal error
-			continue;
-		}
-
-		if( dwBytesTransferred == 0 )	// terminate
-			return;
-		
-		switch( pov->nQueryMode )
-		{
-			case CERTIFY:
-				g_DbManager.Certify2( query, pov, mgr );
-				break;
-			case CLOSE_EXISTING_CONNECTION:
-				g_DbManager.CloseExistingConnection2( query, pov );
-				break;
-		}
-
-		g_DbManager.DeAlloc(pov);
-	}
-}
-
-void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, IpAddressRecentFailChecker & mgr )
-{
-	ACCOUNT_CHECK result	= ACCOUNT_CHECK::Ok;
-	if( pov->dwIP )
-	{
-		result	= mgr.Check( pov->dwIP );
-		switch( result )
-		{
-			case ACCOUNT_CHECK::x1TimeError:
-				g_dpCertifier.SendError( ERROR_15SEC_PREVENT, pov->dpId );
-				return;
-			case ACCOUNT_CHECK::x3TimeError:
-				g_dpCertifier.SendError( ERROR_15MIN_PREVENT, pov->dpId );
-				return;
-		}
-	}
-	char sAddr[16]	= { 0,};
-	g_dpCertifier.GetPlayerAddr( pov->dpId, sAddr );
-	
-	GPAUTH_RESULT r;
-//	GetGPAuthResult( s_sUrl, 1, ( GetLanguage() == LANG_GER? 1: 2 ), pov->AccountInfo.szAccount, pov->AccountInfo.szPassword, sAddr, r );
-	GetGPAuthResult( s_sUrl, 1, ( GetLanguage() == LANG_FRE? 1: 2 ), pov->AccountInfo.szAccount, pov->AccountInfo.szPassword, sAddr, r );
-	char	lpOutputString[200]	= { 0,};
-
-#ifdef __GPAUTH_02
-	sprintf( lpOutputString, "%d, %s, %s, %d, %d, %s", r.nResult, r.szResult, r.szGPotatoID, r.nGPotatoNo, r.bGM, r.szCheck );
-#else	// __GPAUTH_02
-	sprintf( lpOutputString, "%d, %s, %s, %d, %d", r.nResult, r.szResult, r.szGPotatoID, r.nGPotatoNo, r.bGM );
-#endif	// __GPAUTH_02
-	OutputDebugString( lpOutputString );
-	if( r.nResult== 0 )
-	{
-		if( pov->dwIP )
-			mgr.SetError(false);
-
-#ifdef __EUROPE_0514
-		lstrcpy( pov->AccountInfo.szBak, pov->AccountInfo.szAccount );
-#endif	// __EUROPE_0514
-		sprintf( pov->AccountInfo.szAccount, "%d", r.nGPotatoNo );
-		
-		#ifdef __GPAUTH_02
-		OnCertifyQueryOK( query, pov, r.szCheck );
-		#else	// __GPAUTH_02
-		OnCertifyQueryOK( query, pov );
-		#endif	// __GPAUTH_02
-
-		#ifdef __GPAUTH_03
-		SQLAddAccount( query, pov->AccountInfo.szAccount, pov->AccountInfo.szPassword, r.bGM );
-		#else	// __GPAUTH_03
-		SQLAddAccount( query, pov->AccountInfo.szAccount, pov->AccountInfo.szPassword );
-		#endif	// __GPAUTH_03
-	}
-	else
-	{
-		g_dpCertifier.SendErrorString( r.szResult, pov->dpId );
-	}
-}
-
-void CDbManager::CloseExistingConnection2( CQuery & query, LPDB_OVERLAPPED_PLUS pov )
-{
-	GPAUTH_RESULT r;
-
-	char sAddr[16]	= { 0,};
-	g_dpCertifier.GetPlayerAddr( pov->dpId, sAddr );
-
-//	GetGPAuthResult( s_sUrl, 1, ( GetLanguage() == LANG_GER? 1: 2 ), pov->AccountInfo.szAccount, pov->AccountInfo.szPassword, sAddr, r );
-	GetGPAuthResult( s_sUrl, 1, ( GetLanguage() == LANG_FRE? 1: 2 ), pov->AccountInfo.szAccount, pov->AccountInfo.szPassword, sAddr, r );
-	if( r.nResult == 0 )
-	{
-//		lstrcpy( pov->AccountInfo.szAccount, r.szGPotatoID );
-		sprintf( pov->AccountInfo.szAccount, "%d", r.nGPotatoNo );
-
-		g_dpAccountClient.SendCloseExistingConnection( pov->AccountInfo.szAccount );
-#ifdef __GPAUTH_03
-		SQLAddAccount( query, pov->AccountInfo.szAccount, pov->AccountInfo.szPassword, r.bGM );
-#else	// __GPAUTH_03
-		SQLAddAccount( query, pov->AccountInfo.szAccount, pov->AccountInfo.szPassword );
-#endif	// __GPAUTH_03
-	}
-}
-
-#ifdef __GPAUTH_03
 void CDbManager::SQLAddAccount( CQuery & query, char* szAccount, char* szPassword, BOOL bGM )
-#else	// __GPAUTH_03
-void CDbManager::SQLAddAccount( CQuery & query, char* szAccount, char* szPassword )
-#endif	// __GPAUTH_03
 {
 	query.Clear();
 	char szSQL[100]	= { 0,};
-#ifdef __GPAUTH_03
+
 	char chAuth	= ( bGM? 'P': 'F' );
 	sprintf( szSQL, "uspAddAccount '%s', '%s', '%c'", szAccount, szPassword, chAuth );
-#else	// __GPAUTH_03
-	sprintf( szSQL, "uspAddAccount '%s', '%s'", szAccount, szPassword );
-#endif	// __GPAUTH_03
+
 	if( !query.Exec( szSQL ) )
 	{
 		// error
 	}
 }
-#endif	// __GPAUTH
-
-#ifdef __GPAUTH
-void	GetGPAuthResult( const char* szUrl, int nMode, int nGameMode, const char* sAccount, const char* sPassword, const char* sAddr, GPAUTH_RESULT & result )
-{
-	CInternetSession	session( _T( "GPAuth" ) );
-	CHttpConnection*	pServer		= NULL;
-
-	CHttpFile*	pFile	= NULL;
-	char pszSendMsg[255]	= { 0,};
-	char pszHeader[255]	= { 0,};
-	CString strHeaders, strResult;
-	int nReadSize	= 0;
-
-	BOOL b	= FALSE;
-
-	sprintf( pszSendMsg, "MODE=%c&GAMECODE=G00%d&GPOTATOID=%s&PASSWORD=%s&USERIP=%s", ( nMode == 1 ? 'L': 'O' ), nGameMode, sAccount, sPassword, sAddr );
-	strHeaders	= "Content-Type: application/x-www-form-urlencoded";
-	try
-	{
-		pServer		= session.GetHttpConnection( szUrl );
-		if( !pServer )
-		{
-			Error( "\"%s\" Connection Failed!", szUrl );
-			goto DONE;
-		}
-		pFile	= pServer->OpenRequest( CHttpConnection::HTTP_VERB_POST, "/Account/Authentication.Aspx" );
-		if( !pFile  )
-		{
-			Error( "OpenRequest Failed!" );
-			goto DONE;
-		}
-		if( !( pFile->SendRequest( strHeaders, (LPVOID)pszSendMsg, lstrlen( pszSendMsg ) ) ) )
-		{
-			Error( "SendRequest Failed! -> Msg : %s", pszSendMsg ); 	
-			goto DONE;
-		}
-	}
-	catch( CInternetException* e )
-	{
-		TCHAR	szError[255]	= { 0,};
-		e->GetErrorMessage( szError, 255 );
-		goto DONE;
-	}
-
-	nReadSize	= (int)pFile->Read( strResult.GetBuffer( (int)( pFile->GetLength() ) ), (unsigned int)( pFile->GetLength() ) );
-
-	strResult.ReleaseBuffer();
-	if( nReadSize = strResult.GetLength() )
-		b	= TRUE;
-
-DONE:
-	if( pFile )
-	{
-		pFile->Close();
-		safe_delete( pFile );
-		pFile	= NULL;
-	}
-	if( pServer )
-	{
-		pServer->Close();
-		safe_delete( pServer );
-		pServer		= NULL;
-	}
-	session.Close();
-	if( b )
-	{
-		// 1. nFirst > 0
-		// 2. len <= max
-		// 3. if nResult	= 0, szResult = SUCCESS
-		int nFirst	= strResult.Find( "\r\n", 0 );
-		if( nFirst < 0 )
-			nFirst	= strResult.Find( "\n\r", 0 );
-		VALID_CRLF( nFirst, result, strResult )
-
-		result.nResult	= atoi( (LPCSTR)strResult.Left( nFirst ) );
-		nFirst	+= 2;	// \r\n
-		int nLast	= strResult.Find( "\r\n", nFirst );
-		if( nLast < 0 )
-			nLast	= strResult.Find( "\n\r", nFirst );
-		VALID_CRLF( nLast, result, strResult )
-		VALID_STR( nLast - nFirst, 255, result, strResult )
-
-		lstrcpy( result.szResult, (LPCSTR)strResult.Mid( nFirst, nLast - nFirst ) );
-		if( result.nResult == 0 && lstrcmp( result.szResult, "SUCCESS" ) )
-		{
-			result.nResult	= -1;
-			*result.szResult	= '\0';
-			OutputDebugString( (LPCTSTR)strResult );
-			return;
-		}
-
-		nFirst	= nLast + 2;	// \r\n
-		nLast	= strResult.Find( "\r\n", nFirst );
-		if( nLast < 0 )
-			nLast	= strResult.Find( "\n\r", nFirst );
-		VALID_CRLF( nLast, result, strResult )
-		VALID_STR( nLast - nFirst, 20, result, strResult )
-
-		lstrcpy( result.szGPotatoID, (LPCSTR)strResult.Mid( nFirst, nLast - nFirst ) );
-		nFirst	= nLast + 2;	// \r\n
-		nLast	= strResult.Find( "\r\n", nFirst );
-		if( nLast < 0 )
-			nLast	= strResult.Find( "\n\r", nFirst );
-		VALID_CRLF( nLast, result, strResult )
-
-		result.nGPotatoNo	= atoi( (LPCSTR)strResult.Mid( nFirst, nLast - nFirst ) );
-		nFirst	= nLast + 2;	// \r\n
-		nLast	= strResult.Find( "\r\n", nFirst );
-		if( nLast < 0 )
-			nLast	= strResult.Find( "\n\r", nFirst );
-		VALID_CRLF( nLast, result, strResult )
-		VALID_STR( nLast - nFirst, 20, result, strResult )
-
-		lstrcpy( result.szNickName, (LPCSTR)strResult.Mid( nFirst, nLast - nFirst ) );
-
-	#ifdef __GPAUTH_02
-		nFirst	= nLast + 2;	// \r\n
-		nLast	= strResult.Find( "\r\n", nFirst );
-		if( nLast < 0 )
-			nLast	= strResult.Find( "\n\r", nFirst );
-		VALID_CRLF( nLast, result, strResult )
-
-		result.bGM	= ( strResult.Mid( nFirst, nLast - nFirst ) == "Y" );
-		nFirst	= nLast + 2;	// \r\n
-		VALID_STR( strResult.GetLength() - nFirst, 254, result, strResult )
-
-		lstrcpy( result.szCheck, (LPCSTR)strResult.Right( strResult.GetLength() - nFirst ) );
-	#else	// __GPAUTH_02
-		result.bGM	= ( strResult.Right( 1 ) == "Y" );
-	#endif	// __GPAUTH_02
-	}
-	else
-	{
-		result.nResult	= -1;
-		lstrcpy( result.szResult, "Could not establish a connection with the server..." );
-	}
-	switch( result.nResult )
-	{
-		case 1000:
-			lstrcpy( result.szResult, "Unexpected system error occurred." );
-			break;
-		case 2000:
-			lstrcpy( result.szResult, "GPotato is running maintenance from 10 am t0 10 pm." );
-			break;
-		case 3000:
-			lstrcpy( result.szResult, "Your account was blocked by GPOTATO" );
-			break;
-	}
-}
-#endif	// __GPAUTH

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/pool/object_pool.hpp>
+#include "StaticString.h"
 
 #include <thread>
 #include "query.h"
@@ -85,20 +86,12 @@ public:
 	void	GetStrTime( CTime *time, char *strbuf );
 	void	Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, IpAddressRecentFailChecker & accountMgr );
 	void	CloseExistingConnection( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#ifdef __GPAUTH
-	void	Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, IpAddressRecentFailChecker & mgr );
-	void	CloseExistingConnection2( CQuery & query, LPDB_OVERLAPPED_PLUS pov );
 
-	#ifdef __GPAUTH_03
+
 	void	SQLAddAccount( CQuery & query, char* szAccount, char* szPassword, BOOL bGM );
-	#else	// __GPAUTH_03
-	void	SQLAddAccount( CQuery & query, char* szAccount, char* szPassword );
-	#endif	// __GPAUTH_03
-
-#endif	// __GPAUTH
 
 
-	void	DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData );
+	static [[nodiscard]] StaticString<256> DBQryAccount(const DB_OVERLAPPED_PLUS & pData);
 	BOOL	LoadEveSchoolAccount( void );
 	[[nodiscard]] bool IsEveSchoolAccount(const char * pszAccount) const;
 	BYTE	GetAccountFlag( int f18, LPCTSTR szAccount );
@@ -112,9 +105,3 @@ public:
 extern CDbManager g_DbManager;
 
 void	DbWorkerThread(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex);
-
-#ifdef __GPAUTH
-void	GetGPAuthResult( const char* szUrl, int nMode, int nGameMode, const char* sAccount, const char* sPassword, const char* sAddr, GPAUTH_RESULT & result );
-void GPotatoAuthWorker(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex);
-#endif	// __GPAUTH
-

@@ -40,6 +40,7 @@ public:
 
   template<typename ... Ts>
   void Format(LPCTSTR lpszFormat, Ts && ... ts) {
+    // TODO: what is the diff between sntprintf and wsprintf?
     _sntprintf(buffer.data(), N - 1, lpszFormat, std::forward<Ts>(ts)...);
   }
 
