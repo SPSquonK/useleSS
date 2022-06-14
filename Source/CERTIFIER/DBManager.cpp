@@ -15,7 +15,13 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // extern
-extern	UINT				HashKey( const char* key );
+
+UINT HashKey(const char * key) {
+	UINT nHash = 0;
+	while (*key)
+		nHash = (nHash << 5) + nHash + *key++;
+	return nHash;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // global
@@ -191,18 +197,18 @@ void CDbManager::OnCertifyQueryOK( CQuery & query, LPDB_OVERLAPPED_PLUS pData, c
 
 void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMgr& accountMgr )
 {
-	ACCOUNT_CHECK result = CHECK_OK;
+	ACCOUNT_CHECK result = ACCOUNT_CHECK::CHECK_OK;
 	if( pData->dwIP )
 	{
 		result = accountMgr.Check( pData->dwIP );
 		switch( result )
 		{
-		case CHECK_1TIMES_ERROR:
-			g_dpCertifier.SendError( ERROR_15SEC_PREVENT, pData->dpId );
-			return;
-		case CHECK_3TIMES_ERROR:
-			g_dpCertifier.SendError( ERROR_15MIN_PREVENT, pData->dpId );
-			return;
+			case ACCOUNT_CHECK::CHECK_1TIMES_ERROR:
+				g_dpCertifier.SendError(ERROR_15SEC_PREVENT, pData->dpId);
+				return;
+			case ACCOUNT_CHECK::CHECK_3TIMES_ERROR:
+				g_dpCertifier.SendError(ERROR_15MIN_PREVENT, pData->dpId);
+				return;
 		}
 	}
 
@@ -223,7 +229,7 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 			case 0:
 				pData->AccountInfo.dwPCBangClass = query.GetInt( "fPCZone" );
 				if( pData->dwIP )
-					accountMgr.SetError( 0 );
+					accountMgr.SetError(false);
 #ifdef __EUROPE_0514
 				lstrcpy( pData->AccountInfo.szBak, pData->AccountInfo.szAccount );
 #endif	// __EUROPE_0514
@@ -231,7 +237,7 @@ void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMg
 				return;
 			case 1:	// ��ȣƲ��
 				if( pData->dwIP )
-					accountMgr.SetError( 1 );
+					accountMgr.SetError(true);
 				nCode = ERROR_FLYFF_PASSWORD;
 				break;
 			case 3:	// ���������̰ų� ����ȭ �ʰ�
@@ -433,16 +439,16 @@ u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 
 void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr & mgr )
 {
-	ACCOUNT_CHECK result	= CHECK_OK;
+	ACCOUNT_CHECK result	= ACCOUNT_CHECK::CHECK_OK;
 	if( pov->dwIP )
 	{
 		result	= mgr.Check( pov->dwIP );
 		switch( result )
 		{
-			case CHECK_1TIMES_ERROR:
+			case ACCOUNT_CHECK::CHECK_1TIMES_ERROR:
 				g_dpCertifier.SendError( ERROR_15SEC_PREVENT, pov->dpId );
 				return;
-			case CHECK_3TIMES_ERROR:
+			case ACCOUNT_CHECK::CHECK_3TIMES_ERROR:
 				g_dpCertifier.SendError( ERROR_15MIN_PREVENT, pov->dpId );
 				return;
 		}
@@ -464,7 +470,7 @@ void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr
 	if( r.nResult== 0 )
 	{
 		if( pov->dwIP )
-			mgr.SetError( 0 );
+			mgr.SetError(false);
 
 #ifdef __EUROPE_0514
 		lstrcpy( pov->AccountInfo.szBak, pov->AccountInfo.szAccount );

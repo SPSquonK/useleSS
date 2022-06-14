@@ -1,130 +1,116 @@
-// AccountMgr.cpp: implementation of the CAccountMgr class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "AccountMgr.h"
+#include <algorithm>
 #include "..\Resource\lang.h"
 
 //////////////////////////////////////////////////////////////////////
 
-UINT HashKey( const char* key )
-{
-	UINT nHash = 0;
-	while( *key )
-		nHash = (nHash<<5) + nHash + *key++;
-	return nHash;
+ACCOUNT_CHECK CAccountMgr::Check(const DWORD dwIP) {
+	// Is the IP in the list?
+	const auto it = std::ranges::find_if(m_cache,
+		[dwIP](const IPAddressCache & ptr) {
+			return ptr.m_dwIP == dwIP;
+		});
+	
+	if (it != m_cache.end()) {
+		// Yes, use the already stored data for this IP
+		return MoveBackAndCheck(it);
+	} else {
+		// No: add in the list
+		AddNewIp(dwIP);
+		return ACCOUNT_CHECK::CHECK_OK;
+	}
 }
 
-//////////////////////////////////////////////////////////////////////
+ACCOUNT_CHECK CAccountMgr::MoveBackAndCheck(
+	const decltype(CAccountMgr::m_cache)::iterator iterator
+) {
+	IPAddressCache pInfo = *iterator;
+	m_cache.erase(iterator);
 
-CAccountMgr::CAccountMgr()
-{
-}
+	// Check result
+	ACCOUNT_CHECK result = ACCOUNT_CHECK::CHECK_OK;
 
-CAccountMgr::~CAccountMgr()
-{
-	for( auto it = m_cache.begin(); it != m_cache.end(); ++it )
-		safe_delete( *it );
-}
+	static constexpr DWORD localhost = 0xFF000001;
+	if (pInfo.m_dwIP != localhost) {
+		const time_t tmCur = time(nullptr);
 
-//////////////////////////////////////////////////////////////////////
-
-ACCOUNT_CHECK CAccountMgr::Check( DWORD dwIP )
-{
-	time_t	tmCur = time( NULL );
-
-	// 캐쉬에서 찾는다.
-	for(auto it = m_cache.begin(); it != m_cache.end(); ++it )
-	{
-		ACCOUNT_CACHE* pInfo = *it;
-		if( pInfo->m_dwIP == dwIP )
-		{
-			ACCOUNT_CHECK result = CHECK_OK;
-
-			if( pInfo->m_nError >= 3 )
-			{
-				long nSec = tmCur - pInfo->m_tmError;
-				if( nSec <= (15 * 60) )
-					result = CHECK_3TIMES_ERROR;
-			}
-			else if( pInfo->m_nError >= 1 && ::GetLanguage() != LANG_KOR )
-			{
-				long nSec = tmCur - pInfo->m_tmError;
-				if( nSec <= 15 )
-					result = CHECK_1TIMES_ERROR;
-			}
-
-			m_cache.erase( it );
-			m_cache.push_front( pInfo );		// 사용된 것은 앞으로 
-			return result;
+		if (pInfo.m_nError >= 3) {
+			long nSec = tmCur - pInfo.m_tmError;
+			if (nSec <= (15 * 60)) result = ACCOUNT_CHECK::CHECK_3TIMES_ERROR;
+		} else if (pInfo.m_nError >= 1 && ::GetLanguage() != LANG_KOR) {
+			long nSec = tmCur - pInfo.m_tmError;
+			if (nSec <= 15) result = ACCOUNT_CHECK::CHECK_1TIMES_ERROR;
 		}
 	}
+
+	m_cache.emplace_back(pInfo);
+	return result;
+}
+
+void CAccountMgr::AddNewIp(const DWORD dwIP) {
+	// Ensure has space
+	if (m_cache.size() == m_cache.max_size()) {
+		m_cache.erase(m_cache.begin());
+	}
 	
-	// MAX보다 크면 - LRU를 재사용 
-	//     or       - new로 넣는다. 
-	ACCOUNT_CACHE* pInfo = NULL; 
-	if( m_cache.size() < 3 )
-		pInfo = new ACCOUNT_CACHE;
-	else
-	{
-		pInfo = m_cache.back();					// 가장 덜 사용된 것은 맨 뒤에 남아 있다.
-		m_cache.pop_back();
+	// Add
+	const time_t tmCur = time(nullptr);
+	IPAddressCache pInfo = {
+		.m_dwIP = dwIP,
+		.m_nError = 0,
+		.m_tmError = tmCur
+	};
+
+	m_cache.emplace_back(pInfo);
+}
+
+void CAccountMgr::SetError(const bool isError) {
+	// TODO: this API is hell ("modifies the last call of CHECK" = terrible). Fix it
+	IPAddressCache & pInfo = m_cache.front();
+	
+	if (isError) {
+		++pInfo.m_nError;
+	} else {
+		pInfo.m_nError = 0;
 	}
 
-	pInfo->m_nError  = 0;
-	pInfo->m_dwIP    = dwIP;
-	pInfo->m_tmError = tmCur;
-
-	m_cache.push_front( pInfo );
-
-	return CHECK_OK;
+	pInfo.m_tmError = time(NULL);
 }
 
 
-void CAccountMgr::SetError( int nError )
-{
-	ACCOUNT_CACHE* pInfo = m_cache.front();		// MRU
-	
-	if( nError > 0 )
-		++pInfo->m_nError; 
-	else
-		pInfo->m_nError = 0; 
+//////////////////////////////////////////////////////////////////////
 
-	pInfo->m_tmError = time( NULL );
-}
+[[maybe_unused]] static void test_AccountMgr() {
+	static constexpr auto testAssert = [](const bool ok) {
+		if (!ok) {
+			throw "Assert failed";
+		}
+	};
 
-/*
-int main(int argc, char* argv[])
-{
+	const DWORD testerIp = 0x26137822; // Arbitrary value because we need one
 
 	CAccountMgr mgr;
-	ACCOUNT_CHECK check = mgr.Check("tester");
-	if( check == CHECK_OK )
-	{
-		mgr.SetError( 1 );
-		check = mgr.Check("tester");
-		assert( check == CHECK_1TIMES_ERROR );
+	ACCOUNT_CHECK check = mgr.Check(testerIp);
+	testAssert(check == ACCOUNT_CHECK::CHECK_OK);
+	mgr.SetError(true);
+	check = mgr.Check(testerIp);
+	testAssert(check == ACCOUNT_CHECK::CHECK_1TIMES_ERROR);
 
-		Sleep( 1000 * 16 );
+	Sleep(1000 * 16);
 
-		check = mgr.Check("tester");
-		assert( check == CHECK_OK );
+	check = mgr.Check(testerIp);
+	testAssert(check == ACCOUNT_CHECK::CHECK_OK);
 
-		mgr.SetError( 1 );
-		mgr.SetError( 1 );
-		mgr.SetError( 1 );
+	mgr.SetError(true);
+	mgr.SetError(true);
+	mgr.SetError(true);
 
-		check = mgr.Check("tester");
-		assert( check == CHECK_3TIMES_ERROR );
+	check = mgr.Check(testerIp);
+	testAssert(check == ACCOUNT_CHECK::CHECK_3TIMES_ERROR);
 
-		Sleep( 1000 * 60 * 15 + 1000 );
+	Sleep(1000 * 60 * 15 + 1000);
 
-		check = mgr.Check("tester");
-		assert( check == CHECK_OK );
-	}
-
-	return 0;
+	check = mgr.Check(testerIp);
+	testAssert(check == ACCOUNT_CHECK::CHECK_OK);
 }
-
-*/
