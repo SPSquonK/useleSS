@@ -39,7 +39,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AccountMgr.cpp">
+    <ClCompile Include="IpAddressRecentFailChecker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="certifier.cpp">
@@ -142,7 +142,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AccountMgr.h">
+    <ClInclude Include="IpAddressRecentFailChecker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="certifier.h">

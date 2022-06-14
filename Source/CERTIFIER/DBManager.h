@@ -39,7 +39,7 @@ typedef	struct tagDB_OVERLAPPED_PLUS
 	DWORD			dwIP;		//connected ip
 }	DB_OVERLAPPED_PLUS, *LPDB_OVERLAPPED_PLUS;
 
-class CAccountMgr;
+class IpAddressRecentFailChecker;
 
 #ifdef __GPAUTH
 struct GPAUTH_RESULT {
@@ -90,10 +90,10 @@ public:
 
 	BOOL	CreateDbWorkers();
 	void	GetStrTime( CTime *time, char *strbuf );
-	void	Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMgr& accountMgr );
+	void	Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, IpAddressRecentFailChecker & accountMgr );
 	void	CloseExistingConnection( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 #ifdef __GPAUTH
-	void	Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr & mgr );
+	void	Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, IpAddressRecentFailChecker & mgr );
 	void	CloseExistingConnection2( CQuery & query, LPDB_OVERLAPPED_PLUS pov );
 
 	#ifdef __GPAUTH_03
@@ -104,7 +104,7 @@ public:
 
 #endif	// __GPAUTH
 #ifdef __JAPAN_AUTH
-	void	Certify_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr & mgr );
+	void	Certify_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov, IpAddressRecentFailChecker & mgr );
 	void	CloseExistingConnection_Japan( CQuery & query, LPDB_OVERLAPPED_PLUS pov );
 #endif // __JAPAN_AUTH
 	void	DBQryAccount( char* qryAccount, LPDB_OVERLAPPED_PLUS pData );

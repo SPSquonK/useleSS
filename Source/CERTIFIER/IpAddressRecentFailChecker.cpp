@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "AccountMgr.h"
+#include "IpAddressRecentFailChecker.h"
 #include <algorithm>
 #include "..\Resource\lang.h"
 
 //////////////////////////////////////////////////////////////////////
 
-ACCOUNT_CHECK CAccountMgr::Check(const DWORD dwIP) {
+ACCOUNT_CHECK IpAddressRecentFailChecker::Check(const DWORD dwIP) {
 	// Is the IP in the list?
 	const auto it = std::ranges::find_if(m_cache,
 		[dwIP](const IPAddressCache & ptr) {
@@ -18,37 +18,37 @@ ACCOUNT_CHECK CAccountMgr::Check(const DWORD dwIP) {
 	} else {
 		// No: add in the list
 		AddNewIp(dwIP);
-		return ACCOUNT_CHECK::CHECK_OK;
+		return ACCOUNT_CHECK::Ok;
 	}
 }
 
-ACCOUNT_CHECK CAccountMgr::MoveBackAndCheck(
-	const decltype(CAccountMgr::m_cache)::iterator iterator
+ACCOUNT_CHECK IpAddressRecentFailChecker::MoveBackAndCheck(
+	const decltype(IpAddressRecentFailChecker::m_cache)::iterator iterator
 ) {
-	IPAddressCache pInfo = *iterator;
+	const IPAddressCache pInfo = *iterator;
 	m_cache.erase(iterator);
-
-	// Check result
-	ACCOUNT_CHECK result = ACCOUNT_CHECK::CHECK_OK;
-
-	static constexpr DWORD localhost = 0xFF000001;
-	if (pInfo.m_dwIP != localhost) {
-		const time_t tmCur = time(nullptr);
-
-		if (pInfo.m_nError >= 3) {
-			long nSec = tmCur - pInfo.m_tmError;
-			if (nSec <= (15 * 60)) result = ACCOUNT_CHECK::CHECK_3TIMES_ERROR;
-		} else if (pInfo.m_nError >= 1 && ::GetLanguage() != LANG_KOR) {
-			long nSec = tmCur - pInfo.m_tmError;
-			if (nSec <= 15) result = ACCOUNT_CHECK::CHECK_1TIMES_ERROR;
-		}
-	}
-
 	m_cache.emplace_back(pInfo);
-	return result;
+	return pInfo.GetState();
 }
 
-void CAccountMgr::AddNewIp(const DWORD dwIP) {
+ACCOUNT_CHECK IpAddressRecentFailChecker::IPAddressCache::GetState() const {
+	static constexpr DWORD localhost = 0xFF000001;
+	if (m_dwIP == localhost) return ACCOUNT_CHECK::Ok;
+
+	const time_t tmCur = time(nullptr);
+
+	if (m_nError >= 3) {
+		long nSec = tmCur - m_tmError;
+		if (nSec <= (15 * 60)) return ACCOUNT_CHECK::x3TimeError;
+	} else if (m_nError >= 1 && ::GetLanguage() != LANG_KOR) {
+		long nSec = tmCur - m_tmError;
+		if (nSec <= 15) return ACCOUNT_CHECK::x1TimeError;
+	}
+
+	return ACCOUNT_CHECK::Ok;
+}
+
+void IpAddressRecentFailChecker::AddNewIp(const DWORD dwIP) {
 	// Ensure has space
 	if (m_cache.size() == m_cache.max_size()) {
 		m_cache.erase(m_cache.begin());
@@ -65,7 +65,7 @@ void CAccountMgr::AddNewIp(const DWORD dwIP) {
 	m_cache.emplace_back(pInfo);
 }
 
-void CAccountMgr::SetError(const bool isError) {
+void IpAddressRecentFailChecker::SetError(const bool isError) {
 	// TODO: this API is hell ("modifies the last call of CHECK" = terrible). Fix it
 	IPAddressCache & pInfo = m_cache.front();
 	
@@ -90,27 +90,27 @@ void CAccountMgr::SetError(const bool isError) {
 
 	const DWORD testerIp = 0x26137822; // Arbitrary value because we need one
 
-	CAccountMgr mgr;
+	IpAddressRecentFailChecker mgr;
 	ACCOUNT_CHECK check = mgr.Check(testerIp);
-	testAssert(check == ACCOUNT_CHECK::CHECK_OK);
+	testAssert(check == ACCOUNT_CHECK::Ok);
 	mgr.SetError(true);
 	check = mgr.Check(testerIp);
-	testAssert(check == ACCOUNT_CHECK::CHECK_1TIMES_ERROR);
+	testAssert(check == ACCOUNT_CHECK::x1TimeError);
 
 	Sleep(1000 * 16);
 
 	check = mgr.Check(testerIp);
-	testAssert(check == ACCOUNT_CHECK::CHECK_OK);
+	testAssert(check == ACCOUNT_CHECK::Ok);
 
 	mgr.SetError(true);
 	mgr.SetError(true);
 	mgr.SetError(true);
 
 	check = mgr.Check(testerIp);
-	testAssert(check == ACCOUNT_CHECK::CHECK_3TIMES_ERROR);
+	testAssert(check == ACCOUNT_CHECK::x3TimeError);
 
 	Sleep(1000 * 60 * 15 + 1000);
 
 	check = mgr.Check(testerIp);
-	testAssert(check == ACCOUNT_CHECK::CHECK_OK);
+	testAssert(check == ACCOUNT_CHECK::Ok);
 }

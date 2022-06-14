@@ -10,7 +10,7 @@
 
 #include "dpcertifier.h"
 #include "dpaccountclient.h"
-#include "AccountMgr.h"
+#include "IpAddressRecentFailChecker.h"
 #include "..\Resource\Lang.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,18 +195,18 @@ void CDbManager::OnCertifyQueryOK( CQuery & query, LPDB_OVERLAPPED_PLUS pData, c
 		});
 }
 
-void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, CAccountMgr& accountMgr )
+void CDbManager::Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, IpAddressRecentFailChecker & accountMgr )
 {
-	ACCOUNT_CHECK result = ACCOUNT_CHECK::CHECK_OK;
+	ACCOUNT_CHECK result = ACCOUNT_CHECK::Ok;
 	if( pData->dwIP )
 	{
 		result = accountMgr.Check( pData->dwIP );
 		switch( result )
 		{
-			case ACCOUNT_CHECK::CHECK_1TIMES_ERROR:
+			case ACCOUNT_CHECK::x1TimeError:
 				g_dpCertifier.SendError(ERROR_15SEC_PREVENT, pData->dpId);
 				return;
-			case ACCOUNT_CHECK::CHECK_3TIMES_ERROR:
+			case ACCOUNT_CHECK::x3TimeError:
 				g_dpCertifier.SendError(ERROR_15MIN_PREVENT, pData->dpId);
 				return;
 		}
@@ -290,7 +290,7 @@ void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS p
 
 u_int __stdcall DbWorkerThread( LPVOID nIndex )
 {
-	CAccountMgr mgr;
+	IpAddressRecentFailChecker mgr;
 
 	CQuery query;
 	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
@@ -391,7 +391,7 @@ HANDLE CDbManager::GetIOCPHandle( int n )
 #ifdef __GPAUTH
 u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 {
-	CAccountMgr mgr;
+	IpAddressRecentFailChecker mgr;
 
 	CQuery query;
 	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
@@ -437,18 +437,18 @@ u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 	return 0;
 }
 
-void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, CAccountMgr & mgr )
+void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, IpAddressRecentFailChecker & mgr )
 {
-	ACCOUNT_CHECK result	= ACCOUNT_CHECK::CHECK_OK;
+	ACCOUNT_CHECK result	= ACCOUNT_CHECK::Ok;
 	if( pov->dwIP )
 	{
 		result	= mgr.Check( pov->dwIP );
 		switch( result )
 		{
-			case ACCOUNT_CHECK::CHECK_1TIMES_ERROR:
+			case ACCOUNT_CHECK::x1TimeError:
 				g_dpCertifier.SendError( ERROR_15SEC_PREVENT, pov->dpId );
 				return;
-			case ACCOUNT_CHECK::CHECK_3TIMES_ERROR:
+			case ACCOUNT_CHECK::x3TimeError:
 				g_dpCertifier.SendError( ERROR_15MIN_PREVENT, pov->dpId );
 				return;
 		}

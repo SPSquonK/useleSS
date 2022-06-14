@@ -87,7 +87,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AccountMgr.cpp">
+    <ClCompile Include="IpAddressRecentFailChecker.cpp">
     </ClCompile>
     <ClCompile Include="certifier.cpp">
     </ClCompile>
@@ -159,7 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
-    <ClInclude Include="AccountMgr.h" />
+    <ClInclude Include="IpAddressRecentFailChecker.h" />
     <ClInclude Include="certifier.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="dpaccountclient.h" />
