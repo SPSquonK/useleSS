@@ -2,6 +2,7 @@
 
 #include <boost/pool/object_pool.hpp>
 
+#include <thread>
 #include "query.h"
 #include "ar.h"
 #include "mempool.h"
@@ -9,8 +10,6 @@
 #include <map>
 #include <string>
 #include <set>
-
-const DWORD			DEFAULT_DB_WORKER_THREAD_NUM = 8;
 
 enum QUERYMODE
 {	
@@ -56,21 +55,24 @@ struct GPAUTH_RESULT {
 #endif	// __GPAUTH
 
 
-class CDbManager
-{
-protected:
-	HANDLE	m_hDbWorkerThreadTerminate[DEFAULT_DB_WORKER_THREAD_NUM];
-	HANDLE	m_hIOCP[DEFAULT_DB_WORKER_THREAD_NUM];
+class CDbManager {
+public:
+	static constexpr size_t DEFAULT_DB_WORKER_THREAD_NUM = 8;
+
+	struct Worker {
+		std::jthread thread;
+		HANDLE ioCompletionPort = nullptr;
+	};
 
 private:
-	boost::object_pool<DB_OVERLAPPED_PLUS> m_memoryPool;
+	boost::object_pool<DB_OVERLAPPED_PLUS>           m_memoryPool{ 512 };
+	std::array<Worker, DEFAULT_DB_WORKER_THREAD_NUM> m_workers;
 
 public:
 	std::set<std::string>						m_eveSchoolAccount;
 	char							m_szLoginPWD[256] = "";
 
 public:
-	CDbManager();
 	~CDbManager();
 
 	BOOL	CreateDbWorkers();
@@ -95,7 +97,6 @@ public:
 	[[nodiscard]] bool IsEveSchoolAccount(const char * pszAccount) const;
 	BYTE	GetAccountFlag( int f18, LPCTSTR szAccount );
 	void	OnCertifyQueryOK( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, const char* szCheck = "" );
-	HANDLE	GetIOCPHandle( int n );
 	void	PostQ( LPDB_OVERLAPPED_PLUS pData );
 
 	[[nodiscard]] DB_OVERLAPPED_PLUS * Alloc() { return m_memoryPool.construct(); }
@@ -104,9 +105,10 @@ public:
 
 extern CDbManager g_DbManager;
 
-u_int	__stdcall	DbWorkerThread( LPVOID lpDbManager );	// DbWorkerThread
+void	DbWorkerThread(HANDLE hIOCP);
+
 #ifdef __GPAUTH
 void	GetGPAuthResult( const char* szUrl, int nMode, int nGameMode, const char* sAccount, const char* sPassword, const char* sAddr, GPAUTH_RESULT & result );
-u_int	__stdcall	GPotatoAuthWorker( LPVOID pParam );
+void GPotatoAuthWorker(HANDLE hIOCP);
 #endif	// __GPAUTH
 

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "dbmanager.h"
 
+#include <string_view>
+
 #ifdef __GPAUTH
 #include "afxinet.h"
 #define		s_sUrl	"spe.gpotato.eu"
@@ -14,44 +16,22 @@
 #include "..\Resource\Lang.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// extern
-
-UINT HashKey(const char * key) {
-	UINT nHash = 0;
-	while (*key)
-		nHash = (nHash << 5) + nHash + *key++;
-	return nHash;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
 // global
 CDbManager	g_DbManager;
-HANDLE		s_hHandle	= (HANDLE)NULL;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-CDbManager::CDbManager()
-	: m_memoryPool(512)
-{
-	for (int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++) {
-		m_hIOCP[i] = nullptr;
-		m_hDbWorkerThreadTerminate[i] = nullptr;
+
+CDbManager::~CDbManager() {
+	// End all workers through completition port
+	for (auto & worker : m_workers) {
+		PostQueuedCompletionStatus(worker.ioCompletionPort, 0, NULL, NULL);
+		CLOSE_HANDLE(worker.ioCompletionPort);
 	}
+
+	// Waiting for actual stop is performed by the destructor of std::jthread
 }
 
-CDbManager::~CDbManager()
-{
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ )
-	{
-		PostQueuedCompletionStatus( m_hIOCP[i], 0, NULL, NULL );
-		CLOSE_HANDLE( m_hIOCP[i] );
-	}
-
-	WaitForMultipleObjects( DEFAULT_DB_WORKER_THREAD_NUM, m_hDbWorkerThreadTerminate, TRUE, INFINITE );
-
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ ) {
-		CLOSE_HANDLE( m_hDbWorkerThreadTerminate[i] );
-	}
-}
+HANDLE		s_hHandle = (HANDLE)NULL;
 
 BOOL CDbManager::CreateDbWorkers()
 {
@@ -62,26 +42,22 @@ BOOL CDbManager::CreateDbWorkers()
 	bGPAuth = FALSE;
 #endif // __INTERNALSERVER
 #endif	// __GPAUTH
+	
 	s_hHandle = CreateEvent( NULL, FALSE, FALSE, NULL );
 
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ )
-	{
-		m_hIOCP[i]	= CreateIoCompletionPort( INVALID_HANDLE_VALUE, NULL, 0, 0 );
-		ASSERT( m_hIOCP[i] );
+	for (auto & [thread, ioCompletionPort] : m_workers) {
+		ioCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+		ASSERT(ioCompletionPort);
+
 #ifdef __GPAUTH
-		HANDLE hThread;
-		if( bGPAuth )
-			hThread	= chBEGINTHREADEX( NULL, 0, GPotatoAuthWorker, (LPVOID)i, 0, NULL );
+		if (bGPAuth)
+			thread = std::jthread(GPotatoAuthWorker, ioCompletionPort);
 		else
-			hThread	= chBEGINTHREADEX( NULL, 0, DbWorkerThread, (LPVOID)i, 0, NULL );
-#else	// __GPAUTH
-		HANDLE hThread	= chBEGINTHREADEX( NULL, 0, DbWorkerThread, (LPVOID)i, 0, NULL );
 #endif	// __GPAUTH
-		ASSERT( hThread );
-		m_hDbWorkerThreadTerminate[i]	= hThread;
-		if( WaitForSingleObject( s_hHandle, SEC( 10 ) ) == WAIT_TIMEOUT )
-		{
-			OutputDebugString( "CERTIFIER.EXE\t// TIMEOUT\t// ODBC" );
+			thread = std::jthread(DbWorkerThread, ioCompletionPort);
+		
+		if (WaitForSingleObject(s_hHandle, SEC(10)) == WAIT_TIMEOUT) {
+			OutputDebugString("CERTIFIER.EXE\t// TIMEOUT\t// ODBC");
 			return FALSE;
 		}
 	}
@@ -278,26 +254,22 @@ void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS p
 	}
 }
 
-u_int __stdcall DbWorkerThread( LPVOID nIndex )
-{
+void DbWorkerThread(HANDLE hIOCP) {
 	IpAddressRecentFailChecker mgr;
 
 	CQuery query;
-	if( FALSE == query.Connect( 3, "useless_account", "account", g_DbManager.m_szLoginPWD ) )
-	{
-		AfxMessageBox( "Error : Not Connect useless_account DB" );
+	if (!query.Connect(3, "useless_account", "account", g_DbManager.m_szLoginPWD)) {
+		AfxMessageBox("Error : Not Connect useless_account DB");
 	}
 
-	SetEvent( s_hHandle );
+	SetEvent(s_hHandle);
 
-	HANDLE hIOCP				= g_DbManager.GetIOCPHandle( (int)nIndex );
 	DWORD dwBytesTransferred	= 0;
 	LPDWORD lpCompletionKey		= NULL;
 	LPDB_OVERLAPPED_PLUS pData	= NULL;
 
-	while( 1 )
-	{
-		BOOL fOk = GetQueuedCompletionStatus( hIOCP,
+	while (true) {
+		const BOOL fOk = GetQueuedCompletionStatus( hIOCP,
 										 &dwBytesTransferred,
 										(LPDWORD)&lpCompletionKey,
 										(LPOVERLAPPED*)&pData,
@@ -310,7 +282,7 @@ u_int __stdcall DbWorkerThread( LPVOID nIndex )
 		}
 
 		if( dwBytesTransferred == 0 )	// terminate
-			return( 0 );
+			return;
 		
 		switch( pData->nQueryMode )
 		{
@@ -324,8 +296,6 @@ u_int __stdcall DbWorkerThread( LPVOID nIndex )
 
 		g_DbManager.DeAlloc(pData);
 	}
-
-	return 0;
 }
 
 void CDbManager::GetStrTime( CTime *pTime, char *strbuf )
@@ -365,22 +335,15 @@ bool CDbManager::IsEveSchoolAccount(const char * const pszAccount) const {
 	return m_eveSchoolAccount.contains(pszAccount);
 }
 
-void CDbManager::PostQ( LPDB_OVERLAPPED_PLUS pData )
-{
-	UINT nKey = ::HashKey( pData->AccountInfo.szAccount );
-	int nIOCP = nKey % DEFAULT_DB_WORKER_THREAD_NUM;
-
-	::PostQueuedCompletionStatus( GetIOCPHandle( nIOCP ), 1, NULL, (LPOVERLAPPED)pData );
-}
-
-HANDLE CDbManager::GetIOCPHandle( int n )
-{
-	return m_hIOCP[n];
+void CDbManager::PostQ(DB_OVERLAPPED_PLUS * pData) {
+	std::string_view accountSv = pData->AccountInfo.szAccount;
+	const size_t nKey = std::hash<std::string_view>()(accountSv);
+	const size_t nIOCP = nKey % DEFAULT_DB_WORKER_THREAD_NUM;
+	::PostQueuedCompletionStatus(m_workers[nIOCP].ioCompletionPort, 1, NULL, (LPOVERLAPPED)pData);
 }
 
 #ifdef __GPAUTH
-u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
-{
+void GPotatoAuthWorker(HANDLE hIOCP) {
 	IpAddressRecentFailChecker mgr;
 
 	CQuery query;
@@ -389,7 +352,6 @@ u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 
 	SetEvent( s_hHandle );
 
-	HANDLE hIOCP	= g_DbManager.GetIOCPHandle( (int)pParam );
 	DWORD dwBytesTransferred	= 0;
 	LPDWORD lpCompletionKey		= NULL;
 	LPDB_OVERLAPPED_PLUS pov	= NULL;
@@ -409,7 +371,7 @@ u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 		}
 
 		if( dwBytesTransferred == 0 )	// terminate
-			return( 0 );
+			return;
 		
 		switch( pov->nQueryMode )
 		{
@@ -423,8 +385,6 @@ u_int __stdcall GPotatoAuthWorker( LPVOID pParam )
 
 		g_DbManager.DeAlloc(pov);
 	}
-
-	return 0;
 }
 
 void CDbManager::Certify2( CQuery & query, LPDB_OVERLAPPED_PLUS pov, IpAddressRecentFailChecker & mgr )
