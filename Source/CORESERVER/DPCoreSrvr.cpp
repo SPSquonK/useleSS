@@ -752,9 +752,11 @@ void CDPCoreSrvr::OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long )
 		++pParty->m_nLevel;
 	}
 
-	BEFORESENDDUAL(ar, PACKETTYPE_SETPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN);
-	ar << uPartyId << pParty->m_nExp << pParty->m_nPoint << pParty->m_nLevel;
-	SEND(ar, this, DPID_ALLPLAYERS);
+	{
+		BEFORESENDDUAL(ar, PACKETTYPE_SETPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN);
+		ar << uPartyId << pParty->m_nExp << pParty->m_nPoint << pParty->m_nLevel;
+		SEND(ar, this, DPID_ALLPLAYERS);
+	}
 }
 
 void CDPCoreSrvr::OnRemovePartyPoint( CAr & ar, DPID, DPID, DPID, u_long )
