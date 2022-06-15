@@ -6,49 +6,26 @@
 #include "account.h"
 #endif
 
-
-template <typename ServerDesc>
-CAr & SendServerDesc(CAr & ar, const ServerDesc & self) {
-  ar << self.dwID;
-  ar.WriteString(self.lpName);
-  ar.WriteString(self.lpAddr);
-  ar << self.b18;
-  ar << self.lCount;
-  ar << self.lEnable;
-  ar << self.lMax;
-  return ar;
-}
-
-template <typename ServerDesc>
-CAr & ReceiveServerDesc(CAr & ar, ServerDesc & self) {
-  ar >> self.dwID;
-  ar.ReadString(self.lpName);
-  ar.ReadString(self.lpAddr);
-  ar >> self.b18;
-  ar >> self.lCount;
-  ar >> self.lEnable;
-  ar >> self.lMax;
-  return ar;
-}
-
 CAr & operator<<(CAr & ar, const CListedServers::Server & self) {
-  SendServerDesc(ar, self);
+  ar << self.dwID << self.lEnable << self.lpAddr << self.lpName;
   ar << self.channels;
   return ar;
 }
 
 CAr & operator>>(CAr & ar, CListedServers::Server & self) {
-  ReceiveServerDesc(ar, self);
+  ar >> self.dwID >> self.lEnable >> self.lpAddr >> self.lpName;
   ar >> self.channels;
   return ar;
 }
 
 CAr & operator<<(CAr & ar, const CListedServers::Channel & self) {
-  return SendServerDesc(ar, self);
+  ar << self.dwID << self.lpName << self.b18 << self.lCount << self.lMax;
+  return ar;
 }
 
 CAr & operator>>(CAr & ar, CListedServers::Channel & self) {
-  return ReceiveServerDesc(ar, self);
+  ar >> self.dwID >> self.lpName >> self.b18 >> self.lCount >> self.lMax;
+  return ar;
 }
 
 CAr & operator<<(CAr & ar, const CListedServers & self) { return ar << self.m_servers; }

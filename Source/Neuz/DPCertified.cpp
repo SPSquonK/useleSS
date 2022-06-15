@@ -237,12 +237,8 @@ void CDPCertified::OnSrvrList( CAr & ar, DPID )
 
 	if (bPrivate) {
 		for (CListedServers::Server & server : m_servers.GetServers()) {
-			if (bPrivate && server.lpAddr[0] != '\0')
+			if (bPrivate && server.lpAddr[0] != '\0') {
 				lstrcpy(server.lpAddr, g_Neuz.m_lpCertifierAddr);
-
-			for (CListedServers::Channel & channel : server.channels) {
-				if (bPrivate && channel.lpAddr[0] != '\0')
-					lstrcpy(channel.lpAddr, g_Neuz.m_lpCertifierAddr);
 			}
 		}
 	}

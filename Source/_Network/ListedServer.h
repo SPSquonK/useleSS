@@ -25,7 +25,7 @@ public:
   struct Channel {
     DWORD	dwID = NULL_ID;
     char	lpName[36] = "";
-    char	lpAddr[16] = "";
+//    char	lpAddr[16] = "";
     BOOL	b18 = FALSE;
     long	lCount = 0;
     long	lEnable = 0;
@@ -39,10 +39,10 @@ public:
     DWORD	dwID = NULL_ID;
     char	lpName[36] = "";
     char	lpAddr[16] = "";
-    BOOL	b18 = FALSE;
-    long	lCount = 0;
+//    BOOL	b18 = FALSE;
+//    long	lCount = 0;
     long	lEnable = 0;
-    long	lMax = 0;
+//    long	lMax = 0;
     boost::container::static_vector<Channel, MaxChannels> channels;
 
     friend CAr & operator<<(CAr & ar, const Server & self);

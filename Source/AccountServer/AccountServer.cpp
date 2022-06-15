@@ -388,19 +388,19 @@ void CListedServers::EmplaceNew(CScanner & s) {
 	const auto SetValues = [&](auto & instance) {
 		instance.dwID = dwID;
 		lstrcpy(instance.lpName, lpName.GetString());
-		lstrcpy(instance.lpAddr, lpAddr.GetString());
-		instance.b18 = b18;
 		instance.lEnable = lEnable;
-		instance.lMax = lMax;
 	};
 
 	if (dwParent == NULL_ID) {
 		Server server;
 		SetValues(server);
+		lstrcpy(server.lpAddr, lpAddr.GetString());
 		m_servers.emplace_back(server);
 	} else {
 		Channel channel;
 		SetValues(channel);
+		channel.b18 = b18;
+		channel.lMax = lMax;
 
 		auto it = std::ranges::find_if(m_servers,
 			[dwParent](const Server & server) { return server.dwID == dwParent; }
