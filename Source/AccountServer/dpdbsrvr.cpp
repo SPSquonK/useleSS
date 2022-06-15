@@ -190,29 +190,28 @@ void CDPDBSrvr::SendPlayerCount() {
 	static bool foundOneBadServer = false;
 
 	g_dpSrvr.m_servers.read([&](const CListedServers & servers) {
-		servers.ForEachServerAndChannels(
-			[&adpid, this](const SERVER_DESC & server, const CListedServers::Channels & channels) {
-				boost::container::static_vector<int, 63> anCount;
+		for (const SERVER_DESC & server : servers.GetServers()) {
+			boost::container::static_vector<int, 63> anCount;
 
-				if (channels.size() >= anCount.max_size()) {
+			for (const SERVER_DESC & channel : servers.GetChannels(server)) {
+				if (anCount.size() == anCount.max_size()) {
 					if (!foundOneBadServer) {
 						foundOneBadServer = true;
 						Error("Server %s has more than one channel", server.lpName);
 					}
-					return;
+					break;
 				}
 
-				for (const SERVER_DESC * channel : channels) {
-					anCount.emplace_back(channel->lCount);
-				}
+				anCount.emplace_back(channel.lCount);
+			}
 
-				if (server.dwID >= 0 && server.dwID < 64 && adpid[server.dwID] != DPID_UNKNOWN) {
-					BEFORESEND(ar, PACKETTYPE_PLAYER_COUNT);
-					ar << server.dwID << anCount;
-					SEND(ar, this, adpid[server.dwID]);
-				}
-			});
-		});	
+			if (server.dwID >= 0 && server.dwID < 64 && adpid[server.dwID] != DPID_UNKNOWN) {
+				BEFORESEND(ar, PACKETTYPE_PLAYER_COUNT);
+				ar << server.dwID << anCount;
+				SEND(ar, this, adpid[server.dwID]);
+			}
+		}
+		});
 }
 
 void CDPDBSrvr::OnRemoveAllAccounts( CAr & ar, DPID dpid, LPBYTE, u_long )
