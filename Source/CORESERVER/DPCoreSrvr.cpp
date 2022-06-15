@@ -719,19 +719,21 @@ void CDPCoreSrvr::OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long )
 	CParty* pParty	= g_PartyMng.GetParty( uPartyId );
 	if (!pParty) return;
 
-	bool stable = true;
+	constexpr auto CanLevelUp = [](CParty & party) {
+		return party.m_nKindTroup != 0 || party.m_nLevel < MAX_PARTYLEVEL;
+	};
+
+	if (!CanLevelUp(*pParty)) return;
+
+	int nAddExp = (int)((nMonLv / 25 + 1) * 10);
+	nAddExp = (int)(nAddExp * s_fPartyExpRate);
+	if (bSuperLeader) nAddExp *= 2;
+	if (bLeaderSMPartyExpUp) nAddExp = (int)(nAddExp * 1.5);
+
+	pParty->m_nExp += nAddExp;
+
 	while (true) {
-		const bool canLevelUp = pParty->m_nKindTroup != 0 || pParty->m_nLevel < MAX_PARTYLEVEL;
-		if (!canLevelUp) break;
-
-		stable = false;
-
-		int nAddExp = (int)((nMonLv / 25 + 1) * 10);
-		nAddExp = (int)(nAddExp * s_fPartyExpRate);
-		if (bSuperLeader) nAddExp *= 2;
-		if (bLeaderSMPartyExpUp) nAddExp = (int)(nAddExp * 1.5);
-
-		pParty->m_nExp += nAddExp;
+		if (!CanLevelUp(*pParty)) break;
 
 		EXPPARTY expParty;
 		if (pParty->m_nKindTroup == 0) {
@@ -741,18 +743,18 @@ void CDPCoreSrvr::OnAddPartyExp( CAr & ar, DPID, DPID, DPID, u_long )
 			expParty.Point = 15;
 		}
 
-		if (pParty->m_nExp >= expParty.Exp) {
-			pParty->m_nExp -= expParty.Exp;
-			pParty->m_nPoint += expParty.Point;
-			++pParty->m_nLevel;
+		if (pParty->m_nExp < expParty.Exp) {
+			break;
 		}
+
+		pParty->m_nExp -= expParty.Exp;
+		pParty->m_nPoint += expParty.Point;
+		++pParty->m_nLevel;
 	}
 
-	if (!stable) {
-		BEFORESENDDUAL(ar, PACKETTYPE_SETPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN);
-		ar << uPartyId << pParty->m_nExp << pParty->m_nPoint << pParty->m_nLevel;
-		SEND(ar, this, DPID_ALLPLAYERS);
-	}
+	BEFORESENDDUAL(ar, PACKETTYPE_SETPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN);
+	ar << uPartyId << pParty->m_nExp << pParty->m_nPoint << pParty->m_nLevel;
+	SEND(ar, this, DPID_ALLPLAYERS);
 }
 
 void CDPCoreSrvr::OnRemovePartyPoint( CAr & ar, DPID, DPID, DPID, u_long )
