@@ -311,7 +311,7 @@ CListedServers::Server AddServer(DWORD id, const rapidjson::Value::ConstObject &
 	lstrcpy(server.lpAddr, v["ip"].GetString());
 
 	auto itr = v.FindMember("enabled");
-	server.lEnable = itr != v.MemberEnd() ? itr->value.GetBool() : true;
+	server.lEnable = itr != v.MemberEnd() ? itr->value.GetBool() ? 1 : 0 : 1;
 
 	for (const auto & channelJson : v["channels"].GetObject()) {
 		CListedServers::Channel channel;
@@ -324,7 +324,7 @@ CListedServers::Server AddServer(DWORD id, const rapidjson::Value::ConstObject &
 		channel.lMax = jsonObj["max"].GetInt();
 
 		auto itr = v.FindMember("enabled");
-		channel.lEnable = itr != v.MemberEnd() ? itr->value.GetBool() : true;
+		channel.lEnable = itr != v.MemberEnd() ? itr->value.GetBool() ? 1 : 0 : 1;
 
 		server.channels.emplace_back(std::move(channel));
 	}
