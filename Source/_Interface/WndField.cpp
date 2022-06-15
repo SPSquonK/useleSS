@@ -2684,8 +2684,7 @@ void CWndCharInfo::OnDraw(C2DRender* p2DRender)
 	}
 	//���� ����
 	y = 55+ nyAdd3;
-	CString strServerName;
-	strServerName.Format( "%s", g_dpCertified.GetServerName(g_Option.m_nSer) );
+	CString strServerName = g_dpCertified.GetServerName(g_Option.m_nSer);
 	if( TRUE ) //::GetLanguage() == LANG_JAP )
 	{
 		p2DRender->TextOut( 80, y, strServerName, dwColor );
@@ -2698,29 +2697,15 @@ void CWndCharInfo::OnDraw(C2DRender* p2DRender)
 	}
 
 	//ä�� ����
-	LPSERVER_DESC pServerDesc = NULL;
-	int nCount = 0;
-	for( int j = 0; j < (int)( g_dpCertified.m_dwSizeofServerset ); j++ )
-	{
-		if(g_dpCertified.m_aServerset[j].dwParent == NULL_ID)
-		{
-			if(nCount++ == g_Option.m_nSer)
-				pServerDesc = g_dpCertified.m_aServerset + j;
-		}
-		if(g_dpCertified.m_aServerset[j].dwParent != NULL_ID && g_dpCertified.m_aServerset[j].lEnable != 0L)
-		{
-			if(pServerDesc != NULL && g_dpCertified.m_aServerset[j].dwParent == pServerDesc->dwID)
-			{
-				strServerName.Format( "%s",  g_dpCertified.m_aServerset[j+g_Option.m_nMSer].lpName );
-				if( TRUE ) //::GetLanguage() == LANG_JAP )
-					p2DRender->TextOut( 80, y, strServerName, dwColor );
-				else
-					p2DRender->TextOut( 50, y, strServerName, dwColor );
-
-				j = g_dpCertified.m_dwSizeofServerset;
-			}
-		}
+	CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannelFromPos(g_Option.m_nSer, g_Option.m_nMSer);
+	if (channel) {
+		strServerName.Format("%s", channel->lpName);
+		if (TRUE) //::GetLanguage() == LANG_JAP )
+			p2DRender->TextOut(80, y, strServerName, dwColor);
+		else
+			p2DRender->TextOut(50, y, strServerName, dwColor);
 	}
+
 	/*
 	y = 96;
 	
@@ -3902,42 +3887,23 @@ void CWndCharacterBase::OnDraw(C2DRender* p2DRender)
 	}
 	//���� ����
 	y = 55;
-	CString strServerName;
-	strServerName.Format( "%s", g_dpCertified.GetServerName(g_Option.m_nSer) );
-	if( ::GetLanguage() == LANG_JAP )
-	{
-		p2DRender->TextOut( 80, y, strServerName, dwColor );
+	CString strServerName = g_dpCertified.GetServerName(g_Option.m_nSer);
+	if (::GetLanguage() == LANG_JAP) {
+		p2DRender->TextOut(80, y, strServerName, dwColor);
 		y += nNext;
-	}
-	else
-	{
-		p2DRender->TextOut( 50, y, strServerName, dwColor );
+	} else {
+		p2DRender->TextOut(50, y, strServerName, dwColor);
 		y += nNext;
 	}
 
 	//ä�� ����
-	LPSERVER_DESC pServerDesc = NULL;
-	int nCount = 0;
-	for( int j = 0; j < (int)( g_dpCertified.m_dwSizeofServerset ); j++ )
-	{
-		if(g_dpCertified.m_aServerset[j].dwParent == NULL_ID)
-		{
-			if(nCount++ == g_Option.m_nSer)
-				pServerDesc = g_dpCertified.m_aServerset + j;
-		}
-		if(g_dpCertified.m_aServerset[j].dwParent != NULL_ID && g_dpCertified.m_aServerset[j].lEnable != 0L)
-		{
-			if(pServerDesc != NULL && g_dpCertified.m_aServerset[j].dwParent == pServerDesc->dwID)
-			{
-				strServerName.Format( "%s",  g_dpCertified.m_aServerset[j+g_Option.m_nMSer].lpName );
-				if( ::GetLanguage() == LANG_JAP )
-					p2DRender->TextOut( 80, y, strServerName, dwColor );
-				else
-					p2DRender->TextOut( 50, y, strServerName, dwColor );
-
-				j = g_dpCertified.m_dwSizeofServerset;
-			}
-		}
+	CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannelFromPos(g_Option.m_nSer, g_Option.m_nMSer);
+	if (channel) {
+		strServerName = channel->lpName;
+		if (::GetLanguage() == LANG_JAP)
+			p2DRender->TextOut(80, y, strServerName, dwColor);
+		else
+			p2DRender->TextOut(50, y, strServerName, dwColor);
 	}
 
 	y = 96;

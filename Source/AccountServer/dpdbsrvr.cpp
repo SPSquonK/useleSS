@@ -118,10 +118,9 @@ void CDPDBSrvr::OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufS
 		pAccount->m_fRoute	= TRUE;
 		pAccount->m_dwIdofServer	= g_AccountMng.GetIdofServer( dpid );
 		pAccount->m_uIdofMulti	= uIdofMulti;
-		const u_long uId	= pAccount->m_dwIdofServer * 100 + uIdofMulti;
 
 		g_dpSrvr.m_servers.read([&](const CListedServers & servers) {
-			if (servers.GetFromUId(uId)) {
+			if (servers.GetChannel(*pAccount)) {
 				g_dpSrvr.DestroyPlayer(pAccount->m_dpid1, pAccount->m_dpid2);
 			}
 			});
@@ -150,11 +149,10 @@ void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 		OutputDebugString( "ACCOUNTSERVER.EXE\t// PACKETTYPE_JOIN" );
 		
 		// 동접을 보낸다.
-		const u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
 
 		g_dpSrvr.m_servers.write([&](CListedServers & servers) {
-			if (SERVER_DESC * serverDesc = servers.GetFromUId(uId)) {
-				serverDesc->lCount += 1;
+			if (CListedServers::Channel * channel = servers.GetChannel(*pAccount)) {
+				channel->lCount += 1;
 			}
 			});
 	}
@@ -190,18 +188,10 @@ void CDPDBSrvr::SendPlayerCount() {
 	static bool foundOneBadServer = false;
 
 	g_dpSrvr.m_servers.read([&](const CListedServers & servers) {
-		for (const SERVER_DESC & server : servers.GetServers()) {
-			boost::container::static_vector<int, 63> anCount;
+		for (const CListedServers::Server & server : servers.GetServers()) {
+			boost::container::static_vector<int, CListedServers::MaxChannels + 1> anCount;
 
-			for (const SERVER_DESC & channel : servers.GetChannels(server)) {
-				if (anCount.size() == anCount.max_size()) {
-					if (!foundOneBadServer) {
-						foundOneBadServer = true;
-						Error("Server %s has more than one channel", server.lpName);
-					}
-					break;
-				}
-
+			for (const CListedServers::Channel & channel : server.channels) {
 				anCount.emplace_back(channel.lCount);
 			}
 
@@ -214,9 +204,8 @@ void CDPDBSrvr::SendPlayerCount() {
 		});
 }
 
-void CDPDBSrvr::OnRemoveAllAccounts( CAr & ar, DPID dpid, LPBYTE, u_long )
-{
-	g_AccountMng.RemoveIdofServer( dpid, FALSE );
+void CDPDBSrvr::OnRemoveAllAccounts(CAr & ar, DPID dpid, LPBYTE, u_long) {
+	g_AccountMng.RemoveIdofServer(dpid, FALSE);
 }
 
 

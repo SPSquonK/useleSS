@@ -514,39 +514,24 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 		p2DRender->TextOut( 170, 13, 1, 1, strServerName, 0xff606060 );
 
 		//채널 정보
-		LPSERVER_DESC pServerDesc = NULL;
-		int nCount = 0;
-		for( int j = 0; j < (int)( g_dpCertified.m_dwSizeofServerset ); ++j )
-		{
-			if( g_dpCertified.m_aServerset[ j ].dwParent == NULL_ID )
-			{
-				if(nCount++ == g_Option.m_nSer)
-					pServerDesc = g_dpCertified.m_aServerset + j;
-			}
-			if( g_dpCertified.m_aServerset[ j ].dwParent != NULL_ID && g_dpCertified.m_aServerset[ j ].lEnable != 0L )
-			{
-				if( pServerDesc != NULL && g_dpCertified.m_aServerset[ j ].dwParent == pServerDesc->dwID )
-				{
-					strServerName.Format( "%s", g_dpCertified.m_aServerset[ j + g_Option.m_nMSer ].lpName );
-					if( strServerName.GetLength() > 18 ) 
-					{
-						int	nReduceCount = 0;
+		CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannelFromPos(g_Option.m_nSer, g_Option.m_nMSer);
+		
+		if (channel) {
+			CString strServerName = channel->lpName;
+			if (strServerName.GetLength() > 18) {
+				int	nReduceCount = 0;
 
-						for( nReduceCount = 0; nReduceCount < 18; )
-						{
-							if( IsDBCSLeadByte( strServerName[ nReduceCount ] ) )
-								nReduceCount += 2;
-							else
-								++nReduceCount;
-						}
-						strServerName = strServerName.Left( nReduceCount );
-						strServerName += "...";
-					}
-
-					p2DRender->TextOut( 170, 27, 1, 1, strServerName, 0xff606060 );
-					j = g_dpCertified.m_dwSizeofServerset;
+				for (nReduceCount = 0; nReduceCount < 18; ) {
+					if (IsDBCSLeadByte(strServerName[nReduceCount]))
+						nReduceCount += 2;
+					else
+						++nReduceCount;
 				}
+				strServerName = strServerName.Left(nReduceCount);
+				strServerName += "...";
 			}
+
+			p2DRender->TextOut(170, 27, 1, 1, strServerName, 0xff606060);
 		}
 	}
 } 

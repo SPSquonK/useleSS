@@ -17188,15 +17188,9 @@ void CDPClient::OnQuizSystemMessage( CAr & ar )
 	//채널 정보
 	if( nChannel )
 	{
-		CString strChannelName;
-		for( int i = 0; i < (int)( g_dpCertified.m_dwSizeofServerset ); i++ )
-		{
-			if( g_dpCertified.m_aServerset[i].dwParent == g_Neuz.m_dwSys && g_dpCertified.m_aServerset[i].dwID == nChannel )
-			{
-				strChannelName.Format( "%s", g_dpCertified.m_aServerset[i].lpName );
-				break;
-			}
-		}
+		CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannel(g_Neuz.m_dwSys, nChannel);
+		const char * strChannelName = channel ? channel->lpName : "";
+
 		if( nTime )
 			strMessage.Format( prj.GetText( nDefinedTextId ), strChannelName, nTime );
 		else

@@ -1,8 +1,5 @@
-// WndArcane.cpp: implementation of the CWndNeuz class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
+#include <format>
 
 #include "defineObj.h"
 #include "defineText.h"
@@ -579,92 +576,39 @@ void CWndSelectServer::OnInitialUpdate()
 
 	TCHAR szTitle[3][10] = {_T("Server"), _T("Ping"), _T("Max") };
 	
-	BOOL bSeveServer = FALSE;
-	for( int j = 0; j < (int)( g_dpCertified.m_dwSizeofServerset ); j++ )
-	{
-		char lpString[MAX_PATH]	= { 0, };
-		char lpStrtmp[32]	= { 0, };
-		long lCount	= 0;
-		long lMax	= 0;
-		if( g_dpCertified.m_aServerset[j].dwParent == NULL_ID )
-		{
-			if( g_dpCertified.m_aServerset[j].lEnable != 0L )
-			{
-				int nIndex	= pWndList->AddString( g_dpCertified.m_aServerset[j].lpName );
-				pWndList->SetItemData( nIndex, (DWORD)&g_dpCertified.m_aServerset[j] );
-				
-				if( nIndex == g_Option.m_nSer )
-				{
-					bSeveServer = TRUE;
-					pWndListMulti->ResetContent();
-				}
-			}
-		}
-		else if( g_dpCertified.m_aServerset[j].lEnable != 0L )
-		{
-			if( pWndList->GetCount() > 0 )
-			{
-				LPSERVER_DESC pServerDesc;
-				if( bSeveServer )
-				{
-					pServerDesc = (LPSERVER_DESC)pWndList->GetItemData( g_Option.m_nSer );
-				}
-				else
-				{
-					pServerDesc	= (LPSERVER_DESC)pWndList->GetItemData( 0 );
-				}
-				if( g_dpCertified.m_aServerset[j].dwParent == pServerDesc->dwID )
-				{
-					lCount	= g_dpCertified.m_aServerset[j].lCount;
-					lMax	= g_dpCertified.m_aServerset[j].lMax;
-
-					long lBusy	= (long)( lMax * 0.8 );
-
-					if( lCount < lBusy )
-					{
-						//strcpy( lpStrtmp, "정상" );
-						strcpy( lpStrtmp, prj.GetText(TID_GAME_NORMAL));
-					}
-					else 
-					if( lCount < lMax )
-					{
-						//strcpy( lpStrtmp, "혼잡" );
-						strcpy( lpStrtmp, prj.GetText(TID_GAME_BUSY));
-					}
-					else	
-					{
-						strcpy( lpStrtmp, prj.GetText(TID_GAME_FULL) );
-					}
-					sprintf( lpString, "%s(%s)", g_dpCertified.m_aServerset[j].lpName, lpStrtmp );
-//					sprintf( lpString, "%s(%d)", g_dpCertified.m_aServerset[j].lpName, g_dpCertified.m_aServerset[j].lCount );
-					int nIndex	= pWndListMulti->AddString( lpString );
-					pWndListMulti->SetItemData( nIndex, (DWORD)&g_dpCertified.m_aServerset[j] );
-				}
-			}
+	for (CListedServers::Server & server : g_dpCertified.m_servers.GetServers()) {
+		if (server.lEnable != 0) {
+			int nIndex = pWndList->AddString(server.lpName);
+			pWndList->SetItemData(nIndex, reinterpret_cast<DWORD>(&server));
 		}
 	}
-	if( pWndListMulti->GetCount() )
-		pWndListMulti->SetCurSel( 0 );
 
-	if( pWndList->GetCount() )
-		pWndList->SetCurSel( 0 );
+	pWndListMulti->ResetContent();
 
-	if( bSeveServer == FALSE )
-	{
+	if (g_Option.m_nSer >= pWndList->GetCount()) {
 		g_Option.m_nSer = 0;
 		g_Option.m_nMSer = 0;
 	}
-	else
-	{
-		if( g_Option.m_nMSer >= pWndListMulti->GetCount() )
-		{
+
+	if (pWndList->GetCount() > 0) {
+		pWndList->SetCurSel(g_Option.m_nSer);
+	}
+
+	if (!g_dpCertified.m_servers.GetServers().empty()) {
+		CListedServers::Server & server = g_dpCertified.m_servers.GetServers()[g_Option.m_nSer];
+		std::span<CListedServers::Channel> channels = server.channels;
+
+		DisplayChannels(*pWndListMulti, channels);
+
+		if (g_Option.m_nMSer >= pWndListMulti->GetCount()) {
 			g_Option.m_nMSer = 0;
 		}
+
+		if (pWndListMulti->GetCount() != 0) {
+			pWndListMulti->SetCurSel(g_Option.m_nMSer);
+		}
 	}
-	if( pWndList->GetCount() > 0 )
-		pWndList->SetCurSel( g_Option.m_nSer );
-	if( pWndListMulti->GetCount() > 0 )
-		pWndListMulti->SetCurSel( g_Option.m_nMSer );
+
 
 //	if( ::GetLanguage() == LANG_TWN )
 //	{
@@ -799,6 +743,33 @@ void CWndSelectServer::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			pWndListMulti->SetCurSel(++dwIndex);
 	}
 }
+
+void CWndSelectServer::DisplayChannels(CWndListBox & listBox, const std::span<CListedServers::Channel> & channels) {
+	char lpString[256];
+
+	for (CListedServers::Channel & channel : channels) {
+		//if (channel.lEnable) {
+
+		long lCount = channel.lCount;
+		long lMax = channel.lMax;
+
+		long lBusy = (long)(lMax * 0.8);
+
+		const char * lpStrtmp;
+		if (lCount < lBusy)
+			lpStrtmp = prj.GetText(TID_GAME_NORMAL);	//"정상"
+		else if (lCount < lMax)
+			lpStrtmp = prj.GetText(TID_GAME_BUSY);		//"혼잡"
+		else
+			lpStrtmp = prj.GetText(TID_GAME_FULL);
+
+		const auto r = std::format_to_n(lpString, std::size(lpString) - 1, "{}({})", channel.lpName, lpStrtmp);
+		*r.out = '\0';
+		int nIndex = listBox.AddString(lpString);
+		listBox.SetItemData(nIndex, reinterpret_cast<DWORD>(&channel));
+	}
+}
+
 BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
 	if( message == WNM_SELCHANGE )
@@ -819,28 +790,9 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					CWndListBox* pWndListMulti	= (CWndListBox*)GetDlgItem( WIDC_CONTROL1 );
 
 					pWndListMulti->ResetContent();
-					LPSERVER_DESC pServerDesc	= (LPSERVER_DESC)pWndListServer->GetItemData( pWndListServer->GetCurSel() );
-					for( int j = 0; j < (int)( g_dpCertified.m_dwSizeofServerset ); j++ )
-					{
-						if( g_dpCertified.m_aServerset[j].dwParent == pServerDesc->dwID && ( g_dpCertified.m_aServerset[j].lEnable != 0L ) )
-						{
-							lCount	= g_dpCertified.m_aServerset[j].lCount;
-							lMax	= g_dpCertified.m_aServerset[j].lMax;
-
-							long lBusy	= (long)( lMax * 0.8 );
-
-							if( lCount < lBusy )	
-								strcpy( lpStrtmp, prj.GetText(TID_GAME_NORMAL));	//"정상"
-							else if( lCount < lMax )		
-								strcpy( lpStrtmp, prj.GetText(TID_GAME_BUSY));		//"혼잡"
-							else	
-								lstrcpy( lpStrtmp, prj.GetText(TID_GAME_FULL) );
-
-							sprintf( lpString, "%s(%s)", g_dpCertified.m_aServerset[j].lpName, lpStrtmp );
-							int nIndex	= pWndListMulti->AddString( lpString );
-							pWndListMulti->SetItemData( nIndex, (DWORD)&g_dpCertified.m_aServerset[j] );
-						}
-					}
+					CListedServers::Server * pServerDesc	= (CListedServers::Server *) pWndListServer->GetItemData( pWndListServer->GetCurSel() );
+					DisplayChannels(*pWndListMulti, pServerDesc->channels);
+					
 					if( pWndListMulti->GetCount() )
 						pWndListMulti->SetCurSel( 0 );
 					break;
@@ -861,27 +813,21 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				CWndListBox* pWnd	= (CWndListBox*)GetDlgItem( WIDC_CONTROL1 );
 				if( pWnd->GetCount() <= 0 )
 					break;
-				LPSERVER_DESC pDesc		= (LPSERVER_DESC)pWnd->GetItemData( pWnd->GetCurSel() );
+
+				CListedServers::Channel * pDesc = reinterpret_cast<CListedServers::Channel *>(pWnd->GetItemData( pWnd->GetCurSel() ));
 				if( pDesc )
 				{
 					if( !( g_Neuz.m_cbAccountFlag & ACCOUNT_FLAG_SCHOOLEVENT ) && pDesc->lCount > pDesc->lMax )
 					{
 						g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0041) ) );
-//						g_WndMng.OpenMessageBox( _T( "사용자가 너무 많습니다." ) );
 						break;
 					}
-				}
-			}
-			if( ::GetLanguage() != LANG_THA )
-			{
-				CWndListBox* pWnd	= (CWndListBox*)GetDlgItem( WIDC_CONTROL1 );
-				LPSERVER_DESC pDesc		= (LPSERVER_DESC)pWnd->GetItemData( pWnd->GetCurSel() );
-				if( pDesc )
-				{
-					if( pDesc->b18 && !( g_Neuz.m_cbAccountFlag & ACCOUNT_FLAG_18 ) )
-					{
-						g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0058) ) );   // 18세미만 사용자는 접속할 수 없습니다.
-						break;
+
+					if (::GetLanguage() != LANG_THA) {
+						if (pDesc->b18 && !(g_Neuz.m_cbAccountFlag & ACCOUNT_FLAG_18)) {
+							g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0058)));   // 18세미만 사용자는 접속할 수 없습니다.
+							break;
+						}
 					}
 				}
 			}
@@ -899,34 +845,43 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
 
 			CWndListBox* pWndList	= (CWndListBox*)GetDlgItem( WIDC_CONTROL0 );
-			LPSERVER_DESC pServerDesc	= (LPSERVER_DESC)pWndList->GetItemData( pWndList->GetCurSel() );
+			CListedServers::Server * pTServerDesc	= (CListedServers::Server *)pWndList->GetItemData( pWndList->GetCurSel() );
 
 			g_Option.m_nSer = pWndList->GetCurSel();
-			g_Neuz.m_dwSys	= pServerDesc->dwID;
-			LPCSTR lpAddr	= pServerDesc->lpAddr;
+			g_Neuz.m_dwSys	= pTServerDesc->dwID;
+			LPCSTR lpAddr	= pTServerDesc->lpAddr;
 			pWndList	= (CWndListBox*)GetDlgItem( WIDC_CONTROL1 );
-			pServerDesc	= (LPSERVER_DESC)pWndList->GetItemData( pWndList->GetCurSel() );
+			CListedServers::Channel * pServerDesc = (CListedServers::Channel *)pWndList->GetItemData(pWndList->GetCurSel());
 			g_Option.m_nMSer = pWndList->GetCurSel();
 			g_Neuz.m_uIdofMulti		= pServerDesc->dwID;
 			g_Neuz.m_b18Server		= pServerDesc->b18;
-			
 
-			if( pServerDesc->dwParent != g_Neuz.m_dwSys )
-			{
-				CWndListBox* pWndListBox	= (CWndListBox*)GetDlgItem( WIDC_CONTROL0 );
-				for( int i = 0; i < pWndListBox->GetCount(); i++ )
-				{
-					LPSERVER_DESC ptr	= (LPSERVER_DESC)pWndListBox->GetItemData( i );
-					if( ptr && ptr->dwID == pServerDesc->dwParent )
-					{
-						pWndListBox->SetCurSel( i );
-						g_Option.m_nSer	= i;
-						g_Neuz.m_dwSys	= ptr->dwID;
-						lpAddr	= ptr->lpAddr;
-						break;
+			std::span<CListedServers::Server> servers = g_dpCertified.m_servers.GetServers();
+
+			const auto itServer = std::ranges::find_if(servers,
+				[&](const CListedServers::Server & server) {
+					return std::ranges::any_of(server.channels,
+						[&](const CListedServers::Channel & channel) {return &channel == pServerDesc; });
+				}
+			);
+			
+			if (itServer != servers.end()) {
+				if (itServer->dwID != g_Neuz.m_dwSys) {
+
+					CWndListBox * pWndListBox = (CWndListBox *)GetDlgItem(WIDC_CONTROL0);
+					for (int i = 0; i < pWndListBox->GetCount(); i++) {
+						CListedServers::Server * ptr = (CListedServers::Server *)pWndListBox->GetItemData(i);
+						if (ptr == &*itServer) {
+							pWndListBox->SetCurSel(i);
+							g_Option.m_nSer = i;
+							g_Neuz.m_dwSys = ptr->dwID;
+							lpAddr = ptr->lpAddr;
+							break;
+						}
 					}
 				}
 			}
+
 
 #		ifdef __CRC
 			if( !g_dpLoginClient.ConnectToServer( lpAddr, PN_LOGINSRVR, TRUE, CSock::crcWrite ) )

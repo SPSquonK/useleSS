@@ -44,6 +44,7 @@ public:
 #endif
 };
 
+#include "ListedServer.h"
 class CWndSelectServer : public CWndNeuz {
 public:
 	std::vector<CString> m_vecStrBanner;
@@ -58,7 +59,7 @@ public:
 	void OnInitialUpdate() override;
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
-
+	static void DisplayChannels(CWndListBox & listBox, const std::span<CListedServers::Channel> & channels);
 
 	BOOL Process() override;
 	void AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);

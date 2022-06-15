@@ -174,20 +174,10 @@ void CDPCertified::SendCloseExistingConnection( const char* lpszAccount, const c
 
 // 서버인덱스를 가지고 서버의 이름을  얻는다.
 // nServerIndex - 서버 ListBox에서 선택한 행의 번호 ( 0부터 시작 )
-LPCTSTR CDPCertified::GetServerName( int nServerIndex )
-{
-	int nCount = 0;		// 서버셋의 count
-	for( int i = 0; i < (int)( m_dwSizeofServerset ); i++ )
-	{
-		if( m_aServerset[i].dwParent == NULL_ID )
-		{
-			if( nCount++ == nServerIndex )	 // nServerIndex(=서버인덱스)는 서버셋의 인덱스와 같은 의미 
-			{
-				return m_aServerset[i].lpName;
-			}
-		}
-	}
-	return "Unknown";
+LPCTSTR CDPCertified::GetServerName(int nServerIndex) const {
+	const auto span = m_servers.GetServers();
+	if (nServerIndex >= span.size()) return "Unknown";
+	return span[nServerIndex].lpName;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -243,25 +233,20 @@ void CDPCertified::OnSrvrList( CAr & ar, DPID )
 	CString strAddr	= g_Neuz.m_lpCertifierAddr;
 	BOOL bPrivate	= ( ::GetLanguage() == LANG_GER && strAddr.Find( "192.168", 0 ) == 0 );
 
-	ar >> m_dwSizeofServerset;
-	LPSERVER_DESC pServer;
-	for( int i = 0; i < (int)( m_dwSizeofServerset ); i++ )
-	{
-		pServer		= m_aServerset + i;
-		ar >> pServer->dwParent;
-		ar >> pServer->dwID;
-		ar.ReadString( pServer->lpName, 36 );
-		ar.ReadString( pServer->lpAddr, 16 );
+	ar >> m_servers;
 
-		// 독일 테스트 서버로의 현지 접속이고 ip가 포함된 서버 정보라면,
-		if( bPrivate && pServer->lpAddr[0] != '\0' )
-			lstrcpy( pServer->lpAddr, g_Neuz.m_lpCertifierAddr );
+	if (bPrivate) {
+		for (CListedServers::Server & server : m_servers.GetServers()) {
+			if (bPrivate && server.lpAddr[0] != '\0')
+				lstrcpy(server.lpAddr, g_Neuz.m_lpCertifierAddr);
 
-		ar >> pServer->b18;
-		ar >> pServer->lCount;
-		ar >> pServer->lEnable;
-		ar >> pServer->lMax;
+			for (CListedServers::Channel & channel : server.channels) {
+				if (bPrivate && channel.lpAddr[0] != '\0')
+					lstrcpy(channel.lpAddr, g_Neuz.m_lpCertifierAddr);
+			}
+		}
 	}
+
 	CNetwork::GetInstance().OnEvent( CERT_SRVR_LIST );
 
 	CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_LOGIN );
@@ -273,7 +258,7 @@ void CDPCertified::OnSrvrList( CAr & ar, DPID )
 void CDPCertified::OnErrorString( CAr & ar, DPID dpid )
 {
 	char szError[256]	= { 0,};
-	ar.ReadString( szError, 256 );
+	ar.ReadString( szError );
 
 	g_WndMng.CloseMessageBox();
 	g_WndMng.OpenMessageBox( szError );

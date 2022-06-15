@@ -208,8 +208,8 @@ void CDPAccountClient::OnPlayerCount(CAr & ar, DPID ) {
 	const auto [uId, lCount] = ar.Extract<u_long, long>();
 
 	g_dpCertifier.m_servers.write([&](CListedServers & servers) {
-		if (SERVER_DESC * server = servers.GetFromUId(uId)) {
-			server->lCount = lCount;
+		if (CListedServers::Channel * channel = servers.GetFromUId(uId)) {
+			channel->lCount = lCount;
 		}
 		});
 }
@@ -218,8 +218,8 @@ void CDPAccountClient::OnEnableServer(CAr & ar, DPID) {
 	const auto [uId, lEnable] = ar.Extract<u_long, long>();
 
 	g_dpCertifier.m_servers.write([&](CListedServers & servers) {
-		if (SERVER_DESC * server = servers.GetFromUId(uId)) {
-			server->lEnable = lEnable;
+		if (CListedServers::Channel * channel = servers.GetFromUId(uId)) {
+			channel->lEnable = lEnable;
 		}
 		});
 }

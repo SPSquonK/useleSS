@@ -253,8 +253,8 @@ void CAccountMng::RemoveAccount( LPCTSTR lpszAccount )
 			const u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
 
 			g_dpSrvr.m_servers.write([&](CListedServers & servers) {
-				if (SERVER_DESC * server = servers.GetFromUId(uId)) {
-					--server->lCount;
+				if (CListedServers::Channel * channel = servers.GetFromUId(uId)) {
+					--channel->lCount;
 				}
 				});
 		}

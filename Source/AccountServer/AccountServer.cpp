@@ -364,27 +364,55 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 }
 
 void CListedServers::EmplaceNew(CScanner & s) {
-	SERVER_DESC & pServer = m_servers.emplace_back();
 	s.GetToken();	// (
-	pServer.dwParent = s.GetNumber();
+	DWORD dwParent = s.GetNumber();
 	s.GetToken();	// ,
-	pServer.dwID = s.GetNumber();
-	s.GetToken();	// ,
-	s.GetToken();
-	strcpy(pServer.lpName, s.Token);
+	DWORD dwID = s.GetNumber();
 	s.GetToken();	// ,
 	s.GetToken();
-	strcpy(pServer.lpAddr, s.Token);
+	CString lpName = s.Token;
 	s.GetToken();	// ,
-	pServer.b18 = (BOOL)s.GetNumber();
+	s.GetToken();
+	CString lpAddr = s.Token;
 	s.GetToken();	// ,
-	pServer.lEnable = (long)s.GetNumber();
+	BOOL b18 = (BOOL)s.GetNumber();
+	s.GetToken();	// ,
+	long lEnable = (long)s.GetNumber();
 #ifdef __SERVERLIST0911
-	pServer->lEnable = 0L;
+	lEnable = 0L;
 #endif	// __SERVERLIST0911
 	s.GetToken();	// ,
-	pServer.lMax = (long)s.GetNumber();
+	long lMax = (long)s.GetNumber();
 	s.GetToken();	// )
+
+	const auto SetValues = [&](auto & instance) {
+		instance.dwID = dwID;
+		lstrcpy(instance.lpName, lpName.GetString());
+		lstrcpy(instance.lpAddr, lpAddr.GetString());
+		instance.b18 = b18;
+		instance.lEnable = lEnable;
+		instance.lMax = lMax;
+	};
+
+	if (dwParent == NULL_ID) {
+		Server server;
+		SetValues(server);
+		m_servers.emplace_back(server);
+	} else {
+		Channel channel;
+		SetValues(channel);
+
+		auto it = std::ranges::find_if(m_servers,
+			[dwParent](const Server & server) { return server.dwID == dwParent; }
+		);
+
+		if (it == m_servers.end()) {
+			Error("Bad AccountServer.ini: a channel has no parent");
+			throw "Bad AccountServer.ini: a channel has no parent";
+		}
+
+		it->channels.emplace_back(channel);
+	}
 }
 
 

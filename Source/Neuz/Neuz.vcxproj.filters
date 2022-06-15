@@ -1006,6 +1006,9 @@
     <ClCompile Include="..\_Common\ItemMorph.cpp">
       <Filter>ItemProps</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Network\ListedServer.cpp">
+      <Filter>Source Files\_Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1885,6 +1888,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\accessory.h">
       <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\ListedServer.h">
+      <Filter>Source Files\_Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -8,6 +8,8 @@
 
 class CAr;
 
+/*
+
 struct SERVER_DESC {
 	DWORD	dwParent = NULL_ID;
 	long	lCount = 0;
@@ -23,6 +25,8 @@ struct SERVER_DESC {
 };
 
 using LPSERVER_DESC = SERVER_DESC *;
+
+*/
 
 // 쪽지 기능관련 스트럭쳐 
 struct TAG_ENTRY

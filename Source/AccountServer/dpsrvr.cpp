@@ -377,8 +377,8 @@ BOOL CDPSrvr_AccToCert::EnableServer( DWORD dwParent, DWORD dwID, long lEnable )
 	BOOL res = FALSE;
 	m_servers.write([&](CListedServers & servers) {
 		const u_long uId = dwParent * 100 + dwID;
-		if (SERVER_DESC * pServer = servers.GetFromUId(uId)) {
-			pServer->lEnable = lEnable;
+		if (CListedServers::Channel * channel = servers.GetChannel(dwParent, dwID)) {
+			channel->lEnable = lEnable;
 			SendEnableServer(uId, lEnable);
 			g_MyTrace.Add(uId, FALSE, "%d/%d - %s", dwParent, dwID, lEnable ? "o" : "x");
 			

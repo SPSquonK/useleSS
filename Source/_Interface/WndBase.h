@@ -425,11 +425,12 @@ namespace Windows {
 			UINT appId,
 			const std::source_location location = std::source_location::current()
 			) : m_appId(appId) {
-			std::format_to_n(
-				m_message, 512,
+			const auto r = std::format_to_n(
+				m_message, std::size(m_message) - 1,
 				"Bad APP ID {} used in {}",
 				appId, location.function_name()
 			);
+			*r.out = '\0';
 		}
 
 		[[nodiscard]] const char * what() const {

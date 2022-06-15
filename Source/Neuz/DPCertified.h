@@ -4,6 +4,7 @@
 #include "dpmng.h"
 #include "msghdr.h"
 #include "misc.h"
+#include "ListedServer.h"
 
 #undef	theClass
 #define theClass	CDPCertified
@@ -18,8 +19,7 @@ private:
 	LONG	m_lError;					// protocol error code 
 
 public:
-	DWORD		m_dwSizeofServerset;
-	SERVER_DESC	m_aServerset[128];
+	CListedServers m_servers;
 
 public:
 //	Constructions
@@ -38,7 +38,7 @@ public:
 	BOOL	IsConnected( void );
 	void	Ping( void );
 	void	SendNewAccount( LPCSTR lpszAccount, LPCSTR lpszpw );
-	LPCTSTR GetServerName( int nServerIndex );
+	[[nodiscard]] LPCTSTR GetServerName( int nServerIndex ) const;
 	void	SendHdr( DWORD dwHdr );
 	void	SendCloseExistingConnection( const char* lpszAccount, const char* lpszpw );
 	BOOL	CheckNofityDisconnected();
