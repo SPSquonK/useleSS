@@ -118,12 +118,13 @@ void CDPDBSrvr::OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufS
 		pAccount->m_fRoute	= TRUE;
 		pAccount->m_dwIdofServer	= g_AccountMng.GetIdofServer( dpid );
 		pAccount->m_uIdofMulti	= uIdofMulti;
-		u_long uId	= pAccount->m_dwIdofServer * 100 + uIdofMulti;
-		const auto i	= g_dpSrvr.m_2ServersetPtr.find( uId );
-		if( i != g_dpSrvr.m_2ServersetPtr.end() )
-		{
-			g_dpSrvr.DestroyPlayer( pAccount->m_dpid1, pAccount->m_dpid2 );
-		}
+		const u_long uId	= pAccount->m_dwIdofServer * 100 + uIdofMulti;
+
+		g_dpSrvr.m_servers.read([&](const CListedServers & servers) {
+			if (servers.GetFromUId(uId)) {
+				g_dpSrvr.DestroyPlayer(pAccount->m_dpid1, pAccount->m_dpid2);
+			}
+			});
 	}
 	else
 	{
@@ -149,13 +150,13 @@ void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 		OutputDebugString( "ACCOUNTSERVER.EXE\t// PACKETTYPE_JOIN" );
 		
 		// 동접을 보낸다.
-		u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
-		const auto i	= g_dpSrvr.m_2ServersetPtr.find( uId );
-		if( i != g_dpSrvr.m_2ServersetPtr.end() )
-		{
-			long lCount	= InterlockedIncrement( &i->second->lCount );
-			g_dpSrvr.SendPlayerCount( uId, lCount );
-		}
+		const u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
+
+		g_dpSrvr.m_servers.write([&](CListedServers & servers) {
+			if (SERVER_DESC * serverDesc = servers.GetFromUId(uId)) {
+				serverDesc->lCount += 1;
+			}
+			});
 	}
 }
 
@@ -171,86 +172,47 @@ void CDPDBSrvr::SendCloseExistingConnection( const char* lpszAccount, LONG lErro
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPDBSrvr::SendPlayerCount( void )
-{
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-	for( int nChannel = 0; nChannel < (int)( m_vecstrChannelAccount.size()+1 ); nChannel++ )
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-	{
+void CDPDBSrvr::SendPlayerCount() {
+	// 1/ Compute idOfServer to dpid map
+	std::array<DWORD, 64> adpid;
+	adpid.fill(DPID_UNKNOWN);
 
-		DWORD dwParent	= NULL_ID;
-		int cbSize;
-		int anCount[64];
-		DPID adpid[64];
-	
-		memset( (void*)adpid, 0xff, sizeof(DPID) * 64 );
-		DWORD dwIdofServer;
-		g_AccountMng.m_AddRemoveLock.Enter();
-		for( auto i2 = g_AccountMng.m_2IdofServer.begin(); i2 != g_AccountMng.m_2IdofServer.end(); ++i2 )
-		{
-			dwIdofServer	= i2->second;
-			if( dwIdofServer >= 0 && dwIdofServer < 64 )
-				adpid[dwIdofServer]		= i2->first;
-		}
-		g_AccountMng.m_AddRemoveLock.Leave();
-
-		LPSERVER_DESC pServer;
-		for( int i = 0; i < (int)( g_dpSrvr.m_dwSizeofServerset ); i++ )
-		{
-			pServer		= &g_dpSrvr.m_aServerset[i];
-			if( pServer->dwParent == NULL_ID )
-			{
-	//			if( dwParent != NULL_ID )
-				if( dwParent >= 0 && dwParent < 64 && adpid[dwParent] != DPID_UNKNOWN )
-				{
-					BEFORESEND( ar, PACKETTYPE_PLAYER_COUNT );
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-					ar << nChannel;
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-					ar <<cbSize;
-					ar.Write( (void*)anCount, sizeof(int) * cbSize );
-					SEND( ar, this, adpid[dwParent] );
-				}
-				dwParent	= pServer->dwID;
-				cbSize	= 0;
-			}
-			else
-			{
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-				if( nChannel == 0 )
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-					anCount[cbSize++]		= pServer->lCount;
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-				else
-				{
-					CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
-					long lCount = 0;
-
-					for (const auto & [accountName, account] : g_AccountMng.GetMapAccount()) {
-						if(accountName.find( m_vecstrChannelAccount[nChannel-1] ) != -1
-							&& account->m_dwIdofServer == pServer->dwParent
-							&& account->m_uIdofMulti == pServer->dwID )
-						{
-							lCount++;
-						}
-					}
-					anCount[cbSize++] = lCount;
-				}
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-			}
-		}
-	//	if( dwParent != NULL_ID )
-		if( dwParent >= 0 && dwParent < 64 && adpid[dwParent] != DPID_UNKNOWN )
-		{
-			BEFORESEND( ar, PACKETTYPE_PLAYER_COUNT );
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-			ar << nChannel;
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-			ar << cbSize;
-			ar.Write( (void*)anCount, sizeof(int) * cbSize );
-			SEND( ar, this, adpid[dwParent] );
+	g_AccountMng.m_AddRemoveLock.Enter();
+	for (const auto & [dpid, idOfServer] : g_AccountMng.m_2IdofServer) {
+		if (idOfServer >= 0 && idOfServer < 64) {
+			adpid[idOfServer] = dpid;
 		}
 	}
+	g_AccountMng.m_AddRemoveLock.Leave();
+
+
+	// 2/ Log count for each channel
+	static bool foundOneBadServer = false;
+
+	g_dpSrvr.m_servers.read([&](const CListedServers & servers) {
+		servers.ForEachServerAndChannels(
+			[&adpid, this](const SERVER_DESC & server, const CListedServers::Channels & channels) {
+				boost::container::static_vector<int, 63> anCount;
+
+				if (channels.size() >= anCount.max_size()) {
+					if (!foundOneBadServer) {
+						foundOneBadServer = true;
+						Error("Server %s has more than one channel", server.lpName);
+					}
+					return;
+				}
+
+				for (const SERVER_DESC * channel : channels) {
+					anCount.emplace_back(channel->lCount);
+				}
+
+				if (server.dwID >= 0 && server.dwID < 64 && adpid[server.dwID] != DPID_UNKNOWN) {
+					BEFORESEND(ar, PACKETTYPE_PLAYER_COUNT);
+					ar << server.dwID << anCount;
+					SEND(ar, this, adpid[server.dwID]);
+				}
+			});
+		});	
 }
 
 void CDPDBSrvr::OnRemoveAllAccounts( CAr & ar, DPID dpid, LPBYTE, u_long )

@@ -97,7 +97,7 @@ private:
 #endif	// __EUROPE_0514
 public:
 	int						m_nCount;
-	std::map<DWORD, DWORD>		m_2IdofServer;
+	std::map<DPID, DWORD>		m_2IdofServer;
 
 	int		m_nYear;
 	int		m_nMonth;

@@ -22,14 +22,6 @@ CDPSrvr_AccToCert::CDPSrvr_AccToCert()
 	memset( m_sAddrPmttd, 0, sizeof(m_sAddrPmttd) );
 	m_nSizeofAddrPmttd	= 0;
 
-	m_dwSizeofServerset	= 0;
-
-#ifdef __SECURITY_0628
-	*m_szResVer	= '\0';
-#endif	// __SECURITY_0628
-
-	strcpy( m_szVer, "20040706" );	// default value
-
 	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount );
 	ON_MSG( PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount );
@@ -362,20 +354,8 @@ void CDPSrvr_AccToCert::SendServersetList( DPID dpid )
 #ifdef __SECURITY_0628
 	ar.WriteString( m_szResVer );
 #endif	// __SECURITY_0628
-	ar << m_dwSizeofServerset;
-	LPSERVER_DESC pServer;
-	for( DWORD i = 0; i < m_dwSizeofServerset; i++ )
-	{
-		pServer		= m_aServerset + i;
-		ar << pServer->dwParent;
-		ar << pServer->dwID;
-		ar.WriteString( pServer->lpName );
-		ar.WriteString( pServer->lpAddr );
-		ar << pServer->b18;
-		ar << pServer->lCount;
-		ar << pServer->lEnable;
-		ar << pServer->lMax;
-	}
+
+	m_servers.read([&](const CListedServers & servers) { ar << servers; });
 	SEND( ar, this, dpid );
 }
 
@@ -393,21 +373,20 @@ void CDPSrvr_AccToCert::SendEnableServer( u_long uId, long lEnable )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-BOOL CDPSrvr_AccToCert::EnableServer( DWORD dwParent, DWORD dwID, long lEnable )
-{
-//	if( dwParent != NULL_ID )
-	{
-		u_long uId	= dwParent * 100 + dwID;
-		const auto i2	= m_2ServersetPtr.find( uId );
-		if( i2 != m_2ServersetPtr.end() )
-		{
-			InterlockedExchange( &i2->second->lEnable, lEnable );
-			SendEnableServer( uId, lEnable );
-			g_MyTrace.Add( uId, FALSE, "%d/%d - %s", dwParent, dwID, lEnable? "o": "x" );
-			return TRUE;
+BOOL CDPSrvr_AccToCert::EnableServer( DWORD dwParent, DWORD dwID, long lEnable ) {
+	BOOL res = FALSE;
+	m_servers.write([&](CListedServers & servers) {
+		const u_long uId = dwParent * 100 + dwID;
+		if (SERVER_DESC * pServer = servers.GetFromUId(uId)) {
+			pServer->lEnable = lEnable;
+			SendEnableServer(uId, lEnable);
+			g_MyTrace.Add(uId, FALSE, "%d/%d - %s", dwParent, dwID, lEnable ? "o" : "x");
+			
+			res = TRUE;
 		}
-	}
-	return FALSE;
+		});
+
+	return res;
 }
 
 void CDPSrvr_AccToCert::OnCloseExistingConnection( CAr & ar, DPID dpid1, DPID dpid2 )

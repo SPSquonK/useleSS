@@ -255,34 +255,11 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 			}
 			else if( s.Token == "AddTail" )
 			{
-				LPSERVER_DESC pServer
-					= g_dpSrvr.m_aServerset + g_dpSrvr.m_dwSizeofServerset++;
-				s.GetToken();	// (
-				pServer->dwParent	= s.GetNumber();
-				s.GetToken();	// ,
-				pServer->dwID	= s.GetNumber();
-				s.GetToken();	// ,
-				s.GetToken();
-				strcpy( pServer->lpName, s.Token );
-				s.GetToken();	// ,
-				s.GetToken();
-				strcpy( pServer->lpAddr, s.Token );
-				s.GetToken();	// ,
-				pServer->b18	= (BOOL)s.GetNumber();
-				s.GetToken();	// ,
-				pServer->lEnable	= (long)s.GetNumber();
-#ifdef __SERVERLIST0911
-				pServer->lEnable	= 0L;
-#endif	// __SERVERLIST0911
-				s.GetToken();	// ,
-				pServer->lMax	= (long)s.GetNumber();
-				s.GetToken();	// )
-
-//				if( pServer->dwParent != NULL_ID )
-				{
-					u_long uId	= pServer->dwParent * 100 + pServer->dwID;
-					g_dpSrvr.m_2ServersetPtr.emplace(uId, pServer);
-				}
+				g_dpSrvr.m_servers.write(
+					[&](CListedServers & servers) {
+						servers.EmplaceNew(s);
+					}
+				);
 			}
 			else if( s.Token == "MAX" )
 			{
@@ -374,7 +351,6 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 			else if( s.Token == "AddChannel" )
 			{
 				s.GetToken();
-				g_dpDbSrvr.m_vecstrChannelAccount.push_back( s.Token );
 			}
 #endif // __LOG_PLAYERCOUNT_CHANNEL
 
@@ -386,6 +362,31 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 	Error( "Can't open file %s\n", lpszFileName );
 	return FALSE;
 }
+
+void CListedServers::EmplaceNew(CScanner & s) {
+	SERVER_DESC & pServer = m_servers.emplace_back();
+	s.GetToken();	// (
+	pServer.dwParent = s.GetNumber();
+	s.GetToken();	// ,
+	pServer.dwID = s.GetNumber();
+	s.GetToken();	// ,
+	s.GetToken();
+	strcpy(pServer.lpName, s.Token);
+	s.GetToken();	// ,
+	s.GetToken();
+	strcpy(pServer.lpAddr, s.Token);
+	s.GetToken();	// ,
+	pServer.b18 = (BOOL)s.GetNumber();
+	s.GetToken();	// ,
+	pServer.lEnable = (long)s.GetNumber();
+#ifdef __SERVERLIST0911
+	pServer->lEnable = 0L;
+#endif	// __SERVERLIST0911
+	s.GetToken();	// ,
+	pServer.lMax = (long)s.GetNumber();
+	s.GetToken();	// )
+}
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

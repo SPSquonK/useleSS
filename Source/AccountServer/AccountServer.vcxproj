@@ -94,6 +94,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\_Network\ListedServer.cpp" />
     <ClCompile Include="account.cpp">
     </ClCompile>
     <ClCompile Include="AccountServer.cpp">
@@ -167,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Network\ListedServer.h" />
     <ClInclude Include="account.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="dpdbsrvr.h" />

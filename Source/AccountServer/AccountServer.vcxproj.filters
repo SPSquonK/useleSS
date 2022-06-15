@@ -138,6 +138,9 @@
     <ClCompile Include="dpBillingTH.cpp">
       <Filter>Billing</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Network\ListedServer.cpp">
+      <Filter>Network Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AccountServer.rc">
@@ -297,6 +300,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\CommonHeader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\ListedServer.h">
+      <Filter>Network Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,8 @@
 #include "msghdr.h"
 #include "misc.h"
 #include <map>
+#include "ListedServer.h"
+#include "MutexedObject.h"
 
 #undef	theClass
 #define theClass	CDPSrvr_AccToCert
@@ -30,12 +32,11 @@ public:
 	int		m_nIPCut[MAX_IP][3];
 	int		m_nSizeofIPCut;
 
-	DWORD	m_dwSizeofServerset;
-	SERVER_DESC		m_aServerset[128];
-	std::map<u_long, SERVER_DESC *>	m_2ServersetPtr;
-	char	m_szVer[32];
+	sqktd::mutexed_on_write_object<CListedServers> m_servers;
+
+	char	m_szVer[32]     = "20040706";
 #ifdef __SECURITY_0628
-	char	m_szResVer[100];
+	char	m_szResVer[100] = "";
 #endif	// __SECURITY_0628
 
 public:

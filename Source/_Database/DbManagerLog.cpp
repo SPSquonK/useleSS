@@ -12,6 +12,7 @@
 #include "guild.h"
 #include "guildwar.h"
 #include "eveschool.h"
+#include <numeric>
 
 #include "GuildHouse.h"
 
@@ -662,33 +663,26 @@ void CDbManager::Gamema_Chat( CQuery *qry, CAr & arRead)
 	}
 }
 
-void CDbManager::LogConcurrentUserNumber( CQuery *qry, CAr & ar )
-{
-	int cbSize;
-	int anCount[64];
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-	int nChannel;
-	ar >> nChannel;
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-	ar >> cbSize;
-	//	memset( (void*)anCount, 0, sizeof(int) * 64 );
-	ar.Read( (void*)anCount, sizeof(int) * cbSize );
-	//	LOG_USER_CNT_STR '00', 0, 0, 0, 0
-	char szQuery[QUERY_SIZE]	= { 0,};
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-	sprintf( szQuery, "LOG_USER_CNT_STR '%02d', %d", g_appInfo.dwSys, nChannel );
-#else // __LOG_PLAYERCOUNT_CHANNEL
-	sprintf( szQuery, "LOG_USER_CNT_STR '%02d'", g_appInfo.dwSys );
-#endif // __LOG_PLAYERCOUNT_CHANNEL
-	
-	char szCount[10];
-	for( int i = 0; i < cbSize; i++ )
-	{
-		sprintf( szCount, ", %d", anCount[i] );
-		strcat( szQuery, szCount );
-	}
-	
-	qry->Exec( szQuery );
+void CDbManager::LogConcurrentUserNumber(CQuery * qry, CAr & ar) {
+	const auto [nChannel, anCount] = ar.Extract<
+		DWORD,
+		boost::container::static_vector<int, 63>
+	>();
+
+	char szQuery[QUERY_SIZE];
+	sprintf(szQuery, "LOG_USER_CNT_STR '%02d', %d", g_appInfo.dwSys, nChannel);
+	const auto PushNumber = [&](int n) {
+		char szCount[10];
+		sprintf(szCount, ", %d", n);
+		strcat(szQuery, szCount);
+	};
+
+	const int sum = std::reduce(anCount.begin(), anCount.end());
+
+	PushNumber(sum);
+	std::ranges::for_each(anCount, PushNumber);
+
+	qry->Exec(szQuery);
 }
 
 void CDbManager::LogPkPvp( CQuery* qry, CAr & arRead)

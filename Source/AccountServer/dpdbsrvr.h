@@ -31,9 +31,6 @@ public:
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2 );
 	void	SendLogSMItem( );
 
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-	std::vector<CString>	m_vecstrChannelAccount;
-#endif // __LOG_PLAYERCOUNT_CHANNEL
 /*
 #ifdef __S0114_RELOADPRO
 	void	SendReloadAccount();

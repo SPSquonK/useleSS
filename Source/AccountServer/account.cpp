@@ -250,14 +250,13 @@ void CAccountMng::RemoveAccount( LPCTSTR lpszAccount )
 
 		if( pAccount->m_fRoute && pAccount->m_cbRef == 2 )
 		{
-			u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
-			auto i2	= g_dpSrvr.m_2ServersetPtr.find( uId );
+			const u_long uId	= pAccount->m_dwIdofServer * 100 + pAccount->m_uIdofMulti;
 
-			if( i2 != g_dpSrvr.m_2ServersetPtr.end() )
-			{
-				long lCount = InterlockedDecrement( &i2->second->lCount );
-				g_dpSrvr.SendPlayerCount( uId, lCount );
-			}
+			g_dpSrvr.m_servers.write([&](CListedServers & servers) {
+				if (SERVER_DESC * server = servers.GetFromUId(uId)) {
+					--server->lCount;
+				}
+				});
 		}
 
 #ifdef __BILLING0712
