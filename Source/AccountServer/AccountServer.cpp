@@ -14,6 +14,10 @@
 #include "dpadbill.h"
 
 #include "..\Resource\Lang.h"
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
+#include <fstream>
+#include <string_view>
 
 #include "dbmanager.h"
 
@@ -134,7 +138,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	::srand( timeGetTime() );
 
 	// Script함수의 호출순서가 중요하다. (menu -> script -> createdbworker)
-	if( Script( "AccountServer.ini" ) == FALSE )	
+	if( Script( "AccountServer.json" ) == FALSE )	
 		return FALSE;
 
 #ifdef __SECURITY_0628
@@ -212,209 +216,121 @@ void	LoadResAuth( LPCTSTR lpszFileName )
 }
 #endif	// __SECURITY_0628
 
-BOOL Script( LPCTSTR lpszFileName )
-{
-#ifdef __INTERNALSERVER	
-	strcpy( g_DbManager.m_szLoginPWD, "#^#^account" );
-	strcpy( g_DbManager.m_szLogPWD, "#^#^log" );
-#endif
+CListedServers::Server AddServer(DWORD id, const rapidjson::Value::ConstObject & v);
 
-/*
-AddTail( -1, 1, "TEST", "192.168.0.103" );
-	AddTail( 1, 1, "1", "" );
-*/
+BOOL Script(LPCTSTR lpszFileName) {
+	std::ifstream ifs(lpszFileName);
+	if (!ifs) {
+		Error("Can't open file %s\n", lpszFileName);
+		throw std::exception("INI File not found");
+	}
 
-	CScanner s;
-	BOOL bSkipTracking = FALSE;
+	rapidjson::IStreamWrapper isw(ifs);
 
-	if( s.Load( lpszFileName ) )
-	{
-		s.GetToken();
-		while( s.tok != FINISHED )
-		{
-			if( s.Token == ";" )
-			{
-				s.GetToken();
-				continue;
-			}
-			else if( s.Token == "TEST" )
-			{
-				HMENU hMenu	= GetMenu( hMainWnd );
-				CheckMenuItem( hMenu, IDM_OPT_EXTERNAL, MF_CHECKED );
-				EnableMenuItem( hMenu, IDM_OPT_EXTERNAL, MF_DISABLED | MF_GRAYED );
-				CheckMenuItem( hMenu, IDM_OPT_INTERNAL, MF_UNCHECKED );
-				EnableMenuItem( hMenu, IDM_OPT_INTERNAL, MF_ENABLED );
-				g_dpSrvr.m_bCheckAddr	= false;
-				char lpString[MAX_LOADSTRING];
+	rapidjson::Document document;
+	document.ParseStream(isw);
+
+
+	g_DbManager.SetTracking(TRUE);
+
+	using namespace std::literals;
+	for (const auto & rootPair : document.GetObject()) {
+		if (rootPair.name.GetString() == "SKIP_TRACKING"sv) {
+			const bool value = rootPair.value.GetBool();
+			g_DbManager.SetTracking(value ? TRUE : FALSE);
+		} else if (rootPair.name.GetString() == "TEST"sv || rootPair.name.GetString() == "Test"sv) {
+			HMENU hMenu = GetMenu(hMainWnd);
+			CheckMenuItem(hMenu, IDM_OPT_EXTERNAL, MF_CHECKED);
+			EnableMenuItem(hMenu, IDM_OPT_EXTERNAL, MF_DISABLED | MF_GRAYED);
+			CheckMenuItem(hMenu, IDM_OPT_INTERNAL, MF_UNCHECKED);
+			EnableMenuItem(hMenu, IDM_OPT_INTERNAL, MF_ENABLED);
+			g_dpSrvr.m_bCheckAddr = false;
+			char lpString[MAX_LOADSTRING];
 #ifdef _DEBUG
-				sprintf( lpString, "%s - debug", szTitle );
+			sprintf(lpString, "%s - debug", szTitle);
 #else	// _DEBUG
-				sprintf( lpString, "%s - release", szTitle );
+			sprintf(lpString, "%s - release", szTitle);
 #endif	// _DEBUG
-				SetWindowText( hMainWnd, lpString );
-			}
-			else if( s.Token == "AddTail" )
-			{
-				g_dpSrvr.m_servers.write(
-					[&](CListedServers & servers) {
-						servers.EmplaceNew(s);
-					}
-				);
-			}
-			else if( s.Token == "MAX" )
-			{
-				g_dpSrvr.m_nMaxConn = s.GetNumber();
-			}
-			else if( s.Token == "BillingIP" )
-			{
-				s.GetToken();
-				GetBillingMgr()->SetConfig( BID_IP, (DWORD)(LPCTSTR)s.Token );
-			}
-			else if( s.Token == "BillingPort" )
-			{
-				GetBillingMgr()->SetConfig( BID_PORT, s.GetNumber() );
-			}
-			else if( s.Token == "BillingFreePass" )
-			{
-				GetBillingMgr()->SetConfig( BID_FREEPASS, s.GetNumber() );
-			}
-			else if( s.Token == "BillingPWD" )
-			{
-				// 디비패스워드는 암호화 되어 있다. 암호 시키는 프로그램은 외부실행파일이다.
-				s.GetToken();
-				char* szPWD = GetBillingPWD();
-				::GetPWDFromToken( s.Token, szPWD ); // from query.cpp
-			}
-			else if( s.Token == "MSG_VER" )
-			{
-				s.GetToken();
-				lstrcpy( g_dpSrvr.m_szVer, s.Token );
-			}
-			else if( s.Token == "SKIP_TRACKING" )		// login logout로그를 남기지 않는다.
-			{
-				bSkipTracking = TRUE;
-				g_DbManager.SetTracking( FALSE );
-			}
-			else if( s.Token == "DSN_NAME_LOGIN" )
-			{
-				s.GetToken();
-				strcpy( DSN_NAME_LOGIN, s.Token );
-				if( bSkipTracking == FALSE )
-					g_DbManager.SetTracking( TRUE );
-			}
-			else if( s.Token == "DB_ADMIN_ID_LOGIN" )
-			{
-				s.GetToken();
-				strcpy( DB_ADMIN_ID_LOGIN, s.Token );
-			}
-			else if( s.Token == "DSN_NAME_LOG" )
-			{
-				s.GetToken();
-				strcpy( DSN_NAME_LOG, s.Token );
-			}
-			else if( s.Token == "DB_ADMIN_ID_LOG" )
-			{
-				s.GetToken();
-				strcpy( DB_ADMIN_ID_LOG, s.Token );
-			}
-			else if( s.Token == "DSN_NAME_BILLING" )
-			{
-				s.GetToken();
-				strcpy( DSN_NAME_BILLING, s.Token );
-			}
-			else if( s.Token == "DB_ADMIN_ID_BILLING" )
-			{
-				s.GetToken();
-				strcpy( DB_ADMIN_ID_BILLING, s.Token );
-			}
-			else if( s.Token == "NOT_RELOADPRO" )
-			{
-				g_dpSrvr.m_bReloadPro = FALSE;
-			}
-			else if( s.Token == "NOLOG" )
-			{
-				g_DbManager.SetLogging( FALSE );	// 상용화 아이템 로그를 남기지 않는다.
-			}
-			else if( s.Token == "DB_PWD_LOGIN" )
-			{
-				s.GetToken();
-				::GetPWDFromToken( s.Token, g_DbManager.m_szLoginPWD ); 
-				TRACE("%s\n", g_DbManager.m_szLoginPWD ); 
-			}
-			else if( s.Token == "DB_PWD_LOG" )
-			{
-				s.GetToken();
-				::GetPWDFromToken( s.Token, g_DbManager.m_szLogPWD ); 
-				TRACE("%s\n", g_DbManager.m_szLogPWD ); 
-			}
-#ifdef __LOG_PLAYERCOUNT_CHANNEL
-			else if( s.Token == "AddChannel" )
-			{
-				s.GetToken();
-			}
-#endif // __LOG_PLAYERCOUNT_CHANNEL
+			SetWindowText(hMainWnd, lpString);
+		} else if (rootPair.name.GetString() == "MAX"sv) {
+			g_dpSrvr.m_nMaxConn = rootPair.value.GetInt();
+		} else if (rootPair.name.GetString() == "NOT_RELOADPRO"sv) {
+			const bool value = rootPair.value.GetBool();
+			g_dpSrvr.m_bReloadPro = value ? TRUE : FALSE;
+		} else if (rootPair.name.GetString() == "NOLOG"sv) {
+			const bool value = rootPair.value.GetBool();
+			g_DbManager.SetLogging(value ? FALSE : TRUE);	// 상용화 아이템 로그를 남기지 않는다.
+		} else if (rootPair.name.GetString() == "Billing"sv) {
+			const auto & obj = rootPair.value.GetObject();
+			GetBillingMgr()->SetConfig(BID_IP, reinterpret_cast<DWORD>(obj["IP"].GetString()));
+			GetBillingMgr()->SetConfig(BID_PORT, obj["Port"].GetUint());
+			GetBillingMgr()->SetConfig(BID_FREEPASS, obj["FreePass"].GetUint());
 
-			s.GetToken();
+		} else if (rootPair.name.GetString() == "Servers"sv) {
+
+			for (const auto & serverJson : rootPair.value.GetObject()) {
+				const DWORD id = serverJson.name.GetUint();
+				const rapidjson::Value::ConstObject & v = serverJson.value.GetObject();
+
+				g_dpSrvr.m_servers.write([&](CListedServers & servers) {
+					servers.Push(AddServer(id, v));
+					});
+
+				
+			}
+		} else if (rootPair.name.GetString() == "SQL"sv) {
+
+			for (const auto & dbConfig : rootPair.value.GetObject()) {
+				if (dbConfig.name.GetString() == "Login"sv) {
+					g_DbManager.credentials.login.Load(dbConfig.value.GetObject());
+				} else if (dbConfig.name.GetString() == "Log"sv) {
+					g_DbManager.credentials.log.Load(dbConfig.value.GetObject());
+				} else if (dbConfig.name.GetString() == "Billing"sv) {
+					g_DbManager.credentials.billing.Load(dbConfig.value.GetObject());
+				} else {
+					Error(__FUNCTION__"(%s): Unknown database %s", dbConfig.name.GetString());
+					throw std::exception("Unknown database");
+				}
+			}
+		} else if (rootPair.name.GetString() == "MSG_VER"sv) {
+			lstrcpy(g_dpSrvr.m_szVer, rootPair.value.GetString());
+		} else {
+			Error(__FUNCTION__"(%s): Unknown top field %s", lpszFileName, rootPair.name.GetString());
+			throw std::exception("Invalid INI File");
 		}
-		return TRUE;
 	}
 
-	Error( "Can't open file %s\n", lpszFileName );
-	return FALSE;
+	return TRUE;
 }
 
-void CListedServers::EmplaceNew(CScanner & s) {
-	s.GetToken();	// (
-	DWORD dwParent = s.GetNumber();
-	s.GetToken();	// ,
-	DWORD dwID = s.GetNumber();
-	s.GetToken();	// ,
-	s.GetToken();
-	CString lpName = s.Token;
-	s.GetToken();	// ,
-	s.GetToken();
-	CString lpAddr = s.Token;
-	s.GetToken();	// ,
-	BOOL b18 = (BOOL)s.GetNumber();
-	s.GetToken();	// ,
-	long lEnable = (long)s.GetNumber();
-#ifdef __SERVERLIST0911
-	lEnable = 0L;
-#endif	// __SERVERLIST0911
-	s.GetToken();	// ,
-	long lMax = (long)s.GetNumber();
-	s.GetToken();	// )
+CListedServers::Server AddServer(DWORD id, const rapidjson::Value::ConstObject & v) {
+	CListedServers::Server server;
+	server.dwID = id;
 
-	const auto SetValues = [&](auto & instance) {
-		instance.dwID = dwID;
-		lstrcpy(instance.lpName, lpName.GetString());
-		instance.lEnable = lEnable;
-	};
+	lstrcpy(server.lpName, v["name"].GetString());
+	lstrcpy(server.lpAddr, v["ip"].GetString());
 
-	if (dwParent == NULL_ID) {
-		Server server;
-		SetValues(server);
-		lstrcpy(server.lpAddr, lpAddr.GetString());
-		m_servers.emplace_back(server);
-	} else {
-		Channel channel;
-		SetValues(channel);
-		channel.b18 = b18;
-		channel.lMax = lMax;
+	auto itr = v.FindMember("enabled");
+	server.lEnable = itr != v.MemberEnd() ? itr->value.GetBool() : true;
 
-		auto it = std::ranges::find_if(m_servers,
-			[dwParent](const Server & server) { return server.dwID == dwParent; }
-		);
+	for (const auto & channelJson : v["channels"].GetObject()) {
+		CListedServers::Channel channel;
+		channel.dwID = channelJson.name.GetUint();
 
-		if (it == m_servers.end()) {
-			Error("Bad AccountServer.ini: a channel has no parent");
-			throw "Bad AccountServer.ini: a channel has no parent";
-		}
+		const auto & jsonObj = channelJson.value.GetObject();
+		
+		lstrcpy(channel.lpName, jsonObj["name"].GetString());
+		channel.b18 = jsonObj["is18"].GetBool() ? 1 : 0;
+		channel.lMax = jsonObj["max"].GetInt();
 
-		it->channels.emplace_back(channel);
+		auto itr = v.FindMember("enabled");
+		channel.lEnable = itr != v.MemberEnd() ? itr->value.GetBool() : true;
+
+		server.channels.emplace_back(std::move(channel));
 	}
-}
 
+	return server;
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

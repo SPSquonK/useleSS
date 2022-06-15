@@ -34,7 +34,7 @@ private:
 
 	std::vector<time_t>	m_vtmPetVis;
 public:
-	void	SetVisKeepTimeSize( int nSize )	{ m_vtmPetVis.resize( min( nSize, MAX_VIS ), 0 ); }
+	void	SetVisKeepTimeSize( int nSize )	{ m_vtmPetVis.resize( (std::min)( nSize, MAX_VIS ), 0 ); }
 	void	SetVisKeepTime( int nth, time_t tmKeep );
 	time_t	GetVisKeepTime( int nth ) const;
 };

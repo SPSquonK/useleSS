@@ -1,10 +1,10 @@
 #pragma once
 
+#define NOMINMAX
 #define WIN32_LEAN_AND_MEAN	
 #define _USE_32BIT_TIME_T
 #define POINTER_64 __ptr64
 #define __DBSERVER
-
 
 #include <afx.h>
 #include <afxwin.h>

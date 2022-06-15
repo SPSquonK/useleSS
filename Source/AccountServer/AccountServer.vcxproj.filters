@@ -141,6 +141,9 @@
     <ClCompile Include="..\_Network\ListedServer.cpp">
       <Filter>Network Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Database\DBCredentials.cpp">
+      <Filter>Network Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AccountServer.rc">
@@ -302,6 +305,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Network\ListedServer.h">
+      <Filter>Network Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Database\DBCredentials.h">
       <Filter>Network Files</Filter>
     </ClInclude>
   </ItemGroup>

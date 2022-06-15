@@ -11,7 +11,6 @@
 ///////////////////////////////////////////////////////////////////////
 
 static			CBillingMgr* g_pBillingMgr = NULL;	
-static char		g_szBillingPWD[256];
 
 ///////////////////////////////////////////////////////////////////////
 // global function
@@ -32,11 +31,6 @@ void AppendSpace( char* pCur, char* pEnd )
 {
 	if( pEnd - pCur )
 		memset( pCur, 0x20, pEnd - pCur );
-}
-
-char* GetBillingPWD()
-{
-	return g_szBillingPWD;
 }
 
 // TODO: LoadLibrary

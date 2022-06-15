@@ -644,7 +644,7 @@ void CQuery::WriteBlob(LPCTSTR szSQL, void *buf, int size)
 			{
 				for (p=(char *)buf;p<(char *)buf+size;p+=BLOBBATCH) 
 				{
-					nPut=min(BLOBBATCH,(char *)buf+size-p);
+					nPut= (std::min)( static_cast<int>(BLOBBATCH),static_cast<int>((char *)buf+size-p));
 					memcpy(tmp,p,nPut);
 					SQLPutData(hStmt,(PTR)tmp,nPut);
 				}

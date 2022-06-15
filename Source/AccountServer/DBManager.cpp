@@ -19,8 +19,6 @@ CDbManager::CDbManager()
 #ifdef __INTERNALSERVER
 	m_bLogItem = FALSE;
 #endif
-
-	m_szLoginPWD[0] = '\0';
 }
 
 CDbManager::~CDbManager()
@@ -179,9 +177,8 @@ BOOL CDbManager::AllOff()
 		return TRUE;
 
 	CQuery qry;
-	if( FALSE == qry.Connect( 3, DSN_NAME_LOGIN, DB_ADMIN_ID_LOGIN, m_szLoginPWD ) )
-	{
-		AfxMessageBox( "Error AllOff: DB Connect Loing InitInstance Failed " );
+	if (!qry.Connect(3, credentials.login)) {
+		AfxMessageBox("Error AllOff: DB Connect Loing InitInstance Failed ");
 		return FALSE;
 	}
 	
@@ -331,31 +328,25 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 	bLongConnect = TRUE;
 #endif // __S0114_RELOADPRO
 */
-	if( bLongConnect || pDbManager->m_bTracking )
-	{
-		if( FALSE == qryLogin.Connect( 3, DSN_NAME_LOGIN, DB_ADMIN_ID_LOGIN, pDbManager->m_szLoginPWD ) )
-		{
-			AfxMessageBox( " DB Login Connect Failed " );
+	if (bLongConnect || pDbManager->m_bTracking) {
+		if (!qryLogin.Connect(3, pDbManager->credentials.login)) {
+			AfxMessageBox(" DB Login Connect Failed ");
 			return 0;
 		}
 	}
 
 
-	if( pDbManager->m_bLogItem )
-	{
-		if( FALSE == qryLog.Connect( 3, DSN_NAME_LOG, DB_ADMIN_ID_LOG, pDbManager->m_szLogPWD ) )
-		{
-			AfxMessageBox( " DB Log Connect Failed " );
+	if (pDbManager->m_bLogItem) {
+		if (!qryLog.Connect(3, pDbManager->credentials.log)) {
+			AfxMessageBox(" DB Log Connect Failed ");
 			return 0;
 		}
 	}
 
 #ifdef __BILLING2_041021
 	CQuery qryBilling;
-	char* pszPWD = (char*)GetBillingPWD();
-	if( FALSE == qryBilling.Connect( 3, DSN_NAME_BILLING, DB_ADMIN_ID_BILLING, pszPWD ) )
-	{
-		AfxMessageBox( " DB Billing Connect Failed " );
+	if (!qryBilling.Connect(3, pDbManager->credentials.billing)) {
+		AfxMessageBox(" DB Billing Connect Failed ");
 		return 0;
 	}
 #endif

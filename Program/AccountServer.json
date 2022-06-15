@@ -1,0 +1,29 @@
+{
+  "Test": true,
+  
+  "Servers": {
+    "1": {
+      "name": "FlyFF",
+      "ip": "127.0.0.1",
+      "channels": {
+        "1": { "name": "Channel 1", "is18": true, "max": 500 }
+      }
+    }
+  },
+
+  "SQL": {
+    "Login": {
+      "dbname": "useless_account",
+      "username": "useless_account",
+      "password": ""
+    },
+    "Log": {
+      "dbname": "useless_account",
+      "username": "useless_account",
+      "password": ""
+    }
+  },
+  
+  "MSG_VER": "20100412",
+  "SKIP_TRACKING": true
+}

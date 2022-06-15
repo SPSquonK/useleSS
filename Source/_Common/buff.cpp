@@ -39,7 +39,7 @@ void IBuff::SetTotal( DWORD tmTotal )
 {
 //	if( tmTotal > GetRemain() )
 //		m_tmTotal = tmTotal;
-	m_tmTotal	= max( tmTotal, GetRemain() );
+	m_tmTotal	= (std::max)( tmTotal, GetRemain() );
 }
 
 #ifndef __DBSERVER

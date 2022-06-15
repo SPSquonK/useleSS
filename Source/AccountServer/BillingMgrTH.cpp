@@ -61,7 +61,7 @@ bool CBillingMgrTH::Init( HWND hWnd )
 	}
 	
 	int nMaxConnect = m_strIPs.size();
-	nMaxConnect = min( nMaxConnect, MAX_DPBILLING );	// 32개 이상 금지 
+	nMaxConnect = (std::min)( nMaxConnect, MAX_DPBILLING );	// 32개 이상 금지 
 
 	m_nMaxConnect = nMaxConnect;
 	m_pDPBillings = new CDPBillingTH[ nMaxConnect ];

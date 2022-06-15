@@ -17,7 +17,7 @@ typedef DWORD ItemPos;
 
 class CItemContainer {
 public:
-	static constexpr int MAX_SIZE = max(max(MAX_INVENTORY + MAX_HUMAN_PARTS, MAX_GUILDBANK), MAX_VENDOR_INVENTORY);
+	static constexpr int MAX_SIZE = (std::max)({ MAX_INVENTORY + MAX_HUMAN_PARTS, MAX_GUILDBANK, MAX_VENDOR_INVENTORY });
 
 public:
 	LPDWORD	m_apIndex = nullptr;

@@ -63,7 +63,7 @@ public:
   friend CAr & operator>>(CAr & ar,       CListedServers & self);
 
 #ifdef __ACCOUNT
-  void EmplaceNew(CScanner & s);
+  void Push(CListedServers::Server server) { m_servers.emplace_back(std::move(server)); }
 #endif 
   
   [[nodiscard]]       Server * GetServer(DWORD serverId);
