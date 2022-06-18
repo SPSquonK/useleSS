@@ -1,16 +1,14 @@
 #pragma once
 
 #ifdef __CORESERVER
-#include "Ar.h"
 #include "projectcmn.h"
 #endif // __CORESERVER
 
-#if defined(__CLIENT) || defined(__WORLDSERVER)
-#include <ranges>
-#endif
-
-#include "mempooler.h"
 #include <map>
+#include <ranges>
+
+#include "Ar.h"
+#include "mempooler.h"
 
 
 // 모드(데미지 증가, 유니크, 휴식, 아이템)
@@ -27,7 +25,6 @@
 #define MAX_PTMEMBER_SIZE_SPECIAL	8
 
 #define PARTY_MAP_SEC	10
-#define PARTY_MAP_LENGTH	10
 
 struct PartyMember final {	// 플레이어 아이디만 가지고 있음
 	u_long	m_uPlayerId = 0;
@@ -147,7 +144,6 @@ public:
 
 typedef	std::map<u_long, CParty*>	C2PartyPtr;
 typedef std::map<u_long, std::string>	ULONG2STRING;
-typedef std::map<std::string, u_long>	STRING2ULONG;
 
 class CPlayer;
 
@@ -169,7 +165,7 @@ public:
 #endif	// __CORESERVER
 
 	ULONG2STRING	m_2PartyNameLongPtr;
-	STRING2ULONG	m_2PartyNameStringPtr;
+	std::map<std::string, u_long>	m_2PartyNameStringPtr;
 
 public:
 //	Constructions

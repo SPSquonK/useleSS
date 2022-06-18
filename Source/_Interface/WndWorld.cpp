@@ -10315,35 +10315,28 @@ int CWndWorld::GetBuffTimeGap()
 		return 32+5;
 }
 
-void CWndWorld::InviteParty( u_long uidPlayer )
-{
-	if( g_pPlayer->m_nDuel == 2 )
-	{
-		DWORD dwText = TID_GAME_PPVP_ADDPARTY;	// ±Ø´Ü µà¾óÁß ÃÊÃ»ºÒ°©´Ï´Ù~
-		g_WndMng.PutString( prj.GetText(dwText), NULL, prj.GetTextColor(dwText) );
+void CWndWorld::InviteParty(const u_long uidPlayer) {
+	if (g_pPlayer->m_nDuel == 2) {
+		// ±Ø´Ü µà¾óÁß ÃÊÃ»ºÒ°©´Ï´Ù~
+		g_WndMng.PutString(TID_GAME_PPVP_ADDPARTY);
+		return;
 	}
-	else
-	{
-		if( g_Party.m_aMember[0].m_uPlayerId == 0 || g_Party.IsLeader( g_pPlayer->m_idPlayer ) )
-		{
-			int nMaxPartyMember = MAX_PTMEMBER_SIZE_SPECIAL;
-			CString szMessageBuf;
-			szMessageBuf = prj.GetText( TID_GAME_FULLPARTY3 );
-			
-			if( nMaxPartyMember >= g_Party.m_nSizeofMember + 1 )
-			{
-				g_DPlay.SendPartyMemberRequest( g_pPlayer, uidPlayer, FALSE );
-			}
-			else
-			{
-				g_WndMng.PutString( szMessageBuf, NULL, prj.GetTextColor(TID_GAME_FULLPARTY1) );
-			}
-		}
-		else
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0007) ) );
-		}
-	}	
+
+	const bool canInvite = g_Party.m_aMember[0].m_uPlayerId == 0
+		|| g_Party.IsLeader(g_pPlayer->m_idPlayer);
+
+	if (!canInvite) {
+		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0007)));
+		return;
+	}
+
+	if (g_Party.m_nSizeofMember + 1 > MAX_PTMEMBER_SIZE_SPECIAL) {
+		const char * szMessageBuf = prj.GetText(TID_GAME_FULLPARTY3);
+		g_WndMng.PutString(szMessageBuf, NULL, prj.GetTextColor(TID_GAME_FULLPARTY1));
+		return;
+	}
+
+	g_DPlay.SendPartyMemberRequest(g_pPlayer, uidPlayer, FALSE);
 }
 
 void CWndWorld::InviteCompany( OBJID objId )

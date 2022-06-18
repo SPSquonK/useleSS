@@ -70,31 +70,9 @@ void CAccountCacheMgr::RemoveMover( u_long idPlayer, LPCTSTR szAccount )
 
 void CAccountCacheMgr::AddAccount( u_long idPlayer, LPCTSTR szAccount, BOOL bCache, ACCOUNT_CACHE *pCache )
 {
-//	ULONG2STRING::iterator it = m_2AccountPtr.find( idPlayer );
-//	if( it == m_2AccountPtr.end() )
-//		m_2AccountPtr.insert( map<u_long, string>::value_type( idPlayer, szAccount ) );
 	if( !bCache )
 		m_2Account.emplace( szAccount, pCache );
 }
-
-/*
-ACCOUNT_CACHE* CAccountCacheMgr::Find( u_long idPlayer )
-{
-	ULONG2STRING::iterator it = m_2AccountPtr.find( idPlayer );
-	if( it == m_2AccountPtr.end() )
-	{
-		Error( "Error :: Get Playerid->Account Find : %d", idPlayer );
-		return NULL;
-	}
-
-	string strAccount = it->second;
-	ACCOUNT_CACHE* pCache = Find( strAccount.c_str() );
-	if( !pCache )
-		Error( "Error :: Get Account->AccountCache Find : %s", strAccount.c_str() );
-
-	return pCache;
-}
-*/
 
 ACCOUNT_CACHE* CAccountCacheMgr::GetAccount( LPCTSTR szAccount, BOOL *pbCacheHit )
 {
