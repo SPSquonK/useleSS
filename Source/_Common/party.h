@@ -147,14 +147,12 @@ typedef std::map<u_long, std::string>	ULONG2STRING;
 
 class CPlayer;
 
-class CPartyMng
-{
+class CPartyMng final {
 private:
-	u_long		m_id;	// 새로 생성되는 파티에 순차적으로 아이디를 할당하기 위한 변수다.
-//	CMapParty	m_2Party;
+	u_long		m_id = 0;	// 새로 생성되는 파티에 순차적으로 아이디를 할당하기 위한 변수다.
 	C2PartyPtr	m_2PartyPtr;
 #ifdef __WORLDSERVER
-	int			m_nSecCount;
+	int			m_nSecCount = 0;
 #endif // __WORLDSERVER
 public:
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
@@ -169,9 +167,13 @@ public:
 
 public:
 //	Constructions
-	CPartyMng();
-	~CPartyMng();
-	void	Clear( void );
+	CPartyMng() = default;
+	~CPartyMng() { Clear(); }
+
+	CPartyMng(const CPartyMng &) = delete;
+	CPartyMng & operator=(const CPartyMng &) = delete;
+
+	void	Clear();
 //	Operations
 	u_long	NewParty( u_long uLeaderId, LONG nLeaderLevel, LONG nLeaderJob, BYTE nLeaderSex, LPSTR szLeaderName, u_long uMemberId, LONG nMemberLevel, LONG nMemberJob, BYTE nMemberSex, LPSTR szMembername, u_long uPartyId = 0 );
 	BOOL	DeleteParty( u_long uPartyId );
@@ -188,8 +190,8 @@ public:
 
 #ifdef __CORESERVER
 public:
-	HANDLE	m_hWorker;
-	HANDLE	m_hCloseWorker;
+	HANDLE	m_hWorker = nullptr;
+	HANDLE	m_hCloseWorker = nullptr;
 
 public:
 	[[nodiscard]] bool IsPartyName(const char * szPartyName) const {

@@ -518,30 +518,6 @@ CParty g_Party;
 /*--------------------------------------------------------------------------------*/
 #ifndef __CLIENT
 
-CPartyMng::CPartyMng()
-{
-	m_id	= 0;
-#ifdef __WORLDSERVER
-	m_nSecCount = 0;
-#endif // __WORLDSERVER
-//	m_2Party.SetSize( 1024, 4096, 1024 );
-#ifdef __CORESERVER
-	m_hWorker	= m_hCloseWorker	= NULL;
-#endif // __CORESERVER
-}
-
-CPartyMng::~CPartyMng()
-{
-//	CPartyBucket* pBucket	= m_2Party.GetFirstActive();
-//	while( pBucket )
-//	{
-//		delete pBucket->m_value;
-//		pBucket		= pBucket->pNext;
-//	}
-//	m_2Party.RemoveAll();
-	Clear();
-}
-
 void CPartyMng::Clear( void )
 {
 #ifndef __WORLDSERVER
@@ -565,7 +541,7 @@ void CPartyMng::Clear( void )
 // 극단 생성
 // uLeaderPlayerId : 단장, uPartyId : 1번째 단원
 // 극단를 생설할때는 2명으로 생성함( 혼자서는 극단를 생성할수 없음 )
-u_long	CPartyMng::NewParty( u_long uLeaderId, LONG nLeaderLevel, LONG nLeaderJob, BYTE nLeaderSex, LPSTR szLeaderName, u_long uMemberId, LONG nMemberLevel, LONG nMemberJob, BYTE nMemberSex, LPSTR szMembername, u_long uPartyId )
+u_long	CPartyMng::NewParty( u_long uLeaderId, LONG, LONG , BYTE , LPSTR , u_long uMemberId, LONG, LONG , BYTE , LPSTR , u_long uPartyId )
 {
 //	locked
 	if( 0 == uPartyId )
@@ -896,45 +872,32 @@ void CPartyMng::RemoveConnection( CPlayer* pPlayer )
 
 #ifdef __WORLDSERVER
 
-void CPartyMng::PartyMapInfo( )
-{
-	const float PARTY_MAP_AROUND = 32.0f * 32.0f;	// m_nVisibilityRange에 영향을 받는다.
+void CPartyMng::PartyMapInfo() {
+	static constexpr float PARTY_MAP_AROUND = 32.0f * 32.0f;	// m_nVisibilityRange에 영향을 받는다.
 
-	if( ++m_nSecCount < PARTY_MAP_SEC )
-		return;
-
+	if (++m_nSecCount < PARTY_MAP_SEC) return;
 	m_nSecCount = 0;
 
-	D3DXVECTOR3 vPosBuf;
-	float fDist;
-	for( C2PartyPtr::iterator i	= m_2PartyPtr.begin(); i != m_2PartyPtr.end(); ++i )
-	{
-		CParty* pParty = (CParty*)i->second;
-		for( int j = 0 ; j < pParty->GetSizeofMember() ; ++j )
-		{
-			CMover* pMover = prj.GetUserByID( pParty->GetPlayerId( j ) );
-			if( !IsValidObj( pMover ) )
-				continue;
-			
-			vPosBuf = pMover->GetPos() - pParty->GetPos( j );
-			fDist = D3DXVec3LengthSq( &vPosBuf );
-			if( 0.0f < fDist )
-			{
-				pParty->SetPos( j, pMover->GetPos() );
-				
-				CMover* pSendMover;
-				for( int k = 0 ; k < pParty->GetSizeofMember() ; ++k )
-				{
-					if( k == j )
-						continue;
-					pSendMover = prj.GetUserByID( pParty->GetPlayerId( k ) );
-					if( !IsValidObj( pSendMover ) )
-						continue;
+	for (CParty * pParty : m_2PartyPtr | std::views::values) {
 
-					vPosBuf = pSendMover->GetPos() - pMover->GetPos();
-					fDist = D3DXVec3LengthSq( &vPosBuf );
-					if( fDist > PARTY_MAP_AROUND )
-						((CUser*)pSendMover)->AddPartyMapInfo( j, pMover->GetPos() );		
+		for (int j = 0 ; j < pParty->GetSizeofMember() ; ++j) {
+			CUser * pMover = prj.GetUserByID(pParty->GetPlayerId(j));
+			if (!IsValidObj(pMover)) continue;
+			
+			const bool changedPos = pMover->GetPos() != pParty->GetPos(j);
+			if (!changedPos) continue;
+
+			pParty->SetPos(j, pMover->GetPos());
+
+			for (CUser * const pSendMover : AllMembers(*pParty)) {
+				if (pMover == pSendMover) continue;
+
+				const D3DXVECTOR3 vPosBuf = pSendMover->GetPos() - pMover->GetPos();
+				const float fDist = D3DXVec3LengthSq(&vPosBuf);
+				const bool isOutOfVisibilityRange = fDist > PARTY_MAP_AROUND;
+
+				if (isOutOfVisibilityRange) {
+					pSendMover->AddPartyMapInfo(j, pMover->GetPos());
 				}
 			}
 		}
