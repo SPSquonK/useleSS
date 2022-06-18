@@ -188,7 +188,7 @@ int CAttackArbiter::OnDamageMsgW()
 		}
 	}
 
-	nDamage = max( nDamage, 1 );
+	nDamage = std::max( nDamage, 1 );
 	int nHP = MinusHP( &nDamage );							// HP °¨¼Ò ½ÃÅ´ 
 
 	if( CMonsterSkill::GetInstance()->MonsterTransform( m_pDefender, nHP ) )
@@ -375,7 +375,7 @@ int CAttackArbiter::OnAfterDamage( ATTACK_INFO* pInfo, int nDamage )
 
 	if( pInfo->GetSkill() == SI_JST_YOYO_HITOFPENYA && nDamage > 0 )
 	{
-		nDamage = min( pAttacker->GetGold(), nDamage );
+		nDamage = std::min( pAttacker->GetGold(), nDamage );
 		pAttacker->AddGold( -nDamage );
 	}
 

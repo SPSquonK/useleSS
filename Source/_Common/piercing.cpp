@@ -1,23 +1,6 @@
 #include "StdAfx.h"
 #include "Piercing.h"
 
-
-CPiercing::CPiercing()
-{
-}
-
-CPiercing::~CPiercing()
-{
-}
-
-CPiercing& CPiercing::operator=( const CPiercing & piercing )
-{
-	m_vPiercing.assign( piercing.m_vPiercing.begin(), piercing.m_vPiercing.end() );
-	m_vUltimatePiercing.assign( piercing.m_vUltimatePiercing.begin(), piercing.m_vUltimatePiercing.end() );
-	m_vtmPetVis.assign( piercing.m_vtmPetVis.begin(), piercing.m_vtmPetVis.end() );
-	return *this;
-}
-
 void CPiercing::Clear( void )
 {
 	m_vPiercing.clear();

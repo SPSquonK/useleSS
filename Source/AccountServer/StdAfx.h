@@ -5,6 +5,7 @@
 #define _USE_32BIT_TIME_T
 #define __ACCOUNT
 #define _HAS_STD_BYTE 0
+#define NOMINMAX
 
 #include <afxwin.h>
 

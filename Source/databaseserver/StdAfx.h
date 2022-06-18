@@ -4,7 +4,8 @@
 #define _USE_32BIT_TIME_T
 #define POINTER_64 __ptr64
 #define __DBSERVER
-
+#define _HAS_STD_BYTE 0
+#define NOMINMAX
 
 #include <afx.h>
 #include <afxwin.h>

@@ -51,6 +51,8 @@ extern DWORD FULLSCREEN_HEIGHT;
 #define MAX_MAIL_LIST_PER_PAGE 6
 #define MAX_GUILDCOMBAT_LIST		  100
 
+float GetAttackSpeedPlusValue(const int n);
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -3486,20 +3488,9 @@ float CWndCharInfo::GetVirtualATKSpeed()
 	if( 187.5f <= A )
 		A	= (int)( 187.5f );
 
-	const int MAX_ATTACK_SPEED_PLUSVALUE = 18;
+	const float fSpeedPlus = GetAttackSpeedPlusValue(A);
 	
-	int nIndex = A / 10;
-	nIndex = max( nIndex, 0 );
-	nIndex = min( nIndex, (MAX_ATTACK_SPEED_PLUSVALUE-1) );
-	
-	float fPlusValue[MAX_ATTACK_SPEED_PLUSVALUE] = {
-		0.08f, 0.16f, 0.24f, 0.32f,	0.40f,
-		0.48f, 0.56f, 0.64f, 0.72f,	0.80f,
-		0.88f, 0.96f, 1.04f, 1.12f,	1.20f,
-		1.30f, 1.38f, 1.50f
-	};
-	
-	fSpeed = ( ( 50.0f / (200.f - A) ) / 2.0f ) + fPlusValue[nIndex];
+	fSpeed = ( ( 50.0f / (200.f - A) ) / 2.0f ) + fSpeedPlus;
 	
 	float fDstParam = g_pPlayer->GetParam( DST_ATTACKSPEED, 0 ) / 1000.0f;
 	fSpeed += fDstParam;
@@ -4871,20 +4862,9 @@ float CWndCharacterDetail2::GetVirtualATKSpeed()
 	if( 187.5f <= A )
 		A	= (int)( 187.5f );
 
-	const int MAX_ATTACK_SPEED_PLUSVALUE = 18;
+	const float fSpeedPlus = GetAttackSpeedPlusValue(A);
 	
-	int nIndex = A / 10;
-	nIndex = max( nIndex, 0 );
-	nIndex = min( nIndex, (MAX_ATTACK_SPEED_PLUSVALUE-1) );
-	
-	float fPlusValue[MAX_ATTACK_SPEED_PLUSVALUE] = {
-		0.08f, 0.16f, 0.24f, 0.32f,	0.40f,
-		0.48f, 0.56f, 0.64f, 0.72f,	0.80f,
-		0.88f, 0.96f, 1.04f, 1.12f,	1.20f,
-		1.30f, 1.38f, 1.50f
-	};
-	
-	fSpeed = ( ( 50.0f / (200.f - A) ) / 2.0f ) + fPlusValue[nIndex];
+	fSpeed = ( ( 50.0f / (200.f - A) ) / 2.0f ) + fSpeedPlus;
 	
 	float fDstParam = g_pPlayer->GetParam( DST_ATTACKSPEED, 0 ) / 1000.0f;
 	fSpeed += fDstParam;
@@ -19399,7 +19379,7 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 				assert(pWndEdit != NULL);
 				int nMaxSmeltNumber(atoi(pWndEdit->GetString()));
-				nMaxSmeltNumber = min(nMaxSmeltNumber, GetDefaultMaxSmeltValue());
+				nMaxSmeltNumber = std::min(nMaxSmeltNumber, GetDefaultMaxSmeltValue());
 				CString strMaxSmeltNumber;
 				strMaxSmeltNumber.Format("%d", nMaxSmeltNumber);
 				pWndEdit->SetString(strMaxSmeltNumber);

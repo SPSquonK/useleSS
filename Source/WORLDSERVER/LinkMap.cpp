@@ -704,7 +704,7 @@ DWORD CLinkMap::CalcLinkLevel( CObj* pObj, float fObjWidth )
 		TRACE("pObj->m_dwIndex:%d fObjWidth: %f linkType:%d\n", pObj->m_dwIndex, fObjWidth, dwLinkType ); 
 	}
 	
-	nLevel = min( nLevel, (MAX_LINKLEVEL - 1));
+	nLevel = std::min( nLevel, (MAX_LINKLEVEL - 1));
 
 	if( (nLevel+1) > GetMaxLinkLevel(dwLinkType) )
 		SetMaxLinkLevel( dwLinkType, nLevel+1 );

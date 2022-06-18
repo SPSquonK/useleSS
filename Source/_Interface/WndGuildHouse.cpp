@@ -737,10 +737,7 @@ BOOL CWndGHUpkeep::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else
 				nBuyNum = atoi(m_pEdit->GetString());
 
-			nBuyNum = max( nBuyNum, 0 );
-			DWORD dwMAXCount = MAX_BUY_UPKEEP;
-
-			nBuyNum = min( nBuyNum, (int)( dwMAXCount ) );
+			nBuyNum = std::clamp(nBuyNum, 0, MAX_BUY_UPKEEP);
 
 			OnChangeBuyCount(nBuyNum);
 		}

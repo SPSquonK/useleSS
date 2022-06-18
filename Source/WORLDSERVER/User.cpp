@@ -7754,7 +7754,7 @@ EXPINTEGER CUser::GetAddExpAfterApplyRestPoint( EXPINTEGER nExp )
 	if( m_nRestPoint > 0 )
 	{
 		EXPINTEGER nAddExp = (EXPINTEGER)( nExp * GuildHouseMng->GetRestExpFactor( m_nLevel ) );	// 추가 경험치를 구한다.
-		EXPFLOAT fTemp = static_cast<EXPFLOAT>( nExp * min( m_nLevel / 5, 1 ) ) / static_cast<EXPFLOAT>( prj.m_aExpCharacter[m_nLevel + 1].nExp1 );
+		EXPFLOAT fTemp = static_cast<EXPFLOAT>( nExp * std::min<LONG>( m_nLevel / 5, 1 ) ) / static_cast<EXPFLOAT>( prj.m_aExpCharacter[m_nLevel + 1].nExp1 );
 		int nSubRestPoint = (int)( fTemp * static_cast<EXPFLOAT>( MAX_REST_POINT * GuildHouseMng->GetRestPointFactor(  this ) ) );	// 차감될 휴식포인트
 		if( nSubRestPoint > 0 )	// 차감되는 포인트가 있어야 추가 경험치를 적용할 수 있다.
 		{

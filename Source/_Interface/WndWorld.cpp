@@ -6073,7 +6073,7 @@ int CWndWorld::GetGaugePower( int* pnValue )
 		return -1;
 	}
 
-	nTime = min( nTime, MAX_POWER_GAUGE );
+	nTime = std::min( nTime, MAX_POWER_GAUGE );
 	if( pnValue )
 		*pnValue = nTime;
 

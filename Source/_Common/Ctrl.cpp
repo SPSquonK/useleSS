@@ -1266,7 +1266,7 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 		
 				if( nPlus > 0 )
 				{				
-					nPlus = min( nPlus, pDest->GetGold() );		// 피공격자 돈 보다는 많지 않게 
+					nPlus = std::min( nPlus, pDest->GetGold() );		// 피공격자 돈 보다는 많지 않게 
 					pUser->AddGold( nPlus );
 					pDest->AddGold( -nPlus );
 

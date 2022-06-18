@@ -360,7 +360,7 @@ void	CIMEMgr::Reading(HWND hWnd)
 							if( !p ) break;
 							tempLen = *(DWORD *)(p + 7*4 + 16*2*4);
 							dwErr = *(DWORD *)(p + 8*4 + 16*2*4);
-							dwErr = min( dwErr, tempLen );
+							dwErr = std::min( dwErr, tempLen );
 							temp = (wchar_t *)(p + 6*4 + 16*2*1);
 							bUnicodeIme = true;
 						}
@@ -538,7 +538,7 @@ int		CIMEMgr::GetAttribute(BYTE* attr, int len)
 /*----------------------------------------------------------------------------*/ 
 int		CIMEMgr::GetCursorPos()
 {
-	return	ConvertString(m_codePage, &*m_composition.begin(), min(m_cursorPos, (int)( m_composition.size() )), NULL, 0);
+	return	ConvertString(m_codePage, &*m_composition.begin(), std::min(m_cursorPos, (int)( m_composition.size() )), NULL, 0);
 }
 /*----------------------------------------------------------------------------*/ 
 int		CIMEMgr::GetCandidate(DWORD index, char* text, int len)
@@ -906,7 +906,7 @@ void CWndCandList::UpdateCandList( CPoint windowPos )
 	ResetContent();
 
 	// get the longest string length
-	DWORD dwPreferNumPerPage = max(candidateList.dwPageSize, DEFAULT_CAND_NUM_PER_PAGE);
+	DWORD dwPreferNumPerPage = std::max<DWORD>(candidateList.dwPageSize, DEFAULT_CAND_NUM_PER_PAGE);
 	
 	int max_width = 0;
 
@@ -923,7 +923,7 @@ void CWndCandList::UpdateCandList( CPoint windowPos )
 		SIZE size;
 		m_pFont->GetTextExtent( buf, &size, g_imeMgr.m_codePage );
 
-		max_width = max(max_width, size.cx);
+		max_width = std::max<int>(max_width, size.cx);
     }
 	m_ptWindowPos = windowPos;
 	CRect rect( 0, 0, max_width + 24, dwPreferNumPerPage * ( GetFontHeight() + m_nLineSpace ) + 10  );
@@ -1028,11 +1028,11 @@ void CWndHCandList::UpdateCandList(CPoint windowPos)
 
 	int nPageStart = candidateList.dwSelection - (candidateList.dwSelection%9);
 
-	DWORD dwPreferNumPerPage = max(candidateList.dwPageSize, DEFAULT_CAND_NUM_PER_PAGE);
+	DWORD dwPreferNumPerPage = std::max<DWORD>(candidateList.dwPageSize, DEFAULT_CAND_NUM_PER_PAGE);
 	
 	m_maxWidth = 0;
 
-	DWORD dwPageEnd = min(candidateList.dwPageStart+candidateList.dwPageSize, candidateList.dwCount);
+	DWORD dwPageEnd = std::min<DWORD>(candidateList.dwPageStart+candidateList.dwPageSize, candidateList.dwCount);
 
 	m_candidate.clear();
 
@@ -1050,7 +1050,7 @@ void CWndHCandList::UpdateCandList(CPoint windowPos)
 		
 		m_pFont->GetTextExtent( buf, &size, g_imeMgr.m_codePage );
 
-		m_maxWidth = max(m_maxWidth, size.cx + 2);
+		m_maxWidth = std::max<int>(m_maxWidth, size.cx + 2);
     }
 
 	CRect rect( 0, 0, m_maxWidth * (dwPageEnd-candidateList.dwPageStart) + 4, 16 );
@@ -1763,8 +1763,8 @@ void CWndEdit::DeleteBlock( )
 		CRect rect = GetClientRect();
 		m_string.Init( m_pFont, &rect );
 		
-		DWORD dwBlockBegin = min(m_dwBlockBegin, m_dwBlockEnd);
-		DWORD dwBlockEnd = max(m_dwBlockBegin, m_dwBlockEnd);
+		DWORD dwBlockBegin = std::min(m_dwBlockBegin, m_dwBlockEnd);
+		DWORD dwBlockEnd = std::max(m_dwBlockBegin, m_dwBlockEnd);
 
 		m_string.Delete( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 
@@ -1903,8 +1903,8 @@ void CWndEdit::OnChar_(UINT nChar)
 	{
 		if( m_dwBlockBegin != m_dwBlockEnd  && m_bEnableClipboard)
 		{
-			DWORD dwBlockBegin = min(m_dwBlockBegin, m_dwBlockEnd);
-			DWORD dwBlockEnd = max(m_dwBlockBegin, m_dwBlockEnd);
+			DWORD dwBlockBegin = std::min(m_dwBlockBegin, m_dwBlockEnd);
+			DWORD dwBlockEnd = std::max(m_dwBlockBegin, m_dwBlockEnd);
 
 			CString strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 
@@ -2036,12 +2036,12 @@ BOOL CWndEdit::GetCompString(LONG flag)
 				dwColor = dwInputColor;
 				break;
 			case ATTR_TARGET_CONVERTED:
-				inputPos = min(inputPos, i);
+				inputPos = std::min(inputPos, i);
 				dwColor = 0xff0000ff;
 				dwStyle = ESSTY_BOLD;
 				break;
 			case ATTR_TARGET_NOTCONVERTED:
-				inputPos = min(inputPos, i);
+				inputPos = std::min(inputPos, i);
 				dwColor = 0xff0000ff;
 				dwStyle = ESSTY_UNDERLINE | ESSTY_BOLD;
 				break;

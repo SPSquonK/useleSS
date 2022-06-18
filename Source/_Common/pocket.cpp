@@ -257,7 +257,7 @@ time_t	CPocketController::GetAvailable( int nPocket )
 	if( IsAvailable( nPocket ) )
 	{
 		if( m_apPocket[nPocket]->GetExpirationDate() )
-			return max( m_apPocket[nPocket]->GetExpirationDate() - time_null(), 0 );
+			return std::max<time_t>( m_apPocket[nPocket]->GetExpirationDate() - time_null(), 0 );
 	}
 	return 0;
 }

@@ -35,11 +35,8 @@ m_wType( 0 )
 {
 }
 
-void IBuff::SetTotal( DWORD tmTotal )
-{
-//	if( tmTotal > GetRemain() )
-//		m_tmTotal = tmTotal;
-	m_tmTotal	= max( tmTotal, GetRemain() );
+void IBuff::SetTotal(const DWORD tmTotal) {
+	m_tmTotal = std::max(tmTotal, GetRemain());
 }
 
 #ifndef __DBSERVER

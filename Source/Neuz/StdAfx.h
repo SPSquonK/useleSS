@@ -7,6 +7,7 @@
 #define POINTER_64 __ptr64
 #define	__CLIENT
 #define _HAS_STD_BYTE 0
+#define NOMINMAX
    
 // Windows or Standard        
 #include <afxwin.h>      

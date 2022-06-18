@@ -55,21 +55,17 @@ enum
 //////////////////////////////////////////////////////////////////////////
 
 // 공속 가중치를 구한다. n - 가중치를 구하기 위한 중간 계산값 
-float GetAttackSpeedPlusValue( int n )
-{
-	const int MAX_ATTACK_SPEED_PLUSVALUE = 18;
+float GetAttackSpeedPlusValue(const int n) {
+	static constexpr int MAX_ATTACK_SPEED_PLUSVALUE = 18;
 
-	int nIndex = n / 10;
-	nIndex = max( nIndex, 0 );
-	nIndex = min( nIndex, (MAX_ATTACK_SPEED_PLUSVALUE-1) );
-
-	float fPlusValue[MAX_ATTACK_SPEED_PLUSVALUE] = {
+	static constexpr std::array<float, MAX_ATTACK_SPEED_PLUSVALUE> fPlusValue = {
 		0.08f, 0.16f, 0.24f, 0.32f,	0.40f,
 		0.48f, 0.56f, 0.64f, 0.72f,	0.80f,
 		0.88f, 0.96f, 1.04f, 1.12f,	1.20f,
 		1.30f, 1.38f, 1.50f
 	};
 
+	const int nIndex = std::clamp(n / 10, 0, MAX_ATTACK_SPEED_PLUSVALUE - 1);
 	return fPlusValue[nIndex];
 }
 
@@ -886,7 +882,7 @@ float CMover::GetDamageMultiplier( ATTACK_INFO* pInfo )
 		if( pInfo->pAttacker->IsNPC() || pInfo->pDefender->IsNPC() )
 		{
 			const int MAX_OVER_ATK = 16;
-			nDelta = min( nDelta, (MAX_OVER_ATK-1) ); 
+			nDelta = std::min( nDelta, (MAX_OVER_ATK-1) ); 
 			
 			const double pi = 3.1415926535;
 			double radian = ( pi * nDelta ) / (float)(MAX_OVER_ATK * 2);
@@ -1291,8 +1287,8 @@ int CMover::PostCalcGeneric( int nATK, ATTACK_INFO* pInfo )
 	// NPC의 경우 최소 데미지가 들어가게 한다.
 	if( pInfo->pAttacker->IsNPC() && pInfo->pDefender->IsPlayer() )	
 	{
-		int nMin = (int)( max( 0, nATK * 0.1f ) );	// 몬스터 공격력의 10% 데미지가 무조건 들어갈 수 있게 해 준다.
-		nDamage = max( nDamage, nMin );
+		int nMin = (int)( std::max( 0.f, nATK * 0.1f ) );	// 몬스터 공격력의 10% 데미지가 무조건 들어갈 수 있게 해 준다.
+		nDamage = std::max( nDamage, nMin );
 	}
 
 	nDamage += GetWeaponPlusDamage( nDamage );	// 인첸트 옵션 데미지( 방어력 무관 ) 

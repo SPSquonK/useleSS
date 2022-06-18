@@ -329,7 +329,7 @@ BOOL CTElection::Restore( CQuery* pQuery )
 float CTElection::GetRetRate( u_long idPlayer )
 {	// 입찰금 반환율
 	int nOrder	= GetOrder( idPlayer );
-	nOrder	= min( nOrder, IElection::nMaxCandidates );
+	nOrder	= std::min<int>( nOrder, IElection::nMaxCandidates );
 	if( nOrder < 0 )
 		return 0.0F;
 	return property.m_vReturnDepositRates[nOrder];

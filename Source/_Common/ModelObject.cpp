@@ -1152,7 +1152,11 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 
 				if( fblack < 0.3f )		
 					fblack = 0.3f;
-				SetAmbient( min( pObject3D->m_fAmbient[0]*fblack, 1.0f ), min( pObject3D->m_fAmbient[1]*fblack, 1.0f ), min( pObject3D->m_fAmbient[2]*fblack, 1.0f ) );
+				SetAmbient(
+					std::min( pObject3D->m_fAmbient[0]*fblack, 1.0f ),
+					std::min( pObject3D->m_fAmbient[1]*fblack, 1.0f ),
+					std::min( pObject3D->m_fAmbient[2]*fblack, 1.0f )
+				);
 			}
 			else
 #endif // CLIENT

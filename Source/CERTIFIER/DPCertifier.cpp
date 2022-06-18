@@ -3,6 +3,7 @@
 #include "dpcertifier.h"
 #include "dbmanager.h"
 #include "..\Resource\Lang.h"
+#include <algorithm>
 
 #include "user.h"
 
@@ -86,7 +87,7 @@ long GetPlayLeftTime( BYTE cbAccountFlag )
 		span += ts;
 	}
 
-	return max( (long)( span.GetTotalSeconds() ), 1 );	// 적어도 1초 이상 ( 0 과 구분하기 위해서 )
+	return std::max<long>( (long)( span.GetTotalSeconds() ), 1 );	// 적어도 1초 이상 ( 0 과 구분하기 위해서 )
 }
 
 #ifdef __GPAUTH_01

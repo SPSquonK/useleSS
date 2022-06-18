@@ -100,7 +100,7 @@ void CWantedList::Write( CAr& ar )
 
 	std::sort( array.begin(), array.end(), wantedComparison() );
 	int nCount = array.size();
-	nCount = min( 100, nCount );
+	nCount = std::min( 100, nCount );
 
 	ar << lCurrent;
 	ar << nCount;

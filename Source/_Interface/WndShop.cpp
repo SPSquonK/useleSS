@@ -443,7 +443,6 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else
 				nBuyNum = atoi(m_pEdit->GetString());
 
-			nBuyNum = max( nBuyNum, 0 );
 			DWORD dwMAXCount = MAX_BUY_ITEMCOUNT;
 			if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
 				m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
@@ -453,7 +452,8 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				dwMAXCount = 9999;
 			else if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
 				dwMAXCount = 21;
-			nBuyNum = min( nBuyNum, (int)( dwMAXCount ) );
+
+			nBuyNum = std::clamp( nBuyNum, 0, (int)( dwMAXCount ) );
 
 			OnChangeBuyCount(nBuyNum);
 		}

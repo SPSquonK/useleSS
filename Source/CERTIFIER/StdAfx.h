@@ -5,6 +5,7 @@
 #define POINTER_64 __ptr64
 #define __CERTIFIER
 #define _HAS_STD_BYTE 0
+#define NOMINMAX
 
 #include <afxwin.h>
 #include <mmsystem.h>

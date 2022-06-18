@@ -1044,7 +1044,7 @@ FONTTEX* CD3DFont::GetFontTex(const char* begin, const char* end, WORD wCodePage
     SIZE size;
 	GetTextExtentPoint32( m_hDC, begin, end-begin, &size );
 	ExtTextOut( m_hDC, 0, 0, ETO_OPAQUE, NULL, begin, len, NULL );
-	size.cy = min( size.cy,  (int)( m_dwMaxHeight ) );
+	size.cy = std::min<long>( size.cy,  (long)( m_dwMaxHeight ) );
 	CopyToTexture( m_pCurTexture, size,0x008080ff );
 
 	
