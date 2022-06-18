@@ -687,8 +687,6 @@ void CPartyMng::RemovePartyName( u_long uidPlayer, const char* szPartyName )
 
 	if( iter1 != m_2PartyNameStringPtr.end() )
 		m_2PartyNameStringPtr.erase( iter1 );
-//	m_2PartyNameLongPtr.insert(  map<u_long, string>::value_type( uidPlayer, szPartyName ) );
-//	m_2PartyNameStringPtr.insert(  map<string, u_long>::value_type(szPartyName, uidPlayer ) );
 }
 
 BOOL CPartyMng::CreateWorkers( void )
@@ -750,6 +748,7 @@ void CPartyMng::Worker( void )
 									if( pMember )
 										pMember->m_uPartyId	= 0;
 									DeleteParty( pParty->m_uPartyId );
+									pParty = nullptr;
 									break;
 								}
 
@@ -759,6 +758,8 @@ void CPartyMng::Worker( void )
 						}
 					}
 				}	// for
+
+				if (pParty == nullptr) continue;
 			}	// if
 
 			// 파티모드를 체크
