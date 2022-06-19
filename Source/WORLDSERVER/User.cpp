@@ -1097,8 +1097,7 @@ void CUser::AddPartyMember( CParty *pParty, u_long idPlayer, const char* pszLead
 	m_Snapshot.ar.WriteString( pszMember );
 	if( pParty )
 	{
-		m_Snapshot.ar << pParty->m_nSizeofMember;
-		pParty->Serialize( m_Snapshot.ar );
+		m_Snapshot.ar << pParty->m_nSizeofMember << *pParty;
 	}
 	else
 	{

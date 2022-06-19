@@ -75,7 +75,10 @@ public:
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+	virtual void OnLButtonDown( UINT nFlags, CPoint point );
+
+private:
+	void OnChangeLeader();
 }; 
 
 #endif

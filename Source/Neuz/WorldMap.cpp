@@ -568,7 +568,7 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 		{
 			if( g_pPlayer->m_idPlayer != g_Party.GetPlayerId( i ) )
 			{
-				if( !g_Party.m_aMember[ i ].m_bRemove )
+				if( !g_Party.m_aMember[ i ].m_remove )
 					RenderPlayer( p2DRender, FALSE, g_Party.GetPos( i ), CPlayerDataCenter::GetInstance()->GetPlayerString( g_Party.m_aMember[ i ].m_uPlayerId ) );	
 			}
 		}

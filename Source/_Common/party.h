@@ -4,6 +4,7 @@
 #include "projectcmn.h"
 #endif // __CORESERVER
 
+#include <optional>
 #include <map>
 #include <ranges>
 
@@ -28,11 +29,17 @@
 
 struct PartyMember final {	// 플레이어 아이디만 가지고 있음
 	u_long	m_uPlayerId = 0;
-	CTime	m_tTime = CTime::GetCurrentTime();
-	BOOL	m_bRemove = FALSE;
+#ifdef __CORESERVER
+	std::optional<CTime> m_remove = std::nullopt;
+#else
+	bool m_remove = false;
+#endif
 #if defined(__WORLDSERVER) || defined(__CLIENT)
 	D3DXVECTOR3	m_vPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 #endif
+
+	PartyMember() = default;
+	explicit PartyMember(const u_long playerId) : m_uPlayerId(playerId) {}
 };
 
 class CParty final {
@@ -91,7 +98,10 @@ public:
 
 	void	ChangeLeader( u_long uLeaderId );
 
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CParty & self);
+#ifndef __CORESERVER
+	friend CAr & operator>>(CAr & ar,       CParty & self);
+#endif
 
 	void	SwapPartyMember( int first, int Second );
 
@@ -147,23 +157,28 @@ typedef std::map<u_long, std::string>	ULONG2STRING;
 
 class CPlayer;
 
+#ifndef __CLIENT
 class CPartyMng final {
+public:
+	static constexpr __time64_t AllowedLimboTime = 60 * 10 /* seconds */;
+
 private:
 	u_long		m_id = 0;	// 새로 생성되는 파티에 순차적으로 아이디를 할당하기 위한 변수다.
 	C2PartyPtr	m_2PartyPtr;
 #ifdef __WORLDSERVER
 	int			m_nSecCount = 0;
 #endif // __WORLDSERVER
+
 public:
-#if !defined(__WORLDSERVER) && !defined(__CLIENT)
-	CRIT_SEC	m_AddRemoveLock;
-#endif
 #ifdef __CORESERVER
+	mutable CRIT_SEC	m_AddRemoveLock;
+
 	EXPPARTY	m_aExpParty[MAX_PARTYLEVEL];
-#endif	// __CORESERVER
 
 	ULONG2STRING	m_2PartyNameLongPtr;
 	std::map<std::string, u_long>	m_2PartyNameStringPtr;
+#endif	// __CORESERVER
+
 
 public:
 //	Constructions
@@ -178,12 +193,15 @@ public:
 	u_long	NewParty( u_long uLeaderId, LONG nLeaderLevel, LONG nLeaderJob, BYTE nLeaderSex, LPSTR szLeaderName, u_long uMemberId, LONG nMemberLevel, LONG nMemberJob, BYTE nMemberSex, LPSTR szMembername, u_long uPartyId = 0 );
 	BOOL	DeleteParty( u_long uPartyId );
 	[[nodiscard]] CParty * GetParty(u_long uPartyId);
-#if !defined(__WORLDSERVER) && !defined(__CLIENT)
+#ifdef __CORESERVER
 	void	Lock( void )	{	m_AddRemoveLock.Enter();	}
 	void	Unlock( void )	{	m_AddRemoveLock.Leave();	}
 #endif
 
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CPartyMng & self);
+#ifndef __CORESERVER
+	friend CAr & operator>>(CAr & ar,       CPartyMng & self);
+#endif
 
 //	Attributs
 	int		GetSize( void );
@@ -213,6 +231,7 @@ public:
 	void	PartyMapInfo( void );
 #endif // __WORLDSERVER
 };
+#endif
 
 #if defined(__WORLDSERVER) || defined(__CORESERVER)
 extern CPartyMng g_PartyMng;

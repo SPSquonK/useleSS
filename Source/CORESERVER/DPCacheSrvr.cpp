@@ -707,7 +707,7 @@ void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser,
 	}
 
 	int nFind = pParty->FindMember( idChangeLeader );
-	if( nFind == -1 || pParty->m_aMember[nFind].m_bRemove )
+	if( nFind == -1 || pParty->m_aMember[nFind].m_remove )
 		return;
 
 	for( int j = 0 ; j < MAX_PARTYMODE ; j++ )

@@ -366,7 +366,7 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 {
 	CServerDesc desc;
 	desc.Serialize( ar );
-	g_PartyMng.Serialize( ar );
+	ar >> g_PartyMng;
 	g_GuildMng.Serialize( ar, FALSE );
 	g_GuildWarMng.Serialize( ar );
 
@@ -884,8 +884,8 @@ void CDPCoreClient::OnAddPlayerParty(CAr & ar, DPID, DPID, OBJID) {
 	const int i = pParty->FindMember(idPlayer);
 	if (i < 0) return;
 
-	pParty->m_aMember[i].m_bRemove = FALSE;
-	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, BOOL>(idPlayer, FALSE);
+	pParty->m_aMember[i].m_remove = false;
+	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, bool>(idPlayer, false);
 }
 
 void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
@@ -902,8 +902,8 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 		if( i < 0 )
 			return;
 
-		pParty->m_aMember[i].m_bRemove	= TRUE;
-		pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, BOOL>(idPlayer, TRUE);
+		pParty->m_aMember[i].m_remove = true;
+		pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, bool>(idPlayer, true);
 
 		if( i == 0 )		// 극단장이 나갈경우
 		{
@@ -917,7 +917,7 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 			bool fRemoveParty	= true;
 			for( int j = 1; j < pParty->m_nSizeofMember; j++ )
 			{
-				if( pParty->m_aMember[j].m_bRemove == FALSE )
+				if (!pParty->m_aMember[j].m_remove)
 				{
 					fRemoveParty	= false;
 					pParty->SwapPartyMember( 0, j );
@@ -943,16 +943,12 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 				else
 					g_DPCoreClient.SendUserPartySkill( pMover->m_idPlayer, PARTY_PARSKILL_MODE, 0, 0, 1 );
 			}
-			if( fRemoveParty )
-			{
-				CUser* pMember;
-				for( int j = 0; j < pParty->m_nSizeofMember; j++ )
-				{
-					pMember		= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( j ) );
-					if( IsValidObj( (CObj*)pMember ) )
-						pMember->m_idparty = 0;
+
+			if (fRemoveParty) {
+				for (CUser * pMember : AllMembers(*pParty)) {
+					pMember->m_idparty = 0;
 				}
-				g_PartyMng.DeleteParty( pParty->m_uPartyId );
+				g_PartyMng.DeleteParty(pParty->m_uPartyId);
 			}
 		}
 	}
@@ -980,8 +976,8 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 		{
 			for( int j = 0; j < pParty->m_nSizeofMember; ++j )
 			{
-				if( pParty->m_aMember[j].m_bRemove )
-					continue;
+				if (pParty->m_aMember[j].m_remove) continue;
+
 				CUser* pUser = g_UserMng.GetUserByPlayerID( pParty->m_aMember[j].m_uPlayerId );
 				if( IsValidObj( pUser ) && ( pUser->IsSMMode( SM_PARTYSKILL30 ) || pUser->IsSMMode( SM_PARTYSKILL15 ) || pUser->IsSMMode( SM_PARTYSKILL1 ) ) )
 				{

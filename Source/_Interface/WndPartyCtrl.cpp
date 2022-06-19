@@ -122,8 +122,7 @@ void CWndPartyCtrl::OnDraw( C2DRender* p2DRender )
 		else
 		{
 			dwColor = 0xff878787; // 디폴트는 주위에 없는 놈
-			if( g_Party.m_aMember[ i ].m_bRemove ) 
-				dwColor = 0xff000000; // 서버에 없는 놈
+			if( g_Party.m_aMember[ i ].m_remove ) dwColor = 0xff000000; // 서버에 없는 놈
 			strMember.Format( "?? %s", pPlayerData->szPlayer );
 		}
 		if( i == m_nCurSelect )

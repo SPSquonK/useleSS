@@ -55,11 +55,8 @@ void CParty::InitParty()
 	m_nTroupsShareExp = m_nTroupeShareItem = 0;
 	m_nKindTroup = 0;							// 단막극단
 	m_nReferens = 0;	
-	for( int i = 0 ; i < MAX_PTMEMBER_SIZE ; i++ )
-	{
-		m_aMember[i].m_uPlayerId	= 0;
-		m_aMember[i].m_tTime = CTime::GetCurrentTime();
-		m_aMember[i].m_bRemove = FALSE;
+	for (int i = 0; i < MAX_PTMEMBER_SIZE; i++) {
+		m_aMember[i] = PartyMember();
 	}
 }
 
@@ -83,8 +80,7 @@ BOOL CParty::NewMember( u_long uPlayerId )
 	
 	if( IsMember( uPlayerId ) == FALSE && m_nSizeofMember < MAX_PTMEMBER_SIZE )
 	{
-		m_aMember[m_nSizeofMember].m_uPlayerId = uPlayerId;
-		m_aMember[m_nSizeofMember].m_bRemove	= FALSE;
+		m_aMember[m_nSizeofMember] = PartyMember(uPlayerId);
 		m_nSizeofMember++;
 		return TRUE;
 	}
@@ -115,45 +111,52 @@ void CParty::ChangeLeader( u_long uLeaderId )
 	SwapPartyMember( 0, changeIndex );
 }
 
-void CParty::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_uPartyId << m_nKindTroup << m_nSizeofMember;
-		ar << m_nLevel << m_nExp << m_nPoint;
-		ar << m_nTroupsShareExp << m_nTroupeShareItem;
-		ar << m_idDuelParty;
-		for( int i = 0 ; i < MAX_PARTYMODE  ; i++ )
-		{
-			ar << m_nModeTime[i];
-		}
-		if( m_nKindTroup )
-			ar.WriteString( m_sParty );
-		for( int i = 0 ; i < m_nSizeofMember ; i++ )
-		{
-			ar << m_aMember[i].m_uPlayerId;
-			ar << m_aMember[i].m_bRemove;
-		}
+CAr & operator<<(CAr & ar, const CParty & self) {
+	ar << self.m_uPartyId << self.m_nKindTroup << self.m_nSizeofMember;
+	ar << self.m_nLevel << self.m_nExp << self.m_nPoint;
+	ar << self.m_nTroupsShareExp << self.m_nTroupeShareItem;
+	ar << self.m_idDuelParty;
+	for (int i = 0; i < MAX_PARTYMODE; i++) {
+		ar << self.m_nModeTime[i];
 	}
-	else
-	{
-		ar >> m_uPartyId >> m_nKindTroup >> m_nSizeofMember;
-		ar >> m_nLevel >> m_nExp >> m_nPoint;
-		ar >> m_nTroupsShareExp >> m_nTroupeShareItem;
-		ar >> m_idDuelParty;
-		for( int i = 0 ; i < MAX_PARTYMODE  ; i++ )
-		{
-			ar >> m_nModeTime[i];
-		}
-		if( m_nKindTroup )
-			ar.ReadString( m_sParty );
-		for( int i = 0 ; i < m_nSizeofMember ; i++ )
-		{
-			ar >> m_aMember[i].m_uPlayerId;
-			ar >> m_aMember[i].m_bRemove;
-		}
+	
+	if (self.m_nKindTroup) ar.WriteString(self.m_sParty);
+
+	for (int i = 0; i < self.m_nSizeofMember; i++) {
+		ar << self.m_aMember[i].m_uPlayerId;
+
+#ifdef __CORESERVER
+		ar << self.m_aMember->m_remove.has_value();
+#else
+		static_assert(std::is_same_v<decltype(PartyMember::m_remove), bool>);
+		ar << self.m_aMember[i].m_remove;
+#endif
 	}
+	return ar;
 }
+
+#ifndef __CORESERVER
+CAr & operator>>(CAr & ar, CParty & self) {
+	ar >> self.m_uPartyId >> self.m_nKindTroup >> self.m_nSizeofMember;
+	ar >> self.m_nLevel >> self.m_nExp >> self.m_nPoint;
+	ar >> self.m_nTroupsShareExp >> self.m_nTroupeShareItem;
+	ar >> self.m_idDuelParty;
+	for( int i = 0 ; i < MAX_PARTYMODE  ; i++ )
+	{
+		ar >> self.m_nModeTime[i];
+	}
+
+	if(self.m_nKindTroup ) ar.ReadString(self.m_sParty );
+
+	for (int i = 0; i < self.m_nSizeofMember; i++) {
+		ar >> self.m_aMember[i].m_uPlayerId;
+		static_assert(std::is_same_v<decltype(PartyMember::m_remove), bool>);
+		ar >> self.m_aMember[i].m_remove;
+	}
+
+	return ar;
+}
+#endif
 
 void CParty::SwapPartyMember(int first, int Second) {
 	std::swap(m_aMember[first], m_aMember[Second]);
@@ -617,46 +620,39 @@ CParty * CPartyMng::GetParty(const u_long uPartyId) {
 	return sqktd::find_in_map(m_2PartyPtr, uPartyId);
 }
 
-void CPartyMng::Serialize( CAr & ar )
-{
+CAr & operator<<(CAr & ar, const CPartyMng & self) {
 #ifndef __WORLDSERVER
-	m_AddRemoveLock.Enter( theLineFile );	// lock1
+	self.m_AddRemoveLock.Enter(theLineFile);	// lock1
 #endif	// __WORLDSERVER
+	ar << self.m_id;
+	ar << self.m_2PartyPtr.size();
 
-	if( ar.IsStoring() )
-	{
-		ar << m_id;
-		int nCount	= 0;
-		u_long uOffset	= ar.GetOffset();
-		ar << nCount;
-		for( C2PartyPtr::iterator i	= m_2PartyPtr.begin(); i != m_2PartyPtr.end(); ++i )
-		{
-			CParty* pParty = (CParty*)i->second;
-			pParty->Serialize( ar );
-			nCount++;
-		}
-		int nBufSize1;
-		LPBYTE lpBuf1	= ar.GetBuffer( &nBufSize1 );
-		*(UNALIGNED int*)( lpBuf1 + uOffset )	= nCount;
+	for (const CParty * party : self.m_2PartyPtr | std::views::values) {
+		ar << *party;
 	}
-	else
-	{
-		int nCount;
-		ar >> m_id;
-		ar >> nCount;		
-		for( int i = 0 ; i < nCount ; i++ )
-		{
-			CParty* pParty	= new CParty;
-//			pParty->Lock();
-			pParty->Serialize( ar );
-			m_2PartyPtr.insert( C2PartyPtr::value_type( pParty->m_uPartyId, pParty ) );
-//			pParty->Unlock();
-		}
-	}
+
 #ifndef __WORLDSERVER
-	m_AddRemoveLock.Leave( theLineFile );	// unlock1
+	self.m_AddRemoveLock.Leave(theLineFile);	// unlock1
 #endif	// __WORLDSERVER
+	return ar;
 }
+
+#ifndef __CORESERVER
+CAr & operator>>(CAr & ar, CPartyMng & self) {
+	self.Clear();
+
+	ar >> self.m_id;
+
+	size_t s; ar >> s;
+
+	for (size_t i = 0; i != s; ++i) {
+		CParty * party = new CParty();
+		self.m_2PartyPtr.emplace(party->m_uPartyId, party);
+	}
+
+	return ar;
+}
+#endif
 
 #ifdef __CORESERVER
 LPCSTR CPartyMng::GetPartyString( u_long uidPlayer )
@@ -731,9 +727,9 @@ void CPartyMng::Worker( void )
 			{
 				for( int j = 1; j < pParty->m_nSizeofMember; j++ )
 				{
-					if( pParty->m_aMember[j].m_uPlayerId != 0 && pParty->m_aMember[j].m_bRemove )
+					if( pParty->m_aMember[j].m_uPlayerId != 0 && pParty->m_aMember[j].m_remove )
 					{
-						if( timeCurr.GetTime() - pParty->m_aMember[j].m_tTime.GetTime() > 60 * 10 )	// 10분 : 60 * 10 // 지금은 1분
+						if( timeCurr.GetTime() - pParty->m_aMember[j].m_remove->GetTime() > AllowedLimboTime )	// 10분 : 60 * 10 // 지금은 1분
 						{
 							u_long idMember		= pParty->GetPlayerId( j );
 							if( pParty->DeleteMember( idMember ) )
@@ -797,7 +793,7 @@ void CPartyMng::AddConnection( CPlayer* pPlayer )
 			return;
 		}
 
-		pParty->m_aMember[i].m_bRemove	= FALSE;
+		pParty->m_aMember[i].m_remove	= std::nullopt;
 		pParty->m_nReferens--;
 
 		BEFORESENDDUAL( ar, PACKETTYPE_ADDPLAYERPARTY, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -822,8 +818,7 @@ void CPartyMng::RemoveConnection( CPlayer* pPlayer )
 		int i	= pParty->FindMember( pPlayer->uKey );
 		if( i < 0 )
 			return;
-		pParty->m_aMember[i].m_tTime	= CTime::GetCurrentTime();
-		pParty->m_aMember[i].m_bRemove	= TRUE;
+		pParty->m_aMember[i].m_remove	= CTime::GetCurrentTime();
 		pParty->m_nReferens++;
 
 		BEFORESENDDUAL( ar, PACKETTYPE_REMOVEPLAYERPARTY, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -838,7 +833,7 @@ void CPartyMng::RemoveConnection( CPlayer* pPlayer )
 			bool fRemoveParty	= true;
 			for( int j = 1; j < pParty->m_nSizeofMember; j++ )
 			{
-				if( pParty->m_aMember[j].m_bRemove == FALSE )
+				if (!pParty->m_aMember[j].m_remove)
 				{
 					fRemoveParty	= false;
 					pParty->SwapPartyMember( 0, j );

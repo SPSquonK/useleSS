@@ -3868,7 +3868,7 @@ void CDPClient::OnAddPartyMember( CAr & ar )
 
 	if( nSizeofMember != 0 )
 	{
-		g_Party.Serialize( ar );
+		ar >> g_Party;
 
 		CString sMessage;
 		if( nOldSize == 0 && nSizeofMember == 2 )	// new
@@ -4671,20 +4671,19 @@ void CDPClient::OnPartyChangeTroup( CAr & ar )
 }
 
 void CDPClient::OnSetPartyMemberParam(CAr & ar) {
-	const auto [idMember, nVal] = ar.Extract<u_long, BOOL>();
+	const auto [idMember, nVal] = ar.Extract<u_long, bool>();
 
 	const int i = g_Party.FindMember( idMember );
 	if (i < 0) return;
 
-	g_Party.m_aMember[i].m_bRemove	= nVal;
+	g_Party.m_aMember[i].m_remove	= nVal;
 
 	if (nVal != TRUE || i != 0) return;
 
 	bool fRemoveParty	= true;
 
 	for( int j = 1; j < g_Party.m_nSizeofMember; j++ ) {
-		if( g_Party.m_aMember[j].m_bRemove == FALSE )
-		{
+		if (!g_Party.m_aMember[j].m_remove) {
 			fRemoveParty	= false;
 			g_Party.SwapPartyMember( 0, j );
 			g_WndMng.m_pWndWorld->m_buffs.Clear();

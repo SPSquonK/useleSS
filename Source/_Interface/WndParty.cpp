@@ -335,35 +335,7 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	// 극단장 인계.
 	else if( nID==WIDC_BUTTON1 )
 	{
-		if( g_Party.m_nSizeofMember != 0 )
-		{
-			if( g_Party.IsLeader( g_pPlayer->m_idPlayer ) && m_wndPartyInfo.m_nSelected != -1 )
-			{
-				if( g_Party.m_aMember[m_wndPartyInfo.m_nSelected].m_bRemove == FALSE )
-				{
-					u_long  nLeadMember = g_Party.m_aMember[m_wndPartyInfo.m_nSelected].m_uPlayerId;
-					if( g_Party.IsLeader( nLeadMember ) == FALSE )
-					{
-						if( g_pPlayer->m_nDuel == 2 )	// 극단 듀얼중일때는 극단장을 바꿀수 없음
-							g_WndMng.PutString( prj.GetText( TID_PK_NOCHANGE_PARTYLEADER ), NULL, prj.GetTextColor( TID_PK_NOCHANGE_PARTYLEADER ) );
-						else
-							g_DPlay.SendPartyChangeLeader( g_pPlayer->m_idPlayer, nLeadMember );						
-					}
-					else
-					{
-						g_WndMng.PutString( prj.GetText( TID_GAME_PARTY_ALREADYMASTER ), NULL, prj.GetTextColor( TID_GAME_PARTY_ALREADYMASTER ) ); // "이미 단장을 하고 입니다"
-					}
-				}
-				else
-				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_MASTER_AWAY ), NULL, prj.GetTextColor( TID_GAME_MASTER_AWAY ) ); // "단장이 아니거나 극단창에서 단원을 선택을 해야 합니다"					
-				}
-			}
-			else
-			{
-				g_WndMng.PutString( prj.GetText( TID_GAME_PARTY_ISNOTMASTER ), NULL, prj.GetTextColor( TID_GAME_PARTY_ISNOTMASTER ) ); // "단장이 아니거나 극단창에서 단원을 선택을 해야 합니다"
-			}
-		}
+		OnChangeLeader();
 	}
 	else if( nID==WIDC_CHANGE )
 	{
@@ -372,11 +344,7 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			// 순회극단으로 바꾸기~
 			SAFE_DELETE( m_WndPartyChangeTroup );
 			m_WndPartyChangeTroup = new CWndPartyChangeTroup;
-#ifdef __FIX_WND_1109
 			m_WndPartyChangeTroup->Initialize( this );
-#else	// __FIX_WND_1109
-			m_WndPartyChangeTroup->Initialize();
-#endif	// __FIX_WND_1109
 		}
 	}
 	else if(nID == WIDC_BUTTON2)
@@ -446,6 +414,32 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
+}
+
+void CWndParty::OnChangeLeader() {
+	if (g_Party.m_nSizeofMember == 0) {
+		return g_WndMng.PutString(TID_GAME_PARTY_ISNOTMASTER);
+	}
+
+	if (!g_Party.IsLeader(g_pPlayer->m_idPlayer) || m_wndPartyInfo.m_nSelected == -1) {
+		return g_WndMng.PutString(TID_GAME_MASTER_AWAY);
+	}
+
+	if (g_Party.m_aMember[m_wndPartyInfo.m_nSelected].m_remove) {
+		return;
+	}
+
+	const u_long nLeadMember = g_Party.m_aMember[m_wndPartyInfo.m_nSelected].m_uPlayerId;
+
+	if (g_Party.IsLeader(nLeadMember)) {
+		return g_WndMng.PutString(TID_GAME_PARTY_ALREADYMASTER);
+	}
+
+	if (g_pPlayer->m_nDuel == 2) {	// 극단 듀얼중일때는 극단장을 바꿀수 없음
+		return g_WndMng.PutString(TID_PK_NOCHANGE_PARTYLEADER);
+	}
+	
+	g_DPlay.SendPartyChangeLeader(g_pPlayer->m_idPlayer, nLeadMember);
 }
 
 /****************************************************
@@ -525,7 +519,7 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		else
 		{
 			colorStatus = 0xff878787; // 디폴트는 주위에 없는놈
-			if( g_Party.m_aMember[ i ].m_bRemove ) 
+			if( g_Party.m_aMember[ i ].m_remove ) 
 				colorStatus = 0xff000000; // 서버에 없는놈
 		}
 		p2DRender->RenderFillRect( rectTemp, colorStatus );
