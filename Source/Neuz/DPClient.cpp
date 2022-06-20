@@ -14854,15 +14854,6 @@ void CDPClient::SendUltimateMakeGem( OBJID objItemId )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendUltimateTransWeapon( OBJID objItemWeapon, OBJID objItemGem1, OBJID objItemGem2 )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ULTIMATE_TRANSWEAPON, DPID_UNKNOWN );
-	ar << objItemWeapon;
-	ar << objItemGem1;
-	ar << objItemGem2;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendUltimateSetGem( OBJID objItemWeapon, OBJID objItemGem )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_ULTIMATE_SETGEM, DPID_UNKNOWN );

@@ -273,7 +273,7 @@ private:
 
 	void OnUltimateMakeItem(CAr & ar, CUser & pUser);
 	void OnUltimateMakeGem(CAr & ar, CUser & pUser);
-	void OnUltimateTransWeapon( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
+	void OnUltimateTransWeapon(CAr & ar, CUser & pUser);
 	void OnUltimateSetGem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void OnUltimateRemoveGem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void OnUltimateEnchantWeapon( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );

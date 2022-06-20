@@ -16844,7 +16844,9 @@ BOOL CWndChangeWeapon::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			pButton->EnableWindow(FALSE);
 			m_bIsSendChange = TRUE;
 			
-			g_DPlay.SendUltimateTransWeapon(w->m_dwObjId, o->m_dwObjId, j->m_dwObjId);
+			g_DPlay.SendPacket<PACKETTYPE_ULTIMATE_TRANSWEAPON, OBJID, OBJID, OBJID>(
+				w->m_dwObjId, j->m_dwObjId, o->m_dwObjId
+				);
 			UpdateStartButtonStatus();
 		}
 	} else if (nID == WIDC_WeaponReceiver) {

@@ -431,7 +431,6 @@ public:
 	void OnUltimateEnchantWeapon( OBJID objid, CAr & ar );
 
 	void SendUltimateMakeGem( OBJID objItemId );
-	void SendUltimateTransWeapon( OBJID objItemWeapon, OBJID objItemGem1, OBJID objItemGem2 );
 	void SendUltimateSetGem( OBJID objItemWeapon, OBJID objItemGem );
 	void SendUltimateRemoveGem( OBJID objItemWeapon, OBJID objItemGem );
 	void SendUltimateEnchantWeapon( OBJID objItemWeapon, OBJID objItemGem );

@@ -8022,23 +8022,10 @@ void CDPSrvr::OnUltimateMakeGem(CAr & ar, CUser & pUser) {
 	>(ULTIMATE_MAKEGEM, nResult);
 }
 
-void CDPSrvr::OnUltimateTransWeapon( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
-	OBJID objItemWeapon;
-	OBJID objItemGem1;
-	OBJID objItemGem2;
-
-	ar >> objItemWeapon;
-	ar >> objItemGem1;
-	ar >> objItemGem2;
-
-	int nResult = prj.m_UltimateWeapon.TransWeapon( pUser, objItemWeapon, objItemGem1, objItemGem2 );
-	pUser->AddUltimateWeapon( ULTIMATE_TRANSWEAPON, nResult );
+void CDPSrvr::OnUltimateTransWeapon(CAr & ar, CUser & pUser) {
+	const auto [weapon, jewel, ori] = ar.Extract<OBJID, OBJID, OBJID>();
+	const int nResult = prj.m_UltimateWeapon.TransWeapon(&pUser, weapon, jewel, ori);
+	pUser.AddUltimateWeapon(ULTIMATE_TRANSWEAPON, nResult);
 }
 
 void CDPSrvr::OnUltimateSetGem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
