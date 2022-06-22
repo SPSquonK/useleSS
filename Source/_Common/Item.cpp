@@ -590,10 +590,16 @@ DWORD CItemElem::GetLimitLevel() const
 }
 
 bool CItemElem::IsLimitLevel(const CMover * pMover) const {
-	// TODO: expect const ref instead of const ptr
+	// TODO: expect const ref to Mover instead of const ptr
+
+	const ItemProp * prop = GetProp();
+	if (!prop) return false;
+	
 	if (pMover->GetJobType() >= JTYPE_MASTER
-		&& pMover->GetJobType() > pMover->GetJobType(GetProp()->dwItemJob)) {
-		return false;
+		&& pMover->GetJobType() > pMover->GetJobType(prop->dwItemJob)) {
+		if (prop->dwLimitLevel1 == NULL_ID || prop->dwLimitLevel1 <= MAX_LEVEL) {
+			return false;
+		}
 	}
 
 	if ((DWORD)(pMover->GetLevel()) >= GetLimitLevel()) {
