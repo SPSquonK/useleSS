@@ -360,12 +360,6 @@ LPCTSTR GetCPUInfo( void )
 }
 #endif // client
 
-int StringFind( const char* string, int c )
-{
-	char* pdest;
-	return ( pdest = (char*)strchr( string, c ) ) ? pdest - string : -1;
-}
-
 void StringTrimRight( char* szString )
 {
 	// find beginning of trailing spaces by starting at beginning (DBCS aware)

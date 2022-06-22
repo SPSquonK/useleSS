@@ -1360,7 +1360,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 
 			strcpy( pObject->m_MaterialAry[i].strBitMapFileName, szBitmap );
 		#if	!defined(__WORLDSERVER)
-			if( IsEmpty(szBitmap) == FALSE )
+			if( !IsEmpty(szBitmap) )
 				mMaterialAry[i] = g_TextureMng.AddMaterial( m_pd3dDevice, &mMaterial, szBitmap );
 		#endif
 		}
@@ -2453,7 +2453,7 @@ void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, MATERIAL *pmMaterial[
 		GetFileExt( pObj->m_MaterialAry[i].strBitMapFileName, szFileExt );	// mvr_bang-et.dds
 		lstrcat( szTexture, szFileExt );
 
-		if( IsEmpty(szTexture) == FALSE )
+		if( !IsEmpty(szTexture) )
 			pmMaterial[i] = g_TextureMng.AddMaterial( m_pd3dDevice, &mMaterial, szTexture );
 	}
 #endif // !__WORLDSERVER

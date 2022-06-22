@@ -60,16 +60,11 @@ enum  OSTYPE
 
 extern OSTYPE g_osVersion;
 
-LPCTSTR		GetCPUInfo( void ) ;
-void		InitLIB( void );
-#define		SWAP( A, B )	{ A ^= B; B ^= A; A ^= B; }
-inline BOOL IsEmpty( LPCTSTR str )
-{
-	return (str[0] == '\0') ? TRUE : FALSE;
-}
+LPCTSTR GetCPUInfo();
+
+[[nodiscard]] inline bool IsEmpty(LPCTSTR str) { return str[0] == '\0'; }
 
 void	MakeEven( long& x );
-int		StringFind( const char* string, int c );
 void	StringTrimRight( char* szString );
 
 void	SetLanguageInfo( int nLanguage, int nSubLanguage );		
@@ -78,13 +73,6 @@ int		GetSubLanguage();
 
 void	SetUse2ndPassWord( BOOL bUse );
 BOOL	IsUse2ndPassWord();
-
-/////////////////////////////////////////////////////////////////////////////
-// MATH
-inline	float xMathCCW( float x1, float y1, float x2, float y2 )
-{
-	return x1 * y2 - y1 * x2;
-}
 
 /////////////////////////////////////////////////////////////////////////////
 #ifdef __PROF

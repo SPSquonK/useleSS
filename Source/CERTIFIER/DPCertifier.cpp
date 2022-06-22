@@ -208,10 +208,10 @@ void CDPCertifier::OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 	//	mulcom	END100218	패스워드 암호화
 	//////////////////////////////////////////////////////////////////////////
 
-
-	if( pszAccount[0] == '\0' || StringFind( pszAccount, '\'' ) >= 0 || StringFind( pszPwd, '\'' ) >= 0 )
-	{
-		DestroyPlayer( dpid );
+	if (pszAccount[0] == '\0' || std::string_view(pszAccount).contains('\'')
+		|| std::string_view(pszPwd).contains('\'')
+		) {
+		DestroyPlayer(dpid);
 		return;
 	}
 
