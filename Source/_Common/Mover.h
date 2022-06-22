@@ -937,7 +937,7 @@ public:
 	};
 	
 	[[nodiscard]] EquipAble::Result IsEquipAble(const CItemElem & pItem, bool bIgnoreLevel = false) const;		// 장착가능한가?
-	[[nodiscard]] bool IsUnEquipAble(const ItemProp & pItemProp) const; // Check if the current situation blocks equiping the item
+	[[nodiscard]] bool CanMoveWithout(const ItemProp & pItemProp) const;
 	void			SetEquipDstParam();
 	void			SumEquipAdjValue( int* pnAdjHitRate, int* pnAdjParray );
 	int				SumEquipDefenseAbility( LONG* pnMin, LONG* pnMax );

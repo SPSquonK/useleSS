@@ -1140,28 +1140,25 @@ CMover::EquipAble::Result CMover::IsEquipAble(const CItemElem & pItem, bool bIgn
 	return EquipAble::Yes();
 }
 
-//
-//
-// pItemElem이 벗는게 가능한가를 검사.
-bool CMover::IsUnEquipAble(const ItemProp & pItemProp) const {
-	if (pItemProp.dwParts == PARTS_RIDE) {
-		if (m_pActMover->IsSit()) {	// 빗자루는 앉은 상태에서는 탈착 금지
-			return false;
-		}
+bool CMover::CanMoveWithout(const ItemProp & pItemProp) const {
+	if (pItemProp.dwParts != PARTS_RIDE)
+		return true;
 
-		if (GetWorld()) {	// RedoEquip에서 불렀을때 NULL인경우 있음. NULL이면 걍 벗김
-			const int nAttr = GetWorld()->GetHeightAttribute(GetPos().x, GetPos().z);		// 이동할 위치의 속성 읽음.
-			// 비행금지 or 걷기금지 or 이동금지 지역에서 는 못내림.
-			if ((nAttr == HATTR_NOFLY || nAttr == HATTR_NOWALK || nAttr == HATTR_NOMOVE)) {
-				return false;
-			}
-		}
+	if (m_pActMover->IsSit()) {
+		// The broom cannot be removed while seated.
+		return false;
 	}
 
-	if (g_eLocal.GetState(EVE_SCHOOL) && pItemProp.dwItemKind3 == IK3_CLOAK)
-		return false;
+	/* const */ CWorld * const world = GetWorld();
+	if (!world) return true;
 
-	return true;
+	// Read the properties of the location to move to.
+	const int nAttr = world->GetHeightAttribute(GetPos().x, GetPos().z);
+		
+	// You cannot get off in a no-flying, no-walking, or no-moving area.
+	return nAttr != HATTR_NOFLY
+		&& nAttr != HATTR_NOWALK
+		&& nAttr != HATTR_NOMOVE;
 }
 
 //
@@ -1195,7 +1192,7 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 	}
 	else
 	{
-		if (IsUnEquipAble(*pItemProp)) return FALSE;
+		if (!CanMoveWithout(*pItemProp)) return FALSE;
 	}
 
 	EQUIP_INFO equipInfo;
