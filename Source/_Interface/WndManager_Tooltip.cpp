@@ -1233,7 +1233,7 @@ namespace WndMgr {
 		pEdit.AddString("\n");
 		
 		const DWORD limitLevelColor = GetOkOrErrorColor(!pItemElem.IsLimitLevel(&pMover));
-		pEdit.AddString(strTemp, dwItemColor[g_Option.m_nToolTipText].dwNotUse);
+		pEdit.AddString(strTemp, limitLevelColor);
 
 		if (pItemElem.GetLevelDown() != 0) {
 			strTemp.Format("(%d)", pItemElem.GetLevelDown());
