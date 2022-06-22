@@ -277,86 +277,33 @@ void	GetFilePath( LPCTSTR szSrc, LPTSTR szFilePath )
 
 //CPU 정보를 나타낸다.
 #ifdef __CLIENT
-static	char	_szTempBuff[256];
-LPCTSTR GetCPUInfo( void ) 
-{
-	CRegKey rg;
-	DWORD dwCount;
-
-	memset( _szTempBuff, 0, sizeof(_szTempBuff) );
-	
-/*	if( rg.Open( HKEY_LOCAL_MACHINE, "Hardware\\Description\\System\\CentralProcessor\\0" ) == ERROR_SUCCESS ) 
-	{
-		if( rg.QueryValue( _szTempBuff, "ProcessorNameString", &dwCount ) != ERROR_SUCCESS )
-			if( rg.QueryValue( _szTempBuff, "Identifier", &dwCount ) != ERROR_SUCCESS )
-				strcpy( _szTempBuff, "unknown" );
-	} else
-	{
-		strcpy( _szTempBuff, "unknown" );
-	}
-		
-	rg.Close();
-*/
-	HKEY hKey;
-	if( RegOpenKeyEx( HKEY_LOCAL_MACHINE, "Hardware\\Description\\System\\CentralProcessor\\0", 0, KEY_READ, &hKey ) == ERROR_SUCCESS )
-	{
-		dwCount = sizeof( _szTempBuff );
-		if ( RegQueryValueEx( hKey, "ProcessorNameString", NULL, NULL, (LPBYTE)_szTempBuff, &dwCount ) != ERROR_SUCCESS )
-			if ( RegQueryValueEx( hKey, "Identifier", NULL, NULL, (LPBYTE)_szTempBuff, &dwCount ) != ERROR_SUCCESS )
-				strcpy( _szTempBuff, "unknown" );
-	}
-	else
-		strcpy( _szTempBuff, "unknown" );
-
-	RegCloseKey( hKey );
-
-	OSVERSIONINFO versionInformation;
-	versionInformation.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	
-	BOOL b = GetVersionEx( &versionInformation );
-	if( b )
-	{
-		strcat( _szTempBuff, " " );
-		switch( versionInformation.dwMajorVersion ) 
-		{
+OSTYPE GetCPUInfo(const OSVERSIONINFO & versionInformation) {
+	switch (versionInformation.dwMajorVersion) {
 		case 3:
-			strcat( _szTempBuff, "Windows NT 3.51 " );
-			g_osVersion = WINDOWS_NT351;
-			break;
+			return WINDOWS_NT351;
 		case 4:
-			switch( versionInformation.dwMinorVersion )
-			{
-			case 0:		
-				if( versionInformation.dwPlatformId == VER_PLATFORM_WIN32_NT )
-				{
-					strcat( _szTempBuff, "Windows NT 4.0 " );
-					g_osVersion = WINDOWS_NT;
-				}
-				else
-				{
-					strcat( _szTempBuff, "Windows 95 " );	
-					g_osVersion = WINDOWS_95;
-				}
-				break;
-			case 10:	strcat( _szTempBuff, "Windows 98 " );	g_osVersion = WINDOWS_98;	break;
-			case 90:	strcat( _szTempBuff, "Windows Me " );	g_osVersion = WINDOWS_ME;	break;
+			switch (versionInformation.dwMinorVersion) {
+				case 0:
+					if (versionInformation.dwPlatformId == VER_PLATFORM_WIN32_NT) {
+						return WINDOWS_NT;
+					} else {
+						return WINDOWS_95;
+					}
+					break;
+				case 10:	return WINDOWS_98;	break;
+				case 90:	return WINDOWS_ME;	break;
 			}
 			break;
 		case 5:
-			switch( versionInformation.dwMinorVersion )
-			{
-			case 0:		strcat( _szTempBuff, "Windows 2000 " );	g_osVersion = WINDOWS_2000;	break;
-			case 1:		strcat( _szTempBuff, "Windows XP " );	g_osVersion = WINDOWS_XP;	break;
-			case 2:		strcat( _szTempBuff, "Windows Server 2003 family " );	g_osVersion = WINDOWS_SERVER_2003;	break;
-				
+			switch (versionInformation.dwMinorVersion) {
+				case 0:		return WINDOWS_2000;	break;
+				case 1:		return WINDOWS_XP;	break;
+				case 2:		return WINDOWS_SERVER_2003;	break;
 			}
 			break;
-		}
-		if( versionInformation.szCSDVersion[0] )
-			strcat( _szTempBuff, versionInformation.szCSDVersion );
-
 	}
-	return _szTempBuff;
+
+	return WINDOWS_UNKNOWN;
 }
 #endif // client
 

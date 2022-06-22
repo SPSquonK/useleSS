@@ -304,7 +304,8 @@ BOOL InitApp()
 	// Get Os Version
 	OSVERSIONINFO versionInfo;
 	versionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	BOOL bGetOsVr = GetVersionEx( &versionInfo );
+	const BOOL bGetOsVr = GetVersionEx( &versionInfo );
+	g_osVersion = bGetOsVr ? GetCPUInfo(versionInfo) : WINDOWS_UNKNOWN;
 
 	// Get VGA Identifier
 	LPDIRECT3D9 pD3D;
@@ -335,7 +336,7 @@ BOOL InitApp()
 	if( InitializeNetLib() == FALSE )
 		return FALSE;
 
-	LPCTSTR szCPU = GetCPUInfo();
+
 
 
 	//////////////////////////////////////////////////////////////////////////

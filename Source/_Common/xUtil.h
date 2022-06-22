@@ -60,7 +60,7 @@ enum  OSTYPE
 
 extern OSTYPE g_osVersion;
 
-LPCTSTR GetCPUInfo();
+OSTYPE GetCPUInfo(const OSVERSIONINFO & versionInformation);
 
 [[nodiscard]] inline bool IsEmpty(LPCTSTR str) { return str[0] == '\0'; }
 
