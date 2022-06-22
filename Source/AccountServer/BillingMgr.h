@@ -29,8 +29,6 @@ public:
 
 BOOL			CreateBillingMgr();
 CBillingMgr*	GetBillingMgr();
-char*			GetBillingPWD();
-//BOOL			SetBillingPWD( unsigned char* pEncryptedPWD );
 
 extern			char* StrCpyExcludeNull( char* dst, const char* src );
 extern			void AppendSpace( char* pCur, char* pEnd );

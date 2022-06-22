@@ -1,5 +1,4 @@
-#ifndef __DBMANAGER_H__
-#define	__DBMANAGER_H__
+#pragma once
 
 #include "query.h"
 #include "ar.h"
@@ -108,8 +107,6 @@ public:
 	HANDLE							m_hDbCompletionPort;
 	BOOL							m_bTracking;
 	BOOL							m_bLogItem;		// 상용화 아이템 로그 ( 예전 - __NOLOG )
-	char							m_szLoginPWD[256];
-	char							m_szLogPWD[256];
 /*
 #ifdef __S0114_RELOADPRO
 	SET_STRING						m_OutAccount_List;
@@ -149,4 +146,7 @@ extern CDbManager g_DbManager;
 
 u_int	__stdcall	DbWorkerThread( LPVOID lpDbManager );	// DbWorkerThread
 
-#endif	// __DBMANAGER_H__
+extern CQuery::Credentials dbLogin;
+extern CQuery::Credentials dbLog;
+extern CQuery::Credentials dbBilling;
+

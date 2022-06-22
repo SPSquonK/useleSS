@@ -1,5 +1,4 @@
-#ifndef _QUERY_H_
-#define _QUERY_H_
+#pragma once
 
 #include <sql.h>
 #include <sqlext.h>
@@ -15,6 +14,13 @@ struct QUERY_BINDINFO
 
 class CQuery
 {
+public:
+	struct Credentials {
+		char Name[256] = "";
+		char Id[256]   = "";
+		char Pass[256] = "";
+	};
+
 public:
 //	char *DBName, *DBId, *DBPass;	
 	char DBName[256];
@@ -45,6 +51,9 @@ public:
 	void PrintDiag( LPCTSTR szSQL, SQLSMALLINT type = SQL_HANDLE_DBC );						// 진단 정보 출력
 	void PrintQuery(const char * query);
 	BOOL Connect(int Type, const char *ConStr, const char *UID=NULL, const char *PWD=NULL);	// 데이터 소스에 연결한다.
+	BOOL Connect(int Type, const Credentials & credentials) {
+		return Connect(Type, credentials.Name, credentials.Id, credentials.Pass);
+	}
 	void DisConnect();						// 데이터 소스 연결을 끊는다
 	BOOL Exec(LPCTSTR szSQL);				// SQL문을 실행한다.
 	BOOL Exec(LPCTSTR szSQL, int nCount, QUERY_BINDINFO info[]);
@@ -104,4 +113,3 @@ public:
 // 암호화된 토큰을 해독해서 패스워드로 얻는다.
 // 예: 토큰 - 3A08DB22
 extern BOOL GetPWDFromToken( const char* szToken, char* szPWD );
-#endif

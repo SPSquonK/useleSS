@@ -7,6 +7,10 @@
 
 CDbManager	g_DbManager;
 
+CQuery::Credentials dbLogin;
+CQuery::Credentials dbLog;
+CQuery::Credentials dbBilling;
+
 #include "dpdbsrvr.h"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // CDbManager
@@ -19,8 +23,6 @@ CDbManager::CDbManager()
 #ifdef __INTERNALSERVER
 	m_bLogItem = FALSE;
 #endif
-
-	m_szLoginPWD[0] = '\0';
 }
 
 CDbManager::~CDbManager()
@@ -179,7 +181,7 @@ BOOL CDbManager::AllOff()
 		return TRUE;
 
 	CQuery qry;
-	if( FALSE == qry.Connect( 3, DSN_NAME_LOGIN, DB_ADMIN_ID_LOGIN, m_szLoginPWD ) )
+	if( FALSE == qry.Connect( 3, dbLogin ) )
 	{
 		AfxMessageBox( "Error AllOff: DB Connect Loing InitInstance Failed " );
 		return FALSE;
@@ -333,7 +335,7 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 */
 	if( bLongConnect || pDbManager->m_bTracking )
 	{
-		if( FALSE == qryLogin.Connect( 3, DSN_NAME_LOGIN, DB_ADMIN_ID_LOGIN, pDbManager->m_szLoginPWD ) )
+		if( FALSE == qryLogin.Connect( 3, dbLogin))
 		{
 			AfxMessageBox( " DB Login Connect Failed " );
 			return 0;
@@ -343,7 +345,7 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 
 	if( pDbManager->m_bLogItem )
 	{
-		if( FALSE == qryLog.Connect( 3, DSN_NAME_LOG, DB_ADMIN_ID_LOG, pDbManager->m_szLogPWD ) )
+		if( FALSE == qryLog.Connect( 3, dbLog ))
 		{
 			AfxMessageBox( " DB Log Connect Failed " );
 			return 0;
@@ -352,8 +354,7 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 
 #ifdef __BILLING2_041021
 	CQuery qryBilling;
-	char* pszPWD = (char*)GetBillingPWD();
-	if( FALSE == qryBilling.Connect( 3, DSN_NAME_BILLING, DB_ADMIN_ID_BILLING, pszPWD ) )
+	if( FALSE == qryBilling.Connect( 3, dbBilling ) )
 	{
 		AfxMessageBox( " DB Billing Connect Failed " );
 		return 0;

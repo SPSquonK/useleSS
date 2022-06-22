@@ -282,8 +282,7 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 			{
 				// 디비패스워드는 암호화 되어 있다. 암호 시키는 프로그램은 외부실행파일이다.
 				s.GetToken();
-				char* szPWD = GetBillingPWD();
-				::GetPWDFromToken( s.Token, szPWD ); // from query.cpp
+				::GetPWDFromToken( s.Token, dbBilling.Pass); // from query.cpp
 			}
 			else if( s.Token == "MSG_VER" )
 			{
@@ -298,34 +297,34 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 			else if( s.Token == "DSN_NAME_LOGIN" )
 			{
 				s.GetToken();
-				strcpy( DSN_NAME_LOGIN, s.Token );
+				strcpy( dbLogin.Name, s.Token );
 				if( bSkipTracking == FALSE )
 					g_DbManager.SetTracking( TRUE );
 			}
 			else if( s.Token == "DB_ADMIN_ID_LOGIN" )
 			{
 				s.GetToken();
-				strcpy( DB_ADMIN_ID_LOGIN, s.Token );
+				strcpy(dbLogin.Id, s.Token );
 			}
 			else if( s.Token == "DSN_NAME_LOG" )
 			{
 				s.GetToken();
-				strcpy( DSN_NAME_LOG, s.Token );
+				strcpy(dbLog.Name, s.Token );
 			}
 			else if( s.Token == "DB_ADMIN_ID_LOG" )
 			{
 				s.GetToken();
-				strcpy( DB_ADMIN_ID_LOG, s.Token );
+				strcpy(dbLog.Id, s.Token );
 			}
 			else if( s.Token == "DSN_NAME_BILLING" )
 			{
 				s.GetToken();
-				strcpy( DSN_NAME_BILLING, s.Token );
+				strcpy(dbBilling.Name, s.Token );
 			}
 			else if( s.Token == "DB_ADMIN_ID_BILLING" )
 			{
 				s.GetToken();
-				strcpy( DB_ADMIN_ID_BILLING, s.Token );
+				strcpy(dbBilling.Id, s.Token );
 			}
 			else if( s.Token == "NOT_RELOADPRO" )
 			{
@@ -338,14 +337,12 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 			else if( s.Token == "DB_PWD_LOGIN" )
 			{
 				s.GetToken();
-				::GetPWDFromToken( s.Token, g_DbManager.m_szLoginPWD ); 
-				TRACE("%s\n", g_DbManager.m_szLoginPWD ); 
+				::GetPWDFromToken(s.Token, dbLogin.Pass);
 			}
 			else if( s.Token == "DB_PWD_LOG" )
 			{
 				s.GetToken();
-				::GetPWDFromToken( s.Token, g_DbManager.m_szLogPWD ); 
-				TRACE("%s\n", g_DbManager.m_szLogPWD ); 
+				::GetPWDFromToken(s.Token, dbLog.Pass);
 			}
 #ifdef __LOG_PLAYERCOUNT_CHANNEL
 			else if( s.Token == "AddChannel" )

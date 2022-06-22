@@ -55,13 +55,3 @@ const UINT  IDT_TIME_CHECKADDR	= 7;
 
 
 const UINT		WM_CONNENT_BILLING = WM_USER + 100;
-
-extern char		DSN_NAME_LOG[];
-extern char		DB_ADMIN_ID_LOG[];
-
-extern char		DSN_NAME_LOGIN[];
-extern char		DB_ADMIN_ID_LOGIN[];
-
-extern char		DSN_NAME_BILLING[];
-extern char		DB_ADMIN_ID_BILLING[];
-
