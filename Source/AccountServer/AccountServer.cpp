@@ -10,7 +10,6 @@
 #include "dpdbsrvr.h"
 #include "mytrace.h"
 #include "account.h"
-#include "BillingMgr.h"
 #include "dpadbill.h"
 
 #include "..\Resource\Lang.h"
@@ -258,15 +257,12 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 			else if( s.Token == "BillingIP" )
 			{
 				s.GetToken();
-				GetBillingMgr()->SetConfig( BID_IP, (DWORD)(LPCTSTR)s.Token );
 			}
 			else if( s.Token == "BillingPort" )
 			{
-				GetBillingMgr()->SetConfig( BID_PORT, s.GetNumber() );
 			}
 			else if( s.Token == "BillingFreePass" )
 			{
-				GetBillingMgr()->SetConfig( BID_FREEPASS, s.GetNumber() );
 			}
 			else if( s.Token == "BillingPWD" )
 			{

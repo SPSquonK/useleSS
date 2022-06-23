@@ -3,7 +3,6 @@
 #include "dpsrvr.h"
 #include "dpdbsrvr.h"
 #include "MsgHdr.h"
-#include "BillingMgr.h"
 #include "dbmanager.h"
 
 CAccountMng			g_AccountMng;
@@ -439,21 +438,6 @@ void CAccountMng::SendBillingResult( BILLING_INFO* pResult )
 		return;		// may be logout
 
 	pAccount->SendBillingResult( pResult );
-}
-
-// 모든 계정을 검사해서 사용시간 만료를 처리한다.
-void CAccountMng::KickOutCheck()
-{
-	CAccount* pAccount;
-	CMclAutoLock	Lock( m_AddRemoveLock );
-	auto i	= m_stringToPAccount.begin();
-	while( i != m_stringToPAccount.end() )
-	{
-		pAccount = i->second;
-		++i;
-
-		GetBillingMgr()->OnTimer( pAccount );
-	}	
 }
 
 // 날짜를 체크해서 계정들을 풀건지 검사

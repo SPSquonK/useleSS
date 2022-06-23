@@ -5,7 +5,6 @@
 #include "lang.h"
 #endif	// __GPAUTH_01
 
-#include "BillingMgr.h"
 #include "dpsrvr.h"
 #include "account.h"
 #include "mytrace.h"

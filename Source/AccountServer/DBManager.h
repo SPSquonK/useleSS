@@ -16,7 +16,6 @@ enum QUERYMODE
 	ACCOUNT_ON,			// 유저로그인 
 	ACCOUNT_OFF,		// 유저로그아웃  
 	LOG_SM_ITEM,		// 유료화아이템 관련 
-	QUERY_BILLINGINFO,	// 빌링정보를 쿼리 
 	RELOAD_PROJECT,		
 };
 
@@ -132,8 +131,6 @@ public:
 	void	AccountOff( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	DBQryLogSMItem( char* szSql, const LOG_SM_ITEM_INFO & info);
-	void	QueryBillingInfo( CQuery& qeury, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	PostBillingQuery( const char* szAccount, DWORD dwKey, int nExtra );
 /*
 #ifdef __S0114_RELOADPRO
 	void	QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV );

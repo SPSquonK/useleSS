@@ -146,21 +146,7 @@
     </ClCompile>
     <ClCompile Include="..\_Database\Query.cpp">
     </ClCompile>
-    <ClCompile Include="BillingMgr.cpp">
-    </ClCompile>
-    <ClCompile Include="BillingMgrJP.cpp">
-    </ClCompile>
-    <ClCompile Include="BillingMgrJP2.cpp">
-    </ClCompile>
-    <ClCompile Include="BillingMgrTH.cpp">
-    </ClCompile>
-    <ClCompile Include="BillingMgrTW.cpp">
-    </ClCompile>
     <ClCompile Include="dpadbill.cpp">
-    </ClCompile>
-    <ClCompile Include="dpBilling.cpp">
-    </ClCompile>
-    <ClCompile Include="dpBillingTH.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,14 +197,7 @@
     <ClInclude Include="..\_common\xutil.h" />
     <ClInclude Include="..\_Database\des.h" />
     <ClInclude Include="..\_Database\Query.h" />
-    <ClInclude Include="BillingMgr.h" />
-    <ClInclude Include="BillingMgrJP.h" />
-    <ClInclude Include="BillingMgrJP2.h" />
-    <ClInclude Include="BillingMgrTH.h" />
-    <ClInclude Include="BillingMgrTW.h" />
     <ClInclude Include="dpadbill.h" />
-    <ClInclude Include="dpBilling.h" />
-    <ClInclude Include="dpBillingTH.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="AccountServer.ico" />

@@ -134,7 +134,6 @@ public:
 	void	RemoveAccount( LPCTSTR lpszAccount );	
 	void	RemoveAccount( DWORD dpid1, DWORD dpid2 );
 	void	PreventExcess();
-	void	KickOutCheck();
 	BOOL	IsTimeCheckAddr();
 	void	SendBillingResult( BILLING_INFO* pResult );
 

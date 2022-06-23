@@ -114,28 +114,7 @@
     <ClCompile Include="..\_Database\Query.cpp">
       <Filter>ODBC Files</Filter>
     </ClCompile>
-    <ClCompile Include="BillingMgr.cpp">
-      <Filter>Billing</Filter>
-    </ClCompile>
-    <ClCompile Include="BillingMgrJP.cpp">
-      <Filter>Billing</Filter>
-    </ClCompile>
-    <ClCompile Include="BillingMgrJP2.cpp">
-      <Filter>Billing</Filter>
-    </ClCompile>
-    <ClCompile Include="BillingMgrTH.cpp">
-      <Filter>Billing</Filter>
-    </ClCompile>
-    <ClCompile Include="BillingMgrTW.cpp">
-      <Filter>Billing</Filter>
-    </ClCompile>
     <ClCompile Include="dpadbill.cpp">
-      <Filter>Billing</Filter>
-    </ClCompile>
-    <ClCompile Include="dpBilling.cpp">
-      <Filter>Billing</Filter>
-    </ClCompile>
-    <ClCompile Include="dpBillingTH.cpp">
       <Filter>Billing</Filter>
     </ClCompile>
     <ClCompile Include="..\_Network\ListedServer.cpp">
@@ -274,28 +253,7 @@
     <ClInclude Include="..\_Database\Query.h">
       <Filter>ODBC Files</Filter>
     </ClInclude>
-    <ClInclude Include="BillingMgr.h">
-      <Filter>Billing</Filter>
-    </ClInclude>
-    <ClInclude Include="BillingMgrJP.h">
-      <Filter>Billing</Filter>
-    </ClInclude>
-    <ClInclude Include="BillingMgrJP2.h">
-      <Filter>Billing</Filter>
-    </ClInclude>
-    <ClInclude Include="BillingMgrTH.h">
-      <Filter>Billing</Filter>
-    </ClInclude>
-    <ClInclude Include="BillingMgrTW.h">
-      <Filter>Billing</Filter>
-    </ClInclude>
     <ClInclude Include="dpadbill.h">
-      <Filter>Billing</Filter>
-    </ClInclude>
-    <ClInclude Include="dpBilling.h">
-      <Filter>Billing</Filter>
-    </ClInclude>
-    <ClInclude Include="dpBillingTH.h">
       <Filter>Billing</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\CommonHeader.h">

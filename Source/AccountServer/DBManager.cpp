@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "dbmanager.h"
 #include "account.h"
-#include "BillingMgr.h"
 #include <afxdisp.h>
 #include "lang.h"
 
@@ -154,7 +153,7 @@ void CDbManager::DBQryLog( char* qryLog, char* Gu, u_long idPlayer, int nserveri
 void CDbManager::Load_ReloadAccount()
 {
 	LPDB_OVERLAPPED_PLUS pOV = m_pDbIOData->Alloc();
-	pOV->nQueryMode	= RELOAD_PROJECT;	// call CDBManager::QueryBillingInfo
+	pOV->nQueryMode	= RELOAD_PROJECT;
 	PostQueuedCompletionStatus( m_hDbCompletionPort, 1, NULL, &pOV->Overlapped );
 }
 #endif // __S0114_RELOADPRO
@@ -267,24 +266,6 @@ void CDbManager::LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlapped
 	m_pDbIOData->Free( lpDbOverlappedPlus );
 }
 
-void CDbManager::QueryBillingInfo( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
-{
-	GetBillingMgr()->OnDBQuery( query, pOV );
-	m_pDbIOData->Free( pOV );
-}
-
-
-// 유료유저는 빌링정보를 DB에 쿼리 
-void CDbManager::PostBillingQuery( const char* szAccount, DWORD dwKey, int nExtra )
-{
-	LPDB_OVERLAPPED_PLUS pOV = m_pDbIOData->Alloc();
-	strcpy( pOV->szAccount, szAccount );
-	pOV->nQueryMode	= QUERY_BILLINGINFO;	// call CDBManager::QueryBillingInfo
-	pOV->dwKey		= dwKey;
-	pOV->nExtra		= nExtra;
-	PostQueuedCompletionStatus( m_hDbCompletionPort, 1, NULL, &pOV->Overlapped );
-}
-
 /*
 #ifdef __S0114_RELOADPRO
 void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
@@ -352,15 +333,6 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 		}
 	}
 
-#ifdef __BILLING2_041021
-	CQuery qryBilling;
-	if( FALSE == qryBilling.Connect( 3, dbBilling ) )
-	{
-		AfxMessageBox( " DB Billing Connect Failed " );
-		return 0;
-	}
-#endif
-
 	SetEvent( s_hHandle );
 
 	BOOL fOk;
@@ -397,12 +369,6 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 				if( pDbManager->m_bLogItem )
 					pDbManager->LogSMItem( qryLog, lpDbOverlappedPlus );
 				break;
-
-#ifdef __BILLING2_041021
-			case QUERY_BILLINGINFO:
-				pDbManager->QueryBillingInfo( qryBilling, lpDbOverlappedPlus );
-				break;
-#endif
 
 /*
 #ifdef __S0114_RELOADPRO
