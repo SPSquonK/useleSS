@@ -1,66 +1,99 @@
 #include "stdafx.h"
 #include "dpdbsrvr.h"
 #include "dpadbill.h"
+#include <ranges>
 
-CDPAdbill::CDPAdbill()
-{
-	m_dwKey	= 0;
-}
+CDPAdbill g_DPAdbill;
+CBuyingInfoMng g_BuyingInfoMng;
 
-CDPAdbill::~CDPAdbill()
-{
-
-}
-
-void CDPAdbill::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
-{
-	switch( lpMsg->dwType )
-	{
-		case DPSYS_CREATEPLAYERORGROUP:
-			{
-//				LPDPMSG_CREATEPLAYERORGROUP lpCreatePlayer	= (LPDPMSG_CREATEPLAYERORGROUP)lpMsg;
-//				OnAddConnection( lpCreatePlayer->dpId );
-				break;
-			}
-		case DPSYS_DESTROYPLAYERORGROUP:
-			{
-//				LPDPMSG_DESTROYPLAYERORGROUP lpDestroyPlayer	= (LPDPMSG_DESTROYPLAYERORGROUP)lpMsg;
-//				OnRemoveConnection( lpDestroyPlayer->dpId );
-				break;
-			}
-	}
-}
+//________________________________________________________________________________
 
 void CDPAdbill::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
-	PBUYING_INFO3 pbi3	= new BUYING_INFO3;
-	memcpy( (void*)pbi3, lpMsg, sizeof(BUYING_INFO) );
+	BUYING_INFO3 * pbi3	= new BUYING_INFO3;
+	memcpy(pbi3, lpMsg, sizeof(BUYING_INFO));
 	pbi3->dpid	= idFrom;
 	pbi3->dwKey	= m_dwKey++;
 	pbi3->dwTickCount	= GetTickCount();
 
-	CBuyingInfoMng::GetInstance()->Add( pbi3 );
-	g_dpDbSrvr.SendBuyingInfo( (PBUYING_INFO2)pbi3 );
-
-//	TRACE( "RECV PACKETTYPE_BUYING_INFO FROM ADBILLSOFT\n" );
-	static	char lpOutputString[260]	= { 0, };
-	sprintf( lpOutputString, "ACCOUNTSERVER.EXE\t// Recv from billing\t// dwServerIndex = %d\tdwPlayerId = %d\tdwSenderId=%d\tdwItemId = %d\tdwItemNum = %d", 
-		pbi3->dwServerIndex, pbi3->dwPlayerId, pbi3->dwSenderId, pbi3->dwItemId, pbi3->dwItemNum );
-	OutputDebugString( lpOutputString );
-//	TRACE( "dwServerIndex = %d\tdwPlayerId = %d\tdwItemId = %d\tdwItemNum = %d\n", 
-//		pbi3->dwServerIndex, pbi3->dwPlayerId, pbi3->dwItemId, pbi3->dwItemNum );
-//	FILEOUT( "buyinginfo.txt", "dwServerIndex = %d\tdwPlayerId = %d\tdwItemId = %d\tdwItemNum = %d\n", 
-//		pbi3->dwServerIndex, pbi3->dwPlayerId, pbi3->dwItemId, pbi3->dwItemNum );
+	g_BuyingInfoMng.Add(pbi3);
+	g_dpDbSrvr.SendBuyingInfo((PBUYING_INFO2)pbi3);
 }
 
-CDPAdbill* CDPAdbill::GetInstance()
-{
-	static CDPAdbill	sdpAdbill;
-	return &sdpAdbill;
+
+//________________________________________________________________________________
+
+void CBuyingInfoMng::Clear() {
+	std::lock_guard lock(m_mutex);
+	
+	for (BUYING_INFO3 * ptr : m_mapPbi3 | std::views::values) {
+		safe_delete(ptr);
+	}
+	m_mapPbi3.clear();
 }
 
-CBuyingInfoMng*	CBuyingInfoMng::GetInstance()
-{
-	static CBuyingInfoMng	sBuyingInfoMng;
-	return &sBuyingInfoMng;
+void CBuyingInfoMng::Add(BUYING_INFO3 * pbi3) {
+	std::lock_guard lock(m_mutex);
+
+	m_mapPbi3.emplace(pbi3->dwKey, pbi3);
+}
+
+void CBuyingInfoMng::Remove(const DWORD dwKey) {
+	std::lock_guard lock(m_mutex);
+
+	m_mapPbi3.erase(dwKey);
+}
+
+BUYING_INFO3 * CBuyingInfoMng::Get(DWORD dwKey) {
+	auto i = m_mapPbi3.find(dwKey);
+	return i != m_mapPbi3.end() ? i->second : nullptr;
+}
+
+void CBuyingInfoMng::Process() {
+	const DWORD dwTickCount = GetTickCount();
+
+	std::vector<DWORD>	adwKey;
+
+	std::lock_guard lock(m_mutex);
+
+	for (/* const */ BUYING_INFO3 * const pbi3 : m_mapPbi3 | std::views::values) {
+		if (dwTickCount - pbi3->dwTickCount > SEC(3)) {
+			g_DPAdbill.Send(pbi3, sizeof(BUYING_INFO), pbi3->dpid);
+			adwKey.push_back(pbi3->dwKey);
+		}
+	}
+
+	// Remove
+
+	for (const DWORD key : adwKey) {
+		BUYING_INFO3 * ptr = Get(key);
+		
+		if (ptr) {
+			BUYING_INFO2	bi2;
+			bi2.dwServerIndex = ptr->dwServerIndex;
+			bi2.dwPlayerId = ptr->dwPlayerId;
+			// No sender id
+			bi2.dwItemId = ptr->dwItemId;
+			bi2.dwItemNum = ptr->dwItemNum;
+			strcpy(bi2.szBxaid, ptr->szBxaid);
+			bi2.dwRetVal = ptr->dwRetVal;
+			// no buying info 2 member
+			CAr ar;
+			ar.Write((void *)&bi2, sizeof(BUYING_INFO2));
+
+			DWORD sn = 0;
+			ar << sn;
+
+			int nBufSize;
+			LPBYTE lpData = ar.GetBuffer(&nBufSize);
+			LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = g_DbManager.m_pDbIOData->Alloc();
+			memcpy(lpDbOverlappedPlus->lpBuf, lpData, nBufSize);
+			lpDbOverlappedPlus->uBufSize = nBufSize;
+			lpDbOverlappedPlus->nQueryMode = LOG_SM_ITEM;
+			PostQueuedCompletionStatus(g_DbManager.m_hDbCompletionPort, 1, NULL, &lpDbOverlappedPlus->Overlapped);
+		}
+
+		Remove(key);
+		SAFE_DELETE(ptr);
+	}
 }

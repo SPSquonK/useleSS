@@ -157,7 +157,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	
 	if( FALSE == g_dpSrvr.StartServer( PN_ACCOUNTSRVR_0 )
 		|| FALSE == g_dpDbSrvr.StartServer( PN_ACCOUNTSRVR_1 )
-		|| FALSE == CDPAdbill::GetInstance()->StartServer( PN_ADBILL )
+		|| FALSE == g_DPAdbill.StartServer( PN_ADBILL )
 		/*
 #ifdef __GIFTBOX0213
 		|| FALSE == CDPWldSrvr::GetInstance()->StartServer( PN_ACCOUNTSRVR_2 )
@@ -441,7 +441,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 #endif // __S0114_RELOADPRO
 */
 				case IDT_BUYING_INFO:
-					CBuyingInfoMng::GetInstance()->Process();
+					g_BuyingInfoMng.Process();
 					break;
 				}
 			}
@@ -530,7 +530,7 @@ void ExitInstance( void )
 {
 	g_dpSrvr.DeleteDPObject();
 	g_dpDbSrvr.DeleteDPObject();
-	CDPAdbill::GetInstance()->DeleteDPObject();
+	g_DPAdbill.DeleteDPObject();
 	/*
 #ifdef __GIFTBOX0213
 	CDPWldSrvr::GetInstance()->DeleteDPObject();

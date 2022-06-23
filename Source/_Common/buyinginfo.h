@@ -1,50 +1,30 @@
-#ifndef __CHARGEDITEM_H__
-#define	__CHARGEDITEM_H__
+#pragma once
 
-typedef struct _BUYING_INFO
-{
-	DWORD	dwServerIndex;
-	DWORD	dwPlayerId;
-	DWORD	dwSenderId;
-	DWORD	dwItemId;
-	DWORD	dwItemNum;
-	char  szBxaid[21];	// bxaid
-	DWORD	dwRetVal;
+struct BUYING_INFO {
+	static constexpr bool Archivable = true;
 
-	_BUYING_INFO()
-	{
-		dwServerIndex	= 0;
-		dwPlayerId	= 0;
-		dwItemId	= 0;
-		dwItemNum	= 0;
-		dwRetVal	= 0;
-		ZeroMemory( szBxaid, sizeof(char)*21 );
-		dwSenderId	= 0;
-	}
-}
-BUYING_INFO, *PBUYING_INFO;
+	DWORD	dwServerIndex = 0;
+	DWORD	dwPlayerId    = 0;
+	DWORD	dwSenderId    = 0;
+	DWORD	dwItemId      = 0;
+	DWORD	dwItemNum     = 0;
+	char  szBxaid[21]   = ""; // bxaid
+	DWORD	dwRetVal      = 0;
+};
 
-typedef struct _BUYING_INFO2: public _BUYING_INFO
-{
-	DWORD	dpid;
-	DWORD	dwKey;
-	_BUYING_INFO2() : _BUYING_INFO()
-		{
-			dpid	= 0xFFFFFFFF;
-			dwKey	= 0;
-		}
-}
-BUYING_INFO2, *PBUYING_INFO2;
+struct BUYING_INFO2 : public BUYING_INFO {
+	static constexpr bool Archivable = true;
 
-typedef struct _BUYING_INFO3: public _BUYING_INFO2
-{
+	DWORD	dpid = 0xFFFFFFFF;
+	DWORD	dwKey = 0;
+};
+
+using PBUYING_INFO2 = BUYING_INFO2 *;
+
+struct BUYING_INFO3 : public BUYING_INFO2 {
+	static constexpr bool Archivable = true;
+
 	DWORD	dwTickCount;
-	_BUYING_INFO3() : _BUYING_INFO2()
-		{
-//			dwTickCount		= GetTickCount();
-		}
-}
-BUYING_INFO3, *PBUYING_INFO3;
+};
 
-#endif	// __CHARGEDITEM_H__
-
+using PBUYING_INFO3 = BUYING_INFO3 *;

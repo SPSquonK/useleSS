@@ -231,31 +231,14 @@ void CDPDBSrvr::SendBuyingInfo( PBUYING_INFO2 pbi2 )
 
 void CDPDBSrvr::OnBuyingInfo( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {
-	BUYING_INFO2	bi2;
-	SERIALNUMBER iSerialNumber;
-	ar.Read( (void*)&bi2, sizeof(BUYING_INFO2) );
-	ar >> iSerialNumber;
+	auto [bi2, iSerialNumber] = ar.Extract<BUYING_INFO2, SERIALNUMBER>();
 
-	CBuyingInfoMng::GetInstance()->m_AddRemoveLock.Enter();
-	PBUYING_INFO3 pbi3	= CBuyingInfoMng::GetInstance()->Get( bi2.dwKey );
-	if( pbi3 )
-	{
-		static char lpOutputString[260]	= { 0, };
-		sprintf( lpOutputString, "ACCOUNTSERVER.EXE\t// Recv from trans\t// dwRetVal = %d", bi2.dwRetVal );
-		OutputDebugString( lpOutputString );
+	std::lock_guard lock(g_BuyingInfoMng.m_mutex);
 
-		CDPAdbill::GetInstance()->Send( &bi2, sizeof(BUYING_INFO), bi2.dpid );
-		CBuyingInfoMng::GetInstance()->Remove( bi2.dwKey );
-		safe_delete( pbi3 );
-		/*
-		bi2.szBxaid		// 구매 번호
-		bi2.dwItemId	// 아이템 인덱스
-		bi2.dwItemNum	// 아이템 개수
-		bi2.dwServerIndex	// 서버 인덱스
-		bi2.dwPlayerId		// 플레이어 식별자
-		bi2.dwRetVal	// 지급 성공 여부, 성공 : 1, 실패 : 0
-		iSerialNumber		// 시리얼 번호
-		*/
+	if (BUYING_INFO3 * pbi3 = g_BuyingInfoMng.Get(bi2.dwKey)) {
+		g_DPAdbill.Send(&bi2, sizeof(BUYING_INFO), bi2.dpid);
+		g_BuyingInfoMng.Remove(bi2.dwKey);
+		safe_delete(pbi3);
 
 		LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.m_pDbIOData->Alloc();
 		memcpy( lpDbOverlappedPlus->lpBuf, (LPBYTE)lpBuf + sizeof(DWORD), uBufSize - sizeof(DWORD) );
@@ -267,8 +250,7 @@ void CDPDBSrvr::OnBuyingInfo( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 	{
 		// 치명적 오류 : 어카운트 서버에는 지급 명령에 대한 정보가 없다.
 	}
-	CBuyingInfoMng::GetInstance()->m_AddRemoveLock.Leave();
-	TRACE( "RECV PACKETTYPE_BUYING_INFO FROM TRANS\n" );
+
 }
 
 /*
