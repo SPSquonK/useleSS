@@ -5128,7 +5128,39 @@ void CDPSrvr::OnRequestGuildRank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 
 void CDPSrvr::OnBuyingInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	return;
+	BUYING_INFO2 bi2;
+	ar.Read((void *)&bi2, sizeof(BUYING_INFO2));
+
+	CWorld * pWorld;
+	CUser * pUser = g_UserMng.GetUser(dpidCache, dpidUser);
+
+	SERIALNUMBER iSerialNumber = 0;
+	if (IsValidObj(pUser) && (pWorld = pUser->GetWorld())) {
+		bi2.dwRetVal = 0;
+		CItemElem itemElem;
+		itemElem.m_dwItemId = bi2.dwItemId;
+		itemElem.m_nItemNum = (short)bi2.dwItemNum;
+		itemElem.m_bCharged = TRUE;
+		BYTE nId;
+		bi2.dwRetVal = pUser->CreateItem(&itemElem, &nId);
+#ifdef __LAYER_1015
+		g_dpDBClient.SavePlayer(pUser, pWorld->GetID(), pUser->GetPos(), pUser->GetLayer());
+#else	// __LAYER_1015
+		g_dpDBClient.SavePlayer(pUser, pWorld->GetID(), pUser->GetPos());
+#endif	// __LAYER_1015
+		if (bi2.dwRetVal) {
+			CItemElem * pItemElem = pUser->m_Inventory.GetAtId(nId);
+			if (pItemElem) {
+				iSerialNumber = pItemElem->GetSerialNumber();
+				pItemElem->m_bCharged = TRUE;
+				if (bi2.dwSenderId > 0) {
+					// %s was a gift from %s.
+				}
+			}
+		}
+	}
+
+	g_dpDBClient.SendBuyingInfo(&bi2, iSerialNumber);
 }
 
 void CDPSrvr::OnEnterChattingRoom(CAr & ar, CUser & pUser) {
