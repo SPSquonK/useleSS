@@ -233,12 +233,8 @@ void CDPDBSrvr::OnBuyingInfo( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 {
 	auto [bi2, iSerialNumber] = ar.Extract<BUYING_INFO2, SERIALNUMBER>();
 
-	std::lock_guard lock(g_BuyingInfoMng.m_mutex);
-
-	if (BUYING_INFO3 * pbi3 = g_BuyingInfoMng.Get(bi2.dwKey)) {
+	if (g_BuyingInfoMng.Remove(bi2.dwKey)) {
 		g_DPAdbill.Send(&bi2, sizeof(BUYING_INFO), bi2.dpid);
-		g_BuyingInfoMng.Remove(bi2.dwKey);
-		safe_delete(pbi3);
 
 		LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.m_pDbIOData->Alloc();
 		memcpy( lpDbOverlappedPlus->lpBuf, (LPBYTE)lpBuf + sizeof(DWORD), uBufSize - sizeof(DWORD) );

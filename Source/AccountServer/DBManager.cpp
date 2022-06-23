@@ -234,10 +234,7 @@ void CDbManager::LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlapped
 	bi2.dwRetVal	// 지급 성공 여부, 성공 : 1, 실패 : 0
 	sn		// 시리얼 번호
 	*/
-	BUYING_INFO2	bi2;
-	SERIALNUMBER iSerialNumber;
-	arRead.Read( (void*)&bi2, sizeof(BUYING_INFO2) );
-	arRead >> iSerialNumber;
+	const auto [bi2, iSerialNumber] = arRead.Extract<BUYING_INFO2, SERIALNUMBER>();
 	
 	// 구매번호는 : pszGetidPlayer
 	// 아이템인덱스 : dwGold // ItemName은 형식에 안맞음

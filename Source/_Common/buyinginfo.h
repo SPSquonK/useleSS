@@ -20,11 +20,3 @@ struct BUYING_INFO2 : public BUYING_INFO {
 };
 
 using PBUYING_INFO2 = BUYING_INFO2 *;
-
-struct BUYING_INFO3 : public BUYING_INFO2 {
-	static constexpr bool Archivable = true;
-
-	DWORD	dwTickCount;
-};
-
-using PBUYING_INFO3 = BUYING_INFO3 *;
