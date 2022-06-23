@@ -44,10 +44,6 @@ void CDPAccountClient::SendAddAccount(DPID idFrom, const CDPAccountClient_SendAd
 	ar.WriteString( params.lpszAccount );
 	ar << params.cbAccountFlag;
 
-#ifdef __BILLING0712
-	ar << params.fCheck;
-#endif//__BILLING0712
-
 #ifdef __GPAUTH_02
 	BOOL bGPotatoAuth	= ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;
 	if( bGPotatoAuth )
@@ -98,10 +94,6 @@ void CDPAccountClient::OnAddAccount( CAr & ar, DPID dpid )
 	ar >> cbResult;
 	ar >> dwAuthKey;
 	ar >> cbAccountFlag;
-
-#ifdef __BILLING0712
-	ar >> lTimeSpan;
-#endif
 
 #ifdef __GPAUTH_01
 	char szGPotatoNo[10]	= { 0,};

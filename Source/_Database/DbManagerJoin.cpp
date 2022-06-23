@@ -34,9 +34,6 @@ void CDbManager::SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dw
 	PLAY_ACCOUNT playAccount;
 	_tcscpy( playAccount.lpszAccount, lpDBOP->AccountInfo.szAccount );
 	GetLocalTime( &playAccount.m_stLogin );
-#ifdef __BILLING0712
-	playAccount.dwBillingClass	= dwBillingClass;
-#endif	// __BILLING0712
 
 	BEFORESENDDUAL( ar, PACKETTYPE_JOIN, lpDBOP->dpidCache, lpDBOP->dpidUser );
 	ar << dwAuthKey;
@@ -123,9 +120,6 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	lpDBOP->AccountInfo.nPlayerSlot		= _nSlot;
 
 	arRead >> lpDBOP->dpid >> lpDBOP->dpidCache >> lpDBOP->dpidUser;
-#ifdef __BILLING0712
-	arRead >> dwBillingClass;
-#endif	// __BILLING0712
 	DWORD dwPCBangClass;
 	arRead >> dwPCBangClass;
 	char lpOutputString[128]	= { 0, };

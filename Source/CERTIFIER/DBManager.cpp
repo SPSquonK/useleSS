@@ -129,10 +129,6 @@ void CDbManager::OnCertifyQueryOK( CQuery & query, LPDB_OVERLAPPED_PLUS pData, c
 
 
 	int fCheck = 0;
-#ifdef __BILLING0712
-	if( !bGPotatoAuth )
-		fCheck	= query.GetInt( "fCheck" );
-#endif//__BILLING0712
 
 	char lpAddr[16]	= { 0, };
 	g_dpCertifier.GetPlayerAddr( pData->dpId, lpAddr );				

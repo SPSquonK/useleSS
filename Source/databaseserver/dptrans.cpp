@@ -503,9 +503,6 @@ void CDPTrans::OnJoin( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYT
 	ar1 << PACKETTYPE_JOIN;
 	ar1.Write( lpBuf, uBufSize );
 	ar1 << dpid << dpidCache << dpidUser;
-#ifdef __BILLING0712
-	ar1 << (DWORD)0;	// retrieve dwBilling;
-#endif	// __BILLING0712
 	ar1 << (DWORD)0;
 
 	int nBlockSize;

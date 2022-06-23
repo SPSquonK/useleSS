@@ -84,9 +84,6 @@ void CDPSrvr_AccToCert::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 	const auto [lpAddr, lpszAccount, cbAccountFlag] = ar.Extract<char[16], SAccountName, BYTE>();
 	DWORD dwAuthKey = 0;
 	int		fCheck = 0;
-#ifdef __BILLING0712
-	ar >> fCheck;
-#endif//__BILLING0712
 
 #ifdef __GPAUTH_02
 	char szCheck[255]	= { 0,};
@@ -139,16 +136,6 @@ void CDPSrvr_AccToCert::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 			cbResult = ACCOUNT_OVERFLOW;
 	}
 
-#ifdef __BILLING0712
-	// 3. ºô¸µ °Ë»ç 	
-	if( cbResult == ACCOUNT_CHECK_OK )
-	{
-		cbResult = GetBillingMgr()->CheckAccount( fCheck, dwAuthKey, lpszAccount, lpAddr );
-		if( cbResult == ACCOUNT_BILLING_WAIT_ACK )
-			return;
-	}
-#endif
-
 	OnAfterChecking(dpid1, dpid2, {
 		.f = cbResult,
 		.lpszAccount = lpszAccount,
@@ -175,10 +162,6 @@ void CDPSrvr_AccToCert::OnAfterChecking(DPID dpid1, DPID dpid2, const OnAfterChe
 	ar << params.f;
 	ar << params.dwAuthKey;
 	ar << params.cbAccountFlag;
-
-#ifdef __BILLING0712
-	ar << params.lTimeSpan;
-#endif	// __BILLING0712
 
 #ifdef __GPAUTH_01
 	BOOL bGPotatoAuth	= ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;

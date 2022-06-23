@@ -124,13 +124,7 @@ void CDPAccountClient::OnCloseExistingConnection( CAr & ar, LPBYTE lpBuf, u_long
 {
 	char lpszAccount[MAX_ACCOUNT]	= { 0, };
 	LONG lError = 0;
-
 	ar.ReadString( lpszAccount, MAX_ACCOUNT );
-/*
-#if defined( __BILLING0712 ) || defined( __S0114_RELOADPRO )
-	ar >> lError;
-#endif // defined( __BILLING0712 ) || defined( __S0114_RELOADPRO )
-*/
 	g_dpLoginSrvr.SendCloseExistingConnection( lpszAccount, lError );
 }
 

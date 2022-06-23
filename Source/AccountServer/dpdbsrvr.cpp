@@ -141,9 +141,6 @@ void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 	if( pAccount && pAccount->m_dwAuthKey == dwAuthKey && pAccount->m_cbRef == 1 )
 	{
 		pAccount->m_cbRef++;
-#ifdef __BILLING0712
-		*(UNALIGNED DWORD*)( lpBuf + uBufSize - sizeof(DWORD) )	= pAccount->m_dwBillingClass;
-#endif	// __BILLING0712
 		*(UNALIGNED DWORD*)( lpBuf + uBufSize - sizeof(DWORD) )	= g_AccountMng.PopPCBangPlayer( dwAuthKey );
 		Send( (LPVOID)lpBuf, (DWORD)uBufSize, dpid );
 		OutputDebugString( "ACCOUNTSERVER.EXE\t// PACKETTYPE_JOIN" );
@@ -162,11 +159,7 @@ void CDPDBSrvr::SendCloseExistingConnection( const char* lpszAccount, LONG lErro
 {
 	BEFORESEND( ar, PACKETTYPE_CLOSE_EXISTING_CONNECTION );
 	ar.WriteString( lpszAccount );
-/*
-#if defined( __BILLING0712 ) || defined( __S0114_RELOADPRO )
-	ar << lError;
-#endif // defined( __BILLING0712 ) || defined( __S0114_RELOADPRO )
-*/
+
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 

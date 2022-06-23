@@ -364,28 +364,6 @@ void CWndLogin::Connected( long lTimeSpan )
 {
 	g_WndMng.CloseMessageBox();
 	g_WndMng.OpenApplet( APP_SELECT_SERVER );
-#ifdef __BILLING0712
-	if( lTimeSpan )	// 1일 미만?
-	{
-		CTimeSpan span = (time_t)lTimeSpan;		
-		char szMsg[256];			
-
-		if( span.GetTotalMinutes() > 60 )	// 1시간 0분 은 표시하지 않고 60분 남았음으로 
-		{
-			// %d시간 %분 남았습니다.
-			sprintf( szMsg, prj.GetText(TID_DIAG_EXPIRYDAY), span.GetHours(), span.GetMinutes() );
-		}
-		else
-		{
-			// %분 남았습니다. (최소 1분으로 표시)
-			int nMM = span.GetTotalMinutes();
-			sprintf( szMsg, prj.GetText(TID_DIAG_EXPIRYDAYMIN ), max(nMM, 1) );
-		}
-
-		g_WndMng.CloseMessageBox();
-		g_WndMng.OpenMessageBox( szMsg );
-	}
-#endif //__BILLING0712
 	Destroy();
 }
 

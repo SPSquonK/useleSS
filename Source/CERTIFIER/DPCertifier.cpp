@@ -108,10 +108,6 @@ void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFla
 	ar << dwAuthKey;
 	ar << cbAccountFlag;
 
-#ifdef __BILLING0712	   
-	ar << lTimeSpan;
-#endif
-
 #ifdef __GPAUTH_01
 	BOOL bGPotatoAuth	= ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;
 	if( bGPotatoAuth )

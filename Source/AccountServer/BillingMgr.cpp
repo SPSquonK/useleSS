@@ -33,28 +33,6 @@ void AppendSpace( char* pCur, char* pEnd )
 		memset( pCur, 0x20, pEnd - pCur );
 }
 
-// TODO: LoadLibrary
-BOOL CreateBillingMgr()
-{
-#ifdef __BILLING2_041021						// 디비방식 빌링 
-	#if defined(__BILLING_TW)					
-		g_pBillingMgr = new CBillingMgrTW;		// 대만 	
-	#elif defined(__BILLING_JP)
-		g_pBillingMgr = new CBillingMgrJP2;		// 일본 	
-	#else
-		#error BILLING TARGET MUST BE DEFINED.	// 빌링은 나라별로 디파인을 꼭 넣어야한다.
-	#endif
-#else
-	#if defined(__BILLING_TH)
-		g_pBillingMgr = new CBillingMgrTH;		// 태국 
-	#elif defined(__BILLING_JP)
-		g_pBillingMgr = new CBillingMgrJP;	
-	#endif
-#endif
-
-	return TRUE;
-}
-
 CBillingMgr* GetBillingMgr()
 {
 	ASSERT( g_pBillingMgr );

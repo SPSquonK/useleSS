@@ -198,10 +198,6 @@ void CDPCertified::OnSrvrList( CAr & ar, DPID )
 	ar >> g_Neuz.m_dwAuthKey;
 	ar >> g_Neuz.m_cbAccountFlag;
 	long lTimeSpan = 0;
-#ifdef __BILLING0712
-	// 결재가 1일 미만 남은경우, 유저가 로그인 할때 몇시간 몇분 남았습니다 라는 메세지를 보여주는 것
-	ar >> lTimeSpan;
-#endif	// __BILLING0712
 
 #ifdef __GPAUTH_01
 	if( g_Neuz.m_bGPotatoAuth )

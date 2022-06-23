@@ -27,7 +27,6 @@ public:
 	virtual void		NotifyLogout( LPCTSTR lpszAccount, DWORD dwSession ) = 0;
 };
 
-BOOL			CreateBillingMgr();
 CBillingMgr*	GetBillingMgr();
 
 extern			char* StrCpyExcludeNull( char* dst, const char* src );

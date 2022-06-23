@@ -259,11 +259,6 @@ void CAccountMng::RemoveAccount( LPCTSTR lpszAccount )
 				});
 		}
 
-#ifdef __BILLING0712
-		// 빌링 정보요청을 받아서 잔여시간이 0이 아닌유저만 유저 로그 아웃을 빌링서버에 알린다.
-		if( pAccount->m_TimeOverDays != 0 )	
-			GetBillingMgr()->NotifyLogout( lpszAccount, pAccount->m_dwAuthKey );	 
-#endif
 		g_DbManager.UpdateTracking( FALSE, lpszAccount );	// 유저가 logoff했음을 디비에 쓴다.
 
 		safe_delete( pAccount );

@@ -453,16 +453,6 @@ typedef	struct	tagPLAY_ACCOUNT
 	TCHAR	lpszAccount[36];
 	SYSTEMTIME	m_stLogin;
 	TCHAR	lpAddr[16];	
-#ifdef __BILLING0712
-	DWORD	dwBillingClass;
-	tagPLAY_ACCOUNT()
-	{
-		*lpszAccount	= '\0';
-		ZeroMemory( &m_stLogin, sizeof(SYSTEMTIME) );
-		*lpAddr	= '\0';
-		dwBillingClass	= 0;
-	};
-#endif	// __BILLING0712
 }
 PLAY_ACCOUNT;
 

@@ -109,11 +109,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //   InitEH();
 #endif	// _DEBUG
 
-#ifdef __BILLING0712
-	if( ::CreateBillingMgr() == FALSE )		// CreateWindow전에 호출되어야 한다.
-		return FALSE;
-#endif
-
 	HWND hWnd;
 	hInst = hInstance; // Store instance handle in our global variable
 	hMainWnd = hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
@@ -174,11 +169,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		AfxMessageBox( "Unable to start server" );
 		return FALSE;
 	}
-
-#ifdef __BILLING0712
-	if( GetBillingMgr()->Init( hWnd ) == false )
-		return FALSE;
-#endif
 
 	SetTimer( hWnd, IDT_SENDPLAYERCOUNT, 1000 * 60, NULL );
 	SetTimer( hWnd, IDT_TIME_CHECKADDR, 1000 * 30, NULL );
@@ -419,12 +409,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC hdc;
 
-#ifdef __BILLING0712
-	// 빌링에 관련된 윈도우 메세지가 처리되게 한다.
-	if( GetBillingMgr()->PreTranslateMessage( hWnd, message, wParam, lParam ) )
-		return 0;
-#endif
-
 	switch (message) 
 	{
 		case WM_TIMER:
@@ -548,9 +532,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void ExitInstance( void )
 {
-#ifdef __BILLING0712
-	GetBillingMgr()->Release();
-#endif
 	g_dpSrvr.DeleteDPObject();
 	g_dpDbSrvr.DeleteDPObject();
 	CDPAdbill::GetInstance()->DeleteDPObject();
