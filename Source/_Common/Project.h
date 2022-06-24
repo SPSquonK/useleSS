@@ -491,12 +491,6 @@ typedef	struct	_GIFTBOX
 	BYTE	anFlag[MAX_GIFTBOX_ITEM];
 	int		anSpan[MAX_GIFTBOX_ITEM];
 	int		anAbilityOption[MAX_GIFTBOX_ITEM];
-	/*
-#ifdef __GIFTBOX0213
-	BOOL	bGlobal;
-	int		anTotal[MAX_GIFTBOX_ITEM];
-#endif	// __GIFTBOX0213
-	*/
 }	GIFTBOX,	*PGIFTBOX;
 
 typedef struct	_GIFTBOXRESULT
@@ -516,12 +510,6 @@ typedef struct	_GIFTBOXRESULT
 		}
 }	GIFTBOXRESULT,	*PGIFTBOXRESULT;
 
-/*
-#ifdef __GIFTBOX0213
-class CItemElem;
-class CDPMng;
-#endif	// __GIFTBOX0213
-*/
 class	CGiftboxMan
 {
 private:
@@ -535,19 +523,9 @@ public:
 	
 	static	CGiftboxMan* GetInstance( void );
 
-	/*
-#ifdef __GIFTBOX0213
-	BOOL	AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag = 0, int nTotal = 0 );
-	void	Upload( CDPMng* pdp );
-	void	Query( CDPMng* pdp, DWORD dwGiftbox, DWORD dwItem, int nNum, u_long idPlayer, CItemElem* pItemElem );
-	void	Restore( CDPMng* pdp, DWORD dwGiftbox, DWORD dwItem );
-	BOOL	Open( DWORD dwGiftbox, LPDWORD pdwItem, int* pnNum, u_long idPlayer, CItemElem* pItemElem );
-	BOOL	OpenLowest( DWORD dwGiftbox, LPDWORD pdwItem, int* pnNum );
-#else	// __GIFTBOX0213
-	*/
 	BOOL	AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag = 0, int nSpan	= 0, int nAbilityOption = 0 );
 	BOOL	Open( DWORD dwGiftBox, PGIFTBOXRESULT pGiftboxResult );
-//#endif	// __GIFTBOX0213
+
 	void	Verify( void );
 };
 #endif	// __WORLDSERVER

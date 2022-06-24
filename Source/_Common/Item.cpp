@@ -163,13 +163,7 @@ CItemElem::CItemElem()
 	m_dwFeeling = 0;	
 #endif // xPet2
 */
-	/*
-#ifdef __GIFTBOX0213
-#ifdef __WORLDSERVER
-	m_nQueryGiftbox	= 0;
-#endif	// __WORLDSERVER
-#endif	// __GIFTBOX0213
-	*/
+
 	m_pPet	= NULL;
 	m_bTranformVisPet = FALSE;
 

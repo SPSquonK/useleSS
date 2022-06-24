@@ -2385,13 +2385,8 @@ BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, DWORD dwItemId )
 //	int nNum;
 //	BYTE nFlag;
 	GIFTBOXRESULT	result;
-	/*
-#ifdef __GIFTBOX0213
-	if( CGiftboxMan::GetInstance()->Open( dwItemId, &dwItem, &nNum, m_idPlayer, pItemElem ) )
-#else	// __GIFTBOX0213
-	*/
+
 	if( CGiftboxMan::GetInstance()->Open( dwItemId, &result ) )
-//#endif	// __GIFTBOX0213
 	{
 		if( m_Inventory.GetEmptyCount() < 1 )
 		{

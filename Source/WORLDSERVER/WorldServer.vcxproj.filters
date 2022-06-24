@@ -78,9 +78,6 @@
     <ClCompile Include="couplehelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dpaccountclient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DPCoreClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

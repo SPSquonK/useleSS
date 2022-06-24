@@ -158,11 +158,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	if( FALSE == g_dpSrvr.StartServer( PN_ACCOUNTSRVR_0 )
 		|| FALSE == g_dpDbSrvr.StartServer( PN_ACCOUNTSRVR_1 )
 		|| FALSE == g_DPAdbill.StartServer( PN_ADBILL )
-		/*
-#ifdef __GIFTBOX0213
-		|| FALSE == CDPWldSrvr::GetInstance()->StartServer( PN_ACCOUNTSRVR_2 )
-#endif	// __GIFTBOX0213
-		*/
 		 )
 	{
 		AfxMessageBox( "Unable to start server" );
@@ -531,11 +526,6 @@ void ExitInstance( void )
 	g_dpSrvr.DeleteDPObject();
 	g_dpDbSrvr.DeleteDPObject();
 	g_DPAdbill.DeleteDPObject();
-	/*
-#ifdef __GIFTBOX0213
-	CDPWldSrvr::GetInstance()->DeleteDPObject();
-#endif	// __GIFTBOX0213
-	*/
 
 	g_AccountMng.Clear();
 	SAFE_DELETE( CAccount::m_pPool );

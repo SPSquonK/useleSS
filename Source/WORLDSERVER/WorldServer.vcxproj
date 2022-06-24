@@ -110,8 +110,6 @@
     <ClCompile Include="couplehelper.cpp">
     </ClCompile>
     <ClCompile Include="DisplayedInfo.cpp" />
-    <ClCompile Include="dpaccountclient.cpp">
-    </ClCompile>
     <ClCompile Include="DPCoreClient.cpp">
     </ClCompile>
     <ClCompile Include="DPDatabaseClient.cpp">

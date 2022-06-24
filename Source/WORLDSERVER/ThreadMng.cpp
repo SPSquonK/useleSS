@@ -177,17 +177,7 @@ BOOL CRunObject::Init( void )
 	m_hClose	= CreateEvent( NULL, FALSE, FALSE, NULL );
 	DWORD dwThreadId;
 	m_hRunObject	= chBEGINTHREADEX( NULL, 0, _Run, (LPVOID)this, 0, &dwThreadId ); 
-//
-	/*
-#ifdef __GIFTBOX0213
-	if( !CDPAccountClient::GetInstance()->ConnectToServer( s_szAccountAddr, PN_ACCOUNTSRVR_2, TRUE ) )
-	{
-		OutputDebugString( "Can't connect to account server." );
-		return FALSE;
-	}
-	CGiftboxMan::GetInstance()->Upload( CDPAccountClient::GetInstance() );
-#endif	// __GIFTBOX0213
-	*/
+
 	if( !g_DPSrvr.StartServer( (u_short)( g_uKey + PN_WORLDSRVR ), TRUE ) )
 	{
 		OutputDebugString( "Can't start server." );
@@ -332,12 +322,6 @@ void CRunObject::Run( void )
 
 			PROFILE_RUN( r4 );
 		
-/*
-		#ifdef __GIFTBOX0213
-			if( timeoutReadAccount.TimeoutReset( g_tmCurrent ) )
-				CDPAccountClient::GetInstance()->ReceiveMessage();
-		#endif	// __GIFTBOX0213
-*/
 		#ifdef __EVENTLUA_KEEPCONNECT
 			if( timeoutReadAccount.TimeoutReset( g_tmCurrent ) )
 				prj.m_EventLua.KeepConnectEventProcess();

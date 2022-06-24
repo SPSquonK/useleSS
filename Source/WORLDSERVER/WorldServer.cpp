@@ -34,12 +34,6 @@
 
 #include "slord.h"
 
-/*
-#ifdef __GIFTBOX0213
-#include "dpaccountclient.h"
-#endif	// __GIFTBOX0213
-*/
-
 #ifdef __NEW_PROFILE
 #include "ProfileInfo.h"
 #endif // __NEW_PROFILE
@@ -61,11 +55,6 @@ static TCHAR		g_szTitle[MAX_LOADSTRING];
 static TCHAR		g_szWindowClass[MAX_LOADSTRING];	
 HWND g_hMainWnd;
 char				g_szCoreAddr[16];
-/*
-#ifdef __GIFTBOX0213
-static char			s_szAccountAddr[16];
-#endif	
-*/
 
 static char  		g_szINI[] = "WorldServer.ini";
 
@@ -316,11 +305,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 void ExitInstance( void )
 {
 	CRunObject::GetInstance()->Close();
-	/*
-#ifdef __GIFTBOX0213
-	CDPAccountClient::GetInstance()->DeleteDPObject();
-#endif	// __GIFTBOX0213
-	*/
 
 	g_DPSrvr.DeleteDPObject();
 	g_DPCoreClient.DeleteDPObject();
@@ -450,11 +434,6 @@ BOOL Script( LPCSTR lpszFileName )
 		else if( s.Token == "Account" )
 		{
 			s.GetToken();
-			/*
-		#ifdef __GIFTBOX0213
-			lstrcpy( s_szAccountAddr, s.Token );
-		#endif	// __GIFTBOX0213
-		*/
 		}
 		else if( s.Token == "Heartbeat" )
 		{

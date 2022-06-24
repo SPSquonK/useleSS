@@ -49,13 +49,6 @@
 
 #include "CreateMonster.h"
 
-/*
-#ifdef __GIFTBOX0213
-#include "dpaccountclient.h"
-#include "msghdr.h"
-#endif	// __GIFTBOX0213
-*/
-
 #ifdef __LANG_1013
 #include "langman.h"
 #endif	// __LANG_1013
@@ -3348,13 +3341,7 @@ CGiftboxMan* CGiftboxMan::GetInstance( void )
 	return &sGiftboxMan;
 }
 
-/*
-#ifdef __GIFTBOX0213
-BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag, int nTotal )
-#else	// __GIFTBOX0213
-*/
 BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag, int nSpan, int nAbilityOption )
-//#endif	// __GIFTBOX0213
 {
 	const auto i	= m_mapIdx.find( dwGiftbox );
 	int nIdx1	= 0;
@@ -3385,13 +3372,7 @@ BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, i
 	return TRUE;
 }
 
-/*
-#ifdef __GIFTBOX0213
-BOOL CGiftboxMan::Open( DWORD dwGiftbox, LPDWORD pdwItem, int* pnNum, u_long idPlayer, CItemElem* pItemElem )
-#else	// __GIFTBOX0213
-*/
 BOOL CGiftboxMan::Open( DWORD dwGiftbox, PGIFTBOXRESULT pGiftboxResult )
-//#endif	// __GIFTBOX0213
 {
 	DWORD dwRand	= xRandom( 1000000 );
 	const auto i		= m_mapIdx.find( dwGiftbox );
@@ -3405,19 +3386,6 @@ BOOL CGiftboxMan::Open( DWORD dwGiftbox, PGIFTBOXRESULT pGiftboxResult )
 	{
 		if( dwRand >= (DWORD)( low ) && dwRand < pBox->adwProbability[j] )
 		{
-			/*
-#ifdef __GIFTBOX0213
-			if( pBox->anTotal[j] > 0 )
-			{
-				Query( CDPAccountClient::GetInstance(), dwGiftbox, pBox->adwItem[j], pBox->anNum[j], idPlayer, pItemElem );
-				return FALSE;
-			}
-#endif	// __GIFTBOX0213
-			*/
-//			*pdwItem	= pBox->adwItem[j];
-//			*pnNum	= pBox->anNum[j];
-//			*pnFlag	= pBox->anFlag[j];
-//			*pnSpan	= pBox->anSpan[j];
 			pGiftboxResult->dwItem	= pBox->adwItem[j];
 			pGiftboxResult->nNum	= pBox->anNum[j];
 			pGiftboxResult->nFlag	= pBox->anFlag[j];
@@ -3428,26 +3396,6 @@ BOOL CGiftboxMan::Open( DWORD dwGiftbox, PGIFTBOXRESULT pGiftboxResult )
 	}
 	return FALSE;
 }
-
-/*
-#ifdef __GIFTBOX0213
-BOOL CGiftboxMan::OpenLowest( DWORD dwGiftbox, LPDWORD pdwItem, int* pnNum )
-{
-	map<DWORD, int>::iterator i		= m_mapIdx.find( dwGiftbox );
-	if( i == m_mapIdx.end() )
-		return FALSE;
-	int nIdx	= i->second;
-	PGIFTBOX pBox	= &m_giftbox[nIdx];
-
-	int nLowest	= pBox->nSize - 1;
-	if( nLowest < 0 )
-		return FALSE;
-	*pdwItem	= pBox->adwItem[nLowest];
-	*pnNum	= pBox->anNum[nLowest];
-	return TRUE;
-}
-#endif	// __GIFTBOX0213
-*/
 
 void CGiftboxMan::Verify( void )
 {
@@ -3552,87 +3500,12 @@ BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )
 				dwItem	= s.GetNumber();
 			}
 		}
-		/*
-#ifdef __GIFTBOX0213
-		else if( s.Token == _T( "GlobalGiftbox" ) )
-		{
-			int nTotal;
-			dwGiftbox	= s.GetNumber();
-			s.GetToken();	// {
-			dwItem	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-				dwProbability	= s.GetNumber();
-				nNum	= s.GetNumber();
-				nTotal	= s.GetNumber();
-
-				if( !CGiftboxMan::GetInstance()->AddItem( dwGiftbox, dwItem, dwProbability, nNum, 0, nTotal ) )
-					return FALSE;
-				dwItem	= s.GetNumber();
-			}
-		}
-#endif	// __GIFTBOX0213
-		*/
 		s.GetToken();
 	}
 	CGiftboxMan::GetInstance()->Verify();
 	return TRUE;
 }
 
-/*
-#ifdef __GIFTBOX0213
-void CGiftboxMan::Upload( CDPMng* pdp )
-{
-	CAr ar;
-	ar << PACKETTYPE_GLOBALGIFTBOX;
-	u_long uOffset	= ar.GetOffset();
-	int nSize	= 0;
-	ar << nSize;
-	for( int i = 0; i < m_nSize; i++ )
-	{
-		if( m_giftbox[i].bGlobal )
-		{
-			ar << m_giftbox[i].dwGiftbox;
-			ar << m_giftbox[i].nSize;
-			for( int j = 0; j < m_giftbox[i].nSize; j++ )
-			{
-				ar << m_giftbox[i].adwItem[j];
-				ar << m_giftbox[i].anTotal[j];
-			}
-			nSize++;
-		}
-	}
-	int nBufSize;
-	LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );
-	*(UNALIGNED int*)( lpBuf + uOffset )	= nSize;
-	pdp->Send( lpBuf, nBufSize, DPID_SERVERPLAYER );
-}
-
-void CGiftboxMan::Query( CDPMng* pdp, DWORD dwGiftbox, DWORD dwItem, int nNum, u_long idPlayer, CItemElem* pItemElem )
-{
-	if( pItemElem->m_nQueryGiftbox > 0 )
-		return;
-
-	CAr ar;
-	ar << PACKETTYPE_QUERYGLOBALGIFTBOX;
-	pItemElem->m_nQueryGiftbox	= ++m_nQuery;
-	ar << idPlayer << dwGiftbox << dwItem << nNum << pItemElem->m_dwObjId << pItemElem->m_nQueryGiftbox;
-	int nBufSize;
-	LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );
-	pdp->Send( lpBuf, nBufSize, DPID_SERVERPLAYER );
-}
-
-void CGiftboxMan::Restore( CDPMng* pdp, DWORD dwGiftbox, DWORD dwItem )
-{
-	CAr ar;
-	ar << PACKETTYPE_RESTOREGLOBALGIFTBOX;
-	ar << dwGiftbox << dwItem;
-	int nBufSize;
-	LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );
-	pdp->Send( lpBuf, nBufSize, DPID_SERVERPLAYER );
-}
-#endif	// __GIFTBOX0213
-*/
 #endif	// __WORLDSERVER
 
 CPackItem g_PackItem;
