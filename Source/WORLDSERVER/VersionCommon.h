@@ -116,7 +116,6 @@
 #define		__EVENT_MONSTER				// 이벤트 몬스터(WorldServer)
 
 #define		__CHIPI_DYO					// NPC를 특정국가에서만 출력할 수 있게 character.inc에 설정 
-#define		__STL_GIFTBOX_VECTOR		// GiftBox Vector로 변경(박스 갯수 제한 문제)
 #define		__CHIPI_ITEMUPDATE_080804	// 국내의 경우 g_uKey에 101이 없다. 그래서 수정...
 
 #define		__VM_0820

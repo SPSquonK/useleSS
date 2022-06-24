@@ -3340,15 +3340,6 @@ BOOL CProject::SortDropItem( void )
 #ifdef __WORLDSERVER
 CGiftboxMan::CGiftboxMan()
 {
-#ifndef __STL_GIFTBOX_VECTOR
-	m_nSize	= 0;
-	memset( &m_giftbox, 0, sizeof(m_giftbox) );
-#endif // __STL_GIFTBOX_VECTOR
-	/*
-#ifdef __GIFTBOX0213
-	m_nQuery	= 0;
-#endif	// __GIFTBOX0213
-	*/
 }
 
 CGiftboxMan* CGiftboxMan::GetInstance( void )
@@ -3381,7 +3372,6 @@ BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, i
 		m_mapIdx.emplace( dwGiftbox, nIdx1 );
 	}
 
-#ifdef __STL_GIFTBOX_VECTOR
 	m_vGiftBox[nIdx1].dwGiftbox	= dwGiftbox;
 	int nIdx2	= m_vGiftBox[nIdx1].nSize++;
 	m_vGiftBox[nIdx1].adwItem[nIdx2]	= dwItem;
@@ -3392,30 +3382,6 @@ BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, i
 	
 	m_vGiftBox[nIdx1].nSum	+= dwProbability;
 	m_vGiftBox[nIdx1].adwProbability[nIdx2]	= m_vGiftBox[nIdx1].nSum;
-#else // __STL_GIFTBOX_VECTOR
-	if( m_nSize >= MAX_GIFTBOX )
-	{
-		OutputDebugString( "TOO MANY GIFTBOX\n" );
-		return FALSE;
-	}
-
-	m_giftbox[nIdx1].dwGiftbox	= dwGiftbox;
-	int nIdx2	= m_giftbox[nIdx1].nSize++;
-	m_giftbox[nIdx1].adwItem[nIdx2]	= dwItem;
-	m_giftbox[nIdx1].anNum[nIdx2]	= nNum;
-	m_giftbox[nIdx1].anFlag[nIdx2]	= nFlag;
-	m_giftbox[nIdx1].anSpan[nIdx2]	= nSpan;
-	m_giftbox[nIdx1].anAbilityOption[nIdx2]		= nAbilityOption;
-	/*
-#ifdef __GIFTBOX0213
-	m_giftbox[nIdx1].anTotal[nIdx2]	= nTotal;
-	if( nTotal > 0 )
-		m_giftbox[nIdx1].bGlobal	= TRUE;
-#endif	// __GIFTBOX0213
-		*/
-	m_giftbox[nIdx1].nSum	+= dwProbability;
-	m_giftbox[nIdx1].adwProbability[nIdx2]	= m_giftbox[nIdx1].nSum;
-#endif // __STL_GIFTBOX_VECTOR
 	return TRUE;
 }
 
@@ -3432,11 +3398,7 @@ BOOL CGiftboxMan::Open( DWORD dwGiftbox, PGIFTBOXRESULT pGiftboxResult )
 	if( i == m_mapIdx.end() )
 		return 0;
 	int nIdx	= i->second;
-#ifdef __STL_GIFTBOX_VECTOR
 	PGIFTBOX pBox	= &m_vGiftBox[nIdx];
-#else // __STL_GIFTBOX_VECTOR
-	PGIFTBOX pBox	= &m_giftbox[nIdx];
-#endif // __STL_GIFTBOX_VECTOR
 
 	int low	= 0;
 	for( int j = 0; j < pBox->nSize; j++ )
@@ -3489,19 +3451,11 @@ BOOL CGiftboxMan::OpenLowest( DWORD dwGiftbox, LPDWORD pdwItem, int* pnNum )
 
 void CGiftboxMan::Verify( void )
 {
-#ifdef __STL_GIFTBOX_VECTOR
 	for( DWORD i = 0; i < m_vGiftBox.size(); i++ )
 	{
 		TRACE( "GIFTBOX : %d, %d\n", m_vGiftBox[i].dwGiftbox, m_vGiftBox[i].nSum );
 		m_vGiftBox[i].adwProbability[m_vGiftBox[i].nSize-1]	+= ( 1000000 - m_vGiftBox[i].nSum );
 	}	
-#else // __STL_GIFTBOX_VECTOR
-	for( int i = 0; i < m_nSize; i++ )
-	{
-		TRACE( "GIFTBOX : %d, %d\n", m_giftbox[i].dwGiftbox, m_giftbox[i].nSum );
-		m_giftbox[i].adwProbability[m_giftbox[i].nSize-1]	+= ( 1000000 - m_giftbox[i].nSum );
-	}
-#endif // __STL_GIFTBOX_VECTOR
 }
 
 BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )

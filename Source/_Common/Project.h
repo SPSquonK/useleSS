@@ -479,9 +479,7 @@ inline void LOG_CALLSTACK()
 
 #ifdef __WORLDSERVER
 #define	MAX_GIFTBOX_ITEM	128
-#ifndef __STL_GIFTBOX_VECTOR
-#define	MAX_GIFTBOX			256
-#endif // __STL_GIFTBOX_VECTOR
+
 typedef	struct	_GIFTBOX
 {
 	DWORD	dwGiftbox;
@@ -527,12 +525,7 @@ class CDPMng;
 class	CGiftboxMan
 {
 private:
-#ifdef __STL_GIFTBOX_VECTOR
 	std::vector<GIFTBOX> m_vGiftBox;
-#else // __STL_GIFTBOX_VECTOR
-	int		m_nSize;
-	GIFTBOX	m_giftbox[MAX_GIFTBOX];
-#endif // __STL_GIFTBOX_VECTOR
 	std::map<DWORD, int>	m_mapIdx;
 	int	m_nQuery;
 
