@@ -3502,7 +3502,6 @@ bool CGiftboxMan::Load( LPCTSTR lpszFileName )
 	return true;
 }
 
-#endif	// __WORLDSERVER
 
 CPackItem g_PackItem;
 
@@ -3571,6 +3570,8 @@ void CPackItem::Load(LPCTSTR lpszFileName) noexcept(false) {
 	}
 	OutputDebugString( "----------------------------------------\n" );
 }
+
+#endif	// __WORLDSERVER
 
 PSETITEMAVAIL CProject::GetSetItemAvail( int nAbilityOption )
 {

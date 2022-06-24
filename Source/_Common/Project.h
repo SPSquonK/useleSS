@@ -528,7 +528,6 @@ private:
 
 extern CGiftboxMan g_GiftboxMan;
 
-#endif	// __WORLDSERVER
 
 class CPackItem final {
 public:
@@ -561,6 +560,7 @@ public:
 
 extern CPackItem g_PackItem;
 
+#endif	// __WORLDSERVER
 
 
 #define	MAX_ITEMAVAIL	32
