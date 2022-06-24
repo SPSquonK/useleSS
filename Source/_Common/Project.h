@@ -538,20 +538,12 @@ public:
 	};
 
 	struct PACKITEMELEM {
-		DWORD dwPackItem;
 		int		nSpan = 0;
 		std::vector<PackedItem> aItems;
-
-		PACKITEMELEM(DWORD packItem) : dwPackItem(packItem) {}
 	};
 
 private:
-	std::vector<PACKITEMELEM> m_packitems;
-	boost::container::flat_map<DWORD, size_t> m_mapIdx;
-
-	void AddItem(DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum);
-
-	PACKITEMELEM * Open_(DWORD dwPackItem);
+	boost::container::flat_map<DWORD, PACKITEMELEM> m_packs;
 
 public:
 	void Load(LPCTSTR lpszFileName) noexcept(false);

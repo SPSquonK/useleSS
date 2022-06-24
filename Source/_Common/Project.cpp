@@ -3505,32 +3505,10 @@ bool CGiftboxMan::Load( LPCTSTR lpszFileName )
 
 CPackItem g_PackItem;
 
-void CPackItem::AddItem(DWORD dwPackItem, DWORD dwItem, int nAbilityOption, int nNum) {
-	const auto i = m_mapIdx.find(dwPackItem);
-	size_t nIdx1;
-	if (i != m_mapIdx.end()) {
-		nIdx1 = i->second;
-	} else {
-		nIdx1 = m_packitems.size();
-		m_mapIdx.emplace(dwPackItem, nIdx1);
-		m_packitems.emplace_back(dwPackItem);
-	}
-
-	m_packitems[nIdx1].aItems.emplace_back(
-		CPackItem::PackedItem{ dwItem, nAbilityOption, nNum }
-	);
-}
-
 const CPackItem::PACKITEMELEM * CPackItem::Open(const DWORD dwPackItem) const {
-	const auto i = m_mapIdx.find( dwPackItem );
-	if (i == m_mapIdx.end()) return nullptr;
-	return &m_packitems[i->second];
-}
-
-CPackItem::PACKITEMELEM * CPackItem::Open_(const DWORD dwPackItem) {
-	const auto i = m_mapIdx.find(dwPackItem);
-	if (i == m_mapIdx.end()) return nullptr;
-	return &m_packitems[i->second];
+	const auto i = m_packs.find( dwPackItem );
+	if (i == m_packs.end()) return nullptr;
+	return &i->second;
 }
 
 void CPackItem::Load(LPCTSTR lpszFileName) noexcept(false) {
@@ -3539,9 +3517,6 @@ void CPackItem::Load(LPCTSTR lpszFileName) noexcept(false) {
 		throw ProjectLoadError(__FUNCTION__"(): file not found", lpszFileName);
 	}
 
-	char lpOutputString[100]	= { 0, };
-	OutputDebugString( "packItem\n" );
-	OutputDebugString( "----------------------------------------\n" );
 	s.GetToken();	// subject or FINISHED
 	while( s.tok != FINISHED )
 	{
@@ -3549,26 +3524,22 @@ void CPackItem::Load(LPCTSTR lpszFileName) noexcept(false) {
 		{
 			const DWORD dwPackItem	= s.GetNumber();
 			const int nSpan	= s.GetNumber();
+			m_packs[dwPackItem].nSpan = nSpan;
+
 			s.GetToken();	// {
 			DWORD dwItem	= s.GetNumber();
 			while (*s.token != '}') {
 				const int nAbilityOption = s.GetNumber();
 				const int nNum = s.GetNumber();
 
-				std::sprintf(lpOutputString, "%d\n", dwPackItem);
-				OutputDebugString(lpOutputString);
+				CPackItem::PackedItem packedItem{ dwItem, nAbilityOption, nNum };
+				m_packs[dwPackItem].aItems.emplace_back(packedItem);
 
-				AddItem(dwPackItem, dwItem, nAbilityOption, nNum);
 				dwItem = s.GetNumber();
-			}
-			
-			if (PACKITEMELEM * const pPackItemElem = Open_(dwPackItem)) {
-				pPackItemElem->nSpan = nSpan;
 			}
 		}
 		s.GetToken();
 	}
-	OutputDebugString( "----------------------------------------\n" );
 }
 
 #endif	// __WORLDSERVER
