@@ -19,28 +19,17 @@
 // ATTACK_INFO
 //////////////////////////////////////////////////////////////////////
 
-ATK_TYPE ATTACK_INFO::GetAtkType() const
-{
-	ATK_TYPE type = ATK_GENERIC;
+ATK_TYPE ATTACK_INFO::GetAtkType() const noexcept {
+	if (dwAtkFlags & AF_MELEESKILL) return ATK_TYPE::ATK_MELEESKILL;
+	if (dwAtkFlags & AF_MAGICSKILL) return ATK_TYPE::ATK_MAGICSKILL;
 
-	if( dwAtkFlags & AF_MELEESKILL )
-	{
-		type = ATK_MELEESKILL;
-	}
-	else if( dwAtkFlags & AF_MAGICSKILL )
-	{
-		type = ATK_MAGICSKILL;
-	}	
-	else if( dwAtkFlags & AF_MAGIC )		// 일반 완드 공격
-	{
-		type = ATK_MAGIC;
-	}
-	else if( dwAtkFlags & AF_FORCE )		// 반사 데미지같은 경우 
-	{
-		type = ATK_FORCE;
-	}
+	// 일반 완드 공격
+	if (dwAtkFlags & AF_MAGIC) return ATK_TYPE::ATK_MAGIC;
 
-	return type;
+	// 반사 데미지같은 경우 
+	if (dwAtkFlags & AF_FORCE) return ATK_TYPE::ATK_FORCE;
+
+	return ATK_TYPE::ATK_GENERIC;
 }
 
 // 방어력 무시의 경우인가?
@@ -277,20 +266,20 @@ int CAttackArbiter::CalcATK( ATTACK_INFO* pInfo )
 
 	switch( pInfo->GetAtkType() )
 	{
-	case ATK_FORCE:								// 미리계산된 데미지 (반사, 사이킥 월)
+	case ATK_TYPE::ATK_FORCE:								// 미리계산된 데미지 (반사, 사이킥 월)
 		nATK = m_nParam;						
 		nCount = 0;		
 		break;
-	case ATK_MELEESKILL:						// 밀리스킬 
+	case ATK_TYPE::ATK_MELEESKILL:						// 밀리스킬 
 		nATK = m_pAttacker->GetMeleeSkillPower( pInfo );
 		break;
-	case ATK_MAGICSKILL:						// 매직 스킬 
+	case ATK_TYPE::ATK_MAGICSKILL:						// 매직 스킬 
 		nATK = m_pAttacker->GetMagicSkillPower( pInfo );
 		break;
-	case ATK_MAGIC:								// 완드 공격 
+	case ATK_TYPE::ATK_MAGIC:								// 완드 공격 
 		nATK = m_pAttacker->GetMagicHitPower( pInfo->GetChargeLevel() );
 		break;
-	case ATK_GENERIC:							// 일반 공격 
+	case ATK_TYPE::ATK_GENERIC:							// 일반 공격 
 		nATK = m_pAttacker->GetHitPower( pInfo );
 		break;
 	}
@@ -532,27 +521,27 @@ void CAttackArbiter::ProcessAbnormal( int nDamage, ATTACK_INFO* pInfo )
 	{
 		int nReflectRate = m_pDefender->GetChgParam( DST_REFLECT_DAMAGE );	
 
-		BOOL bAble = TRUE;
-		if( nReflectRate > 0 )			// 반사시킬 확률이 있을땐 확률검사 함
-			if( (int)( xRandom(100) ) > nReflectRate )	// 확률 실패냐?
-				bAble = FALSE;
+		bool reflectible = true;
+		if (nReflectRate > 0)			// 반사시킬 확률이 있을땐 확률검사 함
+			if ((int)(xRandom(100)) > nReflectRate)	// 확률 실패냐?
+				reflectible = false;
 
 		ATK_TYPE atkType = pInfo->GetAtkType();
 		switch( atkType )
 		{
-		case ATK_MELEESKILL:
-		case ATK_MAGICSKILL:
+		case ATK_TYPE::ATK_MELEESKILL:
+		case ATK_TYPE::ATK_MAGICSKILL:
 			if( m_pDefender->HasBuff( BUFF_SKILL, SI_PSY_NLG_CRUCIOSPELL ) )		// 방어자가 크루시오 스펠일 경우
-				bAble = FALSE;
+				reflectible = false;
 			break;
-		case ATK_FORCE:															// 미리계산된 데미지
-			bAble = FALSE;
+		case ATK_TYPE::ATK_FORCE:															// 미리계산된 데미지
+			reflectible = false;
 			break;
 		}
 
-		if( bAble )
+		if(reflectible)
 		{
-			int nDmg = (int)( nDamage * (float)(nReflectDmgRate / 100.0f) );
+			int nDmg = MulDiv(nDamage, nReflectDmgRate, 100);
 			if( m_pAttacker->IsPlayer() && m_pDefender->IsPlayer() )
 				nDmg = (int)( nDmg * 0.1f );
 			m_nReflectDmg = nDmg;
@@ -670,7 +659,7 @@ void CAttackArbiter::StealHP( int nDamage, ATK_TYPE type )
 		}
 	}
 
-	if( type == ATK_GENERIC && m_pAttacker->IsPlayer() )
+	if( type == ATK_TYPE::ATK_GENERIC && m_pAttacker->IsPlayer() )
 	{
 		int nDstHP = m_pAttacker->GetParam( DST_MELEE_STEALHP, 0 );
 		int nStealHP = (int)( nDamage * (nDstHP / 100.0f) );

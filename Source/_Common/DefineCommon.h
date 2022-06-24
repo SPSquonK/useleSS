@@ -26,8 +26,7 @@ const int MAX_CHARGE_LEVEL = 4;
 extern const int OLD_MPU;
 extern int g_MPU;
 
-enum ATK_TYPE 
-{
+enum class ATK_TYPE {
 	ATK_FORCE,					// 미리계산된 데미지를 강제로 줄 경우 
 	ATK_MELEESKILL,				// 밀리스킬 
 	ATK_MAGICSKILL,				// 매직 스킬 
@@ -46,7 +45,7 @@ struct ATTACK_INFO
 	int			nParts;				// 오른손인가 왼손인가 
 	int			nDEFFactor;			// 방어력 팩터 
 
-	ATK_TYPE	GetAtkType() const;
+	[[nodiscard]] ATK_TYPE GetAtkType() const noexcept;
 	BOOL		CanIgnoreDEF() const;
 	int			GetChargeLevel() const;
 	int			GetAttackCount() const;
