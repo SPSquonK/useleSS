@@ -478,56 +478,56 @@ inline void LOG_CALLSTACK()
 
 
 #ifdef __WORLDSERVER
-#define	MAX_GIFTBOX_ITEM	128
 
-typedef	struct	_GIFTBOX
-{
-	DWORD	dwGiftbox;
-	int		nSum;
-	int		nSize;
-	DWORD	adwItem[MAX_GIFTBOX_ITEM];
-	DWORD	adwProbability[MAX_GIFTBOX_ITEM];
-	int		anNum[MAX_GIFTBOX_ITEM];
-	BYTE	anFlag[MAX_GIFTBOX_ITEM];
-	int		anSpan[MAX_GIFTBOX_ITEM];
-	int		anAbilityOption[MAX_GIFTBOX_ITEM];
-}	GIFTBOX,	*PGIFTBOX;
+#include <boost/container/flat_map.hpp>
 
-typedef struct	_GIFTBOXRESULT
-{
-	DWORD	dwItem;
-	int		nNum;
-	BYTE nFlag;
-	int nSpan;
-	int	nAbilityOption;
-	_GIFTBOXRESULT()
-		{
-			dwItem	= 0;
-			nNum	= 0;
-			nFlag	= 0;
-			nSpan	= 0;
-			nAbilityOption	= 0;
-		}
-}	GIFTBOXRESULT,	*PGIFTBOXRESULT;
+class	CGiftboxMan {
+public:
+	static constexpr DWORD MaxSum = 1000000;
+	
+	/// If true, boxes with more than MaxSum probabilities
+	/// will be rebalanced over MaxSum.
+	/// If false, boxes with more than MaxSub probabilities
+	/// will make WorldServer crash on load.
+	static constexpr bool Rebalance = true;
 
-class	CGiftboxMan
-{
-private:
-	std::vector<GIFTBOX> m_vGiftBox;
-	std::map<DWORD, int>	m_mapIdx;
-	int	m_nQuery;
+	struct Item {
+		DWORD	dwItem = 0;
+		int		nNum = 0;
+		BYTE nFlag = 0;
+		int nSpan = 0;
+		int	nAbilityOption = 0;
+	};
+
+	struct PossibleItem {
+		Item concreteItem;
+		DWORD	adwProbability;
+
+		PossibleItem(Item concreteItem, DWORD	adwProbability)
+			: concreteItem(concreteItem), adwProbability(adwProbability) {}
+	};
+
+	struct Box {
+		std::vector<PossibleItem> items; // Must be ordered by adwProbability
+
+		[[nodiscard]] std::optional<Item> DrawAnItem() const;
+		void Rebalance();
+	};
+
+	boost::container::flat_map<DWORD, Box>	m_giftBoxes;
 
 public:
-	CGiftboxMan();
-	virtual	~CGiftboxMan()	{}
+	[[nodiscard]] std::optional<Item> Open(DWORD dwGiftBox) const;
 	
-	static	CGiftboxMan* GetInstance( void );
+	[[nodiscard]] bool Load(LPCTSTR lpszFileName);
 
-	BOOL	AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag = 0, int nSpan	= 0, int nAbilityOption = 0 );
-	BOOL	Open( DWORD dwGiftBox, PGIFTBOXRESULT pGiftboxResult );
-
-	void	Verify( void );
+private:
+	[[nodiscard]] bool AddItem(DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag = 0, int nSpan = 0, int nAbilityOption = 0);
+	void Optimize();
 };
+
+extern CGiftboxMan g_GiftboxMan;
+
 #endif	// __WORLDSERVER
 
 class CPackItem final {
@@ -888,7 +888,6 @@ public:
 	BOOL			LoadPropGuildQuest( LPCTSTR szFilename );
 	BOOL			LoadPropPartyQuest( LPCTSTR szFilename );
 	BOOL			LoadDropEvent( LPCTSTR lpszFileName );
-	BOOL			LoadGiftbox( LPCTSTR lpszFileName );
 	BOOL			LoadPiercingAvail( LPCTSTR lpszFileName );
 	DWORD			GetTextColor( DWORD dwIndex ); 
 	LPCTSTR			GetText( DWORD dwIndex );

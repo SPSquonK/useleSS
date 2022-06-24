@@ -486,7 +486,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	LoadPropPartyQuest( "propPartyQuest.inc" );
 
 	LoadDropEvent( "propDropEvent.inc" );
-	LoadGiftbox( "propGiftbox.inc" );
+	if (!g_GiftboxMan.Load("propGiftbox.inc")) throw std::exception("Error on loading propGiftbox.inc");
 	
 	g_PackItem.Load("propPackItem.inc");
 
@@ -3331,86 +3331,81 @@ BOOL CProject::SortDropItem( void )
 
 
 #ifdef __WORLDSERVER
-CGiftboxMan::CGiftboxMan()
-{
-}
 
-CGiftboxMan* CGiftboxMan::GetInstance( void )
-{
-	static CGiftboxMan sGiftboxMan;
-	return &sGiftboxMan;
-}
+CGiftboxMan g_GiftboxMan;
 
-BOOL CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag, int nSpan, int nAbilityOption )
-{
-	const auto i	= m_mapIdx.find( dwGiftbox );
-	int nIdx1	= 0;
-	if( i != m_mapIdx.end() )
-	{
-		nIdx1	= i->second;
-	}
-	else
-	{
-		nIdx1	= m_vGiftBox.size();
-		GIFTBOX giftBox;
-		memset( &giftBox, 0, sizeof(GIFTBOX) );
-		m_vGiftBox.push_back( giftBox );
+bool CGiftboxMan::AddItem( DWORD dwGiftbox, DWORD dwItem, DWORD dwProbability, int nNum, BYTE nFlag, int nSpan, int nAbilityOption ) {
+	Box & box = m_giftBoxes[dwGiftbox];
 
-		m_mapIdx.emplace( dwGiftbox, nIdx1 );
-	}
+	const Item concreteItem{
+		.dwItem = dwItem,
+		.nNum = nNum,
+		.nFlag = nFlag,
+		.nSpan = nSpan,
+		.nAbilityOption = nAbilityOption,
+	};
 
-	m_vGiftBox[nIdx1].dwGiftbox	= dwGiftbox;
-	int nIdx2	= m_vGiftBox[nIdx1].nSize++;
-	m_vGiftBox[nIdx1].adwItem[nIdx2]	= dwItem;
-	m_vGiftBox[nIdx1].anNum[nIdx2]	= nNum;
-	m_vGiftBox[nIdx1].anFlag[nIdx2]	= nFlag;
-	m_vGiftBox[nIdx1].anSpan[nIdx2]	= nSpan;
-	m_vGiftBox[nIdx1].anAbilityOption[nIdx2]		= nAbilityOption;
-	
-	m_vGiftBox[nIdx1].nSum	+= dwProbability;
-	m_vGiftBox[nIdx1].adwProbability[nIdx2]	= m_vGiftBox[nIdx1].nSum;
-	return TRUE;
-}
+	const DWORD baseSum = box.items.empty() ? 0 : box.items.back().adwProbability;
 
-BOOL CGiftboxMan::Open( DWORD dwGiftbox, PGIFTBOXRESULT pGiftboxResult )
-{
-	DWORD dwRand	= xRandom( 1000000 );
-	const auto i		= m_mapIdx.find( dwGiftbox );
-	if( i == m_mapIdx.end() )
-		return 0;
-	int nIdx	= i->second;
-	PGIFTBOX pBox	= &m_vGiftBox[nIdx];
-
-	int low	= 0;
-	for( int j = 0; j < pBox->nSize; j++ )
-	{
-		if( dwRand >= (DWORD)( low ) && dwRand < pBox->adwProbability[j] )
-		{
-			pGiftboxResult->dwItem	= pBox->adwItem[j];
-			pGiftboxResult->nNum	= pBox->anNum[j];
-			pGiftboxResult->nFlag	= pBox->anFlag[j];
-			pGiftboxResult->nSpan	= pBox->anSpan[j];
-			pGiftboxResult->nAbilityOption	= pBox->anAbilityOption[j];
-			return TRUE;
+	if constexpr (!Rebalance) {
+		if (baseSum + dwProbability > MaxSum) {
+			Error(__FUNCTION__"(): Could not add an item in box %lu", dwGiftbox);
+			return false;
 		}
 	}
-	return FALSE;
+
+	box.items.emplace_back(concreteItem, baseSum + dwProbability);
+	return true;
 }
 
-void CGiftboxMan::Verify( void )
-{
-	for( DWORD i = 0; i < m_vGiftBox.size(); i++ )
-	{
-		TRACE( "GIFTBOX : %d, %d\n", m_vGiftBox[i].dwGiftbox, m_vGiftBox[i].nSum );
-		m_vGiftBox[i].adwProbability[m_vGiftBox[i].nSize-1]	+= ( 1000000 - m_vGiftBox[i].nSum );
-	}	
+std::optional<CGiftboxMan::Item> CGiftboxMan::Open(const DWORD dwGiftbox) const {
+	const auto it = m_giftBoxes.find(dwGiftbox);
+	if (it == m_giftBoxes.end()) return std::nullopt;
+
+	const Box & box = it->second;
+	return box.DrawAnItem();
 }
 
-BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )
+std::optional<CGiftboxMan::Item> CGiftboxMan::Box::DrawAnItem() const {
+	if (items.empty()) return std::nullopt;
+	
+	const DWORD dwRand	= xRandom(MaxSum);
+
+	for (const CGiftboxMan::PossibleItem & item : items) {
+		if (dwRand < item.adwProbability) {
+			return item.concreteItem;
+		}
+	}
+
+	// Leftover probs are attributed to the last item on the list
+	return items.back().concreteItem;
+}
+
+void CGiftboxMan::Optimize() {
+	m_giftBoxes.shrink_to_fit();
+
+	for (Box & box : m_giftBoxes | std::views::values) {
+		box.items.shrink_to_fit();
+
+		if constexpr (Rebalance) box.Rebalance();
+	}
+}
+
+void CGiftboxMan::Box::Rebalance() {
+	const DWORD sum = items.back().adwProbability;
+	if (sum <= CGiftboxMan::MaxSum) return;
+
+	const double balanceCoefficient = static_cast<double>(sum) / static_cast<double>(MaxSum);
+
+	for (PossibleItem & item : items) {
+		item.adwProbability = static_cast<DWORD>(item.adwProbability / balanceCoefficient);
+	}
+}
+
+bool CGiftboxMan::Load( LPCTSTR lpszFileName )
 {
 	CScript s;
-	if( s.Load( lpszFileName ) == FALSE )
-		return FALSE;
+	if (!s.Load(lpszFileName)) return false;
 
 	DWORD dwGiftbox, dwItem, dwProbability;
 	int	nNum;
@@ -3430,8 +3425,8 @@ BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )
 			{
 				dwProbability	= s.GetNumber();
 				nNum	= s.GetNumber();
-				if( !CGiftboxMan::GetInstance()->AddItem( dwGiftbox, dwItem, dwProbability * 100, nNum ) )
-					return FALSE;
+				if( !AddItem( dwGiftbox, dwItem, dwProbability * 100, nNum ) )
+					return false;
 				dwItem	= s.GetNumber();
 			}
 		}
@@ -3444,8 +3439,8 @@ BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )
 			{
 				dwProbability	= s.GetNumber();
 				nNum	= s.GetNumber();
-				if( !CGiftboxMan::GetInstance()->AddItem( dwGiftbox, dwItem, dwProbability, nNum ) )
-					return FALSE;
+				if( !AddItem( dwGiftbox, dwItem, dwProbability, nNum ) )
+					return false;
 				dwItem	= s.GetNumber();
 			}
 		}
@@ -3459,8 +3454,8 @@ BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )
 				dwProbability	= s.GetNumber();
 				nNum	= s.GetNumber();
 				nFlag	= s.GetNumber();
-				if( !CGiftboxMan::GetInstance()->AddItem( dwGiftbox, dwItem, dwProbability * 100, nNum, nFlag ) )
-					return FALSE;
+				if( !AddItem( dwGiftbox, dwItem, dwProbability * 100, nNum, nFlag ) )
+					return false;
 				dwItem	= s.GetNumber();
 			}
 		}
@@ -3477,8 +3472,8 @@ BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )
 				nFlag	= s.GetNumber();
 				nSpan	= s.GetNumber();	// �Ⱓ
 				
-				if( !CGiftboxMan::GetInstance()->AddItem( dwGiftbox, dwItem, dwProbability * dwPrecision, nNum, nFlag, nSpan ) )
-					return FALSE;
+				if( !AddItem( dwGiftbox, dwItem, dwProbability * dwPrecision, nNum, nFlag, nSpan ) )
+					return false;
 				dwItem	= s.GetNumber();
 			}
 		}
@@ -3495,15 +3490,16 @@ BOOL CProject::LoadGiftbox( LPCTSTR lpszFileName )
 				nSpan	= s.GetNumber();	// �Ⱓ
 				nAbilityOption	= s.GetNumber();	// +
 				
-				if( !CGiftboxMan::GetInstance()->AddItem( dwGiftbox, dwItem, dwProbability * 10, nNum, nFlag, nSpan, nAbilityOption ) )
-					return FALSE;
+				if( !AddItem( dwGiftbox, dwItem, dwProbability * 10, nNum, nFlag, nSpan, nAbilityOption ) )
+					return false;
 				dwItem	= s.GetNumber();
 			}
 		}
 		s.GetToken();
 	}
-	CGiftboxMan::GetInstance()->Verify();
-	return TRUE;
+
+	Optimize();
+	return true;
 }
 
 #endif	// __WORLDSERVER

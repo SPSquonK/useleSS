@@ -2379,60 +2379,53 @@ void CUser::DoUsePackItem( CItemElem* pItemElem, const CPackItem::PACKITEMELEM &
 	UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 }
 
-BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, DWORD dwItemId )
-{
-//	DWORD dwItem;
-//	int nNum;
-//	BYTE nFlag;
-	GIFTBOXRESULT	result;
+BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, const DWORD dwItemId ) {
+	const std::optional<CGiftboxMan::Item> result = g_GiftboxMan.Open(dwItemId);
 
-	if( CGiftboxMan::GetInstance()->Open( dwItemId, &result ) )
-	{
-		if( m_Inventory.GetEmptyCount() < 1 )
-		{
-			AddDefinedText( TID_GAME_LACKSPACE );
-			return TRUE;
-		}
-		if( pItemElem )
-		{
-			OnAfterUseItem( pItemElem->GetProp() );
-			UpdateItem(*pItemElem, UI::Num::ConsumeOne);
-		}
+	if (!result) {
+		return FALSE;
+	}
 
-		CItemElem itemElem;
-		itemElem.m_dwItemId	= result.dwItem;
-		itemElem.m_nItemNum	= result.nNum;
-		if( result.nFlag != 4 )	// ignore property
-		{
-			itemElem.m_byFlag	= result.nFlag;
-			itemElem.m_bCharged		= itemElem.GetProp()->bCharged;
-		}
-
-		time_t t	= 0;
-		if( result.nSpan )	// minutes
-		{
-			CTime time	= CTime::GetCurrentTime() + CTimeSpan( 0, 0, result.nSpan, 0 );
-			t	= (time_t)( time.GetTime() );
-		}
-		itemElem.m_dwKeepTime	= t;
-		itemElem.SetAbilityOption( result.nAbilityOption );
-
-		if( CreateItem( &itemElem ) )
-		{
-			AddDefinedText( TID_GAME_REAPITEM, "\"%s\"", itemElem.GetProp()->szName );						
-			LogItemInfo aLogItem;
-			aLogItem.Action = "E";
-			aLogItem.SendName = GetName();
-			aLogItem.RecvName = "GIFTBOX";
-			aLogItem.WorldId = GetWorld()->GetID();
-			aLogItem.Gold = aLogItem.Gold2 = GetGold();
-			g_DPSrvr.OnLogItem( aLogItem, &itemElem, result.nNum );
-		}
-		
+	if (m_Inventory.GetEmptyCount() < 1) {
+		AddDefinedText(TID_GAME_LACKSPACE);
 		return TRUE;
 	}
 
-	return FALSE;
+	if (pItemElem) {
+		OnAfterUseItem(pItemElem->GetProp());
+		UpdateItem(*pItemElem, UI::Num::ConsumeOne);
+	}
+
+	CItemElem itemElem;
+	itemElem.m_dwItemId	= result->dwItem;
+	itemElem.m_nItemNum	= result->nNum;
+
+	if (result->nFlag != CItemElem::isusing) {	// ignore property
+		itemElem.m_byFlag = result->nFlag & ~(CItemElem::isusing);
+		itemElem.m_bCharged = itemElem.GetProp()->bCharged;
+	}
+
+	time_t t	= 0;
+	if (result->nSpan) {	// minutes
+		CTime time = CTime::GetCurrentTime() + CTimeSpan(0, 0, result->nSpan, 0);
+		t = (time_t)(time.GetTime());
+	}
+
+	itemElem.m_dwKeepTime	= t;
+	itemElem.SetAbilityOption( result->nAbilityOption );
+
+	if (CreateItem(&itemElem)) {
+		AddDefinedText(TID_GAME_REAPITEM, "\"%s\"", itemElem.GetProp()->szName);
+		LogItemInfo aLogItem;
+		aLogItem.Action = "E";
+		aLogItem.SendName = GetName();
+		aLogItem.RecvName = "GIFTBOX";
+		aLogItem.WorldId = GetWorld()->GetID();
+		aLogItem.Gold = aLogItem.Gold2 = GetGold();
+		g_DPSrvr.OnLogItem(aLogItem, &itemElem, result->nNum);
+	}
+		
+	return TRUE;
 }
 
 
