@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "AppDefine.h"
 #include "WndEquipmentSex.h"
+#include "ItemMorph.h"
 
 BOOL CWndEquipementSex::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_EQUIPMENTSEX, pWndParent, 0, CPoint(0, 0));
@@ -36,6 +37,7 @@ BOOL CWndEquipementSex::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult
 
 void CWndEquipementSex::ChangeMode(const Mode mode) {
 	if (mode == m_currentMode) return;
+	m_currentMode = mode;
 	
 	CWndListBox * box = GetDlgItem<CWndListBox>(WIDC_LISTBOX);
 	box->ResetContent();
@@ -78,19 +80,56 @@ void CWndEquipementSex::OnDraw(C2DRender * p2DRender) {
 */
 
 std::vector<CWndEquipementSex::Displayed> CWndEquipementSex::GetItemsToDisplay(const Mode mode) {
-	std::vector<CWndEquipementSex::Displayed> res;
+	class Builder {
+	private:
+		std::vector<CWndEquipementSex::Displayed> res;
+		std::set<const ItemProp *> alreadyAdded;
+
+	public:
+		void Push(const ItemProp * p1, const ItemProp * p2 = nullptr) {
+			if (p1 && alreadyAdded.contains(p1)) return;
+			if (p2 && alreadyAdded.contains(p2)) return;
+
+			res.emplace_back(Displayed{ p1, p2 });
+
+			if (p1) alreadyAdded.emplace(p1);
+			if (p2) alreadyAdded.emplace(p2);
+		}
+
+		[[nodiscard]] auto Build() const { return res; }
+		[[nodiscard]] auto Size() const { return res.size(); }
+	};
+
+	Builder builder;
 
 	for (size_t i = 0; i != prj.m_aPropItem.GetSize(); ++i) {
 		ItemProp * prop = prj.m_aPropItem.GetAt(i);
 		if (!prop) continue;
 		if (prop->dwID != i) continue;
+		if (prop->dwItemSex != SEX_MALE && prop->dwItemSex != SEX_FEMALE) continue;
 
-		res.emplace_back(Displayed{ prop, nullptr });
+		switch (mode) {
+			case Mode::Vanilla: {
+				const ItemProp * vanilla = ItemMorph::GetTransyItem(*prop);
+				if (vanilla) builder.Push(prop, vanilla);
+				break;
+			}
+			case Mode::Detected: {
 
-		if (res.size() >= 15) break;
+
+				break;
+			}
+			case Mode::Unattributed: {
+				const ItemProp * vanilla = ItemMorph::GetTransyItem(*prop);
+				if (!vanilla) {
+					builder.Push(prop, vanilla);
+				}
+				break;
+			}
+		}
 	}
 
-	return res;
+	return builder.Build();
 }
 
 std::string CWndEquipementSex::Displayed::ToString() const {
