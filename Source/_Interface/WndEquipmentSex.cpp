@@ -19,7 +19,19 @@ void CWndEquipementSex::OnInitialUpdate() {
 	radio->SetGroup(TRUE);
 	radio->SetCheck(TRUE);
 
+	AddQuantity(WIDC_RADIO, m_lists.vanilla.size());
+	AddQuantity(WIDC_RADIO1, m_lists.detected.size());
+	AddQuantity(WIDC_RADIO2, m_lists.unattributed.size());
+
 	MoveParentCenter();
+}
+
+
+void CWndEquipementSex::AddQuantity(UINT widgetId, size_t size) {
+	CWndBase * widget = GetDlgItem(widgetId);
+	CString title = widget->GetTitle();
+	title.AppendFormat(" (%lu)", size);
+	widget->SetTitle(title.GetString());
 }
 
 BOOL CWndEquipementSex::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
@@ -39,15 +51,19 @@ void CWndEquipementSex::ChangeMode(const Mode mode) {
 	if (mode == m_currentMode) return;
 	m_currentMode = mode;
 	
+	m_lists.EnsureBuilt();
+
 	CWndListBox * box = GetDlgItem<CWndListBox>(WIDC_LISTBOX);
 	box->ResetContent();
 
-	m_displayed = GetItemsToDisplay(m_currentMode);
-
-
 	const auto idsToDefines = BuildReverseIndex(CScript::m_defines, "II_");
 
-	for (const Displayed & displayed : m_displayed) {
+	const std::vector<Displayed> * toList =
+		mode == Mode::Vanilla ? &m_lists.vanilla :
+		mode == Mode::Detected ? &m_lists.detected :
+		&m_lists.unattributed;
+
+	for (const Displayed & displayed : *toList) {
 		const std::string str = displayed.ToString(idsToDefines);
 		box->AddString(str.c_str());
 	}
@@ -82,7 +98,24 @@ void CWndEquipementSex::OnDraw(C2DRender * p2DRender) {
 }
 */
 
-std::vector<CWndEquipementSex::Displayed> CWndEquipementSex::GetItemsToDisplay(const Mode mode) {
+struct CStringDetectedMorphs {
+	std::map<const ItemProp *, const ItemProp *> pairs;
+	std::set<const ItemProp *> contained;
+
+	CStringDetectedMorphs();
+
+	bool Contains(const ItemProp * prop) const {
+		return contained.contains(prop);
+	}
+};
+
+void CWndEquipementSex::Lists::EnsureBuilt() {
+	if (!ouiBonjourCEstIciLaLivraisondePizza) {
+		return;
+	}
+
+	ouiBonjourCEstIciLaLivraisondePizza = false;
+
 	class Builder {
 	private:
 		std::vector<CWndEquipementSex::Displayed> res;
@@ -103,7 +136,11 @@ std::vector<CWndEquipementSex::Displayed> CWndEquipementSex::GetItemsToDisplay(c
 		[[nodiscard]] auto Size() const { return res.size(); }
 	};
 
-	Builder builder;
+	Builder forVanilla;
+	Builder forDetected;
+	Builder forUnattributed;
+
+	CStringDetectedMorphs stringDetector;
 
 	for (size_t i = 0; i != prj.m_aPropItem.GetSize(); ++i) {
 		ItemProp * prop = prj.m_aPropItem.GetAt(i);
@@ -111,28 +148,24 @@ std::vector<CWndEquipementSex::Displayed> CWndEquipementSex::GetItemsToDisplay(c
 		if (prop->dwID != i) continue;
 		if (prop->dwItemSex != SEX_MALE && prop->dwItemSex != SEX_FEMALE) continue;
 
-		switch (mode) {
-			case Mode::Vanilla: {
-				const ItemProp * vanilla = ItemMorph::GetTransyItem(*prop);
-				if (vanilla) builder.Push(prop, vanilla);
-				break;
-			}
-			case Mode::Detected: {
+		const ItemProp * vanilla = ItemMorph::GetTransyItem(*prop);
+		if (vanilla) forVanilla.Push(prop, vanilla);
 
+		if (prop->dwItemSex == SEX_MALE) {
+			const auto propFem = stringDetector.pairs.find(prop);
+			if (propFem != stringDetector.pairs.end()) {
+				forDetected.Push(prop, propFem->second);
+			}
+		}
 
-				break;
-			}
-			case Mode::Unattributed: {
-				const ItemProp * vanilla = ItemMorph::GetTransyItem(*prop);
-				if (!vanilla) {
-					builder.Push(prop, vanilla);
-				}
-				break;
-			}
+		if (!vanilla && !stringDetector.Contains(prop)) {
+			forUnattributed.Push(prop, vanilla);
 		}
 	}
 
-	return builder.Build();
+	vanilla = forVanilla.Build();
+	detected = forDetected.Build();
+	unattributed = forUnattributed.Build();
 }
 
 std::string CWndEquipementSex::Displayed::ToString(const std::map<int, CString> & idsToDefines) const {
@@ -172,4 +205,50 @@ std::map<int, CString> CWndEquipementSex::BuildReverseIndex(
 	
 	return reverseIndex;
 }
+
+CStringDetectedMorphs::CStringDetectedMorphs() {
+	const auto reverseIndex = CWndEquipementSex::BuildReverseIndex(CScript::m_defines, "II_");
+	if (reverseIndex.size() == 0) return;
+
+	const auto trySomething = [&](const ItemProp * maleItem, const CString & name) -> bool {
+		if (name == "") return false;
+
+		const auto idIt = CScript::m_defines.find(name);
+		if (idIt == CScript::m_defines.end()) return false;
+
+		const ItemProp * prop = prj.m_aPropItem.GetAt(idIt->second);
+		if (!prop) return false;
+		if (prop->dwID != idIt->second) return false;
+		if (prop->dwItemSex != SEX_FEMALE) return false;
+
+		pairs.emplace(maleItem, prop);
+		contained.emplace(maleItem);
+		contained.emplace(prop);
+
+		return true;
+	};
+
+	constexpr auto Replace = [](const char * name, const char * from, const char * to) -> CString {
+		CString res = name;
+		const auto index = res.Find(from);
+		
+		if (index == -1) return "";
+
+		return res.Left(index) + to + res.Right(res.GetLength() - index - strlen(from));
+	};
+
+
+	for (size_t i = 0; i != prj.m_aPropItem.GetSize(); ++i) {
+		ItemProp * prop = prj.m_aPropItem.GetAt(i);
+		if (!prop) continue;
+		if (prop->dwID != i) continue;
+		if (prop->dwItemSex != SEX_MALE) continue;
+
+		trySomething(prop, Replace(reverseIndex.at(prop->dwID), "_M_", "_F_"));
+
+
+	}
+
+}
+
 

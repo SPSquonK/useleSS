@@ -17,12 +17,21 @@ public:
 		[[nodiscard]] std::string ToString(const std::map<int, CString> & idsToDefines) const;
 	};
 
+	struct Lists {
+		bool ouiBonjourCEstIciLaLivraisondePizza = true;
+		std::vector<Displayed> vanilla;
+		std::vector<Displayed> detected;
+		std::vector<Displayed> unattributed;
+
+		void EnsureBuilt();
+	};
+
 private:
 	Mode m_currentMode = Mode::None;
-	std::vector<Displayed> m_displayed;
+	Lists m_lists;
 
 	void ChangeMode(Mode newMode);
-	static std::vector<Displayed> GetItemsToDisplay(Mode mode);
+	void AddQuantity(UINT widgetId, size_t size);
 
 public:
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
