@@ -14,7 +14,7 @@ public:
 		const ItemProp * item1;
 		const ItemProp * item2;
 
-		[[nodiscard]] std::string ToString() const;
+		[[nodiscard]] std::string ToString(const std::map<int, CString> & idsToDefines) const;
 	};
 
 private:
@@ -30,8 +30,8 @@ public:
 	void OnInitialUpdate() override;
 //	void OnDraw(C2DRender * p2DRender) override;
 
-	static std::optional<CString> FindStringIdOf(
-		const std::map<CString, int> & defines, int defineId, std::string_view prefix
+	static std::map<int, CString> BuildReverseIndex(
+		const std::map<CString, int> & defines, std::string_view prefix
 	);
 };
 

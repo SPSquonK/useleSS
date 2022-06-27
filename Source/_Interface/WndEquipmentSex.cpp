@@ -44,8 +44,11 @@ void CWndEquipementSex::ChangeMode(const Mode mode) {
 
 	m_displayed = GetItemsToDisplay(m_currentMode);
 
+
+	const auto idsToDefines = BuildReverseIndex(CScript::m_defines, "II_");
+
 	for (const Displayed & displayed : m_displayed) {
-		const std::string str = displayed.ToString();
+		const std::string str = displayed.ToString(idsToDefines);
 		box->AddString(str.c_str());
 	}
 }
@@ -132,7 +135,7 @@ std::vector<CWndEquipementSex::Displayed> CWndEquipementSex::GetItemsToDisplay(c
 	return builder.Build();
 }
 
-std::string CWndEquipementSex::Displayed::ToString() const {
+std::string CWndEquipementSex::Displayed::ToString(const std::map<int, CString> & idsToDefines) const {
 	std::string res;
 
 	for (const ItemProp * prop : { item1, item2 }) {
@@ -140,10 +143,10 @@ std::string CWndEquipementSex::Displayed::ToString() const {
 		if (!res.empty()) res += " / ";
 
 		res += item1->szName;
-		std::optional<CString> iiId = CWndEquipementSex::FindStringIdOf(CScript::m_defines, prop->dwID, "II_");
-		if (iiId) {
+		const auto iiId = idsToDefines.find(prop->dwID);
+		if (iiId != idsToDefines.end()) {
 			res += " (";
-			res += iiId->GetString();
+			res += iiId->second.GetString();
 			res += ")";
 		}
 	}
@@ -151,17 +154,22 @@ std::string CWndEquipementSex::Displayed::ToString() const {
 	return res;
 }
 
-std::optional<CString> CWndEquipementSex::FindStringIdOf(
-	const std::map<CString, int> & defines, int defineId, std::string_view prefix
+std::map<int, CString> CWndEquipementSex::BuildReverseIndex(
+	const std::map<CString, int> & defines, std::string_view prefix
 ) {
-	const auto it = std::ranges::find_if(defines,
-		[&](const std::pair<const CString, int> & pair) {
-			if (pair.second != defineId) return false;
-			return pair.first.Left(prefix.size()) == prefix.data();
-		}
-	);
+	std::map<int, CString> reverseIndex;
 
-	if (it == defines.end()) return std::nullopt;
-	return it->first;
+	for (const auto & [textId, numberId] : defines) {
+		if (textId.Left(prefix.size()) == prefix.data()) {
+			const bool dupe = reverseIndex.insert_or_assign(numberId, textId).second;
+			if (dupe) {
+				Error("BuildReverseIndex(%s): Duplicated entry %d - %s and %s",
+					prefix.data(), numberId, reverseIndex[numberId], textId.GetString()
+					);
+			}
+		}
+	}
+	
+	return reverseIndex;
 }
 
