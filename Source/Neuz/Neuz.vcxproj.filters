@@ -1009,6 +1009,9 @@
     <ClCompile Include="..\_Network\ListedServer.cpp">
       <Filter>Source Files\_Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndEquipmentSex.cpp">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1891,6 +1894,9 @@
     </ClInclude>
     <ClInclude Include="..\_Network\ListedServer.h">
       <Filter>Source Files\_Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndEquipmentSex.h">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

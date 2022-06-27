@@ -22,6 +22,8 @@
 #endif // __IMPROVE_MAP_SYSTEM
 #include "WndBagEx.h"
 
+#include "WndEquipmentSex.h"
+
 #include "WndPartyQuick.h"
 #include "WndHousing.h"
 
@@ -131,4 +133,6 @@ void CWndMgr::AddAllApplet() {
 #ifdef __NEW_WEB_BOX
 	AddAppletFunc(WindowBuilder<CWndHelperWebBox> , APP_WEBBOX2              , _T( "HelperWebBox" )       , _T( "Icon_HelperHelp.dds" ) , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TOOLTIP ), 0 );
 #endif // __NEW_WEB_BOX
+
+	AddAppletFunc(WindowBuilder<CWndEquipementSex>, APP_EQUIPMENTSEX, _T("oui"), _T("Icon_Applet.dds"), "Equipement Sex", 'U');
 }

@@ -1,0 +1,37 @@
+#pragma once
+
+#include <map>
+#include <optional>
+#include <string_view>
+
+class CWndEquipementSex : public CWndNeuz {
+public:
+	enum class Mode {
+		None, Vanilla, Detected, Unattributed
+	};
+
+	struct Displayed {
+		const ItemProp * item1;
+		const ItemProp * item2;
+
+		[[nodiscard]] std::string ToString() const;
+	};
+
+private:
+	Mode m_currentMode = Mode::None;
+	std::vector<Displayed> m_displayed;
+
+	void ChangeMode(Mode newMode);
+	static std::vector<Displayed> GetItemsToDisplay(Mode mode);
+
+public:
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+//	void OnDraw(C2DRender * p2DRender) override;
+
+	static std::optional<CString> FindStringIdOf(
+		const std::map<CString, int> & defines, int defineId, std::string_view prefix
+	);
+};
+

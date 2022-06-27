@@ -100,6 +100,7 @@
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
     <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
+    <ClCompile Include="..\_Interface\WndEquipmentSex.cpp" />
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp" />
     <ClCompile Include="..\_Interface\WndSqKComponents.cpp" />
     <ClCompile Include="..\_Network\ListedServer.cpp" />
@@ -687,6 +688,7 @@
     <ClInclude Include="..\_Common\Vector3Helper.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
+    <ClInclude Include="..\_Interface\WndEquipmentSex.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
     <ClInclude Include="..\_Network\ListedServer.h" />
     <ClInclude Include="CNTREVNT.h" />
