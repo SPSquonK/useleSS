@@ -740,7 +740,6 @@ public:
 	int SetItemData2( int nIndex,DWORD dwItemData );
 	int SetItemData2Ptr( int nIndex,void* pData );
 	int SetItemValidity( int nIndex, BOOL bValidity );
-	int SetItemVisibility( int nIndex, BOOL bIsVisible );
 	const CRect& GetItemRect( int nIndex ) const;
 	void  GetText(int nIndex,CString& rString) const;
 	int   GetTextLen(int nIndex) const;

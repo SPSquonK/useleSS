@@ -1925,15 +1925,6 @@ int CWndListBox::SetItemValidity( int nIndex, BOOL bValidity )
 	return 0;
 }
 
-int CWndListBox::SetItemVisibility( int nIndex, BOOL bIsVisible )
-{
-	if( nIndex < 0 || nIndex >= m_listItemArray.GetSize() )
-		return LB_ERR;
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_bIsVisible = bIsVisible;
-	return 0;
-}
-
 const CRect& CWndListBox::GetItemRect( int nIndex ) const
 {
 	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
