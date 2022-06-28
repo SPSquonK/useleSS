@@ -1618,9 +1618,8 @@ void CWndScrollBar::OnSize(UINT nType, int cx, int cy)
 
 CWndListBox::CWndListBox()
 {
-	m_nWndColor    = D3DCOLOR_ARGB( 255,  0x5 << 3,  0x5 << 3,  0x5 << 3 );
+	m_nWndColor    = D3DCOLOR_ARGB( 255,  40,  40,  40 );
 	m_nFontColor   = D3DCOLOR_ARGB( 255, 64, 64, 64 );
-	//m_nSelectColor = D3DCOLOR_ARGB( 255, 64, 64, 0   );
 	m_nSelectColor = D3DCOLOR_ARGB( 255, 64, 64,  255   );
 	m_dwOnMouseColor = D3DCOLOR_ARGB( 255, 255, 128, 0 );
 	m_dwInvalidColor = D3DCOLOR_ARGB( 255, 170, 170, 170 );
@@ -1638,33 +1637,9 @@ CWndListBox::~CWndListBox()
 }
 void CWndListBox::Create( DWORD dwListBoxStyle, RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
-	//m_dwListBoxStyle = dwListBoxStyle;
 	CWndBase::Create( dwListBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
 }
-void CWndListBox::LoadListBoxScript(LPCTSTR lpFileName) 
-{
-	CScanner scanner;
- 	if(scanner.Load(lpFileName) == FALSE)
-		return;
-	scanner.GetToken(); // keyword
-	do {
-		InterpriteScript(scanner,m_listItemArray);
-		scanner.GetToken(); // keyword
-	} while(scanner.tok != FINISHED);
 
-}
-void CWndListBox::InterpriteScript(CScanner& scanner,CPtrArray& ptrArray) 
-{
-	do {
-		LPLISTITEM lpListItem = new LISTITEM;
-		lpListItem->m_strWord = scanner.Token;
-		ptrArray.Add(lpListItem);
-		scanner.GetToken(); 
-	} while(*scanner.token != '}' && scanner.tok != FINISHED);
-	if(scanner.tok == FINISHED)
-		return;
-	scanner.GetToken(); 
-}
 void CWndListBox::OnInitialUpdate()
 {
 	CRect rect = GetWindowRect();
@@ -1911,12 +1886,6 @@ DWORD CWndListBox::GetItemData2( int nIndex ) const
 	return lpListItem->m_dwData2;
 }
 
-void* CWndListBox::GetItemData2Ptr( int nIndex ) const
-{
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return ( void* )lpListItem->m_dwData2;
-}
-
 BOOL CWndListBox::GetItemValidity( int nIndex )
 {
 	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
@@ -1971,16 +1940,6 @@ const CRect& CWndListBox::GetItemRect( int nIndex ) const
 	return lpListItem->m_rect;
 }
 
-int CWndListBox::GetSel(int nIndex) const
-{
-		return 1;
-}
-
-int CWndListBox::GetText(int nIndex,LPSTR lpszBuffer) const
-{
-		return 1;
-}
-
 void CWndListBox::GetText(int nIndex,CString& rString) const
 {
 	if(nIndex >= 0 && nIndex < m_listItemArray.GetSize())
@@ -2027,22 +1986,6 @@ int CWndListBox::SetCurSel(int nSelect)
 	return 0;
 }
 
-int CWndListBox::SetSel(int nIndex,BOOL bSelect)
-{
-		return 1;
-}
-
-int CWndListBox::GetSelCount() const
-{
-		return 1;
-}
-
-int CWndListBox::GetSelItems(int nMaxItems,LPINT rgIndex) const
-{
-		return 1;
-}
-
-
 int CWndListBox::AddString(LPCTSTR lpszItem)
 {
 	LPLISTITEM lpListItem = new LISTITEM;
@@ -2078,12 +2021,6 @@ const CString& CWndListBox::GetString( int nIndex ) const
 	return lpListItem->m_strWord;
 }
 
-void CWndListBox::SetListStringAlpha( int nIndex, BYTE byAlpha )
-{
-	LPLISTITEM lpListItem	= ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_strWord.SetAlpha( byAlpha );
-}
-
 void CWndListBox::SetKeyString( int nIndex, LPCTSTR lpszItem )
 {
 	LPLISTITEM lpListItem	= ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
@@ -2096,34 +2033,9 @@ const CString& CWndListBox::GetKeyString( int nIndex ) const
 	return lpListItem->m_strKey;
 }
 
-void CWndListBox::SetOnMouseColor( DWORD dwOnMouseColor )
-{
-	m_dwOnMouseColor = dwOnMouseColor;
-}
-
-DWORD CWndListBox::GetOnMouseColor( void ) const
-{
-	return m_dwOnMouseColor;
-}
-
-void CWndListBox::SetInvalidColor( DWORD dwInvalidColor )
-{
-	m_dwInvalidColor = dwInvalidColor;
-}
-
-DWORD CWndListBox::GetInvalidColor( void ) const
-{
-	return m_dwInvalidColor;
-}
-
 void CWndListBox::SetLeftMargin( int nLeftMargin )
 {
 	m_nLeftMargin = nLeftMargin;
-}
-
-int CWndListBox::GetLeftMargin( void ) const
-{
-	return m_nLeftMargin;
 }
 
 #ifdef __IMPROVE_MAP_SYSTEM
@@ -2251,10 +2163,6 @@ int QSortListBox( const VOID* arg1, const VOID* arg2 )
 void CWndListBox::SortListBox() 
 {
     qsort( m_listItemArray.GetData(), m_listItemArray.GetSize(), sizeof(LPLISTITEM), QSortListBox ); 
-}
-int CWndListBox::FindStringExact(int nIndexStart,LPCTSTR lpszItem) const
-{
-	return 1;
 }
 
 int CWndListBox::SelectString(int nStartAfter,LPCTSTR lpszItem)

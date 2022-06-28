@@ -691,7 +691,6 @@ public:
 
 class CWndListBox : public CWndBase
 {
-	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
 	void PaintListBox(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray);
 
 public:
@@ -736,7 +735,6 @@ public:
 	int   SetItemData(int nIndex,DWORD dwItemData);
 	int   SetItemDataPtr(int nIndex,void* pData);
 	DWORD GetItemData2( int nIndex ) const;
-	void* GetItemData2Ptr( int nIndex ) const;
 	BOOL GetItemValidity( int nIndex );
 	BOOL GetItemVisibility( int nIndex );
 	int SetItemData2( int nIndex,DWORD dwItemData );
@@ -744,16 +742,11 @@ public:
 	int SetItemValidity( int nIndex, BOOL bValidity );
 	int SetItemVisibility( int nIndex, BOOL bIsVisible );
 	const CRect& GetItemRect( int nIndex ) const;
-	int   GetSel(int nIndex) const;
-	int   GetText(int nIndex,LPSTR lpszBuffer) const;
 	void  GetText(int nIndex,CString& rString) const;
 	int   GetTextLen(int nIndex) const;
 	
 	int   GetCurSel() const;
 	int   SetCurSel(int nSelect);
-	int   SetSel(int nIndex,BOOL bSelect = TRUE);
-	int   GetSelCount() const;
-	int   GetSelItems(int nMaxItems,LPINT rgIndex) const;
 	int   GetScrollPos() {return m_wndScrollBar.GetScrollPos();};
 	void  SetScrollPos( int nPos, BOOL bRedraw = TRUE ) { m_wndScrollBar.SetScrollPos( nPos, bRedraw ); }	//gmpbigsun: added
 	int   AddString(LPCTSTR lpszItem);
@@ -761,26 +754,20 @@ public:
 	int   InsertString(int nIndex,LPCTSTR lpszItem);
 	void	SetString( int nIndex, LPCTSTR lpszItem );
 	const CString& GetString( int nIndex ) const;
-	void SetListStringAlpha( int nIndex, BYTE byAlpha );
 	void SetKeyString( int nIndex, LPCTSTR lpszItem );
 	const CString& GetKeyString( int nIndex ) const;
-	void SetOnMouseColor( DWORD dwOnMouseColor );
-	DWORD GetOnMouseColor( void ) const;
-	void SetInvalidColor( DWORD dwInvalidColor );
-	DWORD GetInvalidColor( void ) const;
+
+
 	void SetLeftMargin( int nLeftMargin );
-	int GetLeftMargin( void ) const;
+
 #ifdef __IMPROVE_MAP_SYSTEM
 	int GetItemIndex( const CString& strItem ) const;
 	int GetItemIndex( DWORD dwItem ) const;
 #endif // __IMPROVE_MAP_SYSTEM
 	void  ResetContent();
 	int   FindString(int nStartAfter,LPCTSTR lpszItem) const;
-	int   FindStringExact(int nIndexStart,LPCTSTR lpszItem) const;
 	int   SelectString(int nStartAfter,LPCTSTR lpszItem);
 	void  SortListBox();
-
-	void LoadListBoxScript(LPCTSTR lpFileName); 
 
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual void OnInitialUpdate();
@@ -1188,7 +1175,6 @@ public:
 
 	int SetItemHeight(int nIndex, UINT cyItemHeight);
 	int GetItemHeight(int nIndex) const;
-	int FindStringExact(int nIndexStart, LPCTSTR lpszFind) const;
 	int SetExtendedUI(BOOL bExtended = TRUE);
 	BOOL GetExtendedUI() const;
 	void GetDroppedControlRect(LPRECT lprect) const;
