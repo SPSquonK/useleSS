@@ -485,7 +485,7 @@ private:
 	int		m_nTutorialState;
 public:
 	[[nodiscard]] LONG	GetFlightLv() const	{	return ( GetLevel() >= 20? 1: 0 );		}
-	[[depecrated]] void	SetFlightLv( LONG nFlightLv )	{}
+	[[deprecated]] void	SetFlightLv( LONG nFlightLv )	{}
 	int		GetTutorialState( void )	{	return m_nTutorialState;	}
 	void	SetTutorialState( int nTutorialState )	{	m_nTutorialState	= nTutorialState;	}
 

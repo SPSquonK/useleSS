@@ -20,7 +20,8 @@
 #pragma warning(disable: 4996)
 
 // Other things
-#pragma warning(error: 4045 4098 4138 4146 4156 4179 )
+#pragma warning(error: 4045 4098 4138 4146 4156 4179 5030 5222)
+
 
 namespace std_ {
   // Overloaded helper for std::visit. Should be in std but for some reason
