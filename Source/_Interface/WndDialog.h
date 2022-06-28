@@ -1,42 +1,46 @@
-#ifndef __WNDDIALOG2__H
-#define __WNDDIALOG2__H
+#pragma once
 
-class CWndAnswer : public CWndButton
-{
-public:
-	LPVOID m_pWordButton;
-};
+#include <array>
 
 class CWndDialog : public CWndNeuz 
 { 
-	CWndAnswer* m_apWndAnswer[ 6 ];
+public:
+	struct WORDBUTTON {
+		BOOL bStatus;
+		CRect rect;
+		TCHAR szWord[64];
+		TCHAR szKey[64];
+		DWORD dwParam;
+		DWORD dwParam2;
+		int nLinkIndex; // Index to concatenate if word is broken by a newline
+	};
+
+	class CWndAnswer : public CWndButton {
+	public:
+		const WORDBUTTON * m_pWordButton;
+	};
+
+private:
+	std::array<std::unique_ptr<CWndAnswer>, 6> m_apWndAnswer;
+
 public: 
 	CTimer m_timer;
 	CTexture m_texChar;
-	BOOL m_bWordButtonEnable;
-	int m_nWordButtonNum;
-	int m_nKeyButtonNum;
-	int m_nContextButtonNum;
-	int m_nNewQuestListNumber;
-	int m_nCurrentQuestListNumber;
-	int m_nSelectKeyButton;
+	BOOL m_bWordButtonEnable = FALSE;
+	int m_nWordButtonNum = 0;
+	int m_nKeyButtonNum  = 0;
+	int m_nContextButtonNum = 0;
+	int m_nNewQuestListNumber = 0;
+	int m_nCurrentQuestListNumber = 0;
+	int m_nSelectKeyButton = - 1;
 	CUIntArray m_aContextMark[ 32 ];
-	struct WORDBUTTON 
-	{
-		BOOL bStatus;
-		CRect rect; 
-		TCHAR szWord[ 64 ];
-		TCHAR szKey[ 64 ];
-		DWORD dwParam;
-		DWORD dwParam2;
-		int nLinkIndex; // 줄바꿈으로 단어가 끊어진 경우 연결하기 위한 인덱스 
-	};
+
 	WORDBUTTON m_aWordButton[ 32 ];
 	WORDBUTTON m_aKeyButton[ 32 ];
 	WORDBUTTON m_aContextButton[ 32 ];
 	CEditString m_string;
 
-	DWORD m_dwQuest;// context 버튼에서 사용함 
+	DWORD m_dwQuest = 0;// context 버튼에서 사용함 
 	BOOL m_bSay;
 	int m_nCurArray;
 	CPtrArray m_strArray;
@@ -45,13 +49,13 @@ public:
 private:
 	CWndListBox m_WndNewQuestListBox;
 	CWndListBox m_WndCurrentQuestListBox;
-	CTexture* m_pNewQuestListIconTexture;
-	CTexture* m_pExpectedQuestListIconTexture;
-	CTexture* m_pCurrentQuestListIconTexture;
-	CTexture* m_pCompleteQuestListIconTexture;
+	CTexture* m_pNewQuestListIconTexture = nullptr;
+	CTexture* m_pExpectedQuestListIconTexture = nullptr;
+	CTexture* m_pCurrentQuestListIconTexture = nullptr;
+	CTexture* m_pCompleteQuestListIconTexture = nullptr;
 public:
 	 
-	CWndDialog(); 
+	CWndDialog() = default;
 	~CWndDialog(); 
 
 	void RemoveAllKeyButton();
@@ -90,4 +94,4 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnMouseWndSurface( CPoint point);
 }; 
-#endif
+

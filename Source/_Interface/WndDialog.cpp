@@ -16,33 +16,16 @@
   WndId : APP_DIALOG - Dialog
 ****************************************************/
 
-CWndDialog::CWndDialog() 
-{ 
-	m_nWordButtonNum = 0;
-	m_nKeyButtonNum = 0;
-	m_nContextButtonNum = 0;
-	m_nNewQuestListNumber = 0;
-	m_nCurrentQuestListNumber = 0;
-	m_nSelectKeyButton = -1;
-	m_pNewQuestListIconTexture = NULL;
-	m_pExpectedQuestListIconTexture = NULL;
-	m_pCurrentQuestListIconTexture = NULL;
-	m_pCompleteQuestListIconTexture = NULL;
-	m_bWordButtonEnable = FALSE;
-	m_dwQuest = 0;
-	ZeroMemory( m_apWndAnswer, sizeof( m_apWndAnswer ) );
-} 
 CWndDialog::~CWndDialog() 
 { 
-	for( int i = 0; i < m_strArray.GetSize(); i++ )
-	{
-		CEditString* pEditString = (CEditString*) m_strArray.GetAt( i );
-		safe_delete( pEditString );
+	for (int i = 0; i < m_strArray.GetSize(); i++) {
+		CEditString * pEditString = (CEditString *)m_strArray.GetAt(i);
+		safe_delete(pEditString);
 	}
-	for( int i = 0; i < 6; i++ )
-		SAFE_DELETE( m_apWndAnswer[ i ] )
-	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetWndBase( APP_QUEST_EX_LIST );
-	if( pWndQuest ) pWndQuest->Update();
+	
+	if (CWndQuest * pWndQuest = CWndBase::GetWndBase<CWndQuest>(APP_QUEST_EX_LIST)) {
+		pWndQuest->Update();
+	}
 } 
 BOOL CWndDialog::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 {
@@ -798,8 +781,9 @@ void CWndDialog::MakeAnswerButton()
 		CString strTexture;
 		int nWndId = 0;
 		int j = 0;
-		for( int i = 0; i < 6; i++ )
-			SAFE_DELETE( m_apWndAnswer[ i ] )
+
+		std::ranges::generate(m_apWndAnswer, [] { return nullptr; });
+
 		for( int i = 0; i < m_nWordButtonNum; i++ )
 		{
 			WORDBUTTON* pWordButton = &m_aWordButton[ i ];
@@ -829,11 +813,11 @@ void CWndDialog::MakeAnswerButton()
 			}
 			if(	nWndId )
 			{
-				m_apWndAnswer[ j ] = new CWndAnswer;
+				m_apWndAnswer[ j ] = std::make_unique<CWndAnswer>();
 				m_apWndAnswer[ j ]->Create( "", WBS_CHILD, rect, this, nWndId );
 				m_apWndAnswer[ j ]->SetTexture( D3DDEVICE, MakePath( DIR_THEME, strTexture ), 1 );
 				m_apWndAnswer[ j ]->FitTextureSize();
-				m_apWndAnswer[ j ]->m_pWordButton = (WORDBUTTON*)	pWordButton;
+				m_apWndAnswer[ j ]->m_pWordButton = pWordButton;
 				j++;
 			}
 			x += 90;
@@ -879,7 +863,7 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	case WIDC_CANCEL:
 		{
 			CWndAnswer* pWndAnswer = (CWndAnswer*)pLResult;
-			WORDBUTTON* pWordButton = (WORDBUTTON*)pWndAnswer->m_pWordButton;
+			const WORDBUTTON* pWordButton = pWndAnswer->m_pWordButton;
 			BeginText();
 			RunScript( pWordButton->szKey,  pWordButton->dwParam,  pWordButton->dwParam2 );
 			MakeKeyButton();
