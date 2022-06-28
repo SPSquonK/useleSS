@@ -1020,11 +1020,7 @@ void CMover::EquipAble::No::Display(CMover & mover) const {
 		if (andString.GetLength() == 0) {
 			user.AddDefinedText(tooltip.value());
 		} else {
-			static_cast<CUser &>(mover).SendSnapshotThisId<
-				SNAPSHOTTYPE_DEFINEDTEXT, DWORD, const char *
-			>(
-				tooltip.value(), andString.GetString()
-				);
+			static_cast<CUser &>(mover).AddDefinedTextAlreadyFormatted(tooltip.value(), andString.GetString());
 		}
 	}
 #endif
