@@ -2,6 +2,7 @@
 #include "AppDefine.h"
 #include "WndCommand.h"
 #include "FuncTextCmd.h"
+#include <boost/range/adaptor/indexed.hpp>
 
 void CWndCommand::OnDraw( C2DRender* p2DRender ) {
 	CWndListBox::OnDraw( p2DRender );
@@ -17,12 +18,11 @@ void CWndCommand::DrawKoreanDescription(C2DRender * p2DRender) {
 	CPoint pt(3, 3);
 	pt.y -= (nFontHeight)*m_wndScrollBar.GetScrollPos();
 	
-	for (int i = 0; i < m_listItemArray.GetSize(); i++) {
-		LISTITEM * pListItem = (LISTITEM *) m_listItemArray.GetAt(i);
+	for (const auto [i, pListItem] : m_listItemArray | boost::adaptors::indexed(0)) {
 		CPoint point = GetMousePoint();
 		CRect rectHittest = CRect(0, pt.y - 3, 0 + rect.Width(), pt.y + nFontHeight - 3);
 		if (rectHittest.PtInRect(point)) {
-			const TextCmdFunc * pTextCmdFunc = (const TextCmdFunc *)pListItem->m_dwData;
+			const TextCmdFunc * pTextCmdFunc = reinterpret_cast<const TextCmdFunc *>(pListItem.m_dwData);
 			CPoint point2 = point;
 			ClientToScreen(&point2);
 			ClientToScreen(&rectHittest);
