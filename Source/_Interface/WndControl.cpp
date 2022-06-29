@@ -1874,25 +1874,6 @@ BOOL CWndListBox::GetItemValidity(int nIndex) {
 	return m_listItemArray[nIndex].m_bIsValid;
 }
 
-int CWndListBox::SetItemData2(int nIndex, DWORD dwItemData) {
-	if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_listItemArray.size())) {
-		return LB_ERR;
-	}
-
-	LISTITEM & lpListItem = m_listItemArray[nIndex];
-	lpListItem.m_dwData2 = dwItemData;
-	return 0;
-}
-int CWndListBox::SetItemValidity( int nIndex, BOOL bValidity ) {
-	if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_listItemArray.size())) {
-		return LB_ERR;
-	}
-
-	LISTITEM & lpListItem = m_listItemArray[nIndex];
-	lpListItem.m_bIsValid = bValidity;
-	return 0;
-}
-
 const CRect & CWndListBox::GetItemRect(int nIndex) const {
 	const LISTITEM & lpListItem = m_listItemArray[nIndex];
 	return lpListItem.m_rect;
@@ -4444,7 +4425,7 @@ void CWndComboBox::OpenListBox( void )
 	m_wndListBox.AdjustWndBase();
 	m_wndListBox.SetFocus();
 }
-#ifdef __IMPROVE_MAP_SYSTEM
+
 DWORD CWndComboBox::GetSelectedItemData( void ) const
 {
 	int nSelectedListNumber = m_wndListBox.GetCurSel();
@@ -4466,4 +4447,3 @@ int CWndComboBox::GetListBoxSize( void ) const
 {
 	return m_wndListBox.GetCount();
 }
-#endif // __IMPROVE_MAP_SYSTEM

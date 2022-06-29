@@ -734,8 +734,6 @@ public:
 	int   SetItemDataPtr(int nIndex,void* pData);
 	DWORD GetItemData2( int nIndex ) const;
 	BOOL GetItemValidity( int nIndex );
-	int SetItemData2( int nIndex,DWORD dwItemData );
-	int SetItemValidity( int nIndex, BOOL bValidity );
 	const CRect& GetItemRect( int nIndex ) const;
 	void  GetText(int nIndex,CString& rString) const;
 	int   GetTextLen(int nIndex) const;
@@ -1154,21 +1152,15 @@ public:
 	int SetItemData(int nIndex, DWORD dwItemData);
 	void* GetItemDataPtr(int nIndex) const;
 	int SetItemDataPtr(int nIndex, void* pData);
-#ifdef __IMPROVE_MAP_SYSTEM
+
 	DWORD GetSelectedItemData( void ) const;
 	void GetListBoxText( int nIndex, CString& strString ) const;
 	int GetListBoxTextLength( int nIndex ) const;
 	int GetListBoxSize( void ) const;
-#else // __IMPROVE_MAP_SYSTEM
-	int GetLBText(int nIndex, LPTSTR lpszText) const;
-	void GetLBText(int nIndex, CString& rString) const;
-	int GetLBTextLen(int nIndex) const;
-#endif // __IMPROVE_MAP_SYSTEM
 
 	int SetItemHeight(int nIndex, UINT cyItemHeight);
 	int GetItemHeight(int nIndex) const;
 	int SetExtendedUI(BOOL bExtended = TRUE);
-	BOOL GetExtendedUI() const;
 	void GetDroppedControlRect(LPRECT lprect) const;
 	BOOL GetDroppedState() const;
 

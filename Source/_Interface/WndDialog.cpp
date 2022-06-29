@@ -995,11 +995,12 @@ void CWndDialog::AddQuestList( CWndListBox& pWndListBox, int& nQuestListNumber, 
 	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuest );
 	if( pQuestProp )
 		strTitleWord.Format( _T( "[#b%d#nb~#b%d#nb ] #b%s#nb" ), pQuestProp->m_nBeginCondLevelMin, pQuestProp->m_nBeginCondLevelMax, lpszWord );
-	pWndListBox.AddString( strTitleWord );
-	if( strcmp( lpszKey, _T( "QUEST_NEXT_LEVEL" ) ) == 0 )
-		pWndListBox.SetItemValidity( nQuestListNumber, FALSE );
-	pWndListBox.SetKeyString( nQuestListNumber, lpszKey );
-	pWndListBox.SetItemData( nQuestListNumber, dwParam );
-	pWndListBox.SetItemData2( nQuestListNumber, dwQuest );
+	CWndListBox::LISTITEM & item = pWndListBox.AddString(strTitleWord);
+	if (strcmp(lpszKey, _T("QUEST_NEXT_LEVEL")) == 0)
+		item.m_bIsValid = FALSE;
+
+	item.m_strKey = lpszKey;
+	item.m_dwData = dwParam;
+	item.m_dwData2 = dwQuest;
 	++nQuestListNumber;
 }
