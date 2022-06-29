@@ -1883,17 +1883,6 @@ int CWndListBox::SetItemData2(int nIndex, DWORD dwItemData) {
 	lpListItem.m_dwData2 = dwItemData;
 	return 0;
 }
-
-int CWndListBox::SetItemData2Ptr(int nIndex, void * pData) {
-	if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_listItemArray.size())) {
-		return LB_ERR;
-	}
-
-	LISTITEM & lpListItem = m_listItemArray[nIndex];
-	lpListItem.m_dwData2 = reinterpret_cast<DWORD>(pData);
-	return 0;
-}
-
 int CWndListBox::SetItemValidity( int nIndex, BOOL bValidity ) {
 	if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_listItemArray.size())) {
 		return LB_ERR;
@@ -1940,14 +1929,14 @@ int CWndListBox::SetCurSel(int nSelect) {
 	return 0;
 }
 
-int CWndListBox::AddString(LPCTSTR lpszItem)
+CWndListBox::LISTITEM & CWndListBox::AddString(LPCTSTR lpszItem)
 {
 	LISTITEM & lpListItem = m_listItemArray.emplace_back();;
 	lpListItem.m_strWord = lpszItem;
 	const auto rect = GetClientRect();
 	lpListItem.m_strWord.Init( m_pFont, &rect );
 	lpListItem.m_strWord.SetParsingString( lpszItem, m_nFontColor, 0x00000000, 0, 0x00000001, TRUE );
-	return static_cast<int>(m_listItemArray.size() - 1);
+	return lpListItem;
 }
 
 int CWndListBox::DeleteString(UINT nIndex)
@@ -4364,13 +4353,14 @@ BOOL CWndComboBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return TRUE;
 }
 // manipulating listbox items
-int CWndComboBox::AddString( LPCTSTR lpszString )
+CWndListBox::LISTITEM & CWndComboBox::AddString( LPCTSTR lpszString )
 {
-	int nNum = m_wndListBox.AddString( lpszString );
+	CWndListBox::LISTITEM & result = m_wndListBox.AddString( lpszString );
+	int nNum = m_wndListBox.GetCount();
 	CRect rect = m_wndListBox.GetWindowRect( TRUE );
-	rect.bottom = rect.top + ( ( nNum + 1 ) * ( m_pFont->GetMaxHeight() + 3 ) ) + 8;
+	rect.bottom = rect.top + ( ( nNum ) * ( m_pFont->GetMaxHeight() + 3 ) ) + 8;
 	m_wndListBox.SetWndRect( rect );
-	return nNum;
+	return result;
 }
 int CWndComboBox::DeleteString( UINT nIndex )
 {

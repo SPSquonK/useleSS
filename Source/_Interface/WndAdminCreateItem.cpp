@@ -31,8 +31,8 @@ void CWndAdminCreateItem::OnInitialUpdate()
 		{
 			if( GetLanguage() != LANG_KOR && pItemProp->nVer >= 7 && pItemProp->bCharged == TRUE )
 				continue;
-			int nIndex = pListBox->AddString( MakeName( pItemProp ) );
-			pListBox->SetItemDataPtr( nIndex, pItemProp );
+			CWndListBox::LISTITEM & item = pListBox->AddString(MakeName(pItemProp));
+			item.m_dwData = reinterpret_cast<DWORD>(pItemProp);
 		}
 	}
 	CWndComboBox* pWndItemKind = (CWndComboBox*)GetDlgItem( WIDC_ITEM_KIND );
@@ -41,36 +41,37 @@ void CWndAdminCreateItem::OnInitialUpdate()
 	CWndEdit* pWndLevel = (CWndEdit*)GetDlgItem( WIDC_LEVEL );
 	CStringArray strArray;
 	CScript::GetFindIdToArray( "IK2_", &strArray );
-	int nIndex = pWndItemKind->AddString( "ALL" );
-	pWndItemKind->SetItemData( nIndex, NULL_ID );
+	CWndListBox::LISTITEM & allKinds = pWndItemKind->AddString( "ALL" );
+	allKinds.m_dwData = NULL_ID;
 	for( int i = 0; i < strArray.GetSize(); i++ )
 	{
-		nIndex = pWndItemKind->AddString( strArray.GetAt( i ) );
+		CWndListBox::LISTITEM & kind = pWndItemKind->AddString( strArray.GetAt( i ) );
 		DWORD dwNum = CScript::GetDefineNum( strArray.GetAt( i ) );
-		pWndItemKind->SetItemData( nIndex, dwNum );
+		kind.m_dwData = dwNum;
 	}
 	pWndItemKind->m_wndListBox.SortListBox();
-	nIndex = pWndItemKind->m_wndListBox.FindString( 0, "ALL" );
+	int nIndex = pWndItemKind->m_wndListBox.FindString( 0, "ALL" );
 	pWndItemKind->SetCurSel( nIndex );
+	
 	strArray.RemoveAll();
 	CScript::GetFindIdToArray( "SEX_", &strArray );
 	for( int i = 0; i < strArray.GetSize(); i++ )
 	{
-		nIndex = pWndItemSex->AddString( strArray.GetAt( i ) );
+		CWndListBox::LISTITEM & sex = pWndItemSex->AddString( strArray.GetAt( i ) );
 		DWORD dwNum = CScript::GetDefineNum( strArray.GetAt( i ) );
-		pWndItemSex->SetItemData( nIndex, dwNum );
+		sex.m_dwData = dwNum;
 	}
 	pWndItemSex->SetCurSel( 2 );
 
 	strArray.RemoveAll();
 	CScript::GetFindIdToArray( "JOB_", &strArray );
-	nIndex = pWndItemJob->AddString( "ALL" );
-	pWndItemJob->SetItemData( nIndex, -1 );
+	CWndListBox::LISTITEM & allJobs = pWndItemKind->AddString("ALL");
+	allJobs.m_dwData = -1;
 	for( int i = 0; i < strArray.GetSize(); i++ )
 	{
-		nIndex = pWndItemJob->AddString( strArray.GetAt( i ) );
+		auto & itemJob = pWndItemJob->AddString( strArray.GetAt( i ) );
 		DWORD dwNum = CScript::GetDefineNum( strArray.GetAt( i ) );
-		pWndItemJob->SetItemData( nIndex, dwNum );
+		itemJob.m_dwData = dwNum;
 	}
 	pWndItemJob->m_wndListBox.SortListBox();
 	nIndex = pWndItemJob->m_wndListBox.FindString( 0, "ALL" );
@@ -143,8 +144,9 @@ BOOL CWndAdminCreateItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 					{
 						if( GetLanguage() != LANG_KOR && pItemProp->nVer >= 7 && pItemProp->bCharged == TRUE )
 							continue;
-						int nIndex = pListBox->AddString( MakeName( pItemProp ) );
-						pListBox->SetItemDataPtr( nIndex, pItemProp );
+
+						CWndListBox::LISTITEM & item = pListBox->AddString(MakeName(pItemProp));
+						item.m_dwData = reinterpret_cast<DWORD>(pItemProp);
 					}
 				}
 			}

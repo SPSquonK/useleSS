@@ -12190,19 +12190,17 @@ void CDPClient::OnGuildAddVote( CAr & ar )
 		if( pWndGuildVote )
 		{
 			CWndComboBox* pCombo = (CWndComboBox*)pWndGuildVote->GetDlgItem(WIDC_COMBOBOX1);
-
 			pCombo->ResetContent();
 
-			int nIndex = -1;
-			
-			for (auto it = pGuild->m_votes.begin(); it != pGuild->m_votes.end() ; ++it )
-			{
-				nIndex = pCombo->AddString( (*it)->GetTitle() );
-				pCombo->SetItemData( nIndex, (*it)->GetID() );
+			for (const CGuildVote * guildVote : pGuild->m_votes) {
+				auto & voteListItem = pCombo->AddString(guildVote->GetTitle());
+				voteListItem.m_dwData = guildVote->GetID();
 			}
 
-			pCombo->SetCurSel(nIndex);
-			pWndGuildVote->SelChange( pGuild, nIndex );
+			const int lastId = static_cast<int>(pGuild->m_votes.size()) - 1;
+
+			pCombo->SetCurSel(lastId);
+			pWndGuildVote->SelChange( pGuild, lastId);
 		}	 
 	}
 	else

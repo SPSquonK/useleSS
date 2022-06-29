@@ -556,8 +556,8 @@ void CWndSelectServer::OnInitialUpdate()
 	
 	for (CListedServers::Server & server : g_dpCertified.m_servers.GetServers()) {
 		if (server.lEnable != 0) {
-			int nIndex = pWndList->AddString(server.lpName);
-			pWndList->SetItemData(nIndex, reinterpret_cast<DWORD>(&server));
+			CWndListBox::LISTITEM & item = pWndList->AddString(server.lpName);
+			item.m_dwData = reinterpret_cast<DWORD>(&server);
 		}
 	}
 
@@ -743,8 +743,9 @@ void CWndSelectServer::DisplayChannels(CWndListBox & listBox, const std::span<CL
 
 		const auto r = std::format_to_n(lpString, std::size(lpString) - 1, "{}({})", channel.lpName, lpStrtmp);
 		*r.out = '\0';
-		int nIndex = listBox.AddString(lpString);
-		listBox.SetItemData(nIndex, reinterpret_cast<DWORD>(&channel));
+		
+		CWndListBox::LISTITEM & item = listBox.AddString(lpString);
+		item.m_dwData = reinterpret_cast<DWORD>(&channel);
 	}
 }
 

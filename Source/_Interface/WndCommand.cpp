@@ -38,7 +38,7 @@ void CWndCommand::OnInitialUpdate()
 { 
 	CWndListBox::OnInitialUpdate(); 
 
-	int nCount = 0, nIndex, nNum = 0;
+	int nCount = 0, nNum = 0;
 
 	for (const auto & func : g_textCmdFuncs) {
 		const TextCmdFunc * pTextCmdFunc = &func;
@@ -53,23 +53,26 @@ void CWndCommand::OnInitialUpdate()
 			if( ::GetLanguage() != LANG_KOR )
 				g_Option.m_nChatCommand = 2;
 
+			CWndListBox::LISTITEM * nIndex = nullptr;
+
 			switch( g_Option.m_nChatCommand )
 			{
 			default:
 			case 0:
-				nIndex = AddString( &(*pTextCmdFunc->m_pKrCommand) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pKrCommand) );
 				break;
 			case 1:
-				nIndex = AddString( &(*pTextCmdFunc->m_pKrAbbreviation) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pKrAbbreviation) );
 				break;
 			case 2:
-				nIndex = AddString( &(*pTextCmdFunc->m_pCommand) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pCommand) );
 				break;
 			case 3:
-				nIndex = AddString( &(*pTextCmdFunc->m_pAbbreviation) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pAbbreviation) );
 				break;
 			}
-			SetItemDataPtr( nIndex, (void *) (pTextCmdFunc) );
+			
+			nIndex->m_dwData = reinterpret_cast<DWORD>(pTextCmdFunc);
 			nNum++;
 		}
 		nCount++;

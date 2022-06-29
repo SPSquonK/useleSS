@@ -735,7 +735,6 @@ public:
 	DWORD GetItemData2( int nIndex ) const;
 	BOOL GetItemValidity( int nIndex );
 	int SetItemData2( int nIndex,DWORD dwItemData );
-	int SetItemData2Ptr( int nIndex,void* pData );
 	int SetItemValidity( int nIndex, BOOL bValidity );
 	const CRect& GetItemRect( int nIndex ) const;
 	void  GetText(int nIndex,CString& rString) const;
@@ -745,7 +744,7 @@ public:
 	int   SetCurSel(int nSelect);
 	int   GetScrollPos() {return m_wndScrollBar.GetScrollPos();};
 	void  SetScrollPos( int nPos, BOOL bRedraw = TRUE ) { m_wndScrollBar.SetScrollPos( nPos, bRedraw ); }	//gmpbigsun: added
-	int   AddString(LPCTSTR lpszItem);
+	LISTITEM & AddString(LPCTSTR lpszItem);
 	int   DeleteString(UINT nIndex);
 	void	SetString( int nIndex, LPCTSTR lpszItem );
 	const CString& GetString( int nIndex ) const;
@@ -1178,7 +1177,7 @@ public:
 	void ShowDropDown(BOOL bShowIt = TRUE);
 
 	// manipulating listbox items
-	int AddString(LPCTSTR lpszString);
+	CWndListBox::LISTITEM & AddString(LPCTSTR lpszString);
 	int DeleteString(UINT nIndex);
 	int InsertString(int nIndex, LPCTSTR lpszString);
 	void ResetContent();
