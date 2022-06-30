@@ -248,6 +248,8 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnSize(UINT nType, int cx, int cy);
+
+	void MouseWheel(short zDelta);
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -768,7 +770,6 @@ public:
 	virtual void OnRButtonUp(UINT nFlags, CPoint point);
 	virtual void OnRButtonDown(UINT nFlags, CPoint point);
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);
-	virtual void OnRButtonDblClk( UINT nFlags, CPoint point);
 	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL OnEraseBkgnd( C2DRender* p2DRender );
 	virtual	void PaintFrame( C2DRender* p2DRender );
@@ -776,6 +777,9 @@ public:
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 };
 // class CListCtrl  CButton
+
+
+#include "WndTListBox.hpp"
 
 /////////////////////////////////////////////////////////////////////////////
 // CListCtrl

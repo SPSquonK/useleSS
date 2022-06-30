@@ -1677,7 +1677,6 @@ void CWndListBox::PaintListBox(C2DRender* p2DRender,CPoint& pt)
 	for (auto [i, pListItem] : m_listItemArray | boost::adaptors::indexed(0)) {
 		int nScrollBarWidth = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetClientRect().Width() : 0;
 		
-		p2DRender->m_pFont->GetTextExtent_EditString(pListItem.m_strWord);
 		pListItem.m_rect.left = pt.x;
 		pListItem.m_rect.top = pt.y;
 		pListItem.m_rect.right = pt.x + m_rectWindow.Width() - nScrollBarWidth;
@@ -1809,29 +1808,27 @@ void CWndListBox::OnLButtonDblClk( UINT nFlags, CPoint point)
 		pt.y += m_nFontHeight;
 	}
 }
-void CWndListBox::OnRButtonDblClk( UINT nFlags, CPoint point)
-{
-}
-BOOL CWndListBox::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
-{
-	if( m_wndScrollBar.GetScrollPage() >= m_wndScrollBar.GetMaxScrollPos() )
-		return TRUE;
-	if( zDelta < 0 )
-	{
-		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()+1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() );
-	}
-	else
-	{
-		if( m_wndScrollBar.GetMinScrollPos() < m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()-1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMinScrollPos() );
-	}
-	
+
+BOOL CWndListBox::OnMouseWheel(UINT, const short zDelta, CPoint) {
+	m_wndScrollBar.MouseWheel(zDelta);
 	return TRUE;
+}
+
+void CWndScrollBar::MouseWheel(const short zDelta) {
+	if (GetScrollPage() >= GetMaxScrollPos())
+		return;
+
+	if (zDelta < 0) {
+		if (GetMaxScrollPos() - GetScrollPage() > GetScrollPos())
+			SetScrollPos(GetScrollPos() + 1);
+		else
+			SetScrollPos(GetMaxScrollPos() - GetScrollPage());
+	} else {
+		if (GetMinScrollPos() < GetScrollPos())
+			SetScrollPos(GetScrollPos() - 1);
+		else
+			SetScrollPos(GetMinScrollPos());
+	}
 }
 
 int CWndListBox::GetCount() const {

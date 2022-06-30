@@ -1,5 +1,6 @@
 #pragma once
 #include <exception>
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////////////////////
 // 윈도의 타이틀 바 
@@ -89,3 +90,29 @@ public:
 	void SetSizeMax();
 	void SetSizeWnd();
 };
+
+template<typename T, typename D>
+void CWndTListBox<T, D>::Replace(CWndNeuz & window, UINT listboxId) {
+	const auto itOldComponent = std::ranges::find_if(window.m_wndArrayTemp,
+		[&](const CWndBase * const component) {
+			return component.GetWndId() == listboxId;
+		}
+	);
+
+	if (itOldComponent != window.m_wndArrayTemp.end()) {
+		itOldComponent->Destroy();
+	}
+
+	CWndTListBox<T, D> * e = new CWndTListBox<T, D>();
+
+	WNDAPPLET * lpWndApplet = m_resMng.GetAt(window.GetWndId());
+	WNDCTRL * pWndCtrl = lpWndApplet->GetAt(listboxId);
+
+	const DWORD dwWndStyle = lpWndCtrl->dwWndStyle;
+	e->Create(dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId);
+	if (lpWndCtrl->strTexture.IsEmpty() == FALSE)
+		e->m_strTexture = lpWndCtrl->strTexture;
+	e->m_bTile = (lpWndCtrl->bTile != FALSE);
+
+	window.m_wndArrayTemp.Add(e);
+}
