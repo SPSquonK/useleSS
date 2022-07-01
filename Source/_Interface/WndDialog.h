@@ -54,7 +54,6 @@ public:
 		CEditString theEditStringClassIsSoBad;
 		CString questName;
 		CString strKey;
-		DWORD dwParam;
 		QuestId questId;
 	};
 
@@ -115,12 +114,11 @@ public:
 	void UpdateButtonEnable();
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	void RunScript( const char* szKey, DWORD dwParam, DWORD dwQuest );
-	void AddNewQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
-	void AddCurrentQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
+	void AddQuestInList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest, bool isNewQuest);
 	void MakeQuestKeyButton( const CString& rstrKeyButton );
 
 private:
-	std::pair<ListedQuest, bool> MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest);
+	std::pair<ListedQuest, bool> MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest);
 
 public:
 

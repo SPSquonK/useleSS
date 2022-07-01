@@ -873,7 +873,7 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				m_bSay = FALSE;
 				m_newQuestListBox.SetVisible(FALSE);
 				BeginText();
-				RunScript(quest->strKey, quest->dwParam, quest->questId.get());
+				RunScript(quest->strKey, 0, quest->questId.get());
 				MakeKeyButton();
 				UpdateButtonEnable();
 			}
@@ -886,7 +886,7 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			m_bSay = FALSE;
 			m_currentQuestListBox.SetVisible(FALSE);
 			BeginText();
-			RunScript(quest->strKey, quest->dwParam, quest->questId.get());
+			RunScript(quest->strKey, 0, quest->questId.get());
 			MakeKeyButton();
 			UpdateButtonEnable();
 		}
@@ -896,16 +896,18 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-void CWndDialog::AddNewQuestList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest) {
-	MakeQuestKeyButton(prj.GetText(TID_GAME_NEW_QUEST));
-	const auto [elem, isValid] = MakeListedQuest(lpszWord, lpszKey, dwParam, dwQuest);
-	m_newQuestListBox.Add(elem).isValid = isValid;
-}
+void CWndDialog::AddQuestInList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const QuestId dwQuest, const bool isNewQuest) {
+	const auto [elem, isValid] = MakeListedQuest(lpszWord, lpszKey, dwQuest);
 
-void CWndDialog::AddCurrentQuestList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest) {
-	MakeQuestKeyButton(prj.GetText(TID_GAME_CURRENT_QUEST));
-	const auto [elem, isValid] = MakeListedQuest(lpszWord, lpszKey, dwParam, dwQuest);
-	m_currentQuestListBox.Add(elem).isValid = isValid;
+	// TODO: we should check if the quest is not already listed
+
+	if (isNewQuest) {
+		MakeQuestKeyButton(prj.GetText(TID_GAME_NEW_QUEST));
+		m_newQuestListBox.Add(elem).isValid = isValid;
+	} else {
+		MakeQuestKeyButton(prj.GetText(TID_GAME_CURRENT_QUEST));
+		m_currentQuestListBox.Add(elem).isValid = isValid;
+	}
 }
 
 void CWndDialog::MakeQuestKeyButton( const CString& rstrKeyButton )
@@ -984,7 +986,7 @@ void CWndDialog::CurrentQuestDisplayer::Render(
 }
 
 
-std::pair<CWndDialog::ListedQuest, bool> CWndDialog::MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest )
+std::pair<CWndDialog::ListedQuest, bool> CWndDialog::MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const QuestId dwQuest)
 {
 	//for( int i = 0; i < nQuestListNumber; ++i )
 	//{
@@ -995,7 +997,7 @@ std::pair<CWndDialog::ListedQuest, bool> CWndDialog::MakeListedQuest(const LPCTS
 	CWndDialog::ListedQuest listed;
 
 	CEditString strTitleWord = _T( "" );
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuest );
+	const QuestProp* pQuestProp = dwQuest.GetProp();
 	if( pQuestProp )
 		strTitleWord.Format( _T( "[#b%d#nb~#b%d#nb ] #b%s#nb" ), pQuestProp->m_nBeginCondLevelMin, pQuestProp->m_nBeginCondLevelMax, lpszWord );
 	
@@ -1005,8 +1007,7 @@ std::pair<CWndDialog::ListedQuest, bool> CWndDialog::MakeListedQuest(const LPCTS
 	// ok
 	const bool isValid = lpszKey != std::string_view(_T("QUEST_NEXT_LEVEL"));
 	listed.strKey = lpszKey;
-	listed.dwParam = dwParam;
-	listed.questId = QuestId(dwQuest);
+	listed.questId = dwQuest;
 
 	return std::make_pair(listed, isValid);
 }
