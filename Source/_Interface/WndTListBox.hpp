@@ -84,8 +84,6 @@ private:
   DWORD m_selectColor = WndTListBox::Color::Select;
 
 public:
-  static void Replace(CWndNeuz & window, UINT listboxId);
-
   CWndTListBox();
 
   void Create(DWORD dwListBoxStyle, RECT & rect, CWndBase * pParentWnd, UINT nID);
@@ -164,8 +162,8 @@ void CWndTListBox<T, D>::OnInitialUpdate() {
   m_wndScrollBar.Create(WBS_DOCKING | WBS_VERT, rect, this, 1000);
   m_wndScrollBar.SetVisible(IsWndStyle(WBS_VSCROLL));
 
-  if (GetFontHeight() == 0) {
-    SetLineHeight(1);
+  if (GetLineHeight() == 0) {
+    SetLineSpace(1);
   }
 }
 

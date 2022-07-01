@@ -89,25 +89,29 @@ public:
 
 	void SetSizeMax();
 	void SetSizeWnd();
+
+	template<typename T, typename D>
+		requires (WndTListBox::DisplayerOf<T, D>)
+	void ReplaceListBox(UINT listboxId);
 };
 
 template<typename T, typename D>
 	requires (WndTListBox::DisplayerOf<T, D>)
-void CWndTListBox<T, D>::Replace(CWndNeuz & window, UINT listboxId) {
-	const auto itOldComponent = std::ranges::find_if(window.m_wndArrayTemp,
-		[&](const CWndBase * const component) {
-			return component.GetWndId() == listboxId;
+void CWndNeuz::ReplaceListBox(UINT listboxId) {
+	for (int i = 0; i != m_wndArrayTemp.GetSize(); ++i) {
+		CWndBase * oldComponent = (CWndBase *) m_wndArrayTemp.GetAt(i);
+		if (oldComponent->GetWndId() == listboxId) {
+			RemoveWnd(oldComponent);
+			oldComponent->Destroy(true);
+			m_wndArrayTemp.RemoveAt(i);
+			break;
 		}
-	);
-
-	if (itOldComponent != window.m_wndArrayTemp.end()) {
-		itOldComponent->Destroy();
 	}
 
 	CWndTListBox<T, D> * e = new CWndTListBox<T, D>();
 
-	WNDAPPLET * lpWndApplet = m_resMng.GetAt(window.GetWndId());
-	WNDCTRL * pWndCtrl = lpWndApplet->GetAt(listboxId);
+	WNDAPPLET * lpWndApplet = m_resMng.GetAt(GetWndId());
+	WNDCTRL * lpWndCtrl = lpWndApplet->GetAt(listboxId);
 
 	const DWORD dwWndStyle = lpWndCtrl->dwWndStyle;
 	e->Create(dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId);
@@ -115,5 +119,5 @@ void CWndTListBox<T, D>::Replace(CWndNeuz & window, UINT listboxId) {
 		e->m_strTexture = lpWndCtrl->strTexture;
 	e->m_bTile = (lpWndCtrl->bTile != FALSE);
 
-	window.m_wndArrayTemp.Add(e);
+	m_wndArrayTemp.Add(e);
 }
