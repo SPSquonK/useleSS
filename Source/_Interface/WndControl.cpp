@@ -1863,10 +1863,6 @@ int CWndListBox::SetItemDataPtr(int nIndex, void * pData) {
 	return 0;
 }
 
-DWORD CWndListBox::GetItemData2(int nIndex) const {
-	return m_listItemArray[nIndex].m_dwData2;
-}
-
 BOOL CWndListBox::GetItemValidity(int nIndex) {
 	return m_listItemArray[nIndex].m_bIsValid;
 }

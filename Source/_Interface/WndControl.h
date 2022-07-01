@@ -704,7 +704,6 @@ public:
 		BOOL        m_bIsValid   = TRUE;
 		DWORD       m_dwData     = 0;
 		CString     m_strKey     = _T("");
-		DWORD       m_dwData2    = 0;
 	};
 
 protected:
@@ -734,7 +733,6 @@ public:
 	void* GetItemDataPtr(int nIndex) const;
 	int   SetItemData(int nIndex,DWORD dwItemData);
 	int   SetItemDataPtr(int nIndex,void* pData);
-	DWORD GetItemData2( int nIndex ) const;
 	BOOL GetItemValidity( int nIndex );
 	const CRect& GetItemRect( int nIndex ) const;
 	void  GetText(int nIndex,CString& rString) const;
