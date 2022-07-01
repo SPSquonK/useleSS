@@ -175,7 +175,7 @@ CWndTListBox<T, D>::ViewedItems CWndTListBox<T, D>::UpdateRects() {
 
     m_listed[i].rect = allocatedRect;
 
-    pt.y = allocatedRect.top;
+    pt.y = allocatedRect.bottom;
   }
   const int spanEnd = i;
 

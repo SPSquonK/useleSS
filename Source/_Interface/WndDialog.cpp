@@ -1003,7 +1003,7 @@ std::pair<CWndDialog::ListedQuest, bool> CWndDialog::MakeListedQuest(const LPCTS
 	listed.questName = strTitleWord.GetString();
 
 	// ok
-	const bool isValid = lpszKey == std::string_view(_T("QUEST_NEXT_LEVEL"));
+	const bool isValid = lpszKey != std::string_view(_T("QUEST_NEXT_LEVEL"));
 	listed.strKey = lpszKey;
 	listed.dwParam = dwParam;
 	listed.questId = QuestId(dwQuest);
