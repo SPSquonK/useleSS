@@ -12893,179 +12893,101 @@ BOOL CGuildCombatSelectionClearMessageBox::OnChildNotify( UINT message, UINT nID
 } 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-// ���? �Ĺ� ������ ����
-CWndGuildCombatSelection::CWndGuildCombatSelection() 
-{
-	m_vecGuildList.clear();
-	m_mapSelectPlayer.clear();
-	m_vecSelectPlayer.clear();
-	m_uidDefender = -1;	
-
-	nMaxJoinMember = 0;
-	nMaxWarMember  = 0;
+GuildCombatPlayer::GuildCombatPlayer(u_long playerId)
+	: playerId(playerId) {
+	PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
+	display.Format("Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[pPlayerData->data.nJob].szName);
 }
 
-void CWndGuildCombatSelection::SetDefender( u_long uiPlayer ) 
-{
+void GuildCombatPlayer::Render(
+	C2DRender * p2DRender, CRect rect,
+	DWORD color, const WndTListBox::DisplayArgs & misc
+) const {
+	p2DRender->TextOut(rect.left, rect.top, display.GetString(), color);
+}
+
+// ���? �Ĺ� ������ ����
+CWndGuildCombatSelection::CWndGuildCombatSelection() {
+	m_uidDefender = -1;
+
+	nMaxJoinMember = 0;
+	nMaxWarMember = 0;
+}
+
+CWndTListBox<GuildCombatPlayer> & CWndGuildCombatSelection::SelectablePlayers() {
+	return *GetDlgItem<CWndTListBox<GuildCombatPlayer>>(WIDC_LISTBOX1);
+}
+
+CWndTListBox<GuildCombatPlayer> & CWndGuildCombatSelection::CombatPlayers() {
+	return *GetDlgItem<CWndTListBox<GuildCombatPlayer>>(WIDC_LISTBOX2);
+}
+
+void CWndGuildCombatSelection::SetDefender(const u_long uiPlayer) {
 	m_uidDefender = uiPlayer;
 }
 
-void CWndGuildCombatSelection::AddCombatPlayer( u_long uiPlayer ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-	m_vecSelectPlayer.push_back( uiPlayer );
+void CWndGuildCombatSelection::SetMemberSize(int nMaxJoin, int nMaxWar) {
+	nMaxJoinMember = nMaxJoin;
+	nMaxWarMember = nMaxWar;
 
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	
-	const auto i = pGuild->m_mapPMember.find( uiPlayer );
-	CGuildMember* pMember = i->second;
-				
+	CWndBase * pWndStatic = GetDlgItem(WIDC_STATIC3);
+
 	CString str;
-	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-	pWndList->AddString( str );			
-} 
-
-void CWndGuildCombatSelection::SetMemberSize( int nMaxJoin,  int nMaxWar ) 
-{ 
-	nMaxJoinMember = nMaxJoin; 
-	nMaxWarMember  = nMaxWar; 
-
-	CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem( WIDC_STATIC3 );
-	
-	CString str;
-	str.Format( prj.GetText(TID_GAME_GUILDCOMBAT_OFFER_INFO), nMaxWarMember, nMaxJoinMember );
-	pWndStatic->SetTitle( str );	
+	str.Format(prj.GetText(TID_GAME_GUILDCOMBAT_OFFER_INFO), nMaxWarMember, nMaxJoinMember);
+	pWndStatic->SetTitle(str);
 }
 
+void CWndGuildCombatSelection::UpDateGuildListBox() {
+	auto & selectableListbox = SelectablePlayers();
+	selectableListbox.ResetContent();
 
-void CWndGuildCombatSelection::AddGuildPlayer( u_long uiPlayer ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-	m_vecGuildList.push_back( uiPlayer );
-	
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	
-	const auto i = pGuild->m_mapPMember.find( uiPlayer );
-	CGuildMember* pMember = i->second;
-				
-	CString str;
-	PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-	pWndList->AddString( str );			
-} 
+	CGuild * pGuild = g_pPlayer->GetGuild();
+	if (!pGuild) return;
 
-void CWndGuildCombatSelection::RemoveGuildPlayer( int nIndex ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-	
-	pWndList->DeleteString( nIndex );
-	m_vecGuildList.erase( m_vecGuildList.begin() + nIndex );
-} 
+	for (const u_long playerId : pGuild->m_mapPMember | std::views::keys) {
+		PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
+		if (pPlayerData->data.uLogin <= 0) continue;
 
-void CWndGuildCombatSelection::RemoveCombatPlayer( int nIndex ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-	
-	pWndList->DeleteString( nIndex );
+		selectableListbox.Add(GuildCombatPlayer(playerId));
+	}
+}
 
-	if( m_vecSelectPlayer[nIndex] == m_uidDefender )
-		SetDefender( -1 );
+void CWndGuildCombatSelection::ReceiveLineup(const std::vector<u_long> & members, u_long defenderId) {
+	CWndTListBox<GuildCombatPlayer> & connectedPlayers = CombatPlayers();
+	CWndTListBox<GuildCombatPlayer> & connectedMmebers = SelectablePlayers();
+	connectedPlayers.ResetContent();
 
-	m_vecSelectPlayer.erase( m_vecSelectPlayer.begin() + nIndex );	
-} 
+	for (const u_long member : members) {
+		connectedPlayers.Add(GuildCombatPlayer(member));
 
-
-void CWndGuildCombatSelection::UpDateGuildListBox() 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-
-	if( pWndList )
-	{
-		pWndList->ResetContent();
-		
-		m_vecGuildList.clear();
-		m_mapSelectPlayer.clear();
-
-		CGuild* pGuild = g_pPlayer->GetGuild();
-		if( pGuild )
-		{
-			// �������� ����
-			CGuildMember* pMember;
-			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-			{
-				pMember		= i->second;
-				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-				if( pPlayerData->data.uLogin > 0 )
-					m_mapSelectPlayer.emplace( pPlayerData->data.nLevel, pMember);
-			}
-
-			// ����Ʈ�� �߰�			
-			CString str;
-			for( auto j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
-			{
-				pMember		= j->second;		
-				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-				if( pPlayerData->data.uLogin > 0 )
-				{
-					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
-					pWndList->AddString( str );	
-					m_vecGuildList.push_back( pMember->m_idPlayer );
-				}
-			}
+		const auto old = connectedMmebers.Find(GuildCombatPlayer::ById(member));
+		if (old != -1) {
+			connectedMmebers.Erase(old);
 		}
 	}
+
+	m_uidDefender = defenderId;
 }
 
-u_long CWndGuildCombatSelection::FindCombatPlayer(u_long uiPlayer)
-{
-	for( int i = 0; i < (int)( m_vecSelectPlayer.size() ); i++ )
-	{
-		if( m_vecSelectPlayer[i] == uiPlayer )
-			return m_vecSelectPlayer[i];
-	}
-	
-	return -1;
-}
+void CWndGuildCombatSelection::OnDraw( C2DRender* p2DRender )  {
+	if (CWndBase * pWndStatic = GetDlgItem(WIDC_BUTTON8)) {
+		pWndStatic->EnableWindow(FALSE);
 
-u_long CWndGuildCombatSelection::FindGuildPlayer(u_long uiPlayer)
-{
-	for( int i = 0; i < (int)( m_vecGuildList.size() ); i++ )
-	{
-		if( m_vecGuildList[i] == uiPlayer )
-			return m_vecGuildList[i];
-	}
-	
-	return -1;
-}
+		if (m_uidDefender <= 0) {
+			pWndStatic->SetVisible(FALSE);
+		} else {
+			auto & combatPlayers = CombatPlayers();
 
-void CWndGuildCombatSelection::OnDraw( C2DRender* p2DRender ) 
-{
-	CWndButton* pWndStatic = (CWndButton*)GetDlgItem( WIDC_BUTTON8 );
-
-	if( pWndStatic )
-	{
-		pWndStatic->EnableWindow( FALSE );
-
-		if( m_uidDefender <= 0 )
-		{
-			pWndStatic->SetVisible( FALSE );
-		}
-		else
-		{
-			pWndStatic->SetVisible( TRUE );
-
-			int i = NULL;
-			for( ; i<(int)( m_vecSelectPlayer.size() ); i++ )
-			{
-				if( m_uidDefender == m_vecSelectPlayer[i] )
-					break;
+			const int position = combatPlayers.Find(
+				GuildCombatPlayer::ById(m_uidDefender)
+			);
+			
+			if (position >= 0) {
+				pWndStatic->SetVisible(TRUE);
+				pWndStatic->Move(330, (position * 17) + 75);
+			} else {
+				pWndStatic->SetVisible(FALSE);
 			}
-
-			pWndStatic->Move( 330, ( i * 17 ) + 75 );			
 		}
 	}
 
@@ -13081,276 +13003,207 @@ void CWndGuildCombatSelection::OnDraw( C2DRender* p2DRender )
 	crect.right = 587;
 	crect.bottom = 377;
 	p2DRender->RenderFillRect( crect, D3DCOLOR_ARGB( 40, 220, 0, 0 ) );
-	
 }
 
-void CWndGuildCombatSelection::EnableFinish( BOOL bFlag )
-{
-	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_FINISH );
-
-	if( pWndButton )
-	{
-		pWndButton->EnableWindow( bFlag );	
+void CWndGuildCombatSelection::EnableFinish(BOOL bFlag) {
+	if (CWndBase * pWndButton = GetDlgItem(WIDC_FINISH)) {
+		pWndButton->EnableWindow(bFlag);
 	}
 }
 
 void CWndGuildCombatSelection::OnInitialUpdate() 
 { 
-	CWndNeuz::OnInitialUpdate(); 
+	CWndNeuz::OnInitialUpdate();
+
+	ReplaceListBox<GuildCombatPlayer>(WIDC_LISTBOX1);
+	ReplaceListBox<GuildCombatPlayer>(WIDC_LISTBOX2);
 
 	// �ð� ���������� �Ǵ�
-	if( g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE )
-	{
-		g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP) ); //������ �����ۼ��� �� �� �����ϴ�.
+	if (g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE) {
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP)); //������ �����ۼ��� �� �� �����ϴ�.
 		Destroy();
 		return;
 	}
 	
 	MoveParentCenter();
-
 	UpDateGuildListBox();
 } 
 
-BOOL CWndGuildCombatSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-
-void CWndGuildCombatSelection::Reset()
-{
-	m_uidDefender = 0;
-	UpDateGuildListBox();
-	CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-	pWndListBox->ResetContent();
-	m_vecSelectPlayer.clear();	
+BOOL CWndGuildCombatSelection::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_SELECTION, pWndParent, 0, CPoint(0, 0));
 }
 
-BOOL CWndGuildCombatSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	// ������ ���?
-	if( nID == WIDC_BUTTON1 )
-	{
-		CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
+void CWndGuildCombatSelection::Reset() {
+	m_uidDefender = 0;
+	UpDateGuildListBox();
+	CombatPlayers().ResetContent();
+}
 
-		int nCurSel = pWndListBox->GetCurSel();
-		if( nCurSel == -1 )
-			return FALSE;
+BOOL CWndGuildCombatSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) { 
+	static constexpr auto ToBOOL = [](bool b) -> BOOL { return b ? TRUE : FALSE; };
 
-		if( nMaxJoinMember < (int)( m_vecSelectPlayer.size() ) )
-		{
-			CString str;
-			str.Format( prj.GetText(TID_GAME_GUILDCOMBAT_SELECTION_MAX), nMaxJoinMember );
-			g_WndMng.OpenMessageBox( str );
-			return FALSE;
+	switch (nID) {
+		case WIDC_BUTTON1: return ToBOOL(OnConnectedToCombat());
+		case WIDC_BUTTON2: return ToBOOL(OnCombatToConnected());
+		case WIDC_BUTTON3: return ToBOOL(OnMoveUp());
+		case WIDC_BUTTON4: return ToBOOL(OnMoveDown());
+		case WIDC_RESET: {
+			CGuildCombatSelectionClearMessageBox * pBox = new CGuildCombatSelectionClearMessageBox;
+			g_WndMng.OpenCustomBox("", pBox);
+			break;
 		}
-
-		CGuild *pGuild = g_pPlayer->GetGuild();
-
-		if( pGuild )
-		{
-			CGuildMember* pGuildMember = pGuild->GetMember( m_vecGuildList[nCurSel] );
-
-			if( pGuildMember )
-			{
-				if( CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer )->data.nLevel < 30 )
-				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_LIMIT_LEVEL_NOTICE) ); //������ �����? ���� 30�̻��� �Ǿ��? �մϴ�.
-					return FALSE;
-				}
-			}	
-			else
-			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_NOT_GUILD_MEMBER) );	//�������� �����ϴ� �����? �ɹ��� �ƴմϴ�.			
-				return FALSE;
-			}
-		}
-
-		u_long uiPlayer;
-		uiPlayer = FindCombatPlayer( m_vecGuildList[nCurSel] );
-
-		if( uiPlayer != -1 )
-		{
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_ALREADY_ENTRY) ); //�̹� ��ϵǾ�? �ֽ��ϴ�. �ٽ� ������ּ���?.
-			return FALSE;
-		}
- 
-		AddCombatPlayer( m_vecGuildList[nCurSel] );		
-		RemoveGuildPlayer( nCurSel );		
-	}
-	else
-	// ������ ���?
-	if( nID == WIDC_BUTTON2 )
-	{
-		CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-		
-		int nCurSel = pWndListBox->GetCurSel();
-		if( nCurSel == -1 )
-			return FALSE;
-
-		u_long uiPlayer;
-		uiPlayer = FindGuildPlayer( m_vecSelectPlayer[nCurSel] );
-		
-		if( uiPlayer == -1 )
-		{
-			// ���?��Ʈ�� ���ٸ� �߰� 
-			AddGuildPlayer( m_vecSelectPlayer[nCurSel] );		
-			RemoveCombatPlayer( nCurSel );		
-		}
-		else
-		{
-			RemoveCombatPlayer( nCurSel );		
-		}		
-	}
-	else
-	// ������ ���� ����
-	if( nID == WIDC_BUTTON3 )
-	{
-		CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-		
-		int nCurSel = pWndListBox->GetCurSel();
-		if( nCurSel == -1 || nCurSel == 0 )
-			return FALSE;
-		
-		CString temp1, temp2;
-		pWndListBox->GetText( nCurSel-1, temp1 );
-		pWndListBox->GetText( nCurSel,   temp2 );
-
-		pWndListBox->SetString( nCurSel-1, temp2 );
-		pWndListBox->SetString( nCurSel, temp1 );
-		
-		u_long uiTemp = 0;
-
-		uiTemp						 = m_vecSelectPlayer[nCurSel];
-		m_vecSelectPlayer[nCurSel]   = m_vecSelectPlayer[nCurSel-1];
-		m_vecSelectPlayer[nCurSel-1] = uiTemp;
-
-		m_nDefenderIndex = nCurSel-1;
-	}
-	else
-	// ������ ���� �Ʒ�
-	if( nID == WIDC_BUTTON4 )
-	{
-		CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-		
-		int nCurSel = pWndListBox->GetCurSel();
-		if( nCurSel == -1 || nCurSel == pWndListBox->GetCount()-1 )
-			return FALSE;
-		
-		CString temp1, temp2;
-		pWndListBox->GetText( nCurSel, temp1 );
-		pWndListBox->GetText( nCurSel+1,   temp2 );
-		
-		pWndListBox->SetString( nCurSel, temp2 );
-		pWndListBox->SetString( nCurSel+1, temp1 );
-		
-		u_long uiTemp = 0;
-		
-		uiTemp						 = m_vecSelectPlayer[nCurSel];
-		m_vecSelectPlayer[nCurSel]   = m_vecSelectPlayer[nCurSel+1];
-		m_vecSelectPlayer[nCurSel+1] = uiTemp;
-
-		m_nDefenderIndex = nCurSel+1;
-	}
-	else
-	if( nID == WIDC_RESET )
-	{
-		CGuildCombatSelectionClearMessageBox* pBox = new CGuildCombatSelectionClearMessageBox;
-		g_WndMng.OpenCustomBox( "", pBox );
-	}
-	else
-	if( nID == WIDC_FINISH )
-	{
-#ifndef _DEBUG
-		if( m_uidDefender == -1 || m_uidDefender == 0 )
-		{
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_NOT_ASSIGN_DEFENDER) ); //�������? �������� �ʾҽ��ϴ�. ��帶���͸�? ������ 1���� �������? ������ �ּ���.
-			return FALSE;
-		}
-#endif //_DEBUG
-
-		// �ð� ���������� �Ǵ�
-		if( g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE )
-		{
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP) ); //������ �����ۼ��� �� �� �����ϴ�.
+		case WIDC_FINISH:  return ToBOOL(OnFinish());
+		case WIDC_BUTTON7: return ToBOOL(OnChooseDefender());
+		case WIDC_CLOSE:
 			Destroy();
-			return FALSE;
-		}
-		
-		if( m_vecSelectPlayer.size() == 0 )
-		{
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_HAVENOT_PLAYER) ); //�����ڰ� �����ϴ�. �����ڸ� �������ּ���.
-			return FALSE;
-		}
-		
-		CGuild *pGuild = g_pPlayer->GetGuild();
-		CGuildMember* pGuildMemberl;
-		
-		if( pGuild )
-		{
-			BOOL bSkip = FALSE;
-
-			// ������ �ɹ��߿� �����Ͱ� ŷ���� �ִ��� �˻縦�Ѵ�.
-			// ���� �ϳ��� ������ ���� �Ұ���...
-			for( int i=0; i<(int)( m_vecSelectPlayer.size() ); i++ )
-			{
-				pGuildMemberl = pGuild->GetMember( m_vecSelectPlayer[i] );
-
-				if( pGuildMemberl )
-				{
-					if( pGuildMemberl->m_nMemberLv == GUD_MASTER || pGuildMemberl->m_nMemberLv == GUD_KINGPIN )
-					{
-						bSkip = TRUE;
-						break;
-					}
-				}
-			}
-
-			if( bSkip )
-			{
-				g_DPlay.SendGCSelectPlayer( m_vecSelectPlayer, m_uidDefender );
-				Destroy();
-			}
-			else
-			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_HAVENOT_MASTER) ); //������ ���ܿ� ��帶���ͳ�? ŷ���� �������� �ʽ��ϴ�.
-				return FALSE;
-			}
-		}
-	}
-	else
-	// �����? ����
-	if( nID == WIDC_BUTTON7 )
-	{
-		CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-		
-		int nCurSel = pWndListBox->GetCurSel();
-		if( nCurSel == -1 )
-			return FALSE;
-
-		CGuild *pGuild = g_pPlayer->GetGuild();
-
-		if( pGuild )
-		{
-			if( m_vecSelectPlayer.size() > 1 &&  pGuild->IsMaster( m_vecSelectPlayer[nCurSel] ) )
-			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT_MASTER_NOT_ASSIGN_DEFENDER) ); //��帶���ʹ�? �������? �� �� �����ϴ�.
-				return FALSE;
-			}
-		}
-		
-		m_nDefenderIndex = nCurSel;
-		SetDefender( m_vecSelectPlayer[nCurSel] );
-	}
-	else
-	if( nID == WIDC_CLOSE )
-	{
-		Destroy();
+			break;
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
 
+bool CWndGuildCombatSelection::OnConnectedToCombat() {
+	CWndTListBox<GuildCombatPlayer> & connectedPlayers = SelectablePlayers();
+	const auto [nCurSel, selPlayer] = connectedPlayers.GetSelection();
+	if (nCurSel == -1) return false;
 
+	if (connectedPlayers.GetSize() > nMaxJoinMember) {
+		CString str;
+		str.Format(prj.GetText(TID_GAME_GUILDCOMBAT_SELECTION_MAX), nMaxJoinMember);
+		g_WndMng.OpenMessageBox(str);
+		return false;
+	}
+
+	CGuild * pGuild = g_pPlayer->GetGuild();
+
+	if (pGuild) {
+		CGuildMember * pGuildMember = pGuild->GetMember(selPlayer->playerId);
+
+		if (!pGuildMember) {
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_NOT_GUILD_MEMBER));	//�������� �����ϴ� �����? �ɹ��� �ƴմϴ�.			
+			return false;
+		}
+
+		if (CPlayerDataCenter::GetInstance()->GetPlayerData(selPlayer->playerId)->data.nLevel < 30) {
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_LIMIT_LEVEL_NOTICE)); //������ �����? ���� 30�̻��� �Ǿ��? �մϴ�.
+			return false;
+		}
+	}
+
+	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
+	const int combatPos = combatPlayers.Find(GuildCombatPlayer::ById(selPlayer->playerId));
+	if (combatPos != -1) {
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_ALREADY_ENTRY));
+		return false;
+	}
+
+	combatPlayers.Add(GuildCombatPlayer(selPlayer->playerId)); // Rebuild to update text
+	connectedPlayers.Erase(nCurSel);
+
+	return true;
+}
+
+bool CWndGuildCombatSelection::OnCombatToConnected() {
+	// Find selected player in combat players
+	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
+	const auto [nCurSel, selPlayer] = combatPlayers.GetSelection();
+	if (nCurSel == -1) return false;
+
+	// Add back in connected players
+	CWndTListBox<GuildCombatPlayer> & connectedPlayers = SelectablePlayers();
+	const int coPlayer = connectedPlayers.Find(
+		GuildCombatPlayer::ById(selPlayer->playerId)
+	);
+
+	if (coPlayer == -1) {
+		SelectablePlayers().Add(GuildCombatPlayer(selPlayer->playerId));
+	}
+
+	// Remove defender
+	if (m_uidDefender == selPlayer->playerId) {
+		m_uidDefender = -1;
+	}
+
+	// Remove from list
+	combatPlayers.Erase(nCurSel);
+	return true;
+}
+
+bool CWndGuildCombatSelection::OnMoveUp() {
+	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
+
+	const int nCurSel = combatPlayers.GetCurSel();
+	if (nCurSel == -1 || nCurSel == 0) return false;
+
+	std::swap(combatPlayers[nCurSel - 1], combatPlayers[nCurSel]);
+	combatPlayers.SetCurSel(nCurSel - 1);
+	return true;
+}
+
+bool CWndGuildCombatSelection::OnMoveDown() {
+	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
+
+	const int nCurSel = combatPlayers.GetCurSel();
+	if (nCurSel == -1 || std::cmp_equal(nCurSel + 1, combatPlayers.GetSize()))
+		return false;
+
+	std::swap(combatPlayers[nCurSel], combatPlayers[nCurSel + 1]);
+	combatPlayers.SetCurSel(nCurSel + 1);
+	return true;
+}
+
+bool CWndGuildCombatSelection::OnFinish() {
+
+#ifndef _DEBUG
+	if (m_uidDefender == -1 || m_uidDefender == 0) {
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_NOT_ASSIGN_DEFENDER)); //�������? �������� �ʾҽ��ϴ�. ��帶���͸�? ������ 1���� �������? ������ �ּ���.
+		return false;
+	}
+#endif //_DEBUG
+
+	// �ð� ���������� �Ǵ�
+	if (g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE) {
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP)); //������ �����ۼ��� �� �� �����ϴ�.
+		Destroy();
+		return false;
+	}
+
+	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
+	if (combatPlayers.GetSize() == 0) {
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_HAVENOT_PLAYER)); //�����ڰ� �����ϴ�. �����ڸ� �������ּ���.
+		return false;
+	}
+
+	CGuild * pGuild = g_pPlayer->GetGuild();
+	if (!pGuild) {
+		return false;
+	}
+
+	std::vector<u_long> selected;
+	for (size_t i = 0; i != combatPlayers.GetSize(); ++i) {
+		const u_long p = combatPlayers[static_cast<int>(i)].playerId;
+		selected.emplace_back(p);
+	}
+
+	g_DPlay.SendGCSelectPlayer(selected, m_uidDefender);
+	Destroy();
+	return true;
+
+	// Message if no guild master or general -> we do not care
+	// g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_HAVENOT_MASTER)); //������ ���ܿ� ��帶���ͳ�? ŷ���� �������� �ʽ��ϴ�.
+	// return FALSE;
+}
+
+bool CWndGuildCombatSelection::OnChooseDefender() {
+	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
+
+	const int nCurSel = combatPlayers.GetCurSel();
+	if (nCurSel == -1)
+		return false;
+
+	SetDefender(combatPlayers[nCurSel].playerId);
+	return true;
+}
 
 //������ ���� ���? ���� ���?
 CWndGuildCombatState::CWndGuildCombatState(int nCombatType)

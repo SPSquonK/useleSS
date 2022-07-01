@@ -6287,15 +6287,11 @@ void CDPClient::OnGCSelectPlayer( CAr& ar )
 			{
 				ar >> uidPlayer;
 				vecSelectPlayer.push_back( uidPlayer );
-				if( g_WndMng.m_pWndGuildCombatSelection )
-				{
-					g_WndMng.m_pWndGuildCombatSelection->AddCombatPlayer( uidPlayer );
-				}	
 			}
 			
 			if( g_WndMng.m_pWndGuildCombatSelection )
 			{
-				g_WndMng.m_pWndGuildCombatSelection->SetDefender( uidDefender );
+				g_WndMng.m_pWndGuildCombatSelection->ReceiveLineup(vecSelectPlayer, uidDefender);
 			}	
 		}
 		else

@@ -25,3 +25,9 @@ Possible bug: it may be applied to everybody even without a parskill (TODO: chec
 - Exp reward is computed over the total hp of a monster, not a mix of the total hp
 and the damage dealt by all the connected players
 
+
+## Guild war
+
+Guild Combats / Eve school / Guild Sieges do not require the guild to have
+the guildmaster or a kingpin. The defender can also be the current guildmaster.
+

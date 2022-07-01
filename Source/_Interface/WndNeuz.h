@@ -90,7 +90,7 @@ public:
 	void SetSizeMax();
 	void SetSizeWnd();
 
-	template<typename T, typename D>
+	template<typename T, typename D = WndTListBox::DefaultDisplayer<typename T>>
 		requires (WndTListBox::DisplayerOf<T, D>)
 	void ReplaceListBox(UINT listboxId);
 };

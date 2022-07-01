@@ -88,8 +88,26 @@ public:
 
   void Create(DWORD dwListBoxStyle, RECT & rect, CWndBase * pParentWnd, UINT nID);
   [[nodiscard]] int GetCurSel() const { return m_nCurSelect; }
+  [[nodiscard]] void SetCurSel(int index) {
+    if (index == -1) {
+      m_nCurSelect = -1;
+      m_pFocusItem = nullptr;
+      return;
+    }
+
+    if (index < 0 || std::cmp_greater_equal(index, m_listed.size())) {
+      return;
+    }
+
+    m_nCurSelect = index;
+    m_pFocusItem = &m_listed[index];
+  }
   [[nodiscard]]       T * GetCurSelItem()       { return m_nCurSelect >= 0 ? &m_listed[m_nCurSelect].item : nullptr; }
   [[nodiscard]] const T * GetCurSelItem() const { return m_nCurSelect >= 0 ? &m_listed[m_nCurSelect].item : nullptr; }
+  [[nodiscard]] std::pair<int, const T *> GetSelection() {
+    return std::make_pair<int, const T *>(GetCurSel(), GetCurSelItem());
+  }
+
 
   void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE) override;
   void OnInitialUpdate() override;
@@ -105,13 +123,26 @@ public:
   BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) override;
 
   T & Add(T item, bool isValid = true);
-  // TODO: Erase
+  void Erase(int index);
   // TODO: Swap
   // TODO: GetAt
-  // TODO: operator[]
+  T & operator[](int index) { return m_listed[index].item; }
+  // TODO: operator[] const
   // TODO: ChangeValidity
   void ResetContent();
   [[nodiscard]] bool IsEmpty() const { return m_listed.empty(); }
+  [[nodiscard]] size_t GetSize() const noexcept { return m_listed.size(); }
+  
+  template<typename F>
+  [[nodiscard]] int Find(F f) const {
+    for (int i = 0; std::cmp_less(i, m_listed.size()); ++i) {
+      if (f(m_listed[i].item)) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
 
   void SetLineHeight(unsigned int lineHeight) { m_lineHeight = lineHeight; }
   void SetLineSpace(unsigned int lineSpace);
@@ -397,9 +428,17 @@ T & CWndTListBox<T, D>::Add(T item, bool isValid) {
 
 template<typename T, typename D>
   requires (WndTListBox::DisplayerOf<T, D>)
+void CWndTListBox<T, D>::Erase(int index) {
+  if (index < 0 || std::cmp_greater_equal(index, m_listed.size())) return;
+  m_listed.erase(m_listed.begin() + index);
+  m_updateRectsCache = std::nullopt;
+}
+
+template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::ResetContent() {
   m_nCurSelect = -1;
-  m_pFocusItem = NULL;
+  m_pFocusItem = nullptr;
   m_listed.clear();
   m_wndScrollBar.SetScrollPos(0, FALSE);
   m_updateRectsCache = std::nullopt;
