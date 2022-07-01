@@ -111,7 +111,7 @@ public:
 	void AddEditString( const CEditString& string );
 	void SetEditString( const CEditString& string );
 	void Empty( );
-	//void Reset( CD3DFont* pFont, CRect* rect, BOOL bHScroll = FALSE, BOOL bVScroll = TRUE);
+
 	void Align( CD3DFont* pFont, int nBeginLine = 0 );
 	DWORD GetLineCount();
 	DWORD GetLineOffset( DWORD dwLine ) ;
