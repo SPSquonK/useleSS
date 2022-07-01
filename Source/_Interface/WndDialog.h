@@ -63,12 +63,9 @@ private:
 		int xOffset = 0;
 
 		void Render(
-			C2DRender * p2DRender,
-			ListedQuest & questId,
-			CRect rect,
-			DWORD color,
-			WndTListBox::DisplayArgs misc
-		);
+			C2DRender * p2DRender, CRect rect,
+			ListedQuest & quest, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
 	};
 
 	struct CurrentQuestDisplayer {
@@ -77,23 +74,14 @@ private:
 		int xOffset = 0;
 
 		void Render(
-			C2DRender * p2DRender,
-			ListedQuest & questId,
-			CRect rect,
-			DWORD color,
-			WndTListBox::DisplayArgs misc
-		);
+			C2DRender * p2DRender, CRect rect,
+			ListedQuest & quest, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
 	};
 
 	CWndTListBox<ListedQuest, NewQuestDisplayer> m_newQuestListBox;
 	CWndTListBox<ListedQuest, CurrentQuestDisplayer> m_currentQuestListBox;
 
-//	CWndListBox m_WndNewQuestListBox;
-//	CWndListBox m_WndCurrentQuestListBox;
-//	CTexture* m_pNewQuestListIconTexture = nullptr;
-//	CTexture* m_pExpectedQuestListIconTexture = nullptr;
-//	CTexture* m_pCurrentQuestListIconTexture = nullptr;
-//	CTexture* m_pCompleteQuestListIconTexture = nullptr;
 public:
 	 
 	CWndDialog() = default;

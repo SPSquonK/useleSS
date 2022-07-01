@@ -1,42 +1,71 @@
 #pragma once
 
-#include <boost/container/stable_vector.hpp>
-#include <span>
+// WndTListBox Class
+// @SPSquonK 2022-06~07, Under the Boost License
+//
+// This class enables to build a listbox with:
+// - Any class used as an item
+// - An utility class that will explain how to draw an item
 
-// SquonK, SKHBL
+#include <boost/container/stable_vector.hpp>
+#include <concepts>
 
 namespace WndTListBox {
+  /// Default used colors for a listbox
   namespace Color {
-    static constexpr DWORD Font = D3DCOLOR_ARGB(255, 64, 64, 64);
-    static constexpr DWORD Select = D3DCOLOR_ARGB(255, 64, 64, 255);
+    static constexpr DWORD Font    = D3DCOLOR_ARGB(255, 64, 64, 64);
+    static constexpr DWORD Select  = D3DCOLOR_ARGB(255, 64, 64, 255);
     static constexpr DWORD OnMouse = D3DCOLOR_ARGB(255, 255, 128, 0);
     static constexpr DWORD Invalid = D3DCOLOR_ARGB(255, 170, 170, 170);
   }
 
+  /// Extra arguments for Displayer Render method
   struct DisplayArgs {
+    /// True if the current element is selected
     bool isSelected;
+    /// True if the current element is valid
     bool isValid;
+    /// Position of the current element
     int i;
+    /// Mouse position
+    CPoint mousePosition;
+  };
+
+  template<typename T>
+  struct DefaultDisplayer;
+
+  template<typename Item, typename Displayer>
+  concept DisplayerOf = requires(Displayer d, Item & item, C2DRender * p2DRender, CRect rect, DWORD color, const WndTListBox::DisplayArgs & misc) {
+    d.Render(p2DRender, rect, item, color, misc);
   };
 }
 
 class CWndNeuz;
 
-template<typename T, typename Displayer>
-class CWndTListBox : public CWndBase {
+/// The CWndTListBox component enables to draw listbox with a
+/// specified class used as list items.
+/// 
+/// It avoids using weird hacks like having a second layer of drawing
+/// or dynamic casting values.
+template<typename T, typename Displayer = WndTListBox::DefaultDisplayer<typename T>>
+requires (WndTListBox::DisplayerOf<T, Displayer>)
+class CWndTListBox : public CWndBase
+{
 public:
   static constexpr int VSCROLL_WIDTH = 16;
   
+
+public:
+  Displayer displayer;
+
+private:
   struct Listed {
     T item;
     std::optional<CRect> rect = std::nullopt;
     bool isValid = true;
   };
 
-  struct ViewedItems {
-    int first;
-    int last;
-  };
+  struct ViewedItems { int first; int last; };
 
   struct UpdateRectsCache {
     size_t listedSize;
@@ -44,17 +73,15 @@ public:
     ViewedItems correspondingView;
   };
 
-  DWORD selectColor = WndTListBox::Color::Select;
-  int lineHeight = 0;
-  Displayer displayer;
-
-private:
   boost::container::stable_vector<Listed> m_listed;
   CWndScrollBar m_wndScrollBar;
 
   int m_nCurSelect = -1;
   Listed * m_pFocusItem = nullptr;
   std::optional<UpdateRectsCache> m_updateRectsCache = std::nullopt;
+  
+  unsigned int m_lineHeight = 0;
+  DWORD m_selectColor = WndTListBox::Color::Select;
 
 public:
   static void Replace(CWndNeuz & window, UINT listboxId);
@@ -63,7 +90,8 @@ public:
 
   void Create(DWORD dwListBoxStyle, RECT & rect, CWndBase * pParentWnd, UINT nID);
   [[nodiscard]] int GetCurSel() const { return m_nCurSelect; }
-  [[nodiscard]] T * GetCurSelItem() { return m_nCurSelect >= 0 ? &m_listed[m_nCurSelect].item : nullptr; }
+  [[nodiscard]]       T * GetCurSelItem()       { return m_nCurSelect >= 0 ? &m_listed[m_nCurSelect].item : nullptr; }
+  [[nodiscard]] const T * GetCurSelItem() const { return m_nCurSelect >= 0 ? &m_listed[m_nCurSelect].item : nullptr; }
 
   void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE) override;
   void OnInitialUpdate() override;
@@ -78,19 +106,29 @@ public:
   void OnSetFocus(CWndBase * pOldWnd) override;
   BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) override;
 
-  Listed & Add(T item);
+  T & Add(T item, bool isValid = true);
+  // TODO: Erase
+  // TODO: Swap
+  // TODO: GetAt
+  // TODO: operator[]
+  // TODO: ChangeValidity
   void ResetContent();
   [[nodiscard]] bool IsEmpty() const { return m_listed.empty(); }
+
+  void SetLineHeight(unsigned int lineHeight) { m_lineHeight = lineHeight; }
+  void SetLineSpace(unsigned int lineSpace);
+  void ChangeSelectColor(DWORD color) { m_selectColor = color; }
 
 private:
   void PaintListBox(C2DRender * p2DRender);
   ViewedItems UpdateRects();
   bool UpdateRectsNeedUpdate();
 
-  [[nodiscard]] int GetLineHeight() const;
+  [[nodiscard]] unsigned int GetLineHeight() const { return m_lineHeight; }
 };
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 CWndTListBox<T, D>::CWndTListBox() {
   m_byWndType = WTYPE_LISTBOX;
   m_strTexture = DEF_CTRL_TEXT;
@@ -98,11 +136,13 @@ CWndTListBox<T, D>::CWndTListBox() {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::Create(DWORD dwListBoxStyle, RECT & rect, CWndBase * pParentWnd, UINT nID) {
   CWndBase::Create(dwListBoxStyle | WBS_CHILD, rect, pParentWnd, nID);
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::SetWndRect(CRect rectWnd, BOOL bOnSize) {
   m_rectWindow = rectWnd;
   m_rectClient = m_rectWindow;
@@ -117,17 +157,26 @@ void CWndTListBox<T, D>::SetWndRect(CRect rectWnd, BOOL bOnSize) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnInitialUpdate() {
   CRect rect = GetWindowRect();
 
   m_wndScrollBar.Create(WBS_DOCKING | WBS_VERT, rect, this, 1000);
   m_wndScrollBar.SetVisible(IsWndStyle(WBS_VSCROLL));
 
-  static constexpr int m_nLineSpace = 1;
-  lineHeight = m_pFont->GetMaxHeight() + m_nLineSpace + m_nLineSpace;
+  if (GetFontHeight() == 0) {
+    SetLineHeight(1);
+  }
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
+void CWndTListBox<T, D>::SetLineSpace(unsigned int lineSpace) {
+  m_lineHeight = m_pFont->GetMaxHeight() + lineSpace + lineSpace;
+}
+
+template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnDraw(C2DRender * p2DRender) {
   PaintListBox(p2DRender);
 
@@ -144,6 +193,7 @@ void CWndTListBox<T, D>::OnDraw(C2DRender * p2DRender) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 CWndTListBox<T, D>::ViewedItems CWndTListBox<T, D>::UpdateRects() {
   if (!UpdateRectsNeedUpdate()) {
     return m_updateRectsCache->correspondingView;
@@ -195,6 +245,7 @@ CWndTListBox<T, D>::ViewedItems CWndTListBox<T, D>::UpdateRects() {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 bool CWndTListBox<T, D>::UpdateRectsNeedUpdate() {
   // TODO: check m_updateRectsCache
   return true;
@@ -202,6 +253,7 @@ bool CWndTListBox<T, D>::UpdateRectsNeedUpdate() {
 
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::PaintListBox(C2DRender * p2DRender) {
   const CPoint mousePoint = GetMousePoint();
 
@@ -212,7 +264,7 @@ void CWndTListBox<T, D>::PaintListBox(C2DRender * p2DRender) {
     if (!m_listed[i].isValid) {
       textColor = WndTListBox::Color::Invalid;
     } else if (i == m_nCurSelect) {
-      textColor = selectColor;
+      textColor = m_selectColor;
     } else if (m_listed[i].rect->PtInRect(mousePoint)) {
       textColor = WndTListBox::Color::OnMouse;
     } else {
@@ -222,19 +274,16 @@ void CWndTListBox<T, D>::PaintListBox(C2DRender * p2DRender) {
     WndTListBox::DisplayArgs args = {
       .isSelected = i == m_nCurSelect,
       .isValid = m_listed[i].isValid,
-      .i = i
+      .i = i,
+      .mousePosition = mousePoint
     };
 
-    displayer.Render(p2DRender, m_listed[i].item, m_listed[i].rect.value(), textColor, args);
+    displayer.Render(p2DRender, m_listed[i].rect.value(), m_listed[i].item, textColor, args);
   }
 }
 
 template<typename T, typename D>
-int CWndTListBox<T, D>::GetLineHeight() const {
-  return lineHeight;
-}
-
-template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnLButtonUp(UINT nFlags, CPoint point) {
   const auto displayed = UpdateRects();
 
@@ -254,6 +303,7 @@ void CWndTListBox<T, D>::OnLButtonUp(UINT nFlags, CPoint point) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnLButtonDown(UINT nFlags, CPoint point) {
   const auto displayed = UpdateRects();
 
@@ -270,6 +320,7 @@ void CWndTListBox<T, D>::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnRButtonUp(UINT nFlags, CPoint point) {
   const auto displayed = UpdateRects();
 
@@ -289,6 +340,7 @@ void CWndTListBox<T, D>::OnRButtonUp(UINT nFlags, CPoint point) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnLButtonDblClk(UINT nFlags, CPoint point) {
   const auto displayed = UpdateRects();
 
@@ -310,6 +362,7 @@ void CWndTListBox<T, D>::OnLButtonDblClk(UINT nFlags, CPoint point) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnSize(UINT nType, int cx, int cy) {
   CRect rect = GetWindowRect();
   if (IsWndStyle(WBS_VSCROLL))
@@ -320,31 +373,50 @@ void CWndTListBox<T, D>::OnSize(UINT nType, int cx, int cy) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 BOOL CWndTListBox<T, D>::OnEraseBkgnd(C2DRender * p2DRender) {
   return TRUE;
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::OnSetFocus(CWndBase * pOldWnd) {
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 BOOL CWndTListBox<T, D>::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   m_wndScrollBar.MouseWheel(zDelta);
   return TRUE;
 }
 
 template<typename T, typename D>
-CWndTListBox<T, D>::Listed & CWndTListBox<T, D>::Add(T item) {
+  requires (WndTListBox::DisplayerOf<T, D>)
+T & CWndTListBox<T, D>::Add(T item, bool isValid) {
   m_updateRectsCache = std::nullopt;
-  return m_listed.emplace_back(Listed{ .item = item });
+  return m_listed.emplace_back(Listed{ .item = item, .isValid = isValid }).item;
 }
 
 template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::ResetContent() {
   m_nCurSelect = -1;
   m_pFocusItem = NULL;
   m_listed.clear();
   m_wndScrollBar.SetScrollPos(0, FALSE);
   m_updateRectsCache = std::nullopt;
+}
+
+namespace WndTListBox {
+  template<typename T>
+  struct DefaultDisplayer {
+    void Render(
+      C2DRender * const p2DRender, const CRect rect,
+      T & item, const DWORD color, const WndTListBox::DisplayArgs & misc
+    ) const {
+      static_assert(WndTListBox::DisplayerOf<T, DefaultDisplayer>);
+
+      item.Render(p2DRender, rect, color, misc);
+    }
+  };
 }

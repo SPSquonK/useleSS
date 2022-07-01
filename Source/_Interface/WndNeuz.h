@@ -92,6 +92,7 @@ public:
 };
 
 template<typename T, typename D>
+	requires (WndTListBox::DisplayerOf<T, D>)
 void CWndTListBox<T, D>::Replace(CWndNeuz & window, UINT listboxId) {
 	const auto itOldComponent = std::ranges::find_if(window.m_wndArrayTemp,
 		[&](const CWndBase * const component) {

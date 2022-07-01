@@ -206,23 +206,22 @@ void CWndDialog::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-	CWndGroupBox* pWndGroupBox = ( CWndGroupBox* )GetDlgItem( WIDC_GROUP_BOX_TITLE );
-	if( pWndGroupBox )
-	{
-		pWndGroupBox->m_dwColor = D3DCOLOR_ARGB( 255, 128, 0, 64 );
-		pWndGroupBox->SetTitle( prj.GetText( TID_GAME_DIALOG ) );
+	if (CWndGroupBox * pWndGroupBox = dynamic_cast<CWndGroupBox *>(GetDlgItem(WIDC_GROUP_BOX_TITLE))) {
+		// TODO: CWndGroupBox is never instanciated. Is it in v21 source code?
+		pWndGroupBox->m_dwColor = D3DCOLOR_ARGB(255, 128, 0, 64);
+		pWndGroupBox->SetTitle(prj.GetText(TID_GAME_DIALOG));
 	}
 
 
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 	lpWndCtrl->dwWndStyle |= WBS_VSCROLL;
 
-	static const int QUEST_LIST_SELECT_COLOR = 0xffff0000;
-	static const int QUEST_LIST_LINE_SPACE = 3;
+	static constexpr int QUEST_LIST_SELECT_COLOR = 0xffff0000;
+	static constexpr int QUEST_LIST_LINE_SPACE = 3;
 
 	m_newQuestListBox.Create( lpWndCtrl->dwWndStyle, lpWndCtrl->rect, this, WIDC_NewQuests);
-	m_newQuestListBox.selectColor = QUEST_LIST_SELECT_COLOR;
-	m_newQuestListBox.lineHeight = m_pFont->GetMaxHeight() + QUEST_LIST_LINE_SPACE * 2;
+	m_newQuestListBox.ChangeSelectColor(QUEST_LIST_SELECT_COLOR);
+	m_newQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
 	m_newQuestListBox.SetVisible( FALSE );
 
 	m_newQuestListBox.displayer.m_pNewQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGreen.tga")), 0xffffffff);
@@ -231,8 +230,8 @@ void CWndDialog::OnInitialUpdate()
 
 
 	m_currentQuestListBox.Create( lpWndCtrl->dwWndStyle, lpWndCtrl->rect, this, WIDC_CurrentQuests);
-	m_currentQuestListBox.selectColor = QUEST_LIST_SELECT_COLOR;
-	m_currentQuestListBox.lineHeight = m_pFont->GetMaxHeight() + QUEST_LIST_LINE_SPACE * 2;
+	m_currentQuestListBox.ChangeSelectColor(QUEST_LIST_SELECT_COLOR);
+	m_currentQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
 	m_currentQuestListBox.SetVisible( FALSE );
 
 	m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGray.tga")), 0xffffffff);
@@ -241,10 +240,7 @@ void CWndDialog::OnInitialUpdate()
 
 
 	
-
-	if (CWndBase * pWndBase = g_WndMng.GetApplet(APP_INVENTORY)) {
-		pWndBase->Destroy();
-	}
+	Windows::DestroyIfOpened(APP_INVENTORY);
 	
 	CMover* pMover = prj.GetMover( m_idMover );
 	if( pMover == NULL ) return;
@@ -903,10 +899,10 @@ void CWndDialog::AddQuestInList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, c
 
 	if (isNewQuest) {
 		MakeQuestKeyButton(prj.GetText(TID_GAME_NEW_QUEST));
-		m_newQuestListBox.Add(elem).isValid = isValid;
+		m_newQuestListBox.Add(elem, isValid);
 	} else {
 		MakeQuestKeyButton(prj.GetText(TID_GAME_CURRENT_QUEST));
-		m_currentQuestListBox.Add(elem).isValid = isValid;
+		m_currentQuestListBox.Add(elem, isValid);
 	}
 }
 
@@ -930,9 +926,10 @@ void CWndDialog::MakeQuestKeyButton( const CString& rstrKeyButton )
 }
 
 void CWndDialog::NewQuestDisplayer::Render(
-	C2DRender * p2DRender, CWndDialog::ListedQuest & quest,
-	CRect rect, DWORD color, WndTListBox::DisplayArgs misc
-) {
+	C2DRender * p2DRender, CRect rect,
+	ListedQuest & quest, DWORD color,
+	const WndTListBox::DisplayArgs & misc
+) const {
 	CTexture * icon = misc.isValid ? m_pNewQuestListIconTexture : m_pExpectedQuestListIconTexture;
 	p2DRender->RenderTexture(rect.TopLeft(), icon);
 
@@ -941,9 +938,10 @@ void CWndDialog::NewQuestDisplayer::Render(
 }
 
 void CWndDialog::CurrentQuestDisplayer::Render(
-	C2DRender * p2DRender, CWndDialog::ListedQuest & quest,
-	CRect rect, DWORD color, WndTListBox::DisplayArgs
-) {
+	C2DRender * p2DRender, CRect rect,
+	ListedQuest & quest, DWORD color,
+	const WndTListBox::DisplayArgs &
+) const {
 	CTexture * icon = __IsEndQuestCondition(g_pPlayer->GetActiveMover(), quest.questId.get())
 		? m_pCompleteQuestListIconTexture
 		: m_pCurrentQuestListIconTexture;
