@@ -538,7 +538,7 @@ void CWndDialog::BeginText()
 	{
 		if( m_apWndAnswer[ i ] )
 			m_apWndAnswer[ i ]->Destroy( TRUE );
-		m_apWndAnswer[ i ] = NULL;
+		[[maybe_unused]] CWndBase * willBeDeletedByDestroy = m_apWndAnswer[ i ].release();
 	}
 }
 void CWndDialog::MakeContextButton()
