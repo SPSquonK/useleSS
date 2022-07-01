@@ -51,8 +51,7 @@ public:
 	CMapStringToString m_mapWordToOriginal;
 
 	struct ListedQuest {
-		CEditString theEditStringClassIsSoBad;
-		CString questName;
+		CEditString displayName;
 		CString strKey;
 		QuestId questId;
 	};

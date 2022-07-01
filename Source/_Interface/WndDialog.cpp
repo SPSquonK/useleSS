@@ -930,59 +930,27 @@ void CWndDialog::MakeQuestKeyButton( const CString& rstrKeyButton )
 }
 
 void CWndDialog::NewQuestDisplayer::Render(
-	C2DRender * p2DRender,
-	CWndDialog::ListedQuest & quest,
-	CRect rect,
-	DWORD color,
-	WndTListBox::DisplayArgs misc
+	C2DRender * p2DRender, CWndDialog::ListedQuest & quest,
+	CRect rect, DWORD color, WndTListBox::DisplayArgs misc
 ) {
+	CTexture * icon = misc.isValid ? m_pNewQuestListIconTexture : m_pExpectedQuestListIconTexture;
+	p2DRender->RenderTexture(rect.TopLeft(), icon);
 
-	if (misc.isValid)
-		p2DRender->RenderTexture(rect.TopLeft(), m_pExpectedQuestListIconTexture);
-	else
-		p2DRender->RenderTexture(rect.TopLeft(), m_pNewQuestListIconTexture);
-
-
-	quest.theEditStringClassIsSoBad.Format(
-		_T("[#b%d#nb~#b%d#nb ] #b%s#nb"),
-		quest.questId.GetProp()->m_nBeginCondLevelMin,
-		quest.questId.GetProp()->m_nBeginCondLevelMax,
-		quest.questId.GetProp()->m_szTitle
-	);
-	
-	quest.theEditStringClassIsSoBad.Init(p2DRender->m_pFont, &p2DRender->m_clipRect);
-	quest.theEditStringClassIsSoBad.SetParsingString(quest.questName.GetString(), 0xFF3C3C3C, 0x00000000, 0, 0x00000001, TRUE);
-
-	quest.theEditStringClassIsSoBad.SetColor(color);
-
-	p2DRender->TextOut_EditString(xOffset + rect.left, rect.top, quest.theEditStringClassIsSoBad);
+	quest.displayName.SetColor(color);
+	p2DRender->TextOut_EditString(xOffset + rect.left, rect.top, quest.displayName);
 }
 
 void CWndDialog::CurrentQuestDisplayer::Render(
-	C2DRender * p2DRender,
-	CWndDialog::ListedQuest & quest,
-	CRect rect,
-	DWORD color,
-	WndTListBox::DisplayArgs misc
+	C2DRender * p2DRender, CWndDialog::ListedQuest & quest,
+	CRect rect, DWORD color, WndTListBox::DisplayArgs
 ) {
-	if (__IsEndQuestCondition(g_pPlayer->GetActiveMover(), quest.questId.get()))
-		p2DRender->RenderTexture(rect.TopLeft(), m_pCompleteQuestListIconTexture);
-	else
-		p2DRender->RenderTexture(rect.TopLeft(), m_pCurrentQuestListIconTexture);
+	CTexture * icon = __IsEndQuestCondition(g_pPlayer->GetActiveMover(), quest.questId.get())
+		? m_pCompleteQuestListIconTexture
+		: m_pCurrentQuestListIconTexture;
+	p2DRender->RenderTexture(rect.TopLeft(), icon);
 
-	quest.theEditStringClassIsSoBad.Format(
-		_T("[#b%d#nb~#b%d#nb ] #b%s#nb"),
-		quest.questId.GetProp()->m_nBeginCondLevelMin,
-		quest.questId.GetProp()->m_nBeginCondLevelMax,
-		quest.questId.GetProp()->m_szTitle
-	);
-
-	quest.theEditStringClassIsSoBad.Init(p2DRender->m_pFont, &p2DRender->m_clipRect);
-	quest.theEditStringClassIsSoBad.SetParsingString(quest.questName.GetString(), 0xFF3C3C3C, 0x00000000, 0, 0x00000001, TRUE);
-
-	quest.theEditStringClassIsSoBad.SetColor(color);
-
-	p2DRender->TextOut_EditString(xOffset + rect.left, rect.top, quest.theEditStringClassIsSoBad);
+	quest.displayName.SetColor(color);
+	p2DRender->TextOut_EditString(xOffset + rect.left, rect.top, quest.displayName);
 }
 
 
@@ -998,16 +966,24 @@ std::pair<CWndDialog::ListedQuest, bool> CWndDialog::MakeListedQuest(const LPCTS
 
 	CEditString strTitleWord = _T( "" );
 	const QuestProp* pQuestProp = dwQuest.GetProp();
-	if( pQuestProp )
-		strTitleWord.Format( _T( "[#b%d#nb~#b%d#nb ] #b%s#nb" ), pQuestProp->m_nBeginCondLevelMin, pQuestProp->m_nBeginCondLevelMax, lpszWord );
+	if (pQuestProp) {
+		strTitleWord.Format(
+			_T("[#b%d#nb~#b%d#nb ] #b%s#nb"),
+			pQuestProp->m_nBeginCondLevelMin,
+			pQuestProp->m_nBeginCondLevelMax,
+			lpszWord
+		);
+	} else {
+		strTitleWord = lpszKey;
+	}
 	
-	// I love doing complicated things for literally nothing
-	listed.questName = strTitleWord.GetString();
-
-	// ok
 	const bool isValid = lpszKey != std::string_view(_T("QUEST_NEXT_LEVEL"));
 	listed.strKey = lpszKey;
 	listed.questId = dwQuest;
+
+	CRect rect = GetClientRect();
+	listed.displayName.Init(m_pFont, &rect);
+	listed.displayName.SetParsingString(strTitleWord.GetString(), 0xFF3C3C3C, 0x00000000, 0, 0x00000001, TRUE);
 
 	return std::make_pair(listed, isValid);
 }
