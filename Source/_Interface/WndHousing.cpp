@@ -572,40 +572,39 @@ void CWndGuildHousing::OnInitialUpdate()
 	{
 		pWndCombo->AddWndStyle( EBS_READONLY );
 		pWndCombo->ResetContent( );
-		int nIndex = -1;
 
-		nIndex = pWndCombo->AddString( GETTEXT(TID_GAME_GUILDHOUSE_FURKIND) );
-		pWndCombo->SetItemData( nIndex, 0 );
+		pWndCombo->AddString(GETTEXT(TID_GAME_GUILDHOUSE_FURKIND))
+			.m_dwData = 0;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_BED ) );
-		pWndCombo->SetItemData( nIndex, IK3_BED );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_BED))
+			.m_dwData = IK3_BED;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_TABLE ) );
-		pWndCombo->SetItemData( nIndex, IK3_TABLE );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_TABLE))
+			.m_dwData = IK3_TABLE;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_SOFA ) );
-		pWndCombo->SetItemData( nIndex, IK3_SOFA );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_SOFA))
+			.m_dwData = IK3_SOFA;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_DESK ) );
-		pWndCombo->SetItemData( nIndex, IK3_DESK );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_DESK))
+			.m_dwData = IK3_DESK;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CHAIR ) );
-		pWndCombo->SetItemData( nIndex, IK3_CHAIR );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CHAIR))
+			.m_dwData = IK3_CHAIR;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CASE ) );
-		pWndCombo->SetItemData( nIndex, IK3_CASE );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CASE))
+			.m_dwData = IK3_CASE;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CLOSET ) );
-		pWndCombo->SetItemData( nIndex, IK3_CLOSET );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CLOSET))
+			.m_dwData = IK3_CLOSET;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_WARDROBE ) );
-		pWndCombo->SetItemData( nIndex, IK3_WARDROBE );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_WARDROBE))
+			.m_dwData = IK3_WARDROBE;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CARPET ) );
-		pWndCombo->SetItemData( nIndex, IK3_CARPET );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CARPET))
+			.m_dwData = IK3_CARPET;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_WALLPAPER ) );
-		pWndCombo->SetItemData( nIndex, IK3_WALLPAPER );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_WALLPAPER))
+			.m_dwData = IK3_WALLPAPER;
 	}
 
 	pWndCombo->SetCurSel( 0 );
@@ -1281,43 +1280,43 @@ void CWndGuildHousing::AutoAddingComboItems( )
 	{
 		int nIndex = -1;
 
-		nIndex = pWndCombo->AddString( GETTEXT(TID_GAME_GUILDHOUSE_FURKIND) );
-		pWndCombo->SetItemData( nIndex, 0 );
+		pWndCombo->AddString(GETTEXT(TID_GAME_GUILDHOUSE_FURKIND))
+			.m_dwData = 0;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_BED ) );
-		pWndCombo->SetItemData( nIndex, IK3_BED );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_BED))
+			.m_dwData = IK3_BED;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_TABLE ) );
-		pWndCombo->SetItemData( nIndex, IK3_TABLE );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_TABLE))
+			.m_dwData = IK3_TABLE;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_SOFA ) );
-		pWndCombo->SetItemData( nIndex, IK3_SOFA );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_SOFA))
+			.m_dwData = IK3_SOFA;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_DESK ) );
-		pWndCombo->SetItemData( nIndex, IK3_DESK );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_DESK))
+			.m_dwData = IK3_DESK;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CHAIR ) );
-		pWndCombo->SetItemData( nIndex, IK3_CHAIR );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CHAIR))
+			.m_dwData = IK3_CHAIR;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CASE ) );
-		pWndCombo->SetItemData( nIndex, IK3_CASE );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CASE))
+			.m_dwData = IK3_CASE;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CLOSET ) );
-		pWndCombo->SetItemData( nIndex, IK3_CLOSET );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CLOSET))
+			.m_dwData = IK3_CLOSET;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_WARDROBE ) );
-		pWndCombo->SetItemData( nIndex, IK3_WARDROBE );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_WARDROBE))
+			.m_dwData = IK3_WARDROBE;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_CARPET ) );
-		pWndCombo->SetItemData( nIndex, IK3_CARPET );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_CARPET))
+			.m_dwData = IK3_CARPET;
 
-		nIndex = pWndCombo->AddString( GETTEXT( TID_MMI_GHOUSE_WALLPAPER ) );
-		pWndCombo->SetItemData( nIndex, IK3_WALLPAPER );
+		pWndCombo->AddString(GETTEXT(TID_MMI_GHOUSE_WALLPAPER))
+			.m_dwData = IK3_WALLPAPER;
 	}
 	else if( GS_TELEPORTER == m_eSection )
 	{
-		int index = pWndCombo->AddString( "TELEPORTER" );
-		pWndCombo->SetItemData( index, 0 );
+		auto & item = pWndCombo->AddString( "TELEPORTER" );
+		item.m_dwData = 0;
 	}
 
 	pWndCombo->SetCurSel( 0 );

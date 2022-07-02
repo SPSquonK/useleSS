@@ -66,8 +66,8 @@ void CWndGuildVote::OnInitialUpdate()
 	pCombo->ResetContent();
 	
 	for (CGuildVote * vote : pGuild->m_votes) {
-		int nIndex = pCombo->AddString(vote->GetTitle() );
-		pCombo->SetItemData( nIndex, vote->GetID() );
+		auto & voteListItem = pCombo->AddString(vote->GetTitle() );
+		voteListItem.m_dwData = vote->GetID();
 	}
 		
 	CWndButton* pWndButton[4];

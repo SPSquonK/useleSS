@@ -2,6 +2,7 @@
 #include "AppDefine.h"
 #include "WndCommand.h"
 #include "FuncTextCmd.h"
+#include <boost/range/adaptor/indexed.hpp>
 
 void CWndCommand::OnDraw( C2DRender* p2DRender ) {
 	CWndListBox::OnDraw( p2DRender );
@@ -17,12 +18,11 @@ void CWndCommand::DrawKoreanDescription(C2DRender * p2DRender) {
 	CPoint pt(3, 3);
 	pt.y -= (nFontHeight)*m_wndScrollBar.GetScrollPos();
 	
-	for (int i = 0; i < m_listItemArray.GetSize(); i++) {
-		LISTITEM * pListItem = (LISTITEM *) m_listItemArray.GetAt(i);
+	for (const auto [i, pListItem] : m_listItemArray | boost::adaptors::indexed(0)) {
 		CPoint point = GetMousePoint();
 		CRect rectHittest = CRect(0, pt.y - 3, 0 + rect.Width(), pt.y + nFontHeight - 3);
 		if (rectHittest.PtInRect(point)) {
-			const TextCmdFunc * pTextCmdFunc = (const TextCmdFunc *)pListItem->m_dwData;
+			const TextCmdFunc * pTextCmdFunc = reinterpret_cast<const TextCmdFunc *>(pListItem.m_dwData);
 			CPoint point2 = point;
 			ClientToScreen(&point2);
 			ClientToScreen(&rectHittest);
@@ -38,7 +38,7 @@ void CWndCommand::OnInitialUpdate()
 { 
 	CWndListBox::OnInitialUpdate(); 
 
-	int nCount = 0, nIndex, nNum = 0;
+	int nCount = 0, nNum = 0;
 
 	for (const auto & func : g_textCmdFuncs) {
 		const TextCmdFunc * pTextCmdFunc = &func;
@@ -53,23 +53,26 @@ void CWndCommand::OnInitialUpdate()
 			if( ::GetLanguage() != LANG_KOR )
 				g_Option.m_nChatCommand = 2;
 
+			CWndListBox::LISTITEM * nIndex = nullptr;
+
 			switch( g_Option.m_nChatCommand )
 			{
 			default:
 			case 0:
-				nIndex = AddString( &(*pTextCmdFunc->m_pKrCommand) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pKrCommand) );
 				break;
 			case 1:
-				nIndex = AddString( &(*pTextCmdFunc->m_pKrAbbreviation) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pKrAbbreviation) );
 				break;
 			case 2:
-				nIndex = AddString( &(*pTextCmdFunc->m_pCommand) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pCommand) );
 				break;
 			case 3:
-				nIndex = AddString( &(*pTextCmdFunc->m_pAbbreviation) );
+				nIndex = &AddString( &(*pTextCmdFunc->m_pAbbreviation) );
 				break;
 			}
-			SetItemDataPtr( nIndex, (void *) (pTextCmdFunc) );
+			
+			nIndex->m_dwData = reinterpret_cast<DWORD>(pTextCmdFunc);
 			nNum++;
 		}
 		nCount++;

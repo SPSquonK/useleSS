@@ -248,6 +248,8 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnSize(UINT nType, int cx, int cy);
+
+	void MouseWheel(short zDelta);
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -689,30 +691,26 @@ public:
 #define WLBS_NOSEL             0x4000L
 #define WLBS_STANDARD          (LBS_NOTIFY | LBS_SORT | WS_VSCROLL | WS_BORDER)
 
+#include <boost/container/stable_vector.hpp>
+
 class CWndListBox : public CWndBase
 {
-	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
-	void PaintListBox(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray);
+	void PaintListBox(C2DRender * p2DRender, CPoint & pt);
 
 public:
-	typedef struct tagITEM
-	{
-		CRect      m_rect;
-		CEditString m_strWord;
-		BOOL		m_bIsValid;
-		BOOL		m_bIsVisible;
-		DWORD      m_dwData;
-		CString    m_strKey;
-		DWORD      m_dwData2;
-		tagITEM( void ) : m_rect( 0, 0, 0, 0 ), m_strWord( _T("") ), m_bIsValid( TRUE ), m_bIsVisible( TRUE ), m_dwData( 0 ), m_strKey( _T("") ), m_dwData2( 0 ) {}
-	} LISTITEM,* LPLISTITEM;
+	struct LISTITEM {
+		CRect       m_rect       = CRect(0, 0, 0, 0);
+		CEditString m_strWord    = _T("");
+		BOOL        m_bIsValid   = TRUE;
+		DWORD       m_dwData     = 0;
+		CString     m_strKey     = _T("");
+	};
 
 protected:
-	CPtrArray m_listItemArray;
-	LPLISTITEM m_pFocusItem;
+	boost::container::stable_vector<LISTITEM> m_listItemArray;
+	LISTITEM * m_pFocusItem;
 	int           m_nCurSelect  ;
 	DWORD         m_nWndColor   ;
-	LISTITEM      m_listItem    ;
 	CWndScrollBar m_wndScrollBar;
 public:
 	DWORD         m_nFontColor  ; 
@@ -735,52 +733,32 @@ public:
 	void* GetItemDataPtr(int nIndex) const;
 	int   SetItemData(int nIndex,DWORD dwItemData);
 	int   SetItemDataPtr(int nIndex,void* pData);
-	DWORD GetItemData2( int nIndex ) const;
-	void* GetItemData2Ptr( int nIndex ) const;
 	BOOL GetItemValidity( int nIndex );
-	BOOL GetItemVisibility( int nIndex );
-	int SetItemData2( int nIndex,DWORD dwItemData );
-	int SetItemData2Ptr( int nIndex,void* pData );
-	int SetItemValidity( int nIndex, BOOL bValidity );
-	int SetItemVisibility( int nIndex, BOOL bIsVisible );
 	const CRect& GetItemRect( int nIndex ) const;
-	int   GetSel(int nIndex) const;
-	int   GetText(int nIndex,LPSTR lpszBuffer) const;
 	void  GetText(int nIndex,CString& rString) const;
 	int   GetTextLen(int nIndex) const;
 	
 	int   GetCurSel() const;
 	int   SetCurSel(int nSelect);
-	int   SetSel(int nIndex,BOOL bSelect = TRUE);
-	int   GetSelCount() const;
-	int   GetSelItems(int nMaxItems,LPINT rgIndex) const;
 	int   GetScrollPos() {return m_wndScrollBar.GetScrollPos();};
 	void  SetScrollPos( int nPos, BOOL bRedraw = TRUE ) { m_wndScrollBar.SetScrollPos( nPos, bRedraw ); }	//gmpbigsun: added
-	int   AddString(LPCTSTR lpszItem);
+	LISTITEM & AddString(LPCTSTR lpszItem);
 	int   DeleteString(UINT nIndex);
-	int   InsertString(int nIndex,LPCTSTR lpszItem);
 	void	SetString( int nIndex, LPCTSTR lpszItem );
 	const CString& GetString( int nIndex ) const;
-	void SetListStringAlpha( int nIndex, BYTE byAlpha );
 	void SetKeyString( int nIndex, LPCTSTR lpszItem );
 	const CString& GetKeyString( int nIndex ) const;
-	void SetOnMouseColor( DWORD dwOnMouseColor );
-	DWORD GetOnMouseColor( void ) const;
-	void SetInvalidColor( DWORD dwInvalidColor );
-	DWORD GetInvalidColor( void ) const;
+
+
 	void SetLeftMargin( int nLeftMargin );
-	int GetLeftMargin( void ) const;
-#ifdef __IMPROVE_MAP_SYSTEM
+
 	int GetItemIndex( const CString& strItem ) const;
 	int GetItemIndex( DWORD dwItem ) const;
-#endif // __IMPROVE_MAP_SYSTEM
+
 	void  ResetContent();
 	int   FindString(int nStartAfter,LPCTSTR lpszItem) const;
-	int   FindStringExact(int nIndexStart,LPCTSTR lpszItem) const;
 	int   SelectString(int nStartAfter,LPCTSTR lpszItem);
 	void  SortListBox();
-
-	void LoadListBoxScript(LPCTSTR lpFileName); 
 
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual void OnInitialUpdate();
@@ -790,15 +768,16 @@ public:
 	virtual void OnRButtonUp(UINT nFlags, CPoint point);
 	virtual void OnRButtonDown(UINT nFlags, CPoint point);
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);
-	virtual void OnRButtonDblClk( UINT nFlags, CPoint point);
 	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL OnEraseBkgnd( C2DRender* p2DRender );
 	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual void OnSetFocus( CWndBase* pOldWnd );
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
-	friend int QSortListBox( const VOID* arg1, const VOID* arg2 );
 };
 // class CListCtrl  CButton
+
+
+#include "WndTListBox.hpp"
 
 /////////////////////////////////////////////////////////////////////////////
 // CListCtrl
@@ -1175,22 +1154,15 @@ public:
 	int SetItemData(int nIndex, DWORD dwItemData);
 	void* GetItemDataPtr(int nIndex) const;
 	int SetItemDataPtr(int nIndex, void* pData);
-#ifdef __IMPROVE_MAP_SYSTEM
+
 	DWORD GetSelectedItemData( void ) const;
 	void GetListBoxText( int nIndex, CString& strString ) const;
 	int GetListBoxTextLength( int nIndex ) const;
 	int GetListBoxSize( void ) const;
-#else // __IMPROVE_MAP_SYSTEM
-	int GetLBText(int nIndex, LPTSTR lpszText) const;
-	void GetLBText(int nIndex, CString& rString) const;
-	int GetLBTextLen(int nIndex) const;
-#endif // __IMPROVE_MAP_SYSTEM
 
 	int SetItemHeight(int nIndex, UINT cyItemHeight);
 	int GetItemHeight(int nIndex) const;
-	int FindStringExact(int nIndexStart, LPCTSTR lpszFind) const;
 	int SetExtendedUI(BOOL bExtended = TRUE);
-	BOOL GetExtendedUI() const;
 	void GetDroppedControlRect(LPRECT lprect) const;
 	BOOL GetDroppedState() const;
 
@@ -1199,7 +1171,7 @@ public:
 	void ShowDropDown(BOOL bShowIt = TRUE);
 
 	// manipulating listbox items
-	int AddString(LPCTSTR lpszString);
+	CWndListBox::LISTITEM & AddString(LPCTSTR lpszString);
 	int DeleteString(UINT nIndex);
 	int InsertString(int nIndex, LPCTSTR lpszString);
 	void ResetContent();

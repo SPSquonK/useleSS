@@ -16,33 +16,16 @@
   WndId : APP_DIALOG - Dialog
 ****************************************************/
 
-CWndDialog::CWndDialog() 
-{ 
-	m_nWordButtonNum = 0;
-	m_nKeyButtonNum = 0;
-	m_nContextButtonNum = 0;
-	m_nNewQuestListNumber = 0;
-	m_nCurrentQuestListNumber = 0;
-	m_nSelectKeyButton = -1;
-	m_pNewQuestListIconTexture = NULL;
-	m_pExpectedQuestListIconTexture = NULL;
-	m_pCurrentQuestListIconTexture = NULL;
-	m_pCompleteQuestListIconTexture = NULL;
-	m_bWordButtonEnable = FALSE;
-	m_dwQuest = 0;
-	ZeroMemory( m_apWndAnswer, sizeof( m_apWndAnswer ) );
-} 
 CWndDialog::~CWndDialog() 
 { 
-	for( int i = 0; i < m_strArray.GetSize(); i++ )
-	{
-		CEditString* pEditString = (CEditString*) m_strArray.GetAt( i );
-		safe_delete( pEditString );
+	for (int i = 0; i < m_strArray.GetSize(); i++) {
+		CEditString * pEditString = (CEditString *)m_strArray.GetAt(i);
+		safe_delete(pEditString);
 	}
-	for( int i = 0; i < 6; i++ )
-		SAFE_DELETE( m_apWndAnswer[ i ] )
-	CWndQuest* pWndQuest = (CWndQuest*)g_WndMng.GetWndBase( APP_QUEST_EX_LIST );
-	if( pWndQuest ) pWndQuest->Update();
+	
+	if (CWndQuest * pWndQuest = CWndBase::GetWndBase<CWndQuest>(APP_QUEST_EX_LIST)) {
+		pWndQuest->Update();
+	}
 } 
 BOOL CWndDialog::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 {
@@ -65,9 +48,9 @@ void CWndDialog::OnDraw( C2DRender* p2DRender )
 	int i;
 	if( m_bSay == TRUE )
 		p2DRender->TextOut_EditString( pt.x, pt.y, m_string, 0, 0, 6 );
-	else if( strcmp( m_aKeyButton[ m_nSelectKeyButton ].szWord, prj.GetText( TID_GAME_NEW_QUEST ) ) == 0 && m_nNewQuestListNumber == 0 )
+	else if( strcmp( m_aKeyButton[ m_nSelectKeyButton ].szWord, prj.GetText( TID_GAME_NEW_QUEST ) ) == 0 && m_newQuestListBox.IsEmpty())
 		p2DRender->TextOut( pt.x + 10, pt.y + 10, prj.GetText( TID_GAME_EMPTY_NEW_QUEST ), D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
-	else if( strcmp( m_aKeyButton[ m_nSelectKeyButton ].szWord, prj.GetText( TID_GAME_CURRENT_QUEST ) ) == 0 && m_nCurrentQuestListNumber == 0 )
+	else if( strcmp( m_aKeyButton[ m_nSelectKeyButton ].szWord, prj.GetText( TID_GAME_CURRENT_QUEST ) ) == 0 && m_currentQuestListBox.IsEmpty())
 		p2DRender->TextOut( pt.x + 10, pt.y + 10, prj.GetText( TID_GAME_EMPTY_CURRENT_QUEST ), D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
 	if( m_bWordButtonEnable )
 	{
@@ -110,10 +93,7 @@ void CWndDialog::OnDraw( C2DRender* p2DRender )
 		p2DRender->TextOut( pKeyButton->rect.left, pKeyButton->rect.top,  pKeyButton->szWord, dwColor );
 		p2DRender->TextOut( pKeyButton->rect.left + 1, pKeyButton->rect.top,  pKeyButton->szWord, dwColor );
 	}
-	if( m_WndNewQuestListBox.IsVisible() == TRUE )
-		RenderNewQuestListIcon( p2DRender );
-	else if( m_WndCurrentQuestListBox.IsVisible() == TRUE )
-		RenderCurrentQuestListIcon( p2DRender );
+
 	for( i = 0; i < m_nContextButtonNum; i++ )
 	{
 		DWORD dwColor = 0xff101010;
@@ -226,44 +206,41 @@ void CWndDialog::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-	CWndGroupBox* pWndGroupBox = ( CWndGroupBox* )GetDlgItem( WIDC_GROUP_BOX_TITLE );
-	if( pWndGroupBox )
-	{
-		pWndGroupBox->m_dwColor = D3DCOLOR_ARGB( 255, 128, 0, 64 );
-		pWndGroupBox->SetTitle( prj.GetText( TID_GAME_DIALOG ) );
+	if (CWndGroupBox * pWndGroupBox = dynamic_cast<CWndGroupBox *>(GetDlgItem(WIDC_GROUP_BOX_TITLE))) {
+		// TODO: CWndGroupBox is never instanciated. Is it in v21 source code?
+		pWndGroupBox->m_dwColor = D3DCOLOR_ARGB(255, 128, 0, 64);
+		pWndGroupBox->SetTitle(prj.GetText(TID_GAME_DIALOG));
 	}
 
-	m_pNewQuestListIconTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "QuestUiPaperGreen.tga" )), 0xffffffff );
-	m_pExpectedQuestListIconTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "QuestUiPaperRed.tga" )), 0xffffffff );
-	m_pCurrentQuestListIconTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "QuestUiPaperGray.tga" )), 0xffffffff );
-	m_pCompleteQuestListIconTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "QuestUiPaperYellow.tga" )), 0xffffffff );
 
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 	lpWndCtrl->dwWndStyle |= WBS_VSCROLL;
 
-	static const int QUEST_LIST_SELECT_COLOR = 0xffff0000;
-	static const int QUEST_LIST_LINE_SPACE = 3;
+	static constexpr int QUEST_LIST_SELECT_COLOR = 0xffff0000;
+	static constexpr int QUEST_LIST_LINE_SPACE = 3;
 
-	m_WndNewQuestListBox.Create( lpWndCtrl->dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
-	m_WndNewQuestListBox.m_nSelectColor = QUEST_LIST_SELECT_COLOR;
-	m_WndNewQuestListBox.m_nLineSpace = QUEST_LIST_LINE_SPACE;
-	if( m_pNewQuestListIconTexture )
-		m_WndNewQuestListBox.SetLeftMargin( m_pNewQuestListIconTexture->m_size.cx );
-	m_WndNewQuestListBox.SetVisible( FALSE );
+	m_newQuestListBox.Create( lpWndCtrl->dwWndStyle, lpWndCtrl->rect, this, WIDC_NewQuests);
+	m_newQuestListBox.ChangeSelectColor(QUEST_LIST_SELECT_COLOR);
+	m_newQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
+	m_newQuestListBox.SetVisible( FALSE );
 
-	m_WndCurrentQuestListBox.Create( lpWndCtrl->dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
-	m_WndCurrentQuestListBox.m_nSelectColor = QUEST_LIST_SELECT_COLOR;
-	m_WndCurrentQuestListBox.m_nLineSpace = QUEST_LIST_LINE_SPACE;
-	if( m_pCurrentQuestListIconTexture )
-		m_WndCurrentQuestListBox.SetLeftMargin( m_pCurrentQuestListIconTexture->m_size.cx );
-	m_WndCurrentQuestListBox.SetVisible( FALSE );
+	m_newQuestListBox.displayer.m_pNewQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGreen.tga")), 0xffffffff);
+	m_newQuestListBox.displayer.m_pExpectedQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperRed.tga")), 0xffffffff);
+	m_newQuestListBox.displayer.xOffset = m_newQuestListBox.displayer.m_pNewQuestListIconTexture->m_size.cx;
+
+
+	m_currentQuestListBox.Create( lpWndCtrl->dwWndStyle, lpWndCtrl->rect, this, WIDC_CurrentQuests);
+	m_currentQuestListBox.ChangeSelectColor(QUEST_LIST_SELECT_COLOR);
+	m_currentQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
+	m_currentQuestListBox.SetVisible( FALSE );
+
+	m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGray.tga")), 0xffffffff);
+	m_currentQuestListBox.displayer.m_pCompleteQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperYellow.tga")), 0xffffffff);
+	m_currentQuestListBox.displayer.xOffset = m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture->m_size.cx;
+
+
 	
-	CWndBase* pWndBase = (CWndBase*)g_WndMng.GetApplet( APP_INVENTORY );
-
-	if( pWndBase )
-	{
-		pWndBase->Destroy();
-	}
+	Windows::DestroyIfOpened(APP_INVENTORY);
 	
 	CMover* pMover = prj.GetMover( m_idMover );
 	if( pMover == NULL ) return;
@@ -350,22 +327,22 @@ void CWndDialog::OnLButtonUp( UINT nFlags, CPoint point )
 			m_bSay = FALSE;
 			BeginText();
  			LPWNDCTRL lpWndCustom1 = GetWndCtrl( WIDC_CUSTOM1 );
-			if( strcmp( m_aKeyButton[ i ].szWord, prj.GetText( TID_GAME_NEW_QUEST ) ) == 0 && m_nNewQuestListNumber > 0 )
+			if( strcmp( m_aKeyButton[ i ].szWord, prj.GetText( TID_GAME_NEW_QUEST ) ) == 0 && !m_newQuestListBox.IsEmpty())
 			{
-				m_WndNewQuestListBox.SetVisible( TRUE );
-				m_WndNewQuestListBox.SetFocus();
-				m_WndCurrentQuestListBox.SetVisible( FALSE );
+				m_newQuestListBox.SetVisible( TRUE );
+				m_newQuestListBox.SetFocus();
+				m_currentQuestListBox.SetVisible( FALSE );
 			}
-			else if( strcmp( m_aKeyButton[ i ].szWord, prj.GetText( TID_GAME_CURRENT_QUEST ) ) == 0 && m_nCurrentQuestListNumber > 0 )
+			else if( strcmp( m_aKeyButton[ i ].szWord, prj.GetText( TID_GAME_CURRENT_QUEST ) ) == 0 && !m_currentQuestListBox.IsEmpty())
 			{
-				m_WndCurrentQuestListBox.SetVisible( TRUE );
-				m_WndCurrentQuestListBox.SetFocus();
-				m_WndNewQuestListBox.SetVisible( FALSE );
+				m_currentQuestListBox.SetVisible( TRUE );
+				m_currentQuestListBox.SetFocus();
+				m_newQuestListBox.SetVisible( FALSE );
 			}
 			else
 			{
-				m_WndNewQuestListBox.SetVisible( FALSE );
-				m_WndCurrentQuestListBox.SetVisible( FALSE );
+				m_newQuestListBox.SetVisible( FALSE );
+				m_currentQuestListBox.SetVisible( FALSE );
 				RunScript( m_aKeyButton[i].szKey, m_aKeyButton[i].dwParam, m_aKeyButton[i].dwParam2 );
 			}
 			MakeKeyButton();
@@ -555,7 +532,7 @@ void CWndDialog::BeginText()
 	{
 		if( m_apWndAnswer[ i ] )
 			m_apWndAnswer[ i ]->Destroy( TRUE );
-		m_apWndAnswer[ i ] = NULL;
+		[[maybe_unused]] CWndBase * willBeDeletedByDestroy = m_apWndAnswer[ i ].release();
 	}
 }
 void CWndDialog::MakeContextButton()
@@ -675,10 +652,8 @@ void CWndDialog::AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam,
 }
 void CWndDialog::RemoveAllKeyButton()
 {
-	m_WndNewQuestListBox.ResetContent();
-	m_nNewQuestListNumber = 0;
-	m_WndCurrentQuestListBox.ResetContent();
-	m_nCurrentQuestListNumber = 0;
+	m_newQuestListBox.ResetContent();
+	m_currentQuestListBox.ResetContent();
 	m_nKeyButtonNum = 0;
 	EndSay();
 }
@@ -798,8 +773,9 @@ void CWndDialog::MakeAnswerButton()
 		CString strTexture;
 		int nWndId = 0;
 		int j = 0;
-		for( int i = 0; i < 6; i++ )
-			SAFE_DELETE( m_apWndAnswer[ i ] )
+
+		std::ranges::generate(m_apWndAnswer, [] { return nullptr; });
+
 		for( int i = 0; i < m_nWordButtonNum; i++ )
 		{
 			WORDBUTTON* pWordButton = &m_aWordButton[ i ];
@@ -829,11 +805,11 @@ void CWndDialog::MakeAnswerButton()
 			}
 			if(	nWndId )
 			{
-				m_apWndAnswer[ j ] = new CWndAnswer;
+				m_apWndAnswer[ j ] = std::make_unique<CWndAnswer>();
 				m_apWndAnswer[ j ]->Create( "", WBS_CHILD, rect, this, nWndId );
 				m_apWndAnswer[ j ]->SetTexture( D3DDEVICE, MakePath( DIR_THEME, strTexture ), 1 );
 				m_apWndAnswer[ j ]->FitTextureSize();
-				m_apWndAnswer[ j ]->m_pWordButton = (WORDBUTTON*)	pWordButton;
+				m_apWndAnswer[ j ]->m_pWordButton = pWordButton;
 				j++;
 			}
 			x += 90;
@@ -879,68 +855,57 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	case WIDC_CANCEL:
 		{
 			CWndAnswer* pWndAnswer = (CWndAnswer*)pLResult;
-			WORDBUTTON* pWordButton = (WORDBUTTON*)pWndAnswer->m_pWordButton;
+			const WORDBUTTON* pWordButton = pWndAnswer->m_pWordButton;
 			BeginText();
 			RunScript( pWordButton->szKey,  pWordButton->dwParam,  pWordButton->dwParam2 );
 			MakeKeyButton();
 			UpdateButtonEnable();
 		}
 		break;
-	case WIDC_CUSTOM1:
-		{
-			if( m_WndNewQuestListBox.IsVisible() == TRUE && m_WndCurrentQuestListBox.IsVisible() == FALSE )
-			{
-				for( int i = 0; i < m_nNewQuestListNumber; ++i )
-				{
-					CRect rect = m_WndNewQuestListBox.GetItemRect( i );
-					CPoint point = m_WndNewQuestListBox.GetMousePoint();
-					if( rect.PtInRect( point ) )
-					{
-						if( strcmp( m_WndNewQuestListBox.GetKeyString( i ), "QUEST_NEXT_LEVEL" ) != 0 )
-						{
-							m_bSay = FALSE;
-							m_WndNewQuestListBox.SetVisible( FALSE );
-							BeginText();
-							RunScript( m_WndNewQuestListBox.GetKeyString( i ), m_WndNewQuestListBox.GetItemData( i ), m_WndNewQuestListBox.GetItemData2( i ) );
-							MakeKeyButton();
-							UpdateButtonEnable();
-						}
-					}
-				}
+	case WIDC_NewQuests: {
+		ListedQuest * quest = m_newQuestListBox.GetCurSelItem();
+		if (quest) {
+			if (quest->strKey != "QUEST_NEXT_LEVEL") {
+				m_bSay = FALSE;
+				m_newQuestListBox.SetVisible(FALSE);
+				BeginText();
+				RunScript(quest->strKey, 0, quest->questId.get());
+				MakeKeyButton();
+				UpdateButtonEnable();
 			}
-			else if( m_WndNewQuestListBox.IsVisible() == FALSE && m_WndCurrentQuestListBox.IsVisible() == TRUE )
-			{
-				for( int i = 0; i < m_nCurrentQuestListNumber; ++i )
-				{
-					CRect rect = m_WndCurrentQuestListBox.GetItemRect( i );
-					CPoint point = m_WndCurrentQuestListBox.GetMousePoint();
-					if( rect.PtInRect( point ) )
-					{
-						m_bSay = FALSE;
-						m_WndCurrentQuestListBox.SetVisible( FALSE );
-						BeginText();
-						RunScript( m_WndCurrentQuestListBox.GetKeyString( i ), m_WndCurrentQuestListBox.GetItemData( i ), m_WndCurrentQuestListBox.GetItemData2( i ) );
-						MakeKeyButton();
-						UpdateButtonEnable();
-					}
-				}
-			}
-			break;
 		}
+		break;
+	}
+	case WIDC_CurrentQuests: {
+		ListedQuest * quest = m_currentQuestListBox.GetCurSelItem();
+		if (quest) {
+			m_bSay = FALSE;
+			m_currentQuestListBox.SetVisible(FALSE);
+			BeginText();
+			RunScript(quest->strKey, 0, quest->questId.get());
+			MakeKeyButton();
+			UpdateButtonEnable();
+		}
+		break;
+	}
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-void CWndDialog::AddNewQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest )
-{
-	MakeQuestKeyButton( prj.GetText( TID_GAME_NEW_QUEST ) );
-	AddQuestList( m_WndNewQuestListBox, m_nNewQuestListNumber, lpszWord, lpszKey, dwParam, dwQuest );
+void CWndDialog::AddQuestInList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const QuestId dwQuest, const bool isNewQuest) {
+	const auto [elem, isValid] = MakeListedQuest(lpszWord, lpszKey, dwQuest);
+
+	// TODO: we should check if the quest is not already listed
+
+	if (isNewQuest) {
+		MakeQuestKeyButton(prj.GetText(TID_GAME_NEW_QUEST));
+		m_newQuestListBox.Add(elem, isValid);
+	} else {
+		MakeQuestKeyButton(prj.GetText(TID_GAME_CURRENT_QUEST));
+		m_currentQuestListBox.Add(elem, isValid);
+	}
 }
-void CWndDialog::AddCurrentQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest )
-{
-	MakeQuestKeyButton( prj.GetText( TID_GAME_CURRENT_QUEST ) );
-	AddQuestList( m_WndCurrentQuestListBox, m_nCurrentQuestListNumber, lpszWord, lpszKey, dwParam, dwQuest );
-}
+
 void CWndDialog::MakeQuestKeyButton( const CString& rstrKeyButton )
 {
 	WORDBUTTON* lpKeyButton = NULL;
@@ -959,63 +924,64 @@ void CWndDialog::MakeQuestKeyButton( const CString& rstrKeyButton )
 	++m_nKeyButtonNum;
 	EndSay();
 }
-void CWndDialog::RenderNewQuestListIcon( C2DRender* p2DRender )
-{
-	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
-	if( lpWndCtrl == NULL || m_pNewQuestListIconTexture == NULL || m_pExpectedQuestListIconTexture == NULL )
-		return;
-	POINT pt = lpWndCtrl->rect.TopLeft();
-	for( int i = 0; i < m_WndNewQuestListBox.GetCount(); ++i )
-	{
-		CRect rectItem = m_WndNewQuestListBox.GetItemRect( i );
-		int nRenderPositionX = pt.x + rectItem.left;
-		int nRenderPositionY = pt.y + rectItem.top;
-		if( ( nRenderPositionY >= lpWndCtrl->rect.top ) && ( nRenderPositionY + rectItem.Height() <= lpWndCtrl->rect.bottom ) )
-		{
-			if( m_WndNewQuestListBox.GetItemValidity( i ) == FALSE )
-				p2DRender->RenderTexture( CPoint( nRenderPositionX, nRenderPositionY ), m_pExpectedQuestListIconTexture );
-			else
-				p2DRender->RenderTexture( CPoint( nRenderPositionX, nRenderPositionY ), m_pNewQuestListIconTexture );
-		}
-	}
+
+void CWndDialog::NewQuestDisplayer::Render(
+	C2DRender * p2DRender, CRect rect,
+	ListedQuest & quest, DWORD color,
+	const WndTListBox::DisplayArgs & misc
+) const {
+	CTexture * icon = misc.isValid ? m_pNewQuestListIconTexture : m_pExpectedQuestListIconTexture;
+	p2DRender->RenderTexture(rect.TopLeft(), icon);
+
+	quest.displayName.SetColor(color);
+	p2DRender->TextOut_EditString(xOffset + rect.left, rect.top, quest.displayName);
 }
-void CWndDialog::RenderCurrentQuestListIcon( C2DRender* p2DRender )
-{
-	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
-	if( lpWndCtrl == NULL || m_pCurrentQuestListIconTexture == NULL || m_pCompleteQuestListIconTexture == NULL )
-		return;
-	POINT pt = lpWndCtrl->rect.TopLeft();
-	for( int i = 0; i < m_WndCurrentQuestListBox.GetCount(); ++i )
-	{
-		CRect rectItem = m_WndCurrentQuestListBox.GetItemRect( i );
-		int nRenderPositionX = pt.x + rectItem.left;
-		int nRenderPositionY = pt.y + rectItem.top;
-		if( ( nRenderPositionY >= lpWndCtrl->rect.top ) && ( nRenderPositionY + rectItem.Height() <= lpWndCtrl->rect.bottom ) )
-		{
-			if( __IsEndQuestCondition( g_pPlayer->GetActiveMover(), m_WndCurrentQuestListBox.GetItemData2( i ) ) )
-				p2DRender->RenderTexture( CPoint( nRenderPositionX, nRenderPositionY ), m_pCompleteQuestListIconTexture );
-			else
-				p2DRender->RenderTexture( CPoint( nRenderPositionX, nRenderPositionY ), m_pCurrentQuestListIconTexture );
-		}
-	}
+
+void CWndDialog::CurrentQuestDisplayer::Render(
+	C2DRender * p2DRender, CRect rect,
+	ListedQuest & quest, DWORD color,
+	const WndTListBox::DisplayArgs &
+) const {
+	CTexture * icon = __IsEndQuestCondition(g_pPlayer->GetActiveMover(), quest.questId.get())
+		? m_pCompleteQuestListIconTexture
+		: m_pCurrentQuestListIconTexture;
+	p2DRender->RenderTexture(rect.TopLeft(), icon);
+
+	quest.displayName.SetColor(color);
+	p2DRender->TextOut_EditString(xOffset + rect.left, rect.top, quest.displayName);
 }
-void CWndDialog::AddQuestList( CWndListBox& pWndListBox, int& nQuestListNumber, const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest )
+
+
+std::pair<CWndDialog::ListedQuest, bool> CWndDialog::MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, const QuestId dwQuest)
 {
-	for( int i = 0; i < nQuestListNumber; ++i )
-	{
-		CString strQuestList = pWndListBox.GetString( i );
-		if( strcmp( strQuestList, lpszWord ) == 0 )
-			return;
-	}
+	//for( int i = 0; i < nQuestListNumber; ++i )
+	//{
+	//	CString strQuestList = pWndListBox.GetString( i );
+	//	if( strcmp( strQuestList, lpszWord ) == 0 )
+	//		return;
+	//}
+	CWndDialog::ListedQuest listed;
+
 	CEditString strTitleWord = _T( "" );
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuest );
-	if( pQuestProp )
-		strTitleWord.Format( _T( "[#b%d#nb~#b%d#nb ] #b%s#nb" ), pQuestProp->m_nBeginCondLevelMin, pQuestProp->m_nBeginCondLevelMax, lpszWord );
-	pWndListBox.AddString( strTitleWord );
-	if( strcmp( lpszKey, _T( "QUEST_NEXT_LEVEL" ) ) == 0 )
-		pWndListBox.SetItemValidity( nQuestListNumber, FALSE );
-	pWndListBox.SetKeyString( nQuestListNumber, lpszKey );
-	pWndListBox.SetItemData( nQuestListNumber, dwParam );
-	pWndListBox.SetItemData2( nQuestListNumber, dwQuest );
-	++nQuestListNumber;
+	const QuestProp* pQuestProp = dwQuest.GetProp();
+	if (pQuestProp) {
+		strTitleWord.Format(
+			_T("[#b%d#nb~#b%d#nb ] #b%s#nb"),
+			pQuestProp->m_nBeginCondLevelMin,
+			pQuestProp->m_nBeginCondLevelMax,
+			lpszWord
+		);
+	} else {
+		strTitleWord = lpszKey;
+	}
+	
+	const bool isValid = lpszKey != std::string_view(_T("QUEST_NEXT_LEVEL"));
+	listed.strKey = lpszKey;
+	listed.questId = dwQuest;
+
+	CRect rect = GetClientRect();
+	listed.displayName.Init(m_pFont, &rect);
+	listed.displayName.SetParsingString(strTitleWord.GetString(), 0xFF3C3C3C, 0x00000000, 0, 0x00000001, TRUE);
+
+	return std::make_pair(listed, isValid);
 }

@@ -102,6 +102,10 @@ public:
 		return *this;
 	}
 
+	// Avoid implicit cast of pointers to an integer type when sending
+	template<typename T> requires (std::is_pointer_v<T>)
+	CAr & operator<<(T t) = delete;
+
 	// extraction operations
 	CAr& operator>>(BYTE& by);
 	CAr& operator>>(WORD& w);

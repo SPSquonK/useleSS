@@ -311,6 +311,7 @@ public:
 	void			AddSetGrowthLearningPoint( long nRemainGP );
 	void			AddSetStatLevel( CHAR chID, long nValue, long nRemainGP );
 	void			AddDefinedText( int dwText, LPCSTR lpszFormat, ... );
+	void AddDefinedTextAlreadyFormatted(int dwText, const TCHAR * formattedString);
 	void			AddChatText( int dwText, LPCSTR lpszFormat, ... );
 	void			AddDefinedText( int dwText );
 	void			AddDefinedCaption( BOOL bSmall, int dwText, LPCSTR lpszFormat, ... );

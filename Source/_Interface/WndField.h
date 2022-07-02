@@ -1113,46 +1113,63 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
+struct GuildCombatPlayer {
+	CString display;
+	u_long playerId;
+
+	explicit GuildCombatPlayer(u_long playerId);
+
+	void Render(
+		C2DRender * p2DRender, CRect rect,
+		DWORD color, const WndTListBox::DisplayArgs & misc
+	) const;
+
+	struct ById {
+		u_long playerId;
+
+		explicit ById(u_long playerId) : playerId(playerId) {}
+
+		[[nodiscard]] bool operator()(const GuildCombatPlayer & gcp) const {
+			return gcp.playerId == playerId;
+		}
+	};
+};
 
 
-class CWndGuildCombatSelection : public CWndNeuz
-{
-protected:	
-	std::multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 길드리스트...레벨소팅
-
-	std::vector<u_long>					m_vecGuildList   ;   // 길드 리스트
-	std::vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트..
-
-	u_long							m_uidDefender;
-	CTexture						m_TexDefender;
-	int								m_nDefenderIndex;
-	
-	int								nMaxJoinMember;
-	int								nMaxWarMember;
+class CWndGuildCombatSelection : public CWndNeuz {
+private:	
+	u_long   m_uidDefender = -1;
+	int      nMaxJoinMember = 0;
+	int      nMaxWarMember = 0;
+	CTexture m_TexDefender;
 	
 public: 
-	void Reset();
 	CWndGuildCombatSelection();
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
+	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void	OnDraw( C2DRender* p2DRender ) override;
+	void	OnInitialUpdate() override;
 	void			EnableFinish( BOOL bFlag );		
 
+	void Reset();
 	void			SetDefender( u_long uiPlayer );
 	void			UpDateGuildListBox();
 
-	void			AddCombatPlayer( u_long uiPlayer );
-	void			AddGuildPlayer( u_long uiPlayer );
+	void			SetMemberSize(int nMaxJoin, int nMaxWar);
 
-	void			RemoveCombatPlayer( int nIndex ) ;
-	void			RemoveGuildPlayer( int nIndex ) ;
+	void ReceiveLineup(const std::vector<u_long> & members, u_long defenderId);
 
-	u_long			FindCombatPlayer( u_long uiPlayer );
-	u_long			FindGuildPlayer( u_long uiPlayer );
+private:
+	CWndTListBox<GuildCombatPlayer> & SelectablePlayers();
+	CWndTListBox<GuildCombatPlayer> & CombatPlayers();
 
-	void			SetMemberSize( int nMaxJoin,  int nMaxWar );
+	bool OnConnectedToCombat();
+	bool OnCombatToConnected();
+	bool OnMoveUp();
+	bool OnMoveDown();
+	bool OnFinish();
+	bool OnChooseDefender();
 }; 
 
 class CWndGuildCombatState : public CWndNeuz 

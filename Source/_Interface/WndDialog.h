@@ -1,57 +1,90 @@
-#ifndef __WNDDIALOG2__H
-#define __WNDDIALOG2__H
+#pragma once
 
-class CWndAnswer : public CWndButton
-{
-public:
-	LPVOID m_pWordButton;
-};
+#include <array>
+#include <memory>
+#include "WndTListBox.hpp"
 
 class CWndDialog : public CWndNeuz 
 { 
-	CWndAnswer* m_apWndAnswer[ 6 ];
+public:
+	static constexpr UINT WIDC_NewQuests = 901;
+	static constexpr UINT WIDC_CurrentQuests = 902;
+
+	struct WORDBUTTON {
+		BOOL bStatus;
+		CRect rect;
+		TCHAR szWord[64];
+		TCHAR szKey[64];
+		DWORD dwParam;
+		DWORD dwParam2;
+		int nLinkIndex; // Index to concatenate if word is broken by a newline
+	};
+
+	class CWndAnswer : public CWndButton {
+	public:
+		const WORDBUTTON * m_pWordButton;
+	};
+
+private:
+	std::array<std::unique_ptr<CWndAnswer>, 6> m_apWndAnswer;
+
 public: 
 	CTimer m_timer;
 	CTexture m_texChar;
-	BOOL m_bWordButtonEnable;
-	int m_nWordButtonNum;
-	int m_nKeyButtonNum;
-	int m_nContextButtonNum;
-	int m_nNewQuestListNumber;
-	int m_nCurrentQuestListNumber;
-	int m_nSelectKeyButton;
+	BOOL m_bWordButtonEnable = FALSE;
+	int m_nWordButtonNum = 0;
+	int m_nKeyButtonNum  = 0;
+	int m_nContextButtonNum = 0;
+	int m_nSelectKeyButton = - 1;
 	CUIntArray m_aContextMark[ 32 ];
-	struct WORDBUTTON 
-	{
-		BOOL bStatus;
-		CRect rect; 
-		TCHAR szWord[ 64 ];
-		TCHAR szKey[ 64 ];
-		DWORD dwParam;
-		DWORD dwParam2;
-		int nLinkIndex; // 줄바꿈으로 단어가 끊어진 경우 연결하기 위한 인덱스 
-	};
+
 	WORDBUTTON m_aWordButton[ 32 ];
 	WORDBUTTON m_aKeyButton[ 32 ];
 	WORDBUTTON m_aContextButton[ 32 ];
 	CEditString m_string;
 
-	DWORD m_dwQuest;// context 버튼에서 사용함 
+	DWORD m_dwQuest = 0;// context 버튼에서 사용함 
 	BOOL m_bSay;
 	int m_nCurArray;
 	CPtrArray m_strArray;
 	OBJID m_idMover;
 	CMapStringToString m_mapWordToOriginal;
+
+	struct ListedQuest {
+		CEditString displayName;
+		CString strKey;
+		QuestId questId;
+	};
+
 private:
-	CWndListBox m_WndNewQuestListBox;
-	CWndListBox m_WndCurrentQuestListBox;
-	CTexture* m_pNewQuestListIconTexture;
-	CTexture* m_pExpectedQuestListIconTexture;
-	CTexture* m_pCurrentQuestListIconTexture;
-	CTexture* m_pCompleteQuestListIconTexture;
+	struct NewQuestDisplayer {
+		CTexture * m_pExpectedQuestListIconTexture = nullptr;
+		CTexture * m_pNewQuestListIconTexture = nullptr;
+		int xOffset = 0;
+
+		void Render(
+			C2DRender * p2DRender, CRect rect,
+			ListedQuest & quest, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	struct CurrentQuestDisplayer {
+		CTexture * m_pCompleteQuestListIconTexture = nullptr;
+		CTexture * m_pCurrentQuestListIconTexture = nullptr;
+		int xOffset = 0;
+
+		void Render(
+			C2DRender * p2DRender, CRect rect,
+			ListedQuest & quest, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	CWndTListBox<ListedQuest, NewQuestDisplayer> m_newQuestListBox;
+	CWndTListBox<ListedQuest, CurrentQuestDisplayer> m_currentQuestListBox;
+
 public:
 	 
-	CWndDialog(); 
+	CWndDialog() = default;
 	~CWndDialog(); 
 
 	void RemoveAllKeyButton();
@@ -68,14 +101,11 @@ public:
 	void UpdateButtonEnable();
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	void RunScript( const char* szKey, DWORD dwParam, DWORD dwQuest );
-	void AddNewQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
-	void AddCurrentQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
+	void AddQuestInList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest, bool isNewQuest);
 	void MakeQuestKeyButton( const CString& rstrKeyButton );
 
 private:
-	void RenderNewQuestListIcon( C2DRender* p2DRender );
-	void RenderCurrentQuestListIcon( C2DRender* p2DRender );
-	void AddQuestList( CWndListBox& pWndListBox, int& nQuestListNumber, const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
+	std::pair<ListedQuest, bool> MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest);
 
 public:
 
@@ -90,4 +120,4 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnMouseWndSurface( CPoint point);
 }; 
-#endif
+

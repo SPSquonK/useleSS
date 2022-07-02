@@ -414,11 +414,39 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 	}
 	return 1;
 }
+
+static void AddQuestKeys(
+	int nPcId,
+	std::vector<QuestId> & vecNewQuest,
+	std::vector<QuestId> & vecNextQuest,
+	std::vector<QuestId> & vecEndQuest,
+	std::vector<QuestId> & vecCurrQuest
+) {
+	// sort
+	__QuestSort(vecNewQuest);
+	__QuestSort(vecNextQuest);
+	__QuestSort(vecEndQuest);
+	__QuestSort(vecCurrQuest);
+
+	// send
+	for (const QuestId questId : vecNewQuest)
+		__AddQuestKey(nPcId, questId, "QUEST_BEGIN", true);
+		
+	for (const QuestId questId : vecNextQuest)
+		__AddQuestKey(nPcId, questId, "QUEST_NEXT_LEVEL", true);
+
+	for (const QuestId questId : vecEndQuest)
+		__AddQuestKey(nPcId, questId, "QUEST_END", false);
+
+	for (const QuestId questId : vecCurrQuest)
+		__AddQuestKey(nPcId, questId, "QUEST_END", false);
+}
+
 //int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam = 0 )
-int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam, BOOL bNew )
+int __AddQuestKey( int nPcId, QuestId nQuestId, LPCTSTR lpKey, bool bNew )
 {
 	CHAR szWord[ 128 ], szKey[ 128 ];
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
+	const QuestProp * pQuestProp = nQuestId.GetProp();
 	if( pQuestProp )
 		strcpy( szWord, pQuestProp->m_szTitle );
 	if( lpKey[0] == '\0' ) 
@@ -434,8 +462,8 @@ int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam, BOOL bNew
 		rsf.wFuncType		= FUNCTYPE_CURRQUEST;
 	lstrcpy( rsf.lpszVal1, szWord );
 	lstrcpy( rsf.lpszVal2, szKey );
-	rsf.dwVal1	= nParam;
-	rsf.dwVal2 = nQuestId;
+	rsf.dwVal1	= 0;
+	rsf.dwVal2 = nQuestId.get();
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
 }
@@ -499,21 +527,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId, BOOL bButtOK
 			}
 		}
 
-		// sort
-		__QuestSort( vecNewQuest );
-		__QuestSort( vecNextQuest );
-		__QuestSort( vecEndQuest );
-		__QuestSort( vecCurrQuest );
-
-		// send
-		for( DWORD i = 0; i < vecNewQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecNewQuest[ i ].get(), "QUEST_BEGIN", 0, TRUE);
-		for( DWORD i = 0; i < vecNextQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecNextQuest[ i ].get(), "QUEST_NEXT_LEVEL", 0, TRUE );
-		for( DWORD i = 0; i < vecEndQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecEndQuest[ i ].get(), "QUEST_END", 0, FALSE );
-		for( DWORD i = 0; i < vecCurrQuest.size(); ++i )
-			__AddQuestKey( nPcId, vecCurrQuest[ i ].get(), "QUEST_END", 0, FALSE );
+		AddQuestKeys(nPcId, vecNewQuest, vecNextQuest, vecEndQuest, vecCurrQuest);
 	}
 	
 	BOOL bDialogText = TRUE;
@@ -650,21 +664,9 @@ void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId )
 				}
 			}
 			
-			// sort
-			__QuestSort( vecNewQuest );
-			__QuestSort( vecNextQuest );
-			__QuestSort( vecEndQuest );
-			__QuestSort( vecCurrQuest );
 			
-			// send
-			for( DWORD i = 0; i < vecNewQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecNewQuest[ i ].get(), "QUEST_BEGIN", 0, TRUE);
-			for( DWORD i = 0; i < vecNextQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecNextQuest[ i ].get(), "QUEST_NEXT_LEVEL", 0, TRUE);
-			for( DWORD i = 0; i < vecEndQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecEndQuest[ i ].get(), "QUEST_END", 0, FALSE);
-			for( DWORD i = 0; i < vecCurrQuest.size(); ++i )
-				__AddQuestKey( nPcId, vecCurrQuest[ i ].get(), "QUEST_END", 0, FALSE);
+
+			AddQuestKeys(nPcId, vecNewQuest, vecNextQuest, vecEndQuest, vecCurrQuest);
 		}
 		pMover->m_pNpcProperty->RunDialog( "#questBeginYes", NULL, 0, nNpcId, nPcId, nQuestId );
 	}

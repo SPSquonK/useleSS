@@ -13,7 +13,7 @@ int __RemoveAllKey( int nPcId );
 int __SayQuest( int nPcId,int nQuestId, int nIdx );
 int __RunQuest( int nPcId, int nNpcId, int nQuestId );
 int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition = TRUE );
-int __AddQuestKey( int nPcId, int nQuestId, LPCTSTR lpKey, int nParam = 0, BOOL bNew = FALSE );
+int __AddQuestKey( int nPcId, QuestId nQuestId, LPCTSTR lpKey, bool bNew);
 void __QuestBegin( int nPcId, int nNpcId, int nQuestId );
 void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, int nQuestId = 0, BOOL bButtOK = FALSE );
 void __QuestBeginYes( int nPcId, int nNpcId, int nQuestId );

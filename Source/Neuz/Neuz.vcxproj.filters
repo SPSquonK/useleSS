@@ -1898,6 +1898,9 @@
     <ClInclude Include="..\_Interface\WndEquipmentSex.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Interface\WndTListBox.hpp">
+      <Filter>Source Files\_Interface\WndBase</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

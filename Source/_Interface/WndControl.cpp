@@ -16,6 +16,7 @@
 
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
+#include <boost/range/adaptor/indexed.hpp>
 
 #define EDIT_HEIGHT 8
 #define VSCROLL_WIDTH 16
@@ -1618,9 +1619,8 @@ void CWndScrollBar::OnSize(UINT nType, int cx, int cy)
 
 CWndListBox::CWndListBox()
 {
-	m_nWndColor    = D3DCOLOR_ARGB( 255,  0x5 << 3,  0x5 << 3,  0x5 << 3 );
+	m_nWndColor    = D3DCOLOR_ARGB( 255,  40,  40,  40 );
 	m_nFontColor   = D3DCOLOR_ARGB( 255, 64, 64, 64 );
-	//m_nSelectColor = D3DCOLOR_ARGB( 255, 64, 64, 0   );
 	m_nSelectColor = D3DCOLOR_ARGB( 255, 64, 64,  255   );
 	m_dwOnMouseColor = D3DCOLOR_ARGB( 255, 255, 128, 0 );
 	m_dwInvalidColor = D3DCOLOR_ARGB( 255, 170, 170, 170 );
@@ -1638,33 +1638,9 @@ CWndListBox::~CWndListBox()
 }
 void CWndListBox::Create( DWORD dwListBoxStyle, RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
-	//m_dwListBoxStyle = dwListBoxStyle;
 	CWndBase::Create( dwListBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
 }
-void CWndListBox::LoadListBoxScript(LPCTSTR lpFileName) 
-{
-	CScanner scanner;
- 	if(scanner.Load(lpFileName) == FALSE)
-		return;
-	scanner.GetToken(); // keyword
-	do {
-		InterpriteScript(scanner,m_listItemArray);
-		scanner.GetToken(); // keyword
-	} while(scanner.tok != FINISHED);
 
-}
-void CWndListBox::InterpriteScript(CScanner& scanner,CPtrArray& ptrArray) 
-{
-	do {
-		LPLISTITEM lpListItem = new LISTITEM;
-		lpListItem->m_strWord = scanner.Token;
-		ptrArray.Add(lpListItem);
-		scanner.GetToken(); 
-	} while(*scanner.token != '}' && scanner.tok != FINISHED);
-	if(scanner.tok == FINISHED)
-		return;
-	scanner.GetToken(); 
-}
 void CWndListBox::OnInitialUpdate()
 {
 	CRect rect = GetWindowRect();
@@ -1679,10 +1655,10 @@ void CWndListBox::OnDraw(C2DRender* p2DRender)
 	{
 		CPoint pt(3,3);
 		pt.y -= m_nFontHeight * m_wndScrollBar.GetScrollPos();
-		PaintListBox(p2DRender,pt,m_listItemArray);
+		PaintListBox(p2DRender, pt);
 
 		int nPage = GetClientRect().Height() / m_nFontHeight;
-		int nRange = m_listItemArray.GetSize();
+		int nRange = static_cast<int>(m_listItemArray.size());
 		if(	IsWndStyle( WBS_VSCROLL ) )
 		{
 			m_wndScrollBar.SetVisible( TRUE );
@@ -1694,40 +1670,33 @@ void CWndListBox::OnDraw(C2DRender* p2DRender)
 	}
 }
 
-void CWndListBox::PaintListBox(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray) 
+void CWndListBox::PaintListBox(C2DRender* p2DRender,CPoint& pt) 
 {
-	LPLISTITEM pListItem;
-	for(int i = 0; i < ptrArray.GetSize(); i++)
-	{
-		pListItem = (LPLISTITEM)ptrArray.GetAt(i);
-		if( pListItem->m_bIsVisible == FALSE )
-			continue;
+	const CPoint point = GetMousePoint();
 
+	for (auto [i, pListItem] : m_listItemArray | boost::adaptors::indexed(0)) {
 		int nScrollBarWidth = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetClientRect().Width() : 0;
-		CSize size = p2DRender->m_pFont->GetTextExtent_EditString( pListItem->m_strWord );
-		pListItem->m_rect.left = pt.x;
-		pListItem->m_rect.top = pt.y;
-		pListItem->m_rect.right = pt.x + m_rectWindow.Width() - nScrollBarWidth;
-		pListItem->m_rect.bottom = pt.y + m_nFontHeight;
-		if( pListItem->m_bIsValid == TRUE )
-		{
-			if( i == m_nCurSelect )
-				pListItem->m_strWord.SetColor( m_nSelectColor );
-			else
-			{
-				CPoint point = GetMousePoint();
-				if( pListItem->m_rect.PtInRect( point ) == TRUE )
-					pListItem->m_strWord.SetColor( m_dwOnMouseColor );
-				else
-					pListItem->m_strWord.SetColor( m_nFontColor );
-			}
+		
+		pListItem.m_rect.left = pt.x;
+		pListItem.m_rect.top = pt.y;
+		pListItem.m_rect.right = pt.x + m_rectWindow.Width() - nScrollBarWidth;
+		pListItem.m_rect.bottom = pt.y + m_nFontHeight;
+
+		if (pListItem.m_bIsValid != TRUE) {
+			pListItem.m_strWord.SetColor(m_dwInvalidColor);
+		} else if (i == m_nCurSelect) {
+			pListItem.m_strWord.SetColor(m_nSelectColor);
+		} else if (pListItem.m_rect.PtInRect(point) == TRUE) {
+			pListItem.m_strWord.SetColor(m_dwOnMouseColor);
+		} else {
+			pListItem.m_strWord.SetColor(m_nFontColor);
 		}
-		else
-			pListItem->m_strWord.SetColor( m_dwInvalidColor );
-		p2DRender->TextOut_EditString( m_nLeftMargin + pt.x, pt.y, pListItem->m_strWord );
+
+		p2DRender->TextOut_EditString( m_nLeftMargin + pt.x, pt.y, pListItem.m_strWord );
 		pt.y += m_nFontHeight;
 	}
 }
+
 void CWndListBox::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CWndBase* pWnd = GetParentWnd();
@@ -1735,11 +1704,9 @@ void CWndListBox::OnLButtonUp(UINT nFlags, CPoint point)
 		CPoint pt(3,3);
 		pt.y -= m_nFontHeight * m_wndScrollBar.GetScrollPos();
 		CRect rect;
-		LPLISTITEM pListItem;
-		for(int i = 0; i < m_listItemArray.GetSize(); i++)
-		{
-			pListItem = (LPLISTITEM)m_listItemArray.GetAt(i);
-			if( pListItem->m_bIsValid == FALSE )
+
+		for (LISTITEM & pListItem : m_listItemArray) {
+			if( pListItem.m_bIsValid == FALSE )
 			{
 				pt.y += m_nFontHeight;
 				continue;
@@ -1748,11 +1715,11 @@ void CWndListBox::OnLButtonUp(UINT nFlags, CPoint point)
 			rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - nScrollBarWidth, pt.y + m_nFontHeight );
 			if(rect.PtInRect(point))
 			{
-				if(m_pFocusItem == pListItem)
+				if(m_pFocusItem == &pListItem)
 				{
 					// 부모가 차일드 윈도가 아니어야 OnCommand 메시지를 받는다.
 					CWndBase* pWnd = m_pParentWnd;
-					pWnd->OnChildNotify(WNM_SELCHANGE,m_nIdWnd,(LRESULT*)pListItem);
+					pWnd->OnChildNotify(WNM_SELCHANGE,m_nIdWnd,(LRESULT*)&pListItem);
 					return;
 				}
 			}
@@ -1765,11 +1732,10 @@ void CWndListBox::OnLButtonDown(UINT nFlags, CPoint point)
 	CPoint pt(3,3);
 	pt.y -= m_nFontHeight * m_wndScrollBar.GetScrollPos();
 	CRect rect;
-	LPLISTITEM pListItem;
-	for(int i = 0; i < m_listItemArray.GetSize(); i++)
-	{
-		pListItem = (LPLISTITEM)m_listItemArray.GetAt(i);
-		if( pListItem->m_bIsValid == FALSE )
+
+	for (const auto & [i, pListItem] : m_listItemArray | boost::adaptors::indexed(0)) {
+
+		if( pListItem.m_bIsValid == FALSE )
 		{
 			pt.y += m_nFontHeight;
 			continue;
@@ -1779,7 +1745,7 @@ void CWndListBox::OnLButtonDown(UINT nFlags, CPoint point)
 		if(rect.PtInRect(point))
 		{
 			m_nCurSelect = i;
-			m_pFocusItem = pListItem;
+			m_pFocusItem = &pListItem;
 		}
 		pt.y += m_nFontHeight;
 	}
@@ -1789,11 +1755,9 @@ void CWndListBox::OnRButtonUp(UINT nFlags, CPoint point)
 	CPoint pt(3,3);
 	pt.y -= m_nFontHeight * m_wndScrollBar.GetScrollPos();
 	CRect rect;
-	LPLISTITEM pListItem;
-	for(int i = 0; i < m_listItemArray.GetSize(); i++)
-	{
-		pListItem = (LPLISTITEM)m_listItemArray.GetAt(i);
-		if( pListItem->m_bIsValid == FALSE )
+
+	for (LISTITEM & pListItem : m_listItemArray) {
+		if( pListItem.m_bIsValid == FALSE )
 		{
 			pt.y += m_nFontHeight;
 			continue;
@@ -1802,15 +1766,15 @@ void CWndListBox::OnRButtonUp(UINT nFlags, CPoint point)
 		rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - nScrollBarWidth, pt.y + m_nFontHeight );
 		if(rect.PtInRect(point))
 		{
-			if(m_pFocusItem == pListItem)
+			if(m_pFocusItem == &pListItem)
 			{
 				// 부모가 차일드 윈도가 아니어야 OnCommand 메시지를 받는다.
 				CWndBase* pWnd = m_pParentWnd;
-				pListItem->m_rect.left = point.x;
-				pListItem->m_rect.top = point.y;				
+				pListItem.m_rect.left = point.x; // TODO why we do this? shoudln't the pListItem be const?
+				pListItem.m_rect.top = point.y;				
 				//while(pWnd->GetStyle() & WBS_CHILD)
 				//	pWnd = pWnd->GetParentWnd();
-				pWnd->OnChildNotify(WNM_SELCANCEL,m_nIdWnd,(LRESULT*)pListItem);//m_pFocusItem); 
+				pWnd->OnChildNotify(WNM_SELCANCEL,m_nIdWnd,(LRESULT*)&pListItem);//m_pFocusItem); 
 				return;
 			}
 		}
@@ -1825,15 +1789,13 @@ void CWndListBox::OnLButtonDblClk( UINT nFlags, CPoint point)
 	CPoint pt(3,3);
 	pt.y -= m_nFontHeight * m_wndScrollBar.GetScrollPos();
 	CRect rect;
-	LPLISTITEM pListItem;
-	for(int i = 0; i < m_listItemArray.GetSize(); i++)
-	{
-		pListItem = (LPLISTITEM)m_listItemArray.GetAt(i);
+
+	for (LISTITEM & pListItem : m_listItemArray) {
 		int nScrollBarWidth = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetClientRect().Width() : 0;
 		rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - nScrollBarWidth, pt.y + m_nFontHeight );
 		if(rect.PtInRect(point))
 		{
-			if(m_pFocusItem == pListItem)
+			if(m_pFocusItem == &pListItem)
 			{
 				// 부모가 차일드 윈도가 아니어야 OnCommand 메시지를 받는다.
 				CWndBase* pWnd = m_pParentWnd;
@@ -1846,218 +1808,115 @@ void CWndListBox::OnLButtonDblClk( UINT nFlags, CPoint point)
 		pt.y += m_nFontHeight;
 	}
 }
-void CWndListBox::OnRButtonDblClk( UINT nFlags, CPoint point)
-{
-}
-BOOL CWndListBox::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
-{
-	if( m_wndScrollBar.GetScrollPage() >= m_wndScrollBar.GetMaxScrollPos() )
-		return TRUE;
-	if( zDelta < 0 )
-	{
-		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()+1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() );
-	}
-	else
-	{
-		if( m_wndScrollBar.GetMinScrollPos() < m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()-1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMinScrollPos() );
-	}
-	
+
+BOOL CWndListBox::OnMouseWheel(UINT, const short zDelta, CPoint) {
+	m_wndScrollBar.MouseWheel(zDelta);
 	return TRUE;
 }
 
-int CWndListBox::GetCount() const
-{
-	return m_listItemArray.GetSize();
-}
-DWORD CWndListBox::GetItemData(int nIndex) const
-{
-	LPLISTITEM lpListItem = (LPLISTITEM)m_listItemArray.GetAt(nIndex);
-	return lpListItem->m_dwData;
-}
+void CWndScrollBar::MouseWheel(const short zDelta) {
+	if (GetScrollPage() >= GetMaxScrollPos())
+		return;
 
-void* CWndListBox::GetItemDataPtr(int nIndex) const
-{
-	LPLISTITEM lpListItem = (LPLISTITEM)m_listItemArray.GetAt(nIndex);
-	return (void*)lpListItem->m_dwData;
-}
-
-int CWndListBox::SetItemData(int nIndex,DWORD dwItemData)
-{
-	if(nIndex < 0 || nIndex >= m_listItemArray.GetSize())
-		return LB_ERR;
-	LPLISTITEM lpListItem = (LPLISTITEM)m_listItemArray.GetAt(nIndex);
-	lpListItem->m_dwData = dwItemData;
-	return 0;
-}
-
-int CWndListBox::SetItemDataPtr(int nIndex,void* pData)
-{
-	if(nIndex < 0 || nIndex >= m_listItemArray.GetSize())
-		return LB_ERR;
-	LPLISTITEM lpListItem = (LPLISTITEM)m_listItemArray.GetAt(nIndex);
-	lpListItem->m_dwData = (DWORD) pData;
-	return 0;
-}
-
-DWORD CWndListBox::GetItemData2( int nIndex ) const
-{
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return lpListItem->m_dwData2;
-}
-
-void* CWndListBox::GetItemData2Ptr( int nIndex ) const
-{
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return ( void* )lpListItem->m_dwData2;
-}
-
-BOOL CWndListBox::GetItemValidity( int nIndex )
-{
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return lpListItem->m_bIsValid;
-}
-
-BOOL CWndListBox::GetItemVisibility( int nIndex )
-{
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return lpListItem->m_bIsVisible;
-}
-
-int CWndListBox::SetItemData2( int nIndex,DWORD dwItemData )
-{
-	if( nIndex < 0 || nIndex >= m_listItemArray.GetSize() )
-		return LB_ERR;
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_dwData2 = dwItemData;
-	return 0;
-}
-
-int CWndListBox::SetItemData2Ptr( int nIndex,void* pData )
-{
-	if( nIndex < 0 || nIndex >= m_listItemArray.GetSize() )
-		return LB_ERR;
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_dwData2 = ( DWORD )pData;
-	return 0;
-}
-
-int CWndListBox::SetItemValidity( int nIndex, BOOL bValidity )
-{
-	if( nIndex < 0 || nIndex >= m_listItemArray.GetSize() )
-		return LB_ERR;
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_bIsValid = bValidity;
-	return 0;
-}
-
-int CWndListBox::SetItemVisibility( int nIndex, BOOL bIsVisible )
-{
-	if( nIndex < 0 || nIndex >= m_listItemArray.GetSize() )
-		return LB_ERR;
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_bIsVisible = bIsVisible;
-	return 0;
-}
-
-const CRect& CWndListBox::GetItemRect( int nIndex ) const
-{
-	LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return lpListItem->m_rect;
-}
-
-int CWndListBox::GetSel(int nIndex) const
-{
-		return 1;
-}
-
-int CWndListBox::GetText(int nIndex,LPSTR lpszBuffer) const
-{
-		return 1;
-}
-
-void CWndListBox::GetText(int nIndex,CString& rString) const
-{
-	if(nIndex >= 0 && nIndex < m_listItemArray.GetSize())
-	{
-		LPLISTITEM lpListItem = (LPLISTITEM)m_listItemArray.GetAt(nIndex);
-		rString = lpListItem->m_strWord;
+	if (zDelta < 0) {
+		if (GetMaxScrollPos() - GetScrollPage() > GetScrollPos())
+			SetScrollPos(GetScrollPos() + 1);
+		else
+			SetScrollPos(GetMaxScrollPos() - GetScrollPage());
+	} else {
+		if (GetMinScrollPos() < GetScrollPos())
+			SetScrollPos(GetScrollPos() - 1);
+		else
+			SetScrollPos(GetMinScrollPos());
 	}
 }
 
-#ifdef __IMPROVE_MAP_SYSTEM
-int CWndListBox::GetTextLen(int nIndex) const
-{
-	if(nIndex >= 0 && nIndex < m_listItemArray.GetSize())
-	{
-		LPLISTITEM lpListItem = (LPLISTITEM)m_listItemArray.GetAt(nIndex);
-		return lpListItem->m_strWord.GetLength();
+int CWndListBox::GetCount() const {
+	return static_cast<int>(m_listItemArray.size());
+}
+
+DWORD CWndListBox::GetItemData(int nIndex) const {
+	return m_listItemArray[nIndex].m_dwData;
+}
+
+void * CWndListBox::GetItemDataPtr(int nIndex) const {
+	return reinterpret_cast<void *>(m_listItemArray[nIndex].m_dwData);
+}
+
+int CWndListBox::SetItemData(int nIndex, DWORD dwItemData) {
+	if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_listItemArray.size())) {
+		return LB_ERR;
 	}
+
+	LISTITEM & lpListItem = m_listItemArray[nIndex];
+	lpListItem.m_dwData = dwItemData;
 	return 0;
 }
-#else // __IMPROVE_MAP_SYSTEM
-int CWndListBox::GetTextLen(int nIndex) const
-{
-		return 1;
+
+int CWndListBox::SetItemDataPtr(int nIndex, void * pData) {
+	if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_listItemArray.size())) {
+		return LB_ERR;
+	}
+
+	LISTITEM & lpListItem = m_listItemArray[nIndex];
+	lpListItem.m_dwData = reinterpret_cast<DWORD>(pData);
+	return 0;
 }
-#endif // __IMPROVE_MAP_SYSTEM
+
+BOOL CWndListBox::GetItemValidity(int nIndex) {
+	return m_listItemArray[nIndex].m_bIsValid;
+}
+
+const CRect & CWndListBox::GetItemRect(int nIndex) const {
+	const LISTITEM & lpListItem = m_listItemArray[nIndex];
+	return lpListItem.m_rect;
+}
+
+void CWndListBox::GetText(int nIndex, CString & rString) const {
+	if (nIndex >= 0 && std::cmp_less(nIndex, m_listItemArray.size())) {
+		const LISTITEM & lpListItem = m_listItemArray[nIndex];
+		rString = lpListItem.m_strWord;
+	}
+}
+
+int CWndListBox::GetTextLen(int nIndex) const {
+	if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_listItemArray.size())) {
+		return 0;
+	}
+
+	return m_listItemArray[nIndex].m_strWord.GetLength();
+}
 
 
-int CWndListBox::GetCurSel() const
-{
+int CWndListBox::GetCurSel() const {
 	return m_nCurSelect;
 }
 
-int CWndListBox::SetCurSel(int nSelect)
-{
-	if(nSelect >= 0 && nSelect < m_listItemArray.GetSize())
-	{	
-		m_pFocusItem = (LPLISTITEM)m_listItemArray.GetAt(nSelect);
+int CWndListBox::SetCurSel(int nSelect) {
+	if (nSelect >= 0 && std::cmp_less(nSelect, m_listItemArray.size())) {
+		m_pFocusItem = &m_listItemArray[nSelect];
 		m_nCurSelect = nSelect;
 		return m_nCurSelect;
 	}
 
-	Error( "CWndListBox::SetCurSel(int nSelect) 범위 넘어섬 %d", nSelect );
-
+	Error("CWndListBox::SetCurSel(int nSelect) 범위 넘어섬 %d", nSelect);
 	return 0;
 }
 
-int CWndListBox::SetSel(int nIndex,BOOL bSelect)
+CWndListBox::LISTITEM & CWndListBox::AddString(LPCTSTR lpszItem)
 {
-		return 1;
-}
-
-int CWndListBox::GetSelCount() const
-{
-		return 1;
-}
-
-int CWndListBox::GetSelItems(int nMaxItems,LPINT rgIndex) const
-{
-		return 1;
-}
-
-
-int CWndListBox::AddString(LPCTSTR lpszItem)
-{
-	LPLISTITEM lpListItem = new LISTITEM;
-	lpListItem->m_strWord = lpszItem;
+	LISTITEM & lpListItem = m_listItemArray.emplace_back();;
+	lpListItem.m_strWord = lpszItem;
 	const auto rect = GetClientRect();
-	lpListItem->m_strWord.Init( m_pFont, &rect );
-	lpListItem->m_strWord.SetParsingString( lpszItem, m_nFontColor, 0x00000000, 0, 0x00000001, TRUE );
-	m_listItemArray.Add(lpListItem);
-	return m_listItemArray.GetSize()-1;
+	lpListItem.m_strWord.Init( m_pFont, &rect );
+	lpListItem.m_strWord.SetParsingString( lpszItem, m_nFontColor, 0x00000000, 0, 0x00000001, TRUE );
+	return lpListItem;
 }
 
 int CWndListBox::DeleteString(UINT nIndex)
 {
-	safe_delete( (LPLISTITEM)m_listItemArray.GetAt(nIndex) );
-	m_listItemArray.RemoveAt(nIndex);
+	m_listItemArray.erase(m_listItemArray.begin() + nIndex);
+
 	if(nIndex == m_nCurSelect)
 	{
 		m_nCurSelect = -1;
@@ -2066,79 +1925,29 @@ int CWndListBox::DeleteString(UINT nIndex)
 	return 1;
 }
 
-void CWndListBox::SetString( int nIndex, LPCTSTR lpszItem )
-{
-	LPLISTITEM lpListItem	= (LPLISTITEM)m_listItemArray.GetAt( nIndex );
-	lpListItem->m_strWord	= lpszItem;
+void CWndListBox::SetString(int nIndex, LPCTSTR lpszItem) {
+	m_listItemArray[nIndex].m_strWord = lpszItem;
 }
 
-const CString& CWndListBox::GetString( int nIndex ) const
-{
-	LPLISTITEM lpListItem	= ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return lpListItem->m_strWord;
+const CString & CWndListBox::GetString(int nIndex) const {
+	return m_listItemArray[nIndex].m_strWord;
 }
 
-void CWndListBox::SetListStringAlpha( int nIndex, BYTE byAlpha )
-{
-	LPLISTITEM lpListItem	= ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_strWord.SetAlpha( byAlpha );
+void CWndListBox::SetKeyString(int nIndex, LPCTSTR lpszItem) {
+	m_listItemArray[nIndex].m_strKey = lpszItem;
 }
 
-void CWndListBox::SetKeyString( int nIndex, LPCTSTR lpszItem )
-{
-	LPLISTITEM lpListItem	= ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	lpListItem->m_strKey	= lpszItem;
+const CString & CWndListBox::GetKeyString(int nIndex) const {
+	return m_listItemArray[nIndex].m_strKey;
 }
 
-const CString& CWndListBox::GetKeyString( int nIndex ) const
-{
-	LPLISTITEM lpListItem	= ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-	return lpListItem->m_strKey;
-}
-
-void CWndListBox::SetOnMouseColor( DWORD dwOnMouseColor )
-{
-	m_dwOnMouseColor = dwOnMouseColor;
-}
-
-DWORD CWndListBox::GetOnMouseColor( void ) const
-{
-	return m_dwOnMouseColor;
-}
-
-void CWndListBox::SetInvalidColor( DWORD dwInvalidColor )
-{
-	m_dwInvalidColor = dwInvalidColor;
-}
-
-DWORD CWndListBox::GetInvalidColor( void ) const
-{
-	return m_dwInvalidColor;
-}
-
-void CWndListBox::SetLeftMargin( int nLeftMargin )
-{
+void CWndListBox::SetLeftMargin(int nLeftMargin) {
 	m_nLeftMargin = nLeftMargin;
 }
 
-int CWndListBox::GetLeftMargin( void ) const
-{
-	return m_nLeftMargin;
-}
-
-#ifdef __IMPROVE_MAP_SYSTEM
-int CWndListBox::GetItemIndex( const CString& strItem ) const
-{
-	for( int nIndex = 0; nIndex < m_listItemArray.GetSize(); ++nIndex )
-	{
-		LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-		if( lpListItem == NULL )
-		{
-			continue;
-		}
-
-		if( strcmp( strItem, lpListItem->m_strWord ) == 0 )
-		{
+int CWndListBox::GetItemIndex(const CString & strItem) const {
+	for (const auto & [nIndex, pListItem] : m_listItemArray | boost::adaptors::indexed(0)) {
+		if (strcmp(strItem, pListItem.m_strWord) == 0) {
 			return nIndex;
 		}
 	}
@@ -2146,72 +1955,44 @@ int CWndListBox::GetItemIndex( const CString& strItem ) const
 	return -1;
 }
 
-int CWndListBox::GetItemIndex( DWORD dwItem ) const
-{
-	for( int nIndex = 0; nIndex < m_listItemArray.GetSize(); ++nIndex )
-	{
-		LPLISTITEM lpListItem = ( LPLISTITEM )m_listItemArray.GetAt( nIndex );
-		if( lpListItem == NULL )
-		{
-			continue;
-		}
-
-		if( dwItem == lpListItem->m_dwData )
-		{
+int CWndListBox::GetItemIndex(DWORD dwItem) const {
+	for (const auto & [nIndex, pListItem] : m_listItemArray | boost::adaptors::indexed(0)) {
+		if (dwItem == pListItem.m_dwData) {
 			return nIndex;
 		}
 	}
 
 	return -1;
 }
-#endif // __IMPROVE_MAP_SYSTEM
-
-int CWndListBox::InsertString(int nIndex,LPCTSTR lpszItem)
-{
-		return 1;
-} 
 
 void CWndListBox::ResetContent()
 {
-	for(int i = 0; i < m_listItemArray.GetSize(); i++)
-		safe_delete( (LPLISTITEM)m_listItemArray.GetAt(i) );
 	m_nCurSelect = -1;
 	m_pFocusItem = NULL;
-	m_listItemArray.RemoveAll();
+	m_listItemArray.clear();
 	m_wndScrollBar.SetScrollPos( 0, FALSE );
 }
 
 int CWndListBox::FindString( int nStartAfter, LPCTSTR lpszItem ) const
 {
-	if( m_listItemArray.GetSize() == 0 )
-		return -1;
-	LPLISTITEM lpListItem;
-	int nCmp = 0;
-	int nBegin = 0, nEnd = m_listItemArray.GetSize() - 1;
-	int nDiv = nBegin + ( ( nEnd - nBegin ) / 2 );
-	do
-	{
-		if( nCmp ==  1 ) nEnd = nDiv;
-		if( nCmp == -1 ) nBegin = nDiv;
-		nDiv = nBegin + ( ( nEnd - nBegin ) / 2 );
-		lpListItem = (LPLISTITEM)m_listItemArray.GetAt( nDiv );
-		nCmp = strcmp( lpListItem->m_strWord, lpszItem );
-		if( nCmp ==  0 ) return nDiv;
-	}
-	while( ( nEnd - nBegin ) > 1 );
-	int nResult;
-	lpListItem = (LPLISTITEM)m_listItemArray.GetAt( nBegin );
-	nCmp = strcmp( lpListItem->m_strWord, lpszItem );
-	if( nCmp >= 0 ) 
-		nResult = nBegin;
-	else
-	{
-		lpListItem = (LPLISTITEM)m_listItemArray.GetAt( nEnd );
-		nResult = nEnd;
-	}
-	if( lpszItem[ 0 ] != lpListItem->m_strWord[ 0 ] )
-		nResult = -1;
-	return nResult;
+	if (m_listItemArray.empty()) return -1;
+
+	// Find word >= to lpszItem
+	const auto it = std::lower_bound(
+		m_listItemArray.begin(), m_listItemArray.end(),
+		lpszItem,
+		[](const LISTITEM & item, const char * lpszItem) {
+			return strcmp(item.m_strWord, lpszItem) < 0;
+		});
+
+	// End = dead
+	if (it == m_listItemArray.end()) return -1;
+
+	// If word > lpszItem = dead
+	if (strcmp(it->m_strWord, lpszItem) != 0) return -1;
+
+	// Ok
+	return it - m_listItemArray.begin();
 }
 /*
 
@@ -2240,21 +2021,12 @@ input d
 4 f
 5 f
 */
-int QSortListBox( const VOID* arg1, const VOID* arg2 )
-{
-	//return _stricmp( * ( char** ) arg1, * ( char** ) arg2 );
-	LPCTSTR pSrc = (*(CWndListBox::LISTITEM**)arg1)->m_strWord;
-    LPCTSTR pDst = (*(CWndListBox::LISTITEM**)arg2)->m_strWord;
 
-	return _stricmp( pSrc, pDst );
-}
-void CWndListBox::SortListBox() 
-{
-    qsort( m_listItemArray.GetData(), m_listItemArray.GetSize(), sizeof(LPLISTITEM), QSortListBox ); 
-}
-int CWndListBox::FindStringExact(int nIndexStart,LPCTSTR lpszItem) const
-{
-	return 1;
+void CWndListBox::SortListBox() {
+	std::ranges::sort(m_listItemArray,
+		[](const LISTITEM & lhs, const LISTITEM & rhs) {
+			return _stricmp(lhs.m_strWord, rhs.m_strWord) < 0;
+		});
 }
 
 int CWndListBox::SelectString(int nStartAfter,LPCTSTR lpszItem)
@@ -4555,13 +4327,14 @@ BOOL CWndComboBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return TRUE;
 }
 // manipulating listbox items
-int CWndComboBox::AddString( LPCTSTR lpszString )
+CWndListBox::LISTITEM & CWndComboBox::AddString( LPCTSTR lpszString )
 {
-	int nNum = m_wndListBox.AddString( lpszString );
+	CWndListBox::LISTITEM & result = m_wndListBox.AddString( lpszString );
+	int nNum = m_wndListBox.GetCount();
 	CRect rect = m_wndListBox.GetWindowRect( TRUE );
-	rect.bottom = rect.top + ( ( nNum + 1 ) * ( m_pFont->GetMaxHeight() + 3 ) ) + 8;
+	rect.bottom = rect.top + ( ( nNum ) * ( m_pFont->GetMaxHeight() + 3 ) ) + 8;
 	m_wndListBox.SetWndRect( rect );
-	return nNum;
+	return result;
 }
 int CWndComboBox::DeleteString( UINT nIndex )
 {
@@ -4645,7 +4418,7 @@ void CWndComboBox::OpenListBox( void )
 	m_wndListBox.AdjustWndBase();
 	m_wndListBox.SetFocus();
 }
-#ifdef __IMPROVE_MAP_SYSTEM
+
 DWORD CWndComboBox::GetSelectedItemData( void ) const
 {
 	int nSelectedListNumber = m_wndListBox.GetCurSel();
@@ -4667,4 +4440,3 @@ int CWndComboBox::GetListBoxSize( void ) const
 {
 	return m_wndListBox.GetCount();
 }
-#endif // __IMPROVE_MAP_SYSTEM

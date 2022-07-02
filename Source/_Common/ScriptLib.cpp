@@ -188,7 +188,6 @@ int APIENTRY EndQuest( NPCDIALOG_INFO* pInfo, int nQuest )
 
 int APIENTRY AddQuestKey( NPCDIALOG_INFO* pInfo, int nQuest, LPCTSTR szKey )
 {
-	int nParam = 0;
 	CString strKey = szKey;
 
 	if( strKey.IsEmpty() )
@@ -204,7 +203,7 @@ int APIENTRY AddQuestKey( NPCDIALOG_INFO* pInfo, int nQuest, LPCTSTR szKey )
 		return 1;
 	}
 
-	return __AddQuestKey( pInfo->GetPcId(), nQuest, strKey, nParam );
+	return __AddQuestKey( pInfo->GetPcId(), QuestId(nQuest), strKey, false);
 }
 
 

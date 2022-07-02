@@ -690,6 +690,7 @@
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
     <ClInclude Include="..\_Interface\WndEquipmentSex.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
+    <ClInclude Include="..\_Interface\WndTListBox.hpp" />
     <ClInclude Include="..\_Network\ListedServer.h" />
     <ClInclude Include="CNTREVNT.h" />
     <ClInclude Include="couplehelper.h" />

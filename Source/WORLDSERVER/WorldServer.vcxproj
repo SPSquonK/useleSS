@@ -115,6 +115,7 @@
     <ClCompile Include="DPDatabaseClient.cpp">
     </ClCompile>
     <ClCompile Include="DPSrvr.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
     </ClCompile>
     <ClCompile Include="DPSrvrLux.cpp">
     </ClCompile>

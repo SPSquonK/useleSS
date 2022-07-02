@@ -1880,13 +1880,17 @@ void CUser::AddDefinedText( int dwText, LPCSTR lpszFormat, ... )
 	if( nBuf < 0 )
 		return;
 
-	
+	AddDefinedTextAlreadyFormatted(dwText, szBuffer);	
+}
+
+void CUser::AddDefinedTextAlreadyFormatted(int dwText, const TCHAR * formattedString) {
+	if (IsDelete())	return;
+
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_DEFINEDTEXT;
 	m_Snapshot.ar << dwText;
-	m_Snapshot.ar.WriteString( szBuffer );
-	
+	m_Snapshot.ar.WriteString(formattedString);
 }
 
 void CUser::AddChatText( int dwText, LPCSTR lpszFormat, ... )

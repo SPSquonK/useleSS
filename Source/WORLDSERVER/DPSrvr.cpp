@@ -6230,136 +6230,95 @@ void CDPSrvr::OnGCRequestStatus( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	if( IsValidObj( pUser ) )
 		pUser->AddGCRequestStatus( g_GuildCombatMng.GetPrizePenya( 2 ), g_GuildCombatMng.vecRequestRanking );
 }
+
 void CDPSrvr::OnGCSelectPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	BOOL bWindow;
 	ar >> bWindow;
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+	if (!IsValidObj(pUser)) return;
+	
+	// 캐릭터를 선택할수 있는 시간인지 검사
+	if (g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE) {
+		pUser->AddText(prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP)); //지금은 명단작성을 할 수 없습니다.		
+		return;
+	}
+
+	// 캐릭터를 선택할수 있는 길드 인지 검사
+	if (g_GuildCombatMng.IsRequestWarGuild(pUser->m_idGuild, FALSE) == FALSE) {
+		pUser->AddText(prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP_FAIL));	//길드대전 입찰을 하지 않았거나 최종 선발 길드순위에 들지 못했습니다.		
+		return;
+	}
+
+	CGuild* pGuild	= g_GuildMng.GetGuild( pUser->m_idGuild );
+	// 캐릭터를 선택할수 잇는것은 마스터와 킹핀급이다.
+	BOOL bMK = FALSE;
+	if (!pGuild) return;
+
+	CGuildMember* pGuildMember = pGuild->GetMember( pUser->m_idPlayer );
+	if (pGuildMember) {
+		if (pGuildMember->m_nMemberLv == GUD_KINGPIN || pGuildMember->m_nMemberLv == GUD_MASTER)
+			bMK = TRUE;
+	}
+
+	if (!bMK) return;
+		
+		
+	if( bWindow == FALSE )
 	{
-		// 캐릭터를 선택할수 있는 시간인지 검사
-		if( g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE ) 
-		{
- 			pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP) ); //지금은 명단작성을 할 수 없습니다.		
+		u_long uidDefender;
+		int nSize;
+		ar >> uidDefender;
+		ar >> nSize;
+		if( nSize > g_GuildCombatMng.m_nMaxJoinMember )
 			return;
+
+		std::vector< u_long > vecSelectPlayer;
+		bool hasDefender = false;
+		for( int i = 0 ; i < nSize ; ++i )
+		{
+			u_long uidPlayer;
+			ar >> uidPlayer;
+			CUser* pUsertmp = g_UserMng.GetUserByPlayerID( uidPlayer );
+			if (!IsValidObj(pUsertmp)) continue;
+
+			CGuildMember * pGuildMember = pGuild->GetMember(uidPlayer);
+			if (!pGuildMember) continue;
+
+			if (pUsertmp->GetLevel() < 30) continue;
+
+			vecSelectPlayer.push_back(uidPlayer);
+			if (uidPlayer == uidDefender) hasDefender = true;
 		}
 
-		// 캐릭터를 선택할수 있는 길드 인지 검사
-		if( g_GuildCombatMng.IsRequestWarGuild( pUser->m_idGuild, FALSE ) == FALSE )
-		{
-			pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_CANNOT_MAKEUP_FAIL) );	//길드대전 입찰을 하지 않았거나 최종 선발 길드순위에 들지 못했습니다.		
-			return;
-		}
-
-		CGuild* pGuild	= g_GuildMng.GetGuild( pUser->m_idGuild );
-		// 캐릭터를 선택할수 잇는것은 마스터와 킹핀급이다.
-		BOOL bMK = FALSE;
-		if( pGuild )
-		{
-			CGuildMember* pGuildMember = pGuild->GetMember( pUser->m_idPlayer );
-			if( pGuildMember )
-			{
-				if( pGuildMember->m_nMemberLv == GUD_KINGPIN || pGuildMember->m_nMemberLv == GUD_MASTER )
-					bMK = TRUE;
-			}
-		}
-		
-		
-		if( pGuild && bMK )
-		{
-			if( bWindow == FALSE )
-			{
-				// 윈도우 메세지가 아니므로 Settting
-				int nSize;
-				u_long uidPlayer, uidDefender;
-				std::vector< u_long > vecSelectPlayer;
-				BOOL bMasterOrKinpin = FALSE;
-				BOOL bDefender = FALSE;
-				BOOL bLevel = FALSE;
-				BOOL bLogOut = FALSE;
-				BOOL bGuildMember = FALSE;
-				BOOL bMastertoDefender = FALSE;
-
-				ar >> uidDefender;
-				ar >> nSize;
-				if( nSize > g_GuildCombatMng.m_nMaxJoinMember )
-					return;
-
-				for( int i = 0 ; i < nSize ; ++i )
-				{
-					ar >> uidPlayer;
-					vecSelectPlayer.push_back( uidPlayer );
-					CUser* pUsertmp = g_UserMng.GetUserByPlayerID( uidPlayer );
-					if( IsValidObj( pUsertmp ) )
-					{
-						CGuildMember* pGuildMember = pGuild->GetMember( uidPlayer );
-						// 길드의 맴버
-						if( pGuildMember )
-						{
-							// 마스터가 리스트에 있는지?
-							if( pGuild->IsMaster( pUsertmp->m_idPlayer ) )
-								bMasterOrKinpin = TRUE;
-							// 킹핀이 리스트에 있는지?
-							if( pGuildMember->m_nMemberLv == GUD_KINGPIN )
-								bMasterOrKinpin = TRUE;
-							// 디펜더가 리스트에 있는지?
-							if( pUsertmp->m_idPlayer == uidDefender )
-								bDefender = TRUE;
-						}
-					}
-				}
-				// 마스터는 디펜더가 될수 없음.
-				if( 1 < nSize && pGuild->IsMaster( uidDefender ) )
-					bMastertoDefender = TRUE;
-
-				if( bMasterOrKinpin && bMastertoDefender == FALSE 
-#ifndef _DEBUG
-					&& bDefender
+#ifdef _DEBUG
+		hasDefender = true;
 #endif // _DEBUG
-					)
-				{
-					g_GuildCombatMng.SelectPlayerClear( pUser->m_idGuild );
-					for( int veci = 0 ; veci < (int)( vecSelectPlayer.size() ) ; ++veci )
-					{
-						// 최대 인원수 이상은 안들어가짐.
-						if( veci >= g_GuildCombatMng.m_nMaxJoinMember )
-							break;
 
-						u_long uidSelectPlayer = vecSelectPlayer[veci];
-						CUser* pUsertmp = g_UserMng.GetUserByPlayerID( uidSelectPlayer );
-						{
-							if( IsValidObj( pUsertmp ) )
-							{
-								CGuildMember* pGuildMember = pGuild->GetMember( uidPlayer );
-								// 길드의 맴버
-								if( pGuildMember )
-								{
-									// 레벨이 30이상만 참여가능
-									if( 30 <= pUsertmp->GetLevel() )
-									{
-										g_GuildCombatMng.AddSelectPlayer( pUser->m_idGuild, uidSelectPlayer );
-									}
-								}
-							}
-						}						
-					}
-					g_GuildCombatMng.SetDefender( pUser->m_idGuild, uidDefender );			
+		if (hasDefender) {
+			g_GuildCombatMng.SelectPlayerClear(pUser->m_idGuild);
 
-					WriteLog( "GuildCombat SelectPlayer GuildID=%d", pUser->m_idGuild );
-				}
+			for (const u_long uidSelectPlayer : vecSelectPlayer) {
+				g_GuildCombatMng.AddSelectPlayer(pUser->m_idGuild, uidSelectPlayer);
 			}
 
-			std::vector<CGuildCombat::__JOINPLAYER> vecSelectList;
-			g_GuildCombatMng.GetSelectPlayer( pUser->m_idGuild, vecSelectList );
-			pUser->AddGCSelectPlayerWindow( vecSelectList, g_GuildCombatMng.GetDefender(pUser->m_idGuild), bWindow, g_GuildCombatMng.IsRequestWarGuild(pUser->m_idGuild, FALSE) );
-			if( bWindow == FALSE )
-			{
-				g_UserMng.AddGCGuildStatus( pUser->m_idGuild );
-				g_UserMng.AddGCWarPlayerlist( pUser->m_idGuild );
-			}
+			g_GuildCombatMng.SetDefender( pUser->m_idGuild, uidDefender );			
+
+			WriteLog( "GuildCombat SelectPlayer GuildID=%d", pUser->m_idGuild );
 		}
 	}
+
+	std::vector<CGuildCombat::__JOINPLAYER> vecSelectList;
+	g_GuildCombatMng.GetSelectPlayer( pUser->m_idGuild, vecSelectList );
+	pUser->AddGCSelectPlayerWindow( vecSelectList, g_GuildCombatMng.GetDefender(pUser->m_idGuild), bWindow, g_GuildCombatMng.IsRequestWarGuild(pUser->m_idGuild, FALSE) );
+
+	if( bWindow == FALSE )
+	{
+		g_UserMng.AddGCGuildStatus( pUser->m_idGuild );
+		g_UserMng.AddGCWarPlayerlist( pUser->m_idGuild );
+	}
 }
+
 void CDPSrvr::OnGCSelectMap( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	int nMap;

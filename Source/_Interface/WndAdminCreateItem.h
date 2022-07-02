@@ -1,21 +1,29 @@
-#ifndef __WNDADMINCREATEITEM__H
-#define __WNDADMINCREATEITEM__H
+#pragma once
 
-class CWndAdminCreateItem : public CWndNeuz 
-{ 
-public: 
-	CWndAdminCreateItem(); 
-	~CWndAdminCreateItem(); 
+#include "WndTListBox.hpp"
 
-	CString MakeName( ItemProp *pProp );
+class CWndAdminCreateItem : public CWndNeuz { 
+public:
+	struct Item {
+		CString name;
+		const ItemProp * itemProp;
+
+		explicit Item(const ItemProp * itemProp);
+	};
+
+	struct Displayer {
+		void Render(
+			C2DRender * const p2DRender, const CRect rect,
+			const Item & item, const DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	using ItemPropListBox = CWndTListBox<Item, Displayer>;
 		
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+	virtual	void OnInitialUpdate();
+
+private:
+	void UpdateItems(DWORD kind, DWORD sex, DWORD job, DWORD level);
 }; 
-#endif

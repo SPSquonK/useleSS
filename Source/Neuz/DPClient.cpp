@@ -6287,15 +6287,11 @@ void CDPClient::OnGCSelectPlayer( CAr& ar )
 			{
 				ar >> uidPlayer;
 				vecSelectPlayer.push_back( uidPlayer );
-				if( g_WndMng.m_pWndGuildCombatSelection )
-				{
-					g_WndMng.m_pWndGuildCombatSelection->AddCombatPlayer( uidPlayer );
-				}	
 			}
 			
 			if( g_WndMng.m_pWndGuildCombatSelection )
 			{
-				g_WndMng.m_pWndGuildCombatSelection->SetDefender( uidDefender );
+				g_WndMng.m_pWndGuildCombatSelection->ReceiveLineup(vecSelectPlayer, uidDefender);
 			}	
 		}
 		else
@@ -12190,19 +12186,17 @@ void CDPClient::OnGuildAddVote( CAr & ar )
 		if( pWndGuildVote )
 		{
 			CWndComboBox* pCombo = (CWndComboBox*)pWndGuildVote->GetDlgItem(WIDC_COMBOBOX1);
-
 			pCombo->ResetContent();
 
-			int nIndex = -1;
-			
-			for (auto it = pGuild->m_votes.begin(); it != pGuild->m_votes.end() ; ++it )
-			{
-				nIndex = pCombo->AddString( (*it)->GetTitle() );
-				pCombo->SetItemData( nIndex, (*it)->GetID() );
+			for (const CGuildVote * guildVote : pGuild->m_votes) {
+				auto & voteListItem = pCombo->AddString(guildVote->GetTitle());
+				voteListItem.m_dwData = guildVote->GetID();
 			}
 
-			pCombo->SetCurSel(nIndex);
-			pWndGuildVote->SelChange( pGuild, nIndex );
+			const int lastId = static_cast<int>(pGuild->m_votes.size()) - 1;
+
+			pCombo->SetCurSel(lastId);
+			pWndGuildVote->SelChange( pGuild, lastId);
 		}	 
 	}
 	else
@@ -13014,23 +13008,16 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				break;
 			}
 		case FUNCTYPE_NEWQUEST:
-			{
-				ar.ReadString( rsf.lpszVal1, 1024 );
-				ar.ReadString( rsf.lpszVal2, 1024 );
-				ar >> rsf.dwVal1;
-				ar >> rsf.dwVal2;
-				if( pWndDialog )
-					pWndDialog->AddNewQuestList( rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2 );
-				break;
-			}
 		case FUNCTYPE_CURRQUEST:
 			{
 				ar.ReadString( rsf.lpszVal1, 1024 );
 				ar.ReadString( rsf.lpszVal2, 1024 );
-				ar >> rsf.dwVal1;
+				ar >> rsf.dwVal1; /* always = 0 */
 				ar >> rsf.dwVal2;
-				if( pWndDialog )
-					pWndDialog->AddCurrentQuestList( rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2 );
+				if (pWndDialog) {
+					const bool isNewQuest = wFuncType == FUNCTYPE_NEWQUEST;
+					pWndDialog->AddQuestInList(rsf.lpszVal1, rsf.lpszVal2, QuestId(rsf.dwVal2), isNewQuest);
+				}
 				break;
 			}
 		case FUNCTYPE_SETMARK:
