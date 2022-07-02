@@ -6,6 +6,7 @@
 #include "playerdata.h"
 #include "SecretRoom.h"
 #include "DPClient.h"
+#include "WndParty.h"
 
 #include "Tax.h"
 
@@ -1857,12 +1858,6 @@ bool prMemberLevelDesc(u_long player1, u_long player2)
 
 CWndSecretRoomQuick::CWndSecretRoomQuick() 
 { 
-	m_pVBGauge = NULL;
-	m_MemberCount = 0;
-	m_nWndHeight= 0;
-	m_bMini = FALSE;
-	m_FocusMemberid = 0;
-
 	if(g_pPlayer->GetGuild())
 		m_vecGuildMemberId.push_back(g_pPlayer->GetGuild()->m_idMaster);
 
@@ -1877,6 +1872,8 @@ CWndSecretRoomQuick::CWndSecretRoomQuick()
 	m_StaticID[8] = WIDC_STATIC_MEM9;
 	m_StaticID[9] = WIDC_STATIC_MEM10;
 	m_StaticID[10] = WIDC_STATIC_MEM11;
+
+	m_pWndMemberStatic.fill(nullptr);
 } 
 
 CWndSecretRoomQuick::~CWndSecretRoomQuick() 
@@ -1891,22 +1888,15 @@ HRESULT CWndSecretRoomQuick::RestoreDeviceObjects()
 		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	return S_OK;
 }
-HRESULT CWndSecretRoomQuick::InvalidateDeviceObjects()
-{
+HRESULT CWndSecretRoomQuick::InvalidateDeviceObjects() {
 	CWndBase::InvalidateDeviceObjects();
-    SAFE_RELEASE( m_pVBGauge );
+	SAFE_RELEASE(m_pVBGauge);
 	return S_OK;
 }
-HRESULT CWndSecretRoomQuick::DeleteDeviceObjects()
-{
+HRESULT CWndSecretRoomQuick::DeleteDeviceObjects() {
 	CWndBase::DeleteDeviceObjects();
-	SAFE_RELEASE( m_pVBGauge );
+	SAFE_RELEASE(m_pVBGauge);
 	return S_OK;
-}
-
-void CWndSecretRoomQuick::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
-{
-	CWndNeuz::SerializeRegInfo( ar, dwVersion );
 }
 
 void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender ) 
@@ -1915,7 +1905,7 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 	if(m_MemberCount <= 0 || m_MemberCount != m_vecGuildMemberId.size() || g_pPlayer->GetGuild() == NULL)
 		return;
 
-	int nDrawCount = 0;
+	int nDrawCount;
 	if(m_bMini)
 		nDrawCount = 1;
 	else
@@ -1965,27 +1955,12 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 					dwColor = 0xffff0000; // 죽은놈
 				else if( ((FLOAT)pObjMember->GetHitPoint()) / ((FLOAT)pObjMember->GetMaxHitPoint()) <.1f ) 
 					dwColor = 0xffffff00; // HP 10% 이하인놈
-
 				if(i==0) //GuildMaster Color Set
 				{
 					dwColor = 0xff1fb72d; //굵게 해야함...
+				}
 
-					if(pObjMember->IsMaster())
-						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
-					else if(pObjMember->IsHero())
-						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-					else 
-						strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
-				}
-				else
-				{
-					if(pObjMember->IsMaster())
-						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
-					else if(pObjMember->IsHero())
-						strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-					else 
-						strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
-				}
+				strMember = CWndPartyQuick::FormatPlayerName(pObjMember->GetLevel(), pObjMember->GetJob(), pObjMember->GetName());
 			}
 			else
 			{
@@ -1997,35 +1972,12 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 				int nLevel	= pPlayerData->data.nLevel;
 				int nJob	= pPlayerData->data.nJob;
 
-				if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
-					strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
-				else if( MAX_MASTER <= nJob )
-					strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-				else 
-					strTemp2.Format( "%d", nLevel );
-
-				if(i==0) //GuildMaster Set 굵게 해야함...
-					strMember.Format( "%s. %s", strTemp2, pPlayerData->szPlayer );
-				else
-					strMember.Format( "%s. %s", strTemp2, pPlayerData->szPlayer );
+				strMember = CWndPartyQuick::FormatPlayerName(nLevel, static_cast<DWORD>(nJob), pszPlayer);
 			}
 			//Member - Level, Name Draw
 			//긴 이름은 ... 으로.
-			if( strMember.GetLength() > 13 ) 
-			{
-				int	nReduceCount = 0;
 
-				for( nReduceCount=0; nReduceCount <13; )
-				{
-					if( IsDBCSLeadByte( strMember[ nReduceCount ] ) )
-						nReduceCount+=2;
-					else
-						nReduceCount++;
-				}
-
-				strMember = strMember.Left( nReduceCount );
-				strMember+="...";
-			}
+			CWndPartyQuick::ReduceSize(strMember, 13);
 
 			p2DRender->TextOut( rect.TopLeft().x+5, rect.TopLeft().y+5, strMember, dwColor );
 
@@ -2048,8 +2000,8 @@ void CWndSecretRoomQuick::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	for(int i=0; i<MAX_SECRETROOM_MEMBER; i++)
-		m_pWndMemberStatic[i] = (CWndStatic*)GetDlgItem( m_StaticID[i] );
+	for (int i = 0; i < MAX_SECRETROOM_MEMBER; i++)
+		m_pWndMemberStatic[i] = GetDlgItem<CWndStatic>(m_StaticID[i]);
 
 	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
 	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
@@ -2057,9 +2009,9 @@ void CWndSecretRoomQuick::OnInitialUpdate()
 	SetActiveMember(m_MemberCount);
 	SortMemberList();
 	
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
+	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rectWindow = GetWindowRect();
+	const CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );
 } 
 
@@ -2072,49 +2024,42 @@ BOOL CWndSecretRoomQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 
 void CWndSecretRoomQuick::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-
 	CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
-	if(((CWndWorld*)g_WndMng.m_pWndWorld)->m_bAutoAttack || pTaskBar->m_nExecute != 0)
+	if(g_WndMng.m_pWndWorld->m_bAutoAttack || pTaskBar->m_nExecute != 0)
 		return;
+
+	CGuild * guild = g_pPlayer->GetGuild();
+	if (!guild) return;
 	
 	for(int i=0; i<m_MemberCount; i++) 
 	{
-		lpWndCtrl = GetWndCtrl( m_StaticID[i] );
-		rect = lpWndCtrl->rect;
-		if( rect.PtInRect( point ) )
-		{
-			((CWndWorld*)g_WndMng.m_pWndWorld)->m_pSelectRenderObj = NULL;
+		const WNDCTRL * lpWndCtrl = GetWndCtrl( m_StaticID[i] );
+		const CRect rect = lpWndCtrl->rect;
+		if (!rect.PtInRect(point)) continue;
+
+		g_WndMng.m_pWndWorld->m_pSelectRenderObj = NULL;
 			
-			CGuildMember* pMember = NULL;
-			if(g_pPlayer->GetGuild())
-				pMember = g_pPlayer->GetGuild()->GetMember(m_vecGuildMemberId[i]);
+		CGuildMember* pMember = guild->GetMember(m_vecGuildMemberId[i]);
+		if (!pMember) return; /* yes return */
 
-			if(pMember)
+		CMover* pMover = pMember->GetMover();
+		if( g_pPlayer != pMover ) 
+		{
+			if( IsValidObj( pMover ) ) 
 			{
-				CMover* pMover = pMember->GetMover();
-				if( g_pPlayer != pMover ) 
-				{
-					if( IsValidObj( pMover ) ) 
-					{
-						g_WorldMng()->SetObjFocus( pMover );
-						CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
-						if(pWndWorld)
-							pWndWorld->m_pRenderTargetObj = NULL;
+				g_WorldMng()->SetObjFocus( pMover );
+				g_WndMng.m_pWndWorld->m_pRenderTargetObj = NULL;
 
-						m_FocusMemberid = m_vecGuildMemberId[i];
-					}
-				}
-				else
-				{
-					m_FocusMemberid = 0;
-					g_WorldMng()->SetObjFocus( NULL );
-				}
+				m_FocusMemberid = m_vecGuildMemberId[i];
 			}
-
-			return;
 		}
+		else
+		{
+			m_FocusMemberid = 0;
+			g_WorldMng()->SetObjFocus( NULL );
+		}
+
+		return;
 	}
 } 
 

@@ -186,24 +186,23 @@ public:
 class CWndSecretRoomQuick : public CWndNeuz 
 { 
 public:
-	int m_StaticID[MAX_SECRETROOM_MEMBER];
-	CWndStatic* m_pWndMemberStatic[MAX_SECRETROOM_MEMBER];
+	std::array<int, MAX_SECRETROOM_MEMBER> m_StaticID;
+	std::array<CWndStatic *, MAX_SECRETROOM_MEMBER> m_pWndMemberStatic;
 	CTexture m_texGauEmptyNormal;
 	CTexture m_texGauFillNormal;
 
-	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
+	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge = nullptr;
 
 	std::vector<u_long> m_vecGuildMemberId;
-	u_long m_FocusMemberid;
-	int m_MemberCount;
-	int m_nWndHeight;
-	BOOL m_bMini;
+	u_long m_FocusMemberid = 0;
+	int m_MemberCount      = 0;
+	int m_nWndHeight       = 0;
+	BOOL m_bMini           = FALSE;
 public: 
 
 	CWndSecretRoomQuick(); 
 	~CWndSecretRoomQuick(); 
 	
-	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
