@@ -92,12 +92,12 @@ public:
 
 	template<typename T, typename D = WndTListBox::DefaultDisplayer<typename T>>
 		requires (WndTListBox::DisplayerOf<T, D>)
-	void ReplaceListBox(UINT listboxId);
+	CWndTListBox<T, D> & ReplaceListBox(UINT listboxId);
 };
 
 template<typename T, typename D>
 	requires (WndTListBox::DisplayerOf<T, D>)
-void CWndNeuz::ReplaceListBox(UINT listboxId) {
+CWndTListBox<T, D> & CWndNeuz::ReplaceListBox(UINT listboxId) {
 	for (int i = 0; i != m_wndArrayTemp.GetSize(); ++i) {
 		CWndBase * oldComponent = (CWndBase *) m_wndArrayTemp.GetAt(i);
 		if (oldComponent->GetWndId() == listboxId) {
@@ -120,4 +120,5 @@ void CWndNeuz::ReplaceListBox(UINT listboxId) {
 	e->m_bTile = (lpWndCtrl->bTile != FALSE);
 
 	m_wndArrayTemp.Add(e);
+	return *e;
 }

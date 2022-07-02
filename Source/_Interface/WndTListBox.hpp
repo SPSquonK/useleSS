@@ -456,4 +456,20 @@ namespace WndTListBox {
       item.Render(p2DRender, rect, color, misc);
     }
   };
+
+  template<typename T>
+  struct BasicDisplayer {
+    void Render(
+      C2DRender * const p2DRender, const CRect rect,
+      T & item, const DWORD color, const WndTListBox::DisplayArgs & misc
+    ) const {
+      static_assert(WndTListBox::DisplayerOf<T, BasicDisplayer>);
+      
+      CString & s = item.text;
+      p2DRender->TextOut(rect.left, rect.top, s.GetString(), color);
+    }
+  };
 }
+
+template<typename T>
+using CWndBasicTListBox = CWndTListBox<T, WndTListBox::BasicDisplayer<T>>;
