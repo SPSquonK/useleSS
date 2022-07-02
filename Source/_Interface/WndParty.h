@@ -1,9 +1,117 @@
-#ifndef __WNDPARTY__H
-#define __WNDPARTY__H
+#pragma once
 
-#include "WndPartyChangeTroup.h"
+class CWndParty;
 
-#include "WndPartyQuick.h"
+class CWndPartyQuick : public CWndNeuz {
+public:
+	CWndButton * m_pBtnParty;
+	CWndStatic * m_pWndMemberStatic[8];
+	CTexture m_texGauEmptyNormal;
+	CTexture m_texGauFillNormal;
+
+	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
+
+	int m_MemberCount;
+	CWndParty * m_pWndParty;
+	CMover * m_pFocusMember;
+public:
+
+	CWndPartyQuick();
+	~CWndPartyQuick();
+
+	virtual void SerializeRegInfo(CAr & ar, DWORD & dwVersion);
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
+	virtual void OnDraw(C2DRender * p2DRender);
+	virtual	void OnInitialUpdate();
+	virtual BOOL OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase);
+	virtual void OnSize(UINT nType, int cx, int cy);
+	virtual void OnLButtonUp(UINT nFlags, CPoint point);
+	virtual void OnLButtonDown(UINT nFlags, CPoint point);
+	virtual void OnLButtonDblClk(UINT nFlags, CPoint point);
+	virtual void OnRButtonDblClk(UINT nFlags, CPoint point);
+	virtual HRESULT RestoreDeviceObjects();
+	virtual HRESULT InvalidateDeviceObjects();
+	virtual HRESULT DeleteDeviceObjects();
+
+	void SetActiveMember(int MemberNum);
+};
+
+class CWndPartyConfirm : public CWndNeuz {
+public:
+	u_long m_uLeader, m_uMember;
+	LONG m_nLeaderLevel, m_nMemberLevel;
+	LONG m_nLeaderJob, m_nMemberJob;
+	DWORD m_dwLeaderSex, m_dwMemberSex;
+	BOOL bTroup;
+
+	TCHAR m_szLeaderName[MAX_NAME];
+	TCHAR m_szMemberName[MAX_NAME];
+	void SetMember(u_long uLeader, LONG nLLevel, LONG nLJob, DWORD dwLSex, u_long uMember, LONG nMLevel, LONG nMJob, DWORD dwMSex, char * szLName, BOOL bTroupbuf);
+	CWndPartyConfirm();
+	~CWndPartyConfirm();
+
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
+	virtual void OnDraw(C2DRender * p2DRender);
+	virtual	void OnInitialUpdate();
+	virtual BOOL OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase);
+	virtual void OnSize(UINT nType, int cx, int cy);
+	virtual void OnLButtonUp(UINT nFlags, CPoint point);
+	virtual void OnLButtonDown(UINT nFlags, CPoint point);
+};
+
+class CWndPartyChangeName : public CWndNeuz {
+public:
+	TCHAR	m_sParty[33];
+
+	CWndPartyChangeName();
+	~CWndPartyChangeName();
+
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
+	virtual void OnDraw(C2DRender * p2DRender);
+	virtual	void OnInitialUpdate();
+	virtual BOOL OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase);
+	virtual void OnSize(UINT nType, int cx, int cy);
+	virtual void OnLButtonUp(UINT nFlags, CPoint point);
+	virtual void OnLButtonDown(UINT nFlags, CPoint point);
+};
+
+class CWndPartyChangeTroup : public CWndNeuz {
+public:
+	CWndPartyChangeName * m_WndPartyChangeName;
+	CWndPartyChangeTroup();
+	~CWndPartyChangeTroup();
+
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
+	virtual void OnDraw(C2DRender * p2DRender);
+	virtual	void OnInitialUpdate();
+	virtual BOOL OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase);
+	virtual void OnSize(UINT nType, int cx, int cy);
+	virtual void OnLButtonUp(UINT nFlags, CPoint point);
+	virtual void OnLButtonDown(UINT nFlags, CPoint point);
+};
+
+class CWndPartyLeaveConfirm : public CWndNeuz {
+public:
+	u_long uLeaveId;
+
+	void SetLeaveId(u_long uidPlayer);
+public:
+	CWndPartyLeaveConfirm();
+	~CWndPartyLeaveConfirm();
+
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
+	virtual void OnDraw(C2DRender * p2DRender);
+	virtual	void OnInitialUpdate();
+	virtual BOOL OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase);
+	virtual void OnSize(UINT nType, int cx, int cy);
+	virtual void OnLButtonUp(UINT nFlags, CPoint point);
+	virtual void OnLButtonDown(UINT nFlags, CPoint point);
+};
 
 class CWndPartyInfo : public CWndNeuz 
 { 
@@ -29,6 +137,7 @@ public:
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
+
 class CWndPartySkill : public CWndNeuz 
 { 
 public: 
@@ -50,6 +159,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);
 }; 
+
 class CWndParty : public CWndNeuz 
 { 
 public:
@@ -80,5 +190,3 @@ public:
 private:
 	void OnChangeLeader();
 }; 
-
-#endif

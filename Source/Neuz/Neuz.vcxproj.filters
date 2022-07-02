@@ -1254,15 +1254,6 @@
     <ClInclude Include="..\_Interface\WndParty.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\WndPartyChangeTroup.h">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndPartyConfirm.h">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndPartyQuick.h">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Interface\WndPetRes.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>

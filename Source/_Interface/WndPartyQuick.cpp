@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "defineText.h"
 #include "AppDefine.h"
-#include "WndPartyQuick.h"
 #include "WndManager.h"
 #include "Party.h"
 #include "WndParty.h"

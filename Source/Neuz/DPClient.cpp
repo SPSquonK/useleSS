@@ -43,7 +43,7 @@
 #include "CommonCtrl.h"
 #include "yUtil.h"
 #include "party.h"
-#include "wndpartyconfirm.h"
+#include "WndParty.h"
 #include "WndDuelConfirm.h"
 #include "Environment.h"
 
@@ -58,7 +58,7 @@
 #include "Chatting.h"
 
 #include "WndFriendConfirm.h"
-#include "WndPartyChangeTroup.h"
+#include "WndParty.h"
 #include "Network.h"
 #include "WndSelectVillage.h"
 

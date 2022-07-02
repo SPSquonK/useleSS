@@ -22,7 +22,6 @@
 #endif // __IMPROVE_MAP_SYSTEM
 #include "WndBagEx.h"
 
-#include "WndPartyQuick.h"
 #include "WndHousing.h"
 
 #include "WndGuildHouse.h"

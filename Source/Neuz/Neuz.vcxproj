@@ -770,9 +770,6 @@
     <ClInclude Include="..\_Interface\WndOption.h" />
     <ClInclude Include="..\_Interface\WndOptionGame.h" />
     <ClInclude Include="..\_Interface\WndParty.h" />
-    <ClInclude Include="..\_Interface\WndPartyChangeTroup.h" />
-    <ClInclude Include="..\_Interface\WndPartyConfirm.h" />
-    <ClInclude Include="..\_Interface\WndPartyQuick.h" />
     <ClInclude Include="..\_Interface\WndPetRes.h" />
     <ClInclude Include="..\_Interface\WndPetSys.h" />
     <ClInclude Include="..\_Interface\WndPvp.h" />
