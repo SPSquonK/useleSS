@@ -2,6 +2,7 @@
 #include "AppDefine.h"
 #include "WndEquipmentSex.h"
 #include "ItemMorph.h"
+#include <array>
 
 BOOL CWndEquipementSex::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_EQUIPMENTSEX, pWndParent, 0, CPoint(0, 0));
@@ -35,6 +36,20 @@ void CWndEquipementSex::AddQuantity(UINT widgetId, size_t size) {
 	widget->SetTitle(title.GetString());
 }
 
+static void CopyToClipboard(const CString & str) {
+	HWND hwnd = GetDesktopWindow();
+	if (OpenClipboard(hwnd)) {
+		const size_t length = str.GetLength();
+		EmptyClipboard();
+		HGLOBAL clipbuffer = GlobalAlloc(GMEM_DDESHARE, length + 1);
+		char * const buffer = static_cast<char *>(GlobalLock(clipbuffer));
+		std::strcpy(buffer, str.GetString());
+		GlobalUnlock(clipbuffer);
+		SetClipboardData(CF_TEXT, clipbuffer);
+		CloseClipboard();
+	}
+}
+
 BOOL CWndEquipementSex::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	if (nID == WIDC_RADIO) {
 		ChangeMode(Mode::Vanilla);
@@ -42,6 +57,20 @@ BOOL CWndEquipementSex::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult
 		ChangeMode(Mode::Detected);
 	} else if (nID == WIDC_RADIO2) {
 		ChangeMode(Mode::Unattributed);
+	} else if (nID == WIDC_LISTBOX) {
+		CWndTListBox<Displayed, DisplayedDisplayer> * box = GetDlgItem<CWndTListBox<Displayed, DisplayedDisplayer>>(WIDC_LISTBOX);
+		const Displayed * selection = box->GetCurSelItem();
+		if (selection && selection->item1) {
+			CString str;
+			str = box->displayer.reverseIndex[selection->item1->dwID];
+
+			if (selection->item2) {
+				str += " / ";
+				str += box->displayer.reverseIndex[selection->item2->dwID];
+			}
+
+			CopyToClipboard(str);
+		}
 	}
 
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
@@ -276,17 +305,38 @@ CStringDetectedMorphs::CStringDetectedMorphs() {
 	};
 
 
+	using DCCS = std::pair<const char *, const char *>;
+
+	const std::initializer_list<std::pair<const char *, const char *>> pairs = {
+		DCCS("_M_", "_F_"),
+		DCCS("M_CHR_TUXEDO01", "F_CHR_DRESS01"),
+		DCCS("M_CHR_TUXEDO02", "F_CHR_DRESS03"),
+		DCCS("M_CHR_TUXEDO03", "F_CHR_DRESS04"),
+		DCCS("M_CHR_BULL01", "F_CHR_COW01"),
+		DCCS("M_CHR_CHINESE01", "F_CHR_MARTIALART01"),
+		DCCS("M_CHR_HATTER01", "F_CHR_ALICE01"),
+	};
+
 	for (size_t i = 0; i != prj.m_aPropItem.GetSize(); ++i) {
 		ItemProp * prop = prj.m_aPropItem.GetAt(i);
 		if (!prop) continue;
 		if (prop->dwID != i) continue;
 		if (prop->dwItemSex != SEX_MALE) continue;
 
-		trySomething(prop, Replace(reverseIndex.at(prop->dwID), "_M_", "_F_"));
 
+		for (const auto [male, female] : pairs) {
+			bool ok = trySomething(prop, Replace(reverseIndex.at(prop->dwID), male, female));
+			if (ok) break;
+		}
 
 	}
 
+	// II_ARM_F_CLO_MAS_WIG07BL_1 II_ARM_M_CLO_MAS_WIG09BR_1
+	// II_ARM_F_CLO_MAS_WIG07B_1 II_ARM_M_CLO_MAS_WIG09B_1
+	// II_ARM_F_CLO_MAS_WIG07BR_1 II_ARM_M_CLO_MAS_WIG09S_1
+	// II_ARM_M_CLO_MAS_WIG04BL II_ARM_F_CLO_MAS_WIG04GO
+	// II_ARM_M_CLO_MAS_WIG04SB II_ARM_F_CLO_MAS_WIG04G
+	// II_ARM_M_CLO_MAS_WIG06R II_ARM_F_CLO_MAS_WIG06B
 }
 
 
