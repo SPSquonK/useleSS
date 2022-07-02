@@ -190,9 +190,7 @@
     </ClCompile>
     <ClCompile Include="..\_Interface\WndQuest.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndQuitRoom.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndRoomList.cpp">
+    <ClCompile Include="..\_Interface\WndRoom.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSelectVillage.cpp">
     </ClCompile>
@@ -729,8 +727,7 @@
     <ClInclude Include="..\_Interface\WndMessageBox.h" />
     <ClInclude Include="..\_Interface\WndNeuz.h" />
     <ClInclude Include="..\_Interface\WndQuest.h" />
-    <ClInclude Include="..\_Interface\WndQuitRoom.h" />
-    <ClInclude Include="..\_Interface\WndRoomList.h" />
+    <ClInclude Include="..\_Interface\WndRoom.h" />
     <ClInclude Include="..\_Interface\WndSelectVillage.h" />
     <ClInclude Include="..\_Interface\WndUserMarkNameChanger.h" />
     <ClInclude Include="..\_Interface\WndWebBox.h" />

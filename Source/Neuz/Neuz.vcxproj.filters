@@ -241,10 +241,7 @@
     <ClCompile Include="..\_Interface\WndQuest.cpp">
       <Filter>Source Files\_Interface</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndQuitRoom.cpp">
-      <Filter>Source Files\_Interface</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndRoomList.cpp">
+    <ClCompile Include="..\_Interface\WndRoom.cpp">
       <Filter>Source Files\_Interface</Filter>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSelectVillage.cpp">
@@ -1128,10 +1125,7 @@
     <ClInclude Include="..\_Interface\WndQuest.h">
       <Filter>Source Files\_Interface</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\WndQuitRoom.h">
-      <Filter>Source Files\_Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndRoomList.h">
+    <ClInclude Include="..\_Interface\WndRoom.h">
       <Filter>Source Files\_Interface</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndSelectVillage.h">

@@ -1,11 +1,14 @@
 #include "stdafx.h"
+#include "WndRoom.h"
+
+#include <boost/range/adaptor/indexed.hpp>
+
+#include "MsgHdr.h"
 #include "resData.h"
-#include "WndRoomList.h"
 #include "defineText.h"
+#include "WndTListBox.hpp"
 #include "playerdata.h"
 #include "DPClient.h"
-#include "WndTListBox.hpp"
-#include <boost/range/adaptor/indexed.hpp>
 
 /****************************************************
   WndId : APP_MINIROOM_LIST - 미니룸 목록
@@ -82,3 +85,35 @@ BOOL CWndRoomList::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
+
+/****************************************************
+	WndId : APP_QUIT_ROOM - 미니룸
+	CtrlId : WIDC_STATIC1 - 미니룸에서 퇴장 하시겠습니까?
+	CtrlId : WIDC_BUTTON1 - Button
+	CtrlId : WIDC_BUTTON2 - Button
+****************************************************/
+
+void CWndQuitRoom::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+	MoveParentCenter();
+}
+
+// 처음 이 함수를 부르면 윈도가 열린다.
+BOOL CWndQuitRoom::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	// Daisy에서 설정한 리소스로 윈도를 연다.
+	return CWndNeuz::InitDialog(APP_QUIT_ROOM, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndQuitRoom::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_BUTTON1:// ok 버튼
+			g_DPlay.SendPacket<PACKETTYPE_HOUSING_GOOUT>();
+			Destroy();
+			break;
+
+		case WIDC_BUTTON2:// cancel 버튼
+			Destroy();
+			break;
+	};
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}

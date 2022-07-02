@@ -48,8 +48,7 @@
 #endif //__HELP_BUG_FIX
 
 #include "WndRainbowRace.h"
-#include "WndRoomList.h"
-#include "WndQuitRoom.h"
+#include "WndRoom.h"
 #ifdef __QUIZ
 #include "WndQuizEvent.h"
 #endif // __QUIZ
