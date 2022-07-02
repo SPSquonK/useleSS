@@ -10,8 +10,9 @@ BOOL CWndEquipementSex::Initialize(CWndBase * pWndParent, DWORD) {
 void CWndEquipementSex::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 
-	CWndListBox * box = GetDlgItem<CWndListBox>(WIDC_LISTBOX);
-	// box->m_nFontHeight = 48;
+	CWndTListBox<Displayed, DisplayedDisplayer> & box = ReplaceListBox<Displayed, DisplayedDisplayer>(WIDC_LISTBOX);
+	box.SetLineHeight(36);
+
 
 	ChangeMode(Mode::Vanilla);
 
@@ -53,10 +54,11 @@ void CWndEquipementSex::ChangeMode(const Mode mode) {
 	
 	m_lists.EnsureBuilt();
 
-	CWndListBox * box = GetDlgItem<CWndListBox>(WIDC_LISTBOX);
+	CWndTListBox<Displayed, DisplayedDisplayer> * box = GetDlgItem<CWndTListBox<Displayed, DisplayedDisplayer>>(WIDC_LISTBOX);
 	box->ResetContent();
 
 	const auto idsToDefines = BuildReverseIndex(CScript::m_defines, "II_");
+	box->displayer.reverseIndex = idsToDefines;
 
 	const std::vector<Displayed> * toList =
 		mode == Mode::Vanilla ? &m_lists.vanilla :
@@ -64,39 +66,75 @@ void CWndEquipementSex::ChangeMode(const Mode mode) {
 		&m_lists.unattributed;
 
 	for (const Displayed & displayed : *toList) {
-		const std::string str = displayed.ToString(idsToDefines);
-		box->AddString(str.c_str());
+		box->Add(displayed);
 	}
 }
 
-// TODO: get SFlyFF ListBox implementation
-/*
-void CWndEquipementSex::OnDraw(C2DRender * p2DRender) {
-	CWndListBox * box = GetDlgItem<CWndListBox>(WIDC_LISTBOX);
+static constexpr int CenterBlockOnAxis(int axisLength, int itemLength) {
+	const int axisMid = axisLength / 2;
+	const int itemMid = itemLength / 2;
+	return axisMid - itemMid;
+}
 
-	const CRect bounds = box->GetClientRect();
+void CWndEquipementSex::DisplayedDisplayer::Render(
+	C2DRender * const p2DRender, const CRect rect,
+	const Displayed & displayed,
+	const DWORD color, const WndTListBox::DisplayArgs & misc
+) const {
+	boost::container::small_vector<const ItemProp *, 2> toDisplay;
+	if (displayed.item1) toDisplay.emplace_back(displayed.item1);
+	if (displayed.item2) toDisplay.emplace_back(displayed.item2);
 
-	const int from = box->GetScrollPos();
+	if (toDisplay.empty()) {
 
-	CPoint topLeft = bounds.TopLeft();
 
-	int current = from;
-	while (topLeft.y + 48 < bounds.bottom) {
-		if (current >= static_cast<int>(m_displayed.size())) {
-			break;
+		return;
+	}
+
+	const int blockXLength = static_cast<int>(toDisplay.size()) * 32;
+	const int blockYLength = static_cast<int>(toDisplay.size()) * 18;
+	const int startXOffset = CenterBlockOnAxis(64           , blockXLength);
+	const int startYOffset = CenterBlockOnAxis(rect.Height(), blockYLength);
+
+	for (int i = 0; std::cmp_less(i, toDisplay.size()); ++i) {
+		CTexture * texture = ItemProps::GetItemIconTexture(toDisplay[i]->dwID);
+		if (texture) {
+			p2DRender->RenderTexture(
+				rect.TopLeft()
+				+ CPoint(startXOffset + i * 32, 0)
+				+ CPoint(0, CenterBlockOnAxis(rect.Height(), 32)),
+				texture
+			);
 		}
 
-		const Displayed & disp = m_displayed[current];
+		CPoint tidPoint = rect.TopLeft()
+			+ CPoint(64 + 3, 0)
+			+ CPoint(0, startYOffset + i * 18);
 
-		CRect uglyRect = CRect(topLeft, CSize(20, 30));
-		p2DRender->RenderRect(&uglyRect, 0x0000FFFF);
-		p2DRender->TextOut(topLeft.x, topLeft.y, disp.item1->szName);
+		const auto it = reverseIndex.find(toDisplay[i]->dwID);
+		if (it != reverseIndex.end()) {
+			p2DRender->TextOut(
+				tidPoint.x, tidPoint.y, it->second.GetString(), color
+			);
+		}
 
-		topLeft.y += 48;
-		++current;
+//		CPoint textPoint = rect.TopLeft()
+//			+ CPoint(64 + 3 + 224, 0)
+//			+ CPoint(0, startYOffset + i * 18);
+//
+//		p2DRender->TextOut(
+//			textPoint.x, textPoint.y, toDisplay[i]->szName, color
+//		);
 	}
+
+	p2DRender->RenderFillRect(
+		CRect(
+			CPoint(rect.left + 4, rect.bottom - 1),
+			CPoint(rect.right - 10, rect.bottom)
+		),
+		0xFF808080
+	);
 }
-*/
 
 struct CStringDetectedMorphs {
 	std::map<const ItemProp *, const ItemProp *> pairs;

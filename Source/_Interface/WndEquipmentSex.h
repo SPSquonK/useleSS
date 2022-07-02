@@ -17,6 +17,16 @@ public:
 		[[nodiscard]] std::string ToString(const std::map<int, CString> & idsToDefines) const;
 	};
 
+	struct DisplayedDisplayer {
+		std::map<int, CString> reverseIndex;
+
+		void Render(
+			C2DRender * const p2DRender, CRect rect,
+			const Displayed & displayed,
+			DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
 	struct Lists {
 		bool ouiBonjourCEstIciLaLivraisondePizza = true;
 		std::vector<Displayed> vanilla;
@@ -37,7 +47,6 @@ public:
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
-//	void OnDraw(C2DRender * p2DRender) override;
 
 	static std::map<int, CString> BuildReverseIndex(
 		const std::map<CString, int> & defines, std::string_view prefix
