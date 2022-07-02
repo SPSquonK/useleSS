@@ -36,6 +36,7 @@ CEditString::CEditString( const CEditString& stringSrc ) : CString( stringSrc )
 	Init( stringSrc.m_nWidth, stringSrc.m_sizeFont );
 	m_adwColor.Append( stringSrc.m_adwColor );
 	m_abyStyle.Append( stringSrc.m_abyStyle );
+	m_adwLineOffset.Append(stringSrc.m_adwLineOffset);
 	m_awCodePage.Append( stringSrc.m_awCodePage );
 	InitWordAlignment();
 }
@@ -503,6 +504,8 @@ void CEditString::SetEditString( const CEditString& string )
 	m_abyStyle.Append( string.m_abyStyle );
 	m_awCodePage.RemoveAll();
 	m_awCodePage.Append( string.m_awCodePage );
+	m_adwLineOffset.RemoveAll();
+	m_adwLineOffset.Append( string.m_adwLineOffset );
 	Align( m_pFont, 0 );
 }
 int CEditString::Insert( int nIndex, TCHAR ch, DWORD dwColor, DWORD dwStyle, WORD wCodePage )

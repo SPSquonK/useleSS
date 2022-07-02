@@ -1,10 +1,15 @@
 #pragma once
 
 #include <array>
+#include <memory>
+#include "WndTListBox.hpp"
 
 class CWndDialog : public CWndNeuz 
 { 
 public:
+	static constexpr UINT WIDC_NewQuests = 901;
+	static constexpr UINT WIDC_CurrentQuests = 902;
+
 	struct WORDBUTTON {
 		BOOL bStatus;
 		CRect rect;
@@ -30,8 +35,6 @@ public:
 	int m_nWordButtonNum = 0;
 	int m_nKeyButtonNum  = 0;
 	int m_nContextButtonNum = 0;
-	int m_nNewQuestListNumber = 0;
-	int m_nCurrentQuestListNumber = 0;
 	int m_nSelectKeyButton = - 1;
 	CUIntArray m_aContextMark[ 32 ];
 
@@ -46,13 +49,39 @@ public:
 	CPtrArray m_strArray;
 	OBJID m_idMover;
 	CMapStringToString m_mapWordToOriginal;
+
+	struct ListedQuest {
+		CEditString displayName;
+		CString strKey;
+		QuestId questId;
+	};
+
 private:
-	CWndListBox m_WndNewQuestListBox;
-	CWndListBox m_WndCurrentQuestListBox;
-	CTexture* m_pNewQuestListIconTexture = nullptr;
-	CTexture* m_pExpectedQuestListIconTexture = nullptr;
-	CTexture* m_pCurrentQuestListIconTexture = nullptr;
-	CTexture* m_pCompleteQuestListIconTexture = nullptr;
+	struct NewQuestDisplayer {
+		CTexture * m_pExpectedQuestListIconTexture = nullptr;
+		CTexture * m_pNewQuestListIconTexture = nullptr;
+		int xOffset = 0;
+
+		void Render(
+			C2DRender * p2DRender, CRect rect,
+			ListedQuest & quest, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	struct CurrentQuestDisplayer {
+		CTexture * m_pCompleteQuestListIconTexture = nullptr;
+		CTexture * m_pCurrentQuestListIconTexture = nullptr;
+		int xOffset = 0;
+
+		void Render(
+			C2DRender * p2DRender, CRect rect,
+			ListedQuest & quest, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	CWndTListBox<ListedQuest, NewQuestDisplayer> m_newQuestListBox;
+	CWndTListBox<ListedQuest, CurrentQuestDisplayer> m_currentQuestListBox;
+
 public:
 	 
 	CWndDialog() = default;
@@ -72,14 +101,11 @@ public:
 	void UpdateButtonEnable();
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	void RunScript( const char* szKey, DWORD dwParam, DWORD dwQuest );
-	void AddNewQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
-	void AddCurrentQuestList( const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
+	void AddQuestInList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest, bool isNewQuest);
 	void MakeQuestKeyButton( const CString& rstrKeyButton );
 
 private:
-	void RenderNewQuestListIcon( C2DRender* p2DRender );
-	void RenderCurrentQuestListIcon( C2DRender* p2DRender );
-	void AddQuestList( CWndListBox& pWndListBox, int& nQuestListNumber, const LPCTSTR lpszWord, const LPCTSTR lpszKey, const DWORD dwParam, const DWORD dwQuest );
+	std::pair<ListedQuest, bool> MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest);
 
 public:
 

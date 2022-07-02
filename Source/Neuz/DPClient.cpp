@@ -6287,15 +6287,11 @@ void CDPClient::OnGCSelectPlayer( CAr& ar )
 			{
 				ar >> uidPlayer;
 				vecSelectPlayer.push_back( uidPlayer );
-				if( g_WndMng.m_pWndGuildCombatSelection )
-				{
-					g_WndMng.m_pWndGuildCombatSelection->AddCombatPlayer( uidPlayer );
-				}	
 			}
 			
 			if( g_WndMng.m_pWndGuildCombatSelection )
 			{
-				g_WndMng.m_pWndGuildCombatSelection->SetDefender( uidDefender );
+				g_WndMng.m_pWndGuildCombatSelection->ReceiveLineup(vecSelectPlayer, uidDefender);
 			}	
 		}
 		else
@@ -13012,23 +13008,16 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				break;
 			}
 		case FUNCTYPE_NEWQUEST:
-			{
-				ar.ReadString( rsf.lpszVal1, 1024 );
-				ar.ReadString( rsf.lpszVal2, 1024 );
-				ar >> rsf.dwVal1;
-				ar >> rsf.dwVal2;
-				if( pWndDialog )
-					pWndDialog->AddNewQuestList( rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2 );
-				break;
-			}
 		case FUNCTYPE_CURRQUEST:
 			{
 				ar.ReadString( rsf.lpszVal1, 1024 );
 				ar.ReadString( rsf.lpszVal2, 1024 );
-				ar >> rsf.dwVal1;
+				ar >> rsf.dwVal1; /* always = 0 */
 				ar >> rsf.dwVal2;
-				if( pWndDialog )
-					pWndDialog->AddCurrentQuestList( rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2 );
+				if (pWndDialog) {
+					const bool isNewQuest = wFuncType == FUNCTYPE_NEWQUEST;
+					pWndDialog->AddQuestInList(rsf.lpszVal1, rsf.lpszVal2, QuestId(rsf.dwVal2), isNewQuest);
+				}
 				break;
 			}
 		case FUNCTYPE_SETMARK:
