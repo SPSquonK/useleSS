@@ -4,37 +4,36 @@ class CWndParty;
 
 class CWndPartyQuick : public CWndNeuz {
 public:
-	CWndButton * m_pBtnParty;
-	CWndStatic * m_pWndMemberStatic[8];
+	static constexpr size_t MaxPartyMember = 8;
+
+	CWndButton * m_pBtnParty = nullptr;
+	std::array<CWndStatic *, MaxPartyMember> m_pWndMemberStatic;
 	CTexture m_texGauEmptyNormal;
 	CTexture m_texGauFillNormal;
 
-	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
+	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge = nullptr;
 
-	int m_MemberCount;
-	CWndParty * m_pWndParty;
-	CMover * m_pFocusMember;
+	size_t m_MemberCount = 0;
+	CWndParty * m_pWndParty = nullptr;
+	CMover * m_pFocusMember = nullptr;
 public:
 
 	CWndPartyQuick();
 	~CWndPartyQuick();
 
-	virtual void SerializeRegInfo(CAr & ar, DWORD & dwVersion);
 	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase);
-	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual void OnLButtonDblClk(UINT nFlags, CPoint point);
-	virtual void OnRButtonDblClk(UINT nFlags, CPoint point);
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 
-	void SetActiveMember(int MemberNum);
+	void SetActiveMember(size_t MemberNum);
+
+	static void ReduceSize(CString & str, int length);
+	static CString FormatPlayerName(int level, DWORD dwJob, const char * name);
 };
 
 class CWndPartyConfirm : public CWndNeuz {

@@ -7,52 +7,42 @@
 
 #include "playerdata.h"
 
+static constexpr std::array<UINT, CWndPartyQuick::MaxPartyMember> StaticID = {
+	WIDC_STATIC_MEM1, WIDC_STATIC_MEM2, WIDC_STATIC_MEM3,
+	WIDC_STATIC_MEM4, WIDC_STATIC_MEM5, WIDC_STATIC_MEM6,
+	WIDC_STATIC_MEM7, WIDC_STATIC_MEM8
+};
 
-
-#define MAX_PARTY_MEMBER 8
-
-int StaticID[MAX_PARTY_MEMBER] = {WIDC_STATIC_MEM1, WIDC_STATIC_MEM2, WIDC_STATIC_MEM3, WIDC_STATIC_MEM4,
-WIDC_STATIC_MEM5, WIDC_STATIC_MEM6, WIDC_STATIC_MEM7, WIDC_STATIC_MEM8};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndPartyQuick
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndPartyQuick::CWndPartyQuick() 
-{ 
-	m_pVBGauge = NULL;
-	m_MemberCount = 0;
-	m_pWndParty = NULL;
-	m_pFocusMember = NULL;
-} 
+CWndPartyQuick::CWndPartyQuick() {
+	m_pWndMemberStatic.fill(nullptr);
+}
 
-CWndPartyQuick::~CWndPartyQuick() 
-{ 
+CWndPartyQuick::~CWndPartyQuick() {
 	DeleteDeviceObjects();
-} 
+}
 
-HRESULT CWndPartyQuick::RestoreDeviceObjects()
-{
+HRESULT CWndPartyQuick::RestoreDeviceObjects() {
 	CWndBase::RestoreDeviceObjects();
-	if( m_pVBGauge == NULL )
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
-	return S_OK;
-}
-HRESULT CWndPartyQuick::InvalidateDeviceObjects()
-{
-	CWndBase::InvalidateDeviceObjects();
-    SAFE_RELEASE( m_pVBGauge );
-	return S_OK;
-}
-HRESULT CWndPartyQuick::DeleteDeviceObjects()
-{
-	CWndBase::DeleteDeviceObjects();
-	SAFE_RELEASE( m_pVBGauge );
+	if (!m_pVBGauge) {
+		return m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
+	}
 	return S_OK;
 }
 
-void CWndPartyQuick::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
-{
-	CWndNeuz::SerializeRegInfo( ar, dwVersion );
+HRESULT CWndPartyQuick::InvalidateDeviceObjects() {
+	CWndBase::InvalidateDeviceObjects();
+	SAFE_RELEASE(m_pVBGauge);
+	return S_OK;
+}
+
+HRESULT CWndPartyQuick::DeleteDeviceObjects() {
+	CWndBase::DeleteDeviceObjects();
+	SAFE_RELEASE(m_pVBGauge);
+	return S_OK;
 }
 
 void CWndPartyQuick::OnDraw( C2DRender* p2DRender ) 
@@ -60,15 +50,13 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 	// 파티 정보 출력
 	//Static control
 	int nMax = g_Party.m_nSizeofMember;
-	int i;
-	CRect rect;
 
 	SetActiveMember(nMax);
 
-	for(i=0; i<nMax; i++)
+	for(int i=0; i<nMax; i++)
 	{
 		LPWNDCTRL lpWndCtrl = GetWndCtrl( StaticID[i] );
-		rect = lpWndCtrl->rect;
+		CRect rect = lpWndCtrl->rect;
 		CMover* pObjMember = prj.GetUserByID( g_Party.m_aMember[i].m_uPlayerId );
 		CString strMember;
 		
@@ -84,25 +72,12 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 				dwColor = 0xffff0000; // 죽은놈
 			else if( ((FLOAT)pObjMember->GetHitPoint()) / ((FLOAT)pObjMember->GetMaxHitPoint()) <.1f ) 
 				dwColor = 0xffffff00; // HP 10% 이하인놈
-			if(g_Party.IsLeader(nLeadMember)) //Leader Color Set
+			if (g_Party.IsLeader(nLeadMember)) //Leader Color Set
 			{
 				dwColor = 0xff1fb72d; //굵게 해야함...
-				if(pObjMember->IsMaster())
-					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
-				else if(pObjMember->IsHero())
-					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-				else 
-					strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
 			}
-			else
-			{
-				if(pObjMember->IsMaster())
-					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_MASTER ), pObjMember->GetLevel(), pObjMember->GetName() );
-				else if(pObjMember->IsHero())
-					strMember.Format( prj.GetText( TID_GAME_QUICK_MARK_HERO ), pObjMember->GetLevel(), pObjMember->GetName() );
-				else 
-					strMember.Format( "%d. %s", pObjMember->GetLevel(), pObjMember->GetName() );
-			}
+
+			strMember = FormatPlayerName(pObjMember->GetLevel(), pObjMember->GetJob(), pObjMember->GetName());
 		}
 		else
 		{
@@ -110,42 +85,15 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 			if (g_Party.m_aMember[i].m_remove)  dwColor = 0xff000000; // 서버에 없는놈
 			const char* pszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( g_Party.m_aMember[i].m_uPlayerId );
 
-			CString	strTemp2;
 			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( g_Party.m_aMember[i].m_uPlayerId );
 			int nLevel	= pPlayerData->data.nLevel;
 			int nJob	= pPlayerData->data.nJob;
 
-			if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
-				strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
-			else if( MAX_MASTER <= nJob )
-				strTemp2.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-			else 
-				strTemp2.Format( "%d", nLevel );
-
-			if(g_Party.IsLeader(nLeadMember)) //Leader Set 굵게 해야함...
-				strMember.Format( "%s. %s", strTemp2,pszPlayer );
-			else
-				strMember.Format( "%s. %s", strTemp2,pszPlayer );
-
-
+			strMember = FormatPlayerName(nLevel, static_cast<DWORD>(nJob), pszPlayer);
 		}
 		//Member - Level, Name Draw
 		//긴 이름은 ... 으로.
-		if( strMember.GetLength() > 13 ) 
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount <13; )
-			{
-				if( IsDBCSLeadByte( strMember[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-
-			strMember = strMember.Left( nReduceCount );
-			strMember+="...";
-		}
+		ReduceSize(strMember, 13);
 
 		p2DRender->TextOut( rect.TopLeft().x+5, rect.TopLeft().y+5, strMember, dwColor );
 
@@ -163,15 +111,46 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 	}
 } 
 
+CString CWndPartyQuick::FormatPlayerName(int level, DWORD dwJob, const char * name) {
+	CString result;
+	
+	if (MAX_PROFESSIONAL <= dwJob && dwJob < MAX_MASTER)
+		result.Format("%d%s", level, prj.GetText(TID_GAME_TOOLTIP_MARK_MASTER));
+	else if (MAX_MASTER <= dwJob)
+		result.Format("%d%s", level, prj.GetText(TID_GAME_TOOLTIP_MARK_HERO));
+	else
+		result.Format("%d", level);
+
+	result.AppendFormat(". %s", name);
+
+	return result;
+}
+
+void CWndPartyQuick::ReduceSize(CString & str, int length) {
+	if (str.GetLength() > length) {
+		int	nReduceCount = 0;
+
+		for (nReduceCount = 0; nReduceCount < length; ) {
+			if (IsDBCSLeadByte(str[nReduceCount]))
+				nReduceCount += 2;
+			else
+				nReduceCount++;
+		}
+
+		str = str.Left(nReduceCount);
+		str += "...";
+	}
+}
+
+
 void CWndPartyQuick::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pBtnParty = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
+	m_pBtnParty = GetDlgItem<CWndButton>( WIDC_BUTTON1 );
 
-	for(int i=0; i<MAX_PARTY_MEMBER; i++)
-	{
-		m_pWndMemberStatic[i] = (CWndStatic*)GetDlgItem( StaticID[i] );
+	for (size_t i = 0; i < MaxPartyMember; i++) {
+		m_pWndMemberStatic[i] = GetDlgItem<CWndStatic>(StaticID[i]);
 	}
 
 	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
@@ -179,9 +158,9 @@ void CWndPartyQuick::OnInitialUpdate()
 	
 	SetActiveMember(g_Party.m_nSizeofMember);
 	
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CPoint point( 30, (rectRoot.bottom - rectRoot.top) / 4);
-	Move( point );
+	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CPoint point( 30, (rectRoot.bottom - rectRoot.top) / 4);
+	Move(point);
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndPartyQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
@@ -192,116 +171,78 @@ BOOL CWndPartyQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_PARTY_QUICK, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndPartyQuick::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPartyQuick::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndPartyQuick::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	int nMax = g_Party.m_nSizeofMember;
-
-	CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
-	if(((CWndWorld*)g_WndMng.m_pWndWorld)->m_bAutoAttack || pTaskBar->m_nExecute != 0)
+void CWndPartyQuick::OnLButtonUp(UINT nFlags, CPoint point) {
+	CWndTaskBar * pTaskBar = g_WndMng.m_pWndTaskBar;
+	if (g_WndMng.m_pWndWorld->m_bAutoAttack || pTaskBar->m_nExecute != 0)
 		return;
-	
-	for(int i=0; i<nMax; i++) 
-	{
-		lpWndCtrl = GetWndCtrl( StaticID[i] );
-		rect = lpWndCtrl->rect;
-		if( rect.PtInRect( point ) )
-		{
-			((CWndWorld*)g_WndMng.m_pWndWorld)->m_pSelectRenderObj = NULL; //마우스에 걸려 그려진놈을 지우고 타겟을 잡아야 안겹친다..
-			m_pFocusMember = prj.GetUserByID( g_Party.m_aMember[ i ].m_uPlayerId );
-			if( g_pPlayer != m_pFocusMember ) 
-			{
-				if( IsValidObj( m_pFocusMember ) ) 
-				{
-					g_WorldMng()->SetObjFocus( m_pFocusMember );
-					CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
-					if(pWndWorld)
-						pWndWorld->m_pRenderTargetObj = NULL;
-				}
+
+	for (int i = 0; i < g_Party.m_nSizeofMember; i++) {
+		const WNDCTRL * const lpWndCtrl = GetWndCtrl(StaticID[i]);
+		const CRect rect = lpWndCtrl->rect;
+		if (!rect.PtInRect(point)) continue;
+
+		g_WndMng.m_pWndWorld->m_pSelectRenderObj = NULL; //마우스에 걸려 그려진놈을 지우고 타겟을 잡아야 안겹친다..
+		m_pFocusMember = prj.GetUserByID(g_Party.m_aMember[i].m_uPlayerId);
+		if (g_pPlayer != m_pFocusMember) {
+			if (IsValidObj(m_pFocusMember)) {
+				g_WorldMng()->SetObjFocus(m_pFocusMember);
+				g_WndMng.m_pWndWorld->m_pRenderTargetObj = NULL;
 			}
-			else
-				g_WorldMng()->SetObjFocus( NULL );
-			return;
+		} else {
+			g_WorldMng()->SetObjFocus(NULL);
 		}
+
+		return;
 	}
-} 
-
-void CWndPartyQuick::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 }
 
-void CWndPartyQuick::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-}
-
-void CWndPartyQuick::OnRButtonDblClk( UINT nFlags, CPoint point )
-{
-}
-
-BOOL CWndPartyQuick::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_BUTTON1 ) 
-	{
-		m_pWndParty = (CWndParty*)g_WndMng.GetApplet( APP_PARTY );
-		if(m_pWndParty == NULL)
-			m_pWndParty = (CWndParty*)g_WndMng.CreateApplet( APP_PARTY );
-		else
-		{
+BOOL CWndPartyQuick::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_BUTTON1) {
+		m_pWndParty = (CWndParty *)g_WndMng.GetApplet(APP_PARTY);
+		if (!m_pWndParty) {
+			m_pWndParty = (CWndParty *)g_WndMng.CreateApplet(APP_PARTY);
+		} else {
 			m_pWndParty->Destroy();
-			m_pWndParty = NULL;
+			m_pWndParty = nullptr;
 		}
 	}
 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-void CWndPartyQuick::SetActiveMember(int MemberNum)
-{
-	int i, height;
-	CRect rect;
-	
-	if(m_MemberCount != MemberNum)
-	{
-		rect = GetWindowRect(TRUE);
-		height = 60;
+void CWndPartyQuick::SetActiveMember(size_t MemberNum) {
+	if (m_MemberCount == MemberNum) return;
 
-		for(i=0; i<MemberNum; i++)
-		{
-			CWndStatic* lpWndStatic;
-			lpWndStatic = (CWndStatic*) GetDlgItem( StaticID[i] );
-			lpWndStatic->EnableWindow(TRUE);
-			lpWndStatic->SetVisible(TRUE);
-			height += 34;
-		}
-		for(i=MemberNum; i<MAX_PARTY_MEMBER; i++)
-		{
-			CWndStatic* lpWndStatic;
-			lpWndStatic = (CWndStatic*) GetDlgItem( StaticID[i] );
-			lpWndStatic->EnableWindow(FALSE);
-			lpWndStatic->SetVisible(FALSE);
-		}
-		rect.bottom = rect.top + height;
-		//Button Move
-		CRect btnRect;
-		btnRect.top = height - 50;
-		btnRect.bottom = btnRect.top + 10;
-		btnRect.left = 114;
-		btnRect.right = btnRect.left + 10;
-		m_pBtnParty->SetWndRect(btnRect);
+	MemberNum = std::min(MemberNum, MaxPartyMember);
 
-		SetWndRect(rect);
-		AdjustWndBase();
-		m_MemberCount = MemberNum;
+	CRect rect = GetWindowRect(TRUE);
+	int height = 60;
+
+	size_t i;
+	for (i = 0; i < MemberNum; i++) {
+		CWndStatic * lpWndStatic = GetDlgItem<CWndStatic>(StaticID[i]);
+		lpWndStatic->EnableWindow(TRUE);
+		lpWndStatic->SetVisible(TRUE);
+		height += 34;
 	}
-}
 
+	for (i = MemberNum; i < MaxPartyMember; i++) {
+		CWndStatic * lpWndStatic = GetDlgItem<CWndStatic>(StaticID[i]);
+		lpWndStatic->EnableWindow(FALSE);
+		lpWndStatic->SetVisible(FALSE);
+	}
+
+	rect.bottom = rect.top + height;
+
+	//Button Move
+	CRect btnRect;
+	btnRect.top = height - 50;
+	btnRect.bottom = btnRect.top + 10;
+	btnRect.left = 114;
+	btnRect.right = btnRect.left + 10;
+	m_pBtnParty->SetWndRect(btnRect);
+
+	SetWndRect(rect);
+	AdjustWndBase();
+	m_MemberCount = MemberNum;
+}
