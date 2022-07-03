@@ -1157,33 +1157,18 @@ void CUser::AddPartyChangeTroup( const char * szPartyName )
 	
 }
 
-void CUser::AddPartyRequest( CUser * pLeader, CUser * pMember, BOOL bTroup )
-{
-	if( IsDelete() )	return;
-	
+void CUser::AddPartyRequest(CUser * pLeader) {
+	if (IsDelete())	return;
+
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_PARTYREQEST;
-	m_Snapshot.ar << pLeader->m_idPlayer << pLeader->m_nLevel << pLeader->m_nJob << pLeader->GetSex();
-	m_Snapshot.ar << pMember->m_idPlayer << pMember->m_nLevel << pMember->m_nJob << pMember->GetSex();
-	m_Snapshot.ar.WriteString( pLeader->m_szName );
-	m_Snapshot.ar << bTroup;
-	
+	m_Snapshot.ar << pLeader->m_idPlayer;
+	m_Snapshot.ar.WriteString(pLeader->m_szName);
 }
 
-void CUser::AddPartyRequestCancel( u_long uLeaderid, u_long uMemberid, int nMode )
-{
-	// nMode
-	// 0 : 실제로 캔슬
-	// 1 : 이미 극단에 포함되어 있음
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PARTYREQESTCANCEL;
-	m_Snapshot.ar << uLeaderid << uMemberid;
-	m_Snapshot.ar << nMode;
-	
+void CUser::AddPartyRequestCancel(const u_long uMemberid, const int nMode) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYREQESTCANCEL, u_long, int>(uMemberid, nMode);
 }
 
 void CUser::AddPartyName()

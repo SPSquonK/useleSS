@@ -168,9 +168,8 @@ public:
 	void	OnMotion( OBJID objid, CAr & ar );
 	void	SendSetHair( BYTE nHair, float r, float g, float b );	//, int nCost );
 	void	SendPartySkillUse( int nSkill );
-	void	SendPartyMemberCancle( u_long uLeader, u_long uMember, int nMode = 0 );
-	void	SendPartyMemberRequest( CMover* pLeader, u_long uMemberId, BOOL bTroup );
-	void	SendAddPartyMember( u_long uLeader, LONG nLLevel, LONG nLJob, DWORD dwLSex, u_long uMember, LONG nMLevel, LONG nMJob, DWORD dwMSex );
+	void	SendPartyMemberCancle( u_long uLeader, int nMode );
+	void	SendAddPartyMember(u_long uLeader);
 	void	SendRemovePartyMember( u_long LeaderId, u_long MemberId );
 	void	SendChangeShareItem( int nItemMode );
 	void	SendChangeShareExp( int nExpMode );

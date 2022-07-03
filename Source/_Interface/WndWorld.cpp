@@ -10336,7 +10336,7 @@ void CWndWorld::InviteParty(const u_long uidPlayer) {
 		return;
 	}
 
-	g_DPlay.SendPartyMemberRequest(g_pPlayer, uidPlayer, FALSE);
+	g_DPlay.SendPacket<PACKETTYPE_MEMBERREQUEST, u_long>(uidPlayer);
 }
 
 void CWndWorld::InviteCompany( OBJID objId )

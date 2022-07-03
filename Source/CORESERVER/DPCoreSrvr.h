@@ -53,7 +53,7 @@ public:
 	void	SendPartyChangeItemMode( u_long idParty, int nItemMode );
 	void	SendPartyChangeExpMode( u_long idParty, int nExpMode );
 
-	void	SendAddPartyMember( u_long uPartyId, u_long idLeader, long nLeaderLevel, long nLeaderJob, BYTE nLeaderSex, u_long idMember, long nMemberLevel, long nMemberJob, BYTE nMemberSex );
+	void	SendAddPartyMember(u_long uPartyId, u_long idLeader, u_long idMember);
 	void	SendAddFriend( u_long uidSender, u_long uidFriend, BYTE nSenderSex, BYTE nFriendSex, LONG nSendJob, LONG nFriendJob );
 	void	SendRemoveFriend( u_long uidSender, u_long uidFriend );
 #ifdef __ENVIRONMENT_EFFECT

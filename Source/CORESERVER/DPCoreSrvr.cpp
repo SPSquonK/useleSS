@@ -1086,13 +1086,10 @@ void CDPCoreSrvr::SendPartyChangeItemMode( u_long idParty, int nItemMode )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCoreSrvr::SendAddPartyMember( u_long uPartyId, u_long idLeader, long nLeaderLevel, long nLeaderJob, BYTE nLeaderSex, u_long idMember, long nMemberLevel, long nMemberJob, BYTE nMemberSex )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ADDPARTYMEMBER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uPartyId;
-	ar << idLeader << nLeaderLevel << nLeaderJob << nLeaderSex;
-	ar << idMember << nMemberLevel << nMemberJob << nMemberSex;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCoreSrvr::SendAddPartyMember(const u_long uPartyId, const u_long idLeader, const u_long idMember) {
+	BEFORESENDDUAL(ar, PACKETTYPE_ADDPARTYMEMBER_CoreWorld, DPID_UNKNOWN, DPID_UNKNOWN);
+	ar << uPartyId << idLeader << idMember;
+	SEND(ar, this, DPID_ALLPLAYERS);
 }
 
 void CDPCoreSrvr::SendAddFriend( u_long uidSender, u_long uidFriend, BYTE nSenderSex, BYTE nFriendSex, LONG nSendJob, LONG nFriendJob )
@@ -2027,6 +2024,7 @@ void CDPCoreSrvr::OnGCRemoveParty( CAr & ar, DPID, DPID, DPID, u_long )
 }
 void CDPCoreSrvr::OnGCAddParty( CAr & ar, DPID, DPID, DPID, u_long )
 {
+	// TODO: see wtf is going on here
 	u_long idLeader, idMember;
 	LONG nLeaderLevel, nMemberLevel, nLeaderJob, nMemberJob;
 	DWORD dwLSex, dwMSex;
@@ -2075,18 +2073,16 @@ void CDPCoreSrvr::OnGCAddParty( CAr & ar, DPID, DPID, DPID, u_long )
 		else	// ok
 		{
 			pMember->m_uPartyId		= pParty->m_uPartyId;
-			g_dpCoreSrvr.SendAddPartyMember( pParty->m_uPartyId, idLeader, nLeaderLevel, nLeaderJob, (BYTE)( dwLSex ), idMember, nMemberLevel, nMemberJob, (BYTE)( dwMSex ) );
+			g_dpCoreSrvr.SendAddPartyMember(pParty->m_uPartyId, idLeader, idMember);
 		}
 	}
 	else	// new
 	{
-		u_long uPartyId		=
-			g_PartyMng.NewParty( idLeader, nLeaderLevel, nLeaderJob, (BYTE)( dwLSex ), pLeader->lpszPlayer,
-			idMember, nMemberLevel, nMemberJob, (BYTE)( dwMSex ), pMember->lpszPlayer );
+		const u_long uPartyId = g_PartyMng.NewParty(idLeader, idMember);
 		if( uPartyId != 0 )
 		{
 			pLeader->m_uPartyId		= pMember->m_uPartyId	= uPartyId;
-			g_dpCoreSrvr.SendAddPartyMember( uPartyId, idLeader, nLeaderLevel, nLeaderJob, (BYTE)( dwLSex ), idMember, nMemberLevel, nMemberJob, (BYTE)( dwMSex ) );
+			g_dpCoreSrvr.SendAddPartyMember(uPartyId, idLeader, idMember);
 		}
 		else
 		{

@@ -1190,27 +1190,26 @@ void CDPSrvr::OnGetPos( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u
 	}
 }
 
-void CDPSrvr::OnPartyRequest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	u_long uLeaderid, uMemberid;
-	BOOL bTroup;
-	ar >> uLeaderid >> uMemberid;
-	ar >> bTroup;
+void CDPSrvr::OnPartyRequest(CAr & ar, CUser & pUser) {
+	u_long uMemberid; ar >> uMemberid;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && pUser->m_idPlayer == uLeaderid )
-		InviteParty( uLeaderid, uMemberid, bTroup );
+	CParty * myParty = g_PartyMng.GetParty(pUser.m_idparty);
+	if (myParty) {
+		if (!myParty->IsLeader(pUser.m_idPlayer)) {
+			return;
+		}
+	}
+
+	InviteParty(pUser.m_idPlayer, uMemberid);
 }
 
-void CDPSrvr::OnPartyRequestCancle( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	u_long uLeaderid, uMemberid;
-	int nMode;
-	ar >> uLeaderid >> uMemberid >> nMode;
-
-	CUser* pUser = g_UserMng.GetUserByPlayerID( uLeaderid );
-	if( IsValidObj( pUser ) )
-		pUser->AddPartyRequestCancel( uLeaderid, uMemberid, nMode );
+void CDPSrvr::OnPartyRequestCancle(CAr & ar, CUser & pMember) {
+	const auto [uLeaderId, nMode] = ar.Extract<u_long, int>();
+	
+	CUser * pLeader = g_UserMng.GetUserByPlayerID(uLeaderId);
+	if (IsValidObj(pLeader)) {
+		pLeader->AddPartyRequestCancel(pMember.m_idPlayer, nMode);
+	}
 }
 
 void CDPSrvr::OnPartySkillUse( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -8123,13 +8122,17 @@ void CDPSrvr::OnExchange( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 }
 #endif // __TRADESYS
 
-void CDPSrvr::InviteParty( u_long uLeaderid, u_long uMemberid, BOOL bTroup )
-{
-	CUser* pUser = g_UserMng.GetUserByPlayerID( uMemberid );
-	CUser* pLeaderUser = g_UserMng.GetUserByPlayerID( uLeaderid );
+void CDPSrvr::InviteParty( u_long uLeaderid, u_long uMemberid ) {
+	CUser * pUser = g_UserMng.GetUserByPlayerID(uMemberid);
+	CUser * pLeaderUser = g_UserMng.GetUserByPlayerID(uLeaderid);
 	
-	if( IsValidObj( pLeaderUser ) && IsValidObj( pUser ) )
-	{
+	if (!IsValidObj(pLeaderUser)) return;
+
+	if (!IsValidObj(pUser)) {
+		pLeaderUser->AddPartyRequestCancel(uMemberid, 4);
+		return;
+	}
+
 		// 대전장에서는 파티를 할수 없습니다.
 		CWorld* pWorld = pUser->GetWorld();
 		if( ( pWorld && pWorld->GetID() == WI_WORLD_GUILDWAR ) || pLeaderUser->GetWorld() && pLeaderUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
@@ -8156,22 +8159,18 @@ void CDPSrvr::InviteParty( u_long uLeaderid, u_long uMemberid, BOOL bTroup )
 		{
 			if( 0 < (CMover*)pUser->GetPartyId() )	// 이미 파티가 있을때
 			{
-				pLeaderUser->AddPartyRequestCancel( uLeaderid, uMemberid, 1 );
+				pLeaderUser->AddPartyRequestCancel(uMemberid, 1 );
 			}
-			else
-			{
-				if( pUser->IsAttackMode() )
-					pLeaderUser->AddDefinedText( TID_GAME_BATTLE_NOTPARTY, "" );
-				else
-					pUser->AddPartyRequest( pLeaderUser, pUser, bTroup );
+			else {
+				if (pUser->IsAttackMode()) {
+					pLeaderUser->AddDefinedText(TID_GAME_BATTLE_NOTPARTY, "");
+				} else {
+					pUser->AddPartyRequest(pLeaderUser);
+				}
 			}
 		}
-	}
-	else
-	{
-		if( IsValidObj( pLeaderUser ) )
-			pLeaderUser->AddPartyRequestCancel( uLeaderid, uMemberid, 4 );
-	}
+
+
 }
 
 void CDPSrvr::InviteCompany( CUser* pUser, OBJID objid )

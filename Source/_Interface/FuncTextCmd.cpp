@@ -2678,7 +2678,7 @@ BOOL TextCmd_PartyInvite(CScanner & scanner, CPlayer_ * pUser) {
 	{
 		CUser* pUser2	= g_UserMng.GetUserByPlayerID( uidPlayer );	
 		if( IsValidObj( pUser2 ) )
-			g_DPSrvr.InviteParty( pUser->m_idPlayer, pUser2->m_idPlayer, FALSE );
+			g_DPSrvr.InviteParty( pUser->m_idPlayer, pUser2->m_idPlayer );
 		else
 			pUser->AddDefinedText( TID_DIAG_0060, "\"%s\"", scanner.Token );
 	}

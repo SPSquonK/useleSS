@@ -94,7 +94,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	else {
 		switch( dw )
 		{
-			case PACKETTYPE_ADDPARTYMEMBER:
+			case PACKETTYPE_ADDPARTYMEMBER_NeuzCore:
 			case PACKETTYPE_REMOVEPARTYMEMBER:
 			case PACKETTYPE_CHANGETROUP:
 			case PACKETTYPE_CHANPARTYNAME:

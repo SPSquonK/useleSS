@@ -544,8 +544,7 @@ void CPartyMng::Clear( void )
 // 극단 생성
 // uLeaderPlayerId : 단장, uPartyId : 1번째 단원
 // 극단를 생설할때는 2명으로 생성함( 혼자서는 극단를 생성할수 없음 )
-u_long	CPartyMng::NewParty( u_long uLeaderId, LONG, LONG , BYTE , LPSTR , u_long uMemberId, LONG, LONG , BYTE , LPSTR , u_long uPartyId )
-{
+u_long	CPartyMng::NewParty( u_long uLeaderId, u_long uMemberId, u_long uPartyId ) {
 //	locked
 	if( 0 == uPartyId )
 	{

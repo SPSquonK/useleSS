@@ -20,7 +20,7 @@ CDPCacheSrvr::CDPCacheSrvr()
 	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPCacheSrvr::OnAddPlayer );
 	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCacheSrvr::OnQueryRemovePlayer );
-	ON_MSG( PACKETTYPE_ADDPARTYMEMBER, &CDPCacheSrvr::OnAddPartyMember );
+	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnAddPartyMember );
 	ON_MSG( PACKETTYPE_REMOVEPARTYMEMBER, &CDPCacheSrvr::OnRemovePartyMember );
 	ON_MSG( PACKETTYPE_CHANGETROUP, &CDPCacheSrvr::OnPartyChangeTroup );
 	ON_MSG( PACKETTYPE_CHANPARTYNAME, &CDPCacheSrvr::OnPartyChangeName );
@@ -726,18 +726,12 @@ void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser,
 
 void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long idLeader, _idMember;
-	LONG nLeaderLevel, nMemberLevel, nLeaderJob, nMemberJob;
-	DWORD dwLSex, dwMSex;
-	ar >> idLeader >> nLeaderLevel >> nLeaderJob >> dwLSex;
-	ar >> _idMember >> nMemberLevel >> nMemberJob >> dwMSex;
-	CPlayer* pLeader;
-	CPlayer* pMember;
+	u_long idLeader; ar >> idLeader;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	
-	pLeader	= g_PlayerMng.GetPlayer( idLeader );
-	pMember = g_PlayerMng.GetPlayerBySerial( dpidUser );
+	CPlayer * pLeader	= g_PlayerMng.GetPlayer( idLeader );
+	CPlayer * pMember = g_PlayerMng.GetPlayerBySerial( dpidUser );
 
 	if( !pLeader || !pMember )
 		return;
@@ -777,19 +771,17 @@ void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 		else	// ok
 		{
 			pMember->m_uPartyId		= pParty->m_uPartyId;
-			g_dpCoreSrvr.SendAddPartyMember( pParty->m_uPartyId, pLeader->uKey, nLeaderLevel, nLeaderJob, (BYTE)( dwLSex ), pMember->uKey, nMemberLevel, nMemberJob, (BYTE)( dwMSex ) );
+			g_dpCoreSrvr.SendAddPartyMember(pParty->m_uPartyId, pLeader->uKey, pMember->uKey);
 			g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
 		}
 	}
 	else	// new
 	{
-		u_long uPartyId		=
-			g_PartyMng.NewParty( pLeader->uKey, nLeaderLevel, nLeaderJob, (BYTE)( dwLSex ), pLeader->lpszPlayer,
-			pMember->uKey, nMemberLevel, nMemberJob, (BYTE)( dwMSex ), pMember->lpszPlayer );
+		const u_long uPartyId = g_PartyMng.NewParty(pLeader->uKey, pMember->uKey);
 		if( uPartyId != 0 )
 		{
 			pLeader->m_uPartyId		= pMember->m_uPartyId	= uPartyId;
-			g_dpCoreSrvr.SendAddPartyMember( uPartyId, pLeader->uKey, nLeaderLevel, nLeaderJob, (BYTE)( dwLSex ), pMember->uKey, nMemberLevel, nMemberJob, (BYTE)( dwMSex ) );
+			g_dpCoreSrvr.SendAddPartyMember(uPartyId, pLeader->uKey, pMember->uKey);
 		}
 		else
 		{

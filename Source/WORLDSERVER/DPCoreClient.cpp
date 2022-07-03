@@ -47,7 +47,7 @@ CDPCoreClient::CDPCoreClient()
 //	ON_MSG( PACKETTYPE_MODIFYMODE, OnModifyMode );
 	
 	ON_MSG( PACKETTYPE_ERRORPARTY, &CDPCoreClient::OnErrorParty );
-	ON_MSG( PACKETTYPE_ADDPARTYMEMBER, &CDPCoreClient::OnAddPartyMember );
+	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_CoreWorld, &CDPCoreClient::OnAddPartyMember );
 	ON_MSG( PACKETTYPE_REMOVEPARTYMEMBER, &CDPCoreClient::OnRemovePartyMember );
 	ON_MSG( PACKETTYPE_ADDPLAYERPARTY, &CDPCoreClient::OnAddPlayerParty );
 	ON_MSG( PACKETTYPE_REMOVEPLAYERPARTY, &CDPCoreClient::OnRemovePlayerParty );
@@ -746,26 +746,15 @@ void CDPCoreClient::OnErrorParty( CAr & ar, DPID, DPID, OBJID )
 
 void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 {
-	u_long	idParty, idLeader, idMember;
-	LONG nLeaderLevel, nMemberLevel, nLeaderJob, nMemberJob;
-	BYTE nLeaderSex, nMemberSex;
-	
-	ar >> idParty;
-	ar >> idLeader >> nLeaderLevel >> nLeaderJob >> nLeaderSex;
-	ar >> idMember >> nMemberLevel >> nMemberJob >> nMemberSex;
+	const auto [idParty, idLeader, idMember] = ar.Extract<u_long, u_long, u_long>();
 
-	char pszLeader[MAX_PLAYER]	= { 0,};
-	char pszMember[MAX_PLAYER]	= { 0,};
-	const char* lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader );
-	if( lpPlayer )
-		lstrcpy( pszLeader, lpPlayer );
-	lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idMember );
-	if( lpPlayer )
-		lstrcpy( pszMember, lpPlayer );
+	const char * pszLeader = CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader );
+	if (!pszLeader) pszLeader = "";
+
+	const char * pszMember = CPlayerDataCenter::GetInstance()->GetPlayerString( idMember );
+	if (!pszMember) pszMember = "";
 		
-	CParty* pParty;
-
-	pParty	= g_PartyMng.GetParty( idParty );
+	CParty* pParty = g_PartyMng.GetParty( idParty );
 	if( pParty )
 	{
 		if( pParty->NewMember( idMember ) )
@@ -788,7 +777,7 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 	}
 	else
 	{
-		if( idParty == g_PartyMng.NewParty( idLeader, nLeaderLevel, nLeaderJob, nLeaderSex, (char*)CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader ), idMember, nMemberLevel, nMemberJob, nMemberSex, (char*)CPlayerDataCenter::GetInstance()->GetPlayerString( idMember ), idParty ) )
+		if( idParty == g_PartyMng.NewParty( idLeader, idMember, idParty ) )
 		{
 			pParty	= g_PartyMng.GetParty( idParty );
 			if( pParty )

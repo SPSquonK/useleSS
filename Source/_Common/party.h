@@ -190,7 +190,7 @@ public:
 
 	void	Clear();
 //	Operations
-	u_long	NewParty( u_long uLeaderId, LONG nLeaderLevel, LONG nLeaderJob, BYTE nLeaderSex, LPSTR szLeaderName, u_long uMemberId, LONG nMemberLevel, LONG nMemberJob, BYTE nMemberSex, LPSTR szMembername, u_long uPartyId = 0 );
+	u_long	NewParty(u_long uLeaderId, u_long uMemberId, u_long uPartyId = 0);
 	BOOL	DeleteParty( u_long uPartyId );
 	[[nodiscard]] CParty * GetParty(u_long uPartyId);
 #ifdef __CORESERVER

@@ -335,8 +335,8 @@ public:
 	void			AddTaskBar();
 	void			AddSendErrorParty( DWORD dw, DWORD dwSkill = 0 );
 	void			AddPartyMember( CParty *pParty, u_long idPlayer, const char* pszLeader, const char* pszMember );
-	void			AddPartyRequest( CUser * pLeader, CUser * pMember, BOOL bTroup );
-	void			AddPartyRequestCancel( u_long uLeaderid, u_long uMemberid, int nMode = 0 );
+	void			AddPartyRequest(CUser * pLeader);
+	void			AddPartyRequestCancel( u_long uMemberid, int nMode);
 	void			AddPartyExpLevel( int Exp, int Level, int nPoint );
 	void			AddPartyMemberFlightLevel( int nMemberIndex, int nLevel);
 	void			AddPartyChangeTroup( const char * szPartyName );

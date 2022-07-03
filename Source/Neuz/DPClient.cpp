@@ -3921,22 +3921,15 @@ void CDPClient::OnAddPartyMember( CAr & ar )
 		memset( g_WndMng.m_dwSkillTime, 0, sizeof(DWORD) * MAX_SKILL );
 }
 
-void CDPClient::OnPartyRequest( CAr & ar )
-{
-	u_long uLeader, uMember;
-
-	BOOL bTroup;
-	LONG nLeaderLevel, nMemberLevel, nLeaderJob, nMemberJob;
-	BYTE byLeaderSex, byMemberSex;
-	char szLeaderName[MAX_PLAYER] = {0,};
-	ar >> uLeader >> nLeaderLevel >> nLeaderJob >> byLeaderSex;
-	ar >> uMember >> nMemberLevel >> nMemberJob >> byMemberSex;
-	ar.ReadString( szLeaderName, MAX_PLAYER );
-	ar >> bTroup;
+void CDPClient::OnPartyRequest( CAr & ar ) {
+	u_long uLeader;
+	char szLeaderName[MAX_PLAYER];
 	
-	if( g_Option.m_bParty == FALSE )
-	{
-		SendPartyMemberCancle( uLeader, uMember, 3 );
+	ar >> uLeader;
+	ar.ReadString(szLeaderName);
+	
+	if (g_Option.m_bParty == FALSE) {
+		SendPartyMemberCancle(uLeader, 3);
 		return;
 	}
 
@@ -3953,20 +3946,13 @@ void CDPClient::OnPartyRequest( CAr & ar )
 		return;
 	}
 
-	g_WndMng.m_pWndPartyConfirm = new CWndPartyConfirm;
-	g_WndMng.m_pWndPartyConfirm->SetMember( uLeader, nLeaderLevel, nLeaderJob, byLeaderSex, uMember, nMemberLevel, nMemberJob, byMemberSex, szLeaderName, bTroup );
+	g_WndMng.m_pWndPartyConfirm = new CWndPartyConfirm(uLeader, szLeaderName);
 	g_WndMng.m_pWndPartyConfirm->Initialize();
 }
 
 void CDPClient::OnPartyRequestCancel( CAr & ar )
 {
-	int nMode;
-	// 0 : 참여 거부
-	// 1 : 이미 다른극단에 포함되어 있음
-	u_long uLeader, uMember;
-	
-	ar >> uLeader >> uMember;
-	ar >> nMode;
+	const auto [uMember, nMode] = ar.Extract<u_long, int>();
 
 	CString sMessage;
 	switch( nMode ) {
@@ -3986,15 +3972,12 @@ void CDPClient::OnPartyRequestCancel( CAr & ar )
 			CMover *pMember = prj.GetUserByID( uMember );
 			if( IsValidObj( (CObj*)pMember ) )
 			{
-				//sMessage = pMember->GetName();
 				if( g_Party.FindMember( uMember ) == -1 )
 				{
-					//sMessage += " 님은 이미 다른극단에 포함되어 있습니다.";
 					sMessage.Format( prj.GetText(TID_GAME_PARTYOTHER), pMember->GetName() );
 				}
 				else
 				{
-					//sMessage += " 님은 이미 극단에 포함되어 있습니다.";
 					sMessage.Format( prj.GetText(TID_GAME_PARTYEXISTCHR), pMember->GetName() );
 				}
 			}
@@ -4010,9 +3993,6 @@ void CDPClient::OnPartyRequestCancel( CAr & ar )
 			CMover *pMember = prj.GetUserByID( uMember );
 			if( IsValidObj( (CObj*)pMember ) )
 			{
-				//pMember->GetName();
-				//sMessage = pMember->GetName();
-				//sMessage += " 님은 극단 참여 거부상태입니다.";
 				sMessage.Format( prj.GetText(TID_GAME_PARTYDENY), pMember->GetName() );
 			}
 			break;
@@ -4026,33 +4006,6 @@ void CDPClient::OnPartyRequestCancel( CAr & ar )
 		break;
 	}
 
-/*	if( nMode != 2)
-	{
-		CMover *pMember = prj.GetUserByID( uMember );
-		pMember->GetName();
-		sMessage = pMember->GetName();
-		if( nMode )
-		{
-			if( g_Party.FindMember( uMember ) == -1 )
-			{
-				sMessage += " 님은 이미 다른극단에 포함되어 있습니다.";
-			}
-			else
-			{
-				sMessage += " 님은 이미 극단에 포함되어 있습니다.";
-			}
-			
-		}
-		else
-		{
-			sMessage += " 님이 극단 참여를 거부하였습니다.";
-		}
-	}
-	else
-	{
-		sMessage = "극단 참여에 실패하였습니다.";
-	}
-*/
 	g_WndMng.PutString( sMessage, NULL, 0xff99cc00 );
 }
 
@@ -8600,26 +8553,12 @@ void CDPClient::SendChangeShareExp( int nExpMode )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendPartyMemberRequest( CMover* pLeader, u_long uMemberId, BOOL bTroup )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_MEMBERREQUEST, DPID_UNKNOWN );
-	ar << pLeader->m_idPlayer << uMemberId << bTroup;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendPartyMemberCancle(u_long uLeader, int nMode) {
+	SendPacket<PACKETTYPE_MEMBERREQUESTCANCLE, u_long, int>(uLeader, nMode);
 }
 
-void CDPClient::SendPartyMemberCancle( u_long uLeader, u_long uMember, int nMode )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_MEMBERREQUESTCANCLE, DPID_UNKNOWN );
-	ar << uLeader << uMember << nMode;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendAddPartyMember( u_long uLeader, LONG nLLevel, LONG nLJob, DWORD dwLSex, u_long uMember, LONG nMLevel, LONG nMJob, DWORD dwMSex )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ADDPARTYMEMBER, DPID_UNKNOWN );
-	ar << uLeader << nLLevel << nLJob << dwLSex;
-	ar << uMember << nMLevel << nMJob << dwMSex;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendAddPartyMember(const u_long uLeader) {
+	SendPacket<PACKETTYPE_ADDPARTYMEMBER_NeuzCore, u_long>(uLeader);
 }
 
 void CDPClient::SendRemovePartyMember( u_long LeaderId, u_long MemberId )

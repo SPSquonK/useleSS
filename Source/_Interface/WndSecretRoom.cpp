@@ -1972,7 +1972,7 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 				int nLevel	= pPlayerData->data.nLevel;
 				int nJob	= pPlayerData->data.nJob;
 
-				strMember = CWndPartyQuick::FormatPlayerName(nLevel, static_cast<DWORD>(nJob), pszPlayer);
+				strMember = CWndPartyQuick::FormatPlayerName(nLevel, static_cast<DWORD>(nJob), pPlayerData->szPlayer);
 			}
 			//Member - Level, Name Draw
 			//긴 이름은 ... 으로.
