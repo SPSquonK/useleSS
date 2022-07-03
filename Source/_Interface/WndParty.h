@@ -83,66 +83,72 @@ public:
 
 class CWndPartyInfo : public CWndNeuz 
 { 
+public:
+	struct PlayerInfo {
+		const char * name;
+		int level;
+		DWORD levelMode;
+		int job;
+		LPCTSTR jobName;
+	};
+
 public: 
-	int m_nSelected; // 현재 파티창에서 선택된 놈 인덱스 (위에서부터 zero base)
-	CWndPartyInfo(); 
+	int m_nSelected = -1; // 현재 파티창에서 선택된 놈 인덱스 (위에서부터 zero base)
 	~CWndPartyInfo(); 
 
 	CTexture m_texGauEmptyNormal ;
 	CTexture m_texGauFillNormal  ;
-	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
+	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge = nullptr;
 	
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+
+private:
+
+	static PlayerInfo GetPlayerInfo(u_long playerId, CMover * pObjMember);
 }; 
 
 class CWndPartySkill : public CWndNeuz 
 { 
 public: 
-	CTexture* m_atexSkill[ 10 ];
-	int m_nSkillSelect;
+	std::array<CTexture *, 10> m_atexSkill;
+	int m_nSkillSelect = -1;
 	
 	CWndPartySkill(); 
-	~CWndPartySkill(); 
 
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);
+
+private:
+	int GetCurrentlyHoveredSkill(CPoint point) /* const */;
 }; 
 
 class CWndParty : public CWndNeuz 
 { 
 public:
-	CWndButton* m_pWndLeave;
-	CWndButton* m_pWndChange;
-	CWndButton* m_pWndTransfer;
-	CWndButton* m_pBtnPartyQuick;
-	CWndPartyQuick* m_pWndPartyQuick;
+	CWndButton* m_pWndLeave          = nullptr;
+	CWndButton* m_pWndChange         = nullptr;
+	CWndButton* m_pWndTransfer       = nullptr;
+	CWndButton* m_pBtnPartyQuick     = nullptr;
+	CWndPartyQuick* m_pWndPartyQuick = nullptr;
 	
 public: 
 	CWndPartyInfo  m_wndPartyInfo;
 	CWndPartySkill m_wndPartySkill;
-	CWndPartyChangeTroup* m_WndPartyChangeTroup;
+	CWndPartyChangeTroup* m_WndPartyChangeTroup = nullptr;
 	
-	CWndParty(); 
 	~CWndParty(); 
 
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
@@ -150,11 +156,8 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 
 private:
+	void OnLeave();
 	void OnChangeLeader();
 }; 

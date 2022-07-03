@@ -19,6 +19,8 @@ Howewer, some minor features may still be added. This document list them.
 - Link Attack is applied to ~~the party leader~~ everybody in the party
 Possible bug: it may be applied to everybody even without a parskill (TODO: check)
 
+- Users may move party skills from the window to shortcuts even if they are not
+the leader / if the party has not reache the required level.
 
 ## Exp reward
 

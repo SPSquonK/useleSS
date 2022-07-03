@@ -15,204 +15,100 @@
   CtrlId : WIDC_CHANGE - 극단전환
 ****************************************************/
 
-CWndParty::CWndParty() 
-{ 
-	m_WndPartyChangeTroup = NULL;
-	m_pWndPartyQuick = NULL;
-	Error( "CWndParty::CWndParty()" );
-} 
-CWndParty::~CWndParty() 
-{ 
-#ifdef __FIX_WND_1109
-	SAFE_DELETE( m_WndPartyChangeTroup );
-#endif	// __FIX_WND_1109
+CWndParty::~CWndParty() {
+	SAFE_DELETE(m_WndPartyChangeTroup);
 	DeleteDeviceObjects();
-} 
-void CWndParty::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
-{
-	Error( "CWndParty::SerializeRegInfo() - IN" );
+}
 
-	CWndNeuz::SerializeRegInfo( ar, dwVersion );
-	CWndTabCtrl* lpTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	if( ar.IsLoading() )
-	{
-		if( dwVersion == 0 )
-		{
-		}
-		else
-		if( dwVersion == 1 )
-		{
+void CWndParty::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
+	CWndNeuz::SerializeRegInfo(ar, dwVersion);
+	CWndTabCtrl * lpTabCtrl = (CWndTabCtrl *)GetDlgItem(WIDC_TABCTRL1);
+	if (ar.IsLoading()) {
+		if (dwVersion == 0) {
+			// noop
+		} else if (dwVersion == 1) {
 			int nCurSel;
 			ar >> nCurSel;
-			lpTabCtrl->SetCurSel( nCurSel );
+			lpTabCtrl->SetCurSel(nCurSel);
 		}
-	}
-	else
-	{
+	} else {
 		dwVersion = 1;
 		ar << lpTabCtrl->GetCurSel();
 	}
-
-	Error( "CWndParty::SerializeRegInfo() - OUT" );
 }
-void CWndParty::OnDraw( C2DRender* p2DRender ) 
-{ 
-	if( g_Party.GetSizeofMember() < 2 )
-	{
-		m_pWndLeave->EnableWindow( FALSE );
-		m_pWndTransfer->EnableWindow( FALSE );
-		m_pBtnPartyQuick->EnableWindow( FALSE );
-	}
-	else
-	{
-		m_pWndLeave->EnableWindow( TRUE );
-		m_pWndTransfer->EnableWindow( TRUE );
-		m_pBtnPartyQuick->EnableWindow( TRUE );
-	}
+
+void CWndParty::OnDraw(C2DRender * p2DRender) {
+	static constexpr auto ToBOOL = [](bool v) -> BOOL { return v ? TRUE : FALSE; };
+
+	const bool partyExist = g_Party.GetSizeofMember() >= 2;
+	m_pWndLeave->EnableWindow(ToBOOL(partyExist));
+	m_pWndTransfer->EnableWindow(ToBOOL(partyExist));
+	m_pBtnPartyQuick->EnableWindow(ToBOOL(partyExist));
 
 #ifdef __PARTY_DEBUG_0129		// 극단장 튕기는 현상 디버깅 neuz
-	if( g_Party.GetSizeofMember() < 2 && g_Party.m_nLevel > 1 )
-	{
-		m_pWndLeave->EnableWindow( TRUE );
+	if (g_Party.GetSizeofMember() < 2 && g_Party.m_nLevel > 1) {
+		m_pWndLeave->EnableWindow(TRUE);
 	}
 #endif	// __PARTY_DEBUG_0129		// 극단장 튕기는 현상 디버깅 neuz
 
-	if( g_Party.GetLevel() >= 10 && g_Party.IsLeader( g_pPlayer->m_idPlayer ) )
-		m_pWndChange->EnableWindow( TRUE );
-	else
-		m_pWndChange->EnableWindow( FALSE );
+	const bool canChange = g_Party.GetLevel() >= 10 && g_Party.IsLeader(g_pPlayer->m_idPlayer);
+	m_pWndChange->EnableWindow(ToBOOL(canChange));
 
 	// 파티 정보 출력
-	CWndStatic* pWndStatic;
+	const char * partyName;
+	if (g_Party.m_nKindTroup == 0) {
+		partyName = prj.GetText(TID_GAME_PARTY1);
+	} else if (0 == strlen(g_Party.m_sParty)) {
+		partyName = prj.GetText(TID_GAME_PARTY2);
+	} else {
+		partyName = g_Party.m_sParty;
+	}
+
+	GetDlgItem<CWndStatic>(WIDC_NAME)
+		->SetTitle(partyName);
+
 	CString strTemp;
-	if(g_Party.m_nKindTroup==0)
-	{
-		strTemp.Format("%s",prj.GetText(TID_GAME_PARTY1));
+	strTemp.Format("%d", g_Party.m_nLevel);
+	GetDlgItem<CWndStatic>(WIDC_LEVEL)
+		->SetTitle(strTemp);
+
+	if (g_Party.m_nLevel >= 10) {
+		strTemp.Format("%.2f %%", (float)g_Party.m_nExp * 100 / (float)(((50 + g_Party.GetLevel()) * g_Party.GetLevel() / 13) * 10));
+	} else {
+		strTemp.Format("%.2f %%", (float)g_Party.m_nExp * 100 / (float)prj.m_aExpParty[g_Party.m_nLevel].Exp);
 	}
-	else 
-	{
-		if( 0 == strlen( g_Party.m_sParty ) )
-			strTemp.Format("%s",prj.GetText(TID_GAME_PARTY2));
-		else
-			strTemp.Format("%s",g_Party.m_sParty);
-	}
-	pWndStatic = (CWndStatic*)GetDlgItem( WIDC_NAME );
-	pWndStatic->SetTitle(strTemp);
-	strTemp.Format("%d",g_Party.m_nLevel);
-	pWndStatic = (CWndStatic*)GetDlgItem( WIDC_LEVEL );
-	pWndStatic->SetTitle(strTemp);
-	
-	if( g_Party.m_nLevel >= 10 )
-	{
-		strTemp.Format("%.2f %%", (float)g_Party.m_nExp * 100 / (float)( ( ( 50 + g_Party.GetLevel() ) * g_Party.GetLevel() / 13 ) * 10 ));
-	}
-	else
-	{
-		strTemp.Format("%.2f %%", (float)g_Party.m_nExp * 100 / (float)prj.m_aExpParty[g_Party.m_nLevel].Exp );
-	}
-	pWndStatic = (CWndStatic*)GetDlgItem( WIDC_EXP );
-	pWndStatic->SetTitle(strTemp);
-	strTemp.Format("%d",g_Party.m_nPoint);
-	pWndStatic = (CWndStatic*)GetDlgItem( WIDC_POINT );
-	pWndStatic->SetTitle(strTemp);
+	GetDlgItem<CWndStatic>(WIDC_EXP)
+		->SetTitle(strTemp);
+
+	strTemp.Format("%d", g_Party.m_nPoint);
+	GetDlgItem<CWndStatic>(WIDC_POINT)
+		->SetTitle(strTemp);
 	// 아이템 경험치 분배방식 상태 갱신
-	CWndButton* pWndButton;
-	switch( g_Party.m_nTroupsShareExp) 
-	{
-	case 0:
-		{
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_EXP_SHARE );
-			pWndButton->SetCheck(TRUE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
-			pWndButton->SetCheck(FALSE);
-//			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO7 );
-//			pWndButton->SetCheck(FALSE);
-		}
-		break;
-	case 1:
-		{
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_EXP_SHARE );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
-			pWndButton->SetCheck(TRUE);
-//			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO7 );
-//			pWndButton->SetCheck(FALSE);
-		}
-		break;
-	case 2:
-		{
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_EXP_SHARE );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
-			pWndButton->SetCheck(FALSE);
-//			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO7 );
-//			pWndButton->SetCheck(TRUE);
-		}
-		break;
-	}
-	switch(g_Party.m_nTroupeShareItem) 
-	{
-	case 0:
-		{
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_ITEM_SHARE );
-			pWndButton->SetCheck(TRUE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-			pWndButton->SetCheck(FALSE);
-		}
-		break;
-	case 1:
-		{
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_ITEM_SHARE );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-			pWndButton->SetCheck(TRUE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-			pWndButton->SetCheck(FALSE);
-		}
-		break;
-	case 2:
-		{
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_ITEM_SHARE );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-			pWndButton->SetCheck(TRUE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-			pWndButton->SetCheck(FALSE);
-		}
-		break;
-	case 3:
-		{
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_ITEM_SHARE );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-			pWndButton->SetCheck(FALSE);
-			pWndButton = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-			pWndButton->SetCheck(TRUE);
-		}
-		break;
-	}
-} 
+
+	GetDlgItem<CWndButton>(WIDC_EXP_SHARE)
+		->SetCheck(ToBOOL(g_Party.m_nTroupsShareExp == 0));
+	GetDlgItem<CWndButton>(WIDC_RADIO6)
+		->SetCheck(ToBOOL(g_Party.m_nTroupsShareExp == 1));
+
+	GetDlgItem<CWndButton>(WIDC_ITEM_SHARE)
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 0));
+	GetDlgItem<CWndButton>(WIDC_RADIO2)
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 1));
+	GetDlgItem<CWndButton>(WIDC_RADIO3)
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 2));
+	GetDlgItem<CWndButton>(WIDC_RADIO4)
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 3));
+}
+
 void CWndParty::OnInitialUpdate() 
 { 
-	Error( "CWndParty::OnInitialUpdate() - IN" );
-
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	
-	m_pWndLeave = (CWndButton*)GetDlgItem( WIDC_LEAVE );
-	m_pWndChange = (CWndButton*)GetDlgItem( WIDC_CHANGE );
-	m_pWndTransfer = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
-	m_pBtnPartyQuick = (CWndButton*)GetDlgItem( WIDC_BUTTON2 );
+	m_pWndLeave = GetDlgItem<CWndButton>(WIDC_LEAVE);
+	m_pWndChange = GetDlgItem<CWndButton>(WIDC_CHANGE);
+	m_pWndTransfer = GetDlgItem<CWndButton>(WIDC_BUTTON1);
+	m_pBtnPartyQuick = GetDlgItem<CWndButton>(WIDC_BUTTON2);
 	if( g_Party.GetSizeofMember() < 2 )
 	{
 		m_pWndTransfer->EnableWindow( FALSE );
@@ -221,116 +117,37 @@ void CWndParty::OnInitialUpdate()
 	}
 	m_pWndChange->EnableWindow( FALSE );
 	
-	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
+	CWndTabCtrl * pWndTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	CRect rect = GetClientRect();
 	rect.left = 5;
 	rect.top = 15;
 
-	//gmpbigsun( 100416 ) : Error 제거 
-	//Error( "CWndParty::OnInitialUpdate() - m_wndPartyInfo.Create - IN" );
-	m_wndPartyInfo.Create( WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_INFO );
-	//Error( "CWndParty::OnInitialUpdate() - m_wndPartyInfo.Create - OUT" );
-
-	//Error( "CWndParty::OnInitialUpdate() - m_wndPartySkill.Create - IN" );
-	m_wndPartySkill.Create( WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME , rect, pWndTabCtrl, APP_PARTY_SKILL );
-	//Error( "CWndParty::OnInitialUpdate() - m_wndPartySkill.Create - OUT" );
-
 	WTCITEM tabTabItem;
 	
+	m_wndPartyInfo.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_INFO);
 	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_INFOMATION);//"정보";
 	tabTabItem.pWndBase = &m_wndPartyInfo;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
 	
+	m_wndPartySkill.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_SKILL);
 	tabTabItem.pszText = prj.GetText(TID_APP_SKILL);//"스킬";
 	tabTabItem.pWndBase = &m_wndPartySkill;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
 	MoveParentCenter();
-
-	Error( "CWndParty::OnInitialUpdate() - OUT" );
 } 
+
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndParty::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	Error( "CWndParty::Initialize() - IN" );
-	BOOL bFlag = CWndNeuz::InitDialog( APP_PARTY, pWndParent, 0, CPoint( 0, 0 ) );
-	Error( "CWndParty::Initialize() - OUT" );
+BOOL CWndParty::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_PARTY, pWndParent, 0, CPoint(0, 0));
+}
 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return bFlag;
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndParty::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndParty::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndParty::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndParty::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndParty::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_LEAVE ) 
 	{ // 탈퇴 눌렸다...
-		if( g_pPlayer->m_nDuel == 2 )		// 극단듀얼중이면 탈퇴 안됨.
-		{
-			DWORD dwText = TID_GAME_PPVP_LEAVE;
-			g_WndMng.PutString( prj.GetText( dwText ), NULL, prj.GetTextColor( dwText ) );
-		} 
-		else
-		{
-			if(m_wndPartyInfo.m_nSelected!=-1) 
-			{
-				u_long  nLeaveMember = g_Party.m_aMember[m_wndPartyInfo.m_nSelected].m_uPlayerId; //탈퇴시킬놈 ID
-				// 여기다가 탈퇴
-				if( g_Party.m_nSizeofMember != 0 )
-				{
-					CWndPartyLeaveConfirm* pWndPartyLeaveConfirm = (CWndPartyLeaveConfirm*)g_WndMng.GetWndBase( APP_PARTYLEAVE_CONFIRM );
-					if( pWndPartyLeaveConfirm == NULL )
-					{
-						g_WndMng.m_pWndPartyLeaveConfirm = new CWndPartyLeaveConfirm;
-						g_WndMng.m_pWndPartyLeaveConfirm->Initialize( NULL, APP_PARTYLEAVE_CONFIRM );
-						if( g_Party.m_aMember[0].m_uPlayerId == g_pPlayer->m_idPlayer )
-							g_WndMng.m_pWndPartyLeaveConfirm->SetLeaveId( nLeaveMember );
-						else
-							g_WndMng.m_pWndPartyLeaveConfirm->SetLeaveId( g_pPlayer->m_idPlayer );
-					}
-				}
-				else
-				{
-					// 극단이 구성이 안되어있음
-				}
-			}
-			else
-			{
-				CWndPartyLeaveConfirm* pWndPartyLeaveConfirm = (CWndPartyLeaveConfirm*)g_WndMng.GetWndBase( APP_PARTYLEAVE_CONFIRM );
-				if( pWndPartyLeaveConfirm == NULL )
-				{
-					g_WndMng.m_pWndPartyLeaveConfirm = new CWndPartyLeaveConfirm;
-					g_WndMng.m_pWndPartyLeaveConfirm->Initialize( NULL, APP_PARTYLEAVE_CONFIRM );
-					if( g_Party.m_nSizeofMember != 0 )
-						g_WndMng.m_pWndPartyLeaveConfirm->SetLeaveId( g_pPlayer->m_idPlayer );
-				}
-				// 내 자신을 극단에서 탈퇴
-			}
-			m_wndPartyInfo.m_nSelected=-1;
-		}
+		OnLeave();
 	}
 	// 극단장 인계.
 	else if( nID==WIDC_BUTTON1 )
@@ -339,7 +156,7 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	else if( nID==WIDC_CHANGE )
 	{
-		if( g_Party.m_nKindTroup == 0 /* && g_Party.m_nLevel == 10 */ )
+		if( g_Party.m_nKindTroup == 0 )
 		{
 			// 순회극단으로 바꾸기~
 			SAFE_DELETE( m_WndPartyChangeTroup );
@@ -375,20 +192,9 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			
 			if(nID==WIDC_EXP_SHARE) nTroupsShareExp   = 0;
 			else if(nID==WIDC_RADIO6) nTroupsShareExp = 1;
-	//		else if(nID==WIDC_RADIO7) nTroupsShareExp = 2;
-			
-			if( nTroupsShareExp == 2 )
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0004) ) );
-				//			g_WndMng.OpenMessageBox( _T("경험치 분배의 동일분배는 아직 지원이 안됩니다.") );
-			}
-			else
-			{
-				if( nTroupsShareExp != g_Party.m_nTroupsShareExp )
-				{
-					// Send
-					g_DPlay.SendChangeShareExp( nTroupsShareExp );
-				}
+
+			if (nTroupsShareExp != g_Party.m_nTroupsShareExp) {
+				g_DPlay.SendChangeShareExp(nTroupsShareExp);
 			}
 		}
 		// 아이템 분배 방식은 단막극단 임
@@ -399,21 +205,46 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		else if(nID==WIDC_RADIO3) nTroupeShareItem = 2;
 		else if(nID==WIDC_RADIO4) nTroupeShareItem = 3;		
 
-		if( nTroupeShareItem != g_Party.m_nTroupeShareItem )
-		{
-			// Send
-			g_DPlay.SendChangeShareItem( nTroupeShareItem );
-			
+		if (nTroupeShareItem != g_Party.m_nTroupeShareItem) {
+			g_DPlay.SendChangeShareItem(nTroupeShareItem);
 		}
 	}
 	else
 	{
 		if( nID != WTBID_CLOSE && nID != WTBID_HELP )
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0008) ) );
-//			g_WndMng.OpenMessageBox( "단장이 아니거나 순회극단이 아니므로 변경할수 없습니다." );
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
+}
+
+void CWndParty::OnLeave() {
+	if (g_pPlayer->m_nDuel == 2) {
+		// 극단듀얼중이면 탈퇴 안됨.
+		g_WndMng.PutString(TID_GAME_PPVP_LEAVE);
+		return;
+	}
+
+	if (g_WndMng.m_pWndPartyLeaveConfirm) return;
+	if (g_Party.m_nSizeofMember != 0) return;
+
+	std::optional<u_long> leaver = std::nullopt;
+
+	if (m_wndPartyInfo.m_nSelected != -1 && g_Party.IsLeader(g_pPlayer->m_idPlayer)) {
+		// 여기다가 탈퇴
+		leaver = g_Party.m_aMember[m_wndPartyInfo.m_nSelected].m_uPlayerId; //탈퇴시킬놈 ID
+	} else {
+		leaver = g_pPlayer->m_idPlayer;
+		// 내 자신을 극단에서 탈퇴
+	}
+
+	if (leaver) {
+		g_WndMng.m_pWndPartyLeaveConfirm = new CWndPartyLeaveConfirm;
+		g_WndMng.m_pWndPartyLeaveConfirm->Initialize(NULL, APP_PARTYLEAVE_CONFIRM);
+		g_WndMng.m_pWndPartyLeaveConfirm->SetLeaveId(leaver.value());
+	}
+
+	m_wndPartyInfo.m_nSelected = -1;
 }
 
 void CWndParty::OnChangeLeader() {
@@ -464,42 +295,38 @@ void CWndParty::OnChangeLeader() {
   CtrlId : WIDC_POINT - 0
 ****************************************************/
 
-CWndPartyInfo::CWndPartyInfo() 
-{ 
-	m_nSelected=-1;
-	m_pVBGauge = NULL;
-} 
-CWndPartyInfo::~CWndPartyInfo() 
-{ 
+CWndPartyInfo::~CWndPartyInfo() {
 	DeleteDeviceObjects();
-} 
+}
+
 void CWndPartyInfo::OnDraw( C2DRender* p2DRender ) 
 {
-	CString strTemp;
+	CString strLevel, strName;
 	
 	// 현재 선택된 놈 표시
-	if( m_nSelected != -1 ) 
-	{
-		CRect rect( 5, 8 + m_nSelected * 15, 410, 22 + m_nSelected * 15 );
-		p2DRender->RenderFillRect( rect, 0x60ffff00 );
+	if (m_nSelected != -1) {
+		CRect rect(5, 8 + m_nSelected * 15, 410, 22 + m_nSelected * 15);
+		p2DRender->RenderFillRect(rect, 0x60ffff00);
 	}
+
 	// 파티원 정보 출력
-	if( g_Party.GetSizeofMember() < m_nSelected + 1 ) 
-	{
+	if (g_Party.GetSizeofMember() < m_nSelected + 1) {
 		m_nSelected = -1;
 	}
+
+	const int nLang = ::GetLanguage();
+	const bool displayPartyRole = nLang == LANG_FRE || nLang == LANG_GER;
+
 	int y = 10;
 
-	DWORD dwColor;
 	for( int i = 0; i < g_Party.m_nSizeofMember; i++ ) 
 	{		
-		dwColor = 0xff000000;
+		DWORD dwColor = 0xff000000;
 		CMover* pObjMember	= prj.GetUserByID( g_Party.m_aMember[ i ].m_uPlayerId );
 
 		CRect rectTemp,rect;
-		CString strClass(prj.GetText(TID_GAME_MEMBER));
-		CString strName;
-		if( i == 0 ) strClass = prj.GetText(TID_GAME_LEADER); // 맨 위에놈이 단장
+		const char * strClass = i == 0 ? prj.GetText(TID_GAME_LEADER) : prj.GetText(TID_GAME_MEMBER);
+
 		rectTemp = CRect( 10, y, 20, y + 10 );
 		p2DRender->RenderFillRect( rectTemp, dwColor );
 		rectTemp = CRect( 11, y + 1, 19, y + 9 );
@@ -510,11 +337,8 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		{
 			if( pObjMember->GetHitPoint() == 0 ) 
 				colorStatus = 0xffff0000; // 죽은놈
-			else 
-			{
-				if( pObjMember->GetMaxHitPoint() > 0 && ( (FLOAT)pObjMember->GetHitPoint() ) / ( (FLOAT)pObjMember->GetMaxHitPoint() ) <.1f ) 
-					colorStatus = 0xffffff00; // HP 10% 이하인놈
-			}
+			else if( pObjMember->GetMaxHitPoint() > 0 && ( (FLOAT)pObjMember->GetHitPoint() ) / ( (FLOAT)pObjMember->GetMaxHitPoint() ) <.1f ) 
+				colorStatus = 0xffffff00; // HP 10% 이하인놈
 		}
 		else
 		{
@@ -527,98 +351,37 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		u_long  nLeadMember = g_Party.m_aMember[i].m_uPlayerId;
 		if(g_Party.IsLeader(nLeadMember)) //Leader Color Set
 			dwColor = 0xff1fb72d;
-		BOOL bSummary	= FALSE;
-		int nLang	= ::GetLanguage();
-		switch( nLang )
-		{
-			case LANG_GER:
-			case LANG_FRE:
-				bSummary	= TRUE;
-				break;
+
+		PlayerInfo info = GetPlayerInfo(nLeadMember, pObjMember);
+
+		strLevel.Format("%d", info.level);
+		if (info.levelMode != NULL) {
+			strLevel += prj.GetText(info.levelMode);
+		}
+		p2DRender->TextOut(30, y, 1.0f, 1.0f, strLevel.GetString(), dwColor);
+
+		if (!displayPartyRole) {
+			p2DRender->TextOut(80, y, 1.0f, 1.0f, strClass, dwColor);
+			p2DRender->TextOut(120, y, 1.0f, 1.0f, info.jobName, dwColor);
+		} else {
+			p2DRender->TextOut(80, y, 1.0f, 1.0f, info.jobName, dwColor);
 		}
 
-		// 레벨 계급 직업
-		if( IsValidObj(pObjMember) )
-		{
-			if( MAX_PROFESSIONAL <= pObjMember->GetJob() && pObjMember->GetJob() < MAX_MASTER )
-				strTemp.Format( "%d%s", pObjMember->GetLevel(), prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
-			else if( MAX_MASTER <= pObjMember->GetJob() )
-				strTemp.Format( "%d%s", pObjMember->GetLevel(), prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-			else 
-				strTemp.Format( "%d", pObjMember->GetLevel() );
-			p2DRender->TextOut( 30, y, 1.0f, 1.0f, strTemp, dwColor );
-			if( !bSummary )
-			{
-				strTemp.Format( "%s", strClass );
-				p2DRender->TextOut( 80, y, 1.0f, 1.0f, strTemp, dwColor );
-				strTemp.Format( "%s", pObjMember->GetJobString() );
-				p2DRender->TextOut( 120, y, 1.0f, 1.0f, strTemp, dwColor );
-			}
-			else
-			{
-				strTemp.Format( "%s", pObjMember->GetJobString() );
-				p2DRender->TextOut( 80, y, 1.0f, 1.0f, strTemp, dwColor );
-			}
-			strName		= pObjMember->GetName();
-		}
-		else
-		{
-			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( g_Party.m_aMember[i].m_uPlayerId );
-			int nLevel	= pPlayerData->data.nLevel;
-			int nJob	= pPlayerData->data.nJob;
-			if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER )
-				strTemp.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_MASTER ) );
-			else if( MAX_MASTER <= nJob )
-				strTemp.Format( "%d%s", nLevel, prj.GetText( TID_GAME_TOOLTIP_MARK_HERO ) );
-			else 
-				strTemp.Format( "%d", nLevel );
-			p2DRender->TextOut(30,y,1.0f,1.0f,strTemp,dwColor);
-			if( !bSummary )
-			{
-				strTemp.Format("%s",strClass);
-				p2DRender->TextOut(80,y,1.0f,1.0f,strTemp,dwColor);
-				strTemp.Format("%s",prj.m_aJob[nJob].szName);
-				p2DRender->TextOut(120,y,1.0f,1.0f,strTemp,dwColor);
-			}
-			else
-			{
-				strTemp.Format( "%s", prj.m_aJob[nJob].szName );
-				p2DRender->TextOut( 80, y, 1.0f, 1.0f, strTemp, dwColor );
-			}
-			strName		= pPlayerData->szPlayer;
-		}
 		// 이름은 10바이트째에서 짜른다
-		if( strName.GetLength() > 8 ) 
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount= 0; nReduceCount < 8; )
-			{
-				if( IsDBCSLeadByte( strName[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-
-			strName = strName.Left( nReduceCount ); // 10바이트째에서 한글이 두동강날거같으면 9바이트에서 짜르기
-			strName+="..."; // 이름 짤린놈은 이게 끝이 아니라고 표시하자... 기획에는 없지만 내멋대로 붙였음
-		}
-		strTemp.Format("%s",strName);
-		p2DRender->TextOut( 180, y, 1.0f, 1.0f, strTemp, dwColor );
+		strName = info.name;
+		CWndPartyQuick::ReduceSize(strName, 8);
+		p2DRender->TextOut( 180, y, 1.0f, 1.0f, strName.GetString(), dwColor);
 		
 		// HP 게이지
 		int nWidth	= ( IsValidObj( pObjMember ) ? 110 * pObjMember->GetHitPoint() / pObjMember->GetMaxHitPoint() : 0 );
-		if( !bSummary )
+		if( !displayPartyRole)
 			rect.SetRect( 280, y, 280 + 110, y + 12 );
 		else
 			rect.SetRect( 310, y, 310 + 110, y + 12 );	// 오른쪽으로 30 이동
 
 		rectTemp = rect; 
 		rectTemp.right = rectTemp.left + nWidth;
-		//rectTemp.DeflateRect( 1, 1 );
-		//if( rectTemp.Width() > 5 )
-		//	m_pTheme->RenderWndGauge( p2DRender, &rectTemp, D3DCOLOR_ARGB( 255, 255, 0, 0 ) );
-		//m_pTheme->RenderWndGauge( p2DRender, &rect,  D3DCOLOR_ARGB( 100, 255, 255, 255 )  );
+
 		m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
 		if( IsValidObj(pObjMember) )
 			m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
@@ -626,21 +389,47 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		y+=15; // 다음줄
 	}
 } 
-HRESULT CWndPartyInfo::RestoreDeviceObjects()
-{
+
+CWndPartyInfo::PlayerInfo CWndPartyInfo::GetPlayerInfo(u_long playerId, CMover * pObjMember) {
+	CWndPartyInfo::PlayerInfo retval;
+	if (IsValidObj(pObjMember)) {
+		retval.name = pObjMember->GetName();
+		retval.level = pObjMember->GetLevel();
+		retval.job = pObjMember->GetJob();
+		retval.jobName = pObjMember->GetJobString();
+	} else {
+		const PlayerData * const pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
+		retval.name = pPlayerData->szPlayer;
+		retval.level = static_cast<int>(pPlayerData->data.nLevel);
+		retval.job = static_cast<int>(pPlayerData->data.nJob);
+		retval.jobName = prj.m_aJob[retval.job].szName;
+	}
+
+	if (retval.job >= MAX_MASTER) {
+		retval.levelMode = TID_GAME_TOOLTIP_MARK_HERO;
+	} else if (retval.job >= MAX_PROFESSIONAL) {
+		retval.levelMode = TID_GAME_TOOLTIP_MARK_MASTER;
+	} else {
+		retval.levelMode = NULL;
+	}
+
+	return retval;
+}
+
+HRESULT CWndPartyInfo::RestoreDeviceObjects() {
 	CWndNeuz::RestoreDeviceObjects();
-	if( m_pVBGauge == NULL )
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+	if (m_pVBGauge == NULL)
+		return m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
 	return S_OK;
 }
-HRESULT CWndPartyInfo::InvalidateDeviceObjects()
-{
+
+HRESULT CWndPartyInfo::InvalidateDeviceObjects() {
 	CWndNeuz::InvalidateDeviceObjects();
-    SAFE_RELEASE( m_pVBGauge );
+	SAFE_RELEASE(m_pVBGauge);
 	return S_OK;
 }
-HRESULT CWndPartyInfo::DeleteDeviceObjects()
-{
+
+HRESULT CWndPartyInfo::DeleteDeviceObjects() {
 	CWndNeuz::DeleteDeviceObjects();
 	InvalidateDeviceObjects();
 	return S_OK;
@@ -655,43 +444,18 @@ void CWndPartyInfo::OnInitialUpdate()
 	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
 	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
 	
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
+
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_PARTY_INFO, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndPartyInfo::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndPartyInfo::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPartyInfo::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPartyInfo::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
+BOOL CWndPartyInfo::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_PARTY_INFO, pWndParent, 0, CPoint(0, 0));
+}
+
 void CWndPartyInfo::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
 	CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
-	if(((CWndWorld*)g_WndMng.m_pWndWorld)->m_bAutoAttack || pTaskBar->m_nExecute != 0)
+	if(g_WndMng.m_pWndWorld->m_bAutoAttack || pTaskBar->m_nExecute != 0)
 		return;
 	
 	// 파티창에서 어떤놈 눌렀는지 색출
@@ -700,124 +464,108 @@ void CWndPartyInfo::OnLButtonDown( UINT nFlags, CPoint point )
 		m_nSelected = ( point.y - 10 ) / 15;
 	else 
 		m_nSelected = -1;
-	if( m_nSelected != -1 ) 
-	{ // 선택된놈 있으면
-		// 그놈을 타겟으로
-		((CWndWorld*)g_WndMng.m_pWndWorld)->m_pSelectRenderObj = NULL; //마우스에 걸려 그려진놈을 지우고 타겟을 잡아야 안겹친다..
-		CMover* pObjMember = prj.GetUserByID( g_Party.m_aMember[m_nSelected].m_uPlayerId );
-		if(g_pPlayer!=pObjMember) 
-		{
-			if(IsValidObj(pObjMember)) 
-			{ // 화면에 없는놈은 패스...
-				g_WorldMng()->SetObjFocus(pObjMember);
-				CWndWorld* pWndWorld = g_WndMng.m_pWndWorld;
-				if(pWndWorld)
-					pWndWorld->m_pRenderTargetObj = NULL;
-			}
-		}
-		else
-			g_WorldMng()->SetObjFocus( NULL );
-	}
-	else 
-	{
+	
+	if (m_nSelected == -1) {
 		// 없으면 타겟 지운다
-		g_WorldMng()->SetObjFocus(NULL);
+		g_WorldMng()->SetObjFocus(nullptr);
+		return;
 	}
-} 
-BOOL CWndPartyInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+
+	// 선택된놈 있으면
+	// 그놈을 타겟으로
+	g_WndMng.m_pWndWorld->m_pSelectRenderObj = nullptr; //마우스에 걸려 그려진놈을 지우고 타겟을 잡아야 안겹친다..
+
+	CMover* pObjMember = prj.GetUserByID( g_Party.m_aMember[m_nSelected].m_uPlayerId );
+	if (g_pPlayer == pObjMember) {
+		g_WorldMng()->SetObjFocus(nullptr);
+		return;
+	}
+
+	if (IsValidObj(pObjMember)) {
+		// 화면에 없는놈은 패스...
+		g_WorldMng()->SetObjFocus(pObjMember);
+		g_WndMng.m_pWndWorld->m_pRenderTargetObj = nullptr;
+	}
+}
 
 /****************************************************
   WndId : APP_PARTY_SKILL - 극단스킬
 ****************************************************/
 
-CWndPartySkill::CWndPartySkill() 
-{ 
-	ZeroMemory( m_atexSkill, sizeof( m_atexSkill ) );
-	m_nSkillSelect = -1;
-} 
-CWndPartySkill::~CWndPartySkill() 
-{ 
-} 
-void CWndPartySkill::OnDraw( C2DRender* p2DRender ) 
-{ 
-//	if( g_Party.m_nKindTroup )
-	{
-		CRect rect = GetClientRect();
-		int nWidth = rect.Width() / 3;
-		int nHeight = rect.Height() / 3;
-		int nCount = 0;
-		for( int i = 0; i < 3; i++ )
-		{
-			for( int j = 0; j < 3; j++, nCount++ )
-			{
-				ItemProp* pItemProp =  prj.GetPartySkill( nCount + 1 );
-				if( pItemProp ) //&& g_Party.m_nSizeofMember >= 2 )
-				{
-					m_atexSkill[ i * 3 + j ] = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pItemProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff, FALSE );
-					CPoint point1 = CPoint( j * nWidth + 35 , i * nHeight + 6 );
-					CPoint point2 = CPoint( j * nWidth + 3, i * nHeight + 3 );
-					
-					if( g_Party.m_nKindTroup && int(g_Party.GetLevel() - pItemProp->dwReqDisLV) >= 0 )
-					{
-						if( (g_Party.GetPoint() - pItemProp->dwExp) >= 0 )
-						{
-							// 사용가능한 기술
-							p2DRender->TextOut( point1.x, point1.y, pItemProp->szName, 0xff000000 );
-							//m_aSlotQueue[nIndex].m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff, FALSE );
-							p2DRender->RenderTexture( point2, m_atexSkill[ i * 3 + j ] );
-							
-						}
-						else
-						{
-							// 기술은 익혔으나 포인트가 모자라 사용을 못함
-							p2DRender->TextOut( point1.x, point1.y, pItemProp->szName, 0xff0000ff );
-							p2DRender->RenderTexture( point2, m_atexSkill[ i * 3 + j ] );
-							
-						}
-					}
-					else
-					{
-						// 기술을 못익혔음
-						p2DRender->TextOut( point1.x, point1.y, pItemProp->szName, 0xffff0000 );
-						p2DRender->RenderTexture( point2, m_atexSkill[ i * 3 + j ], 54 );		
-					}
-				}
+CWndPartySkill::CWndPartySkill() {
+	m_atexSkill.fill(nullptr);
+}
+
+void CWndPartySkill::OnDraw( C2DRender* p2DRender )  { 
+	const CRect rect = GetClientRect();
+	const int nWidth = rect.Width() / 3;
+	const int nHeight = rect.Height() / 3;
+	
+	for (int nCount = 0; nCount < 9; ++nCount) {
+		const int i = nCount / 3;
+		const int j = nCount % 3;
+
+		const ItemProp * const pItemProp = prj.GetPartySkill(nCount + 1);
+		if (!pItemProp) continue;
+
+		m_atexSkill[nCount] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pItemProp->szIcon), 0xffff00ff, FALSE);
+
+		const CPoint ptName = CPoint( j * nWidth + 35 , i * nHeight + 6 );
+		const CPoint ptIcon = CPoint( j * nWidth + 3  , i * nHeight + 3 );
+				
+		DWORD textColor;
+		DWORD textureOpacity;
+
+		if (g_Party.m_nKindTroup && std::cmp_greater_equal(g_Party.GetLevel(), pItemProp->dwReqDisLV)) {
+			if (std::cmp_greater_equal(g_Party.GetPoint(), pItemProp->dwExp)) {
+				textColor = 0xff000000;
+			} else {
+				textColor = 0xff0000ff;
 			}
+
+			textureOpacity = 255;
+		} else {
+			textColor = 0xffff0000;
+			textureOpacity = 54;
 		}
+
+		p2DRender->TextOut(ptName.x, ptName.y, pItemProp->szName, textColor);
+		p2DRender->RenderTexture(ptIcon, m_atexSkill[nCount], textureOpacity);
 	}
 } 
-void CWndPartySkill::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-	CRect rect = GetClientRect();
-	int nWidth = rect.Width() / 3;
-	int nHeight = rect.Height() / 3;
-	point.x /= nWidth; 
+
+int CWndPartySkill::GetCurrentlyHoveredSkill(CPoint point) /* const */ {
+	const CRect rect = GetClientRect();
+	const int nWidth = rect.Width() / 3;
+	const int nHeight = rect.Height() / 3;
+	point.x /= nWidth;
 	point.y /= nHeight;
-	int nSkill = point.y * 3 + point.x;
+	return point.y * 3 + point.x;
+}
+
+
+void CWndPartySkill::OnLButtonDown(UINT, const CPoint point) {
+	const int nSkill = GetCurrentlyHoveredSkill(point);
 	
-	ItemProp* pItemProp =  prj.GetPartySkill( nSkill + 1 );
-	if( pItemProp )
-	{
-		m_nSkillSelect = nSkill;
+	const ItemProp * const pItemProp = prj.GetPartySkill( nSkill + 1 );
+	if (!pItemProp) {
+		m_nSkillSelect = -1;
 		return;
 	}
-	m_nSkillSelect = -1;
-} 
-void CWndPartySkill::OnMouseWndSurface( CPoint point )
-{
-	CRect rect = GetClientRect();
-	int nWidth = rect.Width() / 3;
-	int nHeight = rect.Height() / 3;
+	
+	m_nSkillSelect = nSkill;
+}
+
+void CWndPartySkill::OnMouseWndSurface(CPoint point) {
+	const CRect rect = GetClientRect();
+	const int nWidth = rect.Width() / 3;
+	const int nHeight = rect.Height() / 3;
 	int nCount = 0;
 	for( int i = 0; i < 3; i++ )
 	{
 		for( int j = 0; j < 3; j++, nCount++ )
 		{
-			ItemProp* pItemProp =  prj.GetPartySkill( nCount + 1 );
-			if( pItemProp ) //&& g_Party.m_nSizeofMember >= 2 )
+			if (prj.GetPartySkill(nCount + 1))
 			{
 				CRect rect( j * nWidth + 3, i * nHeight + 3, j * nWidth + 3 + nWidth, i * nHeight + 3 + nHeight);
 				if( rect.PtInRect( point ) )
@@ -831,93 +579,41 @@ void CWndPartySkill::OnMouseWndSurface( CPoint point )
 			}
 		}
 	}
-}	
-void CWndPartySkill::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
+}
+
+void CWndPartySkill::OnLButtonUp(UINT, CPoint) {
 	m_nSkillSelect = -1;
 }
 
-void CWndPartySkill::OnMouseMove(UINT nFlags, CPoint point)
-{
-	if( m_nSkillSelect == -1 || IsPush() == FALSE )
+void CWndPartySkill::OnMouseMove(UINT, CPoint) {
+	if (m_nSkillSelect == -1 || IsPush() == FALSE)
 		return;
-	//	TRACE( " hello \n" );
-	CPoint pt( 3, 3 );
-	CRect rect;
-	//if( m_rect.PtInRect( point ) )
-	//{
-	//DWORD dwSkill = m_apJobSkill[ m_nCurSelect ].dwSkill;
-	ItemProp* pItemProp =  prj.GetPartySkill( m_nSkillSelect + 1 );
-	if( pItemProp ) //&& g_Party.m_nSizeofMember >= 2 )
-	{
-		if( int(g_Party.GetLevel() - pItemProp->dwReqDisLV) >= 0 )
-		{
-			//CItemElem* pItemElem = &m_pItemContainer->m_apItem[ m_pItemContainer->m_apIndex[ m_nCurSelect ] ] ;
-			m_GlobalShortcut.m_dwShortcut  = ShortcutType::PartySkill;
-			m_GlobalShortcut.m_dwIndex = m_nSkillSelect + 1;//m_nSkillSelect;//m_nCurSelect;//(DWORD)pItemElem;//->m_dwItemId;
-			m_GlobalShortcut.m_dwData  = 0;//pItemElem->m_dwObjId;//(DWORD)pItemElem;
-			m_GlobalShortcut.m_dwId     = m_nSkillSelect + 1; // 컬런트 셀렉트가 곧 ID나 마찬가지임.
-			m_GlobalShortcut.m_pTexture = m_atexSkill[ m_nSkillSelect ];//L;//pItemElem->m_pTexture;
-			_tcscpy( m_GlobalShortcut.m_szString, pItemProp->szName);
-			//}
-		}
-	}
+	
+	const ItemProp * const pItemProp =  prj.GetPartySkill( m_nSkillSelect + 1 );
+	if (!pItemProp) return;
+
+	m_GlobalShortcut.m_dwShortcut  = ShortcutType::PartySkill;
+	m_GlobalShortcut.m_dwIndex = m_nSkillSelect + 1;
+	m_GlobalShortcut.m_dwData  = 0;
+	m_GlobalShortcut.m_dwId     = m_nSkillSelect + 1; // 컬런트 셀렉트가 곧 ID나 마찬가지임.
+	m_GlobalShortcut.m_pTexture = m_atexSkill[ m_nSkillSelect ];
+	_tcscpy( m_GlobalShortcut.m_szString, pItemProp->szName);
 }
 
-void CWndPartySkill::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+void CWndPartySkill::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
+}
+
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartySkill::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_PARTY_SKILL, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndPartySkill::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndPartySkill::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPartySkill::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPartySkill::OnLButtonDblClk( UINT nFlags, CPoint point)
-{
-//	if( g_Party.m_nSizeofMember >= 2 && g_Party.m_nKindTroup == 1 )
-	{
-		CRect rect = GetClientRect();
-		int nWidth = rect.Width() / 3;
-		int nHeight = rect.Height() / 3;
-		point.x /= nWidth; 
-		point.y /= nHeight;
-		int nSkill = point.y * 3 + point.x;
-		
-		ItemProp* pItemProp =  prj.GetPartySkill( nSkill + 1 );
-		if( pItemProp )
-		{
-			g_WndMng.ObjectExecutor( ShortcutType::PartySkill, nSkill + 1 );
-		}
+BOOL CWndPartySkill::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_PARTY_SKILL, pWndParent, 0, CPoint(0, 0));
+}
+
+void CWndPartySkill::OnLButtonDblClk(UINT, const CPoint point) {
+	const int nSkill = GetCurrentlyHoveredSkill(point);
+
+	if (prj.GetPartySkill(nSkill + 1)) {
+		g_WndMng.ObjectExecutor(ShortcutType::PartySkill, nSkill + 1);
 	}
 }
-BOOL CWndPartySkill::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
