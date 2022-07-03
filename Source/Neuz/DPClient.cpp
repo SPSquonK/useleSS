@@ -3755,72 +3755,41 @@ void CDPClient::OnErrorParty( CAr & ar )
 	ar >> dw;
 	switch( dw ) {
 	case ERROR_NOLEADER:
-		{
-				g_WndMng.PutString( prj.GetText( TID_GAME_PARTYNOINVATE ), NULL, prj.GetTextColor( TID_GAME_PARTYNOINVATE ) );
-				//g_WndMng.PutString( "단장이 아니라 극단에 추가 할수 없습니다.", NULL, 0xff99cc00 );
-		}
+		g_WndMng.PutString(TID_GAME_PARTYNOINVATE);
 		break;
 	case ERROR_FULLPARTY:
 		{
-			CString szMessageBuf;
-			if( 1 <= g_Party.GetLevel() && g_Party.GetLevel() <= 5 )
-			{
-				// 최대 5명
+			LPCTSTR szMessageBuf;
+			if (1 <= g_Party.GetLevel() && g_Party.GetLevel() <= 5) {
 				szMessageBuf = prj.GetText(TID_GAME_FULLPARTY1);
-				//szMessageBuf = "극단이 꽉 찾습니다 극단레벨 5이하는 5명까지 모집할수 있습니다. 극단레벨을 올려주세요";						
-				
-			}
-			else if( 6 <= g_Party.GetLevel() && g_Party.GetLevel() <= 9 )
-			{
-				// 최대 6명
+			} else if (6 <= g_Party.GetLevel() && g_Party.GetLevel() <= 9) {
 				szMessageBuf = prj.GetText(TID_GAME_FULLPARTY2);
-				//szMessageBuf = "극단이 꽉 찾습니다 극단레벨 9이하는 6명까지 모집할수 있습니다. 극단레벨을 올려주세요";						
-			}
-			else
-			{
+			} else {
 				szMessageBuf = prj.GetText(TID_GAME_FULLPARTY3);
-				//szMessageBuf = "극단이 꽉 찾습니다 8명까지 극단원을 모집할수 있습니다.";
 			}
 
 			g_WndMng.PutString( szMessageBuf, NULL, 0xff99cc00 );
 		}
 		break;
 	case ERROR_NOPARTY:
-		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_NOPARTY ), NULL, prj.GetTextColor( TID_GAME_NOPARTY ) );
-			//g_WndMng.PutString( "극단이 없습니다", NULL, 0xff99cc00 );
-		}
+		g_WndMng.PutString(TID_GAME_NOPARTY);
 		break;
 	case ERROR_DIFFRENTPARTY:
-		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_DIFFRENTPARTY ), NULL, prj.GetTextColor( TID_GAME_DIFFRENTPARTY ) );
-			//g_WndMng.PutString( "극단에 포함시킬수 없음.", NULL, 0xff99cc00 );
-		}
+		g_WndMng.PutString(TID_GAME_DIFFRENTPARTY);
 		break;
 	case ERROR_DIFFERNTUSERNAME:
 		{
-			/*
-			CWndPartyChangeName *pWndPartyChangeName = new CWndPartyChangeName;
-			pWndPartyChangeName->Initialize();
-			*/
 			SAFE_DELETE( g_WndMng.m_pWndPartyChangeName );
 			g_WndMng.m_pWndPartyChangeName = new CWndPartyChangeName;
 			g_WndMng.m_pWndPartyChangeName->Initialize();
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0033) ) );
-//			g_WndMng.OpenMessageBox( _T( "이미 다른사람이 사용하는 극단명입니다. 다시 입력해주세요" ) );
 		}
 		break;
 	case ERROR_NOTPARTYPOINT:
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0046) ) );
-//			g_WndMng.OpenMessageBox( _T( "파티 포인트가 모자라 사용할수 없습니다" ) );
-		}
+		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0046) ) );
 		break;
 	case ERROR_NOTPARTYSKILL:
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0019) ) );
-//			g_WndMng.OpenMessageBox( _T( "사용한 스킬은 배우지를 못했습니다." ) );
-		}
+		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0019) ) );
 		break;
 	case ERROR_NOTTARGET:
 		{
@@ -3837,15 +3806,14 @@ void CDPClient::OnErrorParty( CAr & ar )
 				g_WndMng.m_dwSkillTime[ST_SPHERECIRCLE] = timeGetTime();	// + pItemProp->dwCircleTime;
 				 
 			}
-			g_WndMng.PutString( prj.GetText( TID_GAME_NOTTARGET ), NULL, prj.GetTextColor( TID_GAME_NOTTARGET ) );
-			//g_WndMng.PutString( "타겟이 안잡혀 있거나 몬스터가 아니어서 사용할수 없습니다.", NULL, 0xffff0000 );
+			g_WndMng.PutString(TID_GAME_NOTTARGET);
 		}
 		break;
 	case ERROR_SAMLEADER:
-			g_WndMng.PutString( prj.GetText( TID_GAME_PARTY_ALREADYMASTER ), NULL, prj.GetTextColor( TID_GAME_PARTY_ALREADYMASTER ) ); // "이미 단장을 하고 입니다"
+		g_WndMng.PutString(TID_GAME_PARTY_ALREADYMASTER);
 		break;
 	case ERROR_NOTMAMBER:
-			g_WndMng.PutString( prj.GetText( TID_GAME_PARTYNOTEXMEMBER ), NULL, prj.GetTextColor( TID_GAME_PARTYNOTEXMEMBER ) ); // "극단에 단원이 없습니다"
+		g_WndMng.PutString(TID_GAME_PARTYNOTEXMEMBER);
 		break;
 	default:
 		break;

@@ -18,39 +18,22 @@
   CtrlId : WIDC_CANCEL - Button
 ****************************************************/
 
-CWndPartyChangeName::CWndPartyChangeName() 
-{ 
-} 
-CWndPartyChangeName::~CWndPartyChangeName() 
-{ 
-} 
-void CWndPartyChangeName::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndPartyChangeName::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 
-	if( 0 == strlen( g_pPlayer->m_szPartyName ) )
-	{
-		strcpy( m_sParty, prj.GetText(TID_GAME_PARTY_NAME) );
+	const char * partyName = g_pPlayer->m_szPartyName;
+	if (std::strlen(partyName) == 0) {
+		partyName = prj.GetText(TID_GAME_PARTY_NAME);
 	}
-	else
-	{
-		strcpy( m_sParty, g_pPlayer->m_szPartyName );
-	}
-
-	//sprintf( m_sParty, "순회극단" );
 	
-	CWndEdit *pEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-	pEdit->SetString( m_sParty );
+	strcpy(m_sParty, partyName);
+
+	CWndEdit * pEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
+	pEdit->SetString(m_sParty);
 	
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 
@@ -60,139 +43,83 @@ BOOL CWndPartyChangeName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PARTYCHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndPartyChangeName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPartyChangeName::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPartyChangeName::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPartyChangeName::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndPartyChangeName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_OK )
-	{
-		CWndEdit *pEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-		CString PartyName = pEdit->GetString();
 
-		PartyName.TrimLeft();
-		PartyName.TrimRight();
-		LPCTSTR lpszString = PartyName;		
-		if( PartyName.IsEmpty() == FALSE )
-		{
-			CHAR c = PartyName[ 0 ];
-#ifdef __RULE_0615
-			if( PartyName.GetLength() < 4 || PartyName.GetLength() > 16 )
-#else	// __RULE_0615
-			if( PartyName.GetLength() < 3 || PartyName.GetLength() > 16 )
-#endif	// __RULE_0615
-			{
-#ifdef __RULE_0615
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_RULE_0) ) );
-#else	// __RULE_0615
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011) ) );
-#endif	// __RULE_0615
-//				g_WndMng.OpenMessageBox( _T( "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오." ) );
-				return TRUE;
-			}
-			else
-			if( IsDBCSLeadByte( c ) == FALSE && isdigit2( c ) ) 
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0012) ) );
-//				g_WndMng.OpenMessageBox( _T( "명칭에 첫글자를 숫자로 사용할 수 없습니다." ) );
-				return TRUE;
-			}
-			else
-			{
+BOOL CWndPartyChangeName::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_OK:
+			OnSendName();
+			return FALSE;
+		case WIDC_CANCEL:
+			Destroy();
+			return FALSE;
+		default:
+			return CWndNeuz::OnChildNotify(message, nID, pLResult);
+	}
+}
 
-				for( int i = 0; i < PartyName.GetLength(); i++ )
-				{
-					c = PartyName[ i ];
-					// 숫자나 알파벳이 아닐 경우는 의심하자.
-					if( IsDBCSLeadByte( c ) == TRUE ) 
-					{
-						CHAR c2 = PartyName[ ++i ];
-						WORD word = ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
-						if( ::GetLanguage() == LANG_KOR )
-						{
-							if( IsHangul( word ) == FALSE ) 
-							{
-								g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0014) ) );
-//								g_WndMng.OpenMessageBox( _T( "명칭에 한자나 특수 문자를 사용할 수 없습니다." ) );
-								return TRUE;
-							}
-						}
-					}
-					else
-					if( ::GetLanguage() != LANG_THA )
-					{
-						if( !IsCyrillic( c ) && ( isalnum( c ) == FALSE || iscntrl( c ) )  )
-						{
-							// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
-							g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0013) ) );
-//							g_WndMng.OpenMessageBox( _T( "명칭에 콘트롤이나 스페이스, 특수 문자를 사용할 수 없습니다." ) );
-							return TRUE;
-						}
-					}
+void CWndPartyChangeName::OnSendName() {
+	CWndEdit * pEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
+	CString PartyName = pEdit->GetString();
+
+	PartyName.TrimLeft();
+	PartyName.TrimRight();
+	LPCTSTR lpszString = PartyName;
+
+	if (PartyName.IsEmpty()) {
+		// "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오."
+		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_RULE_0)));
+		return;
+	}
+
+	if (PartyName.GetLength() < 4 || PartyName.GetLength() > 16) {
+		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_RULE_0)));
+		return;
+	}
+
+	CHAR c = PartyName[0];
+
+	if (IsDBCSLeadByte(c) == FALSE && isdigit2(c)) {
+		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0012)));
+		return;
+	}
+
+	for (int i = 0; i < PartyName.GetLength(); i++) {
+		CHAR c = PartyName[i];
+		// 숫자나 알파벳이 아닐 경우는 의심하자.
+		if (IsDBCSLeadByte(c) == TRUE) {
+			CHAR c2 = PartyName[++i];
+			WORD word = ((c << 8) & 0xff00) | (c2 & 0x00ff);
+			if (::GetLanguage() == LANG_KOR) {
+				if (IsHangul(word) == FALSE) {
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0014)));
+					return;
 				}
 			}
-
-			if (prj.nameValider.IsNotAllowedName(PartyName)) {
-				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
-				return TRUE;
+		} else if (::GetLanguage() != LANG_THA) {
+			if (!IsCyrillic(c) && (isalnum(c) == FALSE || iscntrl(c))) {
+				// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
+				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0013)));
+				return;
 			}
-
-			strcpy( m_sParty, PartyName );
-			if( 0 == strcmp( m_sParty, prj.GetText(TID_GAME_PARTY_NAME ) ) )
-			{
-			}
-			else
-			{
-				g_DPlay.SendChangeTroup( TRUE, m_sParty );
-				Destroy();			
-			}
-			
-		}
-		else
-		{
-			// "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오."
-#ifdef __RULE_0615
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_RULE_0) ) );
-#else	// __RULE_0615
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011) ) );
-#endif	// __RULE_0615
-			return TRUE;
 		}
 	}
-	else if( nID == WIDC_CANCEL )
-	{
-		Destroy();
-//		g_WndMng.OpenMessageBox( _T( "순회극단 명칭을 정해야 합니다." ) );
+
+	if (prj.nameValider.IsNotAllowedName(PartyName)) {
+		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
+		return;
 	}
-/*	else if( nID == WTBID_CLOSE )
-	{
-		g_WndMng.OpenMessageBox( _T( "순회극단 명칭을 정해야 합니다." ) );
-//		SAFE_DELETE( g_WndMng.m_pWndPartyChangeName );
-//		g_WndMng.m_pWndPartyChangeName = new CWndPartyChangeName;
-//		g_WndMng.m_pWndPartyChangeName->Initialize( );	
-		return FALSE;
+
+	strcpy(m_sParty, PartyName);
+	if (0 == strcmp(m_sParty, prj.GetText(TID_GAME_PARTY_NAME))) {
+		return;
 	}
-*/
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+
+	g_DPlay.SendChangeTroup(TRUE, m_sParty);
+	Destroy();
+}
 
 //--------------------------------------------------------------------------------------------------------------------
 
-CWndPartyChangeTroup::CWndPartyChangeTroup() 
-{ 
-	m_WndPartyChangeName = NULL;
-} 
 CWndPartyChangeTroup::~CWndPartyChangeTroup() 
 { 
 #ifdef __FIX_WND_1109
@@ -200,61 +127,27 @@ CWndPartyChangeTroup::~CWndPartyChangeTroup()
 #endif	// __FIX_WND_1109
 } 
 
-void CWndPartyChangeTroup::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndPartyChangeTroup::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+void CWndPartyChangeTroup::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyChangeTroup::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_CHANGETROUP, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
 
-BOOL CWndPartyChangeTroup::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPartyChangeTroup::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPartyChangeTroup::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPartyChangeTroup::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndPartyChangeTroup::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_OK )
-	{
-		SAFE_DELETE( m_WndPartyChangeName );
+// 처음 이 함수를 부르면 윈도가 열린다.
+BOOL CWndPartyChangeTroup::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_CHANGETROUP, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndPartyChangeTroup::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) { 
+	if (nID == WIDC_OK) {
+		SAFE_DELETE(m_WndPartyChangeName);
 		m_WndPartyChangeName = new CWndPartyChangeName;
-#ifdef __FIX_WND_1109
-		m_WndPartyChangeName->Initialize( );
-#else	// __FIX_WND_1109
-		m_WndPartyChangeName->Initialize( );
-#endif	// __FIX_WND_1109
-		Destroy();		
-	}
-	else if( nID == WIDC_CANCEL )
-	{
+		m_WndPartyChangeName->Initialize();
+		Destroy();
+	} else if (nID == WIDC_CANCEL) {
 		Destroy();
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
 //------------------------------------------------------------------------------------------------
 // 극단 탈퇴시 다시 확인 창
@@ -266,84 +159,37 @@ CtrlId : WIDC_YES - Yes
 CtrlId : WIDC_NO - Button
 ****************************************************/
 
-CWndPartyLeaveConfirm::CWndPartyLeaveConfirm() 
-{ 
-} 
-CWndPartyLeaveConfirm::~CWndPartyLeaveConfirm() 
-{ 
-} 
-void CWndPartyLeaveConfirm::SetLeaveId( u_long uidPlayer )
-{
+void CWndPartyLeaveConfirm::SetLeaveId(u_long uidPlayer) {
+	// Precondition: Initialize must have been called
 	uLeaveId = uidPlayer;
 
-	CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-	if( g_pPlayer->m_idPlayer == uLeaveId )
-	{
-		// 내 자신이 탈퇴
-		pWndEdit->SetString( prj.GetText( TID_DIAG_0084 ) );
+	CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
+	if (g_pPlayer->m_idPlayer == uLeaveId) {
+		pWndEdit->SetString(prj.GetText(TID_DIAG_0084));
+	} else {
+		pWndEdit->SetString(prj.GetText(TID_DIAG_0085));
 	}
-	else
-	{
-		// 단장이 선택하여 탈퇴
-		pWndEdit->SetString( prj.GetText( TID_DIAG_0085 ) );
-	}
-	pWndEdit->EnableWindow( FALSE );
+	pWndEdit->EnableWindow(FALSE);
 }
-void CWndPartyLeaveConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndPartyLeaveConfirm::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+
+void CWndPartyLeaveConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
+}
+
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyLeaveConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
+BOOL CWndPartyLeaveConfirm::Initialize(CWndBase * pWndParent, DWORD) {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_PARTYLEAVE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-직접 윈도를 열때 사용 
-BOOL CWndPartyLeaveConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-CRect rect( 50 ,50, 300, 300 ); 
-SetTitle( _T( "title" ) ); 
-return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndPartyLeaveConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPartyLeaveConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPartyLeaveConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPartyLeaveConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+	return CWndNeuz::InitDialog(APP_PARTYLEAVE_CONFIRM, pWndParent, 0, CPoint(0, 0));
+}
+
 BOOL CWndPartyLeaveConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	if( nID == WIDC_NO || nID == WTBID_CLOSE ) // 취소 
-	{
-		Destroy( TRUE );
-	}
-	else if ( nID == WIDC_YES )
-	{
-		g_DPlay.SendRemovePartyMember( g_pPlayer->m_idPlayer, uLeaveId );
-		Destroy( TRUE );
+	if (nID == WIDC_NO || nID == WTBID_CLOSE) {
+		Destroy();
+	} else if (nID == WIDC_YES) {
+		g_DPlay.SendRemovePartyMember(g_pPlayer->m_idPlayer, uLeaveId);
+		Destroy();
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 

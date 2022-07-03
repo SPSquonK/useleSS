@@ -340,6 +340,7 @@ namespace WndMgr {
 
 		CWndPartyChangeName * m_pWndPartyChangeName = nullptr;
 		CWndPartyConfirm * m_pWndPartyConfirm = nullptr;
+		CWndPartyLeaveConfirm * m_pWndPartyLeaveConfirm = nullptr;
 
 		CWndMessageNote * m_pWndMessageNote = nullptr;
 		CWndMessengerNote * m_pWndMessengerNote = nullptr;
@@ -610,7 +611,6 @@ public:
 
 	bool						m_bIsOpenLordSkill;
 
-	CWndPartyLeaveConfirm * m_pWndPartyLeaveConfirm; // memleak?
 
 
 	CWndCloseExistingConnection*	m_pWndCloseExistingConnection; // CWndBase def is not included by default
