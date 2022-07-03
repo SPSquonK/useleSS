@@ -1051,7 +1051,7 @@ void CDPCoreSrvr::SendSetPartyMode( u_long idParty, int nMode, BOOL bOnOff, LONG
 }
 void CDPCoreSrvr::SendRemoveParty( u_long idParty, u_long idLeader, u_long idMember )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_REMOVEPARTYMEMBER, DPID_UNKNOWN, DPID_UNKNOWN );
+	BEFORESENDDUAL( ar, PACKETTYPE_REMOVEPARTYMEMBER_CoreWorld, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idParty << idLeader << idMember;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }

@@ -48,7 +48,7 @@ CDPCoreClient::CDPCoreClient()
 	
 	ON_MSG( PACKETTYPE_ERRORPARTY, &CDPCoreClient::OnErrorParty );
 	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_CoreWorld, &CDPCoreClient::OnAddPartyMember );
-	ON_MSG( PACKETTYPE_REMOVEPARTYMEMBER, &CDPCoreClient::OnRemovePartyMember );
+	ON_MSG(PACKETTYPE_REMOVEPARTYMEMBER_CoreWorld, &CDPCoreClient::OnRemovePartyMember );
 	ON_MSG( PACKETTYPE_ADDPLAYERPARTY, &CDPCoreClient::OnAddPlayerParty );
 	ON_MSG( PACKETTYPE_REMOVEPLAYERPARTY, &CDPCoreClient::OnRemovePlayerParty );
 	ON_MSG( PACKETTYPE_GUILD_MEMBER_LEVEL, &CDPCoreClient::OnGuildMemberLv );
@@ -801,66 +801,57 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 
 void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 {
-	u_long idParty, idLeader, idMember;
-	ar >> idParty >> idLeader >> idMember;
+	const auto [idParty, idLeader, idMember] = ar.Extract<u_long, u_long, u_long>();
 
-	CParty* pParty;
-	pParty	= g_PartyMng.GetParty( idParty );
-	if( pParty )
+	CParty* pParty = g_PartyMng.GetParty( idParty );
+	if (!pParty) {
+		Error("OnRemovePartyMember:: Not Party");
+		return;
+	}
+
+	const char * pszLeader = CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader );
+	if (!pszLeader) pszLeader = "";
+
+	const char * pszMember = CPlayerDataCenter::GetInstance()->GetPlayerString( idMember );
+	if (!pszMember) pszMember = "";
+
+	if (!pParty->DeleteMember(idMember)) {
+		Error("OnRemovePartyMember:: Not DeleteMember");
+		return;
+	}
+
+	if( pParty->GetSizeofMember() < 2 )
 	{
-		char pszLeader[MAX_PLAYER]	= { 0,};
-		char pszMember[MAX_PLAYER]	= { 0,};
-		const char* lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idLeader );
-		if( lpPlayer )
-			lstrcpy( pszLeader, lpPlayer );
-		lpPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( idMember );
-		if( lpPlayer )
-			lstrcpy( pszMember, lpPlayer );
-
-		if( pParty->DeleteMember( idMember ) )
+		CUser* pMember	= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( 0 ) );
+		if( IsValidObj( pMember ) )
 		{
-			if( pParty->GetSizeofMember() < 2 )
-			{
-				CUser* pMember	= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( 0 ) );
-				if( IsValidObj( pMember ) )
-				{
-					pMember->AddPartyMember( NULL, 0, pszLeader, pszMember );
-					pMember->m_idparty	= 0;
-				}
-				pMember	= g_UserMng.GetUserByPlayerID( idMember );	// 먼저 삭제됐던 넘의 포인터.
-				if( IsValidObj( pMember ) && pMember->m_nDuel )
-				{
-					CParty* pDuelParty = g_PartyMng.GetParty( pParty->m_idDuelParty );
-					if( pDuelParty )
-						pDuelParty->DoDuelPartyCancel( pParty );
-					else
-						Error( "CDPCoreClient::OnRemovePartyMember : 파티멤버 %s의 정보이상. %d %d", pMember->GetName(), pMember->m_idDuelParty, pParty->m_idDuelParty );
-				}
-				g_PartyMng.DeleteParty( pParty->m_uPartyId );
-			}
+			pMember->AddPartyMember( NULL, 0, pszLeader, pszMember );
+			pMember->m_idparty	= 0;
+		}
+		pMember	= g_UserMng.GetUserByPlayerID( idMember );	// 먼저 삭제됐던 넘의 포인터.
+		if( IsValidObj( pMember ) && pMember->m_nDuel )
+		{
+			CParty* pDuelParty = g_PartyMng.GetParty( pParty->m_idDuelParty );
+			if( pDuelParty )
+				pDuelParty->DoDuelPartyCancel( pParty );
 			else
-			{
-				// leave
-				for (CUser * const pMember : AllMembers(*pParty)) {
-					pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
-				}
-			}
-
-			CUser* pRemovd	= g_UserMng.GetUserByPlayerID( idMember ); 
-			if( IsValidObj( (CObj*)pRemovd ) )
-			{
-				pRemovd->m_idparty	= 0;
-				pRemovd->AddPartyMember( NULL, idMember, pszLeader, pszMember );
-			}
+				Error( "CDPCoreClient::OnRemovePartyMember : 파티멤버 %s의 정보이상. %d %d", pMember->GetName(), pMember->m_idDuelParty, pParty->m_idDuelParty );
 		}
-		else
-		{
-			Error( "OnRemovePartyMember:: Not DeleteMember" );
-		}
+		g_PartyMng.DeleteParty( pParty->m_uPartyId );
 	}
 	else
 	{
-		Error( "OnRemovePartyMember:: Not Party" );
+		// leave
+		for (CUser * const pMember : AllMembers(*pParty)) {
+			pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
+		}
+	}
+
+	CUser* pRemovd	= g_UserMng.GetUserByPlayerID( idMember ); 
+	if( IsValidObj( pRemovd ) )
+	{
+		pRemovd->m_idparty	= 0;
+		pRemovd->AddPartyMember( NULL, idMember, pszLeader, pszMember );
 	}
 }
 

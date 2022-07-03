@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "MsgHdr.h"
 #include "defineText.h"
 #include "AppDefine.h"
 #include "WndParty.h"
@@ -188,7 +189,7 @@ BOOL CWndPartyLeaveConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 	if (nID == WIDC_NO || nID == WTBID_CLOSE) {
 		Destroy();
 	} else if (nID == WIDC_YES) {
-		g_DPlay.SendRemovePartyMember(g_pPlayer->m_idPlayer, uLeaveId);
+		g_DPlay.SendPacket<PACKETTYPE_REMOVEPARTYMEMBER_NeuzCore, u_long>(uLeaveId);
 		Destroy();
 	}
 

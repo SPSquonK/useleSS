@@ -170,7 +170,6 @@ public:
 	void	SendPartySkillUse( int nSkill );
 	void	SendPartyMemberCancle( u_long uLeader, int nMode );
 	void	SendAddPartyMember(u_long uLeader);
-	void	SendRemovePartyMember( u_long LeaderId, u_long MemberId );
 	void	SendChangeShareItem( int nItemMode );
 	void	SendChangeShareExp( int nExpMode );
 	void	SendChangeTroup( BOOL bSendName, const char * szPartyName = "" );

@@ -21,7 +21,7 @@ CDPCacheSrvr::CDPCacheSrvr()
 	ON_MSG( PACKETTYPE_JOIN, &CDPCacheSrvr::OnAddPlayer );
 	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCacheSrvr::OnQueryRemovePlayer );
 	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnAddPartyMember );
-	ON_MSG( PACKETTYPE_REMOVEPARTYMEMBER, &CDPCacheSrvr::OnRemovePartyMember );
+	ON_MSG(PACKETTYPE_REMOVEPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnRemovePartyMember );
 	ON_MSG( PACKETTYPE_CHANGETROUP, &CDPCacheSrvr::OnPartyChangeTroup );
 	ON_MSG( PACKETTYPE_CHANPARTYNAME, &CDPCacheSrvr::OnPartyChangeName );
 	ON_MSG( PACKETTYPE_PARTYCHANGEITEMMODE, &CDPCacheSrvr::OnPartyChangeItemMode );
@@ -792,24 +792,19 @@ void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 
 void CDPCacheSrvr::OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idLeader, idMember;
-	ar >> _idLeader >> idMember;
-
-	CPlayer* pLeader;
-	CPlayer* pMember;
+	u_long idMember; ar >> idMember;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 
-	pLeader	= g_PlayerMng.GetPlayerBySerial( dpidUser );
-	pMember = g_PlayerMng.GetPlayer( idMember );
+	CPlayer * pLeader	= g_PlayerMng.GetPlayerBySerial( dpidUser );
+	CPlayer * pMember = g_PlayerMng.GetPlayer( idMember );
 
 	if( !pLeader )
 		return;
 	
-	CParty* pParty;
 	CMclAutoLock	Lock2( g_PartyMng.m_AddRemoveLock );
 	
-	pParty	= g_PartyMng.GetParty( pLeader->m_uPartyId );
+	CParty * pParty	= g_PartyMng.GetParty( pLeader->m_uPartyId );
 	if( !pParty || !pParty->IsMember( pLeader->uKey ) )
 	{
 		// leader's party not found

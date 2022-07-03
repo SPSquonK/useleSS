@@ -8529,13 +8529,6 @@ void CDPClient::SendAddPartyMember(const u_long uLeader) {
 	SendPacket<PACKETTYPE_ADDPARTYMEMBER_NeuzCore, u_long>(uLeader);
 }
 
-void CDPClient::SendRemovePartyMember( u_long LeaderId, u_long MemberId )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_REMOVEPARTYMEMBER, DPID_UNKNOWN );
-	ar << LeaderId << MemberId;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendChangeTroup( BOOL bSendName, const char * szPartyName )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_CHANGETROUP, DPID_UNKNOWN );
