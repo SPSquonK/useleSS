@@ -58,7 +58,6 @@
 #include "Chatting.h"
 
 #include "WndFriendConfirm.h"
-#include "WndParty.h"
 #include "Network.h"
 #include "WndSelectVillage.h"
 
