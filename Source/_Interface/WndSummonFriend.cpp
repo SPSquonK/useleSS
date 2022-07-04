@@ -17,15 +17,6 @@
   CtrlId : WIDC_STATIC2 - Static
 ****************************************************/
 
-CWndSummonFriendMsg::CWndSummonFriendMsg() 
-{ 
-} 
-CWndSummonFriendMsg::~CWndSummonFriendMsg() 
-{ 
-} 
-void CWndSummonFriendMsg::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndSummonFriendMsg::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -34,10 +25,6 @@ void CWndSummonFriendMsg::OnInitialUpdate()
 	m_dwData = 0;
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -51,25 +38,13 @@ void CWndSummonFriendMsg::SetData( OBJID objid, DWORD dwData, char* szName, char
 	m_objid = objid;
 	m_dwData = dwData;
 	strcpy( m_szName, szName );
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
+	
+	CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT1);
 	CString strTemp;
 	strTemp.Format(_T( prj.GetText(TID_DIAG_SUMMONFRIEND_CONFIRM) ),m_szName, szWorldName ); 
 	pWndText->SetString( strTemp );		
 }
-BOOL CWndSummonFriendMsg::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndSummonFriendMsg::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndSummonFriendMsg::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndSummonFriendMsg::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndSummonFriendMsg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	switch( nID )
@@ -99,15 +74,6 @@ BOOL CWndSummonFriendMsg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
   CtrlId : WIDC_CANCEL - Button
 ****************************************************/
 
-CWndSummonFriend::CWndSummonFriend() 
-{ 
-} 
-CWndSummonFriend::~CWndSummonFriend() 
-{ 
-} 
-void CWndSummonFriend::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndSummonFriend::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -123,10 +89,6 @@ void CWndSummonFriend::OnInitialUpdate()
 	pWndCombo->SetFocus();
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -139,20 +101,7 @@ void CWndSummonFriend::SetData( WORD wId, WORD wReset )
 {
 	m_dwData	= MAKELONG( wId, wReset );
 }
-BOOL CWndSummonFriend::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndSummonFriend::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndSummonFriend::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndSummonFriend::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndSummonFriend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	switch( nID )
@@ -185,7 +134,7 @@ BOOL CWndSummonFriend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				}
 				else
 				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_SUMMON_FRIEND_MY_NOUSE ), NULL, prj.GetTextColor( TID_GAME_SUMMON_FRIEND_MY_NOUSE ) );
+					g_WndMng.PutString(TID_GAME_SUMMON_FRIEND_MY_NOUSE);
 				}
 				Destroy();
 			}
@@ -207,12 +156,6 @@ BOOL CWndSummonFriend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
   CtrlId : WIDC_CANCEL - Button
 ****************************************************/
 
-CWndSummonPartyMsg::CWndSummonPartyMsg() 
-{ 
-} 
-CWndSummonPartyMsg::~CWndSummonPartyMsg() 
-{ 
-} 
 HRESULT CWndSummonPartyMsg::DeleteDeviceObjects()
 {
 	CWndBase::DeleteDeviceObjects();
@@ -221,9 +164,8 @@ HRESULT CWndSummonPartyMsg::DeleteDeviceObjects()
 }
 void CWndSummonPartyMsg::OnDraw( C2DRender* p2DRender ) 
 { 
-	int	sx, sy;
-	sx = 8;
-	sy = 120;
+	const int sx = 8;
+	const int sy = 120;
 	p2DRender->RenderTexture( CPoint(sx+4, sy - 4), &m_Texture, 255  );
 } 
 void CWndSummonPartyMsg::OnInitialUpdate() 
@@ -235,10 +177,6 @@ void CWndSummonPartyMsg::OnInitialUpdate()
 		m_Texture.LoadTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -247,29 +185,12 @@ BOOL CWndSummonPartyMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MESSAGEBOX_SUMMONPARTY, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndSummonPartyMsg::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndSummonPartyMsg::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndSummonPartyMsg::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndSummonPartyMsg::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndSummonPartyMsg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	switch( nID )
-	{
-	case WIDC_OK:
-		{
+
+BOOL CWndSummonPartyMsg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) { 
+	switch (nID) {
+		case WIDC_OK:
 			Destroy();
-		}
-		break;
+			break;
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
@@ -279,7 +200,6 @@ void CWndSummonPartyMsg::SetData( OBJID objid, DWORD dwData, const char* szWorld
 	g_Neuz.m_dwSummonPartyData = dwData;
 	strcpy( g_Neuz.m_szSummonPartyWorldName, szWorldName );
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText* pWndText1 = (CWndText*)GetDlgItem( WIDC_TEXT2 );
 	CString strTemp;
 	strTemp.Format( _T( prj.GetText(TID_DIAG_SUMMONPARTY_CONFIRM) ), g_Party.m_sParty ); 
 	pWndText->SetString( strTemp );		
@@ -287,6 +207,7 @@ void CWndSummonPartyMsg::SetData( OBJID objid, DWORD dwData, const char* szWorld
 	ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
 	if( pItemProp )
 	{
+		CWndText * pWndText1 = (CWndText *)GetDlgItem(WIDC_TEXT2);
 		strTemp.Format( _T( prj.GetText(TID_DIAG_SUMMONPARTY_CONFIRM_USE) ), pItemProp->szName ); 
 		pWndText1->SetString( strTemp );		
 	}
@@ -298,15 +219,6 @@ void CWndSummonPartyMsg::SetData( OBJID objid, DWORD dwData, const char* szWorld
   CtrlId : WIDC_OK - Button
 ****************************************************/
 
-CWndSummonParty::CWndSummonParty() 
-{ 
-} 
-CWndSummonParty::~CWndSummonParty() 
-{ 
-} 
-void CWndSummonParty::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndSummonParty::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -314,10 +226,6 @@ void CWndSummonParty::OnInitialUpdate()
 	m_dwData	= 0;
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -326,20 +234,7 @@ BOOL CWndSummonParty::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SUMMON_PARTY, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndSummonParty::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndSummonParty::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndSummonParty::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndSummonParty::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndSummonParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	switch( nID )
@@ -392,15 +287,6 @@ CtrlId : WIDC_OK - Button
 CtrlId : WIDC_CANCEL - Button
 ****************************************************/
 
-CWndSummonPartyUse::CWndSummonPartyUse() 
-{ 
-} 
-CWndSummonPartyUse::~CWndSummonPartyUse() 
-{ 
-} 
-void CWndSummonPartyUse::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndSummonPartyUse::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -411,10 +297,6 @@ void CWndSummonPartyUse::OnInitialUpdate()
 	pWndText->SetString( strMsg );		
 	
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -423,30 +305,7 @@ BOOL CWndSummonPartyUse::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SUMMON_PARTY_USE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-직접 윈도를 열때 사용 
-BOOL CWndSummonPartyUse::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-CRect rect( 50 ,50, 300, 300 ); 
-SetTitle( _T( "title" ) ); 
-return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndSummonPartyUse::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndSummonPartyUse::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndSummonPartyUse::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndSummonPartyUse::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndSummonPartyUse::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	switch( nID )
