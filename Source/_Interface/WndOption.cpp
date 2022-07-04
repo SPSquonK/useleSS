@@ -11,22 +11,6 @@
 
 #define		MAX_SLIDER		10
 
-
-CWndTotalOption::CWndTotalOption() 
-{ 
-} 
-CWndTotalOption::~CWndTotalOption() 
-{ 
-} 
-
-void CWndTotalOption::UpdateDataAll()
-{
-	//m_OptTabVideoSnd
-}
-
-void CWndTotalOption::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndTotalOption::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -37,22 +21,19 @@ void CWndTotalOption::OnInitialUpdate()
 	rect.left = 5;
 	rect.top = 0;
 
-	
-	
-	m_OptTabVideoSnd.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_AV12);
-	m_OptTabGame.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_GAME12);
 	WTCITEM tabTabItem;
 	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 
+	m_OptTabVideoSnd.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_AV12);
 	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO);
-	//tabTabItem.pszText = prj.GetText(TID_APP_OPTION_VIDEO);
 	tabTabItem.pWndBase = &m_OptTabVideoSnd;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
 
+	m_OptTabGame.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_GAME12);
 	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_GAME);
-	//tabTabItem.pszText = prj.GetText(TID_APP_OPTION_GAME);
 	tabTabItem.pWndBase = &m_OptTabGame;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
+
 	MoveParentCenter();	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -61,20 +42,6 @@ BOOL CWndTotalOption::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndTotalOption::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndTotalOption::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndTotalOption::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndTotalOption::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndTotalOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	switch( nID )
@@ -604,77 +571,33 @@ CPoint CWndOptVideo::GetStepPos(int nStep, int nWidth, int nDivision)
 		return nStep * (nWidth / (nDivision+1));
 }
 
-void CWndOptVideo::OnDraw( C2DRender* p2DRender ) 
-{ 
-	CPoint pt;
-#ifdef __SFX_OPT
-	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM2 );
-	CPoint pt1 = lpWndCtrl->rect.TopLeft();
-	CPoint pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
-	p2DRender->RenderFillRect( lpWndCtrl->rect, 0);	
-	m_Texture.Render( p2DRender, pt1, pt2 );
-	pt = pt1;
-	pt.x += GetStepPos( m_nStep[0], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 5 ).x;
-	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-	
-	lpWndCtrl = GetWndCtrl( WIDC_CUSTOM3 );
-	pt1 = lpWndCtrl->rect.TopLeft();
-	pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
-	m_Texture.Render( p2DRender, pt1, pt2 );
-	pt = pt1;
-	pt.x += GetStepPos( m_nStep[1], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 1 ).x;
-	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-#else
-	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM2 );
-	CPoint pt1 = lpWndCtrl->rect.TopLeft();
-	CPoint pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
-	p2DRender->RenderFillRect( lpWndCtrl->rect, 0);	
-	m_Texture.Render( p2DRender, pt1, pt2 );
-	pt = pt1;
-	pt.x += GetStepPos( m_nStep[0], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
-	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-	
-	lpWndCtrl = GetWndCtrl( WIDC_CUSTOM3 );
-	pt1 = lpWndCtrl->rect.TopLeft();
-	pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
-	m_Texture.Render( p2DRender, pt1, pt2 );
-	pt = pt1;
-	pt.x += GetStepPos( m_nStep[1], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
-	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-#endif
-	lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
-	pt1 = lpWndCtrl->rect.TopLeft();
-	pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
-	m_Texture.Render( p2DRender, pt1, pt2 );
-	pt = pt1;
-	pt.x += GetStepPos( m_nStep[2], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
-	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
+void CWndOptVideo::OnDraw( C2DRender* p2DRender ) { 
+	RenderSlider(p2DRender, WIDC_CUSTOM2, m_nStep[0], 5);
+	RenderSlider(p2DRender, WIDC_CUSTOM3, m_nStep[1], 1);
 
-	lpWndCtrl = GetWndCtrl( WIDC_CUSTOM4 );
-	pt1 = lpWndCtrl->rect.TopLeft();
-	pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
-	m_Texture.Render( p2DRender, pt1, pt2 );
-	pt = pt1;
-	pt.x += GetStepPos( m_nStep[3], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
-	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-
-	lpWndCtrl = GetWndCtrl( WIDC_CUSTOM5 );
-	pt1 = lpWndCtrl->rect.TopLeft();
-	pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
-	m_Texture.Render( p2DRender, pt1, pt2 );
-	pt = pt1;
-	pt.x += GetStepPos( m_nStep[4], lpWndCtrl->rect.right - lpWndCtrl->rect.left, 10 ).x;
-	m_TexturePt.Render( p2DRender, pt, CPoint( 16, 16 ) );
-
-
+	if constexpr (MyServerRecksTheUserScreenParameters) {
+		RenderSlider(p2DRender, WIDC_CUSTOM1, m_nStep[2], 10);
+		RenderSlider(p2DRender, WIDC_CUSTOM4, m_nStep[3], 10);
+		RenderSlider(p2DRender, WIDC_CUSTOM5, m_nStep[4], 10);
+	}
 } 
+
+void CWndOptVideo::RenderSlider(C2DRender * p2DRender, UINT widgetCtrlId, int value, int max) {
+	const WNDCTRL * const lpWndCtrl = GetWndCtrl(widgetCtrlId);
+	CPoint pt1 = lpWndCtrl->rect.TopLeft();
+	CPoint pt2 = lpWndCtrl->rect.BottomRight() - lpWndCtrl->rect.TopLeft();
+	p2DRender->RenderFillRect(lpWndCtrl->rect, 0);
+	m_Texture.Render(p2DRender, pt1, pt2);
+	
+	CPoint pt = pt1;
+	pt.x += GetStepPos(value, lpWndCtrl->rect.right - lpWndCtrl->rect.left, max).x;
+	m_TexturePt.Render(p2DRender, pt, CPoint(16, 16));
+}
+
+
 void CWndOptVideo::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 
 	CWndButton* pWndButton[ 3 ];
@@ -824,6 +747,14 @@ void CWndOptVideo::OnInitialUpdate()
 
 	m_nStep[2] = (int)( g_Option.m_fGamma * 5 );
 	m_nStep[4] = (int)( g_Option.m_fContrast * 5 );
+
+	if constexpr (!MyServerRecksTheUserScreenParameters) {
+		for (UINT staticId : { WIDC_STATIC13, WIDC_STATIC14, WIDC_STATIC15 }) {
+			CWndBase * widget = GetDlgItem(staticId);
+			widget->EnableWindow(FALSE);
+			widget->SetVisible(FALSE);
+		}
+	}
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndOptVideo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
@@ -831,24 +762,7 @@ BOOL CWndOptVideo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTION_VIDEO, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndOptVideo::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndOptVideo::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndOptVideo::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
+
 void CWndOptVideo::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
 	PLAYSND(SND_NONE);
@@ -1023,9 +937,6 @@ void CWndOptVideo::OnMouseMove(UINT nFlags, CPoint point)
 #endif
 }
 
-void CWndOptVideo::OnMouseWndSurface( CPoint point )
-{
-}
 BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CWndButton* pWndButton		= (CWndButton*)*pLResult;

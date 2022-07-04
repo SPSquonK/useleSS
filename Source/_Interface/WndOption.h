@@ -64,6 +64,8 @@ public:
 class CWndOptVideo : public CWndNeuz 
 { 
 public: 
+	static constexpr bool MyServerRecksTheUserScreenParameters = false;
+
 	void GetRangeSlider( DWORD dwWndId, int& nStep, CPoint point );
 	int GetSliderStep( DWORD dwWndId, int &nStep, CPoint point );
 	void GetRangeSlider( DWORD dwWndId, int& nStep, CPoint point, int nDivision);
@@ -84,18 +86,18 @@ public:
 	BOOL			 m_bLButtonClick;
 	BOOL			 m_bLButtonClick2;
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	virtual void OnMouseWndSurface( CPoint point );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
+
+private:
+	void RenderSlider(C2DRender * p2DRender, UINT widgetCtrlId, int value, int max);
 }; 
 
 
@@ -138,19 +140,11 @@ class CWndTotalOption : public CWndNeuz
 public:
 	CWndOptVideo		m_OptTabVideoSnd;
 	CWndOptionGame		m_OptTabGame;
-	CWndTotalOption(); 
-	~CWndTotalOption(); 
 
-	void UpdateDataAll();
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };
 
 

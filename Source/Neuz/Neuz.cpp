@@ -1658,8 +1658,10 @@ void CNeuzApp::Drv_SetGamma(HWND hWnd, float gamma, int overbright, float fContr
             f = 255;
         ramp[i+0] = ramp[i+256] = ramp[i+512] = ((unsigned short)f<<8) ;
     }
-	   
-    SetDeviceGammaRamp( GetDC(hWnd), ramp );
+	  
+		if constexpr (CWndOptVideo::MyServerRecksTheUserScreenParameters) {
+			SetDeviceGammaRamp(GetDC(hWnd), ramp);
+		}
 }
 /*
 void CNeuzApp::Loop()
