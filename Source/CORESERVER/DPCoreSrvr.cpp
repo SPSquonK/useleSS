@@ -24,10 +24,6 @@ extern	BOOL	s_bEvent1206;
 #include "InstanceDungeonParty.h"
 
 CDPCoreSrvr		g_dpCoreSrvr;
-
-#define VERIFYBUFFERSIZE( uRecvd, uBufSize )	\
-		if( uRecvd >= ( uBufSize ) )	{	WriteLog( "%s, %d", __FILE__, __LINE__ );	return;		}
-
 		
 CDPCoreSrvr::CDPCoreSrvr()
 {
@@ -291,7 +287,6 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 		m_apSleepServer.SetAt( uWorldSrvr, pServerDesc );
 		m_toHandle.RemoveKey( uWorldSrvr );
 #endif	// __STL_0402
-//		SendUnify( (u_short)uWorldSrvr );
 		g_MyTrace.Add( uWorldSrvr, TRUE, "%04d", uWorldSrvr );
 
 #ifdef __SERVERLIST0911
@@ -349,12 +344,6 @@ void CDPCoreSrvr::OnJoin( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		if( pParty )
 			g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );
 	}
-}
-
-void CDPCoreSrvr::SendDuplicate( u_long uWorldSrvr )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_DUPLICATE, DPID_UNKNOWN, (DPID)uWorldSrvr );
-	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
 void CDPCoreSrvr::OnWhisper( CAr & ar, DPID dpidFrom, DPID dpidCache, DPID dpidUser, u_long uBufSize )

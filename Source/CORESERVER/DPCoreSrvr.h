@@ -38,9 +38,10 @@ public:
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacket(const Ts & ... ts);
+
 	void	SendRecharge( u_long uBlockSize, DPID dpid );
-	void	SendDuplicate( u_long uWorldSrvr );
-	void	SendUnify( u_long uWorldSrvr );
 	void	SendQueryTickCount( DWORD dwTime, DPID dpid, double dCurrentTime );
 //	Operator commands
 	void	SendShout( u_long idPlayer, const CHAR* lpString, DPID dpid );
@@ -197,6 +198,14 @@ private:
 	void	OnQuizSystemMessage( CAr & ar, DPID, DPID, DPID, u_long );
 #endif // __QUIZ
 };
+
+
+template<DWORD PacketId, typename ... Ts>
+void CDPCoreSrvr::SendPacket(const Ts & ... ts) {
+	BEFORESENDDUAL(ar, PacketId, DPID_UNKNOWN, DPID_UNKNOWN);
+	ar.Accumulate(ts...);
+	SEND(ar, this, DPID_SERVERPLAYER);
+}
 
 extern CDPCoreSrvr g_dpCoreSrvr;
 
