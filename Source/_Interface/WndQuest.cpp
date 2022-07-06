@@ -12,42 +12,33 @@
 
 CTreeInformationManager g_QuestTreeInfoManager;
 
-// TODO: remove all conversions to QuestId here and expect to received some QuestIds
+BOOL CWndRemoveQuest::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+	CRect rect = m_pWndRoot->MakeCenterRect(250, 130);
+	Create("", MB_OKCANCEL, rect, APP_MESSAGEBOX);
 
-BOOL CWndRemoveQuest::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
-	Create( "", MB_OKCANCEL, rect, APP_MESSAGEBOX );//dwWndId );
-
-	m_wndText.SetString( prj.GetText(TID_GAME_QUEST_DELCONFIRM) );
+	m_wndText.SetString(prj.GetText(TID_GAME_QUEST_DELCONFIRM));
 	m_wndText.ResetString();
-	if( g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1 )	// FPS모드일때
-	{
-		g_WndMng.m_pWndWorld->SetMouseMode( 0 );
+	if (g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1) {	// FPS모드일때
+		g_WndMng.m_pWndWorld->SetMouseMode(0);
 	}
-	return CWndMessageBox::Initialize( pWndParent, dwWndId );
+	return CWndMessageBox::Initialize(pWndParent, dwWndId);
 }
-BOOL CWndRemoveQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	if( message == WNM_CLICKED  )
-	{
-		switch(nID)
-		{
-			case IDCANCEL:   
-				Destroy(); 
+
+BOOL CWndRemoveQuest::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (message == WNM_CLICKED) {
+		switch (nID) {
+			case IDCANCEL:
+				Destroy();
 				break;
-			case IDOK:       
-			{
-				const QuestId questId = QuestId(m_nRemoveQuestId);
-				if (g_pPlayer->FindQuest(questId)) {
-					g_DPlay.SendRemoveQuest(questId);
+			case IDOK:
+				if (g_pPlayer->FindQuest(m_nRemoveQuestId)) {
+					g_DPlay.SendRemoveQuest(m_nRemoveQuestId);
 				}
-				Destroy(); 
-			}
-			break;
+				Destroy();
+				break;
 		}
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
 
@@ -390,7 +381,7 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( g_WndMng.m_pWndQuestDetail )
 							SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
-						CWndRemoveQuest* pWndRemoveQuest = new CWndRemoveQuest(nQuestID);
+						CWndRemoveQuest* pWndRemoveQuest = new CWndRemoveQuest(QuestId(nQuestID));
 						g_WndMng.OpenCustomBox( NULL, pWndRemoveQuest );
 					}
 					break;

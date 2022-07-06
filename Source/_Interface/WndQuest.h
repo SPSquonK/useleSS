@@ -12,9 +12,9 @@ public:
 };
 
 class CWndRemoveQuest : public CWndMessageBox {
-	int m_nRemoveQuestId = -1;
+	QuestId m_nRemoveQuestId;
 public:
-	CWndRemoveQuest(int nRemoveQuestId) : m_nRemoveQuestId(nRemoveQuestId) {}
+	CWndRemoveQuest(const QuestId nRemoveQuestId) : m_nRemoveQuestId(nRemoveQuestId) {}
 	
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
