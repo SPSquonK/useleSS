@@ -8506,20 +8506,6 @@ void CDPClient::SendPartySkillUse( int nSkill )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendChangeShareItem( int nItemMode )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PARTYCHANGEITEMMODE, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << nItemMode;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendChangeShareExp( int nExpMode )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PARTYCHANGEEXPMODE, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << nExpMode;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendPartyMemberCancle(u_long uLeader, int nMode) {
 	SendPacket<PACKETTYPE_MEMBERREQUESTCANCLE, u_long, int>(uLeader, nMode);
 }

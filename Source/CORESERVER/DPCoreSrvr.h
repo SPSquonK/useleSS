@@ -6,6 +6,7 @@
 #include "ServerDesc.h"
 #include "ObjMap.h"
 #include "guild.h"
+#include "party.h"
 
 #include "InstanceDungeonBase.h"
 
@@ -50,8 +51,8 @@ public:
 	void	SendRemoveParty( u_long idParty, u_long idLeader, u_long idMember );
 	void	SendPartyChangeTroup( u_long idParty, const char * szPartyName );
 	void	SendPartyChangeName( u_long idParty, const char * szPartyName );
-	void	SendPartyChangeItemMode( u_long idParty, int nItemMode );
-	void	SendPartyChangeExpMode( u_long idParty, int nExpMode );
+	void	SendPartyChangeItemMode( u_long idParty, CParty::ShareItemMode nItemMode );
+	void	SendPartyChangeExpMode( u_long idParty, CParty::ShareExpMode nExpMode );
 
 	void	SendAddPartyMember(u_long uPartyId, u_long idLeader, u_long idMember);
 	void	SendAddFriend( u_long uidSender, u_long uidFriend, BYTE nSenderSex, BYTE nFriendSex, LONG nSendJob, LONG nFriendJob );

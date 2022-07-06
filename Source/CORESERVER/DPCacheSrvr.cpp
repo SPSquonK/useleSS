@@ -936,23 +936,18 @@ void CDPCacheSrvr::OnPartyChangeName( CAr & ar, DPID dpidCache, DPID dpidUser, u
 
 void CDPCacheSrvr::OnPartyChangeItemMode( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _uidPlayer;
-	int nItemMode;
-	ar >> _uidPlayer >> nItemMode;
+	CParty::ShareItemMode nItemMode; ar >> nItemMode;
+	if (!CParty::IsValidMode(nItemMode)) return;
 
-	CPlayer* pPlayer;
-	
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	
-	pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
+	CPlayer * pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
 	
-	if( !pPlayer )
-		return;
+	if (!pPlayer) return;
 	
-	CParty* pParty;
 	CMclAutoLock	Lock2( g_PartyMng.m_AddRemoveLock );
 	
-	pParty	= g_PartyMng.GetParty( pPlayer->m_uPartyId );
+	CParty * pParty	= g_PartyMng.GetParty( pPlayer->m_uPartyId );
 	if( NULL == pParty )
 	{
 		// 파티 찾기 실패
@@ -973,27 +968,21 @@ void CDPCacheSrvr::OnPartyChangeItemMode( CAr & ar, DPID dpidCache, DPID dpidUse
 
 void CDPCacheSrvr::OnPartyChangeExpMode( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _uidPlayer;
-	int nExpMode;
-	ar >> _uidPlayer >> nExpMode;
+	CParty::ShareExpMode nExpMode; ar >> nExpMode;
+	if (!CParty::IsValidMode(nExpMode)) return;
 
-	CPlayer* pPlayer;
-	
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	
-	pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
-	
-	if( !pPlayer )
-		return;
+	CPlayer * pPlayer = g_PlayerMng.GetPlayerBySerial(dpidUser);
+	if (!pPlayer) return;
 	
 	CParty* pParty;
 	CMclAutoLock	Lock2( g_PartyMng.m_AddRemoveLock );
 	
 	pParty	= g_PartyMng.GetParty( pPlayer->m_uPartyId );
-	if( NULL == pParty )
-	{
+	if (NULL == pParty) {
 		// 파티 찾기 실패
-		SendErrorParty( ERROR_NOPARTY, pPlayer );
+		SendErrorParty(ERROR_NOPARTY, pPlayer);
 		return;
 	}
 

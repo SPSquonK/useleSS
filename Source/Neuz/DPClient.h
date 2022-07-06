@@ -170,8 +170,6 @@ public:
 	void	SendPartySkillUse( int nSkill );
 	void	SendPartyMemberCancle( u_long uLeader, int nMode );
 	void	SendAddPartyMember(u_long uLeader);
-	void	SendChangeShareItem( int nItemMode );
-	void	SendChangeShareExp( int nExpMode );
 	void	SendChangeTroup( BOOL bSendName, const char * szPartyName = "" );
 	void	SendChangePartyName( const char * szPartyName );
 	void	SendDuelRequest( CMover* pSrc, CMover* pDst );

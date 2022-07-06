@@ -6,7 +6,7 @@
 #include "Party.h"
 #include "dpclient.h"
 #include "playerdata.h"
-
+#include "MsgHdr.h"
 
 /****************************************************
   WndId : APP_PARTY - 극단(Party)
@@ -86,18 +86,18 @@ void CWndParty::OnDraw(C2DRender * p2DRender) {
 	// 아이템 경험치 분배방식 상태 갱신
 
 	GetDlgItem<CWndButton>(WIDC_EXP_SHARE)
-		->SetCheck(ToBOOL(g_Party.m_nTroupsShareExp == 0));
+		->SetCheck(ToBOOL(g_Party.m_nTroupsShareExp == CParty::ShareExpMode::Level));
 	GetDlgItem<CWndButton>(WIDC_RADIO6)
-		->SetCheck(ToBOOL(g_Party.m_nTroupsShareExp == 1));
+		->SetCheck(ToBOOL(g_Party.m_nTroupsShareExp == CParty::ShareExpMode::Contribution));
 
 	GetDlgItem<CWndButton>(WIDC_ITEM_SHARE)
-		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 0));
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == CParty::ShareItemMode::Self));
 	GetDlgItem<CWndButton>(WIDC_RADIO2)
-		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 1));
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == CParty::ShareItemMode::RoundRobin));
 	GetDlgItem<CWndButton>(WIDC_RADIO3)
-		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 2));
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == CParty::ShareItemMode::Leader));
 	GetDlgItem<CWndButton>(WIDC_RADIO4)
-		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == 3));
+		->SetCheck(ToBOOL(g_Party.m_nTroupeShareItem == CParty::ShareItemMode::Random));
 }
 
 void CWndParty::OnInitialUpdate() 
@@ -188,25 +188,25 @@ BOOL CWndParty::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		if( g_Party.m_nKindTroup != 0 )
 		{
 			// 경험치 분배 방식은 순회극단 임
-			int nTroupsShareExp = g_Party.m_nTroupsShareExp;
+			CParty::ShareExpMode nTroupsShareExp = g_Party.m_nTroupsShareExp;
 			
-			if(nID==WIDC_EXP_SHARE) nTroupsShareExp   = 0;
-			else if(nID==WIDC_RADIO6) nTroupsShareExp = 1;
+			if(nID==WIDC_EXP_SHARE) nTroupsShareExp   = CParty::ShareExpMode::Level;
+			else if(nID==WIDC_RADIO6) nTroupsShareExp = CParty::ShareExpMode::Contribution;
 
 			if (nTroupsShareExp != g_Party.m_nTroupsShareExp) {
-				g_DPlay.SendChangeShareExp(nTroupsShareExp);
+				g_DPlay.SendPacket<PACKETTYPE_PARTYCHANGEEXPMODE, CParty::ShareExpMode>(nTroupsShareExp);
 			}
 		}
 		// 아이템 분배 방식은 단막극단 임
-		int nTroupeShareItem = g_Party.m_nTroupeShareItem;
+		CParty::ShareItemMode nTroupeShareItem = g_Party.m_nTroupeShareItem;
 
-		if(nID==WIDC_ITEM_SHARE) nTroupeShareItem  = 0;
-		else if(nID==WIDC_RADIO2) nTroupeShareItem = 1;
-		else if(nID==WIDC_RADIO3) nTroupeShareItem = 2;
-		else if(nID==WIDC_RADIO4) nTroupeShareItem = 3;		
+		if (nID == WIDC_ITEM_SHARE) nTroupeShareItem = CParty::ShareItemMode::Self;
+		else if (nID == WIDC_RADIO2) nTroupeShareItem = CParty::ShareItemMode::RoundRobin;
+		else if (nID == WIDC_RADIO3) nTroupeShareItem = CParty::ShareItemMode::Leader;
+		else if (nID == WIDC_RADIO4) nTroupeShareItem = CParty::ShareItemMode::Random;
 
 		if (nTroupeShareItem != g_Party.m_nTroupeShareItem) {
-			g_DPlay.SendChangeShareItem(nTroupeShareItem);
+			g_DPlay.SendPacket<PACKETTYPE_PARTYCHANGEITEMMODE, CParty::ShareItemMode>(nTroupeShareItem);
 		}
 	}
 	else

@@ -2207,19 +2207,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 	for( int i = 0; i < pParty->m_nSizeofMember; i++ )
 	{
 		pMember		= g_UserMng.GetUserByPlayerID( pParty->m_aMember[i].m_uPlayerId );
-//		if( IsValidObj( (CObj*)pMember ) )
-		// 12-3 康: 아이템 획득은 같은 맵 일정 반경에 속한 사용자로 제한해야한다.
-		/*  
-		if( IsValidObj( (CObj*)pMember ) && GetWorld() == pMember->GetWorld() )
-		{
-			vDist = pMember->GetPos() - GetPos();
-			fDist = D3DXVec3LengthSq( &vDist );		// 아이템 줍는사람과 멤버간의 거리.
-			if( fDist < 32.0f * 32.0f )		// xx미터보다 작으면
-			{
-				pListMember[ nMaxListMember++ ] = pMember;
-			}
-		}
-		*/ //2009.01.21 // 반경 검사에 레이어 추가
+
 		if( IsValidArea( pMember, 32.0f ) )
 			pListMember[ nMaxListMember++ ] = pMember;
 	}
@@ -2232,7 +2220,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 	{
 		switch( pParty->m_nTroupeShareItem )
 		{
-		case 1 :	// 순서분배
+			case CParty::ShareItemMode::RoundRobin :	// 순서분배
 
 			{
 				for( int i = 0 ; i < nMaxListMember ; i++ )
@@ -2258,7 +2246,7 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 				}
 			}
 			break;
-		case 2 :	// 수동분배 : 단장에게 다 들어감
+			case CParty::ShareItemMode::Leader:	// 수동분배 : 단장에게 다 들어감
 			{
 				if( pParty->IsLeader( pListMember[0]->m_idPlayer ) )
 				{
@@ -2270,12 +2258,13 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 				}
 			}
 			break;
-		case 3 :	// 랜덤분배 : 랜덤하게 들어감
+		case CParty::ShareItemMode::Random:	// 랜덤분배 : 랜덤하게 들어감
 			{
 				DWORD dwRand = xRandom( nMaxListMember );
 				pGetUser = pListMember[dwRand];
 			}
 			break;
+		case CParty::ShareItemMode::Self:
 		default:	// 기본 개임분배
 
 			{
@@ -2298,25 +2287,25 @@ BOOL CMover::SubLootDropMobParty( CItem *pItem, CParty *pParty )
 				if( pMember->m_idPlayer != pGetUser->m_idPlayer )
 				{
 					if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_JAP || ::GetLanguage() == LANG_HK )
-						( (CUser*)pMember )->AddDefinedText( TID_GAME_TROUPEREAPITEM, "\"%s\" \"%s\"", pGetUser->GetName(), pItemBase->GetProp()->szName );
+						pMember->AddDefinedText( TID_GAME_TROUPEREAPITEM, "\"%s\" \"%s\"", pGetUser->GetName(), pItemBase->GetProp()->szName );
 					else
 					{
 						if( ::GetLanguage() == LANG_THA )
-							( (CUser*)pMember )->AddDefinedText( TID_GAME_REAPITEM_THA, "\"%s\" \"%s\"", pGetUser->GetName(), pItemBase->GetProp()->szName );
+							pMember->AddDefinedText( TID_GAME_REAPITEM_THA, "\"%s\" \"%s\"", pGetUser->GetName(), pItemBase->GetProp()->szName );
 						else
-							( (CUser*)pMember )->AddDefinedText( TID_GAME_REAPITEM, "\"%s%s %s\"", pGetUser->GetName(), prj.GetText(TID_GAME_FROM2), pItemBase->GetProp()->szName );
+							pMember->AddDefinedText( TID_GAME_REAPITEM, "\"%s%s %s\"", pGetUser->GetName(), prj.GetText(TID_GAME_FROM2), pItemBase->GetProp()->szName );
 					}
 				}
 				else
 				{
-					( (CUser*)pGetUser )->AddDefinedText( TID_GAME_REAPITEM, "\"%s\"", pItemBase->GetProp()->szName );
+					pGetUser->AddDefinedText( TID_GAME_REAPITEM, "\"%s\"", pItemBase->GetProp()->szName );
 				}
 			}
 			else
 			{
 				// CreateItem을 실패함 Full
 				if( pGetUser == pMember )
-					( (CUser*)pGetUser )->AddDefinedText( TID_GAME_LACKSPACE );
+					pGetUser->AddDefinedText( TID_GAME_LACKSPACE );
 			}
 		}									
 	}

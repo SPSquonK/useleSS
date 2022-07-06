@@ -1072,14 +1072,14 @@ void CDPCoreSrvr::SendPartyChangeName( u_long idParty, const char * szPartyName 
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCoreSrvr::SendPartyChangeExpMode( u_long idParty, int nExpMode )
+void CDPCoreSrvr::SendPartyChangeExpMode( u_long idParty, const CParty::ShareExpMode nExpMode )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_PARTYCHANGEEXPMODE, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idParty << nExpMode;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCoreSrvr::SendPartyChangeItemMode( u_long idParty, int nItemMode )
+void CDPCoreSrvr::SendPartyChangeItemMode( u_long idParty, CParty::ShareItemMode nItemMode )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_PARTYCHANGEITEMMODE, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idParty << nItemMode;

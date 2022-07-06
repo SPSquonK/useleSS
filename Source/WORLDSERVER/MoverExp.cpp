@@ -214,29 +214,17 @@ static float GetExperienceReduceFactor(const int nLevel, const int nMaxLevel) {
 	}
 }
 
-enum class PartyDistributionType { Unknown, Level, Contribution };
-
-// Returns the kind of exp distribution of the party. Even though FlyFF
-// developers only develloped two, the original code base reflected that more
-// were planned.
-static PartyDistributionType GetPartyDistributionType(const CParty & party) {
+// Returns the actual kind of exp distribution of the party. This function
+// should be useless as m_nTroupsShareExp should be sanitized now
+static CParty::ShareExpMode GetPartyDistributionType(const CParty & party) {
 	if (!party.m_nKindTroup) { // Not an advanced party
-		return PartyDistributionType::Level;
+		return CParty::ShareExpMode::Level;
+	} else if (CParty::IsValidMode(party.m_nTroupsShareExp)) {
+		return party.m_nTroupsShareExp;
 	} else {
-		switch (party.m_nTroupsShareExp) {
-			case 0: // Level
-				return PartyDistributionType::Level;
-			case 1:	// Contribution
-				return PartyDistributionType::Contribution;
-			case 2:	// Equal distribution
-				// Not implemented
-				break;
-		}
+		return CParty::ShareExpMode::Level;
 	}
-
-	return PartyDistributionType::Unknown;
 }
-
 
 void Rewarder::ParterParty::ExpReward(float baseExp, CMover & pDead, MoverProp * pMoverProp, float fFxpValue) const {
 	const float fExpValuePerson = baseExp * CPCBang::GetInstance()->GetPartyExpFactor(GetPlayers());
@@ -256,7 +244,7 @@ void Rewarder::ParterParty::AddExperienceParty(EXPFLOAT fExpValue, CMover & pDea
 	int totalLevel = 0;
 	for (const CUser * const user : GetPlayers()) {
 		totalLevel += user->GetLevel();
-		if (maxLevel < user->GetLevel()) maxLevel = user->GetLevel();
+		maxLevel = std::max(maxLevel, user->GetLevel());
 	}
 
 	// Decreased experience to be the highest level party member among nearby party members
@@ -267,19 +255,18 @@ void Rewarder::ParterParty::AddExperienceParty(EXPFLOAT fExpValue, CMover & pDea
 	// party experience and points do not increase.
 	m_party->GetPoint(totalLevel, m_players.size(), pDead.GetLevel());
 
-	const auto type = GetPartyDistributionType(*m_party);
+	const CParty::ShareExpMode type = GetPartyDistributionType(*m_party);
 
 	// Compute min level exclusive to earn exp
-	if (maxLevel < 20) maxLevel = 0;
-	else maxLevel = maxLevel - 20;
+	const int minRequiredLevelExclusive = maxLevel >= 20 ? maxLevel - 20 : 0;
 
 	switch (type) {
-		case PartyDistributionType::Contribution:
-			AddExperiencePartyContribution(fExpValue, maxLevel);
-			break;
-		case PartyDistributionType::Level:
+		case CParty::ShareExpMode::Level:
 		default:
-			AddExperiencePartyLevel(fExpValue, maxLevel);
+			AddExperiencePartyLevel(fExpValue, minRequiredLevelExclusive);
+			break;
+		case CParty::ShareExpMode::Contribution:
+			AddExperiencePartyContribution(fExpValue, minRequiredLevelExclusive);
 			break;
 	}
 }

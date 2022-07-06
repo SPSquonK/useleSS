@@ -976,23 +976,23 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 }
 
 void CDPCoreClient::OnPartyChangeItemMode(CAr & ar, DPID, DPID, OBJID) {
-	const auto [uPartyId, nMode] = ar.Extract<u_long, int>();
+	const auto [uPartyId, nMode] = ar.Extract<u_long, CParty::ShareItemMode>();
 
 	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
 	if (!pParty) return;
 
 	pParty->m_nTroupeShareItem = nMode;
-	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYCHANGEITEMMODE, int>(nMode);
+	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYCHANGEITEMMODE, CParty::ShareItemMode>(nMode);
 }
 
 void CDPCoreClient::OnPartyChangeExpMode(CAr & ar, DPID, DPID, OBJID) {
-	const auto [uPartyId, nMode] = ar.Extract<u_long, int>();
+	const auto [uPartyId, nMode] = ar.Extract<u_long, CParty::ShareExpMode>();
 
 	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
 	if (!pParty) return;
 
 	pParty->m_nTroupsShareExp = nMode;
-	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYCHANGEEXPMODE, int>(nMode);
+	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYCHANGEEXPMODE, CParty::ShareExpMode>(nMode);
 }
 
 

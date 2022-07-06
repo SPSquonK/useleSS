@@ -43,6 +43,19 @@ struct PartyMember final {	// 플레이어 아이디만 가지고 있음
 };
 
 class CParty final {
+public:
+	enum class ShareExpMode { Level, Contribution, /* EqualDistribution */ };
+
+	[[nodiscard]] static bool IsValidMode(const ShareExpMode value) {
+		return value == ShareExpMode::Level || value == ShareExpMode::Contribution;
+	}
+
+	enum class ShareItemMode { Self, RoundRobin, Leader, Random };
+	[[nodiscard]] static bool IsValidMode(const ShareItemMode value) {
+		return value == ShareItemMode::Self || value == ShareItemMode::Leader
+			|| value == ShareItemMode::Random || value == ShareItemMode::RoundRobin;
+	}
+
 private:
 public:
 	u_long	m_uPartyId = 0;								// 극단 ID
@@ -50,7 +63,8 @@ public:
 	PartyMember	m_aMember[MAX_PTMEMBER_SIZE];		// 한개의 극단의 극단원 정보
 	int		m_nSizeofMember = 0;						// 극단원 숫자	( 2 ~ 8 )
 	LONG	m_nLevel = 1, m_nExp = 0, m_nPoint = 0;				// 극단 레벨, 경험치, 포인트
-	int		m_nTroupsShareExp = 0, m_nTroupeShareItem = 0;	// 경험치 분배방식, 아이템 분배방식
+	ShareExpMode  m_nTroupsShareExp = ShareExpMode::Level;
+	ShareItemMode m_nTroupeShareItem = ShareItemMode::Self;	// 경험치 분배방식, 아이템 분배방식
 	int		m_nKindTroup = 0;							// 극단 종류 : 단막극단, 순회극단
 	int		m_nReferens = 0;							// 극단에 포함되어 있는 상태일때 게임에 나갔을경우 10분후에 탈퇴 검색할 파티
 	int		m_nModeTime[MAX_PARTYMODE];				// 모드 시간

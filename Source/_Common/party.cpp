@@ -52,7 +52,8 @@ void CParty::InitParty()
 	memset( m_sParty, 0, sizeof(m_sParty) );
 	m_nLevel = 1;
 	m_nExp = m_nPoint = 0;
-	m_nTroupsShareExp = m_nTroupeShareItem = 0;
+	m_nTroupsShareExp = ShareExpMode::Level;
+	m_nTroupeShareItem = ShareItemMode::Self;
 	m_nKindTroup = 0;							// ´Ü¸·±Ø´Ü
 	m_nReferens = 0;	
 	for (int i = 0; i < MAX_PTMEMBER_SIZE; i++) {
