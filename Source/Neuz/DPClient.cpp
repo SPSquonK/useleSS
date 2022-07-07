@@ -9367,7 +9367,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 
 		if( g_WndMng.m_pWndMessageBox == NULL )
 		{
-			CReturnScrollMsgBox* pMsgBox = new CReturnScrollMsgBox; 
+			CReturnScrollMsgBox * pMsgBox = new CReturnScrollMsgBox;
 			m_dwReturnScroll = dwItemId;
 			g_WndMng.OpenCustomBox( "", pMsgBox );
 		}
