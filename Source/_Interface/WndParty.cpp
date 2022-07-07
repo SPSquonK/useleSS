@@ -226,7 +226,7 @@ void CWndParty::OnLeave() {
 	}
 
 	if (g_WndMng.m_pWndPartyLeaveConfirm) return;
-	if (g_Party.m_nSizeofMember != 0) return;
+	if (g_Party.m_nSizeofMember == 0) return;
 
 	std::optional<u_long> leaver = std::nullopt;
 
