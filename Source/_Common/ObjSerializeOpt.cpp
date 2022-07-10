@@ -510,13 +510,8 @@ void CMover::Serialize( CAr & ar )
 					for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
 						ar >> m_aEquipInfo[i].dwId;
 				}
-#ifdef __SKILL_0205
+
 				ar.Read( (void*)m_aJobSkill, sizeof(SKILL) *  ( MAX_SKILL_JOB ) );
-				for( int i = 0 ; i < MAX_SKILL_JOB; i++)
-					m_abUpdateSkill[i]	= (BOOL)( memcmp( &m_aJobSkill[i], &aJobSkill[i], sizeof(SKILL) ) != 0 );
-#else	// __SKILL_0205
-				ar.Read( (void*)m_aJobSkill, sizeof(SKILL) *  ( MAX_SKILL_JOB ) );
-#endif	// __SKILL_0205
 
 				m_nCheerPoint	= 0;
 				ar >> (BYTE&)m_nCheerPoint >> m_dwTickCheer;

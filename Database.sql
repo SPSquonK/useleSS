@@ -1837,9 +1837,7 @@ GO
 CREATE TABLE [dbo].[tblSkillPoint](
 	[serverindex] [char](2) NOT NULL,
 	[PlayerID] [char](7) NULL,
-	[SkillID] [int] NOT NULL,
-	[SkillLv] [int] NOT NULL,
-	[SkillPosition] [int] NOT NULL
+	[Skill] [varchar](max) NOT NULL,
 ) ON [PRIMARY]
 GO
 SET ANSI_PADDING OFF
@@ -4922,7 +4920,7 @@ CREATE  PROCEDURE [dbo].[uspLoadCharacterSkill]
 AS
 SET NOCOUNT ON
 
-	SELECT PlayerID, SkillID, SkillLv, SkillPosition FROM tblSkillPoint 
+	SELECT PlayerID, Skill FROM tblSkillPoint 
 	WHERE 	PlayerID=@pPlayerID 
 	and		serverindex=@serverindex
 
@@ -4936,238 +4934,16 @@ GO
 CREATE    PROCEDURE [dbo].[uspLearnSkill]
 		@serverindex 	char(2),
 		@pPlayerID		char(7),
-		@pSkillID		int,
-		@pSkillLv		int,
-		@pSkillPosition	int
+		@pSkill		varchar(max)
 AS
 SET NOCOUNT ON
-
-	IF @pSkillID=-1 BEGIN
-		IF ExISTS ( SELECT * FROM dbo.tblSkillPoint WHERE serverindex=@serverindex AND PlayerID=@pPlayerID AND SkillPosition=@pSkillPosition) BEGIN
-			DELETE FROM tblSkillPoint WHERE serverindex=@serverindex AND PlayerID=@pPlayerID and SkillPosition=@pSkillPosition
-		END
-		
-		RETURN
-	END
-
-	IF EXISTS ( SELECT * FROM dbo.tblSkillPoint WHERE serverindex=@serverindex AND PlayerID=@pPlayerID AND SkillPosition=@pSkillPosition) BEGIN
-		UPDATE tblSkillPoint 
-			SET SkillID=@pSkillID,SkillLv=@pSkillLv 
-		WHERE serverindex=@serverindex AND PlayerID=@pPlayerID AND SkillPosition=@pSkillPosition
+	IF EXISTS ( SELECT * FROM dbo.tblSkillPoint WHERE serverindex=@serverindex AND PlayerID=@pPlayerID) BEGIN
+		UPDATE tblSkillPoint SET Skill=@pSkill
+		WHERE serverindex=@serverindex AND PlayerID=@pPlayerID
 	END
 	ELSE BEGIN
-		INSERT INTO tblSkillPoint VALUES (@serverindex, @pPlayerID, @pSkillID, @pSkillLv, @pSkillPosition)
+		INSERT INTO tblSkillPoint VALUES (@serverindex, @pPlayerID, @pSkill)
 	END
-
-SET NOCOUNT OFF
-GO
-/****** Object:  StoredProcedure [dbo].[uspConvertCharacterSkill]    Script Date: 04/03/2010 12:42:40 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-/*
-SELECT count(*) FROM tblSkillPoint
-
-SELECT * FROM tblSkillPoint
-SELECT m_idPlayer FROM CHARACTER_TBL WHERE serverindex='01' and m_idPlayer='033924'
-TRUNCATE TABLE tblSkillPoint
-dbo.uspConvertCharacterSkill '01', '033924'
-SELECT serverindex, m_szName, m_idPlayer, m_nJob, m_nLevel, m_aJobSkill, m_nExp1 FROM CHARACTER_TBL WHERE m_aJobSkill=''
-
-SELECT serverindex, m_szName, m_idPlayer, m_nJob, m_nLevel, m_aJobSkill, m_nExp1 FROM CHARACTER_TBL WHERE m_szName='???'
-select * from tblSkillPoint WHERE PlayerID='009672'
-
-20,1,1,1/0,1,2,1/0,1,3,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,1/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/0,1,-1,0/$
-
-
---SELECT * FROM CHARACTER_TBL WHERE m_szName='ccasse'
-*/
-
-CREATE              Procedure [dbo].[uspConvertCharacterSkill]
-		@serverindex		char(2),
-		@pPlayerID			char(7)='',
-		@pSkillList			varchar(5000)=''
-AS
-SET NOCOUNT ON
-
-	DECLARE	@SkillExp		int,
-				@SkillLevel	int,
-				@SkillID		int,
-				@SkillStatus	int
-				
-    DECLARE	@SkillString		varchar(500),
-				@SkillStringLength 	int
-
-	DECLARE	@SkillSetStartPos	int,
-				@SkillSetEndPos		int,
-				@SkillSetLength		int
-				
-	DECLARE	@SkillElemStartPos	int,
-				@SkillElemEndPos		int,
-				@SkillElemLength		int,
-				@SkillElemIndex		int,
-				@SkillElemString		int
-	
-    SELECT	-1 as SkillExp,
-			-1 as SkillLevel,
-			-1 as SkillID, 
-			-1 as SkillStatus
-    INTO   #TMP
-
-	DECLARE 	@CharacterLevel int,
-				@Job	int,
-				@CharExp	bigint
-
-	DECLARE 	@ExtraPointForJob 	int,
-				@ExtraPointForLevelExp	int,
-				@LevelExpRatio		int,
-				@FinalSkillPoint	int
-
-
-	IF @pPlayerID='' BEGIN
-		DELETE FROM tblSkillPoint WHERE serverindex=@serverindex
-	END
-	ELSE BEGIN
-		DELETE FROM tblSkillPoint WHERE serverindex=@serverindex and PlayerID=@pPlayerID
-	END
-
-	IF @pPlayerID='' BEGIN
-		DECLARE curCharacter CURSOR FOR
-			SELECT m_idPlayer, m_nJob, m_nLevel, m_aJobSkill, m_nExp1 FROM CHARACTER_TBL WHERE serverindex=@serverindex AND isblock<>'D'
-	END
-	ELSE BEGIN
-		DECLARE curCharacter CURSOR FOR
-			SELECT m_idPlayer, m_nJob, m_nLevel, m_aJobSkill, m_nExp1 FROM CHARACTER_TBL WHERE serverindex=@serverindex and m_idPlayer=@pPlayerID
-	END
-
-	OPEN curCharacter
-
-	FETCH NEXT FROM curCharacter INTO @pPlayerID, @Job, @CharacterLevel, @pSkillList, @CharExp
-
-	--PRINT 'START'	
-	WHILE(@@FETCH_STATUS=0) BEGIN
-		--PRINT 'START'
-		-- READ FROM TABLE
-		--SELECT @CharacterLevel=m_nLevel , @pSkillList=m_aJobSkill FROM CHARACTER_TBL WHERE m_idPlayer=@pPlayerID and serverindex=@serverindex
-	
-	    SELECT @SkillStringLength = LEN(@pSkillList)
-	    SELECT @SkillSetStartPos = 0             
-	    SELECT @SkillSetEndPos   = -1          
-	
-		DECLARE @SkillPosition	int, @SkillPoint int, @Point int
-		SET @SkillPosition=0
-		SET @SkillPoint=0
-		SET @Point=0
-		SET 	@ExtraPointForJob 	=0
-		SET		@ExtraPointForLevelExp	=0
-		SET		@LevelExpRatio		=0
-		SET @FinalSkillPoint=0
-	
-	
-		--PRINT @SkillSetEndPos
-		SET @SkillPosition=-1
-		SET 	@ExtraPointForJob=0
-		SET		@ExtraPointForLevelExp=0
-		SET		@LevelExpRatio=0
-		SET 	@SkillPoint=0
-
-	    WHILE ( @SkillSetEndPos <> 0 )	BEGIN
-			SET @Point=0
-
-			SET @SkillPosition = @SkillPosition + 1
-			SELECT @SkillSetStartPos = @SkillSetEndPos+1
-	        SELECT @SkillSetEndPos = CHARINDEX('/', @pSkillList, @SkillSetStartPos)
-			--PRINT @SkillSetEndPos
-			
-			IF @SkillSetEndPos=0 BREAK
-	
-	        SELECT @SkillSetLength = @SkillSetEndPos - @SkillSetStartPos
-	        
-	        IF (@SkillSetEndPos>@SkillStringLength) 
-				BREAK
-			ELSE BEGIN
-				SELECT @SkillString = SUBSTRING(@pSkillList, @SkillSetStartPos, @SkillSetLength) + ','
-				--PRINT @SkillString
-	                
-	            SET	@SkillElemStartPos	= 1
-	            SET @SkillElemEndPos = CHARINDEX(',', @SkillString, @SkillElemStartPos)   
-				SET @SkillElemLength = @SkillElemEndPos-@SkillElemStartPos
-				
-				SET @SkillExp = SUBSTRING(@SkillString, @SkillElemStartPos, @SkillElemLength)
-				
-				SET @SkillElemStartPos=@SkillElemEndPos+1
-				SET @SkillElemEndPos=CHARINDEX(',',@SkillString, @SkillElemStartPos)
-				SET @SkillElemLength = @SkillElemEndPos-@SkillElemStartPos
-				
-				SET @SkillLevel = SUBSTRING(@SkillString, @SkillElemStartPos, @SkillElemLength)
-				
-				SET @SkillElemStartPos=@SkillElemEndPos+1
-				SET @SkillElemEndPos=CHARINDEX(',',@SkillString, @SkillElemStartPos)
-				SET @SkillElemLength = @SkillElemEndPos-@SkillElemStartPos
-				
-				SET @SkillID = SUBSTRING(@SkillString, @SkillElemStartPos, @SkillElemLength)
-	
-				SET @SkillElemStartPos=@SkillElemEndPos+1
-				SET @SkillElemEndPos=CHARINDEX(',',@SkillString, @SkillElemStartPos)
-				SET @SkillElemLength = @SkillElemEndPos-@SkillElemStartPos
-				
-				SET @SkillStatus = SUBSTRING(@SkillString, @SkillElemStartPos, @SkillElemLength)
-				
-				--SELECT @SkillPosition as 'Skill Position', @SkillExp as 'Skill Exp', @SkillLevel as 'Skill Level', @SkillID as 'Skill ID', @SkillStatus as 'Skill Status'
-			END
-	
-			SELECT @Point=CASE WHEN job=0 THEN 1 
-								WHEN job in (1,2,3,4,5) THEN 2
-								WHEN job>5 THEN 3
-								ELSE 0 END * @SkillLevel
-			 FROM MANAGE_DBF.dbo.SKILL_TBL
-			WHERE [Index]=@SkillID
-
-			--PRINT @Point
-			
-			SET @SkillPoint = @SkillPoint + @Point
-	
-			--PRINT @SkillPoint
-
-			IF @SkillID > -1 BEGIN		
-		        INSERT INTO tblSkillPoint(serverindex, SkillPosition, PlayerID, SkillID, SkillLv) 
-					SELECT @serverindex, @SkillPosition, @pPlayerID, @SkillID, 0
-			END
-
-	    END -- END OF WHILE
-
-		-- EXTRA POINT FOR JOB	
-		SELECT @ExtraPointForJob=CASE 	WHEN @Job=0 THEN 0
-										WHEN @Job in (1,2,3,4,5) THEN 30
-										WHEN @Job>5	THEN 60
-								 ELSE 0	END
-		
-		-- EXTRA POINT FOR LEVEL EXP
-		SELECT @LevelExpRatio = dbo.fn_GetExpRatio(@CharacterLevel, @CharExp)
-
-		SELECT @ExtraPointForLevelExp = CASE WHEN @LevelExpRatio < 33 THEN 0
-											WHEN @LevelExpRatio BETWEEN 33 AND 65 THEN 1
-											WHEN @LevelExpRatio BETWEEN 66 AND 98 THEN 2
-											WHEN @LevelExpRatio BETWEEN 99 AND 100 THEN 3
-										ELSE 0 END
-
-		SET @FinalSkillPoint = @SkillPoint + @ExtraPointForLevelExp + @ExtraPointForJob
-
-		IF @FinalSkillPoint < (@CharacterLevel - 1) * 3 + @ExtraPointForJob + @ExtraPointForLevelExp BEGIN
-			SET @FinalSkillPoint = (@CharacterLevel - 1) * 3 + @ExtraPointForJob + @ExtraPointForLevelExp
-		END
-
-
-		UPDATE CHARACTER_TBL SET m_SkillExp=0, m_SkillPoint=@FinalSkillPoint, m_SkillLv=@FinalSkillPoint WHERE m_idPlayer=@pPlayerID AND serverindex=@serverindex
-
-		FETCH NEXT FROM curCharacter INTO @pPlayerID, @Job, @CharacterLevel, @pSkillList, @CharExp
-	END	-- END OF CURSOR
-
-	CLOSE curCharacter
-	DEALLOCATE curCharacter
-
-	RETURN
 
 SET NOCOUNT OFF
 GO
@@ -10675,12 +10451,8 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 							)
 
 		-- Skill Information
-		INSERT INTO tblSkillPoint(serverindex, PlayerID, SkillID, SkillLv, SkillPosition)
-        	VALUES (@iserverindex, @om_idPlayer, 1, 0, 0)
-		INSERT INTO tblSkillPoint(serverindex, PlayerID, SkillID, SkillLv, SkillPosition)
-        	VALUES (@iserverindex, @om_idPlayer, 2, 0, 1)
-		INSERT INTO tblSkillPoint(serverindex, PlayerID, SkillID, SkillLv, SkillPosition)
-        	VALUES (@iserverindex, @om_idPlayer, 3, 0, 2)
+		INSERT INTO tblSkillPoint(serverindex, PlayerID, Skill)
+        	VALUES (@iserverindex, @om_idPlayer, '0,1,0/1,2,0/2,3,0/$')
 
 		-- Pocket
 	INSERT  tblPocket ( serverindex, idPlayer, nPocket, szItem, szIndex, szObjIndex, bExpired, tExpirationDate )

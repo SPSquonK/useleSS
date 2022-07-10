@@ -261,10 +261,6 @@ public:
 	EXPINTEGER		m_nExp1, m_nDeathExp;
 	SKILL			m_aJobSkill[ MAX_SKILL_JOB ];
 
-#ifdef __SKILL_0205
-	BYTE	m_abUpdateSkill[MAX_SKILL_JOB];
-#endif	// __SKILL_0205
-
 	OBJID			m_idMarkingWorld;
 	D3DXVECTOR3		m_vMarkingPos;
 	long			m_nRemainGP;

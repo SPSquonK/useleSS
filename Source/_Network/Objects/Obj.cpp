@@ -204,10 +204,6 @@ CMover::CMover()
 #endif	// __INVALID_LOGIN_0612
 #endif	// __DBSERVER
 
-#ifdef __SKILL_0205
-	memset( m_abUpdateSkill, 0, sizeof(m_abUpdateSkill)  );		// 쿼리 실행해야하는가?
-#endif	// __SKILL_0205
-
 	m_dwPetId	= NULL_ID;
 	m_fSpeedFactor	= 1.0F;
 	
@@ -716,9 +712,6 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_nDeathExp	= pMover->m_nDeathExp;
 		m_nDeathLevel = pMover->m_nDeathLevel;
 		memcpy( m_aJobSkill, pMover->m_aJobSkill, sizeof(m_aJobSkill) );
-#ifdef __SKILL_0205
-		memcpy( m_abUpdateSkill, pMover->m_abUpdateSkill, sizeof(m_abUpdateSkill) );
-#endif	// __SKILL_0205
 		if (pMover->m_quests) {
 			m_quests = std::make_unique<MoverSub::Quests>(*pMover->m_quests);
 		} else {

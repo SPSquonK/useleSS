@@ -357,12 +357,7 @@ int MAX_SAVEPARAM = 88;
 	SaveHonor( qry, pMover->m_idPlayer, pMover->m_aHonorTitle, szQuery );
 
 #ifndef __S_NEW_SKILL_2
-#ifdef __SKILL_0205
-	SaveSkill( qry, pMover->m_idPlayer, pMover->m_aJobSkill, pMover->m_abUpdateSkill, szQuery );
-#else	// __SKILL_0205
 	SaveSkill( qry, pMover->m_idPlayer, pMover->m_aJobSkill, szQuery );
-#endif	// __SKILL_0205
-
 #endif // __S_NEW_SKILL_2
 
 	// 다른 캐릭터의 bank 저장
@@ -519,28 +514,24 @@ void	CDbManager::SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* s
 }
 
 
-#ifdef __SKILL_0205
-void CDbManager::SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, LPBYTE abUpdateSkill, char* szQuery )
-#else	// #define	__SKILL_0205
-void CDbManager::SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, char* szQuery )
-#endif	// #define	__SKILL_0205
-{
-	for( int i = 0 ; i < (MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) ; i++)
-	{
-#ifdef __SKILL_0205
-		if( abUpdateSkill[i] == 0 )
-			continue;
-#endif	// __SKILL_0205
-		sprintf( szQuery,
-			"uspLearnSkill @serverindex='%02d',@pPlayerID='%07d',@pSkillID=%d,@pSkillLv=%d,@pSkillPosition=%d",
-			g_appInfo.dwSys, uidPlayer, aJobSkill[i].dwSkill, aJobSkill[i].dwLevel, i ); 
-	
-		if( FALSE == qry->Exec( szQuery ) )
-		{
-			WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-			return;
-//			continue;
+void CDbManager::SaveSkill(CQuery * qry, u_long uidPlayer, LPSKILL aJobSkill, char * szQuery) {
+	sprintf(szQuery, "uspLearnSkill @serverindex='%02d',@pPlayerID='%07d',@pSkill='",
+		g_appInfo.dwSys, uidPlayer
+	);
+
+	const size_t until = MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL;
+	for (int i = 0; i < until; ++i) {
+		if (aJobSkill[i].dwSkill != NULL_ID && aJobSkill[i].dwSkill != NULL) {
+			char buffer[128] = "";
+			std::sprintf(buffer, "%d,%lu,%lu/", i, aJobSkill[i].dwSkill, aJobSkill[i].dwLevel);
+			std::strcat(szQuery, buffer);
 		}
+	}
+	std::strcat(szQuery, "$'");
+
+	if (!qry->Exec(szQuery)) {
+		WriteLog("%s, %d\t%s", __FILE__, __LINE__, szQuery);
+		return;
 	}
 }
 

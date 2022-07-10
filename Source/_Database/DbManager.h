@@ -724,11 +724,7 @@ public:
 	void	SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer);
 	void	SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery );
 
-#ifdef __SKILL_0205
-	void	SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, LPBYTE abUpdateSkill, char* szQuery );
-#else	// __SKILL_0205
 	void	SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, char* szQuery );
-#endif	// __SKILL_0205
 	void	SaveJobLv( CMover* pMover, char* szJobLv );
 	void	SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest );
 
