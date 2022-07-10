@@ -30,3 +30,6 @@ Source/Libraries/
 Resource/Atools - Credits.txt
 Resource/Licenses/
 Resource/Plugins/
+
+**/*.bak
+resv19/
