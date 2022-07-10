@@ -3,6 +3,9 @@
 
 // Applet 타이틀 
 
+#pragma warning(push)
+#pragma warning(disable: 4005) // Macro redefinition
+
 #define TID_BLANK                       0
      
 #define TID_APP_NAVIGATOR               1         
@@ -7128,5 +7131,8 @@ TID_MMI 메뉴 종료
 #define	TID_MMI_HOLDEMEVENT04_TEXT_18	9077
 #define	TID_MMI_HOLDEMEVENT04_TEXT_19	9078
 #define	TID_MMI_HOLDEMEVENT04_TEXT_20	9079
+
+
+#pragma warning(pop)
 
 #endif

@@ -835,7 +835,7 @@ int APIENTRY ChangeJob( NPCDIALOG_INFO* pInfo, int nJob )
 		Error( "Error ChangeJob : 2" );
 		return 0;
 	}
-	if( pUser->IsPro() && pUser->GetLevel() < MAX_LEVEL && pUser->GetExpPercent() < 9999 )
+	if( pUser->IsPro() && pUser->GetLevel() < MAX_GENERAL_LEVEL && pUser->GetExpPercent() < 9999 )
 	{
 		Error( "Error ChangeJob : 3" );
 		return 0;

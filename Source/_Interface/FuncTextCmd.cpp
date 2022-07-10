@@ -718,7 +718,7 @@ BOOL TextCmd_Level(CScanner & scanner, CPlayer_ * pUser) {
 		}
 	}
 	else
-	if( MAX_JOB_LEVEL + MAX_EXP_LEVEL < nLevel && nLevel < MAX_LEVEL + 1 )
+	if( MAX_JOB_LEVEL + MAX_EXP_LEVEL < nLevel && nLevel < MAX_GENERAL_LEVEL + 1 )
 	{
 		if( MAX_EXPERT <= nJob && nJob < MAX_PROFESSIONAL )
 		{

@@ -1,4 +1,4 @@
-﻿IDS_PROPITEM_TXT_000000	
+IDS_PROPITEM_TXT_000000	
 IDS_PROPITEM_TXT_000001	
 IDS_PROPITEM_TXT_000002	Hand
 IDS_PROPITEM_TXT_000003	
@@ -8813,7 +8813,7 @@ IDS_PROPITEM_TXT_008811	Contains various items and a small chance for a Snowboar
 IDS_PROPITEM_TXT_008812	Magic Carpet Box S
 IDS_PROPITEM_TXT_008813	Contains various items and a small chance for a Magic Carpet
 IDS_PROPITEM_TXT_008814	NarKeni's Potion Box of the Murderous Vagrant
-IDS_PROPITEM_TXT_008815	This box contains one potion, flask, or elixir. *Whenever it’s opened, Shade kills a Vagrant*
+IDS_PROPITEM_TXT_008815	This box contains one potion, flask, or elixir. *Whenever it�s opened, Shade kills a Vagrant*
 IDS_PROPITEM_TXT_008816	Upgrading Gift Box
 IDS_PROPITEM_TXT_008817	Contains materials for upgrading items
 IDS_PROPITEM_TXT_008818	Duel Box (Power Up)
@@ -10195,7 +10195,7 @@ IDS_PROPITEM_TXT_010193	A box that contains a Wedding Bridegroom Set
 IDS_PROPITEM_TXT_010194	Wedding Bride Box (F) (15 days)
 IDS_PROPITEM_TXT_010195	A box that contains a Wedding Bride Set
 IDS_PROPITEM_TXT_010196	Snow Flake
-IDS_PROPITEM_TXT_010197	No two are alike… Well, no two stacks of 99 are alike…
+IDS_PROPITEM_TXT_010197	No two are alike� Well, no two stacks of 99 are alike�
 IDS_PROPITEM_TXT_010198	Snow Fairy
 IDS_PROPITEM_TXT_010199	These fairies have the ability to create snow! Gather enough of them and one could even prolong winter.
 IDS_PROPITEM_TXT_010200	World Cloak Gift Box2
@@ -10316,14 +10316,14 @@ IDS_PROPITEM_TXT_010314	Fresh Cream
 IDS_PROPITEM_TXT_010315	
 IDS_PROPITEM_TXT_010316	Lucky Box (Rabbit)
 IDS_PROPITEM_TXT_010317	You can get a rabbit pet if you are lucky
-IDS_PROPITEM_TXT_010318	1000 퍼니
-IDS_PROPITEM_TXT_010319	1000 퍼니캐시를 충전시켜 줍니다.
-IDS_PROPITEM_TXT_010320	3000 퍼니
-IDS_PROPITEM_TXT_010321	3000 퍼니캐시를 충전시켜 줍니다.
-IDS_PROPITEM_TXT_010322	5000 퍼니
-IDS_PROPITEM_TXT_010323	5000 퍼니캐시를 충전시켜 줍니다.
-IDS_PROPITEM_TXT_010324	10000 퍼니
-IDS_PROPITEM_TXT_010325	10000 퍼니캐시를 충전시켜 줍니다.
+IDS_PROPITEM_TXT_010318	1000 ??
+IDS_PROPITEM_TXT_010319	1000 ????? ???? ???.
+IDS_PROPITEM_TXT_010320	3000 ??
+IDS_PROPITEM_TXT_010321	3000 ????? ???? ???.
+IDS_PROPITEM_TXT_010322	5000 ??
+IDS_PROPITEM_TXT_010323	5000 ????? ???? ???.
+IDS_PROPITEM_TXT_010324	10000 ??
+IDS_PROPITEM_TXT_010325	10000 ????? ???? ???.
 IDS_PROPITEM_TXT_010326	Cloak of Hero
 IDS_PROPITEM_TXT_010327	
 IDS_PROPITEM_TXT_010328	Chipao Panda Hat (M)
@@ -10451,7 +10451,7 @@ IDS_PROPITEM_TXT_010449
 IDS_PROPITEM_TXT_010450	Star Sign Cloak Box
 IDS_PROPITEM_TXT_010451	
 IDS_PROPITEM_TXT_010452	Super Star Candy
-IDS_PROPITEM_TXT_010453	This super-duper canooper Star Candy increases all stats by +10 for 2 hours. 'Packs quite a punch…'
+IDS_PROPITEM_TXT_010453	This super-duper canooper Star Candy increases all stats by +10 for 2 hours. 'Packs quite a punch�'
 IDS_PROPITEM_TXT_010454	Herb of Life
 IDS_PROPITEM_TXT_010455	A natural herb used to ease pain, restore health, and increase appetite.
 IDS_PROPITEM_TXT_010456	Peach Punch
@@ -10512,8 +10512,8 @@ IDS_PROPITEM_TXT_010510	Flying Cloud (Bind)
 IDS_PROPITEM_TXT_010511	A mysterious flying cloud. Can not be traded. Maximum Speed: 269 km/h.
 IDS_PROPITEM_TXT_010512	Cloak of Bravery (Bind)
 IDS_PROPITEM_TXT_010513	
-IDS_PROPITEM_TXT_010514	PC방 이벤트
-IDS_PROPITEM_TXT_010515	경험치와 드롭률을 상승시킵니다.
+IDS_PROPITEM_TXT_010514	PC? ???
+IDS_PROPITEM_TXT_010515	???? ???? ??????.
 IDS_PROPITEM_TXT_010516	Cherry Blossom Seed
 IDS_PROPITEM_TXT_010517	
 IDS_PROPITEM_TXT_010518	Cherry Blossom Box
@@ -10571,7 +10571,7 @@ IDS_PROPITEM_TXT_010569
 IDS_PROPITEM_TXT_010570	Baby Robot Box
 IDS_PROPITEM_TXT_010571	A special box with a chance to contain a Baby Robot.
 IDS_PROPITEM_TXT_010572	Alienware Ancient Weapon Token
-IDS_PROPITEM_TXT_010573	Congratulations! You found an Alienware Ancient Weapon Token! This token entitles you to 1 free Ancient Weapon of your choice.  Email Flyff@gala-net.com to contact a GM in order to redeem this token. Not valid after November 2nd 2010.
+IDS_PROPITEM_TXT_010573	Congratulations! You found an Alienware Ancient Weapon Token! This token entitles you to 1 free Ancient Weapon of your choice.� Email Flyff@gala-net.com to contact a GM in order to redeem this token. Not valid after November 2nd 2010.
 IDS_PROPITEM_TXT_010574	Power Scroll
 IDS_PROPITEM_TXT_010575	Increases your Health Points (HP) by +150 and your Attack Power (ATK) by +100 for one hour. Once it wears off, it becomes a Charged Power Scroll.
 IDS_PROPITEM_TXT_010576	Charged Power Scroll
@@ -10751,7 +10751,7 @@ IDS_PROPITEM_TXT_010749	Cute Red Riding Hood Gloves for Female Characters. 'Bewa
 IDS_PROPITEM_TXT_010750	Red Riding Hood Shoes (F)
 IDS_PROPITEM_TXT_010751	Cute Red Riding Hood Shoes for Female Characters. 'Beware of wolves in grandma's clothing'.
 IDS_PROPITEM_TXT_010752	Red Riding Hood Set (F)
-IDS_PROPITEM_TXT_010753	This box contains a Female Red Riding Hood Set. 'Grandma is expecting you…'.
+IDS_PROPITEM_TXT_010753	This box contains a Female Red Riding Hood Set. 'Grandma is expecting you�'.
 IDS_PROPITEM_TXT_010754	Traditional Native American Headset (M)
 IDS_PROPITEM_TXT_010755	A Traditional Native American Headset for Male Characters.
 IDS_PROPITEM_TXT_010756	Traditional Native American Outfit (M)
@@ -10841,7 +10841,7 @@ IDS_PROPITEM_TXT_010839	A bloody Necklace adorned with skulls. It was seemingly 
 IDS_PROPITEM_TXT_010840	Araknoid Flower
 IDS_PROPITEM_TXT_010841	This strange flower only grows within an Araknoid's body cavity. 'I hope you had fun getting it out.'
 IDS_PROPITEM_TXT_010842	Reptilion Tooth
-IDS_PROPITEM_TXT_010843	You must have hit this guy pretty hard to knock his teeth out…
+IDS_PROPITEM_TXT_010843	You must have hit this guy pretty hard to knock his teeth out�
 IDS_PROPITEM_TXT_010844	Scroll of Smelting (Elements)
 IDS_PROPITEM_TXT_010845	This scroll increases your elemental upgrade chance by 10%. Effective up to +10.
 IDS_PROPITEM_TXT_010846	Lucky Treasure Box (Level 80)
@@ -11119,7 +11119,7 @@ IDS_PROPITEM_TXT_011117	Tiny Tanuki follows his master around and picks up dropp
 IDS_PROPITEM_TXT_011118	Bead Slot Key
 IDS_PROPITEM_TXT_011119	Use this key to unlock a Bead Slot in your Buff Pet. The key is consumed when used.
 IDS_PROPITEM_TXT_011120	Neko Soul Mask
-IDS_PROPITEM_TXT_011121	A mask rumored to contain the soul of a demon. Don’t let it possess you!
+IDS_PROPITEM_TXT_011121	A mask rumored to contain the soul of a demon. Don�t let it possess you!
 IDS_PROPITEM_TXT_011122	Space Cadet Hair (M)
 IDS_PROPITEM_TXT_011123	The hairstyle for male space travelers.
 IDS_PROPITEM_TXT_011124	Space Cadet Uniform (M)
@@ -11190,7 +11190,7 @@ IDS_PROPITEM_TXT_011188	Angel's Wings (White)
 IDS_PROPITEM_TXT_011189	
 IDS_PROPITEM_TXT_011190	White Wings of the Divine Prophet
 IDS_PROPITEM_TXT_011191	The Wings of the Divine Prophet are the ultimate display of grace, radiance, and authority. Maximum Speed: 276 km/h.
-IDS_PROPITEM_TXT_011192	Lord’s Fireworks
+IDS_PROPITEM_TXT_011192	Lord�s Fireworks
 IDS_PROPITEM_TXT_011193	Swear allegieance to your Lord!
 IDS_PROPITEM_TXT_011194	Mysterious Heart Fireworks
 IDS_PROPITEM_TXT_011195	Love(ly) fireworks.
@@ -11225,7 +11225,7 @@ IDS_PROPITEM_TXT_011223
 IDS_PROPITEM_TXT_011224	Johnny Four-Wheels
 IDS_PROPITEM_TXT_011225	After escaping from a military compound, Johnny Four-Wheels became self aware and now he needs your help to find more INPUT. He also picks up dropped items!
 IDS_PROPITEM_TXT_011226	Flyff Card Box
-IDS_PROPITEM_TXT_011227	You can really Fly For Fun with this box!  Each box contains a FLY, FOR, FUN card and a Super Charged Power Scroll.
+IDS_PROPITEM_TXT_011227	You can really Fly For Fun with this box!� Each box contains a FLY, FOR, FUN card and a Super Charged Power Scroll.
 IDS_PROPITEM_TXT_011228	Gryphon Feather
 IDS_PROPITEM_TXT_011229	A quest item taken from a fallen Blighted Gryphon. This feather emits a nice fragrance which some use to create perfume.
 IDS_PROPITEM_TXT_011230	Bone Scythe
@@ -11263,7 +11263,7 @@ IDS_PROPITEM_TXT_011261	A quest item dropped by a Tanuki Protector. A powerful f
 IDS_PROPITEM_TXT_011262	Tribal Bracelet
 IDS_PROPITEM_TXT_011263	A quest item dropped by a Wildwood Stalker. The bracelet is way too large to wear.
 IDS_PROPITEM_TXT_011264	Tribal Mask
-IDS_PROPITEM_TXT_011265	A quest item dropped by a Wildwood Shaman. An inscription reads: "You can see the unseen…"
+IDS_PROPITEM_TXT_011265	A quest item dropped by a Wildwood Shaman. An inscription reads: "You can see the unseen�"
 IDS_PROPITEM_TXT_011266	Oversized Heart
 IDS_PROPITEM_TXT_011267	A quest item dropped by Beast King Khan. It continues to beat even though its owner is long since deceased.
 IDS_PROPITEM_TXT_011268	Brilliant Poison Canine
@@ -11277,7 +11277,7 @@ IDS_PROPITEM_TXT_011275	A quest item dropped by an Elite Tanuki Protector. A pow
 IDS_PROPITEM_TXT_011276	Brilliant Tribal Bracelet
 IDS_PROPITEM_TXT_011277	A quest item dropped by a Mythic Wildwood Stalker. The bracelet is way too large to wear.
 IDS_PROPITEM_TXT_011278	Brilliant Tribal Mask
-IDS_PROPITEM_TXT_011279	A quest item dropped by a Shadowy Wildwood Shaman. An inscription reads: "You can see the unseen…"
+IDS_PROPITEM_TXT_011279	A quest item dropped by a Shadowy Wildwood Shaman. An inscription reads: "You can see the unseen�"
 IDS_PROPITEM_TXT_011280	Brilliant Oversized Heart
 IDS_PROPITEM_TXT_011281	A quest item dropped by Beast Overlord Khan. It continues to beat even though its owner is long since deceased.
 IDS_PROPITEM_TXT_011282	Guild Bed
@@ -11285,12 +11285,12 @@ IDS_PROPITEM_TXT_011283	Bed for testing
 IDS_PROPITEM_TXT_011284	Guild Table
 IDS_PROPITEM_TXT_011285	Table for testing
 IDS_PROPITEM_TXT_011286	Garlic
-IDS_PROPITEM_TXT_011287	Repel vampires, protect the innocent, spice up chicken parmesan... What can’t Garlic do?
+IDS_PROPITEM_TXT_011287	Repel vampires, protect the innocent, spice up chicken parmesan... What can�t Garlic do?
 IDS_PROPITEM_TXT_011288	Blessed Cross
 IDS_PROPITEM_TXT_011289	A powerful item stolen from Rhisis long ago.
 IDS_PROPITEM_TXT_011290	Van Harlen Necklace
 IDS_PROPITEM_TXT_011291	This charm will keep the owner safe in the face of vampires. Note: This item is required to complete the next stage of Van Harlen's Friday the 13th Quest.
-IDS_PROPITEM_TXT_011292	Van Harlen’s Official Anti-Vampire Field Kit
+IDS_PROPITEM_TXT_011292	Van Harlen�s Official Anti-Vampire Field Kit
 IDS_PROPITEM_TXT_011293	Contains various medicines and antidotes for combating the ill effects one might suffer at the hands of a vampire.
 IDS_PROPITEM_TXT_011294	Rays and Clouds Cloak
 IDS_PROPITEM_TXT_011295	Designed by '_chichobits' for the FlyFF Cloak Design Contest in October 2009.
@@ -11481,7 +11481,7 @@ IDS_PROPITEM_TXT_011479	This Christmas Box has lots of great presents and some s
 IDS_PROPITEM_TXT_011480	Male Christmas Box
 IDS_PROPITEM_TXT_011481	This Christmas Box has lots of great presents and some special items for Male characters!
 IDS_PROPITEM_TXT_011482	Wax
-IDS_PROPITEM_TXT_011483	I really hope this is from a candle and not an ear…
+IDS_PROPITEM_TXT_011483	I really hope this is from a candle and not an ear�
 IDS_PROPITEM_TXT_011484	Glass
 IDS_PROPITEM_TXT_011485	Handle with care!
 IDS_PROPITEM_TXT_011486	Holiday Medal
@@ -11491,7 +11491,7 @@ IDS_PROPITEM_TXT_011489	In the movies, they always have rope and they always end
 IDS_PROPITEM_TXT_011490	Enriched Soil Deposit
 IDS_PROPITEM_TXT_011491	The extra UMPH that the soil mixture needs!
 IDS_PROPITEM_TXT_011492	Chunk of Soil
-IDS_PROPITEM_TXT_011493	There is nothing special about this soil… yet!
+IDS_PROPITEM_TXT_011493	There is nothing special about this soil� yet!
 IDS_PROPITEM_TXT_011494	Water
 IDS_PROPITEM_TXT_011495	That is some high quality H20!
 IDS_PROPITEM_TXT_011496	Christmas Cake
@@ -11637,7 +11637,7 @@ IDS_PROPITEM_TXT_011635	This rare armor piece is adorned with the seal of the He
 IDS_PROPITEM_TXT_011636	Mini Santa
 IDS_PROPITEM_TXT_011637	Collecting goodies is much faster than relying on those elves to make everything!
 IDS_PROPITEM_TXT_011638	Mini Snowman
-IDS_PROPITEM_TXT_011639	How does he pick up loot so fast with no arms…
+IDS_PROPITEM_TXT_011639	How does he pick up loot so fast with no arms�
 IDS_PROPITEM_TXT_011640	Shiny Box
 IDS_PROPITEM_TXT_011641	This Shiny Box is filled with Shiny Stuff.
 IDS_PROPITEM_TXT_011642	Santa Set (M) (7 days)
@@ -11809,7 +11809,7 @@ IDS_PROPITEM_TXT_011807	A beautifully crafted cloak adorned with a symbol that r
 IDS_PROPITEM_TXT_011808	Air Shark Board
 IDS_PROPITEM_TXT_011809	It's a Great White! Max speed is 254 km/h.
 IDS_PROPITEM_TXT_011810	Smile Board
-IDS_PROPITEM_TXT_011811	Wrinkles should merely indicate where smiles have been.  Max speed is 254 km/h.
+IDS_PROPITEM_TXT_011811	Wrinkles should merely indicate where smiles have been.� Max speed is 254 km/h.
 IDS_PROPITEM_TXT_011812	Fortune Pouch
 IDS_PROPITEM_TXT_011813	It's full of fortune cookies or something!
 IDS_PROPITEM_TXT_011814	Level 1 Newbie Coupon
@@ -11941,7 +11941,7 @@ IDS_PROPITEM_TXT_011939	Collect 20 of these special Three-leaf Clovers and bring
 IDS_PROPITEM_TXT_011940	Four-Leaf Clover
 IDS_PROPITEM_TXT_011941	You found a Four-Leaf Clover! You must be really lucky. Bring it to Paddy in St Morning!
 IDS_PROPITEM_TXT_011942	Green Root Beer
-IDS_PROPITEM_TXT_011943	This charming St. Patrick's Day beverage increases your Speed by +5% and your HP by +100 for 10 minutes.Sláinte
+IDS_PROPITEM_TXT_011943	This charming St. Patrick's Day beverage increases your Speed by +5% and your HP by +100 for 10 minutes.Sl�inte
 IDS_PROPITEM_TXT_011944	St. Patrick's Day Box
 IDS_PROPITEM_TXT_011945	
 IDS_PROPITEM_TXT_011946	St. Patrick's Day Cloak
@@ -11975,7 +11975,7 @@ IDS_PROPITEM_TXT_011973	Alice Gloves for female characters.
 IDS_PROPITEM_TXT_011974	Alice Shoes (F)
 IDS_PROPITEM_TXT_011975	Alice Shoes for female characters. *Follow the White Rabbit*
 IDS_PROPITEM_TXT_011976	Alice Set (F)
-IDS_PROPITEM_TXT_011977	The Alice Set for female characters. Contains Alice Hair, Dress, Gloves, and Shoes. WARNING: Dress does not resize, even if Alice does…
+IDS_PROPITEM_TXT_011977	The Alice Set for female characters. Contains Alice Hair, Dress, Gloves, and Shoes. WARNING: Dress does not resize, even if Alice does�
 IDS_PROPITEM_TXT_011978	Faded Box
 IDS_PROPITEM_TXT_011979	
 IDS_PROPITEM_TXT_011980	Mysterious Box
@@ -12181,9 +12181,9 @@ IDS_PROPITEM_TXT_012179	This box has a chance to contain various guild furniture
 IDS_PROPITEM_TXT_012180	Mocomochi
 IDS_PROPITEM_TXT_012181	You won't be spending hours looking for this little guy anymore! It is your very own Mocomochi! This little guy will follow its owner around and pick up dropped items.
 IDS_PROPITEM_TXT_012182	Chance Box - Mocomochi
-IDS_PROPITEM_TXT_012183	This Box has the chance to drop Activitions, various Flasks, Ddukguks and of course…a Mocomochi Pick Up Pet!
+IDS_PROPITEM_TXT_012183	This Box has the chance to drop Activitions, various Flasks, Ddukguks and of course�a Mocomochi Pick Up Pet!
 IDS_PROPITEM_TXT_012184	Chance box - Spike
-IDS_PROPITEM_TXT_012185	This Box has the chance to drop Activitions, various Flasks, Ddukguks and of course…a Spike Pick Up Pet!
+IDS_PROPITEM_TXT_012185	This Box has the chance to drop Activitions, various Flasks, Ddukguks and of course�a Spike Pick Up Pet!
 IDS_PROPITEM_TXT_012186	Silver Heart 15 Days Bundle Box
 IDS_PROPITEM_TXT_012187	This box includes Silver Heart Exchange rewards, it contains a 15 Days Full Shout, a Scroll of Party EXP(15 Days), and a Scroll of Party Skill (15 Days)
 IDS_PROPITEM_TXT_012188	Silver Heart Sunstone Bundle Box
@@ -12318,7 +12318,7 @@ IDS_PROPITEM_TXT_012316	Cloak of Uruguay
 IDS_PROPITEM_TXT_012317	This Cloak has a full length depiction of the flag of Uruguay on it. This Cloak provides a 10% Run Speed boost and it raises your HP by 100.
 IDS_PROPITEM_TXT_012318	Running of the Dumb Bull Box
 IDS_PROPITEM_TXT_012319	This special event box contains various food items, Scrolls of Sprint, Milk Cow Sets, Bull Sets and even Baby Cows!
-IDS_PROPITEM_TXT_012320	Matador’s Cloak
+IDS_PROPITEM_TXT_012320	Matador�s Cloak
 IDS_PROPITEM_TXT_012321	Only a true Matador of great skill can earn this Cloak. This cloak will raise your Speed 15%, your Parry 10, and your DEF +1.
 IDS_PROPITEM_TXT_012322	Dumb Bull Steak
 IDS_PROPITEM_TXT_012323	Dumb Bull Steak done right! Yummy! This Steak will raise your HP by 500 and your Critical Hit Rate by 5% for 2 minutes.
@@ -12349,7 +12349,7 @@ IDS_PROPITEM_TXT_012347	You feel a strong aura of magic eminating from this skul
 IDS_PROPITEM_TXT_012348	Devil's Tooth
 IDS_PROPITEM_TXT_012349	More or less the business end of a Taiaha's war staff.
 IDS_PROPITEM_TXT_012350	Heart of Chief Keokuk
-IDS_PROPITEM_TXT_012351	Believe it or not, the Chieftain of the Lycan Tribe had a heart…
+IDS_PROPITEM_TXT_012351	Believe it or not, the Chieftain of the Lycan Tribe had a heart�
 IDS_PROPITEM_TXT_012352	Orcus's Tablet
 IDS_PROPITEM_TXT_012353	Ancient runes are shown on this tablet, maybe they contain secrets to the mystery of the Asylum.
 IDS_PROPITEM_TXT_012354	Bead of Nergal
@@ -12657,7 +12657,7 @@ IDS_PROPITEM_TXT_012655	Chameleon follows his owner around picking up dropped it
 IDS_PROPITEM_TXT_012656	Dragon Cloak Chance Box
 IDS_PROPITEM_TXT_012657	This box contains helpful Scrolls of various types as well as the chance at a Dragon Cloak of the Initiate.
 IDS_PROPITEM_TXT_012658	Russian Cloak Chance Box
-IDS_PROPITEM_TXT_012659	Sift through all of the various Flasks in order to find a Cloak of Russia. Don't be discouraged, I promise, the Cloak is out there….
+IDS_PROPITEM_TXT_012659	Sift through all of the various Flasks in order to find a Cloak of Russia. Don't be discouraged, I promise, the Cloak is out there�.
 IDS_PROPITEM_TXT_012660	Fashion Sunglasses (red) Chance Box
 IDS_PROPITEM_TXT_012661	This chance box includes a wide variety of items. Expect to see anything from a Coral Island Ticket, Champion's Precious Bead Box, to a Common Bank. There is also a chance at obtaining a Fashion Sun Glasses!
 IDS_PROPITEM_TXT_012662	Baby Iguana, Joey Chance Box
@@ -12976,9 +12976,9 @@ IDS_PROPITEM_TXT_012974	Zombie Right Leg
 IDS_PROPITEM_TXT_012975	A slimy, twitchy, throbbing, green mess. You can hardly stand looking at it.
 IDS_PROPITEM_TXT_012976	Zombie Chest
 IDS_PROPITEM_TXT_012977	You can hear a faint thumping sound as if the heart is still beating.
-IDS_PROPITEM_TXT_012978	Survivor’s Cloak
+IDS_PROPITEM_TXT_012978	Survivor�s Cloak
 IDS_PROPITEM_TXT_012979	Zombies? You must be referring to the walking vagrant pinata's.
-IDS_PROPITEM_TXT_012980	Zombie Hunter’s Cloak
+IDS_PROPITEM_TXT_012980	Zombie Hunter�s Cloak
 IDS_PROPITEM_TXT_012981	Follow Me In Case Of Zombie Attack!!!
 IDS_PROPITEM_TXT_012982	Zombie Hunters Box
 IDS_PROPITEM_TXT_012983	This box contains some Halloween treats and the possibility of both the Male and Female Ghastly Ghoul Sets!
@@ -13503,7 +13503,7 @@ IDS_PROPITEM_TXT_013501	Celebrate the Holiday Spirit in style. Perhaps you'll ge
 IDS_PROPITEM_TXT_013502	Jack Frost
 IDS_PROPITEM_TXT_013503	Your Meat Salad won't spoil when this frosty little guy is in charge of your loot. He's also quite good at buffing his owner.
 IDS_PROPITEM_TXT_013504	Mr. Grinchie
-IDS_PROPITEM_TXT_013505	The three words that best describe Mr. Grinchie are as follows: 'STINK, STANK, STUNK!'. He's a three decker saurkraut and toadstool sandwich… with arsenic sauce!
+IDS_PROPITEM_TXT_013505	The three words that best describe Mr. Grinchie are as follows: 'STINK, STANK, STUNK!'. He's a three decker saurkraut and toadstool sandwich� with arsenic sauce!
 IDS_PROPITEM_TXT_013506	Gladiator's Parchment
 IDS_PROPITEM_TXT_013507	Increases the rate at which *REAL* bosses appear during a Colosseum encounter, thereby increasing your chances at better loot.
 IDS_PROPITEM_TXT_013508	Gladiator's Retribution
@@ -15004,8 +15004,8 @@ IDS_PROPITEM_TXT_015002	HARPYNESS Weapon 3
 IDS_PROPITEM_TXT_015003	
 IDS_PROPITEM_TXT_015004	Retunes Memorial Box
 IDS_PROPITEM_TXT_015005	
-IDS_PROPITEM_TXT_015006	리턴즈 업데이트 기념 주화
-IDS_PROPITEM_TXT_015007	18차 업데이트 기념 주화
+IDS_PROPITEM_TXT_015006	??? ???? ?? ??
+IDS_PROPITEM_TXT_015007	18? ???? ?? ??
 IDS_PROPITEM_TXT_015008	Fake Perin
 IDS_PROPITEM_TXT_015009	It is worth precisely one millionth of a real Perin!
 IDS_PROPITEM_TXT_015010	Incognito Scroll
@@ -15516,11 +15516,11 @@ IDS_PROPITEM_TXT_015514	A curious blue potion that grants the imbiber unlimited 
 IDS_PROPITEM_TXT_015515	Eldin's Royal Jelly
 IDS_PROPITEM_TXT_015516	A delicious delicate jelly. It tastes awesome and is even more awesome when used with Eldin's Jar.
 IDS_PROPITEM_TXT_015517	Eldin's Chocolate
-IDS_PROPITEM_TXT_015518	A delicious and succulent piece of chocolate…CHOCOLATE! CHOCOLATE!! CHOCOLATEEEE!!! Use this with Eldin's Jar.
+IDS_PROPITEM_TXT_015518	A delicious and succulent piece of chocolate�CHOCOLATE! CHOCOLATE!! CHOCOLATEEEE!!! Use this with Eldin's Jar.
 IDS_PROPITEM_TXT_015519	Present Box
-IDS_PROPITEM_TXT_015520	A Quest event item for Shade’s Gift
+IDS_PROPITEM_TXT_015520	A Quest event item for Shade�s Gift
 IDS_PROPITEM_TXT_015521	Christmas Gift Box
-IDS_PROPITEM_TXT_015522	Shade’s Gift Reward
+IDS_PROPITEM_TXT_015522	Shade�s Gift Reward
 IDS_PROPITEM_TXT_015523	Revert Transmutation Scroll
 IDS_PROPITEM_TXT_015524	A mystical scroll that will undo the effects of an Item Transmutation. Click on this scroll and use it on a transmutated item to return it to it's original look.
 IDS_PROPITEM_TXT_015525	Eldin's Jar (1 Day)
@@ -16582,7 +16582,7 @@ IDS_PROPITEM_TXT_016580 	Gift Box for Collecting Jack Cards.
 IDS_PROPITEM_TXT_016581	10 Box 2014
 IDS_PROPITEM_TXT_016582 	Gift Box for Collecting 10th Cards.
 IDS_PROPITEM_TXT_016583	Star Box
-IDS_PROPITEM_TXT_016584 	Open it to see what's inside !
+IDS_PROPITEM_TXT_016584 	Open it to see what's inside�!
 IDS_PROPITEM_TXT_016585	Charisma Blog Cloak
 IDS_PROPITEM_TXT_016586	Japan community event
 IDS_PROPITEM_TXT_016587	10th Anniversary Cloak
@@ -16776,7 +16776,7 @@ IDS_PROPITEM_TXT_016774
 IDS_PROPITEM_TXT_016775	Casino Hat (F)
 IDS_PROPITEM_TXT_016776	
 IDS_PROPITEM_TXT_016777	Bored Board
-IDS_PROPITEM_TXT_016778	It flies…yet isn’t amused about it. Speed: 167km/h.
+IDS_PROPITEM_TXT_016778	It flies�yet isn�t amused about it. Speed: 167km/h.
 IDS_PROPITEM_TXT_016779	Extermination Memorial box(F)(11day)
 IDS_PROPITEM_TXT_016780	
 IDS_PROPITEM_TXT_016781	Extermination Memorial box(M)(11day)
@@ -16844,7 +16844,7 @@ IDS_PROPITEM_TXT_016842	Traditional German shoes for female characters.
 IDS_PROPITEM_TXT_016843	Traditional German Shoes (M) 2015
 IDS_PROPITEM_TXT_016844	Traditional German shoes for male characters.
 IDS_PROPITEM_TXT_016845	German Traditional Hat (F) 2015
-IDS_PROPITEM_TXT_016846	Ein traditioneller Hut aus Deutschland für Frauen.
+IDS_PROPITEM_TXT_016846	Ein traditioneller Hut aus Deutschland f�r Frauen.
 IDS_PROPITEM_TXT_016847	Traditional German Hat (M) 2015
 IDS_PROPITEM_TXT_016848	Traditional German hat for for male characters.
 IDS_PROPITEM_TXT_016849	Traditional German Suit (F) 2015
@@ -18838,7 +18838,7 @@ IDS_PROPITEM_TXT_018836	Max HP +20%, STA +13 (1h) - Cards are consumed on use.
 IDS_PROPITEM_TXT_018837	Ace Card (N)
 IDS_PROPITEM_TXT_018838	Crit Dmg +10%, DEX +13 (1h) - Cards are consumed on use.
 IDS_PROPITEM_TXT_018839	Super Star Candy (N)
-IDS_PROPITEM_TXT_018840	This super-duper canooper Star Candy increases all stats by +10 for 2 hours. 'Packs quite a punch…'
+IDS_PROPITEM_TXT_018840	This super-duper canooper Star Candy increases all stats by +10 for 2 hours. 'Packs quite a punch�'
 IDS_PROPITEM_TXT_018841	Regular Teleport Map (N)
 IDS_PROPITEM_TXT_018842	Allows you to teleport to many different areas of the world instantly. Each teleport consumes one map.
 IDS_PROPITEM_TXT_018843	Premium Teleport Map (N)
@@ -19047,9 +19047,9 @@ IDS_PROPITEM_TXT_019045	FPC Accesory Box (Necklace)
 IDS_PROPITEM_TXT_019046	
 IDS_PROPITEM_TXT_019047	FPC Weapon and Shield Box
 IDS_PROPITEM_TXT_019048	
-IDS_PROPITEM_TXT_019049	Rayn's box (to Jessica) 2019
+IDS_PROPITEM_TXT_019049	Rayn's box (to Jessica)�2019
 IDS_PROPITEM_TXT_019050	
-IDS_PROPITEM_TXT_019051	Rayn's box (to Nana) 
+IDS_PROPITEM_TXT_019051	Rayn's box (to Nana)�
 IDS_PROPITEM_TXT_019052	
 IDS_PROPITEM_TXT_019053	Rayn's present (for helping Jessica) 2019
 IDS_PROPITEM_TXT_019054	
@@ -19517,7 +19517,7 @@ IDS_PROPITEM_TXT_019515
 IDS_PROPITEM_TXT_019516	
 IDS_PROPITEM_TXT_019517	
 IDS_PROPITEM_TXT_019518	
-IDS_PROPITEM_TXT_019519	Super Matador’s Cloak
+IDS_PROPITEM_TXT_019519	Super Matador�s Cloak
 IDS_PROPITEM_TXT_019520	Only a true Matador of great skill can earn this Cloak. This cloak will raise your Speed 15%, your Parry 20%, and your DEF +10.
 IDS_PROPITEM_TXT_019521	
 IDS_PROPITEM_TXT_019522	
@@ -20638,11 +20638,11 @@ IDS_PROPITEM_TXT_020636	A rare type of snowflake found only during the most awes
 IDS_PROPITEM_TXT_020637	Enriched Soil Deposit
 IDS_PROPITEM_TXT_020638	The extra UMPH that the soil mixture needs!
 IDS_PROPITEM_TXT_020639	Chunk of Soil
-IDS_PROPITEM_TXT_020640	There is nothing special about this soil… yet!
+IDS_PROPITEM_TXT_020640	There is nothing special about this soil� yet!
 IDS_PROPITEM_TXT_020641	Water
 IDS_PROPITEM_TXT_020642	That is some high quality H20!
 IDS_PROPITEM_TXT_020643	Wax
-IDS_PROPITEM_TXT_020644	I really hope this is from a candle and not an ear…
+IDS_PROPITEM_TXT_020644	I really hope this is from a candle and not an ear�
 IDS_PROPITEM_TXT_020645	Glass
 IDS_PROPITEM_TXT_020646	Handle with care!
 IDS_PROPITEM_TXT_020647	Holiday Medal
@@ -20650,7 +20650,7 @@ IDS_PROPITEM_TXT_020648	Proof that you have helped save Christmas!
 IDS_PROPITEM_TXT_020649	Rope
 IDS_PROPITEM_TXT_020650	In the movies, they always have rope and they always end up using it.
 IDS_PROPITEM_TXT_020651	Present Box
-IDS_PROPITEM_TXT_020652	A Quest event item for Shade’s Gift
+IDS_PROPITEM_TXT_020652	A Quest event item for Shade�s Gift
 IDS_PROPITEM_TXT_020653	Christmas Spirit
 IDS_PROPITEM_TXT_020654	Every time a bell rings, an Aibatt gets it's wings!
 IDS_PROPITEM_TXT_020655	Christmas Token
@@ -20807,7 +20807,7 @@ IDS_PROPITEM_TXT_020805	Rudolph Set (M)
 IDS_PROPITEM_TXT_020806	
 IDS_PROPITEM_TXT_020807	Rudolph Set (F)
 IDS_PROPITEM_TXT_020808	
-IDS_PROPITEM_TXT_020809	Rat’s tooth (Event)
+IDS_PROPITEM_TXT_020809	Rat�s tooth (Event)
 IDS_PROPITEM_TXT_020810	
 IDS_PROPITEM_TXT_020811	2020 New Year Box
 IDS_PROPITEM_TXT_020812	
@@ -21986,7 +21986,7 @@ IDS_PROPITEM_TXT_021984	Contains the fabled Fierce Meteonyker Set. Comes with He
 IDS_PROPITEM_TXT_021985	Set of the Wise Meteonyker (F)
 IDS_PROPITEM_TXT_021986	Contains the fabled Wise Meteonyker Set. Comes with Helm, Suit, Gloves, Boots for female characters.
 IDS_PROPITEM_TXT_021987	Seed of Nature
-IDS_PROPITEM_TXT_021988	What does it grow? If only there was a botanist around…
+IDS_PROPITEM_TXT_021988	What does it grow? If only there was a botanist around�
 IDS_PROPITEM_TXT_021989	Green Nature Box
 IDS_PROPITEM_TXT_021990	Open it and see what sprouts. 
 IDS_PROPITEM_TXT_021991	Iblis Jester
@@ -22004,7 +22004,7 @@ IDS_PROPITEM_TXT_022002	Increases All Stats by 5 and Additional Damage by 120 fo
 IDS_PROPITEM_TXT_022003	Demon Hat 2020 (M)
 IDS_PROPITEM_TXT_022004	Horns from a powerful demon. Careful, they're sharp!
 IDS_PROPITEM_TXT_022005	Demon Suit 2020 (M)
-IDS_PROPITEM_TXT_022006	A suit once owned by an ancient demon. Must admit, he had style…
+IDS_PROPITEM_TXT_022006	A suit once owned by an ancient demon. Must admit, he had style�
 IDS_PROPITEM_TXT_022007	Demon Gloves 2020 (M) 
 IDS_PROPITEM_TXT_022008	The devil makes work for idle hands - unless you wear his gloves.
 IDS_PROPITEM_TXT_022009	Demon Shoes 2020 (M
@@ -22012,7 +22012,7 @@ IDS_PROPITEM_TXT_022010	Shoes that can withstand even the fires of hell.
 IDS_PROPITEM_TXT_022011	Demon Box 2020 (M)
 IDS_PROPITEM_TXT_022012	Contains 1 random part of the Demon 2020 fashion set.
 IDS_PROPITEM_TXT_022013	Enchantress Hat 2020 (F)
-IDS_PROPITEM_TXT_022014	A winged crown with horns… enchanting and powerful.
+IDS_PROPITEM_TXT_022014	A winged crown with horns� enchanting and powerful.
 IDS_PROPITEM_TXT_022015	Enchantress Suit 2020 (F)
 IDS_PROPITEM_TXT_022016	An outfit truly worthy of an enchantress.
 IDS_PROPITEM_TXT_022017	Enchantress Gloves 2020 (F)
@@ -24456,7 +24456,7 @@ IDS_PROPITEM_TXT_024454	Fairy Princess Mask for female characters.
 IDS_PROPITEM_TXT_024455	Fairy Princess Wings
 IDS_PROPITEM_TXT_024456	Wings of Fairy Princess for female characters.
 IDS_PROPITEM_TXT_024457	Blueberry
-IDS_PROPITEM_TXT_024458	Increase your  Attack by 5%, Deacrease your Casting Time by 5% for 10 minutes.
+IDS_PROPITEM_TXT_024458	Increase your �Attack by 5%, Deacrease your Casting Time by 5% for 10 minutes.
 IDS_PROPITEM_TXT_024459	Strawberry
 IDS_PROPITEM_TXT_024460	Increase your Attack by 5%, Increase your Critical Damage by 5% for 10 minutes.
 IDS_PROPITEM_TXT_024461	Mushroom
@@ -25779,7 +25779,7 @@ IDS_PROPITEM_TXT_025777	2021 Cross
 IDS_PROPITEM_TXT_025778	
 IDS_PROPITEM_TXT_025779	Trick or Treat Box
 IDS_PROPITEM_TXT_025780	
-IDS_PROPITEM_TXT_025781	2021 Zombie Hunter’s Cloak
+IDS_PROPITEM_TXT_025781	2021 Zombie Hunter�s Cloak
 IDS_PROPITEM_TXT_025782	
 IDS_PROPITEM_TXT_025783	Vampire Hunter's Necklace
 IDS_PROPITEM_TXT_025784	
@@ -28661,51 +28661,51 @@ IDS_PROPITEM_TXT_028663	IDS_PROPITEM_TXT_028663
 IDS_PROPITEM_TXT_028664	IDS_PROPITEM_TXT_028664
 IDS_PROPITEM_TXT_028665	IDS_PROPITEM_TXT_028665
 IDS_PROPITEM_TXT_028666	IDS_PROPITEM_TXT_028666
-IDS_PROPITEM_TXT_028667	엘리트 큐리온 양손검
+IDS_PROPITEM_TXT_028667	??? ??? ???
 IDS_PROPITEM_TXT_028668	
-IDS_PROPITEM_TXT_028669	엘리트 큐리온 한손검
+IDS_PROPITEM_TXT_028669	??? ??? ???
 IDS_PROPITEM_TXT_028670	
-IDS_PROPITEM_TXT_028671	엘리트 큐리온 도끼
+IDS_PROPITEM_TXT_028671	??? ??? ??
 IDS_PROPITEM_TXT_028672	
-IDS_PROPITEM_TXT_028673	엘리트 큐리온 너클
+IDS_PROPITEM_TXT_028673	??? ??? ??
 IDS_PROPITEM_TXT_028674	
-IDS_PROPITEM_TXT_028675	엘리트 큐리온 스틱
+IDS_PROPITEM_TXT_028675	??? ??? ??
 IDS_PROPITEM_TXT_028676	
-IDS_PROPITEM_TXT_028677	엘리트 큐리온 완드
+IDS_PROPITEM_TXT_028677	??? ??? ??
 IDS_PROPITEM_TXT_028678	
-IDS_PROPITEM_TXT_028679	엘리트 큐리온 요요
+IDS_PROPITEM_TXT_028679	??? ??? ??
 IDS_PROPITEM_TXT_028680	
-IDS_PROPITEM_TXT_028681	엘리트 큐리온 보우
+IDS_PROPITEM_TXT_028681	??? ??? ??
 IDS_PROPITEM_TXT_028682	
-IDS_PROPITEM_TXT_028683	엘리트 큐리온 스태프
+IDS_PROPITEM_TXT_028683	??? ??? ???
 IDS_PROPITEM_TXT_028684	
-IDS_PROPITEM_TXT_028685	엘리트 터틀킹의 등껍질
+IDS_PROPITEM_TXT_028685	??? ???? ???
 IDS_PROPITEM_TXT_028686	
-IDS_PROPITEM_TXT_028687	호랑이 파자마 모자(남)
+IDS_PROPITEM_TXT_028687	??? ??? ??(?)
 IDS_PROPITEM_TXT_028688	
-IDS_PROPITEM_TXT_028689	호랑이 파자마 의상(남)
+IDS_PROPITEM_TXT_028689	??? ??? ??(?)
 IDS_PROPITEM_TXT_028690	
-IDS_PROPITEM_TXT_028691	호랑이 파자마 장갑(남)
+IDS_PROPITEM_TXT_028691	??? ??? ??(?)
 IDS_PROPITEM_TXT_028692	
-IDS_PROPITEM_TXT_028693	호랑이 파자마 신발(남)
+IDS_PROPITEM_TXT_028693	??? ??? ??(?)
 IDS_PROPITEM_TXT_028694	
-IDS_PROPITEM_TXT_028695	호랑이 파자마 가방
+IDS_PROPITEM_TXT_028695	??? ??? ??
 IDS_PROPITEM_TXT_028696	
-IDS_PROPITEM_TXT_028697	호랑이 파자마 꼬리(남)
+IDS_PROPITEM_TXT_028697	??? ??? ??(?)
 IDS_PROPITEM_TXT_028698	
-IDS_PROPITEM_TXT_028699	호랑이 파자마 의상 세트(남)
+IDS_PROPITEM_TXT_028699	??? ??? ?? ??(?)
 IDS_PROPITEM_TXT_028700	
-IDS_PROPITEM_TXT_028701	호랑이 파자마 모자(여)
+IDS_PROPITEM_TXT_028701	??? ??? ??(?)
 IDS_PROPITEM_TXT_028702	
-IDS_PROPITEM_TXT_028703	호랑이 파자마 의상(여)
+IDS_PROPITEM_TXT_028703	??? ??? ??(?)
 IDS_PROPITEM_TXT_028704	
-IDS_PROPITEM_TXT_028705	호랑이 파자마 장갑(여)
+IDS_PROPITEM_TXT_028705	??? ??? ??(?)
 IDS_PROPITEM_TXT_028706	
-IDS_PROPITEM_TXT_028707	호랑이 파자마 신발(여)
+IDS_PROPITEM_TXT_028707	??? ??? ??(?)
 IDS_PROPITEM_TXT_028708	
-IDS_PROPITEM_TXT_028709	호랑이 파자마 꼬리(여)
+IDS_PROPITEM_TXT_028709	??? ??? ??(?)
 IDS_PROPITEM_TXT_028710	
-IDS_PROPITEM_TXT_028711	호랑이 파자마 의상 세트(여)
+IDS_PROPITEM_TXT_028711	??? ??? ?? ??(?)
 IDS_PROPITEM_TXT_028712	
 IDS_PROPITEM_TXT_028713	IDS_PROPITEM_TXT_028713
 IDS_PROPITEM_TXT_028714	IDS_PROPITEM_TXT_028714

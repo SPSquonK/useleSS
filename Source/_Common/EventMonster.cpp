@@ -104,7 +104,7 @@ int CEventMonster::GetLevelGap()
 	if( m_it != m_mapEventMonster.end() )
 		return m_it->second.nLevel;
 	
-	return MAX_LEVEL;
+	return MAX_GENERAL_LEVEL;
 }
 
 float CEventMonster::GetItemDropRange()

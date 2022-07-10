@@ -647,7 +647,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		if( pUser->GetLevel() > MAX_LEGEND_LEVEL )
 		{
 			WriteError( "MAX_LEVEL//%s//%d", pUser->GetName(), pUser->GetLevel() );
-			pUser->m_nLevel	= MAX_LEVEL;
+			pUser->m_nLevel	= MAX_GENERAL_LEVEL;
 		}
 
 		pUser->RemoveBuff( BUFF_ITEM, II_CHEERUP );

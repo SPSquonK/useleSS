@@ -914,17 +914,17 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 	}
 	else if( IsPro() )
 	{
-		if( m_nLevel > MAX_LEVEL )
+		if( m_nLevel > MAX_GENERAL_LEVEL)
 		{
-			m_nLevel = MAX_LEVEL;
+			m_nLevel = MAX_GENERAL_LEVEL;
 			return TRUE;
 		}		
 	}
 	else if(IsMaster())
 	{
-		if( m_nLevel > MAX_LEVEL )
+		if( m_nLevel > MAX_GENERAL_LEVEL)
 		{
-			m_nLevel = MAX_LEVEL;
+			m_nLevel = MAX_GENERAL_LEVEL;
 			return TRUE;
 		}
 	}
@@ -979,9 +979,9 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 			m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
 			return FALSE;
 		}
-		else if( !IsHero() && nNextLevel > MAX_LEVEL )
+		else if( !IsHero() && nNextLevel > MAX_GENERAL_LEVEL)
 		{
-			m_nLevel = MAX_LEVEL;
+			m_nLevel = MAX_GENERAL_LEVEL;
 
 			m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
 			return FALSE;
@@ -1013,18 +1013,18 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 				m_nLevel = MAX_JOB_LEVEL + MAX_EXP_LEVEL;
 				bLevelUp = FALSE;
 			}
-			else if( IsPro() && m_nLevel > MAX_LEVEL )
+			else if( IsPro() && m_nLevel > MAX_GENERAL_LEVEL)
 			{
-				m_nLevel = MAX_LEVEL;
+				m_nLevel = MAX_GENERAL_LEVEL;
 				bLevelUp = FALSE;
 
 				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
 				nExptmp  = 0;
 				return FALSE;
 			}
-			else if( IsMaster() && m_nLevel > MAX_LEVEL )
+			else if( IsMaster() && m_nLevel > MAX_GENERAL_LEVEL)
 			{
-				m_nLevel = MAX_LEVEL;
+				m_nLevel = MAX_GENERAL_LEVEL;
 				bLevelUp = FALSE;
 				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
 				nExptmp  = 0;
@@ -1717,7 +1717,7 @@ void CMover::RemoveDebuff( DWORD dwState )
 	if( dwState & CHS_BLEEDING )
 		SetBleeding( FALSE );
 	
-	if( dwState & CHS_DEBUFFALL )
+	if( dwState & CHS_DARK_POISON_STUN_BLEEDING_DEBUFFALL)
 	{
 		RemoveDstParamBuffs( DST_SPEED );
 		RemoveDstParamBuffs( DST_CHR_CHANCEPOISON );

@@ -10,6 +10,7 @@
 #define	MAX_QUICKSLOT			21
 #define	MAX_EQUIPMENT			18
 #define	MAX_INVENTORY			42			// 60 //42
+#define MAX_HUMAN_PARTS   32
 #define MAX_GUILDBANK			42
 #define	MAX_BANK				42
 #define	MAX_REPAIR				16

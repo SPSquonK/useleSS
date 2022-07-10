@@ -591,7 +591,7 @@ bool CItemElem::IsLimitLevel(const CMover * pMover) const {
 	
 	if (pMover->GetJobType() >= JTYPE_MASTER
 		&& pMover->GetJobType() > pMover->GetJobType(prop->dwItemJob)) {
-		if (prop->dwLimitLevel1 == NULL_ID || prop->dwLimitLevel1 <= MAX_LEVEL) {
+		if (prop->dwLimitLevel1 == NULL_ID || prop->dwLimitLevel1 <= MAX_GENERAL_LEVEL) {
 			return false;
 		}
 	}

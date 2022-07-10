@@ -1711,7 +1711,7 @@ void CMover::ReState()
 		m_nRemainGP += prj.m_aExpCharacter[ i + 1 ].dwLPPoint;
 		if( ( IsMaster() || IsHero() ) && i > 59 )
 			m_nRemainGP++;
-		if( IsHero() && i == MAX_LEVEL)
+		if( IsHero() && i == MAX_GENERAL_LEVEL)
 			m_nRemainGP+=12;
 	}
 	

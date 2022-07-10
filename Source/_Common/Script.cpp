@@ -108,7 +108,7 @@ void CScript::LoadString( void )
 		CString str	= Token;
 		if( str.Find( "IDS", 0 ) != 0 )
 		{
-			Error( "LoadString: %s", m_strFileName );
+			Error( "LoadString: %s (Token= %s)", m_strFileName, str.GetString() );
 			GetToken();
 			continue;
 		}
