@@ -531,6 +531,271 @@
 
 #define	TID_MMI_CHANGEGG01				7169
 
+#define	TID_MMI_EVENT_TRADE_KOR2010		7170
+
+#define	TID_MMI_GUILDHOUSE_AUCTION01	7171
+
+#define	TID_MMI_EVENT_HAPPY_USA2010		7172	// ÇØÇÇ¸Ó´Ï ÀÌº¥Æ® 2010 ¹Ì±¹
+#define	TID_MMI_EVENT_WORLDCUP10_KOR	7173	// 2010¿ùµåÄÅ ÀÌº¥Æ® ÇÑ±¹ 
+#define	TID_MMI_EVENT_WORLDCUP10_FOR	7174
+
+#define	TID_MMI_EVENT_MATCHMAKER_FOR	7175
+
+#define	TID_MMI_EVENT_ALICE_PHP_FOR		7176
+#define	TID_MMI_EVENT_AROTTO_KOR		7177 //·ÔÅä
+
+#define	TID_MMI_SUMMON_SMELT			7178	//¹Ù·ç³ª Á¦·Ã
+#define	TID_MMI_SUMMON_EXTRACTOPER		7179	//¿ÀÆÛ ÃßÃâ
+#define	TID_MMI_SUMMON_MAKEOPER			7180	//¿ÀÆÛ Á¦ÀÛ
+#define	TID_MMI_SUMMON_UPGRADECID		7181	//½Ãµå °áÁ¤Ã¼ ¾÷±×·¹ÀÌµå
+#define	TID_MMI_SUMMON_MAKECID			7182	//½Ãµå Á¦ÀÛ
+#define	TID_MMI_SUMMON_MAKEOPERCID		7183	//¿ÀÆÛ½Ãµå Á¦ÀÛ
+
+
+
+//±æµå ÇÏ¿ì½º
+#define	TID_MMI_GHOUSE_NOTBIDTERM						7184	//ÀÔÂû±â°£ ¾Æ´Ô
+#define	TID_MMI_GHOUSE_NOTBIDTWON						7185	//ÀÔÂû °¡´ÉÇÑ ¸¶À»ÀÌ ¾Æ´Ô
+#define	TID_MMI_GHOUSE_NOTGUILDNOTMASTER				7186	//±æµå°¡ ¾ø°Å³ª ±æµå¸¶½ºÅÍ°¡ ¾Æ´Ô
+#define	TID_MMI_GHOUSE_ALREADYBID						7187	//ÀÌ¹Ì ÀÔÂûÇßÀ½
+#define	TID_MMI_GHOUSE_ALREADYGHOUSE					7188	//ÀÌ¹Ì µ¿±ÞÀÌ»ó ±æµåÇÏ¿ì½º ¼ÒÀ¯
+#define	TID_MMI_GHOUSE_GHOUSTNOTFOUND					7189	//¼ÒÀ¯ÇÑ ±æµåÇÏ¿ì½º°¡ ¾øÀ½
+#define	TID_MMI_GHOUSE_NOTBIDGHOUSE						7190	//ÀÔÂû °¡´ÉÇÑ ±æµåÇÏ¿ì½º°¡ ¾Æ´Ô
+#define	TID_MMI_GHOUSE_SMALLMONEY						7191	//ÃÖ¼Ò ÀÔÂû ±Ý¾×º¸´Ù ÀûÀ½
+#define	TID_MMI_GHOUSE_BIDSUCCESS						7192	//ÀÔÂû ¼º°ø
+#define	TID_MMI_GHOUSE_BIDFAILED						7240	//ÀÔÂû ½ÇÆÐ
+
+//ÇÒ·ÎÀ© ÀÌº¥Æ® ±³È¯ ¸Å´º ½ÃÀÛ
+#define TID_MMI_ZOMBIES_CHANGE1				7193
+#define TID_MMI_ZOMBIES_CHANGE2				7194
+#define TID_MMI_ZOMBIES_CHANGE3				7195
+#define TID_MMI_ZOMBIES_CHANGE4				7196
+//ÇÒ·ÎÀ© ÀÌº¥Æ® ±³È¯ ¸Å´º ³¡
+
+//ÀÏº» ¾ÆÀÌÅÛ ±³È¯ ¸Å´º ½ÃÀÛ
+#define TID_MMI_JAP_CHANGE				7197
+
+//À¯·´ È¦´ý ÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define TID_MMI_HOLDEMEVENT01				7198 // AÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT02				7199 // KÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT03				7200 // QÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT04				7201 // JÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT05				7202 // A/K/Q/J Ä«µå 1Àå¾¿ ±³È¯
+#define TID_MMI_SUMMON_PEARCING				7203 //¹Ù·ç³ª ÇÇ¾î½Ì
+
+//Å©¸®½º¸¶½º Á¤·É ±³È¯ ¸Þ´º
+#define TID_MMI_CHRISTMASFAIRY01				7207 //Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 1°³
+#define TID_MMI_CHRISTMASFAIRY02				7208 //Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 25°³
+#define TID_MMI_CHRISTMASFAIRY03				7209 //Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 50°³
+#define TID_MMI_CHRISTMASFAIRY04				7210 //Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 75°³
+#define TID_MMI_CHRISTMASFAIRY05				7211 //Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 100°³
+
+
+
+
+
+
+//ÀÏº» ¾ÆÀÌÅÛ ±³È¯ ¸Å´º ³¡
+#define	TID_MMI_GHOUSE_GHOUSELEVELUP					8000	//±æµå ÇÏ¿ì½º ·¹º§¾÷ ¼º°ø
+//ÇÃ¶ó¸®½º ÁßÇü ±æµå ÇÏ¿ì½º ³×ÀÓ
+#define TID_MMI_MAFL_GUILDHOUSE_DOOR_01					8001	// È£¼ý°¡ÀÇ ¾Æ´ÁÇÑ Áý
+#define TID_MMI_MAFL_GUILDHOUSE_DOOR_02					8002	// ±¤Àå ¾ÕÀÇ ±ÇÀ§ ÀÖ´Â Áý
+#define TID_MMI_MAFL_GUILDHOUSE_DOOR_03					8003	// ³ª¹« ¾Õ ±×´Ã Áø Áý
+#define TID_MMI_MAFL_GUILDHOUSE_DOOR_04					8004	// Ç³Â÷°¡ º¸ÀÌ´Â Áý
+#define TID_MMI_MAFL_GUILDHOUSE_DOOR_05					8005	// ¼Ò¿Ü ¹Þ´Â ¿Üµý Áý
+//¼¼ÀÎ½ÃÆ¼ ÁßÇü ±æµå ÇÏ¿ì½º ³×ÀÓ
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_01					8006	// ¼¼ÀÎÆ® È¦ °©ºÎ Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_02					8007	// ÀâÈ­Á¡ ¿· ½Ã²ø¹÷ÀûÇÑ Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_03					8008	// °©ºÎÁý ¿· Àç¹ú Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_04					8009	// ÈÄ¹ÌÁø °÷ÀÇ ´©ÃßÇÑ Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_05					8010	// ¼Ò±¸¼®¿¡ Â¯¹ÚÈù Á¶¿ëÇÑ Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_06					8011	// ÀÇ·Ú¼Ò ¿· ÆòÈ­·Î¿î Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_07					8012	// ¾Æ´ãÇÏ°í ¾Æ´ÁÇÑ Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_08					8013	// ¸®½Ã½ºÀÇ °¡È£°¡ ÇÔ²²ÇÏ´Â Áý
+#define TID_MMI_MASA_GUILDHOUSE_DOOR_09					8014	//°ø¿ø ¾ÕÀÇ ÇÑ°¡ÇÑ Áý
+//¿¤¸®¿ò ÁßÇü ±æµå ÇÏ¿ì½º ³×ÀÓ
+#define TID_MMI_MAEW_GUILDHOUSE_DOOR_01					8015	// »§ ±Á´Â ³¿»õ°¡ Ç³±â´Â È­¸ñÇÑ Áý
+#define TID_MMI_MAEW_GUILDHOUSE_DOOR_02					8016	// ¼³·½ÀÌ °¡µæÇÑ ¹Ì¼ÒÀÇ Áý
+#define TID_MMI_MAEW_GUILDHOUSE_DOOR_03					8017	// Ç®ÇÇ¸® ¼Ò¸®°¡ µé¸®´Â ÆòÈ­·Î¿î Áý
+//±æµåÇÏ¿ì½º ÀÔÀå ¿¡·¯¸Þ½ÃÁö
+#define TID_MMI_GUILD_NOTGUILDWON						8018	// ±æµå¿øÀÌ ¾Æ´Ï´Ù´Â ¸Þ½ÃÁö
+
+//±æµåÇÏ¿ì½º ÀÔÀå ¿¡·¯¸Þ½ÃÁö
+#define TID_MMI_GUILD_NOTGUILD						8019	// ±æµå¾øÀ½.
+
+//ÄÝ·Î¼¼¿ò ÀÔÀå NPC ¸Þ´º
+#define TID_MMI_COLOSSEUM_COLOENTER01	7205 //ÄÝ·Î¼¼¿ò ÀÔÀå
+#define TID_MMI_COLOSSEUM_COLOENTER02	7206 //·©Å·
+
+//ÄÚ½º? ÇÕ¼º npc¸Þ´º
+#define TID_MMI_COSTUMEBUY01	7212 // ÄÚ½ºÆ¬ Àç·á ±¸ÀÔ
+#define TID_MMI_COSTUMESELL01	7213 // ÄÚ½ºÆ¬ Àç·á ÆÇ¸Å
+#define TID_MMI_COSTUMEMIX01	7214 // ÄÚ½ºÆ¬ ÇÕ¼º
+
+//Çùµ¿ ±âºÎ NPC ¸Þ´º
+#define TID_MMI_DONATION		7215 // ±âºÎÇÏ±â
+#define TID_MMI_DONATION_RANK	7216	// ±âºÎÀÚ ¼øÀ§ º¸±â
+
+//ÀÏº» ±³È¯ ¸Þ´º
+#define TID_MMI_WHITEDAY_EXCHANGE01		7217
+#define TID_MMI_WHITEDAY_EXCHANGE02		7218
+#define TID_MMI_WHITEDAY_EXCHANGE03		7219
+#define TID_MMI_WHITEDAY_EXCHANGE04		7220		//¿¬Åº Á¶°¢ 10°³ -> »ç¶ûÀÇ ¿¬Åº1°³·Î ±³È¯(±¹³» 2011 ¿¬Åº ÀÌº¥Æ® ±³È¯ ¸Þ´º·Î »ç¿ë)
+
+//±æµå Ä«Å×°í¸® Ãß°¡
+
+#define TID_MMI_GHOUSE_CABINET				7221
+#define	TID_MMI_GHOUSE_CRYSTAL				7222
+
+
+//±¹³» ½Ä¸ñÀÏ ÀÌº¥Æ®
+#define	TID_MMI_FIRSEED2011					7223
+#define	TID_MMI_PEARSEED2011				7224
+#define	TID_MMI_PINESEED2011				7225
+#define	TID_MMI_PERSIMSEED2011				7226
+
+
+#define	TID_MMI_RIVERCARD2011				7227
+#define	TID_MMI_FLAMECARD2011				7228
+#define	TID_MMI_DESERTCARD2011				7229
+#define	TID_MMI_GENERATERCARD2011			7230//±ÛÀÚ Á¶°¢À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_CYCLONECARD2011				7231
+
+
+//±¹³» º¢²É ¸ÂÀÌ ÀÌº¥Æ®
+#define	TID_MMI_EXCHANGEBLOSSOM				7232 //º¢²É¾¾¾Ñ 10°³, 5¸¸ Æä³Ä¸¦ °¡À§¹ÙÀ§º¸ ÄíÆùÀ¸·Î ±³È¯
+
+
+//ÅÚ·¹Æ÷Æ® Áöµµ ÁöÁ¡ ¸Þ´º
+#define	TID_MMI_TELEPORTPOINTMENU01			7233 //»èÁ¦
+#define	TID_MMI_TELEPORTPOINTMENU02			7234 //ÀüÃ¼»èÁ¦
+#define	TID_MMI_TELEPORTPOINTMENU03			7235 //ÀÌ¸§º¯°æ
+#define	TID_MMI_TELEPORTPOINTMENU04			7236 //´Ý±â
+
+//¹Ù·ç³ª Á¦·Ã 18Â÷ Ãß°¡
+#define TID_MMI_BARUNA_ELEMENT_SMELT		7237//¹Ù·ç³ª¼Ó¼ºÁ¦·Ã
+#define TID_MMI_BARUNA_WAKEUP				7238//¹Ù·ç³ª°¢¼º
+#define TID_MMI_BARUNA_WAKEUP_CANCEL		7239//¹Ù·ç³ª°¢¼ºÃë¼Ò
+
+//ÀÌº¥Æ® ¾Æ·¹³ª ÀÔÀå ¸Þ´º
+#define TID_MMI_EVENTARENA_ENTER						7241	//  ÀüÅõ Áö¿ª ÀÔÀå
+
+
+
+//±¹³» 18Â÷ ¾÷µ¥ÀÌÆ® ÀÌº¥Æ® ±³È¯¸Þ´º
+#define TID_MMI_RETURNSUPDATE						7243	//¸®ÅÏÁî ¾÷µ¥ÀÌÆ® ±â³ä ÁÖÈ­·Î ¾ÆÀÌÅÛ ±³È¯
+
+//ÀÎµµ³×½Ã¾Æ µ¶¸³±â³äÀÏ ÀÌº¥Æ®
+#define TID_MMI_TWBOXTRADE01						7242	//±ê¹ßÀ» Ã¥°¡¹æ ¾ÆÀÌÅÛÀ¸·Î ±³È¯
+
+//ÇÑ°¡À§ ÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define TID_MMI_HANGAWI_TRADE						7244		//²Ü¼ÛÆí 10°³¿Í 50,000 Æä³Ä¸¦ °¡À§¹ÙÀ§º¸ ÄíÆù 1ÀåÀ¸·Î ±³È¯
+
+//°Å·¡Áß°³½ÃÀå ÀÔÀå¸Þ´º
+#define TID_MMI_MARKETJOIN						7245	//½ÃÀåÀ¸·Î ÀÔÀå
+
+//´ë¸¸ 5ÁÖ³â ±â³ä »óÀÚ ±³È¯ ¸Þ´º
+#define TID_MMI_TWBOXTRADE						7246	// 5ÁÖ³â ±â³ä »óÀÚ ±³È¯
+
+//º£È÷¸ð½º ¿ìµç ¹«±âÀÇ ºñ¹Ð ÀÌº¥Æ®
+#define	TID_MMI_BEHEMOTHSMELTEVENT_TWOSWORD			7247	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ÅõÇÚµå ¼Òµå¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_TWOAXE			7248	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ÅõÇÚµå ¿¢½º¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_ONESWORD			7249	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç¼Òµå¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_ONEAXE			7250	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ¿¢½º¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_BOW				7251	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç º¸¿ì¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_YOYO				7252	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ¿ä¿ä¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_KNUCKLE			7253	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ³ÊÅ¬À» º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_STICK			7254	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ½ºÆ½À» º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_WAND				7255	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ¿Ïµå¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_STAFF			7256	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ½ºÅÂÇÁ¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+
+//°¡À» ³«¿± ±³È¯ ÀÌº¥Æ®
+#define	TID_MMI_MAPLE_TRADE					7257	// ³«¿±À» º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+
+//°Å·¡ Áß°³ÀÎ NPC °Å·¡ Áß°³ ¸Þ´º
+#define	TID_MMI_MARKET_TRADE					7258	// °Å·¡ Áß°³ ÀÌ¿ë
+
+//¹Ì±¹ °¡À§¹ÙÀ§º¸ ÄíÆù ±³È¯
+#define	TID_MMI_USAKAWIBAWIBOCOUPON2011			7259	// È£¹Ú 10°³¿Í 100,000 Æä³Ä¸¦ °¡À§¹ÙÀ§º¸ ÄíÆùÀ¸·Î ±³È¯
+
+//¾ç¼Õ ¹«±â ÇÕ¼º °ü·Ã
+#define	TID_MMI_TWOHANDEDWEAPONMERGE			7260	//¾ç¼Õ¹«±âÇÕ¼º
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_CANCEL		7261	//¾ç¼Õ¹«±âÇÕ¼ºÃë¼Ò
+
+//Ç×¾Æ¸® Àü¿ë UI
+#define	TID_MMI_ELLDINPOTION		7262	//Ç×¾Æ¸® Àü¿ë UI
+
+//ÄÝ·Î¼¼¿ò º¸»ó
+#define	TID_MMI_COLOSSEUM_REWARD_MIX			7263	//ÁõÇ¥·Î ±âÅ¸ º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1		7264	// ÁõÇ¥·Î ÃÊ±Þ Åõ»çÀÇ ¹«±â ±³È¯
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2		7265	// ÁõÇ¥·Î Áß±Þ Åõ»çÀÇ ¹«±â ±³È¯
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3		7266	// ÁõÇ¥·Î °í±Þ Åõ»çÀÇ ¹«±â ±³È¯
+
+
+//Å©¸®½º¸¶½ºÁ¤·ÉÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define	TID_MMI_CRISTMASRUBETRADEMENU				7267	//Å©¸®½º ¸¶½º ÅäÅ«À¸·Î ¾ÆÀÌÅÛ ±³È¯
+
+
+//¿ÜÇü º¯°æ
+#define	TID_MMI_LOOKCHANGE							7268	//¿ÜÇü º¯°æ
+
+
+//Å©¸®½º¸¶½º Á¦·Ã ÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define	TID_MMI_CHRISTMASENCHANTEVENTMENU		7269	//Á¦·ÃµÈ ½Åºñ·Î¿ö º¸ÀÌ´Â ¹ÝÁö·Î ¾ÆÀÌÅÛ ±³È¯
+
+//½ÃÀå¿¡¼­ ¸¶À»·Î ÀÌµ¿ ¸Þ´º
+#define	TID_MMI_MARKETEXIT				7270	//½ÃÀå¿¡¼­ ¸¶À»·Î ÀÌµ¿ ¸Þ´º
+
+//2012ÇØÇÇ¸Ó´Ï ÀÌº¥Æ®
+#define	TID_MMI_EVENT_2012HAPPYMONEYMENU		7271	//2012ÇØÇÇ¸Ó´Ï ÀÌº¥Æ®
+
+//2012°¡À§¹ÙÀ§º¸ ÀÌº¥Æ®_ÄíÆù ±³È¯ ¸Þ´º_ºê¶óÁú
+#define	TID_MMI_POR_2012KAWIBAWIBOCUPONMENU		7272	//2012°¡À§¹ÙÀ§º¸ ÀÌº¥Æ® ÄíÆù ±³È¯ ¸Þ´º
+
+//¿ë¿ÕÀÇ»ó ¼ºº° ±³È¯ ¸Þ´º
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU			7273	//¿ë¿ÕÀÇ»ó ¼ºº° ±³È¯ ¸Þ´º
+
+//¿ë¿Õ °¡¸é ¿É¼Ç ±³È¯ ¸Þ´º
+#define	TID_MMI_SEAKINGMASKCHANGEMENU			7274	//¿ë¿Õ°¡¸é(³²) ¼º´É±³È¯ ¸Þ´º
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1			7275	//¿ë¿Õ°¡¸é(¿©) ¼º´É±³È¯ ¸Þ´º
+
+//ÇÁ¸®ÇÁ ÄíÆù ±³È¯ ¸Þ´º
+#define	TID_MMI_FLYFFCOUPONSHOP				7276	//ÇÁ¸®ÇÁ ÄíÆù ±³È¯ ¸Þ´º
+
+//ÇÁ¸®ÇÁ Á¶°¢ ±³È¯ ¸Þ´º
+#define	TID_MMI_FLYFFPIECE_CHANGE			7277	//ÇÁ¸®ÇÁ Á¶°¢ ±³È¯ ¸Þ´º
+
+//¹ÂÁ÷Æä½ºÆ¼¹ú ¸Þ´º
+#define	TID_MMI_MUSICFESTIVALETC			7278	//À½Ç¥·Î º¸»ó¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_MUSICFESTIVALGUITAR			7279	//ÇÃ¶ó¹ÌÀÇ ±âÅ¸¸¦ ÀºÇÏ¼ö ±âÅ¸·Î ±³È¯
+
+//¹Ì±¹ ±æµåÀü ÀÌº¥Æ® ¸Þ´º
+#define TID_MMI_ENGGUILDEVENTARMOR       7280  //ºí·çÄ¨À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define TID_MMI_ENGGUILDEVENTWEA       7281  //ºí·çÄ¨À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define TID_MMI_ENGGUILDEVENTGCHIP       7282  //ºí·çÄ¨À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+
+#define TID_MMI_SUMMERENCHANTEVENTMENU       7283  //º£°¡ÀÇ ºûÀ¸·Î ¾ÆÀÌÅÛ ±³È¯
+
+#define TID_MMI_CHRISTMAS_BEARDOLL		7284  //°õÀÎÇü ±³È¯
+
+#define TID_MMI_CHRISTMAS_SNOW_GOLD		7285  //È²±Ý´«ÀÇ°áÁ¤ ±³È¯
+
+#define TID_MMI_CHRISTMASENCHANTEVENT		7286  //Å©¸®½º¸¶½º Á¦·Ã ÀÌº¥Æ®
+
+#define	TID_MMI_VALENTAINEVENT		7287 // ¹ß·»Å¸ÀÎµ¥ÀÌ ÀÌº¥Æ®
+
+#define	TID_MMI_VALENTAIN_QUPID		7288 // ¹ß·»Å¸ÀÎµ¥ÀÌ ÀÌº¥Æ® (º¯´ö½º·¯¿î Å¥ÇÇµå)
+
+
+
+
+
+/*
+====================================================================================================
+TID_MMI ¸Þ´º Á¾·á
+====================================================================================================
+*/
+
 #define TID_GAME_TROUPESKILLUSE        800
 #define TID_GAME_TROUPESKILLSTOP       801
 
@@ -1931,7 +2196,7 @@
 #define TID_GAME_VENDOR_MAX_ONE_GOLD		3141
 #define TID_GAME_VENDOR_MAX_ALL_GOLD		3142
 #define TID_GAME_NOTREADY_USESHOP		3143 //°¡¹ß ¹× ±âÅ¸ ¸Ó¸®¿¡ ¾²´Â ¾ÆÀÌÅÛ Âø¿ë ½Ã Çì¾î¼¥/¼ºÇü¼ö¼ú ÁøÀÔ ºÒ°¡
-#define TID_GAME_DONOTUSE_SHOP			3144 //Çì¾î˜? ¼ºÇü¼ö¼ú ÀÌ¿ë ½Ã ¸Ó¸®¿¡ ¾²´Â ¾ÆÀÌÅÛ »ç¿ë ºÒ°¡
+#define TID_GAME_DONOTUSE_SHOP			3144 //Çì¾î? ¼ºÇü¼ö¼ú ÀÌ¿ë ½Ã ¸Ó¸®¿¡ ¾²´Â ¾ÆÀÌÅÛ »ç¿ë ºÒ°¡
 #define TID_GAME_COMPLETE_ANGEL			3145	
 #define TID_GAME_NOT_INVEN_ANGEL		3146	
 #define TID_GAME_NOT_QUEST_ANGEL		3147	
@@ -3413,6 +3678,11 @@
 #define	TID_GAME_HELPER_WEB_BOX_ICON_TITLE		4395
 #define	TID_GAME_HELPER_WEB_BOX_ICON_TOOLTIP		4396
 
+
+#define	TID_GAME_EVENT_TRADE_KOR2010_TEXT01		4397
+#define	TID_GAME_EVENT_TRADE_KOR2010_COND01		4398
+#define	TID_GAME_EVENT_TRADE_KOR2010_COND02		4399
+
 //»ó¿ë ¾ÆÀÌÅÛ °¢¼º º¸È£ÀÇ µÎ·ç¸¶¸®
 
 #define TID_GAME_REGARDLESS_USE01			4400
@@ -3424,6 +3694,3439 @@
 #define TID_GAME_REGARDLESS_USE02			4403
 #define TID_GAME_REGARDLESS_USE03			4404
 #define TID_GAME_REGARDLESS_USE04			4405
+
 #define	TID_GAME_TOOLTIP_PERMANENTTIME_1	4406
+
+#define	TID_GAME_EVENT_HAPPY_USA2010_TEXT01		4407
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND01		4408
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND02		4409
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND03		4410
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND04		4411
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND05		4412
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND06		4413
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND07		4414
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND08		4415
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND09		4416
+#define	TID_GAME_EVENT_HAPPY_USA2010_COND10		4417
+#define	TID_GAME_EVENT_WORLDCUP10_KOR_TEXT01	4418
+#define	TID_GAME_EVENT_WORLDCUP10_KOR_COND01	4419
+#define	TID_GAME_EVENT_WORLDCUP10_KOR_COND02	4420
+#define	TID_GAME_EVENT_WORLDCUP10_KOR_COND03	4421
+#define	TID_GAME_EVENT_WORLDCUP10_KOR_COND04	4422
+#define	TID_GAME_EVENT_WORLDCUP10_FOR_TEXT01	4423
+#define	TID_GAME_EVENT_WORLDCUP10_FOR_COND01	4424
+#define	TID_GAME_EVENT_WORLDCUP10_FOR_COND02	4425
+#define	TID_GAME_EVENT_WORLDCUP10_FOR_COND03	4426
+#define	TID_GAME_EVENT_WORLDCUP10_FOR_COND04	4427
+
+#define	TID_GAME_MAP_EX_MARK_DELETE			4428
+#define	TID_GAME_MAP_EX_MARK_DELETE_ALL			4429
+#define	TID_GAME_MAP_EX_MARK_INSERT_CHATTING_WINDOW	4430
+#define	TID_GAME_MAP_EX_MARK_CHANGE_NAME		4431
+#define	TID_GAME_MAP_EX_MARK_INITIAL_TITLE_NAME		4432
+#define	TID_ERROR_MAP_EX_MARK_INVALID_POSITION		4433
+#define	TID_ERROR_MAP_EX_MARK_MAX_NUMBER		4434
+
+#define	TID_GAME_TOOLTIP_LORDTEMPLER_HERO	4435
+#define	TID_GAME_TOOLTIP_STORMBLADE_HERO	4436
+#define	TID_GAME_TOOLTIP_WINDLURKER_HERO	4437
+#define	TID_GAME_TOOLTIP_CRACKSHOOTER_HERO	4438
+#define	TID_GAME_TOOLTIP_FLORIST_HERO		4439
+#define	TID_GAME_TOOLTIP_FORCEMASTER_HERO	4440
+#define	TID_GAME_TOOLTIP_MENTALIST_HERO		4441
+#define	TID_GAME_TOOLTIP_ELEMENTORLORD_HERO	4442
+
+#define TID_ERROR_JAPAN_AUTH_CONVERTED_USER		4443
+#define TID_ERROR_JAPAN_AUTH_NEED_AGREEMENT		4444
+
+#define TID_ERROR_JAPAN_AUTH_ID_ERROR			4445
+#define TID_ERROR_JAPAN_AUTH_PASSWORD_ERROR		4446
+#define TID_ERROR_JAPAN_AUTH_BLOCK				4447
+#define TID_ERROR_JAPAN_AUTH_AGREE				4448
+#define TID_ERROR_JAPAN_AUTH_PARAMETER_ERROR	4449
+#define TID_ERROR_JAPAN_AUTH_REJECT				4450
+#define TID_ERROR_JAPAN_AUTH_HANGAME_ERROR		4451
+#define TID_ERROR_JAPAN_AUTH_FAIL				4452
+
+#define TID_GAME_WND_STATUS_TEXT_HP		4453
+#define TID_GAME_WND_STATUS_TEXT_MP		4454
+#define TID_GAME_WND_STATUS_TEXT_FP		4455
+#define TID_GAME_WND_STATUS_TEXT_EXP		4456
+#define TID_GAME_WND_STATUS_TEXT_BT		4457
+
+#define TID_MMI_EVENT_MATCHMAKER_TEXT		4458  //¿ùÇÏ³ëÀÎ
+#define TID_MMI_EVENT_MATCHMAKER_COND		4459
+
+#define TID_MMI_EVENT_ALICE_PHP_FOR_TEXT		4464  //¾î¸Ó´ÏÀÇ ³¯
+#define TID_MMI_EVENT_ALICE_PHP_FOR_COND		4465
+
+#define TID_MMI_EVENT_AROTTO_KOR_TEXT			4466  //·ÔÅä
+#define TID_MMI_EVENT_AROTTO_KOR_COND			4467
+
+// ±â´É »èÁ¦ ¿äÃ» ¸Þ½ÃÁö
+
+#define TID_GAME_TOOLTIP_TRADEERROR01		4460
+#define TID_GAME_TOOLTIP_TRADEERROR02 		4461
+#define TID_GAME_TOOLTIP_MAILERROR01 		4462
+#define TID_GAME_TOOLTIP_GUILDBANKERROR01 	4463
+
+// ±â´É »èÁ¦ ¿äÃ» ¸Þ½ÃÁö
+#define TID_GAME_TOOLTIP_PENAERROR01 	4468
+
+// NPC ¼ÒÈ¯
+#define TID_GAME_SUMMON_NPC_FULL								4470									//¼ÒÈ¯ÇÒ¼ö ÀÖ´Â NPC°¡ ÃÊ°ú µÊ
+#define TID_GAME_CANNOT_SUMMON_NPC_ON_FLYING		4471									//ºñÇàÁß¿¡´Â ¼ÒÈ¯ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_GAME_CALLED_NPC_NOW_USE						4472									//¼ÒÈ¯µÈ NPC°¡ »ç¿ëÁß ÀÔ´Ï´Ù.
+#define TID_GAME_CALLED_NPC_IS_NOT_MINE					4473									//¼ÒÈ¯µÈ NPC°¡ ³»°ÍÀÌ ¾Æ´Õ´Ï´Ù.
+#define TID_GAME_ALREADY_CALLED_NPC							4474									//ÀÌ¹Ì ¼ÒÈ¯ µÇ¾îÀÖ½À´Ï´Ù.
+
+//½Å Á¦·Ã ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁö Ãß°¡
+
+//½Ãµå Á¦ÀÛ ½Ã½ºÅÛ
+#define TID_MMI_NEWSMELT_CID01				4475
+#define TID_MMI_NEWSMELT_CID02				4476
+#define TID_MMI_NEWSMELT_CID03				4477
+#define TID_MMI_NEWSMELT_CID04				4478
+#define TID_MMI_NEWSMELT_CID05				4479
+#define TID_MMI_NEWSMELT_CID06				4480
+#define TID_MMI_NEWSMELT_CID07				4481
+#define TID_MMI_NEWSMELT_CID08				4482
+
+//¿ÀÆÛ Á¦ÀÛ ½Ã½ºÅÛ
+#define TID_MMI_NEWSMELT_OPER01				4483
+#define TID_MMI_NEWSMELT_OPER02				4484
+#define TID_MMI_NEWSMELT_OPER03				4485
+#define TID_MMI_NEWSMELT_OPER04				4486
+
+//¿ÀÆÛ ÃßÃâ ½Ã½ºÅÛ
+#define TID_MMI_NEWSMELT_OPEREXTRACT01		4487
+#define TID_MMI_NEWSMELT_OPEREXTRACT02		4488
+#define TID_MMI_NEWSMELT_OPEREXTRACT03		4489
+#define TID_MMI_NEWSMELT_OPEREXTRACT04		4490
+#define TID_MMI_NEWSMELT_OPEREXTRACT05		4491
+
+//¿ÀÆÛ ½Ãµå ½Ã½ºÅÛ
+#define TID_MMI_NEWSMELT_OPERCID01		4492
+#define TID_MMI_NEWSMELT_OPERCID02		4493
+#define TID_MMI_NEWSMELT_OPERCID03		4494
+#define TID_MMI_NEWSMELT_OPERCID04		4495
+
+//½Å Á¦·Ã ½Ã½ºÅÛ
+#define TID_MMI_NEWSMELT_NEWSMELT01		4496
+#define TID_MMI_NEWSMELT_NEWSMELT02		4497
+#define TID_MMI_NEWSMELT_NEWSMELT03		4498
+#define TID_MMI_NEWSMELT_NEWSMELT04		4499
+#define TID_MMI_NEWSMELT_NEWSMELT05		4500
+#define TID_MMI_NEWSMELT_NEWSMELT06		4501
+#define TID_MMI_NEWSMELT_NEWSMELT07		4502
+
+//16 Â÷ ¸Þ½ÃÁö Ãß°¡
+#define TID_MMI_GHOUSE_BARUNASMELPROT	4503
+#define TID_MMI_GHOUSE_OPERPIECE		4504
+#define TID_MMI_GHOUSE_OPERMIX			4505
+#define TID_MMI_GHOUSE_OPERENCHANT		4506
+#define TID_MMI_GHOUSE_UNSKILL			4507
+#define TID_MMI_ERRORSENCHANT_BARUNA			4508
+
+//3Â÷ ÀüÁ÷ ½ºÅ³ ¾Û¼Ö·çÆ® º£¸®¾î ¸Þ½ÃÁö Ãß°¡
+#define TID_MMI_ABSOLUTEBERRIER01			4509
+
+//Äù½ºÆ® °ü·Ã ¿¡·¯ ¸Þ½ÃÁö
+#define TID_MMI_USING_QUEST_GIFT_ITEM		4510		
+
+//ESÁõÆøÀÇ µÎ·ç¸¶¸® 4¹øÂ°, 5¹øÂ° Áßº¹ ¸Þ½ÃÁö Ãß°¡
+#define TID_GAME_EXP_COUTMSG4				4511
+#define TID_GAME_EXP_COUTMSG5				4512
+
+//ESÁõÆøÀÇ µÎ·ç¸¶¸® ·¹º§ ÃÊ°ú·Î ÀÎÇØ »ç¿ë È¿°ú Á¦°Å ¸Þ½ÃÁö
+
+#define TID_GAME_EXP_LEVELEXCESS01				4513
+
+//ÇÒ·ÎÀ©±³È¯
+#define TID_MMI_ZOMBIES_CHANGE2_FOR_TEXT				4514
+
+//ÀÏº» ±³È¯ ¸Å´º
+#define TID_MMI_JAP_CHANGE_FOR_TEXT						4515	// ÀÏº» ±³È¯ ¸Å´º
+
+//±æµåÇÏ¿ì½º ÁßÇü ¸Þ½ÃÁö Ãß°¡
+#define TID_MMI_GHOUSE_GUILDHOUSEOUT						4516	// ±æµå ÇÏ¿ì½º ÁßÇü ÅðÀå ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_GUILDHOUSESUCCESSFUL					4517	// ±æµå ÇÏ¿ì½º ÁßÇü ³«Âû ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_GUILDHOUSEBIDNOTICE					4518	// ±æµå ÇÏ¿ì½º ÁßÇü ÀÔÂû ¾Ë¸² ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_GUILDHOUSEENDNOTICE					4519	// ±æµå ÇÏ¿ì½º ÁßÇü ÀÔÂû ¸¶°¨ ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_GUILDNOTBID							4520	// ±æµå ÇÏ¿ì½º ÁßÇü ÀÔÂû ±æµå ¾øÀ½ ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_NOTWEEKBIDGUILDHOUSE					4521	// ±ÝÁÖ ÀÔÂû ±æµå ÇÏ¿ì½º ¾ø´Ù´Â ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_GUILDBIDENDMASSAGE					4522	// ±æµåÇÏ¿ì½º ÀÔÂû Á¾·á ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_BIDENDMAILTITLE						4523	// ÀÔÂû Á¾·á ¸ÞÀÏ Å¸ÀÌÆ²
+#define TID_MMI_GHOUSE_BIDENDMAILTITLE01					4524	// ÀÔÂû Á¾·á ¸ÞÀÏ ¾È³»¹®
+#define TID_MMI_GHOUSE_GUILDCHANGECOMPLETE					4525	// ±æµå ÇÏ¿ì½º ¼³¸í º¯°æ ¿Ï·á ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_GUILDCHANGEFAILED					4526	// ±æµå ÇÏ¿ì½º ¼³¸í º¯°æ ½ÇÆÐ ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_GUILDLEVELUPFAILED					4527	// ±æµå ÇÏ¿ì½º ·¹º§¾÷ ½ÇÆÐ ¸Þ½ÃÁö
+#define TID_MMI_GHOUSE_NOTBIDTURMNOTLIST					4528	// ÀÔÂû ±â°£ÀÌ ¾Æ´Ï°Å³ª ÀÔÂû ¸ñ·ÏÀÌ ¾øÀ½
+#define TID_MMI_GHOUSE_NOTMONEYCONDITION					4529	// Àß¸ø µÈ ±Ý¾×À» ÀÔ·ÂÇßÀ» °æ¿ì
+#define TID_MMI_GHOUSE_MONEYEXCESS							4530	// 21¾ï Æä³Ä¸¦ ÃÊ°úÇÏ¿´À» °æ¿ì
+#define TID_MMI_GHOUSE_MINIMUMMONEYBID						4531	// ÃÖ¼Ò ÀÔÂû±Ýº¸´Ù ³·Àº ±Ý¾×À» ÀÔ·ÂÇßÀ» °æ¿ì
+#define TID_MMI_GHOUSE_NOTFOUNDBIDGUILD						4532	// ÀÔÂûÇÑ ±æµå°¡ ¾ø½À´Ï´Ù
+#define TID_GAME_CONT_ELIUN									4533	// ¿¤¸®¿î ¸¶À»
+
+//Àå¹Ù±¸´Ï °ü·Ã ¿¡·¯ ¸Þ¼¼Áö 
+#define TID_CART_ERROR_MSG_1								4534	// Àå¹Ù±¸´Ï°¡ ½½·ÔÀÌ ¸ðµÎ Âü
+#define TID_CART_ERROR_MSG_2								4535	// Àå¹Ù±¸´Ï ½½·ÔÀÌ ºÎÁ·ÇÔ
+#define TID_CART_ERROR_MSG_3								4536	// ¼ÒÁö±Ý¾×ÀÌ ºÎÁ·ÇÔ
+#define TID_CART_ERROR_MSG_4								4537	// ÀÎº¥ ¿©À¯ ½½·ÔÀÌ ºÎÁ·ÇÔ
+#define TID_CART_ERROR_MSG_5								4538	// ÃÖ´ë ±¸¸Å ±Ý¾× ÃÊ°ú
+
+//Àå¹Ù±¸´Ï 
+#define TID_CART_NOTICE_BUY									4539	// ±¸ÀÔ¿Ï·á
+#define TID_CART_NOTICE_CLOSE								4540	// Àå¹Ù±¸´Ï¿¡ ¾ÆÀÌÅÛÀÌ ÀÖ´Â »óÅÂ¿¡¼­ NPC »óÁ¡ ³ª°¡±â
+
+//À¯·´ È¦´ý ÀÌº¥Æ® NPC ±³È¯ ¸Þ´º
+#define TID_MMI_HOLDEMEVENT01_TEXT				4541 // AÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT02_TEXT				4542 // KÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT03_TEXT				4543 // QÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT04_TEXT				4544 // JÄ«µå 4Àå ±³È¯
+#define TID_MMI_HOLDEMEVENT05_TEXT				4545 // A/K/Q/J Ä«µå 1Àå¾¿ ±³È¯
+
+#define TID_ITEM_CANCEL_CLEAR_EQUIP			4546
+#define TID_ITEM_CANCEL_CLEAR_USE			4547
+#define TID_ITEM_CANCEL_ERROR1				4548
+#define TID_ITEM_CANCEL_ERROR2				4549
+#define TID_ITEM_CANCEL_ERROR3				4550
+
+//ÀÎº¥Åä¸® È®Àå
+#define TID_INVEN_NEWITEM				4551
+#define TID_INVEN_PET					4552
+#define TID_INVEN_COSTUME				4553
+#define TID_INVEN_QUEST					4554
+
+//Á¦·Ã ¼º°ø ½ºÅ©·Ñ °ü·Ã ¾È³»/¿¡·¯ ¸Þ½ÃÁö
+#define TID_SMELTING_NOTICE				4555	//Á¦·Ã ¼º°ø ½ºÅ©·Ñ »ç¿ë ¾È³» ¸Þ½ÃÁö
+#define TID_SMELTING_ERROR1				4556	//Á¦·Ã ¼º°ø ½ºÅ©·Ñ Áßº¹ »ç¿ë ºÒ°¡ ¸Þ½ÃÁö
+
+//ÀÎµµ³×½Ã¾Æ °ü·Ã ¸Þ½ÃÁö Ãß°¡
+#define TID_INDONESIA_IDPASSERROR01			4557	//¾ÆÀÌµð ¶Ç´Â ÆÐ½º¿öµå°¡ Æ²·ÈÀ» °æ¿ì ¸Þ½ÃÁö
+#define TID_INDONESIA_LOGINERROR01			4558	//´Ù¸¥ °ÔÀÓ¿¡¼­ ·Î±×ÀÎÇßÀ» °æ¿ì ¸Þ½ÃÁö
+
+//--------------- ¹Ù·ç³ª ÇÇ¾î½Ì °ü·Ã TEXT -----------------
+#define TID_BW_PEARCING_CONFIRM_MSG_1			4559
+#define TID_BW_PEARCING_CONFIRM_MSG_2			4560
+#define TID_BW_PEARCING_CONFIRM_MSG_3			4561
+#define TID_BW_PEARCING_QUESTION_MSG_1			4562
+#define TID_BW_PEARCING_ERROR_MSG_1			4563
+#define TID_BW_PEARCING_ERROR_MSG_2			4564
+#define TID_BW_PEARCING_ERROR_MSG_3			4565	
+#define TID_BW_PEARCING_ERROR_MSG_4			4566
+#define TID_BW_PEARCING_ERROR_MSG_5			4567
+#define TID_BW_PEARCING_ERROR_MSG_6			4568
+#define TID_BW_PEARCING_ERROR_MSG_7			4569
+#define TID_BW_PEARCING_ERROR_MSG_8			4570
+//------------------------------------------------------
+
+
+// Çùµ¿±âºÎ ÀÌº¥Æ® ¸Þ½ÃÁö 
+#define TID_MMI_COOPERATION_DONATION01			4571    // ±âºÎ Á¶°ÇÀÌ µÇÁö ¾Ê¾Æ ±âºÎ¸¦ ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION02			4572    // ±âºÎ ±â°£ÀÌ ¾Æ´Õ´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION03			4573    // ÀÌ¹Ì ±âºÎ¸¦ ÇÏ¿© ´õ ÀÌ»ó ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION04			4574    // ±âºÎ ÇÒ ¾ÆÀÌÅÛÀÌ ÇöÀç »ç¿ë ÁßÀÌ°Å³ª ¼ö·®ÀÌ ºÎÁ·ÇÕ´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION05			4575    // ¼ÒÁöÇÏ°í ÀÖ´Â Æä³Ä°¡ ºÎÁ·ÇÏ¿© ±âºÎ¸¦ ÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//ÄÝ·Î¼¼¿ò ½Ã½ºÅÛ ¸Þ½ÃÁö
+#define TID_COLOSSEUM_NOTENTERTIME01			4576 	//ÀÔÀå °¡´ÉÇÑ ½Ã°£ÀÌ ¾Æ´Ò °æ¿ì
+#define TID_COLOSSEUM_NOTENTERMATCH01			4577 	//ÀÔÀå Á¶°ÇÀÌ ÀÏÄ¡ÇÏÁö ¾ÊÀ» °æ¿ì
+#define TID_COLOSSEUM_COLOFAILD01				4578 	//ÄÝ·Î¼¼¿ò Á¡·É ½ÇÆÐ½Ã
+#define TID_COLOSSEUM_COLOSUCCESS01				4579 	//°¢ ½ºÅ×ÀÌÁö¸¦ ¼º°øÇßÀ» ¶§
+#define TID_COLOSSEUM_COLOINVITE01				4580 	//ÄÝ·Î¼¼¿òÀ» ¸ðµÎ ¿Ï·áÇßÀ» ¶§
+#define TID_COLOSSEUM_COLOISGUILDJOIN01			4581 	//±Ø´ÜÀåÀÌ ÀÔÀåÀ» À§ÇØ °¢ ÆÄÆ¼¿øÀ»¿¡°Ô ÃÊ´ë ¸Þ½ÃÁö¸¦ ³¯¸± ¶§
+#define TID_COLOSSEUM_COLONOWPLAYING01			4582 	//±Ø´Ü¿¡ °¡ÀÔÇÏÁö ¾ÊÀº »óÅÂ¿¡¼­ ÄÝ·Î¼¼¿ò ÀÔÀå ½Ãµµ½Ã
+#define TID_COLOSSEUM_COLOLV90DOWNNOTENTER01	4583 	//90lvÀÌ»óÀÇ À¯Àú°¡ Àú ·¹º§ ÄÝ·Î¼¼¿ò¿¡ ÀÔÀåÀ» ½ÃµµÇÒ ¶§
+#define TID_COLOSSEUM_COLOGUILDGROUP01			4584 	//±æµå ÆÄÆ¼°¡ ¾Æ´Ñ ÀÏ¹Ý ÆÄÆ¼¿øÀÌ ÄÝ·Î¼¼¿ò ÀÔÀåÀ» ½ÃµµÇÒ ¶§
+#define TID_COLOSSEUM_COLOENTER01				4585 	//ÄÝ·Î¼¼¿ò¿¡ ÀÔÀåÇÏ¿´À» ¶§
+#define TID_COLOSSEUM_WATINGSTAGERESTART01		4586 	//ÄÝ·Î¼¼¿ò Àç µµÀüÀ» ÁøÇàÇÒ ¶§
+#define TID_COLOSSEUM_WATINGSTAGESTART01		4587	//°¢ ´Ü°èº° ½ºÅ×ÀÌÁö°¡ ½ÃÀÛµÈ´Ù´Â ¾Ë¸² ¸Þ½ÃÁö
+#define TID_COLOSSEUM_JINBOSS01					4588 	//º¸½º ÃâÇö È®·ü Áõ°¡ Ä³½Ã ¾ÆÀÌÅÛ »ç¿ë½Ã ¸Þ½ÃÁö
+#define TID_COLOSSEUM_RESTARTITEM01				4589 	//¸Þ¸£µ¥¸£ÀÇ °¡º¸¸¦ º¸À¯ÇÏ°í ÀÖÁö ¾ÊÀº »óÅÂ¿¡¼­ Àç µµÀü ¹öÆ° Å¬¸¯½Ã
+#define TID_COLOSSEUM_TIMEOVERCOLOGATE01		4590 	//½Ã°£ÀÌ °æ°úÇÒ °æ¿ì ÀÚµ¿À¸·Î ÄÝ·Î¼¼¿ò ¹ÛÀ¸·Î ÀÌµ¿ µÉ ¶§ÀÇ ¸Þ½ÃÁö
+#define TID_COLOSSEUM_COLONOTPLAYINGPARTY01		4591 	//ÀÚ½ÅÀÇ ±Ø´ÜÀÌ ÄÝ·Î¼¼¿òÀ» ÁøÇàÇÏÁö ¾Ê°í ÀÖ´Âµ¥ ÀÔÀå ½Ãµµ½Ã
+
+//ÄÝ·Î¼¼¿ò ·©Å· ÇöÀç »ç¿ëºÒ°¡´ÉÇÏ´Ù´Â ¸Þ½ÃÁö
+#define TID_COLOSSEUM_COLORANKERROR01			4592
+
+//Å©¸®½º¸¶½º Á¤·É ±³È¯ ¸Þ´º
+#define TID_MMI_CHRISTMASFAIRY01_TEXT			4593 	//Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 1°³
+#define TID_MMI_CHRISTMASFAIRY02_TEXT			4594 	//Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 25°³
+#define TID_MMI_CHRISTMASFAIRY03_TEXT			4595 	//Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 50°³
+#define TID_MMI_CHRISTMASFAIRY04_TEXT			4596 	//Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 75°³
+#define TID_MMI_CHRISTMASFAIRY05_TEXT			4597 	//Å©¸®½º¸¶½º Á¤·É ÅäÅ« ±³È¯ 100°³
+
+//ÄÝ·Î¼¼¿ò Áøº¸½º È®·ü Áõ°¡ ¾ÆÀÌÅÛ ¸Þ¼¼Áö
+#define TID_COLOSSEUM_CANT_USE_ITEM			4598 	//Áö±ÝÀº »ç¿ë ÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//ÄÝ·Î¼¼¿ò ¹Ì¸® ÁøÇàÁßÀÏ ¶§ ±Ø´Ü¿ø¿¡°Ô ¹ß»ýµÇ´Â ¸Þ½ÃÁö
+#define TID_COLOSSEUM_ALREADYPLAYNG			4599 	//ÀÌ¹Ì ¼Ò¼ÓµÈ ±Ø´ÜÀÌ ÄÝ·Î¼¼¿òÀ» ÁøÇàÁßÀÔ´Ï´Ù.
+
+//±Ø´ÜÀåÀÌ ¾Æ´Ñ ±Ø´Ü¿øÀÌ ÄÝ·Î¼¼¿ò ÀÔÀåÀ» ½ÃµµÇßÀ» °æ¿ì ¸Þ½ÃÁö
+#define TID_COLOSSEUM_NOTPARTYREADERENGER		4600 	//±Ø´Ü¿øÀº ÄÝ·Î¼¼¿ò ÀÔÀåÀ» ½ÅÃ»ÇÒ ¼ö ¾øÀ¸¸ç ±Ø´ÜÀå¸¸ÀÌ °¡´ÉÇÕ´Ï´Ù.
+
+//±¸¸Å ¿¹»ó ±Ý¾×ÀÌ ±¸¸Å ÇÑµµ ±Ý¾×ÀÌ¸ç ¾ÆÀÌÅÛ Ãß°¡ ±¸¸Å ½Ãµµ ½Ã ¸Þ½ÃÁö
+#define TID_CART_ERROR_MSG_6		4601
+
+//±Ø´Ü¿øÀÌ Á×¾úÀ» ¶§ ¶ß´Â ui¿¡ ÅðÀå½Ã°£ °ü·ÃÇÑ ¸Þ½ÃÁö
+#define TID_COLOSSEUM_OUTTIMEMASSAGE		4602
+
+//¹Ù·ç³ª ÇÇ¾î½Ì ¾ÆÀÌÅÛ µî·Ï ¿À·ù¸Þ¼¼Áö
+#define TID_BARUNAPEARCING_ERRORMSG			4603
+
+//ÄÝ·Î¼¼¿ò UIÃ¢
+#define TID_COLOSSEUM_HIGHCOLORANKING01		4604    //ÄÝ·Î¼¼¿ò ·©Å·
+#define TID_COLOSSEUM_LOWCOLORANKING01		4605	//Àú ·¹º§ ÄÝ·Î¼¼¿ò ·©Å·
+#define TID_COLOSSEUM_DAYTIMERANKING01		4606	//ÁÖ°£
+#define TID_COLOSSEUM_MONTHLYRANKING01		4607	//¿ù°£
+#define TID_COLOSSEUM_HALLOFFAME01			4608	//¸í¿¹ÀÇ Àü´ç
+
+
+//ÄÚ½ºÆ¬ ÇÕ¼º ½Ã½ºÅÛ ¸Þ½ÃÁö
+#define TID_COSTUME_REGISTERNOTITEM				4609    //µî·ÏÇÒ ¼ö ¾ø´Â ¾ÆÀÌÅÛÀÔ´Ï´Ù.
+#define TID_COSTUME_REGISTERNOTSLOT				4610	//µî·Ï °¡´ÉÇÑ ½½·ÔÀÌ ¾Æ´Õ´Ï´Ù.
+#define TID_COSTUME_ITEMOVERLAP					4611	//ÀÌ¹Ì µî·ÏµÇ¾î ÀÖ¾î Áßº¹ µî·ÏÀÌ ºÒ°¡´É ÇÕ´Ï´Ù.
+#define TID_COSTUME_NOTSAMEITEM					4612	//µî·Ï µÈ ÄÚ½ºÆ¬ÀÌ µ¿ÀÏÇÑ ÄÚ½ºÆ¬ÀÌ ¾Æ´Õ´Ï´Ù. È®ÀÎ ÈÄ ´Ù½Ã ½Ãµµ ÇØ ÁÖ¼¼¿ä
+#define TID_COSTUME_NOTINVENTORYSPACE			4613	//ÀÎº¥Åä¸® °ø°£ÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù. È®ÀÎ ÈÄ ´Ù½Ã ½Ãµµ ÇØ ÁÖ¼¼¿ä.
+#define TID_COSTUME_COSTUMEMIXCOMPLETE			4614	//[****]ÀÇ ÇÕ¼ºÀÌ ¼º°øÀûÀ¸·Î ÀÌ·ç¾îÁ³½À´Ï´Ù.
+#define TID_COSTUME_COSTUMEMIXENTRY01			4623 //ÄÚ½ºÆ¬ ÇÕ¼º UI¿¡ ¾ÆÀÌÅÛÀÌ µî·Ï µÉ °æ¿ì ÀåÂø ºÒ°¡´É ÇÒ °æ¿ì Ãâ·ÂµÇ´Â ¸Þ½ÃÁö
+
+#define TID_COLOSSEUM_NOTENTER_FLYING		4615	//³ª´Â Áß¿¡´Â ÄÝ·Î¼¼¿ò ÀÔÀåÀ» ÇÒ ¼ö ¾ø½À´Ï´Ù.	
+#define	TID_GAME_INSTANCE_NOT_TELEPORT		4616	//ÀÎ´ø¿¡ ÅÚ·¹Æ÷Æ®ÇÏÁö ¸øÇß½À´Ï´Ù.
+
+//Çùµ¿±âºÎ ÀÌº¥Æ® ¸Þ½ÃÁö
+#define TID_MMI_COOPERATION_DONATION06			4617 //±âºÎ °¡´ÉÇÑ ·¹º§ÀÌ ¾Æ´Õ´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION07			4618 //±âºÎ °¡´É ÇÑ Á÷¾÷ÀÌ ¾Æ´Õ´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION08			4619 //°¡Áö°í ÀÖ´Â °æÇèÄ¡°¡ ºÎÁ·ÇÏ¿© ±âºÎ¸¦ ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION09			4620 //±âºÎ°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION10			4621 //%s ÀÇ Ãàº¹ÀÌ Àû¿ëµÇ¾ú½À´Ï´Ù.
+#define TID_MMI_COOPERATION_DONATION11			4622 //%s ÀÇ Ãàº¹ÀÌ Àû¿ëµÇ¾úÀ¸¸ç, ¾ÆÀÌÅÛÀº ÀÎº¥Åä¸®·Î
+#define TID_MMI_COOPERATION_DONATION12			4623 //±âºÎ ÇÒ ¼ö ÀÖ´Â °æÇèÄ¡°¡ ºÎÁ·ÇÕ´Ï´Ù.
+
+//ÄÚ½ºÆ¬ ÇÕ¼º ½Ã½ºÅÛ ÆÄ±« ¹æÁö ÁÖ¹®¼­
+#define TID_MMI_COSTUME_SAFEMIXITEM01			4624 // ÄÚ½ºÆ¬ ÇÕ¼º ÆÄ±« ¹æÁö ÁÖ¹®¼­¸¦ »ç¿ëÇÏÁö ¾ÊÀ» °æ¿ì ¾ÆÀÌÅÛÀÌ ¼Ò¸êµÉ ¼ö ÀÖ½À´Ï´Ù. ±×·¡µµ ÇÕ¼ºÀ» ÁøÇàÇÏ½Ã°Ú½À´Ï±î?
+#define TID_MMI_COSTUME_COSTUMEMIXFAILED		4625 // ÇÕ¼º¿¡ ½ÇÆÐÇÏ¿© ¸ðµç ¾ÆÀÌÅÛÀÌ ¼Ò¸êµÇ¾ú½À´Ï´Ù.
+
+//À¯·á Áöµµ ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁö
+#define TID_MMI_CASHMAP_MAPOPEN01			4626 // ½ÅÀÇ ±â¿îÀ¸·Î ÀÎÇÏ¿© ¾ÏÈæÀÇ ±â¿îÀÌ ¸ðµÎ »ç¶óÁ® ÇØ´ç Áö¿ªÀÌ ¹à°Ô ºñÃçÁüÀ» ´À³§´Ï´Ù.
+#define TID_MMI_CASHMAP_ITEMOVERLAB01			4627 // ÇØ´ç ¾ÆÀÌÅÛÀº ÀÌ¹Ì »ç¿ëÁßÀÔ´Ï´Ù. ´Ù½Ã È®ÀÎÇÏ¿© ÁÖ½Ê½Ã¿ä.
+#define TID_MMI_CASHMAP_MAPITEMUSE01			4628 // %s ¾ÆÀÌÅÛÀ» »ç¿ëÇÒ °æ¿ì ÇØ´ç Áöµµ°¡ ÆË¾÷µÇ¸ç ¾ÆÀÌÅÛÀº ¼Ò¸ê µË´Ï´Ù. »ç¿ëÇÏ½Ã°Ú½À´Ï±î?
+
+//ÄÚ½ºÆ¬ ÇÕ¼º ½Ã½ºÅÛ ½ÇÆÐ ( Ä³½Ã ¾ÆÀÌÅÛ »ç¿ë½Ã )
+#define TID_MMI_COSTUME_SAFEMIXITEM02			4629 // ÄÚ½ºÆ¬ ÆÄ±« ¹æÁö ÁÖ¹®¼­¸¦ »ç¿ëÇÏ¿´½À´Ï´Ù. ¾ÈÀüÇÏ°Ô ÇÕ¼º ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù.
+#define TID_MMI_COSTUME_SAFEMIXITEM03			4630 // ÄÚ½ºÆ¬ ÇÕ¼ºÀÌ ½ÇÆÐÇÏ¿´À¸³ª ÄÚ½ºÆ¬ ÆÄ±« ¹æÁö ÁÖ¹®¼­¸¦ ÅëÇØ º¸È£µÇ¾ú½À´Ï´Ù.
+
+//À¯·á Áöµµ ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁö
+#define TID_MMI_CASHMAP_MAPCLOSE01			4631 // ¾ÏÈæÀÇ ±â¿îÀ¸·Î ÀÎÇÏ¿© ÇØ´ç Áö¿ªÀ» º¼ ¼ö ¾ø½À´Ï´Ù.
+
+//ÀÏº» ±³È¯ ¸Þ´º
+#define TID_MMI_WHITEDAY_EXCHANGE01_TEXT		4636
+#define TID_MMI_WHITEDAY_EXCHANGE02_TEXT		4637
+#define TID_MMI_WHITEDAY_EXCHANGE03_TEXT		4638
+#define TID_MMI_WHITEDAY_EXCHANGE04_TEXT		4639	//¿¬Åº Á¶°¢ 10°³ -> »ç¶ûÀÇ ¿¬Åº 1°³·Î ±³È¯
+
+//ÄÚ½ºÆ¬ ÇÕ¼º ½Ã½ºÅÛ
+#define TID_MMI_COSTUME_UNCONDITIONALINCHANT		4640 // °¢¼ºÀÌ ÁøÇàµÇÁö ¾ÊÀº ÄÚ½ºÆ¬Àº µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù. °¢¼ºÀº ¿©½ÅÀÇ Ãàº¹À» ÅëÇØ °¡´ÉÇÕ´Ï´Ù.
+
+//½ºÅ³ ¹öÇÁ ¾ÆÀÌÄÜ Lv Ç¥±â
+#define TID_SKILL_BUFFICONLEVEL01			4641 // ½ºÅ³ ¾ÆÀÌÄÜ Lv. Ç¥±â
+
+//Ã¢°í º¸°ü ½Ã Æä³Ä/¾ÆÀÌÅÛ UI ÀÌ¸§ ±¸ºÐ
+#define TID_MMI_BANK_SAVEMONEY			4642 // Æä³Ä ÀÌµ¿
+#define TID_MMI_BANK_SAVEITEM			4643 // ¾ÆÀÌÅÛ ÀÌµ¿
+//¹öÇÁ ½Ã°£ Ç¥½Ã
+#define TID_MMI_BUFF_TIME			4644 // ¹öÇÁ ½Ã°£ Ç¥½Ã
+
+//¹öÇÁ ½Ã°£ Ãß°¡
+#define TID_MMI_BUFFTIME_MINUTE_SECOND			4645 // ¹öÇÁ ½Ã°£ Ç¥½Ã - %dºÐ %dÃÊ
+#define TID_MMI_BUFFTIME_HOUR_MINUTE_SECOND		4646 // ¹öÇÁ ½Ã°£ Ç¥½Ã - %d½Ã %dºÐ %dÃÊ
+#define TID_MMI_BUFFTIME_HOUR_MINUTE_SECOND01		4647 // ¹öÇÁ ½Ã°£ Ç¥½Ã - %.2d½Ã %.2dºÐ %.2dÃÊ
+#define TID_MMI_BUFFTIME_MINUTE_SECOND01		4648 // ¹öÇÁ ½Ã°£ Ç¥½Ã - %.2dºÐ %.2dÃÊ
+#define TID_MMI_BUFFTIME_DAY_HOUR_MINUTE_SECOND		4649 // ¹öÇÁ ½Ã°£ Ç¥½Ã - %.2dÀÏ %.2d½Ã %.2dºÐ %.2dÃÊ
+#define TID_MMI_BUFFTIME_DAY_HOUR_MINUTE_SECOND01	4650 // ¹öÇÁ ½Ã°£ Ç¥½Ã - %.2I64dÀÏ %.2d½Ã %.2dºÐ %.2dÃÊ
+
+//±¹³» ½Ä¸ñÀÏ ÀÌº¥Æ®
+#define	TID_MMI_FIRSEED2011_TEXT				4651
+#define	TID_MMI_PEARSEED2011_TEXT				4652
+#define	TID_MMI_PINESEED2011_TEXT				4653
+#define	TID_MMI_PERSIMSEED2011_TEXT				4654
+
+#define	TID_MMI_RIVERCARD2011_TEXT				4655
+#define	TID_MMI_FLAMECARD2011_TEXT				4656
+#define	TID_MMI_DESERTCARD2011_TEXT				4657
+#define	TID_MMI_GENERATERCARD2011_TEXT			4658//±ÛÀÚ Á¶°¢À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_CYCLONECARD2011_TEXT			4659
+
+//¾ÆÀÌÅÛ °¢Á¾ Á¦·Ã °¡´É ¿©ºÎ
+#define	TID_MMI_SMELTING01_TEXT			4660	//°¡´É
+#define	TID_MMI_SMELTING02_TEXT			4661	//ºÒ°¡´É
+#define	TID_MMI_SMELTING03_TEXT			4668	//Á¦·Ã
+#define	TID_MMI_SMELTING04_TEXT			4669	//¼Ó¼ºÁ¦·Ã
+#define	TID_MMI_SMELTING05_TEXT			4670	//º¸¼®Á¦·Ã
+#define	TID_MMI_SMELTING06_TEXT			4671	//ÇÇ¾î½Ì
+#define	TID_MMI_SMELTING07_TEXT			4672	//°¢¼º
+
+//±¹³» º¢²É ¸ÂÀÌ ÀÌº¥Æ®
+#define	TID_MMI_EXCHANGEBLOSSOM_TEXT	4662 //º¢²É¾¾¾Ñ 10°³, 5¸¸ Æä³Ä¸¦ °¡À§¹ÙÀ§º¸ ÄíÆùÀ¸·Î ±³È¯
+
+//ÅÚ·¹Æ÷Æ® Áöµµ °ü·Ã ¸Þ½ÃÁö
+#define	TID_MMI_TELEPORTERRORTEXT01			4663 //µî·Ï °¡´É Áö¿ªÀÌ ¾Æ´Õ´Ï´Ù.
+#define	TID_MMI_TELEPORTERRORTEXT02			4664 //ÃÖ´ë µî·Ï ¼ö·®À» ÃÊ°úÇÏ¿´½À´Ï´Ù. (5°³)
+#define	TID_MMI_TELEPORTERRORTEXT03			4665 //ÀÌ¸§ ÀÔ·Â ±ÔÄ¢¿¡ À§¹èµÇ¾ú½À´Ï´Ù. ÇÑ±Û 8ÀÚ, ¿µ¹® 16ÀÚ±îÁö °¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_TELEPORTERRORTEXT04			4666 //ÀÌµ¿ÀÌ ºÒ°¡´ÉÇÑ ÁöÁ¡ÀÔ´Ï´Ù.
+
+#define	TID_MMI_TELEPORTUSERPOINT			4667 //µî·ÏÇÑ À§Ä¡
+
+//ÄÚ½ºÆ¬ ÇÕ¼º ½Ã½ºÅÛ ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_COSTUME_MIXLEVELDIFFERENT		4673 //µî·Ï µÉ ¾ÆÀÌÅÛÀÇ ÇÕ¼º ´Ü°è ¼öÄ¡°¡ ´Þ¶ó µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù. °°Àº ´Ü°èÀÇ ¾ÆÀÌÅÛÀ» µî·ÏÇØ ÁÖ½Ê½Ã¿ä.
+
+#define	TID_MMI_COSTUME_MIXLEVELOVER		4674 //ÄÚ½ºÆ¬ ÇÕ¼º ¿É¼ÇÀÇ ÃÖ´ë °³¼ö¸¦ ÃÊ°úÇÏ¿´½À´Ï´Ù.
+#define	TID_MMI_COSTUME_SELFBAGDRAGDROP		4675 //ÀÎº¥Åä¸®¿¡ ÀÖ´Â ÄÚ½ºÆ¬¸¸ µî·Ï °¡´ÉÇÕ´Ï´Ù.
+
+//¼ÒÁöÇÑ ±Ý¾×, °¡°Ý, ·¹µåÄ¨ Ãß°¡( ÄÚµå¿¡ ¹ÚÇôÀÖ¾î¼­ µû·Î ÀÌ¹ø¿¡ ÅØ½ºÆ®·Î »­-11.04.26 )
+
+#define	TID_MMI_POSSESSIONMONEY			4676 // ¼ÒÁöÇÑ ±Ý¾×
+#define	TID_MMI_PRICE				4677 // °¡°Ý
+#define	TID_MMI_REDCHIP				4678 // ·¹µåÄ¨
+
+//Çùµ¿ ±âºÎ ÀÌº¥Æ® ¼³Á¤
+#define TID_MMI_DONATION_TITLE			4632 // Çùµ¿ ±âºÎ ÀÌº¥Æ® ÀÌ¸§
+#define TID_MMI_DONATION_GOAL			4633 // Çùµ¿ ±âºÎ ÀÌº¥Æ® Á¶°Ç
+#define TID_MMI_DONATION_REWARD01		4634 // Çùµ¿ ±âºÎ ÀÌº¥Æ® º¸»ó1
+#define TID_MMI_DONATION_REWARD02		4635 // Çùµ¿ ±âºÎ ÀÌº¥Æ® º¸»ó2
+#define TID_MMI_DONATION_REWARD03		4679 // Çùµ¿ ±âºÎ ÀÌº¥Æ® º¸»ó3
+#define TID_MMI_DONATION_REWARD04		4680 // Çùµ¿ ±âºÎ ÀÌº¥Æ® º¸»ó4
+#define TID_MMI_DONATION_CONITEM		4681 // ±âºÎ ¾ÆÀÌÅÛ
+#define TID_MMI_DONATION_CONMONEY		4682 // ±âºÎ ±Ý¾×
+
+
+//ÅÚ·¹Æ÷Æ® Áöµµ °ü·Ã ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_TELEPORTERRORTEXT05			4683//ÀÌ¹Ì µî·ÏµÈ ÁöÁ¡°ú ³Ê¹« °¡±î¿ö¼­ µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//ÄÚ½ºÆ¬ ÇÕ¼º ½Ã½ºÅÛ ¸Þ¼¼Áö (ÀÓÀÇ·Î ³ÖÀº ³×ÀÌ¹ÖÀÓ- ¼öÁ¤¹Ù¶÷)
+#define TID_MMI_COSTUME_UNCONDITIONALINCHANT02		4684
+
+//ÀÌº¥Æ® ¾Æ·¹³ª °ü·Ã °¢Á¾ ÅØ½ºÆ®µé
+#define TID_MMI_EVENTARENA_CALLADMIN				4685 // ¼±¼ö ¼ÒÈ¯ÀÌ ÁøÇà ÁßÀÔ´Ï´Ù.
+#define TID_MMI_EVENTARENA_CALLADMIN_TITLE			4686 // ¼±¼ö ¼ÒÈ¯Ã¢ Å¸ÀÌÆ²
+#define TID_MMI_EVENTARENA_MEMBERENTER				4687 // ¼±¼ö ÀÔÀåÀÌ ÁøÇà ÁßÀÔ´Ï´Ù.
+#define TID_MMI_EVENTARENA_MEMBERENTER_TITLE		4688 // ¼±¼ö ÀÔÀåÃ¢ Å¸ÀÌÆ²
+#define TID_MMI_EVENTARENA_CALLMEMBER				4689 // ¾Æ·¹³ªÀÇ ´ë±â Áö¿ªÀ¸·Î ¼ÒÈ¯µË´Ï´Ù.
+#define TID_MMI_EVENTARENA_MATCHSTOP				4690 // Áö±Ý ÁøÇà ÁßÀÎ °æ±â¸¦ Áß´ÜÇÏ½Ã°Ú½À´Ï±î? Áß´Ü ÇÏ½Ã·Á¸é ÀÔ·Â Ã¢¿¡ %s À» ÀÔ·ÂÇØÁÖ¼¼¿ä.
+#define TID_MMI_EVENTARENA_MATCHSTOP_MESSAGE		4691 // °æ±â°¡ Áß´ÜµÇ¾î ¼±¼öµéÀº °ü¶÷ Áö¿ªÀ¸·Î ÀÌµ¿µË´Ï´Ù.
+#define TID_MMI_EVENTARENA_STARTCOUNT				4692 // °æ±â ½ÃÀÛ %d Àü ÀÔ´Ï´Ù.
+#define TID_MMI_EVENTARENA_WINNER					4693 // %s ÆÀÀÌ ½Â¸®ÇÏ¿´½À´Ï´Ù.
+#define TID_MMI_EVENTARENA_FINALWINNER				4694 // %s ÆÀÀÌ ÃÖÁ¾ ½Â¸®ÇÏ¿´½À´Ï´Ù.
+
+#define TID_MMI_EVENTARENA_DUPLICATIONADMIN			4695 // °ü¸®Ã¢À» ´Ù¸¥ ¿î¿µÀÚ°¡ ¿ÀÇÂ Áß¿¡ ÀÖ½À´Ï´Ù.
+#define TID_MMI_EVENTARENA_TEAMCHECK				4696 // %s ÆÀÀ» ¼±ÅÃÇØ¾ß Ã¼Å©°¡ °¡´ÉÇÕ´Ï´Ù.
+#define TID_MMI_EVENTARENA_CLOSEADMIN				4698 // ¾Æ·¹³ª °æ±â °ü¸® Ã¢À» ´Ý°Ú½À´Ï±î? Ã¢À» ´ÝÀ» °æ¿ì °æ±â°¡ Áß´ÜµÇ¸ç UI ¼³Á¤ÀÌ ÃÊ±âÈ­µË´Ï´Ù.
+
+#define TID_MMI_EVENTARENA_REDTEAM					4699 // ·¹µå
+#define TID_MMI_EVENTARENA_BLUETEAM					4700 // ºí·ç
+#define TID_MMI_EVENTARENA_MATCHSTART				4701 // START
+#define TID_MMI_EVENTARENA_MATCHSTOPWORD			4702 // °æ±â Áß´Ü
+
+#define	TID_MMI_BARUNA_ELESMELT_TEXT01				4703	//	2 ÀÌÇÏÀÇ ¼Ó¼º Á¦·Ã ¼öÄ¡´Â ¼Ó¼º Á¦·Ã ½Ã 100% ¼º°øÇÏ°Ô µÊÀ¸·Î ÇöÀç µî·ÏµÈ ¿ø¼Ò È°¼ºÁ¦´Â Á¦°ÅÇÏ½Ã´Â °ÍÀÌ ÁÁ½À´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_TEXT02				4704	//	Á¦·Ã¿¡ ¼º°øÇÏ¿© ¼Ó¼º Á¦·Ã ¼öÄ¡°¡ + 1 Áõ°¡ÇÏ¿´½À´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_TEXT03				4705	//	Á¦·Ã¿¡ ½ÇÆÐÇÏ¿© ¼Ó¼º Á¦·Ã ¼öÄ¡°¡ -1 °¨¼ÒÇÏ¿´½À´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_TEXT04				4706	//	Á¦·Ã¿¡ ½ÇÆÐÇÏ¿© ¹Ù·ç³ª ¾ÆÀÌÅÛÀÌ ÆÄ±«µÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_Q_TEXT01			4707	//	µî·ÏµÈ ¹Ù·ç³ª ¾ÆÀÌÅÛÀÌ 2ÀÌÇÏÀÇ ¼Ó¼º Á¦·Ã ¼öÄ¡¶ó ÇØ´ç ¾ÆÀÌÅÛÀ» »ç¿ëÇÒ   ÇÊ¿ä°¡ ¾ø½À´Ï´Ù. ±×·¡µµ »ç¿ëÇÏ½Ã°Ú½À´Ï±î?
+#define	TID_MMI_BARUNA_ELESMELT_Q_TEXT02			4708	//	¹Ù·ç³ªÀÇ ÀºÃÑÀÌ µî·ÏµÇÁö ¾Ê¾Æ, Á¦·Ã ½ÇÆÐ ½Ã ÇØ´ç ¾ÆÀÌÅÛÀÌ ÆÄ±«µÉ ¼ö ÀÖ½À´Ï´Ù. ±×·¡µµ °è¼Ó ÁøÇàÇÏ½Ã°Ú½À´Ï±î?
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT01			4709	//	ÇØ´ç ½½·ÔÀº ¹Ù·ç³ª ¾ÆÀÌÅÛ¸¸ µî·ÏÇÒ ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT02			4710	//	ÀÌ¹Ì µî·ÏµÇ¾î ÀÖ´Â ¾ÆÀÌÅÛÀÌ ÀÖ½À´Ï´Ù. 
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT03			4711	//	ÇØ´ç ¾ÆÀÌÅÛÀº Á¦·Ã °¡´ÉÇÑ ¾ÆÀÌÅÛÀÌ ¾Æ´Õ´Ï´Ù. ¾ÆÀÌÅÛ Á¤º¸¸¦ È®ÀÎÇÏ¼¼¿ä.
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT04			4712	//	ÇØ´ç ¾ÆÀÌÅÛÀº ÀÌ¹Ì ¼Ó¼º Á¦·ÃÀ» 20±îÁö ÇÑ ¾ÆÀÌÅÛÀ¸·Î ´õ ÀÌ»ó Á¦·ÃÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT05			4713	//	ÀÌ¹Ì µî·ÏµÇ¾î ÀÖ´Â ¼Ó¼º ¿Àºê¿Í ÇØ´ç ¾ÆÀÌÅÛÀÇ ¼Ó¼ºÀÌ µ¿ÀÏÇÏÁö ¾Ê½À´Ï´Ù. È®ÀÎ ÈÄ ´Ù½Ã ½ÃµµÇØ ÁÖ¼¼¿ä
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT06			4714	//	µî·ÏµÇ¾î ÀÖ´Â ¿ø¼Ò È°·ÂÁ¦ÀÇ »ç¿ë °¡´É ¼Ó¼º Á¦·Ã ¼öÄ¡º¸´Ù ³ôÀº ¾ÆÀÌÅÛÀ» µî·ÏÇÏ¼Ì½À´Ï´Ù. È®ÀÎ ÈÄ ´Ù½Ã ½ÃµµÇØ ÁÖ¼¼¿ä.
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT07			4715	//	ÇØ´ç ½½·ÔÀº ¼Ó¼º ¿Àºê¸¸ µî·Ï ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT08			4716	//	µî·ÏµÇ¾î ÀÖ´Â Àåºñ ¾ÆÀÌÅÛ°ú ÇØ´ç ¾ÆÀÌÅÛÀÇ ¼Ó¼ºÀÌ µ¿ÀÏÇÏÁö ¾Ê½À´Ï´Ù. È®ÀÎ ÈÄ ´Ù½Ã ½ÃµµÇØ ÁÖ¼¼¿ä
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT09			4717	//	ÇØ´ç ¾ÆÀÌÅÛÀº ¹Ù·ç³ªÀÇ ÀºÃÑ or Ãàº¹¹ÞÀº ¹Ù·ç³ªÀÇ ÀºÃÑ¸¸ µî·Ï °¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT10			4718	//	ÇØ´ç ¾ÆÀÌÅÛÀº ¿ø¼Ò È°·ÂÁ¦ Á¾·ù¸¸ µî·Ï °¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_BARUNA_ELESMELT_E_TEXT11			4719	//	µî·ÏµÇ¾î ÀÖ´Â ¹Ù·ç³ª ÀåºñÀÇ ¼Ó¼º Á¦·Ã ¼öÄ¡°¡ ³ô¾Æ ÇØ´ç ¾ÆÀÌÅÛÀ¸·Î´Â È¿°ú¸¦ º¸Áö ¸øÇÔÀ¸·Î µî·Ï¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù.
+#define	TID_MMI_BARUNA_WAKEUP_E_TEXT01				4720	//	¹Ù·ç³ª ¹«±â ¹× ¹æ¾î±¸¸¸ µî·Ï °¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_BARUNA_WAKEUP_E_TEXT02				4721	//	ÀÌ¹Ì µî·Ï µÈ ¾ÆÀÌÅÛÀÌ ÀÖ½À´Ï´Ù.
+#define	TID_MMI_BARUNA_WAKEUP_E_TEXT03				4722	//	°¢¼º °¡´ÉÇÑ ¾ÆÀÌÅÛÀÌ ¾Æ´Õ´Ï´Ù. ¾ÆÀÌÅÛÀ» È®ÀÎÇØ ÁÖ¼¼¿ä.
+#define	TID_MMI_BARUNA_WAKEUP_E_TEXT04				4723	//	ÀÌ¹Ì °¢¼ºµÇ¾îÀÖ´Â ¾ÆÀÌÅÛÀÔ´Ï´Ù. °¢¼º Ãë¼Ò ÈÄ »ç¿ëÇØ ÁÖ¼¼¿ä.
+#define	TID_MMI_BARUNA_WAKEUP_E_TEXT05				4724	//	°¢¼ºÀ» ÇÏ±â À§ÇØ¼­´Â 10¸¸ Æä³Ä°¡ ÇÊ¿äÇÕ´Ï´Ù. 
+#define	TID_MMI_BARUNA_WAKEUP_TEXT01				4725	//	%s ¾ÆÀÌÅÛÀÌ °¢¼ºµÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_BARUNA_WAKEUPCANCEL_E_TEXT01		4726	//	°¢¼ºµÈ Àåºñ¸¸ µî·Ï °¡´ÉÇÕ´Ï´Ù. ¾ÆÀÌÅÛÀ» È®ÀÎÇØ ÁÖ¼¼¿ä.
+#define	TID_MMI_BARUNA_WAKEUPCANCEL_E_TEXT02		4727	//	ÇØ´ç ½½·ÔÀº ¹Ù·ç³ªÀÇ ¸Á°¢Á¦¸¸ µî·Ï °¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_BARUNA_WAKEUPCANCEL_TEXT01			4728	//	%s ¾ÆÀÌÅÛÀÇ °¢¼ºÀÌ Ãë¼ÒµÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_BARUNA_WAKEUP_E_TEXT06				4729	//	ÇØ´ç ¾ÆÀÌÅÛÀº ¹Ù·ç³ª µî±ÞÀÌ ¾Æ´Ï¶ó¼­ µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+#define TID_MMI_EVENTARENA_NPCENTERERROR			4730	//  ¼Ò¼ÓÇÑ ÆÀÀÇ °æ±â°¡ ÀÖ´Â °æ¿ì¿¡¸¸ ÀÔÀåÀÌ °¡´ÉÇÕ´Ï´Ù.
+#define TID_MMI_EVENTARENA_PARTYNUMBER				4731	//  ±Ø´Ü %d
+
+#define TID_MMI_CREATECHAR_OVERFLOW					4732	//  ´õ ÀÌ»ó Ä³¸¯ÅÍ¸¦ »ý¼ºÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_MMI_DELETECHAR_ERROR					4734	//  ÇØ´ç Ä³¸¯ÅÍ¸¦ »èÁ¦ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_MMI_BARUNA_ELESMELT_E_TEXT12			4733	//  ÇØ´ç ½½·ÔÀº ¹Ù·ç³ª ¹æ¾î±¸ Áß ½´Æ®¸¸ µî·ÏÇÒ ¼ö ÀÖ½À´Ï´Ù.
+#define TID_MMI_BARUNA_ELESMELT_TEXT05				4735	//  2 ÀÌÇÏÀÇ ¼Ó¼º Á¦·Ã ¼öÄ¡´Â ¼Ó¼º Á¦·Ã ½Ã ¾ÆÀÌÅÛÀÌ ÆÄ±«µÇÁö ¾Ê±â ¶§¹®¿¡ ÇöÀç µî·ÏµÈ ¹Ù·ç³ªÀÇ ÀºÃÑÀº Á¦°ÅÇÏ½Ã´Â °ÍÀÌ ÁÁ½À´Ï´Ù.
+
+//¾Æ·¹³ª °ü·Ã ÅØ½ºÆ® Ãß°¡
+#define TID_MMI_EVENTARENA_STANDBY					4736	 // °æ±â ÁØºñ ÁßÀÔ´Ï´Ù.
+#define TID_MMI_EVENTARENA_PLAYERCALL				4737	 // °æ±â ½ÃÀÛÀ» À§ÇØ ¼±¼öµéÀÌ ´ë±â Áö¿ªÀ¸·Î ÀÔÀåÇÏ¿´½À´Ï´Ù.
+#define TID_MMI_EVENTARENA_PLAYERENTER				4738	 // °æ±â ÁøÇàÀ» À§ÇØ ¼±¼öµéÀÌ ÀüÅõ Áö¿ª¿¡ ÀÔÀåÇÏ¿´½À´Ï´Ù.
+#define TID_MMI_EVENTARENA_PLAYERFIGHT				4739	 // °æ±â°¡ ½ÃÀÛµÇ¾ú½À´Ï´Ù.
+#define TID_MMI_EVENTARENA_REINSTATEERROR			4740	 // °æ±â°¡ Á¾·áµÇ¾î ºÎÈ°ÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//±æµåÇÏ¿ì½º ±æµå °¡±¸(ÅÚ·¹Æ÷Æ® ÆùÆ®)
+#define TID_MMI_GUILDHOUSE_TELEPORTER			4741	 // Teleporter
+
+//º¸¹° »óÀÚ ½Ã½ºÅÛ ÅØ½ºÆ® ¸Þ½ÃÁö
+#define TID_MMI_TREASURE_ERRORTKEY				4742	 // º¸¹° »óÀÚ´Â ¿­¼è ¾ÆÀÌÅÛÀ¸·Î¸¸ ¿­ ¼ö ÀÖ½À´Ï´Ù.
+#define TID_MMI_TREASURE_ERRORCOMBINE			4743	 // ÀÌ ¿­¼è´Â ÇØ´ç º¸¹° »óÀÚ¿Í ¸ÂÁö ¾Ê½À´Ï´Ù. ´Ù½Ã ÇÑ¹ø È®ÀÎÇØÁÖ¼¼¿ä.
+#define TID_MMI_TREASURE_TREASUREITEM			4744	 // ÃàÇÏÇÕ´Ï´Ù~! º¸¹° »óÀÚ¿¡¼­ [ %s ] ¾ÆÀÌÅÛÀ» È¹µæÇÏ¿´½À´Ï´Ù.
+#define TID_MMI_TREASURE_NOTICETREASUREITEM		4745	 // [ %s ] ´ÔÀÌ º¸¹° »óÀÚ¿¡¼­ [ %s ] ¾ÆÀÌÅÛÀ» È¹µæÇÏ¿´½À´Ï´Ù.
+
+
+//FWC ÄÝ·Î¼¼¿ò ÁõÇ¥ ±³È¯ ¸Þ½ÃÁö
+#define	TID_MMI_FWCCHIPTRADE_TEXT01			4746	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 3000 °³¸¦ ¼öÈ£ ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT02			4747	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 4500 °³¸¦ À¯¼­ ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT03			4748	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 5500 °³¸¦ Ãµ»ç ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT04			4749	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 6500 °³¸¦ Àü¼³ ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT05			4750	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 22500 °³¸¦ ·çÁöÄ« ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT06			4751	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 27000 °³¸¦ ·çÁöÄ« ¹«±â(M) ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT07			4752	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 25000 °³¸¦ ¹ìÆÄÀÌ¾î ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT08			4753	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 30000 °³¸¦ °í´ë ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT09			4754	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 33500 °³¸¦ º£È÷¸ð½º ¹«±â ·£´ý ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT10			4755	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 250 °³¸¦ ¿À¸®Ä®Äñ 10°³ ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT11			4756	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 250 °³¸¦ ¹®½ºÅæ 10°³ ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT12			4757	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 4000 °³¸¦ ¿ÀÆÛ½Ãµå 10°³ ¹Ú½º·Î ±³È¯
+#define	TID_MMI_FWCCHIPTRADE_TEXT13			4758	 //	¿ë¸ÍÇÔÀÇ ÁõÇ¥ 2000 °³¸¦ ºû³ª´Â ¿À¸®Ä®Äñ 10°³ ¹Ú½º·Î ±³È¯
+
+
+//º¸¹° »óÀÚ ½Ã½ºÅÛ Ãß°¡ ÅØ½ºÆ®
+#define TID_MMI_TREASURE_NOTCLOSEDUI		4759	 // °á°úÃ¢ÀÌ ¿­·ÁÀÖ½À´Ï´Ù. Ã¢À» ´Ý°í ´Ù½Ã ½ÃµµÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.
+
+//¾ÆÀÌÅÛ ÅøÆÁ ·¹º§ Ç¥½Ã
+#define TID_MMI_TOOLTIP_LEVEL				4760	 // %d ~ %d
+
+//ÀÌº¥Æ® ¾Æ·¹³ª Ãß°¡ ÅØ½ºÆ®
+#define TID_MMI_EVENTARENA_SELECTSAMETEAM		4761	 // ·¹µå/ºí·çÆÀÀ» ´Ù½Ã ÇÑ¹ø È®ÀÎÇØÁÖ¼¼¿ä. °°Àº ÆÀÀÌ ¼³Á¤µÇ¾î ÀÖ½À´Ï´Ù!!
+#define TID_MMI_EVENTARENA_SELECTTEAM			4762	 // ÆÀÀ» ¼±ÅÃÇØ¾ß Ã¼Å©°¡ °¡´ÉÇÕ´Ï´Ù.
+
+//±¹³» 18Â÷ ¾÷µ¥ÀÌÆ® ÀÌº¥Æ®
+
+#define	TID_MMI_RETURNSUPDATE_TEXT01			4763 //¸®ÅÏÁî ¾÷µ¥ÀÌÆ® ±â³ä ÁÖÈ­ 10°³¸¦ ¸®ÅÏÁî ±â³ä »óÀÚ·Î ±³È¯
+#define	TID_MMI_RETURNSUPDATE_TEXT02			4764 //¸®ÅÏÁî ¾÷µ¥ÀÌÆ® ±â³ä ÁÖÈ­ 1000°³¸¦ Çà¿îÀÇ ÇÇ¾î½Ì Ä«µå »óÀÚ·Î ±³È¯
+#define	TID_MMI_RETURNSUPDATE_TEXT03			4765 //¸®ÅÏÁî ¾÷µ¥ÀÌÆ® ±â³ä ÁÖÈ­ 3000°³¸¦ ÇÇ¾î½Ì Ä«µå »óÀÚ·Î ±³È¯
+#define	TID_MMI_RETURNSUPDATE_TEXT04			4766 //¸®ÅÏÁî ¾÷µ¥ÀÌÆ® ±â³ä ÁÖÈ­ 4000°³¸¦ ¿ë¸ÁÅä(±Í¼Ó)À¸·Î ±³È¯
+
+
+#define TID_MMI_FWCWORDEVENT_TEXT01				4767//±ÛÀÚ Á¶°¢ F, L, Y °¢°¢ 1°³¾¿ -> FLY Ä«µå·Î ±³È¯
+#define TID_MMI_FWCWORDEVENT_TEXT02				4768//±ÛÀÚ Á¶°¢ F, O, R °¢°¢ 1°³¾¿ -> FOR Ä«µå·Î ±³È¯
+#define TID_MMI_FWCWORDEVENT_TEXT03				4769//±ÛÀÚ Á¶°¢ F, U, N °¢°¢ 1°³¾¿ -> FUN Ä«µå·Î ±³È¯
+#define TID_MMI_FWCWORDEVENT_TEXT04				4770//±ÛÀÚ Á¶°¢ 20, 11  °¢°¢ 1°³¾¿ -> 2011 Ä«µå·Î ±³È¯
+#define TID_MMI_FWCWORDEVENT_TEXT05				4771//±ÛÀÚ Á¶°¢ F, W, C °¢°¢ 1°³¾¿ -> FWC Ä«µå·Î ±³È¯
+#define TID_MMI_FWCWORDEVENT_TEXT06				4772//±ÛÀÚ Á¶°¢ 20, 11, F, W, C °¢°¢ 1°³¾¿ -> 2011 FWC Ä«µå·Î ±³È¯
+
+//ÄíÆù ÀÔ·ÂÃ¢ ´ÝÀ»¶§ ¸Þ½ÃÁö
+#define TID_MMI_EVENT_AROTTO_KOR_COND_CLOSE		4773//ÄíÆù ÀÔ·ÂÃ¢À» ´ÝÀ¸½Ã°Ú½À´Ï±î?
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ ÆÇ¸Å µî·Ï ÁøÇà½Ã Ãâ·Â ¸Þ½ÃÁö
+#define TID_MMI_TRADESYSTEM_SELLTEXT01		4805//	ÃÖ¼Ò µî·Ï ±Ý¾×Àº 1¿øÀÔ´Ï´Ù. ´Ù½Ã È®ÀÎ ÇÏ½Ã½Ê½Ã¿ä.
+#define TID_MMI_TRADESYSTEM_SELLTEXT02		4774//	´õ ÀÌ»ó ¾ÆÀÌÅÛÀ» µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù. ÀåÀÎÀÇ °è¾à¼­¸¦ »ç¿ëÇÏ½Ã¸é ¾ÆÀÌÅÛÀ» Ãß°¡ÀûÀ¸·Î µî·ÏÇÒ ¼ö ÀÖ½À´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_SELLTEXT03		4775//	µî·Ï °³¼ö ÇÑµµ¸¦ ÃÊ°úÇÏ¿´½À´Ï´Ù. 50°³ ÀÌ»ó µî·ÏÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_SELLTEXT04		4776//	21¾ïÀ» ÃÊ°úÇÏ¿© ±Ý¾×À» ÀÔ·ÂÇÏ½Ç ¼ö ¾ø½À´Ï´Ù. 21¾ï±îÁö ÀÔ·Â °¡´ÉÇÕ´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_SELLTEXT05		4777//	¾ÆÀÌÅÛ ÆÇ¸Å µî·ÏÀÌ Á¤»óÀûÀ¸·Î ÀÌ·ç¾îÁ³½À´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_SELLTEXT06		4778//	¾ÆÀÌÅÛ ÆÇ¸Å ±â°£ÀÌ Á¾·áµÇ¾ú½À´Ï´Ù. ÆÇ¸Å Á¾·á µÈ ¾ÆÀÌÅÛÀº UI¿¡ ±×´ë·Î º¸Á¸µË´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_SELLTEXT07		4779//	%d ¾ÆÀÌÅÛÀÌ ÆÇ¸Å µÇ¾ú½À´Ï´Ù. ÆÇ¸Å µÈ ¾ÆÀÌÅÛÀº ¿ìÆíÀ¸·Î Áö±ÞµÇ¸ç 15ÀÏ ³»¿¡ Ã£¾Æ°¡Áö ¾ÊÀ¸½Ç °æ¿ì ¼Ò¸ê µÉ ¼ö ÀÖ½À´Ï´Ù.
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ ¾ÆÀÌÅÛ ±¸¸Å ÁøÇà½Ã Ãâ·Â ¸Þ½ÃÁö
+#define TID_MMI_TRADESYSTEM_BUYTEXT01		4780//	º¸À¯ÇÏ½Å ±Ý¾×ÀÌ ºÎÁ·ÇÕ´Ï´Ù. ´Ù½Ã È®ÀÎ ÇØ ÁÖ½Ê½Ã¿ä.
+#define TID_MMI_TRADESYSTEM_BUYTEXT02		4781//	±¸¸Å ½ÃµµÇÑ ¹°Ç°ÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù. ´Ù¸¥ ¹°ÇÄÀ» ±¸¸ÅÇØ ÁÖ½Ê½Ã¿ä.
+#define TID_MMI_TRADESYSTEM_BUYTEXT03		4782//	%d ¾ÆÀÌÅÛ ±¸¸Å°¡ ¿Ï·áµÇ¾úÀ¸¸ç ¿ìÆíÀ¸·Î Áö±ÞµÇ¾ú½À´Ï´Ù. 15ÀÏ ÀÌ³» Ã£¾Æ°¡Áö ¾ÊÀ» °æ¿ì ¼Ò¸ê µÉ ¼ö ÀÖ½À´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_BUYTEXT04		4783//	%s´Â %d PenyaÀÔ´Ï´Ù.±¸¸Å ÇÒ °æ¿ì Ãë¼Ò°¡ ºÒ°¡´ÉÇÏ¸ç ±¸¸Å ±Ý¾×Àº ¹ÝÈ¯µÇÁö ¾Ê½À´Ï´Ù. ±¸¸ÅÇÏ½Ã°Ú½À´Ï±î?
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ ¾ÆÀÌÅÛ Á¤»ê ÁøÇà½Ã Ãâ·Â ¸Þ½ÃÁö
+#define TID_MMI_TRADESYSTEM_SUMTEXT01		4784//	ÆÇ¸Å ´ë±ÝÀÌ ¿ìÆíÀ¸·Î Á¤»ó Áö±ÞµÇ¾ú½À´Ï´Ù. 15ÀÏ ³»¿¡ Ã£¾Æ °¡Áö ¾ÊÀ» °æ¿ì ¼Ò¸ê µÉ ¼ö ÀÖ½À´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_SUMTEXT02		4785//	ÀüÃ¼ Á¤»ê ±Ý¾×ÀÌ 21¾ïÀ» ÃÊ°úÇÏ¿´½À´Ï´Ù. °³º° Á¤»êÀ» ÅëÇØ ÁøÇàÇØ ÁÖ½Ê½Ã¿ä.
+#define TID_MMI_TRADESYSTEM_SUMTEXT03		4786//	Á¤»êÀ» ÇÏ½Ã°Ú½À´Ï±î? Á¤»êÀÌ ¿Ï·áµÇ¸é ¿ìÆíÀ¸·Î Á¤»ê ±Ý¾×ÀÌ Áö±ÞµÇ¸ç 15ÀÏ ³»¿¡ Ã£¾Æ°¡Áö ¾ÊÀ» °æ¿ì ¼Ò¸ê µÉ ¼ö ÀÖ½À´Ï´Ù.
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ ¾ÆÀÌÅÛ µî·ÏÃë¼Ò ÁøÇà½Ã Ãâ·Â ¸Þ½ÃÁö
+#define TID_MMI_TRADESYSTEM_CANCELTEXT01	4787//	%s ¾ÆÀÌÅÛÀ» µî·Ï ÇØÁ¦ ÇÏ½Ã°Ú½À´Ï±î? µî·Ï ÇØÁ¦ µÈ ¾ÆÀÌÅÛÀº ¿ìÆíÀ¸·Î Áö±ÞµÇ¸ç 15ÀÏ ÀÌ³»¿¡ Ã£¾Æ°¡Áö ¾ÊÀ¸½Ç °æ¿ì ¼Ò¸ê µÉ ¼ö ÀÖ½À´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_CANCELTEXT02	4788//	¾ÆÀÌÅÛ µî·ÏÀÌ ÇØÁ¦ µÇ¾ú½À´Ï´Ù. µî·Ï ÇØÁ¦ µÈ ¾ÆÀÌÅÛÀº ¿ìÆíÀ¸·Î Áö±ÞµÇ¸ç 15ÀÏ ÀÌ³»¿¡ Ã£¾Æ°¡Áö ¾ÊÀ¸½Ç °æ¿ì ¼Ò¸êµÉ ¼ö ÀÖ½À´Ï´Ù.
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ °ü·Ã ±âÅ¸ ¸Þ½ÃÁö
+#define TID_MMI_TRADESYSTEM_EXCEPTIONTEXT01	4789// ¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ °Ë»ö ÁßÀÔ´Ï´Ù. Àá½Ã¸¸ ±â´Ù·ÁÁÖ½Ê½Ã¿ä.
+
+
+//³°Àº ¼öÈ£¹«±â ±³È¯
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT01	4790		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ °Ë ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT02	4791		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ ¾ç¼Õ°Ë ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT03	4792		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ µµ³¢ ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT04	4793		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ ¾ç¼Õµµ³¢ ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT05	4794		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ ³ÊÅ¬ ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT06	4795		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ ½ºÆ½ ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT07	4796		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ ¿Ïµå ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT08	4797		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ ½ºÅÂÇÁ ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT09	4798		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ º¸¿ì ±¸ÀÔ
+#define	TID_MMI_BADSUHOWEAPONTRADE_TEXT10	4799		//50,000 Æä³Ä·Î ³°Àº ¼öÈ£ÀÇ ¿ä¿ä ±¸ÀÔ
+#define	TID_MMI_BADSUHOEVENTELECARDTRADE_TEXT01		4800	//30,000 Æä³Ä·Î ¸®¹ö Ä«µå ±¸ÀÔ
+#define	TID_MMI_BADSUHOEVENTELECARDTRADE_TEXT02		4801	//30,000 Æä³Ä·Î ÇÃ·¹ÀÓ Ä«µå ±¸ÀÔ
+#define	TID_MMI_BADSUHOEVENTELECARDTRADE_TEXT03		4802	//30,000 Æä³Ä·Î µ¥ÀúÆ® Ä«µå ±¸ÀÔ
+#define	TID_MMI_BADSUHOEVENTELECARDTRADE_TEXT04		4803	//30,000 Æä³Ä·Î Á¦³Ê·¹ÀÌÅÍ Ä«µå ±¸ÀÔ
+#define	TID_MMI_BADSUHOEVENTELECARDTRADE_TEXT05		4804	//30,000 Æä³Ä·Î »çÀÌÅ¬·Ð Ä«µå ±¸ÀÔ
+
+//ÀÎµµ³×½Ã¾Æ µ¶¸³±â³äÀÏ ÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define	TID_MMI_INDNATIONALFALGEXCHANGE_TEXT01	4806		//±ê¹ß 50°³¸¦ ³ë¶õÃ¥°¡¹æÀ¸·Î ±³È¯
+#define	TID_MMI_INDNATIONALFALGEXCHANGE_TEXT02	4807		//±ê¹ß 100°³¸¦ ÆÄ¶õÃ¥°¡¹æÀ¸·Î ±³È¯
+#define	TID_MMI_INDNATIONALFALGEXCHANGE_TEXT03	4808		//±ê¹ß 200°³¸¦ »¡°£Ã¥°¡¹æÀ¸·Î ±³È¯
+//FWC ÁõÇ¥ ±³È¯ ¸Þ´º
+#define TID_MMI_FWCCHIPTRADE						4809	//  ¿ë¸ÍÇÔÀÇ ÁõÇ¥¸¦ º¸»ó ¾ÆÀÌÅÛÀ¸·Î ±³È¯
+
+//°Å·¡Áß°³½ÃÀå ÀÔÀå ¸Þ´º
+#define TID_MMI_MARKETJOIN_TEXT01			4810		//½ÃÀåÀ¸·Î ÀÔÀåÇÏ½Ã°Ú½À´Ï±î?
+
+//Ä³¸¯ÅÍ ¼­¹ö ÀÌµ¿°ü·Ã ¿¡·¯¸Þ½ÃÁö
+#define TID_MMI_WORLDCHANGEERROR_TEXT01		4811		//ÀÌµ¿ÀÌ Á¦ÇÑµÈ ¾ÆÀÌÅÛÀ» º¸À¯ÇÏ°í ÀÖ½À´Ï´Ù. ´Ù½Ã ÇÑ¹ø È®ÀÎÇØ ÁÖ¼¼¿ä.
+#define TID_MMI_WORLDCHANGEERROR_TEXT02		4812		//±æµå¿¡ °¡ÀÔÇÏ°Å³ª Ä¿ÇÃ, »çÁ¦°ü°è¸¦ ¸Î°í ÀÖÀ¸¸é »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_MMI_WORLDCHANGEERROR_TEXT03		4813		//±ºÁÖ Áý±Ç ±â°£ µ¿¾ÈÀº »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define TID_MMI_WORLDCHANGEERROR_TEXT04		4814		//»ç¿ëÇÒ ¼ö ¾ø´Â ¾ÆÀÌµðÀÔ´Ï´Ù. ´Ù¸¥ ¾ÆÀÌµð¸¦ ÀÔ·ÂÇØ ÁÖ¼¼¿ä.
+#define TID_MMI_WORLDCHANGEERROR_TEXT05		4815		//¾ÆÀÌµð´Â ÃÖ¼Ò 2±ÛÀÚ ÀÌ»ó ÀÔ·Â ÇØ¾ß ÇÕ´Ï´Ù.
+#define TID_MMI_WORLDCHANGEERROR_TEXT06		4816		//¼­¹ö ¼±ÅÃÀÌ Àß¸øµÇ¾ú½À´Ï´Ù.
+
+//ÄÝ·Î¼¼¿ò ÀÔÀå ÀÎ¿ø °ü·Ã ¸Þ½ÃÁö
+#define TID_MMI_COLOMAX				4817		//ÃÖ´ë ÀÔÀåÇÒ ¼ö ÀÖ´Â ÀÎ¿øÀ» ÃÊ°úÇÏ¿© ´õ ÀÌ»ó ÀÔÀåÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù.
+
+//Ä³¸¯ÅÍ ¼­¹ö ÀÌµ¿°ü·Ã ¿¡·¯¸Þ½ÃÁö Ãß°¡
+#define TID_MMI_WORLDCHANGEERROR_TEXT07		4818		//ÀÌµ¿ °¡´ÉÇÑ Æä³Ä´Â ÃÖ´ë 21¾ï Æä³ÄÀÔ´Ï´Ù. ´Ù½Ã ÇÑ¹ø È®ÀÎÇØ ÁÖ¼¼¿ä.
+#define TID_MMI_WORLDCHANGEERROR_TEXT08		4819		//%s ¼­¹ö¿¡¼­ %s ¼­¹ö·Î ÀÌÀüÀÌ ¿Ï·áµÇ¾î ¼­¹ö·ÎºÎÅÍ Á¢¼ÓÀÌ ÇØÁ¦µÇ¾ú½À´Ï´Ù.
+
+//ÇÑ°¡À§ ±³È¯ ÀÌº¥Æ®
+#define TID_MMI_HANGAWI_TRADE_TEXT01		4820		//²Ü¼ÛÆí 10°³¿Í 50,000 Æä³Ä¸¦ °¡À§¹ÙÀ§º¸ ÄíÆù 1ÀåÀ¸·Î ±³È¯
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ ¸Þ½ÃÁö Ãß°¡
+#define TID_MMI_TRADESYSTEM_ITEMBUTNOTFOUND		4821		//±¸¸Å¸¦ ½ÃµµÇÑ ¹°Ç°ÀÌ ¾ø¾î ±¸¸Å¸¦ ¿Ï·áÇÏÁö ¸øÇÏ¿´½À´Ï´Ù. ±¸¸Å¿¡ »ç¿ë µÈ Æä³Ä´Â ¿ìÆíÀ¸·Î Áö±ÞµÇ¸ç 15ÀÏ ÀÌ³»¿¡ Ã£¾Æ°¡Áö ¾ÊÀ» °æ¿ì ¼Ò¸ê µË´Ï´Ù.
+
+//°Å·¡ Áß°³ ¾ÆÀÌÅÛ ¸ñ·Ï ¸®½ºÆ®
+#define TID_MMI_TRADESYSTEM_ITEMLISTWEAPON01			4822	//¹«±â
+#define TID_MMI_TRADESYSTEM_ITEMLISTAOMOR02			4823	//¹æ¾î±¸
+#define TID_MMI_TRADESYSTEM_ITEMLISTACCESSORY03			4824	//¾×¼¼¼­¸®
+#define TID_MMI_TRADESYSTEM_ITEMLISTMATERIAL04			4825	//Àç·á
+#define TID_MMI_TRADESYSTEM_ITEMLISTCONSUME05			4826	//¼Ò¸ðÇ°
+#define TID_MMI_TRADESYSTEM_ITEMLISTALLEXCEPTION06		4827	//±âÅ¸
+#define TID_MMI_TRADESYSTEM_ITEMLISTCOSTUME07			4828	//ÄÚ½ºÆ¬
+#define TID_MMI_TRADESYSTEM_ITEMLIST08				4829	//ÇÑ¼Õ°Ë
+#define TID_MMI_TRADESYSTEM_ITEMLIST09				4830	//¾ç¼Õ°Ë
+#define TID_MMI_TRADESYSTEM_ITEMLIST10				4831	//ÇÑ¼Õµµ³¢
+#define TID_MMI_TRADESYSTEM_ITEMLIST11				4832	//¾ç¼Õµµ³¢
+#define TID_MMI_TRADESYSTEM_ITEMLIST12				4833	//³ÊÅ¬
+#define TID_MMI_TRADESYSTEM_ITEMLIST13				4834	//½ºÆ½
+#define TID_MMI_TRADESYSTEM_ITEMLIST14				4835	//º¸¿ì
+#define TID_MMI_TRADESYSTEM_ITEMLIST15				4836	//½ºÅÂÇÁ
+#define TID_MMI_TRADESYSTEM_ITEMLIST16				4837	//¿ä¿ä
+#define TID_MMI_TRADESYSTEM_ITEMLIST17				4838	//¿Ïµå
+#define TID_MMI_TRADESYSTEM_ITEMLIST18				4839	//Æ÷½ºÀë
+#define TID_MMI_TRADESYSTEM_ITEMLIST19				4840	//¹ý¼­
+#define TID_MMI_TRADESYSTEM_ITEMLIST20				4841	//±âÅ¸
+#define TID_MMI_TRADESYSTEM_ITEMLIST21				4842	//Çï¸ä
+#define TID_MMI_TRADESYSTEM_ITEMLIST22				4843	//½´Æ®
+#define TID_MMI_TRADESYSTEM_ITEMLIST23				4844	//°ÇÆ²·¿
+#define TID_MMI_TRADESYSTEM_ITEMLIST24				4845	//ºÎÃ÷
+#define TID_MMI_TRADESYSTEM_ITEMLIST25				4846	//¹æÆÐ
+#define TID_MMI_TRADESYSTEM_ITEMLIST26				4847	//¹ÝÁö
+#define TID_MMI_TRADESYSTEM_ITEMLIST27				4848	//±Í°ÉÀÌ
+#define TID_MMI_TRADESYSTEM_ITEMLIST28				4849	//¸ñ°ÉÀÌ
+#define TID_MMI_TRADESYSTEM_ITEMLIST29				4850	//Àç·á
+#define TID_MMI_TRADESYSTEM_ITEMLIST30				4851	//¹°¾à
+#define TID_MMI_TRADESYSTEM_ITEMLIST31				4852	//ÁÖ¹®¼­
+#define TID_MMI_TRADESYSTEM_ITEMLIST32				4853	//Æ÷½ºÅÍ
+#define TID_MMI_TRADESYSTEM_ITEMLIST33				4854	//±âÅ¸
+#define TID_MMI_TRADESYSTEM_ITEMLIST34				4855	//±âÅ¸
+#define TID_MMI_TRADESYSTEM_ITEMLIST35				4856	//¸¶½ºÅ©
+#define TID_MMI_TRADESYSTEM_ITEMLIST36				4857	//¸ÁÅä
+#define TID_MMI_TRADESYSTEM_ITEMLIST37				4858	//¸Ó¸®
+#define TID_MMI_TRADESYSTEM_ITEMLIST38				4859	//ÀÇ»ó
+#define TID_MMI_TRADESYSTEM_ITEMLIST39				4860	//Àå°©
+#define TID_MMI_TRADESYSTEM_ITEMLIST40				4861	//½Å¹ß
+
+#define TID_MMI_TWBOXTRADE_TEXT01			4862	// ³ë·Â»óÀÚ 5°³¸¦ Àº»óÀÚ 1°³·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT02			4863	// Àº»óÀÚ 5°³¸¦ ±Ý»óÀÚ 1°³·Î ±³È¯
+
+#define TID_MMI_EXCHAGESCRIPTSMELT_TEXT01			4864	// Á¶°Ç¿¡ ¸Â´Â ¾ÆÀÌÅÛÀ» º¸À¯ÇÏ°í ÀÖÁö ¾Ê½À´Ï´Ù.
+
+//º£È÷¸ð½º ¿ìµç ¹«±âÀÇ ºñ¹Ð ÀÌº¥Æ®
+#define TID_MMI_BEHEMOTHSMELTEVENT_5_9_TEXT			4865	// ¼Ó¼ºÁ¦·Ã °ª 5 ~ 9 -> °­È­ºñÀü¼­(B) 1°³·Î ±³È¯
+#define TID_MMI_BEHEMOTHSMELTEVENT_10_14_TEXT		4866	// ¼Ó¼ºÁ¦·Ã °ª 10 ~ 14 -> Çà¿îÀÇ ¾È°æ»óÀÚ 1°³·Î ±³È¯
+#define TID_MMI_BEHEMOTHSMELTEVENT_15_19_TEXT		4867	// ¼Ó¼ºÁ¦·Ã °ª 15 ~ 19 -> ¿ë¸ÍÇÑ ¶óÄï ¿ì¸® 1°³·Î ±³È¯
+#define TID_MMI_BEHEMOTHSMELTEVENT_20_TEXT			4868	// ¼Ó¼ºÁ¦·Ã °ª 20 -> +20 ¼Ó¼ºÁ¦·Ã µÈ º£È÷¸ð½º ¹«±â·Î ±³È¯
+
+#define	TID_MMI_BEHEMOTHSMELTEVENT_TWOSWORD_DESCRIPTION			4869	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ÅõÇÚµå ¼Òµå¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_TWOAXE_DESCRIPTION			4870	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ÅõÇÚµå ¿¢½º¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_ONESWORD_DESCRIPTION			4871	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç¼Òµå¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_ONEAXE_DESCRIPTION			4872	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ¿¢½º¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_BOW_DESCRIPTION				4873	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç º¸¿ì¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_YOYO_DESCRIPTION				4874	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ¿ä¿ä¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_KNUCKLE_DESCRIPTION			4875	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ³ÊÅ¬À» º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_STICK_DESCRIPTION			4876	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ½ºÆ½À» º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_WAND_DESCRIPTION				4877	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ¿Ïµå¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_BEHEMOTHSMELTEVENT_STAFF_DESCRIPTION			4878	// ¼Ó¼ºÁ¦·ÃµÈ º£È÷¸ð½ºÀÇ ¿ìµç ½ºÅÂÇÁ¸¦ º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+
+//°¡À» ³«¿± ±³È¯ ÀÌº¥Æ®
+#define	TID_MMI_MAPLE_TRADE_TEXT01			4879	// ³ª¹µÀÙ 10°³¸¦ PC zone»óÀÚ 1°³·Î ±³È¯
+#define	TID_MMI_MAPLE_TRADE_TEXT02			4880	// ³ª¹µÀÙ 1000°³¸¦ OMG Ä«¸á·¹¿Â ¸ðÀÚ(ÃÊ·Ï)(7ÀÏ) 1°³·Î ±³È¯
+#define	TID_MMI_MAPLE_TRADE_TEXT03			4881	// ³ª¹µÀÙ 5000°³¸¦ ¼ö½À»ýÀÇ »óÀÚ(1ÀÏ) 1°³·Î ±³È¯
+#define	TID_MMI_MAPLE_TRADE_TEXT04			4882	// ³ª¹µÀÙ 7000°³¸¦ ÇÇ¾î½Ì Ä«µå »óÀÚ 1°³·Î ±³È¯
+#define	TID_MMI_MAPLE_TRADE_TEXT05			4883	// ³ª¹µÀÙÀ» º¸»ó¾ÆÀÌÅÛÀ¸·Î ±³È¯
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁöÃß°¡ 
+#define TID_MMI_TRADESYSTEM_ITEMRESEARCH01		4884//	Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇØ ÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.
+#define TID_MMI_TRADESYSTEM_ITEMREGISTERERROR01		4885//	%s ¾ÆÀÌÅÛÀº µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù. ´Ù½Ã È®ÀÎ ÇØ ÁÖ½Ê½Ã¿ä.
+#define TID_MMI_TRADESYSTEM_ITEMREGISTERERROR02		4886//	µî·Ï ½ÃµµÇÑ ¾ÆÀÌÅÛÀÇ ÃÖ´ë ¼ö·®À» ÃÊ°úÇÏ¿´½À´Ï´Ù. ´Ù½Ã È®ÀÎ ÇØ ÁÖ½Ê½Ã¿ä.
+
+#define TID_MMI_TWBOXTRADE_TEXT03			4887	// OMG ¿ë»çÀÇ ÀÇ»ó(³²)À¸·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT04			4888	// OMG ¿ë»çÀÇ Àå°©(³²)À¸·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT05			4889	// OMG ¿ë»çÀÇ ½Å¹ß(³²)À¸·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT06			4890	// OMG ¿ë»çÀÇ ¸ðÀÚ(³²)À¸·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT07			4891	// OMG ¿ë»çÀÇ ÀÇ»ó(¿©)À¸·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT08			4892	// OMG ¿ë»çÀÇ Àå°©(¿©)À¸·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT09			4893	// OMG ¿ë»çÀÇ ½Å¹ß(¿©)À¸·Î ±³È¯
+#define TID_MMI_TWBOXTRADE_TEXT10			4894	// OMG ¿ë»çÀÇ ¸ðÀÚ(¿©)À¸·Î ±³È¯
+
+//¹Ì±¹ °¡À§¹ÙÀ§º¸ ÄíÆù ±³È¯
+#define	TID_MMI_USAKAWIBAWIBOCOUPON2011_DESCRIPTION	4895	// È£¹Ú 10°³¿Í 100,000 Æä³Ä¸¦ °¡À§¹ÙÀ§º¸ ÄíÆùÀ¸·Î ±³È¯
+
+//ÀåÀÎÀÇ °è¾à¼­_ °Å·¡ Áß°³ ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_TRADEREGISTERITEM			4896	// ÀåÀÎÀÇ °è¾à¼­°¡ Á¤»óÀûÀ¸·Î »ç¿ëµÇ¾î µî·Ï °³¼ö°¡ Áõ°¡µÇ¾ú½À´Ï´Ù.
+
+//¿ÜÇü º¯°æ ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_LOOKCHANGE01				4897	// ¿ÜÇü º¯°æÀ» Àû¿ëÇÒ ¼ö ¾ø´Â ¾ÆÀÌÅÛÀÔ´Ï´Ù.
+#define	TID_MMI_LOOKCHANGE02				4898	// ¿ÜÇü º¹±¸°¡ ºÒ ÇÊ¿äÇÑ ¾ÆÀÌÅÛÀÔ´Ï´Ù.
+#define	TID_MMI_LOOKCHANGE03				4899	// A½½·Ô¿¡ ¸ÕÀú ¾ÆÀÌÅÛÀ» µî·ÏÇØ¾ß ÇÕ´Ï´Ù. ´Ù½Ã È®ÀÎ ÇØ ÁÖ½Ê½Ã¿ä.
+#define	TID_MMI_LOOKCHANGE04				4900	// ¾ÆÀÌÅÛÀÇ ¿ÜÇüÀÌ ¼º°øÀûÀ¸·Î º¯°æµÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_LOOKCHANGE05				4901	// ¾ÆÀÌÅÛ ¿ÜÇüÀÌ ¼º°øÀûÀ¸·Î º¹±¸µÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_LOOKCHANGE06				4902	// ¿ÜÇü º¯°æÀ» ÇÏ±â À§ÇØ¼± ¸ðµç ½½·Ô¿¡ ¾ÆÀÌÅÛÀ» µî·ÏÇØ¾ß ÇÕ´Ï´Ù.
+
+//¾ç¼Õ ¹«±â ÇÕ¼º °ü·Ã ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT01	4903	//	ÇÕ¼º ¿É¼ÇÀÌ ºÎ¿©µÈ ¾ç¼Õ ¹«±â ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT02	4904	//	±â°£Á¦ ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT03	4905	//	¾ç¼Õ ¹«±â°¡ ¾Æ´Ñ ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT04	4906	//	¹Ù·ç³ª µî±ÞÀÇ ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT05	4907	//	ÇÕ¼º ¿É¼ÇÀ» ºÎ¿©ÇÒ ¾ÆÀÌÅÛ°ú ´Ù¸¥ Á¾·ùÀÇ ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT06	4908	//	°Å·¡ ºÒ°¡´ÉÇÑ ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT07	4909	//	ÇÕ¼º ¿É¼ÇÀ» ºÎ¿©ÇÒ ¾ÆÀÌÅÛº¸´Ù ·¹º§ÀÌ ³ôÀº ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT08	4910	//	ÇÕ¼º ¿É¼ÇÀ» ºÎ¿©ÇÒ ¾ÆÀÌÅÛº¸´Ù Àü½Â µî±ÞÀÌ ³ô¾Æ µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT09	4911	//	ÇÕ¼º ¿É¼ÇÀ» ºÎ¿©ÇÒ ¾ÆÀÌÅÛÀ» ¸ÕÀú µî·ÏÇÏ¿©¾ß ÇÕ´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT10	4912	//	¸¶¹ýÀÇ ¿¬¸¶¼®¸¸ µî·ÏÇÒ ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT11	4913	//	ÇÕ¼º ¿É¼ÇÀÌ ºÎ¿©µÇÁö ¾ÊÀº ¾ÆÀÌÅÛÀ» µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT12	4914	//	ÇÕ¼º¿É¼ÇÀ» Á¦°ÅÇÏ·Á¸é %d Æä³Ä°¡ ÇÊ¿äÇÕ´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_FAILTEXT01		4915	//	¾ç¼Õ ¹«±â ÇÕ¼º¿¡ ½ÇÆÐÇÏ¿© µî·ÏµÈ %s °¡ ÆÄ±« µÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_FAILTEXT02		4916	//	¾ç¼Õ ¹«±â ÇÕ¼º¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù.
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_SUCCESSTEXT01	4917	//	¾ç¼Õ ¹«±â ÇÕ¼º¿¡ ¼º°øÇÏ¿´½À´Ï´Ù!
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_SUCCESSTEXT02	4918	//	ÇÕ¼º ¿É¼ÇÀÌ ¼º°øÀûÀ¸·Î Á¦°Å µÇ¾ú½À´Ï´Ù.
+
+//Ç×¾Æ¸® ¾ÆÀÌÅÛ °ü·Ã ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_ELLDINPOTION_LOCKCLEAR			4919	//	¹ÐºÀµÈ »óÅÂ¸¦ ÇØÁ¦ ÇÏ½Ã°Ú½À´Ï±î?
+#define	TID_MMI_ELLDINPOTION_TEXT01			4920	//	ÀúÀåµÈ Ã¼·ÂÀÌ ºÎÁ·ÇØ Ä¡·áÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_ELLDINPOTION_TEXT02			4921	//	µî·ÏÇÒ ¼ö ¾ø´Â ¾ÆÀÌÅÛÀÔ´Ï´Ù. ´Ù½Ã È®ÀÎÇØ ÁÖ¼¼¿ä.
+#define	TID_MMI_ELLDINPOTION_TEXT03			4922	//	%d / 1,000,000	Ã¼·ÂÀ» ÀúÀåÇß½À´Ï´Ù.
+#define	TID_MMI_ELLDINPOTION_TEXT04			4923	//	1,000,000 / 1,000,000	ÀúÀåµÈ Ã¼·ÂÀÌ °¡µæÇØ ´õ ÀÌ»ó ÀúÀåÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_ELLDINPOTION_TEXT05			4924	//	%d / 1,000,000	Ã¼·ÂÀÌ Ä¡·áµÇ¾ú½À´Ï´Ù.
+
+//¾ç¼Õ ¹«±â ÇÕ¼º ¸Þ½ÃÁö Ãß°¡ 2Â÷ºÐ
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_CONFIRM			4925	//Á¤¸»·Î UI¸¦ ´ÝÀ¸½Ã°Ú½À´Ï±î?
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_CANCEL_CONFIRM		4926	//Á¦°ÅµÈ ÇÕ¼º ¿É¼ÇÀº µÇµ¹¸± ¼ö ¾ø½À´Ï´Ù. °è¼ÓÇÏ½Ã°Ú½À´Ï±î?
+
+//ÄÝ·Î¼¼¿ò º¸»ó
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_DESCRIPTION			4927	// ÁõÇ¥·Î ±âÅ¸ º¸»ó ¾ÆÀÌÅÛ ±³È¯
+
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT01					4928	// Çª¸¥ ÁõÇ¥ 150°³ -> ¿À¸®Ä®Äñ 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT02					4929	// Çª¸¥ ÁõÇ¥ 150°³ -> ¹®½ºÅæ 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT03					4930	// Çª¸¥ ÁõÇ¥ 75°³ ->  ¹«ÀÛÀ§ ¼Ó¼º Ä«µå 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT04					4931	// Çª¸¥ ÁõÇ¥ 50°³, ºÓÀº ÁõÇ¥ 10°³ -> 3µî±Þ ½Ãµå °áÁ¤Ã¼ 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT05					4932	// Çª¸¥ ÁõÇ¥ 900°³, ºÓÀº ÁõÇ¥ 180°³ -> ¹«ÀÛÀ§ 3% Ä«µå 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT06					4933	// Çª¸¥ ÁõÇ¥ 900°³, ºÓÀº ÁõÇ¥ 180°³ -> ¹«ÀÛÀ§ C µî±Þ Ä«µå 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT07					4934	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³ -> ¼Ó¼º ¿Àºê ¹Ú½º 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT08					4935	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 10°³ -> ÅäÆÄÁî 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT09					4936	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 25°³ -> ·çºñ 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT10					4937	// Çª¸¥ ÁõÇ¥ 9000°³, ºÓÀº ÁõÇ¥ 1800°³, Åõ»çÀÇ ÁõÇ¥ 80°³ -> »çÆÄÀÌ¾î 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT11					4938	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 96°³  -> ¿¡¸Þ¶öµå 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT12					4939	// Çª¸¥ ÁõÇ¥ 18000°³, ºÓÀº ÁõÇ¥ 3600°³, Åõ»çÀÇ ÁõÇ¥ 112°³ -> ´ÙÀÌ¾Æ¸óµå 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT13					4940	// Çª¸¥ ÁõÇ¥ 27000°³, ºÓÀº ÁõÇ¥ 5400°³, Åõ»çÀÇ ÁõÇ¥ 128°³ -> ¿µÈ¥ÀÇ ¾Ç¼¼¼­¸® ·£´ý ¹Ú½º 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT14					4941	// Çª¸¥ ÁõÇ¥ 18000°³, ºÓÀº ÁõÇ¥ 3600°³, Åõ»çÀÇ ÁõÇ¥ 120°³ -> ¿ë¸ÁÅä(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_MIX_TEXT15					4942	// Çª¸¥ ÁõÇ¥ 37800°³, ºÓÀº ÁõÇ¥ 7560°³, Åõ»çÀÇ ÁõÇ¥ 360°³ -> µµÀüÀÇ ¿ë¸ÁÅä(±Í¼Ó) 1°³
+
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_DESCRIPTION		4943	// ÁõÇ¥·Î ÃÊ±Þ Åõ»çÀÇ ¹«±â ±³È¯
+
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT01			4944	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ÇÑ¼Õ°Ë(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT02			4945	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ¾ç¼Õ°Ë(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT03			4946	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ÇÑ¼Õµµ³¢(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT04			4947	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ¾ç¼Õµµ³¢(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT05			4948	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ³ÊÅ¬(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT06			4949	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ½ºÆ½(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT07			4950	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ¿Ïµå(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT08			4951	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ½ºÅÂÇÁ(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT09			4952	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ È°(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_1_TEXT10			4953	// Çª¸¥ ÁõÇ¥ 1800°³, ºÓÀº ÁõÇ¥ 360°³, Åõ»çÀÇ ÁõÇ¥ 6°³ -> ÃÊ±Þ Åõ»çÀÇ ¿ä¿ä(±Í¼Ó) 1°³
+
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_DESCRIPTION		4954	// ÁõÇ¥·Î Áß±Þ Åõ»çÀÇ ¹«±â ±³È¯
+
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT01			4955	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ÇÑ¼Õ°Ë(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT02			4956	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ¾ç¼Õ°Ë(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT03			4957	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ÇÑ¼Õµµ³¢(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT04			4958	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ¾ç¼Õµµ³¢(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT05			4959	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ³ÊÅ¬(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT06			4960	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ½ºÆ½(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT07			4961	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ¿Ïµå(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT08			4962	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ½ºÅÂÇÁ(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT09			4963	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ È°(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_2_TEXT10			4964	// Çª¸¥ ÁõÇ¥ 5400°³, ºÓÀº ÁõÇ¥ 1080°³, Åõ»çÀÇ ÁõÇ¥ 18°³ -> Áß±Þ Åõ»çÀÇ ¿ä¿ä(±Í¼Ó) 1°³
+
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_DESCRIPTION		4965	// ÁõÇ¥·Î °í±Þ Åõ»çÀÇ ¹«±â ±³È¯
+
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT01			4966	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ÇÑ¼Õ°Ë(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT02			4967	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ¾ç¼Õ°Ë(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT03			4968	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ÇÑ¼Õµµ³¢(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT04			4969	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ¾ç¼Õµµ³¢(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT05			4970	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ³ÊÅ¬(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT06			4971	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ½ºÆ½(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT07			4972	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ¿Ïµå(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT08			4973	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ½ºÅÂÇÁ(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT09			4974	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ È°(±Í¼Ó) 1°³
+#define	TID_MMI_COLOSSEUM_REWARD_WEAPON_3_TEXT10			4975	// Çª¸¥ ÁõÇ¥ 12600°³, ºÓÀº ÁõÇ¥ 2520°³, Åõ»çÀÇ ÁõÇ¥ 40°³ -> °í±Þ Åõ»çÀÇ ¿ä¿ä(±Í¼Ó) 1°³
+
+#define	TID_MMI_QUEST_ESCESS						4976	// Äù½ºÆ® ½ÀµæÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù. Äù½ºÆ® ½ÀµæÀº 60°³¸¦ ÃÊ°úÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+#define	TID_MMI_SHUTDOWNNOTICE01					4977 // ¼Ë´Ù¿îÁ¦µµ ¾Ë¸² ¸Þ½ÃÁö
+#define	TID_MMI_SHUTDOWNNOTICE02					4978 // ¼Ë´Ù¿îÁ¦µµ °­Á¦ ÅðÀå ´çÇßÀ» ¶§
+#define	TID_MMI_SHUTDOWNNOTICE03					4979 // ¼Ë´Ù¿îÁ¦µµ °­Á¦Á¾·áÈÄ Àç Á¢¼Ó ½Ãµµ½Ã
+
+//¾ç¼Õ ¹«±â ÇÕ¼º ¿¡·¯¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_ERRORTEXT13	4980	//°¢¼º º¸È£ »óÅÂÀÎ ¾ÆÀÌÅÛÀº µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.	
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_RESULTTEXT01	4981	//[¾ç¼Õ ¹«±â ÇÕ¼º ¿É¼Ç]
+
+//¾ç¼Õ ¹«±â ÇÕ¼º ¸Þ½ÃÁö Ãß°¡ 3Â÷ºÐ
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_CONFIRM02		4982	//¸¶¹ýÀÇ ¿¬¸¶¼® ¾ÆÀÌÅÛÀÌ ¾ø¾î ¾ç¼Õ ¹«±â ÇÕ¼º ½ÇÆÐ ½Ã ¾ÆÀÌÅÛÀÌ ÆÄ±«µÉ ¼ö ÀÖ½À´Ï´Ù. °è¼Ó ÁøÇà ÇÏ½Ã°Ú½À´Ï±î?
+
+//°Å·¡ Áß°³ ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_TRADESYSTEM_ITEMBUY01			4983	//%s ¾ÆÀÌÅÛÀ» ±¸¸ÅÇÏ½Ã°Ú½À´Ï±î? ±¸¸Å½Ã ¼ö¼ö·á´Â %d Æä³ÄÀÔ´Ï´Ù. 
+
+
+
+//¿ÜÇü º¯°æ ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁö Ãß°¡ºÐ
+#define	TID_MMI_LOOKCHANGE07				4984	// ¿ÜÇü º¯°æÀ» À§ÇØ¼± Àû¿ë ¾ÆÀÌÅÛ°ú ÃßÃâ ¾ÆÀÌÅÛÀÇ ÆÄÃ÷°¡ µ¿ÀÏÇØ¾ß ÇÕ´Ï´Ù.
+#define	TID_MMI_LOOKCHANGE08				4985	// ¿ÜÇü Àû¿ëÀÌ ºÒ°¡´ÉÇÑ ¾ÆÀÌÅÛÀÔ´Ï´Ù. ¾ÆÀÌÅÛÀ» ´Ù½Ã È®ÀÎ ÇØ ÁÖ½Ê½Ã¿ä.
+#define	TID_MMI_LOOKCHANGE09				4986	// ¿ÜÇü ÃßÃâÀÌ ºÒ°¡´ÉÇÑ ¾ÆÀÌÅÛÀÔ´Ï´Ù. ¾ÆÀÌÅÛÀ» ´Ù½Ã È®ÀÎ ÇØ ÁÖ½Ê½Ã¿ä.
+
+//¿¤µòÀÇ Ç×¾Æ¸® °ü·Ã ¸Þ½ÃÁö Ãß°¡ºÐ
+#define	TID_MMI_ELLDINPOTION_TEXT06			4987	// Æ÷ÀåµÈ ¾ÆÀÌÅÛÀÔ´Ï´Ù. Æ÷ÀåÀ» ÇØÁ¦ ÈÄ »ç¿ëÇØÁÖ¼¼¿ä.
+#define	TID_MMI_ELLDINPOTION_TEXT07			4988	// ÀÌ¹Ì Æ÷ÀåÀÌ ÇØÁ¦µÇ¾ú°Å³ª ÇØÁ¦ÇÒ ¼ö ¾ø´Â ¾ÆÀÌÅÛÀÔ´Ï´Ù.
+#define	TID_MMI_ELLDINPOTION_TEXT08			4989	// ÀúÀåÇÒ ¼ö ¾ø´Â ¾ÆÀÌÅÛÀÔ´Ï´Ù. ´Ù½Ã È®ÀÎÇØ ÁÖ¼¼¿ä.
+#define	TID_MMI_ELLDINPOTION_TEXT09			4990	// ¾ÆÀÌÅÛÀ» »ç¿ëÇÏ±â À§ÇØ¼­´Â Àü¿ëÃ¢¿¡ µî·ÏÇØ¾ß ÇÕ´Ï´Ù. Àü¿ëÃ¢Àº ´ÜÃàÅ° (Z)¸¦ ´©¸£¸é ºÒ·¯¿Ã ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_ELLDINPOTION_TEXT10			4991	// Ã¼·ÂÀÌ È¸º¹µÇ¾îÀÖ½À´Ï´Ù.
+
+#define	TID_MMI_TRADESYSTEM_ADMITITEMNUMBER		4992	//µî·ÏÇÑ¹°Ç°(%d/%d)
+
+//½Å±Ô¿É¼Ç ÅØ½ºÆ®
+#define	TID_TOOLTIP_TAKE_PVP_DMG_PHYSICAL_RATE	4993		//	PvP ½Ã ¹ÞÀº ¹°¸® µ¥¹ÌÁö
+#define	TID_TOOLTIP_TAKE_PVP_DMG_MAGIC_RATE	4994		//	PvP ½Ã ¹ÞÀº ¸¶¹ý µ¥¹ÌÁö
+#define	TID_TOOLTIP_TAKE_PVE_DMG_PHYSICAL_RATE	4995		//	PvE ½Ã ¹ÞÀº ¹°¸® µ¥¹ÌÁö
+#define	TID_TOOLTIP_TAKE_PVE_DMG_MAGIC_RATE	4996		//	PvE ½Ã ¹ÞÀº ¸¶¹ý µ¥¹ÌÁö
+#define	TID_TOOLTIP_DROP_ITEM_ALLGRADE_RATE	4997		//	¾ÆÀÌÅÛ µå·Ó·ü
+#define	TID_TOOLTIP_DROP_ITEM_ONEMORE_CHANCE	4998		//	¾ÆÀÌÅÛ µå·Ó ÆÇÁ¤ Àç °Ë»ç È®·ü Áõ°¡
+#define	TID_TOOLTIP_GIVE_PVE_DMG_ELEMENT_FIRE_RATE	4999		//	ºÒ ¼Ó¼º ¸ó½ºÅÍ¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_PVE_DMG_ELEMENT_WATER_RATE	5000		//	¹° ¼Ó¼º ¸ó½ºÅÍ¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_PVE_DMG_ELEMENT_ELECT_RATE	5001		//	Àü±â ¼Ó¼º ¸ó½ºÅÍ¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_PVE_DMG_ELEMENT_WIND_RATE	5002		//	¹Ù¶÷ ¼Ó¼º ¸ó½ºÅÍ¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_PVE_DMG_ELEMENT_EARTH_RATE	5003		//	¶¥ ¼Ó¼º ¸ó½ºÅÍ¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_ADJ_ITEM_EQUIP_LEVEL	5004		//	Âø¿ë ¿ä±¸ ·¹º§
+#define	TID_TOOLTIP_SKILL_LEVELUP_EACH	5005		//	%s ½ºÅ³ ·¹º§ Áõ°¡
+#define	TID_TOOLTIP_SKILL_LEVELUP_ALL	5006		//	¸ðµç ½ºÅ³ ·¹º§ Áõ°¡
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_STUN	5007		//	±âÀýÇÑ »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_DARK	5008		//	¾ÏÈæ »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_POISON	5009		//	Áßµ¶µÈ »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_SLOW	5010		//	´À·ÁÁø »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_BLEEDING	5011		//	ÃâÇ÷ »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_SLILENT	5012		//	Ä§¹¬ »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_LOOT	5013		//	ÀÌµ¿ ºÒ°¡ »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_SETSTONE	5014		//	¼®È­ »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_GIVE_DMG_RATE_ENEMY_SLEEPING	5015		//	¼ö¸é »óÅÂÀÇ ´ë»ó¿¡°Ô Ãß°¡ ÇÇÇØ
+#define	TID_TOOLTIP_ATTACKSPEED_DOWN	5016		//	°ø°Ý ¼Óµµ °¨¼Ò
+#define	TID_TOOLTIP_CRITICALRATE_DOWN	5017		//	Ä¡¸íÅ¸ È®·ü °¨¼Ò
+#define	TID_TOOLTIP_CRITICALDMG_DOWN	5018		//	Ä¡¸íÅ¸ Ãß°¡ ÇÇÇØ °¨¼Ò
+
+//Å©¸®½º¸¶½ºÁ¤·ÉÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define	TID_MMI_CRISTMASRUBETRADEMENU_DESCRIPTION			5019	//Å©¸®½º ¸¶½º ÅäÅ«À¸·Î ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT01			5020	//Å©¸®½º ¸¶½º ÅäÅ« 1°³·Î GM °úÀÏ ÄÉÀÌÅ© 5°³ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT02			5021	//Å©¸®½º ¸¶½º ÅäÅ« 25°³·Î GM °úÀÏ ÄÉÀÌÅ© 30°³ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT03			5022	//Å©¸®½º ¸¶½º ÅäÅ« 25°³·Î »êÅ¸ÀÇ ¼±¹° »óÀÚ 5°³ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT04			5023	//Å©¸®½º ¸¶½º ÅäÅ« 50°³·Î »êÅ¸ÀÇ ¼±¹° »óÀÚ 10°³ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT05			5024	//Å©¸®½º ¸¶½º ÅäÅ« 50°³·Î °¢¼º º¯È¯ ÆÐÅ°Áö 3°³ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT06			5025	//Å©¸®½º ¸¶½º ÅäÅ« 75°³·Î °¢¼º º¯È¯ ÆÐÅ°Áö 5°³ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT07			5026	//Å©¸®½º ¸¶½º ÅäÅ« 75°³·Î ³î¶ó¿î ÁÖ¸Ó´Ï 3°³ ±³È¯
+#define	TID_MMI_CRISTMASRUBETRADEMENU_TEXT08			5027	//Å©¸®½º ¸¶½º ÅäÅ« 100°³·Î Å©¸®½º¸¶½º ¿äÁ¤ Æê 1°³ ±³È¯
+
+//¿ÜÇüº¯°æ ¸Þ½ÃÁö Ãß°¡ºÐ
+#define	TID_MMI_LOOKCHANGE10							5028 //%s ¾ÆÀÌÅÛÀÇ ¿ÜÇü Àû¿ëÁß
+
+//°Å·¡ Áß°³ ½Ã½ºÅÛ °ü·Ã ¸Þ½ÃÁöÃß°¡ 
+#define TID_MMI_TRADESYSTEM_MYITEMREGISTBUYFAILD01		5029//	ÀÚ½ÅÀÌ ÆÇ¸Å µî·ÏÇÑ ¾ÆÀÌÅÛÀº ±¸¸ÅÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//°Å·¡ Áß°³ ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_TRADESYSTEM_ITEMREGIST01			5030	//%s ¾ÆÀÌÅÛÀ» µî·ÏÇÏ½Ã°Ú½À´Ï±î? µî·Ï ¼ö¼ö·á´Â %d Æä³ÄÀÔ´Ï´Ù. 
+#define	TID_MMI_TRADESYSTEM_ITEMREGIST02			5031	//ÀÎº¥Åä¸®¸¦ Á¦¿ÜÇÑ ´Ù¸¥ °÷¿¡¼­´Â ¾ÆÀÌÅÛÀ» µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//¿ÜÇü º¯°æ ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_LOOKCHAGE11							5032	// ÃßÃâ ¾ÆÀÌÅÛ ½½·Ô¿¡ µî·ÏÇÑ ¾ÆÀÌÅÛÀÌ ÆÄ±«µË´Ï´Ù. °è¼ÓÇÏ½Ã°Ú½À´Ï±î?
+
+//»êÅ¸ÀÇ Á¦·Ã ÀÌº¥Æ®
+#define	TID_MMI_CHRISTMASENCHANTEVENTMENU_DESCRIPTION		5033	// Á¦·ÃµÈ ½Åºñ·Î¿ö º¸ÀÌ´Â ¹ÝÁö¸¦ º¸»ó ¾ÆÀÌÅÛÀ¸·Î ±³È¯ 
+#define	TID_MMI_CHRISTMASENCHANTEVENTMENU_8_14_TEXT		5034	// + 8 ~ 14 -> ESÁõÆøÀÇ µÎ·ç¸¶¸®S 5°³·Î ±³È¯
+#define	TID_MMI_CHRISTMASENCHANTEVENTMENU_15_18_TEXT		5035	// + 15 ~ 18 -> ESÁõÆøÀÇ µÎ·ç¸¶¸®R (30ÀÏ) 1°³·Î ±³È¯
+#define	TID_MMI_CHRISTMASENCHANTEVENTMENU_19_TEXT		5036	// + 19 -> ESÁõÆøÀÇ µÎ·ç¸¶¸®Q 2°³, ÆÐ¼Ç Á¾°áÀÚ ¼±±Û¶ó½º 1°³·Î ±³È¯
+#define	TID_MMI_CHRISTMASENCHANTEVENTMENU_20_TEXT		5037	// + 20 -> ·çµ¹ÇÁ ¾×¼¼¼­¸® »óÀÚ 1°³, ESÁõÆøÀÇ µÎ·ç¸¶¸®Q 5°³·Î ±³È¯
+
+//¿ÜÇü º¯°æ ¸Þ½ÃÁö Ãß°¡
+#define	TID_MMI_LOOKCHAGE12								5038	//¿ÜÇü º¯°æÀ» À§ÇØ¼± Àû¿ë ¾ÆÀÌÅÛ°ú ÃßÃâ ¾ÆÀÌÅÛÀÇ ¼ºº°ÀÌ µ¿ÀÏÇØ¾ß ÇÕ´Ï´Ù.
+
+#define	TID_MMI_ELLDINPOTION_TEXT11						5039	//Æ÷ÀåÀÌ ÇØÁ¦µÇ¸é ±³È¯ºÒ°¡ »óÅÂ°¡ µÇ°í »ç¿ë±â°£ÀÌ ¼Ò¸ðµÇ±â ½ÃÀÛÇÕ´Ï´Ù. Æ÷ÀåÀ» ÇØÁ¦ ÇÏ½Ã°Ú½À´Ï±î?
+
+#define	TID_MMI_LOCKTYPE_TEXT01				5040	//ºÀÀÎÀÌ ÇØÁ¦µÈ µ¿ÀÏÇÑ ¾ÆÀÌÅÛÀÌ Á¸ÀçÇÏ¿© ´õ ÀÌ»ó ºÀÀÎÀ» ÇØÁ¦ÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+
+//2011 ±¹³» ¿¬Åº ÀÌº¥Æ®
+
+#define	TID_MMI_CRISTMASEVENTKOREA2011_TEXT01		5041	//¿¬Åº Á¶°¢ 15¸¸°³¸¦ ¸ð¾Æ¶ó!
+#define	TID_MMI_CRISTMASEVENTKOREA2011_TEXT02		5042	//¿¬Åº Á¶°¢ 15¸¸°³
+
+#define	TID_MMI_ELLDINPOTION_TEXT12			5043	//¿¤µòÀÇ Ç×¾Æ¸®°¡ µî·ÏµÇ¾îÀÖÁö ¾Ê½À´Ï´Ù.
+
+#define	TID_MMI_ELLDINPOTIONTOOLTIP_TEXT01		5044	//ÀúÀåµÈ Ã¼·Â ÅøÆÁ
+
+//Ä³¸¯ÅÍ Á¤º¸ ¹öÆ°
+#define	TID_MMI_CHARACTERINFO_BUTTON01		5045	//Ä³¸¯ÅÍ Á¤º¸ ÁÂÃø ¹öÆ° ÅØ½ºÆ®
+#define	TID_MMI_CHARACTERINFO_BUTTON02		5046	//Ä³¸¯ÅÍ Á¤º¸ ¿ìÃø ¹öÆ° ÅØ½ºÆ®
+
+//ÀÎÆ÷ÆÎ ÅøÆÁ ¹öÆ°
+#define	TID_MMI_INFOPANGTIP_BUTTON01		5047	//ÀÎÆ÷ÆÎ Æ©Åä¸®¾ó ÁÂÃø ¹öÆ° ÅØ½ºÆ®
+#define	TID_MMI_INFOPANGTIP_BUTTON02		5048	//ÀÎÆ÷ÆÎ Æ©Åä¸®¾ó ¿ìÃø ¹öÆ° ÅØ½ºÆ®
+
+//UI ¹öÆ° ÅØ½ºÆ®
+#define	TID_MMI_UIBUTTON_BUTTON01		5049	//ÀÌÀü
+#define	TID_MMI_UIBUTTON_BUTTON02		5050	//È®ÀÎ
+#define	TID_MMI_UIBUTTON_BUTTON03		5051	//Ãë¼Ò
+
+#define	TID_MMI_TRADESYSTEM_ITEMREGISTADDMESSAGE		5052	//°³¼ö È®ÀåÀ» À§ÇØ¼± ÀåÀÎÀÇ °è¾à¼­¸¦ ±¸¸ÅÇÏ¿© »ç¿ëÇØ¾ß ÇÕ´Ï´Ù.
+
+#define	TID_MMI_UIEXPTOOLTIP			5053	//º¸À¯ °æÇèÄ¡: %d  /  ÇÊ¿ä °æÇèÄ¡: %d
+
+#define	TID_MMI_TRADESYSTEM_ITEMSEARCHINCLUSION01			5054	//°Ë»ö¾îÆ÷ÇÔ
+#define	TID_MMI_TRADESYSTEM_ITEMSEARCHACCORD01				5055	//°Ë»ö¾îÀÏÄ¡
+
+
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_INFOTEXT01				5056	//ÀÏ¹Ý Á¦·Ã, ¾ÆÀÌÅÛ °¢¼º, Ä«µå ÇÇ¾î½Ì, Á¢µÎ ¿É¼Ç¸¸ ÃßÃâ °¡´É ÇÕ´Ï´Ù
+#define	TID_MMI_TWOHANDEDWEAPONMERGE_INFOTEXT02				5057	//µî·ÏµÈ %s ¾ÆÀÌÅÛÀ¸·ÎºÎÅÍ ¾òÀ» ¼ö ÀÖ´Â ¿É¼ÇÀÌ Á¸Àç ÇÏÁö ¾Ê½À´Ï´Ù.
+
+#define	TID_MMI_ELLDINPOTION_TEXT13					5058	//ÀÌ¹Ì µî·ÏµÈ ¾ÆÀÌÅÛ ÀÔ´Ï´Ù.
+#define	TID_MMI_TRADESYSTEM_ITEMCALCULATE01				5059	//Á¤»êÀ» ÁøÇàÇÏ½Ã°Ú½À´Ï±î? Á¤»êµÈ ¹°Ç°Àº ¿ìÆíÀ¸·Î Áö±ÞµÇ¸ç 15ÀÏ ÀÌ³»¿¡ Ã£¾Æ°¡Áö ¾ÊÀ¸½Ç °æ¿ì ¼Ò¸êµÉ ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_TRADESYSTEM_ITEMREGISTEROVER01				5060	//¼±ÅÃÇÏ½Å ¾ÆÀÌÅÛÀÇ ÃÖ´ë º¸À¯ °³¼ö¸¦ ÃÊ°úÇÏ¿´½À´Ï´Ù.
+#define	TID_MMI_TRADESYSTEM_ITEMENTRYOVERNUMBER01			5061	//¼ö·® ÀÔ·Â ÃÊ°úÀÔ´Ï´Ù. ´õ ÀÌ»ó ¼ö·®À» µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+#define	TID_MMI_MARKETEXIT_TEXT01			5062	//¸¶À»·Î ÀÌµ¿ÇÏ½Ã°Ú½À´Ï±î?
+
+#define	TID_MMI_BUTTONSTART			5063	//½ÃÀÛ
+#define	TID_MMI_BUTTONSTOP			5064	//Á¤Áö
+
+#define	TID_MMI_TRADESYSTEM_ITEMENTRYOVERNUMBER02			5065	//ÃÖ¼Ò ¼ö·®ÀÔ´Ï´Ù. ´õ ÀÌÇÏÀÇ ¼ö·®À» µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_TRADESYSTEM_ITEMREGISTERNOTFOUND01			5066	//ÆÇ¸Å µî·Ï µÈ ¾ÆÀÌÅÛÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.
+
+//¹öÆ° ÅØ½ºÆ®_¼ö¶ô_°ÅÀý
+#define	TID_MMI_UIBUTTON_BUTTON04			5067	//¼ö¶ô
+#define	TID_MMI_UIBUTTON_BUTTON05			5068	//°ÅÀý
+
+//°Å·¡Áß°³ Ãß°¡ ¸Þ½ÃÁö
+#define	TID_MMI_TRADESYSTEM_ITEMNOTREGISTER01			5069	//ÇØ´ç ¾ÆÀÌÅÛÀº µî·ÏÀÌ ºÒ°¡´É ÇÑ ¾ÆÀÌÅÛÀÔ´Ï´Ù.
+
+//2012ÇØÇÇ¸Ó´Ï ÀÌº¥Æ® ¸Þ½ÃÁö
+#define	TID_MMI_EVENT_2012HAPPYMONEY_DESCRIPTION		5070	//¾È³çÇÏ¼¼¿ä. Àú´Â ÇØÇÇ¸Ó´Ï ±³È¯¿ø ÀÔ´Ï´Ù.
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT01			5071	//ÀÌº¥Æ®¿ë ¹®½ºÅæ, ÀÌº¥Æ®¿ë ¿À¸®Ä®Äñ
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT02			5072	//Àå¾î ±¸ÀÌ
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT03			5073	//±Ø´Ü ½ºÅ³ ÁõÆøÀÇ µÎ·ç¸¶¸®(7ÀÏ), ±Ø´Ü °æÇèÄ¡ ÁõÆøÀÇ µÎ·ç¸¶¸®(7ÀÏ), »þ¿ìÆ®Ç®(15ÀÏ)
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT04			5074	//¾ÆÁî¸®¾Æ ÀÔÀå±Ç(7ÀÏ), ÆÄ½ºÅ³Ç®15
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT05			5075	//¶ó¸£Å×½Ã¾Æ ÀÔÀå±Ç(7ÀÏ), ÆÄ½ºÅ³Ç®15
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT06			5076	//Å©¸®½ºÅ»(Lv1)
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT07			5077	//±Í¿©¿î º£ÀÌºñ Ä«¸£°í ¿ì¸®
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT08			5078	//ÇÏÀÌºê¸®µå ¶óÀÌÄ­ ¿ì¸®
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT09			5079	//¿ë¸ÍÀÇ ¸ÁÅä
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT10			5080	//´ÙÅ© ³¯°³
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT11			5081	//¶óÀÌÆ® ³¯°³
+
+//2012°¡À§¹ÙÀ§º¸ ÀÌº¥Æ®_ºê¶óÁú
+#define	TID_MMI_POR_2012KAWIBAWIBO_DESCRIPTION		5082	//È£¹Ú°ú Æä³Ä¸¦ °¡Á®¿À½Ã¸é °¡À§¹ÙÀ§º¸ ÄíÆùÀ¸·Î ±³È¯ÇØµå¸³´Ï´Ù.
+#define	TID_MMI_POR_2012KAWIBAWIBO_TEXT01		5083	//È£¹Ú 5°³¿Í 50,000Æä³Ä¸¦ °¡À§¹ÙÀ§º¸ ÄíÆùÀ¸·Î ±³È¯
+
+//½¦ÀÌµåÀÇ ¸ð·¡½Ã°è ¸Þ½ÃÁö
+#define	TID_MMI_DUNGEONCOOLTIME_TEXT01			5084	//¾ÆÀÌÅÛÀÇ »ç¿ë È½¼ö°¡ ºÎÁ·ÇÕ´Ï´Ù. (³²Àº È½¼ö: %s)
+#define	TID_MMI_DUNGEONCOOLTIME_TEXT02			5085	//ÃÊ±âÈ­ÇÒ ¼ö ÀÖ´Â ÀÎ½ºÅÏ½º ´øÀüÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.
+#define	TID_MMI_DUNGEONCOOLTIME_TEXT03			5086	//%dÀÇ ÀçÀÔÀå ½Ã°£ÀÌ ÃÊ±âÈ­ µÇ¾ú½À´Ï´Ù. (³²Àº È½¼ö : %s)
+
+//¿ë¿Õ ÀÇ»ó ¼ºº° ±³È¯ ¸Þ´º
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_DESCRIPTION	5087	//±âÁ¸ÀÇ ¿ë¿ÕÀÇ»óÀ» ¼ºº°ÀÌ Àû¿ëµÈ ÀÇ»óÀ¸·Î ±³È¯ÇØµå¸³´Ï´Ù.
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT01		5088	//ÆÄ±«ÀÇ ¿ë¿Õ ¸ÁÅä -> ÆÄ±«ÀÇ ¿ë¿Õ ¸ÁÅä(³²)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT02		5089	//ÆÄ±«ÀÇ ¿ë¿Õ ¸ÁÅä -> ÆÄ±«ÀÇ ¿ë¿Õ ¸ÁÅä(¿©)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT03		5090	//½Å¼ÓÇÑ ¿ë¿Õ ¸ÁÅä -> ½Å¼ÓÇÑ ¿ë¿Õ ¸ÁÅä(³²)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT04		5091	//½Å¼ÓÇÑ ¿ë¿Õ ¸ÁÅä -> ½Å¼ÓÇÑ ¿ë¿Õ ¸ÁÅä(¿©)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT05		5092	//Àü´ÉÇÑ ¿ë¿Õ ¸ÁÅä -> Àü´ÉÇÑ ¿ë¿Õ ¸ÁÅä(³²)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT06		5093	//Àü´ÉÇÑ ¿ë¿Õ ¸ÁÅä -> Àü´ÉÇÑ ¿ë¿Õ ¸ÁÅä(¿©)
+
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT07		5094	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é -> ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(³²)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT08		5095	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é -> ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(¿©)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT09		5096	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é -> ½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(³²)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT10		5097	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é -> ½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(¿©)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT11		5098	//Àü´ÉÇÑ ¿ë¿Õ °¡¸é -> Àü´ÉÇÑ ¿ë¿Õ °¡¸é(³²)
+#define	TID_MMI_SEAKINGLOOKCHANGEMENU_TEXT12		5099	//Àü´ÉÇÑ ¿ë¿Õ °¡¸é -> Àü´ÉÇÑ ¿ë¿Õ °¡¸é(¿©)
+
+//½¦ÀÌµåÀÇ ¸ð·¡½Ã°è ¸Þ½ÃÁö Ãß°¡ºÐ
+#define	TID_MMI_DUNGEONCOOLTIME_TEXT04			5100	//ÇØ´ç Áö¿ª¿¡¼­´Â ¾ÆÀÌÅÛÀ» »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//°¢¼ºÀç±¼¸²ÅØ½ºÆ®
+#define	TID_MMI_RANDOMOPTIONRETRY_ERRORTEXT01		5101	//°¢¼º Àç±¼¸²ÀÇ µÎ·ç¸¶¸®¸¦ º¸À¯ÇÏ°í ÀÖÁö ¾Ê½À´Ï´Ù.
+#define	TID_MMI_RANDOMOPTIONRETRY_ERRORTEXT02		5102	//°¢¼º ¿É¼ÇÀÌ ºÎ¿©µÇÁö ¾ÊÀº ¾ÆÀÌÅÛÀº µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_RANDOMOPTIONRETRY_ERRORTEXT03		5103	//°¢¼º ¿É¼ÇÀÌ 2°³ ÀÌ»óÀÎ ¾ÆÀÌÅÛ¸¸ µî·Ï °¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_RANDOMOPTIONRETRY_SUCCESSTEXT01		5104	//%s %d °ªÀÌ %s %d °ªÀ¸·Î º¯°æµÇ¾ú½À´Ï´Ù.
+
+//¸¶µå¸®°¥¼±¹°ÅØ½ºÆ®
+#define	TID_MMI_MADRIGALGIFT_TEXT01	5105	//Æ÷ÀÎÆ® : %s \n ¼±¹° Æ÷ÀÎÆ®°¡ 100ÀÌ µÇ¸é ÇØ´ç ¹öÆ°À» Å¬¸¯ÇÏ¿© 1´Ü°è º¸»óÀ» ¹ÞÀ» ¼ö ÀÖ½À´Ï´Ù. ¼±¹° Æ÷ÀÎÆ®´Â ½Ã°£ÀÌ Áö³¯¼ö·Ï È¹µæÇÏ¸ç, Á¢¼Ó ÁßÀÏ °æ¿ì ´õ ºü¸£°Ô È¹µæ ÇÒ ¼ö ÀÖ½À´Ï´Ù. ÀûÁ¤ ·¹º§ÀÇ ¸ó½ºÅÍ¸¦ »ç³ÉÇÒ °æ¿ì¿¡ Ãß°¡ Æ÷ÀÎÆ®¸¦ È¹µæ ÇÒ ¼ö ÀÖ½À´Ï´Ù. °Å´ë³ª º¸½º ¸ó½ºÅÍÀÇ °æ¿ì ´õ ¸¹Àº ¼±¹° Æ÷ÀÎÆ®¸¦ È¹µæ ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_MADRIGALGIFT_TEXT02	5106	//	ÇöÀç ´Ü°è : 1´Ü°è \nº¸»ó : %s ·¹º§ÀÇ º¸»ó \n´ÙÀ½ ´Ü°è Æ÷ÀÎÆ® : %s \nº¸»ó : %s ·¹º§ÀÇ º¸»ó \n¸¶¿ì½º ¿ÞÂÊ ¹öÆ°À» Å¬¸¯ÇÏ¿© 1 ´Ü°è º¸»óÀ» ¹ÞÀ» ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_MADRIGALGIFT_TEXT03	5107	//	ÇöÀç ´Ü°è : 2´Ü°è \nº¸»ó : %s ·¹º§ÀÇ º¸»ó \n´ÙÀ½ ´Ü°è Æ÷ÀÎÆ® : %s \nº¸»ó : %s ·¹º§ÀÇ º¸»ó \n¸¶¿ì½º ¿ÞÂÊ ¹öÆ°À» Å¬¸¯ÇÏ¿© 2 ´Ü°è º¸»óÀ» ¹ÞÀ» ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_MADRIGALGIFT_TEXT04	5108	//	ÇöÀç ´Ü°è : 3´Ü°è \nº¸»ó : %s ·¹º§ÀÇ º¸»ó \n¸¶¿ì½º ¿ÞÂÊ ¹öÆ°À» Å¬¸¯ÇÏ¿© 3 ´Ü°è º¸»óÀ» ¹ÞÀ» ¼ö ÀÖ½À´Ï´Ù.
+#define	TID_MMI_MADRIGALGIFT_TEXT05	5109	//	¸¶µå¸®°¥ÀÇ ¼±¹°Àº %sÀÔ´Ï´Ù!
+
+
+//°¢¼ºÀç±¼¸²ÅØ½ºÆ®Ãß°¡
+#define	TID_MMI_RANDOMOPTIONRETRY_ERRORTEXT04		5110	//°¢¼º º¸È£µÈ ¾ÆÀÌÅÛÀº µî·Ï ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_RANDOMOPTIONRETRY_ERRORTEXT05		5111	//¼ÒÈ¯ ÁßÀÎ ¸®¾îÆêÀº °¢¼º Àç±¼¸²À» ½Ãµµ ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_RANDOMOPTIONRETRY_STOP				5112	//Á¤Áö
+
+//±Ø´Ü ¼ºÀåÀÇ µÎ·ç¸¶¸®
+#define	TID_MMI_PARTYSPEEDLEVELUP01				5113	//±Ø´Ü ¼ºÀåÀÇ µÎ·ç¸¶¸®¸¦ Á¤»óÀûÀ¸·Î »ç¿ëÇÏ¿´½À´Ï´Ù. ±Ø´ÜÀÇ ·¹º§ÀÌ 40À¸·Î ±Ø´Ü Æ÷ÀÎÆ®°¡ ÀÏÁ¤·® Áö±ÞµË´Ï´Ù.
+
+//±Ø´Ü Æ÷ÀÎÆ®ÀÇ µÎ·ç¸¶¸®
+#define	TID_MMI_PARTYPOINTFREE01				5114	//±Ø´Ü Æ÷ÀÎÆ®ÀÇ µÎ·ç¸¶¸®¸¦ Á¤»óÀûÀ¸·Î »ç¿ëÇÏ¿´½À´Ï´Ù. ÀÏÁ¤ ½Ã°£µ¿¾È ¹«Á¦ÇÑÀ¸·Î ±Ø´Ü Æ÷ÀÎÆ® »ç¿ëÀÌ °¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_PARTYPOINTFREE02				5115	//±Ø´Ü Æ÷ÀÎÆ®ÀÇ µÎ·ç¸¶¸®¸¦ ÀÌ¹Ì »ç¿ëÇÏ°í ÀÖ½À´Ï´Ù. ¸ðµç È¿°ú°¡ ¸¸·á µÈ ÈÄ Àç »ç¿ëÇÏ½Ã±æ ¹Ù¶ø´Ï´Ù.
+
+//±Ø´Ü ¼ºÀå Æ÷ÀÎÆ®ÀÇ ¿¡·¯¸Þ½ÃÁö
+#define	TID_MMI_PARTYMASSAGEERROR01				5116	//±Ø´ÜÀåÀÌ ¾Æ´Ò °æ¿ì ÇØ´ç ¾ÆÀÌÅÛÀÌ »ç¿ëÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù.
+#define	TID_MMI_PARTYMASSAGEERROR02				5117	//±Ø´Ü¿¡ ¼Ò¼ÓµÇ¾î ÀÖÁö ¾Ê¾Æ ¾ÆÀÌÅÛ »ç¿ëÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù. ±Ø´Ü¿¡ °¡ÀÔ ÈÄ ¾ÆÀÌÅÛÀ» »ç¿ëÇÏ½Ã±æ ¹Ù¶ø´Ï´Ù.
+
+#define	TID_MMI_MADRIGALGIFT_TEXT06				5118
+#define	TID_MMI_MADRIGALGIFT_TEXT07				5119
+#define	TID_MMI_MADRIGALGIFT_TEXT08				5120
+
+#define	TID_MMI_MADRIGALGIFT_TEXT09				5121
+#define	TID_MMI_MADRIGALGIFT_TEXT10				5122
+#define	TID_MMI_MADRIGALGIFT_TEXT11				5123	// ¸¶µå¸®°¥ÀÇ ¼±¹°·Î %d Æä³Ä¸¦ È¹µæÇÏ¼Ì½À´Ï´Ù.
+
+#define	TID_MMI_PENYAOVERFLOW					5124	// 21¾ï Æä³Ä ÀÌ»óÀ» ¼ÒÁöÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//±Ø´ÜÆ÷ÀÎÆ®µÎ·ç¸¶¸®
+#define	TID_MMI_PARTYPOINTINFINITE				5125	//±Ø´ÜÆ÷ÀÎÆ®¿¡ »ç¿ëµÇ´Â UI³» ¹«Á¦ÇÑ ±Û±Í Ãß°¡
+
+#define	TID_MMI_PARTYMASSAGEERROR03				5126	//±Ø´Ü ·¹º§ÀÌ 40¿¡ µµ´ÞÇÏ¿© »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+#define	TID_MMI_JOBGRADE_MASTER_TEXT			5127	//¸¶½ºÅÍ	
+#define	TID_MMI_JOBGRADE_HERO_TEXT				5128	//È÷¾î·Î
+
+//ÇÁ¸®ÇÁ Á¶°¢ ÅØ½ºÆ®
+#define	TID_MMI_FLYFFPIECE_TEXT01				5129	//%s¾ÆÀÌÅÛÀº %sÄíÆù %d°³°¡ ¼Ò¸ðµË´Ï´Ù. ±³È¯ÇÒ °æ¿ì Ãë¼Ò°¡ ºÒ°¡´É ÇÕ´Ï´Ù. ±³È¯ ÇÏ½Ã°Ú½À´Ï±î?
+#define	TID_MMI_FLYFFPIECE_TEXT02				5130	//º¸À¯ÇÑ ÄíÆùÀÌ ºÎÁ·ÇÏ¿© ¾ÆÀÌÅÛÀ» ±³È¯ÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_FLYFFPIECE_TEXT03				5131	//·¹º§ÀÌ ³·¾Æ »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+#define	TID_MMI_FLYFFPIECE_TEXT04				5132	//%s¾ÆÀÌÅÛÀÌ ¿ìÆíÀ¸·Î Áö±ÞµÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_FLYFFPIECE_TEXT05				5133	//%s¾ÆÀÌÅÛ ±³È¯ÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_FLYFFPIECE_TEXT06				5134	//ÇÁ¸®ÇÁ Á¶°¢ ¹ö´×Å¸ÀÓ ½ÃÀÛ~~!!
+#define	TID_MMI_FLYFFPIECE_TEXT07				5135	//ÇÁ¸®ÇÁ Á¶°¢ ¹ö´×Å¸ÀÓ Á¾·á~~!!
+
+//¿ë¿Õ °¡¸é ¿É¼Ç ±³È¯ ¸Þ´º
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_DESCRIPTION		5136	//¿ë¿Õ °¡¸éÀÇ ¿É¼ÇÀ» ¿øÇÏ´Â ¼º´ÉÀ¸·Î ±³È¯ÇØµå¸³´Ï´Ù. \nÆÄ±« : Ä¡¸íÅ¸ Ãß°¡ ÇÇÇØ+5%, Ãß°¡ HPÀ² +10%
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT01			5137	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(³²) (ÆÄ±« -> ½Å¼Ó)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT02			5138	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(³²) (ÆÄ±« -> Àü´É)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT03			5139	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(³²) (½Å¼Ó -> ÆÄ±«)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT04			5140	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(³²) (½Å¼Ó -> Àü´É)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT05			5141	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(³²) (Àü´É -> ÆÄ±«)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT06			5142	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(³²) (Àü´É -> ½Å¼Ó)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT07			5143	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(³²) (ÆÄ±« -> ½Å¼Ó)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT08			5144	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(³²) (ÆÄ±« -> Àü´É)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_TEXT09			5145	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(³²) (½Å¼Ó -> ÆÄ±«)
+
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_DESCRIPTION		5146	//¿ë¿Õ °¡¸éÀÇ ¿É¼ÇÀ» ¿øÇÏ´Â ¼º´ÉÀ¸·Î ±³È¯ÇØµå¸³´Ï´Ù. \nÆÄ±« : Ä¡¸íÅ¸ Ãß°¡ ÇÇÇØ+5%, Ãß°¡ HPÀ² +10%
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT01			5147	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(¿©) (ÆÄ±« -> ½Å¼Ó)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT02			5148	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(¿©) (ÆÄ±« -> Àü´É)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT03			5149	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(¿©) (½Å¼Ó -> ÆÄ±«)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT04			5150	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(¿©) (½Å¼Ó -> Àü´É)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT05			5151	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(¿©) (Àü´É -> ÆÄ±«)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT06			5152	//ÆÄ±«ÀÇ ¿ë¿Õ °¡¸é(¿©) (Àü´É -> ½Å¼Ó)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT07			5153	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(¿©) (ÆÄ±« -> ½Å¼Ó)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT08			5154	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(¿©) (ÆÄ±« -> Àü´É)
+#define	TID_MMI_SEAKINGMASKCHANGEMENU_1_TEXT09			5155	//½Å¼ÓÇÑ ¿ë¿Õ °¡¸é(¿©) (½Å¼Ó -> ÆÄ±«)
+
+//ÇÁ¸®ÇÁ ÄíÆù ±³È¯ UI ÅØ½ºÆ®
+#define	TID_MMI_FLYFFCOUPONSHOP_TEXT01				5156	//FLY FOR FUN !! ÄíÆù ¼¥¿¡ ¿À½Å°É È¯¿µÇÕ´Ï´Ù.
+#define	TID_MMI_FLYFFCOUPONSHOP_TEXT02				5157	//ÄíÆù ¼¥Àº ÀÚ½ÅÀÇ ¼ºº°°ú Á÷¾÷¿¡ ¾î¿ï¸®´Â ¾ÆÀÌÅÛÀ» ÄíÆùÀ» »ç¿ëÇØ ÀÚÀ¯·Ó°Ô ±³È¯ÇÒ ¼ö ÀÖ´Â °ø°£ÀÔ´Ï´Ù.
+#define	TID_MMI_FLYFFCOUPONSHOP_TEXT03				5158	//ÁÂÃøÀÇ ¼¼ºÎ ¾ÆÀÌÅÛ ÅÇÀ» ÅëÇØ ¿øÇÏ´Â ¾ÆÀÌÅÛÀ» °ñ¶óº¸¼¼¿ä!
+#define	TID_MMI_FLYFFCOUPONSHOP_LOADING				5159	//¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ ºÒ·¯¿À´Â ÁßÀÔ´Ï´Ù. Àá½Ã¸¸ ±â´Ù·ÁÁÖ¼¼¿ä.
+
+//ÇÁ¸®ÇÁ Á¶°¢ ±³È¯ ¸Þ´º
+#define	TID_MMI_FLYFFPIECE_CHANGE_DESCRIPTION			5160	//ÇÁ¸®ÇÁ Á¶°¢À» ÄíÆùÀ¸·Î ±³È¯ÇØµå¸³´Ï´Ù. \nFLY ÄíÆù : F, L, Y Á¶°¢ 1°³¾¿ ¼Ò¸ð \nFOR ÄíÆù : F, O, R Á¶°¢ 1°³¾¿ ¼Ò¸ð \nFUN ÄíÆù : F, U, N Á¶°¢ 1°³¾¿ ¼Ò¸ð
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT01			5161	//FLY ÄíÆù 1°³ ±³È¯
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT02			5162	//FOR ÄíÆù 1°³ ±³È¯
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT03			5163	//FUN ÄíÆù 1°³ ±³È¯
+
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT04			5164	//FLY ÄíÆù 50°³ ±³È¯
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT05			5165	//FOR ÄíÆù 50°³ ±³È¯
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT06			5166	//FUN ÄíÆù 50°³ ±³È¯
+
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT07			5167	//FLY ÄíÆù 100°³ ±³È¯
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT08			5168	//FOR ÄíÆù 100°³ ±³È¯
+#define	TID_MMI_FLYFFPIECE_CHANGE_TEXT09			5169	//FUN ÄíÆù 100°³ ±³È¯
+
+//ÇÁ¸®ÇÁ Á¶°¢ ¿ìÆí ÅØ½ºÆ®
+#define	TID_MMI_FLYFFPIECE_POST_TITLE				5170	//
+#define	TID_MMI_FLYFFPIECE_POST_TEXT01				5171	//
+
+//ÇÁ¸®ÇÁ ÄíÆù ±³È¯ UI Ãß°¡ ÅØ½ºÆ®
+#define	TID_MMI_FLYFFCOUPONSHOP_TEXT04				5172	//
+#define	TID_MMI_FLYFFCOUPONSHOP_TEXT05				5173	//
+
+//»óÁ¡ÆÇ¸ÅºÒ°¡ ÅØ½ºÆ® Ãß°¡
+#define	TID_MMI_NOTSALETOVENDORTEXT01				5174	//»óÁ¡ÆÇ¸ÅºÒ°¡
+#define	TID_MMI_NOTSALETOVENDORTEXT02				5175	//»óÁ¡¿¡ ÆÇ¸ÅÇÒ ¼ö ¾ø´Â ¾ÆÀÌÅÛ ÀÔ´Ï´Ù.
+
+//±æµåÇÏ¿ì½º À¯Áöºñ ÀÔ±Ý ¿Ï·á ÅØ½ºÆ® Ãß°¡
+#define TID_MMI_GUILDHOUSERENTALSUCCESS				5176	//±æµå ÇÏ¿ì½º À¯Áöºñ ÀÔ±ÝÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.
+
+//PKÆä³ÎÆ¼ ÇØÁ¦ µÎ·ç¸¶¸® ÅØ½ºÆ®
+#define TID_MMI_PKPENALTY_TEXT01				5177	//PKÆä³ÎÆ¼°¡ Á¸ÀçÇÏÁö ¾Ê¾Æ 
+#define TID_MMI_PKPENALTY_TEXT02				5178	//PK¼­¹ö°¡ ¾Æ´Ï¶ó »ç¿ëÇÏÁö ¸øÇØ
+#define TID_MMI_PKPENALTY_TEXT03				5179	//³²Àº È½¼ö: %d / 5
+#define TID_MMI_PKPENALTY_TEXT04				5180	//³²Àº È½¼ö: %d / 10
+#define TID_MMI_PKPENALTY_TEXT05				5181	//³²Àº È½¼ö: %d / 20
+
+//ºñ½º ±×·ì ÅØ½ºÆ®
+#define TID_MMI_VISGROUP_STR_LV1				5182	//ÈûÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_STR_LV2				5183	//ÈûÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_DEX_LV1				5184	//¹ÎÃ¸ÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_DEX_LV2				5185	//¹ÎÃ¸ÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_INT_LV1				5186	//Áö´ÉÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_INT_LV2				5187	//Áö´ÉÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_STA_LV1				5188	//Ã¼·ÂÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_STA_LV2				5189	//Ã¼·ÂÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_DMG_LV1				5190	//Ãß°¡ µ¥¹ÌÁöÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_DMG_LV2				5191	//Ãß°¡ µ¥¹ÌÁöÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_SPELL_LV1				5192	//Àçºü¸¥ »ç°íÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_SPELL_LV2				5193	//Àçºü¸¥ »ç°íÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_CRI_LV1				5194	//ÁÖ¹® ±Ø´ëÈ­ÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_CRI_LV2				5195	//ÁÖ¹® ±Ø´ëÈ­ÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_BLOMELEE_LV1				5196	//±Ù°Å¸® ºí·°ÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_BLOMELEE_LV2				5197	//±Ù°Å¸® ºí·°ÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_BLRANGE_LV1				5198	//¿ø°Å¸® ºí·°ÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_BLRANGE_Lv2				5199	//¿ø°Å¸® ºí·°ÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_CRITICAL_Lv1				5200	//¿¹¸®ÇÔÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_CRITICAL_Lv2				5201	//¿¹¸®ÇÔÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_SPEED_Lv1				5202	//¹Ù¶÷ÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_SPEED_Lv2				5203	//¹Ù¶÷ÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_HITRATE_Lv1				5204	//ÀûÁßÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_HITRATE_Lv2				5205	//ÀûÁßÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_ATKSPEED_Lv1				5206	//Àçºü¸¥ ¼Õ³î¸²ÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_ATKSPEED_Lv2				5207	//Àçºü¸¥ ¼Õ³î¸²ÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_ATKPOWER_Lv1				5208	//°ø°ÝÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_ATKPOWER_Lv2				5209	//°ø°ÝÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_ADJDEF_Lv1				5210	//¹æ¾îÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_ADJDEF_Lv2				5211	//¹æ¾îÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_ADDMAGIC_Lv1				5212	//¸¶¹ý °ø°ÝÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_ADDMAGIC_Lv2				5213	//¸¶¹ý °ø°ÝÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_PARRY_Lv1				5214	//È¸ÇÇÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_PARRY_Lv2				5215	//È¸ÇÇÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_HPMAX_Lv1				5216	//Ãàº¹ÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_HPMAX_Lv2				5217	//Ãàº¹ÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_KILLHP_Lv1				5218	//ÇÏ±Þ ÈíÇ÷ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_KILLHP_Lv2				5219	//ÇÏ±Þ ÈíÇ÷ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_CRIBONUS_Lv1				5220	//³¯·ÆÇÔÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_CRIBONUS_Lv2				5221	//³¯·ÆÇÔÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_MONSTERDMG_Lv1				5222	//»ç³É²ÛÀÇ ºñ½º(·¹º§1)
+#define TID_MMI_VISGROUP_MONSTERDMG_Lv2				5223	//»ç³É²ÛÀÇ ºñ½º(·¹º§2)
+#define TID_MMI_VISGROUP_FOREVERKILLHP01_Lv1			5224	//ÇÏ±Þ ÈíÇ÷ ºñ½º Lv1(¿µ±¸)
+#define TID_MMI_VISGROUP_FOREVERKILLHP02_Lv2			5225	//Áß±Þ ÈíÇ÷ ºñ½º Lv1(¿µ±¸)
+
+#define	TID_MMI_VISGROUP_FOREVERWARRIORLV1				5226//¿ö¸®¾îÀÇ ºñ½º(·¹º§1)
+#define	TID_MMI_VISGROUP_FOREVERWARRIORLV2				5227//¿ö¸®¾îÀÇ ºñ½º(·¹º§2)
+#define	TID_MMI_VISGROUP_FOREVERCASTINGLV1				5228//Ä³½ºÆÃÀÇ ºñ½º(·¹º§1)
+#define	TID_MMI_VISGROUP_FOREVERCASTINGLV2				5229//Ä³½ºÆÃÀÇ ºñ½º(·¹º§2)
+
+
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_DESCRIPTION		5230	//À½Ç¥·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT01			5231	//³ë¶õÀ½Ç¥ 5°³ -> °í±Þ ÅÚ·¹Æ÷Æ® Áöµµ 1°³
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT02			5232	//³ë¶õÀ½Ç¥ 15°³ -> Ä«µå ¹øµé »óÀÚ 1°³
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT03			5233	//»¡°£À½Ç¥ 5°³ -> ¿ë»çÀÇ º¸¹° »óÀÚ 1°³
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT04			5234	//»¡°£À½Ç¥ 15°³ -> 2±Þ ÀÏ¹Ý ÅÚ·¹Æ÷ÅÍ ÀÌ¿ë±Ç 1°³
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT05			5235	//ÆÄ¶õÀ½Ç¥ 5°³ -> µÎ·ç¸¶¸® »óÀÚ 1°³
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT06			5236	//ÆÄ¶õÀ½Ç¥ 15°³ -> ¹°¾à ¹øµé »óÀÚ 1°³
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT07			5237	//ÃÊ·ÏÀ½Ç¥ 5°³ -> ´í½Ì Æê 1°³
+#define	TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT08			5238	//ÃÊ·ÏÀ½Ç¥ 15°³ -> ¸®¾îÆê ºÎÈ°ÀÇ µÎ·ç¸¶¸®(S) 1°³
+#define	TID_MMI_MUSICFESTIVALGUITAR_CHANGE_DESCRIPTION		5239	//ÇÃ¶ó¹ÌÀÇ ±âÅ¸·Î ÀºÇÏ¼ö ±âÅ¸ ±³È¯
+#define	TID_MMI_MUSICFESTIVALGUITAR_CHANGE_TEXT01			5240	//ÇÃ¶ó¹ÌÀÇ ±âÅ¸ 1°³ -> ÀºÇÏ¼ö ±âÅ¸ 1°³
+
+#define	TID_MMI_ITEMDRAGDROPERRORMESSAGE				5241	//ÀÎº¥Åä¸®¿¡ ¼ÒÁöÇÏ°í ÀÖ´Â ¾ÆÀÌÅÛ¸¸ ÀÌ¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.
+
+//ÇØ¿Ü Á¦·Ã ÀÌº¥Æ®(12.07.31 ~ 12.09.25)
+#define	TID_MMI_SUMMERENCHANTEVENTMENU_DESCRIPTION		5242	// Á¦·ÃµÈ º£°¡ÀÇ ºûÀ¸·Î º¸»ó ¾ÆÀÌÅÛÀ¸·Î ±³È¯ÇÒ ¼ö ÀÖ½À´Ï´Ù. 
+
+//¹Ì±¹ ±æµåÀü ÀÌº¥Æ®(12.07.25 ~ 12.08.28)
+#define TID_MMI_ENGGUILDEVENTARMOR_DESCRIPTION     5243  //ºí·çÄ¨À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define TID_MMI_ENGGUILDEVENTWEA_DESCRIPTION     5244  //ºí·çÄ¨À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+#define TID_MMI_ENGGUILDEVENTGCHIP_DESCRIPTION     5245  //ºí·çÄ¨À¸·Î º¸»ó ¾ÆÀÌÅÛ ±³È¯
+
+//±³È¯ ¿©·¯°³ ±¸ÀÔ ¸Þ´º
+#define	TID_MMI_EXCHANGEAMOUNT_TITLE		5246	//¾ÆÀÌÅÛ ±³È¯ °³¼ö ÀÔ·Â
+#define	TID_MMI_EXCHANGEAMOUNT_TEXT			5247	//¸î°³¸¦ ±³È¯ ÇÏ½Ã°Ú½À´Ï±î?
+#define	TID_MMI_EXCHANGEAMOUNT_MESSAGE		5248	//Àç·á ¾ÆÀÌÅÛÀÌ ºÎÁ·ÇÏ¿© ±³È¯ ÇÒ ¼ö ¾ø½À´Ï´Ù.
+
+//¹öºí Æ÷ÀÎÆ® ÅøÆÁ
+#define	TID_MMI_BUBBLEPOINTTOOLTIP			5249	//¹öºí Æ÷ÀÎÆ® ÃæÀü·® : %d%%
+
+//¾ÆÀÌÅÛ »ç¿ë È®ÀÎ UI
+#define	TID_MMI_ITEMUSE					5250	//¾ÆÀÌÅÛ »ç¿ë È®ÀÎ
+
+//Âø¿ë Àåºñ UI
+#define	TID_MMI_NEWINVEN02				5251	//Âø¿ë Àåºñ
+
+//½ºÅÈ ÁÖ»çÀ§ 
+#define	TID_MMI_STATDICE			5252	//½ºÅÈ ÁÖ»çÀ§¸¦ »ç¿ëÇÏ¸é STR, STA, DEX, INT ÀÇ 4 ½ºÅÈÀÌ ·£´ýÀ¸·Î Á¶Á¤µË´Ï´Ù. \n°è¼ÓÇÏ½Ã°Ú½À´Ï±î?
+#define	TID_MMI_STATDICE_RESET			5253	//½ºÅÈ ÁÖ»çÀ§¸¦ ÅëÇØ ·£´ýÀ¸·Î Á¶Á¤µÈ ½ºÅÈÀÌ ÃÊ±âÈ­ µË´Ï´Ù. \n°è¼ÓÇÏ½Ã°Ú½À´Ï±î?
+#define	TID_MMI_DONOTUSE_STATDICE			5254	//ÇöÀç ±âº» ½ºÅÈ »óÅÂÀÌ¹Ç·Î ÁÖ»çÀ§ ½ºÅÈ ÃÊ±âÈ­°¡ ºÒ°¡´ÉÇÕ´Ï´Ù.
+
+//Å©¸®½º¸¶½º °õÀÎÇü ±³È¯
+
+#define TID_MMI_CHRISTMAS_BEARDOLL_DESCRIPTION	2555 //°õÀÎÇü°ú ¿°·á¸¦ °¡Á®¿À½Ã¸é °õÀÎÇüÀ» ¿°»öÇØµå·Á¿ä
+#define TID_MMI_CHRISTMAS_BEARDOLL_COND01		5256//ÆÄ¶õ»ö ¿°·á 1°³, ¿ÂÀüÇÑ °õÀÎÇü -> ÆÄ¶õ»ö °õÀÎÇü
+#define TID_MMI_CHRISTMAS_BEARDOLL_COND02		5257//³ë¶õ»ö ¿°·á 1°³, ¿ÂÀüÇÑ °õÀÎÇü -> ³ë¶õ»ö °õÀÎÇü
+#define TID_MMI_CHRISTMAS_BEARDOLL_COND03		5258//ºÐÈ«»ö ¿°·á 1°³, ¿ÂÀüÇÑ °õÀÎÇü -> ºÐÈ«»ö °õÀÎÇü
+
+// Å©¸®½º¸¶½º È²±Ý´«ÀÇ °áÁ¤ ±³È¯
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_DESCRIPTION	2559 //È²±Ý´«ÀÇ °áÁ¤°ú ¸¶¹ý°¡·ç¸¦ °¡Á®¿À½Ã¸é ¿©·¯°¡Áö ¼±¹°»óÀÚ¸¦ µå¸³´Ï´Ù.
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND01		5260 //È²±Ý´«ÀÇ°áÁ¤ 100°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 10°³ -> Å©¸®½º¸¶½º Æê »óÀÚ 	
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND02		5261	//È²±Ý´«ÀÇ°áÁ¤ 100°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 20°³ -> ¶óµ¹ÇÁ ½ä¸Å	
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND03		5262	//È²±Ý´«ÀÇ°áÁ¤ 150°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 30°³ -> Å©¸®½º¸¶½º Àå³­°¨ ¹«±â»óÀÚ_A
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND04		5263	//È²±Ý´«ÀÇ°áÁ¤ 150°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 30°³ -> Å©¸®½º¸¶½º Àå³­°¨ ¹«±â»óÀÚ_B
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND05		5264	//È²±Ý´«ÀÇ°áÁ¤ 150°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 30°³ -> Å©¸®½º¸¶½º Àå°© ÄÚ½ºÆ¬ »óÀÚ
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND06		5265	//È²±Ý´«ÀÇ°áÁ¤ 150°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 30°³ -> Å©¸®½º¸¶½º ¸¶½ºÅ© »óÀÚ_A
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND07		5266	//È²±Ý´«ÀÇ°áÁ¤ 150°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 30°³ -> Å©¸®½º¸¶½º ¸¶½ºÅ© »óÀÚ_B
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND08		5267	//È²±Ý´«ÀÇ°áÁ¤ 150°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 30°³ -> Å©¸®½º¸¶½º ¸ÁÅä »óÀÚ
+#define TID_MMI_CHRISTMAS_SNOW_GOLD_COND09		5268	//È²±Ý´«ÀÇ°áÁ¤ 100°³, Å©¸®½º¸¶½º ¸¶¹ý°¡·ç 10°³ -> ÅÍÆ²Å·ÀÇ µî²®Áú
+
+//ÄµµðÄÉÀÎ Á¦·Ã ÀÌº¥Æ®
+#define	TID_MMI_CHRISTMASENCHANTEVENT_DESCRIPTION		5269	// ÄµµðÄÉÀÎÀ» ¾ÆÀÌÅÛÀ¸·Î ±³È¯
+#define	TID_MMI_CHRISTMASENCHANTEVENT_10_12_TEXT		5270	
+#define	TID_MMI_CHRISTMASENCHANTEVENT_13_15_TEXT		5271	
+#define	TID_MMI_CHRISTMASENCHANTEVENT_16_18_TEXT		5272	
+#define	TID_MMI_CHRISTMASENCHANTEVENT_19_TEXT		5273	
+#define	TID_MMI_CHRISTMASENCHANTEVENT_20_TEXT		5274	
+
+#define	TID_MMI_NOT_USE_AREA		5275	
+#define	TID_MMI_NOT_USE_GUILDBATTLE		5276
+#define	TID_MMI_NOT_USE_RAINBOWRACE		5277
+#define	TID_MMI_NOT_USE_SECRETROOM		5278
+#define	TID_MMI_NOT_USE_TRANGE		5279
+
+//ÄµµðÄÉÀÎ Á¦·ÃÀÌº¥Æ® Ãß°¡
+#define TID_MMI_CHRISTMASENCHANTEVENT_6_9_TEXT	5280
+
+//¹ß·»Å¸ÀÎµ¥ÀÌ ±³È¯ ÀÌº¥Æ®
+#define	TID_MMI_VALENTAINEVENT_DESCRIPTION		5281
+#define	TID_MMI_VALENTAINEVENT_COND01		5282
+#define	TID_MMI_VALENTAINEVENT_COND02		5283
+#define	TID_MMI_VALENTAINEVENT_COND03		5284
+#define	TID_MMI_VALENTAINEVENT_COND04		5285
+
+#define	TID_MMI_VALENTAIN_QUPID_DESCRIPTION		5286
+#define	TID_MMI_VALENTAIN_QUPID_COND01		5287
+
+#define TID_GAME_DO_NOT_USE_VAGRANT			5288
+#define TID_DIALOG_STATUS_DICE_NOTICE		5289
+
+// ¹ÂÁ÷ Æä½ºÆ¼¹ú ±³È¯ ¾ÆÀÌÅÛ Ãß°¡
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT09	5290
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT10	5291
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT11	5292
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT12	5293
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT13	5294
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT14	5295
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT15	5296
+#define TID_MMI_MUSICFESTIVALETC_CHANGE_TEXT16	5297
+// È­ÀÌÆ®µ¥ÀÌ ±³È¯ ¾ÆÀÌÅÛ Ãß°¡
+#define TID_MMI_WHITEDAY_EXCHANGE05_TEXT		5298
+#define TID_MMI_WHITEDAY_EXCHANGE06_TEXT		5299
+#define TID_MMI_WHITEDAY_EXCHANGE07_TEXT		5300
+#define TID_MMI_WHITEDAY_EXCHANGE08_TEXT		5301
+
+// ÇÒ·ÎÀ© ÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define	TID_MMI_HALLOWEEN_EVENT_2014		7293
+#define	TID_MMI_HALLOWEEN_EVENT_2014_01		5302
+#define	TID_MMI_HALLOWEEN_EVENT_2014_02		5303
+
+// ¿ÍÀÎ ÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define	TID_MMI_WINE_EVENT_FLARIS_2014				7294
+#define	TID_MMI_WINE_EVENT_FLARIS_2014_TEXT			5304
+#define	TID_MMI_WINE_EVENT_FLARIS_2014_TEXT_01		5305
+#define	TID_MMI_WINE_EVENT_SAINT_2014				7295
+#define	TID_MMI_WINE_EVENT_SAINT_2014_TEXT			5306
+#define	TID_MMI_WINE_EVENT_SAINT_2014_TEXT_01		5307
+#define	TID_MMI_WINE_EVENT_DARKON_2014				7296
+#define	TID_MMI_WINE_EVENT_DARKON_2014_TEXT			5308
+#define	TID_MMI_WINE_EVENT_DARKON_2014_TEXT_01		5309
+
+// Å©¸®½º¸¶½º ÀÌº¥Æ® ±³È¯ ¸Þ´º
+#define	TID_MMI_CHRISTMAS_EVENT_02_2014				7297
+#define	TID_MMI_CHRISTMAS_EVENT_02_2014_TEXT		5310
+#define	TID_MMI_CHRISTMAS_EVENT_02_2014_TEXT_01		5311
+#define	TID_MMI_CHRISTMAS_EVENT_02_2014_TEXT_02		5312
+#define	TID_MMI_CHRISTMAS_EVENT_02_2014_TEXT_03		5313
+
+#define	TID_MMI_CHRISTMAS_EVENT_04_2014				7298
+#define	TID_MMI_CHRISTMAS_EVENT_04_2014_TEXT		5314
+#define	TID_MMI_CHRISTMAS_EVENT_04_2014_TEXT_01		5315
+#define	TID_MMI_CHRISTMAS_EVENT_04_2014_TEXT_02		5316
+#define	TID_MMI_CHRISTMAS_EVENT_04_2014_TEXT_03		5317
+#define	TID_MMI_CHRISTMAS_EVENT_04_2014_TEXT_04		5318
+#define	TID_MMI_CHRISTMAS_EVENT_04_2014_TEXT_05		5319
+
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014				7299
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT		5320
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_01		5321
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_02		5322
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_03		5323
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_04		5324
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_05		5325
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_06		5326
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_07		5327
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_08		5328
+
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014				7300
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT		5329
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_01		5330
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_02		5331
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_03		5332
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_04		5333
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_05		5334
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_06		5335
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_07		5336
+#define	TID_MMI_CHRISTMAS_EVENT_07_2014_TEXT_08		5337
+
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014				7301
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT		5338
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT_01		5339
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT_02		5340
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT_03		5341
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT_04		5342
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT_05		5343
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT_06		5344
+#define	TID_MMI_CHRISTMAS_EVENT_08_2014_TEXT_07		5345
+
+#define	TID_MMI_CLOVER_EVENT_2015					7302
+#define	TID_MMI_CLOVER_EVENT_2015_TEXT				5346
+#define	TID_MMI_CLOVER_EVENT_2015_TEXT_01			5347
+#define	TID_MMI_CLOVER_EVENT_2015_TEXT_02			5348
+
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_WEAPON_EXCHANGE_2015					7303
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_WEAPON_EXCHANGE_2015_TEXT			5349
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_WEAPON_EXCHANGE_2015_TEXT_01			5350
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_WEAPON_EXCHANGE_2015_TEXT_02			5351
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_WEAPON_EXCHANGE_2015_TEXT_03			5352
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_WEAPON_EXCHANGE_2015_TEXT_04			5353
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015				7304
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT		5354
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_01		5355
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_02		5356
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_03		5357
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_04		5358
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_05		5359
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_06		5360
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_07		5361
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015_TEXT_08		5362
+#define	TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015			7305
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT		5363
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_01	5364
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_02	5365
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_03	5366
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_04	5367
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_05	5368
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_06	5369
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_07	5370
+#define TID_MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015_TEXT_08	5371
+
+#define	TID_MMI_JP_11TH_ANNIVERSARY_PIGGY_EXCHANGE_2015					7306
+#define	TID_MMI_JP_11TH_ANNIVERSARY_PIGGY_EXCHANGE_2015_TEXT			5372
+#define	TID_MMI_JP_11TH_ANNIVERSARY_PIGGY_EXCHANGE_2015_TEXT_01			5373
+
+#define	TID_MMI_CHRISTMAS_EVENT_07_2015_TEXT_09		5374
+#define	TID_MMI_CHRISTMAS_EVENT_08_2015_TEXT_08		5375
+
+#define	TID_MMI_MADRIGAL_TOUR_EXCHANGE				7307
+#define	TID_MMI_MADRIGAL_TOUR_EXCHANGE_TEXT			5376
+#define	TID_MMI_MADRIGAL_TOUR_EXCHANGE_TEXT_01			5377
+#define	TID_MMI_MADRIGAL_TOUR_EXCHANGE_TEXT_02			5378
+
+
+
+#define 	TID_MMI_BARUNA_ULTIMATETRANS 		7308
+
+#define 	TID_MMI_CARD_UPGRADE 		7309
+
+#define		TID_GAME_INVENTORY_ALIGN_TOOL	5379
+
+#define	TID_MMI_CARDUPGRADE_FAILTEXT01		5380	//	Ä«µå ¾÷±×·¹ÀÌµå¿¡ ½ÇÆÐÇÏ¿© µî·ÏµÈ %s °¡ ÆÄ±« µÇ¾ú½À´Ï´Ù.
+#define	TID_MMI_CARDUPGRADE_FAILTEXT02		5381	//	Ä«µå ¾÷±×·¹ÀÌµå¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù.
+#define	TID_MMI_CARDUPGRADE_SUCCESSTEXT01	5382	//	Ä«µå ¾÷±×·¹ÀÌµå¿¡ ¼º°øÇÏ¿´½À´Ï´Ù!
+
+#define TID_GAME_DAILYQUEST_COMPLETE		5383	//	ÀÌ¹Ì ÀÏÀÏ Äù½ºÆ®¸¦ ¿Ï·áÇÏ¿´½À´Ï´Ù.
+
+#define TID_MMI_COLLECT03			7310	// Ä«µå Á¶°¢ ±³È¯
+#define TID_GAME_COLLECT_COND24			5384	
+#define TID_GAME_COLLECT_COND24_SUCCESS		5385
+#define TID_GAME_COLLECT_COND24_FAIL		5386	
+#define TID_GAME_COLLECT_COND25			5387	
+#define TID_GAME_COLLECT_COND25_SUCCESS		5388
+#define TID_GAME_COLLECT_COND25_FAIL		5389
+#define TID_GAME_COLLECT_COND26			5390
+#define TID_GAME_COLLECT_COND26_SUCCESS		5391
+#define TID_GAME_COLLECT_COND26_FAIL		5392
+#define TID_GAME_COLLECT_COND27			5393
+#define TID_GAME_COLLECT_COND27_SUCCESS		5394
+#define TID_GAME_COLLECT_COND27_FAIL		5395
+#define TID_GAME_COLLECT_COND28			5396
+#define TID_GAME_COLLECT_COND28_SUCCESS		5397
+#define TID_GAME_COLLECT_COND28_FAIL		5398
+#define TID_GAME_COLLECT_COND29			5399
+#define TID_GAME_COLLECT_COND29_SUCCESS		5400
+#define TID_GAME_COLLECT_COND29_FAIL		5401
+#define TID_GAME_COLLECT_COND30			5402
+#define TID_GAME_COLLECT_COND30_SUCCESS		5403
+#define TID_GAME_COLLECT_COND30_FAIL		5404
+#define TID_GAME_COLLECT_COND31			5405
+#define TID_GAME_COLLECT_COND31_SUCCESS		5406
+#define TID_GAME_COLLECT_COND31_FAIL		5407
+#define TID_GAME_COLLECT_COND32			5408
+#define TID_GAME_COLLECT_COND32_SUCCESS		5409
+#define TID_GAME_COLLECT_COND32_FAIL		5410
+#define TID_GAME_COLLECT_COND33			5411
+#define TID_GAME_COLLECT_COND33_SUCCESS		5412
+#define TID_GAME_COLLECT_COND33_FAIL		5413
+
+#define	TID_GAME_COLLECT_COND34			5414
+#define	TID_GAME_COLLECT_COND34_SUCCESS		5415
+#define	TID_GAME_COLLECT_COND34_FAIL		5416
+
+#define	TID_GAME_GUILDWAR_NOCONFIG		5417
+
+#define	TID_GAME_NEW_PASSWORD_INPUT		5418
+#define	TID_GAME_NEW_PASSWORD_REINPUT		5419
+#define	TID_GAME_NEW_PASSWORD_INPUT_ERROR	5420
+#define	TID_GAME_NEW_PASSWORD_INPUT_MSG		5421
+#define	TID_GAME_NEW_PASSWORD_REINPUT_MSG	5422
+
+#define	TID_GAME_COLLECT_TEXT04			5423
+#define	TID_GAME_COLLECT_TEXT05			5424
+
+
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE01			7311	// 12ÁÖ³â »óÀÚ ±³È¯
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE01_TEXT	5425
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE01_TEXT_01	5426
+
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02			7312
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT	5427
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_01	5428
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_02	5429
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_03	5430
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_04	5431
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_05	5432
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_06	5433
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_07	5434
+#define TID_MMI_12TH_ANNIVERSARY_EXCHANGE02_TEXT_08	5435
+
+#define TID_MMI_COSTUME_EXCHANGE01			7313		//	2017 ÄÚ½ºÆ¬ ±³È¯
+#define TID_MMI_COSTUME_EXCHANGE01_TEXT		5436	
+#define TID_MMI_COSTUME_EXCHANGE01_TEXT_01	5437	
+#define TID_MMI_COSTUME_EXCHANGE01_TEXT_02	5438	
+#define TID_MMI_COSTUME_EXCHANGE01_TEXT_03	5439	
+#define TID_MMI_COSTUME_EXCHANGE01_TEXT_04	5440	
+#define TID_MMI_COSTUME_EXCHANGE01_TEXT_05	5441	
+#define TID_MMI_COSTUME_EXCHANGE01_TEXT_06	5442	
+		
+#define TID_MMI_COSTUME_EXCHANGE02			7314
+#define TID_MMI_COSTUME_EXCHANGE02_TEXT		5443	
+#define TID_MMI_COSTUME_EXCHANGE02_TEXT_01	5444	
+#define TID_MMI_COSTUME_EXCHANGE02_TEXT_02	5445	
+#define TID_MMI_COSTUME_EXCHANGE02_TEXT_03	5446	
+#define TID_MMI_COSTUME_EXCHANGE02_TEXT_04	5447	
+#define TID_MMI_COSTUME_EXCHANGE02_TEXT_05	5448	
+#define TID_MMI_COSTUME_EXCHANGE02_TEXT_06	5449	
+		
+#define TID_MMI_COSTUME_EXCHANGE03			7315
+#define TID_MMI_COSTUME_EXCHANGE03_TEXT		5450	
+#define TID_MMI_COSTUME_EXCHANGE03_TEXT_01	5451	
+#define TID_MMI_COSTUME_EXCHANGE03_TEXT_02	5452	
+#define TID_MMI_COSTUME_EXCHANGE03_TEXT_03	5453	
+#define TID_MMI_COSTUME_EXCHANGE03_TEXT_04	5454	
+#define TID_MMI_COSTUME_EXCHANGE03_TEXT_05	5455	
+#define TID_MMI_COSTUME_EXCHANGE03_TEXT_06	5456	
+		
+#define TID_MMI_COSTUME_EXCHANGE04			7316
+#define TID_MMI_COSTUME_EXCHANGE04_TEXT		5457	
+#define TID_MMI_COSTUME_EXCHANGE04_TEXT_01	5458	
+#define TID_MMI_COSTUME_EXCHANGE04_TEXT_02	5459	
+#define TID_MMI_COSTUME_EXCHANGE04_TEXT_03	5460	
+#define TID_MMI_COSTUME_EXCHANGE04_TEXT_04	5461	
+#define TID_MMI_COSTUME_EXCHANGE04_TEXT_05	5462	
+#define TID_MMI_COSTUME_EXCHANGE04_TEXT_06	5463	
+		
+#define TID_MMI_COSTUME_EXCHANGE05			7317
+#define TID_MMI_COSTUME_EXCHANGE05_TEXT		5464	
+#define TID_MMI_COSTUME_EXCHANGE05_TEXT_01	5465	
+#define TID_MMI_COSTUME_EXCHANGE05_TEXT_02	5466	
+		
+#define TID_MMI_COSTUME_EXCHANGE06			7318
+#define TID_MMI_COSTUME_EXCHANGE06_TEXT		5467	
+#define TID_MMI_COSTUME_EXCHANGE06_TEXT_01	5468	
+		
+#define TID_MMI_COSTUME_EXCHANGE07			7319
+#define TID_MMI_COSTUME_EXCHANGE07_TEXT		5469	
+#define TID_MMI_COSTUME_EXCHANGE07_TEXT_01	5470	
+#define TID_MMI_COSTUME_EXCHANGE07_TEXT_02	5471	
+
+#define TID_MMI_WEAPONBOX_EXCHANGE01			7320	// 2017 Ãß¼® ¹«±â ¹Ú½º ±³È¯
+#define TID_MMI_WEAPONBOX_EXCHANGE01_TEXT	5472
+#define TID_MMI_WEAPONBOX_EXCHANGE01_TEXT_01	5473
+
+#define TID_MMI_ARMORBOX_EXCHANGE01			7321	// 2017 Ãß¼® ¹æ¾î±¸ ¹Ú½º ±³È¯
+#define TID_MMI_ARMORBOX_EXCHANGE01_TEXT	5474
+#define TID_MMI_ARMORBOX_EXCHANGE01_TEXT_01	5475
+
+#define TID_MMI_ARMORBOX_EXCHANGE02			7322	// 2017 Ãß¼® ¹æ¾î±¸ ¹Ú½º ±³È¯
+#define TID_MMI_ARMORBOX_EXCHANGE02_TEXT	5476
+#define TID_MMI_ARMORBOX_EXCHANGE02_TEXT_01	5477
+
+#define	TID_GAME_COLLECT_COND35			5478		// 21Â÷ ½Å±Ô Ã¤Áý ±³È¯
+#define	TID_GAME_COLLECT_COND35_SUCCESS		5479
+#define	TID_GAME_COLLECT_COND35_FAIL		5480
+#define	TID_GAME_COLLECT_COND36			5481
+#define	TID_GAME_COLLECT_COND36_SUCCESS		5482
+#define	TID_GAME_COLLECT_COND36_FAIL		5483
+#define	TID_GAME_COLLECT_COND37			5484
+#define	TID_GAME_COLLECT_COND37_SUCCESS		5485
+#define	TID_GAME_COLLECT_COND37_FAIL		5486
+#define	TID_GAME_COLLECT_COND38			5487
+#define	TID_GAME_COLLECT_COND38_SUCCESS		5488
+#define	TID_GAME_COLLECT_COND38_FAIL		5489
+#define	TID_GAME_COLLECT_COND39			5490
+#define	TID_GAME_COLLECT_COND39_SUCCESS		5491
+#define	TID_GAME_COLLECT_COND39_FAIL		5492
+#define	TID_GAME_COLLECT_COND40			5493
+#define	TID_GAME_COLLECT_COND40_SUCCESS		5494
+#define	TID_GAME_COLLECT_COND40_FAIL		5495
+#define	TID_GAME_COLLECT_COND41			5496
+#define	TID_GAME_COLLECT_COND41_SUCCESS		5497
+#define	TID_GAME_COLLECT_COND41_FAIL		5498
+#define	TID_GAME_COLLECT_COND42			5499
+#define	TID_GAME_COLLECT_COND42_SUCCESS		5500
+#define	TID_GAME_COLLECT_COND42_FAIL		5501
+
+#define TID_MMI_SMELT_SAFETY_COSTUME	7323 // ¾ÈÀüÁ¦·Ã(ÄÚ½ºÆ¬)	
+			
+#define	TID_GAME_SMELT_SAFETY_ERROR21			5502
+#define	TID_GAME_SMELT_SAFETY_ERROR22			5503
+
+#define TID_MMI_SMELT_JEWEL_COSTUME			7324
+
+
+#define	TID_MMI_NPC_BUFF2						7325 // ÇÁ¸®¹Ì¾ö ¹öÇÁ
+
+#define	TID_MMI_SMELT_REMOVE_JEWEL_COSTUME		7326 // ÄÚ½ºÆ¬ º¸¼® Á¦°Å Ã¢
+
+#define	TID_MMI_SMELT_MIXCOSTUME			7327 // ÄÚ½ºÆ¬ ÇÕ¼º Ã¢
+
+#define	TID_MMI_SMELT_MIXMATERIAL			7328 // °­È­ ½ºÅ©·Ñ ÇÕ¼º
+
+#define TID_GAME_TOOLTIP_REMOVEJEWEL4		5504
+#define TID_GAME_TOOLTIP_REMOVEJEWEL5		5505
+#define TID_GAME_TOOLTIP_REMOVEJEWEL6		5506
+
+// ½Å±Ô ÅøÆÁ
+#define TID_TOOLTIP_DST_SPELL_RATE01	5507// Ä³½ºÆÃ´ÜÃàÀ²
+#define TID_GAME_TOOLTIP_BLOCKRANGE01	5508// ¿ø°Å¸®ºí·ÏÀ²
+#define TID_GAME_TOOLTIP_BLOCK01	5509// ±Ù°Å¸®ºí·ÏÀ²
+#define TID_TOOLTIP_DST_REFLECT_DAMAGE01	5510// ÇÇÇØ¹Ý»ç
+
+#define TID_GAME_SMELT_SAFETY_CONFIRM_COSTUME	5511
+
+#define	TID_MMI_155_LORDK_F_CHANGE		7329	//¿©¼º¿ë ·Îµå ÅÛÇÃ·¯ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_LORDK_F_CHANGE_01		5512	
+#define	TID_MMI_155_LORDK_F_CHANGE_02		5513	
+#define	TID_MMI_155_LORDK_F_CHANGE_03		5514	
+#define	TID_MMI_155_LORDK_F_CHANGE_04		5515	
+#define	TID_MMI_155_LORDK_F_CHANGE_05		5516	
+#define	TID_MMI_155_LORDK_M_CHANGE		7330	//³²¼º¿ë ·Îµå ÅÛÇÃ·¯ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_LORDK_M_CHANGE_01		5517	
+#define	TID_MMI_155_LORDK_M_CHANGE_02		5518	
+#define	TID_MMI_155_LORDK_M_CHANGE_03		5519	
+#define	TID_MMI_155_LORDK_M_CHANGE_04		5520	
+#define	TID_MMI_155_LORDK_M_CHANGE_05		5521	
+#define	TID_MMI_155_STORMB_F_CHANGE		7331	//¿©¼º¿ë ½ºÅè ºí·¹ÀÌµå ÅÛÇÃ·¯ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_STORMB_F_CHANGE_01		5522	
+#define	TID_MMI_155_STORMB_F_CHANGE_02		5523	
+#define	TID_MMI_155_STORMB_F_CHANGE_03		5524	
+#define	TID_MMI_155_STORMB_F_CHANGE_04		5525	
+#define	TID_MMI_155_STORMB_F_CHANGE_05		5526	
+#define	TID_MMI_155_STORMB_M_CHANGE		7332	//³²¼º¿ë ½ºÅè ºí·¹ÀÌµå ÅÛÇÃ·¯ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_STORMB_M_CHANGE_01		5527	
+#define	TID_MMI_155_STORMB_M_CHANGE_02		5528	
+#define	TID_MMI_155_STORMB_M_CHANGE_03		5529	
+#define	TID_MMI_155_STORMB_M_CHANGE_04		5530	
+#define	TID_MMI_155_STORMB_M_CHANGE_05		5531	
+#define	TID_MMI_155_CRACKS_F_CHANGE		7333	//¿©¼º¿ë Å©·¢½´ÅÍ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_CRACKS_F_CHANGE_01		5532	
+#define	TID_MMI_155_CRACKS_F_CHANGE_02		5533	
+#define	TID_MMI_155_CRACKS_F_CHANGE_03		5534	
+#define	TID_MMI_155_CRACKS_F_CHANGE_04		5535	
+#define	TID_MMI_155_CRACKS_F_CHANGE_05		5536	
+#define	TID_MMI_155_CRACKS_M_CHANGE		7334	//³²¼º¿ë Å©·¢½´ÅÍ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_CRACKS_M_CHANGE_01		5537	
+#define	TID_MMI_155_CRACKS_M_CHANGE_02		5538	
+#define	TID_MMI_155_CRACKS_M_CHANGE_03		5539	
+#define	TID_MMI_155_CRACKS_M_CHANGE_04		5540	
+#define	TID_MMI_155_CRACKS_M_CHANGE_05		5541	
+#define	TID_MMI_155_WINDL_F_CHANGE		7335	//¿©¼º¿ë À©µå·¯Ä¿ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_WINDL_F_CHANGE_01		5542	
+#define	TID_MMI_155_WINDL_F_CHANGE_02		5543	
+#define	TID_MMI_155_WINDL_F_CHANGE_03		5544	
+#define	TID_MMI_155_WINDL_F_CHANGE_04		5545	
+#define	TID_MMI_155_WINDL_F_CHANGE_05		5546	
+#define	TID_MMI_155_WINDL_M_CHANGE		7336	//³²¼º¿ë À©µå·¯Ä¿ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_WINDL_M_CHANGE_01		5547	
+#define	TID_MMI_155_WINDL_M_CHANGE_02		5548	
+#define	TID_MMI_155_WINDL_M_CHANGE_03		5549	
+#define	TID_MMI_155_WINDL_M_CHANGE_04		5550	
+#define	TID_MMI_155_WINDL_M_CHANGE_05		5551	
+#define	TID_MMI_155_FLOR_F_CHANGE		7337	//¿©¼º¿ë ÇÃ·Î¸®½ºÆ® ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_FLOR_F_CHANGE_01		5552	
+#define	TID_MMI_155_FLOR_F_CHANGE_02		5553	
+#define	TID_MMI_155_FLOR_F_CHANGE_03		5554	
+#define	TID_MMI_155_FLOR_F_CHANGE_04		5555	
+#define	TID_MMI_155_FLOR_F_CHANGE_05		5556	
+#define	TID_MMI_155_FLOR_M_CHANGE		7338	//³²¼º¿ë ÇÃ·Î¸®½ºÆ® ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_FLOR_M_CHANGE_01		5557	
+#define	TID_MMI_155_FLOR_M_CHANGE_02		5558	
+#define	TID_MMI_155_FLOR_M_CHANGE_03		5559	
+#define	TID_MMI_155_FLOR_M_CHANGE_04		5560	
+#define	TID_MMI_155_FLOR_M_CHANGE_05		5561	
+#define	TID_MMI_155_FORCEM_F_CHANGE		7339	//¿©¼º¿ë Æ÷½º¸¶½ºÅÍ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_FORCEM_F_CHANGE_01		5562	
+#define	TID_MMI_155_FORCEM_F_CHANGE_02		5563	
+#define	TID_MMI_155_FORCEM_F_CHANGE_03		5564	
+#define	TID_MMI_155_FORCEM_F_CHANGE_04		5565	
+#define	TID_MMI_155_FORCEM_F_CHANGE_05		5566	
+#define	TID_MMI_155_FORCEM_M_CHANGE		7340	//³²¼º¿ë Æ÷½º¸¶½ºÅÍ ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_FORCEM_M_CHANGE_01		5567	
+#define	TID_MMI_155_FORCEM_M_CHANGE_02		5568	
+#define	TID_MMI_155_FORCEM_M_CHANGE_03		5569	
+#define	TID_MMI_155_FORCEM_M_CHANGE_04		5570	
+#define	TID_MMI_155_FORCEM_M_CHANGE_05		5571	
+#define	TID_MMI_155_MENT_F_CHANGE		7341	//¿©¼º¿ë ¸àÅ»¸®½ºÆ® ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_MENT_F_CHANGE_01		5572	
+#define	TID_MMI_155_MENT_F_CHANGE_02		5573	
+#define	TID_MMI_155_MENT_F_CHANGE_03		5574	
+#define	TID_MMI_155_MENT_F_CHANGE_04		5575	
+#define	TID_MMI_155_MENT_F_CHANGE_05		5576	
+#define	TID_MMI_155_MENT_M_CHANGE		7342	//³²¼º¿ë ¸àÅ»¸®½ºÆ® ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_MENT_M_CHANGE_01		5577	
+#define	TID_MMI_155_MENT_M_CHANGE_02		5578	
+#define	TID_MMI_155_MENT_M_CHANGE_03		5579	
+#define	TID_MMI_155_MENT_M_CHANGE_04		5580	
+#define	TID_MMI_155_MENT_M_CHANGE_05		5581	
+#define	TID_MMI_155_ELEL_F_CHANGE		7343	//¿©¼º¿ë ¿¤¸®¸àÅ» ·Îµå ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_ELEL_F_CHANGE_01		5582	
+#define	TID_MMI_155_ELEL_F_CHANGE_02		5583	
+#define	TID_MMI_155_ELEL_F_CHANGE_03		5584	
+#define	TID_MMI_155_ELEL_F_CHANGE_04		5585	
+#define	TID_MMI_155_ELEL_F_CHANGE_05		5586	
+#define	TID_MMI_155_ELEL_M_CHANGE		7344	//³²¼º¿ë ¿¤¸®¸àÅ» ·Îµå ¹æ¾î±¸ ¾ÆÀÌÅÛ ±³È¯
+#define	TID_MMI_155_ELEL_M_CHANGE_01		5587	
+#define	TID_MMI_155_ELEL_M_CHANGE_02		5588	
+#define	TID_MMI_155_ELEL_M_CHANGE_03		5589	
+#define	TID_MMI_155_ELEL_M_CHANGE_04		5590	
+#define	TID_MMI_155_ELEL_M_CHANGE_05		5591	
+#define	TID_MMI_155_LORDK_WEA_CHANGE		7345	//·Îµå ÅÛÇÃ·¯ Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_LORDK_WEA_CHANGE_01		5592	
+#define	TID_MMI_155_LORDK_WEA_CHANGE_02		5593	
+#define	TID_MMI_155_LORDK_WEA_CHANGE_03		5594
+#define	TID_MMI_155_LORDK_WEA_CHANGE_04		5595	
+#define	TID_MMI_155_STORMB_WEA_CHANGE		7346	//½ºÅè ºí·¹ÀÌµå Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_STORMB_WEA_CHANGE_01		5596	
+#define	TID_MMI_155_STORMB_WEA_CHANGE_02		5597	
+#define	TID_MMI_155_STORMB_WEA_CHANGE_03		5598	
+#define	TID_MMI_155_CRACKS_WEA_CHANGE		7347	//Å©·¢½´ÅÍ Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_CRACKS_WEA_CHANGE_01		5599	
+#define	TID_MMI_155_CRACKS_WEA_CHANGE_02		5600	
+#define	TID_MMI_155_WINDL_WEA_CHANGE		7348	//À©µå·¯Ä¿ Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_WINDL_WEA_CHANGE_01		5601	
+#define	TID_MMI_155_WINDL_WEA_CHANGE_02		5602	
+#define	TID_MMI_155_FLOR_WEA_CHANGE		7349	//ÇÃ·Î¸®½ºÆ® Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_FLOR_WEA_CHANGE_01		5603	
+#define	TID_MMI_155_FLOR_WEA_CHANGE_02		5604	
+#define	TID_MMI_155_FORCEM_WEA_CHANGE		7350	//Æ÷½º¸¶½ºÅÍ Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_FORCEM_WEA_CHANGE_01		5605	
+#define	TID_MMI_155_FORCEM_WEA_CHANGE_02		5606	
+#define	TID_MMI_155_MENT_WEA_CHANGE		7351	//¸àÅ»¸®½ºÆ® Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_MENT_WEA_CHANGE_01		5607	
+#define	TID_MMI_155_MENT_WEA_CHANGE_02		5608	
+#define	TID_MMI_155_ELEL_WEA_CHANGE		7352	//¿¤¸®¸àÅ» ·Îµå Àü¿ë ¹«±â ±³È¯
+#define	TID_MMI_155_ELEL_WEA_CHANGE_01		5609	
+#define	TID_MMI_155_ELEL_WEA_CHANGE_02		5610	
+#define	TID_MMI_155_SHEILD_BOOK_CHANGE		7353	//¹æÆÐ ¹× Ã¥ ±³È¯
+#define	TID_MMI_155_SHEILD_BOOK_CHANGE_01		5611	
+#define	TID_MMI_155_SHEILD_BOOK_CHANGE_02		5612	
+#define	TID_MMI_155_SHEILD_BOOK_CHANGE_03		5613
+#define	TID_MMI_GUILD_COIN		7354	//±æµå ´ëÀü ÄÚÀÎ
+#define	TID_MMI_GUILD_COIN_01		5614	
+#define	TID_MMI_GUILD_COIN_02		5615	
+#define	TID_MMI_GUILD_COIN_03		5616	
+#define	TID_MMI_GUILD_COIN_04		5617	
+#define	TID_MMI_GUILD_COIN_05		5618	
+#define	TID_MMI_GUILD_COIN_06		5619	
+#define	TID_MMI_GUILD_COIN_07		5620	
+#define	TID_MMI_GUILD_COIN_08		5621	
+#define	TID_MMI_GUILD_COIN_09		5622	
+#define	TID_MMI_GUILD_COIN_10		5623	
+#define	TID_MMI_GUILD_COIN_11		5624	
+#define	TID_MMI_GUILD_COIN_12		5625	
+#define	TID_MMI_GUILD_COIN_13		5626	
+#define	TID_MMI_GUILD_COIN_14		5627	
+
+#define TID_GAME_GUILDCOMBAT_WIN_EXCESS  	5628
+#define	TID_MMI_GUILD_COIN_15		5629
+#define	TID_MMI_GUILD_COIN_16		5630
+#define	TID_MMI_GUILD_COIN_17		5631
+#define	TID_MMI_GUILD_COIN_18		5632
+#define	TID_MMI_GUILD_COIN_19		5633
+#define	TID_MMI_GUILD_COIN_20		5634
+#define	TID_MMI_GUILD_COIN_21		5635
+#define	TID_MMI_GUILD_COIN_22		5636
+#define	TID_MMI_GUILD_COIN_23		5637
+#define	TID_MMI_GUILD_COIN_24		5638
+#define	TID_MMI_GUILD_COIN_25		5639
+#define	TID_MMI_GUILD_COIN_26		5640
+#define	TID_MMI_GUILD_COIN_27		5641
+
+#define TID_MMI_SMELT_SAFETY_GENERAL_BARUNA 7355
+#define TID_MMI_SMELT_SAFETY_PIERCING_BARUNA 7356
+#define TID_MMI_SMELT_JEWEL_BARUNA			7357
+
+#define TID_MMI_SMELT_REMOVE_PIERCING_BARUNA			7358 // ½´Æ®ÀÇ ÇÇ¾î½Ì ¿É¼Ç Á¦°Å
+
+#define TID_MMI_SMELT_REMOVE_JEWEL_BARUNA		7359
+
+#define TID_MMI_CARD_EXCHANGE		7360	// 10% Ä«µå º¯°æ
+#define	TID_MMI_CARD_EXCHANGE_01		5642
+#define	TID_MMI_CARD_EXCHANGE_02		5643
+#define	TID_MMI_CARD_EXCHANGE_03		5644
+#define	TID_MMI_CARD_EXCHANGE_04		5645
+#define	TID_MMI_CARD_EXCHANGE_05		5646
+#define	TID_MMI_CARD_EXCHANGE_06		5647
+#define	TID_MMI_CARD_EXCHANGE_07		5648
+#define	TID_MMI_CARD_EXCHANGE_08		5649
+#define	TID_MMI_CARD_EXCHANGE_09		5650
+#define	TID_MMI_CARD_EXCHANGE_10		5651
+#define	TID_MMI_BARUNA_CARD_EXCHANGE		7361	// 15% Ä«µå ±³È¯
+#define	TID_MMI_BARUNA_CARD_EXCHANGE_01		5652
+#define	TID_MMI_BARUNA_CARD_EXCHANGE_02		5653
+#define	TID_MMI_BARUNA_CARD_EXCHANGE_03		5654
+#define	TID_MMI_BARUNA_CARD_EXCHANGE_04		5655
+#define	TID_MMI_BARUNA_CARD_EXCHANGE_05		5656
+#define	TID_MMI_BARUNA_CARD_EXCHANGE_06		5657
+
+#define	TID_DIAG_EAC_DISCONNECT			5658	
+
+#define	TID_MMI_FLYCOIN_CASH_COSTUME		7362	// ÇÁ¸®ÇÁ ÄÚÀÎ ÄÚ½ºÆ¬ ±³È¯
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_01		5659	
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_02		5660	
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_03		5661	
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_04		5662	
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_05		5663	
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_06		5664	
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_07		5665	
+				
+#define	TID_MMI_FLYCOIN_CASH_PET		7363	// ÇÁ¸®ÇÁ ÄÚÀÎ Æê ±³È¯
+#define	TID_MMI_FLYCOIN_CASH_PET_01		5666	
+#define	TID_MMI_FLYCOIN_CASH_PET_02		5667	
+#define	TID_MMI_FLYCOIN_CASH_PET_03		5668	
+#define	TID_MMI_FLYCOIN_CASH_PET_04		5669	
+#define	TID_MMI_FLYCOIN_CASH_PET_05		5670	
+#define	TID_MMI_FLYCOIN_CASH_PET_06		5671	
+				
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE		7364	// ÇÁ¸®ÇÁ ÄÚÀÎ ÆíÀÇ¿ëÇ° ±³È¯
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_01		5672	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_02		5673	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_03		5674	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_04		5675	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_05		5676	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_06		5677	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_07		5678	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_08		5679	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_09		5680	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_10		5681	
+#define	TID_MMI_FLYCOIN_CASH_CONVENIENCE_11		5682
+			
+#define	TID_MMI_FLYCOIN_CASH_PARTY		7365
+#define	TID_MMI_FLYCOIN_CASH_PARTY_01		5683
+#define	TID_MMI_FLYCOIN_CASH_PARTY_02		5684
+#define	TID_MMI_FLYCOIN_CASH_PARTY_03		5685
+#define	TID_MMI_FLYCOIN_CASH_PARTY_04		5686
+			
+#define	TID_MMI_FLYCOIN_CASH_BUFF		7366
+#define	TID_MMI_FLYCOIN_CASH_BUFF_01		5687
+#define	TID_MMI_FLYCOIN_CASH_BUFF_02		5688
+#define	TID_MMI_FLYCOIN_CASH_BUFF_03		5689
+#define	TID_MMI_FLYCOIN_CASH_BUFF_04		5690
+#define	TID_MMI_FLYCOIN_CASH_BUFF_05		5691
+#define	TID_MMI_FLYCOIN_CASH_BUFF_06		5692
+#define	TID_MMI_FLYCOIN_CASH_BUFF_07		5693
+#define	TID_MMI_FLYCOIN_CASH_BUFF_08		5694
+#define	TID_MMI_FLYCOIN_CASH_BUFF_09		5695
+#define	TID_MMI_FLYCOIN_CASH_BUFF_10		5696
+#define	TID_MMI_FLYCOIN_CASH_BUFF_11		5697
+#define	TID_MMI_FLYCOIN_CASH_BUFF_12		5698
+			
+#define	TID_MMI_FLYCOIN_CASH_UPGRADE		7367
+#define	TID_MMI_FLYCOIN_CASH_UPGRADE_01		5699
+#define	TID_MMI_FLYCOIN_CASH_UPGRADE_02		5700
+#define	TID_MMI_FLYCOIN_CASH_UPGRADE_03		5701
+#define	TID_MMI_FLYCOIN_CASH_UPGRADE_04		5702
+#define	TID_MMI_FLYCOIN_CASH_UPGRADE_05		5703
+			
+#define	TID_MMI_FLYCOIN_CASH_PRIMIUM		7368
+#define	TID_MMI_FLYCOIN_CASH_PRIMIUM_01		5704
+#define	TID_MMI_FLYCOIN_CASH_PRIMIUM_02		5705
+#define	TID_MMI_FLYCOIN_CASH_PRIMIUM_03		5706
+#define	TID_MMI_FLYCOIN_CASH_PRIMIUM_04		5707
+#define	TID_MMI_FLYCOIN_CASH_PRIMIUM_05		5708
+
+#define	TID_DIAG_NO_REG_GXCACCOUNT			5709
+
+#define	TID_GAME_FLYFFCOIN_GET				5710
+#define	TID_GAME_FLYFFCOIN_BALANCE			5711
+
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_08		5712
+#define	TID_MMI_FLYCOIN_CASH_COSTUME_09		5713
+
+#define	TID_MMI_FLYCOIN_CASH_RIDE		7369
+#define	TID_MMI_FLYCOIN_CASH_RIDE_01		5714
+#define	TID_MMI_FLYCOIN_CASH_RIDE_02		5715
+#define	TID_MMI_FLYCOIN_CASH_RIDE_03		5716
+#define	TID_MMI_FLYCOIN_CASH_RIDE_04		5717
+
+#define	TID_MMI_EVENT_2012HAPPYMONEY_TEXT12	5718	//ÇØÇÇ¸Ó´Ï Ãß°¡ º¸»ó
+
+#define	TID_DIAG_REG_GXCACCOUNT_ACCOUNT		5719
+
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME		7370 // ÇÁ¸®ÇÁ ÄÚÀÎ ¿©¼º Çà¿îÀÇ »óÀÚ
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_01		5720
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_02		5721
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_03		5722
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_04		5723
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_05		5724
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_06		5725
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_07		5726
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_08		5727
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_09		5728
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_10		5729
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_11		5730
+#define	TID_MMI_FLYCOIN_CASH_FECOSTUME_12		5731
+
+#define	TID_MMI_FLYCOIN_CASH_BARUNA		7371	// ÇÁ¸®ÇÁ ÄÚÀÎ ÇÁ¸®¹Ì¾ö ¹Ù·ç³ª
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_01		5732
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_02		5733
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_03		5734
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_04		5735
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_05		5736
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_06		5737
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_07		5738
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_08		5739
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_09		5740
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_10		5741
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_11		5742
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_12		5743
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_13		5744
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_14		5745
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_15		5746
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_16		5747
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_17		5748
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_18		5749
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_19		5750
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_20		5751
+#define	TID_MMI_FLYCOIN_CASH_BARUNA_21		5752
+
+#define	TID_GAME_GUILDCOMBAT_MAX_MASTER_NOTICE		5753
+#define	TID_GAME_GUILDCOMBAT_MAX_LEVEL_NOTICE			5754
+#define	TID_GAME_INSTANCE_DISGUISE03			5755
+#define	TID_GAME_NO_SUPPORT_SERVER			5756
+
+#define	TID_MMI_DRAGONQUEEN_M	7372
+#define	TID_MMI_DRAGONQUEEN_M_01	5757
+#define	TID_MMI_DRAGONQUEEN_M_02	5758
+
+#define	TID_MMI_DRAGONQUEEN_F	7373
+#define	TID_MMI_DRAGONQUEEN_F_01	5759
+#define	TID_MMI_DRAGONQUEEN_F_02	5760
+
+#define	TID_ITEM_CANCEL_ERROR4	5761
+
+#define	TID_MMI_HALLOWEENQUEEN	7374
+#define	TID_MMI_HALLOWEENQUEEN_01	5762
+#define	TID_MMI_HALLOWEENQUEEN_02	5763
+
+#define	TID_MMI_OCTORBERPH_1	7375
+#define	TID_MMI_OCTORBERPH_1_01	5764
+#define	TID_MMI_OCTORBERPH_1_02	5765
+#define	TID_MMI_OCTORBERPH_1_03	5766
+#define	TID_MMI_OCTORBERPH_1_04	5767
+#define	TID_MMI_OCTORBERPH_1_05	5768
+#define	TID_MMI_OCTORBERPH_1_06	5769
+#define	TID_MMI_OCTORBERPH_1_07	5770
+#define	TID_MMI_OCTORBERPH_1_08	5771
+#define	TID_MMI_OCTORBERPH_1_09	5772
+#define	TID_MMI_OCTORBERPH_1_10	5773
+#define	TID_MMI_OCTORBERPH_1_11	5774
+#define	TID_MMI_OCTORBERPH_1_12	5775
+#define	TID_MMI_OCTORBERPH_1_13	5776
+#define	TID_MMI_OCTORBERPH_1_14	5777
+#define	TID_MMI_OCTORBERPH_1_15	5778
+#define	TID_MMI_OCTORBERPH_1_16	5779
+#define	TID_MMI_OCTORBERPH_1_17	5780
+#define	TID_MMI_OCTORBERPH_1_18	5781
+#define	TID_MMI_OCTORBERPH_1_19	5782
+#define	TID_MMI_OCTORBERPH_1_20	5783
+
+#define	TID_MMI_OCTORBERPH_2	7376
+#define	TID_MMI_OCTORBERPH_2_01	5784
+#define	TID_MMI_OCTORBERPH_2_02	5785
+#define	TID_MMI_OCTORBERPH_2_03	5786
+#define	TID_MMI_OCTORBERPH_2_04	5787
+#define	TID_MMI_OCTORBERPH_2_05	5788
+#define	TID_MMI_OCTORBERPH_2_06	5789
+#define	TID_MMI_OCTORBERPH_2_07	5790
+#define	TID_MMI_OCTORBERPH_2_08	5791
+#define	TID_MMI_OCTORBERPH_2_09	5792
+
+#define	TID_MMI_HALLOWEENQUEEN_PH	7377
+#define	TID_MMI_HALLOWEENQUEEN_PH_01	5793
+#define	TID_MMI_HALLOWEENQUEEN_PH_02	5794
+#define	TID_MMI_HALLOWEENQUEEN_PH_03	5795
+#define	TID_MMI_HALLOWEENQUEEN_PH_04	5796
+#define	TID_MMI_HALLOWEENQUEEN_PH_05	5797
+
+#define	TID_MMI_CHIRSTMASPH_1	7378
+#define	TID_MMI_HALLOWEENQUEEN_PH_01	5793
+#define	TID_MMI_HALLOWEENQUEEN_PH_02	5794
+#define	TID_MMI_HALLOWEENQUEEN_PH_03	5795
+
+#define	TID_MMI_CHIRSTMASPH_1	7378
+#define	TID_MMI_CHIRSTMASPH_1_01	5798
+#define	TID_MMI_CHIRSTMASPH_1_02	5799
+#define	TID_MMI_CHIRSTMASPH_1_03	5800
+		
+#define	TID_MMI_CHIRSTMASPH_2	7379
+#define	TID_MMI_CHIRSTMASPH_2_01	5801
+#define	TID_MMI_CHIRSTMASPH_2_02	5802
+#define	TID_MMI_CHIRSTMASPH_2_03	5803
+
+#define	TID_MMI_CHIRSTMASPH_3	7380
+#define	TID_MMI_CHIRSTMASPH_3_01	5804
+#define	TID_MMI_CHIRSTMASPH_3_02	5805
+#define	TID_MMI_CHIRSTMASPH_3_03	5806
+
+#define	TID_MMI_NEWYEAR2020	7381
+#define	TID_MMI_NEWYEAR2020_01	5807
+#define	TID_MMI_NEWYEAR2020_02	5808
+#define	TID_MMI_NEWYEAR2020_03	5809
+
+#define	TID_GAME_SEALCHAR_USED_VIPBUFF	5810
+
+#define	TID_MMI_TWNEWSERVER1	7382
+#define	TID_MMI_TWNEWSERVER1_01	5811
+#define	TID_MMI_TWNEWSERVER1_02	5812
+#define	TID_MMI_TWNEWSERVER1_03	5813
+#define	TID_MMI_TWNEWSERVER1_04	5814
+#define	TID_MMI_TWNEWSERVER1_05	5815
+#define	TID_MMI_TWNEWSERVER1_06	5816
+#define	TID_MMI_TWNEWSERVER1_07	5817
+#define	TID_MMI_TWNEWSERVER1_08	5818
+#define	TID_MMI_TWNEWSERVER1_09	5819
+#define	TID_MMI_TWNEWSERVER1_10	5820
+#define	TID_MMI_TWNEWSERVER1_11	5821
+#define	TID_MMI_TWNEWSERVER1_12	5822
+#define	TID_MMI_TWNEWSERVER1_13	5823
+#define	TID_MMI_TWNEWSERVER1_14	5824
+#define	TID_MMI_TWNEWSERVER1_15	5825
+#define	TID_MMI_TWNEWSERVER1_16	5826
+#define	TID_MMI_TWNEWSERVER1_17	5827
+#define	TID_MMI_TWNEWSERVER1_18	5828
+		
+#define	TID_MMI_TWNEWSERVER2	7383
+#define	TID_MMI_TWNEWSERVER2_01	5829
+#define	TID_MMI_TWNEWSERVER2_02	5830
+#define	TID_MMI_TWNEWSERVER2_03	5831
+#define	TID_MMI_TWNEWSERVER2_04	5832
+#define	TID_MMI_TWNEWSERVER2_05	5833
+#define	TID_MMI_TWNEWSERVER2_06	5834
+#define	TID_MMI_TWNEWSERVER2_07	5835
+#define	TID_MMI_TWNEWSERVER2_08	5836
+#define	TID_MMI_TWNEWSERVER2_09	5837
+#define	TID_MMI_TWNEWSERVER2_10	5838
+#define	TID_MMI_TWNEWSERVER2_11	5839
+#define	TID_MMI_TWNEWSERVER2_12	5840
+#define	TID_MMI_TWNEWSERVER2_13	5841
+#define	TID_MMI_TWNEWSERVER2_14	5842
+
+#define	TID_MMI_VALENTINE2020	7384
+#define	TID_MMI_VALENTINE2020_01	5843
+#define	TID_MMI_VALENTINE2020_02	5844
+#define	TID_MMI_VALENTINE2020_03	5845
+
+#define	TID_MMI_SAINT2020	7385
+#define	TID_MMI_SAINT2020_01	5846
+#define	TID_MMI_SAINT2020_02	5847
+#define	TID_MMI_SAINT2020_03	5848
+#define	TID_MMI_SAINT2020_04	5849
+
+#define	TID_MMI_SUMMER2020	7386
+#define	TID_MMI_SUMMER2020_01	5850
+#define	TID_MMI_SUMMER2020_02	5851
+
+#define	TID_MMI_DEVILWEAPON	7387
+#define	TID_MMI_DEVILWEAPON_01	5852
+#define	TID_MMI_DEVILWEAPON_02	5853
+#define	TID_MMI_DEVILWEAPON_03	5854
+#define	TID_MMI_DEVILWEAPON_04	5855
+#define	TID_MMI_DEVILWEAPON_05	5856
+#define	TID_MMI_DEVILWEAPON_06	5857
+#define	TID_MMI_DEVILWEAPON_07	5858
+#define	TID_MMI_DEVILWEAPON_08	5859
+#define	TID_MMI_DEVILWEAPON_09	5860
+#define	TID_MMI_DEVILWEAPON_10	5861
+#define	TID_MMI_DEVILWEAPON_11	5862
+#define	TID_MMI_DEVILWEAPON_12	5863
+		
+#define	TID_MMI_DEVILWEAPON_QUE	7388
+#define	TID_MMI_DEVILWEAPON_QUE_01	5864
+#define	TID_MMI_DEVILWEAPON_QUE_02	5865
+#define	TID_MMI_DEVILWEAPON_QUE_03	5866
+
+#define	TID_MMI_GROWGREEN	7389
+#define	TID_MMI_GROWGREEN_01	5867
+#define	TID_MMI_GROWGREEN_02	5868
+
+#define	TID_MMI_WEDDING	7390
+#define	TID_MMI_WEDDING_01	5869
+#define	TID_MMI_WEDDING_02	5870
+
+#define TID_GAME_GUILDCOMBAT_SELECTION_MIN 5871
+
+#define	TID_MMI_SUMMER	7391
+#define	TID_MMI_SUMMER_01	5872
+#define	TID_MMI_SUMMER_02	5873
+
+#define	TID_MMI_TWNEWSERVER2_15	5874	// ´ë¸¸ OMG ÀÌº¥Æ® 2Åº
+#define	TID_MMI_TWNEWSERVER2_16	5875
+#define	TID_MMI_TWNEWSERVER2_17	5876
+#define	TID_MMI_TWNEWSERVER2_18	5877
+#define	TID_MMI_TWNEWSERVER2_19	5878
+#define	TID_MMI_TWNEWSERVER2_20	5879
+#define	TID_MMI_TWNEWSERVER2_21	5880
+#define	TID_MMI_TWNEWSERVER2_22	5881
+#define	TID_MMI_TWNEWSERVER2_23	5882
+#define	TID_MMI_TWNEWSERVER2_24	5883
+#define	TID_MMI_TWNEWSERVER2_25	5884
+#define	TID_MMI_TWNEWSERVER2_26	5885
+#define	TID_MMI_TWNEWSERVER2_27	5886
+#define	TID_MMI_TWNEWSERVER2_28	5887
+#define	TID_MMI_TWNEWSERVER2_29	5888
+
+#define	TID_MMI_TREASUREPH	7392	// ÇÊ¸®ÇÉ ÇØÀû ÀÌº¥Æ®
+#define	TID_MMI_TREASUREPH_01	5889
+#define	TID_MMI_TREASUREPH_02	5890
+
+#define	TID_MMI_OCTORBERPH_2_10	5891	// ÇÊ¸®ÇÉ Ãß°¡ Ãâ¼®
+#define	TID_MMI_OCTORBERPH_2_11	5892
+#define	TID_MMI_OCTORBERPH_2_12	5893
+#define	TID_MMI_OCTORBERPH_2_13	5894
+#define	TID_MMI_OCTORBERPH_2_14	5895
+#define	TID_MMI_OCTORBERPH_2_15	5896
+
+#define	TID_MMI_DEVILARMOR	7393	// µ¥¸ó ¾Æ¸Ó
+#define	TID_MMI_DEVILARMOR_01	5897	
+#define	TID_MMI_DEVILARMOR_02	5898	
+#define	TID_MMI_DEVILARMOR_03	5899	
+#define	TID_MMI_DEVILARMOR_04	5900	
+#define	TID_MMI_DEVILARMOR_05	5901	
+#define	TID_MMI_DEVILARMOR_06	5902	
+#define	TID_MMI_DEVILARMOR_07	5903	
+#define	TID_MMI_DEVILARMOR_08	5904	
+#define	TID_MMI_DEVILARMOR_09	5905	
+#define	TID_MMI_DEVILARMOR_10	5906	
+#define	TID_MMI_DEVILARMOR_11	5907	
+#define	TID_MMI_DEVILARMOR_12	5908	
+#define	TID_MMI_DEVILARMOR_13	5909	
+#define	TID_MMI_DEVILARMOR_14	5910	
+#define	TID_MMI_DEVILARMOR_15	5911	
+#define	TID_MMI_DEVILARMOR_16	5912	
+#define	TID_MMI_DEVILARMOR_17	5913	
+
+#define	TID_MMI_DRAGONWINGVIP	7394
+#define	TID_MMI_DRAGONWINGVIP_01	5914
+#define	TID_MMI_DRAGONWINGVIP_02	5915
+#define	TID_MMI_DRAGONWINGVIP_03	5916
+#define	TID_MMI_DRAGONWINGVIP_04	5917
+#define	TID_MMI_DRAGONWINGVIP_05	5918
+#define	TID_MMI_DRAGONWINGVIP_06	5919
+#define	TID_MMI_DRAGONWINGVIP_07	5920
+		
+#define	TID_MMI_VIPHORNOR	7395
+#define	TID_MMI_VIPHORNOR_01	5921
+#define	TID_MMI_VIPHORNOR_02	5922
+		
+#define	TID_MMI_VIIPSUNGLASS	7396
+#define	TID_MMI_VIIPSUNGLASS_01	5923
+#define	TID_MMI_VIIPSUNGLASS_02	5924
+#define	TID_MMI_VIIPSUNGLASS_03	5925
+#define	TID_MMI_VIIPSUNGLASS_04	5926
+#define	TID_MMI_VIIPSUNGLASS_05	5927
+#define	TID_MMI_VIIPSUNGLASS_06	5928
+#define	TID_MMI_VIIPSUNGLASS_07	5929
+#define	TID_MMI_VIIPSUNGLASS_08	5930
+#define	TID_MMI_VIIPSUNGLASS_09	5931
+		
+#define	TID_MMI_DEVILWPTIKET	7397
+#define	TID_MMI_DEVILWPTIKET_01	5932
+#define	TID_MMI_DEVILWPTIKET_02	5933
+		
+#define	TID_MMI_METEONIKERSET	7398
+#define	TID_MMI_METEONIKERSET_01	5934
+#define	TID_MMI_METEONIKERSET_02	5935
+#define	TID_MMI_METEONIKERSET_03	5936
+#define	TID_MMI_METEONIKERSET_04	5937
+#define	TID_MMI_METEONIKERSET_05	5938
+#define	TID_MMI_METEONIKERSET_06	5939
+#define	TID_MMI_METEONIKERSET_07	5940
+		
+#define	TID_MMI_METEONIKERCLOAK	7399
+#define	TID_MMI_METEONIKERCLOAK_01	5941
+#define	TID_MMI_METEONIKERCLOAK_02	5942
+#define	TID_MMI_METEONIKERCLOAK_03	5943
+#define	TID_MMI_METEONIKERCLOAK_04	5944
+#define	TID_MMI_METEONIKERCLOAK_05	5945
+#define	TID_MMI_METEONIKERCLOAK_06	5946
+#define	TID_MMI_METEONIKERCLOAK_07	5947
+		
+#define	TID_MMI_METEONIKERMASK	7400
+#define	TID_MMI_METEONIKERMASK_01	5948
+#define	TID_MMI_METEONIKERMASK_02	5949
+#define	TID_MMI_METEONIKERMASK_03	5950
+		
+#define	TID_MMI_RTIERBX	7401
+#define	TID_MMI_RTIERBX_01	5951
+#define	TID_MMI_RTIERBX_02	5952
+#define	TID_MMI_RTIERBX_03	5953
+		
+#define	TID_MMI_DRAGONWING	7402
+#define	TID_MMI_DRAGONWING_01	5954
+#define	TID_MMI_DRAGONWING_02	5955
+#define	TID_MMI_DRAGONWING_03	5956
+		
+#define	TID_MMI_COSTUMEBX	7403
+#define	TID_MMI_COSTUMEBX_01	5957
+#define	TID_MMI_COSTUMEBX_02	5958
+#define	TID_MMI_COSTUMEBX_03	5959
+		
+#define	TID_MMI_ALTAIRBX	7404
+#define	TID_MMI_ALTAIRBX_01	5960
+#define	TID_MMI_ALTAIRBX_02	5961
+#define	TID_MMI_ALTAIRBX_03	5962
+		
+#define	TID_MMI_ARTIFACTBX	7405
+#define	TID_MMI_ARTIFACTBX_01	5963
+#define	TID_MMI_ARTIFACTBX_02	5964
+		
+#define	TID_MMI_DEVILCLOAK	7406
+#define	TID_MMI_DEVILCLOAK_01	5965
+#define	TID_MMI_DEVILCLOAK_02	5966
+
+#define	TID_MMI_NINJAEVE		7407	// ÇÊ¸®ÇÉ ´ÑÀÚ ÀÌº¥Æ®
+#define	TID_MMI_NINJAEVE_01	5967
+#define	TID_MMI_NINJAEVE_02	5968
+
+#define	TID_MMI_CHRISTMAS_EVENT_2020	7408	// 2020 Å©¸®½º¸¶½º Á¦·Ã ÀÌº¥Æ®
+#define	TID_MMI_CHRISTMAS_EVENT_2020_TEXT	5969	
+#define	TID_MMI_CHRISTMAS_EVENT_2020_TEXT_01	5970	
+
+#define	TID_MMI_VISGROUP_GUILDPVP_LV1				5971//PVP ºñ½º(·¹º§1)
+#define	TID_MMI_VISGROUP_GUILDPVP_LV2				5972//PVP ºñ½º(·¹º§2)
+
+#define	TID_MMI_GUILDWIN_COIN	7409	// ±æµå ´ëÀü ¿ì½Â º¸»ó
+#define	TID_MMI_GUILDWIN_COIN_TEXT	5973
+#define	TID_MMI_GUILDWIN_COIN_TEXT01	5974
+#define	TID_MMI_GUILDWIN_COIN_TEXT02	5975
+#define	TID_MMI_GUILDWIN_COIN_TEXT03	5976
+#define	TID_MMI_GUILDWIN_COIN_TEXT04	5977
+#define	TID_MMI_GUILDWIN_COIN_TEXT05	5978
+#define	TID_MMI_GUILDWIN_COIN_TEXT06	5979
+#define	TID_MMI_GUILDWIN_COIN_TEXT07	5980
+#define	TID_MMI_GUILDWIN_COIN_TEXT08	5981
+
+#define	TID_MMI_GUILD_COIN_NEW	7410
+#define	TID_MMI_GUILD_COIN_NEW_TEXT	5982
+#define	TID_MMI_GUILD_COIN_NEW_TEXT01	5983
+#define	TID_MMI_GUILD_COIN_NEW_TEXT02	5984
+#define	TID_MMI_GUILD_COIN_NEW_TEXT03	5985
+#define	TID_MMI_GUILD_COIN_NEW_TEXT04	5986
+#define	TID_MMI_GUILD_COIN_NEW_TEXT05	5987
+#define	TID_MMI_GUILD_COIN_NEW_TEXT06	5988
+#define	TID_MMI_GUILD_COIN_NEW_TEXT07	5989
+#define	TID_MMI_GUILD_COIN_NEW_TEXT08	5990
+#define	TID_MMI_GUILD_COIN_NEW_TEXT09	5991
+#define	TID_MMI_GUILD_COIN_NEW_TEXT10	5992
+#define	TID_MMI_GUILD_COIN_NEW_TEXT11	5993
+#define	TID_MMI_GUILD_COIN_NEW_TEXT12	5994
+#define	TID_MMI_GUILD_COIN_NEW_TEXT13	5995
+#define	TID_MMI_GUILD_COIN_NEW_TEXT14	5996
+#define	TID_MMI_GUILD_COIN_NEW_TEXT15	5997
+#define	TID_MMI_GUILD_COIN_NEW_TEXT16	5998
+
+#define	TID_MMI_TEDDYBEAR	7411
+#define	TID_MMI_TEDDYBEAR_01	5999
+#define	TID_MMI_TEDDYBEAR_02	6000
+
+#define	TID_MMI_CHRISTTREE	7412
+#define	TID_MMI_CHRISTTREE_01	6001
+#define	TID_MMI_CHRISTTREE_02	6002
+		
+#define	TID_MMI_CHRISTWORK	7413
+#define	TID_MMI_CHRISTWORK_01	6003
+#define	TID_MMI_CHRISTWORK_02	6004
+		
+#define	TID_MMI_GOLDAPPLE	7414
+#define	TID_MMI_GOLDAPPLE_01	6005
+#define	TID_MMI_GOLDAPPLE_02	6006
+		
+#define	TID_MMI_CHRISTFAIRY	7415
+#define	TID_MMI_CHRISTFAIRY_01	6007
+#define	TID_MMI_CHRISTFAIRY_02	6008
+		
+#define	TID_MMI_SANTA	7416
+#define	TID_MMI_SANTA_01	6009
+#define	TID_MMI_SANTA_02	6010
+
+#define	TID_MMI_JESSICA	7417
+#define	TID_MMI_JESSICA_01	6011
+#define	TID_MMI_JESSICA_02	6012
+
+#define	TID_MMI_NANA	7418
+#define	TID_MMI_NANA_01		6013
+#define	TID_MMI_NANA_02		6014
+
+#define	TID_MMI_BORAEGG_EVENT	7419	// º¸¶ó °ËÅõ»ç ÀÌº¥Æ®
+#define	TID_MMI_BORAEGG_EVENT_TEXT	6015
+#define	TID_MMI_BORAEGG_EVENT_TEXT_01	6016
+#define	TID_MMI_BORAEGG_EVENT_TEXT_02	6017
+#define	TID_MMI_BORAEGG_EVENT_TEXT_03	6018
+#define	TID_MMI_BORAEGG_EVENT_TEXT_04	6019
+#define	TID_MMI_BORAEGG_EVENT_TEXT_05	6020
+#define	TID_MMI_BORAEGG_EVENT_TEXT_06	6021
+#define	TID_MMI_BORAEGG_EVENT_TEXT_07	6022
+#define	TID_MMI_BORAEGG_EVENT_TEXT_08	6023
+#define	TID_MMI_BORAEGG_EVENT_TEXT_09	6024
+#define	TID_MMI_BORAEGG_EVENT_TEXT_10	6025
+#define	TID_MMI_BORAEGG_EVENT_TEXT_11	6026
+#define	TID_MMI_BORAEGG_EVENT_TEXT_12	6027
+#define	TID_MMI_BORAEGG_EVENT_TEXT_13	6028
+#define	TID_MMI_BORAEGG_EVENT_TEXT_14	6029
+#define	TID_MMI_BORAEGG_EVENT_TEXT_15	6030
+#define	TID_MMI_BORAEGG_EVENT_TEXT_16	6031
+#define	TID_MMI_BORAEGG_EVENT_TEXT_17	6032
+#define	TID_MMI_BORAEGG_EVENT_TEXT_18	6033
+#define	TID_MMI_BORAEGG_EVENT_TEXT_19	6034
+#define	TID_MMI_BORAEGG_EVENT_TEXT_20	6035
+
+#define	TID_MMI_BORARING_EVENT	7420
+#define	TID_MMI_BORARING_EVENT_01	6036
+#define	TID_MMI_BORARING_EVENT_02	6037
+
+#define	TID_MMI_FAIRY_EVENT	7421
+#define	TID_MMI_FAIRY_EVENT_01	6038
+#define	TID_MMI_FAIRY_EVENT_02	6039
+
+#define	TID_MMI_BORAJAPAN_EVENT	7422	// º¸¶ó ÀÏº» ¿ÀÇÂ ÀÌº¥Æ®
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT	6040	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_01	6041	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_02	6042	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_03	6043	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_04	6044	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_05	6045	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_06	6046	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_07	6047	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_08	6048	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_09	6049	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_10	6050	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_11	6051	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_12	6052	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_13	6053	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_14	6054	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_15	6055	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_16	6056	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_17	6057	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_18	6058	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_19	6059	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_20	6060	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_21	6061	
+#define	TID_MMI_BORAJAPAN_EVENT_TEXT_22	6062	
+
+#define	TID_MMI_BORA_ACCESSORY	7423
+#define	TID_MMI_BORA_ACCESSORY_TEXT	6063
+#define	TID_MMI_BORA_ACCESSORY_TEXT_01	6064
+#define	TID_MMI_BORA_ACCESSORY_TEXT_02	6065
+#define	TID_MMI_BORA_ACCESSORY_TEXT_03	6066
+#define	TID_MMI_BORA_ACCESSORY_TEXT_04	6067
+#define	TID_MMI_BORA_ACCESSORY_TEXT_05	6068
+#define	TID_MMI_BORA_ACCESSORY_TEXT_06	6069
+#define	TID_MMI_BORA_ACCESSORY_TEXT_07	6070
+#define	TID_MMI_BORA_ACCESSORY_TEXT_08	6071
+#define	TID_MMI_BORA_ACCESSORY_TEXT_09	6072
+#define	TID_MMI_BORA_ACCESSORY_TEXT_10	6073
+#define	TID_MMI_BORA_ACCESSORY_TEXT_11	6074
+		
+#define	TID_MMI_BORA_DRAGON	7424
+#define	TID_MMI_BORA_DRAGON_TEXT	6075
+#define	TID_MMI_BORA_DRAGON_TEXT_01	6076
+#define	TID_MMI_BORA_DRAGON_TEXT_02	6077
+
+#define	TID_MMI_TAIWANOPEN	7425
+#define	TID_MMI_TAIWANOPEN_TEXT	6078
+#define	TID_MMI_TAIWANOPEN_TEXT_01	6079
+#define	TID_MMI_TAIWANOPEN_TEXT_02	6080
+#define	TID_MMI_TAIWANOPEN_TEXT_03	6081
+#define	TID_MMI_TAIWANOPEN_TEXT_04	6082
+#define	TID_MMI_TAIWANOPEN_TEXT_05	6083
+#define	TID_MMI_TAIWANOPEN_TEXT_06	6084
+#define	TID_MMI_TAIWANOPEN_TEXT_07	6085
+#define	TID_MMI_TAIWANOPEN_TEXT_08	6086
+
+#define	TID_MMI_ELF_EVENT	7426
+#define	TID_MMI_ELF_EVENT_01	6087
+#define	TID_MMI_ELF_EVENT_02	6088
+
+#define	TID_MMI_TAIWANOPEN_TEXT_09	6089
+#define	TID_MMI_TAIWANOPEN_TEXT_10	6090
+#define	TID_MMI_TAIWANOPEN_TEXT_11	6091
+
+#define TID_ERROR_FLYFF_OTP_MAINTENANCE	6092
+#define TID_ERROR_FLYFF_LOGIN_OVER		6093	
+#define TID_ERROR_FLYFF_NO_VERIFICATION	6094
+#define TID_ERROR_FLYFF_NO_IP		6095
+#define TID_ERROR_FLYFF_NO_RECORD		6096
+#define TID_ERROR_FLYFF_NO_CERIFY		6097
+#define TID_ERROR_FLYFF_NO_OPEN		6098
+#define TID_ERROR_FLYFF_NO_ACCOUNT	6099
+
+#define	TID_MMI_STAR_EVENT	7427
+#define	TID_MMI_STAR_EVENT_01	6100
+#define	TID_MMI_STAR_EVENT_02	6101
+
+#define	TID_MMI_LITA_EVENT	7428
+#define	TID_MMI_LITA_EVENT_01	6102
+#define	TID_MMI_LITA_EVENT_02	6103
+
+#define	TID_MMI_PHMERGE	7429
+#define	TID_MMI_PHMERGE_TEXT	6104
+#define	TID_MMI_PHMERGE_TEXT_01	6105
+#define	TID_MMI_PHMERGE_TEXT_02	6106
+#define	TID_MMI_PHMERGE_TEXT_03	6107
+#define	TID_MMI_PHMERGE_TEXT_04	6108
+#define	TID_MMI_PHMERGE_TEXT_05	6109
+#define	TID_MMI_PHMERGE_TEXT_06	6110
+#define	TID_MMI_PHMERGE_TEXT_07	6111
+#define	TID_MMI_PHMERGE_TEXT_08	6112
+#define	TID_MMI_PHMERGE_TEXT_09	6113
+#define	TID_MMI_PHMERGE_TEXT_10	6114
+#define	TID_MMI_PHMERGE_TEXT_11	6115
+#define	TID_MMI_PHMERGE_TEXT_12	6116
+#define	TID_MMI_PHMERGE_TEXT_13	6117
+#define	TID_MMI_PHMERGE_TEXT_14	6118
+#define	TID_MMI_PHMERGE_TEXT_15	6119
+#define	TID_MMI_PHMERGE_TEXT_16	6120
+#define	TID_MMI_PHMERGE_TEXT_17	6121
+#define	TID_MMI_PHMERGE_TEXT_18	6122
+#define	TID_MMI_PHMERGE_TEXT_19	6123
+#define	TID_MMI_PHMERGE_TEXT_20	6124
+#define	TID_MMI_PHMERGE_TEXT_21	6125
+#define	TID_MMI_PHMERGE_TEXT_22	6126
+#define	TID_MMI_PHMERGE_TEXT_23	6127
+#define	TID_MMI_PHMERGE_TEXT_24	6128
+#define	TID_MMI_PHMERGE_TEXT_25	6129
+#define	TID_MMI_PHMERGE_TEXT_26	6130
+#define	TID_MMI_PHMERGE_TEXT_27	6131
+
+#define	TID_MMI_MOONCAKE_EVENT	7430
+#define	TID_MMI_MOONCAKE_EVENT_01	6132
+#define	TID_MMI_MOONCAKE_EVENT_02	6133
+#define	TID_MMI_MOONCAKE_EVENT_03	6134
+#define	TID_MMI_MOONCAKE_EVENT_04	6135
+#define	TID_MMI_MOONCAKE_EVENT_05	6136
+#define	TID_MMI_MOONCAKE_EVENT_06	6137
+#define	TID_MMI_MOONCAKE_EVENT_07	6138
+#define	TID_MMI_MOONCAKE_EVENT_08	6139
+#define	TID_MMI_MOONCAKE_EVENT_09	6140
+#define	TID_MMI_MOONCAKE_EVENT_10	6141
+#define	TID_MMI_MOONCAKE_EVENT_11	6142
+#define	TID_MMI_MOONCAKE_EVENT_12	6143
+#define	TID_MMI_MOONCAKE_EVENT_13	6144
+#define	TID_MMI_MOONCAKE_EVENT_14	6145
+
+#define	TID_MMI_VISGROUP_RPSHUNTER_LV1	6146	// ½Å±Ô ºñ½º ±×·ì
+#define	TID_MMI_VISGROUP_RPSLEECHING_LV1	6147
+#define	TID_MMI_VISGROUP_RPSWITCH_LV1	6148
+
+#define	TID_MMI_1STANNIVERSARY	7431	// ºÏ¹ÌÀ¯·´ 1ÁÖ³â
+#define	TID_MMI_1STANNIVERSARY_01	6149
+#define	TID_MMI_1STANNIVERSARY_02	6150
+#define	TID_MMI_1STANNIVERSARY_03	6151
+#define	TID_MMI_1STANNIVERSARY_04	6152
+#define	TID_MMI_1STANNIVERSARY_05	6153
+
+#define	TID_MMI_THANKSGIVING_CAKE	7432	// Ãß¼ö°¨»çÀý
+#define	TID_MMI_THANKSGIVING_CAKE_01	6154	
+#define	TID_MMI_THANKSGIVING_CAKE_02	6155	
+#define	TID_MMI_THANKSGIVING_CAKE_03	6156	
+#define	TID_MMI_THANKSGIVING_CAKE_04	6157	
+#define	TID_MMI_THANKSGIVING_CAKE_05	6158	
+			
+#define	TID_MMI_THANKSGIVING_BALL	7433	
+#define	TID_MMI_THANKSGIVING_BALL_01	6159	
+#define	TID_MMI_THANKSGIVING_BALL_02	6160	
+#define	TID_MMI_THANKSGIVING_BALL_03	6161	
+
+#define	TID_MMI_HALLOWEENTW	7434	// ´ë¸¸ ÇÒ·ÎÀ© ÀÌº¥Æ®
+#define	TID_MMI_HALLOWEENTW_01	6162
+#define	TID_MMI_HALLOWEENTW_02	6163
+#define	TID_MMI_HALLOWEENTW_03	6164
+#define	TID_MMI_HALLOWEENTW_04	6165
+#define	TID_MMI_HALLOWEENTW_05	6166
+#define	TID_MMI_HALLOWEENTW_06	6167
+#define	TID_MMI_HALLOWEENTW_07	6168
+#define	TID_MMI_HALLOWEENTW_08	6169
+#define	TID_MMI_HALLOWEENTW_09	6170
+
+#define	TID_MMI_HALLOWEENPH	7435	// ÇÊ¸®ÇÉ ÇÒ·ÎÀ© ÀÌº¥Æ®
+#define	TID_MMI_HALLOWEENPH_01	6171	
+#define	TID_MMI_HALLOWEENPH_02	6172	
+#define	TID_MMI_HALLOWEENPH_03	6173	
+#define	TID_MMI_HALLOWEENPH_04	6174	
+#define	TID_MMI_HALLOWEENPH_05	6175	
+#define	TID_MMI_HALLOWEENPH_06	6176	
+
+#define	TID_MMI_LEAFEXCHANGETW	7436	// ´ë¸¸ 11¿ù ÀÌº¥Æ®
+#define	TID_MMI_LEAFEXCHANGETW_01	6177	
+#define	TID_MMI_LEAFEXCHANGETW_02	6178	
+#define	TID_MMI_LEAFEXCHANGETW_03	6179	
+#define	TID_MMI_LEAFEXCHANGETW_04	6180	
+#define	TID_MMI_LEAFEXCHANGETW_05	6181	
+
+#define	TID_MMI_DUNGEONTICKETONE	7437
+#define	TID_MMI_DUNGEONTICKETONE_01	6182
+#define	TID_MMI_DUNGEONTICKETONE_02	6183
+#define	TID_MMI_DUNGEONTICKETONE_03	6184
+#define	TID_MMI_DUNGEONTICKETONE_04	6185
+#define	TID_MMI_DUNGEONTICKETONE_05	6186
+#define	TID_MMI_DUNGEONTICKETONE_06	6187
+#define	TID_MMI_DUNGEONTICKETONE_07	6188
+#define	TID_MMI_DUNGEONTICKETONE_08	6189
+#define	TID_MMI_DUNGEONTICKETONE_09	6190
+#define	TID_MMI_DUNGEONTICKETONE_10	6191
+#define	TID_MMI_DUNGEONTICKETONE_11	6192
+#define	TID_MMI_DUNGEONTICKETONE_12	6193
+#define	TID_MMI_DUNGEONTICKETONE_13	6194
+#define	TID_MMI_DUNGEONTICKETONE_14	6195
+#define	TID_MMI_DUNGEONTICKETONE_15	6196
+#define	TID_MMI_DUNGEONTICKETONE_16	6197
+#define	TID_MMI_DUNGEONTICKETONE_17	6198
+#define	TID_MMI_DUNGEONTICKETONE_18	6199
+#define	TID_MMI_DUNGEONTICKETONE_19	6200
+#define	TID_MMI_DUNGEONTICKETONE_20	6201
+#define	TID_MMI_DUNGEONTICKETONE_21	6202
+#define	TID_MMI_DUNGEONTICKETONE_22	6203
+#define	TID_MMI_DUNGEONTICKETONE_23	6204
+#define	TID_MMI_DUNGEONTICKETONE_24	6205
+#define	TID_MMI_DUNGEONTICKETONE_25	6206
+#define	TID_MMI_DUNGEONTICKETONE_26	6207
+#define	TID_MMI_DUNGEONTICKETONE_27	6208
+#define	TID_MMI_DUNGEONTICKETONE_28	6209
+#define	TID_MMI_DUNGEONTICKETONE_29	6210
+#define	TID_MMI_DUNGEONTICKETONE_30	6211
+#define	TID_MMI_DUNGEONTICKETONE_31	6212
+#define	TID_MMI_DUNGEONTICKETONE_32	6213
+#define	TID_MMI_DUNGEONTICKETONE_33	6214
+#define	TID_MMI_DUNGEONTICKETONE_34	6215
+#define	TID_MMI_DUNGEONTICKETONE_35	6216
+#define	TID_MMI_DUNGEONTICKETONE_36	6217
+#define	TID_MMI_DUNGEONTICKETONE_37	6218
+#define	TID_MMI_DUNGEONTICKETONE_38	6219
+#define	TID_MMI_DUNGEONTICKETONE_39	6220
+#define	TID_MMI_DUNGEONTICKETONE_40	6221
+#define	TID_MMI_DUNGEONTICKETONE_41	6222
+		
+#define	TID_MMI_DUNGEONTICKETTWO	7438
+#define	TID_MMI_DUNGEONTICKETTWO_01	6223
+#define	TID_MMI_DUNGEONTICKETTWO_02	6224
+#define	TID_MMI_DUNGEONTICKETTWO_03	6225
+#define	TID_MMI_DUNGEONTICKETTWO_04	6226
+#define	TID_MMI_DUNGEONTICKETTWO_05	6227
+#define	TID_MMI_DUNGEONTICKETTWO_06	6228
+#define	TID_MMI_DUNGEONTICKETTWO_07	6229
+#define	TID_MMI_DUNGEONTICKETTWO_08	6230
+#define	TID_MMI_DUNGEONTICKETTWO_09	6231
+#define	TID_MMI_DUNGEONTICKETTWO_10	6232
+#define	TID_MMI_DUNGEONTICKETTWO_11	6233
+#define	TID_MMI_DUNGEONTICKETTWO_12	6234
+#define	TID_MMI_DUNGEONTICKETTWO_13	6235
+#define	TID_MMI_DUNGEONTICKETTWO_14	6236
+#define	TID_MMI_DUNGEONTICKETTWO_15	6237
+#define	TID_MMI_DUNGEONTICKETTWO_16	6238
+#define	TID_MMI_DUNGEONTICKETTWO_17	6239
+#define	TID_MMI_DUNGEONTICKETTWO_18	6240
+#define	TID_MMI_DUNGEONTICKETTWO_19	6241
+#define	TID_MMI_DUNGEONTICKETTWO_20	6242
+#define	TID_MMI_DUNGEONTICKETTWO_21	6243
+#define	TID_MMI_DUNGEONTICKETTWO_22	6244
+#define	TID_MMI_DUNGEONTICKETTWO_23	6245
+#define	TID_MMI_DUNGEONTICKETTWO_24	6246
+#define	TID_MMI_DUNGEONTICKETTWO_25	6247
+#define	TID_MMI_DUNGEONTICKETTWO_26	6248
+#define	TID_MMI_DUNGEONTICKETTWO_27	6249
+#define	TID_MMI_DUNGEONTICKETTWO_28	6250
+#define	TID_MMI_DUNGEONTICKETTWO_29	6251
+#define	TID_MMI_DUNGEONTICKETTWO_30	6252
+#define	TID_MMI_DUNGEONTICKETTWO_31	6253
+#define	TID_MMI_DUNGEONTICKETTWO_32	6254
+#define	TID_MMI_DUNGEONTICKETTWO_33	6255
+#define	TID_MMI_DUNGEONTICKETTWO_34	6256
+#define	TID_MMI_DUNGEONTICKETTWO_35	6257
+#define	TID_MMI_DUNGEONTICKETTWO_36	6258
+#define	TID_MMI_DUNGEONTICKETTWO_37	6259
+#define	TID_MMI_DUNGEONTICKETTWO_38	6260
+#define	TID_MMI_DUNGEONTICKETTWO_39	6261
+#define	TID_MMI_DUNGEONTICKETTWO_40	6262
+#define	TID_MMI_DUNGEONTICKETTWO_41	6263
+#define	TID_MMI_DUNGEONTICKETTWO_42	6264
+#define	TID_MMI_DUNGEONTICKETTWO_43	6265
+#define	TID_MMI_DUNGEONTICKETTWO_44	6266
+#define	TID_MMI_DUNGEONTICKETTWO_45	6267
+#define	TID_MMI_DUNGEONTICKETTWO_46	6268
+#define	TID_MMI_DUNGEONTICKETTWO_47	6269
+#define	TID_MMI_DUNGEONTICKETTWO_48	6270
+#define	TID_MMI_DUNGEONTICKETTWO_49	6271
+#define	TID_MMI_DUNGEONTICKETTWO_50	6272
+#define	TID_MMI_DUNGEONTICKETTWO_51	6273
+#define	TID_MMI_DUNGEONTICKETTWO_52	6274
+#define	TID_MMI_DUNGEONTICKETTWO_53	6275
+#define	TID_MMI_DUNGEONTICKETTWO_54	6276
+#define	TID_MMI_DUNGEONTICKETTWO_55	6277
+#define	TID_MMI_DUNGEONTICKETTWO_56	6278
+#define	TID_MMI_DUNGEONTICKETTWO_57	6279
+#define	TID_MMI_DUNGEONTICKETTWO_58	6280
+#define	TID_MMI_DUNGEONTICKETTWO_59	6281
+#define	TID_MMI_DUNGEONTICKETTWO_60	6282
+#define	TID_MMI_DUNGEONTICKETTWO_61	6283
+
+#define	TID_MMI_LOTTOTICKET	7439
+#define	TID_MMI_LOTTOTICKET_01	6284
+#define	TID_MMI_LOTTOTICKET_02	6285
+#define	TID_MMI_LOTTOTICKET_03	6286
+#define	TID_MMI_LOTTOTICKET_04	6287
+#define	TID_MMI_LOTTOTICKET_05	6288
+#define	TID_MMI_LOTTOTICKET_06	6289
+#define	TID_MMI_LOTTOTICKET_07	6290
+#define	TID_MMI_LOTTOTICKET_08	6291
+#define	TID_MMI_LOTTOTICKET_09	6292
+#define	TID_MMI_LOTTOTICKET_10	6293
+#define	TID_MMI_LOTTOTICKET_11	6294
+#define	TID_MMI_LOTTOTICKET_12	6295
+#define	TID_MMI_LOTTOTICKET_13	6296
+#define	TID_MMI_LOTTOTICKET_14	6297
+
+#define	TID_MMI_FARMER	7440
+#define	TID_MMI_FARMER_01	6298
+#define	TID_MMI_FARMER_02	6299
+#define	TID_MMI_FARMER_03	6300
+#define	TID_MMI_FARMER_04	6301
+#define	TID_MMI_FARMER_05	6302
+#define	TID_MMI_FARMER_06	6303
+#define	TID_MMI_FARMER_07	6304
+#define	TID_MMI_FARMER_08	6305
+#define	TID_MMI_FARMER_09	6306
+#define	TID_MMI_FARMER_10	6307
+#define	TID_MMI_FARMER_11	6308
+#define	TID_MMI_FARMER_12	6309
+#define	TID_MMI_FARMER_13	6310
+#define	TID_MMI_FARMER_14	6311
+#define	TID_MMI_FARMER_15	6312
+
+#define	TID_MMI_SANTA_03	6313	// »êÅ¸ ¼±¹° »óÀÚ Ãß°¡
+
+#define	TID_MMI_LOTTOTICKET_15	6314	// ´ë¸¸ ·Î¶Ç Æ¼ÄÏ ±³È¯
+#define	TID_MMI_LOTTOTICKET_16	6315
+#define	TID_MMI_LOTTOTICKET_17	6316
+#define	TID_MMI_LOTTOTICKET_18	6317
+#define	TID_MMI_LOTTOTICKET_19	6318
+#define	TID_MMI_LOTTOTICKET_20	6319
+#define	TID_MMI_LOTTOTICKET_21	6320
+#define	TID_MMI_LOTTOTICKET_22	6321
+#define	TID_MMI_LOTTOTICKET_23	6322
+#define	TID_MMI_LOTTOTICKET_24	6323
+#define	TID_MMI_LOTTOTICKET_25	6324
+#define	TID_MMI_LOTTOTICKET_26	6325
+
+#define	TID_MMI_GABITOKEN	7441
+#define	TID_MMI_GABITOKEN_01	6326
+#define	TID_MMI_GABITOKEN_02	6227
+
+#define	TID_MMI_DEATHCLOAK	7442
+#define	TID_MMI_DEATHCLOAK_01	6328
+#define	TID_MMI_DEATHCLOAK_02	6229
+
+#define	TID_MMI_TEDDYBEAR_03	6230
+#define	TID_MMI_TEDDYBEAR_04	6231
+#define	TID_MMI_TEDDYBEAR_05	6232
+#define	TID_MMI_TEDDYBEAR_06	6233
+#define	TID_MMI_TEDDYBEAR_07	6234
+#define	TID_MMI_TEDDYBEAR_08	6235
+#define	TID_MMI_TEDDYBEAR_09	6236
+
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_06	6237
+#define	TID_MMI_CHRISTMAS_EVENT_05_2014_TEXT_07	6238
+
+#define	TID_MMI_SANTA_04	6339
+
+#define	TID_MMI_NEWYEAR2022	7443
+#define	TID_MMI_NEWYEAR2022_01	6340
+#define	TID_MMI_NEWYEAR2022_02	6241
+
+#define	TID_MMI_NEWYEAR2022_TW_1	7444
+#define	TID_MMI_NEWYEAR2022_TW_1_01	6342
+#define	TID_MMI_NEWYEAR2022_TW_1_02	6243
+
+#define	TID_MMI_NEWYEAR2022_TW_2	7445
+#define	TID_MMI_NEWYEAR2022_TW_2_01	6344
+#define	TID_MMI_NEWYEAR2022_TW_2_02	6345
+#define	TID_MMI_NEWYEAR2022_TW_2_03	6346
+#define	TID_MMI_NEWYEAR2022_TW_2_04	6347
+#define	TID_MMI_NEWYEAR2022_TW_2_05	6348
+#define	TID_MMI_NEWYEAR2022_TW_2_06	6349
+#define	TID_MMI_NEWYEAR2022_TW_2_07	6350
+#define	TID_MMI_NEWYEAR2022_TW_2_08	6351
+
+#define	TID_MMI_DUNGEONTICKETONE_42	6352
+#define	TID_MMI_DUNGEONTICKETONE_43	6353
+#define	TID_MMI_DUNGEONTICKETONE_44	6354
+#define	TID_MMI_DUNGEONTICKETONE_45	6355
+#define	TID_MMI_DUNGEONTICKETONE_46	6356
+#define	TID_MMI_DUNGEONTICKETONE_47	6357
+#define	TID_MMI_DUNGEONTICKETONE_48	6358
+#define	TID_MMI_DUNGEONTICKETONE_49	6359
+
+#define	TID_MMI_DUNGEONTICKETTWO_62	6360
+#define	TID_MMI_DUNGEONTICKETTWO_63	6361
+#define	TID_MMI_DUNGEONTICKETTWO_64	6362
+#define	TID_MMI_DUNGEONTICKETTWO_65	6363
+#define	TID_MMI_DUNGEONTICKETTWO_66	6364
+#define	TID_MMI_DUNGEONTICKETTWO_67	6365
+#define	TID_MMI_DUNGEONTICKETTWO_68	6366
+#define	TID_MMI_DUNGEONTICKETTWO_69	6367
+#define	TID_MMI_DUNGEONTICKETTWO_70	6368
+#define	TID_MMI_DUNGEONTICKETTWO_71	6369
+#define	TID_MMI_DUNGEONTICKETTWO_72	6370
+
+#define	TID_MMI_SRCARDCHANGE	7446
+#define	TID_MMI_SRCARDCHANGE_1	6371
+#define	TID_MMI_SRCARDCHANGE_2	6372
+#define	TID_MMI_SRCARDCHANGE_3	6373
+#define	TID_MMI_SRCARDCHANGE_4	6374
+#define	TID_MMI_SRCARDCHANGE_5	6375
+		
+#define	TID_MMI_18CARDCHANGE	7447
+#define	TID_MMI_18CARDCHANGE_1	6376
+#define	TID_MMI_18CARDCHANGE_2	6377
+#define	TID_MMI_18CARDCHANGE_3	6378
+#define	TID_MMI_18CARDCHANGE_4	6379
+#define	TID_MMI_18CARDCHANGE_5	6380
+#define	TID_MMI_18CARDCHANGE_6	6381
+		
+#define	TID_MMI_STRBARUNACHANGE	7448
+#define	TID_MMI_STRBARUNACHANGE_1	6382
+#define	TID_MMI_STRBARUNACHANGE_2	6383
+#define	TID_MMI_STRBARUNACHANGE_3	6384
+#define	TID_MMI_STRBARUNACHANGE_4	6385
+#define	TID_MMI_STRBARUNACHANGE_5	6386
+#define	TID_MMI_STRBARUNACHANGE_6	6387
+#define	TID_MMI_STRBARUNACHANGE_7	6388
+		
+#define	TID_MMI_INTBARUNACHANGE	7449
+#define	TID_MMI_INTBARUNACHANGE_1	6389
+#define	TID_MMI_INTBARUNACHANGE_2	6390
+#define	TID_MMI_INTBARUNACHANGE_3	6391
+#define	TID_MMI_INTBARUNACHANGE_4	6392
+#define	TID_MMI_INTBARUNACHANGE_5	6393
+#define	TID_MMI_INTBARUNACHANGE_6	6394
+#define	TID_MMI_INTBARUNACHANGE_7	6395
+		
+#define	TID_MMI_DEXBARUNACHANGE	7450
+#define	TID_MMI_DEXBARUNACHANGE_1	6396
+#define	TID_MMI_DEXBARUNACHANGE_2	6397
+#define	TID_MMI_DEXBARUNACHANGE_3	6398
+#define	TID_MMI_DEXBARUNACHANGE_4	6399
+#define	TID_MMI_DEXBARUNACHANGE_5	6400
+#define	TID_MMI_DEXBARUNACHANGE_6	6401
+#define	TID_MMI_DEXBARUNACHANGE_7	6402
+		
+#define	TID_MMI_STABARUNACHANGE	7451
+#define	TID_MMI_STABARUNACHANGE_1	6403
+#define	TID_MMI_STABARUNACHANGE_2	6404
+#define	TID_MMI_STABARUNACHANGE_3	6405
+#define	TID_MMI_STABARUNACHANGE_4	6406
+#define	TID_MMI_STABARUNACHANGE_5	6407
+#define	TID_MMI_STABARUNACHANGE_6	6408
+#define	TID_MMI_STABARUNACHANGE_7	6409
+		
+#define	TID_MMI_SUNGLASSCHANGE	7452
+#define	TID_MMI_SUNGLASSCHANGE_1	6410
+#define	TID_MMI_SUNGLASSCHANGE_2	6411
+#define	TID_MMI_SUNGLASSCHANGE_3	6412
+#define	TID_MMI_SUNGLASSCHANGE_4	6413
+#define	TID_MMI_SUNGLASSCHANGE_5	6414
+#define	TID_MMI_SUNGLASSCHANGE_6	6415
+#define	TID_MMI_SUNGLASSCHANGE_7	6416
+#define	TID_MMI_SUNGLASSCHANGE_8	6417
+#define	TID_MMI_SUNGLASSCHANGE_9	6418
+
+#define	TID_MMI_FULLMOON	7453
+#define	TID_MMI_FULLMOON_1	6419
+#define	TID_MMI_FULLMOON_2	6420
+#define	TID_MMI_FULLMOON_3	6421
+#define	TID_MMI_FULLMOON_4	6422
+#define	TID_MMI_FULLMOON_5	6423
+#define	TID_MMI_FULLMOON_6	6424
+#define	TID_MMI_FULLMOON_7	6425
+#define	TID_MMI_FULLMOON_8	6426
+#define	TID_MMI_FULLMOON_9	6427
+#define	TID_MMI_FULLMOON_10	6428
+#define	TID_MMI_FULLMOON_11	6429
+#define	TID_MMI_FULLMOON_12	6430
+
+#define	TID_MMI_CATEVENT	7454
+#define	TID_MMI_CATEVENT_1	6431
+#define	TID_MMI_CATEVENT_2	6432
+
+#define	TID_MMI_SAINT2020_04	6433
+#define	TID_MMI_SAINT2020_05	6434
+
+#define	TID_MMI_RONIN	7455
+#define	TID_MMI_RONIN_1	6435
+#define	TID_MMI_RONIN_2	6436
+		
+#define	TID_MMI_SAKURA	7456
+#define	TID_MMI_SAKURA_1	6437
+#define	TID_MMI_SAKURA_2	6438
+
+#define	TID_MMI_TIMETICKET	7457
+#define	TID_MMI_TIMETICKET_1	6439
+#define	TID_MMI_TIMETICKET_2	6440
+
+#define	TID_MMI_EASTERTICKET	7458
+#define	TID_MMI_EASTERTICKET_1	6441
+#define	TID_MMI_EASTERTICKET_2	6442
+#define	TID_MMI_EASTERTICKET_3	6443
+#define	TID_MMI_EASTERTICKET_4	6444
+#define	TID_MMI_EASTERTICKET_5	6445
+#define	TID_MMI_EASTERTICKET_6	6446
+#define	TID_MMI_EASTERTICKET_7	6447
+#define	TID_MMI_EASTERTICKET_8	6448
+
+#define	TID_MMI_DUNGEONTICKETARMOR	7459
+#define	TID_MMI_DUNGEONTICKETARMOR_01	6449
+#define	TID_MMI_DUNGEONTICKETARMOR_02	6450
+#define	TID_MMI_DUNGEONTICKETARMOR_03	6451
+#define	TID_MMI_DUNGEONTICKETARMOR_04	6452
+#define	TID_MMI_DUNGEONTICKETARMOR_05	6453
+#define	TID_MMI_DUNGEONTICKETARMOR_06	6454
+#define	TID_MMI_DUNGEONTICKETARMOR_07	6455
+#define	TID_MMI_DUNGEONTICKETARMOR_08	6456
+#define	TID_MMI_DUNGEONTICKETARMOR_09	6457
+#define	TID_MMI_DUNGEONTICKETARMOR_10	6458
+#define	TID_MMI_DUNGEONTICKETARMOR_11	6459
+#define	TID_MMI_DUNGEONTICKETARMOR_12	6460
+#define	TID_MMI_DUNGEONTICKETARMOR_13	6461
+#define	TID_MMI_DUNGEONTICKETARMOR_14	6462
+#define	TID_MMI_DUNGEONTICKETARMOR_15	6463
+#define	TID_MMI_DUNGEONTICKETARMOR_16	6464
+#define	TID_MMI_DUNGEONTICKETARMOR_17	6465
+#define	TID_MMI_DUNGEONTICKETARMOR_18	6466
+#define	TID_MMI_DUNGEONTICKETARMOR_19	6467
+#define	TID_MMI_DUNGEONTICKETARMOR_20	6468
+#define	TID_MMI_DUNGEONTICKETARMOR_21	6469
+#define	TID_MMI_DUNGEONTICKETARMOR_22	6470
+#define	TID_MMI_DUNGEONTICKETARMOR_23	6471
+#define	TID_MMI_DUNGEONTICKETARMOR_24	6472
+#define	TID_MMI_DUNGEONTICKETARMOR_25	6473
+#define	TID_MMI_DUNGEONTICKETARMOR_26	6474
+#define	TID_MMI_DUNGEONTICKETARMOR_27	6475
+#define	TID_MMI_DUNGEONTICKETARMOR_28	6476
+#define	TID_MMI_DUNGEONTICKETARMOR_29	6477
+#define	TID_MMI_DUNGEONTICKETARMOR_30	6478
+#define	TID_MMI_DUNGEONTICKETARMOR_31	6479
+#define	TID_MMI_DUNGEONTICKETARMOR_32	6480
+#define	TID_MMI_DUNGEONTICKETARMOR_33	6481
+#define	TID_MMI_DUNGEONTICKETARMOR_34	6482
+#define	TID_MMI_DUNGEONTICKETARMOR_35	6483
+#define	TID_MMI_DUNGEONTICKETARMOR_36	6484
+#define	TID_MMI_DUNGEONTICKETARMOR_37	6485
+#define	TID_MMI_DUNGEONTICKETARMOR_38	6486
+#define	TID_MMI_DUNGEONTICKETARMOR_39	6487
+#define	TID_MMI_DUNGEONTICKETARMOR_40	6488
+#define	TID_MMI_DUNGEONTICKETARMOR_41	6489
+#define	TID_MMI_DUNGEONTICKETARMOR_42	6490
+#define	TID_MMI_DUNGEONTICKETARMOR_43	6491
+#define	TID_MMI_DUNGEONTICKETARMOR_44	6492
+#define	TID_MMI_DUNGEONTICKETARMOR_45	6493
+#define	TID_MMI_DUNGEONTICKETARMOR_46	6494
+#define	TID_MMI_DUNGEONTICKETARMOR_47	6495
+#define	TID_MMI_DUNGEONTICKETARMOR_48	6496
+#define	TID_MMI_DUNGEONTICKETARMOR_49	6497
+#define	TID_MMI_DUNGEONTICKETARMOR_50	6498
+#define	TID_MMI_DUNGEONTICKETARMOR_51	6499
+#define	TID_MMI_DUNGEONTICKETARMOR_52	6500
+#define	TID_MMI_DUNGEONTICKETARMOR_53	6501
+#define	TID_MMI_DUNGEONTICKETARMOR_54	6502
+#define	TID_MMI_DUNGEONTICKETARMOR_55	6503
+#define	TID_MMI_DUNGEONTICKETARMOR_56	6504
+#define	TID_MMI_DUNGEONTICKETARMOR_57	6505
+#define	TID_MMI_DUNGEONTICKETARMOR_58	6506
+#define	TID_MMI_DUNGEONTICKETARMOR_59	6507
+#define	TID_MMI_DUNGEONTICKETARMOR_60	6508
+#define	TID_MMI_DUNGEONTICKETARMOR_61	6509
+#define	TID_MMI_DUNGEONTICKETARMOR_62	6510
+#define	TID_MMI_DUNGEONTICKETARMOR_63	6511
+#define	TID_MMI_DUNGEONTICKETARMOR_64	6512
+#define	TID_MMI_DUNGEONTICKETARMOR_65	6513
+#define	TID_MMI_DUNGEONTICKETARMOR_66	6514
+#define	TID_MMI_DUNGEONTICKETARMOR_67	6515
+#define	TID_MMI_DUNGEONTICKETARMOR_68	6516
+#define	TID_MMI_DUNGEONTICKETARMOR_69	6517
+#define	TID_MMI_DUNGEONTICKETARMOR_70	6518
+#define	TID_MMI_DUNGEONTICKETARMOR_71	6519
+#define	TID_MMI_DUNGEONTICKETARMOR_72	6520
+#define	TID_MMI_DUNGEONTICKETARMOR_73	6521
+#define	TID_MMI_DUNGEONTICKETARMOR_74	6522
+#define	TID_MMI_DUNGEONTICKETARMOR_75	6523
+#define	TID_MMI_DUNGEONTICKETARMOR_76	6524
+#define	TID_MMI_DUNGEONTICKETARMOR_77	6525
+#define	TID_MMI_DUNGEONTICKETARMOR_78	6526
+#define	TID_MMI_DUNGEONTICKETARMOR_79	6527
+#define	TID_MMI_DUNGEONTICKETARMOR_80	6528
+#define	TID_MMI_DUNGEONTICKETARMOR_81	6529
+#define	TID_MMI_DUNGEONTICKETARMOR_82	6530
+#define	TID_MMI_DUNGEONTICKETARMOR_83	6531
+#define	TID_MMI_DUNGEONTICKETARMOR_84	6532
+#define	TID_MMI_DUNGEONTICKETARMOR_85	6533
+#define	TID_MMI_DUNGEONTICKETARMOR_86	6534
+#define	TID_MMI_DUNGEONTICKETARMOR_87	6535
+#define	TID_MMI_DUNGEONTICKETARMOR_88	6536
+#define	TID_MMI_DUNGEONTICKETARMOR_89	6537
+#define	TID_MMI_DUNGEONTICKETARMOR_90	6538
+#define	TID_MMI_DUNGEONTICKETARMOR_91	6539
+#define	TID_MMI_DUNGEONTICKETARMOR_92	6540
+#define	TID_MMI_DUNGEONTICKETARMOR_93	6541
+#define	TID_MMI_DUNGEONTICKETARMOR_94	6542
+#define	TID_MMI_DUNGEONTICKETARMOR_95	6543
+#define	TID_MMI_DUNGEONTICKETARMOR_96	6544
+#define	TID_MMI_DUNGEONTICKETARMOR_97	6545
+#define	TID_MMI_DUNGEONTICKETARMOR_98	6546
+#define	TID_MMI_DUNGEONTICKETARMOR_99	6547
+#define	TID_MMI_DUNGEONTICKETARMOR_100	6548
+#define	TID_MMI_DUNGEONTICKETARMOR_101	6549
+#define	TID_MMI_DUNGEONTICKETARMOR_102	6550
+#define	TID_MMI_DUNGEONTICKETARMOR_103	6551
+#define	TID_MMI_DUNGEONTICKETARMOR_104	6552
+#define	TID_MMI_DUNGEONTICKETARMOR_105	6553
+#define	TID_MMI_DUNGEONTICKETARMOR_106	6554
+#define	TID_MMI_DUNGEONTICKETARMOR_107	6555
+#define	TID_MMI_DUNGEONTICKETARMOR_108	6556
+#define	TID_MMI_DUNGEONTICKETARMOR_109	6557
+#define	TID_MMI_DUNGEONTICKETARMOR_110	6558
+#define	TID_MMI_DUNGEONTICKETARMOR_111	6559
+#define	TID_MMI_DUNGEONTICKETARMOR_112	6560
+#define	TID_MMI_DUNGEONTICKETARMOR_113	6561
+#define	TID_MMI_DUNGEONTICKETARMOR_114	6562
+#define	TID_MMI_DUNGEONTICKETARMOR_115	6563
+#define	TID_MMI_DUNGEONTICKETARMOR_116	6564
+#define	TID_MMI_DUNGEONTICKETARMOR_117	6565
+#define	TID_MMI_DUNGEONTICKETARMOR_118	6566
+#define	TID_MMI_DUNGEONTICKETARMOR_119	6567
+#define	TID_MMI_DUNGEONTICKETARMOR_120	6568
+#define	TID_MMI_DUNGEONTICKETARMOR_121	6569
+#define	TID_MMI_DUNGEONTICKETARMOR_122	6570
+#define	TID_MMI_DUNGEONTICKETARMOR_123	6571
+#define	TID_MMI_DUNGEONTICKETARMOR_124	6572
+#define	TID_MMI_DUNGEONTICKETARMOR_125	6573
+#define	TID_MMI_DUNGEONTICKETARMOR_126	6574
+#define	TID_MMI_DUNGEONTICKETARMOR_127	6575
+#define	TID_MMI_DUNGEONTICKETARMOR_128	6576
+#define	TID_MMI_DUNGEONTICKETARMOR_129	6577
+#define	TID_MMI_DUNGEONTICKETARMOR_130	6578
+
+#define	TID_MMI_NEWVVIP	7460
+#define	TID_MMI_NEWVVIP_01	6579
+#define	TID_MMI_NEWVVIP_02	6580
+#define	TID_MMI_NEWVVIP_03	6581
+#define	TID_MMI_NEWVVIP_04	6582
+#define	TID_MMI_NEWVVIP_05	6583
+#define	TID_MMI_NEWVVIP_06	6584
+#define	TID_MMI_NEWVVIP_07	6585
+
+#define	TID_MMI_NEWVIP	7461
+#define	TID_MMI_NEWVIP_01	6586
+#define	TID_MMI_NEWVIP_02	6587
+#define	TID_MMI_NEWVIP_03	6588
+#define	TID_MMI_NEWVIP_04	6589
+#define	TID_MMI_NEWVIP_05	6590
+#define	TID_MMI_NEWVIP_06	6591
+#define	TID_MMI_NEWVIP_07	6592
+#define	TID_MMI_NEWVIP_08	6593
+#define	TID_MMI_NEWVIP_09	6594
+#define	TID_MMI_NEWVIP_10	6595
+#define	TID_MMI_NEWVIP_11	6596
+#define	TID_MMI_NEWVIP_12	6597
+#define	TID_MMI_NEWVIP_13	6598
+#define	TID_MMI_NEWVIP_14	6599
+#define	TID_MMI_NEWVIP_15	6600
+#define	TID_MMI_NEWVIP_16	6601
+#define	TID_MMI_NEWVIP_17	6602
+#define	TID_MMI_NEWVIP_18	6603
+#define	TID_MMI_NEWVIP_19	6604
+#define	TID_MMI_NEWVIP_20	6605
+#define	TID_MMI_NEWVIP_21	6606
+
+#define	TID_MMI_VVIPTICKET	7462
+#define	TID_MMI_VVIPTICKET_01	6607
+#define	TID_MMI_VVIPTICKET_02	6608
+
+#define	TID_MMI_VIPVVIP	7463
+#define	TID_MMI_VIPVVIP_01	6609
+#define	TID_MMI_VIPVVIP_02	6610
+
+#define	TID_MMI_VIPRETURN	7464
+#define	TID_MMI_VIPRETURN_01	6611
+#define	TID_MMI_VIPRETURN_02	6612
+#define	TID_MMI_VIPRETURN_03	6613
+#define	TID_MMI_VIPRETURN_04	6614
+#define	TID_MMI_VIPRETURN_05	6615
+#define	TID_MMI_VIPRETURN_06	6616
+#define	TID_MMI_VIPRETURN_07	6617
+#define	TID_MMI_VIPRETURN_08	6618
+#define	TID_MMI_VIPRETURN_09	6619
+#define	TID_MMI_VIPRETURN_10	6620
+#define	TID_MMI_VIPRETURN_11	6621
+#define	TID_MMI_VIPRETURN_12	6622
+#define	TID_MMI_VIPRETURN_13	6623
+#define	TID_MMI_VIPRETURN_14	6624
+#define	TID_MMI_VIPRETURN_15	6625
+#define	TID_MMI_VIPRETURN_16	6626
+#define	TID_MMI_VIPRETURN_17	6627
+
+#define	TID_MMI_VIPRETURN_2	7465
+#define	TID_MMI_VIPRETURN_2_01	6628
+#define	TID_MMI_VIPRETURN_2_02	6629
+#define	TID_MMI_VIPRETURN_2_03	6630
+#define	TID_MMI_VIPRETURN_2_04	6631
+#define	TID_MMI_VIPRETURN_2_05	6632
+#define	TID_MMI_VIPRETURN_2_06	6633
+#define	TID_MMI_VIPRETURN_2_07	6634
+#define	TID_MMI_VIPRETURN_2_08	6635
+#define	TID_MMI_VIPRETURN_2_09	6636
+#define	TID_MMI_VIPRETURN_2_10	6637
+#define	TID_MMI_VIPRETURN_2_11	6638
+#define	TID_MMI_VIPRETURN_2_12	6639
+#define	TID_MMI_VIPRETURN_2_13	6640
+#define	TID_MMI_VIPRETURN_2_14	6641
+#define	TID_MMI_VIPRETURN_2_15	6642
+#define	TID_MMI_VIPRETURN_2_16	6643
+#define	TID_MMI_VIPRETURN_2_17	6644
+#define	TID_MMI_VIPRETURN_2_18	6645
+#define	TID_MMI_VIPRETURN_2_19	6646
+#define	TID_MMI_VIPRETURN_2_20	6647
+#define	TID_MMI_VIPRETURN_2_21	6648
+
+#define	TID_MMI_FLOATINGSEARCH	7466
+#define	TID_MMI_FLOATINGSEARCH_01	6649
+#define	TID_MMI_FLOATINGSEARCH_02	6650
+		
+#define	TID_MMI_22THWELCOMEBACK_TOKEN	7467
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_01	6651
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_02	6652
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_03	6653
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_04	6654
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_05	6655
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_06	6656
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_07	6657
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_08	6658
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_09	6659
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_10	6660
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_11	6661
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_12	6662
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_13	6663
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_14	6664
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_15	6665
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_16	6666
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_17	6667
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_18	6668
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_19	6669
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_20	6670
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_21	6671
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_22	6672
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_23	6673
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_24	6674
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_25	6675
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_26	6676
+#define	TID_MMI_22THWELCOMEBACK_TOKEN_27	6677
+		
+#define	TID_MMI_22THWELCOMEBACK_TICKET	7468
+#define	TID_MMI_22THWELCOMEBACK_TICKET_01	6678
+#define	TID_MMI_22THWELCOMEBACK_TICKET_02	6679
+#define	TID_MMI_22THWELCOMEBACK_TICKET_03	6680
+#define	TID_MMI_22THWELCOMEBACK_TICKET_04	6681
+#define	TID_MMI_22THWELCOMEBACK_TICKET_05	6682
+#define	TID_MMI_22THWELCOMEBACK_TICKET_06	6683
+#define	TID_MMI_22THWELCOMEBACK_TICKET_07	6684
+#define	TID_MMI_22THWELCOMEBACK_TICKET_08	6685
+#define	TID_MMI_22THWELCOMEBACK_TICKET_09	6686
+#define	TID_MMI_22THWELCOMEBACK_TICKET_10	6687
+#define	TID_MMI_22THWELCOMEBACK_TICKET_11	6688
+
+#define	TID_MMI_VIPRETURN_2_22	6689
+#define	TID_MMI_VIPRETURN_2_23	6690
+#define	TID_MMI_VIPRETURN_2_24	6691
+#define	TID_MMI_VIPRETURN_2_25	6692
+#define	TID_MMI_VIPRETURN_2_26	6693
+#define	TID_MMI_VIPRETURN_2_27	6694
+#define	TID_MMI_VIPRETURN_2_28	6695
+#define	TID_MMI_VIPRETURN_2_29	6696
+#define	TID_MMI_VIPRETURN_2_30	6697
+#define	TID_MMI_VIPRETURN_2_31	6698
+#define	TID_MMI_VIPRETURN_2_32	6699
+#define	TID_MMI_VIPRETURN_2_33	6700
+#define	TID_MMI_VIPRETURN_2_34	6701
+#define	TID_MMI_VIPRETURN_2_35	6702
+#define	TID_MMI_VIPRETURN_2_36	6703
+#define	TID_MMI_VIPRETURN_2_37	6704
+#define	TID_MMI_VIPRETURN_2_38	6705
+#define	TID_MMI_VIPRETURN_2_39	6706
+
+#define	TID_GAME_BOSS_BEETLE_MSG_01	6707
+#define	TID_GAME_BOSS_BEETLE_MSG_02	6708
+#define	TID_GAME_BOSS_BEETLE_MSG_03	6709
+#define	TID_GAME_BOSS_BEETLE_MSG_04	6710
+
+#define	TID_MMI_CARNATION	7469
+#define	TID_MMI_CARNATION_01	6711
+#define	TID_MMI_CARNATION_02	6712
+#define	TID_MMI_CARNATION_03	6713
+#define	TID_MMI_CARNATION_04	6714
+#define	TID_MMI_CARNATION_05	6715
+#define	TID_MMI_CARNATION_06	6716
+#define	TID_MMI_CARNATION_07	6717
+#define	TID_MMI_CARNATION_08	6718
+#define	TID_MMI_CARNATION_09	6719
+#define	TID_MMI_CARNATION_10	6720
+
+#define	TID_MMI_CARNATION_ACCESSORY	7470
+#define	TID_MMI_CARNATION_ACCESSORY_01	6721
+#define	TID_MMI_CARNATION_ACCESSORY_02	6722
+
+#define	TID_MMI_MAYACCESORY_PH	7471
+#define	TID_MMI_MAYACCESORY_PH_01	6723
+#define	TID_MMI_MAYACCESORY_PH_02	6724
+#define	TID_MMI_MAYACCESORY_PH_03	6725
+#define	TID_MMI_MAYACCESORY_PH_04	6726
+#define	TID_MMI_MAYACCESORY_PH_05	6727
+#define	TID_MMI_MAYACCESORY_PH_06	6728
+#define	TID_MMI_MAYACCESORY_PH_07	6729
+#define	TID_MMI_MAYACCESORY_PH_08	6730
+#define	TID_MMI_MAYACCESORY_PH_09	6731
+#define	TID_MMI_MAYACCESORY_PH_10	6732
+#define	TID_MMI_MAYACCESORY_PH_11	6733
+#define	TID_MMI_MAYACCESORY_PH_12	6734
+#define	TID_MMI_MAYACCESORY_PH_13	6735
+#define	TID_MMI_MAYACCESORY_PH_14	6736
+#define	TID_MMI_MAYACCESORY_PH_15	6737
+#define	TID_MMI_MAYACCESORY_PH_16	6738
+#define	TID_MMI_MAYACCESORY_PH_17	6739
+#define	TID_MMI_MAYACCESORY_PH_18	6740
+#define	TID_MMI_MAYACCESORY_PH_19	6741
+#define	TID_MMI_MAYACCESORY_PH_20	6742
+#define	TID_MMI_MAYACCESORY_PH_21	6743
+#define	TID_MMI_MAYACCESORY_PH_22	6744
+
+#define	TID_MMI_ELITEWEAPON_PH	7472
+#define	TID_MMI_ELITEWEAPON_PH_01	6745
+#define	TID_MMI_ELITEWEAPON_PH_02	6746
+#define	TID_MMI_ELITEWEAPON_PH_03	6747
+#define	TID_MMI_ELITEWEAPON_PH_04	6748
+#define	TID_MMI_ELITEWEAPON_PH_05	6749
+#define	TID_MMI_ELITEWEAPON_PH_06	6750
+#define	TID_MMI_ELITEWEAPON_PH_07	6751
+#define	TID_MMI_ELITEWEAPON_PH_08	6752
+#define	TID_MMI_ELITEWEAPON_PH_09	6753
+#define	TID_MMI_ELITEWEAPON_PH_10	6754
+#define	TID_MMI_ELITEWEAPON_PH_11	6755
+		
+#define	TID_MMI_ELITEACCESORY_PH	7473
+#define	TID_MMI_ELITEACCESORY_PH_01	6756
+#define	TID_MMI_ELITEACCESORY_PH_02	6757
+#define	TID_MMI_ELITEACCESORY_PH_03	6758
+#define	TID_MMI_ELITEACCESORY_PH_04	6759
+#define	TID_MMI_ELITEACCESORY_PH_05	6760
+#define	TID_MMI_ELITEACCESORY_PH_06	6761
+#define	TID_MMI_ELITEACCESORY_PH_07	6762
+
+#define	TID_MMI_HUNTING_PH	7474
+#define	TID_MMI_HUNTING_PH_01	6763
+#define	TID_MMI_HUNTING_PH_02	6764
+
+#define	TID_MMI_SAKURALETTER	7475
+#define	TID_MMI_SAKURALETTER_01	6765
+#define	TID_MMI_SAKURALETTER_02	6766
+#define	TID_MMI_SAKURALETTER_03	6767
+#define	TID_MMI_SAKURALETTER_04	6768
+#define	TID_MMI_SAKURALETTER_05	6769
+#define	TID_MMI_SAKURALETTER_06	6770
+		
+#define	TID_MMI_SAKURAPETAL	7476
+#define	TID_MMI_SAKURAPETAL_01	6771
+#define	TID_MMI_SAKURAPETAL_02	6772
+		
+#define	TID_MMI_SAKURACLOTH	7477
+#define	TID_MMI_SAKURACLOTH_01	6773
+#define	TID_MMI_SAKURACLOTH_02	6774
+#define	TID_MMI_SAKURACLOTH_03	6775
+#define	TID_MMI_SAKURACLOTH_04	6776
+#define	TID_MMI_SAKURACLOTH_05	6777
+#define	TID_MMI_SAKURACLOTH_06	6778
+#define	TID_MMI_SAKURACLOTH_07	6779
+#define	TID_MMI_SAKURACLOTH_08	6780
+#define	TID_MMI_SAKURACLOTH_09	6781
+#define	TID_MMI_SAKURACLOTH_10	6782
+#define	TID_MMI_SAKURACLOTH_11	6783
+#define	TID_MMI_SAKURACLOTH_12	6784
+#define	TID_MMI_SAKURACLOTH_13	6785
+#define	TID_MMI_SAKURACLOTH_14	6786
+#define	TID_MMI_SAKURACLOTH_15	6787
+
+// ÇÁ¸®¹Ì¾ö °¡¹æ °ü·Ã ÅØ½ºÆ®
+#define	TID_GAME_BAG_SLOT1	6788
+#define	TID_GAME_BAG_SLOT2	6789
+#define	TID_GAME_BAG_SLOT3	6790
+#define	TID_TOOLTIP_BAG_INFO2	6791
+
+// ´ë¸¸ 1ÁÖ³â ÀÌº¥Æ®
+#define	TID_MMI_ANNIVERSARY01	7478
+#define	TID_MMI_ANNIVERSARY01_01	6792
+#define	TID_MMI_ANNIVERSARY01_02	6793
+#define	TID_MMI_ANNIVERSARY01_03	6794
+#define	TID_MMI_ANNIVERSARY01_04	6795
+#define	TID_MMI_ANNIVERSARY01_05	6796
+#define	TID_MMI_ANNIVERSARY01_06	6797
+#define	TID_MMI_ANNIVERSARY01_07	6798
+#define	TID_MMI_ANNIVERSARY01_08	6799
+#define	TID_MMI_ANNIVERSARY01_09	6800
+#define	TID_MMI_ANNIVERSARY01_10	6801
+#define	TID_MMI_ANNIVERSARY01_11	6802
+#define	TID_MMI_ANNIVERSARY01_12	6803
+#define	TID_MMI_ANNIVERSARY01_13	6804
+#define	TID_MMI_ANNIVERSARY01_14	6805
+#define	TID_MMI_ANNIVERSARY01_15	6806
+#define	TID_MMI_ANNIVERSARY01_16	6807
+#define	TID_MMI_ANNIVERSARY01_17	6808
+		
+#define	TID_MMI_ANNIVERSARY02	7479
+#define	TID_MMI_ANNIVERSARY02_01	6809
+#define	TID_MMI_ANNIVERSARY02_02	6810
+#define	TID_MMI_ANNIVERSARY02_03	6811
+#define	TID_MMI_ANNIVERSARY02_04	6812
+#define	TID_MMI_ANNIVERSARY02_05	6813
+#define	TID_MMI_ANNIVERSARY02_06	6814
+#define	TID_MMI_ANNIVERSARY02_07	6815
+#define	TID_MMI_ANNIVERSARY02_08	6816
+#define	TID_MMI_ANNIVERSARY02_09	6817
+#define	TID_MMI_ANNIVERSARY02_10	6818
+#define	TID_MMI_ANNIVERSARY02_11	6819
+#define	TID_MMI_ANNIVERSARY02_12	6820
+		
+#define	TID_MMI_ANNIVERSARY03	7480
+#define	TID_MMI_ANNIVERSARY03_01	6821
+#define	TID_MMI_ANNIVERSARY03_02	6822
+		
+#define	TID_MMI_ANNIVERSARY04	7481
+#define	TID_MMI_ANNIVERSARY04_01	6823
+#define	TID_MMI_ANNIVERSARY04_02	6824
+#define	TID_MMI_ANNIVERSARY04_03	6825
+#define	TID_MMI_ANNIVERSARY04_04	6826
+#define	TID_MMI_ANNIVERSARY04_05	6827
+#define	TID_MMI_ANNIVERSARY04_06	6828
+#define	TID_MMI_ANNIVERSARY04_07	6829
+#define	TID_MMI_ANNIVERSARY04_08	6830
+#define	TID_MMI_ANNIVERSARY04_09	6831
+#define	TID_MMI_ANNIVERSARY04_10	6832
+#define	TID_MMI_ANNIVERSARY04_11	6833
+#define	TID_MMI_ANNIVERSARY04_12	6834
+#define	TID_MMI_ANNIVERSARY04_13	6835
+#define	TID_MMI_ANNIVERSARY04_14	6836
+#define	TID_MMI_ANNIVERSARY04_15	6837
+		
+#define	TID_MMI_ANNIVERSARY05	7482
+#define	TID_MMI_ANNIVERSARY05_01	6838
+#define	TID_MMI_ANNIVERSARY05_02	6839
+#define	TID_MMI_ANNIVERSARY05_03	6840
+#define	TID_MMI_ANNIVERSARY05_04	6841
+#define	TID_MMI_ANNIVERSARY05_05	6842
+#define	TID_MMI_ANNIVERSARY05_06	6843
+#define	TID_MMI_ANNIVERSARY05_07	6844
+#define	TID_MMI_ANNIVERSARY05_08	6845
+#define	TID_MMI_ANNIVERSARY05_09	6846
+#define	TID_MMI_ANNIVERSARY05_10	6847
+#define	TID_MMI_ANNIVERSARY05_11	6848
+#define	TID_MMI_ANNIVERSARY05_12	6849
+#define	TID_MMI_ANNIVERSARY05_13	6850
+#define	TID_MMI_ANNIVERSARY05_14	6851
+#define	TID_MMI_ANNIVERSARY05_15	6852
+#define	TID_MMI_ANNIVERSARY05_16	6853
+#define	TID_MMI_ANNIVERSARY05_17	6854
+#define	TID_MMI_ANNIVERSARY05_18	6855
+#define	TID_MMI_ANNIVERSARY05_19	6856
+#define	TID_MMI_ANNIVERSARY05_20	6857
+#define	TID_MMI_ANNIVERSARY05_21	6858
+#define	TID_MMI_ANNIVERSARY05_22	6859
+#define	TID_MMI_ANNIVERSARY05_23	6860
+#define	TID_MMI_ANNIVERSARY05_24	6861
+#define	TID_MMI_ANNIVERSARY05_25	6862
+#define	TID_MMI_ANNIVERSARY05_26	6863
+#define	TID_MMI_ANNIVERSARY05_27	6864
+#define	TID_MMI_ANNIVERSARY05_28	6865
+#define	TID_MMI_ANNIVERSARY05_29	6866
+#define	TID_MMI_ANNIVERSARY05_30	6867
+#define	TID_MMI_ANNIVERSARY05_31	6868
+#define	TID_MMI_ANNIVERSARY05_32	6869
+#define	TID_MMI_ANNIVERSARY05_33	6870
+
+// ÇÊ¸®ÇÉ 22Â÷ ¾÷µ¥ÀÌÆ®
+#define	TID_MMI_22THUPDATE01	7483
+#define	TID_MMI_22THUPDATE01_01	6871
+#define	TID_MMI_22THUPDATE01_02	6872
+		
+#define	TID_MMI_22THUPDATE02	7484
+#define	TID_MMI_22THUPDATE02_01	6873
+#define	TID_MMI_22THUPDATE02_02	6874
+#define	TID_MMI_22THUPDATE02_03	6875
+
+#define	TID_MMI_PMCOIN	7485
+#define	TID_MMI_PMCOIN_01	6876
+#define	TID_MMI_PMCOIN_02	6877
+#define	TID_MMI_PMCOIN_03	6878
+		
+#define	TID_MMI_PMCOIN_CONSUMABLE	7486
+#define	TID_MMI_PMCOIN_CONSUMABLE_01	6879
+#define	TID_MMI_PMCOIN_CONSUMABLE_02	6880
+#define	TID_MMI_PMCOIN_CONSUMABLE_03	6881
+#define	TID_MMI_PMCOIN_CONSUMABLE_04	6882
+#define	TID_MMI_PMCOIN_CONSUMABLE_05	6883
+#define	TID_MMI_PMCOIN_CONSUMABLE_06	6884
+#define	TID_MMI_PMCOIN_CONSUMABLE_07	6885
+#define	TID_MMI_PMCOIN_CONSUMABLE_08	6886
+#define	TID_MMI_PMCOIN_CONSUMABLE_09	6887
+#define	TID_MMI_PMCOIN_CONSUMABLE_10	6888
+#define	TID_MMI_PMCOIN_CONSUMABLE_11	6889
+#define	TID_MMI_PMCOIN_CONSUMABLE_12	6890
+#define	TID_MMI_PMCOIN_CONSUMABLE_13	6891
+#define	TID_MMI_PMCOIN_CONSUMABLE_14	6892
+#define	TID_MMI_PMCOIN_CONSUMABLE_15	6893
+#define	TID_MMI_PMCOIN_CONSUMABLE_16	6894
+#define	TID_MMI_PMCOIN_CONSUMABLE_17	6895
+#define	TID_MMI_PMCOIN_CONSUMABLE_18	6896
+#define	TID_MMI_PMCOIN_CONSUMABLE_19	6897
+		
+#define	TID_MMI_PMCOIN_FASHION	7487
+#define	TID_MMI_PMCOIN_FASHION_01	6898
+#define	TID_MMI_PMCOIN_FASHION_02	6899
+#define	TID_MMI_PMCOIN_FASHION_03	6900
+#define	TID_MMI_PMCOIN_FASHION_04	6901
+#define	TID_MMI_PMCOIN_FASHION_05	6902
+#define	TID_MMI_PMCOIN_FASHION_06	6903
+		
+#define	TID_MMI_PMCOIN_FURNITURE	7488
+#define	TID_MMI_PMCOIN_FURNITURE_01	6904
+#define	TID_MMI_PMCOIN_FURNITURE_02	6905
+#define	TID_MMI_PMCOIN_FURNITURE_03	6906
+#define	TID_MMI_PMCOIN_FURNITURE_04	6907
+#define	TID_MMI_PMCOIN_FURNITURE_05	6908
+#define	TID_MMI_PMCOIN_FURNITURE_06	6909
+#define	TID_MMI_PMCOIN_FURNITURE_07	6910
+#define	TID_MMI_PMCOIN_FURNITURE_08	6911
+#define	TID_MMI_PMCOIN_FURNITURE_09	6912
+#define	TID_MMI_PMCOIN_FURNITURE_10	6913
+#define	TID_MMI_PMCOIN_FURNITURE_11	6914
+#define	TID_MMI_PMCOIN_FURNITURE_12	6915
+#define	TID_MMI_PMCOIN_FURNITURE_13	6916
+#define	TID_MMI_PMCOIN_FURNITURE_14	6917
+#define	TID_MMI_PMCOIN_FURNITURE_15	6918
+#define	TID_MMI_PMCOIN_FURNITURE_16	6919
+#define	TID_MMI_PMCOIN_FURNITURE_17	6920
+#define	TID_MMI_PMCOIN_FURNITURE_18	6921
+#define	TID_MMI_PMCOIN_FURNITURE_19	6922
+		
+#define	TID_MMI_PMCOIN_GOTCHA	7489
+#define	TID_MMI_PMCOIN_GOTCHA_01	6923
+#define	TID_MMI_PMCOIN_GOTCHA_02	6924
+
+#define	TID_MMI_GUILD_COIN_28	6925
+#define	TID_MMI_GUILD_COIN_29	6926
+#define	TID_MMI_GUILD_COIN_30	6927
+#define	TID_MMI_GUILD_COIN_31	6928
+#define	TID_MMI_GUILD_COIN_32	6929
+#define	TID_MMI_GUILD_COIN_33	6930
+#define	TID_MMI_GUILD_COIN_34	6931
+#define	TID_MMI_GUILD_COIN_35	6932
+#define	TID_MMI_GUILD_COIN_36	6933
+#define	TID_MMI_GUILD_COIN_37	6934
+
+#define	TID_MMI_DEVILWEAPON_NEW	7490
+#define	TID_MMI_DEVILWEAPON_NEW_01	6935
+#define	TID_MMI_DEVILWEAPON_NEW_02	6936
+#define	TID_MMI_DEVILWEAPON_NEW_03	6937
+#define	TID_MMI_DEVILWEAPON_NEW_04	6938
+#define	TID_MMI_DEVILWEAPON_NEW_05	6939
+#define	TID_MMI_DEVILWEAPON_NEW_06	6940
+#define	TID_MMI_DEVILWEAPON_NEW_07	6941
+#define	TID_MMI_DEVILWEAPON_NEW_08	6942
+#define	TID_MMI_DEVILWEAPON_NEW_09	6943
+#define	TID_MMI_DEVILWEAPON_NEW_10	6944
+#define	TID_MMI_DEVILWEAPON_NEW_11	6945
+#define	TID_MMI_DEVILWEAPON_NEW_12	6946
+		
+#define	TID_MMI_DEVILWEAPON_SHARD	7491
+#define	TID_MMI_DEVILWEAPON_SHARD_01	6947
+#define	TID_MMI_DEVILWEAPON_SHARD_02	6948
+#define	TID_MMI_DEVILWEAPON_SHARD_03	6949
+#define	TID_MMI_DEVILWEAPON_SHARD_04	6950
+#define	TID_MMI_DEVILWEAPON_SHARD_05	6951
+#define	TID_MMI_DEVILWEAPON_SHARD_06	6952
+#define	TID_MMI_DEVILWEAPON_SHARD_07	6953
+#define	TID_MMI_DEVILWEAPON_SHARD_08	6954
+#define	TID_MMI_DEVILWEAPON_SHARD_09	6955
+#define	TID_MMI_DEVILWEAPON_SHARD_10	6956
+#define	TID_MMI_DEVILWEAPON_SHARD_11	6957
+#define	TID_MMI_DEVILWEAPON_SHARD_12	6958
+
+#define	TID_MMI_PMCOIN_FURNITURE_20	6959
+
+#define	TID_MMI_HOLDEMEVENT01_TEXT_01	9000
+#define	TID_MMI_HOLDEMEVENT01_TEXT_02	9001
+#define	TID_MMI_HOLDEMEVENT01_TEXT_03	9002
+#define	TID_MMI_HOLDEMEVENT01_TEXT_04	9003
+#define	TID_MMI_HOLDEMEVENT01_TEXT_05	9004
+#define	TID_MMI_HOLDEMEVENT01_TEXT_06	9005
+#define	TID_MMI_HOLDEMEVENT01_TEXT_07	9006
+#define	TID_MMI_HOLDEMEVENT01_TEXT_08	9007
+#define	TID_MMI_HOLDEMEVENT01_TEXT_09	9008
+#define	TID_MMI_HOLDEMEVENT01_TEXT_10	9009
+#define	TID_MMI_HOLDEMEVENT01_TEXT_11	9010
+#define	TID_MMI_HOLDEMEVENT01_TEXT_12	9011
+#define	TID_MMI_HOLDEMEVENT01_TEXT_13	9012
+#define	TID_MMI_HOLDEMEVENT01_TEXT_14	9013
+#define	TID_MMI_HOLDEMEVENT01_TEXT_15	9014
+#define	TID_MMI_HOLDEMEVENT01_TEXT_16	9015
+#define	TID_MMI_HOLDEMEVENT01_TEXT_17	9016
+#define	TID_MMI_HOLDEMEVENT01_TEXT_18	9017
+#define	TID_MMI_HOLDEMEVENT01_TEXT_19	9018
+#define	TID_MMI_HOLDEMEVENT01_TEXT_20	9019
+
+		
+#define	TID_MMI_HOLDEMEVENT02_TEXT_01	9020
+#define	TID_MMI_HOLDEMEVENT02_TEXT_02	9021
+#define	TID_MMI_HOLDEMEVENT02_TEXT_03	9022
+#define	TID_MMI_HOLDEMEVENT02_TEXT_04	9023
+#define	TID_MMI_HOLDEMEVENT02_TEXT_05	9024
+#define	TID_MMI_HOLDEMEVENT02_TEXT_06	9025
+#define	TID_MMI_HOLDEMEVENT02_TEXT_07	9026
+#define	TID_MMI_HOLDEMEVENT02_TEXT_08	9027
+#define	TID_MMI_HOLDEMEVENT02_TEXT_09	9028
+#define	TID_MMI_HOLDEMEVENT02_TEXT_10	9029
+#define	TID_MMI_HOLDEMEVENT02_TEXT_11	9030
+#define	TID_MMI_HOLDEMEVENT02_TEXT_12	9031
+#define	TID_MMI_HOLDEMEVENT02_TEXT_13	9032
+#define	TID_MMI_HOLDEMEVENT02_TEXT_14	9033
+#define	TID_MMI_HOLDEMEVENT02_TEXT_15	9034
+#define	TID_MMI_HOLDEMEVENT02_TEXT_16	9035
+#define	TID_MMI_HOLDEMEVENT02_TEXT_17	9036
+#define	TID_MMI_HOLDEMEVENT02_TEXT_18	9037
+#define	TID_MMI_HOLDEMEVENT02_TEXT_19	9038
+#define	TID_MMI_HOLDEMEVENT02_TEXT_20	9039
+		
+#define	TID_MMI_HOLDEMEVENT03_TEXT_01	9040
+#define	TID_MMI_HOLDEMEVENT03_TEXT_02	9041
+#define	TID_MMI_HOLDEMEVENT03_TEXT_03	9042
+#define	TID_MMI_HOLDEMEVENT03_TEXT_04	9043
+#define	TID_MMI_HOLDEMEVENT03_TEXT_05	9044
+#define	TID_MMI_HOLDEMEVENT03_TEXT_06	9045
+#define	TID_MMI_HOLDEMEVENT03_TEXT_07	9046
+#define	TID_MMI_HOLDEMEVENT03_TEXT_08	9047
+#define	TID_MMI_HOLDEMEVENT03_TEXT_09	9048
+#define	TID_MMI_HOLDEMEVENT03_TEXT_10	9049
+#define	TID_MMI_HOLDEMEVENT03_TEXT_11	9050
+#define	TID_MMI_HOLDEMEVENT03_TEXT_12	9051
+#define	TID_MMI_HOLDEMEVENT03_TEXT_13	9052
+#define	TID_MMI_HOLDEMEVENT03_TEXT_14	9053
+#define	TID_MMI_HOLDEMEVENT03_TEXT_15	9054
+#define	TID_MMI_HOLDEMEVENT03_TEXT_16	9055
+#define	TID_MMI_HOLDEMEVENT03_TEXT_17	9056
+#define	TID_MMI_HOLDEMEVENT03_TEXT_18	9057
+#define	TID_MMI_HOLDEMEVENT03_TEXT_19	9058
+#define	TID_MMI_HOLDEMEVENT03_TEXT_20	9059
+		
+#define	TID_MMI_HOLDEMEVENT04_TEXT_01	9060
+#define	TID_MMI_HOLDEMEVENT04_TEXT_02	9061
+#define	TID_MMI_HOLDEMEVENT04_TEXT_03	9062
+#define	TID_MMI_HOLDEMEVENT04_TEXT_04	9063
+#define	TID_MMI_HOLDEMEVENT04_TEXT_05	9064
+#define	TID_MMI_HOLDEMEVENT04_TEXT_06	9065
+#define	TID_MMI_HOLDEMEVENT04_TEXT_07	9066
+#define	TID_MMI_HOLDEMEVENT04_TEXT_08	9067
+#define	TID_MMI_HOLDEMEVENT04_TEXT_09	9068
+#define	TID_MMI_HOLDEMEVENT04_TEXT_10	9069
+#define	TID_MMI_HOLDEMEVENT04_TEXT_11	9070
+#define	TID_MMI_HOLDEMEVENT04_TEXT_12	9071
+#define	TID_MMI_HOLDEMEVENT04_TEXT_13	9072
+#define	TID_MMI_HOLDEMEVENT04_TEXT_14	9073
+#define	TID_MMI_HOLDEMEVENT04_TEXT_15	9074
+#define	TID_MMI_HOLDEMEVENT04_TEXT_16	9075
+#define	TID_MMI_HOLDEMEVENT04_TEXT_17	9076
+#define	TID_MMI_HOLDEMEVENT04_TEXT_18	9077
+#define	TID_MMI_HOLDEMEVENT04_TEXT_19	9078
+#define	TID_MMI_HOLDEMEVENT04_TEXT_20	9079
 
 #endif

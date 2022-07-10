@@ -2,15 +2,15 @@ QUEST_DESTINATION_ID_0000
 QUEST_DESTINATION_ID_0001	Investigate all camp grounds found in the Valley of the Risen
 QUEST_DESTINATION_ID_0002	Collect Twinke Stone by hunting Aibatt.
 QUEST_DESTINATION_ID_0003	Investigate Ivilis Temple located southern part of Saint Morning.
-QUEST_DESTINATION_ID_0004	Hunt Meteonyker and Red Meteonyker that live in Volcane.
-QUEST_DESTINATION_ID_0005	Deliver it to [Magician Instructor]Lopaze.
-QUEST_DESTINATION_ID_0006	Deliver it to [Acrobat Trainer]Tailer.
+QUEST_DESTINATION_ID_0004	Hunt Meteonyker and Red Meteonyker that live in Volkane.
+QUEST_DESTINATION_ID_0005	Deliver it to Magician Instructor Lopaze.
+QUEST_DESTINATION_ID_0006	Deliver it to Acrobat Trainer Tailer.
 QUEST_DESTINATION_ID_0007	Get rid of Ren from Ivilis Temple located southern part of Saint Morning.
 QUEST_DESTINATION_ID_0008	Get rid of Sisif and find Soulstone of Hero.
 QUEST_DESTINATION_ID_0009	Get rid of Venel Guardian and find Venel Heart.
 QUEST_DESTINATION_ID_0010	Get rid of Rubo and find Letter of Hynan.
 QUEST_DESTINATION_ID_0011	Get rid of Prankster and find History Book of Heroes.
-QUEST_DESTINATION_ID_0012	Get rid of Cyclops X that live in Volcane.
+QUEST_DESTINATION_ID_0012	Get rid of Cyclops X that live in Volkane.
 QUEST_DESTINATION_ID_0013	Investigate Ivilis Temple area located sourthern part of Saint Morning.
 QUEST_DESTINATION_ID_0014	Get rid of Seido and find Label of Technique.
 QUEST_DESTINATION_ID_0015	Deliver Earring of Heren to Ata.
@@ -41,8 +41,8 @@ QUEST_DESTINATION_ID_0039	Kill Lord Bang and obtain necklace.
 QUEST_DESTINATION_ID_0040	Hand it to Strange Collector
 QUEST_DESTINATION_ID_0041	After making a party of 3 or more, you can look for Helena
 QUEST_DESTINATION_ID_0042	Look for an egg after killing Red Mantis C
-QUEST_DESTINATION_ID_0043	[Dr.] Bring it to Estern
-QUEST_DESTINATION_ID_0044	[Dr.] Bring it to Estly
+QUEST_DESTINATION_ID_0043	Dr.  Bring it to Estern
+QUEST_DESTINATION_ID_0044	Dr.  Bring it to Estly
 QUEST_DESTINATION_ID_0045	Please give it to Mayor in Darkon
 QUEST_DESTINATION_ID_0046	You can see in Flarine, Saintmorning, and Darkon.
 QUEST_DESTINATION_ID_0047	It lives in Coral Island and you can purchase from cash shop.
@@ -54,13 +54,13 @@ QUEST_DESTINATION_ID_0052	It lives in fourth floor of Forsaken Tower and you can
 QUEST_DESTINATION_ID_0053	It lives in fifth floor of Forsaken Tower and you can enter through Forsaken Tower Manger in Flarine.
 QUEST_DESTINATION_ID_0054	You can obtain it in collect area.
 QUEST_DESTINATION_ID_0055	Give it to Hachal.
-QUEST_DESTINATION_ID_0056	Bring it to [Chairman of History Society]Gothante.
-QUEST_DESTINATION_ID_0057	Bring it to [Manager of Ancient Document]Rovanett
-QUEST_DESTINATION_ID_0058	Bring it to [Great Magician]Laola
-QUEST_DESTINATION_ID_0059	Bring it to [Historian]Martinyc
-QUEST_DESTINATION_ID_0060	Bring it to [Mercenary Instructor]Hyuit
+QUEST_DESTINATION_ID_0056	Bring it to Chairman of History Society Gothante.
+QUEST_DESTINATION_ID_0057	Bring it to Manager of Ancient Document Rovanett
+QUEST_DESTINATION_ID_0058	Bring it to Great Magician Laola
+QUEST_DESTINATION_ID_0059	Bring it to Historian Martinyc
+QUEST_DESTINATION_ID_0060	Bring it to Mercenary Instructor Hyuit
 QUEST_DESTINATION_ID_0061	Kill Small Mushpang
-QUEST_DESTINATION_ID_0062	Bring it to [Assist Instructor]Kidmen
+QUEST_DESTINATION_ID_0062	Bring it to Assist Instructor Kidmen
 QUEST_DESTINATION_ID_0063	Bring it to Hachal in Flarine
 QUEST_DESTINATION_ID_0064	Bring it to Hachal in Darkon
 QUEST_DESTINATION_ID_0065	Find Cursed Aminus Dungeon in East of the lake in Shaduwar.
@@ -86,14 +86,51 @@ QUEST_DESTINATION_ID_0084	It exists in Ivillis and revelation can be found in th
 QUEST_DESTINATION_ID_0085	Slay 8 Ivillis Crashers in Ivillis.
 QUEST_DESTINATION_ID_0086	Slay 4 Ivillis Guardians in Ivillis.
 QUEST_DESTINATION_ID_0087	Slay 4 Ivillis Guardians in Ivillis and obtain 4 Pattern of Ivillis Guardians.
-QUEST_DESTINATION_ID_0088	Slay Meteonykers in Volcane and obtain 70 Dragon Tooth.
-QUEST_DESTINATION_ID_0089	Slay Cyclops X in Volcane and obtain 80 Mysterious eyeballs.
-QUEST_DESTINATION_ID_0090	It is said that they live in Volcane.
+QUEST_DESTINATION_ID_0088	Slay Meteonykers in Volkane and obtain 70 Dragon Tooth.
+QUEST_DESTINATION_ID_0089	Slay Cyclops X in Volkane and obtain 80 Mysterious eyeballs.
+QUEST_DESTINATION_ID_0090	It is said that they live in Volkane.
 QUEST_DESTINATION_ID_0091	Please purchase long sword from Luda NPC.
-QUEST_DESTINATION_ID_0092	Slay Meteonykers in Volcane and obtain 100 Dragon Tooth.
+QUEST_DESTINATION_ID_0092	Slay Meteonykers in Volkane and obtain 100 Dragon Tooth.
 QUEST_DESTINATION_ID_0093	After speaking with Drian, obtain a pouch.
 QUEST_DESTINATION_ID_0094	A group of Organigor exists nearby.
 QUEST_DESTINATION_ID_0095	A group of Gangard exists nearby.
 QUEST_DESTINATION_ID_0096	A group of Hadeseor exists nearby.
 QUEST_DESTINATION_ID_0097	Newbies! This is an event coupon.
 QUEST_DESTINATION_ID_0098	It drops from monster lvl 15 or higher during the event.
+QUEST_DESTINATION_ID_0099	
+QUEST_DESTINATION_ID_0100	Find any old stone piece at Ruendera Camp. You shouldn't have to walk far. Bring it back to Raundas.
+QUEST_DESTINATION_ID_0101	Kill Boss Kalgas in the lowest floor of Kalgas Cave. Take Pendant of Eternity to Gigakas.
+QUEST_DESTINATION_ID_0102	Kill Rubo and get Seal of Aenn.
+QUEST_DESTINATION_ID_0103	Kill 50 Baby Kargo, then return to Development Supervisor  Kim. The Baby Kargo can be found on every continent.
+QUEST_DESTINATION_ID_0104	They are at Iblis, Southern Saintmorning.
+QUEST_DESTINATION_ID_0105	TIME RETURN FLOWER is at Rustia Dungeon enterance
+QUEST_DESTINATION_ID_0106	Hunt 20 Keakoon Guard. You can find them at Dekanes Dungeon
+QUEST_DESTINATION_ID_0107	Hunt Chaner. You can find them at Madrun Town
+QUEST_DESTINATION_ID_0108	You can find Marble Hairband at near Pumpkin Town enternace.
+QUEST_DESTINATION_ID_0109	The sword that Captain Hobo has
+QUEST_DESTINATION_ID_0110	It is located at North of Flaris near Altar of Violet 
+QUEST_DESTINATION_ID_0111	You can get it from Captain Tombstone Bearer
+QUEST_DESTINATION_ID_0112	You can get it from Basque
+QUEST_DESTINATION_ID_0113	You can get it from Prankster
+QUEST_DESTINATION_ID_0114	You can get it from Ivillis Crasher and Ivillis Guardian
+QUEST_DESTINATION_ID_0115	You can get it from Steel Knight
+QUEST_DESTINATION_ID_0116	It's a sharp blade that Red Mantis A has
+QUEST_DESTINATION_ID_0117	It's a strong drill that Driller has
+QUEST_DESTINATION_ID_0118	You can get it from Captain Steam Walker
+QUEST_DESTINATION_ID_0119	A ring that Garbagepider stole.
+QUEST_DESTINATION_ID_0120	A dustbin that Captain Garbagepider has on his back
+QUEST_DESTINATION_ID_0121	You can get it from Nautrepy
+QUEST_DESTINATION_ID_0122	A meat from Syliaca
+QUEST_DESTINATION_ID_0123	A jelly from Greemong
+QUEST_DESTINATION_ID_0124	A petal from Boo's body
+QUEST_DESTINATION_ID_0125	A root from Antiquery
+QUEST_DESTINATION_ID_0126	You can find a piece of rock from around Captain Kern
+QUEST_DESTINATION_ID_0127	You can find a piece of rock from around Captain Glaphan
+QUEST_DESTINATION_ID_0128	You can get it from Bishop Popcrank
+QUEST_DESTINATION_ID_0129	Look for Ainher. He's studying at Dekanes Dungeon
+QUEST_DESTINATION_ID_0130	Look for Drico at Dekanes Dungeon
+QUEST_DESTINATION_ID_0131	A sap from Pink Roach Queen
+QUEST_DESTINATION_ID_0132	A sap from Blue Roach Queen
+QUEST_DESTINATION_ID_0133	Ainher is studying something at Dekanes Dungeon
+QUEST_DESTINATION_ID_0134	Drico lives at Dekanes Dungeon
+QUEST_DESTINATION_ID_0135	You can find Furious Matches on the Pumpkins in the village to the south of St Morning.de Saintcity.
