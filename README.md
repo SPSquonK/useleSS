@@ -1,20 +1,20 @@
 # useleSS
 
-FlyFF v15 code with some refactor. This project does **NOT** currently aim to
-add any major features.
+FlyFF mostly v15 code with some refactor. This project does **NOT** currently
+aim to add any major features.
 
 The base code is from Blouflash V15
 https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html 
 
 
-This source is developped on Visual Studio 2022 with the C++lastest option.
-C++latest is used instead of C++20 because MSVC doesn't have range support
-with the C++20 option for some reasons.
+- This source is developped on Visual Studio 2022 with the C++lastest option.
+- It is somewhat compatible with V22 (see [doc/v22.md](doc/v22.md))
 
 
 ## Getting started
 
 - Download Blouflash's version
+- Download official v22 english client and copy the Char, Cursor, Icon, Item, Model, Music, SFX, Sound, Theme, Weather and World folders
 - Unzip the Resource folder
 - Clone this repository
 - Apply the Database.sql script and create the ODBC links:
