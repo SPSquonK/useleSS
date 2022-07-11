@@ -155,10 +155,6 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	LoadBeginPos();
 	LoadJobItem( _T( "jobItem.inc" ) );
 
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-	LoadPropAddSkill( _T( "propSkillAdd.csv" ) );
-#endif // __CONV_SKILL_11_MONTH_JOB1
-
 	m_EventLua.LoadScript();
 	m_EventLua.CheckEventState();
 
@@ -369,22 +365,6 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 		{
 			CGuildTable::GetInstance().ReadBlock( s );
 		}
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-		else
-		if( s.Token == _T( "expSkill" ) )
-		{
-			DWORD dwVal;
-			int i = 0;
-			ZeroMemory( m_aExpSkill, sizeof( m_aExpSkill ) );
-			s.GetToken(); // { 
-			dwVal = s.GetNumber();
-			while( *s.token != '}' )
-			{
-				m_aExpSkill[ i++ ] = dwVal;
-				dwVal = s.GetNumber();
-			}
-		}
-#endif // __CONV_SKILL_11_MONTH_JOB1
 		else if( s.Token == _T( "expParty" ) )
 		{
 			ZeroMemory( m_aExpParty, sizeof( m_aExpParty ) );
@@ -419,64 +399,6 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 #endif	// __DBSERVER
 	return TRUE;
 }
-
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-BOOL CProject::LoadPropAddSkill( LPCTSTR lpszFileName )
-{
-	CScript script;
-	if( script.Load( lpszFileName ) == FALSE )
-		return FALSE;
-	AddSkillProp propAddSkill;
-	int i = script.GetNumber( TRUE ); // id
-	while ( script.tok != FINISHED )
-	{
-		propAddSkill.dwID = i;
-		propAddSkill.dwName = script.GetNumber( TRUE );
-		propAddSkill.dwSkillLvl = script.GetNumber( TRUE );
-		propAddSkill.dwAbilityMin = script.GetNumber( TRUE );
-		propAddSkill.dwAbilityMax = script.GetNumber( TRUE );
-		/*
-		if( (int)propAddSkill.dwAbilityMin <= -1 || (int)propAddSkill.dwAbilityMax <= -1 )
-		{
-		Error( "SkillPropAdd Read Error\nID:%d\nSkillID:%d\ndwAbilityMin:%d\ndwAbilityMax:%d", propAddSkill.dwID, propAddSkill.dwName, propAddSkill.dwAbilityMin, propAddSkill.dwAbilityMax );
-		return FALSE;
-		}
-		*/
-		propAddSkill.dwAttackSpeed = script.GetNumber( TRUE );
-		propAddSkill.dwDmgShift = script.GetNumber( TRUE );
-		propAddSkill.nProbability = script.GetNumber( TRUE );
-		propAddSkill.dwTaunt = script.GetNumber( TRUE );
-		propAddSkill.dwDestParam1 = script.GetNumber( TRUE );
-		propAddSkill.dwDestParam2 = script.GetNumber( TRUE );
-		propAddSkill.nAdjParamVal1 = script.GetNumber( TRUE );
-		propAddSkill.nAdjParamVal2 = script.GetNumber( TRUE );
-		propAddSkill.dwChgParamVal1 = script.GetNumber( TRUE );
-		propAddSkill.dwChgParamVal2 = script.GetNumber( TRUE );
-		propAddSkill.nDestData1[0] = script.GetNumber( TRUE );
-		propAddSkill.nDestData1[1] = script.GetNumber( TRUE );
-		propAddSkill.nDestData1[2] = script.GetNumber( TRUE );
-		propAddSkill.nReqMp = script.GetNumber( TRUE );
-		propAddSkill.nReqFp = script.GetNumber( TRUE );
-		propAddSkill.dwSkillReady = script.GetNumber( TRUE );
-		//		propAddSkill.dwUseMotion = script.GetNumber( TRUE );
-		propAddSkill.dwSkillRange = script.GetNumber( TRUE );
-		propAddSkill.dwCircleTime = script.GetNumber( TRUE );
-		propAddSkill.dwPainTime  = script.GetNumber( TRUE );
-		propAddSkill.dwSkillTime = script.GetNumber( TRUE );
-		propAddSkill.dwSkillExp = script.GetNumber( TRUE );
-		
-		propAddSkill.dwExp = script.GetNumber( TRUE );
-		propAddSkill.dwComboSkillTime = script.GetNumber( TRUE );
-		
-		m_aPropAddSkill.SetAtGrow( i, &propAddSkill );
-		
-		TRACE( "PropAddSkill : %d %d %d\r\n", i, propAddSkill.dwName, propAddSkill.dwSkillLvl );
-		i = script.GetNumber( TRUE ); 
-	}
-	m_aPropAddSkill.Optimize();
-	return TRUE;
-}
-#endif // __CONV_SKILL_11_MONTH_JOB1
 
 void CProject::SetConvMode( DWORD dwMode )
 {

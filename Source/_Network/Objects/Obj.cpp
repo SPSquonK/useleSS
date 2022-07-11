@@ -497,49 +497,6 @@ BOOL CMover::RemoveItemIK3()
 }
 #endif // !__CORESERVER
 
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-int CMover::InitSkillExp()
-{
-	int dwSkillPoint = 0;
-	for( int i = MAX_JOB_SKILL ; i < MAX_SKILL_JOB ; ++i )
-	{
-		LPSKILL pSkill = &m_aJobSkill[ i ];
-		if( pSkill != NULL )
-		{
-			if( pSkill->dwSkill != NULL_ID )
-			{
-				ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
-				if( pSkillProp == NULL )
-				{
-					return 0;	// property not found
-				}
-				
-				for( int j = 1 ; j < pSkill->dwLevel ; ++j )
-				{
-					AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pSkillProp->dwSubDefine, j );
-					if( pAddSkillProp == NULL )
-					{
-						return 0;	// property not found
-					}
-					if( prj.m_aExpSkill[ j + 1 ] != 0 )
-						dwSkillPoint += prj.m_aExpSkill[ j + 1 ] * pAddSkillProp->dwSkillExp;
-					else
-						dwSkillPoint += pAddSkillProp->dwSkillExp;
-				}
-				
-				AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pSkillProp->dwSubDefine, pSkill->dwLevel );
-				if( pAddSkillProp == NULL )
-				{
-					return 0;	// property not found
-				}
-				pSkill->dwLevel = 1;
-			}
-		}
-	}
-	return dwSkillPoint;
-}
-#endif // __CONV_SKILL_11_MONTH_JOB1
-
 // bSize는 피어싱 사이즈를 늘릴 수 있는지 검사할 때 TRUE값을 setting 한다.
 // bSize를 TRUE로 할 경우 dwTagetItemKind3는 NULL_ID로 한다.
 BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize ) const

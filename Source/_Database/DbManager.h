@@ -923,21 +923,6 @@ public:
 	void	GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation );
 	QUEST GetOneQuest( const char* pstrQuest, int *pLocation );
 
-#ifdef __CONV_SKILL
-	void	ConvSkill( void );
-#endif	// __CONV_SKILL
-
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-	void	ConvSkill_11_MONTH_POINT( void );
-#endif // __CONV_SKILL_11_MONTH_JOB1
-#ifdef __CONV_SKILL_11_MONTH_JOB2
-	void	ConvSkill_11_MONTH( void );
-#endif // __CONV_SKILL_11_MONTH_JOB2
-
-#ifdef __CONV_SKILL_STOP
-	void	ConvSkillStop( void );
-#endif // __CONV_SKILL_STOP
-
 #ifdef __VERIFY_PLAYER
 	BOOL	VerifyPlayer( void );
 #endif	// __VERIFY_PLAYER
