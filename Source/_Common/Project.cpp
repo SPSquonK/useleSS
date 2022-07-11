@@ -4384,7 +4384,7 @@ PARTYQUESTPROP*	CProject::GetPartyQuestProp( int nQuestId )
 	return NULL;
 }	
 
-DWORD CProject::GetSkillPoint( ItemProp* pSkillProp )
+DWORD CProject::GetSkillPoint( const ItemProp* pSkillProp ) const
 {
 	DWORD dwPoint = 0;
 	if( pSkillProp->dwItemKind1 == JTYPE_BASE )

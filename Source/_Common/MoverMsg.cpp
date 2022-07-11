@@ -177,7 +177,7 @@ int	CMover::CMD_SetUseSkill( OBJID idTarget, int nSkillIdx, SKILLUSETYPE sutType
 		return 0;	// 
 	}
 
-	ItemProp* pSkillProp = pSkill->GetProp();
+	const ItemProp* pSkillProp = pSkill->GetProp();
 	if( pSkillProp == NULL )		// JobSkill 리스트에서 꺼낸 스킬의 프로퍼티를 꺼냄.
 	{
 		Error( "CMD_SetUseSkill : %s. skill(%d) property not found", m_szName, pSkill->dwSkill );

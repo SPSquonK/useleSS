@@ -6354,7 +6354,7 @@ BOOL CWndSkillTreeEx::Process()
 	if( m_pFocusItem && 0 < g_pPlayer->m_nSkillPoint )
 	{
 		LPSKILL lpSkillUser = g_pPlayer->GetSkill( m_pFocusItem->dwSkill );
-		ItemProp* pSkillProp = m_pFocusItem->GetProp();
+		const ItemProp* pSkillProp = m_pFocusItem->GetProp();
 		if( pSkillProp == NULL || lpSkillUser == NULL )
 			return TRUE;
 		

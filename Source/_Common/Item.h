@@ -59,15 +59,7 @@ inline int CItemElem::GetResistAbilityOption( void ) const
 	return m_nResistAbilityOption;
 }
 
-typedef struct tagSkill
-{
-	DWORD dwSkill;
-	DWORD dwLevel;
-	ItemProp* GetProp()	{ return prj.GetSkillProp( dwSkill ); }
-	
-} SKILL,* LPSKILL;
-
-
+#include "SkillsOfMover.h"
 #include "ItemContainer.h"
 
 

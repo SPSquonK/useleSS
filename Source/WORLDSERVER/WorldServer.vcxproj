@@ -96,6 +96,7 @@
     <ClCompile Include="..\_Common\groupquest.cpp" />
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
+    <ClCompile Include="..\_Common\SkillsOfMover.cpp" />
     <ClCompile Include="..\_Interface\FuncTextCmd_ItemEnchant.cpp" />
     <ClCompile Include="AttackArbiter.cpp">
     </ClCompile>
@@ -460,6 +461,7 @@
     <ClInclude Include="..\_Common\groupquest.h" />
     <ClInclude Include="..\_Common\GroupUtils.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
+    <ClInclude Include="..\_Common\SkillsOfMover.h" />
     <ClInclude Include="..\_Common\sqktd.h" />
     <ClInclude Include="..\_Common\StaticString.h" />
     <ClInclude Include="DisplayedInfo.h" />

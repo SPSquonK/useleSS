@@ -7003,7 +7003,7 @@ BOOL CMover::EndMotion()
 }
 #endif //__CLIENT
 
-BOOL CMover::IsBullet( ItemProp* pItemProp )
+BOOL CMover::IsBullet( const ItemProp* pItemProp )
 {
 	// 필요총알종류가 지정되어 있다면
 	if( pItemProp->dwLinkKindBullet != NULL_ID )

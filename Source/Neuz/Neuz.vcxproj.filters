@@ -1006,6 +1006,9 @@
     <ClCompile Include="..\_Network\ListedServer.cpp">
       <Filter>Source Files\_Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\SkillsOfMover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1879,6 +1882,9 @@
     </ClInclude>
     <ClInclude Include="..\_Interface\WndTListBox.hpp">
       <Filter>Source Files\_Interface\WndBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\SkillsOfMover.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

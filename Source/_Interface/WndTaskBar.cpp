@@ -887,7 +887,7 @@ void CWndTaskBar::RemoveSkillQueue( int nIndex, BOOL bSend )
 BACK:
 	if( !m_aSlotQueue[ nIndex ].IsEmpty() )
 	{
-		ItemProp* pItemProp = g_pPlayer->GetSkill( m_aSlotQueue[ nIndex ].m_dwId )->GetProp();
+		const ItemProp* pItemProp = g_pPlayer->GetSkill( m_aSlotQueue[ nIndex ].m_dwId )->GetProp();
 		DWORD dwComboStyleSrc = pItemProp->dwComboStyle;
 		int i = NULL;
 		for( i = nIndex; i < MAX_SLOT_QUEUE - 1; i++ )
@@ -1940,7 +1940,7 @@ void CWndTaskBar::RenderCollTime(CPoint pt, DWORD dwSkillId, C2DRender* p2DRende
 		SKILL * skill = g_pPlayer->GetSkill(dwSkillId);
 		if (!skill) return;
 
-		ItemProp* pSkillProp	= skill->GetProp();
+		const ItemProp* pSkillProp	= skill->GetProp();
 		ASSERT( pSkillProp );
 		AddSkillProp* pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, skill->dwLevel );
 		ASSERT( pAddSkillProp );

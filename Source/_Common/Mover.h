@@ -1291,7 +1291,7 @@ public:
 	void			OnActFMove();
 	void			OnActIALanding( CObj *pIAObj, const D3DXVECTOR3 &vPos );		// Interact오브젝트에 착지했을때.
 	void			OnAttackStart( CMover *pTarget, OBJMSG dwMsg );					// 공격을 막 시작했을때(일반/스킬/완드 등)
-	BOOL			IsBullet( ItemProp* pItemProp );
+	BOOL			IsBullet( const ItemProp* pItemProp );
 	void			ProcessMovePattern();
 	int				GetMovePattern() { return m_nMovePattern; }
 	int				GetMoveEvent() { return m_nMoveEvent; }

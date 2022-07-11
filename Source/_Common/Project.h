@@ -841,7 +841,7 @@ public:
 	CPtrArray*		GetItemKindAry( int nKind );
 	MoverProp*		GetMoverProp( int nIndex ) ;
 	MoverProp*		GetMoverPropEx( int nIndex );
-	DWORD			GetSkillPoint( ItemProp* pSkillProp );
+	DWORD			GetSkillPoint( const ItemProp* pSkillProp ) const;
 	ItemProp*		GetItemProp( LPCTSTR lpszItem );
 	MoverProp*		GetMoverProp( LPCTSTR lpszMover ); 
 	CtrlProp*		GetCtrlProp( LPCTSTR lpszMover );
