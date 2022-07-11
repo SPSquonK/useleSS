@@ -409,7 +409,7 @@ void CMover::Init()
 	m_pIADestPos = NULL;
 	SetEatPetId( NULL_ID );
 
-	ZeroMemory( m_tmReUseDelay, sizeof( m_tmReUseDelay ) );
+	m_tmReUseDelay.clear();
 
 #ifdef __WORLDSERVER
 	m_pNpcProperty = NULL;
@@ -1277,7 +1277,7 @@ void CMover::InitProp( BOOL bInitAI )
 	ZeroMemory( m_ShopInventory, sizeof( m_ShopInventory ) );	
 	
 	ZeroMemory( m_aJobSkill, sizeof( m_aJobSkill ) );
-	ZeroMemory( m_tmReUseDelay, sizeof( m_tmReUseDelay ) );
+	m_tmReUseDelay.clear();
 
 	// 잡스킬 초기화 
 	for( int i = 0; i < MAX_SKILL_JOB; i++ )

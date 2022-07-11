@@ -1343,7 +1343,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 	else if (pShortcut->m_dwShortcut == ShortcutType::Skill) {
 	  if (CMover::GetActiveMover()->m_vtInfo.VendorIsVendor()) return;
 
-		UseSkillShortCut(0, pShortcut->m_dwId);
+		UseSkillShortCut(pShortcut->m_dwId);
 
 	} else if ( pShortcut->m_dwShortcut == ShortcutType::PartySkill) {
 
@@ -2764,9 +2764,9 @@ DWORD CWndMgr::GetDSTStringId(int nDstParam) {
 
 
 // ¼ôÄÆÀ¸·Î ½ºÅ³ ½ÇÇàÇÏ±â.
-void CWndMgr::UseSkillShortCut( DWORD, DWORD dwSkillIdx )
+void CWndMgr::UseSkillShortCut( DWORD dwSkillIdx )
 {
-	LPSKILL lpSkill = g_pPlayer->GetSkill( 0, dwSkillIdx );
+	LPSKILL lpSkill = g_pPlayer->GetSkill( dwSkillIdx );
 	if( lpSkill )
 	{
 		CCtrl* pCtrl = (CCtrl*)g_WorldMng.Get()->GetObjFocus();

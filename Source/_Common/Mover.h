@@ -474,7 +474,7 @@ public:
 #endif	// __BUFF_1107
 	DWORD			m_dwSMTime[SM_MAX];			/// 유료 아이템 시간 값을 가지고 있음
 	SKILL			m_aJobSkill[ MAX_SKILL_JOB ];		/// 스킬 배열 
-	DWORD			m_tmReUseDelay[ MAX_SKILL_JOB ];	/// 스킬 재사용시각
+	boost::container::flat_map</* Skill Id */ DWORD, DWORD> m_tmReUseDelay; /// 스킬 재사용시각
 	
 	LONG			m_nStr, m_nSta, m_nDex, m_nInt;		/// 스텟 
 	LONG			m_nLevel;					/// 레벨 
@@ -838,7 +838,7 @@ public:
 	void			SetCheerParam( int nCheerPoint, DWORD dwTickCount, DWORD dwRest );
 	void			ClearEquipInfo();
 	int				GetMaxPoint(int nDest);
-	DWORD			GetReuseDelay( int nIndex );
+	[[nodiscard]] DWORD GetReuseDelay(DWORD skillId) const;
 	BOOL			InitSkillExp();
 	void			InitCharacter( LPCHARACTER lpCharacter );	// 이름 초기화 LoadDialog호출 
 	LPCHARACTER		GetCharacter();								// 
@@ -976,9 +976,7 @@ public:
 	int				GetPointParam( int nDstParameter );
 	void			SetPointParam( int nDstParameter, int nValue, BOOL bTrans = FALSE ); // bTrans가 TRUE이면 강제전송
 	void			OnApplySM();
-	LPSKILL			GetSkill( int nType, int nIdx );
-	LPSKILL			GetSkill( DWORD dwSkill );
-	int				GetSkillIdx( DWORD dwSkill );
+	[[nodiscard]] SKILL * GetSkill(DWORD dwSkill);
 	void			OnEndSkillState( DWORD dwSkill, DWORD dwLevel );
 	BOOL			CheckSkill( DWORD dwSkill );
 	void			SetHair( int nHair );
@@ -1270,7 +1268,7 @@ public:
 	void			ChangeExpRatio( CMover* pAttacker, CMover* pDefender );
 	void			OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nReflect );
 	BOOL			OnDamage( int nItemID, DWORD dwState, CMover *pHitObj, const D3DXVECTOR3 *pvDamagePos = NULL, DWORD dwAtkFlag = AF_GENERIC );
-	void			SetCoolTime( AddSkillProp* pAddSkillProp, LPCTSTR szCall );
+	void SetCoolTime(const AddSkillProp & pAddSkillProp);
 	BOOL			OnMeleeSkill( int nType, int nCount = 1 );		// OBJMSG_ATK_MELEESKILL실행후 타점이 되었을때 발생하는 이벤트.
 	BOOL			OnMagicSkill( int nType, int nCount = 1 );		// OBJMSG_ATK_MAGICSKILL실행후 타점이 되었을때 발생하는 이벤트.
 	BOOL			OnAttackRange();		// 장거리무기가 발사되는 시점에 발생하는 이벤트
@@ -1372,7 +1370,7 @@ public:
 //	BOOL			IsResourceMonster() { return m_nResource != -1; }		// 자원몬스터냐? -1이면 자원몬스터가 아니다. 0 ~ 자원몬스터라는 뜻.
 	void			ArrowDown( int nCount );
 	int				GetQueueCastingTime();
-	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl );
+	
 	float			SubDieDecExp( BOOL bTransfer = TRUE, DWORD dwDestParam = 0, BOOL bResurrection = FALSE  );	// 죽었을때 겸치 깎는 부분.
 
 	void			SubAroundExp( CMover *pAttacker, float fRange );		// this를 중심으로 fRange범위안에 있는 유저에게 경험치를 배분한다.
@@ -1450,9 +1448,18 @@ public:
 	void			RenderPVPCount( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderGuildNameLogo( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor );
-	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl, const int nCastingTime, DWORD dwSkill = 0, DWORD dwLevel = 0 );
+	
 	void			RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice);
 #endif	// __CLIENT
+
+
+#if defined(__WORLDSERVER) || defined(__CLIENT)
+	BOOL			DoUseSkillPre(int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl
+#ifdef __CLIENT	
+		, int nCastingTime, DWORD dwSkill = 0, DWORD dwLevel = 0
+#endif
+	);
+#endif
 
 	int				GetSkillLevel( SKILL* pSkill );
 	BOOL			SetExperience( EXPINTEGER nExp1, int nLevel );

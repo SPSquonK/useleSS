@@ -88,7 +88,7 @@ int CMover::GetQueueCastingTime() {
 	for (const SHORTCUT & shortcut : slotQueue) {
 		if (shortcut.IsEmpty()) continue;
 
-		SKILL * const pSkill = GetSkill(0, shortcut.m_dwId);
+		SKILL * const pSkill = GetSkill(shortcut.m_dwId);
 			
 		const ItemProp * const pSkillProp = pSkill->GetProp();
 		if (!pSkillProp) {
@@ -125,62 +125,33 @@ int CMover::GetQueueCastingTime() {
 // Mover가 사용가능한 스킬배열(m_aJobSkill[3+14])에서 nIdx에 해당하는 스킬을 꺼내 그것을 실행한다.
 // sutType : 스킬사용시 단축키/스킬큐의 여부를 클라로부터 받아서 처리.  캐스팅타임 계산이 다르다.
 //
+BOOL	CMover::DoUseSkillPre(
+	int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl
 #ifdef __CLIENT
-	BOOL	CMover::DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl, const int nCastingTime, DWORD dwSkill, DWORD dwLevel )
-#else // __CLIENT
-		BOOL	CMover::DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl )
+	, const int nCastingTime, DWORD dwSkill, DWORD dwLevel
 #endif // __CLIENT
-{
+) {
 	if( IsNPC() )	
 		return FALSE;		// 엔피씨는 이쪽을 타면 안된다.
 
 #ifdef __WORLDSERVER
-	DWORD dwSkill = 0, dwLevel;
+	DWORD dwSkill = 0;
+	DWORD dwLevel;
+	int nCastingTime = 0;
 #endif	// __WORLDSERVER
 	
-	if( nIdx >= 0 )
-	{
-		LPSKILL pSkill = GetSkill( nType, nIdx );
-		if( pSkill == NULL )
-		{
-			Error( "CMover::DoUseSkill : %s는 nIdx에 스킬을 가지고 있지 않다. %d", m_szName, nIdx );
+	if (nIdx != -1) {
+		LPSKILL pSkill = GetSkill(nIdx);
+		if (pSkill == NULL) {
+			Error("CMover::DoUseSkill : %s는 nIdx에 스킬을 가지고 있지 않다. %d", m_szName, nIdx);
 			return FALSE;
 		}
-		dwSkill	= pSkill->dwSkill;
-	#ifdef __SKILL0517
-		dwLevel	= GetSkillLevel( pSkill );
-	#else	// __SKILL0517
-		dwLevel	= pSkill->dwLevel;
-	#endif	// __SKILL0517
+		dwSkill = pSkill->dwSkill;
+		dwLevel = pSkill->dwLevel;
 
-		if( dwSkill == DWORD(-1) )
+		if (dwLevel <= 0)
 			return FALSE;
-
-		if( dwLevel <= 0 )
-			return FALSE;
-/*
-#ifdef __GUILD_COMBAT_1TO1 // chipi_071227 임시로 막음
-		if( dwSkill == SI_KNT_HERO_DRAWING )
-		{
-		#ifdef __CLIENT
-			if( g_GuildCombat1to1Mng.IsPossibleMover( this ) )
-				return FALSE;
-		#endif // __CLIENT
-		#ifdef __WORLDSERVER
-			if( g_GuildCombat1to1Mng.IsPossibleUser( (CUser*)this ) )
-			{
-				((CUser*)this)->AddDefinedText( TID_GAME_NEVERKILLSTOP );
-				return FALSE;
-			}
-		#endif // __WORLDSERVER
-		}
-#endif // __GUILD_COMBAT_1TO1
-*/
 	}
-
-#ifdef __WORLDSERVER
-	int nCastingTime = 0;
-#endif
 
 	ItemProp *pSkillProp = NULL;
 	AddSkillProp *pAddSkillProp = NULL;
@@ -227,8 +198,7 @@ int CMover::GetQueueCastingTime() {
 	#endif
 	}
 
-	BOOL bSuccess = DoUseSkill( dwSkill, dwLevel, idFocusObj, sutType, bControl, nCastingTime );
-	return  bSuccess;
+	return DoUseSkill( dwSkill, dwLevel, idFocusObj, sutType, bControl, nCastingTime );
 }
 
 // dwSkill,nLevel만 있으면 어디서든지 사용가능한 버전	
@@ -576,8 +546,8 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 			}
 			else
 			{
-				int nIdx = GetSkillIdx( dwSkill );
-				Error( "DoUseSkill : %s NULL GetSkill %d = dwReSkill(%d, %d)", m_szName, nIdx, pSkillProp->dwReSkill1, pSkillProp->dwReSkill2 );
+				((CUser *)this)->AddText("SkillLevel1 ");
+				return FALSE;
 			}
 		}
 
@@ -594,8 +564,8 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 			}
 			else
 			{
-				int nIdx = GetSkillIdx( dwSkill );
-				Error( "DoUseSkill : %s NULL GetSkill %d = dwReSkill(%d, %d)", m_szName, nIdx, pSkillProp->dwReSkill1, pSkillProp->dwReSkill2 );
+				((CUser *)this)->AddText("SkillLevel2 ");
+				return FALSE;
 			}
 		}
 	}
@@ -612,15 +582,11 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 
 	// 쿨타임 검사.
 	{
-		int nSkillIdx = GetSkillIdx( dwSkill );		// 스킬리스트 인덱스를 찾음.
-		if( nSkillIdx >= 0 )
+		if( GetReuseDelay( dwSkill ) )		// 쓰려고 하는 스킬 쿨타임이 남아있으면 실행안됨.
 		{
-			if( GetReuseDelay( nSkillIdx ) )		// 쓰려고 하는 스킬 쿨타임이 남아있으면 실행안됨.
-			{
-				if( IsPlayer() )
-					((CUser*)this)->AddDefinedText( TID_GAME_SKILLWAITTIME, "" );	// 아직 사용할 수 없습니다.
-				return FALSE;
-			}
+			if( IsPlayer() )
+				((CUser*)this)->AddDefinedText( TID_GAME_SKILLWAITTIME, "" );	// 아직 사용할 수 없습니다.
+			return FALSE;
 		}
 	}
 #endif // __WORLDSERVER
@@ -1997,17 +1963,15 @@ void	CMover::SendDamageLine( int nDmgType, int nApplyType, int nAttackID,
 } // SendDamageLine()
 
 
-// nIndex skill의 재사용 딜레이를 리턴한다. 
-// nIndex - skill의 index, ( m_tmReUseDelay, m_aJobSkill의 인덱스는 같은 의미 )
-DWORD CMover::GetReuseDelay( int nIndex )
-{
-	ASSERT( nIndex >= 0 );	
+DWORD CMover::GetReuseDelay(const DWORD skillId) const {
+	const auto it = m_tmReUseDelay.find(skillId);
+	if (it == m_tmReUseDelay.end()) return 0;
 
-	DWORD dwCur = ::timeGetTime();
-	if( dwCur > m_tmReUseDelay[nIndex] )	// 종료시각 보다 현재 시각이 크면 
-		return 0;								// 딜레이 없다.
-	else									// 아니면 
-		return m_tmReUseDelay[nIndex] - dwCur;	// 종료시각 - 현재시각 
+	const DWORD dwCur = ::timeGetTime();
+	if (dwCur > it->second)
+		return 0;
+
+	return it->second - dwCur;
 }
 
 #ifdef __WORLDSERVER

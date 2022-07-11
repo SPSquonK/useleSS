@@ -7877,7 +7877,7 @@ BOOL CWndWorld::Process()
 			} else
 			if( m_dwNextSkill != NEXTSKILL_NONE )		// 그외는 예약된 스킬을 실행.
 			{
-				g_WndMng.UseSkillShortCut( 0, m_dwNextSkill );
+				g_WndMng.UseSkillShortCut( m_dwNextSkill );
 			} else
 			{	// 일반 공격.
 				if( (m_bLButtonDown || m_bAutoAttack) && (g_pPlayer->GetCmd() != OBJACT_USESKILL) )	// 누른 순간에만 처리하기 위해서...

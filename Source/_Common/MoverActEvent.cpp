@@ -129,8 +129,9 @@ BOOL CMover::OnMeleeSkill( int nType, int nCount )
 		if( IsActiveMover() )
 #endif
 		{
-			if( pAddSkillProp->dwCooldown != 0xFFFFFFFF )	// 쿨타임이 있는 스킬의 경우
-				SetCoolTime( pAddSkillProp, "OnMeleeSkill" );
+			if (pAddSkillProp->dwCooldown != 0xFFFFFFFF) {	// 쿨타임이 있는 스킬의 경우
+				SetCoolTime(*pAddSkillProp);
+			}
 		}
 	}
 	return TRUE;
@@ -404,15 +405,10 @@ BOOL	CMover::GetSkillProp( ItemProp **ppSkillProp, AddSkillProp **ppAddSkillProp
 
 
 // 쿨타임 시작!
-void	CMover::SetCoolTime( AddSkillProp* pAddSkillProp, LPCTSTR szCall )
-{
-	int nIdx	= GetSkillIdx( pAddSkillProp->dwName );		// 스킬리스트 인덱스를 찾음.
-	
-	if( nIdx < 0 || nIdx >= MAX_SKILL_JOB )
-		Error( "szCall SetCoolTime : %d %d스킬을 찾을 수 없음 %s", nIdx, pAddSkillProp->dwName, GetName() );
-	else
-		m_tmReUseDelay[ nIdx ] = pAddSkillProp->dwCooldown + timeGetTime();		// 1/1000단위
+void	CMover::SetCoolTime(const AddSkillProp & pAddSkillProp) {
+	m_tmReUseDelay[pAddSkillProp.dwName] = pAddSkillProp.dwCooldown + timeGetTime();		// 1/1000단위
 }
+
 //
 //	마법 스킬의 타점때 호출.
 //  nCount 워터볼의 경우 여러번 호출이 되기때문에 nCount==0 의 경우만 경험치가 올라간다.
@@ -551,8 +547,9 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 	#ifdef __CLIENT
 		if( IsActiveMover() && nCount == 0 )		// 연속타점일경우 첫번째 타점에만 적용
 	#endif // __CLIENT
-		if( pAddSkillProp->dwCooldown != 0xFFFFFFFF )
-			SetCoolTime( pAddSkillProp, "OnMagicSkill" );
+			if (pAddSkillProp->dwCooldown != 0xFFFFFFFF) {
+				SetCoolTime(*pAddSkillProp);
+			}
 	} // bSuccess
 
 #if defined(__CLIENT)

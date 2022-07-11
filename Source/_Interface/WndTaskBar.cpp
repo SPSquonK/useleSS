@@ -99,8 +99,7 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Skill)
 	{
-		LPSKILL lpSkill = g_pPlayer->GetSkill( 0, shortcut.m_dwId );
-		ItemProp* pSkillProp = prj.m_aPropSkill.GetAt( lpSkill->dwSkill );
+		ItemProp* pSkillProp = prj.m_aPropSkill.GetAt(shortcut.m_dwId);
 		if( pSkillProp )
 			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
 	}
@@ -223,8 +222,8 @@ void CWndTaskBar::PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect )
 	else if (pShortcut->m_dwShortcut == ShortcutType::PartySkill) {
 		g_WndMng.PutToolTip_Troupe(pShortcut->m_dwId, point, pRect);
 	} else if( pShortcut->m_dwShortcut == ShortcutType::Skill) {
-		const SKILL * const lpSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
-		g_WndMng.PutToolTip_Skill( lpSkill->dwSkill, lpSkill->dwLevel, point, pRect );
+		const SKILL * const lpSkill = g_pPlayer->GetSkill(pShortcut->m_dwId);
+		g_WndMng.PutToolTip_Skill( lpSkill->dwSkill, lpSkill ? lpSkill->dwLevel : 0, point, pRect );
 	}
 	else	
 	if( pShortcut->m_dwShortcut == ShortcutType::Lord)
@@ -410,7 +409,7 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 				break;
 			case ShortcutType::Skill:
 				{
-					DWORD dwSkill = g_pPlayer->GetSkill( 0, m_GlobalShortcut.m_dwId )->dwSkill;
+					const DWORD dwSkill = m_GlobalShortcut.m_dwId;
 					DWORD dwComboStyleSrc = prj.GetSkillProp( dwSkill )->dwComboStyle;
 					if( dwComboStyleSrc == CT_STEP  || dwComboStyleSrc == CT_GENERAL  )		// 스텝이나 제네럴이면 합격
 						p2DRender->RenderFillRect( rectItem, dwColor );		
@@ -823,13 +822,6 @@ BOOL CWndTaskBar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	CWndButton* pWndButton = (CWndButton*) pLResult;
 	if( message == WIN_ITEMDROP )
 	{
-		/*
-		LPSHORTCUT pShortcut = (LPSHORTCUT) pLResult;
-		if( pShortcut && pShortcut->m_dwData == 2 ) // 스킬 큐 버튼의 아이디는 1000 이상 
-		{
-			SetSkillQueue( nID - 1000, pShortcut->m_dwShortcut, pShortcut->m_dwType, pShortcut->m_dwId, pShortcut->m_dwData, pShortcut->m_pTexture );
-		}
-		*/
 	}
 	else
 	switch( nID )
@@ -895,7 +887,7 @@ void CWndTaskBar::RemoveSkillQueue( int nIndex, BOOL bSend )
 BACK:
 	if( !m_aSlotQueue[ nIndex ].IsEmpty() )
 	{
-		ItemProp* pItemProp = g_pPlayer->GetSkill( 0, m_aSlotQueue[ nIndex ].m_dwId )->GetProp();
+		ItemProp* pItemProp = g_pPlayer->GetSkill( m_aSlotQueue[ nIndex ].m_dwId )->GetProp();
 		DWORD dwComboStyleSrc = pItemProp->dwComboStyle;
 		int i = NULL;
 		for( i = nIndex; i < MAX_SLOT_QUEUE - 1; i++ )
@@ -1028,7 +1020,7 @@ BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
 		// 뭔가 있다.
 		{
 			DWORD dwComboStyleDest;
-			DWORD dwSkill = g_pPlayer->GetSkill( 0, m_aSlotQueue[ nQueueDest ].m_dwId )->dwSkill;
+			DWORD dwSkill = m_aSlotQueue[nQueueDest].m_dwId;
 				//m_aSlotQueue[ nQueueDest ].m_dwId;	// 넣으려는 칸의 스킬
 			if( dwSkill )
 				dwComboStyleDest = prj.GetSkillProp( dwSkill )->dwComboStyle;		// 그칸의 스타일
@@ -1044,7 +1036,7 @@ BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
 	{
 		if( dwComboStyleSrc == CT_STEP )	// 스텝은 첫칸이 아니면 무조건 못넣는다.
 			return FALSE;
-		DWORD dwSkill = g_pPlayer->GetSkill( 0, m_aSlotQueue[ nQueueDest - 1 ].m_dwId )->dwSkill;
+		DWORD dwSkill = m_aSlotQueue[ nQueueDest - 1 ].m_dwId;
 			//m_aSlotQueue[ nQueueDest - 1 ].m_dwId;	// 넣으려는 칸의 앞에있는 스킬
 		DWORD dwComboStylePrev;
 		if( dwSkill )
@@ -1073,13 +1065,13 @@ BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
 			return FALSE;
 		DWORD dwComboStylePrev;
 		DWORD dwComboStyleDest;
-		DWORD dwSkill = g_pPlayer->GetSkill( 0, m_aSlotQueue[ nQueueDest - 1 ].m_dwId )->dwSkill;
+		DWORD dwSkill = m_aSlotQueue[ nQueueDest - 1 ].m_dwId;
 			//m_aSlotQueue[ nQueueDest - 1 ].m_dwId;	// 넣으려는 칸의 앞에있는 스킬
 		if( dwSkill )
 			dwComboStylePrev = prj.GetSkillProp( dwSkill )->dwComboStyle;		// 앞칸의 스타일
 		else
 			dwComboStylePrev = 0;
-		dwSkill = g_pPlayer->GetSkill( 0, m_aSlotQueue[ nQueueDest ].m_dwId )->dwSkill;
+		dwSkill = m_aSlotQueue[ nQueueDest ].m_dwId;
 		//dwSkill = m_aSlotQueue[ nQueueDest ].m_dwId;	// 넣으려는 칸의 스킬
 		if( dwSkill )
 			dwComboStyleDest = prj.GetSkillProp( dwSkill )->dwComboStyle;		// 그칸의 스타일
@@ -1112,7 +1104,7 @@ BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
 	}
 	return FALSE;
 }
-BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD , DWORD dwId, CTexture* pTexture )
+BOOL CWndTaskBar::SetSkillQueue( int nIndex, const DWORD skillId, CTexture* pTexture )
 {
 	if( m_nExecute )		return FALSE;		// 스킬큐 실행중엔 등록 안됨.
 	if( m_nCurQueueNum >= 5 )
@@ -1134,22 +1126,19 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD , DWORD dwId, CTexture* pText
 
 	LPSHORTCUT pShortcut = NULL;
 	CRect rect = GetWindowRect();
-	LPSKILL lpSkill = g_pPlayer->GetSkill( 0, dwId );
-	DWORD dwSkill = lpSkill->dwSkill;
-	DWORD dwLevel = lpSkill->dwLevel;
-	ItemProp *pSkillProp = prj.GetSkillProp( dwSkill );
-	DWORD dwComboStyleSrc = pSkillProp->dwComboStyle;
+	SKILL * lpSkill = g_pPlayer->GetSkill(skillId);
+	const DWORD dwLevel = lpSkill->dwLevel;
+	const ItemProp * pSkillProp = prj.GetSkillProp( skillId );
+	const DWORD dwComboStyleSrc = pSkillProp->dwComboStyle;
 
 	if( dwLevel <= 0 )
 		return FALSE;
 
 	AddSkillProp* pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, dwLevel );
 	ASSERT( pAddSkillProp );
-	if( (int)pAddSkillProp->dwCooldown > 0 )	//  쿨타임있는 스킬은 액션슬롯에 못들어감
+	if ((int)pAddSkillProp->dwCooldown > 0)	//  쿨타임있는 스킬은 액션슬롯에 못들어감
 	{
-		CString str;
-		str.Format( prj.GetText(TID_GAME_SKILLLNOTUSE), pSkillProp->szName );
-		g_WndMng.PutString( str , NULL, prj.GetTextColor(TID_GAME_SKILLLNOTUSE) );
+		g_WndMng.PutString(TID_GAME_SKILLLNOTUSE, pSkillProp->szName);
 		return FALSE;
 	}
 
@@ -1177,7 +1166,7 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD , DWORD dwId, CTexture* pText
 	
 	if( pTexture == NULL )
 	{
-		LPSKILL lpSkill = g_pPlayer->GetSkill( 0, dwId );
+		LPSKILL lpSkill = g_pPlayer->GetSkill( skillId );
 		pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon), 0xff000000, FALSE );
 	}
 	else pShortcut->m_pTexture = pTexture;
@@ -1185,7 +1174,7 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, DWORD , DWORD dwId, CTexture* pText
 
 	pShortcut->m_dwShortcut = ShortcutType::Skill;
 	pShortcut->m_dwIndex    = nIndex;//dwIndex; // 스킬 콘트롤에서의 순서 
-	pShortcut->m_dwId       = dwId; // 스킬 인덱스 
+	pShortcut->m_dwId       = skillId; // 스킬 인덱스 
 	pShortcut->m_dwUserId   = 0 ;
 	pShortcut->m_dwData     = 2;
 	_tcscpy( pShortcut->m_szString, m_GlobalShortcut.m_szString );
@@ -1234,7 +1223,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	
 	if( pShortcut->m_dwShortcut == ShortcutType::Skill ) // 극단스킬은 안들어감
 	{
-		LPSKILL pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
+		SKILL * pSkill = g_pPlayer->GetSkill( pShortcut->m_dwId );
 		if( pSkill && (pSkill->dwLevel <= 0 || g_pPlayer->CheckSkill( pSkill->dwSkill ) == FALSE) )
 		{
 			SetForbid( TRUE );
@@ -1274,8 +1263,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			}
 			if( pShortcut->m_dwShortcut == ShortcutType::Skill)
 			{
-				const SKILL * const pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
-				const ItemProp * const pProp = prj.GetSkillProp( pSkill->dwSkill );	
+				const ItemProp * const pProp = prj.GetSkillProp(pShortcut->m_dwId);
 
 				if( pProp->dwComboStyle != CT_STEP && pProp->dwComboStyle != CT_GENERAL )	
 				{
@@ -1285,7 +1273,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			}
 
 #ifdef __MAINSERVER
-			if( point.x == 0 && m_aSlotApplet[ point.x ].m_dwId == 400 )
+			if( point.x == 0 && m_aSlotApplet[ point.x ].m_dwId == APP_WEBBOX)
 				return FALSE;
 #endif //__MAINSERVER
 				
@@ -1320,8 +1308,7 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			}
 			else if( pShortcut->m_dwShortcut == ShortcutType::Skill)
 			{
-				const SKILL * const pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
-				const ItemProp * const pProp = prj.GetSkillProp( pSkill->dwSkill );
+				const ItemProp * const pProp = prj.GetSkillProp(pShortcut->m_dwId);
 
 				if( pProp->dwComboStyle != CT_STEP && pProp->dwComboStyle != CT_GENERAL )	
 				{
@@ -1347,11 +1334,11 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					if( lpShortcut->m_dwData == 2 )
 					{
 						RemoveSkillQueue( lpShortcut->m_dwIndex, FALSE );
-						SetSkillQueue( point.x, 0, pShortcut->m_dwId, pShortcut->m_pTexture );// == FALSE )
+						SetSkillQueue( point.x, pShortcut->m_dwId, pShortcut->m_pTexture );// == FALSE )
 						return TRUE;
 					}
 				}
-				if( SetSkillQueue( point.x, 0, pShortcut->m_dwId, pShortcut->m_pTexture ) == FALSE )
+				if( SetSkillQueue( point.x, pShortcut->m_dwId, pShortcut->m_pTexture ) == FALSE )
 					SetForbid( TRUE );
 				bForbid = FALSE;
 			}
@@ -1481,7 +1468,7 @@ LPSKILL CWndTaskBar::GetCurrentSkillQueue()
 	LPSHORTCUT pShortcut = &m_aSlotQueue[ m_nUsedSkillQueue ];
 
 	if( pShortcut && pShortcut->IsEmpty() == FALSE )
-		pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
+		pSkill = g_pPlayer->GetSkill( pShortcut->m_dwId );
 
 	return pSkill;
 }
@@ -1519,7 +1506,7 @@ BOOL CWndTaskBar::UseSkillQueue( CCtrl* pTargetObj )
 
 	if( pShortcut->IsEmpty() == FALSE )
 	{
-		LPSKILL pSkill = g_pPlayer->GetSkill( 0, pShortcut->m_dwId );
+		LPSKILL pSkill = g_pPlayer->GetSkill( pShortcut->m_dwId );
 		if( pSkill == NULL )	return FALSE;
 		
 		if( g_pPlayer->IsBullet( pSkill->GetProp() ) == FALSE )
@@ -1947,21 +1934,20 @@ BOOL CWndTaskMenu::OnEraseBkgnd( C2DRender* p2DRender )
 
 void CWndTaskBar::RenderCollTime(CPoint pt, DWORD dwSkillId, C2DRender* p2DRender )
 {
-	LPSKILL lpSkill = &g_pPlayer->m_aJobSkill[ dwSkillId ];
-	if( lpSkill )
+	DWORD dwDelay = g_pPlayer->GetReuseDelay( dwSkillId );
+	if( dwDelay > 0 )
 	{
-		DWORD dwDelay = g_pPlayer->GetReuseDelay( dwSkillId );
-		if( dwDelay > 0 )
-		{
-			ItemProp* pSkillProp	= lpSkill->GetProp();
-			ASSERT( pSkillProp );
-			AddSkillProp* pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, lpSkill->dwLevel );
-			ASSERT( pAddSkillProp );
-			RenderRadar( p2DRender, pt, 
-			             pAddSkillProp->dwCooldown - dwDelay, 
-						 pAddSkillProp->dwCooldown );	
-		}
-	}				
+		SKILL * skill = g_pPlayer->GetSkill(dwSkillId);
+		if (!skill) return;
+
+		ItemProp* pSkillProp	= skill->GetProp();
+		ASSERT( pSkillProp );
+		AddSkillProp* pAddSkillProp	= prj.GetAddSkillProp( pSkillProp->dwSubDefine, skill->dwLevel );
+		ASSERT( pAddSkillProp );
+		RenderRadar( p2DRender, pt, 
+			            pAddSkillProp->dwCooldown - dwDelay, 
+						pAddSkillProp->dwCooldown );	
+	}
 }
 
 	void CWndTaskBar::RenderLordCollTime( CPoint pt, DWORD dwSkillId, C2DRender* p2DRender )

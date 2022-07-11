@@ -45,17 +45,6 @@
 #include "CampusHelper.h"
 #endif // __WORLDSERVER
 
-LPSKILL CMover::GetSkill( int , int nIdx )
-{
-	// nType == 0�̸� ���� ��ų
-	// nType == 1�̸� ���̼��� ��ų 
-	if( nIdx >= MAX_SKILL_JOB )
-	{
-		Error( "CMover::GetSkill : %s nId = %d ������ ���", m_szName, nIdx );
-		nIdx = 0;
-	}
-	return &m_aJobSkill[ nIdx ];
-}
 LPSKILL CMover::GetSkill( DWORD dwSkill )
 {
 	for( int i = 0; i < MAX_SKILL_JOB; i++ )	
@@ -65,17 +54,6 @@ LPSKILL CMover::GetSkill( DWORD dwSkill )
 	}
 	return NULL;
 }
-
-int		CMover::GetSkillIdx( DWORD dwSkill )
-{
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )	
-	{
-		if( m_aJobSkill[i].dwSkill == dwSkill )
-			return i;
-	}
-	return -1;
-}
-
 
 BOOL CMover::CheckSkill( DWORD dwSkill )
 {

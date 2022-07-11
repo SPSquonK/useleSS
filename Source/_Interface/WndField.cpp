@@ -6276,7 +6276,7 @@ void CWndSkillTreeEx::OnMouseMove(UINT nFlags, CPoint point)
 		m_GlobalShortcut.m_dwShortcut  = ShortcutType::Skill;
 		m_GlobalShortcut.m_dwIndex = dwSkill;
 		m_GlobalShortcut.m_dwData = 0;
-		m_GlobalShortcut.m_dwId       = g_nSkillCurSelect; // �÷�Ʈ ����Ʈ�� �� ID�� ����������.
+		m_GlobalShortcut.m_dwId       = dwSkill; // �÷�Ʈ ����Ʈ�� �� ID�� ����������.
 		m_GlobalShortcut.m_pTexture = m_atexSkill[ g_nSkillCurSelect ];//L;//pItemElem->m_pTexture;
 		_tcscpy( m_GlobalShortcut.m_szString, pSkillProp->szName);
 	}
@@ -7165,7 +7165,7 @@ void CWndSkillTreeEx::OnLButtonDblClk( UINT nFlags, CPoint point)
 						return;
 					CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
 					if( pTaskBar->m_nExecute == 0 )		// ��ųť�� ������ �������� ��ϵ�?.
-						pTaskBar->SetSkillQueue( pTaskBar->m_nCurQueueNum, 0, i, m_atexSkill[i] );
+						pTaskBar->SetSkillQueue( pTaskBar->m_nCurQueueNum, m_pFocusItem->dwSkill, m_atexSkill[i]);
 					break;
 				}			
 			}	

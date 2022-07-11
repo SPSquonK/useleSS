@@ -3483,7 +3483,7 @@ void CDPClient::OnUseSkill( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) )
 	{
 		pMover->m_dwReqFlag &= (~REQ_USESKILL);	// 응답 받았음.
-		BOOL bSuccess = pMover->DoUseSkill( 0, -1, id, (SKILLUSETYPE)nUseType, FALSE, nCastingTime, dwSkill, dwLevel );
+		BOOL bSuccess = pMover->DoUseSkillPre(-1, id, (SKILLUSETYPE)nUseType, FALSE, nCastingTime, dwSkill, dwLevel );
 		if( bSuccess )
 		{
 			TRACE( "OnUseSkill성공 %d, ", dwSkill );
@@ -8827,10 +8827,10 @@ void CDPClient::SendRangeAttack( OBJMSG dwAtkMsg, OBJID objid, DWORD dwItemID, i
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendUseSkill( WORD wType, WORD wId, OBJID objid, int nUseSkill, BOOL bControl )
+void CDPClient::SendUseSkill(DWORD skillId, OBJID objid, int nUseSkill, BOOL bControl )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_USESKILL, DPID_UNKNOWN );
-	ar << wType << wId << objid << nUseSkill;
+	ar << skillId << objid << nUseSkill;
 	ar << bControl;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }

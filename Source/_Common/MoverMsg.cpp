@@ -170,7 +170,7 @@ int	CMover::CMD_SetUseSkill( OBJID idTarget, int nSkillIdx, SKILLUSETYPE sutType
 	if( m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL )		return 0;	// 데미지 플라이중엔 스킬사용금지.
 	if( IsDie() )	return 0;		// 죽었을때 사용금지.
 
-	LPSKILL pSkill	= GetSkill( 0, nSkillIdx );		// this가 가진 스킬중 nIdx에 해당하는 스킬을 꺼낸다.
+	LPSKILL pSkill	= GetSkill( nSkillIdx );		// this가 가진 스킬중 nIdx에 해당하는 스킬을 꺼낸다.
 	if( pSkill == NULL )
 	{
 		Error( "CMD_SetUseSkill : %s skill(%d) not found", m_szName, nSkillIdx );
@@ -229,11 +229,8 @@ int	CMover::CMD_SetUseSkill( OBJID idTarget, int nSkillIdx, SKILLUSETYPE sutType
 
 			if( GetWorld()->ClientPointToVector( NULL, rect, pWndWorld->GetMousePoint(), &GetWorld()->m_matProj, &GetWorld()->GetCamera()->m_matView, &vPos, TRUE ) )
 			{
-#ifdef __SKILL0517
-				AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pSkillProp->dwSubDefine, GetSkillLevel( pSkill ) );		// UseSkill에서 사용한 스킬의 프로퍼티 꺼냄
-#else	// __SKILL0517
 				AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pSkillProp->dwSubDefine, pSkill->dwLevel );		// UseSkill에서 사용한 스킬의 프로퍼티 꺼냄
-#endif	// __SKILL0517
+
 				if( pAddSkillProp == NULL )
 				{
 					Error( "CMover::OnMagicSkill : %s. add스킬(%d)의 프로퍼티가 없다.", m_szName, nSkillIdx );
