@@ -843,7 +843,7 @@ int APIENTRY ChangeJob( NPCDIALOG_INFO* pInfo, int nJob )
 	if( pUser->AddChangeJob( v1 ) )
 	{
 		pUser->AddSetChangeJob( v1 );
-		g_UserMng.AddNearSetChangeJob( (CMover*)pUser, v1, &pUser->m_aJobSkill[MAX_JOB_SKILL] );
+		g_UserMng.AddNearSetChangeJob(pUser, v1);
 		// #dlvr
 		g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
 #ifdef __S_RECOMMEND_EVE

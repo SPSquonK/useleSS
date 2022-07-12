@@ -86,8 +86,6 @@ static constexpr int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
 #endif // __ADD_RESTATE_LOW
 
 
-#define MAX_SKILL_JOB	( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL )
-
 #ifdef __INTERNALSERVER
 #define	TICK_CHEERPOINT	MIN( 1 )
 #else	// __INTERNALSERVER
@@ -464,8 +462,8 @@ public:
 	void	ProcessBuff();
 #ifdef __CLIENT
 	void	ClearBuffInst();
-	int		GetCurrentMaxSkillPoint();
 #endif	// __CLIENT
+	[[nodiscard]] int GetCurrentMaxSkillPoint() const;
 
 #ifdef __BUFF_1107
 	CBuffMgr	m_buffs;
@@ -473,8 +471,9 @@ public:
 	CSkillInfluence m_SkillState;				/// 지속성을 갖는 스킬의 상태 처리(예:프로텍션 ??초동안 방어력 얼마 증가)
 #endif	// __BUFF_1107
 	DWORD			m_dwSMTime[SM_MAX];			/// 유료 아이템 시간 값을 가지고 있음
-	SKILL			m_aJobSkill[ MAX_SKILL_JOB ];		/// 스킬 배열 
-	DWORD			m_tmReUseDelay[ MAX_SKILL_JOB ];	/// 스킬 재사용시각
+	
+	MoverSkills m_jobSkills; /// 스킬 배열 
+	boost::container::flat_map</* Skill Id */ DWORD, DWORD> m_tmReUseDelay; /// 스킬 재사용시각
 	
 	LONG			m_nStr, m_nSta, m_nDex, m_nInt;		/// 스텟 
 	LONG			m_nLevel;					/// 레벨 
@@ -830,7 +829,7 @@ public:
 	virtual int		SendDamageForce( DWORD dwAtkFlag, OBJID idAttacker, int nParam = 0, BOOL bTarget = TRUE ) { return m_pActMover->SendDamageForce( dwAtkFlag, idAttacker, nParam, bTarget ); }	// 강공격
 
 	void			Init();										// 객체 초기화 
-	void			InitLevel( int nJob, LONG nLevel, BOOL bGamma = TRUE );			// 객체를 nLevel로 바꿔줌
+	void			InitLevel( int nJob, LONG nLevel );			// 객체를 nLevel로 바꿔줌
 	void			ProcessAniSpeed();
 	void			AllocShopInventory( LPCHARACTER pCharacter );
 	BOOL			IsVendorNPC();
@@ -838,7 +837,7 @@ public:
 	void			SetCheerParam( int nCheerPoint, DWORD dwTickCount, DWORD dwRest );
 	void			ClearEquipInfo();
 	int				GetMaxPoint(int nDest);
-	DWORD			GetReuseDelay( int nIndex );
+	[[nodiscard]] DWORD GetReuseDelay(DWORD skillId) const;
 	BOOL			InitSkillExp();
 	void			InitCharacter( LPCHARACTER lpCharacter );	// 이름 초기화 LoadDialog호출 
 	LPCHARACTER		GetCharacter();								// 
@@ -976,9 +975,7 @@ public:
 	int				GetPointParam( int nDstParameter );
 	void			SetPointParam( int nDstParameter, int nValue, BOOL bTrans = FALSE ); // bTrans가 TRUE이면 강제전송
 	void			OnApplySM();
-	LPSKILL			GetSkill( int nType, int nIdx );
-	LPSKILL			GetSkill( DWORD dwSkill );
-	int				GetSkillIdx( DWORD dwSkill );
+	[[nodiscard]] SKILL * GetSkill(DWORD dwSkill);
 	void			OnEndSkillState( DWORD dwSkill, DWORD dwLevel );
 	BOOL			CheckSkill( DWORD dwSkill );
 	void			SetHair( int nHair );
@@ -997,13 +994,11 @@ public:
 	[[nodiscard]] bool IsMaster() const;
 	[[nodiscard]] bool IsHero() const;
 	[[nodiscard]] bool IsInteriorityJob(int nJob) const;
-	BOOL			SetExpert( int nExpert );
-	BOOL			AddChangeJob( int nJob );
+	bool AddChangeJob(int nJob);
 	int				GetJob();
 	int				GetExpPercent();
 	int				SetLevel( int nSetLevel );
 	int				AddGPPoint( int nAddGPPoint );
-	void			SetJobLevel( int nLevel, int nJob );
 	BOOL			IsJobType( DWORD dwJobType ); 
 	[[nodiscard]] int GetLevel() const { return m_nLevel; }
 	int				GetFxp() { return m_nFxp; }
@@ -1270,7 +1265,7 @@ public:
 	void			ChangeExpRatio( CMover* pAttacker, CMover* pDefender );
 	void			OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nReflect );
 	BOOL			OnDamage( int nItemID, DWORD dwState, CMover *pHitObj, const D3DXVECTOR3 *pvDamagePos = NULL, DWORD dwAtkFlag = AF_GENERIC );
-	void			SetCoolTime( AddSkillProp* pAddSkillProp, LPCTSTR szCall );
+	void SetCoolTime(const AddSkillProp & pAddSkillProp);
 	BOOL			OnMeleeSkill( int nType, int nCount = 1 );		// OBJMSG_ATK_MELEESKILL실행후 타점이 되었을때 발생하는 이벤트.
 	BOOL			OnMagicSkill( int nType, int nCount = 1 );		// OBJMSG_ATK_MAGICSKILL실행후 타점이 되었을때 발생하는 이벤트.
 	BOOL			OnAttackRange();		// 장거리무기가 발사되는 시점에 발생하는 이벤트
@@ -1293,7 +1288,7 @@ public:
 	void			OnActFMove();
 	void			OnActIALanding( CObj *pIAObj, const D3DXVECTOR3 &vPos );		// Interact오브젝트에 착지했을때.
 	void			OnAttackStart( CMover *pTarget, OBJMSG dwMsg );					// 공격을 막 시작했을때(일반/스킬/완드 등)
-	BOOL			IsBullet( ItemProp* pItemProp );
+	BOOL			IsBullet( const ItemProp* pItemProp );
 	void			ProcessMovePattern();
 	int				GetMovePattern() { return m_nMovePattern; }
 	int				GetMoveEvent() { return m_nMoveEvent; }
@@ -1372,7 +1367,7 @@ public:
 //	BOOL			IsResourceMonster() { return m_nResource != -1; }		// 자원몬스터냐? -1이면 자원몬스터가 아니다. 0 ~ 자원몬스터라는 뜻.
 	void			ArrowDown( int nCount );
 	int				GetQueueCastingTime();
-	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl );
+	
 	float			SubDieDecExp( BOOL bTransfer = TRUE, DWORD dwDestParam = 0, BOOL bResurrection = FALSE  );	// 죽었을때 겸치 깎는 부분.
 
 	void			SubAroundExp( CMover *pAttacker, float fRange );		// this를 중심으로 fRange범위안에 있는 유저에게 경험치를 배분한다.
@@ -1450,9 +1445,18 @@ public:
 	void			RenderPVPCount( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice );
 	void			RenderGuildNameLogo( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor );
-	BOOL			DoUseSkill( int nType, int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl, const int nCastingTime, DWORD dwSkill = 0, DWORD dwLevel = 0 );
+	
 	void			RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice);
 #endif	// __CLIENT
+
+
+#if defined(__WORLDSERVER) || defined(__CLIENT)
+	BOOL			DoUseSkillPre(int nIdx, OBJID idFocusObj, SKILLUSETYPE sutType, BOOL bControl
+#ifdef __CLIENT	
+		, int nCastingTime, DWORD dwSkill = 0, DWORD dwLevel = 0
+#endif
+	);
+#endif
 
 	int				GetSkillLevel( SKILL* pSkill );
 	BOOL			SetExperience( EXPINTEGER nExp1, int nLevel );

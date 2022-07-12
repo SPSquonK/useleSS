@@ -199,35 +199,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 #endif	// __PROVIDE
 //______________________________________________________________________
-#ifdef __CONV_SKILL
-	g_DbManager.ConvSkill();
-	if( MB_OK != AfxMessageBox( "Complete Skill Convert", MB_OK ) )
-		return FALSE;
-	return FALSE;
-#endif	// __CONV_SKILL
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-	AfxMessageBox( "Start Skill Convert 11_Month Point", MB_OK );
-	g_DbManager.ConvSkill_11_MONTH_POINT();
-	if( MB_OK != AfxMessageBox( "Complete Skill Convert 11_Month Point", MB_OK ) )
-		return FALSE;
-	return FALSE;	
-#endif // __CONV_SKILL_11_MONTH_JOB1
-#ifdef __CONV_SKILL_11_MONTH_JOB2
-	AfxMessageBox( "Start Skill Convert 11_Month", MB_OK );
-	g_DbManager.ConvSkill_11_MONTH();
-	if( MB_OK != AfxMessageBox( "Complete Skill Convert 11_Month", MB_OK ) )
-		return FALSE;
-	return FALSE;	
-#endif // __CONV_SKILL_11_MONTH_JOB2
+
 #ifdef __CONV_SERIAL_NUMBER
 	g_DbManager.SN();
 	return FALSE;
 #endif	// __CONV_SERIAL_NUMBER
-#ifdef __CONV_SKILL_STOP
-	g_DbManager.ConvSkillStop();
-	if( MB_OK != AfxMessageBox( "완료 컨버트 스킬 스톱", MB_OK ) )
-		return FALSE;
-#endif // __CONV_SKILL_STOP
 	
 #ifdef __S0707_ITEM_CONV
 	if( g_DbManager.ConvItem() )	// // 아이템 프로퍼티가 바뀌었을시 사용

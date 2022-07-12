@@ -225,7 +225,7 @@ void CMover::Serialize( CAr & ar )
 					for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
 						ar << m_aEquipInfo[i].dwId;
 				}
-				ar.Write( (void*)m_aJobSkill, sizeof(SKILL) *  ( MAX_SKILL_JOB ) );
+				ar << m_jobSkills;
 				
 				ar << (BYTE)m_nCheerPoint << m_dwTickCheer - GetTickCount();
 
@@ -359,11 +359,6 @@ void CMover::Serialize( CAr & ar )
 		ClearEquipInfo();
 		
 		ar >> (u_char&)m_bPlayer;
-
-#ifdef __SKILL_0205
-		SKILL	aJobSkill[MAX_SKILL_JOB];
-		memcpy( aJobSkill, m_aJobSkill, sizeof(aJobSkill) );
-#endif	// __SKILL_0205
 
 		InitProp();
 
@@ -510,13 +505,8 @@ void CMover::Serialize( CAr & ar )
 					for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
 						ar >> m_aEquipInfo[i].dwId;
 				}
-#ifdef __SKILL_0205
-				ar.Read( (void*)m_aJobSkill, sizeof(SKILL) *  ( MAX_SKILL_JOB ) );
-				for( int i = 0 ; i < MAX_SKILL_JOB; i++)
-					m_abUpdateSkill[i]	= (BOOL)( memcmp( &m_aJobSkill[i], &aJobSkill[i], sizeof(SKILL) ) != 0 );
-#else	// __SKILL_0205
-				ar.Read( (void*)m_aJobSkill, sizeof(SKILL) *  ( MAX_SKILL_JOB ) );
-#endif	// __SKILL_0205
+
+				ar >> m_jobSkills;
 
 				m_nCheerPoint	= 0;
 				ar >> (BYTE&)m_nCheerPoint >> m_dwTickCheer;

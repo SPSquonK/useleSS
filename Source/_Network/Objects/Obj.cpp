@@ -92,7 +92,6 @@ CMover::CMover()
 : m_buffs( this )
 #endif	// __BUFF_1107
 {
-	memset( m_aJobSkill, 0, sizeof(SKILL) * MAX_SKILL_JOB );
 	m_dwBelligerence	= 0;
 #ifdef __JEFF_9_20
 	m_dwMute	= 0;
@@ -204,10 +203,6 @@ CMover::CMover()
 #endif	// __INVALID_LOGIN_0612
 #endif	// __DBSERVER
 
-#ifdef __SKILL_0205
-	memset( m_abUpdateSkill, 0, sizeof(m_abUpdateSkill)  );		// 쿼리 실행해야하는가?
-#endif	// __SKILL_0205
-
 	m_dwPetId	= NULL_ID;
 	m_fSpeedFactor	= 1.0F;
 	
@@ -249,27 +244,15 @@ void CMover::InitProp( void )
 		if( FALSE == m_bPlayer )
 			_tcscpy( m_szName, pMvrProp->szName );
 
-		memset( m_aJobSkill, 0, sizeof(SKILL) * ( MAX_SKILL_JOB ) );
+		m_jobSkills.clear();
 
-		LPSKILL lpSkill;
-		for( int i = 0; i < MAX_SKILL_JOB; i++ )
-		{
-			m_aJobSkill[ i ].dwSkill = NULL_ID;
-		}
-		
-		if( m_nJob != -1 ) 
-		{
-			ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-			int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-			for( int i = 0; i < nJobNum; i++ )
-			{
-				ItemProp* pSkillProp = apSkillProp[ i ];
-				lpSkill = &m_aJobSkill[ i ];
-				lpSkill->dwSkill = pSkillProp->dwID;
+		if (m_nJob != -1) {
+			for (const ItemProp * pSkillProp : prj.m_jobSkills[m_nJob]) {
+				m_jobSkills.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = 0 });
 			}
 		}
-		m_nHitPoint		= 77; //GetMaxHitPoint();
-		m_nManaPoint	= 77; //GetMaxManaPoint();
+
+		m_nManaPoint	= 77; //GetMaxManaPoint()
 		m_nFatiguePoint	= 77; //GetMaxFatiguePoint();
 		memset( m_szBankPass, 0, sizeof( m_szBankPass ) );
 		m_dwBelligerence	= pMvrProp->dwBelligerence;
@@ -501,49 +484,6 @@ BOOL CMover::RemoveItemIK3()
 }
 #endif // !__CORESERVER
 
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-int CMover::InitSkillExp()
-{
-	int dwSkillPoint = 0;
-	for( int i = MAX_JOB_SKILL ; i < MAX_SKILL_JOB ; ++i )
-	{
-		LPSKILL pSkill = &m_aJobSkill[ i ];
-		if( pSkill != NULL )
-		{
-			if( pSkill->dwSkill != NULL_ID )
-			{
-				ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
-				if( pSkillProp == NULL )
-				{
-					return 0;	// property not found
-				}
-				
-				for( int j = 1 ; j < pSkill->dwLevel ; ++j )
-				{
-					AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pSkillProp->dwSubDefine, j );
-					if( pAddSkillProp == NULL )
-					{
-						return 0;	// property not found
-					}
-					if( prj.m_aExpSkill[ j + 1 ] != 0 )
-						dwSkillPoint += prj.m_aExpSkill[ j + 1 ] * pAddSkillProp->dwSkillExp;
-					else
-						dwSkillPoint += pAddSkillProp->dwSkillExp;
-				}
-				
-				AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pSkillProp->dwSubDefine, pSkill->dwLevel );
-				if( pAddSkillProp == NULL )
-				{
-					return 0;	// property not found
-				}
-				pSkill->dwLevel = 1;
-			}
-		}
-	}
-	return dwSkillPoint;
-}
-#endif // __CONV_SKILL_11_MONTH_JOB1
-
 // bSize는 피어싱 사이즈를 늘릴 수 있는지 검사할 때 TRUE값을 setting 한다.
 // bSize를 TRUE로 할 경우 dwTagetItemKind3는 NULL_ID로 한다.
 BOOL CItemElem::IsPierceAble( DWORD dwTargetItemKind3, BOOL bSize ) const
@@ -715,10 +655,7 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_bPlayer	= TRUE;
 		m_nDeathExp	= pMover->m_nDeathExp;
 		m_nDeathLevel = pMover->m_nDeathLevel;
-		memcpy( m_aJobSkill, pMover->m_aJobSkill, sizeof(m_aJobSkill) );
-#ifdef __SKILL_0205
-		memcpy( m_abUpdateSkill, pMover->m_abUpdateSkill, sizeof(m_abUpdateSkill) );
-#endif	// __SKILL_0205
+		m_jobSkills = pMover->m_jobSkills;
 		if (pMover->m_quests) {
 			m_quests = std::make_unique<MoverSub::Quests>(*pMover->m_quests);
 		} else {

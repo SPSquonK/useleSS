@@ -84,7 +84,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 				SKILLUSETYPE sutType = (SKILLUSETYPE)GetCmdParam(2);
 				if( (m_dwReqFlag & REQ_USESKILL) == 0 )	// 응답 요청중일땐 다시 보내선 안된다.
 				{
-					LPSKILL pSkill	= GetSkill( 0, nSkillIdx );		// this가 가진 스킬중 nIdx에 해당하는 스킬을 꺼낸다.
+					LPSKILL pSkill	= GetSkill( nSkillIdx );		// this가 가진 스킬중 nIdx에 해당하는 스킬을 꺼낸다.
 					if( pSkill == NULL )
 					{
 						Error( "CMD_SetUseSkill : %s skill(%d) not found", m_szName, nSkillIdx );
@@ -101,7 +101,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 							if( pWorld->IntersectObjLine( NULL, vStart, vEnd, FALSE, FALSE ) )
 							{
 								g_WndMng.m_pWndWorld->SetNextSkill( NEXTSKILL_NONE );
-								g_WndMng.PutString( prj.GetText( TID_GAME_BLOCKTARGETING ), NULL, prj.GetTextColor( TID_GAME_BLOCKTARGETING ) );
+								g_WndMng.PutString(TID_GAME_BLOCKTARGETING);
 								break;
 							}
 						}
@@ -151,7 +151,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 					
 					TRACE( "OBJACT_USESKILL %d\n", nSkillIdx );
 					BOOL bControl = ((GetAsyncKeyState(VK_CONTROL) & 0x8000)? TRUE:FALSE);
-					g_DPlay.SendUseSkill( 0, nSkillIdx, idTarget, sutType, bControl );	// 목표지점에 도착하면 스킬쓴다고 알림.
+					g_DPlay.SendUseSkill( nSkillIdx, idTarget, sutType, bControl );	// 목표지점에 도착하면 스킬쓴다고 알림.
 
 					m_dwReqFlag |= REQ_USESKILL;	// 응답 요청중
 					
@@ -268,7 +268,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 			OBJID idTarget = (OBJID)GetCmdParam(1);
 			SKILLUSETYPE sutType = (SKILLUSETYPE)GetCmdParam(2);
 
-			LPSKILL pSkill	= GetSkill( 0, nSkillIdx );		// this가 가진 스킬중 nIdx에 해당하는 스킬을 꺼낸다.
+			LPSKILL pSkill	= GetSkill( nSkillIdx );		// this가 가진 스킬중 nIdx에 해당하는 스킬을 꺼낸다.
 			if( pSkill == NULL )
 			{
 				Error( "ProcessMoveArrival mover:%s skill(%d) not found.", m_szName, nSkillIdx );

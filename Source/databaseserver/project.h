@@ -86,13 +86,7 @@ public:
 
 	CGuildCombat1to1Mng m_GuildCombat1to1;
 
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-	CFixedArray< AddSkillProp > m_aPropAddSkill;
-	DWORD        m_aExpSkill    [ MAX_EXPSKILL     ];
-#endif // __CONV_SKILL_11_MONTH_JOB1
-
-	ItemProp*	m_aJobSkill[MAX_JOB][40];
-	DWORD	m_aJobSkillNum[MAX_JOB];
+	JobSkills m_jobSkills;
 	EXPPARTY	m_aExpParty[MAX_PARTYLEVEL];
 	EXPCHARACTER m_aExpCharacter[MAX_EXPCHARACTER];
 
@@ -191,23 +185,6 @@ public:
 			return NULL;
 		return m_aPropSkill.GetAt( nIndex ); 
 	}
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-	BOOL LoadPropAddSkill( LPCTSTR lpszFileName );
-	AddSkillProp* GetAddSkillProp( DWORD dwSubDefine, DWORD dwLevel )
-	{
-		int nskillIndex = dwSubDefine + dwLevel - 1;
-		if( nskillIndex < 5)
-			nskillIndex += 5;
-		
-		if( nskillIndex < 0 || nskillIndex >= m_aPropAddSkill.GetSize() )	
-		{
-			Error( "CProject::GetAddSkillProp out of range. %d", nskillIndex );
-			return 0;
-		}
-		
-		return m_aPropAddSkill.GetAt( nskillIndex );
-	}
-#endif // __CONV_SKILL_11_MONTH_JOB1
 #ifdef __ITEM_REMOVE_LIST
 	void SetConvMode( DWORD dwMode );
 	void ResetConvMode( DWORD dwMode );

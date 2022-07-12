@@ -306,6 +306,9 @@
     <ClCompile Include="..\_Common\ItemContainer.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\SkillsOfMover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Database\AccountCacheMgr.h">
@@ -583,6 +586,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\MutexedObject.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\SkillsOfMover.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

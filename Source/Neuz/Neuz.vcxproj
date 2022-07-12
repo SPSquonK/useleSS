@@ -98,9 +98,11 @@
     </ClCompile>
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
+    <ClCompile Include="..\_Common\SkillsOfMover.cpp" />
     <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp" />
+    <ClCompile Include="..\_Interface\WndSkillTree.cpp" />
     <ClCompile Include="..\_Interface\WndSqKComponents.cpp" />
     <ClCompile Include="..\_Network\ListedServer.cpp" />
     <ClCompile Include="CampusHelper.cpp">
@@ -681,6 +683,7 @@
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />
+    <ClInclude Include="..\_Common\SkillsOfMover.h" />
     <ClInclude Include="..\_Common\UpdateItem.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />

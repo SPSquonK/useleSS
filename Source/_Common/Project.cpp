@@ -284,42 +284,11 @@ CProject::~CProject()
 #endif // __CLIENT
 #endif // __YS_CHATTING_BLOCKING_SYSTEM
 }
-int SortJobSkill( const void *arg1, const void *arg2 )
-{
-	ItemProp* pItemProp1 = *(ItemProp**) arg1;
-	ItemProp* pItemProp2 = *(ItemProp**) arg2;
-	if( pItemProp1->dwReqDisLV < pItemProp2->dwReqDisLV )
-		return -1;
-	if( pItemProp1->dwReqDisLV > pItemProp2->dwReqDisLV )
-		return 1;
-	return 0;
-}
 
 void CProject::LoadSkill()
 {
 	LoadPropItem( "propSkill.txt", &m_aPropSkill );
-	ZeroMemory( m_aJobSkillNum, sizeof( m_aJobSkillNum ) );
-	// ������ ��ų�� �����ؼ� �迭�� ���� 
-	for( int i = 1; i < m_aPropSkill.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = (ItemProp*)m_aPropSkill.GetAt( i );
-		if( pItemProp )
-		{
-			if( pItemProp->dwItemKind1 != JTYPE_COMMON )
-			{
-				ItemProp** apJobSkill = m_aJobSkill[ pItemProp->dwItemKind2 ];
-				apJobSkill[ m_aJobSkillNum[ pItemProp->dwItemKind2 ] ] = pItemProp;
-				m_aJobSkillNum[ pItemProp->dwItemKind2 ]++;
-			}
-		}
-	}
-
-	// ��Ʈ�ϱ� 
-	for( int i = 0; i < MAX_JOB; i++ )
-	{
-		ItemProp** apJobSkill = m_aJobSkill[ i ];
-		qsort( (void *)apJobSkill, (size_t) m_aJobSkillNum[ i ], sizeof( ItemProp* ), SortJobSkill );
-	}
+	m_jobSkills.Load(m_aPropSkill);
 }
 
 #ifdef __EVE_MINIGAME
@@ -4384,16 +4353,17 @@ PARTYQUESTPROP*	CProject::GetPartyQuestProp( int nQuestId )
 	return NULL;
 }	
 
-DWORD CProject::GetSkillPoint( ItemProp* pSkillProp )
-{
-	DWORD dwPoint = 0;
-	if( pSkillProp->dwItemKind1 == JTYPE_BASE )
-		dwPoint = m_dwVagSP;
-	else if( pSkillProp->dwItemKind1 == JTYPE_EXPERT )
-		dwPoint = m_dwExpertSP;
-	else
-		dwPoint = m_dwProSP;
-	return dwPoint;
+DWORD CProject::GetSkillPoint(const ItemProp * pSkillProp) const {
+	switch (pSkillProp->dwItemKind1) {
+		case JTYPE_BASE: return m_dwVagSP;
+		case JTYPE_EXPERT: return m_dwExpertSP;
+		case JTYPE_PRO:
+		default:
+			return m_dwProSP;
+		case JTYPE_MASTER:
+		case JTYPE_HERO:
+			return 0;
+	}
 }
 
 LPCTSTR CProject::GetGuildAppell( int nAppell )

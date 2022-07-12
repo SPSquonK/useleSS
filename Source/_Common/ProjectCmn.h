@@ -5,6 +5,7 @@
 #include <string>
 #include <exception>
 #include "FlyFFTypes.h"
+#include "defineJob.h"
 
 #define	MAX_OBJARRAY			8
 #define	MAX_QUICKSLOT			21
@@ -460,6 +461,10 @@ typedef	struct	tagRANDOM_ITEM
 	}
 }
 RANDOM_ITEM,* LPRANDOM_ITEM;
+
+struct JobSkills : std::array<std::vector<const ItemProp *>, MAX_JOB> {
+	void Load(CFixedArray<ItemProp> & aPropSkill);
+};
 
 /*----------------------------------------------------------------------------------------------------*/
 enum DROPTYPE

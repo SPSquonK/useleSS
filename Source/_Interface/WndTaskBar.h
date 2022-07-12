@@ -42,7 +42,7 @@ public:
 	BOOL CheckAddSkill( int nSkillStyleSrc, int nQueueDest );
 	BOOL UseSkillQueue( CCtrl* pTargetObj );
 	LPSKILL GetCurrentSkillQueue();
-	BOOL SetSkillQueue( int nIndex, DWORD dwType, DWORD dwId, CTexture* pTexture = NULL );
+	BOOL SetSkillQueue( int nIndex, DWORD skillId, CTexture* pTexture = NULL );
 
 	void OnEndSkill( void );
 	void OnCancelSkill( void );

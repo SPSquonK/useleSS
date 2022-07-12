@@ -51,9 +51,6 @@ enum
 	METHOD_NONE, METHOD_EXCLUDE_ITEM
 };
 
-
-#define MAX_SKILL_JOB	( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL )
-
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 class CObj
@@ -115,14 +112,8 @@ inline void CItemElem::Empty() {
 
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-typedef	struct	tagSKILL
-{
-	DWORD	dwSkill;
-	DWORD	dwLevel;
-	void Init()	{};
-}
-SKILL, *LPSKILL;
 
+#include "SkillsOfMover.h"
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -259,11 +250,7 @@ public:
 	LONG			m_nStr,	m_nSta,	m_nDex,	m_nInt;
 	LONG			m_nLevel, m_nDeathLevel;
 	EXPINTEGER		m_nExp1, m_nDeathExp;
-	SKILL			m_aJobSkill[ MAX_SKILL_JOB ];
-
-#ifdef __SKILL_0205
-	BYTE	m_abUpdateSkill[MAX_SKILL_JOB];
-#endif	// __SKILL_0205
+	MoverSkills m_jobSkills;
 
 	OBJID			m_idMarkingWorld;
 	D3DXVECTOR3		m_vMarkingPos;

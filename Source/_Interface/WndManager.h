@@ -683,7 +683,7 @@ public:
 	void	ObjectExecutor(ShortcutType dwShortcut, DWORD dwId );
 	void	ObjectExecutor( LPSHORTCUT lpShortcut );
 	void OpenApplet(DWORD dwId) { return ObjectExecutor(ShortcutType::Applet, dwId); }
-	void	UseSkillShortCut( DWORD, DWORD dwSkillIdx );
+	void	UseSkillShortCut( DWORD dwSkillIdx );
 		
 	// map
 	CWndMap* OpenMap( LPCTSTR lpszMapFileName );

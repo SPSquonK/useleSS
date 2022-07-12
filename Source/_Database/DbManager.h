@@ -724,11 +724,7 @@ public:
 	void	SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer);
 	void	SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery );
 
-#ifdef __SKILL_0205
-	void	SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, LPBYTE abUpdateSkill, char* szQuery );
-#else	// __SKILL_0205
-	void	SaveSkill( CQuery *qry, u_long uidPlayer, LPSKILL aJobSkill, char* szQuery );
-#endif	// __SKILL_0205
+	void	SaveSkill( CQuery *qry, u_long uidPlayer, const MoverSkills & aJobSkill, char* szQuery );
 	void	SaveJobLv( CMover* pMover, char* szJobLv );
 	void	SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest );
 
@@ -926,21 +922,6 @@ public:
 	int		GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation );
 	void	GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation );
 	QUEST GetOneQuest( const char* pstrQuest, int *pLocation );
-
-#ifdef __CONV_SKILL
-	void	ConvSkill( void );
-#endif	// __CONV_SKILL
-
-#ifdef __CONV_SKILL_11_MONTH_JOB1
-	void	ConvSkill_11_MONTH_POINT( void );
-#endif // __CONV_SKILL_11_MONTH_JOB1
-#ifdef __CONV_SKILL_11_MONTH_JOB2
-	void	ConvSkill_11_MONTH( void );
-#endif // __CONV_SKILL_11_MONTH_JOB2
-
-#ifdef __CONV_SKILL_STOP
-	void	ConvSkillStop( void );
-#endif // __CONV_SKILL_STOP
 
 #ifdef __VERIFY_PLAYER
 	BOOL	VerifyPlayer( void );

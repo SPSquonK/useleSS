@@ -144,16 +144,12 @@ namespace WndMgr {
 			string += pSkillProp->szCommand;
 		}
 
-		int nSkillIdx = g_pPlayer->GetSkillIdx(dwSkill);
-
-		if (nSkillIdx != -1) {
-			DWORD dwDelay = g_pPlayer->GetReuseDelay(nSkillIdx);
-			if (dwDelay > 0) {
-				CTimeSpan ct((long)(dwDelay / 1000.0f));		// 남은시간을 초단위로 변환해서 넘겨줌
-				str.Format(prj.GetText(TID_TOOLTIP_COOLTIME), ct.GetMinutes(), ct.GetSeconds());		// 남은시간을 분/초 형태로 출력.
-				string += "\n";
-				string += str;
-			}
+		const DWORD dwDelay = g_pPlayer->GetReuseDelay(dwSkill);
+		if (dwDelay > 0) {
+			CTimeSpan ct((long)(dwDelay / 1000.0f));		// 남은시간을 초단위로 변환해서 넘겨줌
+			str.Format(prj.GetText(TID_TOOLTIP_COOLTIME), ct.GetMinutes(), ct.GetSeconds());		// 남은시간을 분/초 형태로 출력.
+			string += "\n";
+			string += str;
 		}
 
 		CEditString strEdit;

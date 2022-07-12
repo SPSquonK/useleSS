@@ -197,7 +197,7 @@ public:
 	void	SendMagicAttack( OBJMSG dwAtkMsg, OBJID objid, int nParam2, int nParam3, int nMagicPower, int idSfxHit );
 	void	SendRangeAttack( OBJMSG dwAtkMsg, OBJID objid, DWORD dwItemID, int idSfxHit );
 
-	void	SendUseSkill( WORD wType, WORD wId, OBJID objid, int nUseType = 0, int bControl = FALSE );
+	void	SendUseSkill( DWORD skillId, OBJID objid, int nUseType = 0, int bControl = FALSE );
 	void	SendSfxID( OBJID idTarget, int idSfxHit, DWORD dwType, DWORD dwSkill = NULL_ID, int nMaxDmgCnt = 1 );
 	void	SendSetTarget( OBJID idTarget, BYTE bClear );
 	void	SendTeleSkill( OBJID objid, D3DXVECTOR3 vPos );
@@ -215,7 +215,7 @@ public:
 	void	SendCloseGuildBankWnd();
 	void	SendCloseBankWnd( void );
 
-	void	SendDoUseSkillPoint( SKILL aJobSkill[] );
+	void	SendDoUseSkillPoint(const MoverSkills & skills);
 	void	SendEnterChattingRoom( u_long uidChatting );
 	void	SendChatting( char * pszChat );
 	void	SendOpenChattingRoom( void );

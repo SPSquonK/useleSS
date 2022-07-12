@@ -609,6 +609,9 @@
     <ClCompile Include="..\_Common\ItemMorph.cpp">
       <Filter>ItemProps</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\SkillsOfMover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">
@@ -1183,6 +1186,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\ItemMorph.h">
       <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\SkillsOfMover.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

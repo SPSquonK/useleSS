@@ -739,8 +739,7 @@ public:
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;
 	JobProp						m_aPropJob[MAX_JOB];
-	ItemProp*					m_aJobSkill[ MAX_JOB ][ 40 ];
-	DWORD						m_aJobSkillNum[ MAX_JOB ];
+	JobSkills m_jobSkills;
 	JOB							m_aJob[ MAX_JOB ];
 	JOBITEM						m_jobItem[ MAX_JOBITEM ];
 	STRUCTURE					m_aStructure[ MAX_STRUCTURE ];
@@ -841,7 +840,7 @@ public:
 	CPtrArray*		GetItemKindAry( int nKind );
 	MoverProp*		GetMoverProp( int nIndex ) ;
 	MoverProp*		GetMoverPropEx( int nIndex );
-	DWORD			GetSkillPoint( ItemProp* pSkillProp );
+	DWORD			GetSkillPoint( const ItemProp* pSkillProp ) const;
 	ItemProp*		GetItemProp( LPCTSTR lpszItem );
 	MoverProp*		GetMoverProp( LPCTSTR lpszMover ); 
 	CtrlProp*		GetCtrlProp( LPCTSTR lpszMover );

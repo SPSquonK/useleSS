@@ -1103,16 +1103,21 @@ BOOL CDbManager::GetSkill( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
 		return FALSE;
 	}
-	
-	while( qry->Fetch() )
-	{
-		SKILL BufSkill;
-		DWORD dwSkillPosition;
-		dwSkillPosition = (DWORD)qry->GetInt( "SkillPosition" );
-		BufSkill.dwSkill = (DWORD)qry->GetInt( "SkillID" );
-		BufSkill.dwLevel = (DWORD)qry->GetInt( "SkillLv" );
-		pMover->m_aJobSkill[dwSkillPosition] = BufSkill;
+
+	pMover->m_jobSkills.clear();
+
+	if (qry->Fetch()) {
+		const char * stringified = qry->GetStrPtr("Skill");
+		int i = 0;
+		while (stringified[i] != '$') {
+			const DWORD skillId = static_cast<DWORD>(GetIntFromStr(stringified, &i));
+			const DWORD skillLevel = static_cast<DWORD>(GetIntFromStr(stringified, &i));
+
+			SKILL skill{ .dwSkill = skillId, .dwLevel = skillLevel };
+			pMover->m_jobSkills.emplace_back(skill);
+		}
 	}
+
 	return TRUE;
 }
 

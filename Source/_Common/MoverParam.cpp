@@ -4,6 +4,7 @@
 #include "defineQuest.h"
 #include "resdata.h"
 #include "defineObj.h"
+#include <algorithm>
 #ifdef __WORLDSERVER
 #include "DialogMsg.h"
 #include "user.h"
@@ -45,37 +46,12 @@
 #include "CampusHelper.h"
 #endif // __WORLDSERVER
 
-LPSKILL CMover::GetSkill( int , int nIdx )
-{
-	// nType == 0�̸� ���� ��ų
-	// nType == 1�̸� ���̼��� ��ų 
-	if( nIdx >= MAX_SKILL_JOB )
-	{
-		Error( "CMover::GetSkill : %s nId = %d ������ ���", m_szName, nIdx );
-		nIdx = 0;
-	}
-	return &m_aJobSkill[ nIdx ];
+SKILL * CMover::GetSkill(DWORD dwSkill) {
+	const auto it = std::ranges::find_if(m_jobSkills,
+		[dwSkill](const SKILL & skill) { return skill.dwSkill == dwSkill; }
+		);
+	return it != m_jobSkills.end() ? &*it : nullptr;
 }
-LPSKILL CMover::GetSkill( DWORD dwSkill )
-{
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )	
-	{
-		if( m_aJobSkill[i].dwSkill == dwSkill )
-			return &m_aJobSkill[i];
-	}
-	return NULL;
-}
-
-int		CMover::GetSkillIdx( DWORD dwSkill )
-{
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )	
-	{
-		if( m_aJobSkill[i].dwSkill == dwSkill )
-			return i;
-	}
-	return -1;
-}
-
 
 BOOL CMover::CheckSkill( DWORD dwSkill )
 {
@@ -118,12 +94,9 @@ BOOL CMover::CheckSkill( DWORD dwSkill )
 void CMover::PutLvUpSkillName_1( DWORD dwLevel )
 {
 #ifdef __CLIENT
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )	
-	{
-		if( m_aJobSkill[i].dwSkill == NULL_ID ) 
-			continue;
-		
-		ItemProp* pSkillProp = prj.GetSkillProp( m_aJobSkill[i].dwSkill );
+	for (const SKILL & skill : m_jobSkills) {
+
+		const ItemProp * pSkillProp = skill.GetProp();
 		
 		if( pSkillProp && dwLevel == pSkillProp->dwReqDisLV )
 		{
@@ -142,9 +115,7 @@ void CMover::PutLvUpSkillName_1( DWORD dwLevel )
 					continue;
 			}
 
-			CString str;
-			str.Format( prj.GetText( TID_GAME_REAPSKILL ), pSkillProp->szName );
-			g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_REAPSKILL ) );
+			g_WndMng.PutString(TID_GAME_REAPSKILL, pSkillProp->szName);
 		}
 	}
 #endif //__CLIENT
@@ -228,23 +199,11 @@ void CMover::PutLvUpSkillName_2( DWORD dwSkill )
 	LPSKILL pSkill = GetSkill( dwSkill );
 	ItemProp* pSkillProp = prj.GetSkillProp( dwSkill );
 	
-	//���� Ȱ��ȭ �Ǿ��ִ³�?
-	//���� �����ִ� ��ų�� �˻��Ͽ� ���ǿ� ������ �׽�ų�� Ȱ��ȭ �Ѵ�.
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )	
-	{
-		if( m_aJobSkill[i].dwSkill == NULL_ID ) 
-			continue;
-
-		if( IsSkillParent( this, m_aJobSkill[i].dwSkill, dwSkill ) )
-		{
-			if( IsActive( this, m_aJobSkill[i].dwSkill ) )
-			{
-				ItemProp* pSkillProp1;
-				pSkillProp1 = prj.GetSkillProp( m_aJobSkill[i].dwSkill );
-
-				CString str;
-				str.Format( prj.GetText( TID_GAME_REAPSKILL ), pSkillProp1->szName );
-				g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_REAPSKILL ) );	
+	for (const SKILL & skill : m_jobSkills) {
+		if (IsSkillParent(this, skill.dwSkill, dwSkill)) {
+			if (IsActive(this, skill.dwSkill)) {
+				const ItemProp * pSkillProp1 = skill.GetProp();
+				g_WndMng.PutString(TID_GAME_REAPSKILL, pSkillProp1->szName);
 			}
 		}
 	}
@@ -381,39 +340,13 @@ bool CMover::IsInteriorityJob(const int nJob) const {
 	return FALSE;
 }
 
-// ��ų�� 3(�⺻)14(�ͽ���Ʈ)7(������ų�)
-// ���� 10, �ͽ���Ʈ 40. ���� 30
-BOOL  CMover::SetExpert( int nJob )
-{
-	if( m_nJob == nJob )
-		return FALSE;
-	m_nJob = nJob;
-
-	int nNum = 3; // 3�� �⺻ ��ų�� ������. 3 �̻���� �ͽ���Ʈ ��ų�� �߰��ȴٴ� �ǹ� 
-	LPSKILL lpSkill;
-	ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-	int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-	for( int i = 0; i < nJobNum; i++ )
-	{
-		ItemProp* pSkillProp = apSkillProp[ i ];
-		lpSkill = &m_aJobSkill[ nNum++ ];
-		lpSkill->dwSkill = pSkillProp->dwID;
-	}
-	return TRUE;
-}
-
 int   CMover::GetJob()
 {
 	return m_nJob; 
 }
 
-int   CMover::GetExpPercent()
-{
-	int nExpPercent = 0;
-
-	nExpPercent = (int)( GetExp1() * 10000 / GetMaxExp1() );
-
-	return nExpPercent; 
+int   CMover::GetExpPercent() {
+	return (int)(GetExp1() * 10000 / GetMaxExp1());
 }
 
 
@@ -1044,7 +977,6 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 				m_nHitPoint = GetMaxHitPoint();
 				m_nManaPoint = GetMaxManaPoint();
 				m_nFatiguePoint = GetMaxFatiguePoint();
-				SetJobLevel( m_nLevel, m_nJob );
 				if( m_nDeathLevel >= m_nLevel )
 				{
 					m_nRemainGP -= prj.m_aExpCharacter[ nNextLevel ].dwLPPoint;
@@ -1221,69 +1153,20 @@ BOOL CMover::AddFxp( int nFxp )
 	return FALSE;
 }
 
-BOOL CMover::AddChangeJob( int nJob )
-{
-	BOOL	bResult = FALSE;
-	LPSKILL lpSkill;
-	if( MAX_JOBBASE <= nJob && nJob < MAX_EXPERT ) // 1�� ���� ����~~ ^^;;;;
-	{
-		m_nJob = nJob;
-		
-		ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-		int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-		for( int i = 0; i < nJobNum; i++ )
-		{
-			ItemProp* pSkillProp = apSkillProp[ i ];
-			lpSkill = &m_aJobSkill[ i + MAX_JOB_SKILL ];
-			lpSkill->dwSkill = pSkillProp->dwID;
-		}
-		bResult = TRUE;
-	}
-	if( MAX_EXPERT <= nJob && nJob < MAX_PROFESSIONAL ) // 2�� ���� ����~~ ^^;;;;
-	{
-		m_nJob = nJob;
-		
-		ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-		int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-		for( int i = 0; i < nJobNum; i++ )
-		{
-			ItemProp* pSkillProp = apSkillProp[ i ];
-			lpSkill = &m_aJobSkill[ i + MAX_JOB_SKILL + MAX_EXPERT_SKILL ];
-			lpSkill->dwSkill = pSkillProp->dwID;
-		}
-		bResult = TRUE;
-	}
-	if( MAX_PROFESSIONAL <= nJob && nJob < MAX_MASTER ) // ���� ����~~ ^^;;;;
-	{
-		m_nJob = nJob;
-		
-		ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-		int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-		for( int i = 0; i < nJobNum; i++ )
-		{
-			ItemProp* pSkillProp = apSkillProp[ i ];
-			lpSkill = &m_aJobSkill[ i + MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL];
-			lpSkill->dwSkill = pSkillProp->dwID;
-			lpSkill->dwLevel = 1;	//master��ų�� 1���� �ش�.
-		}
-		bResult = TRUE;
-	}
-	
-	if( MAX_MASTER <= nJob && nJob < MAX_HERO ) // ���� ����~~ ^^;;;;
-	{
-		m_nJob = nJob;
-		
-		ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-		int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-		for( int i = 0; i < nJobNum; i++ )
-		{
-			ItemProp* pSkillProp = apSkillProp[ i ];
-			lpSkill = &m_aJobSkill[ i + MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL ];
-			lpSkill->dwSkill = pSkillProp->dwID;
-		}
-		bResult = TRUE;
-	}
+bool CMover::AddChangeJob(const int nJob) {
+	if (nJob < 0 || nJob >= MAX_JOB) return false;
 
+	const DWORD jobType = GetJobType(nJob);
+
+	const MoverSkills previously = std::move(m_jobSkills);
+	m_jobSkills = MoverSkills::ForJob(nJob);
+
+	for (SKILL & newSkill : m_jobSkills) {
+		const SKILL * prevSkill = previously.FindBySkillId(newSkill.dwSkill);
+		if (prevSkill) {
+			newSkill.dwLevel = prevSkill->dwLevel;
+		}
+	}
 
 #ifdef __WORLDSERVER
 #ifdef __S_NEW_SKILL_2
@@ -1293,7 +1176,7 @@ BOOL CMover::AddChangeJob( int nJob )
 	((CUser*)this)->AddHonorListAck();
 	g_UserMng.AddHonorTitleChange( this, m_nHonor);
 #endif // __WORLDSERVER
-	return bResult;
+	return true;
 }
 
 BOOL CMover::SetFxp( int nFxp, int nFlightLv )
@@ -1350,31 +1233,27 @@ BOOL CMover::SetExperience( EXPINTEGER nExp1, int nLevel )
 		static	int nPatLv[4]	= { 2, 8, 12, 0	};
 		for( int i = 0; i < 3; i++ ) {
 			if( m_nLevel < nPatLv[i] && nLevel >= nPatLv[i] ) {
-				g_WndMng.PutString( prj.GetText( TID_GAME_PATTERNUP ), NULL, prj.GetTextColor( TID_GAME_PATTERNUP ) );
+				g_WndMng.PutString(TID_GAME_PATTERNUP);
 				break;
 			}
 			else if( m_nLevel >= nPatLv[2] )
 				break;
 		}
 
-		if( TRUE == IsJobType( JTYPE_BASE ) )
+		if( IsJobType( JTYPE_BASE ) )
 		{
 			if( nLevel == 15 )
-				g_WndMng.PutString( prj.GetText( TID_EVE_LEVEL15 ), NULL, prj.GetTextColor( TID_EVE_LEVEL15 ) );
-
-			static	int nNum	= prj.m_aJobSkillNum[JOB_VAGRANT];
+				g_WndMng.PutString(TID_EVE_LEVEL15);
 		}
 		if( m_nLevel < 20 && nLevel >= 20 )
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_FLYLVLUP ), NULL, prj.GetTextColor( TID_GAME_FLYLVLUP ) );
+			g_WndMng.PutString(TID_GAME_FLYLVLUP);
 			SetFlightLv( 1 );
 		}
 		else if( nLevel < 20 )
 			SetFlightLv( 0 );
 #endif	// __CLIENT
 		m_nLevel	= nLevel;
-
-		SetJobLevel( m_nLevel, m_nJob );
 
 		m_nHitPoint = GetMaxHitPoint();
 		m_nManaPoint = GetMaxManaPoint();

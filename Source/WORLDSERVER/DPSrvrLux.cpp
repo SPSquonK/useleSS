@@ -16,66 +16,44 @@
 #include "..\_Network\ErrorCode.h"
 
 
-void CDPSrvr::OnUseSkill( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	WORD wType;			// 직업스킬이냐, 라이선스스킬이냐 구분하는 변수 - 2005.10.04 의미없음 
-	WORD wId;
+void CDPSrvr::OnUseSkill(CAr & ar, CUser & pUser) {
+	DWORD skillId;
 	OBJID objid;
 	int	 nUseType = 0;
 
-	ar >> wType >> wId >> objid >> nUseType;
+	ar >> skillId >> objid >> nUseType;
 	BOOL bControl;
 	ar >> bControl;
-	
-	int nIdx = wId;
-	if( nIdx < 0 || nIdx >= MAX_SKILL_JOB )
-		return;
 
-	wType = 0;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( (CObj*)pUser ) )
-	{
-		if( pUser->m_vtInfo.VendorIsVendor() )
-			return;
+	if (pUser.m_vtInfo.VendorIsVendor()) return;
 
 #ifdef __S_SERVER_UNIFY
-		if( pUser->m_bAllAction == FALSE )
-			return;
+	if (pUser.m_bAllAction == FALSE) return;
 #endif // __S_SERVER_UNIFY
-		
-		LPSKILL pSkill	= pUser->GetSkill( wType, nIdx );
-		if( !pSkill )
-			return;
-		if( pSkill->dwSkill == DWORD(-1) )
-			return;
-		ItemProp* pSkillProp	= prj.GetSkillProp( pSkill->dwSkill );
-		if( !pSkillProp )
-			return;
-	#ifdef __SKILL0517
-		DWORD dwLevel		= pUser->GetSkillLevel( pSkill );
-	#else	// __SKILL0517
-		DWORD dwLevel		= pSkill->dwLevel;
-	#endif	// __SKILL0517
-		if( dwLevel == 0 || dwLevel > pSkillProp->dwExpertMax )
-			return;
 
-		BOOL fSuccess	= pUser->DoUseSkill( wType, nIdx, objid, (SKILLUSETYPE)nUseType, bControl );
-		if( fSuccess == TRUE )	// 스킬사용에 성공했고
-		{
-			if( nUseType == SUT_QUEUESTART )	// 스킬큐로 실행하라고 한거였다.
-			{
-				pUser->m_nUsedSkillQueue = 0;		// 스킬큐 실행중인 표시 남김.
-			}
-		}
+	SKILL * pSkill = pUser.GetSkill(skillId);
+	if (!pSkill) return;
 
-		if( TRUE == fSuccess )
+	ItemProp * pSkillProp = prj.GetSkillProp(skillId);
+	if (!pSkillProp) return;
+
+	DWORD dwLevel = pSkill->dwLevel;
+
+	if (dwLevel == 0 || dwLevel > pSkillProp->dwExpertMax) return;
+
+	const BOOL fSuccess = pUser.DoUseSkillPre(skillId, objid, (SKILLUSETYPE)nUseType, bControl);
+
+	if (fSuccess == TRUE)	// 스킬사용에 성공했고
+	{
+		if (nUseType == SUT_QUEUESTART)	// 스킬큐로 실행하라고 한거였다.
 		{
+			pUser.m_nUsedSkillQueue = 0;		// 스킬큐 실행중인 표시 남김.
 		}
-		else	// 서버에서 UseSkill을 실패하면 그것을 그 클라한테 알려줘야 한다.
-		{
-			TRACE( "Fail %d, ", nIdx );
-			pUser->AddHdr( GETID( pUser ), SNAPSHOTTYPE_CLEAR_USESKILL );
-		}
+	}
+	else	// 서버에서 UseSkill을 실패하면 그것을 그 클라한테 알려줘야 한다.
+	{
+		TRACE("Fail %d, ", skillId);
+		pUser.AddHdr(pUser.GetId(), SNAPSHOTTYPE_CLEAR_USESKILL);
 	}
 }
 /*
