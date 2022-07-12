@@ -51,9 +51,6 @@ enum
 	METHOD_NONE, METHOD_EXCLUDE_ITEM
 };
 
-
-#define MAX_SKILL_JOB	( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL )
-
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 class CObj

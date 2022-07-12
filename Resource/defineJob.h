@@ -9,12 +9,7 @@
 #define JTYPE_MASTER	 5
 #define JTYPE_HERO	 6
 
-#define MAX_JOB_SKILL			3
-#define MAX_EXPERT_SKILL		20
-#define MAX_PRO_SKILL			20
 #define MAX_TROUPE_SKILL		9
-#define MAX_MASTER_SKILL		1
-#define MAX_HERO_SKILL			1
 
 #define MAX_JOB_LEVEL			15
 #define MAX_EXP_LEVEL			45

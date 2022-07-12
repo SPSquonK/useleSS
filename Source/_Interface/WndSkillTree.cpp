@@ -329,14 +329,6 @@ SKILL * CWndSkillTreeEx::GetSkill(int i) {
 }
 
 bool CWndSkillTreeEx::CheckSkill(int i) {
-	const auto GetdwSkill = [&](DWORD dwSkill) {
-		const auto it = std::ranges::find_if(m_skills,
-			[dwSkill](const SKILL & skill) { return skill.dwSkill == dwSkill; }
-		);
-
-		return it != m_skills.end() ? &*it : nullptr;
-	};
-
 	SKILL * pSkill = GetSkill(i);
 
 	if (!pSkill || !g_pPlayer) return FALSE;
@@ -351,7 +343,7 @@ bool CWndSkillTreeEx::CheckSkill(int i) {
 		return FALSE;
 
 	if (pSkillProp->dwReSkill1 != 0xffffffff) {
-		LPSKILL pSkillBuf = GetdwSkill(pSkillProp->dwReSkill1);
+		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill1);
 
 		if (pSkillBuf) {
 			if (pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel1) {
@@ -362,7 +354,7 @@ bool CWndSkillTreeEx::CheckSkill(int i) {
 	}
 
 	if (pSkillProp->dwReSkill2 != 0xffffffff) {
-		LPSKILL pSkillBuf = GetdwSkill(pSkillProp->dwReSkill2);
+		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill2);
 		if (pSkillBuf) {
 			if (pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel2) {
 				return FALSE;

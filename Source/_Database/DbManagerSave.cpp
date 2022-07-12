@@ -521,7 +521,7 @@ void CDbManager::SaveSkill(CQuery * qry, u_long uidPlayer, const MoverSkills & s
 
 	for (const SKILL & skill : skills) {
 		char buffer[128] = "";
-		std::sprintf(buffer, "%lu,%lu/", 0, skill.dwSkill, skill.dwLevel);
+		std::sprintf(buffer, "%lu,%lu/", skill.dwSkill, skill.dwLevel);
 		std::strcat(szQuery, buffer);
 	}
 	std::strcat(szQuery, "$'");

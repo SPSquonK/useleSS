@@ -9,8 +9,8 @@ const ItemProp * SKILL::GetProp() const {
 CAr & operator<<(CAr & ar, const MoverSkills & self) {
   ar << static_cast<std::uint32_t>(self.size());
   
-  if (self.size() > MAX_SKILL_JOB) {
-    Error("Too many skills to send - %zu/%d skills", self.size(), MAX_SKILL_JOB);
+  if (std::cmp_greater(self.size(), prj.m_aPropSkill.GetSize())) {
+    Error("Too many skills to send - %zu/%d skills", self.size(), prj.m_aPropSkill.GetSize());
   }
   
   for (const SKILL & skill : self) {
@@ -23,8 +23,8 @@ CAr & operator<<(CAr & ar, const MoverSkills & self) {
 CAr & operator>>(CAr & ar, MoverSkills & self) {
   std::uint32_t size; ar >> size;
 
-  if (size > MAX_SKILL_JOB) {
-    size = MAX_SKILL_JOB;
+  if (std::cmp_greater(size, prj.m_aPropSkill.GetSize())) {
+    size = prj.m_aPropSkill.GetSize();
   }
 
   self.clear();

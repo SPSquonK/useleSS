@@ -292,20 +292,6 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 #endif // __VTN_TIMELIMIT
 }
 
-#ifdef __S_NEW_SKILL_2
-void CDPDatabaseClient::SaveSkill( CUser* pUser )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_SAVE_SKILL, DPID_UNKNOWN, DPID_UNKNOWN );  
-
-	ar << pUser->m_idPlayer;
-	ar << pUser->m_nSkillLevel;
-	ar << pUser->m_nSkillPoint;
-	ar.Write( (void*)pUser->m_aJobSkill, sizeof(SKILL) *  ( MAX_SKILL_JOB ) );
-	
-	SEND( ar, this, DPID_SERVERPLAYER );	
-}
-#endif // __S_NEW_SKILL_2
-
 #ifdef __S_RECOMMEND_EVE
 void CDPDatabaseClient::SendRecommend( CUser* pUser, int nValue )
 {
