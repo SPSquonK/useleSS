@@ -357,7 +357,7 @@ int MAX_SAVEPARAM = 88;
 	SaveHonor( qry, pMover->m_idPlayer, pMover->m_aHonorTitle, szQuery );
 
 #ifndef __S_NEW_SKILL_2
-	SaveSkill( qry, pMover->m_idPlayer, pMover->m_aJobSkill, szQuery );
+	SaveSkill( qry, pMover->m_idPlayer, pMover->m_jobSkills, szQuery );
 #endif // __S_NEW_SKILL_2
 
 	// 다른 캐릭터의 bank 저장
@@ -514,18 +514,15 @@ void	CDbManager::SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* s
 }
 
 
-void CDbManager::SaveSkill(CQuery * qry, u_long uidPlayer, LPSKILL aJobSkill, char * szQuery) {
+void CDbManager::SaveSkill(CQuery * qry, u_long uidPlayer, const MoverSkills & skills, char * szQuery) {
 	sprintf(szQuery, "uspLearnSkill @serverindex='%02d',@pPlayerID='%07d',@pSkill='",
 		g_appInfo.dwSys, uidPlayer
 	);
 
-	const size_t until = MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL;
-	for (int i = 0; i < until; ++i) {
-		if (aJobSkill[i].dwSkill != NULL_ID && aJobSkill[i].dwSkill != NULL) {
-			char buffer[128] = "";
-			std::sprintf(buffer, "%d,%lu,%lu/", i, aJobSkill[i].dwSkill, aJobSkill[i].dwLevel);
-			std::strcat(szQuery, buffer);
-		}
+	for (const SKILL & skill : skills) {
+		char buffer[128] = "";
+		std::sprintf(buffer, "%d,%lu,%lu/", 0, skill.dwSkill, skill.dwLevel);
+		std::strcat(szQuery, buffer);
 	}
 	std::strcat(szQuery, "$'");
 

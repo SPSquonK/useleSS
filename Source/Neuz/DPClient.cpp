@@ -3063,7 +3063,7 @@ void CDPClient::OnSetExperience( OBJID objid, CAr & ar )
 		{
 			CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
 			if( pSkillTree && nSP != nSkillPoint )
-				pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
+				pSkillTree->InitItem();
 		}
 	}
 }
@@ -3202,109 +3202,46 @@ void CDPClient::OnSetStatLevel( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar )
-{
-	int nJob;
+void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar ) {
 	CMover* pMover = prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) )
-	{
-		ar >> nJob;
-		pMover->m_nJob = nJob;
+	if (!IsValidObj(pMover)) return;
 
-		for( int i = MAX_JOB_SKILL; i < MAX_SKILL_JOB; i++ )
-		{
-			pMover->m_aJobSkill[ i ].dwSkill = NULL_ID;
-			pMover->m_aJobSkill[ i ].dwLevel = 0;
-		}
+	int nJob;
+	ar >> nJob >> pMover->m_jobSkills;
+	pMover->m_nJob = nJob;
 
-		ar.Read( (void*)&pMover->m_aJobSkill[ 0 ], sizeof(SKILL) *  ( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
-		DWORD dwJobLv[MAX_JOB];	// 사용하지 않는다.
-		ar.Read( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
-
-		CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-
-		if( pSkillTree )
-			pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
-		
-		if( pMover->IsActiveMover() )
-		{
-
-			if( pMover->m_pActMover && ( pMover->m_pActMover->IsState( OBJSTA_STAND ) || pMover->m_pActMover->IsState( OBJSTA_STAND2 )) )
-				pMover->SetMotion( MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED );
-			CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,pMover->GetPos(),pMover->GetId());
-			PlayMusic( BGM_IN_LEVELUP );
-			CString str;
-			str.Format( prj.GetText( TID_EVE_CHGJOB ), pMover->GetJobString() );
-			g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_EVE_CHGJOB ) );
-
-			CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-			
-			if( pWndWorld ) 
-			{
-				pWndWorld->m_pWndGuideSystem->ChangeModel( pMover->GetJob() );
-				pWndWorld->m_pWndGuideSystem->SetAni( pMover->GetJob(), CWndGuideSystem::ANI_IDLE );
-			}
-		}			
+	if (CWndSkillTreeEx * pSkillTree = g_WndMng.GetWndBase<CWndSkillTreeEx>(APP_SKILL3)) {
+		pSkillTree->InitItem();
 	}
-	else
-	{
-		ar >> nJob;
-		CMover TempMover;
+		
+	if (pMover->IsActiveMover()) {
+		if (pMover->m_pActMover && (pMover->m_pActMover->IsState(OBJSTA_STAND) || pMover->m_pActMover->IsState(OBJSTA_STAND2)))
+			pMover->SetMotion(MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED);
+		CreateSfx(g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
+		PlayMusic(BGM_IN_LEVELUP);
+		g_WndMng.PutString(TID_EVE_CHGJOB, pMover->GetJobString());
 
-		TempMover.m_nJob = nJob;
-		if( TempMover.IsExpert() )
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_JOB_SKILL ], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-		else if( TempMover.IsHero() )
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
-		else if( TempMover.IsMaster() )
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
-		else
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
+		CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 
-		DWORD dwJobLv[MAX_JOB];	// 사용하지 않는다.
-		ar.Read( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
+		if (pWndWorld) {
+			pWndWorld->m_pWndGuideSystem->ChangeModel(pMover->GetJob());
+			pWndWorld->m_pWndGuideSystem->SetAni(pMover->GetJob(), CWndGuideSystem::ANI_IDLE);
+		}
 	}
 }
 
-void CDPClient::OnSetNearChangeJob( OBJID objid, CAr & ar )
-{
+void CDPClient::OnSetNearChangeJob(OBJID objid, CAr & ar) {
+	CMover * pMover = prj.GetMover(objid);
+	if (!IsValidObj(pMover)) return;
+
 	int nJob;
-	CMover* pMover = prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) )
-	{
-		ar >> nJob;
-		pMover->m_nJob = nJob;
+	ar >> nJob >> pMover->m_jobSkills;
+	pMover->m_nJob = nJob;
 
-		if( pMover->IsExpert() )
-			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_JOB_SKILL ], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-		else if( pMover->IsHero() )
-			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
-		else if( pMover->IsMaster() )
-			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
-		else
-			ar.Read( (void*)&pMover->m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
+	CreateSfx(g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
 
-
-		CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,pMover->GetPos(),pMover->GetId());
-
-		if( pMover->m_pActMover && ( pMover->m_pActMover->IsState( OBJSTA_STAND ) || pMover->m_pActMover->IsState( OBJSTA_STAND2 )) )
-			pMover->SetMotion( MTI_LEVELUP, ANILOOP_1PLAY,  MOP_FIXED );
-	}
-	else
-	{
-		ar >> nJob;
-		CMover TempMover;
-
-		TempMover.m_nJob = nJob;
-		if( TempMover.IsExpert() )
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_JOB_SKILL ], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
-		else if( TempMover.IsHero() )
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
-		else if( TempMover.IsMaster() )
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
-		else
-			ar.Read( (void*)&TempMover.m_aJobSkill[ MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL ) );
-	}
+	if (pMover->m_pActMover && (pMover->m_pActMover->IsState(OBJSTA_STAND) || pMover->m_pActMover->IsState(OBJSTA_STAND2)))
+		pMover->SetMotion(MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED);
 }
 
 void CDPClient::OnSetDestPos( OBJID objid, CAr & ar )
@@ -8684,24 +8621,8 @@ void CDPClient::SendCloseBankWnd( void )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendDoUseSkillPoint( SKILL aJobSkill[] )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DOUSESKILLPOINT, DPID_UNKNOWN );
-
-	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-	{
-		LPSKILL lpSkill;
-		lpSkill = &aJobSkill[ i ];
-
-		ItemProp*     pSkillProp;
-
-		if( lpSkill->dwSkill != NULL_ID )
-			pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );
-		
-		ar << lpSkill->dwSkill << lpSkill->dwLevel;
-	}
-
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDoUseSkillPoint(const MoverSkills & skills) {
+	SendPacket<PACKETTYPE_DOUSESKILLPOINT, MoverSkills>(skills);
 }
 
 void CDPClient::SendStateModeCancel( DWORD dwStateMode, BYTE nFlag )
@@ -12268,32 +12189,29 @@ void CDPClient::OnCmdSetSkillLevel( CAr & ar )
 	DWORD dwSkillLevel;
 	ar >> dwSkill >> dwSkillLevel;
 
-	LPSKILL pSkill = g_pPlayer->GetSkill( dwSkill );
-	if( pSkill )
-	{
-		pSkill->dwLevel = dwSkillLevel;
-		ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
-		if( pSkillProp )
-		{
-			CString str; 
-			str.Format( prj.GetText( TID_GAME_SKILLLEVELUP ), pSkillProp->szName, pSkill->dwLevel );
-			g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_REAPSKILL ) );
-		}
-		
-		g_pPlayer->PutLvUpSkillName_2( dwSkill );
+	SKILL * pSkill = g_pPlayer->GetSkill(dwSkill);
+	if (!pSkill) return;
 
-		CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-		if( pSkillTree )
-			pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
-
-		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
-		if( pWndQuestDetail )
-			pWndQuestDetail->UpdateQuestText();
-
-		CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
-		if( pWndQuestQuickInfo )
-			pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
+	pSkill->dwLevel = dwSkillLevel;
+	ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
+	if (pSkillProp) {
+		g_WndMng.PutString(TID_GAME_SKILLLEVELUP, pSkillProp->szName, pSkill->dwLevel);
 	}
+		
+	g_pPlayer->PutLvUpSkillName_2(dwSkill);
+
+	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
+	if( pSkillTree )
+		pSkillTree->InitItem();
+
+	CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
+	if( pWndQuestDetail )
+		pWndQuestDetail->UpdateQuestText();
+
+	CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
+	if( pWndQuestQuickInfo )
+		pWndQuestQuickInfo->SetUpdateTextSwitch( TRUE );
+	
 }
 
 void CDPClient::OnQueryPlayerData( CAr & ar )
@@ -13225,44 +13143,32 @@ void CDPClient::OnInitSkillPoint( CAr & ar )
 	}
 	g_pPlayer->m_nSkillPoint = nSkillPoint;
 
-	for( int i = 0 ; i < MAX_SKILL_JOB ; ++i )
-	{
-		LPSKILL pSkill = (LPSKILL)&g_pPlayer->m_aJobSkill[ i ];
-		if( pSkill != NULL )
-		{
-			if(pSkill->dwLevel != 0)
-			{
-				ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
-				if( pSkillProp == NULL )
-					return ;
-
-				if( pSkillProp->dwItemKind1 != JTYPE_MASTER && pSkillProp->dwItemKind1 != JTYPE_HERO )
-					pSkill->dwLevel = 0;
-			}
+	for (SKILL & skill : g_pPlayer->m_jobSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
+		if (!pSkillProp) continue;
+		
+		if (pSkillProp->dwItemKind1 == JTYPE_MASTER
+			|| pSkillProp->dwItemKind1 == JTYPE_HERO) {
+			continue;
 		}
+
+		skill.dwLevel = 0;
 	}
 
 	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
 	if( pSkillTree )
-		pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
+		pSkillTree->InitItem();
 	
-	g_WndMng.PutString( prj.GetText(TID_GAME_RECCURENCE), NULL, prj.GetTextColor(TID_GAME_RECCURENCE) );
+	g_WndMng.PutString(TID_GAME_RECCURENCE);
 }
 
-void CDPClient::OnDoUseSkillPoint( CAr & ar )
-{
-	DWORD dwSkill, dwLevel;
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )
-	{
-		ar >> dwSkill >> dwLevel;
-		LPSKILL pSkill	= g_pPlayer->GetSkill( dwSkill );
-		if( pSkill )
-			pSkill->dwLevel	= dwLevel;
-	}
+void CDPClient::OnDoUseSkillPoint(CAr & ar) {
+	ar >> g_pPlayer->m_jobSkills;
 	ar >> g_pPlayer->m_nSkillPoint;
-	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-	if( pSkillTree )
-		pSkillTree->InitItem(g_pPlayer->GetJob(), g_pPlayer->m_aJobSkill );
+
+	if (CWndSkillTreeEx * pSkillTree = g_WndMng.GetWndBase<CWndSkillTreeEx>(APP_SKILL3)) {
+		pSkillTree->InitItem();
+	}
 }
 
 void CDPClient::SendUpgradeBase( DWORD dwItemId0, DWORD dwItemId1, 

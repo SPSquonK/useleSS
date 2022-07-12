@@ -215,7 +215,7 @@ public:
 	void	SendCloseGuildBankWnd();
 	void	SendCloseBankWnd( void );
 
-	void	SendDoUseSkillPoint( SKILL aJobSkill[] );
+	void	SendDoUseSkillPoint(const MoverSkills & skills);
 	void	SendEnterChattingRoom( u_long uidChatting );
 	void	SendChatting( char * pszChat );
 	void	SendOpenChattingRoom( void );

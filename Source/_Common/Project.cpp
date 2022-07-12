@@ -4384,16 +4384,17 @@ PARTYQUESTPROP*	CProject::GetPartyQuestProp( int nQuestId )
 	return NULL;
 }	
 
-DWORD CProject::GetSkillPoint( const ItemProp* pSkillProp ) const
-{
-	DWORD dwPoint = 0;
-	if( pSkillProp->dwItemKind1 == JTYPE_BASE )
-		dwPoint = m_dwVagSP;
-	else if( pSkillProp->dwItemKind1 == JTYPE_EXPERT )
-		dwPoint = m_dwExpertSP;
-	else
-		dwPoint = m_dwProSP;
-	return dwPoint;
+DWORD CProject::GetSkillPoint(const ItemProp * pSkillProp) const {
+	switch (pSkillProp->dwItemKind1) {
+		case JTYPE_BASE: return m_dwVagSP;
+		case JTYPE_EXPERT: return m_dwExpertSP;
+		case JTYPE_PRO:
+		default:
+			return m_dwProSP;
+		case JTYPE_MASTER:
+		case JTYPE_HERO:
+			return 0;
+	}
 }
 
 LPCTSTR CProject::GetGuildAppell( int nAppell )

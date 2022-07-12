@@ -48,7 +48,7 @@ public:
 	void	SendLogConnect( CUser* pUser );
 	void	SendLogPlayDeath( CMover* pMover, CMover* pSender );
 	void	SendLogLevelUp( CMover* pSender, int Action );
-	void	SendLogSkillPoint( int nAction, int nPoint, CMover* pMover, LPSKILL pSkill );
+	void	SendLogSkillPoint( int nAction, int nPoint, CMover* pMover, const SKILL * pSkill );
 	void	SendLogItem( CUser* pUser, CMover* pSender );
 	void	SendLogSMItemUse( const char *Action, CUser* pUser, CItemElem* pItemElem, ItemProp* pItemProp, const char* szName1 = "" );
 	void	SendLogGamemaChat( CUser* pUser, LPCTSTR lpszString );

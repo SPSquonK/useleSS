@@ -1760,7 +1760,7 @@ void CDPDatabaseClient::SendLogPlayDeath(CMover* pMover, CMover* pSender)
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendLogSkillPoint( int nAction, int nPoint, CMover* pMover, LPSKILL pSkill )
+void CDPDatabaseClient::SendLogSkillPoint( int nAction, int nPoint, CMover* pMover, const SKILL * pSkill )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_SKILLPOINTLOG, DPID_UNKNOWN, DPID_UNKNOWN );
 
@@ -1768,15 +1768,12 @@ void CDPDatabaseClient::SendLogSkillPoint( int nAction, int nPoint, CMover* pMov
 	ar << pMover->m_idPlayer;
 	ar << pMover->m_nSkillLevel;
 	ar << pMover->m_nSkillPoint;
-	if( pSkill )
-	{
+	if (pSkill) {
 		ar << pSkill->dwSkill;
 		ar << pSkill->dwLevel;
-	}
-	else
-	{
-		ar << (DWORD)0;
-		ar << (DWORD)0;
+	} else {
+		ar << static_cast<DWORD>(0);
+		ar << static_cast<DWORD>(0);
 	}
 	ar << nPoint;
 

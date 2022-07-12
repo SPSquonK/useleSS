@@ -464,8 +464,8 @@ public:
 	void	ProcessBuff();
 #ifdef __CLIENT
 	void	ClearBuffInst();
-	int		GetCurrentMaxSkillPoint();
 #endif	// __CLIENT
+	[[nodiscard]] int GetCurrentMaxSkillPoint() const;
 
 #ifdef __BUFF_1107
 	CBuffMgr	m_buffs;
@@ -473,7 +473,8 @@ public:
 	CSkillInfluence m_SkillState;				/// 지속성을 갖는 스킬의 상태 처리(예:프로텍션 ??초동안 방어력 얼마 증가)
 #endif	// __BUFF_1107
 	DWORD			m_dwSMTime[SM_MAX];			/// 유료 아이템 시간 값을 가지고 있음
-	SKILL			m_aJobSkill[ MAX_SKILL_JOB ];		/// 스킬 배열 
+	
+	MoverSkills m_jobSkills; /// 스킬 배열 
 	boost::container::flat_map</* Skill Id */ DWORD, DWORD> m_tmReUseDelay; /// 스킬 재사용시각
 	
 	LONG			m_nStr, m_nSta, m_nDex, m_nInt;		/// 스텟 
@@ -830,7 +831,7 @@ public:
 	virtual int		SendDamageForce( DWORD dwAtkFlag, OBJID idAttacker, int nParam = 0, BOOL bTarget = TRUE ) { return m_pActMover->SendDamageForce( dwAtkFlag, idAttacker, nParam, bTarget ); }	// 강공격
 
 	void			Init();										// 객체 초기화 
-	void			InitLevel( int nJob, LONG nLevel, BOOL bGamma = TRUE );			// 객체를 nLevel로 바꿔줌
+	void			InitLevel( int nJob, LONG nLevel );			// 객체를 nLevel로 바꿔줌
 	void			ProcessAniSpeed();
 	void			AllocShopInventory( LPCHARACTER pCharacter );
 	BOOL			IsVendorNPC();
@@ -995,13 +996,11 @@ public:
 	[[nodiscard]] bool IsMaster() const;
 	[[nodiscard]] bool IsHero() const;
 	[[nodiscard]] bool IsInteriorityJob(int nJob) const;
-	BOOL			SetExpert( int nExpert );
-	BOOL			AddChangeJob( int nJob );
+	bool AddChangeJob(int nJob);
 	int				GetJob();
 	int				GetExpPercent();
 	int				SetLevel( int nSetLevel );
 	int				AddGPPoint( int nAddGPPoint );
-	void			SetJobLevel( int nLevel, int nJob );
 	BOOL			IsJobType( DWORD dwJobType ); 
 	[[nodiscard]] int GetLevel() const { return m_nLevel; }
 	int				GetFxp() { return m_nFxp; }

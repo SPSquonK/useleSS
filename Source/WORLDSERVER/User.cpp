@@ -1032,15 +1032,11 @@ void CUser::AddSetStatLevel( CHAR chID, long nValue, long nRemainGP )
 
 void CUser::AddSetChangeJob( int nJob )
 {
-	DWORD dwJobLv[MAX_JOB] = {0, };
-
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_SET_JOB_SKILL;
-	m_Snapshot.ar << nJob;
-	m_Snapshot.ar.Write( (void*)&m_aJobSkill[0], sizeof(SKILL) *  ( MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL ) );
-	m_Snapshot.ar.Write( (void*)dwJobLv, sizeof(DWORD) * MAX_JOB );
+	m_Snapshot.ar << nJob << m_jobSkills;
 }
 
 void CUser::AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer )
@@ -2049,15 +2045,14 @@ void CUser::AddSetState( LONG nStr, LONG nSta, LONG nDex, LONG nInt, LONG nGP )
 	
 }
 
-void CUser::AddSetSkill( DWORD dwSkill, DWORD dwSkillLevel )
+void CUser::AddSetSkill(const SKILL & skill)
 {
 	if( IsDelete() )	return;
 	
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_CMDSETSKILLLEVEL;
-	m_Snapshot.ar << dwSkill << dwSkillLevel;
-	
+	m_Snapshot.ar << skill.dwSkill << skill.dwLevel;
 }
 
 void CUser::AddMotionError( void )
@@ -4400,17 +4395,11 @@ void	CUserMng::AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwS
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddNearSetChangeJob( CMover* pMover, int nJob, LPSKILL lpSkill )
+void CUserMng::AddNearSetChangeJob( CMover* pMover, int nJob)
 {
 	CAr ar;
 	ar << GETID( pMover ) << SNAPSHOTTYPE_SET_NEAR_JOB_SKILL;
-	ar << nJob;
-	if( pMover->IsHero() )
-		ar.Write( (void*)&pMover->m_aJobSkill[MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
-	else if( pMover->IsMaster() )
-		ar.Write( (void*)&pMover->m_aJobSkill[MAX_EXPERT_SKILL ], sizeof(SKILL) *  ( MAX_PRO_SKILL + MAX_MASTER_SKILL ) );
-	else
-		ar.Write( (void*)&pMover->m_aJobSkill[MAX_JOB_SKILL], sizeof(SKILL) *  ( MAX_EXPERT_SKILL ) );
+	ar << nJob << pMover->m_jobSkills;
 
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
@@ -5672,21 +5661,14 @@ void CUser::AddInitSkill()
 }
 
 
-void CUser::AddDoUseSkillPoint( SKILL aJobSkill[], int nSkillPoint )
+void CUser::AddDoUseSkillPoint(const MoverSkills & skills, int nSkillPoint )
 {
 	if( IsDelete() )	return;
 	
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_DOUSESKILLPOINT;
-
-	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-	{
-		LPSKILL lpSkill;
-		lpSkill = &aJobSkill[ i ];
-		
-		m_Snapshot.ar << lpSkill->dwSkill << lpSkill->dwLevel;
-	}
+	m_Snapshot.ar << skills;
 	m_Snapshot.ar << nSkillPoint;
 }
 

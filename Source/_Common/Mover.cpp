@@ -1276,26 +1276,20 @@ void CMover::InitProp( BOOL bInitAI )
 	}
 	ZeroMemory( m_ShopInventory, sizeof( m_ShopInventory ) );	
 	
-	ZeroMemory( m_aJobSkill, sizeof( m_aJobSkill ) );
+	m_jobSkills.clear();
 	m_tmReUseDelay.clear();
 
 	// 잡스킬 초기화 
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )
-	{
-		m_aJobSkill[ i ].dwSkill = NULL_ID;
-	}
 
 	if( m_nJob != -1 ) 
 	{
 		ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
 		int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
 		
-		LPSKILL lpSkill;
 		for( int i = 0; i < nJobNum; i++ )
 		{
 			ItemProp* pSkillProp = apSkillProp[ i ];
-			lpSkill = &m_aJobSkill[ i ];
-			lpSkill->dwSkill = pSkillProp->dwID;
+			m_jobSkills.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = 0 });
 		}
 	}
 
@@ -1350,240 +1344,111 @@ void CMover::InitProp( BOOL bInitAI )
 	}
 }
 
-void CMover::InitLevel( int nJob, LONG nLevel, BOOL bGamma )
-{
 #ifdef __WORLDSERVER
+void CMover::InitLevel( int nJob, LONG nLevel ) {
 	// 운영자 명령으로 레벨업 하는곳임
-	MoverProp* pProp = GetProp();
-	if( pProp )
-	{
-		// 방랑자 스킬 값 가지고 있기.
-		int nJobSkillBuf[MAX_JOB_SKILL];
-		int nJobSkillLevelBuf[MAX_JOB_SKILL];
-		for( int i = 0 ; i < MAX_JOB_SKILL ; ++i )
-		{
-			nJobSkillBuf[ i ] = m_aJobSkill[ i ].dwSkill;
-			nJobSkillLevelBuf[ i ] = m_aJobSkill[ i ].dwLevel;
-		}
-		ZeroMemory( m_aJobSkill, sizeof( m_aJobSkill ) );
-
-		LPSKILL lpSkill;
-		// 잡스킬 초기화 
-		for( int i = 0; i < MAX_SKILL_JOB; i++ )
-		{
-			m_aJobSkill[ i ].dwSkill = NULL_ID;
-			m_aJobSkill[ i ].dwLevel = 0;
-		}
 	
-		// 1. 방랑자 스킬은 그냥 지급
-		m_nJob	= JOB_VAGRANT;
-		ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-		int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-		for( int i = 0; i < nJobNum; i++ )
-		{
-			ItemProp* pSkillProp = apSkillProp[ i ];
-			lpSkill = &m_aJobSkill[ i ];
-			lpSkill->dwSkill = pSkillProp->dwID;
-		}
-		// 2. 기본 능력치 초기화 
-		m_nLevel	= 1;
-		m_nStr	= m_nSta	= m_nDex	= m_nInt	= 15;
-		m_nRemainGP = 0;
-		m_nSkillLevel = 0;
-		m_nSkillPoint = 0;	
+	// 방랑자 스킬 값 가지고 있기.
+	
+	// 1. 방랑자 스킬은 그냥 지급
+	m_jobSkills = MoverSkills::ForJob(nJob);
+
+	// 2. 기본 능력치 초기화 
+	m_nLevel	= 1;
+	m_nStr	= m_nSta	= m_nDex	= m_nInt	= 15;
+	m_nRemainGP = 0;
+	m_nSkillLevel = 0;
+	m_nSkillPoint = 0;	
 			
-		// 3. LP, GP, 직업
-		for( int i = 1 ; i < nLevel ; i++ )
-		{
-			m_nLevel	= i + 1;
-			m_nRemainGP += prj.m_aExpCharacter[ m_nLevel ].dwLPPoint;
-			if( nJob >= MAX_PROFESSIONAL && i > 59 )
-				m_nRemainGP++;
-
-			if( nJob < MAX_PROFESSIONAL )
-			{
-				if( ( i + 1 ) == MAX_JOB_LEVEL )
-				{
-					if( nJob < MAX_EXPERT )
-					{
-						AddChangeJob( nJob );
-					}
-					else
-					{
-						if( nJob % 2 != 0 )
-						{
-							AddChangeJob( ( nJob - 5 ) / 2 );
-						}
-						else
-						{
-							AddChangeJob( ( nJob - 4 ) / 2 );
-						}
-					}
-				}
-				else
-				if( ( i + 1 ) == MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-				{
-					AddChangeJob( nJob );
-				}
-			}
-			else
-			{
-				if( ( i + 1 ) == MAX_JOB_LEVEL )
-				{
-					if( nJob < MAX_MASTER )
-					{
-						if( nJob % 2 != 0 )
-						{
-							AddChangeJob( ( nJob - 15 ) / 2 );
-						}
-						else
-						{
-							AddChangeJob( ( nJob - 14 ) / 2 );
-						}
-					}
-					else
-					{
-						if( nJob % 2 != 0 )
-						{
-							AddChangeJob( ( nJob - 23 ) / 2 );
-						}
-						else
-						{
-							AddChangeJob( ( nJob - 22 ) / 2 );
-						}
-					}
-				}
-				else
-				if( ( i + 1 ) == MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-				{
-					if( nJob < MAX_MASTER )
-					{
-						AddChangeJob( nJob - 10 );
-						AddChangeJob( nJob );
-					}
-					else
-					{
-						AddChangeJob( nJob - 18 );
-						AddChangeJob( nJob - 8);
-						AddChangeJob( nJob );
-					}
-				}
-			}
-		}
-		int nPoint = 0;
-		if( m_nLevel <= 20 )
-			nPoint = 2 * m_nLevel - 2;	
-		else if( m_nLevel <= 40 )
-			nPoint = 3 * m_nLevel - 22;	
-		else if( m_nLevel <= 60 )
-			nPoint = 4 * m_nLevel - 62;	
-		else if( m_nLevel <= 80 )
-			nPoint = 5 * m_nLevel - 122;	
-		else if( m_nLevel <= 100 )
-			nPoint = 6 * m_nLevel - 202;	
-		else
-			nPoint = 7 * m_nLevel - 302;		
-
-		if( m_nJob == JOB_MERCENARY )
-			nPoint += 40;
-		else if( m_nJob == JOB_ACROBAT )
-			nPoint += 50;
-		else if( m_nJob == JOB_ASSIST )
-			nPoint += 60;
-		else if( m_nJob == JOB_MAGICIAN )
-			nPoint += 90;
-		else if( m_nJob ==  JOB_KNIGHT || m_nJob ==  JOB_BLADE )
-			nPoint += 120;
-		else if( m_nJob ==  JOB_JESTER || m_nJob ==  JOB_RANGER )
-			nPoint += 150;
-		else if( m_nJob ==  JOB_RINGMASTER )
-			nPoint += 160;
-		else if( m_nJob ==  JOB_BILLPOSTER || m_nJob ==  JOB_PSYCHIKEEPER )
-			nPoint += 180;
-		else if( m_nJob ==  JOB_ELEMENTOR )
-			nPoint += 390;
-		m_nSkillLevel = m_nSkillPoint = nPoint;
-
-		SetJobLevel( nLevel, nJob );
-		m_nDeathLevel = nLevel;
-		if(IsMaster())
-		{
-			int dwTmpSkLevel = 1;//60, 72, 84, 96, 108
-			if( nLevel > 59 && nLevel < 72 )
-				dwTmpSkLevel = 1;
-			else if( nLevel > 71 && nLevel < 84 )
-				dwTmpSkLevel = 2;
-			else if( nLevel > 83 && nLevel < 96 )
-				dwTmpSkLevel = 3;
-			else if( nLevel > 95 && nLevel < 108 )
-				dwTmpSkLevel = 4;
-			else if( nLevel > 107 && nLevel < 120 )
-				dwTmpSkLevel = 5;
-			for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-			{				
-				LPSKILL lpSkill = &(m_aJobSkill[i]);
-				if( lpSkill && lpSkill->dwSkill != NULL_ID )
-				{
-					ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
-					if( pSkillProp == NULL )
-						continue;
-					if( pSkillProp->dwItemKind1 != JTYPE_MASTER)
-						continue;
-					lpSkill->dwLevel = dwTmpSkLevel;
-				}
-			}
-		}
-		else if(IsHero())
-		{
-			for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-			{				
-				LPSKILL lpSkill = &(m_aJobSkill[i]);
-				if( lpSkill && lpSkill->dwSkill != NULL_ID )
-				{
-					ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
-					if( pSkillProp == NULL )
-						continue;
-					if( pSkillProp->dwItemKind1 != JTYPE_MASTER)
-						continue;
-					lpSkill->dwLevel = 5;
-				}
-			}
-		}
-		if( bGamma )
-		{
-			m_nExp1 = 0;
-		}
-		
-		if( m_nLevel >= 20 )
-			SetFlightLv( 1 );
-		else
-			SetFlightLv( 0 );
-		
-		( (CUser*)this )->AddSetChangeJob( nJob );
-		g_UserMng.AddNearSetChangeJob( this, nJob, &((CUser*)this)->m_aJobSkill[MAX_JOB_SKILL] );
-// #ifdef __S_RECOMMEND_EVE
-// 		if( g_eLocal.GetState( EVE_RECOMMEND ) && IsPlayer() )
-// 			g_dpDBClient.SendRecommend( (CUser*)this, nJob );
-// #endif // __S_RECOMMEND_EVE
-
-		g_dpDBClient.SendUpdatePlayerData( (CUser*)this );
-		SetHitPoint( GetMaxHitPoint() );
-		SetManaPoint( GetMaxManaPoint() );
-		SetFatiguePoint( GetMaxFatiguePoint() );
-	
-		g_UserMng.AddSetLevel( this, (WORD)m_nLevel );
-		CUser * self = static_cast<CUser *>(this);
-		self->AddSetGrowthLearningPoint( m_nRemainGP );
-		self->AddSetExperience( GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel );
-		self->m_playTaskBar.RemoveAll(ShortcutType::Skill);
-		self->AddTaskBar();
-		self->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
-		self->CheckHonorStat();
-		self->AddHonorListAck();
-		g_UserMng.AddHonorTitleChange( this, m_nHonor);
+	// 3. LP, GP, 직업
+	for( int i = 1 ; i < nLevel ; i++ )
+	{
+		m_nLevel	= i + 1;
+		m_nRemainGP += prj.m_aExpCharacter[ m_nLevel ].dwLPPoint;
+		if( nJob >= MAX_PROFESSIONAL && i > 59 )
+			m_nRemainGP++;
 	}
-#endif // __WORLDSERVER
+
+	if (nJob >= MAX_MASTER) { m_nRemainGP += 12; }
+
+	m_nJob = nJob;
+
+	int nPoint = 0;
+	if( m_nLevel <= 20 )
+		nPoint = 2 * m_nLevel - 2;	
+	else if( m_nLevel <= 40 )
+		nPoint = 3 * m_nLevel - 22;	
+	else if( m_nLevel <= 60 )
+		nPoint = 4 * m_nLevel - 62;	
+	else if( m_nLevel <= 80 )
+		nPoint = 5 * m_nLevel - 122;	
+	else if( m_nLevel <= 100 )
+		nPoint = 6 * m_nLevel - 202;	
+	else
+		nPoint = 7 * m_nLevel - 302;		
+
+	if( m_nJob == JOB_MERCENARY )
+		nPoint += 40;
+	else if( m_nJob == JOB_ACROBAT )
+		nPoint += 50;
+	else if( m_nJob == JOB_ASSIST )
+		nPoint += 60;
+	else if( m_nJob == JOB_MAGICIAN )
+		nPoint += 90;
+	else if( m_nJob ==  JOB_KNIGHT || m_nJob ==  JOB_BLADE )
+		nPoint += 120;
+	else if( m_nJob ==  JOB_JESTER || m_nJob ==  JOB_RANGER )
+		nPoint += 150;
+	else if( m_nJob ==  JOB_RINGMASTER )
+		nPoint += 160;
+	else if( m_nJob ==  JOB_BILLPOSTER || m_nJob ==  JOB_PSYCHIKEEPER )
+		nPoint += 180;
+	else if( m_nJob ==  JOB_ELEMENTOR )
+		nPoint += 390;
+	m_nSkillLevel = m_nSkillPoint = nPoint;
+
+	m_nDeathLevel = nLevel;
+
+	const DWORD masterSkillLevel =
+		nLevel <  72 ? 1 :
+		nLevel <  84 ? 2 :
+		nLevel <  96 ? 3 :
+		nLevel < 108 ? 4 : 5;
+
+	for (SKILL & skill : m_jobSkills) {
+		const ItemProp * skillProp = skill.GetProp();
+		if (skillProp && skillProp->dwItemKind1 == JTYPE_MASTER) {
+			skill.dwLevel = masterSkillLevel;
+		}
+	}
+
+	m_nExp1 = 0;
+		
+	if( m_nLevel >= 20 )
+		SetFlightLv( 1 );
+	else
+		SetFlightLv( 0 );
+		
+	( (CUser*)this )->AddSetChangeJob( nJob );
+	g_UserMng.AddNearSetChangeJob(this, nJob);
+
+	g_dpDBClient.SendUpdatePlayerData( (CUser*)this );
+	SetHitPoint( GetMaxHitPoint() );
+	SetManaPoint( GetMaxManaPoint() );
+	SetFatiguePoint( GetMaxFatiguePoint() );
+	
+	g_UserMng.AddSetLevel( this, (WORD)m_nLevel );
+	CUser * self = static_cast<CUser *>(this);
+	self->AddSetGrowthLearningPoint( m_nRemainGP );
+	self->AddSetExperience( GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel );
+	self->m_playTaskBar.RemoveAll(ShortcutType::Skill);
+	self->AddTaskBar();
+	self->AddSetState( m_nStr, m_nSta, m_nDex, m_nInt, m_nRemainGP );
+	self->CheckHonorStat();
+	self->AddHonorListAck();
+	g_UserMng.AddHonorTitleChange( this, m_nHonor);
 }
+#endif // __WORLDSERVER
 
 int   CMover::SetLevel( int nSetLevel )
 {
@@ -1610,37 +1475,20 @@ int   CMover::AddGPPoint( int nAddGPPoint )
 }
 
 
-BOOL CMover::InitSkillExp()
-{
-	for( int i = 0 ; i < MAX_SKILL_JOB ; ++i )
-	{
-		LPSKILL pSkill = &m_aJobSkill[ i ];
-		if( pSkill != NULL && pSkill->dwSkill != NULL_ID )
-		{
-			ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
-			if( pSkillProp == NULL )
-				return FALSE;
+BOOL CMover::InitSkillExp() {
+	m_nSkillPoint = GetCurrentMaxSkillPoint();
 
-			if( 0 < pSkill->dwLevel && pSkillProp->dwItemKind1 != JTYPE_MASTER && pSkillProp->dwItemKind1 != JTYPE_HERO )
-			{
-				m_nSkillPoint += (  pSkill->dwLevel * prj.GetSkillPoint( pSkillProp ) ); 
-				pSkill->dwLevel = 0;
-			}
-		}			
+	for (SKILL & skill : m_jobSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
+		if (!pSkillProp) return FALSE;
+
+		if (pSkillProp->dwItemKind1 == JTYPE_MASTER
+			|| pSkillProp->dwItemKind1 == JTYPE_HERO) {
+			continue;
+		}
+
+		skill.dwLevel = 0;
 	}
-
-	int nMaxPoint = 1280;	// 최대인 JOB_ELEMENTOR 꺼로 설정함
-	if( m_nJob == JOB_KNIGHT || m_nJob == JOB_BLADE || m_nJob == JOB_KNIGHT_MASTER || m_nJob == JOB_BLADE_MASTER || m_nJob == JOB_KNIGHT_HERO || m_nJob == JOB_BLADE_HERO )
-		nMaxPoint = 870;
-	else if( m_nJob == JOB_JESTER || m_nJob == JOB_RANGER || m_nJob == JOB_JESTER_MASTER || m_nJob == JOB_RANGER_MASTER || m_nJob == JOB_JESTER_HERO || m_nJob == JOB_RANGER_HERO )
-		nMaxPoint = 910;
-	else if( m_nJob == JOB_RINGMASTER || m_nJob == JOB_RINGMASTER_MASTER || m_nJob == JOB_RINGMASTER_HERO )
-		nMaxPoint = 902;
-	else if( m_nJob == JOB_BILLPOSTER || m_nJob == JOB_PSYCHIKEEPER || m_nJob == JOB_BILLPOSTER_MASTER || m_nJob == JOB_PSYCHIKEEPER_MASTER || m_nJob == JOB_BILLPOSTER_HERO || m_nJob == JOB_PSYCHIKEEPER_HERO )
-		nMaxPoint = 950;
-
-	if( m_nSkillPoint > nMaxPoint)
-		m_nSkillPoint = nMaxPoint;
 
 #ifdef __WORLDSERVER
 	( (CUser*)this )->m_playTaskBar.RemoveAll(ShortcutType::Skill);
@@ -1649,22 +1497,20 @@ BOOL CMover::InitSkillExp()
 	return TRUE;
 }
 
-#ifdef __CLIENT
-int CMover::GetCurrentMaxSkillPoint()
-{
+int CMover::GetCurrentMaxSkillPoint() const {
 	int nCurrentMaxSkillPoint = m_nSkillPoint;
-	for( int i = 0 ; i < MAX_SKILL_JOB ; ++i )
-	{
-		LPSKILL pSkill = &m_aJobSkill[ i ];
-		if( pSkill != NULL && pSkill->dwSkill != NULL_ID )
-		{
-			ItemProp* pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
-			if( pSkillProp != NULL )
-			{
-				if( 0 < pSkill->dwLevel && pSkillProp->dwItemKind1 != JTYPE_MASTER && pSkillProp->dwItemKind1 != JTYPE_HERO )
-					nCurrentMaxSkillPoint += (  pSkill->dwLevel * prj.GetSkillPoint( pSkillProp ) );
-			}
-		}			
+	for (const SKILL & skill : m_jobSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
+		if (!pSkillProp) continue;
+
+		if (skill.dwLevel == 0) continue;
+
+		if (pSkillProp->dwItemKind1 == JTYPE_MASTER
+			|| pSkillProp->dwItemKind1 == JTYPE_HERO) {
+			continue;
+		}
+
+		nCurrentMaxSkillPoint += skill.dwLevel * prj.GetSkillPoint(pSkillProp);
 	}
 
 	int nMaxPoint = 1280;	// 최대인 JOB_ELEMENTOR 꺼로 설정함
@@ -1683,6 +1529,7 @@ int CMover::GetCurrentMaxSkillPoint()
 	return nCurrentMaxSkillPoint;
 }
 
+#ifdef __CLIENT
 //버프펫 이펙트 
 void CMover::SetSfxBuffPet( const DWORD idEffect )
 {
@@ -8704,23 +8551,6 @@ DWORD CMover::NextPKPropensity( int nPKValue )
 	if( nResult < 0 )	// overflow!!
 		nResult = 0x7fffffff;
 	return nResult;
-}
-
-void CMover::SetJobLevel( int nLevel, int nJob )
-{
-#if 0
-	if( IsBaseJob() )
-	{
-		m_aJobLv[ nJob ] = nLevel;
-	}
-	else
-	{
-		if( nLevel > MAX_EXPJOBLEVEL )
-			m_aJobLv[ nJob ] = prj.m_aExpJobLevel[ MAX_EXPJOBLEVEL ];
-		else
-			m_aJobLv[ nJob ] = prj.m_aExpJobLevel[ nLevel ];
-	}
-#endif 
 }
 
 #ifdef __WORLDSERVER

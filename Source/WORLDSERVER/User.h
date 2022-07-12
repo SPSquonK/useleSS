@@ -374,7 +374,7 @@ public:
 	void			AddQueryPlayerData( u_long idPlayer, PlayerData* pPlayerData );
 	void			AddPlayerData( void );
 	void			AddSetState( LONG nStr, LONG nSta, LONG nDex, LONG nInt, LONG nGP );	
-	void			AddSetSkill( DWORD dwSkill, DWORD dwSkillLevel );
+	void			AddSetSkill(const SKILL & skill);
 	void			AddQueryGetPos( OBJID objid );
 	void			AddGetPos( OBJID objid, const D3DXVECTOR3 & vPos, float fAngle );
 	void			AddResurrectionMessage();
@@ -469,7 +469,7 @@ public:
 	void			AddSummonFriendConfirm( OBJID objid, DWORD dwData, const char* szName, const char* szWorldName );
 	void			AddSummonPartyConfirm( OBJID objid, DWORD dwData, const char * szWorldName );
 
-	void			AddDoUseSkillPoint( SKILL aJobSkill[], int nSkillPoint );
+	void			AddDoUseSkillPoint( const MoverSkills & skills, int nSkillPoint );
 	void			AddPartyMapInfo( int nIndex, D3DXVECTOR3 vPos );	// __S1005_PARTY_MAP
 	void			AddSetExperience( EXPINTEGER nExp1, WORD wLevel, int nSkillPoint, int nSkillLevel, EXPINTEGER nDeathExp = (EXPINTEGER)-1, WORD wDeathLevel = 0xffff );
 #ifdef __S_SERVER_UNIFY
@@ -777,7 +777,7 @@ public:
 	void			AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget );
 	void			AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
 	void			AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
-	void			AddNearSetChangeJob( CMover* pMover, int nJob, LPSKILL lpSkill );
+	void			AddNearSetChangeJob(CMover * pMover, int nJob);
 	void			AddModifyMode( CUser* pUser );
 	void			AddStateMode( CUser* pUser, BYTE nFlag );
 	void			AddSetFame( CMover* pMover, int nFame );

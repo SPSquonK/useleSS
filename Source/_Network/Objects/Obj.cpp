@@ -92,7 +92,6 @@ CMover::CMover()
 : m_buffs( this )
 #endif	// __BUFF_1107
 {
-	memset( m_aJobSkill, 0, sizeof(SKILL) * MAX_SKILL_JOB );
 	m_dwBelligerence	= 0;
 #ifdef __JEFF_9_20
 	m_dwMute	= 0;
@@ -245,14 +244,8 @@ void CMover::InitProp( void )
 		if( FALSE == m_bPlayer )
 			_tcscpy( m_szName, pMvrProp->szName );
 
-		memset( m_aJobSkill, 0, sizeof(SKILL) * ( MAX_SKILL_JOB ) );
+		m_jobSkills.clear();
 
-		LPSKILL lpSkill;
-		for( int i = 0; i < MAX_SKILL_JOB; i++ )
-		{
-			m_aJobSkill[ i ].dwSkill = NULL_ID;
-		}
-		
 		if( m_nJob != -1 ) 
 		{
 			ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
@@ -260,8 +253,7 @@ void CMover::InitProp( void )
 			for( int i = 0; i < nJobNum; i++ )
 			{
 				ItemProp* pSkillProp = apSkillProp[ i ];
-				lpSkill = &m_aJobSkill[ i ];
-				lpSkill->dwSkill = pSkillProp->dwID;
+				m_jobSkills.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = 0 });
 			}
 		}
 		m_nHitPoint		= 77; //GetMaxHitPoint();
@@ -668,7 +660,7 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_bPlayer	= TRUE;
 		m_nDeathExp	= pMover->m_nDeathExp;
 		m_nDeathLevel = pMover->m_nDeathLevel;
-		memcpy( m_aJobSkill, pMover->m_aJobSkill, sizeof(m_aJobSkill) );
+		m_jobSkills = pMover->m_jobSkills;
 		if (pMover->m_quests) {
 			m_quests = std::make_unique<MoverSub::Quests>(*pMover->m_quests);
 		} else {

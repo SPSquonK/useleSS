@@ -53,9 +53,6 @@
 #include "WndMapEx.h"
 #endif // __IMPROVE_MAP_SYSTEM
 
-int g_nSkillCurSelect;
-
-
 const int MAX_POWER_GAUGE = 1800;
 const DWORD POWER_ATK_DELAY = 1800;
 
@@ -3571,18 +3568,6 @@ void CWndWorld::OnInitialUpdate()
 								
 		if(g_pPlayer->m_nLevel <= 5) m_pWndGuideSystem->GuideStart(FALSE);
 	}
-
-
-	if( g_pPlayer && g_pPlayer->m_nSkillPoint > 0 )
-	{
-		CWndBase* pWndBase = (CWndBase*)g_WndMng.GetWndBase( APP_SKILL3 );
-		if(!pWndBase)
-		{
-			g_nSkillCurSelect = -1;
-			//g_WndMng.ObjectExecutor( SHORTCUT_APPLET, APP_SKILL3 );
-		}
-	}
-
 
 	g_Neuz.m_NeuzEnemy.Clear();
 

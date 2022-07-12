@@ -641,111 +641,26 @@ BOOL TextCmd_Level(CScanner & scanner, CPlayer_ * pUser) {
 	scanner.GetToken();
 	CString strJob = scanner.Token;
 
+	LONG nLevel = scanner.GetNumber();
+	if (nLevel == 0) nLevel = 1;
+
 	int nJob = JOB_VAGRANT;
 
-	LONG nLevel = scanner.GetNumber();
-	
-	if( nLevel == 0 )
-		nLevel = 1;
+	LONG nLegend = scanner.GetNumber();
 
-	for( int i = 0 ; i < MAX_JOB ; i++ )
-	{
-		if( strcmp( strJob, prj.m_aJob[i].szName ) == 0 || strcmp( strJob, prj.m_aJob[i].szEName ) == 0 )
-		{
-			nJob = i;
-			break;
-		}
-	}
-
-	char chMessage[MAX_PATH] = {0,};
-	if( MAX_JOB_LEVEL < nLevel && nJob == 0 )
-	{
-		sprintf( chMessage, prj.GetText(TID_GAME_CHOICEJOB) );
-		pUser->AddText( chMessage );		
-		return TRUE;
-	}
-
-	LONG	nLegend = scanner.GetNumber();
-	if( ( nLegend > 0 ) && ( nLegend < 3 ) )
-	{
-		for( int i = nJob + 1 ; i < MAX_JOB ; i++ )
-		{
-			if( strcmp( strJob, prj.m_aJob[i].szName ) == 0 || strcmp( strJob, prj.m_aJob[i].szEName ) == 0 )
-			{
+	for (int i = 0; i < MAX_JOB; i++) {
+		if (strJob == prj.m_aJob[i].szName || strJob == prj.m_aJob[i].szEName) {
+			if (nLegend == 0) {
 				nJob = i;
-				if( nLegend == 1 )
-					break;
-				else
-					nLegend--;
+				break;
+			} else {
+				--nLegend;
 			}
 		}
+	}
 
-		pUser->InitLevel( nJob, nLevel );	// lock
-		return	TRUE;
-	}
-	
-	if( nLevel <= MAX_JOB_LEVEL )	
-	{
-		pUser->InitLevel( JOB_VAGRANT, nLevel );	// lock
-	}
-	else
-	if( MAX_JOB_LEVEL < nLevel &&  nLevel <= MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-	{
-		if( MAX_JOBBASE <= nJob && nJob < MAX_EXPERT)
-		{
-			pUser->InitLevel( nJob, nLevel );	// lock
-		}
-		else
-		{
-			sprintf( chMessage, "Not Expert Job" );
-			pUser->AddText( chMessage );
-			sprintf( chMessage, "Expert Job : " );
-			for( int i = MAX_JOBBASE ; i < MAX_EXPERT ; ++i )
-			{
-				if( strlen( prj.m_aJob[i].szName ) < 15 )
-				{
-					strcat( chMessage, prj.m_aJob[i].szName );
-					if( i + 1 != MAX_EXPERT )
-					{
-						strcat( chMessage, ", ");
-					}
-				}
-			}
-			pUser->AddText( chMessage );
-			sprintf( chMessage, "Expert Level : %d ~ %d", MAX_JOB_LEVEL + 1, MAX_JOB_LEVEL + MAX_EXP_LEVEL );
-			pUser->AddText( chMessage );
-			return TRUE;
-		}
-	}
-	else
-	if( MAX_JOB_LEVEL + MAX_EXP_LEVEL < nLevel && nLevel < MAX_LEVEL + 1 )
-	{
-		if( MAX_EXPERT <= nJob && nJob < MAX_PROFESSIONAL )
-		{
-			pUser->InitLevel( nJob, nLevel );	// lock
-		}
-		else
-		{
-			sprintf( chMessage, "Not Professional Job" );
-			pUser->AddText( chMessage );
-			sprintf( chMessage, "Professional Job : " );
-			for( int i = MAX_EXPERT ; i < MAX_PROFESSIONAL ; ++i )
-			{
-				if( strlen( prj.m_aJob[i].szName ) < 15 )
-				{
-					strcat( chMessage, prj.m_aJob[i].szName );
-					if( i + 1 != MAX_PROFESSIONAL )
-					{
-						strcat( chMessage, ", ");
-					}
-				}
-			}
-			pUser->AddText( chMessage );
-			sprintf( chMessage, "Professional Level : %d ~~~ ", MAX_JOB_LEVEL + MAX_EXP_LEVEL + 1 );
-			pUser->AddText( chMessage );
-			return TRUE;
-		}
-	}
+	pUser->InitLevel(nJob, nLevel);
+
 #endif // __WORLDSERVER
 	return TRUE;
 }
@@ -789,7 +704,7 @@ BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
 	if( pUser->AddChangeJob( nJob ) )
 	{
 		( (CUser*)pUser )->AddSetChangeJob( nJob );
-		g_UserMng.AddNearSetChangeJob( (CMover*)pUser, nJob, &pUser->m_aJobSkill[MAX_JOB_SKILL] );
+		g_UserMng.AddNearSetChangeJob(pUser, nJob);
 		g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
 		g_dpDBClient.SendUpdatePlayerData( pUser );
 		return TRUE;
@@ -1165,20 +1080,14 @@ BOOL  TextCmd_InitSkillExp(CScanner & scanner, CPlayer_ * pUser) {
 
 BOOL TextCmd_SkillLevel(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	DWORD dwSkillKind	= scanner.GetNumber();
-	DWORD dwSkillLevel = scanner.GetNumber();
+	const DWORD dwSkillKind	= scanner.GetNumber();
+	const DWORD dwSkillLevel = scanner.GetNumber();
 
-	LPSKILL pSkill = pUser->GetSkill( dwSkillKind );
-	if( pSkill )
-	{
-		pSkill->dwLevel = dwSkillLevel;
-	}
-	else
-	{
-		return FALSE;
-	}
-	
-	pUser->AddSetSkill( pSkill->dwSkill, pSkill->dwLevel );
+	SKILL * pSkill = pUser->GetSkill( dwSkillKind );
+	if (!pSkill) return FALSE;
+
+	pSkill->dwLevel = dwSkillLevel;
+	pUser->AddSetSkill(*pSkill);
 #endif // __WORLDSERVER
 #ifdef __CLIENT
 
@@ -1230,27 +1139,14 @@ BOOL TextCmd_SkillLevel(CScanner & scanner, CPlayer_ * pUser) {
 
 BOOL TextCmd_SkillLevelAll(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
+	for (SKILL & skill : pUser->m_jobSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
+		if (!pSkillProp) continue;
 
-	LPSKILL pSkill = NULL;
-	ItemProp* pSkillProp = NULL;
-
-	for( int i = 0; i < MAX_SKILL_JOB; i++ )	
-	{
-		pSkill = &(pUser->m_aJobSkill[i]);
-
-		if( pSkill == NULL || pSkill->dwSkill == 0xffffffff )
-			continue;
-
-		pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
-
-		if( pSkillProp == NULL )
-			continue;
-
-		pSkill->dwLevel = pSkillProp->dwExpertMax;
-		pUser->AddSetSkill( pSkill->dwSkill, pSkill->dwLevel );
+		skill.dwLevel = pSkillProp->dwExpertMax;
+		pUser->AddSetSkill(skill);
 	}
 #endif // __WORLDSERVER
-
 	return TRUE;
 }
 

@@ -2108,7 +2108,7 @@ void CWndMgr::SetPlayer( CMover* pMover )
 		}
 
 		if( pWndBase = GetApplet( APP_SKILL3 ) )
-			( (CWndSkillTreeEx*)pWndBase )->InitItem( pMover->GetJob(), pMover->m_aJobSkill );
+			( (CWndSkillTreeEx*)pWndBase )->InitItem();
 		
 		if( pWndBase = GetApplet( APP_INVENTORY ) )
 		{
@@ -2170,7 +2170,7 @@ void CWndMgr::SetPlayer( CMover* pMover )
 	else 
 	{
 		if( pWndBase = GetApplet( APP_SKILL3 ) )
-			( (CWndSkillTreeEx*)pWndBase )->InitItem( 0, NULL );
+			( (CWndSkillTreeEx*)pWndBase )->InitItem();
 
 		if( pWndBase = GetApplet( APP_GAUGE ) )
 			SAFE_DELETE( ( (CWndStatus*)pWndBase )->m_pModel );

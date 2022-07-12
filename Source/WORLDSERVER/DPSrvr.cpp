@@ -2765,69 +2765,65 @@ void CDPSrvr::OnCloseBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	}
 }
 
-void CDPSrvr::OnDoUseSkillPoint( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	SKILL aJobSkill[ MAX_SKILL_JOB ] = {0, };
-	
-	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-		ar >> aJobSkill[i].dwSkill >> aJobSkill[i].dwLevel;
+void CDPSrvr::OnDoUseSkillPoint( CAr & ar, CUser & pUser ) {
+	const auto nope = [&]() {
+		pUser.AddDefinedText(TID_RESKILLPOINT_ERROR);
+		return;
+	};
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );	
-	if( IsValidObj( pUser ) )
-	{	// 바꿀수 있을지?  확인
-		int nChangePoint = 0;
-		for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-		{		
-			if( aJobSkill[i].dwSkill == NULL_ID )
-				continue;
-			ItemProp* pSkillProp    = prj.GetSkillProp( aJobSkill[i].dwSkill );			
-			if( pSkillProp == NULL )
-				continue;
+	MoverSkills wanted; ar >> wanted;
 
-			if( aJobSkill[i].dwLevel < pUser->m_aJobSkill[i].dwLevel || aJobSkill[i].dwLevel > pSkillProp->dwExpertMax )
-			{
-				pUser->AddDefinedText(TID_RESKILLPOINT_ERROR);
-				return;						
-			}
-			int nPoint = (aJobSkill[i].dwLevel - pUser->m_aJobSkill[i].dwLevel) * prj.GetSkillPoint( pSkillProp );
-			nChangePoint += nPoint;
-		}
-
-		if( nChangePoint == 0 ) 
-			return;
-		if( pUser->m_nSkillPoint < nChangePoint )
-		{
-			pUser->AddDefinedText(TID_RESKILLPOINT_ERROR);
-			return;						
-		}
-		
-		// 스킬별 재분배 하기 // 스킬 레벨 셋팅
-		pUser->m_nSkillPoint -= nChangePoint;
-
-		for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-		{				
-			LPSKILL lpSkill = &(pUser->m_aJobSkill[i]);
-			if( lpSkill )
-			{
-				if( aJobSkill[i].dwSkill == NULL_ID )
-					continue;
-				ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
-				if( pSkillProp == NULL )
-					continue;
-
-				int nPoint = (aJobSkill[i].dwLevel - lpSkill->dwLevel) * prj.GetSkillPoint( pSkillProp );
-				if( 0 < nPoint ) // 스킬 부여한것만 로그에 남기자
-					g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, nPoint, (CMover*)pUser, &aJobSkill[i] );
-
-				lpSkill->dwLevel = aJobSkill[i].dwLevel;
-			}
-		}	
-		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_SYS_EXCHAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
-		pUser->AddDoUseSkillPoint( &aJobSkill[0], pUser->m_nSkillPoint );
-#ifdef __S_NEW_SKILL_2
-		g_dpDBClient.SaveSkill( pUser );
-#endif // __S_NEW_SKILL_2
+	if (wanted.size() != pUser.m_jobSkills.size()) {
+		return nope();
 	}
+
+	int nChangePoint = 0;
+
+	for (size_t i = 0; i != pUser.m_jobSkills.size(); ++i) {
+		const SKILL & wantedSkill = wanted[i];
+		const SKILL & currentSkill = pUser.m_jobSkills[i];
+
+		if (wantedSkill.dwSkill != currentSkill.dwSkill) return nope();
+		if (wantedSkill.dwLevel < currentSkill.dwLevel) return nope();
+
+		const ItemProp * skillProp = wantedSkill.GetProp();
+		if (!skillProp) return nope();
+		if (wantedSkill.dwLevel > skillProp->dwExpertMax) return nope();
+
+		const int costPerPoint = prj.GetSkillPoint(skillProp);
+		if (costPerPoint != 0) {
+			nChangePoint += costPerPoint * (wantedSkill.dwLevel - currentSkill.dwLevel);
+		} else {
+			if (wantedSkill.dwLevel != currentSkill.dwLevel) return nope();
+		}
+	}
+
+	// TODO: check consistency of skills wrt the required previous skills
+
+
+	if (nChangePoint == 0) return;
+	if (pUser.m_nSkillPoint < nChangePoint) return nope();
+		
+	// 스킬별 재분배 하기 // 스킬 레벨 셋팅
+	pUser.m_nSkillPoint -= nChangePoint;
+
+	for (size_t i = 0; i != pUser.m_jobSkills.size(); ++i) {
+		const SKILL & wantedSkill = wanted[i];
+		SKILL & currentSkill = pUser.m_jobSkills[i];
+
+		const ItemProp * skillProp = wantedSkill.GetProp();
+		int nPoint = (wantedSkill.dwLevel - currentSkill.dwLevel) * prj.GetSkillPoint(skillProp);
+		if( 0 < nPoint ) // 스킬 부여한것만 로그에 남기자
+			g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, nPoint, &pUser, &wantedSkill);
+
+		currentSkill.dwLevel = wantedSkill.dwLevel;
+	}	
+
+	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01, pUser.GetPos().x, pUser.GetPos().y, pUser.GetPos().z);
+	pUser.AddDoUseSkillPoint(pUser.m_jobSkills, pUser.m_nSkillPoint);
+#ifdef __S_NEW_SKILL_2
+	g_dpDBClient.SaveSkill( pUser );
+#endif // __S_NEW_SKILL_2
 }
 
 void CDPSrvr::OnCloseGuildBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -4078,110 +4074,7 @@ void CDPSrvr::OnExpUp( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 
 void	CDPSrvr::OnChangeJob( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-// 康: hacked
-/*
-	int nJob;
-	BOOL bGamma = TRUE;
-	ar >> nJob;
-	ar >> bGamma;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( TRUE == IsValidObj( ( CObj* )pUser ) )
-	{
-		if( bGamma )
-		{			
-			if( pUser->IsBaseJob() )	// 1차 전직
-			{
-				if( pUser->GetLevel() != MAX_JOB_LEVEL )
-				{
-					pUser->AddDefinedText( TID_GAME_CHGJOBLEVEL15 ); // "레벨 15가 되야 전직할수 있습니다"
-					return;
-				}			
-				
-				if( pUser->AddChangeJob( nJob ) )
-				{
-					( (CUser*)pUser )->AddSetChangeJob( nJob );
-					g_UserMng.AddNearSetChangeJob( (CMover*)pUser, nJob, &pUser->m_aJobSkill[MAX_JOB_SKILL] );
-					g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
-#if __VER >= 11 // __SYS_PLAYER_DATA
-					g_dpDBClient.SendUpdatePlayerData( pUser );
-#else	// __SYS_PLAYER_DATA
-					g_DPCoreClient.SendPartyMemberJob( (CUser*)pUser );
-					g_DPCoreClient.SendFriendChangeJob( (CUser*)pUser );
-					if( pUser->m_idGuild != 0 )
-						g_DPCoreClient.SendGuildChangeJobLevel( (CUser*)pUser );
-#endif	// __SYS_PLAYER_DATA
-
-					return;
-				}
-				
-			}
-			else
-			if( pUser->IsExpert() )
-			{
-				if( pUser->GetLevel() < MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-				{
-					pUser->AddDefinedText( TID_LIMIT_CHANGEJOBLEVEL, "" );	// 60레벨이 되야 전직을 할수 있습니다
-					return;
-				}
-				
-				if( pUser->AddChangeJob( nJob ) )
-				{
-					( (CUser*)pUser )->AddSetChangeJob( nJob );
-					g_UserMng.AddNearSetChangeJob( (CMover*)pUser, nJob, &pUser->m_aJobSkill[MAX_JOB_SKILL] );
-					g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
-#if __VER >= 11 // __SYS_PLAYER_DATA
-					g_dpDBClient.SendUpdatePlayerData( pUser );
-#else	// __SYS_PLAYER_DATA
-					g_DPCoreClient.SendPartyMemberJob( (CUser*)pUser );
-					g_DPCoreClient.SendFriendChangeJob( (CUser*)pUser );
-					if( pUser->m_idGuild != 0 )
-						g_DPCoreClient.SendGuildChangeJobLevel( (CUser*)pUser );
-#endif	// __SYS_PLAYER_DATA
-					return;
-				}
-			}
-		}
-		else
-		{
-			CItemElem* pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_CHACLA );
-			if( !IsUsableItem( pItemElem ) || pUser->IsBaseJob() || pUser->GetJob() == nJob ) 
-			{	// 인벤토리에 아이템이 없거나 방랑자거나 같은 직업을 바구려면 리턴
-				return;
-			}
-
-			if( pUser->IsExpert() )
-			{
-				if( JOB_VAGRANT == nJob || MAX_EXPERT <= nJob)	// Expert 계열이 아니면 리턴
-					return;
-			}
-			else
-			{
-				if( nJob < MAX_EXPERT || MAX_PROFESSIONAL <= nJob )	// Pro 계열이 아니면 리턴
-					return;
-			}
-
-			for( DWORD dwParts = 0; dwParts < MAX_HUMAN_PARTS; dwParts++ )
-			{
-				if( dwParts == PARTS_HEAD || dwParts == PARTS_HAIR || dwParts == PARTS_RIDE )
-					continue;
-				CItemElem* pArmor	= pUser->m_Inventory.GetEquip( dwParts );
-				if( pArmor )
-					return;
-			}
-
-			pUser->InitLevel( nJob, pUser->GetLevel(), FALSE );
-			ItemProp* pItemProp = pItemElem->GetProp();
-			if( pItemProp && pItemProp->dwSfxObj3 != -1 )
-				g_UserMng.AddCreateSfxObj((CMover *)pUser, pItemElem->GetProp()->dwSfxObj3, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
-			pUser->AddDefinedText( TID_GAME_CHANGECLASS, "%s", prj.m_aJob[pUser->GetJob()].szName );
-			
-			// 상용화 아이템 사용 로그 삽입
-			g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElem, pItemProp );
-			pUser->RemoveItem( (BYTE)pItemElem->m_dwObjId, 1 );
-		}
-	}
-*/
+// TODO: remove this function
 }
 
 void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCount )
@@ -8664,25 +8557,25 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 {
 	const auto [objItemId] = ar.Extract<std::array<OBJID, 5>>();
 
-	if(!pUser.IsHero()) return;
+	if (!pUser.IsHero()) return;
 
-	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-	{				
-		LPSKILL lpSkill = &(pUser.m_aJobSkill[i]);
-		if( lpSkill && lpSkill->dwSkill != NULL_ID )
-		{
-			ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
-			if( pSkillProp == NULL )
-				continue;
-			if( pSkillProp->dwItemKind1 != JTYPE_HERO)
-				continue;
-			if( lpSkill->dwLevel > 4 )
-			{
-				pUser.AddLegendSkillResult(-1);
-				return;
-			}
+	const auto lpSkill = std::ranges::find_if(pUser.m_jobSkills,
+		[](const SKILL & skill) {
+			const ItemProp * pSkillProp = skill.GetProp();
+			if (!pSkillProp) return false;
+			return pSkillProp->dwItemKind1 == JTYPE_HERO;
 		}
-	}	
+	);
+
+	if (lpSkill == pUser.m_jobSkills.end()) {
+		pUser.AddLegendSkillResult(-1);
+		return;
+	}
+
+	if (lpSkill->dwLevel > 4) {
+		pUser.AddLegendSkillResult(-1);
+		return;
+	}
 
 	CItemElem* pItemElem[5];
 	// 일치하는지 검사 (인벤토리에서 검사)
@@ -8713,31 +8606,20 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 	}
 
 	if (xRandom(1000) <= 766) {
-		pUser.AddLegendSkillResult(FALSE);
+		pUser.AddLegendSkillResult(0);
 		return;
 	}
 
-	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-	{				
-		LPSKILL lpSkill = &(pUser.m_aJobSkill[i]);
-		if( lpSkill && lpSkill->dwSkill != NULL_ID )
-		{
-			ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
-			if( pSkillProp == NULL )
-				continue;
-			if( pSkillProp->dwItemKind1 != JTYPE_HERO)
-				continue;
-			lpSkill->dwLevel++;
+	lpSkill->dwLevel++;
 
-			g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, &pUser, &(pUser.m_aJobSkill[i]) );
-		}
-	}	
+	g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, &pUser, &*lpSkill);
+
 	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01, pUser.GetPos().x, pUser.GetPos().y, pUser.GetPos().z);
-	pUser.AddDoUseSkillPoint( &(pUser.m_aJobSkill[0]), pUser.m_nSkillPoint );
+	pUser.AddDoUseSkillPoint(pUser.m_jobSkills, pUser.m_nSkillPoint);
 #ifdef __S_NEW_SKILL_2
 	g_dpDBClient.SaveSkill( pUser );
 #endif // __S_NEW_SKILL_2
-	pUser.AddLegendSkillResult(TRUE);
+	pUser.AddLegendSkillResult(1);
 }
 
 void CDPSrvr::OnGC1to1TenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

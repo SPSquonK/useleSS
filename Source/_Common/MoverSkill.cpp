@@ -51,24 +51,18 @@ void	CMover::SetMasterSkillPointUp()
 	if( IsHero() )
 		return;
 
-	for( int i = 0; i < MAX_SKILL_JOB; i++ ) 
-	{				
-		LPSKILL lpSkill = &(m_aJobSkill[i]);
-		if( lpSkill && lpSkill->dwSkill != NULL_ID )
-		{
-			ItemProp* pSkillProp    = prj.GetSkillProp( lpSkill->dwSkill );			
-			if( pSkillProp == NULL )
-				continue;
-			if( pSkillProp->dwItemKind1 != JTYPE_MASTER)
-				continue;
-			lpSkill->dwLevel++;
-			g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, this, &(m_aJobSkill[i]) );
-		}
+	for (SKILL & skill : m_jobSkills) {
+		const ItemProp * pSkillProp = prj.GetSkillProp(skill.dwSkill);
+		if (!pSkillProp) continue;
+		if (pSkillProp->dwItemKind1 != JTYPE_MASTER) continue;
+
+		skill.dwLevel++;
+		g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, this, &skill);
 	}	
 	g_UserMng.AddCreateSfxObj(this, XI_SYS_EXCHAN01, GetPos().x, GetPos().y, GetPos().z);
 
 	CUser *pUser = (CUser *)this;
-	pUser->AddDoUseSkillPoint( &m_aJobSkill[0], m_nSkillPoint );
+	pUser->AddDoUseSkillPoint( m_jobSkills, m_nSkillPoint );
 
 #ifdef __S_NEW_SKILL_2
 	g_dpDBClient.SaveSkill( this );

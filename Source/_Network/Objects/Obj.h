@@ -253,7 +253,7 @@ public:
 	LONG			m_nStr,	m_nSta,	m_nDex,	m_nInt;
 	LONG			m_nLevel, m_nDeathLevel;
 	EXPINTEGER		m_nExp1, m_nDeathExp;
-	SKILL			m_aJobSkill[ MAX_SKILL_JOB ];
+	MoverSkills m_jobSkills;
 
 	OBJID			m_idMarkingWorld;
 	D3DXVECTOR3		m_vMarkingPos;

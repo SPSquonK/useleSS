@@ -1009,6 +1009,9 @@
     <ClCompile Include="..\_Common\SkillsOfMover.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndSkillTree.cpp">
+      <Filter>Source Files\_Interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">

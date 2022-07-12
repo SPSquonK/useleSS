@@ -102,6 +102,7 @@
     <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp" />
+    <ClCompile Include="..\_Interface\WndSkillTree.cpp" />
     <ClCompile Include="..\_Interface\WndSqKComponents.cpp" />
     <ClCompile Include="..\_Network\ListedServer.cpp" />
     <ClCompile Include="CampusHelper.cpp">

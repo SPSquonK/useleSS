@@ -1104,21 +1104,18 @@ BOOL CDbManager::GetSkill( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 		return FALSE;
 	}
 
-	for (SKILL & skill : pMover->m_aJobSkill) {
-		skill.dwSkill = NULL_ID;
-		skill.dwLevel = 0;
-	}
+	pMover->m_jobSkills.clear();
 
 	if (qry->Fetch()) {
 		const char * stringified = qry->GetStrPtr("Skill");
 		int i = 0;
 		while (stringified[i] != '$') {
-			const int skillPos = GetIntFromStr(stringified, &i);
+			GetIntFromStr(stringified, &i);
 			const DWORD skillId = static_cast<DWORD>(GetIntFromStr(stringified, &i));
 			const DWORD skillLevel = static_cast<DWORD>(GetIntFromStr(stringified, &i));
 
-			pMover->m_aJobSkill[skillPos].dwSkill = skillId;
-			pMover->m_aJobSkill[skillPos].dwLevel = skillLevel;
+			SKILL skill{ .dwSkill = skillId, .dwLevel = skillLevel };
+			pMover->m_jobSkills.emplace_back(skill);
 		}
 	}
 
