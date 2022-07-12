@@ -1110,7 +1110,6 @@ BOOL CDbManager::GetSkill( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpD
 		const char * stringified = qry->GetStrPtr("Skill");
 		int i = 0;
 		while (stringified[i] != '$') {
-			GetIntFromStr(stringified, &i);
 			const DWORD skillId = static_cast<DWORD>(GetIntFromStr(stringified, &i));
 			const DWORD skillLevel = static_cast<DWORD>(GetIntFromStr(stringified, &i));
 

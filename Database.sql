@@ -10452,7 +10452,7 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 
 		-- Skill Information
 		INSERT INTO tblSkillPoint(serverindex, PlayerID, Skill)
-        	VALUES (@iserverindex, @om_idPlayer, '0,1,0/1,2,0/2,3,0/$')
+        	VALUES (@iserverindex, @om_idPlayer, '1,0/2,0/3,0/$')
 
 		-- Pocket
 	INSERT  tblPocket ( serverindex, idPlayer, nPocket, szItem, szIndex, szObjIndex, bExpired, tExpirationDate )

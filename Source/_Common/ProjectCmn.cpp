@@ -912,3 +912,24 @@ CTexture * ItemProp::GetTexture() const {
 	return CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, szIcon), 0xffff00ff);
 }
 #endif
+
+void JobSkills::Load(CFixedArray<ItemProp> & aPropSkill) {
+	fill({});
+
+	for (int i = 1; i < aPropSkill.GetSize(); i++) {
+		ItemProp * pItemProp = aPropSkill.GetAt(i);
+		if (!pItemProp) continue;
+
+		if (pItemProp->dwItemKind1 == JTYPE_COMMON) continue;
+		if (pItemProp->dwItemKind2 == NULL_ID) continue;
+
+		(*this)[pItemProp->dwItemKind2].emplace_back(pItemProp);
+	}
+
+	for (auto & skillsPerJob : *this) {
+		std::ranges::sort(skillsPerJob,
+			[](const ItemProp * lhs, const ItemProp * rhs) {
+				return lhs->dwReqDisLV < rhs->dwReqDisLV;
+			});
+	}
+}

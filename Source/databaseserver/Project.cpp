@@ -75,17 +75,6 @@ CProject::~CProject()
 	}
 }
 
-int SortJobSkill( const void *arg1, const void *arg2 )
-{
-	ItemProp* pItemProp1 = *(ItemProp**) arg1;
-	ItemProp* pItemProp2 = *(ItemProp**) arg2;
-	if( pItemProp1->dwReqDisLV < pItemProp2->dwReqDisLV )
-		return -1;
-	if( pItemProp1->dwReqDisLV >= pItemProp2->dwReqDisLV )
-		return 1;
-	return 0;
-}
-
 BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 {
 	CScanner s;
@@ -111,34 +100,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 		{
 			s.GetToken();
 			LoadPropItem( s.token, &m_aPropSkill );
-			memset( m_aJobSkillNum, 0, sizeof(m_aJobSkillNum ) );
-			for( int i = 1; i < m_aPropSkill.GetSize(); i++ )
-			{
-				ItemProp* pItemProp	= (ItemProp*)m_aPropSkill.GetAt( i );
-				if( pItemProp )
-				{
-					if( pItemProp->dwItemKind2 == -1 )
-					{
-						Error( "ItmeProp(%s) dwItemKind2 = -1", pItemProp->szName );
-					}
-
-					if( pItemProp->dwItemKind1 == JTYPE_COMMON )
-						continue;
-
-					ItemProp** apJobSkill	= m_aJobSkill[pItemProp->dwItemKind2];
-					apJobSkill[m_aJobSkillNum[pItemProp->dwItemKind2]]	= pItemProp;
-					m_aJobSkillNum[pItemProp->dwItemKind2]++;
-				}
-				else
-				{
-					TRACE( "PropSkill Prop NULL SkillIndex = %d now no problem\n", i );
-				}
-			}
-			for( int i = 0; i < MAX_JOB; i++ )
-			{
-				ItemProp** apJobSkill	= m_aJobSkill[i];
-				qsort( (void*)apJobSkill, (size_t)m_aJobSkillNum[i], sizeof(ItemProp*), SortJobSkill );
-			}
+			m_jobSkills.Load(m_aPropSkill);
 		}
 		else if( s.Token == _T( "world" ) )
 		{

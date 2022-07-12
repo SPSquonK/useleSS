@@ -1233,23 +1233,21 @@ BOOL CMover::SetExperience( EXPINTEGER nExp1, int nLevel )
 		static	int nPatLv[4]	= { 2, 8, 12, 0	};
 		for( int i = 0; i < 3; i++ ) {
 			if( m_nLevel < nPatLv[i] && nLevel >= nPatLv[i] ) {
-				g_WndMng.PutString( prj.GetText( TID_GAME_PATTERNUP ), NULL, prj.GetTextColor( TID_GAME_PATTERNUP ) );
+				g_WndMng.PutString(TID_GAME_PATTERNUP);
 				break;
 			}
 			else if( m_nLevel >= nPatLv[2] )
 				break;
 		}
 
-		if( TRUE == IsJobType( JTYPE_BASE ) )
+		if( IsJobType( JTYPE_BASE ) )
 		{
 			if( nLevel == 15 )
-				g_WndMng.PutString( prj.GetText( TID_EVE_LEVEL15 ), NULL, prj.GetTextColor( TID_EVE_LEVEL15 ) );
-
-			static	int nNum	= prj.m_aJobSkillNum[JOB_VAGRANT];
+				g_WndMng.PutString(TID_EVE_LEVEL15);
 		}
 		if( m_nLevel < 20 && nLevel >= 20 )
 		{
-			g_WndMng.PutString( prj.GetText( TID_GAME_FLYLVLUP ), NULL, prj.GetTextColor( TID_GAME_FLYLVLUP ) );
+			g_WndMng.PutString(TID_GAME_FLYLVLUP);
 			SetFlightLv( 1 );
 		}
 		else if( nLevel < 20 )

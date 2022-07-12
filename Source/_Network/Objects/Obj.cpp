@@ -246,18 +246,13 @@ void CMover::InitProp( void )
 
 		m_jobSkills.clear();
 
-		if( m_nJob != -1 ) 
-		{
-			ItemProp** apSkillProp = prj.m_aJobSkill[ m_nJob ];
-			int nJobNum = prj.m_aJobSkillNum[ m_nJob ];
-			for( int i = 0; i < nJobNum; i++ )
-			{
-				ItemProp* pSkillProp = apSkillProp[ i ];
+		if (m_nJob != -1) {
+			for (const ItemProp * pSkillProp : prj.m_jobSkills[m_nJob]) {
 				m_jobSkills.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = 0 });
 			}
 		}
-		m_nHitPoint		= 77; //GetMaxHitPoint();
-		m_nManaPoint	= 77; //GetMaxManaPoint();
+
+		m_nManaPoint	= 77; //GetMaxManaPoint()
 		m_nFatiguePoint	= 77; //GetMaxFatiguePoint();
 		memset( m_szBankPass, 0, sizeof( m_szBankPass ) );
 		m_dwBelligerence	= pMvrProp->dwBelligerence;

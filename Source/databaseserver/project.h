@@ -86,8 +86,7 @@ public:
 
 	CGuildCombat1to1Mng m_GuildCombat1to1;
 
-	ItemProp*	m_aJobSkill[MAX_JOB][40];
-	DWORD	m_aJobSkillNum[MAX_JOB];
+	JobSkills m_jobSkills;
 	EXPPARTY	m_aExpParty[MAX_PARTYLEVEL];
 	EXPCHARACTER m_aExpCharacter[MAX_EXPCHARACTER];
 
