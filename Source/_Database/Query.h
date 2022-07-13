@@ -100,8 +100,7 @@ public:
 	void GetStr(const char *sCol, char *buf);		// 문자열형 컬럼 읽기
 	const char * GetStrPtr(int nCol) const;
 	const char * GetStrPtr(const char * sCol) const;
-	int ReadBlob(LPCTSTR szSQL, void *buf);
-	void WriteBlob(LPCTSTR szSQL, void *buf, int size);
+
 	BOOL BindParameter(SQLUSMALLINT parameterNumber,
                            SQLSMALLINT inputOutputType,
                            SQLSMALLINT valueType,
