@@ -32,90 +32,43 @@ BOOL GetPWDFromToken( const char* szToken, char* szPWD )
 {
 
 	int nCount = strlen( szToken ) / 2;
-	if( nCount > 0 )
+	if (nCount <= 0) return FALSE;
+
+	BYTE byPWD[256];
+	char szBuf[3] = {0, };
+	for( int i=0; i<nCount; i++ )
 	{
-		BYTE byPWD[256];
-		char szBuf[3] = {0, };
-		for( int i=0; i<nCount; i++ )
-		{
-			memcpy( szBuf, szToken + i*2, 2 );						
-			sscanf( szBuf, "%02x", (byPWD + i) );
-		}
-		Decrpyt( byPWD, szPWD );
-		return TRUE;
+		memcpy( szBuf, szToken + i*2, 2 );						
+		sscanf( szBuf, "%02x", (byPWD + i) );
 	}
-	return FALSE;
-/*
-	int i;
-	static unsigned char keys[3][8] =
-	{
-		{ 0x32, 0x89, 0x45, 0x9A, 0x89, 0xAB, 0xCD, 0x11 },
-		{ 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01 },
-		{ 0x1F, 0x67, 0x89, 0x54, 0xCD, 0xEF, 0x00, 0x23 }
-	};
-
-    des3_context ctx3;
-    des3_set_3keys( &ctx3, keys[0], keys[1], keys[2] );
-
-	{
-		// uncomment this block to make encrypted password
-		// unsigned char input[24] = { '1', '2', };       // original password
-		unsigned char input[24] = {0, };       // original password
-		unsigned char output[24];
-		
-		strcpy( (char*)input, szToken );
-
-		for( i=0; i<3; i++ )
-		{
-			unsigned char buf[8] = { 0, };
-			memcpy( buf, input+i*8, 8 );
-			des3_encrypt( &ctx3, buf, output + i*8 );
-		}
-
-		char szBuffer[256] = {0, };
-		for( i=0; i<24; i++ )
-			sprintf( szBuffer+i*2, "%02X", output[i] );
-		OutputDebugString( szBuffer );
-		
-	}
-	OutputDebugString( "\n" );
-*/
+	Decrpyt( byPWD, szPWD );
 	return TRUE;
 }
 
-// 생성자:각종 초기화를 담당한다.
-CQuery::CQuery()
-{
-	hStmt	= NULL;
-	hDbc	= NULL;
-	hDbc	= NULL;
-	hEnv	= NULL;
+CQuery::ColString::ColString() {
+	m_size = 8182;
+	m_buffer = std::make_unique<char[]>(m_size);
+}
 
-	for( int i = 0; i < MAXCOL; i++ )
-		Col[i]	= new char[8192];
+int CQuery::ColString::AsInt() const { return std::atoi(m_buffer.get()); }
+std::int64_t CQuery::ColString::AsInt64() const { return _atoi64(m_buffer.get()); }
+float CQuery::ColString::AsFloat() const { return static_cast<float>(std::atof(m_buffer.get())); }
+char CQuery::ColString::AsChar() const { return m_buffer[0]; }
+const char * CQuery::ColString::GetRawString() const { return m_buffer.get(); }
+
+std::pair<char *, SQLLEN> CQuery::ColString::GetInfoForBind() {
+	return std::pair<char *, SQLLEN>(m_buffer.get(), static_cast<SQLLEN>(m_size));
 }
 
 // 파괴자:연결 핸들을 해제한다.
-CQuery::~CQuery()
-{
-	if (hStmt)	SQLFreeHandle(SQL_HANDLE_STMT,hStmt);
+CQuery::~CQuery() { DisConnect(); }
+
+void CQuery::DisConnect() {
+	if (hStmt)	SQLFreeHandle(SQL_HANDLE_STMT, hStmt);	hStmt = nullptr;
 	if (hDbc)	SQLDisconnect(hDbc);
-	if (hDbc)	SQLFreeHandle(SQL_HANDLE_DBC,hDbc);
-	if (hEnv)	SQLFreeHandle(SQL_HANDLE_ENV,hEnv);
-
-	for( int i = 0; i < MAXCOL; i++ )
-		SAFE_DELETE_ARRAY( Col[i] );
+	if (hDbc)	SQLFreeHandle(SQL_HANDLE_DBC, hDbc);		hDbc = nullptr;
+	if (hEnv)	SQLFreeHandle(SQL_HANDLE_ENV, hEnv);		hEnv = nullptr;
 }
-
-void CQuery::DisConnect()
-{
-	if (hStmt)	SQLFreeHandle(SQL_HANDLE_STMT,hStmt);	hStmt = NULL;
-	if (hDbc)	SQLDisconnect(hDbc);
-	if (hDbc)	SQLFreeHandle(SQL_HANDLE_DBC,hDbc);		hDbc = NULL;
-	if (hEnv)	SQLFreeHandle(SQL_HANDLE_ENV,hEnv);		hEnv = NULL;
-}
-
-
 
 BOOL CQuery::EnableConnectionPooling()
 {
@@ -135,13 +88,13 @@ BOOL CQuery::EnableConnectionPooling()
 // 연결 또는 명령 핸들 할당에 실패하면 FALSE를 리턴한다.
 BOOL CQuery::Connect(int Type, const char *ConStr, const char *UID, const char *PWD)
 {
-	strcpy( DBName, ConStr );
-	strcpy( DBId, UID );
-	strcpy( DBPass, PWD );
+	strcpy(DBCredentials.Name, ConStr );
+	strcpy(DBCredentials.Id, UID );
+	strcpy(DBCredentials.Pass, PWD );
 	
 	SQLCHAR InCon[255];
 	SQLCHAR OutCon[255];
-    SQLSMALLINT cbOutCon;
+   SQLSMALLINT cbOutCon;
 
 	SQLRETURN ret;
 
@@ -249,7 +202,7 @@ BOOL CQuery::Exec(LPCTSTR szSQL)
 		{
 			PrintDiag( szSQL, SQL_HANDLE_STMT );	
 			DisConnect();
-			if( Connect( 3, DBName, DBId, DBPass ) )
+			if( Connect( 3, DBCredentials.Name, DBCredentials.Id, DBCredentials.Pass ) )
 			{
 				ret = SQLExecDirect( hStmt, (SQLCHAR *)szSQL, SQL_NTS );
 				if ((ret != SQL_SUCCESS) && (ret != SQL_SUCCESS_WITH_INFO) && (ret != SQL_NO_DATA)) 
@@ -281,41 +234,6 @@ BOOL CQuery::MoreResults()
 
 	return PrepareFetch();
 }
-
-// SQL문을 실행한다. 실패시 진단 정보를 출력하고 FALSE를 리턴한다.
-BOOL CQuery::Exec(LPCTSTR szSQL, int nCount, QUERY_BINDINFO infos[])
-{
-	Clear();	// 실험적으로 항상 클리어 된 상태로 실행되게 한다.
-
-	SQLRETURN ret = SQLExecDirect( hStmt, (SQLCHAR*)szSQL, lstrlen( szSQL ) );
-	switch( ret )
-	{
-	case SQL_SUCCESS_WITH_INFO:
-#ifdef _DEBUG
-		PrintDiag( szSQL, SQL_HANDLE_STMT );	
-#endif
-		// 아래 계속 실행 
-	case SQL_SUCCESS:
-	case SQL_NO_DATA_FOUND:
-		break;
-	default:
-		{
-			PrintDiag( szSQL, SQL_HANDLE_STMT );	
-			DisConnect();
-			if( Connect( 3, DBName, DBId, DBPass ) )
-			{
-				ret = SQLExecDirect( hStmt, (SQLCHAR *)szSQL, SQL_NTS );
-				if ((ret != SQL_SUCCESS) && (ret != SQL_SUCCESS_WITH_INFO) && (ret != SQL_NO_DATA)) 
-					return FALSE;
-			}
-			else
-				return FALSE;
-		}
-	}
-
-	return PrepareFetch();
-}
-
 
 // 결과셋에서 한 행을 가져온다.
 BOOL CQuery::Fetch()
@@ -371,9 +289,8 @@ int CQuery::GetInt(int nCol)
 	if (lCol[nCol-1]==SQL_NULL_DATA) 
 	{
 		return CQUERYNULL;
-	} else 
-	{
-		return atoi(Col[nCol-1]);
+	} else {
+		return Col[nCol - 1].AsInt();
 	}
 }
 
@@ -400,9 +317,8 @@ __int64 CQuery::GetInt64(int nCol)
 	if (lCol[nCol-1]==SQL_NULL_DATA) 
 	{
 		return CQUERYNULL;
-	} else 
-	{
-		return _atoi64(Col[nCol-1]);
+	} else {
+		return Col[nCol - 1].AsInt64();
 	}
 }
 
@@ -429,9 +345,8 @@ float CQuery::GetFloat(int nCol)
 	if (lCol[nCol-1]==SQL_NULL_DATA) 
 	{
 		return CQUERYNULL;
-	} else 
-	{
-		return	( (float)( atof(Col[nCol-1]) ) );
+	} else {
+		return Col[nCol - 1].AsFloat();
 	}
 }
 
@@ -455,9 +370,8 @@ char CQuery::GetChar(int nCol)					// 실수형 컬럼 읽기
 	if (lCol[nCol-1]==SQL_NULL_DATA) 
 	{
 		return CQUERYNULL;
-	} else 
-	{
-		return Col[nCol-1][0];
+	} else {
+		return Col[nCol - 1].AsChar();
 	}
 }
 
@@ -485,7 +399,7 @@ void CQuery::GetStr(int nCol, char *buf)
 	{
 		lstrcpy(buf,"NULL");
 	} else {
-		 strcpy(buf,Col[nCol-1]);
+		 strcpy(buf,Col[nCol-1].GetRawString());
 	}
 }
 
@@ -505,7 +419,7 @@ void CQuery::GetStr(const char *sCol, char *buf)
 
 const char * CQuery::GetStrPtr(int nCol) const {
 	if (nCol <= 0 || nCol > this->nCol) return nullptr;
-	return Col[nCol - 1];
+	return Col[nCol - 1].GetRawString();
 }
 
 const char * CQuery::GetStrPtr(const char * sCol) const {
@@ -699,7 +613,7 @@ BOOL CQuery::PrepareFetch()
 	
 	SWORD	nActualLen;
 	SWORD	m_nSQLType;
-	UDWORD	m_nPrecision;
+	SQLULEN m_nPrecision;
 	SWORD	m_nScale;
 	SWORD	m_nNullability;
  
@@ -707,9 +621,11 @@ BOOL CQuery::PrepareFetch()
 	// 컬럼 번호는 one base임에 유의할 것
 	for (int c=0;c<nCol;c++) 
 	{
-		SQLBindCol(hStmt,c+1,SQL_C_CHAR,Col[c],8192,&lCol[c]);
-	//	SQLDescribeCol(hStmt,c+1,ColName[c],30,NULL,NULL,NULL,NULL,NULL);
-		SQLDescribeCol(hStmt,c+1,ColName[c],30,
+		auto [buffer, size] = Col[c].GetInfoForBind();
+
+		SQLBindCol(hStmt, c + 1, SQL_C_CHAR, buffer, size, &lCol[c]);
+
+		SQLDescribeCol(hStmt, c + 1, ColName[c], 30,
 			&nActualLen,
 			&m_nSQLType,
 			&m_nPrecision,

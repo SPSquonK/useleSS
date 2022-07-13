@@ -320,7 +320,7 @@ int MAX_SAVEPARAM = 88;
 			// chipi_바인딩 실패시 DB Reconnect
 			WriteLog( "try DB Reconnect... - ThreadId : %d", ::GetCurrentThreadId() );
 			qry->DisConnect();
-			if( qry->Connect( 3, qry->DBName, qry->DBId, qry->DBPass ) )
+			if( qry->Connect( 3, qry->DBCredentials.Name, qry->DBCredentials.Id, qry->DBCredentials.Pass ) )
 				WriteLog( "DB Reconnect Success! - ThreadId : %d", ::GetCurrentThreadId() );
 			else
 				WriteLog( "DB Reconnect Failed! - ThreadId : %d", ::GetCurrentThreadId() );

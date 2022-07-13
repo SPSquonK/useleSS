@@ -2,18 +2,11 @@
 
 #include <sql.h>
 #include <sqlext.h>
+#include <array>
+#include <memory>
 #include <optional>
 
-struct QUERY_BINDINFO
-{
-	SQLSMALLINT targetType;
-	SQLPOINTER	targetValue;
-	SQLINTEGER	bufferLength;
-	SQLINTEGER*	strLen_or_Ind;
-};
-
-class CQuery
-{
+class CQuery {
 public:
 	struct Credentials {
 		char Name[256] = "";
@@ -21,31 +14,48 @@ public:
 		char Pass[256] = "";
 	};
 
+	class ColString {
+	private:
+		SQLULEN m_size;
+		std::unique_ptr<char[]> m_buffer;
+
+	public:
+		ColString();
+
+		[[nodiscard]] int AsInt() const;
+		[[nodiscard]] std::int64_t AsInt64() const;
+		[[nodiscard]] float AsFloat() const;
+		[[nodiscard]] char AsChar() const;
+		[[nodiscard]] const char * GetRawString() const;
+		std::pair<char *, SQLLEN> GetInfoForBind();
+	};
+
 public:
-//	char *DBName, *DBId, *DBPass;	
-	char DBName[256];
-	char DBId[256];
-	char DBPass[256];
+	Credentials DBCredentials;
 
 	// 최대 컬럼수, BLOB 입출력 단위, NULL 필드값
-	enum { MAXCOL=256, BLOBBATCH=10000, CQUERYNULL=-100, CQUERYEOF=-101, 
+	static constexpr SQLSMALLINT MAXCOL = 256;
+	
+	enum { BLOBBATCH=10000, CQUERYNULL=-100, CQUERYEOF=-101, 
 		CQUERYNOCOL=-102, CQUERYERROR=-103 };
 private:
-	SQLHENV hEnv;							// 환경 핸들
-	SQLHDBC hDbc;							// 연결 핸들
-	char*	Col[MAXCOL];					// 바인딩될 컬럼 정보
+	SQLHENV hEnv = nullptr;							// 환경 핸들
+	SQLHDBC hDbc = nullptr;							// 연결 핸들
+	std::array<ColString, MAXCOL> Col; // 바인딩될 컬럼 정보
 
 	[[nodiscard]] int FindCol(const char *name) const;				// 컬럼의 이름으로부터 번호를 찾아준다.
 
 	std::optional<CString> m_storeBindedParameters = std::nullopt;
 
 public:
-	SQLHSTMT hStmt;							// 명령 핸들. 직접 사용할 수도 있으므로 public으로 정의
+	SQLHSTMT hStmt = nullptr;							// 명령 핸들. 직접 사용할 수도 있으므로 public으로 정의
 	SQLSMALLINT nCol;						// 컬럼 개수
 	SQLCHAR ColName[MAXCOL][50];			// 컬럼의 이름들
 	SQLINTEGER lCol[MAXCOL];				// 컬럼의 길이/상태 정보
 
-	CQuery();								// 생성자
+	CQuery() = default;
+	CQuery(const CQuery &) = delete;
+	CQuery & operator=(const CQuery &) = delete;
 	~CQuery();								// 파괴자:연결 핸들을 해제한다.
 
 	void PrintDiag( LPCTSTR szSQL, SQLSMALLINT type = SQL_HANDLE_DBC );						// 진단 정보 출력
@@ -56,7 +66,6 @@ public:
 	}
 	void DisConnect();						// 데이터 소스 연결을 끊는다
 	BOOL Exec(LPCTSTR szSQL);				// SQL문을 실행한다.
-	BOOL Exec(LPCTSTR szSQL, int nCount, QUERY_BINDINFO info[]);
 	BOOL PrepareFetch();
 	void StartLogBindedParameters() { m_storeBindedParameters = CString(); }
 
