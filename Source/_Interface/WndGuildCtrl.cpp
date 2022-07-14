@@ -78,7 +78,7 @@ void CWndGuildCtrl::OnDraw( C2DRender* p2DRender )
 
 	CPoint pt( 3, 3 );
 
-	CWndMessenger* pWndMessenger = (CWndMessenger*)GetWndBase( APP_MESSENGER_ );
+	CWndMessengerEx * pWndMessenger = (CWndMessengerEx*)GetWndBase( APP_MESSENGER_ );
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	
 	CGuild * pGuild = g_pPlayer->GetGuild();

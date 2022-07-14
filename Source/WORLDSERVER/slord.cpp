@@ -144,7 +144,7 @@ namespace	election
 {
 	int	AddDepositRequirements( CUser* pUser, __int64 iTotal, __int64 & iDeposit )
 	{
-		if( !pUser->IsMaster() && !pUser->IsHero() )
+		if(!pUser->IsJobTypeOrBetter(JTYPE_MASTER))
 			return TID_GAME_ELECTION_ADD_DEPOSIT_E001;	// "히어로, 마스터 등급의 캐릭터만 군주 후보에 입찰을 하실 수 있습니다."
 		if( iTotal < CCandidate::nMinDeposit )
 			return TID_GAME_ELECTION_ADD_DEPOSIT_E002;	// "입찰 금액이 부족합니다."

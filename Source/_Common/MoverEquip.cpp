@@ -476,7 +476,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			// 디폴트는 장착위치 오른손
 			// 왼손에 무기가 가야하는 상황을 검사
 			ItemProp *pProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );
-			if( pMover->GetJob() == JOB_BLADE || pMover->GetJob() == JOB_BLADE_MASTER || pMover->GetJob() == JOB_BLADE_HERO )	// 쌍칼속성
+			if (pMover->IsInteriorityJob(JOB_BLADE)) // 쌍칼속성
 			{
 				if( pItemProp->dwID != II_WEA_KNU_ISHOFIST )
 				{

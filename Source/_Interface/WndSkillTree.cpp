@@ -348,8 +348,10 @@ bool CWndSkillTreeEx::CheckSkill(int i) {
 	if (pSkillProp == NULL || pSkillProp->nLog == 1)
 		return FALSE;
 
-	if (g_pPlayer->GetLevel() < (int)(pSkillProp->dwReqDisLV) && !g_pPlayer->IsMaster() && !g_pPlayer->IsHero())
+	const int reqLevel = static_cast<int>(pSkillProp->dwReqDisLV);
+	if (!g_pPlayer->HasLevelForSkill(*pSkillProp)) {
 		return FALSE;
+	}
 
 	if (pSkillProp->dwReSkill1 != 0xffffffff) {
 		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill1);
@@ -434,6 +436,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_KNIGHT:
 		case JOB_KNIGHT_MASTER:
 		case JOB_KNIGHT_HERO:
+		case JOB_LORDTEMPLER_HERO:
 			m_nCount = 26;
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "Back_Night.TGA";
@@ -444,6 +447,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_BLADE:
 		case JOB_BLADE_MASTER:
 		case JOB_BLADE_HERO:
+		case JOB_STORMBLADE_HERO:
 			m_nCount = 26;
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "Back_Blade.TGA";
@@ -462,6 +466,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_BILLPOSTER:
 		case JOB_BILLPOSTER_MASTER:
 		case JOB_BILLPOSTER_HERO:
+		case JOB_FORCEMASTER_HERO:
 			m_nCount = 28;
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "Back_Bill.TGA";
@@ -472,6 +477,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_RINGMASTER:
 		case JOB_RINGMASTER_MASTER:
 		case JOB_RINGMASTER_HERO:
+		case JOB_FLORIST_HERO:
 			m_nCount = 28;
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "Back_Ring.TGA";
@@ -490,6 +496,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_ELEMENTOR:
 		case JOB_ELEMENTOR_MASTER:
 		case JOB_ELEMENTOR_HERO:
+		case JOB_ELEMENTORLORD_HERO:
 			m_nCount = 39;
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "Back_Ele.TGA";
@@ -500,6 +507,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_PSYCHIKEEPER:
 		case JOB_PSYCHIKEEPER_MASTER:
 		case JOB_PSYCHIKEEPER_HERO:
+		case JOB_MENTALIST_HERO:
 			m_nCount = 28;
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "Back_Psy.TGA";
@@ -526,6 +534,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_JESTER:
 		case JOB_JESTER_MASTER:
 		case JOB_JESTER_HERO:
+		case JOB_WINDLURKER_HERO:
 			m_nCount = 20;
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "Back_Jst.TGA";//"Back_Lower.TGA";
@@ -536,6 +545,7 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_RANGER:
 		case JOB_RANGER_MASTER:
 		case JOB_RANGER_HERO:
+		case JOB_CRACKSHOOTER_HERO:
 			m_nCount = 20;
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "Back_Rag.TGA";//"Back_Lower.TGA";
@@ -551,27 +561,35 @@ void CWndSkillTreeEx::InitItem() {
 	//Master Skill�� ���ۺ��� 1Lv�̹Ƿ� ���? �̹��� ����.
 	switch (m_nJob) {
 		case JOB_KNIGHT_HERO:
+		case JOB_LORDTEMPLER_HERO:
 			m_strHeroSkilBg = "Back_Hero_KntDrawing.tga";
 			break;
 		case JOB_BLADE_HERO:
+		case JOB_STORMBLADE_HERO:
 			m_strHeroSkilBg = "Back_Hero_BldDefence.tga";
 			break;
 		case JOB_BILLPOSTER_HERO:
+		case JOB_FORCEMASTER_HERO:
 			m_strHeroSkilBg = "Back_Hero_BilDisEnchant.tga";
 			break;
 		case JOB_RINGMASTER_HERO:
+		case JOB_FLORIST_HERO:
 			m_strHeroSkilBg = "Back_Hero_RigReturn.tga";
 			break;
 		case JOB_ELEMENTOR_HERO:
+		case JOB_ELEMENTORLORD_HERO:
 			m_strHeroSkilBg = "Back_Hero_EleCursemind.tga";
 			break;
 		case JOB_PSYCHIKEEPER_HERO:
+		case JOB_MENTALIST_HERO:
 			m_strHeroSkilBg = "Back_Hero_PsyStone.tga";
 			break;
 		case JOB_JESTER_HERO:
+		case JOB_WINDLURKER_HERO:
 			m_strHeroSkilBg = "Back_Hero_JstSilence.tga";
 			break;
 		case JOB_RANGER_HERO:
+		case JOB_CRACKSHOOTER_HERO:
 			m_strHeroSkilBg = "Back_Hero_RagHawkeye.tga";
 			break;
 	}
@@ -842,29 +860,6 @@ BOOL CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID, CRect & rect) {
 
 		rect += pt;
 	}
-	/*
-		switch( m_nJob )
-		{
-		case JOB_KNIGHT:
-			break;
-		case JOB_BLADE:
-			break;
-		case JOB_MERCENARY:
-			break;
-		case JOB_BILLPOSTER:
-			break;
-		case JOB_RINGMASTER:
-			break;
-		case JOB_ASSIST:
-			break;
-		case JOB_ELEMENTOR:
-			break;
-		case JOB_PSYCHIKEEPER:
-			break;
-		case JOB_MAGICIAN:
-			break;
-		}
-	*/
 	return TRUE;
 }
 

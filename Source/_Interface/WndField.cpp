@@ -12267,55 +12267,12 @@ void CWndGuildCombatRank_Person::UpdatePlayer(int nJob, u_long idPlayer)
 
 }
 
-CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(int nJob)
-{
-	switch(nJob) 
-	{
-	case JOB_MERCENARY:
-	case JOB_KNIGHT:
-	case JOB_BLADE:
- 	case JOB_KNIGHT_MASTER:
-	case JOB_BLADE_MASTER:
-	case JOB_KNIGHT_HERO:
-	case JOB_BLADE_HERO:
-		return &m_WndGuildCombatTabClass_Mer;
-		break;
-		
-	case JOB_ACROBAT:
-	case JOB_JESTER:
-	case JOB_RANGER:
-	case JOB_JESTER_MASTER:
-	case JOB_RANGER_MASTER:
-	case JOB_JESTER_HERO:
-	case JOB_RANGER_HERO:
-		return &m_WndGuildCombatTabClass_Acr;
-		break;
-		
-	case JOB_ASSIST:
-	case JOB_RINGMASTER:
-	case JOB_BILLPOSTER:
-	case JOB_RINGMASTER_MASTER:
-	case JOB_BILLPOSTER_MASTER:
-	case JOB_RINGMASTER_HERO:
-	case JOB_BILLPOSTER_HERO:
-		return &m_WndGuildCombatTabClass_Ass;
-		break;
-		
-	case JOB_MAGICIAN:
-	case JOB_PSYCHIKEEPER:
-	case JOB_ELEMENTOR:
-	case JOB_PSYCHIKEEPER_MASTER:
-	case JOB_ELEMENTOR_MASTER:
-	case JOB_PSYCHIKEEPER_HERO:
-	case JOB_ELEMENTOR_HERO:
-		return &m_WndGuildCombatTabClass_Mag;
-		break;
-		
-	default:
-		break;
-	}	
-
-	return NULL;
+CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int nJob) {
+	if (CMover::IsInteriorityJob(JOB_MERCENARY, nJob)) return &m_WndGuildCombatTabClass_Mer;
+	if (CMover::IsInteriorityJob(JOB_ACROBAT  , nJob)) return &m_WndGuildCombatTabClass_Acr;
+	if (CMover::IsInteriorityJob(JOB_ASSIST   , nJob)) return &m_WndGuildCombatTabClass_Ass;
+	if (CMover::IsInteriorityJob(JOB_MAGICIAN , nJob)) return &m_WndGuildCombatTabClass_Mag;
+	return nullptr;
 }
 
 /****************************************************

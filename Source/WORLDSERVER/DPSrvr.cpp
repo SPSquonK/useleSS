@@ -8557,7 +8557,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 {
 	const auto [objItemId] = ar.Extract<std::array<OBJID, 5>>();
 
-	if (!pUser.IsHero()) return;
+	if (!pUser.IsJobTypeOrBetter(JTYPE_HERO)) return;
 
 	const auto lpSkill = std::ranges::find_if(pUser.m_jobSkills,
 		[](const SKILL & skill) {

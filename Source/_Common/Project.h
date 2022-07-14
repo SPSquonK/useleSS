@@ -7,6 +7,7 @@ static_assert(false, "Project.h was included")
 
 #include <memory>
 #include <set>
+#include <boost/container/small_vector.hpp>
 #include "boost/container/static_vector.hpp"
 #include <boost/container/flat_map.hpp>
 #include "StaticString.h"
@@ -738,10 +739,13 @@ public:
 	CFixedArray< QuestProp >	m_aPropQuest ;
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;
+	
 	JobProp						m_aPropJob[MAX_JOB];
 	JobSkills m_jobSkills;
 	JOB							m_aJob[ MAX_JOB ];
 	JOBITEM						m_jobItem[ MAX_JOBITEM ];
+	[[nodiscard]] boost::container::small_vector<DWORD, 6> GetAllJobsOfLine(DWORD jobId) const;
+
 	STRUCTURE					m_aStructure[ MAX_STRUCTURE ];
 	GUILD_APPELL				m_aGuildAppell[ MAX_GUILDAPPELL ];
 	EXPCHARACTER				m_aExpCharacter[ MAX_EXPCHARACTER ];
@@ -1103,4 +1107,3 @@ public:
 inline const QuestProp * QuestProp::Get(const QuestId questId) {
 	return prj.m_aPropQuest.GetAt(questId.get());
 }
-

@@ -630,10 +630,10 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		
 		pUser->SetStateNotMode( STATE_BASEMOTION_MODE, STATEMODE_BASEMOTION_CANCEL );	// ™VÆÃ »©±â
 
-		if( pUser->GetLevel() > MAX_LEGEND_LEVEL )
+		if( pUser->GetLevel() > MAX_3RD_LEGEND_LEVEL )
 		{
 			WriteError( "MAX_LEVEL//%s//%d", pUser->GetName(), pUser->GetLevel() );
-			pUser->m_nLevel	= MAX_LEVEL;
+			pUser->m_nLevel	= MAX_3RD_LEGEND_LEVEL;
 		}
 
 		pUser->RemoveBuff( BUFF_ITEM, II_CHEERUP );

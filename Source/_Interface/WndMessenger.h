@@ -6,35 +6,6 @@
 #include "WndGuildCtrl.h"
 #include "WndMessengerCtrl.h"
 
-class CWndMessenger : public CWndNeuz 
-{ 
-public: 
-	CWndMessenger(); 
-	~CWndMessenger(); 
-
-	CWndMenu		m_menuState;
-	CWndFriendCtrl	m_wndFriend;
-	CWndPartyCtrl	m_wndParty;
-	CWndGuildCtrl	m_wndGuild;
-	CString			m_strTooltip;	// 접속표시 툴팁문자열 
-	CTexture		m_TexMail;
-	int				m_nFlashCounter;
-	int				m_nSwitch;
-
-	virtual	BOOL Process();	
-	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
-	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnMouseWndSurface( CPoint point );
-};
-
 class CWndMessengerEx : public CWndNeuz 
 { 
 public: 

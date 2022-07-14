@@ -1549,9 +1549,9 @@ void CMover::ReState()
 	for( int i = 1 ; i < nLevelFor ; i++ )
 	{
 		m_nRemainGP += prj.m_aExpCharacter[ i + 1 ].dwLPPoint;
-		if( ( IsMaster() || IsHero() ) && i > 59 )
+		if( IsJobTypeOrBetter(JTYPE_MASTER) && i > 59)
 			m_nRemainGP++;
-		if( IsHero() && i == MAX_LEVEL)
+		if(IsJobTypeOrBetter(JTYPE_HERO) && i == MAX_LEVEL)
 			m_nRemainGP+=12;
 	}
 	
@@ -4264,7 +4264,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 					break;               
 				case IK3_WAND:
 
-					if( GetJob() == JOB_PSYCHIKEEPER || GetJob() == JOB_PSYCHIKEEPER_MASTER || GetJob() == JOB_PSYCHIKEEPER_HERO )	dwMotion += MTI_STAND_11;
+					if( IsInteriorityJob(JOB_PSYCHIKEEPER) )	dwMotion += MTI_STAND_11;
 					else								dwMotion += MTI_STAND_02; 
 					break; 
 				case IK3_CHEERSTICK: dwMotion += 400; break; 
@@ -9387,105 +9387,15 @@ void	CMover::CheckHonorStat()
 	if( m_nHonor < -1 || m_nHonor >= MAX_HONOR_TITLE)
 		m_nHonor = -1;
 
+
+	for (int job = JOB_VAGRANT; job != MAX_JOB; ++job) {
+		const int nIdx = CTitleManager::Instance()->GetIdx(job, HI_EARN_TITLE);
+		if (nIdx != -1) {
+			SetHonorCount(nIdx, IsInteriorityJob(job) ? 1 : 0);
+		}
+	}
+
 	int nIdx = 0;
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_KNIGHT_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_KNIGHT_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BLADE_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_BLADE_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_JESTER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_JESTER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RANGER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_RANGER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RINGMASTER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_RINGMASTER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BILLPOSTER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_BILLPOSTER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_PSYCHIKEEPER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_PSYCHIKEEPER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_ELEMENTOR_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_ELEMENTOR_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_KNIGHT_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_KNIGHT_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BLADE_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_BLADE_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_JESTER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_JESTER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RANGER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_RANGER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RINGMASTER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_RINGMASTER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BILLPOSTER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_BILLPOSTER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_PSYCHIKEEPER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_PSYCHIKEEPER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_ELEMENTOR_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_ELEMENTOR_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);	
-
 	nIdx = CTitleManager::Instance()->GetIdx(HS_STR,HI_COUNT_CHECK);
 	SetHonorCount(nIdx,m_nStr);
 

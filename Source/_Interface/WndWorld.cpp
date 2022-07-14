@@ -2653,36 +2653,9 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 					TCHAR	szText[128];
 					if( pMover->IsPlayer() )
 					{
-/*#if __VER >= 8 // __CSC_VER8_1
-						// 8차 GM일 경우를 제외하고 상대방의 레벨을 볼수 없음 
-						if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) == TRUE )
-#if __VER >= 10 // __LEGEND
-						{
-							if(pMover->IsMaster())
-								sprintf( szText, prj.GetText( TID_GAME_SELECT_OBJECT_LEVEL_PLAYER_MASTER ), pMover->GetName(), pMover->GetLevel() );
-							else if(pMover->IsHero())
-#if __VER >= 15 // __HERO129_VER15				// 15차 히어로 레벨확장
-								sprintf( szText, prj.GetText( TID_GAME_SELECT_OBJECT_LEVEL_PLAYER_HERO ), pMover->GetName(), pMover->GetLevel() );
-	#else	// 15차 히어로 레벨확장
-								sprintf( szText, "%s <HERO>", pMover->GetName() );
-	#endif	// 15차 히어로 레벨확장
-							else
-								sprintf( szText, prj.GetText( TID_GAME_SELECT_OBJECT_LEVEL_PLAYER ), pMover->GetName(), pMover->GetLevel() );
-						}
-#else //__LEGEND
-							sprintf( szText, "%s<Lv.%d>", pMover->GetName(), pMover->GetLevel() );
-#endif //__LEGEND
-#if __VER >= 11 // __CSC_VER11_1
-						else
-							sprintf( szText, "%s", pMover->GetName() );
-#else //__CSC_VER11_1
-						else
-							sprintf( szText, "%s<Lv.\?\?>", pMover->GetName() );
-#endif //__CSC_VER11_1
-#else*/
 						// 타겟이 자신보다 10레벨 이하면 레벨을 볼수 있음.
 						if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) == TRUE || g_pPlayer->GetLevel() + 20 > pMover->GetLevel() )
-							if( pMover->IsHero() )
+							if( pMover->IsJobTypeOrBetter(JTYPE_HERO) )
 								sprintf( szText, "%s <Lvl %d-H>", pMover->GetName(), pMover->GetLevel() );
 							else if( pMover->IsMaster() )
 								sprintf( szText, "%s <Lvl %d-M>", pMover->GetName(), pMover->GetLevel() );
@@ -2690,7 +2663,6 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 								sprintf( szText, "%s <Lvl %d>", pMover->GetName(), pMover->GetLevel() );
 						else
 							sprintf( szText, "%s <Lvl \?\?>", pMover->GetName() );
-//#endif //__CSC_VER8_1
 					}
 					else
 					{

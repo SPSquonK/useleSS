@@ -38,26 +38,9 @@ CAr & operator>>(CAr & ar, MoverSkills & self) {
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
 MoverSkills MoverSkills::ForJob(int job) {
-  constexpr auto GetAllJobsOfLine = [](int jobId) -> boost::container::small_vector<int, 6> {
-    boost::container::small_vector<int, 6> jobs;
-
-    while (jobId != JOB_VAGRANT) {
-      const auto it = std::ranges::find(jobs, jobId);
-      if (it != jobs.end()) break;
-
-      jobs.insert(jobs.begin(), jobId);
-
-      jobId = prj.m_aJob[jobId].dwJobBase;
-    }
-
-    jobs.insert(jobs.begin(), JOB_VAGRANT);
-
-    return jobs;
-  };
-
   MoverSkills list;
 
-  for (const int jobId : GetAllJobsOfLine(job)) {
+  for (const DWORD jobId : prj.GetAllJobsOfLine(job)) {
     for (const ItemProp * pSkillProp : prj.m_jobSkills[jobId]) {
       const DWORD initLevel = pSkillProp->dwItemKind1 == JTYPE_MASTER ? 1 : 0;
       list.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = initLevel });

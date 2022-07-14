@@ -8,17 +8,17 @@
 #define JTYPE_COMMON 4
 #define JTYPE_MASTER	 5
 #define JTYPE_HERO	 6
+#define JTYPE_LEGEND_HERO	 7
 
 #define MAX_TROUPE_SKILL		9
 
 #define MAX_JOB_LEVEL			15
 #define MAX_EXP_LEVEL			45
 #define MAX_PRO_LEVEL			30
-#define MAX_TROUPE_LEVEL		1
-
-#define MAX_LEGEND_LEVEL			129	
-#define MAX_MONSTER_LEVEL			160	
 #define MAX_LEVEL				120
+#define MAX_LEGEND_LEVEL			130
+#define MAX_3RD_LEGEND_LEVEL		190
+#define MAX_MONSTER_LEVEL			200	
 
 //-------------------------------------------------------
 // ���� ��ȣ�� ������� �ٲٸ� �ȵ˴ϴ�.
@@ -71,9 +71,19 @@
 #define JOB_ELEMENTOR_HERO		31
 #define MAX_HERO	             32
 
+// 3�� ����
+#define	JOB_LORDTEMPLER_HERO	32
+#define JOB_STORMBLADE_HERO		33
+#define JOB_WINDLURKER_HERO		34
+#define JOB_CRACKSHOOTER_HERO	35
+#define JOB_FLORIST_HERO		36
+#define JOB_FORCEMASTER_HERO	37
+#define JOB_MENTALIST_HERO		38
+#define JOB_ELEMENTORLORD_HERO	39
+#define MAX_LEGEND_HERO	             40
 //
 
-#define MAX_JOB                      32
+#define MAX_JOB                      40
 #define JOB_ALL					MAX_JOB
 //-------------------------------------------------------
 
@@ -87,6 +97,10 @@
 #define DIS_RIFLE                   6 //
 #define DIS_MARIONETTE              7 //
 #define DIS_BOW			    32 // ���� �߰��� ��
+#define DIS_CROSSBOW		33 // ũ�ν����� 3������
+#define DIS_MAGICBARUNA 		34 //3�� ���� ���ο� ���� ����
+#define DIS_ZEMBARUNA 			35 //3�� ���� ���ο� ���� ����
+#define DIS_SHILDBARUNA 		36 //3�� ���� ���ο� ���� ����
 // �������
 #define DIS_SHIELD                  8 //
 #define DIS_DANCE                   9 //
@@ -133,95 +147,3 @@
 
 // �Ϲ� ��� ����.... ĳ���� ���ο� ������� ����
 #endif
-/*
-#ifndef __DEFINE_JOB
-#define __DEFINE_JOB
-
-#define JTYPE_BASE   0
-#define JTYPE_EXPERT 1
-#define JTYPE_PRO    2
-
-#define MAX_JOB_SKILL    3
-#define MAX_EXPERT_SKILL 14
-
-#define MAX_JOB_LEVEL               10
-#define MAX_EXP_LEVEL               40
-#define MAX_PRO_LEVEL               30
-
-// Job
-#define JOB_MERCENARY               0 // �⺻ ������
-#define JOB_ACROBAT                 1
-#define JOB_ASSIST                  2
-#define JOB_MAGICIAN                3
-#define JOB_ENGINEER                4
-#define JOB_VAGRANT                 5 // ���� ����
-#define MAX_JOBBASE                 5
-  
-// Expert
-#define JOB_GUARD                   5
-#define JOB_STRONGMAN               6
-#define JOB_MARKMAN                 7
-#define JOB_PIERROT                 8
-#define JOB_HEALER                  9
-#define JOB_BILLPOSTER              10
-#define JOB_PYRON                   11
-#define JOB_RAINMAKER               12
-#define JOB_PUPPETEER               13
-#define JOB_GATEKEEPER              14
-#define MAX_EXPERT                  15
-
-// Professional
-#define JOB_KNIGHT                  16 // ������ ������
-#define JOB_BABARIAN                17
-#define JOB_DANCER                  18
-#define JOB_JESTER                  19 // ������ ������
-#define JOB_STARGAZER               20
-#define JOB_ACCOUNTER               21
-#define JOB_RAIDEN                  22 // ���ͼ��� ������
-#define JOB_OVERCASTER              23
-#define JOB_DOPPLER                 24
-#define JOB_STRINGMASTER            25 // ��ڽ� ������
-#define MAX_PROFESSIONAL            26 
-#define MAX_JOB                     26 
-
-
-// SkillGroup
-#define DIS_SWORD                   0 //
-#define DIS_AXE                     1 //
-#define DIS_MACE                    2 //
-#define DIS_TOOL                    3 //
-#define DIS_CASE                    4 //
-#define DIS_SPEAR                   5 //
-#define DIS_WHIP                    6 //
-#define DIS_BOW                     7 //
-#define DIS_THROWING                8 //
-#define DIS_PISTOL                  9 //
-#define DIS_RIFLE                  10 //
-// �������
-#define DIS_SHIELD                 11 //
-#define DIS_PARRY                  12 //
-#define DIS_ACROBAT                13 //
-
-// �������� �����   
-#define DIS_DIVINEPOWER            14 //
-#define DIS_HEAL                   15 //
-#define DIS_ASTROLOGY              16 //
-#define DIS_FIRE                   17 //
-#define DIS_WIND                   18 //
-#define DIS_ELECTRICITY            19 //
-#define DIS_DARK                   20 //
-#define DIS_WATER                  21 //
-#define DIS_EARTH                  22 //
-// Ư�� ���    
-#define DIS_CHEER                  23 //
-#define DIS_PROPERTIES             24 //
-#define DIS_TAMING                 25 //
-#define DIS_TALISMANS              26 //
-#define DIS_HERCULEAN              27 //
-#define DIS_PUPPET                 28 //
-#define DIS_MARIONETTE             29 //
-#define DIS_STRINGDANCE            30 //
-
-// �Ϲ� ��� ����.... ĳ���� ���ο� ������� ����
-#endif
-*/

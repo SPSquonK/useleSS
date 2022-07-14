@@ -53,39 +53,34 @@ SKILL * CMover::GetSkill(DWORD dwSkill) {
 	return it != m_jobSkills.end() ? &*it : nullptr;
 }
 
-BOOL CMover::CheckSkill( DWORD dwSkill )
-{
-	ItemProp* pSkillProp = prj.GetSkillProp( dwSkill );
-	
-	if( pSkillProp == NULL || pSkillProp->nLog == 1 )
+const SKILL * CMover::GetSkill(const DWORD dwSkill) const {
+	const auto it = std::ranges::find_if(m_jobSkills,
+		[dwSkill](const SKILL & skill) { return skill.dwSkill == dwSkill; }
+	);
+	return it != m_jobSkills.end() ? &*it : nullptr;
+}
+
+BOOL CMover::CheckSkill(const DWORD dwSkill) const {
+	const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+
+	if (pSkillProp == NULL || pSkillProp->nLog == 1)
 		return FALSE;
-	if( !IsMaster() && !IsHero() && GetLevel() < (int)( pSkillProp->dwReqDisLV ) )
-		return FALSE;
-				
-	if( pSkillProp->dwReSkill1 != 0xffffffff )
-	{
-		LPSKILL pSkillBuf = GetSkill( pSkillProp->dwReSkill1 );
-		if( pSkillBuf )
-		{
-			if( pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel1 )
-			{
-				return FALSE;
-			}
+	if (!HasLevelForSkill(*pSkillProp)) return FALSE;
+
+	if (pSkillProp->dwReSkill1 != 0xffffffff) {
+		const SKILL * pSkillBuf = GetSkill(pSkillProp->dwReSkill1);
+		if (pSkillBuf && pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel1) {
+			return FALSE;
 		}
 	}
-	
-	if( pSkillProp->dwReSkill2 != 0xffffffff )
-	{
-		LPSKILL pSkillBuf = GetSkill( pSkillProp->dwReSkill2 );
-		if( pSkillBuf )
-		{
-			if( pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel2 )
-			{
-				return FALSE;
-			}				
+
+	if (pSkillProp->dwReSkill2 != 0xffffffff) {
+		const SKILL * pSkillBuf = GetSkill(pSkillProp->dwReSkill2);
+		if (pSkillBuf && pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel2) {
+			return FALSE;
 		}
-	}	
-	
+	}
+
 	return TRUE;
 }
 
@@ -147,46 +142,31 @@ BOOL IsActive( CMover* pMover, DWORD dwSkill )
 	if( pSkillProp == NULL )
 		return FALSE;
 
-	if( pSkillProp->dwReSkill1 != NULL_ID )
-	{
-		LPSKILL pSkill1;
-		ItemProp* pSkillProp1;
+	if (pSkillProp->dwReSkill1 != NULL_ID) {
+		SKILL * pSkill1 = pMover->GetSkill(pSkillProp->dwReSkill1);
+		if (pSkill1 == NULL) return FALSE;
 
-		pSkill1		= pMover->GetSkill( pSkillProp->dwReSkill1 );
-		if( pSkill1 == NULL )
-			return FALSE;
+		const ItemProp * pSkillProp1 = prj.GetSkillProp(pSkill1->dwSkill);
+		if (pSkillProp1 == NULL) return FALSE;
 
-		pSkillProp1 = prj.GetSkillProp( pSkill1->dwSkill );
-		if( pSkillProp1 == NULL )
-			return FALSE;
+		if (!pMover->HasLevelForSkill(*pSkillProp1)) return FALSE;
 
-		if( (int)( pSkillProp1->dwReqDisLV ) > pMover->GetLevel() && !pMover->IsMaster() && !pMover->IsHero() )
-			return FALSE;
-		
-		if( pSkillProp->dwReSkillLevel1 != pSkill1->dwLevel )
-			return FALSE;
+		if (pSkillProp->dwReSkillLevel1 != pSkill1->dwLevel) return FALSE;
 	}
 
-	if( pSkillProp->dwReSkill2 != NULL_ID )
-	{
-		LPSKILL pSkill1;
-		ItemProp* pSkillProp1;
-		
-		pSkill1		= pMover->GetSkill( pSkillProp->dwReSkill2 );
-		if( pSkill1 == NULL )
-			return FALSE;
-	
-		pSkillProp1 = prj.GetSkillProp( pSkill1->dwSkill );
-		if( pSkillProp1 == NULL )
-			return FALSE;
-		if( (int)( pSkillProp1->dwReqDisLV ) > pMover->GetLevel() && !pMover->IsMaster() && !pMover->IsHero() )
-			return FALSE;
-		
-		if( pSkillProp->dwReSkillLevel2 != pSkill1->dwLevel )
-			return FALSE;		
+	if (pSkillProp->dwReSkill2 != NULL_ID) {
+		SKILL * pSkill1 = pMover->GetSkill(pSkillProp->dwReSkill2);
+		if (pSkill1 == NULL) return FALSE;
+
+		const ItemProp * pSkillProp1 = prj.GetSkillProp(pSkill1->dwSkill);
+		if (pSkillProp1 == NULL) return FALSE;
+
+		if (!pMover->HasLevelForSkill(*pSkillProp1)) return FALSE;
+
+		if (pSkillProp->dwReSkillLevel2 != pSkill1->dwLevel) return FALSE;
 	}
-	if( (int)( pSkillProp->dwReqDisLV ) > pMover->GetLevel() && !pMover->IsMaster() && !pMover->IsHero() )
-		return FALSE;
+
+	if (!pMover->HasLevelForSkill(*pSkillProp)) return FALSE;
 
 	return TRUE;
 }
@@ -278,74 +258,43 @@ BOOL CMover::IsExpert()
 	return prj.m_aJob[ m_nJob ].dwJobType == JTYPE_EXPERT;
 }
 
-bool CMover::IsPro()    const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_PRO; }
-bool CMover::IsMaster() const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_MASTER; }
-bool CMover::IsHero()   const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_HERO; }
+bool CMover::IsPro()        const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_PRO; }
+bool CMover::IsMaster()     const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_MASTER; }
+bool CMover::IsHero()       const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_HERO; }
+bool CMover::IsLegendHero() const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_LEGEND_HERO; }
+bool CMover::IsJobTypeOrBetter(DWORD jobType) const {
+	const DWORD myJobType = prj.m_aJob[m_nJob].dwJobType;
+	return myJobType >= jobType;
+}
+
+bool CMover::HasLevelForSkill(const ItemProp & skillProp) const {
+	const int level = GetLevel();
+	
+	// Have the required level?
+	const int reqLevel = static_cast<int>(skillProp.dwReqDisLV);
+	if (reqLevel <= level) return true;
+	
+	// Master+ can bypass level requirement of skills that requires a level <= 120
+	return reqLevel <= MAX_LEVEL && IsJobTypeOrBetter(JTYPE_MASTER);
+}
 
 BYTE	CMover::GetLegendChar()
 {
 	if(IsMaster())
 		return LEGEND_CLASS_MASTER;
-	else if(IsHero())
+	else if(IsJobTypeOrBetter(JTYPE_HERO))
 		return	LEGEND_CLASS_HERO;
 	else
 		return LEGEND_CLASS_NORMAL;
 }
 
-
-
-
-bool CMover::IsInteriorityJob(const int nJob) const {
-	// TODO: replace job arithmetic with something less magic
-	if (nJob == JOB_VAGRANT || nJob == m_nJob) return true;
-
-	if( IsPro() && JOB_VAGRANT < nJob && nJob < MAX_EXPERT )
-	{
-		if( nJob * 2 + 4 == m_nJob || nJob * 2 + 5 == m_nJob )
-		{
-			return TRUE;
-		}
-	}
-	if( IsMaster()  )	// ������ �ȵǸ� ����.				
-	{
-		if( nJob < MAX_EXPERT )
-		{
-			if( nJob * 2 + 14 == m_nJob || nJob * 2 + 15 == m_nJob )
-				return TRUE;
-		}
-		else if( nJob < MAX_PROFESSIONAL )
-		{
-			if( nJob + 10 == m_nJob )
-				return TRUE;
-		}
-	}
-	if( IsHero()  )	// ������ �ȵǸ� ����.				
-	{
-		if( nJob < MAX_EXPERT )
-		{
-			if( nJob * 2 + 22 == m_nJob || nJob * 2 + 23 == m_nJob )
-				return TRUE;
-		}
-		else if( nJob < MAX_PROFESSIONAL )
-		{
-			if( nJob + 18 == m_nJob )
-				return TRUE;
-		}
-		else if( nJob < MAX_MASTER )	// Hero�� ������ ���⸦ ������ �� �ִ�.
-		{
-			if( nJob + 8 == m_nJob )
-				return TRUE;
-		}
-	}
-	return FALSE;
+bool CMover::IsInteriorityJob(const int nJob, const int characterJob) {
+	if (nJob == JOB_VAGRANT || nJob == characterJob) return true;
+	const auto allMyJobs = prj.GetAllJobsOfLine(characterJob);
+	return std::ranges::find(allMyJobs, nJob) != allMyJobs.end();
 }
 
-int   CMover::GetJob()
-{
-	return m_nJob; 
-}
-
-int   CMover::GetExpPercent() {
+int CMover::GetExpPercent() {
 	return (int)(GetExp1() * 10000 / GetMaxExp1());
 }
 
@@ -755,8 +704,8 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 	TRACE( "EXP = %I64d\n", nExp );
 #endif	// __INTERNALSERVER
 
-	if( IsMaster() || IsHero() )
-		nExp /= 2;
+	if(bFirstCall && IsJobTypeOrBetter(JTYPE_MASTER) ) nExp /= 2;
+
 	if( bFirstCall && bMultiPly )
 	{
 #ifdef __WORLDSERVER
@@ -769,13 +718,10 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 	if( bFirstCall && HasBuffByIk3( IK3_ANGEL_BUFF ) )
 	{
 		int nAngel = 100;
-#ifdef __BUFF_1107
+
 		IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
 		WORD wId	= ( pBuff? pBuff->GetId(): 0 );
-#else	// __BUFF_1107
-		LPSKILLINFLUENCE lpSkillIn = m_SkillState.GetItemBuf( IK3_ANGEL_BUFF );
-		WORD wId	= ( lpSkillIn? lpSkillIn->wID: 0 );
-#endif	// __BUFF_1107
+
 		if( wId > 0 )
 		{
 			ItemProp* pItemProp = prj.GetItemProp( wId );
@@ -829,50 +775,28 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 		}
 	}
 
-	if( IsBaseJob() )
-	{
-		if( m_nLevel >= MAX_JOB_LEVEL )
-		{
-			m_nExp1		= 0;
-			return TRUE;
+	// TODO: test and reread this function because it is very messy right now
+
+	constexpr auto GetMaxLevel = [](DWORD jobType) -> std::pair<bool, int> {
+		switch (jobType) {
+			case JTYPE_BASE:        return std::pair<bool, int>(false, MAX_JOB_LEVEL);
+			case JTYPE_EXPERT:      return std::pair<bool, int>(false, MAX_JOB_LEVEL + MAX_EXP_LEVEL);
+			default:
+			case JTYPE_PRO:         return std::pair<bool, int>(true , MAX_LEVEL);
+			case JTYPE_MASTER:      return std::pair<bool, int>(true , MAX_LEVEL);
+			case JTYPE_HERO:        return std::pair<bool, int>(false, MAX_LEGEND_LEVEL);
+			case JTYPE_LEGEND_HERO: return std::pair<bool, int>(true , MAX_3RD_LEGEND_LEVEL);
 		}
-	}
-	else if( IsExpert() )
-	{
-		if( m_nLevel >= MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-		{
-			m_nExp1		= 0;
-			return TRUE;
-		}
-	}
-	else if( IsPro() )
-	{
-		if( m_nLevel > MAX_LEVEL )
-		{
-			m_nLevel = MAX_LEVEL;
-			return TRUE;
-		}		
-	}
-	else if(IsMaster())
-	{
-		if( m_nLevel > MAX_LEVEL )
-		{
-			m_nLevel = MAX_LEVEL;
-			return TRUE;
-		}
-	}
-	else if(IsHero())
-	{
-		if( m_nLevel >  MAX_LEGEND_LEVEL  )
-		{
-			m_nLevel = MAX_LEGEND_LEVEL;
-			return TRUE;
-		}
-	}
-	
+	};
+
+	const auto [lastLevelIsExpable, maxLevel] = GetMaxLevel(GetJobType());
+
+	if (m_nLevel >= maxLevel && !lastLevelIsExpable) {
+		m_nExp1 = 0;
+		return TRUE;
+	}	
 	int nLevelbuf = m_nLevel;
 	int nNextLevel = m_nLevel + 1;
-
 
 	m_nExp1 += nExp;									// pxp�� ������� exp�� ����. ������!
 	
@@ -905,27 +829,17 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 	if( m_nExp1 >= prj.m_aExpCharacter[nNextLevel].nExp1 )	// ������
 	{
 
-		if( IsHero() && ( nNextLevel > MAX_LEGEND_LEVEL ) )
-		{
-			m_nLevel = MAX_LEGEND_LEVEL;
-
-			m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-			return FALSE;
-		}
-		else if( !IsHero() && nNextLevel > MAX_LEVEL )
-		{
-			m_nLevel = MAX_LEVEL;
-
-			m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
+		if (m_nLevel >= maxLevel) {
+			m_nLevel = maxLevel;
+			m_nExp1 = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
 			return FALSE;
 		}
 
 		EXPINTEGER nExptmp;
-//		BOOL f	= FALSE;
 
 		{
 			m_nRemainGP += prj.m_aExpCharacter[ nNextLevel ].dwLPPoint;
-			if( IsMaster() || IsHero() )
+			if( IsJobTypeOrBetter(JTYPE_MASTER) )
 				m_nRemainGP++;
 
 			nExptmp		= m_nExp1 - prj.m_aExpCharacter[nNextLevel].nExp1;
@@ -936,40 +850,15 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 //				f	= TRUE;
 
 			BOOL bLevelUp = TRUE;
-			if( IsBaseJob() && m_nLevel > MAX_JOB_LEVEL ) 
-			{
-				m_nLevel = MAX_JOB_LEVEL;
+			if (m_nLevel > maxLevel) {
+				m_nLevel = maxLevel;
 				bLevelUp = FALSE;
-			}
-			else if( IsExpert() && m_nLevel > MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-			{
-				m_nLevel = MAX_JOB_LEVEL + MAX_EXP_LEVEL;
-				bLevelUp = FALSE;
-			}
-			else if( IsPro() && m_nLevel > MAX_LEVEL )
-			{
-				m_nLevel = MAX_LEVEL;
-				bLevelUp = FALSE;
+				nExptmp = 0;
+				m_nExp1 = lastLevelIsExpable ? prj.m_aExpCharacter[nNextLevel].nExp1 - 1 : 0;
 
-				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-				nExptmp  = 0;
-				return FALSE;
-			}
-			else if( IsMaster() && m_nLevel > MAX_LEVEL )
-			{
-				m_nLevel = MAX_LEVEL;
-				bLevelUp = FALSE;
-				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-				nExptmp  = 0;
-				return FALSE;
-			}
-			else if( IsHero() && (m_nLevel > MAX_LEGEND_LEVEL ) )
-			{
-				m_nLevel = MAX_LEGEND_LEVEL;
-				bLevelUp = FALSE;
-				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-				nExptmp  = 0;
-				return FALSE;
+				if (!lastLevelIsExpable) {
+					return FALSE;
+				}
 			}
 
 			if( bLevelUp )
@@ -980,7 +869,7 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 				if( m_nDeathLevel >= m_nLevel )
 				{
 					m_nRemainGP -= prj.m_aExpCharacter[ nNextLevel ].dwLPPoint;
-					if( IsMaster() || IsHero() )
+					if (IsJobTypeOrBetter(JTYPE_MASTER))
 						m_nRemainGP--;
 				}
 
@@ -988,7 +877,7 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 				if( m_nDeathLevel < m_nLevel )
 				{
 					int nGetPoint = ((GetLevel() - 1) / 20) + 2;
-					if( IsMaster() || IsHero() )
+					if( IsJobTypeOrBetter(JTYPE_MASTER) )
 						SetMasterSkillPointUp();
 					else
 					{
@@ -1017,7 +906,7 @@ BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BO
 			else
 			{
 				m_nRemainGP -= prj.m_aExpCharacter[ nNextLevel ].dwLPPoint;
-				if( IsMaster() || IsHero() )
+				if( IsJobTypeOrBetter(JTYPE_MASTER) )
 					m_nRemainGP--;
 				nExptmp	= m_nExp1	= 0;
 			}
@@ -2441,89 +2330,46 @@ int CMover::GetFPRecovery()
 // ���� �̸��� ��Ʈ������ �����ش�.
 LPCTSTR CMover::GetFameName( void )
 {
-	switch( GetJob() )
-	{
-	// ��ũ�ι�
-	case JOB_ACROBAT:
-	case JOB_JESTER:
-	case JOB_RANGER:
-	case JOB_JESTER_MASTER:
-	case JOB_RANGER_MASTER:
-	case JOB_JESTER_HERO:
-	case JOB_RANGER_HERO:
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_ACR_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_ACR_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_ACR_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_ACR_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_ACR_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_ACR_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_ACR_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_ACR_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_ACR_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_ACR_FAME01 );
-		break;
+	static constexpr std::array<int, 10> acrobatTitles = {
+		TID_GAME_ACR_FAME01, TID_GAME_ACR_FAME02, TID_GAME_ACR_FAME03, TID_GAME_ACR_FAME04,
+		TID_GAME_ACR_FAME05, TID_GAME_ACR_FAME06, TID_GAME_ACR_FAME07, TID_GAME_ACR_FAME08,
+		TID_GAME_ACR_FAME09, TID_GAME_ACR_FAME10
+	};
 
-	// �Ӽ��ʸ��϶�
-	case JOB_MERCENARY:	
-	case JOB_KNIGHT:	
-	case JOB_BLADE:
-	case JOB_KNIGHT_MASTER:
-	case JOB_BLADE_MASTER:
-	case JOB_KNIGHT_HERO:	
-	case JOB_BLADE_HERO:
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_MER_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_MER_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_MER_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_MER_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_MER_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_MER_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_MER_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_MER_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_MER_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_MER_FAME01 );
-		break;
-	// ������
-	case JOB_MAGICIAN:
-	case JOB_PSYCHIKEEPER:	
-	case JOB_ELEMENTOR:
-	case JOB_PSYCHIKEEPER_MASTER:	
-	case JOB_ELEMENTOR_MASTER:
-	case JOB_PSYCHIKEEPER_HERO:	
-	case JOB_ELEMENTOR_HERO:
+	static constexpr std::array<int, 10> mercenaryTitles = {
+		TID_GAME_MER_FAME01, TID_GAME_MER_FAME02, TID_GAME_MER_FAME03, TID_GAME_MER_FAME04,
+		TID_GAME_MER_FAME05, TID_GAME_MER_FAME06, TID_GAME_MER_FAME07, TID_GAME_MER_FAME08,
+		TID_GAME_MER_FAME09, TID_GAME_MER_FAME10
+	};
 
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_MAG_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_MAG_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_MAG_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_MAG_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_MAG_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_MAG_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_MAG_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_MAG_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_MAG_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_MAG_FAME01 );
-		break;
+	static constexpr std::array<int, 10> magicianTitles = {
+		TID_GAME_MAG_FAME01, TID_GAME_MAG_FAME02, TID_GAME_MAG_FAME03, TID_GAME_MAG_FAME04,
+		TID_GAME_MAG_FAME05, TID_GAME_MAG_FAME06, TID_GAME_MAG_FAME07, TID_GAME_MAG_FAME08,
+		TID_GAME_MAG_FAME09, TID_GAME_MAG_FAME10
+	};
 
-	// ��ý�Ʈ
-	case JOB_ASSIST:
-	case JOB_BILLPOSTER:	
-	case JOB_RINGMASTER:
-	case JOB_BILLPOSTER_MASTER:	
-	case JOB_RINGMASTER_MASTER:
-	case JOB_BILLPOSTER_HERO:	
-	case JOB_RINGMASTER_HERO:
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_ASS_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_ASS_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_ASS_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_ASS_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_ASS_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_ASS_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_ASS_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_ASS_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_ASS_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_ASS_FAME01 );		
+	static constexpr std::array<int, 10> assistTitles = {
+		TID_GAME_ASS_FAME01, TID_GAME_ASS_FAME02, TID_GAME_ASS_FAME03, TID_GAME_ASS_FAME04,
+		TID_GAME_ASS_FAME05, TID_GAME_ASS_FAME06, TID_GAME_ASS_FAME07, TID_GAME_ASS_FAME08,
+		TID_GAME_ASS_FAME09, TID_GAME_ASS_FAME10
+	};
 
-		break;
+	static constexpr std::array<int, 10> thresholds = {
+		10, 100, 1000, 4000, 10000, 20000, 50000, 1000000, 5000000, 100000000
+	};
+
+	size_t i = 0;
+	while (i < thresholds.size() && m_nFame >= thresholds[i]) {
+		++i;
 	}
+
+	if (i == 0) return "";
+	
+	if (IsInteriorityJob(JOB_ACROBAT))   return prj.GetText(acrobatTitles[i - 1]);
+	if (IsInteriorityJob(JOB_MERCENARY)) return prj.GetText(mercenaryTitles[i - 1]);
+	if (IsInteriorityJob(JOB_MAGICIAN))  return prj.GetText(magicianTitles[i - 1]);
+	if (IsInteriorityJob(JOB_ASSIST))    return prj.GetText(assistTitles[i - 1]);
+
 	return "";
 }
 

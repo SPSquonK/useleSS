@@ -133,7 +133,7 @@ namespace WndMgr {
 
 		strstr.Format(prj.GetText(TID_GAME_BASESKILLLEVEL), pSkillProp->dwReqDisLV);
 
-		if (g_pPlayer->GetLevel() < (int)(pSkillProp->dwReqDisLV) && !g_pPlayer->IsMaster() && !g_pPlayer->IsHero())
+		if (!g_pPlayer->HasLevelForSkill(*pSkillProp))
 			str.Format("\n#cffff0000%s#nc", strstr);
 		else
 			str.Format("\n%s", strstr);
@@ -326,7 +326,7 @@ namespace WndMgr {
 			sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_LEVEL), g_Neuz.m_apPlayer[SelectCharacter]->m_nLevel);
 			string += '\n'; string += statebuf;
 			string += prj.GetText(TID_GAME_TOOLTIP_MARK_MASTER);
-		} else if (g_Neuz.m_apPlayer[SelectCharacter]->IsHero()) {
+		} else if (g_Neuz.m_apPlayer[SelectCharacter]->IsJobTypeOrBetter(JTYPE_HERO)) {
 			sprintf(statebuf, prj.GetText(TID_GAME_TOOL_EX_LEVEL), g_Neuz.m_apPlayer[SelectCharacter]->m_nLevel);
 			string += '\n'; string += statebuf;
 			string += prj.GetText(TID_GAME_TOOLTIP_MARK_HERO);
@@ -1206,6 +1206,14 @@ namespace WndMgr {
 				case JOB_BILLPOSTER_HERO:     return TID_GAME_TOOLTIP_BILLPOSTER_HERO;
 				case JOB_PSYCHIKEEPER_HERO:   return TID_GAME_TOOLTIP_PSYCHIKEEPER_HERO;
 				case JOB_ELEMENTOR_HERO:      return TID_GAME_TOOLTIP_ELEMENTOR_HERO;
+				case JOB_LORDTEMPLER_HERO:    return TID_GAME_TOOLTIP_LORDTEMPLER_HERO;
+				case JOB_STORMBLADE_HERO:     return TID_GAME_TOOLTIP_STORMBLADE_HERO;
+				case JOB_WINDLURKER_HERO:     return TID_GAME_TOOLTIP_WINDLURKER_HERO;
+				case JOB_CRACKSHOOTER_HERO:   return TID_GAME_TOOLTIP_CRACKSHOOTER_HERO;
+				case JOB_FLORIST_HERO:        return TID_GAME_TOOLTIP_FLORIST_HERO;
+				case JOB_FORCEMASTER_HERO:    return TID_GAME_TOOLTIP_FORCEMASTER_HERO;
+				case JOB_MENTALIST_HERO:      return TID_GAME_TOOLTIP_MENTALIST_HERO;
+				case JOB_ELEMENTORLORD_HERO:  return TID_GAME_TOOLTIP_ELEMENTORLORD_HERO;
 				default: return 0;
 			}
 		};

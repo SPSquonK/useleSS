@@ -976,8 +976,9 @@ public:
 	void			SetPointParam( int nDstParameter, int nValue, BOOL bTrans = FALSE ); // bTrans가 TRUE이면 강제전송
 	void			OnApplySM();
 	[[nodiscard]] SKILL * GetSkill(DWORD dwSkill);
+	[[nodiscard]] const SKILL * GetSkill(DWORD dwSkill) const;
 	void			OnEndSkillState( DWORD dwSkill, DWORD dwLevel );
-	BOOL			CheckSkill( DWORD dwSkill );
+	BOOL			CheckSkill(DWORD dwSkill) const;
 	void			SetHair( int nHair );
 	void			SetHairColor( DWORD dwHairColor );
 	void			SetHairColor( FLOAT r, FLOAT g, FLOAT b );
@@ -993,9 +994,12 @@ public:
 	[[nodiscard]] bool IsPro() const;
 	[[nodiscard]] bool IsMaster() const;
 	[[nodiscard]] bool IsHero() const;
-	[[nodiscard]] bool IsInteriorityJob(int nJob) const;
+	[[nodiscard]] bool IsLegendHero() const;
+	[[nodiscard]] bool IsJobTypeOrBetter(DWORD jobType) const;
+	[[nodiscard]] bool IsInteriorityJob(int nJob) const { return IsInteriorityJob(nJob, m_nJob); }
+	static [[nodiscard]] bool IsInteriorityJob(int wantedJob, int characterJob);
 	bool AddChangeJob(int nJob);
-	int				GetJob();
+	[[nodiscard]] int GetJob() const noexcept { return m_nJob; };
 	int				GetExpPercent();
 	int				SetLevel( int nSetLevel );
 	int				AddGPPoint( int nAddGPPoint );
@@ -1340,6 +1344,7 @@ public:
 		return prj.m_aJob[nJob].dwJobType;
 	}
 
+	[[nodiscard]] bool HasLevelForSkill(const ItemProp & skillProp) const;
 
 	void			AngelMoveProcess();
 #ifdef __EVE_BALLOON

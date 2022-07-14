@@ -221,45 +221,13 @@ void CWndGuideSystem::SetAni(int nJob, int nAniKind)
 	const char* MagArry[3] = { "Mvr_MgGuidepang_Appear.ani", "Mvr_MgGuidepang_Dafault.ani", "Mvr_MgGuidepang_DisAppear.ani"	};
 	const char* AcrArry[3] = { "Mvr_AcrGuidepang_Appear.ani", "Mvr_AcrGuidepang_Default.ani", "Mvr_AcrGuidepang_DisAppear.ani"	};
 	
-	switch( nJob )
-	{
-	default:
-	case JOB_VAGRANT:
-		{
-			filename = VagArry[nAniKind];
-		}
-		break;
-	case JOB_KNIGHT:
-	case JOB_BLADE:
-	case JOB_MERCENARY:
-		{
-			filename = MerArry[nAniKind];
-		}
-		break;
-	case JOB_RINGMASTER:
-	case JOB_BILLPOSTER:
-	case JOB_ASSIST:
-		{
-			filename = AssArry[nAniKind];
-		}
-		break;
-	case JOB_PSYCHIKEEPER:
-	case JOB_ELEMENTOR:
-	case JOB_MAGICIAN:
-		{
-			filename = MagArry[nAniKind];
-		}
-		break;
-	case JOB_ACROBAT:
-	case JOB_RANGER:
-	case JOB_JESTER:
-		{
-			filename = AcrArry[nAniKind];
-		}
-		break;
-		
-	}
-	
+
+	if (CMover::IsInteriorityJob(JOB_MERCENARY, nJob)) filename = MerArry[nAniKind];
+	else if (CMover::IsInteriorityJob(JOB_ASSIST, nJob)) filename = AssArry[nAniKind];
+	else if (CMover::IsInteriorityJob(JOB_ACROBAT, nJob)) filename = AcrArry[nAniKind];
+	else if (CMover::IsInteriorityJob(JOB_MAGICIAN, nJob)) filename = MagArry[nAniKind];
+	else filename = VagArry[nAniKind];
+
 	m_pModel->LoadMotion( filename );
 	
 	switch(nAniKind)

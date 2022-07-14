@@ -4709,3 +4709,22 @@ const CString& CProject::GetPatrolDestination( DWORD dwKey ) const
 	return strEmpty;
 }
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+
+
+boost::container::small_vector<DWORD, 6> CProject::GetAllJobsOfLine(DWORD jobId) const {
+	boost::container::small_vector<DWORD, 6> jobs;
+
+	while (jobId != JOB_VAGRANT) {
+		const auto it = std::ranges::find(jobs, jobId);
+		if (it != jobs.end()) break;
+
+		jobs.insert(jobs.begin(), jobId);
+
+		jobId = m_aJob[jobId].dwJobBase;
+	}
+
+	jobs.insert(jobs.begin(), JOB_VAGRANT);
+
+	return jobs;
+};
+
