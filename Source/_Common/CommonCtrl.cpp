@@ -322,31 +322,23 @@ void CCommonCtrl::Process()
 	{
 		if( g_tmCurrent > m_dwCtrlReadyTime )
 		{
-			CMover* pMover = prj.GetUserByID(m_idExpPlayer);
+			CUser * pUser = prj.GetUserByID(m_idExpPlayer);
 
-			if( IsValidObj( pMover ) )
+			if( IsValidObj(pUser) )
 			{
-				CUser* pUser = (CUser*)pMover;
-
-				EXPINTEGER nGapGap = m_nExpBox;
-				
-				if( pUser->AddExperience( nGapGap, false, false ) )
-					pUser->LevelUpSetting();
-				else
-					pUser->ExpUpSetting();
-
-				pUser->AddSetExperience(pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel);
+				const EXPINTEGER nGapGap = m_nExpBox;
+				pUser->EarnExperience(nGapGap, false, false);
 
 				g_dpDBClient.SendLogExpBox( pUser->m_idPlayer, GetId(), m_nExpBox, TRUE );
 
-				g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_SYS_EXCHAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);						
+				g_UserMng.AddCreateSfxObj(pUser, XI_SYS_EXCHAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);						
 				  
 				pUser->AddDefinedText( TID_GAME_EXPBOX_EAT, "" );						
 				pUser->AddChatText( TID_GAME_EXPBOX_EAT, "");
 
 				m_dwCtrlReadyTime = 0xffffffff;
-				pMover->m_dwCtrlReadyTime = 0xffffffff;
-				pMover->m_dwCtrlReadyId   = NULL_ID;
+				pUser->m_dwCtrlReadyTime = 0xffffffff;
+				pUser->m_dwCtrlReadyId   = NULL_ID;
 				pUser->AddCtrlCoolTimeCancel();
 					
 				m_bAction = TRUE;

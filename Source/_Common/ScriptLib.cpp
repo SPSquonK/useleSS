@@ -652,12 +652,8 @@ int APIENTRY GetLocalEventState( NPCDIALOG_INFO* pInfo, int nEvent )
 
 int APIENTRY AddExp( NPCDIALOG_INFO* pInfo, int nExp )      
 {
-	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
-	if( pUser->AddExperience( nExp, false, false ) )
-		pUser->LevelUpSetting();
-	else
-		pUser->ExpUpSetting();
-	pUser->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
+	CUser * pUser = prj.GetUser(pInfo->GetPcId());
+	pUser->EarnExperience(nExp, false, false);
 	pUser->AddDefinedText( TID_GAME_REAPEXP );
 	return 1;
 }

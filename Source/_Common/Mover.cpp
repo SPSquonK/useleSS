@@ -4965,30 +4965,7 @@ void CMover::SubAroundExp( float fRange )
 	
 	for (CUser * pUser : pList) {
 		const EXPINTEGER reward = std::min(nExp, prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp);
-
-		if( pUser->AddExperience( reward, true, true ) )
-		{
-			// 레벨업 됐다.
-			g_UserMng.AddSetLevel( pUser, (WORD)pUser->m_nLevel );		// pUser의 주위사람에게 pUser가 레벨이 올랐다는걸 보냄.
-			pUser->AddSetGrowthLearningPoint( pUser->m_nRemainGP );		// pUser에게 GP변동된것을 보냄.
-			g_dpDBClient.SendLogLevelUp( pUser, 1 );	// 레벨업 로그
-			g_dpDBClient.SendUpdatePlayerData( pUser );
-		}
-		else
-		{
-			// 레벨업 안되고 겸치만 올랐다.
-			// 레벨 5이상일때는 경험치 업을 로그_레벨업 테이블에 로그를 남긴다
-			// 경험치 20% 단위로 로그를 남김
-			int nNextExpLog = (int)(pUser->m_nExpLog/20 + 1) * 20;	
-			int nExpPercent = (int)( GetExp1() * 100 / GetMaxExp1() );
-			if( nExpPercent >= nNextExpLog )
-			{
-				pUser->m_nExpLog = nExpPercent;
-				g_dpDBClient.SendLogLevelUp( this, 5 );
-			}
-		}
-		// pUser에게 경험치 바뀐걸 보냄
-		pUser->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
+		pUser->EarnExperience(reward, true, true);
 	}
 }
 

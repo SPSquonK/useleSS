@@ -170,8 +170,6 @@ public:
 	void			DoSMItemEquip( CItemElem* pItemElem, DWORD dwParts );
 	void			DoSMItemUnEquip( CItemElem* pItemElem, DWORD dwParts );
 	void			CheckFiniteItem();
-	void			LevelUpSetting( void );
-	void			ExpUpSetting( void );
 	void			SetValid( BOOL bValid ) { m_bValid = bValid; }
 	BOOL			IsValid();
 	void			SetReturnPos( const D3DXVECTOR3& vPos );
@@ -224,8 +222,9 @@ public:
 
 	void AddExperienceSolo(EXPFLOAT fExpValue, MoverProp * pMoverProp, float fFxpValue, bool bParty);
 	void AddPartyMemberExperience(EXPINTEGER nExp, int nFxp);
-	bool AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency);
+	void EarnExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency);
 private:
+	bool AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency);
 	bool AddRawExperience(EXPINTEGER nExp);
 
 public:

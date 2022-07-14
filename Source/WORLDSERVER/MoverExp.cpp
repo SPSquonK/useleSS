@@ -348,14 +348,32 @@ void CUser::AddPartyMemberExperience(EXPINTEGER nExp, int nFxp) {
 		AddSetFxp(m_nFxp, GetFlightLv());
 	}
 
-	if (AddExperience(nExp, true, true))
-		LevelUpSetting();
-	else
-		ExpUpSetting();
-
-	AddSetExperience(GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel);
+	EarnExperience(nExp, true, true);
 }
 
+
+void CUser::EarnExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency) {
+	if (AddExperience(nExp, applyMultipliers, reducePropency)) {
+		g_UserMng.AddSetLevel(this, (short)GetLevel());
+		AddSetGrowthLearningPoint(m_nRemainGP);
+		g_dpDBClient.SendLogLevelUp(this, 1);
+		g_dpDBClient.SendUpdatePlayerData(this);
+	} else {
+		// 레벨 5이상 로그_레벨업 테이블에 로그를 남긴다
+		// 20% 단위로 로그를 남김
+		if (GetLevel() > 5) // 레벨 5이상
+		{
+			int nNextExpLog = (int)(m_nExpLog / 20 + 1) * 20;
+			int nExpPercent = (int)(GetExp1() * 100 / GetMaxExp1());
+			if (nExpPercent >= nNextExpLog) {
+				m_nExpLog = nExpPercent;
+				g_dpDBClient.SendLogLevelUp(this, 5);
+			}
+		}
+	}
+	
+	AddSetExperience(GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel);
+}
 
 bool CUser::AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency) {
 #ifdef __VTN_TIMELIMIT
