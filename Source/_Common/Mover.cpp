@@ -4933,61 +4933,44 @@ void CMover::SubPVP( CMover *pAttacker, int nReflect )
 
 // this가 죽은무버다.
 // this를 중심으로 반경 fRange 이내에 있는 사람들에게 경험치를 분배한다.
-void CMover::SubAroundExp( CMover *pAttacker, float fRange )
+void CMover::SubAroundExp( float fRange )
 {
-#if 1
-#define MAX_AROUND_USER		512
+	static constexpr size_t MaxAroundUser = 512;
 
-	D3DXVECTOR3	vPos = GetPos();
-	D3DXVECTOR3 vDist;
-	FLOAT		fDistSq;
-	CUser *pUser;
-	CUser *pList[ MAX_AROUND_USER ], **ptr;
-	int		nMaxList = 0;
-	int		i;
+	boost::container::small_vector<CUser *, MaxAroundUser> pList;
 
-	TRACE( "보스몹 죽임 %s\n", pAttacker->GetName() );
+	const D3DXVECTOR3	vPos = GetPos();
+
 	fRange *= fRange;		// Sq 버전으로 바꿈.
 
-	memset( pList, 0, sizeof(pList) );
-	ptr = pList;
-
 	// 반경내에 있는 유저를 추려냄.
-	FOR_VISIBILITYRANGE( this )
-	{
-		pUser = USERPTR;
-		vDist = vPos - pUser->GetPos();
-		fDistSq = D3DXVec3LengthSq( &vDist );		// 죽은넘과 유저사이의 거리Sq를 구함 
-		if( fDistSq <= fRange )				// 반경 fRange 미터 이내에 있는 사람은
+	FOR_VISIBILITYRANGE(this) {
+		CUser * pUser = USERPTR;
+		const D3DXVECTOR3 vDist = vPos - pUser->GetPos();
+		const FLOAT fDistSq = D3DXVec3LengthSq(&vDist);		// 죽은넘과 유저사이의 거리Sq를 구함 
+		if (fDistSq <= fRange)				// 반경 fRange 미터 이내에 있는 사람은
 		{
-			*ptr++ = pUser;
-			nMaxList ++;
+			pList.emplace_back(pUser);
 		}
-	}	
+	}
 	NEXT_VISIBILITYRANGE( this )
 
-	if( nMaxList == 0 )
-	{
-		Error( "CMover::SubAroundExp %s주위에 유저가 없다. ", GetName() );
+	if (pList.empty()) {
+		Error("CMover::SubAroundExp %s주위에 유저가 없다. ", GetName());
 		return;
 	}
 
-
-	EXPINTEGER nExp		= GetProp()->nExpValue / (EXPINTEGER)nMaxList;	// 1인당 얼마씩 배분되야 하는가.
+	const EXPINTEGER nExp = GetProp()->nExpValue / static_cast<EXPINTEGER>(pList.size());	// 1인당 얼마씩 배분되야 하는가.
 	// 추려낸 유저들에게 경험치를 줌.
-	ptr = pList;
-	for( i = 0; i < nMaxList; i ++ )
-	{
-		pUser = *ptr++;
+	
+	for (CUser * pUser : pList) {
+		const EXPINTEGER reward = std::min(nExp, prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp);
 
-		if( nExp > prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp )
-			nExp	= prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp;
-
-		if( pUser->AddExperience( nExp, TRUE, TRUE, TRUE ) )
+		if( pUser->AddExperience( reward, true, true ) )
 		{
 			// 레벨업 됐다.
 			g_UserMng.AddSetLevel( pUser, (WORD)pUser->m_nLevel );		// pUser의 주위사람에게 pUser가 레벨이 올랐다는걸 보냄.
-			((CUser*)pUser)->AddSetGrowthLearningPoint( pUser->m_nRemainGP );		// pUser에게 GP변동된것을 보냄.
+			pUser->AddSetGrowthLearningPoint( pUser->m_nRemainGP );		// pUser에게 GP변동된것을 보냄.
 			g_dpDBClient.SendLogLevelUp( pUser, 1 );	// 레벨업 로그
 			g_dpDBClient.SendUpdatePlayerData( pUser );
 		}
@@ -4996,7 +4979,6 @@ void CMover::SubAroundExp( CMover *pAttacker, float fRange )
 			// 레벨업 안되고 겸치만 올랐다.
 			// 레벨 5이상일때는 경험치 업을 로그_레벨업 테이블에 로그를 남긴다
 			// 경험치 20% 단위로 로그를 남김
-#ifdef __EXP_ANGELEXP_LOG
 			int nNextExpLog = (int)(pUser->m_nExpLog/20 + 1) * 20;	
 			int nExpPercent = (int)( GetExp1() * 100 / GetMaxExp1() );
 			if( nExpPercent >= nNextExpLog )
@@ -5004,20 +4986,10 @@ void CMover::SubAroundExp( CMover *pAttacker, float fRange )
 				pUser->m_nExpLog = nExpPercent;
 				g_dpDBClient.SendLogLevelUp( this, 5 );
 			}
-#else // __EXP_ANGELEXP_LOG
-			int iLogExp = GetExp1() * 100 / GetMaxExp1();
-			iLogExp /= 20;
-			if( pUser->GetLevel() > 5 ) // 레벨 5이상
-			{
-				if( ( 20 * ( iLogExp + 1 ) ) <= ( pUser->GetExp1() * 100 / pUser->GetMaxExp1() ) )
-					g_dpDBClient.SendLogLevelUp( pUser, 5 );
-			}
-#endif // __EXP_ANGELEXP_LOG
 		}
 		// pUser에게 경험치 바뀐걸 보냄
-		((CUser*)pUser)->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
-	}		
-#endif // 0
+		pUser->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
+	}
 }
 
 void CMover::AddKillRecovery()

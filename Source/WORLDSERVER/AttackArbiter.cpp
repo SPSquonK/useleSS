@@ -702,7 +702,7 @@ void CAttackArbiter::OnDied()
 	}
 
 	if( m_pDefender->m_dwIndex == MI_CLOCKWORK1 || m_pDefender->m_dwIndex == MI_BIGMUSCLE || m_pDefender->m_dwIndex == MI_KRRR )		
-		m_pDefender->SubAroundExp( m_pAttacker, 50.0f );		// 반경50미터 이내에는 다 경험치 나눠가짐.
+		m_pDefender->SubAroundExp( 50.0f );		// 반경50미터 이내에는 다 경험치 나눠가짐.
 	else
 		m_pAttacker->SubExperience( m_pDefender );		// m_pDefender를 죽이고 난후의 m_pAttacker 경험치 처리.
 	

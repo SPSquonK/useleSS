@@ -330,14 +330,15 @@ void CCommonCtrl::Process()
 
 				EXPINTEGER nGapGap = m_nExpBox;
 				
-				if( pUser->AddExperience( nGapGap, TRUE, FALSE ) )
+				if( pUser->AddExperience( nGapGap, false, false ) )
 					pUser->LevelUpSetting();
 				else
 					pUser->ExpUpSetting();
 
+				pUser->AddSetExperience(pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel);
+
 				g_dpDBClient.SendLogExpBox( pUser->m_idPlayer, GetId(), m_nExpBox, TRUE );
 
-				pUser->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
 				g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_SYS_EXCHAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);						
 				  
 				pUser->AddDefinedText( TID_GAME_EXPBOX_EAT, "" );						

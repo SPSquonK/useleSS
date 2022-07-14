@@ -335,7 +335,7 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 		{
 			nNum = pQuestProp->m_nEndRewardExpMax - pQuestProp->m_nEndRewardExpMin + 1; 
 			int nExp = pQuestProp->m_nEndRewardExpMin + xRandom( nNum ); 
-			if( pUser->AddExperience( nExp, TRUE, FALSE ) )
+			if( pUser->AddExperience( nExp, false, false) )
 				pUser->LevelUpSetting();
 			else
 				pUser->ExpUpSetting();

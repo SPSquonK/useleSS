@@ -4062,7 +4062,7 @@ void CDPSrvr::OnExpUp( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 			EXPINTEGER nExp;
 			ar >> nExp;
 
-			if( pUser->AddExperience( nExp, TRUE, TRUE, TRUE ) )
+			if( pUser->AddExperience( nExp, true, true ) )
 				pUser->LevelUpSetting();
 			else
 				pUser->ExpUpSetting();

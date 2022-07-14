@@ -653,7 +653,7 @@ int APIENTRY GetLocalEventState( NPCDIALOG_INFO* pInfo, int nEvent )
 int APIENTRY AddExp( NPCDIALOG_INFO* pInfo, int nExp )      
 {
 	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
-	if( pUser->AddExperience( nExp, TRUE, FALSE ) )
+	if( pUser->AddExperience( nExp, false, false ) )
 		pUser->LevelUpSetting();
 	else
 		pUser->ExpUpSetting();

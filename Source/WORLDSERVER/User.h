@@ -224,7 +224,11 @@ public:
 
 	void AddExperienceSolo(EXPFLOAT fExpValue, MoverProp * pMoverProp, float fFxpValue, bool bParty);
 	void AddPartyMemberExperience(EXPINTEGER nExp, int nFxp);
+	bool AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency);
+private:
+	bool AddRawExperience(EXPINTEGER nExp);
 
+public:
 #pragma endregion
 
 #pragma region MoverItem
