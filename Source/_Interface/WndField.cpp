@@ -12268,11 +12268,13 @@ void CWndGuildCombatRank_Person::UpdatePlayer(int nJob, u_long idPlayer)
 }
 
 CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int nJob) {
-	if (CMover::IsInteriorityJob(JOB_MERCENARY, nJob)) return &m_WndGuildCombatTabClass_Mer;
-	if (CMover::IsInteriorityJob(JOB_ACROBAT  , nJob)) return &m_WndGuildCombatTabClass_Acr;
-	if (CMover::IsInteriorityJob(JOB_ASSIST   , nJob)) return &m_WndGuildCombatTabClass_Ass;
-	if (CMover::IsInteriorityJob(JOB_MAGICIAN , nJob)) return &m_WndGuildCombatTabClass_Mag;
-	return nullptr;
+	switch (prj.GetProJob(nJob)) {
+		case CProject::ProJob::Mercenary: return &m_WndGuildCombatTabClass_Mer;
+		case CProject::ProJob::Acrobat:   return &m_WndGuildCombatTabClass_Acr;
+		case CProject::ProJob::Assist:    return &m_WndGuildCombatTabClass_Ass;
+		case CProject::ProJob::Magician:  return &m_WndGuildCombatTabClass_Mag;
+		default:                          return nullptr;
+	}
 }
 
 /****************************************************

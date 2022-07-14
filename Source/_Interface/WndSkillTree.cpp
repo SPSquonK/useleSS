@@ -417,7 +417,6 @@ void CWndSkillTreeEx::InitItem() {
 	m_nCurSelect = -1;
 	m_nJob = g_pPlayer->m_nJob;
 
-	m_nCount = 0;
 	CString strTex[2];
 
 	CWndStatic * lpWndStatic1 = (CWndStatic *)GetDlgItem(WIDC_STATIC2);
@@ -426,7 +425,6 @@ void CWndSkillTreeEx::InitItem() {
 
 	switch (m_nJob) {
 		case JOB_VAGRANT:
-			m_nCount = 3;
 			strTex[0] = "";//"Back_Upper.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -437,7 +435,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_KNIGHT_MASTER:
 		case JOB_KNIGHT_HERO:
 		case JOB_LORDTEMPLER_HERO:
-			m_nCount = 26;
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "Back_Night.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -448,7 +445,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_BLADE_MASTER:
 		case JOB_BLADE_HERO:
 		case JOB_STORMBLADE_HERO:
-			m_nCount = 26;
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "Back_Blade.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -456,7 +452,6 @@ void CWndSkillTreeEx::InitItem() {
 			lpWndStatic3->SetTitle(prj.m_aJob[JOB_BLADE].szName);
 			break;
 		case JOB_MERCENARY:
-			m_nCount = 18;
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -467,7 +462,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_BILLPOSTER_MASTER:
 		case JOB_BILLPOSTER_HERO:
 		case JOB_FORCEMASTER_HERO:
-			m_nCount = 28;
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "Back_Bill.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -478,7 +472,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_RINGMASTER_MASTER:
 		case JOB_RINGMASTER_HERO:
 		case JOB_FLORIST_HERO:
-			m_nCount = 28;
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "Back_Ring.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -486,7 +479,6 @@ void CWndSkillTreeEx::InitItem() {
 			lpWndStatic3->SetTitle(prj.m_aJob[JOB_RINGMASTER].szName);
 			break;
 		case JOB_ASSIST:
-			m_nCount = 20;
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -497,7 +489,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_ELEMENTOR_MASTER:
 		case JOB_ELEMENTOR_HERO:
 		case JOB_ELEMENTORLORD_HERO:
-			m_nCount = 39;
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "Back_Ele.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -508,7 +499,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_PSYCHIKEEPER_MASTER:
 		case JOB_PSYCHIKEEPER_HERO:
 		case JOB_MENTALIST_HERO:
-			m_nCount = 28;
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "Back_Psy.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -516,7 +506,6 @@ void CWndSkillTreeEx::InitItem() {
 			lpWndStatic3->SetTitle(prj.m_aJob[JOB_PSYCHIKEEPER].szName);
 			break;
 		case JOB_MAGICIAN:
-			m_nCount = 20;
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -524,7 +513,6 @@ void CWndSkillTreeEx::InitItem() {
 			lpWndStatic3->SetTitle("");
 			break;
 		case JOB_ACROBAT:
-			m_nCount = 20;
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "";//"Back_Lower.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -535,7 +523,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_JESTER_MASTER:
 		case JOB_JESTER_HERO:
 		case JOB_WINDLURKER_HERO:
-			m_nCount = 20;
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "Back_Jst.TGA";//"Back_Lower.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
@@ -546,7 +533,6 @@ void CWndSkillTreeEx::InitItem() {
 		case JOB_RANGER_MASTER:
 		case JOB_RANGER_HERO:
 		case JOB_CRACKSHOOTER_HERO:
-			m_nCount = 20;
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "Back_Rag.TGA";//"Back_Lower.TGA";
 			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);

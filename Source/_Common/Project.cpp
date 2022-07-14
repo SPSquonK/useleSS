@@ -4728,3 +4728,18 @@ boost::container::small_vector<DWORD, 6> CProject::GetAllJobsOfLine(DWORD jobId)
 	return jobs;
 };
 
+CProject::ProJob CProject::GetProJob(DWORD jobId) const {
+	if (jobId == NULL_ID || jobId == JOB_VAGRANT) return ProJob::Vagrant;
+
+	while (true) {
+		switch (jobId) {
+			case JOB_VAGRANT:   return ProJob::Vagrant;
+			case JOB_ACROBAT:   return ProJob::Acrobat;
+			case JOB_ASSIST:    return ProJob::Assist;
+			case JOB_MERCENARY: return ProJob::Mercenary;
+			case JOB_MAGICIAN:  return ProJob::Magician;
+		}
+
+		jobId = m_aJob[jobId].dwJobBase;
+	}
+}

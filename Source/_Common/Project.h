@@ -745,7 +745,8 @@ public:
 	JOB							m_aJob[ MAX_JOB ];
 	JOBITEM						m_jobItem[ MAX_JOBITEM ];
 	[[nodiscard]] boost::container::small_vector<DWORD, 6> GetAllJobsOfLine(DWORD jobId) const;
-
+	enum class ProJob { Vagrant, Mercenary, Assist, Magician, Acrobat };
+	[[nodiscard]] ProJob GetProJob(DWORD jobId) const;
 	STRUCTURE					m_aStructure[ MAX_STRUCTURE ];
 	GUILD_APPELL				m_aGuildAppell[ MAX_GUILDAPPELL ];
 	EXPCHARACTER				m_aExpCharacter[ MAX_EXPCHARACTER ];

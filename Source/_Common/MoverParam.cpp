@@ -2101,14 +2101,14 @@ LPCTSTR CMover::GetFameName( void )
 
 	if (i == 0) return "";
 	
-	if (IsInteriorityJob(JOB_ACROBAT))   return prj.GetText(acrobatTitles[i - 1]);
-	if (IsInteriorityJob(JOB_MERCENARY)) return prj.GetText(mercenaryTitles[i - 1]);
-	if (IsInteriorityJob(JOB_MAGICIAN))  return prj.GetText(magicianTitles[i - 1]);
-	if (IsInteriorityJob(JOB_ASSIST))    return prj.GetText(assistTitles[i - 1]);
-
-	return "";
+	switch (prj.GetProJob(m_nJob)) {
+		case CProject::ProJob::Acrobat:   return prj.GetText(acrobatTitles[i - 1]);
+		case CProject::ProJob::Mercenary: return prj.GetText(mercenaryTitles[i - 1]);
+		case CProject::ProJob::Magician:  return prj.GetText(magicianTitles[i - 1]);
+		case CProject::ProJob::Assist:    return prj.GetText(assistTitles[i - 1]);
+		default:                          return "";
+	}
 }
-
 
 #endif
 

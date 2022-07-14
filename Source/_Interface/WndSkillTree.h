@@ -5,8 +5,6 @@
 
 class CWndSkillTreeEx : public CWndNeuz {
 protected:
-	int  m_nCount = 0;					//현재 직업에 해당하는 스킬 총 갯수
-
 	int  m_nCurSelect = -1;			//잉 안쓰고있는데?
 	BOOL m_bDrag = FALSE;					//마우스로 클릭했는데 스킬아이콘 영역 안 인 경우 TRUE
 	int				m_nCurrSkillPoint = 0;		//현재 남은 스킬포인트
