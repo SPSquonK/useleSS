@@ -8772,24 +8772,6 @@ void CWndInventory::UpdateParts()
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndReSkillWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_BTN_YES || message == EN_RETURN )
-	{
-		CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-		if (pSkillTree)
-			g_DPlay.SendDoUseSkillPoint(pSkillTree->GetSkills());
-
-		Destroy();
-	}
-	else if( nID == WIDC_BTN_NO )
-	{
-		Destroy();
-	}
-	
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
 void CWndPostItemWarning::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 

@@ -688,6 +688,7 @@
     <ClInclude Include="..\_Common\Vector3Helper.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
+    <ClInclude Include="..\_Interface\WndSkillTree.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
     <ClInclude Include="..\_Interface\WndTListBox.hpp" />
     <ClInclude Include="..\_Network\ListedServer.h" />

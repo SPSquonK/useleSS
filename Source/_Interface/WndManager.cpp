@@ -1181,9 +1181,8 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 				if( pWndBase == NULL )
 				{
 					SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
-					g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning;
+					g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
 					g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
-					g_WndMng.m_pWndReSkillWarning->InitItem( TRUE );
 				}
 				return;
 			}

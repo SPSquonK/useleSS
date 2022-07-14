@@ -1889,6 +1889,9 @@
     <ClInclude Include="..\_Common\SkillsOfMover.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Interface\WndSkillTree.h">
+      <Filter>Source Files\_Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

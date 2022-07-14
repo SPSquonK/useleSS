@@ -3,15 +3,12 @@
 #include "AppDefine.h"
 #include "defineSkill.h"
 #include "defineText.h"
+#include "DPClient.h"
 
 /////////////
 
 CWndReSkillWarning::~CWndReSkillWarning() {
 	Destroy();
-}
-
-void CWndReSkillWarning::InitItem(BOOL bParentDestroy) {
-	m_bParentDestroy = bParentDestroy;
 }
 
 void CWndReSkillWarning::OnDestroy() {
@@ -28,13 +25,25 @@ void CWndReSkillWarning::OnInitialUpdate() {
 		pWndEdit->EnableWindow(FALSE);
 	}
 
-	m_bParentDestroy = FALSE;
-
 	MoveParentCenter();
 }
 
 BOOL CWndReSkillWarning::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
 	return CWndNeuz::InitDialog(APP_QUEITMWARNING, pWndParent, WBS_MODAL, CPoint(0, 0));
+}
+
+BOOL CWndReSkillWarning::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_BTN_YES || message == EN_RETURN) {
+		CWndSkillTreeEx * pSkillTree = (CWndSkillTreeEx *)g_WndMng.GetWndBase(APP_SKILL3);
+		if (pSkillTree)
+			g_DPlay.SendDoUseSkillPoint(pSkillTree->GetSkills());
+
+		Destroy();
+	} else if (nID == WIDC_BTN_NO) {
+		Destroy();
+	}
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
 
@@ -1358,7 +1367,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 				{
 					if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint) {
 						SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
-						g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning;
+						g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(false);
 						g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
 					}
 				}
@@ -1372,9 +1381,8 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 			CWndBase * pWndBase = (CWndBase *)g_WndMng.GetWndBase(APP_QUEITMWARNING);
 			if (pWndBase == NULL) {
 				SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
-				g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning;
+				g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
 				g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
-				g_WndMng.m_pWndReSkillWarning->InitItem(TRUE);
 			}
 			return TRUE;
 		}
