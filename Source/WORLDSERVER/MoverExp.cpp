@@ -479,7 +479,7 @@ bool CUser::AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePro
 
 	// TODO: test and reread this function because it is very messy right now
 
-	nExp += prj.m_aExpCharacter[m_nLevel + 1].nExp1 * (50 + xRandom(75)) / 100;
+	// nExp += prj.m_aExpCharacter[m_nLevel + 1].nExp1 * (50 + xRandom(75)) / 100;
 
 	return AddRawExperience(nExp);
 }
