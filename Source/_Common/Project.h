@@ -107,7 +107,7 @@ struct QuestProp
 	char    m_nBeginCondPreviousQuestType;
 	QuestId	m_anBeginCondPreviousQuest[ 6 ];
 	QuestId	m_anBeginCondExclusiveQuest[ 6 ];
-	char	m_nBeginCondJob[ MAX_JOB ];
+	char	m_nBeginCondJob[MAX_JOB];
 	char	m_nBeginCondJobNum;
 	BYTE	m_nBeginCondLevelMax;
 	BYTE	m_nBeginCondLevelMin;
