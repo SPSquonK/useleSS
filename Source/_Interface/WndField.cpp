@@ -16138,26 +16138,10 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 				ptJobType.x = lpCtrl->rect.right - 60;
 				ptJobType.y = lpCtrl->rect.top - 1;
 
-				if( prj.jobs.info[ pData->data.nJob ].dwJobType == JTYPE_MASTER )
-				{
-					int nMasterIndex = 27;
-					if(/*m_nLevel >= 60 && */pData->data.nLevel < 70) //Level Down�� ���? �����ؼ� �ּ�ó��.
-						nMasterIndex = 27;
-					else if(pData->data.nLevel >= 70 && pData->data.nLevel < 80)
-						nMasterIndex = 28;
-					else if(pData->data.nLevel >= 80 && pData->data.nLevel < 90)
-						nMasterIndex = 29;
-					else if(pData->data.nLevel >= 90 && pData->data.nLevel < 100)
-						nMasterIndex = 30;
-					else if(pData->data.nLevel >= 100 && pData->data.nLevel < 110)
-						nMasterIndex = 31;
-					else if(pData->data.nLevel >= 110 && pData->data.nLevel <= 120)
-						nMasterIndex = 32;
-
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, ptJobType,  nMasterIndex, &pVertices, 0xffffffff );
+				const int nMasterIndex = Project::Jobs::PlayerDataIcon(pData->data.nJob, pData->data.nLevel).master;
+				if (nMasterIndex != 0) {
+					pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, ptJobType, nMasterIndex, &pVertices, 0xffffffff);
 				}
-				else if( prj.jobs.info[ pData->data.nJob ].dwJobType >= JTYPE_HERO )
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, ptJobType,  33, &pVertices, 0xffffffff );
 
 				pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 			}

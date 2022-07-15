@@ -178,3 +178,91 @@ const JobProp * Project::Jobs::GetJobProp(int nIndex) const {
 }
 
 #endif
+
+#ifdef __CLIENT
+
+Project::Jobs::PlayerDataIcon::PlayerDataIcon(DWORD jobId, int level) {
+	if (prj.jobs.info[jobId].dwJobType == JTYPE_MASTER) {
+		if (level < 70) master = 27;
+		else if (level < 80) master = 28;
+		else if (level < 90) master = 29;
+		else if (level < 100) master = 30;
+		else if (level < 110) master = 31;
+		else master = 32;
+	} else if (prj.jobs.info[jobId].dwJobType >= JTYPE_HERO) {
+		master = 33;
+	} else {
+		master = 0;
+	}
+
+	switch (jobId) {
+		case JOB_VAGRANT:
+			job = 14;
+			break;
+		case JOB_MERCENARY:
+			job = 15;
+			break;
+		case JOB_ACROBAT:
+			job = 16;
+			break;
+		case JOB_ASSIST:
+			job = 17;
+			break;
+		case JOB_MAGICIAN:
+			job = 18;
+			break;
+		case JOB_KNIGHT:
+		case JOB_KNIGHT_MASTER:
+		case JOB_KNIGHT_HERO:
+		case JOB_LORDTEMPLER_HERO:
+			job = 19;
+			break;
+		case JOB_BLADE:
+		case JOB_BLADE_MASTER:
+		case JOB_BLADE_HERO:
+		case JOB_STORMBLADE_HERO:
+			job = 20;
+			break;
+		case JOB_JESTER:
+		case JOB_JESTER_MASTER:
+		case JOB_JESTER_HERO:
+		case JOB_WINDLURKER_HERO:
+			job = 21;
+			break;
+		case JOB_RANGER:
+		case JOB_RANGER_MASTER:
+		case JOB_RANGER_HERO:
+		case JOB_CRACKSHOOTER_HERO:
+			job = 22;
+			break;
+		case JOB_RINGMASTER:
+		case JOB_RINGMASTER_MASTER:
+		case JOB_RINGMASTER_HERO:
+		case JOB_FLORIST_HERO:
+			job = 23;
+			break;
+		case JOB_BILLPOSTER:
+		case JOB_BILLPOSTER_MASTER:
+		case JOB_BILLPOSTER_HERO:
+		case JOB_FORCEMASTER_HERO:
+			job = 24;
+			break;
+		case JOB_PSYCHIKEEPER:
+		case JOB_PSYCHIKEEPER_MASTER:
+		case JOB_PSYCHIKEEPER_HERO:
+		case JOB_MENTALIST_HERO:
+			job = 25;
+			break;
+		case JOB_ELEMENTOR:
+		case JOB_ELEMENTOR_MASTER:
+		case JOB_ELEMENTOR_HERO:
+		case JOB_ELEMENTORLORD_HERO:
+			job = 26;
+			break;
+		default:
+			job = 13;
+			break;
+	}
+}
+
+#endif

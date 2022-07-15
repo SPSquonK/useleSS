@@ -1653,34 +1653,11 @@ void CWndSecretRoomGuildMember::OnDraw( C2DRender* p2DRender )
 		else
 			dwColor = 0xffff6464;
 			
-		if( prj.m_aJob[ pPlayerData->data.nJob ].dwJobType == JTYPE_PRO )			
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  ( 19 + pPlayerData->data.nJob - 6 ), &pVertices, dwColor );
-		else if( prj.m_aJob[ pPlayerData->data.nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if(pPlayerData->data.nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
-				nMasterIndex = 27;
-			else if(pPlayerData->data.nLevel >= 70 && pPlayerData->data.nLevel < 80)
-				nMasterIndex = 28;
-			else if(pPlayerData->data.nLevel >= 80 && pPlayerData->data.nLevel < 90)
-				nMasterIndex = 29;
-			else if(pPlayerData->data.nLevel >= 90 && pPlayerData->data.nLevel < 100)
-				nMasterIndex = 30;
-			else if(pPlayerData->data.nLevel >= 100 && pPlayerData->data.nLevel < 110)
-				nMasterIndex = 31;
-			else if(pPlayerData->data.nLevel >= 110 && pPlayerData->data.nLevel <= 120)
-				nMasterIndex = 32;
-
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 10, nIconTopPos ),  nMasterIndex, &pVertices, dwColor );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  ( 19 + pPlayerData->data.nJob - 16 ), &pVertices, dwColor );
+		const auto jobIcons = Project::Jobs::PlayerDataIcon(pPlayerData->data.nJob, pPlayerData->data.nLevel);
+		if (jobIcons.master != 0) {
+			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 10, nIconTopPos ),  jobIcons.master, &pVertices, dwColor );
 		}
-		else if( prj.m_aJob[ pPlayerData->data.nJob ].dwJobType == JTYPE_HERO )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 10, nIconTopPos ),  33, &pVertices, dwColor );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  ( 19 + pPlayerData->data.nJob - 24 ), &pVertices, dwColor );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  14 + pPlayerData->data.nJob, &pVertices, dwColor );
+		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  jobIcons.job, &pVertices, dwColor );
 
 		pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 		SAFE_DELETE_ARRAY( pVertex );

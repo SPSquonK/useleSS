@@ -35,8 +35,16 @@ namespace Project {
 
   private:
     [[nodiscard]] bool InfoIsConsistent() const;
+  public:
 
+#endif
 
+#ifdef __CLIENT
+    struct PlayerDataIcon {
+      int job;
+      int master;
+      PlayerDataIcon(DWORD jobId, int level);
+    };
 #endif
 
   };

@@ -221,36 +221,11 @@ void CWndRainbowRaceRanking::OnDraw( C2DRender* p2DRender )
 
 			if(pWndWorld)
 			{
-				if( prj.jobs.info[ nJob ].dwJobType == JTYPE_PRO )
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 218, 55 + nTextGap ),  ( 19 + nJob - 6 ), &pVertices, 0xffffffff );
-				else if( prj.jobs.info[ nJob ].dwJobType == JTYPE_MASTER )
-				{
-					int nMasterIndex = 27;
-					if(/*m_nLevel >= 60 && */pPlayerData->data.nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
-						nMasterIndex = 27;
-					else if(pPlayerData->data.nLevel >= 70 && pPlayerData->data.nLevel < 80)
-						nMasterIndex = 28;
-					else if(pPlayerData->data.nLevel >= 80 && pPlayerData->data.nLevel < 90)
-						nMasterIndex = 29;
-					else if(pPlayerData->data.nLevel >= 90 && pPlayerData->data.nLevel < 100)
-						nMasterIndex = 30;
-					else if(pPlayerData->data.nLevel >= 100 && pPlayerData->data.nLevel < 110)
-						nMasterIndex = 31;
-					else if(pPlayerData->data.nLevel >= 110 && pPlayerData->data.nLevel <= 120)
-						nMasterIndex = 32;
-
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 196, 55 + nTextGap ),  nMasterIndex, &pVertices, 0xffffffff );
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 218, 55 + nTextGap ),  ( 19 + nJob - 16 ), &pVertices, 0xffffffff );
+				const auto jobIcons = Project::Jobs::PlayerDataIcon(nJob, pPlayerData->data.nLevel);
+				if (jobIcons.master != 0) {
+					pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(196, 55 + nTextGap), jobIcons.master, &pVertices, 0xffffffff);
 				}
-				else if( prj.jobs.info[ nJob ].dwJobType == JTYPE_HERO )
-				{
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 196, 55 + nTextGap ),  33, &pVertices, 0xffffffff );
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 218, 55 + nTextGap ),  ( 19 + nJob - 24 ), &pVertices, 0xffffffff );
-				}
-				else
-					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 218, 55 + nTextGap ),  14 + nJob, &pVertices, 0xffffffff );
-
-				pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+				pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(218, 55 + nTextGap), jobIcons.job, &pVertices, 0xffffffff);
 			}
 		}
 	}

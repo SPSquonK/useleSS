@@ -385,34 +385,12 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 		// Draw Job Icon
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-		if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), &pVertices, 0xffffffff );
-		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if( stPlayer.m_nLevel < 70 )
-				nMasterIndex = 27;
-			else if( stPlayer.m_nLevel >= 70 && stPlayer.m_nLevel < 80 )
-				nMasterIndex = 28;
-			else if( stPlayer.m_nLevel >= 80 && stPlayer.m_nLevel < 90 )
-				nMasterIndex = 29;
-			else if( stPlayer.m_nLevel >= 90 && stPlayer.m_nLevel < 100 )
-				nMasterIndex = 30;
-			else if( stPlayer.m_nLevel >= 100 && stPlayer.m_nLevel < 110 )
-				nMasterIndex = 31;
-			else if( stPlayer.m_nLevel >= 110 && stPlayer.m_nLevel <= 120 )
-				nMasterIndex = 32;
 
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), &pVertices, 0xffffffff );
+		const auto jobIcons = Project::Jobs::PlayerDataIcon(stPlayer.m_nJob, stPlayer.m_nLevel);
+		if (jobIcons.master != 0) {
+			pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(JOB_TYPE_ICON_X, pt.y), jobIcons.master, &pVertices, 0xffffffff);
 		}
-		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), &pVertices, 0xffffffff );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  14 + stPlayer.m_nJob, &pVertices, 0xffffffff );
+		pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(JOB_ICON_X, pt.y), jobIcons.job, &pVertices, 0xffffffff);
 
 		// Draw Name
 		DWORD dwColor = 0xff000000;
@@ -1062,34 +1040,12 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		// Draw Job Icon
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-		if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), &pVertices, 0xffffffff );
-		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if( stPlayer.m_nLevel < 70 )
-				nMasterIndex = 27;
-			else if( stPlayer.m_nLevel >= 70 && stPlayer.m_nLevel < 80 )
-				nMasterIndex = 28;
-			else if( stPlayer.m_nLevel >= 80 && stPlayer.m_nLevel < 90 )
-				nMasterIndex = 29;
-			else if( stPlayer.m_nLevel >= 90 && stPlayer.m_nLevel < 100 )
-				nMasterIndex = 30;
-			else if( stPlayer.m_nLevel >= 100 && stPlayer.m_nLevel < 110 )
-				nMasterIndex = 31;
-			else if( stPlayer.m_nLevel >= 110 && stPlayer.m_nLevel <= 120 )
-				nMasterIndex = 32;
 
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), &pVertices, 0xffffffff );
+		const auto jobIcons = Project::Jobs::PlayerDataIcon(stPlayer.m_nJob, stPlayer.m_nLevel);
+		if (jobIcons.master) {
+			pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(JOB_TYPE_ICON_X, pt.y), jobIcons.master, &pVertices, 0xffffffff);
 		}
-		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, &pVertices, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), &pVertices, 0xffffffff );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  14 + stPlayer.m_nJob, &pVertices, 0xffffffff );
+		pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(JOB_ICON_X, pt.y), jobIcons.job, &pVertices, 0xffffffff);
 
 		// Draw Name
 		DWORD dwColor = 0xff000000;
@@ -1589,33 +1545,12 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 			// Draw Job Icon
 			static const int JOB_TYPE_ICON_X = 174;
 			static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-			if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
-				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), 0xffffffff );
-			else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
-			{
-				int nMasterIndex = 27;
-				if( stPlayer.m_nLevel < 70 )
-					nMasterIndex = 27;
-				else if( stPlayer.m_nLevel >= 70 && stPlayer.m_nLevel < 80 )
-					nMasterIndex = 28;
-				else if( stPlayer.m_nLevel >= 80 && stPlayer.m_nLevel < 90 )
-					nMasterIndex = 29;
-				else if( stPlayer.m_nLevel >= 90 && stPlayer.m_nLevel < 100 )
-					nMasterIndex = 30;
-				else if( stPlayer.m_nLevel >= 100 && stPlayer.m_nLevel < 110 )
-					nMasterIndex = 31;
-				else if( stPlayer.m_nLevel >= 110 && stPlayer.m_nLevel <= 120 )
-					nMasterIndex = 32;
-				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, 0xffffffff );
-				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), 0xffffffff );
+
+			const auto jobIcons = Project::Jobs::PlayerDataIcon(stPlayer.m_nJob, stPlayer.m_nLevel);
+			if (jobIcons.master != 0) {
+				pWndWorld->m_texPlayerDataIcon.Render(p2DRender, CPoint(JOB_TYPE_ICON_X, pt.y), jobIcons.master, 0xffffffff);
 			}
-			else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
-			{
-				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, 0xffffffff );
-				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), 0xffffffff );
-			}
-			else
-				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  14 + stPlayer.m_nJob, 0xffffffff );
+			pWndWorld->m_texPlayerDataIcon.Render(p2DRender, CPoint(JOB_ICON_X, pt.y), jobIcons.job, 0xffffffff);
 
 			// Draw Name
 			DWORD dwColor = ( i == m_nCurSelectedDisciple ) ? 0xff6060ff : 0xff000000;
@@ -1668,33 +1603,13 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 		// Draw Job Icon
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-		if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), 0xffffffff );
-		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if( stPlayer.m_nLevel < 70 )
-				nMasterIndex = 27;
-			else if( stPlayer.m_nLevel >= 70 && stPlayer.m_nLevel < 80 )
-				nMasterIndex = 28;
-			else if( stPlayer.m_nLevel >= 80 && stPlayer.m_nLevel < 90 )
-				nMasterIndex = 29;
-			else if( stPlayer.m_nLevel >= 90 && stPlayer.m_nLevel < 100 )
-				nMasterIndex = 30;
-			else if( stPlayer.m_nLevel >= 100 && stPlayer.m_nLevel < 110 )
-				nMasterIndex = 31;
-			else if( stPlayer.m_nLevel >= 110 && stPlayer.m_nLevel <= 120 )
-				nMasterIndex = 32;
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), 0xffffffff );
+
+		const auto jobIcons = Project::Jobs::PlayerDataIcon(stPlayer.m_nJob, stPlayer.m_nLevel);
+		if (jobIcons.master != 0) {
+			pWndWorld->m_texPlayerDataIcon.Render(p2DRender, CPoint(JOB_TYPE_ICON_X, pt.y), jobIcons.master, 0xffffffff);
 		}
-		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
-		{
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, 0xffffffff );
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), 0xffffffff );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  14 + stPlayer.m_nJob, 0xffffffff );
+		pWndWorld->m_texPlayerDataIcon.Render(p2DRender, CPoint(JOB_ICON_X, pt.y), jobIcons.job, 0xffffffff);
+
 
 		// Draw Name
 		DWORD dwColor = ( m_bCurSelectedMaster == TRUE ) ? 0xff6060ff : 0xff000000;

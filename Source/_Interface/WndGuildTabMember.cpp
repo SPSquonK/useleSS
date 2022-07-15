@@ -250,35 +250,13 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		else
 			Color = 0xffff6464;
 		// Draw Job Icon
-		if( prj.jobs.info[ pMember->nJob ].dwJobType == JTYPE_PRO )
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob - 6 ), &pVertices, Color );
-		else if( prj.jobs.info[ pMember->nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if(/*m_nLevel >= 60 && */pMember->nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
-				nMasterIndex = 27;
-			else if(pMember->nLevel>= 70 && pMember->nLevel < 80)
-				nMasterIndex = 28;
-			else if(pMember->nLevel >= 80 && pMember->nLevel < 90)
-				nMasterIndex = 29;
-			else if(pMember->nLevel >= 90 && pMember->nLevel < 100)
-				nMasterIndex = 30;
-			else if(pMember->nLevel >= 100 && pMember->nLevel < 110)
-				nMasterIndex = 31;
-			else if(pMember->nLevel>= 110 && pMember->nLevel <= 120)
-				nMasterIndex = 32;
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 64, sy-3 ),  nMasterIndex, &pVertices, Color );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob- 16 ), &pVertices, Color );
+		const auto jobIcons = Project::Jobs::PlayerDataIcon(pMember->nJob, pMember->nLevel);
+		if (jobIcons.master != 0) {
+			pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(sx + 64, sy - 3), jobIcons.master, &pVertices, Color);
 		}
-		else if( prj.jobs.info[ pMember->nJob ].dwJobType >= JTYPE_HERO  )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 64, sy-3 ),  33, &pVertices, Color );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob - 24 ), &pVertices, Color );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  14 + pMember->nJob, &pVertices, Color );
+		pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(sx + 84, sy - 3), jobIcons.job, &pVertices, Color);
 
-			p2DRender->TextOut( sx + 126, sy, pMember->nLevel, dwColor );
+		p2DRender->TextOut( sx + 126, sy, pMember->nLevel, dwColor );
 		
 		CString strFormat;
 		strFormat.Format("%s", pMember->szName);
