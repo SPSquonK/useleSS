@@ -258,25 +258,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 
 		p2DRender->TextOut( sx + 126, sy, pMember->nLevel, dwColor );
 		
-		CString strFormat;
-		strFormat.Format("%s", pMember->szName);
-
-		if( strFormat.GetLength() > 10 ) 
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount<10; )
-			{
-				if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-
-			strFormat = strFormat.Left( nReduceCount );
-			strFormat += "...";
-		}
-
+		const CString strFormat = sqktd::CStringMaxSize(pMember->szName, 10);
 		p2DRender->TextOut( sx + 168, sy, strFormat, dwColor );
 		p2DRender->TextOut( sx + 264, sy, pMember->szAlias , dwColor );
 

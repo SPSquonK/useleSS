@@ -733,40 +733,11 @@ void CWndSecretRoomCheckTaxRate::OnInitialUpdate()
 	CString strFormat;
 	if(pGuild)
 	{
-		strFormat = pGuild->m_szGuild;
-		if(strFormat.GetLength() > 16)
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount<16; )
-			{
-				if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-			strFormat = strFormat.Left( nReduceCount );
-			strFormat += "...";
-		}
-		
+		strFormat = sqktd::CStringMaxSize(pGuild->m_szGuild, 16);
 		pStatic = (CWndStatic*)GetDlgItem( WIDC_STATIC8 );
 		pStatic->SetTitle(strFormat);
 
-		strFormat = CPlayerDataCenter::GetInstance()->GetPlayerString( pGuild->m_idMaster );
-		if(strFormat.GetLength() > 16)
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount<16; )
-			{
-				if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-			strFormat = strFormat.Left( nReduceCount );
-			strFormat += "...";
-		}
+		strFormat = sqktd::CStringMaxSize(CPlayerDataCenter::GetInstance()->GetPlayerString( pGuild->m_idMaster ), 16);
 
 		pStatic = (CWndStatic*)GetDlgItem( WIDC_STATIC9 );
 		pStatic->SetTitle(strFormat);
@@ -1954,7 +1925,7 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 			//Member - Level, Name Draw
 			//긴 이름은 ... 으로.
 
-			CWndPartyQuick::ReduceSize(strMember, 13);
+			sqktd::ReduceSize(strMember, 13);
 
 			p2DRender->TextOut( rect.TopLeft().x+5, rect.TopLeft().y+5, strMember, dwColor );
 

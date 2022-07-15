@@ -78,22 +78,7 @@ void CWndRankInfoTabLevel::OnDraw( C2DRender* p2DRender )
 		CString strMasterName;
 		strMasterName.Format("%s", pGuildRank->m_Ranking[nFlag][i].m_szName);
 		strMasterName.TrimRight();
-		
-		if( strMasterName.GetLength() > 12 ) 
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount <12; )
-			{
-				if( IsDBCSLeadByte( strMasterName[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-
-			strMasterName = strMasterName.Left( nReduceCount );
-			strMasterName+="...";
-		}
+		sqktd::ReduceSize(strMasterName, 12);
 		p2DRender->TextOut( sx + 210, sy, strMasterName, dwColor );
 		
 		// ·¹º§
@@ -272,22 +257,7 @@ void CWndRankInfoTabPlayTime::OnDraw( C2DRender* p2DRender )
 		CString strMasterName;
 		strMasterName.Format("%s", pGuildRank->m_Ranking[nFlag][i].m_szName);
 		strMasterName.TrimRight();
-		
-		if( strMasterName.GetLength() > 12 ) 
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount <12; )
-			{
-				if( IsDBCSLeadByte( strMasterName[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-
-			strMasterName = strMasterName.Left( nReduceCount );
-			strMasterName+="...";
-		}
+		sqktd::ReduceSize(strMasterName, 12);
 		p2DRender->TextOut( sx + 210, sy, strMasterName, dwColor );
 		
 		sy += 25;

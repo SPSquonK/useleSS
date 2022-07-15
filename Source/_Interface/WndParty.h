@@ -32,7 +32,6 @@ public:
 
 	void SetActiveMember(size_t MemberNum);
 
-	static void ReduceSize(CString & str, int length);
 	static CString FormatPlayerName(int level, DWORD dwJob, const char * name);
 };
 

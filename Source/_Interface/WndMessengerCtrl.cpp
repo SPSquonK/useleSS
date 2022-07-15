@@ -394,39 +394,16 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 
 		// Draw Name
 		DWORD dwColor = 0xff000000;
-		if( i == m_nCurSelect )
-			dwColor = 0xff6060ff;
+		if (i == m_nCurSelect) dwColor = 0xff6060ff;
+		if (stPlayer.m_bBlock) dwColor = 0xffff0000;
+		if (stPlayer.m_bVisitAllowed) dwColor = 0xff00ff00;
 		
-#ifdef __RT_1025
-		if( stPlayer.m_bBlock )
-#else	// __RT_1025
-		if( stPlayer.m_dwStatus == FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
-			dwColor = 0xffff0000;
-		
-		strFormat.Format("%s", stPlayer.m_szName);
-	
-		if( strFormat.GetLength() > 10 ) 
-		{
-			int	nReduceCount = 0;
+		strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
 
-			for( nReduceCount=0; nReduceCount<10; )
-			{
-				if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-
-			strFormat = strFormat.Left( nReduceCount );
-			strFormat += "...";
-		}
 		const int NAME_TEXT_X = 226;
 		const int NAME_TEXT_Y = pt.y + 3;
-		if( stPlayer.m_bVisitAllowed )
-			p2DRender->TextOut( NAME_TEXT_X, NAME_TEXT_Y, strFormat, 0xff00ff00 );
-		else
-			p2DRender->TextOut( NAME_TEXT_X, NAME_TEXT_Y, strFormat, dwColor );
+		
+		p2DRender->TextOut( NAME_TEXT_X, NAME_TEXT_Y, strFormat, dwColor );
 		
 		pt.y += m_nFontHeight;
 	}
@@ -1052,24 +1029,7 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		if( i == m_nCurSelect )
 			dwColor = 0xff6060ff;
 		
-		strFormat.Format("%s", stPlayer.m_szName);
-	
-		if( strFormat.GetLength() > 10 ) 
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount<10; )
-			{
-				if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-
-			strFormat = strFormat.Left( nReduceCount );
-			strFormat += "...";
-		}
-
+		strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
 		p2DRender->TextOut( 226, pt.y + 3, strFormat, dwColor );
 		
 		pt.y += m_nFontHeight;
@@ -1554,22 +1514,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 
 			// Draw Name
 			DWORD dwColor = ( i == m_nCurSelectedDisciple ) ? 0xff6060ff : 0xff000000;
-			strFormat.Format( "%s", stPlayer.m_szName );
-			if( strFormat.GetLength() > 10 )
-			{
-				int	nReduceCount = 0;
-
-				for( nReduceCount = 0; nReduceCount < 10; )
-				{
-					if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-						nReduceCount += 2;
-					else
-						++nReduceCount;
-				}
-
-				strFormat = strFormat.Left( nReduceCount );
-				strFormat += "...";
-			}
+			strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
 			p2DRender->TextOut( 226, pt.y + 3, strFormat, dwColor );
 			pt.y += m_nFontHeight;
 		}
@@ -1613,21 +1558,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 
 		// Draw Name
 		DWORD dwColor = ( m_bCurSelectedMaster == TRUE ) ? 0xff6060ff : 0xff000000;
-		strFormat.Format( "%s", stPlayer.m_szName );
-		if( strFormat.GetLength() > 10 )
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount = 0; nReduceCount < 10; )
-			{
-				if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-					nReduceCount += 2;
-				else
-					++nReduceCount;
-			}
-			strFormat = strFormat.Left( nReduceCount );
-			strFormat += "...";
-		}
+		strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
 		p2DRender->TextOut( 226, pt.y + 3, strFormat, dwColor );
 	}
 }

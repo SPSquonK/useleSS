@@ -109,23 +109,7 @@ void CWndVendorCtrl::OnDrawItemInfo( C2DRender* p2DRender, CItemElem* pItemElem,
 		}
 		strItem		= strOld + "...";
 	}
-/*
-	// 아이템 명이 너무 길 경우 ...으로.
-	if( strItem.GetLength() > 18 ) 
-	{
-		int	nReduceCount = 0;
 
-		for( nReduceCount=0; nReduceCount<18; )
-		{
-			if( IsDBCSLeadByte( strItem[ nReduceCount ] ) )
-				nReduceCount+=2;
-			else
-				nReduceCount++;
-		}
-		strItem = strItem.Left( nReduceCount );
-		strItem += "...";
-	}
-*/
 	p2DRender->TextOut( nX + 50, nY + 3, strItem, 0xff000000 );
 	
 	char szCost[1024] = {0,};

@@ -369,7 +369,7 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 
 		// 이름은 10바이트째에서 짜른다
 		strName = info.name;
-		CWndPartyQuick::ReduceSize(strName, 8);
+		sqktd::ReduceSize(strName, 8);
 		p2DRender->TextOut( 180, y, 1.0f, 1.0f, strName.GetString(), dwColor);
 		
 		// HP 게이지

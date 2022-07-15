@@ -15303,11 +15303,11 @@ void CDPClient::OnGuildBankLogList( CAr & ar )
 			CTime cTime( (time_t)nDate );		
 			sprintf( szDate, "%.2d%.2d%.2d %.2d:%.2d   ", cTime.GetYear(), cTime.GetMonth(), cTime.GetDay(), cTime.GetHour(), cTime.GetMinute() );
 
-			CString strItemName, strCharName;
-			ItemProp* pItemProp = prj.GetItemProp(nItem);
+			const ItemProp * pItemProp = prj.GetItemProp(nItem);
+			
+			CString strCharName = sqktd::CStringMaxSize(szPlayer, 9);
 
-			strCharName.Format("%s", szPlayer);
-
+			CString strItemName;
 			if(pItemProp->dwReferStat1 == WEAPON_ULTIMATE)
 				strItemName.Format("(U)%s", pItemProp->szName);
 			else
@@ -15328,36 +15328,7 @@ void CDPClient::OnGuildBankLogList( CAr & ar )
 					strItemName.Format( "%s", pItemProp->szName );
 			}
 
-			if( strCharName.GetLength() > 9 ) 
-			{
-				int	nReduceCount = 0;
-
-				for( nReduceCount=0; nReduceCount<9; )
-				{
-					if( IsDBCSLeadByte( strCharName[ nReduceCount ] ) )
-						nReduceCount+=2;
-					else
-						nReduceCount++;
-				}
-
-				strCharName = strCharName.Left( nReduceCount );
-				strCharName += "...";
-			}
-			
-			if( strItemName.GetLength() > 25 ) 
-			{
-				int	nReduceCount = 0;
-
-				for( nReduceCount=0; nReduceCount<25; )
-				{
-					if( IsDBCSLeadByte( strItemName[ nReduceCount ] ) )
-						nReduceCount+=2;
-					else
-						nReduceCount++;
-				}
-				strItemName = strItemName.Left( nReduceCount );
-				strItemName += "...";
-			}
+			sqktd::ReduceSize(strItemName, 25);
 
 			if(nAbilityOption > 0)
 			{

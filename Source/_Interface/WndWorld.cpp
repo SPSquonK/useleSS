@@ -1719,21 +1719,7 @@ void CWndWorld::DrawSecretRoomGuildInfo(C2DRender *p2DRender, BOOL bIsMyGuild, i
 		this->m_pTextureLogo[g_GuildMng.GetGuild(stGuildInfo.dwGuildId)->m_dwLogo-1].RenderScal( &g_Neuz.m_2DRender, ptLogo, 255, fLogoScaleX, fLogoScaleY );
 
 	// Draw Guild Name
-	strFormat = g_GuildMng.GetGuild(stGuildInfo.dwGuildId)->m_szGuild;
-	if( strFormat.GetLength() > 14 )
-	{
-		int	nReduceCount = 0;
-
-		for( nReduceCount=0; nReduceCount<14; )
-		{
-			if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-				nReduceCount+=2;
-			else
-				nReduceCount++;
-		}
-		strFormat = strFormat.Left( nReduceCount );
-		strFormat += "...";
-	}
+	strFormat = sqktd::CStringMaxSize(g_GuildMng.GetGuild(stGuildInfo.dwGuildId)->m_szGuild, 14);
 	p2DRender->TextOut( ptGName.x, ptGName.y, strFormat, 0xFFFEBB1B );
 
 	// Draw Hypoon
@@ -2150,21 +2136,7 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 		p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 60, 192, 217, 217 ) );
 
 		// Draw Guild Name
-		CString strFormat = g_pPlayer->GetGuild()->m_szGuild;
-		if( strFormat.GetLength() > 16 ) 
-		{
-			int	nReduceCount = 0;
-
-			for( nReduceCount=0; nReduceCount<16; )
-			{
-				if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-					nReduceCount+=2;
-				else
-					nReduceCount++;
-			}
-			strFormat = strFormat.Left( nReduceCount );
-			strFormat += "...";
-		}
+		CString strFormat = sqktd::CStringMaxSize(g_pPlayer->GetGuild()->m_szGuild, 16);
 		p2DRender->TextOut( cPoint.x, cPoint.y-(nGap+5) ,strFormat, 0xFFEBAD18, 0xFF000000 );
 
 		// Draw Player Info
@@ -2176,24 +2148,11 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 			stPlayerInfo = g_GuildCombat1to1Mng.m_vecGuildCombat1to1_Players[i];
 			
 			nRate++;
-			strTemp		= CPlayerDataCenter::GetInstance()->GetPlayerString( stPlayerInfo.m_uidPlayer );
-
-			if( strTemp.GetLength() > 10 ) 
-			{
-				int	nReduceCount = 0;
-
-				for( nReduceCount=0; nReduceCount<10; )
-				{
-					if( IsDBCSLeadByte( strTemp[ nReduceCount ] ) )
-						nReduceCount+=2;
-					else
-						nReduceCount++;
-				}
-
-				strTemp = strTemp.Left( nReduceCount );
-				strTemp += "...";
-			}
-			strcpy( szBuf, strTemp );
+			strTemp = sqktd::CStringMaxSize(
+				CPlayerDataCenter::GetInstance()->GetPlayerString( stPlayerInfo.m_uidPlayer ),
+				10
+			);
+			strcpy( szBuf, strTemp.GetString() );
 
 			CGuildMember* pMember = g_pPlayer->GetGuild()->GetMember(stPlayerInfo.m_uidPlayer);
 			if(pMember)
@@ -2233,7 +2192,7 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 				strTemp.Format( "%2d.", nRate );
 				p2DRender->TextOut( cPoint.x, cPoint.y, strTemp, D3DCOLOR_ARGB( 255, 112, 147, 219 ), 0xFF000000 );
 					
-				strTemp.Format( "%s", szBuf );
+				strTemp = szBuf;
 				p2DRender->TextOut( cPoint.x+25, cPoint.y, strTemp, dwNameColor, 0xFF000000 );
 				
 				p2DRender->TextOut( cPoint.x+120, cPoint.y, strResult, dwStatusColor, 0xFF000000 );
@@ -2263,25 +2222,7 @@ void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 	p2DRender->TextOut( cPoint.x+22, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_WINCOUNT), 0xFFADEAEA, 0xFF000000 );
 
 	// Draw Guild Info
-	CString strFormat;
-
-	strFormat.Format("%s", g_pPlayer->GetGuild()->m_szGuild);
-	
-	if( strFormat.GetLength() > 16 ) 
-	{
-		int	nReduceCount = 0;
-
-		for( nReduceCount=0; nReduceCount<16; )
-		{
-			if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-				nReduceCount+=2;
-			else
-				nReduceCount++;
-		}
-		strFormat = strFormat.Left( nReduceCount );
-		strFormat += "...";
-	}
-
+	CString strFormat = sqktd::CStringMaxSize(g_pPlayer->GetGuild()->m_szGuild, 16);
 	p2DRender->TextOut( cPoint.x, cPoint.y+30 ,strFormat, 0xFFEBAD18, 0xFF000000 );
 	strFormat.Format("%d", g_GuildCombat1to1Mng.m_nMyGuildCount);
 	p2DRender->TextOut( cPoint.x+120, cPoint.y+30 ,strFormat, 0xFFF5CCB0, 0xFF000000 );
@@ -2291,23 +2232,7 @@ void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 		CGuild* pGuild = g_GuildMng.GetGuild( g_GuildCombat1to1Mng.m_nGuildCombat1to1Guild );
 		if(pGuild)
 		{
-			strFormat.Format("%s", pGuild->m_szGuild);
-
-			if( strFormat.GetLength() > 16 ) 
-			{
-				int	nReduceCount = 0;
-
-				for( nReduceCount=0; nReduceCount<16; )
-				{
-					if( IsDBCSLeadByte( strFormat[ nReduceCount ] ) )
-						nReduceCount+=2;
-					else
-						nReduceCount++;
-				}
-				strFormat = strFormat.Left( nReduceCount );
-				strFormat += "...";
-			}
-			
+			strFormat = sqktd::CStringMaxSize(pGuild->m_szGuild, 16);
 			p2DRender->TextOut( cPoint.x, cPoint.y+60 ,strFormat, 0xFFEBAD18, 0xFF000000 );
 
 			strFormat.Format("%d", g_GuildCombat1to1Mng.m_nVsGuildCount);
