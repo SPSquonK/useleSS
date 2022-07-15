@@ -43,7 +43,7 @@ void CWndSecretRoomSelection::AddCombatPlayer( u_long uiPlayer )
 	CString str;
 
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 
 	pWndList->AddString( str );
 
@@ -82,7 +82,7 @@ void CWndSecretRoomSelection::AddGuildPlayer( u_long uiPlayer )
 				
 	CString str;
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 	pWndList->AddString( str );			
 } 
 
@@ -111,7 +111,7 @@ void CWndSecretRoomSelection::RemoveCombatPlayer( int nIndex )
 		const auto iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
 		CGuildMember* pMember = iter->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 		pWndList->SetString( i, temp );
 	}
 }
@@ -148,7 +148,7 @@ void CWndSecretRoomSelection::UpDateGuildListBox()
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
 				{
-					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 					pWndList->AddString( str );	
 					m_vecGuildList.push_back( pMember->m_idPlayer );
 				}

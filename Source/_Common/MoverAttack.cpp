@@ -147,7 +147,7 @@ float CMover::GetAttackSpeed()
 	if( pWeaponProp )
 		fItem = pWeaponProp->fAttackSpeed;
 
-	JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+	const JobProp * pProperty = prj.jobs.GetJobProp( GetJob() ); 
 	ASSERT( pProperty );
 
 	// A = int( 캐릭터의 공속 + ( 무기의 공속 * ( 4 * 덱스 + ( 레벨 / 8 ) ) ) - 3 )
@@ -316,7 +316,7 @@ float CMover::GetJobPropFactor( JOB_PROP_TYPE type )
 	if( IsPlayer() == FALSE )
 		return 1.0f;
 
-	JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+	const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 	ASSERT( pProperty );
 
 	switch( type )
@@ -561,11 +561,8 @@ int CMover::CalcDefenseCore( CMover* pAttacker, DWORD dwAtkFlags, BOOL bRandom )
 	if( bGeneric )		
 	{
 		float fFactor = 1.0f;
-		if( IsPlayer() )
-		{
-			JobProp* pProperty = prj.GetJobProp( GetJob() ); 
-			assert( pProperty );
-			fFactor = pProperty->fFactorDef;
+		if (IsPlayer()) {
+			fFactor = prj.jobs.GetJobProp(GetJob())->fFactorDef;
 		}
 		int nDefense = (int)( ((((GetLevel()*2) + (GetSta()/2)) / 2.8f ) - 4) + ((GetSta()-14) * fFactor) );
 		nDefense += (GetDefenseByItem( bRandom ) / 4);	// 아이템에 의한 디펜스   

@@ -231,39 +231,20 @@ int CMover::GetSummonState()
 
 
 #ifdef __CLIENT
-LPCTSTR CMover::GetJobString()
-{
-	if( m_nJob != -1 )
-		return prj.m_aJob[ m_nJob ].szName;
-	return _T( "" );
+LPCTSTR CMover::GetJobString() const {
+	if (m_nJob == -1) return _T("");
+	return prj.jobs.info[m_nJob].szName;
 }
 #endif	// __CLIENT
 
-BOOL  CMover::IsJobType( DWORD dwJobType ) 
-{ 
-	if( IsExpert() )
-	{
-		if( dwJobType == JTYPE_EXPERT ) 
-			return TRUE;
-		return FALSE;
-	}
-	return JTYPE_BASE == dwJobType;
-}
-BOOL CMover::IsBaseJob()
-{
-	return prj.m_aJob[ m_nJob ].dwJobType == JTYPE_BASE;
-}
-BOOL CMover::IsExpert()
-{
-	return prj.m_aJob[ m_nJob ].dwJobType == JTYPE_EXPERT;
-}
-
-bool CMover::IsPro()        const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_PRO; }
-bool CMover::IsMaster()     const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_MASTER; }
-bool CMover::IsHero()       const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_HERO; }
-bool CMover::IsLegendHero() const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_LEGEND_HERO; }
+bool CMover::IsBaseJob()    const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_BASE; }
+bool CMover::IsExpert()     const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_EXPERT; }
+bool CMover::IsPro()        const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_PRO; }
+bool CMover::IsMaster()     const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_MASTER; }
+bool CMover::IsHero()       const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_HERO; }
+bool CMover::IsLegendHero() const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_LEGEND_HERO; }
 bool CMover::IsJobTypeOrBetter(DWORD jobType) const {
-	const DWORD myJobType = prj.m_aJob[m_nJob].dwJobType;
+	const DWORD myJobType = prj.jobs.info[m_nJob].dwJobType;
 	return myJobType >= jobType;
 }
 
@@ -290,7 +271,7 @@ BYTE	CMover::GetLegendChar()
 
 bool CMover::IsInteriorityJob(const int nJob, const int characterJob) {
 	if (nJob == JOB_VAGRANT || nJob == characterJob) return true;
-	const auto allMyJobs = prj.GetAllJobsOfLine(characterJob);
+	const auto allMyJobs = prj.jobs.GetAllJobsOfLine(characterJob);
 	return std::ranges::find(allMyJobs, nJob) != allMyJobs.end();
 }
 
@@ -874,10 +855,8 @@ BOOL CMover::SetExperience( EXPINTEGER nExp1, int nLevel )
 				break;
 		}
 
-		if( IsJobType( JTYPE_BASE ) )
-		{
-			if( nLevel == 15 )
-				g_WndMng.PutString(TID_EVE_LEVEL15);
+		if (IsBaseJob() && nLevel == 15) {
+			g_WndMng.PutString(TID_EVE_LEVEL15);
 		}
 		if( m_nLevel < 20 && nLevel >= 20 )
 		{
@@ -1924,7 +1903,7 @@ int CMover::GetMaxOriginHitPoint( BOOL bOriginal )
 		else
 			nSta = GetSta();
 
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp * pProperty = prj.jobs.GetJobProp( GetJob() ); 
 
 		float a = (pProperty->fFactorMaxHP*m_nLevel)/2.0f;
 		float b = a * ((m_nLevel+1.0f)/4.0f) * (1.0f + nSta/50.0f) + (nSta*10.0f) ;
@@ -1956,7 +1935,7 @@ int CMover::GetMaxOriginManaPoint( BOOL bOriginal )
 	{
 		// INT((((BaseLv*2) + (INT*8))*Job���) + 22)+(INT*Job���)) +  �� 
 		// �� : �����ۿ����� �߰� ��� (%����) TDDO
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		float factor = pProperty->fFactorMaxMP;
 		
 		int nMaxMP = (int)( ((((m_nLevel*2.0f) + ( nInt*8.0f))*factor) + 22.0f)+( nInt*factor) );
@@ -1984,7 +1963,7 @@ int CMover::GetMaxOriginFatiguePoint( BOOL bOriginal )
 	if( IsPlayer() )
 	{
 		// (((BaseLv*2) + (STA*6))*Job���) +(STA*Job���) + �� + ��
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		float factor = pProperty->fFactorMaxFP;
 
 		int nMaxFP = (int)( (((m_nLevel*2.0f) + (nSta*6.0f))*factor) +(nSta*factor) );
@@ -2032,7 +2011,7 @@ int CMover::GetHPRecovery()
 	float fFactor = 1.0f;
 	if( IsPlayer() )
 	{
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		fFactor = pProperty->fFactorHPRecovery;
 	}
 
@@ -2047,7 +2026,7 @@ int CMover::GetMPRecovery()
 	float fFactor = 1.0f;
 	if( IsPlayer() )
 	{
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		fFactor = pProperty->fFactorMPRecovery;
 	}
 
@@ -2062,7 +2041,7 @@ int CMover::GetFPRecovery()
 	float fFactor = 1.0f;
 	if( IsPlayer() )
 	{
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		fFactor = pProperty->fFactorFPRecovery;
 	}
 	// ((����*2)+(MaxFP/(500*����))+(STA*Job���))*0.2
@@ -2110,11 +2089,11 @@ LPCTSTR CMover::GetFameName( void )
 
 	if (i == 0) return "";
 	
-	switch (prj.GetProJob(m_nJob)) {
-		case CProject::ProJob::Acrobat:   return prj.GetText(acrobatTitles[i - 1]);
-		case CProject::ProJob::Mercenary: return prj.GetText(mercenaryTitles[i - 1]);
-		case CProject::ProJob::Magician:  return prj.GetText(magicianTitles[i - 1]);
-		case CProject::ProJob::Assist:    return prj.GetText(assistTitles[i - 1]);
+	switch (prj.jobs.GetProJob(m_nJob)) {
+		case Project::ProJob::Acrobat:   return prj.GetText(acrobatTitles[i - 1]);
+		case Project::ProJob::Mercenary: return prj.GetText(mercenaryTitles[i - 1]);
+		case Project::ProJob::Magician:  return prj.GetText(magicianTitles[i - 1]);
+		case Project::ProJob::Assist:    return prj.GetText(assistTitles[i - 1]);
 		default:                          return "";
 	}
 }
@@ -2130,8 +2109,10 @@ int CMover::GetResistMagic()
 int CMover::GetResistSpell( int nDestParam )
 {
 	MoverProp *pProp = GetProp();
-	if( pProp == NULL )
-		Error( "CMover::GetReistSpell : %d ������Ƽ �б� ����", GetName() );
+	if (pProp == NULL) {
+		Error("CMover::GetReistSpell : %d ������Ƽ �б� ����", GetName());
+		return 0;
+	}
 
 	int		nResist = 0;
 

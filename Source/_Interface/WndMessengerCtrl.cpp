@@ -22,8 +22,8 @@ bool prLevelAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
 	bool rtn_val = false;
 	int nPlayer1JobType, nPlayer2JobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.m_nJob ].dwJobType;
+	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
+	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
 
 	if(nPlayer1JobType > nPlayer2JobType)
 		rtn_val = true;
@@ -41,8 +41,8 @@ bool prLevelDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
 	bool rtn_val = false;
 	int nPlayer1JobType, nPlayer2JobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.m_nJob ].dwJobType;
+	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
+	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
 
 	if(nPlayer1JobType < nPlayer2JobType)
 		rtn_val = true;
@@ -61,8 +61,8 @@ bool prJobAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
 
 	int nPlayer1JobType, nPlayer2JobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.m_nJob ].dwJobType;
+	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
+	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
 
 	if(nPlayer1JobType > nPlayer2JobType)
 		rtn_val = true;
@@ -80,8 +80,8 @@ bool prJobDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
 	bool rtn_val = false;
 	int nPlayer1JobType, nPlayer2JobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.m_nJob ].dwJobType;
+	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
+	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
 
 	if(nPlayer1JobType < nPlayer2JobType)
 		rtn_val = true;
@@ -385,9 +385,9 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 		// Draw Job Icon
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-		if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
+		if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), &pVertices, 0xffffffff );
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
+		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
 		{
 			int nMasterIndex = 27;
 			if( stPlayer.m_nLevel < 70 )
@@ -406,7 +406,7 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, &pVertices, 0xffffffff );
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), &pVertices, 0xffffffff );
 		}
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
+		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
 		{
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, &pVertices, 0xffffffff );
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), &pVertices, 0xffffffff );
@@ -477,7 +477,7 @@ void CWndFriendCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 			__MESSENGER_PLAYER stPlayer	= *(iter);
 			ClientToScreen( &point );
 			ClientToScreen( &rect );
-			g_toolTip.PutToolTip( 100, prj.m_aJob[ stPlayer.m_nJob ].szName, rect, point, 3 );
+			g_toolTip.PutToolTip( 100, prj.jobs.info[ stPlayer.m_nJob ].szName, rect, point, 3 );
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -1062,9 +1062,9 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		// Draw Job Icon
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-		if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
+		if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), &pVertices, 0xffffffff );
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
+		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
 		{
 			int nMasterIndex = 27;
 			if( stPlayer.m_nLevel < 70 )
@@ -1083,7 +1083,7 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, &pVertices, 0xffffffff );
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), &pVertices, 0xffffffff );
 		}
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
+		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
 		{
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, &pVertices, 0xffffffff );
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), &pVertices, 0xffffffff );
@@ -1143,7 +1143,7 @@ void CWndGuildCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 			__MESSENGER_PLAYER stPlayer	= *(iter);
 			ClientToScreen( &point );
 			ClientToScreen( &rect );
-			g_toolTip.PutToolTip( 100, prj.m_aJob[ stPlayer.m_nJob ].szName, rect, point, 3 );
+			g_toolTip.PutToolTip( 100, prj.jobs.info[ stPlayer.m_nJob ].szName, rect, point, 3 );
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -1589,9 +1589,9 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 			// Draw Job Icon
 			static const int JOB_TYPE_ICON_X = 174;
 			static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-			if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
+			if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
 				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), 0xffffffff );
-			else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
+			else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
 			{
 				int nMasterIndex = 27;
 				if( stPlayer.m_nLevel < 70 )
@@ -1609,7 +1609,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, 0xffffffff );
 				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), 0xffffffff );
 			}
-			else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
+			else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
 			{
 				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, 0xffffffff );
 				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), 0xffffffff );
@@ -1668,9 +1668,9 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 		// Draw Job Icon
 		static const int JOB_TYPE_ICON_X = 174;
 		static const int JOB_ICON_X = JOB_TYPE_ICON_X + 20;
-		if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
+		if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_PRO )
 			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 6 ), 0xffffffff );
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
+		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_MASTER )
 		{
 			int nMasterIndex = 27;
 			if( stPlayer.m_nLevel < 70 )
@@ -1688,7 +1688,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  nMasterIndex, 0xffffffff );
 			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 16 ), 0xffffffff );
 		}
-		else if( prj.m_aJob[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
+		else if( prj.jobs.info[ stPlayer.m_nJob ].dwJobType == JTYPE_HERO )
 		{
 			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_TYPE_ICON_X, pt.y ),  33, 0xffffffff );
 			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( JOB_ICON_X, pt.y ),  ( 19 + stPlayer.m_nJob - 24 ), 0xffffffff );
@@ -1773,7 +1773,7 @@ void CWndCampus::OnMouseMove( UINT nFlags, CPoint point )
 				__MESSENGER_PLAYER stPlayer	= *DiscipleIterator;
 				ClientToScreen( &point );
 				ClientToScreen( &rect );
-				g_toolTip.PutToolTip( 100, prj.m_aJob[ stPlayer.m_nJob ].szName, rect, point, 3 );
+				g_toolTip.PutToolTip( 100, prj.jobs.info[ stPlayer.m_nJob ].szName, rect, point, 3 );
 				i = m_vDisciplePlayer.size();
 			}
 			pt.y += m_nFontHeight;
@@ -1787,7 +1787,7 @@ void CWndCampus::OnMouseMove( UINT nFlags, CPoint point )
 		{
 			ClientToScreen( &point );
 			ClientToScreen( &rect );
-			g_toolTip.PutToolTip( 100, prj.m_aJob[ m_MasterPlayer.m_nJob ].szName, rect, point, 3 );
+			g_toolTip.PutToolTip( 100, prj.jobs.info[ m_MasterPlayer.m_nJob ].szName, rect, point, 3 );
 		}
 	}
 }

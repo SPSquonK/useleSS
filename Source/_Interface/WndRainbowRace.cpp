@@ -221,9 +221,9 @@ void CWndRainbowRaceRanking::OnDraw( C2DRender* p2DRender )
 
 			if(pWndWorld)
 			{
-				if( prj.m_aJob[ nJob ].dwJobType == JTYPE_PRO )			
+				if( prj.jobs.info[ nJob ].dwJobType == JTYPE_PRO )
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 218, 55 + nTextGap ),  ( 19 + nJob - 6 ), &pVertices, 0xffffffff );
-				else if( prj.m_aJob[ nJob ].dwJobType == JTYPE_MASTER )
+				else if( prj.jobs.info[ nJob ].dwJobType == JTYPE_MASTER )
 				{
 					int nMasterIndex = 27;
 					if(/*m_nLevel >= 60 && */pPlayerData->data.nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
@@ -242,7 +242,7 @@ void CWndRainbowRaceRanking::OnDraw( C2DRender* p2DRender )
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 196, 55 + nTextGap ),  nMasterIndex, &pVertices, 0xffffffff );
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 218, 55 + nTextGap ),  ( 19 + nJob - 16 ), &pVertices, 0xffffffff );
 				}
-				else if( prj.m_aJob[ nJob ].dwJobType == JTYPE_HERO )
+				else if( prj.jobs.info[ nJob ].dwJobType == JTYPE_HERO )
 				{
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 196, 55 + nTextGap ),  33, &pVertices, 0xffffffff );
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 218, 55 + nTextGap ),  ( 19 + nJob - 24 ), &pVertices, 0xffffffff );

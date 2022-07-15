@@ -53,109 +53,57 @@ bool prMemberLevelDesc(MEMBERLIST player1, MEMBERLIST player2)
 	return rtn_val;
 }
 
-bool prJobAsce(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
+bool prJobAsce(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	int nPlayer1JobType, nPlayer2JobType;
-
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nJob > player2.nJob)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType < nPlayer2JobType) return false;
+	if (nPlayer1JobType > nPlayer2JobType) return true;
+	return player1.nJob > player2.nJob;
 }
 
-bool prJobDesc(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+bool prJobDesc(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nJob < player2.nJob)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType < nPlayer2JobType) return true;
+	if (nPlayer1JobType > nPlayer2JobType) return false;
+	return player1.nJob < player2.nJob;
 }
 
-bool prLevelAsce(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+bool prLevelAsce(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nLevel > player2.nLevel)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType > nPlayer2JobType) return true;
+	if (nPlayer1JobType < nPlayer2JobType) return false;
+	if (player1.nLevel > player2.nLevel) return true;
+	return false;
 }
 
-bool prLevelDesc(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+bool prLevelDesc(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nLevel < player2.nLevel)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType < nPlayer2JobType) return true;
+	if (nPlayer1JobType > nPlayer2JobType) return false;
+	if (player1.nLevel < player2.nLevel) return true;
+	return false;
 }
 
-bool prNameAsce(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
+bool prNameAsce(MEMBERLIST player1, MEMBERLIST player2) {
+	CString strplayer1Name = player1.szName;
+	CString strplayer2Name = player2.szName;
 
-	strplayer1Name.Format("%s", player1.szName);
-	strplayer2Name.Format("%s", player2.szName);
-
-	if(strplayer1Name > strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
+	return strplayer1Name > strplayer2Name;
 }
 
 bool prNameDesc(MEMBERLIST player1, MEMBERLIST player2)
 {
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
+	CString strplayer1Name = player1.szName;
+	CString strplayer2Name = player2.szName;
 
-	strplayer1Name.Format("%s", player1.szName);
-	strplayer2Name.Format("%s", player2.szName);
-
-	if(strplayer1Name < strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
+	return strplayer1Name < strplayer2Name;
 }
 
 bool prAliasAsce(MEMBERLIST player1, MEMBERLIST player2)
@@ -302,9 +250,9 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		else
 			Color = 0xffff6464;
 		// Draw Job Icon
-		if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_PRO )
+		if( prj.jobs.info[ pMember->nJob ].dwJobType == JTYPE_PRO )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob - 6 ), &pVertices, Color );
-		else if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_MASTER )
+		else if( prj.jobs.info[ pMember->nJob ].dwJobType == JTYPE_MASTER )
 		{
 			int nMasterIndex = 27;
 			if(/*m_nLevel >= 60 && */pMember->nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
@@ -322,7 +270,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 64, sy-3 ),  nMasterIndex, &pVertices, Color );
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob- 16 ), &pVertices, Color );
 		}
-		else if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_HERO  )
+		else if( prj.jobs.info[ pMember->nJob ].dwJobType >= JTYPE_HERO  )
 		{
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 64, sy-3 ),  33, &pVertices, Color );
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob - 24 ), &pVertices, Color );

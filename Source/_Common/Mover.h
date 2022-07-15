@@ -989,8 +989,8 @@ public:
 	[[nodiscard]] BYTE GetSex() const { return m_bySex; }
 	void			SetSex( BYTE bySex ) { m_bySex = bySex; }
 	BOOL			IsPeaceful() { return m_dwBelligerence == BELLI_PEACEFUL; }
-	BOOL			IsBaseJob();
-	BOOL			IsExpert();
+	[[nodiscard]] bool IsBaseJob() const;
+	[[nodiscard]] bool IsExpert() const;
 	[[nodiscard]] bool IsPro() const;
 	[[nodiscard]] bool IsMaster() const;
 	[[nodiscard]] bool IsHero() const;
@@ -1002,7 +1002,6 @@ public:
 	[[nodiscard]] int GetJob() const noexcept { return m_nJob; };
 	int				SetLevel( int nSetLevel );
 	int				AddGPPoint( int nAddGPPoint );
-	BOOL			IsJobType( DWORD dwJobType ); 
 	[[nodiscard]] int GetLevel() const { return m_nLevel; }
 	int				GetFxp() { return m_nFxp; }
 	int				GetTxp() { return m_nFxp; }
@@ -1339,7 +1338,7 @@ public:
 	// 직업 타입
 	[[nodiscard]] DWORD GetJobType(int nJob = NULL_ID) const {
 		if (nJob == NULL_ID) nJob = m_nJob;
-		return prj.m_aJob[nJob].dwJobType;
+		return prj.jobs.info[nJob].dwJobType;
 	}
 
 	[[nodiscard]] bool HasLevelForSkill(const ItemProp & skillProp) const;
@@ -1430,7 +1429,7 @@ public:
 	void			PlayCombatMusic();
 	BOOL			IsLoot( CItem *pItem ) { return TRUE; }
 	LPCTSTR			GetFameName();						// 명성 이름 얻기
-	LPCTSTR			GetJobString();						// 직업 이름 얻기 
+	[[nodiscard]] LPCTSTR GetJobString() const;						// 직업 이름 얻기 
 	void			DialogOut( LPCTSTR lpszText );		// 말풍선에 의한 대사 출력
 	BOOL			DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart, CModelObject* pModel = NULL ); // for Fake
 	void			RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue );

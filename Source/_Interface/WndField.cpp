@@ -3427,9 +3427,7 @@ int CWndCharInfo::GetVirtualDEF()
 	float fFactor = 1.0f;
 	if( g_pPlayer )
 	{
-		JobProp* pProperty = prj.GetJobProp( g_pPlayer->GetJob() ); 
-		assert( pProperty );
-		fFactor = pProperty->fFactorDef;
+		fFactor = prj.jobs.GetJobProp(g_pPlayer->GetJob())->fFactorDef;
 	}
 	nDefense	= (int)( ((((g_pPlayer->GetLevel()*2) + ((g_pPlayer->GetSta()+m_nStaCount)/2)) / 2.8f ) - 4) + ((g_pPlayer->GetSta() + m_nStaCount - 14) * fFactor) );
 	nDefense	= nDefense + (g_pPlayer->GetDefenseByItem( FALSE ) / 4);
@@ -3479,7 +3477,7 @@ float CWndCharInfo::GetVirtualATKSpeed()
 	if( pWeaponProp )
 		fItem = pWeaponProp->fAttackSpeed;
 	
-	JobProp* pProperty = prj.GetJobProp( g_pPlayer->GetJob() ); 
+	const JobProp * pProperty = prj.jobs.GetJobProp( g_pPlayer->GetJob() ); 
 	ASSERT( pProperty );
 	
 	// A = int( ĳ������ ���� + ( ������ ���� * ( 4 * ���� + ( ���� / 8 ) ) ) - 3 )
@@ -3721,11 +3719,10 @@ void CWndStateConfirm::OnInitialUpdate()
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 
 	// 1�� �������� Ȯ��
-	if( g_pPlayer->IsBaseJob() == TRUE )
+	if( g_pPlayer->IsBaseJob() )
 	{
 		// �����?
-		CString strAddMessage;
-		strAddMessage.Format( prj.GetText( TID_DIAG_0082 ) );
+		CString strAddMessage = prj.GetText( TID_DIAG_0082 );
 		strMessage += '\n';
 		strMessage += strAddMessage;
 	}
@@ -4804,9 +4801,7 @@ int CWndCharacterDetail2::GetVirtualDEF()
 	float fFactor = 1.0f;
 	if( g_pPlayer )
 	{
-		JobProp* pProperty = prj.GetJobProp( g_pPlayer->GetJob() ); 
-		assert( pProperty );
-		fFactor = pProperty->fFactorDef;
+		fFactor = prj.jobs.GetJobProp(g_pPlayer->GetJob())->fFactorDef;
 	}
 	nDefense	= (int)( ((((g_pPlayer->GetLevel()*2) + ((g_pPlayer->GetSta()+m_nStaCount)/2)) / 2.8f ) - 4) + ((g_pPlayer->GetSta() + m_nStaCount - 14) * fFactor) );
 	nDefense	+= (g_pPlayer->GetDefenseByItem( FALSE ) / 4);
@@ -4853,7 +4848,7 @@ float CWndCharacterDetail2::GetVirtualATKSpeed()
 	if( pWeaponProp )
 		fItem = pWeaponProp->fAttackSpeed;
 	
-	JobProp* pProperty = prj.GetJobProp( g_pPlayer->GetJob() ); 
+	const JobProp* pProperty = prj.jobs.GetJobProp( g_pPlayer->GetJob() ); 
 	ASSERT( pProperty );
 	
 	// A = int( ĳ������ ���� + ( ������ ���� * ( 4 * ���� + ( ���� / 8 ) ) ) - 3 )
@@ -5019,15 +5014,16 @@ void CWndChangeJob::OnInitialUpdate()
 	m_wndCancel.SetFontColor( 0xffffffff );
 
 	if( m_nJob == 0 )	{
-		m_wndExpert[ 0 ].Create( prj.m_aJob[ MAX_JOBBASE + 0 ].szName, 0, CRect( 10, 10, 230, 35 ), this, 10 );
-		m_wndExpert[ 1 ].Create( prj.m_aJob[ MAX_JOBBASE + 1 ].szName, 0, CRect( 10, 40, 230, 65 ), this, 11 );
-		m_wndExpert[ 2 ].Create( prj.m_aJob[ MAX_JOBBASE + 2 ].szName, 0, CRect( 10, 70, 230, 95 ), this, 12 );
-		m_wndExpert[ 3 ].Create( prj.m_aJob[ MAX_JOBBASE + 3 ].szName, 0, CRect( 10, 100, 230, 125 ), this, 13 );
-		m_wndExpert[ 4 ].Create( prj.m_aJob[ MAX_JOBBASE + 4 ].szName, 0, CRect( 10, 130, 230, 155 ), this, 14 );
+		m_wndExpert[ 0 ].Create( prj.jobs.info[ MAX_JOBBASE + 0 ].szName, 0, CRect( 10, 10, 230, 35 ), this, 10 );
+		m_wndExpert[ 1 ].Create( prj.jobs.info[ MAX_JOBBASE + 1 ].szName, 0, CRect( 10, 40, 230, 65 ), this, 11 );
+		m_wndExpert[ 2 ].Create( prj.jobs.info[ MAX_JOBBASE + 2 ].szName, 0, CRect( 10, 70, 230, 95 ), this, 12 );
+		m_wndExpert[ 3 ].Create( prj.jobs.info[ MAX_JOBBASE + 3 ].szName, 0, CRect( 10, 100, 230, 125 ), this, 13 );
+		m_wndExpert[ 4 ].Create( prj.jobs.info[ MAX_JOBBASE + 4 ].szName, 0, CRect( 10, 130, 230, 155 ), this, 14 );
 	}
 	else	{
-		m_wndExpert[ 0 ].Create( prj.m_aJob[ m_nJob * 2 + 4 ].szName, 0, CRect( 10, 10, 230, 35  ), this, 10 ); 
-		m_wndExpert[ 1 ].Create( prj.m_aJob[ m_nJob * 2 + 5 ].szName, 0, CRect( 10, 40, 230, 65  ), this, 11 ); 
+		// TODO: remove job arithmetic
+		m_wndExpert[ 0 ].Create( prj.jobs.info[ m_nJob * 2 + 4 ].szName, 0, CRect( 10, 10, 230, 35  ), this, 10 ); 
+		m_wndExpert[ 1 ].Create( prj.jobs.info[ m_nJob * 2 + 5 ].szName, 0, CRect( 10, 40, 230, 65  ), this, 11 ); 
 	}
 	m_wndOk.Create( _T( "OK" )  , 0, CRect( 60, 180, 110, 200), this, IDOK ); 
 	m_wndCancel.Create( _T( "Cancel" ) , 0, CRect( 130, 180, 180, 200), this, IDCANCEL ); 
@@ -10672,7 +10668,7 @@ BOOL CGuildCombatSelectionClearMessageBox::OnChildNotify( UINT message, UINT nID
 GuildCombatPlayer::GuildCombatPlayer(u_long playerId)
 	: playerId(playerId) {
 	PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
-	display.Format("Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[pPlayerData->data.nJob].szName);
+	display.Format("Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[pPlayerData->data.nJob].szName);
 }
 
 void GuildCombatPlayer::Render(
@@ -12167,19 +12163,19 @@ void CWndGuildCombatRank_Person::OnInitialUpdate()
 	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Tot;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
 
-	tabTabItem.pszText = prj.m_aJob[ 1 ].szName;
+	tabTabItem.pszText = prj.jobs.info[ JOB_MERCENARY ].szName;
 	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Mer;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
-	tabTabItem.pszText = prj.m_aJob[ 4 ].szName;
+	tabTabItem.pszText = prj.jobs.info[ JOB_MAGICIAN ].szName;
 	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Mag;
 	pWndTabCtrl->InsertItem( 2, &tabTabItem );
 	
-	tabTabItem.pszText = prj.m_aJob[ 2 ].szName;
+	tabTabItem.pszText = prj.jobs.info[ JOB_ACROBAT ].szName;
 	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Acr;
 	pWndTabCtrl->InsertItem( 3, &tabTabItem );
 
-	tabTabItem.pszText = prj.m_aJob[ 3 ].szName;
+	tabTabItem.pszText = prj.jobs.info[ JOB_ASSIST ].szName;
 	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Ass;
 	pWndTabCtrl->InsertItem( 4, &tabTabItem );
 
@@ -12268,11 +12264,11 @@ void CWndGuildCombatRank_Person::UpdatePlayer(int nJob, u_long idPlayer)
 }
 
 CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int nJob) {
-	switch (prj.GetProJob(nJob)) {
-		case CProject::ProJob::Mercenary: return &m_WndGuildCombatTabClass_Mer;
-		case CProject::ProJob::Acrobat:   return &m_WndGuildCombatTabClass_Acr;
-		case CProject::ProJob::Assist:    return &m_WndGuildCombatTabClass_Ass;
-		case CProject::ProJob::Magician:  return &m_WndGuildCombatTabClass_Mag;
+	switch (prj.jobs.GetProJob(nJob)) {
+		case Project::ProJob::Mercenary: return &m_WndGuildCombatTabClass_Mer;
+		case Project::ProJob::Acrobat:   return &m_WndGuildCombatTabClass_Acr;
+		case Project::ProJob::Assist:    return &m_WndGuildCombatTabClass_Ass;
+		case Project::ProJob::Magician:  return &m_WndGuildCombatTabClass_Mag;
 		default:                          return nullptr;
 	}
 }
@@ -12521,7 +12517,7 @@ void CWndGuildCombatRank_Class::InsertRank( int nJob, u_long uidPlayer, int nPoi
 	}
 
 	m_listRank[m_nMax].strName    = CPlayerDataCenter::GetInstance()->GetPlayerString( uidPlayer );
-	m_listRank[m_nMax].strJob     = prj.m_aJob[ nJob ].szName;	
+	m_listRank[m_nMax].strJob     = prj.jobs.info[ nJob ].szName;	
 	m_listRank[m_nMax].uidPlayer  = uidPlayer;
 	m_listRank[m_nMax].nPoint     = nPoint;
 	
@@ -16118,7 +16114,7 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 			pWndStatic->SetTitle(pData->szPlayer);
 			pWndStatic = (CWndStatic*)GetDlgItem(WIDC_JOB);
 			pWndStatic->m_dwColor = 0xff3f3f3f;
-			pWndStatic->SetTitle(prj.m_aJob[ pData->data.nJob ].szName);
+			pWndStatic->SetTitle(prj.jobs.info[ pData->data.nJob ].szName);
 			pWndStatic = (CWndStatic*)GetDlgItem(WIDC_LEVEL);
 			pWndStatic->m_dwColor = 0xff3f3f3f;
 			strTemp.Format("%d", pData->data.nLevel);
@@ -16142,7 +16138,7 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 				ptJobType.x = lpCtrl->rect.right - 60;
 				ptJobType.y = lpCtrl->rect.top - 1;
 
-				if( prj.m_aJob[ pData->data.nJob ].dwJobType == JTYPE_MASTER )
+				if( prj.jobs.info[ pData->data.nJob ].dwJobType == JTYPE_MASTER )
 				{
 					int nMasterIndex = 27;
 					if(/*m_nLevel >= 60 && */pData->data.nLevel < 70) //Level Down�� ���? �����ؼ� �ּ�ó��.
@@ -16160,7 +16156,7 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, ptJobType,  nMasterIndex, &pVertices, 0xffffffff );
 				}
-				else if( prj.m_aJob[ pData->data.nJob ].dwJobType == JTYPE_HERO )
+				else if( prj.jobs.info[ pData->data.nJob ].dwJobType >= JTYPE_HERO )
 					pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, ptJobType,  33, &pVertices, 0xffffffff );
 
 				pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );

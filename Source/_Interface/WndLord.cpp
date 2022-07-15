@@ -94,8 +94,8 @@ BOOL CWndLordState::Process()
 				PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData(pRanker->GetIdPlayer());
 				// 순위
 				if(i == 10)		strName[i-1].Format("  %d       %s", i, pPlayerData->szPlayer);
-				else			strName[i-1].Format("  %d        %s", i, pPlayerData->szPlayer);
-				strClass[i-1].Format("%s", prj.m_aJob[pPlayerData->data.nJob].szName);
+				else			    strName[i-1].Format("  %d        %s", i, pPlayerData->szPlayer);
+				strClass[i-1].Format("%s", prj.jobs.info[pPlayerData->data.nJob].szName);
 				pWndListBox->AddString("                                                                             ");
 			}
 		}
@@ -483,7 +483,7 @@ void CWndLordVote::OnDraw( C2DRender* p2DRender )
 				// 이름
 				strName.Format("%s", pPlayerData->szPlayer);
 				// 클래스
-				strClass.Format("%s", prj.m_aJob[pPlayerData->data.nJob].szName);
+				strClass.Format("%s", prj.jobs.info[pPlayerData->data.nJob].szName);
 				p2DRender->TextOut( pCustom->rect.left + 15, pCustom->rect.top + 8 + (i-1)*16, strLevel, dwColor);
 				p2DRender->TextOut( pCustom->rect.left + 60, pCustom->rect.top + 8 + (i-1)*16, strName, dwColor);
 				p2DRender->TextOut( pCustom->rect.left + 220, pCustom->rect.top + 8 + (i-1)*16, strClass, dwColor);

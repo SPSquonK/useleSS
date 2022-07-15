@@ -220,12 +220,6 @@ struct FILTER {
 	TCHAR	m_szDst[ 64 ];
 };
 
-struct JOB {
-	TCHAR	szName[32];
-	TCHAR	szEName[32];
-	DWORD	dwJobBase;
-	DWORD	dwJobType;
-};
 
 struct STRUCTURE {
 	TCHAR	szName[ 32 ];
@@ -742,11 +736,6 @@ public:
 	
 	Project::Jobs jobs;
 
-	JobProp						m_aPropJob[MAX_JOB];
-	JOB							m_aJob[ MAX_JOB ];
-	[[nodiscard]] boost::container::small_vector<DWORD, 6> GetAllJobsOfLine(DWORD jobId) const;
-	enum class ProJob { Vagrant, Mercenary, Assist, Magician, Acrobat };
-	[[nodiscard]] ProJob GetProJob(DWORD jobId) const;
 	STRUCTURE					m_aStructure[ MAX_STRUCTURE ];
 	GUILD_APPELL				m_aGuildAppell[ MAX_GUILDAPPELL ];
 	EXPCHARACTER				m_aExpCharacter[ MAX_EXPCHARACTER ];
@@ -835,7 +824,6 @@ public:
 	int				GetMinIdx( int nItemKind3, DWORD dwItemRare );
 	int				GetMaxIdx( int nItemKind3, DWORD dwItemRare );
 	ObjProp*		GetProp( int nType, int nIndex );
-	JobProp*		GetJobProp( int nIndex );
 	GUILDQUESTPROP*	GetGuildQuestProp( int nQuestId );
 	PARTYQUESTPROP*	GetPartyQuestProp( int nQuestId );
 	BOOL			IsGuildQuestRegion( const D3DXVECTOR3 & vPos );
@@ -858,7 +846,6 @@ public:
 	void			LoadPreFiles();
 	void			LoadStrings();
 	BOOL			OpenProject( LPCTSTR lpszFileName );
-	BOOL			LoadPropJob( LPCTSTR lpszFileName );
 	BOOL			LoadPropMover( LPCTSTR lpszFileName );
 	BOOL			LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apObjProp );
 	void			OnAfterLoadPropItem();

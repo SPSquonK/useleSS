@@ -352,7 +352,7 @@ namespace WndMgr {
 		string += '\n'; string += statebuf;
 
 		// Á÷¾÷
-		sprintf(statebuf, "%s : %s", prj.GetText(TID_APP_CHARACTER_JOB), prj.m_aJob[g_Neuz.m_apPlayer[SelectCharacter]->m_nJob].szName);
+		sprintf(statebuf, "%s : %s", prj.GetText(TID_APP_CHARACTER_JOB), prj.jobs.info[g_Neuz.m_apPlayer[SelectCharacter]->m_nJob].szName);
 		string += '\n'; string += statebuf;
 
 		CEditString strEdit;
@@ -1582,7 +1582,7 @@ namespace WndMgr {
 		strTemp += str;
 
 		CString strTemp3;
-		strTemp3.Format("%s", prj.m_aJob[nJob].szName);
+		strTemp3.Format("%s", prj.jobs.info[nJob].szName);
 
 		str.Format("\n%s%s", prj.GetText(TID_TOOLTIP_CHARJOB), strTemp3);
 		strTemp += str;
