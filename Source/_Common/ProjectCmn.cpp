@@ -64,51 +64,6 @@ CString GetLangFileName( int nLang, int nType )
 	return fileName;
 }
 
-BOOL CProject::LoadJobItem( LPCTSTR lpszFileName )
-{
-	CScript script;
-	if( script.Load( lpszFileName ) == FALSE )
-		return FALSE;
-	script.GetToken();
-	int nJob, nSex, i, j, nItem;
-	memset( m_jobItem, 0xff, sizeof( m_jobItem ) );
-	while( script.tok != FINISHED )
-	{
-		if( script.Token == _T( "job" ) )
-		{
-			nJob = script.GetNumber();
-			script.GetToken(); // {
-			script.GetToken(); // sex
-			j = 0;
-			while( script.Token != _T( "}" ) )
-			{
-				if( script.Token == _T( "sex" ) )
-				{
-					nSex = script.GetNumber();
-					script.GetToken(); // {
-					i = 0; nItem = script.GetNumber();
-					while( script.Token != _T( "}" ) )
-					{
-						m_jobItem[ nJob ].adwMale[ i ][ nSex ] = nItem;
-						nItem = script.GetNumber();
-						i++;
-					} 
-				}
-				if( script.Token == _T( "item" ) )
-				{
-					m_jobItem[ nJob ].beginItem[ j ].dwItemType = script.GetNumber();
-					m_jobItem[ nJob ].beginItem[ j ].dwItemId   = script.GetNumber();
-					m_jobItem[ nJob ].beginItem[ j ].dwNum      = script.GetNumber();
-					j++;
-				}
-				script.GetToken();
-			}
-		}
-		script.GetToken();
-	}
-	return TRUE;
-}
-
 BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 {
 	CScript scanner;
@@ -912,24 +867,3 @@ CTexture * ItemProp::GetTexture() const {
 	return CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, szIcon), 0xffff00ff);
 }
 #endif
-
-void JobSkills::Load(CFixedArray<ItemProp> & aPropSkill) {
-	fill({});
-
-	for (int i = 1; i < aPropSkill.GetSize(); i++) {
-		ItemProp * pItemProp = aPropSkill.GetAt(i);
-		if (!pItemProp) continue;
-
-		if (pItemProp->dwItemKind1 == JTYPE_COMMON) continue;
-		if (pItemProp->dwItemKind2 == NULL_ID) continue;
-
-		(*this)[pItemProp->dwItemKind2].emplace_back(pItemProp);
-	}
-
-	for (auto & skillsPerJob : *this) {
-		std::ranges::sort(skillsPerJob,
-			[](const ItemProp * lhs, const ItemProp * rhs) {
-				return lhs->dwReqDisLV < rhs->dwReqDisLV;
-			});
-	}
-}

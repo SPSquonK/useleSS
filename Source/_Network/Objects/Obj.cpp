@@ -247,7 +247,7 @@ void CMover::InitProp( void )
 		m_jobSkills.clear();
 
 		if (m_nJob != -1) {
-			for (const ItemProp * pSkillProp : prj.m_jobSkills[m_nJob]) {
+			for (const ItemProp * pSkillProp : prj.jobs.skills[m_nJob]) {
 				m_jobSkills.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = 0 });
 			}
 		}

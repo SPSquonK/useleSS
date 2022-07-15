@@ -100,7 +100,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 		{
 			s.GetToken();
 			LoadPropItem( s.token, &m_aPropSkill );
-			m_jobSkills.Load(m_aPropSkill);
+			jobs.LoadSkills(m_aPropSkill);
 		}
 		else if( s.Token == _T( "world" ) )
 		{
@@ -115,7 +115,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	}	while( s.tok != FINISHED );
 
 	LoadBeginPos();
-	LoadJobItem( _T( "jobItem.inc" ) );
+	jobs.LoadJobItem(_T("jobItem.inc"));
 
 	m_EventLua.LoadScript();
 	m_EventLua.CheckEventState();

@@ -288,7 +288,7 @@ CProject::~CProject()
 void CProject::LoadSkill()
 {
 	LoadPropItem( "propSkill.txt", &m_aPropSkill );
-	m_jobSkills.Load(m_aPropSkill);
+	jobs.LoadSkills(m_aPropSkill);
 }
 
 #ifdef __EVE_MINIGAME
@@ -444,7 +444,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 
 	LoadMotionProp( "propMotion.txt" );
 	LoadPropMoverEx( "PropMoverEx.inc" );
-	LoadJobItem( "jobItem.inc" );
+	jobs.LoadJobItem( "jobItem.inc" );
 	LoadEtc( "etc.inc" );
 
 	LoadPropEnchant( "propEnchant.inc" );

@@ -86,7 +86,8 @@ public:
 
 	CGuildCombat1to1Mng m_GuildCombat1to1;
 
-	JobSkills m_jobSkills;
+	Project::Jobs jobs;
+
 	EXPPARTY	m_aExpParty[MAX_PARTYLEVEL];
 	EXPCHARACTER m_aExpCharacter[MAX_EXPCHARACTER];
 
@@ -124,10 +125,7 @@ public:
 	BOOL			m_bItemUpdate;		// 
 	TCHAR	m_apszWorld[MAX_WORLD][64];
 	TCHAR	m_apszWorldName[MAX_WORLD][64];
-	std::vector<BEGINITEM>	m_aryBeginItem;
 	std::map<std::string, std::vector<D3DXVECTOR3>> m_mapBeginPos;
-	JOBITEM		m_jobItem[MAX_JOBITEM];
-//	DWORD	m_aExpJobLevel[MAX_EXPJOBLEVEL + 1];
 
 #ifdef __RULE_0615
 	CNameValider nameValider;
@@ -138,14 +136,11 @@ public:
 	void	LoadPreFiles();
 	void	LoadStrings();
 	BOOL	OpenProject( LPCTSTR lpszFileName );
-	int		GetBeginItemSize( void );
-	LPBEGINITEM	GetBeginItem( int nIndex );
 	void	LoadBeginPos( void );
 	std::optional<D3DXVECTOR3> GetRandomBeginPos(DWORD dwWorldID) const;
 	BOOL	LoadPropMover( LPCTSTR lpszFileName );
 	BOOL	LoadPropItem( LPCTSTR lpszFileName, CFixedArray<ItemProp>* apObjProp );
 	BOOL	LoadDefOfWorld( LPCTSTR lpszFileName );
-	BOOL	LoadJobItem( LPCTSTR lpszFileName );
 	BOOL	LoadText( LPCTSTR lpszFileName );
 	LPCTSTR GetText( DWORD dwIndex ) 
 	{ 
@@ -191,16 +186,6 @@ public:
 	BOOL IsConvMode( DWORD dwMode );
 #endif // __ITEM_REMOVE_LIST
 };
-
-inline LPBEGINITEM CProject::GetBeginItem( int nIndex )
-{	
-	return (LPBEGINITEM)&m_aryBeginItem.at( nIndex );	
-}
-
-inline int CProject::GetBeginItemSize( void )
-{	
-	return m_aryBeginItem.size();	
-}
 
 inline ItemProp* CProject::GetItemProp( LPCTSTR lpszItem )
 {

@@ -104,6 +104,9 @@
     <Filter Include="ItemProps">
       <UniqueIdentifier>{b0f5ffd2-6b9c-490e-aa4b-b33b7082e243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Project">
+      <UniqueIdentifier>{49854f99-de81-4c9e-aace-1e98c9589a27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CampusHelper.cpp">
@@ -1012,6 +1015,9 @@
     <ClCompile Include="..\_Interface\WndSkillTree.cpp">
       <Filter>Source Files\_Interface</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\ProjectJob.cpp">
+      <Filter>Source Files\Project</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1891,6 +1897,9 @@
     </ClInclude>
     <ClInclude Include="..\_Interface\WndSkillTree.h">
       <Filter>Source Files\_Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ProjectJob.h">
+      <Filter>Source Files\Project</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

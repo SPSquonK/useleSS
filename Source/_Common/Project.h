@@ -740,10 +740,10 @@ public:
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;
 	
+	Project::Jobs jobs;
+
 	JobProp						m_aPropJob[MAX_JOB];
-	JobSkills m_jobSkills;
 	JOB							m_aJob[ MAX_JOB ];
-	JOBITEM						m_jobItem[ MAX_JOBITEM ];
 	[[nodiscard]] boost::container::small_vector<DWORD, 6> GetAllJobsOfLine(DWORD jobId) const;
 	enum class ProJob { Vagrant, Mercenary, Assist, Magician, Acrobat };
 	[[nodiscard]] ProJob GetProJob(DWORD jobId) const;
@@ -872,7 +872,6 @@ public:
 	BOOL			LoadPropMoverEx_AI_MOVE( LPCTSTR szFileName, CScript &script, int nVal );
 	BOOL			LoadPropMoverEx_AI( LPCTSTR szFileName, CScript &script, int nVal );
 	BOOL			LoadPropMoverEx( LPCTSTR szFileName );
-	BOOL			LoadJobItem( LPCTSTR szFileName );
 	CString			GetLangScript( CScript& script );
 	BOOL			LoadCharacter( LPCTSTR szFileName );
 	BOOL			LoadEtc( LPCTSTR szFileName );

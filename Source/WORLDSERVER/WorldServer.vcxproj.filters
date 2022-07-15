@@ -58,6 +58,9 @@
     <Filter Include="ItemProps">
       <UniqueIdentifier>{1a8e00f9-9ad1-4cab-9797-7a32f4866116}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Project">
+      <UniqueIdentifier>{6fde2ef4-32dc-46e2-bc2d-dbfd6f0cf159}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AttackArbiter.cpp">
@@ -611,6 +614,9 @@
     </ClCompile>
     <ClCompile Include="..\_Common\SkillsOfMover.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\ProjectJob.cpp">
+      <Filter>Source Files\Project</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1189,6 +1195,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\SkillsOfMover.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ProjectJob.h">
+      <Filter>Source Files\Project</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

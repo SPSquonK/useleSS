@@ -41,7 +41,7 @@ MoverSkills MoverSkills::ForJob(int job) {
   MoverSkills list;
 
   for (const DWORD jobId : prj.GetAllJobsOfLine(job)) {
-    for (const ItemProp * pSkillProp : prj.m_jobSkills[jobId]) {
+    for (const ItemProp * pSkillProp : prj.jobs.skills[jobId]) {
       const DWORD initLevel = pSkillProp->dwItemKind1 == JTYPE_MASTER ? 1 : 0;
       list.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = initLevel });
     }
