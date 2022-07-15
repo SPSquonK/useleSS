@@ -649,7 +649,7 @@ BOOL TextCmd_Level(CScanner & scanner, CPlayer_ * pUser) {
 	LONG nLegend = scanner.GetNumber();
 
 	for (int i = 0; i < MAX_JOB; i++) {
-		if (strJob == prj.m_aJob[i].szName || strJob == prj.m_aJob[i].szEName) {
+		if (strJob == prj.jobs.info[i].szName || strJob == prj.jobs.info[i].szEName) {
 			if (nLegend == 0) {
 				nJob = i;
 				break;
@@ -684,10 +684,8 @@ BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
 	
 	int nJob = JOB_VAGRANT;
 	
-	for( int i = 0 ; i < MAX_JOB ; i++ )
-	{
-		if( strcmp( strJob, prj.m_aJob[i].szName ) == 0 || strcmp( strJob, prj.m_aJob[i].szEName ) == 0 )
-		{
+	for (int i = 0; i < MAX_JOB; i++) {
+		if (strJob == prj.jobs.info[i].szName || strJob == prj.jobs.info[i].szName) {
 			nJob = i;
 			break;
 		}
@@ -3166,45 +3164,6 @@ BOOL TextCmd_StopRain( CScanner & scanner )
 	return TRUE;
 }
 
-BOOL TextCmd_JobName( CScanner & scanner )
-{
-#ifdef __CLIENT
-	char chMessage[MAX_PATH] = {0,};
-	sprintf( chMessage, "Expert Job : " );
-	for( int i = MAX_JOBBASE ; i < MAX_EXPERT ; ++i )
-	{
-		if( strlen( prj.m_aJob[i].szName ) < 15 )
-		{
-			strcat( chMessage, prj.m_aJob[i].szName );
-			if( i + 1 != MAX_EXPERT )
-			{
-				strcat( chMessage, ", ");
-			}
-		}
-	}
-	g_WndMng.PutString( chMessage, NULL, 0xffff0000 );
-	sprintf( chMessage, "Expert Level : %d ~ %d", MAX_JOB_LEVEL + 1, MAX_JOB_LEVEL + MAX_EXP_LEVEL );
-	g_WndMng.PutString( chMessage, NULL, 0xffff0000 );
-
-	sprintf( chMessage, "Professional Job : " );
-	for( int i = MAX_EXPERT ; i < MAX_PROFESSIONAL ; ++i )
-	{
-		if( strlen( prj.m_aJob[i].szName ) < 15 )
-		{
-			strcat( chMessage, prj.m_aJob[i].szName );
-			if( i + 1 != MAX_PROFESSIONAL )
-			{
-				strcat( chMessage, ", ");
-			}
-		}
-	}
-	g_WndMng.PutString( chMessage, NULL, 0xffff0000 );
-	sprintf( chMessage, "Professional Level : %d ~~~ ", MAX_JOB_LEVEL + MAX_EXP_LEVEL );
-	g_WndMng.PutString( chMessage, NULL, 0xffff0000 );
-#endif // __CLIENT
-	return TRUE;
-}
-
 #ifdef __CLIENT
 
 BOOL TextCmd_tradeagree( CScanner & scanner )
@@ -4718,7 +4677,6 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_NoDisguise,				"noDisguise",         "nodis",          "변신해제",       "변해",    TCM_SERVER, AUTH_ADMINISTRATOR   , "변신 해제" )
 	ON_TEXTCMDFUNC( TextCmd_ItemEnchant, "itemenchant", "ie", "ie", "ie", TCM_SERVER, AUTH_ADMINISTRATOR, "Change various item enchants")
 	ON_TEXTCMDFUNC( TextCmd_ResistItem,				"ResistItem",         "ritem",          "속성아이템",     "속아",    TCM_BOTH  , AUTH_ADMINISTRATOR, "속성아이템" )
-	ON_TEXTCMDFUNC( TextCmd_JobName,				"jobname",            "jn",             "직업이름",       "직이",    TCM_CLIENT, AUTH_ADMINISTRATOR   , "직업이름 보기" )
 	ON_TEXTCMDFUNC( TextCmd_GetGold,				"getgold",            "gg",             "돈줘",           "돈",      TCM_SERVER, AUTH_ADMINISTRATOR, "돈 얻기" )
 	ON_TEXTCMDFUNC( TextCmd_CreateItem,				"createitem",         "ci",             "아이템생성",     "아생",    TCM_BOTH  , AUTH_ADMINISTRATOR, "아이템생성" )
 	ON_TEXTCMDFUNC( TextCmd_CreateItem2,			"createitem2",        "ci2",            "아이템생성2",    "아생2",   TCM_SERVER, AUTH_ADMINISTRATOR, "아이템생성2" )

@@ -348,8 +348,10 @@ bool CWndSkillTreeEx::CheckSkill(int i) {
 	if (pSkillProp == NULL || pSkillProp->nLog == 1)
 		return FALSE;
 
-	if (g_pPlayer->GetLevel() < (int)(pSkillProp->dwReqDisLV) && !g_pPlayer->IsMaster() && !g_pPlayer->IsHero())
+	const int reqLevel = static_cast<int>(pSkillProp->dwReqDisLV);
+	if (!g_pPlayer->HasLevelForSkill(*pSkillProp)) {
 		return FALSE;
+	}
 
 	if (pSkillProp->dwReSkill1 != 0xffffffff) {
 		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill1);
@@ -415,7 +417,6 @@ void CWndSkillTreeEx::InitItem() {
 	m_nCurSelect = -1;
 	m_nJob = g_pPlayer->m_nJob;
 
-	m_nCount = 0;
 	CString strTex[2];
 
 	CWndStatic * lpWndStatic1 = (CWndStatic *)GetDlgItem(WIDC_STATIC2);
@@ -424,124 +425,119 @@ void CWndSkillTreeEx::InitItem() {
 
 	switch (m_nJob) {
 		case JOB_VAGRANT:
-			m_nCount = 3;
 			strTex[0] = "";//"Back_Upper.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
 			lpWndStatic2->SetTitle("");
 			lpWndStatic3->SetTitle("");
 			break;
 		case JOB_KNIGHT:
 		case JOB_KNIGHT_MASTER:
 		case JOB_KNIGHT_HERO:
-			m_nCount = 26;
+		case JOB_LORDTEMPLER_HERO:
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "Back_Night.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_MERCENARY].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_KNIGHT].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MERCENARY].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_KNIGHT].szName);
 			break;
 		case JOB_BLADE:
 		case JOB_BLADE_MASTER:
 		case JOB_BLADE_HERO:
-			m_nCount = 26;
+		case JOB_STORMBLADE_HERO:
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "Back_Blade.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_MERCENARY].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_BLADE].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MERCENARY].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_BLADE].szName);
 			break;
 		case JOB_MERCENARY:
-			m_nCount = 18;
 			strTex[0] = "Back_Me.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_MERCENARY].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MERCENARY].szName);
 			lpWndStatic3->SetTitle("");
 			break;
 		case JOB_BILLPOSTER:
 		case JOB_BILLPOSTER_MASTER:
 		case JOB_BILLPOSTER_HERO:
-			m_nCount = 28;
+		case JOB_FORCEMASTER_HERO:
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "Back_Bill.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_ASSIST].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_BILLPOSTER].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ASSIST].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_BILLPOSTER].szName);
 			break;
 		case JOB_RINGMASTER:
 		case JOB_RINGMASTER_MASTER:
 		case JOB_RINGMASTER_HERO:
-			m_nCount = 28;
+		case JOB_FLORIST_HERO:
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "Back_Ring.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_ASSIST].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_RINGMASTER].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ASSIST].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_RINGMASTER].szName);
 			break;
 		case JOB_ASSIST:
-			m_nCount = 20;
 			strTex[0] = "Back_As.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_ASSIST].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ASSIST].szName);
 			lpWndStatic3->SetTitle("");
 			break;
 		case JOB_ELEMENTOR:
 		case JOB_ELEMENTOR_MASTER:
 		case JOB_ELEMENTOR_HERO:
-			m_nCount = 39;
+		case JOB_ELEMENTORLORD_HERO:
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "Back_Ele.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_MAGICIAN].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_ELEMENTOR].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MAGICIAN].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_ELEMENTOR].szName);
 			break;
 		case JOB_PSYCHIKEEPER:
 		case JOB_PSYCHIKEEPER_MASTER:
 		case JOB_PSYCHIKEEPER_HERO:
-			m_nCount = 28;
+		case JOB_MENTALIST_HERO:
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "Back_Psy.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_MAGICIAN].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_PSYCHIKEEPER].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MAGICIAN].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_PSYCHIKEEPER].szName);
 			break;
 		case JOB_MAGICIAN:
-			m_nCount = 20;
 			strTex[0] = "Back_Ma.TGA";
 			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_MAGICIAN].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MAGICIAN].szName);
 			lpWndStatic3->SetTitle("");
 			break;
 		case JOB_ACROBAT:
-			m_nCount = 20;
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_ACROBAT].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ACROBAT].szName);
 			lpWndStatic3->SetTitle("");
 			break;
 		case JOB_JESTER:
 		case JOB_JESTER_MASTER:
 		case JOB_JESTER_HERO:
-			m_nCount = 20;
+		case JOB_WINDLURKER_HERO:
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "Back_Jst.TGA";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_ACROBAT].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_JESTER].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ACROBAT].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_JESTER].szName);
 			break;
 		case JOB_RANGER:
 		case JOB_RANGER_MASTER:
 		case JOB_RANGER_HERO:
-			m_nCount = 20;
+		case JOB_CRACKSHOOTER_HERO:
 			strTex[0] = "Back_Acr.tga";
 			strTex[1] = "Back_Rag.TGA";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.m_aJob[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.m_aJob[JOB_ACROBAT].szName);
-			lpWndStatic3->SetTitle(prj.m_aJob[JOB_RANGER].szName);
+			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
+			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ACROBAT].szName);
+			lpWndStatic3->SetTitle(prj.jobs.info[JOB_RANGER].szName);
 			break;
 		default:
 			Error("CWndSkillTreeEx::InitItem �˼����� ���� : %d", m_nJob);
@@ -551,27 +547,35 @@ void CWndSkillTreeEx::InitItem() {
 	//Master Skill�� ���ۺ��� 1Lv�̹Ƿ� ���? �̹��� ����.
 	switch (m_nJob) {
 		case JOB_KNIGHT_HERO:
+		case JOB_LORDTEMPLER_HERO:
 			m_strHeroSkilBg = "Back_Hero_KntDrawing.tga";
 			break;
 		case JOB_BLADE_HERO:
+		case JOB_STORMBLADE_HERO:
 			m_strHeroSkilBg = "Back_Hero_BldDefence.tga";
 			break;
 		case JOB_BILLPOSTER_HERO:
+		case JOB_FORCEMASTER_HERO:
 			m_strHeroSkilBg = "Back_Hero_BilDisEnchant.tga";
 			break;
 		case JOB_RINGMASTER_HERO:
+		case JOB_FLORIST_HERO:
 			m_strHeroSkilBg = "Back_Hero_RigReturn.tga";
 			break;
 		case JOB_ELEMENTOR_HERO:
+		case JOB_ELEMENTORLORD_HERO:
 			m_strHeroSkilBg = "Back_Hero_EleCursemind.tga";
 			break;
 		case JOB_PSYCHIKEEPER_HERO:
+		case JOB_MENTALIST_HERO:
 			m_strHeroSkilBg = "Back_Hero_PsyStone.tga";
 			break;
 		case JOB_JESTER_HERO:
+		case JOB_WINDLURKER_HERO:
 			m_strHeroSkilBg = "Back_Hero_JstSilence.tga";
 			break;
 		case JOB_RANGER_HERO:
+		case JOB_CRACKSHOOTER_HERO:
 			m_strHeroSkilBg = "Back_Hero_RagHawkeye.tga";
 			break;
 	}
@@ -842,29 +846,6 @@ BOOL CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID, CRect & rect) {
 
 		rect += pt;
 	}
-	/*
-		switch( m_nJob )
-		{
-		case JOB_KNIGHT:
-			break;
-		case JOB_BLADE:
-			break;
-		case JOB_MERCENARY:
-			break;
-		case JOB_BILLPOSTER:
-			break;
-		case JOB_RINGMASTER:
-			break;
-		case JOB_ASSIST:
-			break;
-		case JOB_ELEMENTOR:
-			break;
-		case JOB_PSYCHIKEEPER:
-			break;
-		case JOB_MAGICIAN:
-			break;
-		}
-	*/
 	return TRUE;
 }
 

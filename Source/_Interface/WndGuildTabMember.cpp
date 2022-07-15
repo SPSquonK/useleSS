@@ -53,109 +53,57 @@ bool prMemberLevelDesc(MEMBERLIST player1, MEMBERLIST player2)
 	return rtn_val;
 }
 
-bool prJobAsce(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
+bool prJobAsce(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	int nPlayer1JobType, nPlayer2JobType;
-
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nJob > player2.nJob)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType < nPlayer2JobType) return false;
+	if (nPlayer1JobType > nPlayer2JobType) return true;
+	return player1.nJob > player2.nJob;
 }
 
-bool prJobDesc(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+bool prJobDesc(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nJob < player2.nJob)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType < nPlayer2JobType) return true;
+	if (nPlayer1JobType > nPlayer2JobType) return false;
+	return player1.nJob < player2.nJob;
 }
 
-bool prLevelAsce(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+bool prLevelAsce(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nLevel > player2.nLevel)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType > nPlayer2JobType) return true;
+	if (nPlayer1JobType < nPlayer2JobType) return false;
+	if (player1.nLevel > player2.nLevel) return true;
+	return false;
 }
 
-bool prLevelDesc(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+bool prLevelDesc(MEMBERLIST player1, MEMBERLIST player2) {
+	const auto nPlayer1JobType = prj.jobs.info[player1.nJob].dwJobType;
+	const auto nPlayer2JobType = prj.jobs.info[player2.nJob].dwJobType;
 
-	nPlayer1JobType = prj.m_aJob[ player1.nJob ].dwJobType;
-	nPlayer2JobType = prj.m_aJob[ player2.nJob ].dwJobType;
-
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.nLevel < player2.nLevel)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	if (nPlayer1JobType < nPlayer2JobType) return true;
+	if (nPlayer1JobType > nPlayer2JobType) return false;
+	if (player1.nLevel < player2.nLevel) return true;
+	return false;
 }
 
-bool prNameAsce(MEMBERLIST player1, MEMBERLIST player2)
-{
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
+bool prNameAsce(MEMBERLIST player1, MEMBERLIST player2) {
+	CString strplayer1Name = player1.szName;
+	CString strplayer2Name = player2.szName;
 
-	strplayer1Name.Format("%s", player1.szName);
-	strplayer2Name.Format("%s", player2.szName);
-
-	if(strplayer1Name > strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
+	return strplayer1Name > strplayer2Name;
 }
 
 bool prNameDesc(MEMBERLIST player1, MEMBERLIST player2)
 {
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
+	CString strplayer1Name = player1.szName;
+	CString strplayer2Name = player2.szName;
 
-	strplayer1Name.Format("%s", player1.szName);
-	strplayer2Name.Format("%s", player2.szName);
-
-	if(strplayer1Name < strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
+	return strplayer1Name < strplayer2Name;
 }
 
 bool prAliasAsce(MEMBERLIST player1, MEMBERLIST player2)
@@ -302,35 +250,13 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		else
 			Color = 0xffff6464;
 		// Draw Job Icon
-		if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_PRO )
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob - 6 ), &pVertices, Color );
-		else if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if(/*m_nLevel >= 60 && */pMember->nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
-				nMasterIndex = 27;
-			else if(pMember->nLevel>= 70 && pMember->nLevel < 80)
-				nMasterIndex = 28;
-			else if(pMember->nLevel >= 80 && pMember->nLevel < 90)
-				nMasterIndex = 29;
-			else if(pMember->nLevel >= 90 && pMember->nLevel < 100)
-				nMasterIndex = 30;
-			else if(pMember->nLevel >= 100 && pMember->nLevel < 110)
-				nMasterIndex = 31;
-			else if(pMember->nLevel>= 110 && pMember->nLevel <= 120)
-				nMasterIndex = 32;
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 64, sy-3 ),  nMasterIndex, &pVertices, Color );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob- 16 ), &pVertices, Color );
+		const auto jobIcons = Project::Jobs::PlayerDataIcon(pMember->nJob, pMember->nLevel);
+		if (jobIcons.master != 0) {
+			pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(sx + 64, sy - 3), jobIcons.master, &pVertices, Color);
 		}
-		else if( prj.m_aJob[ pMember->nJob ].dwJobType == JTYPE_HERO  )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 64, sy-3 ),  33, &pVertices, Color );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  ( 19 + pMember->nJob - 24 ), &pVertices, Color );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( sx + 84, sy-3 ),  14 + pMember->nJob, &pVertices, Color );
+		pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(sx + 84, sy - 3), jobIcons.job, &pVertices, Color);
 
-			p2DRender->TextOut( sx + 126, sy, pMember->nLevel, dwColor );
+		p2DRender->TextOut( sx + 126, sy, pMember->nLevel, dwColor );
 		
 		CString strFormat;
 		strFormat.Format("%s", pMember->szName);

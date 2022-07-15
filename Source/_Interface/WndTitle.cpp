@@ -2237,15 +2237,11 @@ void CWndCreateChar::SetSex( int nSex )
 			m_Player.m_aEquipInfo[i].dwId	= NULL_ID;
 	}
 
-	for( int i = 0; i < MAX_BEGINEQUIP; i++ )
-	{
-		DWORD dwEquip = prj.m_jobItem[ m_Player.m_byJob ].adwMale[ i ][ m_Player.m_bySex ];
-		if( dwEquip != NULL_ID )
-		{
-			ItemProp* pItemProp = prj.GetItemProp( dwEquip );
-			m_Player.m_aEquipInfo[pItemProp->dwParts].dwId = dwEquip;
-		}
+	for (const DWORD dwEquip : prj.jobs.items[m_Player.m_byJob].adwMale[m_Player.m_bySex]) {
+		const ItemProp * const pItemProp = prj.GetItemProp(dwEquip);
+		m_Player.m_aEquipInfo[pItemProp->dwParts].dwId = dwEquip;
 	}
+
 	CMover::UpdateParts( m_Player.m_bySex, 0, m_Player.m_bySkinSet, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
 }
 

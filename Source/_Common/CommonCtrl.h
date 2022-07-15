@@ -22,7 +22,7 @@ typedef struct CCtrlElem
 	DWORD		m_dwSetQuestNum;			//-박스 오픈 조건(퀘스트 넘버,퀘스트 플래그 넘버)       - UA_QUEST
 	DWORD		m_dwSetFlagNum;
 	DWORD		m_dwSetGender;				//-박스 오픈 조건(성별)									- UA_GENDER
-	BOOL		m_bSetJob[MAX_JOB];			//-박스 오픈 조건(클래스)								- UA_CLASS
+	BOOL		m_bSetJob[32];			//-박스 오픈 조건(클래스)								- UA_CLASS
 	
 	DWORD		m_dwSetEndu;				//-박스 내구도 ? hp와 같이 적용	
 	 

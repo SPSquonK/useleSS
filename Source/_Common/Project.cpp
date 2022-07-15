@@ -288,7 +288,7 @@ CProject::~CProject()
 void CProject::LoadSkill()
 {
 	LoadPropItem( "propSkill.txt", &m_aPropSkill );
-	m_jobSkills.Load(m_aPropSkill);
+	jobs.LoadSkills(m_aPropSkill);
 }
 
 #ifdef __EVE_MINIGAME
@@ -377,7 +377,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 		else if( scanner.Token == "propJob" )
 		{
 			scanner.GetToken();
-			LoadPropJob( "propJob.inc" );
+			jobs.LoadPropJob( "propJob.inc" );
 		}
 		else if( scanner.Token == "propSkill" )
 		{	
@@ -444,7 +444,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 
 	LoadMotionProp( "propMotion.txt" );
 	LoadPropMoverEx( "PropMoverEx.inc" );
-	LoadJobItem( "jobItem.inc" );
+	jobs.LoadJobItem( "jobItem.inc" );
 	LoadEtc( "etc.inc" );
 
 	LoadPropEnchant( "propEnchant.inc" );
@@ -745,15 +745,7 @@ BOOL CProject::LoadEtc( LPCTSTR lpszFileName )
 		if( script.Token == _T( "job" ) )
 		{	
 			script.GetToken(); // skip {
-			id = script.GetNumber();
-			while( *script.token != '}' )
-			{
-				script.GetToken();
-				_tcscpy( m_aJob[ id ].szName, script.token );
-				m_aJob[ id ].dwJobBase = script.GetNumber();
-				m_aJob[ id ].dwJobType = script.GetNumber();
-				id = script.GetNumber();
-			}
+			jobs.LoadJobInfo(script);
 		}
 		else
 		if( script.Token == _T( "structure" ) )
@@ -4003,17 +3995,6 @@ BOOL CProject::LoadExcept( LPCTSTR lpszFilename )
 	return TRUE;
 }
 
-JobProp* CProject::GetJobProp( int nIndex )
-{
-	if( nIndex < 0 || nIndex >= MAX_JOB )
-	{
-		LPCTSTR szErr = Error( "CProject::GetJobProp ����ħ��. %d", nIndex );
-		//ADDERRORMSG( szErr );
-		return NULL;
-	}
-	return &m_aPropJob[nIndex];
-}
-
 BOOL CProject::LoadPropEnchant( LPCTSTR lpszFileName )
 {
 	CScript scanner;
@@ -4072,48 +4053,6 @@ BOOL CProject::LoadPropEnchant( LPCTSTR lpszFileName )
 		scanner.GetToken();
 	}
 	
-	return TRUE;
-}
-
-
-// propJob.inc�� �о���δ�.
-BOOL CProject::LoadPropJob( LPCTSTR lpszFileName )
-{
-	CScript scanner;
-	if( scanner.Load( lpszFileName, FALSE ) == FALSE )
-	{
-#ifdef __CLIENT
-		MessageBox( g_Neuz.GetSafeHwnd(), "������Ƽ �б���� : Job", "������", MB_OK );
-		//ADDERRORMSG( "������Ƽ �б���� : Job" );
-#endif //__CLIENT
-		return FALSE;
-	}
-	
-	while( 1 )
-	{
-		int nJob = scanner.GetNumber();	
-		if( scanner.tok == FINISHED )
-			break;
-
-		JobProp* pProperty = &m_aPropJob[nJob];
-		pProperty->fAttackSpeed      = scanner.GetFloat();		
-		pProperty->fFactorMaxHP      = scanner.GetFloat();		
-		pProperty->fFactorMaxMP      = scanner.GetFloat();		
-		pProperty->fFactorMaxFP      = scanner.GetFloat();		
-		pProperty->fFactorDef        = scanner.GetFloat();		
-		pProperty->fFactorHPRecovery = scanner.GetFloat();	
-		pProperty->fFactorMPRecovery = scanner.GetFloat();	
-		pProperty->fFactorFPRecovery = scanner.GetFloat();	
-		pProperty->fMeleeSWD		 = scanner.GetFloat();	
-		pProperty->fMeleeAXE		 = scanner.GetFloat();	
-		pProperty->fMeleeSTAFF		 = scanner.GetFloat();	
-		pProperty->fMeleeSTICK		 = scanner.GetFloat();	
-		pProperty->fMeleeKNUCKLE	 = scanner.GetFloat();	
-		pProperty->fMagicWAND		 = scanner.GetFloat();	
-		pProperty->fBlocking		 = scanner.GetFloat();	
-		pProperty->fMeleeYOYO        = scanner.GetFloat();	
-		pProperty->fCritical         = scanner.GetFloat();	
-	}
 	return TRUE;
 }
 
@@ -4709,3 +4648,4 @@ const CString& CProject::GetPatrolDestination( DWORD dwKey ) const
 	return strEmpty;
 }
 #endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+

@@ -3,6 +3,8 @@
 #include "User.h"
 #include "party.h"
 #include "GroupUtils.h"
+#include "DPDatabaseClient.h"
+#include "DPSrvr.h"
 
 #include "boost/container/small_vector.hpp"
 
@@ -346,11 +348,215 @@ void CUser::AddPartyMemberExperience(EXPINTEGER nExp, int nFxp) {
 		AddSetFxp(m_nFxp, GetFlightLv());
 	}
 
-	if (AddExperience(nExp, TRUE, TRUE, TRUE))
-		LevelUpSetting();
-	else
-		ExpUpSetting();
+	EarnExperience(nExp, true, true);
+}
 
+
+void CUser::EarnExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency) {
+	if (AddExperience(nExp, applyMultipliers, reducePropency)) {
+		g_UserMng.AddSetLevel(this, (short)GetLevel());
+		AddSetGrowthLearningPoint(m_nRemainGP);
+		g_dpDBClient.SendLogLevelUp(this, 1);
+		g_dpDBClient.SendUpdatePlayerData(this);
+	} else {
+		// 레벨 5이상 로그_레벨업 테이블에 로그를 남긴다
+		// 20% 단위로 로그를 남김
+		if (GetLevel() > 5) // 레벨 5이상
+		{
+			int nNextExpLog = (int)(m_nExpLog / 20 + 1) * 20;
+			int nExpPercent = (int)(GetExp1() * 100 / GetMaxExp1());
+			if (nExpPercent >= nNextExpLog) {
+				m_nExpLog = nExpPercent;
+				g_dpDBClient.SendLogLevelUp(this, 5);
+			}
+		}
+	}
+	
 	AddSetExperience(GetExp1(), (WORD)m_nLevel, m_nSkillPoint, m_nSkillLevel);
 }
 
+bool CUser::AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency) {
+#ifdef __VTN_TIMELIMIT
+	if (::GetLanguage() == LANG_VTN) {
+		if (IsPlayer() && m_nAccountPlayTime != -1) {
+			if (m_nAccountPlayTime < 0 || m_nAccountPlayTime > MIN(300)) {
+				nExp = 0;
+			} else if (m_nAccountPlayTime >= MIN(180) && m_nAccountPlayTime <= MIN(300)) {
+				nExp = (EXPINTEGER)(nExp * 0.5f);
+			}
+		}
+	}
+#endif // __VTN_TIMELIMIT
+
+	if (IsAuthHigher(AUTH_ADMINISTRATOR) && IsMode(MODE_EXPUP_STOP)) {
+		return false;
+	}
+
+	if (nExp <= 0) return false;
+
+	if (m_nHitPoint <= 0) return false;
+
+	if (IsJobTypeOrBetter(JTYPE_MASTER)) nExp /= 2;
+
+	if (applyMultipliers) {
+		EXPINTEGER nAddExp = static_cast<CUser *>(this)->GetAddExpAfterApplyRestPoint(nExp);
+		nExp = (EXPINTEGER)(nExp * GetExpFactor());
+		nExp += nAddExp;
+	}
+
+	if (applyMultipliers && HasBuffByIk3(IK3_ANGEL_BUFF)) {
+		int nAngel = 100;
+
+		IBuff * pBuff = m_buffs.GetBuffByIk3(IK3_ANGEL_BUFF);
+		WORD wId = (pBuff ? pBuff->GetId() : 0);
+
+		if (wId > 0) {
+			ItemProp * pItemProp = prj.GetItemProp(wId);
+			if (pItemProp)
+				nAngel = (int)((float)pItemProp->nAdjParamVal1);
+		}
+		if (nAngel <= 0 || 100 < nAngel)
+			nAngel = 100;
+
+		EXPINTEGER nMaxAngelExp = prj.m_aExpCharacter[m_nAngelLevel].nExp1 / 100 * nAngel;
+		if (m_nAngelExp < nMaxAngelExp) {
+			nExp /= 2;
+			m_nAngelExp += nExp;
+
+#ifdef __ANGEL_LOG
+#ifdef __EXP_ANGELEXP_LOG
+			int nAngelExpPercent = (int)(m_nAngelExp * 100 / nMaxAngelExp);
+			int nNextAngelExpLog = (int)(((CUser *)this)->m_nAngelExpLog / 20 + 1) * 20;
+
+			if (nAngelExpPercent >= nNextAngelExpLog) {
+				((CUser *)this)->m_nAngelExpLog = nAngelExpPercent;
+				ItemProp * pItemProp = prj.GetItemProp(wId);
+
+				if (pItemProp) {
+					LogItemInfo aLogItem;
+					aLogItem.Action = "&";
+					aLogItem.SendName = ((CUser *)this)->GetName();
+					aLogItem.RecvName = "ANGEL_EXP_LOG";
+					aLogItem.WorldId = ((CUser *)this)->GetWorld()->GetID();
+					aLogItem.Gold = aLogItem.Gold2 = ((CUser *)this)->GetGold();
+					//aLogItem.ItemName	= pItemProp->szName;
+					_stprintf(aLogItem.szItemName, "%d", pItemProp->dwID);
+					aLogItem.Gold_1 = (DWORD)(m_nAngelExp);
+					g_DPSrvr.OnLogItem(aLogItem);
+				}
+			}
+#endif //  __EXP_ANGELEXP_LOG
+
+
+			BOOL bAngelComplete = FALSE;
+			if (m_nAngelExp > nMaxAngelExp) {
+				m_nAngelExp = nMaxAngelExp;
+				bAngelComplete = TRUE;
+			}
+
+			AddAngelInfo(bAngelComplete);
+#endif // __WORLDSERVER
+		}
+	}
+
+	if (reducePropency && IsChaotic()) {
+		m_dwPKExp = (DWORD)(m_dwPKExp + nExp);
+		DWORD dwPropensity = GetPKPropensity();
+		int nLevelPKExp = prj.GetLevelExp(GetLevel());
+		if (nLevelPKExp != 0) {
+			int nSubExp = m_dwPKExp / nLevelPKExp;
+			if (nSubExp) {
+				SetPKPropensity(GetPKPropensity() - (m_dwPKExp / nLevelPKExp));
+				if (dwPropensity <= GetPKPropensity())
+					SetPKPropensity(0);
+				m_dwPKExp %= nLevelPKExp;
+
+				g_UserMng.AddPKPropensity(this);
+				g_dpDBClient.SendLogPkPvp(this, NULL, 0, 'P');
+			}
+		}
+	}
+
+	// TODO: test and reread this function because it is very messy right now
+
+	// nExp += prj.m_aExpCharacter[m_nLevel + 1].nExp1 * (50 + xRandom(75)) / 100;
+
+	return AddRawExperience(nExp);
+}
+
+bool CUser::AddRawExperience(EXPINTEGER nExp) {
+	// Can earn exp?
+	constexpr auto GetMaxLevel = [](const DWORD jobType) -> std::pair<bool, int> {
+		switch (jobType) {
+			case JTYPE_BASE:
+				return { false, MAX_JOB_LEVEL };
+			case JTYPE_EXPERT:
+				return { false, MAX_JOB_LEVEL + MAX_EXP_LEVEL };
+			default:
+			case JTYPE_PRO:
+			case JTYPE_MASTER:     
+				return { true, MAX_LEVEL };
+			case JTYPE_HERO:
+				return { false, MAX_LEGEND_LEVEL };
+			case JTYPE_LEGEND_HERO:
+				return { true, MAX_3RD_LEGEND_LEVEL };
+		}
+	};
+
+	const auto [lastLevelIsExpable, maxLevel] = GetMaxLevel(GetJobType());
+
+	if (m_nLevel > maxLevel) return false;
+	if (m_nLevel == maxLevel && !lastLevelIsExpable) return false;
+
+	// Add exp
+	m_nExp1 += nExp;
+
+	// Can level up?
+	const int nNextLevel = m_nLevel + 1;
+	if (m_nExp1 < prj.m_aExpCharacter[nNextLevel].nExp1) return false;
+
+	if (m_nLevel == maxLevel) {
+		m_nExp1 = prj.m_aExpCharacter[nNextLevel].nExp1 - 1;
+		return false;
+	}
+
+	// Apply level up
+	nExp = m_nExp1 - prj.m_aExpCharacter[nNextLevel].nExp1;
+	m_nExp1 = 0;
+	m_nLevel = nNextLevel;
+
+	// Lewel reward
+	if (m_nDeathLevel < m_nLevel) {
+		m_nRemainGP += prj.m_aExpCharacter[nNextLevel].dwLPPoint;
+
+		if (IsJobTypeOrBetter(JTYPE_MASTER)) {
+			m_nRemainGP++;
+			SetMasterSkillPointUp();
+		} else {
+			const int nGetPoint = ((m_nLevel - 1) / 20) + 2;
+			AddSkillPoint(nGetPoint);
+			g_dpDBClient.SendLogSkillPoint(LOG_SKILLPOINT_GET_HUNT, nGetPoint, this, NULL);
+		}
+
+		if (g_eLocal.GetState(EVE_RECOMMEND) && IsPlayer()) {
+			g_dpDBClient.SendRecommend(this);
+		}
+
+		m_nExpLog = 0;
+
+		prj.m_EventLua.SetLevelUpGift(this, m_nLevel);
+
+		CCampusHelper::GetInstance()->SetLevelUpReward(this);
+	}
+
+	// Heal
+	m_nHitPoint = GetMaxHitPoint();
+	m_nManaPoint = GetMaxManaPoint();
+	m_nFatiguePoint = GetMaxFatiguePoint();
+
+	// Things
+	if (m_nLevel == 20) SetFlightLv(1);
+
+	if (nExp != 0) AddRawExperience(nExp);
+	return true;
+}

@@ -197,30 +197,6 @@ void CUser::Init( DPID dpidCache, DPID dpidUser )
 #endif // __PERIN_BUY_BUG
 }
 
-void CUser::LevelUpSetting( void )
-{
-	g_UserMng.AddSetLevel( this, (short)GetLevel() );
-	AddSetGrowthLearningPoint( m_nRemainGP );
-	g_dpDBClient.SendLogLevelUp( this, 1 );	// 레벨업 로그
-	g_dpDBClient.SendUpdatePlayerData( this );
-}
-
-void CUser::ExpUpSetting( void )
-{
-	// 레벨 5이상 로그_레벨업 테이블에 로그를 남긴다
-	// 20% 단위로 로그를 남김
-	if( GetLevel() > 5 ) // 레벨 5이상
-	{
-		int nNextExpLog = (int)(m_nExpLog/20 + 1) * 20;	
-		int nExpPercent = (int)( GetExp1() * 100 / GetMaxExp1() );
-		if( nExpPercent >= nNextExpLog )
-		{
-			m_nExpLog = nExpPercent;
-			g_dpDBClient.SendLogLevelUp( this, 5 );
-		}
-	}
-}
-
 void CUser::RemoveItFromNpcView() {
 	for(CCtrl * const pCtrl : m_2npc | std::views::values) {
 		pCtrl->PCRemoveKey(GetId());

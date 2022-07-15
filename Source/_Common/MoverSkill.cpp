@@ -48,7 +48,7 @@ void	CMover::SetMasterSkillPointUp()
 {
 	if( m_nLevel != 72 && m_nLevel != 84 && m_nLevel != 96 && m_nLevel != 108 )
 		return;
-	if( IsHero() )
+	if( IsJobTypeOrBetter(JTYPE_HERO) )
 		return;
 
 	for (SKILL & skill : m_jobSkills) {
@@ -524,8 +524,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 
 	if( IsPlayer() )
 	{
-		if( pSkillProp->dwReqDisLV != NULL_ID && GetLevel() < (int)( pSkillProp->dwReqDisLV )  && !IsMaster() && !IsHero() )
-			return FALSE;
+		if (!HasLevelForSkill(*pSkillProp)) return false;
 		
 		if( pSkillProp->dwReSkill1 != 0xffffffff )
 		{

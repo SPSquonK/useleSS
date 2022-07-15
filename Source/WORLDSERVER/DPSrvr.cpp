@@ -4052,24 +4052,11 @@ void CDPSrvr::OnChangeFace( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 	}
 }
 
-void CDPSrvr::OnExpUp( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
-		if( (DWORD)AUTH_GAMEMASTER <= pUser->m_dwAuthorization )
-		{
-			EXPINTEGER nExp;
-			ar >> nExp;
+void CDPSrvr::OnExpUp(CAr & ar, CUser & pUser) {
+	if (!pUser.IsAuthHigher(AUTH_GAMEMASTER)) return;
 
-			if( pUser->AddExperience( nExp, TRUE, TRUE, TRUE ) )
-				pUser->LevelUpSetting();
-			else
-				pUser->ExpUpSetting();
-
-			pUser->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
-		}
-	}
+	EXPINTEGER nExp; ar >> nExp;
+	pUser.EarnExperience(nExp, true, true);
 }
 
 void	CDPSrvr::OnChangeJob( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -8557,7 +8544,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 {
 	const auto [objItemId] = ar.Extract<std::array<OBJID, 5>>();
 
-	if (!pUser.IsHero()) return;
+	if (!pUser.IsJobTypeOrBetter(JTYPE_HERO)) return;
 
 	const auto lpSkill = std::ranges::find_if(pUser.m_jobSkills,
 		[](const SKILL & skill) {

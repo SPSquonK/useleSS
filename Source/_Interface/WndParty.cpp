@@ -402,7 +402,7 @@ CWndPartyInfo::PlayerInfo CWndPartyInfo::GetPlayerInfo(u_long playerId, CMover *
 		retval.name = pPlayerData->szPlayer;
 		retval.level = static_cast<int>(pPlayerData->data.nLevel);
 		retval.job = static_cast<int>(pPlayerData->data.nJob);
-		retval.jobName = prj.m_aJob[retval.job].szName;
+		retval.jobName = prj.jobs.info[retval.job].szName;
 	}
 
 	if (retval.job >= MAX_MASTER) {

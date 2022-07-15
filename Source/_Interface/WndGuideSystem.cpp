@@ -164,47 +164,28 @@ void CWndGuideSystem::ChangeModel( int nJob )
 
 	if( m_pModel )
 	{
-		switch( nJob )
-		{
+		switch (prj.jobs.GetProJob(nJob)) {
 			default:
-			case JOB_VAGRANT:
-				{
-					m_pModel->LoadBone( "Mvr_Guidepang.chr" );
-					m_pModel->LoadElement("Mvr_Guidepang.o3d", 0 );
-				}
+			case Project::ProJob::Vagrant:
+				m_pModel->LoadBone("Mvr_Guidepang.chr");
+				m_pModel->LoadElement("Mvr_Guidepang.o3d", 0);
 				break;
-			case JOB_KNIGHT:
-			case JOB_BLADE:
-			case JOB_MERCENARY:
-				{
-					m_pModel->LoadBone( "Mvr_McGuidepang.chr" );
-					m_pModel->LoadElement("Mvr_McGuidepang.o3d", 0 );
-				}
+			case Project::ProJob::Mercenary:
+				m_pModel->LoadBone("Mvr_McGuidepang.chr");
+				m_pModel->LoadElement("Mvr_McGuidepang.o3d", 0);
 				break;
-			case JOB_RINGMASTER:
-			case JOB_BILLPOSTER:
-			case JOB_ASSIST:
-				{
-					m_pModel->LoadBone( "Mvr_AsGuidepang.chr" );
-					m_pModel->LoadElement("Mvr_AsGuidepang.o3d", 0 );
-				}
+			case Project::ProJob::Assist:
+				m_pModel->LoadBone("Mvr_AsGuidepang.chr");
+				m_pModel->LoadElement("Mvr_AsGuidepang.o3d", 0);
 				break;
-			case JOB_PSYCHIKEEPER:
-			case JOB_ELEMENTOR:
-			case JOB_MAGICIAN:
-				{
-					m_pModel->LoadBone( "Mvr_MgGuidepang.chr" );
-					m_pModel->LoadElement("Mvr_MgGuidepang.o3d", 0 );
-				}
+			case Project::ProJob::Magician:
+				m_pModel->LoadBone("Mvr_MgGuidepang.chr");
+				m_pModel->LoadElement("Mvr_MgGuidepang.o3d", 0);
 				break;
-			case JOB_ACROBAT:
-			case JOB_RANGER:
-			case JOB_JESTER:
-				{
-					m_pModel->LoadBone( "Mvr_AcrGuidepang.chr" );
-					m_pModel->LoadElement("Mvr_AcrGuidepang.o3d", 0 );
-				}
-				break;				
+			case Project::ProJob::Acrobat:
+				m_pModel->LoadBone("Mvr_AcrGuidepang.chr");
+				m_pModel->LoadElement("Mvr_AcrGuidepang.o3d", 0);
+				break;
 		}
 	}
 }	
@@ -221,45 +202,15 @@ void CWndGuideSystem::SetAni(int nJob, int nAniKind)
 	const char* MagArry[3] = { "Mvr_MgGuidepang_Appear.ani", "Mvr_MgGuidepang_Dafault.ani", "Mvr_MgGuidepang_DisAppear.ani"	};
 	const char* AcrArry[3] = { "Mvr_AcrGuidepang_Appear.ani", "Mvr_AcrGuidepang_Default.ani", "Mvr_AcrGuidepang_DisAppear.ani"	};
 	
-	switch( nJob )
-	{
-	default:
-	case JOB_VAGRANT:
-		{
-			filename = VagArry[nAniKind];
-		}
-		break;
-	case JOB_KNIGHT:
-	case JOB_BLADE:
-	case JOB_MERCENARY:
-		{
-			filename = MerArry[nAniKind];
-		}
-		break;
-	case JOB_RINGMASTER:
-	case JOB_BILLPOSTER:
-	case JOB_ASSIST:
-		{
-			filename = AssArry[nAniKind];
-		}
-		break;
-	case JOB_PSYCHIKEEPER:
-	case JOB_ELEMENTOR:
-	case JOB_MAGICIAN:
-		{
-			filename = MagArry[nAniKind];
-		}
-		break;
-	case JOB_ACROBAT:
-	case JOB_RANGER:
-	case JOB_JESTER:
-		{
-			filename = AcrArry[nAniKind];
-		}
-		break;
-		
+
+	switch (prj.jobs.GetProJob(nJob)) {
+		case Project::ProJob::Vagrant:   filename = VagArry[nAniKind]; break;
+		case Project::ProJob::Mercenary: filename = MerArry[nAniKind]; break;
+		case Project::ProJob::Assist:    filename = AssArry[nAniKind]; break;
+		case Project::ProJob::Magician:  filename = MagArry[nAniKind]; break;
+		case Project::ProJob::Acrobat:   filename = AcrArry[nAniKind]; break;
 	}
-	
+
 	m_pModel->LoadMotion( filename );
 	
 	switch(nAniKind)

@@ -976,8 +976,9 @@ public:
 	void			SetPointParam( int nDstParameter, int nValue, BOOL bTrans = FALSE ); // bTrans가 TRUE이면 강제전송
 	void			OnApplySM();
 	[[nodiscard]] SKILL * GetSkill(DWORD dwSkill);
+	[[nodiscard]] const SKILL * GetSkill(DWORD dwSkill) const;
 	void			OnEndSkillState( DWORD dwSkill, DWORD dwLevel );
-	BOOL			CheckSkill( DWORD dwSkill );
+	BOOL			CheckSkill(DWORD dwSkill) const;
 	void			SetHair( int nHair );
 	void			SetHairColor( DWORD dwHairColor );
 	void			SetHairColor( FLOAT r, FLOAT g, FLOAT b );
@@ -988,24 +989,25 @@ public:
 	[[nodiscard]] BYTE GetSex() const { return m_bySex; }
 	void			SetSex( BYTE bySex ) { m_bySex = bySex; }
 	BOOL			IsPeaceful() { return m_dwBelligerence == BELLI_PEACEFUL; }
-	BOOL			IsBaseJob();
-	BOOL			IsExpert();
+	[[nodiscard]] bool IsBaseJob() const;
+	[[nodiscard]] bool IsExpert() const;
 	[[nodiscard]] bool IsPro() const;
 	[[nodiscard]] bool IsMaster() const;
 	[[nodiscard]] bool IsHero() const;
-	[[nodiscard]] bool IsInteriorityJob(int nJob) const;
+	[[nodiscard]] bool IsLegendHero() const;
+	[[nodiscard]] bool IsJobTypeOrBetter(DWORD jobType) const;
+	[[nodiscard]] bool IsInteriorityJob(int nJob) const { return IsInteriorityJob(nJob, m_nJob); }
+	static [[nodiscard]] bool IsInteriorityJob(int wantedJob, int characterJob);
 	bool AddChangeJob(int nJob);
-	int				GetJob();
-	int				GetExpPercent();
+	[[nodiscard]] int GetJob() const noexcept { return m_nJob; };
 	int				SetLevel( int nSetLevel );
 	int				AddGPPoint( int nAddGPPoint );
-	BOOL			IsJobType( DWORD dwJobType ); 
 	[[nodiscard]] int GetLevel() const { return m_nLevel; }
 	int				GetFxp() { return m_nFxp; }
 	int				GetTxp() { return m_nFxp; }
-	EXPINTEGER		GetExp1()	{	return m_nExp1;	}
-	EXPINTEGER		GetMaxExp1()	{	return prj.m_aExpCharacter[m_nLevel+1].nExp1;	}
-	EXPINTEGER		GetMaxExp2()	{	return prj.m_aExpCharacter[m_nLevel].nExp2;	}
+	[[nodiscard]] EXPINTEGER GetExp1() const { return m_nExp1; }
+	[[nodiscard]] EXPINTEGER GetMaxExp1() const { return prj.m_aExpCharacter[m_nLevel+1].nExp1; }
+	[[nodiscard]] int GetExpPercent() const; /* Should return a number in [0, 9999] */
 	int				GetRemainGP(); // growth
 	void			IncHitPoint( int nVal) ;
 	void			IncManaPoint(int nVal) ;
@@ -1016,7 +1018,6 @@ public:
 	float			GetExpFactor();
 	float			GetItemDropRateFactor( CMover* pAttacker );
 	float			GetPieceItemDropRateFactor( CMover* pAttacker );
-	BOOL			AddExperience( EXPINTEGER nExp, BOOL bFirstCall = TRUE, BOOL bMultiply = TRUE, BOOL bMonster = FALSE );	// bMultiply : 상용화 아이템 적용? // bMonster : 몬스터를 죽여서 온 경험치 인가?
 	BOOL			DecExperience( EXPINTEGER nExp, BOOL bExp2Clear, BOOL bLvDown );	// 경험치를 깎는다.
 	BOOL			DecExperiencePercent( float fPercent, BOOL bExp2Clear, BOOL bLvDown  );	// 경험치를 퍼센트로 깎는다.
 	BOOL			AddFxp( int nFxp );
@@ -1337,9 +1338,10 @@ public:
 	// 직업 타입
 	[[nodiscard]] DWORD GetJobType(int nJob = NULL_ID) const {
 		if (nJob == NULL_ID) nJob = m_nJob;
-		return prj.m_aJob[nJob].dwJobType;
+		return prj.jobs.info[nJob].dwJobType;
 	}
 
+	[[nodiscard]] bool HasLevelForSkill(const ItemProp & skillProp) const;
 
 	void			AngelMoveProcess();
 #ifdef __EVE_BALLOON
@@ -1370,7 +1372,7 @@ public:
 	
 	float			SubDieDecExp( BOOL bTransfer = TRUE, DWORD dwDestParam = 0, BOOL bResurrection = FALSE  );	// 죽었을때 겸치 깎는 부분.
 
-	void			SubAroundExp( CMover *pAttacker, float fRange );		// this를 중심으로 fRange범위안에 있는 유저에게 경험치를 배분한다.
+	void			SubAroundExp( float fRange );		// this를 중심으로 fRange범위안에 있는 유저에게 경험치를 배분한다.
 	void			GetDieDecExp( int nLevel, FLOAT& fRate, FLOAT& fDecExp, BOOL& bPxpClear, BOOL& bLvDown );
 	void			GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, BOOL bResurrection );
 	BOOL			CreateItem( CItemElem * pItemBase, BYTE* pnId = NULL, short* pnNum = NULL, BYTE nCount = 0 );
@@ -1427,7 +1429,7 @@ public:
 	void			PlayCombatMusic();
 	BOOL			IsLoot( CItem *pItem ) { return TRUE; }
 	LPCTSTR			GetFameName();						// 명성 이름 얻기
-	LPCTSTR			GetJobString();						// 직업 이름 얻기 
+	[[nodiscard]] LPCTSTR GetJobString() const;						// 직업 이름 얻기 
 	void			DialogOut( LPCTSTR lpszText );		// 말풍선에 의한 대사 출력
 	BOOL			DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart, CModelObject* pModel = NULL ); // for Fake
 	void			RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue );

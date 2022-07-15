@@ -1281,7 +1281,7 @@ void CMover::InitProp( BOOL bInitAI )
 
 	// 잡스킬 초기화 
 	if (m_nJob != -1) {
-		for (const ItemProp * pSkillProp : prj.m_jobSkills[m_nJob]) {
+		for (const ItemProp * pSkillProp : prj.jobs.skills[m_nJob]) {
 			m_jobSkills.emplace_back(SKILL{ .dwSkill = pSkillProp->dwID, .dwLevel = 0 });
 		}
 	}
@@ -1549,9 +1549,9 @@ void CMover::ReState()
 	for( int i = 1 ; i < nLevelFor ; i++ )
 	{
 		m_nRemainGP += prj.m_aExpCharacter[ i + 1 ].dwLPPoint;
-		if( ( IsMaster() || IsHero() ) && i > 59 )
+		if( IsJobTypeOrBetter(JTYPE_MASTER) && i > 59)
 			m_nRemainGP++;
-		if( IsHero() && i == MAX_LEVEL)
+		if(IsJobTypeOrBetter(JTYPE_HERO) && i == MAX_LEVEL)
 			m_nRemainGP+=12;
 	}
 	
@@ -4264,7 +4264,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 					break;               
 				case IK3_WAND:
 
-					if( GetJob() == JOB_PSYCHIKEEPER || GetJob() == JOB_PSYCHIKEEPER_MASTER || GetJob() == JOB_PSYCHIKEEPER_HERO )	dwMotion += MTI_STAND_11;
+					if( IsInteriorityJob(JOB_PSYCHIKEEPER) )	dwMotion += MTI_STAND_11;
 					else								dwMotion += MTI_STAND_02; 
 					break; 
 				case IK3_CHEERSTICK: dwMotion += 400; break; 
@@ -4933,91 +4933,40 @@ void CMover::SubPVP( CMover *pAttacker, int nReflect )
 
 // this가 죽은무버다.
 // this를 중심으로 반경 fRange 이내에 있는 사람들에게 경험치를 분배한다.
-void CMover::SubAroundExp( CMover *pAttacker, float fRange )
+void CMover::SubAroundExp( float fRange )
 {
-#if 1
-#define MAX_AROUND_USER		512
+	static constexpr size_t MaxAroundUser = 512;
 
-	D3DXVECTOR3	vPos = GetPos();
-	D3DXVECTOR3 vDist;
-	FLOAT		fDistSq;
-	CUser *pUser;
-	CUser *pList[ MAX_AROUND_USER ], **ptr;
-	int		nMaxList = 0;
-	int		i;
+	boost::container::small_vector<CUser *, MaxAroundUser> pList;
 
-	TRACE( "보스몹 죽임 %s\n", pAttacker->GetName() );
+	const D3DXVECTOR3	vPos = GetPos();
+
 	fRange *= fRange;		// Sq 버전으로 바꿈.
 
-	memset( pList, 0, sizeof(pList) );
-	ptr = pList;
-
 	// 반경내에 있는 유저를 추려냄.
-	FOR_VISIBILITYRANGE( this )
-	{
-		pUser = USERPTR;
-		vDist = vPos - pUser->GetPos();
-		fDistSq = D3DXVec3LengthSq( &vDist );		// 죽은넘과 유저사이의 거리Sq를 구함 
-		if( fDistSq <= fRange )				// 반경 fRange 미터 이내에 있는 사람은
+	FOR_VISIBILITYRANGE(this) {
+		CUser * pUser = USERPTR;
+		const D3DXVECTOR3 vDist = vPos - pUser->GetPos();
+		const FLOAT fDistSq = D3DXVec3LengthSq(&vDist);		// 죽은넘과 유저사이의 거리Sq를 구함 
+		if (fDistSq <= fRange)				// 반경 fRange 미터 이내에 있는 사람은
 		{
-			*ptr++ = pUser;
-			nMaxList ++;
+			pList.emplace_back(pUser);
 		}
-	}	
+	}
 	NEXT_VISIBILITYRANGE( this )
 
-	if( nMaxList == 0 )
-	{
-		Error( "CMover::SubAroundExp %s주위에 유저가 없다. ", GetName() );
+	if (pList.empty()) {
+		Error("CMover::SubAroundExp %s주위에 유저가 없다. ", GetName());
 		return;
 	}
 
-
-	EXPINTEGER nExp		= GetProp()->nExpValue / (EXPINTEGER)nMaxList;	// 1인당 얼마씩 배분되야 하는가.
+	const EXPINTEGER nExp = GetProp()->nExpValue / static_cast<EXPINTEGER>(pList.size());	// 1인당 얼마씩 배분되야 하는가.
 	// 추려낸 유저들에게 경험치를 줌.
-	ptr = pList;
-	for( i = 0; i < nMaxList; i ++ )
-	{
-		pUser = *ptr++;
-
-		if( nExp > prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp )
-			nExp	= prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp;
-
-		if( pUser->AddExperience( nExp, TRUE, TRUE, TRUE ) )
-		{
-			// 레벨업 됐다.
-			g_UserMng.AddSetLevel( pUser, (WORD)pUser->m_nLevel );		// pUser의 주위사람에게 pUser가 레벨이 올랐다는걸 보냄.
-			((CUser*)pUser)->AddSetGrowthLearningPoint( pUser->m_nRemainGP );		// pUser에게 GP변동된것을 보냄.
-			g_dpDBClient.SendLogLevelUp( pUser, 1 );	// 레벨업 로그
-			g_dpDBClient.SendUpdatePlayerData( pUser );
-		}
-		else
-		{
-			// 레벨업 안되고 겸치만 올랐다.
-			// 레벨 5이상일때는 경험치 업을 로그_레벨업 테이블에 로그를 남긴다
-			// 경험치 20% 단위로 로그를 남김
-#ifdef __EXP_ANGELEXP_LOG
-			int nNextExpLog = (int)(pUser->m_nExpLog/20 + 1) * 20;	
-			int nExpPercent = (int)( GetExp1() * 100 / GetMaxExp1() );
-			if( nExpPercent >= nNextExpLog )
-			{
-				pUser->m_nExpLog = nExpPercent;
-				g_dpDBClient.SendLogLevelUp( this, 5 );
-			}
-#else // __EXP_ANGELEXP_LOG
-			int iLogExp = GetExp1() * 100 / GetMaxExp1();
-			iLogExp /= 20;
-			if( pUser->GetLevel() > 5 ) // 레벨 5이상
-			{
-				if( ( 20 * ( iLogExp + 1 ) ) <= ( pUser->GetExp1() * 100 / pUser->GetMaxExp1() ) )
-					g_dpDBClient.SendLogLevelUp( pUser, 5 );
-			}
-#endif // __EXP_ANGELEXP_LOG
-		}
-		// pUser에게 경험치 바뀐걸 보냄
-		((CUser*)pUser)->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
-	}		
-#endif // 0
+	
+	for (CUser * pUser : pList) {
+		const EXPINTEGER reward = std::min(nExp, prj.m_aExpCharacter[pUser->m_nLevel].nLimitExp);
+		pUser->EarnExperience(reward, true, true);
+	}
 }
 
 void CMover::AddKillRecovery()
@@ -9387,105 +9336,15 @@ void	CMover::CheckHonorStat()
 	if( m_nHonor < -1 || m_nHonor >= MAX_HONOR_TITLE)
 		m_nHonor = -1;
 
+
+	for (int job = JOB_VAGRANT; job != MAX_JOB; ++job) {
+		const int nIdx = CTitleManager::Instance()->GetIdx(job, HI_EARN_TITLE);
+		if (nIdx != -1) {
+			SetHonorCount(nIdx, IsInteriorityJob(job) ? 1 : 0);
+		}
+	}
+
 	int nIdx = 0;
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_KNIGHT_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_KNIGHT_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BLADE_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_BLADE_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_JESTER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_JESTER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RANGER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_RANGER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RINGMASTER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_RINGMASTER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BILLPOSTER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_BILLPOSTER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_PSYCHIKEEPER_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_PSYCHIKEEPER_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_ELEMENTOR_MASTER,HI_EARN_TITLE);
-	if( m_nJob == JOB_ELEMENTOR_MASTER )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_KNIGHT_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_KNIGHT_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BLADE_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_BLADE_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_JESTER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_JESTER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RANGER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_RANGER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_RINGMASTER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_RINGMASTER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_BILLPOSTER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_BILLPOSTER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_PSYCHIKEEPER_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_PSYCHIKEEPER_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);
-
-	nIdx = CTitleManager::Instance()->GetIdx(JOB_ELEMENTOR_HERO,HI_EARN_TITLE);
-	if( m_nJob == JOB_ELEMENTOR_HERO )
-		SetHonorCount(nIdx,1);
-	else
-		SetHonorCount(nIdx,0);	
-
 	nIdx = CTitleManager::Instance()->GetIdx(HS_STR,HI_COUNT_CHECK);
 	SetHonorCount(nIdx,m_nStr);
 

@@ -43,7 +43,7 @@ void CWndSecretRoomSelection::AddCombatPlayer( u_long uiPlayer )
 	CString str;
 
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 
 	pWndList->AddString( str );
 
@@ -82,7 +82,7 @@ void CWndSecretRoomSelection::AddGuildPlayer( u_long uiPlayer )
 				
 	CString str;
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 	pWndList->AddString( str );			
 } 
 
@@ -111,7 +111,7 @@ void CWndSecretRoomSelection::RemoveCombatPlayer( int nIndex )
 		const auto iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
 		CGuildMember* pMember = iter->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 		pWndList->SetString( i, temp );
 	}
 }
@@ -148,7 +148,7 @@ void CWndSecretRoomSelection::UpDateGuildListBox()
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
 				{
-					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 					pWndList->AddString( str );	
 					m_vecGuildList.push_back( pMember->m_idPlayer );
 				}
@@ -1653,34 +1653,11 @@ void CWndSecretRoomGuildMember::OnDraw( C2DRender* p2DRender )
 		else
 			dwColor = 0xffff6464;
 			
-		if( prj.m_aJob[ pPlayerData->data.nJob ].dwJobType == JTYPE_PRO )			
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  ( 19 + pPlayerData->data.nJob - 6 ), &pVertices, dwColor );
-		else if( prj.m_aJob[ pPlayerData->data.nJob ].dwJobType == JTYPE_MASTER )
-		{
-			int nMasterIndex = 27;
-			if(pPlayerData->data.nLevel < 70) //Level Down될 경우를 생각해서 주석처리.
-				nMasterIndex = 27;
-			else if(pPlayerData->data.nLevel >= 70 && pPlayerData->data.nLevel < 80)
-				nMasterIndex = 28;
-			else if(pPlayerData->data.nLevel >= 80 && pPlayerData->data.nLevel < 90)
-				nMasterIndex = 29;
-			else if(pPlayerData->data.nLevel >= 90 && pPlayerData->data.nLevel < 100)
-				nMasterIndex = 30;
-			else if(pPlayerData->data.nLevel >= 100 && pPlayerData->data.nLevel < 110)
-				nMasterIndex = 31;
-			else if(pPlayerData->data.nLevel >= 110 && pPlayerData->data.nLevel <= 120)
-				nMasterIndex = 32;
-
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 10, nIconTopPos ),  nMasterIndex, &pVertices, dwColor );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  ( 19 + pPlayerData->data.nJob - 16 ), &pVertices, dwColor );
+		const auto jobIcons = Project::Jobs::PlayerDataIcon(pPlayerData->data.nJob, pPlayerData->data.nLevel);
+		if (jobIcons.master != 0) {
+			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 10, nIconTopPos ),  jobIcons.master, &pVertices, dwColor );
 		}
-		else if( prj.m_aJob[ pPlayerData->data.nJob ].dwJobType == JTYPE_HERO )
-		{
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 10, nIconTopPos ),  33, &pVertices, dwColor );
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  ( 19 + pPlayerData->data.nJob - 24 ), &pVertices, dwColor );
-		}
-		else
-			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  14 + pPlayerData->data.nJob, &pVertices, dwColor );
+		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 32, nIconTopPos ),  jobIcons.job, &pVertices, dwColor );
 
 		pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 		SAFE_DELETE_ARRAY( pVertex );

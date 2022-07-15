@@ -49,6 +49,9 @@
     <Filter Include="Database Files">
       <UniqueIdentifier>{d3660a0d-08f0-485d-b2d9-1e53727498df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Project">
+      <UniqueIdentifier>{d7850cfb-afc8-455c-b1b7-a10fd44c674b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_Database\AccountCacheMgr.cpp">
@@ -100,9 +103,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\pocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Project.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QuizDBCtrl.cpp">
@@ -237,9 +237,6 @@
     <ClCompile Include="..\_Common\post.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\ProjectCmn.cpp">
-      <Filter>Neuz Files\Common Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\Quiz.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
@@ -309,6 +306,15 @@
     <ClCompile Include="..\_Common\SkillsOfMover.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\ProjectJob.cpp">
+      <Filter>Source Files\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="Project.cpp">
+      <Filter>Source Files\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\ProjectCmn.cpp">
+      <Filter>Source Files\Project</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Database\AccountCacheMgr.h">
@@ -360,9 +366,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\pocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="project.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QuizDBCtrl.h">
@@ -542,9 +545,6 @@
     <ClInclude Include="..\_Common\post.h">
       <Filter>Neuz Files\Common Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\ProjectCmn.h">
-      <Filter>Neuz Files\Common Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\Quiz.h">
       <Filter>Neuz Files\Common Files</Filter>
     </ClInclude>
@@ -589,6 +589,15 @@
     </ClInclude>
     <ClInclude Include="..\_Common\SkillsOfMover.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ProjectJob.h">
+      <Filter>Source Files\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="project.h">
+      <Filter>Source Files\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ProjectCmn.h">
+      <Filter>Source Files\Project</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

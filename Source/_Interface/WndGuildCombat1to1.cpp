@@ -43,7 +43,7 @@ void CWndGuildCombat1to1Selection::AddCombatPlayer( u_long uiPlayer )
 	CString str;
 	//str.Format( "Lv%.2d	%.16s %.10s", pMember->m_nLevel, prj.GetPlayerString( pMember->m_idPlayer ), prj.m_aJob[ pMember->m_nJob ].szName );
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 
 	pWndList->AddString( str );			
 } 
@@ -74,7 +74,7 @@ void CWndGuildCombat1to1Selection::AddGuildPlayer( u_long uiPlayer )
 				
 	CString str;
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 	pWndList->AddString( str );			
 } 
 
@@ -103,7 +103,7 @@ void CWndGuildCombat1to1Selection::RemoveCombatPlayer( int nIndex )
 		const auto iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
 		const CGuildMember * const pMember = iter->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 		pWndList->SetString( i, temp );
 	}
 }
@@ -140,7 +140,7 @@ void CWndGuildCombat1to1Selection::UpDateGuildListBox()
 				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
 				if( pPlayerData->data.uLogin > 0 )
 				{
-					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 					pWndList->AddString( str );	
 					m_vecGuildList.push_back( pMember->m_idPlayer );
 				}
@@ -373,11 +373,11 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 		auto i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
 		CGuildMember* pMember = i->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 		i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel-1] );
 		pMember = i->second;
 		pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 		pWndListBox->SetString( nCurSel, temp1 );
 		pWndListBox->SetString( nCurSel-1, temp2 );
 
@@ -411,11 +411,11 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 		auto i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel] );
 		CGuildMember* pMember = i->second;
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+		temp1.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 		i = pGuild->m_mapPMember.find( m_vecSelectPlayer[nCurSel+1] );
 		pMember = i->second;
 		pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+2, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.m_aJob[ pPlayerData->data.nJob ].szName );
+		temp2.Format( "No.%d  Lv%.2d	%.16s %.10s", nCurSel+2, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
 		pWndListBox->SetString( nCurSel, temp1 );
 		pWndListBox->SetString( nCurSel+1, temp2 );
 

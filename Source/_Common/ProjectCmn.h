@@ -854,25 +854,6 @@ struct MoverProp : CtrlProp
 	}
 };
 
-typedef	struct	tagBeginItem
-{
-	DWORD	dwItemType;
-	DWORD	dwItemId;
-	DWORD	dwNum;
-}
-BEGINITEM, *LPBEGINITEM; 
-
-#define MAX_BEGINEQUIP  10
-#define MAX_BEGINITEM   42 //20 
-#define MAX_JOBITEM     10 
-
-typedef struct tagJOBITEM
-{
-	DWORD adwMale[ MAX_BEGINEQUIP ][ 2 ];
-	BEGINITEM beginItem[ MAX_BEGINITEM ];
-
-} JOBITEM,* LPJOBITEM;
-
 #define TASKBAR_TOP    0
 #define TASKBAR_BOTTOM 1
 #define TASKBAR_LEFT   2
@@ -1015,3 +996,6 @@ public:
 
 	[[nodiscard]] const char * what() const { return m_fullMessage; }
 };
+
+#include "ProjectJob.h"
+

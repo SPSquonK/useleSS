@@ -1,11 +1,11 @@
 # useleSS
 
-FlyFF v15 code with some refactor. This project does **NOT** currently aim to
-add any major features.
+FlyFF v15 code with some refactor.
 
 The base code is from Blouflash V15
 https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html 
 
+Some v22 resource compatiblity have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
 
 This source is developped on Visual Studio 2022 with the C++lastest option.
 C++latest is used instead of C++20 because MSVC doesn't have range support

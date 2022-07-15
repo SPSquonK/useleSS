@@ -53,39 +53,34 @@ SKILL * CMover::GetSkill(DWORD dwSkill) {
 	return it != m_jobSkills.end() ? &*it : nullptr;
 }
 
-BOOL CMover::CheckSkill( DWORD dwSkill )
-{
-	ItemProp* pSkillProp = prj.GetSkillProp( dwSkill );
-	
-	if( pSkillProp == NULL || pSkillProp->nLog == 1 )
+const SKILL * CMover::GetSkill(const DWORD dwSkill) const {
+	const auto it = std::ranges::find_if(m_jobSkills,
+		[dwSkill](const SKILL & skill) { return skill.dwSkill == dwSkill; }
+	);
+	return it != m_jobSkills.end() ? &*it : nullptr;
+}
+
+BOOL CMover::CheckSkill(const DWORD dwSkill) const {
+	const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+
+	if (pSkillProp == NULL || pSkillProp->nLog == 1)
 		return FALSE;
-	if( !IsMaster() && !IsHero() && GetLevel() < (int)( pSkillProp->dwReqDisLV ) )
-		return FALSE;
-				
-	if( pSkillProp->dwReSkill1 != 0xffffffff )
-	{
-		LPSKILL pSkillBuf = GetSkill( pSkillProp->dwReSkill1 );
-		if( pSkillBuf )
-		{
-			if( pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel1 )
-			{
-				return FALSE;
-			}
+	if (!HasLevelForSkill(*pSkillProp)) return FALSE;
+
+	if (pSkillProp->dwReSkill1 != 0xffffffff) {
+		const SKILL * pSkillBuf = GetSkill(pSkillProp->dwReSkill1);
+		if (pSkillBuf && pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel1) {
+			return FALSE;
 		}
 	}
-	
-	if( pSkillProp->dwReSkill2 != 0xffffffff )
-	{
-		LPSKILL pSkillBuf = GetSkill( pSkillProp->dwReSkill2 );
-		if( pSkillBuf )
-		{
-			if( pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel2 )
-			{
-				return FALSE;
-			}				
+
+	if (pSkillProp->dwReSkill2 != 0xffffffff) {
+		const SKILL * pSkillBuf = GetSkill(pSkillProp->dwReSkill2);
+		if (pSkillBuf && pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel2) {
+			return FALSE;
 		}
-	}	
-	
+	}
+
 	return TRUE;
 }
 
@@ -147,46 +142,31 @@ BOOL IsActive( CMover* pMover, DWORD dwSkill )
 	if( pSkillProp == NULL )
 		return FALSE;
 
-	if( pSkillProp->dwReSkill1 != NULL_ID )
-	{
-		LPSKILL pSkill1;
-		ItemProp* pSkillProp1;
+	if (pSkillProp->dwReSkill1 != NULL_ID) {
+		SKILL * pSkill1 = pMover->GetSkill(pSkillProp->dwReSkill1);
+		if (pSkill1 == NULL) return FALSE;
 
-		pSkill1		= pMover->GetSkill( pSkillProp->dwReSkill1 );
-		if( pSkill1 == NULL )
-			return FALSE;
+		const ItemProp * pSkillProp1 = prj.GetSkillProp(pSkill1->dwSkill);
+		if (pSkillProp1 == NULL) return FALSE;
 
-		pSkillProp1 = prj.GetSkillProp( pSkill1->dwSkill );
-		if( pSkillProp1 == NULL )
-			return FALSE;
+		if (!pMover->HasLevelForSkill(*pSkillProp1)) return FALSE;
 
-		if( (int)( pSkillProp1->dwReqDisLV ) > pMover->GetLevel() && !pMover->IsMaster() && !pMover->IsHero() )
-			return FALSE;
-		
-		if( pSkillProp->dwReSkillLevel1 != pSkill1->dwLevel )
-			return FALSE;
+		if (pSkillProp->dwReSkillLevel1 != pSkill1->dwLevel) return FALSE;
 	}
 
-	if( pSkillProp->dwReSkill2 != NULL_ID )
-	{
-		LPSKILL pSkill1;
-		ItemProp* pSkillProp1;
-		
-		pSkill1		= pMover->GetSkill( pSkillProp->dwReSkill2 );
-		if( pSkill1 == NULL )
-			return FALSE;
-	
-		pSkillProp1 = prj.GetSkillProp( pSkill1->dwSkill );
-		if( pSkillProp1 == NULL )
-			return FALSE;
-		if( (int)( pSkillProp1->dwReqDisLV ) > pMover->GetLevel() && !pMover->IsMaster() && !pMover->IsHero() )
-			return FALSE;
-		
-		if( pSkillProp->dwReSkillLevel2 != pSkill1->dwLevel )
-			return FALSE;		
+	if (pSkillProp->dwReSkill2 != NULL_ID) {
+		SKILL * pSkill1 = pMover->GetSkill(pSkillProp->dwReSkill2);
+		if (pSkill1 == NULL) return FALSE;
+
+		const ItemProp * pSkillProp1 = prj.GetSkillProp(pSkill1->dwSkill);
+		if (pSkillProp1 == NULL) return FALSE;
+
+		if (!pMover->HasLevelForSkill(*pSkillProp1)) return FALSE;
+
+		if (pSkillProp->dwReSkillLevel2 != pSkill1->dwLevel) return FALSE;
 	}
-	if( (int)( pSkillProp->dwReqDisLV ) > pMover->GetLevel() && !pMover->IsMaster() && !pMover->IsHero() )
-		return FALSE;
+
+	if (!pMover->HasLevelForSkill(*pSkillProp)) return FALSE;
 
 	return TRUE;
 }
@@ -251,102 +231,61 @@ int CMover::GetSummonState()
 
 
 #ifdef __CLIENT
-LPCTSTR CMover::GetJobString()
-{
-	if( m_nJob != -1 )
-		return prj.m_aJob[ m_nJob ].szName;
-	return _T( "" );
+LPCTSTR CMover::GetJobString() const {
+	if (m_nJob == -1) return _T("");
+	return prj.jobs.info[m_nJob].szName;
 }
 #endif	// __CLIENT
 
-BOOL  CMover::IsJobType( DWORD dwJobType ) 
-{ 
-	if( IsExpert() )
-	{
-		if( dwJobType == JTYPE_EXPERT ) 
-			return TRUE;
-		return FALSE;
-	}
-	return JTYPE_BASE == dwJobType;
-}
-BOOL CMover::IsBaseJob()
-{
-	return prj.m_aJob[ m_nJob ].dwJobType == JTYPE_BASE;
-}
-BOOL CMover::IsExpert()
-{
-	return prj.m_aJob[ m_nJob ].dwJobType == JTYPE_EXPERT;
+bool CMover::IsBaseJob()    const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_BASE; }
+bool CMover::IsExpert()     const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_EXPERT; }
+bool CMover::IsPro()        const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_PRO; }
+bool CMover::IsMaster()     const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_MASTER; }
+bool CMover::IsHero()       const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_HERO; }
+bool CMover::IsLegendHero() const { return prj.jobs.info[m_nJob].dwJobType == JTYPE_LEGEND_HERO; }
+bool CMover::IsJobTypeOrBetter(DWORD jobType) const {
+	const DWORD myJobType = prj.jobs.info[m_nJob].dwJobType;
+	return myJobType >= jobType;
 }
 
-bool CMover::IsPro()    const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_PRO; }
-bool CMover::IsMaster() const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_MASTER; }
-bool CMover::IsHero()   const { return prj.m_aJob[m_nJob].dwJobType == JTYPE_HERO; }
+bool CMover::HasLevelForSkill(const ItemProp & skillProp) const {
+	const int level = GetLevel();
+	
+	// Have the required level?
+	const int reqLevel = static_cast<int>(skillProp.dwReqDisLV);
+	if (reqLevel <= level) return true;
+	
+	// Master+ can bypass level requirement of skills that requires a level <= 120
+	return reqLevel <= MAX_LEVEL && IsJobTypeOrBetter(JTYPE_MASTER);
+}
 
 BYTE	CMover::GetLegendChar()
 {
 	if(IsMaster())
 		return LEGEND_CLASS_MASTER;
-	else if(IsHero())
+	else if(IsJobTypeOrBetter(JTYPE_HERO))
 		return	LEGEND_CLASS_HERO;
 	else
 		return LEGEND_CLASS_NORMAL;
 }
 
-
-
-
-bool CMover::IsInteriorityJob(const int nJob) const {
-	// TODO: replace job arithmetic with something less magic
-	if (nJob == JOB_VAGRANT || nJob == m_nJob) return true;
-
-	if( IsPro() && JOB_VAGRANT < nJob && nJob < MAX_EXPERT )
-	{
-		if( nJob * 2 + 4 == m_nJob || nJob * 2 + 5 == m_nJob )
-		{
-			return TRUE;
-		}
-	}
-	if( IsMaster()  )	// ������ �ȵǸ� ����.				
-	{
-		if( nJob < MAX_EXPERT )
-		{
-			if( nJob * 2 + 14 == m_nJob || nJob * 2 + 15 == m_nJob )
-				return TRUE;
-		}
-		else if( nJob < MAX_PROFESSIONAL )
-		{
-			if( nJob + 10 == m_nJob )
-				return TRUE;
-		}
-	}
-	if( IsHero()  )	// ������ �ȵǸ� ����.				
-	{
-		if( nJob < MAX_EXPERT )
-		{
-			if( nJob * 2 + 22 == m_nJob || nJob * 2 + 23 == m_nJob )
-				return TRUE;
-		}
-		else if( nJob < MAX_PROFESSIONAL )
-		{
-			if( nJob + 18 == m_nJob )
-				return TRUE;
-		}
-		else if( nJob < MAX_MASTER )	// Hero�� ������ ���⸦ ������ �� �ִ�.
-		{
-			if( nJob + 8 == m_nJob )
-				return TRUE;
-		}
-	}
-	return FALSE;
+bool CMover::IsInteriorityJob(const int nJob, const int characterJob) {
+	if (nJob == JOB_VAGRANT || nJob == characterJob) return true;
+	const auto allMyJobs = prj.jobs.GetAllJobsOfLine(characterJob);
+	return std::ranges::find(allMyJobs, nJob) != allMyJobs.end();
 }
 
-int   CMover::GetJob()
-{
-	return m_nJob; 
-}
+int CMover::GetExpPercent() const {
+	EXPINTEGER exp = GetExp1();
+	EXPINTEGER maxExp = GetMaxExp1();
 
-int   CMover::GetExpPercent() {
-	return (int)(GetExp1() * 10000 / GetMaxExp1());
+	if (maxExp >= EXPINTEGER(1024 * 1024 * 1024)) {
+		// Avoid overflow when multiplying. 1024 is a power of 2 so it is fast
+		exp /= EXPINTEGER(1024 * 1024 * 1024);
+		maxExp /= EXPINTEGER(1024 * 1024 * 1024);
+	}
+
+	return exp * 10000 / maxExp;
 }
 
 
@@ -718,330 +657,6 @@ BOOL CMover::IncIntLevel()
 	return FALSE;
 }
 
-BOOL CMover::AddExperience( EXPINTEGER nExp, BOOL bFirstCall, BOOL bMultiPly, BOOL bMonster )
-{
-#ifdef __VTN_TIMELIMIT
-	//	mulcom	BEGIN100315	��Ʈ�� �ð� ����
-	if( ::GetLanguage() == LANG_VTN )
-	{
-		if( IsPlayer() && m_nAccountPlayTime != -1 )
-		{
-			if( m_nAccountPlayTime < 0 || m_nAccountPlayTime > MIN( 300 ) )
-			{
-				nExp	= 0;
-			}
-			else if( m_nAccountPlayTime >= MIN( 180 ) && m_nAccountPlayTime <= MIN( 300 ) )
-			{
-				nExp	= (EXPINTEGER)( nExp * 0.5f );
-			}
-		}
-	}
-	//	mulcom	END100315	��Ʈ�� �ð� ����
-#endif // __VTN_TIMELIMIT
-
-	if (IsAuthHigher(AUTH_ADMINISTRATOR))	// ¿î¿µÀÚ °èÁ¤ÀÏ¶§
-	{
-		if (IsMode(MODE_EXPUP_STOP))			// °æÇèÄ¡ »ó½Â ±ÝÁö »óÅÂ¸é
-			return FALSE;						// °æÇèÄ¡°ª 0
-	}
-
-	if( nExp <= 0 )		// nExp�� ���̳ʽ��̰ų� 0�̸� ó�����ʿ� ����.
-		return FALSE;
-
-	if( m_nHitPoint <= 0 )
-		return FALSE;
-
-#ifdef __INTERNALSERVER
-	TRACE( "EXP = %I64d\n", nExp );
-#endif	// __INTERNALSERVER
-
-	if( IsMaster() || IsHero() )
-		nExp /= 2;
-	if( bFirstCall && bMultiPly )
-	{
-#ifdef __WORLDSERVER
-		EXPINTEGER nAddExp = static_cast<CUser*>( this )->GetAddExpAfterApplyRestPoint( nExp );
-		nExp	= (EXPINTEGER)( nExp * GetExpFactor() );
-		nExp += nAddExp;
-#endif // __WORLDSERVER
-	}
-
-	if( bFirstCall && HasBuffByIk3( IK3_ANGEL_BUFF ) )
-	{
-		int nAngel = 100;
-#ifdef __BUFF_1107
-		IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
-		WORD wId	= ( pBuff? pBuff->GetId(): 0 );
-#else	// __BUFF_1107
-		LPSKILLINFLUENCE lpSkillIn = m_SkillState.GetItemBuf( IK3_ANGEL_BUFF );
-		WORD wId	= ( lpSkillIn? lpSkillIn->wID: 0 );
-#endif	// __BUFF_1107
-		if( wId > 0 )
-		{
-			ItemProp* pItemProp = prj.GetItemProp( wId );
-			if( pItemProp )
-				nAngel = (int)( (float)pItemProp->nAdjParamVal1 );
-		}
-		if( nAngel <= 0 || 100 < nAngel  )
-			nAngel = 100;
-		// ˬ: ���� �� ���� ���� Ȱ��ȭ �� �����ϴ� ���, �ʿ� ��ġ�� �ʹ� ũ��.
-		EXPINTEGER nMaxAngelExp = prj.m_aExpCharacter[m_nAngelLevel].nExp1 / 100 * nAngel;
-		if( m_nAngelExp < nMaxAngelExp )
-		{
-			nExp /= 2;
-			m_nAngelExp += nExp;
-#ifdef __WORLDSERVER
-#ifdef __ANGEL_LOG
-#ifdef __EXP_ANGELEXP_LOG
-			int nAngelExpPercent = (int)( m_nAngelExp * 100 / nMaxAngelExp );
-			int nNextAngelExpLog = (int)(((CUser*)this)->m_nAngelExpLog / 20 + 1) * 20;
-			
-			if( nAngelExpPercent >= nNextAngelExpLog )
-			{
-				((CUser*)this)->m_nAngelExpLog = nAngelExpPercent;
-				ItemProp* pItemProp = prj.GetItemProp( wId );
-				
-				if( pItemProp )
-				{
-					LogItemInfo aLogItem;
-					aLogItem.Action		= "&";
-					aLogItem.SendName	= ((CUser*)this)->GetName();
-					aLogItem.RecvName	= "ANGEL_EXP_LOG";
-					aLogItem.WorldId	= ((CUser*)this)->GetWorld()->GetID();
-					aLogItem.Gold		= aLogItem.Gold2 = ((CUser*)this)->GetGold();
-					//aLogItem.ItemName	= pItemProp->szName;
-					_stprintf( aLogItem.szItemName, "%d", pItemProp->dwID );
-					aLogItem.Gold_1		= (DWORD)( m_nAngelExp );
-					g_DPSrvr.OnLogItem( aLogItem );
-				}
-			}
-#endif //  __EXP_ANGELEXP_LOG
-#endif // __ANGEL_LOG
-			
-			BOOL bAngelComplete = FALSE;
-			if( m_nAngelExp > nMaxAngelExp )
-			{
-				m_nAngelExp = nMaxAngelExp;
-				bAngelComplete = TRUE;
-			}
-			((CUser*)this)->AddAngelInfo( bAngelComplete );
-#endif // __WORLDSERVER
-		}
-	}
-
-	if( IsBaseJob() )
-	{
-		if( m_nLevel >= MAX_JOB_LEVEL )
-		{
-			m_nExp1		= 0;
-			return TRUE;
-		}
-	}
-	else if( IsExpert() )
-	{
-		if( m_nLevel >= MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-		{
-			m_nExp1		= 0;
-			return TRUE;
-		}
-	}
-	else if( IsPro() )
-	{
-		if( m_nLevel > MAX_LEVEL )
-		{
-			m_nLevel = MAX_LEVEL;
-			return TRUE;
-		}		
-	}
-	else if(IsMaster())
-	{
-		if( m_nLevel > MAX_LEVEL )
-		{
-			m_nLevel = MAX_LEVEL;
-			return TRUE;
-		}
-	}
-	else if(IsHero())
-	{
-		if( m_nLevel >  MAX_LEGEND_LEVEL  )
-		{
-			m_nLevel = MAX_LEGEND_LEVEL;
-			return TRUE;
-		}
-	}
-	
-	int nLevelbuf = m_nLevel;
-	int nNextLevel = m_nLevel + 1;
-
-
-	m_nExp1 += nExp;									// pxp�� ������� exp�� ����. ������!
-	
-	if( bFirstCall )
-	{
-#ifdef __WORLDSERVER
-		if( bMonster && IsChaotic() )
-		{
-			m_dwPKExp	= (DWORD)( m_dwPKExp + nExp );
-			DWORD dwPropensity = GetPKPropensity(); // undorflow
-			int nLevelPKExp = prj.GetLevelExp( GetLevel() ); // Level�� ���� ����ġ
-			if( nLevelPKExp != 0 )
-			{
-				int nSubExp = m_dwPKExp / nLevelPKExp;
-				if( nSubExp )
-				{
-					SetPKPropensity( GetPKPropensity() - ( m_dwPKExp / nLevelPKExp ) );
-					if( dwPropensity <= GetPKPropensity() )
-						SetPKPropensity( 0 );
-					m_dwPKExp %= nLevelPKExp;
-					
-					g_UserMng.AddPKPropensity( this );
-					g_dpDBClient.SendLogPkPvp( this, NULL, 0, 'P' );
-				}
-			}
-		}
-#endif // __WORLDSERVER
-	}
-
-	if( m_nExp1 >= prj.m_aExpCharacter[nNextLevel].nExp1 )	// ������
-	{
-
-		if( IsHero() && ( nNextLevel > MAX_LEGEND_LEVEL ) )
-		{
-			m_nLevel = MAX_LEGEND_LEVEL;
-
-			m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-			return FALSE;
-		}
-		else if( !IsHero() && nNextLevel > MAX_LEVEL )
-		{
-			m_nLevel = MAX_LEVEL;
-
-			m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-			return FALSE;
-		}
-
-		EXPINTEGER nExptmp;
-//		BOOL f	= FALSE;
-
-		{
-			m_nRemainGP += prj.m_aExpCharacter[ nNextLevel ].dwLPPoint;
-			if( IsMaster() || IsHero() )
-				m_nRemainGP++;
-
-			nExptmp		= m_nExp1 - prj.m_aExpCharacter[nNextLevel].nExp1;
-			m_nExp1		= 0;
-			m_nLevel	= nNextLevel;
-
-//			if( m_nLevel > m_nDeathLevel )
-//				f	= TRUE;
-
-			BOOL bLevelUp = TRUE;
-			if( IsBaseJob() && m_nLevel > MAX_JOB_LEVEL ) 
-			{
-				m_nLevel = MAX_JOB_LEVEL;
-				bLevelUp = FALSE;
-			}
-			else if( IsExpert() && m_nLevel > MAX_JOB_LEVEL + MAX_EXP_LEVEL )
-			{
-				m_nLevel = MAX_JOB_LEVEL + MAX_EXP_LEVEL;
-				bLevelUp = FALSE;
-			}
-			else if( IsPro() && m_nLevel > MAX_LEVEL )
-			{
-				m_nLevel = MAX_LEVEL;
-				bLevelUp = FALSE;
-
-				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-				nExptmp  = 0;
-				return FALSE;
-			}
-			else if( IsMaster() && m_nLevel > MAX_LEVEL )
-			{
-				m_nLevel = MAX_LEVEL;
-				bLevelUp = FALSE;
-				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-				nExptmp  = 0;
-				return FALSE;
-			}
-			else if( IsHero() && (m_nLevel > MAX_LEGEND_LEVEL ) )
-			{
-				m_nLevel = MAX_LEGEND_LEVEL;
-				bLevelUp = FALSE;
-				m_nExp1  = (prj.m_aExpCharacter[nNextLevel].nExp1 - 1);
-				nExptmp  = 0;
-				return FALSE;
-			}
-
-			if( bLevelUp )
-			{
-				m_nHitPoint = GetMaxHitPoint();
-				m_nManaPoint = GetMaxManaPoint();
-				m_nFatiguePoint = GetMaxFatiguePoint();
-				if( m_nDeathLevel >= m_nLevel )
-				{
-					m_nRemainGP -= prj.m_aExpCharacter[ nNextLevel ].dwLPPoint;
-					if( IsMaster() || IsHero() )
-						m_nRemainGP--;
-				}
-
-#ifdef __WORLDSERVER
-				if( m_nDeathLevel < m_nLevel )
-				{
-					int nGetPoint = ((GetLevel() - 1) / 20) + 2;
-					if( IsMaster() || IsHero() )
-						SetMasterSkillPointUp();
-					else
-					{
-						AddSkillPoint( nGetPoint );
-						g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_GET_HUNT, nGetPoint, this, NULL );
-#ifdef __S_NEW_SKILL_2
-						g_dpDBClient.SaveSkill( (CUser*)this );
-#endif // __S_NEW_SKILL_2
-					}
-#ifdef __S_RECOMMEND_EVE
-				    if( g_eLocal.GetState( EVE_RECOMMEND ) && IsPlayer() )
-					{
-						g_dpDBClient.SendRecommend( (CUser*)this );
-					}					
-#endif // __S_RECOMMEND_EVE
-#ifdef __EXP_ANGELEXP_LOG
-					((CUser*)this)->m_nExpLog = 0;
-#endif // __EXP_ANGELEXP_LOG
-#ifdef __EVENTLUA_GIFT
-					prj.m_EventLua.SetLevelUpGift( (CUser*)this, m_nLevel );
-#endif // __EVENTLUA_GIFT
-					CCampusHelper::GetInstance()->SetLevelUpReward( (CUser*)this );
-				}
-#endif // __WORLDSERVER
-			}
-			else
-			{
-				m_nRemainGP -= prj.m_aExpCharacter[ nNextLevel ].dwLPPoint;
-				if( IsMaster() || IsHero() )
-					m_nRemainGP--;
-				nExptmp	= m_nExp1	= 0;
-			}
-
-			// ���� 20�� �Ǵ¼��� ���෹���� 1�̵ȴ�.
-			if( m_nLevel == 20 )
-				SetFlightLv( 1 );
-			
-#ifdef __CLIENT
-			if( m_pActMover && ( m_pActMover->IsState( OBJSTA_STAND ) || m_pActMover->IsState( OBJSTA_STAND2 )) )
-				SetMotion( MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED );
-			CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,GetPos(),GetId());
-			PlayMusic( BGM_IN_LEVELUP );
-#endif	// __CLIENT
-		}
-
-		if( nExptmp > 0 )
-			AddExperience( nExptmp, FALSE, bMultiPly );
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
 // ����ġ�� nExp��ŭ ��´�.  ���ٿ �ȴ�.
 // bExp2Clear : pxp�� 0���� �Ұ��� ������.
 // bLvDown : �����ٿ��� �Ұ��� ������.
@@ -1240,10 +855,8 @@ BOOL CMover::SetExperience( EXPINTEGER nExp1, int nLevel )
 				break;
 		}
 
-		if( IsJobType( JTYPE_BASE ) )
-		{
-			if( nLevel == 15 )
-				g_WndMng.PutString(TID_EVE_LEVEL15);
+		if (IsBaseJob() && nLevel == 15) {
+			g_WndMng.PutString(TID_EVE_LEVEL15);
 		}
 		if( m_nLevel < 20 && nLevel >= 20 )
 		{
@@ -2290,7 +1903,7 @@ int CMover::GetMaxOriginHitPoint( BOOL bOriginal )
 		else
 			nSta = GetSta();
 
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp * pProperty = prj.jobs.GetJobProp( GetJob() ); 
 
 		float a = (pProperty->fFactorMaxHP*m_nLevel)/2.0f;
 		float b = a * ((m_nLevel+1.0f)/4.0f) * (1.0f + nSta/50.0f) + (nSta*10.0f) ;
@@ -2322,7 +1935,7 @@ int CMover::GetMaxOriginManaPoint( BOOL bOriginal )
 	{
 		// INT((((BaseLv*2) + (INT*8))*Job���) + 22)+(INT*Job���)) +  �� 
 		// �� : �����ۿ����� �߰� ��� (%����) TDDO
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		float factor = pProperty->fFactorMaxMP;
 		
 		int nMaxMP = (int)( ((((m_nLevel*2.0f) + ( nInt*8.0f))*factor) + 22.0f)+( nInt*factor) );
@@ -2350,7 +1963,7 @@ int CMover::GetMaxOriginFatiguePoint( BOOL bOriginal )
 	if( IsPlayer() )
 	{
 		// (((BaseLv*2) + (STA*6))*Job���) +(STA*Job���) + �� + ��
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		float factor = pProperty->fFactorMaxFP;
 
 		int nMaxFP = (int)( (((m_nLevel*2.0f) + (nSta*6.0f))*factor) +(nSta*factor) );
@@ -2398,7 +2011,7 @@ int CMover::GetHPRecovery()
 	float fFactor = 1.0f;
 	if( IsPlayer() )
 	{
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		fFactor = pProperty->fFactorHPRecovery;
 	}
 
@@ -2413,7 +2026,7 @@ int CMover::GetMPRecovery()
 	float fFactor = 1.0f;
 	if( IsPlayer() )
 	{
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		fFactor = pProperty->fFactorMPRecovery;
 	}
 
@@ -2428,7 +2041,7 @@ int CMover::GetFPRecovery()
 	float fFactor = 1.0f;
 	if( IsPlayer() )
 	{
-		JobProp* pProperty = prj.GetJobProp( GetJob() ); 
+		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 		fFactor = pProperty->fFactorFPRecovery;
 	}
 	// ((����*2)+(MaxFP/(500*����))+(STA*Job���))*0.2
@@ -2441,92 +2054,49 @@ int CMover::GetFPRecovery()
 // ���� �̸��� ��Ʈ������ �����ش�.
 LPCTSTR CMover::GetFameName( void )
 {
-	switch( GetJob() )
-	{
-	// ��ũ�ι�
-	case JOB_ACROBAT:
-	case JOB_JESTER:
-	case JOB_RANGER:
-	case JOB_JESTER_MASTER:
-	case JOB_RANGER_MASTER:
-	case JOB_JESTER_HERO:
-	case JOB_RANGER_HERO:
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_ACR_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_ACR_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_ACR_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_ACR_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_ACR_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_ACR_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_ACR_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_ACR_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_ACR_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_ACR_FAME01 );
-		break;
+	static constexpr std::array<int, 10> acrobatTitles = {
+		TID_GAME_ACR_FAME01, TID_GAME_ACR_FAME02, TID_GAME_ACR_FAME03, TID_GAME_ACR_FAME04,
+		TID_GAME_ACR_FAME05, TID_GAME_ACR_FAME06, TID_GAME_ACR_FAME07, TID_GAME_ACR_FAME08,
+		TID_GAME_ACR_FAME09, TID_GAME_ACR_FAME10
+	};
 
-	// �Ӽ��ʸ��϶�
-	case JOB_MERCENARY:	
-	case JOB_KNIGHT:	
-	case JOB_BLADE:
-	case JOB_KNIGHT_MASTER:
-	case JOB_BLADE_MASTER:
-	case JOB_KNIGHT_HERO:	
-	case JOB_BLADE_HERO:
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_MER_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_MER_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_MER_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_MER_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_MER_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_MER_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_MER_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_MER_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_MER_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_MER_FAME01 );
-		break;
-	// ������
-	case JOB_MAGICIAN:
-	case JOB_PSYCHIKEEPER:	
-	case JOB_ELEMENTOR:
-	case JOB_PSYCHIKEEPER_MASTER:	
-	case JOB_ELEMENTOR_MASTER:
-	case JOB_PSYCHIKEEPER_HERO:	
-	case JOB_ELEMENTOR_HERO:
+	static constexpr std::array<int, 10> mercenaryTitles = {
+		TID_GAME_MER_FAME01, TID_GAME_MER_FAME02, TID_GAME_MER_FAME03, TID_GAME_MER_FAME04,
+		TID_GAME_MER_FAME05, TID_GAME_MER_FAME06, TID_GAME_MER_FAME07, TID_GAME_MER_FAME08,
+		TID_GAME_MER_FAME09, TID_GAME_MER_FAME10
+	};
 
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_MAG_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_MAG_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_MAG_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_MAG_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_MAG_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_MAG_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_MAG_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_MAG_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_MAG_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_MAG_FAME01 );
-		break;
+	static constexpr std::array<int, 10> magicianTitles = {
+		TID_GAME_MAG_FAME01, TID_GAME_MAG_FAME02, TID_GAME_MAG_FAME03, TID_GAME_MAG_FAME04,
+		TID_GAME_MAG_FAME05, TID_GAME_MAG_FAME06, TID_GAME_MAG_FAME07, TID_GAME_MAG_FAME08,
+		TID_GAME_MAG_FAME09, TID_GAME_MAG_FAME10
+	};
 
-	// ��ý�Ʈ
-	case JOB_ASSIST:
-	case JOB_BILLPOSTER:	
-	case JOB_RINGMASTER:
-	case JOB_BILLPOSTER_MASTER:	
-	case JOB_RINGMASTER_MASTER:
-	case JOB_BILLPOSTER_HERO:	
-	case JOB_RINGMASTER_HERO:
-		if( m_nFame >= 100000000 )	return prj.GetText( TID_GAME_ASS_FAME10 );
-		else if( m_nFame >= 5000000 )	return prj.GetText( TID_GAME_ASS_FAME09 );
-		else if( m_nFame >= 1000000 )	return prj.GetText( TID_GAME_ASS_FAME08 );
-		else if( m_nFame >= 50000 )	return prj.GetText( TID_GAME_ASS_FAME07 );
-		else if( m_nFame >= 20000 )	return prj.GetText( TID_GAME_ASS_FAME06 );
-		else if( m_nFame >= 10000 )	return prj.GetText( TID_GAME_ASS_FAME05 );
-		else if( m_nFame >= 4000 )	return prj.GetText( TID_GAME_ASS_FAME04 );
-		else if( m_nFame >= 1000 )	return prj.GetText( TID_GAME_ASS_FAME03 );
-		else if( m_nFame >= 100 )	return prj.GetText( TID_GAME_ASS_FAME02 );
-		else if( m_nFame >= 10 )	return prj.GetText( TID_GAME_ASS_FAME01 );		
+	static constexpr std::array<int, 10> assistTitles = {
+		TID_GAME_ASS_FAME01, TID_GAME_ASS_FAME02, TID_GAME_ASS_FAME03, TID_GAME_ASS_FAME04,
+		TID_GAME_ASS_FAME05, TID_GAME_ASS_FAME06, TID_GAME_ASS_FAME07, TID_GAME_ASS_FAME08,
+		TID_GAME_ASS_FAME09, TID_GAME_ASS_FAME10
+	};
 
-		break;
+	static constexpr std::array<int, 10> thresholds = {
+		10, 100, 1000, 4000, 10000, 20000, 50000, 1000000, 5000000, 100000000
+	};
+
+	size_t i = 0;
+	while (i < thresholds.size() && m_nFame >= thresholds[i]) {
+		++i;
 	}
-	return "";
-}
 
+	if (i == 0) return "";
+	
+	switch (prj.jobs.GetProJob(m_nJob)) {
+		case Project::ProJob::Acrobat:   return prj.GetText(acrobatTitles[i - 1]);
+		case Project::ProJob::Mercenary: return prj.GetText(mercenaryTitles[i - 1]);
+		case Project::ProJob::Magician:  return prj.GetText(magicianTitles[i - 1]);
+		case Project::ProJob::Assist:    return prj.GetText(assistTitles[i - 1]);
+		default:                          return "";
+	}
+}
 
 #endif
 
@@ -2539,8 +2109,10 @@ int CMover::GetResistMagic()
 int CMover::GetResistSpell( int nDestParam )
 {
 	MoverProp *pProp = GetProp();
-	if( pProp == NULL )
-		Error( "CMover::GetReistSpell : %d ������Ƽ �б� ����", GetName() );
+	if (pProp == NULL) {
+		Error("CMover::GetReistSpell : %d ������Ƽ �б� ����", GetName());
+		return 0;
+	}
 
 	int		nResist = 0;
 

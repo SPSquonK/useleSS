@@ -7,6 +7,7 @@ static_assert(false, "Project.h was included")
 
 #include <memory>
 #include <set>
+#include <boost/container/small_vector.hpp>
 #include "boost/container/static_vector.hpp"
 #include <boost/container/flat_map.hpp>
 #include "StaticString.h"
@@ -106,7 +107,7 @@ struct QuestProp
 	char    m_nBeginCondPreviousQuestType;
 	QuestId	m_anBeginCondPreviousQuest[ 6 ];
 	QuestId	m_anBeginCondExclusiveQuest[ 6 ];
-	char	m_nBeginCondJob[ MAX_JOB ];
+	char	m_nBeginCondJob[MAX_JOB];
 	char	m_nBeginCondJobNum;
 	BYTE	m_nBeginCondLevelMax;
 	BYTE	m_nBeginCondLevelMin;
@@ -219,12 +220,6 @@ struct FILTER {
 	TCHAR	m_szDst[ 64 ];
 };
 
-struct JOB {
-	TCHAR	szName[32];
-	TCHAR	szEName[32];
-	DWORD	dwJobBase;
-	DWORD	dwJobType;
-};
 
 struct STRUCTURE {
 	TCHAR	szName[ 32 ];
@@ -738,10 +733,9 @@ public:
 	CFixedArray< QuestProp >	m_aPropQuest ;
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;
-	JobProp						m_aPropJob[MAX_JOB];
-	JobSkills m_jobSkills;
-	JOB							m_aJob[ MAX_JOB ];
-	JOBITEM						m_jobItem[ MAX_JOBITEM ];
+	
+	Project::Jobs jobs;
+
 	STRUCTURE					m_aStructure[ MAX_STRUCTURE ];
 	GUILD_APPELL				m_aGuildAppell[ MAX_GUILDAPPELL ];
 	EXPCHARACTER				m_aExpCharacter[ MAX_EXPCHARACTER ];
@@ -830,7 +824,6 @@ public:
 	int				GetMinIdx( int nItemKind3, DWORD dwItemRare );
 	int				GetMaxIdx( int nItemKind3, DWORD dwItemRare );
 	ObjProp*		GetProp( int nType, int nIndex );
-	JobProp*		GetJobProp( int nIndex );
 	GUILDQUESTPROP*	GetGuildQuestProp( int nQuestId );
 	PARTYQUESTPROP*	GetPartyQuestProp( int nQuestId );
 	BOOL			IsGuildQuestRegion( const D3DXVECTOR3 & vPos );
@@ -853,7 +846,6 @@ public:
 	void			LoadPreFiles();
 	void			LoadStrings();
 	BOOL			OpenProject( LPCTSTR lpszFileName );
-	BOOL			LoadPropJob( LPCTSTR lpszFileName );
 	BOOL			LoadPropMover( LPCTSTR lpszFileName );
 	BOOL			LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apObjProp );
 	void			OnAfterLoadPropItem();
@@ -867,7 +859,6 @@ public:
 	BOOL			LoadPropMoverEx_AI_MOVE( LPCTSTR szFileName, CScript &script, int nVal );
 	BOOL			LoadPropMoverEx_AI( LPCTSTR szFileName, CScript &script, int nVal );
 	BOOL			LoadPropMoverEx( LPCTSTR szFileName );
-	BOOL			LoadJobItem( LPCTSTR szFileName );
 	CString			GetLangScript( CScript& script );
 	BOOL			LoadCharacter( LPCTSTR szFileName );
 	BOOL			LoadEtc( LPCTSTR szFileName );
@@ -1103,4 +1094,3 @@ public:
 inline const QuestProp * QuestProp::Get(const QuestId questId) {
 	return prj.m_aPropQuest.GetAt(questId.get());
 }
-

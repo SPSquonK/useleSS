@@ -335,12 +335,7 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 		{
 			nNum = pQuestProp->m_nEndRewardExpMax - pQuestProp->m_nEndRewardExpMin + 1; 
 			int nExp = pQuestProp->m_nEndRewardExpMin + xRandom( nNum ); 
-			if( pUser->AddExperience( nExp, TRUE, FALSE ) )
-				pUser->LevelUpSetting();
-			else
-				pUser->ExpUpSetting();
-			
-			pUser->AddSetExperience( pUser->GetExp1(), (WORD)pUser->m_nLevel, pUser->m_nSkillPoint, pUser->m_nSkillLevel );
+			pUser->EarnExperience(nExp, false, false);
 			pUser->AddDefinedText( TID_GAME_REAPEXP );
 		}
 		if( pQuestProp->m_nEndRewardSkillPoint )
