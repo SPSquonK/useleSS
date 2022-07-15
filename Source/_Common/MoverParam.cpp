@@ -294,8 +294,17 @@ bool CMover::IsInteriorityJob(const int nJob, const int characterJob) {
 	return std::ranges::find(allMyJobs, nJob) != allMyJobs.end();
 }
 
-int CMover::GetExpPercent() {
-	return (int)(GetExp1() * 10000 / GetMaxExp1());
+int CMover::GetExpPercent() const {
+	EXPINTEGER exp = GetExp1();
+	EXPINTEGER maxExp = GetMaxExp1();
+
+	if (maxExp >= EXPINTEGER(1024 * 1024 * 1024)) {
+		// Avoid overflow when multiplying. 1024 is a power of 2 so it is fast
+		exp /= EXPINTEGER(1024 * 1024 * 1024);
+		maxExp /= EXPINTEGER(1024 * 1024 * 1024);
+	}
+
+	return exp * 10000 / maxExp;
 }
 
 

@@ -7080,12 +7080,12 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 			p2DRender->TextOut( lpMP->rect.right - nGap, lpMP->rect.top - nTopGap, "/", dwColor, 0xff000000 );
 			p2DRender->TextOut( lpFP->rect.right - nGap, lpFP->rect.top - nTopGap, "/", dwColor, 0xff000000 );
 		}
-		EXPINTEGER	nExpResult = pMover->GetExp1() * (EXPINTEGER)10000 / pMover->GetMaxExp1();
-		float fExp = (float)nExpResult / 100.0f;
-		if( fExp >= 99.99f )
-			nCharEXP = sprintf( cbufExp, "99.99%%" );		// sprintf�Լ� ���ο��� �ݿø��Ǿ� 100.00���� ǥ�õǴ� ���� ���� ���ؼ� 
+
+		const double fExp = pMover->GetExpPercent() / 100.0;
+		if( fExp >= 99.99 )
+			nCharEXP = sprintf( cbufExp, "99.99%%" );
 		else
-			nCharEXP = sprintf( cbufExp, "%.2f%%", fExp );
+			nCharEXP = sprintf( cbufExp, "%.2lf%%", fExp );
 
 		int x = lpHP->rect.right-7; // -40
 		p2DRender->TextOut( x - (int)(nCharEXP*5.8f), lpExp->rect.top - 0, cbufExp, dwColor, 0xff000000 );

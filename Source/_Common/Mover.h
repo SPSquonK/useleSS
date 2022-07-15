@@ -1000,16 +1000,15 @@ public:
 	static [[nodiscard]] bool IsInteriorityJob(int wantedJob, int characterJob);
 	bool AddChangeJob(int nJob);
 	[[nodiscard]] int GetJob() const noexcept { return m_nJob; };
-	int				GetExpPercent();
 	int				SetLevel( int nSetLevel );
 	int				AddGPPoint( int nAddGPPoint );
 	BOOL			IsJobType( DWORD dwJobType ); 
 	[[nodiscard]] int GetLevel() const { return m_nLevel; }
 	int				GetFxp() { return m_nFxp; }
 	int				GetTxp() { return m_nFxp; }
-	EXPINTEGER		GetExp1()	{	return m_nExp1;	}
-	EXPINTEGER		GetMaxExp1()	{	return prj.m_aExpCharacter[m_nLevel+1].nExp1;	}
-	EXPINTEGER		GetMaxExp2()	{	return prj.m_aExpCharacter[m_nLevel].nExp2;	}
+	[[nodiscard]] EXPINTEGER GetExp1() const { return m_nExp1; }
+	[[nodiscard]] EXPINTEGER GetMaxExp1() const { return prj.m_aExpCharacter[m_nLevel+1].nExp1; }
+	[[nodiscard]] int GetExpPercent() const; /* Should return a number in [0, 9999] */
 	int				GetRemainGP(); // growth
 	void			IncHitPoint( int nVal) ;
 	void			IncManaPoint(int nVal) ;
