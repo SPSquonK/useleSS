@@ -1,15 +1,8 @@
-// Campus.h: interface for the CCampus class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_)
-#define AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "ar.h"
+#include <boost/container/flat_map.hpp>
+#include <boost/container/small_vector.hpp>
 
 enum class CampusRole { Invalid = 0, Master = 1, Pupil = 2 };
 
@@ -17,18 +10,17 @@ enum class CampusRole { Invalid = 0, Master = 1, Pupil = 2 };
 #define		MIN_LV2_POINT			41
 #define		MIN_LV3_POINT			101
 
-struct CCampusMember {
-	static constexpr bool Archivable = true;
-	u_long     idPlayer  = 0;
-	CampusRole nMemberLv = CampusRole::Invalid;
-};
 
 class CCampus
 {
-public:
-	CCampus();
-	~CCampus();
+private:
+	struct CCampusMember {
+		static constexpr bool Archivable = true;
+		u_long     idPlayer  = 0;
+		CampusRole nMemberLv = CampusRole::Invalid;
+	};
 
+public:
 	void	Clear();
 	void	Serialize( CAr & ar );
 	
@@ -39,22 +31,22 @@ public:
 	BOOL	IsMaster( u_long idPlayer )		{	return ( idPlayer == m_idMaster );	}
 	int		GetMemberSize()	{	return m_mapCM.size();	}
 
-	BOOL	IsPupil( u_long idPlayer );
-	std::vector<u_long>	GetPupilPlayerId();
-	int		GetPupilNum();
+	[[nodiscard]] bool IsPupil(u_long idPlayer) const;
+	[[nodiscard]] boost::container::small_vector<u_long, MAX_PUPIL_NUM>	GetPupilPlayerId() const;
+	[[nodiscard]] size_t GetPupilNum() const { return GetPupilPlayerId().size(); }
 	
-	std::vector<u_long>	GetAllMemberPlayerId();
-	CampusRole		GetMemberLv( u_long idPlayer );
-	BOOL	IsMember( u_long idPlayer );
-	BOOL	AddMember( CCampusMember* pCM );
-	BOOL	RemoveMember( u_long idPlayer );
-	CCampusMember*	GetMember( u_long idPlayer );
+	[[nodiscard]] boost::container::small_vector<u_long, MAX_PUPIL_NUM + 1>	GetAllMemberPlayerId() const;
+	[[nodiscard]] CampusRole GetMemberLv(u_long idPlayer) const;
+	[[nodiscard]] bool IsMember(u_long idPlayer) const;
+	bool AddMember(u_long idPlayer, CampusRole role);
+	bool RemoveMember(u_long idPlayer);
+	const CCampusMember * GetMember(u_long idPlayer) const;
 	
 
 private:
-	u_long	m_idCampus;
-	u_long	m_idMaster;
-	std::map<u_long, CCampusMember *>	m_mapCM;
+	u_long	m_idCampus = 0;
+	u_long	m_idMaster = 0;
+	boost::container::flat_map<u_long, CCampusMember>	m_mapCM;
 
 #ifdef __WORLDSERVER
 public:
@@ -90,4 +82,3 @@ private:
 	std::map<u_long, CCampus *>	m_mapCampus;
 	std::map<u_long, u_long>	m_mapPid2Cid;
 };
-#endif // !defined(AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_)

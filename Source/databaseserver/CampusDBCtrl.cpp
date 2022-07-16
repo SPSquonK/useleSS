@@ -91,22 +91,20 @@ void CCampusDBCtrl::LoadAllCampus()
 	
 	while( pQuery->Fetch() )
 	{
-		CCampusMember* pMember = new CCampusMember;
-		pMember->idPlayer = static_cast<u_long>(pQuery->GetInt( "m_idPlayer" ));
-		pMember->nMemberLv = static_cast<CampusRole>(pQuery->GetInt( "nMemberLv" ));
+		const u_long idPlayer = static_cast<u_long>(pQuery->GetInt( "m_idPlayer" ));
+		const CampusRole nMemberLv = static_cast<CampusRole>(pQuery->GetInt( "nMemberLv" ));
 		const u_long idCampus = pQuery->GetInt( "idCampus" );
 		CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus( idCampus );
 		if( pCampus )
 		{
-			pCampus->AddMember( pMember );
-			if( pMember->nMemberLv == CampusRole::Master)
-				pCampus->SetMaster( pMember->idPlayer );
-			CCampusHelper::GetInstance()->AddPlayerId2CampusId( pMember->idPlayer, idCampus );
+			pCampus->AddMember(idPlayer, nMemberLv);
+			if( nMemberLv == CampusRole::Master)
+				pCampus->SetMaster( idPlayer );
+			CCampusHelper::GetInstance()->AddPlayerId2CampusId( idPlayer, idCampus );
 		}
 		else
 		{
-			WriteLog( "LoadAllCampus(): Player's campus not found - %d, %d", pMember->idPlayer, idCampus );
-			SAFE_DELETE( pMember );
+			WriteLog( "LoadAllCampus(): Player's campus not found - %d, %d", idPlayer, idCampus );
 		}
 	}
 }
@@ -127,10 +125,7 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 		if( pCampus->GetPupilNum() >= CCampusHelper::GetInstance()->GetMaxPupilNum( nMasterPoint ) )
 			return;
 
-		CCampusMember* pCM = new CCampusMember;
-		pCM->nMemberLv = CampusRole::Pupil;
-		pCM->idPlayer = idPupil;
-		if( pCampus->AddMember( pCM )  )
+		if( pCampus->AddMember(idPupil, CampusRole::Pupil)  )
 		{
 			if( CCampusHelper::GetInstance()->AddPlayerId2CampusId( idPupil, pCampus->GetCampusId() ) )
 			{
@@ -140,14 +135,12 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 			else
 			{
 				Error( "AddPlayerId2CampusId() fail" );
-				pCampus->RemoveMember( pCM->idPlayer);
-				SAFE_DELETE( pCM );
+				pCampus->RemoveMember( idPupil);
 				return;
 			}
 		}
 		else
 		{
-			SAFE_DELETE( pCM );
 			return;
 		}
 	}
@@ -158,15 +151,7 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 		u_long idCampus = CCampusHelper::GetInstance()->AddCampus( pCampus );
 		if( idCampus > 0 )
 		{
-			CCampusMember* pMaster = new CCampusMember;
-			CCampusMember* pPupil = new CCampusMember;
-
-			pMaster->nMemberLv = CampusRole::Master;
-			pMaster->idPlayer = idMaster;
-			pPupil->nMemberLv = CampusRole::Pupil;
-			pPupil->idPlayer = idPupil;
-
-			if( pCampus->AddMember( pMaster ) && pCampus->AddMember( pPupil )
+			if( pCampus->AddMember(idMaster, CampusRole::Master) && pCampus->AddMember(idPupil, CampusRole::Pupil)
 				&& CCampusHelper::GetInstance()->AddPlayerId2CampusId( idMaster, idCampus )
 				&& CCampusHelper::GetInstance()->AddPlayerId2CampusId( idPupil, idCampus ) )
 			{
@@ -179,8 +164,6 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 			else
 			{
 				Error( "AddMember failed!" );
-				SAFE_DELETE( pMaster );
-				SAFE_DELETE( pPupil );
 				CCampusHelper::GetInstance()->RemoveCampus( idCampus );
 				return;
 			}

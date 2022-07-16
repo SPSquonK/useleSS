@@ -50,10 +50,7 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 	{
 		if( pCampus->IsMaster( idMaster ) )
 		{
-			CCampusMember* pCMPupil = new CCampusMember;
-			pCMPupil->nMemberLv = CampusRole::Pupil;
-			pCMPupil->idPlayer = idPupil;
-			if( pCampus->AddMember( pCMPupil ) && AddPlayerId2CampusId( idPupil, pCampus->GetCampusId() ) )
+			if( pCampus->AddMember(idPupil, CampusRole::Pupil) && AddPlayerId2CampusId( idPupil, pCampus->GetCampusId() ) )
 			{
 				if( IsValidObj( pPupil ) )
 				{
@@ -66,7 +63,6 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 			else
 			{
 				Error( "Add Pupil failed!" );
-				SAFE_DELETE( pCMPupil );
 				return;
 			}
 		}
@@ -78,13 +74,7 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 		pCampus->SetMaster( idMaster );
 		if( AddCampus( pCampus ) )
 		{
-			CCampusMember* pCMMaster = new CCampusMember;
-			CCampusMember* pCMPupil = new CCampusMember;
-			pCMMaster->idPlayer = idMaster;
-			pCMMaster->nMemberLv = CampusRole::Master;
-			pCMPupil->idPlayer = idPupil;
-			pCMPupil->nMemberLv = CampusRole::Pupil;
-			if( pCampus->AddMember( pCMMaster ) && pCampus->AddMember( pCMPupil )
+			if( pCampus->AddMember(idMaster, CampusRole::Master) && pCampus->AddMember(idPupil, CampusRole::Pupil)
 				&& AddPlayerId2CampusId( idMaster, idCampus ) && AddPlayerId2CampusId( idPupil, idCampus ) )
 			{
 				if( IsValidObj( pMaster ) )
@@ -101,8 +91,6 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 			else
 			{
 				Error( "Add Master & Pupil failed!" );
-				SAFE_DELETE( pCMMaster );
-				SAFE_DELETE( pCMPupil );
 				RemoveCampus( idCampus );
 				return;
 			}
@@ -177,12 +165,11 @@ void CCampusHelper::OnUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData
 	CCampus* pCampus = GetCampus( GetCampusIdByPlayerId( idPlayer ) );
 	if( pCampus )
 	{
-		std::vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-		for( auto it = vecMember.begin(); it != vecMember.end(); ++it )
-		{
-			CUser* pMember = g_UserMng.GetUserByPlayerID( *it );
-			if( IsValidObj( pMember ) )
-				pMember->AddQueryPlayerData( idPlayer, pPlayerData );
+		for (const u_long memberId : pCampus->GetAllMemberPlayerId()) {
+			CUser* pMember = g_UserMng.GetUserByPlayerID(memberId);
+			if (IsValidObj(pMember)) {
+				pMember->AddQueryPlayerData(idPlayer, pPlayerData);
+			}
 		}
 	}
 }
@@ -365,20 +352,15 @@ void CCampusHelper::AddAllMemberUpdateCampus( CCampus* pCampus )
 	}
 }
 
-void CCampusHelper::AddAllMemberRemoveCampus( CCampus* pCampus )
-{
-	if( !pCampus )
-		return;
+void CCampusHelper::AddAllMemberRemoveCampus(CCampus * pCampus) {
+	if (!pCampus) return;
 
-	std::vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-	for( auto it = vecMember.begin(); it != vecMember.end(); ++it )
-	{
-		RemovePlayerId2CampusId( *it );
-		CUser* pUser = g_UserMng.GetUserByPlayerID( *it );
-		if( IsValidObj( pUser ) )
-		{
-			pUser->AddRemoveCampus( pCampus->GetCampusId() );
-			pUser->SetCampusId( 0 );
+	for (const u_long memberId : pCampus->GetAllMemberPlayerId()) {
+		RemovePlayerId2CampusId(memberId);
+		CUser * pUser = g_UserMng.GetUserByPlayerID(memberId);
+		if (IsValidObj(pUser)) {
+			pUser->AddRemoveCampus(pCampus->GetCampusId());
+			pUser->SetCampusId(0);
 		}
 	}
 }

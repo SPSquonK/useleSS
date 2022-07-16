@@ -1,8 +1,6 @@
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "Campus.h"
+#include <ranges>
 
 #ifdef __WORLDSERVER
 #include "User.h"
@@ -12,22 +10,7 @@
 // CCampus Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCampus::CCampus()
-: m_idCampus( 0 ), m_idMaster( 0 )
-{
-
-}
-
-CCampus::~CCampus()
-{
-	Clear();
-}
-
-void CCampus::Clear()
-{
-	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
-		SAFE_DELETE( it->second );
-
+void CCampus::Clear() {
 	m_mapCM.clear();
 }
 
@@ -35,116 +18,78 @@ void CCampus::Serialize( CAr & ar )
 {
 	if( ar.IsStoring() )
 	{
-		ar << m_idCampus << m_idMaster << m_mapCM.size();
+		ar << m_idCampus << m_idMaster << static_cast<std::uint32_t>(m_mapCM.size());
 		for (auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it)
-			ar << *it->second;
+			ar << it->second;
 	}
 	else
 	{
+		ar.IsUnsafe();
 		Clear();
-		size_t nSize;
+		std::uint32_t nSize;
 		ar >> m_idCampus >> m_idMaster >> nSize;
-		for( int i = 0; i < (int)( nSize ); ++i )
-		{
-			CCampusMember* pMember = new CCampusMember;
-			ar >> *pMember;
-			m_mapCM.insert( decltype(m_mapCM)::value_type(pMember->idPlayer, pMember));
+		for (std::uint32_t i = 0; i < nSize; ++i) {
+			CCampusMember pMember; ar >> pMember;
+			m_mapCM.emplace(pMember.idPlayer, pMember);
 		}
 	}
 }
 
-BOOL CCampus::IsPupil( u_long idPlayer )
-{
-	if( GetMemberLv( idPlayer ) == CampusRole::Pupil)
-		return TRUE;
-
-	return FALSE;
+bool CCampus::IsPupil(u_long idPlayer) const {
+	return GetMemberLv(idPlayer) == CampusRole::Pupil;
 }
 
-std::vector<u_long> CCampus::GetPupilPlayerId()
-{
-	std::vector<u_long> vecPupil;
-	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
-	{
-		if( (it->second)->nMemberLv == CampusRole::Pupil)
-			vecPupil.push_back( (it->second)->idPlayer);
+boost::container::small_vector<u_long, MAX_PUPIL_NUM> CCampus::GetPupilPlayerId() const {
+	boost::container::small_vector<u_long, MAX_PUPIL_NUM> vecPupil;
+	for (const CCampusMember & member : m_mapCM | std::views::values) {
+		if (member.nMemberLv == CampusRole::Pupil) {
+			vecPupil.emplace_back(member.idPlayer);
+		}
 	}
 	return vecPupil;
 }
 
-int CCampus::GetPupilNum()
-{
-	int nPupil = 0;
-	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
-	{
-		if( ( it->second )->nMemberLv == CampusRole::Pupil)
-			++nPupil;
+boost::container::small_vector<u_long, MAX_PUPIL_NUM + 1> CCampus::GetAllMemberPlayerId() const {
+	boost::container::small_vector<u_long, MAX_PUPIL_NUM + 1> vecMembers;
+	for (const CCampusMember & member : m_mapCM | std::views::values) {
+		vecMembers.emplace_back(member.idPlayer);
 	}
-	return nPupil;
+	return vecMembers;
 }
 
-std::vector<u_long> CCampus::GetAllMemberPlayerId()
-{
-	std::vector<u_long> vecMember;
-	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++ it )
-		vecMember.push_back( (it->second)->idPlayer );
-	return vecMember;
+CampusRole CCampus::GetMemberLv(const u_long idPlayer) const {
+	const auto it = m_mapCM.find(idPlayer);
+	return it != m_mapCM.end() ? it->second.nMemberLv : CampusRole::Invalid;
 }
 
-CampusRole CCampus::GetMemberLv( u_long idPlayer )
-{
-	CCampusMember* pMember = GetMember( idPlayer );
-	if( pMember )
-		return pMember->nMemberLv;
-	
-	return CampusRole::Invalid;
+bool CCampus::IsMember(const u_long idPlayer) const {
+	return m_mapCM.contains(idPlayer);
 }
 
-BOOL CCampus::IsMember( u_long idPlayer )
-{
-	CCampusMember* pCM = GetMember( idPlayer );
-	if( pCM )
-		return TRUE;
-	
-	return FALSE;
-}
-
-BOOL CCampus::AddMember( CCampusMember* pMember )
-{
-	if( GetMember( pMember->idPlayer ) )
-	{
-		Error( "Pupil is already campus member - idCampus : %d, idPlayer : %d", GetCampusId(), pMember->idPlayer );
-		return FALSE;
+bool CCampus::AddMember(u_long idPlayer, CampusRole role) {
+	if (m_mapCM.contains(idPlayer)) {
+		Error("Pupil is already campus member - idCampus : %d, idPlayer : %d", GetCampusId(), idPlayer);
+		return false;
 	}
-	if( GetPupilNum() >= MAX_PUPIL_NUM )
-	{
-		Error( "Pupil is full - idCampus : %d", GetCampusId() );
-		return FALSE;
+
+	if (GetPupilNum() >= MAX_PUPIL_NUM) {
+		Error("Pupil is full - idCampus : %d", GetCampusId());
+		return false;
 	}
-	m_mapCM.insert( decltype(m_mapCM)::value_type(pMember->idPlayer, pMember));
-	return TRUE;
+
+	m_mapCM.emplace(idPlayer, CCampusMember{ idPlayer, role });
+	return true;
 }
 
-BOOL CCampus::RemoveMember( u_long idPlayer )
-{
-	CCampusMember* pMember	= GetMember( idPlayer );
-	if( pMember )
-	{
-		SAFE_DELETE( pMember );
-		m_mapCM.erase( idPlayer );
-		return TRUE;
+bool CCampus::RemoveMember(const u_long idPlayer) {
+	const auto it = m_mapCM.find(idPlayer);
+	if (it == m_mapCM.end()) {
+		Error("Member not found - idCampus : %d, idPlayer : %d", GetCampusId(), idPlayer);
+		return false;
 	}
-	Error( "Member not found - idCampus : %d, idPlayer : %d", GetCampusId(), idPlayer );
-	return FALSE;
-}
 
-CCampusMember* CCampus::GetMember( u_long idPlayer )
-{
-	auto it = m_mapCM.find( idPlayer );
-	if( it != m_mapCM.end() )
-		return it->second;
-	
-	return NULL;
+	m_mapCM.erase(it);
+	return true;
 }
 
 #ifdef __WORLDSERVER
@@ -167,10 +112,9 @@ int CCampus::GetBuffLevel( u_long idPlayer )
 	int nLevel = 0;
 	if( IsMaster( idPlayer ) )
 	{
-		for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
-		{
-			CUser* pPupil = g_UserMng.GetUserByPlayerID( ( it->second )->idPlayer );
-			if( IsValidObj( pPupil ) && ( it->second )->nMemberLv == CampusRole::Pupil)
+		for (auto member : m_mapCM | std::views::values) {
+			CUser* pPupil = g_UserMng.GetUserByPlayerID(member.idPlayer );
+			if( IsValidObj( pPupil ) && member.nMemberLv == CampusRole::Pupil)
 				++nLevel;
 		}
 	}
