@@ -45,8 +45,8 @@ private:
 	void	SendAllCampus( DPID dpId );
 	void	InsertCampus( u_long idCampus );
 	void	DeleteCampus( u_long idCampus );
-	void	InsertCampusMember( u_long idCampus, u_long idPlayer, int nMemberLv );
-	void	DeleteCampusMember( u_long idPlayer, int nMemberLv );
+	void	InsertCampusMember( u_long idCampus, u_long idPlayer, CampusRole nMemberLv );
+	void	DeleteCampusMember( u_long idPlayer, CampusRole nMemberLv );
 	int		UpdateCampusPoint( u_long idPlayer, int nCampusPoint );
 	void	UpdateCampusId( u_long idPlayer, u_long idCampus );
 
