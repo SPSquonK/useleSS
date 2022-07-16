@@ -9,29 +9,6 @@
 #endif // __WORLDSERVER
 
 //////////////////////////////////////////////////////////////////////
-// CCampusMember Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-CCampusMember::CCampusMember()
-: m_idPlayer( 0 ), m_nMemberLv( 0 )
-{
-
-}
-
-CCampusMember::~CCampusMember()
-{
-
-}
-
-void CCampusMember::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-		ar << m_idPlayer << m_nMemberLv;
-	else
-		ar >> m_idPlayer >> m_nMemberLv;
-}
-
-//////////////////////////////////////////////////////////////////////
 // CCampus Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
@@ -59,8 +36,8 @@ void CCampus::Serialize( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_idCampus << m_idMaster << m_mapCM.size();
-		for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
-			( it->second )->Serialize( ar );
+		for (auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it)
+			ar << *it->second;
 	}
 	else
 	{
@@ -70,15 +47,15 @@ void CCampus::Serialize( CAr & ar )
 		for( int i = 0; i < (int)( nSize ); ++i )
 		{
 			CCampusMember* pMember = new CCampusMember;
-			pMember->Serialize( ar );
-			m_mapCM.insert( decltype(m_mapCM)::value_type(pMember->GetPlayerId(), pMember));
+			ar >> *pMember;
+			m_mapCM.insert( decltype(m_mapCM)::value_type(pMember->idPlayer, pMember));
 		}
 	}
 }
 
 BOOL CCampus::IsPupil( u_long idPlayer )
 {
-	if( GetMemberLv( idPlayer ) == CAMPUS_PUPIL )
+	if( GetMemberLv( idPlayer ) == CampusRole::Pupil)
 		return TRUE;
 
 	return FALSE;
@@ -89,8 +66,8 @@ std::vector<u_long> CCampus::GetPupilPlayerId()
 	std::vector<u_long> vecPupil;
 	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
 	{
-		if( (it->second)->GetLevel() == CAMPUS_PUPIL )
-			vecPupil.push_back( (it->second)->GetPlayerId() );
+		if( (it->second)->nMemberLv == CampusRole::Pupil)
+			vecPupil.push_back( (it->second)->idPlayer);
 	}
 	return vecPupil;
 }
@@ -100,7 +77,7 @@ int CCampus::GetPupilNum()
 	int nPupil = 0;
 	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
 	{
-		if( ( it->second )->GetLevel() == CAMPUS_PUPIL )
+		if( ( it->second )->nMemberLv == CampusRole::Pupil)
 			++nPupil;
 	}
 	return nPupil;
@@ -110,17 +87,17 @@ std::vector<u_long> CCampus::GetAllMemberPlayerId()
 {
 	std::vector<u_long> vecMember;
 	for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++ it )
-		vecMember.push_back( (it->second)->GetPlayerId() );
+		vecMember.push_back( (it->second)->idPlayer );
 	return vecMember;
 }
 
-int CCampus::GetMemberLv( u_long idPlayer )
+CampusRole CCampus::GetMemberLv( u_long idPlayer )
 {
 	CCampusMember* pMember = GetMember( idPlayer );
 	if( pMember )
-		return pMember->GetLevel();
+		return pMember->nMemberLv;
 	
-	return 0;
+	return CampusRole::Invalid;
 }
 
 BOOL CCampus::IsMember( u_long idPlayer )
@@ -134,9 +111,9 @@ BOOL CCampus::IsMember( u_long idPlayer )
 
 BOOL CCampus::AddMember( CCampusMember* pMember )
 {
-	if( GetMember( pMember->GetPlayerId() ) )
+	if( GetMember( pMember->idPlayer ) )
 	{
-		Error( "Pupil is already campus member - idCampus : %d, idPlayer : %d", GetCampusId(), pMember->GetPlayerId() );
+		Error( "Pupil is already campus member - idCampus : %d, idPlayer : %d", GetCampusId(), pMember->idPlayer );
 		return FALSE;
 	}
 	if( GetPupilNum() >= MAX_PUPIL_NUM )
@@ -144,7 +121,7 @@ BOOL CCampus::AddMember( CCampusMember* pMember )
 		Error( "Pupil is full - idCampus : %d", GetCampusId() );
 		return FALSE;
 	}
-	m_mapCM.insert( decltype(m_mapCM)::value_type(pMember->GetPlayerId(), pMember));
+	m_mapCM.insert( decltype(m_mapCM)::value_type(pMember->idPlayer, pMember));
 	return TRUE;
 }
 
@@ -192,8 +169,8 @@ int CCampus::GetBuffLevel( u_long idPlayer )
 	{
 		for( auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it )
 		{
-			CUser* pPupil = g_UserMng.GetUserByPlayerID( ( it->second )->GetPlayerId() );
-			if( IsValidObj( pPupil ) && ( it->second )->GetLevel() == CAMPUS_PUPIL )
+			CUser* pPupil = g_UserMng.GetUserByPlayerID( ( it->second )->idPlayer );
+			if( IsValidObj( pPupil ) && ( it->second )->nMemberLv == CampusRole::Pupil)
 				++nLevel;
 		}
 	}

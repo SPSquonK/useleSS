@@ -89,24 +89,23 @@ void CCampusDBCtrl::LoadAllCampus()
 		return;
 	}
 	
-	u_long idCampus;
 	while( pQuery->Fetch() )
 	{
 		CCampusMember* pMember = new CCampusMember;
-		pMember->SetPlayerId( pQuery->GetInt( "m_idPlayer" ) );
-		pMember->SetLevel( pQuery->GetInt( "nMemberLv" ) );
-		idCampus = pQuery->GetInt( "idCampus" );
+		pMember->idPlayer = static_cast<u_long>(pQuery->GetInt( "m_idPlayer" ));
+		pMember->nMemberLv = static_cast<CampusRole>(pQuery->GetInt( "nMemberLv" ));
+		const u_long idCampus = pQuery->GetInt( "idCampus" );
 		CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus( idCampus );
 		if( pCampus )
 		{
 			pCampus->AddMember( pMember );
-			if( pMember->GetLevel() == CAMPUS_MASTER )
-				pCampus->SetMaster( pMember->GetPlayerId() );
-			CCampusHelper::GetInstance()->AddPlayerId2CampusId( pMember->GetPlayerId(), idCampus );
+			if( pMember->nMemberLv == CampusRole::Master)
+				pCampus->SetMaster( pMember->idPlayer );
+			CCampusHelper::GetInstance()->AddPlayerId2CampusId( pMember->idPlayer, idCampus );
 		}
 		else
 		{
-			WriteLog( "LoadAllCampus(): Player's campus not found - %d, %d", pMember->GetPlayerId(), idCampus );
+			WriteLog( "LoadAllCampus(): Player's campus not found - %d, %d", pMember->idPlayer, idCampus );
 			SAFE_DELETE( pMember );
 		}
 	}
@@ -129,19 +128,19 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 			return;
 
 		CCampusMember* pCM = new CCampusMember;
-		pCM->SetLevel( CAMPUS_PUPIL );
-		pCM->SetPlayerId( idPupil );
+		pCM->nMemberLv = CampusRole::Pupil;
+		pCM->idPlayer = idPupil;
 		if( pCampus->AddMember( pCM )  )
 		{
 			if( CCampusHelper::GetInstance()->AddPlayerId2CampusId( idPupil, pCampus->GetCampusId() ) )
 			{
 				UpdateCampusId( idPupil, pCampus->GetCampusId() );
-				InsertCampusMember( pCampus->GetCampusId(), idPupil, CAMPUS_PUPIL );
+				InsertCampusMember( pCampus->GetCampusId(), idPupil, CampusRole::Pupil);
 			}
 			else
 			{
 				Error( "AddPlayerId2CampusId() fail" );
-				pCampus->RemoveMember( pCM->GetPlayerId() );
+				pCampus->RemoveMember( pCM->idPlayer);
 				SAFE_DELETE( pCM );
 				return;
 			}
@@ -162,10 +161,10 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 			CCampusMember* pMaster = new CCampusMember;
 			CCampusMember* pPupil = new CCampusMember;
 
-			pMaster->SetLevel( CAMPUS_MASTER );
-			pMaster->SetPlayerId( idMaster );
-			pPupil->SetLevel( CAMPUS_PUPIL );
-			pPupil->SetPlayerId( idPupil );
+			pMaster->nMemberLv = CampusRole::Master;
+			pMaster->idPlayer = idMaster;
+			pPupil->nMemberLv = CampusRole::Pupil;
+			pPupil->idPlayer = idPupil;
 
 			if( pCampus->AddMember( pMaster ) && pCampus->AddMember( pPupil )
 				&& CCampusHelper::GetInstance()->AddPlayerId2CampusId( idMaster, idCampus )
@@ -174,8 +173,8 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 				UpdateCampusId( idMaster, idCampus );
 				UpdateCampusId( idPupil, idCampus );
 				InsertCampus( idCampus );
-				InsertCampusMember( idCampus, idMaster, CAMPUS_MASTER );
-				InsertCampusMember( idCampus, idPupil, CAMPUS_PUPIL );
+				InsertCampusMember( idCampus, idMaster, CampusRole::Master );
+				InsertCampusMember( idCampus, idPupil, CampusRole::Pupil);
 			}
 			else
 			{
@@ -214,7 +213,7 @@ void CCampusDBCtrl::RemoveCampusMember( CAr & ar )
 				UpdateCampusId( *it, 0 );
 				if( *it != idPlayer )
 				{
-					DeleteCampusMember( *it, CAMPUS_PUPIL );
+					DeleteCampusMember( *it, CampusRole::Pupil);
 					LogUpdateCampusMember( idCampus, idPlayer, *it, 'F' );
 				}
 			}
@@ -226,7 +225,7 @@ void CCampusDBCtrl::RemoveCampusMember( CAr & ar )
 			CCampusHelper::GetInstance()->RemovePlayerId2CampusId( idPlayer );
 			pCampus->RemoveMember( idPlayer );
 			UpdateCampusId( idPlayer, 0 );
-			DeleteCampusMember( idPlayer, CAMPUS_PUPIL );
+			DeleteCampusMember( idPlayer, CampusRole::Pupil);
 			LogUpdateCampusMember( idCampus, pCampus->GetMaster(), idPlayer, 'F' );
 			if( pCampus->GetMemberSize() < 2 )
 			{
@@ -292,24 +291,24 @@ void CCampusDBCtrl::DeleteCampus( u_long idCampus )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 }
 
-void CCampusDBCtrl::InsertCampusMember( u_long idCampus, u_long idPlayer, int nMemberLv )
+void CCampusDBCtrl::InsertCampusMember( u_long idCampus, u_long idPlayer, CampusRole nMemberLv )
 {
 	CQuery* pQuery = GetQueryObject();
 	char szQuery[QUERY_SIZE] = {0, };
 	
 	sprintf( szQuery, "usp_CampusMember_Insert @idCampus = %d, @serverindex = '%02d', @m_idPlayer = '%07d', @nMemberLv = %d", 
-		idCampus, g_appInfo.dwSys, idPlayer, nMemberLv );
+		idCampus, g_appInfo.dwSys, idPlayer, static_cast<int>(nMemberLv) );
 	if( pQuery->Exec( szQuery ) == FALSE )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 }
 
-void CCampusDBCtrl::DeleteCampusMember( u_long idPlayer, int nMemberLv )
+void CCampusDBCtrl::DeleteCampusMember( u_long idPlayer, CampusRole nMemberLv )
 {
 	CQuery* pQuery = GetQueryObject();
 	char szQuery[QUERY_SIZE] = {0, };
 	
 	sprintf( szQuery, "usp_CampusMember_Delete  @serverindex = '%02d', @m_idPlayer = '%07d', @nMemberLv = %d", 
-		g_appInfo.dwSys, idPlayer, nMemberLv );
+		g_appInfo.dwSys, idPlayer, static_cast<int>(nMemberLv) );
 	if( pQuery->Exec( szQuery ) == FALSE )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 }

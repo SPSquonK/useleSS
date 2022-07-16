@@ -51,8 +51,8 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 		if( pCampus->IsMaster( idMaster ) )
 		{
 			CCampusMember* pCMPupil = new CCampusMember;
-			pCMPupil->SetLevel( CAMPUS_PUPIL );
-			pCMPupil->SetPlayerId( idPupil );
+			pCMPupil->nMemberLv = CampusRole::Pupil;
+			pCMPupil->idPlayer = idPupil;
 			if( pCampus->AddMember( pCMPupil ) && AddPlayerId2CampusId( idPupil, pCampus->GetCampusId() ) )
 			{
 				if( IsValidObj( pPupil ) )
@@ -80,10 +80,10 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 		{
 			CCampusMember* pCMMaster = new CCampusMember;
 			CCampusMember* pCMPupil = new CCampusMember;
-			pCMMaster->SetPlayerId( idMaster );
-			pCMMaster->SetLevel( CAMPUS_MASTER );
-			pCMPupil->SetPlayerId( idPupil );
-			pCMPupil->SetLevel( CAMPUS_PUPIL );
+			pCMMaster->idPlayer = idMaster;
+			pCMMaster->nMemberLv = CampusRole::Master;
+			pCMPupil->idPlayer = idPupil;
+			pCMPupil->nMemberLv = CampusRole::Pupil;
 			if( pCampus->AddMember( pCMMaster ) && pCampus->AddMember( pCMPupil )
 				&& AddPlayerId2CampusId( idMaster, idCampus ) && AddPlayerId2CampusId( idPupil, idCampus ) )
 			{

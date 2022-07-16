@@ -11,29 +11,16 @@
 
 #include "ar.h"
 
-#define		CAMPUS_MASTER			1
-#define		CAMPUS_PUPIL			2
+enum class CampusRole { Invalid = 0, Master = 1, Pupil = 2 };
+
 #define		MAX_PUPIL_NUM			3
 #define		MIN_LV2_POINT			41
 #define		MIN_LV3_POINT			101
 
-class CCampusMember
-{
-public:
-	CCampusMember();
-	~CCampusMember();
-
-	void	Serialize( CAr & ar );
-
-	u_long	GetPlayerId()	{	return m_idPlayer;	}
-	void	SetPlayerId( u_long idPlayer )	{	m_idPlayer = idPlayer;	}
-
-	int		GetLevel()	{	return m_nMemberLv;	}
-	void	SetLevel( int nLevel )	{	m_nMemberLv = nLevel;	}
-
-private:
-	u_long	m_idPlayer;
-	int		m_nMemberLv;
+struct CCampusMember {
+	static constexpr bool Archivable = true;
+	u_long     idPlayer  = 0;
+	CampusRole nMemberLv = CampusRole::Invalid;
 };
 
 class CCampus
@@ -57,7 +44,7 @@ public:
 	int		GetPupilNum();
 	
 	std::vector<u_long>	GetAllMemberPlayerId();
-	int		GetMemberLv( u_long idPlayer );
+	CampusRole		GetMemberLv( u_long idPlayer );
 	BOOL	IsMember( u_long idPlayer );
 	BOOL	AddMember( CCampusMember* pCM );
 	BOOL	RemoveMember( u_long idPlayer );
