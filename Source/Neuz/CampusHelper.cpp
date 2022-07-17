@@ -35,7 +35,7 @@ void CCampusHelper::OnUpdateCampus( CAr & ar )
 {
 	Clear();
 	m_pCampus = new CCampus;
-	m_pCampus->Serialize( ar );
+	ar >> *m_pCampus;
 	g_pPlayer->SetCampusId( m_pCampus->GetCampusId() );
 }
 

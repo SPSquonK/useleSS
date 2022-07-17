@@ -6,11 +6,6 @@
 
 enum class CampusRole { Invalid = 0, Master = 1, Pupil = 2 };
 
-#define		MAX_PUPIL_NUM			3
-#define		MIN_LV2_POINT			41
-#define		MIN_LV3_POINT			101
-
-
 class CCampus
 {
 private:
@@ -21,15 +16,22 @@ private:
 	};
 
 public:
-	void	Clear();
-	void	Serialize( CAr & ar );
+	static constexpr size_t MAX_PUPIL_NUM = 3;
+	static constexpr int MIN_LV2_POINT = 41;
+	static constexpr int MIN_LV3_POINT = 101;
 	
-	u_long	GetCampusId()	{	return m_idCampus;	}
-	void	SetCampusId( u_long idCampus )	{	m_idCampus = idCampus;	}
-	u_long	GetMaster()		{	return m_idMaster;	}
-	void	SetMaster( u_long idMaster )	{	m_idMaster = idMaster;	}
-	BOOL	IsMaster( u_long idPlayer )		{	return ( idPlayer == m_idMaster );	}
-	int		GetMemberSize()	{	return m_mapCM.size();	}
+	static size_t GetMaxPupilNum(int campusPoints);
+
+	friend CAr & operator<<(CAr & ar, const CCampus & campus);
+	friend CAr & operator>>(CAr & ar, CCampus & campus);
+	
+	[[nodiscard]] u_long GetCampusId() const { return m_idCampus; }
+	void SetCampusId(u_long idCampus) { m_idCampus = idCampus; }
+	void SetMaster(u_long idMaster) { m_idMaster = idMaster; }
+
+	[[nodiscard]] u_long GetMaster() const { return m_idMaster; }
+	[[nodiscard]] bool IsMaster(u_long idPlayer) const { return idPlayer == m_idMaster; }
+	[[nodiscard]] size_t GetMemberSize() const { return m_mapCM.size(); }
 
 	[[nodiscard]] bool IsPupil(u_long idPlayer) const;
 	[[nodiscard]] boost::container::small_vector<u_long, MAX_PUPIL_NUM>	GetPupilPlayerId() const;
@@ -39,9 +41,7 @@ public:
 	[[nodiscard]] CampusRole GetMemberLv(u_long idPlayer) const;
 	[[nodiscard]] bool IsMember(u_long idPlayer) const;
 	bool AddMember(u_long idPlayer, CampusRole role);
-	bool RemoveMember(u_long idPlayer);
-	const CCampusMember * GetMember(u_long idPlayer) const;
-	
+	bool RemoveMember(u_long idPlayer);	
 
 private:
 	u_long	m_idCampus = 0;
@@ -50,8 +50,8 @@ private:
 
 #ifdef __WORLDSERVER
 public:
-	BOOL	IsChangeBuffLevel( u_long idPlayer );
-	int		GetBuffLevel( u_long idPlayer );
+	bool IsChangeBuffLevel(u_long idPlayer);
+	[[nodiscard]] int GetBuffLevel(u_long idPlayer) const;
 
 private:
 	int		m_nPreBuffLevel;

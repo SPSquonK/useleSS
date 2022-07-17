@@ -800,7 +800,7 @@ private:
 public:
 	u_long	GetCampusId()		{	return m_idCampus;	}
 	void	SetCampusId( u_long idCampus )		{	m_idCampus = idCampus;	}
-	int		GetCampusPoint()	{	return m_nCampusPoint;	}
+	[[nodiscard]] int GetCampusPoint() const noexcept { return m_nCampusPoint; }
 	void	SetCampusPoint( int nMPPoint )		{	m_nCampusPoint = nMPPoint;	}
 
 protected:

@@ -1408,7 +1408,7 @@ BOOL CWndCampus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 			if( pCampus == NULL )
 				return FALSE;
-			if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) == TRUE )
+			if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) )
 			{
 				__MESSENGER_PLAYER* pstDisciplePlayer = GetSelectedDiscipleID( m_nCurSelectedDisciple );
 				if( !pstDisciplePlayer )
@@ -1422,7 +1422,7 @@ BOOL CWndCampus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize( NULL );
 				}
 			}
-			else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) == TRUE )
+			else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
 			{
 				if( m_MasterPlayer.m_dwPlayerId != -1 )
 				{
@@ -1466,7 +1466,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	CPoint pt( 3, 3 );
 
-	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) == TRUE )
+	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) )
 	{
 		pt.y = DISCIPLE_RENDERING_POSITION;
 		int nDiscipleMax = GetDiscipleDrawCount();
@@ -1519,7 +1519,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 			pt.y += m_nFontHeight;
 		}
 	}
-	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) == TRUE )
+	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
 	{
 		pt.y = MASTER_RENDERING_POSITION;
 		CString strFormat = _T( "" );
@@ -1568,9 +1568,9 @@ void CWndCampus::OnLButtonUp( UINT nFlags, CPoint point )
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 	if( pCampus == NULL )
 		return;
-	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) == TRUE )
+	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) )
 		GetSelectedDiscipleID( point );
-	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) == TRUE )
+	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
 		GetSelectedMasterID( point );
 		
 }
@@ -1580,12 +1580,12 @@ void CWndCampus::OnRButtonUp( UINT nFlags, CPoint point )
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 	if( pCampus == NULL )
 		return;
-	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) == TRUE )
+	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) )
 	{
 		if( GetSelectedDiscipleID( point ) == -1 )
 			return;
 	}
-	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) == TRUE )
+	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
 	{
 		if( GetSelectedMasterID( point ) == -1 )
 			return;
@@ -1605,7 +1605,7 @@ void CWndCampus::OnMouseMove( UINT nFlags, CPoint point )
 		return;
 
 	CPoint pt( 188, 3 );
-	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) == TRUE )
+	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) )
 	{
 		pt.y = DISCIPLE_RENDERING_POSITION;
 		CRect rect( 0, 0, 0, 0 );
@@ -1625,7 +1625,7 @@ void CWndCampus::OnMouseMove( UINT nFlags, CPoint point )
 			pt.y += m_nFontHeight;
 		}
 	}
-	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) == TRUE )
+	else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
 	{
 		pt.y = MASTER_RENDERING_POSITION;
 		CRect rect( pt.x, pt.y, pt.x + 24, pt.y + m_nFontHeight );
@@ -1716,7 +1716,7 @@ u_long CWndCampus::GetSelectedMasterID( CPoint point )
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 	if( pCampus == NULL )
 		return -1;
-	if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) == TRUE )
+	if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
 	{
 		CPoint pt( 3, MASTER_RENDERING_POSITION );
 		CRect rect( pt.x, pt.y, pt.x + m_rectWindow.Width(), pt.y + m_nFontHeight );
@@ -1734,7 +1734,7 @@ u_long CWndCampus::GetSelectedDiscipleID( CPoint point )
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 	if( pCampus == NULL )
 		return -1;
-	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) == TRUE )
+	if( pCampus->IsMaster( g_pPlayer->m_idPlayer ) )
 	{
 		CPoint pt( 3, DISCIPLE_RENDERING_POSITION );
 		CRect rect( 0, 0, 0, 0 );

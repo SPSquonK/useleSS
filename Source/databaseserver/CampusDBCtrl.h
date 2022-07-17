@@ -82,8 +82,6 @@ public:
 	void	RemovePlayerId2CampusId( u_long idPlayer )	{	m_pCampusMng->RemovePlayerId2CampusId( idPlayer );	}
 	u_long	GetCampusIdByPlayerId( u_long idPlayer )	{	return m_pCampusMng->GetCampusIdByPlayerId( idPlayer );	}
 
-	int		GetMaxPupilNum( int nCampusPoint );
-
 private:
 	CCampusDBCtrl	m_CampusDBCtrl;
 	CCampusMng*		m_pCampusMng;

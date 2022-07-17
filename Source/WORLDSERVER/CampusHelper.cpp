@@ -318,18 +318,8 @@ BOOL CCampusHelper::IsPupilLevel( CUser* pUser )
 	return FALSE;
 }
 
-int CCampusHelper::GetMaxPupilNum( CUser* pUser )
-{
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->GetCampusPoint() >= 0 && pUser->GetCampusPoint() < MIN_LV2_POINT )
-			return 1;
-		else if( pUser->GetCampusPoint() >= MIN_LV2_POINT && pUser->GetCampusPoint() < MIN_LV3_POINT )
-			return 2;
-		else if( pUser->GetCampusPoint() >= MIN_LV3_POINT )
-			return 3;
-	}
-	return 0;
+size_t CCampusHelper::GetMaxPupilNum(const CUser * const pUser) {
+	return IsValidObj(pUser) ? CCampus::GetMaxPupilNum(pUser->GetCampusPoint()) : 0;
 }
 
 bool CCampusHelper::IsCompleteCampusQuest(const CUser * const pUser) const {

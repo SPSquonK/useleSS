@@ -10,37 +10,40 @@
 // CCampus Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-void CCampus::Clear() {
-	m_mapCM.clear();
+size_t CCampus::GetMaxPupilNum(int campusPoints) {
+	if (campusPoints < 0) return 0;
+	else if (campusPoints < CCampus::MIN_LV2_POINT) return 1;
+	else if (campusPoints < CCampus::MIN_LV3_POINT) return 2;
+	else return 3;
 }
 
-void CCampus::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idCampus << m_idMaster << static_cast<std::uint32_t>(m_mapCM.size());
-		for (auto it = m_mapCM.begin(); it != m_mapCM.end(); ++it)
-			ar << it->second;
+CAr & operator<<(CAr & ar, const CCampus & campus) {
+	ar << campus.m_idCampus << campus.m_idMaster;
+	ar << static_cast<std::uint32_t>(campus.m_mapCM.size());
+	for (const CCampus::CCampusMember & cm : campus.m_mapCM | std::views::values) {
+		ar << cm;
 	}
-	else
-	{
-		ar.IsUnsafe();
-		Clear();
-		std::uint32_t nSize;
-		ar >> m_idCampus >> m_idMaster >> nSize;
-		for (std::uint32_t i = 0; i < nSize; ++i) {
-			CCampusMember pMember; ar >> pMember;
-			m_mapCM.emplace(pMember.idPlayer, pMember);
-		}
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CCampus & campus) {
+	ar.IsUnsafe();
+	campus.m_mapCM.clear();
+	std::uint32_t nSize;
+	ar >> campus.m_idCampus >> campus.m_idMaster >> nSize;
+	for (std::uint32_t i = 0; i < nSize; ++i) {
+		CCampus::CCampusMember pMember; ar >> pMember;
+		campus.m_mapCM.emplace(pMember.idPlayer, pMember);
 	}
+	return ar;
 }
 
 bool CCampus::IsPupil(u_long idPlayer) const {
 	return GetMemberLv(idPlayer) == CampusRole::Pupil;
 }
 
-boost::container::small_vector<u_long, MAX_PUPIL_NUM> CCampus::GetPupilPlayerId() const {
-	boost::container::small_vector<u_long, MAX_PUPIL_NUM> vecPupil;
+boost::container::small_vector<u_long, CCampus::MAX_PUPIL_NUM> CCampus::GetPupilPlayerId() const {
+	boost::container::small_vector<u_long, CCampus::MAX_PUPIL_NUM> vecPupil;
 	for (const CCampusMember & member : m_mapCM | std::views::values) {
 		if (member.nMemberLv == CampusRole::Pupil) {
 			vecPupil.emplace_back(member.idPlayer);
@@ -49,8 +52,8 @@ boost::container::small_vector<u_long, MAX_PUPIL_NUM> CCampus::GetPupilPlayerId(
 	return vecPupil;
 }
 
-boost::container::small_vector<u_long, MAX_PUPIL_NUM + 1> CCampus::GetAllMemberPlayerId() const {
-	boost::container::small_vector<u_long, MAX_PUPIL_NUM + 1> vecMembers;
+boost::container::small_vector<u_long, CCampus::MAX_PUPIL_NUM + 1> CCampus::GetAllMemberPlayerId() const {
+	boost::container::small_vector<u_long, CCampus::MAX_PUPIL_NUM + 1> vecMembers;
 	for (const CCampusMember & member : m_mapCM | std::views::values) {
 		vecMembers.emplace_back(member.idPlayer);
 	}
@@ -93,38 +96,34 @@ bool CCampus::RemoveMember(const u_long idPlayer) {
 }
 
 #ifdef __WORLDSERVER
-BOOL CCampus::IsChangeBuffLevel( u_long idPlayer )
-{
-	if( IsMaster( idPlayer ) )
-	{
-		int nLevel = GetBuffLevel( idPlayer );
-		if( m_nPreBuffLevel != nLevel )
-		{
-			m_nPreBuffLevel = nLevel;
-			return TRUE;
-		}
-	}
-	return FALSE;
+bool CCampus::IsChangeBuffLevel(u_long idPlayer) {
+	if (!IsMaster(idPlayer)) return false;
+
+	const int nLevel = GetBuffLevel(idPlayer);
+	if (nLevel == m_nPreBuffLevel) return false;
+
+	m_nPreBuffLevel = nLevel;
+	return true;
 }
 
-int CCampus::GetBuffLevel( u_long idPlayer )
-{
-	int nLevel = 0;
-	if( IsMaster( idPlayer ) )
-	{
-		for (auto member : m_mapCM | std::views::values) {
-			CUser* pPupil = g_UserMng.GetUserByPlayerID(member.idPlayer );
-			if( IsValidObj( pPupil ) && member.nMemberLv == CampusRole::Pupil)
-				++nLevel;
+int CCampus::GetBuffLevel(u_long idPlayer) const {
+	if (IsMaster(idPlayer)) {
+		int nLevel = 0;
+
+		for (const auto & member : m_mapCM | std::views::values) {
+			if (member.nMemberLv == CampusRole::Pupil) {
+				CUser * pPupil = g_UserMng.GetUserByPlayerID(member.idPlayer);
+				if (IsValidObj(pPupil)) {
+					++nLevel;
+				}
+			}
 		}
+
+		return nLevel;
+	} else {
+		const CUser * const pMaster = g_UserMng.GetUserByPlayerID(GetMaster());
+		return IsValidObj(pMaster) ? 1 : 0;
 	}
-	else
-	{
-		CUser* pMaster = g_UserMng.GetUserByPlayerID( GetMaster() );
-		if( IsValidObj( pMaster ) )
-			++nLevel;
-	}
-	return nLevel;
 }
 #endif // __WORLDSERVER
 
@@ -159,13 +158,13 @@ void CCampusMng::Serialize( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_idCampus << m_mapCampus.size();
-		for( auto it = m_mapCampus.begin(); it != m_mapCampus.end(); ++it )
-			( it->second )->Serialize( ar );
+		for (const CCampus * campus : m_mapCampus | std::views::values) {
+			ar << *campus;
+		}
 
 		ar << m_mapPid2Cid.size();
 		for( auto it2 = m_mapPid2Cid.begin(); it2 != m_mapPid2Cid.end(); ++it2 )
 			ar << it2->first << it2->second;
-
 	}
 	else
 	{
@@ -175,7 +174,7 @@ void CCampusMng::Serialize( CAr & ar )
 		for( i = 0; i < (int)( nSize ); ++i )
 		{
 			CCampus* pCampus = new CCampus;
-			pCampus->Serialize( ar );
+			ar >> *pCampus;
 			m_mapCampus.insert( decltype(m_mapCampus)::value_type(pCampus->GetCampusId(), pCampus));
 		}
 		ar >> nSize;

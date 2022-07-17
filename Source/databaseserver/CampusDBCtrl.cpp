@@ -122,7 +122,7 @@ void CCampusDBCtrl::AddCampusMember( CAr & ar )
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus( CCampusHelper::GetInstance()->GetCampusIdByPlayerId( idMaster ) );
 	if( pCampus )
 	{
-		if( pCampus->GetPupilNum() >= CCampusHelper::GetInstance()->GetMaxPupilNum( nMasterPoint ) )
+		if( pCampus->GetPupilNum() >= CCampus::GetMaxPupilNum(nMasterPoint) )
 			return;
 
 		if( pCampus->AddMember(idPupil, CampusRole::Pupil)  )
@@ -363,17 +363,5 @@ CCampusHelper* CCampusHelper::GetInstance()
 {
 	static CCampusHelper sCH;
 	return & sCH;
-}
-
-int CCampusHelper::GetMaxPupilNum( int nCampusPoint )
-{
-	if( nCampusPoint >= 0 && nCampusPoint < MIN_LV2_POINT )
-		return 1;
-	else if( nCampusPoint >= MIN_LV2_POINT && nCampusPoint < MIN_LV3_POINT )
-		return 2;
-	else if( nCampusPoint >= MIN_LV3_POINT )
-		return 3;
-	
-	return 0;
 }
 

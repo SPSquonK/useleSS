@@ -53,7 +53,7 @@ typedef std::map<int, DWORD> MAP_CBUFF;
 	BOOL	IsInviteAble( CUser* pRequest, CUser* pTarget );
 	BOOL	IsMasterLevel( CUser* pUser );
 	BOOL	IsPupilLevel( CUser* pUser );
-	int		GetMaxPupilNum( CUser* pUser );
+	[[nodiscard]] static size_t GetMaxPupilNum(const CUser * pUser);
 	[[nodiscard]] bool	IsCompleteCampusQuest(const CUser * pUser) const;
 	void	AddAllMemberUpdateCampus( CCampus* pCampus );
 	void	AddAllMemberRemoveCampus( CCampus* pCampus );
