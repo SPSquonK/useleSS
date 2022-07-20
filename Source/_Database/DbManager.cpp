@@ -303,15 +303,7 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		return;
 	}
 
-	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus( CCampusHelper::GetInstance()->GetCampusIdByPlayerId( idPlayer ) );
-	if( pCampus && pCampus->IsMember( idPlayer ) )
-	{
-		CAr ar;
-		ar << pCampus->GetCampusId() << idPlayer;
-		int nBufSize;
-		LPBYTE lpBuf = ar.GetBuffer( &nBufSize );
-		CCampusHelper::GetInstance()->PostRequest( CAMPUS_REMOVE_MEMBER, lpBuf, nBufSize );
-	}
+	CCampusHelper::GetInstance()->RemovePlayerFromCampus(idPlayer);
 
 	CPlayerDataCenter::GetInstance()->DeletePlayerData( idPlayer );
 	m_AddRemoveLock.Enter();
