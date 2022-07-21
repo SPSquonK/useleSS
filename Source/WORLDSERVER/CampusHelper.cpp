@@ -13,28 +13,9 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCampusHelper::CCampusHelper()
-{
-	m_pCampusMng = new CCampusMng;
-}
-
-CCampusHelper::~CCampusHelper()
-{
-	Clear();
-}
-
-CCampusHelper* CCampusHelper::GetInstance()
-{
+CCampusHelper * CCampusHelper::GetInstance() {
 	static CCampusHelper sCH;
-	return & sCH;
-}
-
-void CCampusHelper::Clear()
-{
-	m_vecCQuest.clear();
-	m_mapCBuff.clear();
-	m_mapCReward.clear();
-	SAFE_DELETE( m_pCampusMng );
+	return &sCH;
 }
 
 void CCampusHelper::OnAddCampusMember( CAr & ar )
