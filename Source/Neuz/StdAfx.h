@@ -94,7 +94,6 @@
 #include "Debug.h"
 #include "Music.h"
 #include "HwOption.h"
-#include "Messenger.h"
 #include "yUtil.h"
 
 #include "TexturePool.h"	//gmpbigsun

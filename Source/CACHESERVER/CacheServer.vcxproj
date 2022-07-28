@@ -100,8 +100,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\memtrace.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-    </ClCompile>
     <ClCompile Include="packetlog.cpp">
     </ClCompile>
     <ClCompile Include="Player.cpp">
@@ -167,7 +165,6 @@
     <ClInclude Include="DPClient.h" />
     <ClInclude Include="DPCoreClient.h" />
     <ClInclude Include="..\_Common\memtrace.h" />
-    <ClInclude Include="..\_Common\messenger.h" />
     <ClInclude Include="packetlog.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="resource.h" />

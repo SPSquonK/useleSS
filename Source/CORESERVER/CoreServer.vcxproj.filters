@@ -96,9 +96,6 @@
     <ClCompile Include="..\_Common\InstanceDungeonParty.cpp">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-      <Filter>Neuz Common Files\Common Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\party.cpp">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClCompile>
@@ -224,9 +221,6 @@
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\InstanceDungeonParty.h">
-      <Filter>Neuz Common Files\Common Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\messenger.h">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\party.h">

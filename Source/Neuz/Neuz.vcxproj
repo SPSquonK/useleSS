@@ -434,8 +434,6 @@
     <ClCompile Include="..\_Common\MapInformationManager.cpp" />
     <ClCompile Include="..\_Common\MapMonsterInformation.cpp" />
     <ClCompile Include="..\_Common\MapMonsterInformationPack.cpp" />
-    <ClCompile Include="..\_Common\messenger.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\MiniGame.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\MiniGameBase.cpp">
@@ -853,7 +851,6 @@
     <ClInclude Include="..\_Common\MapInformationManager.h" />
     <ClInclude Include="..\_Common\MapMonsterInformation.h" />
     <ClInclude Include="..\_Common\MapMonsterInformationPack.h" />
-    <ClInclude Include="..\_Common\messenger.h" />
     <ClInclude Include="..\_Common\MiniGame.h" />
     <ClInclude Include="..\_Common\partyquest.h" />
     <ClInclude Include="..\_Common\PCBang.h" />

@@ -1065,25 +1065,6 @@ void CWndGuildCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 		}
 	}	
 }
-
-/*
-#ifdef __RT_1025
-void	CWndGuildCtrlEx::GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend )
-#else	// __RT_1025
-void CWndGuildCtrlEx::GetSelectFriend( int SelectCount, LPFRIEND* lppFriend )
-#endif	// __RT_1025
-{
-	vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
-	iter += SelectCount;
-	__MESSENGER_PLAYER stPlayer	= *(iter);
-#ifdef __RT_1025
-	idPlayer	= stPlayer.m_dwPlayerId;
-	*ppFriend	= g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
-#else	// __RT_1025
-	*lppFriend = g_WndMng.m_Messenger.GetFriend( stPlayer.m_dwPlayerId );
-#endif	// __RT_1025
-}
-*/
 	
 u_long CWndGuildCtrlEx::GetSelectId( int SelectCount )
 {

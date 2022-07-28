@@ -616,9 +616,6 @@
     <ClCompile Include="..\_Common\MapMonsterInformationPack.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-      <Filter>Source Files\_Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\MiniGame.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
@@ -1495,9 +1492,6 @@
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\MapMonsterInformationPack.h">
-      <Filter>Source Files\_Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\messenger.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\MiniGame.h">

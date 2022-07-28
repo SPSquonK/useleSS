@@ -4,7 +4,6 @@
 #include "AppDefine.h"
 #include "WndMessenger.h"
 #include "WndFriendCtrl.h"
-#include "messenger.h"
 #include "WndFriendConFirm.h"
 #include "dpcertified.h"
 #include "WndManager.h"

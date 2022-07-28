@@ -11,7 +11,6 @@
 #include "packetlog.h"
 #endif	// __PL_0917
 #include "mytrace.h"
-#include "messenger.h"
 
 #ifdef __CRASH_0404
 #include "crashstatus.h"
