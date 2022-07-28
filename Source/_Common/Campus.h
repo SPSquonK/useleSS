@@ -1,78 +1,57 @@
-// Campus.h: interface for the CCampus class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_)
-#define AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "ar.h"
+#include <boost/container/flat_map.hpp>
+#include <boost/container/small_vector.hpp>
 
-#define		CAMPUS_MASTER			1
-#define		CAMPUS_PUPIL			2
-#define		MAX_PUPIL_NUM			3
-#define		MIN_LV2_POINT			41
-#define		MIN_LV3_POINT			101
-
-class CCampusMember
-{
-public:
-	CCampusMember();
-	~CCampusMember();
-
-	void	Serialize( CAr & ar );
-
-	u_long	GetPlayerId()	{	return m_idPlayer;	}
-	void	SetPlayerId( u_long idPlayer )	{	m_idPlayer = idPlayer;	}
-
-	int		GetLevel()	{	return m_nMemberLv;	}
-	void	SetLevel( int nLevel )	{	m_nMemberLv = nLevel;	}
-
-private:
-	u_long	m_idPlayer;
-	int		m_nMemberLv;
-};
+enum class CampusRole { Invalid = 0, Master = 1, Pupil = 2 };
 
 class CCampus
 {
+private:
+	struct CCampusMember {
+		static constexpr bool Archivable = true;
+		u_long     idPlayer  = 0;
+		CampusRole nMemberLv = CampusRole::Invalid;
+	};
+
 public:
-	CCampus();
-	~CCampus();
+	static constexpr size_t MAX_PUPIL_NUM = 3;
+	static constexpr int MIN_LV2_POINT = 41;
+	static constexpr int MIN_LV3_POINT = 101;
+	
+	static size_t GetMaxPupilNum(int campusPoints);
 
-	void	Clear();
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CCampus & campus);
+	friend CAr & operator>>(CAr & ar, CCampus & campus);
 	
-	u_long	GetCampusId()	{	return m_idCampus;	}
-	void	SetCampusId( u_long idCampus )	{	m_idCampus = idCampus;	}
-	u_long	GetMaster()		{	return m_idMaster;	}
-	void	SetMaster( u_long idMaster )	{	m_idMaster = idMaster;	}
-	BOOL	IsMaster( u_long idPlayer )		{	return ( idPlayer == m_idMaster );	}
-	int		GetMemberSize()	{	return m_mapCM.size();	}
+	[[nodiscard]] u_long GetCampusId() const { return m_idCampus; }
+	void SetCampusId(u_long idCampus) { m_idCampus = idCampus; }
+	void SetMaster(u_long idMaster) { m_idMaster = idMaster; }
 
-	BOOL	IsPupil( u_long idPlayer );
-	std::vector<u_long>	GetPupilPlayerId();
-	int		GetPupilNum();
+	[[nodiscard]] u_long GetMaster() const { return m_idMaster; }
+	[[nodiscard]] bool IsMaster(u_long idPlayer) const { return idPlayer == m_idMaster; }
+	[[nodiscard]] size_t GetMemberSize() const { return m_mapCM.size(); }
+
+	[[nodiscard]] bool IsPupil(u_long idPlayer) const;
+	[[nodiscard]] boost::container::small_vector<u_long, MAX_PUPIL_NUM>	GetPupilPlayerId() const;
+	[[nodiscard]] size_t GetPupilNum() const { return GetPupilPlayerId().size(); }
 	
-	std::vector<u_long>	GetAllMemberPlayerId();
-	int		GetMemberLv( u_long idPlayer );
-	BOOL	IsMember( u_long idPlayer );
-	BOOL	AddMember( CCampusMember* pCM );
-	BOOL	RemoveMember( u_long idPlayer );
-	CCampusMember*	GetMember( u_long idPlayer );
-	
+	[[nodiscard]] boost::container::small_vector<u_long, MAX_PUPIL_NUM + 1>	GetAllMemberPlayerId() const;
+	[[nodiscard]] CampusRole GetMemberLv(u_long idPlayer) const;
+	[[nodiscard]] bool IsMember(u_long idPlayer) const;
+	bool AddMember(u_long idPlayer, CampusRole role);
+	bool RemoveMember(u_long idPlayer);	
 
 private:
-	u_long	m_idCampus;
-	u_long	m_idMaster;
-	std::map<u_long, CCampusMember *>	m_mapCM;
+	u_long	m_idCampus = 0;
+	u_long	m_idMaster = 0;
+	boost::container::flat_map<u_long, CCampusMember>	m_mapCM;
 
 #ifdef __WORLDSERVER
 public:
-	BOOL	IsChangeBuffLevel( u_long idPlayer );
-	int		GetBuffLevel( u_long idPlayer );
+	bool IsChangeBuffLevel(u_long idPlayer);
+	[[nodiscard]] int GetBuffLevel(u_long idPlayer) const;
 
 private:
 	int		m_nPreBuffLevel;
@@ -103,4 +82,3 @@ private:
 	std::map<u_long, CCampus *>	m_mapCampus;
 	std::map<u_long, u_long>	m_mapPid2Cid;
 };
-#endif // !defined(AFX_CAMPUS_H__D0177E19_6285_41A9_9AB5_6A145BBD08BC__INCLUDED_)

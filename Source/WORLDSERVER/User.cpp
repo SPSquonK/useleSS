@@ -7774,7 +7774,7 @@ void CUser::AddUpdateCampus( CCampus* pCampus )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_CAMPUS_UPDATE;
-	pCampus->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pCampus;
 }
 
 void CUser::AddRemoveCampus( u_long idCampus )

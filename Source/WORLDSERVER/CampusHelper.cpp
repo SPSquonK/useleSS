@@ -13,28 +13,9 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCampusHelper::CCampusHelper()
-{
-	m_pCampusMng = new CCampusMng;
-}
-
-CCampusHelper::~CCampusHelper()
-{
-	Clear();
-}
-
-CCampusHelper* CCampusHelper::GetInstance()
-{
+CCampusHelper * CCampusHelper::GetInstance() {
 	static CCampusHelper sCH;
-	return & sCH;
-}
-
-void CCampusHelper::Clear()
-{
-	m_vecCQuest.clear();
-	m_mapCBuff.clear();
-	m_mapCReward.clear();
-	SAFE_DELETE( m_pCampusMng );
+	return &sCH;
 }
 
 void CCampusHelper::OnAddCampusMember( CAr & ar )
@@ -50,10 +31,7 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 	{
 		if( pCampus->IsMaster( idMaster ) )
 		{
-			CCampusMember* pCMPupil = new CCampusMember;
-			pCMPupil->SetLevel( CAMPUS_PUPIL );
-			pCMPupil->SetPlayerId( idPupil );
-			if( pCampus->AddMember( pCMPupil ) && AddPlayerId2CampusId( idPupil, pCampus->GetCampusId() ) )
+			if( pCampus->AddMember(idPupil, CampusRole::Pupil) && AddPlayerId2CampusId( idPupil, pCampus->GetCampusId() ) )
 			{
 				if( IsValidObj( pPupil ) )
 				{
@@ -66,7 +44,6 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 			else
 			{
 				Error( "Add Pupil failed!" );
-				SAFE_DELETE( pCMPupil );
 				return;
 			}
 		}
@@ -78,13 +55,7 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 		pCampus->SetMaster( idMaster );
 		if( AddCampus( pCampus ) )
 		{
-			CCampusMember* pCMMaster = new CCampusMember;
-			CCampusMember* pCMPupil = new CCampusMember;
-			pCMMaster->SetPlayerId( idMaster );
-			pCMMaster->SetLevel( CAMPUS_MASTER );
-			pCMPupil->SetPlayerId( idPupil );
-			pCMPupil->SetLevel( CAMPUS_PUPIL );
-			if( pCampus->AddMember( pCMMaster ) && pCampus->AddMember( pCMPupil )
+			if( pCampus->AddMember(idMaster, CampusRole::Master) && pCampus->AddMember(idPupil, CampusRole::Pupil)
 				&& AddPlayerId2CampusId( idMaster, idCampus ) && AddPlayerId2CampusId( idPupil, idCampus ) )
 			{
 				if( IsValidObj( pMaster ) )
@@ -101,8 +72,6 @@ void CCampusHelper::OnAddCampusMember( CAr & ar )
 			else
 			{
 				Error( "Add Master & Pupil failed!" );
-				SAFE_DELETE( pCMMaster );
-				SAFE_DELETE( pCMPupil );
 				RemoveCampus( idCampus );
 				return;
 			}
@@ -177,12 +146,11 @@ void CCampusHelper::OnUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData
 	CCampus* pCampus = GetCampus( GetCampusIdByPlayerId( idPlayer ) );
 	if( pCampus )
 	{
-		std::vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-		for( auto it = vecMember.begin(); it != vecMember.end(); ++it )
-		{
-			CUser* pMember = g_UserMng.GetUserByPlayerID( *it );
-			if( IsValidObj( pMember ) )
-				pMember->AddQueryPlayerData( idPlayer, pPlayerData );
+		for (const u_long memberId : pCampus->GetAllMemberPlayerId()) {
+			CUser* pMember = g_UserMng.GetUserByPlayerID(memberId);
+			if (IsValidObj(pMember)) {
+				pMember->AddQueryPlayerData(idPlayer, pPlayerData);
+			}
 		}
 	}
 }
@@ -331,18 +299,8 @@ BOOL CCampusHelper::IsPupilLevel( CUser* pUser )
 	return FALSE;
 }
 
-int CCampusHelper::GetMaxPupilNum( CUser* pUser )
-{
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->GetCampusPoint() >= 0 && pUser->GetCampusPoint() < MIN_LV2_POINT )
-			return 1;
-		else if( pUser->GetCampusPoint() >= MIN_LV2_POINT && pUser->GetCampusPoint() < MIN_LV3_POINT )
-			return 2;
-		else if( pUser->GetCampusPoint() >= MIN_LV3_POINT )
-			return 3;
-	}
-	return 0;
+size_t CCampusHelper::GetMaxPupilNum(const CUser * const pUser) {
+	return IsValidObj(pUser) ? CCampus::GetMaxPupilNum(pUser->GetCampusPoint()) : 0;
 }
 
 bool CCampusHelper::IsCompleteCampusQuest(const CUser * const pUser) const {
@@ -365,20 +323,15 @@ void CCampusHelper::AddAllMemberUpdateCampus( CCampus* pCampus )
 	}
 }
 
-void CCampusHelper::AddAllMemberRemoveCampus( CCampus* pCampus )
-{
-	if( !pCampus )
-		return;
+void CCampusHelper::AddAllMemberRemoveCampus(CCampus * pCampus) {
+	if (!pCampus) return;
 
-	std::vector<u_long> vecMember = pCampus->GetAllMemberPlayerId();
-	for( auto it = vecMember.begin(); it != vecMember.end(); ++it )
-	{
-		RemovePlayerId2CampusId( *it );
-		CUser* pUser = g_UserMng.GetUserByPlayerID( *it );
-		if( IsValidObj( pUser ) )
-		{
-			pUser->AddRemoveCampus( pCampus->GetCampusId() );
-			pUser->SetCampusId( 0 );
+	for (const u_long memberId : pCampus->GetAllMemberPlayerId()) {
+		RemovePlayerId2CampusId(memberId);
+		CUser * pUser = g_UserMng.GetUserByPlayerID(memberId);
+		if (IsValidObj(pUser)) {
+			pUser->AddRemoveCampus(pCampus->GetCampusId());
+			pUser->SetCampusId(0);
 		}
 	}
 }

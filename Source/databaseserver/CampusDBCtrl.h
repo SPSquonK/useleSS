@@ -11,6 +11,7 @@
 
 #include "dbcontroller.h"
 #include "Campus.h"
+#include <memory>
 
 //////////////////////////////////////////////////////////////////////
 // CCampusDBCtrl Construction/Destruction
@@ -29,8 +30,7 @@ class CCampusDBCtrl : public CDbController
 {
 public:
 	
-	CCampusDBCtrl();
-	virtual ~CCampusDBCtrl();
+	CCampusDBCtrl(CCampusMng & campusMng) : m_campusMng(campusMng) {}
 
 	virtual void Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwCompletionKey );
 
@@ -45,15 +45,16 @@ private:
 	void	SendAllCampus( DPID dpId );
 	void	InsertCampus( u_long idCampus );
 	void	DeleteCampus( u_long idCampus );
-	void	InsertCampusMember( u_long idCampus, u_long idPlayer, int nMemberLv );
-	void	DeleteCampusMember( u_long idPlayer, int nMemberLv );
+	void	InsertCampusMember( u_long idCampus, u_long idPlayer, CampusRole nMemberLv );
+	void	DeleteCampusMember( u_long idPlayer, CampusRole nMemberLv );
 	int		UpdateCampusPoint( u_long idPlayer, int nCampusPoint );
 	void	UpdateCampusId( u_long idPlayer, u_long idCampus );
 
 	void	LogUpdateCampusMember( u_long idCampus, u_long idMaster, u_long idPupil, char chState );
 	void	LogUpdateCampusPoint( u_long idPlayer, int nPrevPoint, int nCurrPoint, char chState );
 
-	CQuery* m_pLogQuery;
+	std::unique_ptr<CQuery> m_pLogQuery = nullptr;
+	CCampusMng & m_campusMng;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -70,23 +71,12 @@ public:
 	BOOL PostRequest( int nQuery, BYTE* lpBuf = NULL, int nBufSize = 0, DWORD dwCompletionKey = 0 )
 	{ return m_CampusDBCtrl.PostRequest( nQuery, lpBuf, nBufSize, dwCompletionKey );	}
 
-	void	Serialize( CAr & ar )	{	m_pCampusMng->Serialize( ar );	}
-	u_long	AddCampus( CCampus* pCampus )	{	return m_pCampusMng->AddCampus( pCampus );	}
-	BOOL	RemoveCampus( u_long idCampus )	{	return m_pCampusMng->RemoveCampus( idCampus );	}
-	BOOL	IsEmpty()	{	return m_pCampusMng->IsEmpty();	}
-	
-	CCampus*	GetCampus( u_long idCampus )	{	return m_pCampusMng->GetCampus( idCampus );	}
-
-	void	Clear()	{	m_pCampusMng->Clear();	}
-	bool	AddPlayerId2CampusId( u_long idPlayer, u_long idCampus )	{	return m_pCampusMng->AddPlayerId2CampusId( idPlayer, idCampus );	}
-	void	RemovePlayerId2CampusId( u_long idPlayer )	{	m_pCampusMng->RemovePlayerId2CampusId( idPlayer );	}
-	u_long	GetCampusIdByPlayerId( u_long idPlayer )	{	return m_pCampusMng->GetCampusIdByPlayerId( idPlayer );	}
-
-	int		GetMaxPupilNum( int nCampusPoint );
+	void	Serialize( CAr & ar )	{ m_pCampusMng.Serialize( ar );	} // only operator<< is used
+	void RemovePlayerFromCampus(u_long playerId);
 
 private:
+	CCampusMng 		m_pCampusMng;
 	CCampusDBCtrl	m_CampusDBCtrl;
-	CCampusMng*		m_pCampusMng;
 };
 
 #endif // !defined(AFX_CAMPUSDBCTRL_H__D25D11CF_A207_47BA_A35B_5AD4D63DAAB9__INCLUDED_)
