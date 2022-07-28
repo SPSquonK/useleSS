@@ -6864,12 +6864,12 @@ void	CDbManager::LoadMessenger( CMover* pMover, CQuery* pQuery )
 	{
 		idFriend	= (u_long)pQuery->GetInt( "idFriend" );
 		f.bBlock	= (DWORD)pQuery->GetInt( "bBlock" );
-		if( ++nSize > MAX_FRIEND )
+		if( ++nSize > CRTMessenger::MaxFriend)
 		{
 			Error( "TOO MANY FRIEND: %07d", pMover->m_idPlayer );
 			break;
 		}
-		pMover->m_RTMessenger.SetFriend( idFriend, &f );
+		pMover->m_RTMessenger.SetFriend( idFriend, f );
 	}
 }
 

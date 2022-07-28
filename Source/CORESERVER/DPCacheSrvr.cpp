@@ -1840,10 +1840,10 @@ void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 		return;
 	}
 	pSender->Lock();
-	BOOL bFullA	= pSender->m_RTMessenger.size() >= MAX_FRIEND;
+	BOOL bFullA	= pSender->m_RTMessenger.size() >= CRTMessenger::MaxFriend;
 	pSender->Unlock();
 	pFriend->Lock();
-	BOOL bFullB	= pFriend->m_RTMessenger.size() >= MAX_FRIEND;
+	BOOL bFullB	= pFriend->m_RTMessenger.size() >= CRTMessenger::MaxFriend;
 	pFriend->Unlock();
 	if( bFullA )
 	{
@@ -1856,10 +1856,10 @@ void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 		return;
 	}
 	pSender->Lock();
-	pSender->m_RTMessenger.SetFriend( pFriend->uKey, NULL );
+	pSender->m_RTMessenger.SetFriend( pFriend->uKey );
 	pSender->Unlock();
 	pFriend->Lock();
-	pFriend->m_RTMessenger.SetFriend( uidSend, NULL );
+	pFriend->m_RTMessenger.SetFriend( uidSend );
 	pFriend->Unlock();
 	g_dpDatabaseClient.QueryAddMessenger( uidSend, pFriend->uKey );
 	g_dpCoreSrvr.SendAddFriend( uidSend, pFriend->uKey, nSendSex, nFriendSex, nSendJob, nFriendJob );
@@ -1965,6 +1965,9 @@ void CDPCacheSrvr::OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 		pFriendUser->Lock();
 		pFriendUser->m_RTMessenger.RemoveFriend( pPlayer->uKey );
 		pFriendUser->Unlock();
+		// TODO: this is fishy. Current code mean that removing a friend on another
+		// channel would lead them to see us as online? Shouldn't we be removed
+		// instead?
 		BEFORESENDSOLE( ar, PACKETTYPE_REMOVEFRIENDSTATE, pFriendUser->dpidUser );
 		ar << pPlayer->uKey;
 		SEND( ar, this, pFriendUser->dpidCache );

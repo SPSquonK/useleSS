@@ -16,41 +16,32 @@
 #define	FRS_AUTOABSENT		11	// 자동 : 자동 자리비움	
 #define MAX_FRIENDSTAT		12	// 맥스값
 
-#define MAX_FRIEND		200 // 맥스값 친구 등록 횟수
+struct Friend {
+	static constexpr bool Archivable = true;
 
-typedef struct	_Friend
-{
-	BOOL	bBlock;
-	DWORD	dwState;
-	_Friend()
-	{
-		bBlock	= FALSE;
-		dwState		= 0;
-	}
-}	Friend;
+	BOOL	bBlock = FALSE;
+	DWORD	dwState = 0;
+	Friend() = default;
+};
 
-class CRTMessenger	: public	std::map<u_long, Friend>
+class CRTMessenger final : public	std::map<u_long, Friend>
 {
 public:
-	CRTMessenger();
-	virtual	~CRTMessenger();
-//
-//	void	SetFriend( u_long idFriend, BOOL bBlock, DWORD dwState );
-	void	SetFriend( u_long idFriend, Friend * pFriend );
-	void	RemoveFriend( u_long idFriend )		{	erase( idFriend );	}
+	static constexpr size_t MaxFriend = 200;
+
+	void SetFriend(u_long idFriend, const Friend & pFriend = Friend());
+	void RemoveFriend(u_long idFriend) { erase(idFriend); }
 	Friend*	GetFriend( u_long idFriend );
 
-	void	SetBlock( u_long idFriend, BOOL bBlock );
-	BOOL	IsBlock( u_long idFriend );
+	void SetBlock(u_long idFriend, bool bBlock);
+	[[nodiscard]] bool IsBlock(u_long idFriend) const;
 
-	DWORD	GetState( void )	{	return m_dwState;	}
-	void	SetState( DWORD dwState )	{	m_dwState	= dwState;	}
+	[[nodiscard]] DWORD GetState() const  { return m_dwState; }
+	void	SetState(DWORD dwState) { m_dwState = dwState; }
 
-//	void	Serialize( CAr & ar );
-	int	Serialize( CAr & ar );
+	int	Serialize(CAr & ar);
 
-	CRTMessenger &	operator =( CRTMessenger & rRTMessenger );
 private:
-	DWORD	m_dwState;
+	DWORD	m_dwState = 0;
 };
 

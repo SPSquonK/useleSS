@@ -6990,10 +6990,9 @@ void CDPClient::OnAddFriend( CAr & ar )
 	ar >> uidPlayer;
 	ar.ReadString( lpName, MAX_PLAYER );
 
-//	g_WndMng.m_Messenger.m_dwMyState = FRS_ONLINE;
-	g_WndMng.m_RTMessenger.SetFriend( uidPlayer, NULL );
+	g_WndMng.m_RTMessenger.SetFriend( uidPlayer );
 	SendGetFriendState();
-//	g_WndMng.AddFriend( pFocusMover->m_szName, pFocusMover->m_idPlayer 0, FALSE );////Add( lpFriend );
+
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
@@ -7087,7 +7086,7 @@ void CDPClient::OnRemoveFriendState( CAr & ar )
 	u_long uRemoveid;
 	ar >> uRemoveid;
 
-	g_WndMng.m_RTMessenger.SetFriend( uRemoveid, NULL );
+	g_WndMng.m_RTMessenger.SetFriend( uRemoveid );
 
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
@@ -7139,7 +7138,7 @@ void CDPClient::OnFriendNoIntercept( CAr & ar )
 {
 	u_long idFriend;
 	ar >> idFriend;
-	g_WndMng.m_RTMessenger.SetBlock( idFriend, FALSE );
+	g_WndMng.m_RTMessenger.SetBlock( idFriend, false );
 	CWndMessengerEx* pWndMessengerEx	= (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
@@ -7153,7 +7152,7 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 	{
 		if( g_pPlayer->m_idPlayer == idPlayer )
 		{
-			g_WndMng.m_RTMessenger.SetBlock( idFriend, TRUE );
+			g_WndMng.m_RTMessenger.SetBlock( idFriend, true );
 		}
 		else
 		{

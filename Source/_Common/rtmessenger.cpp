@@ -1,36 +1,15 @@
 #include "stdafx.h"
 #include "rtmessenger.h"
 
-CRTMessenger::CRTMessenger()
-{
-	m_dwState	= 0;
+void CRTMessenger::SetFriend(u_long idFriend, const Friend & pFriend) {
+	if (idFriend != 0) {
+		(*this)[idFriend] = pFriend;
+	}
 }
 
-CRTMessenger::~CRTMessenger()
-{
-	clear();
-}
-
-void	CRTMessenger::SetFriend( u_long idFriend, Friend * pFriend )
-{
-	if( idFriend == 0 )
-		return;
-	Friend f;	//
-	if( !pFriend )
-		pFriend		= &f;
-	const auto i	= find( idFriend );
-	if( i != end() )
-		memcpy( &i->second, pFriend, sizeof(Friend) );
-	else
-		emplace( idFriend, *pFriend);
-}
-
-Friend*	CRTMessenger::GetFriend( u_long idFriend )
-{
-	const auto i		= find( idFriend );
-	if( i != end() )
-		return &i->second;
-	return NULL;
+Friend * CRTMessenger::GetFriend(u_long idFriend) {
+	const auto i = find(idFriend);
+	return i != end() ? &i->second : nullptr;
 }
 
 int CRTMessenger::Serialize( CAr & ar )
@@ -40,8 +19,7 @@ int CRTMessenger::Serialize( CAr & ar )
 		ar << m_dwState;
 		ar << static_cast<int>( size() );
 		for(const auto & [idFriend, friend_] : *this) {
-			ar << idFriend;
-			ar.Write( &friend_, sizeof(Friend) );
+			ar << idFriend << friend_;
 		}
 	}
 	else
@@ -51,7 +29,7 @@ int CRTMessenger::Serialize( CAr & ar )
 		int nSize;
 		ar >> nSize;
 
-		if( nSize > MAX_FRIEND )
+		if( nSize > CRTMessenger::MaxFriend)
 			return nSize;
 
 		u_long idFriend;
@@ -60,34 +38,21 @@ int CRTMessenger::Serialize( CAr & ar )
 		{
 			ar >> idFriend;
 			Friend f;
-			ar.Read( &f, sizeof(Friend) );
-			SetFriend( idFriend, &f );
+			ar >> f;
+			SetFriend( idFriend, f );
 		}
 	}
 	return 0;
 }
 
-CRTMessenger &	CRTMessenger::operator =( CRTMessenger & rRTMessenger )
-{
-	clear();
-	for (auto & [friendId, friend_] : rRTMessenger) {
-		SetFriend(friendId, &friend_);
+void	CRTMessenger::SetBlock(u_long idFriend, bool bBlock) {
+	if (Friend * pFriend = GetFriend(idFriend)) {
+		pFriend->bBlock = bBlock;
 	}
-	m_dwState	= rRTMessenger.GetState();
-	return *this;
 }
 
-void	CRTMessenger::SetBlock( u_long idFriend, BOOL bBlock )
-{
-	Friend* pFriend		= GetFriend( idFriend );
-	if( pFriend )
-		pFriend->bBlock		= bBlock;
-}
-
-BOOL	CRTMessenger::IsBlock( u_long idFriend )
-{
-	Friend* pFriend		= GetFriend( idFriend );
-	if( pFriend )
-		return pFriend->bBlock;
-	return TRUE;
+bool CRTMessenger::IsBlock(u_long idFriend) const {
+	const auto it = find(idFriend);
+	if (it == end()) return true;
+	return it->second.bBlock;
 }

@@ -1108,13 +1108,13 @@ void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
 
 	if( IsValidObj( (CObj*)pSender ) )
 	{
-		if( MAX_FRIEND <= pSender->m_RTMessenger.size() )
+		if(CRTMessenger::MaxFriend <= pSender->m_RTMessenger.size() )
 		{
 			pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
 		}
 		else
 		{
-			pSender->m_RTMessenger.SetFriend( uidFriend, NULL );
+			pSender->m_RTMessenger.SetFriend( uidFriend );
 			pSender->AddAddFriend( uidFriend, lpszFriend ); 
 			bAdd++;
 		}
@@ -1128,14 +1128,14 @@ void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
 
 	if( IsValidObj( (CObj*)pFriend ) )
 	{
-		if( MAX_FRIEND <= pFriend->m_RTMessenger.size() )
+		if(CRTMessenger::MaxFriend <= pFriend->m_RTMessenger.size() )
 		{
 			if( IsValidObj( (CObj*)pSender ) )
 				pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
 		}
 		else
 		{
-			pFriend->m_RTMessenger.SetFriend( uidSend, NULL );
+			pFriend->m_RTMessenger.SetFriend( uidSend );
 			pFriend->AddAddFriend( uidSend, lpszSend );
 			bAdd	+= 2;
 		}
