@@ -51,14 +51,10 @@ public:
 	void	SendWarMasterAbsent(WarId idWar, u_long idGuild );
 	void	SendSnoopGuild( u_long idGuild, u_long idPlayer, const char* lpszChat );
 	void	OnUpdateGuildRankFinish( CAr & ar );
-#ifdef __RT_1025
 	void	QueryAddMessenger( u_long idPlayer, u_long idFriend );
 	void	QueryDeleteMessenger( u_long idPlayer, u_long idFriend );
 	void	QueryUpdateMessenger( u_long idPlayer, u_long idFriend, BOOL bBlock );
 	void	OnRemovePlayerFriend( CAr & ar );
-#else	// __RT_1025
-	void	SendRemoveFriend( u_long uidPlayer, u_long uidFriend );
-#endif	// __RT_1025
 	void	SendAddPartyName( u_long uidPlayer, const char * sParty );
 	void	SendTag( u_long idFrom, u_long idTo, LPCTSTR lpszString );
 	void	SendCTWanted( BYTE byReqType, u_long idPlayer, int nGold, long nEnd, LPCTSTR szMsg );

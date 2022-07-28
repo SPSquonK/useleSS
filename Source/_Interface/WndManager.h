@@ -2,11 +2,7 @@
 
 #include <boost/container/flat_map.hpp>
 
-#ifdef __RT_1025
 #include "rtmessenger.h"
-#else	// __RT_1025
-#include "messenger.h"
-#endif	// __RT_1025
 #include "WndWorld.h"
 #include "WndBank.h"
 #include "WndRepairItem.h"	 // ¼ö¸®Ã¢
@@ -554,11 +550,7 @@ private:
 public:
 	std::vector<WndMgr::StoredChatMessage> m_aChat;
 
-#ifdef __RT_1025
 	CRTMessenger	m_RTMessenger;
-#else	//__RT_1025
-	CMessenger m_Messenger;
-#endif	// __RT_1025
 	boost::container::flat_map<std::string, std::unique_ptr<CWndMap>>        m_mapMap;
 	boost::container::flat_map<CString, std::unique_ptr<CWndInstantMsg>> m_mapInstantMsg;
 	boost::container::flat_map<CString, std::unique_ptr<CWndMessage>>    m_mapMessage;

@@ -3113,11 +3113,7 @@ BOOL CWndMgr::LoadRegInfo( LPCTSTR lpszFileName )
 
 void CWndMgr::SetMessengerAutoState()
 {
-#ifdef __RT_1025
 	if( m_bConnect && m_RTMessenger.GetState() == FRS_AUTOABSENT )
-#else	// __RT_1025
-	if( m_bConnect && m_Messenger.GetState() == FRS_AUTOABSENT )
-#endif	// __RT_1025
 	{
 		g_DPlay.SendSetState( FRS_ONLINE );	
 		m_timerMessenger.Set( MIN( 5 ) );

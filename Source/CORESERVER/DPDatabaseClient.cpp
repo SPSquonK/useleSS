@@ -29,9 +29,7 @@ CDPDatabaseClient::CDPDatabaseClient()
 #ifdef __AUTO_NOTICE
 	ON_MSG( PACKETTYPE_EVENTLUA_NOTICE, &CDPDatabaseClient::OnEventNotice );
 #endif // __AUTO_NOTICE
-#ifdef __RT_1025
 	ON_MSG( PACKETTYPE_REMOVEFRIEND, &CDPDatabaseClient::OnRemovePlayerFriend );
-#endif // __RT_1025
 }
 
 CDPDatabaseClient::~CDPDatabaseClient()
@@ -552,7 +550,6 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar )
 	}
 }
 
-#ifdef __RT_1025
 void CDPDatabaseClient::QueryAddMessenger( u_long idPlayer, u_long idFriend )
 {
 	BEFORESEND( ar, PACKETTYPE_ADD_MESSENGER );
@@ -591,14 +588,6 @@ void CDPDatabaseClient::OnRemovePlayerFriend( CAr & ar )
 		g_dpCoreSrvr.SendRemoveFriend( pFriendUser->uKey, uPlayerId );
 	}
 }
-#else	// __RT_1025
-void CDPDatabaseClient::SendRemoveFriend( u_long uidPlayer, u_long uidFriend )
-{
-	BEFORESEND( ar, PACKETTYPE_REMOVEFRIEND );
-	ar << uidPlayer << uidFriend;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-#endif	// __RT_1025
 
 #ifdef __AUTO_NOTICE
 void CDPDatabaseClient::OnEventNotice( CAr & ar )

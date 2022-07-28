@@ -1002,11 +1002,7 @@ void CWndCommItemCtrl::SetScrollBar()
 {
 	int nPage, nRange;
 	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
 	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();//m_pItemContainer->m_dwIndexNum;// - nPage;
-#endif	// __RT_1025
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }

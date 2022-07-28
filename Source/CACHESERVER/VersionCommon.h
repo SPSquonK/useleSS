@@ -18,7 +18,6 @@
 // 11
 #define		__MA_VER11_07				// cache 서버에서 loginserver로 유저접속끊낌을 알려주는 부분
 //#define		__SYS_PLAYER_DATA
-#define		__RT_1025					// 메신저	//
 
 #if (_MSC_VER > 1200)
 #define		__VS2003		// 컴파일러변경.net

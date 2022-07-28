@@ -243,7 +243,6 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	DWORD dwAuthKey;
 	arRead >> dwAuthKey;
 
-#ifdef __RT_1025
 	size_t nSize;	u_long uMessengerId;
 	std::vector<u_long> vecMessenger;
 	arRead >> nSize;
@@ -252,7 +251,6 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		arRead >> uMessengerId;
 		vecMessenger.push_back( uMessengerId );
 	}
-#endif // __RT_1025
 
 #ifdef __REMOVE_PLAYER_0221
 	arRead >> lpDbOverlappedPlus->dpid;
@@ -311,13 +309,11 @@ void CDbManager::RemovePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	m_AddRemoveLock.Leave();
 
 	CDPTrans::GetInstance()->SendDeletePlayerData( idPlayer );
-#ifdef __RT_1025
 	for( auto it=vecMessenger.begin(); it!=vecMessenger.end(); it++ )
 	{
 		qry->Execute( "uspDeleteMessenger '%02d', '%07d', '%07d'", g_appInfo.dwSys, idPlayer, (*it) );
 		g_dpCoreSrvr.SendRemovePlayerFriend( idPlayer, (*it) );
 	}
-#endif // __RT_1025
 	g_dpLoginSrvr.SendPlayerList( lpDbOverlappedPlus->AccountInfo.szAccount, lpDbOverlappedPlus->AccountInfo.szPassword, lpDbOverlappedPlus->dpid, dwAuthKey );
 	FreeRequest( lpDbOverlappedPlus );
 }
@@ -630,19 +626,10 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 		CMover cMoverBuf;
 		cMoverBuf.InitProp();
 		cMoverBuf.m_idPlayer = uidPlayer[i];
-#ifdef __RT_1025
 		LoadMessenger( &cMoverBuf, qry );
 		cMoverBuf.m_RTMessenger.SetState( dwMessengerState[i] );
-#else	// __RT_1025
-		GetMessengerFriend( &cMoverBuf, qry, lpDbOverlappedPlus );
-		cMoverBuf.m_Messenger.m_dwMyState = dwMessengerState[i];
-#endif	// __RT_1025
 		ar << MessengerSlot[i];
-#ifdef __RT_1025
 		cMoverBuf.m_RTMessenger.Serialize( ar );
-#else	// __RT_1025
-		cMoverBuf.m_Messenger.Serialize( ar );
-#endif	// __RT_1025
 	}
 
 	SEND( ar, &g_dpLoginSrvr, DPID_ALLPLAYERS );
@@ -869,31 +856,6 @@ BOOL CDbManager::GetPartyName( void )
 	return TRUE;	
 }
 
-#ifndef __RT_1025
-BOOL CDbManager::SetMessenger( void )
-{
-	CQuery qry;
-	
-	if( qry.Connect( 3, DSN_NAME_CHARACTER01, DB_ADMIN_ID_CHARACTER01, DB_ADMIN_PASS_CHARACTER01 ) == FALSE )
-	{
-		WriteLog( "%s, %d", __FILE__, __LINE__ );
-		return FALSE;
-	}
-	
-	char szQuery[256];
-	
-	sprintf( szQuery,
-		"MESSENGER_STR 'D1','','%02d'",
-		g_appInfo.dwSys );
-	
-	if( FALSE == qry.Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		return FALSE;
-	}
-	return TRUE;	
-}
-#endif	// __RT_1025
 
 BOOL CDbManager::GetMyPartyName( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, u_long uidPlayer, char * szPartyName )
 {
@@ -1006,96 +968,6 @@ void CDbManager::AddPartyName( CQuery* pQuery, CAr & arRead)
 		});
 }
 
-#ifndef __RT_1025
-void CDbManager::RemoveFriend( CQuery* pQuery, CAr & arRead)
-{
-	u_long uidPlayer, uidFriend;		
-	arRead >> uidPlayer >> uidFriend;
-
-	// 친구 삭제
-	/*  MESSENGER_STR 'D1',@im_idPlayer,@iserverindex,@if_idPlayer
-		MESSENGER_STR 'D1','000001','01','000002' */
-	char szQuery[QUERY_SIZE]	= { 0,};
-	sprintf( szQuery,
-		"MESSENGER_STR 'D1','%07d','%02d','%07d'",
-		uidPlayer, g_appInfo.dwSys, uidFriend);
-
-	if( FALSE == pQuery->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		return;
-	}
-}
-
-void CDbManager::GetMessengerFriend( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	pMover->m_Messenger.Clear();
-	// 내가 등록한 아이디 가지고 오기
-	char szQuery[QUERY_SIZE]	= { 0,};
-
-	sprintf( szQuery,
-		"MESSENGER_STR 'S1','%07d','%02d'",
-		pMover->m_idPlayer, g_appInfo.dwSys );
-	if( FALSE == qry->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		return;
-	}
-
-	while( qry->Fetch() )
-	{
-		u_long uFriendId;
-		BYTE nSex;
-		LONG nJob;
-		DWORD dwState;
-		
-		uFriendId = qry->GetInt("f_idPlayer");
-		nSex = qry->GetInt( "m_dwSex" );
-		nJob = qry->GetInt( "m_nJob" );
-		dwState = qry->GetInt( "m_dwState" );
-		pMover->m_Messenger.AddFriend( uFriendId, nJob, nSex, dwState );
-	}
-	// 나를 동록한 아이디 가지고 오기
-	sprintf( szQuery,
-		"MESSENGER_STR 'S2','%07d','%02d'",
-		pMover->m_idPlayer, g_appInfo.dwSys );
-	if( FALSE == qry->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		return;
-	}
-	
-	while( qry->Fetch() )
-	{
-		u_long uFriendId;
-		uFriendId = qry->GetInt("f_idPlayer");
-		pMover->m_Messenger.AddDefferntFriend( uFriendId );
-	}
-}
-
-void CDbManager::SaveMessengerFriend( CQuery *qry, CMover* pMover, char* szQuery )
-{
-	for( C2FriendPtr::iterator i	= pMover->m_Messenger.m_aFriend.begin(); i != pMover->m_Messenger.m_aFriend.end(); ++i )
-	{
-		LPFRIEND pFriend = (LPFRIEND)i->second;
-		pFriend->dwUserId;
-
-		if( pFriend->bSave )
-		{
-			// 메신저 추가시 성별하고 직업은 DB에서 자체적으로 Join을 해서 성별과 직업을 가지고 옴
-			sprintf( szQuery,
-				"MESSENGER_STR @iGu='A1',@im_idPlayer='%07d',@iserverindex='%02d',@if_idPlayer='%07d',@im_dwState=%d", 
-				pMover->m_idPlayer, g_appInfo.dwSys, pFriend->dwUserId, pFriend->dwState ); 
-
-			if( FALSE == qry->Exec( szQuery ) )
-			{
-				WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-				return;
-			}
-		}
-	}
-}
-#endif	// __RT_1025
 
 BOOL CDbManager::SendItemtoCharacter( int nSlot, CMover* pMover, CQuery *qry, CQuery *qry1, CQuery *qrylog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
@@ -1866,13 +1738,9 @@ void CDbManager::PutThread( void )	// log
 				SavePlayTime(pQueryChar, ar, lpDbOverlappedPlus->AccountInfo.szPlayer);
 				break;
 
-#ifdef __RT_1025
 			case QM_ADD_MESSENGER:    AddMessenger   (pQueryChar, ar); break;
 			case QM_DELETE_MESSENGER: DeleteMessenger(pQueryChar, ar); break;
 			case QM_UPDATE_MESSENGER: UpdateMessenger(pQueryChar, ar); break;
-#else	// __RT_1025
-			case REMOVE_FRIEND:       RemoveFriend   (pQueryChar, ar); break;
-#endif	// __RT_1025
 
 			case ADD_PARTYNAME:   AddPartyName(pQueryChar, ar); break;
 			case CHANGE_BANKPASS: ChangeBankPass(pQueryChar, ar); break;
@@ -6982,7 +6850,6 @@ BOOL CDbManager::RestorePetGuildBank(std::map<DWORD, int> & mRestore )
 	return TRUE;
 }
 
-#ifdef __RT_1025
 void	CDbManager::LoadMessenger( CMover* pMover, CQuery* pQuery )
 {
 	pMover->m_RTMessenger.clear();
@@ -7048,7 +6915,6 @@ void CDbManager::UpdateMessenger( CQuery* pQuery, CAr & ar)
 		// error
 	}
 }
-#endif	// __RT_1025
 
 void CDbManager::LoadGC1to1TenderGuild( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, DPID dpId )
 {

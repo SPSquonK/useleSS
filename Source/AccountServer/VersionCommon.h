@@ -24,7 +24,6 @@
 
 #define	__REMOVE_PLAYER_0221		// 캐릭터 삭제 패킷 조작
 
-#define __RT_1025
 
 // 14th
 //	#define __PCBANG			// PC방 혜택

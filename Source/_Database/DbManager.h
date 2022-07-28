@@ -100,11 +100,9 @@ enum QUERYMODE
 #ifdef __GETMAILREALTIME
 	QM_GETMAIL_REALTIME,
 #endif // __GETMAILREALTIME
-#ifdef __RT_1025
 	QM_ADD_MESSENGER,
 	QM_DELETE_MESSENGER,
 	QM_UPDATE_MESSENGER,
-#endif	// __RT_1025
 	QM_GUILDBANK_LOG_VIEW,
 	LOG_GETHONORTIME,
 	QM_SEALCHAR,
@@ -980,19 +978,10 @@ public:
 
 private:
 			CDbManager();
-#ifdef __RT_1025
 	void	LoadMessenger( CMover* pMover, CQuery* pQuery );
 	void	AddMessenger( CQuery* pQuery, CAr & ar);
 	void	DeleteMessenger( CQuery* pQuery, CAr & ar);
 	void	UpdateMessenger( CQuery* pQuery, CAr & ar);
-#else	// __RT_1025
-	void	SaveMessengerFriend( CQuery *qry, CMover* pMover, char* szQuery );
-public:
-	BOOL	SetMessenger( void );
-private:
-	void	GetMessengerFriend( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	RemoveFriend( CQuery* pQuery, CAr & arRead);
-#endif	// __RT_1025
 	BOOL	IsAbnormalPlayerData( CMover* pMover );
 	BOOL	NormalizePlayerData( CMover* pMover );
 	int		SelectTag( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, u_long uidPlayer, TAG_ENTRY* tags );

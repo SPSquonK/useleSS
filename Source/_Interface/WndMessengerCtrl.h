@@ -12,9 +12,7 @@ typedef struct __MESSENGER_PLAYER
 	int		m_nJob;
 	DWORD	m_dwPlayerId;
 	TCHAR	m_szName[ 64 ];
-#ifdef __RT_1025
 	BOOL	m_bBlock;
-#endif	// __RT_1025
 	BOOL	m_bVisitAllowed;
 	__MESSENGER_PLAYER( void );
 	void Initialize( void );
@@ -67,13 +65,8 @@ public:
 
 	// UI Func.
 	void SetScrollBar();
-#ifdef __RT_1025
 	int		GetSelect( CPoint point, u_long & idPlayer, Friend** ppFriend );
 	void	GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend );
-#else	// __RT_1025
-	int GetSelect( CPoint point, LPFRIEND* lppFriend );
-	void GetSelectFriend( int SelectCount, LPFRIEND* lppFriend );
-#endif	// __RT_1025
 	u_long GetSelectId( int SelectCount );
 	void ScrollBarPos( int nPos );
 	int GetDrawCount( void );
@@ -123,13 +116,8 @@ public:
 
 	// UI Func.
 	void SetScrollBar();
-#ifdef __RT_1025
 	int		GetSelect( CPoint point, u_long & idPlayer, CGuildMember** lppGuildMember );
 //	void	GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend );
-#else	// __RT_1025
-	int GetSelect( CPoint point, LPFRIEND* lppFriend );
-	void GetSelectFriend( int SelectCount, LPFRIEND* lppFriend );
-#endif	// __RT_1025
 	u_long GetSelectId( int SelectCount );
 	void ScrollBarPos( int nPos );
 	int GetDrawCount( void );

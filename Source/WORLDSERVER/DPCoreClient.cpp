@@ -2237,11 +2237,7 @@ void CDPCoreClient::OnSetFriendState( CAr & ar, DPID, DPID, OBJID )
 
 	pUser	= (CUser*)prj.GetUserByID( uidPlayer );
 	if( IsValidObj( pUser ) )
-#ifdef __RT_1025
 		pUser->m_RTMessenger.SetState( dwState );
-#else	// __RT_1025
-		pUser->m_Messenger.m_dwMyState = dwState;
-#endif	// __RT_1025
 }
 
 void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
@@ -2258,7 +2254,6 @@ void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
 	if( IsValidObj( pUser ) == FALSE )
 		return;
 
-#ifdef __RT_1025
 	Friend* pFriend	= pUser->m_RTMessenger.GetFriend( uidFriend );
 	if( pFriend )
 	{
@@ -2276,42 +2271,6 @@ void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
 			pFriend->dwState	= 0;
 		}
 	}	
-#else	// __RT_1025
-	LPFRIEND pFriend	= pUser->m_Messenger.GetFriend( uidFriend );
-	if( pFriend )
-	{
-		if( pFriend->dwState == FRS_BLOCK )	// 차단상태
-		{
-			// 차단해제를 하려고함 :: 차단해제를 하면 그넘의 상태를 가지고 와서 나에게만 보내면 됨 : 나한테만 보내줌
-			if( pUserFriend )
-			{
-				pFriend->dwState	= pUserFriend->m_Messenger.m_dwMyState;
-			}
-			else
-			{
-				pFriend->dwState	= FRS_OFFLINE;
-			}
-			
-			LPFRIEND pDFriend = pUser->m_Messenger.GetDefferntFriend( uidFriend );
-			if( pDFriend )
-			{
-				pDFriend->dwState = 0;
-			}
-
-		}
-		else	// 차단해제 상태
-		{
-			// 차단을 하려고함 :: 나는 그넘을 블럭상태라고 나에게 보내주고 그넘에게는 나를 로그아웃이라고 함 : 나에게 보내주고 그넘한태두 보내줌
-			pFriend->dwState	= FRS_BLOCK;
-			LPFRIEND pDFriend = pUser->m_Messenger.GetDefferntFriend( uidFriend );
-			if( pDFriend )
-			{
-				pDFriend->dwState = FRS_BLOCK;
-			}
-		}
-		pFriend->bSave = TRUE;
-	}
-#endif	// __RT_1025
 }
 
 

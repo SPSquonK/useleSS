@@ -114,11 +114,7 @@ public:
 	void	SendHdr( DWORD dwHdr );
 	LONG	GetErrorCode() { return m_lError; }
 	LONG	GetNetError();
-#ifdef __RT_1025
 	void	SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti );
-#else	// __RT_1025
-	void	SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CMessenger* pMessenger, u_long uIdofMulti );
-#endif	// __RT_1025
 
 	void	PostPlayerAngle( BOOL f );
 	void	FlushPlayerAngle( void );

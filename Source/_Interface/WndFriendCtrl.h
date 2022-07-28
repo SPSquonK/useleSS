@@ -9,11 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifdef __RT_1025
 #include "rtmessenger.h"
-#else	// __RT_1025
-#include "messenger.h"
-#endif	// __RT_1025
 
 class C2DRender;
 class CItemElem;
@@ -50,13 +46,8 @@ public:
 
 
 	void SetScrollBar();
-#ifdef __RT_1025
 	int		GetSelect( CPoint point, u_long & idPlayer, Friend** ppFriend );
 	void	GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend );
-#else	// __RT_1025
-	int GetSelect( CPoint point, LPFRIEND* lppFriend );
-	void	GetSelectFriend( int SelectCount, LPFRIEND* lppFriend );
-#endif	// __RT_1025
 	u_long GetSelectId( int SelectCount );
 	
 //	void InitItem( int nJob, int nExpert, LPSKILL apExpertSkill, u_long uParent = 0 );

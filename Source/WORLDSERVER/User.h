@@ -5,11 +5,7 @@
 #include "Snapshot.h"
 #include "UserTaskBar.h"
 #include "Party.h"
-#ifdef __RT_1025
 #include "rtmessenger.h"
-#else	// __RT_1025
-#include "messenger.h"
-#endif	// __RT_1025
 #include "misc.h"
 #include "guild.h"
 #include "eveschool.h"
@@ -77,11 +73,7 @@ public:
 	CTaskbar	m_playTaskBar;						/// player의 taskbar class(큇슬롯)
 	int			m_nUsedSkillQueue;
 	OBJID			m_idSetTarget;						/// 이 유저가 잡고있는 타겟
-#ifdef __RT_1025
 	CRTMessenger	m_RTMessenger;
-#else	// __RT_1025
-	CMessenger		m_Messenger;						/// 메신져 
-#endif	// __RT_1025
 	char			m_szPartyName[32];					/// 파티 이름 
 	char			m_szBankPass[5];					/// 은행 비빌번호 
 
@@ -358,11 +350,7 @@ public:
 #endif // __ENVIRONMENT_EFFECT
 	void			AddEnvironment();
 	void			AddPartyChat( const CHAR* lpName, const CHAR* lpString, OBJID objid );
-#ifdef __RT_1025
 	void			AddAddFriend( u_long idPlayer, const char* lpszPlayer );
-#else	// __RT_1025
-	void			AddAddFriend( u_long idPlayer, LONG nJob, DWORD dwSex, const char* lpszPlayer );
-#endif	// __RT_1025
 	void			AddRemoveFriend( u_long uidSender );
 	void			AddDuelCount( int nCount );
 	void			AddDuelRequest( u_long uidSrc, u_long uidDst );

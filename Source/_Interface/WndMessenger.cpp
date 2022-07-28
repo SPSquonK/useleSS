@@ -45,7 +45,6 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
 	// Draw Status Icon
-#ifdef __RT_1025
 	DWORD dwMyState;
 	if( g_WndMng.m_RTMessenger.GetState() == FRS_AUTOABSENT )
 		dwMyState	= FRS_ABSENT;
@@ -55,17 +54,6 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 		dwMyState	= 8;
 	else
 		dwMyState	= g_WndMng.m_RTMessenger.GetState();
-#else	// __RT_1025
-	DWORD dwMyState;
-	if( g_WndMng.m_Messenger.m_dwMyState == FRS_AUTOABSENT )
-		dwMyState = FRS_ABSENT;
-	else if( g_WndMng.m_Messenger.m_dwMyState == FRS_ONLINE )
-		dwMyState = 2;
-	else if( g_WndMng.m_Messenger.m_dwMyState == FRS_OFFLINE )
-		dwMyState = 8;
-	else
-		dwMyState = g_WndMng.m_Messenger.m_dwMyState;
-#endif	// __RT_1025
 	
 	TEXTUREVERTEX2 vertex[ 6 ];
 	TEXTUREVERTEX2* pVertices = vertex;
@@ -75,11 +63,7 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	
 	// Draw Name & Status
 	CString strState;
-#ifdef __RT_1025
 	switch( g_WndMng.m_RTMessenger.GetState() )
-#else	// __RT_1025
-	switch(g_WndMng.m_Messenger.m_dwMyState)
-#endif	// __RT_1025
 	{
 		case FRS_ONLINE:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_ONLINE_STATUS ) );
@@ -191,11 +175,7 @@ void CWndMessengerEx::OnInitialUpdate()
 
 	m_wndFriend.Create( CRect( 0, 0, 250, 250 ), pWndTabCtrl, 11 );
 	m_wndFriend.AddWndStyle( WBS_NODRAWFRAME );
-#ifdef __RT_1025
 	if( g_WndMng.m_RTMessenger.size() )
-#else	// __RT_1025
-	if( g_WndMng.m_Messenger.m_aFriend.size() )
-#endif	// __RT_1025
 	{
 		g_DPlay.SendGetFriendState();
 	}

@@ -69,16 +69,12 @@ public:
 	void	OnSurrender( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnWarDead( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnWarMasterAbsent( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
-#ifdef __RT_1025
 	void	OnAddMessenger( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnDeleteMessenger( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnUpdateMessenger( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 public:
 	void	SendRemovePlayerFriend( u_long uPlayerId, u_long uFriendId );
 private:
-#else	// __RT_1025
-	void	OnRemoveFriend( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
-#endif	// __RT_1025
 	void	OnAddPartyName( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnTag( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnWanted( CAr & ar, LPBYTE lpBuf, u_long uBufSize );	

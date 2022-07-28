@@ -228,12 +228,8 @@ int MAX_SAVEPARAM = 88;
 #else	// __JEFF_9_20
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwFlyTime, 0, 0 );
 #endif	// __JEFF_9_20
-#ifdef __RT_1025
 	DWORD dwState	= pMover->m_RTMessenger.GetState();
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &dwState, 0, 0 );
-#else	// __RT_1025
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_Messenger.m_dwMyState, 0, 0 );
-#endif	// __RT_1025
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nTotalPlayTime, 0, 0 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nPKValue, 0, 0 );
 	// 5
@@ -350,9 +346,6 @@ int MAX_SAVEPARAM = 88;
 		}
 	}
 
-#ifndef __RT_1025
-	SaveMessengerFriend( qry, pMover, szQuery );
-#endif	// __RT_1025
 
 	SaveHonor( qry, pMover->m_idPlayer, pMover->m_aHonorTitle, szQuery );
 

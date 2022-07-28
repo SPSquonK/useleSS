@@ -10,13 +10,9 @@ extern	CProject	prj;
 CDPCoreSrvr::CDPCoreSrvr()
 {
 	BEGIN_MSG;
-#ifdef __RT_1025
 	ON_MSG( PACKETTYPE_ADD_MESSENGER, &CDPCoreSrvr::OnAddMessenger );
 	ON_MSG( PACKETTYPE_DELETE_MESSENGER, &CDPCoreSrvr::OnDeleteMessenger );
 	ON_MSG( PACKETTYPE_UPDATE_MESSENGER, &CDPCoreSrvr::OnUpdateMessenger );
-#else	// __RT_1025
-	ON_MSG( PACKETTYPE_REMOVEFRIEND, &CDPCoreSrvr::OnRemoveFriend );
-#endif	// __RT_1025
 	ON_MSG( PACKETTYPE_ADDPARTYNAME, &CDPCoreSrvr::OnAddPartyName );
 	ON_MSG( PACKETTYPE_TAG, &CDPCoreSrvr::OnTag );
 
@@ -435,7 +431,6 @@ void CDPCoreSrvr::SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-#ifdef __RT_1025
 void CDPCoreSrvr::OnAddMessenger( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
 {
 	LPDB_OVERLAPPED_PLUS pov	= g_DbManager.AllocRequest();
@@ -466,15 +461,6 @@ void CDPCoreSrvr::SendRemovePlayerFriend( u_long uPlayerId, u_long uFriendId )
 	ar << uPlayerId << uFriendId;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
-#else	// __RT_1025
-void CDPCoreSrvr::OnRemoveFriend( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
-{
-	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.AllocRequest();
-	g_DbManager.MakeRequest( lpDbOverlappedPlus, lpBuf, uBufSize );
-	lpDbOverlappedPlus->nQueryMode	= REMOVE_FRIEND;
-	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
-}
-#endif	// __RT_1025
 
 #ifdef __AUTO_NOTICE
 void CDPCoreSrvr::SendEventLuaNotice()

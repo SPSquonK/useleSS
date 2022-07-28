@@ -5,11 +5,7 @@
 
 #include "mempooler.h"
 #include "CMclCritSec.h"
-#ifdef __RT_1025
 #include "rtmessenger.h"
-#else	// __RT_1025
-#include "messenger.h"
-#endif	// __RT_1025
 
 enum TAG_RESULT 
 {
@@ -29,11 +25,7 @@ public:
 	CHAR			lpszPlayer[MAX_PLAYER];		// name
 	CHAR			lpAddr[16];					// ip
 	CHAR			lpszAccount[MAX_ACCOUNT];	// account
-#ifdef __RT_1025
 	CRTMessenger	m_RTMessenger;
-#else	// __RT_1025
-	CMessenger		m_Messenger;
-#endif	// __RT_1025
 	u_long			m_uPartyId = 0;	
 	u_long			m_idGuild = 0;
 	WarId			m_idWar = WarIdNone;

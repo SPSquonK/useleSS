@@ -374,7 +374,6 @@ void CWndFriendCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 }
 
-#ifdef __RT_1025
 void CWndFriendCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
 	u_long idFriend;
@@ -383,11 +382,7 @@ void CWndFriendCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 	if( nSelect != -1 )
 	{
 		CPlayerDataCenter* pPlayerDataCenter	= CPlayerDataCenter::GetInstance();
-#ifdef __RT_1025
 		if( pFriend->dwState != FRS_OFFLINE && !pFriend->bBlock )
-#else	// __RT_1025
-		if( pFriend->dwState != FRS_OFFLINE && pFriend->dwState != FRS_BLOCK && pFriend->dwState != FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 		{
 			m_nCurSelect	= nSelect;
 			CWndMessage* pWndMessage	= g_WndMng.OpenMessage( pPlayerDataCenter->GetPlayerString( idFriend ) );
@@ -403,46 +398,7 @@ void CWndFriendCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 		}
 	}	
 }
-#else	// __RT_1025
-//{{AFX
-void CWndFriendCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	LPFRIEND lpFriend = NULL;
-	int nSelect = GetSelect( point, &lpFriend );
-	if( nSelect != -1 )
-	{
-#ifdef __SYS_PLAYER_DATA
-		CPlayerDataCenter* pPlayerDataCenter	= CPlayerDataCenter::GetInstance();
-#endif	// __SYS_PLAYER_DATA
-		if( lpFriend->dwState != FRS_OFFLINE && lpFriend->dwState != FRS_BLOCK && lpFriend->dwState != FRS_OFFLINEBLOCK )
-		{
-			m_nCurSelect = nSelect;
-#ifdef __SYS_PLAYER_DATA
-			CWndMessage* pWndMessage	= g_WndMng.OpenMessage( pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId ) );
-#else	// __SYS_PLAYER_DATA
-			CWndMessage* pWndMessage = g_WndMng.OpenMessage( lpFriend->szName );
-#endif	// __SYS_PLAYER_DATA
-		}
-		else
-		{
-			CString szMessage;
-			if( lpFriend->dwState == FRS_OFFLINE )
-				szMessage = prj.GetText(TID_GAME_NOTLOGIN);                               //szMessage += "님은 접속되어 있지 않습니다";
-			else
-#ifdef __SYS_PLAYER_DATA
-				szMessage.Format( prj.GetText( TID_GAME_MSGBLOCKCHR ), pPlayerDataCenter->GetPlayerString( lpFriend->dwUserId ) );  //szMessage += "님은 차단되어 있어 메세지를 보낼수 없습니다";
-#else	// __SYS_PLAYER_DATA
-				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), lpFriend->szName );  //szMessage += "님은 차단되어 있어 메세지를 보낼수 없습니다";
-#endif	// __SYS_PLAYER_DATA
-			g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_NOTLOGIN) );
-			
-		}
-	}	
-}
-//}}AFX
-#endif	// __RT_1025
 
-#ifdef __RT_1025
 void	CWndFriendCtrl::GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend )
 {
 	int count	= 0;
@@ -489,60 +445,6 @@ void	CWndFriendCtrl::GetSelectFriend( int SelectCount, u_long & idPlayer, Friend
 	idPlayer	= 0;
 	*ppFriend	= NULL;
 }
-#else	// __RT_1025
-//{{AFX
-void CWndFriendCtrl::GetSelectFriend( int SelectCount, LPFRIEND* lppFriend )
-{
-	int count = 0;
-	for( int j = 0 ; j < m_nServerCount[g_Neuz.m_uIdofMulti-1] ; ++j, ++count )
-	{
-		if( count < m_nDrawCount )
-		{
-			continue;
-		}
-		
-		if( SelectCount == count )
-		{
-			u_long uFriendId = m_uServerPlayerId[g_Neuz.m_uIdofMulti-1][j];
-			LPFRIEND lpFriend = g_WndMng.m_Messenger.GetFriend( uFriendId );
-			if( lpFriend )
-			{
-				*lppFriend = lpFriend;
-				return;
-			}
-		}
-	}
-	
-	for( j = 0 ; j < 11 ; ++j )
-	{
-		if( j == g_Neuz.m_uIdofMulti -1 )
-		{
-			continue;
-		}
-		for( int k = 0 ; k < m_nServerCount[j] ; ++k, ++count )
-		{
-			if( count < m_nDrawCount )
-			{
-				continue;
-			}
-			
-			if( SelectCount == count )
-			{
-				u_long uFriendId = m_uServerPlayerId[j][k];
-				LPFRIEND lpFriend = g_WndMng.m_Messenger.GetFriend( uFriendId );
-				if( lpFriend )
-				{
-					*lppFriend = lpFriend;
-					return;
-				}
-			}
-		}
-	}
-	
-	*lppFriend = NULL;
-}
-//}}AFX
-#endif	// __RT_1025
 
 u_long CWndFriendCtrl::GetSelectId( int SelectCount )
 {
@@ -555,17 +457,10 @@ u_long CWndFriendCtrl::GetSelectId( int SelectCount )
 		} 
 		if( SelectCount == count )
 		{
-#ifdef __RT_1025
 			u_long idFriend	= m_uServerPlayerId[g_Neuz.m_uIdofMulti-1][j];
 			Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idFriend );
 			if( pFriend )
 				return idFriend;
-#else	// __RT_1025
-			u_long uFriendId = m_uServerPlayerId[g_Neuz.m_uIdofMulti-1][j];
-			LPFRIEND lpFriend = g_WndMng.m_Messenger.GetFriend( uFriendId );
-			if( lpFriend )
-				return lpFriend->dwUserId;
-#endif	// __RT_1025
 		}
 	}
 	
@@ -581,28 +476,17 @@ u_long CWndFriendCtrl::GetSelectId( int SelectCount )
 
 			if( SelectCount == count )
 			{
-#ifdef __RT_1025
 				u_long idFriend		= m_uServerPlayerId[j][k];
 				Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idFriend );
 				if( pFriend )
 					return idFriend;
-#else	// __RT_1025
-				u_long uFriendId = m_uServerPlayerId[j][k];
-				LPFRIEND lpFriend = g_WndMng.m_Messenger.GetFriend( uFriendId );
-				if( lpFriend )
-					return lpFriend->dwUserId;
-#endif	// __RT_1025
 			}
 		}
 	}
 	return -1;
 }
 
-#ifdef __RT_1025
 int CWndFriendCtrl::GetSelect( CPoint point, u_long & idPlayer, Friend** ppFriend )
-#else	// __RT_1025
-int CWndFriendCtrl::GetSelect( CPoint point, LPFRIEND* lppFriend )
-#endif	// __RT_1025
 {
 	CPoint pt( 3, 3 );
 	CRect rect;
@@ -618,7 +502,6 @@ int CWndFriendCtrl::GetSelect( CPoint point, LPFRIEND* lppFriend )
 		if( rect.PtInRect( point ) )
 		{
 			u_long uFriendId = m_uServerPlayerId[g_Neuz.m_uIdofMulti-1][j];
-#ifdef __RT_1025
 			Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uFriendId );
 			if( pFriend )
 			{
@@ -626,11 +509,6 @@ int CWndFriendCtrl::GetSelect( CPoint point, LPFRIEND* lppFriend )
 				if( pFriend )
 					*ppFriend	= pFriend;
 			}				
-#else	// __RT_1025
-			LPFRIEND lpFriend = g_WndMng.m_Messenger.GetFriend( uFriendId );
-			if( lpFriend )
-				*lppFriend = lpFriend;
-#endif	// __RT_1025
 			return count;
 		}
 		pt.y += m_nFontHeight;
@@ -653,31 +531,20 @@ int CWndFriendCtrl::GetSelect( CPoint point, LPFRIEND* lppFriend )
 			if( rect.PtInRect( point ) )
 			{
 				u_long uFriendId = m_uServerPlayerId[j][k];
-#ifdef __RT_1025
 				Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uFriendId );
 				if( pFriend )
 				{
 					idPlayer	= uFriendId;
 					*ppFriend	= pFriend;
 				}
-#else	// __RT_1025
-				LPFRIEND lpFriend = g_WndMng.m_Messenger.GetFriend( uFriendId );
-				if( lpFriend )
-					*lppFriend = lpFriend;
-#endif	// __RT_1025
 				return count;
 			}
 			pt.y += m_nFontHeight;
 		}
 	}
 
-#ifdef __RT_1025
 	idPlayer	= 0;
 	*ppFriend	= NULL;
-#else	// __RT_1025
-	if( lppFriend )
-		*lppFriend = NULL;
-#endif	// __RT_1025
 	return -1;
 }
 
@@ -691,18 +558,11 @@ BOOL CWndFriendCtrl::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 	{
 	case 0:		// 메시지
 		{
-#ifdef __RT_1025
 			u_long idPlayer	= 0;
 			Friend* pFriend;
 			GetSelectFriend( m_nCurSelect, idPlayer, &pFriend );
 			if( idPlayer )
 				CWndMessage* pWndMessage	= g_WndMng.OpenMessage( pPlayerDataCenter->GetPlayerString( idPlayer ) );
-#else	// __RT_1025
-			LPFRIEND lpFriend = NULL;
-			GetSelectFriend( m_nCurSelect, &lpFriend );
-			if( lpFriend )
-				CWndMessage* pWndMessage = g_WndMng.OpenMessage( lpFriend->szName );
-#endif	// __RT_1025
 		}
 		break;
 	case 1:		// 차단 / 차단해제
@@ -751,7 +611,6 @@ BOOL CWndFriendCtrl::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		break;
 	case 6: // 쪽지 보내기
 		{
-#ifdef __RT_1025
 			u_long idPlayer;
 			Friend* pFriend;
 			GetSelectFriend( m_nCurSelect, idPlayer, &pFriend );
@@ -763,18 +622,6 @@ BOOL CWndFriendCtrl::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndMessageNote->m_dwUserId	= idPlayer;
 				g_WndMng.m_pWndMessageNote->Initialize();		
 			}
-#else	// __RT_1025
-			LPFRIEND lpFriend = NULL;
-			GetSelectFriend( m_nCurSelect, &lpFriend );
-			if( lpFriend )
-			{
-				SAFE_DELETE( g_WndMng.m_pWndMessageNote );
-				g_WndMng.m_pWndMessageNote = new CWndMessageNote;
-				strcpy( g_WndMng.m_pWndMessageNote->m_szName, lpFriend->szName );
-				g_WndMng.m_pWndMessageNote->m_dwUserId = lpFriend->dwUserId;
-				g_WndMng.m_pWndMessageNote->Initialize();		
-			}
-#endif	// __RT_1025
 		}
 		break;
 	}
@@ -788,61 +635,32 @@ void CWndFriendCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 void CWndFriendCtrl::OnRButtonUp( UINT nFlags, CPoint point )
 {
 	u_long idPlayer;
-#ifdef __RT_1025
 	Friend* pFriend;
 	int nSelect		= GetSelect( point, idPlayer, &pFriend );
-#else	// __RT_1025
-	LPFRIEND lpFriend = NULL;
-	int nSelect		= GetSelect( point, &lpFriend );
-#endif	// __RT_1025
 	if( nSelect != -1 )
 	{
-#ifdef __RT_1025
 		idPlayer		= idPlayer;
 		DWORD dwState	= pFriend->dwState;
-#else	// __RT_1025
-		idPlayer		= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-#endif	// __RT_1025
 		m_nCurSelect	= nSelect;
 		ClientToScreen( &point );
 		m_menu.DeleteAllMenu();
-#ifdef __RT_1025
 		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState != FRS_OFFLINE && dwState != FRS_BLOCK && dwState != FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 			m_menu.AppendMenu( 0, 0 ,_T( prj.GetText( TID_APP_MESSAGE ) ) );
-#ifdef __RT_1025
 		if( pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState == FRS_BLOCK || dwState == FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 			m_menu.AppendMenu( 0, 1 ,_T( prj.GetText( TID_FRS_BLOCKRESTORE ) ) );
 		else
 			m_menu.AppendMenu( 0, 1 ,_T( prj.GetText( TID_FRS_BLOCK ) ) );
 		m_menu.AppendMenu( 0, 2 ,_T( prj.GetText( TID_FRS_DELETE ) ) );
-#ifdef __RT_1025
 		if( !pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState != FRS_OFFLINE && dwState != FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 		{					
 			if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
 				m_menu.AppendMenu( 0, 3 ,_T( prj.GetText( TID_FRS_MOVE2 ) ) );	
-#ifndef __RT_1025
-			if( dwState != FRS_BLOCK )
-#endif	// __RT_1025
 			{
 				if( g_Party.IsMember( idPlayer ) == FALSE )
 					m_menu.AppendMenu( 0, 4 ,_T( prj.GetText( TID_MMI_INVITE_PARTY ) ) );
 			}
 		}
-#ifdef __RT_1025
 		if( dwState == FRS_OFFLINE || pFriend->bBlock )
-#else	// __RT_1025
-		if( dwState == FRS_OFFLINE || dwState == FRS_BLOCK || dwState == FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 			m_menu.AppendMenu( 0, 6 , _T( prj.GetText( TID_GAME_TAGSEND ) ) );
 		m_menu.Move( point );
 		m_menu.SetVisible( TRUE );
@@ -859,11 +677,7 @@ void CWndFriendCtrl::SetScrollBar()
 {
 	int nPage, nRange;
 	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
 	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();//m_pItemContainer->m_dwIndexNum;// - nPage;
-#endif	// __RT_1025
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }
@@ -876,11 +690,7 @@ void CWndFriendCtrl::OnSize( UINT nType, int cx, int cy )
 
 	int nPage, nRange;
 	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
 	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();//m_pItemContainer->m_dwIndexNum;// - nPage;
-#endif	// __RT_1025
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	
@@ -914,11 +724,7 @@ void CWndFriendCtrl::PaintFrame( C2DRender* p2DRender )
 	{
 		m_nFontHeight = 20;//GetFontHeight( &g_2DRender );
 		nPage = GetClientRect().Height() / ( m_nFontHeight );
-#ifdef __RT_1025
 		nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-		nRange = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	}
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
@@ -947,11 +753,7 @@ void CWndFriendCtrl::ScrollBarPos( int nPos )
 
 int CWndFriendCtrl::GetDrawCount( void )
 {
-#ifdef __RT_1025
 	int nMax	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	int nMax =  g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	if( nMax - m_wndScrollBar.GetScrollPos() > m_wndScrollBar.GetScrollPage() )
 		nMax = m_wndScrollBar.GetScrollPage() + m_wndScrollBar.GetScrollPos();
 	if( nMax < m_wndScrollBar.GetScrollPos() )

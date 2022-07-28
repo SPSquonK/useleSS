@@ -90,7 +90,6 @@
 #define		__SYS_TICKET				// 입장권
 //	#define		__SYS_PLAYER_DATA			// 캐릭터 정보 통합
 #define		__HACK_1023					// 리소스 변조 // 날것 속도, 무기 공격 속도
-#define		__RT_1025					// 메신저
 #define		__VENDOR_1106				// 개인상점 허용 문자
 #define		__JEFF_11
 

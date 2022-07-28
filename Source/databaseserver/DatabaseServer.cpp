@@ -259,12 +259,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	{
 		ASSERT( 0 );
 	}
-#ifndef __RT_1025	
-	if( !g_DbManager.SetMessenger() )
-	{
-		ASSERT( 0 );
-	}
-#endif	// __RT_1025
 
 	if( !g_DbManager.LoadPost() )
 	{

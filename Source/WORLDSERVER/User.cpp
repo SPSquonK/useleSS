@@ -1185,11 +1185,7 @@ void CUser::AddFriendGameJoin()
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_ADDFRIENDGAMEJOIN;
-#ifdef __RT_1025
 	m_RTMessenger.Serialize( m_Snapshot.ar );
-#else	// __RT_1025
-	m_Messenger.Serialize( m_Snapshot.ar );
-#endif	// __RT_1025
 }
 
 void CUser::AddCancelQuest(const QuestId dwQuestCancelID) {
@@ -1315,11 +1311,7 @@ void CUser::AddPartyChat( const CHAR* lpName, const CHAR* lpString, OBJID objid 
 	
 }
 
-#ifdef __RT_1025
 void CUser::AddAddFriend( u_long idPlayer, const char* lpszPlayer )
-#else	// __RT_1025
-void CUser::AddAddFriend( u_long idPlayer, LONG nJob, DWORD dwSex, const char* lpszPlayer )
-#endif	// __RT_1025
 {
 	if( IsDelete() )	return;
 	
@@ -1327,10 +1319,6 @@ void CUser::AddAddFriend( u_long idPlayer, LONG nJob, DWORD dwSex, const char* l
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_ADDFRIEND;
 	m_Snapshot.ar << idPlayer;
-#ifndef __RT_1025
-	m_Snapshot.ar << nJob;
-	m_Snapshot.ar << (BYTE)dwSex;
-#endif	// __RT_1025
 	m_Snapshot.ar.WriteString( lpszPlayer );
 	
 }

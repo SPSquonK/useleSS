@@ -6967,19 +6967,10 @@ void CDPClient::OnGCBestPlayer( CAr & ar )
 
 void CDPClient::OnFriendGameJoin( CAr & ar )
 {
-#ifdef __RT_1025
 	g_WndMng.m_RTMessenger.Serialize( ar );		// g_WndMng.m_RTMessenger.clear()
-#else	// __RT_1025
-	g_WndMng.m_Messenger.Clear();
-	g_WndMng.m_Messenger.Serialize( ar );
-#endif	// __RT_1025
 	g_WndMng.m_bConnect = TRUE;
 	g_WndMng.m_timerMessenger.Set( MIN( 5 ) );
-#ifdef __RT_1025
 	if( g_WndMng.m_RTMessenger.size() )
-#else	// __RT_1025
-	if( g_WndMng.m_Messenger.m_aFriend.size() )
-#endif	// __RT_1025
 	{
 		SendGetFriendState();
 	}
@@ -6995,16 +6986,8 @@ void CDPClient::OnAddFriend( CAr & ar )
 {
 	u_long uidPlayer;
 	char lpName[MAX_PLAYER]	= { 0,};
-#ifndef __RT_1025
-	BYTE nSex;
-	LONG nJob;
-#endif	// __RT_1025
 
 	ar >> uidPlayer;
-#ifndef __RT_1025
-	ar >> nJob;
-	ar >> nSex;
-#endif	// __RT_1025
 	ar.ReadString( lpName, MAX_PLAYER );
 
 //	g_WndMng.m_Messenger.m_dwMyState = FRS_ONLINE;
@@ -7020,11 +7003,7 @@ void CDPClient::OnRemoveFriend( CAr & ar )
 {
 	u_long uidPlayer;
 	ar >> uidPlayer;
-#ifdef __RT_1025
 	g_WndMng.m_RTMessenger.RemoveFriend( uidPlayer );
-#else	// __RT_1025
-	g_WndMng.m_Messenger.RemoveFriend( uidPlayer );
-#endif	// __RT_1025
 
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
@@ -7108,13 +7087,7 @@ void CDPClient::OnRemoveFriendState( CAr & ar )
 	u_long uRemoveid;
 	ar >> uRemoveid;
 
-#ifdef __RT_1025
 	g_WndMng.m_RTMessenger.SetFriend( uRemoveid, NULL );
-#else	// __RT_1025
-	LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uRemoveid );
-	if( pFriend )
-		pFriend->dwState = FRS_OFFLINE;
-#endif	// __RT_1025
 
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
@@ -7123,7 +7096,6 @@ void CDPClient::OnRemoveFriendState( CAr & ar )
 
 void CDPClient::OnFriendJoin( CAr & ar )
 {
-#ifdef __RT_1025
 	u_long idFriend;
 	DWORD dwState;
 	u_long uLogin;
@@ -7147,45 +7119,10 @@ void CDPClient::OnFriendJoin( CAr & ar )
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
 	}
-#else	// __RT_1025
-	// 친구들 중에 로그인을 하여서 알려주는 것임
-	// stat값을 바꿔줘야함
-	u_long uidPlayer;
-	DWORD dwMessengerState;
-
-	ar >> uidPlayer;
-	ar >> dwMessengerState;
-
-	u_long uIdofMulti;
-	ar >> uIdofMulti;
-
-	LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-	if( pFriend )
-	{
-		if( pFriend->dwState == FRS_OFFLINEBLOCK )
-		{
-			pFriend->dwState = FRS_BLOCK;
-		}
-		else
-		{
-			pFriend->dwState = dwMessengerState;
-		}
-
-		pFriend->m_uIdofMulti = uIdofMulti;
-
-		if( g_Option.m_bMessengerJoin && pFriend->dwState != FRS_OFFLINE )
-		{
-			CWndInstantMsg* pWndInstantMsg	= g_WndMng.OpenInstantMsg( pFriend->szName );
-			if( pWndInstantMsg )
-				pWndInstantMsg->AddMessageJoin( pFriend->szName );		
-		}
-	}
-#endif	// __RT_1025
 }
 
 void CDPClient::OnFriendLogOut( CAr & ar )
 {
-#ifdef __RT_1025
 	u_long idFriend;
 	ar >> idFriend;
 	Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idFriend );
@@ -7196,50 +7133,20 @@ void CDPClient::OnFriendLogOut( CAr & ar )
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
 	}
-#else	// __RT_1025
-	// 친구들 중에 로그아웃을 하여서 알려주는 것임
-	// stat값을 바꿔줘야함
-	u_long uidPlayer;
-	ar >> uidPlayer;
-	LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-	if( pFriend )
-	{
-		if( pFriend->dwState == FRS_BLOCK )
-			pFriend->dwState = FRS_OFFLINEBLOCK;
-		else
-			pFriend->dwState = FRS_OFFLINE;
-	}
-#endif	// __RT_1025
 }
 
 void CDPClient::OnFriendNoIntercept( CAr & ar )
 {
-#ifdef __RT_1025
 	u_long idFriend;
 	ar >> idFriend;
 	g_WndMng.m_RTMessenger.SetBlock( idFriend, FALSE );
 	CWndMessengerEx* pWndMessengerEx	= (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
-#else	// __RT_1025
-	u_long uidPlayer;
-	int state;
-	ar >> uidPlayer;
-	ar >> state;
-	LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-	if( pFriend )
-	{
-		if( pFriend->dwState != FRS_OFFLINEBLOCK )
-			pFriend->dwState = state;
-		else
-			pFriend->dwState = FRS_OFFLINE;
-	}
-#endif	// __RT_1025
 }
 
 void CDPClient::OnFriendIntercept( CAr & ar )
 {
-#ifdef __RT_1025
 	u_long idPlayer, idFriend;
 	ar >> idPlayer >> idFriend;
 	if( g_pPlayer )
@@ -7258,48 +7165,6 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
 	}
-#else	// __RT_1025
-	u_long uidPlayer, uidFriend;
-	ar >> uidPlayer >> uidFriend;
-	if( g_pPlayer )
-	{
-		if( g_pPlayer->m_idPlayer == uidPlayer )
-		{
-			// 차단한넘
-			LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidFriend );
-			if( pFriend )
-			{
-				if( pFriend->dwState == FRS_OFFLINE )
-				{
-					pFriend->dwState = FRS_OFFLINEBLOCK;
-				}
-				else
-				{
-					pFriend->dwState = FRS_BLOCK;
-				}
-			}
-		}
-		else
-		{
-			// 차단당한넘
-			LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-			if( pFriend )
-			{
-				if( pFriend->dwState != FRS_BLOCK )
-				{
-					pFriend->dwState = 1;
-				}
-				else
-				{
-					pFriend->dwState = FRS_OFFLINEBLOCK;
-				}
-			}
-		}
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
-	}
-#endif	// __RT_1025
 }
 
 void CDPClient::OnGetFriendState( CAr & ar )
@@ -7316,7 +7181,6 @@ void CDPClient::OnGetFriendState( CAr & ar )
 		ar >> uidPlayer;
 		ar >> dwState;
 		ar >> uIdofMulti;
-#ifdef __RT_1025
 		Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uidPlayer );
 		if( pFriend )
 			pFriend->dwState	= dwState;
@@ -7326,21 +7190,12 @@ void CDPClient::OnGetFriendState( CAr & ar )
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-#else	// __RT_1025
-		LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-		if( pFriend )
-		{
-			pFriend->dwState	= dwState;
-			pFriend->m_uIdofMulti	= uIdofMulti;
-		}
-#endif	// __RT_1025
 	}
 	for( int i = 0 ; i < nCountBlock ; ++i )
 	{
 		ar >> uidPlayer;
 		ar >> dwState;
 		ar >> uIdofMulti;
-#ifdef __RT_1025
 		Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uidPlayer );
 		if( pFriend )
 			pFriend->dwState	= dwState;
@@ -7350,14 +7205,6 @@ void CDPClient::OnGetFriendState( CAr & ar )
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
-#else	// __RT_1025
-		LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-		if( pFriend )
-		{
-			pFriend->dwState	= dwState;
-			pFriend->m_uIdofMulti	= uIdofMulti;
-		}
-#endif	// __RT_1025
 	}
 }
 
@@ -7372,26 +7219,16 @@ void CDPClient::OnSetFriendState( CAr & ar )
 	{
 		if( g_pPlayer->m_idPlayer == uidPlayer )
 		{
-#ifdef __RT_1025
 			g_WndMng.m_RTMessenger.SetState( dwState );
-#else	// __RT_1025
-			g_WndMng.m_Messenger.m_dwMyState	= dwState;
-#endif	// __RT_1025
 		}
 		else
 		{
-#ifdef __RT_1025
 			Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uidPlayer );
 			if( pFriend )
 				pFriend->dwState	= dwState;
 			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 			if( pWndMessengerEx )
 				pWndMessengerEx->UpdateFriendList();
-#else	// __RT_1025
-			LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( uidPlayer );
-			if( pFriend )
-				pFriend->dwState = dwState;
-#endif	// __RT_1025
 		}
 	}
 }
@@ -7401,11 +7238,7 @@ void CDPClient::OnOneFriendState( CAr & ar )
 	u_long idFriend;
 	DWORD dwState;
 	ar >> idFriend >> dwState;
-#ifdef __RT_1025
 	Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idFriend );
-#else	// __RT_1025
-	LPFRIEND pFriend = g_WndMng.m_Messenger.GetFriend( idFriend );
-#endif	// __RT_1025
 	if( pFriend )
 		pFriend->dwState	= dwState;
 	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
@@ -8105,11 +7938,7 @@ void CDPClient::OnWantedList( CAr & ar )
 }
 
 // Sender
-#ifdef __RT_1025
 void CDPClient::SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti )
-#else	// __RT_1025
-void CDPClient::SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CMessenger* pMessenger, u_long uIdofMulti )
-#endif	// __RT_1025
 {
 #ifdef __FLYFF_INITPAGE_EXT
 	CWndBase::m_Theme.DestoryTitleWorld();
@@ -8142,11 +7971,7 @@ void CDPClient::SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CMessenge
 	ar.WriteString( g_Neuz.m_szAccount );
 #endif	// __GPAUTH_01
 	ar.WriteString( g_Neuz.m_szPassword );
-#ifdef __RT_1025
 	pRTMessenger->Serialize( ar );
-#else	// __RT_1025
-	pMessenger->Serialize( ar );
-#endif	// __RT_1025
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -10537,7 +10362,6 @@ CHAR	sPlayerFrom[MAX_PLAYER], sPlayerTo[MAX_PLAYER], lpString[260];
 	ar >> idFrom >> idTo;
 	ar >> nSearch;
 
-#ifdef __RT_1025
 	Friend* pFriend		= NULL;
 	u_long idPlayer		= 0;
 	BOOL	bCheck	= FALSE;
@@ -10579,41 +10403,6 @@ CHAR	sPlayerFrom[MAX_PLAYER], sPlayerTo[MAX_PLAYER], lpString[260];
 		}
 		return;
 	}
-#else	// __RT_1025
-	LPFRIEND pFriend;
-	BOOL bchack = FALSE;
-	if( strcmp( sPlayerFrom, g_pPlayer->GetName() ) == 0 )
-	{
-		pFriend = g_WndMng.m_Messenger.GetFriend( idTo );
-		bchack = TRUE;
-	}
-	else
-	{
-		pFriend = g_WndMng.m_Messenger.GetFriend( idFrom );
-	}
-
-	if( pFriend && ( pFriend->dwState == FRS_BLOCK || pFriend->dwState == FRS_OFFLINEBLOCK ) )
-	{
-		if( bchack )
-		{
-			CString szMessage;
-			szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), sPlayerTo );  //szMessage += "님은 차단되어 있어 메세지를 보낼수 없습니다";
-			g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_NOTLOGIN) );
-			CWndMessage* pWndMessage =	g_WndMng.GetMessage( sPlayerTo );
-			if( pWndMessage )
-			{
-				CWndEdit* pWndText = (CWndEdit*)pWndMessage->GetDlgItem( WIDC_EDIT );
-				CWndButton* pWndSend = (CWndButton*)pWndMessage->GetDlgItem( WIDC_SEND );
-				if( pWndText && pWndSend )
-				{
-					pWndSend->EnableWindow( FALSE );
-					pWndText->SetVisible( FALSE );
-				}
-			}
-		}
-		return;
-	}
-#endif	// __RT_1025
 	if( nSearch )
 	{
 		//wsprintf( lpString, "접속중이 아닙니다." );.
@@ -10673,7 +10462,6 @@ CHAR	sPlayerFrom[MAX_PLAYER], sPlayerTo[MAX_PLAYER], lpString[260];
 	ar >> idFrom >> idTo;
 	ar >> nSearch;
 
-#ifdef __RT_1025
 	u_long idPlayer	= 0;
 	DWORD dwState	= 0xFFFFFFFF;
 	BOOL bCheck	= FALSE;
@@ -10711,48 +10499,6 @@ CHAR	sPlayerFrom[MAX_PLAYER], sPlayerTo[MAX_PLAYER], lpString[260];
 			return;
 		}
 	}
-#else	// __RT_1025
-	LPFRIEND pFriend;
-	BOOL bchack = FALSE;
-	if( strcmp( sPlayerFrom, g_pPlayer->GetName() ) == 0 )
-	{
-		pFriend = g_WndMng.m_Messenger.GetFriend( idTo );
-		bchack = TRUE;
-	}
-	else
-	{
-		pFriend = g_WndMng.m_Messenger.GetFriend( idFrom );
-	}
-
-	if( pFriend && ( pFriend->dwState == FRS_BLOCK || pFriend->dwState == FRS_OFFLINEBLOCK ) )
-	{
-		if( bchack )
-		{
-			CString szMessage;
-			if( pFriend->dwState == FRS_BLOCK || pFriend->dwState == FRS_OFFLINEBLOCK )
-			{
-				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), sPlayerTo );  //szMessage += "님은 차단되어 있어 메세지를 보낼수 없습니다";
-			}
-			else
-			{
-				szMessage = prj.GetText(TID_GAME_NOTLOGIN);                               //szMessage += "님은 접속되어 있지 않습니다";
-			}
-			g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_NOTLOGIN) );
-			CWndMessage* pWndMessage =	g_WndMng.GetMessage( sPlayerTo );
-			if( pWndMessage )
-			{
-				CWndEdit* pWndText = (CWndEdit*)pWndMessage->GetDlgItem( WIDC_EDIT );
-				CWndButton* pWndSend = (CWndButton*)pWndMessage->GetDlgItem( WIDC_SEND );
-				if( pWndText && pWndSend )
-				{
-					pWndSend->EnableWindow( FALSE );
-					pWndText->SetVisible( FALSE );
-				}
-			}
-		}
-		return;
-	}
-#endif	// __RT_1025
 
 	if( nSearch )
 	{

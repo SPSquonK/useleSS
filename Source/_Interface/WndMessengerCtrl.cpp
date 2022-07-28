@@ -461,25 +461,13 @@ void CWndFriendCtrlEx::OnLButtonUp( UINT nFlags, CPoint point )
 
 void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
-#ifdef __RT_1025
 	u_long idPlayer;
 	Friend* pFriend;
 	int nSelect		= GetSelect( point, idPlayer, &pFriend );
 	if( nSelect != -1 && pFriend )
-#else	// __RT_1025
-	LPFRIEND lpFriend = NULL;
-	int nSelect = GetSelect( point, &lpFriend );
-	if( nSelect != -1 && lpFriend)
-#endif	// __RT_1025
 	{
-#ifdef __RT_1025
 		DWORD dwState	= pFriend->dwState;
 		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
-#else	// __RT_1025
-		u_long idPlayer		= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-		if( dwState != FRS_OFFLINE && dwState != FRS_BLOCK && dwState != FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
 		{
 			m_nCurSelect = nSelect;
 			CWndMessage* pWndMessage	= g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
@@ -597,7 +585,6 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 		break;
 	case 6:		// 쪽지 보내기
 		{
-#ifdef __RT_1025
 			Friend* pFriend		= NULL;
 			GetSelectFriend( m_nCurSelect, idPlayer, &pFriend );
 			if( pFriend )
@@ -608,18 +595,6 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 				g_WndMng.m_pWndMessageNote->m_dwUserId	= idPlayer;
 				g_WndMng.m_pWndMessageNote->Initialize();
 			}
-#else	// __RT_1025
-			LPFRIEND lpFriend = NULL;
-			GetSelectFriend( m_nCurSelect, &lpFriend );
-			if( lpFriend )
-			{
-				SAFE_DELETE( g_WndMng.m_pWndMessageNote );
-				g_WndMng.m_pWndMessageNote = new CWndMessageNote;
-				strcpy( g_WndMng.m_pWndMessageNote->m_szName, lpFriend->szName );
-				g_WndMng.m_pWndMessageNote->m_dwUserId = lpFriend->dwUserId;
-				g_WndMng.m_pWndMessageNote->Initialize();		
-			}
-#endif	// __RT_1025
 		}
 		break;
 		case 7 :	// 입장허가를 취소한다
@@ -642,27 +617,13 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 
 void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 {
-#ifdef __RT_1025
 	u_long idPlayer;
 	Friend* pFriend		= NULL;
 	int nSelect		= GetSelect( point, idPlayer, &pFriend );
-#else	// __RT_1025
-	LPFRIEND lpFriend = NULL;
-	int nSelect = GetSelect( point, &lpFriend );
-#endif	// __RT_1025
 
-#ifdef __RT_1025
 	if( nSelect != -1 && pFriend != NULL )
-#else //__RT_1025
-	if( nSelect != -1 )
-#endif //__RT_1025
 	{
-#ifdef __RT_1025
 		DWORD dwState	= pFriend->dwState;
-#else	// __RT_1025
-		u_long idPlayer	= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-#endif	// __RT_1025
 		m_nCurSelect	= nSelect;
 		ClientToScreen( &point );
 		m_menu.DeleteAllMenu();
@@ -715,11 +676,7 @@ void CWndFriendCtrlEx::SetScrollBar()
 {
 	int nPage, nRange;
 	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
 	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }
@@ -731,11 +688,7 @@ void CWndFriendCtrlEx::ScrollBarPos( int nPos )
 
 int CWndFriendCtrlEx::GetDrawCount( void )
 {
-#ifdef __RT_1025
 	int nMax	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	int nMax = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	if( nMax - m_wndScrollBar.GetScrollPos() > m_wndScrollBar.GetScrollPage() )
 		nMax = m_wndScrollBar.GetScrollPage() + m_wndScrollBar.GetScrollPos();
 	if( nMax < m_wndScrollBar.GetScrollPos() )
@@ -752,11 +705,7 @@ void CWndFriendCtrlEx::OnSize( UINT nType, int cx, int cy )
 
 	int nPage, nRange;
 	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
 	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	
@@ -1088,7 +1037,6 @@ void CWndGuildCtrlEx::OnLButtonUp( UINT nFlags, CPoint point )
 
 void CWndGuildCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
-#ifdef __RT_1025
 	u_long idPlayer;
 	CGuildMember* pGuildMember = NULL;
 	int nSelect	= GetSelect( point, idPlayer, &pGuildMember );
@@ -1101,19 +1049,6 @@ void CWndGuildCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 			m_nCurSelect = nSelect;
 			CWndMessage* pWndMessage = g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
 		}
-#else	// __RT_1025
-	LPFRIEND lpFriend = NULL;
-	int nSelect = GetSelect( point, &lpFriend );
-	if( nSelect != -1 && lpFriend )
-	{
-		u_long idPlayer	= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-		if( dwState != FRS_OFFLINE && dwState != FRS_BLOCK && dwState != FRS_OFFLINEBLOCK )
-		{
-			m_nCurSelect	= nSelect;
-			CWndMessage* pWndMessage = g_WndMng.OpenMessage( lpFriend->szName );
-		}
-#endif	// __RT_1025
 		else
 		{
 			CString szMessage;
@@ -1159,11 +1094,7 @@ u_long CWndGuildCtrlEx::GetSelectId( int SelectCount )
 	return stPlayer.m_dwPlayerId;
 }
 
-#ifdef __RT_1025
 int	CWndGuildCtrlEx::GetSelect( CPoint point, u_long & idPlayer, CGuildMember** lppGuildMember )
-#else	// __RT_1025
-int CWndGuildCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
-#endif	// __RT_1025
 {
 	CPoint pt( 3, 3 );
 	CRect rect;
@@ -1184,14 +1115,10 @@ int CWndGuildCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
 				iter += j + nPos;
 				rtn_val += nPos;
 				__MESSENGER_PLAYER stPlayer = *(iter);
-#ifdef __RT_1025
 				idPlayer = stPlayer.m_dwPlayerId;
 				CGuildMember * lpGuildMember = pGuild->GetMember( idPlayer );
 				if( lpGuildMember )
 					*lppGuildMember = lpGuildMember;
-#else	// __RT_1025
-				*lppFriend = g_WndMng.m_Messenger.GetFriend( stPlayer.m_dwPlayerId );
-#endif	// __RT_1025
 				j = m_vPlayerList.size();
 			}
 			pt.y += m_nFontHeight;
@@ -1205,11 +1132,7 @@ void CWndGuildCtrlEx::SetScrollBar()
 {
 	int nPage, nRange;
 	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
 	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }

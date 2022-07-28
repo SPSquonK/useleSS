@@ -26,21 +26,12 @@ CPlayer::CPlayer( u_long idPlayer, const CHAR* pszPlayer, const CHAR* pszAccount
 
 TAG_RESULT CPlayer::IsTagSendable( u_long idTo )
 {
-#ifdef __RT_1025
 	Friend* pFriend		= m_RTMessenger.GetFriend( idTo );
 	if( !pFriend )
 		return TAG_NOTFRIEND;
 	if( pFriend->bBlock )
 		return TAG_BLOCKED;
 	return TAG_OK;
-#else	// __RT_1025
-	LPFRIEND lpFriend = m_Messenger.GetFriend( idTo );
-	if( lpFriend == NULL )
-		return TAG_NOTFRIEND;
-	if( lpFriend->dwState == FRS_BLOCK || lpFriend->dwState == FRS_OFFLINEBLOCK)
-		return TAG_BLOCKED;
-	return TAG_OK;
-#endif	// __RT_1025
 }
 
 

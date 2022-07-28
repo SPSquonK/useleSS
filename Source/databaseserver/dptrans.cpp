@@ -548,13 +548,9 @@ void CDPTrans::OnSavePlayer( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser,
 	pMover->Serialize( ar );
 	pMover->m_fAngle	= 0.0f;
 	ar >> pMover->m_UserTaskBar;
-#ifdef __RT_1025
 	DWORD dwState;
 	ar >> dwState;
 	pMover->m_RTMessenger.SetState( dwState );
-#else	// __RT_1025
-	pMover->m_Messenger.Serialize( ar );
-#endif	// __RT_1025
 #ifndef __JEFF_9_20
 	ar >> pMover->m_dwFlyTime;
 #endif	// __JEFF_9_20
@@ -1401,7 +1397,6 @@ void CDPTrans::OnCalluspXXXMultiServer( CAr & ar, DPID dpid, DPID dpidCache, DPI
 	lpDbOverlappedPlus->nQueryMode	= QM_CALL_XXX_MULTI_SERVER;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 
-#ifdef __RT_1025
 	if( idPlayer > 0 )
 	{
 		CPlayerDataCenter::GetInstance()->m_Access.Enter();
@@ -1415,7 +1410,6 @@ void CDPTrans::OnCalluspXXXMultiServer( CAr & ar, DPID dpid, DPID dpidCache, DPI
 		}
 		CPlayerDataCenter::GetInstance()->m_Access.Leave();
 	}
-#endif	// __RT_1025
 }
 
 void CDPTrans::OnLogExpBox( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

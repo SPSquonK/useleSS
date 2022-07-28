@@ -45,11 +45,7 @@ void CDbManager::SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dw
 	ar << pMover->m_dwIndex;
 	pMover->Serialize( ar );			
 	ar << pMover->m_UserTaskBar;
-#ifdef __RT_1025
 	pMover->m_RTMessenger.Serialize( ar );
-#else	// __RT_1025
-	pMover->m_Messenger.Serialize( ar );
-#endif	// __RT_1025
 	ar.WriteString( szPartyName );
 	ar.WriteString( szBankPass );
 	ar << dwPlayTime;
@@ -176,11 +172,7 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	GetJobLv( &mover, qry, lpDBOP );
 	// mirchang_100416
 
-#ifdef __RT_1025
 	mover.m_RTMessenger.SetState( (DWORD)qry->GetInt( "m_nMessengerState" ) );
-#else	// __RT_1025
-	mover.m_Messenger.m_dwMyState	= (DWORD)qry->GetInt( "m_nMessengerState" );
-#endif	// __RT_1025
 	mover.m_dwReturnWorldID		= qry->GetInt( "m_dwReturnWorldID" );
 	mover.m_vReturnPos.x	= qry->GetFloat( "m_vReturnPos_x" );
 	mover.m_vReturnPos.y	= qry->GetFloat( "m_vReturnPos_y" );
@@ -268,11 +260,7 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 
 	GetMyPartyName( qry, lpDBOP, mover.m_idPlayer, szPartyName );
 	int nTags = SelectTag( qry, lpDBOP, mover.m_idPlayer, tags );
-#ifdef __RT_1025
 	LoadMessenger( &mover, qry );
-#else	// __RT_1025
-	GetMessengerFriend( &mover, qry, lpDBOP );
-#endif	// __RT_1025
 
 	GetHonor( &mover, qry, lpDBOP );
 

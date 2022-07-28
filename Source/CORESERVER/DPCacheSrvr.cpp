@@ -202,11 +202,7 @@ void CDPCacheSrvr::OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 		g_GuildMng.m_AddRemoveLock.Leave( theLineFile );
 
 		ar >> pPlayer->m_uIdofMulti;
-#ifdef __RT_1025
 		pPlayer->m_RTMessenger.Serialize( ar );
-#else	// __RT_1025
-		pPlayer->m_Messenger.Serialize( ar );
-#endif	// __RT_1025
 		ar.ReadString( lpszPlayer, MAX_PLAYER );
 		ar.ReadString( pPlayer->lpAddr, 16 );
 
@@ -290,7 +286,6 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 	BEFORESENDSOLE( ar, PACKETTYPE_GETFRIENDSTATE, pTo->dpidUser );
 	
 	pTo->Lock();
-#ifdef __RT_1025
 	for( auto i = pTo->m_RTMessenger.begin(); i != pTo->m_RTMessenger.end(); ++i )
 	{
 		Friend* pFriend		= &i->second;
@@ -299,19 +294,6 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 		else
 			vecIdBlock.push_back( i->first );
 	}
-#else	// __RT_1025
-	for( C2FriendPtr::iterator i = pTo->m_Messenger.m_aFriend.begin(); i != pTo->m_Messenger.m_aFriend.end() ; ++i )
-	{
-		LPFRIEND lpFriend	= (LPFRIEND)i->second;
-		if( !lpFriend )
-			continue;
-
-		if( lpFriend->dwState != FRS_BLOCK )
-			vecIdFriend.push_back( lpFriend->dwUserId );
-		else 
-			vecIdBlock.push_back( lpFriend->dwUserId );
-	}
-#endif	// __RT_1025
 	pTo->Unlock();
 
 	ar << static_cast<int>( vecIdFriend.size() );
@@ -323,7 +305,6 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 		if( pPlayer )
 		{
 			pPlayer->Lock();
-#ifdef __RT_1025
 			Friend* pFriend		= pPlayer->m_RTMessenger.GetFriend( pTo->uKey );
 			if( pFriend )
 			{
@@ -332,18 +313,6 @@ void CDPCacheSrvr::SendFriendState( CPlayer* pTo )
 				else
 					dwState		= pPlayer->m_RTMessenger.GetState();
 			}
-#else	// __RT_1025
-			LPFRIEND lpFriend = pPlayer->m_Messenger.GetFriend( pTo->uKey );
-			if( lpFriend )
-			{
-				if( lpFriend->dwState == FRS_BLOCK )
-					dwState = FRS_OFFLINE;
-				else
-					dwState = pPlayer->m_Messenger.GetState();
-			}
-			else
-				dwState = FRS_OFFLINE;
-#endif	// __RT_1025
 			pPlayer->Unlock();
 		}
 		else
@@ -432,11 +401,7 @@ void CDPCacheSrvr::SendFriendJoin( CPlayer* pTo, CPlayer* pFriend )
 	BEFORESENDSOLE( ar, PACKETTYPE_ADDFRIENDJOIN, pTo->dpidUser );
 
 	ar << pFriend->uKey;
-#ifdef __RT_1025
 	ar << pFriend->m_RTMessenger.GetState();
-#else	// __RT_1025
-	ar << pFriend->m_Messenger.m_dwMyState;
-#endif	// __RT_1025
 	ar << pFriend->m_uIdofMulti;
 
 	SEND( ar, this, pTo->dpidCache );
@@ -1869,7 +1834,6 @@ void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 
 	if( !pFriend )
 		return;
-#ifdef __RT_1025
 	if( !pSender )
 	{
 		// #
@@ -1899,47 +1863,6 @@ void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	pFriend->Unlock();
 	g_dpDatabaseClient.QueryAddMessenger( uidSend, pFriend->uKey );
 	g_dpCoreSrvr.SendAddFriend( uidSend, pFriend->uKey, nSendSex, nFriendSex, nSendJob, nFriendJob );
-#else	// __RT_1025
-	BOOL	bSendFriend = FALSE;
-	if( pSender )
-	{
-		pSender->Lock();	// lock
-		if( MAX_FRIEND > pSender->m_Messenger.GetSize() )
-		{
-			if( pSender->m_Messenger.AddFriend( pFriend->uKey , nFriendJob, nFriendSex ) )
-			{
-				bSendFriend = TRUE;
-				pSender->m_Messenger.AddDefferntFriend( pFriend->uKey );
-			}
-			else
-			{
-				if( pFriend )
-					SendOneFriendState( pSender, pFriend->uKey, pFriend->m_Messenger.m_dwMyState );
-			}
-		}
-		pSender->Unlock();	// unlock
-	}
-	pFriend->Lock();	// lock2
-	if( MAX_FRIEND > pFriend->m_Messenger.GetSize() )
-	{
-		if( pFriend->m_Messenger.AddFriend( uidSend, nSendJob, nSendSex ) )
-		{
-			bSendFriend = TRUE;
-			pFriend->m_Messenger.AddDefferntFriend( uidSend );
-		}
-		else
-		{
-			if( pSender )
-				SendOneFriendState( pFriend, pSender->uKey, pSender->m_Messenger.m_dwMyState );
-		}
-	}
-	pFriend->Unlock();	// unlock2
-
-	if( bSendFriend )
-	{
-		g_dpCoreSrvr.SendAddFriend( uidSend, pFriend->uKey, nSendSex, nFriendSex, nSendJob, nFriendJob );
-	}
-#endif	// __RT_1025
 }
 
 void CDPCacheSrvr::OnGetFriendState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
@@ -1968,17 +1891,10 @@ void CDPCacheSrvr::OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 	{
 		int state;
 		ar >> state;
-#ifdef __RT_1025
 		pPlayer->m_RTMessenger.SetState( state );
 		SendSetFriendState( pPlayer );
 		if( pPlayer->m_RTMessenger.GetState() != FRS_AUTOABSENT )
 			g_dpCoreSrvr.SendSetFriendState( pPlayer->uKey, pPlayer->m_RTMessenger.GetState() );
-#else	// __RT_1025
-		pPlayer->m_Messenger.m_dwMyState	= state;
-		SendSetFriendState( pPlayer );
-		if( pPlayer->m_Messenger.m_dwMyState != FRS_AUTOABSENT )
-			g_dpCoreSrvr.SendSetFriendState( pPlayer->uKey, pPlayer->m_Messenger.m_dwMyState );
-#endif	// __RT_1025
 	}
 }
 
@@ -1996,7 +1912,6 @@ void CDPCacheSrvr::OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUs
 	if( !pPlayer )
 		return;
 	pPlayer->Lock();
-#ifdef __RT_1025
 	Friend* pFriend		= pPlayer->m_RTMessenger.GetFriend( uidFriend );
 	if( pFriend )
 	{
@@ -2020,50 +1935,6 @@ void CDPCacheSrvr::OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUs
 			g_dpDatabaseClient.QueryUpdateMessenger( pPlayer->uKey, uidFriend, TRUE );
 		}
 	}
-#else	// __RT_1025
-	LPFRIEND pFriend	= pPlayer->m_Messenger.GetFriend( uidFriend );
-	if( pFriend )
-	{
-		if( pFriend->dwState == FRS_BLOCK ) // 차단상태
-		{
-			// 차단해제를 하려고함 :: 차단해제를 하면 그넘의 상태를 가지고 와서 나에게만 보내면 됨 : 나한테만 보내줌
-			if( pFriendUser )
-			{
-				pFriend->dwState	= pFriendUser->m_Messenger.m_dwMyState;
-				SendFriendNoIntercept( pPlayer, pFriendUser, pFriend->dwState );
-			}
-			else
-			{
-				pFriend->dwState	= FRS_OFFLINE;
-				SendFriendNoIntercept( pPlayer, uidFriend, pFriend->dwState );
-			}
-
-			LPFRIEND pDFriend = pPlayer->m_Messenger.GetDefferntFriend( uidFriend );
-			if( pDFriend )
-			{
-				pDFriend->dwState = 0;
-			}
-		}
-		else	// 차단해제 상태
-		{
-			// 차단을 하려고함 :: 나는 그넘을 블럭상태라고 나에게 보내주고 그넘에게는 나를 로그아웃이라고 함 : 나에게 보내주고 그넘한태두 보내줌
-			pFriend->dwState	= FRS_BLOCK;
-			if( pFriendUser )
-			{
-				SendFriendIntercept( pPlayer, pFriendUser );	
-			}
-			else
-			{
-				SendFriendIntercept( pPlayer, uidFriend );
-			}
-			LPFRIEND pDFriend = pPlayer->m_Messenger.GetDefferntFriend( uidFriend );
-			if( pDFriend )
-			{
-				pDFriend->dwState = FRS_BLOCK;
-			}
-		}
-	}
-#endif	// __RT_1025
 	pPlayer->Unlock();
 	g_dpCoreSrvr.SendFriendInterceptState( pPlayer->uKey, uidFriend );
 }
@@ -2082,7 +1953,6 @@ void CDPCacheSrvr::OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 
 	if( pPlayer )
 	{
-#ifdef __RT_1025
 		pPlayer->Lock();
 		pPlayer->m_RTMessenger.RemoveFriend( uidFriend );
 		pPlayer->Unlock();
@@ -2098,29 +1968,6 @@ void CDPCacheSrvr::OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 		BEFORESENDSOLE( ar, PACKETTYPE_REMOVEFRIENDSTATE, pFriendUser->dpidUser );
 		ar << pPlayer->uKey;
 		SEND( ar, this, pFriendUser->dpidCache );
-#else	// __RT_1025
-		pPlayer->Lock();	// lock
-		if( pPlayer->m_Messenger.RemoveFriend( uidFriend ) )	// 내가 삭제 했으므로 지움
-		{
-			pPlayer->Unlock();	// unlock
-			g_dpCoreSrvr.SendRemoveFriend( pPlayer->uKey, uidFriend );
-			g_dpDatabaseClient.SendRemoveFriend( pPlayer->uKey, uidFriend );
-
-			pFriendUser		= g_PlayerMng.GetPlayer( uidFriend );
-			if( !pFriendUser )
-				return;
-			pFriendUser->Lock();	// lock2
-			pFriendUser->m_Messenger.RemoveDifferntFriend( pPlayer->uKey ); // 나를 등록했으므로 삭제 해줌(나에게 메세지를 안보내게)
-			BEFORESENDSOLE( ar, PACKETTYPE_REMOVEFRIENDSTATE, pFriendUser->dpidUser );
-			ar << pPlayer->uKey;
-			SEND( ar, this, pFriendUser->dpidCache );
-			pFriendUser->Unlock();	// unlock2
-		}
-		else
-		{
-			pPlayer->Unlock();	// unlock
-		}
-#endif	// __RT_1025
 	}
 }
 
