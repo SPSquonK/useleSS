@@ -1,9 +1,6 @@
 #ifndef __WNDMESSENGER__H
 #define __WNDMESSENGER__H
 
-#include "WndFriendCtrl.h"
-#include "WndPartyCtrl.h"
-#include "WndGuildCtrl.h"
 #include "WndMessengerCtrl.h"
 
 class CWndMessengerEx : public CWndNeuz 

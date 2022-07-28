@@ -355,9 +355,6 @@
     <ClCompile Include="..\_Interface\WndMapEx.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndMessengerSearch.cpp">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndMiniGame.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
@@ -445,19 +442,10 @@
     <ClCompile Include="..\_Interface\WndFriendConFirm.cpp">
       <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndFriendCtrl.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildCtrl.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndMessenger.cpp">
       <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMessengerCtrl.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndPartyCtrl.cpp">
       <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
     </ClCompile>
     <ClCompile Include="..\_interface\WndRegVend.cpp">
@@ -1242,9 +1230,6 @@
     <ClInclude Include="..\_Interface\WndMapEx.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\WndMessengerSearch.h">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Interface\WndMiniGame.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
@@ -1323,19 +1308,10 @@
     <ClInclude Include="..\_Interface\WndFriendConFirm.h">
       <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\WndFriendCtrl.h">
-      <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndGuildCtrl.h">
-      <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Interface\WndMessenger.h">
       <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndMessengerCtrl.h">
-      <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndPartyCtrl.h">
       <Filter>Source Files\_Interface\WndApplet\Communication</Filter>
     </ClInclude>
     <ClInclude Include="..\_interface\WndRegVend.h">

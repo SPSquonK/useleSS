@@ -3,7 +3,6 @@
 #include "defineText.h"
 #include "AppDefine.h"
 #include "WndMessenger.h"
-#include "WndFriendCtrl.h"
 #include "WndFriendConFirm.h"
 #include "dpcertified.h"
 #include "WndManager.h"
