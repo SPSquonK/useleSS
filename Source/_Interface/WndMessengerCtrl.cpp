@@ -342,10 +342,9 @@ void CWndFriendCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 			auto iter = m_vPlayerList.begin();
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
-			__MESSENGER_PLAYER stPlayer	= *(iter);
 			ClientToScreen( &point );
 			ClientToScreen( &rect );
-			g_toolTip.PutToolTip( 100, prj.jobs.info[ stPlayer.m_nJob ].szName, rect, point, 3 );
+			g_toolTip.PutToolTip( 100, prj.jobs.info[ iter->m_nJob ].szName, rect, point, 3 );
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -397,23 +396,15 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 	}	
 }
 
-void	CWndFriendCtrlEx::GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend )
-{
-	*ppFriend	= NULL;
-	auto iter	= m_vPlayerList.begin();
-	iter	+= SelectCount;
-	__MESSENGER_PLAYER stPlayer	= *(iter);
-	idPlayer	= stPlayer.m_dwPlayerId;
-	*ppFriend	= g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
+void	CWndFriendCtrlEx::GetSelectFriend(int SelectCount, u_long & idPlayer, Friend ** ppFriend) {
+	idPlayer = GetSelectId(SelectCount);
+	*ppFriend = g_WndMng.m_RTMessenger.GetFriend(idPlayer);
 }
 
-u_long CWndFriendCtrlEx::GetSelectId( int SelectCount )
-{
+u_long CWndFriendCtrlEx::GetSelectId(int SelectCount) {
 	auto iter = m_vPlayerList.begin();
 	iter += SelectCount;
-	__MESSENGER_PLAYER stPlayer = *(iter);
-	
-	return stPlayer.m_dwPlayerId;
+	return iter->m_dwPlayerId;
 }
 
 int	CWndFriendCtrlEx::GetSelect( CPoint point, u_long &idPlayer, Friend** ppFriend )
@@ -432,9 +423,9 @@ int	CWndFriendCtrlEx::GetSelect( CPoint point, u_long &idPlayer, Friend** ppFrie
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
 			rtn_val += nPos;
-			__MESSENGER_PLAYER stPlayer	= *(iter);
-			idPlayer = stPlayer.m_dwPlayerId;
-			*ppFriend = g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
+
+			idPlayer = iter->m_dwPlayerId;
+			*ppFriend = g_WndMng.m_RTMessenger.GetFriend(iter->m_dwPlayerId);
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -792,10 +783,9 @@ void CWndGuildCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 			auto iter = m_vPlayerList.begin();
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
-			__MESSENGER_PLAYER stPlayer	= *(iter);
 			ClientToScreen( &point );
 			ClientToScreen( &rect );
-			g_toolTip.PutToolTip( 100, prj.jobs.info[ stPlayer.m_nJob ].szName, rect, point, 3 );
+			g_toolTip.PutToolTip( 100, prj.jobs.info[ iter->m_nJob ].szName, rect, point, 3 );
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -838,17 +828,7 @@ void CWndGuildCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 		}
 		else
 		{
-			CString szMessage;
-//			if( dwState == FRS_OFFLINE )
-				szMessage = prj.GetText( TID_GAME_NOTLOGIN );                               //"??? 님은 접속되어 있지 않습니다";
-/*			else
-#if __VER >= 11 // __SYS_PLAYER_DATA
-				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
-#else	// __SYS_PLAYER_DATA
-				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), lpFriend->szName );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
-#endif	// __SYS_PLAYER_DATA
-*/
-			g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_NOTLOGIN) );		
+			g_WndMng.PutString(TID_GAME_NOTLOGIN);
 		}
 	}	
 }
@@ -857,9 +837,7 @@ u_long CWndGuildCtrlEx::GetSelectId( int SelectCount )
 {
 	auto iter = m_vPlayerList.begin();
 	iter += SelectCount;
-	__MESSENGER_PLAYER stPlayer = *(iter);
-	
-	return stPlayer.m_dwPlayerId;
+	return iter->m_dwPlayerId;
 }
 
 int	CWndGuildCtrlEx::GetSelect( CPoint point, u_long & idPlayer, CGuildMember** lppGuildMember )
@@ -882,8 +860,7 @@ int	CWndGuildCtrlEx::GetSelect( CPoint point, u_long & idPlayer, CGuildMember** 
 				int nPos = m_wndScrollBar.GetScrollPos();
 				iter += j + nPos;
 				rtn_val += nPos;
-				__MESSENGER_PLAYER stPlayer = *(iter);
-				idPlayer = stPlayer.m_dwPlayerId;
+				idPlayer = iter->m_dwPlayerId;
 				CGuildMember * lpGuildMember = pGuild->GetMember( idPlayer );
 				if( lpGuildMember )
 					*lppGuildMember = lpGuildMember;
@@ -1262,14 +1239,9 @@ int CWndCampus::GetDiscipleDrawCount( void ) const
 //-----------------------------------------------------------------------------
 __MESSENGER_PLAYER* CWndCampus::GetSelectedDiscipleID( int nSelectedNumber )
 {
-//	vector < __MESSENGER_PLAYER >::iterator iter = m_vDisciplePlayer.begin();
-//	iter += nSelectedNumber;
-	//	BEGINTEST100113	??????????
-//	return	( ( __MESSENGER_PLAYER* )( &iter ) );
 	if( nSelectedNumber >= (int)( m_vDisciplePlayer.size() ) || nSelectedNumber < 0 )	//gmpbigsun: with => || nSelectedNumber < 0 )
 		return NULL;
 	return	&m_vDisciplePlayer[nSelectedNumber];
-	//	ENDTEST100113	??????????
 }
 //-----------------------------------------------------------------------------
 u_long CWndCampus::GetSelectedMasterID( CPoint point )
@@ -1305,7 +1277,7 @@ u_long CWndCampus::GetSelectedDiscipleID( CPoint point )
 			if( rect.PtInRect( point ) == TRUE )
 			{
 				m_nCurSelectedDisciple = i;
-				return static_cast< u_long >( ( ( __MESSENGER_PLAYER )( m_vDisciplePlayer[i] ) ).m_dwPlayerId );
+				return m_vDisciplePlayer[i].m_dwPlayerId;
 			}
 			pt.y += m_nFontHeight;
 		}
