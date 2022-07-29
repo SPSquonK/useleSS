@@ -18,6 +18,23 @@ typedef struct __MESSENGER_PLAYER
 	void Initialize( void );
 } __MESSENGER_PLAYER;
 
+struct MessengerHelper {
+	struct Sorter {
+		enum class By { Channel, Status, Level, Job, Name };
+
+		bool channelAsc = true;
+		bool statusAsc  = false;
+		bool levelAsc   = true;
+		bool jobAsc     = true;
+		bool nameAsc    = true;
+
+		By lastSort = By::Channel;
+
+		void ChangeSort(By criterion, std::span<__MESSENGER_PLAYER> list);
+		void ReApply(std::span<__MESSENGER_PLAYER> list) const;
+	};
+};
+
 class CWndFriendCtrlEx : public CWndBase
 {
 public:
@@ -29,13 +46,7 @@ public:
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
-	enum {SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME};
-	BOOL m_bSortbyChannel;
-	BOOL m_bSortbyStatus;
-	BOOL m_bSortbyLevel;
-	BOOL m_bSortbyJob;
-	BOOL m_bSortbyName;
-	int m_nCurSort;
+	MessengerHelper::Sorter m_sortStrategy;
 
 public:
 	CWndFriendCtrlEx();
@@ -56,11 +67,7 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 
 	// Sort Func.
-	void SortbyChannel(BOOL bCheckbefore = TRUE);
-	void SortbyStatus(BOOL bCheckbefore = TRUE);
-	void SortbyLevel(BOOL bCheckbefore = TRUE);
-	void SortbyJob(BOOL bCheckbefore = TRUE);
-	void SortbyName(BOOL bCheckbefore = TRUE);
+	void ChangeSort(MessengerHelper::Sorter::By by);
 	void UpdatePlayerList();
 
 	// UI Func.
@@ -82,13 +89,7 @@ public:
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
-	enum {SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME};
-	BOOL m_bSortbyChannel;
-	BOOL m_bSortbyStatus;
-	BOOL m_bSortbyLevel;
-	BOOL m_bSortbyJob;
-	BOOL m_bSortbyName;
-	int m_nCurSort;
+	MessengerHelper::Sorter m_sortStrategy;
 
 public:
 	CWndGuildCtrlEx();
@@ -107,11 +108,7 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 
 	// Sort Func.
-	void SortbyChannel(BOOL bCheckbefore = TRUE);
-	void SortbyStatus(BOOL bCheckbefore = TRUE);
-	void SortbyLevel(BOOL bCheckbefore = TRUE);
-	void SortbyJob(BOOL bCheckbefore = TRUE);
-	void SortbyName(BOOL bCheckbefore = TRUE);
+	void ChangeSort(MessengerHelper::Sorter::By by);
 	void UpdatePlayerList();
 
 	// UI Func.
@@ -146,21 +143,12 @@ public:
 	__MESSENGER_PLAYER* GetSelectedDiscipleID( int nSelectedNumber );
 	u_long GetSelectedMasterID( CPoint point );
 	u_long GetSelectedDiscipleID( CPoint point );
-	void SortbyChannel( BOOL bCheckbefore = TRUE );
-	void SortbyStatus( BOOL bCheckbefore = TRUE );
-	void SortbyLevel( BOOL bCheckbefore = TRUE );
-	void SortbyJob( BOOL bCheckbefore = TRUE );
-	void SortbyName( BOOL bCheckbefore = TRUE );
+	void ChangeSort(MessengerHelper::Sorter::By by);
 
 private:
 	enum { MASTER_RENDERING_POSITION = 43, DISCIPLE_RENDERING_POSITION = 122 };
-	enum { SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME };
-	BOOL m_bSortbyChannel;
-	BOOL m_bSortbyStatus;
-	BOOL m_bSortbyLevel;
-	BOOL m_bSortbyJob;
-	BOOL m_bSortbyName;
-	int m_nCurSort;
+	MessengerHelper::Sorter m_sortStrategy;
+
 	BOOL m_bCurSelectedMaster;
 	int m_nCurSelectedDisciple;
 	int m_nFontHeight;

@@ -353,58 +353,22 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	else if( pChild == &m_WndCampus )
 		nFocusChild = 3;
 
-	switch(nID)
-	{
-		case WIDC_CHANNEL:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyChannel();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyChannel();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyChannel();
-			}
-			break;
-		case WIDC_STATE:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyStatus();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyStatus();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyStatus();
-			}
-			break;
-		case WIDC_LEVEL:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyLevel();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyLevel();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyLevel();
-			}
-			break;
-		case WIDC_JOB:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyJob();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyJob();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyJob();
-			}
-			break;
-		case WIDC_NAME:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyName();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyName();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyName();
-			}
-			break;
+	std::optional<MessengerHelper::Sorter::By> sort = std::nullopt;
+	switch (nID) {
+		case WIDC_CHANNEL: sort = MessengerHelper::Sorter::By::Channel; break;
+		case WIDC_STATE  : sort = MessengerHelper::Sorter::By::Status;  break;
+		case WIDC_LEVEL  : sort = MessengerHelper::Sorter::By::Level;   break;
+		case WIDC_JOB    : sort = MessengerHelper::Sorter::By::Job;     break;
+		case WIDC_NAME   : sort = MessengerHelper::Sorter::By::Name;    break;
+	}
+
+	if (sort) {
+		if (nFocusChild == 1)
+			m_wndFriend.ChangeSort(sort.value());
+		else if (nFocusChild == 2)
+			m_wndGuild.ChangeSort(sort.value());
+		else if (nFocusChild == 3)
+			m_WndCampus.ChangeSort(sort.value());
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 

@@ -184,6 +184,56 @@ bool prNameDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
 	return rtn_val;
 }
 
+void CWndFriendCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
+	m_sortStrategy.ChangeSort(by, m_vPlayerList);
+}
+
+void CWndGuildCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
+	m_sortStrategy.ChangeSort(by, m_vPlayerList);
+}
+
+void CWndCampus::ChangeSort(MessengerHelper::Sorter::By by) {
+	m_sortStrategy.ChangeSort(by, m_vDisciplePlayer);
+}
+
+void MessengerHelper::Sorter::ChangeSort(By criterion, std::span<__MESSENGER_PLAYER> list) {
+	switch (criterion) {
+		case By::Channel: channelAsc = !channelAsc; break;
+		case By::Job:     jobAsc = !jobAsc;         break;
+		case By::Level:   levelAsc = !levelAsc;     break;
+		case By::Name:    nameAsc = !nameAsc;       break;
+		case By::Status:  statusAsc = !statusAsc;   break;
+	}
+
+	criterion = lastSort;
+	ReApply(list);
+}
+
+void MessengerHelper::Sorter::ReApply(std::span<__MESSENGER_PLAYER> messenger) const {
+	switch (lastSort) {
+		case By::Channel:
+			if (channelAsc) std::ranges::sort(messenger, prChannelAsce);
+			else std::ranges::sort(messenger, prChannelDesc);
+			break;
+		case By::Job:
+			if (jobAsc) std::ranges::sort(messenger, prJobAsce);
+			else std::ranges::sort(messenger, prJobDesc);
+			break;
+		case By::Level:
+			if (levelAsc) std::ranges::sort(messenger, prLevelAsce);
+			else std::ranges::sort(messenger, prLevelDesc);
+			break;
+		case By::Name:
+			if (nameAsc) std::ranges::sort(messenger, prNameAsce);
+			else std::ranges::sort(messenger, prNameDesc);
+			break;
+		case By::Status:
+			if (statusAsc) std::ranges::sort(messenger, prStatusAsce);
+			else std::ranges::sort(messenger, prStatusDesc);
+			break;
+	}
+}
+
 //-----------------------------------------------------------------------------
 __MESSENGER_PLAYER::__MESSENGER_PLAYER( void ) : 
 m_nChannel( 0 ),
@@ -219,12 +269,6 @@ CWndFriendCtrlEx::CWndFriendCtrlEx()
 	m_nCurSelect = -1;
 	m_nFontHeight = 20;
 	m_nDrawCount = 0;
-	m_bSortbyChannel = TRUE;
-	m_bSortbyStatus = FALSE;
-	m_bSortbyLevel = TRUE;
-	m_bSortbyJob = TRUE;
-	m_bSortbyName = TRUE;
-	m_nCurSort = SORT_BY_STATUS;
 
 	m_vPlayerList.clear();
 }
@@ -291,24 +335,7 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 		m_vPlayerList.push_back( stPlayer );
 	}
 
-	switch(m_nCurSort)
-	{
-		case SORT_BY_CHANNEL:
-			SortbyChannel(FALSE);
-			break;
-		case SORT_BY_STATUS:
-			SortbyStatus(FALSE);
-			break;
-		case SORT_BY_LEVEL:
-			SortbyLevel(FALSE);
-			break;
-		case SORT_BY_JOB:
-			SortbyJob(FALSE);
-			break;
-		case SORT_BY_NAME:
-			SortbyName(FALSE);
-			break;
-	}
+	m_sortStrategy.ReApply(m_vPlayerList);
 }
 
 void CWndFriendCtrlEx::PaintFrame( C2DRender* p2DRender )
@@ -721,96 +748,6 @@ void CWndFriendCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
 
-void CWndFriendCtrlEx::SortbyChannel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyChannel = !m_bSortbyChannel;
-
-	if(m_bSortbyChannel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelAsce );
-		m_bSortbyChannel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelDesc );
-		m_bSortbyChannel = TRUE;
-	}
-	m_nCurSort = SORT_BY_CHANNEL;
-}
-
-void CWndFriendCtrlEx::SortbyStatus(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyStatus = !m_bSortbyStatus;
-
-	if(m_bSortbyStatus)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusAsce );
-		m_bSortbyStatus = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusDesc );
-		m_bSortbyStatus = TRUE;
-	}
-	m_nCurSort = SORT_BY_STATUS;
-}
-
-void CWndFriendCtrlEx::SortbyLevel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyLevel = !m_bSortbyLevel;
-
-	if(m_bSortbyLevel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelAsce );
-		m_bSortbyLevel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelDesc );
-		m_bSortbyLevel = TRUE;
-	}
-	m_nCurSort = SORT_BY_LEVEL;
-}
-
-void CWndFriendCtrlEx::SortbyJob(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyJob = !m_bSortbyJob;
-
-	if(m_bSortbyJob)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobAsce );
-		m_bSortbyJob = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobDesc );
-		m_bSortbyJob = TRUE;
-	}
-	m_nCurSort = SORT_BY_JOB;
-}
-
-void CWndFriendCtrlEx::SortbyName(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyName = !m_bSortbyName;
-
-	if(m_bSortbyName)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameAsce );
-		m_bSortbyName = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameDesc );
-		m_bSortbyName = TRUE;
-	}
-	m_nCurSort = SORT_BY_NAME;
-}
-
 //////////////////////////////////////////////////////////////////////////
 // Messenger Guild Tab Ctrl
 //////////////////////////////////////////////////////////////////////////
@@ -820,12 +757,6 @@ CWndGuildCtrlEx::CWndGuildCtrlEx()
 	m_nCurSelect = -1;
 	m_nFontHeight = 20;
 	m_nDrawCount = 0;
-	m_bSortbyChannel = TRUE;
-	m_bSortbyStatus = FALSE;
-	m_bSortbyLevel = TRUE;
-	m_bSortbyJob = TRUE;
-	m_bSortbyName = TRUE;
-	m_nCurSort = SORT_BY_STATUS;
 
 	m_vPlayerList.clear();
 }
@@ -876,24 +807,7 @@ void CWndGuildCtrlEx::UpdatePlayerList()
 		}
 	}
 
-	switch(m_nCurSort)
-	{
-		case SORT_BY_CHANNEL:
-			SortbyChannel(FALSE);
-			break;
-		case SORT_BY_STATUS:
-			SortbyStatus(FALSE);
-			break;
-		case SORT_BY_LEVEL:
-			SortbyLevel(FALSE);
-			break;
-		case SORT_BY_JOB:
-			SortbyJob(FALSE);
-			break;
-		case SORT_BY_NAME:
-			SortbyName(FALSE);
-			break;
-	}
+	m_sortStrategy.ReApply(m_vPlayerList);
 }
 
 void CWndGuildCtrlEx::PaintFrame( C2DRender* p2DRender )
@@ -1166,104 +1080,8 @@ void CWndGuildCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
 
-void CWndGuildCtrlEx::SortbyChannel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyChannel = !m_bSortbyChannel;
-
-	if(m_bSortbyChannel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelAsce );
-		m_bSortbyChannel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelDesc );
-		m_bSortbyChannel = TRUE;
-	}
-	m_nCurSort = SORT_BY_CHANNEL;
-}
-
-void CWndGuildCtrlEx::SortbyStatus(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyStatus = !m_bSortbyStatus;
-
-	if(m_bSortbyStatus)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusAsce );
-		m_bSortbyStatus = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusDesc );
-		m_bSortbyStatus = TRUE;
-	}
-	m_nCurSort = SORT_BY_STATUS;
-}
-
-void CWndGuildCtrlEx::SortbyLevel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyLevel = !m_bSortbyLevel;
-
-	if(m_bSortbyLevel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelAsce );
-		m_bSortbyLevel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelDesc );
-		m_bSortbyLevel = TRUE;
-	}
-	m_nCurSort = SORT_BY_LEVEL;
-}
-
-void CWndGuildCtrlEx::SortbyJob(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyJob = !m_bSortbyJob;
-
-	if(m_bSortbyJob)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobAsce );
-		m_bSortbyJob = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobDesc );
-		m_bSortbyJob = TRUE;
-	}
-	m_nCurSort = SORT_BY_JOB;
-}
-
-void CWndGuildCtrlEx::SortbyName(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyName = !m_bSortbyName;
-
-	if(m_bSortbyName)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameAsce );
-		m_bSortbyName = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameDesc );
-		m_bSortbyName = TRUE;
-	}
-	m_nCurSort = SORT_BY_NAME;
-}
-
 //-----------------------------------------------------------------------------
 CWndCampus::CWndCampus( void ) : 
-m_bSortbyChannel( TRUE ), 
-m_bSortbyStatus( FALSE ), 
-m_bSortbyLevel( TRUE ), 
-m_bSortbyJob( TRUE ), 
-m_bSortbyName( TRUE ), 
-m_nCurSort( SORT_BY_STATUS ), 
 m_bCurSelectedMaster( FALSE ), 
 m_nCurSelectedDisciple( -1 ), 
 m_nFontHeight( 20 ), 
@@ -1578,24 +1396,8 @@ void CWndCampus::UpdatePlayerList( void )
 		m_MasterPlayer.m_nLevel = pPlayerData->data.nLevel;
 		lstrcpy( m_MasterPlayer.m_szName, pPlayerData->szPlayer );
 	}
-	switch( m_nCurSort )
-	{
-		case SORT_BY_CHANNEL:
-			SortbyChannel(FALSE);
-			break;
-		case SORT_BY_STATUS:
-			SortbyStatus(FALSE);
-			break;
-		case SORT_BY_LEVEL:
-			SortbyLevel(FALSE);
-			break;
-		case SORT_BY_JOB:
-			SortbyJob(FALSE);
-			break;
-		case SORT_BY_NAME:
-			SortbyName(FALSE);
-			break;
-	}
+
+	m_sortStrategy.ReApply(m_vDisciplePlayer);
 }
 //-----------------------------------------------------------------------------
 int CWndCampus::GetDiscipleDrawCount( void ) const
@@ -1655,95 +1457,3 @@ u_long CWndCampus::GetSelectedDiscipleID( CPoint point )
 	}
 	return -1;
 }
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyChannel( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyChannel = !m_bSortbyChannel;
-
-	if(m_bSortbyChannel)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prChannelAsce );
-		m_bSortbyChannel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prChannelDesc );
-		m_bSortbyChannel = TRUE;
-	}
-	m_nCurSort = SORT_BY_CHANNEL;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyStatus( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyStatus = !m_bSortbyStatus;
-
-	if(m_bSortbyStatus)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prStatusAsce );
-		m_bSortbyStatus = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prStatusDesc );
-		m_bSortbyStatus = TRUE;
-	}
-	m_nCurSort = SORT_BY_STATUS;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyLevel( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyLevel = !m_bSortbyLevel;
-
-	if(m_bSortbyLevel)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prLevelAsce );
-		m_bSortbyLevel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prLevelDesc );
-		m_bSortbyLevel = TRUE;
-	}
-	m_nCurSort = SORT_BY_LEVEL;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyJob( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyJob = !m_bSortbyJob;
-
-	if(m_bSortbyJob)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prJobAsce );
-		m_bSortbyJob = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prJobDesc );
-		m_bSortbyJob = TRUE;
-	}
-	m_nCurSort = SORT_BY_JOB;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyName( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyName = !m_bSortbyName;
-
-	if(m_bSortbyName)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prNameAsce );
-		m_bSortbyName = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prNameDesc );
-		m_bSortbyName = TRUE;
-	}
-	m_nCurSort = SORT_BY_NAME;
-}
-//-----------------------------------------------------------------------------
-
