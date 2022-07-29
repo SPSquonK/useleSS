@@ -1,22 +1,17 @@
-
-#ifndef __WNDMESSENGERCTRL_H
-#define __WNDMESSENGERCTRL_H
+#pragma once
 
 class C2DRender;
 
-typedef struct __MESSENGER_PLAYER
-{
-	int		m_nChannel;
-	DWORD	m_dwStatus;
-	int		m_nLevel;
-	int		m_nJob;
-	DWORD	m_dwPlayerId;
-	TCHAR	m_szName[ 64 ];
-	BOOL	m_bBlock;
-	BOOL	m_bVisitAllowed;
-	__MESSENGER_PLAYER( void );
-	void Initialize( void );
-} __MESSENGER_PLAYER;
+struct __MESSENGER_PLAYER {
+	int		m_nChannel      = 0;
+	DWORD	m_dwStatus      = 0;
+	int		m_nLevel        = 0;
+	int		m_nJob          = 0;
+	DWORD	m_dwPlayerId    = 0;
+	TCHAR	m_szName[ 64 ]  = "";
+	BOOL	m_bBlock        = FALSE;
+	BOOL	m_bVisitAllowed = FALSE;
+};
 
 struct MessengerHelper {
 	struct Sorter {
@@ -38,9 +33,9 @@ struct MessengerHelper {
 class CWndFriendCtrlEx : public CWndBase
 {
 public:
-	int m_nCurSelect;
-	int m_nFontHeight;
-	int m_nDrawCount;
+	int m_nCurSelect  = -1;
+	int m_nFontHeight = 20;
+	int m_nDrawCount  = 0;
 	CWndScrollBar m_wndScrollBar;
 	CWndMenu m_menu;
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
@@ -49,9 +44,6 @@ private:
 	MessengerHelper::Sorter m_sortStrategy;
 
 public:
-	CWndFriendCtrlEx();
-	~CWndFriendCtrlEx();
-
 	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
 
 	// Overridables
@@ -82,9 +74,9 @@ public:
 class CWndGuildCtrlEx : public CWndBase
 {
 public:
-	int m_nCurSelect;
-	int m_nFontHeight;
-	int m_nDrawCount;
+	int m_nCurSelect  = -1;
+	int m_nFontHeight = 20;
+	int m_nDrawCount  = 0;
 	CWndScrollBar m_wndScrollBar;
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
@@ -92,9 +84,6 @@ private:
 	MessengerHelper::Sorter m_sortStrategy;
 
 public:
-	CWndGuildCtrlEx();
-	~CWndGuildCtrlEx();
-
 	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
 
 	// Overridables
@@ -123,12 +112,7 @@ public:
 class CWndCampus : public CWndNeuz
 {
 public:
-	CWndCampus( void );
-	~CWndCampus( void );
-
-public:
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
  	virtual	void PaintFrame( C2DRender* p2DRender );
@@ -149,13 +133,10 @@ private:
 	enum { MASTER_RENDERING_POSITION = 43, DISCIPLE_RENDERING_POSITION = 122 };
 	MessengerHelper::Sorter m_sortStrategy;
 
-	BOOL m_bCurSelectedMaster;
-	int m_nCurSelectedDisciple;
-	int m_nFontHeight;
+	BOOL m_bCurSelectedMaster  = FALSE;
+	int m_nCurSelectedDisciple = -1;
+	int m_nFontHeight          = 20;
 	CWndMenu m_Menu;
 	__MESSENGER_PLAYER m_MasterPlayer;
 	std::vector < __MESSENGER_PLAYER > m_vDisciplePlayer;
 };
-
-#endif //__WNDMESSENGERCTRL_H
-

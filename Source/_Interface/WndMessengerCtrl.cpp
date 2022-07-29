@@ -111,7 +111,6 @@ namespace {
 	}
 }
 
-
 void CWndFriendCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
 	m_sortStrategy.ChangeSort(by, m_vPlayerList);
 }
@@ -163,47 +162,10 @@ void MessengerHelper::Sorter::ReApply(std::span<__MESSENGER_PLAYER> messenger) c
 }
 
 //-----------------------------------------------------------------------------
-__MESSENGER_PLAYER::__MESSENGER_PLAYER( void ) : 
-m_nChannel( 0 ),
-m_dwStatus( 0 ),
-m_nLevel( 0 ), 
-m_nJob( 0 ), 
-m_dwPlayerId( 0 ), 
-m_bBlock( FALSE ), 
-m_bVisitAllowed( FALSE )
-{
-	ZeroMemory( m_szName, sizeof( m_szName ) );
-}
-//-----------------------------------------------------------------------------
-void __MESSENGER_PLAYER::Initialize( void )
-{
-	m_nChannel = 0;
-	m_dwStatus = 0;
-	m_nLevel = 0;
-	m_nJob = 0;
-	m_dwPlayerId = 0;
-	m_bBlock = FALSE;
-	m_bVisitAllowed = FALSE;
-	ZeroMemory( m_szName, sizeof( m_szName ) );
-}
-//-----------------------------------------------------------------------------
 
 //////////////////////////////////////////////////////////////////////////
 // Messenger Friend Tab Ctrl
 //////////////////////////////////////////////////////////////////////////
-
-CWndFriendCtrlEx::CWndFriendCtrlEx() 
-{
-	m_nCurSelect = -1;
-	m_nFontHeight = 20;
-	m_nDrawCount = 0;
-
-	m_vPlayerList.clear();
-}
-
-CWndFriendCtrlEx::~CWndFriendCtrlEx()
-{
-}
 
 void CWndFriendCtrlEx::Create(const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
@@ -680,19 +642,6 @@ void CWndFriendCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 // Messenger Guild Tab Ctrl
 //////////////////////////////////////////////////////////////////////////
 
-CWndGuildCtrlEx::CWndGuildCtrlEx() 
-{
-	m_nCurSelect = -1;
-	m_nFontHeight = 20;
-	m_nDrawCount = 0;
-
-	m_vPlayerList.clear();
-}
-
-CWndGuildCtrlEx::~CWndGuildCtrlEx()
-{
-}
-
 void CWndGuildCtrlEx::Create( const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
 	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
@@ -1009,27 +958,9 @@ void CWndGuildCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 }
 
 //-----------------------------------------------------------------------------
-CWndCampus::CWndCampus( void ) : 
-m_bCurSelectedMaster( FALSE ), 
-m_nCurSelectedDisciple( -1 ), 
-m_nFontHeight( 20 ), 
-m_MasterPlayer()
-{
-	m_vDisciplePlayer.clear();
-}
-//-----------------------------------------------------------------------------
-CWndCampus::~CWndCampus( void )
-{
-}
-//-----------------------------------------------------------------------------
 BOOL CWndCampus::Initialize( CWndBase* pWndParent, DWORD nType )
 {
 	return CWndNeuz::InitDialog( APP_MESSENGER_TAB_CAMPUS, pWndParent, 0, CPoint( 0, 0 ) );
-}
-//-----------------------------------------------------------------------------
-BOOL CWndCampus::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 //-----------------------------------------------------------------------------
 void CWndCampus::OnInitialUpdate( void )
@@ -1290,7 +1221,7 @@ void CWndCampus::OnMouseMove( UINT nFlags, CPoint point )
 //-----------------------------------------------------------------------------
 void CWndCampus::UpdatePlayerList( void )
 {
-	m_MasterPlayer.Initialize();
+	m_MasterPlayer = __MESSENGER_PLAYER();
 	m_vDisciplePlayer.clear();
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 	if( pCampus == NULL )
