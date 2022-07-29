@@ -12,177 +12,105 @@
 #include "Campus.h"
 #include "CampusHelper.h"
 #include "FuncTextCmd.h"
-
+#include <compare>
 
 //////////////////////////////////////////////////////////////////////////
 // Common Local Func.
 //////////////////////////////////////////////////////////////////////////
-bool prLevelAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+struct MessengerPlayerOrdering {
+	static std::partial_ordering Level(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		const DWORD nPlayer1JobType = prj.jobs.info[player1.m_nJob].dwJobType;
+		const DWORD nPlayer2JobType = prj.jobs.info[player2.m_nJob].dwJobType;
 
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
+		if (nPlayer1JobType > nPlayer2JobType)
+			return std::partial_ordering::less;
 
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nLevel > player2.m_nLevel)
-			rtn_val = true;
+		if (nPlayer1JobType < nPlayer2JobType)
+			return std::partial_ordering::greater;
+
+		if (player1.m_nLevel > player2.m_nLevel)
+			return std::partial_ordering::less;
+
+		if (player1.m_nLevel < player2.m_nLevel)
+			return std::partial_ordering::greater;
+
+		return std::partial_ordering::unordered;
 	}
-	
-	return rtn_val;
-}
 
-bool prLevelDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+	static std::partial_ordering Job(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		DWORD nPlayer1JobType = prj.jobs.info[player1.m_nJob].dwJobType;
+		DWORD nPlayer2JobType = prj.jobs.info[player2.m_nJob].dwJobType;
 
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
+		if (nPlayer1JobType > nPlayer2JobType)
+			return std::partial_ordering::less;
 
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nLevel < player2.m_nLevel)
-			rtn_val = true;
+		if (nPlayer1JobType < nPlayer2JobType)
+			return std::partial_ordering::greater;
+			
+		if (player1.m_nJob > player2.m_nJob)
+			return std::partial_ordering::less;
+
+		if (player1.m_nJob < player2.m_nJob)
+			return std::partial_ordering::greater;
+
+		return std::partial_ordering::unordered;
 	}
-	
-	return rtn_val;
-}
 
-bool prJobAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
+	static std::partial_ordering Status(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		DWORD nPlayer1Status = player1.m_dwStatus;
+		if (nPlayer1Status == FRS_OFFLINE) nPlayer1Status = MAX_FRIENDSTAT;
 
-	int nPlayer1JobType, nPlayer2JobType;
+		DWORD nPlayer2Status = player2.m_dwStatus;
+		if (nPlayer2Status == FRS_OFFLINE) nPlayer2Status = MAX_FRIENDSTAT;
 
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
-
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nJob > player2.m_nJob)
-			rtn_val = true;
+		if (nPlayer1Status < nPlayer2Status) return std::partial_ordering::less;
+		if (nPlayer1Status > nPlayer2Status) return std::partial_ordering::greater;
+		return std::partial_ordering::unordered;
 	}
-	
-	return rtn_val;
-}
+};
 
-bool prJobDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
-
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
-
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nJob < player2.m_nJob)
-			rtn_val = true;
+namespace {
+	bool prLevelAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Level(player1, player2) == std::partial_ordering::less;
 	}
-	
-	return rtn_val;
+
+	bool prLevelDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Level(player1, player2) == std::partial_ordering::greater;
+	}
+
+	bool prJobAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Job(player1, player2) == std::partial_ordering::less;
+	}
+
+	bool prJobDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Job(player1, player2) == std::partial_ordering::greater;
+	}
+
+	bool prStatusAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Status(player1, player2) == std::partial_ordering::less;
+	}
+
+	bool prStatusDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Status(player1, player2) == std::partial_ordering::less;
+	}
+
+	bool prChannelAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return player1.m_nChannel > player2.m_nChannel;
+	}
+
+	bool prChannelDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return player1.m_nChannel < player2.m_nChannel;
+	}
+
+	bool prNameAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return std::strcmp(player1.m_szName, player2.m_szName) > 0;
+	}
+
+	bool prNameDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return std::strcmp(player1.m_szName, player2.m_szName) < 0;
+	}
 }
 
-bool prStatusAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1Status, nPlayer2Status;
-
-	nPlayer1Status = player1.m_dwStatus;
-	nPlayer2Status = player2.m_dwStatus;
-
-	// offline 상태가 맨 마지막상태
-	if(nPlayer1Status == FRS_OFFLINE)
-		nPlayer1Status = 12;
-	if(nPlayer2Status == FRS_OFFLINE)
-		nPlayer2Status = 12;
-
-	if(nPlayer1Status < nPlayer2Status)
-		rtn_val = true;
-	
-	return rtn_val;
-}
-
-bool prStatusDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1Status, nPlayer2Status;
-
-	nPlayer1Status = player1.m_dwStatus;
-	nPlayer2Status = player2.m_dwStatus;
-
-	// offline 상태가 맨 마지막상태
-	if(nPlayer1Status == FRS_OFFLINE)
-		nPlayer1Status = 12;
-	if(nPlayer2Status == FRS_OFFLINE)
-		nPlayer2Status = 12;
-
-	if(nPlayer1Status > nPlayer2Status)
-		rtn_val = true;
-	
-	return rtn_val;
-	
-	return rtn_val;
-}
-
-bool prChannelAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-
-	if(player1.m_nChannel > player2.m_nChannel)
-		rtn_val = true;
-	
-	return rtn_val;
-}
-
-bool prChannelDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-
-	if(player1.m_nChannel < player2.m_nChannel)
-		rtn_val = true;
-	
-	return rtn_val;
-}
-
-bool prNameAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
-
-	strplayer1Name.Format("%s", player1.m_szName);
-	strplayer2Name.Format("%s", player2.m_szName);
-
-	if(strplayer1Name > strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
-}
-
-bool prNameDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
-
-	strplayer1Name.Format("%s", player1.m_szName);
-	strplayer2Name.Format("%s", player2.m_szName);
-
-	if(strplayer1Name < strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
-}
 
 void CWndFriendCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
 	m_sortStrategy.ChangeSort(by, m_vPlayerList);
