@@ -188,33 +188,29 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 {
 	// Set Friends List
 	m_vPlayerList.clear();
-	__MESSENGER_PLAYER stPlayer;
-	std::vector<DWORD> vecTemp;
-	CHousing::GetInstance()->GetVisitAllow( vecTemp );
+	const std::vector<DWORD> & allowedVisit = CHousing::GetInstance()->GetVisitAllow();
 
-	for( auto i	= g_WndMng.m_RTMessenger.begin(); i != g_WndMng.m_RTMessenger.end(); ++i )
-	{
-		u_long idPlayer	= i->first;
-		Friend* pFriend		= &i->second;
+	for (const auto & [idPlayer, pFriend] : g_WndMng.m_RTMessenger) {
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( idPlayer );
 		int nJob	= pPlayerData->data.nJob;
 		int nLevel	= pPlayerData->data.nLevel;
 		u_long uLogin	= pPlayerData->data.uLogin;
 		LPCSTR lpszPlayer	= pPlayerData->szPlayer;
-		DWORD dwState	= pFriend->dwState;
+		DWORD dwState	= pFriend.dwState;
 
+		__MESSENGER_PLAYER stPlayer;
 		stPlayer.m_dwPlayerId	= idPlayer;
 		stPlayer.m_dwStatus		= dwState;
 		stPlayer.m_nJob		= nJob;
 		stPlayer.m_nLevel	= nLevel;
-		stPlayer.m_bBlock	= pFriend->bBlock;
+		stPlayer.m_bBlock	= pFriend.bBlock;
 		stPlayer.m_bVisitAllowed = FALSE;
 		
-		for(auto iterV = vecTemp.begin(); iterV != vecTemp.end(); ++iterV)
-		{
-			if(idPlayer == *iterV)
-				stPlayer.m_bVisitAllowed = TRUE;
+		const auto visitIt = std::ranges::find(allowedVisit, idPlayer);
+		if (visitIt != allowedVisit.end()) {
+			stPlayer.m_bVisitAllowed = TRUE;
 		}
+
 		if( stPlayer.m_dwStatus == FRS_OFFLINE )
 			stPlayer.m_nChannel	= 100;
 		else
