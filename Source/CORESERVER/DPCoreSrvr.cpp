@@ -1551,7 +1551,7 @@ void CDPCoreSrvr::SendWarMasterAbsent(WarId idWar, BOOL bDecl )
 }
 
 
-void CDPCoreSrvr::SendSetFriendState( u_long uidPlayer, DWORD dwState )
+void CDPCoreSrvr::SendSetFriendState( u_long uidPlayer, FriendStatus dwState )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_SETFRIENDSTATE, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << uidPlayer << dwState;

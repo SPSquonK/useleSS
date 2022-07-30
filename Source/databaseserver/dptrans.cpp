@@ -548,7 +548,7 @@ void CDPTrans::OnSavePlayer( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser,
 	pMover->Serialize( ar );
 	pMover->m_fAngle	= 0.0f;
 	ar >> pMover->m_UserTaskBar;
-	DWORD dwState;
+	FriendStatus dwState;
 	ar >> dwState;
 	pMover->m_RTMessenger.SetState( dwState );
 #ifndef __JEFF_9_20

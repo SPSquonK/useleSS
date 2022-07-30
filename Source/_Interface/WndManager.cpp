@@ -3113,9 +3113,9 @@ BOOL CWndMgr::LoadRegInfo( LPCTSTR lpszFileName )
 
 void CWndMgr::SetMessengerAutoState()
 {
-	if( m_bConnect && m_RTMessenger.GetState() == FRS_AUTOABSENT )
+	if( m_bConnect && m_RTMessenger.GetState() == FriendStatus::AUTOABSENT )
 	{
-		g_DPlay.SendSetState( FRS_ONLINE );	
+		g_DPlay.SendPacket<PACKETTYPE_SETFRIENDSTATE, FriendStatus>(FriendStatus::ONLINE);
 		m_timerMessenger.Set( MIN( 5 ) );
 	}
 }

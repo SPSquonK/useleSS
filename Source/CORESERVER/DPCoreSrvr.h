@@ -9,6 +9,7 @@
 #include "party.h"
 
 #include "InstanceDungeonBase.h"
+#include "rtmessenger.h"
 
 #undef	theClass
 #define theClass	CDPCoreSrvr
@@ -169,7 +170,7 @@ public:
 	void	OnWarTimeout( CAr & ar, DPID, DPID, DPID, u_long );
 
 public:
-	void	SendSetFriendState( u_long uidPlayer, DWORD dwState );
+	void	SendSetFriendState( u_long uidPlayer, FriendStatus dwState );
 	void	SendChangeLeader( u_long uPartyId, u_long uidChangeLeader );
 	void	SendFriendInterceptState( u_long uIdPlayer, u_long uIdFriend );
 		

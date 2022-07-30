@@ -1,6 +1,21 @@
 #include "stdafx.h"
 #include "rtmessenger.h"
 
+bool IsValid(FriendStatus friendStatus) {
+	switch (friendStatus) {
+		case FriendStatus::ONLINE:
+		case FriendStatus::ABSENT:
+		case FriendStatus::HARDPLAY:
+		case FriendStatus::EAT:
+		case FriendStatus::REST:
+		case FriendStatus::MOVE:
+		case FriendStatus::OFFLINE:
+			return true;
+		default:
+			return false;
+	}
+}
+
 void CRTMessenger::SetFriend(u_long idFriend, const Friend & pFriend) {
 	if (idFriend != 0) {
 		(*this)[idFriend] = pFriend;

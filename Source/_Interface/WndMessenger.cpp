@@ -43,45 +43,37 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
 	// Draw Status Icon
-	DWORD dwMyState;
-	if( g_WndMng.m_RTMessenger.GetState() == FRS_AUTOABSENT )
-		dwMyState	= FRS_ABSENT;
-	else if( g_WndMng.m_RTMessenger.GetState() == FRS_ONLINE )
-		dwMyState	= 2;
-	else if( g_WndMng.m_RTMessenger.GetState() == FRS_OFFLINE )
-		dwMyState	= 8;
-	else
-		dwMyState	= g_WndMng.m_RTMessenger.GetState();
+	const int statusIcon = GetVertexIconIndex(g_WndMng.m_RTMessenger.GetState());
 	
 	TEXTUREVERTEX2 vertex[ 6 ];
 	TEXTUREVERTEX2* pVertices = vertex;
 	
-	pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 8, 8 ), dwMyState - 2, &pVertices, 0xffffffff );	
+	pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 8, 8 ), statusIcon, &pVertices, 0xffffffff );	
 	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX2 ) );
 	
 	// Draw Name & Status
 	CString strState;
 	switch( g_WndMng.m_RTMessenger.GetState() )
 	{
-		case FRS_ONLINE:
+		case FriendStatus::ONLINE:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_ONLINE_STATUS ) );
 			break;
-		case FRS_OFFLINE:
+		case FriendStatus::OFFLINE:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_OFFLINE_STATUS ) );
 			break;
-		case FRS_ABSENT:
+		case FriendStatus::ABSENT:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_ABSENT ) );
 			break;
-		case FRS_HARDPLAY:
+		case FriendStatus::HARDPLAY:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_HARDPLAY ) );
 			break;
-		case FRS_EAT:
+		case FriendStatus::EAT:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_EAT ) );
 			break;
-		case FRS_REST:
+		case FriendStatus::REST:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_REST ) );
 			break;
-		case FRS_MOVE:
+		case FriendStatus::MOVE:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_MOVE ) );
 			break;
 	}
@@ -202,13 +194,13 @@ void CWndMessengerEx::OnInitialUpdate()
 	m_wndGuild.ScrollBarPos( 0 );
 
 	m_menuState.CreateMenu( this );	
-	m_menuState.AppendMenu( 0, FRS_ONLINE   , prj.GetText( TID_FRS_ONLINE_STATUS   ) );
-	m_menuState.AppendMenu( 0, FRS_ABSENT   , prj.GetText( TID_FRS_ABSENT   ) );
-	m_menuState.AppendMenu( 0, FRS_HARDPLAY , prj.GetText( TID_FRS_HARDPLAY ) );
-	m_menuState.AppendMenu( 0, FRS_EAT      , prj.GetText( TID_FRS_EAT      ) );
-	m_menuState.AppendMenu( 0, FRS_REST     , prj.GetText( TID_FRS_REST     ) );
-	m_menuState.AppendMenu( 0, FRS_MOVE     , prj.GetText( TID_FRS_MOVE     ) );
-	m_menuState.AppendMenu( 0, FRS_OFFLINE  , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::ONLINE  ) , prj.GetText( TID_FRS_ONLINE_STATUS   ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::ABSENT  ) , prj.GetText( TID_FRS_ABSENT   ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::HARDPLAY) , prj.GetText( TID_FRS_HARDPLAY ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::EAT     ) , prj.GetText( TID_FRS_EAT      ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::REST    ) , prj.GetText( TID_FRS_REST     ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::MOVE    ) , prj.GetText( TID_FRS_MOVE     ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::OFFLINE ) , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
 	
 	m_TexMail.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndMail.dds" ), 0xffff00ff );
 	m_nFlashCounter = 0;
@@ -336,10 +328,11 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	else
 	{
-		if( FRS_ONLINE <= nID && nID < MAX_FRIENDSTAT )
+		const FriendStatus asStatus = static_cast<FriendStatus>(nID);
+		if( IsValid(asStatus) )
 		{
 			// 내 상태가 바뀌었따~ 코어로 보내어 모두 알려주자~
-			g_DPlay.SendSetState( nID );
+			g_DPlay.SendPacket<PACKETTYPE_SETFRIENDSTATE, FriendStatus>(asStatus);
 		}
 	}
 

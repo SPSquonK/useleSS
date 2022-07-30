@@ -272,8 +272,6 @@ public:
 	void	SendQuePetResurrection( int nItem );
 #endif	// __JEFF_11
 	void	SendGetFriendState();
-	void	SendSetState( int state );
-	void	SendFriendInterceptState( u_long uidPlayer );
 	void	SendRemoveFriend( u_long uidPlayer );
 	void	SendUpgradeBase( DWORD dwItemId0, DWORD dwItemId1, 
 							DWORD dwItemId2, DWORD dwItemCount2, 
@@ -707,7 +705,6 @@ public:
 	void	OnAddFriendError( CAr & ar );
 	void	OnAddFriendNameReqest( CAr & ar );
 	void	OnAddFriendNotConnect( CAr & ar );
-	void	OnOneFriendState( CAr & ar );
 	void	OnRemoveFriendState( CAr & ar );
 	void	OnBlock( CAr & ar );
 	void	OnDuelCount( CAr & ar );

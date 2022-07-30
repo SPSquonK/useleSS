@@ -104,12 +104,11 @@ BOOL CPlayerMng::UnregisterPlayerInfo( CPlayer* pPlayer, BOOL bNotify )
 	pPlayer->Lock();
 	
 	// messenger
-	pPlayer->m_RTMessenger.SetState( FRS_OFFLINE );
-	for( auto i = pPlayer->m_RTMessenger.begin(); i != pPlayer->m_RTMessenger.end(); ++i )
-	{
-		CPlayer* pPlayertmp		= GetPlayer( i->first );
-		if( pPlayertmp )
-			g_DPCacheSrvr.SendFriendLogOut( pPlayertmp, pPlayer->uKey );
+	pPlayer->m_RTMessenger.SetState(FriendStatus::OFFLINE);
+	for (const u_long playerId : pPlayer->m_RTMessenger | std::views::keys) {
+		if (CPlayer * pPlayertmp = GetPlayer(playerId)) {
+			g_DPCacheSrvr.SendFriendLogOut(pPlayertmp, pPlayer->uKey);
+		}
 	}
 
 	if( pPlayer == GetPlayerBySerial( pPlayer->m_dwSerial ) )
@@ -129,8 +128,7 @@ BOOL CPlayerMng::UnregisterPlayerInfo( CPlayer* pPlayer, BOOL bNotify )
 	return TRUE;
 }
 
-BOOL CPlayerMng::RegisterPlayerInfo( CPlayer* pPlayer )
-{
+void CPlayerMng::RegisterPlayerInfo(CPlayer * pPlayer) {
 	m_players.emplace(pPlayer->m_dwSerial, pPlayer);
 	m_uCount++;
 	g_PartyMng.AddConnection( pPlayer );
@@ -149,16 +147,11 @@ BOOL CPlayerMng::RegisterPlayerInfo( CPlayer* pPlayer )
 
 	pPlayer->Unlock();
 
-	for( DWORD j = 0 ; j < vecIdFriend.size() ; j++ )
-	{
-		CPlayer *pFriendPlayer = GetPlayer( vecIdFriend[j] );
-		if( pFriendPlayer )
-		{
-			g_DPCacheSrvr.SendFriendJoin( pFriendPlayer, pPlayer );
+	for (const u_long idFriend : vecIdFriend) {
+		if (CPlayer * pFriendPlayer = GetPlayer(idFriend)) {
+			g_DPCacheSrvr.SendFriendJoin(pFriendPlayer, pPlayer);
 		}
 	}
-	
-	return TRUE;
 }
 
 // bNotify - CACHE서버에게 플레이러 제거를 알릴 것인가?

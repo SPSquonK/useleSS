@@ -362,7 +362,7 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 	u_long uidPlayer[5];
 	BYTE nslot[5];
 	BYTE MessengerSlot[5];
-	DWORD	dwMessengerState[5];
+	FriendStatus	dwMessengerState[5];
 	int countMessenger = 0;
 
 	DWORD	adwWorldId[3];
@@ -584,7 +584,7 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 
 			MessengerSlot[countMessenger] = islot;
 			uidPlayer[countMessenger] = mover.m_idPlayer;
-			dwMessengerState[countMessenger] = qry->GetInt( "m_nMessengerState" );
+			dwMessengerState[countMessenger] = static_cast<FriendStatus>(qry->GetInt( "m_nMessengerState" ));
 			countMessenger++;
 
 			u_long uOffset	= arbuf.GetOffset();

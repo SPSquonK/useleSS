@@ -124,7 +124,6 @@ CDPClient::CDPClient()
 	ON_MSG( PACKETTYPE_FRIENDINTERCEPTSTATE, &CDPClient::OnFriendIntercept );
 	ON_MSG( PACKETTYPE_GETFRIENDSTATE, &CDPClient::OnGetFriendState );
 	ON_MSG( PACKETTYPE_SETFRIENDSTATE, &CDPClient::OnSetFriendState );
-	ON_MSG( PACKETTYPE_ONEFRIEMDSTATE, &CDPClient::OnOneFriendState );
 	ON_MSG( PACKETTYPE_GAMERATE, &CDPClient::OnGameRate );
 	ON_MSG( PACKETTYPE_ERRORPARTY, &CDPClient::OnErrorParty );
 	ON_MSG( PACKETTYPE_GUILD, &CDPClient::OnGuild );
@@ -7093,30 +7092,24 @@ void CDPClient::OnRemoveFriendState( CAr & ar )
 		pWndMessengerEx->UpdateFriendList();
 }
 
-void CDPClient::OnFriendJoin( CAr & ar )
-{
-	u_long idFriend;
-	DWORD dwState;
-	u_long uLogin;
+void CDPClient::OnFriendJoin(CAr & ar) {
+	const auto [idFriend, dwState] = ar.Extract<u_long, FriendStatus>();
 
-	ar >> idFriend >> dwState >> uLogin;
+	Friend * const pFriend = g_WndMng.m_RTMessenger.GetFriend(idFriend);
+	if (!pFriend) return;
 
-	Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idFriend );
-	if( pFriend )
-	{
-		pFriend->dwState	= dwState;
-//		PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( idFriend );
-//		if( pPlayerData )
-//			pPlayerData->data.uLogin	= uLogin;
-		if( g_Option.m_bMessengerJoin && pFriend->dwState != FRS_OFFLINE )
-		{
-			CWndInstantMsg* pWndInstantMsg	= g_WndMng.OpenInstantMsg( CPlayerDataCenter::GetInstance()->GetPlayerString( idFriend ) );
-			if( pWndInstantMsg )
-				pWndInstantMsg->AddMessageJoin( CPlayerDataCenter::GetInstance()->GetPlayerString( idFriend ) );
+	pFriend->dwState = dwState;
+
+	if (g_Option.m_bMessengerJoin && pFriend->dwState != FriendStatus::OFFLINE) {
+		const char * friendName = CPlayerDataCenter::GetInstance()->GetPlayerString(idFriend);
+
+		if (CWndInstantMsg * pWndInstantMsg = g_WndMng.OpenInstantMsg(friendName)) {
+			pWndInstantMsg->AddMessageJoin(friendName);
 		}
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
+	}
+
+	if (CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_)) {
+		pWndMessengerEx->UpdateFriendList();
 	}
 }
 
@@ -7127,7 +7120,7 @@ void CDPClient::OnFriendLogOut( CAr & ar )
 	Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idFriend );
 	if( pFriend )
 	{
-		pFriend->dwState	= FRS_OFFLINE;
+		pFriend->dwState	= FriendStatus::OFFLINE;
 		CWndMessengerEx* pWndMessengerEx	= (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
 			pWndMessengerEx->UpdateFriendList();
@@ -7138,8 +7131,8 @@ void CDPClient::OnFriendNoIntercept( CAr & ar )
 {
 	u_long idFriend;
 	ar >> idFriend;
-	g_WndMng.m_RTMessenger.SetBlock( idFriend, false );
-	CWndMessengerEx* pWndMessengerEx	= (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
+	g_WndMng.m_RTMessenger.SetBlock(idFriend, false);
+	CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_);
 	if( pWndMessengerEx )
 		pWndMessengerEx->UpdateFriendList();
 }
@@ -7158,7 +7151,7 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 		{
 			Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idPlayer );
 			if( pFriend )
-				pFriend->dwState	= FRS_OFFLINE;
+				pFriend->dwState	= FriendStatus::OFFLINE;
 		}
 		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
 		if( pWndMessengerEx )
@@ -7166,83 +7159,42 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 	}
 }
 
-void CDPClient::OnGetFriendState( CAr & ar )
-{
-	int nCount;
-	int nCountBlock;
-	u_long uidPlayer;
-	u_long uIdofMulti;
-	DWORD dwState;
-	ar >> nCount;
-	ar >> nCountBlock;
-	for( int i = 0 ; i < nCount ; ++i )
-	{
-		ar >> uidPlayer;
-		ar >> dwState;
-		ar >> uIdofMulti;
-		Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uidPlayer );
-		if( pFriend )
-			pFriend->dwState	= dwState;
-//		PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( uidPlayer );
-//		if( pPlayerData )
-//			pPlayerData->data.uLogin		= uIdofMulti;
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
-	}
-	for( int i = 0 ; i < nCountBlock ; ++i )
-	{
-		ar >> uidPlayer;
-		ar >> dwState;
-		ar >> uIdofMulti;
-		Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uidPlayer );
-		if( pFriend )
-			pFriend->dwState	= dwState;
-//		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( uidPlayer );
-//		if( pPlayerData )
-//			pPlayerData->data.uLogin		= uIdofMulti;
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
-	}
-}
+void CDPClient::OnGetFriendState(CAr & ar) {
+	std::uint32_t size; ar >> size;
 
-void CDPClient::OnSetFriendState( CAr & ar )
-{
-	u_long uidPlayer;
-	DWORD dwState;
-	ar >> uidPlayer;
-	ar >> dwState;
+	if (size != 0) return;
 
-	if( g_pPlayer )
-	{
-		if( g_pPlayer->m_idPlayer == uidPlayer )
-		{
-			g_WndMng.m_RTMessenger.SetState( dwState );
-		}
-		else
-		{
-			Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( uidPlayer );
-			if( pFriend )
-				pFriend->dwState	= dwState;
-			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-			if( pWndMessengerEx )
-				pWndMessengerEx->UpdateFriendList();
+	for (std::uint32_t i = 0; i != size; ++i) {
+		const auto [uidPlayer, dwState] = ar.Extract<u_long, FriendStatus>();
+
+		Friend * pFriend = g_WndMng.m_RTMessenger.GetFriend(uidPlayer);
+		if (pFriend) {
+			pFriend->dwState = dwState;
 		}
 	}
-}
 
-void CDPClient::OnOneFriendState( CAr & ar )
-{
-	u_long idFriend;
-	DWORD dwState;
-	ar >> idFriend >> dwState;
-	Friend* pFriend		= g_WndMng.m_RTMessenger.GetFriend( idFriend );
-	if( pFriend )
-		pFriend->dwState	= dwState;
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
+	CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_);
+	if (pWndMessengerEx) {
 		pWndMessengerEx->UpdateFriendList();
+	}
+}
+
+void CDPClient::OnSetFriendState(CAr & ar) {
+	const auto [uidPlayer, dwState] = ar.Extract<u_long, FriendStatus>();
+
+	if (!g_pPlayer) return;
+
+	if (g_pPlayer->m_idPlayer == uidPlayer) {
+		g_WndMng.m_RTMessenger.SetState(dwState);
+	} else {
+		if (Friend * pFriend = g_WndMng.m_RTMessenger.GetFriend(uidPlayer)) {
+			pFriend->dwState = dwState;
+		}
+
+		if (CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_)) {
+			pWndMessengerEx->UpdateFriendList();
+		}
+	}
 }
 
 void CDPClient::OnBlock(CAr & ar) {
@@ -9724,23 +9676,6 @@ void CDPClient::SendGetFriendState()
 
 	ar << g_pPlayer->m_idPlayer;
 	
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendSetState( int state ) // 상태 바꾸기
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SETFRIENDSTATE, DPID_UNKNOWN );
-	
-	ar << g_pPlayer->m_idPlayer;
-	ar << state;	
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendFriendInterceptState( u_long uidPlayer )  // 차단
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_FRIENDINTERCEPTSTATE, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer;
-	ar << uidPlayer;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 

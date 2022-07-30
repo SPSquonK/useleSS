@@ -2228,16 +2228,13 @@ void CDPCoreClient::SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild )
 
 
 
-void CDPCoreClient::OnSetFriendState( CAr & ar, DPID, DPID, OBJID )
-{
-	CUser* pUser;
-	u_long uidPlayer;
-	DWORD dwState;
-	ar >> uidPlayer >> dwState;
+void CDPCoreClient::OnSetFriendState(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uidPlayer, dwState] = ar.Extract<u_long, FriendStatus>();
 
-	pUser	= (CUser*)prj.GetUserByID( uidPlayer );
-	if( IsValidObj( pUser ) )
-		pUser->m_RTMessenger.SetState( dwState );
+	CUser * pUser = prj.GetUserByID(uidPlayer);
+	if (IsValidObj(pUser)) {
+		pUser->m_RTMessenger.SetState(dwState);
+	}
 }
 
 void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
@@ -2246,31 +2243,25 @@ void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
 	u_long uidFriend;
 	ar >> uidPlayer >> uidFriend;
 	
-	CUser* pUser, *pUserFriend;
+	CUser * pUser = prj.GetUserByID( uidPlayer );
 
-	pUser = (CUser*)prj.GetUserByID( uidPlayer );
-	pUserFriend = (CUser*)prj.GetUserByID( uidFriend );
+	if (!IsValidObj(pUser)) return;
 
-	if( IsValidObj( pUser ) == FALSE )
-		return;
+	Friend * pFriend = pUser->m_RTMessenger.GetFriend(uidFriend);
+	if (!pFriend) return;
+		
+	if (pFriend->bBlock) {
+		pFriend->bBlock = FALSE;
 
-	Friend* pFriend	= pUser->m_RTMessenger.GetFriend( uidFriend );
-	if( pFriend )
-	{
-		if( pFriend->bBlock )
-		{
-			pFriend->bBlock		= FALSE;
-			if( IsValidObj( pUserFriend ) )
-				pFriend->dwState	= pUserFriend->m_RTMessenger.GetState();
-			else
-				pFriend->dwState	= FRS_OFFLINE;
-		}
+		CUser * pUserFriend = prj.GetUserByID(uidFriend);
+		if (IsValidObj(pUserFriend))
+			pFriend->dwState = pUserFriend->m_RTMessenger.GetState();
 		else
-		{
-			pFriend->bBlock		= TRUE;
-			pFriend->dwState	= 0;
-		}
-	}	
+			pFriend->dwState = FriendStatus::OFFLINE;
+	} else {
+		pFriend->bBlock = TRUE;
+		pFriend->dwState = FriendStatus::ONLINE;
+	}
 }
 
 

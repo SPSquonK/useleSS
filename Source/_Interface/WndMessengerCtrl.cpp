@@ -12,6 +12,7 @@
 #include "Campus.h"
 #include "CampusHelper.h"
 #include "FuncTextCmd.h"
+#include "MsgHdr.h"
 #include <compare>
 
 //////////////////////////////////////////////////////////////////////////
@@ -57,11 +58,18 @@ struct MessengerPlayerOrdering {
 	}
 
 	static std::partial_ordering Status(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
-		DWORD nPlayer1Status = player1.m_dwStatus;
-		if (nPlayer1Status == FRS_OFFLINE) nPlayer1Status = MAX_FRIENDSTAT;
+		const FriendStatus nPlayer1Status = player1.m_dwStatus;
+		const FriendStatus nPlayer2Status = player2.m_dwStatus;
 
-		DWORD nPlayer2Status = player2.m_dwStatus;
-		if (nPlayer2Status == FRS_OFFLINE) nPlayer2Status = MAX_FRIENDSTAT;
+		if (nPlayer1Status == FriendStatus::OFFLINE) {
+			if (nPlayer2Status == FriendStatus::OFFLINE) {
+				return std::partial_ordering::unordered;
+			} else {
+				return std::partial_ordering::greater;
+			}
+		} else if (nPlayer2Status == FriendStatus::OFFLINE) {
+			return std::partial_ordering::less;
+		}
 
 		if (nPlayer1Status < nPlayer2Status) return std::partial_ordering::less;
 		if (nPlayer1Status > nPlayer2Status) return std::partial_ordering::greater;
@@ -161,6 +169,29 @@ void MessengerHelper::Sorter::ReApply(std::span<__MESSENGER_PLAYER> messenger) c
 	}
 }
 
+int GetVertexIconIndex(FriendStatus status) {
+	switch (status) {
+		case FriendStatus::ONLINE:
+			return 0;
+		case FriendStatus::OFFLINE:
+		case FriendStatus::OFFLINEBLOCK:
+			return 6;
+		case FriendStatus::ABSENT:
+		case FriendStatus::AUTOABSENT:
+			return 1;
+		case FriendStatus::HARDPLAY:
+			return 2;
+		case FriendStatus::EAT:
+			return 3;
+		case FriendStatus::REST:
+			return 4;
+		case FriendStatus::MOVE:
+			return 5;
+		default:
+			return 0;
+	}
+}
+
 //-----------------------------------------------------------------------------
 
 //////////////////////////////////////////////////////////////////////////
@@ -196,7 +227,7 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 		int nLevel	= pPlayerData->data.nLevel;
 		u_long uLogin	= pPlayerData->data.uLogin;
 		LPCSTR lpszPlayer	= pPlayerData->szPlayer;
-		DWORD dwState	= pFriend.dwState;
+		FriendStatus dwState	= pFriend.dwState;
 
 		__MESSENGER_PLAYER stPlayer;
 		stPlayer.m_dwPlayerId	= idPlayer;
@@ -211,7 +242,7 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 			stPlayer.m_bVisitAllowed = TRUE;
 		}
 
-		if( stPlayer.m_dwStatus == FRS_OFFLINE )
+		if( stPlayer.m_dwStatus == FriendStatus::OFFLINE )
 			stPlayer.m_nChannel	= 100;
 		else
 			stPlayer.m_nChannel	= uLogin;
@@ -275,17 +306,8 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, &pVertices, 0xffffffff );
 
 		// Draw Status Icon
-		DWORD dwMyState;
-		if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-			dwMyState = FRS_ABSENT;
-		else if( stPlayer.m_dwStatus == FRS_ONLINE )
-			dwMyState = 2;
-		else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-			dwMyState = 8;
-		else
-			dwMyState = stPlayer.m_dwStatus;
-		
-		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
+		const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+		pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(76, pt.y), statusIcon + 7, &pVertices, 0xffffffff);
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
@@ -378,8 +400,8 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 	int nSelect		= GetSelect( point, idPlayer, &pFriend );
 	if( nSelect != -1 && pFriend )
 	{
-		DWORD dwState	= pFriend->dwState;
-		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
+		const FriendStatus dwState	= pFriend->dwState;
+		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
 		{
 			m_nCurSelect = nSelect;
 			CWndMessage* pWndMessage	= g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
@@ -387,7 +409,7 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 		else
 		{
 			CString szMessage;
-			if( dwState == FRS_OFFLINE )
+			if( dwState == FriendStatus::OFFLINE )
 				szMessage = prj.GetText(TID_GAME_NOTLOGIN);                               //"??? 님은 접속되어 있지 않습니다";
 			else
 				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
@@ -453,8 +475,9 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 	case 1:		// 차단 / 차단해제
 		{
 			u_long uidPlayer = GetSelectId( m_nCurSelect );
-			if( uidPlayer != -1 )
-				g_DPlay.SendFriendInterceptState( uidPlayer );		
+			if (uidPlayer != -1) {
+				g_DPlay.SendPacket<PACKETTYPE_FRIENDINTERCEPTSTATE, u_long>(uidPlayer);
+			}
 		}
 		break;
 	case 2:		// 삭제
@@ -527,12 +550,12 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 
 	if( nSelect != -1 && pFriend != NULL )
 	{
-		DWORD dwState	= pFriend->dwState;
+		const FriendStatus dwState	= pFriend->dwState;
 		m_nCurSelect	= nSelect;
 		ClientToScreen( &point );
 		m_menu.DeleteAllMenu();
 
-		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
+		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
 			m_menu.AppendMenu( 0, 0 ,_T( prj.GetText( TID_APP_MESSAGE ) ) );
 
 		if( pFriend->bBlock )
@@ -542,7 +565,7 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 
 		m_menu.AppendMenu( 0, 2 ,_T( prj.GetText( TID_FRS_DELETE ) ) );
 
-		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
+		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
 		{					
 			if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
 				m_menu.AppendMenu( 0, 3 ,_T( prj.GetText( TID_FRS_MOVE2 ) ) );
@@ -552,7 +575,7 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 					m_menu.AppendMenu( 0, 4 ,_T( prj.GetText(TID_MMI_INVITE_PARTY) ) );
 			}
 		}
-		if( dwState == FRS_OFFLINE || pFriend->bBlock )
+		if( dwState == FriendStatus::OFFLINE || pFriend->bBlock )
 			m_menu.AppendMenu( 0, 6 , _T( prj.GetText( TID_GAME_TAGSEND ) ) );
 
 		
@@ -663,9 +686,9 @@ void CWndGuildCtrlEx::UpdatePlayerList()
 			stPlayer.m_dwPlayerId = pGuildMember->m_idPlayer;
 			stPlayer.m_nChannel = pPlayerData->data.uLogin;
 			if( pPlayerData->data.uLogin > 0 )
-				stPlayer.m_dwStatus = FRS_ONLINE;
+				stPlayer.m_dwStatus = FriendStatus::ONLINE;
 			else
-				stPlayer.m_dwStatus = FRS_OFFLINE;
+				stPlayer.m_dwStatus = FriendStatus::OFFLINE;
 			lstrcpy( stPlayer.m_szName, pPlayerData->szPlayer );
 			m_vPlayerList.push_back(stPlayer);
 		}
@@ -725,17 +748,8 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, &pVertices, 0xffffffff );
 
 		// Draw Status Icon
-		DWORD dwMyState;
-		if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-			dwMyState = FRS_ABSENT;
-		else if( stPlayer.m_dwStatus == FRS_ONLINE )
-			dwMyState = 2;
-		else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-			dwMyState = 8;
-		else
-			dwMyState = stPlayer.m_dwStatus;
-		
-		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
+		const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + statusIcon, &pVertices, 0xffffffff );
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
@@ -1041,16 +1055,8 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, 0xffffffff );
 
 			// Draw Status Icon
-			DWORD dwMyState = 0;
-			if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-				dwMyState = FRS_ABSENT;
-			else if( stPlayer.m_dwStatus == FRS_ONLINE )
-				dwMyState = 2;
-			else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-				dwMyState = 8;
-			else
-				dwMyState = stPlayer.m_dwStatus;
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), 0xffffffff );
+			const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + statusIcon, 0xffffffff );
 
 			// Draw Level
 			strFormat.Format("%d", stPlayer.m_nLevel);
@@ -1084,16 +1090,8 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, 0xffffffff );
 
 		// Draw Status Icon
-		DWORD dwMyState = 0;
-		if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-			dwMyState = FRS_ABSENT;
-		else if( stPlayer.m_dwStatus == FRS_ONLINE )
-			dwMyState = 2;
-		else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-			dwMyState = 8;
-		else
-			dwMyState = stPlayer.m_dwStatus;
-		pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), 0xffffffff );
+		const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+		pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + statusIcon, 0xffffffff );
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
@@ -1207,7 +1205,7 @@ void CWndCampus::UpdatePlayerList( void )
 				continue;
 			__MESSENGER_PLAYER stDisciplePlayer;
 			stDisciplePlayer.m_dwPlayerId = idDisciplePlayer;
-			stDisciplePlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FRS_ONLINE : FRS_OFFLINE;
+			stDisciplePlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FriendStatus::ONLINE : FriendStatus::OFFLINE;
 			stDisciplePlayer.m_nChannel	= pPlayerData->data.uLogin;
 			stDisciplePlayer.m_nJob = pPlayerData->data.nJob;
 			stDisciplePlayer.m_nLevel = pPlayerData->data.nLevel;
@@ -1222,7 +1220,7 @@ void CWndCampus::UpdatePlayerList( void )
 		if( pPlayerData == NULL )
 			return;
 		m_MasterPlayer.m_dwPlayerId = idMasterPlayer;
-		m_MasterPlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FRS_ONLINE : FRS_OFFLINE;
+		m_MasterPlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FriendStatus::ONLINE : FriendStatus::OFFLINE;
 		m_MasterPlayer.m_nChannel = pPlayerData->data.uLogin;
 		m_MasterPlayer.m_nJob = pPlayerData->data.nJob;
 		m_MasterPlayer.m_nLevel = pPlayerData->data.nLevel;

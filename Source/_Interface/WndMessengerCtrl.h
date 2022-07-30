@@ -1,17 +1,21 @@
 #pragma once
 
+#include "rtmessenger.h"
+
 class C2DRender;
 
 struct __MESSENGER_PLAYER {
-	int		m_nChannel      = 0;
-	DWORD	m_dwStatus      = 0;
-	int		m_nLevel        = 0;
-	int		m_nJob          = 0;
-	DWORD	m_dwPlayerId    = 0;
-	TCHAR	m_szName[ 64 ]  = "";
-	BOOL	m_bBlock        = FALSE;
-	BOOL	m_bVisitAllowed = FALSE;
+	int		m_nChannel        = 0;
+	FriendStatus m_dwStatus = FriendStatus::ONLINE;
+	int		m_nLevel          = 0;
+	int		m_nJob            = 0;
+	DWORD	m_dwPlayerId      = 0;
+	TCHAR	m_szName[ 64 ]    = "";
+	BOOL	m_bBlock          = FALSE;
+	BOOL	m_bVisitAllowed   = FALSE;
 };
+
+int GetVertexIconIndex(FriendStatus status);
 
 struct MessengerHelper {
 	struct Sorter {

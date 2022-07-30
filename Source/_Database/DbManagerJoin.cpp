@@ -172,7 +172,7 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	GetJobLv( &mover, qry, lpDBOP );
 	// mirchang_100416
 
-	mover.m_RTMessenger.SetState( (DWORD)qry->GetInt( "m_nMessengerState" ) );
+	mover.m_RTMessenger.SetState( static_cast<FriendStatus>(qry->GetInt( "m_nMessengerState" )) );
 	mover.m_dwReturnWorldID		= qry->GetInt( "m_dwReturnWorldID" );
 	mover.m_vReturnPos.x	= qry->GetFloat( "m_vReturnPos_x" );
 	mover.m_vReturnPos.y	= qry->GetFloat( "m_vReturnPos_y" );

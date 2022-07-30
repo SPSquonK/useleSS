@@ -74,7 +74,7 @@ public:
 	u_long		GetCache( DPID dpidCache );
 	BOOL		AddPlayer( u_long idPlayer, const CHAR* lpszPlayer, const CHAR* lpszAccount );
 	void		RemovePlayer( CPlayer* pPlayer, BOOL bNotify = TRUE );
-	BOOL		RegisterPlayerInfo( CPlayer* pPlayer );
+	void RegisterPlayerInfo(CPlayer * pPlayer);
 	BOOL		UnregisterPlayerInfo( CPlayer* pPlayer, BOOL bNotify );
 	CPlayer*	GetPlayerBySerial( DWORD dwSerial );
 	CPlayer*	GetPlayerBySocket( DPID dpidSocket );
