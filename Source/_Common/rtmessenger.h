@@ -5,16 +5,11 @@
 enum class FriendStatus : DWORD {
 	ONLINE = 0, // 기본 : 게임중 
 	OFFLINE = 1, // 자동 : 로그오프
-	BLOCK = 2, // 설정 : 차단 
 	ABSENT = 3, // 설정 : 자리비움
 	HARDPLAY = 4, // 설정 : 열랩중 
 	EAT = 5, // 설정 : 식사중 
 	REST = 6, // 설정 : 휴식중
-	MOVE = 7, // 설정 : 이동중 
-	DIE = 8, // 자동 : 사망 
-	DANGER = 9, // 자동 : 위험
-	OFFLINEBLOCK = 10,
-	AUTOABSENT = 11 	// 자동 : 자동 자리비움
+	MOVE = 7 // 설정 : 이동중 
 };
 
 bool IsValid(FriendStatus friendStatus);

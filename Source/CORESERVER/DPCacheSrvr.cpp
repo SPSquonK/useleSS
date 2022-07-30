@@ -1821,9 +1821,7 @@ void CDPCacheSrvr::OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 
 	pPlayer->m_RTMessenger.SetState( state );
 	SendSetFriendState( pPlayer );
-	if (pPlayer->m_RTMessenger.GetState() != FriendStatus::AUTOABSENT) {
-		g_dpCoreSrvr.SendSetFriendState(pPlayer->uKey, pPlayer->m_RTMessenger.GetState());
-	}
+	g_dpCoreSrvr.SendSetFriendState(pPlayer->uKey, pPlayer->m_RTMessenger.GetState());
 }
 
 void CDPCacheSrvr::OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )

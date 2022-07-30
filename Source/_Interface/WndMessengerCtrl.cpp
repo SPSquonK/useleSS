@@ -173,11 +173,7 @@ int GetVertexIconIndex(FriendStatus status) {
 	switch (status) {
 		case FriendStatus::ONLINE:
 			return 0;
-		case FriendStatus::OFFLINE:
-		case FriendStatus::OFFLINEBLOCK:
-			return 6;
 		case FriendStatus::ABSENT:
-		case FriendStatus::AUTOABSENT:
 			return 1;
 		case FriendStatus::HARDPLAY:
 			return 2;
@@ -187,6 +183,8 @@ int GetVertexIconIndex(FriendStatus status) {
 			return 4;
 		case FriendStatus::MOVE:
 			return 5;
+		case FriendStatus::OFFLINE:
+			return 6;
 		default:
 			return 0;
 	}
