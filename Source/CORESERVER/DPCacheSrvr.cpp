@@ -1797,17 +1797,12 @@ void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	g_dpCoreSrvr.SendAddFriend( uidSend, pFriend->uKey, nSendSex, nFriendSex, nSendJob, nFriendJob );
 }
 
-void CDPCacheSrvr::OnGetFriendState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
-{
-	u_long _uidPlayer;
-	ar >> _uidPlayer;
-
-	CPlayer* pPlayer;
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
-
-	if( pPlayer )
-		SendFriendState( pPlayer );
+void CDPCacheSrvr::OnGetFriendState(CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize) {
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
+	
+	if (CPlayer * pPlayer = g_PlayerMng.GetPlayerBySerial(dpidUser)) {
+		SendFriendState(pPlayer);
+	}
 }
 
 void CDPCacheSrvr::OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )

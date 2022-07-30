@@ -9638,13 +9638,8 @@ void	CDPClient::SendMoveItem_Pocket( int nPocket1, int nItem, short nNum, int nP
 }
 
 
-void CDPClient::SendGetFriendState()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GETFRIENDSTATE, DPID_UNKNOWN );
-
-	ar << g_pPlayer->m_idPlayer;
-	
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGetFriendState() {
+	SendPacket<PACKETTYPE_GETFRIENDSTATE>();
 }
 
 void CDPClient::SendRemoveFriend( u_long uidPlayer )
