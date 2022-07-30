@@ -7027,7 +7027,7 @@ void CDPClient::OnAddFriendReqest( CAr & ar )
 
 	g_WndMng.m_pWndFriendConfirm = new CWndFriendConFirm;
 	g_WndMng.m_pWndFriendConfirm->Initialize();
-	g_WndMng.m_pWndFriendConfirm->SetMember( uLeaderid, g_pPlayer->m_idPlayer, nLeaderJob, nLeaderSex, szLeaderName );
+	g_WndMng.m_pWndFriendConfirm->SetMember( uLeaderid, szLeaderName );
 }
 
 void CDPClient::OnAddFriendCancel( CAr & ar )
@@ -12182,7 +12182,7 @@ void CDPClient::OnAddFriendNameReqest( CAr & ar )
 
 	g_WndMng.m_pWndFriendConfirm = new CWndFriendConFirm;
 	g_WndMng.m_pWndFriendConfirm->Initialize();
-	g_WndMng.m_pWndFriendConfirm->SetMember( uLeader, g_pPlayer->m_idPlayer, nLeaderJob, nLeaderSex, szLeaderName );
+	g_WndMng.m_pWndFriendConfirm->SetMember( uLeader, szLeaderName );
 }
 
 void CDPClient::SendSetHair( BYTE nHair, float r, float g, float b )//, int nCost )
