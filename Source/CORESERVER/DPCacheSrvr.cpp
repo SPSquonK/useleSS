@@ -26,7 +26,7 @@ CDPCacheSrvr::CDPCacheSrvr()
 	ON_MSG( PACKETTYPE_CHANPARTYNAME, &CDPCacheSrvr::OnPartyChangeName );
 	ON_MSG( PACKETTYPE_PARTYCHANGEITEMMODE, &CDPCacheSrvr::OnPartyChangeItemMode );
 	ON_MSG( PACKETTYPE_PARTYCHANGEEXPMODE, &CDPCacheSrvr::OnPartyChangeExpMode );
-	ON_MSG( PACKETTYPE_ADDFRIEND, &CDPCacheSrvr::OnAddFriend );
+	ON_MSG(PACKETTYPE_NC_ADDFRIEND, &CDPCacheSrvr::OnAddFriend );
 	ON_MSG( PACKETTYPE_GETFRIENDSTATE, &CDPCacheSrvr::OnGetFriendState );
 	ON_MSG( PACKETTYPE_SETFRIENDSTATE, &CDPCacheSrvr::OnSetFrinedState );
 	ON_MSG( PACKETTYPE_FRIENDINTERCEPTSTATE, &CDPCacheSrvr::OnFriendInterceptState );
@@ -1747,54 +1747,40 @@ void CDPCacheSrvr::SendGuildError( CPlayer * pTo, int nError )
 }
 
 // fixme - raiders
-void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
-{
-	u_long uidSend, _uidFriend;
-	BYTE nSendSex, nFriendSex;
-	LONG nSendJob, nFriendJob;
-	ar >> uidSend >> _uidFriend;
-	ar >> nSendSex >> nFriendSex;
-	ar >> nSendJob >> nFriendJob;
+void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize ) {
+	u_long uidSend; ar >> uidSend;
 
-	CPlayer* pSender;
-	CPlayer* pFriend;
-	
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	
-	pSender = g_PlayerMng.GetPlayer( uidSend );
-	pFriend	= g_PlayerMng.GetPlayerBySerial( dpidUser );
+	CPlayer * pSender = g_PlayerMng.GetPlayer( uidSend );
+	CPlayer * pFriend	= g_PlayerMng.GetPlayerBySerial( dpidUser );
 
-	if( !pFriend )
+	if (!pFriend) return;
+	if (!pSender) return;
+
+	pSender->Lock();
+	const bool bFullA	= pSender->m_RTMessenger.size() >= CRTMessenger::MaxFriend;
+	pSender->Unlock();
+
+	pFriend->Lock();
+	const bool bFullB	= pFriend->m_RTMessenger.size() >= CRTMessenger::MaxFriend;
+	pFriend->Unlock();
+	if (bFullA) {
+		// TODO: send TID_GAME_MSGMAXUSER
 		return;
-	if( !pSender )
-	{
-		// #
+	}
+	if (bFullB) {
+		// TODO: send TID_GAME_MSGMAXUSER
 		return;
 	}
 	pSender->Lock();
-	BOOL bFullA	= pSender->m_RTMessenger.size() >= CRTMessenger::MaxFriend;
+	pSender->m_RTMessenger.SetFriend(pFriend->uKey);
 	pSender->Unlock();
 	pFriend->Lock();
-	BOOL bFullB	= pFriend->m_RTMessenger.size() >= CRTMessenger::MaxFriend;
+	pFriend->m_RTMessenger.SetFriend(uidSend);
 	pFriend->Unlock();
-	if( bFullA )
-	{
-		// #
-		return;
-	}
-	if( bFullB )
-	{
-		// #
-		return;
-	}
-	pSender->Lock();
-	pSender->m_RTMessenger.SetFriend( pFriend->uKey );
-	pSender->Unlock();
-	pFriend->Lock();
-	pFriend->m_RTMessenger.SetFriend( uidSend );
-	pFriend->Unlock();
-	g_dpDatabaseClient.QueryAddMessenger( uidSend, pFriend->uKey );
-	g_dpCoreSrvr.SendAddFriend( uidSend, pFriend->uKey, nSendSex, nFriendSex, nSendJob, nFriendJob );
+	g_dpDatabaseClient.QueryAddMessenger(uidSend, pFriend->uKey);
+	g_dpCoreSrvr.SendPacket<PACKETTYPE_CW_ADDFRIEND, u_long, u_long>(uidSend, pFriend->uKey);
 }
 
 void CDPCacheSrvr::OnGetFriendState(CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize) {

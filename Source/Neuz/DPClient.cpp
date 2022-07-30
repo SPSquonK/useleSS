@@ -6965,18 +6965,19 @@ void CDPClient::OnFriendGameJoin( CAr & ar )
 	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
-void CDPClient::OnAddFriend( CAr & ar )
-{
+void CDPClient::OnAddFriend( CAr & ar ) {
 	u_long uidPlayer;
 	char lpName[MAX_PLAYER]	= { 0,};
 
 	ar >> uidPlayer;
-	ar.ReadString( lpName, MAX_PLAYER );
+	ar.ReadString(lpName, MAX_PLAYER);
 
-	g_WndMng.m_RTMessenger.SetFriend( uidPlayer );
+	g_WndMng.m_RTMessenger.SetFriend(uidPlayer);
 	SendGetFriendState();
 
 	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
+
+	g_WndMng.PutString(TID_GAME_MSGINVATECOM, lpName);
 }
 
 void CDPClient::OnRemoveFriend( CAr & ar )
@@ -9584,18 +9585,6 @@ void CDPClient::SendRemoveItemTaskBar(BYTE nSlotIndex, BYTE nIndex) {
 	>(
 		Operation::Remove, BarName::Item, nSlotIndex, nIndex
 		);
-}
-
-void CDPClient::SendAddFriend( u_long uidPlayer, LONG nJob, BYTE nSex )
-{
-	if( g_pPlayer == NULL )
-		return;
-
-	BEFORESENDSOLE( ar, PACKETTYPE_ADDFRIEND, DPID_UNKNOWN );
-	ar << uidPlayer << g_pPlayer->m_idPlayer;
-	ar << nSex << g_pPlayer->GetSex();
-	ar << nJob << g_pPlayer->m_nJob;
-	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
 void CDPClient::SendAddFriendReqest( u_long uidPlayer )

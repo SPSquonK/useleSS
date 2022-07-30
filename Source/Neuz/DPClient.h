@@ -262,7 +262,6 @@ public:
 	void SendAddInTaskbar(std::optional<unsigned int> where, unsigned int nIndex, const SHORTCUT & shortcut);
 	void	SendRemoveAppletTaskBar( BYTE nIndex );
 	void	SendRemoveItemTaskBar( BYTE nSlotIndex, BYTE nIndex );
-	void	SendAddFriend( u_long uidPlayer, LONG nJob, BYTE nSex );
 	void	SendAddFriendReqest( u_long uidPlayer );
 	void	SendAddFriendNameReqest( const char * szName );
 	void	SendFriendCancel( u_long uidLeader, u_long uidMember );

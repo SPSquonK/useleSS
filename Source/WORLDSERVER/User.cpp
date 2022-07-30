@@ -1320,7 +1320,6 @@ void CUser::AddAddFriend( u_long idPlayer, const char* lpszPlayer )
 	m_Snapshot.ar << SNAPSHOTTYPE_ADDFRIEND;
 	m_Snapshot.ar << idPlayer;
 	m_Snapshot.ar.WriteString( lpszPlayer );
-	
 }
 
 void CUser::AddRemoveFriend( u_long uidSender )

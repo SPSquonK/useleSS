@@ -57,7 +57,6 @@ public:
 	void	SendPartyChangeExpMode( u_long idParty, CParty::ShareExpMode nExpMode );
 
 	void	SendAddPartyMember(u_long uPartyId, u_long idLeader, u_long idMember);
-	void	SendAddFriend( u_long uidSender, u_long uidFriend, BYTE nSenderSex, BYTE nFriendSex, LONG nSendJob, LONG nFriendJob );
 	void	SendRemoveFriend( u_long uidSender, u_long uidFriend );
 #ifdef __ENVIRONMENT_EFFECT
 	void	SendEnvironmentEffect();

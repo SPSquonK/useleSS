@@ -4,7 +4,7 @@
 #include "WndFriendConFirm.h"
 
 #include "DPClient.h"
-
+#include "MsgHdr.h"
 #include "WndManager.h"
 
 /****************************************************
@@ -93,7 +93,7 @@ BOOL CWndFriendConFirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 	if( nID == WIDC_YES ) 
 	{
 		// 여기다가 승락하는 처리 추가하시오
-		g_DPlay.SendAddFriend( m_uLeader, m_nLeaderJob, m_nLeaderSex );
+		g_DPlay.SendPacket<PACKETTYPE_NC_ADDFRIEND, u_long>(m_uLeader);
 		Destroy();	// 수동파괴로 바꿈. -xuzhu- 09/16
 	}
 	else 
@@ -188,10 +188,7 @@ BOOL CWndAddFriend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				else
 				{
 					g_DPlay.SendAddFriendNameReqest( szAddName );
-					//g_WndMng.PutString( "메신저 추가 요청중입니다. 잠시만 기다려주세요", NULL, 0xffff0000 );
-					CString str;
-					str.Format( prj.GetText(TID_GAME_MSGINVATE), szAddName );
-					g_WndMng.PutString( str, NULL, prj.GetTextColor(TID_GAME_MSGINVATE) );
+					g_WndMng.PutString(TID_GAME_MSGINVATE, szAddName);
 				}
 				Destroy( );	
 			}
@@ -199,17 +196,14 @@ BOOL CWndAddFriend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				pWndEdit->SetString("");
 				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0056) ) );
-//				g_WndMng.OpenMessageBox( "자기 자신은 추가할수 없습니다. 다시 입력해주세요." );
 			}			
 		}
 		else
 		{
 			pWndEdit->SetString("");
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0057) ) );
-//			g_WndMng.OpenMessageBox( "이름이 너무 깁니다. 다시 입력해주세요." );
 		}
 		// 여기다가 승락하는 처리 추가하시오
-//		g_DPlay.SendAddFriend( m_uLeader, m_nLeaderSex );
 	}
 	else 
 	if( nID == WIDC_CANCEL )

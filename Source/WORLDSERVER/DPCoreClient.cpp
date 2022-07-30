@@ -59,7 +59,7 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_SETPARTYMODE, &CDPCoreClient::OnSetPartyMode );
 	ON_MSG( PACKETTYPE_PARTYCHANGEITEMMODE, &CDPCoreClient::OnPartyChangeItemMode );
 	ON_MSG( PACKETTYPE_PARTYCHANGEEXPMODE, &CDPCoreClient::OnPartyChangeExpMode );
-	ON_MSG( PACKETTYPE_ADDFRIEND, &CDPCoreClient::OnAddFriend );
+	ON_MSG( PACKETTYPE_CW_ADDFRIEND, &CDPCoreClient::OnAddFriend );
 	ON_MSG( PACKETTYPE_REMOVEFRIEND, &CDPCoreClient::OnRemovefriend );
 
 #ifdef __ENVIRONMENT_EFFECT
@@ -1084,68 +1084,25 @@ void CDPCoreClient::OnPartyChangeTroup( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
-{
-	int bAdd = 0; // 0이면 추가를 아무도 안한것 1 Sender만 추가, 2 Friend만 추가, 3 : 두명다 추가됨
-	u_long uidSend, uidFriend;
-	BYTE nSendSex, nFriendSex;
-	LONG nSendJob, nFriendJob;
-	ar >> uidSend >> uidFriend;
-	ar >> nSendSex >> nFriendSex;
-	ar >> nSendJob >> nFriendJob;
+void CDPCoreClient::OnAddFriend(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uidSend, uidFriend] = ar.Extract<u_long, u_long>();
 
-	CUser* pSender;
-	CUser* pFriend;
+	CUser * pSender = g_UserMng.GetUserByPlayerID(uidSend);
+	CUser * pFriend = g_UserMng.GetUserByPlayerID(uidFriend);
 	
-	pSender = g_UserMng.GetUserByPlayerID( uidSend );
-	pFriend = g_UserMng.GetUserByPlayerID( uidFriend );
-	
-	const char* lpszFriendPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( uidFriend );
-	if( lpszFriendPlayer == NULL )	//
-		return;
-	char lpszFriend[MAX_PLAYER];
-	strcpy( lpszFriend, lpszFriendPlayer );
+	const char * lpszFriend = CPlayerDataCenter::GetInstance()->GetPlayerString(uidFriend);
+	const char * lpszSend = CPlayerDataCenter::GetInstance()->GetPlayerString(uidSend);
+	if (!lpszFriend || !lpszSend) return;
 
-	if( IsValidObj( (CObj*)pSender ) )
-	{
-		if(CRTMessenger::MaxFriend <= pSender->m_RTMessenger.size() )
-		{
-			pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
-		}
-		else
-		{
-			pSender->m_RTMessenger.SetFriend( uidFriend );
-			pSender->AddAddFriend( uidFriend, lpszFriend ); 
-			bAdd++;
-		}
+	if (IsValidObj(pSender)) {
+		pSender->m_RTMessenger.SetFriend(uidFriend);
+		pSender->AddAddFriend(uidFriend, lpszFriend);
 	}
 
-	const char* lpszSendPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( uidSend );
-	if( lpszSendPlayer == NULL )
-		return;
-	char lpszSend[MAX_PLAYER];
-	strcpy( lpszSend, lpszSendPlayer );
-
-	if( IsValidObj( (CObj*)pFriend ) )
-	{
-		if(CRTMessenger::MaxFriend <= pFriend->m_RTMessenger.size() )
-		{
-			if( IsValidObj( (CObj*)pSender ) )
-				pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
-		}
-		else
-		{
-			pFriend->m_RTMessenger.SetFriend( uidSend );
-			pFriend->AddAddFriend( uidSend, lpszSend );
-			bAdd	+= 2;
-		}
+	if (IsValidObj(pFriend)) {
+		pFriend->m_RTMessenger.SetFriend(uidSend);
+		pFriend->AddAddFriend(uidSend, lpszSend);
 	}
-
-	if( IsValidObj( (CObj*)pSender ) && strlen( lpszFriend ) && ( bAdd == 2 || bAdd == 3 ) )
-		pSender->AddDefinedText( TID_GAME_MSGINVATECOM, "%s", lpszFriend );
-
-	if( IsValidObj( (CObj*)pFriend ) && strlen( lpszSend ) && ( bAdd == 1 || bAdd == 3 )  )
-		pFriend->AddDefinedText( TID_GAME_MSGINVATECOM, "%s", lpszSend );
 }
 
 void CDPCoreClient::OnRemovefriend( CAr & ar, DPID, DPID, OBJID )
