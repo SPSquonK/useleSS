@@ -328,7 +328,6 @@ CWndMgr::CWndMgr()
 	m_szTimerChat[ 0 ] = 0;
 	m_timerChat.Set( 0 );
 	m_bConnect = FALSE;
-	m_timerMessenger.Set( MIN( 5 ) );
 
 	for( int i = 0 ; i < MAX_SKILL ; i++ )
 	{
@@ -1925,8 +1924,6 @@ BOOL CWndMgr::Process()
 			m_timerChat.Set( 0 );
 		}
 
-		if( m_bConnect && m_timerMessenger.IsTimeOut() )
-			m_timerMessenger.Set( MIN( 5 ) );
 		if( g_pPlayer && CSecretRoomMng::GetInstance()->m_nState >= SRCONT_WAR )
 		{
 			if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( g_pPlayer ) )
@@ -3109,10 +3106,6 @@ BOOL CWndMgr::LoadRegInfo( LPCTSTR lpszFileName )
 		}
 	}
 	return bResult;
-}
-
-void CWndMgr::SetMessengerAutoState()
-{
 }
 
 BOOL CWndMgr::CheckConfirm(CItemElem * pItem )

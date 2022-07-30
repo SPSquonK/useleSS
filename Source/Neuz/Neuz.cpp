@@ -1287,7 +1287,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 				pWndWorld->OnKeyDown( nVirtKey, 0, 0 );
 			
 			g_bKeyTable[ nVirtKey ] = TRUE;
-			g_WndMng.SetMessengerAutoState();
 
 #ifdef __BS_CONSOLE
 			if( nVirtKey == VK_OEM_3 )
@@ -1339,7 +1338,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 			}
 			
 			g_bKeyTable[ nVirtKey ] = FALSE;
-			g_WndMng.SetMessengerAutoState();
 		}
 		break;
 	case WM_LBUTTONDOWN:
@@ -1363,7 +1361,6 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 				CDeployManager::GetInstance()->m_pTargetObj->UpdateLocalMatrix();
 			}
 		}
-			g_WndMng.SetMessengerAutoState();		
 		break;
 	case WM_CLOSE:
 		{

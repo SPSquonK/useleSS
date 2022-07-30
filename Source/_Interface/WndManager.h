@@ -563,8 +563,6 @@ public:
 	CTimer m_timerChat;
 	
 	BOOL   m_bConnect;
-	CTimer m_timerMessenger;
-
 
 	BOOL	m_bTitle        ;
 	boost::container::flat_map<DWORD, AppletFunc *> m_mapAppletFunc;
@@ -578,7 +576,6 @@ public:
 	BOOL SaveJPG( LPCTSTR lpszName );
 	void InitSetItemTextColor();
 	void Free();
-	void SetMessengerAutoState();
 
 public:
 	DWORD		   m_dwSkillTime[MAX_SKILL];

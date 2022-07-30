@@ -1328,7 +1328,6 @@ BOOL CGuildDeployManager::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			}
 
 			g_bKeyTable[ nVirtKey ] = FALSE;
-			g_WndMng.SetMessengerAutoState();
 		}
 
 		break;

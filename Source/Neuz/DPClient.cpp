@@ -6955,11 +6955,10 @@ void CDPClient::OnGCBestPlayer( CAr & ar )
 
 void CDPClient::OnFriendGameJoin( CAr & ar )
 {
-	g_WndMng.m_RTMessenger.Serialize( ar );		// g_WndMng.m_RTMessenger.clear()
+	g_WndMng.m_RTMessenger.Serialize(ar);
 	g_WndMng.m_bConnect = TRUE;
-	g_WndMng.m_timerMessenger.Set( MIN( 5 ) );
-	if( g_WndMng.m_RTMessenger.size() )
-	{
+
+	if (!g_WndMng.m_RTMessenger.empty()) {
 		SendGetFriendState();
 	}
 
