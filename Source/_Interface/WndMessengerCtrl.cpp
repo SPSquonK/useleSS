@@ -253,6 +253,7 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 	}
 
 	m_sortStrategy.ReApply(m_vPlayerList);
+	SetScrollBar();
 }
 
 void CWndFriendCtrlEx::PaintFrame( C2DRender* p2DRender )
@@ -599,13 +600,11 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-void CWndFriendCtrlEx::SetScrollBar()
-{
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange	= g_WndMng.m_RTMessenger.size();
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
+void CWndFriendCtrlEx::SetScrollBar() {
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange = static_cast<int>(m_vPlayerList.size());
+	m_wndScrollBar.SetScrollRange(0, nRange);
+	m_wndScrollBar.SetScrollPage(nPage);
 }
 
 void CWndFriendCtrlEx::ScrollBarPos( int nPos )
@@ -695,6 +694,7 @@ void CWndGuildCtrlEx::UpdatePlayerList()
 	}
 
 	m_sortStrategy.ReApply(m_vPlayerList);
+	SetScrollBar();
 }
 
 void CWndGuildCtrlEx::PaintFrame( C2DRender* p2DRender )
@@ -889,9 +889,8 @@ int	CWndGuildCtrlEx::GetSelect( CPoint point, u_long & idPlayer, CGuildMember** 
 
 void CWndGuildCtrlEx::SetScrollBar()
 {
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange	= g_WndMng.m_RTMessenger.size();
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange	= static_cast<int>(m_vPlayerList.size());
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }

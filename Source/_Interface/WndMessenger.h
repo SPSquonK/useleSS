@@ -29,9 +29,8 @@ public:
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 
-	void UpdateFriendList();
-	void UpdateGuildMemberList();
-	void UpdateCampusMemberList();
+	enum class UpdateListType { Friend, Guild, Campus, Any };
+	static void TryUpdateList(UpdateListType type);
 };
 
 class CWndInstantMsg : public CWndNeuz 
@@ -39,8 +38,6 @@ class CWndInstantMsg : public CWndNeuz
 public: 
 	CTimer m_timer;
 	CString m_strMessage;
-	CWndInstantMsg(); 
-	~CWndInstantMsg(); 
 	
 	CString m_strPlayer;
 	

@@ -849,13 +849,8 @@ void CDPClient::OnUpdatePlayerData( CAr & ar )
 
 	if( pPlayerData->data.nVer < data.nVer )
 		memcpy( &pPlayerData->data, &data, sizeof(sPlayerData) );
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-	{
-		pWndMessengerEx->UpdateFriendList();
-		pWndMessengerEx->UpdateGuildMemberList();
-		pWndMessengerEx->UpdateCampusMemberList();
-	}
+
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Any);
 	UpdateGuildWnd();
 }
 
@@ -866,13 +861,7 @@ void	CDPClient::OnLogout( CAr & ar )
 	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( idPlayer );
 	pPlayerData->data.uLogin	= 0;
 	TRACE( "OnLogout : %s\n", pPlayerData->szPlayer );
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-	{
-		pWndMessengerEx->UpdateFriendList();
-		pWndMessengerEx->UpdateGuildMemberList();
-		pWndMessengerEx->UpdateCampusMemberList();
-	}
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Any);
 	UpdateGuildWnd();
 }
 
@@ -6973,12 +6962,8 @@ void CDPClient::OnFriendGameJoin( CAr & ar )
 	{
 		SendGetFriendState();
 	}
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-	{
-		pWndMessengerEx->UpdateFriendList();
-		pWndMessengerEx->m_wndFriend.SetScrollBar();
-	}
+
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 void CDPClient::OnAddFriend( CAr & ar )
@@ -6992,9 +6977,7 @@ void CDPClient::OnAddFriend( CAr & ar )
 	g_WndMng.m_RTMessenger.SetFriend( uidPlayer );
 	SendGetFriendState();
 
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateFriendList();
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 void CDPClient::OnRemoveFriend( CAr & ar )
@@ -7003,9 +6986,7 @@ void CDPClient::OnRemoveFriend( CAr & ar )
 	ar >> uidPlayer;
 	g_WndMng.m_RTMessenger.RemoveFriend( uidPlayer );
 
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateFriendList();
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 
@@ -7087,9 +7068,7 @@ void CDPClient::OnRemoveFriendState( CAr & ar )
 
 	g_WndMng.m_RTMessenger.SetFriend( uRemoveid );
 
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateFriendList();
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 void CDPClient::OnFriendJoin(CAr & ar) {
@@ -7108,9 +7087,7 @@ void CDPClient::OnFriendJoin(CAr & ar) {
 		}
 	}
 
-	if (CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_)) {
-		pWndMessengerEx->UpdateFriendList();
-	}
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 void CDPClient::OnFriendLogOut( CAr & ar )
@@ -7121,9 +7098,8 @@ void CDPClient::OnFriendLogOut( CAr & ar )
 	if( pFriend )
 	{
 		pFriend->dwState	= FriendStatus::OFFLINE;
-		CWndMessengerEx* pWndMessengerEx	= (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
+
+		CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 	}
 }
 
@@ -7132,9 +7108,8 @@ void CDPClient::OnFriendNoIntercept( CAr & ar )
 	u_long idFriend;
 	ar >> idFriend;
 	g_WndMng.m_RTMessenger.SetBlock(idFriend, false);
-	CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_);
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateFriendList();
+
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 void CDPClient::OnFriendIntercept( CAr & ar )
@@ -7153,9 +7128,8 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 			if( pFriend )
 				pFriend->dwState	= FriendStatus::OFFLINE;
 		}
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateFriendList();
+		
+		CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 	}
 }
 
@@ -7173,10 +7147,7 @@ void CDPClient::OnGetFriendState(CAr & ar) {
 		}
 	}
 
-	CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_);
-	if (pWndMessengerEx) {
-		pWndMessengerEx->UpdateFriendList();
-	}
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 void CDPClient::OnSetFriendState(CAr & ar) {
@@ -7191,9 +7162,7 @@ void CDPClient::OnSetFriendState(CAr & ar) {
 			pFriend->dwState = dwState;
 		}
 
-		if (CWndMessengerEx * pWndMessengerEx = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_)) {
-			pWndMessengerEx->UpdateFriendList();
-		}
+		CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 	}
 }
 
@@ -10985,9 +10954,7 @@ void CDPClient::OnCreateGuild( CAr & ar )
 
 				if(g_pPlayer->m_idPlayer == idPlayer)
 				{
-					CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-					if( pWndMessengerEx )
-						pWndMessengerEx->UpdateGuildMemberList();
+					CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 				}
 			}
 		}
@@ -11027,9 +10994,8 @@ void CDPClient::OnDestroyGuild( CAr & ar )
 			pWndGuild->m_WndGuildTabMember.UpdateData();
 			pWndGuild->m_WndGuildTabWar.UpdateData();
 		}
-			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-			if( pWndMessengerEx )
-				pWndMessengerEx->UpdateGuildMemberList();
+
+		CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 	}
 }
 
@@ -11048,17 +11014,6 @@ void CDPClient::OnGuild( CAr & ar )
 	{
 		pGuild->Serialize( ar, FALSE );
 	}
-
-	CGuildMember* pGuildMember;
-	for( int i = 0 ; i < m_nMaxLoginGuild ; ++i )
-	{
-		pGuildMember = pGuild->GetMember( m_uLoginPlayerIdGuild[ i ] );
-		if( pGuildMember )
-		{
-//			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer );
-//			pPlayerData->data.uLogin	= m_uLoginGuildMulti[i];
-		}
-	}
 	
 	CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
 	if( pWndGuild )
@@ -11068,9 +11023,8 @@ void CDPClient::OnGuild( CAr & ar )
 		pWndGuild->m_WndGuildTabMember.UpdateData();
 		pWndGuild->m_WndGuildTabWar.UpdateData();
 	}
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateGuildMemberList();
+
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 
 	if( pGuild )
 	{
@@ -11129,12 +11083,8 @@ void CDPClient::OnSetGuild( OBJID objid, CAr & ar )
 						pWndGuild->m_WndGuildTabMember.UpdateData();
 						pWndGuild->m_WndGuildTabWar.UpdateData();
 					}
-					CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-					if( pWndMessengerEx )
-					{
-						pWndMessengerEx->UpdateFriendList();
-						pWndMessengerEx->UpdateGuildMemberList();
-					}
+
+					CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Any);
 				}
 			}
 //			CWndX
@@ -11176,9 +11126,7 @@ void CDPClient::OnAddGuildMember( CAr & ar )
 		}
 		if(g_pPlayer->m_idGuild == idGuild)
 		{
-			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-			if( pWndMessengerEx )
-				pWndMessengerEx->UpdateGuildMemberList();
+			CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 		}
 	}
 }
@@ -11209,9 +11157,8 @@ void CDPClient::OnRemoveGuildMember( CAr & ar )
 				pWndGuild->m_WndGuildTabMember.UpdateData();
 				pWndGuild->m_WndGuildTabWar.UpdateData();
 			}
-			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-			if( pWndMessengerEx )
-				pWndMessengerEx->UpdateGuildMemberList();
+			
+			CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 		}
 	}
 }
@@ -11284,9 +11231,8 @@ void CDPClient::OnGuildMemberLv( CAr & ar )
 			pWndGuild->m_WndGuildTabInfo.UpdateData();
 			pWndGuild->m_WndGuildTabMember.UpdateData();
 		}
-		CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-		if( pWndMessengerEx )
-			pWndMessengerEx->UpdateGuildMemberList();
+
+		CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 	}
 }
 
@@ -11397,9 +11343,8 @@ void CDPClient::OnGuildMemberLogin( CAr & ar )
 			CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
 			if( pWndGuild )
 				pWndGuild->m_WndGuildTabMember.UpdateData();
-			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-			if( pWndMessengerEx )
-				pWndMessengerEx->UpdateGuildMemberList();
+			
+			CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 		}
 	}
 }
@@ -11441,9 +11386,8 @@ void CDPClient::OnGuldMyGameJoin( CAr & ar )
 				pWndGuild->m_WndGuildTabInfo.UpdateData();
 				pWndGuild->m_WndGuildTabMember.UpdateData();
 			}
-			CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-			if( pWndMessengerEx )
-				pWndMessengerEx->UpdateGuildMemberList();
+			
+			CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Guild);
 		}
 	}
 
@@ -11911,13 +11855,8 @@ void CDPClient::OnQueryPlayerData( CAr & ar )
 	{
 		CPlayerDataCenter::GetInstance()->AddPlayerData( idPlayer, pd );
 	}
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-	{
-		pWndMessengerEx->UpdateFriendList();
-		pWndMessengerEx->UpdateGuildMemberList();
-		pWndMessengerEx->UpdateCampusMemberList();
-	}
+
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Any);
 	UpdateGuildWnd();
 
 }
@@ -16381,17 +16320,14 @@ void CDPClient::OnHousingSetVisitAllow( CAr & ar )
 	CHousing::GetInstance()->SetVisitAllow( dwTargetId, bAllow );
 
 	DWORD dwTextId;
-	CString strTemp;
 	if( bAllow )
 		dwTextId = TID_GAME_HOUSING_INVIATION;
 	else
 		dwTextId = TID_GAME_HOUSING_INVIATION_CANCEL;
 
-	strTemp.Format( prj.GetText( dwTextId ), CPlayerDataCenter::GetInstance()->GetPlayerString( dwTargetId ) );
-	g_WndMng.PutString( strTemp, NULL, prj.GetTextColor( dwTextId ) );
+	g_WndMng.PutString(dwTextId, CPlayerDataCenter::GetInstance()->GetPlayerString(dwTargetId));
 
-	CWndMessengerEx* pWndMessengerEx = (CWndMessengerEx*)g_WndMng.GetApplet( APP_MESSENGER_EX );
-	if(pWndMessengerEx) pWndMessengerEx->UpdateFriendList();
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Friend);
 }
 
 void CDPClient::OnHousingVisitableList( CAr & ar )
@@ -16912,28 +16848,19 @@ void CDPClient::OnInviteCampusMember( CAr & ar )
 	g_WndMng.m_pWndCampusInvitationConfirm->Initialize( NULL );
 }
 
-void CDPClient::OnUpdateCampus( CAr & ar )
-{
-	CCampusHelper::GetInstance()->OnUpdateCampus( ar );
-	CWndMessengerEx* pWndMessengerEx = ( CWndMessengerEx* )g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateCampusMemberList();
+void CDPClient::OnUpdateCampus(CAr & ar) {
+	CCampusHelper::GetInstance()->OnUpdateCampus(ar);
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Campus);
 }
 
-void CDPClient::OnRemoveCampus( CAr & ar )
-{
-	CCampusHelper::GetInstance()->OnRemoveCampus( ar );
-	CWndMessengerEx* pWndMessengerEx = ( CWndMessengerEx* )g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateCampusMemberList();
+void CDPClient::OnRemoveCampus(CAr & ar) {
+	CCampusHelper::GetInstance()->OnRemoveCampus(ar);
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Campus);
 }
 
-void CDPClient::OnUpdateCampusPoint( CAr & ar )
-{
-	CCampusHelper::GetInstance()->OnUpdateCampusPoint( ar );
-	CWndMessengerEx* pWndMessengerEx = ( CWndMessengerEx* )g_WndMng.GetWndBase( APP_MESSENGER_ );
-	if( pWndMessengerEx )
-		pWndMessengerEx->UpdateCampusMemberList();
+void CDPClient::OnUpdateCampusPoint(CAr & ar) {
+	CCampusHelper::GetInstance()->OnUpdateCampusPoint(ar);
+	CWndMessengerEx::TryUpdateList(CWndMessengerEx::UpdateListType::Campus);
 }
 
 void CDPClient::SendInviteCampusMember( u_long idTarget )

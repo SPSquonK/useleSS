@@ -366,70 +366,29 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
-/*
-void CWndMessengerEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
-{
-	AdjustMinRect( &rectWnd, 352, 368 );
-	CWndNeuz::SetWndRect( rectWnd, bOnSize );
+
+void CWndMessengerEx::TryUpdateList(UpdateListType type) {
+	CWndMessengerEx * self = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_);
+	if (!self) return;
+
+	CWndTabCtrl * pTabCtrl = self->GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
+	CWndBase * pChild = pTabCtrl->GetFocusChild();
+
+	if (pChild == &self->m_wndFriend) {
+		if (type == UpdateListType::Friend || type == UpdateListType::Any) {
+			self->m_wndFriend.UpdatePlayerList();
+		}
+	} else if (pChild == &self->m_wndGuild) {
+		if (type == UpdateListType::Guild || type == UpdateListType::Any) {
+			self->m_wndGuild.UpdatePlayerList();
+		}
+	} else if (pChild == &self->m_WndCampus) {
+		if (type == UpdateListType::Campus || type == UpdateListType::Any) {
+			self->m_WndCampus.UpdatePlayerList();
+		}
+	}
 }
 
-void CWndMessengerEx::OnSize(UINT nType, int cx, int cy)
-{
-	CRect rect = GetClientRect();
-	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CWndButton* pAdd = (CWndButton*)GetDlgItem( WIDC_ADD );
-	CWndButton* pTag = (CWndButton*)GetDlgItem( WIDC_BUTTON2 );
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
-
-	rect.top += 78;
-	rect.left += 8;
-	rect.bottom -= 22;
-	rect.right -= 8;
-	
-	pTabCtrl->SetWndRect( rect );
-	pAdd->Move( rect.left, rect.bottom + 3 );
-	pTag->Move( rect.left + 22, rect.bottom + 3 );
-	wndCtrl->rect.left = rect.left + 49;
-	wndCtrl->rect.right = wndCtrl->rect.left + 12;
-	wndCtrl->rect.top = rect.bottom + 3;
-	wndCtrl->rect.bottom = wndCtrl->rect.top + 12;
-
-	m_wndFriend.ScrollBarPos( 0 );
-	m_wndGuild.ScrollBarPos( 0 );
-
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-*/
-void CWndMessengerEx::UpdateFriendList()
-{
-	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CWndBase* pChild = pTabCtrl->GetFocusChild();
-	if(pChild == &m_wndFriend)
-		m_wndFriend.UpdatePlayerList();
-}
-
-void CWndMessengerEx::UpdateGuildMemberList()
-{
-	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CWndBase* pChild = pTabCtrl->GetFocusChild();
-	if(pChild == &m_wndGuild)
-		m_wndGuild.UpdatePlayerList();
-}
-
-void CWndMessengerEx::UpdateCampusMemberList()
-{
-	CWndTabCtrl* pTabCtrl = ( CWndTabCtrl* )GetDlgItem( WIDC_TABCTRL1 );
-	CWndBase* pChild = pTabCtrl->GetFocusChild();
-	if( pChild == &m_WndCampus )
-		m_WndCampus.UpdatePlayerList();
-}
-
-CWndInstantMsg::CWndInstantMsg() 
-{ 
-} 
-CWndInstantMsg::~CWndInstantMsg() 
-{ 
-} 
 void CWndInstantMsg::OnDraw( C2DRender* p2DRender ) 
 { 
 	if( m_timer.IsTimeOut() )
