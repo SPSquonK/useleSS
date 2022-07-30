@@ -584,11 +584,7 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 	m_dwMode	= pMover->m_dwMode;
 	lstrcpy( m_szBankPass, pMover->m_szBankPass );
 	m_dwPeriodicTick	= pMover->m_dwPeriodicTick;
-#ifdef __RT_1025
 	m_RTMessenger	= pMover->m_RTMessenger;
-#else	// __RT_1025
-	m_Messenger		= pMover->m_Messenger;
-#endif	// __RT_1025
 #ifdef __BUFF_1107
 	m_buffs	= pMover->m_buffs;
 #endif	// __BUFF_1107

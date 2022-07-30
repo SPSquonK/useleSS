@@ -9,6 +9,7 @@
 #include "guild.h"
 
 #include "playerdata.h"
+#include "rtmessenger.h"
 
 #undef	theClass
 #define theClass	CDPCacheSrvr
@@ -40,11 +41,9 @@ public:
 	void	SendFriendJoin( CPlayer* pTo, CPlayer* pFriend );
 	void	SendFriendLogOut( CPlayer* pTo, u_long uidPlayer );
 	void	SendSetFriendState( CPlayer* pTo );
-	void	SendFriendNoIntercept( CPlayer* pTo, CPlayer* pFriend, int state );
+	void	SendFriendNoIntercept(CPlayer * pTo, u_long uFriendid);
 	void	SendFriendIntercept( CPlayer* pPlayer, CPlayer* pFriend );
 	void	SendFriendIntercept( CPlayer* pPlayer, u_long uFriendid );
-	void	SendFriendNoIntercept( CPlayer* pTo, u_long uFriendid, int state );
-	void	SendOneFriendState( CPlayer* pTo, u_long uidPlayer, DWORD dwState );
 	void	SendModifyMode( DWORD dwMode, BYTE f, u_long idFrom, CPlayer* pTo );
 #ifdef __LAYER_1015
 	void	SendSummonPlayer( u_long idOperator, u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, CPlayer* pPlayer, int nLayer );

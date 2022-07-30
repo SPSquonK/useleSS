@@ -156,14 +156,12 @@ void CDPLoginClient::SendDeletePlayer( BYTE nSlot, LPCTSTR szNo )
 	ar.WriteString( g_Neuz.GetDeleteKey( szNo ) );
 	ar << g_Neuz.m_apPlayer[nSlot]->m_idPlayer;
 	ar << g_Neuz.m_dwAuthKey;
-#ifdef __RT_1025
 	ar << g_Neuz.m_aRTMessenger[nSlot].size();
 	for( CRTMessenger::iterator it=g_Neuz.m_aRTMessenger[nSlot].begin(); it!=g_Neuz.m_aRTMessenger[nSlot].end(); it++ )
 	{
 		u_long uTemp = it->first;
 		ar << it->first;
 	}
-#endif // __RT_1025
 
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
@@ -188,11 +186,7 @@ void CDPLoginClient::OnPreJoin( CAr & ar )
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;
 	
 	// Open world here.	
-#ifdef __RT_1025
 	g_DPlay.SendJoin( (BYTE)m_nSlot, g_Neuz.m_adwWorldID[m_nSlot], g_Neuz.m_apPlayer[m_nSlot], &g_Neuz.m_aRTMessenger[m_nSlot], g_Neuz.m_uIdofMulti );	
-#else	// __RT_1025
-	g_DPlay.SendJoin( (BYTE)m_nSlot, g_Neuz.m_adwWorldID[m_nSlot], g_Neuz.m_apPlayer[m_nSlot], &g_Neuz.m_Messenger[m_nSlot], g_Neuz.m_uIdofMulti );	
-#endif	// __RT_1025
 
 	// ata2k - (2)시간 저장
 	if( ::GetLanguage() == LANG_ENG && ::GetSubLanguage() == LANG_SUB_USA )
@@ -469,11 +463,7 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 	for( int i = 0 ; i < CountMessenger ; i++ )
 	{		
 		ar >> nSlot;
-#ifdef __RT_1025
 		g_Neuz.m_aRTMessenger[nSlot].Serialize( ar );
-#else	// __RT_1025
-		g_Neuz.m_Messenger[nSlot].Serialize( ar );
-#endif	// __RT_1025
 	}
 
 	CNetwork::GetInstance().OnEvent( LOGIN_PLAYER_LIST );

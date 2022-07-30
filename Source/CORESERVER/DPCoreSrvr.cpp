@@ -1081,16 +1081,6 @@ void CDPCoreSrvr::SendAddPartyMember(const u_long uPartyId, const u_long idLeade
 	SEND(ar, this, DPID_ALLPLAYERS);
 }
 
-void CDPCoreSrvr::SendAddFriend( u_long uidSender, u_long uidFriend, BYTE nSenderSex, BYTE nFriendSex, LONG nSendJob, LONG nFriendJob )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ADDFRIEND, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uidSender << uidFriend;
-	ar << nSenderSex << nFriendSex;
-	ar << nSendJob << nFriendJob;
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-
 void CDPCoreSrvr::SendRemoveFriend( u_long uidSender, u_long uidFriend )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_REMOVEFRIEND, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1551,7 +1541,7 @@ void CDPCoreSrvr::SendWarMasterAbsent(WarId idWar, BOOL bDecl )
 }
 
 
-void CDPCoreSrvr::SendSetFriendState( u_long uidPlayer, DWORD dwState )
+void CDPCoreSrvr::SendSetFriendState( u_long uidPlayer, FriendStatus dwState )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_SETFRIENDSTATE, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << uidPlayer << dwState;

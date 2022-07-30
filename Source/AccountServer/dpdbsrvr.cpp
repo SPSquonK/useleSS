@@ -88,12 +88,10 @@ void CDPDBSrvr::OnRemovePlayer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSi
 		SAccountName, char[255], char[255], u_long, DWORD
 	>();
 
-#ifdef __RT_1025
 	size_t nSize; u_long uTemp;
 	ar >> nSize;
 	for( size_t i=0; i<nSize; i++ )
 		ar >> uTemp;	// 그냥 받기만 한다.(쓸모없음)
-#endif // __RT_1025
 
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
 	CAccount* pAccount	= g_AccountMng.GetAccount( szAccount );

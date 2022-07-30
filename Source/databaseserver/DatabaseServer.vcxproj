@@ -209,8 +209,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\LuaBase.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\piercing.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\playerdata.cpp">
@@ -340,7 +338,6 @@
     <ClInclude Include="..\_Common\lord.h" />
     <ClInclude Include="..\_Common\lordskill.h" />
     <ClInclude Include="..\_Common\LuaBase.h" />
-    <ClInclude Include="..\_Common\messenger.h" />
     <ClInclude Include="..\_common\party.h" />
     <ClInclude Include="..\_common\path.h" />
     <ClInclude Include="..\_Common\Piercing.h" />

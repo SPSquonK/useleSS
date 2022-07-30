@@ -9,6 +9,7 @@
 #include "party.h"
 
 #include "InstanceDungeonBase.h"
+#include "rtmessenger.h"
 
 #undef	theClass
 #define theClass	CDPCoreSrvr
@@ -56,7 +57,6 @@ public:
 	void	SendPartyChangeExpMode( u_long idParty, CParty::ShareExpMode nExpMode );
 
 	void	SendAddPartyMember(u_long uPartyId, u_long idLeader, u_long idMember);
-	void	SendAddFriend( u_long uidSender, u_long uidFriend, BYTE nSenderSex, BYTE nFriendSex, LONG nSendJob, LONG nFriendJob );
 	void	SendRemoveFriend( u_long uidSender, u_long uidFriend );
 #ifdef __ENVIRONMENT_EFFECT
 	void	SendEnvironmentEffect();
@@ -169,7 +169,7 @@ public:
 	void	OnWarTimeout( CAr & ar, DPID, DPID, DPID, u_long );
 
 public:
-	void	SendSetFriendState( u_long uidPlayer, DWORD dwState );
+	void	SendSetFriendState( u_long uidPlayer, FriendStatus dwState );
 	void	SendChangeLeader( u_long uPartyId, u_long uidChangeLeader );
 	void	SendFriendInterceptState( u_long uIdPlayer, u_long uIdFriend );
 		

@@ -225,9 +225,6 @@
     <ClCompile Include="..\_Common\LuaBase.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-      <Filter>Neuz Files\Common Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\piercing.cpp">
       <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
@@ -525,9 +522,6 @@
       <Filter>Neuz Files\Common Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\LuaBase.h">
-      <Filter>Neuz Files\Common Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\messenger.h">
       <Filter>Neuz Files\Common Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_common\party.h">

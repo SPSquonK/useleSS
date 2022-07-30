@@ -83,7 +83,7 @@ void CWndSummonFriend::OnInitialUpdate()
 	CWndComboBox* pWndCombo		= (CWndComboBox*)GetDlgItem( WIDC_COMBOBOX1 );
 
 	for (const auto & [idPlayer, pFriend] : g_WndMng.m_RTMessenger) {
-		if( pFriend.dwState != FRS_OFFLINE && !pFriend.bBlock	)
+		if( pFriend.dwState != FriendStatus::OFFLINE && !pFriend.bBlock	)
 			pWndCombo->AddString( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
 	}
 	pWndCombo->SetFocus();

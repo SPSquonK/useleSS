@@ -3,8 +3,6 @@
 #include "defineText.h"
 #include "AppDefine.h"
 #include "WndMessenger.h"
-#include "WndFriendCtrl.h"
-#include "messenger.h"
 #include "WndFriendConFirm.h"
 #include "dpcertified.h"
 #include "WndManager.h"
@@ -45,61 +43,37 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
 	// Draw Status Icon
-#ifdef __RT_1025
-	DWORD dwMyState;
-	if( g_WndMng.m_RTMessenger.GetState() == FRS_AUTOABSENT )
-		dwMyState	= FRS_ABSENT;
-	else if( g_WndMng.m_RTMessenger.GetState() == FRS_ONLINE )
-		dwMyState	= 2;
-	else if( g_WndMng.m_RTMessenger.GetState() == FRS_OFFLINE )
-		dwMyState	= 8;
-	else
-		dwMyState	= g_WndMng.m_RTMessenger.GetState();
-#else	// __RT_1025
-	DWORD dwMyState;
-	if( g_WndMng.m_Messenger.m_dwMyState == FRS_AUTOABSENT )
-		dwMyState = FRS_ABSENT;
-	else if( g_WndMng.m_Messenger.m_dwMyState == FRS_ONLINE )
-		dwMyState = 2;
-	else if( g_WndMng.m_Messenger.m_dwMyState == FRS_OFFLINE )
-		dwMyState = 8;
-	else
-		dwMyState = g_WndMng.m_Messenger.m_dwMyState;
-#endif	// __RT_1025
+	const int statusIcon = GetVertexIconIndex(g_WndMng.m_RTMessenger.GetState());
 	
 	TEXTUREVERTEX2 vertex[ 6 ];
 	TEXTUREVERTEX2* pVertices = vertex;
 	
-	pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 8, 8 ), dwMyState - 2, &pVertices, 0xffffffff );	
+	pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 8, 8 ), statusIcon, &pVertices, 0xffffffff );	
 	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX2 ) );
 	
 	// Draw Name & Status
 	CString strState;
-#ifdef __RT_1025
 	switch( g_WndMng.m_RTMessenger.GetState() )
-#else	// __RT_1025
-	switch(g_WndMng.m_Messenger.m_dwMyState)
-#endif	// __RT_1025
 	{
-		case FRS_ONLINE:
+		case FriendStatus::ONLINE:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_ONLINE_STATUS ) );
 			break;
-		case FRS_OFFLINE:
+		case FriendStatus::OFFLINE:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_OFFLINE_STATUS ) );
 			break;
-		case FRS_ABSENT:
+		case FriendStatus::ABSENT:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_ABSENT ) );
 			break;
-		case FRS_HARDPLAY:
+		case FriendStatus::HARDPLAY:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_HARDPLAY ) );
 			break;
-		case FRS_EAT:
+		case FriendStatus::EAT:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_EAT ) );
 			break;
-		case FRS_REST:
+		case FriendStatus::REST:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_REST ) );
 			break;
-		case FRS_MOVE:
+		case FriendStatus::MOVE:
 			strState.Format( "(%s)", prj.GetText( TID_FRS_MOVE ) );
 			break;
 	}
@@ -191,11 +165,7 @@ void CWndMessengerEx::OnInitialUpdate()
 
 	m_wndFriend.Create( CRect( 0, 0, 250, 250 ), pWndTabCtrl, 11 );
 	m_wndFriend.AddWndStyle( WBS_NODRAWFRAME );
-#ifdef __RT_1025
 	if( g_WndMng.m_RTMessenger.size() )
-#else	// __RT_1025
-	if( g_WndMng.m_Messenger.m_aFriend.size() )
-#endif	// __RT_1025
 	{
 		g_DPlay.SendGetFriendState();
 	}
@@ -224,13 +194,13 @@ void CWndMessengerEx::OnInitialUpdate()
 	m_wndGuild.ScrollBarPos( 0 );
 
 	m_menuState.CreateMenu( this );	
-	m_menuState.AppendMenu( 0, FRS_ONLINE   , prj.GetText( TID_FRS_ONLINE_STATUS   ) );
-	m_menuState.AppendMenu( 0, FRS_ABSENT   , prj.GetText( TID_FRS_ABSENT   ) );
-	m_menuState.AppendMenu( 0, FRS_HARDPLAY , prj.GetText( TID_FRS_HARDPLAY ) );
-	m_menuState.AppendMenu( 0, FRS_EAT      , prj.GetText( TID_FRS_EAT      ) );
-	m_menuState.AppendMenu( 0, FRS_REST     , prj.GetText( TID_FRS_REST     ) );
-	m_menuState.AppendMenu( 0, FRS_MOVE     , prj.GetText( TID_FRS_MOVE     ) );
-	m_menuState.AppendMenu( 0, FRS_OFFLINE  , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::ONLINE  ) , prj.GetText( TID_FRS_ONLINE_STATUS   ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::ABSENT  ) , prj.GetText( TID_FRS_ABSENT   ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::HARDPLAY) , prj.GetText( TID_FRS_HARDPLAY ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::EAT     ) , prj.GetText( TID_FRS_EAT      ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::REST    ) , prj.GetText( TID_FRS_REST     ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::MOVE    ) , prj.GetText( TID_FRS_MOVE     ) );
+	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::OFFLINE ) , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
 	
 	m_TexMail.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndMail.dds" ), 0xffff00ff );
 	m_nFlashCounter = 0;
@@ -358,10 +328,11 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	else
 	{
-		if( FRS_ONLINE <= nID && nID < MAX_FRIENDSTAT )
+		const FriendStatus asStatus = static_cast<FriendStatus>(nID);
+		if( IsValid(asStatus) )
 		{
 			// 내 상태가 바뀌었따~ 코어로 보내어 모두 알려주자~
-			g_DPlay.SendSetState( nID );
+			g_DPlay.SendPacket<PACKETTYPE_SETFRIENDSTATE, FriendStatus>(asStatus);
 		}
 	}
 
@@ -375,126 +346,49 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	else if( pChild == &m_WndCampus )
 		nFocusChild = 3;
 
-	switch(nID)
-	{
-		case WIDC_CHANNEL:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyChannel();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyChannel();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyChannel();
-			}
-			break;
-		case WIDC_STATE:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyStatus();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyStatus();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyStatus();
-			}
-			break;
-		case WIDC_LEVEL:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyLevel();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyLevel();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyLevel();
-			}
-			break;
-		case WIDC_JOB:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyJob();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyJob();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyJob();
-			}
-			break;
-		case WIDC_NAME:
-			{
-				if(nFocusChild == 1)
-					m_wndFriend.SortbyName();
-				else if(nFocusChild == 2)
-					m_wndGuild.SortbyName();
-				else if( nFocusChild == 3 )
-					m_WndCampus.SortbyName();
-			}
-			break;
+	std::optional<MessengerHelper::Sorter::By> sort = std::nullopt;
+	switch (nID) {
+		case WIDC_CHANNEL: sort = MessengerHelper::Sorter::By::Channel; break;
+		case WIDC_STATE  : sort = MessengerHelper::Sorter::By::Status;  break;
+		case WIDC_LEVEL  : sort = MessengerHelper::Sorter::By::Level;   break;
+		case WIDC_JOB    : sort = MessengerHelper::Sorter::By::Job;     break;
+		case WIDC_NAME   : sort = MessengerHelper::Sorter::By::Name;    break;
+	}
+
+	if (sort) {
+		if (nFocusChild == 1)
+			m_wndFriend.ChangeSort(sort.value());
+		else if (nFocusChild == 2)
+			m_wndGuild.ChangeSort(sort.value());
+		else if (nFocusChild == 3)
+			m_WndCampus.ChangeSort(sort.value());
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
-/*
-void CWndMessengerEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
-{
-	AdjustMinRect( &rectWnd, 352, 368 );
-	CWndNeuz::SetWndRect( rectWnd, bOnSize );
+
+void CWndMessengerEx::TryUpdateList(UpdateListType type) {
+	CWndMessengerEx * self = g_WndMng.GetWndBase<CWndMessengerEx>(APP_MESSENGER_);
+	if (!self) return;
+
+	CWndTabCtrl * pTabCtrl = self->GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
+	CWndBase * pChild = pTabCtrl->GetFocusChild();
+
+	if (pChild == &self->m_wndFriend) {
+		if (type == UpdateListType::Friend || type == UpdateListType::Any) {
+			self->m_wndFriend.UpdatePlayerList();
+		}
+	} else if (pChild == &self->m_wndGuild) {
+		if (type == UpdateListType::Guild || type == UpdateListType::Any) {
+			self->m_wndGuild.UpdatePlayerList();
+		}
+	} else if (pChild == &self->m_WndCampus) {
+		if (type == UpdateListType::Campus || type == UpdateListType::Any) {
+			self->m_WndCampus.UpdatePlayerList();
+		}
+	}
 }
 
-void CWndMessengerEx::OnSize(UINT nType, int cx, int cy)
-{
-	CRect rect = GetClientRect();
-	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CWndButton* pAdd = (CWndButton*)GetDlgItem( WIDC_ADD );
-	CWndButton* pTag = (CWndButton*)GetDlgItem( WIDC_BUTTON2 );
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
-
-	rect.top += 78;
-	rect.left += 8;
-	rect.bottom -= 22;
-	rect.right -= 8;
-	
-	pTabCtrl->SetWndRect( rect );
-	pAdd->Move( rect.left, rect.bottom + 3 );
-	pTag->Move( rect.left + 22, rect.bottom + 3 );
-	wndCtrl->rect.left = rect.left + 49;
-	wndCtrl->rect.right = wndCtrl->rect.left + 12;
-	wndCtrl->rect.top = rect.bottom + 3;
-	wndCtrl->rect.bottom = wndCtrl->rect.top + 12;
-
-	m_wndFriend.ScrollBarPos( 0 );
-	m_wndGuild.ScrollBarPos( 0 );
-
-	CWndNeuz::OnSize( nType, cx, cy );
-}
-*/
-void CWndMessengerEx::UpdateFriendList()
-{
-	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CWndBase* pChild = pTabCtrl->GetFocusChild();
-	if(pChild == &m_wndFriend)
-		m_wndFriend.UpdatePlayerList();
-}
-
-void CWndMessengerEx::UpdateGuildMemberList()
-{
-	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CWndBase* pChild = pTabCtrl->GetFocusChild();
-	if(pChild == &m_wndGuild)
-		m_wndGuild.UpdatePlayerList();
-}
-
-void CWndMessengerEx::UpdateCampusMemberList()
-{
-	CWndTabCtrl* pTabCtrl = ( CWndTabCtrl* )GetDlgItem( WIDC_TABCTRL1 );
-	CWndBase* pChild = pTabCtrl->GetFocusChild();
-	if( pChild == &m_WndCampus )
-		m_WndCampus.UpdatePlayerList();
-}
-
-CWndInstantMsg::CWndInstantMsg() 
-{ 
-} 
-CWndInstantMsg::~CWndInstantMsg() 
-{ 
-} 
 void CWndInstantMsg::OnDraw( C2DRender* p2DRender ) 
 { 
 	if( m_timer.IsTimeOut() )

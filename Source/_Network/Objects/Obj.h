@@ -23,11 +23,7 @@
 #include "dbmanager.h"
 #endif	//
 
-#ifdef __RT_1025
 #include "rtmessenger.h"
-#else	// __RT_1025
-#include "messenger.h"
-#endif	// __RT_1025
 
 #ifdef __BUFF_1107
 #include "buff.h"
@@ -260,11 +256,7 @@ public:
 
 	CTaskbar	m_UserTaskBar;
 	int			m_nUsedSkillQueue;
-#ifdef __RT_1025
 	CRTMessenger	m_RTMessenger;
-#else	// __RT_1025
-	CMessenger		m_Messenger;
-#endif	// __RT_1025
 
 	u_long			m_idparty;
 	u_long			m_idGuild;

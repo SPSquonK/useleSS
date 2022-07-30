@@ -12,226 +12,189 @@
 #include "Campus.h"
 #include "CampusHelper.h"
 #include "FuncTextCmd.h"
-
+#include "MsgHdr.h"
+#include <compare>
 
 //////////////////////////////////////////////////////////////////////////
 // Common Local Func.
 //////////////////////////////////////////////////////////////////////////
-bool prLevelAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+struct MessengerPlayerOrdering {
+	static std::partial_ordering Level(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		const DWORD nPlayer1JobType = prj.jobs.info[player1.m_nJob].dwJobType;
+		const DWORD nPlayer2JobType = prj.jobs.info[player2.m_nJob].dwJobType;
 
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
+		if (nPlayer1JobType > nPlayer2JobType)
+			return std::partial_ordering::less;
 
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nLevel > player2.m_nLevel)
-			rtn_val = true;
+		if (nPlayer1JobType < nPlayer2JobType)
+			return std::partial_ordering::greater;
+
+		if (player1.m_nLevel > player2.m_nLevel)
+			return std::partial_ordering::less;
+
+		if (player1.m_nLevel < player2.m_nLevel)
+			return std::partial_ordering::greater;
+
+		return std::partial_ordering::unordered;
 	}
-	
-	return rtn_val;
-}
 
-bool prLevelDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
+	static std::partial_ordering Job(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		DWORD nPlayer1JobType = prj.jobs.info[player1.m_nJob].dwJobType;
+		DWORD nPlayer2JobType = prj.jobs.info[player2.m_nJob].dwJobType;
 
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
+		if (nPlayer1JobType > nPlayer2JobType)
+			return std::partial_ordering::less;
 
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nLevel < player2.m_nLevel)
-			rtn_val = true;
+		if (nPlayer1JobType < nPlayer2JobType)
+			return std::partial_ordering::greater;
+			
+		if (player1.m_nJob > player2.m_nJob)
+			return std::partial_ordering::less;
+
+		if (player1.m_nJob < player2.m_nJob)
+			return std::partial_ordering::greater;
+
+		return std::partial_ordering::unordered;
 	}
-	
-	return rtn_val;
-}
 
-bool prJobAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
+	static std::partial_ordering Status(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		const FriendStatus nPlayer1Status = player1.m_dwStatus;
+		const FriendStatus nPlayer2Status = player2.m_dwStatus;
 
-	int nPlayer1JobType, nPlayer2JobType;
+		if (nPlayer1Status == FriendStatus::OFFLINE) {
+			if (nPlayer2Status == FriendStatus::OFFLINE) {
+				return std::partial_ordering::unordered;
+			} else {
+				return std::partial_ordering::greater;
+			}
+		} else if (nPlayer2Status == FriendStatus::OFFLINE) {
+			return std::partial_ordering::less;
+		}
 
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
-
-	if(nPlayer1JobType > nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nJob > player2.m_nJob)
-			rtn_val = true;
+		if (nPlayer1Status < nPlayer2Status) return std::partial_ordering::less;
+		if (nPlayer1Status > nPlayer2Status) return std::partial_ordering::greater;
+		return std::partial_ordering::unordered;
 	}
-	
-	return rtn_val;
-}
+};
 
-bool prJobDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1JobType, nPlayer2JobType;
-
-	nPlayer1JobType = prj.jobs.info[ player1.m_nJob ].dwJobType;
-	nPlayer2JobType = prj.jobs.info[ player2.m_nJob ].dwJobType;
-
-	if(nPlayer1JobType < nPlayer2JobType)
-		rtn_val = true;
-	else if(nPlayer1JobType == nPlayer2JobType)
-	{
-		if(player1.m_nJob < player2.m_nJob)
-			rtn_val = true;
+namespace {
+	bool prLevelAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Level(player1, player2) == std::partial_ordering::less;
 	}
-	
-	return rtn_val;
+
+	bool prLevelDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Level(player1, player2) == std::partial_ordering::greater;
+	}
+
+	bool prJobAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Job(player1, player2) == std::partial_ordering::less;
+	}
+
+	bool prJobDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Job(player1, player2) == std::partial_ordering::greater;
+	}
+
+	bool prStatusAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Status(player1, player2) == std::partial_ordering::less;
+	}
+
+	bool prStatusDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return MessengerPlayerOrdering::Status(player1, player2) == std::partial_ordering::less;
+	}
+
+	bool prChannelAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return player1.m_nChannel > player2.m_nChannel;
+	}
+
+	bool prChannelDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return player1.m_nChannel < player2.m_nChannel;
+	}
+
+	bool prNameAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return std::strcmp(player1.m_szName, player2.m_szName) > 0;
+	}
+
+	bool prNameDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
+		return std::strcmp(player1.m_szName, player2.m_szName) < 0;
+	}
 }
 
-bool prStatusAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1Status, nPlayer2Status;
-
-	nPlayer1Status = player1.m_dwStatus;
-	nPlayer2Status = player2.m_dwStatus;
-
-	// offline 상태가 맨 마지막상태
-	if(nPlayer1Status == FRS_OFFLINE)
-		nPlayer1Status = 12;
-	if(nPlayer2Status == FRS_OFFLINE)
-		nPlayer2Status = 12;
-
-	if(nPlayer1Status < nPlayer2Status)
-		rtn_val = true;
-	
-	return rtn_val;
+void CWndFriendCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
+	m_sortStrategy.ChangeSort(by, m_vPlayerList);
 }
 
-bool prStatusDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	int nPlayer1Status, nPlayer2Status;
-
-	nPlayer1Status = player1.m_dwStatus;
-	nPlayer2Status = player2.m_dwStatus;
-
-	// offline 상태가 맨 마지막상태
-	if(nPlayer1Status == FRS_OFFLINE)
-		nPlayer1Status = 12;
-	if(nPlayer2Status == FRS_OFFLINE)
-		nPlayer2Status = 12;
-
-	if(nPlayer1Status > nPlayer2Status)
-		rtn_val = true;
-	
-	return rtn_val;
-	
-	return rtn_val;
+void CWndGuildCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
+	m_sortStrategy.ChangeSort(by, m_vPlayerList);
 }
 
-bool prChannelAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-
-	if(player1.m_nChannel > player2.m_nChannel)
-		rtn_val = true;
-	
-	return rtn_val;
+void CWndCampus::ChangeSort(MessengerHelper::Sorter::By by) {
+	m_sortStrategy.ChangeSort(by, m_vDisciplePlayer);
 }
 
-bool prChannelDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
+void MessengerHelper::Sorter::ChangeSort(By criterion, std::span<__MESSENGER_PLAYER> list) {
+	switch (criterion) {
+		case By::Channel: channelAsc = !channelAsc; break;
+		case By::Job:     jobAsc = !jobAsc;         break;
+		case By::Level:   levelAsc = !levelAsc;     break;
+		case By::Name:    nameAsc = !nameAsc;       break;
+		case By::Status:  statusAsc = !statusAsc;   break;
+	}
 
-	if(player1.m_nChannel < player2.m_nChannel)
-		rtn_val = true;
-	
-	return rtn_val;
+	criterion = lastSort;
+	ReApply(list);
 }
 
-bool prNameAsce(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
-
-	strplayer1Name.Format("%s", player1.m_szName);
-	strplayer2Name.Format("%s", player2.m_szName);
-
-	if(strplayer1Name > strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
+void MessengerHelper::Sorter::ReApply(std::span<__MESSENGER_PLAYER> messenger) const {
+	switch (lastSort) {
+		case By::Channel:
+			if (channelAsc) std::ranges::sort(messenger, prChannelAsce);
+			else std::ranges::sort(messenger, prChannelDesc);
+			break;
+		case By::Job:
+			if (jobAsc) std::ranges::sort(messenger, prJobAsce);
+			else std::ranges::sort(messenger, prJobDesc);
+			break;
+		case By::Level:
+			if (levelAsc) std::ranges::sort(messenger, prLevelAsce);
+			else std::ranges::sort(messenger, prLevelDesc);
+			break;
+		case By::Name:
+			if (nameAsc) std::ranges::sort(messenger, prNameAsce);
+			else std::ranges::sort(messenger, prNameDesc);
+			break;
+		case By::Status:
+			if (statusAsc) std::ranges::sort(messenger, prStatusAsce);
+			else std::ranges::sort(messenger, prStatusDesc);
+			break;
+	}
 }
 
-bool prNameDesc(__MESSENGER_PLAYER player1, __MESSENGER_PLAYER player2)
-{
-	bool rtn_val = false;
-	CString strplayer1Name, strplayer2Name;
-
-	strplayer1Name.Format("%s", player1.m_szName);
-	strplayer2Name.Format("%s", player2.m_szName);
-
-	if(strplayer1Name < strplayer2Name)
-		rtn_val = true;
-	
-	return rtn_val;
+int GetVertexIconIndex(FriendStatus status) {
+	switch (status) {
+		case FriendStatus::ONLINE:
+			return 0;
+		case FriendStatus::ABSENT:
+			return 1;
+		case FriendStatus::HARDPLAY:
+			return 2;
+		case FriendStatus::EAT:
+			return 3;
+		case FriendStatus::REST:
+			return 4;
+		case FriendStatus::MOVE:
+			return 5;
+		case FriendStatus::OFFLINE:
+			return 6;
+		default:
+			return 0;
+	}
 }
 
-//-----------------------------------------------------------------------------
-__MESSENGER_PLAYER::__MESSENGER_PLAYER( void ) : 
-m_nChannel( 0 ),
-m_dwStatus( 0 ),
-m_nLevel( 0 ), 
-m_nJob( 0 ), 
-m_dwPlayerId( 0 ), 
-m_bBlock( FALSE ), 
-m_bVisitAllowed( FALSE )
-{
-	ZeroMemory( m_szName, sizeof( m_szName ) );
-}
-//-----------------------------------------------------------------------------
-void __MESSENGER_PLAYER::Initialize( void )
-{
-	m_nChannel = 0;
-	m_dwStatus = 0;
-	m_nLevel = 0;
-	m_nJob = 0;
-	m_dwPlayerId = 0;
-	m_bBlock = FALSE;
-	m_bVisitAllowed = FALSE;
-	ZeroMemory( m_szName, sizeof( m_szName ) );
-}
 //-----------------------------------------------------------------------------
 
 //////////////////////////////////////////////////////////////////////////
 // Messenger Friend Tab Ctrl
 //////////////////////////////////////////////////////////////////////////
-
-CWndFriendCtrlEx::CWndFriendCtrlEx() 
-{
-	m_nCurSelect = -1;
-	m_nFontHeight = 20;
-	m_nDrawCount = 0;
-	m_bSortbyChannel = TRUE;
-	m_bSortbyStatus = FALSE;
-	m_bSortbyLevel = TRUE;
-	m_bSortbyJob = TRUE;
-	m_bSortbyName = TRUE;
-	m_nCurSort = SORT_BY_STATUS;
-
-	m_vPlayerList.clear();
-}
-
-CWndFriendCtrlEx::~CWndFriendCtrlEx()
-{
-}
 
 void CWndFriendCtrlEx::Create(const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
@@ -254,34 +217,30 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 {
 	// Set Friends List
 	m_vPlayerList.clear();
-	__MESSENGER_PLAYER stPlayer;
-	std::vector<DWORD> vecTemp;
-	CHousing::GetInstance()->GetVisitAllow( vecTemp );
+	const std::vector<DWORD> & allowedVisit = CHousing::GetInstance()->GetVisitAllow();
 
-	for( auto i	= g_WndMng.m_RTMessenger.begin(); i != g_WndMng.m_RTMessenger.end(); ++i )
-	{
-		u_long idPlayer	= i->first;
-		Friend* pFriend		= &i->second;
+	for (const auto & [idPlayer, pFriend] : g_WndMng.m_RTMessenger) {
 		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( idPlayer );
 		int nJob	= pPlayerData->data.nJob;
 		int nLevel	= pPlayerData->data.nLevel;
 		u_long uLogin	= pPlayerData->data.uLogin;
 		LPCSTR lpszPlayer	= pPlayerData->szPlayer;
-		DWORD dwState	= pFriend->dwState;
+		FriendStatus dwState	= pFriend.dwState;
 
+		__MESSENGER_PLAYER stPlayer;
 		stPlayer.m_dwPlayerId	= idPlayer;
 		stPlayer.m_dwStatus		= dwState;
 		stPlayer.m_nJob		= nJob;
 		stPlayer.m_nLevel	= nLevel;
-		stPlayer.m_bBlock	= pFriend->bBlock;
+		stPlayer.m_bBlock	= pFriend.bBlock;
 		stPlayer.m_bVisitAllowed = FALSE;
 		
-		for(auto iterV = vecTemp.begin(); iterV != vecTemp.end(); ++iterV)
-		{
-			if(idPlayer == *iterV)
-				stPlayer.m_bVisitAllowed = TRUE;
+		const auto visitIt = std::ranges::find(allowedVisit, idPlayer);
+		if (visitIt != allowedVisit.end()) {
+			stPlayer.m_bVisitAllowed = TRUE;
 		}
-		if( stPlayer.m_dwStatus == FRS_OFFLINE )
+
+		if( stPlayer.m_dwStatus == FriendStatus::OFFLINE )
 			stPlayer.m_nChannel	= 100;
 		else
 			stPlayer.m_nChannel	= uLogin;
@@ -291,24 +250,8 @@ void CWndFriendCtrlEx::UpdatePlayerList()
 		m_vPlayerList.push_back( stPlayer );
 	}
 
-	switch(m_nCurSort)
-	{
-		case SORT_BY_CHANNEL:
-			SortbyChannel(FALSE);
-			break;
-		case SORT_BY_STATUS:
-			SortbyStatus(FALSE);
-			break;
-		case SORT_BY_LEVEL:
-			SortbyLevel(FALSE);
-			break;
-		case SORT_BY_JOB:
-			SortbyJob(FALSE);
-			break;
-		case SORT_BY_NAME:
-			SortbyName(FALSE);
-			break;
-	}
+	m_sortStrategy.ReApply(m_vPlayerList);
+	SetScrollBar();
 }
 
 void CWndFriendCtrlEx::PaintFrame( C2DRender* p2DRender )
@@ -362,17 +305,8 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, &pVertices, 0xffffffff );
 
 		// Draw Status Icon
-		DWORD dwMyState;
-		if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-			dwMyState = FRS_ABSENT;
-		else if( stPlayer.m_dwStatus == FRS_ONLINE )
-			dwMyState = 2;
-		else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-			dwMyState = 8;
-		else
-			dwMyState = stPlayer.m_dwStatus;
-		
-		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
+		const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+		pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, CPoint(76, pt.y), statusIcon + 7, &pVertices, 0xffffffff);
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
@@ -429,10 +363,9 @@ void CWndFriendCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 			auto iter = m_vPlayerList.begin();
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
-			__MESSENGER_PLAYER stPlayer	= *(iter);
 			ClientToScreen( &point );
 			ClientToScreen( &rect );
-			g_toolTip.PutToolTip( 100, prj.jobs.info[ stPlayer.m_nJob ].szName, rect, point, 3 );
+			g_toolTip.PutToolTip( 100, prj.jobs.info[ iter->m_nJob ].szName, rect, point, 3 );
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -461,25 +394,13 @@ void CWndFriendCtrlEx::OnLButtonUp( UINT nFlags, CPoint point )
 
 void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
-#ifdef __RT_1025
 	u_long idPlayer;
 	Friend* pFriend;
 	int nSelect		= GetSelect( point, idPlayer, &pFriend );
 	if( nSelect != -1 && pFriend )
-#else	// __RT_1025
-	LPFRIEND lpFriend = NULL;
-	int nSelect = GetSelect( point, &lpFriend );
-	if( nSelect != -1 && lpFriend)
-#endif	// __RT_1025
 	{
-#ifdef __RT_1025
-		DWORD dwState	= pFriend->dwState;
-		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
-#else	// __RT_1025
-		u_long idPlayer		= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-		if( dwState != FRS_OFFLINE && dwState != FRS_BLOCK && dwState != FRS_OFFLINEBLOCK )
-#endif	// __RT_1025
+		const FriendStatus dwState	= pFriend->dwState;
+		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
 		{
 			m_nCurSelect = nSelect;
 			CWndMessage* pWndMessage	= g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
@@ -487,7 +408,7 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 		else
 		{
 			CString szMessage;
-			if( dwState == FRS_OFFLINE )
+			if( dwState == FriendStatus::OFFLINE )
 				szMessage = prj.GetText(TID_GAME_NOTLOGIN);                               //"??? 님은 접속되어 있지 않습니다";
 			else
 				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
@@ -496,23 +417,15 @@ void CWndFriendCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 	}	
 }
 
-void	CWndFriendCtrlEx::GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend )
-{
-	*ppFriend	= NULL;
-	auto iter	= m_vPlayerList.begin();
-	iter	+= SelectCount;
-	__MESSENGER_PLAYER stPlayer	= *(iter);
-	idPlayer	= stPlayer.m_dwPlayerId;
-	*ppFriend	= g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
+void	CWndFriendCtrlEx::GetSelectFriend(int SelectCount, u_long & idPlayer, Friend ** ppFriend) {
+	idPlayer = GetSelectId(SelectCount);
+	*ppFriend = g_WndMng.m_RTMessenger.GetFriend(idPlayer);
 }
 
-u_long CWndFriendCtrlEx::GetSelectId( int SelectCount )
-{
+u_long CWndFriendCtrlEx::GetSelectId(int SelectCount) {
 	auto iter = m_vPlayerList.begin();
 	iter += SelectCount;
-	__MESSENGER_PLAYER stPlayer = *(iter);
-	
-	return stPlayer.m_dwPlayerId;
+	return iter->m_dwPlayerId;
 }
 
 int	CWndFriendCtrlEx::GetSelect( CPoint point, u_long &idPlayer, Friend** ppFriend )
@@ -531,9 +444,9 @@ int	CWndFriendCtrlEx::GetSelect( CPoint point, u_long &idPlayer, Friend** ppFrie
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
 			rtn_val += nPos;
-			__MESSENGER_PLAYER stPlayer	= *(iter);
-			idPlayer = stPlayer.m_dwPlayerId;
-			*ppFriend = g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
+
+			idPlayer = iter->m_dwPlayerId;
+			*ppFriend = g_WndMng.m_RTMessenger.GetFriend(iter->m_dwPlayerId);
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -561,8 +474,9 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 	case 1:		// 차단 / 차단해제
 		{
 			u_long uidPlayer = GetSelectId( m_nCurSelect );
-			if( uidPlayer != -1 )
-				g_DPlay.SendFriendInterceptState( uidPlayer );		
+			if (uidPlayer != -1) {
+				g_DPlay.SendPacket<PACKETTYPE_FRIENDINTERCEPTSTATE, u_long>(uidPlayer);
+			}
 		}
 		break;
 	case 2:		// 삭제
@@ -597,7 +511,6 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 		break;
 	case 6:		// 쪽지 보내기
 		{
-#ifdef __RT_1025
 			Friend* pFriend		= NULL;
 			GetSelectFriend( m_nCurSelect, idPlayer, &pFriend );
 			if( pFriend )
@@ -608,18 +521,6 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 				g_WndMng.m_pWndMessageNote->m_dwUserId	= idPlayer;
 				g_WndMng.m_pWndMessageNote->Initialize();
 			}
-#else	// __RT_1025
-			LPFRIEND lpFriend = NULL;
-			GetSelectFriend( m_nCurSelect, &lpFriend );
-			if( lpFriend )
-			{
-				SAFE_DELETE( g_WndMng.m_pWndMessageNote );
-				g_WndMng.m_pWndMessageNote = new CWndMessageNote;
-				strcpy( g_WndMng.m_pWndMessageNote->m_szName, lpFriend->szName );
-				g_WndMng.m_pWndMessageNote->m_dwUserId = lpFriend->dwUserId;
-				g_WndMng.m_pWndMessageNote->Initialize();		
-			}
-#endif	// __RT_1025
 		}
 		break;
 		case 7 :	// 입장허가를 취소한다
@@ -642,32 +543,18 @@ BOOL CWndFriendCtrlEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase 
 
 void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 {
-#ifdef __RT_1025
 	u_long idPlayer;
 	Friend* pFriend		= NULL;
 	int nSelect		= GetSelect( point, idPlayer, &pFriend );
-#else	// __RT_1025
-	LPFRIEND lpFriend = NULL;
-	int nSelect = GetSelect( point, &lpFriend );
-#endif	// __RT_1025
 
-#ifdef __RT_1025
 	if( nSelect != -1 && pFriend != NULL )
-#else //__RT_1025
-	if( nSelect != -1 )
-#endif //__RT_1025
 	{
-#ifdef __RT_1025
-		DWORD dwState	= pFriend->dwState;
-#else	// __RT_1025
-		u_long idPlayer	= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-#endif	// __RT_1025
+		const FriendStatus dwState	= pFriend->dwState;
 		m_nCurSelect	= nSelect;
 		ClientToScreen( &point );
 		m_menu.DeleteAllMenu();
 
-		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
+		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
 			m_menu.AppendMenu( 0, 0 ,_T( prj.GetText( TID_APP_MESSAGE ) ) );
 
 		if( pFriend->bBlock )
@@ -677,7 +564,7 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 
 		m_menu.AppendMenu( 0, 2 ,_T( prj.GetText( TID_FRS_DELETE ) ) );
 
-		if( dwState != FRS_OFFLINE && !pFriend->bBlock )
+		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
 		{					
 			if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
 				m_menu.AppendMenu( 0, 3 ,_T( prj.GetText( TID_FRS_MOVE2 ) ) );
@@ -687,7 +574,7 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 					m_menu.AppendMenu( 0, 4 ,_T( prj.GetText(TID_MMI_INVITE_PARTY) ) );
 			}
 		}
-		if( dwState == FRS_OFFLINE || pFriend->bBlock )
+		if( dwState == FriendStatus::OFFLINE || pFriend->bBlock )
 			m_menu.AppendMenu( 0, 6 , _T( prj.GetText( TID_GAME_TAGSEND ) ) );
 
 		
@@ -711,17 +598,11 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-void CWndFriendCtrlEx::SetScrollBar()
-{
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
-	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
+void CWndFriendCtrlEx::SetScrollBar() {
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange = static_cast<int>(m_vPlayerList.size());
+	m_wndScrollBar.SetScrollRange(0, nRange);
+	m_wndScrollBar.SetScrollPage(nPage);
 }
 
 void CWndFriendCtrlEx::ScrollBarPos( int nPos )
@@ -731,11 +612,7 @@ void CWndFriendCtrlEx::ScrollBarPos( int nPos )
 
 int CWndFriendCtrlEx::GetDrawCount( void )
 {
-#ifdef __RT_1025
 	int nMax	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	int nMax = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	if( nMax - m_wndScrollBar.GetScrollPos() > m_wndScrollBar.GetScrollPage() )
 		nMax = m_wndScrollBar.GetScrollPage() + m_wndScrollBar.GetScrollPos();
 	if( nMax < m_wndScrollBar.GetScrollPos() )
@@ -752,11 +629,7 @@ void CWndFriendCtrlEx::OnSize( UINT nType, int cx, int cy )
 
 	int nPage, nRange;
 	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
 	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	
@@ -772,118 +645,9 @@ void CWndFriendCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
 
-void CWndFriendCtrlEx::SortbyChannel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyChannel = !m_bSortbyChannel;
-
-	if(m_bSortbyChannel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelAsce );
-		m_bSortbyChannel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelDesc );
-		m_bSortbyChannel = TRUE;
-	}
-	m_nCurSort = SORT_BY_CHANNEL;
-}
-
-void CWndFriendCtrlEx::SortbyStatus(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyStatus = !m_bSortbyStatus;
-
-	if(m_bSortbyStatus)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusAsce );
-		m_bSortbyStatus = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusDesc );
-		m_bSortbyStatus = TRUE;
-	}
-	m_nCurSort = SORT_BY_STATUS;
-}
-
-void CWndFriendCtrlEx::SortbyLevel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyLevel = !m_bSortbyLevel;
-
-	if(m_bSortbyLevel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelAsce );
-		m_bSortbyLevel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelDesc );
-		m_bSortbyLevel = TRUE;
-	}
-	m_nCurSort = SORT_BY_LEVEL;
-}
-
-void CWndFriendCtrlEx::SortbyJob(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyJob = !m_bSortbyJob;
-
-	if(m_bSortbyJob)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobAsce );
-		m_bSortbyJob = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobDesc );
-		m_bSortbyJob = TRUE;
-	}
-	m_nCurSort = SORT_BY_JOB;
-}
-
-void CWndFriendCtrlEx::SortbyName(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyName = !m_bSortbyName;
-
-	if(m_bSortbyName)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameAsce );
-		m_bSortbyName = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameDesc );
-		m_bSortbyName = TRUE;
-	}
-	m_nCurSort = SORT_BY_NAME;
-}
-
 //////////////////////////////////////////////////////////////////////////
 // Messenger Guild Tab Ctrl
 //////////////////////////////////////////////////////////////////////////
-
-CWndGuildCtrlEx::CWndGuildCtrlEx() 
-{
-	m_nCurSelect = -1;
-	m_nFontHeight = 20;
-	m_nDrawCount = 0;
-	m_bSortbyChannel = TRUE;
-	m_bSortbyStatus = FALSE;
-	m_bSortbyLevel = TRUE;
-	m_bSortbyJob = TRUE;
-	m_bSortbyName = TRUE;
-	m_nCurSort = SORT_BY_STATUS;
-
-	m_vPlayerList.clear();
-}
-
-CWndGuildCtrlEx::~CWndGuildCtrlEx()
-{
-}
 
 void CWndGuildCtrlEx::Create( const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
@@ -919,32 +683,16 @@ void CWndGuildCtrlEx::UpdatePlayerList()
 			stPlayer.m_dwPlayerId = pGuildMember->m_idPlayer;
 			stPlayer.m_nChannel = pPlayerData->data.uLogin;
 			if( pPlayerData->data.uLogin > 0 )
-				stPlayer.m_dwStatus = FRS_ONLINE;
+				stPlayer.m_dwStatus = FriendStatus::ONLINE;
 			else
-				stPlayer.m_dwStatus = FRS_OFFLINE;
+				stPlayer.m_dwStatus = FriendStatus::OFFLINE;
 			lstrcpy( stPlayer.m_szName, pPlayerData->szPlayer );
 			m_vPlayerList.push_back(stPlayer);
 		}
 	}
 
-	switch(m_nCurSort)
-	{
-		case SORT_BY_CHANNEL:
-			SortbyChannel(FALSE);
-			break;
-		case SORT_BY_STATUS:
-			SortbyStatus(FALSE);
-			break;
-		case SORT_BY_LEVEL:
-			SortbyLevel(FALSE);
-			break;
-		case SORT_BY_JOB:
-			SortbyJob(FALSE);
-			break;
-		case SORT_BY_NAME:
-			SortbyName(FALSE);
-			break;
-	}
+	m_sortStrategy.ReApply(m_vPlayerList);
+	SetScrollBar();
 }
 
 void CWndGuildCtrlEx::PaintFrame( C2DRender* p2DRender )
@@ -998,17 +746,8 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, &pVertices, 0xffffffff );
 
 		// Draw Status Icon
-		DWORD dwMyState;
-		if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-			dwMyState = FRS_ABSENT;
-		else if( stPlayer.m_dwStatus == FRS_ONLINE )
-			dwMyState = 2;
-		else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-			dwMyState = 8;
-		else
-			dwMyState = stPlayer.m_dwStatus;
-		
-		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), &pVertices, 0xffffffff );
+		const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+		pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 76, pt.y ), 7 + statusIcon, &pVertices, 0xffffffff );
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
@@ -1056,10 +795,9 @@ void CWndGuildCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 			auto iter = m_vPlayerList.begin();
 			int nPos = m_wndScrollBar.GetScrollPos();
 			iter += j + nPos;
-			__MESSENGER_PLAYER stPlayer	= *(iter);
 			ClientToScreen( &point );
 			ClientToScreen( &rect );
-			g_toolTip.PutToolTip( 100, prj.jobs.info[ stPlayer.m_nJob ].szName, rect, point, 3 );
+			g_toolTip.PutToolTip( 100, prj.jobs.info[ iter->m_nJob ].szName, rect, point, 3 );
 			j = m_vPlayerList.size();
 		}
 		pt.y += m_nFontHeight;
@@ -1088,7 +826,6 @@ void CWndGuildCtrlEx::OnLButtonUp( UINT nFlags, CPoint point )
 
 void CWndGuildCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
-#ifdef __RT_1025
 	u_long idPlayer;
 	CGuildMember* pGuildMember = NULL;
 	int nSelect	= GetSelect( point, idPlayer, &pGuildMember );
@@ -1101,69 +838,21 @@ void CWndGuildCtrlEx::OnLButtonDblClk( UINT nFlags, CPoint point )
 			m_nCurSelect = nSelect;
 			CWndMessage* pWndMessage = g_WndMng.OpenMessage( CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );
 		}
-#else	// __RT_1025
-	LPFRIEND lpFriend = NULL;
-	int nSelect = GetSelect( point, &lpFriend );
-	if( nSelect != -1 && lpFriend )
-	{
-		u_long idPlayer	= lpFriend->dwUserId;
-		DWORD dwState	= lpFriend->dwState;
-		if( dwState != FRS_OFFLINE && dwState != FRS_BLOCK && dwState != FRS_OFFLINEBLOCK )
-		{
-			m_nCurSelect	= nSelect;
-			CWndMessage* pWndMessage = g_WndMng.OpenMessage( lpFriend->szName );
-		}
-#endif	// __RT_1025
 		else
 		{
-			CString szMessage;
-//			if( dwState == FRS_OFFLINE )
-				szMessage = prj.GetText( TID_GAME_NOTLOGIN );                               //"??? 님은 접속되어 있지 않습니다";
-/*			else
-#if __VER >= 11 // __SYS_PLAYER_DATA
-				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), CPlayerDataCenter::GetInstance()->GetPlayerString( idPlayer ) );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
-#else	// __SYS_PLAYER_DATA
-				szMessage.Format( prj.GetText(TID_GAME_MSGBLOCKCHR), lpFriend->szName );  //"??? 님은 차단되어 있어 메세지를 보낼수 없습니다";
-#endif	// __SYS_PLAYER_DATA
-*/
-			g_WndMng.PutString( szMessage, NULL, prj.GetTextColor(TID_GAME_NOTLOGIN) );		
+			g_WndMng.PutString(TID_GAME_NOTLOGIN);
 		}
 	}	
 }
-
-/*
-#ifdef __RT_1025
-void	CWndGuildCtrlEx::GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend )
-#else	// __RT_1025
-void CWndGuildCtrlEx::GetSelectFriend( int SelectCount, LPFRIEND* lppFriend )
-#endif	// __RT_1025
-{
-	vector < __MESSENGER_PLAYER >::iterator iter = m_vPlayerList.begin();
-	iter += SelectCount;
-	__MESSENGER_PLAYER stPlayer	= *(iter);
-#ifdef __RT_1025
-	idPlayer	= stPlayer.m_dwPlayerId;
-	*ppFriend	= g_WndMng.m_RTMessenger.GetFriend( stPlayer.m_dwPlayerId );
-#else	// __RT_1025
-	*lppFriend = g_WndMng.m_Messenger.GetFriend( stPlayer.m_dwPlayerId );
-#endif	// __RT_1025
-}
-*/
 	
 u_long CWndGuildCtrlEx::GetSelectId( int SelectCount )
 {
 	auto iter = m_vPlayerList.begin();
 	iter += SelectCount;
-	__MESSENGER_PLAYER stPlayer = *(iter);
-	
-	return stPlayer.m_dwPlayerId;
+	return iter->m_dwPlayerId;
 }
 
-#ifdef __RT_1025
 int	CWndGuildCtrlEx::GetSelect( CPoint point, u_long & idPlayer, CGuildMember** lppGuildMember )
-#else	// __RT_1025
-int CWndGuildCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
-#endif	// __RT_1025
 {
 	CPoint pt( 3, 3 );
 	CRect rect;
@@ -1183,15 +872,10 @@ int CWndGuildCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
 				int nPos = m_wndScrollBar.GetScrollPos();
 				iter += j + nPos;
 				rtn_val += nPos;
-				__MESSENGER_PLAYER stPlayer = *(iter);
-#ifdef __RT_1025
-				idPlayer = stPlayer.m_dwPlayerId;
+				idPlayer = iter->m_dwPlayerId;
 				CGuildMember * lpGuildMember = pGuild->GetMember( idPlayer );
 				if( lpGuildMember )
 					*lppGuildMember = lpGuildMember;
-#else	// __RT_1025
-				*lppFriend = g_WndMng.m_Messenger.GetFriend( stPlayer.m_dwPlayerId );
-#endif	// __RT_1025
 				j = m_vPlayerList.size();
 			}
 			pt.y += m_nFontHeight;
@@ -1203,13 +887,8 @@ int CWndGuildCtrlEx::GetSelect( CPoint point, LPFRIEND* lppFriend )
 
 void CWndGuildCtrlEx::SetScrollBar()
 {
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-#ifdef __RT_1025
-	nRange	= g_WndMng.m_RTMessenger.size();
-#else	// __RT_1025
-	nRange = g_WndMng.m_Messenger.m_aFriend.size();
-#endif	// __RT_1025
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange	= static_cast<int>(m_vPlayerList.size());
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }
@@ -1262,124 +941,10 @@ void CWndGuildCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
 
-void CWndGuildCtrlEx::SortbyChannel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyChannel = !m_bSortbyChannel;
-
-	if(m_bSortbyChannel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelAsce );
-		m_bSortbyChannel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prChannelDesc );
-		m_bSortbyChannel = TRUE;
-	}
-	m_nCurSort = SORT_BY_CHANNEL;
-}
-
-void CWndGuildCtrlEx::SortbyStatus(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyStatus = !m_bSortbyStatus;
-
-	if(m_bSortbyStatus)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusAsce );
-		m_bSortbyStatus = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prStatusDesc );
-		m_bSortbyStatus = TRUE;
-	}
-	m_nCurSort = SORT_BY_STATUS;
-}
-
-void CWndGuildCtrlEx::SortbyLevel(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyLevel = !m_bSortbyLevel;
-
-	if(m_bSortbyLevel)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelAsce );
-		m_bSortbyLevel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prLevelDesc );
-		m_bSortbyLevel = TRUE;
-	}
-	m_nCurSort = SORT_BY_LEVEL;
-}
-
-void CWndGuildCtrlEx::SortbyJob(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyJob = !m_bSortbyJob;
-
-	if(m_bSortbyJob)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobAsce );
-		m_bSortbyJob = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prJobDesc );
-		m_bSortbyJob = TRUE;
-	}
-	m_nCurSort = SORT_BY_JOB;
-}
-
-void CWndGuildCtrlEx::SortbyName(BOOL bCheckbefore)
-{
-	if(!bCheckbefore)
-		m_bSortbyName = !m_bSortbyName;
-
-	if(m_bSortbyName)
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameAsce );
-		m_bSortbyName = FALSE;
-	}
-	else
-	{
-		std::sort( m_vPlayerList.begin(), m_vPlayerList.end(), prNameDesc );
-		m_bSortbyName = TRUE;
-	}
-	m_nCurSort = SORT_BY_NAME;
-}
-
-//-----------------------------------------------------------------------------
-CWndCampus::CWndCampus( void ) : 
-m_bSortbyChannel( TRUE ), 
-m_bSortbyStatus( FALSE ), 
-m_bSortbyLevel( TRUE ), 
-m_bSortbyJob( TRUE ), 
-m_bSortbyName( TRUE ), 
-m_nCurSort( SORT_BY_STATUS ), 
-m_bCurSelectedMaster( FALSE ), 
-m_nCurSelectedDisciple( -1 ), 
-m_nFontHeight( 20 ), 
-m_MasterPlayer()
-{
-	m_vDisciplePlayer.clear();
-}
-//-----------------------------------------------------------------------------
-CWndCampus::~CWndCampus( void )
-{
-}
 //-----------------------------------------------------------------------------
 BOOL CWndCampus::Initialize( CWndBase* pWndParent, DWORD nType )
 {
 	return CWndNeuz::InitDialog( APP_MESSENGER_TAB_CAMPUS, pWndParent, 0, CPoint( 0, 0 ) );
-}
-//-----------------------------------------------------------------------------
-BOOL CWndCampus::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 //-----------------------------------------------------------------------------
 void CWndCampus::OnInitialUpdate( void )
@@ -1487,16 +1052,8 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 				pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, 0xffffffff );
 
 			// Draw Status Icon
-			DWORD dwMyState = 0;
-			if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-				dwMyState = FRS_ABSENT;
-			else if( stPlayer.m_dwStatus == FRS_ONLINE )
-				dwMyState = 2;
-			else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-				dwMyState = 8;
-			else
-				dwMyState = stPlayer.m_dwStatus;
-			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), 0xffffffff );
+			const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + statusIcon, 0xffffffff );
 
 			// Draw Level
 			strFormat.Format("%d", stPlayer.m_nLevel);
@@ -1530,16 +1087,8 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 			pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 20, pt.y ), 34 + stPlayer.m_nChannel - 1, 0xffffffff );
 
 		// Draw Status Icon
-		DWORD dwMyState = 0;
-		if( stPlayer.m_dwStatus == FRS_AUTOABSENT )
-			dwMyState = FRS_ABSENT;
-		else if( stPlayer.m_dwStatus == FRS_ONLINE )
-			dwMyState = 2;
-		else if( stPlayer.m_dwStatus == FRS_OFFLINE )
-			dwMyState = 8;
-		else
-			dwMyState = stPlayer.m_dwStatus;
-		pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + ( dwMyState - 2 ), 0xffffffff );
+		const int statusIcon = GetVertexIconIndex(stPlayer.m_dwStatus);
+		pWndWorld->m_texPlayerDataIcon.Render( p2DRender, CPoint( 76, pt.y ), 7 + statusIcon, 0xffffffff );
 
 		// Draw Level
 		strFormat.Format("%d", stPlayer.m_nLevel);
@@ -1640,7 +1189,7 @@ void CWndCampus::OnMouseMove( UINT nFlags, CPoint point )
 //-----------------------------------------------------------------------------
 void CWndCampus::UpdatePlayerList( void )
 {
-	m_MasterPlayer.Initialize();
+	m_MasterPlayer = __MESSENGER_PLAYER();
 	m_vDisciplePlayer.clear();
 	CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 	if( pCampus == NULL )
@@ -1653,7 +1202,7 @@ void CWndCampus::UpdatePlayerList( void )
 				continue;
 			__MESSENGER_PLAYER stDisciplePlayer;
 			stDisciplePlayer.m_dwPlayerId = idDisciplePlayer;
-			stDisciplePlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FRS_ONLINE : FRS_OFFLINE;
+			stDisciplePlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FriendStatus::ONLINE : FriendStatus::OFFLINE;
 			stDisciplePlayer.m_nChannel	= pPlayerData->data.uLogin;
 			stDisciplePlayer.m_nJob = pPlayerData->data.nJob;
 			stDisciplePlayer.m_nLevel = pPlayerData->data.nLevel;
@@ -1668,30 +1217,14 @@ void CWndCampus::UpdatePlayerList( void )
 		if( pPlayerData == NULL )
 			return;
 		m_MasterPlayer.m_dwPlayerId = idMasterPlayer;
-		m_MasterPlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FRS_ONLINE : FRS_OFFLINE;
+		m_MasterPlayer.m_dwStatus = ( pPlayerData->data.uLogin > 0 ) ? FriendStatus::ONLINE : FriendStatus::OFFLINE;
 		m_MasterPlayer.m_nChannel = pPlayerData->data.uLogin;
 		m_MasterPlayer.m_nJob = pPlayerData->data.nJob;
 		m_MasterPlayer.m_nLevel = pPlayerData->data.nLevel;
 		lstrcpy( m_MasterPlayer.m_szName, pPlayerData->szPlayer );
 	}
-	switch( m_nCurSort )
-	{
-		case SORT_BY_CHANNEL:
-			SortbyChannel(FALSE);
-			break;
-		case SORT_BY_STATUS:
-			SortbyStatus(FALSE);
-			break;
-		case SORT_BY_LEVEL:
-			SortbyLevel(FALSE);
-			break;
-		case SORT_BY_JOB:
-			SortbyJob(FALSE);
-			break;
-		case SORT_BY_NAME:
-			SortbyName(FALSE);
-			break;
-	}
+
+	m_sortStrategy.ReApply(m_vDisciplePlayer);
 }
 //-----------------------------------------------------------------------------
 int CWndCampus::GetDiscipleDrawCount( void ) const
@@ -1701,14 +1234,9 @@ int CWndCampus::GetDiscipleDrawCount( void ) const
 //-----------------------------------------------------------------------------
 __MESSENGER_PLAYER* CWndCampus::GetSelectedDiscipleID( int nSelectedNumber )
 {
-//	vector < __MESSENGER_PLAYER >::iterator iter = m_vDisciplePlayer.begin();
-//	iter += nSelectedNumber;
-	//	BEGINTEST100113	??????????
-//	return	( ( __MESSENGER_PLAYER* )( &iter ) );
 	if( nSelectedNumber >= (int)( m_vDisciplePlayer.size() ) || nSelectedNumber < 0 )	//gmpbigsun: with => || nSelectedNumber < 0 )
 		return NULL;
 	return	&m_vDisciplePlayer[nSelectedNumber];
-	//	ENDTEST100113	??????????
 }
 //-----------------------------------------------------------------------------
 u_long CWndCampus::GetSelectedMasterID( CPoint point )
@@ -1744,102 +1272,10 @@ u_long CWndCampus::GetSelectedDiscipleID( CPoint point )
 			if( rect.PtInRect( point ) == TRUE )
 			{
 				m_nCurSelectedDisciple = i;
-				return static_cast< u_long >( ( ( __MESSENGER_PLAYER )( m_vDisciplePlayer[i] ) ).m_dwPlayerId );
+				return m_vDisciplePlayer[i].m_dwPlayerId;
 			}
 			pt.y += m_nFontHeight;
 		}
 	}
 	return -1;
 }
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyChannel( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyChannel = !m_bSortbyChannel;
-
-	if(m_bSortbyChannel)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prChannelAsce );
-		m_bSortbyChannel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prChannelDesc );
-		m_bSortbyChannel = TRUE;
-	}
-	m_nCurSort = SORT_BY_CHANNEL;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyStatus( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyStatus = !m_bSortbyStatus;
-
-	if(m_bSortbyStatus)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prStatusAsce );
-		m_bSortbyStatus = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prStatusDesc );
-		m_bSortbyStatus = TRUE;
-	}
-	m_nCurSort = SORT_BY_STATUS;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyLevel( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyLevel = !m_bSortbyLevel;
-
-	if(m_bSortbyLevel)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prLevelAsce );
-		m_bSortbyLevel = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prLevelDesc );
-		m_bSortbyLevel = TRUE;
-	}
-	m_nCurSort = SORT_BY_LEVEL;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyJob( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyJob = !m_bSortbyJob;
-
-	if(m_bSortbyJob)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prJobAsce );
-		m_bSortbyJob = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prJobDesc );
-		m_bSortbyJob = TRUE;
-	}
-	m_nCurSort = SORT_BY_JOB;
-}
-//-----------------------------------------------------------------------------
-void CWndCampus::SortbyName( BOOL bCheckbefore )
-{
-	if(!bCheckbefore)
-		m_bSortbyName = !m_bSortbyName;
-
-	if(m_bSortbyName)
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prNameAsce );
-		m_bSortbyName = FALSE;
-	}
-	else
-	{
-		std::sort( m_vDisciplePlayer.begin(), m_vDisciplePlayer.end(), prNameDesc );
-		m_bSortbyName = TRUE;
-	}
-	m_nCurSort = SORT_BY_NAME;
-}
-//-----------------------------------------------------------------------------
-

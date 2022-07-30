@@ -114,11 +114,7 @@ public:
 	void	SendHdr( DWORD dwHdr );
 	LONG	GetErrorCode() { return m_lError; }
 	LONG	GetNetError();
-#ifdef __RT_1025
 	void	SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti );
-#else	// __RT_1025
-	void	SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CMessenger* pMessenger, u_long uIdofMulti );
-#endif	// __RT_1025
 
 	void	PostPlayerAngle( BOOL f );
 	void	FlushPlayerAngle( void );
@@ -266,7 +262,6 @@ public:
 	void SendAddInTaskbar(std::optional<unsigned int> where, unsigned int nIndex, const SHORTCUT & shortcut);
 	void	SendRemoveAppletTaskBar( BYTE nIndex );
 	void	SendRemoveItemTaskBar( BYTE nSlotIndex, BYTE nIndex );
-	void	SendAddFriend( u_long uidPlayer, LONG nJob, BYTE nSex );
 	void	SendAddFriendReqest( u_long uidPlayer );
 	void	SendAddFriendNameReqest( const char * szName );
 	void	SendFriendCancel( u_long uidLeader, u_long uidMember );
@@ -276,8 +271,6 @@ public:
 	void	SendQuePetResurrection( int nItem );
 #endif	// __JEFF_11
 	void	SendGetFriendState();
-	void	SendSetState( int state );
-	void	SendFriendInterceptState( u_long uidPlayer );
 	void	SendRemoveFriend( u_long uidPlayer );
 	void	SendUpgradeBase( DWORD dwItemId0, DWORD dwItemId1, 
 							DWORD dwItemId2, DWORD dwItemCount2, 
@@ -711,7 +704,6 @@ public:
 	void	OnAddFriendError( CAr & ar );
 	void	OnAddFriendNameReqest( CAr & ar );
 	void	OnAddFriendNotConnect( CAr & ar );
-	void	OnOneFriendState( CAr & ar );
 	void	OnRemoveFriendState( CAr & ar );
 	void	OnBlock( CAr & ar );
 	void	OnDuelCount( CAr & ar );

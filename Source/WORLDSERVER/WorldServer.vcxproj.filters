@@ -333,9 +333,6 @@
     <ClCompile Include="..\_Common\LuaBase.cpp">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-      <Filter>Neuz Common Files\Common Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\MiniGame.cpp">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClCompile>
@@ -954,9 +951,6 @@
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\LuaBase.h">
-      <Filter>Neuz Common Files\Common Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\messenger.h">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\MiniGame.h">

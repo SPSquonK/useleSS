@@ -264,8 +264,6 @@
     <ClCompile Include="..\_Interface\WndMap.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMapEx.cpp" />
-    <ClCompile Include="..\_Interface\WndMessengerSearch.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndMiniGame.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMotion.cpp">
@@ -324,15 +322,9 @@
     </ClCompile>
     <ClCompile Include="..\_Interface\WndFriendConFirm.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndFriendCtrl.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildCtrl.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndMessenger.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndMessengerCtrl.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndPartyCtrl.cpp">
     </ClCompile>
     <ClCompile Include="..\_interface\WndRegVend.cpp">
     </ClCompile>
@@ -434,8 +426,6 @@
     <ClCompile Include="..\_Common\MapInformationManager.cpp" />
     <ClCompile Include="..\_Common\MapMonsterInformation.cpp" />
     <ClCompile Include="..\_Common\MapMonsterInformationPack.cpp" />
-    <ClCompile Include="..\_Common\messenger.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\MiniGame.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\MiniGameBase.cpp">
@@ -769,7 +759,6 @@
     <ClInclude Include="..\_Interface\WndLvReqDown.h" />
     <ClInclude Include="..\_Interface\WndMap.h" />
     <ClInclude Include="..\_Interface\WndMapEx.h" />
-    <ClInclude Include="..\_Interface\WndMessengerSearch.h" />
     <ClInclude Include="..\_Interface\WndMiniGame.h" />
     <ClInclude Include="..\_Interface\WndMotion.h" />
     <ClInclude Include="..\_Interface\WndNotice.h" />
@@ -796,11 +785,8 @@
     <ClInclude Include="..\_Interface\WndCommand.h" />
     <ClInclude Include="..\_Interface\WndCommunication.h" />
     <ClInclude Include="..\_Interface\WndFriendConFirm.h" />
-    <ClInclude Include="..\_Interface\WndFriendCtrl.h" />
-    <ClInclude Include="..\_Interface\WndGuildCtrl.h" />
     <ClInclude Include="..\_Interface\WndMessenger.h" />
     <ClInclude Include="..\_Interface\WndMessengerCtrl.h" />
-    <ClInclude Include="..\_Interface\WndPartyCtrl.h" />
     <ClInclude Include="..\_interface\WndRegVend.h" />
     <ClInclude Include="..\_interface\WndVendor.h" />
     <ClInclude Include="..\_interface\WndVendorBuy.h" />
@@ -853,7 +839,6 @@
     <ClInclude Include="..\_Common\MapInformationManager.h" />
     <ClInclude Include="..\_Common\MapMonsterInformation.h" />
     <ClInclude Include="..\_Common\MapMonsterInformationPack.h" />
-    <ClInclude Include="..\_Common\messenger.h" />
     <ClInclude Include="..\_Common\MiniGame.h" />
     <ClInclude Include="..\_Common\partyquest.h" />
     <ClInclude Include="..\_Common\PCBang.h" />

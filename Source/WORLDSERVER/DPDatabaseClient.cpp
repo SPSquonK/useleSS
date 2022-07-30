@@ -233,12 +233,7 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 	pUser->AddGold( -nTrade, FALSE );
 	//
 	ar << pUser->m_playTaskBar;
-#ifdef __RT_1025
 	ar << pUser->m_RTMessenger.GetState();
-#else	// __RT_1025
-	pUser->m_Messenger.Serialize( ar );
-	pUser->m_Messenger.SetSave();
-#endif	// __RT_1025
 
 #ifndef __JEFF_9_20
 	if( pUser->m_pActMover->IsFly() )
@@ -665,11 +660,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		nOnError	= 3; 
 #endif	// __ON_ERROR
 
-#ifdef __RT_1025
 		pUser->m_RTMessenger.Serialize( ar );
-#else	// __RT_1025
-		pUser->m_Messenger.Serialize( ar );
-#endif	// __RT_1025
 
 #ifdef __ON_ERROR
 		nOnError	= 4;

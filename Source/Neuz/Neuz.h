@@ -104,11 +104,7 @@ public:
 	CMover*					m_apPlayer[MAX_CHARACTER_LIST];
 	DWORD					m_adwWorldID[MAX_CHARACTER_LIST];
 	int						m_nCharacterBlock[MAX_CHARACTER_LIST];
-#ifdef __RT_1025
 	CRTMessenger	m_aRTMessenger[MAX_CHARACTER_LIST];
-#else	// __RT_1025
-	CMessenger				m_Messenger[MAX_CHARACTER_LIST];
-#endif	// __RT_1025
 #ifdef __THROUGHPORTAL0810
 	BOOL	m_bThroughPortal;
 #else	// __THROUGHPORTAL0810

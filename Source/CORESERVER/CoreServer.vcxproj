@@ -126,8 +126,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\InstanceDungeonParty.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\party.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\timer.cpp">
@@ -192,7 +190,6 @@
     <ClInclude Include="..\_common\guildwar.h" />
     <ClInclude Include="..\_Common\InstanceDungeonBase.h" />
     <ClInclude Include="..\_Common\InstanceDungeonParty.h" />
-    <ClInclude Include="..\_Common\messenger.h" />
     <ClInclude Include="..\_Common\party.h" />
     <ClInclude Include="..\databaseserver\project.h" />
     <ClInclude Include="..\_common\projectcmn.h" />

@@ -55,7 +55,7 @@ public:
 	std::vector<DWORD>	m_vecVisitable;
 	static CHousing* GetInstance();
 	void	GetHousingList(std::vector<HOUSINGINFO> & vHousingList );	// 가구 목록 정보를 복사해서 넘김.
-	void	GetVisitAllow(std::vector<DWORD> & vVisitAllow );		// 방문허용자 목록을 넘김
+	[[nodiscard]] const std::vector<DWORD> & GetVisitAllow() const { return m_vecIdVisitAllow; }
 #endif // __CLIENT
 		
 	void Serialize( CAr & ar );

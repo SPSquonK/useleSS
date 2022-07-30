@@ -1260,11 +1260,7 @@ void CDPSrvr::OnAddFriendReqest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 			return;
 		}
 
-#ifdef __RT_1025
 		if( !pLeader->m_RTMessenger.GetFriend( uMemberid ) )
-#else	// __RT_1025
-		if( FALSE == pLeader->m_Messenger.IsFriend( uMemberid ) )
-#endif	// __RT_1025
 		{
 			if( pMember->IsAttackMode() )
 				pLeader->AddDefinedText( TID_GAME_BATTLE_NOTFRIEND, "" );
@@ -1291,11 +1287,7 @@ void CDPSrvr::OnAddFriendNameReqest( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 	{
 		if( uMember > 0 )
 		{
-#ifdef __RT_1025
 			if( !pLeader->m_RTMessenger.GetFriend( uMember ) )
-#else	// __RT_1025
-			if( pLeader->m_Messenger.IsFriend( uMember ) == FALSE )
-#endif	// __RT_1025
 				g_DPCoreClient.SendAddFriendNameReqest( uLeaderid, pLeader->m_nJob, (BYTE)pLeader->GetSex(), uMember, pLeader->GetName(), szMemberName );
 			else
 				pLeader->AddFriendError( 1, szMemberName );
@@ -6408,12 +6400,7 @@ void CDPSrvr::OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 #endif // __QUIZ
 				else
 				{
-#ifdef __RT_1025
 					if( pUsertmp->m_RTMessenger.IsBlock( pUser->m_idPlayer ) )
-#else	//__RT_1025
-					LPFRIEND pFriend	= pUsertmp->m_Messenger.GetFriend( pUser->m_idPlayer );
-					if( pFriend && pFriend->dwState == FRS_BLOCK )
-#endif	// __RT_1025
 					{
 						pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", lpszPlayer );
 						return;

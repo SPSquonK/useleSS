@@ -23,7 +23,6 @@
 //
 #define		__MA_VER11_01			// 극단레벨업포인트변경
 //#define		__SYS_PLAYER_DATA
-#define		__RT_1025				// 메신저
 
 
 #define		__AUTO_NOTICE		// 자동 공지

@@ -58,10 +58,6 @@ void CHousing::GetHousingList(std::vector<HOUSINGINFO> & vHousingList )
 	vHousingList.assign( m_vecHousingInfo.begin(), m_vecHousingInfo.end() );
 }
 
-void CHousing::GetVisitAllow(std::vector<DWORD> & vVisitAllow )
-{
-	vVisitAllow.assign( m_vecIdVisitAllow.begin(), m_vecIdVisitAllow.end() );
-}
 #endif // __CLIENT
 
 void CHousing::Serialize( CAr & ar )
@@ -1332,7 +1328,6 @@ BOOL CGuildDeployManager::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			}
 
 			g_bKeyTable[ nVirtKey ] = FALSE;
-			g_WndMng.SetMessengerAutoState();
 		}
 
 		break;

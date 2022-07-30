@@ -11,7 +11,6 @@
 #include "packetlog.h"
 #endif	// __PL_0917
 #include "mytrace.h"
-#include "messenger.h"
 
 #ifdef __CRASH_0404
 #include "crashstatus.h"
@@ -100,7 +99,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 			case PACKETTYPE_CHANPARTYNAME:
 			case PACKETTYPE_PARTYCHANGEITEMMODE:
 			case PACKETTYPE_PARTYCHANGEEXPMODE:
-			case PACKETTYPE_ADDFRIEND:
+			case PACKETTYPE_NC_ADDFRIEND:
 			case PACKETTYPE_GETFRIENDSTATE:
 			case PACKETTYPE_SETFRIENDSTATE:
 			case PACKETTYPE_FRIENDINTERCEPTSTATE:

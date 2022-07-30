@@ -1,48 +1,53 @@
+#pragma once
 
-#ifndef __WNDMESSENGERCTRL_H
-#define __WNDMESSENGERCTRL_H
+#include "rtmessenger.h"
 
 class C2DRender;
 
-typedef struct __MESSENGER_PLAYER
-{
-	int		m_nChannel;
-	DWORD	m_dwStatus;
-	int		m_nLevel;
-	int		m_nJob;
-	DWORD	m_dwPlayerId;
-	TCHAR	m_szName[ 64 ];
-#ifdef __RT_1025
-	BOOL	m_bBlock;
-#endif	// __RT_1025
-	BOOL	m_bVisitAllowed;
-	__MESSENGER_PLAYER( void );
-	void Initialize( void );
-} __MESSENGER_PLAYER;
+struct __MESSENGER_PLAYER {
+	int		m_nChannel        = 0;
+	FriendStatus m_dwStatus = FriendStatus::ONLINE;
+	int		m_nLevel          = 0;
+	int		m_nJob            = 0;
+	DWORD	m_dwPlayerId      = 0;
+	TCHAR	m_szName[ 64 ]    = "";
+	BOOL	m_bBlock          = FALSE;
+	BOOL	m_bVisitAllowed   = FALSE;
+};
+
+int GetVertexIconIndex(FriendStatus status);
+
+struct MessengerHelper {
+	struct Sorter {
+		enum class By { Channel, Status, Level, Job, Name };
+
+		bool channelAsc = true;
+		bool statusAsc  = false;
+		bool levelAsc   = true;
+		bool jobAsc     = true;
+		bool nameAsc    = true;
+
+		By lastSort = By::Channel;
+
+		void ChangeSort(By criterion, std::span<__MESSENGER_PLAYER> list);
+		void ReApply(std::span<__MESSENGER_PLAYER> list) const;
+	};
+};
 
 class CWndFriendCtrlEx : public CWndBase
 {
 public:
-	int m_nCurSelect;
-	int m_nFontHeight;
-	int m_nDrawCount;
+	int m_nCurSelect  = -1;
+	int m_nFontHeight = 20;
+	int m_nDrawCount  = 0;
 	CWndScrollBar m_wndScrollBar;
 	CWndMenu m_menu;
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
-	enum {SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME};
-	BOOL m_bSortbyChannel;
-	BOOL m_bSortbyStatus;
-	BOOL m_bSortbyLevel;
-	BOOL m_bSortbyJob;
-	BOOL m_bSortbyName;
-	int m_nCurSort;
+	MessengerHelper::Sorter m_sortStrategy;
 
 public:
-	CWndFriendCtrlEx();
-	~CWndFriendCtrlEx();
-
 	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
 
 	// Overridables
@@ -58,22 +63,13 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 
 	// Sort Func.
-	void SortbyChannel(BOOL bCheckbefore = TRUE);
-	void SortbyStatus(BOOL bCheckbefore = TRUE);
-	void SortbyLevel(BOOL bCheckbefore = TRUE);
-	void SortbyJob(BOOL bCheckbefore = TRUE);
-	void SortbyName(BOOL bCheckbefore = TRUE);
+	void ChangeSort(MessengerHelper::Sorter::By by);
 	void UpdatePlayerList();
 
 	// UI Func.
 	void SetScrollBar();
-#ifdef __RT_1025
 	int		GetSelect( CPoint point, u_long & idPlayer, Friend** ppFriend );
 	void	GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend );
-#else	// __RT_1025
-	int GetSelect( CPoint point, LPFRIEND* lppFriend );
-	void GetSelectFriend( int SelectCount, LPFRIEND* lppFriend );
-#endif	// __RT_1025
 	u_long GetSelectId( int SelectCount );
 	void ScrollBarPos( int nPos );
 	int GetDrawCount( void );
@@ -82,25 +78,16 @@ public:
 class CWndGuildCtrlEx : public CWndBase
 {
 public:
-	int m_nCurSelect;
-	int m_nFontHeight;
-	int m_nDrawCount;
+	int m_nCurSelect  = -1;
+	int m_nFontHeight = 20;
+	int m_nDrawCount  = 0;
 	CWndScrollBar m_wndScrollBar;
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
-	enum {SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME};
-	BOOL m_bSortbyChannel;
-	BOOL m_bSortbyStatus;
-	BOOL m_bSortbyLevel;
-	BOOL m_bSortbyJob;
-	BOOL m_bSortbyName;
-	int m_nCurSort;
+	MessengerHelper::Sorter m_sortStrategy;
 
 public:
-	CWndGuildCtrlEx();
-	~CWndGuildCtrlEx();
-
 	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
 
 	// Overridables
@@ -114,22 +101,13 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 
 	// Sort Func.
-	void SortbyChannel(BOOL bCheckbefore = TRUE);
-	void SortbyStatus(BOOL bCheckbefore = TRUE);
-	void SortbyLevel(BOOL bCheckbefore = TRUE);
-	void SortbyJob(BOOL bCheckbefore = TRUE);
-	void SortbyName(BOOL bCheckbefore = TRUE);
+	void ChangeSort(MessengerHelper::Sorter::By by);
 	void UpdatePlayerList();
 
 	// UI Func.
 	void SetScrollBar();
-#ifdef __RT_1025
 	int		GetSelect( CPoint point, u_long & idPlayer, CGuildMember** lppGuildMember );
 //	void	GetSelectFriend( int SelectCount, u_long & idPlayer, Friend** ppFriend );
-#else	// __RT_1025
-	int GetSelect( CPoint point, LPFRIEND* lppFriend );
-	void GetSelectFriend( int SelectCount, LPFRIEND* lppFriend );
-#endif	// __RT_1025
 	u_long GetSelectId( int SelectCount );
 	void ScrollBarPos( int nPos );
 	int GetDrawCount( void );
@@ -138,12 +116,7 @@ public:
 class CWndCampus : public CWndNeuz
 {
 public:
-	CWndCampus( void );
-	~CWndCampus( void );
-
-public:
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
  	virtual	void PaintFrame( C2DRender* p2DRender );
@@ -158,28 +131,16 @@ public:
 	__MESSENGER_PLAYER* GetSelectedDiscipleID( int nSelectedNumber );
 	u_long GetSelectedMasterID( CPoint point );
 	u_long GetSelectedDiscipleID( CPoint point );
-	void SortbyChannel( BOOL bCheckbefore = TRUE );
-	void SortbyStatus( BOOL bCheckbefore = TRUE );
-	void SortbyLevel( BOOL bCheckbefore = TRUE );
-	void SortbyJob( BOOL bCheckbefore = TRUE );
-	void SortbyName( BOOL bCheckbefore = TRUE );
+	void ChangeSort(MessengerHelper::Sorter::By by);
 
 private:
 	enum { MASTER_RENDERING_POSITION = 43, DISCIPLE_RENDERING_POSITION = 122 };
-	enum { SORT_BY_CHANNEL, SORT_BY_STATUS, SORT_BY_LEVEL, SORT_BY_JOB, SORT_BY_NAME };
-	BOOL m_bSortbyChannel;
-	BOOL m_bSortbyStatus;
-	BOOL m_bSortbyLevel;
-	BOOL m_bSortbyJob;
-	BOOL m_bSortbyName;
-	int m_nCurSort;
-	BOOL m_bCurSelectedMaster;
-	int m_nCurSelectedDisciple;
-	int m_nFontHeight;
+	MessengerHelper::Sorter m_sortStrategy;
+
+	BOOL m_bCurSelectedMaster  = FALSE;
+	int m_nCurSelectedDisciple = -1;
+	int m_nFontHeight          = 20;
 	CWndMenu m_Menu;
 	__MESSENGER_PLAYER m_MasterPlayer;
 	std::vector < __MESSENGER_PLAYER > m_vDisciplePlayer;
 };
-
-#endif //__WNDMESSENGERCTRL_H
-

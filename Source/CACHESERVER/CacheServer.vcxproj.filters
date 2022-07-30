@@ -50,9 +50,6 @@
     <ClCompile Include="..\_Common\memtrace.cpp">
       <Filter>Cache Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\messenger.cpp">
-      <Filter>Cache Files</Filter>
-    </ClCompile>
     <ClCompile Include="packetlog.cpp">
       <Filter>Cache Files</Filter>
     </ClCompile>
@@ -265,9 +262,6 @@
       <Filter>Cache Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\memtrace.h">
-      <Filter>Cache Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\messenger.h">
       <Filter>Cache Files</Filter>
     </ClInclude>
     <ClInclude Include="packetlog.h">

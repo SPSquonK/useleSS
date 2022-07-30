@@ -59,7 +59,7 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_SETPARTYMODE, &CDPCoreClient::OnSetPartyMode );
 	ON_MSG( PACKETTYPE_PARTYCHANGEITEMMODE, &CDPCoreClient::OnPartyChangeItemMode );
 	ON_MSG( PACKETTYPE_PARTYCHANGEEXPMODE, &CDPCoreClient::OnPartyChangeExpMode );
-	ON_MSG( PACKETTYPE_ADDFRIEND, &CDPCoreClient::OnAddFriend );
+	ON_MSG( PACKETTYPE_CW_ADDFRIEND, &CDPCoreClient::OnAddFriend );
 	ON_MSG( PACKETTYPE_REMOVEFRIEND, &CDPCoreClient::OnRemovefriend );
 
 #ifdef __ENVIRONMENT_EFFECT
@@ -1084,68 +1084,25 @@ void CDPCoreClient::OnPartyChangeTroup( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnAddFriend( CAr & ar, DPID, DPID, OBJID )
-{
-	int bAdd = 0; // 0이면 추가를 아무도 안한것 1 Sender만 추가, 2 Friend만 추가, 3 : 두명다 추가됨
-	u_long uidSend, uidFriend;
-	BYTE nSendSex, nFriendSex;
-	LONG nSendJob, nFriendJob;
-	ar >> uidSend >> uidFriend;
-	ar >> nSendSex >> nFriendSex;
-	ar >> nSendJob >> nFriendJob;
+void CDPCoreClient::OnAddFriend(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uidSend, uidFriend] = ar.Extract<u_long, u_long>();
 
-	CUser* pSender;
-	CUser* pFriend;
+	CUser * pSender = g_UserMng.GetUserByPlayerID(uidSend);
+	CUser * pFriend = g_UserMng.GetUserByPlayerID(uidFriend);
 	
-	pSender = g_UserMng.GetUserByPlayerID( uidSend );
-	pFriend = g_UserMng.GetUserByPlayerID( uidFriend );
-	
-	const char* lpszFriendPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( uidFriend );
-	if( lpszFriendPlayer == NULL )	//
-		return;
-	char lpszFriend[MAX_PLAYER];
-	strcpy( lpszFriend, lpszFriendPlayer );
+	const char * lpszFriend = CPlayerDataCenter::GetInstance()->GetPlayerString(uidFriend);
+	const char * lpszSend = CPlayerDataCenter::GetInstance()->GetPlayerString(uidSend);
+	if (!lpszFriend || !lpszSend) return;
 
-	if( IsValidObj( (CObj*)pSender ) )
-	{
-		if( MAX_FRIEND <= pSender->m_RTMessenger.size() )
-		{
-			pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
-		}
-		else
-		{
-			pSender->m_RTMessenger.SetFriend( uidFriend, NULL );
-			pSender->AddAddFriend( uidFriend, lpszFriend ); 
-			bAdd++;
-		}
+	if (IsValidObj(pSender)) {
+		pSender->m_RTMessenger.SetFriend(uidFriend);
+		pSender->AddAddFriend(uidFriend, lpszFriend);
 	}
 
-	const char* lpszSendPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( uidSend );
-	if( lpszSendPlayer == NULL )
-		return;
-	char lpszSend[MAX_PLAYER];
-	strcpy( lpszSend, lpszSendPlayer );
-
-	if( IsValidObj( (CObj*)pFriend ) )
-	{
-		if( MAX_FRIEND <= pFriend->m_RTMessenger.size() )
-		{
-			if( IsValidObj( (CObj*)pSender ) )
-				pSender->AddDefinedText( TID_GAME_MSGMAXUSER, "" );
-		}
-		else
-		{
-			pFriend->m_RTMessenger.SetFriend( uidSend, NULL );
-			pFriend->AddAddFriend( uidSend, lpszSend );
-			bAdd	+= 2;
-		}
+	if (IsValidObj(pFriend)) {
+		pFriend->m_RTMessenger.SetFriend(uidSend);
+		pFriend->AddAddFriend(uidSend, lpszSend);
 	}
-
-	if( IsValidObj( (CObj*)pSender ) && strlen( lpszFriend ) && ( bAdd == 2 || bAdd == 3 ) )
-		pSender->AddDefinedText( TID_GAME_MSGINVATECOM, "%s", lpszFriend );
-
-	if( IsValidObj( (CObj*)pFriend ) && strlen( lpszSend ) && ( bAdd == 1 || bAdd == 3 )  )
-		pFriend->AddDefinedText( TID_GAME_MSGINVATECOM, "%s", lpszSend );
 }
 
 void CDPCoreClient::OnRemovefriend( CAr & ar, DPID, DPID, OBJID )
@@ -2228,20 +2185,13 @@ void CDPCoreClient::SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild )
 
 
 
-void CDPCoreClient::OnSetFriendState( CAr & ar, DPID, DPID, OBJID )
-{
-	CUser* pUser;
-	u_long uidPlayer;
-	DWORD dwState;
-	ar >> uidPlayer >> dwState;
+void CDPCoreClient::OnSetFriendState(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uidPlayer, dwState] = ar.Extract<u_long, FriendStatus>();
 
-	pUser	= (CUser*)prj.GetUserByID( uidPlayer );
-	if( IsValidObj( pUser ) )
-#ifdef __RT_1025
-		pUser->m_RTMessenger.SetState( dwState );
-#else	// __RT_1025
-		pUser->m_Messenger.m_dwMyState = dwState;
-#endif	// __RT_1025
+	CUser * pUser = prj.GetUserByID(uidPlayer);
+	if (IsValidObj(pUser)) {
+		pUser->m_RTMessenger.SetState(dwState);
+	}
 }
 
 void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
@@ -2250,68 +2200,25 @@ void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
 	u_long uidFriend;
 	ar >> uidPlayer >> uidFriend;
 	
-	CUser* pUser, *pUserFriend;
+	CUser * pUser = prj.GetUserByID( uidPlayer );
 
-	pUser = (CUser*)prj.GetUserByID( uidPlayer );
-	pUserFriend = (CUser*)prj.GetUserByID( uidFriend );
+	if (!IsValidObj(pUser)) return;
 
-	if( IsValidObj( pUser ) == FALSE )
-		return;
+	Friend * pFriend = pUser->m_RTMessenger.GetFriend(uidFriend);
+	if (!pFriend) return;
+		
+	if (pFriend->bBlock) {
+		pFriend->bBlock = FALSE;
 
-#ifdef __RT_1025
-	Friend* pFriend	= pUser->m_RTMessenger.GetFriend( uidFriend );
-	if( pFriend )
-	{
-		if( pFriend->bBlock )
-		{
-			pFriend->bBlock		= FALSE;
-			if( IsValidObj( pUserFriend ) )
-				pFriend->dwState	= pUserFriend->m_RTMessenger.GetState();
-			else
-				pFriend->dwState	= FRS_OFFLINE;
-		}
+		CUser * pUserFriend = prj.GetUserByID(uidFriend);
+		if (IsValidObj(pUserFriend))
+			pFriend->dwState = pUserFriend->m_RTMessenger.GetState();
 		else
-		{
-			pFriend->bBlock		= TRUE;
-			pFriend->dwState	= 0;
-		}
-	}	
-#else	// __RT_1025
-	LPFRIEND pFriend	= pUser->m_Messenger.GetFriend( uidFriend );
-	if( pFriend )
-	{
-		if( pFriend->dwState == FRS_BLOCK )	// 차단상태
-		{
-			// 차단해제를 하려고함 :: 차단해제를 하면 그넘의 상태를 가지고 와서 나에게만 보내면 됨 : 나한테만 보내줌
-			if( pUserFriend )
-			{
-				pFriend->dwState	= pUserFriend->m_Messenger.m_dwMyState;
-			}
-			else
-			{
-				pFriend->dwState	= FRS_OFFLINE;
-			}
-			
-			LPFRIEND pDFriend = pUser->m_Messenger.GetDefferntFriend( uidFriend );
-			if( pDFriend )
-			{
-				pDFriend->dwState = 0;
-			}
-
-		}
-		else	// 차단해제 상태
-		{
-			// 차단을 하려고함 :: 나는 그넘을 블럭상태라고 나에게 보내주고 그넘에게는 나를 로그아웃이라고 함 : 나에게 보내주고 그넘한태두 보내줌
-			pFriend->dwState	= FRS_BLOCK;
-			LPFRIEND pDFriend = pUser->m_Messenger.GetDefferntFriend( uidFriend );
-			if( pDFriend )
-			{
-				pDFriend->dwState = FRS_BLOCK;
-			}
-		}
-		pFriend->bSave = TRUE;
+			pFriend->dwState = FriendStatus::OFFLINE;
+	} else {
+		pFriend->bBlock = TRUE;
+		pFriend->dwState = FriendStatus::ONLINE;
 	}
-#endif	// __RT_1025
 }
 
 

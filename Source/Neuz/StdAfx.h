@@ -94,7 +94,6 @@
 #include "Debug.h"
 #include "Music.h"
 #include "HwOption.h"
-#include "Messenger.h"
 #include "yUtil.h"
 
 #include "TexturePool.h"	//gmpbigsun
@@ -144,7 +143,6 @@
 #include "WndOptionGame.h"	 // 게임 옵션
 #include "WndDialog.h"       // 대화  
 #include "WndShop.h"         // 상점 
-#include "WndMessengerSearch.h" // 메신저 검색창
 #include "WndManager.h"      // 윈도 매니저 
 #include "WndWorld.h"        // 월드 윈도 
 #include "WndGuild.h"			// 길드 윈도

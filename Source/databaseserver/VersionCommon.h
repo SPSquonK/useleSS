@@ -46,7 +46,6 @@
 //	#define		__SYS_COLLECTING			//
 //	#define		__SYS_IDENTIFY				// 각성, 축복
 //	#define		__SYS_PLAYER_DATA			// 캐릭터 통합 정보
-#define		__RT_1025					// 메신저
 #define		__CONV_0906
 #define		__INVALID_LOGIN_0320		// 저장이 완료 되지 않은 사용자의 접속 막기(복사 방지)
 #define		__INVALID_LOGIN_0612		// 보완

@@ -4736,11 +4736,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			break;
 		case MMI_ADD_MESSENGER:
 			{
-#ifdef __RT_1025
 				if( g_WndMng.m_RTMessenger.GetFriend( pFocusMover->m_idPlayer ) )
-#else	// __RT_1025
-				if( g_WndMng.m_Messenger.IsFriend( pFocusMover->m_idPlayer ) )
-#endif	// __RT_1025
 				{
 					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0051) ) );
 				}
