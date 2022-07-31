@@ -354,17 +354,9 @@ BOOL CItemElem::IsLogable( void )
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 #ifdef __WORLDSERVER
-	#ifdef __VM_0819
-	CItemPool*	CItem::m_pPool	= new CItemPool( 512, "CItem" );
-	#else	// __VM_0819
 	CItemPool*	CItem::m_pPool	= new CItemPool( 512 );
-	#endif	// __VM_0819
 #else	// __WORLDSERVER
-	#ifdef __VM_0819
-	CItemPool*	CItem::m_pPool	= new CItemPool( 128, "CItem" );
-	#else	// __VM_0819
 	CItemPool*	CItem::m_pPool	= new CItemPool( 128 );
-	#endif	// __VM_0819
 #endif	// __WORLDSERVER
 #endif	// __MEM_TRACE
 #endif	// __VM_0820

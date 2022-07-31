@@ -47,17 +47,9 @@
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 #ifdef __INTERNALSERVER
-	#ifdef __VM_0819
-	CUserPool*	CUser::m_pPool	= new CUserPool( 5, "CUser" );
-	#else	// __VM_0819
 	CUserPool*	CUser::m_pPool	= new CUserPool( 5 );
-	#endif	// __VM_0819
 #else	// __INTERNALSERVER
-	#ifdef __VM_0819
-	CUserPool*	CUser::m_pPool	= new CUserPool( 512, "CUser" );
-	#else	// __VM_0819
 	CUserPool*	CUser::m_pPool	= new CUserPool( 512 );
-	#endif	// __VM_0819
 #endif	// __INTERNALSERVER
 #endif	// __MEM_TRACE
 #endif	// __VM_0820

@@ -24,9 +24,6 @@
 #include "WScript.h"
 #include "DisplayedInfo.h"
 
-#ifdef __VM_0819
-#include "vmlog.h"
-#endif	// __VM_0819
 
 #include "couple.h"
 #include "housing.h"
@@ -188,9 +185,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			CMemTrace::Instance()->Print();
 #endif	// _DEBUG
 #endif	// __MEM_TRACE
-#ifdef __VM_0819
-			CVMLog::Instance()->Log();
-#endif	// __VM_0819
 			break;
 		case WM_RBUTTONDOWN:
 #ifdef __NEW_PROFILE

@@ -4,17 +4,9 @@
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 #ifdef MASSIVE
-	#ifdef __VM_0819
-	MemPooler<CClientSockE>*	CClientSockE::m_pPool	= new MemPooler<CClientSockE>( 1024, "CClientSockE" );
-	#else	// __VM_0819
 	MemPooler<CClientSockE>*	CClientSockE::m_pPool	= new MemPooler<CClientSockE>( 1024 );
-	#endif	// __VM_0819
 #else	// MASSIVE
-	#ifdef __VM_0819
-	MemPooler<CClientSockE>*	CClientSockE::m_pPool	= new MemPooler<CClientSockE>( 4, "CClientSockE" );
-	#else	// __VM_0819
 	MemPooler<CClientSockE>*	CClientSockE::m_pPool	= new MemPooler<CClientSockE>( 4 );
-	#endif	// __VM_0819
 #endif	// MASSIVE
 #endif	// __MEM_TRACE
 #endif	// __VM_0820

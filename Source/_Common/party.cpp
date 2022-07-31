@@ -26,11 +26,7 @@
 
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CParty>*	CParty::m_pPool		= new MemPooler<CParty>( 512, "CParty" );
-	#else	// __VM_0819
 	MemPooler<CParty>*	CParty::m_pPool		= new MemPooler<CParty>( 512 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 

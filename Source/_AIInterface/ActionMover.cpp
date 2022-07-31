@@ -91,17 +91,9 @@ BOOL CMagicAtkMsgq::Process( CMover* pMover )
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 #ifdef __WORLDSERVER
-	#ifdef __VM_0819
-	CActionMoverPool*	CActionMover::m_pPool	= new CActionMoverPool( 1024, "CActionMover" );
-	#else	// __VM_0819
 	CActionMoverPool*	CActionMover::m_pPool	= new CActionMoverPool( 1024 );
-	#endif	// __VM_0819
 #else	// __WORLDSERVER
-	#ifdef __VM_0819
-	CActionMoverPool*	CActionMover::m_pPool	= new CActionMoverPool( 128, "CActionMover" );
-	#else	// __VM_0819
 	CActionMoverPool*	CActionMover::m_pPool	= new CActionMoverPool( 128 );
-	#endif	// __VM_0819
 #endif	// __WORLDSERVER
 #endif	// __MEM_TRACE
 #endif	// __VM_0820

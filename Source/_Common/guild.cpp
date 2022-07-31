@@ -223,11 +223,7 @@ WORD CGuildTable::GetMaxMemeber(WORD nLevel) const
 //________________________________________________________________________________
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CGuildMember>*	CGuildMember::sm_pPool	= new MemPooler<CGuildMember>( 512, "CGuildMember" );
-	#else	// __VM_0819
 	MemPooler<CGuildMember>*	CGuildMember::sm_pPool	= new MemPooler<CGuildMember>( 512 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 CGuildMember::CGuildMember()
@@ -293,11 +289,7 @@ CGuildMember & CGuildMember::operator = ( CGuildMember & source )
 //________________________________________________________________________________
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CGuild>*	CGuild::sm_pPool		= new MemPooler<CGuild>( 128, "CGuild" );
-	#else	// __VM_0819
 	MemPooler<CGuild>*	CGuild::sm_pPool		= new MemPooler<CGuild>( 128 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 

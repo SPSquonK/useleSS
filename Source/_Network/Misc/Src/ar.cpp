@@ -7,11 +7,7 @@
 #include "StdAfx.h"
 #include "Ar.h"
 
-#ifdef __VM_0819
-CHeapMng*	CAr::m_pHeapMng		= new CHeapMng( "CAr" );
-#else	// __VM_0819
 CHeapMng*	CAr::m_pHeapMng		= new CHeapMng;
-#endif	// __VM_0819
 
 CAr::CAr( void* lpBuf, u_int nBufSize )
 {
@@ -35,11 +31,7 @@ CAr::~CAr()
 {
 	if( IsStoring() && ( m_nBufSize > nGrowSize ) )
 	{
-#ifdef __VM_0819
-		CAr::m_pHeapMng->Free( m_lpBufStart, m_nBufSize );
-#else	// __VM_0819
 		CAr::m_pHeapMng->Free( m_lpBufStart );
-#endif	// __VM_0819
 	}
 }
 
@@ -134,11 +126,7 @@ void CAr::CheckBuf( u_int nSize )
 		
 		if( m_nBufSize > nGrowSize )
 		{
-#ifdef __VM_0819
-			m_lpBufStart	= (LPBYTE)CAr::m_pHeapMng->Realloc( m_lpBufStart, m_nBufSize + nExtension, m_nBufSize );
-#else	// __VM_0819
 			m_lpBufStart	= (LPBYTE)CAr::m_pHeapMng->Realloc( m_lpBufStart, m_nBufSize + nExtension );
-#endif	// __VM_0819
 
 // 			//	BEGINTEST
 // 			Error( "m_nBufSize : %d, Realloc Size : %d", m_nBufSize, m_nBufSize + nExtension );
@@ -180,11 +168,7 @@ void CAr::ReelIn( u_int uOffset )
 #if 1
 	if( m_nBufSize > nGrowSize )
 	{
-#ifdef __VM_0819
-		CAr::m_pHeapMng->Free( m_lpBufStart, m_nBufSize );
-#else	// __VM_0819
 		CAr::m_pHeapMng->Free( m_lpBufStart );
-#endif	// __VM_0819
 		m_lpBufStart	= m_lpBuf;
 		m_nBufSize	= nGrowSize;
 		m_lpBufMax	= m_lpBufStart + m_nBufSize;
