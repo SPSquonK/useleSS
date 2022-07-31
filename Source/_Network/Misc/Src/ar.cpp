@@ -7,8 +7,6 @@
 #include "StdAfx.h"
 #include "Ar.h"
 
-CHeapMng*	CAr::m_pHeapMng		= new CHeapMng;
-
 CAr::CAr( void* lpBuf, u_int nBufSize )
 {
 	if( lpBuf )
@@ -31,7 +29,7 @@ CAr::~CAr()
 {
 	if( IsStoring() && ( m_nBufSize > nGrowSize ) )
 	{
-		CAr::m_pHeapMng->Free( m_lpBufStart );
+		delete[] m_lpBufStart;
 	}
 }
 
@@ -106,7 +104,7 @@ void CAr::Reserve( u_int nSize )
 	if( nSize <= nGrowSize )
 		return;
 //	LPBYTE lpBuf	= (LPBYTE) heapAlloc( nSize );
-	LPBYTE lpBuf	= (LPBYTE)CAr::m_pHeapMng->Malloc( nSize );
+	BYTE * lpBuf = new BYTE[nSize];
 	m_lpBufStart	= lpBuf;
 
 	ASSERT( m_lpBufStart );
@@ -126,14 +124,14 @@ void CAr::CheckBuf( u_int nSize )
 		
 		if( m_nBufSize > nGrowSize )
 		{
-			m_lpBufStart	= (LPBYTE)CAr::m_pHeapMng->Realloc( m_lpBufStart, m_nBufSize + nExtension );
-
-// 			//	BEGINTEST
-// 			Error( "m_nBufSize : %d, Realloc Size : %d", m_nBufSize, m_nBufSize + nExtension );
+			BYTE * old = m_lpBufStart;
+			m_lpBufStart = new BYTE[m_nBufSize + nExtension];
+			std::memcpy(m_lpBufStart, old, m_nBufSize);
+			delete[] old;
 		}
 		else
 		{
-			LPBYTE lpBuf	= (LPBYTE)CAr::m_pHeapMng->Malloc( m_nBufSize + nExtension );
+			LPBYTE lpBuf	= new BYTE[m_nBufSize + nExtension];
 			memcpy( lpBuf, m_lpBufStart, m_nBufSize );
 			m_lpBufStart	= lpBuf;
 		}
@@ -165,14 +163,14 @@ void CAr::ReelIn( u_int uOffset )
 {
 	ASSERT( IsStoring() );
 	ASSERT( m_lpBufStart + uOffset <= m_lpBufCur );
-#if 1
+
 	if( m_nBufSize > nGrowSize )
 	{
-		CAr::m_pHeapMng->Free( m_lpBufStart );
+		delete[] m_lpBufStart;
 		m_lpBufStart	= m_lpBuf;
 		m_nBufSize	= nGrowSize;
 		m_lpBufMax	= m_lpBufStart + m_nBufSize;
 	}
-#endif	// 1
+
 	m_lpBufCur	= m_lpBufStart + uOffset;
 }

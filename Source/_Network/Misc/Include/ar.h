@@ -1,6 +1,5 @@
 #pragma once
 
-#include "HeapMng.h"
 #include "FlyFFTypes.h"
 #include "StaticString.h"
 #include <boost/container/static_vector.hpp>
@@ -17,10 +16,7 @@ public:
 // Flag values
 	enum class Mode { store = 0, load = 1 };
 	enum class GoToOffsetAnswer { SamePlace, NotAllConsumed, TooFar };
-	static constexpr int nGrowSize = 16384;
-
-	static CHeapMng * m_pHeapMng;
-
+	static constexpr size_t nGrowSize = 16 * 1024;
 
 // Attributes
 	BOOL	IsLoading()	const;

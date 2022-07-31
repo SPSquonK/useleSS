@@ -239,7 +239,6 @@ BOOL InitializeNetLib()
 
 void UninitializeNetLib()
 {
-	SAFE_DELETE( CAr::m_pHeapMng );
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 	SAFE_DELETE( CClientSock::m_pPool );

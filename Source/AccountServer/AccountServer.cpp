@@ -533,7 +533,6 @@ void ExitInstance( void )
 	g_DbManager.CloseDbWorkers();
 	
 //	UninitializeNetLib();
-	SAFE_DELETE( CAr::m_pHeapMng );
 	SAFE_DELETE( CBuffer::m_pPool );
 	SAFE_DELETE( CBuffer2::m_pPool2 );	
 	SAFE_DELETE( CBuffer3::m_pPool2 );	
