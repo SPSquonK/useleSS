@@ -8,23 +8,18 @@
 
 class CAr final {
 public:
-	CAr(void *lpBuf = NULL, u_int nBufSize = 0);
+	CAr(void * lpBuf = nullptr, u_int nBufSize = 0);
 	~CAr();
 
 	CAr(const CAr &) = delete;
 	CAr & operator=(const CAr &) = delete;
 
 // Flag values
-	enum	{ store = 0, load = 1 };
-	enum	{ nGrowSize = 16384 };
+	enum class Mode { store = 0, load = 1 };
+	enum class GoToOffsetAnswer { SamePlace, NotAllConsumed, TooFar };
+	static constexpr int nGrowSize = 16384;
 
-	enum class GoToOffsetAnswer {
-		SamePlace,
-		NotAllConsumed,
-		TooFar
-	};
-
-	static CHeapMng*	m_pHeapMng;
+	static CHeapMng * m_pHeapMng;
 
 
 // Attributes
@@ -79,10 +74,7 @@ public:
 
 	LPBYTE	GetBuffer( int* pnBufSize );
 	u_long	GetOffset( void );
-/*
-	void	Copy( CAr & ar );
-	CAr& operator = ( CAr & ar );
-*/
+
 	// insertion operations
 	CAr& operator<<(BYTE by);
 	CAr& operator<<(WORD w);
@@ -140,13 +132,6 @@ public:
 		ReadString(buffer, N);
 		return *this;
 	}
-
-#ifdef __CLIENT
-#ifdef _DEBUG
-static	DWORD	s_dwHdrPrev;
-static	DWORD	s_dwHdrCur;
-#endif	// _DEBUG
-#endif	// __CLIENT
 
 	/** Push into the archiver each passed value */
 	template<typename ... Ts> void Accumulate(const Ts & ...);
@@ -250,12 +235,12 @@ private:
 	void VariantPush(const std::variant<Ts ...> & variant);
 
 protected:
-	BYTE	m_nMode;	// read or write
+	Mode m_nMode;
 	u_int	m_nBufSize;
 	LPBYTE	m_lpBufCur;
 	LPBYTE	m_lpBufMax;
 	LPBYTE	m_lpBufStart;
-	BYTE	m_lpBuf[nGrowSize];
+	BYTE	m_lpBuf[nGrowSize] = { '\0' };
 };
 /*
 inline void CAr::Copy( CAr & ar )
@@ -263,10 +248,8 @@ inline void CAr::Copy( CAr & ar )
 inline CAr& CAr::operator = ( CAr & ar )
 	{	ar.Copy( *this );	return *this;	}
 */
-inline BOOL CAr::IsLoading() const
-	{ return (m_nMode & CAr::load) != 0; }
-inline BOOL CAr::IsStoring() const
-	{ return (m_nMode & CAr::load) == 0; }
+inline BOOL CAr::IsLoading() const { return m_nMode == Mode::load; }
+inline BOOL CAr::IsStoring() const { return m_nMode == Mode::store; }
 
 inline CAr& CAr::operator<<(int i)
 	{ return CAr::operator<<((LONG)i); }

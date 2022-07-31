@@ -17,13 +17,13 @@ CAr::CAr( void* lpBuf, u_int nBufSize )
 {
 	if( lpBuf )
 	{
-		m_nMode		= load;
+		m_nMode		= Mode::load;
 		m_lpBufStart	= (LPBYTE)lpBuf;
 		m_nBufSize	= nBufSize;
 	}
 	else
 	{
-		m_nMode		= store;
+		m_nMode		= Mode::store;
 		m_lpBufStart	= m_lpBuf;
 		m_nBufSize	= nGrowSize;
 	}
