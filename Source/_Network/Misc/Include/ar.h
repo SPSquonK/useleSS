@@ -5,6 +5,23 @@
 #include <boost/container/static_vector.hpp>
 #include <variant>
 
+namespace ArHelper {
+	template<typename T>
+	concept UnitTypes =
+		std::same_as<T, BYTE>
+		|| std::same_as<T, WORD>
+		|| std::same_as<T, LONG>
+		|| std::same_as<T, DWORD>
+		|| std::same_as<T, float>
+		|| std::same_as<T, double>
+		|| std::same_as<T, int>
+		|| std::same_as<T, short>
+		|| std::same_as<T, char>
+		|| std::same_as<T, unsigned int>
+		|| std::same_as<T, __int64>;
+}
+
+
 class CAr final {
 public:
 	CAr(void * lpBuf = nullptr, u_int nBufSize = 0);
@@ -72,17 +89,7 @@ public:
 	u_long	GetOffset( void );
 
 	// insertion operations
-	CAr& operator<<(BYTE by);
-	CAr& operator<<(WORD w);
-	CAr& operator<<(LONG l);
-	CAr& operator<<(DWORD dw);
-	CAr& operator<<(float f);
-	CAr& operator<<(double d);
-
-	CAr& operator<<(int i);
-	CAr& operator<<(short w);
-	CAr& operator<<(char ch);
-	CAr& operator<<(unsigned u);
+	template <ArHelper::UnitTypes Type> CAr & operator<<(Type value);
 
 	template<size_t N>
 	CAr & operator<<(const char(&buffer)[N]) requires (N >= 3) {
@@ -95,17 +102,7 @@ public:
 	CAr & operator<<(T t) = delete;
 
 	// extraction operations
-	CAr& operator>>(BYTE& by);
-	CAr& operator>>(WORD& w);
-	CAr& operator>>(DWORD& dw);
-	CAr& operator>>(LONG& l);
-	CAr& operator>>(float& f);
-	CAr& operator>>(double& d);
-
-	CAr& operator>>(int& i);
-	CAr& operator>>(short& w);
-	CAr& operator>>(char& ch);
-	CAr& operator>>(unsigned& u);
+	template <ArHelper::UnitTypes Type> CAr & operator>>(Type & value);
 
 	CAr & operator<<(bool b) { return *this << static_cast<BYTE>(b ? 1 : 0); }
 	CAr & operator>>(bool & b) { BYTE bb; *this >> bb; b = bb != 0; return *this; }
@@ -238,70 +235,30 @@ protected:
 	LPBYTE	m_lpBufStart;
 	BYTE	m_lpBuf[nGrowSize] = { '\0' };
 };
-/*
-inline void CAr::Copy( CAr & ar )
-	{	ASSERT( IsLoading() );	ASSERT( ar.IsStoring() );	ar.Write( (void*)m_lpBufStart, (u_int)( m_lpBufMax - m_lpBufStart ) );	}
-inline CAr& CAr::operator = ( CAr & ar )
-	{	ar.Copy( *this );	return *this;	}
-*/
+
 inline BOOL CAr::IsLoading() const { return m_nMode == Mode::load; }
 inline BOOL CAr::IsStoring() const { return m_nMode == Mode::store; }
 
-inline CAr& CAr::operator<<(int i)
-	{ return CAr::operator<<((LONG)i); }
-inline CAr& CAr::operator<<(unsigned u)
-	{ return CAr::operator<<((LONG)u); }
-inline CAr& CAr::operator<<(short w)
-	{ return CAr::operator<<((WORD)w); }
-inline CAr& CAr::operator<<(char ch)
-	{ return CAr::operator<<((BYTE)ch); }
-inline CAr& CAr::operator<<(BYTE by)
-	{ CheckBuf( sizeof(BYTE) );
-		*(UNALIGNED BYTE*)m_lpBufCur = by; m_lpBufCur += sizeof(BYTE); return *this; }
-inline CAr& CAr::operator<<(WORD w)
-	{ CheckBuf( sizeof( WORD ) );
-		*(UNALIGNED WORD*)m_lpBufCur = w; m_lpBufCur += sizeof(WORD); return *this; }
-inline CAr& CAr::operator<<(LONG l)
-	{ CheckBuf( sizeof(LONG) );
-		*(UNALIGNED LONG*)m_lpBufCur = l; m_lpBufCur += sizeof(LONG); return *this; }
-inline CAr& CAr::operator<<(DWORD dw)
-	{ CheckBuf( sizeof(DWORD) );
-		*(UNALIGNED DWORD*)m_lpBufCur = dw; m_lpBufCur += sizeof(DWORD); return *this; }
-inline CAr& CAr::operator<<(float f)
-	{ CheckBuf( sizeof(float) );
-		*(UNALIGNED FLOAT*)m_lpBufCur = *(FLOAT*)&f; m_lpBufCur += sizeof(float); return *this; }
-inline CAr& CAr::operator<<(double d)
-	{ CheckBuf( sizeof(double) );
-		*(UNALIGNED double*)m_lpBufCur = *(double*)&d; m_lpBufCur += sizeof(double); return *this; }
+template <ArHelper::UnitTypes Type>
+CAr & CAr::operator<<(const Type value) {
+	CheckBuf(sizeof(Type));
 
-inline CAr& CAr::operator>>(int& i)
-	{ return CAr::operator>>((LONG&)i); }
-inline CAr& CAr::operator>>(unsigned& u)
-	{ return CAr::operator>>((LONG&)u); }
-inline CAr& CAr::operator>>(short& w)
-	{ return CAr::operator>>((WORD&)w); }
-inline CAr& CAr::operator>>(char& ch)
-	{ return CAr::operator>>((BYTE&)ch); }
+	*reinterpret_cast<UNALIGNED Type *>(m_lpBufCur) = value;
+	m_lpBufCur += sizeof(Type);
+	return *this;
+}
 
-#define	CAR_SAFE_READ( type, value )	\
-	if( m_lpBufCur + sizeof(type) <= m_lpBufMax )	\
-		{	value	= *(UNALIGNED type*)m_lpBufCur;	m_lpBufCur += sizeof(type);	}	\
-	else	\
-		{	value	= (type)0;	m_lpBufCur	= m_lpBufMax;	}	\
-	return *this
-
-inline CAr& CAr::operator>>(BYTE& by)
-	{	CAR_SAFE_READ( BYTE, by );	}
-inline CAr& CAr::operator>>(WORD& w)
-	{	CAR_SAFE_READ( WORD, w );	}
-inline CAr& CAr::operator>>(DWORD& dw)
-	{	CAR_SAFE_READ( DWORD, dw );	}
-inline CAr& CAr::operator>>(float& f)
-	{	CAR_SAFE_READ( float, f );	}
-inline CAr& CAr::operator>>(double& d)
-	{	CAR_SAFE_READ( double, d );	}
-inline CAr& CAr::operator>>(LONG& l)
-	{	CAR_SAFE_READ( LONG, l );	}
+template <ArHelper::UnitTypes Type>
+CAr & CAr::operator>>(Type & value) {
+	if (m_lpBufCur + sizeof(Type) <= m_lpBufMax) {
+		value = *reinterpret_cast<UNALIGNED Type *>(m_lpBufCur);
+		m_lpBufCur += sizeof(Type);
+	} else {
+		value = Type(0);
+		m_lpBufCur = m_lpBufMax;
+	}
+	return *this;
+}
 
 #include <D3DX9Math.h>
 
@@ -310,20 +267,6 @@ inline CAr& operator<<(CAr & ar, D3DXVECTOR3 v)
 
 inline CAr& operator>>(CAr & ar, D3DXVECTOR3& v)
 	{	ar.Read( &v, sizeof(D3DXVECTOR3) );		return ar;	}
-
-inline CAr& operator<<(CAr & ar, __int64 i)
-	{	ar.Write( &i, sizeof(__int64) );	return ar;	}
-
-inline CAr& operator>>(CAr & ar, __int64& i)
-	{	ar.Read( &i, sizeof(__int64) );	return ar;	}
-
-/*
-inline CAr& operator<<(CAr & ar, CRect rect)
-	{	ar.Write( &rect, sizeof(CRect) );	return ar;	}
-
-inline CAr& operator>>(CAr & ar, CRect & rect)
-	{	ar.Read( &rect, sizeof(CRect) );	return ar;	}
-*/
 
 inline CAr& operator<<(CAr & ar, RECT rect)
 	{	ar.Write( &rect, sizeof(RECT) );	return ar;	}
