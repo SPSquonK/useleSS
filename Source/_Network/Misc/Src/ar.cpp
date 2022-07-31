@@ -174,3 +174,24 @@ void CAr::ReelIn( u_int uOffset )
 
 	m_lpBufCur	= m_lpBufStart + uOffset;
 }
+
+CAr::GoToOffsetAnswer CAr::GoToOffset(const u_long expectedOffset) {
+	BYTE * target = m_lpBufStart + expectedOffset;
+
+	if (target == m_lpBufCur) {
+		return GoToOffsetAnswer::SamePlace;
+	}
+
+	const GoToOffsetAnswer answer = target > m_lpBufCur ?
+		GoToOffsetAnswer::NotAllConsumed :
+		GoToOffsetAnswer::TooFar;
+
+	m_lpBufCur = target;
+
+	if (target > m_lpBufMax) [[unlikely]] {
+		Error("CAr::GoToOffset - Target is out of bound");
+		m_lpBufCur = m_lpBufMax;
+	}
+
+	return answer;
+}

@@ -18,7 +18,8 @@ namespace ArHelper {
 		|| std::same_as<T, short>
 		|| std::same_as<T, char>
 		|| std::same_as<T, unsigned int>
-		|| std::same_as<T, __int64>;
+		|| std::same_as<T, __int64>
+		|| std::same_as<T, bool>;
 }
 
 
@@ -47,185 +48,63 @@ public:
 	void	Flush( void );
 	void	ReelIn( u_int uOffset );
 
-	void IsUnsafe() {
-		// TODO: throw if this is a CAr received from client
-	}
+	void IsUnsafe() { /* TODO: throw if this is a CAr received from client */ }
 
-
-	template<typename T> friend class PushBacker;
-
-	template<typename T> class PushBacker {
-	private:
-		CAr * m_self;
-		u_long offset;
-
-	public:
-		explicit(false) PushBacker(CAr & self) : m_self(&self), offset(self.GetOffset()) {}
-
-		[[nodiscard]] T & operator*() const {
-			return *reinterpret_cast<T *>(m_self->m_lpBufStart + offset);
-		}
-
-		[[nodiscard]] T * operator->() const {
-			return reinterpret_cast<T *>(m_self->m_lpBufStart + offset);
-		}
-	};
-
-	template<typename T>
-	PushBacker<T> PushBack(const T & value) {
-		PushBacker<T> lookBack = *this;
-		*this << value;
-		return lookBack;
-	}
+	template<typename T> class PushBacker;
+	template<typename T> PushBacker<T> PushBack(const T & value);
 
 	// reading and writing strings
-	void WriteString(LPCTSTR lpsz);
-	LPTSTR ReadString( LPTSTR lpsz, int nBufSize );
 
-	template<size_t N>
-	LPTSTR ReadString(char (&buffer)[N]) { return ReadString(buffer, N); }
 
 	LPBYTE	GetBuffer( int* pnBufSize );
 	u_long	GetOffset( void );
 
-	// insertion operations
-	template <ArHelper::UnitTypes Type> CAr & operator<<(Type value);
+	// -- Trivial Types
+	template<ArHelper::UnitTypes Type> CAr & operator<<(Type value);
+	template<ArHelper::UnitTypes Type> CAr & operator>>(Type & value);
+	template<sqktd::Archivable Archivable> CAr & operator<<(const Archivable & archivable);
+	template<sqktd::Archivable Archivable> CAr & operator>>(Archivable & archivable);
 
-	template<size_t N>
-	CAr & operator<<(const char(&buffer)[N]) requires (N >= 3) {
-		WriteString(buffer);
-		return *this;
-	}
+	// -- Strings
+	void WriteString(LPCTSTR lpsz);
+	LPTSTR ReadString(LPTSTR lpsz, int nBufSize);
+	template<size_t N> LPTSTR ReadString(char(&buffer)[N]) { return ReadString(buffer, N); }
 
-	// Avoid implicit cast of pointers to an integer type when sending
-	template<typename T> requires (std::is_pointer_v<T>)
-	CAr & operator<<(T t) = delete;
+	template<size_t N> CAr & operator<<(const char(&buffer)[N]) requires (N >= 3);
+	template<size_t N> CAr & operator>>(char(&buffer)[N]) requires (N >= 3);
 
-	// extraction operations
-	template <ArHelper::UnitTypes Type> CAr & operator>>(Type & value);
+	// -- Avoid implicit cast of pointers to an integer type when sending
+	template<typename T> requires (std::is_pointer_v<T>) CAr & operator<<(T t) = delete;
 
-	CAr & operator<<(bool b) { return *this << static_cast<BYTE>(b ? 1 : 0); }
-	CAr & operator>>(bool & b) { BYTE bb; *this >> bb; b = bb != 0; return *this; }
+	// -- Enums
+	template <typename E> CAr & operator<<(E e) requires (std::is_enum_v<E>);
+	template <typename E> CAr & operator>>(E & e) requires (std::is_enum_v<E>);
 
-	template <typename E>
-	CAr & operator<<(E e) requires (std::is_scoped_enum_v<E>) {
-		return *this << std::to_underlying(e);
-	}
+	// -- Containers
+	template<typename T, size_t N> CAr & operator<<(const std::array<T, N> & values);
+	template<typename T, size_t N> CAr & operator>>(std::array<T, N> & values);
+	template<typename T, size_t N> CAr & operator<<(const boost::container::static_vector<T, N> & values);
+	template<typename T, size_t N> CAr & operator>>(boost::container::static_vector<T, N> & values);
 
-	template <typename E>
-	CAr & operator>>(E & e) requires (std::is_scoped_enum_v<E>) {
-		std::underlying_type_t<E> v;
-		*this >> v;
-		e = static_cast<E>(v);
-		return *this;
-	}
+	template<typename ... Ts> friend CAr & operator<<(CAr & ar, const std::variant<Ts ...> & variant);
+	template<typename ... Ts> friend CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant);
+	
+	template<sqktd::EmptyArchivable EmptyArchivable> CAr & operator<<(const EmptyArchivable & e) { return *this; }
+	template<sqktd::EmptyArchivable EmptyArchivable> CAr & operator>>(EmptyArchivable & e) { return *this; }
 
-	template<size_t N>
-	CAr & operator>>(char(&buffer)[N]) requires (N >= 3) {
-		ReadString(buffer, N);
-		return *this;
-	}
-
+public:
 	/** Push into the archiver each passed value */
 	template<typename ... Ts> void Accumulate(const Ts & ...);
 	/** Extract from the archiver one value of each specified value type */
 	template<typename ... Ts> std::tuple<Ts ...> Extract();
 
-	template<sqktd::Archivable Archivable>
-	CAr & operator<<(const Archivable & archivable) {
-		Write(&archivable, sizeof(Archivable));
-		return *this;
-	}
-
-	template<sqktd::Archivable Archivable>
-	CAr & operator>>(Archivable & archivable) {
-		Read(&archivable, sizeof(Archivable));
-		return *this;
-	}
-
-	template<sqktd::EmptyArchivable EmptyArchivable>
-	CAr & operator<<(const EmptyArchivable & e) { return *this; }
-
-	template<sqktd::EmptyArchivable EmptyArchivable>
-	CAr & operator>>(EmptyArchivable & e) { return *this; }
-
-	template<typename T, size_t N>
-	CAr & operator<<(const std::array<T, N> & values) {
-		for (size_t i = 0; i != N; ++i) {
-			*this << values[i];
-		}
-		return *this;
-	}
-
-	template<typename T, size_t N>
-	CAr & operator>>(std::array<T, N> & values) {
-		for (size_t i = 0; i != N; ++i) {
-			*this >> values[i];
-		}
-		return *this;
-	}
-
-	template<typename T, size_t N>
-	CAr & operator<<(const boost::container::static_vector<T, N> & values) {
-		*this << values.size();
-		for (const auto & value : values) {
-			*this << value;
-		}
-		return *this;
-	}
-
-	template<typename T, size_t N>
-	CAr & operator>>(boost::container::static_vector<T, N> & values) {
-		values.clear();
-
-		size_t size;
-		*this >> size;
-		if (size > N) {
-			size = 0;
-		}
-		T value{};
-		for (size_t i = 0; i != size; ++i) {
-			*this >> value;
-			values.push_back(value);
-		}
-		return *this;
-	}
-
-
-	template<typename ... Ts> friend CAr & operator<<(CAr & ar, const std::variant<Ts ...> & variant);
-
-	template<typename ... Ts> friend CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant);
-
-
-	GoToOffsetAnswer GoToOffset(const u_long expectedOffset) {
-		BYTE * target = m_lpBufStart + expectedOffset;
-
-		if (target == m_lpBufCur) {
-			return GoToOffsetAnswer::SamePlace;
-		}
-
-		const GoToOffsetAnswer answer = target > m_lpBufCur ?
-			GoToOffsetAnswer::NotAllConsumed :
-			GoToOffsetAnswer::TooFar;
-		
-		m_lpBufCur = target;
-
-		if (target > m_lpBufMax) [[unlikely]] {
-			Error("CAr::GoToOffset - Target is out of bound");
-			m_lpBufCur = m_lpBufMax;
-		}
-
-		return answer;
-	}
+	GoToOffsetAnswer GoToOffset(const u_long expectedOffset);
 
 private:
 	template<size_t POS, typename TupleType> void TupleExtract(TupleType & tuple);
 
-	template<size_t Index, typename ... Ts>
-	void VariantPull(size_t index, std::variant<Ts ...> & variant);
-	
-	template<size_t Index, typename ... Ts>
-	void VariantPush(const std::variant<Ts ...> & variant);
+	template<size_t Index, typename ... Ts> void VariantPull(size_t index, std::variant<Ts ...> & variant);
+	template<size_t Index, typename ... Ts> void VariantPush(const std::variant<Ts ...> & variant);
 
 protected:
 	Mode m_nMode;
@@ -239,7 +118,9 @@ protected:
 inline BOOL CAr::IsLoading() const { return m_nMode == Mode::load; }
 inline BOOL CAr::IsStoring() const { return m_nMode == Mode::store; }
 
-template <ArHelper::UnitTypes Type>
+// -- Trivial Types
+
+template<ArHelper::UnitTypes Type>
 CAr & CAr::operator<<(const Type value) {
 	CheckBuf(sizeof(Type));
 
@@ -248,7 +129,7 @@ CAr & CAr::operator<<(const Type value) {
 	return *this;
 }
 
-template <ArHelper::UnitTypes Type>
+template<ArHelper::UnitTypes Type>
 CAr & CAr::operator>>(Type & value) {
 	if (m_lpBufCur + sizeof(Type) <= m_lpBufMax) {
 		value = *reinterpret_cast<UNALIGNED Type *>(m_lpBufCur);
@@ -257,6 +138,18 @@ CAr & CAr::operator>>(Type & value) {
 		value = Type(0);
 		m_lpBufCur = m_lpBufMax;
 	}
+	return *this;
+}
+
+template<sqktd::Archivable Archivable>
+CAr & CAr::operator<<(const Archivable & archivable) {
+	Write(&archivable, sizeof(Archivable));
+	return *this;
+}
+
+template<sqktd::Archivable Archivable>
+CAr & CAr::operator>>(Archivable & archivable) {
+	Read(&archivable, sizeof(Archivable));
 	return *this;
 }
 
@@ -377,3 +270,106 @@ CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant) {
 	ar.VariantPull<0, Ts ...>(index, variant);
 	return ar;
 }
+
+template<typename T> class CAr::PushBacker {
+private:
+	CAr * m_self;
+	u_long offset;
+
+public:
+	explicit(false) PushBacker(CAr & self) : m_self(&self), offset(self.GetOffset()) {}
+
+	[[nodiscard]] T & operator*() const {
+		return *reinterpret_cast<T *>(m_self->m_lpBufStart + offset);
+	}
+
+	[[nodiscard]] T * operator->() const {
+		return reinterpret_cast<T *>(m_self->m_lpBufStart + offset);
+	}
+};
+
+
+
+template<typename T>
+CAr::PushBacker<T> CAr::PushBack(const T & value) {
+	PushBacker<T> lookBack = *this;
+	*this << value;
+	return lookBack;
+}
+
+// -- Strings
+
+template<size_t N>
+CAr & CAr::operator<<(const char(&buffer)[N]) requires (N >= 3) {
+	WriteString(buffer);
+	return *this;
+}
+
+template<size_t N>
+CAr & CAr::operator>>(char(&buffer)[N]) requires (N >= 3) {
+	ReadString(buffer, N);
+	return *this;
+}
+
+
+// -- Enums
+
+template <typename E>
+CAr & CAr::operator<<(E e) requires (std::is_enum_v<E>) {
+	return *this << std::to_underlying(e);
+}
+
+template <typename E>
+CAr & CAr::operator>>(E & e) requires (std::is_enum_v<E>) {
+	std::underlying_type_t<E> v;
+	*this >> v;
+	e = static_cast<E>(v);
+	return *this;
+}
+
+
+#pragma region Containers
+
+template<typename T, size_t N>
+CAr & CAr::operator<<(const std::array<T, N> & values) {
+	for (size_t i = 0; i != N; ++i) {
+		*this << values[i];
+	}
+	return *this;
+}
+
+template<typename T, size_t N>
+CAr & CAr::operator>>(std::array<T, N> & values) {
+	for (size_t i = 0; i != N; ++i) {
+		*this >> values[i];
+	}
+	return *this;
+}
+
+template<typename T, size_t N>
+CAr & CAr::operator<<(const boost::container::static_vector<T, N> & values) {
+	*this << values.size();
+	for (const auto & value : values) {
+		*this << value;
+	}
+	return *this;
+}
+
+template<typename T, size_t N>
+CAr & CAr::operator>>(boost::container::static_vector<T, N> & values) {
+	values.clear();
+
+	size_t size;
+	*this >> size;
+	if (size > N) {
+		size = 0;
+	}
+	T value{};
+	for (size_t i = 0; i != size; ++i) {
+		*this >> value;
+		values.push_back(value);
+	}
+	return *this;
+}
+
+#pragma endregion
