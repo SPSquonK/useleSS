@@ -3827,9 +3827,8 @@ void CDPDatabaseClient::OnGuildHouseExpired( CAr & ar, DPID, DPID )
 }
 #endif // __GUILD_HOUSE_MIDDLE
 
-void CDPDatabaseClient::OnAllCampus( CAr & ar, DPID, DPID )
-{
-	CCampusHelper::GetInstance()->Serialize( ar );
+void CDPDatabaseClient::OnAllCampus(CAr & ar, DPID, DPID) {
+	ar >> *CCampusHelper::GetInstance();
 }
 
 void CDPDatabaseClient::OnAddCampusMember( CAr & ar, DPID, DPID )

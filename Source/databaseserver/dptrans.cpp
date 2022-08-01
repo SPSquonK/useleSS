@@ -2116,7 +2116,7 @@ void CDPTrans::OnUpdateCampusPoint( CAr & ar, DPID dpid, DPID dpidCache, DPID dp
 void CDPTrans::SendAllCampus( DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_ALL, DPID_UNKNOWN, DPID_UNKNOWN );
-	CCampusHelper::GetInstance()->Serialize( ar );
+	ar << *CCampusHelper::GetInstance();
 	SEND( ar, this, dpId );
 }
 

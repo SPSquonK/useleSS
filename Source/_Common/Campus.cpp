@@ -151,40 +151,40 @@ void CCampusMng::Clear()
 	m_mapPid2Cid.clear();
 }
 
-void CCampusMng::Serialize( CAr & ar )
-{
-	int	i = 0;
+CAr & operator<<(CAr & ar, const CCampusMng & self) {
+	ar << self.m_idCampus;
 	
-	if( ar.IsStoring() )
-	{
-		ar << m_idCampus << m_mapCampus.size();
-		for (const CCampus * campus : m_mapCampus | std::views::values) {
-			ar << *campus;
-		}
+	ar << self.m_mapCampus.size();
+	for (const CCampus * campus : self.m_mapCampus | std::views::values) {
+		ar << *campus;
+	}
 
-		ar << m_mapPid2Cid.size();
-		for( auto it2 = m_mapPid2Cid.begin(); it2 != m_mapPid2Cid.end(); ++it2 )
-			ar << it2->first << it2->second;
+	ar << self.m_mapPid2Cid.size();
+	for (const auto & [idPlayer, idCampus] : self.m_mapPid2Cid) {
+		ar << idPlayer << idCampus;
 	}
-	else
-	{
-		Clear();
-		size_t nSize;
-		ar >> m_idCampus >> nSize;
-		for( i = 0; i < (int)( nSize ); ++i )
-		{
-			CCampus* pCampus = new CCampus;
-			ar >> *pCampus;
-			m_mapCampus.insert( decltype(m_mapCampus)::value_type(pCampus->GetCampusId(), pCampus));
-		}
-		ar >> nSize;
-		for( i = 0; i < (int)( nSize ); ++i )
-		{
-			u_long idPlayer, idCampus;
-			ar >> idPlayer >> idCampus;
-			AddPlayerId2CampusId( idPlayer, idCampus );
-		}
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CCampusMng & self) {
+	self.Clear();
+	size_t nSize;
+	ar >> self.m_idCampus >> nSize;
+	for (int i = 0; i < (int)(nSize); ++i) {
+		CCampus * pCampus = new CCampus;
+		ar >> *pCampus;
+		self.m_mapCampus.emplace(pCampus->GetCampusId(), pCampus);
 	}
+
+	ar >> nSize;
+	for (int i = 0; i < (int)(nSize); ++i) {
+		u_long idPlayer, idCampus;
+		ar >> idPlayer >> idCampus;
+		self.AddPlayerId2CampusId(idPlayer, idCampus);
+	}
+
+	return ar;
 }
 
 u_long CCampusMng::AddCampus( CCampus* pCampus )

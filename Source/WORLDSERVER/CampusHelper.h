@@ -17,7 +17,7 @@ public:
 
 	static CCampusHelper* GetInstance();
 
-	void	Serialize( CAr & ar )	{	m_pCampusMng.Serialize( ar );	}
+	friend CAr & operator>>(CAr & ar, CCampusHelper & self) { return ar >> self.m_pCampusMng; }
 	u_long	AddCampus( CCampus* pCampus )	{	return m_pCampusMng.AddCampus( pCampus );	}
 	BOOL	RemoveCampus( u_long idCampus )	{	return m_pCampusMng.RemoveCampus( idCampus );	}
 	
