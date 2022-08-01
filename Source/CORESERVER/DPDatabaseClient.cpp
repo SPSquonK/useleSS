@@ -239,7 +239,7 @@ void CDPDatabaseClient::SendAddPartyName( u_long uidPlayer, const char * sParty 
 void CDPDatabaseClient::OnGlobalData( CAr & ar )
 {
 	g_GuildMng.Serialize( ar, FALSE );
-	CGuildTable::GetInstance().Serialize( ar );
+	ar >> CGuildTable::GetInstance();
 	ar >> g_GuildWarMng;
 	ar.Read( (void*)g_PartyMng.m_aExpParty, sizeof(g_PartyMng.m_aExpParty) );
 	

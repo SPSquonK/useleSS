@@ -99,12 +99,12 @@ struct GUILD_VOTE_SELECT
 };
 
 // 길드 투표 
-class CGuildVote
+class CGuildVote final
 {
 public:
 	CGuildVote();
-	virtual ~CGuildVote();
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildVote & self);
+	friend CAr & operator>>(CAr & ar, CGuildVote & self);
 	bool	IsCompleted() const { return m_bCompleted; }
 	void	SetComplete() { m_bCompleted = true; }
 	void    Init( const VOTE_INSERTED_INFO& info, bool bCompleted, BYTE* cbCounts );
@@ -142,8 +142,9 @@ extern CAr&  operator>>(CAr& ar, CONTRIBUTION_CHANGED_INFO& info);
 //CGuildTable 관련 
 ////////////////////////////////////////////////////////////////////////////////
 
-struct GUILD_TABLE_ENTRY
-{
+struct GUILD_TABLE_ENTRY {
+	static constexpr bool Archivable = true;
+
 	DWORD	dwPxpCount;		// 필요공헌도 
 	DWORD	dwPenya;		// 필요페냐 
 	WORD	nMaxMember;		// 최대인원 
@@ -152,29 +153,28 @@ struct GUILD_TABLE_ENTRY
 class CGuildTable
 {
 public:
-	virtual ~CGuildTable();
-
 	BOOL	Load(LPCTSTR szFileName);
 	DWORD	GetPxpCount(WORD nLevel) const;
 	DWORD	GetPenya(WORD nLevel) const;
 	WORD	GetMaxMemeber(WORD nLevel) const;
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildTable & self);
+	friend CAr & operator>>(CAr & ar, CGuildTable & self);
 	BOOL	ReadBlock( CScript & script );
 	int		GetMaxLevel() const { return m_nCount; } 
 
 	static CGuildTable& GetInstance();
 	
 private:
-	CGuildTable();
+	CGuildTable() = default;
 	GUILD_TABLE_ENTRY	m_table[MAX_GUILD_LEVEL];
-	int					m_nCount;					// m_table에 실제 데이타수 
+	int					m_nCount = 0;					// m_table에 실제 데이타수 
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 //CGuildMember 관련 
 ////////////////////////////////////////////////////////////////////////////////
 
-class CGuildMember
+class CGuildMember final
 {
 public:
 	u_long	m_idPlayer;						// Player ID
@@ -192,9 +192,9 @@ public:
 public:
 //	Constructions
 	CGuildMember();
-	virtual ~CGuildMember();
 //	Operations
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildMember & self);
+	friend CAr & operator>>(CAr & ar, CGuildMember & self);
 
 	CGuildMember &	operator = ( CGuildMember & source );
 	
