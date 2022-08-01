@@ -7136,7 +7136,7 @@ void CDPClient::OnFriendIntercept( CAr & ar )
 void CDPClient::OnGetFriendState(CAr & ar) {
 	std::uint32_t size; ar >> size;
 
-	if (size != 0) return;
+	if (size == 0) return;
 
 	for (std::uint32_t i = 0; i != size; ++i) {
 		const auto [uidPlayer, dwState] = ar.Extract<u_long, FriendStatus>();

@@ -204,7 +204,7 @@ template<DWORD PacketId, typename ... Ts>
 void CDPCoreSrvr::SendPacket(const Ts & ... ts) {
 	BEFORESENDDUAL(ar, PacketId, DPID_UNKNOWN, DPID_UNKNOWN);
 	ar.Accumulate(ts...);
-	SEND(ar, this, DPID_SERVERPLAYER);
+	SEND(ar, this, DPID_ALLPLAYERS);
 }
 
 extern CDPCoreSrvr g_dpCoreSrvr;

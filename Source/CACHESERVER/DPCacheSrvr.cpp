@@ -160,13 +160,17 @@ void CDPCacheSrvr::OnAddConnection( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uB
 	}
 
 	pPlayer->SetAddr( this );
-	pPlayer->Join( ar );
+	pPlayer->Join( ar ); // TODO: this is bad and whoever wrote this should feel bad
 	CRTMessenger rtmessenger;
 	int nSize	= rtmessenger.Serialize( ar );
 	if (nSize) {
 		Error("CRTMessenger.Serialize: %s(%d)", pPlayer->GetAddr(), nSize);
 		DestroyPlayer(dpid);
 	} else {
+		if (!IsValid(rtmessenger.GetState())) {
+			rtmessenger.SetState(FriendStatus::ONLINE);
+		}
+
 		g_DPCoreClient.SendAddPlayer(*pPlayer, rtmessenger);
 	}
 }

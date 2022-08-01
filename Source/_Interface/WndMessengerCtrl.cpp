@@ -99,7 +99,7 @@ namespace {
 	}
 
 	bool prStatusDesc(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
-		return MessengerPlayerOrdering::Status(player1, player2) == std::partial_ordering::less;
+		return MessengerPlayerOrdering::Status(player1, player2) == std::partial_ordering::greater;
 	}
 
 	bool prChannelAsce(const __MESSENGER_PLAYER & player1, const __MESSENGER_PLAYER & player2) {
@@ -119,19 +119,19 @@ namespace {
 	}
 }
 
-void CWndFriendCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
+void CWndFriendCtrlEx::ChangeSort(const MessengerHelper::Sorter::By by) {
 	m_sortStrategy.ChangeSort(by, m_vPlayerList);
 }
 
-void CWndGuildCtrlEx::ChangeSort(MessengerHelper::Sorter::By by) {
+void CWndGuildCtrlEx::ChangeSort(const MessengerHelper::Sorter::By by) {
 	m_sortStrategy.ChangeSort(by, m_vPlayerList);
 }
 
-void CWndCampus::ChangeSort(MessengerHelper::Sorter::By by) {
+void CWndCampus::ChangeSort(const MessengerHelper::Sorter::By by) {
 	m_sortStrategy.ChangeSort(by, m_vDisciplePlayer);
 }
 
-void MessengerHelper::Sorter::ChangeSort(By criterion, std::span<__MESSENGER_PLAYER> list) {
+void MessengerHelper::Sorter::ChangeSort(const By criterion, std::span<__MESSENGER_PLAYER> list) {
 	switch (criterion) {
 		case By::Channel: channelAsc = !channelAsc; break;
 		case By::Job:     jobAsc = !jobAsc;         break;
@@ -140,7 +140,7 @@ void MessengerHelper::Sorter::ChangeSort(By criterion, std::span<__MESSENGER_PLA
 		case By::Status:  statusAsc = !statusAsc;   break;
 	}
 
-	criterion = lastSort;
+	lastSort = criterion;
 	ReApply(list);
 }
 
