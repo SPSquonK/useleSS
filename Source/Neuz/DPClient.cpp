@@ -15700,12 +15700,10 @@ void CDPClient::SendLordSkillUse( int nSkill, const char* szTarget )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendTransformItem( CTransformStuff & stuff )
-{	// 알변환 프로토콜
+void CDPClient::SendTransformItem(CTransformStuff & stuff) {
+	// 알변환 프로토콜
 	// stuff는 변환에 필요한 아이템 목록
-	BEFORESENDSOLE( ar, PACKETTYPE_TRANSFORM_ITEM, DPID_UNKNOWN );
-	stuff.Serialize( ar );
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_TRANSFORM_ITEM, CTransformStuff>(stuff);
 }
 
 void CDPClient::SendPickupPetAwakeningCancel( DWORD dwItem )

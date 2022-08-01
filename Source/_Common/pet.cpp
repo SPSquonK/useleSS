@@ -673,31 +673,32 @@ void CTransformStuff::AddComponent( int nItem, short nNum )
 	m_vComponents.push_back( component );
 }
 
-void CTransformStuff::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_nTransform;
-		ar << m_vComponents.size();
-		for( VTSC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-			ar.Write( &( *i ), sizeof(TransformStuffComponent) );
+CAr & operator<<(CAr & ar, const CTransformStuff & self) {
+	ar << self.m_nTransform;
+
+	ar << static_cast<std::uint32_t>(self.m_vComponents.size());
+	for (const TransformStuffComponent & component : self.m_vComponents) {
+		ar << component;
 	}
-	else
-	{
-		ar >> m_nTransform;
-		size_t nSize;
-		ar >> nSize;
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CTransformStuff & self) {
+	ar >> self.m_nTransform;
+
+	std::uint32_t nSize; ar >> nSize;
 #ifdef __WORLDSERVER
-		if( nSize != CTransformItemProperty::Instance()->GetStuffSize( m_nTransform ) )
-			return;
+	if (nSize != CTransformItemProperty::Instance()->GetStuffSize(self.m_nTransform))
+		return ar;
 #endif	// __WORLDSERVER
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			TransformStuffComponent component;
-			ar.Read( &component, sizeof(TransformStuffComponent ) );
-			AddComponent( component.nItem, component.nNum );
-		}
+	for (std::uint32_t i = 0; i < nSize; i++) {
+		TransformStuffComponent component;
+		ar >> component;
+		self.AddComponent(component.nItem, component.nNum);
 	}
+
+	return ar;
 }
 
 #ifdef __WORLDSERVER

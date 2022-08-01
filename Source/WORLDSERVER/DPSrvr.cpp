@@ -9833,19 +9833,15 @@ BOOL CDPSrvr::DoUseItemTarget_ItemLevelDown( CUser* pUser, CItemElem* pMaterial,
 	return FALSE;
 }
 
-void CDPSrvr::OnTransformItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
+void CDPSrvr::OnTransformItem( CAr & ar, CUser & pUser )
 {	// 알변환
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	CTransformStuff stuff;
-	stuff.Serialize( ar );	// 재료를 수신
+	ar >> stuff; // 재료를 수신
 
 	// 변환 번호로부터 변환 함수를 결정한다.
 	ITransformer* pTransformer	= ITransformer::Transformer( stuff.GetTransform() );
 	if (!pTransformer) return;
-	pTransformer->Transform( pUser, stuff );	// 변환
+	pTransformer->Transform( &pUser, stuff );	// 변환
 }
 
 void CDPSrvr::OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )

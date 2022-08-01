@@ -201,6 +201,7 @@ public:
 // 변환 시 필요한 개별 아이템 요소
 typedef	struct	_TransformStuffComponent
 {
+	static constexpr bool Archivable = true;
 	int		nItem;
 	short	nNum;
 	_TransformStuffComponent()
@@ -217,14 +218,15 @@ typedef	struct	_TransformStuffComponent
 typedef	std::vector<TransformStuffComponent>	VTSC;
 
 // 변환 시 필요한 아이템 집합
-class CTransformStuff
+class CTransformStuff final
 {
 public:
 	CTransformStuff();
 	CTransformStuff( int nTransform );
 	virtual	~CTransformStuff();
 	void	AddComponent( int nItem, short nNum );		// 필요 아이템 요소 추가
-	virtual	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CTransformStuff & self);
+	friend CAr & operator>>(CAr & ar, CTransformStuff & self);
 	int		GetTransform( void )		{	return m_nTransform;	}	// 변환 종류를 반환
 	size_t	GetSize( void )		{	return m_vComponents.size();		}
 	TransformStuffComponent*	GetComponent( int i )	{	return &m_vComponents[i];	}
