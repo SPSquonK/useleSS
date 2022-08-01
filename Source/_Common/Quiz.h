@@ -39,37 +39,37 @@ private:
 	
 #if defined(__DBSERVER) || defined(__WORLDSERVER)
 public:
-	typedef struct _QUIZLIST
-	{
+	struct QUIZLIST {
 		int		nQuizId;		// 퀴즈의 id
 		CString	strQuestion;	// 퀴즈 문제
 		int		nCorrect;		// 퀴즈 정답
 		int		nItemId;		// 정답을 맞췄을 경우 지급할 아이템 id
 		int		nItemNum;		// 아이템 개수
 		
-		void Serialize( CAr & ar )
-		{
-			if( ar.IsStoring() )
-			{
-				ar << nQuizId;
-				ar.WriteString( strQuestion );
-				ar << nCorrect;
-				ar << nItemId;
-				ar << nItemNum;
-			}
-			else
-			{
-				ar >> nQuizId;
-				char szTemp[MAX_QUIZ_SIZE] = {0, };
-				ar.ReadString( szTemp, MAX_QUIZ_SIZE );
-				strQuestion = szTemp;
-				strQuestion.Replace( "|", "\r\n" );
-				ar >> nCorrect;
-				ar >> nItemId;
-				ar >> nItemNum;
-			}
+		
+		friend CAr & operator<<(CAr & ar, const QUIZLIST & self) {
+			ar << self.nQuizId;
+			ar.WriteString(self.strQuestion);
+			ar << self.nCorrect;
+			ar << self.nItemId;
+			ar << self.nItemNum;
+
+			return ar;
 		}
-	} QUIZLIST;
+
+		friend CAr & operator>>(CAr & ar, QUIZLIST & self) {
+			ar >> self.nQuizId;
+			char szTemp[MAX_QUIZ_SIZE] = {0, };
+			ar.ReadString( szTemp, MAX_QUIZ_SIZE );
+			self.strQuestion = szTemp;
+			self.strQuestion.Replace( "|", "\r\n" );
+			ar >> self.nCorrect;
+			ar >> self.nItemId;
+			ar >> self.nItemNum;
+
+			return ar;
+		}
+	};
 	typedef std::vector<QUIZLIST>	VEC_QUIZLIST;
 	
 	void	SetAutoMode( BOOL bAuto )	{	m_bAuto = bAuto;	}

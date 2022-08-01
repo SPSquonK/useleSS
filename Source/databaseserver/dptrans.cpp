@@ -2034,8 +2034,7 @@ void CDPTrans::SendQuizEventOpen( DPID dpId )
 void CDPTrans::SendQuizList( DPID dpId, CQuiz::QUIZLIST & QL, int nSize )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_LOADQUIZ, DPID_UNKNOWN, DPID_UNKNOWN );
-	QL.Serialize( ar );
-	ar << nSize;
+	ar << QL << nSize;
 	SEND( ar, this, dpId );
 }
 

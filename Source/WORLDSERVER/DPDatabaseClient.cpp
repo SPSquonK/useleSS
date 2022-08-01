@@ -3675,7 +3675,7 @@ void CDPDatabaseClient::OnQuizEventOpen( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::OnQuizList( CAr & ar, DPID, DPID )
 {
 	CQuiz::QUIZLIST QL;
-	QL.Serialize( ar );
+	ar >> QL;
 	CQuiz::GetInstance()->MakeQuizList( QL );
 	ar >> CQuiz::GetInstance()->m_nQuizSize;
 }
