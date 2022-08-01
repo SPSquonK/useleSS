@@ -223,8 +223,7 @@ void CGuildHouseDBCtrl::JoinGuildHouseTender( CAr & ar, DPID dpId )
 {
 	DWORD dwPlayerId;
 	CGuildHouseMng::GUILDHOUSE_TENDER GHT;
-	ar >> dwPlayerId;
-	GHT.Serialize( ar );
+	ar >> dwPlayerId >> GHT;
 
 	CGuildHouseMng::GUILDHOUSE_DATA* pGHData = GuildHouseMng->GetGuildHouseData( GHT.objGHId );
 	if( pGHData == NULL )
@@ -241,8 +240,7 @@ void CGuildHouseDBCtrl::JoinGuildHouseTender( CAr & ar, DPID dpId )
 		arTender << dwPlayerId << GHT.objGHId;
 		if( InsertGuildHouseTender( GHT ) == TRUE && GuildHouseMng->AddGuildHouseTender( GHT.dwGuildId, GHT ) == TRUE )
 		{
-			arTender << TRUE;
-			GHT.Serialize( arTender );
+			arTender << TRUE << GHT;
 			dpId = DPID_ALLPLAYERS;
 		}
 		else
