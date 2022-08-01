@@ -3467,35 +3467,22 @@ void CDPDatabaseClient::OnHousingLoadInfo( CAr & ar, DPID, DPID )
 
 	if( pHousing )
 	{
-		pHousing->Serialize( ar );
-		CUser* pUser = static_cast<CUser*>( prj.GetUserByID( dwPlayerId ) );
+		ar >> *pHousing;
+		CUser * pUser = prj.GetUserByID(dwPlayerId);
 		if( IsValidObj( pUser ) )
 			pUser->AddHousingAllInfo( pHousing );
 		pHousing->AddAllFurnitureControl();
 	}
 }
 
-void CDPDatabaseClient::OnHousingSetFunitureList( CAr & ar, DPID, DPID )
-{
-	DWORD dwPlayerId;
-	HOUSINGINFO housingInfo;
-	BOOL bAdd;
-
-	ar >> dwPlayerId;
-	housingInfo.Serialize( ar );
-	ar >> bAdd;
-
-	CHousingMng::GetInstance()->SetFurnitureList( dwPlayerId, housingInfo, bAdd );
+void CDPDatabaseClient::OnHousingSetFunitureList(CAr & ar, DPID, DPID) {
+	auto [dwPlayerId, housingInfo, bAdd] = ar.Extract<DWORD, HOUSINGINFO, BOOL>();
+	CHousingMng::GetInstance()->SetFurnitureList(dwPlayerId, housingInfo, bAdd);
 }
 
-void CDPDatabaseClient::OnHousingSetupFuniture( CAr & ar, DPID, DPID )
-{
-	DWORD dwPlayerId;
-	HOUSINGINFO housingInfo;
-	ar >> dwPlayerId;
-	housingInfo.Serialize( ar );
-
-	CHousingMng::GetInstance()->SetupFurniture( dwPlayerId, housingInfo );
+void CDPDatabaseClient::OnHousingSetupFuniture(CAr & ar, DPID, DPID) {
+	const auto [dwPlayerId, housingInfo] = ar.Extract<DWORD, HOUSINGINFO>();
+	CHousingMng::GetInstance()->SetupFurniture(dwPlayerId, housingInfo);
 }
 
 void CDPDatabaseClient::OnHousingSetVisitAllow( CAr & ar, DPID, DPID )

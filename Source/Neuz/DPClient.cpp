@@ -16166,18 +16166,13 @@ void CDPClient::OnSetPetName( OBJID objid, CAr & ar )
 }
 #endif	// __PET_1024
 
-void CDPClient::OnHousingAllInfo( CAr & ar )
-{
-	CHousing::GetInstance()->Serialize( ar );
+void CDPClient::OnHousingAllInfo(CAr & ar) {
+	ar >> *CHousing::GetInstance();
 }
 
 void CDPClient::OnHousingSetFunitureList( CAr & ar )
 {
-	HOUSINGINFO housingInfo;
-	BOOL bAdd;
-
-	housingInfo.Serialize( ar );
-	ar >> bAdd;
+	auto [housingInfo, bAdd] = ar.Extract<HOUSINGINFO, BOOL>();
 
 	CHousing::GetInstance()->SetFurnitureList( housingInfo, bAdd );
 
@@ -16203,7 +16198,7 @@ void CDPClient::OnHousingSetFunitureList( CAr & ar )
 void CDPClient::OnHousingSetupFurniture( CAr & ar )
 {
 	HOUSINGINFO housingInfo;
-	housingInfo.Serialize( ar );
+	ar >> housingInfo;
 
 	CHousing::GetInstance()->SetupFurniture( housingInfo );
 
@@ -16297,11 +16292,8 @@ void CDPClient::OnHousingVisitableList( CAr & ar )
 	if(pWndRoomList) pWndRoomList->Refresh();
 }
 
-void CDPClient::SendHousingReqSetupFurniture( HOUSINGINFO housingInfo )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_HOUSING_SETUPFURNITURE, DPID_UNKNOWN );
-	housingInfo.Serialize( ar );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendHousingReqSetupFurniture(HOUSINGINFO housingInfo) {
+	SendPacket<PACKETTYPE_HOUSING_SETUPFURNITURE, HOUSINGINFO>(housingInfo);
 }
 
 void CDPClient::SendHousingReqSetVisitAllow( DWORD dwPlayerId, BOOL bAllow )

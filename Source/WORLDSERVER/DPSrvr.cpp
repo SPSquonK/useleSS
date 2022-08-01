@@ -9980,7 +9980,7 @@ void CDPSrvr::OnHousingSetupFurniture( CAr & ar, DPID dpidCache, DPID dpidUser, 
 		return;
 
 	HOUSINGINFO housingInfo;
-	housingInfo.Serialize( ar );
+	ar >> housingInfo;
 
 	// 플레이어가 방에 있어야 하고 자신의 레이어에 들어가 있는 경우만 가능...
 	CHousingMng::GetInstance()->ReqSetupFurniture( pUser, housingInfo );

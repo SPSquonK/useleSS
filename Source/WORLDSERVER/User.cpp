@@ -7381,26 +7381,19 @@ void CUser::AddHousingAllInfo( CHousing* pHousing )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_HOUSING_ALLINFO;
-	pHousing->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pHousing;
 }
 
-void CUser::AddHousingSetFurnitureList( HOUSINGINFO& housingInfo, BOOL bAdd )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_HOUSING_FURNITURELIST;
-	housingInfo.Serialize( m_Snapshot.ar );
-	m_Snapshot.ar << bAdd;
+void CUser::AddHousingSetFurnitureList(HOUSINGINFO & housingInfo, BOOL bAdd) {
+	SendSnapshotThisId<SNAPSHOTTYPE_HOUSING_FURNITURELIST, HOUSINGINFO, BOOL>(housingInfo, bAdd);
 }
 
-void CUser::AddHousingSetupFurniture( HOUSINGINFO* pHousingInfo )
-{
-	if( IsDelete() )	return;
+void CUser::AddHousingSetupFurniture(HOUSINGINFO * pHousingInfo) {
+	if (IsDelete())	return;
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_HOUSING_SETUPFURNITURE;
-	pHousingInfo->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pHousingInfo;
 }
 
 void CUser::AddHousingPaperingInfo( DWORD dwItemId, BOOL bSetup )

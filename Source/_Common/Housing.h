@@ -32,17 +32,9 @@ struct HOUSINGINFO
 		}
 	}
 #endif // __DBSERVER
-	void Serialize( CAr & ar )
-	{
-		if( ar.IsStoring() )
-			ar << dwItemId << static_cast<time_t>(tKeepTime - time_null()) << bSetup << vPos << fAngle;
-		else
-		{
-			ar >> dwItemId >> tKeepTime;
-			tKeepTime += time_null();
-			ar >> bSetup >> vPos >> fAngle;
-		}
-	}
+
+	friend CAr & operator<<(CAr & ar, const HOUSINGINFO & self);
+	friend CAr & operator>>(CAr & ar, HOUSINGINFO & self);
 };
 
 class CHousing
@@ -58,7 +50,8 @@ public:
 	[[nodiscard]] const std::vector<DWORD> & GetVisitAllow() const { return m_vecIdVisitAllow; }
 #endif // __CLIENT
 		
-	void Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CHousing & self);
+	friend CAr & operator>>(CAr & ar, CHousing & self);
 	void SetFurnitureList( HOUSINGINFO& housingInfo, BOOL bAdd );
 	void SetupFurniture( HOUSINGINFO housingInfo );
 	void SetVisitAllow( DWORD dwTargetId, BOOL bAllow );

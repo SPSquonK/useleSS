@@ -1816,8 +1816,7 @@ void CDPTrans::SendHousingLoadInfo( DWORD dwPlayerId, CHousing* pHousing, DPID d
 {
 	ASSERT( pHousing );
 	BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_LOADINFO, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	pHousing->Serialize( ar );
+	ar << dwPlayerId << *pHousing;
 	SEND( ar, this, dpId );
 }
 
@@ -1825,7 +1824,7 @@ void CDPTrans::SendHousingFurnitureList( DWORD dwPlayerId, HOUSINGINFO& housingI
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_FURNITURELIST, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << dwPlayerId;
-	housingInfo.Serialize( ar );
+	ar << housingInfo;
 	ar << bAdd;
 	SEND( ar, this, dpId );
 }
@@ -1833,8 +1832,7 @@ void CDPTrans::SendHousingFurnitureList( DWORD dwPlayerId, HOUSINGINFO& housingI
 void CDPTrans::SendHousingSetupFurniture( DWORD dwPlayerId, HOUSINGINFO housingInfo, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_SETUPFURNITURE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	housingInfo.Serialize( ar );
+	ar << dwPlayerId << housingInfo;
 	SEND( ar, this, dpId );
 }
 
