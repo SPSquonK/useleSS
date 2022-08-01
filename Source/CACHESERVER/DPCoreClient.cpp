@@ -112,7 +112,7 @@ void CDPCoreClient::OnProcServerList( CAr & ar, DPID )
 {
 	std::uint32_t nSize; ar >> nSize;
 
-	for (std::uint32_t i; i != nSize; ++i) {
+	for (std::uint32_t i = 0; i != nSize; ++i) {
 		CServerDesc * pServer = new CServerDesc;
 		ar >> *pServer;
 
