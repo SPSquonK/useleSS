@@ -89,7 +89,7 @@ void CDPCoreSrvr::OnAddConnection( DPID dpid )
 	g_DbManager.OpenGuild();
 	g_GuildMng.Serialize( ar, FALSE );
 	CGuildTable::GetInstance().Serialize( ar );
-	ar >> g_GuildWarMng;
+	ar << g_GuildWarMng;
 	ar.Write( (const void*)prj.m_aExpParty, sizeof(prj.m_aExpParty) );
 
 #if defined(__INTERNALSERVER )

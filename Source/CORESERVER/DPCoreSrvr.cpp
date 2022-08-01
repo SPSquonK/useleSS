@@ -223,7 +223,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		ar << g_PartyMng;
 		g_GuildMng.m_AddRemoveLock.Enter( theLineFile );
 		g_GuildMng.Serialize( ar, FALSE );
-		ar >> g_GuildWarMng;
+		ar << g_GuildWarMng;
 		g_GuildMng.m_AddRemoveLock.Leave( theLineFile );
 
 #ifdef __ENVIRONMENT_EFFECT
