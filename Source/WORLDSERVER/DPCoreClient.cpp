@@ -368,7 +368,7 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	ar >> desc;
 	ar >> g_PartyMng;
 	g_GuildMng.Serialize( ar, FALSE );
-	g_GuildWarMng.Serialize( ar );
+	ar >> g_GuildWarMng;
 
 #ifdef __ENVIRONMENT_EFFECT
 	

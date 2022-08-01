@@ -240,7 +240,7 @@ void CDPDatabaseClient::OnGlobalData( CAr & ar )
 {
 	g_GuildMng.Serialize( ar, FALSE );
 	CGuildTable::GetInstance().Serialize( ar );
-	g_GuildWarMng.Serialize( ar );
+	ar >> g_GuildWarMng;
 	ar.Read( (void*)g_PartyMng.m_aExpParty, sizeof(g_PartyMng.m_aExpParty) );
 	
 #if defined(__INTERNALSERVER )	

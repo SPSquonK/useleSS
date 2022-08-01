@@ -1549,8 +1549,7 @@ void CUser::AddMyGuildWar( void )
 	m_Snapshot.ar << NULL_ID;
 	m_Snapshot.ar << SNAPSHOTTYPE_WAR;
 	m_Snapshot.ar << pWar->m_idWar;
-	pWar->Serialize( m_Snapshot.ar );
-	
+	m_Snapshot.ar << *pWar;
 }
 
 void CUser::AddContribution( CONTRIBUTION_CHANGED_INFO& info )

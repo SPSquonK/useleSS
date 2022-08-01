@@ -50,7 +50,8 @@ public:
 //	Constructions
 	CGuildWar();
 //	Operations
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildWar & self);
+	friend CAr & operator>>(CAr & ar, CGuildWar & self);
 #ifdef __WORLDSERVER
 	void	Process( CTime & time );
 #endif	// __WORLDSERVER
@@ -79,7 +80,8 @@ public:
 	~CGuildWarMng();
 	void	Clear( void );
 //	Operations
-	void Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildWarMng & self);
+	friend CAr & operator>>(CAr & ar, CGuildWarMng & self);
 	WarId	AddWar( CGuildWar* pGuildWar );
 	BOOL	RemoveWar(WarId idWar);
 	void	Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nType, int nWptDecl = 0, int nWptAcpt = 0 );
