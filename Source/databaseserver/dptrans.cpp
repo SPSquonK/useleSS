@@ -1704,7 +1704,7 @@ void CDPTrans::SendLEventTick( ILordEvent* pEvent )
 void CDPTrans::SendTaxInfo( DPID dpId, BOOL bConnect, BOOL bToAllClient )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_TAX_ALLINFO, DPID_UNKNOWN, DPID_UNKNOWN );
-	CTax::GetInstance()->Serialize( ar );
+	ar << *CTax::GetInstance();
 	ar << bConnect;
 	if( bConnect )
 	{

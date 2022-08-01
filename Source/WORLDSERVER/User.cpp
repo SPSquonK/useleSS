@@ -7303,7 +7303,7 @@ void CUser::AddTaxInfo( void )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_TAX_ALLINFO;
-	CTax::GetInstance()->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *CTax::GetInstance();
 }
 
 void CUser::AddTaxSetTaxRateOpenWnd( BYTE nCont )

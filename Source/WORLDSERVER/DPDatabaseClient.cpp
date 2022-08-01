@@ -3283,7 +3283,7 @@ void CDPDatabaseClient::SendApplyTaxRateNow()
 
 void CDPDatabaseClient::OnTaxInfo( CAr & ar, DPID, DPID )
 {
-	CTax::GetInstance()->Serialize( ar );
+	ar >> *CTax::GetInstance();
 	
 	BOOL bConnect, bToAllClient;
 	ar >> bConnect;

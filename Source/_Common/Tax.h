@@ -87,7 +87,8 @@ public:
 	~CTax(void);
 
 	static CTax* GetInstance( void );
-	void Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CTax & self);
+	friend CAr & operator>>(CAr & ar, CTax & self);
 	
 	int m_nMinTaxRate;					// 최소 세율
 	int m_nMaxTaxRate;					// 최대 세율

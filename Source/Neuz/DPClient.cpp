@@ -15506,11 +15506,10 @@ void CDPClient::SendTeleportToSecretRoomDungeon()
 }
 
 
-void CDPClient::OnTaxInfo( CAr & ar )
-{
-	CTax::GetInstance()->Serialize( ar );
+void CDPClient::OnTaxInfo(CAr & ar) {
+	ar >> *CTax::GetInstance();
 
-	SAFE_DELETE( g_WndMng.m_pWndSecretRoomChangeTaxRate );
+	SAFE_DELETE(g_WndMng.m_pWndSecretRoomChangeTaxRate);
 }
 
 void CDPClient::OnTaxSetTaxRateOpenWnd( CAr & ar )
