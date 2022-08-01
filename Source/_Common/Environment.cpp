@@ -135,26 +135,27 @@ void CEnvironment::SetSeason( int nSeason )
 
 #endif // __ENVIRONMENT_EFFECT
 
-void CEnvironment::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
+CAr & operator<<(CAr & ar, const CEnvironment & self) {
+
 #ifdef __ENVIRONMENT_EFFECT
-		ar << m_bEffect;
+	ar << self.m_bEffect;
 #else // __ENVIRONMENT_EFFECT
-		ar << m_bRain;
-		ar << m_bSnow;
+	ar << self.m_bRain;
+	ar << self.m_bSnow;
 #endif // __ENVIRONMENT_EFFECT
-	}
-	else
-	{
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CEnvironment & self) {
 #ifdef __ENVIRONMENT_EFFECT
-		ar >> m_bEffect;
+	ar >> self.m_bEffect;
 #else // __ENVIRONMENT_EFFECT
-		ar >> m_bRain;
-		ar >> m_bSnow;
+	ar >> self.m_bRain;
+	ar >> self.m_bSnow;
 #endif // __ENVIRONMENT_EFFECT
-	}
+
+	return ar;
 }
 
 #ifdef __CORESERVER

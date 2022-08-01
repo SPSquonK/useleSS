@@ -371,13 +371,9 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	ar >> g_GuildWarMng;
 
 #ifdef __ENVIRONMENT_EFFECT
-	
-	CEnvironment::GetInstance()->Serialize( ar );
-
+	ar >> *CEnvironment::GetInstance();
 #else // __ENVIRONMENT_EFFECT
-
 	g_Environment.Serialize( ar );
-
 #endif // __ENVIRONMENT_EFFECT
 
 #ifdef __EVENT0913
@@ -1146,11 +1142,11 @@ void CDPCoreClient::OnQueryTickCount( CAr & ar, DPID, DPID, OBJID )
 
 void CDPCoreClient::OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID )
 {
-	CEnvironment::GetInstance()->Serialize( ar );
+	ar >> *CEnvironment::GetInstance();
 
 	CAr arBlock;
 	arBlock << NULL_ID << SNAPSHOTTYPE_ENVIRONMENT;
-	CEnvironment::GetInstance()->Serialize( arBlock );
+	arBlock << *CEnvironment::GetInstance();
 
 	if( CEnvironment::GetInstance()->GetEnvironmentEffect() == TRUE )
 	{

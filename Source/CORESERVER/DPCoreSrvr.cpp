@@ -227,7 +227,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		g_GuildMng.m_AddRemoveLock.Leave( theLineFile );
 
 #ifdef __ENVIRONMENT_EFFECT
-		CEnvironment::GetInstance()->Serialize( ar );
+		ar << *CEnvironment::GetInstance();
 #else // __ENVIRONMENT_EFFECT
 		g_Environment.Serialize( ar );
 #endif // __ENVIRONMENT_EFFECT
@@ -1093,7 +1093,7 @@ void CDPCoreSrvr::SendRemoveFriend( u_long uidSender, u_long uidFriend )
 void CDPCoreSrvr::SendEnvironmentEffect()
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_ENVIRONMENTALL, DPID_UNKNOWN, DPID_UNKNOWN );
-	CEnvironment::GetInstance()->Serialize( ar );
+	ar << *CEnvironment::GetInstance();
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 

@@ -4707,7 +4707,7 @@ void CDPClient::OnEnvironmentSetting( CAr & ar )
 
 void CDPClient::OnEnvironmentEffect( CAr & ar )
 {
-	CEnvironment::GetInstance()->Serialize( ar );
+	ar >> *CEnvironment::GetInstance();
 
 	if( CEnvironment::GetInstance()->GetEnvironmentEffect() == TRUE )
 	{

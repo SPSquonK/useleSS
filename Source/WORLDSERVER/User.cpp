@@ -1268,7 +1268,7 @@ void CUser::AddEnvironment( void )
 
 #ifdef __ENVIRONMENT_EFFECT
 
-	CEnvironment::GetInstance()->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *CEnvironment::GetInstance();
 	
 	if( CEnvironment::GetInstance()->GetEnvironmentEffect() == TRUE )
 	{
