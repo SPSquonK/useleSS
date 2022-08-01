@@ -365,7 +365,7 @@ void CDPCoreClient::SendBlock( BYTE nGu, u_long uidPlayerTo, char *szNameTo, u_l
 void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 {
 	CServerDesc desc;
-	desc.Serialize( ar );
+	ar >> desc;
 	ar >> g_PartyMng;
 	g_GuildMng.Serialize( ar, FALSE );
 	g_GuildWarMng.Serialize( ar );

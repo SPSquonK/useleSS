@@ -219,7 +219,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		SendRecharge( (u_long)10240, dpid );
 
 		BEFORESENDDUAL( ar, PACKETTYPE_LOAD_WORLD, DPID_UNKNOWN, DPID_UNKNOWN );
-		pServerDesc->Serialize( ar );
+		ar << *pServerDesc;
 		ar << g_PartyMng;
 		g_GuildMng.m_AddRemoveLock.Enter( theLineFile );
 		g_GuildMng.Serialize( ar, FALSE );
