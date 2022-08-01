@@ -3744,7 +3744,7 @@ void CDPDatabaseClient::SendErrorLogToDB( CUser* pUser, char chType, LPCTSTR szE
 
 void CDPDatabaseClient::OnLoadGuildHouse( CAr & ar, DPID, DPID )
 {
-	GuildHouseMng->Serialize( ar );
+	ar >> *GuildHouseMng;
 }
 void CDPDatabaseClient::OnBuyGuildHouse( CAr & ar, DPID, DPID )
 {
@@ -3763,7 +3763,7 @@ void CDPDatabaseClient::OnGuildHousePacket( CAr & ar, DPID, DPID )
 	
 	ar >> bResult >> dwGuildId;
 	ar >> nPacketType >> nIndex;
-	gfi.Serialize( ar );
+	ar >> gfi;
 	
 	CGuildHouseBase* pGuildHouse = GuildHouseMng->GetGuildHouse( dwGuildId );
 	if( pGuildHouse )
@@ -3784,9 +3784,7 @@ void CDPDatabaseClient::OnGuildHousePacket( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::SendLogGuildFurniture( DWORD dwGuildId, GH_Fntr_Info & gfi, char chState )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_GUILDFURNITURE_LOG, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwGuildId;
-	gfi.Serialize( ar );
-	ar << chState;
+	ar << dwGuildId << gfi << chState;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 

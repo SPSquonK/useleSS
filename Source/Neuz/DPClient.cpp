@@ -16715,8 +16715,7 @@ void CDPClient::OnGuildHousePacket( CAr & ar )
 	int nPacketType, nIndex;
 	GH_Fntr_Info gfi;
 
-	ar >> nPacketType >> nIndex;
-	gfi.Serialize( ar );
+	ar >> nPacketType >> nIndex >> gfi;
 
 	GuildHouse->OnGuildHousePacket( nPacketType, gfi, nIndex );
 
@@ -16734,7 +16733,7 @@ void CDPClient::OnGuildHouseAllInfo( CAr & ar )
 	
 	GuildHouse->SetFurnitureChannel( bSetFurnitureChannel );
 	if( bHaveGuildHouse )
-		GuildHouse->SerializeAllInfo( ar );
+		ar >> *GuildHouse;
 
 	GuildHouse->ApplyEFTexture( );
 }

@@ -39,25 +39,24 @@ CGuildHouseBase::GuildHouse_Furniture_Info::GuildHouse_Furniture_Info( DWORD dwI
 {
 }
 
-void CGuildHouseBase::GuildHouse_Furniture_Info::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << dwItemId << bSetup << vPos << fAngle << objId;
-		if( tKeepTime > 0 )
-			ar << tKeepTime - time_null();
-		else
-			ar << static_cast<time_t>( 0 );
-	}
-	else	
-	{
-		ar >> dwItemId >> bSetup >> vPos >> fAngle >> objId;
-		ar >> tKeepTime;
-		if( tKeepTime > 0 )
-			tKeepTime += time_null();
-	}
+CAr & operator<<(CAr & ar, const CGuildHouseBase::GuildHouse_Furniture_Info & self) {
+	ar << self.dwItemId << self.bSetup << self.vPos << self.fAngle << self.objId;
+	if (self.tKeepTime > 0)
+		ar << self.tKeepTime - time_null();
+	else
+		ar << static_cast<time_t>(0);
+	
+	return ar;
 }
 
+CAr & operator>>(CAr & ar, CGuildHouseBase::GuildHouse_Furniture_Info & self) {
+	ar >> self.dwItemId >> self.bSetup >> self.vPos >> self.fAngle >> self.objId;
+	ar >> self.tKeepTime;
+	if (self.tKeepTime > 0)
+		self.tKeepTime += time_null();
+
+	return ar;
+}
 
 //////////////////////////////////////////////////////////////////////
 // CGuildHouseBase
@@ -110,8 +109,7 @@ CGuildHouseBase* CGuildHouseBase::GetInstance()
 void CGuildHouseBase::SendClientToWorld( int nPacketType, GH_Fntr_Info& gfi, int nIndex )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_GUILDHOUSE_PACKET, DPID_UNKNOWN );
-	ar << nPacketType << nIndex;
-	gfi.Serialize( ar );
+	ar << nPacketType << nIndex << gfi;
 	SEND( ar, &g_DPlay, DPID_SERVERPLAYER );
 }
 
@@ -560,7 +558,7 @@ BOOL CGuildHouseBase::SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fnt
 		BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_PACKET, DPID_UNKNOWN, DPID_UNKNOWN );
 		ar << pUser->m_idGuild;
 		ar << nPacketType << nIndex;
-		gfi.Serialize( ar );
+		ar << gfi;
 		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
 	}
 
@@ -696,38 +694,39 @@ int	CGuildHouseBase::GetFirstExpiredFurnitureIndex()
 }
 #endif // __DBSERVER
 
-void CGuildHouseBase::SerializeAllInfo( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_dwGuildId << m_dwWorldId;
-		if( m_tUpkeepTime > 0 )
-			ar << m_tUpkeepTime - time_null();
-		else
-			ar << static_cast<time_t>( 0 );
-#ifdef __GUILD_HOUSE_MIDDLE
-		ar << m_objGHId << m_nAreaIndex << m_nGHLevel;
-		ar.WriteString( m_szGHName );
-#endif // __GUILD_HOUSE_MIDDLE
-		ar << m_vecFntInfo.size();
-		for( int i=0; i<(int)( m_vecFntInfo.size() ); i++ )
-			m_vecFntInfo[i].Serialize( ar );
-	}
+
+CAr & operator<<(CAr & ar, const CGuildHouseBase & self) {
+	ar << self.m_dwGuildId << self.m_dwWorldId;
+	if (self.m_tUpkeepTime > 0)
+		ar << self.m_tUpkeepTime - time_null();
 	else
-	{
-		ar >> m_dwGuildId >> m_dwWorldId >> m_tUpkeepTime;
-		if( m_tUpkeepTime > 0 )
-			m_tUpkeepTime += time_null();
+		ar << static_cast<time_t>(0);
 #ifdef __GUILD_HOUSE_MIDDLE
-		ar >> m_objGHId >> m_nAreaIndex >> m_nGHLevel;
-		ar.ReadString( m_szGHName, MAX_GH_NAME );
+	ar << self.m_objGHId << self.m_nAreaIndex << self.m_nGHLevel;
+	ar.WriteString(self.m_szGHName);
 #endif // __GUILD_HOUSE_MIDDLE
-		int nSize;
-		ar >> nSize;
-		m_vecFntInfo.clear(); m_vecFntInfo.resize( nSize );
-		for( int i=0; i<nSize; i++ )
-			m_vecFntInfo[i].Serialize( ar );
-	}
+	ar << self.m_vecFntInfo.size();
+	for (int i = 0; i < (int)(self.m_vecFntInfo.size()); i++)
+		ar << self.m_vecFntInfo[i];
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CGuildHouseBase & self) {
+	ar >> self.m_dwGuildId >> self.m_dwWorldId >> self.m_tUpkeepTime;
+	if (self.m_tUpkeepTime > 0)
+		self.m_tUpkeepTime += time_null();
+#ifdef __GUILD_HOUSE_MIDDLE
+	ar >> self.m_objGHId >> self.m_nAreaIndex >> self.m_nGHLevel;
+	ar.ReadString(self.m_szGHName, MAX_GH_NAME);
+#endif // __GUILD_HOUSE_MIDDLE
+	size_t nSize;
+	ar >> nSize;
+	self.m_vecFntInfo.clear(); self.m_vecFntInfo.resize(nSize);
+	for (int i = 0; i < nSize; i++)
+		ar >> self.m_vecFntInfo[i];
+
+	return ar;
 }
 
 BOOL CGuildHouseBase::OnGuildHousePacket( int nPacketType, GuildHouse_Furniture_Info & gfi, int nIndex )
@@ -1119,59 +1118,55 @@ CGuildHouseBase* CGuildHouseMng::GetGuildHouse( DWORD dwGuildId )
 	return it->second;
 }
 
-void CGuildHouseMng::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_mapGuildHouse.size();
-		for( auto it=m_mapGuildHouse.begin(); it!=m_mapGuildHouse.end(); it++ )
-		{
-			ar << it->first << it->second->GetType();
-			it->second->SerializeAllInfo( ar );
-		}
-#ifdef __GUILD_HOUSE_MIDDLE
-		ar << m_mapTenderGuild.size();
-		for( MAP_TENDER_GUILD::iterator it = m_mapTenderGuild.begin(); it != m_mapTenderGuild.end(); ++it )
-		{
-			ar << it->first;
-			it->second.Serialize( ar );
-		}
-#endif // __GUILD_HOUSE_MIDDLE
+
+CAr & operator<<(CAr & ar, const CGuildHouseMng & self) {
+	ar << self.m_mapGuildHouse.size();
+	for (const auto & [guildId, house] : self.m_mapGuildHouse) {
+		ar << guildId << house->GetType() << *house;
 	}
-	else
+#ifdef __GUILD_HOUSE_MIDDLE
+	ar << self.m_mapTenderGuild.size();
+	for (const auto & [dwTenderGuildId, tender] : self.m_mapTenderGuild) {
+		ar << dwTenderGuildId << tender;
+	}
+#endif // __GUILD_HOUSE_MIDDLE
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CGuildHouseMng & self) {
+	self.m_mapGuildHouse.clear();
+	int nSize;
+	DWORD dwGuildId, dwType;
+	ar >> nSize;
+	for( int i=0; i<nSize; i++ )
 	{
-		m_mapGuildHouse.clear();
-		int nSize;
-		DWORD dwGuildId, dwType;
-		ar >> nSize;
-		for( int i=0; i<nSize; i++ )
-		{
-			ar >> dwGuildId >> dwType;
-			CGuildHouseBase* pGuildHouse = MakeGuildHouse( dwGuildId, dwType );
+		ar >> dwGuildId >> dwType;
+		CGuildHouseBase* pGuildHouse = self.MakeGuildHouse( dwGuildId, dwType );
 			
-			if( pGuildHouse && AddGuildHouse( dwGuildId, pGuildHouse ) )
-				pGuildHouse->SerializeAllInfo( ar );
-			else
-			{
-				SAFE_DELETE( pGuildHouse );
-				CGuildHouseSmall temp( NULL_ID );
-				temp.SerializeAllInfo( ar );
-			}
-		}
-#ifdef __GUILD_HOUSE_MIDDLE
-		m_mapTenderGuild.clear();
-		int nTenderSize;
-		DWORD dwTenderGuildId;
-		ar >> nTenderSize;
-		for( int i = 0; i < nTenderSize; ++i )
+		if (pGuildHouse && self.AddGuildHouse(dwGuildId, pGuildHouse))
+			ar >> *pGuildHouse;
+		else
 		{
-			GUILDHOUSE_TENDER GHT;
-			ar >> dwTenderGuildId;
-			GHT.Serialize( ar );
-			m_mapTenderGuild.insert( MAP_TENDER_GUILD::value_type( dwTenderGuildId, GHT ) );
+			SAFE_DELETE( pGuildHouse );
+			CGuildHouseSmall temp( NULL_ID );
+			ar >> temp;
 		}
-#endif // __GUILD_HOUSE_MIDDLE
 	}
+#ifdef __GUILD_HOUSE_MIDDLE
+	self.m_mapTenderGuild.clear();
+	int nTenderSize;
+	DWORD dwTenderGuildId;
+	ar >> nTenderSize;
+	for( int i = 0; i < nTenderSize; ++i )
+	{
+		GUILDHOUSE_TENDER GHT;
+		ar >> dwTenderGuildId >> GHT;
+		m_mapTenderGuild.emplace(dwTenderGuildId, GHT);
+	}
+#endif // __GUILD_HOUSE_MIDDLE
+
+	return ar;
 }
 
 #ifdef __WORLDSERVER
@@ -1246,8 +1241,8 @@ void CGuildHouseMng::OnBuyGuildHouse( CAr & ar )
 		CGuildHouseBase* pGuildHouse = MakeGuildHouse( dwGuildId, WI_GUILDHOUSE_SMALL );
 		if( pGuildHouse && AddGuildHouse( dwGuildId, pGuildHouse ) )
 		{
-			pGuildHouse->SerializeAllInfo( ar );
-			CUser* pUser = static_cast<CUser*>( prj.GetUserByID( dwPlayerId ) );
+			ar >> *pGuildHouse;
+			CUser * pUser = prj.GetUserByID(dwPlayerId);
 			//if( IsValidObj( pUser ) )
 			//	pUser->AddDefinedText( TID_GAME_GUILDHOUSE_PURCHASE );
 
@@ -1256,7 +1251,7 @@ void CGuildHouseMng::OnBuyGuildHouse( CAr & ar )
 			{
 				for( auto it=pGuild->m_mapPMember.begin(); it!=pGuild->m_mapPMember.end(); it++ )
 				{
-					pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
+					pUser = prj.GetUserByID(it->first);
 					if( IsValidObj( pUser ) )
 					{
 						pUser->AddGuildHouseAllInfo( pGuildHouse );
@@ -1271,7 +1266,7 @@ void CGuildHouseMng::OnBuyGuildHouse( CAr & ar )
 			SAFE_DELETE( pGuildHouse );
 			Error( "CGuildHouseMng::BuyGuildHouse - CreateGuildHouse Failed!!! [User:%07d, Guild:%06d]", dwPlayerId, dwGuildId ); 
 			CGuildHouseSmall temp( NULL_ID );
-			temp.SerializeAllInfo( ar );
+			ar >> temp;
 		}
 	}
 	else
@@ -1453,7 +1448,7 @@ void CGuildHouseMng::ProcessExpired()
 		{
 			CAr ar;
 			ar << it->first << GUILDHOUSE_PCKTTYPE_LISTDROP << nIndex;
-			it->second->GetFurnitureInfo( nIndex ).Serialize( ar );
+			ar << it->second->GetFurnitureInfo( nIndex );
 			int nBufSize;
 			LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );
 			GuildHouseDBMng->PostRequest( GUILDHOUSE_DEFAULT_PACKET, lpBuf, nBufSize );
@@ -1473,7 +1468,7 @@ void CGuildHouseMng::ProcessExpired()
 				GH_Fntr_Info gfiTemp;
 				CAr ar;
 				ar << it->first << GUILDHOUSE_PCKTTYPE_EXPIRED << NULL_ID;
-				gfiTemp.Serialize( ar );
+				ar << gfiTemp;
 				int nBufSize;
 				LPBYTE lpBuf = ar.GetBuffer( &nBufSize );
 				GuildHouseDBMng->PostRequest( GUILDHOUSE_DEFAULT_PACKET, lpBuf, nBufSize );

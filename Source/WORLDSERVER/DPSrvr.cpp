@@ -10167,8 +10167,7 @@ void CDPSrvr::OnGuildHousePacket( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	int nPacketType, nIndex;
 	GH_Fntr_Info gfi;
 
-	ar >> nPacketType >> nIndex;
-	gfi.Serialize( ar );
+	ar >> nPacketType >> nIndex >> gfi;
 
 	if( nPacketType == GUILDHOUSE_PCKTTYPE_LISTUP )
 		return;

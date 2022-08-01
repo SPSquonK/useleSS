@@ -7632,7 +7632,7 @@ void CUser::AddGuildHousePakcet( int nPacketType, GH_Fntr_Info & gfi, int nIndex
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_GUILDHOUSE_PACKET;
 	m_Snapshot.ar << nPacketType << nIndex;
-	gfi.Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << gfi;
 }
 
 void CUser::AddGuildHouseAllInfo( CGuildHouseBase* pGuildHouse )
@@ -7646,7 +7646,7 @@ void CUser::AddGuildHouseAllInfo( CGuildHouseBase* pGuildHouse )
 	if( pGuildHouse )
 	{
 		m_Snapshot.ar << TRUE;
-		pGuildHouse->SerializeAllInfo( m_Snapshot.ar );
+		m_Snapshot.ar << *pGuildHouse;
 	}
 	else
 		m_Snapshot.ar << FALSE;

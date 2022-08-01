@@ -93,7 +93,7 @@ void CGuildHouseDBCtrl::SendGuildHouse( DPID dpId )
 	if( !GuildHouseMng->IsEmpty() )
 	{
 		BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_LOAD, DPID_UNKNOWN, DPID_UNKNOWN );
-		GuildHouseMng->Serialize( ar );
+		ar << *GuildHouseMng;
 		SEND( ar, CDPTrans::GetInstance(), dpId );
 	}
 }
@@ -121,7 +121,7 @@ void CGuildHouseDBCtrl::CreateGuildHouse( CAr & ar, DPID dpId )
 				GH_Fntr_Info gfi( II_GHOU_FUR_NPC_TELEPORTER, TRUE, pGuildHouse->GetTeleporterPos(), 0.0f, ( UPKEEP_DAY_TIME * 7 ) );
 				if( ExcuteQuery( dwGuildId, pGuildHouse, GUILDHOUSE_PCKTTYPE_LISTUP, gfi, NULL_ID ) )
 					pGuildHouse->OnGuildHousePacket( GUILDHOUSE_PCKTTYPE_LISTUP, gfi, NULL_ID );
-				pGuildHouse->SerializeAllInfo( arCreate );
+				arCreate << *pGuildHouse;
 			}
 			else
 			{
@@ -152,8 +152,7 @@ void CGuildHouseDBCtrl::RunDefaultPacket( CAr & ar, DPID dpId )
 	int nPacketType, nIndex;
 	GH_Fntr_Info gfi;
 
-	ar >> dwGuildId >> nPacketType >> nIndex;
-	gfi.Serialize( ar );
+	ar >> dwGuildId >> nPacketType >> nIndex >> gfi;
 
 	CGuildHouseBase* pGuildHouse = GuildHouseMng->GetGuildHouse( dwGuildId );
 	if( pGuildHouse )
@@ -166,7 +165,7 @@ void CGuildHouseDBCtrl::RunDefaultPacket( CAr & ar, DPID dpId )
 		BEFORESENDDUAL( arOut, PACKETTYPE_GUILDHOUSE_PACKET, DPID_UNKNOWN, DPID_UNKNOWN );
 		arOut << bResult << dwGuildId;
 		arOut << nPacketType << nIndex;
-		gfi.Serialize( arOut );
+		arOut << gfi;
 		SEND( arOut, CDPTrans::GetInstance(), dpId );
 	}
 }
