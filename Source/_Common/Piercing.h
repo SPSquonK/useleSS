@@ -6,10 +6,12 @@
 #define	MAX_PIERCING_ULTIMATE	5
 #define	MAX_PIERCING			15
 */
-class CPiercing
+class CPiercing final
 {
 public:
-	virtual	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CPiercing & self);
+	friend CAr & operator>>(CAr & ar, CPiercing & self);
+	
 	void	SetPiercingSize( int nSize );
 	int		GetPiercingSize() const;
 	void	SetPiercingItem( int nth, DWORD dwItem );

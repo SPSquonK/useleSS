@@ -1840,11 +1840,11 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 #ifdef __JEFF_11_4
 					CWorld* pWorld	= pMover->GetWorld();
 					if( pWorld && pWorld->IsArena() )
-						g_WndMng.PutString( prj.GetText( TID_GAME_DEATH_ARENA ), NULL, prj.GetTextColor( TID_GAME_DEATH_ARENA ) );
+						g_WndMng.PutString(TID_GAME_DEATH_ARENA);
 					else
-						g_WndMng.PutString( prj.GetText( TID_GAME_DEATH ), NULL, prj.GetTextColor( TID_GAME_DEATH ) );
+						g_WndMng.PutString(TID_GAME_DEATH);
 #else	// __JEFF_11_4
-					g_WndMng.PutString( prj.GetText( TID_GAME_DEATH ), NULL, prj.GetTextColor( TID_GAME_DEATH ) );
+					g_WndMng.PutString(TID_GAME_DEATH);
 #endif	// __JEFF_11_4
 				}
 
@@ -1929,9 +1929,7 @@ void CDPClient::OnCreateItem( OBJID objid, CAr & ar )
 	BYTE nItemType, pnId[MAX_INVENTORY], nCount;
 	short pnNum[MAX_INVENTORY];
 	
-	ar >> nItemType;
-
-	itemElem.Serialize( ar );
+	ar >> nItemType >> itemElem;
 
 	ar >> nCount;
 	ar.Read( (void*)pnId, sizeof(BYTE) * nCount );
@@ -2309,7 +2307,7 @@ void CDPClient::OnTradePut( OBJID objid, CAr & ar )
 	} else {
 		const auto [i, nItemNum] = ar.Extract<BYTE, short>();
 		CItemElem item;
-		item.Serialize(ar);
+		ar >> item;
 
 		pOther->m_vtInfo.TradeSetItem(item, i, nItemNum);
 	}
@@ -2529,7 +2527,7 @@ void CDPClient::OnOpenShopWnd( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pVendor ) )
 	{
 		for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-			pVendor->m_ShopInventory[i]->Serialize( ar );
+			ar >> *pVendor->m_ShopInventory[i];
 
 		SAFE_DELETE( g_WndMng.m_pWndShop );
 		g_WndMng.m_pWndShop		= new CWndShop;
@@ -2539,32 +2537,21 @@ void CDPClient::OnOpenShopWnd( OBJID objid, CAr & ar )
 		g_WndMng.CreateApplet( APP_INVENTORY );
 		g_WndMng.m_pWndShop->Initialize( NULL, APP_SHOP_ );
 	}
-	else
-	{
-		CItemContainer dump;
-		dump.SetItemContainer( CItemContainer::ContainerTypes::VENDOR );
-		for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-			dump.Serialize( ar );	// waste
-	}
 }
 
-void CDPClient::OnPutItemBank( OBJID objid, CAr & ar )
-{
-	CItemElem itemElem;
+void CDPClient::OnPutItemBank(OBJID objid, CAr & ar) {
 	BYTE nSlot;
-	ar >> nSlot;
-	itemElem.Serialize( ar );
-	g_pPlayer->m_Bank[nSlot].Add( &itemElem );
+	CItemElem itemElem;
+	ar >> nSlot >> itemElem;
+	g_pPlayer->m_Bank[nSlot].Add(&itemElem);
 }
 
-void CDPClient::OnPutItemGuildBank(OBJID objid, CAr & ar )
-{
-	BYTE mode = 0;
-	ar >> mode;
-	
+void CDPClient::OnPutItemGuildBank(OBJID objid, CAr & ar) {
+	BYTE mode;
 	CItemElem itemElem;
-	itemElem.Serialize( ar );
-	g_pPlayer->GetGuild()->m_GuildBank.Add( &itemElem );
+	ar >> mode >> itemElem;
+
+	g_pPlayer->GetGuild()->m_GuildBank.Add(&itemElem);
 }
 
 void CDPClient::OnGetItemGuildBank( OBJID objid, CAr & ar )
@@ -2628,7 +2615,7 @@ void CDPClient::OnGetItemGuildBank( OBJID objid, CAr & ar )
 	case	GUILD_ITEM_MINE_UPDATE:
 		{
 			CItemElem itemElem;
-			itemElem.Serialize( ar );
+			ar >> itemElem;
 		
 			CItemElem* pTempElem = g_pPlayer->GetGuild()->m_GuildBank.GetAtId(itemElem.m_dwObjId);
 			if (pTempElem)
@@ -2645,7 +2632,7 @@ void CDPClient::OnGetItemGuildBank( OBJID objid, CAr & ar )
 	case	GUILD_ITEM_ALL_UPDATE:
 		{
 			CItemElem itemElem;
-			itemElem.Serialize( ar );
+			ar >> itemElem;
 			
 			CItemElem* pTempElem = g_pPlayer->GetGuild()->m_GuildBank.GetAtId(itemElem.m_dwObjId);
 			if (pTempElem)
@@ -2663,7 +2650,7 @@ void CDPClient::OnGetItemGuildBank( OBJID objid, CAr & ar )
 void CDPClient::OnGetItemBank( OBJID objid, CAr & ar )
 {
 	CItemElem itemElem;
-	itemElem.Serialize( ar );
+	ar >> itemElem;
 	g_pPlayer->m_Inventory.Add( &itemElem );
 }
 
@@ -2685,9 +2672,8 @@ void CDPClient::OnMoveBankItem( OBJID objid, CAr & ar )
 {
 }
 
-void CDPClient::OnErrorBankIsFull( OBJID objid, CAr & ar )
-{
-	g_WndMng.PutString( prj.GetText( TID_GAME_SLOTFULL ), NULL, prj.GetTextColor( TID_GAME_SLOTFULL ) );
+void CDPClient::OnErrorBankIsFull(OBJID objid, CAr & ar) {
+	g_WndMng.PutString(TID_GAME_SLOTFULL);
 }
 
 void CDPClient::OnBankWindow( OBJID objid, CAr & ar )
@@ -2728,11 +2714,10 @@ void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 			SAFE_DELETE( g_WndMng.m_pWndGuildBank );
 			g_WndMng.m_pWndGuildBank = new CWndGuildBank;
 			
-			int nGuildGold = 0;
-			ar >> nGuildGold;
-
+			int nGuildGold; ar >> nGuildGold;
 			g_pPlayer->GetGuild()->m_nGoldGuild = nGuildGold;
-			g_pPlayer->GetGuild()->m_GuildBank.Serialize(ar);
+
+			ar >> g_pPlayer->GetGuild()->m_GuildBank;
 
 			g_WndMng.CreateApplet( APP_INVENTORY );
 			
@@ -2797,25 +2782,14 @@ void CDPClient::OnConfirmBankPass( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnVendor( OBJID objid, CAr & ar )
-{
-	CMover* pVendor	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pVendor ) )
-	{
-		for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-			pVendor->m_ShopInventory[i]->Serialize( ar );
-		// release
-	}
-	else
-	{
-		CItemContainer dump;
-		dump.SetItemContainer( CItemContainer::ContainerTypes::VENDOR );
-		for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-			dump.Serialize( ar );	// waste
+void CDPClient::OnVendor(OBJID objid, CAr & ar) {
+	CMover * pVendor = prj.GetMover(objid);
+	if (!IsValidObj(pVendor)) return;
+
+	for (int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++) {
+		ar >> *pVendor->m_ShopInventory[i];
 	}
 }
-
-
 
 void CDPClient::OnUpdateVendor( OBJID objid, CAr & ar )
 {
@@ -12115,7 +12089,7 @@ void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 		CItemElem* pItemElem = new CItemElem;
 		
 		ar >> iIndex;
-		pItemElem->Serialize( ar );
+		ar >> *pItemElem;
 		ar >> nExtra;
 		ar >> pItemElem->m_nCost;
 		
@@ -13655,7 +13629,7 @@ void CDPClient::OnQueryEquip( OBJID objid, CAr & ar )
 	{
 		ar >> nParts;
 		ar >> aEquipInfoAdd[nParts].iRandomOptItemId;
-		aEquipInfoAdd[nParts].piercing.Serialize( ar );
+		ar >> aEquipInfoAdd[nParts].piercing;
 		ar >> aEquipInfoAdd[nParts].bItemResist >> aEquipInfoAdd[nParts].nResistAbilityOption;
 	}
 
@@ -15111,8 +15085,7 @@ void CDPClient::OnPocketAddItem( CAr & ar )
 {
 	int nPocket;
 	CItemElem item;
-	ar >> nPocket;
-	item.Serialize( ar );
+	ar >> nPocket >> item;
 	CMover* pPlayer	= CMover::GetActiveMover();
 	if( pPlayer )
 		pPlayer->m_Pocket.Add( nPocket, &item );

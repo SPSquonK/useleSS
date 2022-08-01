@@ -21,7 +21,8 @@ public:
 	time_t	GetExpirationDate( void )	{	return m_tExpirationDate;	}
 	void	Copy( CPocket & rPocket );
 // Operations
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CPocket & self);
+	friend CAr & operator>>(CAr & ar, CPocket & self);
 
 private:
 	BOOL	m_bExpired;

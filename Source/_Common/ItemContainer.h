@@ -56,7 +56,8 @@ public:
 	[[nodiscard]] BOOL	IsFull(CItemElem * pElem, ItemProp * pItemProp, short nNum);
 
 	void	Copy(CItemContainer & rItemContainer);
-	void	Serialize(CAr & ar);
+	friend CAr & operator<<(CAr & ar, const CItemContainer & self);
+	friend CAr & operator>>(CAr & ar, CItemContainer & self);
 
 
 #ifdef __CLIENT

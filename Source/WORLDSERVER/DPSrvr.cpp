@@ -3247,7 +3247,7 @@ void CDPSrvr::UpdateGuildBank(CGuild* p_GuildBank, int p_Mode, BYTE cbUpdate, u_
 	{
 		ar << p_GuildBank->m_idGuild;
 		ar << p_GuildBank->m_nGoldGuild;
-		p_GuildBank->m_GuildBank.Serialize(ar);
+		ar << p_GuildBank->m_GuildBank;
 		ar << cbUpdate;	// ¸â¹öÀÇ °øÇåÆä³Ä¸¦ ¾÷µ«ÇØ¾ßÇÏ´Â°¡? 
 		ar << idPlayer;
 		ar << p_Mode;

@@ -24,31 +24,32 @@ void CPocket::Copy( CPocket & rPocket )
 	m_tExpirationDate	= rPocket.GetExpirationDate();
 }
 
-void CPocket::Serialize( CAr & ar )
-{
-	CItemContainer::Serialize( ar );
-	if( ar.IsStoring() )
-	{
-		ar << m_bExpired << m_tExpirationDate;
-		if( m_tExpirationDate )
-		{
-			time_t	t	= m_tExpirationDate - time_null();
-			ar << t;
-		}
+CAr & operator<<(CAr & ar, const CPocket & self) {
+	ar << static_cast<const CItemContainer & >(self);
+	ar << self.m_bExpired << self.m_tExpirationDate;
+	if (self.m_tExpirationDate) {
+		time_t t = self.m_tExpirationDate - time_null();
+		ar << t;
 	}
-	else
-	{
-		ar >> m_bExpired >> m_tExpirationDate;
-		if( m_tExpirationDate )
-		{
-			time_t	t;
-			ar >> t;
-#ifdef __CLIENT
-			m_tExpirationDate	= time_null() + t;
-#endif	// __CLIENT
-		}
-	}
+
+	return ar;
 }
+
+CAr & operator>>(CAr & ar, CPocket & self) {
+	ar >> static_cast<CItemContainer &>(self);
+	ar >> self.m_bExpired >> self.m_tExpirationDate;
+	if( self.m_tExpirationDate )
+	{
+		time_t t;
+		ar >> t;
+#ifdef __CLIENT
+		self.m_tExpirationDate	= time_null() + t;
+#endif	// __CLIENT
+	}
+
+	return ar;
+}
+
 
 CPocketController::CPocketController()
 {
@@ -308,7 +309,7 @@ void	CPocketController::Serialize( CAr & ar )
 			if( IsAvailable( i, FALSE ) )
 			{
 				ar << (BYTE)1;
-				m_apPocket[i]->Serialize( ar );
+				ar << *m_apPocket[i];
 			}
 			else
 				ar << (BYTE)0;
@@ -324,7 +325,7 @@ void	CPocketController::Serialize( CAr & ar )
 			if( !bExists )
 				continue;
 			Avail( i );
-			m_apPocket[i]->Serialize( ar );
+			ar >> *m_apPocket[i];
 		}
 	}
 }

@@ -2052,13 +2052,13 @@ void CDPDatabaseClient::OnGuildBank( CAr & ar, DPID, DPID )
 		if( pGuild )
 		{
 			pGuild->m_nGoldGuild = nGoldGuild;
-			pGuild->m_GuildBank.Serialize( ar );
+			ar >> pGuild->m_GuildBank;
 		}
 		else
 		{
 			// 임시로 템프변수 만들어서 받기 banktmp
 			CGuild tempGuild;
-			tempGuild.m_GuildBank.Serialize( ar );
+			ar >> tempGuild.m_GuildBank;
 		}
 	}
 }
@@ -2275,7 +2275,7 @@ void CDPDatabaseClient::SendQueryPostMail( u_long idReceiver, u_long idSender, C
 	if( FALSE == itemElem.IsEmpty() )
 	{
 		ar << (BYTE)1;
-		itemElem.Serialize( ar );
+		ar << itemElem;
 	}
 	else
 	{

@@ -2772,7 +2772,7 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 
 		ar2 << nGuildId;
 		ar2 << nGoldGuild;
-		GuildBank.Serialize(ar2);
+		ar2 << GuildBank;
 
 		if( nCount >= 1000 )
 			break;
@@ -2809,7 +2809,7 @@ void CDbManager::UpdateGuildBankUpdate( CQuery* pQuery, CQuery* pQueryLog, LPDB_
 
 	ar >> nGuildId;
 	ar >> nGoldGuild;
-	GuildBank.Serialize(ar);
+	ar >> GuildBank;
 	ar >> cbUpdateContribution;	// 길드멤버 공헌페냐를 변경해야 하는가?
 	ar >> idPlayer;				// 뱅크를 업뎃한 플레이어
 	ar >> nMode;
@@ -5217,7 +5217,7 @@ void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	if( byItem )
 	{
 		pMail->m_pItemElem	= new CItemElem;
-		pMail->m_pItemElem->Serialize( ar );
+		ar >> *pMail->m_pItemElem;
 	}
 	ar >> pMail->m_nGold;
 	ar.ReadString( pMail->m_szTitle, MAX_MAILTITLE );

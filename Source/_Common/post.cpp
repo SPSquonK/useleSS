@@ -95,7 +95,7 @@ void CMail::Serialize( CAr & ar, BOOL bData )
 			if( m_pItemElem )
 			{
 				ar << (BYTE)1;
-				m_pItemElem->Serialize( ar );
+				ar << *m_pItemElem;
 			}
 			else
 			{
@@ -122,7 +122,7 @@ void CMail::Serialize( CAr & ar, BOOL bData )
 			if( byItemElem )
 			{
 				m_pItemElem	= new CItemElem;
-				m_pItemElem->Serialize( ar );
+				ar >> *m_pItemElem;
 			}
 			ar >> m_nGold;
 			time_t tm;

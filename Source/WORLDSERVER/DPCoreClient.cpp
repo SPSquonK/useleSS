@@ -325,7 +325,7 @@ void CDPCoreClient::SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pIte
 	if (pUser->GetGuild())
 	{
 		ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
-		pItemElem->Serialize( ar );
+		ar << *pItemElem;
 	}
 	
 	PASS( ar );

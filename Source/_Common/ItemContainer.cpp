@@ -203,53 +203,49 @@ void CItemContainer::Copy(CItemContainer & rItemContainer) {
 	}
 }
 
-void CItemContainer::Serialize(CAr & ar)	// 0-673	// 466-631
-{
-	DWORD	adwObjIndex[CItemContainer::MAX_SIZE];
+CAr & operator<<(CAr & ar, const CItemContainer & self) {
+	ar.Write(self.m_apIndex, sizeof(DWORD) * self.m_dwItemMax);
 
-	unsigned char chSize = 0;
+	const auto chSize = ar.PushBack<std::uint8_t>(0);
 
-	if (ar.IsStoring()) {
-
-		ar.Write(m_apIndex, sizeof(DWORD) * m_dwItemMax);
-
-		u_long uOffset = ar.GetOffset();
-		ar << chSize;
-
-		for (u_char ch = 0; ch < m_dwItemMax; ch++)	// 0-504
-		{
-			if (m_apItem[ch].IsEmpty() == FALSE) {
-				ar << ch;
-				m_apItem[ch].Serialize(ar);
-				chSize++;
-			}
-			adwObjIndex[ch] = m_apItem[ch].m_dwObjIndex;
+	DWORD	adwObjIndex[CItemContainer::MAX_SIZE] = {};
+	for (std::uint8_t ch = 0; ch < self.m_dwItemMax; ch++) {
+		if (!self.m_apItem[ch].IsEmpty()) {
+			ar << ch << self.m_apItem[ch];
+			++(*chSize);
 		}
 
-		ar.Write(adwObjIndex, sizeof(DWORD) * m_dwItemMax);
-
-		int nBufSize;
-		LPBYTE lpBuf = ar.GetBuffer(&nBufSize);
-		*(lpBuf + uOffset) = chSize;
-	} else {
-		ar.Read(m_apIndex, sizeof(DWORD) * m_dwItemMax);
-		// Clear
-		for (u_long i = 0; i < m_dwItemMax; i++)
-			m_apItem[i].Empty();
-
-		ar >> chSize;
-
-		unsigned char ch;
-		for (u_int i = 0; i < chSize; i++) {
-			ar >> ch;
-			m_apItem[ch].Serialize(ar);
-		}
-
-		ar.Read(adwObjIndex, sizeof(DWORD) * m_dwItemMax);
-		for (unsigned int i = 0; i < m_dwItemMax; i++) {
-			m_apItem[i].m_dwObjIndex = adwObjIndex[i];
-		}
+		adwObjIndex[ch] = self.m_apItem[ch].m_dwObjIndex;
 	}
+
+	ar.Write(adwObjIndex, sizeof(DWORD) * self.m_dwItemMax);
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CItemContainer & self) {
+	ar.Read(self.m_apIndex, sizeof(DWORD) * self.m_dwItemMax);
+
+	// Clear
+	for (u_long i = 0; i < self.m_dwItemMax; i++) {
+		self.m_apItem[i].Empty();
+	}
+
+	std::uint8_t chSize; ar >> chSize;
+
+	unsigned char ch;
+	for (std::uint8_t i = 0; i < chSize; i++) {
+		ar >> ch;
+		ar >> self.m_apItem[ch];
+	}
+
+	DWORD	adwObjIndex[CItemContainer::MAX_SIZE] = {};
+	ar.Read(adwObjIndex, sizeof(DWORD) * self.m_dwItemMax);
+	for (unsigned int i = 0; i < self.m_dwItemMax; i++) {
+		self.m_apItem[i].m_dwObjIndex = adwObjIndex[i];
+	}
+
+	return ar;
 }
 
 BOOL CItemContainer::IsFull(CItemElem * pElem, ItemProp * pItemProp, short nNum) {
