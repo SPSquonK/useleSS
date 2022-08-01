@@ -450,7 +450,7 @@ public:
 	DWORD			m_Version;
 
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
-	CRIT_SEC		m_Lock;
+	mutable CRIT_SEC		m_Lock;
 #endif
 	CTime			m_UpdateTime;
 
@@ -531,40 +531,7 @@ public:
 		return TRUE;
 	}
 #endif//__DBSERVER
-
-	void Serialize( CAr & ar )
-	{
-#if !defined(__WORLDSERVER) && !defined(__CLIENT)
-		m_Lock.Enter( theLineFile );
-#endif
-
-		if( ar.IsStoring() )
-		{
-			ar << m_Version;
-			ar.Write( m_Total, sizeof(int)*RANK_END );
-			for ( int i=R1; i<RANK_END; i++ )
-			{
-				if ( m_Total[i] )
-				{
-					ar.Write( m_Ranking[i], sizeof(GUILD_RANKING)*m_Total[i] );
-				}
-			}
-		}
-		else
-		{
-			ar >> m_Version;
-			ar.Read( m_Total, sizeof(int)*RANK_END );
-			for ( int i=R1; i<RANK_END; i++ )
-			{
-				if ( m_Total[i] )
-				{
-					ar.Read( m_Ranking[i], sizeof(GUILD_RANKING)*m_Total[i] );
-				}
-			}
-		}
-
-#if !defined(__WORLDSERVER) && !defined(__CLIENT)
-		m_Lock.Leave( theLineFile );
-#endif	// __WORLDSERVER
-	}
+	
+	friend CAr & operator<<(CAr & ar, const CGuildRank & self);
+	friend CAr & operator>>(CAr & ar, CGuildRank & self);
 };

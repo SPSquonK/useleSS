@@ -1649,7 +1649,7 @@ void CUser::SendGuildRank()
 	m_Snapshot.cb++;
 	m_Snapshot.ar << NULL_ID;
 	m_Snapshot.ar << SNAPSHOTTYPE_REQUEST_GUILDRANK;
-	CGuildRank::Instance()->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *CGuildRank::Instance();
 	
 }
 

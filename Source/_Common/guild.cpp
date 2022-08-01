@@ -764,7 +764,7 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 			( i->second )->Serialize( ar, bDesc );
 		
 		// 길드랭크 정보 로드
-		CGuildRank::Instance()->Serialize( ar );
+		ar << *CGuildRank::Instance();
 	}
 	else
 	{
@@ -784,7 +784,7 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 		}
 
 		// 길드랭크 정보  쓰기
-		CGuildRank::Instance()->Serialize( ar );
+		ar >> *CGuildRank::Instance();
 	}
 }
 
@@ -950,6 +950,39 @@ CGuildRank* CGuildRank::Instance()
 {
 	static CGuildRank	sGuildRank;
 	return &sGuildRank;
+}
+
+CAr & operator<<(CAr & ar, const CGuildRank & self) {
+#if !defined(__WORLDSERVER) && !defined(__CLIENT)
+	CMclAutoLock lock(self.m_Lock);
+#endif
+
+	ar << self.m_Version;
+	ar.Write(self.m_Total, sizeof(int) * CGuildRank::RANK_END);
+	for (int i = CGuildRank::R1; i < CGuildRank::RANK_END; i++) {
+		if (self.m_Total[i]) {
+			ar.Write(self.m_Ranking[i], sizeof(CGuildRank::GUILD_RANKING) * self.m_Total[i]);
+		}
+	}
+
+	return ar;
+}
+
+
+CAr & operator>>(CAr & ar, CGuildRank & self) {
+#if !defined(__WORLDSERVER) && !defined(__CLIENT)
+	CMclAutoLock lock(self.m_Lock);
+#endif
+
+	ar >> self.m_Version;
+	ar.Read(self.m_Total, sizeof(int) * CGuildRank::RANK_END);
+	for (int i = CGuildRank::R1; i < CGuildRank::RANK_END; i++) {
+		if (self.m_Total[i]) {
+			ar.Read(self.m_Ranking[i], sizeof(CGuildRank::GUILD_RANKING) * self.m_Total[i]);
+		}
+	}
+
+	return ar;
 }
 
 #ifndef __CORESERVER

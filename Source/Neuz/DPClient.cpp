@@ -11757,9 +11757,8 @@ void CDPClient::OnGuildSetName( CAr & ar )
 	}		
 }
 
-void CDPClient::OnGuildRank( CAr & ar )
-{
-	CGuildRank::Instance()->Serialize( ar );
+void CDPClient::OnGuildRank(CAr & ar) {
+	ar >> *CGuildRank::Instance();
 }
 
 void CDPClient::SendQueryPlayerData( u_long idPlayer, int nVer )
@@ -12941,9 +12940,8 @@ void	CDPClient::OnSendActMsg( OBJID objid, CAr & ar )
 }
 
 
-void	CDPClient::OnRequestGuildRank( CAr & ar )
-{
-	CGuildRank::Instance()->Serialize( ar );
+void	CDPClient::OnRequestGuildRank(CAr & ar) {
+	ar >> *CGuildRank::Instance();
 }
 
 

@@ -339,9 +339,7 @@ void CDPDatabaseClient::SendCastVote( u_long idVote, BYTE cbSelection )
 void CDPDatabaseClient::OnUpdateGuildRankFinish( CAr & ar )
 {
 	// 길드 랭크 정보를 시리얼라이즈 한다.
-	CGuildRank* pGuildRank = CGuildRank::Instance();
-	pGuildRank->Serialize( ar );
-
+	ar >> *CGuildRank::Instance();
 	g_DPCacheSrvr.SendUpdateGuildRank();
 }
 

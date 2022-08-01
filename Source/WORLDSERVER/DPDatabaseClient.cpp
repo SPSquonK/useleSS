@@ -2063,9 +2063,8 @@ void CDPDatabaseClient::OnGuildBank( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::OnUpdateGuildRankingFinish( CAr & ar, DPID, DPID )
-{
-	CGuildRank::Instance()->Serialize( ar );
+void CDPDatabaseClient::OnUpdateGuildRankingFinish(CAr & ar, DPID, DPID) {
+	ar >> *CGuildRank::Instance();
 }
 
 

@@ -374,7 +374,7 @@ void CDPTrans::SendHdr( DWORD dwHdr, DPID dpid )
 void CDPTrans::SendUpdateGuildRankFinish()
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_UPDATE_GUILD_RANKING_END, DPID_UNKNOWN, DPID_UNKNOWN );
-	CGuildRank::Instance()->Serialize( ar );
+	ar << *CGuildRank::Instance();
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
