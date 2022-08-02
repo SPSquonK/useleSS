@@ -40,12 +40,7 @@ void CHousingDBCtrl::Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwCompletionKey )
 			
 		case QUERY_HOUSING_SETUP_FURNITURE:
 			{
-				DWORD dwPlayerId;
-				HOUSINGINFO housingInfo;
-
-				ar >> dwPlayerId;
-				housingInfo.Serialize( ar );
-
+				const auto [dwPlayerId, housingInfo] = ar.Extract<DWORD, HOUSINGINFO>();
 				SetupFurniture( dwPlayerId, housingInfo, dwCompletionKey );
 			}
 			break;

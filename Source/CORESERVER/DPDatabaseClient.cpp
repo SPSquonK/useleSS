@@ -239,8 +239,8 @@ void CDPDatabaseClient::SendAddPartyName( u_long uidPlayer, const char * sParty 
 void CDPDatabaseClient::OnGlobalData( CAr & ar )
 {
 	g_GuildMng.Serialize( ar, FALSE );
-	CGuildTable::GetInstance().Serialize( ar );
-	g_GuildWarMng.Serialize( ar );
+	ar >> CGuildTable::GetInstance();
+	ar >> g_GuildWarMng;
 	ar.Read( (void*)g_PartyMng.m_aExpParty, sizeof(g_PartyMng.m_aExpParty) );
 	
 #if defined(__INTERNALSERVER )	
@@ -339,9 +339,7 @@ void CDPDatabaseClient::SendCastVote( u_long idVote, BYTE cbSelection )
 void CDPDatabaseClient::OnUpdateGuildRankFinish( CAr & ar )
 {
 	// 길드 랭크 정보를 시리얼라이즈 한다.
-	CGuildRank* pGuildRank = CGuildRank::Instance();
-	pGuildRank->Serialize( ar );
-
+	ar >> *CGuildRank::Instance();
 	g_DPCacheSrvr.SendUpdateGuildRank();
 }
 

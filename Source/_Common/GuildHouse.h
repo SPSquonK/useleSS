@@ -70,7 +70,8 @@ public:
 #endif // __DBSERVER
 
 		GuildHouse_Furniture_Info( DWORD dwII = NULL_ID, BOOL bS = FALSE, D3DXVECTOR3 v = D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), float fA = 0.0f, time_t tK = 0 );
-		void		Serialize( CAr & ar );
+		friend CAr & operator<<(CAr & ar, const GuildHouse_Furniture_Info & self);
+		friend CAr & operator>>(CAr & ar, GuildHouse_Furniture_Info & self);
 	};
 	typedef std::vector<GuildHouse_Furniture_Info>	VECFurnituretInfo;
 	typedef VECFurnituretInfo::iterator			VECFurnitureIter;
@@ -96,7 +97,8 @@ public:
 	void	Clear();
 	DWORD	GetType()	{ return m_dwWorldId; }
 	BOOL	OnGuildHousePacket( int nPacketType, GuildHouse_Furniture_Info & gfi, int nIndex );
-	void	SerializeAllInfo( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildHouseBase & self);
+	friend CAr & operator>>(CAr & ar, CGuildHouseBase & self);
 	GuildHouse_Furniture_Info GetFurnitureInfo( int nIndex ) { return nIndex < (int)( m_vecFntInfo.size() ) ? m_vecFntInfo[nIndex] : GuildHouse_Furniture_Info(); }
 	time_t	GetUpkeepTime()	{ return m_tUpkeepTime; }
 	void	SetUpkeeptime( time_t tUpkeepTime ) { m_tUpkeepTime = tUpkeepTime; }
@@ -300,7 +302,8 @@ public:
 	BOOL				RemoveGuildHouse( DWORD dwGuildId );
 	CGuildHouseBase* GetGuildHouse( DWORD dwGuildId );
 	BOOL	IsEmpty()	{ return m_mapGuildHouse.empty(); }
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildHouseMng & self);
+	friend CAr & operator>>(CAr & ar, CGuildHouseMng & self);
 
 #ifdef __WORLDSERVER
 public:
@@ -386,6 +389,8 @@ public:
 
 	struct GUILDHOUSE_TENDER
 	{
+		static constexpr bool Archivable = true;
+
 		OBJID		objGHId;
 		DWORD		dwGuildId;
 		int			nTenderPerin;
@@ -400,18 +405,6 @@ public:
 		GUILDHOUSE_TENDER( OBJID _objGHId, DWORD _dwGuildId, int _nTenderPerin, int _nTenderPenya )
 		: objGHId( _objGHId ), dwGuildId( _dwGuildId ), nTenderPerin( _nTenderPerin ), nTenderPenya( _nTenderPenya ),
 		dwGHType( 0 ), nAreaIndex( 0 ), tTenderTime( NULL ), chState( 'T' )	{}
-	
-		void Serialize( CAr & ar )
-		{
-			if( ar.IsStoring() )
-			{
-				ar << objGHId << dwGuildId << nTenderPerin << nTenderPenya << dwGHType << nAreaIndex << tTenderTime << chState;
-			}
-			else
-			{
-				ar >> objGHId >> dwGuildId >> nTenderPerin >> nTenderPenya >> dwGHType >> nAreaIndex >> tTenderTime >> chState;
-			}
-		}
 	};
 	typedef map<DWORD, GUILDHOUSE_TENDER>	MAP_TENDER_GUILD;
 

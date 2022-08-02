@@ -110,14 +110,11 @@ void CDPCoreClient::SendAddPlayer(const CCachePlayer & pPlayer, CRTMessenger & r
 
 void CDPCoreClient::OnProcServerList( CAr & ar, DPID )
 {
-	CServerDesc *pServer;
-	short nSize;
+	std::uint32_t nSize; ar >> nSize;
 
-	ar >> nSize;
-	for( int i = 0; i < nSize; i++ )
-	{
-		pServer		= new CServerDesc;
-		pServer->Serialize( ar );
+	for (std::uint32_t i = 0; i != nSize; ++i) {
+		CServerDesc * pServer = new CServerDesc;
+		ar >> *pServer;
 
 		if( !g_DPClientArray.Connect( pServer ) ) {
 			SAFE_DELETE( pServer );
@@ -126,12 +123,12 @@ void CDPCoreClient::OnProcServerList( CAr & ar, DPID )
 	g_MyTrace.AddLine( '-' );
 }
 
-void CDPCoreClient::OnProcServer( CAr & ar, DPID )
-{
-	CServerDesc* pServer	= new CServerDesc;
-	pServer->Serialize( ar );
-	if( !g_DPClientArray.Connect( pServer ) ) {
-		SAFE_DELETE( pServer );
+void CDPCoreClient::OnProcServer(CAr & ar, DPID) {
+	CServerDesc * pServer = new CServerDesc;
+	ar >> *pServer;
+
+	if (!g_DPClientArray.Connect(pServer)) {
+		SAFE_DELETE(pServer);
 	}
 }
 

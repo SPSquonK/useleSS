@@ -23,6 +23,23 @@
 /////////////////////////////////////////////////////////////////////
 //// CHousing ///////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
+
+CAr & operator<<(CAr & ar, const HOUSINGINFO & self) {
+	ar << self.dwItemId
+		<< static_cast<time_t>(self.tKeepTime - time_null())
+		<< self.bSetup << self.vPos << self.fAngle;
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, HOUSINGINFO & self) {
+	ar >> self.dwItemId
+		>> self.tKeepTime;
+	self.tKeepTime += time_null();
+	ar >> self.bSetup >> self.vPos >> self.fAngle;
+
+	return ar;
+}
+
 CHousing::CHousing( DWORD dwPlayerId ) :
 #ifdef __WORLDSERVER
 m_bSetting( FALSE ),
@@ -60,49 +77,49 @@ void CHousing::GetHousingList(std::vector<HOUSINGINFO> & vHousingList )
 
 #endif // __CLIENT
 
-void CHousing::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_vecHousingInfo.size();	// 하우징 가구 정보..
-		for( DWORD i=0; i<m_vecHousingInfo.size(); i++ )
-			m_vecHousingInfo[i].Serialize( ar );
-		ar << m_vecIdVisitAllow.size(); // 방문 허용 목록...
-		for( DWORD i=0; i<m_vecIdVisitAllow.size(); i++ )
-			ar << m_vecIdVisitAllow[i];
+CAr & operator<<(CAr & ar, const CHousing & self) {
+	ar << self.m_vecHousingInfo.size();	// 하우징 가구 정보..
+	for (const HOUSINGINFO & housingInfo : self.m_vecHousingInfo) {
+		ar << housingInfo;
 	}
-	else
-	{
-		m_vecHousingInfo.clear();
-		int nSize = 0;
-		ar >> nSize;
-		for( int i=0; i<nSize; i++ )
-		{
-			HOUSINGINFO housingInfo;
-			housingInfo.Serialize( ar );
-			m_vecHousingInfo.push_back( housingInfo );
-		}
-#ifdef __WORLDSERVER
-		CUser* pUser = static_cast<CUser*>( prj.GetUserByID( m_dwMasterId ) );
-#endif // __WORLDSERVER
-		m_vecIdVisitAllow.clear();
-		ar >> nSize;
-		for( int i=0; i<nSize; i++ )
-		{
-			DWORD dwPlayerId;
-			ar >> dwPlayerId;
-			m_vecIdVisitAllow.push_back( dwPlayerId );
-#ifdef __WORLDSERVER
-			CHousingMng::GetInstance()->SetAddVisitable( m_dwMasterId, dwPlayerId );
-			if( IsValidObj( pUser ) && !pUser->m_RTMessenger.GetFriend( dwPlayerId ) )
-			{
-				BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_SETVISITALLOW, DPID_UNKNOWN, DPID_UNKNOWN );
-				ar << pUser->m_idPlayer << dwPlayerId << FALSE;
-				SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
-			}
-#endif // __WORLDSERVER
-		}
+	
+	ar << self.m_vecIdVisitAllow.size(); // 방문 허용 목록...
+	for (const DWORD dwPlayerId : self.m_vecIdVisitAllow) {
+		ar << dwPlayerId;
 	}
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CHousing & self) {
+	self.m_vecHousingInfo.clear();
+	int nSize = 0;
+	ar >> nSize;
+	for (int i = 0; i < nSize; i++) {
+		HOUSINGINFO housingInfo;
+		ar >> housingInfo;
+		self.m_vecHousingInfo.push_back(housingInfo);
+	}
+#ifdef __WORLDSERVER
+	CUser * pUser = prj.GetUserByID(self.m_dwMasterId);
+#endif // __WORLDSERVER
+	self.m_vecIdVisitAllow.clear();
+	ar >> nSize;
+	for (int i = 0; i < nSize; i++) {
+		DWORD dwPlayerId;
+		ar >> dwPlayerId;
+		self.m_vecIdVisitAllow.push_back(dwPlayerId);
+#ifdef __WORLDSERVER
+		CHousingMng::GetInstance()->SetAddVisitable(self.m_dwMasterId, dwPlayerId);
+		if (IsValidObj(pUser) && !pUser->m_RTMessenger.GetFriend(dwPlayerId)) {
+			BEFORESENDDUAL(ar, PACKETTYPE_HOUSING_SETVISITALLOW, DPID_UNKNOWN, DPID_UNKNOWN);
+			ar << pUser->m_idPlayer << dwPlayerId << FALSE;
+			SEND(ar, &g_dpDBClient, DPID_SERVERPLAYER);
+		}
+#endif // __WORLDSERVER
+	}
+
+	return ar;
 }
 
 int CHousing::GetIndexFromList( DWORD dwItemId )
@@ -484,8 +501,7 @@ BOOL CHousingMng::ReqSetupFurniture( CUser* pUser, HOUSINGINFO housingInfo )
 	{
 		pHousing->Setting( TRUE );
 		BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_SETUPFURNITURE, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idPlayer;
-		housingInfo.Serialize( ar );
+		ar << pUser->m_idPlayer << housingInfo;
 		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
 	}
 	else

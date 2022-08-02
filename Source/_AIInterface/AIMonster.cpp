@@ -56,11 +56,7 @@ END_AISTATE_MAP()
 
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CAIMonster>*	CAIMonster::m_pPool		= new MemPooler<CAIMonster>( INITIAL_AI_MONSTER, "CAIMonster" );
-	#else	// __VM_0819
 	MemPooler<CAIMonster>*	CAIMonster::m_pPool		= new MemPooler<CAIMonster>( INITIAL_AI_MONSTER );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 

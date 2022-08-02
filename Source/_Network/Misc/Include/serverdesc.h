@@ -63,7 +63,9 @@ public:
 #endif // __S8_SERVER_PORT
 	u_long	GetKey( void )	{	return m_uKey;	}
 	u_long	GetIdofMulti( void )	{	return	m_uIdofMulti;	}	
-	void	Serialize( CAr & ar );
+
+	friend CAr & operator<<(CAr & ar, const CServerDesc & self);
+	friend CAr & operator>>(CAr & ar, CServerDesc & self);
 };
 
 class CServerDescArray : public std::map<u_long, CServerDesc*>

@@ -25,26 +25,24 @@ CGuildWar::CGuildWar()
 	ZeroMemory( &m_Acpt, sizeof(m_Acpt) );
 }
 
-void CGuildWar::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idWar;
-		ar.Write( &m_Decl, sizeof(m_Decl) );
-		ar.Write( &m_Acpt, sizeof(m_Acpt) );
-		ar << m_nFlag;
-		ar << (time_t)m_time.GetTime();
-	}
-	else
-	{
-		ar >> m_idWar;
-		ar.Read( &m_Decl, sizeof(m_Decl) );
-		ar.Read( &m_Acpt, sizeof(m_Acpt) );
-		ar >> m_nFlag;
-		time_t time;
-		ar >> time;
-		m_time	= CTime( time );
-	}
+CAr & operator<<(CAr & ar, const CGuildWar & self) {
+	ar << self.m_idWar;
+	ar.Write(&self.m_Decl, sizeof(self.m_Decl));
+	ar.Write(&self.m_Acpt, sizeof(self.m_Acpt));
+	ar << self.m_nFlag;
+	ar << static_cast<time_t>(self.m_time.GetTime());
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CGuildWar & self) {
+	ar >> self.m_idWar;
+	ar.Read(&self.m_Decl, sizeof(self.m_Decl));
+	ar.Read(&self.m_Acpt, sizeof(self.m_Acpt));
+	ar >> self.m_nFlag;
+	time_t time;
+	ar >> time;
+	self.m_time = CTime(time);
+	return ar;
 }
 
 #ifdef __WORLDSERVER
@@ -116,30 +114,30 @@ CGuildWar * CGuildWarMng::GetWar(const WarId idWar) {
 	return sqktd::find_in_map(m_mapPWar, idWar);
 }
 
-void CGuildWarMng::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_id;
-		ar << GetSize();
-		for( auto i = m_mapPWar.begin(); i != m_mapPWar.end(); ++i )
-			( i->second )->Serialize( ar );
+CAr & operator<<(CAr & ar, const CGuildWarMng & self) {
+	ar << self.m_id;
+	ar << static_cast<std::uint32_t>(self.m_mapPWar.size());
+	for (const CGuildWar * pWar : self.m_mapPWar | std::views::values) {
+		ar << *pWar;
 	}
-	else
-	{
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CGuildWarMng & self) {
 #ifdef __CLIENT
-		Clear();
+	self.Clear();
 #endif	// __CLIENT
-		ar >> m_id;
-		int nSize;
-		ar >> nSize;
-		for( int i = 0; i < nSize; i++ )
-		{
-			CGuildWar* pWar	= new CGuildWar;
-			pWar->Serialize( ar );
-			m_mapPWar.emplace(pWar->m_idWar, pWar);
-		}
+	ar >> self.m_id;
+	
+	std::uint32_t nSize; ar >> nSize;
+	for (std::uint32_t i = 0; i < nSize; ++i) {
+		CGuildWar * pWar = new CGuildWar;
+		ar >> *pWar;
+		self.m_mapPWar.emplace(pWar->m_idWar, pWar);
 	}
+
+	return ar;
 }
 
 void CGuildWarMng::Result( CGuildWar* pWar, CGuild* pDecl, CGuild* pAcpt, int nType, int nWptDecl, int nWptAcpt )

@@ -66,7 +66,8 @@ public:
 
 	BOOL	IsEmpty()	{	return m_mapCampus.empty();	}
 	void	Clear();
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CCampusMng & self);
+	friend CAr & operator>>(CAr & ar, CCampusMng & self);
 
 	u_long	AddCampus( CCampus* pCampus );
 	BOOL	RemoveCampus( u_long idCampus );

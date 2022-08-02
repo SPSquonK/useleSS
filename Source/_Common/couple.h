@@ -24,7 +24,8 @@ public:
 	u_long	GetPartner( u_long idPlayer );
 	BOOL	HasPlayer( u_long idPlayer )	{	return m_idFirst == idPlayer || m_idSecond == idPlayer;		}
 	void	OnTimer();
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CCouple & self);
+	friend CAr & operator>>(CAr & ar, CCouple & self);
 	u_long	GetFirst()	{	return m_idFirst;	}
 	u_long	GetSecond()		{	return m_idSecond;	}
 private:
@@ -93,7 +94,8 @@ public:
 	BOOL	Decouple( u_long idPlayer );
 	CCouple*	GetCouple( u_long idPlayer );
 	BOOL	IsCouple( u_long idFirst, u_long idSecond );
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CCoupleMgr & self);
+	friend CAr & operator>>(CAr & ar, CCoupleMgr & self);
 	void	OnTimer();
 private:
 	void	Clear();

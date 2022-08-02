@@ -18,21 +18,12 @@
 
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-#ifdef __VM_0819
-MemPooler<CBuffer2>*	CBuffer2::m_pPool2	= new MemPooler<CBuffer2>( 512, "CBuffer2" );
-MemPooler<CBuffer>*	CBuffer::m_pPool	= new MemPooler<CBuffer>( 512, "CBuffer" );
-#else	// __VM_0819
 MemPooler<CBuffer2>*	CBuffer2::m_pPool2	= new MemPooler<CBuffer2>(512);
 MemPooler<CBuffer>*	CBuffer::m_pPool	= new MemPooler<CBuffer>(512);
-#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
-#ifdef __VM_0819
-CHeapMng*	CBuffer::m_pHeapMng		= new CHeapMng( "CBuffer" );
-#else	// __VM_0819
 CHeapMng*	CBuffer::m_pHeapMng		= new CHeapMng;
-#endif	// __VM_0819
 
 CBuffer::CBuffer( u_long uBufSize )
 {
@@ -59,11 +50,7 @@ CBuffer::~CBuffer()
 #ifdef __SO1014
 		if( m_lpBufStart )
 #endif	// __SO1014
-#ifdef __VM_0819
-			CBuffer::m_pHeapMng->Free( m_lpBufStart, GetSize() );
-#else	// __VM_0819
 			CBuffer::m_pHeapMng->Free( m_lpBufStart );
-#endif	// __VM_0819
 	}
 }
 

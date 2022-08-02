@@ -27,88 +27,82 @@ void CCtrl::Serialize( CAr & ar )	// 33
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-void CItemElem::Serialize( CAr & ar )	// 18
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_dwObjId << m_dwItemId;
-		ar << m_liSerialNumber;
-		ar.WriteString(m_szItemText);
+CAr & operator<<(CAr & ar, const CItemElem & self) {
+	ar << self.m_dwObjId << self.m_dwItemId;
+	ar << self.m_liSerialNumber;
+	ar.WriteString(self.m_szItemText);
 
-		ar << m_nItemNum;
-		ar << m_nRepairNumber << m_nHitPoint;
-		ar << m_nRepair;
-		ar << m_byFlag;
-		ar << m_nAbilityOption;
-		ar << m_idGuild;				// 길드번호도 저장.
-		ar << m_bItemResist;			// 어느 속성 인가?
-		ar << m_nResistAbilityOption ;	// 속성 추가 능력치 가변 옵션
-		ar << m_nResistSMItemId;
-		m_piercing.Serialize( ar );
-		ar << m_bCharged;
-		ar << m_iRandomOptItemId;
-		ar << m_dwKeepTime;
-		if( m_dwKeepTime )
-		{
-			time_t t	= m_dwKeepTime - time_null();
-			ar << t;
-		}
-		if( m_pPet )
-		{
-			ar << (BYTE)0x01;
-			ar << *m_pPet;
-		}
-		else
-		{
-			ar << (BYTE)0x00;
-		}
-		ar << m_bTranformVisPet;
+	ar << self.m_nItemNum;
+	ar << self.m_nRepairNumber << self.m_nHitPoint;
+	ar << self.m_nRepair;
+	ar << self.m_byFlag;
+	ar << self.m_nAbilityOption;
+	ar << self.m_idGuild;				// 길드번호도 저장.
+	ar << self.m_bItemResist;			// 어느 속성 인가?
+	ar << self.m_nResistAbilityOption;	// 속성 추가 능력치 가변 옵션
+	ar << self.m_nResistSMItemId;
+	ar << self.m_piercing;
+	ar << self.m_bCharged;
+	ar << self.m_iRandomOptItemId;
+	ar << self.m_dwKeepTime;
+	if (self.m_dwKeepTime) {
+		time_t t = self.m_dwKeepTime - time_null();
+		ar << t;
 	}
-	else
-	{
-		ar >> m_dwObjId >> m_dwItemId;
-		ar >> m_liSerialNumber;
-		ar.ReadString(m_szItemText, 32);
+	if (self.m_pPet) {
+		ar << (BYTE)0x01;
+		ar << *self.m_pPet;
+	} else {
+		ar << (BYTE)0x00;
+	}
+	ar << self.m_bTranformVisPet;
 
-		ar >> m_nItemNum;
-		ar >> m_nRepairNumber ;
-		ar >> m_nHitPoint;
-		ar >> m_nRepair;
-		ar >> m_byFlag;
-		ar >> m_nAbilityOption;
-		ar >> m_idGuild;		
-		ar >> m_bItemResist;	
-		ar >> m_nResistAbilityOption ;	
-		ar >> m_nResistSMItemId;
-//		memset( &m_piercingInfo, 0, sizeof(m_piercingInfo) );
-		m_piercing.Serialize( ar );
-		ar >> m_bCharged;
-		ar >> m_iRandomOptItemId;
-		ar >> m_dwKeepTime;
+	return ar;
+}
 
-		if( m_dwKeepTime ) 
-		{
-			time_t t;
-			ar >> t;
-		#ifdef __CLIENT
-			m_dwKeepTime	= time_null() + t;
-		#endif	// __CLIENT
-		}
-		SAFE_DELETE( m_pPet );
-		BYTE bPet;
-		ar >> bPet;
-		if( bPet )
-		{
-			m_pPet	= new CPet;
-			ar >> *m_pPet;
-		}
-		ar >> m_bTranformVisPet;
+CAr & operator>>(CAr & ar, CItemElem & self) {
+	ar >> self.m_dwObjId >> self.m_dwItemId;
+	ar >> self.m_liSerialNumber;
+	ar.ReadString(self.m_szItemText, 32);
+
+	ar >> self.m_nItemNum;
+	ar >> self.m_nRepairNumber;
+	ar >> self.m_nHitPoint;
+	ar >> self.m_nRepair;
+	ar >> self.m_byFlag;
+	ar >> self.m_nAbilityOption;
+	ar >> self.m_idGuild;
+	ar >> self.m_bItemResist;
+	ar >> self.m_nResistAbilityOption;
+	ar >> self.m_nResistSMItemId;
+	ar >> self.m_piercing;
+	ar >> self.m_bCharged;
+	ar >> self.m_iRandomOptItemId;
+	ar >> self.m_dwKeepTime;
+
+	if (self.m_dwKeepTime) {
+		time_t t;
+		ar >> t;
+#ifdef __CLIENT
+		self.m_dwKeepTime = time_null() + t;
+#endif	// __CLIENT
+	}
+	SAFE_DELETE(self.m_pPet);
+	BYTE bPet;
+	ar >> bPet;
+	if (bPet) {
+		self.m_pPet = new CPet;
+		ar >> *self.m_pPet;
+	}
+	ar >> self.m_bTranformVisPet;
 
 #ifdef __CLIENT
-		SetTexture();
+	self.SetTexture();
 #endif
-	}
+
+	return ar;
 }
+
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*
@@ -134,14 +128,14 @@ void CItem::Serialize( CAr & ar )	// 45
 	
 	if( ar.IsStoring() )
 	{
+		ar << *m_pItemBase;
 	}
 	else
 	{
 		SAFE_DELETE( m_pItemBase );
 		m_pItemBase	= new CItemElem;
+		ar >> *m_pItemBase;
 	}
-
-	m_pItemBase->Serialize( ar );	// 11
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/

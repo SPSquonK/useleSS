@@ -112,17 +112,15 @@ void CCouple::OnTimer()
 	AddExperience( 1 );		//
 }
 
-void CCouple::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_nExperience << m_idFirst << m_idSecond;
-	}
-	else
-	{
-		ar >> m_nExperience >> m_idFirst >> m_idSecond;
-		GetLevel( TRUE );
-	}
+CAr & operator<<(CAr & ar, const CCouple & self) {
+	ar << self.m_nExperience << self.m_idFirst << self.m_idSecond;
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CCouple & self) {
+	ar >> self.m_nExperience >> self.m_idFirst >> self.m_idSecond;
+	self.GetLevel(TRUE);
+	return ar;
 }
 
 int CCouple::GetLevel( BOOL bCalc )
@@ -186,26 +184,26 @@ void CCoupleMgr::OnTimer()
 		(*i2)->OnTimer();
 }
 
-void CCoupleMgr::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_vCouples.size();
-		for( auto i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
-			(*i)->Serialize( ar );
+CAr & operator<<(CAr & ar, const CCoupleMgr & self) {
+	ar << self.m_vCouples.size();
+	for (const CCouple * pCouple : self.m_vCouples) {
+		ar << *pCouple;
 	}
-	else
-	{
-		Clear();
-		size_t nSize;
-		ar >> nSize;
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			CCouple* pCouple	= new CCouple;
-			pCouple->Serialize( ar );
-			Couple( pCouple );
-		}
-	}	
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CCoupleMgr & self) {
+	self.Clear();
+	size_t nSize;
+	ar >> nSize;
+	for (size_t i = 0; i < nSize; i++) {
+		CCouple * pCouple = new CCouple;
+		ar >> *pCouple;
+		self.Couple(pCouple);
+	}
+
+	return ar;
 }
 
 void CCoupleMgr::Couple( CCouple* pCouple )

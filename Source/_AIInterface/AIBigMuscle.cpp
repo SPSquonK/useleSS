@@ -45,11 +45,7 @@ END_AISTATE_MAP()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CAIBigMuscle>*	CAIBigMuscle::m_pPool		= new MemPooler<CAIBigMuscle>( 4, "CAIBigMuscle" );
-	#else	// __VM_0819
 	MemPooler<CAIBigMuscle>*	CAIBigMuscle::m_pPool		= new MemPooler<CAIBigMuscle>( 4 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 

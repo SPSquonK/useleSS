@@ -325,7 +325,7 @@ void CDPCoreClient::SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pIte
 	if (pUser->GetGuild())
 	{
 		ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
-		pItemElem->Serialize( ar );
+		ar << *pItemElem;
 	}
 	
 	PASS( ar );
@@ -365,19 +365,15 @@ void CDPCoreClient::SendBlock( BYTE nGu, u_long uidPlayerTo, char *szNameTo, u_l
 void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 {
 	CServerDesc desc;
-	desc.Serialize( ar );
+	ar >> desc;
 	ar >> g_PartyMng;
 	g_GuildMng.Serialize( ar, FALSE );
-	g_GuildWarMng.Serialize( ar );
+	ar >> g_GuildWarMng;
 
 #ifdef __ENVIRONMENT_EFFECT
-	
-	CEnvironment::GetInstance()->Serialize( ar );
-
+	ar >> *CEnvironment::GetInstance();
 #else // __ENVIRONMENT_EFFECT
-
 	g_Environment.Serialize( ar );
-
 #endif // __ENVIRONMENT_EFFECT
 
 #ifdef __EVENT0913
@@ -1146,11 +1142,11 @@ void CDPCoreClient::OnQueryTickCount( CAr & ar, DPID, DPID, OBJID )
 
 void CDPCoreClient::OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID )
 {
-	CEnvironment::GetInstance()->Serialize( ar );
+	ar >> *CEnvironment::GetInstance();
 
 	CAr arBlock;
 	arBlock << NULL_ID << SNAPSHOTTYPE_ENVIRONMENT;
-	CEnvironment::GetInstance()->Serialize( arBlock );
+	arBlock << *CEnvironment::GetInstance();
 
 	if( CEnvironment::GetInstance()->GetEnvironmentEffect() == TRUE )
 	{

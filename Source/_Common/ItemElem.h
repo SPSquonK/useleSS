@@ -71,7 +71,8 @@ public:
 	CItemElem();
 	~CItemElem();
 	CItemElem & operator = (CItemElem & ie);
-	void	Serialize(CAr & ar);
+	friend CAr & operator<<(CAr & ar, const CItemElem & item);
+	friend CAr & operator>>(CAr & ar, CItemElem & item);
 
 	void Empty();
 	[[nodiscard]] BOOL IsEmpty() const noexcept { return m_dwItemId ? FALSE : TRUE; }
@@ -104,7 +105,7 @@ public:
 	void	SetPiercingItem(int nth, DWORD dwItem) { m_piercing.SetPiercingItem(nth, dwItem); }
 	DWORD	GetPiercingItem(int nth) const { return m_piercing.GetPiercingItem(nth); }
 	void	CopyPiercing(const CPiercing & piercing) { m_piercing = piercing; }
-	void	SerializePiercing(CAr & ar) { m_piercing.Serialize(ar); }
+	[[nodiscard]] const CPiercing & GetPiercings() const { return m_piercing; }
 	BOOL	IsPiercedItem() { return m_piercing.IsPiercedItem(); }
 
 #ifndef __CORESERVER

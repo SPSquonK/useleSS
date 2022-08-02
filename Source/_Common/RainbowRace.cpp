@@ -52,31 +52,30 @@ void CRainbowRace::DestroyGame()
 #endif // __WORLDSERVER
 }
 
-
-void CRainbowRace::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_wNowGame;
-		ar << m_wGameState;
 #ifdef __WORLDSERVER
-		if( IsFinished() || (CRainbowRaceMng::GetInstance()->GetState() == CRainbowRaceMng::RR_CLOSED) )
-			ar << (DWORD)0;
-		else
-			ar << CRainbowRaceMng::GetInstance()->GetNextTime() - GetTickCount();
-#endif // __WORLDSERVER
-	}
+CAr & operator<<(CAr & ar, const CRainbowRace & self) {
+	ar << self.m_wNowGame;
+	ar << self.m_wGameState;
+	if (self.IsFinished() || (CRainbowRaceMng::GetInstance()->GetState() == CRainbowRaceMng::RR_CLOSED))
+		ar << (DWORD)0;
 	else
-	{
-		ar >> m_wNowGame;
-		ar >> m_wGameState;
-#ifdef __CLIENT
-		ar >> m_dwRemainTime;
-		if( m_dwRemainTime > 0 )
-			m_dwRemainTime += GetTickCount();
-#endif // __CLIENT
-	}
+		ar << CRainbowRaceMng::GetInstance()->GetNextTime() - GetTickCount();
+
+	return ar;
 }
+#endif // __WORLDSERVER
+
+#ifdef __CLIENT
+CAr & operator>>(CAr & ar, CRainbowRace & self) {
+	ar >> self.m_wNowGame;
+	ar >> self.m_wGameState;
+	ar >> self.m_dwRemainTime;
+	if (self.m_dwRemainTime > 0)
+		self.m_dwRemainTime += GetTickCount();
+
+	return ar;
+}
+#endif // __CLIENT
 
 BOOL CRainbowRace::IsCompletedGame( int nGameNum )
 {

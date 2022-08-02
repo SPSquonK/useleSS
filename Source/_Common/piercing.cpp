@@ -8,51 +8,49 @@ void CPiercing::Clear( void )
 	m_vtmPetVis.clear();
 }
 
-void CPiercing::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << GetPiercingSize();
-		for( int i = 0; i < GetPiercingSize(); i++ )
-			ar << GetPiercingItem( i );
-		ar << GetUltimatePiercingSize();
-		for( int i = 0; i < GetUltimatePiercingSize(); i++ )
-			ar << GetUltimatePiercingItem( i );
-		ar << m_vtmPetVis.size();
-		for( int i=0; i<(int)( m_vtmPetVis.size() ); i++ )
-			ar << GetVisKeepTime( i ) - time_null();
-	}
-	else
-	{
-		m_vPiercing.clear();
-		size_t nSize;
-		ar >> nSize;
-		SetPiercingSize( nSize );
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			DWORD dwItem;
-			ar >> dwItem;
-			SetPiercingItem( i, dwItem );
-		}
-		m_vUltimatePiercing.clear();
-		ar >> nSize;
-		SetUltimatePiercingSize( nSize );
-		for( int i = 0; i < nSize; i++ )
-		{
-			DWORD dwItem;
-			ar >> dwItem;
-			SetUltimatePiercingItem( i, dwItem );
-		}
-		ar >> nSize;
-		SetVisKeepTimeSize( nSize );
-		for( int i=0; i<nSize; i++ )
-		{
-			time_t tmTemp;
-			ar >> tmTemp;
-			SetVisKeepTime( i, tmTemp + time_null() );
-		}
-	}
+CAr & operator<<(CAr & ar, const CPiercing & self) {
+	ar << self.GetPiercingSize();
+	for (int i = 0; i < self.GetPiercingSize(); i++)
+		ar << self.GetPiercingItem(i);
+	ar << self.GetUltimatePiercingSize();
+	for (int i = 0; i < self.GetUltimatePiercingSize(); i++)
+		ar << self.GetUltimatePiercingItem(i);
+	ar << self.m_vtmPetVis.size();
+	for (int i = 0; i < (int)(self.m_vtmPetVis.size()); i++)
+		ar << self.GetVisKeepTime(i) - time_null();
+
+	return ar;
 }
+
+CAr & operator>>(CAr & ar, CPiercing & self) {
+	self.m_vPiercing.clear();
+	size_t nSize;
+	ar >> nSize;
+	self.SetPiercingSize(nSize);
+	for (size_t i = 0; i < nSize; i++) {
+		DWORD dwItem;
+		ar >> dwItem;
+		self.SetPiercingItem(i, dwItem);
+	}
+	self.m_vUltimatePiercing.clear();
+	ar >> nSize;
+	self.SetUltimatePiercingSize(nSize);
+	for (int i = 0; i < nSize; i++) {
+		DWORD dwItem;
+		ar >> dwItem;
+		self.SetUltimatePiercingItem(i, dwItem);
+	}
+	ar >> nSize;
+	self.SetVisKeepTimeSize(nSize);
+	for (int i = 0; i < nSize; i++) {
+		time_t tmTemp;
+		ar >> tmTemp;
+		self.SetVisKeepTime(i, tmTemp + time_null());
+	}
+
+	return ar;
+}
+
 
 void CPiercing::SetPiercingSize( int nSize )
 {

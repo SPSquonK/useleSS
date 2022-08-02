@@ -240,11 +240,11 @@ void CMover::Serialize( CAr & ar )
 				ar << m_nDefenseResist;
 				ar << m_nAngelExp;
 				ar << m_nAngelLevel;
-				m_Inventory.Serialize( ar );
+				ar << m_Inventory;
 				for( int k = 0 ; k < 3 ; ++k )
-					m_Bank[k].Serialize( ar );
+					ar << m_Bank[k];
 				ar << GetPetId();	// 소환 중인 펫 인벤토리 위치
-				m_Pocket.Serialize( ar );
+				ar << m_Pocket;
 #ifdef __JEFF_9_20
 				ar << m_dwMute;
 #endif	// __JEFF_9_20
@@ -523,9 +523,9 @@ void CMover::Serialize( CAr & ar )
 				ar >> m_nDefenseResist;
 				ar >> m_nAngelExp;
 				ar >> m_nAngelLevel;
-				m_Inventory.Serialize( ar );
+				ar >> m_Inventory;
 				for( int k = 0 ; k < 3 ; ++k )
-					m_Bank[k].Serialize( ar );
+					ar >> m_Bank[k];
 
 				CItemElem* pItemElem	= m_Inventory.GetEquip( PARTS_RIDE );
 				if( pItemElem )
@@ -541,7 +541,7 @@ void CMover::Serialize( CAr & ar )
 					m_pet.SetName( const_cast<char*>( pPet->GetName() ) );
 	#endif	// __CLIENT
 	#endif	// __PET_1024
-				m_Pocket.Serialize( ar );
+				ar >> m_Pocket;
 
 #ifdef __JEFF_9_20
 				ar >> m_dwMute;

@@ -16,12 +16,13 @@ public:
 
 // Attributes
 	void	SetExpired( BOOL bExpired )	{	m_bExpired	= bExpired;		}
-	BOOL	IsExpired( void )	{	return m_bExpired;	}
+	BOOL	IsExpired( void ) const	{	return m_bExpired;	}
 	void	SetExpirationDate( time_t tExpirationDate )	{	m_tExpirationDate	= tExpirationDate;		}
 	time_t	GetExpirationDate( void )	{	return m_tExpirationDate;	}
 	void	Copy( CPocket & rPocket );
 // Operations
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CPocket & self);
+	friend CAr & operator>>(CAr & ar, CPocket & self);
 
 private:
 	BOOL	m_bExpired;
@@ -66,7 +67,7 @@ public:
 	BOOL	IsAllClean( void );
 	int		GetCount( DWORD dwItemId );
 	
-	BOOL	IsAvailable( int nPocket, BOOL bExpiration = TRUE )
+	BOOL	IsAvailable( int nPocket, BOOL bExpiration = TRUE ) const
 		{	return( m_apPocket[nPocket] && ( !bExpiration || !m_apPocket[nPocket]->IsExpired() ) );		}
 	void	Avail( int nPocket, time_t t = 0 );
 
@@ -75,7 +76,8 @@ public:
 	time_t		GetAvailable( int nPocket );
 
 	void	Copy( CPocketController & rPocketController );
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CPocketController & self);
+	friend CAr & operator>>(CAr & ar, CPocketController & self);
 
 #ifdef __WORLDSERVER
 	void	ProcessExpiring( void );

@@ -44,11 +44,7 @@ END_AISTATE_MAP()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CAIKrrr>*	CAIKrrr::m_pPool		= new MemPooler<CAIKrrr>( 4, "CAIKrrr" );
-	#else	// __VM_0819
 	MemPooler<CAIKrrr>*	CAIKrrr::m_pPool		= new MemPooler<CAIKrrr>( 4 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 

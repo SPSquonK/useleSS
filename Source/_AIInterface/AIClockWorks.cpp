@@ -40,11 +40,7 @@ END_AISTATE_MAP()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CAIClockWorks>*	CAIClockWorks::m_pPool		= new MemPooler<CAIClockWorks>( 4, "CAIClockWorks" );
-	#else	// __VM_0819
 	MemPooler<CAIClockWorks>*	CAIClockWorks::m_pPool		= new MemPooler<CAIClockWorks>( 4 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 

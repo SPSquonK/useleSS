@@ -16,7 +16,9 @@ public:
 	~CRainbowRace();
 	void	DestroyGame();
 
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CRainbowRace & self);
+	friend CAr & operator>>(CAr & ar, CRainbowRace & self);
+
 	BOOL	IsCompletedGame( int nGameNum );	// nGameNum(RMG_...) 게임을 클리어 했는가?
 	BOOL	IsAllCompleted() { return ( m_wGameState == (0x7fff >> (15 - RMG_MAX)) ); } // 모든 미니게임을 클리어 했는가?
 	
@@ -39,7 +41,7 @@ public:
 	void	OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket );
 
 	void	SetFinish()	{ m_bFinished = TRUE; m_wGameState = 0x0000; }		// 완주 설정
-	BOOL	IsFinished() { return m_bFinished; }	// 이미 완주한 놈인가..
+	BOOL	IsFinished() const { return m_bFinished; }	// 이미 완주한 놈인가..
 private:
 	int		GetCompletedGameNum();		// 현재까지 완료한 미니게임 개수
 	void	SetMiniGame( int nGameNum );

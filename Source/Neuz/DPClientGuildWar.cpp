@@ -197,23 +197,21 @@ void CDPClient::OnWar( CAr & ar )
 	if( !pWar )
 	{
 		pWar	= new CGuildWar;
-		pWar->Serialize( ar );
+		ar >> *pWar;
 		g_GuildWarMng.AddWar( pWar );
 	}
 	else
 	{
-		pWar->Serialize( ar );
+		ar >> *pWar;
 	}
 
-	char lpString[128]	= { 0, };
 	CGuild* pDecl	= g_GuildMng.GetGuild( pWar->m_Decl.idGuild );
 	CGuild* pAcpt	= g_GuildMng.GetGuild( pWar->m_Acpt.idGuild );
 	
 	if( pDecl && pAcpt )
 	{
-		sprintf( lpString, prj.GetText( TID_GAME_GUILDWARSTILL ), pDecl->m_szGuild, pAcpt->m_szGuild );
-		g_WndMng.PutString( lpString , NULL, prj.GetTextColor( TID_GAME_GUILDWARSTILL ) );
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDWARDOING ) , NULL, prj.GetTextColor( TID_GAME_GUILDWARDOING ) );
+		g_WndMng.PutString(TID_GAME_GUILDWARSTILL, pDecl->m_szGuild, pAcpt->m_szGuild);
+		g_WndMng.PutString(TID_GAME_GUILDWARDOING);
 
 		CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
 		if( pWndGuild )

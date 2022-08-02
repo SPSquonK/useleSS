@@ -359,7 +359,7 @@ private:
 	void	OnElectionIncVote( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnLEventCreate( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnLordSkillUse( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnTransformItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );		// 알변환 핸들러
+	void	OnTransformItem( CAr & ar, CUser & pUser );		// 알변환 핸들러
 	void	OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );		// 픽업펫 각성 취소
 
 	void	OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );

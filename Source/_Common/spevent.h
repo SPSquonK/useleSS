@@ -71,7 +71,8 @@ public:
 //	op
 	BOOL	IsTimeout( int nHour );		// 드롭 주기 인가?
 	void	Skip( LONG lSkip );		// 드롭 주기에 드롭 무시 회수 설정
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CEventItem & self);
+	friend CAr & operator>>(CAr & ar, CEventItem & self);
 };
 // 코어 서버에는 프로젝트를 로딩하지 않으므로
 // 트랜스 서버에서 객체를 관리한다.
@@ -173,7 +174,8 @@ public:
 
 #endif	// __WORLDSERVER
 	static	CEventGeneric*	GetInstance( void );
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CEventGeneric & self);
+	friend CAr & operator>>(CAr & ar, CEventGeneric & self);
 	DWORD	GetFlag( void )		{	return m_dwFlag;	}
 	BOOL	Run( void );
 	std::list<PEVENT_GENERIC>*	GetEventList( void )	{	return &m_lspEvent;		}

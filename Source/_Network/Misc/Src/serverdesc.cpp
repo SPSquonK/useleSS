@@ -40,39 +40,38 @@ BOOL CServerDesc::IsIntersected(const DWORD dwWorldID) const {
 	return (i != m_lspJurisdiction.end()) ? TRUE : FALSE;
 }
 
-void CServerDesc::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_uKey;
-		ar << (short)m_lspJurisdiction.size();
-		for (const auto & juridiction : m_lspJurisdiction) {
-			ar << juridiction->m_dwWorldID;
-			ar << juridiction->m_rect;
-			ar << juridiction->m_wLeft;
-			ar << juridiction->m_wRight;
-		}
-		ar.WriteString( m_szAddr );
+CAr & operator<<(CAr & ar, const CServerDesc & self) {
+	ar << self.m_uKey;
+	ar << static_cast<std::uint32_t>(self.m_lspJurisdiction.size());
+	for (const auto & juridiction : self.m_lspJurisdiction) {
+		ar << juridiction->m_dwWorldID;
+		ar << juridiction->m_rect;
+		ar << juridiction->m_wLeft;
+		ar << juridiction->m_wRight;
 	}
-	else
-	{
-		u_long uKey;
-		ar >> uKey;
-		SetKey( uKey );
-		short nSize;
-		ar >> nSize;
-		for( int i =0; i < nSize; i++ )
-		{
-			CJurisdiction* pJurisdiction	= new CJurisdiction;
-			ar >> pJurisdiction->m_dwWorldID;
-			ar >> pJurisdiction->m_rect;
-			ar >> pJurisdiction->m_wLeft;
-			ar >> pJurisdiction->m_wRight;
-			m_lspJurisdiction.push_back( pJurisdiction );
-		}
-		ar.ReadString( m_szAddr );
-	}
+	ar.WriteString(self.m_szAddr);
+	return ar;
 }
+
+CAr & operator>>(CAr & ar, CServerDesc & self) {
+	u_long uKey; ar >> uKey;
+	self.SetKey(uKey);
+
+	std::uint32_t nSize;
+	ar >> nSize;
+	for (std::uint32_t i = 0; i < nSize; i++) {
+		CJurisdiction * pJurisdiction = new CJurisdiction;
+		ar >> pJurisdiction->m_dwWorldID;
+		ar >> pJurisdiction->m_rect;
+		ar >> pJurisdiction->m_wLeft;
+		ar >> pJurisdiction->m_wRight;
+		self.m_lspJurisdiction.push_back(pJurisdiction);
+	}
+	ar.ReadString(self.m_szAddr);
+
+	return ar;
+}
+
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 CServerDescArray::CServerDescArray()
 {

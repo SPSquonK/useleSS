@@ -942,9 +942,7 @@ void CDbManager::LogGuildFurniture( CQuery* pQuery, CAr & arRead )
 	GH_Fntr_Info gfi;
 	char chState;
 
-	arRead >> dwGuildId;
-	gfi.Serialize( arRead );
-	arRead >> chState;
+	arRead >> dwGuildId >> gfi >> chState;
 
 	pQuery->Execute( "usp_GuildFurniture_Log @serverindex = '%02d', @m_idGuild = '%06d', @SEQ = %d", 
 		g_appInfo.dwSys, dwGuildId, gfi.nSeqNum);

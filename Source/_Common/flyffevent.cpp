@@ -1,34 +1,29 @@
 #include "stdafx.h"
 #include "flyffevent.h"
 
-CFlyffEvent::CFlyffEvent()
-{
-	memset( (void*)m_aEvent, 0, sizeof(BYTE) * MAX_EVENT );
+CFlyffEvent::CFlyffEvent() {
+	m_aEvent.fill(0);
 }
 
-BOOL CFlyffEvent::SetState( int id, BYTE nState )
-{
-	if( id < 0 || id >= MAX_EVENT )
-		return FALSE;
-	m_aEvent[id]	= nState;
+bool CFlyffEvent::IsOutOfRange(const int id) noexcept {
+	return id < 0 || id >= MAX_EVENT;
+}
+
+BOOL CFlyffEvent::SetState(const int id, const BYTE nState) {
+	if (IsOutOfRange(id)) return FALSE;
+	m_aEvent[id] = nState;
 	return TRUE;
 }
 
-BYTE CFlyffEvent::GetState( int id )
-{
-	if( id < 0 || id >= MAX_EVENT )
-		return (BYTE)0;
+BYTE CFlyffEvent::GetState(const int id) const {
+	if (IsOutOfRange(id)) return static_cast<BYTE>(0);
 	return m_aEvent[id];
 }
 
-void CFlyffEvent::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar.Write( (const void*)m_aEvent, sizeof(BYTE) * MAX_EVENT );
-	}
-	else
-	{
-		ar.Read( (void*)m_aEvent, sizeof(BYTE) * MAX_EVENT );
-	}
+CAr & operator<<(CAr & ar, const CFlyffEvent & self) {
+	return ar << self.m_aEvent;
+}
+
+CAr & operator>>(CAr & ar, CFlyffEvent & self) {
+	return ar >> self.m_aEvent;
 }

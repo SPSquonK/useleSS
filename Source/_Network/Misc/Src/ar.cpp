@@ -7,23 +7,17 @@
 #include "StdAfx.h"
 #include "Ar.h"
 
-#ifdef __VM_0819
-CHeapMng*	CAr::m_pHeapMng		= new CHeapMng( "CAr" );
-#else	// __VM_0819
-CHeapMng*	CAr::m_pHeapMng		= new CHeapMng;
-#endif	// __VM_0819
-
 CAr::CAr( void* lpBuf, u_int nBufSize )
 {
 	if( lpBuf )
 	{
-		m_nMode		= load;
+		m_nMode		= Mode::load;
 		m_lpBufStart	= (LPBYTE)lpBuf;
 		m_nBufSize	= nBufSize;
 	}
 	else
 	{
-		m_nMode		= store;
+		m_nMode		= Mode::store;
 		m_lpBufStart	= m_lpBuf;
 		m_nBufSize	= nGrowSize;
 	}
@@ -35,11 +29,7 @@ CAr::~CAr()
 {
 	if( IsStoring() && ( m_nBufSize > nGrowSize ) )
 	{
-#ifdef __VM_0819
-		CAr::m_pHeapMng->Free( m_lpBufStart, m_nBufSize );
-#else	// __VM_0819
-		CAr::m_pHeapMng->Free( m_lpBufStart );
-#endif	// __VM_0819
+		delete[] m_lpBufStart;
 	}
 }
 
@@ -114,7 +104,7 @@ void CAr::Reserve( u_int nSize )
 	if( nSize <= nGrowSize )
 		return;
 //	LPBYTE lpBuf	= (LPBYTE) heapAlloc( nSize );
-	LPBYTE lpBuf	= (LPBYTE)CAr::m_pHeapMng->Malloc( nSize );
+	BYTE * lpBuf = new BYTE[nSize];
 	m_lpBufStart	= lpBuf;
 
 	ASSERT( m_lpBufStart );
@@ -134,18 +124,14 @@ void CAr::CheckBuf( u_int nSize )
 		
 		if( m_nBufSize > nGrowSize )
 		{
-#ifdef __VM_0819
-			m_lpBufStart	= (LPBYTE)CAr::m_pHeapMng->Realloc( m_lpBufStart, m_nBufSize + nExtension, m_nBufSize );
-#else	// __VM_0819
-			m_lpBufStart	= (LPBYTE)CAr::m_pHeapMng->Realloc( m_lpBufStart, m_nBufSize + nExtension );
-#endif	// __VM_0819
-
-// 			//	BEGINTEST
-// 			Error( "m_nBufSize : %d, Realloc Size : %d", m_nBufSize, m_nBufSize + nExtension );
+			BYTE * old = m_lpBufStart;
+			m_lpBufStart = new BYTE[m_nBufSize + nExtension];
+			std::memcpy(m_lpBufStart, old, m_nBufSize);
+			delete[] old;
 		}
 		else
 		{
-			LPBYTE lpBuf	= (LPBYTE)CAr::m_pHeapMng->Malloc( m_nBufSize + nExtension );
+			LPBYTE lpBuf	= new BYTE[m_nBufSize + nExtension];
 			memcpy( lpBuf, m_lpBufStart, m_nBufSize );
 			m_lpBufStart	= lpBuf;
 		}
@@ -177,18 +163,35 @@ void CAr::ReelIn( u_int uOffset )
 {
 	ASSERT( IsStoring() );
 	ASSERT( m_lpBufStart + uOffset <= m_lpBufCur );
-#if 1
+
 	if( m_nBufSize > nGrowSize )
 	{
-#ifdef __VM_0819
-		CAr::m_pHeapMng->Free( m_lpBufStart, m_nBufSize );
-#else	// __VM_0819
-		CAr::m_pHeapMng->Free( m_lpBufStart );
-#endif	// __VM_0819
+		delete[] m_lpBufStart;
 		m_lpBufStart	= m_lpBuf;
 		m_nBufSize	= nGrowSize;
 		m_lpBufMax	= m_lpBufStart + m_nBufSize;
 	}
-#endif	// 1
+
 	m_lpBufCur	= m_lpBufStart + uOffset;
+}
+
+CAr::GoToOffsetAnswer CAr::GoToOffset(const u_long expectedOffset) {
+	BYTE * target = m_lpBufStart + expectedOffset;
+
+	if (target == m_lpBufCur) {
+		return GoToOffsetAnswer::SamePlace;
+	}
+
+	const GoToOffsetAnswer answer = target > m_lpBufCur ?
+		GoToOffsetAnswer::NotAllConsumed :
+		GoToOffsetAnswer::TooFar;
+
+	m_lpBufCur = target;
+
+	if (target > m_lpBufMax) [[unlikely]] {
+		Error("CAr::GoToOffset - Target is out of bound");
+		m_lpBufCur = m_lpBufMax;
+	}
+
+	return answer;
 }

@@ -99,12 +99,12 @@ struct GUILD_VOTE_SELECT
 };
 
 // 길드 투표 
-class CGuildVote
+class CGuildVote final
 {
 public:
 	CGuildVote();
-	virtual ~CGuildVote();
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildVote & self);
+	friend CAr & operator>>(CAr & ar, CGuildVote & self);
 	bool	IsCompleted() const { return m_bCompleted; }
 	void	SetComplete() { m_bCompleted = true; }
 	void    Init( const VOTE_INSERTED_INFO& info, bool bCompleted, BYTE* cbCounts );
@@ -142,8 +142,9 @@ extern CAr&  operator>>(CAr& ar, CONTRIBUTION_CHANGED_INFO& info);
 //CGuildTable 관련 
 ////////////////////////////////////////////////////////////////////////////////
 
-struct GUILD_TABLE_ENTRY
-{
+struct GUILD_TABLE_ENTRY {
+	static constexpr bool Archivable = true;
+
 	DWORD	dwPxpCount;		// 필요공헌도 
 	DWORD	dwPenya;		// 필요페냐 
 	WORD	nMaxMember;		// 최대인원 
@@ -152,29 +153,28 @@ struct GUILD_TABLE_ENTRY
 class CGuildTable
 {
 public:
-	virtual ~CGuildTable();
-
 	BOOL	Load(LPCTSTR szFileName);
 	DWORD	GetPxpCount(WORD nLevel) const;
 	DWORD	GetPenya(WORD nLevel) const;
 	WORD	GetMaxMemeber(WORD nLevel) const;
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildTable & self);
+	friend CAr & operator>>(CAr & ar, CGuildTable & self);
 	BOOL	ReadBlock( CScript & script );
 	int		GetMaxLevel() const { return m_nCount; } 
 
 	static CGuildTable& GetInstance();
 	
 private:
-	CGuildTable();
+	CGuildTable() = default;
 	GUILD_TABLE_ENTRY	m_table[MAX_GUILD_LEVEL];
-	int					m_nCount;					// m_table에 실제 데이타수 
+	int					m_nCount = 0;					// m_table에 실제 데이타수 
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 //CGuildMember 관련 
 ////////////////////////////////////////////////////////////////////////////////
 
-class CGuildMember
+class CGuildMember final
 {
 public:
 	u_long	m_idPlayer;						// Player ID
@@ -192,9 +192,9 @@ public:
 public:
 //	Constructions
 	CGuildMember();
-	virtual ~CGuildMember();
 //	Operations
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CGuildMember & self);
+	friend CAr & operator>>(CAr & ar, CGuildMember & self);
 
 	CGuildMember &	operator = ( CGuildMember & source );
 	
@@ -450,7 +450,7 @@ public:
 	DWORD			m_Version;
 
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
-	CRIT_SEC		m_Lock;
+	mutable CRIT_SEC		m_Lock;
 #endif
 	CTime			m_UpdateTime;
 
@@ -531,40 +531,7 @@ public:
 		return TRUE;
 	}
 #endif//__DBSERVER
-
-	void Serialize( CAr & ar )
-	{
-#if !defined(__WORLDSERVER) && !defined(__CLIENT)
-		m_Lock.Enter( theLineFile );
-#endif
-
-		if( ar.IsStoring() )
-		{
-			ar << m_Version;
-			ar.Write( m_Total, sizeof(int)*RANK_END );
-			for ( int i=R1; i<RANK_END; i++ )
-			{
-				if ( m_Total[i] )
-				{
-					ar.Write( m_Ranking[i], sizeof(GUILD_RANKING)*m_Total[i] );
-				}
-			}
-		}
-		else
-		{
-			ar >> m_Version;
-			ar.Read( m_Total, sizeof(int)*RANK_END );
-			for ( int i=R1; i<RANK_END; i++ )
-			{
-				if ( m_Total[i] )
-				{
-					ar.Read( m_Ranking[i], sizeof(GUILD_RANKING)*m_Total[i] );
-				}
-			}
-		}
-
-#if !defined(__WORLDSERVER) && !defined(__CLIENT)
-		m_Lock.Leave( theLineFile );
-#endif	// __WORLDSERVER
-	}
+	
+	friend CAr & operator<<(CAr & ar, const CGuildRank & self);
+	friend CAr & operator>>(CAr & ar, CGuildRank & self);
 };

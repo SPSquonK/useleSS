@@ -77,10 +77,6 @@ CGuildVote::CGuildVote()
 	}
 }
 
-CGuildVote::~CGuildVote()
-{
-}
-
 // VOTE_INSERTED_INFO 구조체를 이용해서 초기화하기 
 void CGuildVote::Init( const VOTE_INSERTED_INFO& info, bool bCompleted, BYTE* cbCounts )
 {
@@ -105,35 +101,33 @@ void CGuildVote::Cast( BYTE cbSelect )
 	m_selects[cbSelect].cbCount++;
 }
 
-void CGuildVote::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idVote << (BYTE)m_bCompleted;
-		ar.WriteString( m_szTitle );
-		ar.WriteString( m_szQuestion );
+CAr & operator<<(CAr & ar, const CGuildVote & self) {
+	ar << self.m_idVote << (BYTE)self.m_bCompleted;
+	ar.WriteString(self.m_szTitle);
+	ar.WriteString(self.m_szQuestion);
 
-		for( int i=0; i<4; ++i )
-		{
-			ar.WriteString( m_selects[i].szString );
-			ar << m_selects[i].cbCount;
-		}	
+	for (int i = 0; i < 4; ++i) {
+		ar.WriteString(self.m_selects[i].szString);
+		ar << self.m_selects[i].cbCount;
 	}
-	else
-	{
-		BYTE complete;
-		ar >> m_idVote >> complete;
-		ar.ReadString( m_szTitle, MAX_BYTE_VOTETITLE );
-		ar.ReadString( m_szQuestion, MAX_BYTE_VOTEQUESTION );
 
-		for( int i=0; i<4; ++i )
-		{
-			ar.ReadString( m_selects[i].szString, MAX_BYTE_VOTESELECT );
-			ar >> m_selects[i].cbCount;
-		}	
+	return ar;
+}
 
-		m_bCompleted = (complete == 1);
+CAr & operator>>(CAr & ar, CGuildVote & self) {
+	BYTE complete;
+	ar >> self.m_idVote >> complete;
+	ar.ReadString(self.m_szTitle, MAX_BYTE_VOTETITLE);
+	ar.ReadString(self.m_szQuestion, MAX_BYTE_VOTEQUESTION);
+
+	for (int i = 0; i < 4; ++i) {
+		ar.ReadString(self.m_selects[i].szString, MAX_BYTE_VOTESELECT);
+		ar >> self.m_selects[i].cbCount;
 	}
+
+	self.m_bCompleted = (complete == 1);
+
+	return ar;
 }
 
 //________________________________________________________________________________
@@ -143,38 +137,23 @@ CGuildTable& CGuildTable::GetInstance()
 	return table;
 }
 
-CGuildTable::CGuildTable()
-{
-	m_nCount = 0;
-}
-
-CGuildTable::~CGuildTable()
-{
-}
-
 // ar에 읽기, 쓰기 - database서버에서 core서버에 socket을 통해서 보내기 위해서 
-void CGuildTable::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_nCount;
-		for( int i=0; i<m_nCount; i++ )
-		{
-			ar << m_table[ i ].dwPxpCount;
-			ar << m_table[ i ].dwPenya;
-			ar << m_table[ i ].nMaxMember;
-		}
+CAr & operator<<(CAr & ar, const CGuildTable & self) {
+	ar << self.m_nCount;
+	for (int i = 0; i < self.m_nCount; i++) {
+		ar << self.m_table[i];
 	}
-	else
-	{
-		ar >> m_nCount;
-		for( int i=0; i<m_nCount; i++ )
-		{
-			ar >> m_table[ i ].dwPxpCount;
-			ar >> m_table[ i ].dwPenya;
-			ar >> m_table[ i ].nMaxMember;
-		}
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CGuildTable & self) {
+	ar >> self.m_nCount;
+	for (int i = 0; i < self.m_nCount; i++) {
+		ar >> self.m_table[i];
 	}
+
+	return ar;
 }
 
 // 스크립트 파일에서 읽기 
@@ -223,11 +202,7 @@ WORD CGuildTable::GetMaxMemeber(WORD nLevel) const
 //________________________________________________________________________________
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CGuildMember>*	CGuildMember::sm_pPool	= new MemPooler<CGuildMember>( 512, "CGuildMember" );
-	#else	// __VM_0819
 	MemPooler<CGuildMember>*	CGuildMember::sm_pPool	= new MemPooler<CGuildMember>( 512 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 CGuildMember::CGuildMember()
@@ -245,33 +220,33 @@ CGuildMember::CGuildMember()
 	m_nClass = 0;
 }
 
-CGuildMember::~CGuildMember()
-{
+CAr & operator<<(CAr & ar, const CGuildMember & self) {
+	ar << self.m_idPlayer << self.m_nPay
+		<< self.m_nGiveGold << self.m_dwGivePxpCount
+		<< self.m_nWin << self.m_nLose << self.m_nMemberLv;
+	ar << self.m_idSelectedVote;
+	ar << self.m_nSurrender;
+	ar << self.m_nClass;
+	ar.WriteString(self.m_szAlias);
 
+	return ar;
 }
 
-void CGuildMember::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idPlayer << m_nPay << m_nGiveGold << m_dwGivePxpCount << m_nWin << m_nLose << m_nMemberLv;
-		ar << m_idSelectedVote;
-		ar << m_nSurrender;
-		ar << m_nClass;
-		ar.WriteString( m_szAlias );
-	}
-	else
-	{
-		ar >> m_idPlayer >> m_nPay >> m_nGiveGold >> m_dwGivePxpCount >> m_nWin >> m_nLose >> m_nMemberLv;
-		ar >> m_idSelectedVote;
-		ar >> m_nSurrender;
-		ar >> m_nClass;
-		ar.ReadString( m_szAlias, MAX_GM_ALIAS );
-	}
+CAr & operator>>(CAr & ar, CGuildMember & self) {
+	ar >> self.m_idPlayer >> self.m_nPay
+		>> self.m_nGiveGold >> self.m_dwGivePxpCount
+		>> self.m_nWin >> self.m_nLose >> self.m_nMemberLv;
+	ar >> self.m_idSelectedVote;
+	ar >> self.m_nSurrender;
+	ar >> self.m_nClass;
+	ar.ReadString(self.m_szAlias, MAX_GM_ALIAS);
+
+	return ar;
 }
 
 CGuildMember & CGuildMember::operator = ( CGuildMember & source )
 {
+	// TODO: wtf? This copy constructor is not copying
 //	m_nGiveGold	= source.m_nGiveGold;
 //	m_dwGivePxpCount	= source.m_dwGivePxpCount;
 //	m_dwSex	= source.m_dwSex;
@@ -293,11 +268,7 @@ CGuildMember & CGuildMember::operator = ( CGuildMember & source )
 //________________________________________________________________________________
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CGuild>*	CGuild::sm_pPool		= new MemPooler<CGuild>( 128, "CGuild" );
-	#else	// __VM_0819
 	MemPooler<CGuild>*	CGuild::sm_pPool		= new MemPooler<CGuild>( 128 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
@@ -399,11 +370,11 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			ar << m_idEnemyGuild;
 			ar << (short)GetSize();
 			for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
-				( i->second )->Serialize( ar );
+				ar >> *( i->second );
 
 			ar << (short)m_votes.size();
 			for ( auto it = m_votes.begin(); it!=m_votes.end(); ++it )
-				(*it)->Serialize( ar );
+				ar << **it;
 
 			ar << m_quests.size();
 			for (const std::pair<int, int> & p : m_quests) {
@@ -435,7 +406,7 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			for( i = 0; i < nSize; i++ )
 			{
 				CGuildMember* pMember	= new CGuildMember;
-				pMember->Serialize( ar );
+				ar >> *pMember;
 				m_mapPMember.emplace(pMember->m_idPlayer, pMember);
 			}
 
@@ -443,7 +414,7 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			for( i = 0; i < nSize; i++ )
 			{
 				CGuildVote* pVote = new CGuildVote;
-				pVote->Serialize( ar );
+				ar >> *pVote;
 				m_votes.push_back( pVote );
 			}
 			
@@ -772,7 +743,7 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 			( i->second )->Serialize( ar, bDesc );
 		
 		// 길드랭크 정보 로드
-		CGuildRank::Instance()->Serialize( ar );
+		ar << *CGuildRank::Instance();
 	}
 	else
 	{
@@ -792,7 +763,7 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 		}
 
 		// 길드랭크 정보  쓰기
-		CGuildRank::Instance()->Serialize( ar );
+		ar >> *CGuildRank::Instance();
 	}
 }
 
@@ -958,6 +929,39 @@ CGuildRank* CGuildRank::Instance()
 {
 	static CGuildRank	sGuildRank;
 	return &sGuildRank;
+}
+
+CAr & operator<<(CAr & ar, const CGuildRank & self) {
+#if !defined(__WORLDSERVER) && !defined(__CLIENT)
+	CMclAutoLock lock(self.m_Lock);
+#endif
+
+	ar << self.m_Version;
+	ar.Write(self.m_Total, sizeof(int) * CGuildRank::RANK_END);
+	for (int i = CGuildRank::R1; i < CGuildRank::RANK_END; i++) {
+		if (self.m_Total[i]) {
+			ar.Write(self.m_Ranking[i], sizeof(CGuildRank::GUILD_RANKING) * self.m_Total[i]);
+		}
+	}
+
+	return ar;
+}
+
+
+CAr & operator>>(CAr & ar, CGuildRank & self) {
+#if !defined(__WORLDSERVER) && !defined(__CLIENT)
+	CMclAutoLock lock(self.m_Lock);
+#endif
+
+	ar >> self.m_Version;
+	ar.Read(self.m_Total, sizeof(int) * CGuildRank::RANK_END);
+	for (int i = CGuildRank::R1; i < CGuildRank::RANK_END; i++) {
+		if (self.m_Total[i]) {
+			ar.Read(self.m_Ranking[i], sizeof(CGuildRank::GUILD_RANKING) * self.m_Total[i]);
+		}
+	}
+
+	return ar;
 }
 
 #ifndef __CORESERVER

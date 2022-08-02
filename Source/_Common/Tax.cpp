@@ -383,57 +383,53 @@ void CTax::SetApplyTaxRateNow()		// GM명령으로 세율 변경을 할 경우
 #endif // __DBSERVER
 }
 
-void CTax::Serialize( CAr & ar )	// 세율에 필요한 모든 정보를 전송한다.
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_mapTaxInfo.size();
-		for( auto it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
-		{
-			__TAXINFO* taxInfo = it->second;
-			ar << it->first;
+CAr & operator<<(CAr & ar, const CTax & self) {
+	ar << static_cast<std::uint32_t>(self.m_mapTaxInfo.size());
+	for (const auto & [nCont, taxInfo] : self.m_mapTaxInfo) {
+		ar << nCont;
 
-			ar << taxInfo->dwId;
+		ar << taxInfo->dwId;
 #ifdef __DBSERVER
-			ar << taxInfo->bSetTaxRate;
-			ar << taxInfo->dwNextId;
+		ar << taxInfo->bSetTaxRate;
+		ar << taxInfo->dwNextId;
 #endif // __DBSERVER
-			ar << taxInfo->mapTaxDetail.size();
-			for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
-			{
-				__TAXDETAIL* taxDetail = it2->second;
-				ar << it2->first;
+		
+		ar << static_cast<std::uint32_t>(taxInfo->mapTaxDetail.size());
+		for (const auto & [nTaxKind, taxDetail] : taxInfo->mapTaxDetail) {
+			ar << nTaxKind << taxDetail->nTaxRate;
+		}
+	}
 
-				ar << taxDetail->nTaxRate;
-			}
-		}
-	}
-	else
-	{
-		int nSize, nSize2;
-		BYTE nCont, nTaxKind;
-				
-		ar >> nSize;
-		for( int i=0; i<nSize; i++ )
-		{
-			ar >> nCont;
-			__TAXINFO* taxInfo = GetTaxInfo( nCont );
-			ar >> taxInfo->dwId;
-#ifdef __WORLDSERVER
-			ar >> taxInfo->bSetTaxRate;
-			ar >> taxInfo->dwNextId;
-#endif // __WORLDSERVER
-			ar >> nSize2;
-			for( int j=0; j<nSize2; j++ )
-			{
-				ar >> nTaxKind;
-				__TAXDETAIL* taxDetail = taxInfo->mapTaxDetail.find( nTaxKind )->second;
-			
-				ar >> taxDetail->nTaxRate;
-			}
-		}
-	}
+	return ar;
 }
+
+CAr & operator>>(CAr & ar, CTax & self) {
+	std::uint32_t nSize; ar >> nSize;
+	for( std::uint32_t i=0; i<nSize; i++ )
+	{
+		BYTE nCont;
+		ar >> nCont;
+		__TAXINFO* taxInfo = self.GetTaxInfo( nCont );
+		ar >> taxInfo->dwId;
+#ifdef __WORLDSERVER
+		ar >> taxInfo->bSetTaxRate;
+		ar >> taxInfo->dwNextId;
+#endif // __WORLDSERVER
+
+		std::uint32_t nSize2; ar >> nSize2;
+		for( std::uint32_t j=0; j<nSize2; j++ )
+		{
+			BYTE nTaxKind;
+			ar >> nTaxKind;
+			__TAXDETAIL* taxDetail = taxInfo->mapTaxDetail.find( nTaxKind )->second;
+			
+			ar >> taxDetail->nTaxRate;
+		}
+	}
+
+	return ar;
+}
+
 
 BOOL CTax::AddTax( BYTE nCont, int nTax, BYTE nTaxKind )	// 판매, 구매, 입장료에 대한 세금을 적립한다.
 {

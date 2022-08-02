@@ -36,7 +36,7 @@ public:
 	virtual	~CCoupleHelper();
 	static	CCoupleHelper*	Instance();
 	void	Clear();
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CCoupleHelper & self);
 	BOOL	Initialize();
 	void	Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwCompletionKey );
 	void	OnTimer();

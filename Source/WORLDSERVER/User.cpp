@@ -47,17 +47,9 @@
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 #ifdef __INTERNALSERVER
-	#ifdef __VM_0819
-	CUserPool*	CUser::m_pPool	= new CUserPool( 5, "CUser" );
-	#else	// __VM_0819
 	CUserPool*	CUser::m_pPool	= new CUserPool( 5 );
-	#endif	// __VM_0819
 #else	// __INTERNALSERVER
-	#ifdef __VM_0819
-	CUserPool*	CUser::m_pPool	= new CUserPool( 512, "CUser" );
-	#else	// __VM_0819
 	CUserPool*	CUser::m_pPool	= new CUserPool( 512 );
-	#endif	// __VM_0819
 #endif	// __INTERNALSERVER
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
@@ -611,7 +603,7 @@ void CUser::AddCreateItem(CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE 
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_CREATEITEM;
 	m_Snapshot.ar << (BYTE)0;
-	pItemBase->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pItemBase;
 	m_Snapshot.ar << nCount;
 	m_Snapshot.ar.Write( (void*)pnId, sizeof(BYTE) * nCount );
 	m_Snapshot.ar.Write( (void*)pnNum, sizeof(short) * nCount );
@@ -685,7 +677,7 @@ void CUser::AddTradePut_Them(OBJID trader, BYTE i, CItemElem * item, short nItem
 	m_Snapshot.ar << trader;
 	m_Snapshot.ar << SNAPSHOTTYPE_TRADEPUT;
 	m_Snapshot.ar << i << nItemNum;
-	item->Serialize(m_Snapshot.ar);
+	m_Snapshot.ar << *item;
 }
 
 void CUser::AddTradePut_Me(BYTE i, BYTE nItemType, BYTE nId, short nItemNum) {
@@ -756,7 +748,7 @@ void CUser::AddOpenShopWnd( CMover* pVendor )
 	m_Snapshot.ar << pVendor->GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_OPENSHOPWND;
 	for( i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-		pVendor->m_ShopInventory[i]->Serialize( m_Snapshot.ar );
+		m_Snapshot.ar << *pVendor->m_ShopInventory[i];
 }
 
 void CUser::AddUnregisterPVendorItem( BYTE iIndex )
@@ -805,7 +797,7 @@ void CUser::AddPVendorItem( CUser* pUser, BOOL bState )
 			continue;
 
 		m_Snapshot.ar << (BYTE)i;
-		pItemElem->Serialize( m_Snapshot.ar );
+		m_Snapshot.ar << *pItemElem;
 		m_Snapshot.ar << pItemElem->GetExtra();
 		m_Snapshot.ar << pItemElem->m_nCost;
 		nVendorItem++;
@@ -823,7 +815,7 @@ void CUser::AddPutItemGuildBank( CItemElem* pItemElem )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_PUTITEMGUILDBANK;
 	m_Snapshot.ar << (BYTE)1; // 아이템을 받는 헤더
-	pItemElem->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pItemElem;
 }
 
 void CUser::AddGetItemGuildBank( CItemElem* pItemElem )
@@ -833,7 +825,7 @@ void CUser::AddGetItemGuildBank( CItemElem* pItemElem )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_GETITEMGUILDBANK;
 	m_Snapshot.ar << (BYTE)1; // 아이템을 보내는 헤더
-	pItemElem->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pItemElem;
 }
 
 void CUser::AddGetGoldGuildBank( DWORD p_Gold, BYTE p_Mode, u_long playerID, BYTE cbCloak )
@@ -856,7 +848,7 @@ void CUser::AddPutItemBank( BYTE nSlot, CItemElem* pItemElem )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_PUTITEMBANK;
 	m_Snapshot.ar << nSlot;
-	pItemElem->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pItemElem;
 }
 
 void CUser::AddGetItemBank( CItemElem* pItemElem )
@@ -865,7 +857,7 @@ void CUser::AddGetItemBank( CItemElem* pItemElem )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_GETITEMBANK;
-	pItemElem->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pItemElem;
 }
 
 void CUser::AddPutGoldBank( BYTE nSlot, DWORD dwGold, DWORD dwGoldBank )
@@ -934,7 +926,7 @@ void CUser::AddGuildBankWindow( int nMode )
 		m_Snapshot.ar << nMode;
 		
 		m_Snapshot.ar << pGuild->m_nGoldGuild;
-		pGuild->m_GuildBank.Serialize(m_Snapshot.ar);
+		m_Snapshot.ar << pGuild->m_GuildBank;
 	}
 }
 
@@ -1276,7 +1268,7 @@ void CUser::AddEnvironment( void )
 
 #ifdef __ENVIRONMENT_EFFECT
 
-	CEnvironment::GetInstance()->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *CEnvironment::GetInstance();
 	
 	if( CEnvironment::GetInstance()->GetEnvironmentEffect() == TRUE )
 	{
@@ -1557,8 +1549,7 @@ void CUser::AddMyGuildWar( void )
 	m_Snapshot.ar << NULL_ID;
 	m_Snapshot.ar << SNAPSHOTTYPE_WAR;
 	m_Snapshot.ar << pWar->m_idWar;
-	pWar->Serialize( m_Snapshot.ar );
-	
+	m_Snapshot.ar << *pWar;
 }
 
 void CUser::AddContribution( CONTRIBUTION_CHANGED_INFO& info )
@@ -1657,7 +1648,7 @@ void CUser::SendGuildRank()
 	m_Snapshot.cb++;
 	m_Snapshot.ar << NULL_ID;
 	m_Snapshot.ar << SNAPSHOTTYPE_REQUEST_GUILDRANK;
-	CGuildRank::Instance()->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *CGuildRank::Instance();
 	
 }
 
@@ -1762,15 +1753,8 @@ void CUser::AddCommercialElem( DWORD dwItemId, int nResistSMItemId )
 	
 }
 
-void CUser::AddFlyffEvent( void )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_FLYFF_EVENT;
-	g_eLocal.Serialize( m_Snapshot.ar );
-	
+void CUser::AddFlyffEvent() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_FLYFF_EVENT, CFlyffEvent>(g_eLocal);
 }
 
 void CUser::AddEventLuaDesc( int nState, std::string strDesc )
@@ -2217,13 +2201,12 @@ void CUser::AddQueryEquip( CUser* pUser )
 	
 	for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
 	{
-		CItemElem* pItemElem	= pUser->GetEquipItem( i );
+		const CItemElem* pItemElem	= pUser->GetEquipItem( i );
 		if( pItemElem )
 		{
 			m_Snapshot.ar << i;
 			m_Snapshot.ar << pItemElem->GetRandomOptItemId();
-//			m_Snapshot.ar.Write( &pItemElem->m_piercingInfo, sizeof(PIERCINGINFO) );
-			pItemElem->SerializePiercing( m_Snapshot.ar );
+			m_Snapshot.ar << pItemElem->GetPiercings();
 			m_Snapshot.ar << pItemElem->m_bItemResist;
 			m_Snapshot.ar << pItemElem->m_nResistAbilityOption;
 			cbEquip++;
@@ -2950,7 +2933,7 @@ void	CUser::AddPocketAddItem( int nPocket, CItemElem* pItem )
 	m_Snapshot.ar << NULL_ID;
 	m_Snapshot.ar << SNAPSHOTTYPE_POCKET_ADD_ITEM;
 	m_Snapshot.ar << nPocket;
-	pItem->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pItem;
 }
 
 void	CUser::AddPocketRemoveItem( int nPocket, int nItem, short nNum )
@@ -3066,7 +3049,7 @@ void CUser::AddCouple()
 		m_Snapshot.cb++;
 		m_Snapshot.ar << GetId();
 		m_Snapshot.ar << SNAPSHOTTYPE_COUPLE;
-		pCouple->Serialize( m_Snapshot.ar );
+		m_Snapshot.ar << *pCouple;
 	}
 }
 
@@ -3840,7 +3823,7 @@ void CUserMng::AddVendor( CMover* pVendor )
 	ar << GETID( pVendor ) << SNAPSHOTTYPE_VENDOR;
 
 	for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
-		pVendor->m_ShopInventory[i]->Serialize( ar );
+		ar << *pVendor->m_ShopInventory[i];
 
 	GETBLOCK( ar, lpBuf, nBufSize );
 
@@ -4558,7 +4541,7 @@ void CUserMng::AddGetItemElem( CUser* pUser, CItemElem* pItemElem )
 
 	ar << GETID( pUser ) << SNAPSHOTTYPE_GETITEMGUILDBANK;
 	ar << (BYTE)3;
-	pItemElem->Serialize( ar );
+	ar << *pItemElem;
 	GETBLOCK( ar, lpBuf, nBufSize );
 
 	FOR_VISIBILITYRANGE( pUser )
@@ -4573,7 +4556,7 @@ void CUserMng::AddPutItemElem( CUser* pUser, CItemElem* pItemElem )
 	
 	ar << GETID( pUser ) << SNAPSHOTTYPE_PUTITEMGUILDBANK;
 	ar << (BYTE)3;
-	pItemElem->Serialize( ar );
+	ar << *pItemElem;
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
 	FOR_VISIBILITYRANGE( pUser )
@@ -4588,7 +4571,7 @@ void CUserMng::AddPutItemElem( u_long uidGuild, CItemElem* pItemElem )
 	
 	ar << NULL_ID << SNAPSHOTTYPE_PUTITEMGUILDBANK;
 	ar << (BYTE)3;
-	pItemElem->Serialize( ar );
+	ar << *pItemElem;
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
 	for(auto it = m_users.begin(); it != m_users.end(); ++it )
@@ -7313,7 +7296,7 @@ void CUser::AddTaxInfo( void )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_TAX_ALLINFO;
-	CTax::GetInstance()->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *CTax::GetInstance();
 }
 
 void CUser::AddTaxSetTaxRateOpenWnd( BYTE nCont )
@@ -7364,7 +7347,7 @@ void CUser::AddRainbowRaceState( CRainbowRace* pRainbowRace )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_RAINBOWRACE_NOWSTATE;
-	pRainbowRace->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pRainbowRace;
 }
 
 void CUser::AddMiniGameState( __MINIGAME_PACKET MiniGamePacket )
@@ -7391,26 +7374,19 @@ void CUser::AddHousingAllInfo( CHousing* pHousing )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_HOUSING_ALLINFO;
-	pHousing->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pHousing;
 }
 
-void CUser::AddHousingSetFurnitureList( HOUSINGINFO& housingInfo, BOOL bAdd )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_HOUSING_FURNITURELIST;
-	housingInfo.Serialize( m_Snapshot.ar );
-	m_Snapshot.ar << bAdd;
+void CUser::AddHousingSetFurnitureList(HOUSINGINFO & housingInfo, BOOL bAdd) {
+	SendSnapshotThisId<SNAPSHOTTYPE_HOUSING_FURNITURELIST, HOUSINGINFO, BOOL>(housingInfo, bAdd);
 }
 
-void CUser::AddHousingSetupFurniture( HOUSINGINFO* pHousingInfo )
-{
-	if( IsDelete() )	return;
+void CUser::AddHousingSetupFurniture(HOUSINGINFO * pHousingInfo) {
+	if (IsDelete())	return;
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_HOUSING_SETUPFURNITURE;
-	pHousingInfo->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pHousingInfo;
 }
 
 void CUser::AddHousingPaperingInfo( DWORD dwItemId, BOOL bSetup )
@@ -7518,13 +7494,8 @@ CUser::DoUseSystemAnswer CUser::DoUseItemPetNaming() {
 }
 #endif	// __PET_1024
 
-void CUser::AddPCBangInfo( CPCBangInfo* pPI )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PCBANG_INFO;
-	pPI->Serialize( m_Snapshot.ar );
+void CUser::AddPCBangInfo(CPCBangInfo * pPI) {
+	SendSnapshotThisId<SNAPSHOTTYPE_PCBANG_INFO, CPCBangInfo>(*pPI);
 }
 
 #ifdef __VTN_TIMELIMIT
@@ -7642,7 +7613,7 @@ void CUser::AddGuildHousePakcet( int nPacketType, GH_Fntr_Info & gfi, int nIndex
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_GUILDHOUSE_PACKET;
 	m_Snapshot.ar << nPacketType << nIndex;
-	gfi.Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << gfi;
 }
 
 void CUser::AddGuildHouseAllInfo( CGuildHouseBase* pGuildHouse )
@@ -7656,7 +7627,7 @@ void CUser::AddGuildHouseAllInfo( CGuildHouseBase* pGuildHouse )
 	if( pGuildHouse )
 	{
 		m_Snapshot.ar << TRUE;
-		pGuildHouse->SerializeAllInfo( m_Snapshot.ar );
+		m_Snapshot.ar << *pGuildHouse;
 	}
 	else
 		m_Snapshot.ar << FALSE;

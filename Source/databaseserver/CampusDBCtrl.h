@@ -71,7 +71,8 @@ public:
 	BOOL PostRequest( int nQuery, BYTE* lpBuf = NULL, int nBufSize = 0, DWORD dwCompletionKey = 0 )
 	{ return m_CampusDBCtrl.PostRequest( nQuery, lpBuf, nBufSize, dwCompletionKey );	}
 
-	void	Serialize( CAr & ar )	{ m_pCampusMng.Serialize( ar );	} // only operator<< is used
+	friend CAr & operator<<(CAr & ar, const CCampusHelper & self) { return ar << self.m_pCampusMng; }
+
 	void RemovePlayerFromCampus(u_long playerId);
 
 private:

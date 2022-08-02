@@ -47,7 +47,8 @@ public:
 //	Constructions
 	CEnvironment();
 	~CEnvironment();
-	void Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CEnvironment & self);
+	friend CAr & operator>>(CAr & ar, CEnvironment & self);
 
 #ifdef __CORESERVER
 public:

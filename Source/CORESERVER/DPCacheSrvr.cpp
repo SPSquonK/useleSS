@@ -96,20 +96,10 @@ void CDPCacheSrvr::SendProcServerList( DPID dpid )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_PROCSERVER_LIST, DPID_UNKNOWN );
 
-#ifdef __STL_0402
-	ar << (short)g_dpCoreSrvr.m_apServer.size();
-	for( CServerDescArray::iterator i = g_dpCoreSrvr.m_apServer.begin(); i != g_dpCoreSrvr.m_apServer.end(); ++i )
-		i->second->Serialize( ar );
-#else	// __STL_0402
-	ar << (short)g_dpCoreSrvr.m_apServer.GetCount();
-	CMyBucket<CServerDesc*>* pBucket;
-	pBucket		= g_dpCoreSrvr.m_apServer.GetFirstActive();
-	while( pBucket )
-	{
-		pBucket->m_value->Serialize( ar );
-		pBucket		= pBucket->pNext;
+	ar << static_cast<std::uint32_t>(g_dpCoreSrvr.m_apServer.size());
+	for (const CServerDesc * serverDesc : g_dpCoreSrvr.m_apServer | std::views::values) {
+		ar << *serverDesc;
 	}
-#endif	// __STL_0402
 
 	SEND( ar, this, dpid );
 }
@@ -2406,9 +2396,7 @@ void CDPCacheSrvr::OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long u
 void CDPCacheSrvr::SendUpdateGuildRank()
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_UPDATE_GUILD_RANKING, DPID_ALLPLAYERS );
-
-	CGuildRank::Instance()->Serialize( ar );
-
+	ar << *CGuildRank::Instance();
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 

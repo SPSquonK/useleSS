@@ -2052,20 +2052,19 @@ void CDPDatabaseClient::OnGuildBank( CAr & ar, DPID, DPID )
 		if( pGuild )
 		{
 			pGuild->m_nGoldGuild = nGoldGuild;
-			pGuild->m_GuildBank.Serialize( ar );
+			ar >> pGuild->m_GuildBank;
 		}
 		else
 		{
 			// 임시로 템프변수 만들어서 받기 banktmp
 			CGuild tempGuild;
-			tempGuild.m_GuildBank.Serialize( ar );
+			ar >> tempGuild.m_GuildBank;
 		}
 	}
 }
 
-void CDPDatabaseClient::OnUpdateGuildRankingFinish( CAr & ar, DPID, DPID )
-{
-	CGuildRank::Instance()->Serialize( ar );
+void CDPDatabaseClient::OnUpdateGuildRankingFinish(CAr & ar, DPID, DPID) {
+	ar >> *CGuildRank::Instance();
 }
 
 
@@ -2276,7 +2275,7 @@ void CDPDatabaseClient::SendQueryPostMail( u_long idReceiver, u_long idSender, C
 	if( FALSE == itemElem.IsEmpty() )
 	{
 		ar << (BYTE)1;
-		itemElem.Serialize( ar );
+		ar << itemElem;
 	}
 	else
 	{
@@ -2607,7 +2606,7 @@ void CDPDatabaseClient::SendQueryRemoveGuildBankTbl( int nNo, DWORD dwRemoved )
 void CDPDatabaseClient::OnEventGeneric( CAr & ar, DPID, DPID )
 {
 	DWORD dwFlag;
-	CEventGeneric::GetInstance()->Serialize( ar );
+	ar >> *CEventGeneric::GetInstance();
 	ar >> dwFlag;
 	std::list<PEVENT_GENERIC>* pList	= CEventGeneric::GetInstance()->GetEventList();
 	for( auto i = pList->begin(); i != pList->end(); ++i )
@@ -3284,7 +3283,7 @@ void CDPDatabaseClient::SendApplyTaxRateNow()
 
 void CDPDatabaseClient::OnTaxInfo( CAr & ar, DPID, DPID )
 {
-	CTax::GetInstance()->Serialize( ar );
+	ar >> *CTax::GetInstance();
 	
 	BOOL bConnect, bToAllClient;
 	ar >> bConnect;
@@ -3468,35 +3467,22 @@ void CDPDatabaseClient::OnHousingLoadInfo( CAr & ar, DPID, DPID )
 
 	if( pHousing )
 	{
-		pHousing->Serialize( ar );
-		CUser* pUser = static_cast<CUser*>( prj.GetUserByID( dwPlayerId ) );
+		ar >> *pHousing;
+		CUser * pUser = prj.GetUserByID(dwPlayerId);
 		if( IsValidObj( pUser ) )
 			pUser->AddHousingAllInfo( pHousing );
 		pHousing->AddAllFurnitureControl();
 	}
 }
 
-void CDPDatabaseClient::OnHousingSetFunitureList( CAr & ar, DPID, DPID )
-{
-	DWORD dwPlayerId;
-	HOUSINGINFO housingInfo;
-	BOOL bAdd;
-
-	ar >> dwPlayerId;
-	housingInfo.Serialize( ar );
-	ar >> bAdd;
-
-	CHousingMng::GetInstance()->SetFurnitureList( dwPlayerId, housingInfo, bAdd );
+void CDPDatabaseClient::OnHousingSetFunitureList(CAr & ar, DPID, DPID) {
+	auto [dwPlayerId, housingInfo, bAdd] = ar.Extract<DWORD, HOUSINGINFO, BOOL>();
+	CHousingMng::GetInstance()->SetFurnitureList(dwPlayerId, housingInfo, bAdd);
 }
 
-void CDPDatabaseClient::OnHousingSetupFuniture( CAr & ar, DPID, DPID )
-{
-	DWORD dwPlayerId;
-	HOUSINGINFO housingInfo;
-	ar >> dwPlayerId;
-	housingInfo.Serialize( ar );
-
-	CHousingMng::GetInstance()->SetupFurniture( dwPlayerId, housingInfo );
+void CDPDatabaseClient::OnHousingSetupFuniture(CAr & ar, DPID, DPID) {
+	const auto [dwPlayerId, housingInfo] = ar.Extract<DWORD, HOUSINGINFO>();
+	CHousingMng::GetInstance()->SetupFurniture(dwPlayerId, housingInfo);
 }
 
 void CDPDatabaseClient::OnHousingSetVisitAllow( CAr & ar, DPID, DPID )
@@ -3574,9 +3560,8 @@ void CDPDatabaseClient::OnDecoupleResult( CAr & ar, DPID, DPID )
 	CCoupleHelper::Instance()->OnDecoupleResult( ar );
 }
 
-void CDPDatabaseClient::OnCouple( CAr & ar, DPID, DPID )
-{
-	CCoupleHelper::Instance()->Serialize( ar );
+void CDPDatabaseClient::OnCouple(CAr & ar, DPID, DPID) {
+	ar >> *CCoupleHelper::Instance();
 }
 
 void CDPDatabaseClient::SendQueryAddCoupleExperience( u_long idPlayer, int nExperience )
@@ -3676,7 +3661,7 @@ void CDPDatabaseClient::OnQuizEventOpen( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::OnQuizList( CAr & ar, DPID, DPID )
 {
 	CQuiz::QUIZLIST QL;
-	QL.Serialize( ar );
+	ar >> QL;
 	CQuiz::GetInstance()->MakeQuizList( QL );
 	ar >> CQuiz::GetInstance()->m_nQuizSize;
 }
@@ -3745,7 +3730,7 @@ void CDPDatabaseClient::SendErrorLogToDB( CUser* pUser, char chType, LPCTSTR szE
 
 void CDPDatabaseClient::OnLoadGuildHouse( CAr & ar, DPID, DPID )
 {
-	GuildHouseMng->Serialize( ar );
+	ar >> *GuildHouseMng;
 }
 void CDPDatabaseClient::OnBuyGuildHouse( CAr & ar, DPID, DPID )
 {
@@ -3764,7 +3749,7 @@ void CDPDatabaseClient::OnGuildHousePacket( CAr & ar, DPID, DPID )
 	
 	ar >> bResult >> dwGuildId;
 	ar >> nPacketType >> nIndex;
-	gfi.Serialize( ar );
+	ar >> gfi;
 	
 	CGuildHouseBase* pGuildHouse = GuildHouseMng->GetGuildHouse( dwGuildId );
 	if( pGuildHouse )
@@ -3785,9 +3770,7 @@ void CDPDatabaseClient::OnGuildHousePacket( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::SendLogGuildFurniture( DWORD dwGuildId, GH_Fntr_Info & gfi, char chState )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_GUILDFURNITURE_LOG, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwGuildId;
-	gfi.Serialize( ar );
-	ar << chState;
+	ar << dwGuildId << gfi << chState;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -3828,9 +3811,8 @@ void CDPDatabaseClient::OnGuildHouseExpired( CAr & ar, DPID, DPID )
 }
 #endif // __GUILD_HOUSE_MIDDLE
 
-void CDPDatabaseClient::OnAllCampus( CAr & ar, DPID, DPID )
-{
-	CCampusHelper::GetInstance()->Serialize( ar );
+void CDPDatabaseClient::OnAllCampus(CAr & ar, DPID, DPID) {
+	ar >> *CCampusHelper::GetInstance();
 }
 
 void CDPDatabaseClient::OnAddCampusMember( CAr & ar, DPID, DPID )

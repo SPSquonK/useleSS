@@ -30,11 +30,7 @@ END_AISTATE_MAP()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	#ifdef __VM_0819
-	MemPooler<CAIPet>*	CAIPet::m_pPool		= new MemPooler<CAIPet>( 128, "CAIPet" );
-	#else	// __VM_0819
 	MemPooler<CAIPet>*	CAIPet::m_pPool		= new MemPooler<CAIPet>( 128 );
-	#endif	// __VM_0819
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 

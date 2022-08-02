@@ -83,17 +83,9 @@ extern	BOOL CanAdd( DWORD dwGold, int nPlus );
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
 #ifdef __WORLDSERVER
-	#ifdef __VM_0819
-	CMoverPool*	CMover::m_pPool	= new CMoverPool( 1024, "CMover" );
-	#else	// __VM_0819
 	CMoverPool*	CMover::m_pPool	= new CMoverPool( 1024 );
-	#endif	// __VM_0819
 #else	// __WORLDSERVER
-	#ifdef __VM_0819
-	CMoverPool*	CMover::m_pPool	= new CMoverPool( 128, "CMover" );
-	#else	// __VM_0819
 	CMoverPool*	CMover::m_pPool	= new CMoverPool( 128 );
-	#endif	// __VM_0819
 #endif	// __WORLDSERVER
 #endif	// __MEM_TRACE
 #endif	// __VM_0820

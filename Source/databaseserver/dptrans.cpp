@@ -374,7 +374,7 @@ void CDPTrans::SendHdr( DWORD dwHdr, DPID dpid )
 void CDPTrans::SendUpdateGuildRankFinish()
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_UPDATE_GUILD_RANKING_END, DPID_UNKNOWN, DPID_UNKNOWN );
-	CGuildRank::Instance()->Serialize( ar );
+	ar << *CGuildRank::Instance();
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
@@ -1313,7 +1313,7 @@ void CDPTrans::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID, DPID, LPBYTE lpB
 void CDPTrans::SendEventGeneric( DPID dpid )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_EVENT_GENERIC, DPID_UNKNOWN, DPID_UNKNOWN );
-	CEventGeneric::GetInstance()->Serialize( ar );
+	ar << *CEventGeneric::GetInstance();
 	ar << CEventGeneric::GetInstance()->GetFlag();
 	SEND( ar, this, dpid );
 }
@@ -1704,7 +1704,7 @@ void CDPTrans::SendLEventTick( ILordEvent* pEvent )
 void CDPTrans::SendTaxInfo( DPID dpId, BOOL bConnect, BOOL bToAllClient )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_TAX_ALLINFO, DPID_UNKNOWN, DPID_UNKNOWN );
-	CTax::GetInstance()->Serialize( ar );
+	ar << *CTax::GetInstance();
 	ar << bConnect;
 	if( bConnect )
 	{
@@ -1816,8 +1816,7 @@ void CDPTrans::SendHousingLoadInfo( DWORD dwPlayerId, CHousing* pHousing, DPID d
 {
 	ASSERT( pHousing );
 	BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_LOADINFO, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	pHousing->Serialize( ar );
+	ar << dwPlayerId << *pHousing;
 	SEND( ar, this, dpId );
 }
 
@@ -1825,7 +1824,7 @@ void CDPTrans::SendHousingFurnitureList( DWORD dwPlayerId, HOUSINGINFO& housingI
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_FURNITURELIST, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << dwPlayerId;
-	housingInfo.Serialize( ar );
+	ar << housingInfo;
 	ar << bAdd;
 	SEND( ar, this, dpId );
 }
@@ -1833,8 +1832,7 @@ void CDPTrans::SendHousingFurnitureList( DWORD dwPlayerId, HOUSINGINFO& housingI
 void CDPTrans::SendHousingSetupFurniture( DWORD dwPlayerId, HOUSINGINFO housingInfo, DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_SETUPFURNITURE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	housingInfo.Serialize( ar );
+	ar << dwPlayerId << housingInfo;
 	SEND( ar, this, dpId );
 }
 
@@ -1916,7 +1914,7 @@ void CDPTrans::SendAddCoupleExperience( u_long idPlayer, int nExperience )
 void CDPTrans::SendCouple( CCoupleMgr* pMgr, DPID dpid )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_ALL_COUPLES, DPID_UNKNOWN, DPID_UNKNOWN );
-	CCoupleHelper::Instance()->Serialize( ar );
+	ar << *CCoupleHelper::Instance();
 	SEND( ar, this, dpid );
 }
 
@@ -2034,8 +2032,7 @@ void CDPTrans::SendQuizEventOpen( DPID dpId )
 void CDPTrans::SendQuizList( DPID dpId, CQuiz::QUIZLIST & QL, int nSize )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_LOADQUIZ, DPID_UNKNOWN, DPID_UNKNOWN );
-	QL.Serialize( ar );
-	ar << nSize;
+	ar << QL << nSize;
 	SEND( ar, this, dpId );
 }
 
@@ -2116,7 +2113,7 @@ void CDPTrans::OnUpdateCampusPoint( CAr & ar, DPID dpid, DPID dpidCache, DPID dp
 void CDPTrans::SendAllCampus( DPID dpId )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_ALL, DPID_UNKNOWN, DPID_UNKNOWN );
-	CCampusHelper::GetInstance()->Serialize( ar );
+	ar << *CCampusHelper::GetInstance();
 	SEND( ar, this, dpId );
 }
 

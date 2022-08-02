@@ -3247,7 +3247,7 @@ void CDPSrvr::UpdateGuildBank(CGuild* p_GuildBank, int p_Mode, BYTE cbUpdate, u_
 	{
 		ar << p_GuildBank->m_idGuild;
 		ar << p_GuildBank->m_nGoldGuild;
-		p_GuildBank->m_GuildBank.Serialize(ar);
+		ar << p_GuildBank->m_GuildBank;
 		ar << cbUpdate;	// 멤버의 공헌페냐를 업뎃해야하는가? 
 		ar << idPlayer;
 		ar << p_Mode;
@@ -9833,19 +9833,15 @@ BOOL CDPSrvr::DoUseItemTarget_ItemLevelDown( CUser* pUser, CItemElem* pMaterial,
 	return FALSE;
 }
 
-void CDPSrvr::OnTransformItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
+void CDPSrvr::OnTransformItem( CAr & ar, CUser & pUser )
 {	// 알변환
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	CTransformStuff stuff;
-	stuff.Serialize( ar );	// 재료를 수신
+	ar >> stuff; // 재료를 수신
 
 	// 변환 번호로부터 변환 함수를 결정한다.
 	ITransformer* pTransformer	= ITransformer::Transformer( stuff.GetTransform() );
 	if (!pTransformer) return;
-	pTransformer->Transform( pUser, stuff );	// 변환
+	pTransformer->Transform( &pUser, stuff );	// 변환
 }
 
 void CDPSrvr::OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
@@ -9984,7 +9980,7 @@ void CDPSrvr::OnHousingSetupFurniture( CAr & ar, DPID dpidCache, DPID dpidUser, 
 		return;
 
 	HOUSINGINFO housingInfo;
-	housingInfo.Serialize( ar );
+	ar >> housingInfo;
 
 	// 플레이어가 방에 있어야 하고 자신의 레이어에 들어가 있는 경우만 가능...
 	CHousingMng::GetInstance()->ReqSetupFurniture( pUser, housingInfo );
@@ -10171,8 +10167,7 @@ void CDPSrvr::OnGuildHousePacket( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	int nPacketType, nIndex;
 	GH_Fntr_Info gfi;
 
-	ar >> nPacketType >> nIndex;
-	gfi.Serialize( ar );
+	ar >> nPacketType >> nIndex >> gfi;
 
 	if( nPacketType == GUILDHOUSE_PCKTTYPE_LISTUP )
 		return;

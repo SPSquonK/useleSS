@@ -24,7 +24,8 @@ public:
 	float	GetExpFactor()				{ return m_fExpFactor; }
 	float	GetPieceItemDropFactor()	{ return m_fPieceItemDropFactor; }
 	DWORD	GetUnitTime()				{ return (g_tmCurrent - m_dwConnectTime)/MIN(60); }
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CPCBangInfo & self);
+	friend CAr & operator>>(CAr & ar, CPCBangInfo & self);
 #ifdef __CLIENT
 	CPCBangInfo();
 	~CPCBangInfo();

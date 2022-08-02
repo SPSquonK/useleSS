@@ -88,8 +88,8 @@ void CDPCoreSrvr::OnAddConnection( DPID dpid )
 	BEFORESEND( ar, PACKETTYPE_GLOBAL_DATA );
 	g_DbManager.OpenGuild();
 	g_GuildMng.Serialize( ar, FALSE );
-	CGuildTable::GetInstance().Serialize( ar );
-	g_GuildWarMng.Serialize( ar );
+	ar << CGuildTable::GetInstance();
+	ar << g_GuildWarMng;
 	ar.Write( (const void*)prj.m_aExpParty, sizeof(prj.m_aExpParty) );
 
 #if defined(__INTERNALSERVER )

@@ -1,6 +1,8 @@
 #ifndef __FLYFFEVENT_H__
 #define	__FLYFFEVENT_H__
 
+#include <array>
+
 #define	MAX_EVENT	1024
 
 enum
@@ -43,17 +45,21 @@ enum
 class CFlyffEvent
 {
 private:
-	BYTE	m_aEvent[MAX_EVENT];
+	std::array<BYTE, MAX_EVENT> m_aEvent;
+
 public:
 //	Constructions
 	CFlyffEvent();
-	~CFlyffEvent()	{}
 //	Operations
 	BOOL	SetState( int id, BYTE nState );
-	BYTE	GetState( int id );
+	[[nodiscard]] BYTE	GetState( int id ) const;
 	BOOL	ClearEvent( int id )	{	return SetState( id, 0 );	}
 
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CFlyffEvent & self);
+	friend CAr & operator>>(CAr & ar, CFlyffEvent & self);
+	
+private:
+	static bool IsOutOfRange(int id) noexcept;
 };
 
 #endif	// __FLYFFEVENT_H__
