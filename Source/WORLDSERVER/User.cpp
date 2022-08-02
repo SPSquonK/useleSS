@@ -1753,15 +1753,8 @@ void CUser::AddCommercialElem( DWORD dwItemId, int nResistSMItemId )
 	
 }
 
-void CUser::AddFlyffEvent( void )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_FLYFF_EVENT;
-	g_eLocal.Serialize( m_Snapshot.ar );
-	
+void CUser::AddFlyffEvent() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_FLYFF_EVENT, CFlyffEvent>(g_eLocal);
 }
 
 void CUser::AddEventLuaDesc( int nState, std::string strDesc )

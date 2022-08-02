@@ -198,15 +198,15 @@ public:
 
 	/* Adds a new snapshot centered on this user */
 	template<WORD snapshotID, typename... Ts>
-	void SendSnapshotThisId(Ts ... ts);
+	void SendSnapshotThisId(const Ts & ... ts);
 
 	/* Adds a new snapshot centered on no target */
 	template<WORD snapshotID, typename... Ts>
-	void SendSnapshotNoTarget(Ts ... ts);
+	void SendSnapshotNoTarget(const Ts & ... ts);
 
 	/* Adds a snapshot centered on another object */
 	template<WORD snapshotID, typename... Ts>
-	void SendSnapshotWithTarget(DWORD targetId, Ts ... ts);
+	void SendSnapshotWithTarget(DWORD targetId, const Ts & ... ts);
 #pragma endregion
 
 	// Functions that should be in CMover but that are only called for players in Worldserver
@@ -916,7 +916,7 @@ extern CUserMng g_UserMng;
 #pragma region SqKsEmission
 
 template<WORD SnapshotId, typename... Ts>
-void CUser::SendSnapshotThisId(Ts ... ts) {
+void CUser::SendSnapshotThisId(const Ts & ... ts) {
 	if (IsDelete())	return;
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
@@ -925,7 +925,7 @@ void CUser::SendSnapshotThisId(Ts ... ts) {
 }
 
 template<WORD SnapshotId, typename... Ts>
-void CUser::SendSnapshotNoTarget(Ts ... ts) {
+void CUser::SendSnapshotNoTarget(const Ts & ... ts) {
 	if (IsDelete())	return;
 	m_Snapshot.cb++;
 	m_Snapshot.ar << static_cast<DWORD>(NULL_ID);
@@ -934,7 +934,7 @@ void CUser::SendSnapshotNoTarget(Ts ... ts) {
 }
 
 template<WORD SnapshotId, typename... Ts>
-void CUser::SendSnapshotWithTarget(DWORD targetId, Ts ... ts) {
+void CUser::SendSnapshotWithTarget(DWORD targetId, const Ts & ... ts) {
 	if (IsDelete())	return;
 	m_Snapshot.cb++;
 	m_Snapshot.ar << targetId;

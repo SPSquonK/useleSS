@@ -5322,7 +5322,7 @@ void CDPClient::OnPartyMapInfo( CAr & ar )
 
 void CDPClient::OnFlyffEvent( CAr & ar )
 {
-	g_eLocal.Serialize( ar );
+	ar >> g_eLocal;
 
 	for( int i = 0; i < MAX_EVENT; i++ )
 	{
