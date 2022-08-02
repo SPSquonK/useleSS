@@ -12078,7 +12078,7 @@ void CDPClient::OnPVendorItemNum( OBJID objid, CAr & ar )
 
 void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 {
-	std::array<CItemElem *, MAX_VENDITEM> apItemVd = { nullptr };
+	std::array<sqktd::maybe_owned_ptr<CItemElem>, MAX_VENDITEM> apItemVd = { nullptr };
 
 	BYTE nVendorItem, iIndex;
 	int nExtra;
@@ -12103,7 +12103,7 @@ void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 	if( IsValidObj( pPVendor ) && pPVendor->IsPlayer() )
 	{
 		CMover::GetActiveMover()->m_vtInfo.SetOther( pPVendor );
-		pPVendor->m_vtInfo.VendorCopyItems( apItemVd );
+		pPVendor->m_vtInfo.VendorCopyItems(std::move(apItemVd));
 
 		CWndVendor* pWndVendor	= (CWndVendor*)g_WndMng.CreateApplet( APP_VENDOR_REVISION );
 		if( pWndVendor )
@@ -12118,11 +12118,6 @@ void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 
 			pWndVendor->SetVendor( pPVendor );
 		}			
-	}
-	else
-	{
-		for( int i = 0; i < MAX_VENDITEM; i++ )
-			SAFE_DELETE( apItemVd[i] );
 	}
 }
 

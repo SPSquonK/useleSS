@@ -324,10 +324,8 @@ public:
 	[[nodiscard]] BOOL VendorIsVendor() const noexcept;
 	[[nodiscard]] BOOL IsTrading(const CItemElem * pItemElem) const noexcept;
 
-	void VendorCopyItems(const std::array<CItemElem *, MAX_VENDITEM> & values) {
-		for (size_t i = 0; i != MAX_VENDITEM; ++i) {
-			m_items_VT[i] = values[i];
-		}
+	void VendorCopyItems(std::array<sqktd::maybe_owned_ptr<CItemElem>, MAX_VENDITEM> values) {
+		m_items_VT = std::move(values);
 	}
 
 	[[nodiscard]] bool IsInSomeKindOfTrade() const noexcept {
