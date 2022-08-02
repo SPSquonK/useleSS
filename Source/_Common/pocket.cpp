@@ -300,34 +300,30 @@ void	CPocketController::Copy( CPocketController & rPocketController )
 	}
 }
 
-void	CPocketController::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		for( int i = 0; i < MAX_POCKET; i++ )
-		{
-			if( IsAvailable( i, FALSE ) )
-			{
-				ar << (BYTE)1;
-				ar << *m_apPocket[i];
-			}
-			else
-				ar << (BYTE)0;
-		}
+CAr & operator<<(CAr & ar, const CPocketController & self) {
+	for (int i = 0; i < MAX_POCKET; i++) {
+		if (self.IsAvailable(i, FALSE)) {
+			ar << (BYTE)1;
+			ar << *self.m_apPocket[i];
+		} else
+			ar << (BYTE)0;
 	}
-	else
-	{
-		Clear();
-		for( int i = 0; i < MAX_POCKET; i++ )
-		{
-			BYTE bExists;
-			ar >> bExists;
-			if( !bExists )
-				continue;
-			Avail( i );
-			ar >> *m_apPocket[i];
-		}
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CPocketController & self) {
+	self.Clear();
+	for (int i = 0; i < MAX_POCKET; i++) {
+		BYTE bExists;
+		ar >> bExists;
+		if (!bExists)
+			continue;
+		self.Avail(i);
+		ar >> *self.m_apPocket[i];
 	}
+
+	return ar;
 }
 
 CPocket*	CPocketController::GetPocket( int nPocket )
