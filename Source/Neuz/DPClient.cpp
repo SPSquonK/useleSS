@@ -16392,7 +16392,7 @@ void CDPClient::OnAddCoupleExperience( CAr & ar )
 
 void CDPClient::OnPCBangInfo( CAr & ar )
 {
-	CPCBangInfo::GetInstance()->Serialize( ar );
+	ar >> *CPCBangInfo::GetInstance();
 }
 #ifdef __VTN_TIMELIMIT
 void CDPClient::OnAccountPlayTime( CAr & ar )

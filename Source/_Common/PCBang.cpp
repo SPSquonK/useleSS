@@ -47,17 +47,15 @@ void CPCBangInfo::UpdateInfo()
 }
 #endif // __WORLDSERVER
 
-void CPCBangInfo::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_dwPCBangClass << g_tmCurrent - m_dwConnectTime << m_fExpFactor << m_fPieceItemDropFactor;
-	}
-	else
-	{
-		ar >> m_dwPCBangClass >> m_dwConnectTime >> m_fExpFactor >> m_fPieceItemDropFactor;
-		m_dwConnectTime = g_tmCurrent - m_dwConnectTime;
-	}
+CAr & operator<<(CAr & ar, const CPCBangInfo & self) {
+	ar << self.m_dwPCBangClass << g_tmCurrent - self.m_dwConnectTime << self.m_fExpFactor << self.m_fPieceItemDropFactor;
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CPCBangInfo & self) {
+	ar >> self.m_dwPCBangClass >> self.m_dwConnectTime >> self.m_fExpFactor >> self.m_fPieceItemDropFactor;
+	self.m_dwConnectTime = g_tmCurrent - self.m_dwConnectTime;
+	return ar;
 }
 
 #ifdef __CLIENT

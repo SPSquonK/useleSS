@@ -7494,13 +7494,8 @@ CUser::DoUseSystemAnswer CUser::DoUseItemPetNaming() {
 }
 #endif	// __PET_1024
 
-void CUser::AddPCBangInfo( CPCBangInfo* pPI )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PCBANG_INFO;
-	pPI->Serialize( m_Snapshot.ar );
+void CUser::AddPCBangInfo(CPCBangInfo * pPI) {
+	SendSnapshotThisId<SNAPSHOTTYPE_PCBANG_INFO, CPCBangInfo>(*pPI);
 }
 
 #ifdef __VTN_TIMELIMIT
