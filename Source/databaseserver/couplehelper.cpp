@@ -139,10 +139,10 @@ void CCoupleHelper::Clear()
 	SAFE_DELETE( m_pMgr );
 }
 
-void CCoupleHelper::Serialize( CAr & ar )
-{
-	ASSERT( m_pMgr );
-	m_pMgr->Serialize( ar );
+CAr & operator<<(CAr & ar, const CCoupleHelper & self) {
+	ASSERT( self.m_pMgr );
+	ar << *self.m_pMgr;
+	return ar;
 }
 
 BOOL CCoupleHelper::Initialize()

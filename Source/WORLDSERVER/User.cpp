@@ -3056,7 +3056,7 @@ void CUser::AddCouple()
 		m_Snapshot.cb++;
 		m_Snapshot.ar << GetId();
 		m_Snapshot.ar << SNAPSHOTTYPE_COUPLE;
-		pCouple->Serialize( m_Snapshot.ar );
+		m_Snapshot.ar << *pCouple;
 	}
 }
 

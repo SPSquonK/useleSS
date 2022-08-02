@@ -37,7 +37,7 @@ void CCoupleHelper::OnCouple( CAr & ar )
 	election::OutputDebugString( "C: CCoupleHelper.OnCouple" );
 	SAFE_DELETE( m_pCouple );
 	m_pCouple	= new CCouple;
-	m_pCouple->Serialize( ar );
+	ar >> *m_pCouple;
 }
 
 void CCoupleHelper::OnProposeResult( CAr & ar )

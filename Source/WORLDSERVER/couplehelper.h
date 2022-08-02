@@ -24,7 +24,7 @@ public:
 	void	OnCoupleResult( CAr & ar );
 	void	OnDecouple( CUser* pUser );
 	void	OnDecoupleResult( CAr & ar );
-	void	Serialize( CAr & ar )	{	ASSERT( m_pMgr );	m_pMgr->Serialize( ar );	}
+	friend CAr & operator>>(CAr & ar, CCoupleHelper & self) { ASSERT(self.m_pMgr);	ar >> *self.m_pMgr;	return ar; }
 	CCouple* GetCouple( u_long idPlayer )	{	ASSERT( m_pMgr );	return m_pMgr->GetCouple( idPlayer );	}
 	void	OnAddCoupleExperience( CAr & ar );
 	void	OnUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData );

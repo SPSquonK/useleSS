@@ -3560,9 +3560,8 @@ void CDPDatabaseClient::OnDecoupleResult( CAr & ar, DPID, DPID )
 	CCoupleHelper::Instance()->OnDecoupleResult( ar );
 }
 
-void CDPDatabaseClient::OnCouple( CAr & ar, DPID, DPID )
-{
-	CCoupleHelper::Instance()->Serialize( ar );
+void CDPDatabaseClient::OnCouple(CAr & ar, DPID, DPID) {
+	ar >> *CCoupleHelper::Instance();
 }
 
 void CDPDatabaseClient::SendQueryAddCoupleExperience( u_long idPlayer, int nExperience )

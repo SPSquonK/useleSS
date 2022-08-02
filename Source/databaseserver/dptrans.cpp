@@ -1914,7 +1914,7 @@ void CDPTrans::SendAddCoupleExperience( u_long idPlayer, int nExperience )
 void CDPTrans::SendCouple( CCoupleMgr* pMgr, DPID dpid )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_ALL_COUPLES, DPID_UNKNOWN, DPID_UNKNOWN );
-	CCoupleHelper::Instance()->Serialize( ar );
+	ar << *CCoupleHelper::Instance();
 	SEND( ar, this, dpid );
 }
 
