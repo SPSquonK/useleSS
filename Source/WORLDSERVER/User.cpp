@@ -7347,7 +7347,7 @@ void CUser::AddRainbowRaceState( CRainbowRace* pRainbowRace )
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_RAINBOWRACE_NOWSTATE;
-	pRainbowRace->Serialize( m_Snapshot.ar );
+	m_Snapshot.ar << *pRainbowRace;
 }
 
 void CUser::AddMiniGameState( __MINIGAME_PACKET MiniGamePacket )

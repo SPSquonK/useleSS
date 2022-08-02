@@ -15817,9 +15817,8 @@ void CDPClient::OnRainbowRaceApplicationOpenWnd( CAr & ar )
 	}
 }
 
-void CDPClient::OnRainbowRaceNowState( CAr & ar )
-{
-	CRainbowRace::GetInstance()->Serialize( ar );
+void CDPClient::OnRainbowRaceNowState(CAr & ar) {
+	ar >> *CRainbowRace::GetInstance();
 }
 
 void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
