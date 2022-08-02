@@ -345,12 +345,11 @@ void CDPCoreSrvr::OnTag( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
 
-void CDPCoreSrvr::SendTagResult( u_long idFrom, BYTE cbResult )
-{
-	BEFORESEND( ar, PACKETTYPE_INSERTTAG_RESULT );
+void CDPCoreSrvr::SendTagResult(u_long idFrom, bool cbResult) {
+	BEFORESEND(ar, PACKETTYPE_INSERTTAG_RESULT);
 	ar << idFrom;
 	ar << cbResult;
-	SEND( ar, this, DPID_ALLPLAYERS );
+	SEND(ar, this, DPID_ALLPLAYERS);
 }
 
 void CDPCoreSrvr::SendDelPlayer( u_long idPlayer, u_long idGuild )

@@ -24,14 +24,11 @@ CPlayer::CPlayer( u_long idPlayer, const CHAR* pszPlayer, const CHAR* pszAccount
 	m_tGuildMember = CTime::GetCurrentTime();
 }
 
-TAG_RESULT CPlayer::IsTagSendable( u_long idTo )
-{
-	Friend* pFriend		= m_RTMessenger.GetFriend( idTo );
-	if( !pFriend )
-		return TAG_NOTFRIEND;
-	if( pFriend->bBlock )
-		return TAG_BLOCKED;
-	return TAG_OK;
+TAG_RESULT CPlayer::IsTagSendable(u_long idTo) const {
+	const Friend * pFriend = m_RTMessenger.GetFriend(idTo);
+	if (!pFriend) return TAG_RESULT::NOTFRIEND;
+	if (pFriend->bBlock) return TAG_RESULT::BLOCKED;
+	return TAG_RESULT::OK;
 }
 
 

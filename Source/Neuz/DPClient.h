@@ -148,7 +148,7 @@ public:
 	void	SendTradePull( int i );
 	void	SendTradeOk( void );//	{	SendHdr( PACKETTYPE_TRADEOK );	}
 	void	SendTradeCancel( int nMode = 0 );
-	void	SendMessageNote( u_long uidTo, LPSTR strMessage );
+	void	SendMessageNote( u_long uidTo, LPCTSTR strMessage );
 	void	SendTradePutGold( DWORD dwGold );
 //raiders.2006.11.28
 //	void	SendTradeClearGold( void );//	{	SendHdr( PACKETTYPE_TRADECLEARGOLD );	}

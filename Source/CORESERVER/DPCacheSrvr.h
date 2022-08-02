@@ -63,7 +63,7 @@ public:
 	void	SendAddFriend( u_long uLeader, u_long uMember, LONG nLeaderJob, BYTE nLeaderSex, char * szLeaderName, CPlayer* pMember );
 	void	SendAddFriendNotFound( char * szMemberName, CPlayer* pLeader );
 	void	SendBlock( BYTE nGu, char *szName, CPlayer* pTo );
-	void	SendTagResult( CPlayer* pPlayer, BYTE cbResult );
+	void	SendTagResult(CPlayer * pPlayer, bool cbResult);
 	void	SendGameRate( FLOAT fRate, BYTE nFlag );
 
 	void	SendSetPlayerName( u_long idPlayer, const char* lpszPlayer );

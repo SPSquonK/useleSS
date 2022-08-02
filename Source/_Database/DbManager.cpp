@@ -3256,28 +3256,21 @@ int CDbManager::SelectTag( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus,
 
 void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 {
-	u_long idFrom;
-	u_long idTo;
-	char szString[256];
-	arRead >> idFrom >> idTo;
-	arRead.ReadString( szString, 256 );
+	auto [idFrom, idTo, szString] = arRead.Extract<u_long, u_long, char[256]>();
 
 	TRACE( "CDbManager::InsertTag %d %d %s\n", idFrom, idTo, szString );
 	//TAG_STR 'A1','000001','01','000002','안녕하세요?'
 	
 	char szQuery[QUERY_SIZE]	= { 0,};
-	sprintf( szQuery,
-		"{call TAG_STR('A1', '%07d', '%02d', '%07d', ?)}", idTo, g_appInfo.dwSys, idFrom);
+	sprintf(szQuery, "{call TAG_STR('A1', '%07d', '%02d', '%07d', ?)}", idTo, g_appInfo.dwSys, idFrom);
 
 	SQLINTEGER cbLen = SQL_NTS;
-	if( qry->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 256, 0, szString, 0, &cbLen ) == FALSE )
-	{
+	if (qry->BindParameter(1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 256, 0, szString, 0, &cbLen) == FALSE) {
 		return;
 	}
 
-	if( FALSE == qry->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
+	if (FALSE == qry->Exec(szQuery)) {
+		WriteLog("%s, %d\t%s", __FILE__, __LINE__, szQuery);
 		TRACE("CDbManager::InsertTag -> qry->Exec %s\n", szQuery);
 		return;
 	}
@@ -3286,9 +3279,9 @@ void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 	{
 		int nError = qry->GetInt( "fError" );
 		if (nError == 1)	
-			g_dpCoreSrvr.SendTagResult(idFrom, 0);	// 쪽지가 20개를 초과했어요
+			g_dpCoreSrvr.SendTagResult(idFrom, false);	// 쪽지가 20개를 초과했어요
 		else
-			g_dpCoreSrvr.SendTagResult(idFrom, 1);	// 성공 
+			g_dpCoreSrvr.SendTagResult(idFrom, true);	// 성공 
 	}
 }
 

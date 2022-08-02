@@ -26,7 +26,7 @@ public:
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid );
 
 	void	SendPartyName( DPID dpid );
-	void	SendTagResult( u_long idFrom, BYTE cbResult );
+	void	SendTagResult( u_long idFrom, bool cbResult );
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
 	void	SendAddVoteResult( VOTE_INSERTED_INFO & info );

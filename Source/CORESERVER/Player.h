@@ -7,12 +7,7 @@
 #include "CMclCritSec.h"
 #include "rtmessenger.h"
 
-enum TAG_RESULT 
-{
-	TAG_NOTFRIEND, 
-	TAG_BLOCKED, 
-	TAG_OK
-};
+enum class TAG_RESULT { NOTFRIEND, BLOCKED, OK };
 
 class CPlayer final {
 public:
@@ -38,7 +33,7 @@ public:
 
 	void		Lock()		{ m_AccessLock.Enter();	}
 	void		Unlock()	{ m_AccessLock.Leave();	}
-	TAG_RESULT	IsTagSendable( u_long idTo );
+	[[nodiscard]] TAG_RESULT IsTagSendable(u_long idTo) const;
 
 public:
 #ifndef __VM_0820

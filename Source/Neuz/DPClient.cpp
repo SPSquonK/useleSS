@@ -7162,19 +7162,13 @@ void CDPClient::OnBlock(CAr & ar) {
 	}
 }
 
-void CDPClient::OnTagResult( CAr & ar )
-{
-	BYTE cbResult;
-	ar >> cbResult;
+void CDPClient::OnTagResult(CAr & ar) {
+	bool cbResult; ar >> cbResult;
 	// 결과: 0 - 실패(20개 초과의 경우), 1 - 성공 
-	if( cbResult == 0 )
-	{
-		g_WndMng.PutString( prj.GetText( TID_GAME_MESSFULLNOTE ), NULL, prj.GetTextColor( TID_GAME_MESSFULLNOTE ) );	
-	}
-	else
-	if( cbResult == 1 )
-	{
-		g_WndMng.PutString( prj.GetText( TID_GAME_MESSSENTNOET ), NULL, prj.GetTextColor( TID_GAME_MESSSENTNOET ) );	
+	if (!cbResult) {
+		g_WndMng.PutString(TID_GAME_MESSFULLNOTE);
+	} else if (cbResult) {
+		g_WndMng.PutString(TID_GAME_MESSSENTNOET);
 	}
 }
 
@@ -8147,12 +8141,11 @@ void CDPClient::SendTradeCancel( int nMode )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendMessageNote( u_long uidTo, LPSTR strMessage )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SENDTAG, DPID_UNKNOWN );
+void CDPClient::SendMessageNote(u_long uidTo, LPCTSTR strMessage) {
+	BEFORESENDSOLE(ar, PACKETTYPE_SENDTAG, DPID_UNKNOWN);
 	ar << uidTo;
-	ar.WriteString( strMessage );
-	SEND( ar, this, DPID_SERVERPLAYER );
+	ar.WriteString(strMessage);
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
 void CDPClient::SendPartySkillUse( int nSkill )

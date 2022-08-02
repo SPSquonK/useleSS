@@ -30,6 +30,7 @@ public:
 	void SetFriend(u_long idFriend, const Friend & pFriend = Friend());
 	void RemoveFriend(u_long idFriend) { erase(idFriend); }
 	Friend*	GetFriend( u_long idFriend );
+	const Friend * GetFriend(u_long idFriend) const;
 
 	void SetBlock(u_long idFriend, bool bBlock);
 	[[nodiscard]] bool IsBlock(u_long idFriend) const;

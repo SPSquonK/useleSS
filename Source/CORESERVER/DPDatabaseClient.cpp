@@ -263,21 +263,14 @@ void CDPDatabaseClient::SendTag( u_long idFrom, u_long idTo, LPCTSTR lpszString 
 }
 
 
-void CDPDatabaseClient::OnInsertTagResult( CAr & ar )
-{
-	u_long idFrom;
-	BYTE cbResult;
+void CDPDatabaseClient::OnInsertTagResult(CAr & ar) {
+	const auto [idFrom, cbResult] = ar.Extract<u_long, bool>();
 
-	ar >> idFrom;
-	ar >> cbResult;
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
+	CPlayer * pFrom = g_PlayerMng.GetPlayer(idFrom);
+	if (!pFrom) return;
 
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CPlayer* pFrom	= g_PlayerMng.GetPlayer( idFrom );
-
-	if( pFrom == NULL)
-		return;
-
-	g_DPCacheSrvr.SendTagResult( pFrom, cbResult);
+	g_DPCacheSrvr.SendTagResult(pFrom, cbResult);
 }
 
 

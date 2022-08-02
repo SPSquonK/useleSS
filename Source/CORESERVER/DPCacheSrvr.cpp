@@ -497,50 +497,41 @@ void CDPCacheSrvr::SendDefinedText( int dwText, DPID dpidCache, DPID dpidUser, L
 
 void CDPCacheSrvr::OnSendTag( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long idTo;
-	char szString[256];
-
-	ar >> idTo;						// 쪽지를 받을 캐릭터 
-	ar.ReadString( szString, 256 );		// 쪽지내용 
-	szString[255] = '\0';
+	const auto [idTo, szString] = ar.Extract<u_long, TCHAR[256]>();
 
 	TRACE( "CDPCacheSrvr::OnSendTag - %d %s\n", idTo, szString );
 	
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 
 	CPlayer* pFrom	=  g_PlayerMng.GetPlayerBySerial( dpidUser );
-	if( pFrom == NULL)
-		return;		// 보내는자 없으면 무시
+	if (!pFrom) return; // 보내는자 없으면 무시
 
 	pFrom->Lock();
 
 	TAG_RESULT result = pFrom->IsTagSendable( idTo );  // db에 쪽지를 넣는다.
-	switch( result )
-	{
-	case TAG_BLOCKED:
-		SendTagResult( pFrom, 0 );		// 상대방이 blocked시킨 상태이면 full(0의 의미)되어서 보내지 못했다고 알려준다.
-		break;
+	switch (result) {
+		case TAG_RESULT::BLOCKED:
+			SendTagResult(pFrom, false);		// 상대방이 blocked시킨 상태이면 full(0의 의미)되어서 보내지 못했다고 알려준다.
+			break;
 
-	case TAG_OK:
-		if( g_PlayerMng.GetPlayer( idTo ) )
-		{
-			pFrom->Unlock();
-			return;					// 받는자 online이면 무시 
-		}
+		case TAG_RESULT::OK:
+			if (g_PlayerMng.GetPlayer(idTo)) {
+				pFrom->Unlock();
+				return;					// 받는자 online이면 무시 
+			}
 
-		g_dpDatabaseClient.SendTag( pFrom->uKey, idTo, szString );
-		break;
+			g_dpDatabaseClient.SendTag(pFrom->uKey, idTo, szString);
+			break;
 	}
 
 	pFrom->Unlock();
 }
 
 // cbResult -  결과: 0 - 실패(20개 초과의 경우), 1 - 성공 
-void CDPCacheSrvr::SendTagResult( CPlayer* pPlayer, BYTE cbResult )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_INSERTTAG_RESULT, pPlayer->dpidUser );
-	ar << cbResult;		
-	SEND( ar, this, pPlayer->dpidCache );
+void CDPCacheSrvr::SendTagResult(CPlayer * pPlayer, bool cbResult) {
+	BEFORESENDSOLE(ar, PACKETTYPE_INSERTTAG_RESULT, pPlayer->dpidUser);
+	ar << cbResult;
+	SEND(ar, this, pPlayer->dpidCache);
 }
 
 void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )

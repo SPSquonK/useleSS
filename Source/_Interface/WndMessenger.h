@@ -57,24 +57,17 @@ public:
 class CWndMessage : public CWndNeuz 
 { 
 public: 
-	CWndMessage(); 
-	~CWndMessage(); 
-	
+
 	CString m_strPlayer;
 	
 	void InitSize( void );
 	void AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage );
-	void OnInputString();
 
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndMessageNote : public CWndNeuz 
@@ -86,33 +79,15 @@ public:
 	CWndText* m_pWndText;
 	CWndEdit* m_pEdit;
 public: 
-	CWndMessageNote(); 
-	~CWndMessageNote(); 
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndMessengerNote : public CWndNeuz 
-{ 
-public: 
-	CWndMessengerNote(); 
-	~CWndMessengerNote(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+class CWndMessengerNote : public CWndNeuz {
+public:
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	virtual	void OnInitialUpdate();
+};
 
 #endif

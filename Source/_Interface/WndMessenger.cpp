@@ -500,65 +500,30 @@ void CWndInstantMsg::AddPostMessage( LPCTSTR lpszSendName )
 }
 //////////////////////////////////////////////////////////
 
-CWndMessage::CWndMessage() 
-{ 
-} 
-CWndMessage::~CWndMessage() 
-{ 
-} 
-void CWndMessage::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndMessage::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
+void CWndMessage::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
-	CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT );
-	pWndEdit->AddWndStyle( EBS_AUTOVSCROLL );
+	CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT);
+	pWndEdit->AddWndStyle(EBS_AUTOVSCROLL);
 	pWndEdit->SetNativeMode();
-
 	pWndEdit->SetFocus();
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
-} 
-void CWndMessage::InitSize( void )
-{
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+}
+
+void CWndMessage::InitSize(void) {
 	MoveParentCenter();
 }
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessage::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_MESSAGE, pWndParent, WBS_THICKFRAME, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndMessage::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndMessage::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndMessage::SetWndRect( CRect rectWnd, BOOL bOnSize )
-{
-	AdjustMinRect( &rectWnd, 16 * 10, 16 * 10 );
-//	AdjustMaxRect( &rectWnd, 16 * 12, 16 * 12 );
-	CWndNeuz::SetWndRect( rectWnd, bOnSize );
+BOOL CWndMessage::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_MESSAGE, pWndParent, WBS_THICKFRAME, CPoint(0, 0));
 }
+
+void CWndMessage::SetWndRect(CRect rectWnd, BOOL bOnSize) {
+	AdjustMinRect(&rectWnd, 16 * 10, 16 * 10);
+	CWndNeuz::SetWndRect(rectWnd, bOnSize);
+}
+
 void CWndMessage::OnSize( UINT nType, int cx, int cy ) \
 { 
 	CRect rect = GetClientRect();//GetWndRect();
@@ -573,77 +538,41 @@ void CWndMessage::OnSize( UINT nType, int cx, int cy ) \
 	rect.bottom -= 50;
 	pWndText->SetWndRect( rect );
 
-	rect = GetClientRect();//GetWndRect();
+	rect = GetClientRect();
 	rect.top = rect.bottom - 45;
 	rect.left += 4;
 	rect.right -= 80;
 	rect.bottom -= 4;
 	pWndEdit->SetWndRect( rect );
 	
-	rect = GetClientRect();//GetWndRect();
+	rect = GetClientRect();
 	rect.top = rect.bottom - 45;
 	rect.left = rect.right - 74;
 	rect.right -= 4;
 	rect.bottom -= 4;
-	//pWndSend->SetWndRect( rect );
-	pWndSend->Move( rect.TopLeft() );//rect.right + 4, rect.top );
 
-	//pAdd->Move( rect.left + 5, rect.bottom + 2 );
-	//pFind->Move( rect.left + 25, rect.bottom + 2 );
-	
-	//m_wndPlace.Move( CPoint( 0, 0 ) );
-	//m_wndZoomIn.Move( CPoint(0, cy - 32 ) );
-	//m_wndZoomOut.Move( CPoint(0, cy - 16 ) );
+	pWndSend->Move( rect.TopLeft() );
+
 	
 	CWndNeuz::OnSize( nType, cx, cy ); 
 } 
-void CWndMessage::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndMessage::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndMessage::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	CWndEdit* pWndText = (CWndEdit*)GetDlgItem( WIDC_EDIT );
-	switch(nID)
-	{
-		case WIDC_EDIT: // 본문 
-			if( message == EN_RETURN)
-			{
-				if( pWndText->m_string.IsEmpty() == FALSE )
-				{
-					CString strFormat = pWndText->m_string;					
-					pWndText->m_string.GetTextFormat(strFormat);
-					CString string;
-					string.Format( "/say \"%s\" %s", m_strPlayer, strFormat );
-					
-					g_DPlay.SendChat( string );
-					pWndText->Empty();
-				}
-				//				pWndText->ResetString();
-			}
-			break;
-		case WIDC_SEND: // 본문 
-			{
-				CString str = pWndText->m_string;
-				if( str.IsEmpty() == FALSE )
-				{
-					CString strFormat = pWndText->m_string;
 
-					pWndText->m_string.GetTextFormat(strFormat);
+BOOL CWndMessage::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) {
+	if (nID == WIDC_SEND || (nID == WIDC_EDIT && message == EN_RETURN)) {
+		CWndEdit * pWndText = GetDlgItem<CWndEdit>(WIDC_EDIT);
 
-					CString string;
-					string.Format( "/say \"%s\" %s", m_strPlayer, strFormat );					
-					
-					g_DPlay.SendChat( string );
-					pWndText->Empty();
-	//				pWndText->ResetString();
-				}
-			}
-			break;
+		if (!pWndText->m_string.IsEmpty()) {
+			CString strFormat = pWndText->m_string;
+			pWndText->m_string.GetTextFormat(strFormat);
 
+			CString string;
+			string.Format("/say \"%s\" %s", m_strPlayer.GetString(), strFormat.GetString());
+			g_DPlay.SendChat(string);
+
+			pWndText->Empty();
+		}
 	}
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 void CWndMessage::AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage )
@@ -651,12 +580,10 @@ void CWndMessage::AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage )
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
 	CString strMessage;
 
-	if( !strcmp( lpszFrom, g_pPlayer->GetName() ) )
+	if( strcmp( lpszFrom, g_pPlayer->GetName() ) != 0 )
 		strMessage.Format( "#cffff0000%s%s :#nc\n  %s\n", lpszFrom, prj.GetText(TID_GAME_FROM3), lpszMessage );
-	//  	strMessage.Format( "#cffff0000%s님의 말 :#nc\n  %s\n", lpszFrom, lpszMessage );
 	else
 		strMessage.Format( "#cff0000ff%s%s :#nc\n  %s\n", lpszFrom, prj.GetText(TID_GAME_FROM3), lpszMessage );
-	//  	strMessage.Format( "#cff0000ff%s님의 말 :#nc\n  %s\n", lpszFrom, lpszMessage );
 	
 	pWndText->AddString( strMessage );
 	pWndText->m_wndScrollBar.SetMaxScrollPos();
@@ -674,32 +601,18 @@ CtrlId : WIDC_BUTTON1 - Button
 CtrlId : WIDC_TEXT1 - 
 ****************************************************/
 
-CWndMessageNote::CWndMessageNote() 
-{ 
-} 
-CWndMessageNote::~CWndMessageNote() 
-{ 
-} 
-void CWndMessageNote::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndMessageNote::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-//	m_pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	m_pEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-	m_pEdit->AddWndStyle( EBS_WANTRETURN );//| WBS_VSCROLL  );
+
+	m_pEdit = GetDlgItem<CWndEdit>( WIDC_EDIT1 );
+	m_pEdit->AddWndStyle( EBS_WANTRETURN );
 	m_pEdit->SetNativeMode();
 	m_pEdit->SetFocus();
 	CString strTitle;
 	strTitle.Format( "%s - %s", GetTitle(), m_szName );
 	SetTitle( strTitle );
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -708,124 +621,52 @@ BOOL CWndMessageNote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MESSAGE_NOTE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-직접 윈도를 열때 사용 
-BOOL CWndMessageNote::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-CRect rect( 50 ,50, 300, 300 ); 
-SetTitle( _T( "title" ) ); 
-return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndMessageNote::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndMessageNote::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndMessageNote::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndMessageNote::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndMessageNote::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_BUTTON1 )
-	{
-		LPSTR lpSendMessage = (LPSTR)m_pEdit->GetString();
-		int adf = strlen( lpSendMessage );
-		if( strlen( lpSendMessage ) <= 255 )
-		{
-			g_DPlay.SendMessageNote( m_dwUserId, (LPSTR)m_pEdit->GetString() );
-		}
-		else
-		{
-			// 에러 메세지 
-			g_WndMng.PutString( prj.GetText( TID_GAME_MESSFULLMSG ), NULL, prj.GetTextColor( TID_GAME_MESSFULLMSG ) );
+
+
+BOOL CWndMessageNote::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_BUTTON1) {
+		LPCTSTR lpSendMessage = m_pEdit->GetString();
+		int adf = std::strlen(lpSendMessage);
+		if (adf <= 255) {
+			g_DPlay.SendMessageNote(m_dwUserId, lpSendMessage);
+		} else {
+			g_WndMng.PutString(TID_GAME_MESSFULLMSG);
 		}
 		Destroy();
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
 /****************************************************
 WndId : APP_MESSENGER_NOTE - 쪽지창
 CtrlId : WIDC_TEXT1 - 
 ****************************************************/
 
-CWndMessengerNote::CWndMessengerNote() 
-{ 
-} 
-CWndMessengerNote::~CWndMessengerNote() 
-{ 
-} 
-void CWndMessengerNote::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndMessengerNote::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
+void CWndMessengerNote::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	// 여기에 코딩하세요
-	
-	for( int i = 0 ; i < g_Neuz.m_nTagCount ; i++ )
-	{
-		CWndText * pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-		pWndText->AddWndStyle( EBS_WANTRETURN );
-		CString strMessage;
-		strMessage.Format( "%s - %d / %02d / %02d", g_Neuz.m_strTagName[ i ], g_Neuz.m_dwtegDate[ i ] / 10000, ( g_Neuz.m_dwtegDate[ i ] % 10000 ) / 100,  ( g_Neuz.m_dwtegDate[ i ] % 10000 ) % 100 );
-		pWndText->AddString( strMessage, 0xff804000 );
-		pWndText->AddString( "\n  " );
-		pWndText->AddString( g_Neuz.m_strTagMessage[ i ] );
-		pWndText->AddString( "\n\n" );
-		
-//		g_Neuz.m_dwtegDate[ i ]
-//		g_Neuz.m_strTagMessage[ i ]
-	}
-	
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
-	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessengerNote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_MESSENGER_NOTE, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-직접 윈도를 열때 사용 
-BOOL CWndMessengerNote::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-CRect rect( 50 ,50, 300, 300 ); 
-SetTitle( _T( "title" ) ); 
-return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndMessengerNote::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndMessengerNote::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndMessengerNote::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndMessengerNote::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndMessengerNote::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
 
+	if (g_Neuz.m_nTagCount != 0) {
+		CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT1);
+		pWndText->AddWndStyle(EBS_WANTRETURN);
+
+		for (int i = 0; i < g_Neuz.m_nTagCount; i++) {
+			CString strMessage;
+			strMessage.Format("%s - %d / %02d / %02d", g_Neuz.m_strTagName[i], g_Neuz.m_dwtegDate[i] / 10000, (g_Neuz.m_dwtegDate[i] % 10000) / 100, (g_Neuz.m_dwtegDate[i] % 10000) % 100);
+			pWndText->AddString(strMessage, 0xff804000);
+			pWndText->AddString("\n  ");
+			pWndText->AddString(g_Neuz.m_strTagMessage[i]);
+			pWndText->AddString("\n\n");
+		}
+	}
+
+	// 윈도를 중앙으로 옮기는 부분.
+	MoveParentCenter();
+}
+
+// 처음 이 함수를 부르면 윈도가 열린다.
+BOOL CWndMessengerNote::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_MESSENGER_NOTE, pWndParent, 0, CPoint(0, 0));
+}
 

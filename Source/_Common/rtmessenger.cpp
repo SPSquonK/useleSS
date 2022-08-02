@@ -22,7 +22,12 @@ void CRTMessenger::SetFriend(u_long idFriend, const Friend & pFriend) {
 	}
 }
 
-Friend * CRTMessenger::GetFriend(u_long idFriend) {
+Friend * CRTMessenger::GetFriend(const u_long idFriend) {
+	const auto i = find(idFriend);
+	return i != end() ? &i->second : nullptr;
+}
+
+const Friend * CRTMessenger::GetFriend(const u_long idFriend) const {
 	const auto i = find(idFriend);
 	return i != end() ? &i->second : nullptr;
 }
