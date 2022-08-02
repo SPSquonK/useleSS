@@ -1313,7 +1313,7 @@ void CDPTrans::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID, DPID, LPBYTE lpB
 void CDPTrans::SendEventGeneric( DPID dpid )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_EVENT_GENERIC, DPID_UNKNOWN, DPID_UNKNOWN );
-	CEventGeneric::GetInstance()->Serialize( ar );
+	ar << *CEventGeneric::GetInstance();
 	ar << CEventGeneric::GetInstance()->GetFlag();
 	SEND( ar, this, dpid );
 }

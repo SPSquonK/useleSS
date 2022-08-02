@@ -124,23 +124,23 @@ void CEventItem::Skip( LONG lSkip )
 	m_lSkip		= lSkip;
 }
 
-void CEventItem::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_dwItemId;
-		ar << m_nMax;
-		ar << m_nNum;
-		ar.Write( (const void*)m_adwInterval, sizeof(m_adwInterval) );
-	}
-	else
-	{
-		ar >> m_dwItemId;
-		ar >> m_nMax;
-		ar >> m_nNum;
-		ar.Read( (void*)m_adwInterval, sizeof(m_adwInterval) );
-		m_dwTimeout		= GetTickCount();
-	}
+CAr & operator<<(CAr & ar, const CEventItem & self) {
+	ar << self.m_dwItemId;
+	ar << self.m_nMax;
+	ar << self.m_nNum;
+	ar.Write(self.m_adwInterval, sizeof(self.m_adwInterval));
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CEventItem & self) {
+	ar >> self.m_dwItemId;
+	ar >> self.m_nMax;
+	ar >> self.m_nNum;
+	ar.Read(self.m_adwInterval, sizeof(self.m_adwInterval) );
+	
+	self.m_dwTimeout		= GetTickCount();
+	return ar;
 }
 
 CEventGeneric::CEventGeneric()
@@ -404,62 +404,55 @@ FLOAT CEventGeneric::GetItemDropRateFactor( void )
 }
 #endif // __ITEMDROPRATE
 #endif	// __WORLDSERVER
-void CEventGeneric::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << (int)m_lspEvent.size();
-		for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
-		{
-			PEVENT_GENERIC pEvent	= *i;
-			ar.Write( (const void*)pEvent, sizeof(EVENT_GENERIC) );
-		}
-		ar << (int)m_mapEventItemList.size();
-		for( auto i2 = m_mapEventItemList.begin(); i2 != m_mapEventItemList.end(); ++i2 )
-		{
-			ar << (int)i2->first;
-			std::list<CEventItem*>* pList	= i2->second;
-			ar << (int)pList->size();
-			for( auto i3 = pList->begin(); i3 != pList->end(); ++i3 )
-			{
-				CEventItem* pEventItem	= *i3;
-				pEventItem->Serialize( ar );
-			}
+CAr & operator<<(CAr & ar, const CEventGeneric & self) {
+	ar << (int)self.m_lspEvent.size();
+	for (const EVENT_GENERIC * pEvent : self.m_lspEvent) {
+		ar.Write(pEvent, sizeof(EVENT_GENERIC));
+	}
+
+	ar << (int)self.m_mapEventItemList.size();
+	for (const auto & [nEvent, pList] : self.m_mapEventItemList) {
+		ar << (int)nEvent;
+		ar << (int)pList->size();
+		
+		for (const CEventItem * pEventItem : *pList) {
+			ar << *pEventItem;
 		}
 	}
-	else
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CEventGeneric & self) {
+	self.Clear( FALSE );
+	int nEventSize;
+	ar >> nEventSize;
+	for( int i = 0; i < nEventSize; i++ )
 	{
-		Clear( FALSE );
-		int nEventSize;
-		ar >> nEventSize;
-		for( int i = 0; i < nEventSize; i++ )
+		EVENT_GENERIC * pEvent	= new EVENT_GENERIC;
+		ar.Read( pEvent, sizeof(EVENT_GENERIC) );
+		self.m_lspEvent.push_back( pEvent );
+	}
+	int nEventItemListSize;
+	ar >> nEventItemListSize;
+	for( int i = 0; i < nEventItemListSize; i++ )
+	{
+		int nEvent;
+		ar >> nEvent;
+		std::list<CEventItem*>* pList	= new std::list<CEventItem*>;
+		self.m_mapEventItemList.emplace(nEvent, pList);
+
+		int nEventItemSize;
+		ar >> nEventItemSize;
+		for( int j = 0; j < nEventItemSize; j++ )
 		{
-			PEVENT_GENERIC pEvent	= new EVENT_GENERIC;
-			ar.Read( (void*)pEvent, sizeof(EVENT_GENERIC) );
-			m_lspEvent.push_back( pEvent );
-		}
-		int nEventItemListSize;
-		ar >> nEventItemListSize;
-		for( int i = 0; i < nEventItemListSize; i++ )
-		{
-			int nEvent;
-			ar >> nEvent;
-			std::list<CEventItem*>* pList	= new std::list<CEventItem*>;
-			bool bResult	= m_mapEventItemList.emplace(nEvent, pList).second;
-			if( !bResult )
-			{
-				//
-			}
-			int nEventItemSize;
-			ar >> nEventItemSize;
-			for( int j = 0; j < nEventItemSize; j++ )
-			{
-				CEventItem* pEventItem	= new CEventItem;
-				pEventItem->Serialize( ar );
-				pList->push_back( pEventItem );
-			}
+			CEventItem* pEventItem	= new CEventItem;
+			ar >> *pEventItem;
+			pList->push_back( pEventItem );
 		}
 	}
+
+	return ar;
 }
 
 BOOL CEventGeneric::Run( void )

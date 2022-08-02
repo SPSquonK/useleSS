@@ -1914,8 +1914,7 @@ void CGuildHouseMng::ReturnPenyaTenderFailGuild( DWORD dwGHType )
 	ar << dwGHType << m_mapTenderGuild.size();
 	for( MAP_TENDER_GUILD::iterator it = m_mapTenderGuild.begin(); it != m_mapTenderGuild.end(); ++it )
 	{
-		ar << it->first;
-		it->second.Serialize( ar );
+		ar << it->first << it->second;
 	}
 	SEND( ar, CDPTrans::GetInstance(), DPID_ALLPLAYERS );
 }
@@ -2190,7 +2189,7 @@ void CGuildHouseMng::OnGuildHouseTenderJoin( CUser* pUser, OBJID objGHId, int nT
 		BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_TENDER_JOIN, DPID_UNKNOWN, DPID_UNKNOWN );
 		ar << pUser->m_idPlayer;
 		GUILDHOUSE_TENDER GHT( objGHId, pUser->m_idGuild, nTenderPerin, nTenderPenya );
-		GHT.Serialize( ar );
+		ar << GHT;
 		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
 	}
 }
@@ -2263,7 +2262,7 @@ void CGuildHouseMng::OnGuildHouseTenderJoin( CAr & ar )
 	if( bTender == TRUE )
 	{
 		GUILDHOUSE_TENDER GHT;
-		GHT.Serialize( ar );
+		ar >> GHT;
 
 		if( AddGuildHouseTender( GHT.dwGuildId, GHT ) == TRUE )
 		{
@@ -2319,7 +2318,7 @@ void CGuildHouseMng::OnGuildHouseTenderResult( CAr & ar )
 		MAP_TENDER_GUILD::iterator it = m_mapTenderGuild.find( dwGuildId );
 		if( it != m_mapTenderGuild.end() )
 		{
-			it->second.Serialize( ar );
+			ar >> it->second;
 		}
 	}
 

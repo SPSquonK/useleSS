@@ -2606,7 +2606,7 @@ void CDPDatabaseClient::SendQueryRemoveGuildBankTbl( int nNo, DWORD dwRemoved )
 void CDPDatabaseClient::OnEventGeneric( CAr & ar, DPID, DPID )
 {
 	DWORD dwFlag;
-	CEventGeneric::GetInstance()->Serialize( ar );
+	ar >> *CEventGeneric::GetInstance();
 	ar >> dwFlag;
 	std::list<PEVENT_GENERIC>* pList	= CEventGeneric::GetInstance()->GetEventList();
 	for( auto i = pList->begin(); i != pList->end(); ++i )
