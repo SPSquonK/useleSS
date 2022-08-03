@@ -1383,15 +1383,6 @@
     <ClInclude Include="..\_Interface\WndSecretRoom.h">
       <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\WndRankGuild.h">
-      <Filter>Source Files\_Interface\WndApplet\Rank</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndRankInfo.h">
-      <Filter>Source Files\_Interface\WndApplet\Rank</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndRankWar.h">
-      <Filter>Source Files\_Interface\WndApplet\Rank</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Interface\WndPiercing.h">
       <Filter>Source Files\_Interface\WndApplet\Piercing</Filter>
     </ClInclude>

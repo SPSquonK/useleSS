@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "defineText.h"
 #include "AppDefine.h"
-#include "WndRankGuild.h"
+#include "WndRankCmn.h"
 
 /****************************************************
   WndId : APP_RANK_GUILDTABBEST - 최강길드
@@ -66,15 +66,6 @@ CWndRankTab::ValuesToPrint CWndRankTabPenya::GetValuesToPrint(const CGuildRank::
   CtrlId : WIDC_TABCTRL1 - 
 ****************************************************/
 
-CWndRankGuild::CWndRankGuild() 
-{ 
-} 
-CWndRankGuild::~CWndRankGuild() 
-{ 
-} 
-void CWndRankGuild::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndRankGuild::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -118,23 +109,3 @@ BOOL CWndRankGuild::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RANK_GUILD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-
-BOOL CWndRankGuild::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRankGuild::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRankGuild::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRankGuild::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndRankGuild::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-

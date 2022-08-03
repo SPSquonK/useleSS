@@ -811,9 +811,6 @@
     <ClInclude Include="..\_Interface\WndGuildWarPeaceConfirm.h" />
     <ClInclude Include="..\_Interface\WndGuildWarRequest.h" />
     <ClInclude Include="..\_Interface\WndSecretRoom.h" />
-    <ClInclude Include="..\_Interface\WndRankGuild.h" />
-    <ClInclude Include="..\_Interface\WndRankInfo.h" />
-    <ClInclude Include="..\_Interface\WndRankWar.h" />
     <ClInclude Include="..\_Interface\WndPiercing.h" />
     <ClInclude Include="..\_Interface\WndAdminCreateItem.h" />
     <ClInclude Include="..\_Interface\WndDebugInfo.h" />

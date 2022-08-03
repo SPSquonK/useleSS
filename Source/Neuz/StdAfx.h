@@ -146,9 +146,7 @@
 #include "WndManager.h"      // 윈도 매니저 
 #include "WndWorld.h"        // 월드 윈도 
 #include "WndGuild.h"			// 길드 윈도
-#include "WndRankGuild.h"		// 길드 랭킹
-#include "WndRankInfo.h"
-#include "WndRankWar.h"
+#include "WndRankCmn.h"
 #include "WndGuildVote.h"         // 길드투표 윈도
 #include "WndUpgradeBase.h"         // 재련윈도 
 
