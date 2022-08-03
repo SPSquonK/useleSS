@@ -1,6 +1,8 @@
 #ifndef __WNDRANKINFO__H
 #define __WNDRANKINFO__H
 
+#include "WndRankCmn.h"
+
 class CWndRankInfoTabLevel : public CWndNeuz 
 { 
 public: 

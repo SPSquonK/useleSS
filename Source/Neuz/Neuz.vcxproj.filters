@@ -1003,6 +1003,9 @@
     <ClCompile Include="..\_Common\ProjectJob.cpp">
       <Filter>Source Files\Project</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndRankCmn.cpp">
+      <Filter>Source Files\_Interface\WndApplet\Rank</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1872,6 +1875,9 @@
     </ClInclude>
     <ClInclude Include="CampusHelper.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndRankCmn.h">
+      <Filter>Source Files\_Interface\WndApplet\Rank</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
