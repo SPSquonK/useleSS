@@ -6,19 +6,19 @@
 class CWndRankWarTabGiveUp : public CWndRankTab {
 public:
 	CWndRankWarTabGiveUp();
-	CString ToString(const CGuildRank::GUILD_RANKING & ranking) override;
+	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
 class CWndRankWarTabLose : public CWndRankTab {
 public:
 	CWndRankWarTabLose();
-	CString ToString(const CGuildRank::GUILD_RANKING & ranking) override;
+	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
 class CWndRankWarTabWin : public CWndRankTab {
 public:
 	CWndRankWarTabWin();
-	CString ToString(const CGuildRank::GUILD_RANKING & ranking) override;
+	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
 class CWndRankWar : public CWndNeuz 

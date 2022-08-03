@@ -17,10 +17,8 @@ CWndRankTabBest::CWndRankTabBest()
 	: CWndRankTab(CGuildRank::RANKING::R1, APP_RANK_GUILDTABBEST) {
 }
 
-CString CWndRankTabBest::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	CString strWin;
-	strWin.Format("%5d  /  %5d", ranking.m_nWin, ranking.m_nLose);
-	return strWin;
+CWndRankTab::ValuesToPrint CWndRankTabBest::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return { ranking.m_nWin, ranking.m_nLose };
 }
 
 
@@ -40,10 +38,8 @@ CWndRankTabUnited::CWndRankTabUnited()
 	: CWndRankTab(CGuildRank::RANKING::R5, APP_RANK_GUILDTABUNITED) {
 }
 
-CString CWndRankTabUnited::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	CString strWin;
-	strWin.Format("%5d  /  %5d", ranking.m_nWin, ranking.m_nLose);
-	return strWin;
+CWndRankTab::ValuesToPrint CWndRankTabUnited::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return { ranking.m_nWin, ranking.m_nLose };
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,8 +55,8 @@ CWndRankTabPenya::CWndRankTabPenya()
 	: CWndRankTab(CGuildRank::RANKING::R6, APP_RANK_GUILDTABPENYA) {
 }
 
-CString CWndRankTabPenya::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	return "";
+CWndRankTab::ValuesToPrint CWndRankTabPenya::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return {};
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

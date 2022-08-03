@@ -6,13 +6,13 @@
 class CWndRankInfoTabLevel : public CWndRankTab {
 public:
 	CWndRankInfoTabLevel();
-	CString ToString(const CGuildRank::GUILD_RANKING & ranking) override;
+	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
 class CWndRankInfoTabPlayTime : public CWndRankTab {
 public:
 	CWndRankInfoTabPlayTime();
-	CString ToString(const CGuildRank::GUILD_RANKING & ranking) override;
+	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
 class CWndRankInfo : public CWndNeuz 

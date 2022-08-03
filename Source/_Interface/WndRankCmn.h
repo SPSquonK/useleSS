@@ -1,6 +1,7 @@
 #pragma once
 
 #include "guild.h"
+#include <boost/container/static_vector.hpp>
 
 class CWndRankTab : public CWndNeuz {
 private:
@@ -8,9 +9,11 @@ private:
 	UINT m_appId;
 
 public:
+	using ValuesToPrint = boost::container::static_vector<int, 2>;
+
 	CWndRankTab(CGuildRank::RANKING rank, UINT appId) : m_rank(rank), m_appId(appId) {}
 
-	virtual CString ToString(const CGuildRank::GUILD_RANKING & ranking) = 0;
+	virtual ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) = 0;
 
 	int		m_nCurrentList = 0;			// 출력될 멤버리스트의 시작 인덱스.
 	int		m_nMxOld = 0;

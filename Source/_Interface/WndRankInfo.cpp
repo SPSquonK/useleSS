@@ -15,10 +15,8 @@ CWndRankInfoTabLevel::CWndRankInfoTabLevel()
 	: CWndRankTab(CGuildRank::RANKING::R7, APP_RANK_INFOTABLEVEL) {
 }
 
-CString CWndRankInfoTabLevel::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	CString strWin;
-	strWin.Format("%d", static_cast<int>(ranking.m_AvgLevel));
-	return strWin;
+CWndRankTab::ValuesToPrint CWndRankInfoTabLevel::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return { static_cast<int>(ranking.m_AvgLevel) };
 }
 
 /****************************************************
@@ -32,8 +30,8 @@ CWndRankInfoTabPlayTime::CWndRankInfoTabPlayTime()
 	: CWndRankTab(CGuildRank::RANKING::R8, APP_RANK_INFOTABPLAYTIME) {
 }
 
-CString CWndRankInfoTabPlayTime::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	return "";
+CWndRankTab::ValuesToPrint CWndRankInfoTabPlayTime::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return {};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -15,10 +15,8 @@ CWndRankWarTabGiveUp::CWndRankWarTabGiveUp()
 	: CWndRankTab(CGuildRank::RANKING::R4, APP_RANK_WARTABGIVEUP) {
 }
 
-CString CWndRankWarTabGiveUp::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	CString strWin;
-	strWin.Format("%d", ranking.m_nSurrender);
-	return strWin;
+CWndRankTab::ValuesToPrint CWndRankWarTabGiveUp::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return { ranking.m_nSurrender };
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,10 +34,8 @@ CWndRankWarTabLose::CWndRankWarTabLose()
 	: CWndRankTab(CGuildRank::RANKING::R3, APP_RANK_WARTABLOSE) {
 }
 
-CString CWndRankWarTabLose::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	CString strWin;
-	strWin.Format("%5d  /  %5d", ranking.m_nWin, ranking.m_nLose);
-	return strWin;
+CWndRankTab::ValuesToPrint CWndRankWarTabLose::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return { ranking.m_nWin, ranking.m_nLose };
 }
 
 /****************************************************
@@ -56,10 +52,8 @@ CWndRankWarTabWin::CWndRankWarTabWin()
 	: CWndRankTab(CGuildRank::RANKING::R2, APP_RANK_WARTABWIN) {
 }
 
-CString CWndRankWarTabWin::ToString(const CGuildRank::GUILD_RANKING & ranking) {
-	CString strWin;
-	strWin.Format("%5d  /  %5d", ranking.m_nWin, ranking.m_nLose);
-	return strWin;
+CWndRankTab::ValuesToPrint CWndRankWarTabWin::GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) {
+	return { ranking.m_nWin, ranking.m_nLose };
 }
 
 

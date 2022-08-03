@@ -64,8 +64,15 @@ void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 		p2DRender->TextOut(sx + 210, sy, strMasterName, dwColor);
 
 		// ½Â / ÆÐ
-		CString strWin = ToString(pGuildRank->m_Ranking[m_rank][i]);
-		p2DRender->TextOut(sx + 330, sy, strWin, dwColor);
+		
+		const ValuesToPrint toPrint = GetValuesToPrint(pGuildRank->m_Ranking[m_rank][i]);
+		if (toPrint.size() == 1) {
+			p2DRender->TextOut(sx + 350, sy, toPrint[0], dwColor);
+		} else if (toPrint.size() == 2) {
+			CString str;
+			str.Format("%5d  /  %5d", toPrint[0], toPrint[1]);
+			p2DRender->TextOut(sx + 330, sy, str, dwColor);
+		}
 
 		sy += 25;
 	}
