@@ -848,7 +848,6 @@ void CEventLua::KeepConnectEventProcess()
 }
 #endif // __EVENTLUA_KEEPCONNECT
 
-#ifdef __ENVIRONMENT_EFFECT
 
 float CEventLua::GetWeatherEventExpFactor( BOOL bProxy )
 {
@@ -891,95 +890,6 @@ std::string CEventLua::GetWeatherEventTitle()
 	return strTitle;
 }
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __EVENTLUA_RAIN
-float CEventLua::GetRainEventExpFactor( BOOL bProxy )
-{
-	float fFactor = 1.0f;
-
-	if( !IsPossible() )
-		return fFactor;
-
-	if( bProxy )
-		return m_proxy.GetRainEventExpFactor();
-
-	if( m_Lua.GetLuaFunction( "GetRainEventExpFactor" ) )
-	{
-		m_Lua.CallLuaFunction( 0, 1 );
-
-		fFactor = (float)m_Lua.ToNumber( -1 );
-	}
-	m_Lua.Pop(0);
-
-	return fFactor;
-}
-
-string CEventLua::GetRainEventTitle()
-{
-	string strTitle("");
-
-	if( !IsPossible() )
-		return strTitle;
-
-	if( m_Lua.GetLuaFunction( "GetRainEventTitle" ) )
-	{
-		m_Lua.CallLuaFunction( 0, 1 );
-
-		if( m_Lua.IsNil( -1 ) )
-			return strTitle;
-		strTitle = m_Lua.ToString( -1 );
-	}
-	m_Lua.Pop( 0 );
-
-	return strTitle;
-}
-#endif // __EVENTLUA_RAIN
-
-#ifdef __EVENTLUA_SNOW
-float CEventLua::GetSnowEventExpFactor( BOOL bProxy )
-{
-	float fFactor = 1.0f;
-
-	if( !IsPossible() )
-		return fFactor;
-
-	if( bProxy )
-		return m_proxy.GetSnowEventExpFactor();
-
-	if( m_Lua.GetLuaFunction( "GetSnowEventExpFactor" ) )
-	{
-		m_Lua.CallLuaFunction( 0, 1 );
-
-		fFactor = (float)m_Lua.ToNumber( -1 );
-	}
-	m_Lua.Pop(0);
-
-	return fFactor;
-}
-
-string CEventLua::GetSnowEventTitle()
-{
-	string strTitle("");
-
-	if( !IsPossible() )
-		return strTitle;
-
-	if( m_Lua.GetLuaFunction( "GetSnowEventTitle" ) )
-	{
-		m_Lua.CallLuaFunction( 0, 1 );
-
-		if( m_Lua.IsNil( -1 ) )
-			return strTitle;
-		strTitle = m_Lua.ToString( -1 );
-	}
-	m_Lua.Pop( 0 );
-
-	return strTitle;
-}
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __SHOP_COST_RATE
 float CEventLua::GetShopBuyFactor( BOOL bProxy )
@@ -1044,20 +954,9 @@ m_dwCouponEvent( 0 )
 , m_dwKeepConnect( 0 )
 #endif // __EVENTLUA_KEEPCONNECT
 
-#ifdef __ENVIRONMENT_EFFECT
 
 , m_fWeatherEventExpFactor( 1.0f )
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __EVENTLUA_RAIN
-, m_fRainEventExpFactor( 1.0f )
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-, m_fSnowEventExpFactor( 1.0f )
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 #ifdef __SHOP_COST_RATE
 , m_fShopBuyFactor( 1.0f )
 , m_fShopSellFactor( 1.0f )
@@ -1088,20 +987,9 @@ void CEventLuaProxy::Initialize( CEventLua* pEventLua )
 	pEventLua->GetKeepConnectItem();
 #endif // __EVENTLUA_KEEPCONNECT
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	SetWeatherEventExpFactor( pEventLua->GetWeatherEventExpFactor( FALSE ) );
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __EVENTLUA_RAIN
-	SetRainEventExpFactor( pEventLua->GetRainEventExpFactor( FALSE ) );
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	SetSnowEventExpFactor( pEventLua->GetSnowEventExpFactor( FALSE ) );
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 #ifdef __SHOP_COST_RATE
 	SetShopBuyFactor( pEventLua->GetShopBuyFactor( FALSE ) );
 	SetShopSellFactor( pEventLua->GetShopSellFactor( FALSE ) );

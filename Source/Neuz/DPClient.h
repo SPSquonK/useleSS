@@ -600,20 +600,11 @@ public:
 
 	void	OnSetPartyMemberParam( CAr & ar );
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	void	OnEnvironmentSetting( CAr & ar );
 
 	void	OnEnvironmentEffect( CAr & ar );
 
-#else // __ENVIRONMENT_EFFECT
-
-	void	OnEnvironment( CAr & ar );
-	void	OnEnvironmentSnow( CAr & ar );
-	void	OnEnvironmentRain( CAr & ar );
-	void	OnEnvironmentAll( CAr & ar );
-
-#endif // __ENVIRONMENT_EFFECT
 
 	void	OnPartyChat( CAr & ar );
 	void	OnMyPartyName( CAr & ar );

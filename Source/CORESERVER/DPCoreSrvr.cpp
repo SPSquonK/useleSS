@@ -48,15 +48,8 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_CAPTION, &CDPCoreSrvr::OnCaption );	
 	ON_MSG( PACKETTYPE_ADDPARTYEXP, &CDPCoreSrvr::OnAddPartyExp );
 	ON_MSG( PACKETTYPE_REMOVEPARTYPOINT, &CDPCoreSrvr::OnRemovePartyPoint );
-#ifdef __ENVIRONMENT_EFFECT
 	ON_MSG( PACKETTYPE_FALLRAIN, &CDPCoreSrvr::OnFallRain );
 	ON_MSG( PACKETTYPE_STOPRAIN, &CDPCoreSrvr::OnStopRain );
-#else // __ENVIRONMENT_EFFECT
-	ON_MSG( PACKETTYPE_FALLSNOW, &CDPCoreSrvr::OnFallSnow );
-	ON_MSG( PACKETTYPE_FALLRAIN, &CDPCoreSrvr::OnFallRain );
-	ON_MSG( PACKETTYPE_STOPSNOW, &CDPCoreSrvr::OnStopSnow );
-	ON_MSG( PACKETTYPE_STOPRAIN, &CDPCoreSrvr::OnStopRain );
-#endif // __ENVIRONMENT_EFFECT
 	ON_MSG( PACKETTYPE_PARTYCHAT, &CDPCoreSrvr::OnPartyChat );
 	ON_MSG( PACKETTYPE_PARTYSKILLUSE, &CDPCoreSrvr::OnPartySkillUse );
 	ON_MSG( PACKETTYPE_PARTYLEVEL, &CDPCoreSrvr::OnPartyLevel );
@@ -226,11 +219,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		ar << g_GuildWarMng;
 		g_GuildMng.m_AddRemoveLock.Leave( theLineFile );
 
-#ifdef __ENVIRONMENT_EFFECT
 		ar << *CEnvironment::GetInstance();
-#else // __ENVIRONMENT_EFFECT
-		g_Environment.Serialize( ar );
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __EVENT0913
 		ar << s_bEvent0913;
@@ -949,7 +938,6 @@ void CDPCoreSrvr::OnPartyChat( CAr & ar, DPID, DPID, DPID, u_long uBufSize )
 	}
 }
 
-#ifdef __ENVIRONMENT_EFFECT
 
 void CDPCoreSrvr::OnFallRain( CAr & ar, DPID, DPID, DPID, u_long )
 {
@@ -964,36 +952,6 @@ void CDPCoreSrvr::OnStopRain( CAr & ar, DPID, DPID, DPID, u_long )
 	SendEnvironmentEffect();
 }
 
-#else // __ENVIRONMENT_EFFECT
-
-void CDPCoreSrvr::OnFallSnow( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	g_Environment.m_Authority = TRUE;
-	g_Environment.m_bSnow = TRUE;
-	g_Environment.m_bRain = FALSE;
-}
-void CDPCoreSrvr::OnFallRain( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	g_Environment.m_Authority = TRUE;
-	g_Environment.m_bRain = TRUE;
-	g_Environment.m_bSnow = FALSE;
-}
-void CDPCoreSrvr::OnStopSnow( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	g_Environment.m_Authority = FALSE;
-	g_Environment.m_bSnow = FALSE;
-	g_Environment.m_bRain = FALSE;
-	SendEnvironment( g_Environment.m_bRain, g_Environment.m_bSnow );
-}
-void CDPCoreSrvr::OnStopRain( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	g_Environment.m_Authority = FALSE;
-	g_Environment.m_bRain = FALSE;
-	g_Environment.m_bSnow = FALSE;
-	SendEnvironment( g_Environment.m_bRain, g_Environment.m_bSnow );
-}
-
-#endif // __ENVIRONMENT_EFFECT
 
 void CDPCoreSrvr::SendShout( u_long idPlayer, const CHAR* lpString, DPID dpid )
 {
@@ -1088,7 +1046,6 @@ void CDPCoreSrvr::SendRemoveFriend( u_long uidSender, u_long uidFriend )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-#ifdef __ENVIRONMENT_EFFECT
 
 void CDPCoreSrvr::SendEnvironmentEffect()
 {
@@ -1097,30 +1054,6 @@ void CDPCoreSrvr::SendEnvironmentEffect()
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-#else // __ENVIRONMENT_EFFECT
-
-void CDPCoreSrvr::SendEnvironmentSnow( BOOL bSnow )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ENVIRONMENTSNOW, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << bSnow;
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-void CDPCoreSrvr::SendEnvironmentRain( BOOL bRain )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ENVIRONMENTRAIN, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << bRain;
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-void CDPCoreSrvr::SendEnvironment( BOOL bRain, BOOL bSnow )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ENVIRONMENTALL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << bRain << bSnow;
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-#endif // __ENVIRONMENT_EFFECT
 
 void CDPCoreSrvr::OnGuildMsgControl( CAr & ar, DPID, DPID, DPID, u_long )
 {//*

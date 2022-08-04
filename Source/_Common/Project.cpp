@@ -76,9 +76,7 @@
 
 #include "GuildHouse.h"
 
-#ifdef __ENVIRONMENT_EFFECT
 #include "Environment.h"
-#endif // __ENVIRONMENT_EFFECT
 
 #endif // __WORLDSERVER
 
@@ -530,9 +528,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #endif // __QUIZ
 	CCampusHelper::GetInstance()->LoadScript();
 
-#ifdef __ENVIRONMENT_EFFECT
 	CEnvironment::GetInstance()->LoadScript();
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __GUILD_HOUSE_MIDDLE
 	GuildHouseMng->LoadScript();

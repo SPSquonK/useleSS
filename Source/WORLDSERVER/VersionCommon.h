@@ -220,7 +220,6 @@
 //	#define		__ITEMTRANSY_PENYA			//	페냐로 아이템 트랜지 가능하게 설정.
 	#define		__PROTECT_AWAKE				//	각성 보호의 두루마리.
 
-	#define		__ENVIRONMENT_EFFECT
 
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
 //	#define	__RULE_0615

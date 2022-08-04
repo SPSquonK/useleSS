@@ -9,7 +9,6 @@
 
 CEnvironment::CEnvironment()
 {
-#ifdef __ENVIRONMENT_EFFECT
 
 #ifdef __WORLDSERVER
 	::memset( m_aEnvironmentEffect, 0, sizeof( m_aEnvironmentEffect ) );
@@ -22,25 +21,6 @@ CEnvironment::CEnvironment()
 	m_bEffect = FALSE;
 	m_tEffectTime.Set( MIN( 60 ), TRUE );
 
-#else // __ENVIRONMENT_EFFECT
-
-	m_bRain = m_bSnow = FALSE;
-#ifdef __EVENTLUA_RAIN
-	m_tRainTime.Set( MIN( 60 ) );
-#else // __EVENTLUA_RAIN
-#ifdef __RAIN_EVENT
-	m_tRainTime.Set( MIN( 60 ) );
-#else // __RAIN_EVENT
-	m_tRainTime.Set( MIN( 10 ) );
-#endif // __RAIN_EVENT
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	m_tSnowTime.Set( MIN( 60 ) );
-#else // __EVENTLUA_SNOW
-	m_tSnowTime.Set( MIN( 10 ) );
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __CORESERVER
 	m_Authority = FALSE;
@@ -57,7 +37,6 @@ CEnvironment::~CEnvironment()
 
 
 
-#ifdef __ENVIRONMENT_EFFECT
 
 CEnvironment* CEnvironment::GetInstance()
 {
@@ -133,27 +112,16 @@ void CEnvironment::SetSeason( int nSeason )
 }
 #endif // __CLIENT
 
-#endif // __ENVIRONMENT_EFFECT
 
 CAr & operator<<(CAr & ar, const CEnvironment & self) {
 
-#ifdef __ENVIRONMENT_EFFECT
 	ar << self.m_bEffect;
-#else // __ENVIRONMENT_EFFECT
-	ar << self.m_bRain;
-	ar << self.m_bSnow;
-#endif // __ENVIRONMENT_EFFECT
 
 	return ar;
 }
 
 CAr & operator>>(CAr & ar, CEnvironment & self) {
-#ifdef __ENVIRONMENT_EFFECT
 	ar >> self.m_bEffect;
-#else // __ENVIRONMENT_EFFECT
-	ar >> self.m_bRain;
-	ar >> self.m_bSnow;
-#endif // __ENVIRONMENT_EFFECT
 
 	return ar;
 }
@@ -188,40 +156,15 @@ void CEnvironment::Worker( void )
 	{
 		if( m_Authority )
 		{
-#ifdef __ENVIRONMENT_EFFECT
 			if( m_bEffect == TRUE )
 			{
 				m_Authority = FALSE;
 				m_tEffectTime.Reset();
 				g_dpCoreSrvr.SendEnvironmentEffect();
 			}
-#else // __ENVIRONMENT_EFFECT
-			if( m_bRain )
-			{
-#ifdef __EVENTLUA_RAIN
-				m_Authority = FALSE;
-				m_tRainTime.Reset();
-#else // __EVENTLUA_RAIN
-#ifdef __RAIN_EVENT
-				m_Authority = FALSE;
-				m_tRainTime.Reset();
-#endif // __RAIN_EVENT
-#endif // __EVENTLUA_RAIN
-				g_dpCoreSrvr.SendEnvironmentRain( m_bRain );
-			}
-			if( m_bSnow )
-			{
-#ifdef __EVENTLUA_SNOW
-				m_Authority = FALSE;
-				m_tSnowTime.Reset();
-#endif // __EVENTLUA_SNOW
-				g_dpCoreSrvr.SendEnvironmentSnow( m_bSnow );
-			}
-#endif // __ENVIRONMENT_EFFECT
 		}
 		else
 		{
-#ifdef __ENVIRONMENT_EFFECT
 
 			if( m_tEffectTime.IsTimeOut() == TRUE )
 			{
@@ -243,119 +186,6 @@ void CEnvironment::Worker( void )
 				}
 			}
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __JAPAN_SAKURA
-			CTime timeCurr	= CTime::GetCurrentTime();
-			int nMonth = timeCurr.GetMonth();
-			if( nMonth >= 6 && nMonth <= 8 ) // 6 ~ 8 - ºñ
-			{
-				if( m_tRainTime.IsTimeOut() )
-				{
-					BOOL bRainBuf = m_bRain;
-
-					if( random(1440) < 5 )
-					{
-						m_tRainTime.Reset();
-						m_bRain = TRUE;
-					}
-					else
-					{
-						m_bRain = FALSE;
-					}
-
-					if( bRainBuf != m_bRain )
-					{
-						g_dpCoreSrvr.SendEnvironmentRain( m_bRain );
-					}
-				}
-			}
-			else // 3 ~ 5 - º¢²É, 9 ~ 11 - ´ÜÇ³, 12,1,2 - ´«
-			{
-				if( m_tSnowTime.IsTimeOut() )
-				{
-					BOOL bSnowBuf = m_bSnow;
-					if( random(1440) < 5 )
-					{
-						m_tSnowTime.Reset();
-						m_bSnow = TRUE;
-					}
-					else
-					{
-						m_bSnow = FALSE;
-					}
-
-					if( bSnowBuf != m_bSnow )
-					{
-						g_dpCoreSrvr.SendEnvironmentSnow( m_bSnow );
-					}
-				}
-			}
-#else __JAPAN_SAKURA
-			CTime timeCurr	= CTime::GetCurrentTime();
-//			CString strMessage;
-			
-			int nMonth = timeCurr.GetMonth();
-			if( 1 == nMonth || 2 == nMonth || 12 == nMonth ) // ´«³»¸®´Â ´Þ 12¿ù 1¿ù 2¿ù  ÆÞÆÞ~~ ´«ÀÌ¿É´Ï´Ù. ÇÏ´Ã¿¡¼­ ´«ÀÌ¿É´Ï´Ù.
-			{
-				if( m_tSnowTime.IsTimeOut() )
-				{
-					BOOL bSnowBuf = m_bSnow;
-					if( random(1440) < 5 ) // 1ºÐ¿¡ ÇÑ¹ø¾¿ °Ë»ç 1440 = 60ºÐ * 24½Ã°£
-					{
-						m_tSnowTime.Reset();
-						m_bSnow = TRUE;
-//						strMessage.Format( "%02d¿ù%02dÀÏ %02d:%02d:%02d\tºñ°¡ ÁÖ¸£¸¤ ÁÖ¸£¸¤~~", 
-//							timeCurr.GetMonth(), timeCurr.GetDay(), timeCurr.GetHour(), timeCurr.GetMinute(), timeCurr.GetSecond() );
-					}
-					else
-					{
-						m_bSnow = FALSE;
-//						strMessage.Format( "%02d¿ù%02dÀÏ %02d:%02d:%02d\tºñ°¡ ¸ØÃã»óÅÂ", 
-//							timeCurr.GetMonth(), timeCurr.GetDay(), timeCurr.GetHour(), timeCurr.GetMinute(), timeCurr.GetSecond() );
-					}
-					
-					if( bSnowBuf != m_bSnow )
-					{
-						g_dpCoreSrvr.SendEnvironmentSnow( m_bSnow );
-					}
-
-/*					m_tSnowTime.Reset();
-					m_bSnow = !m_bSnow;
-					g_dpCoreSrvr.SendEnvironmentSnow( m_bSnow );
-*/				}
-			}
-			else	// ºñ°¡ ³»¸®³×~~ ºñµÎ³»¸®´Âµ¥ ¸·°É¸® ÇÑÀÜ~~ ^^;
-			{
-				if( m_tRainTime.IsTimeOut() )
-				{
-					BOOL bRainBuf = m_bRain;
-
-					if( random(1440) < 5 ) // 1ºÐ¿¡ ÇÑ¹ø¾¿ °Ë»ç 1440 = 60ºÐ * 24½Ã°£
-					{
-						m_tRainTime.Reset();
-						m_bRain = TRUE;
-//						strMessage.Format( "%02d¿ù%02dÀÏ %02d:%02d:%02d\t´«ÀÌ ÆÞÆÞ~~", 
-//							timeCurr.GetMonth(), timeCurr.GetDay(), timeCurr.GetHour(), timeCurr.GetMinute(), timeCurr.GetSecond() );
-					}
-					else
-					{
-						m_bRain = FALSE;
-//						strMessage.Format( "%02d¿ù%02dÀÏ %02d:%02d:%02d\t´«ÀÌ ¸ØÃã»óÅÂ", 
-//							timeCurr.GetMonth(), timeCurr.GetDay(), timeCurr.GetHour(), timeCurr.GetMinute(), timeCurr.GetSecond() );
-					}
-					
-					if( bRainBuf != m_bRain )
-					{
-						g_dpCoreSrvr.SendEnvironmentRain( m_bRain );
-					}
-				}
-			}
-//			if( strMessage.GetLength() > 10 )
-//				WriteLog( strMessage );
-#endif // __JAPAN_SAKURA
-
-#endif // __ENVIRONMENT_EFFECT
 		}
 
 		TRACE( "CEnvironment Worker\n" );
@@ -363,7 +193,4 @@ void CEnvironment::Worker( void )
 }
 #endif // __CORESERVER
 
-#ifndef __ENVIRONMENT_EFFECT
-CEnvironment	g_Environment;
-#endif // __ENVIRONMENT_EFFECT
 

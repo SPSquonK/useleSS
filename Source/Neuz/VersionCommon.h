@@ -243,7 +243,6 @@
 	#define		__BS_FIX_ARRIVEPOS_ALGO		// 마우스 이동시 도착 검사루틴 개선 ( 정뱡향 축으로 한곳만 도착했을때 멈추는 문제가있었음 )
 	#define		__BS_ITEM_UNLIMITEDTIME		// 아이템 유지시간 ( 999999999 >= 일경우 무제한 표기 )
 	
-	#define		__ENVIRONMENT_EFFECT
 
 // 8.5차
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 

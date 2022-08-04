@@ -350,19 +350,10 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_PARTYCHANGEITEMMODE: OnPartyChangeItemMode( ar ); break;
 			case SNAPSHOTTYPE_PARTYCHANGEEXPMODE: OnPartyChangeExpMode( ar ); break;
 
-#ifdef __ENVIRONMENT_EFFECT
 
 			case SNAPSHOTTYPE_ENVIRONMENTALL: OnEnvironmentSetting( ar ); break;
 			case SNAPSHOTTYPE_ENVIRONMENT: OnEnvironmentEffect( ar ); break;
 
-#else // __ENVIRONMENT_EFFECT
-
-			case SNAPSHOTTYPE_ENVIRONMENT: OnEnvironment( ar ); break;
-			case SNAPSHOTTYPE_ENVIRONMENTSNOW: OnEnvironmentSnow( ar ); break;
-			case SNAPSHOTTYPE_ENVIRONMENTRAIN: OnEnvironmentRain( ar ); break;
-			case SNAPSHOTTYPE_ENVIRONMENTALL: OnEnvironmentAll( ar ); break;
-
-#endif // __ENVIRONMENT_EFFECT
 
 			case SNAPSHOTTYPE_PARTYCHAT: OnPartyChat( ar ); break;
 			case SNAPSHOTTYPE_PVENDOR_OPEN:	OnPVendorOpen( objid, ar );	break;
@@ -4653,7 +4644,6 @@ void CDPClient::OnPartySkillSphereCircle( OBJID objid )
 	}
 }
 
-#ifdef __ENVIRONMENT_EFFECT
 
 void CDPClient::OnEnvironmentSetting( CAr & ar )
 {
@@ -4770,218 +4760,6 @@ void CDPClient::OnEnvironmentEffect( CAr & ar )
 	CWorld::m_skyBox.SetWeather( nWeather , CEnvironment::GetInstance()->GetEnvironmentEffect() );
 }
 
-#else // __ENVIRONMENT_EFFECT
-
-void CDPClient::OnEnvironment( CAr & ar )
-{
-	g_Environment.Serialize( ar );
-
-#ifdef __EVENTLUA_RAIN
-	if( g_Environment.m_bRain )
-	{
-		char lpszRainTitle[256] = {0,};
-		ar.ReadString( lpszRainTitle, 255 );
-		if( strlen( lpszRainTitle ) > 0	)
-		{
-			char lpszTitle[512] = {0,};
-			sprintf( lpszTitle, GETTEXT( TID_GAME_ON_EVENT ), lpszRainTitle );
-
-			if( m_bEventTextColor )
-				g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-			else
-				g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-			m_bEventTextColor = !m_bEventTextColor;
-		}
-	}
-#else // __EVENTLUA_RAIN
-#ifdef __RAIN_EVENT
-	char lpszTitle[256] = {0,};
-	if( g_Environment.m_bRain )
-		sprintf( lpszTitle, GETTEXT( TID_GAME_ON_EVENT ), GETTEXT( TID_GAME_RAIN_EVENT ) );
-
-	if( m_bEventTextColor )
-		g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-	else
-		g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-	m_bEventTextColor = !m_bEventTextColor;
-#endif // __RAIN_EVENT
-#endif // __EVENTLUA_RAIN
-
-#ifdef __EVENTLUA_SNOW
-	if( g_Environment.m_bSnow )
-	{
-		char lpszSnowTitle[256] = {0,};
-		ar.ReadString( lpszSnowTitle, 255 );
-		if( strlen( lpszSnowTitle ) > 0	)
-		{
-			char lpszTitle[512] = {0,};
-			sprintf( lpszTitle, GETTEXT( TID_GAME_ON_EVENT ), lpszSnowTitle );
-
-			if( m_bEventTextColor )
-				g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-			else
-				g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-			m_bEventTextColor = !m_bEventTextColor;
-		}
-	}
-#endif // __EVENTLUA_SNOW
-
-	if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->m_bIsIndoor && g_pPlayer->GetWorld()->GetID() != WI_DUNGEON_KRRR )
-		return;
-
-	// 여기서 환경을 조정하는 소스가 들어가야 한다.
-	CWorld::m_skyBox.SetWeather( WEATHER_SNOW, g_Environment.m_bSnow );
-	CWorld::m_skyBox.SetWeather( WEATHER_RAIN, g_Environment.m_bRain );
-}
-
-void CDPClient::OnEnvironmentSnow( CAr & ar )
-{
-	ar >> g_Environment.m_bSnow;
-
-#ifdef __EVENTLUA_SNOW
-	char lpszSnowTitle[256] = {0,};
-	ar.ReadString( lpszSnowTitle, 255 );
-	if( strlen( lpszSnowTitle ) > 0 )
-	{
-		char lpszTitle[512] = {0,};
-		if( g_Environment.m_bSnow )
-			sprintf( lpszTitle, GETTEXT( TID_GAME_START_EVENT ), lpszSnowTitle );
-		else
-			sprintf( lpszTitle, GETTEXT( TID_GAME_END_EVENT ), lpszSnowTitle );
-
-		if( m_bEventTextColor )
-			g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-		else
-			g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-		m_bEventTextColor = !m_bEventTextColor;
-	}
-#endif // __EVENTLUA_SNOW
-
-	if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->m_bIsIndoor && g_pPlayer->GetWorld()->GetID() != WI_DUNGEON_KRRR )
-		return;
-
-	if( g_pPlayer->GetWorld()->GetID() == WI_DUNGEON_KRRR )
-		g_pPlayer->GetWorld()->m_bViewWeather = TRUE;
-	
-	if( g_Environment.m_bSnow )
-		g_Environment.m_bRain = FALSE;
-	CWorld::m_skyBox.SetWeather( WEATHER_SNOW, g_Environment.m_bSnow );
-}
-
-void CDPClient::OnEnvironmentRain( CAr & ar )
-{
-	ar >> g_Environment.m_bRain;
-#ifdef __EVENTLUA_RAIN
-	char lpszRainTitle[256] = {0,};
-	ar.ReadString( lpszRainTitle, 255 );
-	if( strlen( lpszRainTitle ) > 0 )
-	{
-		char lpszTitle[512] = {0,};
-		if( g_Environment.m_bRain )
-			sprintf( lpszTitle, GETTEXT( TID_GAME_START_EVENT ), lpszRainTitle );
-		else
-			sprintf( lpszTitle, GETTEXT( TID_GAME_END_EVENT ), lpszRainTitle );
-
-		if( m_bEventTextColor )
-			g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-		else
-			g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-		m_bEventTextColor = !m_bEventTextColor;
-	}
-#else // __EVENTLUA_RAIN
-#ifdef __RAIN_EVENT
-	char lpszTitle[256] = {0,};
-	if( g_Environment.m_bRain )
-		sprintf( lpszTitle, GETTEXT( TID_GAME_START_EVENT ), GETTEXT( TID_GAME_RAIN_EVENT ) );
-	else
-		sprintf( lpszTitle, GETTEXT( TID_GAME_END_EVENT ), GETTEXT( TID_GAME_RAIN_EVENT ) );
-
-	if( m_bEventTextColor )
-		g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-	else
-		g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-	m_bEventTextColor = !m_bEventTextColor;
-#endif // __RAIN_EVENT
-#endif // __EVENTLUA_RAIN
-	if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->m_bIsIndoor && g_pPlayer->GetWorld()->GetID() != WI_DUNGEON_KRRR )
-		return;
-	
-	if( g_pPlayer->GetWorld()->GetID() == WI_DUNGEON_KRRR )
-		g_pPlayer->GetWorld()->m_bViewWeather = TRUE;
-
-	if( g_Environment.m_bRain )
-		g_Environment.m_bSnow = FALSE;
-
-	CWorld::m_skyBox.SetWeather( WEATHER_RAIN, g_Environment.m_bRain );
-}
-
-void CDPClient::OnEnvironmentAll( CAr & ar )
-{
-	ar >> g_Environment.m_bRain;
-	ar >> g_Environment.m_bSnow;
-#ifdef __EVENTLUA_RAIN
-	char lpszRainTitle[256] = {0,};
-	ar.ReadString( lpszRainTitle, 255 );
-	if( strlen( lpszRainTitle ) > 0 )
-	{
-		char lpszTitle[512] = {0,};
-		if( g_Environment.m_bRain )
-			sprintf( lpszTitle, GETTEXT( TID_GAME_START_EVENT ), lpszRainTitle );
-		else
-			sprintf( lpszTitle, GETTEXT( TID_GAME_END_EVENT ), lpszRainTitle );
-
-		if( m_bEventTextColor )
-			g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-		else
-			g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-		m_bEventTextColor = !m_bEventTextColor;
-	}
-#else // __EVENTLUA_RAIN
-#ifdef __RAIN_EVENT
-	char lpszTitle[256] = {0,};
-	if( g_Environment.m_bRain )
-		sprintf( lpszTitle, GETTEXT( TID_GAME_START_EVENT ), GETTEXT( TID_GAME_RAIN_EVENT ) );
-	else
-		sprintf( lpszTitle, GETTEXT( TID_GAME_END_EVENT ), GETTEXT( TID_GAME_RAIN_EVENT ) );
-
-	if( m_bEventTextColor )
-		g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-	else
-		g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-	m_bEventTextColor = !m_bEventTextColor;
-#endif // __RAIN_EVENT
-#endif // __EVENTLUA_RAIN
-
-#ifdef __EVENTLUA_SNOW
-	char lpszSnowTitle[256] = {0,};
-	ar.ReadString( lpszSnowTitle, 255 );
-	if( strlen( lpszSnowTitle ) > 0 )
-	{
-		char lpszTitle[512] = {0,};
-		if( g_Environment.m_bSnow )
-			sprintf( lpszTitle, GETTEXT( TID_GAME_START_EVENT ), lpszSnowTitle );
-		else
-			sprintf( lpszTitle, GETTEXT( TID_GAME_END_EVENT ), lpszSnowTitle );
-
-		if( m_bEventTextColor )
-			g_WndMng.PutString( lpszTitle, NULL, 0xffffff99 );
-		else
-			g_WndMng.PutString( lpszTitle, NULL, 0xffccffcc );
-		m_bEventTextColor = !m_bEventTextColor;
-	}
-#endif // __EVENTLUA_SNOW
-
-	if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->m_bIsIndoor && g_pPlayer->GetWorld()->GetID() != WI_DUNGEON_KRRR )
-		return;
-	
-	if( g_pPlayer->GetWorld()->GetID() == WI_DUNGEON_KRRR )
-		g_pPlayer->GetWorld()->m_bViewWeather = TRUE;
-
-	CWorld::m_skyBox.SetWeather( WEATHER_SNOW, g_Environment.m_bSnow );
-	CWorld::m_skyBox.SetWeather( WEATHER_RAIN, g_Environment.m_bRain );
-}
-
-#endif // __ENVIRONMENT_EFFECT
 
 void CDPClient::OnPartyChat( CAr & ar )
 {

@@ -45,23 +45,10 @@ public:
 	void	SetKeepConnectTime( DWORD dwKeepConnect )	{	m_dwKeepConnect	= dwKeepConnect;	}
 #endif // __EVENTLUA_KEEPCONNECT
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	void	SetWeatherEventExpFactor( float fWeatherEventExpFactor )	{ m_fWeatherEventExpFactor = fWeatherEventExpFactor; }
 	float	GetWeatherEventExpFactor()	{ return m_fWeatherEventExpFactor; }
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __EVENTLUA_RAIN
-	void	SetRainEventExpFactor( float fRainEventExpFactor )	{ m_fRainEventExpFactor = fRainEventExpFactor; }
-	float	GetRainEventExpFactor()	{ return m_fRainEventExpFactor; }
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	void	SetSnowEventExpFactor( float fSnowEventExpFactor )	{ m_fSnowEventExpFactor = fSnowEventExpFactor; }
-	float	GetSnowEventExpFactor()	{ return m_fSnowEventExpFactor; }
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __SHOP_COST_RATE
 	void	SetShopBuyFactor( float fShopBuyFactor )	{	m_fShopBuyFactor = fShopBuyFactor;	}
@@ -86,20 +73,9 @@ private:
 	DWORD	m_dwKeepConnect;
 #endif // __EVENTLUA_KEEPCONNECT
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	float	m_fWeatherEventExpFactor;
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __EVENTLUA_RAIN
-	float	m_fRainEventExpFactor;
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	float	m_fSnowEventExpFactor;
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __SHOP_COST_RATE
 	float	m_fShopBuyFactor;
@@ -160,23 +136,10 @@ public:
 	float GetCheerExpFactor( BOOL bProxy = TRUE );
 #endif // __EVENTLUA_CHEEREXP
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	float			GetWeatherEventExpFactor( BOOL bProxy = TRUE );
 	std::string			GetWeatherEventTitle();
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __EVENTLUA_RAIN
-	float			GetRainEventExpFactor( BOOL bProxy = TRUE );
-	std::string			GetRainEventTitle();
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	float			GetSnowEventExpFactor( BOOL bProxy = TRUE );
-	std::string			GetSnowEventTitle();
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __SHOP_COST_RATE
 	float			GetShopBuyFactor( BOOL bProxy = TRUE );

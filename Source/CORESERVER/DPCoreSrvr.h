@@ -58,13 +58,7 @@ public:
 
 	void	SendAddPartyMember(u_long uPartyId, u_long idLeader, u_long idMember);
 	void	SendRemoveFriend( u_long uidSender, u_long uidFriend );
-#ifdef __ENVIRONMENT_EFFECT
 	void	SendEnvironmentEffect();
-#else // __ENVIRONMENT_EFFECT
-	void	SendEnvironmentSnow( BOOL bSnow );
-	void	SendEnvironmentRain( BOOL bRain );
-	void	SendEnvironment( BOOL bRain, BOOL bSnow );
-#endif // __ENVIRONMENT_EFFECT
 	void	SendPartyChat( u_long idParty, const CHAR* lpName, const CHAR* lpString, OBJID objid );
 	void	SendSetPlayerName( u_long idPlayer, const char* lpszPlayer, DWORD dwData, BOOL f );
 

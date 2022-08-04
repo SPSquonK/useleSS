@@ -1,14 +1,9 @@
-#ifndef __ENVIRONMENT_H__ 
-#define	__ENVIRONMENT_H__
-
-#ifdef __CORESERVER
+#pragma once
 #include "Ar.h"
-#endif // __cORESERVER
 
 class CEnvironment
 {
 public:
-#ifdef __ENVIRONMENT_EFFECT
 	static	CEnvironment*	GetInstance();
 	
 	BOOL	GetEnvironmentEffect()	{	return m_bEffect;	}
@@ -36,13 +31,6 @@ private:
 
 	BOOL	m_bEffect;
 	CTimer	m_tEffectTime;
-#else // __ENVIRONMENT_EFFECT
-public:
-	BOOL	m_bRain;
-	BOOL	m_bSnow;
-	CTimer  m_tRainTime;
-	CTimer  m_tSnowTime;
-#endif // __ENVIRONMENT_EFFECT
 public:
 //	Constructions
 	CEnvironment();
@@ -65,6 +53,3 @@ public:
 #endif // __CORESERVER
 };
 
-extern CEnvironment g_Environment;
-
-#endif	//	__ENVIRONMENT_H__

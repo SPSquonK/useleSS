@@ -62,17 +62,9 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_CW_ADDFRIEND, &CDPCoreClient::OnAddFriend );
 	ON_MSG( PACKETTYPE_REMOVEFRIEND, &CDPCoreClient::OnRemovefriend );
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	ON_MSG( PACKETTYPE_ENVIRONMENTALL, &CDPCoreClient::OnEnvironmentEffect );
 
-#else // __ENVIRONMENT_EFFECT
-
-	ON_MSG( PACKETTYPE_ENVIRONMENTSNOW, &CDPCoreClient::OnEnvironmentSnow );
-	ON_MSG( PACKETTYPE_ENVIRONMENTRAIN, &CDPCoreClient::OnEnvironmentRain );
-	ON_MSG( PACKETTYPE_ENVIRONMENTALL, &CDPCoreClient::OnEnvironmentAll );
-
-#endif // __ENVIRONMENT_EFFECT
 
 	ON_MSG( PACKETTYPE_PARTYCHAT, &CDPCoreClient::OnPartyChat );
 
@@ -370,11 +362,7 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	g_GuildMng.Serialize( ar, FALSE );
 	ar >> g_GuildWarMng;
 
-#ifdef __ENVIRONMENT_EFFECT
 	ar >> *CEnvironment::GetInstance();
-#else // __ENVIRONMENT_EFFECT
-	g_Environment.Serialize( ar );
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __EVENT0913
 	BOOL bEvent0913;
@@ -1138,7 +1126,6 @@ void CDPCoreClient::OnQueryTickCount( CAr & ar, DPID, DPID, OBJID )
 	g_GameTimer.SetCurrentTime( dCurrentTime );
 }
 
-#ifdef __ENVIRONMENT_EFFECT
 
 void CDPCoreClient::OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID )
 {
@@ -1157,63 +1144,6 @@ void CDPCoreClient::OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID )
 	g_UserMng.AddBlock( lpBlock, uBlockSize );
 }
 
-#else // __ENVIRONMENT_EFFECT
-
-void CDPCoreClient::OnEnvironmentSnow( CAr & ar, DPID, DPID, OBJID )
-{
-	ar >> g_Environment.m_bSnow;
-
-	if( g_Environment.m_bSnow )
-	{
-		g_Environment.m_bRain = FALSE;
-	}
-	CAr arBlock;
-	arBlock << NULL_ID << SNAPSHOTTYPE_ENVIRONMENTSNOW;
-	arBlock << g_Environment.m_bSnow;
-#ifdef __EVENTLUA_SNOW
-	arBlock.WriteString( prj.m_EventLua.GetSnowEventTitle().c_str() );
-#endif // __EVENTLUA_SNOW
-	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	g_UserMng.AddBlock( lpBlock, uBlockSize );
-}
-
-void CDPCoreClient::OnEnvironmentRain( CAr & ar, DPID, DPID, OBJID )
-{
-	ar >> g_Environment.m_bRain;
-
-	if( g_Environment.m_bRain )
-		g_Environment.m_bSnow = FALSE;
-
-	CAr arBlock;
-	arBlock << NULL_ID << SNAPSHOTTYPE_ENVIRONMENTRAIN;
-	arBlock << g_Environment.m_bRain;
-#ifdef __EVENTLUA_RAIN
-	arBlock.WriteString( prj.m_EventLua.GetRainEventTitle().c_str() );
-#endif // __EVENTLUA_RAIN
-	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	g_UserMng.AddBlock( lpBlock, uBlockSize );
-}
-
-void CDPCoreClient::OnEnvironmentAll( CAr & ar, DPID, DPID, OBJID )
-{
-	ar >> g_Environment.m_bRain;
-	ar >> g_Environment.m_bSnow;
-	
-	CAr arBlock;
-	arBlock << NULL_ID << SNAPSHOTTYPE_ENVIRONMENTALL;
-	arBlock << g_Environment.m_bRain;
-	arBlock << g_Environment.m_bSnow;
-#ifdef __EVENTLUA_RAIN
-	arBlock.WriteString( prj.m_EventLua.GetRainEventTitle().c_str() );
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	arBlock.WriteString( prj.m_EventLua.GetSnowEventTitle().c_str() );
-#endif // __EVENTLUA_SNOW
-	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	g_UserMng.AddBlock( lpBlock, uBlockSize );
-}
-
-#endif // __ENVIRONMENT_EFFECT
 
 void CDPCoreClient::OnPartyChat( CAr & ar , DPID, DPID, OBJID )
 {

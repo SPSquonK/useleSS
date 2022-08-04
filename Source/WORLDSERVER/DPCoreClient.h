@@ -175,13 +175,7 @@ protected:
 	void	OnPartyChangeItemMode( CAr & ar, DPID, DPID, OBJID );
 	void	OnPartyChangeExpMode( CAr & ar, DPID, DPID, OBJID );
 
-#ifdef __ENVIRONMENT_EFFECT
 	void	OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID );
-#else // __ENVIRONMENT_EFFECT
-	void	OnEnvironmentSnow( CAr & ar, DPID, DPID, OBJID );
-	void	OnEnvironmentRain( CAr & ar, DPID, DPID, OBJID );
-	void	OnEnvironmentAll( CAr & ar, DPID, DPID, OBJID );
-#endif // __ENVIRONMENT_EFFECT
 
 	void	OnPartyChat( CAr & ar , DPID, DPID, OBJID );
 	void	OnCreateGuild( CAr & ar, DPID, DPID, OBJID );

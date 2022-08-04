@@ -201,17 +201,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		assert( 0 );
 	}
 
-#ifdef __ENVIRONMENT_EFFECT
 	if( CEnvironment::GetInstance()->CreateWorkers() == FALSE )
 	{
 		assert( 0 );
 	}
-#else // __ENVIRONMENT_EFFECT
-	if( !g_Environment.CreateWorkers() )
-	{
-		assert( 0 );
-	}
-#endif // __ENVIRONMENT_EFFECT
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

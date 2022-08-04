@@ -207,11 +207,9 @@ void CUser::Open( void )
 	PCSetAt( GetId(), (CCtrl*)this );
 	m_Snapshot.SetSnapshot( GetId(),  PACKETTYPE_JOIN );
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	AddEnvironmentSetting();
 
-#endif // __ENVIRONMENT_EFFECT
 
 #ifdef __MAP_SECURITY
 	AddWorldReadInfo( dwWorldId, GetPos() );
@@ -1244,7 +1242,6 @@ void CUser::AddFriendError( BYTE nError, const char * szName )
 }
 
 
-#ifdef __ENVIRONMENT_EFFECT
 
 void CUser::AddEnvironmentSetting()
 {
@@ -1256,7 +1253,6 @@ void CUser::AddEnvironmentSetting()
 	m_Snapshot.ar << CEnvironment::GetInstance()->GetSeason();
 }
 
-#endif // __ENVIRONMENT_EFFECT
 
 void CUser::AddEnvironment( void )
 {
@@ -1266,7 +1262,6 @@ void CUser::AddEnvironment( void )
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_ENVIRONMENT;
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	m_Snapshot.ar << *CEnvironment::GetInstance();
 	
@@ -1275,19 +1270,6 @@ void CUser::AddEnvironment( void )
 		m_Snapshot.ar.WriteString( prj.m_EventLua.GetWeatherEventTitle().c_str() );
 	}
 
-#else // __ENVIRONMENT_EFFECT
-
-	g_Environment.Serialize( m_Snapshot.ar );
-#ifdef __EVENTLUA_RAIN
-	if( g_Environment.m_bRain )
-		m_Snapshot.ar.WriteString( prj.m_EventLua.GetRainEventTitle().c_str() );
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	if( g_Environment.m_bSnow )
-		m_Snapshot.ar.WriteString( prj.m_EventLua.GetSnowEventTitle().c_str() );
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 }
 void CUser::AddPartyChat( const CHAR* lpName, const CHAR* lpString, OBJID objid )
 {

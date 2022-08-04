@@ -9,11 +9,9 @@
 #include "ModelObject.h"
 
 
-#ifdef __ENVIRONMENT_EFFECT
 
 #include "Environment.h"
 
-#endif // __ENVIRONMENT_EFFECT
 
 
 LPDIRECT3DTEXTURE9	g_pReflectMap = NULL;
@@ -3305,7 +3303,6 @@ void	CObject3D::RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, GMOBJECT *pObj, cons
 	{
 		pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
 
-#ifdef __ENVIRONMENT_EFFECT
 
 		if( CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING )
 		{
@@ -3319,22 +3316,6 @@ void	CObject3D::RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, GMOBJECT *pObj, cons
 			}
 		}
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __JAPAN_SAKURA
-		if( stricmp( m_szFileName, "obj_macoprtr16.o3d" ) == 0 || stricmp( m_szFileName, "obj_macoprtr17.o3d" ) == 0 )
-		{
-			pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE2X );
-		}
-		else
-		{
-			pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-		}
-#else
-		pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-#endif //__JAPAN_SAKURA
-
-#endif // __ENVIRONMENT_EFFECT
 		
 		pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 	}

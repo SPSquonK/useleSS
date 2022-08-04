@@ -3076,30 +3076,12 @@ float CMover::GetExpFactor( void )
 	if( HasBuff( BUFF_ITEM, II_SYS_SYS_VOTE_THANKS ) )
 		fFactor		*=	1.05F;
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	if( CEnvironment::GetInstance()->GetEnvironmentEffect() == TRUE )
 	{
 		fFactor *= prj.m_EventLua.GetWeatherEventExpFactor();
 	}
 
-#else // __ENVIRONMENT_EFFECT
-
-#ifdef __EVENTLUA_RAIN
-	if( g_Environment.m_bRain )
-		fFactor *= prj.m_EventLua.GetRainEventExpFactor();
-#else // __EVENTLUA_RAIN
-#ifdef __RAIN_EVENT
-	if( g_Environment.m_bRain )
-		fFactor *= 2.0f;
-#endif // __RAIN_EVENT
-#endif // __EVENTLUA_RAIN
-#ifdef __EVENTLUA_SNOW
-	if( g_Environment.m_bSnow )
-		fFactor *= prj.m_EventLua.GetSnowEventExpFactor();
-#endif // __EVENTLUA_SNOW
-
-#endif // __ENVIRONMENT_EFFECT
 
 #endif	// __WORLDSERVER
 

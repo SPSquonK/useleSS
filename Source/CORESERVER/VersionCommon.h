@@ -47,7 +47,6 @@
 // 15차
 //	#define		__HERO129_VER15				// 15차 히어로 레벨확장
 
-	#define		__ENVIRONMENT_EFFECT
 
 
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 

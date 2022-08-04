@@ -448,60 +448,6 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 
 //////////////////////////////////////////////////////////
 
-#ifndef __ENVIRONMENT_EFFECT
-
-#ifdef __EVENT_FALL
-			BOOL bEventFlag = FALSE;
-			
-			if( stricmp(modelElem.m_szName, "MaCoPrTr01") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr03") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr10") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr20") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr14") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr11") == 0 )
-			{
-				bEventFlag = TRUE;
-				_tcscpy( modelElem.m_szName, "MapleTree01" );
-			}
-			
-			if( stricmp(modelElem.m_szName, "MaCoPrTr04") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr05") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr12") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr15") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr13") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr02") == 0 )
-			{
-				bEventFlag = TRUE;
-				_tcscpy( modelElem.m_szName, "MapleTree02" );
-			}			
-
-			if(	bEventFlag == TRUE )
-				modelElem.m_fScale = 1.0f;	
-#endif //__EVENT_FALL			
-//////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////////////
-#ifdef __JAPAN_SAKURA
-			BOOL bEventFlag = FALSE;
-			
-			if( stricmp(modelElem.m_szName, "MaCoPrTr01") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr03") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr10") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr20") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr14") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr11") == 0 )
-			{
-				bEventFlag = TRUE;
-				_tcscpy( modelElem.m_szName, "MaCoPrTr16" );
-			}
-			
-			if( stricmp(modelElem.m_szName, "MaCoPrTr04") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr05") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr12") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr15") == 0 ||
-				stricmp(modelElem.m_szName, "MaCoPrTr13") == 0 || stricmp(modelElem.m_szName, "MaCoPrTr02") == 0 )
-			{
-				bEventFlag = TRUE;
-				_tcscpy( modelElem.m_szName, "MaCoPrTr17" );
-			}			
-
-			if(	bEventFlag == TRUE )
-			{
-				modelElem.m_fScale = 1.0f;
-			}
-#endif //__JAPAN_SAKURA			
-
-#endif // __ENVIRONMENT_EFFECT
 //////////////////////////////////////////////////////////
 			
 		#ifdef __WORLDSERVER

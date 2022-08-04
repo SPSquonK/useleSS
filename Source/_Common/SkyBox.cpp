@@ -55,13 +55,11 @@ void CSkyBox::Free()
 {
 }
 
-#ifdef __ENVIRONMENT_EFFECT
 CSkyBox* CSkyBox::GetInstance()
 {
 	static CSkyBox	sSkyBox;
 	return & sSkyBox;
 }
-#endif // __ENVIRONMENT_EFFECT
 
 void CSkyBox::SetWeather( int nWeather, BOOL bOnOff )
 {
@@ -124,7 +122,6 @@ void CSkyBox::Process()
 #ifdef __CLIENT
 		if( m_pWorld->GetID() == WI_WORLD_KEBARAS )
 		{
-#ifdef __ENVIRONMENT_EFFECT
 
 			if( CEnvironment::GetInstance()->GetSeason() != SEASON_WINTER )
 			{
@@ -133,17 +130,6 @@ void CSkyBox::Process()
 				CWorld::m_skyBox.SetWeather( WEATHER_SNOW, TRUE );
 			}
 
-#else // __ENVIRONMENT_EFFECT
-
-			if( !g_Environment.m_bSnow )
-			{
-				g_Environment.m_bSnow	= TRUE;
-				g_Environment.m_bRain	= FALSE;
-
-				CWorld::m_skyBox.SetWeather( WEATHER_SNOW, TRUE );
-			}
-
-#endif // __ENVIRONMENT_EFFECT
 		}
 #endif	// __CLIENT
 #endif	// __JEFF_11
@@ -1273,7 +1259,6 @@ HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
 
-#ifdef __ENVIRONMENT_EFFECT
 
 	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "sundisk.bmp"), &m_pSunTexture ) ) )
 	{
@@ -1306,26 +1291,6 @@ HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 	}
 */
 
-#else // __ENVIRONMENT_EFFECT
-
-#if defined( __EVENT_FALL )
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "leaf.bmp"), &m_pSunTexture ) ) )
-	{
-		return	D3DAPPERR_MEDIANOTFOUND;
-	}
-#elif defined( __JAPAN_SAKURA )
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "sakura.bmp"), &m_pSunTexture ) ) )
-	{
-		return	D3DAPPERR_MEDIANOTFOUND;
-	}
-#else
-    if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "sundisk.bmp"), &m_pSunTexture ) ) )
-	{
-		return	D3DAPPERR_MEDIANOTFOUND;
-	}
-#endif
-
-#endif // __ENVIRONMENT_EFFECT
 
 	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "flare_3.tga"),
 									   &m_pSunTexture2 ) ) )

@@ -83,9 +83,7 @@ public:
 	CSkyBox();
 	~CSkyBox();
 
-#ifdef __ENVIRONMENT_EFFECT
 	static	CSkyBox*	GetInstance();
-#endif // __ENVIRONMENT_EFFECT
 
 	void SetWeather( int nWeather, BOOL bOnOff );		
 

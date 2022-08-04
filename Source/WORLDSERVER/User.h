@@ -345,9 +345,7 @@ public:
 	void			AddFriendCancel();
 	void			AddFriendError( BYTE nError, const char * szName );
 
-#ifdef __ENVIRONMENT_EFFECT
 	void			AddEnvironmentSetting();
-#endif // __ENVIRONMENT_EFFECT
 	void			AddEnvironment();
 	void			AddPartyChat( const CHAR* lpName, const CHAR* lpString, OBJID objid );
 	void			AddAddFriend( u_long idPlayer, const char* lpszPlayer );
