@@ -4969,7 +4969,7 @@ void CDPSrvr::OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 void CDPSrvr::OnRequestGuildRank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	CTime		tm			= CTime::GetCurrentTime();
-	CTimeSpan	tm_update	= tm - CGuildRank::Instance()->m_UpdateTime;
+	CTimeSpan	tm_update	= tm - CGuildRank::Instance.m_UpdateTime;
 
 	DWORD	ver;
 	
@@ -4985,7 +4985,7 @@ void CDPSrvr::OnRequestGuildRank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	else
 	{
 		// 랭크 정보 버젼이 다를 경우엔 랭크 정보를 보내게 된다.
-		if ( CGuildRank::Instance()->m_Version != ver )
+		if ( CGuildRank::Instance.m_Version != ver )
 		{
 			// 랭킹 정보를 보낸다.
 			CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );

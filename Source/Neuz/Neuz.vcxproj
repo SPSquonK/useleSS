@@ -103,6 +103,7 @@
     <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp" />
+    <ClCompile Include="..\_Interface\WndRankCmn.cpp" />
     <ClCompile Include="..\_Interface\WndSkillTree.cpp" />
     <ClCompile Include="..\_Interface\WndSqKComponents.cpp" />
     <ClCompile Include="..\_Network\ListedServer.cpp" />
@@ -680,6 +681,7 @@
     <ClInclude Include="..\_Common\Vector3Helper.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
+    <ClInclude Include="..\_Interface\WndRankCmn.h" />
     <ClInclude Include="..\_Interface\WndSkillTree.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
     <ClInclude Include="..\_Interface\WndTListBox.hpp" />
@@ -809,9 +811,6 @@
     <ClInclude Include="..\_Interface\WndGuildWarPeaceConfirm.h" />
     <ClInclude Include="..\_Interface\WndGuildWarRequest.h" />
     <ClInclude Include="..\_Interface\WndSecretRoom.h" />
-    <ClInclude Include="..\_Interface\WndRankGuild.h" />
-    <ClInclude Include="..\_Interface\WndRankInfo.h" />
-    <ClInclude Include="..\_Interface\WndRankWar.h" />
     <ClInclude Include="..\_Interface\WndPiercing.h" />
     <ClInclude Include="..\_Interface\WndAdminCreateItem.h" />
     <ClInclude Include="..\_Interface\WndDebugInfo.h" />

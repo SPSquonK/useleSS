@@ -5151,7 +5151,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndRankGuild = new CWndRankGuild;
 				g_WndMng.m_pWndRankGuild->Initialize( &g_WndMng, APP_RANK_GUILD );
 				
-				g_DPlay.SendGuildRank( CGuildRank::Instance()->m_Version );
+				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
 			}
 		case MMI_RANK_WAR:
@@ -5159,7 +5159,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndRankWar );
 				g_WndMng.m_pWndRankWar = new CWndRankWar;
 				g_WndMng.m_pWndRankWar->Initialize( &g_WndMng, APP_RANK_WAR );
-				g_DPlay.SendGuildRank( CGuildRank::Instance()->m_Version );
+				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
 			}
 		case MMI_RANK_INFO:
@@ -5167,7 +5167,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndRankInfo );
 				g_WndMng.m_pWndRankInfo = new CWndRankInfo;
 				g_WndMng.m_pWndRankInfo->Initialize( &g_WndMng, APP_RANK_INFO );
-				g_DPlay.SendGuildRank( CGuildRank::Instance()->m_Version );
+				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
 			}
 		case MMI_INVITE_PARTY: // 파티참여

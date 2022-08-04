@@ -331,8 +331,9 @@ void CDPDatabaseClient::SendCastVote( u_long idVote, BYTE cbSelection )
 
 void CDPDatabaseClient::OnUpdateGuildRankFinish( CAr & ar )
 {
+	// TODO: this is never triggered
 	// 길드 랭크 정보를 시리얼라이즈 한다.
-	ar >> *CGuildRank::Instance();
+	ar >> CGuildRank::Instance;
 	g_DPCacheSrvr.SendUpdateGuildRank();
 }
 

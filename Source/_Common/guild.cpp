@@ -743,7 +743,7 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 			( i->second )->Serialize( ar, bDesc );
 		
 		// 길드랭크 정보 로드
-		ar << *CGuildRank::Instance();
+		ar << CGuildRank::Instance;
 	}
 	else
 	{
@@ -763,7 +763,7 @@ void CGuildMng::Serialize( CAr & ar, BOOL bDesc )
 		}
 
 		// 길드랭크 정보  쓰기
-		ar >> *CGuildRank::Instance();
+		ar >> CGuildRank::Instance;
 	}
 }
 
@@ -925,26 +925,80 @@ void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 }
 #endif	// __WORLDSERVER
 
-CGuildRank* CGuildRank::Instance()
-{
-	static CGuildRank	sGuildRank;
-	return &sGuildRank;
+static CGuildRank g_sGuildRank;
+CGuildRank & CGuildRank::Instance = g_sGuildRank;
+
+
+#ifdef __DBSERVER
+/*
+ *	TRANS 서버일때에만 Rank함수를 Call 할수 있다.
+ */
+BOOL CGuildRank::GetRanking(CQuery * pQuery, LPCTSTR p_strQuery) {
+	m_Lock.Enter(theLineFile);
+
+	m_UpdateTime = CTime::GetCurrentTime();
+
+	m_Version++;
+	m_Ranking.fill({});
+
+	pQuery->Clear();
+
+	for (int i = R1; i < RANK_END; ++i) {
+		sprintf(const_cast<char *>(p_strQuery), "RANKING_DBF.dbo.RANKING_STR 'R%d','%02d'", i + 1, g_appInfo.dwSys);
+		if (!pQuery->Exec(p_strQuery)) {
+			Error("CDbManager::UpdateGuildRanking에서 (%s) 실패", p_strQuery);
+			m_Lock.Leave(theLineFile);
+			return FALSE;
+		}
+
+		while (pQuery->Fetch()) {
+			GUILD_RANKING & ranking = m_Ranking[i].emplace_back();
+
+			ranking.m_dwLogo = pQuery->GetInt("m_dwLogo");
+
+			pQuery->GetStr("m_szGuild", ranking.m_szGuild);
+			pQuery->GetStr("m_szName", ranking.m_szName);
+
+			ranking.m_nWin = pQuery->GetInt("m_nWin");
+			ranking.m_nLose = pQuery->GetInt("m_nLose");
+			ranking.m_nSurrender = pQuery->GetInt("m_nSurrender");
+			ranking.m_AvgLevel = pQuery->GetFloat("m_AvgLevel");
+			ranking.m_nWinPoint = pQuery->GetInt("m_nWinPoint");
+		}
+
+		pQuery->Clear();
+	}
+
+	m_Lock.Leave(theLineFile);
+
+	return TRUE;
 }
+
+
+BOOL CGuildRank::RankingDBUpdate(CQuery * pQuery, LPCTSTR p_strQuery) {
+	m_Lock.Enter(theLineFile);
+
+	pQuery->Clear();
+
+	sprintf(const_cast<char *>(p_strQuery), "MAKE_RANKING_STR '%02d'", g_appInfo.dwSys);
+	if (FALSE == pQuery->Exec(p_strQuery)) {
+		Error("CDbManager::RankingDBUpdate (%s) 실패", p_strQuery);
+		m_Lock.Leave(theLineFile);
+		return FALSE;
+	}
+
+	m_Lock.Leave(theLineFile);
+
+	return TRUE;
+}
+#endif//__DBSERVER
 
 CAr & operator<<(CAr & ar, const CGuildRank & self) {
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
 	CMclAutoLock lock(self.m_Lock);
 #endif
 
-	ar << self.m_Version;
-	ar.Write(self.m_Total, sizeof(int) * CGuildRank::RANK_END);
-	for (int i = CGuildRank::R1; i < CGuildRank::RANK_END; i++) {
-		if (self.m_Total[i]) {
-			ar.Write(self.m_Ranking[i], sizeof(CGuildRank::GUILD_RANKING) * self.m_Total[i]);
-		}
-	}
-
-	return ar;
+	return ar << self.m_Version << self.m_Ranking;
 }
 
 
@@ -953,15 +1007,7 @@ CAr & operator>>(CAr & ar, CGuildRank & self) {
 	CMclAutoLock lock(self.m_Lock);
 #endif
 
-	ar >> self.m_Version;
-	ar.Read(self.m_Total, sizeof(int) * CGuildRank::RANK_END);
-	for (int i = CGuildRank::R1; i < CGuildRank::RANK_END; i++) {
-		if (self.m_Total[i]) {
-			ar.Read(self.m_Ranking[i], sizeof(CGuildRank::GUILD_RANKING) * self.m_Total[i]);
-		}
-	}
-
-	return ar;
+	return ar >> self.m_Version >> self.m_Ranking;
 }
 
 #ifndef __CORESERVER

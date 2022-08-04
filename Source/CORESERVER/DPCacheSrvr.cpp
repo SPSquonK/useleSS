@@ -2387,7 +2387,7 @@ void CDPCacheSrvr::OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long u
 void CDPCacheSrvr::SendUpdateGuildRank()
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_UPDATE_GUILD_RANKING, DPID_ALLPLAYERS );
-	ar << *CGuildRank::Instance();
+	ar << CGuildRank::Instance;
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 

@@ -84,9 +84,7 @@ class CWndMap;
 #define REG_VERSION 1
 
 #include "WndGuild.h"
-#include "WndRankGuild.h"
-#include "WndRankInfo.h"
-#include "WndRankWar.h"
+#include "WndRankCmn.h"
 #include "WndGuildBank.h"
 
 #include "WndChangeName.h"

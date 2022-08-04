@@ -417,6 +417,8 @@ extern	APP_INFO	g_appInfo;
 class CGuildRank
 {
 public:
+	static CGuildRank & Instance;
+
 	/*
 	 *	R1 : 최강길드
 	 *	R2 : 최다승
@@ -433,8 +435,9 @@ public:
 	};
 
 	// 랭크 정보 구조체
-	typedef struct _SGuildRanking
-	{
+	struct GUILD_RANKING {
+		static constexpr bool Archivable = true;
+
 		int			m_dwLogo;
 		char		m_szGuild[17];
 		char		m_szName[33];
@@ -443,94 +446,26 @@ public:
 		int			m_nSurrender;
 		float		m_AvgLevel;
 		int			m_nWinPoint;
-	}GUILD_RANKING, *LPGUILD_RANKING;
+	};
 	
-	GUILD_RANKING	m_Ranking[RANK_END][MAX_RANK_LIST];
-	int				m_Total[RANK_END];
-	DWORD			m_Version;
+	std::array<boost::container::static_vector<GUILD_RANKING, MAX_RANK_LIST>, RANK_END> m_Ranking;
+
+	DWORD			m_Version = 0;
 
 #if !defined(__WORLDSERVER) && !defined(__CLIENT)
 	mutable CRIT_SEC		m_Lock;
 #endif
-	CTime			m_UpdateTime;
+	CTime			m_UpdateTime = m_UpdateTime = CTime::GetCurrentTime();;
 
-
-	GUILD_RANKING*	operator[](int i)		{	return m_Ranking[i]; }
+	boost::container::static_vector<GUILD_RANKING, MAX_RANK_LIST> & operator[](RANKING i) {
+		return m_Ranking[i];
+	}
 
 public:
-	CGuildRank()									{	m_Version = 0; m_UpdateTime = CTime::GetCurrentTime();}
-	~CGuildRank()									{	;}
-
-	static CGuildRank* Instance();
 #ifdef __DBSERVER
-	/*	
-	 *	TRANS 서버일때에만 Rank함수를 Call 할수 있다.
-	 */
-	BOOL GetRanking(CQuery* pQuery, LPCTSTR p_strQuery)
-	{
-		m_Lock.Enter( theLineFile );
-
-		m_UpdateTime = CTime::GetCurrentTime();
-
-		m_Version++;
-		ZeroMemory(m_Ranking, sizeof(GUILD_RANKING)*MAX_RANK_LIST*RANK_END);
-		ZeroMemory(m_Total, sizeof(int)*RANK_END);
-
-		pQuery->Clear();
-
-		for ( int i=R1; i<RANK_END; ++i )
-		{
-			sprintf(const_cast<char*>(p_strQuery), "RANKING_DBF.dbo.RANKING_STR 'R%d','%02d'", i+1, g_appInfo.dwSys );
-			if( FALSE == pQuery->Exec( p_strQuery ) )
-			{
-				Error( "CDbManager::UpdateGuildRanking에서 (%s) 실패", p_strQuery );
-				m_Lock.Leave( theLineFile );
-				return FALSE;
-			}
-
-			int& j = m_Total[i];
-			for ( ; pQuery->Fetch() == TRUE ; ++j )
-			{
-				m_Ranking[i][j].m_dwLogo		= pQuery->GetInt("m_dwLogo");
-				
-				pQuery->GetStr( "m_szGuild"		, m_Ranking[i][j].m_szGuild );
-				pQuery->GetStr( "m_szName"		, m_Ranking[i][j].m_szName );
-
-				m_Ranking[i][j].m_nWin			= pQuery->GetInt("m_nWin");
-				m_Ranking[i][j].m_nLose			= pQuery->GetInt("m_nLose");
-				m_Ranking[i][j].m_nSurrender	= pQuery->GetInt("m_nSurrender");			
-				m_Ranking[i][j].m_AvgLevel		= pQuery->GetFloat("m_AvgLevel");				
-				m_Ranking[i][j].m_nWinPoint		= pQuery->GetInt("m_nWinPoint");
-			}
-			
-			pQuery->Clear();
-		}
-
-		m_Lock.Leave( theLineFile );
-
-		return TRUE;
-	}
-
-	
-	BOOL RankingDBUpdate(CQuery* pQuery, LPCTSTR p_strQuery)
-	{
-		m_Lock.Enter( theLineFile );
-
-		pQuery->Clear();
-
-		sprintf(const_cast<char*>(p_strQuery), "MAKE_RANKING_STR '%02d'", g_appInfo.dwSys );
-		if( FALSE == pQuery->Exec( p_strQuery ) )
-		{
-			Error( "CDbManager::RankingDBUpdate (%s) 실패", p_strQuery );
-			m_Lock.Leave( theLineFile );
-			return FALSE;
-		}
-
-		m_Lock.Leave( theLineFile );
-
-		return TRUE;
-	}
-#endif//__DBSERVER
+	BOOL RankingDBUpdate(CQuery * pQuery, LPCTSTR p_strQuery);
+	BOOL GetRanking(CQuery * pQuery, LPCTSTR p_strQuery);
+#endif
 	
 	friend CAr & operator<<(CAr & ar, const CGuildRank & self);
 	friend CAr & operator>>(CAr & ar, CGuildRank & self);

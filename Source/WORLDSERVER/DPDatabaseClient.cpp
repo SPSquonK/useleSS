@@ -2023,12 +2023,9 @@ void CDPDatabaseClient::UpdateGuildRanking()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::UpdateGuildRankingUpdate()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_UPDATE_GUILD_RANKING_DB, DPID_UNKNOWN, DPID_UNKNOWN );
-	
-	ar << static_cast<int>(1); // 월드 서버에서 요청
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::UpdateGuildRankingUpdate() {
+	BEFORESENDDUAL(ar, PACKETTYPE_UPDATE_GUILD_RANKING_DB, DPID_UNKNOWN, DPID_UNKNOWN);
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
 void CDPDatabaseClient::OnGuildBank( CAr & ar, DPID, DPID )
@@ -2064,7 +2061,9 @@ void CDPDatabaseClient::OnGuildBank( CAr & ar, DPID, DPID )
 }
 
 void CDPDatabaseClient::OnUpdateGuildRankingFinish(CAr & ar, DPID, DPID) {
-	ar >> *CGuildRank::Instance();
+	ar >> CGuildRank::Instance;
+
+	// TODO: send the GuildRank to all users
 }
 
 
