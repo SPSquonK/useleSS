@@ -31,6 +31,47 @@ private:
 	void MoveCurrentList(int delta);
 };
 
+class CWndTabCtrlManager {
+private:
+	std::vector<std::unique_ptr<CWndBase>> m_tabs;
+
+public:
+	// API 1: Add a tab into a given CWndTablCtrl
+
+	template<typename WindowType>
+	void Add(CWndTabCtrl & tabCtrl, CRect rect, DWORD widgetId, DWORD textId) {
+		CWndBase * const window = m_tabs.emplace_back(std::make_unique<WindowType>()).get();
+		Add(tabCtrl, rect, *window, widgetId, textId);
+	}
+
+
+	// API 2: For a given CWndTabCtrl, add many tabs
+
+	class AddInTabCtrl {
+		CWndTabCtrlManager & m_manager;
+		CWndTabCtrl & m_tabCtrl;
+		CRect m_rect;
+
+	public:
+		AddInTabCtrl(CWndTabCtrlManager & manager, CWndTabCtrl & tabCtrl, CRect rect)
+			: m_manager(manager), m_tabCtrl(tabCtrl), m_rect(rect) {
+		}
+
+		template<typename WindowType>
+		AddInTabCtrl Add(DWORD widgetId, DWORD textId) {
+			m_manager.Add<WindowType>(m_tabCtrl, m_rect, widgetId, textId);
+			return *this;
+		}
+	};
+
+	AddInTabCtrl In(CWndTabCtrl & tabCtrl, CRect rect) {
+		return AddInTabCtrl(*this, tabCtrl, rect);
+	}
+
+private:
+	void Add(CWndTabCtrl & tabCtrl, CRect rect, CWndBase & tab, DWORD widgetId, DWORD textId);
+};
+
 
 class CWndRankTabBest : public CWndRankTab {
 public:
@@ -52,9 +93,7 @@ public:
 
 class CWndRankGuild : public CWndNeuz {
 public:
-	CWndRankTabBest		m_WndRankTabBest;
-	CWndRankTabUnited	m_WndRankTabUnited;
-	CWndRankTabPenya	m_WndRankTabPenya;
+	CWndTabCtrlManager m_tabManager;
 
 	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
 	virtual	void OnInitialUpdate();
@@ -75,8 +114,7 @@ public:
 
 class CWndRankInfo : public CWndNeuz {
 public:
-	CWndRankInfoTabLevel	m_WndRankInfoTabLevel;
-	CWndRankInfoTabPlayTime m_WndRankInfoTabPlayTime;
+	CWndTabCtrlManager m_tabManager;
 
 	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
 	virtual	void OnInitialUpdate();
@@ -103,9 +141,7 @@ public:
 
 class CWndRankWar : public CWndNeuz {
 public:
-	CWndRankWarTabGiveUp	m_WndRankWarTabGiveUp;
-	CWndRankWarTabLose		m_WndRankWarTabLose;
-	CWndRankWarTabWin		m_WndRankWarTabWin;
+	CWndTabCtrlManager m_tabManager;
 
 	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
 	virtual	void OnInitialUpdate();

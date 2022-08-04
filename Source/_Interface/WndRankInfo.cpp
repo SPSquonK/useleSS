@@ -40,42 +40,22 @@ CWndRankTab::ValuesToPrint CWndRankInfoTabPlayTime::GetValuesToPrint(const CGuil
   CtrlId : WIDC_TABCTRL1 - 
 ****************************************************/
 
-void CWndRankInfo::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
+void CWndRankInfo::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
+	CWndTabCtrl * pWndTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	CRect rect = GetClientRect();
 	rect.left = 5;
 	rect.top = 0;
-	
-	m_WndRankInfoTabLevel.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_RANK_INFOTABLEVEL );
-	m_WndRankInfoTabPlayTime.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_RANK_INFOTABPLAYTIME );
-	
-	WTCITEM tabTabItem;
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText( TID_GAME_TOOLTIP_RANKLEVEL );
-	tabTabItem.pWndBase = &m_WndRankInfoTabLevel;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-	
-	
-	tabTabItem.pszText = prj.GetText( TID_GAME_TOOLTIP_RANKPLAYTIME );
-	tabTabItem.pWndBase = &m_WndRankInfoTabPlayTime;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
-	
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+
+	m_tabManager.In(*pWndTabCtrl, rect)
+		.Add<CWndRankInfoTabLevel>(APP_RANK_INFOTABLEVEL, TID_GAME_TOOLTIP_RANKLEVEL)
+		.Add<CWndRankInfoTabPlayTime>(APP_RANK_INFOTABPLAYTIME, TID_GAME_TOOLTIP_RANKPLAYTIME);
+
 	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndRankInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_RANK_INFO, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
+
+BOOL CWndRankInfo::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_RANK_INFO, pWndParent, 0, CPoint(0, 0));
+}
 

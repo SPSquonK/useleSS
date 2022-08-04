@@ -64,48 +64,23 @@ CWndRankTab::ValuesToPrint CWndRankWarTabWin::GetValuesToPrint(const CGuildRank:
   CtrlId : WIDC_TABCTRL1 - 
 ****************************************************/
 
-void CWndRankWar::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
+void CWndRankWar::OnInitialUpdate() {
+  CWndNeuz::OnInitialUpdate();
 
-	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CRect rect = GetClientRect();
-	rect.left = 5;
-	rect.top = 0;
+  CWndTabCtrl * pWndTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
+  CRect rect = GetClientRect();
+  rect.left = 5;
+  rect.top = 0;
 
-	m_WndRankWarTabWin.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_RANK_WARTABWIN );
-	m_WndRankWarTabLose.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_RANK_WARTABLOSE );
-	m_WndRankWarTabGiveUp.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_RANK_WARTABGIVEUP );
-	
-	WTCITEM tabTabItem;
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText( TID_GAME_TOOLTIP_RANKWIN );
-	tabTabItem.pWndBase = &m_WndRankWarTabWin;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-	
-	
-	tabTabItem.pszText = prj.GetText( TID_GAME_TOOLTIP_RANKLOSE );
-	tabTabItem.pWndBase = &m_WndRankWarTabLose;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
-	
-	tabTabItem.pszText = prj.GetText( TID_GAME_TOOLTIP_RANKGIVEUP );
-	tabTabItem.pWndBase = &m_WndRankWarTabGiveUp;
-	pWndTabCtrl->InsertItem( 2, &tabTabItem );	
+  m_tabManager.In(*pWndTabCtrl, rect)
+    .Add<CWndRankWarTabWin>(APP_RANK_WARTABWIN, TID_GAME_TOOLTIP_RANKWIN)
+    .Add<CWndRankWarTabLose>(APP_RANK_WARTABLOSE, TID_GAME_TOOLTIP_RANKLOSE)
+    .Add<CWndRankWarTabGiveUp>(APP_RANK_WARTABGIVEUP, TID_GAME_TOOLTIP_RANKGIVEUP);
 
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
-	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndRankWar::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_RANK_WAR, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+  MoveParentCenter();
+}
+
+BOOL CWndRankWar::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+  return CWndNeuz::InitDialog(APP_RANK_WAR, pWndParent, 0, CPoint(0, 0));
+}
 

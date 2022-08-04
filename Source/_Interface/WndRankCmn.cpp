@@ -3,6 +3,11 @@
 #include "defineText.h"
 #include "AppDefine.h"
 
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 	static constexpr DWORD dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
 
@@ -86,7 +91,7 @@ void CWndRankTab::OnInitialUpdate() {
 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndRankTab::Initialize(CWndBase * pWndParent, DWORD) {
-	// Daisy에서 설정한 리소스로 윈도를 연다.
+	// TODO: this function is probably never called -> delete it
 	return CWndNeuz::InitDialog(m_appId, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -117,4 +122,17 @@ void CWndRankTab::MoveCurrentList(int delta) {
 			static_cast<int>(CGuildRank::Instance[m_rank].size() - 10)
 		);
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+void CWndTabCtrlManager::Add(CWndTabCtrl & tabCtrl, CRect rect, CWndBase & tab, DWORD widgetId, DWORD textId) {
+	tab.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, &tabCtrl, widgetId);
+
+	WTCITEM tabTabItem;
+	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
+	tabTabItem.pszText = prj.GetText(textId);
+	tabTabItem.pWndBase = &tab;
+	tabCtrl.InsertItem(tabCtrl.GetSize(), &tabTabItem);
 }
