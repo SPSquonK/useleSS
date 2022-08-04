@@ -966,38 +966,6 @@ BOOL CGuildRank::GetRanking(CQuery * pQuery, LPCTSTR p_strQuery) {
 			ranking.m_nWinPoint = pQuery->GetInt("m_nWinPoint");
 		}
 
-		while (m_Ranking[i].size() != 20) {
-			GUILD_RANKING & ranking = m_Ranking[i].emplace_back();
-
-			ranking.m_dwLogo = xRandom(4, 8);
-
-
-			std::vector<const char *> guilds = {
-				"AllezLesVerts", "AllezLesBleus", "AllezLesRouges", "LesGentils",
-				"LesMechants", "FanClubDeSquonK", "JePrefereSFlyFF", "JePrefereMoonFlyFF",
-				"JePrefereSyliaFlyFF", "SnowersBanni", "LesGensQui", "SupprimentUnPerso"
-			};
-
-			std::vector<const char *> masters = {
-				"Michel", "Sophie", "Jean-Pierre", "Alice", "Jordan", "Josiane",
-				"Philippe", "Marlene"
-			};
-
-			std::strcpy(ranking.m_szGuild, guilds[xRandom(guilds.size())]);
-			std::strcpy(ranking.m_szName, masters[xRandom(masters.size())]);
-
-			ranking.m_nWin = xRandom(1, 200);
-			ranking.m_nLose = xRandom(1, 200);
-			ranking.m_nSurrender = xRandom(1, 200);
-			ranking.m_AvgLevel = xRandom(1, 200);
-			ranking.m_nWinPoint = xRandom(1, 200);
-
-			xRandom(5);
-			xRandom(5); xRandom(5); xRandom(5); xRandom(5);
-			int roll = xRandom(10);
-			for (int i = 0; i != roll; ++i) xRandom(8);
-		}
-
 		pQuery->Clear();
 	}
 
