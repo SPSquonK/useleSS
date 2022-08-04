@@ -1640,16 +1640,8 @@ void CUser::AddGuildRealPenya( int nGoldGuild, int nType )
 	
 }
 
-void CUser::SendGuildRank()
-{
-	if( IsDelete() )	return;
-	
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_REQUEST_GUILDRANK;
-	m_Snapshot.ar << *CGuildRank::Instance();
-	
+void CUser::SendGuildRank() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REQUEST_GUILDRANK>(CGuildRank::Instance);
 }
 
 void CUser::AddSMMode( int nType, DWORD dwTime )

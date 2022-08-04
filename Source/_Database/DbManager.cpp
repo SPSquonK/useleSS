@@ -2286,8 +2286,7 @@ void CDbManager::OpenGuild( void )
 #endif // __GUILDVOTE
 
 	// 길드 랭킹정보 받아오기
-	CGuildRank* pGuildRank = CGuildRank::Instance();
-	pGuildRank->GetRanking( pQuery, szSql );
+	CGuildRank::Instance.GetRanking(pQuery, szSql);
 
 	WAR_QUERYINFO wqi( "S1" );
 	DBQryWar( szSql, wqi );
@@ -3174,10 +3173,8 @@ void CDbManager::UpdateGuildRanking( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 	CAr	ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
 
 	// 길드 랭크 정보를 받아온다.
-	CGuildRank* pGuildRank = CGuildRank::Instance();
-
 	char szQuery[QUERY_SIZE]	= { 0,};
-	pGuildRank->GetRanking( pQuery, szQuery );
+	CGuildRank::Instance.GetRanking( pQuery, szQuery );
 	
 	// 길드 랭크 정보가 Refresh 되었을때..
 	// Core서버에게 정보를 보내준다.
@@ -3189,15 +3186,11 @@ void CDbManager::UpdateGuildRanking( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 
 void CDbManager::UpdateGuildRankingDB( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
-	CAr	ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	
 	// 길드 랭크 정보를 받아온다.
-	CGuildRank* pGuildRank = CGuildRank::Instance();
-
 	char szQuery[QUERY_SIZE]	= { 0,};
 
-	pGuildRank->RankingDBUpdate( pQuery, szQuery );
-	pGuildRank->GetRanking( pQuery, szQuery );
+	CGuildRank::Instance.RankingDBUpdate( pQuery, szQuery );
+	CGuildRank::Instance.GetRanking( pQuery, szQuery );
 	
 	// 길드 랭크 정보가 Refresh 되었을때..
 	// Core서버에게 정보를 보내준다.

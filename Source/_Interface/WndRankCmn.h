@@ -2,6 +2,7 @@
 
 #include "guild.h"
 #include <boost/container/static_vector.hpp>
+#include <memory>
 
 class CWndRankTab : public CWndNeuz {
 private:
@@ -25,6 +26,9 @@ public:
 	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
+
+private:
+	void MoveCurrentList(int delta);
 };
 
 
