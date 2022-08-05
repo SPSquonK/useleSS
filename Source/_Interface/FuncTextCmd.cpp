@@ -986,28 +986,28 @@ BOOL TextCmd_GuildStat(CScanner & scanner, CPlayer_ * pUser) {
 	{
 		DWORD dwLogo = scanner.GetNumber();
 		TRACE("guild Logo:%d\n", dwLogo);
-		g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_LOGO, dwLogo );
+		g_DPCoreClient.SendGuildStatLogo( pUser, dwLogo );
 	}
 	else
 	if( strstat == "pxp" )
 	{
 		DWORD dwPxpCount = scanner.GetNumber();
 		TRACE("guild pxpCount:%d\n", dwPxpCount);
-		g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_PXPCOUNT, dwPxpCount );
+		g_DPCoreClient.SendGuildStatPxp( pUser, dwPxpCount );
 	}
 	else
 	if( strstat == "penya" )
 	{
 		DWORD dwPenya = scanner.GetNumber();
 		TRACE("guild dwPenya:%d\n", dwPenya);
-		g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_PENYA, dwPenya);
+		g_DPCoreClient.SendGuildStatPenya(pUser, dwPenya);
 	}
 	else
 	if( strstat == "notice" )
 	{
 		scanner.GetToken();
 		TRACE("guild notice:%s\n", scanner.Token);
-		g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_NOTICE, (DWORD)(LPCTSTR)scanner.Token);
+		g_DPCoreClient.SendGuildStatNotice( pUser, scanner.Token.GetString());
 	}
 	else
 	{

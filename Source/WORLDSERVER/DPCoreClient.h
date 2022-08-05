@@ -38,7 +38,7 @@ private:
 private:
 	void	MyRegister( u_long uKey );
 	void	Recharge( u_long uBlockSize );
-	BOOL	Contribute( CUser* pUser, DWORD dwPxpCount, DWORD dwPenya );
+	bool Contribute(const CUser & pUser, DWORD dwPxpCount, DWORD dwPenya);
 
 public:
 
@@ -108,7 +108,10 @@ public:
 	void	SendSetPartyDuel( u_long idParty1, u_long idParty2, BOOL bDuel );
 	void	SendCreateGuild( GUILD_MEMBER_INFO* info, int nSize, const char* szGuild );
 	void	SendGuildChat( CUser* pUser, const char* sChat );
-	BOOL	SendGuildStat(  CUser* pUser, GUILD_STAT stat, DWORD data );
+	void SendGuildStatLogo(  CUser* pUser, DWORD data );
+	bool SendGuildStatPenya(CUser * pUser, DWORD data);
+	bool SendGuildStatPxp(CUser * pUser, DWORD data);
+	void SendGuildStatNotice(CUser * pUser, const char * notice);
 	void	SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild );
 	void	SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pItemElem, BYTE p_Mode );
 	void	SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE p_Mode, BYTE cbCloak );

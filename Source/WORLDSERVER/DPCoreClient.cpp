@@ -2010,27 +2010,20 @@ void CDPCoreClient::OnGuildMsgControl( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-BOOL CDPCoreClient::Contribute( CUser* pUser, DWORD dwPxpCount, DWORD dwPenya )
+bool CDPCoreClient::Contribute(const CUser & pUser, const DWORD dwPxpCount, const DWORD dwPenya )
 {
-	u_long idGuild, idPlayer;
-	idGuild = pUser->m_idGuild;
-	idPlayer = pUser->m_idPlayer;
+	const u_long idGuild = pUser.m_idGuild;
+	const u_long idPlayer = pUser.m_idPlayer;
 
 	CGuild* pGuild = g_GuildMng.GetGuild( idGuild );
-	if( pGuild == NULL )
-		return FALSE;
+	if (!pGuild) return false;
 
 	CGuildMember* pGuildMember = pGuild->GetMember( idPlayer );
-	if( pGuildMember == NULL )
-		return FALSE;
+	if (!pGuildMember) return false;
 		
 
-	int nLastGuildLv = pGuild->m_nLevel;	// 길드 레벨업을 판단하기 위하여 저장
-	if( pGuild->AddContribution( dwPxpCount, dwPenya, idPlayer ) == FALSE )
-		return FALSE;
-
-
-
+	const int nLastGuildLv = pGuild->m_nLevel;
+	if (!pGuild->AddContribution(dwPxpCount, dwPenya, idPlayer)) return false;
 
 	CONTRIBUTION_CHANGED_INFO info;
 
@@ -2043,8 +2036,8 @@ BOOL CDPCoreClient::Contribute( CUser* pUser, DWORD dwPxpCount, DWORD dwPenya )
 	info.nGuildLevel	= pGuild->m_nLevel;
 
 	PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( idPlayer );
-	if( pPlayerData )
-		g_dpDBClient.SendGuildContribution( info, ( nLastGuildLv < pGuild->m_nLevel? 1: 0 ), pPlayerData->data.nLevel );
+	if (pPlayerData)
+		g_dpDBClient.SendGuildContribution(info, (nLastGuildLv < pGuild->m_nLevel ? 1 : 0), pPlayerData->data.nLevel);
 
 	{
 		BEFORESENDDUAL( ar, PACKETTYPE_WC_GUILDCONTRIBUTION, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -2052,51 +2045,35 @@ BOOL CDPCoreClient::Contribute( CUser* pUser, DWORD dwPxpCount, DWORD dwPenya )
 		ar << info;
 		SEND( ar, this, DPID_SERVERPLAYER );
 	}
-	return TRUE;
+
+	return true;
 }
 
-// 길드 스탯변경 요청 
-BOOL CDPCoreClient::SendGuildStat( CUser* pUser, GUILD_STAT stat, DWORD data )
-{
-	BOOL bResult = TRUE;
 
-	switch (stat)
-	{
-	case GUILD_STAT_LOGO:		// 로고 변경 
-		{
-			BEFORESENDDUAL( ar, PACKETTYPE_WC_GUILDLOGO, DPID_UNKNOWN, DPID_UNKNOWN );
-			ar << pUser->m_idGuild << pUser->m_idPlayer << data;	
-			SEND( ar, this, DPID_SERVERPLAYER );
-		}
-		break;
+void CDPCoreClient::SendGuildStatLogo(CUser * pUser, DWORD data) {
+	BEFORESENDDUAL(ar, PACKETTYPE_WC_GUILDLOGO, DPID_UNKNOWN, DPID_UNKNOWN);
+	ar << pUser->m_idGuild << pUser->m_idPlayer << data;
+	SEND(ar, this, DPID_SERVERPLAYER);
+}
 
-	case GUILD_STAT_PXPCOUNT:
-		bResult =  Contribute( pUser, data, 0 );
-		break;
+bool CDPCoreClient::SendGuildStatPenya(CUser * pUser, DWORD data) {
+	return Contribute(*pUser, 0, data);
+}
 
-	case GUILD_STAT_PENYA:
-		bResult = Contribute( pUser, 0, data );
-		break;
+bool CDPCoreClient::SendGuildStatPxp(CUser * pUser, DWORD data) {
+	return Contribute(*pUser, data, 0);
+}
 
-	case GUILD_STAT_NOTICE:		// 공지사항 변경 
-		{
-			BEFORESENDDUAL( ar, PACKETTYPE_WC_GUILDNOTICE, DPID_UNKNOWN, DPID_UNKNOWN );
-			ar << pUser->m_idGuild << pUser->m_idPlayer;
-			
-			// 128바이트보다 큰 경우를 예방하기 위해서 버퍼에 복사한 후에 send
-			char szNotice[MAX_BYTE_NOTICE];
-			strncpy(szNotice, (char *)data, MAX_BYTE_NOTICE);
-			szNotice[MAX_BYTE_NOTICE-1] = '\0';
+void CDPCoreClient::SendGuildStatNotice(CUser * pUser, const char * notice) {
+	BEFORESENDDUAL(ar, PACKETTYPE_WC_GUILDNOTICE, DPID_UNKNOWN, DPID_UNKNOWN);
+	ar << pUser->m_idGuild << pUser->m_idPlayer;
 
-			ar.WriteString(szNotice);	
-			SEND( ar, this, DPID_SERVERPLAYER );
-		}
-		break;
-	default:
-		ASSERT( 0 );
-	}
+	char szNotice[MAX_BYTE_NOTICE];
+	std::strncpy(szNotice, notice, MAX_BYTE_NOTICE);
+	szNotice[MAX_BYTE_NOTICE - 1] = '\0';
 
-	return bResult;
+	ar.WriteString(szNotice);
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
 void CDPCoreClient::SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild )
@@ -2105,11 +2082,6 @@ void CDPCoreClient::SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild )
 	ar << uGuildId << nGoldGuild;
 	SEND( ar, this, DPID_SERVERPLAYER );		
 }
-
-
-
-
-
 
 void CDPCoreClient::OnSetFriendState(CAr & ar, DPID, DPID, OBJID) {
 	const auto [uidPlayer, dwState] = ar.Extract<u_long, FriendStatus>();

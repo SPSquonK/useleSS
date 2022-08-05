@@ -1444,7 +1444,7 @@ void CDPSrvr::OnGuildLogo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 	if( dwLogo > 20 && !pUser->IsAuthHigher( AUTH_GAMEMASTER ) )
 		return;
 
-	g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_LOGO, dwLogo );
+	g_DPCoreClient.SendGuildStatLogo( pUser, dwLogo );
 }
 
 // °øÇåµµ 
@@ -1468,7 +1468,7 @@ void CDPSrvr::OnGuildContribution( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 	{
 		if( pUser->GetGold() >= nGold ) 
 		{
-			if( g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_PENYA, nGold ) )
+			if( g_DPCoreClient.SendGuildStatPenya( pUser, nGold ) )
 			{
 				pUser->AddGold( -nGold );
 
@@ -1512,7 +1512,7 @@ void CDPSrvr::OnGuildContribution( CAr & ar, DPID dpidCache, DPID dpidUser, LPBY
 
 			if( nValue > 0 )
 			{
-				if( g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_PXPCOUNT, nValue ) )
+				if( g_DPCoreClient.SendGuildStatPxp( pUser, nValue ) )
 				{
 					LogItemInfo aLogItem;
 					aLogItem.Action = "V";
@@ -1534,14 +1534,13 @@ void CDPSrvr::OnGuildNotice( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 {
 	const auto [szNotice] = ar.Extract<char[MAX_BYTE_NOTICE]>();
 
-	if( strlen( szNotice ) == 0 )
-		return;
+	if (std::strlen(szNotice) == 0) return;
 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) == FALSE )
 		return;
 
-	g_DPCoreClient.SendGuildStat( pUser, GUILD_STAT_NOTICE, (DWORD)szNotice );
+	g_DPCoreClient.SendGuildStatNotice( pUser, szNotice );
 }
 
 void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

@@ -38,15 +38,6 @@ struct TAG_ENTRY
 
 const int MAX_TAGS = 20;			// 최대 쪽지 저장치 
 
-// 길드 스탯 enum
-enum GUILD_STAT
-{
-	GUILD_STAT_LOGO,
-	GUILD_STAT_PXPCOUNT,
-	GUILD_STAT_PENYA,
-	GUILD_STAT_NOTICE,
-};
-
 const int WANTED_MSG_MAX = 20;
 
 // 포상금 항목 
