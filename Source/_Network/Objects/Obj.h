@@ -187,13 +187,6 @@ typedef struct tagQuest
 typedef		MemPooler<CMover>	CMoverPool;
 #endif	// __DBSERVER
 
-typedef	struct	_EQUIP_INFO
-{
-	DWORD	dwId;
-	int		nOption;
-	BYTE	byFlag;
-}	EQUIP_INFO,	*PEQUIP_INFO;
-
 #include "pocket.h"
 #include "MoverCommon.h"
 

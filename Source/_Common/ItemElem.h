@@ -231,3 +231,22 @@ public:
 	void		UseItem();
 #endif
 };
+
+/// Equipment information structure
+struct EQUIP_INFO {
+	DWORD	dwId;
+	int		nOption;
+	BYTE	byFlag;
+};
+
+/// Mounting Additional Information Structure
+struct EQUIP_INFO_ADD {
+	__int64		iRandomOptItemId = 0;
+	CPiercing	piercing;
+
+	BYTE			bItemResist = 0;
+	int				nResistAbilityOption = 0;
+#ifdef __CLIENT
+	CTexture * pTexture = nullptr;
+#endif	// __CLIENT
+};

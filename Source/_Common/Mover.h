@@ -156,38 +156,6 @@ enum TRADE_STATE
 // struct
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Equipment information structure
-typedef	struct	_EQUIP_INFO
-{
-	DWORD	dwId;
-	int		nOption;
-	BYTE	byFlag;
-}	EQUIP_INFO,	*PEQUIP_INFO;
-
-/// Mounting Additional Information Structure
-typedef	struct	_EQUIP_INFO_ADD
-{
-	__int64		iRandomOptItemId;
-	CPiercing	piercing;
-
-	BYTE			bItemResist;
-	int				nResistAbilityOption;
-#ifdef __CLIENT
-	CTexture*		pTexture;
-#endif	// __CLIENT
-	_EQUIP_INFO_ADD()
-	{
-		iRandomOptItemId	= 0;
-		piercing.Clear();
-		bItemResist	= FALSE;
-		nResistAbilityOption	= 0;
-#ifdef __CLIENT
-		pTexture	= NULL;
-#endif	// __CLIENT
-	}
-	
-}	EQUIP_INFO_ADD, *PEQUIP_INFO_ADD;
-
 /// Player appearance struct
 typedef struct tagPLAYER
 {
@@ -811,8 +779,8 @@ protected:
 public:
 	static CMover*  GetActiveMover() { return (CMover*)m_pObjActive; }	// 주인공 객체 얻기 	
 	static	int		GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair );
-	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, PEQUIP_INFO pEquipInfo, CModelObject* pModel, CItemContainer* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
-	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer* pInventory, PEQUIP_INFO pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
+	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
+	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer* pInventory, EQUIP_INFO * pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
 	static	float	GetItemEnduranceInfluence( int nEndurance );	
 	static	int		GetItemEnduranceWeight( int nEndurance );	
 
@@ -901,7 +869,7 @@ public:
 	CItemElem*		GetLWeaponItem();					// 왼손에 장착한 무기 얻기.
 	CItemElem*		GetEquipItem( int nParts );			// 장착한 아이템 얻기 
 	[[nodiscard]] const CItemElem * GetEquipItem(int nParts) const;
-	ItemProp*		GetEquipItemProp( CItemContainer * pInventory, PEQUIP_INFO pEquipInfo, int nParts );
+	ItemProp*		GetEquipItemProp( CItemContainer * pInventory, EQUIP_INFO * pEquipInfo, int nParts );
 	BOOL			IsDualWeapon();
 	void			RedoEquip( BOOL fFakeParts, BOOL bDestParam = TRUE );	
 	void			UpdateParts( BOOL bFakeParts  = FALSE ); // normal or fake
