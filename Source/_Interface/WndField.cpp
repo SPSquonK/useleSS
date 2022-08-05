@@ -409,14 +409,28 @@ void CWndGold::OnInitialUpdate()
 }
 
 //////////////////////////////////////////////
-CWndQueryEquip::CWndQueryEquip()
-{
-	m_ObjID = NULL_ID;
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
+CWndQueryEquip::CWndQueryEquip(CMover & mover, std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> aEquipInfoAdd) {
+	memset(m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS);
 
-	m_pModel = NULL;
-	m_OldPos = CPoint(0,0);
+	m_OldPos = CPoint(0, 0);
+
+	// Set mover
+	m_ObjID = mover.GetId();
+
+	const int nMover = (mover.GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
+	m_pModel = (CModelObject *)prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
+	prj.m_modelMng.LoadMotion(m_pModel, OT_MOVER, nMover, MTI_STAND);
+	CMover::UpdateParts(mover.GetSex(), mover.m_dwSkinSet, mover.m_dwFace, mover.m_dwHairMesh, mover.m_dwHeadMesh, mover.m_aEquipInfo, m_pModel, NULL);
+	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
+
+	// Set Equip Info add
+	m_aEquipInfoAdd = aEquipInfoAdd;
+
+	for (size_t i = 0; i != MAX_HUMAN_PARTS; ++i) {
+		EnsureHasTexture(mover.m_aEquipInfo[i], m_aEquipInfoAdd[i]);
+	}
 }
+
 CWndQueryEquip::~CWndQueryEquip()
 {
 	SAFE_DELETE( m_pModel );
@@ -780,47 +794,13 @@ void CWndQueryEquip::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-void CWndQueryEquip::SetMover( DWORD ObjID )
-{
-	m_ObjID = ObjID;
-
-	SAFE_DELETE( m_pModel );
-	
-	if( GetMover() )
-	{
-		int nMover = (GetMover()->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-		m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-		prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND );
-		CMover::UpdateParts( GetMover()->GetSex(), GetMover()->m_dwSkinSet, GetMover()->m_dwFace, GetMover()->m_dwHairMesh, GetMover()->m_dwHeadMesh,GetMover()->m_aEquipInfo, m_pModel, NULL );
-		m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
+void CWndQueryEquip::EnsureHasTexture(const EQUIP_INFO & equipInfo, EQUIP_INFO_ADD & equipInfoAdd) {
+	if (equipInfo.dwId != NULL_ID) {
+		equipInfoAdd.pTexture = ItemProps::GetItemIconTexture(equipInfo.dwId);
 	}
 }
 
-void CWndQueryEquip::SetEquipInfoAdd( EQUIP_INFO_ADD* aEquipInfoAdd )
-{
-//	memcpy( m_aEquipInfoAdd, aEquipInfoAdd, sizeof(EQUIP_INFO_ADD) * MAX_HUMAN_PARTS );
-	for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
-		m_aEquipInfoAdd[i]	= aEquipInfoAdd[i];
-
-	CMover* pMover = GetMover();
-	
-	if( IsInvalidObj(pMover) )
-		return ;
-	
-#ifdef __CLIENT
-	for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
-	{
-		if( pMover->m_aEquipInfo[i].dwId != NULL_ID )
-		{
-			ItemProp* pItemProp	= prj.GetItemProp( pMover->m_aEquipInfo[i].dwId );
-			if( pItemProp )
-				m_aEquipInfoAdd[i].pTexture	= CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-		}
-	}
-#endif	// __CLIENT
-}
-
-BOOL CWndQueryEquip::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndQueryEquip::Initialize( CWndBase* pWndParent, DWORD )
 {
 	CRect rectWindow = m_pWndRoot->GetWindowRect();
 
@@ -828,7 +808,7 @@ BOOL CWndQueryEquip::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	// �κ��丮 ���? ��ġ ����
 	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
+	return CWndNeuz::InitDialog(APP_QUERYEQUIP, pWndParent, 0, CPoint( 792, 130 ) );
 }
 
 

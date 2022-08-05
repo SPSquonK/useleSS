@@ -210,7 +210,7 @@ class CWndQueryEquip : public CWndNeuz
 	DWORD		 m_ObjID;
 	CRect		 m_InvenRect[MAX_HUMAN_PARTS];
 
-	EQUIP_INFO_ADD	m_aEquipInfoAdd[MAX_HUMAN_PARTS];
+	std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> m_aEquipInfoAdd;
 public:
 
 	CMover* GetMover() 
@@ -220,10 +220,10 @@ public:
 
 		return NULL;
 	}
-	void	SetMover( DWORD		 ObjID );
-	void	SetEquipInfoAdd( EQUIP_INFO_ADD* aEquipInfoAdd );
+
+	CWndQueryEquip(CMover & mover, std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> aEquipInfoAdd);
+	static void EnsureHasTexture(const EQUIP_INFO & equipInfo, EQUIP_INFO_ADD & equipInfoAdd);
 	
-	CWndQueryEquip();
 	virtual ~CWndQueryEquip();
 	virtual BOOL Process ();
 	virtual void OnDraw(C2DRender* p2DRender);

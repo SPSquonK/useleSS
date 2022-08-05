@@ -103,6 +103,21 @@ CAr & operator>>(CAr & ar, CItemElem & self) {
 	return ar;
 }
 
+CAr & operator<<(CAr & ar, const EQUIP_INFO_ADD & self) {
+	ar << self.iRandomOptItemId
+		<< self.piercing
+		<< self.bItemResist
+		<< self.nResistAbilityOption;
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, EQUIP_INFO_ADD & self) {
+	ar >> self.iRandomOptItemId
+		>> self.piercing
+		>> self.bItemResist
+		>> self.nResistAbilityOption;
+	return ar;
+}
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*

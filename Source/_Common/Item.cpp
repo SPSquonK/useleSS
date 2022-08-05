@@ -784,3 +784,10 @@ bool		CItemElem::SelectRandomOption( BYTE bySelectFlag )
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+EQUIP_INFO_ADD::EQUIP_INFO_ADD(const CItemElem & item) :
+	iRandomOptItemId(item.GetRandomOptItemId()),
+	piercing(item.GetPiercings()),
+	bItemResist(item.GetItemResist()),
+	nResistAbilityOption(item.GetResistAbilityOption()) {
+}

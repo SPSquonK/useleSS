@@ -13382,32 +13382,23 @@ void CDPClient::SendQueryEquipSetting( BOOL bAllow )
 /*
 	ata2k
 */
-void CDPClient::OnQueryEquip( OBJID objid, CAr & ar )
-{
-	EQUIP_INFO_ADD	aEquipInfoAdd[MAX_HUMAN_PARTS];
-//	memset( aEquipInfoAdd, 0, sizeof(EQUIP_INFO_ADD) * MAX_HUMAN_PARTS );
-	
-	int cbEquip;
-	ar >> cbEquip;
+void CDPClient::OnQueryEquip(OBJID objid, CAr & ar) {
+	std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> aEquipInfoAdd;
+
+	int cbEquip; ar >> cbEquip;
 
 	int nParts;
-	for( int i = 0; i < cbEquip; i++ )
-	{
+	for (int i = 0; i < cbEquip; i++) {
 		ar >> nParts;
-		ar >> aEquipInfoAdd[nParts].iRandomOptItemId;
-		ar >> aEquipInfoAdd[nParts].piercing;
-		ar >> aEquipInfoAdd[nParts].bItemResist >> aEquipInfoAdd[nParts].nResistAbilityOption;
+		ar >> aEquipInfoAdd[nParts];
 	}
 
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) )
-	{
-		SAFE_DELETE(g_WndMng.m_pWndQueryEquip);
-		g_WndMng.m_pWndQueryEquip = new CWndQueryEquip;
-		g_WndMng.m_pWndQueryEquip->Initialize( &g_WndMng, APP_QUERYEQUIP );
-		g_WndMng.m_pWndQueryEquip->SetMover( pMover->GetId() );
-		g_WndMng.m_pWndQueryEquip->SetEquipInfoAdd( aEquipInfoAdd );
-	}
+	CMover * pMover = prj.GetMover(objid);
+	if (!IsValidObj(pMover)) return;
+
+	SAFE_DELETE(g_WndMng.m_pWndQueryEquip);
+	g_WndMng.m_pWndQueryEquip = new CWndQueryEquip(*pMover, aEquipInfoAdd);
+	g_WndMng.m_pWndQueryEquip->Initialize(&g_WndMng);
 }
 
 void CDPClient::SendReturnScroll( int nSelect )

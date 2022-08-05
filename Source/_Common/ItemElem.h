@@ -249,4 +249,12 @@ struct EQUIP_INFO_ADD {
 #ifdef __CLIENT
 	CTexture * pTexture = nullptr;
 #endif	// __CLIENT
+
+	EQUIP_INFO_ADD() = default;
+#if defined(__CLIENT) || defined(__WORLDSERVER)
+	explicit EQUIP_INFO_ADD(const CItemElem & item);
+#endif
+
+	friend CAr & operator<<(CAr & ar, const EQUIP_INFO_ADD & equipInfoAdd);
+	friend CAr & operator>>(CAr & ar, EQUIP_INFO_ADD & equipInfoAdd);
 };
