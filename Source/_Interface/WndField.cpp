@@ -767,78 +767,27 @@ void CWndInventory::OnDestroy( void )
 {
 	SAFE_DELETE( m_pModel );
 	SAFE_DELETE( m_pWndConfirmBuy );	
-	CWndSummonAngel* pWndAngel = (CWndSummonAngel*)GetWndBase( APP_SUMMON_ANGEL );
-	if(pWndAngel != NULL)
-		pWndAngel->Destroy();
+	Windows::DestroyIfOpened(APP_SUMMON_ANGEL);
 
 #ifdef __EVE_MINIGAME
-	CWndFindWordGame* pWndWordGame = (CWndFindWordGame*)GetWndBase( APP_MINIGAME_WORD );
-	if(pWndWordGame != NULL)
-		pWndWordGame->Destroy();
-	
-	CWndPuzzleGame* pWndPuzzleGame = (CWndPuzzleGame*)GetWndBase( APP_MINIGAME_PUZZLE );
-	if(pWndPuzzleGame != NULL)
-		pWndPuzzleGame->Destroy();
+	Windows::DestroyIfOpened(APP_MINIGAME_WORD, APP_MINIGAME_PUZZLE);
 #endif //__EVE_MINIGAME
-	CWndMixJewel* pWndMixJewel = (CWndMixJewel*)GetWndBase( APP_SMELT_MIXJEWEL );
-	if(pWndMixJewel != NULL)
-		pWndMixJewel->Destroy();
 
-	CWndExtraction* pWndExtraction = (CWndExtraction*)GetWndBase( APP_SMELT_EXTRACTION );
-	if(pWndExtraction != NULL)
-		pWndExtraction->Destroy();
+	Windows::DestroyIfOpened(APP_SMELT_MIXJEWEL, APP_SMELT_EXTRACTION);
 
 #ifdef __WINDOW_INTERFACE_BUG
-	CWndPiercing* pWndPiercing = (CWndPiercing*)GetWndBase( APP_PIERCING );
-	if(pWndPiercing != NULL)
-		pWndPiercing->Destroy();
-	CWndRemoveAttribute* pWndRemoveAttribute = (CWndRemoveAttribute*)GetWndBase( APP_REMOVE_ATTRIBUTE );
-	if(pWndRemoveAttribute != NULL)
-		pWndRemoveAttribute->Destroy();
-	CWndRemovePiercing* pWndRemovePiercing = (CWndRemovePiercing*)GetWndBase( APP_SMELT_REMOVE_PIERCING_EX );
-	if(pWndRemovePiercing != NULL)
-		pWndRemovePiercing->Destroy();
-	CWndRemoveJewel* pWndRemoveJewel = (CWndRemoveJewel*)GetWndBase( APP_SMELT_REMOVE_JEWEL );
-	if(pWndRemoveJewel != NULL)
-		pWndRemoveJewel->Destroy();
-	CWndLvReqDown* pWndLvReqDown = (CWndLvReqDown*)GetWndBase( APP_LVREQDOWN );
-	if(pWndLvReqDown != NULL)
-		pWndLvReqDown->Destroy();
-	CWndBlessingCancel* pWndBlessingCancel = (CWndBlessingCancel*)GetWndBase( APP_CANCEL_BLESSING );
-	if(pWndBlessingCancel != NULL)
-		pWndBlessingCancel->Destroy();
-	CWndUpgradeBase* pWndUpgradeBase = (CWndUpgradeBase*)GetWndBase( APP_TEST );
-	if(pWndUpgradeBase != NULL)
-		pWndUpgradeBase->Destroy();
+	Windows::DestroyIfOpened(
+		APP_PIERCING, APP_REMOVE_ATTRIBUTE,
+		APP_SMELT_REMOVE_PIERCING_EX, APP_SMELT_REMOVE_JEWEL,
+		APP_LVREQDOWN, APP_CANCEL_BLESSING, APP_TEST
+		);
 #endif // __WINDOW_INTERFACE_BUG
 
-	CWndSmeltSafety* pWndSmeltSafety = (CWndSmeltSafety*)GetWndBase( APP_SMELT_SAFETY );
-	if(pWndSmeltSafety != NULL)
-		pWndSmeltSafety->Destroy();
-
-	CWndSmeltSafetyConfirm* pWndSmeltSafetyConfirm = (CWndSmeltSafetyConfirm*)GetWndBase( APP_SMELT_SAFETY_CONFIRM );
-	if(pWndSmeltSafetyConfirm != NULL)
-		pWndSmeltSafetyConfirm->Destroy();
-
-	CWndEquipBindConfirm* pWndEquipBindConfirm = (CWndEquipBindConfirm*)GetWndBase(APP_EQUIP_BIND_CONFIRM);
-	if(pWndEquipBindConfirm != NULL)
-		pWndEquipBindConfirm->Destroy();
-
-	CWndRestateConfirm* pWndRestateConfirm = (CWndRestateConfirm*)GetWndBase(APP_RESTATE_CONFIRM);
-	if(pWndRestateConfirm != NULL)
-		pWndRestateConfirm->Destroy();
-
-	CWndPetFoodMill* pWndPetFoodMill = ( CWndPetFoodMill* )GetWndBase( APP_PET_FOODMILL );
-	if(pWndPetFoodMill != NULL)
-		pWndPetFoodMill->Destroy();
-
-	CWndShop* pWndShop = ( CWndShop* )GetWndBase( APP_SHOP_ );
-	if( pWndShop != NULL )
-		pWndShop->Destroy();
-
-	CWndBank* pWndBank = ( CWndBank* )GetWndBase( APP_COMMON_BANK );
-	if( pWndBank != NULL )
-		pWndBank->Destroy();
+	Windows::DestroyIfOpened(
+		APP_SMELT_SAFETY, APP_SMELT_SAFETY_CONFIRM,
+		APP_EQUIP_BIND_CONFIRM, APP_RESTATE_CONFIRM, APP_PET_FOODMILL,
+		APP_SHOP_, APP_COMMON_BANK
+	);
 }
 void CWndInventory::OnMouseWndSurface( CPoint point )
 {
@@ -1367,15 +1316,13 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		LPSHORTCUT lpShortcut = (LPSHORTCUT)pLResult;
 		if( lpShortcut->m_pFromWnd == NULL )
 		{
-			//ADDERRORMSG( "CWndInventory::OnChildNotify : m_pFromWnd �� NULL " );
 			return CWndNeuz::OnChildNotify( message, nID, pLResult );
 		}
 		CWndBase* pWndFrame = lpShortcut->m_pFromWnd->GetFrameWnd();
 
 		if( pWndFrame == NULL )
 		{
-			LPCTSTR szErr = Error( "CWndInventory::OnChildNotify : pWndFrame==NULL" );
-			//ADDERRORMSG( szErr );
+			Error( "CWndInventory::OnChildNotify : pWndFrame==NULL" );
 		}
 		BOOL bForbid = TRUE;
 		if( pWndFrame && nID == 11 ) // item
@@ -1700,19 +1647,19 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( m_dwEnchantWaitTime != 0xffffffff || GetWndBase(APP_SMELT_SAFETY_CONFIRM) != NULL )
 			{
-				g_WndMng.PutString( prj.GetText(TID_MMI_NOTUPGRADE), NULL, prj.GetTextColor(TID_MMI_NOTUPGRADE) );
+				g_WndMng.PutString(TID_MMI_NOTUPGRADE);
 				return 0;
 			}
 
 			if( GetWndBase(APP_EQUIP_BIND_CONFIRM) != NULL )
 			{
-				g_WndMng.PutString( prj.GetText(TID_TOOLTIP_EQUIPBIND_ERROR01), NULL, prj.GetTextColor(TID_TOOLTIP_EQUIPBIND_ERROR01) );
+				g_WndMng.PutString(TID_TOOLTIP_EQUIPBIND_ERROR01);
 				return 0;
 			}
 
 			if( GetWndBase(APP_COMMITEM_DIALOG) != NULL )
 			{
-				g_WndMng.PutString( prj.GetText(TID_TOOLTIP_ITEM_USING_ERROR), NULL, prj.GetTextColor(TID_TOOLTIP_ITEM_USING_ERROR) );
+				g_WndMng.PutString(TID_TOOLTIP_ITEM_USING_ERROR);
 				return 0;
 			}
 			
@@ -1730,7 +1677,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				// ������Ƽ�� �εǼ� �״´�.
 				if( pProp )
 				{					
-					if (CWndSummonAngel * pWndSummonAngel = (CWndSummonAngel *)g_WndMng.GetWndBase(APP_SUMMON_ANGEL)) {
+					if (CWndSummonAngel * pWndSummonAngel = g_WndMng.GetWndBase<CWndSummonAngel>(APP_SUMMON_ANGEL)) {
 						const bool isRightMaterial = ItemProps::IsOrichalcum(*pProp) || ItemProps::IsMoonstone(*pProp);
 						const bool andCanBeUsed = isRightMaterial && (pFocusItem->GetExtra() < pFocusItem->m_nItemNum);
 
@@ -1924,7 +1871,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 #ifdef __QUIZ
 						if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ )
 						{
-							g_WndMng.PutString( prj.GetText( TID_SBEVE_NOTUSEITEM ), NULL, prj.GetTextColor( TID_SBEVE_NOTUSEITEM ) );
+							g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 							return FALSE;
 						}
 #endif // __QUIZ
@@ -1974,7 +1921,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 						}
 						else
-							g_WndMng.PutString( prj.GetText(TID_GAME_ERROR_SKILLRECCURENCE), NULL, prj.GetTextColor(TID_GAME_ERROR_SKILLRECCURENCE) );
+							g_WndMng.PutString(TID_GAME_ERROR_SKILLRECCURENCE);
 
 						bAble = FALSE;
 					}
@@ -2033,7 +1980,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							{
 								if( g_pPlayer->IsBaseJob() )
 								{
-									g_WndMng.PutString( prj.GetText( TID_GAME_NOTUSEVAG ), NULL, prj.GetTextColor( TID_GAME_NOTUSEVAG ) );
+									g_WndMng.PutString(TID_GAME_NOTUSEVAG);
 									bAble = FALSE;
 								}
 								else
@@ -2045,7 +1992,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 										CItemElem* pArmor	= g_pPlayer->m_Inventory.GetEquip( dwParts );
 										if( pArmor )
 										{
-											g_WndMng.PutString( prj.GetText( TID_GAME_CHECK_EQUIP ), NULL, prj.GetTextColor( TID_GAME_CHECK_EQUIP ) );
+											g_WndMng.PutString(TID_GAME_CHECK_EQUIP);
 											bAble = FALSE;
 										}
 									}
@@ -2071,65 +2018,43 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.GetWndBase( APP_BANK )  ||
 					g_WndMng.GetWndBase( APP_TRADE ) )
 				{
-					//g_WndMng.PutString( "�ŷ��߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
-					g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+					g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
 				}
 				else if(g_WndMng.GetWndBase( APP_SUMMON_ANGEL ))
 				{
-					g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+					g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
 				}
 #ifdef __EVE_MINIGAME
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_DICE ))
+				else if(Windows::IsOpen(
+					APP_MINIGAME_DICE,
+					APP_MINIGAME_KAWIBAWIBO,
+					APP_MINIGAME_KAWIBAWIBO_WIN,
+					APP_MINIGAME_PUZZLE,
+					APP_MINIGAME_WORD
+					))
 				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_KAWIBAWIBO ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_KAWIBAWIBO_WIN ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_PUZZLE ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_WORD ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 #endif //__EVE_MINIGAME
-				else if(g_WndMng.GetWndBase( APP_SMELT_EXTRACTION ))
+				else if(Windows::IsOpen(
+					APP_SMELT_EXTRACTION,
+					APP_SMELT_JEWEL,
+					APP_SMELT_MIXJEWEL,
+					APP_PET_FOODMILL,
+					APP_SMELT_SAFETY
+				))
 				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_SMELT_JEWEL ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_SMELT_MIXJEWEL ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_PET_FOODMILL ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_SMELT_SAFETY ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 #ifdef __QUIZ
 				else if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ )
 				{
-					g_WndMng.PutString( prj.GetText( TID_SBEVE_NOTUSEITEM ), NULL, prj.GetTextColor( TID_SBEVE_NOTUSEITEM ) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 #endif // __QUIZ
 				else if( g_WndMng.GetWndBase( APP_REPAIR ) )
 				{
-					//g_WndMng.PutString( "�����߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
-					g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 				else
 				{
@@ -2262,16 +2187,12 @@ BOOL CWndInventory::OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT messag
 	return TRUE;
 }
 
-void CWndInventory::SetEnchantCursor()
-{
+void CWndInventory::SetEnchantCursor() {
 	// �κ�â�� �����ְ� ��þƮ ����̸�? Ŀ�����? ����
-	if( m_bIsUpgradeMode )
-	{
-		SetMouseCursor( CUR_HAMMER );
-	}
-	else
-	{
-		SetMouseCursor( CUR_BASE );		
+	if (m_bIsUpgradeMode) {
+		SetMouseCursor(CUR_HAMMER);
+	} else {
+		SetMouseCursor(CUR_BASE);
 	}
 }
 
@@ -2319,8 +2240,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		if( pWndFrame->GetWndId() == APP_INVENTORY )
 		{
 			SetForbid( TRUE );
-			//g_WndMng.PutString( "�ŷ��߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
-			g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+			g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
 			
 			return FALSE;
 		}
@@ -2330,7 +2250,6 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		if( pWndFrame->GetWndId() == APP_INVENTORY )
 		{
 			SetForbid( TRUE );
-			//g_WndMng.PutString( "�����߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
 			g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
 			
 			return FALSE;
