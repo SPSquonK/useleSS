@@ -418,24 +418,21 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemE
 	m_ObjID = mover.GetId();
 
 	const int nMover = (mover.GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	m_pModel = (CModelObject *)prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
-	prj.m_modelMng.LoadMotion(m_pModel, OT_MOVER, nMover, MTI_STAND);
-	CMover::UpdateParts(mover.GetSex(), mover.m_dwSkinSet, mover.m_dwFace, mover.m_dwHairMesh, mover.m_dwHeadMesh, mover.m_aEquipInfo, m_pModel, NULL);
+	m_pModel = std::unique_ptr<CModelObject>(dynamic_cast<CModelObject *>(
+		prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+		)));
+	prj.m_modelMng.LoadMotion(m_pModel.get(), OT_MOVER, nMover, MTI_STAND);
+	CMover::UpdateParts(mover.GetSex(), mover.m_dwSkinSet, mover.m_dwFace, mover.m_dwHairMesh, mover.m_dwHeadMesh, mover.m_aEquipInfo, m_pModel.get(), NULL);
 	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
 
 	// Set Equip Info add
 	m_aEquipInfoAdd = std::move(aEquipInfoAdd);
 
-	for (size_t i = 0; i != MAX_HUMAN_PARTS; ++i) {
-		if (!(*m_aEquipInfoAdd)[i].IsEmpty()) {
-			(*m_aEquipInfoAdd)[i].SetTexture();
+	for (CItemElem & item : *m_aEquipInfoAdd) {
+		if (!item.IsEmpty()) {
+			item.SetTexture();
 		}
 	}
-}
-
-CWndQueryEquip::~CWndQueryEquip()
-{
-	SAFE_DELETE( m_pModel );
 }
 
 BOOL CWndQueryEquip::Process() {
@@ -615,7 +612,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 		::SetTransformView( matView );
 		::SetTransformProj( matProj );
 	
-	pMover->OverCoatItemRenderCheck(m_pModel);
+	pMover->OverCoatItemRenderCheck(m_pModel.get());
 		
 	// �����? �Ӹ�ī�� �������ϴ°��̳�?  // �κ��� ���°��?
 			DWORD dwId	= pMover->m_aEquipInfo[PARTS_CAP].dwId;
@@ -641,9 +638,9 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 						if( pItemProp && pItemProp->dwBasePartsIgnore != -1 )
 						{
 							if( pItemProp->dwBasePartsIgnore == PARTS_HEAD )
-								((CModelObject*)m_pModel)->SetEffect(PARTS_HAIR, XE_HIDE );
+								m_pModel->SetEffect(PARTS_HAIR, XE_HIDE );
 							
-							((CModelObject*)m_pModel)->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
+							m_pModel->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
 						}
 						else
 						{
@@ -666,9 +663,9 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 						if( pItemProp && pItemProp->dwBasePartsIgnore != -1 )
 						{
 							if( pItemProp->dwBasePartsIgnore == PARTS_HEAD )
-								((CModelObject*)m_pModel)->SetEffect(PARTS_HAIR, XE_HIDE );
+								m_pModel->SetEffect(PARTS_HAIR, XE_HIDE );
 
-							((CModelObject*)m_pModel)->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
+							m_pModel->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
 						}
 					}
 				}							

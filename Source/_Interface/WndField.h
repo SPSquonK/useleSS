@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <memory>
+
 #include "post.h"
 #include "guild.h"
 
@@ -207,7 +209,7 @@ class CWndQueryEquip : public CWndNeuz
 {
 	CPoint				m_OldPos;
 	FLOAT				m_fRot;
-	CModelObject*		m_pModel;
+	std::unique_ptr<CModelObject> m_pModel;
 	BOOL				m_bLButtonDownRot;
 	DWORD		 m_ObjID;
 
@@ -226,7 +228,6 @@ public:
 	CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemElem, MAX_HUMAN_PARTS>> aEquipInfoAdd);
 	static void EnsureHasTexture(CItemElem & equipInfoAdd);
 	
-	virtual ~CWndQueryEquip();
 	virtual BOOL Process ();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual void OnMouseWndSurface( CPoint point );
