@@ -150,7 +150,7 @@ class CWndInventory : public CWndNeuz
 	CModelObject*		m_pModel;
 	BOOL				m_bLButtonDownRot;
 	
-	CRect		 m_InvenRect[MAX_HUMAN_PARTS];
+	std::array<CRect, MAX_HUMAN_PARTS> m_InvenRect;
 
 	CModelObject m_meshStage;
 	CItemElem* m_pSelectItem;
@@ -158,6 +158,8 @@ class CWndInventory : public CWndNeuz
 	
 	CTexture* m_TexRemoveItem;
 public:
+	static void InitializeInvenRect(std::array<CRect, MAX_HUMAN_PARTS> & invenRect, /* const */ CWndBase & self);
+
 	void UpDateModel();
 
 	void UpdateParts();
@@ -208,9 +210,9 @@ class CWndQueryEquip : public CWndNeuz
 	CModelObject*		m_pModel;
 	BOOL				m_bLButtonDownRot;
 	DWORD		 m_ObjID;
-	CRect		 m_InvenRect[MAX_HUMAN_PARTS];
 
 	std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> m_aEquipInfoAdd;
+	std::array<CRect, MAX_HUMAN_PARTS> m_InvenRect;
 public:
 
 	CMover* GetMover() 

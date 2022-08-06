@@ -410,7 +410,7 @@ void CWndGold::OnInitialUpdate()
 
 //////////////////////////////////////////////
 CWndQueryEquip::CWndQueryEquip(CMover & mover, std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> aEquipInfoAdd) {
-	memset(m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS);
+	m_InvenRect.fill(CRect());
 
 	m_OldPos = CPoint(0, 0);
 
@@ -436,22 +436,21 @@ CWndQueryEquip::~CWndQueryEquip()
 	SAFE_DELETE( m_pModel );
 }
 
-BOOL CWndQueryEquip::Process()
-{
-	CMover* pMover = GetMover();
+BOOL CWndQueryEquip::Process() {
+	CMover * pMover = GetMover();
 
-	if( IsInvalidObj(pMover) )
-	{
+	if (IsInvalidObj(pMover)) {
 		Destroy();
 		return FALSE;
 	}
 
-
-	if( m_pModel )
+	if (m_pModel)
 		m_pModel->FrameMove();
-		
+
 	return TRUE;
-}	
+}
+
+
 void CWndQueryEquip::OnMouseWndSurface( CPoint point )
 {
 	CMover* pMover = GetMover();
@@ -747,49 +746,7 @@ void CWndQueryEquip::OnInitialUpdate()
 	m_bLButtonDownRot = FALSE;
 	m_fRot = 0.0f;
 	
-	LPWNDCTRL lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM1 );
-	LPWNDCTRL lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM2 );
-	LPWNDCTRL lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM3 );
-	LPWNDCTRL lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM4 );
-	LPWNDCTRL lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM5 );
-	LPWNDCTRL lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM6 );
-	LPWNDCTRL lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM7 );
-	LPWNDCTRL lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM8 );
-	LPWNDCTRL lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM9 );
-	LPWNDCTRL lpWndCtrl10 = GetWndCtrl( WIDC_CUSTOM10 );
-	
-	m_InvenRect[6] = m_InvenRect[14] = lpWndCtrl1->rect;
-	m_InvenRect[2] = m_InvenRect[15] = lpWndCtrl2->rect;
-	m_InvenRect[4] = m_InvenRect[17] = lpWndCtrl3->rect;
-	m_InvenRect[5] = m_InvenRect[18] = lpWndCtrl4->rect;
-	
-	m_InvenRect[10] = lpWndCtrl5->rect;
-	m_InvenRect[9] = m_InvenRect[11] = lpWndCtrl6->rect;
-	m_InvenRect[25] = lpWndCtrl7->rect;
-	m_InvenRect[8] = lpWndCtrl8->rect;
-	m_InvenRect[12] = lpWndCtrl9->rect;
-	m_InvenRect[13] = lpWndCtrl10->rect;
-	
-	lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM11 );
-	lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM12 );
-	lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM13 );
-	lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM14 );
-	lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM15 );
-	lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM16 );
-	lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM17 );
-	lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM18 );
-	lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM19 );
-	
-	m_InvenRect[20] = lpWndCtrl1->rect;
-	m_InvenRect[22] = lpWndCtrl2->rect;
-	m_InvenRect[19] = lpWndCtrl3->rect;
-	m_InvenRect[23] = lpWndCtrl4->rect;
-	m_InvenRect[21] = lpWndCtrl5->rect;
-	
-	m_InvenRect[26] = lpWndCtrl6->rect;
-	m_InvenRect[27] = lpWndCtrl7->rect;
-	m_InvenRect[28] = lpWndCtrl8->rect;
-	m_InvenRect[29] = lpWndCtrl9->rect;
+	CWndInventory::InitializeInvenRect(m_InvenRect, *this);
 	
 	MoveParentCenter();
 }
@@ -800,15 +757,9 @@ void CWndQueryEquip::EnsureHasTexture(const EQUIP_INFO & equipInfo, EQUIP_INFO_A
 	}
 }
 
-BOOL CWndQueryEquip::Initialize( CWndBase* pWndParent, DWORD )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-
-	CRect rect( 792, 130, 792 + 232, 130 + 405 + 20 ); // 1024 768
-
-	// �κ��丮 ���? ��ġ ����
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
-	return CWndNeuz::InitDialog(APP_QUERYEQUIP, pWndParent, 0, CPoint( 792, 130 ) );
+BOOL CWndQueryEquip::Initialize(CWndBase * pWndParent, DWORD) {
+	m_InvenRect.fill(CRect());
+	return CWndNeuz::InitDialog(APP_QUERYEQUIP, pWndParent, 0, CPoint(792, 130));
 }
 
 
@@ -833,7 +784,7 @@ CWndInventory::CWndInventory()
 	m_pModel = NULL;
 	m_OldPos = CPoint(0,0);
 	
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
+	m_InvenRect.fill(CRect());
 	m_pWndRemoveJewelConfirm = NULL;
 	m_bRemoveJewel = FALSE;
 }
@@ -1331,49 +1282,8 @@ void CWndInventory::OnInitialUpdate()
 	m_bLButtonDownRot = FALSE;
 	m_fRot = 0.0f;
 
-	LPWNDCTRL lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM1 );
-	LPWNDCTRL lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM2 );
-	LPWNDCTRL lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM3 );
-	LPWNDCTRL lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM4 );
-	LPWNDCTRL lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM5 );
-	LPWNDCTRL lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM6 );
-	LPWNDCTRL lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM7 );
-	LPWNDCTRL lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM8 );
-	LPWNDCTRL lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM9 );
-	LPWNDCTRL lpWndCtrl10 = GetWndCtrl( WIDC_CUSTOM10 );
-	
-	m_InvenRect[6] = m_InvenRect[14] = lpWndCtrl1->rect;
-	m_InvenRect[2] = m_InvenRect[15] = lpWndCtrl2->rect;
-	m_InvenRect[4] = m_InvenRect[17] = lpWndCtrl3->rect;
-	m_InvenRect[5] = m_InvenRect[18] = lpWndCtrl4->rect;
 
-	m_InvenRect[10] = lpWndCtrl5->rect;
-	m_InvenRect[9] = m_InvenRect[11] = lpWndCtrl6->rect;
-	m_InvenRect[25] = lpWndCtrl7->rect;
-	m_InvenRect[8] = lpWndCtrl8->rect;
-	m_InvenRect[12] = lpWndCtrl9->rect;
-	m_InvenRect[13] = lpWndCtrl10->rect;
-
-	lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM11 );
-	lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM12 );
-	lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM13 );
-	lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM14 );
-	lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM15 );
-	lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM16 );
-	lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM17 );
-	lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM18 );
-	lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM19 );
-	
-	m_InvenRect[20] = lpWndCtrl1->rect;
-	m_InvenRect[22] = lpWndCtrl2->rect;
-	m_InvenRect[19] = lpWndCtrl3->rect;
-	m_InvenRect[23] = lpWndCtrl4->rect;
-	m_InvenRect[21] = lpWndCtrl5->rect;
-
-	m_InvenRect[26] = lpWndCtrl6->rect;
-	m_InvenRect[27] = lpWndCtrl7->rect;
-	m_InvenRect[28] = lpWndCtrl8->rect;
-	m_InvenRect[29] = lpWndCtrl9->rect;
+	InitializeInvenRect(m_InvenRect, *this);
 
 	SAFE_DELETE( m_pModel );
 
@@ -1412,15 +1322,9 @@ void CWndInventory::OnInitialUpdate()
 	CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );
 }
-BOOL CWndInventory::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 792, 130, 792 + 232, 130 + 405 + 20 ); // 1024 768
-
-	// �κ��丮 ���? ��ġ ����
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
-//	return CWndNeuz::Create( WBS_VIEW | WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_THICKFRAME, rect, pWndParent, dwWndId );
+BOOL CWndInventory::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+	m_InvenRect.fill(CRect());
+	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
 }
 
 BOOL CWndInventory::Process()
@@ -2548,6 +2452,43 @@ void CWndInventory::OnDestroyChildWnd( CWndBase* pWndChild )
 		SAFE_DELETE( m_pWndConfirmBuy );
 }
 
+
+void CWndInventory::InitializeInvenRect(std::array<CRect, MAX_HUMAN_PARTS> & invenRect, /* const */ CWndBase & self) {
+	// Not displayed parts:
+	// PARTS_HEAD, PARTS_HAIR, PARTS_LOWER_BODY, PARTS_ROBE,
+	// PARTS_LOWER2, PARTS_PROPERTY, PARTS_CLOAK2
+	
+	const auto AffectRect = [&](UINT widgetCtrlId, int partId) {
+		invenRect[partId] = self.GetWndCtrl(widgetCtrlId)->rect;
+	};
+
+	AffectRect(WIDC_CUSTOM1 , PARTS_CAP);
+	AffectRect(WIDC_CUSTOM1 , PARTS_CAP2);
+	AffectRect(WIDC_CUSTOM2 , PARTS_UPPER_BODY);
+	AffectRect(WIDC_CUSTOM2 , PARTS_UPPER2);
+	AffectRect(WIDC_CUSTOM3 , PARTS_HAND);
+	AffectRect(WIDC_CUSTOM3 , PARTS_HAND2);
+	AffectRect(WIDC_CUSTOM4 , PARTS_FOOT);
+	AffectRect(WIDC_CUSTOM4 , PARTS_FOOT2);
+	AffectRect(WIDC_CUSTOM5 , PARTS_RWEAPON);
+	AffectRect(WIDC_CUSTOM6 , PARTS_LWEAPON);
+	AffectRect(WIDC_CUSTOM6 , PARTS_SHIELD);
+	AffectRect(WIDC_CUSTOM7 , PARTS_BULLET);
+	AffectRect(WIDC_CUSTOM8 , PARTS_CLOAK);
+	AffectRect(WIDC_CUSTOM9 , PARTS_MASK);
+	AffectRect(WIDC_CUSTOM10, PARTS_RIDE);
+
+	AffectRect(WIDC_CUSTOM11, PARTS_RING1);
+	AffectRect(WIDC_CUSTOM12, PARTS_EARRING1);
+	AffectRect(WIDC_CUSTOM13, PARTS_NECKLACE1);
+	AffectRect(WIDC_CUSTOM14, PARTS_EARRING2);
+	AffectRect(WIDC_CUSTOM15, PARTS_RING2);
+
+	AffectRect(WIDC_CUSTOM16, PARTS_HAT);
+	AffectRect(WIDC_CUSTOM17, PARTS_CLOTH);
+	AffectRect(WIDC_CUSTOM18, PARTS_GLOVE);
+	AffectRect(WIDC_CUSTOM19, PARTS_BOOTS);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
