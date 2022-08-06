@@ -30,7 +30,7 @@ inline int CItemElem::GetExtra() const noexcept {
 	return m_nExtra;
 }
 
-inline CTexture * CItemElem::GetTexture() {
+inline CTexture * CItemElem::GetTexture() const {
 #ifdef __CLIENT
 	return m_pTexture;
 #else

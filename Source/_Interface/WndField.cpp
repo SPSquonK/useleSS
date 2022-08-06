@@ -409,71 +409,67 @@ void CWndGold::OnInitialUpdate()
 }
 
 //////////////////////////////////////////////
-CWndQueryEquip::CWndQueryEquip()
-{
-	m_ObjID = NULL_ID;
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
+CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemElem, MAX_HUMAN_PARTS>> aEquipInfoAdd) {
+	m_InvenRect.fill(CRect());
 
-	m_pModel = NULL;
-	m_OldPos = CPoint(0,0);
+	m_OldPos = CPoint(0, 0);
+
+	// Set mover
+	m_ObjID = mover.GetId();
+
+	const int nMover = (mover.GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
+	m_pModel = std::unique_ptr<CModelObject>(dynamic_cast<CModelObject *>(
+		prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+		)));
+	prj.m_modelMng.LoadMotion(m_pModel.get(), OT_MOVER, nMover, MTI_STAND);
+	CMover::UpdateParts(mover.GetSex(), mover.m_dwSkinSet, mover.m_dwFace, mover.m_dwHairMesh, mover.m_dwHeadMesh, mover.m_aEquipInfo, m_pModel.get(), NULL);
+	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
+
+	// Set Equip Info add
+	m_aEquipInfoAdd = std::move(aEquipInfoAdd);
+
+	for (CItemElem & item : *m_aEquipInfoAdd) {
+		if (!item.IsEmpty()) {
+			item.SetTexture();
+		}
+	}
 }
-CWndQueryEquip::~CWndQueryEquip()
-{
-	SAFE_DELETE( m_pModel );
-}
 
-BOOL CWndQueryEquip::Process()
-{
-	CMover* pMover = GetMover();
+BOOL CWndQueryEquip::Process() {
+	CMover * pMover = GetMover();
 
-	if( IsInvalidObj(pMover) )
-	{
+	if (IsInvalidObj(pMover)) {
 		Destroy();
 		return FALSE;
 	}
 
-
-	if( m_pModel )
+	if (m_pModel)
 		m_pModel->FrameMove();
-		
-	return TRUE;
-}	
-void CWndQueryEquip::OnMouseWndSurface( CPoint point )
-{
-	CMover* pMover = GetMover();
 
-	if( IsInvalidObj(pMover) )
-		return ;
-	
-	for( int i=2; i<MAX_HUMAN_PARTS; i++ )
-	{
-		if( pMover->m_aEquipInfo[i].dwId == NULL_ID )
-			continue;
-		
+	return TRUE;
+}
+
+
+void CWndQueryEquip::OnMouseWndSurface(CPoint point) {
+	if (IsInvalidObj(GetMover())) return;
+
+	for (int i = 2; i < MAX_HUMAN_PARTS; i++) {
+		/* const */ CItemElem & itemElem = (*m_aEquipInfoAdd)[i];
+		if (itemElem.IsEmpty()) continue;
+
 		CRect DrawRect = m_InvenRect[i];
-		
 		CPoint point = GetMousePoint();
-		// ����
-		if( DrawRect.PtInRect( point ) )
-		{
+
+		if (DrawRect.PtInRect(point)) {
 			CPoint point2 = point;
-			ClientToScreen( &point2 );
-			ClientToScreen( &DrawRect );
-			
-			CItemElem itemElem;
-			itemElem.m_dwItemId	= pMover->m_aEquipInfo[i].dwId;
-			itemElem.m_byFlag	= pMover->m_aEquipInfo[i].byFlag;
-			itemElem.SetAbilityOption( pMover->m_aEquipInfo[i].nOption & 0xFF );
-			itemElem.m_nResistAbilityOption = m_aEquipInfoAdd[i].nResistAbilityOption;
-			itemElem.m_bItemResist	= m_aEquipInfoAdd[i].bItemResist;
-			itemElem.SetRandomOptItemId( m_aEquipInfoAdd[i].iRandomOptItemId );
-			itemElem.CopyPiercing( m_aEquipInfoAdd[i].piercing );
-			
-			// ����?�� �ִ°� ����
-			g_WndMng.PutToolTip_Item( &itemElem, point2, &DrawRect, APP_QUERYEQUIP );
+			ClientToScreen(&point2);
+			ClientToScreen(&DrawRect);
+
+			g_WndMng.PutToolTip_Item(&itemElem, point2, &DrawRect, APP_QUERYEQUIP);
 		}
 	}
 }
+
 void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 {
 	CMover* pMover = GetMover();
@@ -497,21 +493,17 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 	DWORD dwColor2 = D3DCOLOR_ARGB( 255, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
 	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
 
-	for( int i=2; i<MAX_HUMAN_PARTS; i++ )
-	{
-		FLOAT sx = 1.0f, sy = 1.0f;
+
+
+	for (int i = 2; i < MAX_HUMAN_PARTS; i++) {
+		CItemElem & itemElem = (*m_aEquipInfoAdd)[i];
+		if (itemElem.IsEmpty()) continue;
+		if (!itemElem.GetTexture()) continue;
+
+		const ItemProp * const pItemProp = itemElem.GetProp();
+		if (!pItemProp) continue;
 
 		DWORD dwAlpha = 255;
-
-		if( pMover->m_aEquipInfo[i].dwId == NULL_ID )
-			continue;
-
-		ItemProp* pItemProp	= prj.GetItemProp( pMover->m_aEquipInfo[i].dwId );
-		if( !pItemProp )
-			continue;
-
-		if( m_aEquipInfoAdd[i].pTexture == NULL )
-			continue;
 
 		if( i == PARTS_LWEAPON )		// �޼չ��� �׸�Ÿ�̹��϶�
 		{
@@ -521,32 +513,21 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 			}
 		}
 		
-		CRect DrawRect = m_InvenRect[i];
-		CPoint cpAdd = CPoint(6,6);
-		
-		if( i >= PARTS_NECKLACE1 && i <= PARTS_EARRING2 )
-		{
-			cpAdd = CPoint(0,0);
-			
-			sx = 0.8f;
-			sy = 0.8f;
-		}
-		else
-		if( i >= PARTS_HAT && i <= PARTS_BOOTS )
-		{
-			cpAdd = CPoint(0,0);
-			
-			sx = 0.9f;
-			sy = 0.9f;
-		}
+		CPoint drawPoint = m_InvenRect[i].TopLeft();
 
-		if( pMover->m_aEquipInfo[i].byFlag & CItemElem::expired )
-		{
-			p2DRender->RenderTexture2( DrawRect.TopLeft()+cpAdd, m_aEquipInfoAdd[i].pTexture, sx, sy, D3DCOLOR_XRGB( 255, 100, 100 ) );
+		FLOAT displayRatio = 1.0f;
+		if (i >= PARTS_NECKLACE1 && i <= PARTS_EARRING2) {
+			displayRatio = 0.8f;
+		} else if (i >= PARTS_HAT && i <= PARTS_BOOTS) {
+			displayRatio = 0.9f;
+		} else {
+			drawPoint += CPoint(6, 6);
 		}
-		else
-		{
-			p2DRender->RenderTexture( DrawRect.TopLeft()+cpAdd, m_aEquipInfoAdd[i].pTexture, dwAlpha, sx, sy );
+		
+		if (itemElem.IsFlag(CItemElem::expired)) {
+			p2DRender->RenderTexture2(drawPoint, itemElem.GetTexture(), displayRatio, displayRatio, D3DCOLOR_XRGB(255, 100, 100));
+		} else {
+			p2DRender->RenderTexture(drawPoint, itemElem.GetTexture(), dwAlpha, displayRatio, displayRatio);
 		}
 	}
 
@@ -631,7 +612,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 		::SetTransformView( matView );
 		::SetTransformProj( matProj );
 	
-	pMover->OverCoatItemRenderCheck(m_pModel);
+	pMover->OverCoatItemRenderCheck(m_pModel.get());
 		
 	// �����? �Ӹ�ī�� �������ϴ°��̳�?  // �κ��� ���°��?
 			DWORD dwId	= pMover->m_aEquipInfo[PARTS_CAP].dwId;
@@ -657,9 +638,9 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 						if( pItemProp && pItemProp->dwBasePartsIgnore != -1 )
 						{
 							if( pItemProp->dwBasePartsIgnore == PARTS_HEAD )
-								((CModelObject*)m_pModel)->SetEffect(PARTS_HAIR, XE_HIDE );
+								m_pModel->SetEffect(PARTS_HAIR, XE_HIDE );
 							
-							((CModelObject*)m_pModel)->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
+							m_pModel->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
 						}
 						else
 						{
@@ -682,9 +663,9 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 						if( pItemProp && pItemProp->dwBasePartsIgnore != -1 )
 						{
 							if( pItemProp->dwBasePartsIgnore == PARTS_HEAD )
-								((CModelObject*)m_pModel)->SetEffect(PARTS_HAIR, XE_HIDE );
+								m_pModel->SetEffect(PARTS_HAIR, XE_HIDE );
 
-							((CModelObject*)m_pModel)->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
+							m_pModel->SetEffect(pItemProp->dwBasePartsIgnore, XE_HIDE );
 						}
 					}
 				}							
@@ -733,102 +714,14 @@ void CWndQueryEquip::OnInitialUpdate()
 	m_bLButtonDownRot = FALSE;
 	m_fRot = 0.0f;
 	
-	LPWNDCTRL lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM1 );
-	LPWNDCTRL lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM2 );
-	LPWNDCTRL lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM3 );
-	LPWNDCTRL lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM4 );
-	LPWNDCTRL lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM5 );
-	LPWNDCTRL lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM6 );
-	LPWNDCTRL lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM7 );
-	LPWNDCTRL lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM8 );
-	LPWNDCTRL lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM9 );
-	LPWNDCTRL lpWndCtrl10 = GetWndCtrl( WIDC_CUSTOM10 );
-	
-	m_InvenRect[6] = m_InvenRect[14] = lpWndCtrl1->rect;
-	m_InvenRect[2] = m_InvenRect[15] = lpWndCtrl2->rect;
-	m_InvenRect[4] = m_InvenRect[17] = lpWndCtrl3->rect;
-	m_InvenRect[5] = m_InvenRect[18] = lpWndCtrl4->rect;
-	
-	m_InvenRect[10] = lpWndCtrl5->rect;
-	m_InvenRect[9] = m_InvenRect[11] = lpWndCtrl6->rect;
-	m_InvenRect[25] = lpWndCtrl7->rect;
-	m_InvenRect[8] = lpWndCtrl8->rect;
-	m_InvenRect[12] = lpWndCtrl9->rect;
-	m_InvenRect[13] = lpWndCtrl10->rect;
-	
-	lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM11 );
-	lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM12 );
-	lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM13 );
-	lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM14 );
-	lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM15 );
-	lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM16 );
-	lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM17 );
-	lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM18 );
-	lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM19 );
-	
-	m_InvenRect[20] = lpWndCtrl1->rect;
-	m_InvenRect[22] = lpWndCtrl2->rect;
-	m_InvenRect[19] = lpWndCtrl3->rect;
-	m_InvenRect[23] = lpWndCtrl4->rect;
-	m_InvenRect[21] = lpWndCtrl5->rect;
-	
-	m_InvenRect[26] = lpWndCtrl6->rect;
-	m_InvenRect[27] = lpWndCtrl7->rect;
-	m_InvenRect[28] = lpWndCtrl8->rect;
-	m_InvenRect[29] = lpWndCtrl9->rect;
+	CWndInventory::InitializeInvenRect(m_InvenRect, *this);
 	
 	MoveParentCenter();
 }
 
-void CWndQueryEquip::SetMover( DWORD ObjID )
-{
-	m_ObjID = ObjID;
-
-	SAFE_DELETE( m_pModel );
-	
-	if( GetMover() )
-	{
-		int nMover = (GetMover()->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-		m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-		prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND );
-		CMover::UpdateParts( GetMover()->GetSex(), GetMover()->m_dwSkinSet, GetMover()->m_dwFace, GetMover()->m_dwHairMesh, GetMover()->m_dwHeadMesh,GetMover()->m_aEquipInfo, m_pModel, NULL );
-		m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
-	}
-}
-
-void CWndQueryEquip::SetEquipInfoAdd( EQUIP_INFO_ADD* aEquipInfoAdd )
-{
-//	memcpy( m_aEquipInfoAdd, aEquipInfoAdd, sizeof(EQUIP_INFO_ADD) * MAX_HUMAN_PARTS );
-	for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
-		m_aEquipInfoAdd[i]	= aEquipInfoAdd[i];
-
-	CMover* pMover = GetMover();
-	
-	if( IsInvalidObj(pMover) )
-		return ;
-	
-#ifdef __CLIENT
-	for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
-	{
-		if( pMover->m_aEquipInfo[i].dwId != NULL_ID )
-		{
-			ItemProp* pItemProp	= prj.GetItemProp( pMover->m_aEquipInfo[i].dwId );
-			if( pItemProp )
-				m_aEquipInfoAdd[i].pTexture	= CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-		}
-	}
-#endif	// __CLIENT
-}
-
-BOOL CWndQueryEquip::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-
-	CRect rect( 792, 130, 792 + 232, 130 + 405 + 20 ); // 1024 768
-
-	// �κ��丮 ���? ��ġ ����
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
+BOOL CWndQueryEquip::Initialize(CWndBase * pWndParent, DWORD) {
+	m_InvenRect.fill(CRect());
+	return CWndNeuz::InitDialog(APP_QUERYEQUIP, pWndParent, 0, CPoint(792, 130));
 }
 
 
@@ -853,7 +746,7 @@ CWndInventory::CWndInventory()
 	m_pModel = NULL;
 	m_OldPos = CPoint(0,0);
 	
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
+	m_InvenRect.fill(CRect());
 	m_pWndRemoveJewelConfirm = NULL;
 	m_bRemoveJewel = FALSE;
 }
@@ -1351,49 +1244,8 @@ void CWndInventory::OnInitialUpdate()
 	m_bLButtonDownRot = FALSE;
 	m_fRot = 0.0f;
 
-	LPWNDCTRL lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM1 );
-	LPWNDCTRL lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM2 );
-	LPWNDCTRL lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM3 );
-	LPWNDCTRL lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM4 );
-	LPWNDCTRL lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM5 );
-	LPWNDCTRL lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM6 );
-	LPWNDCTRL lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM7 );
-	LPWNDCTRL lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM8 );
-	LPWNDCTRL lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM9 );
-	LPWNDCTRL lpWndCtrl10 = GetWndCtrl( WIDC_CUSTOM10 );
-	
-	m_InvenRect[6] = m_InvenRect[14] = lpWndCtrl1->rect;
-	m_InvenRect[2] = m_InvenRect[15] = lpWndCtrl2->rect;
-	m_InvenRect[4] = m_InvenRect[17] = lpWndCtrl3->rect;
-	m_InvenRect[5] = m_InvenRect[18] = lpWndCtrl4->rect;
 
-	m_InvenRect[10] = lpWndCtrl5->rect;
-	m_InvenRect[9] = m_InvenRect[11] = lpWndCtrl6->rect;
-	m_InvenRect[25] = lpWndCtrl7->rect;
-	m_InvenRect[8] = lpWndCtrl8->rect;
-	m_InvenRect[12] = lpWndCtrl9->rect;
-	m_InvenRect[13] = lpWndCtrl10->rect;
-
-	lpWndCtrl1 = GetWndCtrl( WIDC_CUSTOM11 );
-	lpWndCtrl2 = GetWndCtrl( WIDC_CUSTOM12 );
-	lpWndCtrl3 = GetWndCtrl( WIDC_CUSTOM13 );
-	lpWndCtrl4 = GetWndCtrl( WIDC_CUSTOM14 );
-	lpWndCtrl5 = GetWndCtrl( WIDC_CUSTOM15 );
-	lpWndCtrl6 = GetWndCtrl( WIDC_CUSTOM16 );
-	lpWndCtrl7 = GetWndCtrl( WIDC_CUSTOM17 );
-	lpWndCtrl8 = GetWndCtrl( WIDC_CUSTOM18 );
-	lpWndCtrl9 = GetWndCtrl( WIDC_CUSTOM19 );
-	
-	m_InvenRect[20] = lpWndCtrl1->rect;
-	m_InvenRect[22] = lpWndCtrl2->rect;
-	m_InvenRect[19] = lpWndCtrl3->rect;
-	m_InvenRect[23] = lpWndCtrl4->rect;
-	m_InvenRect[21] = lpWndCtrl5->rect;
-
-	m_InvenRect[26] = lpWndCtrl6->rect;
-	m_InvenRect[27] = lpWndCtrl7->rect;
-	m_InvenRect[28] = lpWndCtrl8->rect;
-	m_InvenRect[29] = lpWndCtrl9->rect;
+	InitializeInvenRect(m_InvenRect, *this);
 
 	SAFE_DELETE( m_pModel );
 
@@ -1432,15 +1284,9 @@ void CWndInventory::OnInitialUpdate()
 	CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );
 }
-BOOL CWndInventory::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 792, 130, 792 + 232, 130 + 405 + 20 ); // 1024 768
-
-	// �κ��丮 ���? ��ġ ����
-	memset( m_InvenRect, 0, sizeof(CRect) * MAX_HUMAN_PARTS );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
-//	return CWndNeuz::Create( WBS_VIEW | WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_THICKFRAME, rect, pWndParent, dwWndId );
+BOOL CWndInventory::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+	m_InvenRect.fill(CRect());
+	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
 }
 
 BOOL CWndInventory::Process()
@@ -2568,6 +2414,43 @@ void CWndInventory::OnDestroyChildWnd( CWndBase* pWndChild )
 		SAFE_DELETE( m_pWndConfirmBuy );
 }
 
+
+void CWndInventory::InitializeInvenRect(std::array<CRect, MAX_HUMAN_PARTS> & invenRect, /* const */ CWndBase & self) {
+	// Not displayed parts:
+	// PARTS_HEAD, PARTS_HAIR, PARTS_LOWER_BODY, PARTS_ROBE,
+	// PARTS_LOWER2, PARTS_PROPERTY, PARTS_CLOAK2
+	
+	const auto AffectRect = [&](UINT widgetCtrlId, int partId) {
+		invenRect[partId] = self.GetWndCtrl(widgetCtrlId)->rect;
+	};
+
+	AffectRect(WIDC_CUSTOM1 , PARTS_CAP);
+	AffectRect(WIDC_CUSTOM1 , PARTS_CAP2);
+	AffectRect(WIDC_CUSTOM2 , PARTS_UPPER_BODY);
+	AffectRect(WIDC_CUSTOM2 , PARTS_UPPER2);
+	AffectRect(WIDC_CUSTOM3 , PARTS_HAND);
+	AffectRect(WIDC_CUSTOM3 , PARTS_HAND2);
+	AffectRect(WIDC_CUSTOM4 , PARTS_FOOT);
+	AffectRect(WIDC_CUSTOM4 , PARTS_FOOT2);
+	AffectRect(WIDC_CUSTOM5 , PARTS_RWEAPON);
+	AffectRect(WIDC_CUSTOM6 , PARTS_LWEAPON);
+	AffectRect(WIDC_CUSTOM6 , PARTS_SHIELD);
+	AffectRect(WIDC_CUSTOM7 , PARTS_BULLET);
+	AffectRect(WIDC_CUSTOM8 , PARTS_CLOAK);
+	AffectRect(WIDC_CUSTOM9 , PARTS_MASK);
+	AffectRect(WIDC_CUSTOM10, PARTS_RIDE);
+
+	AffectRect(WIDC_CUSTOM11, PARTS_RING1);
+	AffectRect(WIDC_CUSTOM12, PARTS_EARRING1);
+	AffectRect(WIDC_CUSTOM13, PARTS_NECKLACE1);
+	AffectRect(WIDC_CUSTOM14, PARTS_EARRING2);
+	AffectRect(WIDC_CUSTOM15, PARTS_RING2);
+
+	AffectRect(WIDC_CUSTOM16, PARTS_HAT);
+	AffectRect(WIDC_CUSTOM17, PARTS_CLOTH);
+	AffectRect(WIDC_CUSTOM18, PARTS_GLOVE);
+	AffectRect(WIDC_CUSTOM19, PARTS_BOOTS);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

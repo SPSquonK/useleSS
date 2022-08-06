@@ -83,7 +83,7 @@ public:
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
 	[[nodiscard]] BOOL IsQuest();
-	CTexture * GetTexture();
+	CTexture * GetTexture() const;
 
 	[[nodiscard]] int GetCost() const;
 	[[nodiscard]] DWORD GetChipCost() const;
@@ -230,4 +230,11 @@ public:
 	//	Operations
 	void		UseItem();
 #endif
+};
+
+/// Equipment information structure
+struct EQUIP_INFO {
+	DWORD	dwId;
+	int		nOption;
+	BYTE	byFlag;
 };

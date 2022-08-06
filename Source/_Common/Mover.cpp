@@ -2506,7 +2506,7 @@ const CItemElem * CMover::GetEquipItem(const int nParts) const {
 	return m_Inventory.GetEquip(nParts);
 }
 
-ItemProp* CMover::GetEquipItemProp( CItemContainer* pInventory, PEQUIP_INFO pEquipInfo, int nParts )
+ItemProp* CMover::GetEquipItemProp( CItemContainer* pInventory, EQUIP_INFO * pEquipInfo, int nParts )
 {
 	ItemProp *pItemProp = NULL;
 #if 1	

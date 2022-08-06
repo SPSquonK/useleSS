@@ -2168,29 +2168,15 @@ void CUser::AddQueryEquip( CUser* pUser )
 	m_Snapshot.ar << GETID( pUser );
 	m_Snapshot.ar << SNAPSHOTTYPE_QUERYEQUIP;
 
-	u_long uOffset	= m_Snapshot.ar.GetOffset();
-	int cbEquip		= 0;
+	auto & cbEquip = m_Snapshot.ar.PushBack<int>(0);
 	
-	m_Snapshot.ar << cbEquip;
-	
-	for( int i = 0; i < MAX_HUMAN_PARTS; i++ )
-	{
-		const CItemElem* pItemElem	= pUser->GetEquipItem( i );
-		if( pItemElem )
-		{
-			m_Snapshot.ar << i;
-			m_Snapshot.ar << pItemElem->GetRandomOptItemId();
-			m_Snapshot.ar << pItemElem->GetPiercings();
-			m_Snapshot.ar << pItemElem->m_bItemResist;
-			m_Snapshot.ar << pItemElem->m_nResistAbilityOption;
-			cbEquip++;
+	for (int i = 0; i < MAX_HUMAN_PARTS; i++) {
+		const CItemElem * pItemElem = pUser->GetEquipItem(i);
+		if (pItemElem) {
+			m_Snapshot.ar << i << *pItemElem;
+			++(*cbEquip);
 		}
 	}
-
-	GETBLOCK( m_Snapshot.ar, lpBlock, nBlockSize );
-	*(UNALIGNED int*)( lpBlock + uOffset )	= cbEquip;
-
-	
 }
 
 void CUser::AddSummonFriendUse( CItemElem* pItemElem )
