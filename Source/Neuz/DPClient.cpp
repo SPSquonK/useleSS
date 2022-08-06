@@ -13383,21 +13383,26 @@ void CDPClient::SendQueryEquipSetting( BOOL bAllow )
 	ata2k
 */
 void CDPClient::OnQueryEquip(OBJID objid, CAr & ar) {
-	std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> aEquipInfoAdd;
+	std::unique_ptr<std::array<CItemElem, MAX_HUMAN_PARTS>> aEquipInfoAdd
+		= std::make_unique<std::array<CItemElem, MAX_HUMAN_PARTS>>();
+
+	for (CItemElem & item : *aEquipInfoAdd) {
+		item.Empty();
+	}
 
 	int cbEquip; ar >> cbEquip;
 
 	int nParts;
 	for (int i = 0; i < cbEquip; i++) {
 		ar >> nParts;
-		ar >> aEquipInfoAdd[nParts];
+		ar >> (*aEquipInfoAdd)[nParts];
 	}
 
 	CMover * pMover = prj.GetMover(objid);
 	if (!IsValidObj(pMover)) return;
 
 	SAFE_DELETE(g_WndMng.m_pWndQueryEquip);
-	g_WndMng.m_pWndQueryEquip = new CWndQueryEquip(*pMover, aEquipInfoAdd);
+	g_WndMng.m_pWndQueryEquip = new CWndQueryEquip(*pMover, std::move(aEquipInfoAdd));
 	g_WndMng.m_pWndQueryEquip->Initialize(&g_WndMng);
 }
 

@@ -2173,8 +2173,7 @@ void CUser::AddQueryEquip( CUser* pUser )
 	for (int i = 0; i < MAX_HUMAN_PARTS; i++) {
 		const CItemElem * pItemElem = pUser->GetEquipItem(i);
 		if (pItemElem) {
-			EQUIP_INFO_ADD add = EQUIP_INFO_ADD(*pItemElem);
-			m_Snapshot.ar << i << add;
+			m_Snapshot.ar << i << *pItemElem;
 			++(*cbEquip);
 		}
 	}

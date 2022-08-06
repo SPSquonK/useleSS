@@ -178,7 +178,7 @@ namespace WndMgr {
 		MakeToolTipText(pItemBase, strItem, flag);
 		g_toolTip.PutToolTip(pItemBase->m_dwItemId, strItem, *pRect, point, 0);
 		if (pItemProp->IsUltimate()) {
-			g_toolTip.SetUltimateToolTip(pItemBase);
+			g_toolTip.SetUltimateToolTip(*pItemBase);
 		}
 	}
 
@@ -275,7 +275,7 @@ namespace WndMgr {
 
 			ptoolTip->PutToolTipEx(pPartsItemBase->m_dwItemId, strEquipItem, pRect, point, 0, nSubToolTipFlag);
 			if (pPartsItemProp->IsUltimate()) {
-				ptoolTip->SetUltimateToolTip(pPartsItemBase);
+				ptoolTip->SetUltimateToolTip(*pPartsItemBase);
 			}
 		}
 	}

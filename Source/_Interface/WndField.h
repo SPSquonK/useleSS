@@ -211,7 +211,7 @@ class CWndQueryEquip : public CWndNeuz
 	BOOL				m_bLButtonDownRot;
 	DWORD		 m_ObjID;
 
-	std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> m_aEquipInfoAdd;
+	std::unique_ptr<std::array<CItemElem, MAX_HUMAN_PARTS>> m_aEquipInfoAdd;
 	std::array<CRect, MAX_HUMAN_PARTS> m_InvenRect;
 public:
 
@@ -223,8 +223,8 @@ public:
 		return NULL;
 	}
 
-	CWndQueryEquip(CMover & mover, std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> aEquipInfoAdd);
-	static void EnsureHasTexture(const EQUIP_INFO & equipInfo, EQUIP_INFO_ADD & equipInfoAdd);
+	CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemElem, MAX_HUMAN_PARTS>> aEquipInfoAdd);
+	static void EnsureHasTexture(CItemElem & equipInfoAdd);
 	
 	virtual ~CWndQueryEquip();
 	virtual BOOL Process ();

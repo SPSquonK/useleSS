@@ -706,14 +706,12 @@ void CToolTip::Paint(C2DRender* p2DRender)
 	}
 }
 
-void CToolTip::SetUltimateToolTip(CItemElem * pItemBase)
+void CToolTip::SetUltimateToolTip(const CItemElem & pItemBase)
 {
 	m_nAdded = 1;
-	m_nSlot = pItemBase->GetUltimatePiercingSize();
+	m_nSlot = pItemBase.GetUltimatePiercingSize();
 	for(int i=0; i<m_nSlot; i++)
-		m_nAddedJewel[i] = pItemBase->GetUltimatePiercingItem(i);
-
-	m_pUltimateItemBase = pItemBase;
+		m_nAddedJewel[i] = pItemBase.GetUltimatePiercingItem(i);
 }
 
 #ifndef __IMPROVE_MAP_SYSTEM

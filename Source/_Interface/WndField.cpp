@@ -409,7 +409,7 @@ void CWndGold::OnInitialUpdate()
 }
 
 //////////////////////////////////////////////
-CWndQueryEquip::CWndQueryEquip(CMover & mover, std::array<EQUIP_INFO_ADD, MAX_HUMAN_PARTS> aEquipInfoAdd) {
+CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemElem, MAX_HUMAN_PARTS>> aEquipInfoAdd) {
 	m_InvenRect.fill(CRect());
 
 	m_OldPos = CPoint(0, 0);
@@ -424,10 +424,12 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::array<EQUIP_INFO_ADD, MAX_HU
 	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
 
 	// Set Equip Info add
-	m_aEquipInfoAdd = aEquipInfoAdd;
+	m_aEquipInfoAdd = std::move(aEquipInfoAdd);
 
 	for (size_t i = 0; i != MAX_HUMAN_PARTS; ++i) {
-		EnsureHasTexture(mover.m_aEquipInfo[i], m_aEquipInfoAdd[i]);
+		if (!(*m_aEquipInfoAdd)[i].IsEmpty()) {
+			(*m_aEquipInfoAdd)[i].SetTexture();
+		}
 	}
 }
 
@@ -451,42 +453,26 @@ BOOL CWndQueryEquip::Process() {
 }
 
 
-void CWndQueryEquip::OnMouseWndSurface( CPoint point )
-{
-	CMover* pMover = GetMover();
+void CWndQueryEquip::OnMouseWndSurface(CPoint point) {
+	if (IsInvalidObj(GetMover())) return;
 
-	if( IsInvalidObj(pMover) )
-		return ;
-	
-	for( int i=2; i<MAX_HUMAN_PARTS; i++ )
-	{
-		if( pMover->m_aEquipInfo[i].dwId == NULL_ID )
-			continue;
-		
+	for (int i = 2; i < MAX_HUMAN_PARTS; i++) {
+		/* const */ CItemElem & itemElem = (*m_aEquipInfoAdd)[i];
+		if (itemElem.IsEmpty()) continue;
+
 		CRect DrawRect = m_InvenRect[i];
-		
 		CPoint point = GetMousePoint();
-		// ����
-		if( DrawRect.PtInRect( point ) )
-		{
+
+		if (DrawRect.PtInRect(point)) {
 			CPoint point2 = point;
-			ClientToScreen( &point2 );
-			ClientToScreen( &DrawRect );
-			
-			CItemElem itemElem;
-			itemElem.m_dwItemId	= pMover->m_aEquipInfo[i].dwId;
-			itemElem.m_byFlag	= pMover->m_aEquipInfo[i].byFlag;
-			itemElem.SetAbilityOption( pMover->m_aEquipInfo[i].nOption & 0xFF );
-			itemElem.m_nResistAbilityOption = m_aEquipInfoAdd[i].nResistAbilityOption;
-			itemElem.m_bItemResist	= m_aEquipInfoAdd[i].bItemResist;
-			itemElem.SetRandomOptItemId( m_aEquipInfoAdd[i].iRandomOptItemId );
-			itemElem.CopyPiercing( m_aEquipInfoAdd[i].piercing );
-			
-			// ����?�� �ִ°� ����
-			g_WndMng.PutToolTip_Item( &itemElem, point2, &DrawRect, APP_QUERYEQUIP );
+			ClientToScreen(&point2);
+			ClientToScreen(&DrawRect);
+
+			g_WndMng.PutToolTip_Item(&itemElem, point2, &DrawRect, APP_QUERYEQUIP);
 		}
 	}
 }
+
 void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 {
 	CMover* pMover = GetMover();
@@ -510,21 +496,17 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 	DWORD dwColor2 = D3DCOLOR_ARGB( 255, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
 	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
 
-	for( int i=2; i<MAX_HUMAN_PARTS; i++ )
-	{
-		FLOAT sx = 1.0f, sy = 1.0f;
+
+
+	for (int i = 2; i < MAX_HUMAN_PARTS; i++) {
+		CItemElem & itemElem = (*m_aEquipInfoAdd)[i];
+		if (itemElem.IsEmpty()) continue;
+		if (!itemElem.GetTexture()) continue;
+
+		const ItemProp * const pItemProp = itemElem.GetProp();
+		if (!pItemProp) continue;
 
 		DWORD dwAlpha = 255;
-
-		if( pMover->m_aEquipInfo[i].dwId == NULL_ID )
-			continue;
-
-		ItemProp* pItemProp	= prj.GetItemProp( pMover->m_aEquipInfo[i].dwId );
-		if( !pItemProp )
-			continue;
-
-		if( m_aEquipInfoAdd[i].pTexture == NULL )
-			continue;
 
 		if( i == PARTS_LWEAPON )		// �޼չ��� �׸�Ÿ�̹��϶�
 		{
@@ -534,32 +516,21 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 			}
 		}
 		
-		CRect DrawRect = m_InvenRect[i];
-		CPoint cpAdd = CPoint(6,6);
-		
-		if( i >= PARTS_NECKLACE1 && i <= PARTS_EARRING2 )
-		{
-			cpAdd = CPoint(0,0);
-			
-			sx = 0.8f;
-			sy = 0.8f;
-		}
-		else
-		if( i >= PARTS_HAT && i <= PARTS_BOOTS )
-		{
-			cpAdd = CPoint(0,0);
-			
-			sx = 0.9f;
-			sy = 0.9f;
-		}
+		CPoint drawPoint = m_InvenRect[i].TopLeft();
 
-		if( pMover->m_aEquipInfo[i].byFlag & CItemElem::expired )
-		{
-			p2DRender->RenderTexture2( DrawRect.TopLeft()+cpAdd, m_aEquipInfoAdd[i].pTexture, sx, sy, D3DCOLOR_XRGB( 255, 100, 100 ) );
+		FLOAT displayRatio = 1.0f;
+		if (i >= PARTS_NECKLACE1 && i <= PARTS_EARRING2) {
+			displayRatio = 0.8f;
+		} else if (i >= PARTS_HAT && i <= PARTS_BOOTS) {
+			displayRatio = 0.9f;
+		} else {
+			drawPoint += CPoint(6, 6);
 		}
-		else
-		{
-			p2DRender->RenderTexture( DrawRect.TopLeft()+cpAdd, m_aEquipInfoAdd[i].pTexture, dwAlpha, sx, sy );
+		
+		if (itemElem.IsFlag(CItemElem::expired)) {
+			p2DRender->RenderTexture2(drawPoint, itemElem.GetTexture(), displayRatio, displayRatio, D3DCOLOR_XRGB(255, 100, 100));
+		} else {
+			p2DRender->RenderTexture(drawPoint, itemElem.GetTexture(), dwAlpha, displayRatio, displayRatio);
 		}
 	}
 
@@ -749,12 +720,6 @@ void CWndQueryEquip::OnInitialUpdate()
 	CWndInventory::InitializeInvenRect(m_InvenRect, *this);
 	
 	MoveParentCenter();
-}
-
-void CWndQueryEquip::EnsureHasTexture(const EQUIP_INFO & equipInfo, EQUIP_INFO_ADD & equipInfoAdd) {
-	if (equipInfo.dwId != NULL_ID) {
-		equipInfoAdd.pTexture = ItemProps::GetItemIconTexture(equipInfo.dwId);
-	}
 }
 
 BOOL CWndQueryEquip::Initialize(CWndBase * pWndParent, DWORD) {
