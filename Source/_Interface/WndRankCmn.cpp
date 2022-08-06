@@ -17,7 +17,7 @@ void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 	CWndWorld * const pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 	const auto & ranked = CGuildRank::Instance[m_rank];
 
-	TEXTUREVERTEX2 * pVertex = new TEXTUREVERTEX2[10 * 6];
+	TEXTUREVERTEX2 pVertex[10 * 6];
 	TEXTUREVERTEX2 * pVertices = pVertex;
 
 	const int maxBound = std::min(m_nCurrentList + 10, static_cast<int>(ranked.size()));
@@ -76,7 +76,6 @@ void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 	}
 
 	pWndWorld->m_texMsgIcon.Render(m_pApp->m_pd3dDevice, pVertex, ((int)pVertices - (int)pVertex) / sizeof(TEXTUREVERTEX2));
-	//	delete pVertex;
 }
 void CWndRankTab::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
