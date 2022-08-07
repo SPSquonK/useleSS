@@ -12672,26 +12672,23 @@ void CWndBuffStatus::OnRButtonDblClk( UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndBuffStatus::GetHitTestResult()
-{
-	BOOL rtn_val = FALSE;
+bool CWndBuffStatus::GetHitTestResult() {
 	CPoint ptMouse = GetMousePoint();
-	ClientToScreen( &ptMouse );
+	ClientToScreen(&ptMouse);
 	
 	CPointGenerator generator = CPointGenerator(m_verticalDisplay);
 
-	for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i!= g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
-		if( pBuff->GetType() == BUFF_SKILL )
-		{
+	for (IBuff * pBuff : g_pPlayer->m_buffs.m_mapBuffs | std::views::values) {
+		if (pBuff->GetType() == BUFF_SKILL) {
 			CRect rectHittest(generator.Next(), CSize(34, 34));
-			ClientToScreen( &rectHittest );
-			if( PtInRect(&rectHittest, ptMouse ) )
-				rtn_val = TRUE;
+			ClientToScreen(&rectHittest);
+			if (PtInRect(&rectHittest, ptMouse)) {
+				return true;
+			}
 		}
 	}
-	return rtn_val;
+
+	return false;
 }
 
 void CWndBuffStatus::SetBuffIconInfo(bool force)
@@ -12909,7 +12906,7 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 
 void CWndBuffStatus::RenderOptBuffTime(C2DRender * p2DRender, const CPoint & point, const DWORD timeLeft, DWORD dwColor) {
 	if (g_Option.m_bVisibleBuffTimeRender) {
-		char buffer[64];
+		char buffer[65];
 		const auto r = std::format_to_n(buffer, 64, "{}", timeLeft / 1000);
 		*r.out = '\0';
 		p2DRender->TextOut(point.x + 2, point.y + 22, buffer, dwColor, 0xFF000000);

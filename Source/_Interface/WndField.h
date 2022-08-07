@@ -1419,7 +1419,7 @@ public:
 	void RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, CPoint buffPosition, CPoint ptMouse );
 	void RenderOptBuffTime(C2DRender *p2DRender, const CPoint& point, DWORD timeLeft, DWORD dwColor );
 	void SetBuffIconInfo(bool force);
-	BOOL GetHitTestResult();
+	[[nodiscard]] bool GetHitTestResult() /* const */;
 
 	class CPointGenerator {
 	private:
