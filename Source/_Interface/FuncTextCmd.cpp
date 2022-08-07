@@ -2373,13 +2373,8 @@ BOOL TextCmd_AngelExp(CScanner & s, CPlayer_ * pUser) {
 	if( pUser->HasBuffByIk3( IK3_ANGEL_BUFF ) )
 	{
 		int nAngel = 100;
-	#ifdef __BUFF_1107
 		IBuff* pBuff	= pUser->m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
 		WORD wId	= ( pBuff? pBuff->GetId(): 0 );
-	#else	// __BUFF_1107
-		LPSKILLINFLUENCE lpSkillIn = pUser->m_SkillState.GetItemBuf( IK3_ANGEL_BUFF );
-		WORD wId	= ( lpSkillIn? lpSkillIn->wID: 0 );
-	#endif	// __BUFF_1107
 		if( wId )
 		{
 			ItemProp* pItemProp = prj.GetItemProp( wId );

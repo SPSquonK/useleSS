@@ -88,9 +88,7 @@ CMoverPool*	CMover::m_pPool	= new CMoverPool( 1024 );
 #endif	// __DBSERVER
 
 CMover::CMover()
-#ifdef __BUFF_1107
 : m_buffs( this )
-#endif	// __BUFF_1107
 {
 	m_dwBelligerence	= 0;
 #ifdef __JEFF_9_20
@@ -124,10 +122,6 @@ CMover::CMover()
 	m_nAttackResistRight = (BYTE)0xff;
 	m_nDefenseResist = (BYTE)0xff;
 	memset( m_dwSMTime, 0, sizeof( DWORD ) * SM_MAX );
-#ifndef __BUFF_1107
-	m_SkillState.Init();
-	m_SkillState.SetMover( this );
-#endif	// __BUFF_1107
 	ClearEquipInfo();
 	m_dwSkinSet	= 0;//SKINSET_00;
 	m_dwHairMesh	= 0;//HAIRMESH_00;
@@ -585,9 +579,7 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 	lstrcpy( m_szBankPass, pMover->m_szBankPass );
 	m_dwPeriodicTick	= pMover->m_dwPeriodicTick;
 	m_RTMessenger	= pMover->m_RTMessenger;
-#ifdef __BUFF_1107
 	m_buffs	= pMover->m_buffs;
-#endif	// __BUFF_1107
 	m_dwPCBangClass = pMover->m_dwPCBangClass;
 	m_idCampus	= pMover->m_idCampus;
 	m_nCampusPoint	= pMover->m_nCampusPoint;
@@ -663,9 +655,6 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_nAttackResistLeft	= pMover->m_nAttackResistLeft;
 		m_nAttackResistRight	= pMover->m_nAttackResistRight;
 		m_nDefenseResist	= pMover->m_nDefenseResist;
-#ifndef __BUFF_1107
-		memcpy( m_SkillState.m_aSkillInfluence, pMover->m_SkillState.m_aSkillInfluence, sizeof(m_SkillState.m_aSkillInfluence) );
-#endif	// __BUFF_1107
 		m_dwReturnWorldID	= pMover->m_dwReturnWorldID;
 		m_vReturnPos	= pMover->m_vReturnPos;
 		

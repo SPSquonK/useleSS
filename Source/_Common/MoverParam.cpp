@@ -1225,20 +1225,12 @@ void CMover::RemoveDebuff( DWORD dwState )
 // this���� �ɸ� ������ 1�� ���ش�.
 void CMover::RemoveBuffOne( DWORD dwSkill )
 {
-#ifdef __BUFF_1107
 	m_buffs.RemoveBuffs( RBF_ONCE | RBF_GOODSKILL, 0 );
-#else	// __BUFF_1107
-	m_SkillState.RemoveOneSkillBuff();		// �̷ο������ų �ϳ��� ���� �Ѵ�.
-#endif	// __BUFF_1107
 }	
 
 void CMover::RemoveBuffAll( void )
 {
-#ifdef __BUFF_1107
 	m_buffs.RemoveBuffs( RBF_GOODSKILL, 0 );
-#else	// __BUFF_1107
-	m_SkillState.RemoveAllSkillBuff();		// �̷ο������ų�� ��� ã�� ���� �Ѵ�.
-#endif	// __BUFF_1107
 }
 
 

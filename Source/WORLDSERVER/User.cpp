@@ -2818,17 +2818,10 @@ void CUser::RemoveAngel( void )
 #ifdef __ANGEL_LOG
 	if( HasBuffByIk3( IK3_ANGEL_BUFF ) )
 	{
-#ifdef __BUFF_1107
 		IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
 		ItemProp* pItemProp	= NULL;
 		if( pBuff )
 			pItemProp	= pBuff->GetProp();
-#else	// __BUFF_1107
-		LPSKILLINFLUENCE lpSkillIn	= m_SkillState.GetItemBuf( IK3_ANGEL_BUFF );
-		ItemProp* pItemProp	= NULL;
-		if( lpSkillIn )
-			pItemProp	= prj.GetItemProp( lpSkillIn->wID );
-#endif	// __BUFF_1107
 		if( pItemProp )
 		{
 			LogItemInfo aLogItem;

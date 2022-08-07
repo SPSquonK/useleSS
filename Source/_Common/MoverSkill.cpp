@@ -475,17 +475,10 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 		else
 			searchMover = pTarget;
 
-#ifdef __BUFF_1107
 		IBuff* pBuff	= searchMover->m_buffs.GetBuff( BUFF_SKILL, (WORD)( pSkillProp->dwID ) );
 		if( pBuff )
 		{
 			if( pBuff->GetLevel() > (DWORD)( nLevel ) )
-#else	// __BUFF_1107
-		SKILLINFLUENCE* hasSkill = searchMover->m_SkillState.Find( BUFF_SKILL, pSkillProp->dwID );
-		if( hasSkill )
-		{
-			if( hasSkill->dwLevel > nLevel )
-#endif	// __BUFF_1107
 			{
 				if( IsPlayer() ) // À±»óÀÌ	// this°¡ CUser°¡ ¾Æ´Ò ¼ö ÀÖÀ½.
 					( (CUser*)this )->AddDefinedText( TID_GAME_DONOTUSEBUFF, "" );
@@ -1266,7 +1259,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 		}
 		if( nResult != 1 )
 		{
-		#ifdef __BUFF_1107
 			IBuff* pBuff	= m_buffs.GetBuff( BUFF_ITEM, (WORD)( pItemProp->dwID ) );
 			if( pBuff )
 			{
@@ -1274,15 +1266,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 				if( static_cast<int>( pItemProp->dwSkillTime ) > static_cast<int>( pItemProp->dwSkillTime + ( pBuff->GetTotal() - ( dwCurr - pBuff->GetInst() ) ) ) )
 					nResult		= 1;
 			}
-		#else	// __BUFF_1107
-			LPSKILLINFLUENCE ptr	= m_SkillState.FindPtr( BUFF_ITEM, pItemProp->dwID );
-			if( ptr )
-			{
-				DWORD dwCurr	= ::timeGetTime();
-				if( static_cast<int>( pItemProp->dwSkillTime ) > static_cast<int>( pItemProp->dwSkillTime + ( ptr->tmCount - ( dwCurr - ptr->tmTime ) ) ) )
-					nResult		= 1;
-			}
-		#endif	// __BUFF_1107
 		}
 	}
 #endif	// __JEFF_11_1

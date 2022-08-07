@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#ifdef __BUFF_1107
 
 #include "buff.h"
 #include "defineskill.h"
@@ -1001,4 +1000,3 @@ size_t CBuffMgr::GetRemoveBuffSize()
 	return nCount;
 }
 
-#endif	// __BUFF_1107

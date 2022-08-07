@@ -12699,7 +12699,6 @@ void CWndBuffStatus::OnRButtonDblClk( UINT nFlags, CPoint point )
 
 BOOL CWndBuffStatus::GetHitTestResult()
 {
-#ifdef __BUFF_1107
 	BOOL rtn_val = FALSE;
 	RECT rectHittest;
 	CPoint ptMouse = GetMousePoint();
@@ -12721,37 +12720,6 @@ BOOL CWndBuffStatus::GetHitTestResult()
 		}
 	}
 	return rtn_val;
-#else	// __BUFF_1107
-//{{AFX
-	BOOL rtn_val = FALSE;
-	RECT rectHittest;
-	int i;
-	CPoint ptMouse = GetMousePoint();
-	ClientToScreen( &ptMouse );
-	BUFFICON_INFO buffinfo;
-	
-	std::list<BUFFICON_INFO>::iterator it = m_pBuffIconInfo.begin();
-	for(i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		SKILLINFLUENCE* pSkill = g_pPlayer->m_SkillState.Get(i);
-		if(pSkill->wID)	
-		{
-			if(pSkill->wType == BUFF_SKILL)
-			{
-				buffinfo  = *it;
-				SetRect( &rectHittest, buffinfo.pt.x, buffinfo.pt.y, buffinfo.pt.x+34, buffinfo.pt.y+34 );
-				ClientToScreen( &rectHittest );
-				if( PtInRect(&rectHittest, ptMouse ) )
-				{
-					rtn_val = TRUE;
-				}
-				it++;
-			}
-		}
-	}
-	return rtn_val;
-//}}AFX
-#endif	// __BUFF_1107
 }
 
 void CWndBuffStatus::SetBuffIconInfo()
@@ -12817,7 +12785,6 @@ void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
 	BUFFICON_INFO buffinfo;
 
 	std::list<BUFFICON_INFO>::iterator it = m_pBuffIconInfo.begin();
-#ifdef __BUFF_1107
 	for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i != g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
 	{
 		IBuff* pBuff	= i->second;
@@ -12828,24 +12795,6 @@ void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
 			it++;
 		}
 	}
-#else	// __BUFF_1107
-//{{AFX
-	int i;
-	for(i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		SKILLINFLUENCE* pSkill = g_pPlayer->m_SkillState.Get(i);
-		if(pSkill->wID)	
-		{
-			if(pSkill->wType == BUFF_SKILL)
-			{
-				buffinfo  = *it;
-				RenderBuffIcon( p2DRender, pSkill, TRUE, &buffinfo, ptMouse );
-				it++;
-			}
-		}
-	}
-//}}AFX
-#endif	// __BUFF_1107
 }
 
 void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
@@ -12861,7 +12810,6 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 	
 	ItemProp* pItem = NULL;
 
-#ifdef __BUFF_1107
 	WORD wID = pBuff->GetId();
 	if( pBuff->GetType() == BUFF_SKILL )
 	{
@@ -13013,159 +12961,6 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 			}
 		}
 	}
-#else	// __BUFF_1107
-//{{AFX
-	WORD wID = pSkill->wID;
-	if( pSkill->wType == BUFF_SKILL )
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].find(pSkill->wID);
-
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].end() )
-			return;
-
-		if( bPlayer )
-			pItem = prj.GetSkillProp( pSkill->wID );
-		else
-			pItem = prj.GetPartySkill( pSkill->wID );
-	}
-	else
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].find(pSkill->wID);
-
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].end() )
-			return;
-
-		pItem = prj.GetItemProp( wID );
-	}
-	
-	multimap< DWORD, BUFFSKILL >::value_type* pp;
-	pp = &(*iter);
-
-	ASSERT( pItem );
-	if( pp->second.m_pTexture == NULL )
-		return;
-	
-	BOOL bFlash = FALSE;
-	DWORD dwOddTime = 0;
-	
-	if( pSkill->tmCount > 0 )
-	{	
-		dwOddTime = pSkill->tmCount - (g_tmCurrent - pSkill->tmTime);
-		bFlash = ( dwOddTime < 20 * 1000 );		// 20�� ���� �������� �����Ÿ�
-		
-		if(pSkill->tmCount < (g_tmCurrent - pSkill->tmTime)) // - �� �Ǹ� 0���� ó��
-			dwOddTime = 0;
-	}
-	
-	D3DXCOLOR color;
-	
-	if( bFlash )		
-	{		
-		if( pp->second.m_bFlsh == TRUE )
-		{
-			pp->second.m_nAlpha+=6;
-			
-			if( pp->second.m_nAlpha > 192 )
-			{
-				pp->second.m_nAlpha = 192;
-				pp->second.m_bFlsh = FALSE;
-			}
-		}
-		else
-		{
-			pp->second.m_nAlpha-=6;
-			
-			if( pp->second.m_nAlpha < 64 )
-			{
-				pp->second.m_nAlpha = 64;
-				pp->second.m_bFlsh = TRUE;
-			}
-		}
-		
-		if( pItem->nEvildoing < 0 )							// ���۸�����
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 120, 255 );		// ���� �� 
-		else
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );		
-	}
-	else
-	{
-		if( pItem->nEvildoing < 0 )							// ���۸�����
-			color =  D3DCOLOR_ARGB( 192, 255, 120, 255 );		// ���� �� 
-		else
-			color =  D3DCOLOR_ARGB( 192, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );
-	}
-
-	SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x+28, pInfo->pt.y+28 );
-	ClientToScreen( &rectHittest );
-	
-	CEditString strEdit;
-	CString strLevel;
-	strLevel.Format("   Lv %d", pSkill->dwLevel);
-
-	if( pItem->dwItemRare == 102 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-	}
-	else if( pItem->dwItemRare == 103 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-	}
-	else
-	{
-		strEdit.AddString( pItem->szName, 0xff2fbe6d, ESSTY_BOLD );
-		strEdit.AddString( strLevel, 0xff2fbe6d, ESSTY_BOLD );
-	}
-
-	CString str;
-
-	if( pSkill->tmCount > 0 )
-	{
-		CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// �����ð��� �ʴ����� ��ȯ�ؼ� �Ѱ���
-				
-		if( ct.GetDays() != 0 )
-		{
-			str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
-		}
-		else
-		{
-			if( ct.GetHours() >= 1 )
-				str.Format( "\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
-			else
-				str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );						// ����
-		}
-		RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 255, 255, 255 ) );
-	}
-
-	CString strTemp;
-	strTemp.Format( "\n%s", pItem->szCommand );
-
-	strEdit.AddString( strTemp );
-
-	if( PtInRect(&rectHittest, ptMouse ) )
-	{
-		g_WndMng.PutDestParam( pItem->dwDestParam[0], pItem->dwDestParam[1],
-			pItem->nAdjParamVal[0], pItem->nAdjParamVal[1], strEdit );
-		
-		if( pSkill->wType == BUFF_SKILL && pSkill->wID != SI_RIG_MASTER_BLESSING && 
-			pSkill->wID != SI_ASS_CHEER_STONEHAND && pSkill->wID != SI_MAG_EARTH_LOOTING ) //������ �ູ, ���� �ڵ�, ���� ����
-		{
-			AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pSkill->dwLevel );
-
-			if( pAddSkillProp )
-			{
-				g_WndMng.PutDestParam( pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
-					pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit );
-			}
-		}
-	}
-//}}AFX
-#endif	// __BUFF_1107
 
 	strEdit.AddString( str );
 

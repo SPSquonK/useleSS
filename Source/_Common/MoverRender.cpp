@@ -1831,7 +1831,6 @@ void CMover::RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice)
 	g_Neuz.m_TextureAngelGauge[0].RenderScal(&(g_Neuz.m_2DRender), p, 200, 0.4f, 0.55f);
 	
 	int nAngel = 100;
-#ifdef __BUFF_1107
 	IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
 	if( pBuff )
 	{
@@ -1839,15 +1838,6 @@ void CMover::RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice)
 		if( pItemProp )
 			nAngel = (int)( (float)pItemProp->nAdjParamVal1 );
 	}
-#else	// __BUFF_1107
-	LPSKILLINFLUENCE lpSkillIn = m_SkillState.GetItemBuf( IK3_ANGEL_BUFF );
-	if( lpSkillIn )
-	{
-		ItemProp* pItemProp = prj.GetItemProp( lpSkillIn->wID );
-		if( pItemProp )
-			nAngel = (float)pItemProp->nAdjParamVal1;
-	}
-#endif	// __BUFF_1107
 	if( nAngel <= 0 || 100 < nAngel  )
 		nAngel = 100;
 	

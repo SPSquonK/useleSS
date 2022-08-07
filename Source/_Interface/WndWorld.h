@@ -14,9 +14,7 @@
 extern vector<CString> g_vecHelpInsKey;
 #endif //__HELP_BUG_FIX
 
-#ifdef __BUFF_1107
 #include "buff.h"
-#endif	// __BUFF_1107
 
 typedef struct tagCAPTION
 {
@@ -426,27 +424,14 @@ public:
 
 	BOOL						m_bFirstFlying;
 	int                         m_nLimitBuffCount;
-#ifdef __BUFF_1107
 	CBuffMgr	m_buffs;
-#else	// __BUFF_1107
-	CSkillInfluence             m_partySkillState;
-#endif	// __BUFF_1107
 	std::vector< std::multimap<DWORD, BUFFSKILL> >	m_pBuffTexture;
 
-#ifdef __BUFF_1107
 	DWORD	GetSystemPetTextureKey( IBuff* pBuff );
-#else	// __BUFF_1107
-	DWORD	GetSystemPetTextureKey( SKILLINFLUENCE* pSkill );
-#endif	// __BUFF_1107
 	void RenderBuff( C2DRender* p2DRender );
 	void RenderSelectObj( C2DRender* pRender, CObj* pObj );
-#ifdef __BUFF_1107
 	void RenderExpBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BUFFICON_INFO* pInfo, CPoint ptMouse, DWORD dwItemID );
 	void RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse );
-#else	// __BUFF_1107
-	void RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BUFFICON_INFO* pInfo, CPoint ptMouse, DWORD dwItemID );
-	void RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse );
-#endif	// __BUFF_1107
 	void RenderSMBuff( C2DRender *p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
 	void RenderCasting(C2DRender *p2DRender);
 	void	RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );

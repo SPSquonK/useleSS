@@ -148,7 +148,6 @@
 #define		__LAYER_1020				// __LAYER_1015 테스트
 #define		__AZRIA_1023				// 입장권 계층 적용
 #define		__PET_1024					// 펫 작명
-#define		__BUFF_1107
 #define		__SYNC_1217					// 비동기 수정(필리핀 보고)
 #define		__SYS_ITEMTRANSY			// NPC메뉴 아이템 트렌지 기능
 

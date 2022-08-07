@@ -327,11 +327,7 @@ void CMover::Serialize( CAr & ar )
 			ar << m_nMoveEventCnt;
 			ar << m_fSpeedFactor;
 		}
-#ifdef __BUFF_1107
 		m_buffs.Serialize( ar );
-#else	// __BUFF_1107
-		m_SkillState.Serialize( ar );
-#endif	// __BUFF_1107
 	}
 	else	// LOADING
 	{
@@ -683,11 +679,7 @@ void CMover::Serialize( CAr & ar )
 			ar >> m_fSpeedFactor;
 		}
 
-#ifdef __BUFF_1107
 		m_buffs.Serialize( ar );
-#else	// __BUFF_1107
-		m_SkillState.Serialize( ar );
-#endif	// __BUFF_1107
 
 	#ifdef __CLIENT
 		InitInterpolation();

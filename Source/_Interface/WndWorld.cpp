@@ -514,10 +514,8 @@ CCloth g_Cloth;
 #endif
 
 CWndWorld::CWndWorld()
-#ifdef __BUFF_1107
 :
 m_buffs( NULL )
-#endif	// __BUFF_1107
 {
 	m_bFreeMove = FALSE;
 	m_bBGM = FALSE;
@@ -572,9 +570,6 @@ m_buffs( NULL )
 	m_pFontAPITime = NULL;
 
 	m_bFirstFlying = FALSE;
-#ifndef __BUFF_1107
-	m_partySkillState.Init();
-#endif	// __BUFF_1107
 	m_pBuffTexture.clear();
 	m_pBuffTexture.resize(3);
 
@@ -8068,11 +8063,7 @@ BOOL CWndWorld::Process()
 	g_CapTime.Process();
 
 	if( g_pPlayer )
-#ifdef __BUFF_1107
 		m_buffs.Process();
-#else	// __BUFF_1107
-		m_partySkillState.Process();
-#endif	// __BUFF_1107
 
 	DWORD dwBufCount = GetTickCount();
 	if( g_pPlayer && dwBufCount >= m_dwOneSecCount + 1000 )
@@ -8110,7 +8101,6 @@ BOOL CWndWorld::Process()
 	BOOL buffstatus = FALSE;
 	if( g_pPlayer )
 	{
-#ifdef __BUFF_1107
 		for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i != g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
 		{
 			IBuff* pBuff	= i->second;
@@ -8120,19 +8110,6 @@ BOOL CWndWorld::Process()
 				break;
 			}
 		}
-#else	// __BUFF_1107
-		//{{AFX
-		for( int i=0; i<MAX_SKILLINFLUENCE; i++)
-		{
-			SKILLINFLUENCE* pSkill = g_pPlayer->m_SkillState.Get(i);
-			if( pSkill->wType == BUFF_SKILL )	
-			{
-				buffstatus = TRUE;
-				i = MAX_SKILLINFLUENCE;
-			}
-		}
-		//}}AFX
-#endif	// __BUFF_1107
 	}
 	
 	if(buffstatus)
@@ -8364,17 +8341,9 @@ void CWndWorld::UseSkill()
 	}
 }
 
-#ifdef __BUFF_1107
 DWORD CWndWorld::GetSystemPetTextureKey( IBuff* pBuff )
-#else	// __BUFF_1107
-DWORD CWndWorld::GetSystemPetTextureKey( SKILLINFLUENCE* pSkill )
-#endif	// __BUFF_1107
 {
-#ifdef __BUFF_1107
 	WORD wId	= pBuff->GetId();
-#else	// __BUFF_1107
-	WORD wId	= pSkill->wID;
-#endif	// __BUFF_1107
 	CPet* pPet	= g_pPlayer->GetPet();
 	if( pPet )
 	{
@@ -8389,7 +8358,6 @@ DWORD CWndWorld::GetSystemPetTextureKey( SKILLINFLUENCE* pSkill )
 	return static_cast<DWORD>( wId );
 }
 
-#ifdef __BUFF_1107
 void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
 {
 	RECT rectHittest;
@@ -8841,399 +8809,6 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 		pInfo->pt.y += GetBuffTimeGap();
 	}		
 }
-#else	// __BUFF_1107
-void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
-{
-	RECT rectHittest;
-	multimap< DWORD, BUFFSKILL >::value_type* pp = NULL;
-
-	pInfo->pt.x		+= pInfo->nDelta;
-	ItemProp* pItem		= NULL;
-	WORD wID	= pSkill->wID;
-	int nTexture	= bPlayer? 0: 1;
-
-	if( pSkill->wType == BUFF_SKILL )
-	{
-		if(m_pBuffTexture[nTexture].find(pSkill->wID) != m_pBuffTexture[nTexture].end())
-			pp	= &( *( m_pBuffTexture[nTexture].find(pSkill->wID ) ) );
-		pItem	= bPlayer? prj.GetSkillProp( pSkill->wID ): prj.GetPartySkill( pSkill->wID );
-	}
-	else if( pSkill->wType == BUFF_ITEM || pSkill->wType == BUFF_ITEM2 || pSkill->wType == BUFF_EQUIP )
-	{
-		if(m_pBuffTexture[2].find(pSkill->wID) != m_pBuffTexture[2].end())
-			pp	= &( *( m_pBuffTexture[2].find(pSkill->wID ) ) );
-		pItem	= prj.GetItemProp( pSkill->wID );
-	}
-	else if( pSkill->wType == BUFF_PET )
-	{
-		if(m_pBuffTexture[2].find(GetSystemPetTextureKey(pSkill)) != m_pBuffTexture[2].end())
-			pp	= &( *( m_pBuffTexture[2].find( GetSystemPetTextureKey( pSkill ) ) ) );
-		pItem	= prj.GetItemProp( pSkill->wID );
-	}
-	if(pp == NULL)
-		return;
-	ASSERT( pItem );
-	if( pp->second.m_pTexture == NULL )
-		return;
-
-	BOOL bFlash	= FALSE;
-	DWORD dwOddTime	= 0;
-	if( pSkill->tmCount > 0 )
-	{	
-		dwOddTime	= pSkill->tmCount - (g_tmCurrent - pSkill->tmTime);
-		bFlash	= ( dwOddTime < 20 * 1000 );	// 20초 이하 남았으면 깜빡거림
-		if( pItem->dwID == II_SYS_SYS_SCR_RETURN )	// 귀환의 두루마리는 깜빡거림
-			bFlash	= TRUE;
-	}
-	int nAngel = 100;
-	__int64 nPercent = 0;
-	
-	if( pItem->dwItemKind3 == IK3_ANGEL_BUFF )
-	{
-		LPSKILLINFLUENCE lpSkillIn = g_pPlayer->m_SkillState.GetItemBuf( IK3_ANGEL_BUFF );
-		if( lpSkillIn )
-		{
-			ItemProp* pItemProp = prj.GetItemProp( lpSkillIn->wID );
-			if( pItemProp )
-				nAngel = (float)pItemProp->nAdjParamVal1;
-		}
-		if( nAngel <= 0 || 100 < nAngel  )
-			nAngel = 100;
-		
-		EXPINTEGER maxExp = prj.m_aExpCharacter[g_pPlayer->m_nAngelLevel].nExp1 / 100 * nAngel;
-		if( maxExp > 0)
-		{
-			nPercent = ( g_pPlayer->m_nAngelExp * (EXPINTEGER)100 ) / maxExp;
-		}
-		if(nPercent == 100)
-		{
-			if(!m_bAngelFinish)
-			{
-				g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_ANGELEXP_END ) );
-				m_bAngelFinish = TRUE;
-			}
-			bFlash = TRUE;
-		}
-		else
-			m_bAngelFinish = FALSE;
-	}
-
-	D3DXCOLOR color;
-	
-	if( bFlash )		
-	{		
-		if( pp->second.m_bFlsh == TRUE )
-		{
-			pp->second.m_nAlpha	+=6;
-			
-			if( pp->second.m_nAlpha > 192 )
-			{
-				pp->second.m_nAlpha = 192;
-				pp->second.m_bFlsh = FALSE;
-			}
-		}
-		else
-		{
-			pp->second.m_nAlpha-=6;
-			
-			if( pp->second.m_nAlpha < 64 )
-			{
-				pp->second.m_nAlpha = 64;
-				pp->second.m_bFlsh = TRUE;
-			}
-		}
-
-		if( pItem->nEvildoing < 0 )							// 나쁜마법은
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 120, 255 );		// 빨간 색 
-		else
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1, 1, color );		
-	}
-	else
-	{
-		if( pItem->nEvildoing < 0 )							// 나쁜마법은
-			color =  D3DCOLOR_ARGB( 192, 255, 120, 255 );		// 빨간 색 
-		else
-			color =  D3DCOLOR_ARGB( 192, 255, 255, 255 );
-
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1, 1, color );
-	}
-	
-	//지속시간이 있는 Buff의 경우 현재 남은 시간을 항상 표시하도록 변경
-	if( dwOddTime > 0 && pItem->dwSkillTime != 999999999
-#ifdef __DST_GIFTBOX
-		&& pSkill->wType != BUFF_EQUIP
-#endif // __DST_GIFTBOX
-		)
-	{
-		CTimeSpan ct( (long)(dwOddTime / 1000.0f) );
-		RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 240, 240, 0 ) );
-	}
-	else if( pItem->dwItemKind2 == IK2_BUFF2 )
-	{
-		time_t	t = (time_t)pSkill->dwLevel - time_null();
-		if( t < 0 )
-			t	= 0;
-		CTimeSpan ts( t );
-		RenderOptBuffTime( p2DRender, pInfo->pt, ts, D3DCOLOR_XRGB( 240, 240, 0 ) );
-	}
-	
-	SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x+32, pInfo->pt.y+32 );
-	ClientToScreen( &rectHittest );
-	
-	CRect rc	= rectHittest;
-	if( rc.PtInRect( ptMouse ) )
-	{
-		CEditString strEdit;
-		if( pItem->dwItemRare == 102 )
-			strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-		else if( pItem->dwItemRare == 103 )
-			strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-		else if( pItem->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET )
-			strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 46, 112, 169 ), ESSTY_BOLD );
-		else if( pItem->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET02 )
-			strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 46, 112, 169 ), ESSTY_BOLD );
-		else
-			strEdit.AddString( pItem->szName, 0xff2fbe6d, ESSTY_BOLD );
-
-		BOOL bItemKind3 = FALSE;
-		CString str;
-		if( pItem->dwItemKind3 == IK3_ANGEL_BUFF )
-		{
-			BUFFICONRECT_INFO info;
-			CString strPercent;
-			CopyRect( &info.rc, &rectHittest );
-			info.dwID = pItem->dwID;
-			m_rcCheck.push_back( info );
-
-			strPercent.Format("   %d%%", nPercent);
-			strEdit.AddString( strPercent, D3DCOLOR_XRGB( 100, 100, 255 ), ESSTY_BOLD );
-			bItemKind3	= TRUE;
-		}
-		else if( pItem->dwItemKind3 == IK3_EGG )
-		{
-			CItemElem* pItemElem	= g_pPlayer->GetPetItem();
-			if( pItemElem != NULL )
-			{
-				PutPetTooltipInfo( pItemElem, &strEdit );
-				bItemKind3	= TRUE;
-			}
-		}
-		switch( pItem->dwID )
-		{
-			case II_SYS_SYS_SCR_SMELPROT:
-#ifdef __SM_ITEM_2ND_EX
-			case II_SYS_SYS_SCR_SMELPROT2:
-#endif	// __SM_ITEM_2ND_EX
-			case II_SYS_SYS_SCR_SMELPROT3:
-			case II_SYS_SYS_SCR_SMELPROT4:
-			case II_SYS_SYS_SCR_SMELTING:
-			case II_SYS_SYS_SCR_SMELTING2:
-				str.Format( "\n%s", prj.GetText( TID_GAME_DEMOL_USE ) );
-				break;
-			case II_SYS_SYS_SCR_RETURN:
-				{
-					BUFFICONRECT_INFO info;
-					CopyRect( &info.rc, &rectHittest );
-					info.dwID = pItem->dwID;
-					m_rcCheck.push_back( info );			
-				}
-				break;
-			case II_SYS_SYS_SCR_SUPERSMELTING:
-				str.Format( "\n%s", prj.GetText( TID_GAME_DEMOL_USE ) );
-				break;
-			case II_SYS_SYS_SCR_PARTYSUMMON:
-				{
-					BUFFICONRECT_INFO info;
-					CopyRect( &info.rc, &rectHittest );
-					info.dwID = pItem->dwID;
-					m_rcCheck.push_back( info );
-
-					CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// 남은시간을 초단위로 변환해서 넘겨줌
-					if( ct.GetHours() >= 1 )
-						str.Format( "\n%.2d:%.2d:%.2d\n%s", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds(), prj.GetText( TID_GAME_SUMMON_BUFF_ICON ) );	//시분초 
-					else
-						str.Format( "\n%.2d:%.2d\n%s", ct.GetMinutes(), ct.GetSeconds(), prj.GetText( TID_GAME_SUMMON_BUFF_ICON ) );						// 분초
-					RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 240, 240, 0 ) );
-				}
-				break;
-			case II_SYS_SYS_SCR_PET_FEED_POCKET:
-				{
-					//검색해서 활성화 된 먹이 주머니를 찾는다.
-					CItemElem* ptr;
-					CItemElem* pItemElem = NULL;
-
-					int nMax = g_pPlayer->m_Inventory.GetMax();
-					for( int i = 0 ; i < nMax; i++ )
-					{
-						ptr	= g_pPlayer->m_Inventory.GetAtId( i );
-						if( IsUsableItem( ptr ) && ptr->m_dwItemId == II_SYS_SYS_SCR_PET_FEED_POCKET &&
-							ptr->m_dwKeepTime > 0 && !ptr->IsFlag( CItemElem::expired ) )		// 활성화한 먹이 주머니일 경우
-						{
-							BUFFICONRECT_INFO info;
-							CopyRect( &info.rc, &rectHittest );
-							info.dwID = pItem->dwID;
-							m_rcCheck.push_back( info );			
-							
-							pItemElem = ptr;
-							i = nMax;
-						}
-					}
-
-					if(pItemElem != NULL)
-					{
-						CString strTemp;
-						//사용 제한 시한
-						time_t t = pItemElem->m_dwKeepTime - time_null();
-//						if( pItemElem->m_dwKeepTime && !pItemElem->IsFlag( CItemElem::expired ) )
-						{
-							if( t > 0 )
-							{
-								CTimeSpan time( t );
-								if( time.GetDays() )
-									str.Format( prj.GetText(TID_PK_LIMIT_DAY), static_cast<int>(time.GetDays()+1) );
-								else if( time.GetHours() )
-									str.Format( prj.GetText(TID_PK_LIMIT_HOUR), time.GetHours() );
-								else if( time.GetMinutes() > 1 )
-									str.Format( prj.GetText(TID_PK_LIMIT_MINUTE), time.GetMinutes() );
-								else
-									str.Format( prj.GetText(TID_PK_LIMIT_SECOND), time.GetSeconds() );
-							}
-							strTemp = str + prj.GetText(TID_TOOLTIP_PERIOD);	
-							strEdit.AddString( "\n" );
-							strEdit.AddString( strTemp, D3DCOLOR_XRGB( 255, 20, 20 ) );
-						}
-						//사료 개수
-						strEdit.AddString( "\n" );	
-						strTemp.Format( "%s %d", prj.GetText( TID_GAME_PET_FEED_COUNT ), g_pPlayer->GetItemNumForClient( II_SYS_SYS_FEED_01 ) );
-						strEdit.AddString( strTemp, D3DCOLOR_XRGB( 50, 50, 205 ) );
-						//설명
-						strEdit.AddString( "\n" );
-						strTemp.Format( "%s", pItem->szCommand );
-						strEdit.AddString( strTemp, D3DCOLOR_XRGB( 178, 0, 255 ) ); 
-					}
-				}
-				break;
-			default:
-				{
-					if( bItemKind3 )	// 위쪽에서 처리
-						break;
-				#ifdef __DST_GIFTBOX
-					if( pSkill->wType == BUFF_EQUIP )
-						break;
-				#endif // __DST_GIFTBOX
-					if( pSkill->tmCount > 0 )						
-					{
-						CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// 남은시간을 초단위로 변환해서 넘겨줌
-						
-						if( ct.GetDays() != 0 )
-						{
-							str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//시분초 
-						}
-						else
-						{
-							if( ct.GetHours() >= 1 )
-								str.Format( "\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//시분초 
-							else
-								str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );						// 분초
-						}
-//						RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 240, 240, 0 ) );
-					}
-					else if( prj.GetItemProp( pSkill->wID )->dwItemKind2 == IK2_BUFF2 )
-					{
-						time_t	t = (time_t)pSkill->dwLevel - time_null();
-						if( t < 0 )
-							t	= 0;
-						CTimeSpan ts( t );
-						if( ts.GetDays() != 0 )
-						{
-							str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ts.GetDays()), ts.GetHours(), ts.GetMinutes(), ts.GetSeconds() );
-						}
-						else
-						{
-							if( ts.GetHours() >= 1 )
-								str.Format( "\n%.2d:%.2d:%.2d", ts.GetHours(), ts.GetMinutes(), ts.GetSeconds() );
-							else
-								str.Format( "\n%.2d:%.2d", ts.GetMinutes(), ts.GetSeconds() );
-						}
-					}
-				}
-				break;
-		}	// switch
-
-		CString strTemp;
-		strTemp.Format( "\n%s", pItem->szCommand );
-
-		if(pItem->dwID != II_SYS_SYS_SCR_PET_FEED_POCKET && pItem->dwID != II_PET_EGG)
-			strEdit.AddString( strTemp );
-
-#ifdef __JEFF_11_1
-		if( pItem->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET02 )
-		{
-			strEdit.AddString( "\n" );	
-			CString str;
-			str.Format( "%s %d", prj.GetText( TID_GAME_PET_FEED_COUNT ), g_pPlayer->GetItemNumForClient( II_SYS_SYS_FEED_01 ) );
-			strEdit.AddString( str, D3DCOLOR_XRGB( 50, 50, 205 ) );
-		}
-#endif	// __JEFF_11_1
-		g_WndMng.PutDestParam( pItem->dwDestParam[0], pItem->dwDestParam[1], 
-			pItem->nAdjParamVal[0], pItem->nAdjParamVal[1], strEdit );
-#ifdef __DST_GIFTBOX
-		g_WndMng.PutDestParam( pItem->dwDestParam[2], 0, pItem->nAdjParamVal[2], 0, strEdit );
-#endif // __DST_GIFTBOX
-
-		if( pSkill->wType == BUFF_SKILL )
-		{
-			AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pSkill->dwLevel );
-
-			if( pAddSkillProp )
-			{
-				g_WndMng.PutDestParam( pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
-					pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit );
-			}
-		}
-
-#ifdef __VTN_TIMELIMIT
-		//	mulcom	BEGIN100315	베트남 시간 제한
-		if( ::GetLanguage() == LANG_VTN )
-		{
-			if( g_pPlayer->m_nAccountPlayTime > -1 && pItem->dwID == II_VIETNAM_BUFF01 )
-			{
-				DWORD dwTime = g_tmCurrent - g_pPlayer->m_nAccountPlayTime;
-				CTimeSpan ts( dwTime / SEC( 1 ) );
-				strTemp.Format( prj.GetText( TID_GAME_PCBANGINFO_TIME ), ts.GetHours(), ts.GetMinutes(), ts.GetSeconds() );	strTemp = '\n' + strTemp;
-				if( dwTime > MIN( 300 ) )
-					strTemp += "\nExp 0%";
-				else if( dwTime <= MIN( 300 ) && dwTime >= MIN( 180 ) )
-					strTemp += "\nExp 50%";
-				else
-					strTemp += "\nExp 100%";
-				strEdit.AddString( strTemp, prj.GetTextColor( TID_GAME_PCBANGINFO_TIME ) );
-			}
-		}
-		//	mulcom	END100315	베트남 시간 제한
-#endif // __VTN_TIMELIMIT
-
-		if(pItem->dwID != II_SYS_SYS_SCR_PET_FEED_POCKET 
-			&& pItem->dwID != II_PET_EGG)
-			strEdit.AddString( str );
-
-		g_toolTip.PutToolTip( wID, strEdit, rectHittest, ptMouse, 1 );	
-	}
-
-	++pInfo->nCount;
-	if( (pInfo->nCount % m_nLimitBuffCount) == 0 )
-	{
-		if( pSkill->wType == BUFF_SKILL )
-			pInfo->pt.x  = (m_rectWindow.Width() / 2) - 100;
-		else
-			pInfo->pt.x  = (m_rectWindow.Width() / 2) + 75;
-
-		pInfo->pt.y += GetBuffTimeGap();
-	}		
-}
-#endif	// __BUFF_1107
 
 void CWndWorld::PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit )
 {
@@ -9289,11 +8864,7 @@ void CWndWorld::PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit )
 	}
 }
 
-#ifdef __BUFF_1107
 void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BUFFICON_INFO* pInfo, CPoint ptMouse, DWORD dwItemID )
-#else	// __BUFF_1107
-void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BUFFICON_INFO* pInfo, CPoint ptMouse, DWORD dwItemID )
-#endif	// __BUFF_1107
 {
 	// 경험치 중복 아이템 : 루프를 돌아서 몇개인지 확인. 버프아이콘은 한개, 설명은 3개면 3개.
 	int nExpCount = 0;
@@ -9319,7 +8890,6 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 	else if( dwItemID == II_SYS_SYS_SCR_AMPESE)
 		IsOverlap = FALSE;
 
-#ifdef __BUFF_1107
 	for( MAPBUFF::iterator it = g_pPlayer->m_buffs.m_mapBuffs.begin(); it != g_pPlayer->m_buffs.m_mapBuffs.end(); ++it )
 	{
 		IBuff* ptr	= it->second;
@@ -9350,41 +8920,6 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 			}
 		}
 	}
-#else	// __BUFF_1107
-//{{AFX
-	for( int i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		SKILLINFLUENCE* pSkillBuf = g_pPlayer->m_SkillState.Get(i);
-
-		if( dwItemID == II_SYS_SYS_SCR_AMPESE ) // 중복되지 않는 ES증폭의 두루마리 defineitem에서 처리 잘못되어 따로 분기
-		{
-			if( pSkillBuf->wID == dwItemID )
-			{
-				dwExpTime[0] = pSkillBuf->tmCount - (g_tmCurrent - pSkillBuf->tmTime);
-				nExpCount = 1;
-				break;
-			}
-		}
-		else
-		{
-			if( pSkillBuf->wID == dwItemID || pSkillBuf->wID == dwItemID + 1 || pSkillBuf->wID == dwItemID + 2 )	
-			{
-				if(IsOverlap)
-				{
-					dwExpTime[nExpCount] = pSkillBuf->tmCount - (g_tmCurrent - pSkillBuf->tmTime);
-					++nExpCount;				
-				}
-				else
-				{
-					dwExpTime[0] = pSkillBuf->tmCount - (g_tmCurrent - pSkillBuf->tmTime);
-					nExpCount = 1;
-					break;
-				}
-			}
-		}
-	}
-//}}AFX
-#endif	// __BUFF_1107
 
 	int nTexture;
 	RECT rectHittest;	
@@ -9492,11 +9027,7 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 	strEdit.AddString( prj.GetText( TID_GAME_EXPITEM_TOOLTIP1 ) );
 	strEdit.AddString( '\n' );
 	strEdit.AddString( prj.GetText( TID_GAME_EXP_COUTMSG0 ));//, 0xff99cc00 );
-#ifdef __BUFF_1107
 	for( int i = 0 ; i < nExpCount ; ++i )
-#else	// __BUFF_1107
-	for( i = 0 ; i < nExpCount ; ++i )
-#endif	// __BUFF_1107
 	{
 		DWORD dwMsg = TID_GAME_EXP_COUTMSG3;
 		if( i == 0 )
@@ -9526,11 +9057,7 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill,
 	++pInfo->nCount;
 	if( (pInfo->nCount % m_nLimitBuffCount) == 0 )
 	{
-#ifdef __BUFF_1107
 		if( pBuff->GetType() == BUFF_SKILL )
-#else	// __BUFF_1107
-		if( pSkill->wType == BUFF_SKILL )
-#endif	// __BUFF_1107
 			pInfo->pt.x  = (m_rectWindow.Width() / 2) - 100;
 		else
 			pInfo->pt.x  = (m_rectWindow.Width() / 2) + 75;
@@ -9670,19 +9197,11 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 	BUFFICON_INFO* pInfo;
 	BOOL bExpRander[6];
 	ZeroMemory( bExpRander, sizeof( bExpRander ) );
-#ifdef __BUFF_1107
 	for( MAPBUFF::iterator it = g_pPlayer->m_buffs.m_mapBuffs.begin(); it != g_pPlayer->m_buffs.m_mapBuffs.end(); ++it )
 	{
 		IBuff* pBuff	= it->second;
 		WORD wType	= pBuff->GetType();
 		WORD wId	= pBuff->GetId();
-#else	// __BUFF_1107
-	for( i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		SKILLINFLUENCE* pSkill = g_pPlayer->m_SkillState.Get(i);
-		WORD wType	= pSkill->wType;
-		WORD wId	= pSkill->wID;
-#endif	// __BUFF_1107
 
 		if( wId  )	
 		{
@@ -9717,22 +9236,13 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 			if( nExpkind != 100 )
 			{
 				if( bExpRander[nExpkind] == FALSE )
-#ifdef __BUFF_1107
 					RenderExpBuffIcon( p2DRender, pBuff, pInfo, ptMouse, wId );
-#else	// __BUFF_1107
-					RenderExpBuffIcon( p2DRender, pSkill, pInfo, ptMouse, wId );
-#endif	// __BUFF_1107
 				bExpRander[nExpkind] = TRUE;
 			}
 			else
 			{
-			#ifdef __BUFF_1107
 				if( wType != BUFF_SKILL )
 					RenderBuffIcon( p2DRender, pBuff, TRUE, pInfo, ptMouse );
-				#else	// __BUFF_1107
-				if( wType != BUFF_SKILL )
-					RenderBuffIcon( p2DRender, pSkill, TRUE, pInfo, ptMouse );
-				#endif	// __BUFF_1107
 			}
 		}
 	}
@@ -9745,24 +9255,12 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 
 	if( g_Party.m_nModeTime[PARTY_PARSKILL_MODE] || bNearByLeader )
 	{
-#ifdef __BUFF_1107
 		for( MAPBUFF::iterator it2 = m_buffs.m_mapBuffs.begin(); it2 != m_buffs.m_mapBuffs.end(); ++it2 )
 		{
 			IBuff* ptr2	= it2->second;
 			pInfo = &left;
 			RenderBuffIcon( p2DRender, ptr2, FALSE, pInfo, ptMouse );		// 
 		}
-#else	// __BUFF_1107
-		for( i=0; i<MAX_SKILLINFLUENCE; i++)
-		{
-			SKILLINFLUENCE* pSkill = m_partySkillState.Get(i);
-			if( pSkill->wID )	
-			{
-				pInfo = &left;
-				RenderBuffIcon( p2DRender, pSkill, FALSE, pInfo, ptMouse );		// 
-			}
-		}
-#endif	// __BUFF_1107
 	}
 
 	// 상용화 아이템 버프
@@ -9856,20 +9354,11 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 	BOOL bExpRander = FALSE;
 	
 	// 일반 스킬 버프 표시
-#ifdef __BUFF_1107
 	for( MAPBUFF::iterator i = pMover->m_buffs.m_mapBuffs.begin(); i != pMover->m_buffs.m_mapBuffs.end(); ++i )
 	{
 		IBuff* pBuff	= i->second;
 		WORD wType	= pBuff->GetType();
 		DWORD dwSkillID	= pBuff->GetId();
-#else	// __BUFF_1107
-	for( int i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		SKILLINFLUENCE* pSkill = pMover->m_SkillState.Get(i);
-		if( pSkill->wID == 0 )	continue;
-		WORD wType	= pSkill->wType;
-		DWORD dwSkillID	= pSkill->wID;
-#endif	// __BUFF_1107
 		ItemProp* pItem = NULL;
 		if( dwSkillID == II_SYS_SYS_SCR_AMPESA || dwSkillID == II_SYS_SYS_SCR_AMPESA1 || dwSkillID == II_SYS_SYS_SCR_AMPESA2 )
 			dwSkillID = II_SYS_SYS_SCR_AMPESA;
@@ -9963,11 +9452,7 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 			else
 			{
 				Lpoint.x += nIconSize;
-			#ifdef __BUFF_1107
 				if( pBuff->GetTotal() > 0 && dwOddTime < 20 * 1000 )		// 20초 이하 남았으면 깜빡거림.					
-			#else	// __BUFF_1107
-				if( pSkill->tmCount > 0 && dwOddTime < 20 * 1000 )		// 20초 이하 남았으면 깜빡거림.					
-			#endif	// __BUFF_1107
 				{
 					pp->second.m_pTexture->Render( p2DRender, Lpoint, CPoint(nIconSize,nIconSize), pp->second.m_nAlpha );
 					
@@ -10045,11 +9530,7 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 					)
 					bTime = FALSE;
 				
-			#ifdef __BUFF_1107
 				if( bTime && pBuff->GetTotal() > 0  )					
-			#else	// __BUFF_1107
-				if( bTime && pSkill->tmCount > 0 )					
-			#endif	// __BUFF_1107
 				{
 					CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// 남은시간을 초단위로 변환해서 넘겨줌
 					str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );		// 남은시간을 분/초 형태로 출력.
@@ -10066,11 +9547,7 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 					
 					if( wType == BUFF_SKILL )
 					{
-#ifdef __BUFF_1107
 						AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pBuff->GetLevel() );
-#else	// __BUFF_1107
-						AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pSkill->dwLevel );
-#endif	// __BUFF_1107
 						
 						if( pAddSkillProp )
 						{
