@@ -1416,7 +1416,7 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual	void PaintFrame( C2DRender* p2DRender );
 
-	void RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, CPoint buffPosition, CPoint ptMouse );
+	void RenderBuffIcon(C2DRender * p2DRender, IBuff * pBuff, CPoint buffPosition, CPoint ptMouse);
 	void RenderOptBuffTime(C2DRender *p2DRender, const CPoint& point, DWORD timeLeft, DWORD dwColor );
 	void SetBuffIconInfo(bool force);
 	[[nodiscard]] bool GetHitTestResult() /* const */;

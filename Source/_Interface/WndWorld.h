@@ -185,6 +185,9 @@ typedef struct __KILLCOUNTCIPHERS
 
 #define MAX_KILLCOUNT_CIPHERS 3
 
+namespace Strings {
+	[[nodiscard]] CString ToStringDHMmSs(CTimeSpan timeSpan);
+}
 
 class CWndWorld : public CWndNeuz
 {

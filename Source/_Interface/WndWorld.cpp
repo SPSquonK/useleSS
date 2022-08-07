@@ -8635,36 +8635,16 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 						break;
 					if( pBuff->GetTotal() > 0 )						
 					{
-						CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// 남은시간을 초단위로 변환해서 넘겨줌
-						if( ct.GetDays() != 0 )
-						{
-							str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//시분초 
-						}
-						else
-						{
-							if( ct.GetHours() >= 1 )
-								str.Format( "\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//시분초 
-							else
-								str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );						// 분초
-						}
+						const CTimeSpan ct((long)(dwOddTime / 1000.0f));		// 남은시간을 초단위로 변환해서 넘겨줌
+						str = Strings::ToStringDHMmSs(ct);
 					}
 					else if( prj.GetItemProp( pBuff->GetId() )->dwItemKind2 == IK2_BUFF2 )
 					{
 						time_t	t = (time_t)pBuff->GetLevel() - time_null();
 						if( t < 0 )
 							t	= 0;
-						CTimeSpan ts( t );
-						if( ts.GetDays() != 0 )
-						{
-							str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ts.GetDays()), ts.GetHours(), ts.GetMinutes(), ts.GetSeconds() );
-						}
-						else
-						{
-							if( ts.GetHours() >= 1 )
-								str.Format( "\n%.2d:%.2d:%.2d", ts.GetHours(), ts.GetMinutes(), ts.GetSeconds() );
-							else
-								str.Format( "\n%.2d:%.2d", ts.GetMinutes(), ts.GetSeconds() );
-						}
+						const CTimeSpan ts(t);
+						str = Strings::ToStringDHMmSs(ts);
 					}
 				}
 				break;
@@ -8836,6 +8816,23 @@ void CWndWorld::PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit )
 //		pEdit->AddString( "\n" );
 //		pEdit->AddString( strTemp, D3DCOLOR_XRGB(178, 0, 255) );
 	}
+}
+
+CString Strings::ToStringDHMmSs(const CTimeSpan timeSpan) {
+	CString str;
+	if (timeSpan.GetDays() != 0) {
+		str.Format(
+			"\n%.2d:%.2d:%.2d:%.2d",
+			static_cast<int>(timeSpan.GetDays()),
+			timeSpan.GetHours(), timeSpan.GetMinutes(), timeSpan.GetSeconds()
+		);
+	} else if (timeSpan.GetHours() >= 1) {
+		str.Format("\n%.2d:%.2d:%.2d", timeSpan.GetHours(), timeSpan.GetMinutes(), timeSpan.GetSeconds());
+	} else {
+		str.Format("\n%.2d:%.2d", timeSpan.GetMinutes(), timeSpan.GetSeconds());
+	}
+
+	return str;
 }
 
 void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BUFFICON_INFO* pInfo, CPoint ptMouse, DWORD dwItemID )

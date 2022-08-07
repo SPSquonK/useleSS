@@ -12749,12 +12749,12 @@ void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
 	
 	for (IBuff * pBuff : g_pPlayer->m_buffs.m_mapBuffs | std::views::values) {
 		if (pBuff->GetType() == BUFF_SKILL) {
-			RenderBuffIcon(p2DRender, pBuff, TRUE, generator.Next(), ptMouse);
+			RenderBuffIcon(p2DRender, pBuff, generator.Next(), ptMouse);
 		}
 	}
 }
 
-void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, const CPoint buffPosition, const CPoint ptMouse )
+void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, const CPoint buffPosition, const CPoint ptMouse )
 {
 	const ItemProp * pItem;
 	std::multimap< DWORD, BUFFSKILL >::iterator pp;
@@ -12766,10 +12766,7 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 		if (pp == g_WndMng.m_pWndWorld->m_pBuffTexture[0].end())
 			return;
 
-		if (bPlayer)
-			pItem = prj.GetSkillProp(pBuff->GetId());
-		else
-			pItem = prj.GetPartySkill(pBuff->GetId());
+		pItem = prj.GetSkillProp(pBuff->GetId());
 	} else {
 		pp = g_WndMng.m_pWndWorld->m_pBuffTexture[2].find(pBuff->GetId());
 
@@ -12844,15 +12841,7 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 
 	if (pBuff->GetTotal() > 0) {
 		CTimeSpan ct((long)(dwOddTime / 1000.0f));		// �����ð��� �ʴ����� ��ȯ�ؼ� �Ѱ���
-
-		if (ct.GetDays() != 0) {
-			str.Format("\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds());	//�ú��� 
-		} else {
-			if (ct.GetHours() >= 1)
-				str.Format("\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds());	//�ú��� 
-			else
-				str.Format("\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds());						// ����
-		}
+		str = Strings::ToStringDHMmSs(ct);
 	}
 
 	CString strTemp;
