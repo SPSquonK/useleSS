@@ -12564,6 +12564,8 @@ void CWndFontEdit::ReSetBar( FLOAT r, FLOAT g, FLOAT b )
 }
 
 
+#include <format>
+
 CWndBuffStatus::CWndBuffStatus() 
 { 
 	m_BuffIconViewOpt = g_Option.m_BuffStatusMode;
@@ -12580,29 +12582,18 @@ void CWndBuffStatus::OnInitialUpdate()
 	
 	m_wndTitleBar.SetVisible( FALSE );
 
-	SetBuffIconInfo();
+	SetBuffIconInfo(true);
 
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CPoint point( (rectRoot.right - rectRoot.left) / 3, (rectRoot.bottom - rectRoot.top) / 3);
 	Move( point );
-} 
-BOOL CWndBuffStatus::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	return CWndNeuz::InitDialog( APP_BUFF_STATUS, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
-} 
+}
 
-BOOL CWndBuffStatus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
+BOOL CWndBuffStatus::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_BUFF_STATUS, pWndParent, WBS_NOFOCUS, CPoint(0, 0));
+}
 
-BOOL CWndBuffStatus::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
-void CWndBuffStatus::OnLButtonUp( UINT nFlags, CPoint point )
-{
+void CWndBuffStatus::OnLButtonUp(UINT nFlags, CPoint point) {
 	this->m_pWndFocus = this;
 }
 
@@ -12656,7 +12647,7 @@ void CWndBuffStatus::OnLButtonDblClk( UINT nFlags, CPoint point )
 		else if(m_BuffIconViewOpt == 1)
 			m_BuffIconViewOpt = 0;
 		g_Option.m_BuffStatusMode = m_BuffIconViewOpt;
-		SetBuffIconInfo();
+		SetBuffIconInfo(true);
 	}
 	else
 	{
@@ -12681,7 +12672,7 @@ void CWndBuffStatus::OnRButtonDblClk( UINT nFlags, CPoint point )
 		else if(m_BuffIconViewOpt == 1)
 			m_BuffIconViewOpt = 0;
 		g_Option.m_BuffStatusMode = m_BuffIconViewOpt;
-		SetBuffIconInfo();
+		SetBuffIconInfo(true);
 	}
 	else
 	{
@@ -12700,76 +12691,64 @@ void CWndBuffStatus::OnRButtonDblClk( UINT nFlags, CPoint point )
 BOOL CWndBuffStatus::GetHitTestResult()
 {
 	BOOL rtn_val = FALSE;
-	RECT rectHittest;
 	CPoint ptMouse = GetMousePoint();
 	ClientToScreen( &ptMouse );
-	BUFFICON_INFO buffinfo;
 	
-	std::list<BUFFICON_INFO>::iterator it = m_pBuffIconInfo.begin();
+	CPointGenerator generator = CPointGenerator(m_BuffIconViewOpt);
+
 	for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i!= g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
 	{
 		IBuff* pBuff	= i->second;
 		if( pBuff->GetType() == BUFF_SKILL )
 		{
-			buffinfo  = *it;
-			SetRect( &rectHittest, buffinfo.pt.x, buffinfo.pt.y, buffinfo.pt.x+34, buffinfo.pt.y+34 );
+			CRect rectHittest(generator.Next(), CSize(34, 34));
 			ClientToScreen( &rectHittest );
 			if( PtInRect(&rectHittest, ptMouse ) )
 				rtn_val = TRUE;
-			it++;
 		}
 	}
 	return rtn_val;
 }
 
-void CWndBuffStatus::SetBuffIconInfo()
+void CWndBuffStatus::SetBuffIconInfo(bool force)
 {
-	BUFFICON_INFO buffinfo;
-	int x = 0;
-	int y = 0;
-	int i;
-	CRect rect;
-	rect = GetWindowRect(TRUE);
-	
-	if(!m_pBuffIconInfo.empty())
-		m_pBuffIconInfo.clear();
+	if (!force && m_lastSeenSize == g_pPlayer->m_buffs.m_mapBuffs.size()) return;
 
-	if(m_BuffIconViewOpt == 0)
-	{
-		for(i=0; i<MAX_SKILLBUFF_COUNT; i++)
-		{
-			buffinfo.pt = CPoint( x, y );
-			m_pBuffIconInfo.push_back(buffinfo);
-			x += 34;
-			if(((i+1) % 7) == 0)
-			{
-				x  = 0;
-				y += 34;
-			}
-		}
-		//widht 238, heigth = 68
-		rect.bottom = 136 + rect.top;
-		rect.right = 238 + rect.left;
+	m_lastSeenSize = g_pPlayer->m_buffs.m_mapBuffs.size();
+
+	int numberOfRows = static_cast<int>(g_pPlayer->m_buffs.m_mapBuffs.size() / 7);
+	if (g_pPlayer->m_buffs.m_mapBuffs.size() % 7 != 0) {
+		numberOfRows += 1;
 	}
-	else if(m_BuffIconViewOpt == 1)
-	{
-		for(i=0; i<MAX_SKILLBUFF_COUNT; i++)
-		{
-			buffinfo.pt = CPoint( x, y );
-			m_pBuffIconInfo.push_back(buffinfo);
-			y += 34;
-			if(((i+1) % 7) == 0)
-			{
-				y  = 0;
-				x += 34;
-			}
-		}
-		//widht 54, heigth = 238
-		rect.bottom = 238 + rect.top;
-		rect.right = 136 + rect.left;
+
+	CRect rect = GetWindowRect(TRUE);
+
+	if (m_BuffIconViewOpt == 0) {
+		rect.bottom = (7 * 34) + rect.top;
+		rect.right = (numberOfRows * 34) + rect.left;
+	} else if (m_BuffIconViewOpt == 1) {
+		rect.right = (7 * 34) + rect.left;
+		rect.bottom = (numberOfRows * 34) + rect.top;
 	}
+
 	SetWndRect(rect);
 	AdjustWndBase();
+}
+
+CPoint CWndBuffStatus::CPointGenerator::Next() {
+	CPoint retval = m_point;
+
+	m_point.x += 34;
+	if (m_point.x >= 34 * 7) {
+		m_point.x -= 34 * 7;
+		m_point.y += 34;
+	}
+
+	if (m_viewOpt != 1) {
+		return CPoint(retval.y, retval.x);
+	} else {
+		return retval;
+	}
 }
 
 void CWndBuffStatus::PaintFrame( C2DRender* p2DRender )
@@ -12782,58 +12761,44 @@ void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
 		return;
 	CPoint ptMouse = GetMousePoint();
 	ClientToScreen( &ptMouse );
-	BUFFICON_INFO buffinfo;
+	
+	SetBuffIconInfo(false);
 
-	std::list<BUFFICON_INFO>::iterator it = m_pBuffIconInfo.begin();
-	for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i != g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
-		if( pBuff->GetType() == BUFF_SKILL )
-		{
-			buffinfo  = *it;
-			RenderBuffIcon( p2DRender, pBuff, TRUE, &buffinfo, ptMouse );
-			it++;
+	CPointGenerator generator = CPointGenerator(m_BuffIconViewOpt);
+	
+	for (IBuff * pBuff : g_pPlayer->m_buffs.m_mapBuffs | std::views::values) {
+		if (pBuff->GetType() == BUFF_SKILL) {
+			RenderBuffIcon(p2DRender, pBuff, TRUE, generator.Next(), ptMouse);
 		}
 	}
 }
 
-void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
+void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, const CPoint buffPosition, const CPoint ptMouse )
 {
-	int nTexture;
-	RECT rectHittest;	
+	const ItemProp * pItem;
 	std::multimap< DWORD, BUFFSKILL >::iterator iter;
-	
-	if( bPlayer )
-		nTexture = 0;
-	else
-		nTexture = 1;
-	
-	ItemProp* pItem = NULL;
 
 	WORD wID = pBuff->GetId();
-	if( pBuff->GetType() == BUFF_SKILL )
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].find( pBuff->GetId() );
+	if (pBuff->GetType() == BUFF_SKILL) {
+		iter = g_WndMng.m_pWndWorld->m_pBuffTexture[0].find(pBuff->GetId());
 
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].end() )
+		if (iter == g_WndMng.m_pWndWorld->m_pBuffTexture[0].end())
 			return;
 
-		if( bPlayer )
-			pItem = prj.GetSkillProp( pBuff->GetId() );
+		if (bPlayer)
+			pItem = prj.GetSkillProp(pBuff->GetId());
 		else
-			pItem = prj.GetPartySkill( pBuff->GetId() );
-	}
-	else
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].find( pBuff->GetId() );
+			pItem = prj.GetPartySkill(pBuff->GetId());
+	} else {
+		iter = g_WndMng.m_pWndWorld->m_pBuffTexture[2].find(pBuff->GetId());
 
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].end() )
+		if (iter == g_WndMng.m_pWndWorld->m_pBuffTexture[2].end())
 			return;
 
-		pItem = prj.GetItemProp( wID );
+		pItem = prj.GetItemProp(wID);
 	}
 	
-	std::multimap< DWORD, BUFFSKILL >::value_type* pp = &(*iter);
+	const auto pp = iter;
 
 	ASSERT( pItem );
 	if( pp->second.m_pTexture == NULL )
@@ -12880,8 +12845,6 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 120, 255 );		// ���� �� 
 		else
 			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );		
 	}
 	else
 	{
@@ -12889,94 +12852,83 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 			color =  D3DCOLOR_ARGB( 192, 255, 120, 255 );		// ���� �� 
 		else
 			color =  D3DCOLOR_ARGB( 192, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );
 	}
 
-	SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x+28, pInfo->pt.y+28 );
+	p2DRender->RenderTexture2(buffPosition, pp->second.m_pTexture, 1.2f, 1.2f, color);
+
+	if (dwOddTime != 0) {
+		RenderOptBuffTime(p2DRender, buffPosition, dwOddTime, D3DCOLOR_XRGB(255, 255, 255));
+	}
+
+	CRect rectHittest(buffPosition, CSize(28, 28));
 	ClientToScreen( &rectHittest );
 	
+	if (!rectHittest.PtInRect(ptMouse)) return;
+
 	CEditString strEdit;
 	CString strLevel;
-	strLevel.Format("   Lvl %d", pBuff->GetLevel() );
+	strLevel.Format("   Lvl %d", pBuff->GetLevel());
 
-	if( pItem->dwItemRare == 102 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-	}
-	else if( pItem->dwItemRare == 103 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-	}
-	else
-	{
-		strEdit.AddString( pItem->szName, 0xff2fbe6d, ESSTY_BOLD );
-		strEdit.AddString( strLevel, 0xff2fbe6d, ESSTY_BOLD );
+	if (pItem->dwItemRare == 102) {
+		strEdit.AddString(pItem->szName, D3DCOLOR_XRGB(0, 93, 0), ESSTY_BOLD);
+		strEdit.AddString(strLevel, D3DCOLOR_XRGB(0, 93, 0), ESSTY_BOLD);
+	} else if (pItem->dwItemRare == 103) {
+		strEdit.AddString(pItem->szName, D3DCOLOR_XRGB(182, 0, 255), ESSTY_BOLD);
+		strEdit.AddString(strLevel, D3DCOLOR_XRGB(182, 0, 255), ESSTY_BOLD);
+	} else {
+		strEdit.AddString(pItem->szName, 0xff2fbe6d, ESSTY_BOLD);
+		strEdit.AddString(strLevel, 0xff2fbe6d, ESSTY_BOLD);
 	}
 
 	CString str;
 
-	if( pBuff->GetTotal() > 0 )
-	{
-		CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// �����ð��� �ʴ����� ��ȯ�ؼ� �Ѱ���
-				
-		if( ct.GetDays() != 0 )
-		{
-			str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
-		}
-		else
-		{
-			if( ct.GetHours() >= 1 )
-				str.Format( "\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
+	if (pBuff->GetTotal() > 0) {
+		CTimeSpan ct((long)(dwOddTime / 1000.0f));		// �����ð��� �ʴ����� ��ȯ�ؼ� �Ѱ���
+
+		if (ct.GetDays() != 0) {
+			str.Format("\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds());	//�ú��� 
+		} else {
+			if (ct.GetHours() >= 1)
+				str.Format("\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds());	//�ú��� 
 			else
-				str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );						// ����
+				str.Format("\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds());						// ����
 		}
-		RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 255, 255, 255 ) );
 	}
 
 	CString strTemp;
-	strTemp.Format( "\n%s", pItem->szCommand );
+	strTemp.Format("\n%s", pItem->szCommand);
 
-	strEdit.AddString( strTemp );
+	strEdit.AddString(strTemp);
 
-	if( PtInRect(&rectHittest, ptMouse ) )
+	CWndMgr::CTooltipBuilder::PutDestParam( pItem->dwDestParam[0], pItem->dwDestParam[1],
+		pItem->nAdjParamVal[0], pItem->nAdjParamVal[1], strEdit );
+
+	if( pBuff->GetType() == BUFF_SKILL && 
+		pBuff->GetId() != SI_RIG_MASTER_BLESSING && 
+		pBuff->GetId() != SI_ASS_CHEER_STONEHAND && 
+		pBuff->GetId() != SI_MAG_EARTH_LOOTING && 
+		pBuff->GetId() != SI_ASS_HEAL_PREVENTION ) //������ �ູ, ���� �ڵ�, ����, �������� ����
 	{
-		g_WndMng.PutDestParam( pItem->dwDestParam[0], pItem->dwDestParam[1],
-			pItem->nAdjParamVal[0], pItem->nAdjParamVal[1], strEdit );
+		const AddSkillProp * pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pBuff->GetLevel() );
 
-		if( pBuff->GetType() == BUFF_SKILL && 
-			pBuff->GetId() != SI_RIG_MASTER_BLESSING && 
-			pBuff->GetId() != SI_ASS_CHEER_STONEHAND && 
-			pBuff->GetId() != SI_MAG_EARTH_LOOTING && 
-			pBuff->GetId() != SI_ASS_HEAL_PREVENTION ) //������ �ູ, ���� �ڵ�, ����, �������� ����
+		if( pAddSkillProp )
 		{
-			AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pBuff->GetLevel() );
-
-			if( pAddSkillProp )
-			{
-				g_WndMng.PutDestParam( pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
-					pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit );
-			}
+			CWndMgr::CTooltipBuilder::PutDestParam( pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
+				pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit );
 		}
 	}
 
-	strEdit.AddString( str );
+	strEdit.AddString(str);
 
-	g_toolTip.PutToolTip( wID, strEdit, rectHittest, ptMouse, 1);
-
-	++pInfo->nCount;
+	g_toolTip.PutToolTip(wID, strEdit, rectHittest, ptMouse, 1);
 }
 
-void CWndBuffStatus::RenderOptBuffTime(C2DRender *p2DRender, CPoint& point, CTimeSpan &ct, DWORD dwColor )
-{
-	if(g_Option.m_bVisibleBuffTimeRender)
-	{
-		CString str;
-		int seconds = (int)(ct.GetTotalSeconds());
-		str.Format( "%d" , seconds );
-		p2DRender->TextOut(point.x+2, point.y+22, str, dwColor, 0xFF000000);
+void CWndBuffStatus::RenderOptBuffTime(C2DRender * p2DRender, const CPoint & point, const DWORD timeLeft, DWORD dwColor) {
+	if (g_Option.m_bVisibleBuffTimeRender) {
+		char buffer[64];
+		const auto r = std::format_to_n(buffer, 64, "{}", timeLeft / 1000);
+		*r.out = '\0';
+		p2DRender->TextOut(point.x + 2, point.y + 22, buffer, dwColor, 0xFF000000);
 	}
 }
 

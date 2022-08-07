@@ -486,7 +486,7 @@ namespace WndMgr {
 
 	void CTooltipBuilder::PutDestParam(
 		DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString & str
-	) const {
+	) {
 		const SINGLE_DST a = {
 			.nDst = static_cast<int>(dwDst1),
 			.nAdj = static_cast<int>(dwAdj1)
@@ -501,7 +501,7 @@ namespace WndMgr {
 		PutDestParam(b, str);
 	}
 
-	void CTooltipBuilder::PutDestParam(const SINGLE_DST dst, CEditString & str) const {
+	void CTooltipBuilder::PutDestParam(const SINGLE_DST dst, CEditString & str) {
 		if (dst.nDst != NULL_ID && dst.nDst != 0 && dst.nDst != DST_CHRSTATE) {
 			const CString strTemp = SingleDstToString(dst);
 			str.AddString(strTemp, D3DCOLOR_XRGB(0, 0, 255));

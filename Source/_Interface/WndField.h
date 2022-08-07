@@ -1399,7 +1399,7 @@ class CWndBuffStatus : public CWndNeuz
 {
 public:
 	std::vector< std::multimap<DWORD, BUFFSKILL> > m_pBuffTexture;
-	std::list<BUFFICON_INFO> m_pBuffIconInfo;
+	size_t m_lastSeenSize = 0;
 
 	int m_BuffIconViewOpt;
 public:
@@ -1407,10 +1407,8 @@ public:
 	virtual ~CWndBuffStatus(); 
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnRButtonUp( UINT nFlags, CPoint point ); 
@@ -1420,10 +1418,20 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual	void PaintFrame( C2DRender* p2DRender );
 
-	void RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse );
-	void RenderOptBuffTime(C2DRender *p2DRender, CPoint& point, CTimeSpan &ct, DWORD dwColor );
-	void SetBuffIconInfo();
+	void RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, CPoint buffPosition, CPoint ptMouse );
+	void RenderOptBuffTime(C2DRender *p2DRender, const CPoint& point, DWORD timeLeft, DWORD dwColor );
+	void SetBuffIconInfo(bool force);
 	BOOL GetHitTestResult();
+
+	class CPointGenerator {
+	private:
+		int m_viewOpt;
+		CPoint m_point;
+
+	public:
+		explicit CPointGenerator(int viewOpt) : m_viewOpt(viewOpt) {}
+		CPoint Next();
+	};
 };
 
 /*******************************

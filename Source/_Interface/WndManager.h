@@ -424,8 +424,8 @@ namespace WndMgr {
 		void MakeToolTipText_(CMover & pMover, CItemElem & pItemElem, const ItemProp & itemProp, CEditString & strEdit, int fromApp) const;
 		
 	public:
-		void PutDestParam(DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString & str) const;
-		void PutDestParam(SINGLE_DST dst, CEditString & str) const;
+		static void PutDestParam(DWORD dwDst1, DWORD dwDst2, DWORD dwAdj1, DWORD dwAdj2, CEditString & str);
+		static void PutDestParam(SINGLE_DST dst, CEditString & str);
 
 		[[nodiscard]] DWORD PutItemName(const CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutItemAbilityPiercing(const CItemElem & pItemElem, CEditString & pEdit, DWORD dwColorBuf) const;
