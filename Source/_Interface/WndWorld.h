@@ -88,12 +88,12 @@ extern CCaption g_Caption1;
 #define NEXTSKILL_ACTIONSLOT		0x7fffffff	// 다음스킬 액션슬롯으로 사용
 // 그외는 스킬인덱스.
 
-typedef struct BUFFSKILL
-{
-	BOOL m_bFlsh;
-	int   m_nAlpha;
-	CTexture* m_pTexture;
-} BUFFSKILL;
+#include "Flasher.h"
+
+struct BUFFSKILL {
+	sqktd::Flasher<64, 192, 6> m_flasher;
+	CTexture * m_pTexture = nullptr;
+};
 
 typedef	struct	_SET_NAVIGATOR
 {

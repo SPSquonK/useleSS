@@ -1870,6 +1870,9 @@
     <ClInclude Include="..\_Interface\WndRankCmn.h">
       <Filter>Source Files\_Interface\WndApplet\Rank</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Interface\Flasher.h">
+      <Filter>Source Files\_Interface\Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

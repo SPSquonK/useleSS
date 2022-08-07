@@ -3253,7 +3253,6 @@ void CWndWorld::OnInitialUpdate()
 
 
 	int i = 0;
-	BUFFSKILL   buffskill;
 	for( i=0; i<prj.m_aPropAddSkill.GetSize(); i++ )
 	{
 		AddSkillProp* pAddSkill = prj.m_aPropAddSkill.GetAt(i);
@@ -3266,9 +3265,7 @@ void CWndWorld::OnInitialUpdate()
 
 				if( pItem )
 				{
-					buffskill.m_bFlsh    = 0;
-					buffskill.m_nAlpha  = 192;
-					
+					BUFFSKILL buffskill;
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
 
 					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
@@ -3285,9 +3282,7 @@ void CWndWorld::OnInitialUpdate()
 		{
 			if( pItemProp->dwSkillTime != -1 )
 			{
-				buffskill.m_bFlsh    = 0;
-				buffskill.m_nAlpha  = 192;
-				
+				BUFFSKILL buffskill;
 				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp->szIcon ), 0xffff00ff );
 				m_pBuffTexture[1].emplace(pItemProp->dwID, buffskill);
 			}
@@ -3308,8 +3303,8 @@ void CWndWorld::OnInitialUpdate()
 				|| pItemProp->dwItemKind3 == IK3_PET
 			)
 			{
-				buffskill.m_bFlsh    = 0;
-				buffskill.m_nAlpha  = 192;
+
+				BUFFSKILL buffskill;
 
 				CString strIcon	= pItemProp->szIcon;
 				if( pItemProp->dwItemKind3 == IK3_EGG && pItemProp->dwID != II_PET_EGG )
@@ -8439,33 +8434,12 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 	
 	if( bFlash )		
 	{		
-		if( pp->second.m_bFlsh == TRUE )
-		{
-			pp->second.m_nAlpha	+=6;
-			
-			if( pp->second.m_nAlpha > 192 )
-			{
-				pp->second.m_nAlpha = 192;
-				pp->second.m_bFlsh = FALSE;
-			}
-		}
-		else
-		{
-			pp->second.m_nAlpha-=6;
-			
-			if( pp->second.m_nAlpha < 64 )
-			{
-				pp->second.m_nAlpha = 64;
-				pp->second.m_bFlsh = TRUE;
-			}
-		}
+		const int alpha = pp->second.m_flasher.Increment();
 
 		if( pItem->nEvildoing < 0 )							// 나쁜마법은
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 120, 255 );		// 빨간 색 
+			color =  D3DCOLOR_ARGB(alpha, 255, 120, 255 );		// 빨간 색 
 		else
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1, 1, color );		
+			color =  D3DCOLOR_ARGB(alpha, 255, 255, 255 );
 	}
 	else
 	{
@@ -8473,9 +8447,9 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 			color =  D3DCOLOR_ARGB( 192, 255, 120, 255 );		// 빨간 색 
 		else
 			color =  D3DCOLOR_ARGB( 192, 255, 255, 255 );
-
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1, 1, color );
 	}
+
+	p2DRender->RenderTexture2(pInfo->pt, pp->second.m_pTexture, 1, 1, color);
 	
 	//지속시간이 있는 Buff의 경우 현재 남은 시간을 항상 표시하도록 변경
 	if( dwOddTime > 0 && pItem->dwSkillTime != 999999999
@@ -9454,28 +9428,9 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 				Lpoint.x += nIconSize;
 				if( pBuff->GetTotal() > 0 && dwOddTime < 20 * 1000 )		// 20초 이하 남았으면 깜빡거림.					
 				{
-					pp->second.m_pTexture->Render( p2DRender, Lpoint, CPoint(nIconSize,nIconSize), pp->second.m_nAlpha );
-					
-					if( pp->second.m_bFlsh == TRUE )
-					{
-						pp->second.m_nAlpha+=6;
-						
-						if( pp->second.m_nAlpha > 192 )
-						{
-							pp->second.m_nAlpha = 192;
-							pp->second.m_bFlsh = FALSE;
-						}
-					}
-					else
-					{
-						pp->second.m_nAlpha-=6;
-						
-						if( pp->second.m_nAlpha < 32 )
-						{
-							pp->second.m_nAlpha = 32;
-							pp->second.m_bFlsh = TRUE;
-						}
-					}
+					const int alpha = pp->second.m_flasher.Get();
+					pp->second.m_pTexture->Render( p2DRender, Lpoint, CPoint(nIconSize,nIconSize), alpha );
+					pp->second.m_flasher.Increment();
 				}
 				else
 				{

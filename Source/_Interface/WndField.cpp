@@ -12705,11 +12705,11 @@ void CWndBuffStatus::SetBuffIconInfo(bool force)
 	CRect rect = GetWindowRect(TRUE);
 
 	if (m_verticalDisplay) {
-		rect.right = (7 * 34) + rect.left;
-		rect.bottom = (numberOfRows * 34) + rect.top;
-	} else {
 		rect.bottom = (7 * 34) + rect.top;
 		rect.right = (numberOfRows * 34) + rect.left;
+	} else {
+		rect.right = (7 * 34) + rect.left;
+		rect.bottom = (numberOfRows * 34) + rect.top;
 	}
 
 	SetWndRect(rect);
@@ -12757,13 +12757,13 @@ void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
 void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, const CPoint buffPosition, const CPoint ptMouse )
 {
 	const ItemProp * pItem;
-	std::multimap< DWORD, BUFFSKILL >::iterator iter;
+	std::multimap< DWORD, BUFFSKILL >::iterator pp;
 
 	WORD wID = pBuff->GetId();
 	if (pBuff->GetType() == BUFF_SKILL) {
-		iter = g_WndMng.m_pWndWorld->m_pBuffTexture[0].find(pBuff->GetId());
+		pp = g_WndMng.m_pWndWorld->m_pBuffTexture[0].find(pBuff->GetId());
 
-		if (iter == g_WndMng.m_pWndWorld->m_pBuffTexture[0].end())
+		if (pp == g_WndMng.m_pWndWorld->m_pBuffTexture[0].end())
 			return;
 
 		if (bPlayer)
@@ -12771,16 +12771,14 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 		else
 			pItem = prj.GetPartySkill(pBuff->GetId());
 	} else {
-		iter = g_WndMng.m_pWndWorld->m_pBuffTexture[2].find(pBuff->GetId());
+		pp = g_WndMng.m_pWndWorld->m_pBuffTexture[2].find(pBuff->GetId());
 
-		if (iter == g_WndMng.m_pWndWorld->m_pBuffTexture[2].end())
+		if (pp == g_WndMng.m_pWndWorld->m_pBuffTexture[2].end())
 			return;
 
 		pItem = prj.GetItemProp(wID);
 	}
 	
-	const auto pp = iter;
-
 	ASSERT( pItem );
 	if( pp->second.m_pTexture == NULL )
 		return;
@@ -12801,31 +12799,12 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bP
 	
 	if( bFlash )		
 	{		
-		if( pp->second.m_bFlsh == TRUE )
-		{
-			pp->second.m_nAlpha+=6;
-			
-			if( pp->second.m_nAlpha > 192 )
-			{
-				pp->second.m_nAlpha = 192;
-				pp->second.m_bFlsh = FALSE;
-			}
-		}
-		else
-		{
-			pp->second.m_nAlpha-=6;
-			
-			if( pp->second.m_nAlpha < 64 )
-			{
-				pp->second.m_nAlpha = 64;
-				pp->second.m_bFlsh = TRUE;
-			}
-		}
+		const int alpha = pp->second.m_flasher.Increment();
 		
 		if( pItem->nEvildoing < 0 )							// ���۸�����
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 120, 255 );		// ���� �� 
+			color =  D3DCOLOR_ARGB(alpha, 255, 120, 255 );		// ���� �� 
 		else
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 255, 255 );
+			color =  D3DCOLOR_ARGB(alpha, 255, 255, 255 );
 	}
 	else
 	{
