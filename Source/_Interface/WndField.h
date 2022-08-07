@@ -1401,17 +1401,15 @@ public:
 	std::vector< std::multimap<DWORD, BUFFSKILL> > m_pBuffTexture;
 	size_t m_lastSeenSize = 0;
 
-	int m_BuffIconViewOpt;
+	bool m_verticalDisplay;
 public:
 	CWndBuffStatus(); 
-	virtual ~CWndBuffStatus(); 
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnRButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnRButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual void OnRButtonDblClk( UINT nFlags, CPoint point );
@@ -1425,11 +1423,11 @@ public:
 
 	class CPointGenerator {
 	private:
-		int m_viewOpt;
+		int m_verticalAlign;
 		CPoint m_point;
 
 	public:
-		explicit CPointGenerator(int viewOpt) : m_viewOpt(viewOpt) {}
+		explicit CPointGenerator(bool verticalAlign) : m_verticalAlign(verticalAlign) {}
 		CPoint Next();
 	};
 };

@@ -12566,27 +12566,21 @@ void CWndFontEdit::ReSetBar( FLOAT r, FLOAT g, FLOAT b )
 
 #include <format>
 
-CWndBuffStatus::CWndBuffStatus() 
-{ 
-	m_BuffIconViewOpt = g_Option.m_BuffStatusMode;
-} 
-
-CWndBuffStatus::~CWndBuffStatus() 
-{ 
-} 
+CWndBuffStatus::CWndBuffStatus() {
+	m_verticalDisplay = g_Option.m_BuffStatusMode == 1;
+}
 
 void CWndBuffStatus::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-	this->DelWndStyle(WBS_CAPTION);
+	DelWndStyle(WBS_CAPTION);
 	
-	m_wndTitleBar.SetVisible( FALSE );
-
+	m_wndTitleBar.SetVisible(FALSE);
 	SetBuffIconInfo(true);
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CPoint point( (rectRoot.right - rectRoot.left) / 3, (rectRoot.bottom - rectRoot.top) / 3);
-	Move( point );
+	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CPoint point(rectRoot.Width() / 3, rectRoot.Height() / 3);
+	Move(point);
 }
 
 BOOL CWndBuffStatus::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
@@ -12594,7 +12588,7 @@ BOOL CWndBuffStatus::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
 }
 
 void CWndBuffStatus::OnLButtonUp(UINT nFlags, CPoint point) {
-	this->m_pWndFocus = this;
+	m_pWndFocus = this;
 }
 
 void CWndBuffStatus::OnLButtonDown( UINT nFlags, CPoint point )
@@ -12612,10 +12606,6 @@ void CWndBuffStatus::OnLButtonDown( UINT nFlags, CPoint point )
 			this->m_pWndFocus = g_WndMng.m_pWndWorld;
 		}
 	}
-}
-
-void CWndBuffStatus::OnRButtonUp( UINT nFlags, CPoint point )
-{
 }
 
 void CWndBuffStatus::OnRButtonDown( UINT nFlags, CPoint point )
@@ -12642,11 +12632,8 @@ void CWndBuffStatus::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
 	if(GetHitTestResult())
 	{
-		if(m_BuffIconViewOpt == 0)
-			m_BuffIconViewOpt = 1;
-		else if(m_BuffIconViewOpt == 1)
-			m_BuffIconViewOpt = 0;
-		g_Option.m_BuffStatusMode = m_BuffIconViewOpt;
+		m_verticalDisplay = !m_verticalDisplay;
+		g_Option.m_BuffStatusMode = m_verticalDisplay ? 1 : 0;
 		SetBuffIconInfo(true);
 	}
 	else
@@ -12667,11 +12654,8 @@ void CWndBuffStatus::OnRButtonDblClk( UINT nFlags, CPoint point )
 {
 	if(GetHitTestResult())
 	{
-		if(m_BuffIconViewOpt == 0)
-			m_BuffIconViewOpt = 1;
-		else if(m_BuffIconViewOpt == 1)
-			m_BuffIconViewOpt = 0;
-		g_Option.m_BuffStatusMode = m_BuffIconViewOpt;
+		m_verticalDisplay = !m_verticalDisplay;
+		g_Option.m_BuffStatusMode = m_verticalDisplay ? 1 : 0;
 		SetBuffIconInfo(true);
 	}
 	else
@@ -12694,7 +12678,7 @@ BOOL CWndBuffStatus::GetHitTestResult()
 	CPoint ptMouse = GetMousePoint();
 	ClientToScreen( &ptMouse );
 	
-	CPointGenerator generator = CPointGenerator(m_BuffIconViewOpt);
+	CPointGenerator generator = CPointGenerator(m_verticalDisplay);
 
 	for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i!= g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
 	{
@@ -12723,12 +12707,12 @@ void CWndBuffStatus::SetBuffIconInfo(bool force)
 
 	CRect rect = GetWindowRect(TRUE);
 
-	if (m_BuffIconViewOpt == 0) {
-		rect.bottom = (7 * 34) + rect.top;
-		rect.right = (numberOfRows * 34) + rect.left;
-	} else if (m_BuffIconViewOpt == 1) {
+	if (m_verticalDisplay) {
 		rect.right = (7 * 34) + rect.left;
 		rect.bottom = (numberOfRows * 34) + rect.top;
+	} else {
+		rect.bottom = (7 * 34) + rect.top;
+		rect.right = (numberOfRows * 34) + rect.left;
 	}
 
 	SetWndRect(rect);
@@ -12744,7 +12728,7 @@ CPoint CWndBuffStatus::CPointGenerator::Next() {
 		m_point.y += 34;
 	}
 
-	if (m_viewOpt != 1) {
+	if (m_verticalAlign) {
 		return CPoint(retval.y, retval.x);
 	} else {
 		return retval;
@@ -12764,7 +12748,7 @@ void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
 	
 	SetBuffIconInfo(false);
 
-	CPointGenerator generator = CPointGenerator(m_BuffIconViewOpt);
+	CPointGenerator generator = CPointGenerator(m_verticalDisplay);
 	
 	for (IBuff * pBuff : g_pPlayer->m_buffs.m_mapBuffs | std::views::values) {
 		if (pBuff->GetType() == BUFF_SKILL) {
