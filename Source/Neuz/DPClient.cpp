@@ -13,6 +13,7 @@
 #include "dialogmsg.h"
 #include "misc.h"
 #include "defineObj.h" 
+#include "WndCharacter.h"
 #include "wndmessenger.h"
 #include "WndQuest.h" 
 #include "mover.h"

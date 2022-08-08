@@ -23,6 +23,7 @@
 #include "ClientMsg.h"
 
 #include "WndBase.h"
+#include "WndCharacter.h"
 #include "WndGuideSystem.h"
 
 #include "WorldMap.h"
