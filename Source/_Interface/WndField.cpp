@@ -12841,7 +12841,7 @@ void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, const C
 
 	if (pBuff->GetTotal() > 0) {
 		CTimeSpan ct((long)(dwOddTime / 1000.0f));		// �����ð��� �ʴ����� ��ȯ�ؼ� �Ѱ���
-		str = Strings::ToStringDHMmSs(ct);
+		str = TimeSpanToString::DHMmSs(ct);
 	}
 
 	CString strTemp;

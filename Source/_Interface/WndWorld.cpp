@@ -8636,7 +8636,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 					if( pBuff->GetTotal() > 0 )						
 					{
 						const CTimeSpan ct((long)(dwOddTime / 1000.0f));		// 남은시간을 초단위로 변환해서 넘겨줌
-						str = Strings::ToStringDHMmSs(ct);
+						str = TimeSpanToString::DHMmSs(ct);
 					}
 					else if( prj.GetItemProp( pBuff->GetId() )->dwItemKind2 == IK2_BUFF2 )
 					{
@@ -8644,7 +8644,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 						if( t < 0 )
 							t	= 0;
 						const CTimeSpan ts(t);
-						str = Strings::ToStringDHMmSs(ts);
+						str = TimeSpanToString::DHMmSs(ts);
 					}
 				}
 				break;
@@ -8818,7 +8818,7 @@ void CWndWorld::PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit )
 	}
 }
 
-CString Strings::ToStringDHMmSs(const CTimeSpan timeSpan) {
+CString TimeSpanToString::DHMmSs(const CTimeSpan timeSpan) {
 	CString str;
 	if (timeSpan.GetDays() != 0) {
 		str.Format(
