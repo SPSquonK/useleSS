@@ -8093,35 +8093,26 @@ BOOL CWndWorld::Process()
 	}
 #endif
 
-	BOOL buffstatus = FALSE;
-	if( g_pPlayer )
-	{
-		for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i != g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
-		{
-			IBuff* pBuff	= i->second;
-			if( pBuff->GetType() == BUFF_SKILL )
-			{
-				buffstatus	= TRUE;
-				break;
+	bool buffstatus = false;
+	if (g_pPlayer) {
+		buffstatus = std::ranges::any_of(g_pPlayer->m_buffs.m_mapBuffs,
+			[](const decltype(g_pPlayer->m_buffs.m_mapBuffs)::value_type & pair) {
+				return pair.second->GetType() == BUFF_SKILL;
 			}
-		}
+		);
 	}
 	
-	if(buffstatus)
-	{
-		if(m_pWndBuffStatus == NULL)
-			m_pWndBuffStatus = (CWndBuffStatus*)g_WndMng.CreateApplet( APP_BUFF_STATUS );
-	}
-	else
-	{
-		if(m_pWndBuffStatus != NULL)
-		{
-			m_pWndBuffStatus ->Destroy();
-			m_pWndBuffStatus = NULL;
-			CWndBase* pWndBaseFocus = CWndBase::GetFocusWnd();
-			if(pWndBaseFocus && pWndBaseFocus->GetWndApplet() && pWndBaseFocus->GetWndApplet()->dwWndId != APP_COMMUNICATION_CHAT)
+	if (buffstatus) {
+		if (!m_pWndBuffStatus)
+			m_pWndBuffStatus = g_WndMng.CreateApplet(APP_BUFF_STATUS);
+	} else {
+		if (m_pWndBuffStatus) {
+			m_pWndBuffStatus->Destroy(TRUE);
+			m_pWndBuffStatus = nullptr;
+			CWndBase * pWndBaseFocus = CWndBase::GetFocusWnd();
+			if (pWndBaseFocus && pWndBaseFocus->GetWndApplet() && pWndBaseFocus->GetWndApplet()->dwWndId != APP_COMMUNICATION_CHAT)
 				SetFocus();
-		}	
+		}
 	}
 	
 	if( g_pPlayer && CRainbowRace::GetInstance()->m_dwRemainTime != 0 )
