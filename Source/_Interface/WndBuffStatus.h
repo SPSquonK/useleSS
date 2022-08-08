@@ -7,7 +7,6 @@
 
 class CWndBuffStatus : public CWndNeuz {
 public:
-	std::vector<std::multimap<DWORD, BUFFSKILL>> m_pBuffTexture;
 	size_t m_lastSeenSize = 0;
 
 	bool m_verticalDisplay;
