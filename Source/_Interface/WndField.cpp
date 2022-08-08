@@ -1976,38 +1976,18 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //								bAble = FALSE;
 //							}
 //							break;
-						case II_SYS_SYS_SCR_CHACLA:
-							{
-								if( g_pPlayer->IsBaseJob() )
-								{
-									g_WndMng.PutString(TID_GAME_NOTUSEVAG);
-									bAble = FALSE;
-								}
-								else
-								{
-									for( DWORD dwParts = 0; dwParts < MAX_HUMAN_PARTS; dwParts++ )
-									{
-										if( dwParts == PARTS_HEAD || dwParts == PARTS_HAIR || dwParts == PARTS_RIDE )
-											continue;
-										CItemElem* pArmor	= g_pPlayer->m_Inventory.GetEquip( dwParts );
-										if( pArmor )
-										{
-											g_WndMng.PutString(TID_GAME_CHECK_EQUIP);
-											bAble = FALSE;
-										}
-									}
-								}
-
-								if( bAble )
-								{
-									SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
-									g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-									g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
-									g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_WARNINGCCLS, pProp->dwID, pFocusItem->m_dwObjId);
-									bAble = FALSE;
-								}
+						case II_SYS_SYS_SCR_CHACLA: {
+							if (g_pPlayer->IsBaseJob()) {
+								g_WndMng.PutString(TID_GAME_NOTUSEVAG);
+							} else {
+								SAFE_DELETE(g_WndMng.m_pWndCommItemDlg);
+								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
+								g_WndMng.m_pWndCommItemDlg->Initialize(&g_WndMng, APP_COMMITEM_DIALOG);
+								g_WndMng.m_pWndCommItemDlg->SetItem(TID_GAME_WARNINGCCLS, pProp->dwID, pFocusItem->m_dwObjId);
+								bAble = FALSE;
 							}
 							break;
+						}
 						}
 					}
 				}

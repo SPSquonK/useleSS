@@ -4026,11 +4026,15 @@ void CDPSrvr::OnChangeJob(CAr & ar, CUser & pUser) {
 		if (!IsUsableItem(itemScroll)) return;
 		if (itemScroll->m_dwItemId != II_SYS_SYS_SCR_CHACLA) return;
 
-		// TODO: not in guildwar /* send */
+		// TODO: check not in guildwar
 
-		// TODO: send messages for legit reasons
-		if (CItemUpgrade::IsInTrade(pUser)) return /* send */;
-		if (pUser.IsAttackMode()) return /* send */;
+		if (CItemUpgrade::IsInTrade(pUser)) {
+			return pUser.AddDefinedText(TID_GAME_TRADE_NOTUSE);
+		}
+
+		if (pUser.IsAttackMode()) {
+			return pUser.AddDefinedText(TID_GAME_BATTLE_NOTTRADE);
+		}
 
 		const auto currentJobType = prj.jobs.info[pUser.GetJob()].dwJobType;
 		const auto wantedJobType = prj.jobs.info[wantedJob].dwJobType;
@@ -4050,7 +4054,13 @@ void CDPSrvr::OnChangeJob(CAr & ar, CUser & pUser) {
 			}
 		}
 
-		if (!badItems.empty()) return /* send */;
+		if (!badItems.empty()) {
+			pUser.AddDefinedText(TID_GAME_CHECK_EQUIP);
+			for (const ItemProp * badItem : badItems) {
+				pUser.AddText(badItem->szName);
+			}
+			return;
+		}
 	} else {
 		if (!pUser.IsAuthHigher(AUTH_GAMEMASTER)) {
 			return;
