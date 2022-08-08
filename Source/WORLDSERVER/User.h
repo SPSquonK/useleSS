@@ -304,7 +304,6 @@ public:
 	void			AddPocketRemoveItem( int nPocket, int nItem, short nNum );
 	void			AddSetFxp( int nFxp, int nFlightLv );
 	void			AddSetGrowthLearningPoint( long nRemainGP );
-	void			AddSetStatLevel( CHAR chID, long nValue, long nRemainGP );
 	void			AddDefinedText( int dwText, LPCSTR lpszFormat, ... );
 	void AddDefinedTextAlreadyFormatted(int dwText, const TCHAR * formattedString);
 	void			AddChatText( int dwText, LPCSTR lpszFormat, ... );
@@ -722,7 +721,6 @@ public:
 #endif	// __LAYER_1015
 	void			AddDisguise( CMover* pMover, DWORD dwMoverIdx );
 	void			AddNoDisguise( CMover* pMover );
-	void			AddSetStateLevel( CMover* pMover, CHAR chID, long nValue );
 	void			AddHdr( CCtrl* pCtrl, WORD wHdr );
 	void			AddChat( CCtrl* pCtrl, const TCHAR* szChat );
 	void			AddStartCollecting( CUser* pUser );

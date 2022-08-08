@@ -1411,26 +1411,18 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 	return CD3DApplication::MsgProc( hWnd, msg, wParam, lParam );
 }
 
-BOOL CNeuzApp::KillWindow( int wParam )
-{
-	CWndStateConfirm* pWndStateConfirm = (CWndStateConfirm*)g_WndMng.GetWndBase( APP_STATE_CONFIRM );
-	if( pWndStateConfirm )
-	{
-		if( wParam == VK_RETURN )
-		{
+bool CNeuzApp::KillWindow(int wParam) {
+	if (CWndStateConfirm * pWndStateConfirm = g_WndMng.GetWndBase<CWndStateConfirm>(APP_STATE_CONFIRM)) {
+		if (wParam == VK_RETURN) {
 			pWndStateConfirm->SendYes();
-		}
-		else if( wParam == VK_ESCAPE )
-		{
-	CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER3 );
-			if( pWndBase ) {
-			}
+		} else if (wParam == VK_ESCAPE) {
 			pWndStateConfirm->Destroy();
 		}
-		return TRUE;
+
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 void __cdecl LoadProperty( void* p )

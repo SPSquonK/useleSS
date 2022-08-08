@@ -242,18 +242,14 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////
 // ป๓ลย 
 //
-class CWndStateConfirm : public CWndNeuz 
-{ 
+class CWndStateConfirm final : public CWndNeuz {
 public:
-	UINT m_nId = 0;
-	void OnSetState( UINT nId );
-	void SendYes( void );
-public: 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
-}; 
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+
+	void SendYes();
+};
 
 class CWndChangeJob : public CWndNeuz
 {

@@ -92,7 +92,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_DOEQUIP, &CDPSrvr::OnDoEquip );
 	OnMsg( PACKETTYPE_MOVEITEM, &CDPSrvr::OnMoveItem );
 	OnMsg( PACKETTYPE_SNAPSHOT, &CDPSrvr::OnSnapshot );
-	OnMsg( PACKETTYPE_INC_STAT_LEVEL, &CDPSrvr::OnIncStatLevel );
 	OnMsg( PACKETTYPE_SEND_TO_SERVER_CHANGEJOB, &CDPSrvr::OnChangeJob );
 	OnMsg( PACKETTYPE_SETLODELIGHT, &CDPSrvr::OnSetLodelight );
 	OnMsg( PACKETTYPE_MODIFYMODE, &CDPSrvr::OnModifyMode );
@@ -948,43 +947,6 @@ void CDPSrvr::OnSetLodelight( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 			return;
 		pUser->SetMarkingPos();
 		pUser->AddDefinedText( TID_GAME_LODELIGHT, "" );
-	}
-}
-
-void CDPSrvr::OnIncStatLevel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CHAR chID;
-	ar >> chID;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		long nValue;
-		
-		switch( chID )
-		{
-			case 100:	
-				pUser->IncStrLevel();
-				nValue	= pUser->m_nStr;
-				break;
-			case 101:
-				pUser->IncStaLevel();
-				nValue	= pUser->m_nSta;
-				break;
-			case 102:
-				pUser->IncDexLevel();
-				nValue	= pUser->m_nDex;
-				break;
-			case 103:
-				pUser->IncIntLevel();
-				nValue	= pUser->m_nInt;
-				break;
-			default:
-				return;			
-		}
-//		pUser->AddSetStatLevel( chID, nValue, pUser->m_nRemainGP );
-		g_UserMng.AddSetStateLevel( pUser, chID, nValue );
-		g_dpDBClient.SendLogLevelUp( pUser, 2 );
 	}
 }
 

@@ -231,7 +231,7 @@ public:
 #endif	// __TWN_LOGIN0816
 	LPCTSTR		GetDeleteKey( LPCTSTR szNo );
 	BOOL		LoadOption();
-	BOOL		KillWindow( int wParam );
+	bool KillWindow(int wParam);
 	void		BeginLoadThread();	
 	void		WaitLoading();
 };

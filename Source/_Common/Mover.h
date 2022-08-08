@@ -991,10 +991,6 @@ public:
 #endif	// __JEFF_11_4
 	HITTYPE			GetHitType2( CMover* pMover, BOOL bTarget, BOOL bGood );
 	void			ReSetDuelTime( CMover* pAttacker , CMover* pDefender);
-	BOOL			IncStrLevel();
-	BOOL			IncStaLevel();
-	BOOL			IncDexLevel();
-	BOOL			IncIntLevel();
 	int				GetHR();
 	void			SetStr( int nStr ) { m_nStr = nStr; }
 	void			SetSta( int nSta ) { m_nSta = nSta; }

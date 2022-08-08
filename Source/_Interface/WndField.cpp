@@ -3508,26 +3508,22 @@ BOOL CWndCharacter::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-void CWndStateConfirm::OnSetState( UINT nId )
-{
-	m_nId = nId;
-}
 void CWndStateConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
 	CString strMessage = prj.GetText(TID_GAME_CHARSTATUS_APPLY_Q);
 
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 
 	// 1�� �������� Ȯ��
 	if( g_pPlayer->IsBaseJob() )
 	{
 		// �����?
-		CString strAddMessage = prj.GetText( TID_DIAG_0082 );
 		strMessage += '\n';
-		strMessage += strAddMessage;
+		strMessage += prj.GetText(TID_DIAG_0082);
 	}
+
+	CWndText * pWndText = (CWndText *)GetDlgItem(WIDC_TEXT1);
 	pWndText->SetString( strMessage );
 	pWndText->EnableWindow( FALSE );
 
@@ -3539,17 +3535,7 @@ BOOL CWndStateConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_STATE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  ���� ������ ���� ���? 
-BOOL CWndStateConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
+}
 
 BOOL CWndStateConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
@@ -3570,19 +3556,18 @@ BOOL CWndStateConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	}
 	else if( nID == WIDC_NO || nID == WTBID_CLOSE )
 	{
-		CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER3 );
+		CWndCharacter * pWndBase	= g_WndMng.GetWndBase<CWndCharacter>( APP_CHARACTER3 );
 		if( pWndBase ) 
 		{
-			( (CWndCharacter*)pWndBase )->m_wndCharInfo.m_fWaitingConfirm	= FALSE;
+			pWndBase->m_wndCharInfo.m_fWaitingConfirm = FALSE;
 		}
 		Destroy();
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndStateConfirm::SendYes( void )
-{
-	g_DPlay.SendIncStatLevel( (CHAR)m_nId );
+void CWndStateConfirm::SendYes() {
+
 	Destroy();
 }
 

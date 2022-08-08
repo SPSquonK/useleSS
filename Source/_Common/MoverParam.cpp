@@ -616,46 +616,6 @@ void CMover::SetPointParam( int nDstParameter, int nValue, BOOL bTrans )	// bTra
 		g_UserMng.AddSetPointParam( this, nDstParameter, nValue );
 #endif	// __WORLDSERVER
 }
-BOOL CMover::IncStrLevel()
-{
-	if( m_nRemainGP > 0 )
-	{
-		m_nStr += 1;
-		m_nRemainGP -= 1;
-		return TRUE;
-	}
-	return FALSE;
-}
-BOOL CMover::IncStaLevel()
-{
-	if( m_nRemainGP > 0 )
-	{
-		m_nSta += 1;
-		m_nRemainGP -= 1;
-		return TRUE;
-	}
-	return FALSE;
-}
-BOOL CMover::IncDexLevel()
-{
-	if( m_nRemainGP > 0 )
-	{
-		m_nDex += 1;
-		m_nRemainGP -= 1;
-		return TRUE;
-	}
-	return FALSE;
-}
-BOOL CMover::IncIntLevel()
-{
-	if( m_nRemainGP > 0 )
-	{
-		m_nInt += 1;
-		m_nRemainGP -= 1;
-		return TRUE;
-	}
-	return FALSE;
-}
 
 // ����ġ�� nExp��ŭ ��´�.  ���ٿ �ȴ�.
 // bExp2Clear : pxp�� 0���� �Ұ��� ������.

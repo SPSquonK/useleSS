@@ -517,7 +517,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_REVIVAL_TO_LODESTAR:	OnRevivalLodestar( objid );	break;	
 			case SNAPSHOTTYPE_REVIVAL_TO_LODELIGHT:	OnRevivalLodelight( objid );	break;
 			case SNAPSHOTTYPE_USESKILL:	OnUseSkill( objid, ar );	break;
-			case SNAPSHOTTYPE_SET_STAT_LEVEL:	OnSetStatLevel( objid, ar );	break;
 			case SNAPSHOTTYPE_SET_GROWTH_LEARNING_POINT:	OnSetGrowthLearningPoint( objid, ar );	break;
 			case SNAPSHOTTYPE_SET_JOB_SKILL:		OnSetChangeJob( objid, ar ); break;
 			case SNAPSHOTTYPE_SET_NEAR_JOB_SKILL:   OnSetNearChangeJob( objid, ar ); break;
@@ -3104,53 +3103,6 @@ void CDPClient::OnSetGrowthLearningPoint( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) )
 	{
 		pMover->m_nRemainGP	= nRemainGP;
-	}
-}
-
-void CDPClient::OnSetStatLevel( OBJID objid, CAr & ar )
-{
-	CHAR chID;
-	long nValue, nRemainGP;
-	ar >> chID >> nValue >> nRemainGP;
-
-	CMover* pMover	= prj.GetMover( objid );
-
-	LPCTSTR lpString	= NULL;
-	DWORD dwColor	= 0;
-
-	if( IsValidObj( (CObj*)pMover ) )
-	{
-		switch( chID )
-		{
-			case 100:
-				pMover->SetStr( nValue );
-				lpString	= prj.GetText( TID_GAME_STRUP );
-				dwColor		= prj.GetTextColor( TID_GAME_STRUP );
-				break;
-			case 101:
-				pMover->SetSta( nValue );
-				lpString	= prj.GetText( TID_GAME_STAUP );
-				dwColor		= prj.GetTextColor( TID_GAME_STAUP );
-				break;
-			case 102:
-				pMover->SetDex( nValue );
-				lpString	= prj.GetText( TID_GAME_DEXUP );
-				dwColor		= prj.GetTextColor( TID_GAME_DEXUP );
-				break;
-			case 103:
-				pMover->SetInt( nValue );
-				lpString	= prj.GetText( TID_GAME_INTUP );
-				dwColor		= prj.GetTextColor( TID_GAME_INTUP );
-				break;
-		}
-		pMover->m_nRemainGP	= nRemainGP;
-		if( g_pPlayer == pMover )
-		{
-			CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER3 );
-			if( pWndBase ) {
-			}
-			g_WndMng.PutString( lpString, NULL, dwColor );
-		}
 	}
 }
 
@@ -8258,13 +8210,6 @@ void CDPClient::SendSetTarget( OBJID idTarget, BYTE bClear )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SETTARGET, DPID_UNKNOWN );
 	ar << idTarget << bClear;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendIncStatLevel( CHAR chID )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_INC_STAT_LEVEL, DPID_UNKNOWN );
-	ar << chID;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 

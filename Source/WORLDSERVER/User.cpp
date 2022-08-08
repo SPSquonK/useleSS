@@ -986,16 +986,6 @@ void CUser::AddSetGrowthLearningPoint( long nRemainGP )
 	m_Snapshot.ar << nRemainGP << (long)0;
 }
 
-void CUser::AddSetStatLevel( CHAR chID, long nValue, long nRemainGP )
-{
-	if( IsDelete() )	return;
-
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SET_STAT_LEVEL;
-	m_Snapshot.ar << chID << nValue << nRemainGP;
-}
-
 void CUser::AddSetChangeJob( int nJob )
 {
 	if( IsDelete() )	return;
@@ -3699,17 +3689,6 @@ void CUserMng::AddNoDisguise( CMover* pMover )
 
 	GETBLOCK( ar, lpBuf, nBufSize );
 
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
-}
-void CUserMng::AddSetStateLevel( CMover* pMover, CHAR chID, long nValue )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_SET_STAT_LEVEL;
-	ar << chID << nValue << pMover->m_nRemainGP;
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
 	FOR_VISIBILITYRANGE( pMover )
 		USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pMover )

@@ -198,7 +198,6 @@ public:
 	void	SendSetTarget( OBJID idTarget, BYTE bClear );
 	void	SendTeleSkill( OBJID objid, D3DXVECTOR3 vPos );
 		
-	void	SendIncStatLevel( CHAR chID );
 	void	SendIncJobLevel( CHAR chID );
 	void	SendExp( EXPINTEGER nExp );
 	void	SendChangeJob( int nJob, BOOL bGama = TRUE );
@@ -559,7 +558,6 @@ public:
 	void	OnRevivalLodelight( OBJID objid );
 
 	void	OnSetGrowthLearningPoint( OBJID objid, CAr & ar );
-	void	OnSetStatLevel( OBJID objid, CAr & ar );
 
 	void	OnSetDestPos( OBJID objid, CAr & ar );
 	void	OnSetDestAngle( OBJID objid, CAr & ar );
