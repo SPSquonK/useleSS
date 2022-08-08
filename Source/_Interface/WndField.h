@@ -1392,44 +1392,6 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 }; 
 
-
-#include "WndWorld.h"
-
-class CWndBuffStatus : public CWndNeuz 
-{
-public:
-	std::vector< std::multimap<DWORD, BUFFSKILL> > m_pBuffTexture;
-	std::list<BUFFICON_INFO> m_pBuffIconInfo;
-
-	int m_BuffIconViewOpt;
-public:
-	CWndBuffStatus(); 
-	virtual ~CWndBuffStatus(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnRButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnRButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual void OnRButtonDblClk( UINT nFlags, CPoint point );
-	virtual void OnMouseWndSurface( CPoint point );
-	virtual	void PaintFrame( C2DRender* p2DRender );
-
-#ifdef __BUFF_1107
-	void RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse );
-#else	// __BUFF_1107
-	void RenderBuffIcon( C2DRender *p2DRender, SKILLINFLUENCE* pSkill, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse );
-#endif	// __BUFF_1107
-	void RenderOptBuffTime(C2DRender *p2DRender, CPoint& point, CTimeSpan &ct, DWORD dwColor );
-	void SetBuffIconInfo();
-	BOOL GetHitTestResult();
-};
-
 /*******************************
 	제련 시스템 관련 Window
 ********************************/

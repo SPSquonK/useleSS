@@ -225,7 +225,7 @@ public:
 
 	BOOL IsFocusWnd() { return m_pWndFocus == this; }
 	BOOL IsFocusChild() { return m_pParentWnd ? m_pParentWnd->m_pWndFocusChild == this : FALSE; }
-	CPoint GetMousePoint() { return m_ptMouse; } 
+	[[nodiscard]] CPoint GetMousePoint() const noexcept { return m_ptMouse; } 
 	void SetGroup(BOOL bGroup) { m_bGroup = bGroup; }
 	BOOL IsGroup() { return m_bGroup; }
 	CPtrArray* GetWndArray() { return &m_wndArray; }

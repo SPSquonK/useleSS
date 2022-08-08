@@ -885,25 +885,7 @@ void CDbManager::SaveSMCode( CMover* pMover, char* szszSMTime )
 
 void CDbManager::SaveSkillInfluence( CMover* pMover, char* szszSkillInfluence )
 {
-#ifdef __BUFF_1107
 	pMover->m_buffs.ToString( szszSkillInfluence );
-#else	// __BUFF_1107
-	char OneSkillInfluence[256] = { 0, };
-	for( int ch = 0 ; ch < MAX_SKILLINFLUENCE ; ++ ch )
-	{
-		SKILLINFLUENCE* pSkillInfluenece = &pMover->m_SkillState.m_aSkillInfluence[ch];
-		if( pSkillInfluenece->wType == BUFF_EQUIP )
-			continue;
-		if( pSkillInfluenece->wType == 0 && pSkillInfluenece->wID == 0
-			&& pSkillInfluenece->dwLevel == 0 && pSkillInfluenece->tmCount == 0 )
-			break;
-		sprintf( OneSkillInfluence, "%d,%d,%d,%d/", 
-			pSkillInfluenece->wType, pSkillInfluenece->wID,
-			pSkillInfluenece->dwLevel, pSkillInfluenece->tmCount );
-		strcat( szszSkillInfluence, OneSkillInfluence );
-	}
-	strcat( szszSkillInfluence, NullStr );
-#endif	// __BUFF_1107
 }
 
 void CDbManager::SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer)

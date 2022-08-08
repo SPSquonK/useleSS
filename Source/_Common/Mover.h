@@ -2,9 +2,7 @@
 
 #include "pocket.h"
 
-#ifdef __BUFF_1107
 #include "buff.h"
-#endif	// __BUFF_1107
 
 #include <array>
 #include <optional>
@@ -431,11 +429,7 @@ public:
 #endif	// __CLIENT
 	[[nodiscard]] int GetCurrentMaxSkillPoint() const;
 
-#ifdef __BUFF_1107
 	CBuffMgr	m_buffs;
-#else	// __BUFF_1107
-	CSkillInfluence m_SkillState;				/// 지속성을 갖는 스킬의 상태 처리(예:프로텍션 ??초동안 방어력 얼마 증가)
-#endif	// __BUFF_1107
 	DWORD			m_dwSMTime[SM_MAX];			/// 유료 아이템 시간 값을 가지고 있음
 	
 	MoverSkills m_jobSkills; /// 스킬 배열 

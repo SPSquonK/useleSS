@@ -76,7 +76,6 @@
 //	#define		__HOUSING			// 하우징 시스템
 
 #define		__PET_1024
-#define		__BUFF_1107	
 //	#define		__HONORABLE_TITLE			// 달인
 //	#define		__COUPLE_1117
 //	#define		__COUPLE_1202		// 커플 보상

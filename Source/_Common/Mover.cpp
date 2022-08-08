@@ -112,10 +112,8 @@ LPDIRECT3DTEXTURE9 CMover::m_pTextureEyeFlash[2][MAX_HEAD] = { 0, };
 #pragma warning ( disable : 4355 )
 
 CMover::CMover()
-#ifdef __BUFF_1107
 :
 m_buffs( this )
-#endif	// __BUFF_1107
 {
 	Init();
 }
@@ -272,10 +270,6 @@ void CMover::Init()
 	m_dwFlag			= 0;
 	m_nAtkCnt			= 0;
 	m_wStunCnt			= 0;
-#ifndef __BUFF_1107
-	m_SkillState.Init();
-	m_SkillState.SetMover( this );
-#endif	// __BUFF_1107
 	m_idAttacker		= NULL_ID;
 	m_idTargeter		= NULL_ID;
 	m_idTracking		= NULL_ID;
@@ -2989,17 +2983,11 @@ void CMover::Process()
 			m_pAngel = new CModelObject;
 			m_pAngel->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 			
-#ifdef __BUFF_1107
 			IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
 			ItemProp* pItemProp	= NULL;
 			if( pBuff )
 				pItemProp	= pBuff->GetProp();
 			if( pItemProp )
-#else	// __BUFF_1107
-			LPSKILLINFLUENCE itemskill = m_SkillState.GetItemBuf(IK3_ANGEL_BUFF);
-			ItemProp *pItemProp = prj.GetItemProp( itemskill->wID );
-			if( itemskill && pItemProp )
-#endif	// __BUFF_1107
 			{
 				switch(pItemProp->dwSfxElemental)
 				{
@@ -3058,29 +3046,10 @@ void CMover::Process()
 			m_pBalloon = new CModelObject;
 			m_pBalloon->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 			
-#ifdef __BUFF_1107
 			IBuff* pBuff = m_buffs.GetBuffByIk3( IK3_BALLOON );
 			if( pBuff != NULL )
 			{
 				ItemProp *pItemProp = pBuff->GetProp();
-#else	// __BUFF_1107
-			LPSKILLINFLUENCE itemskill;
-			for( int i=0; i<MAX_SKILLINFLUENCE; i++)
-			{
-				LPSKILLINFLUENCE pSkill = m_SkillState.Get(i);
-				if( pSkill->wID == II_SYS_SYS_EVE_BALLOON
-					|| pSkill->wID == II_SYS_SYS_EVE_BALLOON01
-					|| pSkill->wID == II_SYS_SYS_EVE_BALLOON02
-					|| pSkill->wID == II_SYS_SYS_EVE_BALLOON_01
-					|| pSkill->wID == II_SYS_SYS_EVE_BALLOON01_01
-					|| pSkill->wID == II_SYS_SYS_EVE_BALLOON02_01
- 				)
-					itemskill = pSkill;
-			}
-			if(itemskill)
-			{
-				ItemProp *pItemProp = prj.GetItemProp( itemskill->wID );
-#endif	// __BUFF_1107
 				if( pItemProp )
 				{
 					TCHAR szModelName[ MAX_PATH ];
@@ -9563,26 +9532,16 @@ void	CMover::RemoveItem2( int nItem, short nNum, int nPocket )
 #ifdef __SYS_TICKET
 CItemElem*	CMover::GetTicket( void )
 {
-#ifdef __BUFF_1107
 	IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_TICKET );
 	if( !pBuff )
 		return NULL;
-#else	// __BUFF_1107
-	LPSKILLINFLUENCE pInfluence		= m_SkillState.GetItemBuf( IK3_TICKET );
-	if( !pInfluence )
-		return NULL;
-#endif	// __BUFF_1107
 
 	CItemElem* pTicket;
 	for( DWORD i = 0; i < m_Inventory.m_dwItemMax; i++ )
 	{
 		pTicket		= m_Inventory.GetAtId( i );
 		if( pTicket && pTicket->m_dwKeepTime > 0 && pTicket->GetProp()->dwItemKind3 == IK3_TICKET
-#ifdef __BUFF_1107
 			&&  pTicket->m_dwItemId == (DWORD)pBuff->GetId()
-#else	// __BUFF_1107
-			&&  pTicket->m_dwItemId == (DWORD)pInfluence->wID
-#endif	// __BUFF_1107
 			&& !pTicket->IsFlag( CItemElem::expired ) )
 			return pTicket;
 	}

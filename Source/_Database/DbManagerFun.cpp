@@ -1244,7 +1244,6 @@ BOOL CDbManager::GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED
 	VERIFYSTRING_RETURN( szSKillInfluence, pMover->m_szName );
 	while( '$' != szSKillInfluence[CountStr] )
 	{
-#ifdef __BUFF_1107
 		WORD wType	= (WORD)GetIntFromStr( szSKillInfluence, &CountStr );
 		WORD wId	= (WORD)GetIntFromStr( szSKillInfluence, &CountStr );
 		DWORD dwLevel	= (DWORD)GetIntFromStr( szSKillInfluence, &CountStr );
@@ -1257,16 +1256,6 @@ BOOL CDbManager::GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED
 		pBuff->SetTotal( tmTotal );
 		bool bResult	= pMover->m_buffs.Add( pBuff );
 		ASSERT( bResult );
-#else	// __BUFF_1107
-		pMover->m_SkillState.m_aSkillInfluence[iSkillIndex].wType = (WORD)GetIntFromStr( szSKillInfluence, &CountStr );
-		pMover->m_SkillState.m_aSkillInfluence[iSkillIndex].wID = (WORD)GetIntFromStr( szSKillInfluence, &CountStr );
-		pMover->m_SkillState.m_aSkillInfluence[iSkillIndex].dwLevel = (DWORD)GetIntFromStr( szSKillInfluence, &CountStr );
-		pMover->m_SkillState.m_aSkillInfluence[iSkillIndex].tmCount = GetIntFromStr( szSKillInfluence, &CountStr );
-		SKILLINFLUENCE* pSkillInfluenece = &pMover->m_SkillState.m_aSkillInfluence[iSkillIndex];
-		if( pSkillInfluenece->wType == 0 && pSkillInfluenece->wID == 0
-			&& pSkillInfluenece->dwLevel == 0 && pSkillInfluenece->tmCount == 0 )
-			break;
-#endif	// __BUFF_1107
 		
 		++iSkillIndex;
 	}

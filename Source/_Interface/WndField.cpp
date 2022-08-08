@@ -767,78 +767,27 @@ void CWndInventory::OnDestroy( void )
 {
 	SAFE_DELETE( m_pModel );
 	SAFE_DELETE( m_pWndConfirmBuy );	
-	CWndSummonAngel* pWndAngel = (CWndSummonAngel*)GetWndBase( APP_SUMMON_ANGEL );
-	if(pWndAngel != NULL)
-		pWndAngel->Destroy();
+	Windows::DestroyIfOpened(APP_SUMMON_ANGEL);
 
 #ifdef __EVE_MINIGAME
-	CWndFindWordGame* pWndWordGame = (CWndFindWordGame*)GetWndBase( APP_MINIGAME_WORD );
-	if(pWndWordGame != NULL)
-		pWndWordGame->Destroy();
-	
-	CWndPuzzleGame* pWndPuzzleGame = (CWndPuzzleGame*)GetWndBase( APP_MINIGAME_PUZZLE );
-	if(pWndPuzzleGame != NULL)
-		pWndPuzzleGame->Destroy();
+	Windows::DestroyIfOpened(APP_MINIGAME_WORD, APP_MINIGAME_PUZZLE);
 #endif //__EVE_MINIGAME
-	CWndMixJewel* pWndMixJewel = (CWndMixJewel*)GetWndBase( APP_SMELT_MIXJEWEL );
-	if(pWndMixJewel != NULL)
-		pWndMixJewel->Destroy();
 
-	CWndExtraction* pWndExtraction = (CWndExtraction*)GetWndBase( APP_SMELT_EXTRACTION );
-	if(pWndExtraction != NULL)
-		pWndExtraction->Destroy();
+	Windows::DestroyIfOpened(APP_SMELT_MIXJEWEL, APP_SMELT_EXTRACTION);
 
 #ifdef __WINDOW_INTERFACE_BUG
-	CWndPiercing* pWndPiercing = (CWndPiercing*)GetWndBase( APP_PIERCING );
-	if(pWndPiercing != NULL)
-		pWndPiercing->Destroy();
-	CWndRemoveAttribute* pWndRemoveAttribute = (CWndRemoveAttribute*)GetWndBase( APP_REMOVE_ATTRIBUTE );
-	if(pWndRemoveAttribute != NULL)
-		pWndRemoveAttribute->Destroy();
-	CWndRemovePiercing* pWndRemovePiercing = (CWndRemovePiercing*)GetWndBase( APP_SMELT_REMOVE_PIERCING_EX );
-	if(pWndRemovePiercing != NULL)
-		pWndRemovePiercing->Destroy();
-	CWndRemoveJewel* pWndRemoveJewel = (CWndRemoveJewel*)GetWndBase( APP_SMELT_REMOVE_JEWEL );
-	if(pWndRemoveJewel != NULL)
-		pWndRemoveJewel->Destroy();
-	CWndLvReqDown* pWndLvReqDown = (CWndLvReqDown*)GetWndBase( APP_LVREQDOWN );
-	if(pWndLvReqDown != NULL)
-		pWndLvReqDown->Destroy();
-	CWndBlessingCancel* pWndBlessingCancel = (CWndBlessingCancel*)GetWndBase( APP_CANCEL_BLESSING );
-	if(pWndBlessingCancel != NULL)
-		pWndBlessingCancel->Destroy();
-	CWndUpgradeBase* pWndUpgradeBase = (CWndUpgradeBase*)GetWndBase( APP_TEST );
-	if(pWndUpgradeBase != NULL)
-		pWndUpgradeBase->Destroy();
+	Windows::DestroyIfOpened(
+		APP_PIERCING, APP_REMOVE_ATTRIBUTE,
+		APP_SMELT_REMOVE_PIERCING_EX, APP_SMELT_REMOVE_JEWEL,
+		APP_LVREQDOWN, APP_CANCEL_BLESSING, APP_TEST
+		);
 #endif // __WINDOW_INTERFACE_BUG
 
-	CWndSmeltSafety* pWndSmeltSafety = (CWndSmeltSafety*)GetWndBase( APP_SMELT_SAFETY );
-	if(pWndSmeltSafety != NULL)
-		pWndSmeltSafety->Destroy();
-
-	CWndSmeltSafetyConfirm* pWndSmeltSafetyConfirm = (CWndSmeltSafetyConfirm*)GetWndBase( APP_SMELT_SAFETY_CONFIRM );
-	if(pWndSmeltSafetyConfirm != NULL)
-		pWndSmeltSafetyConfirm->Destroy();
-
-	CWndEquipBindConfirm* pWndEquipBindConfirm = (CWndEquipBindConfirm*)GetWndBase(APP_EQUIP_BIND_CONFIRM);
-	if(pWndEquipBindConfirm != NULL)
-		pWndEquipBindConfirm->Destroy();
-
-	CWndRestateConfirm* pWndRestateConfirm = (CWndRestateConfirm*)GetWndBase(APP_RESTATE_CONFIRM);
-	if(pWndRestateConfirm != NULL)
-		pWndRestateConfirm->Destroy();
-
-	CWndPetFoodMill* pWndPetFoodMill = ( CWndPetFoodMill* )GetWndBase( APP_PET_FOODMILL );
-	if(pWndPetFoodMill != NULL)
-		pWndPetFoodMill->Destroy();
-
-	CWndShop* pWndShop = ( CWndShop* )GetWndBase( APP_SHOP_ );
-	if( pWndShop != NULL )
-		pWndShop->Destroy();
-
-	CWndBank* pWndBank = ( CWndBank* )GetWndBase( APP_COMMON_BANK );
-	if( pWndBank != NULL )
-		pWndBank->Destroy();
+	Windows::DestroyIfOpened(
+		APP_SMELT_SAFETY, APP_SMELT_SAFETY_CONFIRM,
+		APP_EQUIP_BIND_CONFIRM, APP_RESTATE_CONFIRM, APP_PET_FOODMILL,
+		APP_SHOP_, APP_COMMON_BANK
+	);
 }
 void CWndInventory::OnMouseWndSurface( CPoint point )
 {
@@ -1367,15 +1316,13 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		LPSHORTCUT lpShortcut = (LPSHORTCUT)pLResult;
 		if( lpShortcut->m_pFromWnd == NULL )
 		{
-			//ADDERRORMSG( "CWndInventory::OnChildNotify : m_pFromWnd �� NULL " );
 			return CWndNeuz::OnChildNotify( message, nID, pLResult );
 		}
 		CWndBase* pWndFrame = lpShortcut->m_pFromWnd->GetFrameWnd();
 
 		if( pWndFrame == NULL )
 		{
-			LPCTSTR szErr = Error( "CWndInventory::OnChildNotify : pWndFrame==NULL" );
-			//ADDERRORMSG( szErr );
+			Error( "CWndInventory::OnChildNotify : pWndFrame==NULL" );
 		}
 		BOOL bForbid = TRUE;
 		if( pWndFrame && nID == 11 ) // item
@@ -1700,19 +1647,19 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( m_dwEnchantWaitTime != 0xffffffff || GetWndBase(APP_SMELT_SAFETY_CONFIRM) != NULL )
 			{
-				g_WndMng.PutString( prj.GetText(TID_MMI_NOTUPGRADE), NULL, prj.GetTextColor(TID_MMI_NOTUPGRADE) );
+				g_WndMng.PutString(TID_MMI_NOTUPGRADE);
 				return 0;
 			}
 
 			if( GetWndBase(APP_EQUIP_BIND_CONFIRM) != NULL )
 			{
-				g_WndMng.PutString( prj.GetText(TID_TOOLTIP_EQUIPBIND_ERROR01), NULL, prj.GetTextColor(TID_TOOLTIP_EQUIPBIND_ERROR01) );
+				g_WndMng.PutString(TID_TOOLTIP_EQUIPBIND_ERROR01);
 				return 0;
 			}
 
 			if( GetWndBase(APP_COMMITEM_DIALOG) != NULL )
 			{
-				g_WndMng.PutString( prj.GetText(TID_TOOLTIP_ITEM_USING_ERROR), NULL, prj.GetTextColor(TID_TOOLTIP_ITEM_USING_ERROR) );
+				g_WndMng.PutString(TID_TOOLTIP_ITEM_USING_ERROR);
 				return 0;
 			}
 			
@@ -1730,7 +1677,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				// ������Ƽ�� �εǼ� �״´�.
 				if( pProp )
 				{					
-					if (CWndSummonAngel * pWndSummonAngel = (CWndSummonAngel *)g_WndMng.GetWndBase(APP_SUMMON_ANGEL)) {
+					if (CWndSummonAngel * pWndSummonAngel = g_WndMng.GetWndBase<CWndSummonAngel>(APP_SUMMON_ANGEL)) {
 						const bool isRightMaterial = ItemProps::IsOrichalcum(*pProp) || ItemProps::IsMoonstone(*pProp);
 						const bool andCanBeUsed = isRightMaterial && (pFocusItem->GetExtra() < pFocusItem->m_nItemNum);
 
@@ -1924,7 +1871,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 #ifdef __QUIZ
 						if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ )
 						{
-							g_WndMng.PutString( prj.GetText( TID_SBEVE_NOTUSEITEM ), NULL, prj.GetTextColor( TID_SBEVE_NOTUSEITEM ) );
+							g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 							return FALSE;
 						}
 #endif // __QUIZ
@@ -1974,7 +1921,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 						}
 						else
-							g_WndMng.PutString( prj.GetText(TID_GAME_ERROR_SKILLRECCURENCE), NULL, prj.GetTextColor(TID_GAME_ERROR_SKILLRECCURENCE) );
+							g_WndMng.PutString(TID_GAME_ERROR_SKILLRECCURENCE);
 
 						bAble = FALSE;
 					}
@@ -2033,7 +1980,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							{
 								if( g_pPlayer->IsBaseJob() )
 								{
-									g_WndMng.PutString( prj.GetText( TID_GAME_NOTUSEVAG ), NULL, prj.GetTextColor( TID_GAME_NOTUSEVAG ) );
+									g_WndMng.PutString(TID_GAME_NOTUSEVAG);
 									bAble = FALSE;
 								}
 								else
@@ -2045,7 +1992,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 										CItemElem* pArmor	= g_pPlayer->m_Inventory.GetEquip( dwParts );
 										if( pArmor )
 										{
-											g_WndMng.PutString( prj.GetText( TID_GAME_CHECK_EQUIP ), NULL, prj.GetTextColor( TID_GAME_CHECK_EQUIP ) );
+											g_WndMng.PutString(TID_GAME_CHECK_EQUIP);
 											bAble = FALSE;
 										}
 									}
@@ -2071,65 +2018,43 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.GetWndBase( APP_BANK )  ||
 					g_WndMng.GetWndBase( APP_TRADE ) )
 				{
-					//g_WndMng.PutString( "�ŷ��߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
-					g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+					g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
 				}
 				else if(g_WndMng.GetWndBase( APP_SUMMON_ANGEL ))
 				{
-					g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+					g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
 				}
 #ifdef __EVE_MINIGAME
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_DICE ))
+				else if(Windows::IsOpen(
+					APP_MINIGAME_DICE,
+					APP_MINIGAME_KAWIBAWIBO,
+					APP_MINIGAME_KAWIBAWIBO_WIN,
+					APP_MINIGAME_PUZZLE,
+					APP_MINIGAME_WORD
+					))
 				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_KAWIBAWIBO ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_KAWIBAWIBO_WIN ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_PUZZLE ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_MINIGAME_WORD ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 #endif //__EVE_MINIGAME
-				else if(g_WndMng.GetWndBase( APP_SMELT_EXTRACTION ))
+				else if(Windows::IsOpen(
+					APP_SMELT_EXTRACTION,
+					APP_SMELT_JEWEL,
+					APP_SMELT_MIXJEWEL,
+					APP_PET_FOODMILL,
+					APP_SMELT_SAFETY
+				))
 				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_SMELT_JEWEL ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_SMELT_MIXJEWEL ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_PET_FOODMILL ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
-				}
-				else if(g_WndMng.GetWndBase( APP_SMELT_SAFETY ))
-				{
-					g_WndMng.PutString( prj.GetText(TID_SBEVE_NOTUSEITEM), NULL, prj.GetTextColor(TID_SBEVE_NOTUSEITEM) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 #ifdef __QUIZ
 				else if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ )
 				{
-					g_WndMng.PutString( prj.GetText( TID_SBEVE_NOTUSEITEM ), NULL, prj.GetTextColor( TID_SBEVE_NOTUSEITEM ) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 #endif // __QUIZ
 				else if( g_WndMng.GetWndBase( APP_REPAIR ) )
 				{
-					//g_WndMng.PutString( "�����߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
-					g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+					g_WndMng.PutString(TID_SBEVE_NOTUSEITEM);
 				}
 				else
 				{
@@ -2262,16 +2187,12 @@ BOOL CWndInventory::OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT messag
 	return TRUE;
 }
 
-void CWndInventory::SetEnchantCursor()
-{
+void CWndInventory::SetEnchantCursor() {
 	// �κ�â�� �����ְ� ��þƮ ����̸�? Ŀ�����? ����
-	if( m_bIsUpgradeMode )
-	{
-		SetMouseCursor( CUR_HAMMER );
-	}
-	else
-	{
-		SetMouseCursor( CUR_BASE );		
+	if (m_bIsUpgradeMode) {
+		SetMouseCursor(CUR_HAMMER);
+	} else {
+		SetMouseCursor(CUR_BASE);
 	}
 }
 
@@ -2319,8 +2240,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		if( pWndFrame->GetWndId() == APP_INVENTORY )
 		{
 			SetForbid( TRUE );
-			//g_WndMng.PutString( "�ŷ��߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
-			g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
+			g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
 			
 			return FALSE;
 		}
@@ -2330,7 +2250,6 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		if( pWndFrame->GetWndId() == APP_INVENTORY )
 		{
 			SetForbid( TRUE );
-			//g_WndMng.PutString( "�����߿� ������ �����? �Ұ����ؿ�.", NULL, 0xffff0000 );
 			g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
 			
 			return FALSE;
@@ -12642,628 +12561,6 @@ void CWndFontEdit::ReSetBar( FLOAT r, FLOAT g, FLOAT b )
 	m_ColorScrollBar[1].y = m_ColorRect[1].top - 20;
 	m_ColorScrollBar[2].x = (LONG)( (((m_ColorRect[2].right-m_ColorRect[2].left) * fB) / 100.0f) + m_ColorRect[2].left );
 	m_ColorScrollBar[2].y = m_ColorRect[2].top - 20;
-}
-
-
-CWndBuffStatus::CWndBuffStatus() 
-{ 
-	m_BuffIconViewOpt = g_Option.m_BuffStatusMode;
-} 
-
-CWndBuffStatus::~CWndBuffStatus() 
-{ 
-} 
-
-void CWndBuffStatus::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	this->DelWndStyle(WBS_CAPTION);
-	
-	m_wndTitleBar.SetVisible( FALSE );
-
-	SetBuffIconInfo();
-
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CPoint point( (rectRoot.right - rectRoot.left) / 3, (rectRoot.bottom - rectRoot.top) / 3);
-	Move( point );
-} 
-BOOL CWndBuffStatus::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	return CWndNeuz::InitDialog( APP_BUFF_STATUS, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
-} 
-
-BOOL CWndBuffStatus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-BOOL CWndBuffStatus::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
-void CWndBuffStatus::OnLButtonUp( UINT nFlags, CPoint point )
-{
-	this->m_pWndFocus = this;
-}
-
-void CWndBuffStatus::OnLButtonDown( UINT nFlags, CPoint point )
-{
-	if(!GetHitTestResult())
-	{
-		if( g_WndMng.m_pWndWorld )
-		{
-			CRect rect = GetWindowRect( TRUE );
-			CPoint p;
-			p.x = point.x + rect.left;
-			p.y = point.y + rect.top;
-			g_WndMng.m_pWndWorld->m_bLButtonDown = TRUE;
-			g_WndMng.m_pWndWorld->OnLButtonDown( nFlags, p );
-			this->m_pWndFocus = g_WndMng.m_pWndWorld;
-		}
-	}
-}
-
-void CWndBuffStatus::OnRButtonUp( UINT nFlags, CPoint point )
-{
-}
-
-void CWndBuffStatus::OnRButtonDown( UINT nFlags, CPoint point )
-{
-	if(!GetHitTestResult())
-	{
-		if( g_WndMng.m_pWndWorld )
-		{
-			CRect rect = GetWindowRect( TRUE );
-			CPoint p;
-			p.x = point.x + rect.left;
-			p.y = point.y + rect.top;
-			g_WndMng.m_pWndWorld->m_bRButtonDown = TRUE;
-			g_WndMng.m_pWndWorld->OnRButtonDown( nFlags, p );
-		}
-	}
-}
-
-void CWndBuffStatus::OnMouseWndSurface( CPoint point )
-{
-}
-
-void CWndBuffStatus::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	if(GetHitTestResult())
-	{
-		if(m_BuffIconViewOpt == 0)
-			m_BuffIconViewOpt = 1;
-		else if(m_BuffIconViewOpt == 1)
-			m_BuffIconViewOpt = 0;
-		g_Option.m_BuffStatusMode = m_BuffIconViewOpt;
-		SetBuffIconInfo();
-	}
-	else
-	{
-		if( g_WndMng.m_pWndWorld )
-		{
-			CRect rect = GetWindowRect( TRUE );
-			CPoint p;
-			p.x = point.x + rect.left;
-			p.y = point.y + rect.top;
-			g_WndMng.m_pWndWorld->m_bLButtonDown = TRUE;
-			g_WndMng.m_pWndWorld->OnLButtonDblClk( nFlags, p );
-		}
-	}
-}
-
-void CWndBuffStatus::OnRButtonDblClk( UINT nFlags, CPoint point )
-{
-	if(GetHitTestResult())
-	{
-		if(m_BuffIconViewOpt == 0)
-			m_BuffIconViewOpt = 1;
-		else if(m_BuffIconViewOpt == 1)
-			m_BuffIconViewOpt = 0;
-		g_Option.m_BuffStatusMode = m_BuffIconViewOpt;
-		SetBuffIconInfo();
-	}
-	else
-	{
-		if( g_WndMng.m_pWndWorld )
-		{
-			CRect rect = GetWindowRect( TRUE );
-			CPoint p;
-			p.x = point.x + rect.left;
-			p.y = point.y + rect.top;
-			g_WndMng.m_pWndWorld->m_bRButtonDown = TRUE;
-			g_WndMng.m_pWndWorld->OnRButtonDblClk( nFlags, p );
-		}
-	}
-}
-
-BOOL CWndBuffStatus::GetHitTestResult()
-{
-#ifdef __BUFF_1107
-	BOOL rtn_val = FALSE;
-	RECT rectHittest;
-	CPoint ptMouse = GetMousePoint();
-	ClientToScreen( &ptMouse );
-	BUFFICON_INFO buffinfo;
-	
-	std::list<BUFFICON_INFO>::iterator it = m_pBuffIconInfo.begin();
-	for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i!= g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
-		if( pBuff->GetType() == BUFF_SKILL )
-		{
-			buffinfo  = *it;
-			SetRect( &rectHittest, buffinfo.pt.x, buffinfo.pt.y, buffinfo.pt.x+34, buffinfo.pt.y+34 );
-			ClientToScreen( &rectHittest );
-			if( PtInRect(&rectHittest, ptMouse ) )
-				rtn_val = TRUE;
-			it++;
-		}
-	}
-	return rtn_val;
-#else	// __BUFF_1107
-//{{AFX
-	BOOL rtn_val = FALSE;
-	RECT rectHittest;
-	int i;
-	CPoint ptMouse = GetMousePoint();
-	ClientToScreen( &ptMouse );
-	BUFFICON_INFO buffinfo;
-	
-	std::list<BUFFICON_INFO>::iterator it = m_pBuffIconInfo.begin();
-	for(i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		SKILLINFLUENCE* pSkill = g_pPlayer->m_SkillState.Get(i);
-		if(pSkill->wID)	
-		{
-			if(pSkill->wType == BUFF_SKILL)
-			{
-				buffinfo  = *it;
-				SetRect( &rectHittest, buffinfo.pt.x, buffinfo.pt.y, buffinfo.pt.x+34, buffinfo.pt.y+34 );
-				ClientToScreen( &rectHittest );
-				if( PtInRect(&rectHittest, ptMouse ) )
-				{
-					rtn_val = TRUE;
-				}
-				it++;
-			}
-		}
-	}
-	return rtn_val;
-//}}AFX
-#endif	// __BUFF_1107
-}
-
-void CWndBuffStatus::SetBuffIconInfo()
-{
-	BUFFICON_INFO buffinfo;
-	int x = 0;
-	int y = 0;
-	int i;
-	CRect rect;
-	rect = GetWindowRect(TRUE);
-	
-	if(!m_pBuffIconInfo.empty())
-		m_pBuffIconInfo.clear();
-
-	if(m_BuffIconViewOpt == 0)
-	{
-		for(i=0; i<MAX_SKILLBUFF_COUNT; i++)
-		{
-			buffinfo.pt = CPoint( x, y );
-			m_pBuffIconInfo.push_back(buffinfo);
-			x += 34;
-			if(((i+1) % 7) == 0)
-			{
-				x  = 0;
-				y += 34;
-			}
-		}
-		//widht 238, heigth = 68
-		rect.bottom = 136 + rect.top;
-		rect.right = 238 + rect.left;
-	}
-	else if(m_BuffIconViewOpt == 1)
-	{
-		for(i=0; i<MAX_SKILLBUFF_COUNT; i++)
-		{
-			buffinfo.pt = CPoint( x, y );
-			m_pBuffIconInfo.push_back(buffinfo);
-			y += 34;
-			if(((i+1) % 7) == 0)
-			{
-				y  = 0;
-				x += 34;
-			}
-		}
-		//widht 54, heigth = 238
-		rect.bottom = 238 + rect.top;
-		rect.right = 136 + rect.left;
-	}
-	SetWndRect(rect);
-	AdjustWndBase();
-}
-
-void CWndBuffStatus::PaintFrame( C2DRender* p2DRender )
-{
-}
-
-void CWndBuffStatus::OnDraw( C2DRender* p2DRender )
-{	
-	if( g_pPlayer == NULL )
-		return;
-	CPoint ptMouse = GetMousePoint();
-	ClientToScreen( &ptMouse );
-	BUFFICON_INFO buffinfo;
-
-	std::list<BUFFICON_INFO>::iterator it = m_pBuffIconInfo.begin();
-#ifdef __BUFF_1107
-	for( MAPBUFF::iterator i = g_pPlayer->m_buffs.m_mapBuffs.begin(); i != g_pPlayer->m_buffs.m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
-		if( pBuff->GetType() == BUFF_SKILL )
-		{
-			buffinfo  = *it;
-			RenderBuffIcon( p2DRender, pBuff, TRUE, &buffinfo, ptMouse );
-			it++;
-		}
-	}
-#else	// __BUFF_1107
-//{{AFX
-	int i;
-	for(i=0; i<MAX_SKILLINFLUENCE; i++)
-	{
-		SKILLINFLUENCE* pSkill = g_pPlayer->m_SkillState.Get(i);
-		if(pSkill->wID)	
-		{
-			if(pSkill->wType == BUFF_SKILL)
-			{
-				buffinfo  = *it;
-				RenderBuffIcon( p2DRender, pSkill, TRUE, &buffinfo, ptMouse );
-				it++;
-			}
-		}
-	}
-//}}AFX
-#endif	// __BUFF_1107
-}
-
-void CWndBuffStatus::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse )
-{
-	int nTexture;
-	RECT rectHittest;	
-	std::multimap< DWORD, BUFFSKILL >::iterator iter;
-	
-	if( bPlayer )
-		nTexture = 0;
-	else
-		nTexture = 1;
-	
-	ItemProp* pItem = NULL;
-
-#ifdef __BUFF_1107
-	WORD wID = pBuff->GetId();
-	if( pBuff->GetType() == BUFF_SKILL )
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].find( pBuff->GetId() );
-
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].end() )
-			return;
-
-		if( bPlayer )
-			pItem = prj.GetSkillProp( pBuff->GetId() );
-		else
-			pItem = prj.GetPartySkill( pBuff->GetId() );
-	}
-	else
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].find( pBuff->GetId() );
-
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].end() )
-			return;
-
-		pItem = prj.GetItemProp( wID );
-	}
-	
-	std::multimap< DWORD, BUFFSKILL >::value_type* pp = &(*iter);
-
-	ASSERT( pItem );
-	if( pp->second.m_pTexture == NULL )
-		return;
-	
-	BOOL bFlash = FALSE;
-	DWORD dwOddTime = 0;
-	
-	if( pBuff->GetTotal() > 0 )
-	{	
-		dwOddTime = pBuff->GetTotal() - ( g_tmCurrent - pBuff->GetInst() );
-		bFlash = ( dwOddTime < 20 * 1000 );		// 20�� ���� �������� �����Ÿ�
-		
-		if( pBuff->GetTotal() < ( g_tmCurrent - pBuff->GetInst() ) ) // - �� �Ǹ� 0���� ó��
-			dwOddTime = 0;
-	}
-	
-	D3DXCOLOR color;
-	
-	if( bFlash )		
-	{		
-		if( pp->second.m_bFlsh == TRUE )
-		{
-			pp->second.m_nAlpha+=6;
-			
-			if( pp->second.m_nAlpha > 192 )
-			{
-				pp->second.m_nAlpha = 192;
-				pp->second.m_bFlsh = FALSE;
-			}
-		}
-		else
-		{
-			pp->second.m_nAlpha-=6;
-			
-			if( pp->second.m_nAlpha < 64 )
-			{
-				pp->second.m_nAlpha = 64;
-				pp->second.m_bFlsh = TRUE;
-			}
-		}
-		
-		if( pItem->nEvildoing < 0 )							// ���۸�����
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 120, 255 );		// ���� �� 
-		else
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );		
-	}
-	else
-	{
-		if( pItem->nEvildoing < 0 )							// ���۸�����
-			color =  D3DCOLOR_ARGB( 192, 255, 120, 255 );		// ���� �� 
-		else
-			color =  D3DCOLOR_ARGB( 192, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );
-	}
-
-	SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x+28, pInfo->pt.y+28 );
-	ClientToScreen( &rectHittest );
-	
-	CEditString strEdit;
-	CString strLevel;
-	strLevel.Format("   Lvl %d", pBuff->GetLevel() );
-
-	if( pItem->dwItemRare == 102 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-	}
-	else if( pItem->dwItemRare == 103 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-	}
-	else
-	{
-		strEdit.AddString( pItem->szName, 0xff2fbe6d, ESSTY_BOLD );
-		strEdit.AddString( strLevel, 0xff2fbe6d, ESSTY_BOLD );
-	}
-
-	CString str;
-
-	if( pBuff->GetTotal() > 0 )
-	{
-		CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// �����ð��� �ʴ����� ��ȯ�ؼ� �Ѱ���
-				
-		if( ct.GetDays() != 0 )
-		{
-			str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
-		}
-		else
-		{
-			if( ct.GetHours() >= 1 )
-				str.Format( "\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
-			else
-				str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );						// ����
-		}
-		RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 255, 255, 255 ) );
-	}
-
-	CString strTemp;
-	strTemp.Format( "\n%s", pItem->szCommand );
-
-	strEdit.AddString( strTemp );
-
-	if( PtInRect(&rectHittest, ptMouse ) )
-	{
-		g_WndMng.PutDestParam( pItem->dwDestParam[0], pItem->dwDestParam[1],
-			pItem->nAdjParamVal[0], pItem->nAdjParamVal[1], strEdit );
-
-		if( pBuff->GetType() == BUFF_SKILL && 
-			pBuff->GetId() != SI_RIG_MASTER_BLESSING && 
-			pBuff->GetId() != SI_ASS_CHEER_STONEHAND && 
-			pBuff->GetId() != SI_MAG_EARTH_LOOTING && 
-			pBuff->GetId() != SI_ASS_HEAL_PREVENTION ) //������ �ູ, ���� �ڵ�, ����, �������� ����
-		{
-			AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pBuff->GetLevel() );
-
-			if( pAddSkillProp )
-			{
-				g_WndMng.PutDestParam( pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
-					pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit );
-			}
-		}
-	}
-#else	// __BUFF_1107
-//{{AFX
-	WORD wID = pSkill->wID;
-	if( pSkill->wType == BUFF_SKILL )
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].find(pSkill->wID);
-
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[0].end() )
-			return;
-
-		if( bPlayer )
-			pItem = prj.GetSkillProp( pSkill->wID );
-		else
-			pItem = prj.GetPartySkill( pSkill->wID );
-	}
-	else
-	{
-		iter = ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].find(pSkill->wID);
-
-		if( iter == ((CWndWorld*)g_WndMng.m_pWndWorld)->m_pBuffTexture[2].end() )
-			return;
-
-		pItem = prj.GetItemProp( wID );
-	}
-	
-	multimap< DWORD, BUFFSKILL >::value_type* pp;
-	pp = &(*iter);
-
-	ASSERT( pItem );
-	if( pp->second.m_pTexture == NULL )
-		return;
-	
-	BOOL bFlash = FALSE;
-	DWORD dwOddTime = 0;
-	
-	if( pSkill->tmCount > 0 )
-	{	
-		dwOddTime = pSkill->tmCount - (g_tmCurrent - pSkill->tmTime);
-		bFlash = ( dwOddTime < 20 * 1000 );		// 20�� ���� �������� �����Ÿ�
-		
-		if(pSkill->tmCount < (g_tmCurrent - pSkill->tmTime)) // - �� �Ǹ� 0���� ó��
-			dwOddTime = 0;
-	}
-	
-	D3DXCOLOR color;
-	
-	if( bFlash )		
-	{		
-		if( pp->second.m_bFlsh == TRUE )
-		{
-			pp->second.m_nAlpha+=6;
-			
-			if( pp->second.m_nAlpha > 192 )
-			{
-				pp->second.m_nAlpha = 192;
-				pp->second.m_bFlsh = FALSE;
-			}
-		}
-		else
-		{
-			pp->second.m_nAlpha-=6;
-			
-			if( pp->second.m_nAlpha < 64 )
-			{
-				pp->second.m_nAlpha = 64;
-				pp->second.m_bFlsh = TRUE;
-			}
-		}
-		
-		if( pItem->nEvildoing < 0 )							// ���۸�����
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 120, 255 );		// ���� �� 
-		else
-			color =  D3DCOLOR_ARGB( pp->second.m_nAlpha, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );		
-	}
-	else
-	{
-		if( pItem->nEvildoing < 0 )							// ���۸�����
-			color =  D3DCOLOR_ARGB( 192, 255, 120, 255 );		// ���� �� 
-		else
-			color =  D3DCOLOR_ARGB( 192, 255, 255, 255 );
-		
-		p2DRender->RenderTexture2( pInfo->pt, pp->second.m_pTexture, 1.2f, 1.2f, color );
-	}
-
-	SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x+28, pInfo->pt.y+28 );
-	ClientToScreen( &rectHittest );
-	
-	CEditString strEdit;
-	CString strLevel;
-	strLevel.Format("   Lv %d", pSkill->dwLevel);
-
-	if( pItem->dwItemRare == 102 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-	}
-	else if( pItem->dwItemRare == 103 )
-	{
-		strEdit.AddString( pItem->szName, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-		strEdit.AddString( strLevel, D3DCOLOR_XRGB( 182, 0, 255 ), ESSTY_BOLD );
-	}
-	else
-	{
-		strEdit.AddString( pItem->szName, 0xff2fbe6d, ESSTY_BOLD );
-		strEdit.AddString( strLevel, 0xff2fbe6d, ESSTY_BOLD );
-	}
-
-	CString str;
-
-	if( pSkill->tmCount > 0 )
-	{
-		CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// �����ð��� �ʴ����� ��ȯ�ؼ� �Ѱ���
-				
-		if( ct.GetDays() != 0 )
-		{
-			str.Format( "\n%.2d:%.2d:%.2d:%.2d", static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
-		}
-		else
-		{
-			if( ct.GetHours() >= 1 )
-				str.Format( "\n%.2d:%.2d:%.2d", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );	//�ú��� 
-			else
-				str.Format( "\n%.2d:%.2d", ct.GetMinutes(), ct.GetSeconds() );						// ����
-		}
-		RenderOptBuffTime( p2DRender, pInfo->pt, ct, D3DCOLOR_XRGB( 255, 255, 255 ) );
-	}
-
-	CString strTemp;
-	strTemp.Format( "\n%s", pItem->szCommand );
-
-	strEdit.AddString( strTemp );
-
-	if( PtInRect(&rectHittest, ptMouse ) )
-	{
-		g_WndMng.PutDestParam( pItem->dwDestParam[0], pItem->dwDestParam[1],
-			pItem->nAdjParamVal[0], pItem->nAdjParamVal[1], strEdit );
-		
-		if( pSkill->wType == BUFF_SKILL && pSkill->wID != SI_RIG_MASTER_BLESSING && 
-			pSkill->wID != SI_ASS_CHEER_STONEHAND && pSkill->wID != SI_MAG_EARTH_LOOTING ) //������ �ູ, ���� �ڵ�, ���� ����
-		{
-			AddSkillProp* pAddSkillProp = prj.GetAddSkillProp( pItem->dwSubDefine, pSkill->dwLevel );
-
-			if( pAddSkillProp )
-			{
-				g_WndMng.PutDestParam( pAddSkillProp->dwDestParam[0], pAddSkillProp->dwDestParam[1],
-					pAddSkillProp->nAdjParamVal[0], pAddSkillProp->nAdjParamVal[1], strEdit );
-			}
-		}
-	}
-//}}AFX
-#endif	// __BUFF_1107
-
-	strEdit.AddString( str );
-
-	g_toolTip.PutToolTip( wID, strEdit, rectHittest, ptMouse, 1);
-
-	++pInfo->nCount;
-}
-
-void CWndBuffStatus::RenderOptBuffTime(C2DRender *p2DRender, CPoint& point, CTimeSpan &ct, DWORD dwColor )
-{
-	if(g_Option.m_bVisibleBuffTimeRender)
-	{
-		CString str;
-		int seconds = (int)(ct.GetTotalSeconds());
-		str.Format( "%d" , seconds );
-		p2DRender->TextOut(point.x+2, point.y+22, str, dwColor, 0xFF000000);
-	}
 }
 
 

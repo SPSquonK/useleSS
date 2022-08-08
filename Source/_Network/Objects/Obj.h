@@ -25,9 +25,7 @@
 
 #include "rtmessenger.h"
 
-#ifdef __BUFF_1107
 #include "buff.h"
-#endif	// __BUFF_1107
 
 #include "pet.h"
 
@@ -330,11 +328,7 @@ public:
 	BYTE			m_nAttackResistRight;
 	BYTE			m_nDefenseResist;
 
-#ifdef __BUFF_1107
 	CBuffMgr	m_buffs;
-#else	// __BUFF_1107
-	CSkillInfluence m_SkillState;				// 지속성을 갖는 스킬의 상태 처리(예:프로텍션 ??초동안 방어력 얼마 증가)
-#endif	// __BUFF_1107
 
 	EQUIP_INFO		m_aEquipInfo[MAX_HUMAN_PARTS];
 	void	ClearEquipInfo( void )

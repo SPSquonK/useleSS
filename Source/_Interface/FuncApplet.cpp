@@ -25,7 +25,7 @@
 #include "WndHousing.h"
 
 #include "WndGuildHouse.h"
-
+#include "WndBuffStatus.h"
 #include "Wnd2ndPassword.h"
 
 #ifdef __NEW_WEB_BOX

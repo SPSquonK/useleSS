@@ -1,7 +1,6 @@
 #ifndef __BUFF_H
 #define	__BUFF_H
 
-#ifdef __BUFF_1107
 
 #include "ar.h"
 
@@ -269,6 +268,5 @@ private:
 	size_t	GetRemoveBuffSize();
 };
 
-#endif	// __BUFF_1107
 
 #endif	// __BUFF_H

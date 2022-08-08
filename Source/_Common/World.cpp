@@ -1585,9 +1585,6 @@ void CWorld::_replace( void )
 				pUser->PCSetAt( pUser->GetId(), pUser );
 				pUser->AddAddObj( pUser );
 				pWorld->ADDOBJ( pUser, FALSE, nLayer );			// set pWorld 
-#ifndef __BUFF_1107	// chipi_090623 수정 - 버프 시스템 변경 후 부터는 중복으로 능력치가 차감되는 문제가 발생하므로 제거..
-				g_UserMng.AddHdr( pUser, SNAPSHOTTYPE_RESETBUFFSKILL );	// 버프스킬 다시 세팅	
-#endif // __BUFF_1107
 				pUser->AddSMModeAll();
 				pUser->AddEnvironment(); // 현재 날씨 세팅
 				GuildHouseMng->SetApplyDST( pUser );

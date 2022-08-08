@@ -256,28 +256,16 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 			}
 			else if( pItem->dwItemKind2 == IK2_BUFF2 )
 			{
-			#ifdef __BUFF_1107
 				IBuff* pBuff	= g_pPlayer->m_buffs.GetBuff( BUFF_ITEM2, (WORD)( pItem->dwID ) );
-			#else	// __BUFF_1107
-				LPSKILLINFLUENCE	pSkill	= g_pPlayer->m_SkillState.FindPtr( BUFF_ITEM2, pItem->dwID );
-			#endif	// __BUFF_1107
 				time_t				t = 0;
 
-			#ifdef __BUFF_1107
 				if( !pBuff )
-			#else	// __BUFF_1107
-				if(!pSkill)
-			#endif	// __BUFF_1107
 				{
 					t = 0;
 				}
 				else
 				{
-				#ifdef __BUFF_1107
 					t = (time_t)pBuff->GetLevel() - time_null();
-				#else	// __BUFF_1107
-					t = (time_t)pSkill->dwLevel - time_null();
-				#endif	// __BUFF_1107
 					if( t < 0 )  t = 0;
 				}
 				
@@ -342,19 +330,7 @@ int CWndCommItemCtrl::GetMaxBuff()
 			++nMaxCount;
 	}
 
-#ifdef __BUFF_1107
 	nMaxCount	+= g_pPlayer->m_buffs.GetCommercialCount();
-#else	// __BUFF_1107
-	for( i=0 ; i<MAX_SKILLINFLUENCE; ++i )
-	{
-		SKILLINFLUENCE* pSkill = g_pPlayer->m_SkillState.Get(i);
-		if( pSkill->wID == 0 || pSkill->wType == BUFF_SKILL )	
-			continue;
-		pItem = prj.GetItemProp( pSkill->wID );
-		if( pItem->bCharged && pItem->dwID != II_PET_EGG )
-			++nMaxCount;
-	}
-#endif	// __BUFF_1107
 	return nMaxCount;
 }
 
@@ -411,7 +387,6 @@ void CWndCommItemCtrl::DrawSM( C2DRender* p2DRender, CPoint* pPoint, int x, int 
 
 void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, int &nScroll )
 {
-#ifdef __BUFF_1107
 	ItemProp* pItem = NULL;
 	std::multimap<DWORD, BUFFSKILL>::value_type* pp = NULL;
 	BOOL bExpRander[6];
@@ -682,283 +657,6 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 		else if( dwSkillID == II_SYS_SYS_SCR_AMPESS )
 			bExpRander[5] = FALSE;
 	}
-#else	// __BUFF_1107
-//{{AFX
-	SKILLINFLUENCE* pSkill;
-	ItemProp* pItem = NULL;
-	multimap< DWORD, BUFFSKILL >::value_type* pp;
-	BOOL bExpRander[6];
-	BOOL IsOverlap;
-
-	for( int iRander = 0 ; iRander < 6 ; ++iRander )
-		bExpRander[iRander] = TRUE;
-	for( int i=0 ; i<MAX_SKILLINFLUENCE; ++i )
-	{
-		pSkill = g_pPlayer->m_SkillState.Get(i);
-		if( pSkill->wID == 0 || pSkill->wType == BUFF_SKILL )	
-			continue;
-#ifdef __DST_GIFTBOX
-		else if( pSkill->wType == BUFF_EQUIP )
-			continue;
-#endif // __DST_GIFTBOX
-
-		DWORD dwSkillID = pSkill->wID;
-		int nExpCount = 0;
-		DWORD dwExpTime[3];
-		ZeroMemory( dwExpTime, sizeof( DWORD ) * 3 );
-		if( dwSkillID == II_SYS_SYS_SCR_AMPESA || dwSkillID == II_SYS_SYS_SCR_AMPESA1 || dwSkillID == II_SYS_SYS_SCR_AMPESA2 )	
-		{
-			dwSkillID = II_SYS_SYS_SCR_AMPESA;
-			BOOL IsOverlap = TRUE;
-			if( bExpRander[0] == FALSE )
-				continue;
-		}
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESB || dwSkillID == II_SYS_SYS_SCR_AMPESB1 || dwSkillID == II_SYS_SYS_SCR_AMPESB2 )	
-		{
-			dwSkillID = II_SYS_SYS_SCR_AMPESB;
-			BOOL IsOverlap = TRUE;
-			if( bExpRander[1] == FALSE )
-				continue;
-		}
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESC || dwSkillID == II_SYS_SYS_SCR_AMPESC1 || dwSkillID == II_SYS_SYS_SCR_AMPESC2 )	
-		{
-			dwSkillID = II_SYS_SYS_SCR_AMPESC;
-			BOOL IsOverlap = TRUE;
-			if( bExpRander[2] == FALSE )
-				continue;
-		}
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESD || dwSkillID == II_SYS_SYS_SCR_AMPESD1 || dwSkillID == II_SYS_SYS_SCR_AMPESD2 )	
-		{
-			dwSkillID = II_SYS_SYS_SCR_AMPESD;
-			BOOL IsOverlap = TRUE;
-			if( bExpRander[3] == FALSE )
-				continue;
-		}
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESE )
-		{
-			dwSkillID = II_SYS_SYS_SCR_AMPESE;
-			IsOverlap = FALSE;
-			if( bExpRander[4] == FALSE )
-				continue;
-		}
-#ifdef __S_ADD_EXP
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESS || dwSkillID == II_SYS_SYS_SCR_AMPESS1 || dwSkillID == II_SYS_SYS_SCR_AMPESS2 )	
-		{
-			dwSkillID = II_SYS_SYS_SCR_AMPESS;
-			BOOL IsOverlap = TRUE;
-			if( bExpRander[5] == FALSE )
-				continue;
-		}
-#endif // __S_ADD_EXP
-
-		if( dwSkillID == II_SYS_SYS_SCR_AMPESA || dwSkillID == II_SYS_SYS_SCR_AMPESB
-			|| dwSkillID == II_SYS_SYS_SCR_AMPESC || dwSkillID == II_SYS_SYS_SCR_AMPESD  
-			|| dwSkillID == II_SYS_SYS_SCR_AMPESE 
-#ifdef __S_ADD_EXP
-			|| dwSkillID == II_SYS_SYS_SCR_AMPESS
-#endif // __S_ADD_EXP
-			)
-		{
-			for( int j=0; j<MAX_SKILLINFLUENCE; j++)
-			{
-				SKILLINFLUENCE* pSkillBuf = g_pPlayer->m_SkillState.Get(j);
-		
-				if( dwSkillID == II_SYS_SYS_SCR_AMPESE ) // 중복되지 않는 ES증폭의 두루마리 defineitem에서 처리 잘못되어 따로 분기
-				{
-					if( pSkillBuf->wID == dwSkillID )
-					{
-						dwExpTime[0] = pSkillBuf->tmCount - (g_tmCurrent - pSkillBuf->tmTime);
-						nExpCount = 1;
-						break;
-					}
-				}
-				else
-				{
-					if( pSkillBuf->wID == dwSkillID || pSkillBuf->wID == dwSkillID+1 || pSkillBuf->wID == dwSkillID+2 )	
-					{
-						if(IsOverlap)
-						{
-							dwExpTime[nExpCount] = pSkillBuf->tmCount - (g_tmCurrent - pSkillBuf->tmTime);
-							++nExpCount;				
-						}
-						else
-						{
-							dwExpTime[0] = pSkillBuf->tmCount - (g_tmCurrent - pSkillBuf->tmTime);
-							nExpCount = 1;
-							break;
-						}
-					}
-				}
-			}
-		}				
-		pItem = prj.GetItemProp( dwSkillID );
-		if( pItem->bCharged == FALSE )
-			continue;
-
-		if( pItem->dwItemKind3 == IK3_EGG )
-			continue;
-		pp = &(*(pWndWorld->m_pBuffTexture[2].find(dwSkillID)));
-		if( pp->second.m_pTexture == NULL )
-			continue;
-
-		++nScroll;
-		if( ( m_wndScrollBar.GetScrollPos() >= nScroll ) )
-			continue;
-
-		p2DRender->RenderTexture( CPoint( 2, pPoint->y ), pp->second.m_pTexture, 192 );
-
-		DWORD dwColor = 0xff000000;
-		CString string;
-		string.Format( "#cff0000ff%s#nc", pItem->szName );
-		CEditString strEdit;
-		strEdit.SetParsingString( string );
-		p2DRender->TextOut_EditString( x + 40, pPoint->y + 3, strEdit, 0, 0, 2 );
-
-		if( pItem->dwID == II_SYS_SYS_SCR_SMELPROT || pItem->dwID == II_SYS_SYS_SCR_SMELTING
-#ifdef __SM_ITEM_2ND_EX
-			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT2
-#endif	// __SM_ITEM_2ND_EX
-			|| pItem->dwID == II_SYS_SYS_SCR_SUPERSMELTING
-			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT3
-			|| pItem->dwID == II_SYS_SYS_SCR_SMELPROT4
-		)
-		{
-			string.Format( "%s", prj.GetText( TID_GAME_DEMOL_USE ) );
-		}
-		else if( pItem->dwID == II_SYS_SYS_SCR_RETURN )
-		{
-			string.Format( "%s", prj.GetText( TID_TOOLTIP_RETURN_USE ) );
-		}
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESA || dwSkillID == II_SYS_SYS_SCR_AMPESB
-			|| dwSkillID == II_SYS_SYS_SCR_AMPESC || dwSkillID == II_SYS_SYS_SCR_AMPESD
-			|| dwSkillID == II_SYS_SYS_SCR_AMPESE
-#ifdef __S_ADD_EXP
-			|| dwSkillID == II_SYS_SYS_SCR_AMPESS
-#endif // __S_ADD_EXP
-			)
-		{
-			string = "";
-			for( int k = 0 ; k < nExpCount ; ++k )
-			{
-				DWORD dwOddTime = dwExpTime[k];
-				CTimeSpan ct( (long)(dwOddTime / 1000.0f) );		// 남은시간을 초단위로 변환해서 넘겨줌
-				CString strTemp;
-				strTemp.Format( "%.1d:%.2d:%.2d ", ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );
-				string += strTemp;
-				if( k + 1 != nExpCount )
-					string += "/ ";
-			}
-		}
-		else
-		{
-			if( pItem->dwItemKind3 == IK3_ANGEL_BUFF )
-			{
-				string.Format( prj.GetText( TID_GAME_TIP_ANGEL_PLAIN ) );	
-			}
-			else
-			if( pItem->dwItemKind2 == IK2_BUFF2 )
-			{
-				time_t	t = (time_t)pSkill->dwLevel - time_null();
-				if( t < 0 )
-					t	= 0;
-				CTimeSpan ts( t );
-
-				CString strTemp, str;
-				strTemp.Format( prj.GetText( TID_TOOLTIP_ITEMTIME ) );	// 지속시간 : 
-				str += strTemp;
-				strTemp.Format( " : " );
-				str += strTemp;
-				strTemp.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ts.GetDays()), ts.GetHours(), ts.GetMinutes(), ts.GetSeconds() );	// 지속시간 : 
-				str += strTemp;
-				string	= str;	
-			}
-#ifdef __SYS_TICKET
-			else
-			if( pItem->dwItemKind3 == IK3_TICKET )
-			{
-				CItemElem* pTicket	= g_pPlayer->GetTicket();
-				CString str;
-				if( pTicket )
-				{
-					time_t t	= pTicket->m_dwKeepTime - time_null();
-					if( t > 0 )
-					{
-						CTimeSpan time( t );
-						str.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes(), time.GetSeconds() );
-					}
-					string	= str + prj.GetText( TID_TOOLTIP_PERIOD );
-				}
-				else
-				{
-					string	= "";
-				}
-			}
-#endif	// __SYS_TICKET
-			else if( pItem->dwID == II_SYS_SYS_SCR_PET_FEED_POCKET )
-			{
-				//검색해서 활성화 된 먹이 주머니를 찾는다.
-				CItemElem* ptr;
-				CItemElem* pItemElem = NULL;
-
-				int nMax = g_pPlayer->m_Inventory.GetMax();
-				for( int i = 0 ; i < nMax; i++ )
-				{
-					ptr	= g_pPlayer->m_Inventory.GetAtId( i );
-					if( IsUsableItem( ptr ) && ptr->m_dwItemId == II_SYS_SYS_SCR_PET_FEED_POCKET &&
-						ptr->m_dwKeepTime > 0 && !ptr->IsFlag( CItemElem::expired ) )	// 활성화한 먹이 주머니일 경우
-					{						
-						pItemElem = ptr;
-						i = nMax;
-					}
-				}
-
-				if(pItemElem != NULL)
-				{
-					CString strTemp;
-					//사용 제한 시한
-					time_t t = pItemElem->m_dwKeepTime - time_null();
-//					if( pItemElem->m_dwKeepTime && !pItemElem->IsFlag( CItemElem::expired ) )
-					{
-						if( t > 0 )
-						{
-							CTimeSpan ct( t );
-							string.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );
-						}
-					}
-				}
-			}
-			else
-			{
-				DWORD dwOddTime = pSkill->tmCount - (g_tmCurrent - pSkill->tmTime);
-				CTimeSpan ct( (dwOddTime / 1000 ) );		// 남은시간을 초단위로 변환해서 넘겨줌
-				string	= prj.GetText( TID_TOOLTIP_DATE );
-				string.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>( ct.GetDays() ), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );
-			}
-		}
-
-		p2DRender->TextOut( x + 40, pPoint->y + 18, string, dwColor );
-		
-		pPoint->y += m_nFontHeight;// + 3;
-		m_dwDraw[m_nMaxDraw] = pItem->dwID;
-		++m_nMaxDraw;
-
-		if( dwSkillID == II_SYS_SYS_SCR_AMPESA )
-			bExpRander[0] = FALSE;
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESB )
-			bExpRander[1] = FALSE;
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESC )
-			bExpRander[2] = FALSE;
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESD )
-			bExpRander[3] = FALSE;
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESE )
-			bExpRander[4] = FALSE;
-#ifdef __S_ADD_EXP
-		else if( dwSkillID == II_SYS_SYS_SCR_AMPESS )
-			bExpRander[5] = FALSE;
-#endif // __S_ADD_EXP
-	}
-//}}AFX
-#endif	// __BUFF_1107
 }
 
 void CWndCommItemCtrl::OnDraw( C2DRender* p2DRender ) 
@@ -1025,21 +723,7 @@ void CWndCommItemCtrl::OnSize( UINT nType, int cx, int cy )
 		}
 	}
 
-#ifdef __BUFF_1107
 	nCount	+= g_pPlayer->m_buffs.GetCommercialCount();
-#else	// __BUFF_1107
-	SKILLINFLUENCE* pSkill;
-	for( k=0 ; k<MAX_SKILLINFLUENCE; ++k )
-	{
-		pSkill = g_pPlayer->m_SkillState.Get(k);
-		if( pSkill->wID == 0 || pSkill->wType == BUFF_SKILL )	
-			continue;
-		
-		pItem = prj.GetItemProp( pSkill->wID );
-		if( pItem->bCharged )
-			++nCount;
-	}
-#endif	// __BUFF_1107
 
 	nRange = nCount;//m_pItemContainer->m_dwIndexNum;// - nPage;
 	m_wndScrollBar.SetScrollRange( 0, nRange );
@@ -1071,21 +755,7 @@ void CWndCommItemCtrl::PaintFrame( C2DRender* p2DRender )
 				++nCount;
 			}
 		}
-#ifdef __BUFF_1107
 		nCount	+= g_pPlayer->m_buffs.GetCommercialCount();
-#else	// __BUFF_1107
-		SKILLINFLUENCE* pSkill;
-		for( k=0 ; k<MAX_SKILLINFLUENCE; ++k )
-		{
-			pSkill = g_pPlayer->m_SkillState.Get(k);
-			if( pSkill->wID == 0 || pSkill->wType == BUFF_SKILL )	
-				continue;
-			
-			pItem = prj.GetItemProp( pSkill->wID );
-			if( pItem->bCharged )
-				++nCount;
-		}
-#endif	// __BUFF_1107
 		nRange = nCount;
 	}
 	m_wndScrollBar.SetScrollRange( 0, nRange );

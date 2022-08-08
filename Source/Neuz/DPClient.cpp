@@ -3767,11 +3767,7 @@ void CDPClient::OnAddPartyMember( CAr & ar )
 			g_WndMng.PutString( prj.GetText(TID_GAME_PARTYDESTROY), NULL, prj.GetTextColor(TID_GAME_PARTYDESTROY) );
 
 		CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-#ifdef __BUFF_1107	//
 		pWndWorld->m_buffs.Clear();
-#else	// __BUFF_1107
-		pWndWorld->m_partySkillState.Init();
-#endif	// __BUFF_1107
 	}
 
 	if( !g_Party.IsLeader( uLeaderId ) )
@@ -4391,11 +4387,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 		if( bOnOff )
 		{
 			CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-		#ifdef __BUFF_1107
 			pWndWorld->m_buffs.AddBuff( BUFF_SKILL, (WORD)( pItemProp->dwID ), 1, dwSkillTime );
-		#else	// __BUFF_1107
-			pWndWorld->m_partySkillState.Set( BUFF_SKILL, (WORD)( pItemProp->dwID ), 1, dwSkillTime );
-		#endif	// __BUFF_1107
 			str.Format( prj.GetText( TID_GAME_TROUPESKILLUSE ), pItemProp->szName );
 			g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_TROUPESKILLUSE ) );
 		}
