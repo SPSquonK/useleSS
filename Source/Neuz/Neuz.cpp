@@ -1416,7 +1416,7 @@ bool CNeuzApp::KillWindow(int wParam) {
 		if (wParam == VK_RETURN) {
 			pWndStateConfirm->SendYes();
 		} else if (wParam == VK_ESCAPE) {
-			pWndStateConfirm->Destroy();
+			pWndStateConfirm->CloseTheWindow();
 		}
 
 		return true;

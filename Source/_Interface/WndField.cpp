@@ -3508,66 +3508,50 @@ BOOL CWndCharacter::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-void CWndStateConfirm::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
+void CWndStateConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
 	CString strMessage = prj.GetText(TID_GAME_CHARSTATUS_APPLY_Q);
 
-
-	// 1�� �������� Ȯ��
-	if( g_pPlayer->IsBaseJob() )
-	{
-		// �����?
+	if (g_pPlayer->IsBaseJob()) {
 		strMessage += '\n';
 		strMessage += prj.GetText(TID_DIAG_0082);
 	}
 
-	CWndText * pWndText = (CWndText *)GetDlgItem(WIDC_TEXT1);
-	pWndText->SetString( strMessage );
-	pWndText->EnableWindow( FALSE );
+	CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT1);
+	pWndText->SetString(strMessage);
+	pWndText->EnableWindow(FALSE);
 
-	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-} 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndStateConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_STATE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
 
-BOOL CWndStateConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{
-	if( nID == WIDC_YES )
-	{
-		CWndCharacter* pWndBase = (CWndCharacter*)g_WndMng.GetWndBase( APP_CHARACTER3 );
-		if( pWndBase )
-		{
-			CWndCharInfo* pInfo = &pWndBase->m_wndCharInfo;
-			if( pInfo )
-			{
-				g_DPlay.SendModifyStatus(pInfo->m_nStrCount, pInfo->m_nStaCount, pInfo->m_nDexCount, pInfo->m_nIntCount);
-				pInfo->m_nStrCount = pInfo->m_nStaCount = pInfo->m_nDexCount = pInfo->m_nIntCount = 0;
-				pInfo->RefreshStatPoint();
-				Destroy();
-			}
-		}
+BOOL CWndStateConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_STATE_CONFIRM, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndStateConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_YES) {
+		SendYes();
+	} else if (nID == WIDC_NO || nID == WTBID_CLOSE) {
+		CloseTheWindow();
 	}
-	else if( nID == WIDC_NO || nID == WTBID_CLOSE )
-	{
-		CWndCharacter * pWndBase	= g_WndMng.GetWndBase<CWndCharacter>( APP_CHARACTER3 );
-		if( pWndBase ) 
-		{
-			pWndBase->m_wndCharInfo.m_fWaitingConfirm = FALSE;
-		}
-		Destroy();
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
 void CWndStateConfirm::SendYes() {
+	if (CWndCharacter * pWndBase = g_WndMng.GetWndBase<CWndCharacter>(APP_CHARACTER3)) {
+		CWndCharInfo * pInfo = &pWndBase->m_wndCharInfo;
+		g_DPlay.SendModifyStatus(pInfo->m_nStrCount, pInfo->m_nStaCount, pInfo->m_nDexCount, pInfo->m_nIntCount);
+		pInfo->m_nStrCount = pInfo->m_nStaCount = pInfo->m_nDexCount = pInfo->m_nIntCount = 0;
+		pInfo->RefreshStatPoint();
+	}
+	Destroy();
+}
 
+void CWndStateConfirm::CloseTheWindow() {
+	if (CWndCharacter * pWndBase = g_WndMng.GetWndBase<CWndCharacter>(APP_CHARACTER3)) {
+		pWndBase->m_wndCharInfo.m_fWaitingConfirm = FALSE;
+	}
 	Destroy();
 }
 

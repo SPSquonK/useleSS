@@ -249,6 +249,7 @@ public:
 	void OnInitialUpdate() override;
 
 	void SendYes();
+	void CloseTheWindow();
 };
 
 class CWndChangeJob : public CWndNeuz
