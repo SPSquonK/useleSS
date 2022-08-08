@@ -958,6 +958,8 @@ void CUser::AddSetExperience( EXPINTEGER nExp1, WORD wLevel, int nSkillPoint, in
 {
 	if( IsDelete() )	return;
 
+	// TODO: remove all the parameter as we are sending to this their stats...
+
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_SETEXPERIENCE;

@@ -2896,8 +2896,10 @@ void CWndCharInfo::OnInitialUpdate()
 	}
 	int nyAdd2 = 280;
 	int y = 105 + nyAdd2;
-	if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-		m_wndChangeJob.Create( ">", 0, CRect( 130, y, 135+40, y + 13 ), this, 10  ); 
+	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		static constexpr int yJob = 10 + 21 + 15;
+		m_wndChangeJob.Create("E", 0, CRect(175 - 13, yJob + 1, 175, yJob + 1 + 13), this, 10);
+	}
 
 	//SetTexture(m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTile00.tga")), TRUE);
 
@@ -6884,31 +6886,78 @@ CtrlId : WIDC_BUTTON_CANCEL -
 ****************************************************/
 
 BOOL CWndChangeClass1::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
-	if (nID == WIDC_BUTTON_OK || nID == WIDC_BUTTON_OK2 || message == EN_RETURN) {
-		// TODO
-		// if (g_pPlayer->GetJob() == m_currentJobId) {
-		// 	g_WndMng.PutString(TID_GAME_EQUALJOB);
-		// } else {
-		// 	g_DPlay.SendChangeJob(m_currentJobId, FALSE);
-		// 	Destroy();
-		// }
-	} else if (nID == WIDC_BUTTON_CANCEL || nID == WIDC_BUTTON_CANCEL2 || nID == WTBID_CLOSE) {
+	if (nID == WIDC_BUTTON_OK || message == EN_RETURN) {
+		OnSendModifiedJob();
+	} else if (nID == WIDC_BUTTON_CANCEL || nID == WTBID_CLOSE) {
 		Destroy();
-	} else {
-		// TODO (listbox change)
+	} else if (nID == WIDC_LISTBOX) {
+		OnModifiedJob();
 	}
 
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
+#include <algorithm>
+
 void CWndChangeClass1::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
-	// TODO
+	
+	auto & jobList = ReplaceListBox<JobId, JobDisplayer>(WIDC_LISTBOX);
+
+	const auto currentJob = g_pPlayer->GetJob();
+	const auto currentJobType = prj.jobs.info[g_pPlayer->GetJob()].dwJobType;
+
+	for (int i = 0; i != MAX_JOB; ++i) {
+		if (!m_usedScroll || currentJobType == prj.jobs.info[i].dwJobType) {
+			jobList.Add(i, currentJob != i);
+		}
+	}
+
+	if (jobList.GetSize() >= 3) {
+		const size_t numberOfDisplay = std::clamp<size_t>(jobList.GetSize(), 3lu, 10lu);
+		
+		CRect jobRect = jobList.GetWndRect();
+		const int originalHeight = jobRect.Height();
+		const int size = static_cast<int>((numberOfDisplay - 3) * jobList.GetLineHeight()) + originalHeight;
+		const int diff = size - originalHeight;
+
+		jobRect.bottom = jobRect.top + size;
+		jobList.SetWndRect(jobRect, TRUE);
+
+		CRect thisRect = GetWindowRect(TRUE);
+		thisRect.bottom += diff;
+		SetWndRect(thisRect);
+
+		for (const UINT buttonId : { WIDC_BUTTON_OK, WIDC_BUTTON_CANCEL }) {
+			CWndBase * button = GetDlgItem(buttonId);
+			CRect rect = button->GetWndRect();
+			button->Move(rect.left, rect.top + diff);
+		}
+	}
+
 	MoveParentCenter();
 }
 
+void CWndChangeClass1::OnSendModifiedJob() {
+	if (CWndJobList * list = GetDlgItem<CWndJobList>(WIDC_LISTBOX)) {
+		const JobId * picked = list->GetCurSelItem();
+		if (picked) {
+			g_DPlay.SendPacket<PACKETTYPE_SEND_TO_SERVER_CHANGEJOB, int, std::optional<OBJID>>(*picked, m_usedScroll);
+		}
+	}
+	
+	Destroy();
+}
+
 void CWndChangeClass1::OnModifiedJob() {
-	// TODO
+	static constexpr auto ToBOOL = [](bool b) -> BOOL { return b ? TRUE : FALSE; };
+
+	if (CWndJobList * list = GetDlgItem<CWndJobList>(WIDC_LISTBOX)) {
+		const JobId * picked = list->GetCurSelItem();
+		
+		CWndButton * button = GetDlgItem<CWndButton>(WIDC_BUTTON_OK);
+		button->EnableWindow(ToBOOL(picked && *picked != g_pPlayer->GetJob()));
+	}
 }
 
 BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent, DWORD) {
@@ -6917,13 +6966,29 @@ BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent, DWORD) {
 
 void CWndChangeClass1::OpenWindow(std::optional<OBJID> scrollPos) {
 	SAFE_DELETE(g_WndMng.m_pWndChangeClass1);
-	g_WndMng.m_pWndChangeClass1 = new CWndChangeClass1();
+	g_WndMng.m_pWndChangeClass1 = new CWndChangeClass1(scrollPos);
 	g_WndMng.m_pWndChangeClass1->Initialize();
-	g_WndMng.m_pWndChangeClass1->m_usedScroll = scrollPos;
-
-	// TODO
-
 }
+
+void CWndChangeClass1::JobDisplayer::Render(
+	C2DRender * const p2DRender, CRect rect,
+	const CWndChangeClass1::JobId & item, DWORD color, const WndTListBox::DisplayArgs & misc
+) const {
+	if (prj.jobs.info[item].dwJobType != JTYPE_MASTER && prj.jobs.info[item].dwJobType != JTYPE_HERO) {
+		p2DRender->TextOut(rect.left, rect.top, prj.jobs.info[item].szName, color);
+	} else {
+		TCHAR jobName[64];
+		std::strcpy(jobName, prj.jobs.info[item].szName);
+		std::strcat(jobName, " ");
+		if (prj.jobs.info[item].dwJobType == JTYPE_MASTER) {
+			std::strcat(jobName, "[M]");
+		} else {
+			std::strcat(jobName, "[H]");
+		}
+		p2DRender->TextOut(rect.left, rect.top, jobName, color);
+	}
+}
+
 
 
 void CWndInventory::RunUpgrade( CItemElem * pItem )

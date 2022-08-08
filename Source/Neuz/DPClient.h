@@ -200,7 +200,6 @@ public:
 		
 	void	SendIncJobLevel( CHAR chID );
 	void	SendExp( EXPINTEGER nExp );
-	void	SendChangeJob( int nJob, BOOL bGama = TRUE );
 
 	void	SendOpenBankWnd( DWORD dwId, DWORD dwItemId );
 	

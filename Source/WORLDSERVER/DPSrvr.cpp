@@ -4012,9 +4012,36 @@ void CDPSrvr::OnExpUp(CAr & ar, CUser & pUser) {
 	pUser.EarnExperience(nExp, true, true);
 }
 
-void	CDPSrvr::OnChangeJob( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-// TODO: remove this function
+void CDPSrvr::OnChangeJob(CAr & ar, CUser & pUser) {
+	const auto [wantedJob, scroll] = ar.Extract<int, std::optional<OBJID>>();
+
+	if (wantedJob < 0 || wantedJob >= MAX_JOB) return;
+
+	CItemElem * itemScroll = nullptr;
+
+	if (scroll) {
+		pUser.AddText("Change job scroll is not yet implemented.");
+		return;
+
+		// Check if right scroll
+		// Check if usable
+		// Check if out of combat / trade
+		// Check if no incompatible item is equiped
+		// Check if did not pick Pupeeteer etc
+	} else {
+		if (!pUser.IsAuthHigher(AUTH_GAMEMASTER)) {
+			return;
+		}
+	}
+
+	const auto exp = pUser.GetExp1();
+	pUser.InitLevel(wantedJob, pUser.GetLevel());
+	pUser.SetExperience(pUser.GetExp1(), pUser.GetLevel());
+	pUser.AddSetExperience(pUser.GetExp1(), pUser.GetLevel(), pUser.m_nSkillPoint, pUser.m_nSkillLevel);
+
+	if (itemScroll) {
+		// TODO: remove scroll
+	}
 }
 
 void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCount )

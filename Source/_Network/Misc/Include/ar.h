@@ -3,6 +3,7 @@
 #include "FlyFFTypes.h"
 #include "StaticString.h"
 #include <boost/container/static_vector.hpp>
+#include <optional>
 #include <variant>
 
 namespace ArHelper {
@@ -91,6 +92,9 @@ public:
 	
 	template<sqktd::EmptyArchivable EmptyArchivable> CAr & operator<<(const EmptyArchivable & e) { return *this; }
 	template<sqktd::EmptyArchivable EmptyArchivable> CAr & operator>>(EmptyArchivable & e) { return *this; }
+
+	template<typename T> CAr & operator<<(const std::optional<T> & opt);
+	template<typename T> CAr & operator>>(      std::optional<T> & opt);
 
 public:
 	/** Push into the archiver each passed value */
@@ -368,6 +372,26 @@ CAr & CAr::operator>>(boost::container::static_vector<T, N> & values) {
 	for (size_t i = 0; i != size; ++i) {
 		*this >> value;
 		values.push_back(value);
+	}
+	return *this;
+}
+
+
+template<typename T> CAr & CAr::operator<<(const std::optional<T> & opt) {
+	if (opt.has_value()) {
+		*this << true << opt.value();
+	} else {
+		*this << false;
+	}
+	return *this;
+}
+
+template<typename T> CAr & CAr::operator>>(std::optional<T> & opt) {
+	bool hasValue; *this >> hasValue;
+
+	if (hasValue) {
+		opt.emplace();
+		*this >> opt;
 	}
 	return *this;
 }

@@ -670,6 +670,15 @@ private:
 	std::optional<OBJID> m_usedScroll = std::nullopt;
 
 public:
+	using JobId = int;
+	struct JobDisplayer {
+		void Render(
+			C2DRender * const p2DRender, CRect rect,
+			const JobId & item, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+	using CWndJobList = CWndTListBox<JobId, JobDisplayer>;
+
 	static void OpenWindow(std::optional<OBJID> scrollPos);
 
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
@@ -677,7 +686,9 @@ public:
 	void OnInitialUpdate() override;
 
 private:
-	CWndChangeClass1() = default;
+	CWndChangeClass1(std::optional<OBJID> scrollPos) : m_usedScroll(scrollPos) {}
+	
+	void OnSendModifiedJob();
 	void OnModifiedJob();
 };
 

@@ -26,7 +26,7 @@ Build a `Displayer` class with the `Render` method.
 struct Displayer {
     void Render(
         C2DRender * const p2DRender, CRect rect,
-        const Item & item, DWORD color, WndTListBox::DisplayArgs & misc
+        const Item & item, DWORD color, const WndTListBox::DisplayArgs & misc
     ) const;
 };
 ```

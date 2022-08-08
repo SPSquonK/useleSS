@@ -8227,14 +8227,6 @@ void CDPClient::SendExp( EXPINTEGER nExp )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendChangeJob( int nJob, BOOL bGama )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SEND_TO_SERVER_CHANGEJOB, DPID_UNKNOWN );
-	ar << nJob;
-	ar << bGama;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendCorrReq( CObj *pObj )
 {
 	CMover *pMover = NULL;
