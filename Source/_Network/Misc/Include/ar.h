@@ -391,7 +391,7 @@ template<typename T> CAr & CAr::operator>>(std::optional<T> & opt) {
 
 	if (hasValue) {
 		opt.emplace();
-		*this >> opt;
+		*this >> *opt;
 	}
 	return *this;
 }

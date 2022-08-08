@@ -4016,18 +4016,41 @@ void CDPSrvr::OnChangeJob(CAr & ar, CUser & pUser) {
 	const auto [wantedJob, scroll] = ar.Extract<int, std::optional<OBJID>>();
 
 	if (wantedJob < 0 || wantedJob >= MAX_JOB) return;
+	if (wantedJob == JOB_PUPPETEER || wantedJob == JOB_DOPPLER || wantedJob == JOB_GATEKEEPER) return;
 
 	CItemElem * itemScroll = nullptr;
 
 	if (scroll) {
-		pUser.AddText("Change job scroll is not yet implemented.");
-		return;
+		itemScroll = pUser.GetItemId(scroll.value());
+		if (!itemScroll) return;
+		if (!IsUsableItem(itemScroll)) return;
+		if (itemScroll->m_dwItemId != II_SYS_SYS_SCR_CHACLA) return;
 
-		// Check if right scroll
-		// Check if usable
-		// Check if out of combat / trade
-		// Check if no incompatible item is equiped
-		// Check if did not pick Pupeeteer etc
+		// TODO: not in guildwar /* send */
+
+		// TODO: send messages for legit reasons
+		if (CItemUpgrade::IsInTrade(pUser)) return /* send */;
+		if (pUser.IsAttackMode()) return /* send */;
+
+		const auto currentJobType = prj.jobs.info[pUser.GetJob()].dwJobType;
+		const auto wantedJobType = prj.jobs.info[wantedJob].dwJobType;
+		if (currentJobType != wantedJobType) return;
+		
+		boost::container::small_vector<const ItemProp *, MAX_HUMAN_PARTS> badItems;
+		for (int i = 0; i != MAX_HUMAN_PARTS; ++i) {
+			const CItemElem * const equip = pUser.GetEquipItem(i);
+			if (!equip) continue;
+
+			const ItemProp * const prop = equip->GetProp();
+			if (!prop) continue;
+
+			const auto itemJob = prop->dwItemJob;
+			if (!CMover::IsInteriorityJob(itemJob, wantedJob)) {
+				badItems.push_back(prop);
+			}
+		}
+
+		if (!badItems.empty()) return /* send */;
 	} else {
 		if (!pUser.IsAuthHigher(AUTH_GAMEMASTER)) {
 			return;
@@ -4040,7 +4063,9 @@ void CDPSrvr::OnChangeJob(CAr & ar, CUser & pUser) {
 	pUser.AddSetExperience(pUser.GetExp1(), pUser.GetLevel(), pUser.m_nSkillPoint, pUser.m_nSkillLevel);
 
 	if (itemScroll) {
-		// TODO: remove scroll
+		pUser.RemoveItem(itemScroll->m_dwObjId, 1);
+
+		// TODO: log scroll usage
 	}
 }
 

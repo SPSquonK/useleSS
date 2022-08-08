@@ -2003,7 +2003,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 									SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 									g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
 									g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
-									g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_WARNINGCCLS, pProp->dwID, pProp->dwID );
+									g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_WARNINGCCLS, pProp->dwID, pFocusItem->m_dwObjId);
 									bAble = FALSE;
 								}
 							}
@@ -6799,69 +6799,50 @@ BOOL CWndResurrectionConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pL
   CtrlId : WIDC_BUTTON_OK - Button
 ****************************************************/
 
-void CWndCommItemDlg::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	m_pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT_COMMUSE );
-	if( m_pWndEdit )
-		m_pWndEdit->EnableWindow( FALSE );
+void CWndCommItemDlg::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
-	// ������ �߾����� �ű��? �κ�.
+	m_pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT_COMMUSE);
+	if (m_pWndEdit)  m_pWndEdit->EnableWindow(FALSE);
+
 	MoveParentCenter();
 }
+
 void CWndCommItemDlg::SetItem( DWORD dwDefindText, DWORD dwObjId, DWORD dwCtrlId )
 {
 	m_pWndEdit->AddString( prj.GetText( dwDefindText ) );
 	m_dwObjId = dwObjId;
 	m_dwCtrlId = dwCtrlId;
 } 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndCommItemDlg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_COMMITEM_DIALOG, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+
+BOOL CWndCommItemDlg::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_COMMITEM_DIALOG, pWndParent, 0, CPoint(0, 0));
+}
 
 BOOL CWndCommItemDlg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON_OK || message == EN_RETURN )
 	{
-		if( g_WndMng.GetWndBase( APP_SHOP_ )  ||
-			g_WndMng.GetWndBase( APP_BANK )  ||
-			g_WndMng.GetWndBase( APP_TRADE ) )
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
-		}
-		else
-		if( g_WndMng.GetWndBase( APP_REPAIR ) )
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
-		}
-		else
-		{
-			if( m_dwObjId == II_SYS_SYS_SCR_CHACLA )
-			{
-				CWndChangeClass1::OpenWindow(m_dwObjId);
-			}
-			else if( m_dwCtrlId == II_SYS_SYS_SCR_PET_TAMER_MISTAKE )
-			{
+		if (Windows::IsOpen(APP_SHOP_, APP_BANK, APP_TRADE)) {
+			g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
+		} else if (Windows::IsOpen(APP_REPAIR)) {
+			g_WndMng.PutString(prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING));
+		} else {
+
+			if (m_dwObjId == II_SYS_SYS_SCR_CHACLA) {
+				CWndChangeClass1::OpenWindow(m_dwCtrlId);
+			} else if (m_dwCtrlId == II_SYS_SYS_SCR_PET_TAMER_MISTAKE) {
 				g_DPlay.SendPetTamerMistake(m_dwObjId);
-			}
-			else
-			{
-#ifdef __AZRIA_1023
+			} else {
+
 				CItemElem * pItem = g_pPlayer->GetItemId(m_dwObjId);
-				if( pItem )
-				{
-					if( pItem->GetProp()->dwItemKind3 == IK3_TICKET )	// +
-						g_DPlay.SendDoUseItemInput( MAKELONG( ITYPE_ITEM, m_dwObjId ), "0" );
-					else	
-						g_DPlay.SendDoUseItem( MAKELONG( ITYPE_ITEM, m_dwObjId ), m_dwCtrlId, -1, FALSE );
+				if (pItem) {
+					if (pItem->GetProp()->dwItemKind3 == IK3_TICKET)	// +
+						g_DPlay.SendDoUseItemInput(MAKELONG(ITYPE_ITEM, m_dwObjId), "0");
+					else
+						g_DPlay.SendDoUseItem(MAKELONG(ITYPE_ITEM, m_dwObjId), m_dwCtrlId, -1, FALSE);
 				}
-#else	// __AZRIA_1023
-				g_DPlay.SendDoUseItem( MAKELONG( ITYPE_ITEM, m_dwObjId ), m_dwCtrlId, -1, FALSE );
-#endif	// __AZRIA_1023
+
 			}
 		}
 		Destroy();
@@ -6908,6 +6889,8 @@ void CWndChangeClass1::OnInitialUpdate() {
 	const auto currentJobType = prj.jobs.info[g_pPlayer->GetJob()].dwJobType;
 
 	for (int i = 0; i != MAX_JOB; ++i) {
+		if (i == JOB_PUPPETEER || i == JOB_DOPPLER || i == JOB_GATEKEEPER) continue;
+
 		if (!m_usedScroll || currentJobType == prj.jobs.info[i].dwJobType) {
 			jobList.Add(i, currentJob != i);
 		}
