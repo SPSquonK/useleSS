@@ -9,7 +9,8 @@ Some v22 resource compatiblity have been added. See [Documentation/v15plus.md](D
 
 This source is developped on Visual Studio 2022 with the C++lastest option.
 C++latest is used instead of C++20 because MSVC doesn't have range support
-with the C++20 option for some reasons.
+with the C++20 option for some reasons. A recent version of C++ is used because I want to improve in modern
+C++, and it is dumb to not use it in a project that does not have any restriction that goes against it.
 
 
 ## Getting started
@@ -22,6 +23,7 @@ with the C++20 option for some reasons.
     - ODBC source `useless_character` = table `USELESS_CHARACTER_01_DBF`
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
     - You can create `useless_ranking` but IFAIK, it is never used.
+    - Database.sql script might be glitchy. See #39
 
 ## Dependencies
 
