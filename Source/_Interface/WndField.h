@@ -1392,46 +1392,6 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 }; 
 
-
-#include "WndWorld.h"
-
-class CWndBuffStatus : public CWndNeuz 
-{
-public:
-	std::vector< std::multimap<DWORD, BUFFSKILL> > m_pBuffTexture;
-	size_t m_lastSeenSize = 0;
-
-	bool m_verticalDisplay;
-public:
-	CWndBuffStatus(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnRButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
-	virtual void OnRButtonDblClk( UINT nFlags, CPoint point );
-	virtual void OnMouseWndSurface( CPoint point );
-	virtual	void PaintFrame( C2DRender* p2DRender );
-
-	void RenderBuffIcon(C2DRender * p2DRender, IBuff * pBuff, CPoint buffPosition, CPoint ptMouse);
-	void RenderOptBuffTime(C2DRender *p2DRender, const CPoint& point, DWORD timeLeft, DWORD dwColor );
-	void SetBuffIconInfo(bool force);
-	[[nodiscard]] bool GetHitTestResult() /* const */;
-
-	class CPointGenerator {
-	private:
-		int m_verticalAlign;
-		CPoint m_point;
-
-	public:
-		explicit CPointGenerator(bool verticalAlign) : m_verticalAlign(verticalAlign) {}
-		CPoint Next();
-	};
-};
-
 /*******************************
 	제련 시스템 관련 Window
 ********************************/
