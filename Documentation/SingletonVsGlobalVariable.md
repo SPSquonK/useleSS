@@ -1,7 +1,7 @@
 # Singleton vs Global Variable
 
 
-Singleton:
+## Singleton
 
 ```cpp
 // .h
@@ -11,7 +11,7 @@ struct MyClass {
 ```
 
 
-Global Variable:
+## Global Variable
 
 ```cpp
 // .h
@@ -23,7 +23,7 @@ extern MyClass g_MyClass;
 ```
 
 
-I prefer a global variables:
+## I prefer a global variables
 
 - Singleton is a cute way to have a global variable in Java (you can't have any "real" global variable)
 - `MyClass::GetInstance()` is longer than `g_MyClass`
@@ -39,4 +39,22 @@ possible to have multiple instances if required. Note that this point is very mi
 Unlike what FlyFF developers have been doing, I prefer to put a single extern in the header. This is to limit the
 number of times where the `extern MyClass g_MyClass` is repeated: if I'm including the header in which there is
 a class used as a global variable, I will probably use `g_MyClass` anyway.
+
+## The best of both worlds?
+
+```cpp
+// .h
+class MyClass {
+    MyClass & Instance;
+};
+
+// .cpp
+static MyClass s_MyClassInstance;
+MyClass & MyClass::Instance = s_MyClassInstance;
+```
+
+- Global instance is easy to find (`NameOfTheClass::Instance`).
+- But I don't know how to compiles. Is this pattern slower than `extern MyClass g_myClass;`?
+
+
 
