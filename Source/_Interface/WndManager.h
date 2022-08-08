@@ -10,7 +10,6 @@
 #include "WndGuildWarRequest.h"
 #include "WndUpgradebase.h"
 #include "WndCommItem.h"
-#include "WndPvp.h"
 
 #include "WndPiercing.h"
 
@@ -257,7 +256,6 @@ namespace WndMgr {
 		CWndConfirmBank * m_pWndConfirmBank = nullptr;
 		CWndBankPassword * m_pWndBankPassword = nullptr;
 
-		CWndPenaltyPK * m_pWndPenaltyPK = nullptr;
 		CWndRankGuild * m_pWndRankGuild = nullptr;
 		CWndRankInfo * m_pWndRankInfo = nullptr;
 		CWndRankWar * m_pWndRankWar = nullptr;

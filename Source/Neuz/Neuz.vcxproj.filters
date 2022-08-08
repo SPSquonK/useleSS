@@ -388,9 +388,6 @@
     <ClCompile Include="..\_Interface\WndPetSys.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndPvp.cpp">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndQuestQuickInfo.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
@@ -1258,9 +1255,6 @@
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndPetSys.h">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndPvp.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndQuestQuickInfo.h">

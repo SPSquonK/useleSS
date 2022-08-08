@@ -1752,7 +1752,6 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 		{
 			pMover->GetWorld()->SetObjFocus( NULL );
 			SAFE_DELETE( g_WndMng.m_pWndDuelConfirm );
-			SAFE_DELETE( g_WndMng.m_pWndPenaltyPK );
 			( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( NULL_ID );
 		}
 		else if( pAttacker && g_pPlayer == pAttacker )

@@ -13,7 +13,6 @@
 #include "WndCommItem.h"
 #include "WndQuest.h"
 #include "WndMotion.h"
-#include "WndPvp.h"
 #include "WndGuildVote.h"
 #ifdef __IMPROVE_MAP_SYSTEM
 #include "WndMapEx.h"

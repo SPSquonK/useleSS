@@ -288,8 +288,6 @@
     </ClCompile>
     <ClCompile Include="..\_Interface\WndPetSys.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndPvp.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndQuestQuickInfo.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRainbowRace.cpp">
@@ -772,7 +770,6 @@
     <ClInclude Include="..\_Interface\WndParty.h" />
     <ClInclude Include="..\_Interface\WndPetRes.h" />
     <ClInclude Include="..\_Interface\WndPetSys.h" />
-    <ClInclude Include="..\_Interface\WndPvp.h" />
     <ClInclude Include="..\_Interface\WndQuestQuickInfo.h" />
     <ClInclude Include="..\_Interface\WndRainbowRace.h" />
     <ClInclude Include="..\_Interface\WndRepairItem.h" />
