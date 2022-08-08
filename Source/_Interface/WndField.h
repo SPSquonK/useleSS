@@ -257,9 +257,8 @@ class CWndCharInfo : public CWndBase
 
 public:
 	CWndButton		m_wndChangeJob;
-	BOOL			m_fWaitingConfirm;
-	BOOL			m_bExpert;
-	int				m_nDisplay;
+	BOOL			m_fWaitingConfirm = FALSE;
+	int				m_nDisplay = 1;
 
 	CWndButton m_wndStrPlus, m_wndStrMinus;
 	CWndButton m_wndStaPlus, m_wndStaMinus;
@@ -273,21 +272,20 @@ public:
 	CWndEdit m_editDexCount;
 	CWndEdit m_editIntCount;
 
-	int m_nStrCount;
-	int m_nStaCount;
-	int m_nDexCount;
-	int m_nIntCount;
+	int m_nStrCount = 0;
+	int m_nStaCount = 0;
+	int m_nDexCount = 0;
+	int m_nIntCount = 0;
 
-	int m_nGpPoint;
+	int m_nGpPoint = 0;
 
-	int m_nATK;
-	int m_nDEF;
-	int m_nCritical;
-	int m_nATKSpeed;
+	int m_nATK = 0;
+	int m_nDEF = 0;
+	int m_nCritical = 0;
+	int m_nATKSpeed = 0;
 
 public:
 
-	CWndCharInfo();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);

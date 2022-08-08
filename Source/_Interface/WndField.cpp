@@ -2358,24 +2358,6 @@ void CWndInventory::InitializeInvenRect(std::array<CRect, MAX_HUMAN_PARTS> & inv
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndCharInfo::CWndCharInfo()
-{
-	m_nStrCount = 0;
-	m_nStaCount = 0;
-	m_nDexCount = 0;
-	m_nIntCount = 0;
-	m_nGpPoint = 0;
-
-	m_nATK = 0;
-	m_nDEF = 0;
-	m_nCritical = 0;
-	m_nATKSpeed = 0;
-
-	m_bExpert = FALSE;
-	m_fWaitingConfirm	= FALSE;
-	m_nDisplay = 1;
-
-}
 
 void CWndCharInfo::OnDraw(C2DRender* p2DRender)
 {
@@ -2394,8 +2376,7 @@ void CWndCharInfo::OnDraw(C2DRender* p2DRender)
 	y = 13;
 	p2DRender->TextOut( 60, y, prj.GetText((TID_APP_CHARACTER_BASE)), dwColor );
 	y = 10 + nyAdd3;
-	if( TRUE ) //::GetLanguage() == LANG_JAP )
-	{
+
 		p2DRender->TextOut( 80, y, g_pPlayer->GetName()       , dwColor); y += nNext;
 		p2DRender->TextOut( 80, y, g_pPlayer->GetJobString()  , dwColor ); y += nNext;
 		ypos = y;
@@ -2411,25 +2392,7 @@ void CWndCharInfo::OnDraw(C2DRender* p2DRender)
 			p2DRender->TextOut( 80, y, g_pPlayer->GetLevel()      , dwColor ); y += nNext;
 
 		y = 81+ nyAdd3;
-	}
-	else
-	{
-		p2DRender->TextOut( 50, y, g_pPlayer->GetName()       , dwColor); y += nNext;
-		p2DRender->TextOut( 50, y, g_pPlayer->GetJobString()  , dwColor ); y += nNext;
-		ypos = y;
-		if(checkhero == LEGEND_CLASS_MASTER)
-		{
-			if(g_pPlayer->GetLevel() < 100)
-				xpos = 67;
-			else
-				xpos = 73;
-		}
-		if(checkhero == LEGEND_CLASS_HERO)
-			xpos = 73;
-			p2DRender->TextOut( 50, y, g_pPlayer->GetLevel()      , dwColor ); y += nNext;
-	
-		y = 81 + nyAdd3;
-	}
+
 
 	point.x = xpos;
 	point.y = ypos - 2;
@@ -2484,23 +2447,12 @@ void CWndCharInfo::OnDraw(C2DRender* p2DRender)
 			p2DRender->TextOut(50, y, strServerName, dwColor);
 	}
 
-	/*
-	y = 96;
-	
-	p2DRender->TextOut( 96, y, g_pPlayer->GetFlightLv(), dwColor ); y += nNext;
-	{
-		char szBuff[64];
-		int nMaxFxp = prj.m_aFxpCharacter[ g_pPlayer->GetFlightLv() + 1 ].dwFxp;
-		sprintf( szBuff, "%5.2f%%", (float)g_pPlayer->GetFxp() * 100.0f / (float)nMaxFxp );
-		p2DRender->TextOut( 90, y, szBuff, dwColor ); y += nNext;
-	}
-	*/
 	y = 10+ nyAdd3;
 	dwColor = D3DCOLOR_ARGB(255, 0, 0, 180);
 	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_01), dwColor ); y += nNext;
 	p2DRender->TextOut( 7, y, prj.GetText(TID_APP_CHARACTER_JOB), dwColor ); y += nNext;
 	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_02), dwColor ); y += nNext;
-	//p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_03), dwColor ); y += nNext;
+	
 	//�������� -> ����/ä�� ����
 	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHAR_SERVER), dwColor ); y += nNext;
 	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHAR_SERVERNAME), dwColor ); y += nNext;
@@ -2881,21 +2833,15 @@ void CWndCharInfo::OnInitialUpdate()
 		m_wndChangeJob.Create("E", 0, CRect(175 - 13, yJob + 1, 175, yJob + 1 + 13), this, 10);
 	}
 
-	//SetTexture(m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTile00.tga")), TRUE);
-
 	RefreshStatPoint();
-
-	//FitTextureSize();
 
 	MakeVertexBuffer();
 }
 
 
-BOOL CWndCharInfo::Initialize(CWndBase* pWndParent,DWORD dwWndId)
-{
+BOOL CWndCharInfo::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
 	CRect rect = m_pWndRoot->GetWindowRect();
-	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
-
+	return CWndBase::Create(WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_EXTENSION, rect, pWndParent, dwWndId);
 }
 
 BOOL CWndCharInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
@@ -3368,10 +3314,9 @@ void CWndHonor::RefreshList()
 }
 
 
-BOOL CWndHonor::Initialize( CWndBase* pWndParent,DWORD dwWndId )
-{
-
-	return CWndNeuz::InitDialog( APP_HONOR, pWndParent, 0, CPoint( 0, 0 ) );
+BOOL CWndHonor::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+	// This function is never actually called
+	return CWndNeuz::InitDialog(APP_HONOR, pWndParent, 0, CPoint(0, 0));
 }
 
 
