@@ -147,13 +147,12 @@ public:
   void SetLineHeight(unsigned int lineHeight) { m_lineHeight = lineHeight; }
   void SetLineSpace(unsigned int lineSpace);
   void ChangeSelectColor(DWORD color) { m_selectColor = color; }
+  [[nodiscard]] unsigned int GetLineHeight() const { return m_lineHeight; }
 
 private:
   void PaintListBox(C2DRender * p2DRender);
   ViewedItems UpdateRects();
   bool UpdateRectsNeedUpdate();
-
-  [[nodiscard]] unsigned int GetLineHeight() const { return m_lineHeight; }
 };
 
 template<typename T, typename D>

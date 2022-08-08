@@ -399,7 +399,6 @@ namespace WndMgr {
 		CWndLogOutWaitting * m_pLogOutWaitting = nullptr;
 		CWndCommItemDlg * m_pWndCommItemDlg = nullptr;
 		CWndChangeClass1 * m_pWndChangeClass1 = nullptr;
-		CWndChangeClass2 * m_pWndChangeClass2 = nullptr;
 	};
 
 	/// List of all functions formely in CWndMgr that are used to update the

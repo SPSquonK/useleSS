@@ -252,27 +252,11 @@ public:
 	void CloseTheWindow();
 };
 
-class CWndChangeJob : public CWndNeuz
-{
-public:
-	int m_nJob;
-	CWndButton m_wndExpert[ 6 ];
-	CWndButton m_wndOk;
-	CWndButton m_wndCancel;
-
-	CWndChangeJob( int nJob );
-	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 );
-	// message
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-};
-
 class CWndCharInfo : public CWndBase
 {
 
 public:
 	CWndButton		m_wndChangeJob;
-	CWndChangeJob*	m_pWndChangeJob;
 	BOOL			m_fWaitingConfirm;
 	BOOL			m_bExpert;
 	int				m_nDisplay;
@@ -304,7 +288,6 @@ public:
 public:
 
 	CWndCharInfo();
-	virtual ~CWndCharInfo();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
@@ -682,40 +665,33 @@ public:
 	virtual	void OnInitialUpdate(); 
 }; 
 
-class CWndChangeClassGeneric : public CWndNeuz {
-public:
-	struct PossibleJob {
-		UINT widgetId;
-		int jobId;
-	};
-
+class CWndChangeClass1 : public CWndNeuz {
 private:
-	int m_currentJobId;
-	std::vector<PossibleJob> m_allJobs;
-
-	void OnModifiedJob();
-	
-protected:
-	CWndChangeClassGeneric(std::vector<PossibleJob> allJobs)
-		: m_currentJobId(0), m_allJobs(allJobs) {
-	}
+	std::optional<OBJID> m_usedScroll = std::nullopt;
 
 public:
+	using JobId = int;
+	struct JobDisplayer {
+		void Render(
+			C2DRender * const p2DRender, CRect rect,
+			const JobId & item, DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+	using CWndJobList = CWndTListBox<JobId, JobDisplayer>;
+
+	static void OpenWindow(std::optional<OBJID> scrollPos);
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
+
+private:
+	CWndChangeClass1(std::optional<OBJID> scrollPos) : m_usedScroll(scrollPos) {}
+	
+	void OnSendModifiedJob();
+	void OnModifiedJob();
 };
 
-class CWndChangeClass1 : public CWndChangeClassGeneric {
-public:
-	CWndChangeClass1();
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
-};
-
-class CWndChangeClass2 : public CWndChangeClassGeneric {
-public:
-	CWndChangeClass2();
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
-};
 
 class CWndPostSendConfirm;
 

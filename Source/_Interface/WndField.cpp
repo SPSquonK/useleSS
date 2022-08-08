@@ -1976,38 +1976,18 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //								bAble = FALSE;
 //							}
 //							break;
-						case II_SYS_SYS_SCR_CHACLA:
-							{
-								if( g_pPlayer->IsBaseJob() )
-								{
-									g_WndMng.PutString(TID_GAME_NOTUSEVAG);
-									bAble = FALSE;
-								}
-								else
-								{
-									for( DWORD dwParts = 0; dwParts < MAX_HUMAN_PARTS; dwParts++ )
-									{
-										if( dwParts == PARTS_HEAD || dwParts == PARTS_HAIR || dwParts == PARTS_RIDE )
-											continue;
-										CItemElem* pArmor	= g_pPlayer->m_Inventory.GetEquip( dwParts );
-										if( pArmor )
-										{
-											g_WndMng.PutString(TID_GAME_CHECK_EQUIP);
-											bAble = FALSE;
-										}
-									}
-								}
-
-								if( bAble )
-								{
-									SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
-									g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-									g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
-									g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_WARNINGCCLS, pProp->dwID, pProp->dwID );
-									bAble = FALSE;
-								}
+						case II_SYS_SYS_SCR_CHACLA: {
+							if (g_pPlayer->IsBaseJob()) {
+								g_WndMng.PutString(TID_GAME_NOTUSEVAG);
+							} else {
+								SAFE_DELETE(g_WndMng.m_pWndCommItemDlg);
+								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
+								g_WndMng.m_pWndCommItemDlg->Initialize(&g_WndMng, APP_COMMITEM_DIALOG);
+								g_WndMng.m_pWndCommItemDlg->SetItem(TID_GAME_WARNINGCCLS, pProp->dwID, pFocusItem->m_dwObjId);
+								bAble = FALSE;
 							}
 							break;
+						}
 						}
 					}
 				}
@@ -2392,16 +2372,9 @@ CWndCharInfo::CWndCharInfo()
 	m_nATKSpeed = 0;
 
 	m_bExpert = FALSE;
-	m_pWndChangeJob = NULL;
 	m_fWaitingConfirm	= FALSE;
 	m_nDisplay = 1;
 
-}
-
-
-CWndCharInfo::~CWndCharInfo()
-{
-	SAFE_DELETE(m_pWndChangeJob);
 }
 
 void CWndCharInfo::OnDraw(C2DRender* p2DRender)
@@ -2903,8 +2876,10 @@ void CWndCharInfo::OnInitialUpdate()
 	}
 	int nyAdd2 = 280;
 	int y = 105 + nyAdd2;
-	if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-		m_wndChangeJob.Create( ">", 0, CRect( 130, y, 135+40, y + 13 ), this, 10  ); 
+	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		static constexpr int yJob = 10 + 21 + 15;
+		m_wndChangeJob.Create("E", 0, CRect(175 - 13, yJob + 1, 175, yJob + 1 + 13), this, 10);
+	}
 
 	//SetTexture(m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTile00.tga")), TRUE);
 
@@ -3028,12 +3003,7 @@ BOOL CWndCharInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				}
 			case 10: // ���� 
 				// �������? ������ 15�̻��ΰ��� ã��
-				if( g_pPlayer->GetLevel() >= MAX_JOB_LEVEL )
-				{
-					SAFE_DELETE(m_pWndChangeJob);
-					m_pWndChangeJob = new CWndChangeJob( g_pPlayer->GetJob() ); 
-					m_pWndChangeJob->Initialize( this, 1106 );
-				}
+				CWndChangeClass1::OpenWindow(std::nullopt);
 				break;
 		}
 	}
@@ -3554,89 +3524,6 @@ void CWndStateConfirm::CloseTheWindow() {
 	}
 	Destroy();
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// ����  
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndChangeJob::CWndChangeJob( int nJob ) 
-{ 
-	m_nJob = nJob;
-} 
-
-void CWndChangeJob::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	for( int i  = 0 ; i < 6 ; ++i )
-	{
-		m_wndExpert[ i ].SetFontColor( 0xffffffff );
-	}
-	m_wndOk.SetFontColor( 0xffffffff );
-	m_wndCancel.SetFontColor( 0xffffffff );
-
-	if( m_nJob == 0 )	{
-		m_wndExpert[ 0 ].Create( prj.jobs.info[ MAX_JOBBASE + 0 ].szName, 0, CRect( 10, 10, 230, 35 ), this, 10 );
-		m_wndExpert[ 1 ].Create( prj.jobs.info[ MAX_JOBBASE + 1 ].szName, 0, CRect( 10, 40, 230, 65 ), this, 11 );
-		m_wndExpert[ 2 ].Create( prj.jobs.info[ MAX_JOBBASE + 2 ].szName, 0, CRect( 10, 70, 230, 95 ), this, 12 );
-		m_wndExpert[ 3 ].Create( prj.jobs.info[ MAX_JOBBASE + 3 ].szName, 0, CRect( 10, 100, 230, 125 ), this, 13 );
-		m_wndExpert[ 4 ].Create( prj.jobs.info[ MAX_JOBBASE + 4 ].szName, 0, CRect( 10, 130, 230, 155 ), this, 14 );
-	}
-	else	{
-		// TODO: remove job arithmetic
-		m_wndExpert[ 0 ].Create( prj.jobs.info[ m_nJob * 2 + 4 ].szName, 0, CRect( 10, 10, 230, 35  ), this, 10 ); 
-		m_wndExpert[ 1 ].Create( prj.jobs.info[ m_nJob * 2 + 5 ].szName, 0, CRect( 10, 40, 230, 65  ), this, 11 ); 
-	}
-	m_wndOk.Create( _T( "OK" )  , 0, CRect( 60, 180, 110, 200), this, IDOK ); 
-	m_wndCancel.Create( _T( "Cancel" ) , 0, CRect( 130, 180, 180, 200), this, IDCANCEL ); 
-
-} 
-BOOL CWndChangeJob::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	//SetTitle( _T( "����" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, dwWndId ); 
-} 
-
-BOOL CWndChangeJob::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( message == WNM_CLICKED )
-	{
-		if( 10 <= nID && nID <= 14 )
-		{
-			if( g_pPlayer->IsBaseJob() )
-			{
-				if( 10 == nID || 11 == nID || 12 == nID || 13 == nID )
-				{
-					g_DPlay.SendChangeJob( nID - 9 );
-				}
-				else
-				{
-					g_WndMng.PutString( "Not Change Job" );
-				}
-			}
-			else
-			if( g_pPlayer->IsExpert() )
-			{
-				if( nID == 10 )
-					g_DPlay.SendChangeJob( m_nJob * 2 + 4 );
-				else
-				if( nID == 11 )
-					g_DPlay.SendChangeJob( m_nJob * 2 + 5 );
-			}
-			Destroy();
-		}
-		else
-		{
-			Destroy();
-		}
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
 
 
 
@@ -6892,80 +6779,50 @@ BOOL CWndResurrectionConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pL
   CtrlId : WIDC_BUTTON_OK - Button
 ****************************************************/
 
-void CWndCommItemDlg::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	m_pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT_COMMUSE );
-	if( m_pWndEdit )
-		m_pWndEdit->EnableWindow( FALSE );
+void CWndCommItemDlg::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
-	// ������ �߾����� �ű��? �κ�.
+	m_pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT_COMMUSE);
+	if (m_pWndEdit)  m_pWndEdit->EnableWindow(FALSE);
+
 	MoveParentCenter();
 }
+
 void CWndCommItemDlg::SetItem( DWORD dwDefindText, DWORD dwObjId, DWORD dwCtrlId )
 {
 	m_pWndEdit->AddString( prj.GetText( dwDefindText ) );
 	m_dwObjId = dwObjId;
 	m_dwCtrlId = dwCtrlId;
 } 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndCommItemDlg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_COMMITEM_DIALOG, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+
+BOOL CWndCommItemDlg::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_COMMITEM_DIALOG, pWndParent, 0, CPoint(0, 0));
+}
 
 BOOL CWndCommItemDlg::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON_OK || message == EN_RETURN )
 	{
-		if( g_WndMng.GetWndBase( APP_SHOP_ )  ||
-			g_WndMng.GetWndBase( APP_BANK )  ||
-			g_WndMng.GetWndBase( APP_TRADE ) )
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_TRADELIMITUSING), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
-		}
-		else
-		if( g_WndMng.GetWndBase( APP_REPAIR ) )
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING) );
-		}
-		else
-		{
-			if( m_dwObjId == II_SYS_SYS_SCR_CHACLA )
-			{
-				if( g_pPlayer->IsExpert() )
-				{
-					SAFE_DELETE( g_WndMng.m_pWndChangeClass1 );
-					g_WndMng.m_pWndChangeClass1 = new CWndChangeClass1;
-					g_WndMng.m_pWndChangeClass1->Initialize( &g_WndMng, APP_CHANGECLASS_1 );
-				}
-				else
-				{
-					SAFE_DELETE( g_WndMng.m_pWndChangeClass2 );
-					g_WndMng.m_pWndChangeClass2 = new CWndChangeClass2;
-					g_WndMng.m_pWndChangeClass2->Initialize( &g_WndMng, APP_CHANGECLASS_2 );
-				}
-			}
-			else if( m_dwCtrlId == II_SYS_SYS_SCR_PET_TAMER_MISTAKE )
-			{
+		if (Windows::IsOpen(APP_SHOP_, APP_BANK, APP_TRADE)) {
+			g_WndMng.PutString(TID_GAME_TRADELIMITUSING);
+		} else if (Windows::IsOpen(APP_REPAIR)) {
+			g_WndMng.PutString(prj.GetText(TID_GAME_REPAIR_NOTUSE), NULL, prj.GetTextColor(TID_GAME_TRADELIMITUSING));
+		} else {
+
+			if (m_dwObjId == II_SYS_SYS_SCR_CHACLA) {
+				CWndChangeClass1::OpenWindow(m_dwCtrlId);
+			} else if (m_dwCtrlId == II_SYS_SYS_SCR_PET_TAMER_MISTAKE) {
 				g_DPlay.SendPetTamerMistake(m_dwObjId);
-			}
-			else
-			{
-#ifdef __AZRIA_1023
+			} else {
+
 				CItemElem * pItem = g_pPlayer->GetItemId(m_dwObjId);
-				if( pItem )
-				{
-					if( pItem->GetProp()->dwItemKind3 == IK3_TICKET )	// +
-						g_DPlay.SendDoUseItemInput( MAKELONG( ITYPE_ITEM, m_dwObjId ), "0" );
-					else	
-						g_DPlay.SendDoUseItem( MAKELONG( ITYPE_ITEM, m_dwObjId ), m_dwCtrlId, -1, FALSE );
+				if (pItem) {
+					if (pItem->GetProp()->dwItemKind3 == IK3_TICKET)	// +
+						g_DPlay.SendDoUseItemInput(MAKELONG(ITYPE_ITEM, m_dwObjId), "0");
+					else
+						g_DPlay.SendDoUseItem(MAKELONG(ITYPE_ITEM, m_dwObjId), m_dwCtrlId, -1, FALSE);
 				}
-#else	// __AZRIA_1023
-				g_DPlay.SendDoUseItem( MAKELONG( ITYPE_ITEM, m_dwObjId ), m_dwCtrlId, -1, FALSE );
-#endif	// __AZRIA_1023
+
 			}
 		}
 		Destroy();
@@ -6989,108 +6846,113 @@ CtrlId : WIDC_BUTTON_OK - Button
 CtrlId : WIDC_BUTTON_CANCEL - 
 ****************************************************/
 
-BOOL CWndChangeClassGeneric::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
-	if (nID == WIDC_BUTTON_OK || nID == WIDC_BUTTON_OK2 || message == EN_RETURN) {
-		if (g_pPlayer->GetJob() == m_currentJobId) {
-			g_WndMng.PutString(TID_GAME_EQUALJOB);
-		} else {
-			g_DPlay.SendChangeJob(m_currentJobId, FALSE);
-			Destroy();
-		}
-	} else if (nID == WIDC_BUTTON_CANCEL || nID == WIDC_BUTTON_CANCEL2 || nID == WTBID_CLOSE) {
+BOOL CWndChangeClass1::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_BUTTON_OK || message == EN_RETURN) {
+		OnSendModifiedJob();
+	} else if (nID == WIDC_BUTTON_CANCEL || nID == WTBID_CLOSE) {
 		Destroy();
-	} else {
-		for (const auto & [widgetId, jobId] : m_allJobs) {
-			if (nID == widgetId) {
-				m_currentJobId = jobId;
-				OnModifiedJob();
-				break;
-			}
-		}
+	} else if (nID == WIDC_LISTBOX) {
+		OnModifiedJob();
 	}
 
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-void CWndChangeClassGeneric::OnInitialUpdate() {
+#include <algorithm>
+
+void CWndChangeClass1::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
+	
+	auto & jobList = ReplaceListBox<JobId, JobDisplayer>(WIDC_LISTBOX);
 
-	// Set current job to player's current job
-	const int currentJob = g_pPlayer->GetJob();
-	m_currentJobId = currentJob;
-	OnModifiedJob();
+	const auto currentJob = g_pPlayer->GetJob();
+	const auto currentJobType = prj.jobs.info[g_pPlayer->GetJob()].dwJobType;
 
-	// Disable the player's current job
-	const auto itJob = std::ranges::find_if(m_allJobs,
-		[currentJob](const PossibleJob & possibleJob) {
-			return possibleJob.jobId == currentJob;
-		});
+	for (int i = 0; i != MAX_JOB; ++i) {
+		if (i == JOB_PUPPETEER || i == JOB_DOPPLER || i == JOB_GATEKEEPER) continue;
 
-	if (itJob != m_allJobs.end()) {
-		CWndBase * const widget = GetDlgItem(itJob->widgetId);
-		widget->EnableWindow(FALSE);
+		if (!m_usedScroll || currentJobType == prj.jobs.info[i].dwJobType) {
+			jobList.Add(i, currentJob != i);
+		}
 	}
 
-	// Ok
+	if (jobList.GetSize() >= 3) {
+		const size_t numberOfDisplay = std::clamp<size_t>(jobList.GetSize(), 3lu, 10lu);
+		
+		CRect jobRect = jobList.GetWndRect();
+		const int originalHeight = jobRect.Height();
+		const int size = static_cast<int>((numberOfDisplay - 3) * jobList.GetLineHeight()) + originalHeight;
+		const int diff = size - originalHeight;
+
+		jobRect.bottom = jobRect.top + size;
+		jobList.SetWndRect(jobRect, TRUE);
+
+		CRect thisRect = GetWindowRect(TRUE);
+		thisRect.bottom += diff;
+		SetWndRect(thisRect);
+
+		for (const UINT buttonId : { WIDC_BUTTON_OK, WIDC_BUTTON_CANCEL }) {
+			CWndBase * button = GetDlgItem(buttonId);
+			CRect rect = button->GetWndRect();
+			button->Move(rect.left, rect.top + diff);
+		}
+	}
+
 	MoveParentCenter();
 }
 
-void CWndChangeClassGeneric::OnModifiedJob() {
-	for (const auto & [widgetId, jobId] : m_allJobs) {
-		CWndButton * const widget = GetDlgItem<CWndButton>(widgetId);
-		widget->SetCheck(m_currentJobId == jobId ? TRUE : FALSE);
+void CWndChangeClass1::OnSendModifiedJob() {
+	if (CWndJobList * list = GetDlgItem<CWndJobList>(WIDC_LISTBOX)) {
+		const JobId * picked = list->GetCurSelItem();
+		if (picked) {
+			g_DPlay.SendPacket<PACKETTYPE_SEND_TO_SERVER_CHANGEJOB, int, std::optional<OBJID>>(*picked, m_usedScroll);
+		}
+	}
+	
+	Destroy();
+}
+
+void CWndChangeClass1::OnModifiedJob() {
+	static constexpr auto ToBOOL = [](bool b) -> BOOL { return b ? TRUE : FALSE; };
+
+	if (CWndJobList * list = GetDlgItem<CWndJobList>(WIDC_LISTBOX)) {
+		const JobId * picked = list->GetCurSelItem();
+		
+		CWndButton * button = GetDlgItem<CWndButton>(WIDC_BUTTON_OK);
+		button->EnableWindow(ToBOOL(picked && *picked != g_pPlayer->GetJob()));
 	}
 }
 
-CWndChangeClass1::CWndChangeClass1()
-	: CWndChangeClassGeneric(
-		{
-			PossibleJob{ WIDC_RADIO_MER, JOB_MERCENARY },
-			PossibleJob{ WIDC_RADIO_ACR, JOB_ACROBAT },
-			PossibleJob{ WIDC_RADIO_ASS, JOB_ASSIST },
-			PossibleJob{ WIDC_RADIO_MAG, JOB_MAGICIAN }
-		}
-	) {
-}
-
-BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_CHANGECLASS_1, pWndParent, 0, CPoint(0, 0));
 }
 
-/****************************************************
-WndId : APP_CHANGECLASS_2 - ��������(2��)
-CtrlId : WIDC_STATIC1 - ������ ���ϴ� ������ �����Ͻʽÿ�
-CtrlId : WIDC_STATIC2 - ���� ���?
-CtrlId : WIDC_RADIO_KNI - ����Ʈ
-CtrlId : WIDC_RADIO_BLA - �����̵�
-CtrlId : WIDC_RADIO_RIN - ��������
-CtrlId : WIDC_RADIO_PSY - ����Ű��
-CtrlId : WIDC_RADIO_ELE - ��������
-CtrlId : WIDC_RADIO_JES - ������
-CtrlId : WIDC_RADIO_RAN - ������
-CtrlId : WIDC_RADIO_BIL - ��������
-CtrlId : WIDC_BUTTON_OK2 - Button
-CtrlId : WIDC_BUTTON_CANCEL2 - Button
-****************************************************/
+void CWndChangeClass1::OpenWindow(std::optional<OBJID> scrollPos) {
+	SAFE_DELETE(g_WndMng.m_pWndChangeClass1);
+	g_WndMng.m_pWndChangeClass1 = new CWndChangeClass1(scrollPos);
+	g_WndMng.m_pWndChangeClass1->Initialize();
+}
 
-CWndChangeClass2::CWndChangeClass2()
-	: CWndChangeClassGeneric(
-		{
-			PossibleJob{ WIDC_RADIO_KNI, JOB_KNIGHT },
-			PossibleJob{ WIDC_RADIO_BLA, JOB_BLADE },
-			PossibleJob{ WIDC_RADIO_JES, JOB_JESTER },
-			PossibleJob{ WIDC_RADIO_RAN, JOB_RANGER },
-			PossibleJob{ WIDC_RADIO_RIN, JOB_RINGMASTER },
-			PossibleJob{ WIDC_RADIO_BIL, JOB_BILLPOSTER },
-			PossibleJob{ WIDC_RADIO_PSY, JOB_PSYCHIKEEPER },
-			PossibleJob{ WIDC_RADIO_ELE, JOB_ELEMENTOR }
+void CWndChangeClass1::JobDisplayer::Render(
+	C2DRender * const p2DRender, CRect rect,
+	const CWndChangeClass1::JobId & item, DWORD color, const WndTListBox::DisplayArgs & misc
+) const {
+	if (prj.jobs.info[item].dwJobType != JTYPE_MASTER && prj.jobs.info[item].dwJobType != JTYPE_HERO) {
+		p2DRender->TextOut(rect.left, rect.top, prj.jobs.info[item].szName, color);
+	} else {
+		TCHAR jobName[64];
+		std::strcpy(jobName, prj.jobs.info[item].szName);
+		std::strcat(jobName, " ");
+		if (prj.jobs.info[item].dwJobType == JTYPE_MASTER) {
+			std::strcat(jobName, "[M]");
+		} else {
+			std::strcat(jobName, "[H]");
 		}
-	) {
+		p2DRender->TextOut(rect.left, rect.top, jobName, color);
+	}
 }
 
-BOOL CWndChangeClass2::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
-	return CWndNeuz::InitDialog(APP_CHANGECLASS_2, pWndParent, 0, CPoint(0, 0));
-}
+
 
 void CWndInventory::RunUpgrade( CItemElem * pItem )
 {

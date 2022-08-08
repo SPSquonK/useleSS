@@ -4012,9 +4012,71 @@ void CDPSrvr::OnExpUp(CAr & ar, CUser & pUser) {
 	pUser.EarnExperience(nExp, true, true);
 }
 
-void	CDPSrvr::OnChangeJob( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-// TODO: remove this function
+void CDPSrvr::OnChangeJob(CAr & ar, CUser & pUser) {
+	const auto [wantedJob, scroll] = ar.Extract<int, std::optional<OBJID>>();
+
+	if (wantedJob < 0 || wantedJob >= MAX_JOB) return;
+	if (wantedJob == JOB_PUPPETEER || wantedJob == JOB_DOPPLER || wantedJob == JOB_GATEKEEPER) return;
+
+	CItemElem * itemScroll = nullptr;
+
+	if (scroll) {
+		itemScroll = pUser.GetItemId(scroll.value());
+		if (!itemScroll) return;
+		if (!IsUsableItem(itemScroll)) return;
+		if (itemScroll->m_dwItemId != II_SYS_SYS_SCR_CHACLA) return;
+
+		// TODO: check not in guildwar
+
+		if (CItemUpgrade::IsInTrade(pUser)) {
+			return pUser.AddDefinedText(TID_GAME_TRADE_NOTUSE);
+		}
+
+		if (pUser.IsAttackMode()) {
+			return pUser.AddDefinedText(TID_GAME_BATTLE_NOTTRADE);
+		}
+
+		const auto currentJobType = prj.jobs.info[pUser.GetJob()].dwJobType;
+		const auto wantedJobType = prj.jobs.info[wantedJob].dwJobType;
+		if (currentJobType != wantedJobType) return;
+		
+		boost::container::small_vector<const ItemProp *, MAX_HUMAN_PARTS> badItems;
+		for (int i = 0; i != MAX_HUMAN_PARTS; ++i) {
+			const CItemElem * const equip = pUser.GetEquipItem(i);
+			if (!equip) continue;
+
+			const ItemProp * const prop = equip->GetProp();
+			if (!prop) continue;
+
+			const auto itemJob = prop->dwItemJob;
+			if (!CMover::IsInteriorityJob(itemJob, wantedJob)) {
+				badItems.push_back(prop);
+			}
+		}
+
+		if (!badItems.empty()) {
+			pUser.AddDefinedText(TID_GAME_CHECK_EQUIP);
+			for (const ItemProp * badItem : badItems) {
+				pUser.AddText(badItem->szName);
+			}
+			return;
+		}
+	} else {
+		if (!pUser.IsAuthHigher(AUTH_GAMEMASTER)) {
+			return;
+		}
+	}
+
+	const auto exp = pUser.GetExp1();
+	pUser.InitLevel(wantedJob, pUser.GetLevel());
+	pUser.SetExperience(pUser.GetExp1(), pUser.GetLevel());
+	pUser.AddSetExperience(pUser.GetExp1(), pUser.GetLevel(), pUser.m_nSkillPoint, pUser.m_nSkillLevel);
+
+	if (itemScroll) {
+		pUser.RemoveItem(itemScroll->m_dwObjId, 1);
+
+		// TODO: log scroll usage
+	}
 }
 
 void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCount )

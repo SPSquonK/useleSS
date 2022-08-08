@@ -33,3 +33,19 @@ and the damage dealt by all the connected players
 Guild Combats / Eve school / Guild Sieges do not require the guild to have
 the guildmaster or a kingpin. The defender can also be the current guildmaster.
 
+
+## Change Job window
+
+- The `CDPSrvr::OnChangeJob` has been fixed and features related to it work.
+
+- The change job button in the character info (H) and *Scroll of Class Change*
+uses the same window.
+
+
+![](img/WndJobChange_Admin.png) ![](img/WndJobChange_Player.png)
+
+- Game masters can change to any job
+
+- Using the scroll will only give access to job of the same type: for example
+if you are master, you can only access master jobs.
+
