@@ -23,7 +23,7 @@ C++, and it is dumb to not use it in a project that does not have any restrictio
     - ODBC source `useless_character` = table `USELESS_CHARACTER_01_DBF`
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
     - You can create `useless_ranking` but IFAIK, it is never used.
-    - Database.sql script might be glitchy. See #39
+    - Database.sql script might be glitchy. See [this issue](https://github.com/SPSquonK/useleSS/issues/39)
 
 ## Dependencies
 
