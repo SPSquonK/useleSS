@@ -164,50 +164,20 @@ void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
 	y = 52 + nyAdd;
 	int StatYPos = 50;
 
-	if (g_pPlayer->m_nStr == g_pPlayer->GetStr())
-		dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	else
-		if (g_pPlayer->m_nStr < g_pPlayer->GetStr())
-			dwColor = D3DCOLOR_ARGB(255, 0, 0, 255);
-		else
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-
+	dwColor = StatColor(g_pPlayer->m_nStr, g_pPlayer->GetStr());
 	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetStr(), dwColor); y += nNext;
 
-	if (g_pPlayer->m_nSta == g_pPlayer->GetSta())
-		dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	else
-		if (g_pPlayer->m_nSta < g_pPlayer->GetSta())
-			dwColor = D3DCOLOR_ARGB(255, 0, 0, 255);
-		else
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-
+	dwColor = StatColor(g_pPlayer->m_nSta, g_pPlayer->GetSta());
 	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetSta(), dwColor); y += nNext;
 
-	if (g_pPlayer->m_nDex == g_pPlayer->GetDex())
-		dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	else
-		if (g_pPlayer->m_nDex < g_pPlayer->GetDex())
-			dwColor = D3DCOLOR_ARGB(255, 0, 0, 255);
-		else
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-
+	dwColor = StatColor(g_pPlayer->m_nDex, g_pPlayer->GetDex());
 	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetDex(), dwColor); y += nNext;
 
-	if (g_pPlayer->m_nInt == g_pPlayer->GetInt())
-		dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	else
-		if (g_pPlayer->m_nInt < g_pPlayer->GetInt())
-			dwColor = D3DCOLOR_ARGB(255, 0, 0, 255);
-		else
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-
+	dwColor = StatColor(g_pPlayer->m_nInt, g_pPlayer->GetInt());
 	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetInt(), dwColor); y += nNext;
 
-	if (m_nGpPoint) {
-		if ((g_nRenderCnt / 8) & 1) {
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-		}
+	if (m_nGpPoint != 0 && ((g_nRenderCnt % 8) == 1)) {
+		dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
 	}
 
 	p2DRender->TextOut(105, y, m_nGpPoint, dwColor); y += nNext;
@@ -381,6 +351,15 @@ void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
 	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP4), dwColor); y += nNext;
 }
 
+DWORD CWndCharInfo::StatColor(const int rawStat, const int totalStat) {
+	if (rawStat == totalStat) {
+		return D3DCOLOR_ARGB(255, 0, 0, 0);
+	} else if (rawStat < totalStat) {
+		return D3DCOLOR_ARGB(255, 0, 0, 255);
+	} else {
+		return D3DCOLOR_ARGB(255, 255, 0, 0);
+	}
+}
 
 void CWndCharInfo::OnInitialUpdate() {
 

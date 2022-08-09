@@ -45,8 +45,11 @@ public:
 	int GetVirtualCritical();
 	float GetVirtualATKSpeed();
 
-protected:
+private:
 	void RenderATK(C2DRender * p2DRender, int x, int y);
+
+	static DWORD StatColor(int rawStat, int totalStat);
+
 };
 
 class CWndHonor final : public CWndNeuz {
