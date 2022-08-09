@@ -1549,7 +1549,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			{
 				if( pFocus && pFocus->GetType() == OT_MOVER )//&& ((CMover*)pFocus)->IsNPC() )플레이어에게도 쓸수있음 pk용
 				{
-					ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+					const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 					if( pItemProp && pItemProp->dwItemKind3 == IK3_WAND ) //Wand일 경우 AutoAttack을 하지 않음.
 					{
 						CCtrl* pFocusObj = (CCtrl*)pFocus;

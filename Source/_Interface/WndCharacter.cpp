@@ -745,7 +745,7 @@ float CWndCharInfo::GetVirtualATKSpeed() {
 	float fSpeed = 1.0f;
 	float fItem = 1.0f;
 
-	ItemProp * pWeaponProp = g_pPlayer->GetActiveHandItemProp();
+	const ItemProp * pWeaponProp = g_pPlayer->GetActiveHandItemProp();
 	if (pWeaponProp)
 		fItem = pWeaponProp->fAttackSpeed;
 

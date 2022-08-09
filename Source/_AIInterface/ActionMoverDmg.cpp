@@ -65,7 +65,7 @@ DWORD CActionMover::OnDamageMsgC( DWORD dwMsg, CMover* pAttacker, DWORD dwAtkFla
 
 	if( (dwAtkFlags & AF_GENERIC) )	
 	{
-		ItemProp* pAttackerProp = pAttacker->GetActiveHandItemProp();
+		const ItemProp* pAttackerProp = pAttacker->GetActiveHandItemProp();
 		
 		D3DXVECTOR3 vLocal;
 		if( pAttackerProp && pAttackerProp->dwItemKind3 == IK3_YOYO )

@@ -1702,7 +1702,7 @@ g_PASS:
 			{
 				if( dwAtkFlags & AF_CRITICAL )
 				{
-					ItemProp *pItemProp = ((CMover *)pAttacker)->GetActiveHandItemProp();
+					const ItemProp *pItemProp = ((CMover *)pAttacker)->GetActiveHandItemProp();
 					if (pItemProp && pItemProp->dwSndAttack2 != NULL_ID) {
 						const auto attackerPos = pAttacker->GetPos();
 						PLAYSND(pItemProp->dwSndAttack2, &attackerPos);
@@ -3332,7 +3332,7 @@ void CDPClient::OnUseSkill( OBJID objid, CAr & ar )
 			
 			if( g_Option.m_bAutoAttack && pMover->IsActiveMover() )		// 여기야여기 - 자동공격 ON
 			{
-				ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+				const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 				if( pItemProp )
 				{   
 					// 손에 들고 있는게 스태프나 치어스틱이 아닐때만 자동공격.

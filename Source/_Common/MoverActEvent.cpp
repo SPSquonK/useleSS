@@ -585,7 +585,7 @@ BOOL	CMover::OnAttackRange()
 	if( IsInvalidObj(pHit) )	
 		return FALSE;							// 클릭했을당시는 있었으나 발사되기전에 삭제되었다.
 	
-	ItemProp *pItemProp = NULL;
+	const ItemProp *pItemProp = NULL;
 	if( IsPlayer() )
 		pItemProp = GetActiveHandItemProp();		// 이런경우는 걍 손에 든 무기(혹은 기본아이템)
 	else 
@@ -615,7 +615,7 @@ BOOL	CMover::OnAttackRange()
 	// 아크로뱃은 이펙트 출력이 항상 왼손에...
 	if( IsPlayer() )		
 	{
-		ItemProp *pItemElem = GetActiveHandItemProp( PARTS_BULLET );  // 화살아이템을 참조로 화살이펙트 생성
+		const ItemProp *pItemElem = GetActiveHandItemProp( PARTS_BULLET );  // 화살아이템을 참조로 화살이펙트 생성
 		if( pItemElem && pItemElem->dwSfxObj2 != NULL_ID )
 		{
 		#ifdef __CLIENT
@@ -704,7 +704,7 @@ BOOL	CMover::OnAttackMagic()
 
 	D3DXVECTOR3 vPosSrc = GetPos() + D3DXVECTOR3( 0.0f, 1.0f, 0.0f ); // 발사 지점을 임의로 올려준다. 땜빵 
 
-	ItemProp *pHandItemProp = GetActiveHandItemProp( PARTS_RWEAPON );
+	const ItemProp *pHandItemProp = GetActiveHandItemProp( PARTS_RWEAPON );
 	CSfx* pSfx = NULL;
 	if( m_pActMover->IsFly() )
 	{
@@ -1560,7 +1560,7 @@ BOOL	CMover::OnAttackMelee( DWORD dwState, CMover *pHitObj )
 				g_WndMng.m_pWndTaskBar->m_nActionPoint ++;
 		}
 		//  플레이어는 들고 있는 무기에 따라 타격 음이 다르다.
-		ItemProp* pItemProp = GetActiveHandItemProp();
+		const ItemProp* pItemProp = GetActiveHandItemProp();
 		if( pItemProp )
 		{
 /*		#ifndef __Y_DRAGON_FIRE
@@ -1755,7 +1755,7 @@ BOOL	CMover::OnAttackSP()
 	CMover* pHit = prj.GetMover( idTarget );	// 타겟의 포인터를 얻어냄.
 	if( IsInvalidObj(pHit) )	return FALSE;		// 클릭했을당시는 있었으나 발사되기전에 삭제되었다.
 
-	ItemProp *pItemProp;
+	const ItemProp *pItemProp;
 	if( nItemID == NULL_ID || nItemID == 0 )	
 		pItemProp = GetActiveHandItemProp();	// 이런경우는 걍 손에 든 무기(혹은 기본아이템)
 	else

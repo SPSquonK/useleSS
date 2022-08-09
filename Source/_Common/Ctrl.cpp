@@ -775,7 +775,7 @@ BOOL CCtrl::ApplySkillHardCoding( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillPro
 #ifdef __CLIENT
 void CCtrl::CreateYoyoSkill( CSfx* pSfx, CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp )
 {
-	ItemProp* pItemProp = ((CMover *)this)->GetActiveHandItemProp();
+	const ItemProp* pItemProp = ((CMover *)this)->GetActiveHandItemProp();
 	
 	if(pItemProp)
 	{

@@ -1585,7 +1585,7 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 				CMover *pMover	= CMover::GetActiveMover();
 				if( pMover )
 				{
-					ItemProp* pItemProp	= pMover->GetActiveHandItemProp();
+					const ItemProp* pItemProp	= pMover->GetActiveHandItemProp();
 					if( pItemProp && pItemProp->dwItemKind3 != IK3_YOYO && !pMover->IsActiveMover() )
 					{
 						pMover->GetWorld()->m_pCamera->SetQuake( 15 );				

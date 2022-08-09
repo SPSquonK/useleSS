@@ -823,13 +823,13 @@ public:
 	void			SetStateMode( DWORD dwMode, BYTE nFlag );		// 유저상태 셑팅
 	void			SetStateNotMode( DWORD dwMode, BYTE nFlag );	// 유저상태 리셑
 	BOOL			IsUseItemReadyTime( const ItemProp* pItemProp, OBJID dwObjItemId );
-	BOOL			IsNPC()				{ return !m_bPlayer; }
-	BOOL			IsPlayer()			{ return m_bPlayer; }
+	[[nodiscard]] BOOL IsNPC() const { return !m_bPlayer; }
+	[[nodiscard]] BOOL IsPlayer() const { return m_bPlayer; }
 	BOOL			IsEquipableNPC()	{	return( GetCharacter() && GetCharacter()->m_nEquipNum > 0 );	}
 	BOOL			IsFlyingNPC()		{ return (m_dwTypeFlag & OBJTYPE_FLYING) ? TRUE : FALSE; }		// 비행형 몹인가.
 	BOOL			IsFly();
-	MoverProp*		GetProp() { return prj.GetMoverProp( m_dwIndex ); }	// 객체의 프로퍼티 얻기 	
-	ItemProp*		GetActiveHandItemProp( int nParts = PARTS_RWEAPON );							// 손에 들려진 아이템의 프로퍼티를 얻기 
+	[[nodiscard]] MoverProp * GetProp() const { return prj.GetMoverProp( m_dwIndex ); }	// 객체의 프로퍼티 얻기 	
+	[[nodiscard]] const ItemProp * GetActiveHandItemProp(int nParts = PARTS_RWEAPON) const;							// 손에 들려진 아이템의 프로퍼티를 얻기 
 	OBJID			GetDestId()			{ return m_idDest; }
 	CCtrl*			GetDestObj()		{ return prj.GetCtrl( m_idDest ); }
 	void			SetDestObj( CCtrl* pObj, float fRange = 0.0f )	{	SetDestObj( pObj->GetId(), fRange );	}
@@ -859,12 +859,13 @@ public:
 	BOOL			SetMotion(DWORD dwMotion, int nLoop = ANILOOP_LOOP, DWORD dwOption = 0 );	// MOP_SWDFORCE, MOP_FIXED, MOP_NO_TRANS, MOP_HITSLOW
 	BOOL			InitMotion(DWORD dwMotion);
 	void			SetDamagedMotion( CMover* pAttacker, DWORD dwAtkFlags );
+	[[nodiscard]] const CItemElem * GetWeaponItem(int nParts = PARTS_RWEAPON) const;
 	CItemElem*		GetWeaponItem( int nParts = PARTS_RWEAPON );					// 장착한 무기 얻기 
 	CItemElem*		GetLWeaponItem();					// 왼손에 장착한 무기 얻기.
 	CItemElem*		GetEquipItem( int nParts );			// 장착한 아이템 얻기 
 	[[nodiscard]] const CItemElem * GetEquipItem(int nParts) const;
 	ItemProp*		GetEquipItemProp( CItemContainer * pInventory, EQUIP_INFO * pEquipInfo, int nParts );
-	BOOL			IsDualWeapon();
+	[[nodiscard]] bool IsDualWeapon() const;
 	void			RedoEquip( BOOL fFakeParts, BOOL bDestParam = TRUE );	
 	void			UpdateParts( BOOL bFakeParts  = FALSE ); // normal or fake
 #ifdef __WORLDSERVER
@@ -1036,8 +1037,8 @@ public:
 	float			GetATKMultiplier( CMover* pDefender, DWORD dwAtkFlags );
 	float			GetDEFMultiplier( ATTACK_INFO* pInfo );
 	float			GetBlockFactor( CMover* pAttacker, ATTACK_INFO* pInfo );
-	int				GetWeaponATK( DWORD dwWeaponType );
-	int				GetPlusWeaponATK( DWORD dwWeaponType );
+	[[nodiscard]] int	GetWeaponATK(DWORD dwWeaponType) const;
+	[[nodiscard]] int GetPlusWeaponATK(DWORD dwWeaponType) const;
 	void			GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* pnDEFFactor, int nParts );
 	int				GetPropATKPlus( int nParts );
 	int				GetPropDEFPlus();
@@ -1058,11 +1059,11 @@ public:
 	int				GetResistMagic();
 	int				GetResistSpell( int nDestParam );
 	int				GetMeleeSkillPower( ATTACK_INFO* pInfo );	// 근접공격 스킬데미지
-	int				GetMagicHitPower( int nMagicPower );			// 완드공격 데미지
+	[[nodiscard]] int GetMagicHitPower( int nMagicPower ) const;			// 완드공격 데미지
 	int				GetItemAbility( int nItem );
 	[[nodiscard]] int GetItemAbilityMin(int nItem) const;
 	[[nodiscard]] int GetItemAbilityMax(int nItem) const;
-	std::pair<int, int> GetHitMinMax(const ATTACK_INFO * pInfo = nullptr);
+	[[nodiscard]] std::pair<int, int> GetHitMinMax(const ATTACK_INFO * pInfo = nullptr) const;
 	BOOL			IsAfterDeath();
 	BOOL			IsDie() { return m_pActMover->IsDie() || m_nHitPoint == 0; }
 	BOOL			IsLive() { return m_pActMover->IsDie() == FALSE || m_nHitPoint > 0; }		// && 를  ||로 바꿨음.  !=를 >로 바꿈
@@ -1100,8 +1101,8 @@ public:
 	void	ResetDestParamRandomOptOrigin(const CItemElem * pItemElem);
 	void	ResetDestParamRandomOptExtension( CItemElem* pItemElem );
 
-	void			GetItemATKPower( int *pnMin, int *pnMax, ItemProp* pItemProp, CItemElem *pWeapon ); 
-	[[nodiscard]] float GetItemMultiplier(const CItemElem * pItemElem) const;
+	[[nodiscard]] std::pair<int, int> GetItemATKPower(const ItemProp & pItemProp, const CItemElem * pWeapon) const;
+	[[nodiscard]] static float GetItemMultiplier(const CItemElem * pItemElem);
 	BOOL			SubLootDropNotMob( CItem *pItem );
 	BOOL			SubLootDropMobSingle( CItem *pItem );
 	BOOL			SubLootDropMobParty( CItem *pItem, CParty *pParty );
@@ -1270,7 +1271,7 @@ public:
 #ifdef __ADD_RESTATE_LOW
 	void			ReStateOneLow( int nKind );
 #endif // __ADD_RESTATE_LOW
-	float			GetJobPropFactor( JOB_PROP_TYPE type );
+	[[nodiscard]] float GetJobPropFactor(JOB_PROP_TYPE type) const;
 	int				CalcDefense( ATTACK_INFO* pInfo, BOOL bRandom = TRUE );
 	int				CalcDefenseCore( CMover* pAttacker, DWORD dwAtkFlags, BOOL bRandom = TRUE );	
 	int				CalcDefensePlayer( CMover* pAttacker, DWORD dwAtkFlags );

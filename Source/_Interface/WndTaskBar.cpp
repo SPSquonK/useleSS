@@ -1520,7 +1520,7 @@ BOOL CWndTaskBar::UseSkillQueue( CCtrl* pTargetObj )
 		} else
 		{	// success
 			// 1단계 쓸때는 ap가 소모되지 않는다.
-			ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+			const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 			if( pItemProp )
 			{   // 손에 들고 있는게 스태프나 치어스틱이 아닐때만 NEXTSKILL_NONE로 변경. 안하면 스킬이 이어지지 않음.
 				if( pItemProp->dwItemKind3 != IK3_STAFF && pItemProp->dwItemKind3 != IK3_CHEERSTICK )			

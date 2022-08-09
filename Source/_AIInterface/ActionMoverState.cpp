@@ -800,7 +800,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					{
 						if( (pMover->GetLevel() >= nReqLevel) && ((m_dwCtrlMsg & CTRLMSG_LDOWN) || ((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack) )	// 직업레벨 X이상이면 다음연타가능
 						{
-							ItemProp* pItemProp = pMover->GetActiveHandItemProp();
+							const ItemProp* pItemProp = pMover->GetActiveHandItemProp();
 							if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )
 							{
 								if( dwState == OBJSTA_ATK2 || dwState == OBJSTA_ATK3 || dwState == OBJSTA_ATK4 )
@@ -815,7 +815,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 								if( nError > 0 )	
 								{
 #ifdef __HACK_1023
-									ItemProp* pHandItemProp		= pMover->GetActiveHandItemProp();
+									const ItemProp* pHandItemProp		= pMover->GetActiveHandItemProp();
 									FLOAT fVal	= pHandItemProp? pHandItemProp->fAttackSpeed: 0.0F;
 									g_DPlay.SendMeleeAttack ( dwNextMsg, m_objidHit, MAKELONG( 0, 0 ), MAKELONG( 0, (WORD)nError ), fVal );
 #else	// __HACK_1023
@@ -1021,7 +1021,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 		} else
 		{
 		#if defined(__CLIENT)
-			ItemProp* pItemProp = pMover->GetActiveHandItemProp();
+			const ItemProp* pItemProp = pMover->GetActiveHandItemProp();
 
 			// 요요는 일반 밀리 평타와는 다르게
 			// 흔들림효과(Quake)를 기준으로 발사체를 발사하고

@@ -387,7 +387,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	}
 
 	// 스킬을 사용할때 적합한 무기를 들고 있는가 검사
-	ItemProp* pItemProp = NULL;
+	const ItemProp* pItemProp = NULL;
 	DWORD	dwItemKind3;
 
 	if( pSkillProp->dwLinkKind == IK3_SHIELD )	// 필요아아이템이 방패일때
@@ -496,7 +496,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 			{
 				if( pSkillProp->dwHanded == HD_DUAL )		// 듀얼용 스킬인데
 				{
-					if( IsDualWeapon() == FALSE )			// 듀얼로 안차고 있다.
+					if( !IsDualWeapon() )			// 듀얼로 안차고 있다.
 					{
 						((CUser*)this)->AddDefinedText( TID_GAME_WRONGITEM, "" );
 						return FALSE;
@@ -1438,7 +1438,7 @@ int	 CMover::DoAttackMagic( CObj *pTargetObj, int nMagicPower, int idSfxHit )
 //
 int	 CMover::DoAttackRange( CObj *pTargetObj, DWORD dwItemID, int idSfxHit )
 {
-	ItemProp* pItemProp = NULL;
+	const ItemProp* pItemProp = NULL;
 	int nPower = 0;
 
 	if( IsInvalidObj(pTargetObj) )
@@ -1532,7 +1532,7 @@ int		CMover::DoAttackSP( CObj *pTargetObj, DWORD dwItemID )
 	if( IsInvalidObj(pTargetObj) )
 		return( -1 );
 	
-	ItemProp* pItemProp;
+	const ItemProp* pItemProp;
 	if( dwItemID == NULL_ID || dwItemID == 0 )	
 		pItemProp = GetActiveHandItemProp();	// 이런경우는 걍 손에 든 무기(혹은 기본아이템)
 	else
@@ -1587,7 +1587,7 @@ int		CMover::DoAttackMelee( CMover *pTarget, OBJMSG dwMsg, DWORD dwItemID )
 	if( IsInvalidObj(pTarget) )
 		return 0;
 	
-	ItemProp* pItemProp;
+	const ItemProp* pItemProp;
 	if( dwItemID == NULL_ID || dwItemID == 0 )	
 		pItemProp = GetActiveHandItemProp();	// 이런경우는 걍 손에 든 무기(혹은 기본아이템)
 	else
@@ -1606,7 +1606,7 @@ int		CMover::DoAttackMelee( CMover *pTarget, OBJMSG dwMsg, DWORD dwItemID )
 
 #ifdef __CLIENT
 #ifdef __HACK_1023
-		ItemProp* pHandItemProp		= GetActiveHandItemProp();
+		const ItemProp* pHandItemProp		= GetActiveHandItemProp();
 		FLOAT fVal	= pHandItemProp? pHandItemProp->fAttackSpeed: 0.0F;
 		g_DPlay.SendMeleeAttack( dwMsg, pTarget->GetId(), MAKELONG( 0, 0 ), MAKELONG( 0, (WORD)nError ), fVal );
 #else	// __HACK_1023

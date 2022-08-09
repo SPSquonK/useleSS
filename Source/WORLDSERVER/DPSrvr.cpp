@@ -3586,7 +3586,7 @@ void CDPSrvr::OnMeleeAttack( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			return;
 		}
 #ifdef __HACK_1023
-		ItemProp* pHandItemProp	= pUser->GetActiveHandItemProp();
+		const ItemProp* pHandItemProp	= pUser->GetActiveHandItemProp();
 		FLOAT f	= pHandItemProp? pHandItemProp->fAttackSpeed: 0.0F;
 		if( f != fVal )
 		{
