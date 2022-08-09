@@ -3,6 +3,11 @@
 
 class CWndCharInfo final : public CWndBase {
 public:
+	static constexpr DWORD TitleColor        = D3DCOLOR_ARGB(255, 0, 0, 0);
+	static constexpr DWORD LabelColor        = D3DCOLOR_ARGB(255, 0, 0, 180);
+	static constexpr DWORD RegularValueColor = D3DCOLOR_ARGB(255, 0, 0, 0);
+
+public:
 	CWndButton		m_wndChangeJob;
 	BOOL			m_fWaitingConfirm = FALSE;
 	int				m_nDisplay = 1;
@@ -49,6 +54,8 @@ private:
 	void RenderATK(C2DRender * p2DRender, int x, int y);
 
 	static DWORD StatColor(int rawStat, int totalStat);
+
+	void DrawCharacterBase(C2DRender * p2DRender);
 
 };
 

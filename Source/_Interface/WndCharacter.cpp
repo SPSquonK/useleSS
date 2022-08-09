@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "WndCharacter.h"
+#include <concepts>
 #include <numeric>
 #include "defineText.h"
 #include "DPCertified.h"
@@ -18,104 +19,35 @@ float GetAttackSpeedPlusValue(int n); // MoverAttack.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
+struct ByLineDrawer {
+	int y;
+	int step;
 
+	ByLineDrawer(int y, int step) : y(y), step(step) {}
+
+	void DrawLine(const char *, std::invocable<int> auto func) {
+		func(y);
+		y += step;
+	}
+};
+
+void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
 	CRect rect = GetClientRect();
 	rect.bottom -= 30;
-	int			y = 0, nNext = 15, nyAdd3 = 21;
-	DWORD		dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	BYTE		checkhero = g_pPlayer->GetLegendChar();
-	int			xpos = 0;
-	int			ypos = 0;
-	CTexture * pTexture;
-	CString		strPath;
-	CPoint		point;
 
-	y = 13;
-	p2DRender->TextOut(60, y, prj.GetText((TID_APP_CHARACTER_BASE)), dwColor);
-	y = 10 + nyAdd3;
-
-	p2DRender->TextOut(80, y, g_pPlayer->GetName(), dwColor); y += nNext;
-	p2DRender->TextOut(80, y, g_pPlayer->GetJobString(), dwColor); y += nNext;
-	ypos = y;
-	if (checkhero == LEGEND_CLASS_MASTER) {
-		if (g_pPlayer->GetLevel() < 100)
-			xpos = 97;
-		else
-			xpos = 103;
-	}
-	if (checkhero == LEGEND_CLASS_HERO)
-		xpos = 103;
-	p2DRender->TextOut(80, y, g_pPlayer->GetLevel(), dwColor); y += nNext;
-
-	y = 81 + nyAdd3;
-
-
-	point.x = xpos;
-	point.y = ypos - 2;
-	if (checkhero == LEGEND_CLASS_MASTER) //������ ���� ���?.
-	{
-		if (/*g_pPlayer->m_nLevel >= 60 && */g_pPlayer->m_nLevel < 70) //Level Down�� ���? �����ؼ� �ּ�ó��
-			strPath = MakePath(DIR_ICON, "Icon_MasterMark1.dds");
-		else if (g_pPlayer->m_nLevel >= 70 && g_pPlayer->m_nLevel < 80)
-			strPath = MakePath(DIR_ICON, "Icon_MasterMark2.dds");
-		else if (g_pPlayer->m_nLevel >= 80 && g_pPlayer->m_nLevel < 90)
-			strPath = MakePath(DIR_ICON, "Icon_MasterMark3.dds");
-		else if (g_pPlayer->m_nLevel >= 90 && g_pPlayer->m_nLevel < 100)
-			strPath = MakePath(DIR_ICON, "Icon_MasterMark4.dds");
-		else if (g_pPlayer->m_nLevel >= 100 && g_pPlayer->m_nLevel < 110)
-			strPath = MakePath(DIR_ICON, "Icon_MasterMark5.dds");
-		else if (g_pPlayer->m_nLevel >= 110 && g_pPlayer->m_nLevel <= 120)
-			strPath = MakePath(DIR_ICON, "Icon_MasterMark6.dds");
-
-		pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, strPath, 0xffff00ff);
-		if (pTexture != NULL)
-			pTexture->Render(p2DRender, point);
-
-	} else if (checkhero == LEGEND_CLASS_HERO) //������ ���?.
-	{
-		strPath = MakePath(DIR_ICON, "Icon_HeroMark.dds");
-		pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, strPath, 0xffff00ff);
-		if (pTexture != NULL)
-			pTexture->Render(p2DRender, point);
-	}
-	//���� ����
-	y = 55 + nyAdd3;
-	CString strServerName = g_dpCertified.GetServerName(g_Option.m_nSer);
-		p2DRender->TextOut(80, y, strServerName, dwColor);
-		y += nNext;
-
-	//ä�� ����
-	CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannelFromPos(g_Option.m_nSer, g_Option.m_nMSer);
-	if (channel) {
-		strServerName.Format("%s", channel->lpName);
-			p2DRender->TextOut(80, y, strServerName, dwColor);
-	}
-
-	y = 10 + nyAdd3;
-	dwColor = D3DCOLOR_ARGB(255, 0, 0, 180);
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_01), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_APP_CHARACTER_JOB), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_02), dwColor); y += nNext;
+	DrawCharacterBase(p2DRender);
 
 	//�������� -> ����/ä�� ����
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHAR_SERVER), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHAR_SERVERNAME), dwColor); y += nNext;
-	/*
-	y += 10;
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_04), dwColor ); y += nNext;
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_05), dwColor ); y += nNext;
-	p2DRender->TextOut( 7, y, prj.GetText(TID_GAME_CHARACTER_06), dwColor );
-	*/
+
 
 	p2DRender->TextOut(60, 113, prj.GetText((TID_APP_CHARACTER_DETAIL)), D3DCOLOR_ARGB(255, 0, 0, 0));
 	/////////////////////////// detail begin //////////////////////////////////
-	int nyAdd = 121;
-	int x = 5, nNextX = 100;
+	static constexpr int nyAdd = 121;
 
-	dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	x = 50; y = 10 + nyAdd;
-	nNext = 15;
+	DWORD dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
+	int x = 50;
+	int y = 10 + nyAdd;
+	int nNext = 15;
 	// ���ݷ�
 	RenderATK(p2DRender, x, y);
 	y += nNext;
@@ -160,7 +92,7 @@ void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
 	strMsg.Format("%d%%", int(fAttackSpeed * 100.0f) / 2);
 	p2DRender->TextOut(x, y, strMsg, dwColor); y += nNext;
 
-	x = 15; nNextX = 60;
+	x = 15;
 	// �Ʒ����� �ɷ�ġ ���� 
 	y = 52 + nyAdd;
 	int StatYPos = 50;
@@ -350,6 +282,71 @@ void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
 	y += 20;
 	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP3), dwColor); y += nNext;
 	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP4), dwColor); y += nNext;
+}
+
+void CWndCharInfo::DrawCharacterBase(C2DRender * p2DRender) {
+	// Title
+	p2DRender->TextOut(60, 13, prj.GetText((TID_APP_CHARACTER_BASE)), TitleColor);
+
+	// Content
+	ByLineDrawer characterBase(31, 15);
+
+	characterBase.DrawLine("Name", [&](int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_01), LabelColor);
+		p2DRender->TextOut(80, y, g_pPlayer->GetName(), RegularValueColor);
+		});
+
+	characterBase.DrawLine("Job", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_APP_CHARACTER_JOB), LabelColor);
+		p2DRender->TextOut(80, y, g_pPlayer->GetJobString(), RegularValueColor);
+		});
+
+	characterBase.DrawLine("Level", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_02), LabelColor);
+		p2DRender->TextOut(80, y, g_pPlayer->GetLevel(), RegularValueColor);
+
+		const BYTE checkhero = g_pPlayer->GetLegendChar();
+		if (checkhero == LEGEND_CLASS_NORMAL) return;
+
+		const int xpos = g_pPlayer->GetLevel() < 100 ? 97 : 103;
+
+		CPoint iconPoint(xpos, y - 2);
+		CString strPath;
+
+		if (checkhero == LEGEND_CLASS_MASTER) {
+			if (g_pPlayer->m_nLevel < 70)
+				strPath = MakePath(DIR_ICON, "Icon_MasterMark1.dds");
+			else if (g_pPlayer->m_nLevel < 80)
+				strPath = MakePath(DIR_ICON, "Icon_MasterMark2.dds");
+			else if (g_pPlayer->m_nLevel < 90)
+				strPath = MakePath(DIR_ICON, "Icon_MasterMark3.dds");
+			else if (g_pPlayer->m_nLevel < 100)
+				strPath = MakePath(DIR_ICON, "Icon_MasterMark4.dds");
+			else if (g_pPlayer->m_nLevel < 110)
+				strPath = MakePath(DIR_ICON, "Icon_MasterMark5.dds");
+			else
+				strPath = MakePath(DIR_ICON, "Icon_MasterMark6.dds");
+		} else {
+			strPath = MakePath(DIR_ICON, "Icon_HeroMark.dds");
+		}
+
+		CTexture * pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, strPath, 0xffff00ff);
+		if (pTexture) {
+			pTexture->Render(p2DRender, iconPoint);
+		}
+		});
+
+	characterBase.DrawLine("Server", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHAR_SERVER), LabelColor);
+		p2DRender->TextOut(80, y, g_dpCertified.GetServerName(g_Option.m_nSer), RegularValueColor);
+		});
+
+	characterBase.DrawLine("Channel", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHAR_SERVERNAME), LabelColor);
+		if (CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannelFromPos(g_Option.m_nSer, g_Option.m_nMSer)) {
+			p2DRender->TextOut(80, y, channel->lpName, RegularValueColor);
+		}
+		});
 }
 
 DWORD CWndCharInfo::StatColor(const int rawStat, const int totalStat) {
