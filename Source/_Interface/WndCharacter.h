@@ -40,7 +40,7 @@ public:
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	BOOL Process() override;
 	void RefreshStatPoint();
-	void GetVirtualATK(int * pnMin, int * pnMax);
+	std::pair<int, int> GetVirtualATK() const;
 	int GetVirtualDEF();
 	int GetVirtualCritical();
 	float GetVirtualATKSpeed();

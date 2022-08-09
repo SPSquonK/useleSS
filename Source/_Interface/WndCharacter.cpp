@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "WndCharacter.h"
+#include <numeric>
 #include "defineText.h"
 #include "DPCertified.h"
 #include "DPClient.h"
@@ -633,75 +634,71 @@ void CWndCharInfo::RefreshStatPoint() {
 }
 
 
-void CWndCharInfo::GetVirtualATK(int * pnMin, int * pnMax) {
-	int nParts = PARTS_RWEAPON;
+std::pair<int, int> CWndCharInfo::GetVirtualATK() const {
+	if (!g_pPlayer) return { 0, 0 };
 
-	*pnMin = 0;
-	*pnMax = 0;
+	const ItemProp * const pItemProp = g_pPlayer->GetActiveHandItemProp(PARTS_RWEAPON);
+	if (pItemProp == nullptr) return { 0, 0 };
 
-	if (g_pPlayer) {
-		ItemProp * pItemProp = g_pPlayer->GetActiveHandItemProp(nParts);
-		if (pItemProp == NULL)
-			return;
+	int min = pItemProp->dwAbilityMin * 2;
+	int max = pItemProp->dwAbilityMax * 2;
 
-		*pnMin = pItemProp->dwAbilityMin * 2;
-		*pnMax = pItemProp->dwAbilityMax * 2;
+	min = g_pPlayer->GetParam(DST_ABILITY_MIN, min);
+	max = g_pPlayer->GetParam(DST_ABILITY_MAX, max);
 
-		*pnMin = g_pPlayer->GetParam(DST_ABILITY_MIN, *pnMin);
-		*pnMax = g_pPlayer->GetParam(DST_ABILITY_MAX, *pnMax);
+	int nATK = 0;
+	switch (pItemProp->dwWeaponType) {
+		case WT_MELEE_SWD:
+			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_SWD)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			break;
+		case WT_MELEE_AXE:
+			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_AXE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
+			break;
+		case WT_MELEE_STAFF:
+			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STAFF)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			break;
+		case WT_MELEE_STICK:
+			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STICK)) + (float(g_pPlayer->GetLevel() * 1.3f)));
+			break;
+		case WT_MELEE_KNUCKLE:
+			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_KNUCKLE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
+			break;
+		case WT_MAGIC_WAND:
+			nATK = (int)((g_pPlayer->GetInt() + m_nIntCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_WAND) + g_pPlayer->GetLevel() * 1.2f);
+			break;
+		case WT_MELEE_YOYO:
+			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_YOYO)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			break;
+		case WT_RANGE_BOW:
+			nATK = (int)((((g_pPlayer->GetDex() + m_nDexCount - 14) * 4.0f + (g_pPlayer->GetLevel() * 1.3f) + ((g_pPlayer->GetStr() + m_nStrCount) * 0.2f)) * 0.7f));
+			break;
+	}
 
-		int nATK = 0;
-		switch (pItemProp->dwWeaponType) {
-			case WT_MELEE_SWD:
-				nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_SWD)) + (float(g_pPlayer->GetLevel() * 1.1f)));
-				break;
-			case WT_MELEE_AXE:
-				nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_AXE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
-				break;
-			case WT_MELEE_STAFF:
-				nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STAFF)) + (float(g_pPlayer->GetLevel() * 1.1f)));
-				break;
-			case WT_MELEE_STICK:
-				nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STICK)) + (float(g_pPlayer->GetLevel() * 1.3f)));
-				break;
-			case WT_MELEE_KNUCKLE:
-				nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_KNUCKLE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
-				break;
-			case WT_MAGIC_WAND:
-				nATK = (int)((g_pPlayer->GetInt() + m_nIntCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_WAND) + g_pPlayer->GetLevel() * 1.2f);
-				break;
-			case WT_MELEE_YOYO:
-				nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_YOYO)) + (float(g_pPlayer->GetLevel() * 1.1f)));
-				break;
-			case WT_RANGE_BOW:
-				nATK = (int)((((g_pPlayer->GetDex() + m_nDexCount - 14) * 4.0f + (g_pPlayer->GetLevel() * 1.3f) + ((g_pPlayer->GetStr() + m_nStrCount) * 0.2f)) * 0.7f));
-				break;
-		}
+	nATK += g_pPlayer->GetPlusWeaponATK(pItemProp->dwWeaponType);
 
-		nATK += g_pPlayer->GetPlusWeaponATK(pItemProp->dwWeaponType);	// ������ �߰� ���ݷ¸� ���Ѵ�.
+	const int nPlus = nATK + g_pPlayer->GetParam(DST_CHR_DMG, 0);
 
-		int nPlus = nATK + g_pPlayer->GetParam(DST_CHR_DMG, 0);
+	min += nPlus;
+	max += nPlus;
 
-		*pnMin += nPlus;
-		*pnMax += nPlus;
+	CItemElem * pWeapon = g_pPlayer->GetWeaponItem(PARTS_RWEAPON);
+	if (pWeapon) {
 
-		CItemElem * pWeapon = g_pPlayer->GetWeaponItem(nParts);
-		if (pWeapon && pWeapon->GetProp()) {
+		if (pWeapon->GetProp()) {
 			float f = g_pPlayer->GetItemMultiplier(pWeapon);
-			*pnMin = (int)(*pnMin * f);
-			*pnMax = (int)(*pnMax * f);
+			min = static_cast<int>(min * f);
+			max = static_cast<int>(max * f);
 		}
 
-		if (pWeapon) {
-			int nOption = pWeapon->GetAbilityOption();
-			if (nOption > 0) {
-				int nValue = (int)pow((float)(nOption), 1.5f);
-
-				*pnMin += nValue;
-				*pnMax += nValue;
-			}
+		const int nOption = pWeapon->GetAbilityOption();
+		if (nOption > 0) {
+			const int nValue = (int)pow((float)(nOption), 1.5f);
+			min += nValue;
+			max += nValue;
 		}
 	}
+	
+	return { min, max };
 }
 
 
@@ -781,26 +778,21 @@ float CWndCharInfo::GetVirtualATKSpeed() {
 }
 
 
-void CWndCharInfo::RenderATK(C2DRender * p2DRender, int x, int y) {
+void CWndCharInfo::RenderATK(C2DRender * p2DRender, const int x, const int y) {
+	const auto [nMin, nMax] = GetVirtualATK();
+
 	DWORD dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	char szText[32];
-	int nMin, nMax;
-	int nTemp1, nTemp2;
-
-	GetVirtualATK(&nTemp1, &nTemp2);
-	g_pPlayer->GetHitMinMax(&nMin, &nMax);
-
-	if ((m_nStrCount != 0 || m_nDexCount != 0 || m_nIntCount != 0) && (nTemp1 != nMin || nTemp2 != nMax)) //���� ������ ����ǰ�? ���� �ɷ�ġ�� �ٸ� ���?
-	{
-		if ((g_nRenderCnt / 8) & 1) {
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
+	if ((g_nRenderCnt / 8) & 1) {
+		if (m_nStrCount != 0 || m_nDexCount != 0 || m_nIntCount != 0) {
+			int nTemp1, nTemp2;
+			g_pPlayer->GetHitMinMax(&nTemp1, &nTemp2);
+			if ((nTemp1 != nMin || nTemp2 != nMax)) {
+				dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
+			}
 		}
-
-		GetVirtualATK(&nMin, &nMax);
-	} else
-		g_pPlayer->GetHitMinMax(&nMin, &nMax);
-
-	int nATK = (nMin + nMax) / 2;
+	}
+	
+	int nATK = std::midpoint(nMin, nMax);
 
 	if (g_pPlayer->IsSMMode(SM_ATTACK_UP1) || g_pPlayer->IsSMMode(SM_ATTACK_UP))
 		nATK = (int)(nATK * 1.2f);
@@ -811,86 +803,75 @@ void CWndCharInfo::RenderATK(C2DRender * p2DRender, int x, int y) {
 	nATK += g_pPlayer->GetWeaponPlusDamage(1, FALSE);
 	nATK += g_pPlayer->GetParam(DST_ATKPOWER, 0);
 
-#ifdef __JEFF_11
-	if (nATK < 0)
-		nATK = 0;
-#endif	// __JEFF_11
+	nATK = std::max(0, nATK);
 
-	wsprintf(szText, "%d", nATK);
-
-	p2DRender->TextOut(x, y, szText, dwColor);
+	p2DRender->TextOut(x, y, nATK, dwColor);
 }
 
 void CWndHonor::OnDraw(C2DRender * p2DRender) {
-	CWndListBox * pWndListBox = (CWndListBox *)GetDlgItem(WIDC_LISTBOX1);
-	LPWNDCTRL	pCustom = NULL;
-	DWORD		dwNormal;
-	int			nIndex = 0;
-	pCustom = GetWndCtrl(WIDC_LISTBOX1);
-	dwNormal = D3DCOLOR_ARGB(255, 0, 0, 0);
+	if (m_vecTitle.empty()) {
+		const int nIndex = 0;
+		LPWNDCTRL	pCustom = GetWndCtrl(WIDC_LISTBOX1);
+		const DWORD dwNormal = D3DCOLOR_ARGB(255, 0, 0, 0);
 
-	if (m_vecTitle.empty() != false)
 		p2DRender->TextOut(pCustom->rect.left + 5, pCustom->rect.top + 8 + (nIndex) * 16, prj.GetText(TID_GAME_NO_TITLE), dwNormal);
+	}
 }
 
 
 void CWndHonor::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
-	// Ÿ��Ʋ�� �˻��ؼ� ����Ʈ�� �߰��ϰ�, ������ ���ٴ� �޽��� ���?
+
 	RefreshList();
-	CWndListBox * pWndListBox = (CWndListBox *)GetDlgItem(WIDC_LISTBOX1);
+	CWndListBox * pWndListBox = GetDlgItem<CWndListBox>(WIDC_LISTBOX1);
 	pWndListBox->m_nSelectColor = D3DCOLOR_ARGB(255, 255, 0, 0);
 }
 
 void CWndHonor::RefreshList() {
-	CWndButton * pWndButton1 = (CWndButton *)GetDlgItem(WIDC_BUTTON1);
-	CWndListBox * pWndListBox = (CWndListBox *)GetDlgItem(WIDC_LISTBOX1);
-	pWndListBox->ResetContent();
-	pWndButton1->EnableWindow(FALSE);
+	GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(FALSE);
 
-	m_vecTitle.clear();
+	CWndListBox * pWndListBox = GetDlgItem<CWndListBox>(WIDC_LISTBOX1);
+	pWndListBox->ResetContent();
+
 	m_vecTitle = CTitleManager::Instance()->m_vecEarned;
 
-	if (g_pPlayer)
-		m_nSelectedId = g_pPlayer->m_nHonor;
+	if (g_pPlayer) m_nSelectedId = g_pPlayer->m_nHonor;
 
-	if (m_vecTitle.size() > 0) {
+	if (!m_vecTitle.empty()) {
 		pWndListBox->AddString(prj.GetText(TID_GAME_NOT_SELECTED_TITLE));
-		for (auto iter = m_vecTitle.begin(); iter != m_vecTitle.end(); ++iter) {
-			pWndListBox->AddString(iter->strTitle.GetBuffer(0));
+		for (const EarnedTitle & title : m_vecTitle) {
+			pWndListBox->AddString(title.strTitle.GetString());
 		}
 	}
 }
 
 
-BOOL CWndHonor::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
-	// This function is never actually called
+BOOL CWndHonor::Initialize(CWndBase * pWndParent, DWORD) {
+	// TODO: This function is never actually called, delete it
 	return CWndNeuz::InitDialog(APP_HONOR, pWndParent, 0, CPoint(0, 0));
 }
 
 
 BOOL CWndHonor::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
-	CWndButton * pWndButton1 = (CWndButton *)GetDlgItem(WIDC_BUTTON1);
 	switch (nID) {
-		case WIDC_LISTBOX1: // view ctrl
-		{
-			CWndListBox * pWndListBox = (CWndListBox *)GetDlgItem(WIDC_LISTBOX1);
+		case WIDC_LISTBOX1: {
+			CWndListBox * pWndListBox = GetDlgItem<CWndListBox>(WIDC_LISTBOX1);
 			if (pWndListBox->GetCurSel() == 0) {
 				m_nSelectedId = -1;
-				pWndButton1->EnableWindow(TRUE);
 			} else {
 				m_nSelectedId = m_vecTitle[pWndListBox->GetCurSel() - 1].nId;
-				pWndButton1->EnableWindow(TRUE);
+			}
+			GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(TRUE);
+			break;
+		}
+		case WIDC_BUTTON1: {
+			if (g_pPlayer) {
+				GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(FALSE);
+				g_DPlay.SendReqHonorTitleChange(m_nSelectedId);
 			}
 			break;
 		}
-		case WIDC_BUTTON1:// ���õ� Ÿ��Ʋ�� ����ϰ�? �Ѵ�
-			if (g_pPlayer) {
-				pWndButton1->EnableWindow(FALSE);
-				g_DPlay.SendReqHonorTitleChange(m_nSelectedId);
-				break;
-			}
-	};
+	}
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
