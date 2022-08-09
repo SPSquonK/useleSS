@@ -99,28 +99,6 @@ float GetWandATKMultiplier( int nLevel )
 //////////////////////////////////////////////////////////////////////////
 // CMover ATTACK RELATED MEMBER FUNCTIONS
 //////////////////////////////////////////////////////////////////////////
-int GetWeaponPlusDamage( int nDamage, BOOL bRandom, ItemProp* pItemProp , int nOption )
-{
-	return 0; // 방어력 무시가 아니라 공격력을 높이는 방향으로 수정되었음 
-}
-
-
-// 들고있는 무기의 옵션에 의한 추가 데미지를 구한다. ( bRandom = TRUE )
-int CMover::GetWeaponPlusDamage( int nDamage, BOOL bRandom )
-{
-	int nPlus = 0;
-	CItemElem* pWeapon = GetWeaponItem();
-	if( pWeapon )
-	{
-		int nOption = pWeapon->GetAbilityOption();	
-		if( nOption > 10 )
-			return nPlus;
-		
-		ItemProp* pItemProp = GetActiveHandItemProp();
-		return ::GetWeaponPlusDamage( nDamage, bRandom, pItemProp, nOption ); 
-	}
-	return nPlus;
-}
 
 // 공격에 의해서 날아갈 수 있는가?
 BOOL CMover::CanFlyByAttack()
@@ -1288,7 +1266,6 @@ int CMover::PostCalcGeneric( int nATK, ATTACK_INFO* pInfo )
 		nDamage = std::max( nDamage, nMin );
 	}
 
-	nDamage += GetWeaponPlusDamage( nDamage );	// 인첸트 옵션 데미지( 방어력 무관 ) 
 	if( nDamage == 0 )
 	{
 		pInfo->dwAtkFlags &= ~AF_CRITICAL;

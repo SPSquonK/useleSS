@@ -1038,7 +1038,6 @@ public:
 	float			GetBlockFactor( CMover* pAttacker, ATTACK_INFO* pInfo );
 	int				GetWeaponATK( DWORD dwWeaponType );
 	int				GetPlusWeaponATK( DWORD dwWeaponType );
-	int				GetWeaponPlusDamage( int nDamage, BOOL bRandom = TRUE );
 	void			GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* pnDEFFactor, int nParts );
 	int				GetPropATKPlus( int nParts );
 	int				GetPropDEFPlus();
@@ -1592,7 +1591,6 @@ inline void CMover::ClearActParam()
 }
 
 
-extern int GetWeaponPlusDamage( int nDamage, BOOL bRandom, ItemProp* pItemProp , int nOption );
 extern int __IsEndQuestCondition( CMover* pMover, int nQuestId );
 extern int __IsBeginQuestCondition( CMover* pMover, int nQuestId );
 extern int __IsNextLevelQuest( CMover* pMover, int nQuestId );

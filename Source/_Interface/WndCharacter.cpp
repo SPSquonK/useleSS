@@ -638,7 +638,7 @@ std::pair<int, int> CWndCharInfo::GetVirtualATK() const {
 	if (!g_pPlayer) return { 0, 0 };
 
 	const ItemProp * const pItemProp = g_pPlayer->GetActiveHandItemProp(PARTS_RWEAPON);
-	if (pItemProp == nullptr) return { 0, 0 };
+	if (!pItemProp) return { 0, 0 };
 
 	int min = pItemProp->dwAbilityMin * 2;
 	int max = pItemProp->dwAbilityMax * 2;
@@ -800,7 +800,6 @@ void CWndCharInfo::RenderATK(C2DRender * p2DRender, const int x, const int y) {
 	if (0 < g_pPlayer->GetParam(DST_ATKPOWER_RATE, 0))
 		nATK = nATK + (nATK * g_pPlayer->GetParam(DST_ATKPOWER_RATE, 0) / 100);
 
-	nATK += g_pPlayer->GetWeaponPlusDamage(1, FALSE);
 	nATK += g_pPlayer->GetParam(DST_ATKPOWER, 0);
 
 	nATK = std::max(0, nATK);
