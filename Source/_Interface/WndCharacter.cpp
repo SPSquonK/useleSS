@@ -239,20 +239,6 @@ void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
 
 	//////////////// pvp /////////////////////////
 
-	if (g_pPlayer->IsBaseJob()) {
-		if (g_pPlayer->GetLevel() >= MAX_JOB_LEVEL)
-			m_wndChangeJob.EnableWindow(TRUE);
-		else
-			m_wndChangeJob.EnableWindow(FALSE);
-	} else if (g_pPlayer->IsExpert()) {
-		if (g_pPlayer->GetLevel() >= MAX_JOB_LEVEL + MAX_EXP_LEVEL)
-			m_wndChangeJob.EnableWindow(TRUE);
-		else
-			m_wndChangeJob.EnableWindow(FALSE);
-	}
-
-	//CRect rect = GetClientRect();
-	//rect.bottom -= 30;
 	int nyAdd2 = 284;
 	y = 15 + nyAdd2, nNext = 15;
 	dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
@@ -426,6 +412,7 @@ void CWndCharInfo::OnInitialUpdate() {
 	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
 		static constexpr int yJob = 10 + 21 + 15;
 		m_wndChangeJob.Create("E", 0, CRect(175 - 13, yJob + 1, 175, yJob + 1 + 13), this, 10);
+		m_wndChangeJob.EnableWindow(TRUE);
 	}
 
 	RefreshStatPoint();
