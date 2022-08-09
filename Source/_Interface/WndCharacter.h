@@ -1,11 +1,20 @@
 #pragma once
 
+#include <span>
 
 class CWndCharInfo final : public CWndBase {
 public:
+	enum class TooltipBox { Str, Sta, Dex, Int, Gp, Status, Edit, Apply, Reset };
+
+	struct Hoverable {
+		CRect rect;
+		TooltipBox box;
+	};
+
 	static constexpr DWORD TitleColor        = D3DCOLOR_ARGB(255, 0, 0, 0);
 	static constexpr DWORD LabelColor        = D3DCOLOR_ARGB(255, 0, 0, 180);
 	static constexpr DWORD RegularValueColor = D3DCOLOR_ARGB(255, 0, 0, 0);
+	static constexpr DWORD ChangeValueColor  = D3DCOLOR_ARGB(255, 255, 0, 0);
 
 public:
 	CWndButton		m_wndChangeJob;
@@ -56,8 +65,10 @@ private:
 	static DWORD StatColor(int rawStat, int totalStat);
 
 	void DrawCharacterBase(C2DRender * p2DRender);
-	// TODO: Draw stats
+	void DrawStats(C2DRender * p2DRender);
 	void DrawPvp(C2DRender * p2DRender);
+
+	void CheckAndDrawTooltip();
 };
 
 class CWndHonor final : public CWndNeuz {

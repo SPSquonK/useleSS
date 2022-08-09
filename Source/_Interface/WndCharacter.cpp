@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "WndCharacter.h"
+#include <algorithm>
 #include <concepts>
 #include <numeric>
 #include "defineText.h"
@@ -19,6 +20,8 @@ float GetAttackSpeedPlusValue(int n); // MoverAttack.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
 struct ByLineDrawer {
 	int y;
 	int step;
@@ -31,213 +34,19 @@ struct ByLineDrawer {
 	}
 };
 
+static DWORD DecideStatColor(auto displayedValue, auto statCheck, auto newValueGet) {
+	if (!((g_nRenderCnt / 8) & 1)) return CWndCharInfo::RegularValueColor;
+	if (!statCheck()) return CWndCharInfo::RegularValueColor;
+
+	const auto newValue = newValueGet();
+	if (displayedValue == newValue) return CWndCharInfo::RegularValueColor;
+	return CWndCharInfo::ChangeValueColor;
+};
+
 void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
-	CRect rect = GetClientRect();
-	rect.bottom -= 30;
-
 	DrawCharacterBase(p2DRender);
-
-	//�������� -> ����/ä�� ����
-
-
-	p2DRender->TextOut(60, 113, prj.GetText((TID_APP_CHARACTER_DETAIL)), D3DCOLOR_ARGB(255, 0, 0, 0));
-	/////////////////////////// detail begin //////////////////////////////////
-	static constexpr int nyAdd = 121;
-
-	DWORD dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	int x = 50;
-	int y = 10 + nyAdd;
-	int nNext = 15;
-	// ���ݷ�
-	RenderATK(p2DRender, x, y);
-	y += nNext;
-
-	//����
-	if (m_nStaCount != 0 && GetVirtualDEF() != g_pPlayer->GetShowDefense(FALSE)) //���� ������ ����ǰ�? ���� �ɷ�ġ�� �ٸ� ���?
-	{
-		if ((g_nRenderCnt / 8) & 1) {
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-		}
-		p2DRender->TextOut(x, y, GetVirtualDEF(), dwColor); y += nNext;
-	} else
-		p2DRender->TextOut(x, y, g_pPlayer->GetShowDefense(FALSE), dwColor); y += nNext;
-
-	x = 140; y = 10 + nyAdd;
-
-	//ũ��Ƽ��
-	CString strMsg;
-	dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	if (m_nDexCount != 0 && GetVirtualCritical() != g_pPlayer->GetCriticalProb()) //���� ������ ����ǰ�? ���� �ɷ�ġ�� �ٸ� ���?
-	{
-		if ((g_nRenderCnt / 8) & 1) {
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-		}
-		strMsg.Format("%d%%", GetVirtualCritical());
-	} else
-		strMsg.Format("%d%%", g_pPlayer->GetCriticalProb());
-	p2DRender->TextOut(x, y, strMsg, dwColor); y += nNext;
-
-	//���ݼӵ�	
-	float fAttackSpeed;
-	dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	if (m_nDexCount != 0 && GetVirtualATKSpeed() != g_pPlayer->GetAttackSpeed()) //���� ������ ����ǰ�? ���� �ɷ�ġ�� �ٸ� ���?
-	{
-		if ((g_nRenderCnt / 8) & 1) {
-			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-		}
-		fAttackSpeed = GetVirtualATKSpeed();
-	} else
-		fAttackSpeed = g_pPlayer->GetAttackSpeed();
-
-	strMsg.Format("%d%%", int(fAttackSpeed * 100.0f) / 2);
-	p2DRender->TextOut(x, y, strMsg, dwColor); y += nNext;
-
-	x = 15;
-	// �Ʒ����� �ɷ�ġ ���� 
-	y = 52 + nyAdd;
-	int StatYPos = 50;
-
-	dwColor = StatColor(g_pPlayer->m_nStr, g_pPlayer->GetStr());
-	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetStr(), dwColor); y += nNext;
-
-	dwColor = StatColor(g_pPlayer->m_nSta, g_pPlayer->GetSta());
-	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetSta(), dwColor); y += nNext;
-
-	dwColor = StatColor(g_pPlayer->m_nDex, g_pPlayer->GetDex());
-	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetDex(), dwColor); y += nNext;
-
-	dwColor = StatColor(g_pPlayer->m_nInt, g_pPlayer->GetInt());
-	p2DRender->TextOut(StatYPos, y, g_pPlayer->GetInt(), dwColor); y += nNext;
-
-	if (m_nGpPoint != 0 && ((g_nRenderCnt % 8) == 1)) {
-		dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
-	}
-
-	p2DRender->TextOut(105, y, m_nGpPoint, dwColor); y += nNext;
-
-	CRect rectHittest[5];
-
-	rectHittest[0].SetRect(10, 52 + nyAdd, 80, 65 + nyAdd);
-	rectHittest[1].SetRect(10, 67 + nyAdd, 80, 80 + nyAdd);
-	rectHittest[2].SetRect(10, 82 + nyAdd, 80, 95 + nyAdd);
-	rectHittest[3].SetRect(10, 97 + nyAdd, 80, 110 + nyAdd);
-	rectHittest[4].SetRect(10, 112 + nyAdd, 160, 125 + nyAdd);
-
-	CRect rectTemp;
-	CPoint ptTemp;
-	// ���� ������ �ϱ�( Str, Sta, Dex, Int, GP )
-	CPoint ptMouse = GetMousePoint();
-	for (int iC = 0; iC < 5; ++iC) {
-		if (rectHittest[iC].PtInRect(ptMouse)) {
-			ClientToScreen(&ptMouse);
-			ClientToScreen(&rectHittest[iC]);
-			CEditString strEdit;
-			CString szString;
-			DWORD dwColorName = D3DCOLOR_XRGB(0, 93, 0);
-			DWORD dwColorCommand = D3DCOLOR_XRGB(180, 0, 0);
-			if (iC == 0)	// STR
-			{
-				szString.Format("%s", prj.GetText(TID_TOOLTIP_STR));
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				szString.Format("  %d\n ", g_pPlayer->GetStr());
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STR0));
-				strEdit.AddString("(");
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STR1), dwColorCommand);
-				strEdit.AddString(")");
-			} else if (iC == 1) // STA
-			{
-				szString.Format("%s", prj.GetText(TID_TOOLTIP_STA));
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				szString.Format("  %d\n ", g_pPlayer->GetSta());
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STA0));
-				strEdit.AddString("\n ");
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STA1));
-			} else if (iC == 2) // DEX
-			{
-				szString.Format("%s", prj.GetText(TID_TOOLTIP_DEX));
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				szString.Format("  %d\n ", g_pPlayer->GetDex());
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX0));
-				strEdit.AddString("\n ");
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX1));
-				strEdit.AddString("\n ");
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX2));
-				strEdit.AddString("\n ");
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX3), dwColorCommand);
-			} else if (iC == 3) // INT
-			{
-				szString.Format("%s", prj.GetText(TID_TOOLTIP_INT));
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				szString.Format("  %d\n ", g_pPlayer->GetInt());
-				strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_INT0));
-				strEdit.AddString("\n ");
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_INT1));
-			} else // GP
-				strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_GPPOINT));
-
-			g_toolTip.PutToolTip(100, strEdit, rectHittest[iC], ptMouse, 3);
-			break;
-		}
-	}
-
-	y = 10 + nyAdd;
-	dwColor = D3DCOLOR_ARGB(255, 0, 0, 180);
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_13), dwColor);
-	p2DRender->TextOut(85, y, prj.GetText(TID_GAME_CHARACTER_14), dwColor); y += nNext;
-
-	p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_DEFENCE), dwColor);
-	p2DRender->TextOut(85, y, prj.GetText(TID_GAME_CHARACTER_15), dwColor); y += nNext;
-	y += 12;
-	p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_STR), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_STA), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_DEX), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_INT), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_07), dwColor); y += nNext;
-
-	//�ɷ�ġ ���� Tooltip
-	rect.SetRect(7, 10 + nyAdd, 160, 38 + nyAdd);
-	if (rect.PtInRect(ptMouse)) {
-		ClientToScreen(&ptMouse);
-		ClientToScreen(&rect);
-		CEditString strEdit;
-		if (m_nStrCount != 0 || m_nStaCount != 0 || m_nDexCount != 0 || m_nIntCount != 0)
-			strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_STATUS1));
-		else
-			strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_STATUS2));
-		g_toolTip.PutToolTip(100, strEdit, rect, ptMouse, 3);
-	}
-	//Edit Tooltip
-	rect.SetRect(90, 52 + nyAdd, 160, 110 + nyAdd);
-	if (rect.PtInRect(ptMouse)) {
-		ClientToScreen(&ptMouse);
-		ClientToScreen(&rect);
-		CEditString strEdit;
-		strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_EDIT));
-		g_toolTip.PutToolTip(100, strEdit, rect, ptMouse, 3);
-	}
-	//Button Tooltip
-	rect = m_wndApply.m_rectWindow;
-	if (rect.PtInRect(ptMouse)) {
-		ClientToScreen(&ptMouse);
-		ClientToScreen(&rect);
-		CEditString strEdit;
-		strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_APPLY));
-		g_toolTip.PutToolTip(100, strEdit, rect, ptMouse, 3);
-	}
-	rect = m_wndReset.m_rectWindow;
-	if (rect.PtInRect(ptMouse)) {
-		ClientToScreen(&ptMouse);
-		ClientToScreen(&rect);
-		CEditString strEdit;
-		strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_RESET));
-		g_toolTip.PutToolTip(100, strEdit, rect, ptMouse, 3);
-	}
-
-	//////////////// pvp /////////////////////////
+	DrawStats(p2DRender);
+	CheckAndDrawTooltip();
 	DrawPvp(p2DRender);
 }
 
@@ -306,6 +115,87 @@ void CWndCharInfo::DrawCharacterBase(C2DRender * p2DRender) {
 		});
 }
 
+void CWndCharInfo::DrawStats(C2DRender * p2DRender) {
+	static constexpr int nyAdd = 121;
+
+	// Title
+	p2DRender->TextOut(60, 113, prj.GetText((TID_APP_CHARACTER_DETAIL)), D3DCOLOR_ARGB(255, 0, 0, 0));
+
+	// Computed stats display
+	ByLineDrawer computed(10 + nyAdd, 15);
+
+	computed.DrawLine("ATK and Crit", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_13), LabelColor);
+		RenderATK(p2DRender, 50, y);
+
+		p2DRender->TextOut(85, y, prj.GetText(TID_GAME_CHARACTER_14), LabelColor);
+		const int crit = GetVirtualCritical();
+		CString strMsg;
+		strMsg.Format("%d%%", crit);
+		const DWORD color = DecideStatColor(crit,
+			[&]() { return m_nDexCount != 0; },
+			[&]() { return g_pPlayer->GetCriticalProb(); }
+		);
+		p2DRender->TextOut(140, y, strMsg, color);
+		});
+
+	computed.DrawLine("Def and AtkSpeed", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_DEFENCE), LabelColor);
+		const auto virtualDef = GetVirtualDEF();
+		const DWORD defColor = DecideStatColor(virtualDef,
+			[&]() { return m_nStaCount != 0; },
+			[&]() { return g_pPlayer->GetShowDefense(FALSE); }
+		);
+		p2DRender->TextOut(50, y, virtualDef, defColor);
+
+		p2DRender->TextOut(85, y, prj.GetText(TID_GAME_CHARACTER_15), LabelColor);
+		const float attackSpeed = GetVirtualATKSpeed();
+		const DWORD asColor = DecideStatColor(attackSpeed,
+			[&]() { return m_nDexCount != 0; },
+			[&]() { return g_pPlayer->GetAttackSpeed(); }
+		);
+		CString strMsg;
+		strMsg.Format("%d%%", int(attackSpeed * 100.0f) / 2);
+		p2DRender->TextOut(140, y, strMsg, asColor);
+		});
+
+	// Raw stats
+	ByLineDrawer rawStats(52 + nyAdd, 15);
+
+	rawStats.DrawLine("Str", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_STR), LabelColor);
+		const DWORD dwColor = StatColor(g_pPlayer->m_nStr, g_pPlayer->GetStr());
+		p2DRender->TextOut(50, y, g_pPlayer->GetStr(), dwColor);
+		});
+
+	rawStats.DrawLine("Sta", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_STA), LabelColor);
+		const DWORD dwColor = StatColor(g_pPlayer->m_nSta, g_pPlayer->GetSta());
+		p2DRender->TextOut(50, y, g_pPlayer->GetSta(), dwColor);
+		});
+
+	rawStats.DrawLine("Int", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_DEX), LabelColor);
+		const DWORD dwColor = StatColor(g_pPlayer->m_nDex, g_pPlayer->GetDex());
+		p2DRender->TextOut(50, y, g_pPlayer->GetDex(), dwColor);
+		});
+
+	rawStats.DrawLine("Int", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_INT), LabelColor);
+		const DWORD dwColor = StatColor(g_pPlayer->m_nInt, g_pPlayer->GetInt());
+		p2DRender->TextOut(50, y, g_pPlayer->GetInt(), dwColor);
+		});
+
+	rawStats.DrawLine("GP", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_07), LabelColor);
+		DWORD dwColor = RegularValueColor;
+		if (m_nGpPoint != 0 && ((g_nRenderCnt % 8) == 1)) {
+			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
+		}
+		p2DRender->TextOut(105, y, m_nGpPoint, dwColor);
+		});
+}
+
 void CWndCharInfo::DrawPvp(C2DRender * p2DRender) {
 	// Title
 	p2DRender->TextOut(60, 281, prj.GetText((TID_GAME_CHARACTTER_PVP0)), TitleColor);
@@ -339,6 +229,115 @@ void CWndCharInfo::DrawPvp(C2DRender * p2DRender) {
 		});
 }
 
+void CWndCharInfo::CheckAndDrawTooltip() {
+	static constexpr int nyAdd = 121;
+	boost::container::small_vector<Hoverable, 10> hoverables;
+	hoverables.emplace_back(CRect(10, 52 + nyAdd, 80, 65 + nyAdd), TooltipBox::Str);
+	hoverables.emplace_back(CRect(10, 67 + nyAdd, 80, 80 + nyAdd), TooltipBox::Sta);
+	hoverables.emplace_back(CRect(10, 82 + nyAdd, 80, 95 + nyAdd), TooltipBox::Dex);
+	hoverables.emplace_back(CRect(10, 97 + nyAdd, 80, 110 + nyAdd), TooltipBox::Int);
+	hoverables.emplace_back(CRect(10, 112 + nyAdd, 160, 125 + nyAdd), TooltipBox::Gp);
+	hoverables.emplace_back(CRect(7, 10 + nyAdd, 160, 38 + nyAdd), TooltipBox::Status);
+	hoverables.emplace_back(CRect(90, 52 + nyAdd, 160, 110 + nyAdd), TooltipBox::Edit);
+	hoverables.emplace_back(m_wndApply.m_rectWindow, TooltipBox::Apply);
+	hoverables.emplace_back(m_wndReset.m_rectWindow, TooltipBox::Reset);
+
+	CPoint ptMouse = GetMousePoint();
+
+	const auto it = std::ranges::find_if(hoverables,
+		[ptMouse](const CWndCharInfo::Hoverable & hoverable) {
+			return hoverable.rect.PtInRect(ptMouse);
+		}
+	);
+
+	if (it == hoverables.end()) return;
+
+	const TooltipBox tooltipType = it->box;
+
+	ClientToScreen(&ptMouse);
+	CRect rect = it->rect;
+	ClientToScreen(&rect);
+
+
+	static constexpr DWORD dwColorName = D3DCOLOR_XRGB(0, 93, 0);
+	static constexpr DWORD dwColorCommand = D3DCOLOR_XRGB(180, 0, 0);
+	CEditString strEdit;
+	CString szString;
+
+	switch (tooltipType) {
+		case TooltipBox::Str: {
+			szString.Format("%s", prj.GetText(TID_TOOLTIP_STR));
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			szString.Format("  %d\n ", g_pPlayer->GetStr());
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STR0));
+			strEdit.AddString("(");
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STR1), dwColorCommand);
+			strEdit.AddString(")");
+			break;
+		}
+		case TooltipBox::Sta: {
+			szString.Format("%s", prj.GetText(TID_TOOLTIP_STA));
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			szString.Format("  %d\n ", g_pPlayer->GetSta());
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STA0));
+			strEdit.AddString("\n ");
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_STA1));
+			break;
+		}
+		case TooltipBox::Dex: {
+			szString.Format("%s", prj.GetText(TID_TOOLTIP_DEX));
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			szString.Format("  %d\n ", g_pPlayer->GetDex());
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX0));
+			strEdit.AddString("\n ");
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX1));
+			strEdit.AddString("\n ");
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX2));
+			strEdit.AddString("\n ");
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_DEX3), dwColorCommand);
+			break;
+		}
+		case TooltipBox::Int: {
+			szString.Format("%s", prj.GetText(TID_TOOLTIP_INT));
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			szString.Format("  %d\n ", g_pPlayer->GetInt());
+			strEdit.AddString(szString, dwColorName, ESSTY_BOLD);
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_INT0));
+			strEdit.AddString("\n ");
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_COMMAND_INT1));
+			break;
+		}
+		case TooltipBox::Gp: {
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_GPPOINT));
+			break;
+		}
+		case TooltipBox::Status: {
+			if (m_nStrCount != 0 || m_nStaCount != 0 || m_nDexCount != 0 || m_nIntCount != 0)
+				strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_STATUS1));
+			else
+				strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_STATUS2));
+			break;
+		}
+		case TooltipBox::Edit: {
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_EDIT));
+			break;
+		}
+		case TooltipBox::Apply: {
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_APPLY));
+			break;
+		}
+		case TooltipBox::Reset: {
+			strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_RESET));
+			break;
+		}
+	}
+
+	g_toolTip.PutToolTip(100, strEdit, rect, ptMouse, 3);
+}
+
 DWORD CWndCharInfo::StatColor(const int rawStat, const int totalStat) {
 	if (rawStat == totalStat) {
 		return D3DCOLOR_ARGB(255, 0, 0, 0);
@@ -348,6 +347,7 @@ DWORD CWndCharInfo::StatColor(const int rawStat, const int totalStat) {
 		return D3DCOLOR_ARGB(255, 255, 0, 0);
 	}
 }
+
 
 void CWndCharInfo::OnInitialUpdate() {
 
@@ -423,12 +423,6 @@ void CWndCharInfo::OnInitialUpdate() {
 
 	MakeVertexBuffer();
 }
-
-
-// BOOL CWndCharInfo::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
-// 	CRect rect = m_pWndRoot->GetWindowRect();
-// 	return CWndBase::Create(WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_EXTENSION, rect, pWndParent, dwWndId);
-// }
 
 BOOL CWndCharInfo::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	int editnum = 0;
