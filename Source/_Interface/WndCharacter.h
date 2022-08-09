@@ -56,7 +56,8 @@ private:
 	static DWORD StatColor(int rawStat, int totalStat);
 
 	void DrawCharacterBase(C2DRender * p2DRender);
-
+	// TODO: Draw stats
+	void DrawPvp(C2DRender * p2DRender);
 };
 
 class CWndHonor final : public CWndNeuz {

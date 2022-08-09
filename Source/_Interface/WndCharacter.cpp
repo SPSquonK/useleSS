@@ -238,36 +238,7 @@ void CWndCharInfo::OnDraw(C2DRender * p2DRender) {
 	}
 
 	//////////////// pvp /////////////////////////
-
-	int nyAdd2 = 284;
-	y = 15 + nyAdd2, nNext = 15;
-	dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
-	char szBuff[32];
-	int gap1 = 0;
-	int gap2 = 0;
-	gap1 -= 10;
-	gap2 -= 10;
-
-	p2DRender->TextOut(60, 281, prj.GetText((TID_GAME_CHARACTTER_PVP0)), dwColor);
-
-	strcpy(szBuff, g_pPlayer->GetFameName());
-	if (IsEmpty(szBuff)) { szBuff[0] = '-'; szBuff[1] = NULL; }
-	p2DRender->TextOut(100 + gap1, y, szBuff, dwColor); y += nNext;
-	y += 4;
-	p2DRender->TextOut(100 + gap2, y, g_pPlayer->m_nFame, dwColor); y += nNext;
-	y += 20;
-	p2DRender->TextOut(100 + gap2, y, g_pPlayer->GetPKValue(), dwColor); y += nNext;
-	y += 4;
-	p2DRender->TextOut(100 + gap2, y, g_pPlayer->GetPKPropensity(), dwColor); y += nNext;
-
-	y = 13 + nyAdd2;
-	nNext = 19;
-	dwColor = D3DCOLOR_ARGB(255, 0, 0, 180);
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP1), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP2), dwColor); y += nNext;
-	y += 20;
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP3), dwColor); y += nNext;
-	p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP4), dwColor); y += nNext;
+	DrawPvp(p2DRender);
 }
 
 void CWndCharInfo::DrawCharacterBase(C2DRender * p2DRender) {
@@ -332,6 +303,39 @@ void CWndCharInfo::DrawCharacterBase(C2DRender * p2DRender) {
 		if (CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannelFromPos(g_Option.m_nSer, g_Option.m_nMSer)) {
 			p2DRender->TextOut(80, y, channel->lpName, RegularValueColor);
 		}
+		});
+}
+
+void CWndCharInfo::DrawPvp(C2DRender * p2DRender) {
+	// Title
+	p2DRender->TextOut(60, 281, prj.GetText((TID_GAME_CHARACTTER_PVP0)), TitleColor);
+
+	// Content
+	ByLineDrawer pvp(15 + 284, 19);
+
+	pvp.DrawLine("Fame", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP1), LabelColor);
+
+		const char * fameName = g_pPlayer->GetFameName();
+		if (fameName[0] == '\0') fameName = "-";
+		p2DRender->TextOut(90, y, fameName, RegularValueColor);
+		});
+
+	pvp.DrawLine("PVP Points", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP2), LabelColor);
+		p2DRender->TextOut(90, y, g_pPlayer->m_nFame, RegularValueColor);
+		});
+
+	pvp.y += 16;
+
+	pvp.DrawLine("PK", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP3), LabelColor);
+		p2DRender->TextOut(90, y, g_pPlayer->GetPKValue(), RegularValueColor);
+		});
+
+	pvp.DrawLine("Propency", [&](const int y) {
+		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTTER_PVP4), LabelColor);
+		p2DRender->TextOut(90, y, g_pPlayer->GetPKPropensity(), RegularValueColor);
 		});
 }
 
