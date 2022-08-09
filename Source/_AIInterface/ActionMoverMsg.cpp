@@ -614,8 +614,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			DWORD dwOption = MOP_SWDFORCE | MOP_NO_TRANS;
 			
 #ifdef __XSLOW1018
-			int nMin, nTemp;
-			pMover->GetHitMinMax( &nMin, &nTemp );
+			const auto [nMin, nTemp] = pMover->GetHitMinMax();
 			if( dwMsg == OBJMSG_ATK3 || dwMsg == OBJMSG_ATK4 )
 				if( pMover->GetLevel() >= 12 && pHitObj->GetHitPoint() < (int)(nMin * 1.5f) )
 					dwOption |= MOP_HITSLOW;

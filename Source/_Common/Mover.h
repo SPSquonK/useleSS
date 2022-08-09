@@ -1062,7 +1062,7 @@ public:
 	int				GetItemAbility( int nItem );
 	[[nodiscard]] int GetItemAbilityMin(int nItem) const;
 	[[nodiscard]] int GetItemAbilityMax(int nItem) const;
-	void			GetHitMinMax( int* pnMin, int* pnMax, ATTACK_INFO *pInfo = NULL );
+	std::pair<int, int> GetHitMinMax(const ATTACK_INFO * pInfo = nullptr);
 	BOOL			IsAfterDeath();
 	BOOL			IsDie() { return m_pActMover->IsDie() || m_nHitPoint == 0; }
 	BOOL			IsLive() { return m_pActMover->IsDie() == FALSE || m_nHitPoint > 0; }		// && ¸¦  ||·Î ¹Ù²åÀ½.  !=¸¦ >·Î ¹Ù²Þ

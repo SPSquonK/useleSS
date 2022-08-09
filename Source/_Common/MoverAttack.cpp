@@ -366,65 +366,46 @@ int CMover::GetWeaponATK( DWORD dwWeaponType )
 
 
 // 공격력Min,Max를 구한다.
-void CMover::GetHitMinMax( int* pnMin, int* pnMax, ATTACK_INFO *pInfo )
-{
-	int nParts = PARTS_RWEAPON;
-	if( pInfo )
-		nParts  = pInfo->nParts;
+std::pair<int, int> CMover::GetHitMinMax(const ATTACK_INFO * const pInfo) {
+	const int nParts = pInfo ? pInfo->nParts : PARTS_RWEAPON;
 
-	*pnMin = 0;
-	*pnMax = 0;
-
-	if( IsInvalidObj(this) )	
-		return;
+	if (IsInvalidObj(this))	return { 0, 0 };
+	
+	int min, max;
 
 	if( IsPlayer() )
 	{
-		ItemProp* pItemProp = GetActiveHandItemProp( nParts );
-		if( pItemProp == NULL )
-			return;
+		const ItemProp * pItemProp = GetActiveHandItemProp(nParts);
+		if (!pItemProp) return { 0, 0 };
 
-		*pnMin = pItemProp->dwAbilityMin * 2;
-		*pnMax = pItemProp->dwAbilityMax * 2;
-
-		*pnMin = GetParam( DST_ABILITY_MIN, *pnMin );
-		*pnMax = GetParam( DST_ABILITY_MAX, *pnMax );
+		min = GetParam(DST_ABILITY_MIN, pItemProp->dwAbilityMin * 2);
+		max = GetParam(DST_ABILITY_MAX, pItemProp->dwAbilityMax * 2);
 
 		int nPlus = GetWeaponATK( pItemProp->dwWeaponType ) + GetParam( DST_CHR_DMG, 0 );
-		*pnMin += nPlus;
-		*pnMax += nPlus;
+		min += nPlus;
+		max += nPlus;
 
-		CItemElem *pWeapon = GetWeaponItem( nParts );
-		if( pWeapon && pWeapon->GetProp() )
-		{
-			float f = GetItemMultiplier( pWeapon );
-			*pnMin = (int)( *pnMin * f );
-			*pnMax = (int)( *pnMax * f );
-		}
+		
+		if (CItemElem * pWeapon = GetWeaponItem(nParts)) {
+			if (pWeapon->GetProp()) {
+				const float f = GetItemMultiplier(pWeapon);
+				min = static_cast<int>(min * f);
+				max = static_cast<int>(max * f);
+			}
 
-		if( pWeapon )
-		{
-			int nOption = pWeapon->GetAbilityOption();
-			if( nOption > 0 )
-			{
-				int nValue = (int)( pow( (float)( nOption ), 1.5f ) );
-
-				*pnMin += nValue;
-				*pnMax += nValue;
+			const int nOption = pWeapon->GetAbilityOption();
+			if (nOption > 0) {
+				const int nValue = (int)(pow((float)(nOption), 1.5f));
+				min += nValue;
+				max += nValue;
 			}
 		}
 	} 
 	else
 	{
-		MoverProp* pMoverProp = GetProp();
-		*pnMin = pMoverProp->dwAtkMin;
-		*pnMax = pMoverProp->dwAtkMax;
-
-		*pnMin = GetParam( DST_ABILITY_MIN, *pnMin );
-		*pnMax = GetParam( DST_ABILITY_MAX, *pnMax );
-		
-		*pnMin = GetParam( DST_CHR_DMG, *pnMin );
-		*pnMax = GetParam( DST_CHR_DMG, *pnMax );		
+		const MoverProp * const pMoverProp = GetProp();
+		min = GetParam(DST_CHR_DMG, GetParam(DST_ABILITY_MIN, pMoverProp->dwAtkMin));
+		max = GetParam(DST_CHR_DMG, GetParam(DST_ABILITY_MAX, pMoverProp->dwAtkMax));
 		
 		DWORD dwAtk = pMoverProp->dwAtk1;
 		if( pInfo )
@@ -436,14 +417,14 @@ void CMover::GetHitMinMax( int* pnMin, int* pnMax, ATTACK_INFO *pInfo )
 	
 		if( dwAtk != NULL_ID )		// 들고있는 무기가 있을땐 그 무기의 min,max 값까지 더한다.
 		{
-			ItemProp* pItemProp = prj.GetItemProp( dwAtk );
-			if( pItemProp )
-			{
-				*pnMin += pItemProp->dwAbilityMin;
-				*pnMax += pItemProp->dwAbilityMax;
+			if (const ItemProp * pItemProp = prj.GetItemProp(dwAtk)) {
+				min += pItemProp->dwAbilityMin;
+				max += pItemProp->dwAbilityMax;
 			}
 		}
 	}
+
+	return { min, max };
 }
 
 // 방어력증폭값을 얻는다.    this는 방어자
@@ -1185,10 +1166,10 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 // 일반 공격 데미지를 구한다.
 int CMover::GetHitPower( ATTACK_INFO* pInfo  )
 {
-	int nMin, nMax, nATKFactor, nATK;
+	int nATKFactor, nATK;
 	GetDamagePropertyFactor( pInfo->pDefender, &nATKFactor, &pInfo->nDEFFactor, pInfo->nParts );
 
-	GetHitMinMax( &nMin, &nMax, pInfo );
+	auto [nMin, nMax] = GetHitMinMax(pInfo);
 
 	if( IsCriticalAttack( pInfo->pDefender, pInfo->dwAtkFlags ) )
 	{

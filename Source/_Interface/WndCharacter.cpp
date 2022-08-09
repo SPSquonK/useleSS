@@ -779,20 +779,19 @@ float CWndCharInfo::GetVirtualATKSpeed() {
 
 
 void CWndCharInfo::RenderATK(C2DRender * p2DRender, const int x, const int y) {
-	const auto [nMin, nMax] = GetVirtualATK();
+	const auto windowMinMax = GetVirtualATK();
 
 	DWORD dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
 	if ((g_nRenderCnt / 8) & 1) {
 		if (m_nStrCount != 0 || m_nDexCount != 0 || m_nIntCount != 0) {
-			int nTemp1, nTemp2;
-			g_pPlayer->GetHitMinMax(&nTemp1, &nTemp2);
-			if ((nTemp1 != nMin || nTemp2 != nMax)) {
+			const auto realMinMax = g_pPlayer->GetHitMinMax();
+			if (windowMinMax != realMinMax) {
 				dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
 			}
 		}
 	}
 	
-	int nATK = std::midpoint(nMin, nMax);
+	int nATK = std::midpoint(windowMinMax.first, windowMinMax.second);
 
 	if (g_pPlayer->IsSMMode(SM_ATTACK_UP1) || g_pPlayer->IsSMMode(SM_ATTACK_UP))
 		nATK = (int)(nATK * 1.2f);
