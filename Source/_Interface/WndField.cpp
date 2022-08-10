@@ -3392,44 +3392,6 @@ bool CWndNavigator::RenderNaviPoint(C2DRender * p2DRender, NaviPoint & naviPoint
 	return true;
 }
 
-void CWndNavigator::RenderPartyMember( C2DRender* p2DRender, TEXTUREVERTEX** pVertices, CRect rect, D3DXVECTOR3 vPos, u_long uIdPlayer, LPCTSTR lpStr )
-{
-	float fDistx = g_pPlayer->GetPos().x - vPos.x;
-	float fDistz = g_pPlayer->GetPos().z - vPos.z;
-	float fRadian = atan2( fDistx, fDistz );
-	float fDegree = D3DXToDegree( fRadian );
-	CPoint PointBuf;
-	
-	if( fDegree < 0 )
-	{
-		if( fDegree > -45 )
-			PointBuf = CPoint( (int)( rect.Width() / 2 + -fDegree ), rect.Height() - 10 );
-		else if( fDegree > -135 )
-			PointBuf = CPoint( rect.Width() - 10, (int)( rect.Height() / 2 + 90 + fDegree ) );
-		else
-			PointBuf = CPoint( (int)( rect.Width() / 2 + (180 + fDegree) ), 5 );
-	}
-	else
-	{
-		if( fDegree < 45 )
-			PointBuf = CPoint( (int)( rect.Width() / 2 + -fDegree ), rect.Height() - 10 );
-		else if( fDegree < 135 )
-			PointBuf = CPoint( 8, (int)( rect.Height() / 2 + 90 -fDegree ) );
-		else
-			PointBuf = CPoint( (int)( rect.Width() / 2 + -(180 - fDegree) ), 5 );
-	}
-
-	m_texNavObjs.MakeVertex( p2DRender, PointBuf, 3, pVertices );
-
-	CRect rectHittest( PointBuf.x, PointBuf.y, PointBuf.x + 5, PointBuf.y + 5);
-	CPoint ptMouse = GetMousePoint();
-	if( rectHittest.PtInRect( ptMouse ) )
-	{
-		ClientToScreen( &ptMouse );
-		ClientToScreen( &rectHittest );
-		g_toolTip.PutToolTip( 10000 + uIdPlayer, lpStr, rectHittest, ptMouse, 0 );
-	}
-}
 HRESULT CWndNavigator::DeleteDeviceObjects()
 {
 	//CWndNeuz::DeleteDeviceObjects();

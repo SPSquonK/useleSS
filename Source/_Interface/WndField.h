@@ -300,7 +300,6 @@ public:
 	BOOL m_bObjFilterMonster = FALSE;
 	
 
-	void RenderPartyMember( C2DRender* p2DRender, TEXTUREVERTEX** pVertices, CRect rect, D3DXVECTOR3 vPos, u_long uIdPlayer, LPCTSTR lpStr );
 	void SetRegionName( const TCHAR *tszName );		// Áö¿ª
 		
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
