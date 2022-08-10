@@ -11,6 +11,17 @@ public:
 		TooltipBox box;
 	};
 
+	struct StatChange {
+		CWndButton plus;
+		CWndButton minus;
+		CWndEdit edit;
+		int count = 0;
+
+		void Setup(LPDIRECT3DDEVICE9 device, bool hasGp);
+		void Update(int gp);
+		bool Handle(UINT nID, UINT messagen, CWndCharInfo & parent);
+	};
+
 	static constexpr DWORD TitleColor        = D3DCOLOR_ARGB(255, 0, 0, 0);
 	static constexpr DWORD LabelColor        = D3DCOLOR_ARGB(255, 0, 0, 180);
 	static constexpr DWORD RegularValueColor = D3DCOLOR_ARGB(255, 0, 0, 0);
@@ -21,29 +32,14 @@ public:
 	BOOL			m_fWaitingConfirm = FALSE;
 	int				m_nDisplay = 1;
 
-	CWndButton m_wndStrPlus, m_wndStrMinus;
-	CWndButton m_wndStaPlus, m_wndStaMinus;
-	CWndButton m_wndDexPlus, m_wndDexMinus;
-	CWndButton m_wndIntPlus, m_wndIntMinus;
+	StatChange m_str;
+	StatChange m_sta;
+	StatChange m_dex;
+	StatChange m_int;
 
 	CWndButton m_wndApply, m_wndReset;
 
-	CWndEdit m_editStrCount;
-	CWndEdit m_editStaCount;
-	CWndEdit m_editDexCount;
-	CWndEdit m_editIntCount;
-
-	int m_nStrCount = 0;
-	int m_nStaCount = 0;
-	int m_nDexCount = 0;
-	int m_nIntCount = 0;
-
 	int m_nGpPoint = 0;
-
-	int m_nATK = 0;
-	int m_nDEF = 0;
-	int m_nCritical = 0;
-	int m_nATKSpeed = 0;
 
 public:
 
@@ -53,11 +49,12 @@ public:
 	// message
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	BOOL Process() override;
-	void RefreshStatPoint();
 	std::pair<int, int> GetVirtualATK() const;
 	int GetVirtualDEF();
 	int GetVirtualCritical();
 	float GetVirtualATKSpeed();
+
+	void ResetCount();
 
 private:
 	void RenderATK(C2DRender * p2DRender, int x, int y);
@@ -69,6 +66,8 @@ private:
 	void DrawPvp(C2DRender * p2DRender);
 
 	void CheckAndDrawTooltip();
+
+	[[nodiscard]] int GetAttributedTotal() const;
 };
 
 class CWndHonor final : public CWndNeuz {

@@ -198,7 +198,6 @@ public:
 	void	SendSetTarget( OBJID idTarget, BYTE bClear );
 	void	SendTeleSkill( OBJID objid, D3DXVECTOR3 vPos );
 		
-	void	SendIncJobLevel( CHAR chID );
 	void	SendExp( EXPINTEGER nExp );
 
 	void	SendOpenBankWnd( DWORD dwId, DWORD dwItemId );

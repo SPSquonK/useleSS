@@ -8214,13 +8214,6 @@ void CDPClient::SendSetTarget( OBJID idTarget, BYTE bClear )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendIncJobLevel( CHAR chID )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_INC_JOB_LEVEL, DPID_UNKNOWN );
-	ar << chID;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendExp( EXPINTEGER nExp )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SEND_TO_SERVER_EXP, DPID_UNKNOWN );

@@ -2,6 +2,7 @@
 #include "WndCharacter.h"
 #include <algorithm>
 #include <concepts>
+#include <format>
 #include <numeric>
 #include "defineText.h"
 #include "DPCertified.h"
@@ -19,8 +20,6 @@ float GetAttackSpeedPlusValue(int n); // MoverAttack.cpp
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 struct ByLineDrawer {
 	int y;
@@ -133,7 +132,7 @@ void CWndCharInfo::DrawStats(C2DRender * p2DRender) {
 		CString strMsg;
 		strMsg.Format("%d%%", crit);
 		const DWORD color = DecideStatColor(crit,
-			[&]() { return m_nDexCount != 0; },
+			[&]() { return m_dex.count != 0; },
 			[&]() { return g_pPlayer->GetCriticalProb(); }
 		);
 		p2DRender->TextOut(140, y, strMsg, color);
@@ -143,7 +142,7 @@ void CWndCharInfo::DrawStats(C2DRender * p2DRender) {
 		p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_DEFENCE), LabelColor);
 		const auto virtualDef = GetVirtualDEF();
 		const DWORD defColor = DecideStatColor(virtualDef,
-			[&]() { return m_nStaCount != 0; },
+			[&]() { return m_sta.count != 0; },
 			[&]() { return g_pPlayer->GetShowDefense(FALSE); }
 		);
 		p2DRender->TextOut(50, y, virtualDef, defColor);
@@ -151,7 +150,7 @@ void CWndCharInfo::DrawStats(C2DRender * p2DRender) {
 		p2DRender->TextOut(85, y, prj.GetText(TID_GAME_CHARACTER_15), LabelColor);
 		const float attackSpeed = GetVirtualATKSpeed();
 		const DWORD asColor = DecideStatColor(attackSpeed,
-			[&]() { return m_nDexCount != 0; },
+			[&]() { return m_dex.count != 0; },
 			[&]() { return g_pPlayer->GetAttackSpeed(); }
 		);
 		CString strMsg;
@@ -174,7 +173,7 @@ void CWndCharInfo::DrawStats(C2DRender * p2DRender) {
 		p2DRender->TextOut(50, y, g_pPlayer->GetSta(), dwColor);
 		});
 
-	rawStats.DrawLine("Int", [&](const int y) {
+	rawStats.DrawLine("Dex", [&](const int y) {
 		p2DRender->TextOut(7, y, prj.GetText(TID_TOOLTIP_DEX), LabelColor);
 		const DWORD dwColor = StatColor(g_pPlayer->m_nDex, g_pPlayer->GetDex());
 		p2DRender->TextOut(50, y, g_pPlayer->GetDex(), dwColor);
@@ -189,7 +188,7 @@ void CWndCharInfo::DrawStats(C2DRender * p2DRender) {
 	rawStats.DrawLine("GP", [&](const int y) {
 		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_07), LabelColor);
 		DWORD dwColor = RegularValueColor;
-		if (m_nGpPoint != 0 && ((g_nRenderCnt % 8) == 1)) {
+		if (m_nGpPoint != 0 && ((g_nRenderCnt / 8) & 1)) {
 			dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
 		}
 		p2DRender->TextOut(105, y, m_nGpPoint, dwColor);
@@ -315,7 +314,7 @@ void CWndCharInfo::CheckAndDrawTooltip() {
 			break;
 		}
 		case TooltipBox::Status: {
-			if (m_nStrCount != 0 || m_nStaCount != 0 || m_nDexCount != 0 || m_nIntCount != 0)
+			if (GetAttributedTotal() != 0)
 				strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_STATUS1));
 			else
 				strEdit.AddString(prj.GetText(TID_TOOLTIP_CHARSTATUS_STATUS2));
@@ -338,6 +337,10 @@ void CWndCharInfo::CheckAndDrawTooltip() {
 	g_toolTip.PutToolTip(100, strEdit, rect, ptMouse, 3);
 }
 
+int CWndCharInfo::GetAttributedTotal() const {
+	return m_str.count + m_sta.count + m_dex.count + m_int.count;
+}
+
 DWORD CWndCharInfo::StatColor(const int rawStat, const int totalStat) {
 	if (rawStat == totalStat) {
 		return D3DCOLOR_ARGB(255, 0, 0, 0);
@@ -348,43 +351,31 @@ DWORD CWndCharInfo::StatColor(const int rawStat, const int totalStat) {
 	}
 }
 
-
 void CWndCharInfo::OnInitialUpdate() {
-
 	CWndBase::OnInitialUpdate();
 	SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("WndNewCharacter01.tga")), TRUE);
 
 	// �Ʒ����� �ɷ�ġ ���� 
-	int nyAdd = 121;
-	int posY = 49 + nyAdd;
+	static constexpr int nyAdd = 121;
 	int posX = 128;
 
-	m_editStrCount.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, 100);
-	m_wndStrPlus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, 101);
-	m_wndStrMinus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, 102); posY += 15;
+	m_nGpPoint = g_pPlayer->GetRemainGP();
 
-	m_editStaCount.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, 103);
-	m_wndStaPlus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, 104);
-	m_wndStaMinus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, 105); posY += 15;
+	ByLineDrawer forStats(49 + nyAdd, 15);
+	int nextAppId = 100;
 
-	m_editDexCount.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, 106);
-	m_wndDexPlus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, 107);
-	m_wndDexMinus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, 108); posY += 15;
+	for (StatChange * stat : { &m_str, &m_sta, &m_dex, &m_int }) {
+		forStats.DrawLine("x", [&](const int posY) {
+			stat->edit.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, nextAppId + 1);
+			stat->plus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, nextAppId + 2);
+			stat->minus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, nextAppId + 3);
+			stat->Setup(m_pApp->m_pd3dDevice, m_nGpPoint > 0);
 
-	m_editIntCount.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, 109);
-	m_wndIntPlus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, 110);
-	m_wndIntMinus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, 111);
+			nextAppId += 3;
+			});
+	}
 
-	m_wndStrPlus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharPlus.bmp")), TRUE);
-	m_wndStrMinus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharMinus.bmp")), TRUE);
-	m_wndStaPlus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharPlus.bmp")), TRUE);
-	m_wndStaMinus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharMinus.bmp")), TRUE);
-	m_wndDexPlus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharPlus.bmp")), TRUE);
-	m_wndDexMinus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharMinus.bmp")), TRUE);
-	m_wndIntPlus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharPlus.bmp")), TRUE);
-	m_wndIntMinus.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharMinus.bmp")), TRUE);
-
-	posY += 36;
+	int posY = forStats.y + 21;
 	m_wndApply.Create("Apply", 0, CRect(posX - 108, posY, posX - 58, posY + 22), this, 112);
 	m_wndReset.Create("Reset", 0, CRect(posX - 30, posY, posX + 20, posY + 22), this, 113);
 
@@ -396,21 +387,6 @@ void CWndCharInfo::OnInitialUpdate() {
 		m_wndReset.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharReset.tga")), TRUE);
 	}
 
-	//���? ������ ������ 1�� �����̹Ƿ� �Ʒ� ����
-
-	m_nGpPoint = g_pPlayer->GetRemainGP();
-	//���� ������ ���� �����Ƿ� Minus Button Default�� False
-	m_wndStrMinus.EnableWindow(FALSE);
-	m_wndStaMinus.EnableWindow(FALSE);
-	m_wndDexMinus.EnableWindow(FALSE);
-	m_wndIntMinus.EnableWindow(FALSE);
-
-	if (g_pPlayer->GetRemainGP() <= 0) {
-		m_wndStrPlus.EnableWindow(FALSE);
-		m_wndStaPlus.EnableWindow(FALSE);
-		m_wndDexPlus.EnableWindow(FALSE);
-		m_wndIntPlus.EnableWindow(FALSE);
-	}
 	int nyAdd2 = 280;
 	int y = 105 + nyAdd2;
 	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
@@ -419,178 +395,61 @@ void CWndCharInfo::OnInitialUpdate() {
 		m_wndChangeJob.EnableWindow(TRUE);
 	}
 
-	RefreshStatPoint();
-
 	MakeVertexBuffer();
 }
 
 BOOL CWndCharInfo::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
-	int editnum = 0;
-
-	if (nID == 100 || nID == 103 || nID == 106 || nID == 109) {
-		CString tempnum = m_editStrCount.GetString();
-		for (int i = 0; i < tempnum.GetLength(); i++) {
-			if (isdigit2(tempnum.GetAt(i)) == FALSE)
-				return FALSE;
+	const bool isHandled = m_str.Handle(nID, message, *this)
+		|| m_sta.Handle(nID, message, *this)
+		|| m_int.Handle(nID, message, *this)
+		|| m_dex.Handle(nID, message, *this);
+	
+	if (isHandled) {
+		if (g_pPlayer->GetRemainGP() == GetAttributedTotal()) {
+			m_str.plus.EnableWindow(FALSE);
+			m_sta.plus.EnableWindow(FALSE);
+			m_dex.plus.EnableWindow(FALSE);
+			m_int.plus.EnableWindow(FALSE);
+		} else if (g_pPlayer->GetRemainGP() > GetAttributedTotal()) {
+			m_str.plus.EnableWindow(TRUE);
+			m_sta.plus.EnableWindow(TRUE);
+			m_dex.plus.EnableWindow(TRUE);
+			m_int.plus.EnableWindow(TRUE);
 		}
-	}
-	switch (nID) {
-		case 100:
-			editnum = atoi(m_editStrCount.GetString());
-			if (editnum > g_pPlayer->GetRemainGP() - (m_nStaCount + m_nDexCount + m_nIntCount))
-				editnum = g_pPlayer->GetRemainGP() - (m_nStaCount + m_nDexCount + m_nIntCount);
-			m_nStrCount = editnum;
-			break;
-		case 103:
-			editnum = atoi(m_editStaCount.GetString());
-			if (editnum > g_pPlayer->GetRemainGP() - (m_nStrCount + m_nDexCount + m_nIntCount))
-				editnum = g_pPlayer->GetRemainGP() - (m_nStrCount + m_nDexCount + m_nIntCount);
-			m_nStaCount = editnum;
-			break;
-		case 106:
-			editnum = atoi(m_editDexCount.GetString());
-			if (editnum > g_pPlayer->GetRemainGP() - (m_nStrCount + m_nStaCount + m_nIntCount))
-				editnum = g_pPlayer->GetRemainGP() - (m_nStrCount + m_nStaCount + m_nIntCount);
-			m_nDexCount = editnum;
-			break;
-		case 109:
-			editnum = atoi(m_editIntCount.GetString());
-			if (editnum > g_pPlayer->GetRemainGP() - (m_nStrCount + m_nStaCount + m_nDexCount))
-				editnum = g_pPlayer->GetRemainGP() - (m_nStrCount + m_nStaCount + m_nDexCount);
-			m_nIntCount = editnum;
-			break;
-	}
+	} else {
+		if (message == WNM_CLICKED) {
+			switch (nID) {
+				case 112: //Apply
+					if (GetAttributedTotal() != 0) {
+						SAFE_DELETE(g_WndMng.m_pWndStateConfirm);
+						g_WndMng.m_pWndStateConfirm = new CWndStateConfirm;
+						g_WndMng.m_pWndStateConfirm->Initialize();
+					}
+					break;
+				case 113: //Reset
+					ResetCount();
+					break;
 
-	if (message == WNM_CLICKED) {
-		switch (nID) {
-			case 101: //Str Plus
-				m_nStrCount++;
-				break;
-			case 102: //Str Minus
-				m_nStrCount--;
-				break;
-			case 104: //Sta Plus
-				m_nStaCount++;
-				break;
-			case 105: //Sta Minus
-				m_nStaCount--;
-				break;
-			case 107: //Dex Plus
-				m_nDexCount++;
-				break;
-			case 108: //Dex Minus
-				m_nDexCount--;
-				break;
-			case 110: //Int Plus
-				m_nIntCount++;
-				break;
-			case 111: //Int Minus
-				m_nIntCount--;
-				break;
-			case 112: //Apply
-				if (m_nStrCount != 0 || m_nStaCount != 0 || m_nDexCount != 0 || m_nIntCount != 0) {
-					SAFE_DELETE(g_WndMng.m_pWndStateConfirm);
-					g_WndMng.m_pWndStateConfirm = new CWndStateConfirm;
-					g_WndMng.m_pWndStateConfirm->Initialize();
-				}
-				break;
-			case 113: //Reset
-				m_nStrCount = 0;
-				m_nStaCount = 0;
-				m_nDexCount = 0;
-				m_nIntCount = 0;
-				RefreshStatPoint();
-				break;
-
-			case JOB_MERCENARY:
-			case JOB_ACROBAT:
-			case JOB_ASSIST:
-			case JOB_MAGICIAN:
-			case JOB_PUPPETEER:
-			{
-				if (nID != g_pPlayer->GetJob()) {
-					//"�ڽ��� ������ �ø��� �ֽ��ϴ�"
-					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0037)));
-				}
-				if (m_fWaitingConfirm == FALSE) {
-					g_DPlay.SendIncJobLevel(nID);
-					m_fWaitingConfirm = TRUE;
-				}
-				break;
+				case 10:
+					CWndChangeClass1::OpenWindow(std::nullopt);
+					break;
 			}
-			case 10: // ���� 
-				// �������? ������ 15�̻��ΰ��� ã��
-				CWndChangeClass1::OpenWindow(std::nullopt);
-				break;
-		}
-	}
-
-	if (nID >= 100 && nID <= 111) //If use Full GpPoint
-	{
-		if (g_pPlayer->GetRemainGP() == (m_nStrCount + m_nStaCount + m_nDexCount + m_nIntCount)) {
-			m_wndStrPlus.EnableWindow(FALSE);
-			m_wndStaPlus.EnableWindow(FALSE);
-			m_wndDexPlus.EnableWindow(FALSE);
-			m_wndIntPlus.EnableWindow(FALSE);
-		} else if (g_pPlayer->GetRemainGP() > (m_nStrCount + m_nStaCount + m_nDexCount + m_nIntCount)) {
-			m_wndStrPlus.EnableWindow(TRUE);
-			m_wndStaPlus.EnableWindow(TRUE);
-			m_wndDexPlus.EnableWindow(TRUE);
-			m_wndIntPlus.EnableWindow(TRUE);
 		}
 	}
 
 	return CWndBase::OnChildNotify(message, nID, pLResult);
 }
 
-
 BOOL CWndCharInfo::Process() {
-	//Control Button Plus or Minus
-	if (m_nStrCount > 0)
-		m_wndStrMinus.EnableWindow(TRUE);
-	else
-		m_wndStrMinus.EnableWindow(FALSE);
+	// Update Control Button Plus or Minus
+	m_nGpPoint = g_pPlayer->GetRemainGP() - GetAttributedTotal();
 
-	if (m_nStaCount > 0)
-		m_wndStaMinus.EnableWindow(TRUE);
-	else
-		m_wndStaMinus.EnableWindow(FALSE);
+	m_str.Update(m_nGpPoint);
+	m_sta.Update(m_nGpPoint);
+	m_dex.Update(m_nGpPoint);
+	m_int.Update(m_nGpPoint);
 
-	if (m_nDexCount > 0)
-		m_wndDexMinus.EnableWindow(TRUE);
-	else
-		m_wndDexMinus.EnableWindow(FALSE);
-
-	if (m_nIntCount > 0)
-		m_wndIntMinus.EnableWindow(TRUE);
-	else
-		m_wndIntMinus.EnableWindow(FALSE);
-
-	m_nGpPoint = g_pPlayer->GetRemainGP() - (m_nStrCount + m_nStaCount + m_nDexCount + m_nIntCount);
-
-	if (m_nGpPoint > 0) {
-		m_wndStrPlus.EnableWindow(TRUE);
-		m_wndStaPlus.EnableWindow(TRUE);
-		m_wndDexPlus.EnableWindow(TRUE);
-		m_wndIntPlus.EnableWindow(TRUE);
-
-		m_editStrCount.EnableWindow(TRUE);
-		m_editStaCount.EnableWindow(TRUE);
-		m_editDexCount.EnableWindow(TRUE);
-		m_editIntCount.EnableWindow(TRUE);
-	} else {
-		m_wndStrPlus.EnableWindow(FALSE);
-		m_wndStaPlus.EnableWindow(FALSE);
-		m_wndDexPlus.EnableWindow(FALSE);
-		m_wndIntPlus.EnableWindow(FALSE);
-
-		m_editStrCount.EnableWindow(FALSE);
-		m_editStaCount.EnableWindow(FALSE);
-		m_editDexCount.EnableWindow(FALSE);
-		m_editIntCount.EnableWindow(FALSE);
-	}
-
-	if (m_nStrCount > 0 || m_nStaCount > 0 || m_nDexCount > 0 || m_nIntCount > 0) {
+	if (GetAttributedTotal() > 0) {
 		m_wndApply.EnableWindow(TRUE);
 		m_wndReset.EnableWindow(TRUE);
 	} else {
@@ -598,23 +457,19 @@ BOOL CWndCharInfo::Process() {
 		m_wndReset.EnableWindow(FALSE);
 	}
 
-	RefreshStatPoint();
 	return TRUE;
 }
 
-
-void CWndCharInfo::RefreshStatPoint() {
-	CString tempstr;
-	tempstr.Format("%d", m_nStrCount);
-	m_editStrCount.SetString(tempstr);
-	tempstr.Format("%d", m_nStaCount);
-	m_editStaCount.SetString(tempstr);
-	tempstr.Format("%d", m_nDexCount);
-	m_editDexCount.SetString(tempstr);
-	tempstr.Format("%d", m_nIntCount);
-	m_editIntCount.SetString(tempstr);
+void CWndCharInfo::ResetCount() {
+	m_str.count = 0;
+	m_str.Update(m_nGpPoint);
+	m_sta.count = 0;
+	m_sta.Update(m_nGpPoint);
+	m_dex.count = 0;
+	m_dex.Update(m_nGpPoint);
+	m_int.count = 0;
+	m_int.Update(m_nGpPoint);
 }
-
 
 std::pair<int, int> CWndCharInfo::GetVirtualATK() const {
 	if (!g_pPlayer) return { 0, 0 };
@@ -631,28 +486,28 @@ std::pair<int, int> CWndCharInfo::GetVirtualATK() const {
 	int nATK = 0;
 	switch (pItemProp->dwWeaponType) {
 		case WT_MELEE_SWD:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_SWD)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_SWD)) + (float(g_pPlayer->GetLevel() * 1.1f)));
 			break;
 		case WT_MELEE_AXE:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_AXE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_AXE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
 			break;
 		case WT_MELEE_STAFF:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STAFF)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STAFF)) + (float(g_pPlayer->GetLevel() * 1.1f)));
 			break;
 		case WT_MELEE_STICK:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STICK)) + (float(g_pPlayer->GetLevel() * 1.3f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STICK)) + (float(g_pPlayer->GetLevel() * 1.3f)));
 			break;
 		case WT_MELEE_KNUCKLE:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_KNUCKLE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_KNUCKLE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
 			break;
 		case WT_MAGIC_WAND:
-			nATK = (int)((g_pPlayer->GetInt() + m_nIntCount - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_WAND) + g_pPlayer->GetLevel() * 1.2f);
+			nATK = (int)((g_pPlayer->GetInt() + m_int.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_WAND) + g_pPlayer->GetLevel() * 1.2f);
 			break;
 		case WT_MELEE_YOYO:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_nStrCount - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_YOYO)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_YOYO)) + (float(g_pPlayer->GetLevel() * 1.1f)));
 			break;
 		case WT_RANGE_BOW:
-			nATK = (int)((((g_pPlayer->GetDex() + m_nDexCount - 14) * 4.0f + (g_pPlayer->GetLevel() * 1.3f) + ((g_pPlayer->GetStr() + m_nStrCount) * 0.2f)) * 0.7f));
+			nATK = (int)((((g_pPlayer->GetDex() + m_dex.count - 14) * 4.0f + (g_pPlayer->GetLevel() * 1.3f) + ((g_pPlayer->GetStr() + m_str.count) * 0.2f)) * 0.7f));
 			break;
 	}
 
@@ -683,7 +538,6 @@ std::pair<int, int> CWndCharInfo::GetVirtualATK() const {
 	return { min, max };
 }
 
-
 int CWndCharInfo::GetVirtualDEF() {
 	int nDefense = 0;
 
@@ -695,7 +549,7 @@ int CWndCharInfo::GetVirtualDEF() {
 	if (g_pPlayer) {
 		fFactor = prj.jobs.GetJobProp(g_pPlayer->GetJob())->fFactorDef;
 	}
-	nDefense = (int)(((((g_pPlayer->GetLevel() * 2) + ((g_pPlayer->GetSta() + m_nStaCount) / 2)) / 2.8f) - 4) + ((g_pPlayer->GetSta() + m_nStaCount - 14) * fFactor));
+	nDefense = (int)(((((g_pPlayer->GetLevel() * 2) + ((g_pPlayer->GetSta() + m_sta.count) / 2)) / 2.8f) - 4) + ((g_pPlayer->GetSta() + m_sta.count - 14) * fFactor));
 	nDefense = nDefense + (g_pPlayer->GetDefenseByItem(FALSE) / 4);
 	nDefense = nDefense + (g_pPlayer->GetParam(DST_ADJDEF, 0));
 
@@ -708,10 +562,9 @@ int CWndCharInfo::GetVirtualDEF() {
 	return nDefense;
 }
 
-
 int CWndCharInfo::GetVirtualCritical() {
 	int nCritical;
-	nCritical = ((g_pPlayer->GetDex() + m_nDexCount) / 10);
+	nCritical = ((g_pPlayer->GetDex() + m_dex.count) / 10);
 	nCritical = (int)(nCritical * g_pPlayer->GetJobPropFactor(JOB_PROP_CRITICAL));
 	nCritical = g_pPlayer->GetParam(DST_CHR_CHANCECRITICAL, nCritical);	// ũ��Ƽ�� Ȯ���� �����ִ� ��ų���� 
 #ifdef __JEFF_11
@@ -721,7 +574,6 @@ int CWndCharInfo::GetVirtualCritical() {
 
 	return nCritical;
 }
-
 
 float CWndCharInfo::GetVirtualATKSpeed() {
 	float fSpeed = 1.0f;
@@ -736,7 +588,7 @@ float CWndCharInfo::GetVirtualATKSpeed() {
 
 	// A = int( ĳ������ ���� + ( ������ ���� * ( 4 * ���� + ( ���� / 8 ) ) ) - 3 )
 	// ���ݼӵ� = ( ( 50 / 200 - A ) / 2 ) + ����ġ 
-	int A = int(pProperty->fAttackSpeed + (fItem * (4.0f * (g_pPlayer->GetDex() + m_nDexCount) + g_pPlayer->GetLevel() / 8.0f)) - 3.0f);
+	int A = int(pProperty->fAttackSpeed + (fItem * (4.0f * (g_pPlayer->GetDex() + m_dex.count) + g_pPlayer->GetLevel() / 8.0f)) - 3.0f);
 
 	if (187.5f <= A)
 		A = (int)(187.5f);
@@ -759,13 +611,12 @@ float CWndCharInfo::GetVirtualATKSpeed() {
 	return fSpeed;
 }
 
-
 void CWndCharInfo::RenderATK(C2DRender * p2DRender, const int x, const int y) {
 	const auto windowMinMax = GetVirtualATK();
 
 	DWORD dwColor = D3DCOLOR_ARGB(255, 0, 0, 0);
 	if ((g_nRenderCnt / 8) & 1) {
-		if (m_nStrCount != 0 || m_nDexCount != 0 || m_nIntCount != 0) {
+		if (m_str.count != 0 || m_dex.count != 0 || m_int.count != 0) {
 			const auto realMinMax = g_pPlayer->GetHitMinMax();
 			if (windowMinMax != realMinMax) {
 				dwColor = D3DCOLOR_ARGB(255, 255, 0, 0);
@@ -788,16 +639,58 @@ void CWndCharInfo::RenderATK(C2DRender * p2DRender, const int x, const int y) {
 	p2DRender->TextOut(x, y, nATK, dwColor);
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+void CWndCharInfo::StatChange::Setup(LPDIRECT3DDEVICE9 device, const bool hasGp) {
+	plus.SetTexture(device, MakePath(DIR_THEME, _T("ButtCharPlus.bmp")), TRUE);
+	minus.SetTexture(device, MakePath(DIR_THEME, _T("ButtCharMinus.bmp")), TRUE);
+
+	plus.EnableWindow(hasGp ? TRUE : FALSE);
+	minus.EnableWindow(FALSE);
+
+	edit.SetString("0");
+}
+
+void CWndCharInfo::StatChange::Update(const int gp) {
+	char buffer[65];
+	const auto r = std::format_to_n(buffer, std::size(buffer) - 1, "{}", count);
+	*r.out = '\0';
+	edit.SetString(buffer);
+
+	plus.EnableWindow(gp > 0 ? TRUE : FALSE);
+	minus.EnableWindow(count > 0 ? TRUE : FALSE);
+}
+
+bool CWndCharInfo::StatChange::Handle(UINT nID, UINT message, CWndCharInfo & parent) {
+	if (plus.GetWndId() == nID) {
+		if (message == WNM_CLICKED) ++count;
+		return true;
+	} else if (minus.GetWndId() == nID) {
+		if (message == WNM_CLICKED) --count;
+		return true;
+	} else if (edit.GetWndId() == nID) {
+		int editnum = std::atoi(edit.GetString());
+		editnum = std::min(editnum, g_pPlayer->GetRemainGP() - parent.GetAttributedTotal() + count);
+		count = editnum;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 void CWndHonor::OnDraw(C2DRender * p2DRender) {
 	if (m_vecTitle.empty()) {
-		const int nIndex = 0;
+		static constexpr int nIndex = 0;
 		LPWNDCTRL	pCustom = GetWndCtrl(WIDC_LISTBOX1);
-		const DWORD dwNormal = D3DCOLOR_ARGB(255, 0, 0, 0);
+		static constexpr DWORD dwNormal = D3DCOLOR_ARGB(255, 0, 0, 0);
 
 		p2DRender->TextOut(pCustom->rect.left + 5, pCustom->rect.top + 8 + (nIndex) * 16, prj.GetText(TID_GAME_NO_TITLE), dwNormal);
 	}
 }
-
 
 void CWndHonor::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
@@ -810,12 +703,12 @@ void CWndHonor::OnInitialUpdate() {
 void CWndHonor::RefreshList() {
 	GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(FALSE);
 
-	CWndListBox * pWndListBox = GetDlgItem<CWndListBox>(WIDC_LISTBOX1);
-	pWndListBox->ResetContent();
-
 	m_vecTitle = CTitleManager::Instance()->m_vecEarned;
 
 	if (g_pPlayer) m_nSelectedId = g_pPlayer->m_nHonor;
+
+	CWndListBox * pWndListBox = GetDlgItem<CWndListBox>(WIDC_LISTBOX1);
+	pWndListBox->ResetContent();
 
 	if (!m_vecTitle.empty()) {
 		pWndListBox->AddString(prj.GetText(TID_GAME_NOT_SELECTED_TITLE));
@@ -825,12 +718,10 @@ void CWndHonor::RefreshList() {
 	}
 }
 
-
 BOOL CWndHonor::Initialize(CWndBase * pWndParent, DWORD) {
 	// TODO: This function is never actually called, delete it
 	return CWndNeuz::InitDialog(APP_HONOR, pWndParent, 0, CPoint(0, 0));
 }
-
 
 BOOL CWndHonor::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	switch (nID) {
@@ -954,9 +845,8 @@ BOOL CWndStateConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 void CWndStateConfirm::SendYes() {
 	if (CWndCharacter * pWndBase = g_WndMng.GetWndBase<CWndCharacter>(APP_CHARACTER3)) {
 		CWndCharInfo * pInfo = &pWndBase->m_wndCharInfo;
-		g_DPlay.SendModifyStatus(pInfo->m_nStrCount, pInfo->m_nStaCount, pInfo->m_nDexCount, pInfo->m_nIntCount);
-		pInfo->m_nStrCount = pInfo->m_nStaCount = pInfo->m_nDexCount = pInfo->m_nIntCount = 0;
-		pInfo->RefreshStatPoint();
+		g_DPlay.SendModifyStatus(pInfo->m_str.count, pInfo->m_sta.count, pInfo->m_dex.count, pInfo->m_int.count);
+		pInfo->ResetCount();
 	}
 	Destroy();
 }
