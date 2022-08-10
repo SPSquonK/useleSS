@@ -8803,80 +8803,56 @@ void CDPSrvr::OnHonorChangeReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE 
 	}
 }
 
-void CDPSrvr::OnSealCharReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
-		CGuild *pGuild = pUser->GetGuild();
-		if( pGuild != NULL )
-		{
-			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANGUILD );
-			return;
-		}
-		if( pUser->IsChaotic() )
-		{
-			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANEQUIP );
-			return;
-		}
-		int nSize	= 0;
-		for( int i=0; i< pUser->m_Inventory.GetMax(); ++i )
-		{
-			CItemElem* pItemElem = pUser->m_Inventory.GetAtId( i );
-			if( !IsUsableItem( pItemElem ) )
-				continue;
-			if( pItemElem->m_nItemNum > 0 )
-				nSize++;
-		}
-		
-		if( nSize > 1 )
-		{
-			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANINVEN );
-			return;
-		}
-		else
-		{
-			CItemElem* pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_SEAL );
-			if( !IsUsableItem( pItemElem ) )
-			{
-				pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANINVEN );
-				return;
-			}
-			else if(pItemElem->m_nItemNum > 1)
-			{
-				pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANINVEN );
-				return;
-			}
-		}
-
-		if( pUser->GetGold() > 0 )
-		{
-			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANEQUIP );
-			return;
-		}
-		int nBankSize	= 0;
-		for( int i=0; i< pUser->m_Bank[pUser->m_nSlot].GetMax(); ++i )
-		{
-			CItemElem* pItemElem = pUser->m_Bank[pUser->m_nSlot].GetAtId( i );
-			if( !IsUsableItem( pItemElem ) )
-				continue;
-			if( pItemElem->m_nItemNum > 0 )
-				nBankSize++;
-		}
-		if( !pUser->m_Pocket.IsAllClean() )
-		{
-			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANBANK );
-			return;
-		}
-		if( nBankSize > 0 || pUser->m_dwGoldBank[pUser->m_nSlot] > 0)
-		{
-			pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CLEANBANK );
-			return;
-		}
-		g_dpDBClient.SendQueryGetSealChar( pUser->m_idPlayer,pUser->m_playAccount.lpszAccount);
-//		pUser->AddDefinedText( TID_GAME_SEALCHAR_NO_CHARSEND );
+void CDPSrvr::OnSealCharReq( CAr & ar, CUser & pUser ) {
+	if (pUser.GetGuild()) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANGUILD);
 	}
+
+	if (pUser.IsChaotic()) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANEQUIP);
+	}
+
+	int nSize	= 0;
+	for (int i = 0; i < pUser.m_Inventory.GetMax(); ++i) {
+		const CItemElem * const pItemElem = pUser.m_Inventory.GetAtId(i);
+		if (IsUsableItem(pItemElem) && pItemElem->m_nItemNum > 0) {
+			nSize++;
+		}
+	}
+
+	if (nSize > 1) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANINVEN);
+	}
+
+	const CItemElem * const pItemElem = pUser.m_Inventory.GetAtItemId(II_SYS_SYS_SCR_SEAL);
+	if (!IsUsableItem(pItemElem)) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANINVEN);
+	} else if (pItemElem->m_nItemNum > 1) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANINVEN);
+	}
+
+	if (pUser.GetGold() > 0) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANEQUIP);
+	}
+
+	for (int i = 0; i < pUser.m_Bank[pUser.m_nSlot].GetMax(); ++i) {
+		const CItemElem * const pItemElem = pUser.m_Bank[pUser.m_nSlot].GetAtId(i);
+		if (IsUsableItem(pItemElem) && pItemElem->m_nItemNum > 0) {
+			return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANBANK);
+		}
+	}
+
+	if (pUser.m_dwGoldBank[pUser.m_nSlot] > 0) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANBANK);
+	}
+
+	if (!pUser.m_Pocket.IsAllClean()) {
+		return pUser.AddDefinedText(TID_GAME_SEALCHAR_NO_CLEANBANK);
+	}
+
+	g_dpDBClient.SendQueryGetSealChar(pUser.m_idPlayer, pUser.m_playAccount.lpszAccount);
 }
+
 void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	OBJID objidSend;
@@ -9003,29 +8979,18 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer ); // pUser->m_Snapshot.dpidUser에는 소켓번호가 들어가 있다.
 	}
 }
-void CDPSrvr::OnSealCharGetReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSealCharGetReq( CAr & ar, CUser & pUser )
 {
-	DWORD dwData;
-	DWORD dwId;
+	DWORD dwData; ar >> dwData ;
 
-	ar >> dwData ;
+	const DWORD dwId = HIWORD( dwData );
+	if (!pUser.IsUsableState(dwId)) return;
 
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
-		dwId = HIWORD( dwData );
+	const CItemElem * const pItemElem = pUser.m_Inventory.GetAtId(dwId);
+	if (!IsUsableItem(pItemElem)) return;
+	if (pItemElem->m_dwItemId != II_SYS_SYS_SCR_SEALCHARACTER) return;
 
-		if( pUser->IsUsableState( dwId ) == FALSE )
-			return;
-
-		CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
-		if( IsUsableItem( pItemElem ) )
-		{
-			if(pItemElem->m_dwItemId != II_SYS_SYS_SCR_SEALCHARACTER )
-				return;
-			g_dpDBClient.SendQueryGetSealCharGet( pUser->m_idPlayer,pUser->m_playAccount.lpszAccount,dwId);
-		}
-	}
+	g_dpDBClient.SendQueryGetSealCharGet(pUser.m_idPlayer, pUser.m_playAccount.lpszAccount, dwId);
 }
 
 

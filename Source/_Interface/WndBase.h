@@ -175,6 +175,7 @@ static void FreeTileTexture();
 	void MoveRectCenter(CRect rect); // 윈도를 rect의 중앙으로 옮긴다.
 	void MovePointCenter(CPoint pt); // 윈도를 pt의 중앙으로 옮긴다.
 	void Move( CPoint pt ); // 왼도의 left,top을 pt로 
+	void Move70(); // Horizontally centers the window and moves it at y=70
 	void Move( int x, int y ) { Move( CPoint( x, y ) ); } // 왼도의 left,top을 pt로 
 	[[nodiscard]] BOOL IsVisible() const { return m_bVisible; } // 윈도가 보이는 상태인가.
 	void SetVisible(BOOL bVisible) { m_bVisible = ( bVisible != FALSE ); } // 윈도를 보이거나 감춘다.

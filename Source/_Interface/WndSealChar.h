@@ -1,88 +1,57 @@
-#ifndef __WNDSEALCHAR__H
-#define __WNDSEALCHAR__H
+#pragma once
 
-class CWndSealChar : public CWndNeuz 
-{ 
-public: 
-	
-	CWndSealChar(); 
-	~CWndSealChar(); 
+class CWndSealChar final : public CWndNeuz {
+public:
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+class CWndSealCharSelect final : public CWndNeuz {
+public:
+	struct Target {
+		char name[MAX_NAME] = "";
+		OBJID id;
+		LONG slot;
+	};
 
-class CWndSealCharSelect : public CWndNeuz 
-{ 
-public: 
-	char	m_szSrc1[ MAX_NAME ];	// 이름
-	OBJID	m_idSrc1;
-	char	m_szSrc2[ MAX_NAME ];	// 이름
-	OBJID	m_idSrc2;
-	LONG	m_lPlayerSlot1;
-	LONG	m_lPlayerSlot2;
-	short	m_sCount;
-	
-	CWndSealCharSelect(); 
-	~CWndSealCharSelect(); 
+	static void OpenOrResetWindow(std::vector<Target> targets);
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
 
-	void	SetData( short sCount,LONG lPlayerSolt1,LONG lPlayerSolt2,u_long uPlayerID1,u_long uPlayerID2, char* szName1, char* szName2 );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+private:
+	CWndSealCharSelect(std::vector<Target> targets)
+		: m_targets(std::move(targets)) {
+	}
+	void UpdateRadioButtons();
 
-class CWndSealCharSend : public CWndNeuz 
-{ 
-public: 
-	char	m_szSrc1[ MAX_NAME ];	// 이름
-	OBJID	m_idSrc1;
-	
-	CWndSealCharSend(); 
-	~CWndSealCharSend(); 
+	std::vector<Target> m_targets;
+};
 
-	void	SetData( u_long uPlayerID1, char* szName1 );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+class CWndSealCharSend final : public CWndNeuz {
+public:
+	static void OpenOrResetWindow(const CWndSealCharSelect::Target & target);
 
-class CWndSealCharSet : public CWndNeuz 
-{ 
-public: 
-	char	m_szSrc1[ MAX_NAME ];	// 이름
-	OBJID	m_idSrc1;
-	DWORD	m_dwData;
+	CWndSealCharSelect::Target m_target;
 
-	CWndSealCharSet(); 
-	~CWndSealCharSet(); 
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
 
-	void SetData( DWORD dwId, WORD wReset );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+private:
+	CWndSealCharSend() = default;
+	void UpdateTarget(const CWndSealCharSelect::Target & target);
+};
 
+class CWndSealCharSet final : public CWndNeuz {
+public:
+	static void OpenOrResetWindow(DWORD scrollPosition);
+	DWORD m_scrollPos = 0;
 
-#endif
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+private:
+	CWndSealCharSet() = default;
+};

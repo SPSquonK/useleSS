@@ -19,6 +19,7 @@
 #include "WndFriendConfirm.h"
 #include "WndDuelConfirm.h"
 #include "WndRegVend.h"
+#include "WndSealChar.h"
 #include "WndText.h"
 #include "party.h"
 #include "DPClient.h"
