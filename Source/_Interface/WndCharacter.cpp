@@ -1,25 +1,22 @@
 #include "StdAfx.h"
 #include "WndCharacter.h"
+
 #include <algorithm>
 #include <concepts>
 #include <format>
 #include <numeric>
+
+#include "AppDefine.h"
 #include "defineText.h"
 #include "DPCertified.h"
 #include "DPClient.h"
 #include "party.h"
-#include "AppDefine.h"
 
 
 float GetAttackSpeedPlusValue(int n); // MoverAttack.cpp
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// ĳ���� ���� ����
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 struct ByLineDrawer {
 	int y;
@@ -471,6 +468,9 @@ void CWndCharInfo::ResetCount() {
 	m_int.Update(m_nGpPoint);
 }
 
+// TODO: all these GetVirtual functions are bad. Merge them with the original functions.
+// (templates!)
+
 std::pair<int, int> CWndCharInfo::GetVirtualATK() const {
 	if (!g_pPlayer) return { 0, 0 };
 
@@ -749,16 +749,10 @@ BOOL CWndHonor::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// ĳ���� ����  
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CWndCharacter::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 	CWndNeuz::SerializeRegInfo(ar, dwVersion);
-	CWndTabCtrl * lpTabCtrl = (CWndTabCtrl *)GetDlgItem(WIDC_TABCTRL1);
+	CWndTabCtrl * lpTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	if (ar.IsLoading()) {
 		int nCurSel;
 		ar >> nCurSel;
@@ -768,40 +762,32 @@ void CWndCharacter::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 		ar << lpTabCtrl->GetCurSel();
 	}
 }
+
 void CWndCharacter::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 
-	//CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	//CPoint point( rectRoot.left, rectRoot.top + 96 + 16 );
-	//Move( point );
+	const CRect rect(CPoint(5, 15), GetClientRect().BottomRight());
 
-	CRect rect = GetClientRect();
-	rect.left = 5;
-	rect.top = 15;
-
-	CWndTabCtrl * lpTapCtrl = (CWndTabCtrl *)GetDlgItem(WIDC_TABCTRL1);
-	//m_wndTabCtrl.Create( WBS_NOFRAME, rect, this, 12 );
+	CWndTabCtrl * const lpTapCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
+	
 	m_wndCharInfo.Create(WBS_CHILD | WBS_NOFRAME, rect, lpTapCtrl, 100000);
 	m_wndHonor.Create(WBS_CHILD | WBS_NOFRAME, rect, lpTapCtrl, APP_HONOR);
 	m_wndHonor.AddWndStyle(WBS_NOFRAME);
 	m_wndHonor.AddWndStyle(WBS_NODRAWFRAME);
 	m_wndCharInfo.AddWndStyle(WBS_NOFRAME);
-	//m_wndCharInfo.AddWndStyle( WBS_NODRAWFRAME );
 	WTCITEM tabTabItem;
 
 	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_GAME_TITLE_CHAR_INFO);//"�⺻";
+	tabTabItem.pszText = prj.GetText(TID_GAME_TITLE_CHAR_INFO);
 	tabTabItem.pWndBase = &m_wndCharInfo;
 	lpTapCtrl->InsertItem(0, &tabTabItem);
 
-	tabTabItem.pszText = prj.GetText(TID_GAME_TITLE_HONOR);//"����";
+	tabTabItem.pszText = prj.GetText(TID_GAME_TITLE_HONOR);
 	tabTabItem.pWndBase = &m_wndHonor;
 	lpTapCtrl->InsertItem(1, &tabTabItem);
 	lpTapCtrl->SetCurSel(0);
-
-	//lpTapCtrl->SetButtonLength( 60 );
-
 }
+
 BOOL CWndCharacter::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
 	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(0, 0));
 }
