@@ -5763,7 +5763,7 @@ BOOL CWndWorld::UseSkillToFocusObj( CCtrl* pFocusObj )
 		LPSKILL pSkill = pTaskBar->GetCurrentSkillQueue();
 		if( bRet )
 		{
-			ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+			const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 			if( pItemProp )
 			{   
 				ItemProp* pSkillProp;
@@ -5974,7 +5974,7 @@ void CWndWorld::OnLButtonUp(UINT nFlags, CPoint point)
 				{
 					m_dwPowerTick = GetTickCount();
 
-					ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+					const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 					if( pItemProp->dwItemKind3 == IK3_WAND )
 						g_pPlayer->CMD_SetMagicAttack( idTarget, nPower );
 					else if( pItemProp->dwItemKind3 == IK3_BOW )
@@ -6324,7 +6324,7 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 						m_pNextTargetObj = NULL;
 					//if( g_Option.m_bAutoAttack )		// 여기야여기 - 자동공격 ON
 					//	m_bAutoAttack = TRUE;					  // 자동 공격.
-					ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+					const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 					if( pItemProp )
 					{   
 						if( pItemProp->dwItemKind3 != IK3_WAND ) //Wand일 경우 AutoAttack을 하지 않음.
@@ -6631,7 +6631,7 @@ void CWndWorld::OnLButtonDblClk( UINT nFlags, CPoint point)
 	CObj* pFocusObj	= g_WorldMng.Get()->GetObjFocus();
 	if( pFocusObj && CObj::m_pObjHighlight == pFocusObj )
 	{
-		ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+		const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 		if( pItemProp )
 		{   
 			if( pItemProp->dwItemKind3 != IK3_WAND ) //Wand일 경우 AutoAttack을 하지 않음.

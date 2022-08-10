@@ -780,7 +780,7 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 			if( pMover->IsAttackAble( pObj ) )	// 공격 가능한지 검사.
 			{
 				OBJID	idTarget = ((CMover *)pObj)->GetId();
-				ItemProp *pWeapon = pMover->GetActiveHandItemProp();
+				const ItemProp *pWeapon = pMover->GetActiveHandItemProp();
 				if( pWeapon )
 				{
 					g_pPlayer->PlayCombatMusic();

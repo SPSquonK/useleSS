@@ -2448,18 +2448,21 @@ CItemElem* CMover::GetLWeaponItem()
 	return GetWeaponItem( PARTS_LWEAPON );
 }
 
+const CItemElem * CMover::GetWeaponItem(int nParts) const {
+	return IsPlayer() ? m_Inventory.GetEquip(nParts) : nullptr;
+}
+
 CItemElem * CMover::GetWeaponItem(int nParts) {
 	return IsPlayer() ? m_Inventory.GetEquip(nParts) : nullptr;
 }
 
-ItemProp* CMover::GetActiveHandItemProp( int nParts )
-{
+const ItemProp * CMover::GetActiveHandItemProp( int nParts ) const {
 	if( IsPlayer() )
 	{
 #ifdef __CLIENT
 		if( IsActiveMover() )
 		{
-			CItemElem* pItemElem = m_Inventory.GetEquip( nParts );
+			const CItemElem * pItemElem = m_Inventory.GetEquip(nParts);
 			if( pItemElem )
 				return pItemElem->GetProp();
 			return prj.GetItemProp( II_WEA_HAN_HAND );
@@ -2472,7 +2475,7 @@ ItemProp* CMover::GetActiveHandItemProp( int nParts )
 			return prj.GetItemProp( II_WEA_HAN_HAND );
 		}
 #else	// __CLIENT
-		CItemElem* pItemElem = m_Inventory.GetEquip( nParts ); 
+		const CItemElem * pItemElem = m_Inventory.GetEquip(nParts);;
 		if( pItemElem )
 			return pItemElem->GetProp();
 		return prj.GetItemProp( II_WEA_HAN_HAND );
@@ -2521,28 +2524,18 @@ ItemProp* CMover::GetEquipItemProp( CItemContainer* pInventory, EQUIP_INFO * pEq
 
 // ½ÖÄ®¸ðµå ÀÎ°¡.
 // ¾ç¼Õ¿¡ ½ÖÄ®À» µé°í ÀÖ³ª.
-BOOL CMover::IsDualWeapon()
-{
+bool CMover::IsDualWeapon() const {
 #ifdef __CLIENT
-	if( IsActiveMover() )
+	const bool checkInventory = IsActiveMover();
 #else
-	if( IsPlayer() )
+	const bool checkInventory = IsPlayer();
 #endif
-	{
-		CItemElem *pItemElemR = m_Inventory.GetEquip( PARTS_RWEAPON );
-		CItemElem *pItemElemL = m_Inventory.GetEquip( PARTS_LWEAPON );
-		if( pItemElemR && pItemElemL )
-			return TRUE;
-		else
-			return FALSE;
-	} else
-	{
-		if( m_aEquipInfo[PARTS_RWEAPON].dwId != NULL_ID && m_aEquipInfo[PARTS_LWEAPON].dwId != NULL_ID )
-			return TRUE;
-		else
-			return FALSE;
+	
+	if (checkInventory) {
+		return m_Inventory.GetEquip(PARTS_RWEAPON) && m_Inventory.GetEquip(PARTS_LWEAPON);
+	} else {
+		return m_aEquipInfo[PARTS_RWEAPON].dwId != NULL_ID && m_aEquipInfo[PARTS_LWEAPON].dwId != NULL_ID;
 	}
-	return FALSE;
 }
 
 
@@ -4161,7 +4154,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 {
 	CModelObject* pModel = (CModelObject*)m_pModel;
 	DWORD	dwOrigMotion = dwMotion;
-	ItemProp* pItemProp = GetActiveHandItemProp();
+	const ItemProp* pItemProp = GetActiveHandItemProp();
 	if( m_pActMover->IsStateFlag( OBJSTAF_COMBAT ) && (dwOption & MOP_FIXED) == 0 )
 	{
 #if defined(__CLIENT) 
@@ -6764,7 +6757,7 @@ BOOL CMover::IsBullet( const ItemProp* pItemProp )
 			dwTip = TID_TIP_NEEDSATTACKITEM;			
 		}
 		
-		ItemProp *pProp = GetActiveHandItemProp( PARTS_BULLET );
+		const ItemProp *pProp = GetActiveHandItemProp( PARTS_BULLET );
 		if( pProp )
 		{
 			if( pProp->dwItemKind2 != pItemProp->dwLinkKindBullet )		// ÇÊ¿äÃÑ¾ËÁ¾·ù¶û ´Ù¸¥°É ÀåÂøÇÏ°í ÀÖÀ¸¸é ¿¡·¯
@@ -9440,7 +9433,7 @@ void	CMover::ProcessCollecting( void )
 		// SFX
 		if( ( m_dwFlag & MVRF_COLLECT ) == 0 )
 		{
-			ItemProp *pHandProp	= GetActiveHandItemProp();
+			const ItemProp *pHandProp	= GetActiveHandItemProp();
 			if( pHandProp->dwSfxObj2 != NULL_ID )
 			{
 				D3DXVECTOR3 vSrc, vLocal	= D3DXVECTOR3( 0, 0.5f, 0 );

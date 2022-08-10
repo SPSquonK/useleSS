@@ -99,28 +99,6 @@ float GetWandATKMultiplier( int nLevel )
 //////////////////////////////////////////////////////////////////////////
 // CMover ATTACK RELATED MEMBER FUNCTIONS
 //////////////////////////////////////////////////////////////////////////
-int GetWeaponPlusDamage( int nDamage, BOOL bRandom, ItemProp* pItemProp , int nOption )
-{
-	return 0; // 방어력 무시가 아니라 공격력을 높이는 방향으로 수정되었음 
-}
-
-
-// 들고있는 무기의 옵션에 의한 추가 데미지를 구한다. ( bRandom = TRUE )
-int CMover::GetWeaponPlusDamage( int nDamage, BOOL bRandom )
-{
-	int nPlus = 0;
-	CItemElem* pWeapon = GetWeaponItem();
-	if( pWeapon )
-	{
-		int nOption = pWeapon->GetAbilityOption();	
-		if( nOption > 10 )
-			return nPlus;
-		
-		ItemProp* pItemProp = GetActiveHandItemProp();
-		return ::GetWeaponPlusDamage( nDamage, bRandom, pItemProp, nOption ); 
-	}
-	return nPlus;
-}
 
 // 공격에 의해서 날아갈 수 있는가?
 BOOL CMover::CanFlyByAttack()
@@ -143,7 +121,7 @@ float CMover::GetAttackSpeed()
 	float fSpeed = 1.0f;
 	float fItem = 1.0f;
 
-	ItemProp* pWeaponProp = GetActiveHandItemProp();
+	const ItemProp* pWeaponProp = GetActiveHandItemProp();
 	if( pWeaponProp )
 		fItem = pWeaponProp->fAttackSpeed;
 
@@ -262,7 +240,7 @@ BOOL CMover::GetAttackResult( CMover* pDefender, DWORD dwOption )
 }
 
 // 무기의 추가 공격력를 구한다.
-int CMover::GetPlusWeaponATK( DWORD dwWeaponType )
+int CMover::GetPlusWeaponATK( DWORD dwWeaponType ) const
 {
 	int nATK = 0;
 	switch( dwWeaponType )
@@ -283,7 +261,7 @@ int CMover::GetPlusWeaponATK( DWORD dwWeaponType )
 		nATK = GetParam( DST_BOW_DMG, 0 );		
 		break;
 	}
-	if(IsDualWeapon() == TRUE )
+	if(IsDualWeapon() )
 		nATK += GetParam( DST_ONEHANDMASTER_DMG, 0 );
 	else
 	{
@@ -311,10 +289,9 @@ int CMover::GetPlusWeaponATK( DWORD dwWeaponType )
 
 
 // 직업에 따른 factor를 구한다.
-float CMover::GetJobPropFactor( JOB_PROP_TYPE type )
+float CMover::GetJobPropFactor( JOB_PROP_TYPE type ) const
 {
-	if( IsPlayer() == FALSE )
-		return 1.0f;
+	if (!IsPlayer()) return 1.0f;
 
 	const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
 	ASSERT( pProperty );
@@ -347,7 +324,7 @@ float CMover::GetJobPropFactor( JOB_PROP_TYPE type )
 }
 
 // 무기의 공격력를 구한다.
-int CMover::GetWeaponATK( DWORD dwWeaponType )
+int CMover::GetWeaponATK( DWORD dwWeaponType ) const
 {
 	int nATK = 0;
 	switch( dwWeaponType )
@@ -388,65 +365,46 @@ int CMover::GetWeaponATK( DWORD dwWeaponType )
 
 
 // 공격력Min,Max를 구한다.
-void CMover::GetHitMinMax( int* pnMin, int* pnMax, ATTACK_INFO *pInfo )
-{
-	int nParts = PARTS_RWEAPON;
-	if( pInfo )
-		nParts  = pInfo->nParts;
+std::pair<int, int> CMover::GetHitMinMax(const ATTACK_INFO * const pInfo) const {
+	const int nParts = pInfo ? pInfo->nParts : PARTS_RWEAPON;
 
-	*pnMin = 0;
-	*pnMax = 0;
-
-	if( IsInvalidObj(this) )	
-		return;
+	if (IsInvalidObj(this))	return { 0, 0 };
+	
+	int min, max;
 
 	if( IsPlayer() )
 	{
-		ItemProp* pItemProp = GetActiveHandItemProp( nParts );
-		if( pItemProp == NULL )
-			return;
+		const ItemProp * pItemProp = GetActiveHandItemProp(nParts);
+		if (!pItemProp) return { 0, 0 };
 
-		*pnMin = pItemProp->dwAbilityMin * 2;
-		*pnMax = pItemProp->dwAbilityMax * 2;
-
-		*pnMin = GetParam( DST_ABILITY_MIN, *pnMin );
-		*pnMax = GetParam( DST_ABILITY_MAX, *pnMax );
+		min = GetParam(DST_ABILITY_MIN, pItemProp->dwAbilityMin * 2);
+		max = GetParam(DST_ABILITY_MAX, pItemProp->dwAbilityMax * 2);
 
 		int nPlus = GetWeaponATK( pItemProp->dwWeaponType ) + GetParam( DST_CHR_DMG, 0 );
-		*pnMin += nPlus;
-		*pnMax += nPlus;
+		min += nPlus;
+		max += nPlus;
 
-		CItemElem *pWeapon = GetWeaponItem( nParts );
-		if( pWeapon && pWeapon->GetProp() )
-		{
-			float f = GetItemMultiplier( pWeapon );
-			*pnMin = (int)( *pnMin * f );
-			*pnMax = (int)( *pnMax * f );
-		}
+		
+		if (const CItemElem * pWeapon = GetWeaponItem(nParts)) {
+			if (pWeapon->GetProp()) {
+				const float f = GetItemMultiplier(pWeapon);
+				min = static_cast<int>(min * f);
+				max = static_cast<int>(max * f);
+			}
 
-		if( pWeapon )
-		{
-			int nOption = pWeapon->GetAbilityOption();
-			if( nOption > 0 )
-			{
-				int nValue = (int)( pow( (float)( nOption ), 1.5f ) );
-
-				*pnMin += nValue;
-				*pnMax += nValue;
+			const int nOption = pWeapon->GetAbilityOption();
+			if (nOption > 0) {
+				const int nValue = (int)(pow((float)(nOption), 1.5f));
+				min += nValue;
+				max += nValue;
 			}
 		}
 	} 
 	else
 	{
-		MoverProp* pMoverProp = GetProp();
-		*pnMin = pMoverProp->dwAtkMin;
-		*pnMax = pMoverProp->dwAtkMax;
-
-		*pnMin = GetParam( DST_ABILITY_MIN, *pnMin );
-		*pnMax = GetParam( DST_ABILITY_MAX, *pnMax );
-		
-		*pnMin = GetParam( DST_CHR_DMG, *pnMin );
-		*pnMax = GetParam( DST_CHR_DMG, *pnMax );		
+		const MoverProp * const pMoverProp = GetProp();
+		min = GetParam(DST_CHR_DMG, GetParam(DST_ABILITY_MIN, pMoverProp->dwAtkMin));
+		max = GetParam(DST_CHR_DMG, GetParam(DST_ABILITY_MAX, pMoverProp->dwAtkMax));
 		
 		DWORD dwAtk = pMoverProp->dwAtk1;
 		if( pInfo )
@@ -458,14 +416,14 @@ void CMover::GetHitMinMax( int* pnMin, int* pnMax, ATTACK_INFO *pInfo )
 	
 		if( dwAtk != NULL_ID )		// 들고있는 무기가 있을땐 그 무기의 min,max 값까지 더한다.
 		{
-			ItemProp* pItemProp = prj.GetItemProp( dwAtk );
-			if( pItemProp )
-			{
-				*pnMin += pItemProp->dwAbilityMin;
-				*pnMax += pItemProp->dwAbilityMax;
+			if (const ItemProp * pItemProp = prj.GetItemProp(dwAtk)) {
+				min += pItemProp->dwAbilityMin;
+				max += pItemProp->dwAbilityMax;
 			}
 		}
 	}
+
+	return { min, max };
 }
 
 // 방어력증폭값을 얻는다.    this는 방어자
@@ -928,7 +886,7 @@ int CMover::CalcPropDamage( CMover* pDefender, DWORD dwAtkFlags )
 		}
 		else
 		{
-			ItemProp* pProp = GetActiveHandItemProp();
+			const ItemProp* pProp = GetActiveHandItemProp();
 			type = pProp->eItemType;
 			nATK = pProp->wItemEatk; 
 		}
@@ -991,7 +949,7 @@ float CMover::GetMagicSkillFactor( CMover* pDefender, SAI79::ePropType skillType
 		itemType = (SAI79::ePropType)pWeapon->m_bItemResist;	// 제련속성 
 	else
 	{
-		ItemProp* pItemProp = GetActiveHandItemProp();
+		const ItemProp* pItemProp = GetActiveHandItemProp();
 		if( pItemProp ) 
 			itemType = pItemProp->eItemType;					// 아이템 속성
 		else
@@ -1127,7 +1085,7 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 		}
 		else
 		{
-			ItemProp* pProp = GetActiveHandItemProp( nParts );
+			const ItemProp* pProp = GetActiveHandItemProp( nParts );
 			atkType = pProp->eItemType;
 		}	
 
@@ -1207,10 +1165,10 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 // 일반 공격 데미지를 구한다.
 int CMover::GetHitPower( ATTACK_INFO* pInfo  )
 {
-	int nMin, nMax, nATKFactor, nATK;
+	int nATKFactor, nATK;
 	GetDamagePropertyFactor( pInfo->pDefender, &nATKFactor, &pInfo->nDEFFactor, pInfo->nParts );
 
-	GetHitMinMax( &nMin, &nMax, pInfo );
+	auto [nMin, nMax] = GetHitMinMax(pInfo);
 
 	if( IsCriticalAttack( pInfo->pDefender, pInfo->dwAtkFlags ) )
 	{
@@ -1242,7 +1200,7 @@ int CMover::GetHitPower( ATTACK_INFO* pInfo  )
 		nMax	= (int)( nMax * fMax * fCriticalBonus );
 
 		BOOL bFlyByAttack = xRandom(100) < 15;
-		ItemProp* pItemProp = GetActiveHandItemProp();			//요요공격이나 반사류는 날리지 않음 
+		const ItemProp* pItemProp = GetActiveHandItemProp();			//요요공격이나 반사류는 날리지 않음 
 		if( pItemProp && pItemProp->dwWeaponType == WT_MELEE_YOYO || (pInfo->dwAtkFlags & AF_FORCE) )
 			bFlyByAttack = FALSE;
 		if(pInfo->pDefender->IsPlayer() )
@@ -1288,7 +1246,6 @@ int CMover::PostCalcGeneric( int nATK, ATTACK_INFO* pInfo )
 		nDamage = std::max( nDamage, nMin );
 	}
 
-	nDamage += GetWeaponPlusDamage( nDamage );	// 인첸트 옵션 데미지( 방어력 무관 ) 
 	if( nDamage == 0 )
 	{
 		pInfo->dwAtkFlags &= ~AF_CRITICAL;
@@ -1302,7 +1259,7 @@ int	CMover::GetMeleeSkillPower( ATTACK_INFO* pInfo )
 	int nSkill = pInfo->GetSkill();
 	int nSkillLv = pInfo->GetSkillLevel();
 	//int(무기의AbilityMinMax * (기술의AbilityMinMax + 10) / 6 + 무기의AbilityMinMax)
-	ItemProp* pItemProp = GetActiveHandItemProp();			// 들고있는 무기의 프로퍼티 꺼냄
+	const ItemProp* pItemProp = GetActiveHandItemProp();			// 들고있는 무기의 프로퍼티 꺼냄
 	ItemProp* pSkillProp = prj.GetSkillProp( nSkill );		// 스킬의 프로퍼티꺼냄
 	if( !pItemProp || !pSkillProp )
 	{
@@ -1315,8 +1272,7 @@ int	CMover::GetMeleeSkillPower( ATTACK_INFO* pInfo )
 		return 1;
 
 	CItemElem *pWeapon = GetWeaponItem();		// 손에든 아이템의 포인터.
-	int nMin, nMax;
-	GetItemATKPower( &nMin, &nMax, pItemProp, pWeapon ); 
+	const auto [nMin, nMax] = GetItemATKPower( *pItemProp, pWeapon ); 
 
 	int   nReferStat = 0, nReferStat1 = 0, nReferStat2 = 0;
 	switch(pSkillProp->dwReferStat1)
@@ -1380,15 +1336,13 @@ int	CMover::GetMeleeSkillPower( ATTACK_INFO* pInfo )
 //
 // 완드(매직)공격 데미지계산.
 //
-int CMover::GetMagicHitPower( int nChargeLevel )
-{
-	ItemProp* pItemProp = GetActiveHandItemProp();			// 들고있는 무기의 프로퍼티 꺼냄
-	CItemElem *pWeapon = GetWeaponItem();		// 손에든 아이템의 포인터.
+int CMover::GetMagicHitPower(const int nChargeLevel) const {
+	const ItemProp * pItemProp = GetActiveHandItemProp();			// 들고있는 무기의 프로퍼티 꺼냄
+	const CItemElem * pWeapon = GetWeaponItem();		// 손에든 아이템의 포인터.
 
-	int nMin, nMax;
-	GetItemATKPower( &nMin, &nMax, pItemProp, pWeapon ); 
+	auto [nMin, nMax] = GetItemATKPower(*pItemProp, pWeapon);
 
-	int nATK = GetWeaponATK( WT_MAGIC_WAND );
+	const int nATK = GetWeaponATK( WT_MAGIC_WAND );
 	nMin += nATK;
 	nMax += nATK;
 
@@ -1825,7 +1779,7 @@ void CMover::SetDamagedMotion( CMover* pAttacker, DWORD dwAtkFlags )
 
 
 // 아이템의 효능 곱하기 팩터를 구한다.
-float CMover::GetItemMultiplier(const CItemElem * pItemElem) const {
+float CMover::GetItemMultiplier(const CItemElem * pItemElem) {
 	if (pItemElem->IsFlag(CItemElem::expired)) return 0.0f;
 
 	const ItemProp * const pItemProp = pItemElem->GetProp();
@@ -1846,24 +1800,15 @@ float CMover::GetItemMultiplier(const CItemElem * pItemElem) const {
 	return fValue;
 }
 
-void CMover::GetItemATKPower( int *pnMin, int *pnMax, ItemProp* pItemProp, CItemElem *pWeapon ) 
-{
-	float f	= 1.0f;
-	int nOption, nAdd;
-	nAdd = nOption = 0;
+std::pair<int, int> CMover::GetItemATKPower(const ItemProp & pItemProp, const CItemElem * pWeapon) const {
+	const int nOption = pWeapon ? pWeapon->GetAbilityOption() : 0;	// 제련수치 
+	const int nAdd = nOption > 0 ? (int)(pow((float)(nOption), 1.5f)) : 0;
+	const float f = pWeapon ? GetItemMultiplier(pWeapon) : 1.0f;
 
-	if( pWeapon )
-		nOption = pWeapon->GetAbilityOption();	// 제련수치 
-
-	if( nOption > 0 )
-		nAdd = (int)( pow( (float)( nOption ), 1.5f ) );
-
-	if( pWeapon )
-	{
-		f = GetItemMultiplier( pWeapon );
-	}
-	*pnMin	= (int)( GetItemAbilityMin( pItemProp->dwID ) * f ) + nAdd;
-	*pnMax	= (int) ( GetItemAbilityMax( pItemProp->dwID ) * f ) + nAdd;
+	return std::pair<int, int>(
+		static_cast<int>(GetItemAbilityMin(pItemProp.dwID) * f) + nAdd,
+		static_cast<int>(GetItemAbilityMax(pItemProp.dwID) * f) + nAdd
+		);
 }
 
 

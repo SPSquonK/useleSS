@@ -9,6 +9,7 @@
 #include "defineText.h"
 #include "AppDefine.h"
 //#include "WndActiveDesktop.h"
+#include "WndCharacter.h"
 #include "WndMessenger.h"
 #include "WndCommand.h"
 #include "WndNotice.h"
@@ -513,9 +514,6 @@ void CWndMgr::Free()
 }
 
 namespace WndMgr {
-	// If you have an error near here saying "hey this window is not a CWndBase"
-	// it means you have to include the .h with the window class definition.
-
 	template<typename Ptr>
 	static void Impl_SafeDeleteWindowBase(Ptr *& ptr) {
 		static_assert(std::derived_from<Ptr, CWndBase>);
@@ -540,6 +538,8 @@ namespace WndMgr {
 
 	template<size_t I>
 	static bool Impl_DeleteChild(COwnedChildren & self, CWndBase * window) {
+		// If you have an error near here saying "hey this window is not a CWndBase"
+		// it means you have to include the .h with the window class definition.
 		if constexpr (I != boost::pfr::tuple_size_v<COwnedChildren>) {
 			if (window == boost::pfr::get<I>(self)) {
 				Impl_SafeDeleteWindowBase(boost::pfr::get<I>(self));
@@ -1549,7 +1549,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			{
 				if( pFocus && pFocus->GetType() == OT_MOVER )//&& ((CMover*)pFocus)->IsNPC() )플레이어에게도 쓸수있음 pk용
 				{
-					ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+					const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
 					if( pItemProp && pItemProp->dwItemKind3 == IK3_WAND ) //Wand일 경우 AutoAttack을 하지 않음.
 					{
 						CCtrl* pFocusObj = (CCtrl*)pFocus;

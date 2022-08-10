@@ -166,7 +166,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 		case OBJACT_MELEE_ATTACK:
 			if( pObj->GetType() == OT_MOVER )
 			{
-				ItemProp *pItemProp = GetActiveHandItemProp(); 
+				const ItemProp *pItemProp = GetActiveHandItemProp();
 				if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )
 				{
 					CWorld *pWorld = GetWorld();

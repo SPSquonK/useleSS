@@ -414,7 +414,7 @@ class CWndWorld;
 
 void	CMover::CMD_SetMeleeAttack( OBJID idTarget, FLOAT fRange )
 {
-	ItemProp *pProp = GetActiveHandItemProp();
+	const ItemProp *pProp = GetActiveHandItemProp();
 	if( pProp->dwItemKind2 == IK2_TOOLS )			// 툴을 들고선 공격못한다,.
 		return;
 
@@ -470,7 +470,7 @@ void	CMover::CMD_SetRangeAttack( OBJID idTarget, int nPower )
 	if( IsDie() )	
 		return;								// 죽었을때 사용금지.
 	
-	ItemProp *pItemProp = GetActiveHandItemProp();
+	const ItemProp *pItemProp = GetActiveHandItemProp();
 	if( pItemProp == NULL )		
 		return;
 	
@@ -495,7 +495,7 @@ void	CMover::CMD_SetMagicAttack( OBJID idTarget, int nMagicPower )
 	
 	// 손에 들고 있는 완드의 프로퍼티 꺼냄
 	// 사정거리 계산함
-	ItemProp *pItemProp = GetActiveHandItemProp();
+	const ItemProp *pItemProp = GetActiveHandItemProp();
 	if( pItemProp == NULL )		return;
 
 	if( pItemProp->dwItemKind3 != IK3_WAND /*&& pItemProp->dwItemKind3 != IK3_STAFF*/ )	//Staff->ata2k	// 들고있는 무기가 완드가 아니면 취소

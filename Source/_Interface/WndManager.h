@@ -79,6 +79,7 @@ class CWndSelectVillage;
 class CWndGHMainMenu;
 class CWndGHUpkeep;
 class CWndMap;
+class CWndStateConfirm;
  
 #define REG_VERSION 1
 

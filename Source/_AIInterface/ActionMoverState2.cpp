@@ -573,7 +573,7 @@ void	CActionMover::_ProcessStateAttack2( DWORD dwState, int nParam )
 				if( bSuccess == FALSE )
 					return;
 			#ifdef __CLIENT
-				ItemProp* pItemProp = pMover->GetActiveHandItemProp();
+				const ItemProp* pItemProp = pMover->GetActiveHandItemProp();
 				if( pItemProp )
 				{
 					D3DXVECTOR3 v = pMover->GetPos();

@@ -1006,6 +1006,9 @@
     <ClCompile Include="..\_Interface\WndBuffStatus.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndCharacter.cpp">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1871,6 +1874,9 @@
       <Filter>Source Files\_Interface\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndBuffStatus.h">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndCharacter.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
   </ItemGroup>

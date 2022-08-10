@@ -573,7 +573,7 @@ void CAttackArbiter::ProcessAbnormal( int nDamage, ATTACK_INFO* pInfo )
 		
 		// Active Skill(마법 발동)
 		{
-			ItemProp *pAttackerHandItemProp = m_pAttacker->GetActiveHandItemProp();
+			const ItemProp *pAttackerHandItemProp = m_pAttacker->GetActiveHandItemProp();
 			if( pAttackerHandItemProp )
 			{
 				DWORD dwActiveSkill	= pAttackerHandItemProp->dwActiveSkill;
@@ -649,7 +649,7 @@ int CAttackArbiter::MinusHP( int *pnDamage )
 // 흡혈 
 void CAttackArbiter::StealHP( int nDamage, ATK_TYPE type )
 {
-	ItemProp *pHandItem = m_pAttacker->GetActiveHandItemProp();
+	const ItemProp *pHandItem = m_pAttacker->GetActiveHandItemProp();
 	if( pHandItem )
 	{
 		if( pHandItem->dwDestParam1 == DST_CHR_STEALHP )					// 들고 있던 무기에 흡혈 옵션이 있으면
