@@ -180,10 +180,7 @@ void CWndMessageBoxUpper::OnInitialUpdate()
 	SetupWindowsStyleDialog(this, m_nType, m_wndButtons, m_wndText);
 
 	// 게이지 위쪽으로 나오게 하기
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );
+	Move70();
 }
 
 BOOL CWndMessageBoxUpper::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )

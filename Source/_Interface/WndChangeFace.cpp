@@ -45,15 +45,7 @@ void CWndChangeFace::OnDraw( C2DRender* p2DRender )
 } 
 void CWndChangeFace::OnInitialUpdate() 
 { 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -256,10 +248,6 @@ void CWndChangeSex::OnInitialUpdate()
 	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
 	
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -362,10 +350,6 @@ void CWndItemTransy::OnInitialUpdate()
 	m_itemReceiver.SetTooltipId(TID_GAME_TRANSITEM_PUT);
 	
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.

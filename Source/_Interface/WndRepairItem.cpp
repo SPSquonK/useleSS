@@ -76,12 +76,6 @@ void CWndRepairItem::OnInitialUpdate()
 	else
 		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
 	Move( ptMove );
-/*		CRect rectRoot = m_pWndRoot->GetLayoutRect();
-		CRect rectWindow = GetWindowRect();
-		CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-		Move( point );
-		MoveParentCenter();
-*/
 } 
 
 BOOL CWndRepairItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 

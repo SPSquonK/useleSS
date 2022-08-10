@@ -350,10 +350,6 @@ void CWndCredit::OnInitialUpdate()
 	//m_pFont->RestoreDeviceObjects();//>InvalidateDeviceObjects();
 	//m_mapFont.SetAt( _T( "Arial Black9"), pFont );
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 
 	if( ::GetLanguage() == LANG_JAP )
@@ -467,10 +463,6 @@ void CWndAbout::OnInitialUpdate()
 	
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.

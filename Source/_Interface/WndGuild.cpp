@@ -185,10 +185,7 @@ void CWndGuildConfirm::OnInitialUpdate()
 	// 여기에 코딩하세요
 	CWndEdit* pEdit = (CWndEdit*)GetDlgItem( WIDC_STATIC3 );
 	pEdit->SetTitle( strGuildName );
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );		
+	Move70();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndGuildConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 

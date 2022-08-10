@@ -27,10 +27,6 @@ void CWndGuildName::OnDraw( C2DRender* p2DRender )
 #ifdef __S_SERVER_UNIFY
 	if( g_WndMng.m_bAllAction == FALSE )
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
-		CRect rectWindow = GetWindowRect();
-		CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-		Move( point );
 		MoveParentCenter();		
 	}
 #endif // __S_SERVER_UNIFY
@@ -51,10 +47,6 @@ void CWndGuildName::OnInitialUpdate()
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -180,15 +172,7 @@ void CWndGuildNickName::OnDraw( C2DRender* p2DRender )
 } 
 void CWndGuildNickName::OnInitialUpdate() 
 { 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.

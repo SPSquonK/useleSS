@@ -111,14 +111,7 @@ BOOL CWndLordState::Process()
 
 void CWndLordState::OnInitialUpdate() 
 { 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -210,10 +203,6 @@ void CWndLordPledge::OnInitialUpdate()
 	pWndEdit->SetVisible(FALSE);
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -384,10 +373,6 @@ void CWndLordTender::OnInitialUpdate()
 	pWndEdit->SetString("0");
 	RefreshDeposit();
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -504,15 +489,7 @@ BOOL CWndLordVote::Process()
 
 void CWndLordVote::OnInitialUpdate() 
 { 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -678,13 +655,6 @@ void CWndLordEvent::OnDraw( C2DRender* p2DRender )
 void CWndLordEvent::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 }
 
@@ -783,10 +753,6 @@ void CWndLordSkill::OnInitialUpdate()
 	m_aWndCtrl[8] = GetWndCtrl( WIDC_CUSTOM9 );
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 }
 
@@ -907,10 +873,6 @@ void CWndLordConfirm::OnInitialUpdate()
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 	pWndText->SetString(prj.GetText(TID_GAME_MOD_PLEGDE));
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 }
 
@@ -985,10 +947,6 @@ void CWndLordSkillConfirm::OnInitialUpdate()
 	};
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 }
 
@@ -1095,10 +1053,6 @@ void CWndLordInfo::OnInitialUpdate()
 		pWndText->SetString(scanner.m_pProg);
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 }
 
@@ -1145,10 +1099,6 @@ void CWndLordRPInfo::OnInitialUpdate()
 		pWndText->SetString(scanner.m_pProg);
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 }
 

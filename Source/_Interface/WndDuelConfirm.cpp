@@ -48,17 +48,7 @@ void CWndDuelConfirm::OnInitialUpdate()
 	pWndText->SetString( strTemp );
 
 	// 윈도를 중앙으로 옮기는 부분.
-	/*
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
-	MoveParentCenter();
-	*/
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );	
+	Move70();	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndDuelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
@@ -362,17 +352,7 @@ void CWndDuelResult::OnInitialUpdate()
 	pWndText->SetString( strTemp );
 
 	// 윈도를 중앙으로 옮기는 부분.
-	/*
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
-	MoveParentCenter();
-	*/
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );	
+	Move70();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndDuelResult::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 

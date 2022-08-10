@@ -88,10 +88,6 @@ void CWndDebugInfo::OnInitialUpdate()
 	//g_World.m_bViewWater
 	//////////////////////////////////////////////////////
 	
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 

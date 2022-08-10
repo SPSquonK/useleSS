@@ -28,10 +28,6 @@ void CWndChangeName::OnDraw( C2DRender* p2DRender )
 #ifdef __S_SERVER_UNIFY
 	if( g_WndMng.m_bAllAction == FALSE )
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
-		CRect rectWindow = GetWindowRect();
-		CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-		Move( point );
 		MoveParentCenter();		
 	}
 #endif // __S_SERVER_UNIFY
@@ -43,10 +39,6 @@ void CWndChangeName::OnInitialUpdate()
 
 	m_dwData	= 0;
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 
@@ -133,10 +125,6 @@ void CWndChangePetName::OnDraw( C2DRender* p2DRender )
 #ifdef __S_SERVER_UNIFY
 	if( g_WndMng.m_bAllAction == FALSE )
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
-		CRect rectWindow = GetWindowRect();
-		CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-		Move( point );
 		MoveParentCenter();		
 	}
 #endif // __S_SERVER_UNIFY
@@ -148,10 +136,6 @@ void CWndChangePetName::OnInitialUpdate()
 
 	m_dwData	= 0;
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 

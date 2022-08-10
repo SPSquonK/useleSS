@@ -279,10 +279,6 @@ void CWndRandomScrollConfirm::OnInitialUpdate()
 	}
 
 	// ������ �߾����� �ű��? �κ�.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
@@ -2690,11 +2686,7 @@ void CWndConfirmTrade::OnSetName( const char* szName, OBJID objid )
 void CWndConfirmTrade::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );	
+	Move70();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
 BOOL CWndConfirmTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
@@ -2862,10 +2854,6 @@ void CWndTrade::OnInitialUpdate()
 		m_wndItemCtrlI.InitItem( g_pPlayer );
 	}
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 	
 	CWndNeuz::OnInitialUpdate();
@@ -4796,10 +4784,7 @@ BOOL CWndLogOut::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	}
 
 	// ������ �������� ������ �ϱ�
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );
+	Move70();
 
 	return CWndMessageBox::Initialize( pWndParent, dwWndId );
 }
@@ -4898,10 +4883,7 @@ void CWndLogOutWaitting::OnInitialUpdate()
 	dwTime = g_tmCurrent+SEC(TIMEWAIT_CLOSE);
 
 	// ������ �������� ������ �ϱ�
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );
+	Move70();
 
 	// ���� ��Ŷ ���� ����
 	g_DPlay.SendReqLeave();	
@@ -4931,10 +4913,7 @@ BOOL CWndQuit::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	}
 
 	// ������ �������� ������ �ϱ�
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );
+	Move70();
 
 	m_bFlag = FALSE;
 	
@@ -5079,12 +5058,8 @@ void CWndRevival::OnInitialUpdate()
 //		crect.bottom -= 31;
 //		SetWndRect( crect, TRUE );
 	}
-	
-	// ������ �������� ������ �ϱ�
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );
+
+	Move70();
 } 
 BOOL CWndRevival::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
@@ -5551,12 +5526,7 @@ void CWndResurrectionConfirm::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	
 	m_wndTitleBar.SetVisible( FALSE );
-
-	// ������ �������� ������ �ϱ�
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );
+	Move70();
 } 
 BOOL CWndResurrectionConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 

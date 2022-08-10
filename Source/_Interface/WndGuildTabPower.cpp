@@ -29,10 +29,6 @@ void CWndGuildTabPower::OnInitialUpdate()
 	UpdateData();
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 
 	//최초엔 버튼 disable 

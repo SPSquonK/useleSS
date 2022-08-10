@@ -138,10 +138,7 @@ void CWndOption::OnInitialUpdate()
 
 	CWndButton* pWndZoom = (CWndButton*)GetDlgItem( WIDC_CHECK5 );		
 	pWndZoom->SetCheck(!g_Option.m_bZoomLimit);
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -329,11 +326,8 @@ void CWndOptSound::OnDraw( C2DRender* p2DRender )
 } 
 void CWndOptSound::OnInitialUpdate() 
 { 
-	CWndNeuz::OnInitialUpdate(); 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	CWndNeuz::OnInitialUpdate();
+
 	MoveParentCenter();
 
 	CWndButton* pWndButton[ 3 ];
@@ -1162,17 +1156,7 @@ void CWndOptWindow::OnInitialUpdate()
 	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
 	pWndButton[ 0 ]->SetGroup( TRUE );
 	pWndButton[ g_Option.m_nWindowEffect ]->SetCheck( TRUE );
-/*
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_OBJECT_DISTANT_HIGH );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_OBJECT_DISTANT_MID );
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_OBJECT_DISTANT_LOW );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-*/
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -1233,11 +1217,7 @@ void CWndOptMyInfo::OnDraw( C2DRender* p2DRender )
 } 
 void CWndOptMyInfo::OnInitialUpdate() 
 { 
-	CWndNeuz::OnInitialUpdate(); 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
-	Move( point );
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
