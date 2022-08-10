@@ -2993,24 +2993,6 @@ void CWndTrade::DoCancel()
 #define OBJFILTER_NPC      2
 #define OBJFILTER_MONSTER  3 
 
-CWndNavigator::CWndNavigator()
-{
-	m_bObjFilterPlayer  = TRUE;
-	m_bObjFilterParty   = TRUE;
-	m_bObjFilterNPC     = TRUE;
-	m_bObjFilterMonster = TRUE;
-	m_szName[ 0 ] = 0;
-	m_iFrame = 0;
-	m_iPastTime = 0;
-	m_size.cx = 0;
-	m_size.cy = 0;
-	m_pDestinationPositionTexture = NULL;
-}
-CWndNavigator::~CWndNavigator()
-{
-
-}
-
 void CWndNavigator::SetRegionName( const TCHAR *tszName )
 {
 	CString strTitle = tszName;
@@ -3189,7 +3171,6 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 					else
 					if( pMover->IsNPC() && pMover->IsPeaceful() == FALSE )
 						nIndex = 2;
-						//xu = 10, yv = 0;
 					else
 					if( pMover->IsPlayer() )
 					{
@@ -3255,78 +3236,8 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 
 			nIndex = pMover->m_nQuestEmoticonIndex + 20;
 			m_texNavObjs.MakeVertex( p2DRender, CPoint( point.x - 5, point.y - 5 ), nIndex, &pVertices );		
-/*			
-			
-			LPCHARACTER lpCharacter = pMover->GetCharacter();
-			if( pMover->m_nQuestEmoticonIndex == 0 || pMover->m_nQuestEmoticonIndex == 2 ) 
-			{
-				if( lpCharacter && lpCharacter->m_nStructure == -1 )
-				{
-					nIndex = pMover->m_nQuestEmoticonIndex + 20;
-					m_texNavObjs.MakeVertex( p2DRender, CPoint( point.x - 5, point.y - 5 ), nIndex, &pVertices );
-				}
-			}
-			else
-			if( pMover->m_nQuestEmoticonIndex == 1 || pMover->m_nQuestEmoticonIndex == 3 ) 
-			{
-				//if( lpCharacter && lpCharacter->m_nStructure != -1 )
-				{
-					nIndex = pMover->m_nQuestEmoticonIndex + 20;
-					m_texNavObjs.MakeVertex( p2DRender, CPoint( point.x - 5, point.y - 5 ), nIndex, &pVertices );
-				}
-			}
-*/
 		}
-/*	#ifdef __S1005_PARTY_MAP
-		nPartyMap[nPartyMapCount] = g_Party.FindMember( g_pPlayer->m_idPlayer );
-		if( nPartyMap[nPartyMapCount] != -1 )
-			++nPartyMapCount;
-		for( i = 0 ; i < g_Party.GetSizeofMember() && g_Party.GetSizeofMember() != nPartyMapCount ; ++i )
-		{
-			BOOL bDisplay = TRUE;
-			for( int j = 0 ; j < nPartyMapCount ; ++j )
-			{
-				if( nPartyMap[j] == i )
-				{
-					bDisplay = FALSE;
-					break;
-				}
-			}
-					
-			if( bDisplay )
-			{
-				D3DXVECTOR3 vPosBuf = g_pPlayer->GetPos() - g_Party.GetPos( i );
-				float fDist = D3DXVec3Length( &vPosBuf );
 
-				
-				if( fDist > fDistMap )
-				{
-					RenderPartyMember( p2DRender, &pVertices, rect, g_Party.GetPos( i ), g_Party.m_aMember[i].m_uPlayerId, g_Party.m_aMember[i].m_szName );
-				}
-				else
-				{
-					vPos = g_Party.GetPos( i );
-					vPos.x *= fx;
-					vPos.z *= fy;
-					point.x = ( rect.Width() / 2 ) + vPos.x;
-					point.y = ( rect.Height() / 2 ) - vPos.z;
-					point.x -= xCenter;
-					point.y -= yCenter;
-					m_texNavObjs.MakeVertex( p2DRender, CPoint( point.x - 2, point.y - 2 ), 3, &pVertices );
-
-					CRect rectHittest( point.x, point.y, point.x + 5, point.y + 5);
-					CPoint ptMouse = GetMousePoint();
-					if( rectHittest.PtInRect( ptMouse ) )
-					{
-						ClientToScreen( &ptMouse );
-						ClientToScreen( &rectHittest );
-						g_toolTip.PutToolTip( 10000 + g_Party.m_aMember[i].m_uPlayerId, g_Party.m_aMember[i].m_szName, rectHittest, ptMouse, 0 );
-					}
-				}
-			}
-		}
-	#endif // __S1005_PARTY_MAP
-*/
 		////////////////////////////////////////////////////
 		// ��Ŀ�� ������Ʈ ���? (���� �и��ϰ� ���̵���)
 		////////////////////////////////////////////////////
@@ -3407,13 +3318,8 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 	D3DXMatrixIdentity( &matWorld );
 
 	D3DXMatrixScaling( &mat, 1.2f, 1.2f, 1.2f );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &mat );
-/*
-	FLOAT fAngle	= ( g_pPlayer != NULL ? g_pPlayer->GetAngle() - 180 : 0 );
-	if( fAngle < 0 ) fAngle = 360 + fAngle;
-	FLOAT fTheta = D3DXToRadian( fAngle );// (2*D3DX_PI*g_pPlayer->m_nAngle)/(360);//m_nAngle
-	D3DXMatrixRotationZ( &mat, fTheta );
-*/
+	matWorld = matWorld * mat;
+
 	D3DXVECTOR3 vDir      = D3DXVECTOR3( 0.0f, 0.0f, 1.0f );
 	D3DXVECTOR3 vDestNor  = g_pPlayer->GetPos() - g_Neuz.m_camera.m_vPos;
 	D3DXVECTOR3 vAxis;
@@ -3611,8 +3517,6 @@ void CWndNavigator::OnInitialUpdate()
 	CRect rectClient = GetClientRect();
 	rectClient.right = 13;
 	m_wndPlace.Create  ( "P", 0, CRect( rectClient.left,   1, rectClient.left + 16,   1 + 16 ), this, 100000 );
-//	m_wndMover.Create  ( "U", 0, CRect( rectClient.left,  17, rectClient.left + 16,  17 + 16 ), this, 100001 );
-//	m_wndMover.Create  ( "M", 0, CRect( rectClient.left,  36, rectClient.left + 16,  36 + 16 ), this, 102 );
 	m_wndZoomIn.Create ( "+", 0, CRect( rectClient.left,  54, rectClient.left + 16,  54 + 16 ), this, 100005 );
 	m_wndZoomOut.Create( "-", 0, CRect( rectClient.left,  70, rectClient.left + 16,  70 + 16 ), this, 100006 );
 
@@ -3628,12 +3532,6 @@ void CWndNavigator::OnInitialUpdate()
 	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
 
 	m_wndMenuPlace.CreateMenu( this );	
-	/*
-	m_wndMenuPlace.AppendMenu( 0, 0 ,_T("�÷��̾�" ) );
-	m_wndMenuPlace.AppendMenu( 0, 1 ,_T("�ش�"     ) ); 
-	m_wndMenuPlace.AppendMenu( 0, 2 ,_T("NPC"      ) );
-	m_wndMenuPlace.AppendMenu( 0, 3 ,_T("����"   ) ); 
-	*/
 	m_wndMenuPlace.AppendMenu( 0, 0 , prj.GetText(TID_GAME_PLAYER) );
 	m_wndMenuPlace.AppendMenu( 0, 1 , prj.GetText(TID_GAME_PARTYTEXT) ); 
 	m_wndMenuPlace.AppendMenu( 0, 2 , prj.GetText(TID_GAME_NPC) );
@@ -3645,35 +3543,10 @@ void CWndNavigator::OnInitialUpdate()
 	m_wndMenuPlace.CheckMenuItem( 2, m_bObjFilterNPC    );
 	m_wndMenuPlace.CheckMenuItem( 3, m_bObjFilterMonster );
 
-/*
-	m_wndMenuPlace.AppendMenu( 0, 0 ,_T("�������?" ) );
-	m_wndMenuPlace.AppendMenu( 0, 1 ,_T("��ȭ��"   ) );
-	m_wndMenuPlace.AppendMenu( 0, 2 ,_T("����?" ) ); 
-	m_wndMenuPlace.AppendMenu( 0, 3 ,_T("����"     ) );
-	m_wndMenuPlace.AppendMenu( 0, 4 ,_T("���� "    ) );
-	m_wndMenuPlace.AppendMenu( 0, 5 ,_T("�������?" ) );
-	m_wndMenuPlace.AppendMenu( 0, 6 ,_T("��ȭ��"   ) );
-	m_wndMenuPlace.AppendMenu( 0, 7 ,_T("����?" ) ); 
-	m_wndMenuPlace.AppendMenu( 0, 8 ,_T("����"     ) );
-	m_wndMenuPlace.AppendMenu( 0, 9 ,_T("-- ����߰�? --" ));
-*/
 	m_wndMenuMover.CreateMenu( this );	
-	/*
-	CRect rect = GetClientRect();
-	D3DXVECTOR3 vPos = ( g_pPlayer != NULL ? g_pPlayer->GetPos() : D3DXVECTOR3( 0, 0 , 0 ) );
-	// 128 : m_texture.m_size.cx = 1 : x
-	FLOAT fx = (FLOAT)m_texture.m_size.cx / 256.0f * 2;
-	FLOAT fy = (FLOAT)m_texture.m_size.cy / 256.0f * 2;
-	vPos.x *= fx;
-	vPos.z *= fy;
-	CObj* pObj;
-	D3DXVECTOR3 vCenter	= ( g_pPlayer != NULL ? g_pPlayer->GetPos() : D3DXVECTOR3( 0, 0, 0 ) );
-	*/
 
-	//m_size = CSize( MINIMAP_SIZE, MINIMAP_SIZE );
 	m_size = CSize( 256, 256) ;//MINIMAP_SIZE, MINIMAP_SIZE );
 	m_nSizeCnt = 0;
-	//m_wndMinimize.Create("_",0,CRect(00,0,14,14),this,10000);
 
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
@@ -3701,8 +3574,6 @@ BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	
 	SetTitle( GETTEXT( TID_APP_NAVIGATOR ) );
 	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
-
-//	return CWndNeuz::Create( WBS_MOVE|WBS_SOUND|WBS_CAPTION, rect, &g_WndMng, dwWndId );
 }
 void CWndNavigator::ResizeMiniMap()
 {
@@ -3722,14 +3593,11 @@ void CWndNavigator::ResizeMiniMap()
 BOOL CWndNavigator::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
 	CRect rect = GetWindowRect( TRUE );
-	//int nImageBlock = pLand->m_texMiniMap.m_size.cx;
 
 	CWndBase* pWndBase = (CWndBase*) pLResult;
 
 	if( pWndBase->m_pParentWnd == &m_wndMenuPlace )
 	{
-	//	g_WndMng.m_nObjectFilter = nID;
-		//m_wndMenuPlace.CheckMenuRadioItem( 0, 2, nID, TRUE );
 		int nState = !m_wndMenuPlace.GetMenuState( nID, 0 );
 		m_wndMenuPlace.CheckMenuItem( nID, nState );
 		SetFocus();
@@ -3794,26 +3662,17 @@ BOOL CWndNavigator::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				m_nSizeCnt = 1;
 				m_size.cx += 32;
 				m_size.cy += 32;
-				if(m_size.cx > 352)
-					m_size.cx = 352;
-				if(m_size.cy > 352 )
-					m_size.cy = 352;
-				/*
-				if(m_size.cx > 1024)
-					m_size.cx = 1024;
-				if(m_size.cy > 1024 )
-					m_size.cy = 1024;
-					*/
+				m_size.cx = std::min(m_size.cx, 352l);
+				m_size.cy = std::min(m_size.cy, 352l);
+
 				ResizeMiniMap();
 				break;
 			case 100006: // zoom out 
 				m_nSizeCnt = -1;
 				m_size.cx -= 32;
 				m_size.cy -= 32;
-				if( m_size.cx < 128 )
-					m_size.cx = 128;
-				if( m_size.cy < 128 )
-					m_size.cy = 128;
+				m_size.cx = std::max(m_size.cx, 128l);
+				m_size.cy = std::max(m_size.cy, 128l);
 				ResizeMiniMap();
 				break;
 		}
@@ -3882,19 +3741,17 @@ void CWndNavigator::OnRButtonDown(UINT nFlags, CPoint point)
 	m_wndMenuMover.DeleteAllMenu();
 	CLandscape* pLand;
 	CObj* pObj;
-	CWndButton* pWndButton;
 	int i = 0;
 
-	CMover* pMover = NULL;
 	int nTarget = 0;
 	FOR_LAND( pWorld, pLand, pWorld->m_nVisibilityLand, FALSE )
 	{
 		FOR_OBJ( pLand, pObj, OT_MOVER )
 		{
-			pMover = ( CMover* )pObj;
+			CMover * pMover = ( CMover* )pObj;
 			if( !pMover->IsPlayer( ) && pMover->GetCharacter( ) )		//NPC�ΰ��? 
 			{
-				pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
+				CWndButton * pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
 				pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Object;
 				++nTarget;
 			}

@@ -266,8 +266,8 @@ class CWndNavigator : public CWndNeuz
 	CTexture   m_texArrow;
 	CTexture   m_texDunFog;
 	CTexturePack m_texNavObjs;
-	DWORD		 m_iFrame;
-	DWORD		 m_iPastTime;
+	DWORD		 m_iFrame = 0;
+	DWORD		 m_iPastTime = 0;
 	CTexturePack m_texNavPos;
 	inline void	 AccuFrame() { 
 		DWORD CurTime = g_tmCurrent;
@@ -285,19 +285,19 @@ class CWndNavigator : public CWndNeuz
 	void RenderMarkAll( C2DRender* p2DRender , CMover* Player );
 	bool RenderNaviPoint(C2DRender * p2DRender, NaviPoint & naviPoint);
 	CBillboard m_billArrow;
-	CSize      m_size;
+	CSize      m_size = CSize(0, 0);
 	int        m_nSizeCnt;
-	TCHAR      m_szName[ 64 ];
+	TCHAR      m_szName[ 64 ] = "";
 	void ResizeMiniMap();
 	
 	CTexture m_GuildCombatTextureMask;
-	CTexture* m_pDestinationPositionTexture;
+	CTexture* m_pDestinationPositionTexture = nullptr;
 
 public:
-	BOOL m_bObjFilterPlayer ;
-	BOOL m_bObjFilterParty  ;
-	BOOL m_bObjFilterNPC    ;
-	BOOL m_bObjFilterMonster;
+	BOOL m_bObjFilterPlayer  = FALSE;
+	BOOL m_bObjFilterParty   = FALSE;
+	BOOL m_bObjFilterNPC     = FALSE;
+	BOOL m_bObjFilterMonster = FALSE;
 	
 
 	void RenderPartyMember( C2DRender* p2DRender, TEXTUREVERTEX** pVertices, CRect rect, D3DXVECTOR3 vPos, u_long uIdPlayer, LPCTSTR lpStr );
@@ -305,8 +305,6 @@ public:
 		
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
 	
-	CWndNavigator(); 
-	virtual ~CWndNavigator();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
