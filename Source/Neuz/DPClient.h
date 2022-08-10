@@ -449,9 +449,7 @@ public:
 	
 	void	SendReqGuildBankLogList( BYTE byListType );
 	void	OnGuildBankLogList( CAr & ar );
-	void	SendSealChar(  );
 	void	OnSealChar( CAr & ar );
-	void	SendSealCharConm( OBJID objid  );
 	void	OnSealCharGet( CAr & ar );
 
 	void	SendReqHonorList();

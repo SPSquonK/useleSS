@@ -14613,50 +14613,29 @@ void CDPClient::OnGuildBankLogList( CAr & ar )
 
 	pWndGuildBankLog->UpdateScroll();
 }
-void CDPClient::SendSealChar( )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SEALCHAR_REQ, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-void CDPClient::OnSealChar( CAr & ar )
-{
-	short nCount = 0;
-	char szPlayer[3][42] = {0,};
-	u_long uidPlayer[3] = {0,};
-	LONG  nPlayerSlot[3] = {-1,};
 
-	ar >> nCount;
-	
-	for(short i=0; i<nCount; i++)
-	{
-		CString strLog;
-		ar >> nPlayerSlot[i];
-		ar >> uidPlayer[i];
-		ar.ReadString(szPlayer[i], 42);
-	}
-	
-	if( g_pPlayer )
-	{
-		CWndSealCharSelect* pWndCWndSealCharSelect = (CWndSealCharSelect*)g_WndMng.GetWndBase( APP_SEAL_CHAR_SELECT );
-		if( !pWndCWndSealCharSelect )
-		{
-			pWndCWndSealCharSelect = new CWndSealCharSelect;
-			pWndCWndSealCharSelect->Initialize( &g_WndMng );
-		}
-		if(g_pPlayer->m_idPlayer == uidPlayer[0] )
-			pWndCWndSealCharSelect->SetData(nCount - 1,nPlayerSlot[1],nPlayerSlot[2],uidPlayer[1],uidPlayer[2],szPlayer[1],szPlayer[2]);
-		else if(g_pPlayer->m_idPlayer == uidPlayer[1] )
-			pWndCWndSealCharSelect->SetData(nCount - 1,nPlayerSlot[0],nPlayerSlot[2],uidPlayer[0],uidPlayer[2],szPlayer[0],szPlayer[2]);
-		else if(g_pPlayer->m_idPlayer == uidPlayer[2] )
-			pWndCWndSealCharSelect->SetData(nCount - 1,nPlayerSlot[0],nPlayerSlot[1],uidPlayer[0],uidPlayer[1],szPlayer[0],szPlayer[1]);
-	}
-}
+void CDPClient::OnSealChar(CAr & ar) {
+	std::vector<CWndSealCharSelect::Target> targets;
+	targets.reserve(3);
 
-void CDPClient::SendSealCharConm( OBJID objid  )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SEALCHARCONM_REQ, DPID_UNKNOWN );
-	ar << objid;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	short nCount = 0; ar >> nCount;
+
+	for (short i = 0; i < nCount; i++) {
+		CWndSealCharSelect::Target target;
+		ar >> target.slot >> target.id >> target.name;
+		targets.emplace_back(target);
+	}
+
+	if (!g_pPlayer) return;
+
+	const auto thisPlayer = std::ranges::find_if(targets,
+		[](const CWndSealCharSelect::Target & target) {
+			return target.id == g_pPlayer->m_idPlayer;
+		});
+
+	targets.erase(thisPlayer);
+	
+	CWndSealCharSelect::OpenOrResetWindow(std::move(targets));
 }
 
 void CDPClient::OnSealCharGet( CAr & ar )

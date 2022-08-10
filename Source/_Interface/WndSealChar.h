@@ -1,44 +1,48 @@
 #pragma once
 
-class CWndSealChar : public CWndNeuz {
+class CWndSealChar final : public CWndNeuz {
 public:
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 };
 
-class CWndSealCharSelect : public CWndNeuz 
-{ 
-public: 
-	char	m_szSrc1[ MAX_NAME ] = "";
-	OBJID	m_idSrc1;
-	char	m_szSrc2[ MAX_NAME ] = "";
-	OBJID	m_idSrc2;
-	LONG	m_lPlayerSlot1;
-	LONG	m_lPlayerSlot2;
-	short	m_sCount;
-	
-	CWndSealCharSelect(); 
+class CWndSealCharSelect final : public CWndNeuz {
+public:
+	struct Target {
+		char name[MAX_NAME] = "";
+		OBJID id;
+		LONG slot;
+	};
 
-	void	SetData( short sCount,LONG lPlayerSolt1,LONG lPlayerSolt2,u_long uPlayerID1,u_long uPlayerID2, char* szName1, char* szName2 );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
-}; 
+	static void OpenOrResetWindow(std::vector<Target> targets);
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
 
-class CWndSealCharSend : public CWndNeuz 
-{ 
-public: 
-	char	m_szSrc1[ MAX_NAME ];	// ¿Ã∏ß
-	OBJID	m_idSrc1;
-	
-	CWndSealCharSend(); 
+private:
+	CWndSealCharSelect(std::vector<Target> targets)
+		: m_targets(std::move(targets)) {
+	}
+	void UpdateRadioButtons();
 
-	void	SetData( u_long uPlayerID1, char* szName1 );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
-}; 
+	std::vector<Target> m_targets;
+};
+
+class CWndSealCharSend final : public CWndNeuz {
+public:
+	static void OpenOrResetWindow(const CWndSealCharSelect::Target & target);
+
+	CWndSealCharSelect::Target m_target;
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+
+private:
+	CWndSealCharSend() = default;
+	void UpdateTarget(const CWndSealCharSelect::Target & target);
+};
 
 class CWndSealCharSet final : public CWndNeuz {
 public:
