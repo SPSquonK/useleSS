@@ -1,10 +1,9 @@
 #pragma once
 
-#include <span>
-
 class CWndCharInfo final : public CWndBase {
 public:
 	enum class TooltipBox { Str, Sta, Dex, Int, Gp, Status, Edit, Apply, Reset };
+	enum class LoadedIcon { None, Master60, Master70, Master80, Master90, Master100, Master110, Hero };
 
 	struct Hoverable {
 		CRect rect;
@@ -41,12 +40,13 @@ public:
 
 	int m_nGpPoint = 0;
 
+	CTexture * m_masterIcon = nullptr;
+	LoadedIcon m_currentMasterIcon = LoadedIcon::None;
+
 public:
 
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	// BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
-	// message
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	BOOL Process() override;
 	std::pair<int, int> GetVirtualATK() const;
@@ -68,6 +68,7 @@ private:
 	void CheckAndDrawTooltip();
 
 	[[nodiscard]] int GetAttributedTotal() const;
+	CTexture * UpdateAndGetMasterIcon();
 };
 
 class CWndHonor final : public CWndNeuz {

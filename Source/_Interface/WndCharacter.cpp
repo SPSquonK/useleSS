@@ -67,34 +67,10 @@ void CWndCharInfo::DrawCharacterBase(C2DRender * p2DRender) {
 		p2DRender->TextOut(7, y, prj.GetText(TID_GAME_CHARACTER_02), LabelColor);
 		p2DRender->TextOut(80, y, g_pPlayer->GetLevel(), RegularValueColor);
 
-		const BYTE checkhero = g_pPlayer->GetLegendChar();
-		if (checkhero == LEGEND_CLASS_NORMAL) return;
-
-		const int xpos = g_pPlayer->GetLevel() < 100 ? 97 : 103;
-
-		CPoint iconPoint(xpos, y - 2);
-		CString strPath;
-
-		if (checkhero == LEGEND_CLASS_MASTER) {
-			if (g_pPlayer->m_nLevel < 70)
-				strPath = MakePath(DIR_ICON, "Icon_MasterMark1.dds");
-			else if (g_pPlayer->m_nLevel < 80)
-				strPath = MakePath(DIR_ICON, "Icon_MasterMark2.dds");
-			else if (g_pPlayer->m_nLevel < 90)
-				strPath = MakePath(DIR_ICON, "Icon_MasterMark3.dds");
-			else if (g_pPlayer->m_nLevel < 100)
-				strPath = MakePath(DIR_ICON, "Icon_MasterMark4.dds");
-			else if (g_pPlayer->m_nLevel < 110)
-				strPath = MakePath(DIR_ICON, "Icon_MasterMark5.dds");
-			else
-				strPath = MakePath(DIR_ICON, "Icon_MasterMark6.dds");
-		} else {
-			strPath = MakePath(DIR_ICON, "Icon_HeroMark.dds");
-		}
-
-		CTexture * pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, strPath, 0xffff00ff);
-		if (pTexture) {
-			pTexture->Render(p2DRender, iconPoint);
+		if (CTexture * masterIcon = UpdateAndGetMasterIcon()) {
+			const int xpos = g_pPlayer->GetLevel() < 100 ? 97 : 103;
+			CPoint iconPoint(xpos, y - 2);
+			masterIcon->Render(p2DRender, iconPoint);
 		}
 		});
 
@@ -109,6 +85,47 @@ void CWndCharInfo::DrawCharacterBase(C2DRender * p2DRender) {
 			p2DRender->TextOut(80, y, channel->lpName, RegularValueColor);
 		}
 		});
+}
+
+CTexture * CWndCharInfo::UpdateAndGetMasterIcon() {
+	const BYTE checkhero = g_pPlayer->GetLegendChar();
+	if (checkhero == LEGEND_CLASS_NORMAL) return nullptr;
+
+	const LoadedIcon expected = ([&]() {
+		if (checkhero == LEGEND_CLASS_MASTER) {
+			if (g_pPlayer->m_nLevel < 70)
+				return LoadedIcon::Master60;
+			else if (g_pPlayer->m_nLevel < 80)
+				return LoadedIcon::Master70;
+			else if (g_pPlayer->m_nLevel < 90)
+				return LoadedIcon::Master80;
+			else if (g_pPlayer->m_nLevel < 100)
+				return LoadedIcon::Master90;
+			else if (g_pPlayer->m_nLevel < 110)
+				return LoadedIcon::Master100;
+			else
+				return LoadedIcon::Master110;
+		} else {
+			return LoadedIcon::Hero;
+		}
+	})();
+
+	if (expected == m_currentMasterIcon) return m_masterIcon;
+
+	CString strPath;
+	switch (expected) {
+		case LoadedIcon::Master60:  strPath = MakePath(DIR_ICON, "Icon_MasterMark1.dds"); break;
+		case LoadedIcon::Master70:  strPath = MakePath(DIR_ICON, "Icon_MasterMark2.dds"); break;
+		case LoadedIcon::Master80:  strPath = MakePath(DIR_ICON, "Icon_MasterMark3.dds"); break;
+		case LoadedIcon::Master90:  strPath = MakePath(DIR_ICON, "Icon_MasterMark4.dds"); break;
+		case LoadedIcon::Master100: strPath = MakePath(DIR_ICON, "Icon_MasterMark5.dds"); break;
+		case LoadedIcon::Master110: strPath = MakePath(DIR_ICON, "Icon_MasterMark6.dds"); break;
+		case LoadedIcon::Hero:      strPath = MakePath(DIR_ICON, "Icon_HeroMark.dds");    break;
+	}
+
+	m_currentMasterIcon = expected;
+	m_masterIcon = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, strPath, 0xffff00ff);
+	return m_masterIcon;
 }
 
 void CWndCharInfo::DrawStats(C2DRender * p2DRender) {
