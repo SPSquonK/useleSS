@@ -9057,20 +9057,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	}
 	if( pItemProp->dwID == II_SYS_SYS_SCR_SEALCHARACTER )
 	{
-		if( !g_WndMng.m_pWndSealCharSet )
-		{
-			g_WndMng.m_pWndSealCharSet		= new CWndSealCharSet;
-			g_WndMng.m_pWndSealCharSet->Initialize( &g_WndMng, 0 );
-		}
-		g_WndMng.m_pWndSealCharSet->SetData( dwItemId, 0 );
-
-/*		BEFORESENDSOLE( ar, PACKETTYPE_SEALCHARGET_REQ, DPID_UNKNOWN );
-		ar << dwItemId << objid;
-		ar << nPart;
-		SEND( ar, this, DPID_SERVERPLAYER );
-	
-		g_WndMng.OpenMessageBoxUpper( prj.GetText(TID_DIAG_0023), MB_OK, TRUE );	//서버로부터 접속이 해제되었습니다.		  
-*/
+		CWndSealCharSet::OpenOrResetWindow(dwItemId);
 		return;
 	}
 
@@ -14679,14 +14666,6 @@ void CDPClient::OnSealCharGet( CAr & ar )
 		g_WndMng.OpenMessageBoxUpper( prj.GetText(TID_DIAG_0023), MB_OK, TRUE );	//서버로부터 접속이 해제되었습니다.		  
 	}
 }
-
-void CDPClient::SendSealCharSet( DWORD dwData )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SEALCHARGET_REQ, DPID_UNKNOWN );
-	ar << dwData;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 
 void CDPClient::SendReqHonorList()
 {

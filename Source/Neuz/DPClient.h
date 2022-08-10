@@ -453,7 +453,6 @@ public:
 	void	OnSealChar( CAr & ar );
 	void	SendSealCharConm( OBJID objid  );
 	void	OnSealCharGet( CAr & ar );
-	void	SendSealCharSet( DWORD dwData );
 
 	void	SendReqHonorList();
 	void	SendReqHonorTitleChange( int nChange );

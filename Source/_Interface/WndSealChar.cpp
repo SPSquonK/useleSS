@@ -2,6 +2,7 @@
 #include "defineText.h"
 #include "AppDefine.h"
 #include "WndSealChar.h"
+#include "MsgHdr.h"
 #include "DPClient.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -202,52 +203,36 @@ void CWndSealCharSend::SetData( u_long uPlayerID1, char* szName1 )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
 
-CWndSealCharSet::CWndSealCharSet() 
-{ 
-	memset( m_szSrc1, 0, sizeof(m_szSrc1) );
-	m_idSrc1 = NULL_ID;
+void CWndSealCharSet::OpenOrResetWindow(DWORD scrollPosition) {
+	if (!g_WndMng.m_pWndSealCharSet) {
+		g_WndMng.m_pWndSealCharSet = new CWndSealCharSet;
+		g_WndMng.m_pWndSealCharSet->Initialize(&g_WndMng);
+	}
+
+	g_WndMng.m_pWndSealCharSet->m_scrollPos = scrollPosition;
 }
 
-void CWndSealCharSet::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-	CWndText* pWndText = GetDlgItem<CWndText>( WIDC_TEXT1 );
-	CString strTemp;
-	strTemp.Format( _T( prj.GetText(TID_DIAG_SEAL_CHAR_SET_TEXT01) ), m_szSrc1); // 메시지 바꾸려면 이걸 바꾸시오
-	pWndText->SetString( strTemp );
+void CWndSealCharSet::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
-	m_dwData	= 0;
+	CWndText * pWndText = GetDlgItem<CWndText>(WIDC_TEXT1);
+	LPCTSTR strTemp = _T(prj.GetText(TID_DIAG_SEAL_CHAR_SET_TEXT01));
+	pWndText->SetString(strTemp);
 
-	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( ( rectRoot.right - rectWindow.Width() ) / 2, 70 );
-	Move( point );	
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSealCharSet::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_SEAL_CHAR_SET, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+	Move70();
+}
 
-BOOL CWndSealCharSet::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	BOOL bResult = TRUE;
-	if( nID == WIDC_YES ) 
-	{
-		g_DPlay.SendSealCharSet(m_dwData);
+BOOL CWndSealCharSet::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_SEAL_CHAR_SET, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndSealCharSet::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_YES) {
+		g_DPlay.SendPacket<PACKETTYPE_SEALCHARGET_REQ, DWORD>(m_scrollPos);
+		Destroy();
 	}
-	// 반드시!!! TRUE로 해서 메모리에서 날리자!!
-	if( bResult )
-		Destroy( /*TRUE*/ );
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
 
-void CWndSealCharSet::SetData( DWORD dwId, WORD )
-{
-	m_dwData	= dwId;
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }

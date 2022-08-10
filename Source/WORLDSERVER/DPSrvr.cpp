@@ -9003,29 +9003,18 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer ); // pUser->m_Snapshot.dpidUser에는 소켓번호가 들어가 있다.
 	}
 }
-void CDPSrvr::OnSealCharGetReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSealCharGetReq( CAr & ar, CUser & pUser )
 {
-	DWORD dwData;
-	DWORD dwId;
+	DWORD dwData; ar >> dwData ;
 
-	ar >> dwData ;
+	const DWORD dwId = HIWORD( dwData );
+	if (!pUser.IsUsableState(dwId)) return;
 
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
-		dwId = HIWORD( dwData );
+	const CItemElem * const pItemElem = pUser.m_Inventory.GetAtId(dwId);
+	if (!IsUsableItem(pItemElem)) return;
+	if (pItemElem->m_dwItemId != II_SYS_SYS_SCR_SEALCHARACTER) return;
 
-		if( pUser->IsUsableState( dwId ) == FALSE )
-			return;
-
-		CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
-		if( IsUsableItem( pItemElem ) )
-		{
-			if(pItemElem->m_dwItemId != II_SYS_SYS_SCR_SEALCHARACTER )
-				return;
-			g_dpDBClient.SendQueryGetSealCharGet( pUser->m_idPlayer,pUser->m_playAccount.lpszAccount,dwId);
-		}
-	}
+	g_dpDBClient.SendQueryGetSealCharGet(pUser.m_idPlayer, pUser.m_playAccount.lpszAccount, dwId);
 }
 
 

@@ -40,17 +40,14 @@ public:
 	virtual	void OnInitialUpdate(); 
 }; 
 
-class CWndSealCharSet : public CWndNeuz 
-{ 
-public: 
-	char	m_szSrc1[ MAX_NAME ];	// ¿Ã∏ß
-	OBJID	m_idSrc1;
-	DWORD	m_dwData;
+class CWndSealCharSet final : public CWndNeuz {
+public:
+	static void OpenOrResetWindow(DWORD scrollPosition);
+	DWORD m_scrollPos = 0;
 
-	CWndSealCharSet(); 
-
-	void SetData( DWORD dwId, WORD wReset );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
-}; 
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+private:
+	CWndSealCharSet() = default;
+};

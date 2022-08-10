@@ -1786,6 +1786,13 @@ void CWndBase::Move(CPoint pt)
 	SetWndRect(CRect(pt.x,pt.y,pt.x+m_rectWindow.Width(),pt.y+m_rectWindow.Height()));
 }
 
+void CWndBase::Move70() {
+	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectWindow = GetWindowRect();
+	CPoint point((rectRoot.right - rectWindow.Width()) / 2, 70);
+	Move(point);
+}
+
 void CWndBase::MoveParentCenter()
 {
 	MoveRectCenter(m_pWndRoot->m_rectWindow);
