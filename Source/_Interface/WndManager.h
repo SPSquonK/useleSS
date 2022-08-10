@@ -80,6 +80,8 @@ class CWndGHMainMenu;
 class CWndGHUpkeep;
 class CWndMap;
 class CWndStateConfirm;
+
+class CWndSealChar; class CWndSealCharSelect; class CWndSealCharSend; class CWndSealCharSet;
  
 #define REG_VERSION 1
 
@@ -89,7 +91,6 @@ class CWndStateConfirm;
 
 #include "WndChangeName.h"
 
-#include "WndSealChar.h"
 
 #define MAX_SKILL		  16
 

@@ -61,6 +61,7 @@
 #include "WndFriendConfirm.h"
 #include "Network.h"
 #include "WndSelectVillage.h"
+#include "WndSealChar.h"
 
 #include "post.h"
 #include "spevent.h"
