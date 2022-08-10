@@ -279,9 +279,11 @@ class CWndNavigator : public CWndNeuz
 		if ( m_iFrame >= 4 )
 			m_iFrame = 0;
 	};
-	void RenderMark( C2DRender* p2DRender, CMover* Player );	//	참조되는 변수는 플레이어와 파티플레이어를 얻을 수 있는 것이어야 하지만 
+	
+	/* Render Mark */ //	참조되는 변수는 플레이어와 파티플레이어를 얻을 수 있는 것이어야 하지만 
 																//	현재는 자신만을 찍는 것을 하고 그 다음에 파티 플레이어들을 찾을수 있는 방법을 찾아 보자꾸나
 	void RenderMarkAll( C2DRender* p2DRender , CMover* Player );
+	bool RenderNaviPoint(C2DRender * p2DRender, NaviPoint & naviPoint);
 	CBillboard m_billArrow;
 	CSize      m_size;
 	int        m_nSizeCnt;

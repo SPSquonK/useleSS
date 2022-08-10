@@ -3442,86 +3442,48 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 	return TRUE;
 }
 
-void CWndNavigator::RenderMark( C2DRender* p2DRender, CMover* Player )
-{
-	FLOAT fx = (FLOAT)m_size.cx / ( MAP_SIZE * MPU );
-	FLOAT fy = (FLOAT)m_size.cy / ( MAP_SIZE * MPU );
+//	�̰� �־� �ش����� ������ ���ؼ� NaviPoint���� ������ �����ͷ� �޴� ���·� �ٽ� �����? �־��? �Ұ��̴�.
+void CWndNavigator::RenderMarkAll(C2DRender * p2DRender, CMover * Player) {
+	RenderNaviPoint(p2DRender, Player->m_nvPoint);
 
-	if ( Player->m_nvPoint.Time != 0 )
-	{	
-		D3DXVECTOR3 Pos = g_pPlayer->GetPos() - Player->m_nvPoint.Pos;
-		Pos.x *= fx ;
-		Pos.z *= -fy;
-		Player->m_nvPoint.Time--;
-
-		CPoint point;
-		CRect rect = GetClientRect();
-		point.x = (LONG)( ( rect.Width() / 2 ) - ( Pos.x + 2 ) );
-		point.y = (LONG)( ( rect.Height() / 2 ) - ( Pos.z + 2 ) );
-		
-		//m_texNavPos.MakeVertex(p2DRender, point, 1, &pVertices);
-		m_texNavPos.Render( p2DRender, point, m_iFrame, 255, 0.5f, 0.5f);
-
-		CRect rectHit( point.x - 8, point.y - 8, point.x + 8, point.y + 8);
-		CPoint ptMouse = GetMousePoint();
-		if( rectHit.PtInRect( ptMouse ) )
-		{
-//			CString toolTip("Mark : ");
-			CString toolTip		= prj.GetText( TID_GAME_NAV_MARK );
-			toolTip += Player->GetName( TRUE );
-			ClientToScreen( &ptMouse );
-			ClientToScreen( &rectHit );
-			g_toolTip.PutToolTip( 10000 + Player->GetId(), toolTip, rectHit, ptMouse, 0 );
+	auto nvi = g_pPlayer->m_vOtherPoint.begin();
+	while (nvi != g_pPlayer->m_vOtherPoint.end()) {
+		if (RenderNaviPoint(p2DRender, *nvi)) {
+			nvi++;
+		} else {
+			nvi = g_pPlayer->m_vOtherPoint.erase(nvi);
 		}
 	}
 }
 
-//	�̰� �־� �ش����� ������ ���ؼ� NaviPoint���� ������ �����ͷ� �޴� ���·� �ٽ� �����? �־��? �Ұ��̴�.
-void CWndNavigator::RenderMarkAll( C2DRender* p2DRender , CMover * Player )
-{
-	RenderMark( p2DRender, Player );
+bool CWndNavigator::RenderNaviPoint(C2DRender * p2DRender, NaviPoint & naviPoint) {
+	if (naviPoint.Time == 0) return false;
 
-	FLOAT fx = (FLOAT)m_size.cx / ( MAP_SIZE * MPU );
-	FLOAT fy = (FLOAT)m_size.cy / ( MAP_SIZE * MPU );
+	D3DXVECTOR3 Pos = g_pPlayer->GetPos() - naviPoint.Pos;
+	Pos.x *= (FLOAT)m_size.cx / (MAP_SIZE * MPU);
+	Pos.z *= -(FLOAT)m_size.cy / (MAP_SIZE * MPU);
+	naviPoint.Time--;
 
-	V_NaviPoint::iterator nvi = g_pPlayer->m_vOtherPoint.begin();
-	for ( int i = 0 ; i < (int)( g_pPlayer->m_vOtherPoint.size() ) ; )
-	{
-		if ( g_pPlayer->m_vOtherPoint[i].Time != 0 )
-		{
-			D3DXVECTOR3 Pos = g_pPlayer->GetPos() - g_pPlayer->m_vOtherPoint[i].Pos;
-			Pos.x *= fx ;
-			Pos.z *= -fy;
-			g_pPlayer->m_vOtherPoint[i].Time--;
+	CRect rect = GetClientRect();
 
-			CPoint point;
-			CRect rect = GetClientRect();
-			point.x = (LONG)( ( rect.Width() / 2 ) - ( Pos.x + 2 ) );
-			point.y = (LONG)( ( rect.Height() / 2 ) - ( Pos.z + 2 ) );
-			
-			//m_texNavPos.MakeVertex(p2DRender, point, 1, &pVertices);
-			m_texNavPos.Render( p2DRender, point, m_iFrame, 255, 0.5f, 0.5f);
+	const CPoint point(
+		rect.Width()  / 2 - Pos.x - 2,
+		rect.Height() / 2 - Pos.z - 2
+	);
 
-			CRect rectHit( point.x - 8, point.y - 8, point.x + 8, point.y + 8);
-			CPoint ptMouse = GetMousePoint();
-			if( rectHit.PtInRect( ptMouse ) )
-			{
-//				CString toolTip("Mark : ");
-				CString toolTip		= prj.GetText( TID_GAME_NAV_MARK );
-				toolTip += g_pPlayer->m_vOtherPoint[i].Name.c_str();
-				ClientToScreen( &ptMouse );
-				ClientToScreen( &rectHit );
-				g_toolTip.PutToolTip( 10000 + g_pPlayer->m_vOtherPoint[i].objid, toolTip, rectHit, ptMouse, 0 );
-			}
-			nvi++;
-			i++;
-		}
-		else
-		{
-			g_pPlayer->m_vOtherPoint.erase(nvi);
-		}
-		
+	m_texNavPos.Render(p2DRender, point, m_iFrame, 255, 0.5f, 0.5f);
+
+	CRect rectHit(point.x - 8, point.y - 8, point.x + 8, point.y + 8);
+	CPoint ptMouse = GetMousePoint();
+	if (rectHit.PtInRect(ptMouse)) {
+		CString toolTip = prj.GetText(TID_GAME_NAV_MARK);
+		toolTip += naviPoint.Name.c_str();
+		ClientToScreen(&ptMouse);
+		ClientToScreen(&rectHit);
+		g_toolTip.PutToolTip(10000 + naviPoint.objid, toolTip, rectHit, ptMouse, 0);
 	}
+
+	return true;
 }
 
 void CWndNavigator::RenderPartyMember( C2DRender* p2DRender, TEXTUREVERTEX** pVertices, CRect rect, D3DXVECTOR3 vPos, u_long uIdPlayer, LPCTSTR lpStr )
@@ -3972,6 +3934,8 @@ void CWndNavigator::OnLButtonDown(UINT nFlags, CPoint point)
 	g_pPlayer->m_nvPoint.Pos.z = vCenter.z - ( (float)( point.y - (rect.bottom / 2) ) / fy );
 	//	�� �ð��� �׺�����Ϳ�? ���� �ִ� �ð����� �������̳� ���Ϸ� ������ ������������ �켱 �ϵ� �ڵ��̴�
 	g_pPlayer->m_nvPoint.Time = 200;	
+	g_pPlayer->m_nvPoint.objid = g_pPlayer->GetId();
+	g_pPlayer->m_nvPoint.Name = g_pPlayer->GetName(TRUE);
 	if( pWorld )
 	{
 		CObj* pObj	= pWorld->GetObjFocus();
