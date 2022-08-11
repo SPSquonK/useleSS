@@ -453,13 +453,13 @@ void CWndVendorMessage::OnInitialUpdate()
 	m_wndChat.Create(WBS_NODRAWFRAME, CRect( 0, 0, 300, 220 ), pWndTabCtrl, 10 );
 	m_wndChat.AddWndStyle(WBS_VSCROLL);
 	
-	pWndTabCtrl->InsertItem(0, &m_wndChat, prj.GetText(TID_APP_DIALOG));
+	pWndTabCtrl->InsertItem(&m_wndChat, prj.GetText(TID_APP_DIALOG));
 
 	if( m_nIsOwner )
 	{
 		m_wndInfo.Create(WBS_NODRAWFRAME, CRect( 0, 0, 300, 220 ), pWndTabCtrl, 11 );
 		m_wndInfo.AddWndStyle(WBS_VSCROLL);
-		pWndTabCtrl->InsertItem( 1, &m_wndInfo, prj.GetText(TID_APP_INFOMATION));
+		pWndTabCtrl->InsertItem( &m_wndInfo, prj.GetText(TID_APP_INFOMATION));
 	}
 
 	MoveParentCenter();

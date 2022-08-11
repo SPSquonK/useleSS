@@ -37,11 +37,11 @@ void CWndGuild::OnInitialUpdate() {
 	m_WndGuildTabWar.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TABGUILDWAR);
 	m_WndGuildTabPower.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILD_TAPPOWER);
 
-	pWndTabCtrl->InsertItem(0, &m_WndGuildTabInfo, prj.GetText(TID_GAME_TOOLTIP_GUILDINFO));
-	pWndTabCtrl->InsertItem(1, &m_WndGuildTabMember, prj.GetText(TID_GAME_TOOLTIP_GUILDMEMBER));
-	pWndTabCtrl->InsertItem(2, &m_WndGuildTabApp, prj.GetText(TID_GAME_TOOLTIP_APPELLATION));
-	pWndTabCtrl->InsertItem(3, &m_WndGuildTabWar, prj.GetText(TID_GAME_TOOLTIP_GUILDWAR));
-	pWndTabCtrl->InsertItem(4, &m_WndGuildTabPower, prj.GetText(TID_GAME_TOOLTIP_AGIT));
+	pWndTabCtrl->InsertItem(&m_WndGuildTabInfo, prj.GetText(TID_GAME_TOOLTIP_GUILDINFO));
+	pWndTabCtrl->InsertItem(&m_WndGuildTabMember, prj.GetText(TID_GAME_TOOLTIP_GUILDMEMBER));
+	pWndTabCtrl->InsertItem(&m_WndGuildTabApp, prj.GetText(TID_GAME_TOOLTIP_APPELLATION));
+	pWndTabCtrl->InsertItem(&m_WndGuildTabWar, prj.GetText(TID_GAME_TOOLTIP_GUILDWAR));
+	pWndTabCtrl->InsertItem(&m_WndGuildTabPower, prj.GetText(TID_GAME_TOOLTIP_AGIT));
 
 
 #ifdef __S_SERVER_UNIFY

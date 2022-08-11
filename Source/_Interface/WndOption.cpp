@@ -22,10 +22,10 @@ void CWndTotalOption::OnInitialUpdate()
 	rect.top = 0;
 
 	m_OptTabVideoSnd.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_AV12);
-	pWndTabCtrl->InsertItem( 0, &m_OptTabVideoSnd, prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO));
+	pWndTabCtrl->InsertItem(&m_OptTabVideoSnd, prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO));
 
 	m_OptTabGame.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_GAME12);
-	pWndTabCtrl->InsertItem( 1, &m_OptTabGame, prj.GetText(TID_TOOLTIP_OPT_GAME));
+	pWndTabCtrl->InsertItem(&m_OptTabGame, prj.GetText(TID_TOOLTIP_OPT_GAME));
 
 	MoveParentCenter();	
 } 

@@ -150,9 +150,9 @@ void CWndBagEx::OnInitialUpdate()
 	m_wndItemCtrl[2].InitItem( g_pPlayer->m_Pocket.GetPocket(2), APP_CANCEL_BLESSING );
 
 	LPCTSTR label = prj.GetText(TID_GAME_ITEM);
-	pTab0->InsertItem(0, &m_wndItemCtrl[0], label);
-	pTab1->InsertItem(0, &m_wndItemCtrl[1], label);
-	pTab2->InsertItem(0, &m_wndItemCtrl[2], label);
+	pTab0->InsertItem(&m_wndItemCtrl[0], label);
+	pTab1->InsertItem(&m_wndItemCtrl[1], label);
+	pTab2->InsertItem(&m_wndItemCtrl[2], label);
 
 	m_RectItemCtrl[0] = pTab0->m_rectClient;
 	m_RectItemCtrl[1] = pTab1->m_rectClient;

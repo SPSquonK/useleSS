@@ -652,14 +652,14 @@ void CWndShop::OnInitialUpdate()
 		for(int i = 0 ; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 		{
 			for (int j = pTabCtrl->GetSize(); j < i; ++j) {
-				pTabCtrl->InsertItem(j, nullptr, "");
+				pTabCtrl->InsertItem(nullptr, "");
 			}
 
 			if( lpCharacter->m_vendor.m_venderSlot[ i ].IsEmpty() == FALSE )
 			{
 				m_wndItemCtrl[ i ].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, i + 10 );
 				m_wndItemCtrl[ i ].InitItem( m_pMover->m_ShopInventory[ i ], APP_SHOP_ );
-				pTabCtrl->InsertItem(i, &m_wndItemCtrl[i], lpCharacter->m_vendor.m_venderSlot[i].GetString());
+				pTabCtrl->InsertItem(&m_wndItemCtrl[i], lpCharacter->m_vendor.m_venderSlot[i].GetString());
 			}
 		}
 	}

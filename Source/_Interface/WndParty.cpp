@@ -123,10 +123,10 @@ void CWndParty::OnInitialUpdate()
 	rect.top = 15;
 
 	m_wndPartyInfo.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_INFO);
-	pWndTabCtrl->InsertItem( 0, &m_wndPartyInfo, prj.GetText(TID_APP_INFOMATION));
+	pWndTabCtrl->InsertItem(&m_wndPartyInfo, prj.GetText(TID_APP_INFOMATION));
 	
 	m_wndPartySkill.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_SKILL);
-	pWndTabCtrl->InsertItem( 1, &m_wndPartySkill, prj.GetText(TID_APP_SKILL));
+	pWndTabCtrl->InsertItem(&m_wndPartySkill, prj.GetText(TID_APP_SKILL));
 
 	MoveParentCenter();
 } 

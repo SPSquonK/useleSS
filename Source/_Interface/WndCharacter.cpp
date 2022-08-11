@@ -793,8 +793,8 @@ void CWndCharacter::OnInitialUpdate() {
 	m_wndHonor.AddWndStyle(WBS_NODRAWFRAME);
 	m_wndCharInfo.AddWndStyle(WBS_NOFRAME);
 	
-	lpTapCtrl->InsertItem(0, &m_wndCharInfo, prj.GetText(TID_GAME_TITLE_CHAR_INFO));
-	lpTapCtrl->InsertItem(1, &m_wndHonor, prj.GetText(TID_GAME_TITLE_HONOR));
+	lpTapCtrl->InsertItem(&m_wndCharInfo, prj.GetText(TID_GAME_TITLE_CHAR_INFO));
+	lpTapCtrl->InsertItem(&m_wndHonor, prj.GetText(TID_GAME_TITLE_HONOR));
 	lpTapCtrl->SetCurSel(0);
 }
 

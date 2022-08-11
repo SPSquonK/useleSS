@@ -70,9 +70,9 @@ void CWndBank::OnInitialUpdate()
 	m_wndItemCtrl[2].InitItem( &g_pPlayer->m_Bank[2], APP_COMMON_BANK );
 
 	LPCTSTR pszText = prj.GetText(TID_GAME_ITEM);
-	pTabCtrl->InsertItem(0, &m_wndItemCtrl[0], pszText);
-	pTabCtrl1->InsertItem(0, &m_wndItemCtrl[1], pszText);
-	pTabCtrl2->InsertItem(0, &m_wndItemCtrl[2], pszText);
+	pTabCtrl->InsertItem(&m_wndItemCtrl[0], pszText);
+	pTabCtrl1->InsertItem(&m_wndItemCtrl[1], pszText);
+	pTabCtrl2->InsertItem(&m_wndItemCtrl[2], pszText);
 	
 
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_BANKGO_0 );
