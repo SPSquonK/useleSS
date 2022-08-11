@@ -755,15 +755,6 @@ BOOL CWndCommItemCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
 }
-BOOL CWndCommItemCtrl::SetItem( const LVITEM* pItem )
-{
-	return TRUE;
-}
-int CWndCommItemCtrl::InsertItem( const LVITEM* pItem )
-{
-	return TRUE;
-}
-
 
 /****************************************************
   WndId : APP_COMMERCIAL_ELEM - 상용 속성 아이템 사용
