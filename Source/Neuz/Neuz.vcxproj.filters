@@ -493,21 +493,6 @@
     <ClCompile Include="..\_Interface\WndGuildVote.cpp">
       <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarDecl.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarGiveUp.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarPeace.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarPeaceConfirm.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarRequest.cpp">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndSecretRoom.cpp">
       <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
     </ClCompile>
@@ -1363,21 +1348,6 @@
       <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndGuildVote.h">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndGuildWarDecl.h">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndGuildWarGiveUp.h">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndGuildWarPeace.h">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndGuildWarPeaceConfirm.h">
-      <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndGuildWarRequest.h">
       <Filter>Source Files\_Interface\WndApplet\Guild</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndSecretRoom.h">
