@@ -3621,22 +3621,7 @@ BOOL CWndTabCtrl::Create(DWORD dwStyle, const RECT& rect, CWndBase* pParentWnd, 
 {
 	return CWndBase::Create( dwStyle | WBS_CHILD | WBS_NOFRAME /*| WBS_NODRAWFRAME*/, rect, pParentWnd, nID );//,pSprPack,nSprIdx,nColorTable);
 }
-HRESULT CWndTabCtrl::InitDeviceObjects()
-{
-	return CWndBase::InitDeviceObjects();
-}
-HRESULT CWndTabCtrl::RestoreDeviceObjects()
-{
-	return CWndBase::RestoreDeviceObjects();
-}
-HRESULT CWndTabCtrl::InvalidateDeviceObjects()
-{
-	return CWndBase::InvalidateDeviceObjects();
-}
-HRESULT CWndTabCtrl::DeleteDeviceObjects()
-{
-	return CWndBase::DeleteDeviceObjects();
-}
+
 void CWndTabCtrl::PaintFrame(C2DRender* p2DRender)
 {
 	return;
@@ -3953,16 +3938,10 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	}
 }
 
+void CWndTabCtrl::OnLButtonDown(UINT nFlags, CPoint point) {
+	if (m_aTab.empty()) return;
 
-void CWndTabCtrl::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if( m_aTab.empty() ) return;
-
-	CRect rectClient = GetClientRect();
-
-	int y = rectClient.bottom - 18;
-
-	int nSelect = -1;
+	const int y = GetClientRect().bottom - 18;
 
 	for (int i = 0; i < (int)(m_aTab.size()); i++) {
 		const auto & pItem = m_aTab[i];
@@ -3970,16 +3949,10 @@ void CWndTabCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		CRect rect(CPoint(i * m_nTabButtonLength, y), CSize(m_nTabButtonLength, 18));
 
 		if (rect.PtInRect(point)) {
-			nSelect = i;
-			break;
+			SetCurSel(i);
+			GetParentWnd()->OnChildNotify(WNM_SELCHANGE, GetWndId(), (LRESULT *)this);
+			return;
 		}
-	}
-
-	if( nSelect != -1 )
-	{
-		SetCurSel( nSelect );
-		CWndBase* pParent = (CWndBase*)GetParentWnd();
-		pParent->OnChildNotify( WNM_SELCHANGE, GetWndId(), (LRESULT*) this ); 
 	}
 }
 
@@ -3987,52 +3960,35 @@ BOOL CWndTabCtrl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	return GetParentWnd()->OnChildNotify(message, nID, pLResult);
 }
 
-int CWndTabCtrl::GetCurSel() const { return m_nCurSelect; }
+void CWndTabCtrl::SetCurSel(const size_t nItem) {
+	if (nItem >= m_aTab.size()) return;
+	if (!m_aTab[nItem].pWndBase) return;
 
-int CWndTabCtrl::SetCurSel( int nItem )
-{
-	int nOldSelect = m_nCurSelect;
-	CRect rect;
+	m_aTab[m_nCurSelect].pWndBase->SetVisible(FALSE);
+
 	m_nCurSelect = nItem;
-	if( m_aTab[ m_nCurSelect ].pWndBase )
-	{
-		const auto & old = m_aTab[nOldSelect];
-		old.pWndBase->SetVisible( FALSE );
-		
-		if( m_nCurSelect >= (int)( m_aTab.size() ) )
-		{
-			CString string;
-			string.Format( "CWndTabCtrl::SetCurSel에서 nItem이 범위를 넘어섬 : nItem(%d) m_aTabSize(%d)", m_nCurSelect, m_aTab.size() );
-			//ADDERRORMSG( string );
-		}
 
-		const auto & pItem = m_aTab[ m_nCurSelect ];
-		pItem.pWndBase->SetVisible( TRUE );
-		rect = GetWindowRect( TRUE );
-		if( IsWndStyle( WBS_VSCROLL ) )
-			rect.right -= 15;
-		rect.bottom -= 18;
+	const auto & pItem = m_aTab[m_nCurSelect];
+	pItem.pWndBase->SetVisible(TRUE);
 
-		for (const auto & tab : m_aTab) {
-			if( tab.pWndBase )
-			{
-				rect.OffsetRect( -rect.TopLeft() );
-				tab.pWndBase->SetWndRect( rect );
-			}
+	CRect rect = GetWindowRect(TRUE);
+	if (IsWndStyle(WBS_VSCROLL));
+	rect.right -= 15;
+	rect.bottom -= 18;
+
+	for (const auto & tab : m_aTab) {
+		if (tab.pWndBase) {
+			rect.OffsetRect(-rect.TopLeft());
+			tab.pWndBase->SetWndRect(rect);
 		}
-		GetFrameWnd()->AdjustWndBase();
-		m_aTab[ m_nCurSelect ].pWndBase->SetFocus();
 	}
-	else
-		m_nCurSelect = nOldSelect;
-	return nItem;
+
+	GetFrameWnd()->AdjustWndBase();
+	m_aTab[m_nCurSelect].pWndBase->SetFocus();
 }
 
-CWndBase * CWndTabCtrl::GetTabItem(int nItemNumber) const {
-	if (nItemNumber < 0 || std::cmp_greater_equal(nItemNumber, m_aTab.size())) {
-		return nullptr;
-	}
-
+CWndBase * CWndTabCtrl::GetTabItem(const size_t nItemNumber) const {
+	if (nItemNumber >= m_aTab.size()) return nullptr;
 	return m_aTab[nItemNumber].pWndBase;
 }
 
@@ -4051,10 +4007,10 @@ const CWndTabCtrl::TabTitleAlign CWndTabCtrl::GetTabTitleAlign( void ) const
 }
 void CWndTabCtrl::InsertItem(CWndBase * window, LPCTSTR tabText)
 {
-	m_aTab.emplace_back(tabText, window);
+	m_aTab.emplace_back(WTCITEM{ tabText, window });
 
 	if (window) {
-		if (std::cmp_equal(m_aTab.size() - 1, m_nCurSelect))
+		if (m_aTab.size() - 1 == m_nCurSelect)
 			window->SetVisible(TRUE);
 		else
 			window->SetVisible(FALSE);
@@ -4074,12 +4030,6 @@ void CWndTabCtrl::InsertItem(CWndBase * window, LPCTSTR tabText)
 	m_nTabButtonLength = GetClientRect().Width() / m_aTab.size();
 }
 
-BOOL CWndTabCtrl::InsertTexture( int nItem, LPCTSTR lpszFileName )
-{
-	//m_apTexture[ nItem ] = new CTexture;
-	//m_apTexture[ nItem ]->LoadTexture( m_pApp->m_pd3dDevice, lpszFileName, 0xffff00ff, TRUE );
-	return TRUE;
-}
 void CWndTabCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
 	CWndBase::SetWndRect( rectWnd, bOnSize );
@@ -4101,6 +4051,26 @@ void CWndTabCtrl::OnSize(UINT nType, int cx, int cy)
 	
 	CWndBase::OnSize(nType,cx,cy);
 }
+
+
+CAr & operator<<(CAr & ar, const CWndTabCtrl & tab) {
+	return ar << static_cast<int>(tab.m_nCurSelect);
+}
+
+CAr & operator>>(CAr & ar, CWndTabCtrl & tab) {
+	int output; ar >> output;
+
+	size_t formerSelect;
+	if (output <= 0) formerSelect = 0;
+	else formerSelect = static_cast<size_t>(output);
+
+	if (formerSelect < tab.GetSize()) {
+		tab.SetCurSel(formerSelect);
+	}
+
+	return ar;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // CWndComboBox
 //////////////////////////////////////////////////////////////////////////////

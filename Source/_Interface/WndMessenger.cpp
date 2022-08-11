@@ -26,15 +26,10 @@ void CWndMessengerEx::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 {
 	CWndNeuz::SerializeRegInfo( ar, dwVersion );
 	CWndTabCtrl* lpTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	if( ar.IsLoading() )
-	{
-		int nCurSel;
-		ar >> nCurSel;
-		lpTabCtrl->SetCurSel( nCurSel );
-	}
-	else
-	{
-		ar << lpTabCtrl->GetCurSel();
+	if (ar.IsLoading()) {
+		ar >> *lpTabCtrl;
+	} else {
+		ar << *lpTabCtrl;
 	}
 }
 
@@ -98,7 +93,7 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 	if( pWndTabCtrl == NULL )
 		return;
-	if( pWndTabCtrl->GetCurSel() == 2 )
+	if( pWndTabCtrl->GetSelectedTab() == &m_WndCampus )
 	{
 		CString strCampusPoint = _T( "" );
 		strCampusPoint.Format( prj.GetText( TID_GAME_CAMPUS_POINTS ), g_pPlayer->GetCampusPoint() );

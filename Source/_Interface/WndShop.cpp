@@ -538,7 +538,7 @@ void CWndConfirmBuy::OnOK()
 	CWndShop* pWndShop = (CWndShop*)GetWndBase( APP_SHOP_ );
 
 	CWndTabCtrl* pTabCtrl	= (CWndTabCtrl*)pWndShop->GetDlgItem( WIDC_INVENTORY );
-	CHAR cTab	= (CHAR)pTabCtrl->GetCurSel();
+	const std::uint8_t cTab	= static_cast<std::uint8_t>(pTabCtrl->GetCurSel());
 	if(m_nBuyType == 0)
 		g_DPlay.SendBuyItem( cTab, (BYTE)( m_pItemElem->m_dwObjId ), nBuy, m_dwItemId );
 	else if(m_nBuyType == 1)
@@ -649,15 +649,15 @@ void CWndShop::OnInitialUpdate()
 
 	if( lpCharacter )
 	{
-		for(int i = 0 ; i < MAX_VENDOR_INVENTORY_TAB; i++ )
+		for(size_t i = 0 ; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 		{
-			for (int j = pTabCtrl->GetSize(); j < i; ++j) {
+			for (size_t j = pTabCtrl->GetSize(); j < i; ++j) {
 				pTabCtrl->InsertItem(nullptr, "");
 			}
 
 			if( lpCharacter->m_vendor.m_venderSlot[ i ].IsEmpty() == FALSE )
 			{
-				m_wndItemCtrl[ i ].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, i + 10 );
+				m_wndItemCtrl[ i ].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, static_cast<int>(i) + 10 );
 				m_wndItemCtrl[ i ].InitItem( m_pMover->m_ShopInventory[ i ], APP_SHOP_ );
 				pTabCtrl->InsertItem(&m_wndItemCtrl[i], lpCharacter->m_vendor.m_venderSlot[i].GetString());
 			}

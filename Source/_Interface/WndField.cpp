@@ -6080,11 +6080,7 @@ BOOL CWndPost::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 		CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 
-		if( pWndTabCtrl->GetCurSel() == 0 )
-		{
-		}
-		else
-		{
+		if (pWndTabCtrl->GetSelectedTab() == &m_PostTabReceive) {
 #ifndef __MAIL_REQUESTING_BOX
 			m_PostTabSend.ClearData();
 #endif // __MAIL_REQUESTING_BOX
@@ -9173,9 +9169,6 @@ void CWndGuildCombatResult::OnInitialUpdate()
 	CRect rect = GetClientRect();
 	rect.left = 0;
 	rect.top = 0;
-	//pWndTabCtrl->Create( WBS_NOFRAME, rect, this, 12 );
-	
-	pWndTabCtrl->SetButtonLength( 100 );
 
 	m_WndGuildCombatTabResultRate.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_TAB_RESULT );
 	m_WndGuildCombatTabResultLog.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_TAB_RESULT_LOG );
@@ -9328,10 +9321,7 @@ void CWndGuildCombatRank_Person::OnInitialUpdate()
 	CRect rect = GetClientRect();
 	rect.left = 0;
 	rect.top = 0;
-	//pWndTabCtrl->Create( WBS_NOFRAME, rect, this, 12 );
 	
-	pWndTabCtrl->SetButtonLength( 100 );
-
 	m_WndGuildCombatTabClass_Tot.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
 	m_WndGuildCombatTabClass_Mer.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
 	m_WndGuildCombatTabClass_Mag.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
