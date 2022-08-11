@@ -73,15 +73,12 @@ void CDPClient::OnSurrender( CAr & ar )
 	g_WndMng.PutString( lpString , NULL, prj.GetTextColor( TID_GAME_GUILDWARGIVEUP ) );
 }
 
-void CDPClient::OnQueryTruce( CAr & ar )
-{
-	TRACE( "OnQueryTruce\n" );
-
+void CDPClient::OnQueryTruce(CAr &) {
+	SAFE_DELETE(g_WndMng.m_pWndGuildWarPeaceConfirm);
 	g_WndMng.m_pWndGuildWarPeaceConfirm = new CWndGuildWarPeaceConfirm;
 	g_WndMng.m_pWndGuildWarPeaceConfirm->Initialize();
-	
 }
-	
+
 void CDPClient::OnDeclWar(CAr & ar) {
 	const auto [idDecl, szMaster] = ar.Extract<u_long, char[MAX_PLAYER]>();
 
@@ -95,9 +92,7 @@ void CDPClient::OnAcptWar( CAr & ar )
 {
 	TRACE( "OnAcpWar\n" );
 	
-	WarId idWar;
-	u_long idDecl, idAcpt;
-	ar >> idWar >> idDecl >> idAcpt;
+	auto [idWar, idDecl, idAcpt] = ar.Extract<WarId, u_long, u_long>();
 	
 	CGuild* pDecl	= g_GuildMng.GetGuild( idDecl );
 	CGuild* pAcpt	= g_GuildMng.GetGuild( idAcpt );
