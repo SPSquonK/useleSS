@@ -874,12 +874,11 @@ BOOL TextCmd_CreateGuild(CScanner & scanner, CPlayer_ * pUser) {
 	return FALSE;
 }
 
-BOOL TextCmd_DestroyGuild( CScanner & )
-{
+BOOL TextCmd_DestroyGuild(CScanner &) {
 #ifdef __CLIENT
-	g_DPlay.SendDestroyGuild( g_pPlayer->m_idPlayer );
+	g_DPlay.SendDestroyGuild();
 #endif
-	return TRUE; 
+	return TRUE;
 }
 
 BOOL TextCmd_RemoveGuildMember( CScanner & scanner )

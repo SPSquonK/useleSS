@@ -961,55 +961,41 @@ void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, 
 
 void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idMaster;
-	ar >> _idMaster;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer* pMaster = g_PlayerMng.GetPlayerBySerial( dpidUser );
-	if( !pMaster )
-	{
+	if (!pMaster) {
 		// player not found
 		return;
 	}
 
-	CGuild* pGuild;
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
-	pGuild	= g_GuildMng.GetGuild( pMaster->m_idGuild );
-	if( !pGuild || FALSE == pGuild->IsMember( pMaster->uKey ) )
-	{
+	CGuild * pGuild	= g_GuildMng.GetGuild( pMaster->m_idGuild );
+	if (!pGuild || !pGuild->IsMember(pMaster->uKey)) {
 		// guild not found
 		// OR is not member
-		SendDefinedText( TID_GAME_COMNOHAVECOM, pMaster->dpidCache, pMaster->dpidUser, "" );
-		pMaster->m_idGuild	= 0;
+		SendDefinedText(TID_GAME_COMNOHAVECOM, pMaster->dpidCache, pMaster->dpidUser, "");
+		pMaster->m_idGuild = 0;
 		return;
 	}
 
-	if( FALSE == pGuild->IsMaster( pMaster->uKey ) )
-	{
+	if (!pGuild->IsMaster(pMaster->uKey)) {
 		// is not leader
-		SendDefinedText( TID_GAME_COMDELNOTKINGPIN, pMaster->dpidCache, pMaster->dpidUser, "" );
+		SendDefinedText(TID_GAME_COMDELNOTKINGPIN, pMaster->dpidCache, pMaster->dpidUser, "");
 		return;
 	}
 
-	if( pGuild->GetWar() )
-	{
-		SendDefinedText( TID_GAME_GUILDWARNODISMISS, pMaster->dpidCache, pMaster->dpidUser, "" );
+	if (pGuild->GetWar()) {
+		SendDefinedText(TID_GAME_GUILDWARNODISMISS, pMaster->dpidCache, pMaster->dpidUser, "");
 		return;
 	}
 
-	CGuildMember* pMember;
-	CPlayer* pPlayer;
-	for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-	{
-		pMember		= i->second;
-		pPlayer	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
+	for (CGuildMember * pMember : pGuild->m_mapPMember | std::views::values) {
+		CPlayer * pPlayer	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
 		if( pPlayer )
 		{
 			pPlayer->m_idGuild	= 0;
-			pPlayer->m_tGuildMember = CTime::GetCurrentTime();
-			pPlayer->m_tGuildMember += CTimeSpan( 2, 0, 0, 0 );
+			pPlayer->m_tGuildMember = CTime::GetCurrentTime() + CTimeSpan(2, 0, 0, 0);
 		}
-		
 	}
 	u_long idGuild	= pGuild->m_idGuild;
 	g_GuildMng.RemoveGuild( idGuild );
