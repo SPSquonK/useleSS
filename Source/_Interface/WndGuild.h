@@ -1,69 +1,42 @@
-#ifndef __WNDGUILD__H
-#define __WNDGUILD__H
+#pragma once
 
 #include "WndGuildTabApp.h"
 #include "WndGuildTabInfo.h"
 #include "WndGuildTabMember.h"
 #include "WndGuildTabWar.h"
-
 #include "WndGuildTabPower.h"
 
 
-class CWndGuild : public CWndNeuz 
-{ 
-public: 
-	CWndGuild(); 
-	~CWndGuild(); 
-
+class CWndGuild final : public CWndNeuz {
+public:
 	CWndGuildTabApp     m_WndGuildTabApp;
 	CWndGuildTabInfo    m_WndGuildTabInfo;
 	CWndGuildTabMember  m_WndGuildTabMember;
-	CWndGuildTabWar		m_WndGuildTabWar;
+	CWndGuildTabWar			m_WndGuildTabWar;
+	CWndGuildTabPower		m_WndGuildTabPower;
 
-	CWndGuildTabPower m_WndGuildTabPower;
-
-	void SetCurTab( int index );		//선택된 탭 변경 
-
+	void SetCurTab(int index);
 	void UpdateDataAll();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnMouseMove(UINT nFlags, CPoint point );
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	void OnInitialUpdate() override;
 }; 
 
+class CWndGuildConfirm final : public CWndNeuz { 
+public:
+	static void OpenWindow(u_long idMaster, const CGuild & guild);
 
-class CWndGuildConfirm : public CWndNeuz 
-{ 
-public: 
-	CWndGuildConfirm(); 
-	~CWndGuildConfirm(); 
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
 
-	u_long	m_idMaster;
-	CString strGuildName;
-	void	SetGuildName( char* pGuildName );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+private:
+	explicit CWndGuildConfirm(u_long idMaster) : m_idMaster(idMaster) {}
+	void SetGuildName(const char * pGuildName);
+
+	u_long m_idMaster;
+};
 
 
 
 
-
-
-
-
-
-
-#endif

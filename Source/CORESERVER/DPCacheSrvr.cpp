@@ -1020,24 +1020,21 @@ void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 // fixme - raiders
 void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long idMaster;//, idPlayer;
-	GUILD_MEMBER_INFO	info;
-	ar >> idMaster;// >> idPlayer;
-	ar.Read( &info, sizeof(GUILD_MEMBER_INFO) );
-	CPlayer* pMaster, *pPlayer;
+	u_long idMaster; ar >> idMaster;
 
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
 
-	pMaster	= g_PlayerMng.GetPlayer( idMaster );
-	pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
+	CPlayer * pMaster	= g_PlayerMng.GetPlayer( idMaster );
+	CPlayer * pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
 
 	if( !pPlayer )
 		return;
-	if( pPlayer->uKey != info.idPlayer )
-		return;
-	if( !pMaster )
-	{
-		SendDefinedText( TID_GAME_GUILDCHROFFLINE, pPlayer->dpidCache, pPlayer->dpidUser, "" );
+
+	GUILD_MEMBER_INFO	info;
+	info.idPlayer = pPlayer->uKey;
+
+	if (!pMaster) {
+		SendDefinedText(TID_GAME_GUILDCHROFFLINE, pPlayer->dpidCache, pPlayer->dpidUser, "");
 		return;
 	}
 
@@ -1103,10 +1100,10 @@ void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 		pPlayer->m_idGuild	= pGuild->m_idGuild;
 		g_dpCoreSrvr.SendAddGuildMember( info, pGuild->m_idGuild );
 		g_dpDatabaseClient.SendAddGuildMember( pPlayer->uKey, pGuild->m_idGuild, pMaster->uKey );
-		CPlayer* pPlayertmp;
-		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-		{
-			pPlayertmp	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
+
+		for (CGuildMember * member : pGuild->m_mapPMember | std::views::values) {
+
+			CPlayer * pPlayertmp	= g_PlayerMng.GetPlayer( member->m_idPlayer );
 			if( pPlayertmp )
 			{
 				if( pPlayertmp == pPlayer )
