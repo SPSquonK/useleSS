@@ -3536,36 +3536,7 @@ void CWndListCtrl::PaintFrame( C2DRender* p2DRender )
 			D3DCOLOR_ARGB( 50, 000, 000, 000 ), 20 );
 	}
 }
-/*
-typedef struct tagLVCOLUMNA
-{
-    UINT mask;
-    int fmt;
-    int cx;
-    LPSTR pszText;
-    int cchTextMax;
-    int iSubItem;
-#if (_WIN32_IE >= 0x0300)
-    int iImage;
-    int iOrder;
-#endif
-} LVCOLUMNA, FAR* LPLVCOLUMNA;
-typedef struct tagLVITEMA
-{
-    UINT mask;
-    int iItem;
-    int iSubItem;
-    UINT state;
-    UINT stateMask;
-    LPSTR pszText;
-    int cchTextMax;
-    int iImage;
-    LPARAM lParam;
-#if (_WIN32_IE >= 0x0300)
-    int iIndent;
-#endif
-} LVITEMA, FAR* LPLVITEMA;
-*/
+
 BOOL CWndListCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
@@ -3635,17 +3606,6 @@ int CWndListCtrl::InsertColumn( int nCol, const LVCOLUMN* pColumn )
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-tagWTCITEM::tagWTCITEM( void ) : 
-mask( 0 ), 
-dwState( 0 ), 
-dwStateMask( 0 ), 
-pszText( _T( "" ) ), 
-cchTextMax( 0 ), 
-iImage( 0 ), 
-lParam( 0 ), 
-pWndBase( NULL )
-{
-}
 CWndTabCtrl::CWndTabCtrl()
 {
 	m_nTabButtonLength = 0;
