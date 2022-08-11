@@ -256,52 +256,19 @@ BOOL CWndGuildWarRequest::OnChildNotify(UINT message, UINT nID, LRESULT * pLResu
 	CtrlId : WIDC_STATIC2 - 승인하시겠습니까?
 ****************************************************/
 
-CWndGuildWarPeaceConfirm::CWndGuildWarPeaceConfirm() {
-}
-CWndGuildWarPeaceConfirm::~CWndGuildWarPeaceConfirm() {
-}
-void CWndGuildWarPeaceConfirm::OnDraw(C2DRender * p2DRender) {
-}
 void CWndGuildWarPeaceConfirm::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
-	// 여기에 코딩하세요
-
-
-	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 }
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildWarPeaceConfirm::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
-	// Daisy에서 설정한 리소스로 윈도를 연다.
+
+BOOL CWndGuildWarPeaceConfirm::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARPEACECONFIRM, pWndParent, 0, CPoint(0, 0));
 }
-/*
-	직접 윈도를 열때 사용
-BOOL CWndGuildWarPeaceConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 50 ,50, 300, 300 );
-	SetTitle( _T( "title" ) );
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId );
-}
-*/
-BOOL CWndGuildWarPeaceConfirm::OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase) {
-	return CWndNeuz::OnCommand(nID, dwMessage, pWndBase);
-}
-void CWndGuildWarPeaceConfirm::OnSize(UINT nType, int cx, int cy) \
-{
-	CWndNeuz::OnSize(nType, cx, cy);
-}
-void CWndGuildWarPeaceConfirm::OnLButtonUp(UINT nFlags, CPoint point) {
-}
-void CWndGuildWarPeaceConfirm::OnLButtonDown(UINT nFlags, CPoint point) {
-}
+
 BOOL CWndGuildWarPeaceConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	switch (nID) {
 		case WIDC_YES:
-			// 휴전을 승락 한다는것을 서버로 보냄.
-			if (g_pPlayer)
-				g_DPlay.SendAcptTruce(g_pPlayer->m_idPlayer);
+			g_DPlay.SendPacket<PACKETTYPE_ACPT_TRUCE>();
 			Destroy();
 			break;
 		case WIDC_NO:
@@ -319,51 +286,19 @@ BOOL CWndGuildWarPeaceConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * p
 	CtrlId : WIDC_STATIC1 - 상대길드에 휴전을 요청하겠습니까?
 ****************************************************/
 
-CWndGuildWarPeace::CWndGuildWarPeace() {
-}
-CWndGuildWarPeace::~CWndGuildWarPeace() {
-}
-void CWndGuildWarPeace::OnDraw(C2DRender * p2DRender) {
-}
 void CWndGuildWarPeace::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
-	// 여기에 코딩하세요
-
-
-	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 }
-// 처음 이 함수를 부르면 윈도가 열린다.
+
 BOOL CWndGuildWarPeace::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
-	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog(APP_GUILD_WARPEACE, pWndParent, 0, CPoint(0, 0));
 }
-/*
-	직접 윈도를 열때 사용
-BOOL CWndGuildWarPeace::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 50 ,50, 300, 300 );
-	SetTitle( _T( "title" ) );
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId );
-}
-*/
-BOOL CWndGuildWarPeace::OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase) {
-	return CWndNeuz::OnCommand(nID, dwMessage, pWndBase);
-}
-void CWndGuildWarPeace::OnSize(UINT nType, int cx, int cy) \
-{
-	CWndNeuz::OnSize(nType, cx, cy);
-}
-void CWndGuildWarPeace::OnLButtonUp(UINT nFlags, CPoint point) {
-}
-void CWndGuildWarPeace::OnLButtonDown(UINT nFlags, CPoint point) {
-}
+
 BOOL CWndGuildWarPeace::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	switch (nID) {
 		case WIDC_YES:
-			// 휴전신청을 서버로 보냄.
-			g_DPlay.SendQueryTruce(g_pPlayer->m_idPlayer);
+			g_DPlay.SendPacket<PACKETTYPE_QUERY_TRUCE>();
 			Destroy();
 			break;
 		case WIDC_NO:
@@ -380,52 +315,19 @@ BOOL CWndGuildWarPeace::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult
 	CtrlId : WIDC_STATIC1 - 길드전에서 항복을 하겠습니까?
 ****************************************************/
 
-CWndGuildWarGiveUp::CWndGuildWarGiveUp() {
-}
-CWndGuildWarGiveUp::~CWndGuildWarGiveUp() {
-}
-void CWndGuildWarGiveUp::OnDraw(C2DRender * p2DRender) {
-}
 void CWndGuildWarGiveUp::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
-	// 여기에 코딩하세요
-
-
-	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 }
-// 처음 이 함수를 부르면 윈도가 열린다.
+
 BOOL CWndGuildWarGiveUp::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
-	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog(APP_GUILD_WARGIVEUP, pWndParent, 0, CPoint(0, 0));
 }
-/*
-	직접 윈도를 열때 사용
-BOOL CWndGuildWarGiveUp::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 50 ,50, 300, 300 );
-	SetTitle( _T( "title" ) );
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId );
-}
-*/
-BOOL CWndGuildWarGiveUp::OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase) {
-	return CWndNeuz::OnCommand(nID, dwMessage, pWndBase);
-}
-void CWndGuildWarGiveUp::OnSize(UINT nType, int cx, int cy) \
-{
-	CWndNeuz::OnSize(nType, cx, cy);
-}
-void CWndGuildWarGiveUp::OnLButtonUp(UINT nFlags, CPoint point) {
-}
-void CWndGuildWarGiveUp::OnLButtonDown(UINT nFlags, CPoint point) {
-}
+
 BOOL CWndGuildWarGiveUp::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	switch (nID) {
 		case WIDC_YES:
-			// 항복했다는걸 서버로 보냄.
-			if (g_pPlayer)
-				g_DPlay.SendSurrender(g_pPlayer->m_idPlayer);
+			g_DPlay.SendPacket<PACKETTYPE_SURRENDER>();
 			Destroy();
 			break;
 		case WIDC_NO:
@@ -448,15 +350,9 @@ BOOL CWndGuildWarGiveUp::OnChildNotify(UINT message, UINT nID, LRESULT * pLResul
 ****************************************************/
 
 
-CWndGuildWarDecl::CWndGuildWarDecl() {
-}
-CWndGuildWarDecl::~CWndGuildWarDecl() {
-}
-void CWndGuildWarDecl::OnDraw(C2DRender * p2DRender) {
-}
 void CWndGuildWarDecl::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
-	// 여기에 코딩하세요
+
 	CWndEdit * pWndName = (CWndEdit *)GetDlgItem(WIDC_EDIT1);	// 상대길드명.
 	CWndEdit * pWndPenya = (CWndEdit *)GetDlgItem(WIDC_EDIT2);	// 전쟁자금.
 
@@ -467,32 +363,11 @@ void CWndGuildWarDecl::OnInitialUpdate() {
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 }
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildWarDecl::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
-	// Daisy에서 설정한 리소스로 윈도를 연다.
+
+BOOL CWndGuildWarDecl::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_GUILD_WAR, pWndParent, 0, CPoint(0, 0));
 }
-/*
-	직접 윈도를 열때 사용
-BOOL CWndGuildWarDecl::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 50 ,50, 300, 300 );
-	SetTitle( _T( "title" ) );
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId );
-}
-*/
-BOOL CWndGuildWarDecl::OnCommand(UINT nID, DWORD dwMessage, CWndBase * pWndBase) {
-	return CWndNeuz::OnCommand(nID, dwMessage, pWndBase);
-}
-void CWndGuildWarDecl::OnSize(UINT nType, int cx, int cy) \
-{
-	CWndNeuz::OnSize(nType, cx, cy);
-}
-void CWndGuildWarDecl::OnLButtonUp(UINT nFlags, CPoint point) {
-}
-void CWndGuildWarDecl::OnLButtonDown(UINT nFlags, CPoint point) {
-}
+
 BOOL CWndGuildWarDecl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	switch (nID) {
 		case WIDC_OK:
@@ -502,7 +377,7 @@ BOOL CWndGuildWarDecl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 				CString strGuild = pWndEdit->GetString();
 				if (strGuild.GetLength() >= 3 && strGuild.GetLength() < MAX_G_NAME) {
 					strGuild.TrimLeft();	strGuild.TrimRight();
-					g_DPlay.SendDeclWar(g_pPlayer->m_idPlayer, (LPSTR)(LPCSTR)strGuild);
+					g_DPlay.SendDeclWar(g_pPlayer->m_idPlayer, strGuild.GetString());
 					Destroy();
 				}
 			}
@@ -515,5 +390,3 @@ BOOL CWndGuildWarDecl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
-
-

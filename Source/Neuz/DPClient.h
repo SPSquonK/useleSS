@@ -313,9 +313,6 @@ public:
 	void	OnSetWar( OBJID objid, CAr & ar );
 	void	SendDeclWar( u_long idMaster, const char* szGuild );
 	
-	void	SendSurrender( u_long idPlayer );	// 항복
-	void	SendQueryTruce( u_long idPlayer );	// 정전 요청
-	void	SendAcptTruce( u_long idPlayer );	// 정전 수락
 	void	OnSurrender( CAr & ar );	// 항복
 	void	OnQueryTruce( CAr & ar );
 

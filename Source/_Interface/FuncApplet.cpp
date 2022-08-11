@@ -8,6 +8,7 @@
 #include "WndBank.h"		 // 은행 / 창고
 #include "WndRepairItem.h"	 // 수리창
 #include "WndDebugInfo.h"    // 디버그 창 
+#include "WndGuild.h"
 #include "WndHelp.h"
 #include "WndWebBox.h"
 #include "WndVendor.h"

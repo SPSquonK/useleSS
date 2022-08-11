@@ -4,6 +4,7 @@
 
 #include "AppDefine.h"
 #include "defineText.h"
+#include "WndGuild.h"
 #include "WndGuildHouse.h"
 #include "GuildHouse.h"
 #include "dpclient.h"
