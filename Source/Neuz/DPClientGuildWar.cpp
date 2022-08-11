@@ -28,13 +28,6 @@ void CDPClient::SendDeclWar( u_long idMaster, const char* szGuild )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendAcptWar( u_long idMaster, u_long idDecl )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ACPT_GUILD_WAR, DPID_UNKNOWN );
-	ar << idMaster << idDecl;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendSurrender( u_long idPlayer )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SURRENDER, DPID_UNKNOWN );
@@ -109,17 +102,12 @@ void CDPClient::OnQueryTruce( CAr & ar )
 	
 }
 	
-void CDPClient::OnDeclWar( CAr & ar )
-{
-	TRACE( "OnDeclWar\n" );
-	
-	u_long idDecl;
-	char szMaster[MAX_PLAYER];
-	ar >> idDecl;
-	ar.ReadString( szMaster, MAX_PLAYER );
+void CDPClient::OnDeclWar(CAr & ar) {
+	const auto [idDecl, szMaster] = ar.Extract<u_long, char[MAX_PLAYER]>();
 
+	SAFE_DELETE(g_WndMng.m_pWndGuildWarRequest);
 	g_WndMng.m_pWndGuildWarRequest = new CWndGuildWarRequest;
-	g_WndMng.m_pWndGuildWarRequest->Set( idDecl, szMaster );
+	g_WndMng.m_pWndGuildWarRequest->Set(idDecl, szMaster);
 	g_WndMng.m_pWndGuildWarRequest->Initialize();
 }
 

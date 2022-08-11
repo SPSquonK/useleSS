@@ -2105,8 +2105,7 @@ void CDPCacheSrvr::OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uB
 // fixme	- raiders
 void CDPCacheSrvr::OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idMaster, idDecl;
-	ar >> _idMaster >> idDecl;
+	u_long idDecl; ar >> idDecl;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	
