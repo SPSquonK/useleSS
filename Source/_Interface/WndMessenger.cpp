@@ -174,9 +174,9 @@ void CWndMessengerEx::OnInitialUpdate()
 
 	m_WndCampus.Create( WBS_CHILD | WBS_NODRAWFRAME, GetClientRect(), pWndTabCtrl, APP_MESSENGER_TAB_CAMPUS );
 
-	pWndTabCtrl->InsertItem( 0, &m_wndFriend, prj.GetText(TID_APP_COMMUNITY_FRIEND));
-	pWndTabCtrl->InsertItem( 1, &m_wndGuild, prj.GetText(TID_APP_COMPANY));
-	pWndTabCtrl->InsertItem( 2, &m_WndCampus, prj.GetText(TID_APP_COMMUNITY_CAMPUS));
+	pWndTabCtrl->InsertItem(&m_wndFriend, prj.GetText(TID_APP_COMMUNITY_FRIEND));
+	pWndTabCtrl->InsertItem(&m_wndGuild, prj.GetText(TID_APP_COMPANY));
+	pWndTabCtrl->InsertItem(&m_WndCampus, prj.GetText(TID_APP_COMMUNITY_CAMPUS));
 
 	m_wndFriend.ScrollBarPos( 0 );
 	m_wndGuild.ScrollBarPos( 0 );

@@ -238,16 +238,16 @@ void CWndQuest::OnInitialUpdate()
 	QuestProp* pQuestProp = NULL;
 	
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_SCENARIO );
-	pWndTabCtrl->InsertItem( 0, &m_WndScenario, pQuestProp ? pQuestProp->m_szTitle : _T(""));
+	pWndTabCtrl->InsertItem(&m_WndScenario, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_NORMAL );
-	pWndTabCtrl->InsertItem( 1, &m_WndNormal, pQuestProp ? pQuestProp->m_szTitle : _T(""));
+	pWndTabCtrl->InsertItem(&m_WndNormal, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_REQUEST );
-	pWndTabCtrl->InsertItem( 2, &m_WndRequest, pQuestProp ? pQuestProp->m_szTitle : _T(""));
+	pWndTabCtrl->InsertItem(&m_WndRequest, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_EVENT );
-	pWndTabCtrl->InsertItem( 3, &m_WndEvent, pQuestProp ? pQuestProp->m_szTitle : _T(""));
+	pWndTabCtrl->InsertItem(&m_WndEvent, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pWndTabCtrl->SetCurSel( CTreeInformationManager::m_nSelectedTabNumber );
 

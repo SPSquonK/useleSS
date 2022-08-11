@@ -128,5 +128,5 @@ void CWndRankTab::MoveCurrentList(int delta) {
 
 void CWndTabCtrlManager::Add(CWndTabCtrl & tabCtrl, CRect rect, CWndBase & tab, DWORD widgetId, DWORD textId) {
 	tab.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, &tabCtrl, widgetId);
-	tabCtrl.InsertItem(tabCtrl.GetSize(), &tab, prj.GetText(textId));
+	tabCtrl.InsertItem(&tab, prj.GetText(textId));
 }

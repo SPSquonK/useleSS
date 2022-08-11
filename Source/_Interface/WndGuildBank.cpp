@@ -59,7 +59,7 @@ void CWndGuildBank::OnInitialUpdate()
 	m_wndItemCtrl.Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, 11 );
 	m_wndItemCtrl.InitItem( &g_pPlayer->GetGuild()->m_GuildBank, APP_GUILD_BANK );
 
-	pTabCtrl->InsertItem( 0, &m_wndItemCtrl, prj.GetText(TID_GAME_ITEM));
+	pTabCtrl->InsertItem(&m_wndItemCtrl, prj.GetText(TID_GAME_ITEM));
 	
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 	m_wndGold.Create( "g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_CUSTOM1 );
@@ -347,10 +347,10 @@ void CWndGuildBankLog::OnInitialUpdate()
 	// Default - AddItemLog UpdateList
 	m_wndAddItemLog.UpdateLogList();
 
-	pWndTabCtrl->InsertItem(0, &m_wndAddItemLog, prj.GetText(TID_GAME_GUILD_BANK_ADDITEMLOG));
-	pWndTabCtrl->InsertItem(1, &m_wndRemoveItemLog, prj.GetText(TID_GAME_GUILD_BANK_REMOVEITEMLOG));
-	pWndTabCtrl->InsertItem(2, &m_wndReceivePenyaLog, prj.GetText(TID_GAME_GUILD_BANK_RECEIVEPENYALOG));
-	pWndTabCtrl->InsertItem(3, &m_wndInvestPenyaLog, prj.GetText(TID_GAME_GUILD_BANK_INVESTPENYALOG));
+	pWndTabCtrl->InsertItem(&m_wndAddItemLog, prj.GetText(TID_GAME_GUILD_BANK_ADDITEMLOG));
+	pWndTabCtrl->InsertItem(&m_wndRemoveItemLog, prj.GetText(TID_GAME_GUILD_BANK_REMOVEITEMLOG));
+	pWndTabCtrl->InsertItem(&m_wndReceivePenyaLog, prj.GetText(TID_GAME_GUILD_BANK_RECEIVEPENYALOG));
+	pWndTabCtrl->InsertItem(&m_wndInvestPenyaLog, prj.GetText(TID_GAME_GUILD_BANK_INVESTPENYALOG));
 
 	CWndGuildBank* pWndGuildBank = (CWndGuildBank*)GetWndBase( APP_GUILD_BANK );
 	if(pWndGuildBank != NULL)

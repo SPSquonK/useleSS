@@ -900,19 +900,21 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CTabCtrl
 
-struct WTCITEM {
-	LPCTSTR pszText;
-	CWndBase * pWndBase;
-
-	WTCITEM(LPCTSTR text, CWndBase * wndBase)
-		: pszText(text), pWndBase(wndBase) {}
-};
 
 #include <optional>
 
 class CWndTabCtrl: public CWndBase
 {
-	std::vector<std::optional<WTCITEM>> m_aTab;
+	struct WTCITEM {
+		LPCTSTR pszText;
+		CWndBase * pWndBase;
+
+		WTCITEM(LPCTSTR text, CWndBase * wndBase)
+			: pszText(text), pWndBase(wndBase) {
+		}
+	};
+
+	std::vector<WTCITEM> m_aTab;
 
 // Constructors
 	int m_nCurSelect;
@@ -955,7 +957,7 @@ public:
 	int SetCurSel(int nItem);
 
 // Operations
-	void InsertItem(int nItem, CWndBase * window, LPCTSTR tabText);
+	void InsertItem(CWndBase * window, LPCTSTR tabText);
 
 };
 

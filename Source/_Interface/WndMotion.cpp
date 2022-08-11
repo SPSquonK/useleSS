@@ -29,8 +29,8 @@ void CWndMotion::OnInitialUpdate()
 	m_wndMotion1.Create( WBS_CHILD | WBS_NODRAWFRAME , rect, lpTapCtrl, 100000 );
 	m_wndEmoticon.Create( WBS_CHILD | WBS_NODRAWFRAME , rect, lpTapCtrl, 1000001 );
 
-	lpTapCtrl->InsertItem( 0, &m_wndMotion1, prj.GetText(TID_GAME_TOOLTIP_MOTION));	
-	lpTapCtrl->InsertItem( 1, &m_wndEmoticon, prj.GetText(TID_GAME_TOOLTIP_EMOTICON));
+	lpTapCtrl->InsertItem(&m_wndMotion1, prj.GetText(TID_GAME_TOOLTIP_MOTION));	
+	lpTapCtrl->InsertItem(&m_wndEmoticon, prj.GetText(TID_GAME_TOOLTIP_EMOTICON));
 	lpTapCtrl->SetCurSel( 0 );
 	
 	lpTapCtrl->SetButtonLength( 130 );
