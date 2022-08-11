@@ -14,82 +14,40 @@
 /****************************************************
   WndId : APP_GUILD_DISMISS
 ****************************************************/
-CWndGuildDisMiss::CWndGuildDisMiss() 
-{ 
-} 
-CWndGuildDisMiss::~CWndGuildDisMiss() 
-{ 
-} 
-void CWndGuildDisMiss::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndGuildDisMiss::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
 
-	// 윈도를 중앙으로 옮기는 부분.
+void CWndGuildDisMiss::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildDisMiss::Initialize( CWndBase* pWndParent ) 
-{ 
-	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_GUILD_DISMISS );
-	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
-	return CWndNeuz::Create( /*WBS_THICKFRAME |*/ WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_GUILD_DISMISS ); 
-} 
+}
 
-BOOL CWndGuildDisMiss::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildDisMiss::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildDisMiss::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildDisMiss::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndGuildDisMiss::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	switch( nID )
-	{
+BOOL CWndGuildDisMiss::Initialize(CWndBase * pWndParent) {
+	LPWNDAPPLET lpWndApplet = m_resMng.GetAt(APP_GUILD_DISMISS);
+	const CRect rect = CRect(CPoint(0, 0), lpWndApplet->size);
+	// TODO: Why did they use Create and not InitDialog?
+	return CWndNeuz::Create(WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_GUILD_DISMISS);
+}
+
+BOOL CWndGuildDisMiss::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
 		case WIDC_YES:
-			{
-				if( g_GuildCombatMng.m_bRequest )
-					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDCOMBAT_NOT_DISSOLVE_GUILD ) );	// "수정해야함 : 길드대전에 신청한길드는 길드해체를 할수 없습니다" );
-				else
-					g_DPlay.SendDestroyGuild( g_pPlayer->m_idPlayer );
-				Destroy();
-			}
+			if (g_GuildCombatMng.m_bRequest)
+				g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_NOT_DISSOLVE_GUILD));	// "수정해야함 : 길드대전에 신청한길드는 길드해체를 할수 없습니다" );
+			else
+				g_DPlay.SendDestroyGuild();
+			Destroy();
 			break;
 		case WIDC_NO:
-			{
-				Destroy();
-			}
+			Destroy();
 			break;
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
 
 
 /****************************************************
   WndId : APP_GUILD_NOTICE
 ****************************************************/
-CWndGuildNotice::CWndGuildNotice() 
-{ 
-} 
-CWndGuildNotice::~CWndGuildNotice() 
-{ 
-} 
-void CWndGuildNotice::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndGuildNotice::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -113,45 +71,27 @@ void CWndGuildNotice::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildNotice::Initialize( CWndBase* pWndParent ) 
-{ 
-	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_GUILD_NOTICE );
-	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
-	return CWndNeuz::Create( /*WBS_THICKFRAME |*/ WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_GUILD_NOTICE ); 
-} 
+BOOL CWndGuildNotice::Initialize(CWndBase * pWndParent) {
+	LPWNDAPPLET lpWndApplet = m_resMng.GetAt(APP_GUILD_NOTICE);
+	const CRect rect = CRect(CPoint(0, 0), lpWndApplet->size);
+	return CWndNeuz::Create( /*WBS_THICKFRAME |*/ WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_GUILD_NOTICE);
+}
 
-BOOL CWndGuildNotice::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildNotice::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildNotice::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildNotice::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuildNotice::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CWndEdit* pNotice = (CWndEdit*) GetDlgItem( WIDC_EDIT1 );
 
 	switch( nID )
 	{
-	case WIDC_BUTTON2:		// 공지 개시
+	case WIDC_BUTTON2:
 		{
 			LPCTSTR szNotice = pNotice->GetString();
 
-			if( strlen(szNotice) < MAX_BYTE_NOTICE )
-			{
-				g_DPlay.SendGuildNotice( szNotice );
-				Destroy();		// 창 닫음.
-			}
-			else
-			{
-				g_WndMng.OpenMessageBox( prj.GetText( TID_GUILD_NOTICE_ERROR ) );
+			if (strlen(szNotice) < MAX_BYTE_NOTICE) {
+				g_DPlay.SendGuildNotice(szNotice);
+				Destroy();
+			} else {
+				g_WndMng.OpenMessageBox(prj.GetText(TID_GUILD_NOTICE_ERROR));
 			}
 			break;
 		}
@@ -163,7 +103,6 @@ BOOL CWndGuildNotice::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		break;
 	}
 		
-	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
@@ -171,53 +110,32 @@ BOOL CWndGuildNotice::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 /****************************************************
   WndId : APP_GUILD_SETLOGO
 ****************************************************/
-CWndGuildSetLogo::CWndGuildSetLogo() 
-{ 
-} 
-CWndGuildSetLogo::~CWndGuildSetLogo() 
-{ 
-} 
-void CWndGuildSetLogo::OnDraw( C2DRender* p2DRender ) 
-{ 
-	{
-		if( m_nSelectLogo )
-		{
-			CRect rect = m_rect[m_nSelectLogo-1];
-			
-			rect.left -= 1;
-			rect.top  -= 1;
-			rect.right  += 1;
-			rect.bottom += 1;
-			
-			p2DRender->RenderRect( rect, D3DCOLOR_XRGB( 255, 0, 255) );
-			
-			rect.left -= 1;
-			rect.top  -= 1;
-			rect.right  += 1;
-			rect.bottom += 1;
-			
-			p2DRender->RenderRect( rect, D3DCOLOR_XRGB( 255, 0, 255) );
-		}
-		
-		CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-		
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
-		
-		if( pWndWorld )
-		{
-			for( int i=0; i<CUSTOM_LOGO_MAX - 7; i++ )  // GM Guild Log 출력 막음
-			{
-				CPoint pt = CPoint( m_rect[i].left, m_rect[i].top );
-				p2DRender->RenderTexture( pt, &pWndWorld->m_pTextureLogo[i] );
-			}
-		}
-		
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		
+
+void CWndGuildSetLogo::OnDraw(C2DRender * p2DRender) {
+
+	if (m_nSelectLogo) {
+		CRect rect = m_rect[m_nSelectLogo - 1];
+
+		rect.InflateRect(1, 1, 1, 1);
+		p2DRender->RenderRect(rect, D3DCOLOR_XRGB(255, 0, 255));
+
+		rect.InflateRect(1, 1, 1, 1);
+		p2DRender->RenderRect(rect, D3DCOLOR_XRGB(255, 0, 255));
 	}
-} 
+
+	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+
+	if (CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD)) {
+		for (int i = 0; i < CUSTOM_LOGO_MAX - 7; i++) {
+			p2DRender->RenderTexture(m_rect[i].TopLeft(), &pWndWorld->m_pTextureLogo[i]);
+		}
+	}
+
+	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+}
+
 void CWndGuildSetLogo::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -231,95 +149,68 @@ void CWndGuildSetLogo::OnInitialUpdate()
 			return;
 
 		// 출력위치 지정
-		CPoint pt;
 		int index = 0;
-		
 		for( int y=0; y<4; y++ )
 		{
 			for( int x=0; x<5; x++ )
 			{
-				pt = CPoint( x+24, y+18 );
+				CPoint pt = CPoint( x+24, y+18 );
 				
 				pt.x += (x*(pWndWorld->m_pTextureLogo[index].m_size.cx+5));
 				pt.y += (y*(pWndWorld->m_pTextureLogo[index].m_size.cy+5));
 				
-				SetRect( m_rect[index], pt.x, pt.y, pt.x+pWndWorld->m_pTextureLogo[index].m_size.cx, pt.y+pWndWorld->m_pTextureLogo[index].m_size.cy );
+				m_rect[index] = CRect(pt, pWndWorld->m_pTextureLogo[index].m_size);
 				index++;
 			}
 		}
 
-		CGuild* pGuild = g_pPlayer->GetGuild();
-		
-		if( pGuild )
+		if (CGuild * pGuild = g_pPlayer->GetGuild()) {
 			m_nSelectLogo = pGuild->m_dwLogo;
+		}
 	}
+
 	// Check Game Master
-	if(!g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER))
-	{
-		CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
-		if(pWndButton)
-		{
+	if (!g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		CWndButton * pWndButton = (CWndButton *)GetDlgItem(WIDC_BUTTON1);
+		if (pWndButton) {
 			pWndButton->SetVisible(FALSE);
 			pWndButton->EnableWindow(FALSE);
 		}
+
 		CRect rectWindow = GetWindowRect();
 		rectWindow.bottom = 208;
 		SetWndRect(rectWindow);
 	}
+
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
-	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildSetLogo::Initialize( CWndBase* pWndParent ) 
-{ 
-	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_GUILD_SETLOGO );
-	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
+BOOL CWndGuildSetLogo::Initialize(CWndBase * pWndParent) {
+	LPWNDAPPLET lpWndApplet = m_resMng.GetAt(APP_GUILD_SETLOGO);
+	const CRect rect = CRect(CPoint(0, 0), lpWndApplet->size);
+	return CWndNeuz::Create( /*WBS_THICKFRAME |*/ WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_GUILD_SETLOGO);
+}
 
-	return CWndNeuz::Create( /*WBS_THICKFRAME |*/ WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_GUILD_SETLOGO ); 
-} 
-
-BOOL CWndGuildSetLogo::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildSetLogo::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildSetLogo::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-	{
-		for( int i=0; i<CUSTOM_LOGO_MAX - 7; i++ ) // GM Guild Log 선택 막음
-		{
-			if( PtInRect( &m_rect[i], point) )
-			{
-				m_nSelectLogo = i+1;
-				return;
-			}
+void CWndGuildSetLogo::OnLButtonUp(UINT nFlags, CPoint point) {
+	for (int i = 0; i < CUSTOM_LOGO_MAX - 7; i++) {
+		if (PtInRect(&m_rect[i], point)) {
+			m_nSelectLogo = i + 1;
+			return;
 		}
 	}
-} 
-void CWndGuildSetLogo::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+}
+
 BOOL CWndGuildSetLogo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	switch( nID )
-	{
+	switch (nID) {
 		case WIDC_OK:
-		{
-			CWndListBox* pListCtrl = (CWndListBox*) GetDlgItem( WIDC_LISTBOX1 );
-			CGuild* pGuild = g_pPlayer->GetGuild();
-			
-			if( pGuild )
-			{
-				g_DPlay.SendGuildLogo( m_nSelectLogo );
+			if (CGuild * pGuild = g_pPlayer->GetGuild()) {
+				g_DPlay.SendGuildLogo(m_nSelectLogo);
 			}
-			
+
 			Destroy();
 			break;
-		}
 		case WIDC_CANCEL:
 		{
 			Destroy();
@@ -327,16 +218,15 @@ BOOL CWndGuildSetLogo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 		}
 		case WIDC_BUTTON1:
 		{
-			CGuild* pGuild = g_pPlayer->GetGuild();
-			
-			if( pGuild && g_WndMng.m_pWndWorld )
-			{
-				if(g_WndMng.m_pWndWorld->GetGMLogoIndex() != -1)
-					g_DPlay.SendGuildLogo( g_WndMng.m_pWndWorld->GetGMLogoIndex() );
+			CGuild * pGuild = g_pPlayer->GetGuild();
+
+			if (pGuild && g_WndMng.m_pWndWorld) {
+				if (g_WndMng.m_pWndWorld->GetGMLogoIndex() != -1)
+					g_DPlay.SendGuildLogo(g_WndMng.m_pWndWorld->GetGMLogoIndex());
 				else
 					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_DONOTHAVE_GMLOGO));
 			}
-			
+
 			Destroy();
 			break;
 		}
@@ -350,25 +240,7 @@ BOOL CWndGuildSetLogo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 /****************************************************
   WndId : APP_GUILD_TABINFO
 ****************************************************/
-CWndGuildTabInfo::CWndGuildTabInfo() 
-{ 
-	m_pwndGuildName = NULL;
-	m_pwndGuildNotice = NULL;
-	m_pwndGuildSetLogo = NULL;
-	m_pwndGuildDisMiss = NULL;
-	
-#ifdef _DEBUG
-	m_nMx = m_nMy = 0;
-#endif
 
-} 
-CWndGuildTabInfo::~CWndGuildTabInfo() 
-{ 
-	SAFE_DELETE(m_pwndGuildName);
-	SAFE_DELETE(m_pwndGuildNotice);
-	SAFE_DELETE(m_pwndGuildSetLogo);
-	SAFE_DELETE(m_pwndGuildDisMiss);
-} 
 void CWndGuildTabInfo::OnDraw( C2DRender* p2DRender ) 
 { 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
@@ -416,7 +288,6 @@ void CWndGuildTabInfo::UpdateData()
 		pWndText = GetDlgItem( WIDC_GUILDNUMBER );
 		
 		strText.Format( "%d / %d", pGuild->GetSize(), CGuildTable::GetInstance().GetMaxMemeber(pGuild->m_nLevel) );	
-//		strText.Format( "%d / %d", pGuild->GetSize(), prj.GetExpCompany(pGuild->m_nLevel-1)->nMaxMember );	
 		pWndText->SetTitle( strText );  // 길드 인원
 		pWndText = GetDlgItem( WIDC_GUILDEXPMERIT );
 		strText.Format( "%u", pGuild->m_dwContributionPxp );
@@ -452,40 +323,16 @@ void CWndGuildTabInfo::UpdateData()
 			pNotice->SetString( "" );
 	}
 }
-void CWndGuildTabInfo::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
 
+void CWndGuildTabInfo::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	UpdateData();
-
-	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildTabInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_GUILD_TABINFO, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndGuildTabInfo::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildTabInfo::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildTabInfo::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildTabInfo::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildTabInfo::OnMouseMove(UINT nFlags, CPoint point )
-{
 }
 
+BOOL CWndGuildTabInfo::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_GUILD_TABINFO, pWndParent, 0, CPoint(0, 0));
+}
 
 BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -493,7 +340,8 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 
 	if( pGuild == NULL )
 		return FALSE;
-		
+	
+	// TODO: this returnfalse is fishy: does it mean that the titlebar is glitched?
 	if( !pGuild->IsMaster(g_pPlayer->m_idPlayer) )
 		return FALSE;
 
@@ -518,8 +366,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 		break;
 	case WIDC_BUTTON1:		// 공지
 		{
-			SAFE_DELETE(m_pwndGuildNotice);
-			m_pwndGuildNotice = new CWndGuildNotice;
+			m_pwndGuildNotice = std::make_unique<CWndGuildNotice>();
 			m_pwndGuildNotice->Initialize( this );
 		}
 		break;
@@ -542,8 +389,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				return FALSE;
 			}
 
-			SAFE_DELETE(m_pwndGuildSetLogo);
-			m_pwndGuildSetLogo = new CWndGuildSetLogo;
+			m_pwndGuildSetLogo = std::make_unique<CWndGuildSetLogo>();
 			m_pwndGuildSetLogo->Initialize( this );
 		}
 		break;
@@ -571,8 +417,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			} 
 			else
 			{
-				SAFE_DELETE(m_pwndGuildDisMiss);
-				m_pwndGuildDisMiss = new CWndGuildDisMiss;
+				m_pwndGuildDisMiss = std::make_unique<CWndGuildDisMiss>();
 				m_pwndGuildDisMiss->Initialize( this );
 			}
 		}

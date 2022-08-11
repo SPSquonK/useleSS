@@ -10527,11 +10527,8 @@ void CDPClient::SendCreateGuild( const char* szGuild )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendDestroyGuild( u_long idPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DESTROY_GUILD, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDestroyGuild() {
+	SendPacket<PACKETTYPE_DESTROY_GUILD>();
 }
 
 void CDPClient::SendRemoveGuildMember( u_long idMaster, u_long idPlayer )
