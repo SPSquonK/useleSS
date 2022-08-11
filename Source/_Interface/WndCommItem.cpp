@@ -34,12 +34,7 @@ void CWndCommItem::OnInitialUpdate()
 	rect.top = 0;
 	m_wndCommItemCtrl.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_COMM_ITEM );
 
-
-	WTCITEM tabTabItem;
-	
-	tabTabItem.pszText = prj.GetText( TID_TOOLTIP_ITEMTIME );
-	tabTabItem.pWndBase = &m_wndCommItemCtrl;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
+	pWndTabCtrl->InsertItem(0, &m_wndCommItemCtrl, prj.GetText(TID_TOOLTIP_ITEMTIME));
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();

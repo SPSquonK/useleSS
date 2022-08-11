@@ -975,25 +975,23 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CTabCtrl
 
-typedef struct tagWTCITEM {
-	LPCTSTR pszText = _T("");
-	CWndBase * pWndBase = nullptr;
-	tagWTCITEM() = default;
-} WTCITEM, FAR * LPWTCITEM;
+struct WTCITEM {
+	LPCTSTR pszText;
+	CWndBase * pWndBase;
 
+	WTCITEM(LPCTSTR text, CWndBase * wndBase)
+		: pszText(text), pWndBase(wndBase) {}
+};
+
+#include <optional>
 
 class CWndTabCtrl: public CWndBase
 {
-//	DECLARE_DYNAMIC(CTabCtrl)
-	std::vector< LPWTCITEM > m_aTab;
-//	CObjArray::iterator m_itor;
+	std::vector<std::optional<WTCITEM>> m_aTab;
+
 // Constructors
 	int m_nCurSelect;
-//#ifdef __NEWTAB
 	CTexture m_aTexture[ 6 ];
-//#else
-//	CTexture* m_apTexture[ 10 ];
-//#endif
 	int m_nTabButtonLength;
 public:
 	enum TabTitleAlign { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER };
@@ -1023,48 +1021,17 @@ public:
 	virtual	void OnInitialUpdate();
 	
 // Attributes
-	//CImageList* GetImageList() const;
-	//CImageList* SetImageList(CImageList* pImageList);
-	//int GetItemCount() const;
-	BOOL GetItem(int nItem, WTCITEM* pTabCtrlItem) const;
-	LPWTCITEM GetTabItem( int nItemNumber ) const;
-	LPWTCITEM GetSelectedTab( void ) const;
+	[[nodiscard]] CWndBase * GetTabItem(int nItemNumber) const;
+	[[nodiscard]] CWndBase * GetSelectedTab() const;
 	void SetTabTitleAlign( const TabTitleAlign eTabTitleAlign );
 	const TabTitleAlign GetTabTitleAlign( void ) const;
-	//BOOL SetItem(int nItem, TCITEM* pTabCtrlItem);
-	//BOOL SetItemExtra(int nBytes);
-	//BOOL GetItemRect(int nItem, LPRECT lpRect) const;
+
 	int GetCurSel() const;
 	int SetCurSel(int nItem);
-	/*
-	void SetCurFocus(int nItem);
-	CSize SetItemSize(CSize size);
-	void SetPadding(CSize size);
-	int GetRowCount() const;
-	CToolTipCtrl* GetToolTips() const;
-	void SetToolTips(CToolTipCtrl* pWndTip);
-	int GetCurFocus() const;
-	int SetMinTabWidth(int cx);
-	DWORD GetExtendedStyle();
-	DWORD SetExtendedStyle(DWORD dwNewStyle, DWORD dwExMask = 0);
-	DWORD GetItemState(int nItem, DWORD dwMask) const;
-	BOOL SetItemState(int nItem, DWORD dwMask, DWORD dwState);
-*/
+
 // Operations
-	BOOL InsertItem(int nItem, WTCITEM* pTabCtrlItem);
+	void InsertItem(int nItem, CWndBase * window, LPCTSTR tabText);
 
-// Overridables
-	//virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-
-// Implementation
-public:
-	virtual ~CWndTabCtrl();
-//protected:
-	//virtual BOOL OnChildNotify(UINT, WPARAM, LPARAM, LRESULT*);
-	////{{AFX_MSG(CTabCtrl)
-	//afx_msg void OnDestroy();
-	////}}AFX_MSG
-	//DECLARE_MESSAGE_MAP()
 };
 
 //////////////////////////////////////////////////////////////////////////////

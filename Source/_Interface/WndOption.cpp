@@ -21,17 +21,11 @@ void CWndTotalOption::OnInitialUpdate()
 	rect.left = 5;
 	rect.top = 0;
 
-	WTCITEM tabTabItem;
-
 	m_OptTabVideoSnd.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_AV12);
-	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO);
-	tabTabItem.pWndBase = &m_OptTabVideoSnd;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
+	pWndTabCtrl->InsertItem( 0, &m_OptTabVideoSnd, prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO));
 
 	m_OptTabGame.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_GAME12);
-	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_GAME);
-	tabTabItem.pWndBase = &m_OptTabGame;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
+	pWndTabCtrl->InsertItem( 1, &m_OptTabGame, prj.GetText(TID_TOOLTIP_OPT_GAME));
 
 	MoveParentCenter();	
 } 

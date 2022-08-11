@@ -93,9 +93,7 @@ void CWndQuest::TreeOpen()
 {
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
-	LPWTCITEM lpItem = pWndTabCtrl->GetSelectedTab();
-	assert( lpItem );
-	CWndQuestTreeCtrl* pTreeCtrl = ( CWndQuestTreeCtrl* )lpItem->pWndBase;
+	CWndQuestTreeCtrl* pTreeCtrl = ( CWndQuestTreeCtrl* )pWndTabCtrl->GetSelectedTab();
 	assert( pTreeCtrl );
 	OpenTreeArray( pTreeCtrl->GetRootElem()->m_ptrArray );
 }
@@ -103,19 +101,17 @@ void CWndQuest::Update( int nNewQuestId )
 {
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
-	LPWTCITEM lpItem = NULL;
+
 	CWndQuestTreeCtrl* pTreeCtrl = NULL;
 	for( int k = 0; k < pWndTabCtrl->GetSize(); ++k )
 	{
-		lpItem = pWndTabCtrl->GetTabItem( k );
 		assert( lpItem );
-		pTreeCtrl = ( CWndQuestTreeCtrl* )lpItem->pWndBase;
+		pTreeCtrl = (CWndQuestTreeCtrl *)pWndTabCtrl->GetTabItem(k);
 		assert( pTreeCtrl );
 		pTreeCtrl->DeleteAllItems();
 	}
-	lpItem = pWndTabCtrl->GetSelectedTab();
-	assert( lpItem );
-	pTreeCtrl = ( CWndQuestTreeCtrl* )lpItem->pWndBase;
+
+	pTreeCtrl = ( CWndQuestTreeCtrl* )pWndTabCtrl->GetSelectedTab();
 	assert( pTreeCtrl );
 
 	LPQUEST lpQuest = NULL;
@@ -138,7 +134,7 @@ void CWndQuest::Update( int nNewQuestId )
 	if( CTreeInformationManager::m_eQuestListGroup != CTreeInformationManager::CURRENT_QUEST_LIST )
 	{
 		if (g_pPlayer->m_quests) {
-			for (const auto wQuest : g_pPlayer->m_quests->completed) {
+			for (const QuestId wQuest : g_pPlayer->m_quests->completed) {
 				InsertQuestItem(wQuest.get(), aOldHeadData, TRUE, nNewQuestId);
 			}
 		}
@@ -163,9 +159,8 @@ void CWndQuest::RemoveQuest( void )
 {
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
-	LPWTCITEM lpItem = pWndTabCtrl->GetSelectedTab();
-	assert( lpItem );
-	CWndQuestTreeCtrl* pTreeCtrl = ( CWndQuestTreeCtrl* )lpItem->pWndBase;
+
+	CWndQuestTreeCtrl* pTreeCtrl = ( CWndQuestTreeCtrl* )pWndTabCtrl->GetSelectedTab();
 	assert( pTreeCtrl );
 	CWndButton* pWndRemove = (CWndButton*)GetDlgItem( WIDC_REMOVE );
 	assert( pWndRemove );
@@ -241,26 +236,18 @@ void CWndQuest::OnInitialUpdate()
 	m_WndEvent.SetMaxCheckNumber( MAX_CHECK_NUMBER );
 
 	QuestProp* pQuestProp = NULL;
-	WTCITEM tabTabItem;
+	
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_SCENARIO );
-	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
-	tabTabItem.pWndBase = &m_WndScenario;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
+	pWndTabCtrl->InsertItem( 0, &m_WndScenario, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_NORMAL );
-	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
-	tabTabItem.pWndBase = &m_WndNormal;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
+	pWndTabCtrl->InsertItem( 1, &m_WndNormal, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_REQUEST );
-	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
-	tabTabItem.pWndBase = &m_WndRequest;
-	pWndTabCtrl->InsertItem( 2, &tabTabItem );
+	pWndTabCtrl->InsertItem( 2, &m_WndRequest, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_EVENT );
-	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
-	tabTabItem.pWndBase = &m_WndEvent;
-	pWndTabCtrl->InsertItem( 3, &tabTabItem );
+	pWndTabCtrl->InsertItem( 3, &m_WndEvent, pQuestProp ? pQuestProp->m_szTitle : _T(""));
 
 	pWndTabCtrl->SetCurSel( CTreeInformationManager::m_nSelectedTabNumber );
 
@@ -321,9 +308,8 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
 	CTreeInformationManager::m_nSelectedTabNumber = pWndTabCtrl->GetCurSel();
-	LPWTCITEM lpItem = pWndTabCtrl->GetSelectedTab();
-	assert( lpItem );
-	CWndQuestTreeCtrl* pTreeCtrl = ( CWndQuestTreeCtrl* )lpItem->pWndBase;
+
+	CWndQuestTreeCtrl* pTreeCtrl = ( CWndQuestTreeCtrl* )pWndTabCtrl->GetSelectedTab();
 	assert( pTreeCtrl );
 	LPTREEELEM lpTreeElem = pTreeCtrl->GetCurSel();
 	int nQuestID = 0;
