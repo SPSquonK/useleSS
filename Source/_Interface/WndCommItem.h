@@ -45,11 +45,9 @@ public:
 	COLORREF GetBkColor() const;
 	BOOL SetBkColor(COLORREF cr);
 	BOOL GetItem(LVITEM* pItem) const;
-	BOOL SetItem(const LVITEM* pItem);
 	BOOL SetItem(int nItem, int nSubItem, UINT nMask, LPCTSTR lpszItem,
 		int nImage, UINT nState, UINT nStateMask, LPARAM lParam);
 // Operations
-	int InsertItem(const LVITEM* pItem);
 
 // Overridables
 	virtual void OnMouseWndSurface( CPoint point );

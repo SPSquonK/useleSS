@@ -50,11 +50,6 @@ public:
 	virtual	void	OnMouseMove( UINT nFlags, CPoint point );
 	virtual	BOOL	OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 //	Implementation
-public:
-	int		InsertItem( UINT nMask, int nItem, LPCTSTR lpszItem, UINT nState,
-								UINT nStateMask, int nImage, LPARAM lParam );
-protected:
-protected:
 };
 
 #endif	// __WNDREPAIRITEMCTRL_H__

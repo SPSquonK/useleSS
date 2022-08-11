@@ -53,8 +53,7 @@ public:
 public:
 	void ClearItem();
 	void AddItem(CItemElem * pItemContainer);
-	int		InsertItem( UINT nMask, int nItem, LPCTSTR lpszItem, UINT nState,
-								UINT nStateMask, int nImage, LPARAM lParam );
+
 protected:
 protected:
 };
