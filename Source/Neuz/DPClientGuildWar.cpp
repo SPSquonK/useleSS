@@ -10,6 +10,7 @@
 #include "dialogmsg.h"
 #include "misc.h"
 #include "defineObj.h"
+#include "WndGuild.h"
 #include "wndmessenger.h"
 #include "WndQuest.h"
 #include "mover.h"
@@ -25,13 +26,6 @@ void CDPClient::SendDeclWar( u_long idMaster, const char* szGuild )
 	BEFORESENDSOLE( ar, PACKETTYPE_DECL_GUILD_WAR, DPID_UNKNOWN );
 	ar << idMaster;
 	ar.WriteString( szGuild );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendSurrender( u_long idPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SURRENDER, DPID_UNKNOWN );
-	ar << idPlayer;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -77,20 +71,6 @@ void CDPClient::OnSurrender( CAr & ar )
 	char lpString[128]	= { 0, };
 	sprintf( lpString, prj.GetText( TID_GAME_GUILDWARGIVEUP ), pGuild->m_szGuild, sPlayer );
 	g_WndMng.PutString( lpString , NULL, prj.GetTextColor( TID_GAME_GUILDWARGIVEUP ) );
-}
-
-void CDPClient::SendQueryTruce( u_long idPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERY_TRUCE, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendAcptTruce( u_long idPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ACPT_TRUCE, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
 void CDPClient::OnQueryTruce( CAr & ar )

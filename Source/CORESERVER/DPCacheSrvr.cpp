@@ -1877,9 +1877,6 @@ void CDPCacheSrvr::SendBlock( BYTE nGu, char *szName, CPlayer* pTo )
 
 void CDPCacheSrvr::OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idPlayer;
-	ar >> _idPlayer;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
 
@@ -1962,9 +1959,6 @@ void CDPCacheSrvr::SendSurrender(WarId idWar, u_long idPlayer, const char* sPlay
 
 void CDPCacheSrvr::OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idPlayer;
-	ar >> _idPlayer;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
 
@@ -2004,9 +1998,6 @@ void CDPCacheSrvr::OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 
 void CDPCacheSrvr::OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idPlayer;
-	ar >> _idPlayer;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
 

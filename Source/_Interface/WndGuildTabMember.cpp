@@ -2,6 +2,7 @@
 #include <ranges>
 #include "defineText.h"
 #include "AppDefine.h"
+#include "WndGuild.h"
 #include "WndGuildTabMember.h"
 #include "WndManager.h"
 #include "DPClient.h"
