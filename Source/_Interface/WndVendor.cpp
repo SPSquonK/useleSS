@@ -454,7 +454,6 @@ void CWndVendorMessage::OnInitialUpdate()
 	m_wndChat.Create(WBS_NODRAWFRAME, CRect( 0, 0, 300, 220 ), pWndTabCtrl, 10 );
 	m_wndChat.AddWndStyle(WBS_VSCROLL);
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_DIALOG); //"대화"
 	tabTabItem.pWndBase = &m_wndChat;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
@@ -463,7 +462,6 @@ void CWndVendorMessage::OnInitialUpdate()
 	{
 		m_wndInfo.Create(WBS_NODRAWFRAME, CRect( 0, 0, 300, 220 ), pWndTabCtrl, 11 );
 		m_wndInfo.AddWndStyle(WBS_VSCROLL);
-		tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 		tabTabItem.pszText = prj.GetText(TID_APP_INFOMATION); //"정보"
 		tabTabItem.pWndBase = &m_wndInfo;
 		pWndTabCtrl->InsertItem( 1, &tabTabItem );

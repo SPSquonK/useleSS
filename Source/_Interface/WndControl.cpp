@@ -4126,10 +4126,6 @@ void CWndTabCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
 	CWndBase::SetWndRect( rectWnd, bOnSize );
 }
-BOOL CWndTabCtrl::InsertItem( int nItem, LPCTSTR lpszItem )
-{
-	return TRUE;
-}
 
 void CWndTabCtrl::OnSize(UINT nType, int cx, int cy)
 {

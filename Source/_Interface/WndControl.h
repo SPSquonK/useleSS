@@ -976,10 +976,7 @@ public:
 // CTabCtrl
 
 typedef struct tagWTCITEM {
-	UINT mask = 0;
-	DWORD dwState = 0;
 	LPCTSTR pszText = _T("");
-	LPARAM lParam = 0;
 	CWndBase * pWndBase = nullptr;
 	tagWTCITEM() = default;
 } WTCITEM, FAR * LPWTCITEM;
@@ -1055,7 +1052,6 @@ public:
 */
 // Operations
 	BOOL InsertItem(int nItem, WTCITEM* pTabCtrlItem);
-	BOOL InsertItem(int nItem, LPCTSTR lpszItem);
 
 // Overridables
 	//virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);

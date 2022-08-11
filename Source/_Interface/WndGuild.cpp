@@ -39,7 +39,6 @@ void CWndGuild::OnInitialUpdate() {
 
 	WTCITEM tabTabItem;
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_GUILDINFO);
 	tabTabItem.pWndBase = &m_WndGuildTabInfo;
 	pWndTabCtrl->InsertItem(0, &tabTabItem);

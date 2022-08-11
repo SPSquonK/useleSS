@@ -175,17 +175,14 @@ void CWndMessengerEx::OnInitialUpdate()
 
 	m_WndCampus.Create( WBS_CHILD | WBS_NODRAWFRAME, GetClientRect(), pWndTabCtrl, APP_MESSENGER_TAB_CAMPUS );
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_FRIEND); //"模备"
 	tabTabItem.pWndBase = &m_wndFriend;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_COMPANY); //"必窜"
 	tabTabItem.pWndBase = &m_wndGuild;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_CAMPUS); //"荤力"
 	tabTabItem.pWndBase = &m_WndCampus;
 	pWndTabCtrl->InsertItem( 2, &tabTabItem );

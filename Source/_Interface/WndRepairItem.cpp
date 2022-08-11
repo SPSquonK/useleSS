@@ -61,7 +61,6 @@ void CWndRepairItem::OnInitialUpdate()
 //	pRepairItem.SetItemContainer( ITYPE_ITEM, MAX_REPAIR );
 //	m_wndItemCtrl.InitItem( &pRepairItem, APP_REPAIR );
 //	WTCITEM tabTabItem;
-//	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 //	tabTabItem.pszText = "¾ÆÀÌÅÛ";
 //	tabTabItem.pWndBase = &m_wndItemCtrl;
 //	pTabCtrl->InsertItem( 0, &tabTabItem );

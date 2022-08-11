@@ -31,7 +31,6 @@ void CWndMotion::OnInitialUpdate()
 
 	WTCITEM tabTabItem;
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_MOTION);//"±âº»";
 	tabTabItem.pWndBase = &m_wndMotion1;
 	lpTapCtrl->InsertItem( 0, &tabTabItem );

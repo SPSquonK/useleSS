@@ -242,25 +242,21 @@ void CWndQuest::OnInitialUpdate()
 
 	QuestProp* pQuestProp = NULL;
 	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_SCENARIO );
 	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
 	tabTabItem.pWndBase = &m_WndScenario;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_NORMAL );
 	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
 	tabTabItem.pWndBase = &m_WndNormal;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_REQUEST );
 	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
 	tabTabItem.pWndBase = &m_WndRequest;
 	pWndTabCtrl->InsertItem( 2, &tabTabItem );
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	pQuestProp = prj.m_aPropQuest.GetAt( QUEST_KIND_EVENT );
 	tabTabItem.pszText = pQuestProp ? pQuestProp->m_szTitle : _T( "" );
 	tabTabItem.pWndBase = &m_WndEvent;

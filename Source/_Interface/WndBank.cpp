@@ -71,7 +71,6 @@ void CWndBank::OnInitialUpdate()
 
 	WTCITEM tabTabItem;
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_ITEM);//"¾ÆÀÌÅÛ";
 	tabTabItem.pWndBase = &m_wndItemCtrl[0];
 	pTabCtrl->InsertItem( 0, &tabTabItem );
