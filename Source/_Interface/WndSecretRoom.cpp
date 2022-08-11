@@ -831,13 +831,10 @@ void CWndSecretRoomOfferState::Init( time_t lTime )
 {
 }
 
-void CWndSecretRoomOfferState::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
-	// 윈도를 중앙으로 옮기는 부분.
+void CWndSecretRoomOfferState::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
+}
 
 void CWndSecretRoomOfferState::InsertTitle( const char szTitle[] )
 {
@@ -1063,10 +1060,8 @@ void CWndSecretRoomInfoMsgBox::SetString( CString strMsg )
 	pWndText->ResetString();	
 }
 
-void CWndSecretRoomInfoMsgBox::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
+void CWndSecretRoomInfoMsgBox::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 }
 
@@ -1185,18 +1180,10 @@ void CWndSecretRoomBoard::OnDraw( C2DRender* p2DRender )
 {
 }
 
-void CWndSecretRoomBoard::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	
-	CRect rect	= GetClientRect();
-	rect.left	+= 8;
-	rect.right	-= 4;
-	rect.top	+= 8;
-	rect.bottom	/= 2;
-
+void CWndSecretRoomBoard::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
+}
 
 BOOL CWndSecretRoomBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
