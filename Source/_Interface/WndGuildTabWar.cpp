@@ -24,18 +24,6 @@
   CtrlId : WIDC_BUTTON3 - 길드전항복
 ****************************************************/
 
-CWndGuildTabWar::CWndGuildTabWar() 
-{ 
-	m_pWndGuildWarDecl = NULL;
-	m_pWndGuildWarGiveUp = NULL;
-	m_pWndGuildWarPeace = NULL;
-} 
-CWndGuildTabWar::~CWndGuildTabWar() 
-{ 
-	SAFE_DELETE( m_pWndGuildWarDecl );
-	SAFE_DELETE( m_pWndGuildWarGiveUp );
-	SAFE_DELETE( m_pWndGuildWarPeace );
-} 
 void CWndGuildTabWar::OnDraw( C2DRender* p2DRender ) 
 { 
 	if( !g_pPlayer )
@@ -112,36 +100,11 @@ void CWndGuildTabWar::OnInitialUpdate()
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildTabWar::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_GUILD_TABGUILDWAR, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndGuildTabWar::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndGuildTabWar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildTabWar::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildTabWar::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildTabWar::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
+BOOL CWndGuildTabWar::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_GUILD_TABGUILDWAR, pWndParent, 0, CPoint(0, 0));
+}
+
 BOOL CWndGuildTabWar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CGuild* pGuild = g_pPlayer->GetGuild();
@@ -153,20 +116,19 @@ BOOL CWndGuildTabWar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	case WIDC_BUTTON1:		// 길드전 선언
 		if( !pGuild->IsMaster(g_pPlayer->m_idPlayer) )
 			return FALSE;
-		SAFE_DELETE(m_pWndGuildWarDecl);
-		m_pWndGuildWarDecl = new CWndGuildWarDecl;
+
+		m_pWndGuildWarDecl = std::make_unique<CWndGuildWarDecl>();
 		m_pWndGuildWarDecl->Initialize( this );
 		break;
 	case WIDC_BUTTON2:		// 길드전 휴전
 		if( !pGuild->IsMaster(g_pPlayer->m_idPlayer) )
 			return FALSE;
-		SAFE_DELETE(m_pWndGuildWarPeace);
-		m_pWndGuildWarPeace = new CWndGuildWarPeace;
+
+		m_pWndGuildWarPeace = std::make_unique<CWndGuildWarPeace>();
 		m_pWndGuildWarPeace->Initialize( this );
 		break;
 	case WIDC_BUTTON3:		// 길드전 항복
-		SAFE_DELETE(m_pWndGuildWarGiveUp);
-		m_pWndGuildWarGiveUp = new CWndGuildWarGiveUp;
+		m_pWndGuildWarGiveUp = std::make_unique<CWndGuildWarGiveUp>();
 		m_pWndGuildWarGiveUp->Initialize( this );
 		break;
 	}
