@@ -975,19 +975,14 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CTabCtrl
 
-typedef struct tagWTCITEM
-{
-    UINT mask;
-    DWORD dwState;
-    DWORD dwStateMask;
-    //TCHAR szText[ 32 ];
-	LPCTSTR pszText;
-    int cchTextMax;
-    int iImage;
-    LPARAM lParam;
-	CWndBase* pWndBase;
-	tagWTCITEM( void );
-} WTCITEM, FAR *LPWTCITEM;
+typedef struct tagWTCITEM {
+	UINT mask = 0;
+	DWORD dwState = 0;
+	LPCTSTR pszText = _T("");
+	LPARAM lParam = 0;
+	CWndBase * pWndBase = nullptr;
+	tagWTCITEM() = default;
+} WTCITEM, FAR * LPWTCITEM;
 
 
 class CWndTabCtrl: public CWndBase
@@ -1061,20 +1056,7 @@ public:
 // Operations
 	BOOL InsertItem(int nItem, WTCITEM* pTabCtrlItem);
 	BOOL InsertItem(int nItem, LPCTSTR lpszItem);
-	/*
-	BOOL InsertItem(int nItem, LPCTSTR lpszItem, int nImage);
-	BOOL InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem,
-		int nImage, LPARAM lParam);
-	BOOL InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem,
-		int nImage, LPARAM lParam, DWORD dwState, DWORD dwStateMask);
-	BOOL DeleteItem(int nItem);
-	BOOL DeleteAllItems();
-	void AdjustRect(BOOL bLarger, LPRECT lpRect);
-	void RemoveImage(int nImage);
-	int HitTest(TCHITTESTINFO* pHitTestInfo) const;
-	void DeselectAll(BOOL fExcludeFocus);
-	BOOL HighlightItem(int idItem, BOOL fHighlight = TRUE);
-*/
+
 // Overridables
 	//virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 
