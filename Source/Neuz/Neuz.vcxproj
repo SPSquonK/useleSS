@@ -359,16 +359,6 @@
     </ClCompile>
     <ClCompile Include="..\_Interface\WndGuildVote.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarDecl.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarGiveUp.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarPeace.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarPeaceConfirm.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndGuildWarRequest.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndSecretRoom.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRankGuild.cpp">
@@ -807,11 +797,6 @@
     <ClInclude Include="..\_Interface\WndGuildTabPower.h" />
     <ClInclude Include="..\_Interface\WndGuildTabWar.h" />
     <ClInclude Include="..\_Interface\WndGuildVote.h" />
-    <ClInclude Include="..\_Interface\WndGuildWarDecl.h" />
-    <ClInclude Include="..\_Interface\WndGuildWarGiveUp.h" />
-    <ClInclude Include="..\_Interface\WndGuildWarPeace.h" />
-    <ClInclude Include="..\_Interface\WndGuildWarPeaceConfirm.h" />
-    <ClInclude Include="..\_Interface\WndGuildWarRequest.h" />
     <ClInclude Include="..\_Interface\WndSecretRoom.h" />
     <ClInclude Include="..\_Interface\WndPiercing.h" />
     <ClInclude Include="..\_Interface\WndAdminCreateItem.h" />

@@ -6,8 +6,6 @@
 #include "WndWorld.h"
 #include "WndBank.h"
 #include "WndRepairItem.h"	 // ¼ö¸®Ã¢
-#include "WndGuildWarPeaceConfirm.h"
-#include "WndGuildWarRequest.h"
 #include "WndUpgradebase.h"
 #include "WndCommItem.h"
 
@@ -82,10 +80,13 @@ class CWndMap;
 class CWndStateConfirm;
 
 class CWndSealChar; class CWndSealCharSelect; class CWndSealCharSend; class CWndSealCharSet;
- 
+
+class CWndGuildConfirm; class CWndGuildWarPeaceConfirm; class CWndGuildWarRequest;
+class CWndGuildBank;
+class CWndGuildNickName;
+
 #define REG_VERSION 1
 
-#include "WndGuild.h"
 #include "WndRankCmn.h"
 #include "WndGuildBank.h"
 
