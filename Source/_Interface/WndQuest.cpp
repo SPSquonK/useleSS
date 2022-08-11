@@ -102,16 +102,12 @@ void CWndQuest::Update( int nNewQuestId )
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_QUEST_LIST_TABCTRL );
 	assert( pWndTabCtrl );
 
-	CWndQuestTreeCtrl* pTreeCtrl = NULL;
-	for( int k = 0; k < pWndTabCtrl->GetSize(); ++k )
-	{
-		assert( lpItem );
-		pTreeCtrl = (CWndQuestTreeCtrl *)pWndTabCtrl->GetTabItem(k);
-		assert( pTreeCtrl );
+	for (size_t i = 0; i != pWndTabCtrl->GetSize(); ++i) {
+		CWndQuestTreeCtrl * pTreeCtrl = static_cast<CWndQuestTreeCtrl *>(pWndTabCtrl->GetTabItem(i));
 		pTreeCtrl->DeleteAllItems();
 	}
 
-	pTreeCtrl = ( CWndQuestTreeCtrl* )pWndTabCtrl->GetSelectedTab();
+	CWndQuestTreeCtrl * pTreeCtrl = ( CWndQuestTreeCtrl* )pWndTabCtrl->GetSelectedTab();
 	assert( pTreeCtrl );
 
 	LPQUEST lpQuest = NULL;

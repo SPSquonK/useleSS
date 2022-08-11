@@ -27,13 +27,11 @@ void CWndParty::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 		if (dwVersion == 0) {
 			// noop
 		} else if (dwVersion == 1) {
-			int nCurSel;
-			ar >> nCurSel;
-			lpTabCtrl->SetCurSel(nCurSel);
+			ar >> *lpTabCtrl;
 		}
 	} else {
 		dwVersion = 1;
-		ar << lpTabCtrl->GetCurSel();
+		ar << *lpTabCtrl;
 	}
 }
 

@@ -15,7 +15,7 @@ public:
 	CWndGuildTabWar			m_WndGuildTabWar;
 	CWndGuildTabPower		m_WndGuildTabPower;
 
-	void SetCurTab(int index);
+	void SetCurTab(size_t index);
 	void UpdateDataAll();
 
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;

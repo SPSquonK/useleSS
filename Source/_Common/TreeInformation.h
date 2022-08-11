@@ -40,7 +40,7 @@ public:
 	int GetTreeInformationListSize( void ) const;
 
 public:
-	static int m_nSelectedTabNumber;
+	static size_t m_nSelectedTabNumber;
 	static QuestListGroup m_eQuestListGroup;
 
 private:

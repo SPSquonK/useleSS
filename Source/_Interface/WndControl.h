@@ -900,24 +900,16 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CTabCtrl
 
-
-#include <optional>
-
-class CWndTabCtrl: public CWndBase
-{
+class CWndTabCtrl : public CWndBase {
 	struct WTCITEM {
 		LPCTSTR pszText;
 		CWndBase * pWndBase;
-
-		WTCITEM(LPCTSTR text, CWndBase * wndBase)
-			: pszText(text), pWndBase(wndBase) {
-		}
 	};
 
 	std::vector<WTCITEM> m_aTab;
 
 // Constructors
-	int m_nCurSelect;
+	size_t m_nCurSelect;
 	CTexture m_aTexture[ 6 ];
 	int m_nTabButtonLength;
 public:
@@ -929,36 +921,32 @@ public:
 	CWndTabCtrl();
 	BOOL Create(DWORD dwStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID);
 
-	void SetButtonLength( int nLength ) { m_nTabButtonLength = nLength; }
-	BOOL InsertTexture( int nItem, LPCTSTR lpszFileName );
-	int GetSize() { return m_aTab.size(); }
-
-	virtual HRESULT InitDeviceObjects();
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
-	virtual HRESULT DeleteDeviceObjects();
+	void SetButtonLength(const int nLength) { m_nTabButtonLength = nLength; }
+	[[nodiscard]] size_t GetSize() const { return m_aTab.size(); }
 	
-	virtual	void PaintFrame( C2DRender* p2DRender );
-	virtual void OnDraw( C2DRender* p2DRender );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual void AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
-	virtual	void OnInitialUpdate();
+	void PaintFrame(C2DRender * p2DRender) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnSize(UINT nType, int cx, int cy) override;
+	void OnLButtonDown(UINT nFlags, CPoint point) override;
+	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE) override;
+	void AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 ) override;
+	void OnInitialUpdate() override;
 	
 // Attributes
-	[[nodiscard]] CWndBase * GetTabItem(int nItemNumber) const;
+	[[nodiscard]] CWndBase * GetTabItem(size_t nItemNumber) const;
 	[[nodiscard]] CWndBase * GetSelectedTab() const;
 	void SetTabTitleAlign( const TabTitleAlign eTabTitleAlign );
 	const TabTitleAlign GetTabTitleAlign( void ) const;
 
-	int GetCurSel() const;
-	int SetCurSel(int nItem);
+	[[nodiscard]] size_t GetCurSel() const { return m_nCurSelect; }
+	void SetCurSel(size_t nItem);
 
 // Operations
 	void InsertItem(CWndBase * window, LPCTSTR tabText);
 
+	friend CAr & operator<<(CAr & ar, const CWndTabCtrl & tab);
+	friend CAr & operator>>(CAr & ar, CWndTabCtrl & tab);
 };
 
 //////////////////////////////////////////////////////////////////////////////

@@ -63,7 +63,7 @@ BOOL CWndGuild::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_GUILD, pWndParent, 0, CPoint(0, 0));
 }
 
-void CWndGuild::SetCurTab(int index) {
+void CWndGuild::SetCurTab(const size_t index) {
 	CWndTabCtrl * pWndTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	assert(pWndTabCtrl);
 

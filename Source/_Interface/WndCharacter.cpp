@@ -771,12 +771,9 @@ void CWndCharacter::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 	CWndNeuz::SerializeRegInfo(ar, dwVersion);
 	CWndTabCtrl * lpTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	if (ar.IsLoading()) {
-		int nCurSel;
-		ar >> nCurSel;
-		if (nCurSel > 1) nCurSel = 0;
-		lpTabCtrl->SetCurSel(nCurSel);
+		ar >> *lpTabCtrl;
 	} else {
-		ar << lpTabCtrl->GetCurSel();
+		ar << *lpTabCtrl;
 	}
 }
 
