@@ -292,7 +292,6 @@ public:
 	void	SendIgnoreGuildInvite( u_long idPlayer );
 	void	SendCreateGuild( const char* szGuild );
 	void	SendDestroyGuild( u_long idMaster );
-	void	SendAddGuildMember( u_long idMaster, const GUILD_MEMBER_INFO & info, BOOL bGM );
 	void	SendRemoveGuildMember( u_long idMaster, u_long idPlayer );
 	void	SendGuildLogo( DWORD dwLogo );
 	void	SendGuildContribution( BYTE cbPxpCount, int nGold, BYTE cbItemFlag = 0);

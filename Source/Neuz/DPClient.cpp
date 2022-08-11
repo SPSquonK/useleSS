@@ -10534,15 +10534,6 @@ void CDPClient::SendDestroyGuild( u_long idPlayer )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-//void CDPClient::SendAddGuildMember( u_long idMaster, u_long idPlayer )
-void CDPClient::SendAddGuildMember( u_long idMaster, const GUILD_MEMBER_INFO & info, BOOL bGM )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ADD_GUILD_MEMBER, DPID_UNKNOWN );
-	ar << idMaster;// << idPlayer;
-	ar.Write( &info, sizeof(GUILD_MEMBER_INFO) );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendRemoveGuildMember( u_long idMaster, u_long idPlayer )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_REMOVE_GUILD_MEMBER, DPID_UNKNOWN );
@@ -11059,28 +11050,17 @@ void CDPClient::OnGuildError( CAr & ar )
 	}
 }
 
-void CDPClient::OnGuildInvite( CAr & ar )
-{
-	u_long idGuild;
-	ar >> idGuild;
-	u_long idMaster;
-	ar >> idMaster;
-
+void CDPClient::OnGuildInvite( CAr & ar ) {
+	const auto [idGuild, idMaster] = ar.Extract<u_long, u_long>();
 
 #ifdef __S_SERVER_UNIFY
-	if( g_WndMng.m_bAllAction == FALSE )
-		return;
+	if (!g_WndMng.m_bAllAction) return;
 #endif // __S_SERVER_UNIFY
 
-	CGuild* pGuild	= g_GuildMng.GetGuild( idGuild );
-	if( pGuild )
-	{
-		SAFE_DELETE(g_WndMng.m_pWndGuildConfirm);
-		g_WndMng.m_pWndGuildConfirm = new CWndGuildConfirm;
-		g_WndMng.m_pWndGuildConfirm->SetGuildName( pGuild->m_szGuild );
-		g_WndMng.m_pWndGuildConfirm->Initialize( NULL, APP_GUILD_INVATE );
-		g_WndMng.m_pWndGuildConfirm->m_idMaster = idMaster;
-	}
+	CGuild * pGuild = g_GuildMng.GetGuild(idGuild);
+	if (!pGuild) return;
+
+	CWndGuildConfirm::OpenWindow(idMaster, *pGuild);
 }
 
 void CDPClient::OnAllGuilds( CAr & ar )
