@@ -69,18 +69,10 @@ void CWndBank::OnInitialUpdate()
 	m_wndItemCtrl[2].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl2, 11 );
 	m_wndItemCtrl[2].InitItem( &g_pPlayer->m_Bank[2], APP_COMMON_BANK );
 
-	WTCITEM tabTabItem;
-	
-	tabTabItem.pszText = prj.GetText(TID_GAME_ITEM);//"¾ÆÀÌÅÛ";
-	tabTabItem.pWndBase = &m_wndItemCtrl[0];
-	pTabCtrl->InsertItem( 0, &tabTabItem );
-
-	tabTabItem.pWndBase = &m_wndItemCtrl[1];
-	pTabCtrl1->InsertItem( 0, &tabTabItem );
-
-	
-	tabTabItem.pWndBase = &m_wndItemCtrl[2];
-	pTabCtrl2->InsertItem( 0, &tabTabItem );
+	LPCTSTR pszText = prj.GetText(TID_GAME_ITEM);
+	pTabCtrl->InsertItem(0, &m_wndItemCtrl[0], pszText);
+	pTabCtrl1->InsertItem(0, &m_wndItemCtrl[1], pszText);
+	pTabCtrl2->InsertItem(0, &m_wndItemCtrl[2], pszText);
 	
 
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_BANKGO_0 );

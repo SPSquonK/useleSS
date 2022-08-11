@@ -161,7 +161,6 @@ void CWndMessengerEx::OnInitialUpdate()
 	// 여기에 코딩하세요
 
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );	
-	WTCITEM tabTabItem;
 
 	m_wndFriend.Create( CRect( 0, 0, 250, 250 ), pWndTabCtrl, 11 );
 	m_wndFriend.AddWndStyle( WBS_NODRAWFRAME );
@@ -174,18 +173,10 @@ void CWndMessengerEx::OnInitialUpdate()
 	m_wndGuild.AddWndStyle( WBS_NODRAWFRAME );
 
 	m_WndCampus.Create( WBS_CHILD | WBS_NODRAWFRAME, GetClientRect(), pWndTabCtrl, APP_MESSENGER_TAB_CAMPUS );
-	
-	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_FRIEND); //"친구"
-	tabTabItem.pWndBase = &m_wndFriend;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-	
-	tabTabItem.pszText = prj.GetText(TID_APP_COMPANY); //"극단"
-	tabTabItem.pWndBase = &m_wndGuild;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
-	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_CAMPUS); //"사제"
-	tabTabItem.pWndBase = &m_WndCampus;
-	pWndTabCtrl->InsertItem( 2, &tabTabItem );
+	pWndTabCtrl->InsertItem( 0, &m_wndFriend, prj.GetText(TID_APP_COMMUNITY_FRIEND));
+	pWndTabCtrl->InsertItem( 1, &m_wndGuild, prj.GetText(TID_APP_COMPANY));
+	pWndTabCtrl->InsertItem( 2, &m_WndCampus, prj.GetText(TID_APP_COMMUNITY_CAMPUS));
 
 	m_wndFriend.ScrollBarPos( 0 );
 	m_wndGuild.ScrollBarPos( 0 );

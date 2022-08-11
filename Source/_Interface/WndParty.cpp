@@ -122,17 +122,11 @@ void CWndParty::OnInitialUpdate()
 	rect.left = 5;
 	rect.top = 15;
 
-	WTCITEM tabTabItem;
-	
 	m_wndPartyInfo.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_INFO);
-	tabTabItem.pszText = prj.GetText(TID_APP_INFOMATION);//"정보";
-	tabTabItem.pWndBase = &m_wndPartyInfo;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
+	pWndTabCtrl->InsertItem( 0, &m_wndPartyInfo, prj.GetText(TID_APP_INFOMATION));
 	
 	m_wndPartySkill.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_SKILL);
-	tabTabItem.pszText = prj.GetText(TID_APP_SKILL);//"스킬";
-	tabTabItem.pWndBase = &m_wndPartySkill;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
+	pWndTabCtrl->InsertItem( 1, &m_wndPartySkill, prj.GetText(TID_APP_SKILL));
 
 	MoveParentCenter();
 } 

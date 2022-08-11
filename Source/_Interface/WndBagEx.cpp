@@ -149,17 +149,10 @@ void CWndBagEx::OnInitialUpdate()
 	m_wndItemCtrl[2].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTab2, 11 );
 	m_wndItemCtrl[2].InitItem( g_pPlayer->m_Pocket.GetPocket(2), APP_CANCEL_BLESSING );
 
-	WTCITEM tabTabItem;
-	
-	tabTabItem.pszText = prj.GetText(TID_GAME_ITEM);//"¾ÆÀÌÅÛ";
-	tabTabItem.pWndBase = &m_wndItemCtrl[0];
-	pTab0->InsertItem( 0, &tabTabItem );
-
-	tabTabItem.pWndBase = &m_wndItemCtrl[1];
-	pTab1->InsertItem( 0, &tabTabItem );
-
-	tabTabItem.pWndBase = &m_wndItemCtrl[2];
-	pTab2->InsertItem( 0, &tabTabItem );
+	LPCTSTR label = prj.GetText(TID_GAME_ITEM);
+	pTab0->InsertItem(0, &m_wndItemCtrl[0], label);
+	pTab1->InsertItem(0, &m_wndItemCtrl[1], label);
+	pTab2->InsertItem(0, &m_wndItemCtrl[2], label);
 
 	m_RectItemCtrl[0] = pTab0->m_rectClient;
 	m_RectItemCtrl[1] = pTab1->m_rectClient;

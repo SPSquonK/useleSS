@@ -59,11 +59,7 @@ void CWndGuildBank::OnInitialUpdate()
 	m_wndItemCtrl.Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, 11 );
 	m_wndItemCtrl.InitItem( &g_pPlayer->GetGuild()->m_GuildBank, APP_GUILD_BANK );
 
-	WTCITEM tabTabItem;
-	
-	tabTabItem.pszText = prj.GetText(TID_GAME_ITEM);//"아이템";
-	tabTabItem.pWndBase = &m_wndItemCtrl;
-	pTabCtrl->InsertItem( 0, &tabTabItem );
+	pTabCtrl->InsertItem( 0, &m_wndItemCtrl, prj.GetText(TID_GAME_ITEM));
 	
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 	m_wndGold.Create( "g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_CUSTOM1 );
@@ -332,7 +328,6 @@ void CWndGuildBankLog::OnInitialUpdate()
 	// 여기에 코딩하세요
 
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );	
-	WTCITEM tabTabItem;
 
 	CRect rect = pWndTabCtrl->GetClientRect();
 	rect.bottom -= 15;
@@ -352,21 +347,10 @@ void CWndGuildBankLog::OnInitialUpdate()
 	// Default - AddItemLog UpdateList
 	m_wndAddItemLog.UpdateLogList();
 
-	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_ADDITEMLOG); //"아이템 추가"
-	tabTabItem.pWndBase = &m_wndAddItemLog;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-	
-	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_REMOVEITEMLOG); //"아이템 제거"
-	tabTabItem.pWndBase = &m_wndRemoveItemLog;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
-
-	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_RECEIVEPENYALOG); //"페냐 입금"
-	tabTabItem.pWndBase = &m_wndReceivePenyaLog;
-	pWndTabCtrl->InsertItem( 2, &tabTabItem );
-
-	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_INVESTPENYALOG); //"페냐 출금"
-	tabTabItem.pWndBase = &m_wndInvestPenyaLog;
-	pWndTabCtrl->InsertItem( 3, &tabTabItem );
+	pWndTabCtrl->InsertItem(0, &m_wndAddItemLog, prj.GetText(TID_GAME_GUILD_BANK_ADDITEMLOG));
+	pWndTabCtrl->InsertItem(1, &m_wndRemoveItemLog, prj.GetText(TID_GAME_GUILD_BANK_REMOVEITEMLOG));
+	pWndTabCtrl->InsertItem(2, &m_wndReceivePenyaLog, prj.GetText(TID_GAME_GUILD_BANK_RECEIVEPENYALOG));
+	pWndTabCtrl->InsertItem(3, &m_wndInvestPenyaLog, prj.GetText(TID_GAME_GUILD_BANK_INVESTPENYALOG));
 
 	CWndGuildBank* pWndGuildBank = (CWndGuildBank*)GetWndBase( APP_GUILD_BANK );
 	if(pWndGuildBank != NULL)
