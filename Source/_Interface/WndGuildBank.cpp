@@ -61,7 +61,6 @@ void CWndGuildBank::OnInitialUpdate()
 
 	WTCITEM tabTabItem;
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_ITEM);//"아이템";
 	tabTabItem.pWndBase = &m_wndItemCtrl;
 	pTabCtrl->InsertItem( 0, &tabTabItem );
@@ -353,22 +352,18 @@ void CWndGuildBankLog::OnInitialUpdate()
 	// Default - AddItemLog UpdateList
 	m_wndAddItemLog.UpdateLogList();
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_ADDITEMLOG); //"아이템 추가"
 	tabTabItem.pWndBase = &m_wndAddItemLog;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_REMOVEITEMLOG); //"아이템 제거"
 	tabTabItem.pWndBase = &m_wndRemoveItemLog;
 	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_RECEIVEPENYALOG); //"페냐 입금"
 	tabTabItem.pWndBase = &m_wndReceivePenyaLog;
 	pWndTabCtrl->InsertItem( 2, &tabTabItem );
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_GUILD_BANK_INVESTPENYALOG); //"페냐 출금"
 	tabTabItem.pWndBase = &m_wndInvestPenyaLog;
 	pWndTabCtrl->InsertItem( 3, &tabTabItem );

@@ -22,7 +22,6 @@ void CWndTotalOption::OnInitialUpdate()
 	rect.top = 0;
 
 	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 
 	m_OptTabVideoSnd.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_OPTEX_AV12);
 	tabTabItem.pszText = prj.GetText(TID_TOOLTIP_OPT_VIDEOAUDIO);

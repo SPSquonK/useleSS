@@ -125,7 +125,6 @@ void CWndParty::OnInitialUpdate()
 	WTCITEM tabTabItem;
 	
 	m_wndPartyInfo.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_INFO);
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_APP_INFOMATION);//"Á¤º¸";
 	tabTabItem.pWndBase = &m_wndPartyInfo;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );

@@ -794,7 +794,6 @@ void CWndCharacter::OnInitialUpdate() {
 	m_wndCharInfo.AddWndStyle(WBS_NOFRAME);
 	WTCITEM tabTabItem;
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_TITLE_CHAR_INFO);
 	tabTabItem.pWndBase = &m_wndCharInfo;
 	lpTapCtrl->InsertItem(0, &tabTabItem);

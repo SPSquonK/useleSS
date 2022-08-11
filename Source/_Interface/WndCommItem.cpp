@@ -37,7 +37,6 @@ void CWndCommItem::OnInitialUpdate()
 
 	WTCITEM tabTabItem;
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText( TID_TOOLTIP_ITEMTIME );
 	tabTabItem.pWndBase = &m_wndCommItemCtrl;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );

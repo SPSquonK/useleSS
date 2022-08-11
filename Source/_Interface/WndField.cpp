@@ -1203,7 +1203,6 @@ void CWndInventory::OnInitialUpdate()
 	m_wndItemCtrl.InitItem( &g_pPlayer->m_Inventory, APP_INVENTORY );
 
 	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = GETTEXT( TID_GAME_ITEM );//"������";
 	tabTabItem.pWndBase = &m_wndItemCtrl;
 	pTabCtrl->InsertItem( 0, &tabTabItem );
@@ -6050,7 +6049,6 @@ void CWndPost::OnInitialUpdate()
 	m_PostTabReceive.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_POST_RECEIVE );
 
 	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 
 	tabTabItem.pszText = prj.GetText(TID_APP_POST_SEND);
 	tabTabItem.pWndBase = &m_PostTabSend;
@@ -9195,7 +9193,6 @@ void CWndGuildCombatResult::OnInitialUpdate()
 	
 	WTCITEM tabTabItem;
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_LOG1);
 	tabTabItem.pWndBase = &m_WndGuildCombatTabResultRate;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
@@ -9367,7 +9364,6 @@ void CWndGuildCombatRank_Person::OnInitialUpdate()
 	
 	WTCITEM tabTabItem;
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_LOG1);
 	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Tot;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );
@@ -12920,7 +12916,6 @@ void CWndCoupleManager::OnInitialUpdate()
 	
 	WTCITEM tabTabItem;
 	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 	tabTabItem.pszText = prj.GetText(TID_GAME_COUPLE_INFO);
 	tabTabItem.pWndBase = &m_wndCoupleTabInfo;
 	pWndTabCtrl->InsertItem( 0, &tabTabItem );

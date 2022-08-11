@@ -647,7 +647,6 @@ void CWndShop::OnInitialUpdate()
 
 	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_INVENTORY );
 	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 
 	LPCHARACTER lpCharacter = m_pMover->GetCharacter();
 
