@@ -312,7 +312,6 @@ public:
 	void	OnChgMaster( CAr & ar );
 	void	OnSetWar( OBJID objid, CAr & ar );
 	void	SendDeclWar( u_long idMaster, const char* szGuild );
-	void	SendAcptWar( u_long idMaster, u_long idDecl );
 	
 	void	SendSurrender( u_long idPlayer );	// 항복
 	void	SendQueryTruce( u_long idPlayer );	// 정전 요청
