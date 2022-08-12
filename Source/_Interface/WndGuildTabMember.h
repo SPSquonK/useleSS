@@ -1,6 +1,8 @@
 #ifndef __WNDGUILD_TAB_MEMBER__H
 #define __WNDGUILD_TAB_MEMBER__H
 
+#include <vector>
+
 struct MEMBERLIST
 {
 	DWORD	idPlayer;	// 플레이어 아이디.
@@ -17,8 +19,6 @@ struct MEMBERLIST
 	char szAlias[ MAX_GM_ALIAS ];	// 별칭
 	int nClass;				// 등급
 };
-
-#define MAX_MEMBER	128
 
 class CWndGuildTabMember : public CWndNeuz 
 { 
@@ -37,8 +37,7 @@ class CWndGuildTabMember : public CWndNeuz
 
 public: 
 	void UpdateData();
-	int		m_nMax;
-	MEMBERLIST	m_aList[ MAX_MEMBER ];
+	std::vector<MEMBERLIST> m_list;
 
 	CWndGuildTabMember(); 
 
@@ -50,7 +49,6 @@ public:
 	virtual	void OnInitialUpdate(); 
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual	void OnRButtonUp( UINT nFlags, CPoint point );
 	virtual void OnRButtonDown( UINT nFlags, CPoint point );
@@ -63,6 +61,8 @@ public:
 	void SortbyLevel();
 	void SortbyName();
 	void SortbyAlias();
+
+	[[nodiscard]] static int GetMemberLevelIcon(int nbClass);
 }; 
 
 #endif
