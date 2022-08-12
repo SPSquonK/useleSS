@@ -56,6 +56,45 @@ BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent, DWORD )
 	return CWndNeuz::InitDialog( APP_GUILD_TABAPPELLATION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
+void CWndGuildTabApp::ForEachPower(
+	std::invocable<UINT, int, DWORD> auto func
+) {
+	func(WIDC_CHECK1 , GUD_MASTER   , PF_MEMBERLEVEL);
+	func(WIDC_CHECK6 , GUD_MASTER   , PF_LEVEL      );
+	func(WIDC_CHECK11, GUD_MASTER   , PF_INVITATION );
+	func(WIDC_CHECK16, GUD_MASTER   , PF_PENYA      );
+	func(WIDC_CHECK21, GUD_MASTER   , PF_ITEM       );
+	func(WIDC_CHECK2 , GUD_KINGPIN  , PF_MEMBERLEVEL);
+	func(WIDC_CHECK7 , GUD_KINGPIN  , PF_LEVEL      );
+	func(WIDC_CHECK12, GUD_KINGPIN  , PF_INVITATION );
+	func(WIDC_CHECK17, GUD_KINGPIN  , PF_PENYA      );
+	func(WIDC_CHECK22, GUD_KINGPIN  , PF_ITEM       );
+	func(WIDC_CHECK3 , GUD_CAPTAIN  , PF_MEMBERLEVEL);
+	func(WIDC_CHECK8 , GUD_CAPTAIN  , PF_LEVEL      );
+	func(WIDC_CHECK13, GUD_CAPTAIN  , PF_INVITATION );
+	func(WIDC_CHECK18, GUD_CAPTAIN  , PF_PENYA      );
+	func(WIDC_CHECK23, GUD_CAPTAIN  , PF_ITEM       );
+	func(WIDC_CHECK4 , GUD_SUPPORTER, PF_MEMBERLEVEL);
+	func(WIDC_CHECK9 , GUD_SUPPORTER, PF_LEVEL      );
+	func(WIDC_CHECK14, GUD_SUPPORTER, PF_INVITATION );
+	func(WIDC_CHECK19, GUD_SUPPORTER, PF_PENYA      );
+	func(WIDC_CHECK24, GUD_SUPPORTER, PF_ITEM       );
+	func(WIDC_CHECK5 , GUD_ROOKIE   , PF_MEMBERLEVEL);
+	func(WIDC_CHECK10, GUD_ROOKIE   , PF_LEVEL      );
+	func(WIDC_CHECK15, GUD_ROOKIE   , PF_INVITATION );
+	func(WIDC_CHECK20, GUD_ROOKIE   , PF_PENYA      );
+	func(WIDC_CHECK25, GUD_ROOKIE   , PF_ITEM       );
+}
+
+void CWndGuildTabApp::ForEachPower(
+	std::invocable<CWndButton &, int, DWORD> auto func
+) {
+	ForEachPower([&](const UINT widgetId, const int gud, const DWORD power) {
+		CWndButton * button = GetDlgItem<CWndButton>(widgetId);
+		func(*button, gud, power);
+		});
+}
+
 BOOL CWndGuildTabApp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CGuild* pGuild = g_pPlayer->GetGuild();
@@ -71,114 +110,19 @@ BOOL CWndGuildTabApp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	if(	pGuildMember->m_nMemberLv != GUD_MASTER )
 		return FALSE;
 	
-	//Kingpin
-	if( nID == WIDC_CHECK2 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK2);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_KINGPIN] |= PF_MEMBERLEVEL : m_adwPower[GUD_KINGPIN] &= (~PF_MEMBERLEVEL);
-	}
-	if( nID == WIDC_CHECK7 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK7);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_KINGPIN] |= PF_LEVEL : m_adwPower[GUD_KINGPIN] &= (~PF_LEVEL);
-	}
-	if( nID == WIDC_CHECK12 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK12);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_KINGPIN] |= PF_INVITATION : m_adwPower[GUD_KINGPIN] &= (~PF_INVITATION);
-	}
-	if( nID == WIDC_CHECK17 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK17);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_KINGPIN] |= PF_PENYA : m_adwPower[GUD_KINGPIN] &= (~PF_PENYA);
-	}
-	if( nID == WIDC_CHECK22 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK22);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_KINGPIN] |= PF_ITEM : m_adwPower[GUD_KINGPIN] &= (~PF_ITEM);
-	}
-	
-	//GA_LEADER
-	if( nID == WIDC_CHECK3 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK3);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_CAPTAIN] |= PF_MEMBERLEVEL : m_adwPower[GUD_CAPTAIN] &= (~PF_MEMBERLEVEL);
-	}
-	if( nID == WIDC_CHECK8 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK8);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_CAPTAIN] |= PF_LEVEL : m_adwPower[GUD_CAPTAIN] &= (~PF_LEVEL);
-	}
-	if( nID == WIDC_CHECK13 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK13);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_CAPTAIN] |= PF_INVITATION : m_adwPower[GUD_CAPTAIN] &= (~PF_INVITATION);
-	}
-	if( nID == WIDC_CHECK18 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK18);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_CAPTAIN] |= PF_PENYA : m_adwPower[GUD_CAPTAIN] &= (~PF_PENYA);
-	}
-	if( nID == WIDC_CHECK23 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK23);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_CAPTAIN] |= PF_ITEM : m_adwPower[GUD_CAPTAIN] &= (~PF_ITEM);
-	}
-	
-	//GA_SUPPORTER
-	if( nID == WIDC_CHECK4 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK4);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_SUPPORTER] |= PF_MEMBERLEVEL : m_adwPower[GUD_SUPPORTER] &= (~PF_MEMBERLEVEL);
-	}
-	if( nID == WIDC_CHECK9 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK9);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_SUPPORTER] |= PF_LEVEL : m_adwPower[GUD_SUPPORTER] &= (~PF_LEVEL);
-	}
-	if( nID == WIDC_CHECK14 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK14);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_SUPPORTER] |= PF_INVITATION : m_adwPower[GUD_SUPPORTER] &= (~PF_INVITATION);
-	}
-	if( nID == WIDC_CHECK19 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK19);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_SUPPORTER] |= PF_PENYA : m_adwPower[GUD_SUPPORTER] &= (~PF_PENYA);
-	}
-	if( nID == WIDC_CHECK24 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK24);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_SUPPORTER] |= PF_ITEM : m_adwPower[GUD_SUPPORTER] &= (~PF_ITEM);
-	}
 
-	
-	//GA_ROOKIE
-	if( nID == WIDC_CHECK5 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK5);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_ROOKIE] |= PF_MEMBERLEVEL : m_adwPower[GUD_ROOKIE] &= (~PF_MEMBERLEVEL);
-	}
-	if( nID == WIDC_CHECK10 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK10);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_ROOKIE] |= PF_LEVEL : m_adwPower[GUD_ROOKIE] &= (~PF_LEVEL);
-	}
-	if( nID == WIDC_CHECK15 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK15);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_ROOKIE] |= PF_INVITATION : m_adwPower[GUD_ROOKIE] &= (~PF_INVITATION);
-	}
-	if( nID == WIDC_CHECK20 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK20);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_ROOKIE] |= PF_PENYA : m_adwPower[GUD_ROOKIE] &= (~PF_PENYA);
-	}
-	if( nID == WIDC_CHECK25 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK25);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_ROOKIE] |= PF_ITEM : m_adwPower[GUD_ROOKIE] &= (~PF_ITEM);
-	}
+	ForEachPower([&](const UINT buttonID, const int gud, const DWORD power) {
+		if (gud == GUD_MASTER) return;
+
+		if (nID == buttonID) {
+			CWndButton * pWndCheck = GetDlgItem<CWndButton>(buttonID);
+			if (pWndCheck->GetCheck()) {
+				m_adwPower[gud] |= power;
+			} else {
+				m_adwPower[gud] &= ~power;
+			}
+		}
+		});
 
 	// 설절버튼 눌렀을때 실행 클라에서 먼저 가지고 있는권한이 다르면 서버로 전송
 	if( nID == WIDC_BUTTON1 )	// 마스트
@@ -235,169 +179,14 @@ void CWndGuildTabApp::SetPenya( void )
 }
 
 
-void CWndGuildTabApp::SetData(DWORD dwPower[])
-{
-	CWndButton* pWndCheck = NULL;
+void CWndGuildTabApp::SetData(DWORD dwPower[]) {
+	memcpy(m_adwPower, dwPower, sizeof(DWORD) * MAX_GM_LEVEL);
 
-	memcpy( m_adwPower, dwPower, sizeof(DWORD)*MAX_GM_LEVEL );
+	ForEachPower([&](CWndButton & button, const int gud, const DWORD power) {
+		button.SetCheck((m_adwPower[gud] & power) ? TRUE : FALSE);
 
-	// Master
-	if( m_adwPower[GUD_MASTER] & PF_MEMBERLEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK1);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_MASTER] & PF_LEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK6);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_MASTER] & PF_INVITATION )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK11);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_MASTER] & PF_PENYA )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK16);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_MASTER] & PF_ITEM )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK21);
-		pWndCheck->SetCheck(1);
-	}
-	
-	
-	// GUD_KINGPIN
-	if( m_adwPower[GUD_KINGPIN] & PF_MEMBERLEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK2);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_KINGPIN] & PF_LEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK7);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_KINGPIN] & PF_INVITATION )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK12);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_KINGPIN] & PF_PENYA )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK17);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_KINGPIN] & PF_ITEM )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK22);
-		pWndCheck->SetCheck(1);
-	}
-	
-
-	// GUD_CAPTAIN
-	if( m_adwPower[GUD_CAPTAIN] & PF_MEMBERLEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK3);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_CAPTAIN] & PF_LEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK8);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_CAPTAIN] & PF_INVITATION )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK13);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_CAPTAIN] & PF_PENYA )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK18);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_CAPTAIN] & PF_ITEM )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK23);
-		pWndCheck->SetCheck(1);
-	}
-
-
-	// GUD_SUPPORTER
-	if( m_adwPower[GUD_SUPPORTER] & PF_MEMBERLEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK4);
-		if(pWndCheck) pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_SUPPORTER] & PF_LEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK9);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_SUPPORTER] & PF_INVITATION )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK14);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_SUPPORTER] & PF_PENYA )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK19);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_SUPPORTER] & PF_ITEM )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK24);
-		pWndCheck->SetCheck(1);
-	}
-
-	// GUD_ROOKIE
-	if( m_adwPower[GUD_ROOKIE] & PF_MEMBERLEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK5);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_ROOKIE] & PF_LEVEL )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK10);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_ROOKIE] & PF_INVITATION )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK15);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_ROOKIE] & PF_PENYA )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK20);
-		pWndCheck->SetCheck(1);
-	}
-
-	if( m_adwPower[GUD_ROOKIE] & PF_ITEM )
-	{
-		pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK25);
-		pWndCheck->SetCheck(1);
-	}
+		if (gud == GUD_MASTER) button.EnableWindow(FALSE);
+		});
 }
 
 /****************************************************
@@ -474,61 +263,11 @@ BOOL CWndGuildPayConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 void CWndGuildTabApp::EnableButton(BOOL bEnable)
 {
+	ForEachPower([bEnable](CWndButton & button, int, DWORD) {
+		button.EnableWindow(bEnable);
+		});
+
 	CWndButton* pWndCheck = NULL;
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK1);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK6);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK11);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK16);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK21);
-	pWndCheck->EnableWindow(bEnable);
-
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK2);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK7);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK12);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK17);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK22);
-	pWndCheck->EnableWindow(bEnable);
-
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK3);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK8);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK13);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK18);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK23);
-	pWndCheck->EnableWindow(bEnable);
-	
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK4);
-	if(pWndCheck) pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK9);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK14);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK19);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK24);
-	pWndCheck->EnableWindow(bEnable);
-
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK5);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK10);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK15);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK20);
-	pWndCheck->EnableWindow(bEnable);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK25);
-	pWndCheck->EnableWindow(bEnable);
 	
 	// 버튼 부분
 	pWndCheck = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
@@ -545,7 +284,6 @@ void CWndGuildTabApp::EnableButton(BOOL bEnable)
 	pWndCheck->EnableWindow(bEnable);
 	
 }
-
 
 void CWndGuildTabApp::UpdateData()
 {
@@ -603,17 +341,5 @@ void CWndGuildTabApp::UpdateData()
 			m_pWndPenya[i]->SetTitle( "0" );
 		}
 	}
-	
-	// 마스터 부분의 버튼은 누룰수 없다
-	CWndButton* pWndCheck = NULL;
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK1);
-	pWndCheck->EnableWindow(FALSE);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK6);
-	pWndCheck->EnableWindow(FALSE);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK11);
-	pWndCheck->EnableWindow(FALSE);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK16);
-	pWndCheck->EnableWindow(FALSE);
-	pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK21);
-	pWndCheck->EnableWindow(FALSE);	
+	;
 }
