@@ -8,9 +8,6 @@
 
 #include "DPClient.h"
 
-
-_ERROR_STATE g_Error_State;
-
 #define TASKBAR_HEIGHT 48
 
 #define ICON_SIZE    32
@@ -1592,11 +1589,7 @@ BOOL CWndTaskBar::Process( void )
 #else
 				if( g_bKeyTable[ pApplet->m_cHotkey ] )			//gmpbigsun: 하우징 Y키( 가구창 ) 검사 
 #endif
-				{
-					g_Error_State.m_ch = pApplet->m_cHotkey;
-					g_Error_State.m_bIsShowWnd = TRUE;
-					g_Error_State.m_dwWndId = pApplet->m_dwIdApplet;
-					
+				{					
 					g_WndMng.OpenApplet( pApplet->m_dwIdApplet );
 #ifndef __XKEYEDGE					
 					g_bKeyTable[ pApplet->m_cHotkey ] = FALSE;
