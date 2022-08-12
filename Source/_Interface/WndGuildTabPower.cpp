@@ -28,23 +28,17 @@ BOOL CWndGuildTabPower::Initialize( CWndBase* pWndParent, DWORD )
 	return CWndNeuz::InitDialog( APP_GUILD_TAPPOWER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-void CWndGuildTabPower::UpdateData()
-{
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	if( pGuild )
-	{
-		SetData( pGuild->m_adwPower );
+void CWndGuildTabPower::UpdateData() {
+	CGuild * pGuild = g_pPlayer->GetGuild();
+	if (pGuild) {
+		SetData(pGuild->m_adwPower);
 
-		if( pGuild->IsMaster( g_pPlayer->m_idPlayer ) )
-			EnableButton( TRUE );
-		else EnableButton( FALSE );
-	}
-	else
-	{
-		DWORD adwPower [MAX_GM_LEVEL] = { 0 };
-		SetData( adwPower );
+		EnableButton(pGuild->IsMaster(g_pPlayer->m_idPlayer) ? TRUE : FALSE);
+	} else {
+		DWORD adwPower[MAX_GM_LEVEL] = { 0 };
+		SetData(adwPower);
 
-		EnableButton( FALSE );
+		EnableButton(FALSE);
 	}
 }
 
