@@ -1,47 +1,35 @@
-#ifndef __WNDGUILD_TAB_APP__H
-#define __WNDGUILD_TAB_APP__H
+#pragma once
+
+#include <concepts>
+#include <memory>
 
 #include "guild.h"
 
-class CWndGuildPayConfirm : public CWndNeuz 
-{ 
-public: 
-	DWORD   m_dwAppellation;
-	CWndGuildPayConfirm(); 
-	~CWndGuildPayConfirm(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+class CWndGuildPayConfirm : public CWndNeuz {
+public:
+	DWORD   m_dwAppellation = -1;
 
-class CWndGuildTabApp : public CWndNeuz 
-{ 
-public: 
+	virtual BOOL Initialize(CWndBase * pWndParent);
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
+
+class CWndGuildTabApp : public CWndNeuz {
+public:
 	void UpdateData();
-	void EnableButton( BOOL bEnable );
-	CWndGuildTabApp(); 
-	~CWndGuildTabApp(); 
-	
-	DWORD	m_adwPower[MAX_GM_LEVEL];
-	CWndGuildPayConfirm*    m_pWndGuildPayConfirm;
-	CWndStatic* m_pWndPenya[MAX_GM_LEVEL];
-		
-	void SetData( DWORD dwPower[] );
-	void SetPenya( void );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+	void EnableButton(BOOL bEnable);
+	CWndGuildTabApp();
 
-#endif
+	DWORD	m_adwPower[MAX_GM_LEVEL];
+	std::unique_ptr<CWndGuildPayConfirm> m_pWndGuildPayConfirm;
+	CWndStatic * m_pWndPenya[MAX_GM_LEVEL];
+
+	void SetData(DWORD dwPower[]);
+	void SetPenya(void);
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
+};
+

@@ -19,16 +19,13 @@ CWndGuildTabApp::CWndGuildTabApp()
 		m_adwPower[i] = 0xffffffff;
 
 	m_pWndGuildPayConfirm = NULL;
-} 
-CWndGuildTabApp::~CWndGuildTabApp() 
-{ 
-	SAFE_DELETE(m_pWndGuildPayConfirm);
-} 
+}
+
 void CWndGuildTabApp::OnDraw( C2DRender* p2DRender ) 
 { 
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 		
-	TEXTUREVERTEX2* pVertex = new TEXTUREVERTEX2[ 6 * MAX_GM_LEVEL ];
+	TEXTUREVERTEX2 pVertex[ 6 * MAX_GM_LEVEL ];
 	TEXTUREVERTEX2* pVertices = pVertex;
 	
 	LPWNDCTRL pCustom = NULL;
@@ -46,37 +43,19 @@ void CWndGuildTabApp::OnDraw( C2DRender* p2DRender )
 	
 	pWndWorld->m_texMsgIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 
-	SAFE_DELETE_ARRAY( pVertex );
 } 
-void CWndGuildTabApp::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
 
+void CWndGuildTabApp::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	UpdateData();
-
-	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
-} 
+}
+
 BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent, DWORD ) 
 { 
 	return CWndNeuz::InitDialog( APP_GUILD_TABAPPELLATION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndGuildTabApp::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildTabApp::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildTabApp::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildTabApp::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuildTabApp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CGuild* pGuild = g_pPlayer->GetGuild();
@@ -91,35 +70,6 @@ BOOL CWndGuildTabApp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	
 	if(	pGuildMember->m_nMemberLv != GUD_MASTER )
 		return FALSE;
-	
-	/*
-	// Master
-	if( nID == WIDC_CHECK1 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK1);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_MASTER] |= PF_MEMBERLEVEL : m_adwPower[GUD_MASTER] &= (~PF_MEMBERLEVEL);
-	}
-	if( nID == WIDC_CHECK6 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK6);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_MASTER] |= PF_LEVEL : m_adwPower[GUD_MASTER] &= (~PF_LEVEL);
-	}
-	if( nID == WIDC_CHECK11 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK11);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_MASTER] |= PF_INVITATION : m_adwPower[GUD_MASTER] &= (~PF_INVITATION);
-	}
-	if( nID == WIDC_CHECK16 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK16);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_MASTER] |= PF_PENYA : m_adwPower[GUD_MASTER] &= (~PF_PENYA);
-	}
-	if( nID == WIDC_CHECK21 )
-	{
-		CWndButton* pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK21);
-		pWndCheck->GetCheck() ? m_adwPower[GUD_MASTER] |= PF_ITEM : m_adwPower[GUD_MASTER] &= (~PF_ITEM);
-	}
-	*/
 	
 	//Kingpin
 	if( nID == WIDC_CHECK2 )
@@ -233,36 +183,31 @@ BOOL CWndGuildTabApp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	// 설절버튼 눌렀을때 실행 클라에서 먼저 가지고 있는권한이 다르면 서버로 전송
 	if( nID == WIDC_BUTTON1 )	// 마스트
 	{
-		SAFE_DELETE(m_pWndGuildPayConfirm);
-		m_pWndGuildPayConfirm = new CWndGuildPayConfirm;
+		m_pWndGuildPayConfirm = std::make_unique<CWndGuildPayConfirm>();
 		m_pWndGuildPayConfirm->Initialize( this );
 		m_pWndGuildPayConfirm->m_dwAppellation = GUD_MASTER;
 	}
 	else if( nID == WIDC_BUTTON2 )  // 킹 핀
 	{
-		SAFE_DELETE(m_pWndGuildPayConfirm);
-		m_pWndGuildPayConfirm = new CWndGuildPayConfirm;
+		m_pWndGuildPayConfirm = std::make_unique<CWndGuildPayConfirm>();
 		m_pWndGuildPayConfirm->Initialize( this );
 		m_pWndGuildPayConfirm->m_dwAppellation = GUD_KINGPIN;
 	}
 	else if( nID == WIDC_BUTTON3 )  // 캡 틴
 	{
-		SAFE_DELETE(m_pWndGuildPayConfirm);
-		m_pWndGuildPayConfirm = new CWndGuildPayConfirm;
+		m_pWndGuildPayConfirm = std::make_unique<CWndGuildPayConfirm>();
 		m_pWndGuildPayConfirm->Initialize( this );
 		m_pWndGuildPayConfirm->m_dwAppellation = GUD_CAPTAIN;
 	}
 	else if( nID == WIDC_BUTTON4 )  // 서포터
 	{
-		SAFE_DELETE(m_pWndGuildPayConfirm);
-		m_pWndGuildPayConfirm = new CWndGuildPayConfirm;
+		m_pWndGuildPayConfirm = std::make_unique<CWndGuildPayConfirm>();
 		m_pWndGuildPayConfirm->Initialize( this );
 		m_pWndGuildPayConfirm->m_dwAppellation = GUD_SUPPORTER;
 	}
 	else if( nID == WIDC_BUTTON5 )  // 루 키
 	{
-		SAFE_DELETE(m_pWndGuildPayConfirm);
-		m_pWndGuildPayConfirm = new CWndGuildPayConfirm;
+		m_pWndGuildPayConfirm = std::make_unique<CWndGuildPayConfirm>();
 		m_pWndGuildPayConfirm->Initialize( this );
 		m_pWndGuildPayConfirm->m_dwAppellation = GUD_ROOKIE;
 	}
@@ -458,47 +403,20 @@ void CWndGuildTabApp::SetData(DWORD dwPower[])
 /****************************************************
   WndId : APP_GUILD_PAYCONFIRM
 ****************************************************/
-CWndGuildPayConfirm::CWndGuildPayConfirm() 
-{ 
-	m_dwAppellation = -1;
-} 
-CWndGuildPayConfirm::~CWndGuildPayConfirm() 
-{ 
-} 
-void CWndGuildPayConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndGuildPayConfirm::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
-	
-	// 윈도를 중앙으로 옮기는 부분.
+
+void CWndGuildPayConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
+}
+
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndGuildPayConfirm::Initialize( CWndBase* pWndParent ) 
 { 
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_GUILD_PAYCONFIRM );
 	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
-
 	return CWndNeuz::Create( /*WBS_THICKFRAME |*/ WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_GUILD_PAYCONFIRM ); 
 } 
 
-BOOL CWndGuildPayConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildPayConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildPayConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildPayConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuildPayConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_YES )
