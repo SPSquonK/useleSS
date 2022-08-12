@@ -31,5 +31,9 @@ public:
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
+
+private:
+	void ForEachPower(std::invocable<UINT, int, DWORD> auto func);
+	void ForEachPower(std::invocable<CWndButton &, int, DWORD> auto func);
 };
 
