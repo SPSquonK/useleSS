@@ -389,8 +389,6 @@ public:
 	void			AddSetNotice( u_long idGuild, const char* szNotice );
 	void			AddInsertedVote( VOTE_INSERTED_INFO& info );
 	void			AddModifyVote( u_long idVote, BYTE cbOperation, BYTE cbExtra );
-	void			AddSetGuildAuthority( DWORD dwAuthority[] );
-	void			AddSetGuildPenya( DWORD dwType, DWORD dwPenya );
 	void			AddGuildRealPenya( int nGoldGuild, int nType );
 	void			AddAllGuilds();
 	void			AddMyGuild();

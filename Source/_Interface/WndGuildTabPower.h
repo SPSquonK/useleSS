@@ -1,5 +1,6 @@
 #pragma once 
 
+#include "guild.h"
 #include <concepts>
 
 class CWndGuildTabPower : public CWndNeuz {
@@ -10,14 +11,14 @@ public:
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 
 	void UpdateData();
-	void SetData(DWORD dwPower[]);
+	void SetData(const GuildPowerss & dwPower);
 	void EnableButton(BOOL bEnable);
 
 private:
-	DWORD m_adwPower[MAX_GM_LEVEL];
+	GuildPowerss m_aPowers;
 	BOOL m_bChanedCheckBox = FALSE;
 	bool m_hasBeenChanged = false;
 
-	void ForEachPower(std::invocable<UINT, int, DWORD> auto func);
-	void ForEachPower(std::invocable<CWndButton &, int, DWORD> auto func);
+	void ForEachPower(std::invocable<UINT, int, GuildPower> auto func);
+	void ForEachPower(std::invocable<CWndButton &, int, GuildPower> auto func);
 };

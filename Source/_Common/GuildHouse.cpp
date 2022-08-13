@@ -397,7 +397,7 @@ BOOL CGuildHouseBase::IsAuthority( CUser* pUser, int nPacketType )
 
 	if( nPacketType == GUILDHOUSE_PCKTTYPE_UPKEEP ) // 유지비는 권한만 있으면 OK!
 	{
-		if( !pGuild->IsAuthority( pUser->m_idPlayer, PF_GUILDHOUSE_UPKEEP ) )
+		if( !pGuild->IsAuthority( pUser->m_idPlayer, GuildPower::GuildHouseUpKeep ) )
 		{
 			pUser->AddDefinedText( TID_GAME_GUILDHOUSE_TAX_LEVEL );
 			return FALSE;
@@ -405,7 +405,7 @@ BOOL CGuildHouseBase::IsAuthority( CUser* pUser, int nPacketType )
 	}
 	else 
 	{
-		if( !pGuild->IsAuthority( pUser->m_idPlayer, PF_GUILDHOUSE_FURNITURE ) )	// 가구 제어 권한 검사(텔레포터 포함)
+		if( !pGuild->IsAuthority( pUser->m_idPlayer, GuildPower::GuildHouseFurniture ) )	// 가구 제어 권한 검사(텔레포터 포함)
 		{
 			pUser->AddDefinedText( TID_GAME_GUILDHOUSE_INSIDE_INSTALL_LEVEL );
 			return FALSE;
