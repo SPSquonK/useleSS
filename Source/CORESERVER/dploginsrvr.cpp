@@ -65,7 +65,7 @@ void CDPLoginSrvr::OnRemoveConnection( DPID dpid )
 {
 	if( s_dpid == dpid )
 	{
-		g_DPCacheSrvr.SendHdr( PACKETTYPE_DESTROY_ALLPLAYERS, DPID_ALLPLAYERS, DPID_ALLPLAYERS );
+		g_DPCacheSrvr.BroadcastPacket<PACKETTYPE_DESTROY_ALLPLAYERS>();
 		s_dpid	= 0xFFFFFFFF;
 		g_PlayerMng.Free();
 	}
@@ -76,9 +76,7 @@ void CDPLoginSrvr::OnQueryTickCount( CAr & ar )
 	DWORD dwTime;
 	ar >> dwTime;
 
-	BEFORESEND( ar1, PACKETTYPE_QUERYTICKCOUNT );
-	ar1 << dwTime << g_TickCount.GetTickCount();
-	SEND( ar1, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_QUERYTICKCOUNT, __int64>(dwTime, g_TickCount.GetTickCount());
 }
 
 void CDPLoginSrvr::OnPreJoin( CAr & ar )
@@ -142,11 +140,10 @@ void CDPLoginSrvr::OnLeave( CAr & ar )
 		WriteLog( "OnLeave(): player not found, %d", idPlayer );
 }
 
-void CDPLoginSrvr::SendQueryRemovePlayer( const CHAR* lpszAccount )
-{
-	BEFORESEND( ar, PACKETTYPE_DESTROY_PLAYER );
-	ar.WriteString( lpszAccount );
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPLoginSrvr::SendQueryRemovePlayer(const CHAR * lpszAccount) {
+	BEFORESEND(ar, PACKETTYPE_DESTROY_PLAYER);
+	ar.WriteString(lpszAccount);
+	SEND(ar, this, DPID_ALLPLAYERS);
 }
 
 CDPLoginSrvr	g_dpLoginSrvr;

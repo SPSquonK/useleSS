@@ -12,7 +12,7 @@
 #define theParameters	CAr & ar, DPID, LPBYTE lpBuf, u_long uBufSize
 
 //class CAccount;
-class CDPLoginSrvr : public CDPMng
+class CDPLoginSrvr : public CDPServerSole
 {
 public:
 //	Constructions

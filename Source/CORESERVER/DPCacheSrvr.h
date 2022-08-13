@@ -18,7 +18,7 @@
 
 class CGuild;
 
-class CDPCacheSrvr : public CDPMng
+class CDPCacheSrvr : public CDPServerSole
 {
 private:
 	CServerDescArray	m_apServer;
