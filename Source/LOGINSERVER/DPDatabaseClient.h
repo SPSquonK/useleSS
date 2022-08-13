@@ -10,7 +10,7 @@
 #undef theParameters
 #define theParameters	CAr & ar, DPID, LPBYTE, u_long
 
-class CDPDatabaseClient : public CDPMng
+class CDPDatabaseClient : public CDPClientSole
 {
 public:
 //	Constructions

@@ -9,7 +9,7 @@
 #undef theParameters
 #define theParameters	CAr & ar, LPBYTE lpBuf, u_long uBufSize
 
-class CDPAccountClient : public CDPMng
+class CDPAccountClient : public CDPClientNone
 {
 public:
 /*

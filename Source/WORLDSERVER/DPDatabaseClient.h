@@ -14,7 +14,7 @@
 #define theParameters CAr & ar, DPID, DPID
 
 class CUser;
-class CDPDatabaseClient : public CDPMng
+class CDPDatabaseClient : public CDPClientDual
 {
 private:
 	int		m_cbPing;

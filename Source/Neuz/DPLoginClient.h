@@ -9,7 +9,7 @@
 #undef theParameters
 #define theParameters	CAr & ar
 
-class CDPLoginClient : public CDPMng
+class CDPLoginClient : public CDPClientSole
 {
 private:
 	BOOL	m_fDestroy; 
