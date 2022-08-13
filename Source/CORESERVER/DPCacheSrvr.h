@@ -165,7 +165,7 @@ inline void CDPCacheSrvr::SendHdr( DWORD dwHdr, DPID dpidCache, DPID dpidUser )
 
 template<DWORD PacketId, typename ... Ts>
 void CDPCacheSrvr::SendPacket(CPlayer * const player, const Ts & ... ts) {
-	BEFORESENDSOLE(ar, packetId, player->dpidUser);
+	BEFORESENDSOLE(ar, PacketId, player->dpidUser);
 	ar.Accumulate(ts...);
 	SEND(ar, this, player->dpidCache);
 }
