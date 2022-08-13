@@ -64,8 +64,6 @@
 #include "DPCollectClient.h"
 #endif // __CERTIFIER_COLLECTING_SYSTEM
 
-extern _ERROR_STATE g_Error_State;
-
 extern DWORD FULLSCREEN_WIDTH;
 extern DWORD FULLSCREEN_HEIGHT;
 

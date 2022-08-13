@@ -1738,7 +1738,7 @@ void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	pFriend->m_RTMessenger.SetFriend(uidSend);
 	pFriend->Unlock();
 	g_dpDatabaseClient.QueryAddMessenger(uidSend, pFriend->uKey);
-	g_dpCoreSrvr.SendPacket<PACKETTYPE_CW_ADDFRIEND, u_long, u_long>(uidSend, pFriend->uKey);
+	g_dpCoreSrvr.BroadcastPacket<PACKETTYPE_CW_ADDFRIEND, u_long, u_long>(uidSend, pFriend->uKey);
 }
 
 void CDPCacheSrvr::OnGetFriendState(CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize) {

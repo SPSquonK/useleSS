@@ -75,7 +75,7 @@ typedef struct tagSNAPSHOT
 SNAPSHOT, *LPSNAPSHOT;
 
 class CWndGuildVote;
-class CDPClient : public CDPMng
+class CDPClient : public CDPClientSole
 {
 private:
 	SNAPSHOT	m_ss;
@@ -1050,17 +1050,8 @@ public:
 	void    OnDisguise( OBJID objid, CAr & ar );
 	void    OnNoDisguise( OBJID objid, CAr & ar );
 
-	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(const Ts & ... ts);
 private:
 	BOOL	m_bEventTextColor;
 };
-
-template<DWORD PacketId, typename ... Ts>
-void CDPClient::SendPacket(const Ts & ... ts) {
-	BEFORESENDSOLE(ar, PacketId, DPID_UNKNOWN);
-	ar.Accumulate(ts...);
-	SEND(ar, this, DPID_SERVERPLAYER);
-}
 
 extern CDPClient g_DPlay;

@@ -10,7 +10,7 @@
 #undef theParameters
 #define theParameters	CAr & ar
 
-class CDPCoreClient : public CDPMng
+class CDPCoreClient : public CDPClientNone
 {
 
 public:

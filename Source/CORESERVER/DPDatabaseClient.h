@@ -11,7 +11,7 @@
 #define theParameters	CAr & ar
 
 
-class CDPDatabaseClient : public CDPMng
+class CDPDatabaseClient : public CDPClientNone
 {
 public:
 //	Constructions

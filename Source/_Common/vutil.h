@@ -108,14 +108,4 @@ inline BOOL isdigit2(CHAR c)
 		return FALSE;
 }
 
-typedef struct _ERROR_STATE
-{
-	DWORD	m_dwWndId;
-	BOOL	m_bIsShowWnd;
-	CHAR	m_ch;
-} _ERROR_STATE;
-
-extern _ERROR_STATE g_Error_State;
-
-
 #endif // D3DUTIL_H

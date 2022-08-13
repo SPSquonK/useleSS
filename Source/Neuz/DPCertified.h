@@ -11,7 +11,7 @@
 #undef theParameters
 #define theParameters	CAr & ar, DPID
 
-class CDPCertified : public CDPMng
+class CDPCertified : public CDPClientNone
 {
 private:
 	BOOL	m_fConn;

@@ -173,4 +173,65 @@ inline BOOL CDPMng::Send( LPVOID lpData, DWORD dwDataSize, DPID dpidTo )
 	return m_pDPSock->Send( (char*)lpData, dwDataSize, dpidTo );
 }
 
+class CDPClientNone : public CDPMng {
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacket(const Ts & ... ts) {
+		BEFORESEND(ar, PacketId);
+		ar.Accumulate(ts...);
+		SEND(ar, this, DPID_SERVERPLAYER);
+	}
+};
+
+class CDPClientSole : public CDPMng {
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacket(const Ts & ... ts) {
+		BEFORESENDSOLE(ar, PacketId, DPID_UNKNOWN);
+		ar.Accumulate(ts...);
+		SEND(ar, this, DPID_SERVERPLAYER);
+	}
+};
+
+class CDPClientDual : public CDPMng {
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacket(const Ts & ... ts) {
+		BEFORESENDDUAL(ar, PacketId, DPID_UNKNOWN, DPID_UNKNOWN);
+		ar.Accumulate(ts...);
+		SEND(ar, this, DPID_SERVERPLAYER);
+	}
+};
+
+
+class CDPServerNone : public CDPMng {
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void BroadcastPacket(const Ts & ... ts) {
+		BEFORESEND(ar, PacketId);
+		ar.Accumulate(ts...);
+		SEND(ar, this, DPID_ALLPLAYERS);
+	}
+};
+
+class CDPServerSole : public CDPMng {
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void BroadcastPacket(const Ts & ... ts) {
+		BEFORESENDSOLE(ar, PacketId, DPID_ALLPLAYERS);
+		ar.Accumulate(ts...);
+		SEND(ar, this, DPID_ALLPLAYERS);
+	}
+};
+
+class CDPServerDual : public CDPMng {
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void BroadcastPacket(const Ts & ... ts) {
+		BEFORESENDDUAL(ar, PacketId, DPID_ALLPLAYERS, DPID_ALLPLAYERS);
+		ar.Accumulate(ts...);
+		SEND(ar, this, DPID_ALLPLAYERS);
+	}
+};
+
 #endif //__DPMNG_H__

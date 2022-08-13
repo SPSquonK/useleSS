@@ -7,7 +7,7 @@
 #undef	theParameters
 #define theParameters	CAr & ar
 
-class CDPLoginSrvr : public CDPMng
+class CDPLoginSrvr : public CDPServerNone
 {
 public:
 //	Constructions

@@ -14,7 +14,7 @@
 
 #include "playerdata.h"
 
-class CDPCoreSrvr : public CDPMng
+class CDPCoreSrvr : public CDPServerNone
 {
 public:
 //	Constructions

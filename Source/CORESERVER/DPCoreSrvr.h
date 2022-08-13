@@ -16,7 +16,7 @@
 #undef	theParameters
 #define theParameters	CAr & ar, DPID, DPID, DPID, u_long
 	
-class CDPCoreSrvr : public CDPMng
+class CDPCoreSrvr : public CDPServerDual
 {
 public:
 	int					m_nGCState;
@@ -38,9 +38,6 @@ public:
 	// Operations
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
-
-	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(const Ts & ... ts);
 
 	void	SendRecharge( u_long uBlockSize, DPID dpid );
 	void	SendQueryTickCount( DWORD dwTime, DPID dpid, double dCurrentTime );
@@ -192,14 +189,6 @@ private:
 	void	OnQuizSystemMessage( CAr & ar, DPID, DPID, DPID, u_long );
 #endif // __QUIZ
 };
-
-
-template<DWORD PacketId, typename ... Ts>
-void CDPCoreSrvr::SendPacket(const Ts & ... ts) {
-	BEFORESENDDUAL(ar, PacketId, DPID_UNKNOWN, DPID_UNKNOWN);
-	ar.Accumulate(ts...);
-	SEND(ar, this, DPID_ALLPLAYERS);
-}
 
 extern CDPCoreSrvr g_dpCoreSrvr;
 

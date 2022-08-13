@@ -465,8 +465,7 @@ void CDPCoreSrvr::SendRemovePlayerFriend( u_long uPlayerId, u_long uFriendId )
 void CDPCoreSrvr::SendEventLuaNotice()
 {
 	BEFORESEND( ar, PACKETTYPE_EVENTLUA_NOTICE );
-	std::vector<std::string> vecstrMessage;
-	vecstrMessage = prj.m_EventLua.GetNoticeMessage();
+	std::vector<std::string> vecstrMessage = prj.m_EventLua.GetNoticeMessage();
 	ar << vecstrMessage.size();
 	for( DWORD i=0; i<vecstrMessage.size(); i++ )
 	ar.WriteString( vecstrMessage[i].c_str() );

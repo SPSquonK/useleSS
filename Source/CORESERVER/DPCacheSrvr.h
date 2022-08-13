@@ -18,7 +18,7 @@
 
 class CGuild;
 
-class CDPCacheSrvr : public CDPMng
+class CDPCacheSrvr : public CDPServerSole
 {
 private:
 	CServerDescArray	m_apServer;
@@ -150,12 +150,24 @@ private:
 	void	OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
 	void	OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
 	void	OnSendTag( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
+
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacket(CPlayer * player, const Ts & ... ts);
+
 };
 
 inline void CDPCacheSrvr::SendHdr( DWORD dwHdr, DPID dpidCache, DPID dpidUser )
 {
 	BEFORESENDSOLE( ar, dwHdr, dpidUser );
 	SEND( ar, this, dpidCache );
+}
+
+template<DWORD PacketId, typename ... Ts>
+void CDPCacheSrvr::SendPacket(CPlayer * const player, const Ts & ... ts) {
+	BEFORESENDSOLE(ar, packetId, player->dpidUser);
+	ar.Accumulate(ts...);
+	SEND(ar, this, player->dpidCache);
 }
 
 extern CDPCacheSrvr g_DPCacheSrvr;

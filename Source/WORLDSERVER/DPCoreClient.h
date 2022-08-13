@@ -29,7 +29,7 @@
 #undef theParameters
 #define theParameters CAr & ar, DPID, DPID, OBJID objid
 
-class CDPCoreClient : public CDPMng
+class CDPCoreClient : public CDPClientDual
 {
 private:
 	WSAEVENT	m_hWait;
