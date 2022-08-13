@@ -16,7 +16,7 @@
 CWndGuildTabApp::CWndGuildTabApp() 
 { 
 	for( int i=0; i<MAX_GM_LEVEL; i++ )
-		m_adwPower[i] = 0xffffffff;
+		m_aPowers[i].SetAll();
 
 	m_pWndGuildPayConfirm = NULL;
 }
@@ -57,39 +57,39 @@ BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent, DWORD )
 } 
 
 void CWndGuildTabApp::ForEachPower(
-	std::invocable<UINT, int, DWORD> auto func
+	std::invocable<UINT, int, GuildPower> auto func
 ) {
-	func(WIDC_CHECK1 , GUD_MASTER   , PF_MEMBERLEVEL);
-	func(WIDC_CHECK6 , GUD_MASTER   , PF_LEVEL      );
-	func(WIDC_CHECK11, GUD_MASTER   , PF_INVITATION );
-	func(WIDC_CHECK16, GUD_MASTER   , PF_PENYA      );
-	func(WIDC_CHECK21, GUD_MASTER   , PF_ITEM       );
-	func(WIDC_CHECK2 , GUD_KINGPIN  , PF_MEMBERLEVEL);
-	func(WIDC_CHECK7 , GUD_KINGPIN  , PF_LEVEL      );
-	func(WIDC_CHECK12, GUD_KINGPIN  , PF_INVITATION );
-	func(WIDC_CHECK17, GUD_KINGPIN  , PF_PENYA      );
-	func(WIDC_CHECK22, GUD_KINGPIN  , PF_ITEM       );
-	func(WIDC_CHECK3 , GUD_CAPTAIN  , PF_MEMBERLEVEL);
-	func(WIDC_CHECK8 , GUD_CAPTAIN  , PF_LEVEL      );
-	func(WIDC_CHECK13, GUD_CAPTAIN  , PF_INVITATION );
-	func(WIDC_CHECK18, GUD_CAPTAIN  , PF_PENYA      );
-	func(WIDC_CHECK23, GUD_CAPTAIN  , PF_ITEM       );
-	func(WIDC_CHECK4 , GUD_SUPPORTER, PF_MEMBERLEVEL);
-	func(WIDC_CHECK9 , GUD_SUPPORTER, PF_LEVEL      );
-	func(WIDC_CHECK14, GUD_SUPPORTER, PF_INVITATION );
-	func(WIDC_CHECK19, GUD_SUPPORTER, PF_PENYA      );
-	func(WIDC_CHECK24, GUD_SUPPORTER, PF_ITEM       );
-	func(WIDC_CHECK5 , GUD_ROOKIE   , PF_MEMBERLEVEL);
-	func(WIDC_CHECK10, GUD_ROOKIE   , PF_LEVEL      );
-	func(WIDC_CHECK15, GUD_ROOKIE   , PF_INVITATION );
-	func(WIDC_CHECK20, GUD_ROOKIE   , PF_PENYA      );
-	func(WIDC_CHECK25, GUD_ROOKIE   , PF_ITEM       );
+	func(WIDC_CHECK1 , GUD_MASTER   , GuildPower::MemberLevel);
+	func(WIDC_CHECK6 , GUD_MASTER   , GuildPower::Level      );
+	func(WIDC_CHECK11, GUD_MASTER   , GuildPower::Invitation );
+	func(WIDC_CHECK16, GUD_MASTER   , GuildPower::Penya      );
+	func(WIDC_CHECK21, GUD_MASTER   , GuildPower::Item       );
+	func(WIDC_CHECK2 , GUD_KINGPIN  , GuildPower::MemberLevel);
+	func(WIDC_CHECK7 , GUD_KINGPIN  , GuildPower::Level      );
+	func(WIDC_CHECK12, GUD_KINGPIN  , GuildPower::Invitation );
+	func(WIDC_CHECK17, GUD_KINGPIN  , GuildPower::Penya      );
+	func(WIDC_CHECK22, GUD_KINGPIN  , GuildPower::Item       );
+	func(WIDC_CHECK3 , GUD_CAPTAIN  , GuildPower::MemberLevel);
+	func(WIDC_CHECK8 , GUD_CAPTAIN  , GuildPower::Level      );
+	func(WIDC_CHECK13, GUD_CAPTAIN  , GuildPower::Invitation );
+	func(WIDC_CHECK18, GUD_CAPTAIN  , GuildPower::Penya      );
+	func(WIDC_CHECK23, GUD_CAPTAIN  , GuildPower::Item       );
+	func(WIDC_CHECK4 , GUD_SUPPORTER, GuildPower::MemberLevel);
+	func(WIDC_CHECK9 , GUD_SUPPORTER, GuildPower::Level      );
+	func(WIDC_CHECK14, GUD_SUPPORTER, GuildPower::Invitation );
+	func(WIDC_CHECK19, GUD_SUPPORTER, GuildPower::Penya      );
+	func(WIDC_CHECK24, GUD_SUPPORTER, GuildPower::Item       );
+	func(WIDC_CHECK5 , GUD_ROOKIE   , GuildPower::MemberLevel);
+	func(WIDC_CHECK10, GUD_ROOKIE   , GuildPower::Level      );
+	func(WIDC_CHECK15, GUD_ROOKIE   , GuildPower::Invitation );
+	func(WIDC_CHECK20, GUD_ROOKIE   , GuildPower::Penya      );
+	func(WIDC_CHECK25, GUD_ROOKIE   , GuildPower::Item       );
 }
 
 void CWndGuildTabApp::ForEachPower(
-	std::invocable<CWndButton &, int, DWORD> auto func
+	std::invocable<CWndButton &, int, GuildPower> auto func
 ) {
-	ForEachPower([&](const UINT widgetId, const int gud, const DWORD power) {
+	ForEachPower([&](const UINT widgetId, const int gud, const GuildPower power) {
 		CWndButton * button = GetDlgItem<CWndButton>(widgetId);
 		func(*button, gud, power);
 		});
@@ -111,15 +111,15 @@ BOOL CWndGuildTabApp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		return FALSE;
 	
 
-	ForEachPower([&](const UINT buttonID, const int gud, const DWORD power) {
+	ForEachPower([&](const UINT buttonID, const int gud, const GuildPower power) {
 		if (gud == GUD_MASTER) return;
 
 		if (nID == buttonID) {
 			CWndButton * pWndCheck = GetDlgItem<CWndButton>(buttonID);
 			if (pWndCheck->GetCheck()) {
-				m_adwPower[gud] |= power;
+				m_aPowers[gud].Set(power);
 			} else {
-				m_adwPower[gud] &= ~power;
+				m_aPowers[gud].Unset(power);
 			}
 		}
 		});
@@ -157,33 +157,30 @@ BOOL CWndGuildTabApp::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	else if( nID == WIDC_OK )	// º¸³»±â
 	{
-		g_DPlay.SendGuildAuthority( pGuild->GetGuildId(), m_adwPower );
+		g_DPlay.SendGuildAuthority(m_aPowers);
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
 
-void CWndGuildTabApp::SetPenya( void )
-{
+void CWndGuildTabApp::SetPenya() {
 	CGuild * pGuild = g_pPlayer->GetGuild();
-	if( pGuild )
-	{
-		CString strMessege;
-		for( int i = 0 ; i < MAX_GM_LEVEL ; ++i )
-		{
-			strMessege.Format( "%d", pGuild->m_adwPenya[ i ] );
-			m_pWndPenya[i]->SetTitle( strMessege );
-		}
+	if (!pGuild) return;
+
+	CString strMessege;
+	for (int i = 0; i < MAX_GM_LEVEL; ++i) {
+		strMessege.Format("%d", pGuild->m_aPenya[i]);
+		m_pWndPenya[i]->SetTitle(strMessege);
 	}
 }
 
 
-void CWndGuildTabApp::SetData(DWORD dwPower[]) {
-	memcpy(m_adwPower, dwPower, sizeof(DWORD) * MAX_GM_LEVEL);
+void CWndGuildTabApp::SetData(const GuildPowerss & dwPower) {
+	m_aPowers = dwPower;
 
-	ForEachPower([&](CWndButton & button, const int gud, const DWORD power) {
-		button.SetCheck((m_adwPower[gud] & power) ? TRUE : FALSE);
+	ForEachPower([&](CWndButton & button, const int gud, const GuildPower power) {
+		button.SetCheck(m_aPowers[gud][power] ? TRUE : FALSE);
 
 		if (gud == GUD_MASTER) button.EnableWindow(FALSE);
 		});
@@ -263,7 +260,7 @@ BOOL CWndGuildPayConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 void CWndGuildTabApp::EnableButton(BOOL bEnable)
 {
-	ForEachPower([bEnable](CWndButton & button, int, DWORD) {
+	ForEachPower([bEnable](CWndButton & button, int, GuildPower) {
 		button.EnableWindow(bEnable);
 		});
 
@@ -318,10 +315,9 @@ void CWndGuildTabApp::UpdateData()
 
 		pStatic = (CWndStatic*)GetDlgItem( WIDC_GUILD_NUM_ROOKIE );
 		str.Format( "%.2d/%.2d", pGuild->GetMemberLvSize(GUD_ROOKIE), pGuild->GetMaxMemberSize() );
-//		str.Format( "%.2d/%.2d", pGuild->GetMaxMemberSize(), pGuild->GetMaxMemberSize() );
 		pStatic->SetTitle( str );
 		
-		SetData( pGuild->m_adwPower );
+		SetData( pGuild->m_aPower );
 		SetPenya();
 		
 		if(	pGuild->IsMaster( g_pPlayer->m_idPlayer ) )
@@ -331,8 +327,7 @@ void CWndGuildTabApp::UpdateData()
 	}
 	else
 	{
-		DWORD adwPower [MAX_GM_LEVEL] = { 0 };
-		SetData( adwPower );
+		SetData( GuildPowerss() );
 
 		EnableButton( FALSE );
 		

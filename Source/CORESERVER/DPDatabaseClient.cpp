@@ -204,19 +204,17 @@ void CDPDatabaseClient::SendGuildNotice( u_long idGuild, LPCTSTR szNotice )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendGuildAuthority( u_long idGuild, DWORD adwAuthority[] )
+void CDPDatabaseClient::SendGuildAuthority( u_long idGuild, const GuildPowerss & adwPowers)
 {
 	BEFORESEND( ar, PACKETTYPE_GUILD_AUTHORITY );
-	ar << idGuild;
-	ar.Write( adwAuthority, sizeof(DWORD) * MAX_GM_LEVEL );
+	ar << idGuild << adwPowers;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendGuildPenya( u_long idGuild, DWORD adwPenya[] )
+void CDPDatabaseClient::SendGuildPenya( u_long idGuild, const std::array<DWORD, MAX_GM_LEVEL> & adwPenya)
 {
 	BEFORESEND( ar, PACKETTYPE_GUILD_PENYA );
-	ar << idGuild;
-	ar.Write( adwPenya, sizeof(DWORD) * MAX_GM_LEVEL );
+	ar << idGuild << adwPenya;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 

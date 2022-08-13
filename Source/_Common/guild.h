@@ -12,6 +12,7 @@
 
 #include "guildquest.h"
 #include <boost/container/flat_map.hpp>
+#include "sqktd/enumset.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // 길드관련 상수 
@@ -35,13 +36,18 @@ const int MAX_VOTE_ENTRY		= 20;		// 길드가 투표를 최대 몇개 가지고 있는가
 #define GM_SUPPORTER 20
 #define GM_ROOKIE 80
 
-const DWORD PF_MEMBERLEVEL		= 0x00000001;
-const DWORD PF_LEVEL			= 0x00000002;
-const DWORD PF_INVITATION		= 0x00000004;
-const DWORD PF_PENYA			= 0x00000008;
-const DWORD PF_ITEM				= 0x00000010;
-const DWORD PF_GUILDHOUSE_FURNITURE		= 0x00000020;
-const DWORD PF_GUILDHOUSE_UPKEEP		= 0x00000040;
+enum class GuildPower {
+	MemberLevel,
+	Level,
+	Invitation,
+	Penya,
+	Item,
+	GuildHouseFurniture,
+	GuildHouseUpKeep,
+	_MAX
+};
+
+using GuildPowers = sqktd::EnumSet<GuildPower>;
 
 typedef struct _SGuildMsgHeader
 {
@@ -240,6 +246,8 @@ GUILD_MEMBER_INFO, *PGUILD_MEMBER_INFO;
 
 class	CGuildWar;
 
+using GuildPowerss = std::array<GuildPowers, MAX_GM_LEVEL>;
+
 class CGuild
 {
 public:
@@ -248,8 +256,8 @@ public:
 	std::map<u_long, CGuildMember*>	m_mapPMember;	// 회원들
 	u_long	m_idMaster;							// 길드장 ID
 	int		m_nLevel;							// Guild Level
-	DWORD	m_adwPower[MAX_GM_LEVEL];			// 권한 설정값
-	DWORD	m_adwPenya[MAX_GM_LEVEL];			// 페냐 설정값
+	std::array<GuildPowers, MAX_GM_LEVEL> m_aPower;			// 권한 설정값
+	std::array<DWORD, MAX_GM_LEVEL> m_aPenya; // 페냐 설정값
 	BOOL	m_bActive;							// 활동중? 중지중? 검사하는건가?
 	DWORD   m_dwLogo;							// 로고 이미지 번호
 	DWORD   m_dwContributionPxp;				// 공헌된 PXP
@@ -301,14 +309,20 @@ public:
 	bool	ModifyVote( u_long idVote, BYTE cbOperation, BYTE cbExtra );
 		
 	//	길드 창고에서 페냐를 가져올수 있는지 확인
-	BOOL	IsGetPenya( u_long idPlayer )	{	return m_adwPower[GetMember(idPlayer)->m_nMemberLv] & PF_PENYA; }
+	[[nodiscard]] bool IsGetPenya(u_long idPlayer) { return IsAuthority(idPlayer, GuildPower::Penya); }
 	//	길드 창고에서 아이템을 가져올수 있는지 확인
-	BOOL	IsGetItem( u_long idPlayer )	{	return m_adwPower[GetMember(idPlayer)->m_nMemberLv] & PF_ITEM; }
+	[[nodiscard]] bool IsGetItem(u_long idPlayer) { return IsAuthority(idPlayer, GuildPower::Item); }
 	
 	// 권한 검사
-	BOOL	IsCmdCap( int nMemberLv, DWORD dwPower )	{	return( ( m_adwPower[nMemberLv] & dwPower )? TRUE: FALSE );	}
+	[[nodiscard]] bool IsCmdCap(int nMemberLv, const GuildPower dwPower) const {
+		return m_aPower[nMemberLv][dwPower];
+	}
 
-	BOOL	IsAuthority( DWORD dwPlayerId, int nAuthority )	{ return GetMember(dwPlayerId) ? ( m_adwPower[GetMember(dwPlayerId)->m_nMemberLv] & nAuthority ) : FALSE; }
+	[[nodiscard]] bool IsAuthority(const DWORD dwPlayerId, const GuildPower guildPower) /* const */ {
+		const CGuildMember * gm = GetMember(dwPlayerId);
+		return gm ? IsCmdCap(gm->m_nMemberLv, guildPower) : false;
+	}
+
 	//	Attributes
 	int		GetSize( void )	{	return m_mapPMember.size();	}
 	CGuildMember*	GetMember( u_long idPlayer );

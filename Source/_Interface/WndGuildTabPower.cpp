@@ -31,19 +31,18 @@ BOOL CWndGuildTabPower::Initialize( CWndBase* pWndParent, DWORD )
 void CWndGuildTabPower::UpdateData() {
 	CGuild * pGuild = g_pPlayer->GetGuild();
 	if (pGuild) {
-		SetData(pGuild->m_adwPower);
+		SetData(pGuild->m_aPower);
 
 		EnableButton(pGuild->IsMaster(g_pPlayer->m_idPlayer) ? TRUE : FALSE);
 	} else {
-		DWORD adwPower[MAX_GM_LEVEL] = { 0 };
-		SetData(adwPower);
+		SetData(GuildPowerss());
 
 		EnableButton(FALSE);
 	}
 }
 
 void CWndGuildTabPower::EnableButton(const BOOL bEnable) {
-	ForEachPower([bEnable](CWndButton & button, int, DWORD) {
+	ForEachPower([bEnable](CWndButton & button, int, GuildPower) {
 		button.EnableWindow(bEnable);
 		});
 
@@ -58,32 +57,32 @@ void CWndGuildTabPower::EnableButton(const BOOL bEnable) {
 }
 
 void CWndGuildTabPower::ForEachPower(
-	std::invocable<UINT, int, DWORD> auto func
+	std::invocable<UINT, int, GuildPower> auto func
 ) {
-	func(WIDC_CHECK1 , GUD_KINGPIN  , PF_GUILDHOUSE_FURNITURE);
-	func(WIDC_CHECK9 , GUD_KINGPIN  , PF_GUILDHOUSE_UPKEEP   );
-	func(WIDC_CHECK2 , GUD_CAPTAIN  , PF_GUILDHOUSE_FURNITURE);
-	func(WIDC_CHECK10, GUD_CAPTAIN  , PF_GUILDHOUSE_UPKEEP   );
-	func(WIDC_CHECK3 , GUD_SUPPORTER, PF_GUILDHOUSE_FURNITURE);
-	func(WIDC_CHECK11, GUD_SUPPORTER, PF_GUILDHOUSE_UPKEEP   );
-	func(WIDC_CHECK4 , GUD_ROOKIE   , PF_GUILDHOUSE_FURNITURE);
-	func(WIDC_CHECK12, GUD_ROOKIE   , PF_GUILDHOUSE_UPKEEP   );
+	func(WIDC_CHECK1 , GUD_KINGPIN  , GuildPower::GuildHouseFurniture);
+	func(WIDC_CHECK9 , GUD_KINGPIN  , GuildPower::GuildHouseUpKeep   );
+	func(WIDC_CHECK2 , GUD_CAPTAIN  , GuildPower::GuildHouseFurniture);
+	func(WIDC_CHECK10, GUD_CAPTAIN  , GuildPower::GuildHouseUpKeep   );
+	func(WIDC_CHECK3 , GUD_SUPPORTER, GuildPower::GuildHouseFurniture);
+	func(WIDC_CHECK11, GUD_SUPPORTER, GuildPower::GuildHouseUpKeep   );
+	func(WIDC_CHECK4 , GUD_ROOKIE   , GuildPower::GuildHouseFurniture);
+	func(WIDC_CHECK12, GUD_ROOKIE   , GuildPower::GuildHouseUpKeep   );
 }
 
 void CWndGuildTabPower::ForEachPower(
-	std::invocable<CWndButton &, int, DWORD> auto func
+	std::invocable<CWndButton &, int, GuildPower> auto func
 ) {
-	ForEachPower([&](const UINT widgetId, const int gud, const DWORD power) {
+	ForEachPower([&](const UINT widgetId, const int gud, const GuildPower power) {
 		CWndButton * button = GetDlgItem<CWndButton>(widgetId);
 		func(*button, gud, power);
 		});
 }
 
-void CWndGuildTabPower::SetData(DWORD dwPower[]) {
-	memcpy(m_adwPower, dwPower, sizeof(DWORD) * MAX_GM_LEVEL);
+void CWndGuildTabPower::SetData(const GuildPowerss & dwPower) {
+	m_aPowers = dwPower;
 
-	ForEachPower([&](CWndButton & button, const int gud, const DWORD power) {
-		button.SetCheck((m_adwPower[gud] & power) ? TRUE : FALSE);
+	ForEachPower([&](CWndButton & button, const int gud, const GuildPower power) {
+		button.SetCheck((m_aPowers[gud][power]) ? TRUE : FALSE);
 		});
 
 	m_hasBeenChanged = false;
@@ -104,21 +103,21 @@ BOOL CWndGuildTabPower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 	if(	pGuildMember->m_nMemberLv != GUD_MASTER )
 		return FALSE;
 
-	ForEachPower([&](const UINT buttonID, const int gud, const DWORD power) {
+	ForEachPower([&](const UINT buttonID, const int gud, const GuildPower power) {
 		if (nID == buttonID) {
 			CWndButton * pWndCheck = GetDlgItem<CWndButton>(buttonID);
 			if (pWndCheck->GetCheck()) {
-				m_adwPower[gud] |= power;
+				m_aPowers[gud].Set(power);
 			} else {
-				m_adwPower[gud] &= ~power;
+				m_aPowers[gud].Unset(power);
 			}
 			m_hasBeenChanged = true;
 		}
 		});
 
-	 if( WIDC_BUTTON1 == nID && m_hasBeenChanged)	// 보내기
+	if (WIDC_BUTTON1 == nID && m_hasBeenChanged)	// 보내기
 	{
-		g_DPlay.SendGuildAuthority( pGuild->GetGuildId(), m_adwPower );
+		g_DPlay.SendGuildAuthority(m_aPowers);
 		m_hasBeenChanged = false;
 	}
 

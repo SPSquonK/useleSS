@@ -9,6 +9,7 @@
 #include "RainbowRace.h"
 
 #include "Housing.h"
+#include "guild.h"
 
 #undef	theClass
 #define	theClass	CDPClient
@@ -296,7 +297,7 @@ public:
 	void	SendGuildLogo( DWORD dwLogo );
 	void	SendGuildContribution( BYTE cbPxpCount, int nGold, BYTE cbItemFlag = 0);
 	void    SendGuildNotice( const char* szNotice );
-	void	SendGuildAuthority( u_long uGuildId, DWORD dwAuthority[] );
+	void	SendGuildAuthority(const GuildPowerss & powers);
 	void	SendGuilPenya( u_long uGuildId, DWORD dwType, DWORD dwPenty );
 	void	SendGuildSetName( LPCTSTR szName );
 	void	SendGuildRank( DWORD nVer );

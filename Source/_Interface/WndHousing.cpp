@@ -865,18 +865,18 @@ void CWndGuildHousing::UpdateIRButton( )
 	if( !g_pPlayer->GetWorld( ) )
 		return;
 
-	BOOL bResult = FALSE;
+	bool bResult = false;
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	if( pGuild )
-		bResult = pGuild->IsAuthority( g_pPlayer->m_idPlayer, PF_GUILDHOUSE_FURNITURE );
+		bResult = pGuild->IsAuthority( g_pPlayer->m_idPlayer, GuildPower::GuildHouseFurniture);
 	
 	if( bResult )
 	{
 		if( !g_pPlayer->GetWorld()->IsWorldGuildHouse() )			//길드하우스 월드가 아니면 
-			bResult = FALSE;
+			bResult = false;
 	}
 
-	SetEnableInstallBtns( bResult );
+	SetEnableInstallBtns( bResult ? TRUE : FALSE );
 
 	CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
 	int nScrollPos = pWndListBox->GetScrollPos();		//음 요녀석이 가장 top인가?

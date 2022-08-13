@@ -10554,7 +10554,7 @@ void CDPClient::OnCreateGuild( CAr & ar )
 	pGuild->m_idGuild	= idGuild;
 	lstrcpy( pGuild->m_szGuild, szGuild );
 	pGuild->m_idMaster		= idPlayer;
-	pGuild->m_adwPower[ GUD_MASTER ] = 0x000000FF;
+	pGuild->m_aPower[GUD_MASTER].SetAll();
 	idGuild		= g_GuildMng.AddGuild( pGuild );
 	if( idGuild > 0 )
 	{
@@ -11129,20 +11129,13 @@ void CDPClient::SendGuildNotice( const char* szNotice )
 }
 
 // 길드 권한설정 변경
-void CDPClient::SendGuildAuthority( u_long uGuildId, DWORD dwAuthority[] )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_AUTHORITY, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << uGuildId;
-	
-	ar.Write( dwAuthority, sizeof(DWORD) * MAX_GM_LEVEL );
-
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGuildAuthority(const GuildPowerss & powers) {
+	SendPacket<PACKETTYPE_GUILD_AUTHORITY, GuildPowerss>(powers);
 }
 
-void CDPClient::SendGuilPenya( u_long uGuildId, DWORD dwType, DWORD dwSendPenya )
+void CDPClient::SendGuilPenya( u_long, DWORD dwType, DWORD dwSendPenya )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_PENYA, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << uGuildId;
 	ar << dwType << dwSendPenya;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
@@ -11301,35 +11294,28 @@ void CDPClient::OnGuildNotice( CAr & ar )
 		pWndGuild->m_WndGuildTabInfo.UpdateData();
 }
 
-void CDPClient::OnGuildAuthority( CAr & ar )
-{
-	DWORD dwAuthority[MAX_GM_LEVEL];
+void CDPClient::OnGuildAuthority(CAr & ar) {
+	const auto [dwAuthority] = ar.Extract<GuildPowerss>();
+	CGuild * pGuild = g_pPlayer->GetGuild();
+	if (!pGuild) return;
 
-	ar.Read( dwAuthority, sizeof(dwAuthority) );
-	
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	if( pGuild )
-	{
-		memcpy( pGuild->m_adwPower, dwAuthority, sizeof(pGuild->m_adwPower) );
+	pGuild->m_aPower = dwAuthority;
 
-		CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
-		if( pWndGuild )
-			pWndGuild->m_WndGuildTabApp.UpdateData();
-
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDCHGWARRANT ), NULL, prj.GetTextColor( TID_GAME_GUILDCHGWARRANT ) );
+	if (CWndGuild * pWndGuild = g_WndMng.GetWndBase<CWndGuild>(APP_GUILD)) {
+		pWndGuild->m_WndGuildTabApp.UpdateData();
 	}
+
+	g_WndMng.PutString(TID_GAME_GUILDCHGWARRANT);
 }
 
 void CDPClient::OnGuildPenya( CAr & ar )
 {
-	DWORD dwType, dwPenya;
-
-	ar >> dwType >> dwPenya;
+	DWORD dwType, dwPenya; ar >> dwType >> dwPenya;
 
 	CGuild* pGuild = g_pPlayer->GetGuild();
 	if( pGuild )
 	{
-		pGuild->m_adwPenya[dwType] = dwPenya;
+		pGuild->m_aPenya[dwType] = dwPenya;
 		
 		CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
 		if( pWndGuild )
@@ -11338,31 +11324,24 @@ void CDPClient::OnGuildPenya( CAr & ar )
 			pWndGuild->m_WndGuildTabApp.SetPenya();
 		}
 
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDCHGPAY ), NULL, prj.GetTextColor( TID_GAME_GUILDCHGPAY ) );
+		g_WndMng.PutString(TID_GAME_GUILDCHGPAY);
 	}
 }
 
-void CDPClient::OnGuildRealPenya( CAr & ar )
-{
-	int nGoldGuild, nType;
-	ar >> nGoldGuild >> nType;
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	if( pGuild )
-	{
-		pGuild->m_nGoldGuild = nGoldGuild;
-		
-		CWndGuild* pWndGuild = (CWndGuild*)g_WndMng.GetWndBase( APP_GUILD );
-		if( pWndGuild )
-		{
-			pWndGuild->m_WndGuildTabInfo.UpdateData();
-		}
-		
-		if( 0 < pGuild->m_adwPenya[ nType ] )
-		{
-			CString str;
-			str.Format( prj.GetText( TID_GAME_GUILD_PAYTAKE ), pGuild->m_adwPenya[ nType ] );
-			g_WndMng.PutString( (LPCTSTR)str, NULL, prj.GetTextColor( TID_GAME_GUILD_PAYTAKE ) );
-		}
+void CDPClient::OnGuildRealPenya(CAr & ar) {
+	const auto [nGoldGuild, nType] = ar.Extract<int, int>();
+
+	CGuild * pGuild = g_pPlayer->GetGuild();
+	if (!pGuild) return;
+
+	pGuild->m_nGoldGuild = nGoldGuild;
+
+	if (CWndGuild * pWndGuild = g_WndMng.GetWndBase<CWndGuild>(APP_GUILD)) {
+		pWndGuild->m_WndGuildTabInfo.UpdateData();
+	}
+
+	if (pGuild->m_aPenya[nType] > 0) {
+		g_WndMng.PutString(TID_GAME_GUILD_PAYTAKE, pGuild->m_aPenya[nType]);
 	}
 }
 

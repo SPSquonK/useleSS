@@ -1238,7 +1238,7 @@ void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 		SendDefinedText( TID_GAME_GUILDWARRANTREGOVER, pMaster->dpidCache, pMaster->dpidUser, "" );
 		return;
 	}
-	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, PF_MEMBERLEVEL ) )
+	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, GuildPower::MemberLevel ) )
 	{
 		SendDefinedText( TID_GAME_GUILDAPPNOTWARRANT, pMaster->dpidCache, pMaster->dpidUser, "" );
 		return;
@@ -1273,35 +1273,29 @@ void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 	}
 }
 
-void CDPCacheSrvr::OnGuildAuthority( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
-{
-	u_long _uidPlayer, _uGuildId;
-	DWORD dwAuthority[MAX_GM_LEVEL];
-	
-	ar >> _uidPlayer >> _uGuildId;
-	
-	ar.Read( dwAuthority, sizeof(dwAuthority) );
-	
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );	
+void CDPCacheSrvr::OnGuildAuthority(CAr & ar, DPID, DPID dpidUser, u_long) {
+	GuildPowerss dwAuthority; ar >> dwAuthority;
 
-	CPlayer* pPlayer = g_PlayerMng.GetPlayerBySerial( dpidUser );	
-	if( pPlayer == NULL )
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
+	CMclAutoLock	Lock2(g_GuildMng.m_AddRemoveLock);
+
+	CPlayer * pPlayer = g_PlayerMng.GetPlayerBySerial(dpidUser);
+	if (pPlayer == NULL)
 		return;
 
-	CGuild* pGuild = g_GuildMng.GetGuild( pPlayer->m_idGuild );
-	if( pGuild && pGuild->IsMaster( pPlayer->uKey ) )
-	{
-		if( pGuild->GetWar() )
-		{
-			SendDefinedText( TID_GAME_GUILDWARNOMEMBER, pPlayer->dpidCache, pPlayer->dpidUser, "" );
+	CGuild * pGuild = g_GuildMng.GetGuild(pPlayer->m_idGuild);
+	if (pGuild && pGuild->IsMaster(pPlayer->uKey)) {
+		if (pGuild->GetWar()) {
+			SendDefinedText(TID_GAME_GUILDWARNOMEMBER, pPlayer->dpidCache, pPlayer->dpidUser, "");
 			return;
 		}
-		memcpy( pGuild->m_adwPower, dwAuthority, sizeof(dwAuthority) );
-		g_dpCoreSrvr.SendGuildAuthority( pPlayer->m_idGuild, dwAuthority );
+
+		pGuild->m_aPower = dwAuthority;
+
+		g_dpCoreSrvr.SendGuildAuthority(pPlayer->m_idGuild, dwAuthority);
 
 		// GUILD DB AUTHORITY UPDATE
-		g_dpDatabaseClient.SendGuildAuthority( pPlayer->m_idGuild, pGuild->m_adwPower );
+		g_dpDatabaseClient.SendGuildAuthority(pPlayer->m_idGuild, dwAuthority);
 	}
 }
 
@@ -1355,7 +1349,7 @@ void CDPCacheSrvr::OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 
 void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	const auto [_playerId, _guildId, dwType, dwPenya] = ar.Extract<u_long, u_long, DWORD, DWORD>();
+	const auto [dwType, dwPenya] = ar.Extract<DWORD, DWORD>();
 
 	if (dwType >= MAX_GM_LEVEL) return;
 
@@ -1371,11 +1365,11 @@ void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	{
 		if( 0 <= dwPenya && dwPenya < 1000000 )
 		{
-			pGuild->m_adwPenya[dwType] = dwPenya;
+			pGuild->m_aPenya[dwType] = dwPenya;
 			g_dpCoreSrvr.SendGuildPenya( pPlayer->m_idGuild, dwType, dwPenya );
 			
 			// GUILD DB AUTHORITY UPDATE
-			g_dpDatabaseClient.SendGuildPenya( pPlayer->m_idGuild, pGuild->m_adwPenya );
+			g_dpDatabaseClient.SendGuildPenya( pPlayer->m_idGuild, pGuild->m_aPenya );
 		}
 		else
 		{
@@ -1426,7 +1420,7 @@ void CDPCacheSrvr::OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	CGuildMember* pMember1	= pGuild->GetMember( pMaster->uKey );
 	CGuildMember* pMember2	= pGuild->GetMember( idPlayer );
 
-	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, PF_LEVEL ) )	
+	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, GuildPower::Level ) )	
 	{
 		SendDefinedText( TID_GAME_GUILDAPPNOTWARRANT, pMaster->dpidCache, pMaster->dpidUser, "" );
 		return;

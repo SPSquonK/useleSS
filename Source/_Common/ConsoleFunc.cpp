@@ -194,12 +194,12 @@ void _world_height( std::vector< string >& arg )
 	gConsole()->Log( "==>OK.. Now the world height is %f(m)", fnewMax );
 }
 
-void _test_func( std::vector< string >& arg )
+void _test_func( std::vector< std::string >& arg )
 {
-	BOOL bAuthority = FALSE;
+	bool bAuthority = false;
 	CGuild* pGuild = g_pPlayer->GetGuild( );
 	if( pGuild )
-		bAuthority = pGuild->IsAuthority( g_pPlayer->m_idPlayer, PF_GUILDHOUSE_UPKEEP );
+		bAuthority = pGuild->IsAuthority( g_pPlayer->m_idPlayer, GuildPower::GuildHouseUpKeep);
 
 	if( !bAuthority )		//유지비 권한이 없으면 
 	{

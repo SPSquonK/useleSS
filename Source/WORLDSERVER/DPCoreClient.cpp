@@ -1224,7 +1224,7 @@ void CDPCoreClient::OnCreateGuild( CAr & ar, DPID, DPID, OBJID )
 	pGuild->m_idGuild	= idGuild;
 	lstrcpy( pGuild->m_szGuild, szGuild );
 	pGuild->m_idMaster		= info[0].idPlayer;
-	pGuild->m_adwPower[ GUD_MASTER ] = 0x000000FF;
+	pGuild->m_aPower[GUD_MASTER].SetAll();
 	idGuild	= g_GuildMng.AddGuild( pGuild );
 	if( idGuild > 0 )
 	{
@@ -1841,54 +1841,25 @@ void CDPCoreClient::OnGuildNoticeACk( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildAuthority( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long uGuildId;
-	DWORD dwAuthority[MAX_GM_LEVEL];
-	
-	ar >> uGuildId;
+void CDPCoreClient::OnGuildAuthority(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uGuildId, dwAuthority] = ar.Extract<u_long, GuildPowerss>();
 
-	ar.Read( dwAuthority, sizeof(dwAuthority) );
+	CGuild * const pGuild = g_GuildMng.GetGuild(uGuildId);
+	if (!pGuild) return;
 
-	CGuild* pGuild	= g_GuildMng.GetGuild( uGuildId );
-	if( pGuild )
-	{
-		memcpy( pGuild->m_adwPower, dwAuthority, sizeof(dwAuthority) );
-
-		CUser* pUser;
-		CGuildMember* pMember;
-		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-		{
-			pMember		= i->second;
-			pUser	= prj.GetUserByID( pMember->m_idPlayer );
-			if( IsValidObj(pUser) ) 
-				pUser->AddSetGuildAuthority( dwAuthority );
-		}
-	}
+	pGuild->m_aPower = dwAuthority;
+	pGuild->SendSnapshotNoTarget<SNAPSHOTTYPE_GUILD_AUTHORITY, GuildPowerss>(dwAuthority);
 }
 
-void CDPCoreClient::OnGuildPenya( CAr & ar, DPID, DPID, OBJID )
-{
-	u_long uGuildId;
-	DWORD dwType, dwPenya;
+void CDPCoreClient::OnGuildPenya(CAr & ar, DPID, DPID, OBJID) {
+	const auto [uGuildId, dwType, dwPenya] = ar.Extract<u_long, DWORD, DWORD>();
 
-	ar >> uGuildId;
-	ar >> dwType >> dwPenya;
+	CGuild * pGuild = g_GuildMng.GetGuild(uGuildId);
+	if (!pGuild) return;
 
-	CGuild* pGuild	= g_GuildMng.GetGuild( uGuildId );
-	if( pGuild )
-	{
-		pGuild->m_adwPenya[dwType] = dwPenya;
-		CUser* pUser;
-		CGuildMember* pMember;
-		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-		{
-			pMember		= i->second;
-			pUser	= prj.GetUserByID( pMember->m_idPlayer );
-			if( IsValidObj(pUser) ) 
-				pUser->AddSetGuildPenya( dwType, dwPenya );
-		}
-	}
+	pGuild->m_aPenya[dwType] = dwPenya;
+
+	pGuild->SendSnapshotNoTarget<SNAPSHOTTYPE_GUILD_PENYA, DWORD, DWORD>(dwType, dwPenya);
 }
 
 void CDPCoreClient::OnGuildRealPenya( CAr & ar, DPID, DPID, OBJID )
