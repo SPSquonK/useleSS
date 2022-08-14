@@ -2476,7 +2476,6 @@ void CDbManager::UpdateGuildNotice( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryGuild( szQuery, info);
 
-	SQLINTEGER cbLen = SQL_NTS;
 	if( !pQuery->BindParameter( 1, szNotice, MAX_BYTE_NOTICE - 1 ) )
 	{
 		FreeRequest( lpDbOverlappedPlus );
@@ -2911,7 +2910,6 @@ void CDbManager::AddGuildVote( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 			 g_appInfo.dwSys, idGuild, 0, 0);
 
 	std::array<bool, 6> bOK;
-	SQLINTEGER cbLen = SQL_NTS;
 	bOK[0] = pQuery->BindParameter( 1, szTitle, MAX_BYTE_VOTETITLE);
 	bOK[1] = pQuery->BindParameter( 2, szQuestion, MAX_BYTE_VOTEQUESTION);
 	bOK[2] = pQuery->BindParameter( 3, szSelections[0], MAX_BYTE_VOTESELECT);
@@ -3253,7 +3251,6 @@ void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 	char szQuery[QUERY_SIZE]	= { 0,};
 	sprintf(szQuery, "{call TAG_STR('A1', '%07d', '%02d', '%07d', ?)}", idTo, g_appInfo.dwSys, idFrom);
 
-	SQLINTEGER cbLen = SQL_NTS;
 	if (!qry->BindParameter(1, szString, 256)) {
 		return;
 	}
@@ -4008,7 +4005,6 @@ BOOL CDbManager::OnWantedQuery( CQuery* pQuery, WANTED_QUERYINFO& info )
 			"{call WANTED_STR('%s', '%07d', '%02d', '%d', ?)}", 
              info.pszType, info.idPlayer, g_appInfo.dwSys, info.nGold );
 
-	SQLINTEGER cbLen = SQL_NTS;
 	if( !pQuery->BindParameter( 1, info.szMsg, WANTED_MSG_MAX ) )
 		return FALSE;
 
@@ -5216,8 +5212,6 @@ void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		char szQuery[QUERY_SIZE]	= { 0,};
 		CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
-
-		SQLINTEGER cbLen	= SQL_NTS;
 
 		if( !pQuery->BindParameter( 1, pMail->m_szTitle, 128)
 			|| !pQuery->BindParameter( 2, pMail->m_szText, 1024) )

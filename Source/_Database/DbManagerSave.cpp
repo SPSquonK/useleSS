@@ -163,7 +163,6 @@ int MAX_SAVEPARAM = 88;
 	
 	int nNumSkill = 0;
 	int nSlaughter = 0;
-	SQLINTEGER cbLen = SQL_NTS;
 	BOOL* bOK = new BOOL[MAX_SAVEPARAM];
 //	BOOL bOK[MAX_SAVEPARAM];
 //	qry->StartLogBindedParameters();
