@@ -111,16 +111,13 @@ public:
 	template<typename T>
 	requires (DatabasableType<T>)
 	BOOL BindParameter(SQLUSMALLINT parameterNumber,
-		SQLSMALLINT inputOutputType,
 		SQLSMALLINT valueType,
 		SQLSMALLINT parameterType,
 		SQLUINTEGER columnSize,
-		SQLSMALLINT decimalDigits,
 		T * parameterValuePtr,
-		SQLINTEGER bufferLength,
 		SQLINTEGER * strLen_or_IndPtr) {
-		return BindParameterImpl(parameterNumber, inputOutputType, valueType, parameterType, columnSize, decimalDigits,
-			parameterValuePtr, bufferLength, strLen_or_IndPtr);
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, valueType, parameterType, columnSize, 0,
+			parameterValuePtr, 0, strLen_or_IndPtr);
 	}
 	
 	BOOL MoreResults( void );
