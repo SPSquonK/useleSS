@@ -226,7 +226,7 @@ int MAX_SAVEPARAM = 88;
 #ifdef __JEFF_9_20
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMute );
 #else	// __JEFF_9_20
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_LONG, SQL_INTEGER,   0, &pMover->m_dwFlyTime, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwFlyTime );
 #endif	// __JEFF_9_20
 	long dwState	= static_cast<long>(pMover->m_RTMessenger.GetState());
 	bOK[++j] = qry->BindParameter( ++i, &dwState );
@@ -273,7 +273,7 @@ int MAX_SAVEPARAM = 88;
 	#ifdef __EVENT_1101_2
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nEventFlag );
 	#else // __EVENT_1101_2
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_LONG, SQL_INTEGER,   0, &pMover->m_dwEventFlag, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventFlag );
 	#endif // __EVENT_1101_2
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventTime );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventElapsed );
