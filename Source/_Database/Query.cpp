@@ -5,6 +5,8 @@
 #include "..\monitor\dbmanager.h"
 #endif	// __MONITORSRVR
 
+SQLINTEGER CQuery::sqlNts = SQL_NTS;
+
 extern "C"
 {
 	#include "des.h"

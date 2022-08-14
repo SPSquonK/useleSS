@@ -2476,7 +2476,7 @@ void CDbManager::UpdateGuildNotice( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 	DBQryGuild( szQuery, info);
 
 	SQLINTEGER cbLen = SQL_NTS;
-	if( pQuery->BindParameter( 1, SQL_C_CHAR, SQL_VARCHAR, 127, szNotice, &cbLen ) == FALSE )
+	if( pQuery->BindParameter( 1, szNotice, MAX_BYTE_NOTICE - 1 ) == FALSE )
 	{
 		FreeRequest( lpDbOverlappedPlus );
 		return;
@@ -2911,12 +2911,12 @@ void CDbManager::AddGuildVote( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 
 	BOOL bOK[6];
 	SQLINTEGER cbLen = SQL_NTS;
-	bOK[0] = pQuery->BindParameter( 1, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTETITLE, szTitle, &cbLen );
-	bOK[1] = pQuery->BindParameter( 2, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTEQUESTION, szQuestion, &cbLen );
-	bOK[2] = pQuery->BindParameter( 3, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, szSelections[0], &cbLen );
-	bOK[3] = pQuery->BindParameter( 4, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, szSelections[1], &cbLen );
-	bOK[4] = pQuery->BindParameter( 5, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, szSelections[2], &cbLen );
-	bOK[5] = pQuery->BindParameter( 6, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, szSelections[3], &cbLen );
+	bOK[0] = pQuery->BindParameter( 1, szTitle, MAX_BYTE_VOTETITLE);
+	bOK[1] = pQuery->BindParameter( 2, szQuestion, MAX_BYTE_VOTEQUESTION);
+	bOK[2] = pQuery->BindParameter( 3, szSelections[0], MAX_BYTE_VOTESELECT);
+	bOK[3] = pQuery->BindParameter( 4, szSelections[1], MAX_BYTE_VOTESELECT);
+	bOK[4] = pQuery->BindParameter( 5, szSelections[2], MAX_BYTE_VOTESELECT);
+	bOK[5] = pQuery->BindParameter( 6, szSelections[3], MAX_BYTE_VOTESELECT);
 	
 	u_long idVote = 0;
 	if( bOK[0] && bOK[1] && bOK[2] && bOK[3] && bOK[4] && bOK[5] )
@@ -3258,7 +3258,7 @@ void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 	sprintf(szQuery, "{call TAG_STR('A1', '%07d', '%02d', '%07d', ?)}", idTo, g_appInfo.dwSys, idFrom);
 
 	SQLINTEGER cbLen = SQL_NTS;
-	if (qry->BindParameter(1, SQL_C_CHAR, SQL_VARCHAR, 256, szString, &cbLen) == FALSE) {
+	if (qry->BindParameter(1, szString, 256) == FALSE) {
 		return;
 	}
 
@@ -4013,7 +4013,7 @@ BOOL CDbManager::OnWantedQuery( CQuery* pQuery, WANTED_QUERYINFO& info )
              info.pszType, info.idPlayer, g_appInfo.dwSys, info.nGold );
 
 	SQLINTEGER cbLen = SQL_NTS;
-	if( !pQuery->BindParameter( 1, SQL_C_CHAR, SQL_VARCHAR, WANTED_MSG_MAX, info.szMsg, &cbLen ) )
+	if( !pQuery->BindParameter( 1, info.szMsg, WANTED_MSG_MAX ) )
 		return FALSE;
 
 	if( !pQuery->Exec( szQeury ) )
@@ -5223,8 +5223,8 @@ void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 
 		SQLINTEGER cbLen	= SQL_NTS;
 
-		if( pQuery->BindParameter( 1, SQL_C_CHAR, SQL_VARCHAR, 128, (void*)pMail->m_szTitle, &cbLen ) == FALSE
-			|| pQuery->BindParameter( 2, SQL_C_CHAR, SQL_VARCHAR, 1024, (void*)pMail->m_szText, &cbLen ) == FALSE )
+		if( pQuery->BindParameter( 1, pMail->m_szTitle, 128) == FALSE
+			|| pQuery->BindParameter( 2, pMail->m_szText, 1024) == FALSE )
 		{
 			Error( "QUERY: PACKETTYPE_QUERYPOSTMAIL" );
 			CDPTrans::GetInstance()->SendPostMail( FALSE, idReceiver, pMail );

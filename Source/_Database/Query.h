@@ -9,6 +9,8 @@
 
 class CQuery {
 public:
+	static SQLINTEGER sqlNts;
+
 	struct Credentials {
 		char Name[256] = "";
 		char Id[256]   = "";
@@ -102,22 +104,14 @@ public:
 	const char * GetStrPtr(int nCol) const;
 	const char * GetStrPtr(const char * sCol) const;
 
-	// List of accepted type by the SQL API. You may add some missing integral types.
-	// Do NOT add std::string and CString.
-	template <typename T>
-	static constexpr bool DatabasableType =
-		sqktd::IsOneOf<T, void, char>;
-
-	template<typename T>
-	requires (DatabasableType<T>)
+	template<SQLSMALLINT ParameterType = SQL_VARCHAR>
+	requires ((ParameterType == SQL_VARCHAR || ParameterType == SQL_CHAR))
 	BOOL BindParameter(SQLUSMALLINT parameterNumber,
-		SQLSMALLINT valueType,
-		SQLSMALLINT parameterType,
-		SQLUINTEGER columnSize,
-		T * parameterValuePtr,
-		SQLINTEGER * strLen_or_IndPtr) {
-		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, valueType, parameterType, columnSize, 0,
-			parameterValuePtr, 0, strLen_or_IndPtr);
+		char * parameterValuePtr,
+		SQLUINTEGER columnSize = 0
+	) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, SQL_C_CHAR, ParameterType, columnSize, 0,
+			parameterValuePtr, 0, &sqlNts);
 	}
 
 	template<typename IntegerType>

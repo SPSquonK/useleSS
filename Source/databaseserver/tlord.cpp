@@ -698,7 +698,7 @@ BOOL CLController::SetPledge( u_long idPlayer, const char* szPledge )
 	IElection* pElection	= m_pLord->GetElection();
 	sprintf( szQuery, "{call uspElectionSetPledge( %d, %d, %d, ? )}", g_appInfo.dwSys, pElection->GetId(), idPlayer );
 	SQLINTEGER cbLen	= SQL_NTS;
-	if( !GetQueryObject()->BindParameter( 1, SQL_C_CHAR, SQL_VARCHAR, CCandidate::nMaxPledgeLen, const_cast<char*>( szPledge ), &cbLen ) )
+	if( !GetQueryObject()->BindParameter( 1, const_cast<char*>( szPledge ), CCandidate::nMaxPledgeLen ) )
 		return FALSE;
 	return GetQueryObject()->Exec( szQuery );
 }
