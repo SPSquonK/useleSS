@@ -25,6 +25,7 @@
 #include "GuildHouseDBCtrl.h"
 
 #include "CampusDBCtrl.h"
+#include "sqktd.h"
 
 #if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816) || defined(__ITEM_REMOVE_LIST)
 #define	MAX_QUERY_SIZE	1024 * 64
@@ -2476,7 +2477,7 @@ void CDbManager::UpdateGuildNotice( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 	DBQryGuild( szQuery, info);
 
 	SQLINTEGER cbLen = SQL_NTS;
-	if( pQuery->BindParameter( 1, szNotice, MAX_BYTE_NOTICE - 1 ) == FALSE )
+	if( !pQuery->BindParameter( 1, szNotice, MAX_BYTE_NOTICE - 1 ) )
 	{
 		FreeRequest( lpDbOverlappedPlus );
 		return;
@@ -2909,7 +2910,7 @@ void CDbManager::AddGuildVote( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 		     "{call GUILD_VOTE_STR('A1', '%02d', '%06d', %d, ?, ?, ?, ?, ?, ?, %d)}",
 			 g_appInfo.dwSys, idGuild, 0, 0);
 
-	BOOL bOK[6];
+	std::array<bool, 6> bOK;
 	SQLINTEGER cbLen = SQL_NTS;
 	bOK[0] = pQuery->BindParameter( 1, szTitle, MAX_BYTE_VOTETITLE);
 	bOK[1] = pQuery->BindParameter( 2, szQuestion, MAX_BYTE_VOTEQUESTION);
@@ -2919,14 +2920,9 @@ void CDbManager::AddGuildVote( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 	bOK[5] = pQuery->BindParameter( 6, szSelections[3], MAX_BYTE_VOTESELECT);
 	
 	u_long idVote = 0;
-	if( bOK[0] && bOK[1] && bOK[2] && bOK[3] && bOK[4] && bOK[5] )
-	{
-		if( pQuery->Exec( szQuery ) )
-		{
-			if( pQuery->Fetch() )
-			{
-				idVote = (u_long)pQuery->GetInt( "m_idVote" );
-			}
+	if (sqktd::ranges::all_are(bOK, true)) {
+		if (pQuery->Exec(szQuery) && pQuery->Fetch()) {
+			idVote = (u_long)pQuery->GetInt("m_idVote");
 		}
 	}
 	// 성공이던지, 실패이던지 패킷을 보낸다.
@@ -3258,7 +3254,7 @@ void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 	sprintf(szQuery, "{call TAG_STR('A1', '%07d', '%02d', '%07d', ?)}", idTo, g_appInfo.dwSys, idFrom);
 
 	SQLINTEGER cbLen = SQL_NTS;
-	if (qry->BindParameter(1, szString, 256) == FALSE) {
+	if (!qry->BindParameter(1, szString, 256)) {
 		return;
 	}
 
@@ -5223,8 +5219,8 @@ void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 
 		SQLINTEGER cbLen	= SQL_NTS;
 
-		if( pQuery->BindParameter( 1, pMail->m_szTitle, 128) == FALSE
-			|| pQuery->BindParameter( 2, pMail->m_szText, 1024) == FALSE )
+		if( !pQuery->BindParameter( 1, pMail->m_szTitle, 128)
+			|| !pQuery->BindParameter( 2, pMail->m_szText, 1024) )
 		{
 			Error( "QUERY: PACKETTYPE_QUERYPOSTMAIL" );
 			CDPTrans::GetInstance()->SendPostMail( FALSE, idReceiver, pMail );

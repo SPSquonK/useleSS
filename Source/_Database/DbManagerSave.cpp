@@ -304,7 +304,7 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j]	= qry->BindParameter( ++i, &idCampus );
 	for( i=0; i<j; ++i )
 	{
-		if( bOK[i] == FALSE )
+		if( !bOK[i] )
 		{
 			char szBuffer[128];
 			sprintf( szBuffer, "SavePlayer(%s) - %dth bindparam error - %d", pMover->m_szName, i+1, ::GetCurrentThreadId() );
@@ -371,15 +371,13 @@ int MAX_SAVEPARAM = 88;
 			DBQryAddBankSave( szQuery, info );
 			
 			{
-				SQLINTEGER cbLen = SQL_NTS;
-				BOOL bOK[7];
-				bOK[0] = qry->BindParameter( 1, (char*)info.pszBank, 4290 );
-				bOK[1] = qry->BindParameter( 2, (char*)info.pszBankIndex, 215 );
-				bOK[2] = qry->BindParameter( 3, (char*)info.pszObjIndexBank, 215 );
-				bOK[3] = qry->BindParameter( 4, &info.dwGoldBank );
-				bOK[4] = qry->BindParameter( 5, (char*)info.pszExtBank, 2000 );
-				bOK[5] = qry->BindParameter( 6, (char*)info.pszPirecingBank, 7800 );
-				bOK[6] = qry->BindParameter( 7, (char*)info.pszBankPet, 2689 );
+				qry->BindParameter( 1, (char*)info.pszBank, 4290 );
+				qry->BindParameter( 2, (char*)info.pszBankIndex, 215 );
+				qry->BindParameter( 3, (char*)info.pszObjIndexBank, 215 );
+				qry->BindParameter( 4, &info.dwGoldBank );
+				qry->BindParameter( 5, (char*)info.pszExtBank, 2000 );
+				qry->BindParameter( 6, (char*)info.pszPirecingBank, 7800 );
+				qry->BindParameter( 7, (char*)info.pszBankPet, 2689 );
 			}
 
 			if( FALSE == qry->Exec( szQuery ) )
@@ -405,19 +403,16 @@ int MAX_SAVEPARAM = 88;
 		p.tExpirationDate	= aPocket[i].tExpirationDate;
 
 		MakeQueryPocket( szQuery, p );
-		SQLINTEGER	cbLen	= SQL_NTS;
-		BOOL	bOk[9];
 
-		bOk[0]	= qry->BindParameter( 1, &i );
-		bOk[1]	= qry->BindParameter( 2, (char*)p.pszItem    , 4290);
-		bOk[2]	= qry->BindParameter( 3, (char*)p.pszIndex   , 215);
-		bOk[3]	= qry->BindParameter( 4, (char*)p.pszObjIndex, 215);
-		bOk[4]	= qry->BindParameter( 5, (char*)p.pszExt     , 2000);
-		bOk[5]	= qry->BindParameter( 6, (char*)p.pszPiercing, 7800);
-		bOk[6]	= qry->BindParameter( 7, (char*)p.pszPet     , 2689);
-		bOk[7]	= qry->BindParameter( 8, &p.bExpired );
-		bOk[8]	= qry->BindParameter( 9, &p.tExpirationDate );
-
+		qry->BindParameter( 1, &i );
+		qry->BindParameter( 2, (char*)p.pszItem    , 4290);
+		qry->BindParameter( 3, (char*)p.pszIndex   , 215);
+		qry->BindParameter( 4, (char*)p.pszObjIndex, 215);
+		qry->BindParameter( 5, (char*)p.pszExt     , 2000);
+		qry->BindParameter( 6, (char*)p.pszPiercing, 7800);
+		qry->BindParameter( 7, (char*)p.pszPet     , 2689);
+		qry->BindParameter( 8, &p.bExpired );
+		qry->BindParameter( 9, &p.tExpirationDate );
 
 		if( !qry->Exec( szQuery ) )
 		{

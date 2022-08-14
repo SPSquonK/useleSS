@@ -218,7 +218,7 @@ namespace	post	{
 			char szQuery[QUERY_SIZE]	= {0, };
 			CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
 			SQLINTEGER cbLen	= SQL_NTS;
-			BOOL bOk	= pQuery->BindParameter( 1, pMail->m_szTitle, 128 )
+			bool bOk	= pQuery->BindParameter( 1, pMail->m_szTitle, 128 )
 				&& pQuery->BindParameter( 2, pMail->m_szText, 1024 );
 			if( bOk )
 				bOk		= pQuery->Exec( szQuery );

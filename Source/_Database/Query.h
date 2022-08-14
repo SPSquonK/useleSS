@@ -106,7 +106,7 @@ public:
 
 	template<SQLSMALLINT ParameterType = SQL_VARCHAR>
 	requires ((ParameterType == SQL_VARCHAR || ParameterType == SQL_CHAR))
-	BOOL BindParameter(SQLUSMALLINT parameterNumber,
+	bool BindParameter(SQLUSMALLINT parameterNumber,
 		char * parameterValuePtr,
 		SQLUINTEGER columnSize = 0
 	) {
@@ -116,7 +116,7 @@ public:
 
 	template<typename IntegerType>
 		requires (sqktd::IsOneOf<std::remove_volatile_t<IntegerType>, int, unsigned int, long, unsigned long>)
-	BOOL BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
+	bool BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
 		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT,
 			SQL_C_LONG, SQL_INTEGER, 0, 0, valuePtr, 0, 0
 		);
@@ -124,7 +124,7 @@ public:
 
 	template<typename FloatType>
 		requires (sqktd::IsOneOf<std::remove_volatile_t<FloatType>, float>)
-	BOOL BindParameter(SQLUSMALLINT parameterNumber, FloatType * valuePtr) {
+	bool BindParameter(SQLUSMALLINT parameterNumber, FloatType * valuePtr) {
 		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT,
 			SQL_C_FLOAT, SQL_REAL, 0, 0, valuePtr, 0, 0
 		);
@@ -132,7 +132,7 @@ public:
 
 	template<typename IntegerType>
 		requires (sqktd::IsOneOf<std::remove_volatile_t<IntegerType>, long long>)
-	BOOL BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
+	bool BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
 		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT,
 			SQL_C_SBIGINT, SQL_BIGINT, 0, 0, valuePtr, 0, 0
 		);
