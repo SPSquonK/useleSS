@@ -45,7 +45,7 @@ namespace sqktd {
 
 	namespace ranges {
 		template<typename Collection>
-		[[nodiscard]] constexpr bool all_are(const Collection & col, const typename Collection::value_type & value) {
+		[[nodiscard]] constexpr bool all_are(const Collection & collection, const typename Collection::value_type & value) {
 			return std::ranges::all_of(collection, [&](const auto & value_) { return value_ == value; });
 		}
 	}
