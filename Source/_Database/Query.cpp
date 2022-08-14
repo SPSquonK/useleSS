@@ -141,7 +141,7 @@ BOOL CQuery::Connect(int Type, const char *ConStr, const char *UID, const char *
 	return TRUE;
 }
 
-BOOL CQuery::BindParameter(SQLUSMALLINT parameterNumber,
+BOOL CQuery::BindParameterImpl(SQLUSMALLINT parameterNumber,
                            SQLSMALLINT inputOutputType,
                            SQLSMALLINT valueType,
                            SQLSMALLINT parameterType,

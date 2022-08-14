@@ -5,6 +5,8 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <type_traits>
+#include "sqktd.h"
 
 class CQuery {
 public:
@@ -101,7 +103,36 @@ public:
 	const char * GetStrPtr(int nCol) const;
 	const char * GetStrPtr(const char * sCol) const;
 
+	// List of accepted type by the SQL API. You may add some missing integral types.
+	// Do NOT add std::string and CString.
+	template <typename T>
+	static constexpr bool DatabasableType =
+		sqktd::IsOneOf<T, void, int, unsigned int, char, float, long long, unsigned long, long>;
+
+	template<typename T>
+	requires (DatabasableType<T>)
 	BOOL BindParameter(SQLUSMALLINT parameterNumber,
+		SQLSMALLINT inputOutputType,
+		SQLSMALLINT valueType,
+		SQLSMALLINT parameterType,
+		SQLUINTEGER columnSize,
+		SQLSMALLINT decimalDigits,
+		T * parameterValuePtr,
+		SQLINTEGER bufferLength,
+		SQLINTEGER * strLen_or_IndPtr) {
+		return BindParameterImpl(parameterNumber, inputOutputType, valueType, parameterType, columnSize, decimalDigits,
+			parameterValuePtr, bufferLength, strLen_or_IndPtr);
+	}
+	
+	BOOL MoreResults( void );
+	
+
+	void WriteLogFile(const char *strLog,...);
+	static BOOL EnableConnectionPooling();
+
+	private:
+		
+	BOOL BindParameterImpl(SQLUSMALLINT parameterNumber,
                            SQLSMALLINT inputOutputType,
                            SQLSMALLINT valueType,
                            SQLSMALLINT parameterType,
@@ -110,12 +141,6 @@ public:
                            SQLPOINTER  parameterValuePtr,
                            SQLINTEGER bufferLength,
                            SQLINTEGER *strLen_or_IndPtr);
-	
-	BOOL MoreResults( void );
-	
-
-	void WriteLogFile(const char *strLog,...);
-	static BOOL EnableConnectionPooling();
 };
 // TODO: 모듈 분리 
 // 암호화된 토큰을 해독해서 패스워드로 얻는다.
