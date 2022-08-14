@@ -114,6 +114,18 @@ public:
 			parameterValuePtr, 0, &sqlNts);
 	}
 
+	bool BindParameter(SQLUSMALLINT parameterNumber, CString & string) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 0, 0,
+			const_cast<CHAR *>(string.GetString()), 0, &sqlNts
+		);
+	}
+
+	bool BindParameter(SQLUSMALLINT parameterNumber, std::string & string) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 0, 0,
+			const_cast<char *>(string.c_str()), 0, &sqlNts
+		);
+	}
+
 	template<typename IntegerType>
 		requires (sqktd::IsOneOf<std::remove_volatile_t<IntegerType>, int, unsigned int, long, unsigned long>)
 	bool BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
