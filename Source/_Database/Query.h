@@ -106,7 +106,7 @@ public:
 	// Do NOT add std::string and CString.
 	template <typename T>
 	static constexpr bool DatabasableType =
-		sqktd::IsOneOf<T, void, int, unsigned int, char, float, long long, unsigned long, long>;
+		sqktd::IsOneOf<T, void, char, float, long long>;
 
 	template<typename T>
 	requires (DatabasableType<T>)
@@ -118,6 +118,14 @@ public:
 		SQLINTEGER * strLen_or_IndPtr) {
 		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, valueType, parameterType, columnSize, 0,
 			parameterValuePtr, 0, strLen_or_IndPtr);
+	}
+
+	template<typename IntegerType>
+	requires (sqktd::IsOneOf<std::remove_volatile_t<IntegerType>, int, unsigned int, long, unsigned long>)
+	BOOL BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT,
+			SQL_C_LONG, SQL_INTEGER, 0, 0, valuePtr, 0, 0
+		);
 	}
 	
 	BOOL MoreResults( void );
