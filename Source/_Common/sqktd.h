@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <type_traits>
 
 namespace sqktd {
   template<typename InputIt, typename UnaryPredicate>

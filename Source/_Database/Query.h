@@ -5,7 +5,6 @@
 #include <array>
 #include <memory>
 #include <optional>
-#include <type_traits>
 #include "sqktd.h"
 
 class CQuery {
