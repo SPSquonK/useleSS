@@ -171,9 +171,9 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, &nSlot );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwWorldID );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwIndex );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0 , &pMover->m_vPos.x, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0 , &pMover->m_vPos.y, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0 , &pMover->m_vPos.z, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.x );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.y );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.z );
 	bOK[++j] = qry->BindParameter( ++i, SQL_C_CHAR,  SQL_VARCHAR,  32, pMover->m_szCharacterKey, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwSkinSet );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHairMesh );
@@ -181,9 +181,9 @@ int MAX_SAVEPARAM = 88;
 	// 1
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHeadMesh );
 	bOK[++j] = qry->BindParameter( ++i, &nSex );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0, &pMover->m_vScale.x, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vScale.x );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMotion );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0, &pMover->m_fAngle, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_fAngle );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nHitPoint );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nManaPoint );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFatiguePoint );
@@ -197,17 +197,17 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDex );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nInt );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nLevel );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_SBIGINT, SQL_BIGINT, 0, &pMover->m_nExp1, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_SBIGINT, SQL_BIGINT, 0, &nExp2, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nExp1 );
+	bOK[++j] = qry->BindParameter( ++i, &nExp2 );
 	bOK[++j] = qry->BindParameter( ++i, SQL_C_CHAR, SQL_VARCHAR,   500, JobSkill, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_C_CHAR, SQL_VARCHAR,   500, LicenseSkill, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_C_CHAR, SQL_VARCHAR,   500, JobLv, &cbLen );
 	// 3
 	bOK[++j] = qry->BindParameter( ++i, &nExpertLv );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idMarkingWorld );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0, &pMover->m_vMarkingPos.x, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0, &pMover->m_vMarkingPos.y, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_FLOAT, SQL_REAL,     0, &pMover->m_vMarkingPos.z, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.x );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.y );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.z );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nRemainGP );
 	bOK[++j] = qry->BindParameter( ++i, &nRemainLP );
 	int nTutorialState	= pMover->GetTutorialState();
@@ -221,7 +221,7 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idparty );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idMurderer );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFame );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_SBIGINT, SQL_BIGINT, 0, &pMover->m_nDeathExp, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDeathExp );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDeathLevel );
 #ifdef __JEFF_9_20
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMute );
@@ -268,17 +268,17 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwReturnWorldID );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSkillPoint );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSkillLevel );
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_SBIGINT, SQL_BIGINT, 0, &nSkillExp, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &nSkillExp );
 #ifdef __EVENT_1101
 	#ifdef __EVENT_1101_2
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_SBIGINT, SQL_BIGINT,  0, &pMover->m_nEventFlag, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nEventFlag );
 	#else // __EVENT_1101_2
 	bOK[++j] = qry->BindParameter( ++i, SQL_C_LONG, SQL_INTEGER,   0, &pMover->m_dwEventFlag, 0 );
 	#endif // __EVENT_1101_2
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventTime );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventElapsed );
 #endif	// __EVENT_1101
-	bOK[++j] = qry->BindParameter( ++i, SQL_C_SBIGINT, SQL_BIGINT, 0, &pMover->m_nAngelExp, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelExp );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelLevel );
 	bOK[++j] = qry->BindParameter( ++i, SQL_C_CHAR,  SQL_VARCHAR,  2000, icsInventory.szPet, &cbLen );
 	bOK[++j] = qry->BindParameter( ++i, SQL_C_CHAR,  SQL_VARCHAR,  2000, icsBank[pMover->m_nSlot].szPet, &cbLen );
