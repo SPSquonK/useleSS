@@ -17,14 +17,12 @@ public:
 class CWndGuildTabApp : public CWndNeuz {
 public:
 	void UpdateData();
-	void EnableButton(BOOL bEnable);
 	CWndGuildTabApp();
 
 	GuildPowerss m_aPowers;
 	std::unique_ptr<CWndGuildPayConfirm> m_pWndGuildPayConfirm;
 	CWndStatic * m_pWndPenya[MAX_GM_LEVEL];
 
-	void SetData(const GuildPowerss & dwPower);
 	void SetPenya();
 
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
@@ -35,5 +33,8 @@ public:
 private:
 	void ForEachPower(std::invocable<UINT, int, GuildPower> auto func);
 	void ForEachPower(std::invocable<CWndButton &, int, GuildPower> auto func);
+
+	void SetData(const GuildPowerss & dwPower);
+	void EnableButton(BOOL bEnable);
 };
 
