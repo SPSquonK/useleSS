@@ -3248,16 +3248,11 @@ void CWndWorld::OnInitialUpdate()
 	m_texLvDn2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
 
 
-	int i = 0;
-	for( i=0; i<prj.m_aPropAddSkill.GetSize(); i++ )
-	{
-		AddSkillProp* pAddSkill = prj.m_aPropAddSkill.GetAt(i);
+	for (const AddSkillProp & pAddSkill : prj.m_aPropAddSkill) {
 
-		if( pAddSkill )
-		{
-			if( pAddSkill->dwSkillTime != -1 )
+		if( pAddSkill.dwSkillTime != -1 )
 			{
-				ItemProp* pItem = prj.GetSkillProp(pAddSkill->dwName);
+				ItemProp* pItem = prj.GetSkillProp(pAddSkill.dwName);
 
 				if( pItem )
 				{
@@ -3267,22 +3262,16 @@ void CWndWorld::OnInitialUpdate()
 					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
 				}
 			}
-		}
+
 	}
 
-	for( i=0; i<prj.m_aPartySkill.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = prj.m_aPartySkill.GetAt(i);
-		
-		if( pItemProp )
-		{
-			if( pItemProp->dwSkillTime != -1 )
+	for (const ItemProp & pItemProp : prj.m_aPartySkill) {
+			if( pItemProp.dwSkillTime != -1 )
 			{
 				BUFFSKILL buffskill;
-				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp->szIcon ), 0xffff00ff );
-				m_pBuffTexture[1].emplace(pItemProp->dwID, buffskill);
+				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
+				m_pBuffTexture[1].emplace(pItemProp.dwID, buffskill);
 			}
-		}
 	}
 
 	for (const ItemProp & pItemProp : prj.m_aPropItem) {
@@ -3359,7 +3348,7 @@ void CWndWorld::OnInitialUpdate()
 	
 	// 아이콘 텍스쳐 로딩
 	CString str;
-	for( i=0; i<CUSTOM_LOGO_MAX; i++ )
+	for( int i=0; i<CUSTOM_LOGO_MAX; i++ )
 	{
 		str.Format( "Icon_CloakSLogo%02d.jpg", i+1 );
 		
