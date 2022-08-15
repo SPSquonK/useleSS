@@ -4,166 +4,60 @@
 
 const DWORD NULL_ID	= 0xffffffff;
 
-template <class T> class CFixedArray
+template <class T> class CFixedArray final
 {
-protected:
-	LPBYTE	m_pData;
-	LPBYTE* m_apOffset;
-	int m_nCurOffset;
-	int m_nCurNum;
-	int m_nMaxByte;
-	int m_nMaxIndex;
-
-	int m_nEndByte;
-	int m_nEndIndex;
+private:
+	std::vector<T> m_data;
+	std::vector<size_t> m_offsets;
 
 public:
 	CFixedArray();
 	
-	virtual	~CFixedArray();
-	int  GetSize() { return m_nMaxIndex; }
-	void SetSize( int nNum, int nMaxIndex );
-	void Add( T* pData, int nSize = 0 );
-	void SetAtGrow( int nIndex, T* pData, int nSize = 0 );
-	T* GetAt( DWORD dwIndex );
+	int  GetSize() { return static_cast<int>(m_data.size()); }
+	void SetAtGrow(size_t nIndex, const T * pData);
+	T * GetAt(DWORD dwIndex);
 	void Optimize();
-	void RemoveAll();
+	void RemoveAll() { *this = CFixedArray(); }
 };
-template <class T> inline CFixedArray<T>::CFixedArray( )
-{
-	m_pData = NULL;
-	m_apOffset = NULL;
-	m_nEndByte = 0;
-	m_nEndIndex = -1;
-	SetSize( 100, 100 );
-}
-template <class T> inline CFixedArray<T>::~CFixedArray( )
-{
-	SAFE_DELETE_ARRAY( m_apOffset );
-	SAFE_DELETE_ARRAY( m_pData ); 
-}
-template <class T> inline void CFixedArray<T>::RemoveAll()
-{
-	SAFE_DELETE_ARRAY( m_apOffset );
-	SAFE_DELETE_ARRAY( m_pData ); 
-	m_pData = NULL;
-	m_apOffset = NULL;
-	m_nEndByte = 0;
-	m_nEndIndex = -1;
-	SetSize( 100, 100 );
+
+template <class T> inline CFixedArray<T>::CFixedArray() {
+	m_data.reserve(100);
+	m_offsets.reserve(100);
 }
 
-// nNum = 총갯수 
-// nMaxIndex = 색인 갯수 
-// 0 = data,  5 = data일 경우 nMaxIndex는 0~5까지 총 6이 되며,
-// nMaxNum는 0,2 총 2개가 된다. 
-// 초기값은 100, 100으로 지정되어 있다.
-template <class T> inline void CFixedArray<T>::SetSize( int nMaxNum, int nMaxIndex )
-{
-	m_pData = new BYTE[ sizeof( T ) * nMaxNum ];
-	m_apOffset = new LPBYTE [ nMaxIndex ];
-	ZeroMemory( m_apOffset, sizeof( LPBYTE ) * nMaxIndex );
-	m_nMaxByte = sizeof( T ) * nMaxNum;
-	m_nMaxIndex = nMaxIndex;
-	m_nCurOffset = 0;
-	m_nCurNum = 0;
+template <class T> inline T * CFixedArray<T>::GetAt(DWORD dwIndex) {
+	if (dwIndex >= m_offsets.size()) return nullptr;
+
+	const auto offset = m_offsets[dwIndex];
+	if (offset == NULL_ID) return nullptr;
+
+	return &m_data[offset];
 }
-template <class T> inline T* CFixedArray<T>::GetAt( DWORD dwIndex )
-{
-	if( dwIndex >= (DWORD)m_nMaxIndex )
-		return NULL;
-	return (T*) m_apOffset[ dwIndex ];
+
+template <class T> void CFixedArray<T>::Optimize() {
+	m_data.shrink_to_fit();
+	m_offsets.shrink_to_fit();
 }
-template <class T> inline void CFixedArray<T>::Add( T* pData, int nSize )
+
+template <class T> void CFixedArray<T>::SetAtGrow( size_t nIndex, const T * pData )
 {
-	SetAtGrow( m_nCurNum, pData, nSize );
-	m_nCurNum++;
-}
-template <class T> void CFixedArray<T>::Optimize()
-{
-	if( m_nMaxIndex >= m_nEndIndex )
-	{
-		m_nMaxIndex = m_nEndIndex + 1;
-		LPBYTE* apOffset = new LPBYTE [ m_nMaxIndex ]; 
-		memcpy( apOffset, m_apOffset, sizeof( LPBYTE ) * m_nMaxIndex ); 
-		SAFE_DELETE_ARRAY( m_apOffset );
-		m_apOffset = apOffset;
-	}
-	if( m_nMaxByte > m_nCurOffset )
-	{
-		LPBYTE pData = new BYTE[ m_nCurOffset ]; 
-		memcpy( pData, m_pData, m_nCurOffset ); 
-		for( int i = 0; i <= m_nEndIndex; i++ )
-			if( m_apOffset[ i ] )
-				m_apOffset[ i ] = ( m_apOffset[ i ] - m_pData ) + pData; 
-		SAFE_DELETE_ARRAY( m_pData );
-		m_pData = pData;
-		m_nMaxByte = m_nCurOffset ;
-	}
-}
-/*
-template <class T> void CFixedArray<T>::SetAt( int nIndex, T* pData, int nSize )
-{
-	if( nIndex < m_nMaxIndex )
-		SetAtGrow( nIndex, pData, nSize );
-	else
-		ASSERT( 0 );
-}*/
-template <class T> void CFixedArray<T>::SetAtGrow( int nIndex, T* pData, int nSize )
-{
-	if( nIndex >= m_nMaxIndex )
-	{
-		LPBYTE* apOffset = new LPBYTE [ nIndex * 2 ]; // 두배 확장 
-		ZeroMemory( apOffset, sizeof( LPBYTE ) * nIndex * 2 ); // 초기화 
-		memcpy( apOffset, m_apOffset, sizeof( LPBYTE ) * ( m_nEndIndex + 1 ) ); // 복사 
-		SAFE_DELETE_ARRAY( m_apOffset );
-		m_apOffset = apOffset;
-		m_nMaxIndex = nIndex * 2;
-	}
-	int nSizeTemp 
-		= nSize ? nSize : sizeof( T );
-	if( m_nCurOffset + nSizeTemp > m_nMaxByte )
-	{
-		m_nMaxByte = m_nCurOffset * 2 + nSizeTemp;
-		LPBYTE pData2 = new BYTE[ m_nMaxByte ]; // 두배 확장 
-		memcpy( pData2, m_pData, m_nCurOffset ); // 복사 
-		for( int i = 0; i <= m_nEndIndex; i++ )
-			if( m_apOffset[ i ] )
-				m_apOffset[ i ] = ( m_apOffset[ i ] - m_pData ) + pData2; 
-		SAFE_DELETE_ARRAY( m_pData );
-		m_pData = pData2;
-	}
-	// 사이즈 자체에 변동이 없는 경우임( T 사이즈가 유지되는 경우 )
-	if( nSize == 0 )
-	{
-		if( m_apOffset[ nIndex ] == NULL )
-		{
-			memcpy( &m_pData[ m_nCurOffset ], pData, sizeof( T ) );
-			m_apOffset[ nIndex ] = (LPBYTE) m_pData + m_nCurOffset;
-			m_nCurOffset += sizeof( T );
+	if (nIndex < m_offsets.size()) {
+		if (m_offsets[nIndex] == NULL_ID) {
+			const size_t offset = m_data.size();
+			T & data = m_data.emplace_back();
+			std::memcpy(&data, pData, sizeof(T));
+			m_offsets[nIndex] = offset;
+		} else {
+			std::memcpy(&m_data[m_offsets[nIndex]], pData, sizeof(T));
 		}
-		else
-		{
-			memcpy( m_apOffset[ nIndex ], pData, sizeof( T ) );
-		}
+	} else {
+		if (nIndex != 0) m_offsets.resize(nIndex - 1, NULL_ID);
+
+		const size_t offset = m_data.size();
+		T & data = m_data.emplace_back();
+		std::memcpy(&data, pData, sizeof(T));
+		m_offsets.emplace_back(offset);
 	}
-	// 각 구조체의 사이즈가 변경됨. ex) 스트링의 길이에 따라서.
-	else
-	{
-		if( m_apOffset[ nIndex ] == NULL )
-		{
-			memcpy( &m_pData[ m_nCurOffset ], pData, nSize );
-			m_apOffset[ nIndex ] = (LPBYTE) m_pData + m_nCurOffset;
-			m_nCurOffset += nSize;
-		}
-		else
-		{
-			// 사이즈가 변경되는 구조에서는 인덱스 내용을 바꾸면 안됨.
-			WriteLog( "%s, %d", __FILE__, __LINE__ );
-		}
-	}
-	if( nIndex > m_nEndIndex )
-		m_nEndIndex = nIndex;
 }
 
 typedef	__int64	EXPINTEGER;
