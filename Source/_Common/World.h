@@ -2,6 +2,7 @@
 #define __WORLD_2002_1_22
 
 #include <boost/container/small_vector.hpp>
+#include "ExistingObjects.h"
 
 #ifdef __LAYER_1015
 #define	ADDOBJ( pObj, bAddItToGlobalId, nLayer )	AddObj( (pObj), (bAddItToGlobalId), (nLayer) )
@@ -206,9 +207,8 @@ public:
 	CLinkMap		m_linkMap;
 #endif	// __LAYER_1015
 
-	u_long			m_dwObjNum;
-	CCtrl*			m_apObject[MAX_DYNAMICOBJ];	// dynamic 객체를 담는다.		// 312k
-	CDWordStack		m_ObjStack;
+
+	ExistingObjects<CObj, MAX_DYNAMICOBJ> m_Objs;
 
 	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
 
@@ -243,7 +243,7 @@ public:
 	BOOL			PreremoveObj( OBJID objid );
 	CObj*			PregetObj( OBJID objid );
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}
-	DWORD			GetObjCount() { return m_dwObjNum; }
+	// DWORD			GetObjCount() { return m_dwObjNum; }
 	void			OnDie(CUser * pDie, CUser * pAttacker);
 	void			_OnDie( void );
 	CMover*			FindMover( LPCTSTR szName );
@@ -592,7 +592,7 @@ private:
 	BOOL	HasNobody_Process( int nLayer );
 	BOOL	HasNoObj_Add( int nLayer );
 	[[nodiscard]] bool HasNobody_Replace(int nLayer) const;
-	BOOL	IsLayerPlayer( CObj* pObj, int nLayer );
+	[[nodiscard]] static bool IsLayerPlayer(CObj * pObj, int nLayer);
 
 public:
 	void	Invalidate( int nLayer, BOOL bInvalid = TRUE )	{	m_linkMap.Invalidate( nLayer, bInvalid );	}

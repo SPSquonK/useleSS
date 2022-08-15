@@ -5027,25 +5027,21 @@ void CUserMng::ReplaceWorldArea( u_long idParty, DWORD dwWorldId, DWORD dwReplac
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	if( pWorld )
 	{
-		for( int i = 0; i < (int)( pWorld->m_dwObjNum ); i++ )
-		{
-			CObj* pObj	= pWorld->m_apObject[i];
-			if( IsValidObj( pObj ) && pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->IsPlayer() && ( (CMover*)pObj )->m_idparty == idParty )
-			{
-				CUser* pUser	= (CUser*)pObj;
-				if( bDieFlag )
-				{
-					if( pUser->IsDie() )
+		for (CObj * pObj : pWorld->m_Objs.Range()) {
+			if (IsValidObj(pObj) && pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPlayer() && ((CMover *)pObj)->m_idparty == idParty) {
+				CUser * pUser = (CUser *)pObj;
+				if (bDieFlag) {
+					if (pUser->IsDie())
 						continue;
 				}
 
-				D3DXVECTOR3 vPos	= pUser->GetPos();
-				AddCreateSfxObj( pUser, XI_GEN_WEARF, vPos.x, vPos.y, vPos.z );
-				float fNewArea	= fArea * 2.0f;
-				fReplaceX += (-fArea) + xRandomF( fNewArea );
-				fReplaceZ += (-fArea) + xRandomF( fNewArea );
-				pUser->REPLACE( g_uIdofMulti, dwReplaceWorldId, D3DXVECTOR3( fReplaceX, 0.0f, fReplaceZ ), REPLACE_NORMAL, nLayer );
-				AddCreateSfxObj( (CMover*)pUser, XI_GEN_WEARF, fReplaceX, vPos.y, fReplaceZ );
+				D3DXVECTOR3 vPos = pUser->GetPos();
+				AddCreateSfxObj(pUser, XI_GEN_WEARF, vPos.x, vPos.y, vPos.z);
+				float fNewArea = fArea * 2.0f;
+				fReplaceX += (-fArea) + xRandomF(fNewArea);
+				fReplaceZ += (-fArea) + xRandomF(fNewArea);
+				pUser->REPLACE(g_uIdofMulti, dwReplaceWorldId, D3DXVECTOR3(fReplaceX, 0.0f, fReplaceZ), REPLACE_NORMAL, nLayer);
+				AddCreateSfxObj((CMover *)pUser, XI_GEN_WEARF, fReplaceX, vPos.y, fReplaceZ);
 			}
 		}
 	}

@@ -258,11 +258,8 @@ BOOL CWorld::LoadPatrol()
 #ifdef __LAYER_1021
 void CWorld::DeleteLayerControls( int nLayer )
 {
-	CObj* pObj;
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		pObj	= m_apObject[i];
-		if( pObj && pObj->GetType() == OT_CTRL && pObj->GetLayer() == nLayer )
+	for (CObj * pObj : m_Objs.Range()) {
+		if( pObj->GetType() == OT_CTRL && pObj->GetLayer() == nLayer )
 			pObj->Delete();
 	}
 }
@@ -1185,13 +1182,13 @@ BOOL CWorld::HasNobody( int nLayer )
 	return TRUE;
 }
 
-BOOL CWorld::HasNobody_Process( int nLayer )
-{
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		if( IsLayerPlayer( m_apObject[i], nLayer ) )
+BOOL CWorld::HasNobody_Process(int nLayer) {
+	for (CObj * pObj : m_Objs.Range()) {
+		if (IsLayerPlayer(pObj, nLayer)) {
 			return FALSE;
+		}
 	}
+
 	return TRUE;
 }
 
@@ -1209,19 +1206,17 @@ bool CWorld::HasNobody_Replace(const int nLayer) const {
 	return g_WorldMng.HasNobody_Replace(GetID(), nLayer);
 }
 
-BOOL CWorld::IsLayerPlayer( CObj* pObj, int nLayer )
-{
-	return ( pObj && pObj->GetLayer() == nLayer && pObj->GetType() == OT_MOVER && static_cast<CMover*>( pObj )->IsPlayer() );
+bool CWorld::IsLayerPlayer(CObj * pObj, int nLayer) {
+	return (pObj && pObj->GetLayer() == nLayer && pObj->GetType() == OT_MOVER && static_cast<CMover *>(pObj)->IsPlayer());
 }
 
 void CWorld::DriveOut( int nLayer )
 {
 #ifdef __WORLDSERVER
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		if( IsLayerPlayer( m_apObject[i], nLayer ) )
+	for (CObj * pObj : m_Objs.Range()) {
+		if( IsLayerPlayer( pObj, nLayer ) )
 		{
-			CUser* pUser	= static_cast<CUser*>( m_apObject[i] );
+			CUser* pUser	= static_cast<CUser*>(pObj);
 			switch( GetID() )
 			{
 				case WI_WORLD_MINIROOM : CHousingMng::GetInstance()->GoOut( pUser ); break;
@@ -1255,11 +1250,11 @@ BOOL CWorld::ReleaseLayer( int nLayer )
 
 void CWorld::DestroyObj( int nLayer )
 {
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		CObj* pObj	= m_apObject[i];
-		if( pObj && pObj->GetLayer() == nLayer )
-			DestroyObj( pObj );
+	for (size_t i = 0; i != m_Objs.realSize; ++i) {
+		CObj * pObj = m_Objs.objects[i];
+		if (pObj && pObj->GetLayer() == nLayer) {
+			DestroyObj(pObj);
+		}
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////

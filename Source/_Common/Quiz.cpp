@@ -319,11 +319,10 @@ void CQuiz::Process()
 				CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 				if( pWorld )
 				{
-					for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-					{
-						if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
-						{
-							static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WAIT_QUESTION ) );
+
+					for (CObj * pObj : pWorld->m_Objs.Range()) {
+						if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
+							static_cast<CUser *>(pObj)->AddQuizEventMessage(prj.GetText(TID_GAME_QUIZ_WAIT_QUESTION));
 							bAble = TRUE;
 							++nUser;
 						}
@@ -354,12 +353,11 @@ void CQuiz::Process()
 			CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 			if( pWorld )
 			{
-				for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-				{
-					if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
+				for (CObj * pObj : pWorld->m_Objs.Range()) {
+					if(IsPlayerOnLayer(pObj, nDefaultLayer ) )
 					{
-						static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_QUESTION ), QE_QUESTION );
-						static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizQuestion( GetType(), it->strQuestion, m_dwQuestionTime / SEC(1) );
+						static_cast<CUser *>(pObj)->AddQuizEventMessage(prj.GetText(TID_GAME_QUIZ_QUESTION), QE_QUESTION);
+						static_cast<CUser *>(pObj)->AddQuizQuestion( GetType(), it->strQuestion, m_dwQuestionTime / SEC(1) );
 					}
 				}
 			}
@@ -430,12 +428,10 @@ void CQuiz::Process()
 			CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 			if( pWorld )
 			{
-				for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-				{
-					if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
-					{
-						static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( str_Message, QE_CORRECT_ANSWER );
-						static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( strMessage );
+				for (CObj * pObj : pWorld->m_Objs.Range()) {
+					if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
+						static_cast<CUser *>(pObj)->AddQuizEventMessage(str_Message, QE_CORRECT_ANSWER);
+						static_cast<CUser *>(pObj)->AddQuizEventMessage(strMessage);
 					}
 				}
 			}
@@ -465,12 +461,10 @@ void CQuiz::Process()
 				CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 				if( pWorld )
 				{
-					for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-					{
-						if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
-						{
-							static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WATCHINGZONE_OPEN ), QE_WATCHINGZONE_OPEN );
-							static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_TELEPORT_QUIZZONE ) );
+					for (CObj * pObj : pWorld->m_Objs.Range()) {
+						if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
+							static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WATCHINGZONE_OPEN ), QE_WATCHINGZONE_OPEN );
+							static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_TELEPORT_QUIZZONE ) );
 						}
 					}
 				}
@@ -502,13 +496,12 @@ void CQuiz::Process()
 			CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 			if( pWorld )
 			{
-				for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-				{
-					if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
-					{
-						static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WAIT_QUESTION ) );
+
+				for (CObj * pObj : pWorld->m_Objs.Range()) {
+					if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
+						static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WAIT_QUESTION ) );
 						//if( static_cast<CUser*>( pWorld->m_apObject[i] )->IsAuthHigher( AUTH_GAMEMASTER ) == FALSE )
-						if( GetZoneType( static_cast<CMover*>( pWorld->m_apObject[i] ) ) == ZONE_QUIZ )
+						if( GetZoneType( static_cast<CMover*>( pObj ) ) == ZONE_QUIZ )
 						{
 							bAble = TRUE;
 							++nUser;
@@ -540,18 +533,17 @@ void CQuiz::DropOutWrongUser( int nQuizId, int nCorrect, int nItemId, int nItemN
 	CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 	if( pWorld )
 	{
-		for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-		{
-			if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
-			{
+
+		for (CObj * pObj : pWorld->m_Objs.Range()) {
+			if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 				if( m_bSelectLog )
 				{
-					int nSelect = GetUserSelectExample( static_cast<CUser*>( pWorld->m_apObject[i] ) );
+					int nSelect = GetUserSelectExample( static_cast<CUser*>( pObj ) );
 					if( nSelect )
-						g_dpDBClient.SendQuizEventSelect( static_cast<CUser*>( pWorld->m_apObject[i] )->m_idPlayer, g_uIdofMulti, nQuizId, nSelect, nCorrect );
+						g_dpDBClient.SendQuizEventSelect( static_cast<CUser*>( pObj )->m_idPlayer, g_uIdofMulti, nQuizId, nSelect, nCorrect );
 				}
-				static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_DROP_OUT ), QE_DROP_OUT );
-				if( PtInCorrectZoneRect( static_cast<CUser*>( pWorld->m_apObject[i] ), nCorrect ) )
+				static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_DROP_OUT ), QE_DROP_OUT );
+				if( PtInCorrectZoneRect( static_cast<CUser*>( pObj ), nCorrect ) )
 				{
 					++nCorrectUser;
 					// 091014 - mirchang : 시스템 부하 발생 가능성이 있어 보류
@@ -577,14 +569,13 @@ void CQuiz::DropOutWrongUser( int nQuizId, int nCorrect, int nItemId, int nItemN
 		strMessage.Format( prj.GetText( TID_GAME_QUIZ_WINNERCOUNT ), nCorrectUser );
 		if( pWorld )
 		{
-			for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-			{
-				if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
-				{
-					static_cast<CUser*>( pWorld->m_apObject[i] )->AddQuizEventMessage( strMessage, QE_CLOSE_WAIT );
+
+			for (CObj * pObj : pWorld->m_Objs.Range()) {
+				if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
+					static_cast<CUser*>( pObj )->AddQuizEventMessage( strMessage, QE_CLOSE_WAIT );
 					// 스크립트에 정해진 아이템 지급
-					if( PtInCorrectZoneRect( static_cast<CUser*>( pWorld->m_apObject[i] ), nCorrect ) )
-						g_dpDBClient.SendPostPrizeItem( static_cast<CUser*>( pWorld->m_apObject[i] )->m_idPlayer, m_dwPrizeItemId, m_nPrizeItemNum );
+					if( PtInCorrectZoneRect( static_cast<CUser*>( pObj ), nCorrect ) )
+						g_dpDBClient.SendPostPrizeItem( static_cast<CUser*>( pObj )->m_idPlayer, m_dwPrizeItemId, m_nPrizeItemNum );
 				}
 			}
 			g_dpDBClient.SendQuizEventState( QE_WINNER, g_uIdofMulti, nCorrectUser, m_nQuizCount );
@@ -636,13 +627,11 @@ int CQuiz::GetUserSelectExample( CUser* pUser )
 	return 0;
 }
 
-BOOL CQuiz::IsInQuizEventPlayer( CWorld* pWorld, int nLayer, int nIndex )
-{
-	if( pWorld->m_apObject[nIndex] && pWorld->m_apObject[nIndex]->GetType() == OT_MOVER && 
-		static_cast<CMover*>( pWorld->m_apObject[nIndex] )->IsPlayer()  && pWorld->m_apObject[nIndex]->GetLayer() == nLayer)
-		return TRUE;
-	
-	return FALSE;
+bool CQuiz::IsPlayerOnLayer(const CObj * const pObj, int nLayer) {
+	return pObj
+		&& pObj->GetType() == OT_MOVER
+		&& static_cast<const CMover *>(pObj)->IsPlayer()
+		&& pObj->GetLayer() == nLayer;
 }
 
 void CQuiz::GoOut( CUser* pUser )
@@ -664,10 +653,10 @@ void CQuiz::CloseQuizEvent()
 	CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 	if( pWorld )
 	{
-		for( DWORD i = 0; i < pWorld->m_dwObjNum; ++i )
-		{
-			if( IsInQuizEventPlayer( pWorld, nDefaultLayer, i ) )
-				GoOut( static_cast<CUser*>( pWorld->m_apObject[i] ) );
+		for (CObj * pObj : pWorld->m_Objs.Range()) {
+			if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
+				GoOut(static_cast<CUser *>(pObj));
+			}
 		}
 	}
 }
