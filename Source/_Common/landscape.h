@@ -148,9 +148,11 @@ public:
 	DWORD				m_dwVersion;
 	CPtrArray			m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
 	BOOL				m_abPatchRendered[NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE];
+	
 	CObj**				m_apObject [ MAX_OBJARRAY ];
 	DWORD				m_adwObjNum[ MAX_OBJARRAY ];
 	CDWordStack			m_aObjStack[ MAX_OBJARRAY ];
+
 	CTexture			m_texMiniMap;
 	CPatch				m_aPatches[NUM_PATCHES_PER_SIDE][NUM_PATCHES_PER_SIDE];	// 패치 배열
 	CObj**				m_apObjLink[MAX_LINKTYPE][MAX_LINKLEVEL];

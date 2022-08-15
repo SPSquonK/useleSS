@@ -208,6 +208,8 @@ public:
 
 	u_long			m_dwObjNum;
 	CCtrl*			m_apObject[MAX_DYNAMICOBJ];	// dynamic 객체를 담는다.		// 312k
+	CDWordStack		m_ObjStack;
+
 	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
 
 //	CRIT_SEC		m_csModifyLink;
@@ -223,7 +225,6 @@ public:
 	BOOL			m_bAddItToGlobalId[MAX_ADDOBJS];		// 80k
 
 	TCHAR			m_lpszWorld[64];
-	CDWordStack		m_ObjStack;
 	u_long			m_cbUser;
 #ifdef __LAYER_1021
 	CLayerdRespawner	m_respawner;
