@@ -1,91 +1,8 @@
-#ifndef __DATA_H
-#define __DATA_H
-
 #pragma once
 
 #include "debug.h"
 
 const DWORD NULL_ID	= 0xffffffff;
-
-
-template <class T> class CStack
-{
-protected:
-	T*	m_pBlock;
-	int	m_nSize;
-	int	m_nGrowSize;
-	int	m_nTop;
-
-public:
-	CStack( int nSize = 1024, int nGrowSize = 1024 );
-	
-	virtual	~CStack() { SAFE_DELETE_ARRAY( m_pBlock );	}
-
-	void	SetSize( int nSize, int nGrowSize = 1024 );
-	int		GetSize() { return m_nSize; }
-	int		GetCount( void ) { return m_nTop; }
-	void	Push( T data );
-	T	    Pop( void );
-	T	    Peek( void );
-	void	Clear() { m_nTop = 0; }
-	BOOL	IsFull( void )	{ return ( m_nTop >= m_nSize ); }
-	BOOL	IsEmpty( void )	{ return ( m_nTop == 0 ); }
-};
-template <class T> inline CStack<T>::CStack( int nSize, int nGrowSize )
-{
-	m_nTop = 0;
-	m_nGrowSize		= nGrowSize;
-	m_pBlock	= new T[m_nSize = nSize];
-}
-
-template <class T> inline void CStack<T>::SetSize( int nSize, int nGrowSize )
-{
-	m_nTop	= 0;
-	SAFE_DELETE_ARRAY( m_pBlock );
-	m_nGrowSize		= nGrowSize;
-	m_pBlock	= new T[m_nSize = nSize];
-}
-
-template <class T> inline void CStack<T>::Push( T data )
-{
-//	ASSERT( m_nTop < m_nSize );
-	if( m_nTop >= m_nSize )
-	{
-		WriteLog( "%s, %d", __FILE__, __LINE__ );
-		return;
-	}
-	m_pBlock[m_nTop++]	= data;
-
-	if( IsFull() && m_nGrowSize > 0 )
-	{
-		T* pOld	= m_pBlock;
-		m_pBlock = new T[m_nSize + m_nGrowSize];
-		memcpy( m_pBlock, pOld, m_nTop * sizeof(T) );
-		SAFE_DELETE_ARRAY( pOld );
-		m_nSize		+= m_nGrowSize;
-	}
-}
-
-template <class T> inline T CStack<T>::Pop( void )
-{
-//	ASSERT( m_nTop );
-	if( m_nTop < 1 )
-	{
-		WriteLog( "%s, %d", __FILE__, __LINE__ );
-	}
-	return m_pBlock[--m_nTop];
-}
-
-template <class T> inline T CStack<T>::Peek( void )
-{
-//	ASSERT( m_nTop );
-	if( m_nTop < 1 )
-	{
-		WriteLog( "%s, %d", __FILE__, __LINE__ );
-	}
-	return m_pBlock[m_nTop - 1];
-}
-
 
 template <class T> class CFixedArray
 {
@@ -279,4 +196,3 @@ namespace SAI79
 	enum	ePropType 	{ NO_PROP = 0, FIRE, WATER, ELECTRICITY, WIND, EARTH, END_PROP };
 } // namespace SAI79
 
-#endif
