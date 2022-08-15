@@ -3838,21 +3838,20 @@ BOOL CProject::IsGuildQuestRegion( const D3DXVECTOR3 & vPos )
 //LoadPropItem�� ȣ���ϰ� ��ó���� �Ѵ�.
 void CProject::OnAfterLoadPropItem()
 {
-	for( int i = 0; i < m_aPropItem.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = (ItemProp*)m_aPropItem.GetAt( i );
-		if( pItemProp && pItemProp->dwFlag == NULL_ID )
-			pItemProp->dwFlag = 0;
+	for (ItemProp & pItemProp : m_aPropItem) {
 
-		if( pItemProp && pItemProp->dwItemKind3 != NULL_ID )
+		if( pItemProp.dwFlag == NULL_ID )
+			pItemProp.dwFlag = 0;
+
+		if( pItemProp.dwItemKind3 != NULL_ID )
 		{
-			m_itemKindAry[ pItemProp->dwItemKind3 ].Add( pItemProp );
+			m_itemKindAry[ pItemProp.dwItemKind3 ].Add( &pItemProp );
 
-			switch( pItemProp->dwItemKind3 )
+			switch( pItemProp.dwItemKind3 )
 			{
 			case IK3_EVENTMAIN:
 			case IK3_BINDS:
-				pItemProp->dwFlag |= IP_FLAG_BINDS;
+				pItemProp.dwFlag |= IP_FLAG_BINDS;
 				break;
 			}
 		}

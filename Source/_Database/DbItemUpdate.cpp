@@ -50,6 +50,7 @@ void CDbManager::ItemUpdateThread( void )
 
 void CDbManager::ChangeItemUpdate( CQuery* pQuery )
 {
+	// TODO: is it actually used?
 	char szSQL[4096] = {0,};
 	
 	sprintf( szSQL, "ITEM_STR 'D1'" );
@@ -60,9 +61,8 @@ void CDbManager::ChangeItemUpdate( CQuery* pQuery )
 		return;		
 	}
 
-	for( int i = 0; i < prj.m_aPropItem.GetSize(); i++ )
-	{
-		ItemProp* pItemProp =  prj.GetItemProp( i );
+	for (const ItemProp & itemProp : prj.m_aPropItem) {
+		const ItemProp* pItemProp =  &itemProp;
 		if( pItemProp && pItemProp->dwItemKind3 != IK3_VIRTUAL && pItemProp->dwID != 0 )
 		{
 			CString	strItem	= pItemProp->szName;
@@ -125,6 +125,7 @@ void CDbManager::ChangeItemUpdate( CQuery* pQuery )
 
 void CDbManager::ChangeSkillUpdate( CQuery* pQuery )
 {
+	// TODO: is it actually used?
 	char szSQL[1024] = {0,};
 	
 	sprintf( szSQL, "ITEM_STR 'D2'" );
@@ -135,15 +136,13 @@ void CDbManager::ChangeSkillUpdate( CQuery* pQuery )
 		return;		
 	}
 	
-	for( int i = 0; i < prj.m_aPropSkill.GetSize(); i++ )
-	{
-		ItemProp* pSkillProp =  prj.GetSkillProp( i );
-		if( pSkillProp && pSkillProp->dwID != 0 )
+	for (const ItemProp & pSkillProp : prj.m_aPropSkill) {
+		if( pSkillProp.dwID != 0 )
 		{
-			CString strSkill	= pSkillProp->szName;
+			CString strSkill	= pSkillProp.szName;
 			strSkill.Replace( "'", " " );
 			sprintf( szSQL, "ITEM_STR 'I2', %d,'%s','',%d",
-				pSkillProp->dwID, strSkill, pSkillProp->dwItemJob );
+				pSkillProp.dwID, strSkill, pSkillProp.dwItemJob );
 			if( FALSE == pQuery->Exec( szSQL ) )
 			{
 				WriteLog( szSQL );

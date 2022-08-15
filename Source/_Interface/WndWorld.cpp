@@ -3285,50 +3285,47 @@ void CWndWorld::OnInitialUpdate()
 		}
 	}
 
-	for( i=0; i<prj.m_aPropItem.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = (ItemProp*)prj.m_aPropItem.GetAt(i);
-		
-		if( pItemProp )
-		{
-			if( pItemProp->dwSkillTime != -1 
+	for (const ItemProp & pItemProp : prj.m_aPropItem) {
+			if( pItemProp.dwSkillTime != -1 
 #ifdef __DST_GIFTBOX
-				|| pItemProp->dwDestParam[0] == DST_GIFTBOX || pItemProp->dwDestParam[1] == DST_GIFTBOX || pItemProp->dwDestParam[2] == DST_GIFTBOX 
+				|| pItemProp.dwDestParam[0] == DST_GIFTBOX
+				|| pItemProp.dwDestParam[1] == DST_GIFTBOX
+				|| pItemProp.dwDestParam[2] == DST_GIFTBOX 
 #endif // __DST_GIFTBOX
-				|| pItemProp->dwItemKind3 == IK3_EGG
-				|| pItemProp->dwItemKind3 == IK3_PET
+				|| pItemProp.dwItemKind3 == IK3_EGG
+				|| pItemProp.dwItemKind3 == IK3_PET
 			)
 			{
 
 				BUFFSKILL buffskill;
 
-				CString strIcon	= pItemProp->szIcon;
-				if( pItemProp->dwItemKind3 == IK3_EGG && pItemProp->dwID != II_PET_EGG )
+				CString strIcon	= pItemProp.szIcon;
+				if( pItemProp.dwItemKind3 == IK3_EGG && pItemProp.dwID != II_PET_EGG )
 				{
 					strIcon.Replace( ".", "_00." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 0 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 0 ), buffskill );
 					strIcon.Replace( "0.", "1." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 1 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 1 ), buffskill );
 					strIcon.Replace( "1.", "2." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 2 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 2 ), buffskill );
 				}
 				else
 				{
 #ifdef __DST_GIFTBOX
-					if(pItemProp->dwDestParam[0] == DST_GIFTBOX || pItemProp->dwDestParam[1] == DST_GIFTBOX || pItemProp->dwDestParam[2] == DST_GIFTBOX)
+					if(pItemProp.dwDestParam[0] == DST_GIFTBOX || pItemProp.dwDestParam[1] == DST_GIFTBOX || pItemProp.dwDestParam[2] == DST_GIFTBOX)
 						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
 					else
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #else //__DST_GIFTBOX
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #endif //__DST_GIFTBOX
-					m_pBuffTexture[2].emplace( pItemProp->dwID, buffskill );
+					m_pBuffTexture[2].emplace( pItemProp.dwID, buffskill );
 				}
 			}
-		}
+
 	}
 
 	switch( m_rectWindow.Width() )
