@@ -2989,13 +2989,11 @@ void CWndWorld::RenderAltimeter()
 //	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
 	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			D3DXVECTOR3 vPos = pObj->GetPos();
-			if( fHigh1 < vPos.y ) fHigh1 = vPos.y;
-			if( fLow1 > vPos.y ) fLow1 = vPos.y;
+			if (fHigh1 < vPos.y) fHigh1 = vPos.y;
+			if (fLow1 > vPos.y) fLow1 = vPos.y;
 		}
-		END_OBJ
 	}
 	END_LAND
 
@@ -3043,8 +3041,7 @@ void CWndWorld::RenderAltimeter()
 //	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
 	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			CMover* pMover = (CMover*) pObj;
 			/*
 			if( g_WndMng.m_nObjectFilter == OBJFILTER_PLAYER && pMover->IsPlayer() == FALSE )
@@ -3076,7 +3073,6 @@ void CWndWorld::RenderAltimeter()
 				CPoint( rect.left + 5, rect.bottom - y ), 
 				dwColor	);
 		}
-		END_OBJ
 	}
 	END_LAND
 

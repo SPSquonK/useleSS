@@ -500,7 +500,7 @@ void CQuiz::Process()
 				for (CObj * pObj : pWorld->m_Objs.Range()) {
 					if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 						static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WAIT_QUESTION ) );
-						//if( static_cast<CUser*>( pWorld->m_apObject[i] )->IsAuthHigher( AUTH_GAMEMASTER ) == FALSE )
+
 						if( GetZoneType( static_cast<CMover*>( pObj ) ) == ZONE_QUIZ )
 						{
 							bAble = TRUE;

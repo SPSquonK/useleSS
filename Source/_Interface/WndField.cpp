@@ -3098,7 +3098,6 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 		////////////////////////////////////////////////////
 		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿? 
 		////////////////////////////////////////////////////
-		CObj* pObj;
 		int nIndex = 0;
 		int nPartyMap[ MAX_PTMEMBER_SIZE ];
 		CMover* apQuest[ 100 ];
@@ -3109,8 +3108,7 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 
 		FOR_LAND( pWorld, pLand, pWorld->m_nVisibilityLand, FALSE )
 		{
-			FOR_OBJ( pLand, pObj, OT_MOVER )
-			{
+			for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 //				BOOL bPartyMap = FALSE;
 				if( pObj != g_pPlayer )
 				{
@@ -3207,7 +3205,6 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 					}
 				}
 			}
-			END_OBJ
 		}
 		END_LAND
 		////////////////////////////////////////////////////////
@@ -3797,18 +3794,14 @@ BOOL CWndNavigator::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					m_wndMenuMover.DeleteAllMenu();
 					CWorld* pWorld	= g_WorldMng();
 					CLandscape* pLand;
-					CObj* pObj;
-					CWndButton* pWndButton;
 					int i = 0;
 
 					FOR_LAND( pWorld, pLand, pWorld->m_nVisibilityLand, FALSE )
 					{
-						FOR_OBJ( pLand, pObj, OT_MOVER )
-						{
-							pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
+						for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
+							CWndButton *pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
 							pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Object;
 						}
-						END_OBJ
 					}
 					END_LAND
 					m_wndMenuMover.Move( CPoint( rect.left - m_wndMenuMover.GetWindowRect().Width(), rect.top ) );
@@ -3907,25 +3900,21 @@ void CWndNavigator::OnRButtonDown(UINT nFlags, CPoint point)
 
 	m_wndMenuMover.DeleteAllMenu();
 	CLandscape* pLand;
-	CObj* pObj;
-	CWndButton* pWndButton;
 	int i = 0;
 
 	CMover* pMover = NULL;
 	int nTarget = 0;
 	FOR_LAND( pWorld, pLand, pWorld->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
-			pMover = ( CMover* )pObj;
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
+			CMover * pMover = ( CMover* )pObj;
 			if( !pMover->IsPlayer( ) && pMover->GetCharacter( ) )		//NPCï¿½Î°ï¿½ì¸? 
 			{
-				pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
+				CWndButton * pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
 				pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Object;
 				++nTarget;
 			}
 		}
-		END_OBJ
 	}
 	END_LAND
 
@@ -3979,17 +3968,15 @@ void CWndNavigator::OnLButtonDown(UINT nFlags, CPoint point)
 	int xCenter = (int)( vCenter.x );
 	int yCenter = (int)( - vCenter.z );
 	
-	CObj* pObj;
 	CLandscape* pLand;
 //	CWorld* pWorld	= g_WorldMng();
-	CMover *pMover;
+
 	FOR_LAND( pWorld, pLand, pWorld->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			if( pObj->GetType() == OT_MOVER )
 			{
-				pMover = (CMover *)pObj;
+				CMover * pMover = (CMover *)pObj;
 				if( pMover->IsMode( TRANSPARENT_MODE ) == FALSE )
 				{
 					vPos = pObj->GetPos();
@@ -4009,7 +3996,6 @@ void CWndNavigator::OnLButtonDown(UINT nFlags, CPoint point)
 				}
 			}
 		}
-		END_OBJ
 	}
 	END_LAND
 

@@ -41,6 +41,9 @@
 #define WTYPE_CLOUD 0x01
 #define WTYPE_WATER 0x02
 
+#include <array>
+#include "ExistingObjects.h"
+
 struct WATERVERTEX 
 { 
 	D3DXVECTOR3 p; 
@@ -149,9 +152,7 @@ public:
 	CPtrArray			m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
 	BOOL				m_abPatchRendered[NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE];
 	
-	CObj**				m_apObject [ MAX_OBJARRAY ];
-	DWORD				m_adwObjNum[ MAX_OBJARRAY ];
-	CDWordStack			m_aObjStack[ MAX_OBJARRAY ];
+	std::array<ExistingObjects<CObj, 5000>, MAX_OBJARRAY> m_apObjects;
 
 	CTexture			m_texMiniMap;
 	CPatch				m_aPatches[NUM_PATCHES_PER_SIDE][NUM_PATCHES_PER_SIDE];	// 패치 배열
@@ -189,7 +190,6 @@ public:
 	BOOL				RemoveObjLink( CObj* pObj );
 	BOOL				SetObjInLinkMap( D3DXVECTOR3 vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj );
 	CObj*				GetObjInLinkMap( D3DXVECTOR3 vPos, DWORD dwLinkType, int nLinkLevel );
-	int					GetObjArraySize();
 };
 
 void SetLODDetail( int nDetail );

@@ -731,7 +731,7 @@ void CWorld::Process()
 	
 	// 처리 프로세스 
 	CHECK1();
-	int i, j, k, l, x, y;
+	int i, j, k, x, y;
 	WorldPosToLand( m_pCamera->m_vPos, x, y );
 	CLandscape* pLand = NULL;
 	DWORD dwObjProcessNum = 0;
@@ -739,7 +739,6 @@ void CWorld::Process()
 	float	fLengthSq;
 	float	fFarSq = CWorld::m_fFarPlane / 2;
 	fFarSq *= fFarSq;
-	int		nNumObj;
 	CObj* pObj = NULL;
 	
 #ifdef _DEBUG
@@ -768,23 +767,20 @@ void CWorld::Process()
 				pLand = m_apLand[ i * m_nLandWidth + j ];
 				for( k = OT_ANI; k < MAX_OBJARRAY; k++ )
 				{
-					CObj** apObject = pLand->m_apObject[ idx[k] ];
-					nNumObj = pLand->m_adwObjNum[ idx[k] ];
-					for( l = 0; l < nNumObj; l++ )
-					{
-						if( *apObject && (*apObject)->IsDelete() == FALSE && (*apObject)->GetWorld() != NULL )
+					auto & apObject = pLand->m_apObjects[idx[k]];
+					for (CObj * pObj : apObject.Range()) {
+						if(pObj->IsDelete() == FALSE && pObj->GetWorld() != NULL )
 						{
-							vPos = (*apObject)->GetPos() - *pvCameraPos;
+							vPos = pObj->GetPos() - *pvCameraPos;
 							fLengthSq = D3DXVec3LengthSq( &vPos );
 							if( fLengthSq < fFarSq ) 
 							{
 							#ifdef _DEBUG
 								_nCnt ++;
 							#endif								
-								(*apObject)->Process();
+								pObj->Process();
 							}
 						}
-						apObject ++;
 					}
 				}
 			}
@@ -1825,13 +1821,11 @@ void CWorld::ProcessAllSfx( void )
 			if( LandInWorld( j, i ) && m_apLand[i * m_nLandWidth + j] )
 			{
 				CLandscape* pLand = m_apLand[i * m_nLandWidth + j];
-				CObj** apObject		= pLand->m_apObject[OT_SFX];
-				int nNumObj	= pLand->m_adwObjNum[OT_SFX];
-				for( int l = 0; l < nNumObj; l++ )
-				{
-					if( *apObject && (*apObject)->IsDelete() == FALSE && (*apObject)->GetWorld() != NULL )
-						(*apObject)->Process();
-					apObject++;
+
+				for (CObj * pObj : pLand->m_apObjects[OT_SFX].ValidObjs()) {
+					if (pObj->GetWorld()) {
+						pObj->Process();
+					}
 				}
 			}
 		}

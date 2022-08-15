@@ -903,25 +903,5 @@ extern CObj *GetLastPickObj( void );
 
 	#define END_LAND } } } } }
 
-	#define FOR_OBJARRAY( _pLand, _pObj ) { \
-		for( int _k = 0; _k < MAX_OBJARRAY; _k++ ) \
-		{ \
-			CObj** _apObjs = _pLand->m_apObject[ _k ]; \
-			for( int _l = 0; _l < int( _pLand->m_adwObjNum[ _k ] ); _l++ ) \
-			{ \
-				_pObj = _apObjs[ _l ]; \
-				if( IsValidObj( _pObj ) )  
-
-	#define END_OBJARRAY } } }
-
-	#define FOR_OBJ( _pLand, _pObj, _nType ) { \
-			CObj** _apObjs = _pLand->m_apObject[ _nType ]; \
-			for( int _l = 0; _l < int( _pLand->m_adwObjNum[ _nType ] ); _l++ ) \
-			{ \
-				_pObj = _apObjs[ _l ]; \
-				if( IsValidObj( _pObj ) )  
-
-	#define END_OBJ } }  
-
 #endif	// __WORLDSERVER
 #endif	// __WORLD_2002_1_22

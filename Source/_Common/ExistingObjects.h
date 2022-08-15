@@ -10,9 +10,12 @@ template<typename T, size_t MaxSize>
 class ExistingObjects {
 public:
 	std::array<T *, MaxSize> objects;
-	size_t realSize; // never decreases
+	size_t realSize = 0; // never decreases
 	std::stack<size_t> emptyPlaces;
 
+	ExistingObjects() {
+		objects.fill(nullptr);
+	}
 
 	auto Range() const {
 		return std::ranges::subrange(objects.begin(), objects.begin() + realSize)
@@ -21,6 +24,11 @@ public:
 
 	size_t Add(T * object);
 	bool Remove(T * object, size_t index);
+
+	auto ValidObjs() const {
+		return std::ranges::subrange(objects.begin(), objects.begin() + realSize)
+			| std::views::filter([](T * const ptr) { return IsValidObj(ptr); });
+	}
 };
 
 template<typename T, size_t MaxSize>

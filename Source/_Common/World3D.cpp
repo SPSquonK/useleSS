@@ -625,7 +625,8 @@ void CWorld::RenderObject( CD3DFont* pFont )
 
 		FOR_LAND( this, pLand, m_nVisibilityLand, FALSE )
 		{
-			FOR_OBJARRAY( pLand, pObj )
+			for (auto & apObjects : pLand->m_apObjects)
+			for (CObj * pObj : apObjects.ValidObjs())
 			{
 				// 거리를 계산하고, 거리에 따라 출력할 것과 안할 것을 구분한다.
 
@@ -735,7 +736,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					}
 				}
 			}
-			END_OBJARRAY
+
 		}
 		END_LAND
 		//END_LINKMAP

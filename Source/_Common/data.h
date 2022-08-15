@@ -87,8 +87,6 @@ template <class T> inline T CStack<T>::Peek( void )
 }
 
 
-typedef CStack<DWORD>  CDWordStack; 
-
 template <class T> class CFixedArray
 {
 protected:
