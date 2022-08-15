@@ -25,7 +25,8 @@ template <class T> inline CFixedArray<T>::CFixedArray() {
 	m_offsets.reserve(100);
 }
 
-template <class T> inline T * CFixedArray<T>::GetAt(DWORD dwIndex) {
+template <class T>
+inline T * CFixedArray<T>::GetAt(DWORD dwIndex) {
 	if (dwIndex >= m_offsets.size()) return nullptr;
 
 	const auto offset = m_offsets[dwIndex];
@@ -39,25 +40,22 @@ template <class T> void CFixedArray<T>::Optimize() {
 	m_offsets.shrink_to_fit();
 }
 
-template <class T> void CFixedArray<T>::SetAtGrow( size_t nIndex, const T * pData )
-{
-	if (nIndex < m_offsets.size()) {
-		if (m_offsets[nIndex] == NULL_ID) {
-			const size_t offset = m_data.size();
-			T & data = m_data.emplace_back();
-			std::memcpy(&data, pData, sizeof(T));
-			m_offsets[nIndex] = offset;
-		} else {
-			std::memcpy(&m_data[m_offsets[nIndex]], pData, sizeof(T));
-		}
-	} else {
-		if (nIndex != 0) m_offsets.resize(nIndex - 1, NULL_ID);
-
-		const size_t offset = m_data.size();
-		T & data = m_data.emplace_back();
-		std::memcpy(&data, pData, sizeof(T));
-		m_offsets.emplace_back(offset);
+template <class T>
+void CFixedArray<T>::SetAtGrow(const size_t nIndex, const T * const pData) {
+	if (nIndex >= m_offsets.size()) {
+		m_offsets.resize(nIndex, NULL_ID);
 	}
+
+	T * target;
+	if (m_offsets[nIndex] == NULL_ID) {
+		const size_t offset = m_data.size();
+		m_offsets[nIndex] = offset;
+		target = &m_data.emplace_back();
+	} else {
+		target = &m_data[m_offsets[nIndex]];
+	}
+
+	std::memcpy(target, pData, sizeof(T));
 }
 
 typedef	__int64	EXPINTEGER;
