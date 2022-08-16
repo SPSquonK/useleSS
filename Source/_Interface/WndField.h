@@ -266,8 +266,8 @@ class CWndNavigator : public CWndNeuz
 	CTexture   m_texArrow;
 	CTexture   m_texDunFog;
 	CTexturePack m_texNavObjs;
-	DWORD		 m_iFrame;
-	DWORD		 m_iPastTime;
+	DWORD		 m_iFrame = 0;
+	DWORD		 m_iPastTime = 0;
 	CTexturePack m_texNavPos;
 	inline void	 AccuFrame() { 
 		DWORD CurTime = g_tmCurrent;
@@ -279,32 +279,31 @@ class CWndNavigator : public CWndNeuz
 		if ( m_iFrame >= 4 )
 			m_iFrame = 0;
 	};
-	void RenderMark( C2DRender* p2DRender, CMover* Player );	//	참조되는 변수는 플레이어와 파티플레이어를 얻을 수 있는 것이어야 하지만 
+	
+	/* Render Mark */ //	참조되는 변수는 플레이어와 파티플레이어를 얻을 수 있는 것이어야 하지만 
 																//	현재는 자신만을 찍는 것을 하고 그 다음에 파티 플레이어들을 찾을수 있는 방법을 찾아 보자꾸나
 	void RenderMarkAll( C2DRender* p2DRender , CMover* Player );
+	bool RenderNaviPoint(C2DRender * p2DRender, NaviPoint & naviPoint);
 	CBillboard m_billArrow;
-	CSize      m_size;
+	CSize      m_size = CSize(0, 0);
 	int        m_nSizeCnt;
-	TCHAR      m_szName[ 64 ];
+	TCHAR      m_szName[ 64 ] = "";
 	void ResizeMiniMap();
 	
 	CTexture m_GuildCombatTextureMask;
-	CTexture* m_pDestinationPositionTexture;
+	CTexture* m_pDestinationPositionTexture = nullptr;
 
 public:
-	BOOL m_bObjFilterPlayer ;
-	BOOL m_bObjFilterParty  ;
-	BOOL m_bObjFilterNPC    ;
-	BOOL m_bObjFilterMonster;
+	BOOL m_bObjFilterPlayer  = FALSE;
+	BOOL m_bObjFilterParty   = FALSE;
+	BOOL m_bObjFilterNPC     = FALSE;
+	BOOL m_bObjFilterMonster = FALSE;
 	
 
-	void RenderPartyMember( C2DRender* p2DRender, TEXTUREVERTEX** pVertices, CRect rect, D3DXVECTOR3 vPos, u_long uIdPlayer, LPCTSTR lpStr );
 	void SetRegionName( const TCHAR *tszName );		// 지역
 		
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
 	
-	CWndNavigator(); 
-	virtual ~CWndNavigator();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
