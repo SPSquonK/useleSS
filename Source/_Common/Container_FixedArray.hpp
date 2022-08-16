@@ -13,7 +13,7 @@ private:
 public:
 	CFixedArray();
 
-	int  GetSize() { return static_cast<int>(m_data.size()); }
+	int  GetSize() { return static_cast<int>(m_offsets.size()); }
 	void SetAtGrow(size_t nIndex, const T & pData);
 	T * GetAt(DWORD dwIndex);
 	void Optimize();
@@ -45,7 +45,7 @@ template <class T> void CFixedArray<T>::Optimize() {
 
 template <class T> void CFixedArray<T>::SetAtGrow(const size_t nIndex, const T & pData) {
 	if (nIndex >= m_offsets.size()) {
-		m_offsets.resize(nIndex, nullptr);
+		m_offsets.resize(nIndex + 1, nullptr);
 	}
 
 	if (m_offsets[nIndex] == nullptr) {
