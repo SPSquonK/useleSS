@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <type_traits>
 
 template <typename T> class CFixedArrayIterator;
 
@@ -13,7 +14,7 @@ public:
 	CFixedArray();
 
 	int  GetSize() { return static_cast<int>(m_data.size()); }
-	void SetAtGrow(size_t nIndex, const T * pData);
+	void SetAtGrow(size_t nIndex, const T & pData);
 	T * GetAt(DWORD dwIndex);
 	void Optimize();
 	void RemoveAll() { *this = CFixedArray(); }
@@ -42,20 +43,18 @@ template <class T> void CFixedArray<T>::Optimize() {
 	m_offsets.shrink_to_fit();
 }
 
-template <class T> void CFixedArray<T>::SetAtGrow(const size_t nIndex, const T * const pData) {
+template <class T> void CFixedArray<T>::SetAtGrow(const size_t nIndex, const T & pData) {
 	if (nIndex >= m_offsets.size()) {
 		m_offsets.resize(nIndex, nullptr);
 	}
 
-	T * target;
 	if (m_offsets[nIndex] == nullptr) {
-		WhileMonitoringPointers([&]() { target = &m_data.emplace_back(); });
+		T * target;
+		WhileMonitoringPointers([&]() { target = &m_data.emplace_back(pData); });
 		m_offsets[nIndex] = target;
 	} else {
-		target = m_offsets[nIndex];
+		*m_offsets[nIndex] = pData;
 	}
-
-	std::memcpy(target, pData, sizeof(T));
 }
 
 template <typename T>

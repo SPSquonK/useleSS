@@ -806,7 +806,7 @@ BOOL CProject::LoadMotionProp( LPCTSTR lpszFileName )
 		_tcscpy( MotionProp.szName, script.m_mszToken );
 		script.GetToken();
 		_tcscpy( MotionProp.szDesc, script.m_mszToken );
-		m_aPropMotion.SetAtGrow( MotionProp.dwID, &MotionProp);
+		m_aPropMotion.SetAtGrow( MotionProp.dwID, MotionProp);
 		
 		nVer = script.GetNumber(); 
 	}
@@ -1068,7 +1068,7 @@ BOOL CProject::LoadPropGuildQuest( LPCTSTR lpszFilename )
 			}
 			s.GetToken();
 		}
-		m_aPropGuildQuest.SetAtGrow( nQuestId, &prop );
+		m_aPropGuildQuest.SetAtGrow( nQuestId, prop );
 		nQuestId	= s.GetNumber();	// id
 	}
 	m_aPropGuildQuest.Optimize();
@@ -2216,7 +2216,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 		if( nQuest == QuestId(QUEST_KAWIBAWIBO01) )
 			bAdd	= FALSE;
 		if( bAdd )
-			m_aPropQuest.SetAtGrow( nQuest.get(), &propQuest);
+			m_aPropQuest.SetAtGrow( nQuest.get(), propQuest);
 
 		nQuest = QuestId(script.GetNumber());  // id
 	}
@@ -2299,7 +2299,7 @@ BOOL CProject::LoadPropAddSkill( LPCTSTR lpszFileName )
 		if( propAddSkill.dwActiveSkillRatePVP == dwDefault )
 			propAddSkill.dwActiveSkillRatePVP	= propAddSkill.dwActiveSkillRate;
 
-		m_aPropAddSkill.SetAtGrow( i, &propAddSkill );
+		m_aPropAddSkill.SetAtGrow( i, propAddSkill );
 
 		// TRACE( "PropAddSkill : %d %d %d\r\n", i, propAddSkill.dwName, propAddSkill.dwSkillLvl );
 		i = script.GetNumber( TRUE ); 
@@ -4086,7 +4086,7 @@ BOOL CProject::LoadPropCtrl( LPCTSTR lpszFileName, CFixedArray<CtrlProp>*	apObjP
 		ctrlProp.dwSndDamage = scanner.GetNumber();
 
 		scanner.GetToken();		// skip szCommand (������� �ʴ´�. )
-		apObjProp->SetAtGrow( i, &ctrlProp);
+		apObjProp->SetAtGrow( i, ctrlProp);
 		i = scanner.GetNumber(); 
 	}
 	apObjProp->Optimize();

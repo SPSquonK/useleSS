@@ -452,9 +452,9 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 			
 		#ifdef __WORLDSERVER
 			if( iType != OT_SFX )	// sfx는 서버에서 skip
-				apModelElem->SetAtGrow( iObject, &modelElem );
+				apModelElem->SetAtGrow( iObject, modelElem );
 		#else
-			apModelElem->SetAtGrow( iObject, &modelElem );
+			apModelElem->SetAtGrow( iObject, modelElem );
 		#endif
 
 		} // while( nBrace )

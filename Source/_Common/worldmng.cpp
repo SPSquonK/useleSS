@@ -239,7 +239,7 @@ BOOL CWorldMng::LoadScript( LPCTSTR lpszFileName )
 			scanner.GetToken();		// fileName
 			strcpy( world.m_szFileName, scanner.token );
 			TRACE( "Load World %s %d\n", world.m_szFileName, i );
-			m_aWorld.SetAtGrow( i, &world );
+			m_aWorld.SetAtGrow( i, world );
 		}
 
 		scanner.SetMark();
