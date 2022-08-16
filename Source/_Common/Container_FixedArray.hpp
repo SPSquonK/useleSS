@@ -1,11 +1,13 @@
 #pragma once
 
+#include <concepts>
+
 template <typename T> class CFixedArrayIterator;
 
 template <class T> class CFixedArray final {
 private:
 	std::vector<T> m_data;
-	std::vector<size_t> m_offsets;
+	std::vector<T *> m_offsets;
 
 public:
 	CFixedArray();
@@ -20,6 +22,9 @@ public:
 	CFixedArrayIterator<T> end();
 
 	friend class CFixedArrayIterator<T>;
+
+private:
+	void WhileMonitoringPointers(std::invocable<> auto function);
 };
 
 template <class T> inline CFixedArray<T>::CFixedArray() {
@@ -29,35 +34,44 @@ template <class T> inline CFixedArray<T>::CFixedArray() {
 
 template <class T> inline T * CFixedArray<T>::GetAt(DWORD dwIndex) {
 	if (dwIndex >= m_offsets.size()) return nullptr;
-
-	const auto offset = m_offsets[dwIndex];
-	if (offset == NULL_ID) return nullptr;
-
-	return &m_data[offset];
+	return m_offsets[dwIndex];
 }
 
 template <class T> void CFixedArray<T>::Optimize() {
-	m_data.shrink_to_fit();
+	WhileMonitoringPointers([&]() { m_data.shrink_to_fit(); });
 	m_offsets.shrink_to_fit();
 }
 
 template <class T> void CFixedArray<T>::SetAtGrow(const size_t nIndex, const T * const pData) {
 	if (nIndex >= m_offsets.size()) {
-		m_offsets.resize(nIndex, NULL_ID);
+		m_offsets.resize(nIndex, nullptr);
 	}
 
 	T * target;
-	if (m_offsets[nIndex] == NULL_ID) {
-		const size_t offset = m_data.size();
-		m_offsets[nIndex] = offset;
-		target = &m_data.emplace_back();
+	if (m_offsets[nIndex] == nullptr) {
+		WhileMonitoringPointers([&]() { target = &m_data.emplace_back(); });
+		m_offsets[nIndex] = target;
 	} else {
-		target = &m_data[m_offsets[nIndex]];
+		target = m_offsets[nIndex];
 	}
 
 	std::memcpy(target, pData, sizeof(T));
 }
 
+template <typename T>
+void CFixedArray<T>::WhileMonitoringPointers(std::invocable<> auto function) {
+	T * const beforeFirstLocation = m_data.empty() ? nullptr : &m_data[0];
+	function();
+	T * const afterFirstLocation = !beforeFirstLocation ? nullptr : &m_data[0];
+
+	if (beforeFirstLocation != afterFirstLocation) {
+		for (T *& offset : m_offsets) {
+			if (offset) {
+				offset = offset - beforeFirstLocation + afterFirstLocation;
+			}
+		}
+	}
+}
 
 template <typename T> class CFixedArrayIterator {
 	size_t m_i;
