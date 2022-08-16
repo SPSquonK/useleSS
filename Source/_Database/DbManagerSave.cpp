@@ -163,148 +163,147 @@ int MAX_SAVEPARAM = 88;
 	
 	int nNumSkill = 0;
 	int nSlaughter = 0;
-	SQLINTEGER cbLen = SQL_NTS;
 	BOOL* bOK = new BOOL[MAX_SAVEPARAM];
 //	BOOL bOK[MAX_SAVEPARAM];
 //	qry->StartLogBindedParameters();
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  32, 0, pMover->m_szName, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nSlot, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwWorldID, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwIndex, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vPos.x, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vPos.y, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vPos.z, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  32, 0, pMover->m_szCharacterKey, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwSkinSet, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwHairMesh, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwHairColor, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, pMover->m_szName, 32 );
+	bOK[++j] = qry->BindParameter( ++i, &nSlot );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwWorldID );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwIndex );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.x );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.y );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.z );
+	bOK[++j] = qry->BindParameter( ++i, pMover->m_szCharacterKey, 32 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwSkinSet );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHairMesh );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHairColor );
 	// 1
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwHeadMesh, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nSex, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vScale.x, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwMotion, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_fAngle, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nHitPoint, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nManaPoint, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFatiguePoint, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwRideItemIdx, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &dwGold, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nJob, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHeadMesh );
+	bOK[++j] = qry->BindParameter( ++i, &nSex );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vScale.x );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMotion );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_fAngle );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nHitPoint );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nManaPoint );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFatiguePoint );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwRideItemIdx );
+	bOK[++j] = qry->BindParameter( ++i, &dwGold );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nJob );
 	// 2
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  50, 0, cActMover, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nStr, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nSta, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nDex, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nInt, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nLevel, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &pMover->m_nExp1, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &nExp2, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,   500, 0, JobSkill, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,   500, 0, LicenseSkill, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,   500, 0, JobLv, 0, &cbLen );
+	bOK[++j] = qry->BindParameter( ++i, cActMover, 50 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nStr );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSta );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDex );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nInt );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nLevel );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nExp1 );
+	bOK[++j] = qry->BindParameter( ++i, &nExp2 );
+	bOK[++j] = qry->BindParameter( ++i, JobSkill, 500 );
+	bOK[++j] = qry->BindParameter( ++i, LicenseSkill, 500 );
+	bOK[++j] = qry->BindParameter( ++i, JobLv, 500 );
 	// 3
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nExpertLv, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_idMarkingWorld, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vMarkingPos.x, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vMarkingPos.y, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_REAL,     0, 0, &pMover->m_vMarkingPos.z, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nRemainGP, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nRemainLP, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &nExpertLv );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idMarkingWorld );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.x );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.y );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.z );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nRemainGP );
+	bOK[++j] = qry->BindParameter( ++i, &nRemainLP );
 	int nTutorialState	= pMover->GetTutorialState();
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nTutorialState, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFxp, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFxp, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  3072, 0, QuestCnt, 0, &cbLen );
+	bOK[++j] = qry->BindParameter( ++i, &nTutorialState );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFxp );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFxp );
+	bOK[++j] = qry->BindParameter( ++i, QuestCnt, 3072 );
 	// 4
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_CHAR,     1, 0, szAuthority, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwMode, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_idparty, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_idMurderer, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFame, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &pMover->m_nDeathExp, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nDeathLevel, 0, 0 );
+	bOK[++j] = qry->BindParameter<SQL_CHAR>( ++i, szAuthority, 1 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMode );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idparty );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idMurderer );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFame );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDeathExp );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDeathLevel );
 #ifdef __JEFF_9_20
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwMute, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMute );
 #else	// __JEFF_9_20
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwFlyTime, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwFlyTime );
 #endif	// __JEFF_9_20
 	long dwState	= static_cast<long>(pMover->m_RTMessenger.GetState());
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &dwState, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nTotalPlayTime, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nPKValue, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &dwState );
+	bOK[++j] = qry->BindParameter( ++i, &nTotalPlayTime );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nPKValue );
 	// 5
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwPKPropensity, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwPKExp, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  1980, 0, Card, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215,  0, sCardIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215,  0, sCardObjIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  1980, 0, Cube, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215,  0, sCubeIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215,  0, sCubeObjIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  6940, 0, icsInventory.szItem, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  345 , 0, icsInventory.szIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  135 , 0, Equipment, 0, &cbLen );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwPKPropensity );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwPKExp );
+	bOK[++j] = qry->BindParameter( ++i, Card, 1980 );
+	bOK[++j] = qry->BindParameter( ++i, sCardIndex, 215 );
+	bOK[++j] = qry->BindParameter( ++i, sCardObjIndex, 215 );
+	bOK[++j] = qry->BindParameter( ++i, Cube, 1980 );
+	bOK[++j] = qry->BindParameter( ++i, sCubeIndex, 215 );
+	bOK[++j] = qry->BindParameter( ++i, sCubeObjIndex, 215 );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szItem, 6940 );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szIndex, 345  );
+	bOK[++j] = qry->BindParameter( ++i, Equipment, 135  );
 	// 6
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  345 , 0, icsInventory.szObjIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  3100, 0, AppletTaskBar, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  6885, 0, ItemTaskBar, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  225, 0, SkillTaskBar, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SHORT, SQL_SMALLINT, 0, 0, &pMover->m_UserTaskBar.m_nActionPoint, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  4290, 0, icsBank[pMover->m_nSlot].szItem, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215, 0, icsBank[pMover->m_nSlot].szIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215, 0, icsBank[pMover->m_nSlot].szObjIndex, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwGoldBank[pMover->m_nSlot], 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nFuel, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_tmAccFuel, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szObjIndex, 345  );
+	bOK[++j] = qry->BindParameter( ++i, AppletTaskBar, 3100 );
+	bOK[++j] = qry->BindParameter( ++i, ItemTaskBar, 6885 );
+	bOK[++j] = qry->BindParameter( ++i, SkillTaskBar, 225 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_UserTaskBar.m_nActionPoint );
+	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szItem, 4290 );
+	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szIndex, 215 );
+	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szObjIndex, 215 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwGoldBank[pMover->m_nSlot] );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFuel );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_tmAccFuel );
 	// 7
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2560, 0, szSMTime, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  7500, 0, szSkillInfluence, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &dwSkillPoint, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  1024, 0, m_aCompleteQuest, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsInventory.szExt, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsBank[pMover->m_nSlot].szExt, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  7800, 0, icsInventory.szPiercing, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  7800, 0, icsBank[pMover->m_nSlot].szPiercing, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwReturnWorldID, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nSkillPoint, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nSkillLevel, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &nSkillExp, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, szSMTime, 2560);
+	bOK[++j] = qry->BindParameter( ++i, szSkillInfluence, 7500);
+	bOK[++j] = qry->BindParameter( ++i, &dwSkillPoint );
+	bOK[++j] = qry->BindParameter( ++i, m_aCompleteQuest, 1024 );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szExt, 2000 );
+	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szExt, 2000 );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szPiercing, 7800 );
+	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szPiercing, 7800 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwReturnWorldID );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSkillPoint );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSkillLevel );
+	bOK[++j] = qry->BindParameter( ++i, &nSkillExp );
 #ifdef __EVENT_1101
 	#ifdef __EVENT_1101_2
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT,   0, 0, &pMover->m_nEventFlag, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nEventFlag );
 	#else // __EVENT_1101_2
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwEventFlag, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventFlag );
 	#endif // __EVENT_1101_2
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwEventTime, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_dwEventElapsed, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventTime );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventElapsed );
 #endif	// __EVENT_1101
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &pMover->m_nAngelExp, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &pMover->m_nAngelLevel, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsInventory.szPet, 0, &cbLen );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, icsBank[pMover->m_nSlot].szPet, 0, &cbLen );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelExp );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelLevel );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szPet, 2000 );
+	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szPet, 2000 );
 	DWORD dwPetId	= pMover->GetPetId();
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &dwPetId, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &dwPetId );
 #ifdef __EXP_ANGELEXP_LOG
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nExpLog, 0, 0 );
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nAngelExpLog, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nExpLog );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelExpLog );
 #endif // __EXP_ANGELEXP_LOG
 
 #ifdef __EVENTLUA_COUPON
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nCoupon, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nCoupon );
 #endif // __EVENTLUA_COUPON
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &pMover->m_nHonor, 0, 0 );
+	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nHonor );
 #ifdef __LAYER_1015
 	int nLayer	= pMover->GetLayer();
-	bOK[++j]	= qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nLayer, 0, 0 );
+	bOK[++j]	= qry->BindParameter( ++i, &nLayer );
 #endif	// __LAYER_1015
-	bOK[++j] = qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  100, 0, CheckedQuest, 0, &cbLen );
+	bOK[++j] = qry->BindParameter( ++i, CheckedQuest, 100 );
 	int nCampusPoint	= pMover->GetCampusPoint();
-	bOK[++j]	= qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &nCampusPoint, 0, 0 );
+	bOK[++j]	= qry->BindParameter( ++i, &nCampusPoint );
 	u_long idCampus		= pMover->GetCampusId();
-	bOK[++j]	= qry->BindParameter( ++i, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,   0, 0, &idCampus, 0, 0 );
+	bOK[++j]	= qry->BindParameter( ++i, &idCampus );
 	for( i=0; i<j; ++i )
 	{
-		if( bOK[i] == FALSE )
+		if( !bOK[i] )
 		{
 			char szBuffer[128];
 			sprintf( szBuffer, "SavePlayer(%s) - %dth bindparam error - %d", pMover->m_szName, i+1, ::GetCurrentThreadId() );
@@ -371,15 +370,13 @@ int MAX_SAVEPARAM = 88;
 			DBQryAddBankSave( szQuery, info );
 			
 			{
-				SQLINTEGER cbLen = SQL_NTS;
-				BOOL bOK[7];
-				bOK[0] = qry->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  4290, 0, (char*)info.pszBank, 0, &cbLen );
-				bOK[1] = qry->BindParameter( 2, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215, 0, (char*)info.pszBankIndex, 0, &cbLen );
-				bOK[2] = qry->BindParameter( 3, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  215, 0, (char*)info.pszObjIndexBank, 0, &cbLen );
-				bOK[3] = qry->BindParameter( 4, SQL_PARAM_INPUT, SQL_C_LONG,  SQL_INTEGER,  0, 0, &info.dwGoldBank, 0, 0 );
-				bOK[4] = qry->BindParameter( 5, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2000, 0, (char*)info.pszExtBank, 0, &cbLen );
-				bOK[5] = qry->BindParameter( 6, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  7800, 0, (char*)info.pszPirecingBank, 0, &cbLen );
-				bOK[6] = qry->BindParameter( 7, SQL_PARAM_INPUT, SQL_C_CHAR,  SQL_VARCHAR,  2689, 0, (char*)info.pszBankPet, 0, &cbLen );
+				qry->BindParameter( 1, (char*)info.pszBank, 4290 );
+				qry->BindParameter( 2, (char*)info.pszBankIndex, 215 );
+				qry->BindParameter( 3, (char*)info.pszObjIndexBank, 215 );
+				qry->BindParameter( 4, &info.dwGoldBank );
+				qry->BindParameter( 5, (char*)info.pszExtBank, 2000 );
+				qry->BindParameter( 6, (char*)info.pszPirecingBank, 7800 );
+				qry->BindParameter( 7, (char*)info.pszBankPet, 2689 );
 			}
 
 			if( FALSE == qry->Exec( szQuery ) )
@@ -405,19 +402,16 @@ int MAX_SAVEPARAM = 88;
 		p.tExpirationDate	= aPocket[i].tExpirationDate;
 
 		MakeQueryPocket( szQuery, p );
-		SQLINTEGER	cbLen	= SQL_NTS;
-		BOOL	bOk[9];
 
-		bOk[0]	= qry->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &i, 0, &cbLen );
-		bOk[1]	= qry->BindParameter( 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 4290, 0, (char*)p.pszItem, 0, &cbLen );
-		bOk[2]	= qry->BindParameter( 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 215, 0, (char*)p.pszIndex, 0, &cbLen );
-		bOk[3]	= qry->BindParameter( 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 215, 0, (char*)p.pszObjIndex, 0, &cbLen );
-		bOk[4]	= qry->BindParameter( 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 2000, 0, (char*)p.pszExt, 0, &cbLen );
-		bOk[5]	= qry->BindParameter( 6, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 7800, 0, (char*)p.pszPiercing, 0, &cbLen );
-		bOk[6]	= qry->BindParameter( 7, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 2689, 0, (char*)p.pszPet, 0, &cbLen );
-		bOk[7]	= qry->BindParameter( 8, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &p.bExpired, 0, &cbLen );
-		bOk[8]	= qry->BindParameter( 9, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &p.tExpirationDate, 0, &cbLen );
-
+		qry->BindParameter( 1, &i );
+		qry->BindParameter( 2, (char*)p.pszItem    , 4290);
+		qry->BindParameter( 3, (char*)p.pszIndex   , 215);
+		qry->BindParameter( 4, (char*)p.pszObjIndex, 215);
+		qry->BindParameter( 5, (char*)p.pszExt     , 2000);
+		qry->BindParameter( 6, (char*)p.pszPiercing, 7800);
+		qry->BindParameter( 7, (char*)p.pszPet     , 2689);
+		qry->BindParameter( 8, &p.bExpired );
+		qry->BindParameter( 9, &p.tExpirationDate );
 
 		if( !qry->Exec( szQuery ) )
 		{

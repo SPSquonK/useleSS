@@ -42,6 +42,13 @@ namespace sqktd {
     if (it != map.end()) return it->second.get();
     return nullptr;
   }
+
+	namespace ranges {
+		template<typename Collection>
+		[[nodiscard]] constexpr bool all_are(const Collection & collection, const typename Collection::value_type & value) {
+			return std::ranges::all_of(collection, [&](const auto & value_) { return value_ == value; });
+		}
+	}
 }
 
 namespace sqktd {
