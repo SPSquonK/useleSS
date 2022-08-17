@@ -537,10 +537,6 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 
 	ProtectPropMover();
 
-#ifdef __PERF_0226
-	CPartsItem::GetInstance()->Init( this );
-#endif	// __PERF_0226
-
 #ifdef __WORLDSERVER
 	CSLord::Instance()->CreateColleagues();
 #else	// __WORLDSERVER
@@ -4424,51 +4420,6 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 }
 #endif	// __JEFF_11_3
 #endif	// __WORLDSERVER
-
-#ifdef __PERF_0226
-CPartsItem::CPartsItem()
-{
-	m_pProject	= NULL;
-}
-
-CPartsItem::~CPartsItem()
-{
-	for( int i = 0; i < 3; i++ )
-	{
-		for( int j = 0; j < MAX_HUMAN_PARTS; j++ )
-			m_items[i][j].clear();
-	}
-}
-
-void	CPartsItem::Init( CProject* pProject )
-{
-	m_pProject	= pProject;
-	int nSize	= pProject->m_aPropItem.GetSize();
-	for( int i = 0; i < nSize; i++ )
-	{
-		ItemProp* pProp	= pProject->GetItemProp( i );
-		if( pProp && pProp->dwParts >= 0 && pProp->dwParts < MAX_HUMAN_PARTS )
-		{
-			int nSex	= pProp->dwItemSex;
-			if( nSex < 0 )
-				nSex	= SEX_SEXLESS;
-			m_items[nSex][pProp->dwParts].push_back( pProp );
-		}
-	}
-}
-
-ItemProp*	CPartsItem::GetItemProp( int nSex, int nParts )
-{
-	int nIndex	= xRandom( m_items[nSex][nParts].size() );
-	return	m_items[nSex][nParts][nIndex];
-}
-
-CPartsItem*	CPartsItem::GetInstance( void )
-{
-	static	CPartsItem	sPartsItem;
-	return &sPartsItem;
-}
-#endif	// __PERF_0226
 
 void CProject::OutputDropItem( void )
 {

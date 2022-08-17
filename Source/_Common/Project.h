@@ -1075,22 +1075,6 @@ extern CProject prj;
 #define GETITEM( x )		prj.GetItem( x )
 #define GETMOVER( x )		prj.GetMover( x )
 
-#ifdef __PERF_0226
-class CPartsItem
-{
-private:
-	vector<ItemProp*>		m_items[3][MAX_HUMAN_PARTS];
-	CProject*	m_pProject;
-private:
-	CPartsItem();
-public:
-	~CPartsItem();
-	static	CPartsItem*	GetInstance( void );
-	void	Init( CProject* pProject );
-	ItemProp*	GetItemProp( int nSex, int nParts );
-};
-#endif	// __PERF_0226
-
 inline const QuestProp * QuestProp::Get(const QuestId questId) {
 	return prj.m_aPropQuest.GetAt(questId.get());
 }

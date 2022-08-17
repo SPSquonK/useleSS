@@ -2424,50 +2424,6 @@ BOOL TextCmd_CallTheRoll(CScanner & s, CPlayer_ * pUser) {
 
 #endif	// __EVENT_1101
 
-BOOL TextCmd_CreatePc(CScanner & scanner, CPlayer_ * pUser) {
-#ifdef __PERF_0226
-#ifdef __WORLDSERVER
-	int nNum = scanner.GetNumber();
-	for( int i=0; i<nNum; i++ )
-	{
-		int nSex	= xRandom( 2 );
-		DWORD dwIndex	= ( nSex == SEX_FEMALE? MI_FEMALE: MI_MALE );
-
-		CMover* pMover	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, dwIndex );
-		if( NULL == pMover )	
-			return FALSE;
-		pMover->SetPos( pUser->GetPos() );
-		pMover->InitMotion( MTI_STAND );
-		pMover->UpdateLocalMatrix();
-		SAFE_DELETE( pMover->m_pAIInterface );
-		pMover->SetAIInterface( AII_MONSTER );
-		pMover->m_Inventory.SetItemContainer( CItemContainer::ContainerType::INVENTORY ); 
-
-		static DWORD adwParts[5]	= {	PARTS_CAP, PARTS_HAND, PARTS_UPPER_BODY, PARTS_FOOT, PARTS_RWEAPON };
-		for( int i = 0; i < 5; i++ )
-		{
-			CItemElem itemElem;
-			ItemProp* pProp	= CPartsItem::GetInstance()->GetItemProp( ( i == 4? SEX_SEXLESS: nSex ), adwParts[i] );
-			if( pProp )
-			{
-				CItemElem	itemElem;
-				itemElem.m_dwItemId	= pProp->dwID;
-				itemElem.m_nItemNum	= 1;
-				itemElem.SetAbilityOption( xRandom( 10 ) );
-				BYTE nId, nCount;
-				short nNum;
-				pMover->m_Inventory.Add( &itemElem, &nId, &nNum, &nCount );
-				CItemElem* pAddItem	= pMover->m_Inventory.GetAtId( nId );
-				pMover->m_Inventory.DoEquip( pAddItem->m_dwObjIndex, pProp->dwParts );
-			}
-		}
-		pUser->GetWorld()->ADDOBJ( pMover, TRUE, pUser->GetLayer() );
-	}
-#endif	// __WORLDSERVER
-#endif	// __PERF_0226
-	return TRUE;
-}
-
 BOOL TextCmd_CreateNPC(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos	= pUser->GetPos();
@@ -4803,9 +4759,6 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_Coupon,					"COUPON",		"coupon",			"ÄíÆù¼³Á¤", "ÄíÆù",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 #endif // __EVENTLUA_COUPON
 
-//#ifdef __PERF_0226
-	ON_TEXTCMDFUNC( TextCmd_CreatePc,				"CreatePc",		"cp",			"cp", "cp",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-//#endif	// __PERF_0226
 #ifdef __SFX_OPT
 	ON_TEXTCMDFUNC( TextCmd_SfxLv,					"SfxLevel",		"sl",			"sl", "sl",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 #endif	

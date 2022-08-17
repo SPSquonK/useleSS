@@ -299,8 +299,6 @@
 
 //	#define		__DST_GIFTBOX				// 착용 아이템에 기프트 박스 기능 추가
 
-	#define		__PERF_0226
-
 	#define		__OPT_MEM_0811
 //	#define		__MEM_TRACE
 	#define		__NEW_PROFILE		// 새로운 프로파일러 적용
