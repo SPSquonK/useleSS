@@ -3631,293 +3631,151 @@ void CMover::Interpolate()
 		}
 	}
 }
-void CMover::CreateAbilityOption_SetItemSFX( int nAbilityOption )
+void CMover::CreateAbilityOption_SetItemSFX(const int nAbilityOption )
 {
-	DWORD dwSfx = 0;
+	static constexpr auto GetSfxId = [](const int nAbilityOption) -> DWORD {
+		switch (nAbilityOption) {
+			case 3: return XI_GEN_ITEM_SETITEM03;
+			case 4: return XI_GEN_ITEM_SETITEM04;
+			case 5: return XI_GEN_ITEM_SETITEM05;
+			case 6: return XI_GEN_ITEM_SETITEM06;
+			case 7: return XI_GEN_ITEM_SETITEM07;
+			case 8: return XI_GEN_ITEM_SETITEM08;
+			case 9: return XI_GEN_ITEM_SETITEM09;
+			case 10: return XI_GEN_ITEM_SETITEM10;
+			default: return 0;
+		}
+	};
 
-//	nAbilityOption = 4;
-	
-	switch( nAbilityOption )
-	{
-	case 3: dwSfx = XI_GEN_ITEM_SETITEM03; break;
-	case 4: dwSfx = XI_GEN_ITEM_SETITEM04; break;
-	case 5: dwSfx = XI_GEN_ITEM_SETITEM05; break;
-	case 6: dwSfx = XI_GEN_ITEM_SETITEM06; break;
-	case 7: dwSfx = XI_GEN_ITEM_SETITEM07; break;
-	case 8: dwSfx = XI_GEN_ITEM_SETITEM08; break;
-	case 9: dwSfx = XI_GEN_ITEM_SETITEM09; break;
-	case 10: dwSfx = XI_GEN_ITEM_SETITEM10; break;
-	}
-	
-	CSfxPartsLinkShoulder* pSfx = NULL;
-	D3DXVECTOR3 v3Scal = D3DXVECTOR3( 1.0f, 1.0f, 1.0f );
+	const DWORD generalSfx = GetSfxId(nAbilityOption);
+	if (generalSfx == 0) return;
 
+	const auto BuildSfx_ = [&](const DWORD dwSfx, const int partLink, const float yOffset, const std::optional<D3DXVECTOR3> scale) {
+		CSfxPartsLinkShoulder * pSfx = (CSfxPartsLinkShoulder *)CreateSfx(D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1);
+		pSfx->m_nPartsLink = partLink;
+		pSfx->m_nOldAbilityOption = nAbilityOption;
+
+		if (yOffset != 0.0f) pSfx->m_v3Offset.y = yOffset;
+		if (scale) pSfx->SetScale(scale.value());
+
+		return pSfx;
+	};
+
+	const auto BuildSfx = [&](const int partLink, const float yOffset = 0.0f, const std::optional<D3DXVECTOR3> scale = std::nullopt) {
+		return BuildSfx_(generalSfx, partLink, yOffset, scale);
+	};
+
+	const auto BuildHand = [&](const int partLink, const float yOffset = 0.0f, const std::optional<D3DXVECTOR3> scale = std::nullopt) {
+		return BuildSfx_(XI_SETIEM_EFFECTHAND, partLink, yOffset, scale);
+	};
 	
-	if( nAbilityOption == 3 )
-	{
+	if( nAbilityOption == 3 ) {
 		// ¾î±ú
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 0;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 1;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-	}
-	/*
-	else
-	if( nAbilityOption == 4 )
-	{
+		BuildSfx(0, 0.1f);
+		BuildSfx(1, 0.1f);
+	} else if( nAbilityOption == 4 ) {
 		// ¸öÅë
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 6;
-		pSfx->SetScale(D3DXVECTOR3( 2.2f, 2.2f, 2.2f ));
-	}
-	*/
-	else
-	if( nAbilityOption == 4 )
-	{
-		// ¸öÅë
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 6;
-		pSfx->SetScale(D3DXVECTOR3( 3.0f, 3.0f, 3.0f ));
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-	}
-	else
-	if( nAbilityOption == 5 )
-	{
+		BuildSfx(6, 0.0f, D3DXVECTOR3(3.0f, 3.0f, 3.0f));
+	} else if( nAbilityOption == 5 ) {
 		// ¾î±ú
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 0;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 1;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(0, 0.1f);
+		BuildSfx(1, 0.1f);
 		// ¾î±ú, ÆÈ¸ñ Áß°£
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 4;		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 5;	
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(4);
+		BuildSfx(5);
 	}
 	else
 	if( nAbilityOption == 6 )
 	{
 		// ¾î±ú
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 0;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 1;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(0, 0.1f);
+		BuildSfx(1, 0.1f);
 		// ¾î±ú, ÆÈ¸ñ Áß°£
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 4;		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 5;	
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(4);
+		BuildSfx(5);
 		// ÆÈ¸ñ
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 2;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 3;		
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(2, 0.1f);
+		BuildSfx(3, 0.1f);
 	}
 	else
 	if( nAbilityOption == 7 )
 	{
 		// ¾î±ú
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 0;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 1;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(0);
+		BuildSfx(1);
 		// ¾î±ú, ÆÈ¸ñ Áß°£
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 4;		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 5;	
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(4);
+		BuildSfx(5);
 		// ÆÈ¸ñ
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 2;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 3;		
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(2, 0.1f);
+		BuildSfx(3, 0.1f);
 		// ¼Õ	
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 8;			
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 9;		
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(8, 0.1f);
+		BuildSfx(9, 0.1f);
 	}
 	else
 	if( nAbilityOption == 8 )
 	{
 		// ¾î±ú
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 0;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 1;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(0);
+		BuildSfx(1);
 		// ¾î±ú, ÆÈ¸ñ Áß°£
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 4;		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 5;	
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(4);
+		BuildSfx(5);
 		// ÆÈ¸ñ
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 2;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 3;		
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(2, 0.1f);
+		BuildSfx(3, 0.1f);
 		// ¼Õ	
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 8;			
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 9;		
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, XI_SETIEM_EFFECTHAND, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 9;			
-		pSfx->m_v3Offset.y = 0.2f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(8, 0.1f);
+		BuildSfx(9, 0.1f);
+
+		BuildHand(9, 0.2f);
 	}
 	else
 	if( nAbilityOption == 9 )
 	{
 		// ¾î±ú
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 0;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 1;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(0);
+		BuildSfx(1);
 		// ¾î±ú, ÆÈ¸ñ Áß°£
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 4;		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 5;	
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(4);
+		BuildSfx(5);
 		// ÆÈ¸ñ
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 2;
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 3;		
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(2, 0.1f);
+		BuildSfx(3, 0.1f);
 		// ¼Õ	
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 8;			
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 9;		
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(8, 0.1f);
+		BuildSfx(9, 0.1f);
 		// ¹ß
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 26;	
-		pSfx->SetScale(D3DXVECTOR3( 1.5f, 1.5f, 1.5f ));		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 29;
-		pSfx->SetScale(D3DXVECTOR3( 1.5f, 1.5f, 1.5f ));
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(26, 0.0f, D3DXVECTOR3(1.5f, 1.5f, 1.5f));
+		BuildSfx(29, 0.0f, D3DXVECTOR3(1.5f, 1.5f, 1.5f));
 		
-		
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, XI_SETIEM_EFFECTHAND, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 9;			
-		pSfx->m_v3Offset.y = 0.2f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildHand(9, 0.2f);
 	}
 	else
 	if( nAbilityOption == 10 )
 	{
 		// ¾î±ú
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 0;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 1;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(0);
+		BuildSfx(1);
 		// ¾î±ú, ÆÈ¸ñ Áß°£
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 4;		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 5;	
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(4);
+		BuildSfx(5);
 		// ¸öÅë
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 6;
-		pSfx->SetScale(D3DXVECTOR3( 3.0f, 4.5f, 3.0f ));
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 7;		
-		pSfx->SetScale(D3DXVECTOR3( 3.0f, 3.0f, 3.0f ));		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(6, 0.0f, D3DXVECTOR3(3.0f, 4.5f, 3.0f));
+		BuildSfx(7, 0.0f, D3DXVECTOR3(3.0f, 3.0f, 3.0f));
 		// ¼Õ	
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 8;			
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 9;	
-		pSfx->m_v3Offset.y = 0.1f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(8, 0.1f);
+		BuildSfx(9, 0.1f);
 		// ÆÈ¸ñ
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 2;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 3;		
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(2);
+		BuildSfx(3);
 		// ¹ß
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 26;			
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 29;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildSfx(26);
+		BuildSfx(29);
 		
-
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, XI_SETIEM_EFFECTHAND, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 8;			
-		pSfx->m_v3Offset.y = 0.2f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
-		pSfx = (CSfxPartsLinkShoulder*)CreateSfx( D3DDEVICE, XI_SETIEM_EFFECTHAND, GetPos(), GetId(), GetPos(), GetId(), -1 );
-		pSfx->m_nPartsLink = 9;			
-		pSfx->m_v3Offset.y = 0.2f;
-		pSfx->m_nOldAbilityOption = nAbilityOption;
+		BuildHand(8, 0.2f);
+		BuildHand(9, 0.2f);
 	}
 }
 
