@@ -9,6 +9,8 @@
 
 class CQuery {
 public:
+	static SQLINTEGER sqlNts;
+
 	struct Credentials {
 		char Name[256] = "";
 		char Id[256]   = "";
@@ -102,27 +104,52 @@ public:
 	const char * GetStrPtr(int nCol) const;
 	const char * GetStrPtr(const char * sCol) const;
 
-	// List of accepted type by the SQL API. You may add some missing integral types.
-	// Do NOT add std::string and CString.
-	template <typename T>
-	static constexpr bool DatabasableType =
-		sqktd::IsOneOf<T, void, int, unsigned int, char, float, long long, unsigned long, long>;
-
-	template<typename T>
-	requires (DatabasableType<T>)
-	BOOL BindParameter(SQLUSMALLINT parameterNumber,
-		SQLSMALLINT inputOutputType,
-		SQLSMALLINT valueType,
-		SQLSMALLINT parameterType,
-		SQLUINTEGER columnSize,
-		SQLSMALLINT decimalDigits,
-		T * parameterValuePtr,
-		SQLINTEGER bufferLength,
-		SQLINTEGER * strLen_or_IndPtr) {
-		return BindParameterImpl(parameterNumber, inputOutputType, valueType, parameterType, columnSize, decimalDigits,
-			parameterValuePtr, bufferLength, strLen_or_IndPtr);
+	template<SQLSMALLINT ParameterType = SQL_VARCHAR>
+	requires ((ParameterType == SQL_VARCHAR || ParameterType == SQL_CHAR))
+	bool BindParameter(SQLUSMALLINT parameterNumber,
+		char * parameterValuePtr,
+		SQLUINTEGER columnSize = 0
+	) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, SQL_C_CHAR, ParameterType, columnSize, 0,
+			parameterValuePtr, 0, &sqlNts);
 	}
-	
+
+	bool BindParameter(SQLUSMALLINT parameterNumber, CString & string) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 0, 0,
+			const_cast<CHAR *>(string.GetString()), 0, &sqlNts
+		);
+	}
+
+	bool BindParameter(SQLUSMALLINT parameterNumber, std::string & string) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 0, 0,
+			const_cast<char *>(string.c_str()), 0, &sqlNts
+		);
+	}
+
+	template<typename IntegerType>
+		requires (sqktd::IsOneOf<std::remove_volatile_t<IntegerType>, int, unsigned int, long, unsigned long>)
+	bool BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT,
+			SQL_C_LONG, SQL_INTEGER, 0, 0, valuePtr, 0, 0
+		);
+	}
+
+	template<typename FloatType>
+		requires (sqktd::IsOneOf<std::remove_volatile_t<FloatType>, float>)
+	bool BindParameter(SQLUSMALLINT parameterNumber, FloatType * valuePtr) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT,
+			SQL_C_FLOAT, SQL_REAL, 0, 0, valuePtr, 0, 0
+		);
+	}
+
+	template<typename IntegerType>
+		requires (sqktd::IsOneOf<std::remove_volatile_t<IntegerType>, long long>)
+	bool BindParameter(SQLUSMALLINT parameterNumber, IntegerType * valuePtr) {
+		return BindParameterImpl(parameterNumber, SQL_PARAM_INPUT,
+			SQL_C_SBIGINT, SQL_BIGINT, 0, 0, valuePtr, 0, 0
+		);
+	}
+
 	BOOL MoreResults( void );
 	
 

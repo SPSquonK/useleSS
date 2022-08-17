@@ -25,6 +25,7 @@
 #include "GuildHouseDBCtrl.h"
 
 #include "CampusDBCtrl.h"
+#include "sqktd.h"
 
 #if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816) || defined(__ITEM_REMOVE_LIST)
 #define	MAX_QUERY_SIZE	1024 * 64
@@ -2475,8 +2476,7 @@ void CDbManager::UpdateGuildNotice( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryGuild( szQuery, info);
 
-	SQLINTEGER cbLen = SQL_NTS;
-	if( pQuery->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 127, 0, szNotice, 0, &cbLen ) == FALSE )
+	if( !pQuery->BindParameter( 1, szNotice, MAX_BYTE_NOTICE - 1 ) )
 	{
 		FreeRequest( lpDbOverlappedPlus );
 		return;
@@ -2909,24 +2909,18 @@ void CDbManager::AddGuildVote( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 		     "{call GUILD_VOTE_STR('A1', '%02d', '%06d', %d, ?, ?, ?, ?, ?, ?, %d)}",
 			 g_appInfo.dwSys, idGuild, 0, 0);
 
-	BOOL bOK[6];
-	SQLINTEGER cbLen = SQL_NTS;
-	bOK[0] = pQuery->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTETITLE, 0, szTitle, 0, &cbLen );
-	bOK[1] = pQuery->BindParameter( 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTEQUESTION, 0, szQuestion, 0, &cbLen );
-	bOK[2] = pQuery->BindParameter( 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, 0, szSelections[0], 0, &cbLen );
-	bOK[3] = pQuery->BindParameter( 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, 0, szSelections[1], 0, &cbLen );
-	bOK[4] = pQuery->BindParameter( 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, 0, szSelections[2], 0, &cbLen );
-	bOK[5] = pQuery->BindParameter( 6, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, MAX_BYTE_VOTESELECT, 0, szSelections[3], 0, &cbLen );
+	std::array<bool, 6> bOK;
+	bOK[0] = pQuery->BindParameter( 1, szTitle, MAX_BYTE_VOTETITLE);
+	bOK[1] = pQuery->BindParameter( 2, szQuestion, MAX_BYTE_VOTEQUESTION);
+	bOK[2] = pQuery->BindParameter( 3, szSelections[0], MAX_BYTE_VOTESELECT);
+	bOK[3] = pQuery->BindParameter( 4, szSelections[1], MAX_BYTE_VOTESELECT);
+	bOK[4] = pQuery->BindParameter( 5, szSelections[2], MAX_BYTE_VOTESELECT);
+	bOK[5] = pQuery->BindParameter( 6, szSelections[3], MAX_BYTE_VOTESELECT);
 	
 	u_long idVote = 0;
-	if( bOK[0] && bOK[1] && bOK[2] && bOK[3] && bOK[4] && bOK[5] )
-	{
-		if( pQuery->Exec( szQuery ) )
-		{
-			if( pQuery->Fetch() )
-			{
-				idVote = (u_long)pQuery->GetInt( "m_idVote" );
-			}
+	if (sqktd::ranges::all_are(bOK, true)) {
+		if (pQuery->Exec(szQuery) && pQuery->Fetch()) {
+			idVote = (u_long)pQuery->GetInt("m_idVote");
 		}
 	}
 	// 성공이던지, 실패이던지 패킷을 보낸다.
@@ -3257,8 +3251,7 @@ void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 	char szQuery[QUERY_SIZE]	= { 0,};
 	sprintf(szQuery, "{call TAG_STR('A1', '%07d', '%02d', '%07d', ?)}", idTo, g_appInfo.dwSys, idFrom);
 
-	SQLINTEGER cbLen = SQL_NTS;
-	if (qry->BindParameter(1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 256, 0, szString, 0, &cbLen) == FALSE) {
+	if (!qry->BindParameter(1, szString, 256)) {
 		return;
 	}
 
@@ -4012,8 +4005,7 @@ BOOL CDbManager::OnWantedQuery( CQuery* pQuery, WANTED_QUERYINFO& info )
 			"{call WANTED_STR('%s', '%07d', '%02d', '%d', ?)}", 
              info.pszType, info.idPlayer, g_appInfo.dwSys, info.nGold );
 
-	SQLINTEGER cbLen = SQL_NTS;
-	if( !pQuery->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, WANTED_MSG_MAX, 0, info.szMsg, 0, &cbLen ) )
+	if( !pQuery->BindParameter( 1, info.szMsg, WANTED_MSG_MAX ) )
 		return FALSE;
 
 	if( !pQuery->Exec( szQeury ) )
@@ -5221,10 +5213,8 @@ void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 		char szQuery[QUERY_SIZE]	= { 0,};
 		CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
 
-		SQLINTEGER cbLen	= SQL_NTS;
-
-		if( pQuery->BindParameter( 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 128, 0, (void*)pMail->m_szTitle, 0, &cbLen ) == FALSE
-			|| pQuery->BindParameter( 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 1024, 0, (void*)pMail->m_szText, 0, &cbLen ) == FALSE )
+		if( !pQuery->BindParameter( 1, pMail->m_szTitle, 128)
+			|| !pQuery->BindParameter( 2, pMail->m_szText, 1024) )
 		{
 			Error( "QUERY: PACKETTYPE_QUERYPOSTMAIL" );
 			CDPTrans::GetInstance()->SendPostMail( FALSE, idReceiver, pMail );
