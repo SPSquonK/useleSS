@@ -6116,36 +6116,35 @@ void CDPClient::OnIsRequest( CAr & ar )
 	ar >> bRequest;
 	g_GuildCombatMng.m_bRequest = bRequest;
 }
+
+#include <chrono>
+#include <format>
 void CDPClient::OnGCLog( CAr & ar )
 {
 	g_GuildCombatMng.m_vecGCGetPoint.clear();
 	u_long uSize;
 	ar >> uSize;
 
-//#ifdef __INTERNALSERVER
+
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+	if (!pWndWorld) return;
+
 	SAFE_DELETE( g_WndMng.n_pWndGuildCombatResult );
 	g_WndMng.n_pWndGuildCombatResult = new CWndGuildCombatResult;
-		
-	if( pWndWorld && g_WndMng.n_pWndGuildCombatResult )
-	{
-		g_WndMng.n_pWndGuildCombatResult->Initialize();
+	g_WndMng.n_pWndGuildCombatResult->Initialize();
 
+	const auto timeAtFirst = std::chrono::steady_clock::now();
 		CGuild *pPlayerGuild = g_pPlayer->GetGuild();
 
 		// 길드 순위
 		std::multimap< int, CString > mmapGuildRate = pWndWorld->m_mmapGuildCombat_GuildPrecedence;
 
 		int nRate = 0;
-		int nPoint;
 		CString str, strTemp;
 		int nOldPoint = 0xffffffff;
 		char szBuf[MAX_NAME];
 
-		for( auto i = mmapGuildRate.rbegin(); i != mmapGuildRate.rend(); ++i )
-		{
-			nPoint  = i->first;
-			str		= i->second;
+		for (auto [nPoint, str] : mmapGuildRate) {
 			
 			if( nOldPoint != nPoint )
 				nRate++;
@@ -6184,13 +6183,9 @@ void CDPClient::OnGCLog( CAr & ar )
 		// 개인순위
 		nRate = 0;
 		nOldPoint = 0xffffffff;
-		u_long uiPlayer;
 
 		std::multimap<int, u_long> mmapPersonRate = pWndWorld->m_mmapGuildCombat_PlayerPrecedence;
-		for( auto j = mmapPersonRate.rbegin(); j != mmapPersonRate.rend(); ++j )
-		{ 
-			nPoint			= j->first;
-			uiPlayer		= j->second;	
+		for (auto [nPoint, uiPlayer] : mmapPersonRate) {
 			
 			if( nOldPoint != nPoint )
 				nRate++;
@@ -6344,22 +6339,21 @@ void CDPClient::OnGCLog( CAr & ar )
 				strTemp += prj.GetText(TID_GAME_GC_LOG5);
 			}
 			
-//			if( GCGetPoint.uidPlayerAttack == g_pPlayer->m_idPlayer )
-//			{
-//				strTemp2.Format( "#cff009c00< %s >#nc", 	strTemp );
-//			}
-//			else
-//			{
 				strTemp2.Format( "< %s >", 	strTemp );
-//			}
 
 			strTemp2+="\n";
 			
 			g_WndMng.n_pWndGuildCombatResult->InsertLog( strTemp2 );
 			g_WndMng.n_pWndGuildCombatResult->InsertLog( "\r\n" );
 		}
+
+	const auto timeAtLast = std::chrono::steady_clock::now();
+	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(timeAtLast - timeAtFirst);
+		std::string elapsed = std::format("Elapsed time = {} ms", diff.count());
+		g_WndMng.PutString(elapsed.c_str());
 	}
-//#endif //__INTERNALSERVER
+
 }
 void CDPClient::OnGCLogRealTime( CAr & ar )
 {

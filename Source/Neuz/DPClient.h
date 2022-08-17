@@ -651,7 +651,9 @@ public:
 	void	OnGCTele( CAr & ar );
 	void	OnGCDiagMessage( CAr & ar );	
 	void	OnIsRequest( CAr & ar );
+	public:
 	void	OnGCLog( CAr & ar );
+	private:
 	void	OnGCLogRealTime( CAr & ar );
 	void	OnGCPlayerPoint( CAr & ar );
 
