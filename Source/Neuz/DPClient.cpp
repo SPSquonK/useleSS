@@ -6144,7 +6144,7 @@ void CDPClient::OnGCLog( CAr & ar )
 		int nOldPoint = 0xffffffff;
 		char szBuf[MAX_NAME];
 
-		for (auto [nPoint, str] : mmapGuildRate) {
+		for (auto & [nPoint, str] : mmapGuildRate | std::views::reverse) {
 			
 			if( nOldPoint != nPoint )
 				nRate++;
@@ -6185,7 +6185,7 @@ void CDPClient::OnGCLog( CAr & ar )
 		nOldPoint = 0xffffffff;
 
 		std::multimap<int, u_long> mmapPersonRate = pWndWorld->m_mmapGuildCombat_PlayerPrecedence;
-		for (auto [nPoint, uiPlayer] : mmapPersonRate) {
+		for (auto & [nPoint, uiPlayer] : mmapPersonRate | std::views::reverse) {
 			
 			if( nOldPoint != nPoint )
 				nRate++;
