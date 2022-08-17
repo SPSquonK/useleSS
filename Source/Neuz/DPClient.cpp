@@ -6117,15 +6117,8 @@ void CDPClient::OnIsRequest( CAr & ar )
 	g_GuildCombatMng.m_bRequest = bRequest;
 }
 
-#include <chrono>
-#include <format>
 void CDPClient::OnGCLog( CAr & ar )
 {
-	g_GuildCombatMng.m_vecGCGetPoint.clear();
-	u_long uSize;
-	ar >> uSize;
-
-
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	if (!pWndWorld) return;
 
@@ -6133,98 +6126,76 @@ void CDPClient::OnGCLog( CAr & ar )
 	g_WndMng.n_pWndGuildCombatResult = new CWndGuildCombatResult;
 	g_WndMng.n_pWndGuildCombatResult->Initialize();
 
-	const auto timeAtFirst = std::chrono::steady_clock::now();
-		CGuild *pPlayerGuild = g_pPlayer->GetGuild();
+	static constexpr auto MakeName = [](const char * name) -> StaticString<MAX_NAME> {
+		StaticString<MAX_NAME> retval;
+		GetStrCut(name, retval.GetBuffer(), 10);
 
-		// 길드 순위
-		std::multimap< int, CString > mmapGuildRate = pWndWorld->m_mmapGuildCombat_GuildPrecedence;
-
-		int nRate = 0;
-		CString str, strTemp;
-		int nOldPoint = 0xffffffff;
-		char szBuf[MAX_NAME];
-
-		for (auto & [nPoint, str] : mmapGuildRate | std::views::reverse) {
-			
-			if( nOldPoint != nPoint )
-				nRate++;
-
-			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-			
-			GetStrCut( str, szBuf, 10 );
-			
-			if( 10 <= GetStrLen(str) )
-			{
-				strcat( szBuf, "..." );
-			}
-			else
-			{
-				strcpy( szBuf, str );
-			}						
-
-			if( nOldPoint != nPoint )
-			{
-				if( nRate == 1 )
-					strTemp.Format( "%2d   %s\t(%d) WINNER", nRate, szBuf, nPoint );
-				else
-					strTemp.Format( "%2d   %s\t(%d)", nRate, szBuf, nPoint );				
-			}
-			else
-			{					
-				strTemp.Format( "%s   %s\t(%d)", "  ", szBuf, nPoint );
-			}
-			
-			g_WndMng.n_pWndGuildCombatResult->InsertGuildRate( strTemp );
-//			g_WndMng.n_pWndGuildCombatResult->m_WndGuildCombatTabResultRate.InsertGuildRate( szBuf, nPoint );
-
-			nOldPoint = nPoint;
+		if (10 <= GetStrLen(name)) {
+			strcat(szBuf, "...");
+		} else {
+			retval = name;
 		}
 
-		// 개인순위
-		nRate = 0;
-		nOldPoint = 0xffffffff;
+		return retval;
+	};
 
-		std::multimap<int, u_long> mmapPersonRate = pWndWorld->m_mmapGuildCombat_PlayerPrecedence;
-		for (auto & [nPoint, uiPlayer] : mmapPersonRate | std::views::reverse) {
-			
-			if( nOldPoint != nPoint )
-				nRate++;
+	// 길드 순위
+	CString strTemp;
 
-			str		= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
+	int nRate = 0;
+	int nOldPoint = 0xffffffff;
 
-			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-				
-			GetStrCut( str, szBuf, 10 );
-			
-			if( 10 <= GetStrLen(str) )
-			{
-				strcat( szBuf, "..." );
-			}
+	for (const auto & [nPoint, str] : pWndWorld->m_mmapGuildCombat_GuildPrecedence | std::views::reverse) {
+		if (nOldPoint != nPoint)
+			nRate++;
+
+		const auto name = MakeName(str.GetString());
+
+		if (nOldPoint != nPoint) {
+			if (nRate == 1)
+				strTemp.Format("%2d   %s\t(%d) WINNER", nRate, name.GetRawStr(), nPoint);
 			else
-			{
-				strcpy( szBuf, str );
-			}			
-
-			if( nOldPoint != nPoint )
-			{
-				if( uiPlayer == g_GuildCombatMng.m_uBestPlayer)
-					strTemp.Format( "%2d   %s\t(%d) MVP", nRate, szBuf, nPoint );
-				else
-					strTemp.Format( "%2d   %s\t(%d)", nRate, szBuf, nPoint );				
-			}
-			else
-			{					
-				strTemp.Format( "%s   %s\t(%d)", "  ", szBuf, nPoint );
-			}
-			
-			g_WndMng.n_pWndGuildCombatResult->InsertPersonRate( strTemp );
-
-			nOldPoint = nPoint;			
+				strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
+		} else {
+			strTemp.Format("%s   %s\t(%d)", "  ", name.GetRawStr(), nPoint);
 		}
+
+		g_WndMng.n_pWndGuildCombatResult->InsertGuildRate(strTemp);
+
+		nOldPoint = nPoint;
+	}
+
+	// 개인순위
+	nRate = 0;
+	nOldPoint = 0xffffffff;
+
+	for (const auto & [nPoint, uiPlayer] : pWndWorld->m_mmapGuildCombat_PlayerPrecedence | std::views::reverse) {
+		if (nOldPoint != nPoint)
+			nRate++;
+
+		const auto name = MakeName(CPlayerDataCenter::GetInstance()->GetPlayerString(uiPlayer));
+
+		if (nOldPoint != nPoint) {
+			if (uiPlayer == g_GuildCombatMng.m_uBestPlayer)
+				strTemp.Format("%2d   %s\t(%d) MVP", nRate, name.GetRawStr(), nPoint);
+			else
+				strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
+		} else {
+			strTemp.Format("%s   %s\t(%d)", "  ", name.GetRawStr(), nPoint);
+		}
+
+		g_WndMng.n_pWndGuildCombatResult->InsertPersonRate(strTemp);
+
+		nOldPoint = nPoint;
+	}
 
 	// 로그 표시
+	CGuild * pPlayerGuild = g_pPlayer->GetGuild();
 	CString textualLog;
 	const char * const szTempAttack = prj.GetText(TID_GAME_ATTACK);
+	
+	g_GuildCombatMng.m_vecGCGetPoint.clear();
+	u_long uSize; ar >> uSize;
 	for (u_long k = 0; k < uSize; ++k) {
 		CGuildCombat::__GCGETPOINT GCGetPoint;
 		ar >> GCGetPoint;
@@ -6270,14 +6241,8 @@ void CDPClient::OnGCLog( CAr & ar )
 	}
 
 	g_WndMng.n_pWndGuildCombatResult->InsertLog(textualLog);
-
-	const auto timeAtLast = std::chrono::steady_clock::now();
-	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
-		const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(timeAtLast - timeAtFirst);
-		std::string elapsed = std::format("Elapsed time = {} ms", diff.count());
-		g_WndMng.PutString(elapsed.c_str());
-	}
 }
+
 void CDPClient::OnGCLogRealTime( CAr & ar )
 {
 	char szAttacker[MAX_NAME], szDefender[MAX_NAME];

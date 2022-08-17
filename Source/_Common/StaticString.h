@@ -49,6 +49,8 @@ public:
     return *this;
   }
 
+  [[nodiscard]] char * GetBuffer() { return buffer.data(); }
+
 private:
   std::array<char, N> buffer = { '\0' };
 };
