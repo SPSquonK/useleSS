@@ -4454,7 +4454,7 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 	std::uniform_int_distribution<int> uniform_dist(1, 25);
 	std::default_random_engine e1(r());
 
-	for (int i = 0; i != 500; ++i) {
+	for (int i = 0; i != 9 * 9 * 50; ++i) {
 		u_long pAtk = usablePlayers[uniform_dist(e1) % usablePlayers.size()];
 		CGuild * gAtk = usableGuilds[uniform_dist(e1) % usableGuilds.size()];
 		

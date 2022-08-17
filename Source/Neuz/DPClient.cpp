@@ -6313,7 +6313,7 @@ void CDPClient::OnGCLog( CAr & ar )
 			}
 			strTemp += "\n";
 			
-			g_WndMng.n_pWndGuildCombatResult->InsertLog( strTemp );
+			strTemp2 += strTemp;
 
 			strTemp.Empty();
 			strTemp += prj.GetText(TID_GAME_GC_LOG1);
@@ -6339,13 +6339,13 @@ void CDPClient::OnGCLog( CAr & ar )
 				strTemp += prj.GetText(TID_GAME_GC_LOG5);
 			}
 			
-				strTemp2.Format( "< %s >", 	strTemp );
+			strTemp2.AppendFormat( "< %s >", 	strTemp );
 
-			strTemp2+="\n";
+			strTemp2+="\n\r\n";
 			
-			g_WndMng.n_pWndGuildCombatResult->InsertLog( strTemp2 );
-			g_WndMng.n_pWndGuildCombatResult->InsertLog( "\r\n" );
 		}
+
+		g_WndMng.n_pWndGuildCombatResult->InsertLog(strTemp2);
 
 	const auto timeAtLast = std::chrono::steady_clock::now();
 	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
