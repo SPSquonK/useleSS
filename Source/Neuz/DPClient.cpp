@@ -6222,122 +6222,54 @@ void CDPClient::OnGCLog( CAr & ar )
 			nOldPoint = nPoint;			
 		}
 
-		CString strAtk, strDef;
-		CString strGuild1, strGuild2;
-		CString strTemp2;
-		// 로그 표시
-		for( u_long k = 0 ; k < uSize ; ++k )
-		{
-			CGuildCombat::__GCGETPOINT GCGetPoint;
-			ar >> GCGetPoint;
-			g_GuildCombatMng.m_vecGCGetPoint.push_back( GCGetPoint );
+	// 로그 표시
+	CString textualLog;
+	const char * const szTempAttack = prj.GetText(TID_GAME_ATTACK);
+	for (u_long k = 0; k < uSize; ++k) {
+		CGuildCombat::__GCGETPOINT GCGetPoint;
+		ar >> GCGetPoint;
+		g_GuildCombatMng.m_vecGCGetPoint.push_back(GCGetPoint);
 
-			// 길드 정보
-			CGuild* pGuildAtk = g_GuildMng.GetGuild( GCGetPoint.uidGuildAttack );
-			CGuild* pGuildDef = g_GuildMng.GetGuild( GCGetPoint.uidGuildDefence );
+		// 길드 정보
+		const CGuild * const pGuildAtk = g_GuildMng.GetGuild(GCGetPoint.uidGuildAttack);
+		const CGuild * const pGuildDef = g_GuildMng.GetGuild(GCGetPoint.uidGuildDefence);
 
-			BOOL bAtkMaster = pGuildAtk->IsMaster( GCGetPoint.uidPlayerAttack );
-			BOOL bDefMaster = pGuildDef->IsMaster( GCGetPoint.uidPlayerDefence );
-			
-			if( bAtkMaster && bDefMaster )
-			{
-				strGuild1 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-				strGuild2 = strGuild1;
-			}
-			else
-			if( !bAtkMaster && bDefMaster )
-			{
-				strGuild1 = "";
-				strGuild2 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-			}
-			else
-			if( bAtkMaster && !bDefMaster )
-			{
-				strGuild1 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-				strGuild2 = "";
-			}
-			else
-			if( !bAtkMaster && !bDefMaster )
-			{
-				strGuild1 = "";
-				strGuild2 = "";
-			}
+		const char * const strGuild1 = GCGetPoint.bMaster ? prj.GetText(TID_GAME_GC_LOG_MASTER) : "";
+		const char * const strAtk = CPlayerDataCenter::GetInstance()->GetPlayerString(GCGetPoint.uidPlayerAttack);
+		const char * const strDef = CPlayerDataCenter::GetInstance()->GetPlayerString(GCGetPoint.uidPlayerDefence);
+		const char * const strGuild2 = GCGetPoint.bDefender ? prj.GetText(TID_GAME_GC_LOG_DEFENDER) : "";
 
-			strAtk	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerAttack );
-			strDef	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerDefence );
-			if( GCGetPoint.bDefender )
-			{
-				strGuild2 = prj.GetText(TID_GAME_GC_LOG_DEFENDER);
-			}
-			
-			CString szTempGuild;
-			szTempGuild.Format( prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildAtk->m_szGuild );
-			CString szTempPoint;
-			szTempPoint.Format( prj.GetText(TID_GAME_GC_LOG_POINT), GCGetPoint.nPoint );
-			CString szTempGuildDef;
-			szTempGuildDef.Format( prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildDef->m_szGuild );
-			CString szTempAttack;
-			szTempAttack = prj.GetText(TID_GAME_ATTACK);
-			
-			if( GCGetPoint.uidPlayerAttack == g_pPlayer->m_idPlayer )
-			{
-				strTemp.Format( "#cff009c00%s %s %s%s#nc %s → %s %s %s", 
-					szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-			}
-			else
-			{
-				if( pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildAttack )
-				{
-					strTemp.Format( "#cff009c00%s %s %s%s#nc %s → %s %s %s", 
-						szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-				}
-				else
-				if( pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildDefence )
-				{
-					strTemp.Format( "%s %s %s%s %s → #cff9c0000%s %s %s#nc", 
-						szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-				}
-				else
-				{
-					strTemp.Format( "%s %s %s%s %s → %s %s %s", 
-						szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-				}
-			}
-			strTemp += "\n";
-			
-			strTemp2 += strTemp;
+		CString szTempGuild; szTempGuild.Format(prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildAtk->m_szGuild);
+		CString szTempPoint; szTempPoint.Format(prj.GetText(TID_GAME_GC_LOG_POINT), GCGetPoint.nPoint);
+		CString szTempGuildDef; szTempGuildDef.Format(prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildDef->m_szGuild);
 
-			strTemp.Empty();
-			strTemp += prj.GetText(TID_GAME_GC_LOG1);
-			
-			if( GCGetPoint.bMaster )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG2);
-			}
-			if( GCGetPoint.bDefender )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG3);
-			}
-			if( GCGetPoint.bKillDiffernceGuild )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG4);
-			}
-			if( GCGetPoint.bLastLife )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG5);
-			}
-			
-			strTemp2.AppendFormat( "< %s >", 	strTemp );
+		const bool weAttacked = GCGetPoint.uidPlayerAttack == g_pPlayer->m_idPlayer
+			|| (pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildAttack);
 
-			strTemp2+="\n\r\n";
-			
-		}
+		const bool weDefended = !weAttacked && (pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildDefence);
 
-		g_WndMng.n_pWndGuildCombatResult->InsertLog(strTemp2);
+		if (weAttacked) textualLog += "#cff009c00";
+		textualLog.AppendFormat("%s %s %s%s", szTempGuild.GetString(), strGuild1, strAtk, szTempPoint.GetString());
+		if (weAttacked) textualLog += "#nc";
+
+		textualLog.AppendFormat(" %s -> ", szTempAttack); // TODO: get the real arrow symbol
+
+		if (weDefended) textualLog += "#cff9c0000";
+		textualLog.AppendFormat("%s %s %s", szTempGuildDef.GetString(), strGuild2, strDef);
+		if (weDefended) textualLog += "#nc";
+		textualLog += '\n';
+
+
+		strTemp = prj.GetText(TID_GAME_GC_LOG1);
+		if (GCGetPoint.bMaster)             strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG2));
+		if (GCGetPoint.bDefender)           strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG3));
+		if (GCGetPoint.bKillDiffernceGuild) strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG4));
+		if (GCGetPoint.bLastLife)           strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG5));
+
+		textualLog.AppendFormat("< %s >\n\r\n", strTemp.GetString());
+	}
+
+	g_WndMng.n_pWndGuildCombatResult->InsertLog(textualLog);
 
 	const auto timeAtLast = std::chrono::steady_clock::now();
 	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
@@ -6345,7 +6277,6 @@ void CDPClient::OnGCLog( CAr & ar )
 		std::string elapsed = std::format("Elapsed time = {} ms", diff.count());
 		g_WndMng.PutString(elapsed.c_str());
 	}
-
 }
 void CDPClient::OnGCLogRealTime( CAr & ar )
 {
