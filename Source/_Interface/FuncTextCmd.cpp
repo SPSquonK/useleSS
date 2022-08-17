@@ -4490,15 +4490,7 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 	CAr ar;
 	ar << static_cast<u_long>(kills.size());
 	for (const auto & gc : kills) {
-		ar << gc.uidGuildAttack;			// 공격한 길드 아이디
-		ar << gc.uidGuildDefence;		// 죽은 길드 아이디
-		ar << gc.uidPlayerAttack;		// 공격한 유저 아이디
-		ar << gc.uidPlayerDefence;		// 죽은 유저 아이디
-		ar << gc.nPoint;					// 얻은 포인트
-		ar << gc.bKillDiffernceGuild;	// 전에 죽인 길드와 요번에 죽인 길드가 다르면 +1
-		ar << gc.bMaster;				// 마스터 이면 +1
-		ar << gc.bDefender;				// 디펜터 +1
-		ar << gc.bLastLife;				// 마지막 생명일때 +1
+		ar << gc;
 	}
 
 	int size;

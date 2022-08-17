@@ -165,6 +165,8 @@ public:
 	};
 	struct __GCGETPOINT
 	{
+		static constexpr bool Archivable = true;
+
 		u_long uidGuildAttack;
 		u_long uidGuildDefence;
 		u_long uidPlayerAttack;
