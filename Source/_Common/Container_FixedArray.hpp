@@ -98,7 +98,7 @@ CFixedArrayIterator<T> CFixedArray<T>::begin() {
 
 template <typename T>
 CFixedArrayIterator<T> CFixedArray<T>::end() {
-	return CFixedArrayIterator<T>(this, m_data.size());
+	return CFixedArrayIterator<T>(this, m_offsets.size());
 }
 
 template <typename T>
