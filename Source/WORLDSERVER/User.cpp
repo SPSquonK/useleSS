@@ -4934,15 +4934,7 @@ void CUserMng::AddGCLogWorld( void )
 	for( int veci = 0 ; veci < (int)( g_GuildCombatMng.m_vecGCGetPoint.size() ) ; ++veci )
 	{
 		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[ veci ];
-		arBlock << GCGetPoint.uidGuildAttack;
-		arBlock << GCGetPoint.uidGuildDefence;
-		arBlock << GCGetPoint.uidPlayerAttack;
-		arBlock << GCGetPoint.uidPlayerDefence;
-		arBlock << GCGetPoint.nPoint;
-		arBlock << GCGetPoint.bKillDiffernceGuild;
-		arBlock << GCGetPoint.bMaster;
-		arBlock << GCGetPoint.bDefender;
-		arBlock << GCGetPoint.bLastLife;
+		arBlock << GCGetPoint;
 	}
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 
@@ -5941,18 +5933,9 @@ void CUser::AddGCLog( void )
 	m_Snapshot.ar << SNAPSHOTTYPE_GUILDCOMBAT;
 	m_Snapshot.ar << GC_LOG;
 	m_Snapshot.ar << (u_long)g_GuildCombatMng.m_vecGCGetPoint.size();
-	for( int veci = 0 ; veci < (int)( g_GuildCombatMng.m_vecGCGetPoint.size() ) ; ++veci )
-	{
-		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[ veci ];
-		m_Snapshot.ar << GCGetPoint.uidGuildAttack;
-		m_Snapshot.ar << GCGetPoint.uidGuildDefence;
-		m_Snapshot.ar << GCGetPoint.uidPlayerAttack;
-		m_Snapshot.ar << GCGetPoint.uidPlayerDefence;
-		m_Snapshot.ar << GCGetPoint.nPoint;
-		m_Snapshot.ar << GCGetPoint.bKillDiffernceGuild;
-		m_Snapshot.ar << GCGetPoint.bMaster;
-		m_Snapshot.ar << GCGetPoint.bDefender;
-		m_Snapshot.ar << GCGetPoint.bLastLife;
+	for (int veci = 0; veci < (int)(g_GuildCombatMng.m_vecGCGetPoint.size()); ++veci) {
+		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[veci];
+		m_Snapshot.ar << GCGetPoint;
 	}
 	
 }

@@ -6116,251 +6116,133 @@ void CDPClient::OnIsRequest( CAr & ar )
 	ar >> bRequest;
 	g_GuildCombatMng.m_bRequest = bRequest;
 }
+
 void CDPClient::OnGCLog( CAr & ar )
 {
-	g_GuildCombatMng.m_vecGCGetPoint.clear();
-	u_long uSize;
-	ar >> uSize;
-
-//#ifdef __INTERNALSERVER
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+	if (!pWndWorld) return;
+
 	SAFE_DELETE( g_WndMng.n_pWndGuildCombatResult );
 	g_WndMng.n_pWndGuildCombatResult = new CWndGuildCombatResult;
-		
-	if( pWndWorld && g_WndMng.n_pWndGuildCombatResult )
-	{
-		g_WndMng.n_pWndGuildCombatResult->Initialize();
+	g_WndMng.n_pWndGuildCombatResult->Initialize();
 
-		CGuild *pPlayerGuild = g_pPlayer->GetGuild();
+	static constexpr auto MakeName = [](const char * name) -> StaticString<MAX_NAME> {
+		StaticString<MAX_NAME> retval;
+		GetStrCut(name, retval.GetBuffer(), 10);
 
-		// 길드 순위
-		std::multimap< int, CString > mmapGuildRate = pWndWorld->m_mmapGuildCombat_GuildPrecedence;
-
-		int nRate = 0;
-		int nPoint;
-		CString str, strTemp;
-		int nOldPoint = 0xffffffff;
-		char szBuf[MAX_NAME];
-
-		for( auto i = mmapGuildRate.rbegin(); i != mmapGuildRate.rend(); ++i )
-		{
-			nPoint  = i->first;
-			str		= i->second;
-			
-			if( nOldPoint != nPoint )
-				nRate++;
-
-			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-			
-			GetStrCut( str, szBuf, 10 );
-			
-			if( 10 <= GetStrLen(str) )
-			{
-				strcat( szBuf, "..." );
-			}
-			else
-			{
-				strcpy( szBuf, str );
-			}						
-
-			if( nOldPoint != nPoint )
-			{
-				if( nRate == 1 )
-					strTemp.Format( "%2d   %s\t(%d) WINNER", nRate, szBuf, nPoint );
-				else
-					strTemp.Format( "%2d   %s\t(%d)", nRate, szBuf, nPoint );				
-			}
-			else
-			{					
-				strTemp.Format( "%s   %s\t(%d)", "  ", szBuf, nPoint );
-			}
-			
-			g_WndMng.n_pWndGuildCombatResult->InsertGuildRate( strTemp );
-//			g_WndMng.n_pWndGuildCombatResult->m_WndGuildCombatTabResultRate.InsertGuildRate( szBuf, nPoint );
-
-			nOldPoint = nPoint;
+		if (10 <= GetStrLen(name)) {
+			strcat(szBuf, "...");
+		} else {
+			retval = name;
 		}
 
-		// 개인순위
-		nRate = 0;
-		nOldPoint = 0xffffffff;
-		u_long uiPlayer;
+		return retval;
+	};
 
-		std::multimap<int, u_long> mmapPersonRate = pWndWorld->m_mmapGuildCombat_PlayerPrecedence;
-		for( auto j = mmapPersonRate.rbegin(); j != mmapPersonRate.rend(); ++j )
-		{ 
-			nPoint			= j->first;
-			uiPlayer		= j->second;	
-			
-			if( nOldPoint != nPoint )
-				nRate++;
+	// 길드 순위
+	CString strTemp;
 
-			str		= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
+	int nRate = 0;
+	int nOldPoint = 0xffffffff;
 
-			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-				
-			GetStrCut( str, szBuf, 10 );
-			
-			if( 10 <= GetStrLen(str) )
-			{
-				strcat( szBuf, "..." );
-			}
+	for (const auto & [nPoint, str] : pWndWorld->m_mmapGuildCombat_GuildPrecedence | std::views::reverse) {
+		if (nOldPoint != nPoint)
+			nRate++;
+
+		const auto name = MakeName(str.GetString());
+
+		if (nOldPoint != nPoint) {
+			if (nRate == 1)
+				strTemp.Format("%2d   %s\t(%d) WINNER", nRate, name.GetRawStr(), nPoint);
 			else
-			{
-				strcpy( szBuf, str );
-			}			
-
-			if( nOldPoint != nPoint )
-			{
-				if( uiPlayer == g_GuildCombatMng.m_uBestPlayer)
-					strTemp.Format( "%2d   %s\t(%d) MVP", nRate, szBuf, nPoint );
-				else
-					strTemp.Format( "%2d   %s\t(%d)", nRate, szBuf, nPoint );				
-			}
-			else
-			{					
-				strTemp.Format( "%s   %s\t(%d)", "  ", szBuf, nPoint );
-			}
-			
-			g_WndMng.n_pWndGuildCombatResult->InsertPersonRate( strTemp );
-
-			nOldPoint = nPoint;			
+				strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
+		} else {
+			strTemp.Format("%s   %s\t(%d)", "  ", name.GetRawStr(), nPoint);
 		}
 
-		CString strAtk, strDef;
-		CString strGuild1, strGuild2;
-		CString strTemp2;
-		// 로그 표시
-		for( int k = 0 ; k < (int)( uSize ) ; ++k )
-		{
-			CGuildCombat::__GCGETPOINT GCGetPoint;
-			ar >>GCGetPoint.uidGuildAttack;			// 공격한 길드 아이디
-			ar >>GCGetPoint.uidGuildDefence;		// 죽은 길드 아이디
-			ar >>GCGetPoint.uidPlayerAttack;		// 공격한 유저 아이디
-			ar >>GCGetPoint.uidPlayerDefence;		// 죽은 유저 아이디
-			ar >>GCGetPoint.nPoint;					// 얻은 포인트
-			ar >>GCGetPoint.bKillDiffernceGuild;	// 전에 죽인 길드와 요번에 죽인 길드가 다르면 +1
-			ar >>GCGetPoint.bMaster;				// 마스터 이면 +1
-			ar >>GCGetPoint.bDefender;				// 디펜터 +1
-			ar >>GCGetPoint.bLastLife;				// 마지막 생명일때 +1
-			g_GuildCombatMng.m_vecGCGetPoint.push_back( GCGetPoint );
+		g_WndMng.n_pWndGuildCombatResult->InsertGuildRate(strTemp);
 
-			// 길드 정보
-			CGuild* pGuildAtk = g_GuildMng.GetGuild( GCGetPoint.uidGuildAttack );
-			CGuild* pGuildDef = g_GuildMng.GetGuild( GCGetPoint.uidGuildDefence );
-
-			BOOL bAtkMaster = pGuildAtk->IsMaster( GCGetPoint.uidPlayerAttack );
-			BOOL bDefMaster = pGuildDef->IsMaster( GCGetPoint.uidPlayerDefence );
-			
-			if( bAtkMaster && bDefMaster )
-			{
-				strGuild1 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-				strGuild2 = strGuild1;
-			}
-			else
-			if( !bAtkMaster && bDefMaster )
-			{
-				strGuild1 = "";
-				strGuild2 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-			}
-			else
-			if( bAtkMaster && !bDefMaster )
-			{
-				strGuild1 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-				strGuild2 = "";
-			}
-			else
-			if( !bAtkMaster && !bDefMaster )
-			{
-				strGuild1 = "";
-				strGuild2 = "";
-			}
-
-			strAtk	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerAttack );
-			strDef	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerDefence );
-			if( GCGetPoint.bDefender )
-			{
-				strGuild2 = prj.GetText(TID_GAME_GC_LOG_DEFENDER);
-			}
-			
-			CString szTempGuild;
-			szTempGuild.Format( prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildAtk->m_szGuild );
-			CString szTempPoint;
-			szTempPoint.Format( prj.GetText(TID_GAME_GC_LOG_POINT), GCGetPoint.nPoint );
-			CString szTempGuildDef;
-			szTempGuildDef.Format( prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildDef->m_szGuild );
-			CString szTempAttack;
-			szTempAttack = prj.GetText(TID_GAME_ATTACK);
-			
-			if( GCGetPoint.uidPlayerAttack == g_pPlayer->m_idPlayer )
-			{
-				strTemp.Format( "#cff009c00%s %s %s%s#nc %s → %s %s %s", 
-					szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-			}
-			else
-			{
-				if( pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildAttack )
-				{
-					strTemp.Format( "#cff009c00%s %s %s%s#nc %s → %s %s %s", 
-						szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-				}
-				else
-				if( pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildDefence )
-				{
-					strTemp.Format( "%s %s %s%s %s → #cff9c0000%s %s %s#nc", 
-						szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-				}
-				else
-				{
-					strTemp.Format( "%s %s %s%s %s → %s %s %s", 
-						szTempGuild, strGuild1, strAtk, szTempPoint, szTempAttack, szTempGuildDef, strGuild2, strDef );
-				}
-			}
-			strTemp += "\n";
-			
-			g_WndMng.n_pWndGuildCombatResult->InsertLog( strTemp );
-
-			strTemp.Empty();
-			strTemp += prj.GetText(TID_GAME_GC_LOG1);
-			
-			if( GCGetPoint.bMaster )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG2);
-			}
-			if( GCGetPoint.bDefender )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG3);
-			}
-			if( GCGetPoint.bKillDiffernceGuild )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG4);
-			}
-			if( GCGetPoint.bLastLife )
-			{
-				strTemp += ", ";
-				strTemp += prj.GetText(TID_GAME_GC_LOG5);
-			}
-			
-//			if( GCGetPoint.uidPlayerAttack == g_pPlayer->m_idPlayer )
-//			{
-//				strTemp2.Format( "#cff009c00< %s >#nc", 	strTemp );
-//			}
-//			else
-//			{
-				strTemp2.Format( "< %s >", 	strTemp );
-//			}
-
-			strTemp2+="\n";
-			
-			g_WndMng.n_pWndGuildCombatResult->InsertLog( strTemp2 );
-			g_WndMng.n_pWndGuildCombatResult->InsertLog( "\r\n" );
-		}
+		nOldPoint = nPoint;
 	}
-//#endif //__INTERNALSERVER
+
+	// 개인순위
+	nRate = 0;
+	nOldPoint = 0xffffffff;
+
+	for (const auto & [nPoint, uiPlayer] : pWndWorld->m_mmapGuildCombat_PlayerPrecedence | std::views::reverse) {
+		if (nOldPoint != nPoint)
+			nRate++;
+
+		const auto name = MakeName(CPlayerDataCenter::GetInstance()->GetPlayerString(uiPlayer));
+
+		if (nOldPoint != nPoint) {
+			if (uiPlayer == g_GuildCombatMng.m_uBestPlayer)
+				strTemp.Format("%2d   %s\t(%d) MVP", nRate, name.GetRawStr(), nPoint);
+			else
+				strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
+		} else {
+			strTemp.Format("%s   %s\t(%d)", "  ", name.GetRawStr(), nPoint);
+		}
+
+		g_WndMng.n_pWndGuildCombatResult->InsertPersonRate(strTemp);
+
+		nOldPoint = nPoint;
+	}
+
+	// 로그 표시
+	CGuild * pPlayerGuild = g_pPlayer->GetGuild();
+	CString textualLog;
+	const char * const szTempAttack = prj.GetText(TID_GAME_ATTACK);
+	
+	g_GuildCombatMng.m_vecGCGetPoint.clear();
+	u_long uSize; ar >> uSize;
+	for (u_long k = 0; k < uSize; ++k) {
+		CGuildCombat::__GCGETPOINT GCGetPoint;
+		ar >> GCGetPoint;
+		g_GuildCombatMng.m_vecGCGetPoint.push_back(GCGetPoint);
+
+		// 길드 정보
+		const CGuild * const pGuildAtk = g_GuildMng.GetGuild(GCGetPoint.uidGuildAttack);
+		const CGuild * const pGuildDef = g_GuildMng.GetGuild(GCGetPoint.uidGuildDefence);
+
+		const char * const strGuild1 = GCGetPoint.bMaster ? prj.GetText(TID_GAME_GC_LOG_MASTER) : "";
+		const char * const strAtk = CPlayerDataCenter::GetInstance()->GetPlayerString(GCGetPoint.uidPlayerAttack);
+		const char * const strDef = CPlayerDataCenter::GetInstance()->GetPlayerString(GCGetPoint.uidPlayerDefence);
+		const char * const strGuild2 = GCGetPoint.bDefender ? prj.GetText(TID_GAME_GC_LOG_DEFENDER) : "";
+
+		CString szTempGuild; szTempGuild.Format(prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildAtk->m_szGuild);
+		CString szTempPoint; szTempPoint.Format(prj.GetText(TID_GAME_GC_LOG_POINT), GCGetPoint.nPoint);
+		CString szTempGuildDef; szTempGuildDef.Format(prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildDef->m_szGuild);
+
+		const bool weAttacked = GCGetPoint.uidPlayerAttack == g_pPlayer->m_idPlayer
+			|| (pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildAttack);
+
+		const bool weDefended = !weAttacked && (pPlayerGuild && pPlayerGuild->GetGuildId() == GCGetPoint.uidGuildDefence);
+
+		if (weAttacked) textualLog += "#cff009c00";
+		textualLog.AppendFormat("%s %s %s%s", szTempGuild.GetString(), strGuild1, strAtk, szTempPoint.GetString());
+		if (weAttacked) textualLog += "#nc";
+
+		textualLog.AppendFormat(" %s -> ", szTempAttack); // TODO: get the real arrow symbol
+
+		if (weDefended) textualLog += "#cff9c0000";
+		textualLog.AppendFormat("%s %s %s", szTempGuildDef.GetString(), strGuild2, strDef);
+		if (weDefended) textualLog += "#nc";
+		textualLog += '\n';
+
+
+		strTemp = prj.GetText(TID_GAME_GC_LOG1);
+		if (GCGetPoint.bMaster)             strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG2));
+		if (GCGetPoint.bDefender)           strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG3));
+		if (GCGetPoint.bKillDiffernceGuild) strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG4));
+		if (GCGetPoint.bLastLife)           strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG5));
+
+		textualLog.AppendFormat("< %s >\n\r\n", strTemp.GetString());
+	}
+
+	g_WndMng.n_pWndGuildCombatResult->InsertLog(textualLog);
 }
+
 void CDPClient::OnGCLogRealTime( CAr & ar )
 {
 	char szAttacker[MAX_NAME], szDefender[MAX_NAME];

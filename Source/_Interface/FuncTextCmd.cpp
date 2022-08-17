@@ -4417,72 +4417,107 @@ BOOL TextCmd_InvenRemove(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-#include <variant>
-#include "ar.h"
-struct One { int x; };
-CAr & operator<<(CAr & ar, One one) {
-	return ar << one.x;
-}
-CAr & operator>>(CAr & ar, One & one) {
-	return ar >> one.x;
-}
-
-struct Two_ { int x; int y; };
-CAr & operator<<(CAr & ar, Two_ one) {
-	return ar << one.x << one.y;
-}
-CAr & operator>>(CAr & ar, Two_ & one) {
-	return ar >> one.x >> one.y;
-}
-
-struct Strings { std::string str; };
-CAr & operator<<(CAr & ar, const Strings & one) {
-	ar.WriteString(one.str.c_str());
-	return ar;
-}
-CAr & operator>>(CAr & ar, Strings & one) {
-	char xxx[256];
-	ar.ReadString(xxx);
-	one.str = xxx;
-	return ar;
-}
-
-using COUCOU = std::variant<One, Two_, Strings>;
-
-#include <format>
-
-
+#include "eveschool.h"
+#include <random>
 BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __CLIENT
-	scanner.GetToken();
-	CString type = scanner.Token;
+	
+	std::vector<u_long> usablePlayers;
+	std::vector<CGuild *> usableGuilds;
 
-	COUCOU v;
-	if (type == "One") {
-		int x = scanner.GetNumber();
-		v = One{ x };
-	} else if (type == "Two") {
-		int x = scanner.GetNumber();
-		int y = scanner.GetNumber();
-		v = Two_{ x, y };
-	} else if (type == "Strings") {
-		scanner.GetToken();
-		CString content = scanner.Token;
-		v = Strings{ std::string(content.GetString()) };
-	} else if (type == "hack") {
+	for (u_long i = 0; i != 100; ++i) {
+		const char * name = CPlayerDataCenter::GetInstance()->GetPlayerString(i);
+		if (name != std::string_view("")) {
+			usablePlayers.emplace_back(i);
+		}
+	}
 
-		g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET,
-			std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t
-		>(15, 15, 15, 15);
+	for (int i = 0; i != 100; ++i) {
+		CGuild * guild = g_GuildMng.GetGuild(i);
+		if (guild) usableGuilds.emplace_back(guild);
+	}
 
-		return TRUE;
-
-	} else {
-		g_WndMng.PutString("You're drunk");
+	if (usableGuilds.size() < 5 || usablePlayers.size() < 1) {
+		g_WndMng.PutString("We need more guilds and players");
 		return TRUE;
 	}
 
-	g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET>(v);
+	usableGuilds.resize(5);
+	if (usablePlayers.size() >= 25) usablePlayers.resize(25);
+
+
+	std::vector<CGuildCombat::__GCGETPOINT> kills;
+	std::map<u_long, int> guildToPoints;
+	std::map<u_long, int> playersToPoints;
+	
+	std::random_device r;
+	std::uniform_int_distribution<int> uniform_dist(1, 25);
+	std::default_random_engine e1(r());
+
+	for (int i = 0; i != 9 * 9 * 50; ++i) {
+		u_long pAtk = usablePlayers[uniform_dist(e1) % usablePlayers.size()];
+		CGuild * gAtk = usableGuilds[uniform_dist(e1) % usableGuilds.size()];
+		
+		u_long pDef = usablePlayers[uniform_dist(e1) % usablePlayers.size()];
+		CGuild * gDef = usableGuilds[uniform_dist(e1) % usableGuilds.size()];
+
+		BOOL master = (uniform_dist(e1) % 15 == 5) ? TRUE : FALSE;
+		BOOL defender = (uniform_dist(e1) % 15 == 8) ? TRUE : FALSE;
+		BOOL bLastLife = (uniform_dist(e1) % 15 == 4) ? TRUE : FALSE;
+
+		int points = 2
+			+ (master ? 1 : 0)
+			+ (defender ? 1 : 0)
+			+ (bLastLife ? 1 : 0);
+
+		CGuildCombat::__GCGETPOINT gc;
+		gc.uidGuildAttack = gAtk->GetGuildId();
+		gc.uidGuildDefence = gDef->GetGuildId();
+		gc.uidPlayerAttack = pAtk;
+		gc.uidPlayerDefence = pDef;
+		gc.nPoint = points;
+		gc.bKillDiffernceGuild = FALSE;
+		gc.bMaster = master;
+		gc.bDefender = defender;
+		gc.bLastLife = bLastLife;
+
+		kills.emplace_back(gc);
+
+		guildToPoints[gAtk->GetGuildId()] += points;
+		playersToPoints[pAtk] += points;
+	}
+
+	CAr ar;
+	ar << static_cast<u_long>(kills.size());
+	for (const auto & gc : kills) {
+		ar << gc;
+	}
+
+	int size;
+	BYTE * buffer = ar.GetBuffer(&size);
+	
+
+	CAr receive(buffer, size);
+
+	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
+	if (!pWndWorld) return FALSE;
+
+	pWndWorld->m_mmapGuildCombat_GuildPrecedence.clear();
+
+	for (const auto & [guildId, points] : guildToPoints) {
+		CGuild * guild = g_GuildMng.GetGuild(guildId);
+		pWndWorld->m_mmapGuildCombat_GuildPrecedence.emplace(points, guild->m_szGuild);
+	}
+
+	pWndWorld->m_mmapGuildCombat_PlayerPrecedence.clear();
+	for (const auto & [playerId, points] : playersToPoints) {
+		pWndWorld->m_mmapGuildCombat_PlayerPrecedence.emplace(points, playerId);
+	}
+
+
+
+	g_DPlay.OnGCLog(receive);
+	// g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET>(v);
 		
 #endif
 	return TRUE;
@@ -4490,29 +4525,7 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 
 #ifndef __CLIENT
 void CDPSrvr::OnSquonKArbitraryPacket(CAr & ar, CUser & thisIsMe) {
-	COUCOU v; ar >> v;
 
-	if (v.valueless_by_exception()) {
-		thisIsMe.AddText("Mistakes were made");
-		return;
-	}
-
-	struct Visitor {
-		std::string operator()(One one) {
-			return std::format("One= {}", one.x);
-		}
-
-		std::string operator()(Two_ one) {
-			return std::format("Two= {} {}", one.x, one.y);
-		}
-		std::string operator()(Strings one) {
-			return std::format("Strings= {}", one.str);
-		}
-	};
-
-	std::string x = std::visit(Visitor{}, v);
-
-	thisIsMe.AddText(x.c_str());
 }
 #endif
 
