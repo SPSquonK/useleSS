@@ -68,23 +68,12 @@ CWorld* CAction::GetWorld( )
 // OBJSTA_MOVE_ALL 스테이트가 클리어되는 순간 발생.
 void	CAction::OnEndMoveState( void )
 {
-	// 이곳에 그외 필요한 코드를 넣으셈.
 	switch( m_dwState & OBJSTA_MOVE_ALL )
 	{
 	case OBJSTA_SIT:		// 착지 동작 중.
 		m_dwStateFlag &= (~OBJSTAF_SIT);
 		break;
 	}	
-}
-
-void	CAction::OnEndTurnState( void )
-{
-	// 이곳에 그외 필요한 코드를 넣으셈.
-}
-
-void	CAction::OnEndLookState( void )
-{
-	// 이곳에 그외 필요한 코드를 넣으셈.
 }
 
 void	CAction::OnEndJumpState( DWORD dwState )
@@ -134,16 +123,6 @@ void	CAction::OnEndAttackState( DWORD dwState )
 	}
 }
 
-void	CAction::OnEndDamageState( void )
-{
-	// 이곳에 그외 필요한 코드를 넣으셈.
-}
-
-void	CAction::OnEndActionState( void )
-{
-	// 이곳에 그외 필요한 코드를 넣으셈.
-}
-
 void	CAction::ClearState( void )
 {
 	DWORD dwState = m_dwState;
@@ -171,13 +150,11 @@ void	CAction::ResetState( DWORD dwState )
 	
 	if( dwState & OBJSTA_TURN_ALL )
 	{
-		OnEndTurnState();
 		m_dwState &= (~dwState);		// 해당 비트값 클리어.
 	}
 	
 	if( dwState & OBJSTA_LOOK_ALL )
 	{
-		OnEndLookState();
 		m_dwState &= (~dwState);		// 해당 비트값 클리어.
 	}
 	
@@ -195,13 +172,11 @@ void	CAction::ResetState( DWORD dwState )
 	
 	if( dwState &	OBJSTA_DMG_ALL )
 	{
-		OnEndDamageState();
 		m_dwState &= (~dwState);		// 해당 비트값 클리어.
 	}
 	
 	if( dwState & OBJSTA_ACTION_ALL )
 	{
-		OnEndActionState();
 		m_dwState &= (~dwState);
 	}
 }
