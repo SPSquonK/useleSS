@@ -580,7 +580,7 @@ void CWndMessage::AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage )
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
 	CString strMessage;
 
-	if( strcmp( lpszFrom, g_pPlayer->GetName() ) != 0 )
+	if( strcmp( lpszFrom, g_pPlayer->GetName() ) == 0 )
 		strMessage.Format( "#cffff0000%s%s :#nc\n  %s\n", lpszFrom, prj.GetText(TID_GAME_FROM3), lpszMessage );
 	else
 		strMessage.Format( "#cff0000ff%s%s :#nc\n  %s\n", lpszFrom, prj.GetText(TID_GAME_FROM3), lpszMessage );
