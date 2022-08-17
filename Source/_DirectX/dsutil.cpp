@@ -51,7 +51,7 @@ BOOL CSoundManager::LoadScript( LPCTSTR lpszFileName )
 	{
 		script.GetToken(); // fileName
 		_tcscpy( music.szMusicFileName, script.token );
-		m_aMusic.SetAtGrow( id, &music );
+		m_aMusic.SetAtGrow( id, music );
 		id = script.GetNumber();
 	} while( script.tok != FINISHED );
 	m_aMusic.Optimize();

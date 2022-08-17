@@ -467,10 +467,8 @@ void CInstanceDungeonBase::SetNextState( ID_INFO* pInfo, DWORD dwDungeonId )
 			if( !pWorld )
 				return;
 			
-			CObj* pObj;
-			for( DWORD i=0; i<pWorld->m_dwObjNum; i++ )
-			{
-				pObj = pWorld->m_apObject[i];
+
+			for (CObj * pObj : pWorld->m_Objs.Range()) {
 				if( IsValidObj( pObj ) && pObj->GetLayer() == static_cast<int>( dwDungeonId )
 					&& 	pObj->GetType() == OT_MOVER && static_cast<CMover*>( pObj )->IsPlayer() )
 					static_cast<CUser*>( pObj )->REPLACE( g_uIdofMulti, pWorld->GetID(), vNextPos, REPLACE_NORMAL, static_cast<int>( dwDungeonId ) );

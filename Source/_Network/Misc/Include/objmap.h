@@ -32,37 +32,33 @@ public:
 
 
 #ifdef __WORLDSERVER
-class CIdStack : public CStack<OBJID>
-{
+#include <stack>
+
+class CIdStack final {
 private:
 	CMclCritSec		m_AccessLock;
+	std::stack<OBJID> m_stack;
 
 public:
-	CIdStack()
-		{
-			SetSize( 125440, 16384 );
-		}
-	virtual	~CIdStack()	{}
-	void	PushIdBlock( OBJID idBase, u_long uSize )
-		{
-			CMclAutoLock Lock( m_AccessLock );
-			for( DWORD i=0; i<uSize; i++ )
-				Push( idBase + i );
-		}
-	OBJID GetId( void )
-		{
-			CMclAutoLock Lock( m_AccessLock );
-			if( IsEmpty() )
-				WriteLog( "%s, %d", __FILE__, __LINE__ );
-			assert( !IsEmpty() );
-			return Pop();
-		}
 
-	int GetCount( void )
-		{
-//			CMclAutoLock Lock( m_AccessLock );
-			return m_nTop;
-		}
+	void	PushIdBlock(OBJID idBase, u_long uSize) {
+		CMclAutoLock Lock(m_AccessLock);
+		for (DWORD i = 0; i < uSize; i++)
+			m_stack.emplace(idBase + i);
+	}
+	OBJID GetId(void) {
+		CMclAutoLock Lock(m_AccessLock);
+		if (m_stack.empty())
+			WriteLog("%s, %d", __FILE__, __LINE__);
+		assert(!m_stack.empty());
+		const OBJID elem = m_stack.top();
+		m_stack.pop();
+		return elem;
+	}
+
+	int GetCount(void) {
+		return m_stack.size();
+	}
 };
 #endif
 

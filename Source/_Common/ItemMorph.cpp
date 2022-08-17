@@ -76,18 +76,12 @@ namespace ItemMorph {
 		std::vector<const char *> canBeMorphedTo;
 		canBeMorphedTo.reserve(4);
 
-		for (int i = 0; i < prj.m_aPropItem.GetSize(); i++) {
+		for (const ItemProp & self : prj.m_aPropItem) {
 			canBeMorphedTo.clear();
-
-			const ItemProp * self = prj.GetItemProp(i);
-			if (!self || self->dwID != i) continue;
 			
-			for (int j = 0; j < prj.m_aPropItem.GetSize(); ++j) {
-				const ItemProp * other = prj.GetItemProp(i);
-				if (!other || other->dwID != i) continue;
-
-				if (IsMorphableTo(*self, *other)) {
-					canBeMorphedTo.push_back(other->szName);
+			for (const ItemProp & other : prj.m_aPropItem) {
+				if (IsMorphableTo(self, other)) {
+					canBeMorphedTo.push_back(other.szName);
 				}
 			}
 
@@ -96,10 +90,10 @@ namespace ItemMorph {
 			}
 
 			if (canBeMorphedTo.size() == 1) {
-				output += std::format("{} -> {}\n", self->szName, canBeMorphedTo[0]);
+				output += std::format("{} -> {}\n", self.szName, canBeMorphedTo[0]);
 			} else {
 				for (size_t index = 0; index != canBeMorphedTo.size(); ++index) {
-					output += std::format("{} -> {} ({})\n", self->szName, canBeMorphedTo[index], index + 1);
+					output += std::format("{} -> {} ({})\n", self.szName, canBeMorphedTo[index], index + 1);
 				}
 			}
 		}

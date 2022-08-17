@@ -477,7 +477,7 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 			}
 		}
 #endif	// __CLIENT
-		apObjProp->SetAtGrow( prop.dwID, &prop);
+		apObjProp->SetAtGrow(prop.dwID, prop);
 
 
 		nVer = scanner.GetNumber();	// version; 
@@ -488,7 +488,7 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 
 BOOL CProject::LoadText( LPCTSTR lpszFileName )
 {
-	tagColorText colorText, *pColorText;
+	tagColorText colorText;
 
 	CScript scanner;
 	if( scanner.Load( lpszFileName ) == FALSE )
@@ -525,9 +525,9 @@ BOOL CProject::LoadText( LPCTSTR lpszFileName )
 	{
 		if( strArray.GetAt( i ).IsEmpty() == FALSE )
 		{
-			m_colorText.SetAtGrow( i, &colorText );
+			m_colorText.SetAtGrow(i, colorText);
 
-			pColorText = m_colorText.GetAt( i );
+			tagColorText * pColorText = m_colorText.GetAt( i );
 			pColorText->dwColor = colorArray.GetAt( i );
 			pColorText->lpszData = strdup( strArray.GetAt( i ) ) ;
 		}

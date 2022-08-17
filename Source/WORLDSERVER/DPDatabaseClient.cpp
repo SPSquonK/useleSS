@@ -3312,10 +3312,8 @@ void CDPDatabaseClient::OnTaxInfo( CAr & ar, DPID, DPID )
 		if( !pWorld )
 			return;
 
-		CObj* pObj;
-		for( int i=0; i<(int)( pWorld->m_dwObjNum ); i++ )
-		{
-			pObj	= pWorld->m_apObject[i];
+
+		for (CObj * pObj : pWorld->m_Objs.Range()) {
 			if( pObj && pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsPlayer() && !pObj->IsDelete() )
 				((CUser*)pObj)->REPLACE( g_uIdofMulti, ((CUser*)pObj)->m_idMarkingWorld, ((CUser*)pObj)->m_vMarkingPos, REPLACE_NORMAL, nTempLayer );
 		}

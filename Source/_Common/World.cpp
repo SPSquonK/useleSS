@@ -88,7 +88,6 @@ m_cbRunnableObject( 0 )
 #ifdef __WORLDSERVER
 	m_apHeightMap	= NULL;
 	m_apWaterHeight = NULL;
-	m_dwObjNum	= 0;
 	m_cbAddObjs		= 0;
 	memset( m_lpszWorld, 0, sizeof(TCHAR) * 64 );
 	m_cbUser	= 0;
@@ -155,10 +154,7 @@ CWorld::~CWorld()
 void CWorld::Free()
 {
 #ifdef __WORLDSERVER
-	CObj* pObjtmp;
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		pObjtmp		= m_apObject[i];
+	for (CObj * pObjtmp : m_Objs.objects) {
 		SAFE_DELETE( pObjtmp );
 	}
 	
@@ -220,10 +216,9 @@ void CWorld::CalcBound()
 void CWorld::LoadAllMoverDialog()
 {
 #ifdef __WORLDSERVER
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		if( m_apObject[ i ] && m_apObject[ i ]->GetType() == OT_MOVER )
-			((CMover*)m_apObject[ i ])->LoadDialog();
+	for (CObj * pObj : m_Objs.Range()) {
+		if(pObj->GetType() == OT_MOVER )
+			((CMover*)pObj)->LoadDialog();
 	}
 #endif
 }
@@ -501,27 +496,13 @@ void CWorld::DeleteObj( CObj* pObj )
 BOOL CWorld::AddObjArray( CObj* pObj )
 {
 #ifdef __WORLDSERVER
-	int nIndex;
-	if( m_ObjStack.GetCount() > 0 )
-	{
-		nIndex	= m_ObjStack.Pop();
-		ASSERT( !m_apObject[nIndex] );
-	}
-	else
-	{
-		nIndex	= m_dwObjNum++;
-	}
-
-	if( nIndex == 0xffffffff )
-	{
-		WriteLog( "AddObjArray nIndex = 0xffffffff" );
+	try {
+		const size_t where = m_Objs.Add(pObj);
+		pObj->m_dwObjAryIdx = where;
+		m_cbRunnableObject++;
+	} catch (...) {
 		return FALSE;
 	}
-
-	m_apObject[nIndex]	= (CCtrl*)pObj;
-	pObj->m_dwObjAryIdx	= nIndex;
-
-	m_cbRunnableObject++;
 #else	// __WORLDSERVER
 	CLandscape* pLandscape	= GetLandscape( pObj );
 	if( NULL != pLandscape ) 
@@ -550,10 +531,8 @@ void CWorld::RemoveObjArray( CObj* pObj )
 		return;
 	}
 
-	if( m_apObject[pObj->m_dwObjAryIdx] == pObj )
-	{
-		m_ObjStack.Push( pObj->m_dwObjAryIdx );
-		m_apObject[pObj->m_dwObjAryIdx]		= NULL;
+	if (m_Objs.Remove(pObj, pObj->m_dwObjAryIdx)) {
+		// ok
 	}
 	else
 	{
@@ -752,7 +731,7 @@ void CWorld::Process()
 	
 	// 처리 프로세스 
 	CHECK1();
-	int i, j, k, l, x, y;
+	int i, j, k, x, y;
 	WorldPosToLand( m_pCamera->m_vPos, x, y );
 	CLandscape* pLand = NULL;
 	DWORD dwObjProcessNum = 0;
@@ -760,7 +739,6 @@ void CWorld::Process()
 	float	fLengthSq;
 	float	fFarSq = CWorld::m_fFarPlane / 2;
 	fFarSq *= fFarSq;
-	int		nNumObj;
 	CObj* pObj = NULL;
 	
 #ifdef _DEBUG
@@ -789,23 +767,20 @@ void CWorld::Process()
 				pLand = m_apLand[ i * m_nLandWidth + j ];
 				for( k = OT_ANI; k < MAX_OBJARRAY; k++ )
 				{
-					CObj** apObject = pLand->m_apObject[ idx[k] ];
-					nNumObj = pLand->m_adwObjNum[ idx[k] ];
-					for( l = 0; l < nNumObj; l++ )
-					{
-						if( *apObject && (*apObject)->IsDelete() == FALSE && (*apObject)->GetWorld() != NULL )
+					auto & apObject = pLand->m_apObjects[idx[k]];
+					for (CObj * pObj : apObject.Range()) {
+						if(pObj->IsDelete() == FALSE && pObj->GetWorld() != NULL )
 						{
-							vPos = (*apObject)->GetPos() - *pvCameraPos;
+							vPos = pObj->GetPos() - *pvCameraPos;
 							fLengthSq = D3DXVec3LengthSq( &vPos );
 							if( fLengthSq < fFarSq ) 
 							{
 							#ifdef _DEBUG
 								_nCnt ++;
 							#endif								
-								(*apObject)->Process();
+								pObj->Process();
 							}
 						}
-						apObject ++;
 					}
 				}
 			}
@@ -1617,12 +1592,10 @@ void CWorld::_replace( void )
 
 void CWorld::_process( void )
 {
-	CObj* pObj;
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		pObj	= m_apObject[i];
-		if( pObj && !pObj->IsDelete() && pObj->m_dwObjAryIdx != 0xffffffff )
+	for (CObj * pObj : m_Objs.Range()) {
+		if (!pObj->IsDelete() && pObj->m_dwObjAryIdx != 0xffffffff) {
 			pObj->Process();
+		}
 	}
 }
 #endif	// __WORLDSERVER
@@ -1848,13 +1821,11 @@ void CWorld::ProcessAllSfx( void )
 			if( LandInWorld( j, i ) && m_apLand[i * m_nLandWidth + j] )
 			{
 				CLandscape* pLand = m_apLand[i * m_nLandWidth + j];
-				CObj** apObject		= pLand->m_apObject[OT_SFX];
-				int nNumObj	= pLand->m_adwObjNum[OT_SFX];
-				for( int l = 0; l < nNumObj; l++ )
-				{
-					if( *apObject && (*apObject)->IsDelete() == FALSE && (*apObject)->GetWorld() != NULL )
-						(*apObject)->Process();
-					apObject++;
+
+				for (CObj * pObj : pLand->m_apObjects[OT_SFX].ValidObjs()) {
+					if (pObj->GetWorld()) {
+						pObj->Process();
+					}
 				}
 			}
 		}
@@ -1891,18 +1862,15 @@ void CWorld::_OnDie() {
 
 CMover* CWorld::FindMover( LPCTSTR szName )
 {
-	CMover* pMover;
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		if( m_apObject[ i ] && m_apObject[ i ]->GetType() == OT_MOVER )
-		{
-			pMover = (CMover*)m_apObject[ i ];
-			if( _tcscmp( pMover->GetName(), szName ) == NULL )
+	for (CObj * pObj : m_Objs.Range()) {
+		if (pObj->GetType() == OT_MOVER) {
+			CMover * pMover = (CMover *)pObj;
+			if (_tcscmp(pMover->GetName(), szName) == 0)
 				return pMover;
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 #endif	// __WORLDSERVER
 

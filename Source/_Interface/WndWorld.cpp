@@ -2989,13 +2989,11 @@ void CWndWorld::RenderAltimeter()
 //	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
 	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			D3DXVECTOR3 vPos = pObj->GetPos();
-			if( fHigh1 < vPos.y ) fHigh1 = vPos.y;
-			if( fLow1 > vPos.y ) fLow1 = vPos.y;
+			if (fHigh1 < vPos.y) fHigh1 = vPos.y;
+			if (fLow1 > vPos.y) fLow1 = vPos.y;
 		}
-		END_OBJ
 	}
 	END_LAND
 
@@ -3043,8 +3041,7 @@ void CWndWorld::RenderAltimeter()
 //	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
 	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			CMover* pMover = (CMover*) pObj;
 			/*
 			if( g_WndMng.m_nObjectFilter == OBJFILTER_PLAYER && pMover->IsPlayer() == FALSE )
@@ -3076,7 +3073,6 @@ void CWndWorld::RenderAltimeter()
 				CPoint( rect.left + 5, rect.bottom - y ), 
 				dwColor	);
 		}
-		END_OBJ
 	}
 	END_LAND
 
@@ -3252,16 +3248,11 @@ void CWndWorld::OnInitialUpdate()
 	m_texLvDn2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
 
 
-	int i = 0;
-	for( i=0; i<prj.m_aPropAddSkill.GetSize(); i++ )
-	{
-		AddSkillProp* pAddSkill = prj.m_aPropAddSkill.GetAt(i);
+	for (const AddSkillProp & pAddSkill : prj.m_aPropAddSkill) {
 
-		if( pAddSkill )
-		{
-			if( pAddSkill->dwSkillTime != -1 )
+		if( pAddSkill.dwSkillTime != -1 )
 			{
-				ItemProp* pItem = prj.GetSkillProp(pAddSkill->dwName);
+				ItemProp* pItem = prj.GetSkillProp(pAddSkill.dwName);
 
 				if( pItem )
 				{
@@ -3271,68 +3262,59 @@ void CWndWorld::OnInitialUpdate()
 					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
 				}
 			}
-		}
+
 	}
 
-	for( i=0; i<prj.m_aPartySkill.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = prj.m_aPartySkill.GetAt(i);
-		
-		if( pItemProp )
-		{
-			if( pItemProp->dwSkillTime != -1 )
+	for (const ItemProp & pItemProp : prj.m_aPartySkill) {
+			if( pItemProp.dwSkillTime != -1 )
 			{
 				BUFFSKILL buffskill;
-				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp->szIcon ), 0xffff00ff );
-				m_pBuffTexture[1].emplace(pItemProp->dwID, buffskill);
+				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
+				m_pBuffTexture[1].emplace(pItemProp.dwID, buffskill);
 			}
-		}
 	}
 
-	for( i=0; i<prj.m_aPropItem.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = (ItemProp*)prj.m_aPropItem.GetAt(i);
-		
-		if( pItemProp )
-		{
-			if( pItemProp->dwSkillTime != -1 
+	for (const ItemProp & pItemProp : prj.m_aPropItem) {
+			if( pItemProp.dwSkillTime != -1 
 #ifdef __DST_GIFTBOX
-				|| pItemProp->dwDestParam[0] == DST_GIFTBOX || pItemProp->dwDestParam[1] == DST_GIFTBOX || pItemProp->dwDestParam[2] == DST_GIFTBOX 
+				|| pItemProp.dwDestParam[0] == DST_GIFTBOX
+				|| pItemProp.dwDestParam[1] == DST_GIFTBOX
+				|| pItemProp.dwDestParam[2] == DST_GIFTBOX 
 #endif // __DST_GIFTBOX
-				|| pItemProp->dwItemKind3 == IK3_EGG
-				|| pItemProp->dwItemKind3 == IK3_PET
+				|| pItemProp.dwItemKind3 == IK3_EGG
+				|| pItemProp.dwItemKind3 == IK3_PET
 			)
 			{
 
 				BUFFSKILL buffskill;
 
-				CString strIcon	= pItemProp->szIcon;
-				if( pItemProp->dwItemKind3 == IK3_EGG && pItemProp->dwID != II_PET_EGG )
+				CString strIcon	= pItemProp.szIcon;
+				if( pItemProp.dwItemKind3 == IK3_EGG && pItemProp.dwID != II_PET_EGG )
 				{
 					strIcon.Replace( ".", "_00." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 0 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 0 ), buffskill );
 					strIcon.Replace( "0.", "1." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 1 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 1 ), buffskill );
 					strIcon.Replace( "1.", "2." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 2 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 2 ), buffskill );
 				}
 				else
 				{
 #ifdef __DST_GIFTBOX
-					if(pItemProp->dwDestParam[0] == DST_GIFTBOX || pItemProp->dwDestParam[1] == DST_GIFTBOX || pItemProp->dwDestParam[2] == DST_GIFTBOX)
+					if(pItemProp.dwDestParam[0] == DST_GIFTBOX || pItemProp.dwDestParam[1] == DST_GIFTBOX || pItemProp.dwDestParam[2] == DST_GIFTBOX)
 						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
 					else
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #else //__DST_GIFTBOX
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #endif //__DST_GIFTBOX
-					m_pBuffTexture[2].emplace( pItemProp->dwID, buffskill );
+					m_pBuffTexture[2].emplace( pItemProp.dwID, buffskill );
 				}
 			}
-		}
+
 	}
 
 	switch( m_rectWindow.Width() )
@@ -3366,7 +3348,7 @@ void CWndWorld::OnInitialUpdate()
 	
 	// 아이콘 텍스쳐 로딩
 	CString str;
-	for( i=0; i<CUSTOM_LOGO_MAX; i++ )
+	for( int i=0; i<CUSTOM_LOGO_MAX; i++ )
 	{
 		str.Format( "Icon_CloakSLogo%02d.jpg", i+1 );
 		

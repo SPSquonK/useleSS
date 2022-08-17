@@ -1116,11 +1116,8 @@ void CSecretRoomContinent::RemoveAllSecretRoomObj( DWORD dwWorldId )
 	if( !pWorld )
 		return;
 
-	CObj* pObj;
-	for( DWORD i=0; i<pWorld->m_dwObjNum; i++ )
-	{
-		pObj	= pWorld->m_apObject[i];
-		if( pObj && pObj->GetType() == OT_MOVER && !((CMover*)pObj)->IsPlayer() && !pObj->IsDelete() )
+	for (CObj * pObj : pWorld->m_Objs.Range()) {
+		if( pObj->GetType() == OT_MOVER && !((CMover*)pObj)->IsPlayer() && !pObj->IsDelete() )
 			pObj->Delete();
 	}
 }

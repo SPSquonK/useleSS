@@ -2,6 +2,7 @@
 #define __WORLD_2002_1_22
 
 #include <boost/container/small_vector.hpp>
+#include "ExistingObjects.h"
 
 #ifdef __LAYER_1015
 #define	ADDOBJ( pObj, bAddItToGlobalId, nLayer )	AddObj( (pObj), (bAddItToGlobalId), (nLayer) )
@@ -206,8 +207,9 @@ public:
 	CLinkMap		m_linkMap;
 #endif	// __LAYER_1015
 
-	u_long			m_dwObjNum;
-	CCtrl*			m_apObject[MAX_DYNAMICOBJ];	// dynamic 객체를 담는다.		// 312k
+
+	ExistingObjects<CObj, MAX_DYNAMICOBJ> m_Objs;
+
 	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
 
 //	CRIT_SEC		m_csModifyLink;
@@ -223,7 +225,6 @@ public:
 	BOOL			m_bAddItToGlobalId[MAX_ADDOBJS];		// 80k
 
 	TCHAR			m_lpszWorld[64];
-	CDWordStack		m_ObjStack;
 	u_long			m_cbUser;
 #ifdef __LAYER_1021
 	CLayerdRespawner	m_respawner;
@@ -242,7 +243,7 @@ public:
 	BOOL			PreremoveObj( OBJID objid );
 	CObj*			PregetObj( OBJID objid );
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}
-	DWORD			GetObjCount() { return m_dwObjNum; }
+	// DWORD			GetObjCount() { return m_dwObjNum; }
 	void			OnDie(CUser * pDie, CUser * pAttacker);
 	void			_OnDie( void );
 	CMover*			FindMover( LPCTSTR szName );
@@ -591,7 +592,7 @@ private:
 	BOOL	HasNobody_Process( int nLayer );
 	BOOL	HasNoObj_Add( int nLayer );
 	[[nodiscard]] bool HasNobody_Replace(int nLayer) const;
-	BOOL	IsLayerPlayer( CObj* pObj, int nLayer );
+	[[nodiscard]] static bool IsLayerPlayer(CObj * pObj, int nLayer);
 
 public:
 	void	Invalidate( int nLayer, BOOL bInvalid = TRUE )	{	m_linkMap.Invalidate( nLayer, bInvalid );	}
@@ -901,26 +902,6 @@ extern CObj *GetLastPickObj( void );
 						if( _bVisuble == FALSE || ( _bVisuble == TRUE && _pLand->isVisibile() ) ) 
 
 	#define END_LAND } } } } }
-
-	#define FOR_OBJARRAY( _pLand, _pObj ) { \
-		for( int _k = 0; _k < MAX_OBJARRAY; _k++ ) \
-		{ \
-			CObj** _apObjs = _pLand->m_apObject[ _k ]; \
-			for( int _l = 0; _l < int( _pLand->m_adwObjNum[ _k ] ); _l++ ) \
-			{ \
-				_pObj = _apObjs[ _l ]; \
-				if( IsValidObj( _pObj ) )  
-
-	#define END_OBJARRAY } } }
-
-	#define FOR_OBJ( _pLand, _pObj, _nType ) { \
-			CObj** _apObjs = _pLand->m_apObject[ _nType ]; \
-			for( int _l = 0; _l < int( _pLand->m_adwObjNum[ _nType ] ); _l++ ) \
-			{ \
-				_pObj = _apObjs[ _l ]; \
-				if( IsValidObj( _pObj ) )  
-
-	#define END_OBJ } }  
 
 #endif	// __WORLDSERVER
 #endif	// __WORLD_2002_1_22

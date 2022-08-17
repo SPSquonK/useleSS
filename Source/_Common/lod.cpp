@@ -261,31 +261,22 @@ CLandscape::CLandscape()
 		}
 		m_nWidthLinkMap[i] = nWidth;
 	}
-	for( int i = 0; i < MAX_OBJARRAY; i++)
-	{
-		m_apObject[ i ] = new CObj * [ 5000 ];
-		m_adwObjNum[ i ] = 0;
-	}
-
 }
 CLandscape::~CLandscape()
 {
 	FreeTerrain();
 	SAFE_DELETE_ARRAY( m_pWaterVB );
 	// 오브젝트 파괴 
-	for( int i = 0; i < MAX_OBJARRAY; i++)
-	{
-		CObj** apObject = m_apObject[ i ];
-		for( int j = 0; j < int( m_adwObjNum[ i ] ); j++ )
-		{
-			if( m_pWorld->m_pObjFocus == apObject[ j ] )
+	for (auto & apObject : m_apObjects) {
+		for (CObj * pObj : apObject.Range()) {
+			if( m_pWorld->m_pObjFocus == pObj)
 				m_pWorld->SetObjFocus( NULL );
-			if( CObj::m_pObjHighlight == apObject[ j ] )
+			if( CObj::m_pObjHighlight == pObj)
 				CObj::m_pObjHighlight = NULL;
-			SAFE_DELETE( apObject[ j ] );
+			SAFE_DELETE(pObj);
 		}
-		SAFE_DELETE_ARRAY( apObject );
 	}
+
 	for( int j = 0; j < MAX_LINKTYPE; j++ ) 
 	{
 		for( int i = 0; i < MAX_LINKLEVEL; i++ ) 
@@ -335,15 +326,14 @@ HRESULT CLandscape::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 	pd3dDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );		
 	pd3dDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );		
 
-	for( int i = 0; i < MAX_OBJARRAY; i++)
-	{
-		CObj** apObject = m_apObject[ i ];
-		for( int j = 0; j < int( m_adwObjNum[ i ] ); j++ )
-		{
-			if( apObject[ j ] && apObject[ j ]->m_pModel->IsAniable() )
-				apObject[ j ]->m_pModel->RestoreDeviceObjects();
+	for (auto & apObject : m_apObjects) {
+		for (CObj * pObj : apObject.Range()) {
+			if (pObj->m_pModel->IsAniable()) {
+				pObj->m_pModel->RestoreDeviceObjects();
+			}
 		}
 	}
+
 	// 물 버텍스 버퍼 만들기 
 	MakeWaterVertexBuffer();
 	MakeHgtAttrVertexBuffer();
@@ -604,29 +594,28 @@ HRESULT CLandscape::InvalidateDeviceObjects()
 	// 매모리풀이 default이므로 비디오메모리에 잡힌다. 따라서 
 	// InvalidateDeviceObjects에서 파괴해야한다.
 	//SAFE_RELEASE( m_texMiniMap.m_pTexture );
-	for( int i = 0; i < MAX_OBJARRAY; i++)
-	{
-		CObj** apObject = m_apObject[ i ];
-		for( int j = 0; j < int( m_adwObjNum[ i ] ); j++ )
-		{
-			if( apObject[ j ] && apObject[ j ]->m_pModel->IsAniable() )
-				apObject[ j ]->m_pModel->InvalidateDeviceObjects();
+
+	for (auto & apObject : m_apObjects) {
+		for (CObj * pObj : apObject.Range()) {
+			if (pObj->m_pModel->IsAniable()) {
+				pObj->m_pModel->InvalidateDeviceObjects();
+			}
 		}
 	}
+
 	return S_OK;
 }
 HRESULT CLandscape::DeleteDeviceObjects()
 {
 	SAFE_RELEASE( m_texMiniMap.m_pTexture );
-	for( int i = 0; i < MAX_OBJARRAY; i++)
-	{
-		CObj** apObject = m_apObject[ i ];
-		for( int j = 0; j < int( m_adwObjNum[ i ] ); j++ )
-		{
-			if( apObject[ j ] && apObject[ j ]->m_pModel->IsAniable() )
-				apObject[ j ]->m_pModel->DeleteDeviceObjects();
+	for (auto & apObject : m_apObjects) {
+		for (CObj * pObj : apObject.Range()) {
+			if (pObj->m_pModel->IsAniable()) {
+				pObj->m_pModel->DeleteDeviceObjects();
+			}
 		}
 	}
+
 	for( int i = 0; i < m_aLayer.GetSize(); i++ ) 
 	{
 		CLandLayer* pLandLayer = (CLandLayer*)m_aLayer.GetAt( i );
@@ -1226,18 +1215,14 @@ FLOAT CLandscape::GetHeight(POINT pos)
 }
 
 
-void CLandscape::SetUsedAllObjects()
-{
-	for( int i = 0; i < MAX_OBJARRAY; i++ )
-	{
-		CObj** apObjs = m_apObject[ i ];
-		for( int j = 0; j < (int)( m_adwObjNum[ i ] ); j++ )
-		{
-			if( apObjs[ j ] )
-				apObjs[ j ]->m_pModel->m_pModelElem->m_bUsed = TRUE;
+void CLandscape::SetUsedAllObjects() {
+	for (auto & apObjs : m_apObjects) {
+		for (CObj * pObj : apObjs.Range()) {
+			pObj->m_pModel->m_pModelElem->m_bUsed = TRUE;
 		}
 	}
 }
+
 BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 {
 	CResFile file;
@@ -1321,7 +1306,6 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 	
 
 	// Read Objects
-	CObj** apObject = m_apObject[ OT_OBJ ];
 	DWORD dwObjNum;
 	file.Read( &dwObjNum, sizeof( DWORD ), 1 );
 	TRACE( "Load Object Num = %d\n", dwObjNum );
@@ -1333,12 +1317,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 			pObj->m_vPos.x += xx * LANDREALSCALE;
 			pObj->m_vPos.z += yy * LANDREALSCALE;
 		}
-		if( pObj->m_dwIndex  == 0 )
-		{
-			int a=0;
-			a++;
 
-		}
 		//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
 		if( pObj->SetIndex( m_pd3dDevice, pObj->m_dwIndex ) == TRUE)
 		{
@@ -1519,28 +1498,9 @@ void CLandscape::AddObjArray( CObj* pObj )
 	int nType = pObj->GetType();
 	if( nType == OT_OBJ && pObj->GetModel()->IsAniable() )
 		nType = OT_ANI;
-	CObj** apObject = m_apObject[ nType ];
+	auto & apObject = m_apObjects[ nType ];
 	CObj* pTemp = NULL;
-	int nIndex = -1;
-	if( m_aObjStack[ nType ].GetCount() )
-	{
-		nIndex = m_aObjStack[ nType ].Pop();
-		if( nIndex == -1 )
-		{
-			int a	= 0;
-		}
-		ASSERT( !apObject[ nIndex ] );
-		apObject[ nIndex ] = pObj;
-	}
-	else
-	{
-		nIndex = m_adwObjNum[ nType ]++;
-		if( nIndex == -1 )
-		{
-			int a	= 0;
-		}
-		apObject[ nIndex ] = pObj;
-	}
+	size_t nIndex = apObject.Add(pObj);
 	pObj->m_pWorld = m_pWorld;
 	pObj->m_dwObjAryIdx = nIndex;
 	//InsertObjLink( pObj );
@@ -1548,25 +1508,9 @@ void CLandscape::AddObjArray( CObj* pObj )
 
 void CLandscape::RemoveObjArray( CObj* pObj )
 {
-	int nType = pObj->GetType();
-	CObj** apObject = m_apObject[ nType ];
-	if( apObject[ pObj->m_dwObjAryIdx ] == pObj )
-	{
-		m_aObjStack[ nType ].Push( pObj->m_dwObjAryIdx );
-		apObject[ pObj->m_dwObjAryIdx ] = NULL;
-	}
-	else
-	{
-		ASSERT( 0 );
-	}
-}
-
-int CLandscape::GetObjArraySize()
-{
-	int nSum = 0;
-	for( int i = 0; i < MAX_OBJARRAY; i++ )
-		nSum += int( m_adwObjNum[ i ] );
-	return nSum;
+	const int nType = pObj->GetType();
+	const bool r = m_apObjects[nType].Remove(pObj, pObj->m_dwObjAryIdx);
+	ASSERT(r);
 }
 
 CLandLayer* CLandscape::NewLayer( WORD nTex )

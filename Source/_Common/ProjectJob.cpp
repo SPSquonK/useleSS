@@ -6,14 +6,11 @@
 void Project::Jobs::LoadSkills(CFixedArray<ItemProp> & aPropSkill) {
 	skills.fill({});
 
-	for (int i = 1; i < aPropSkill.GetSize(); i++) {
-		ItemProp * pItemProp = aPropSkill.GetAt(i);
-		if (!pItemProp) continue;
+	for (const ItemProp & pItemProp : aPropSkill) {
+		if (pItemProp.dwItemKind1 == JTYPE_COMMON) continue;
+		if (pItemProp.dwItemKind2 == NULL_ID) continue;
 
-		if (pItemProp->dwItemKind1 == JTYPE_COMMON) continue;
-		if (pItemProp->dwItemKind2 == NULL_ID) continue;
-
-		skills[pItemProp->dwItemKind2].emplace_back(pItemProp);
+		skills[pItemProp.dwItemKind2].emplace_back(&pItemProp);
 	}
 
 	for (auto & skillsPerJob : skills) {
