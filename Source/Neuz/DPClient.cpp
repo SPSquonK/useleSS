@@ -4589,51 +4589,38 @@ void CDPClient::OnPartySkillSphereCircle( OBJID objid )
 	}
 }
 
-
-void CDPClient::OnEnvironmentSetting( CAr & ar )
-{
-	int nSeason = SEASON_NONE;
-	ar >> nSeason;
+void CDPClient::OnEnvironmentSetting( CAr & ar ) {
+	int nSeason; ar >> nSeason;
 	CEnvironment::GetInstance()->SetSeason( nSeason );
 
-	if( CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING || CEnvironment::GetInstance()->GetSeason() == SEASON_FALL )
-	{
-		CFixedArray< tagMODELELEM >* apModelElem = &(prj.m_modelMng.m_aaModelElem[OT_OBJ]);
-		for( int i = 0; i < apModelElem->GetSize(); ++i )
-		{
-			LPMODELELEM pModelElem = (LPMODELELEM) apModelElem->GetAt( i );
-			if( pModelElem )
-			{
-				if( _tcsicmp(pModelElem->m_szName, "MaCoPrTr01") == 0 || _tcsicmp(pModelElem->m_szName, "MaCoPrTr03") == 0 ||
-					_tcsicmp(pModelElem->m_szName, "MaCoPrTr10") == 0 || _tcsicmp(pModelElem->m_szName, "MaCoPrTr20") == 0 ||
-					_tcsicmp(pModelElem->m_szName, "MaCoPrTr14") == 0 || _tcsicmp(pModelElem->m_szName, "MaCoPrTr11") == 0 )
-				{
-					pModelElem->m_fScale = 1.0f;
+	if (CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING || CEnvironment::GetInstance()->GetSeason() == SEASON_FALL) {
+		static constexpr auto trees1 = std::to_array({ "MaCoPrTr01", "MaCoPrTr03", "MaCoPrTr10", "MaCoPrTr20", "MaCoPrTr14", "MaCoPrTr11" });
+		static constexpr auto trees2 = std::to_array({ "MaCoPrTr04", "MaCoPrTr05", "MaCoPrTr12", "MaCoPrTr15", "MaCoPrTr13", "MaCoPrTr02" });
+		static constexpr auto IsOneOf = [](const MODELELEM & modelElem, const auto & trees) -> bool {
+			return std::ranges::any_of(trees, [&](const char * treeName) {
+				return _tcsicmp(modelElem.m_szName, treeName) == 0;
+				});
+		};
 
-					if( CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING )
-					{
-						_tcscpy( pModelElem->m_szName, "MaCoPrTr16" );
-					}
-					else if( CEnvironment::GetInstance()->GetSeason() == SEASON_FALL )
-					{
-						_tcscpy( pModelElem->m_szName, "MapleTree01" );
-					}
+		CFixedArray<MODELELEM> & apModelElem = prj.m_modelMng.m_aaModelElem[OT_OBJ];
+
+		for (MODELELEM & pModelElem : apModelElem) {
+
+			if (IsOneOf(pModelElem, trees1)) {
+				pModelElem.m_fScale = 1.0f;
+
+				if (CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING) {
+					_tcscpy(pModelElem.m_szName, "MaCoPrTr16");
+				} else if (CEnvironment::GetInstance()->GetSeason() == SEASON_FALL) {
+					_tcscpy(pModelElem.m_szName, "MapleTree01");
 				}
+			} else if (IsOneOf(pModelElem, trees2)) {
+				pModelElem.m_fScale = 1.0f;
 
-				else if( _tcsicmp(pModelElem->m_szName, "MaCoPrTr04") == 0 || _tcsicmp(pModelElem->m_szName, "MaCoPrTr05") == 0 ||
-					_tcsicmp(pModelElem->m_szName, "MaCoPrTr12") == 0 || _tcsicmp(pModelElem->m_szName, "MaCoPrTr15") == 0 ||
-					_tcsicmp(pModelElem->m_szName, "MaCoPrTr13") == 0 || _tcsicmp(pModelElem->m_szName, "MaCoPrTr02") == 0 )
-				{
-					pModelElem->m_fScale = 1.0f;
-
-					if( CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING )
-					{
-						_tcscpy( pModelElem->m_szName, "MaCoPrTr17" );
-					}
-					else if( CEnvironment::GetInstance()->GetSeason() == SEASON_FALL )
-					{
-						_tcscpy( pModelElem->m_szName, "MapleTree02" );
-					}
+				if (CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING) {
+					_tcscpy(pModelElem.m_szName, "MaCoPrTr17");
+				} else if (CEnvironment::GetInstance()->GetSeason() == SEASON_FALL) {
+					_tcscpy(pModelElem.m_szName, "MapleTree02");
 				}
 			}
 		}
@@ -4719,8 +4706,7 @@ static	\
 	CMover* pMover = prj.GetMover( objid );
 	if( pMover && pMover->IsPlayer() == TRUE )
 	{
-		auto BlockedUserIterator = prj.m_setBlockedUserID.find( lpName );
-		if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
+		if (prj.m_setBlockedUserID.contains(lpName))
 			return;
 	}
 #endif // __YS_CHATTING_BLOCKING_SYSTEM

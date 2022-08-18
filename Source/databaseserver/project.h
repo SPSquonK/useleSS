@@ -11,7 +11,6 @@
 #include "GuildCombat1to1.h"
 
 
-typedef std::map< std::string, void* > CMapStrToPtr;
 #define	MAX_WORLD	256
 
 
