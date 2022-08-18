@@ -537,11 +537,8 @@ void CObj::SetPos( const D3DXVECTOR3& vPos )
 		D3DXVECTOR3 vCur	= vPos / (float)( pWorld->m_iMPU );
 		if( (int)vOld.x != (int)vCur.x || (int)vOld.z != (int)vCur.z )
 		{
-			if( m_vRemoval == D3DXVECTOR3( 0, 0, 0 ) )
-			{
-				pWorld->m_apModifyLink[pWorld->m_cbModifyLink++]	= this;
-				if( pWorld->m_cbModifyLink >= MAX_MODIFYLINK )
-					Error( "MODIFYLINK//MAX//%d", pWorld->m_cbModifyLink ); 
+			if (m_vRemoval == D3DXVECTOR3(0, 0, 0)) {
+				pWorld->m_aModifyLink.emplace_back(this);
 			}
 
 			m_vRemoval = vPos;
@@ -552,16 +549,11 @@ void CObj::SetPos( const D3DXVECTOR3& vPos )
 			m_vPos  = vPos;
 			m_vLink	= vPos;
 
-			if( m_vRemoval != D3DXVECTOR3( 0, 0, 0 ) )
-			{
-				for( int i = 0; i < pWorld->m_cbModifyLink; i++ )
-				{
-					if( pWorld->m_apModifyLink[i] == this )
-					{
-						pWorld->m_apModifyLink[i]	= NULL;
-						m_vRemoval	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-						break;
-					}
+			if (m_vRemoval != D3DXVECTOR3(0, 0, 0)) {
+				const auto itRemoval = std::ranges::find(pWorld->m_aModifyLink, this);
+				if (itRemoval != pWorld->m_aModifyLink.end()) {
+					*itRemoval = nullptr;
+					m_vRemoval = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 				}
 			}
 		}
@@ -653,8 +645,7 @@ void CObj::SetAngle( FLOAT fAngle )
 { 
 	m_fAngle = (float)( (360.0/65536) * ((int)(fAngle*(65536/360.0)) & 65535) );
 
-	FLOAT fAngZ = 0.0f;
-	fAngZ = -m_fAngZ;
+	FLOAT fAngZ = -m_fAngZ;
 
 #if !defined(__CLIENT)
 	D3DXMatrixRotationYawPitchRoll( &m_matRotation, D3DXToRadian( -m_fAngle ), D3DXToRadian( -m_fAngX ), D3DXToRadian( fAngZ ) );

@@ -88,7 +88,7 @@ m_cbRunnableObject( 0 )
 	m_cbAddObjs		= 0;
 	memset( m_lpszWorld, 0, sizeof(TCHAR) * 64 );
 	m_cbUser	= 0;
-	m_cbModifyLink	= 0;
+	m_aModifyLink.reserve(/* MAX_MODIFYLINK */ 4096);
 	m_bLoadScriptFlag = FALSE;
 
 #else	// __WORLDSERVER
@@ -1371,79 +1371,73 @@ void CWorld::_add( void )
 	m_cbAddObjs		= 0;
 }
 
-void CWorld::_modifylink( void )
-{
-	CObj* pObj, *pObjtmp;
-	D3DXVECTOR3 vOld, vCur, vOldtmp, vCurtmp;
-	int nLinkLevel;
-	DWORD dwLinkType;
-
-	for( int i = 0; i < m_cbModifyLink; i++ )
-	{
-		pObj	= m_apModifyLink[i];
-		if( IsInvalidObj( pObj ) )	
+void CWorld::_modifylink() {
+	for (CObj * pObj : m_aModifyLink) {
+		if (IsInvalidObj(pObj))
 			continue;
 
-		if( pObj->GetWorld() != this )
-		{
-			WriteError( "LINKMAP world different" );	// temp
+		if (pObj->GetWorld() != this) {
+			WriteError("LINKMAP world different");	// temp
 			continue;
 		}
 
-		vOld	= pObj->GetLinkPos();
-		vCur	= pObj->GetRemovalPos();
-		vOldtmp		= vOld	/ (FLOAT)( m_iMPU );
-		vCurtmp		= vCur / (FLOAT)( m_iMPU );
+		const D3DXVECTOR3 vOld	= pObj->GetLinkPos();
+		const D3DXVECTOR3 vCur	= pObj->GetRemovalPos();
+		const D3DXVECTOR3 vOldtmp		= vOld	/ (FLOAT)( m_iMPU );
+		const D3DXVECTOR3 vCurtmp		= vCur / (FLOAT)( m_iMPU );
 
-		if( (int)vOldtmp.x != (int)vCurtmp.x || (int)vOldtmp.z != (int)vCurtmp.z )
+		if ((int)vOldtmp.x == (int)vCurtmp.x && (int)vOldtmp.z == (int)vCurtmp.z)
+			continue;
+		
+		const DWORD dwLinkType	= pObj->GetLinkType();
+		const int nLinkLevel	= (int)pObj->GetLinkLevel();
+#ifdef __LAYER_1015
+		const int nLayer	= pObj->GetLayer();
+#endif	// __LAYER_1015
+
+		if( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->IsPlayer() && nLinkLevel != 0 )
+			WriteError( "ML//%s//%d//%d", ( (CMover*)pObj )->GetName(), ( (CMover*)pObj )->m_idPlayer, nLinkLevel );
+
+#ifdef __LAYER_1015
+		if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) != pObj )
+#else	// __LAYER_1015
+		if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) != pObj )
+#endif	// __LAYER_1015
 		{
-			dwLinkType	= pObj->GetLinkType();
-			nLinkLevel	= (int)pObj->GetLinkLevel();
-#ifdef __LAYER_1015
-			int nLayer	= pObj->GetLayer();
-#endif	// __LAYER_1015
-
-			if( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->IsPlayer() && nLinkLevel != 0 )
-				WriteError( "ML//%s//%d//%d", ( (CMover*)pObj )->GetName(), ( (CMover*)pObj )->m_idPlayer, nLinkLevel );
-#ifdef __LAYER_1015
-			if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) != pObj )
-#else	// __LAYER_1015
-			if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) != pObj )
-#endif	// __LAYER_1015
-			{
-				WriteError( "ML//BINGO//%d//%d//%d", pObj->GetType(), pObj->GetIndex(), pObj->GetLinkLevel() );
-				RemoveObjLink2( pObj );
-			}
-
-#ifdef __LAYER_1015
-			if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) == pObj )
-				SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext, nLayer );
-#else	// __LAYER_1015
-			if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) == pObj )
-				SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext );
-#endif	// __LAYER_1015
-			pObj->DelNode();
-
-#ifdef __LAYER_1015
-			if( ( pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel, nLayer ) ) )
-				pObjtmp->InsNextNode( pObj );
-			else
-				SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj, nLayer );
-#else	// __LAYER_1015
-			if( ( pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel ) ) )
-				pObjtmp->InsNextNode( pObj );
-			else
-				SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj );
-#endif	// __LAYER_1015
-
-			pObj->SetLinkPos( pObj->GetRemovalPos() );
-			pObj->SetRemovalPos( D3DXVECTOR3( 0, 0, 0 ) );
-
-			if( pObj->IsDynamicObj() )
-				ModifyView( ( CCtrl* )pObj );
+			WriteError( "ML//BINGO//%d//%d//%d", pObj->GetType(), pObj->GetIndex(), pObj->GetLinkLevel() );
+			RemoveObjLink2( pObj );
 		}
+
+#ifdef __LAYER_1015
+		if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) == pObj )
+			SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext, nLayer );
+#else	// __LAYER_1015
+		if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) == pObj )
+			SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext );
+#endif	// __LAYER_1015
+		
+		pObj->DelNode();
+
+#ifdef __LAYER_1015
+		if( CObj * pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel, nLayer ) )
+			pObjtmp->InsNextNode( pObj );
+		else
+			SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj, nLayer );
+#else	// __LAYER_1015
+		if( CObj * pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel ) )
+			pObjtmp->InsNextNode( pObj );
+		else
+			SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj );
+#endif	// __LAYER_1015
+
+		pObj->SetLinkPos( pObj->GetRemovalPos() );
+		pObj->SetRemovalPos( D3DXVECTOR3( 0, 0, 0 ) );
+
+		if (pObj->IsDynamicObj())
+			ModifyView((CCtrl *)pObj);
 	}
-	m_cbModifyLink	= 0;
+
+	m_aModifyLink.clear();
 }
 
 void CWorld::_delete( void )
@@ -1460,13 +1454,10 @@ void CWorld::_delete( void )
 			}
 		}
 
-		for( int j = 0; j < m_cbModifyLink; j++ )
-		{
-			if( m_apModifyLink[j] == pObj )
-			{
-				m_apModifyLink[j]	= NULL;
-				pObj->m_vRemoval	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-			}
+		const auto itRemoval = std::ranges::find(m_aModifyLink, pObj);
+		if (itRemoval != m_aModifyLink.end()) {
+			(*itRemoval) = nullptr;
+			pObj->m_vRemoval	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 		}
 
 #ifdef __WORLDSERVER

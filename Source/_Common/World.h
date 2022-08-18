@@ -28,7 +28,6 @@
 #define	MAX_ADDOBJS				20480
 #define	MAX_DYNAMICOBJ			81920
 //#define	MAX_BKGND				20480
-#define	MAX_MODIFYLINK			4096
 #define	CLOSEWORKER				(DWORD)-1
 #define D3DFVF_BOUNDBOXVERTEX	(D3DFVF_XYZ|D3DFVF_DIFFUSE) 
 #define MAX_DISPLAYOBJ			5000
@@ -213,9 +212,7 @@ public:
 
 	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
 
-//	CRIT_SEC		m_csModifyLink;
-	int				m_cbModifyLink;
-	CObj*			m_apModifyLink[MAX_MODIFYLINK];		// 16k
+	std::vector<CObj *> m_aModifyLink;
 
 	static constexpr size_t MAX_REPLACEOBJ = 1024;
 	boost::container::small_vector<REPLACEOBJ, MAX_REPLACEOBJ> m_ReplaceObj;

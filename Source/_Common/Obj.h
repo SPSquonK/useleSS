@@ -124,8 +124,8 @@ public:
 		int				m_nPatrolIndexCount;	/// 경로벡터의 index 
 		BYTE            m_bPatrolCycle: 1;		/// 전체 순환이냐? 끝->처음->끝 방향이냐
 		BYTE            m_bPatrolReverse: 1;	/// 현재 진행방향
-	D3DXVECTOR3		m_vRemoval;				/// 링크맵에서 제거할 위치 
-	D3DXVECTOR3		m_vLink;				/// 링크맵에서의 현 위치 
+	D3DXVECTOR3		m_vRemoval;				/// Location to remove from link map
+	D3DXVECTOR3		m_vLink;				/// Current position on the link map
 #else	// __WORLDSERVER
 	CObj**			m_ppViewPtr;
     D3DXVECTOR3		m_vecBoundsLocal[8];	// bounding box coordinates (in local coord space)

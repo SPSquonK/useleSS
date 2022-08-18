@@ -1804,14 +1804,10 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 		InactivateEatPet();
 
 
-	for( int i = 0; i < pWorld->m_cbModifyLink; i++ )
-	{
-		if( pWorld->m_apModifyLink[i] == this )
-		{
-			pWorld->m_apModifyLink[i]	= NULL;
-			m_vRemoval	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-			break;
-		}
+	const auto it = std::ranges::find(pWorld->m_aModifyLink, this);
+	if (it != pWorld->m_aModifyLink.end()) {
+		(*it) = nullptr;
+		m_vRemoval = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	}
 
 	const auto lpReplaceObj = std::ranges::find_if(
