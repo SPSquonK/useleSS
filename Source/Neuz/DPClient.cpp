@@ -4598,10 +4598,10 @@ void CDPClient::OnEnvironmentSetting( CAr & ar )
 
 	if( CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING || CEnvironment::GetInstance()->GetSeason() == SEASON_FALL )
 	{
-		CFixedArray< tagMODELELEM >* apModelElem = &(prj.m_modelMng.m_aaModelElem[OT_OBJ]);
+		CFixedArray< MODELELEM >* apModelElem = &(prj.m_modelMng.m_aaModelElem[OT_OBJ]);
 		for( int i = 0; i < apModelElem->GetSize(); ++i )
 		{
-			LPMODELELEM pModelElem = (LPMODELELEM) apModelElem->GetAt( i );
+			MODELELEM * pModelElem = apModelElem->GetAt( i );
 			if( pModelElem )
 			{
 				if( _tcsicmp(pModelElem->m_szName, "MaCoPrTr01") == 0 || _tcsicmp(pModelElem->m_szName, "MaCoPrTr03") == 0 ||

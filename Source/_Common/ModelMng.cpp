@@ -21,10 +21,10 @@ CModelMng::~CModelMng()
 {
 	for( int i = 0; i < MAX_OBJTYPE ; i++ )
 	{
-		CFixedArray< tagMODELELEM >* apModelElem = &m_aaModelElem[ i ];
+		CFixedArray< MODELELEM >* apModelElem = &m_aaModelElem[ i ];
 		for( int j = 0; j < apModelElem->GetSize(); j++ )
 		{
-			LPMODELELEM pModelElem = (LPMODELELEM) apModelElem->GetAt( j );
+			MODELELEM * pModelElem = apModelElem->GetAt( j );
 			if( pModelElem )
 				SAFE_DELETE_ARRAY( pModelElem->m_apszMotion );
 		}
@@ -35,9 +35,9 @@ CModelMng::~CModelMng()
 void CModelMng::Free()
 {
 }
-LPMODELELEM CModelMng::GetModelElem( DWORD dwType, DWORD dwIndex )
+MODELELEM * CModelMng::GetModelElem( DWORD dwType, DWORD dwIndex )
 {
-	LPMODELELEM pElem = m_aaModelElem[ dwType ].GetAt( dwIndex );
+	MODELELEM * pElem = m_aaModelElem[ dwType ].GetAt( dwIndex );
 	if( pElem == NULL )
 	{
 		if( dwType == OT_ITEM )	// 아이템인 경우, 돈 모델을 사용   
@@ -54,7 +54,7 @@ LPMODELELEM CModelMng::GetModelElem( DWORD dwType, DWORD dwIndex )
 }
 void CModelMng::MakeBoneName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex )
 {
-	LPMODELELEM lpModelElem = GetModelElem( dwType, dwIndex );
+	MODELELEM * lpModelElem = GetModelElem( dwType, dwIndex );
 	_tcscpy( pszModelName, g_szRoot[dwType]);
 	_tcscat( pszModelName, "_" );
 	_tcscat( pszModelName, lpModelElem->m_szName );
@@ -62,7 +62,7 @@ void CModelMng::MakeBoneName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex )
 }
 void CModelMng::MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex )
 {
-	LPMODELELEM lpModelElem = GetModelElem( dwType, dwIndex );
+	MODELELEM * lpModelElem = GetModelElem( dwType, dwIndex );
 	if( lpModelElem == NULL )
 	{
 		Error( "MakeModelName : dwType=%d dwIndex=%d", dwType, dwIndex );
@@ -94,7 +94,7 @@ void CModelMng::MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex 
 }
 void CModelMng::MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD dwIndex, int nSex )
 {
-	LPMODELELEM lpModelElem = GetModelElem( OT_ITEM, dwIndex );
+	MODELELEM * lpModelElem = GetModelElem( OT_ITEM, dwIndex );
 	_tcscpy( pszPartsName, lpszRootName );
 	_tcscat( pszPartsName, _T( "_" ) );
 	if( nSex == SEX_SEXLESS || nSex == -1 )
@@ -123,7 +123,7 @@ void CModelMng::MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD 
 }
 void CModelMng::MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwIndex, DWORD dwMotion )
 {
-	LPMODELELEM lpModelElem = GetModelElem( dwType, dwIndex );
+	MODELELEM * lpModelElem = GetModelElem( dwType, dwIndex );
 	if( lpModelElem == NULL )
 		Error( "MakeMotionName GetModelElem dwType:%d dwIndex:%d, dwMotion:%d", dwType, dwIndex, dwMotion );
 
@@ -165,7 +165,7 @@ BOOL CModelMng::LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD d
 }
 CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
 {
-	LPMODELELEM lpModelElem = GetModelElem( nType, nIndex );
+	MODELELEM * lpModelElem = GetModelElem( nType, nIndex );
 	if( lpModelElem == NULL ) 
 	{
 		Error( "CModelMng::loadModel mdlObj/mdlDyna 에 objtype=%d index=%d bpart=%d 의 정보가 없군여.", nType, nIndex, bParts );
@@ -176,7 +176,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nInde
 	MakeModelName( szFileName, nType, nIndex );
 	return LoadModel( pd3dDevice, szFileName, lpModelElem, nType, bParts ); 
 }
-CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, LPMODELELEM lpModelElem, int nType, BOOL bParts ) 
+CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
 {
 	HRESULT hr;
 	CModel* pModel = NULL;
@@ -303,7 +303,7 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 	if( script.Load( lpszFileName, FALSE ) == FALSE )
 		return FALSE;
 
-	CFixedArray< tagMODELELEM >* apModelElem; 
+	CFixedArray< MODELELEM >* apModelElem;
 	TCHAR szObject[48];
 	TCHAR szMotion[48];
 	UINT iType, iObject, iMotion;

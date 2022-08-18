@@ -235,7 +235,7 @@ void CSfx::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	if( IsUpdateMatrix() )
 		UpdateMatrix();
 	
-	LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( m_dwType, m_dwIndex );
+	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( m_dwType, m_dwIndex );
 	// Model이 없으면 출력하지 않음 
 	if( lpModelElem == NULL )
 		return;

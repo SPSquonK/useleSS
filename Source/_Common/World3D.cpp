@@ -636,7 +636,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				const float yDist = (pv.y - pvCamera.y);
 				const float zDist = (pv.z - pvCamera.z);
 
-				LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( pObj->m_dwType, pObj->m_dwIndex );
+				MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( pObj->m_dwType, pObj->m_dwIndex );
 				if( lpModelElem && g_Option.m_bSFXRenderOff && lpModelElem->m_bRenderFlag != 1 )
 					continue;
 				

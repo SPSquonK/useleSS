@@ -2016,7 +2016,7 @@ void CSfxModel::SetSfx( LPCTSTR szSfxName )
 
 void CSfxModel::SetSfx( DWORD dwIndex )
 {
-	LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( OT_SFX, dwIndex );
+	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( OT_SFX, dwIndex );
 
 	if( lpModelElem )
 	{

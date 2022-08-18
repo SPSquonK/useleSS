@@ -7,8 +7,7 @@
 
 #include "2DRender.h"
 
-typedef struct tagMODELELEM
-{
+struct MODELELEM {
 	DWORD m_dwType;
 	DWORD m_dwIndex;
 	TCHAR m_szName [48];
@@ -34,7 +33,7 @@ typedef struct tagMODELELEM
 	{ 
 		if( i < 0 || i >= m_nMax )
 		{
-			Error( "tagMODELELEM : out of range %d", i );
+			Error( "MODELELEM : out of range %d", i );
 			i = 0;
 		}
 
@@ -43,7 +42,7 @@ typedef struct tagMODELELEM
 		return NULL; 
 	}
 
-}* LPMODELELEM, MODELELEM;
+};
 
 class CModel;
 
@@ -52,14 +51,14 @@ class CModelMng
 {
 public:
 	std::map<std::string, CModel *> m_mapFileToMesh;
-	CFixedArray< tagMODELELEM > m_aaModelElem[ MAX_OBJTYPE ]; 
+	CFixedArray< MODELELEM > m_aaModelElem[ MAX_OBJTYPE ];
 
 public:
 	CModelMng();
 	~CModelMng();
 
 	void Free();	
-	LPMODELELEM GetModelElem( DWORD dwType, DWORD dwIndex );
+	MODELELEM * GetModelElem( DWORD dwType, DWORD dwIndex );
 	void MakeBoneName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex );
 	void MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex );
 	void MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
@@ -67,7 +66,7 @@ public:
 
 	BOOL    LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
 	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE );
-	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, LPMODELELEM lpModelElem, int nType, BOOL bParts = FALSE ); //int nModelType, LPCTSTR lpszTexture = NULL );
+	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts = FALSE ); //int nModelType, LPCTSTR lpszTexture = NULL );
 
 	BOOL LoadScript( LPCTSTR lpszFileName );
 

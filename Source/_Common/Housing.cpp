@@ -1002,7 +1002,7 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	}
 
 // gmpbigun:  clone model!!
- 	LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( OT_CTRL, nItemId );
+	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( OT_CTRL, nItemId );
  
 //	SAFE_DELETE( m_pClonedModel );
  	m_pClonedModel = new CModelObject;

@@ -220,7 +220,7 @@ void CObj::DelNode()
 void CObj::Process()
 {
 #ifdef __CLIENT
-	LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( m_dwType, m_dwIndex );
+	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( m_dwType, m_dwIndex );
 	if( lpModelElem == NULL )
 		return;					// Model이 없으면 출력하지 않음 
 
@@ -302,7 +302,7 @@ void CObj::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		UpdateMatrix();
 
 	// Model이 없으면 출력하지 않음 
-	LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( m_dwType, m_dwIndex );
+	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( m_dwType, m_dwIndex );
 	if( lpModelElem == NULL )
 		return;
 	if( lpModelElem->m_dwModelType == MODELTYPE_SFX )
