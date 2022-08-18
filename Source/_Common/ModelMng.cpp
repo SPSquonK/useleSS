@@ -153,25 +153,25 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nInde
 	MakeModelName( szFileName, nType, nIndex );
 	return LoadModel( pd3dDevice, szFileName, lpModelElem, nType, bParts ); 
 }
+
 CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
 {
-	HRESULT hr;
-	CModel* pModel = NULL;
-	CModel* pModelBill = NULL;
-	int nModelType = lpModelElem->m_dwModelType;
-	TCHAR szFileName[MAX_PATH];
+	const int nModelType = lpModelElem->m_dwModelType;
+
 
 	switch( nModelType )
 	{
-		case MODELTYPE_SFX: 
-		#ifndef __WORLDSERVER		// 새버전에선 월드에서 sfx를 new하지 않는다.
-			pModel = new CSfxModel;		
-			pModel->SetModelType( nModelType );
-			((CSfxModel*)pModel)->SetSfx( lpszFileName );
+		case MODELTYPE_SFX: {
+#ifndef __WORLDSERVER		// 새버전에선 월드에서 sfx를 new하지 않는다.
+			CSfxModel * pModel = new CSfxModel;
+			pModel->SetModelType(nModelType);
+			pModel->SetSfx(lpszFileName);
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
-		#endif // not World
-			break;
+			return pModel;
+#endif // not World
+			return nullptr;
+		}
 
 		case MODELTYPE_MESH: {
 			auto mapItor = m_mapFileToMesh.find( lpszFileName );
@@ -180,7 +180,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				mapItor->second->m_pModelElem->m_bUsed = TRUE;
 
 #ifdef __CSC_EXTEXTURE
-				pModel = mapItor->second;
+				CModelObject * pModel = mapItor->second;
 				pModel->SetModelType( nModelType );
 				pModel->m_pModelElem = lpModelElem;
 
@@ -189,60 +189,63 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				return mapItor->second;
 #endif //__CSC_EXTEXTURE
 			}
-			pModel = new CModelObject;
+			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType( nModelType );
 			pModel->m_pModelElem = lpModelElem;
-			hr = pModel->InitDeviceObjects( pd3dDevice );
+			HRESULT hr = pModel->InitDeviceObjects( pd3dDevice );
 			hr = pModel->LoadModel( lpszFileName );
 			if( hr == SUCCESS )
 			{
 				hr = pModel->RestoreDeviceObjects();
 			#ifdef _DEBUG
-				if( ((CModelObject*)pModel)->GetObject3D()->m_nHavePhysique )
+				if( pModel->GetObject3D()->m_nHavePhysique )
 					Error( "CModelMng::LoadModel : %s가 동적오브젝트인데 정적오브젝트로 설정되어 있다.", lpszFileName );
 			#endif			
 				m_mapFileToMesh.emplace(lpszFileName, pModel);
 				pModel->m_pModelElem->m_bUsed = TRUE;
+				return pModel;
+			} else {
+				SAFE_DELETE(pModel);
+				return nullptr;
 			}
-			else
-				SAFE_DELETE( pModel )
-			break;
 		}
-		case MODELTYPE_ANIMATED_MESH:
-			pModel = new CModelObject;
-			pModel->SetModelType( nModelType );
-			pModel->InitDeviceObjects( pd3dDevice );
+		case MODELTYPE_ANIMATED_MESH: {
+			CModelObject * pModel = new CModelObject;
+			pModel->SetModelType(nModelType);
+			pModel->InitDeviceObjects(pd3dDevice);
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
-			memset( szFileName, 0, sizeof(szFileName) );
-			_tcsncpy( szFileName, lpszFileName, _tcslen( lpszFileName ) - 4 );	// .o3d를 떼고 파일명부분만 카피
-			_tcscat( szFileName, _T(".chr") );
-			switch( nType )
-			{
-			case OT_ITEM:	// 아이템일 경우, 외장본(.chr)이 있다면 로딩한다 (예: 날개)
+			TCHAR szFileName[MAX_PATH];
+			std::memset(szFileName, 0, sizeof(szFileName)); // memset because we use strncpy
+			_tcsncpy(szFileName, lpszFileName, _tcslen(lpszFileName) - 4);	// .o3d를 떼고 파일명부분만 카피
+			_tcscat(szFileName, _T(".chr"));
+			switch (nType) {
+				case OT_ITEM:	// 아이템일 경우, 외장본(.chr)이 있다면 로딩한다 (예: 날개)
 				{
 					CResFile resFp;
-					BOOL bResult = resFp.Open( MakePath( DIR_MODEL, szFileName ), "rb" );
-					if( bResult == TRUE )
-						((CModelObject*)pModel)->LoadBone( szFileName );
+					BOOL bResult = resFp.Open(MakePath(DIR_MODEL, szFileName), "rb");
+					if (bResult == TRUE)
+						pModel->LoadBone(szFileName);
 					break;
 				}
-			case OT_MOVER:	// 무버일 경우 외장본(.chr)을 로딩한다
+				case OT_MOVER:	// 무버일 경우 외장본(.chr)을 로딩한다
 				{
-					((CModelObject*)pModel)->LoadBone( szFileName );
+					pModel->LoadBone(szFileName);
 					break;
 				}
 			}
-			if( bParts == FALSE )
-			{
-				if( ((CModelObject*)pModel)->LoadModel( lpszFileName ) == SUCCESS )  // skin 읽음
+			if (bParts == FALSE) {
+				if (pModel->LoadModel(lpszFileName) == SUCCESS)  // skin 읽음
 				{
-					((CModelObject*)pModel)->RestoreDeviceObjects();
+					pModel->RestoreDeviceObjects();
 				}
 			}
-			break;
+
+			return pModel;
+		}
+		default:
+			return nullptr;
 	}
-	return pModel;
 }
 
 HRESULT CModelMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
@@ -250,7 +253,7 @@ HRESULT CModelMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
 }
 
 HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	for (CModel * pModel : m_mapFileToMesh | std::views::values) {
+	for (CModelObject * pModel : m_mapFileToMesh | std::views::values) {
 		pModel->RestoreDeviceObjects();
 	}
 
@@ -258,7 +261,7 @@ HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
 }
 
 HRESULT CModelMng::InvalidateDeviceObjects() {
-	for (CModel * pModel : m_mapFileToMesh | std::views::values) {
+	for (CModelObject * pModel : m_mapFileToMesh | std::views::values) {
 		pModel->InvalidateDeviceObjects();
 	}
 
@@ -266,7 +269,7 @@ HRESULT CModelMng::InvalidateDeviceObjects() {
 }
 
 HRESULT CModelMng::DeleteDeviceObjects() {
-	for (CModel *& pModel : m_mapFileToMesh | std::views::values) {
+	for (CModelObject *& pModel : m_mapFileToMesh | std::views::values) {
 		pModel->DeleteDeviceObjects();
 		SAFE_DELETE(pModel);
 	}

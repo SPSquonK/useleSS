@@ -36,11 +36,11 @@ struct MODELELEM {
 };
 
 class CModel;
-
+class CModelObject;
 
 class CModelMng final {
 public:
-	std::map<std::string, CModel *> m_mapFileToMesh;
+	std::map<std::string, CModelObject *> m_mapFileToMesh;
 	std::array<CFixedArray<MODELELEM>, MAX_OBJTYPE> m_aaModelElem;
 
 public:
