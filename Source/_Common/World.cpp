@@ -55,9 +55,7 @@ int	CLandscape::m_nWidthLinkMap[MAX_LINKLEVEL];
 
 #ifndef __WORLDSERVER
 CObj* CWorld::m_aobjCull[ MAX_DISPLAYOBJ ];
-CObj* CWorld::m_asfxCull[ MAX_DISPLAYSFX ];
 int CWorld::m_nObjCullSize = 0;
-int CWorld::m_nSfxCullSize = 0;
 #endif
 
 CWorld::CWorld()
@@ -130,7 +128,6 @@ m_cbRunnableObject( 0 )
 	m_bViewLODObj = TRUE;
 
 	m_nObjCullSize = 0;
-	m_nSfxCullSize = 0;
 	m_bViewIdState = FALSE;
 	m_dwAmbient	= D3DCOLOR_ARGB( 255,128,128,128);
 	m_pObjFocus		= NULL;

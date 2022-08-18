@@ -321,40 +321,17 @@ int ObjSortNearToFar( const VOID* arg1, const VOID* arg2 )
     return -1;
 }
 // 먼데서 가까운 순으로 소팅 
-int ObjSortFarToNear( const VOID* arg1, const VOID* arg2 )
-{
+static bool ObjSortFarToNear(const CObj * arg1, const CObj * arg2) {
 #ifndef __CSC_UPDATE_WORLD3D
-    D3DXVECTOR3 vPos1 = (*(CObj**)arg1)->GetPos();
-    D3DXVECTOR3 vPos2 = (*(CObj**)arg2)->GetPos();
-	D3DXVECTOR3 vDir = (*(CObj**)arg1)->GetWorld()->m_pCamera->GetPos();//m_vPos2;
-    
-    //FLOAT d1 = vPos1.x * vDir.x + vPos1.z * vDir.z;
-    //FLOAT d2 = vPos2.x * vDir.x + vPos2.z * vDir.z;
+	const D3DXVECTOR3 vDir = arg1->GetWorld()->m_pCamera->GetPos();
+	const D3DXVECTOR3 vPos1 = arg1->GetPos() - vDir;
+	const D3DXVECTOR3 vPos2 = arg2->GetPos() - vDir;
 
-//	FLOAT d1 =  sqrt( (vPos1.x - vDir.x ) * ( vPos1.x - vDir.x ) + ( vPos1.z - vDir.z ) * ( vPos1.z - vDir.z ) );
-//	FLOAT d2 =  sqrt( (vPos2.x - vDir.x ) * ( vPos2.x - vDir.x ) + ( vPos2.z - vDir.z ) * ( vPos2.z - vDir.z ) );
-	// 실제 거리가 필요한게 아니므로 sqrt를 씌울필요는 없을거 같습니다.
-	// sqrt가 무지 느린함수거든요.
-	// 문제생기면 얘기해주세요. xuzhu.
-	FLOAT d1 =  (vPos1.x - vDir.x ) * ( vPos1.x - vDir.x ) + ( vPos1.z - vDir.z ) * ( vPos1.z - vDir.z );
-	FLOAT d2 =  (vPos2.x - vDir.x ) * ( vPos2.x - vDir.x ) + ( vPos2.z - vDir.z ) * ( vPos2.z - vDir.z );
-
-    if (d1 < d2)
-        return +1;
-
-    return -1;
+	return D3DXVec3LengthSq(&vPos1) > D3DXVec3LengthSq(&vPos2);
 #endif //__CSC_UPDATE_WORLD3D
 
 #ifdef __CSC_UPDATE_WORLD3D
-	float	fDist1 = (*(CObj**)arg1)->m_fDistCamera;
-	float	fDist2 = (*(CObj**)arg2)->m_fDistCamera;
-	
-    if (fDist1 < fDist2)
-        return 1; 
-	else if( fDist1 > fDist2 )
-		return -1; 
-	else
-		return 0;
+	return arg1->m_fDistCamera > arg2->m_fDistCamera;
 #endif //__CSC_UPDATE_WORLD3D
 }
 
@@ -579,13 +556,10 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	for(int i = 0; i < m_nObjCullSize; i++ )
 		if( m_aobjCull[ i ] )
 			m_aobjCull[ i ]->m_ppViewPtr = NULL;
-	for(int i = 0; i < m_nSfxCullSize; i++ )
-		if( m_asfxCull[ i ] )
-			m_asfxCull[ i ]->m_ppViewPtr = NULL;	
 
 	m_nObjCullSize = 0;
-	m_nSfxCullSize = 0;
 
+	boost::container::static_vector<CObj *, MAX_DISPLAYSFX> m_asfxCull;
 	
 	// Targets for TAB targetting
 	const bool bScan = GetID() == WI_WORLD_GUILDWAR;
@@ -610,7 +584,6 @@ void CWorld::RenderObject( CD3DFont* pFont )
 		CLandscape* pLand;
 		// Static object culling and collection
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, m_bViewLight );
-		int _nCount = 0, _nCount2 = 0;
 
 		FOR_LAND( this, pLand, m_nVisibilityLand, FALSE )
 		{
@@ -669,12 +642,11 @@ void CWorld::RenderObject( CD3DFont* pFont )
 
 						if( m_nObjCullSize < MAX_DISPLAYOBJ )
 						{
-							{
+							
 								if( pObj->m_pModel!=NULL && pObj->m_pModel->GetModelType() != MODELTYPE_SFX )
 								{
 									if( m_bCullObj )
 									{
-										_nCount ++;
 										pObj->m_cullstate 
 											= CullObject( &g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld );
 
@@ -686,23 +658,19 @@ void CWorld::RenderObject( CD3DFont* pFont )
 								}
 								else
 								{
-									if( m_bCullObj )
-									{
-										_nCount ++;
-										pObj->m_cullstate 
-											= CullObject( &g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld );
+									if (m_asfxCull.size() < m_asfxCull.max_size()) {
+										if (m_bCullObj) {
+											pObj->m_cullstate = CullObject(&g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld);
 
-										if( pObj->IsCull() == FALSE )
-										{
-											m_asfxCull[ m_nSfxCullSize++ ] = pObj;
+											if (!pObj->IsCull()) {
+												m_asfxCull.emplace_back(pObj);
+											}
+										} else {
+											m_asfxCull.emplace_back(pObj);
 										}
 									}
-									else
-									{
-										m_asfxCull[ m_nSfxCullSize++ ] = pObj;
-									}
 								}
-							} // dot
+							 // dot
 						}
 						else
 							TRACE("The number of output objects on one screen exceeded %d. danger!!!! \n", m_nObjCullSize);
@@ -1048,20 +1016,15 @@ void CWorld::RenderObject( CD3DFont* pFont )
 		}
 	}
 	CHECK1();
-
-	qsort( m_asfxCull, m_nSfxCullSize, sizeof(CObj*), ObjSortFarToNear );
-	for(int i = 0; i < m_nSfxCullSize; i++ )
-		m_asfxCull[ i ]->m_ppViewPtr = &m_asfxCull[ i ];	
-		
+	
 	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 	
 	//
 	// 3.Effect output
 	// 
-	for(int i = 0; i < m_nSfxCullSize; i++)
-	{
-		CObj * pObj = m_asfxCull[ i ]; 
+	std::sort(m_asfxCull.begin(), m_asfxCull.end(), ObjSortFarToNear);
+	for (CObj * pObj : m_asfxCull) {
 
 	#ifdef __SFX_OPT
 		if( pObj->GetType() == OT_SFX && (g_Option.m_nSfxLevel <= 0) && ( (CSfx*)pObj )->GetSkill() == FALSE)

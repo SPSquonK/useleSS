@@ -265,9 +265,7 @@ public:
 	static D3DLIGHT9	m_light;
 	static D3DLIGHT9	m_lightFogSky;
 	static CObj*		m_aobjCull[ MAX_DISPLAYOBJ ];
-	static CObj*		m_asfxCull[ MAX_DISPLAYSFX ];
 	static int			m_nObjCullSize;
-	static int			m_nSfxCullSize;
 	static CWeather		m_weather;
 	static CCamera*		m_pCamera;
 	static D3DXMATRIX	m_matProj;
