@@ -659,15 +659,9 @@ void CWorld::RenderObject( CD3DFont* pFont )
 								else
 								{
 									if (m_asfxCull.size() < m_asfxCull.max_size()) {
-										if (m_bCullObj) {
-											pObj->m_cullstate = CullObject(&g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld);
-
-											if (!pObj->IsCull()) {
-												m_asfxCull.emplace_back(pObj);
-											}
-										} else {
-											m_asfxCull.emplace_back(pObj);
-										}
+										pObj->m_cullstate = CullObject(&g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld);
+										if (!m_bCullObj) [[unlikely]] pObj->m_cullstate = CS_UNKNOWN;
+										if (!pObj->IsCull()) m_asfxCull.emplace_back(pObj);
 									}
 								}
 							 // dot
