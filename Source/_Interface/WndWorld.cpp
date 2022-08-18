@@ -596,7 +596,7 @@ m_buffs( NULL )
 	m_dwPowerTick = 0;	
 	m_idLastTarget	= NULL_ID;
 	
-	n_nMoverSelectCount = 0;
+	n_nMoverSelectCount = nullptr;
 	m_dwGuildCombatTime = 0xffffffff;
 	memset( &m_QuestTime, 0, sizeof(m_QuestTime) );
 	memset( m_szGuildCombatStr, 0, sizeof(char) * 64 );	
@@ -6990,31 +6990,21 @@ void CWndWorld::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	else if( nChar == VK_TAB )
 	{		
-		CWorld* pWorld = g_WorldMng.Get();
-		CMover* pMover = NULL;
+		const auto ppMover = std::ranges::find_if(CWorld::m_amvrSelect,
+			[&](CMover * candidate) {
+				return candidate
+					&& candidate != n_nMoverSelectCount
+					&& !candidate->IsMode(TRANSPARENT_MODE)
+					&& !candidate->IsDie();
+			});
 
-		if( n_nMoverSelectCount > MAX_MOVERSELECT )
-			n_nMoverSelectCount = 0;
-
-		int i = NULL;
-		for( ; i<MAX_MOVERSELECT; i++ )
-		{
-			if( n_nMoverSelectCount == i )
-				continue;
-
-			pMover = CWorld::m_amvrSelect[i];
-
-			if( pMover )
-				break;
+		if (ppMover != CWorld::m_amvrSelect.end()) {
+			CMover * pMover = *ppMover;
+			g_WorldMng.Get()->SetObjFocus(pMover);
+			n_nMoverSelectCount = pMover;
+		} else {
+			n_nMoverSelectCount = nullptr;
 		}
-
-		if( pMover )
-		{
-			if( !pMover->IsMode( TRANSPARENT_MODE )	&& !pMover->IsDie() ) // ´ë»óÀÌ Åõ¸í¸ðµåÀÏ¶© Å¸°Ù ¾ÈµÊ.
-				pWorld->SetObjFocus( pMover );
-		}
-		
-		n_nMoverSelectCount = i;
 	}
 	if( nChar == VK_ESCAPE )	
 	{

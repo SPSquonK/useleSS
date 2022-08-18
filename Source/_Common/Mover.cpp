@@ -6327,7 +6327,7 @@ void CMover::SetJJim( CMover *pJJimer )
 }
 
 
-CGuild* CMover::GetGuild()
+CGuild* CMover::GetGuild() const
 {
 #ifdef __WORLDSERVER
 //	locked

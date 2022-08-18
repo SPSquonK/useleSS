@@ -808,7 +808,7 @@ public:
 	int				IsSteal( CMover *pTarget );		// pTarget을 스틸하려 하는가.
 	int				IsSteal( OBJID idTaget );		// id로 검사하는 버전.
 	u_long			GetPartyId() { return m_idparty; }
-	BOOL			IsMode( DWORD dwMode ); 
+	BOOL			IsMode( DWORD dwMode ) const; 
 	void			SetMode( DWORD dwMode )		{ m_dwMode |= dwMode; }	// 유저상태 셑팅
 	void			SetNotMode( DWORD dwMode )	{ m_dwMode &= (~dwMode); } // 유저상태 리셑
 	BOOL			SetDarkCover( BOOL bApply, DWORD tmMaxTime = 0 );
@@ -1065,7 +1065,7 @@ public:
 	[[nodiscard]] int GetItemAbilityMax(int nItem) const;
 	[[nodiscard]] std::pair<int, int> GetHitMinMax(const ATTACK_INFO * pInfo = nullptr) const;
 	BOOL			IsAfterDeath();
-	BOOL			IsDie() { return m_pActMover->IsDie() || m_nHitPoint == 0; }
+	BOOL			IsDie() const { return m_pActMover->IsDie() || m_nHitPoint == 0; }
 	BOOL			IsLive() { return m_pActMover->IsDie() == FALSE || m_nHitPoint > 0; }		// && 를  ||로 바꿨음.  !=를 >로 바꿈
 	int				GetCount() { return m_nCount; }
 	void			SetPKPink( DWORD dwTime ) { if( dwTime == 0 || m_dwPKTime < dwTime ) m_dwPKTime = dwTime; }
@@ -1261,7 +1261,7 @@ public:
 									 int nLoop, DWORD dwMotionOption );
 	void			HalfForceSet( D3DXVECTOR3 & vPos, D3DXVECTOR3 & vd,	float fAngle, float fAnlgeX, 
 		                          float fAccPower, float fTurnAngle );
-	CGuild*			GetGuild();
+	[[nodiscard]] CGuild * GetGuild() const;
 	CGuildWar*		GetWar();
 	BOOL			IsSMMode( int nType ) { return ( m_dwSMTime[nType] > 0 ) ? TRUE : FALSE; }
 	void			ReState();
@@ -1498,7 +1498,7 @@ public:
 
 
 // 유저상태 알아봄
-inline	BOOL CMover::IsMode( DWORD dwMode ) 
+inline	BOOL CMover::IsMode( DWORD dwMode ) const
 { 
 #ifdef __HACK_0516
 	switch( dwMode )

@@ -34,12 +34,10 @@ WORD g_anStartIndex[4]={0,(128+48)*3,(128+48+32+16)*3,(128+48+32+16+8+4)*3};
 CCamera*   CWorld::m_pCamera = NULL;
 BOOL       CWorld::m_bViewLODTerrain = TRUE;
 BOOL       CWorld::m_bMiniMapRender = FALSE;
-#ifdef __CLIENT
 CSkyBox    CWorld::m_skyBox;
 BOOL	   CWorld::m_bZoomView = FALSE;
 int		   CWorld::m_nZoomLevel = 0;
-CMover*	   CWorld::m_amvrSelect[ MAX_MOVERSELECT ];
-#endif
+boost::container::static_vector<CMover *, MAX_MOVERSELECT> CWorld::m_amvrSelect;
 
 CWeather   CWorld::m_weather;
 D3DCOLOR   CWorld::m_dwBgColor = D3DCOLOR_XRGB(0xe0,0xe0,0xff);
@@ -590,9 +588,8 @@ void CWorld::RenderObject( CD3DFont* pFont )
 
 	
 	// Targets for TAB targetting
-	int	 nCount = 0;
 	const bool bScan = GetID() == WI_WORLD_GUILDWAR;
-	memset( CWorld::m_amvrSelect, 0, sizeof(CWorld::m_amvrSelect) );
+	CWorld::m_amvrSelect.clear();
 	
 	if(CDeployManager::GetInstance()->IsReady()) {
 		CDeployManager::GetInstance()->Process();
@@ -769,31 +766,9 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				// TAB key set target - contains a list...
 				if( !pObj->IsActiveObj() )
 				{
-					if( bScan )
-					{
-						if( nCount < MAX_MOVERSELECT )
-						{	
-							if( pObj->GetType() == OT_MOVER )
-							{
-								CMover* pMover = (CMover*)pObj;
-								
-								if( pMover->IsPlayer() && !pMover->IsDie() && !pMover->IsMode( TRANSPARENT_MODE ) )
-								{
-									CGuild* pGuild1 = g_pPlayer->GetGuild();
-									CGuild* pGuild2 = pMover->GetGuild();
-
-									if( pGuild1 && pGuild2 )
-									{
-										if( pGuild1->GetGuildId() != pGuild2->GetGuildId() )
-										{
-											if( pObj->IsRangeObj( g_pPlayer->GetPos(), 20.0f ) )
-											{
-												CWorld::m_amvrSelect[nCount++] = pMover;
-											}
-										}
-									}
-								}
-							}
+					if (bScan && CWorld::m_amvrSelect.size() < CWorld::m_amvrSelect.max_size()) {
+						if (CMover * asMover = CWorld::RenderObject_IsTabbable(pObj)) {
+							CWorld::m_amvrSelect.emplace_back(asMover);
 						}
 					}
 				}
@@ -1201,6 +1176,22 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, m_bViewFog );
 	CHECK2("  Render Effect");
 		
+}
+
+/// If the pObj is tabbable and is a mover, returns pObj, as a CMover *.
+/// Else returns nullptr
+CMover * CWorld::RenderObject_IsTabbable(CObj * pObj) {
+	CMover * pMover = pObj->ToMover();
+	if (!pMover) return nullptr;
+	if (!pMover->IsPlayer()) return nullptr;
+	if (pMover->IsDie() || pMover->IsMode(TRANSPARENT_MODE)) return nullptr;
+
+	CGuild * pGuild1 = g_pPlayer->GetGuild();
+	CGuild * pGuild2 = pMover->GetGuild();
+	if (!pGuild1 || !pGuild2) return nullptr;
+	if (pGuild1->GetGuildId() == pGuild2->GetGuildId()) return nullptr;
+
+	return pMover->IsRangeObj(g_pPlayer->GetPos(), 20.0f) ? pMover : nullptr;
 }
 
 

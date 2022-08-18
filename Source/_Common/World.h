@@ -1,6 +1,7 @@
 #ifndef __WORLD_2002_1_22
 #define __WORLD_2002_1_22
 
+#include <array>
 #include <boost/container/small_vector.hpp>
 #include "ExistingObjects.h"
 
@@ -276,7 +277,7 @@ public:
 	static BOOL			m_bZoomView;
 	static int			m_nZoomLevel;
 	static CSkyBox		m_skyBox;
-	static CMover*		m_amvrSelect[ MAX_MOVERSELECT ];
+	static boost::container::static_vector<CMover *, MAX_MOVERSELECT> m_amvrSelect;
 	CLandscape**		m_apLand;
 	FLOAT				m_fElapsedTime;
 	CObj*				m_pObjFocus;
@@ -577,6 +578,8 @@ private:
 	void			SetBoundBoxVertex( CObj* pObj );
 
 	void			RenderObj(CObj* pObj);
+
+	static CMover * RenderObject_IsTabbable(CObj * pObj);
 
 #endif // !__WORLDSERVER
 

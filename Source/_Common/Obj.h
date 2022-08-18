@@ -196,7 +196,7 @@ public:
 	void			UpdateLocalMatrix();
 	void			UpdateMatrix();
 	BOOL			IsRangeObj( CObj *pSrc, float fRange );
-	BOOL			IsRangeObj( const D3DXVECTOR3 &vDest, float fRange );		// 좌표로 하는 버전. this가 Src측이 된다.
+	BOOL			IsRangeObj( const D3DXVECTOR3 &vDest, float fRange ) const;		// 좌표로 하는 버전. this가 Src측이 된다.
 	void			NullNode() { m_pPrev = m_pNext = NULL; }
 	CObj*			GetPrevNode() { return m_pPrev; }
 	CObj*			GetNextNode() { return m_pNext; }
@@ -238,7 +238,7 @@ public:
 	D3DXMATRIX		GetMatrixWorld() const		{ return m_matWorld; } // 모든 매트릭스가 곱해진 결과 
 	D3DXMATRIX*		GetMatrixWorldPtr()		    { return &m_matWorld; } // 포인터 리턴 버전
 
-	FLOAT			GetRadius();			// 모델의 X,Y,Z평균의 반지름을 구함
+	FLOAT			GetRadius() const;			// 모델의 X,Y,Z평균의 반지름을 구함
 	FLOAT			GetRadiusXZ();			// 모델의 X,Z 평면의 반지름을 구함.		
 
 #ifdef __WORLDSERVER

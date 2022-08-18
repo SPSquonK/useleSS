@@ -770,7 +770,7 @@ FLOAT	CObj::GetRadiusXZ( void )
 const float INV_6 = 1.0f / 6.0f;
 
 // this의 반지름을 계산함. = 삼면 평균을 반지름으로 선택 
-FLOAT	CObj::GetRadius( void )
+FLOAT	CObj::GetRadius( void ) const
 {
 	float fRadius = fabs(m_pModel->m_vMax.x - m_pModel->m_vMin.x);
 	fRadius      += fabs(m_pModel->m_vMax.y - m_pModel->m_vMin.y);
@@ -811,7 +811,7 @@ BOOL	CObj::IsRangeObj( CObj *pOther, float fRange )
 //
 // this(src) + m_nArrivalRange 의 반경 내에 vDest의 중심점이 들어와있는가?
 //
-BOOL	CObj::IsRangeObj( const D3DXVECTOR3 &vDest, float fRange )
+BOOL	CObj::IsRangeObj( const D3DXVECTOR3 &vDest, float fRange ) const
 {
 	if( m_pModel == NULL )	return FALSE;
 
