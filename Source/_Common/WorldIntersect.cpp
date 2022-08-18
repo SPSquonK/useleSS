@@ -631,19 +631,15 @@ BOOL	CWorld::ProcessCollisionReflection( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &v
 // 좌표 주위 3x3그리드 영역의 삼각형좌표를 스캔해 vDir과 충돌하는 삼각형을 찾아낸다.
 D3DXVECTOR3 *FindTouchLandTri( D3DXVECTOR3 *pTris, int nMaxTri, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vDir, FLOAT *pfDist )
 {
-	int		i;
-	D3DXVECTOR3	*pv0, *pv1, *pv2;
-	D3DXVECTOR3	v1, v2;
-	FLOAT	fDist;
-	BOOL	bRet;
 	
-	for( i = 0; i < nMaxTri; i ++ )
+	for(int i = 0; i < nMaxTri; i ++ )
 	{
-		pv0 = pTris++;		
-		pv1 = pTris++;		
-		pv2 = pTris++;
-		
-		bRet = IsTouchRayTri( pv0, pv1, pv2, &vPos, &vDir, &fDist );
+		D3DXVECTOR3 * pv0 = pTris++;		
+		D3DXVECTOR3 * pv1 = pTris++;		
+		D3DXVECTOR3 * pv2 = pTris++;
+
+		FLOAT	fDist;
+		BOOL bRet = IsTouchRayTri( pv0, pv1, pv2, &vPos, &vDir, &fDist );
 		if( bRet && fDist >= 0.0f )	// 반대방향 면은 검사하지 않음.
 		{
 			*pfDist = fDist;
@@ -667,9 +663,7 @@ BOOL	CWorld::IntersectObjLine( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 #ifdef __CLIENT
 	if( bWithObject )
 	{
-		CObj* pNonCullObjs[ 10000 ];
-		int nNonCullNum = 0;
-
+		boost::container::small_vector<CObj *, 5000> pNonCullObjs;
 		for (CObj * pObj : m_objCull) {
 			if( pObj )
 			{
@@ -677,36 +671,28 @@ BOOL	CWorld::IntersectObjLine( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 				{
 					if( pObj->IsCull() == FALSE /*&& pObj->GetModel()->m_pModelElem->m_dwDistant <= 1*/ ) 
 					{
-						if( nNonCullNum >= 10000 )
-						{
-							Error( "CWorld::IntersectObjLine : 범위를 넘어섬." );
-							break;
-						}
 						if( bSkipTrans && pObj->m_pModel->m_pModelElem->m_bTrans )	// 반투명이 되는 오브젝트는 검사대상에서 제외함.
 							continue;
-						pNonCullObjs[ nNonCullNum++ ] = pObj;
+
+						pNonCullObjs.emplace_back(pObj);
 					}
 				}
 			}
 		}
 		
-		int ObjSortNearToFar( const VOID* arg1, const VOID* arg2 );
-		qsort( pNonCullObjs, nNonCullNum, sizeof(CObj*), ObjSortNearToFar ); 
+		bool ObjSortNearToFar(const CObj * arg1, const CObj * arg2);
+		std::sort(pNonCullObjs.begin(), pNonCullObjs.end(), ObjSortNearToFar);
 
-		CModel	*pModel = NULL;
-		D3DXVECTOR3	vIntersect;
-		FLOAT fDist;
-		Segment3 segment( vPos, vEnd );
+		const Segment3 segment( vPos, vEnd );
 
-		for( int i = nNonCullNum - 1; i >= 0; i-- )
-		{
-			CObj * pObj = pNonCullObjs[ i ];
-			pModel = pObj->m_pModel;
+		for (CObj * pObj : pNonCullObjs | std::views::reverse) {
+			CModel * pModel = pObj->m_pModel;
 			BOOL bCollObj = TRUE;
 			if( pObj->GetType() == OT_CTRL )	bCollObj = FALSE;
 			if( pModel->TestIntersectionOBB_Line( segment, pObj, bCollObj ) == TRUE )
 			{
 				D3DXVECTOR3	*pTri[3];
+				FLOAT fDist;
 				((CModelObject *)pModel)->GetObject3D()->FindTouchTriLine( pTri, vPos, vEnd, pObj->GetMatrixWorld(), &fDist, bCollObj );
 				if( *pTri )
 				{

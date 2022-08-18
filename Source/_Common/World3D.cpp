@@ -301,25 +301,14 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 //-----------------------------------------------------------------------------
 
 // 가까운데서 먼거리로 소팅 (이게 빠르데요)
-int ObjSortNearToFar( const VOID* arg1, const VOID* arg2 )
-{
-    D3DXVECTOR3 vPos1 = (*(CObj**)arg1)->GetPos();
-    D3DXVECTOR3 vPos2 = (*(CObj**)arg2)->GetPos();
-	D3DXVECTOR3 vDir = (*(CObj**)arg1)->GetWorld()->m_pCamera->GetPos();//m_vPos2;
-    
-    //FLOAT d1 = vPos1.x * vDir.x + vPos1.z * vDir.z;
-    //FLOAT d2 = vPos2.x * vDir.x + vPos2.z * vDir.z;
+bool ObjSortNearToFar(const CObj * arg1, const CObj * arg2) {
+	const D3DXVECTOR3 vDir = arg1->GetWorld()->m_pCamera->GetPos();
+	const D3DXVECTOR3 vPos1 = arg1->GetPos() - vDir;
+	const D3DXVECTOR3 vPos2 = arg2->GetPos() - vDir;
 
-//	FLOAT d1 =  sqrt( (vPos1.x - vDir.x ) * ( vPos1.x - vDir.x ) + ( vPos1.z - vDir.z ) * ( vPos1.z - vDir.z ) );
-//	FLOAT d2 =  sqrt( (vPos2.x - vDir.x ) * ( vPos2.x - vDir.x ) + ( vPos2.z - vDir.z ) * ( vPos2.z - vDir.z ) );
-	FLOAT d1 =  (vPos1.x - vDir.x ) * ( vPos1.x - vDir.x ) + ( vPos1.z - vDir.z ) * ( vPos1.z - vDir.z );
-	FLOAT d2 =  (vPos2.x - vDir.x ) * ( vPos2.x - vDir.x ) + ( vPos2.z - vDir.z ) * ( vPos2.z - vDir.z );
-
-    if (d1 > d2)
-        return +1;
-
-    return -1;
+	return D3DXVec3LengthSq(&vPos1) < D3DXVec3LengthSq(&vPos2);
 }
+
 // 먼데서 가까운 순으로 소팅 
 static bool ObjSortFarToNear(const CObj * arg1, const CObj * arg2) {
 #ifndef __CSC_UPDATE_WORLD3D
@@ -2319,9 +2308,8 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 	vPickRayDir2 = vPickRayDir;
 	vPickRayDir2.y = 0.0f;
 	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
-	
-	CObj* pNonCullObjs[ 10000 ];
-	int nNonCullNum = 0;
+
+	boost::container::small_vector<CObj *, 5000> pNonCullObjs;
 
 	for (CObj * pObj : m_objCull) {
 		if( pObj )
@@ -2335,16 +2323,14 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 					if( bOnlyNPC && pObj->GetType() == OT_MOVER )	// bOnlyNPC옵션이 켜져있을때
 						if( ((CMover*)pObj)->IsPlayer() )	continue;	// 플레이어는 스킵.
 
-					pNonCullObjs[ nNonCullNum++ ] = pObj;
+					pNonCullObjs.emplace_back(pObj);
 				}
 			}
 		}
 	}
 
 	BOOL bPick = FALSE;
-	for( int i = nNonCullNum - 1; i >= 0; i-- )
-	{
-		CObj* pObj = (CObj*)pNonCullObjs[ i ];
+	for (CObj * pObj : pNonCullObjs | std::views::reverse) {
 
 		if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsDie() )	// 죽은사람은 바운딩박스로 검사하지 않음.(바운딩박스랑 맞지 않는다).
 			bPick = pObj->m_pModel->Intersect( vPickRayOrig, vPickRayDir, pObj->GetMatrixWorld(), &vIntersect, &fDist );
@@ -2388,8 +2374,8 @@ CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmat
 	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
 	int nCount = 0;
 	
-	CObj* pNonCullObjs[ 10000 ];
-	int nNonCullNum = 0;
+	boost::container::small_vector<CObj *, 5000> pNonCullObjs;
+
 	for (CObj * pObj : m_objCull) {
 		if( pObj )
 		{
@@ -2413,17 +2399,14 @@ CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmat
 								continue;
 						}
 					}
-					pNonCullObjs[ nNonCullNum++ ] = pObj;
+					pNonCullObjs.emplace_back(pObj);
 				}
 			}
 		}
 	}
 
-	BOOL bAABB = bBoundBox;
-	for( int i = nNonCullNum - 1; i >= 0; i-- )
-	{
-		CObj* pObj = pNonCullObjs[ i ];
-		bAABB = bBoundBox;
+	for (CObj * pObj : pNonCullObjs | std::views::reverse) {
+		BOOL bAABB = bBoundBox;
 		if( pObj->GetType() == OT_CTRL )		// 컨트롤은 바운딩박스로만 체크하면 안됨.
 			bAABB = FALSE;
 		if( pObj->Pick( &vPickRayOrig, &vPickRayDir, &vIntersect, &fDist, bAABB ) )
