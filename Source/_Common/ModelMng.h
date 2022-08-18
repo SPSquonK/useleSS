@@ -12,27 +12,26 @@ struct MODELELEM {
 	DWORD m_dwModelType;
 	TCHAR m_szPart[48]; 
 	FLOAT m_fScale;
-	LPDIRECT3DTEXTURE9 m_pTexture;	// 4바이트 정렬을 위해서 옮김.-xuzhu-
-	int m_nTextureEx;			// 텍스쳐 셋 번호 0 ~ 7
+	LPDIRECT3DTEXTURE9 m_pTexture;
+	int m_nTextureEx;			// Texture set number 0 to 7
 
 	BYTE  m_bMark;
 	BYTE  m_bFly      : 1;
 	BYTE  m_dwDistant : 2;
-	BYTE  m_bPick     : 1; // 캐릭터 이동시 마우스 피킹에 걸리는 오브젝트인가?
+	BYTE  m_bPick     : 1; // Is it an object that is subject to mouse picking when moving a character?
 	BYTE  m_bUsed     : 1;
-	BYTE  m_bTrans    : 1; // 캐릭터를 가릴 시 반투명이 되는 오브젝트인가?
+	BYTE  m_bTrans    : 1; // Is it an object that becomes translucent when covering a character?
 	BYTE  m_bShadow   : 1;
 	BYTE  m_bReserved : 1;
 	BYTE m_bRenderFlag : 1;
 
-	TCHAR * GetMotion(int i) {
+	[[nodiscard]] TCHAR * GetMotion(int i) {
 		if (i < 0 || i >= m_nMax) {
 			Error("MODELELEM : out of range %d", i);
 			i = 0;
 		}
 		return m_apszMotion ? &m_apszMotion[i * 32] : nullptr;
 	}
-
 };
 
 class CModel;
@@ -56,15 +55,14 @@ public:
 
 	BOOL    LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
 	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE );
-	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts = FALSE ); //int nModelType, LPCTSTR lpszTexture = NULL );
+	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts = FALSE );
 
 	BOOL LoadScript( LPCTSTR lpszFileName );
 
-	// dx 초기화 관련 
+	// D3DX initialization related
 	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
 	HRESULT RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 };
-/////////////////////////////////////////////////////////////////////////////
 

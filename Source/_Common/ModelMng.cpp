@@ -28,8 +28,9 @@ MODELELEM * CModelMng::GetModelElem(const DWORD dwType, const DWORD dwIndex) {
 	MODELELEM * const pElem = m_aaModelElem[dwType].GetAt(dwIndex);
 	if (pElem) return pElem;
 
-	if (dwType == OT_ITEM) {	// 아이템인 경우, 돈 모델을 사용   
-		return m_aaModelElem[OT_ITEM].GetAt(II_ARM_M_VAG_HELMET02);	// 일반 방어구 모양으로 교체
+	if (dwType == OT_ITEM) {
+		// Items with no model default appearance
+		return m_aaModelElem[OT_ITEM].GetAt(II_ARM_M_VAG_HELMET02);
 	}
 
 	Error("GetModelElem - out of range: type=%lu, size=%d, index=%lu", dwType, m_aaModelElem[dwType].GetSize(), dwIndex);
@@ -104,7 +105,7 @@ void CModelMng::MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwInde
 	if( lpModelElem == NULL )
 		Error( "MakeMotionName GetModelElem dwType:%d dwIndex:%d, dwMotion:%d", dwType, dwIndex, dwMotion );
 
-	// 초과됐을 경우 MTI_STAND(정지상태)로 강제 세팅 
+	// Set to MTI_STAND (stop state) when out of range
 	if( (int)( dwMotion ) >= lpModelElem->m_nMax || dwMotion == NULL_ID )
 	{
 		dwMotion = MTI_STAND;
@@ -120,7 +121,7 @@ void CModelMng::MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwInde
 		_tcscat( pszMotionName, "_" );
 	}
 
-	// 공란일 경우 MTI_STAND(정지상태)로 강제 세팅 
+	// Forced setting to MTI_STAND (stop state) in case of blank
 	if( lpszMotion[0] == 0 )
 	{
 		dwMotion = MTI_STAND;
@@ -137,7 +138,7 @@ BOOL CModelMng::LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD d
 	TCHAR szMotionName[ MAX_PATH ];
 	MakeMotionName( szMotionName, dwType, dwIndex, dwMotion );
 
-	((CModelObject*)pModel)->LoadMotion( szMotionName );		// bone animation 읽음
+	((CModelObject*)pModel)->LoadMotion( szMotionName );		// Read bone animation
 	return TRUE;
 }
 CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
@@ -145,7 +146,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nInde
 	MODELELEM * lpModelElem = GetModelElem( nType, nIndex );
 	if( lpModelElem == NULL ) 
 	{
-		Error( "CModelMng::loadModel mdlObj/mdlDyna 에 objtype=%d index=%d bpart=%d 의 정보가 없군여.", nType, nIndex, bParts );
+		Error( "CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts );
 		return NULL;
 	}
 
@@ -162,7 +163,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 	switch( nModelType )
 	{
 		case MODELTYPE_SFX: {
-#ifndef __WORLDSERVER		// 새버전에선 월드에서 sfx를 new하지 않는다.
+#ifndef __WORLDSERVER		// The new version doesn't new sfx in the world.
 			CSfxModel * pModel = new CSfxModel;
 			pModel->SetModelType(nModelType);
 			pModel->SetSfx(lpszFileName);
@@ -185,9 +186,9 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				pModel->m_pModelElem = lpModelElem;
 
 				return pModel;
-#else //__CSC_EXTEXTURE
+#else
 				return mapItor->second;
-#endif //__CSC_EXTEXTURE
+#endif
 			}
 			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType( nModelType );
@@ -199,7 +200,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				hr = pModel->RestoreDeviceObjects();
 			#ifdef _DEBUG
 				if( pModel->GetObject3D()->m_nHavePhysique )
-					Error( "CModelMng::LoadModel : %s가 동적오브젝트인데 정적오브젝트로 설정되어 있다.", lpszFileName );
+					Error( "CModelMng::LoadModel : %s is a dynamic object, but it is set as a static object.", lpszFileName );
 			#endif			
 				m_mapFileToMesh.emplace(lpszFileName, pModel);
 				pModel->m_pModelElem->m_bUsed = TRUE;
@@ -217,10 +218,10 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 			pModel->m_pModelElem->m_bUsed = TRUE;
 			TCHAR szFileName[MAX_PATH];
 			std::memset(szFileName, 0, sizeof(szFileName)); // memset because we use strncpy
-			_tcsncpy(szFileName, lpszFileName, _tcslen(lpszFileName) - 4);	// .o3d를 떼고 파일명부분만 카피
+			_tcsncpy(szFileName, lpszFileName, _tcslen(lpszFileName) - 4);	// Remove the .o3d and copy only the file name part
 			_tcscat(szFileName, _T(".chr"));
 			switch (nType) {
-				case OT_ITEM:	// 아이템일 경우, 외장본(.chr)이 있다면 로딩한다 (예: 날개)
+				case OT_ITEM:	// If it is an item, load the outer copy (.chr), if any (eg wings)
 				{
 					CResFile resFp;
 					BOOL bResult = resFp.Open(MakePath(DIR_MODEL, szFileName), "rb");
@@ -228,14 +229,14 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 						pModel->LoadBone(szFileName);
 					break;
 				}
-				case OT_MOVER:	// 무버일 경우 외장본(.chr)을 로딩한다
+				case OT_MOVER:	// If it is a mover, load the external copy (.chr)
 				{
 					pModel->LoadBone(szFileName);
 					break;
 				}
 			}
 			if (bParts == FALSE) {
-				if (pModel->LoadModel(lpszFileName) == SUCCESS)  // skin 읽음
+				if (pModel->LoadModel(lpszFileName) == SUCCESS)  // Read skin
 				{
 					pModel->RestoreDeviceObjects();
 				}
@@ -297,7 +298,8 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 		script.GetToken(); // {
 		script.GetToken(); // object name or }
 		int nBrace = 1;
-		// 여기부터 오브젝트 단위 obj, ctrl, item, sfx, mover
+
+		// Read objects in file
 		while( nBrace )
 		{
 			MODELELEM modelElem;
@@ -315,14 +317,14 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 			}
 		#ifdef _DEBUG
 			if( sizeof(szObject) <= strlen(script.token) + 1 )
-				Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
+				Error( "%s name is too long. max = %zu", lpszFileName, strlen(script.token) );
 		#endif
 
 			TCHAR szObject[48];
-			_tcscpy( szObject, script.token ); // folder 또는 object name
+			_tcscpy( szObject, script.token ); // Folder or object name
 
 			script.SetMark();
-			// 스크립트 실수 검출 루틴 필요. - xuzhu -
+			
 			script.GetToken(); // {
 			if( *script.token == '{' )
 			{
@@ -330,10 +332,10 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 				script.GetToken(); // object name or }
 			#ifdef _DEBUG
 				if( sizeof(szObject) <= strlen(script.token) + 1 )
-					Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
+					Error( "%s name is too long. max = %zu", lpszFileName, strlen(script.token) );
 			#endif
 
-				_tcscpy( szObject, script.token ); // folder 또는 object name
+				_tcscpy( szObject, script.token );
 				continue;
 			}
 			else
@@ -342,21 +344,21 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 			if( iObject == 0 )
 			{
 				CString str;
-				str.Format( "CModelMng::LoadScript(%d) 0으로 지정된 모션 아이디 : %s, %s", script.GetLineNum(), szObject, script.token );
+				str.Format( "CModelMng::LoadScript(%d) Motion ID specified as 0 : %s, %s", script.GetLineNum(), szObject, script.token );
 				AfxMessageBox( str );
 			}
 			modelElem.m_dwType = iType;
 			modelElem.m_dwIndex = iObject;
 		#ifdef _DEBUG
 			if( sizeof(modelElem.m_szName) <= strlen(szObject) + 1 )
-				Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(szObject) );
+				Error( "%s string is too long. max = %zu", lpszFileName, strlen(szObject) );
 		#endif
 			_tcscpy( modelElem.m_szName, szObject );
 			modelElem.m_dwModelType = script.GetNumber();
 			script.GetToken();
 		#ifdef _DEBUG
 			if( sizeof(modelElem.m_szPart) <= strlen(script.token) + 1 )
-				Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
+				Error( "%s string is too long. max = %zu", lpszFileName, strlen(script.token) );
 		#endif
 			_tcscpy( modelElem.m_szPart, script.Token );
 			modelElem.m_bFly = script.GetNumber();
@@ -370,19 +372,19 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 			modelElem.m_bRenderFlag = script.GetNumber();
 
 			script.GetToken(); // object name or { or }
-			// 여기부터 애니메이션 
+			// Animations
 			if( *script.token == '{' )
 			{
 				script.SetMark();
 				script.GetToken(); // motion name or }
 				int nMax = 0;
-				// 모션 리스트 카운트 
+				// Motion list count
 				while( *script.token != '}' )
 				{
 					TCHAR szMotion[48];
 				#ifdef _DEBUG
 					if( sizeof(szMotion) <= strlen(script.token) + 1 )
-						Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
+						Error( "%s string is too long. max = %d", lpszFileName, strlen(script.token) );
 				#endif
 					_tcscpy( szMotion, script.token );
 					const UINT iMotion = script.GetNumber();
@@ -392,7 +394,7 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 				}
 				nMax++;
 				script.GoMark();
-				// 실제 모션 리스트 세팅 
+				// Actual motion list setting
 				script.GetToken(); // motion name or }
 				modelElem.m_apszMotion = new TCHAR[ nMax * 32 ];
 				modelElem.m_nMax = nMax;
@@ -403,7 +405,7 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 					TCHAR szMotion[48];
 				#ifdef _DEBUG
 					if( sizeof(szMotion) <= strlen(script.token) + 1 )
-						Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
+						Error( "%s string is too long. max = %zu", lpszFileName, strlen(script.token) );
 				#endif
 					_tcscpy( szMotion, script.token );
 					const UINT iMotion = script.GetNumber();
@@ -411,7 +413,7 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 					if( lpszMotion[0] )
 					{
 						CString str;
-						str.Format( "CModelMng::LoadScript(%d) %s모션 중복 아이디 : %s", script.GetLineNum(), lpszFileName, lpszMotion );
+						str.Format( "CModelMng::LoadScript(%d) %s Motion Duplicate ID : %s", script.GetLineNum(), lpszFileName, lpszMotion );
 						AfxMessageBox( str );
 					}
 					_tcscpy( lpszMotion, szMotion );
@@ -422,7 +424,7 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 			if( apModelElem.GetAt( iObject ) )
 			{
 				CString str;
-				str.Format( "CModelMng::LoadScript(%d) %s중복 아이디 : type = %d, idx = %d, name = %s", script.GetLineNum(), lpszFileName, iType, iObject, modelElem.m_szName );
+				str.Format( "CModelMng::LoadScript(%d) %s duplicate id : type = %d, idx = %d, name = %s", script.GetLineNum(), lpszFileName, iType, iObject, modelElem.m_szName );
 				AfxMessageBox( str );
 			}
 
@@ -431,7 +433,7 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 //////////////////////////////////////////////////////////
 			
 		#ifdef __WORLDSERVER
-			if( iType != OT_SFX )	// sfx는 서버에서 skip
+			if( iType != OT_SFX )	// Sfx skip from server
 				apModelElem.SetAtGrow( iObject, modelElem );
 		#else
 			apModelElem.SetAtGrow( iObject, modelElem );
