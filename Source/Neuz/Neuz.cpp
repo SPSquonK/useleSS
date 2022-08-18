@@ -707,7 +707,7 @@ HRESULT CNeuzApp::Render()
 	{
 		_PROFILE("Make Shadow Map");
 		CHECK1();
-		void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, CObj **pList, int nMax );
+		void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList );
 		if( g_pPlayer )
 		{
 			CWorld *pWorld = g_pPlayer->GetWorld();
@@ -715,7 +715,7 @@ HRESULT CNeuzApp::Render()
 			{
 
 		if( pWorld->GetID() != WI_WORLD_MINIROOM ) // 7.28기획요청 : 하우징 그림자 제거
-			RenderShadowMap( m_pd3dDevice, pWorld->m_aobjCull, pWorld->m_nObjCullSize );
+			RenderShadowMap( m_pd3dDevice, pWorld->m_objCull );
 
 			}
 

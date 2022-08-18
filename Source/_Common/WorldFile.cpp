@@ -976,7 +976,7 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 						m_apLand[ i * m_nLandWidth + j ]->InvalidateDeviceObjects();
 						m_apLand[ i * m_nLandWidth + j ]->DeleteDeviceObjects();
 						SAFE_DELETE( m_apLand[ i * m_nLandWidth + j] );
-						m_nObjCullSize = 0;
+						m_objCull.clear();
 					}
 					else
 						pLand->SetUsedAllObjects();

@@ -676,7 +676,7 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 		else
 			p2DRender->TextOut( 2, 200 ,0 , D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
 
-		_stprintf( strDebug, _T("Obj:%d  Face:%d   LFace:%d" ), g_pPlayer->GetWorld()->m_nObjCullSize, g_nMaxTri,0 );
+		_stprintf( strDebug, _T("Obj:%zu  Face:%d   LFace:%d" ), g_pPlayer->GetWorld()->m_objCull.size(), g_nMaxTri, 0);
 		p2DRender->TextOut( 2, 230, strDebug, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
 		_stprintf( strDebug, _T("%f %f %f %f %f" ), _g_fReg[0], _g_fReg[1], _g_fReg[2], _g_fReg[3], _g_fReg[4]  );
 		p2DRender->TextOut( 2, 250, strDebug, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );

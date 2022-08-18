@@ -667,13 +667,10 @@ BOOL	CWorld::IntersectObjLine( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 #ifdef __CLIENT
 	if( bWithObject )
 	{
-		CObj* pObj;
 		CObj* pNonCullObjs[ 10000 ];
-		CObj **pList = m_aobjCull;
 		int nNonCullNum = 0;
-		for( int i = 0; i < m_nObjCullSize; i++ )
-		{
-			pObj = *pList++;
+
+		for (CObj * pObj : m_objCull) {
 			if( pObj )
 			{
 				if( pObj->GetType() == OT_OBJ || pObj->GetType() == OT_CTRL )
@@ -703,7 +700,7 @@ BOOL	CWorld::IntersectObjLine( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 
 		for( int i = nNonCullNum - 1; i >= 0; i-- )
 		{
-			pObj = (CObj*)pNonCullObjs[ i ];
+			CObj * pObj = pNonCullObjs[ i ];
 			pModel = pObj->m_pModel;
 			BOOL bCollObj = TRUE;
 			if( pObj->GetType() == OT_CTRL )	bCollObj = FALSE;

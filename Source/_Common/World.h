@@ -264,8 +264,7 @@ private:
 public:
 	static D3DLIGHT9	m_light;
 	static D3DLIGHT9	m_lightFogSky;
-	static CObj*		m_aobjCull[ MAX_DISPLAYOBJ ];
-	static int			m_nObjCullSize;
+	static boost::container::static_vector<CObj *, MAX_DISPLAYOBJ> m_objCull;
 	static CWeather		m_weather;
 	static CCamera*		m_pCamera;
 	static D3DXMATRIX	m_matProj;

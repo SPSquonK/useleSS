@@ -54,8 +54,7 @@ int	CLandscape::m_nWidthLinkMap[MAX_LINKLEVEL];
 
 
 #ifndef __WORLDSERVER
-CObj* CWorld::m_aobjCull[ MAX_DISPLAYOBJ ];
-int CWorld::m_nObjCullSize = 0;
+boost::container::static_vector<CObj *, MAX_DISPLAYOBJ> CWorld::m_objCull;
 #endif
 
 CWorld::CWorld()
@@ -127,7 +126,6 @@ m_cbRunnableObject( 0 )
 	m_bViewHeightAttribute = FALSE;
 	m_bViewLODObj = TRUE;
 
-	m_nObjCullSize = 0;
 	m_bViewIdState = FALSE;
 	m_dwAmbient	= D3DCOLOR_ARGB( 255,128,128,128);
 	m_pObjFocus		= NULL;
@@ -743,12 +741,8 @@ void CWorld::Process()
 #endif
 
 	// 정적 오브젝트의 반투명 처리를 위한 프로세스 처리 
-	int nNonCullNum = 0;
-	for( i = 0; i < m_nObjCullSize; i++ )
-	{
-		pObj = m_aobjCull[ i ];
-		if( pObj && pObj->GetType() == OT_OBJ && pObj->GetModel()->m_pModelElem->m_bTrans && pObj->IsCull() == FALSE )
-		{
+	for (CObj * pObj : m_objCull) {
+		if (pObj && pObj->GetType() == OT_OBJ && pObj->GetModel()->m_pModelElem->m_bTrans && pObj->IsCull() == FALSE) {
 			pObj->Process();
 		}
 	}

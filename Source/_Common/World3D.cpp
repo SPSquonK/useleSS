@@ -336,24 +336,12 @@ static bool ObjSortFarToNear(const CObj * arg1, const CObj * arg2) {
 }
 
 // 먼데서 가까운 순으로 소팅 - 미리 계산해둔 거리값으로 비교하는 버전.
-int ObjSortFarToNear2( const VOID* arg1, const VOID* arg2 )
+static bool ObjSortFarToNear2( const CObj * arg1, const CObj * arg2 )
 {
-	float	fDist1 = (*(CObj**)arg1)->m_fDistCamera;
-	float	fDist2 = (*(CObj**)arg2)->m_fDistCamera;
+	const float	fDist1 = arg1->m_fDistCamera;
+	const float	fDist2 = arg2->m_fDistCamera;
 
-#ifdef __CSC_UPDATE_WORLD3D
-	if (fDist1 < fDist2)
-        return -1;
-	else if(fDist1 > fDist2)
-		return 1;
-	else
-		return 0;
-#else //__CSC_UPDATE_WORLD3D
-    if (fDist1 < fDist2)
-       return 1;
-	
-    return -1;
-#endif //__CSC_UPDATE_WORLD3D
+	return fDist1 > fDist2;
 }
 
 void CWorld::RenderTerrain()
@@ -553,11 +541,10 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	static D3DXVECTOR4 vConst( 1.0f, 1.0f, 1.0f, 100.0f );
 	
 	// Remove previous objects from view
-	for(int i = 0; i < m_nObjCullSize; i++ )
-		if( m_aobjCull[ i ] )
-			m_aobjCull[ i ]->m_ppViewPtr = NULL;
-
-	m_nObjCullSize = 0;
+	for (CObj * pObj : m_objCull) {
+		if (pObj) pObj->m_ppViewPtr = nullptr;
+	}
+	m_objCull.clear();
 
 	boost::container::static_vector<CObj *, MAX_DISPLAYSFX> m_asfxCull;
 	
@@ -640,24 +627,16 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						// Initialize cull state
 						pObj->SetCullState( CS_UNKNOWN );
 
-						if( m_nObjCullSize < MAX_DISPLAYOBJ )
-						{
 							
-								if( pObj->m_pModel!=NULL && pObj->m_pModel->GetModelType() != MODELTYPE_SFX )
-								{
-									if( m_bCullObj )
-									{
-										pObj->m_cullstate 
-											= CullObject( &g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld );
-
-										if( pObj->IsCull() == FALSE )
-											m_aobjCull[ m_nObjCullSize++ ] = pObj;
+								if (pObj->m_pModel && pObj->m_pModel->GetModelType() != MODELTYPE_SFX) {
+									if (m_objCull.size() < m_objCull.max_size()) {
+										pObj->m_cullstate = CullObject(&g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld);
+										if (!m_bCullObj) [[unlikely]] pObj->m_cullstate = CS_UNKNOWN;
+										if (!pObj->IsCull()) m_objCull.emplace_back(pObj);
+									} else {
+										TRACE("The number of output objects on one screen exceeded %zu. danger!!!! \n", m_objCull.size());
 									}
-									else
-										m_aobjCull[ m_nObjCullSize++ ] = pObj;
-								}
-								else
-								{
+								} else {
 									if (m_asfxCull.size() < m_asfxCull.max_size()) {
 										pObj->m_cullstate = CullObject(&g_cullinfo, pObj->m_vecBoundsWorld, pObj->m_planeBoundsWorld);
 										if (!m_bCullObj) [[unlikely]] pObj->m_cullstate = CS_UNKNOWN;
@@ -665,9 +644,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 									}
 								}
 							 // dot
-						}
-						else
-							TRACE("The number of output objects on one screen exceeded %d. danger!!!! \n", m_nObjCullSize);
+						
 					}
 				}
 			}
@@ -679,12 +656,14 @@ void CWorld::RenderObject( CD3DFont* pFont )
 
 		// Once you've sorted them all out, sort them out.
 		CHECK1();
-	    qsort( m_aobjCull, m_nObjCullSize, sizeof(CObj*), ObjSortFarToNear2 ); 
+		std::sort(m_objCull.begin(), m_objCull.end(), ObjSortFarToNear2);
 
-		for(int i = 0; i < m_nObjCullSize; i++ )
-			m_aobjCull[ i ]->m_ppViewPtr = &m_aobjCull[ i ];			//sun! No, such irresponsible coding... When deleting an object, this seems to be a problem.
-			                                                            //squonk: oui parce que vous savez pas ecrire un destructeur. mais ca ...
-																		//squonk: vous voyez moi aussi je peux ecrire des commentaires qui n'en disent pas assez dans une langue qui n'est pas l'anglais
+		for (size_t i = 0; i != m_objCull.size(); ++i) {
+			m_objCull[i]->m_ppViewPtr = &m_objCull[i];
+			//sun! No, such irresponsible coding... When deleting an object, this seems to be a problem.
+			//squonk: oui parce que vous savez pas ecrire un destructeur. mais ca ...
+			//squonk: vous voyez moi aussi je peux ecrire des commentaires qui n'en disent pas assez dans une langue qui n'est pas l'anglais
+		}
 
 		CHECK2("Sort");
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
@@ -713,9 +692,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			g_nMaxTri = 0;
 			// Let's distinguish between OT_OBJ and non-OT_OBJ.
 			// Anything that is not OT_OBJ.
-			for(int i = 0; i < m_nObjCullSize; i++)
-			{
-				CObj * pObj = m_aobjCull[ i ];
+			for (CObj * pObj : m_objCull) {
 
 				if( g_Option.m_nShadow < 2 )	
 					if( pObj->GetType() == OT_OBJ )	continue;		// OT_OBJ is the next thing.
@@ -775,9 +752,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 
 				bool bRenderedShadow = false;
 				const D3DXVECTOR3 kMyPos = g_pPlayer->GetPos( );			//The protagonist is always assumed to be valid.
-				for(int i = 0; i < m_nObjCullSize; i++)
-				{
-					CObj * pObj = m_aobjCull[ i ];
+				for (CObj * pObj : m_objCull) {
 					if( pObj == NULL )	continue;
 					if( pObj->GetType() != OT_OBJ )	continue;		// Anything that is not OT_OBJ is next.
 					
@@ -842,10 +817,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				ResetStateShadowMap( m_pd3dDevice, 2 );
 			}
 
-
-			for(int i = 0; i < m_nObjCullSize; i++)
-			{
-				CObj * pObj = m_aobjCull[ i ];
+			for (CObj * pObj : m_objCull) {
 				if( pObj == NULL )	continue;
 				if( pObj->GetType() != OT_MOVER )	continue;
 				CMover* pMover = (CMover*) pObj;
@@ -881,9 +853,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 
 				pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 				
-				for(int i = 0; i < m_nObjCullSize; i++)
-				{
-					CObj * pObj = m_aobjCull[ i ];
+				for (CObj * pObj : m_objCull) {
 					if( pObj && pObj->GetType() == OT_MOVER )
 					{
 						CMover * pMoverShadow = (CMover *)pObj;
@@ -1044,13 +1014,10 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	//   Since the effect should be visible under the translucency, the translucent object is output last.
 	
 #ifdef __CSC_UPDATE_WORLD3D
-	int i = m_nObjCullSize;
-	while(i--)
+	for (CObj * pObj : m_objCull | std::views::reverse) {
 #else //__CSC_UPDATE_WORLD3D
-	for(int i = 0; i < m_nObjCullSize; i++ )
+	for (CObj * pObj : m_objCull) {
 #endif //__CSC_UPDATE_WORLD3D
-	{
-		CObj * pObj = m_aobjCull[ i ];
 		if( pObj->m_wBlendFactor < 255 )
 #ifdef __CSC_UPDATE_WORLD3D
 			RenderObj(pObj);
@@ -1085,9 +1052,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	//
 	// 5. name is at the end
 	// 
-	for( int i = 0; i < m_nObjCullSize; i++)
-	{
-		CObj * pObj = m_aobjCull[ i ];
+	for (CObj * pObj : m_objCull) {
 		if( pObj && m_bViewName && pFont )
 		{
 			if( pObj->GetType() == OT_MOVER )
@@ -1210,12 +1175,10 @@ void	_DrawRect( LPDIRECT3DDEVICE9 pd3dDevice, int x, int y, int w, int h, DWORD 
 }
 
 // 쉐도우 맵에 오브젝트들을 렌더함.
-void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, CObj **pList, int nMax )
+void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 {
 	extern BOOL g_bShadow;
 	if( g_bShadow == FALSE )	return;
-	int		i;
-	CObj *pObj;
 	static D3DXVECTOR4 vConst( 1.0f, 1.0f, 1.0f, 100.0f );
 #ifdef __YENV
 	g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvFog, &vConst );
@@ -1263,9 +1226,7 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, CObj **pList, int nMax )
 	pd3dDevice->SetTransform( D3DTS_PROJECTION, &g_mShadowProj );
 	::SetTransformView( g_mViewLight );
 	::SetTransformProj( g_mShadowProj );
-	for( i = 0; i < nMax; i ++ )
-	{
-		pObj = *pList++;
+	for (CObj * pObj : pList) {
 		if( pObj )
 		{
 			if( g_Option.m_nShadow == 1 && pObj->GetType() != OT_MOVER )	continue;	// 무버만 찍는 옵션일땐 무버가 아닌건 스킵
@@ -2358,14 +2319,11 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 	vPickRayDir2 = vPickRayDir;
 	vPickRayDir2.y = 0.0f;
 	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
-	int nCount = 0;
 	
-	CObj* pObj;
 	CObj* pNonCullObjs[ 10000 ];
 	int nNonCullNum = 0;
-	for( int i = 0; i < m_nObjCullSize; i++ )
-	{
-		pObj = m_aobjCull[ i ];
+
+	for (CObj * pObj : m_objCull) {
 		if( pObj )
 		{
 			if( bOnlyTopPick && pObj->GetModel()->m_pModelElem->m_bPick == FALSE )
@@ -2387,7 +2345,7 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 	for( int i = nNonCullNum - 1; i >= 0; i-- )
 	{
 		CObj* pObj = (CObj*)pNonCullObjs[ i ];
-		nCount++;
+
 		if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsDie() )	// 죽은사람은 바운딩박스로 검사하지 않음.(바운딩박스랑 맞지 않는다).
 			bPick = pObj->m_pModel->Intersect( vPickRayOrig, vPickRayDir, pObj->GetMatrixWorld(), &vIntersect, &fDist );
 		else
@@ -2430,12 +2388,9 @@ CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmat
 	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
 	int nCount = 0;
 	
-	CObj* pObj;
 	CObj* pNonCullObjs[ 10000 ];
 	int nNonCullNum = 0;
-	for( int i = 0; i < m_nObjCullSize; i++ )
-	{
-		pObj = m_aobjCull[ i ];
+	for (CObj * pObj : m_objCull) {
 		if( pObj )
 		{
 			if( pObj->IsCull() == FALSE ) 
@@ -2467,7 +2422,7 @@ CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmat
 	BOOL bAABB = bBoundBox;
 	for( int i = nNonCullNum - 1; i >= 0; i-- )
 	{
-		CObj* pObj = (CObj*)pNonCullObjs[ i ];
+		CObj* pObj = pNonCullObjs[ i ];
 		bAABB = bBoundBox;
 		if( pObj->GetType() == OT_CTRL )		// 컨트롤은 바운딩박스로만 체크하면 안됨.
 			bAABB = FALSE;
