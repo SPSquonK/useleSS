@@ -560,66 +560,58 @@ void CWorld::RenderObj(CObj* pObj)
 	}
 }
 #endif //__CSC_UPDATE_WORLD3D
+
 //////////////////////////////////////////////////////////////////
-// 오브젝트 랜더링 
+// Objects rendering
 //
-// 출력 순서
+// Output order
 //
-// 1.오브젝트 출력 
-// 2.물 출력 (오브젝트가 먼저 있어야 오브젝트가 물속에 비치게 할 수 있다.
-// 3.이펙트 출력 ( 이펙트를 맨 마지막에 출력해야, 오브젝트와 물이 배경으로 보일 수 있다. )
-// 4.반투명하게 사라지는 오브젝트를 맨 마지막에 출력한다.(반투명 오브젝트는 물 이후에 출력하기 때문에 물 속에 비치게 할 수 없다.)
+// 1.object output
+// 2.Water output (object must be present before object can be reflected in water.
+// 3.Effect output (Effect must be output last so that objects and water can be seen in the background.)
+// 4.The semi-transparent disappearing object is output last. (Since the semi-transparent object is printed after the water, it cannot be reflected in the water.)
 //
 void CWorld::RenderObject( CD3DFont* pFont )
 {
 	_PROFILE("CWorld::RenderObject()");
 
-	int i = 0, nObjRegion = 0;
 	static D3DXVECTOR4 vConst( 1.0f, 1.0f, 1.0f, 100.0f );
 	
-//#ifdef __NEWPROCESS
-	// 화면 출력용 포인트 삭제 
-	for( i = 0; i < m_nObjCullSize; i++ )
+	// Remove previous objects from view
+	for(int i = 0; i < m_nObjCullSize; i++ )
 		if( m_aobjCull[ i ] )
 			m_aobjCull[ i ]->m_ppViewPtr = NULL;
-	for( i = 0; i < m_nSfxCullSize; i++ )
+	for(int i = 0; i < m_nSfxCullSize; i++ )
 		if( m_asfxCull[ i ] )
 			m_asfxCull[ i ]->m_ppViewPtr = NULL;	
-//#endif
+
 	m_nObjCullSize = 0;
 	m_nSfxCullSize = 0;
 
 	
-#ifdef __CLIENT
-	// 반경에 있는 케릭터들을 배열에 넣는다.
-	// 자동 타겟팅  TAB키
+	// Targets for TAB targetting
 	int	 nCount = 0;
-	BOOL bScan = FALSE;
-	memset( CWorld::m_amvrSelect, 0, sizeof(CMover*) * MAX_MOVERSELECT );
-	if( GetID() == WI_WORLD_GUILDWAR )
-	{
-		bScan = TRUE;
-	}
-	if(CDeployManager::GetInstance()->IsReady())
-	{
+	const bool bScan = GetID() == WI_WORLD_GUILDWAR;
+	memset( CWorld::m_amvrSelect, 0, sizeof(CWorld::m_amvrSelect) );
+	
+	if(CDeployManager::GetInstance()->IsReady()) {
 		CDeployManager::GetInstance()->Process();
 	}
 
 	if( GuildDeploy()->IsReady( ) )
 		GuildDeploy()->Process( );
 
-#endif //__CLIENT	
+
 	
 	
 
 	if( m_bViewAllObjects )
 	{
 		CHECK1();
-		// 컬링을 하자. 화면에 보이는 놈들만 추려내기
-		// 추려내는 것과 동시에 컬링 플렉도 세팅하자.
-		CObj* pObj;
-		CLandscape* pLand;// m_nVisibilityLand
-		// 정적 오브젝트 컬링 및 컬렉션 
+		// Culling: pick the objects that are seen on screen
+		// Set the culling flex at the same time as the culling.
+		CLandscape* pLand;
+		// Static object culling and collection
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, m_bViewLight );
 		int _nCount = 0, _nCount2 = 0;
 
@@ -628,20 +620,17 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			for (auto & apObjects : pLand->m_apObjects)
 			for (CObj * pObj : apObjects.ValidObjs())
 			{
-				// 거리를 계산하고, 거리에 따라 출력할 것과 안할 것을 구분한다.
+				// Calculates the distance, and distinguishes what to print and what not to print according to the distance.
 
-				const D3DXVECTOR3 pvCamera = m_pCamera->GetPos();	// 카메라 좌표
-				const D3DXVECTOR3 pv = pObj->GetPos();	// CObj좌표
-				const float xDist = (pv.x - pvCamera.x);
-				const float yDist = (pv.y - pvCamera.y);
-				const float zDist = (pv.z - pvCamera.z);
+				const D3DXVECTOR3 pvCamera = m_pCamera->GetPos();
+				const D3DXVECTOR3 pv = pObj->GetPos();
+				const D3DXVECTOR3 dist = pv - pvCamera;
 
 				MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( pObj->m_dwType, pObj->m_dwIndex );
 				if( lpModelElem && g_Option.m_bSFXRenderOff && lpModelElem->m_bRenderFlag != 1 )
 					continue;
 				
-		#if defined(__CLIENT)
-				// 길드컴뱃 랜더링 옵션...
+				// Guild Combat Rendering Options
 				if( pObj->GetType() == OT_MOVER )
 				{
 					CMover* pMover = (CMover*)pObj;
@@ -650,14 +639,13 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						continue;
 					}
 			#ifdef __QUIZ
-					// 퀴즈이벤트 지역에서의 랜더링 스킵
+					// Skip rendering in the quiz event area
 					if( !pObj->IsActiveObj() && ( pMover->m_dwMode & QUIZ_RENDER_SKIP_MODE ) )
 						continue;
 			#endif // __QUIZ
 				}
-		#endif //defined(__CLIENT)
 				
-				pObj->m_fDistCamera = sqrt( xDist * xDist + yDist * yDist + zDist * zDist );
+				pObj->m_fDistCamera = D3DXVec3Length(&dist);
 				static FLOAT fDistant[3][4] = { 
 					{ 400, 200, 70, 400 },
 					{ 250, 150, 60, 400 },
@@ -671,33 +659,21 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				}
 				else
 					pObj->m_fDistCamera = 0;
-				//pObj->m_fDistCamera = sqrt( xDist * xDist + yDist * yDist + zDist * zDist ) + 200;
 
-//				vCam2Obj = pObj->GetPos() - m_pCamera->m_vPos;	// 카메라에서 오브젝트쪽의 벡터
-//				D3DXVec3Normalize( &vCam2Obj, &vCam2Obj );
-//				FLOAT fDot = D3DXVec3Dot( &vCamDir, &vCam2Obj );
-//				if( fDot <= 0 )	// 카메라시선과 오브젝쪽의 벡터의 각도차가 90도보다 적을때만 컬링 테스트
-//		  			continue;
 					
-//				_nCount2 ++;
-				if( pLand->isVisibile() )
-				//if( IsVecInVisibleLand( pObj->GetPos(), m_pCamera->m_vPos, m_nVisibilityLand ) && pObj->GetIndex() > 8 )
-//				if( pObj->GetType() != OT_OBJ || ( pObj->GetType() == OT_OBJ && pObj->GetIndex() > 15 ) )
-//#endif
-				{
+				if( pLand->isVisibile() ) { // TODO: can't we do this before?...
 					if( !( m_bMiniMapRender == TRUE && pObj->GetType() != OT_OBJ ) )
 					{
-						// 행렬과 바운드 박스 업데이트 
+						// Matrices and bound box updates
 						if( pObj->IsUpdateMatrix() )
 							pObj->UpdateMatrix();
-						// cull 상태 초기화 
+						// Initialize cull state
 						pObj->SetCullState( CS_UNKNOWN );
 
 						if( m_nObjCullSize < MAX_DISPLAYOBJ )
 						{
 							{
-								if( pObj->m_pModel!=NULL && pObj->m_pModel->GetModelType() != MODELTYPE_SFX ) // kentauji edited
-//								if( pObj->m_pModel->GetModelType() != MODELTYPE_ANIMATED_BILLBOARD )
+								if( pObj->m_pModel!=NULL && pObj->m_pModel->GetModelType() != MODELTYPE_SFX )
 								{
 									if( m_bCullObj )
 									{
@@ -732,36 +708,36 @@ void CWorld::RenderObject( CD3DFont* pFont )
 							} // dot
 						}
 						else
-							TRACE("한 화면에 출력 오브젝트가 %d를 넘었다. 위험!!!! \n", m_nObjCullSize);
+							TRACE("The number of output objects on one screen exceeded %d. danger!!!! \n", m_nObjCullSize);
 					}
 				}
 			}
 
 		}
 		END_LAND
-		//END_LINKMAP
+		
 		CHECK2( "Assert Obj" );
 
-		// 모두 추려냈으면 추려낸 것을 소팅하자. 
+		// Once you've sorted them all out, sort them out.
 		CHECK1();
 	    qsort( m_aobjCull, m_nObjCullSize, sizeof(CObj*), ObjSortFarToNear2 ); 
-//#ifdef __NEWPROCESS
-		for( i = 0; i < m_nObjCullSize; i++ )
-			m_aobjCull[ i ]->m_ppViewPtr = &m_aobjCull[ i ];			//sun! 아니이런 무책임한 코딩을.. 객체를 삭제할때 이넘이 문제되는듯하다.
-//#endif
+
+		for(int i = 0; i < m_nObjCullSize; i++ )
+			m_aobjCull[ i ]->m_ppViewPtr = &m_aobjCull[ i ];			//sun! No, such irresponsible coding... When deleting an object, this seems to be a problem.
+			                                                            //squonk: oui parce que vous savez pas ecrire un destructeur. mais ca ...
+																		//squonk: vous voyez moi aussi je peux ecrire des commentaires qui n'en disent pas assez dans une langue qui n'est pas l'anglais
+
 		CHECK2("Sort");
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-	//	SetLight( m_bViewLight );
+	
 		::SetLight( m_bViewLight );
 		::SetFog( m_bViewFog );
 
-		// 이제 오브젝트 출력 
+		// Now output the object
 		CHECK1();
 		m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 		{
-			//static D3DXVECTOR4 vConst( 1.0f, 1.0f, 1.0f, 100.0f );
-			//SetFogEnable( m_pd3dDevice, FALSE );
-			::SetTransformView( m_pCamera->m_matView );		// CModelObject::Render()를 부르기전에 이것을 호출해주자. 내부에서 pd3dDevice->GetTransform()을 안하기 위해서다.
+			::SetTransformView( m_pCamera->m_matView );		// Call this before calling CModelObject::Render(). This is to avoid pd3dDevice->GetTransform() inside.
 			::SetTransformProj( m_matProj );
 
 			SetDiffuse( m_light.Diffuse.r, m_light.Diffuse.g, m_light.Diffuse.b );
@@ -776,22 +752,21 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				m_pd3dDevice->SetRenderState( D3DRS_RANGEFOGENABLE, TRUE );
 			}				
 			g_nMaxTri = 0;
-			// OT_OBJ인것과 아닌것을 구분해서 찍자.
-			// OT_OBJ가 아닌것들.
-			for( i = 0; i < m_nObjCullSize; i++)
+			// Let's distinguish between OT_OBJ and non-OT_OBJ.
+			// Anything that is not OT_OBJ.
+			for(int i = 0; i < m_nObjCullSize; i++)
 			{
-				pObj = m_aobjCull[ i ];
+				CObj * pObj = m_aobjCull[ i ];
 
 				if( g_Option.m_nShadow < 2 )	
-					if( pObj->GetType() == OT_OBJ )	continue;		// OT_OBJ 인건 걍 다음. - 비스트에선 이 루프에서 다 찍는다.
-				// 반투명 오브젝트는 스킵 (맨 마지막에 출력)
+					if( pObj->GetType() == OT_OBJ )	continue;		// OT_OBJ is the next thing.
+				// Skip translucent objects (printed last)
 				if( pObj->m_wBlendFactor < 255 )	
 					continue;
 				if( pObj->IsActiveObj() && m_nZoomLevel != 0 )
 					continue;
 
-#ifdef __CLIENT
-				// TAB키로 타켓 설정 - 리스트를 담고있는다...
+				// TAB key set target - contains a list...
 				if( !pObj->IsActiveObj() )
 				{
 					if( bScan )
@@ -809,7 +784,6 @@ void CWorld::RenderObject( CD3DFont* pFont )
 
 									if( pGuild1 && pGuild2 )
 									{
-										// 다른길드들만 타겟팅리스트에 넣자
 										if( pGuild1->GetGuildId() != pGuild2->GetGuildId() )
 										{
 											if( pObj->IsRangeObj( g_pPlayer->GetPos(), 20.0f ) )
@@ -823,19 +797,14 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						}
 					}
 				}
-#endif //__CLIENT
+				
 #ifdef __CSC_UPDATE_WORLD3D
 				RenderObj(pObj);
 #else //__CSC_UPDATE_WORLD3D
 				if( m_bViewFog )
 				{
-					//m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, m_bViewFog );
-					//m_pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-					//m_pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_LINEAR );
-					//m_pd3dDevice->SetRenderState( D3DRS_RANGEFOGENABLE, TRUE );
-					if( pObj->m_pModel->m_bSkin )	// 스키닝인것
+					if( pObj->m_pModel->m_bSkin )	// Being skinned
 					{
-//						m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 						vConst.w = (m_fFogEndValue - pObj->m_fDistCamera) / (m_fFogEndValue - m_fFogStartValue);
 		#ifdef __YENV
 						g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvFog, &vConst );
@@ -843,21 +812,11 @@ void CWorld::RenderObject( CD3DFont* pFont )
 		#else //__YENV						
 						m_pd3dDevice->SetVertexShaderConstantF( 95, (float*)&vConst, 1 );
 		#endif //__YENV
-						if( 0 )//pObj->GetType() == OT_MOVER )	// 스키닝 캐릭터
-						{
-							SetDiffuse( 0, 0, 0 );
-							SetAmbient( m_light.Ambient.r * 2.0f, m_light.Ambient.g * 2.0f, m_light.Ambient.b * 2.0f );
-//							SetAmbient( 1.0f, 1.0f, 1.0f );
-						} else
-						{	// 스키닝되는 배경
-							SetLightVec( m_light.Direction );
-						}
-					} else
-					{	// 스키닝이 아닌것
-//						m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, m_bViewFog );
-//						m_pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-//						m_pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_LINEAR );
-//						m_pd3dDevice->SetRenderState( D3DRS_RANGEFOGENABLE, TRUE );
+
+						// Skinned background
+						SetLightVec( m_light.Direction );
+						
+					} else {	// Not skinning
 						SetAmbient( m_light.Ambient.r+0.3f, m_light.Ambient.g+0.3f, m_light.Ambient.b+0.3f );						
 					}
 				}
@@ -866,7 +825,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					pObj->Render( m_pd3dDevice );
 				}
 #endif //__CSC_UPDATE_WORLD3D
-				// 오브젝트 이름은 마지막에 찍는쪽으로 옮김.
+				// The object name is moved to the last shot.
 				if( m_bViewBoundBox )
 				{
 					SetBoundBoxVertex( pObj );
@@ -878,18 +837,14 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			{
 
 				bool bRenderedShadow = false;
-				D3DXVECTOR3 kMyPos = g_pPlayer->GetPos( );			//주인공은 항상 유효하다고 가정한다.
-				//m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, m_bViewFog );
-				//m_pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-				//m_pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_LINEAR );
-				//m_pd3dDevice->SetRenderState( D3DRS_RANGEFOGENABLE, TRUE );
-				for( i = 0; i < m_nObjCullSize; i++)
+				const D3DXVECTOR3 kMyPos = g_pPlayer->GetPos( );			//The protagonist is always assumed to be valid.
+				for(int i = 0; i < m_nObjCullSize; i++)
 				{
-					pObj = m_aobjCull[ i ];
+					CObj * pObj = m_aobjCull[ i ];
 					if( pObj == NULL )	continue;
-					if( pObj->GetType() != OT_OBJ )	continue;		// OT_OBJ가 아닌건 걍 다음.
-						// 반투명 오브젝트는 스킵 (맨 마지막에 출력)
-
+					if( pObj->GetType() != OT_OBJ )	continue;		// Anything that is not OT_OBJ is next.
+					
+					// Skip translucent objects (printed last)
 					if( pObj->m_wBlendFactor < 255 )	
 						continue;
 
@@ -898,7 +853,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					{
 						if( pObj->GetPos().y < ( kMyPos.y + 0.5f ) )
 						{
-							if( !IsWorldGuildHouse() )			//길드하우스 안에서는 오브젝트 위에 그림자 받지 않게..
+							if( !IsWorldGuildHouse() )			//In the guild house, do not cast shadows on objects.
 							{
 								SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
 								bRenderedShadow = true;
@@ -908,12 +863,9 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					
 					if( m_bViewFog )
 					{
-						//SetDiffuse( 0, 0, 0 );
-						//SetAmbient( m_light.Ambient.r, m_light.Ambient.g, m_light.Ambient.b );
-						if( pObj->m_pModel->m_bSkin )	// 스키닝인것
+						if( pObj->m_pModel->m_bSkin )	// being skinned
 						{
-//							m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-							// 버텍스 쉐이더를 쓰는넘들은 수동으로 포그를 넣어야 하기땜에 이렇게 함.
+							// People who use vertex shaders do this because they have to manually add fog.
 							vConst.w = (m_fFogEndValue - pObj->m_fDistCamera) / (m_fFogEndValue - m_fFogStartValue);
 #ifdef __YENV
 							g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvFog, &vConst );
@@ -921,15 +873,11 @@ void CWorld::RenderObject( CD3DFont* pFont )
 #else //__YENV						
 							m_pd3dDevice->SetVertexShaderConstantF( 95, (float*)&vConst, 1 );
 #endif //__YENV
-							{	// 스키닝되는 배경
+							{	// skinned background
 								SetLightVec( m_light.Direction );
 							}
 						} else
-						{	// 스키닝이 아닌것
-//							m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, m_bViewFog );
-//							m_pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-//							m_pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_LINEAR );
-//							m_pd3dDevice->SetRenderState( D3DRS_RANGEFOGENABLE, TRUE );
+						{	// not skinning
 #ifdef __YENV
 							SetAmbient( m_light.Ambient.r+0.3f, m_light.Ambient.g+0.3f, m_light.Ambient.b+0.3f );						
 #endif //__YENV						
@@ -958,11 +906,11 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			}
 
 
-			for( i = 0; i < m_nObjCullSize; i++)
+			for(int i = 0; i < m_nObjCullSize; i++)
 			{
-				pObj = m_aobjCull[ i ];
+				CObj * pObj = m_aobjCull[ i ];
 				if( pObj == NULL )	continue;
-				if( pObj->GetType() != OT_MOVER )	continue;		// OT_MOVER가 아닌건 걍 다음.
+				if( pObj->GetType() != OT_MOVER )	continue;
 				CMover* pMover = (CMover*) pObj;
 				pMover->RenderPartsEffect( m_pd3dDevice );
 			}
@@ -971,7 +919,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			g_ParticleMng.Render( m_pd3dDevice );
 #endif
 			
-			// 단순그림자
+			// Simple shadow
 			if( g_Option.m_nShadow == 2 )
 			{
 				extern CModelObject g_Shadow;
@@ -993,41 +941,33 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 				
 				g_Shadow.m_nNoEffect = 1;
-				//				g_Shadow.Render( pd3dDevice, &mWorldShadow );
-				CMover *pMoverShadow = NULL;
 
 				pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-//				pd3dDevice->SetRenderState(D3DRS_DEPTHBIAS, 1 );
 				
-				for( i = 0; i < m_nObjCullSize; i++)
+				for(int i = 0; i < m_nObjCullSize; i++)
 				{
-					pObj = m_aobjCull[ i ];
+					CObj * pObj = m_aobjCull[ i ];
 					if( pObj && pObj->GetType() == OT_MOVER )
 					{
-						pMoverShadow = (CMover *)pObj;
+						CMover * pMoverShadow = (CMover *)pObj;
 						if( !pMoverShadow->IsVisible() )
 							continue;
 						if( pMoverShadow->IsMode( TRANSPARENT_MODE ) )
 							continue;						
-						if( pMoverShadow->m_pActMover->m_fCurrentHeight < GetWaterHeight( pMoverShadow->GetPos() )->byWaterHeight )	// 수면높이 보다도 낮으면 찍지 않음.
+						if( pMoverShadow->m_pActMover->m_fCurrentHeight < GetWaterHeight( pMoverShadow->GetPos() )->byWaterHeight )	// If it is lower than the water level, it will not be photographed.
 							continue;
-						if( pMoverShadow->GetPos().y - pMoverShadow->m_pActMover->m_fCurrentHeight > 10.0f )	// 실체와 그림자의 높이차가 일정이상이면 안찍음
+						if( pMoverShadow->GetPos().y - pMoverShadow->m_pActMover->m_fCurrentHeight > 10.0f )	// If the height difference between the object and the shadow is more than a certain level, it is not taken.
 							continue;
-						if( pMoverShadow->GetPos().y - pMoverShadow->m_pActMover->m_fCurrentHeight < 0 )	// 그림자가 오히려 위에 찍혀야 하는상황이면 안찍음
+						if( pMoverShadow->GetPos().y - pMoverShadow->m_pActMover->m_fCurrentHeight < 0 )	// I don't take pictures in situations where the shadows need to be placed on top.
 							continue;
 
 					//////////////////////////////////////////
-						D3DXVECTOR3 v3Pos;
-						D3DXVECTOR3 vec3Tri[3];
 
-						D3DXMATRIX mRot;
-
-						D3DXMatrixIdentity( &mRot );
+						D3DXMATRIX mRot; D3DXMatrixIdentity( &mRot );
 						
+						//Let's use GetScrPos only for summons.
+						const MoverProp* pMoverProp = pMoverShadow->GetProp();
 						D3DXVECTOR3 vPos;
-						
-						//소환수만 GetScrPos로 하자.
-						MoverProp* pMoverProp = pMoverShadow->GetProp();
 						if( pMoverProp && ( pMoverProp->dwAI == AII_PET || pMoverProp->dwAI == AII_EGG ) )
 							vPos = pMoverShadow->GetScrPos();
 						else
@@ -1035,72 +975,50 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						
 						if( pMoverShadow->GetWorld() )
 						{
+							D3DXVECTOR3 vec3Tri[3];
 							pMoverShadow->GetWorld()->GetLandTri( vPos.x, vPos.z, vec3Tri );
 							FLOAT ffHeight = pMoverShadow->GetWorld()->GetLandHeight( vPos.x, vPos.z );
 							
-							D3DXVECTOR3 vVector1 = vec3Tri[2] - vec3Tri[0];
-							D3DXVECTOR3 vVector2 = vec3Tri[1] - vec3Tri[0];
+							const D3DXVECTOR3 vVector1 = vec3Tri[2] - vec3Tri[0];
+							const D3DXVECTOR3 vVector2 = vec3Tri[1] - vec3Tri[0];
 							D3DXVECTOR3 vNormal;
 							D3DXVec3Cross( &vNormal, &vVector1, &vVector2);	
 							D3DXVec3Normalize( &vNormal, &vNormal );
 							
 							D3DXVECTOR3 v3Up = D3DXVECTOR3( 0.0f, -1.0f, 0.0f );
-							D3DXVECTOR3 v3Cross;
-							FLOAT fDot;
-							FLOAT fTheta;
-							D3DXVec3Cross( &v3Cross, &v3Up, &vNormal );
-							fDot = D3DXVec3Dot( &v3Up, &vNormal );
-							fTheta = acos( fDot );
+							D3DXVECTOR3 v3Cross; D3DXVec3Cross( &v3Cross, &v3Up, &vNormal );
+							const FLOAT fDot = D3DXVec3Dot( &v3Up, &vNormal );
+							const FLOAT fTheta = acos( fDot );
 							
-							D3DXQUATERNION qDirMap;
-							D3DXQuaternionRotationAxis( &qDirMap, &v3Cross, fTheta );
-							
-							v3Pos = vPos;
-							v3Pos.y = ffHeight+0.1f;
+							D3DXQUATERNION qDirMap; D3DXQuaternionRotationAxis( &qDirMap, &v3Cross, fTheta );
 							
 							D3DXMatrixRotationQuaternion( &mRot, &qDirMap);
 						}
 
 						D3DXMatrixTranslation( &mWorldShadow, vPos.x, pMoverShadow->m_pActMover->m_fCurrentHeight, vPos.z );
-						D3DXMatrixMultiply( &mWorldShadow, &mRot, &mWorldShadow );
+						
+						mWorldShadow = mRot * mWorldShadow;
 						//////////////////////////////////////////
 						
 						g_Shadow.Render( pd3dDevice, &mWorldShadow );
 					}
 				}
-
-//				pd3dDevice->SetRenderState(D3DRS_DEPTHBIAS, 0 );
 				
 				bias = 0;
 				if( g_ModelGlobal.m_bDepthBias )
 					pd3dDevice->SetRenderState(D3DRS_DEPTHBIAS, *((DWORD*) (&bias)));
 			}
 		}
-#if 0
-		{
-			D3DXVECTOR3 pTri[54];
-			int nMax = GetLandTris( g_pPlayer->GetPos().x, g_pPlayer->GetPos().z, pTri ) / 3;
-			D3DXMATRIX m;
-			D3DXMatrixIdentity( &m );
-			m_pd3dDevice->SetTransform( D3DTS_WORLD, &m );
-			for( i = 0; i < nMax; i ++ )
-			{
-				g_Grp3D.Render3DTri( &pTri[i*3], COL_RED, TRUE );
-			}
-		}
-#endif
+
 		CHECK2( "  Render Obj" );
 	}
 	CHECK1();	// rener water
 	RenderWater();
 	CHECK2( "  Render Water" );
 
-#ifdef __CLIENT
 	g_TailEffectMng.Render( m_pd3dDevice );
-	//			g_Tail.Render( m_pd3dDevice );
-#endif
 	
-	// 수면 막 처리 (카메라가 물 밑으로 들어가면 화면 전면에 물텍스춰를 그려 물속에 들어간 것 처럼 보이게 하기)
+	// Water surface treatment (when the camera goes under water, it draws a water texture on the front of the screen to make it look like it is under water)
 	D3DXMATRIX matWorld;
 	D3DXMATRIX mat, matView;
 	m_pd3dDevice->GetTransform( D3DTS_VIEW, &matView );
@@ -1127,7 +1045,6 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
 			m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
 			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-			//m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
 			m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 			m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
 			m_pd3dDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
@@ -1137,7 +1054,6 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			m_pd3dDevice->SetFVF ( D3DFVF_D3DSFXVERTEX );
 			m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
 			D3DSFXVERTEX pVertices[4];
-//			D3DSFXVERTEX* pVertices = new D3DSFXVERTEX[ 4 ];
 			pVertices[ 0 ].p = D3DXVECTOR3(-2.0f,-2.0f,1.0f);
 			pVertices[ 0 ].tu1 = .0f;
 			pVertices[ 0 ].tv1 = .0f;
@@ -1149,30 +1065,28 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			pVertices[ 2 ].tv1 = .0f;
 			pVertices[ 3 ].p = D3DXVECTOR3(2.0f,-2.0f,1.0f);
 			pVertices[ 3 ].tu1 = .0f; 
-			pVertices[ 2 ].tv1 = .0f;
+			pVertices[ 3 ].tv1 = .0f;
 			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, pVertices, sizeof( D3DSFXVERTEX ) );
 			m_pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
 			m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 			m_pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
-//			delete pVertices;
 		}
 	}
 	CHECK1();
+
 	qsort( m_asfxCull, m_nSfxCullSize, sizeof(CObj*), ObjSortFarToNear );
-//#ifdef __NEWPROCESS
-	for( i = 0; i < m_nSfxCullSize; i++ )
+	for(int i = 0; i < m_nSfxCullSize; i++ )
 		m_asfxCull[ i ]->m_ppViewPtr = &m_asfxCull[ i ];	
-//#endif
-	//SetFogEnable( m_pd3dDevice, FALSE );
+		
 	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );////_bViewLight );
-	CObj* pObj;
+	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+	
 	//
-	// 3.이펙트 출력 
+	// 3.Effect output
 	// 
-	for( i = 0; i < m_nSfxCullSize; i++)
+	for(int i = 0; i < m_nSfxCullSize; i++)
 	{
-		pObj = m_asfxCull[ i ]; 
+		CObj * pObj = m_asfxCull[ i ]; 
 
 	#ifdef __SFX_OPT
 		if( pObj->GetType() == OT_SFX && (g_Option.m_nSfxLevel <= 0) && ( (CSfx*)pObj )->GetSkill() == FALSE)
@@ -1190,22 +1104,21 @@ void CWorld::RenderObject( CD3DFont* pFont )
 			if( IsValidObj( pMover ) && pMover->IsPlayer() )
 				continue;
 		}
-		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );//m_bViewLight );
+		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 		pObj->Render( m_pd3dDevice );
 	}
 	//
-	// 4.반투명 오브젝트 출력 
-	//   반투명 밑으로 이펙트가 보여야하기 때문에 반투명해지는 오브젝트는 맨 마지막에 출력한다.
-//	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, TRUE );
-//	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );////_bViewLight );
+	// 4.Print a semi-transparent object
+	//   Since the effect should be visible under the translucency, the translucent object is output last.
+	
 #ifdef __CSC_UPDATE_WORLD3D
-	i = m_nObjCullSize;
+	int i = m_nObjCullSize;
 	while(i--)
 #else //__CSC_UPDATE_WORLD3D
-	for( i = 0; i < m_nObjCullSize; i++ )
+	for(int i = 0; i < m_nObjCullSize; i++ )
 #endif //__CSC_UPDATE_WORLD3D
 	{
-		pObj = m_aobjCull[ i ];
+		CObj * pObj = m_aobjCull[ i ];
 		if( pObj->m_wBlendFactor < 255 )
 #ifdef __CSC_UPDATE_WORLD3D
 			RenderObj(pObj);
@@ -1213,16 +1126,16 @@ void CWorld::RenderObject( CD3DFont* pFont )
 		{
 			if( m_bViewFog )
 			{
-				if( pObj->m_pModel->m_bSkin )	// 스키닝인것
+				if( pObj->m_pModel->m_bSkin )	// being skinned
 				{
-					// 버텍스 쉐이더를 쓰는넘들은 수동으로 포그를 넣어야 하기땜에 이렇게 함.
+					// People who use vertex shaders do this because they have to manually add fog.
 					vConst.w = (m_fFogEndValue - pObj->m_fDistCamera) / (m_fFogEndValue - m_fFogStartValue);
 #ifdef __YENV
 					g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvFog, &vConst );
 #else //__YENV						
 					m_pd3dDevice->SetVertexShaderConstantF( 95, (float*)&vConst, 1 );
 #endif //__YENV
-					{	// 스키닝되는 배경
+					{	// skinned background
 						SetLightVec( m_light.Direction );
 					}
 				}
@@ -1236,14 +1149,13 @@ void CWorld::RenderObject( CD3DFont* pFont )
 		}
 #endif //__CSC_UPDATE_WORLD3D
 	}					
-//	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-//	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );////_bViewLight );
+	
 	//
-	// 5. 이름은 맨 마지막에 찍음 
+	// 5. name is at the end
 	// 
-	for( i = 0; i < m_nObjCullSize; i++)
+	for( int i = 0; i < m_nObjCullSize; i++)
 	{
-		pObj = m_aobjCull[ i ];
+		CObj * pObj = m_aobjCull[ i ];
 		if( pObj && m_bViewName && pFont )
 		{
 			if( pObj->GetType() == OT_MOVER )
@@ -1254,17 +1166,17 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					continue;
 				DWORD dwColor = 0xffffffff;
 				float fDistLimit = 40.0f;
-				if( pMover->IsPlayer() || (pMover->IsNPC() && pMover->IsPeaceful()) )		// 평화적 npc이면
-					fDistLimit = 100.0f;								// 더 멀리서부터 이름이 보인다.
+				if( pMover->IsPlayer() || (pMover->IsNPC() && pMover->IsPeaceful()) )
+					fDistLimit = 100.0f;
 				if( pObj->m_fDistCamera < fDistLimit ) 
 				{
 					CMover* pMover = (CMover*) pObj;
-					if( pMover->IsMode( TRANSPARENT_MODE ) == 0 )		// 투명상태가 아닐때만 렌더.
+					if( !pMover->IsMode( TRANSPARENT_MODE ) )
 					{
-						// 나와 상대가 게임 마스터이거나 그보다 높은 신분이라면?
-						if( pMover->IsAuthHigher( AUTH_GAMEMASTER ) && CMover::GetActiveMover()->IsAuthHigher( AUTH_GAMEMASTER ) ) //> IsAuthHigher( AUTH_GAMEMASTER ) )
+						
+						if( pMover->IsAuthHigher( AUTH_GAMEMASTER ) && CMover::GetActiveMover()->IsAuthHigher( AUTH_GAMEMASTER ) )
 						{
-							// 높은 레벨의 신분은 낮은 레벨의 신분을 구별할 수 있지만 낮은 신분은 높은 신분을 볼 수 없다.
+							// High-level identities can distinguish lower-level identities, but low-level identities cannot see higher identities.
 							if( pMover->m_dwAuthorization <= CMover::GetActiveMover()->m_dwAuthorization )
 							{
 								if( pMover->IsAuthorization( AUTH_GAMEMASTER    ) ) dwColor = 0xffffff90; else
@@ -1273,15 +1185,15 @@ void CWorld::RenderObject( CD3DFont* pFont )
 							}
 						}
 						else
-							// 일반 유저는 게임 마스터일 경우만 노란색으로.
-							if( pMover->IsAuthorization( AUTH_GAMEMASTER ) ) //> IsAuthHigher( AUTH_GAMEMASTER ) )
-								dwColor = 0xffffff00; // 노란색 
+							// Normal users are yellow only if they are game masters.
+							if( pMover->IsAuthorization( AUTH_GAMEMASTER ) )
+								dwColor = 0xffffff00; // Yellow
 						pMover->RenderName( m_pd3dDevice, pFont, dwColor );
 							
 					}
 				}
-				// 스턴등 상태이상 이모티콘을 표시한다(기존은 g_DialogMsg에서 처리했는데 중간에 상태이상 풀려도 
-				// 안그려야하는데 건들면 지저분 해져서 따로 일단 빼보았음 )
+				// Displays emoticons with status abnormalities such as stun (previously it was handled in g_DialogMsg,
+				// I shouldn't draw it, but if I touch it, it gets messy, so I removed it separately)
 				pMover->RenderChrState( m_pd3dDevice );
 			}
 		}
@@ -1290,6 +1202,8 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	CHECK2("  Render Effect");
 		
 }
+
+
 void	_DrawRect( LPDIRECT3DDEVICE9 pd3dDevice, int x, int y, int w, int h, DWORD dwColor )
 {
 	#define D3DFVF_2DVERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
