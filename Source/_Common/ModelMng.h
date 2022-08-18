@@ -1,18 +1,14 @@
-#if !defined(AFX_MODELMNG_H__25FE7788_56AD_4D50_8D9E_E69C969DE0F9__INCLUDED_)
-#define AFX_MODELMNG_H__25FE7788_56AD_4D50_8D9E_E69C969DE0F9__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "2DRender.h"
+#include <array>
 
 struct MODELELEM {
 	DWORD m_dwType;
 	DWORD m_dwIndex;
 	TCHAR m_szName [48];
 	int		m_nMax;
-	TCHAR* m_apszMotion;
+	TCHAR* m_apszMotion; // array of 32 * m_nMax TCHARs
 	DWORD m_dwModelType;
 	TCHAR m_szPart[48]; 
 	FLOAT m_fScale;
@@ -29,17 +25,12 @@ struct MODELELEM {
 	BYTE  m_bReserved : 1;
 	BYTE m_bRenderFlag : 1;
 
-	TCHAR* GetMotion( int i ) 
-	{ 
-		if( i < 0 || i >= m_nMax )
-		{
-			Error( "MODELELEM : out of range %d", i );
+	TCHAR * GetMotion(int i) {
+		if (i < 0 || i >= m_nMax) {
+			Error("MODELELEM : out of range %d", i);
 			i = 0;
 		}
-
-		if( m_apszMotion ) 
-			return &m_apszMotion[ i * 32 ]; 
-		return NULL; 
+		return m_apszMotion ? &m_apszMotion[i * 32] : nullptr;
 	}
 
 };
@@ -47,19 +38,18 @@ struct MODELELEM {
 class CModel;
 
 
-class CModelMng 
-{
+class CModelMng final {
 public:
 	std::map<std::string, CModel *> m_mapFileToMesh;
-	CFixedArray< MODELELEM > m_aaModelElem[ MAX_OBJTYPE ];
+	std::array<CFixedArray<MODELELEM>, MAX_OBJTYPE> m_aaModelElem;
 
 public:
-	CModelMng();
+	CModelMng() = default;
+	CModelMng(const CModelMng &) = delete;
+	CModelMng & operator=(const CModelMng &) = delete;
 	~CModelMng();
 
-	void Free();	
-	MODELELEM * GetModelElem( DWORD dwType, DWORD dwIndex );
-	void MakeBoneName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex );
+	[[nodiscard]] MODELELEM * GetModelElem(DWORD dwType, DWORD dwIndex);
 	void MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex );
 	void MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
 	void MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD dwIndex, int nSex = SEX_SEXLESS );
@@ -77,14 +67,4 @@ public:
 	HRESULT DeleteDeviceObjects();
 };
 /////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_MODELMNG_H__25FE7788_56AD_4D50_8D9E_E69C969DE0F9__INCLUDED_)
-
-
-
-
-
 

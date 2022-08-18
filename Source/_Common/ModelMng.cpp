@@ -14,59 +14,36 @@ static TCHAR g_szRoot[ MAX_OBJTYPE ][32] = {
 	"path"
 };
 
-CModelMng::CModelMng()
-{
-}
-CModelMng::~CModelMng()
-{
-	for( int i = 0; i < MAX_OBJTYPE ; i++ )
-	{
-		CFixedArray< MODELELEM >* apModelElem = &m_aaModelElem[ i ];
-		for( int j = 0; j < apModelElem->GetSize(); j++ )
-		{
-			MODELELEM * pModelElem = apModelElem->GetAt( j );
-			if( pModelElem )
-				SAFE_DELETE_ARRAY( pModelElem->m_apszMotion );
+CModelMng::~CModelMng() {
+	for (CFixedArray<MODELELEM> & apModelElem : m_aaModelElem) {
+		for (MODELELEM & pModelElem : apModelElem) {
+			SAFE_DELETE_ARRAY(pModelElem.m_apszMotion);
 		}
 	}
 
-	Free();
+	// TODO: Shoudln't the models stored in m_mapFileToMesh be also deleted?
 }
-void CModelMng::Free()
-{
-}
-MODELELEM * CModelMng::GetModelElem( DWORD dwType, DWORD dwIndex )
-{
-	MODELELEM * pElem = m_aaModelElem[ dwType ].GetAt( dwIndex );
-	if( pElem == NULL )
-	{
-		if( dwType == OT_ITEM )	// 아이템인 경우, 돈 모델을 사용   
-//			return m_aaModelElem[ OT_ITEM ].GetAt( II_GOLD_SEED1 );
-			return m_aaModelElem[ OT_ITEM ].GetAt( II_ARM_M_VAG_HELMET02 );	// 일반 방어구 모양으로 교체
-		else
-		{
-			LPCTSTR szErr = Error( "GetModelElem - out of range: type=%d, size=%d, index=%d", (int)dwType, m_aaModelElem[ dwType ].GetSize(), (int)dwIndex );
-			//ADDERRORMSG( szErr );
-		}
+
+MODELELEM * CModelMng::GetModelElem(const DWORD dwType, const DWORD dwIndex) {
+	MODELELEM * const pElem = m_aaModelElem[dwType].GetAt(dwIndex);
+	if (pElem) return pElem;
+
+	if (dwType == OT_ITEM) {	// 아이템인 경우, 돈 모델을 사용   
+		return m_aaModelElem[OT_ITEM].GetAt(II_ARM_M_VAG_HELMET02);	// 일반 방어구 모양으로 교체
 	}
-	
-	return pElem;
+
+	Error("GetModelElem - out of range: type=%lu, size=%d, index=%lu", dwType, m_aaModelElem[dwType].GetSize(), dwIndex);
+	return nullptr;
 }
-void CModelMng::MakeBoneName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex )
-{
-	MODELELEM * lpModelElem = GetModelElem( dwType, dwIndex );
-	_tcscpy( pszModelName, g_szRoot[dwType]);
-	_tcscat( pszModelName, "_" );
-	_tcscat( pszModelName, lpModelElem->m_szName );
-	_tcscat( pszModelName, _T(".chr") );
-}
+
 void CModelMng::MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex )
 {
-	MODELELEM * lpModelElem = GetModelElem( dwType, dwIndex );
-	if( lpModelElem == NULL )
-	{
-		Error( "MakeModelName : dwType=%d dwIndex=%d", dwType, dwIndex );
+	MODELELEM * lpModelElem = GetModelElem(dwType, dwIndex);
+	if (!lpModelElem) {
+		Error("MakeModelNae : dwType=%d dwIndex=%d", dwType, dwIndex);
+		throw std::runtime_error("MakeModelName Error");
 	}
+
 	if( lpModelElem->m_dwModelType == MODELTYPE_BILLBOARD )
 	{
 		_tcscpy( pszModelName, lpModelElem->m_szName );
@@ -267,29 +244,28 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 	}
 	return pModel;
 }
-HRESULT CModelMng::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	HRESULT hr = S_OK;
-	return hr;
+
+HRESULT CModelMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
+	return S_OK;
 }
-HRESULT CModelMng::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
+
+HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
 	for (CModel * pModel : m_mapFileToMesh | std::views::values) {
 		pModel->RestoreDeviceObjects();
 	}
 
 	return S_OK;
 }
-HRESULT CModelMng::InvalidateDeviceObjects()
-{
+
+HRESULT CModelMng::InvalidateDeviceObjects() {
 	for (CModel * pModel : m_mapFileToMesh | std::views::values) {
 		pModel->InvalidateDeviceObjects();
 	}
 
 	return S_OK;
 }
-HRESULT CModelMng::DeleteDeviceObjects()
-{
+
+HRESULT CModelMng::DeleteDeviceObjects() {
 	for (CModel *& pModel : m_mapFileToMesh | std::views::values) {
 		pModel->DeleteDeviceObjects();
 		SAFE_DELETE(pModel);
@@ -297,29 +273,31 @@ HRESULT CModelMng::DeleteDeviceObjects()
 	m_mapFileToMesh.clear();
 	return S_OK;
 }
-BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
-{
+
+BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 	CScript script;
-	if( script.Load( lpszFileName, FALSE ) == FALSE )
+	if (!script.Load(lpszFileName, FALSE))
 		return FALSE;
 
-	CFixedArray< MODELELEM >* apModelElem;
-	TCHAR szObject[48];
-	TCHAR szMotion[48];
-	UINT iType, iObject, iMotion;
-	MODELELEM modelElem;
+
 	script.GetToken(); // subject or FINISHED
 	while( script.tok != FINISHED )
 	{
-		iType = script.GetNumber();
+		const UINT iType = static_cast<UINT>(script.GetNumber());
 
-		apModelElem = &m_aaModelElem[ iType ];
+		if (iType >= MAX_OBJTYPE) {
+			Error("Tried to load a model with iType = %u >= MAX_OBJTYPE(%d)", iType, MAX_OBJTYPE);
+			throw std::exception("Bad model loading");
+		}
+
+		CFixedArray<MODELELEM> & apModelElem = m_aaModelElem[iType];
 		script.GetToken(); // {
 		script.GetToken(); // object name or }
 		int nBrace = 1;
 		// 여기부터 오브젝트 단위 obj, ctrl, item, sfx, mover
 		while( nBrace )
 		{
+			MODELELEM modelElem;
 			ZeroMemory( &modelElem, sizeof( modelElem ) );
 			if( *script.token == '}' ) 
 			{
@@ -337,6 +315,7 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 				Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
 		#endif
 
+			TCHAR szObject[48];
 			_tcscpy( szObject, script.token ); // folder 또는 object name
 
 			script.SetMark();
@@ -356,7 +335,7 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 			}
 			else
 				script.GoMark();
-			iObject = script.GetNumber();
+			const UINT iObject = script.GetNumber();
 			if( iObject == 0 )
 			{
 				CString str;
@@ -397,12 +376,13 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 				// 모션 리스트 카운트 
 				while( *script.token != '}' )
 				{
+					TCHAR szMotion[48];
 				#ifdef _DEBUG
 					if( sizeof(szMotion) <= strlen(script.token) + 1 )
 						Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
 				#endif
 					_tcscpy( szMotion, script.token );
-					iMotion = script.GetNumber();
+					const UINT iMotion = script.GetNumber();
 					if( (int)( iMotion ) > nMax )
 						nMax = iMotion;
 					script.GetToken(); // motion name or }
@@ -417,12 +397,13 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 				//TRACE( " %s %p\n", modelElem.m_szName, modelElem.m_apszMotion);
 				while( *script.token != '}' )
 				{
+					TCHAR szMotion[48];
 				#ifdef _DEBUG
 					if( sizeof(szMotion) <= strlen(script.token) + 1 )
 						Error( "%s 스트링의 길이가 너무길다. %d", lpszFileName, strlen(script.token) );
 				#endif
 					_tcscpy( szMotion, script.token );
-					iMotion = script.GetNumber();
+					const UINT iMotion = script.GetNumber();
 					TCHAR* lpszMotion = modelElem.GetMotion( iMotion );
 					if( lpszMotion[0] )
 					{
@@ -435,7 +416,7 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 				}
 				script.GetToken(); // object name or }
 			}
-			if( apModelElem->GetAt( iObject ) )
+			if( apModelElem.GetAt( iObject ) )
 			{
 				CString str;
 				str.Format( "CModelMng::LoadScript(%d) %s중복 아이디 : type = %d, idx = %d, name = %s", script.GetLineNum(), lpszFileName, iType, iObject, modelElem.m_szName );
@@ -448,15 +429,15 @@ BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 			
 		#ifdef __WORLDSERVER
 			if( iType != OT_SFX )	// sfx는 서버에서 skip
-				apModelElem->SetAtGrow( iObject, modelElem );
+				apModelElem.SetAtGrow( iObject, modelElem );
 		#else
-			apModelElem->SetAtGrow( iObject, modelElem );
+			apModelElem.SetAtGrow( iObject, modelElem );
 		#endif
 
 		} // while( nBrace )
 
 		script.GetToken(); // type name or }
-		apModelElem->Optimize();
+		apModelElem.Optimize();
 	}	// while( script.tok != FINISHED )
 
 	return TRUE;
