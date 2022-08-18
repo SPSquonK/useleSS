@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "ModelMng.h"
 
-
-static TCHAR g_szRoot[ MAX_OBJTYPE ][32] = { 
-	"obj", 
-	"ani", 
-	"ctrl", 
-	"sfx", 
-	"item", 
-	"mvr", 
+static constexpr std::array<const TCHAR *, MAX_OBJTYPE> g_szRoot = std::to_array({
+	"obj",
+	"ani",
+	"ctrl",
+	"sfx",
+	"item",
+	"mvr",
 	"region",
 	"obj",		// ship
 	"path"
-};
+});
+
 
 CModelMng::~CModelMng() {
 	for (CFixedArray<MODELELEM> & apModelElem : m_aaModelElem) {
@@ -302,8 +302,6 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 		// Read objects in file
 		while( nBrace )
 		{
-			MODELELEM modelElem;
-			ZeroMemory( &modelElem, sizeof( modelElem ) );
 			if( *script.token == '}' ) 
 			{
 				nBrace--;
@@ -338,8 +336,8 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 				_tcscpy( szObject, script.token );
 				continue;
 			}
-			else
-				script.GoMark();
+
+			script.GoMark();
 			const UINT iObject = script.GetNumber();
 			if( iObject == 0 )
 			{
@@ -347,6 +345,9 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 				str.Format( "CModelMng::LoadScript(%d) Motion ID specified as 0 : %s, %s", script.GetLineNum(), szObject, script.token );
 				AfxMessageBox( str );
 			}
+
+			MODELELEM modelElem;
+			ZeroMemory(&modelElem, sizeof(modelElem));
 			modelElem.m_dwType = iType;
 			modelElem.m_dwIndex = iObject;
 		#ifdef _DEBUG
