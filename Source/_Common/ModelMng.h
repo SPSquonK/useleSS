@@ -45,16 +45,13 @@ typedef struct tagMODELELEM
 
 }* LPMODELELEM, MODELELEM;
 
-typedef std::map< std::string, void* > CMapStrToPtr;
-typedef CMapStrToPtr::value_type MapStrToPtrType;
-typedef CMapStrToPtr::iterator MapStrToPtrItor;
+class CModel;
 
-class CModel; 
 
 class CModelMng 
 {
 public:
-	CMapStrToPtr m_mapFileToMesh;
+	std::map<std::string, CModel *> m_mapFileToMesh;
 	CFixedArray< tagMODELELEM > m_aaModelElem[ MAX_OBJTYPE ]; 
 
 public:

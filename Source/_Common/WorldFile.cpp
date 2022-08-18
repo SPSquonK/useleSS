@@ -987,9 +987,9 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 		}
 		// 사용하지 않는 모델을 파괴한다.
 		// 정적인것만 이리로 들어와야 한다. 동적인것(스키닝을 쓰는것)이 여기서 파괴되면 안된다.
-		for( MapStrToPtrItor itor = prj.m_modelMng.m_mapFileToMesh.begin(); itor != prj.m_modelMng.m_mapFileToMesh.end(); /*itor++*/ )
+		for( auto itor = prj.m_modelMng.m_mapFileToMesh.begin(); itor != prj.m_modelMng.m_mapFileToMesh.end(); /*itor++*/ )
 		{
-			CModel* pModel = ( CModel* )(*itor).second;
+			CModel* pModel = itor->second;
 			pModel->DeleteDeviceObjects();
 			if( pModel->m_pModelElem->m_bUsed == FALSE &&  pModel->m_pModelElem->m_dwType != OT_ITEM )
 			{

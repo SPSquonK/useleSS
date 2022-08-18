@@ -183,7 +183,6 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 	CModel* pModelBill = NULL;
 	int nModelType = lpModelElem->m_dwModelType;
 	TCHAR szFileName[MAX_PATH];
-	MapStrToPtrItor mapItor;
 
 	switch( nModelType )
 	{
@@ -197,20 +196,20 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 		#endif // not World
 			break;
 
-		case MODELTYPE_MESH: 
-			mapItor = m_mapFileToMesh.find( lpszFileName );
+		case MODELTYPE_MESH: {
+			auto mapItor = m_mapFileToMesh.find( lpszFileName );
 			if( mapItor != m_mapFileToMesh.end() )
 			{
-				((CModel*)(*mapItor).second)->m_pModelElem->m_bUsed = TRUE;
+				mapItor->second->m_pModelElem->m_bUsed = TRUE;
 
 #ifdef __CSC_EXTEXTURE
-				pModel = (CModel*) (*mapItor).second;
+				pModel = mapItor->second;
 				pModel->SetModelType( nModelType );
 				pModel->m_pModelElem = lpModelElem;
 
 				return pModel;
 #else //__CSC_EXTEXTURE
-				return (CModel*) (*mapItor).second;
+				return mapItor->second;
 #endif //__CSC_EXTEXTURE
 			}
 			pModel = new CModelObject;
@@ -225,12 +224,13 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				if( ((CModelObject*)pModel)->GetObject3D()->m_nHavePhysique )
 					Error( "CModelMng::LoadModel : %s가 동적오브젝트인데 정적오브젝트로 설정되어 있다.", lpszFileName );
 			#endif			
-				m_mapFileToMesh.insert( MapStrToPtrType( lpszFileName, pModel ) );
+				m_mapFileToMesh.emplace(lpszFileName, pModel);
 				pModel->m_pModelElem->m_bUsed = TRUE;
 			}
 			else
 				SAFE_DELETE( pModel )
 			break;
+		}
 		case MODELTYPE_ANIMATED_MESH:
 			pModel = new CModelObject;
 			pModel->SetModelType( nModelType );
@@ -274,32 +274,28 @@ HRESULT CModelMng::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 HRESULT CModelMng::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 {
-	HRESULT hr = S_OK;
-	MapStrToPtrItor itor;
-	for( itor = m_mapFileToMesh.begin(); itor != m_mapFileToMesh.end(); itor++ )
-		((CModel*)(*itor).second)->RestoreDeviceObjects();
-	return hr;
+	for (CModel * pModel : m_mapFileToMesh | std::views::values) {
+		pModel->RestoreDeviceObjects();
+	}
+
+	return S_OK;
 }
 HRESULT CModelMng::InvalidateDeviceObjects()
 {
-	HRESULT hr = S_OK;
-	MapStrToPtrItor itor;
-	for( itor = m_mapFileToMesh.begin(); itor != m_mapFileToMesh.end(); itor++ )
-		((CModel*)(*itor).second)->InvalidateDeviceObjects();
-	return hr;
+	for (CModel * pModel : m_mapFileToMesh | std::views::values) {
+		pModel->InvalidateDeviceObjects();
+	}
+
+	return S_OK;
 }
 HRESULT CModelMng::DeleteDeviceObjects()
 {
-	HRESULT hr = S_OK;
-	MapStrToPtrItor itor;
-	for( itor = m_mapFileToMesh.begin(); itor != m_mapFileToMesh.end(); itor++ )
-	{
-		((CModel*)(*itor).second)->DeleteDeviceObjects();
-		CModel* pModel = ( CModel* )(*itor).second;
-		SAFE_DELETE( pModel );
+	for (CModel *& pModel : m_mapFileToMesh | std::views::values) {
+		pModel->DeleteDeviceObjects();
+		SAFE_DELETE(pModel);
 	}
 	m_mapFileToMesh.clear();
-	return hr;
+	return S_OK;
 }
 BOOL CModelMng::LoadScript( LPCTSTR lpszFileName )
 {
