@@ -145,22 +145,21 @@ void CLayeredLinkMap::DeleteLinkMap( int nLayer )
 
 void CLayeredLinkMap::Process( CWorld* pWorld )
 {
-	for( MLM::iterator i = m_mapLinkMap.begin(); i != m_mapLinkMap.end(); )
+	for( auto i = m_mapLinkMap.begin(); i != m_mapLinkMap.end(); )
 	{
-		int nLayer	= i->first;
-		CLinkMap* pLinkMap	= i->second;
-		++i;
+		const int nLayer = i->first;
+		CLinkMap * pLinkMap = i->second;
+		++i; // ensure that if the current i is erased, the loop can continue
 		if( nLayer <= 0 )
 			continue;
 		if( pLinkMap->IsInvalid() )
 		{
-			if( pWorld->HasNobody( nLayer ) )
-			{
-				pWorld->ReleaseLayer( nLayer );
-				TRACE( "CWorld.ReleaseLayer( %d, %d )\n", pWorld->GetID(), nLayer );
+			if (pWorld->HasSomeone(nLayer)) {
+				pWorld->DriveOut(nLayer);
+			} else {
+				pWorld->ReleaseLayer(nLayer);
+				TRACE("CWorld.ReleaseLayer( %d, %d )\n", pWorld->GetID(), nLayer);
 			}
-			else
-				pWorld->DriveOut( nLayer );
 		}
 	}
 }

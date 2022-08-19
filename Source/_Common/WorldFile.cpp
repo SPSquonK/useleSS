@@ -1170,38 +1170,30 @@ BOOL CWorld::CreateLayer( int nLayer )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOL CWorld::HasNobody( int nLayer )
-{
-	if( !HasNobody_Process( nLayer ) )
-		return FALSE;
-	if( !HasNoObj_Add( nLayer ) )
-		return FALSE;
-	if( !HasNobody_Replace( nLayer ) )
-		return FALSE;
-	return TRUE;
-}
-
-BOOL CWorld::HasNobody_Process(int nLayer) {
-	for (CObj * pObj : m_Objs.Range()) {
-		if (IsLayerPlayer(pObj, nLayer)) {
-			return FALSE;
+bool CWorld::HasSomeone(const int nLayer) const {
+	constexpr auto HasSomeoneInWorld = [](const CWorld & world, const int nLayer) {
+		for (CObj * pObj : world.m_Objs.Range()) {
+			if (IsLayerPlayer(pObj, nLayer)) {
+				return true;
+			}
 		}
-	}
 
-	return TRUE;
+		return false;
+	};
+
+	constexpr auto HasSomeoneToAdd = [](const CWorld & world, const int nLayer) {
+		return std::ranges::any_of(world.m_aAddObjs,
+			[nLayer](const AddRequest & add) {
+				return add.pObj && add.pObj->GetLayer() == nLayer;
+			}
+		);
+	};
+
+	return HasSomeoneInWorld(*this, nLayer)
+		|| HasSomeoneToAdd(*this, nLayer)
+		|| g_WorldMng.HasSomeoneGoingTo(GetID(), nLayer);
 }
 
-bool CWorld::HasNoObj_Add(const int nLayer) const {
-	return std::ranges::none_of(m_aAddObjs,
-		[nLayer](const AddRequest & add) {
-			return add.pObj && add.pObj->GetLayer() == nLayer;
-		}
-	);
-}
-
-bool CWorld::HasNobody_Replace(const int nLayer) const {
-	return g_WorldMng.HasNobody_Replace(GetID(), nLayer);
-}
 
 bool CWorld::IsLayerPlayer(CObj * pObj, int nLayer) {
 	return (pObj && pObj->GetLayer() == nLayer && pObj->GetType() == OT_MOVER && static_cast<CMover *>(pObj)->IsPlayer());

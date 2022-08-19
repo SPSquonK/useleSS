@@ -580,14 +580,11 @@ public:
 	BOOL			OpenWorld( OBJID idWorld, BOOL bDir = FALSE );
 #ifdef __LAYER_1021
 private:
-	BOOL	HasNobody_Process( int nLayer );
-	[[nodiscard]] bool HasNoObj_Add(int nLayer) const;
-	[[nodiscard]] bool HasNobody_Replace(int nLayer) const;
 	[[nodiscard]] static bool IsLayerPlayer(CObj * pObj, int nLayer);
 
 public:
 	void	Invalidate( int nLayer, BOOL bInvalid = TRUE )	{	m_linkMap.Invalidate( nLayer, bInvalid );	}
-	BOOL	HasNobody( int nLayer );
+	[[nodiscard]] bool HasSomeone(int nLayer) const;
 	void	DriveOut( int nLayer );
 	BOOL	LoadObject( int nLayer );
 	BOOL	CreateLayer( int nLayer );

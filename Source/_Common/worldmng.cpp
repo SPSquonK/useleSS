@@ -577,14 +577,14 @@ void CWorldMng::Process() {
 	}
 }
 
-bool CWorldMng::HasNobody_Replace(const DWORD dwWorldId, const int nLayer) const {
-	const auto IsTargettedHere = [&](const REPLACEOBJ & replaceObj) {
+bool CWorldMng::HasSomeoneGoingTo(const DWORD dwWorldId, const int nLayer) const {
+	const auto IsGoingTo = [&](const REPLACEOBJ & replaceObj) {
 		return replaceObj.dwWorldID == dwWorldId && replaceObj.nLayer == nLayer;
 	};
 
-	return std::ranges::all_of(m_worlds,
+	return std::ranges::any_of(m_worlds,
 		[&](const auto & pWorld) {
-			return std::ranges::none_of(pWorld->m_ReplaceObj, IsTargettedHere);
+			return std::ranges::any_of(pWorld->m_ReplaceObj, IsGoingTo);
 		}
 	);
 }

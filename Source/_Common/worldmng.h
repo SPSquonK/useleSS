@@ -36,7 +36,7 @@ public:
 	void		Add( CJurisdiction* pJurisdiction );
 	void		ReadObject();
 	void		Process();
-	[[nodiscard]] bool HasNobody_Replace(DWORD dwWorldId, int nLayer) const;
+	[[nodiscard]] bool HasSomeoneGoingTo(DWORD dwWorldId, int nLayer) const;
 #ifdef __LAYER_1015
 	BOOL		AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId, int nLayer );
 #else	// __LAYER_1015
