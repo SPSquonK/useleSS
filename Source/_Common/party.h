@@ -127,7 +127,6 @@ public:
 	void	SetPartyLevel( CUser* pUser, DWORD dwLevel, DWORD dwPoint, DWORD dwExp );
 	void	DoDuelPartyStart( CParty *pDst );
 	void	DoDuelResult( CParty *pParty, BOOL bWin, int nAddFame, float fSubFameRatio );
-	void	DoUsePartyReCall( u_long uPartyId, u_long nLeaderid, int nSkill );
 	void	Replace(DWORD dwWorldId, const D3DXVECTOR3 & vPos, BOOL) const;
 	void	Replace(DWORD dwWorldId, LPCTSTR sKey) const;
 	[[nodiscard]] bool ReplaceChkLv(int Lv) const;
