@@ -2625,7 +2625,7 @@ BOOL TextCmd_Freeze(CScanner & scanner, CPlayer_ * pUser) {
 		if( idFrom > 0 && idTo > 0 ) 
 		{
 			// 1 : Ãß°¡ m_dwMode
-			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, (BYTE)1, idFrom, idTo );					
+			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, true, idFrom, idTo );					
 		}
 		else 
 		{
@@ -2651,7 +2651,7 @@ BOOL TextCmd_NoFreeze(CScanner & scanner, CPlayer_ * pUser) {
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idFrom > 0 && idTo > 0 ) 
 		{
-			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, (BYTE)0, idFrom, idTo );	// 0 : »­ m_dwMode
+			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, false, idFrom, idTo );
 		}
 		else 
 		{
@@ -2676,7 +2676,7 @@ BOOL TextCmd_Talk(CScanner & scanner, CPlayer_ * pUser) {
 	idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 	if( idFrom > 0 && idTo > 0 ) 
 	{
-		g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)0, idFrom, idTo );	// 0 : »­ m_dwMode
+		g_DPCoreClient.SendModifyMode( DONTALK_MODE, false, idFrom, idTo );
 	}
 	else 
 	{
@@ -2698,7 +2698,7 @@ BOOL TextCmd_NoTalk(CScanner & scanner, CPlayer_ * pUser) {
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idFrom > 0 && idTo > 0 ) 
 		{
-			g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)1, idFrom, idTo );	// 1 : Ãß°¡
+			g_DPCoreClient.SendModifyMode( DONTALK_MODE, true, idFrom, idTo );	// 1 : Ãß°¡
 		}
 		else 
 		{

@@ -39,7 +39,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_PLAYMUSIC, &CDPCoreSrvr::OnPlayMusic );
 	ON_MSG( PACKETTYPE_PLAYSOUND, &CDPCoreSrvr::OnPlaySound );
 	ON_MSG( PACKETTYPE_SUMMONPLAYER, &CDPCoreSrvr::OnSummonPlayer );
-	ON_MSG( PACKETTYPE_TELEPORTPLAYER, &CDPCoreSrvr::OnTeleportPlayer );
 	ON_MSG( PACKETTYPE_KILLPLAYER, &CDPCoreSrvr::OnKillPlayer );
 	ON_MSG( PACKETTYPE_GETPLAYERADDR, &CDPCoreSrvr::OnGetPlayerAddr );
 	ON_MSG( PACKETTYPE_GETPLAYERCOUNT, &CDPCoreSrvr::OnGetPlayerCount );
@@ -406,25 +405,18 @@ void CDPCoreSrvr::OnSay( CAr & ar, DPID dpidFrom, DPID dpidCache, DPID dpidUser,
 	}
 }
 
-void CDPCoreSrvr::OnModifyMode( CAr & ar, DPID dpidFrom, DPID dpidCache, DPID dpidUser, u_long )
-{
-	u_long idFrom, idTo;
-	DWORD dwMode;
-	BYTE f;
-	ar >> dwMode >> f >> idFrom >> idTo;
+void CDPCoreSrvr::OnModifyMode(CAr & ar, DPID, DPID, DPID, u_long) {
+	const auto [dwMode, f, idFrom, idTo] = ar.Extract<DWORD, bool, u_long, u_long>();
 
-	CPlayer* pFrom, *pTo;
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	pFrom	= g_PlayerMng.GetPlayer( idFrom );
-	pTo	= g_PlayerMng.GetPlayer( idTo );
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
+	CPlayer * pFrom = g_PlayerMng.GetPlayer(idFrom);
+	CPlayer * pTo = g_PlayerMng.GetPlayer(idTo);
 
-	if( pFrom && pTo )
-	{
-		g_DPCacheSrvr.SendModifyMode( dwMode, f, idFrom, pTo );
-	}
-	else
-	{
-		g_DPCacheSrvr.SendSay( "", "", idFrom, idTo, "", pFrom, 1 ); // 플레이어가 접속중이지 않습니다. 
+	if (pFrom && pTo) {
+		// TODO: In a better world, only send to world pTo->dpid
+		BroadcastPacket<PACKETTYPE_MODIFYMODE, u_long, DWORD, bool, u_long>(pTo->uKey, dwMode, f, idFrom);
+	} else {
+		g_DPCacheSrvr.SendSay("", "", idFrom, idTo, "", pFrom, 1); // 플레이어가 접속중이지 않습니다. 
 	}
 }
 
@@ -554,42 +546,24 @@ void CDPCoreSrvr::OnSummonPlayer( CAr & ar, DPID, DPID, DPID, u_long )
 	ar >> nLayer;
 #endif	// __LAYER_1015
 
-	CPlayer* pOperator, *pPlayer;
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	pOperator	= g_PlayerMng.GetPlayer( idOperator );
-	pPlayer		= g_PlayerMng.GetPlayer( idPlayer );
+	CPlayer * pOperator	= g_PlayerMng.GetPlayer( idOperator );
+	CPlayer * pPlayer		= g_PlayerMng.GetPlayer( idPlayer );
 
 	if( pOperator && pPlayer )
 	{
+		// TODO: unbroadcast
+		BroadcastPacket<PACKETTYPE_SUMMONPLAYER>(
+			pPlayer->uKey, dwWorldID, vPos, uIdofMulti
 #ifdef __LAYER_1015
-		g_DPCacheSrvr.SendSummonPlayer( idOperator, uIdofMulti, dwWorldID, vPos, pPlayer, nLayer );
-#else	// __LAYER_1015
-		g_DPCacheSrvr.SendSummonPlayer( idOperator, uIdofMulti, dwWorldID, vPos, pPlayer );
+			, nLayer
 #endif	// __LAYER_1015
+			);
 	}
 	else
 	{
 		g_DPCacheSrvr.SendSay( "", "", idOperator, idPlayer, "", pOperator, 1 ); // 플레이어가 접속중이지 않습니다. 
 		// player not found
-	}
-}
-
-void CDPCoreSrvr::OnTeleportPlayer( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	u_long idOperator, idPlayer;
-	ar >> idOperator >> idPlayer;
-
-	CPlayer* pOperator, *pPlayer;
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	pOperator	= g_PlayerMng.GetPlayer( idOperator );
-	pPlayer		= g_PlayerMng.GetPlayer( idPlayer );
-	if( pOperator && pPlayer )
-	{
-		g_DPCacheSrvr.SendTeleportPlayer( idOperator, pPlayer );
-	}
-	else
-	{
-		g_DPCacheSrvr.SendSay( "", "", idOperator, idPlayer, "", pOperator, 1 ); // 플레이어가 접속중이지 않습니다. 
 	}
 }
 

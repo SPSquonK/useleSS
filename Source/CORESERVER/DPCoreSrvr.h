@@ -87,7 +87,6 @@ public:
 	void	OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnSummonPlayer( CAr & ar, DPID, DPID, DPID, u_long );
-	void	OnTeleportPlayer( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnKillPlayer( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGetPlayerAddr( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGetPlayerCount( CAr & ar, DPID, DPID, DPID, u_long );

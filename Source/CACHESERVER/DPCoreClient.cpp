@@ -67,21 +67,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 		( this->*( pfn ) )( ar, dpidUser );
 	else
 	{
-		switch( dw )
-		{
-			case PACKETTYPE_SUMMONPLAYER:
-			case PACKETTYPE_TELEPORTPLAYER:
-			case PACKETTYPE_MODIFYMODE:
-			case PACKETTYPE_BUYING_INFO:
-				{
-					CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
-					g_DPClientArray.SendToServer( dpidUser, lpMsg, dwMsgSize );
-					break;
-				}
-			default:
-				g_DPCacheSrvr.Send( lpBuf, uBufSize, dpidUser );
-				break;
-		}
+		g_DPCacheSrvr.Send( lpBuf, uBufSize, dpidUser );
 	}
 #ifdef __CRASH_0404
 	CCrashStatus::GetInstance()->SetLastPacket( this, 0xFFFFFFFF );

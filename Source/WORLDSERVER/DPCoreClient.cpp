@@ -44,7 +44,6 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_SHOUT, &CDPCoreClient::OnShout );
 	ON_MSG( PACKETTYPE_PLAYMUSIC, &CDPCoreClient::OnPlayMusic );
 	ON_MSG( PACKETTYPE_PLAYSOUND, &CDPCoreClient::OnPlaySound );
-//	ON_MSG( PACKETTYPE_MODIFYMODE, OnModifyMode );
 	
 	ON_MSG( PACKETTYPE_ERRORPARTY, &CDPCoreClient::OnErrorParty );
 	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_CoreWorld, &CDPCoreClient::OnAddPartyMember );
@@ -125,6 +124,10 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_SETCOOLTIME, &CDPCoreClient::OnInstanceDungeonSetCoolTimeInfo );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_DELETECOOLTIME, &CDPCoreClient::OnInstanceDungeonDeleteCoolTimeInfo );
 	
+	ON_MSG(PACKETTYPE_SUMMONPLAYER, &CDPCoreClient::OnSummonPlayer);
+	ON_MSG(PACKETTYPE_BUYING_INFO, &CDPCoreClient::OnBuyingInfo);
+	ON_MSG(PACKETTYPE_MODIFYMODE, &CDPCoreClient::OnModifyMode);
+
 	m_bAlive	= TRUE;
 	m_hWait		= WSACreateEvent();
 	m_uRecharge		= 0;
@@ -443,29 +446,6 @@ void CDPCoreClient::OnRecharge( CAr & ar, DPID, DPID, OBJID )
 	prj.m_objmap.m_idStack.PushIdBlock( idBase, uBlockSize );
 	m_uRecharge	= 0;
 }
-/*
-void CDPCoreClient::OnModifyMode( CAr & ar, DPID, DPID, OBJID objid )
-{
-	CUser* pUser;
-
-	pUser	= prj.GetUser( objid );
-	if( IsValidObj( (CObj*)pUser ) )
-	{
-		DWORD dwMode;
-		BYTE f;
-		u_long idFrom;
-
-		ar >> dwMode >> f >> idFrom;
-
-		if( f )
-			pUser->m_dwMode		|= dwMode;
-		else
-			pUser->m_dwMode		&= ~dwMode;
-
-		g_UserMng.AddModifyMode( pUser );
-	}
-}
-*/
 
 void CDPCoreClient::SendJoin( u_long idPlayer, const char* szPlayer, BOOL bOperator )
 {
@@ -492,7 +472,7 @@ void CDPCoreClient::SendSay( u_long idFrom, u_long idTo, const CHAR* lpString )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::SendModifyMode( DWORD dwMode, BYTE fAdd, u_long idFrom, u_long idTo )
+void CDPCoreClient::SendModifyMode( DWORD dwMode, bool fAdd, u_long idFrom, u_long idTo )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_MODIFYMODE, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << dwMode << fAdd << idFrom << idTo;
@@ -566,13 +546,6 @@ void CDPCoreClient::SendSummonPlayer( u_long idOperator, DWORD dwWorldID, const 
 #ifdef __LAYER_1015
 	ar << nLayer;
 #endif	// __LAYER_1015
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPCoreClient::SendTeleportPlayer( u_long idOperator, u_long idPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_TELEPORTPLAYER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idOperator << idPlayer;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -2701,3 +2674,78 @@ void CDPCoreClient::SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nC
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 #endif // __QUIZ
+
+
+
+// 운영자의 소환 명령어 
+void CDPCoreClient::OnSummonPlayer( CAr & ar, DPID, DPID, DPID) {
+	const auto [
+		teleported, dwWorldID, vPos, uIdofMulti
+	] = ar.Extract<u_long, DWORD, D3DXVECTOR3, u_long>();
+
+	CUser * pUser = g_UserMng.GetUserByPlayerID(teleported);
+
+	if (!IsValidObj(pUser)) return;
+	if (uIdofMulti != g_uIdofMulti) return;
+
+#ifdef __LAYER_1015
+	int nLayer; ar >> nLayer;
+#endif	// __LAYER_1015
+
+	if (!pUser->GetWorld()) {
+		WriteError("PACKETTYPE_SUMMONPLAYER//1");
+		return;
+	}
+
+	pUser->Replace( dwWorldID, vPos, REPLACE_FORCE, nLayer );
+}
+
+void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
+{
+	auto [playerId, bi2] = ar.Extract<u_long, BUYING_INFO2>();
+
+	CWorld * pWorld;
+	CUser * pUser = g_UserMng.GetUserByPlayerID(playerId);
+
+	SERIALNUMBER iSerialNumber = 0;
+	if (IsValidObj(pUser) && (pWorld = pUser->GetWorld())) {
+		bi2.dwRetVal = 0;
+		CItemElem itemElem;
+		itemElem.m_dwItemId = bi2.dwItemId;
+		itemElem.m_nItemNum = (short)bi2.dwItemNum;
+		itemElem.m_bCharged = TRUE;
+		BYTE nId;
+		bi2.dwRetVal = pUser->CreateItem(&itemElem, &nId);
+#ifdef __LAYER_1015
+		g_dpDBClient.SavePlayer(pUser, pWorld->GetID(), pUser->GetPos(), pUser->GetLayer());
+#else	// __LAYER_1015
+		g_dpDBClient.SavePlayer(pUser, pWorld->GetID(), pUser->GetPos());
+#endif	// __LAYER_1015
+		if (bi2.dwRetVal) {
+			CItemElem * pItemElem = pUser->m_Inventory.GetAtId(nId);
+			if (pItemElem) {
+				iSerialNumber = pItemElem->GetSerialNumber();
+				pItemElem->m_bCharged = TRUE;
+				if (bi2.dwSenderId > 0) {
+					// %s was a gift from %s.
+				}
+			}
+		}
+	}
+
+	g_dpDBClient.SendBuyingInfo(&bi2, iSerialNumber);
+}
+
+void CDPCoreClient::OnModifyMode(CAr & ar, DPID, DPID, DPID) {
+	const auto [idTo, dwMode, f, _idFrom] = ar.Extract<u_long, DWORD, bool, u_long>();
+
+	CUser * pUser = g_UserMng.GetUserByPlayerID(idTo);
+	if (!IsValidObj(pUser)) return;
+
+	if (f)
+		pUser->m_dwMode |= dwMode;
+	else
+		pUser->m_dwMode &= ~dwMode;
+
+	g_UserMng.AddModifyMode(pUser);
+}

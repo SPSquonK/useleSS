@@ -382,52 +382,6 @@ void CDPCacheSrvr::SendFriendIntercept( CPlayer* pPlayer, u_long uFriendid )
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::SendModifyMode( DWORD dwMode, BYTE f, u_long idFrom, CPlayer* pTo )
-{
-	if( !pTo )
-		return;
-//	ASSERT( pTo );
-
-	BEFORESENDSOLE( ar, PACKETTYPE_MODIFYMODE, pTo->dpidUser );
-	ar << dwMode << f << idFrom;
-#ifdef __HACK_0516
-	ar << pTo->dpidUser;
-#endif	// __HACK_0516
-	SEND( ar, this, pTo->dpidCache );
-}
-
-#ifdef __LAYER_1015
-void CDPCacheSrvr::SendSummonPlayer( u_long idOperator, u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, CPlayer* pPlayer, int nLayer )
-#else	// __LAYER_1015
-void CDPCacheSrvr::SendSummonPlayer( u_long idOperator, u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, CPlayer* pPlayer )
-#endif	// __LAYER_1015
-{
-	ASSERT( pPlayer );
-
-	BEFORESENDSOLE( ar, PACKETTYPE_SUMMONPLAYER, pPlayer->dpidUser );
-	ar << idOperator;
-	ar << dwWorldID;
-	ar << vPos;
-	ar << uIdofMulti;
-#ifdef __HACK_0516
-	ar << pPlayer->dpidUser;
-#endif	// __HACK_0516
-#ifdef __LAYER_1015
-	ar << nLayer;
-#endif	// __LAYER_1015
-	SEND( ar, this, pPlayer->dpidCache );
-}
-
-void CDPCacheSrvr::SendTeleportPlayer( u_long idOperator, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TELEPORTPLAYER, pPlayer->dpidUser );
-	ar << idOperator;
-#ifdef __HACK_0516
-	ar << pPlayer->dpidUser;
-#endif	// __HACK_0516
-	SEND( ar, this, pPlayer->dpidCache );
-}
-
 void CDPCacheSrvr::SendKillPlayer( CPlayer* pPlayer )
 {
 	SendHdr( PACKETTYPE_KILLPLAYER, pPlayer->dpidCache, pPlayer->dpidUser );
@@ -2389,13 +2343,6 @@ void CDPCacheSrvr::SendUpdateGuildRank()
 	BEFORESENDSOLE( ar, PACKETTYPE_UPDATE_GUILD_RANKING, DPID_ALLPLAYERS );
 	ar << CGuildRank::Instance;
 	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-void CDPCacheSrvr::SendBuyingInfo( PBUYING_INFO2 pbi2, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_BUYING_INFO, pPlayer->dpidUser );
-	ar.Write( (void*)pbi2, sizeof(BUYING_INFO2) );
-	SEND( ar, this, pPlayer->dpidCache );
 }
 
 void CDPCacheSrvr::SendSetPlayerName( u_long idPlayer, const char* lpszPlayer )
