@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #define MAX_REGIONDESC 256
 #define MAX_REGIONTITLE 256
 
@@ -67,6 +69,38 @@ public:
 	int	GetSize( void )	{	return m_cbRegionElem;	}
 	void	AddTail( const REGIONELEM * lpRegionElem );
 	REGIONELEM *	GetAt( int nIndex );
+
+	template<typename Func>
+	requires (std::is_invocable_r_v<bool, Func, const REGIONELEM &>)
+	[[nodiscard]] const REGIONELEM * FindAny(Func && predicate) const {
+		for (DWORD i = 0; i != m_cbRegionElem; ++i) {
+			if (predicate(m_aRegionElem[i])) {
+				return &m_aRegionElem[i];
+			}
+		}
+
+		return nullptr;
+	}
+
+	template<typename Func>
+	requires (std::is_invocable_r_v<bool, Func, const REGIONELEM &>)
+	[[nodiscard]] const REGIONELEM * FindClosest(const D3DXVECTOR3 & position, Func && predicate) const {
+		const REGIONELEM * result = nullptr;
+		long resultDistance = 0; // Initialized to shut up the compiler
+
+		for (DWORD i = 0; i != m_cbRegionElem; ++i) {
+			if (predicate(m_aRegionElem[i])) {
+				const D3DXVECTOR3 & diff = position - m_aRegionElem[i].m_vPos;
+				const long distance = static_cast<long>(D3DXVec3LengthSq(&diff));
+				if (!result || distance < resultDistance) {
+					result = &m_aRegionElem[i];
+					resultDistance = distance;
+				}
+			}
+		}
+
+		return result;
+	}
 };
 
 inline void CRegionElemArray::AddTail( const REGIONELEM * lpRegionElem )

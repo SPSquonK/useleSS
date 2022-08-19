@@ -69,10 +69,10 @@ private:
 
 #ifdef __WORLDSERVER
 public:
-	REGIONELEM * GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey );
-	REGIONELEM * GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
-	REGIONELEM * GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey );
-	REGIONELEM * GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
+	const REGIONELEM * GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey ) const;
+	const REGIONELEM * GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const;
+	const REGIONELEM * GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey ) const;
+	const REGIONELEM * GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const;
 
 	const REGIONELEM * GetRevival(CMover * pUser);
 	const REGIONELEM * GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, bool isChaotic);

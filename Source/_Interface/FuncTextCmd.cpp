@@ -2041,9 +2041,9 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 		// 두번째 파라메타가 스트링이면 리젼 키
 		if( scanner.GetToken() != NUMBER )
 		{
-			REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( dwWorldId, scanner.token );
-			if( NULL != pRgnElem )
-				pUser->Replace( *pRgnElem, REPLACE_NORMAL, nRevivalLayer );
+			if (const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos(dwWorldId, scanner.token)) {
+				pUser->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
+			}
 		}
 		// 스트링이 아니면 좌표 
 		else

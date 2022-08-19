@@ -437,106 +437,59 @@ void CWorldMng::LoadAllMoverDialog()
 
 #ifdef __WORLDSERVER
 
-REGIONELEM * CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey )
+const REGIONELEM * CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey ) const
 {
-	int nSize	= m_aRevivalPos.GetSize();
-	REGIONELEM * pRgnElem;
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && strcmp( sKey, pRgnElem->m_szKey ) == 0 && pRgnElem->m_bChaoKey )
-		{
-			return pRgnElem;
-		}
-	}
-	return NULL;	// not found
-}
-REGIONELEM * CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
-{
-	REGIONELEM *pRgnElem, *ptr	= NULL;
-	CPoint point;
-	
-	int nSize;
-	
-	nSize	= m_aRevivalPos.GetSize();
-	long	d	= 2147483647L, tmp;	// 46340	// 21722
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && pRgnElem->m_bChaoKey )
-		{
-			D3DXVECTOR3 vd	= vPos - pRgnElem->m_vPos;
-			tmp		= (long)D3DXVec3LengthSq( &vd );
-			if( tmp < d )
-			{
-				ptr		= pRgnElem;
-				d	= tmp;
-			}
-		}
-	}
-
-	if( ptr == NULL )	// 같은 서버에 찾지를 못했을 경우 다른서버검색
-	{
-		for( int i = 0; i < nSize; i++ )
-		{
-			pRgnElem	= m_aRevivalPos.GetAt( i );
-			if( dwWorldId != pRgnElem->m_dwWorldId && pRgnElem->m_bChaoKey )
-			{
-				ptr		= pRgnElem;
-				break;			// 거리계산은 필요없음
-			}
-		}
-	}
-	return ptr;
+	return m_aRevivalPos.FindAny([&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId
+			&& strcmp(sKey, pRgnElem.m_szKey) == 0
+			&& pRgnElem.m_bChaoKey;
+		});
 }
 
-REGIONELEM * CWorldMng::GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey )
+const REGIONELEM * CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const
 {
-	int nSize	= m_aRevivalPos.GetSize();
-	for( int i = 0; i < nSize; i++ )
-	{
-		REGIONELEM * pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && strcmp( sKey, pRgnElem->m_szKey ) == 0 && pRgnElem->m_bChaoKey == FALSE )
-			return pRgnElem;
-	}
-	return nullptr;	// not found
+	const REGIONELEM * ptr = m_aRevivalPos.FindClosest(vPos, [&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId && pRgnElem.m_bChaoKey;
+		});
+
+	if (ptr) return ptr;
+
+	// 같은 서버에 찾지를 못했을 경우 다른서버검색
+	return m_aRevivalPos.FindAny([&](const REGIONELEM & pRgnElem) {
+		// 거리계산은 필요없음
+		return dwWorldId != pRgnElem.m_dwWorldId && pRgnElem.m_bChaoKey;
+		});
 }
 
-REGIONELEM * CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
+const REGIONELEM * CWorldMng::GetRevivalPos(DWORD dwWorldId, LPCTSTR sKey) const {
+	return m_aRevivalPos.FindAny([&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId
+			&& strcmp(sKey, pRgnElem.m_szKey) == 0
+			&& pRgnElem.m_bChaoKey == FALSE;
+	});
+}
+
+const REGIONELEM * CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const
 {
-	REGIONELEM *pRgnElem, *ptr	= NULL;
-	CPoint point;
-
-	int nSize	= m_aRevivalRgn.GetSize();
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalRgn.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && pRgnElem->m_dwIndex == RI_REVIVAL && pRgnElem->m_bChaoKey == FALSE )
-		{
-			point.x	= (LONG)( vPos.x );
-			point.y	= (LONG)( vPos.z );
-			if( pRgnElem->m_rect.PtInRect( point ) )
-				return GetRevivalPos( dwWorldId, pRgnElem->m_szKey );
+	const CPoint point(static_cast<long>(vPos.x), static_cast<long>(vPos.z));
+	const REGIONELEM * revivalRegion = m_aRevivalRgn.FindAny(
+		[&](const REGIONELEM & pRgnElem) {
+			return dwWorldId == pRgnElem.m_dwWorldId
+				&& pRgnElem.m_dwIndex == RI_REVIVAL
+				&& pRgnElem.m_bChaoKey == FALSE
+				&& pRgnElem.m_rect.PtInRect(point);
 		}
+	);
+
+	if (revivalRegion) {
+		return GetRevivalPos(dwWorldId, revivalRegion->m_szKey);
 	}
 
-	nSize	= m_aRevivalPos.GetSize();
-	long	d	= 2147483647L, tmp;	// 46340	// 21722
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && pRgnElem->m_bChaoKey == FALSE )
-		{
-			D3DXVECTOR3 vd	= vPos - pRgnElem->m_vPos;
-			tmp		= (long)D3DXVec3LengthSq( &vd );
-			if( tmp < d )
-			{
-				ptr		= pRgnElem;
-				d	= tmp;
-			}
-		}
-	}
-	return ptr;
+	return m_aRevivalPos.FindClosest(vPos, [&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId && pRgnElem.m_bChaoKey == FALSE;
+		});
+
+	// tfw the code does not try to send to any respawn point if none in this world :|
 }
 
 const REGIONELEM * CWorldMng::GetRevival(CMover * pUser) {

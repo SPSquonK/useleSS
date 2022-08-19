@@ -1162,15 +1162,13 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 		}
 		if( IsChaotic() )
 		{
-			REGIONELEM * pRgnElem	= NULL;
-			CWorld* pWorld = g_WorldMng.GetWorld( pItemProp->dwWeaponType );
-			if( pWorld )
-				pRgnElem	= g_WorldMng.GetRevivalPosChao( pItemProp->dwWeaponType, pItemProp->szTextFileName );
-			if( NULL == pRgnElem && pWorld )	// Find near revival pos
-				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
+			const CWorld * pWorld = g_WorldMng.GetWorld(pItemProp->dwWeaponType);
+			if (!pWorld) return FALSE;
 
-			if( pRgnElem )
-				Replace( *pRgnElem, REPLACE_NORMAL, nRevivalLayer );
+			const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPosChao(pItemProp->dwWeaponType, pItemProp->szTextFileName);
+			if (!pRgnElem) pRgnElem = g_WorldMng.GetNearRevivalPosChao(pWorld->GetID(), GetPos());
+
+			if (pRgnElem) Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
 		}
 		else
 		{

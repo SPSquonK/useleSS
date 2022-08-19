@@ -3242,7 +3242,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 	// 로그 아웃시 길드대전 맵에 있으면 모두 flaris로 이동
 	if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 	{
-		REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
+		const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
 		if( pRgnElem )
 		{
 			dwWorldId	= pRgnElem->m_dwWorldId;
