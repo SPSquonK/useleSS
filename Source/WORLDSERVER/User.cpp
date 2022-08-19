@@ -6357,41 +6357,6 @@ void CUser::DoSMItemUnEquip( CItemElem* pItemElem, DWORD dwParts )
 	}
 }
 
-void CUserMng::AddAddRegion( DWORD dwWorldId, REGIONELEM & re )
-{
-	CAr ar;
-	
-	ar << NULL_ID << SNAPSHOTTYPE_ADDREGION;
-	ar << dwWorldId << re;
-	
-	std::list<CUser*>	lspUser;
-	for( auto it = m_users.begin(); it != m_users.end(); ++it )
-	{
-		CUser* pUser = it->second;
-		if( pUser->IsValid() == FALSE )
-			continue;
-		CWorld* pWorld	= pUser->GetWorld();
-		POINT point	= {	(LONG)( pUser->GetPos().x ), (LONG)( pUser->GetPos().z ) };
-		if( pWorld && pWorld->GetID() == dwWorldId && re.m_rect.PtInRect( point ) )
-		{
-			pUser->SetPosChanged( TRUE );
-			lspUser.push_back( pUser );
-		}
-	}
-
-	ar << (int)lspUser.size();
-	for( auto i	= lspUser.begin(); i != lspUser.end(); ++i )
-		ar << (*i)->GetId();
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	// transfer
-	for( auto i	= lspUser.begin(); i != lspUser.end(); ++i )
-		(*i)->AddBlock( lpBuf, nBufSize );
-
-	lspUser.clear();
-}
-
 #ifdef __EVENT_1101
 #ifdef __EVENT_1101_2
 __int64 CUser::GetEventFlagBit( int nBit )

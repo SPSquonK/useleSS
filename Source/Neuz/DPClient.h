@@ -826,7 +826,6 @@ private:
 	void	OnSummonFriendConfirm( CAr & ar );
 	void	OnSummonPartyConfirm( CAr & ar );
 	void	OnRemoveGuildBankItem( CAr & ar );
-	void	OnAddRegion( CAr & ar );
 #ifdef __EVENT_1101
 	void	OnCallTheRoll( CAr & ar );
 #endif	// __EVENT_1101

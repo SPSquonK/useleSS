@@ -868,7 +868,7 @@ public:
 #else	// __IAOBJ0622
 	void			AddSetDestPos( CMover* pMover, CONST D3DXVECTOR3 & vPos, BYTE fForward );
 #endif	// __IAOBJ0622
-	void	AddAddRegion( DWORD dwWorldId, REGIONELEM & re );
+
 #ifdef __EVENT_1101
 	void	CallTheRoll( int nBit );
 #endif	// __EVENT_1101

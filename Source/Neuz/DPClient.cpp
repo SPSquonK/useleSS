@@ -581,7 +581,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_QUERYMAILBOX_REQ:		OnMailBoxReq( ar );	break;
 			case SNAPSHOTTYPE_SUMMON:	OnSummon( ar ); break;
 			case SNAPSHOTTYPE_REMOVE_GUILD_BANK_ITEM:	OnRemoveGuildBankItem( ar );	break;
-			case SNAPSHOTTYPE_ADDREGION:	OnAddRegion( ar );	break;
 #ifdef __EVENT_1101
 			case SNAPSHOTTYPE_CALLTHEROLL:	OnCallTheRoll( ar );	break;
 #endif	// __EVENT_1101
@@ -13589,38 +13588,6 @@ void CDPClient::OnMotionArrive( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) ) 
 	{
 		pMover->m_dwMotionArrive = (OBJMSG)objmsg;
-	}
-}
-
-void CDPClient::OnAddRegion( CAr & ar )
-{
-	DWORD dwWorldId;
-	REGIONELEM re;
-	ar >> dwWorldId >> re;
-
-	int nSize	= 0;
-	ar >> nSize;
-	for( int i = 0; i < nSize; i++ )
-	{
-		DPID objid;
-		ar >> objid;
-		CMover* pMover	= prj.GetMover( objid );		
-		if( IsValidObj( pMover ) )
-			pMover->SetPosChanged( TRUE );
-	}
-	CMover* pPlayer	= CMover::GetActiveMover();
-	if( IsValidObj( pPlayer ) )
-	{
-		CWorld* pWorld = pPlayer->GetWorld();
-		if( pWorld && pWorld->GetID() == dwWorldId )
-		{
-			REGIONELEM * ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
-			if( ptr->m_dwAttribute != ( RA_DANGER | RA_FIGHT ) )
-			{
-				pWorld->m_aRegion.AddTail( &re );
-				OutputDebugString( "SNAPSHOTTYPE_ADDREGION" );
-			}
-		}
 	}
 }
 

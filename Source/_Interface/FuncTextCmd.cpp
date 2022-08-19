@@ -2559,49 +2559,6 @@ BOOL TextCmd_GuildInvite(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL bCTDFlag	= FALSE;
-
-BOOL TextCmd_CTD(CScanner & s, CPlayer_ * pUser) {
-#ifdef __WORLDSERVER
-	if( g_eLocal.GetState( EVE_WORMON ) == 0 )
-	{
-		CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-		const CRect * pRect	= pProcessor->GetQuestRect( QUEST_WARMON_LV1 );
-		if( pRect )
-		{
-			OutputDebugString( "recv /ctd" );
-			REGIONELEM re;
-			memset( &re, 0, sizeof(REGIONELEM) );
-			re.m_uItemId	= 0xffffffff;
-			re.m_uiItemCount	= 0xffffffff;
-			re.m_uiMinLevel	= 0xffffffff;
-			re.m_uiMaxLevel	= 0xffffffff;
-			re.m_iQuest	= 0xffffffff;
-			re.m_iQuestFlag	= 0xffffffff;
-			re.m_iJob	= 0xffffffff;
-			re.m_iGender	= 0xffffffff;
-			re.m_dwAttribute	= RA_DANGER | RA_FIGHT;
-			re.m_dwIdMusic	= 121;
-			re.m_bDirectMusic	= TRUE;
-			re.m_dwIdTeleWorld	= 0;
-			re.m_rect = *pRect;
-			lstrcpy( re.m_szTitle, "Duel Zone" );
-
-			CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
-			if( pWorld )
-			{
-				REGIONELEM * ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
-				if( ptr->m_dwAttribute != ( RA_DANGER | RA_FIGHT ) )
-					pWorld->m_aRegion.AddTail( &re );
-				pUser->AddText( "recv /ctd" );
-				g_UserMng.AddAddRegion( WI_WORLD_MADRIGAL, re );
-			}
-		}
-	}
-#endif	// __WORLDSERVER
-	return TRUE;
-}
-
 BOOL TextCmd_Undying(CScanner & scanner, CPlayer_ * pUser) {
 	pUser->m_dwMode &= (~MATCHLESS2_MODE);
 	pUser->m_dwMode |= MATCHLESS_MODE;
@@ -4647,7 +4604,6 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_QuestState,				"QuestState",         "qs",             "퀘스트상태",     "퀘상",    TCM_SERVER, AUTH_ADMINISTRATOR, "퀘스트 설정 [ID] [State]" )
 	ON_TEXTCMDFUNC( TextCmd_LoadScript,				"loadscript",         "loscr",          "로드스크립트",   "로스",    TCM_BOTH  , AUTH_ADMINISTRATOR   , "스크립트 다시 읽기" )
 	ON_TEXTCMDFUNC( TextCmd_ReloadConstant,			"ReloadConstant",     "rec",            "리로드콘스탄트", "리콘",    TCM_SERVER, AUTH_ADMINISTRATOR, "리로드 콘스탄트파일" )
-	ON_TEXTCMDFUNC( TextCmd_CTD,					"ctd",				 "ctd",            "이벤트듀얼존",   "이듀",    TCM_BOTH  , AUTH_ADMINISTRATOR   , "이벤트 듀얼존 설정" )
 	ON_TEXTCMDFUNC( TextCmd_Piercing,				"Piercing",           "pier",           "피어싱",         "피싱",    TCM_BOTH  , AUTH_ADMINISTRATOR, "피어싱(소켓)" )
 	ON_TEXTCMDFUNC( TextCmd_PetLevel,				"petlevel",         "pl",          "펫레벨",     "펫레",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_PetExp,					"petexp",         "pe",          "펫경험치",     "펫경",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
