@@ -25,7 +25,6 @@
 // define 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#define	MAX_ADDOBJS				20480
 #define	MAX_DYNAMICOBJ			81920
 //#define	MAX_BKGND				20480
 #define	CLOSEWORKER				(DWORD)-1
@@ -214,9 +213,8 @@ public:
 	std::vector<REPLACEOBJ> m_ReplaceObj;
 
 //	CRIT_SEC		m_AddRemoveLock;
-	int				m_cbAddObjs;
-	CObj*			m_apAddObjs[MAX_ADDOBJS];				// 80k
-	BOOL			m_bAddItToGlobalId[MAX_ADDOBJS];		// 80k
+	struct AddRequest { CObj * pObj; bool addToGlobalId; };
+	std::vector<AddRequest> m_aAddObjs;
 
 	TCHAR			m_lpszWorld[64];
 	u_long			m_cbUser;
@@ -234,7 +232,7 @@ public:
 	void			Process();
 	void			ModifyView( CCtrl* pCtrl );
 	BOOL			ReadWorld( const CRect & rcLandscapce ); 
-	BOOL			PreremoveObj( OBJID objid );
+	bool PreremoveObj(OBJID objid);
 	CObj*			PregetObj( OBJID objid );
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}
 	// DWORD			GetObjCount() { return m_dwObjNum; }
@@ -418,7 +416,7 @@ public:
 	void			RemoveObj( CObj* pObj );
 	void			DeleteObj( CObj* pObj );
 	void			DestroyObj( CObj* pObj );
-	BOOL			DoNotAdd( CObj* pObj );
+	bool DoNotAdd(CUser * pObj);
 	BOOL			AddObjArray( CObj* pObj );
 	void			RemoveObjArray( CObj* pObj );
 	BOOL			InsertObjLink( CObj* pObj );
@@ -583,7 +581,7 @@ public:
 #ifdef __LAYER_1021
 private:
 	BOOL	HasNobody_Process( int nLayer );
-	BOOL	HasNoObj_Add( int nLayer );
+	[[nodiscard]] bool HasNoObj_Add(int nLayer) const;
 	[[nodiscard]] bool HasNobody_Replace(int nLayer) const;
 	[[nodiscard]] static bool IsLayerPlayer(CObj * pObj, int nLayer);
 

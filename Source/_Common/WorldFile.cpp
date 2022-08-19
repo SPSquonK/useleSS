@@ -1191,14 +1191,12 @@ BOOL CWorld::HasNobody_Process(int nLayer) {
 	return TRUE;
 }
 
-BOOL CWorld::HasNoObj_Add( int nLayer )
-{
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		if( m_apAddObjs[i] && m_apAddObjs[i]->GetLayer() == nLayer )
-			return FALSE;
-	}
-	return TRUE;
+bool CWorld::HasNoObj_Add(const int nLayer) const {
+	return std::ranges::none_of(m_aAddObjs,
+		[nLayer](const AddRequest & add) {
+			return add.pObj && add.pObj->GetLayer() == nLayer;
+		}
+	);
 }
 
 bool CWorld::HasNobody_Replace(const int nLayer) const {

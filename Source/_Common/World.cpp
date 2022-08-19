@@ -85,9 +85,9 @@ m_cbRunnableObject( 0 )
 #ifdef __WORLDSERVER
 	m_apHeightMap	= NULL;
 	m_apWaterHeight = NULL;
-	m_cbAddObjs		= 0;
 	memset( m_lpszWorld, 0, sizeof(TCHAR) * 64 );
 	m_cbUser	= 0;
+	m_aAddObjs.reserve(/* MAX_ADDOBJS */ 20480);
 	m_aModifyLink.reserve(/* MAX_MODIFYLINK */ 4096);
 	m_ReplaceObj.reserve(/* MAX_REPLACEOBJ */ 1024);
 	m_bLoadScriptFlag = FALSE;
@@ -339,19 +339,15 @@ CLight* CWorld::GetLight( LPCTSTR lpszKey )
 #endif	// __WORLDSERVER
 
 #ifdef __WORLDSERVER
-BOOL CWorld::DoNotAdd( CObj* pObj )
-{
-
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		if( m_apAddObjs[i] == pObj )
-		{
-			pObj->SetWorld( NULL );
-			m_apAddObjs[i]	= NULL;
-			return TRUE;
-		}
+bool CWorld::DoNotAdd(CUser * pObj) {
+	const auto it = std::ranges::find_if(m_aAddObjs, [pObj](const AddRequest & self) { return self.pObj == pObj; });
+	if (it == m_aAddObjs.end()) {
+		return false;
 	}
-	return FALSE;
+
+	pObj->SetWorld(nullptr);
+	it->pObj = nullptr;
+	return true;
 }
 #endif	// __WORLDSERVER
 
@@ -408,9 +404,7 @@ BOOL CWorld::AddObj( CObj* pObj, BOOL bAddItToGlobalId )
 		pObj->m_pAIInterface->InitAI();
 
 #ifdef __WORLDSERVER
-	ASSERT( m_cbAddObjs < MAX_ADDOBJS );
-	m_bAddItToGlobalId[m_cbAddObjs]	= bAddItToGlobalId;
-	m_apAddObjs[m_cbAddObjs++]	= pObj;
+	m_aAddObjs.emplace_back(CWorld::AddRequest{ pObj, static_cast<bool>(bAddItToGlobalId) });
 #else	// __WORLDSERVER
 	InsertObjLink( pObj );
 	AddObjArray( pObj );
@@ -1297,52 +1291,42 @@ void CWorld::ModifyView( CCtrl* pCtrl )
 }
 
 
-BOOL CWorld::PreremoveObj( OBJID objid )
-{
-	CObj* pObj;
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		pObj	= m_apAddObjs[i];
-		if( pObj && pObj->IsDynamicObj() && ( (CCtrl*)pObj )->GetId() == objid )
-		{
-			SAFE_DELETE( m_apAddObjs[i] );
-			return TRUE;
+bool CWorld::PreremoveObj(const OBJID objid) {
+	const auto it = std::ranges::find_if(m_aAddObjs,
+		[objid](const AddRequest & addRequest) {
+			return addRequest.pObj
+				&& addRequest.pObj->IsDynamicObj()
+				&& static_cast<CCtrl *>(addRequest.pObj)->GetId() == objid;
 		}
-	}
-	return FALSE;
+	);
+
+	if (it == m_aAddObjs.end()) return false;
+
+	SAFE_DELETE(it->pObj);
+	return true;
 }
 
-CObj* CWorld::PregetObj( OBJID objid )
-{
-	CObj* pObj;
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		pObj	= m_apAddObjs[i];
-		if( pObj && pObj->IsDynamicObj() && ( (CCtrl*)pObj )->GetId() == objid )
-			return pObj;
-	}
+CObj * CWorld::PregetObj(const OBJID objid) {
+	const auto it = std::ranges::find_if(m_aAddObjs,
+		[objid](const AddRequest & addRequest) {
+			return addRequest.pObj
+				&& addRequest.pObj->IsDynamicObj()
+				&& static_cast<CCtrl *>(addRequest.pObj)->GetId() == objid;
+		}
+	);
 
-	return NULL;
+	return it != m_aAddObjs.end() ? it->pObj : nullptr;
 }
 
-void CWorld::_add( void )
-{
-	CObj* pObj;
-
-	if( g_DPCoreClient.CheckIdStack() == FALSE )
-	{
+void CWorld::_add() {
+	if (!g_DPCoreClient.CheckIdStack()) {
 		return;
 	}
 
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		pObj	= m_apAddObjs[i];
-		if( NULL == pObj )	
-			continue;
+	for (const auto & [pObj, addToGlobalId] : m_aAddObjs) {
+		if (!pObj) continue;
 
-#ifdef __WORLDSERVER
 		if( !pObj->IsVirtual() )
-#endif	// __WORLDSERVER
 		{
 			if( !InsertObjLink( pObj ))			// 링크맵에 넣는다 ( 에러가 날 수 있다 )
 				continue;
@@ -1354,22 +1338,20 @@ void CWorld::_add( void )
 			continue;
 		}
 
-#ifdef __WORLDSERVER
 		if( !pObj->IsVirtual() )
-#endif	// __WORLDSERVER
 		{
 			if( pObj->IsDynamicObj() ) 
 			{
-				if( m_bAddItToGlobalId[i] )
+				if(addToGlobalId)
 					( (CCtrl*)pObj )->AddItToGlobalId();	// prj.m_objmap 와 prj.m_idPlayerToUserPtr에 넣는다.
 				AddItToView( (CCtrl*)pObj );
 			}
 		}
-#ifdef __WORLDSERVER
+
 		CNpcChecker::GetInstance()->AddNpc( pObj );
-#endif	// __WORLDSERVER
 	}
-	m_cbAddObjs		= 0;
+
+	m_aAddObjs.clear();
 }
 
 void CWorld::_modifylink() {
