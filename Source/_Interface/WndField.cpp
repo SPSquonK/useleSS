@@ -3191,18 +3191,15 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 		////////////////////////////////////////////////////////
 		// ���� ������Ʈ�� ������ ��Ʈ���� �̸�Ƽ�� ���? 
 		////////////////////////////////////////////////////////
-		int nSize = pWorld->m_aStructure.GetSize();
-		for( i = 0; i < nSize; i++ )
-		{
-			REGIONELEM * lpRegionElem = pWorld->m_aStructure.GetAt( i );
-			vPos = lpRegionElem->m_vPos;
+		for (const REGIONELEM & lpRegionElem : pWorld->m_aStructure.AsSpan()) {
+			vPos = lpRegionElem.m_vPos;
 			vPos.x *= fx;
 			vPos.z *= fy;
 			point.x = (LONG)( ( rect.Width() / 2 ) + vPos.x );
 			point.y = (LONG)( ( rect.Height() / 2 ) - vPos.z );
 			point.x -= xCenter;
 			point.y -= yCenter;
-			m_texNavObjs.MakeVertex( p2DRender, CPoint( point.x - 8, point.y - 8 ), 6 + lpRegionElem->m_dwStructure, &pVertices );
+			m_texNavObjs.MakeVertex( p2DRender, CPoint( point.x - 8, point.y - 8 ), 6 + lpRegionElem.m_dwStructure, &pVertices );
 		}
 		////////////////////////////////////////////////////////
 		// ����Ʈ �̸�Ƽ�� ���? 

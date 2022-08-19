@@ -656,7 +656,7 @@ BOOL CInstanceDungeonBase::TeleportToDungeon( CUser* pUser, DWORD dwWorldId, DWO
 		D3DXVECTOR3 vPos = GetTeleportPos( dwWorldId, dwDungeonId );
 		if( vPos == D3DXVECTOR3( 0, 0, 0 ) )
 		{
-			REGIONELEM * pPortkey = pUser->UpdateRegionAttr();
+			const REGIONELEM * pPortkey = pUser->UpdateRegionAttr();
 			if( pPortkey && pPortkey->m_dwIdTeleWorld == dwWorldId )
 				vPos = pPortkey->m_vTeleWorld;
 			else

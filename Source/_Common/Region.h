@@ -54,28 +54,28 @@ struct REGIONELEM
 	BOOL	m_bChaoKey;
 };
 
+
 /*----------------------------------------*/
-class CRegionElemArray
-{
+class CRegionElemArray final {
 private:
-	static constexpr size_t MAX_REGIONELEM = 256;
-	DWORD	m_cbRegionElem;
-	REGIONELEM	m_aRegionElem[MAX_REGIONELEM];
+	// In V21, Sanpres has 12 regions which is the second max.
+	// Madrigal, the max, have 148.
+	static constexpr size_t SoftMaxRegions = 24;
+	boost::container::small_vector<REGIONELEM, SoftMaxRegions> m_elems;
 public:
-//	Constructions
-	CRegionElemArray()	{	m_cbRegionElem	= 0;	}
-	~CRegionElemArray()		{}
-//	Operations
-	int	GetSize( void )	{	return m_cbRegionElem;	}
-	void	AddTail( const REGIONELEM * lpRegionElem );
-	REGIONELEM *	GetAt( int nIndex );
+	[[nodiscard]] std::span<      REGIONELEM> AsSpan()       { return m_elems; }
+	[[nodiscard]] std::span<const REGIONELEM> AsSpan() const { return m_elems; }
+
+	void Add(const REGIONELEM & lpRegionElem) {
+		m_elems.emplace_back(lpRegionElem);
+	}
 
 	template<typename Func>
 	requires (std::is_invocable_r_v<bool, Func, const REGIONELEM &>)
 	[[nodiscard]] const REGIONELEM * FindAny(Func && predicate) const {
-		for (DWORD i = 0; i != m_cbRegionElem; ++i) {
-			if (predicate(m_aRegionElem[i])) {
-				return &m_aRegionElem[i];
+		for (const REGIONELEM & elem : m_elems) {
+			if (predicate(elem)) {
+				return &elem;
 			}
 		}
 
@@ -88,12 +88,12 @@ public:
 		const REGIONELEM * result = nullptr;
 		long resultDistance = 0; // Initialized to shut up the compiler
 
-		for (DWORD i = 0; i != m_cbRegionElem; ++i) {
-			if (predicate(m_aRegionElem[i])) {
-				const D3DXVECTOR3 & diff = position - m_aRegionElem[i].m_vPos;
+		for (const REGIONELEM & elem : m_elems) {
+			if (predicate(elem)) {
+				const D3DXVECTOR3 & diff = position - elem.m_vPos;
 				const long distance = static_cast<long>(D3DXVec3LengthSq(&diff));
 				if (!result || distance < resultDistance) {
-					result = &m_aRegionElem[i];
+					result = &elem;
 					resultDistance = distance;
 				}
 			}
@@ -102,16 +102,3 @@ public:
 		return result;
 	}
 };
-
-inline void CRegionElemArray::AddTail( const REGIONELEM * lpRegionElem )
-{
-	ASSERT( m_cbRegionElem < MAX_REGIONELEM );
-	memcpy( &m_aRegionElem[m_cbRegionElem++], lpRegionElem, sizeof(REGIONELEM) );
-}
-inline REGIONELEM * CRegionElemArray::GetAt( int nIndex )
-{
-	if( nIndex >= 0 && nIndex < MAX_REGIONELEM )
-		return &m_aRegionElem[nIndex];
-	return NULL;
-}
-

@@ -1673,7 +1673,7 @@ void CMover::ReStateOneLow( int nKind )
 
 #ifdef __WORLDSERVER
 
-BOOL CMover::ReplaceInspection(REGIONELEM * pPortkey )
+BOOL CMover::ReplaceInspection(const REGIONELEM * pPortkey )
 {
 	BOOL bResult = TRUE;
 	if( bResult != FALSE && pPortkey->m_uItemId != 0xffffffff )
@@ -2187,36 +2187,31 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 }
 
 // TODO_OPTIMIZE: 좌표가 변경될 때 호출되게한다. ( rect를 트리구조로 갖고 찾게 하는 것도 좋겠다.)
-REGIONELEM * CMover::UpdateRegionAttr()
+const REGIONELEM * CMover::UpdateRegionAttr()
 {
-	REGIONELEM * pPortkey = NULL;
-	const DWORD dwCheck = ( RA_SAFETY | RA_PENALTY_PK | RA_PK | RA_FIGHT ) ;
+	static constexpr DWORD dwCheck = ( RA_SAFETY | RA_PENALTY_PK | RA_PK | RA_FIGHT ) ;
 
-	D3DXVECTOR3 vPos = GetPos();
-	POINT pt = { (LONG)( vPos.x ), (LONG)( vPos.z ) };
-	REGIONELEM * lpRegionElem;
-	int nSize = GetWorld()->m_aRegion.GetSize();
+	const D3DXVECTOR3 vPos = GetPos();
+	const POINT pt = { (LONG)( vPos.x ), (LONG)( vPos.z ) };
+
 	DWORD	dwRegionAttr	= 0;
-	for( int i = 0; i < nSize; i++ )
-	{
-		lpRegionElem = GetWorld()->m_aRegion.GetAt( i );
-		if( lpRegionElem->m_rect.PtInRect( pt ) )
-		{
-			dwRegionAttr	|= lpRegionElem->m_dwAttribute;
-			if( lpRegionElem->m_dwIdTeleWorld != WI_WORLD_NONE )
-				pPortkey = lpRegionElem;
+
+	const REGIONELEM * pPortkey = nullptr;
+
+	for (const REGIONELEM & lpRegionElem : GetWorld()->m_aRegion.AsSpan()) {
+		if (lpRegionElem.m_rect.PtInRect(pt)) {
+			dwRegionAttr |= lpRegionElem.m_dwAttribute;
+			if (lpRegionElem.m_dwIdTeleWorld != WI_WORLD_NONE) {
+				pPortkey = &lpRegionElem;
+			}
 		}
 	}
 
-	if( dwRegionAttr & dwCheck )
-	{
-		m_dwOldRegionAttr	= m_dwRegionAttr;
-		m_dwRegionAttr	= dwRegionAttr;
-	}
-	else
-	{
-		m_dwOldRegionAttr	= m_dwRegionAttr;
-		m_dwRegionAttr	= GetWorld()->m_nPKMode;;
+	m_dwOldRegionAttr = m_dwRegionAttr;
+	if (dwRegionAttr & dwCheck) {
+		m_dwRegionAttr = dwRegionAttr;
+	} else {
+		m_dwRegionAttr = GetWorld()->m_nPKMode;
 	}
 
 	return pPortkey;
@@ -2352,7 +2347,7 @@ void CMover::ProcessRegion()
 	if( FALSE == IsPlayer() )
 		return;
 
-	REGIONELEM * pPortkey = NULL;
+	const REGIONELEM * pPortkey = NULL;
 	if( IsPosChanged() )
 	{
 		pPortkey = UpdateRegionAttr();

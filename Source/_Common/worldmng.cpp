@@ -399,12 +399,12 @@ void CWorldMng::LoadRevivalPos( DWORD dwWorldId, LPCTSTR lpszWorld )
 
 					if( FALSE == pRgnElem->m_bTargetKey )
 					{
-						m_aRevivalPos.AddTail( pRgnElem );	// memcpy
+						m_aRevivalPos.Add( *pRgnElem );
 					}
 					else
 					{
 						ASSERT( strlen( pRgnElem->m_szKey ) );
-						m_aRevivalRgn.AddTail( pRgnElem );	// memcpy
+						m_aRevivalRgn.Add( *pRgnElem );
 					}
 				}
 			}

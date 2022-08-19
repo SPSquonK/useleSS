@@ -505,11 +505,11 @@ BOOL CWorld::ReadRegion( CScript& s )
 	case RI_REVIVAL:
 		break;
 	case RI_STRUCTURE:
-		m_aStructure.AddTail( pRe );
+		m_aStructure.Add( *pRe );
 		break;
 	default:
 		{
-			m_aRegion.AddTail( pRe );	
+			m_aRegion.Add( *pRe );	
 			break;
 		}
 	}

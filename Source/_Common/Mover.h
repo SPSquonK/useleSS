@@ -842,7 +842,7 @@ public:
 	void			SetDestAngle( float fDestAngle, bool bLeft )	{	m_fDestAngle	= fDestAngle;	m_bLeft	= bLeft;	}
 	void			ClearDestAngle()	{ m_fDestAngle	= -1.0f; }
 	BOOL			IsRegionAttr( DWORD dwAttribite ) { return ( m_dwRegionAttr & dwAttribite ) == dwAttribite ? TRUE : FALSE; }
-	REGIONELEM *		UpdateRegionAttr();
+	const REGIONELEM * UpdateRegionAttr();
 	DWORD			GetRideItemIdx()	{ return m_dwRideItemIdx; }
 	void			SetRide( CModel *pModel, int nRideItemIdx = 0 ) { m_dwRideItemIdx = nRideItemIdx; m_pRide = (CModelObject*)pModel; 	};
 	void			ClearDuel();
@@ -1331,7 +1331,7 @@ public:
 	void			RemoveVendorItem( CHAR chTab, BYTE nId, short nNum );
 	void			RemoveItemIK3( DWORD dwItemKind3 );
 
-	BOOL			ReplaceInspection(REGIONELEM * pPortkey );
+	BOOL			ReplaceInspection(const REGIONELEM * pPortkey );
 	BOOL			Replace( DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );
 	bool Replace(const CMover & pTarget, REPLACE_TYPE replaceType = REPLACE_TYPE::REPLACE_NORMAL);
 	bool Replace(const REGIONELEM & region, REPLACE_TYPE type, int nLayer);

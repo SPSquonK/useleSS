@@ -7767,11 +7767,10 @@ BOOL CWndWorld::Process()
 			}
 		}
 		m_bLButtonDowned = m_bLButtonDown;
-		int nSize = pWorld->m_aRegion.GetSize();
 		D3DXVECTOR3 vPos = g_pPlayer->GetPos();
-		for( int i = 0; i < nSize; i++ )
-		{
-			REGIONELEM * lpRegionElem = pWorld->m_aRegion.GetAt( i );
+		
+		for (REGIONELEM & regionElem : pWorld->m_aRegion.AsSpan()) {
+			REGIONELEM * lpRegionElem = &regionElem;
 			if( lpRegionElem->m_rect.PtInRect( CPoint( (int)( vPos.x ), (int)( vPos.z ) ) ) )
 			{
 				if( lpRegionElem->m_bInside == FALSE )
