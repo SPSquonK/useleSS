@@ -1030,7 +1030,7 @@ BOOL CMover::DoUseItemVirtual( DWORD dwItemId, BOOL bEffectSkip )
 
 			DWORD dwWorldID;
 			D3DXVECTOR3 vPos = ((CUser*)this)->GetReturnPos( &dwWorldID );
-			((CUser*)this)->REPLACE( g_uIdofMulti, dwWorldID, vPos, REPLACE_NORMAL, nTempLayer );
+			Replace( dwWorldID, vPos, REPLACE_NORMAL, nTempLayer );
 			return TRUE;
 		}
 
@@ -1133,12 +1133,12 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 		if( !pWorld )
 			return FALSE;
 
-		const RegionElem * pRgnElem = g_WorldMng.GetRevival(*pWorld, GetPos(), IsChaotic());
+		const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(*pWorld, GetPos(), IsChaotic());
 
 		if( NULL != pRgnElem )
-			REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, type, nRevivalLayer );
+			Replace( *pRgnElem, type, nRevivalLayer );
 		else
-			REPLACE( g_uIdofMulti, pWorld->GetID(), GetPos(), type, nDefaultLayer );
+			Replace( pWorld->GetID(), GetPos(), type, nDefaultLayer );
 	}
 	else
 	{
@@ -1162,7 +1162,7 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 		}
 		if( IsChaotic() )
 		{
-			PRegionElem pRgnElem	= NULL;
+			REGIONELEM * pRgnElem	= NULL;
 			CWorld* pWorld = g_WorldMng.GetWorld( pItemProp->dwWeaponType );
 			if( pWorld )
 				pRgnElem	= g_WorldMng.GetRevivalPosChao( pItemProp->dwWeaponType, pItemProp->szTextFileName );
@@ -1170,11 +1170,11 @@ BOOL CMover::DoUseItemBlinkWing( ItemProp *pItemProp, CItemElem* pItemElem, BOOL
 				pRgnElem	= g_WorldMng.GetNearRevivalPosChao( pWorld->GetID(), GetPos() );
 
 			if( pRgnElem )
-				REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+				Replace( *pRgnElem, REPLACE_NORMAL, nRevivalLayer );
 		}
 		else
 		{
-			REPLACE( g_uIdofMulti, pItemProp->dwWeaponType, vPos, REPLACE_NORMAL, nTempLayer );
+			Replace( pItemProp->dwWeaponType, vPos, REPLACE_NORMAL, nTempLayer );
 		}
 	}
 #endif // worldserver

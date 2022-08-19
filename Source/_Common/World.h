@@ -87,7 +87,6 @@ struct REPLACEOBJ {
 	CMover * pObj;
 	DWORD		dwWorldID;
 	D3DXVECTOR3	vPos;
-	u_long		uIdofMulti;
 #ifdef __LAYER_1015
 	int		nLayer;
 #endif	// __LAYER_1015

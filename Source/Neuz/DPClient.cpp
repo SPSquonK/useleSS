@@ -13594,10 +13594,9 @@ void CDPClient::OnMotionArrive( OBJID objid, CAr & ar )
 
 void CDPClient::OnAddRegion( CAr & ar )
 {
-	REGIONELEM re;
 	DWORD dwWorldId;
-	ar >> dwWorldId;
-	ar.Read( &re, sizeof(re) );
+	REGIONELEM re;
+	ar >> dwWorldId >> re;
 
 	int nSize	= 0;
 	ar >> nSize;
@@ -13615,7 +13614,7 @@ void CDPClient::OnAddRegion( CAr & ar )
 		CWorld* pWorld = pPlayer->GetWorld();
 		if( pWorld && pWorld->GetID() == dwWorldId )
 		{
-			LPREGIONELEM ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
+			REGIONELEM * ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
 			if( ptr->m_dwAttribute != ( RA_DANGER | RA_FIGHT ) )
 			{
 				pWorld->m_aRegion.AddTail( &re );

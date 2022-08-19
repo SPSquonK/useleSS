@@ -1492,13 +1492,9 @@ void CWorld::_replace( void )
 
 		const DWORD dwWorldID   = replaceObj.dwWorldID;
 		D3DXVECTOR3 vPos  = replaceObj.vPos;
-		const u_long uIdofMulti	= replaceObj.uIdofMulti;
 #ifdef __LAYER_1015
 		const int nLayer	= replaceObj.nLayer;
 #endif	// __LAYER_1015
-
-		if( uIdofMulti != g_uIdofMulti )		// 현재구현에서는 보류 
-			continue;
 
 #ifdef __LAYER_1015
 		if( GetID() == dwWorldID && pMover->GetLayer() == nLayer )

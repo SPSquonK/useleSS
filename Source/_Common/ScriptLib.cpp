@@ -349,7 +349,7 @@ int APIENTRY Replace( NPCDIALOG_INFO*  pInfo, int nWorld, float x, float y, floa
 		if( g_eLocal.GetState( EVE_SCHOOL ) )
 			g_dpDBClient.SendLogSchool( pUser->m_idPlayer, pUser->GetName() );
 
-		pUser->REPLACE( g_uIdofMulti, nWorld, D3DXVECTOR3( x, y, z ), REPLACE_NORMAL, nTempLayer );
+		pUser->Replace( nWorld, D3DXVECTOR3( x, y, z ), REPLACE_NORMAL, nTempLayer );
 	}
 	return 1;
 }
@@ -361,9 +361,9 @@ int APIENTRY ReplaceKey( NPCDIALOG_INFO* pInfo, int nWorld, LPCTSTR szKey )
 	rsf.wFuncType = FUNCTYPE_EXIT;
 	pUser->AddRunScriptFunc( rsf );
 
-	PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( nWorld, szKey );
+	const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( nWorld, szKey );
 	if( pRgnElem )
-		pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+		pUser->Replace( *pRgnElem, REPLACE_NORMAL, nRevivalLayer );
 	return 1;
 }
 

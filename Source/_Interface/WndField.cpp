@@ -3194,7 +3194,7 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 		int nSize = pWorld->m_aStructure.GetSize();
 		for( i = 0; i < nSize; i++ )
 		{
-			LPREGIONELEM lpRegionElem = pWorld->m_aStructure.GetAt( i );
+			REGIONELEM * lpRegionElem = pWorld->m_aStructure.GetAt( i );
 			vPos = lpRegionElem->m_vPos;
 			vPos.x *= fx;
 			vPos.z *= fy;

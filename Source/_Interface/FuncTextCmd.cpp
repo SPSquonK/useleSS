@@ -1895,7 +1895,7 @@ BOOL TextCmd_Layer(CScanner & s, CPlayer_ * pUser) {
 			FLOAT x	= s.GetFloat();
 			FLOAT z	= s.GetFloat();
 			if( pWorld->VecInWorld( x, z ) && x > 0 && z > 0 )	
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), D3DXVECTOR3( x, 0, z ), REPLACE_NORMAL, nLayer );
+				pUser->Replace( pWorld->GetID(), D3DXVECTOR3( x, 0, z ), REPLACE_NORMAL, nLayer );
 			else
 				pUser->AddText( "OUT OF WORLD" );
 		}
@@ -2011,7 +2011,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 					if( pWorld != pUser->GetWorld() || pUser->GetLayer() != pUserTarget->GetLayer() )
 						return TRUE;
 
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pUserTarget->GetPos(), REPLACE_NORMAL, pUserTarget->GetLayer() );
+				pUser->Replace( *pUserTarget, REPLACE_NORMAL );
 			}
 		}
 		else 
@@ -2022,7 +2022,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 			CMover* pMover = pWorld->FindMover( scanner.Token );
 			if( pMover )
 			{
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pMover->GetPos(), REPLACE_NORMAL, pMover->GetLayer() );
+				pUser->Replace( *pMover, REPLACE_NORMAL );
 				return TRUE;
 			}
 		#endif // _DEBUG
@@ -2041,9 +2041,9 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 		// 두번째 파라메타가 스트링이면 리젼 키
 		if( scanner.GetToken() != NUMBER )
 		{
-			PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( dwWorldId, scanner.token );
+			REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( dwWorldId, scanner.token );
 			if( NULL != pRgnElem )
-				pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+				pUser->Replace( *pRgnElem, REPLACE_NORMAL, nRevivalLayer );
 		}
 		// 스트링이 아니면 좌표 
 		else
@@ -2055,7 +2055,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 			if( pWorld && pWorld->VecInWorld( (FLOAT)( x ), (FLOAT)( z ) ) && x > 0 && z > 0 )
 			{
 				int nLayer	= pWorld == pUser->GetWorld()? pUser->GetLayer(): nDefaultLayer;
-				pUser->REPLACE( g_uIdofMulti, dwWorldId, D3DXVECTOR3( (FLOAT)x, 0, (FLOAT)z ), REPLACE_NORMAL, nLayer );
+				pUser->Replace( dwWorldId, D3DXVECTOR3( (FLOAT)x, 0, (FLOAT)z ), REPLACE_NORMAL, nLayer );
 			}
 		}
 	}
@@ -2590,7 +2590,7 @@ BOOL TextCmd_CTD(CScanner & s, CPlayer_ * pUser) {
 			CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
 			if( pWorld )
 			{
-				LPREGIONELEM ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
+				REGIONELEM * ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
 				if( ptr->m_dwAttribute != ( RA_DANGER | RA_FIGHT ) )
 					pWorld->m_aRegion.AddTail( &re );
 				pUser->AddText( "recv /ctd" );

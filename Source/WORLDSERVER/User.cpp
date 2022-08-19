@@ -260,8 +260,8 @@ void CUser::Process()
 	if( IsMode( MODE_OUTOF_PARTYQUESTRGN ) )
 	{
 		SetNotMode( MODE_OUTOF_PARTYQUESTRGN );
-		D3DXVECTOR3 vPos	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
-		REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, vPos, REPLACE_NORMAL, nDefaultLayer );
+		const D3DXVECTOR3 vPos	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
+		Replace( WI_WORLD_MADRIGAL, vPos, REPLACE_NORMAL, nDefaultLayer );
 		return;
 	}
 
@@ -310,7 +310,7 @@ void CUser::Process()
 			if( !pTicket )
 			{
 				RemoveIk3Buffs( IK3_TICKET );
-				REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
+				Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
 			}
 		}
 		else
@@ -2687,7 +2687,7 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 			return;
 		}
 		RemoveBuff( BUFF_ITEM, (WORD)( pItemElem->m_dwItemId ) );
-		REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
+		Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
 	}
 	else
 	{
@@ -2726,7 +2726,7 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 			if (channel <= nExpand) {
 				DoApplySkill(this, pItemProp, nullptr);
 				const int nLayer = -static_cast<int>(channel);
-				REPLACE(g_uIdofMulti, pTicketProp->dwWorldId, pTicketProp->vPos, REPLACE_NORMAL, nLayer);
+				Replace(pTicketProp->dwWorldId, pTicketProp->vPos, REPLACE_NORMAL, nLayer);
 			}
 		}
 	}
@@ -2943,7 +2943,7 @@ void CUser::AdjustGuildQuest( DWORD dwWorldId )
 		CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 		if( pWorld && pWorld == GetWorld())
 		{
-			const RegionElem * pRgnElem = g_WorldMng.GetRevival(this);
+			const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(this);
 			if (pRgnElem) {
 				SetPos(pRgnElem->m_vPos);
 			}
@@ -3242,7 +3242,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 	// 로그 아웃시 길드대전 맵에 있으면 모두 flaris로 이동
 	if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 	{
-		PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
+		REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
 		if( pRgnElem )
 		{
 			dwWorldId	= pRgnElem->m_dwWorldId;
@@ -3285,7 +3285,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 				pUser->SetFatiguePoint( nVal );
 			
 
-			const RegionElem * pRgnElem = g_WorldMng.GetRevival(pUser);
+			const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(pUser);
 
 			if( pRgnElem )
 			{
@@ -4992,19 +4992,16 @@ void CUserMng::ReplaceWorld( DWORD dwWorldId, DWORD dwReplaceWorldId, float fRep
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	if( pWorld )
 	{
-		for(auto it = m_users.begin(); it != m_users.end(); ++it )
-		{
-			CUser* pUser = it->second;
-			if( pUser->IsValid() == FALSE )
-				continue;
+		for (CUser * pUser : m_users | std::views::values) {
+			if (!pUser->IsValid()) continue;
 			
 			if( pUser->GetWorld() == pWorld )
 			{
 				D3DXVECTOR3 v3Pos = pUser->GetPos();
-				AddCreateSfxObj( (CMover*)pUser, XI_GEN_WEARF, v3Pos.x, v3Pos.y, v3Pos.z );
-				( (CMover*)pUser)->REPLACE( g_uIdofMulti, dwReplaceWorldId, D3DXVECTOR3( fReplaceX, 0.0f, fReplaceZ ), REPLACE_NORMAL, nLayer );
+				AddCreateSfxObj( pUser, XI_GEN_WEARF, v3Pos.x, v3Pos.y, v3Pos.z );
+				pUser->Replace( dwReplaceWorldId, D3DXVECTOR3( fReplaceX, 0.0f, fReplaceZ ), REPLACE_NORMAL, nLayer );
 				pUser->m_vtInfo.SetOther( NULL );
-				AddCreateSfxObj( (CMover*)pUser, XI_GEN_WEARF, fReplaceX, v3Pos.y, fReplaceZ );				
+				AddCreateSfxObj( pUser, XI_GEN_WEARF, fReplaceX, v3Pos.y, fReplaceZ );				
 			}
 		}
 	}
@@ -5032,8 +5029,8 @@ void CUserMng::ReplaceWorldArea( u_long idParty, DWORD dwWorldId, DWORD dwReplac
 				float fNewArea = fArea * 2.0f;
 				fReplaceX += (-fArea) + xRandomF(fNewArea);
 				fReplaceZ += (-fArea) + xRandomF(fNewArea);
-				pUser->REPLACE(g_uIdofMulti, dwReplaceWorldId, D3DXVECTOR3(fReplaceX, 0.0f, fReplaceZ), REPLACE_NORMAL, nLayer);
-				AddCreateSfxObj((CMover *)pUser, XI_GEN_WEARF, fReplaceX, vPos.y, fReplaceZ);
+				pUser->Replace(dwReplaceWorldId, D3DXVECTOR3(fReplaceX, 0.0f, fReplaceZ), REPLACE_NORMAL, nLayer);
+				AddCreateSfxObj(pUser, XI_GEN_WEARF, fReplaceX, vPos.y, fReplaceZ);
 			}
 		}
 	}
@@ -6138,7 +6135,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 				if( IsFly() == FALSE )
 				{
 					D3DXVECTOR3 vPos( (float)( pCommonCtrl->m_CtrlElem.m_dwTeleX ), (float)( pCommonCtrl->m_CtrlElem.m_dwTeleY ), (float)( pCommonCtrl->m_CtrlElem.m_dwTeleZ ) );
-					REPLACE( g_uIdofMulti, pCommonCtrl->m_CtrlElem.m_dwTeleWorldId, vPos, REPLACE_NORMAL, nTempLayer );
+					Replace( pCommonCtrl->m_CtrlElem.m_dwTeleWorldId, vPos, REPLACE_NORMAL, nTempLayer );
 				}
 				else
 				{
@@ -6365,8 +6362,7 @@ void CUserMng::AddAddRegion( DWORD dwWorldId, REGIONELEM & re )
 	CAr ar;
 	
 	ar << NULL_ID << SNAPSHOTTYPE_ADDREGION;
-	ar << dwWorldId;
-	ar.Write( &re, sizeof(re) );
+	ar << dwWorldId << re;
 	
 	std::list<CUser*>	lspUser;
 	for( auto it = m_users.begin(); it != m_users.end(); ++it )

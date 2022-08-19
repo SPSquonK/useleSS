@@ -1,13 +1,4 @@
-// Region.h: interface for the CCtrl class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_REGION_H__A23AD198_7E45_465B_B646_7956A4AE179F__INCLUDED_)
-#define AFX_REGION_H__A23AD198_7E45_465B_B646_7956A4AE179F__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000  
 
 #define MAX_REGIONDESC 256
 #define MAX_REGIONTITLE 256
@@ -15,6 +6,7 @@
 
 struct REGIONELEM
 {
+	static constexpr bool Archivable = true;
 	FLOAT         m_fTeleAngle;
 	D3DXVECTOR3   m_vTeleWorld;  
 	D3DXVECTOR3   m_vPos;  
@@ -59,13 +51,12 @@ struct REGIONELEM
 	BOOL	m_bCheckGuild;
 	BOOL	m_bChaoKey;
 };
-typedef REGIONELEM*  LPREGIONELEM;
 
 /*----------------------------------------*/
-#define	MAX_REGIONELEM	256
 class CRegionElemArray
 {
 private:
+	static constexpr size_t MAX_REGIONELEM = 256;
 	DWORD	m_cbRegionElem;
 	REGIONELEM	m_aRegionElem[MAX_REGIONELEM];
 public:
@@ -74,20 +65,19 @@ public:
 	~CRegionElemArray()		{}
 //	Operations
 	int	GetSize( void )	{	return m_cbRegionElem;	}
-	void	AddTail( const LPREGIONELEM lpRegionElem );
-	LPREGIONELEM	GetAt( int nIndex );
+	void	AddTail( const REGIONELEM * lpRegionElem );
+	REGIONELEM *	GetAt( int nIndex );
 };
 
-inline void CRegionElemArray::AddTail( const LPREGIONELEM lpRegionElem )
+inline void CRegionElemArray::AddTail( const REGIONELEM * lpRegionElem )
 {
 	ASSERT( m_cbRegionElem < MAX_REGIONELEM );
 	memcpy( &m_aRegionElem[m_cbRegionElem++], lpRegionElem, sizeof(REGIONELEM) );
 }
-inline LPREGIONELEM CRegionElemArray::GetAt( int nIndex )
+inline REGIONELEM * CRegionElemArray::GetAt( int nIndex )
 {
 	if( nIndex >= 0 && nIndex < MAX_REGIONELEM )
 		return &m_aRegionElem[nIndex];
 	return NULL;
 }
-/*----------------------------------------*/
-#endif // !defined(AFX_REGION_H__A23AD198_7E45_465B_B646_7956A4AE179F__INCLUDED_)
+

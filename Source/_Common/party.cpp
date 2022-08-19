@@ -477,27 +477,27 @@ void CParty::ReplaceLodestar(const CRect & rect) const {
 		const POINT point = { (int)pUser->GetPos().x, (int)pUser->GetPos().z };
 		if (!rect.PtInRect(point)) continue;
 
-		const RegionElem * const pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), false);
+		const REGIONELEM * const pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), false);
 
 		if (pRgnElem) {
-			pUser->REPLACE(g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer);
+			pUser->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
 		}
 	}
 }
 
 void CParty::Replace(DWORD dwWorldId, const D3DXVECTOR3 & vPos, BOOL) const {
 	for (CUser * pMember : AllMembers(*this)) {
-		pMember->REPLACE(g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nTempLayer);
+		pMember->Replace(dwWorldId, vPos, REPLACE_NORMAL, nTempLayer);
 		pMember->m_buffs.RemoveBuffs(RBF_COMMON, 0);
 	}
 }
 
 void CParty::Replace( DWORD dwWorldId, LPCTSTR sKey ) const {
-	const RegionElem * const pRgnElem = g_WorldMng.GetRevivalPos(dwWorldId, sKey);
+	const REGIONELEM * const pRgnElem = g_WorldMng.GetRevivalPos(dwWorldId, sKey);
 	if (!pRgnElem) return;
 
 	for (CUser * pMember : AllMembers(*this)) {
-		pMember->REPLACE(g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer);
+		pMember->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
 	}
 }
 

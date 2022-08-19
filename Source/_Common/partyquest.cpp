@@ -210,7 +210,7 @@ void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPo
 		{
 			CUser* pUser = (CUser*)pObj;
 			pUser->AddQuestTextTime( 0, GroupQuest::ProcessState::Ready, 0xffffffff );			
-			( (CUser*)pObj )->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, vPos2, REPLACE_NORMAL, nDefaultLayer );
+			pUser->Replace( WI_WORLD_MADRIGAL, vPos2, REPLACE_NORMAL, nDefaultLayer );
 		}
 	}
 	END_LINKMAP

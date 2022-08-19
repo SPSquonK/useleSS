@@ -327,12 +327,6 @@ struct	REGIONELEM;
 class	CParty;
 class	CActionMover;
 
-#ifdef __LAYER_1015
-#define	REPLACE( uMulti, dwWorld, vPos, type, nLayer )	Replace( (uMulti), (dwWorld), (vPos), (type), (nLayer) )
-#else	// __LAYER_1015
-#define	REPLACE( uMulti, dwWorld, vPos, type, nLayer )	Replace( (uMulti), (dwWorld), (vPos), (type) )
-#endif	// __LAYER_1015
-
 #ifdef __CLIENT
 class CClientPet
 {
@@ -848,7 +842,7 @@ public:
 	void			SetDestAngle( float fDestAngle, bool bLeft )	{	m_fDestAngle	= fDestAngle;	m_bLeft	= bLeft;	}
 	void			ClearDestAngle()	{ m_fDestAngle	= -1.0f; }
 	BOOL			IsRegionAttr( DWORD dwAttribite ) { return ( m_dwRegionAttr & dwAttribite ) == dwAttribite ? TRUE : FALSE; }
-	REGIONELEM*		UpdateRegionAttr();
+	REGIONELEM *		UpdateRegionAttr();
 	DWORD			GetRideItemIdx()	{ return m_dwRideItemIdx; }
 	void			SetRide( CModel *pModel, int nRideItemIdx = 0 ) { m_dwRideItemIdx = nRideItemIdx; m_pRide = (CModelObject*)pModel; 	};
 	void			ClearDuel();
@@ -1336,13 +1330,12 @@ public:
 	int				RemoveItemA( DWORD dwItemId, short nNum );
 	void			RemoveVendorItem( CHAR chTab, BYTE nId, short nNum );
 	void			RemoveItemIK3( DWORD dwItemKind3 );
-	BOOL			ReplaceInspection( REGIONELEM* pPortkey );
-#ifdef __LAYER_1015
-	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );
-#else	// __LAYER_1015
-	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type );
-#endif	// __LAYER_1015
+
+	BOOL			ReplaceInspection(REGIONELEM * pPortkey );
+	BOOL			Replace( DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );
 	bool Replace(const CMover & pTarget, REPLACE_TYPE replaceType = REPLACE_TYPE::REPLACE_NORMAL);
+	bool Replace(const REGIONELEM & region, REPLACE_TYPE type, int nLayer);
+
 	BOOL			IsLoot( CItem *pItem, BOOL bPet = FALSE );
 	void			ProcInstantBanker();
 	void			ProcInstantGC();

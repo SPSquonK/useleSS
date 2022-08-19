@@ -7771,7 +7771,7 @@ BOOL CWndWorld::Process()
 		D3DXVECTOR3 vPos = g_pPlayer->GetPos();
 		for( int i = 0; i < nSize; i++ )
 		{
-			LPREGIONELEM lpRegionElem = pWorld->m_aRegion.GetAt( i );
+			REGIONELEM * lpRegionElem = pWorld->m_aRegion.GetAt( i );
 			if( lpRegionElem->m_rect.PtInRect( CPoint( (int)( vPos.x ), (int)( vPos.z ) ) ) )
 			{
 				if( lpRegionElem->m_bInside == FALSE )

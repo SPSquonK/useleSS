@@ -1227,11 +1227,10 @@ void CWorld::DriveOut( int nLayer )
 					}
 					else if( GuildHouseMng->IsGuildHouse( GetID() ) )
 					{
-						//pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
 						Invalidate( nLayer, FALSE );
 						break;
 					}
-					pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
+					pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
 					break;
 			}
 		}

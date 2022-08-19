@@ -360,7 +360,7 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 			}
 		}
 		if( pQuestProp->m_nEndRewardTeleport != 0 )
-			pUser->REPLACE( g_uIdofMulti, pQuestProp->m_nEndRewardTeleport, pQuestProp->m_nEndRewardTeleportPos, REPLACE_NORMAL, nTempLayer );
+			pUser->Replace( pQuestProp->m_nEndRewardTeleport, pQuestProp->m_nEndRewardTeleportPos, REPLACE_NORMAL, nTempLayer );
 		// 시작시 변신을 했으면 종료시 변신 해제시킨다.
 		if( pQuestProp->m_nBeginSetDisguiseMoverIndex )
 		{

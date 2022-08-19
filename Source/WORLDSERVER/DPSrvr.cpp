@@ -909,7 +909,7 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 
 		if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( pUser ) )
 		{
-			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CSecretRoomMng::GetInstance()->GetRevivalPos( pUser ), REPLACE_NORMAL, nDefaultLayer );
+			pUser->Replace( WI_WORLD_MADRIGAL, CSecretRoomMng::GetInstance()->GetRevivalPos( pUser ), REPLACE_NORMAL, nDefaultLayer );
 			return;
 		}
 		
@@ -917,20 +917,20 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 		// 그러면 부활은 마을에서...
 		if( pWorld->GetID() == WI_DUNGEON_MUSCLE || pWorld->GetID() == WI_DUNGEON_KRRR || pWorld->GetID() == WI_DUNGEON_BEAR )
 		{			
-			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6968.0f, 0.0f, 3328.8f ), REPLACE_NORMAL, nDefaultLayer );
+			pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6968.0f, 0.0f, 3328.8f ), REPLACE_NORMAL, nDefaultLayer );
 			return;
 		}
 
-		const RegionElem * pRgnElem = g_WorldMng.GetRevival(
+		const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(
 			*pWorld,
 			pUser->GetPos(),
 			pUser->IsChaotic() && !pWorld->IsArena()
 		);
 
 		if( pRgnElem ) 
-			pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_FORCE, nRevivalLayer );
+			pUser->Replace( *pRgnElem, REPLACE_FORCE, nRevivalLayer );
 		else 
-			pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pUser->GetPos(), REPLACE_FORCE, pUser->GetLayer() );
+			pUser->Replace( pWorld->GetID(), pUser->GetPos(), REPLACE_FORCE, pUser->GetLayer() );
 	}
 }
 
@@ -3724,7 +3724,7 @@ void CDPSrvr::OnTeleSkill( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 			if( fabs( pWorld->GetLandHeight( v ) - v.y ) > 1.0F || fabs( pWorld->GetLandHeight( vPos ) - vPos.y ) > 1.0F )
 				return;
 		}
-		pUser->REPLACE( g_uIdofMulti, pUser->GetWorld()->GetID(), vPos, REPLACE_NORMAL, pUser->GetLayer() );
+		pUser->Replace( pUser->GetWorld()->GetID(), vPos, REPLACE_NORMAL, pUser->GetLayer() );
 	}
 }
 
@@ -3902,6 +3902,8 @@ void CDPSrvr::OnSummonPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u
 		ar >> vPos;
 		ar >> uIdofMulti;
 
+		if (uIdofMulti != g_uIdofMulti) return;
+
 #ifdef __HACK_0516
 		DPID dpid;
 		ar >> dpid;
@@ -3922,7 +3924,7 @@ void CDPSrvr::OnSummonPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u
 			return;
 		}
 
-		pUser->REPLACE( uIdofMulti, dwWorldID, vPos, REPLACE_FORCE, nLayer );
+		pUser->Replace( dwWorldID, vPos, REPLACE_FORCE, nLayer );
 	}
 }
 
@@ -6310,9 +6312,9 @@ void CDPSrvr::OnGCTele( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
-		if( pRgnElem )
-			((CMover*)pUser)->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_NORMAL, nDefaultLayer );
+		if (g_WorldMng.GetRevivalPos(WI_WORLD_MADRIGAL, "flaris")) {
+			pUser->Replace(WI_WORLD_MADRIGAL, D3DXVECTOR3(6983.0f, 0.0f, 3330.0f), REPLACE_NORMAL, nDefaultLayer);
+		}
 	}
 }
 void CDPSrvr::OnGCPlayerPoint( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -6539,7 +6541,7 @@ void CDPSrvr::OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 				{
 					g_dpDBClient.SendLogSMItemUse( "1", pUsertmp, pItemElem, pItemElem->GetProp(), pUser->GetName() );
 
-					pUser->REPLACE( g_uIdofMulti, pUsertmp->GetWorld()->GetID(), pUsertmp->GetPos(), REPLACE_NORMAL, pUsertmp->GetLayer() );
+					pUser->Replace(*pUsertmp, REPLACE_NORMAL);
 
 					pItemElem->m_bQuery		= FALSE;
 					pUsertmp->RemoveItem( (BYTE)( wId ), (short)1 );
@@ -6783,7 +6785,7 @@ void CDPSrvr::OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 				else
 				{
 					pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_PARTYSUMMON );
-					pUser->REPLACE( g_uIdofMulti, pLeader->GetWorld()->GetID(), pLeader->GetPos(), REPLACE_FORCE, pLeader->GetLayer() );
+					pUser->Replace(*pLeader, REPLACE_FORCE);
 					pUser->AddDefinedText( TID_GAME_SUMMON_SUCCESS1, "\"%s\"", pLeader->GetName() );
 					((CUser*)pLeader)->AddDefinedText( TID_GAME_SUMMON_SUCCESS, "\"%s\"", pUser->GetName() );					
 					ItemProp* pItemProptmp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
@@ -9244,7 +9246,7 @@ void	CDPSrvr::OnArenaEnter( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 		if( pUser->IsBaseJob() )	// 1차 전직을 완료한 유저만 가능
 			return;
 		pUser->SetMarkingPos();
-		pUser->REPLACE( g_uIdofMulti, WI_WORLD_ARENA, D3DXVECTOR3( 540.0F, 140.0F, 485.0F ), REPLACE_NORMAL, nDefaultLayer );
+		pUser->Replace( WI_WORLD_ARENA, D3DXVECTOR3( 540.0F, 140.0F, 485.0F ), REPLACE_NORMAL, nDefaultLayer );
 	}
 }
 
@@ -9252,7 +9254,7 @@ void	CDPSrvr::OnArenaExit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
-		pUser->REPLACE( g_uIdofMulti, pUser->m_idMarkingWorld, pUser->m_vMarkingPos, REPLACE_NORMAL, nTempLayer );
+		pUser->Replace( pUser->m_idMarkingWorld, pUser->m_vMarkingPos, REPLACE_NORMAL, nTempLayer );
 }
 #endif	// __JEFF_11_4
 
@@ -9402,7 +9404,7 @@ void	CDPSrvr::OnSecretRoomTeleportToNPC( CAr & ar, DPID dpidCache, DPID dpidUser
 
 	if( IsValidObj( pUser ) == FALSE )
 		return;
-	pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CSecretRoomMng::GetInstance()->GetRevivalPos( pUser ), REPLACE_NORMAL, nDefaultLayer );
+	pUser->Replace( WI_WORLD_MADRIGAL, CSecretRoomMng::GetInstance()->GetRevivalPos( pUser ), REPLACE_NORMAL, nDefaultLayer );
 }
 
 void CDPSrvr::OnSecretRoomTenderView( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -9431,7 +9433,7 @@ void CDPSrvr::OnTeleportSecretRoomDungeon( CAr & ar, DPID dpidCache, DPID dpidUs
 		pUser->SetAngle( 180.0f );
 		int nRandx = xRandom(4) - 2;
 		int nRandz = xRandom(4) - 2;
-		pUser->REPLACE( g_uIdofMulti, WI_DUNGEON_SECRET_0, D3DXVECTOR3( (float)( 295 + nRandx ), 102.0f, (float)( 530 + nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
+		pUser->Replace( WI_DUNGEON_SECRET_0, D3DXVECTOR3( (float)( 295 + nRandx ), 102.0f, (float)( 530 + nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
 	}
 	else
 		pUser->AddDefinedText( TID_GAME_SECRETROOM_NOENTRANCE_1 );
@@ -9640,7 +9642,7 @@ void CDPSrvr::OnTeleportToHeavenTower( CAr & ar, DPID dpidCache, DPID dpidUser, 
 
 	BYTE nCont = CTax::GetInstance()->GetContinent( pUser );
 	// 해당 층으로 텔레포트 -> 실패시 그냥 리턴...
-	if( pUser->REPLACE( g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nDefaultLayer ) )
+	if( pUser->Replace( dwWorldId, vPos, REPLACE_NORMAL, nDefaultLayer ) )
 	{
 		pUser->AddGold( -nCost );
 		pUser->SetAngle( fAngle );
@@ -10200,7 +10202,7 @@ void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, 
 			if( (int)( lpChar->m_vecTeleportPos.size() ) <= nIndex )
 				return;
 
-			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, lpChar->m_vecTeleportPos[nIndex], REPLACE_NORMAL, nDefaultLayer );
+			pUser->Replace( WI_WORLD_MADRIGAL, lpChar->m_vecTeleportPos[nIndex], REPLACE_NORMAL, nDefaultLayer );
 		}
 	}
 }

@@ -7,8 +7,6 @@ static_assert(false, "worldmng.h included in another project than World or Clien
 #include <vector>
 #include <memory>
 
-typedef	REGIONELEM	RegionElem, *PRegionElem;
-
 typedef struct tagWORLD
 {
 	TCHAR	m_szFileName[128];
@@ -71,13 +69,13 @@ private:
 
 #ifdef __WORLDSERVER
 public:
-	PRegionElem		GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey );
-	PRegionElem		GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
-	PRegionElem		GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey );
-	PRegionElem		GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
+	REGIONELEM * GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey );
+	REGIONELEM * GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
+	REGIONELEM * GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey );
+	REGIONELEM * GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
 
-	const RegionElem * GetRevival(CMover * pUser);
-	const RegionElem * GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, bool isChaotic);
+	const REGIONELEM * GetRevival(CMover * pUser);
+	const REGIONELEM * GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, bool isChaotic);
 #endif	// __WORLDSERVER
 public:
 

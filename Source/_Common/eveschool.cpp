@@ -38,7 +38,7 @@ BOOL CEveSchool::Ready( void )
 			CUser* pUser	= g_UserMng.GetUserByPlayerID( pMember->m_idPlayer );
 			if( IsValidObj( (CObj*)pUser ) )
 			{
-				pUser->REPLACE( g_uIdofMulti, WI_WORLD_EVENT01, GetPos( pSchool->m_idGuild ), REPLACE_NORMAL, nDefaultLayer );
+				pUser->Replace( WI_WORLD_EVENT01, GetPos( pSchool->m_idGuild ), REPLACE_NORMAL, nDefaultLayer );
 				pUser->SetNotMode( OBSERVE_MODE );	// Not observe mode
 				g_UserMng.AddModifyMode( pUser );
 			}
@@ -575,7 +575,7 @@ void CGuildCombat::JoinWar( CUser* pUser, int nMap , BOOL bWar)
 			g_UserMng.AddGuildCombatUserState( pUser );
 	}
 	
-	((CMover*)pUser)->REPLACE( g_uIdofMulti, WI_WORLD_GUILDWAR, v3Pos[nMap], REPLACE_NORMAL, nDefaultLayer );
+	pUser->Replace( WI_WORLD_GUILDWAR, v3Pos[nMap], REPLACE_NORMAL, nDefaultLayer );
 	pUser->m_vtInfo.SetOther( NULL );
 
 	if( bWar )
@@ -689,7 +689,7 @@ void CGuildCombat::JoinObserver( CUser* pUser )
 	// 버프 없애기
 	pUser->RemoveCommonBuffs();
 	g_UserMng.AddRemoveAllSkillInfluence( pUser );
-	((CMover*)pUser)->REPLACE( g_uIdofMulti, WI_WORLD_GUILDWAR, D3DXVECTOR3( 1361.6f, 0.0f, 1273.3f ), REPLACE_NORMAL, nDefaultLayer );
+	pUser->Replace( WI_WORLD_GUILDWAR, D3DXVECTOR3( 1361.6f, 0.0f, 1273.3f ), REPLACE_NORMAL, nDefaultLayer );
 	pUser->m_vtInfo.SetOther( NULL );
 	// 길드대전에 오신걸 환영합니다.
 	pUser->AddText( prj.GetText(TID_GAME_GUILDCOMBAT_WELCOME) );
@@ -1432,15 +1432,10 @@ void CGuildCombat::GuildCombatCloseTeleport()
 	if( m_nStopWar != 200 )
 		g_dpDBClient.SendGuildCombatResult();
 	
-	PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
-	if( NULL == pRgnElem )
+	if(!g_WorldMng.GetRevivalPos(WI_WORLD_MADRIGAL, "flaris"))
 		return;
 
-#ifdef __LAYER_1015
-	g_UserMng.ReplaceWorld( WI_WORLD_GUILDWAR, WI_WORLD_MADRIGAL, 6968.0f, 3328.8f, nDefaultLayer );
-#else	// __LAYER_1015
-	g_UserMng.ReplaceWorld( WI_WORLD_GUILDWAR, WI_WORLD_MADRIGAL, 6968.0f, 3328.8f );
-#endif	// __LAYER_1015
+	g_UserMng.ReplaceWorld( WI_WORLD_GUILDWAR, WI_WORLD_MADRIGAL, 6968.0f, 3328.8f, nDefaultLayer);
 
 	for( int i = 0 ; i < (int)( m_vecstrGuildMsg.size() ) ; ++i )
 		g_UserMng.AddGuildMsg( m_uWinGuildId, m_vecstrGuildMsg[i] );

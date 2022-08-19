@@ -979,11 +979,10 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 					//1.귀환모드로 설정 
 					DoApplySkill(this, pItemProp, nullptr);
 					//2. 선택된 마을로 이동 
-					LPCTSTR lpszKey = ((CUser *)this)->m_lpszVillage;
-					if (lpszKey) {
-						PRegionElem pRgnElem = g_WorldMng.GetRevivalPos(GetWorld()->GetID(), lpszKey);
-						if (pRgnElem)
-							REPLACE(g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer);
+					if (m_lpszVillage) {
+						if (const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos(GetWorld()->GetID(), m_lpszVillage)) {
+							Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
+						}
 					} else {
 						Error("II_SYS_SYS_SCR_RETURN selected village is NULL\n");
 					}

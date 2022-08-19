@@ -437,10 +437,10 @@ void CWorldMng::LoadAllMoverDialog()
 
 #ifdef __WORLDSERVER
 
-PRegionElem	CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey )
+REGIONELEM * CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey )
 {
 	int nSize	= m_aRevivalPos.GetSize();
-	PRegionElem pRgnElem;
+	REGIONELEM * pRgnElem;
 	for( int i = 0; i < nSize; i++ )
 	{
 		pRgnElem	= m_aRevivalPos.GetAt( i );
@@ -451,9 +451,9 @@ PRegionElem	CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey )
 	}
 	return NULL;	// not found
 }
-PRegionElem CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
+REGIONELEM * CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
 {
-	RegionElem *pRgnElem, *ptr	= NULL;
+	REGIONELEM *pRgnElem, *ptr	= NULL;
 	CPoint point;
 	
 	int nSize;
@@ -490,22 +490,21 @@ PRegionElem CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3
 	return ptr;
 }
 
-PRegionElem	CWorldMng::GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey )
+REGIONELEM * CWorldMng::GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey )
 {
 	int nSize	= m_aRevivalPos.GetSize();
-	PRegionElem pRgnElem;
 	for( int i = 0; i < nSize; i++ )
 	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
+		REGIONELEM * pRgnElem	= m_aRevivalPos.GetAt( i );
 		if( dwWorldId == pRgnElem->m_dwWorldId && strcmp( sKey, pRgnElem->m_szKey ) == 0 && pRgnElem->m_bChaoKey == FALSE )
 			return pRgnElem;
 	}
-	return NULL;	// not found
+	return nullptr;	// not found
 }
 
-PRegionElem CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
+REGIONELEM * CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
 {
-	RegionElem *pRgnElem, *ptr	= NULL;
+	REGIONELEM *pRgnElem, *ptr	= NULL;
 	CPoint point;
 
 	int nSize	= m_aRevivalRgn.GetSize();
@@ -540,14 +539,14 @@ PRegionElem CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & v
 	return ptr;
 }
 
-const RegionElem * CWorldMng::GetRevival(CMover * pUser) {
+const REGIONELEM * CWorldMng::GetRevival(CMover * pUser) {
 	const CWorld * pWorld = pUser->GetWorld();
 	if (!pWorld) return nullptr;
 	return GetRevival(*pWorld, pUser->GetPos(), pUser->IsChaotic());
 }
 
-const RegionElem * CWorldMng::GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, const bool isChaotic) {
-	const RegionElem * retval = nullptr;
+const REGIONELEM * CWorldMng::GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, const bool isChaotic) {
+	const REGIONELEM * retval = nullptr;
 
 	const bool differentWorldRevival =
 		world.GetID() != world.m_dwIdWorldRevival
