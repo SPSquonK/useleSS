@@ -33,7 +33,6 @@
 #define MAX_DISPLAYSFX			500
 #define MINIMAP_SIZE			256
 #define WLD_EXTRA_WIDTH			10.0f
-#define	MAX_DELETEOBJS			4096
 #define MAX_MOVERSELECT			5
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,8 +343,7 @@ public:
 	CMapWordToPtr   m_mapCreateChar;
 	FLOAT			m_fMaxHeight;
 	FLOAT			m_fMinHeight;
-	int				m_nDeleteObjs;
-	CObj*			m_apDeleteObjs[MAX_DELETEOBJS];		//
+	std::vector<CObj *> m_aDeleteObjs; // can not contain null values
 	TCHAR			m_szFilePath[ MAX_PATH ];
 	TCHAR			m_szFileName[ 64  ];
 	TCHAR			m_szWorldName[ 128 ];

@@ -929,16 +929,12 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			safe_delete( pObjtmp );
 
 			// cancel deletion
-			for( int i = 0; i < pWorld->m_nDeleteObjs; i++ )
-			{
-				if( pObj == pWorld->m_apDeleteObjs[i] )
-				{
-					pObj->SetDelete( FALSE );
-					memmove( &pWorld->m_apDeleteObjs[i], &pWorld->m_apDeleteObjs[i+1], sizeof(CObj*)*(pWorld->m_nDeleteObjs-i-1) );
-					pWorld->m_nDeleteObjs--;
-					break;
-				}
+			const auto itDeleted = std::ranges::find(pWorld->m_aDeleteObjs, pObj);
+			if (itDeleted != pWorld->m_aDeleteObjs.end()) {
+				pObj->SetDelete(FALSE);
+				pWorld->m_aDeleteObjs.erase(itDeleted);
 			}
+
 			return;
 		}
 		else
@@ -1518,14 +1514,9 @@ void CDPClient::OnRemoveObj( OBJID objid )
 			CWorld* pWorld = g_pPlayer->GetWorld( );
 
 			// cancel deletion
-			for( int i = 0; i < pWorld->m_nDeleteObjs; i++ )
-			{
-				if( pCtrl == pWorld->m_apDeleteObjs[i] )
-				{
-					pWorld->m_apDeleteObjs[i] = NULL;
-					pWorld->m_nDeleteObjs--;
-					break;
-				}
+			const auto it = std::ranges::find(pWorld->m_aDeleteObjs, pCtrl);
+			if (it != pWorld->m_aDeleteObjs.end()) {
+				pWorld->m_aDeleteObjs.erase(it);
 			}
 		}
 #endif //__BS_SAFE_WORLD_DELETE

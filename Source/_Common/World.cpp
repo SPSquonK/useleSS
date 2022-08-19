@@ -70,7 +70,7 @@ m_cbRunnableObject( 0 )
 	m_dwWorldID	= NULL_ID;
 	m_dwIdWorldRevival = WI_WORLD_NONE; 
 	ZeroMemory( m_szKeyRevival, sizeof( m_szKeyRevival ) );	
-	m_nDeleteObjs	= 0;
+	m_aDeleteObjs.reserve(/* MAX_DELETEOBJS */ 4096);
 	m_szFileName[0]	= '\0';
 	m_fMaxHeight = 200.0f;		//091209 기획요청으로 200
 	m_fMinHeight = 85.0f;
@@ -190,7 +190,7 @@ void CWorld::Free()
 	}
 
 	m_pObjFocus	= NULL;
-	m_nDeleteObjs	= 0;
+	m_aDeleteObjs.clear();
 
 	m_strCurContName = "";
 
@@ -456,30 +456,15 @@ void CWorld::DeleteObj( CObj* pObj )
 	if( !pObj->IsDelete() )
 	{
 		pObj->SetDelete( TRUE );
-#ifdef __WORLDSERVER
-		if( m_nDeleteObjs >= MAX_DELETEOBJS )
-		{
-			if( pObj->GetType() == OT_MOVER )
-				Error( "CWorld::DeleteObj : %s %d", ((CMover *)pObj)->GetName(), m_nDeleteObjs );
-			else
-				Error( "CWorld::DeleteObj : type=%d idx=%d %d", pObj->GetType(), pObj->GetIndex(), m_nDeleteObjs );
-		}
-
-		if( m_nDeleteObjs >= MAX_DELETEOBJS )
-			Error( "MAX_DELETEOBJS" );
-		m_apDeleteObjs[ m_nDeleteObjs++ ] = pObj;
-#else
-
+#ifdef __CLIENT
 #ifdef __BS_SAFE_WORLD_DELETE
-		if(pObj->m_ppViewPtr)
-		{
-			*pObj->m_ppViewPtr = NULL;
-			pObj->m_ppViewPtr = NULL;
+		if (pObj->m_ppViewPtr) {
+			*pObj->m_ppViewPtr = nullptr;
+			pObj->m_ppViewPtr = nullptr;
 		}
 #endif //__BS_SAFE_WORLD_DELETE
-
-		m_apDeleteObjs[ m_nDeleteObjs++ ] = pObj;
 #endif
+		m_aDeleteObjs.emplace_back(pObj);
 	}
 }
 
@@ -786,10 +771,10 @@ void CWorld::Process()
 
 	// Delete Obj 
 #ifdef __BS_SAFE_WORLD_DELETE 
-	if( 1 == m_nDeleteObjs )		//언제나 무효한 포인터가 남는경우는 m_nDeleteObjs == 1인경우였다.
+	if( m_aDeleteObjs.size() == 1 )		// The case where an invalid pointer was always left was when m_nDeleteObjs == 1.
 	{
-		CCtrl *pCtrl = (CCtrl*)m_apDeleteObjs[0];
-		if( !prj.GetCtrl( pCtrl->m_objid ) )						// level 1 : 현존하는 녀석인지 체크한다( sfx는 클라가 자체로 생성하고 NULL_ID이기때문에 여기를 통과한다 )
+		CCtrl *pCtrl = (CCtrl*)m_aDeleteObjs[0];
+		if( !prj.GetCtrl( pCtrl->m_objid ) )						// level 1 : Check if there is an existing one ( sfx passes here because it is created by the clone itself and is NULL_ID )
 		{
 			if( pCtrl->m_dwFlags != 0 && pCtrl->m_dwFlags < 1021 )	// level 2 : flag
 			if( pCtrl->m_pWorld )									// level 3 : world
@@ -799,21 +784,16 @@ void CWorld::Process()
 			}
 			else
 			{
-				// 문제의 녀석이 등장했다. 이미지워졌거나 하는 불량 포인터 
-				--m_nDeleteObjs;
-				m_apDeleteObjs[0] = NULL;
+				// The guy in question appeared. Bad pointers that are imaged or otherwise
+				m_aDeleteObjs.clear();
 				Error( "Fucking world process ::Delete" );
-			}
-			
-			
+			}			
 		}
 	}
 #endif //__BS_SAFE_WORLD_DELETE
 
 	// 오브젝트 Delete ( DeleteObj가 호출된 오브젝트들)
-	for( i = 0; i < m_nDeleteObjs; i++ )
-	{
-		pObj = m_apDeleteObjs[ i ];
+	for (CObj * pObj : m_aDeleteObjs) {
 		if( !pObj )
 		{
 			Error( "m_apDeleteObjs %d is NULL", i );
@@ -822,7 +802,7 @@ void CWorld::Process()
 	
 		if( m_pObjFocus == pObj )
 			SetObjFocus( NULL );
-#ifdef __CLIENT
+
 		CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 		if( pWndWorld )
 		{
@@ -831,7 +811,7 @@ void CWorld::Process()
 			else if(pWndWorld->m_pNextTargetObj == pObj)
 				pWndWorld->m_pNextTargetObj = NULL;
 		}
-#endif	// __CLIENT
+
 		if( CObj::m_pObjHighlight == pObj )
 			CObj::m_pObjHighlight = NULL;
 		// 화면에 출력되고 있는 오브젝트인가.
@@ -847,10 +827,7 @@ void CWorld::Process()
 		SAFE_DELETE( pObj );
 	}
 
-	if( m_nDeleteObjs > 0 )
-		memset( m_apDeleteObjs, 0, sizeof(CObj*) * m_nDeleteObjs );		//gmpbigsun: m_nDeleteObjs 와 m_apDeleteObjs이 꼬이면서 클라가 죽음.. 해서 안젼제일! 
-
-	m_nDeleteObjs = 0;
+	m_aDeleteObjs.clear();  //gmpbigsun: Clara died as m_nDeleteObjs and m_apDeleteObjs were twisted.. Safety is the best!
 
 	if( m_pCamera )
 	{
@@ -1425,9 +1402,7 @@ void CWorld::_modifylink() {
 
 void CWorld::_delete( void )
 {
-	for( int i = 0; i < m_nDeleteObjs; i++ )
-	{
-		CObj * pObj	= m_apDeleteObjs[i];
+	for (CObj * pObj : m_aDeleteObjs) {
 		if (!pObj) continue;
 
 		// Remove from replace obj
@@ -1453,15 +1428,14 @@ void CWorld::_delete( void )
 		
 		DestroyObj(pObj);
 	}
-	m_nDeleteObjs	= 0;
+
+	m_aDeleteObjs.clear();
 }
 
 void CWorld::DestroyObj( CObj* pObj )
 {
 	RemoveObjArray( pObj );
-#ifdef __WORLDSERVER
 	CNpcChecker::GetInstance()->RemoveNpc( pObj );
-#endif
 	SAFE_DELETE( pObj );
 }
 
