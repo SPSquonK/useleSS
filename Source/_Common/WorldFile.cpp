@@ -505,11 +505,11 @@ BOOL CWorld::ReadRegion( CScript& s )
 	case RI_REVIVAL:
 		break;
 	case RI_STRUCTURE:
-		m_aStructure.AddTail( pRe );
+		m_aStructure.Add( *pRe );
 		break;
 	default:
 		{
-			m_aRegion.AddTail( pRe );	
+			m_aRegion.Add( *pRe );	
 			break;
 		}
 	}
@@ -976,8 +976,7 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 						m_apLand[ i * m_nLandWidth + j ]->InvalidateDeviceObjects();
 						m_apLand[ i * m_nLandWidth + j ]->DeleteDeviceObjects();
 						SAFE_DELETE( m_apLand[ i * m_nLandWidth + j] );
-						m_nObjCullSize = 0;
-						m_nSfxCullSize = 0;
+						m_objCull.clear();
 					}
 					else
 						pLand->SetUsedAllObjects();
@@ -1171,40 +1170,30 @@ BOOL CWorld::CreateLayer( int nLayer )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOL CWorld::HasNobody( int nLayer )
-{
-	if( !HasNobody_Process( nLayer ) )
-		return FALSE;
-	if( !HasNoObj_Add( nLayer ) )
-		return FALSE;
-	if( !HasNobody_Replace( nLayer ) )
-		return FALSE;
-	return TRUE;
-}
-
-BOOL CWorld::HasNobody_Process(int nLayer) {
-	for (CObj * pObj : m_Objs.Range()) {
-		if (IsLayerPlayer(pObj, nLayer)) {
-			return FALSE;
+bool CWorld::HasSomeone(const int nLayer) const {
+	constexpr auto HasSomeoneInWorld = [](const CWorld & world, const int nLayer) {
+		for (CObj * pObj : world.m_Objs.Range()) {
+			if (IsLayerPlayer(pObj, nLayer)) {
+				return true;
+			}
 		}
-	}
 
-	return TRUE;
+		return false;
+	};
+
+	constexpr auto HasSomeoneToAdd = [](const CWorld & world, const int nLayer) {
+		return std::ranges::any_of(world.m_aAddObjs,
+			[nLayer](const AddRequest & add) {
+				return add.pObj && add.pObj->GetLayer() == nLayer;
+			}
+		);
+	};
+
+	return HasSomeoneInWorld(*this, nLayer)
+		|| HasSomeoneToAdd(*this, nLayer)
+		|| g_WorldMng.HasSomeoneGoingTo(GetID(), nLayer);
 }
 
-BOOL CWorld::HasNoObj_Add( int nLayer )
-{
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		if( m_apAddObjs[i] && m_apAddObjs[i]->GetLayer() == nLayer )
-			return FALSE;
-	}
-	return TRUE;
-}
-
-bool CWorld::HasNobody_Replace(const int nLayer) const {
-	return g_WorldMng.HasNobody_Replace(GetID(), nLayer);
-}
 
 bool CWorld::IsLayerPlayer(CObj * pObj, int nLayer) {
 	return (pObj && pObj->GetLayer() == nLayer && pObj->GetType() == OT_MOVER && static_cast<CMover *>(pObj)->IsPlayer());
@@ -1228,11 +1217,10 @@ void CWorld::DriveOut( int nLayer )
 					}
 					else if( GuildHouseMng->IsGuildHouse( GetID() ) )
 					{
-						//pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
 						Invalidate( nLayer, FALSE );
 						break;
 					}
-					pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
+					pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
 					break;
 			}
 		}

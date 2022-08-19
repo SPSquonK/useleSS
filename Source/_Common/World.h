@@ -1,6 +1,7 @@
 #ifndef __WORLD_2002_1_22
 #define __WORLD_2002_1_22
 
+#include <array>
 #include <boost/container/small_vector.hpp>
 #include "ExistingObjects.h"
 
@@ -24,17 +25,14 @@
 // define 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#define	MAX_ADDOBJS				20480
 #define	MAX_DYNAMICOBJ			81920
 //#define	MAX_BKGND				20480
-#define	MAX_MODIFYLINK			4096
 #define	CLOSEWORKER				(DWORD)-1
 #define D3DFVF_BOUNDBOXVERTEX	(D3DFVF_XYZ|D3DFVF_DIFFUSE) 
 #define MAX_DISPLAYOBJ			5000
 #define MAX_DISPLAYSFX			500
 #define MINIMAP_SIZE			256
 #define WLD_EXTRA_WIDTH			10.0f
-#define	MAX_DELETEOBJS			4096
 #define MAX_MOVERSELECT			5
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,17 +81,14 @@ struct ON_DIE {
 };
 #endif	// __WORLDSERVER
 
-typedef struct tagREPLACEOBJ
-{
-	CMover*		pObj;
+struct REPLACEOBJ {
+	CMover * pObj;
 	DWORD		dwWorldID;
 	D3DXVECTOR3	vPos;
-//	DWORD		dpid;
-	u_long		uIdofMulti;
 #ifdef __LAYER_1015
 	int		nLayer;
 #endif	// __LAYER_1015
-} REPLACEOBJ, *LPREPLACEOBJ; 
+};
 
 
 typedef std::vector< D3DXVECTOR3 >		Vec3D_Container;
@@ -210,19 +205,15 @@ public:
 
 	ExistingObjects<CObj, MAX_DYNAMICOBJ> m_Objs;
 
-	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
+	std::vector<CObj *> m_vecBackground;			// static 객체를 담는다.
 
-//	CRIT_SEC		m_csModifyLink;
-	int				m_cbModifyLink;
-	CObj*			m_apModifyLink[MAX_MODIFYLINK];		// 16k
+	std::vector<CObj *> m_aModifyLink;
 
-	static constexpr size_t MAX_REPLACEOBJ = 1024;
-	boost::container::small_vector<REPLACEOBJ, MAX_REPLACEOBJ> m_ReplaceObj;
+	std::vector<REPLACEOBJ> m_ReplaceObj;
 
 //	CRIT_SEC		m_AddRemoveLock;
-	int				m_cbAddObjs;
-	CObj*			m_apAddObjs[MAX_ADDOBJS];				// 80k
-	BOOL			m_bAddItToGlobalId[MAX_ADDOBJS];		// 80k
+	struct AddRequest { CObj * pObj; bool addToGlobalId; };
+	std::vector<AddRequest> m_aAddObjs;
 
 	TCHAR			m_lpszWorld[64];
 	u_long			m_cbUser;
@@ -240,7 +231,7 @@ public:
 	void			Process();
 	void			ModifyView( CCtrl* pCtrl );
 	BOOL			ReadWorld( const CRect & rcLandscapce ); 
-	BOOL			PreremoveObj( OBJID objid );
+	bool PreremoveObj(OBJID objid);
 	CObj*			PregetObj( OBJID objid );
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}
 	// DWORD			GetObjCount() { return m_dwObjNum; }
@@ -263,10 +254,7 @@ private:
 public:
 	static D3DLIGHT9	m_light;
 	static D3DLIGHT9	m_lightFogSky;
-	static CObj*		m_aobjCull[ MAX_DISPLAYOBJ ];
-	static CObj*		m_asfxCull[ MAX_DISPLAYSFX ];
-	static int			m_nObjCullSize;
-	static int			m_nSfxCullSize;
+	static boost::container::static_vector<CObj *, MAX_DISPLAYOBJ> m_objCull;
 	static CWeather		m_weather;
 	static CCamera*		m_pCamera;
 	static D3DXMATRIX	m_matProj;
@@ -276,7 +264,7 @@ public:
 	static BOOL			m_bZoomView;
 	static int			m_nZoomLevel;
 	static CSkyBox		m_skyBox;
-	static CMover*		m_amvrSelect[ MAX_MOVERSELECT ];
+	static boost::container::static_vector<CMover *, MAX_MOVERSELECT> m_amvrSelect;
 	CLandscape**		m_apLand;
 	FLOAT				m_fElapsedTime;
 	CObj*				m_pObjFocus;
@@ -355,8 +343,7 @@ public:
 	CMapWordToPtr   m_mapCreateChar;
 	FLOAT			m_fMaxHeight;
 	FLOAT			m_fMinHeight;
-	int				m_nDeleteObjs;
-	CObj*			m_apDeleteObjs[MAX_DELETEOBJS];		//
+	std::vector<CObj *> m_aDeleteObjs; // can not contain null values
 	TCHAR			m_szFilePath[ MAX_PATH ];
 	TCHAR			m_szFileName[ 64  ];
 	TCHAR			m_szWorldName[ 128 ];
@@ -427,7 +414,7 @@ public:
 	void			RemoveObj( CObj* pObj );
 	void			DeleteObj( CObj* pObj );
 	void			DestroyObj( CObj* pObj );
-	BOOL			DoNotAdd( CObj* pObj );
+	bool DoNotAdd(CUser * pObj);
 	BOOL			AddObjArray( CObj* pObj );
 	void			RemoveObjArray( CObj* pObj );
 	BOOL			InsertObjLink( CObj* pObj );
@@ -578,6 +565,8 @@ private:
 
 	void			RenderObj(CObj* pObj);
 
+	static CMover * RenderObject_IsTabbable(CObj * pObj);
+
 #endif // !__WORLDSERVER
 
 	
@@ -589,14 +578,11 @@ public:
 	BOOL			OpenWorld( OBJID idWorld, BOOL bDir = FALSE );
 #ifdef __LAYER_1021
 private:
-	BOOL	HasNobody_Process( int nLayer );
-	BOOL	HasNoObj_Add( int nLayer );
-	[[nodiscard]] bool HasNobody_Replace(int nLayer) const;
 	[[nodiscard]] static bool IsLayerPlayer(CObj * pObj, int nLayer);
 
 public:
 	void	Invalidate( int nLayer, BOOL bInvalid = TRUE )	{	m_linkMap.Invalidate( nLayer, bInvalid );	}
-	BOOL	HasNobody( int nLayer );
+	[[nodiscard]] bool HasSomeone(int nLayer) const;
 	void	DriveOut( int nLayer );
 	BOOL	LoadObject( int nLayer );
 	BOOL	CreateLayer( int nLayer );

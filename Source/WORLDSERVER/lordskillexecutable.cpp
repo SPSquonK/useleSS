@@ -45,7 +45,7 @@ void CLordSkillComponentSummon::Execute( u_long idPlayer, u_long idTarget, VOID*
 	if( IsValidObj( pTarget ) && IsValidObj( pUser ) && pUser->GetWorld() )
 	{
 		pTarget->AddDefinedText( TID_GAME_LORD_SKILL_SUMMON_S001 );
-		pTarget->REPLACE( g_uIdofMulti, pUser->GetWorld()->GetID(), pUser->GetPos(), REPLACE_NORMAL, pUser->GetLayer() );
+		pTarget->Replace( *pUser, REPLACE_NORMAL );
 		PutSkillLog( pTarget );
 	}
 }
@@ -63,7 +63,7 @@ void CLordSkillComponentTeleport::Execute( u_long idPlayer, u_long idTarget, VOI
 	CUser* pTarget	= g_UserMng.GetUserByPlayerID( idTarget );
 	if( IsValidObj( pUser ) && IsValidObj( pTarget ) && pTarget->GetWorld() )
 	{
-		pUser->REPLACE( g_uIdofMulti, pTarget->GetWorld()->GetID(), pTarget->GetPos(), REPLACE_NORMAL, pTarget->GetLayer() );
+		pUser->Replace( *pTarget, REPLACE_NORMAL );
 		PutSkillLog( pTarget );
 	}
 }

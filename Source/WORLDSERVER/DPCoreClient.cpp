@@ -1338,7 +1338,7 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 				if( pUserIk3[cou]->GetWorld() )
 				{
 					////
-					const RegionElem * pRgnElem	= NULL;
+					const REGIONELEM * pRgnElem	= NULL;
 					DWORD dwWorldID	= pUserIk3[cou]->GetWorld()->GetID();
 					CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
 					int nId	= pProcessor->PtInQuestRect( WI_WORLD_MADRIGAL, pUserIk3[cou]->GetPos() );
@@ -1351,8 +1351,8 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 						}
 					}
 					////
-					if( pRgnElem )
-						pUserIk3[cou]->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+					if (pRgnElem)
+						pUserIk3[cou]->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
 				}
 				////////////////
 			}
@@ -1433,7 +1433,7 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 			if( pUser->GetWorld() )
 			{
 				////
-				const RegionElem * pRgnElem	= NULL;
+				const REGIONELEM * pRgnElem	= NULL;
 				DWORD dwWorldID	= pUser->GetWorld()->GetID();
 				CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
 				const int nId	= pProcessor->PtInQuestRect( WI_WORLD_MADRIGAL, pUser->GetPos() );
@@ -1446,8 +1446,8 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 					}
 				}
 				////
-				if( pRgnElem )
-					pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+				if (pRgnElem)
+					pUser->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
 			}
 		}
 	}

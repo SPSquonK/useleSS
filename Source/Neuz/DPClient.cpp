@@ -581,7 +581,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_QUERYMAILBOX_REQ:		OnMailBoxReq( ar );	break;
 			case SNAPSHOTTYPE_SUMMON:	OnSummon( ar ); break;
 			case SNAPSHOTTYPE_REMOVE_GUILD_BANK_ITEM:	OnRemoveGuildBankItem( ar );	break;
-			case SNAPSHOTTYPE_ADDREGION:	OnAddRegion( ar );	break;
 #ifdef __EVENT_1101
 			case SNAPSHOTTYPE_CALLTHEROLL:	OnCallTheRoll( ar );	break;
 #endif	// __EVENT_1101
@@ -930,16 +929,12 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			safe_delete( pObjtmp );
 
 			// cancel deletion
-			for( int i = 0; i < pWorld->m_nDeleteObjs; i++ )
-			{
-				if( pObj == pWorld->m_apDeleteObjs[i] )
-				{
-					pObj->SetDelete( FALSE );
-					memmove( &pWorld->m_apDeleteObjs[i], &pWorld->m_apDeleteObjs[i+1], sizeof(CObj*)*(pWorld->m_nDeleteObjs-i-1) );
-					pWorld->m_nDeleteObjs--;
-					break;
-				}
+			const auto itDeleted = std::ranges::find(pWorld->m_aDeleteObjs, pObj);
+			if (itDeleted != pWorld->m_aDeleteObjs.end()) {
+				pObj->SetDelete(FALSE);
+				pWorld->m_aDeleteObjs.erase(itDeleted);
 			}
+
 			return;
 		}
 		else
@@ -1519,14 +1514,9 @@ void CDPClient::OnRemoveObj( OBJID objid )
 			CWorld* pWorld = g_pPlayer->GetWorld( );
 
 			// cancel deletion
-			for( int i = 0; i < pWorld->m_nDeleteObjs; i++ )
-			{
-				if( pCtrl == pWorld->m_apDeleteObjs[i] )
-				{
-					pWorld->m_apDeleteObjs[i] = NULL;
-					pWorld->m_nDeleteObjs--;
-					break;
-				}
+			const auto it = std::ranges::find(pWorld->m_aDeleteObjs, pCtrl);
+			if (it != pWorld->m_aDeleteObjs.end()) {
+				pWorld->m_aDeleteObjs.erase(it);
 			}
 		}
 #endif //__BS_SAFE_WORLD_DELETE
@@ -13589,39 +13579,6 @@ void CDPClient::OnMotionArrive( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) ) 
 	{
 		pMover->m_dwMotionArrive = (OBJMSG)objmsg;
-	}
-}
-
-void CDPClient::OnAddRegion( CAr & ar )
-{
-	REGIONELEM re;
-	DWORD dwWorldId;
-	ar >> dwWorldId;
-	ar.Read( &re, sizeof(re) );
-
-	int nSize	= 0;
-	ar >> nSize;
-	for( int i = 0; i < nSize; i++ )
-	{
-		DPID objid;
-		ar >> objid;
-		CMover* pMover	= prj.GetMover( objid );		
-		if( IsValidObj( pMover ) )
-			pMover->SetPosChanged( TRUE );
-	}
-	CMover* pPlayer	= CMover::GetActiveMover();
-	if( IsValidObj( pPlayer ) )
-	{
-		CWorld* pWorld = pPlayer->GetWorld();
-		if( pWorld && pWorld->GetID() == dwWorldId )
-		{
-			LPREGIONELEM ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
-			if( ptr->m_dwAttribute != ( RA_DANGER | RA_FIGHT ) )
-			{
-				pWorld->m_aRegion.AddTail( &re );
-				OutputDebugString( "SNAPSHOTTYPE_ADDREGION" );
-			}
-		}
 	}
 }
 

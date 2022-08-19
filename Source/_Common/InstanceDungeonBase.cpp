@@ -471,7 +471,7 @@ void CInstanceDungeonBase::SetNextState( ID_INFO* pInfo, DWORD dwDungeonId )
 			for (CObj * pObj : pWorld->m_Objs.Range()) {
 				if( IsValidObj( pObj ) && pObj->GetLayer() == static_cast<int>( dwDungeonId )
 					&& 	pObj->GetType() == OT_MOVER && static_cast<CMover*>( pObj )->IsPlayer() )
-					static_cast<CUser*>( pObj )->REPLACE( g_uIdofMulti, pWorld->GetID(), vNextPos, REPLACE_NORMAL, static_cast<int>( dwDungeonId ) );
+					static_cast<CUser*>( pObj )->Replace( pWorld->GetID(), vNextPos, REPLACE_NORMAL, static_cast<int>( dwDungeonId ) );
 			}
 		}
 		
@@ -656,7 +656,7 @@ BOOL CInstanceDungeonBase::TeleportToDungeon( CUser* pUser, DWORD dwWorldId, DWO
 		D3DXVECTOR3 vPos = GetTeleportPos( dwWorldId, dwDungeonId );
 		if( vPos == D3DXVECTOR3( 0, 0, 0 ) )
 		{
-			REGIONELEM* pPortkey = pUser->UpdateRegionAttr();
+			const REGIONELEM * pPortkey = pUser->UpdateRegionAttr();
 			if( pPortkey && pPortkey->m_dwIdTeleWorld == dwWorldId )
 				vPos = pPortkey->m_vTeleWorld;
 			else
@@ -669,7 +669,7 @@ BOOL CInstanceDungeonBase::TeleportToDungeon( CUser* pUser, DWORD dwWorldId, DWO
 			int nRandx = xRandom(4) - 2;
 			int nRandz = xRandom(4) - 2;
 			vPos += D3DXVECTOR3( (float)( nRandx ), (float)( 0 ), (float)( nRandz ) );
-			pUser->REPLACE( g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, static_cast<int>( dwDungeonId ) );
+			pUser->Replace( dwWorldId, vPos, REPLACE_NORMAL, static_cast<int>( dwDungeonId ) );
 			IncreasePlayerCount( static_cast<DWORD>( pUser->m_idparty ), dwWorldId );
 			if( !pCT_Info || pCT_Info->dwDungeonId != dwDungeonId )	// 090813 던전이 유지되고 있는 상태에서의 재입장은 set하지 않음 
 				CInstanceDungeonHelper::GetInstance()->SendInstanceDungeonSetCoolTimeInfo( g_uKey, GetType(), pUser->m_idPlayer, COOLTIME_INFO( dwWorldId, dwDungeonId, ( GetCoolTime( dwWorldId ) + GetTickCount() ) ) );
@@ -709,23 +709,17 @@ void CInstanceDungeonBase::SetLeaveMarkingPos( CUser* pUser, DWORD dwWorldId, D3
 	pUser->m_vMarkingPos = D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f );
 
 	CWorld* pWorld = g_WorldMng.GetWorld( dwWorldId );
-	if( !pWorld )
-		return;
+	if (!pWorld) return;
 
-	float fDist = static_cast<float>( INT_MAX );
-	for( int i = 0; i < pWorld->m_aRegion.GetSize(); i++ )
-	{
-		LPREGIONELEM lpRegionElem = pWorld->m_aRegion.GetAt( i );
-		if( !lpRegionElem || lpRegionElem->m_dwIdTeleWorld == WI_WORLD_NONE )
-			continue;
-		const auto delta = vPos - lpRegionElem->m_vPos;
-		float fTemp = D3DXVec3LengthSq( &delta );
-		if( fTemp < fDist )
-		{
-			fDist = fTemp;
-			pUser->m_vMarkingPos = lpRegionElem->m_vTeleWorld;
-			pUser->m_idMarkingWorld = lpRegionElem->m_dwIdTeleWorld;
+	const REGIONELEM * closest = pWorld->m_aRegion.FindClosest(vPos,
+		[&](const REGIONELEM & lpRegionElem) {
+			return lpRegionElem.m_dwIdTeleWorld != WI_WORLD_NONE;
 		}
+	);
+
+	if (closest) {
+		pUser->m_vMarkingPos = closest->m_vTeleWorld;
+		pUser->m_idMarkingWorld = closest->m_dwIdTeleWorld;
 	}
 }
 	
@@ -978,7 +972,7 @@ BOOL CInstanceDungeonHelper::EnteranceDungeon( CUser* pUser, DWORD dwWorldId )
 		{
 			float fPushPower = 0.5f;
 			AngleToVectorXZ( &pUser->m_pActMover->m_vDeltaE, pUser->GetAngle() + 180.0f, fPushPower );
-			pUser->Replace( g_uIdofMulti, pUser->GetWorld()->GetID(), pUser->GetPos() + pUser->m_pActMover->m_vDeltaE, REPLACE_NORMAL, pUser->GetLayer() );
+			pUser->Replace( pUser->GetWorld()->GetID(), pUser->GetPos() + pUser->m_pActMover->m_vDeltaE, REPLACE_NORMAL, pUser->GetLayer() );
 			g_UserMng.AddPushPower( pUser, pUser->GetPos(), pUser->GetAngle(), pUser->GetAngle() + 180.0f, fPushPower );
 		}
 	}
@@ -1001,7 +995,7 @@ BOOL CInstanceDungeonHelper::LeaveDungeon( CUser* pUser, DWORD dwWorldId )
 // OnJoin()에서만 dwWorldId 에 값이 존재한다. 해당 던전에서 입장 캐릭터수를 증가시키지 않고 강퇴시키기위해 입장 캐릭터수를 미리 증가시킨다.
 void CInstanceDungeonHelper::GoOut( CUser* pUser )
 {
-	pUser->REPLACE( g_uIdofMulti, pUser->m_idMarkingWorld, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
+	pUser->Replace( pUser->m_idMarkingWorld, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
 }
 
 void CInstanceDungeonHelper::SetInstanceDungeonKill( DWORD dwWorldId, DWORD dwDungeonId, DWORD dwMonsterId )

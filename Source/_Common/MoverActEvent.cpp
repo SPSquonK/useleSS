@@ -519,12 +519,12 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 				if( !pWorld )
 					return FALSE;
 
-				const RegionElem * pRgnElem = g_WorldMng.GetRevival(this);
+				const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(this);
 
 				if( NULL != pRgnElem )
-					REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, type, nRevivalLayer );
+					Replace( *pRgnElem, type, nRevivalLayer );
 				else
-					REPLACE( g_uIdofMulti, pWorld->GetID(), GetPos(), type, nDefaultLayer );
+					Replace( pWorld->GetID(), GetPos(), type, nDefaultLayer );
 			}
 			if( pSkillProp->dwID == SI_KNT_HERO_DRAWING )
 			{

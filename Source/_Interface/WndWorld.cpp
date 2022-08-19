@@ -596,7 +596,7 @@ m_buffs( NULL )
 	m_dwPowerTick = 0;	
 	m_idLastTarget	= NULL_ID;
 	
-	n_nMoverSelectCount = 0;
+	n_nMoverSelectCount = nullptr;
 	m_dwGuildCombatTime = 0xffffffff;
 	memset( &m_QuestTime, 0, sizeof(m_QuestTime) );
 	memset( m_szGuildCombatStr, 0, sizeof(char) * 64 );	
@@ -676,7 +676,7 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 		else
 			p2DRender->TextOut( 2, 200 ,0 , D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
 
-		_stprintf( strDebug, _T("Obj:%d  Face:%d   LFace:%d" ), g_pPlayer->GetWorld()->m_nObjCullSize, g_nMaxTri,0 );
+		_stprintf( strDebug, _T("Obj:%zu  Face:%d   LFace:%d" ), g_pPlayer->GetWorld()->m_objCull.size(), g_nMaxTri, 0);
 		p2DRender->TextOut( 2, 230, strDebug, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
 		_stprintf( strDebug, _T("%f %f %f %f %f" ), _g_fReg[0], _g_fReg[1], _g_fReg[2], _g_fReg[3], _g_fReg[4]  );
 		p2DRender->TextOut( 2, 250, strDebug, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
@@ -6990,31 +6990,21 @@ void CWndWorld::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	else if( nChar == VK_TAB )
 	{		
-		CWorld* pWorld = g_WorldMng.Get();
-		CMover* pMover = NULL;
+		const auto ppMover = std::ranges::find_if(CWorld::m_amvrSelect,
+			[&](CMover * candidate) {
+				return candidate
+					&& candidate != n_nMoverSelectCount
+					&& !candidate->IsMode(TRANSPARENT_MODE)
+					&& !candidate->IsDie();
+			});
 
-		if( n_nMoverSelectCount > MAX_MOVERSELECT )
-			n_nMoverSelectCount = 0;
-
-		int i = NULL;
-		for( ; i<MAX_MOVERSELECT; i++ )
-		{
-			if( n_nMoverSelectCount == i )
-				continue;
-
-			pMover = CWorld::m_amvrSelect[i];
-
-			if( pMover )
-				break;
+		if (ppMover != CWorld::m_amvrSelect.end()) {
+			CMover * pMover = *ppMover;
+			g_WorldMng.Get()->SetObjFocus(pMover);
+			n_nMoverSelectCount = pMover;
+		} else {
+			n_nMoverSelectCount = nullptr;
 		}
-
-		if( pMover )
-		{
-			if( !pMover->IsMode( TRANSPARENT_MODE )	&& !pMover->IsDie() ) // ´ë»óÀÌ Åõ¸í¸ðµåÀÏ¶© Å¸°Ù ¾ÈµÊ.
-				pWorld->SetObjFocus( pMover );
-		}
-		
-		n_nMoverSelectCount = i;
 	}
 	if( nChar == VK_ESCAPE )	
 	{
@@ -7777,11 +7767,10 @@ BOOL CWndWorld::Process()
 			}
 		}
 		m_bLButtonDowned = m_bLButtonDown;
-		int nSize = pWorld->m_aRegion.GetSize();
 		D3DXVECTOR3 vPos = g_pPlayer->GetPos();
-		for( int i = 0; i < nSize; i++ )
-		{
-			LPREGIONELEM lpRegionElem = pWorld->m_aRegion.GetAt( i );
+		
+		for (REGIONELEM & regionElem : pWorld->m_aRegion.AsSpan()) {
+			REGIONELEM * lpRegionElem = &regionElem;
 			if( lpRegionElem->m_rect.PtInRect( CPoint( (int)( vPos.x ), (int)( vPos.z ) ) ) )
 			{
 				if( lpRegionElem->m_bInside == FALSE )

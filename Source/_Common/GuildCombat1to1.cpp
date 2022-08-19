@@ -372,7 +372,7 @@ void	CGuildCombat1to1::GuildCombat1to1Close()
 			if( IsPossibleUser( pUser ) )
 			{
 				SendNowState( pUser );
-				pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3326.0f ), REPLACE_NORMAL, nDefaultLayer );
+				pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3326.0f ), REPLACE_NORMAL, nDefaultLayer );
 			}
 		}
 	}
@@ -638,12 +638,12 @@ void	CGuildCombat1to1::SetTeleportToWaitStage( CUser* pUser )
 	if( m_vecTenderGuild[nIndex].nPosition == 0 )
 	{
 		pUser->SetAngle( 0 );
-		pUser->REPLACE( g_uIdofMulti, m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( (float)( 256+nRandx ), 90.0f, (float)( 277+nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
+		pUser->Replace( m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( (float)( 256+nRandx ), 90.0f, (float)( 277+nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
 	}
 	else
 	{
 		pUser->SetAngle( 180 );
-		pUser->REPLACE( g_uIdofMulti, m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( (float)( 272+nRandx ), 90.0f, (float)( 212+nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
+		pUser->Replace( m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( (float)( 272+nRandx ), 90.0f, (float)( 212+nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
 	}
 }
 
@@ -657,12 +657,12 @@ void	CGuildCombat1to1::SetTeleportToWarStage( CUser* pUser )
 	if( m_vecTenderGuild[nIndex].nPosition == 0 )
 	{
 		pUser->SetAngle( 0 );
-		pUser->REPLACE( g_uIdofMulti, m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( 260, 75, 252 ), REPLACE_NORMAL, nDefaultLayer );
+		pUser->Replace( m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( 260, 75, 252 ), REPLACE_NORMAL, nDefaultLayer );
 	}
 	else
 	{
 		pUser->SetAngle( 180 );
-		pUser->REPLACE( g_uIdofMulti, m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( 260, 75, 235 ), REPLACE_NORMAL, nDefaultLayer );
+		pUser->Replace( m_vecTenderGuild[nIndex].dwWorldId, D3DXVECTOR3( 260, 75, 235 ), REPLACE_NORMAL, nDefaultLayer );
 	}
 }
 
@@ -1616,9 +1616,9 @@ void	CGuildCombat1to1Mng::SetTeleportToNPC( CUser* pUser )
 		return;
 	}
 	
-	PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
-	if( pRgnElem )
-		pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3326.0f ), REPLACE_NORMAL, nDefaultLayer );
+	if (g_WorldMng.GetRevivalPos(WI_WORLD_MADRIGAL, "flaris")) {
+		pUser->Replace(WI_WORLD_MADRIGAL, D3DXVECTOR3(6983.0f, 0.0f, 3326.0f), REPLACE_NORMAL, nDefaultLayer);
+	}
 }
 
 // 대전장 대기실로 입장

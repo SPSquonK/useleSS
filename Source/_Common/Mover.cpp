@@ -1673,7 +1673,7 @@ void CMover::ReStateOneLow( int nKind )
 
 #ifdef __WORLDSERVER
 
-BOOL CMover::ReplaceInspection( REGIONELEM* pPortkey )
+BOOL CMover::ReplaceInspection(const REGIONELEM * pPortkey )
 {
 	BOOL bResult = TRUE;
 	if( bResult != FALSE && pPortkey->m_uItemId != 0xffffffff )
@@ -1755,19 +1755,18 @@ bool CMover::Replace(const CMover & pTarget, REPLACE_TYPE replaceType) {
 	if (!world) return false;
 
 	Replace(
-		g_uIdofMulti, world->GetID(), pTarget.GetPos(),
+		world->GetID(), pTarget.GetPos(),
 		replaceType, pTarget.GetLayer()
 	);
 	return true;
 }
 
-// default type =  REPLACE_NORMAL
-#ifdef __LAYER_1015
-BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer  )
-#else	// __LAYER_1015
-BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type  )
-#endif	// __LAYER_1015
+bool CMover::Replace(const REGIONELEM & region, REPLACE_TYPE type, int nLayer) {
+	return Replace(region.m_dwWorldId, region.m_vPos, type, nLayer);
+}
 
+// default type =  REPLACE_NORMAL
+BOOL CMover::Replace( DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer  )
 {
 	CWorld* pWorld	= GetWorld();
 	if( !pWorld )
@@ -1785,10 +1784,8 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 #endif	// __LAYER_1015
 
 	// 조건검사 
-	if( type == REPLACE_NORMAL )
-	{
-		if( IsAuthHigher( AUTH_GAMEMASTER ) == FALSE && IsFly() ) 
-			return FALSE;
+	if (type == REPLACE_NORMAL && !IsAuthHigher(AUTH_GAMEMASTER) && IsFly()) {
+		return FALSE;
 	}
 
 	// 이동을 멈춘다.
@@ -1804,17 +1801,13 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 		InactivateEatPet();
 
 
-	for( int i = 0; i < pWorld->m_cbModifyLink; i++ )
-	{
-		if( pWorld->m_apModifyLink[i] == this )
-		{
-			pWorld->m_apModifyLink[i]	= NULL;
-			m_vRemoval	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-			break;
-		}
+	const auto it = std::ranges::find(pWorld->m_aModifyLink, this);
+	if (it != pWorld->m_aModifyLink.end()) {
+		(*it) = nullptr;
+		m_vRemoval = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	}
 
-	const auto lpReplaceObj = std::ranges::find_if(
+	auto lpReplaceObj = std::ranges::find_if(
 		pWorld->m_ReplaceObj,
 		[&](const REPLACEOBJ & replaceObj) {
 			return replaceObj.pObj == this;
@@ -1822,13 +1815,12 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 	);
 
 	if (lpReplaceObj == pWorld->m_ReplaceObj.end()) {
-		pWorld->m_ReplaceObj.push_back(REPLACEOBJ{ });
-		lpReplaceObj->pObj = this;
+		pWorld->m_ReplaceObj.emplace_back(REPLACEOBJ{ .pObj = this });
+		lpReplaceObj = pWorld->m_ReplaceObj.end() - 1;
 	}
 
 	lpReplaceObj->dwWorldID	 = dwWorldID;
 	lpReplaceObj->vPos       = vPos;
-	lpReplaceObj->uIdofMulti = uIdofMulti;
 #ifdef __LAYER_1015
 	lpReplaceObj->nLayer	= nLayer;
 #endif	// __LAYER_1015
@@ -2195,36 +2187,31 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 }
 
 // TODO_OPTIMIZE: 좌표가 변경될 때 호출되게한다. ( rect를 트리구조로 갖고 찾게 하는 것도 좋겠다.)
-REGIONELEM* CMover::UpdateRegionAttr()
+const REGIONELEM * CMover::UpdateRegionAttr()
 {
-	REGIONELEM* pPortkey = NULL;
-	const DWORD dwCheck = ( RA_SAFETY | RA_PENALTY_PK | RA_PK | RA_FIGHT ) ;
+	static constexpr DWORD dwCheck = ( RA_SAFETY | RA_PENALTY_PK | RA_PK | RA_FIGHT ) ;
 
-	D3DXVECTOR3 vPos = GetPos();
-	POINT pt = { (LONG)( vPos.x ), (LONG)( vPos.z ) };
-	LPREGIONELEM lpRegionElem;
-	int nSize = GetWorld()->m_aRegion.GetSize();
+	const D3DXVECTOR3 vPos = GetPos();
+	const POINT pt = { (LONG)( vPos.x ), (LONG)( vPos.z ) };
+
 	DWORD	dwRegionAttr	= 0;
-	for( int i = 0; i < nSize; i++ )
-	{
-		lpRegionElem = GetWorld()->m_aRegion.GetAt( i );
-		if( lpRegionElem->m_rect.PtInRect( pt ) )
-		{
-			dwRegionAttr	|= lpRegionElem->m_dwAttribute;
-			if( lpRegionElem->m_dwIdTeleWorld != WI_WORLD_NONE )
-				pPortkey = lpRegionElem;
+
+	const REGIONELEM * pPortkey = nullptr;
+
+	for (const REGIONELEM & lpRegionElem : GetWorld()->m_aRegion.AsSpan()) {
+		if (lpRegionElem.m_rect.PtInRect(pt)) {
+			dwRegionAttr |= lpRegionElem.m_dwAttribute;
+			if (lpRegionElem.m_dwIdTeleWorld != WI_WORLD_NONE) {
+				pPortkey = &lpRegionElem;
+			}
 		}
 	}
 
-	if( dwRegionAttr & dwCheck )
-	{
-		m_dwOldRegionAttr	= m_dwRegionAttr;
-		m_dwRegionAttr	= dwRegionAttr;
-	}
-	else
-	{
-		m_dwOldRegionAttr	= m_dwRegionAttr;
-		m_dwRegionAttr	= GetWorld()->m_nPKMode;;
+	m_dwOldRegionAttr = m_dwRegionAttr;
+	if (dwRegionAttr & dwCheck) {
+		m_dwRegionAttr = dwRegionAttr;
+	} else {
+		m_dwRegionAttr = GetWorld()->m_nPKMode;
 	}
 
 	return pPortkey;
@@ -2360,7 +2347,7 @@ void CMover::ProcessRegion()
 	if( FALSE == IsPlayer() )
 		return;
 
-	REGIONELEM* pPortkey = NULL;
+	const REGIONELEM * pPortkey = NULL;
 	if( IsPosChanged() )
 	{
 		pPortkey = UpdateRegionAttr();
@@ -2411,12 +2398,12 @@ void CMover::ProcessRegion()
 			if(	!CInstanceDungeonHelper::GetInstance()->IsInstanceDungeon( static_cast<CUser*>( this )->GetWorld()->GetID() ) ) 
 				CInstanceDungeonHelper::GetInstance()->EnteranceDungeon( static_cast<CUser*>( this ), pPortkey->m_dwIdTeleWorld );
 			else
-				REPLACE( g_uIdofMulti, pPortkey->m_dwIdTeleWorld, pPortkey->m_vTeleWorld, REPLACE_NORMAL, static_cast<CUser*>( this )->GetLayer() );
+				Replace( pPortkey->m_dwIdTeleWorld, pPortkey->m_vTeleWorld, REPLACE_NORMAL, static_cast<CUser*>( this )->GetLayer() );
 			return;
 		}
 		if( ReplaceInspection( pPortkey ) == FALSE )
 			return;
-		REPLACE( g_uIdofMulti, pPortkey->m_dwIdTeleWorld, pPortkey->m_vTeleWorld, REPLACE_NORMAL, nTempLayer );
+		Replace( pPortkey->m_dwIdTeleWorld, pPortkey->m_vTeleWorld, REPLACE_NORMAL, nTempLayer );
 	}
 #endif	// __WORLDSERVER
 }
@@ -6327,7 +6314,7 @@ void CMover::SetJJim( CMover *pJJimer )
 }
 
 
-CGuild* CMover::GetGuild()
+CGuild* CMover::GetGuild() const
 {
 #ifdef __WORLDSERVER
 //	locked

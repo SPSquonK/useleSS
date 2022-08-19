@@ -54,10 +54,7 @@ int	CLandscape::m_nWidthLinkMap[MAX_LINKLEVEL];
 
 
 #ifndef __WORLDSERVER
-CObj* CWorld::m_aobjCull[ MAX_DISPLAYOBJ ];
-CObj* CWorld::m_asfxCull[ MAX_DISPLAYSFX ];
-int CWorld::m_nObjCullSize = 0;
-int CWorld::m_nSfxCullSize = 0;
+boost::container::static_vector<CObj *, MAX_DISPLAYOBJ> CWorld::m_objCull;
 #endif
 
 CWorld::CWorld()
@@ -73,7 +70,7 @@ m_cbRunnableObject( 0 )
 	m_dwWorldID	= NULL_ID;
 	m_dwIdWorldRevival = WI_WORLD_NONE; 
 	ZeroMemory( m_szKeyRevival, sizeof( m_szKeyRevival ) );	
-	m_nDeleteObjs	= 0;
+	m_aDeleteObjs.reserve(/* MAX_DELETEOBJS */ 4096);
 	m_szFileName[0]	= '\0';
 	m_fMaxHeight = 200.0f;		//091209 기획요청으로 200
 	m_fMinHeight = 85.0f;
@@ -88,10 +85,11 @@ m_cbRunnableObject( 0 )
 #ifdef __WORLDSERVER
 	m_apHeightMap	= NULL;
 	m_apWaterHeight = NULL;
-	m_cbAddObjs		= 0;
 	memset( m_lpszWorld, 0, sizeof(TCHAR) * 64 );
 	m_cbUser	= 0;
-	m_cbModifyLink	= 0;
+	m_aAddObjs.reserve(/* MAX_ADDOBJS */ 20480);
+	m_aModifyLink.reserve(/* MAX_MODIFYLINK */ 4096);
+	m_ReplaceObj.reserve(/* MAX_REPLACEOBJ */ 1024);
 	m_bLoadScriptFlag = FALSE;
 
 #else	// __WORLDSERVER
@@ -129,8 +127,6 @@ m_cbRunnableObject( 0 )
 	m_bViewHeightAttribute = FALSE;
 	m_bViewLODObj = TRUE;
 
-	m_nObjCullSize = 0;
-	m_nSfxCullSize = 0;
 	m_bViewIdState = FALSE;
 	m_dwAmbient	= D3DCOLOR_ARGB( 255,128,128,128);
 	m_pObjFocus		= NULL;
@@ -194,7 +190,7 @@ void CWorld::Free()
 	}
 
 	m_pObjFocus	= NULL;
-	m_nDeleteObjs	= 0;
+	m_aDeleteObjs.clear();
 
 	m_strCurContName = "";
 
@@ -343,19 +339,15 @@ CLight* CWorld::GetLight( LPCTSTR lpszKey )
 #endif	// __WORLDSERVER
 
 #ifdef __WORLDSERVER
-BOOL CWorld::DoNotAdd( CObj* pObj )
-{
-
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		if( m_apAddObjs[i] == pObj )
-		{
-			pObj->SetWorld( NULL );
-			m_apAddObjs[i]	= NULL;
-			return TRUE;
-		}
+bool CWorld::DoNotAdd(CUser * pObj) {
+	const auto it = std::ranges::find_if(m_aAddObjs, [pObj](const AddRequest & self) { return self.pObj == pObj; });
+	if (it == m_aAddObjs.end()) {
+		return false;
 	}
-	return FALSE;
+
+	pObj->SetWorld(nullptr);
+	it->pObj = nullptr;
+	return true;
 }
 #endif	// __WORLDSERVER
 
@@ -412,9 +404,7 @@ BOOL CWorld::AddObj( CObj* pObj, BOOL bAddItToGlobalId )
 		pObj->m_pAIInterface->InitAI();
 
 #ifdef __WORLDSERVER
-	ASSERT( m_cbAddObjs < MAX_ADDOBJS );
-	m_bAddItToGlobalId[m_cbAddObjs]	= bAddItToGlobalId;
-	m_apAddObjs[m_cbAddObjs++]	= pObj;
+	m_aAddObjs.emplace_back(CWorld::AddRequest{ pObj, static_cast<bool>(bAddItToGlobalId) });
 #else	// __WORLDSERVER
 	InsertObjLink( pObj );
 	AddObjArray( pObj );
@@ -466,30 +456,15 @@ void CWorld::DeleteObj( CObj* pObj )
 	if( !pObj->IsDelete() )
 	{
 		pObj->SetDelete( TRUE );
-#ifdef __WORLDSERVER
-		if( m_nDeleteObjs >= MAX_DELETEOBJS )
-		{
-			if( pObj->GetType() == OT_MOVER )
-				Error( "CWorld::DeleteObj : %s %d", ((CMover *)pObj)->GetName(), m_nDeleteObjs );
-			else
-				Error( "CWorld::DeleteObj : type=%d idx=%d %d", pObj->GetType(), pObj->GetIndex(), m_nDeleteObjs );
-		}
-
-		if( m_nDeleteObjs >= MAX_DELETEOBJS )
-			Error( "MAX_DELETEOBJS" );
-		m_apDeleteObjs[ m_nDeleteObjs++ ] = pObj;
-#else
-
+#ifdef __CLIENT
 #ifdef __BS_SAFE_WORLD_DELETE
-		if(pObj->m_ppViewPtr)
-		{
-			*pObj->m_ppViewPtr = NULL;
-			pObj->m_ppViewPtr = NULL;
+		if (pObj->m_ppViewPtr) {
+			*pObj->m_ppViewPtr = nullptr;
+			pObj->m_ppViewPtr = nullptr;
 		}
 #endif //__BS_SAFE_WORLD_DELETE
-
-		m_apDeleteObjs[ m_nDeleteObjs++ ] = pObj;
 #endif
+		m_aDeleteObjs.emplace_back(pObj);
 	}
 }
 
@@ -746,12 +721,8 @@ void CWorld::Process()
 #endif
 
 	// 정적 오브젝트의 반투명 처리를 위한 프로세스 처리 
-	int nNonCullNum = 0;
-	for( i = 0; i < m_nObjCullSize; i++ )
-	{
-		pObj = m_aobjCull[ i ];
-		if( pObj && pObj->GetType() == OT_OBJ && pObj->GetModel()->m_pModelElem->m_bTrans && pObj->IsCull() == FALSE )
-		{
+	for (CObj * pObj : m_objCull) {
+		if (pObj && pObj->GetType() == OT_OBJ && pObj->GetModel()->m_pModelElem->m_bTrans && pObj->IsCull() == FALSE) {
 			pObj->Process();
 		}
 	}
@@ -800,10 +771,10 @@ void CWorld::Process()
 
 	// Delete Obj 
 #ifdef __BS_SAFE_WORLD_DELETE 
-	if( 1 == m_nDeleteObjs )		//언제나 무효한 포인터가 남는경우는 m_nDeleteObjs == 1인경우였다.
+	if( m_aDeleteObjs.size() == 1 )		// The case where an invalid pointer was always left was when m_nDeleteObjs == 1.
 	{
-		CCtrl *pCtrl = (CCtrl*)m_apDeleteObjs[0];
-		if( !prj.GetCtrl( pCtrl->m_objid ) )						// level 1 : 현존하는 녀석인지 체크한다( sfx는 클라가 자체로 생성하고 NULL_ID이기때문에 여기를 통과한다 )
+		CCtrl *pCtrl = (CCtrl*)m_aDeleteObjs[0];
+		if( !prj.GetCtrl( pCtrl->m_objid ) )						// level 1 : Check if there is an existing one ( sfx passes here because it is created by the clone itself and is NULL_ID )
 		{
 			if( pCtrl->m_dwFlags != 0 && pCtrl->m_dwFlags < 1021 )	// level 2 : flag
 			if( pCtrl->m_pWorld )									// level 3 : world
@@ -813,21 +784,16 @@ void CWorld::Process()
 			}
 			else
 			{
-				// 문제의 녀석이 등장했다. 이미지워졌거나 하는 불량 포인터 
-				--m_nDeleteObjs;
-				m_apDeleteObjs[0] = NULL;
+				// The guy in question appeared. Bad pointers that are imaged or otherwise
+				m_aDeleteObjs.clear();
 				Error( "Fucking world process ::Delete" );
-			}
-			
-			
+			}			
 		}
 	}
 #endif //__BS_SAFE_WORLD_DELETE
 
 	// 오브젝트 Delete ( DeleteObj가 호출된 오브젝트들)
-	for( i = 0; i < m_nDeleteObjs; i++ )
-	{
-		pObj = m_apDeleteObjs[ i ];
+	for (CObj * pObj : m_aDeleteObjs) {
 		if( !pObj )
 		{
 			Error( "m_apDeleteObjs %d is NULL", i );
@@ -836,7 +802,7 @@ void CWorld::Process()
 	
 		if( m_pObjFocus == pObj )
 			SetObjFocus( NULL );
-#ifdef __CLIENT
+
 		CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 		if( pWndWorld )
 		{
@@ -845,7 +811,7 @@ void CWorld::Process()
 			else if(pWndWorld->m_pNextTargetObj == pObj)
 				pWndWorld->m_pNextTargetObj = NULL;
 		}
-#endif	// __CLIENT
+
 		if( CObj::m_pObjHighlight == pObj )
 			CObj::m_pObjHighlight = NULL;
 		// 화면에 출력되고 있는 오브젝트인가.
@@ -861,10 +827,7 @@ void CWorld::Process()
 		SAFE_DELETE( pObj );
 	}
 
-	if( m_nDeleteObjs > 0 )
-		memset( m_apDeleteObjs, 0, sizeof(CObj*) * m_nDeleteObjs );		//gmpbigsun: m_nDeleteObjs 와 m_apDeleteObjs이 꼬이면서 클라가 죽음.. 해서 안젼제일! 
-
-	m_nDeleteObjs = 0;
+	m_aDeleteObjs.clear();  //gmpbigsun: Clara died as m_nDeleteObjs and m_apDeleteObjs were twisted.. Safety is the best!
 
 	if( m_pCamera )
 	{
@@ -1305,52 +1268,42 @@ void CWorld::ModifyView( CCtrl* pCtrl )
 }
 
 
-BOOL CWorld::PreremoveObj( OBJID objid )
-{
-	CObj* pObj;
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		pObj	= m_apAddObjs[i];
-		if( pObj && pObj->IsDynamicObj() && ( (CCtrl*)pObj )->GetId() == objid )
-		{
-			SAFE_DELETE( m_apAddObjs[i] );
-			return TRUE;
+bool CWorld::PreremoveObj(const OBJID objid) {
+	const auto it = std::ranges::find_if(m_aAddObjs,
+		[objid](const AddRequest & addRequest) {
+			return addRequest.pObj
+				&& addRequest.pObj->IsDynamicObj()
+				&& static_cast<CCtrl *>(addRequest.pObj)->GetId() == objid;
 		}
-	}
-	return FALSE;
+	);
+
+	if (it == m_aAddObjs.end()) return false;
+
+	SAFE_DELETE(it->pObj);
+	return true;
 }
 
-CObj* CWorld::PregetObj( OBJID objid )
-{
-	CObj* pObj;
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		pObj	= m_apAddObjs[i];
-		if( pObj && pObj->IsDynamicObj() && ( (CCtrl*)pObj )->GetId() == objid )
-			return pObj;
-	}
+CObj * CWorld::PregetObj(const OBJID objid) {
+	const auto it = std::ranges::find_if(m_aAddObjs,
+		[objid](const AddRequest & addRequest) {
+			return addRequest.pObj
+				&& addRequest.pObj->IsDynamicObj()
+				&& static_cast<CCtrl *>(addRequest.pObj)->GetId() == objid;
+		}
+	);
 
-	return NULL;
+	return it != m_aAddObjs.end() ? it->pObj : nullptr;
 }
 
-void CWorld::_add( void )
-{
-	CObj* pObj;
-
-	if( g_DPCoreClient.CheckIdStack() == FALSE )
-	{
+void CWorld::_add() {
+	if (!g_DPCoreClient.CheckIdStack()) {
 		return;
 	}
 
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		pObj	= m_apAddObjs[i];
-		if( NULL == pObj )	
-			continue;
+	for (const auto & [pObj, addToGlobalId] : m_aAddObjs) {
+		if (!pObj) continue;
 
-#ifdef __WORLDSERVER
 		if( !pObj->IsVirtual() )
-#endif	// __WORLDSERVER
 		{
 			if( !InsertObjLink( pObj ))			// 링크맵에 넣는다 ( 에러가 날 수 있다 )
 				continue;
@@ -1362,156 +1315,142 @@ void CWorld::_add( void )
 			continue;
 		}
 
-#ifdef __WORLDSERVER
 		if( !pObj->IsVirtual() )
-#endif	// __WORLDSERVER
 		{
 			if( pObj->IsDynamicObj() ) 
 			{
-				if( m_bAddItToGlobalId[i] )
+				if(addToGlobalId)
 					( (CCtrl*)pObj )->AddItToGlobalId();	// prj.m_objmap 와 prj.m_idPlayerToUserPtr에 넣는다.
 				AddItToView( (CCtrl*)pObj );
 			}
 		}
-#ifdef __WORLDSERVER
+
 		CNpcChecker::GetInstance()->AddNpc( pObj );
-#endif	// __WORLDSERVER
 	}
-	m_cbAddObjs		= 0;
+
+	m_aAddObjs.clear();
 }
 
-void CWorld::_modifylink( void )
-{
-	CObj* pObj, *pObjtmp;
-	D3DXVECTOR3 vOld, vCur, vOldtmp, vCurtmp;
-	int nLinkLevel;
-	DWORD dwLinkType;
-
-	for( int i = 0; i < m_cbModifyLink; i++ )
-	{
-		pObj	= m_apModifyLink[i];
-		if( IsInvalidObj( pObj ) )	
+void CWorld::_modifylink() {
+	for (CObj * pObj : m_aModifyLink) {
+		if (IsInvalidObj(pObj))
 			continue;
 
-		if( pObj->GetWorld() != this )
-		{
-			WriteError( "LINKMAP world different" );	// temp
+		if (pObj->GetWorld() != this) {
+			WriteError("LINKMAP world different");	// temp
 			continue;
 		}
 
-		vOld	= pObj->GetLinkPos();
-		vCur	= pObj->GetRemovalPos();
-		vOldtmp		= vOld	/ (FLOAT)( m_iMPU );
-		vCurtmp		= vCur / (FLOAT)( m_iMPU );
+		const D3DXVECTOR3 vOld	= pObj->GetLinkPos();
+		const D3DXVECTOR3 vCur	= pObj->GetRemovalPos();
+		const D3DXVECTOR3 vOldtmp		= vOld	/ (FLOAT)( m_iMPU );
+		const D3DXVECTOR3 vCurtmp		= vCur / (FLOAT)( m_iMPU );
 
-		if( (int)vOldtmp.x != (int)vCurtmp.x || (int)vOldtmp.z != (int)vCurtmp.z )
+		if ((int)vOldtmp.x == (int)vCurtmp.x && (int)vOldtmp.z == (int)vCurtmp.z)
+			continue;
+		
+		const DWORD dwLinkType	= pObj->GetLinkType();
+		const int nLinkLevel	= (int)pObj->GetLinkLevel();
+#ifdef __LAYER_1015
+		const int nLayer	= pObj->GetLayer();
+#endif	// __LAYER_1015
+
+		if( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->IsPlayer() && nLinkLevel != 0 )
+			WriteError( "ML//%s//%d//%d", ( (CMover*)pObj )->GetName(), ( (CMover*)pObj )->m_idPlayer, nLinkLevel );
+
+#ifdef __LAYER_1015
+		if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) != pObj )
+#else	// __LAYER_1015
+		if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) != pObj )
+#endif	// __LAYER_1015
 		{
-			dwLinkType	= pObj->GetLinkType();
-			nLinkLevel	= (int)pObj->GetLinkLevel();
-#ifdef __LAYER_1015
-			int nLayer	= pObj->GetLayer();
-#endif	// __LAYER_1015
-
-			if( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->IsPlayer() && nLinkLevel != 0 )
-				WriteError( "ML//%s//%d//%d", ( (CMover*)pObj )->GetName(), ( (CMover*)pObj )->m_idPlayer, nLinkLevel );
-#ifdef __LAYER_1015
-			if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) != pObj )
-#else	// __LAYER_1015
-			if( !pObj->m_pPrev && GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) != pObj )
-#endif	// __LAYER_1015
-			{
-				WriteError( "ML//BINGO//%d//%d//%d", pObj->GetType(), pObj->GetIndex(), pObj->GetLinkLevel() );
-				RemoveObjLink2( pObj );
-			}
-
-#ifdef __LAYER_1015
-			if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) == pObj )
-				SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext, nLayer );
-#else	// __LAYER_1015
-			if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) == pObj )
-				SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext );
-#endif	// __LAYER_1015
-			pObj->DelNode();
-
-#ifdef __LAYER_1015
-			if( ( pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel, nLayer ) ) )
-				pObjtmp->InsNextNode( pObj );
-			else
-				SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj, nLayer );
-#else	// __LAYER_1015
-			if( ( pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel ) ) )
-				pObjtmp->InsNextNode( pObj );
-			else
-				SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj );
-#endif	// __LAYER_1015
-
-			pObj->SetLinkPos( pObj->GetRemovalPos() );
-			pObj->SetRemovalPos( D3DXVECTOR3( 0, 0, 0 ) );
-
-			if( pObj->IsDynamicObj() )
-				ModifyView( ( CCtrl* )pObj );
+			WriteError( "ML//BINGO//%d//%d//%d", pObj->GetType(), pObj->GetIndex(), pObj->GetLinkLevel() );
+			RemoveObjLink2( pObj );
 		}
+
+#ifdef __LAYER_1015
+		if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel, nLayer ) == pObj )
+			SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext, nLayer );
+#else	// __LAYER_1015
+		if( GetObjInLinkMap( vOld, dwLinkType, nLinkLevel ) == pObj )
+			SetObjInLinkMap( vOld, dwLinkType, nLinkLevel, pObj->m_pNext );
+#endif	// __LAYER_1015
+		
+		pObj->DelNode();
+
+#ifdef __LAYER_1015
+		if( CObj * pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel, nLayer ) )
+			pObjtmp->InsNextNode( pObj );
+		else
+			SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj, nLayer );
+#else	// __LAYER_1015
+		if( CObj * pObjtmp = GetObjInLinkMap( vCur, dwLinkType, nLinkLevel ) )
+			pObjtmp->InsNextNode( pObj );
+		else
+			SetObjInLinkMap( vCur, dwLinkType, nLinkLevel, pObj );
+#endif	// __LAYER_1015
+
+		pObj->SetLinkPos( pObj->GetRemovalPos() );
+		pObj->SetRemovalPos( D3DXVECTOR3( 0, 0, 0 ) );
+
+		if (pObj->IsDynamicObj())
+			ModifyView((CCtrl *)pObj);
 	}
-	m_cbModifyLink	= 0;
+
+	m_aModifyLink.clear();
 }
 
 void CWorld::_delete( void )
 {
-	CObj* pObj;
+	for (CObj * pObj : m_aDeleteObjs) {
+		if (!pObj) continue;
 
-	for( int i = 0; i < m_nDeleteObjs; i++ )
-	{
-		pObj	= m_apDeleteObjs[i];
-
-		for (REPLACEOBJ & replaceObj : m_ReplaceObj) {
-			if (replaceObj.pObj == pObj) {
-				replaceObj.pObj = nullptr;
+		// Remove from replace obj
+		const auto itReplace = std::ranges::find_if(m_ReplaceObj,
+			[pObj](const REPLACEOBJ & replaceObj) {
+				return replaceObj.pObj == pObj;
 			}
+		);
+		if (itReplace != m_ReplaceObj.end()) {
+			itReplace->pObj = nullptr;
 		}
 
-		for( int j = 0; j < m_cbModifyLink; j++ )
-		{
-			if( m_apModifyLink[j] == pObj )
-			{
-				m_apModifyLink[j]	= NULL;
-				pObj->m_vRemoval	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-			}
+		// Remove from modify link
+		const auto itRemoval = std::ranges::find(m_aModifyLink, pObj);
+		if (itRemoval != m_aModifyLink.end()) {
+			(*itRemoval) = nullptr;
+			pObj->m_vRemoval = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
 
-#ifdef __WORLDSERVER
-		if( !pObj->IsVirtual() )
-#endif	// __WORLDSERVER
-			RemoveObjLink( pObj );
-		DestroyObj( pObj );
+		// Remove from world and delete
+		if (!pObj->IsVirtual())
+			RemoveObjLink(pObj);
+		
+		DestroyObj(pObj);
 	}
-	m_nDeleteObjs	= 0;
+
+	m_aDeleteObjs.clear();
 }
 
 void CWorld::DestroyObj( CObj* pObj )
 {
 	RemoveObjArray( pObj );
-#ifdef __WORLDSERVER
 	CNpcChecker::GetInstance()->RemoveNpc( pObj );
-#endif	// __WORLDSERVER
 	SAFE_DELETE( pObj );
 }
 
 void CWorld::_replace( void )
 {
-	for (const auto & replaceObj : m_ReplaceObj) {
+	for (const REPLACEOBJ & replaceObj : m_ReplaceObj) {
 		CMover * const pMover	= replaceObj.pObj;
 		if( ::IsInvalidObj( pMover ) )
 			continue;
 
 		const DWORD dwWorldID   = replaceObj.dwWorldID;
 		D3DXVECTOR3 vPos  = replaceObj.vPos;
-		const u_long uIdofMulti	= replaceObj.uIdofMulti;
 #ifdef __LAYER_1015
 		const int nLayer	= replaceObj.nLayer;
 #endif	// __LAYER_1015
-
-		if( uIdofMulti != g_uIdofMulti )		// 현재구현에서는 보류 
-			continue;
 
 #ifdef __LAYER_1015
 		if( GetID() == dwWorldID && pMover->GetLayer() == nLayer )
@@ -1524,15 +1463,14 @@ void CWorld::_replace( void )
 				vPos.y = 100.0f;
 				vPos.y = GetFullHeight( vPos );  // 검사 
 			}
-			g_UserMng.AddSetPos( (CCtrl*)pMover, vPos );
-			//vPos.y = GetFullHeight( vPos );  // 검사 
+			g_UserMng.AddSetPos( pMover, vPos );
 			pMover->SetPos( vPos );
 			if( pMover->IsPlayer() )
 				( (CUser*)pMover )->Notify();	
 		}
 		else
 		{	
-			if( pMover->IsPlayer() == FALSE )
+			if( !pMover->IsPlayer() )
 				continue;
 
 			CUser* pUser = (CUser*)pMover;
@@ -1570,10 +1508,8 @@ void CWorld::_replace( void )
 					if( pHousing )
 					{
 						pUser->AddHousingPaperingInfo( NULL_ID, FALSE );	// 벽지 및 장판 초기화
-						std::vector<DWORD> vecTemp = pHousing->GetAllPaperingInfo();
-						for( DWORD i=0; i<vecTemp.size(); i++ )
-						{
-							pUser->AddHousingPaperingInfo( vecTemp[i], TRUE );
+						for (const DWORD paperInfo : pHousing->GetAllPaperingInfo()) {
+							pUser->AddHousingPaperingInfo(paperInfo, TRUE);
 						}
 					}
 				}

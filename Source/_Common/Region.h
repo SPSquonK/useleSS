@@ -1,13 +1,6 @@
-// Region.h: interface for the CCtrl class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_REGION_H__A23AD198_7E45_465B_B646_7956A4AE179F__INCLUDED_)
-#define AFX_REGION_H__A23AD198_7E45_465B_B646_7956A4AE179F__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000  
+
+#include <type_traits>
 
 #define MAX_REGIONDESC 256
 #define MAX_REGIONTITLE 256
@@ -15,6 +8,7 @@
 
 struct REGIONELEM
 {
+	static constexpr bool Archivable = true;
 	FLOAT         m_fTeleAngle;
 	D3DXVECTOR3   m_vTeleWorld;  
 	D3DXVECTOR3   m_vPos;  
@@ -59,35 +53,52 @@ struct REGIONELEM
 	BOOL	m_bCheckGuild;
 	BOOL	m_bChaoKey;
 };
-typedef REGIONELEM*  LPREGIONELEM;
+
 
 /*----------------------------------------*/
-#define	MAX_REGIONELEM	256
-class CRegionElemArray
-{
+class CRegionElemArray final {
 private:
-	DWORD	m_cbRegionElem;
-	REGIONELEM	m_aRegionElem[MAX_REGIONELEM];
+	// In V21, Sanpres has 12 regions which is the second max.
+	// Madrigal, the max, have 148.
+	static constexpr size_t SoftMaxRegions = 24;
+	boost::container::small_vector<REGIONELEM, SoftMaxRegions> m_elems;
 public:
-//	Constructions
-	CRegionElemArray()	{	m_cbRegionElem	= 0;	}
-	~CRegionElemArray()		{}
-//	Operations
-	int	GetSize( void )	{	return m_cbRegionElem;	}
-	void	AddTail( const LPREGIONELEM lpRegionElem );
-	LPREGIONELEM	GetAt( int nIndex );
-};
+	[[nodiscard]] std::span<      REGIONELEM> AsSpan()       { return m_elems; }
+	[[nodiscard]] std::span<const REGIONELEM> AsSpan() const { return m_elems; }
 
-inline void CRegionElemArray::AddTail( const LPREGIONELEM lpRegionElem )
-{
-	ASSERT( m_cbRegionElem < MAX_REGIONELEM );
-	memcpy( &m_aRegionElem[m_cbRegionElem++], lpRegionElem, sizeof(REGIONELEM) );
-}
-inline LPREGIONELEM CRegionElemArray::GetAt( int nIndex )
-{
-	if( nIndex >= 0 && nIndex < MAX_REGIONELEM )
-		return &m_aRegionElem[nIndex];
-	return NULL;
-}
-/*----------------------------------------*/
-#endif // !defined(AFX_REGION_H__A23AD198_7E45_465B_B646_7956A4AE179F__INCLUDED_)
+	void Add(const REGIONELEM & lpRegionElem) {
+		m_elems.emplace_back(lpRegionElem);
+	}
+
+	template<typename Func>
+	requires (std::is_invocable_r_v<bool, Func, const REGIONELEM &>)
+	[[nodiscard]] const REGIONELEM * FindAny(Func && predicate) const {
+		for (const REGIONELEM & elem : m_elems) {
+			if (predicate(elem)) {
+				return &elem;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template<typename Func>
+	requires (std::is_invocable_r_v<bool, Func, const REGIONELEM &>)
+	[[nodiscard]] const REGIONELEM * FindClosest(const D3DXVECTOR3 & position, Func && predicate) const {
+		const REGIONELEM * result = nullptr;
+		long resultDistance = 0; // Initialized to shut up the compiler
+
+		for (const REGIONELEM & elem : m_elems) {
+			if (predicate(elem)) {
+				const D3DXVECTOR3 & diff = position - elem.m_vPos;
+				const long distance = static_cast<long>(D3DXVec3LengthSq(&diff));
+				if (!result || distance < resultDistance) {
+					result = &elem;
+					resultDistance = distance;
+				}
+			}
+		}
+
+		return result;
+	}
+};

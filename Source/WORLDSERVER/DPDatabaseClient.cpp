@@ -887,7 +887,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		{
 			pUser->m_vPos = D3DXVECTOR3( 6971.984f, 100.0f, 3336.884f );
 			g_UserMng.AddPlayer( pUser, WI_WORLD_MADRIGAL, nDefaultLayer );
-			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984f, 99.8f, 3336.884f ), REPLACE_NORMAL, nDefaultLayer );
+			pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984f, 99.8f, 3336.884f ), REPLACE_NORMAL, nDefaultLayer );
 		}
 #else	// __LAYER_1015
 		g_UserMng.AddPlayer( pUser, dwWorldId );
@@ -1009,7 +1009,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 			if( pWorld  && pWorld->GetID() >= WI_WORLD_GUILDWAR1TO1_0
 						&& pWorld->GetID() <= WI_WORLD_GUILDWAR1TO1_L )
 			{
-				pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_NORMAL, nDefaultLayer );
+				pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_NORMAL, nDefaultLayer );
 			}
 		}
 
@@ -1025,10 +1025,10 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 		CSecretRoomMng::GetInstance()->GetAllInfo( pUser );
 		if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( pUser ) )
-			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( CONT_FLARIS ), REPLACE_NORMAL, nDefaultLayer );
+			pUser->Replace( WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( CONT_FLARIS ), REPLACE_NORMAL, nDefaultLayer );
 
 		if( pWorld->GetID() == WI_DUNGEON_SECRET_0 )
-			pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( CONT_DARKON12 ), REPLACE_NORMAL, nDefaultLayer );
+			pUser->Replace( WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( CONT_DARKON12 ), REPLACE_NORMAL, nDefaultLayer );
 
 #ifdef __LAYER_1015
 #endif	// __LAYER_1015
@@ -3315,7 +3315,7 @@ void CDPDatabaseClient::OnTaxInfo( CAr & ar, DPID, DPID )
 
 		for (CObj * pObj : pWorld->m_Objs.Range()) {
 			if( pObj && pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsPlayer() && !pObj->IsDelete() )
-				((CUser*)pObj)->REPLACE( g_uIdofMulti, ((CUser*)pObj)->m_idMarkingWorld, ((CUser*)pObj)->m_vMarkingPos, REPLACE_NORMAL, nTempLayer );
+				((CUser*)pObj)->Replace( ((CUser*)pObj)->m_idMarkingWorld, ((CUser*)pObj)->m_vMarkingPos, REPLACE_NORMAL, nTempLayer );
 		}
 	}
 }

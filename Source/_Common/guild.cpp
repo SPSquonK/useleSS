@@ -884,10 +884,10 @@ void CGuild::ReplaceLodestar( const CRect &rect )
 				POINT point	= { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};
 				if( rect.PtInRect( point ) )
 				{
-					const RegionElem * pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), true);
+					const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), true);
 
 					if( pRgnElem )
-						pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+						pUser->Replace( *pRgnElem, REPLACE_NORMAL, nRevivalLayer );
 				}
 			}
 		}
@@ -897,8 +897,6 @@ void CGuild::ReplaceLodestar( const CRect &rect )
 void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 {
 //	locked
-	CUser* pUser;
-	CGuildMember* pMember;
 	CUser* pMaster	= NULL;
 	if( bMasterAround )
 	{
@@ -907,11 +905,9 @@ void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 			return;
 	}
 
-	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
-	{
-		pMember	= i->second;
+	for (CGuildMember * pMember : m_mapPMember | std::views::values) {
 
-		pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+		CUser * pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
 		if( IsValidObj( pUser ) )
 		{
 			if( pMaster && !pMaster->IsNearPC( pUser->GetId() ) )
@@ -919,7 +915,7 @@ void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 
 			if( GetStateOfQuest( QUEST_WARMON_LV1 ) ) // 클락워크 퀘스트면 비행 해제
 				pUser->UnequipRide();
-			pUser->REPLACE( g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nTempLayer );
+			pUser->Replace( dwWorldId, vPos, REPLACE_NORMAL, nTempLayer );
 		}
 	}
 }

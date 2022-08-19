@@ -1895,7 +1895,7 @@ BOOL TextCmd_Layer(CScanner & s, CPlayer_ * pUser) {
 			FLOAT x	= s.GetFloat();
 			FLOAT z	= s.GetFloat();
 			if( pWorld->VecInWorld( x, z ) && x > 0 && z > 0 )	
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), D3DXVECTOR3( x, 0, z ), REPLACE_NORMAL, nLayer );
+				pUser->Replace( pWorld->GetID(), D3DXVECTOR3( x, 0, z ), REPLACE_NORMAL, nLayer );
 			else
 				pUser->AddText( "OUT OF WORLD" );
 		}
@@ -2011,7 +2011,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 					if( pWorld != pUser->GetWorld() || pUser->GetLayer() != pUserTarget->GetLayer() )
 						return TRUE;
 
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pUserTarget->GetPos(), REPLACE_NORMAL, pUserTarget->GetLayer() );
+				pUser->Replace( *pUserTarget, REPLACE_NORMAL );
 			}
 		}
 		else 
@@ -2022,7 +2022,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 			CMover* pMover = pWorld->FindMover( scanner.Token );
 			if( pMover )
 			{
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pMover->GetPos(), REPLACE_NORMAL, pMover->GetLayer() );
+				pUser->Replace( *pMover, REPLACE_NORMAL );
 				return TRUE;
 			}
 		#endif // _DEBUG
@@ -2041,9 +2041,9 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 		// 두번째 파라메타가 스트링이면 리젼 키
 		if( scanner.GetToken() != NUMBER )
 		{
-			PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( dwWorldId, scanner.token );
-			if( NULL != pRgnElem )
-				pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+			if (const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos(dwWorldId, scanner.token)) {
+				pUser->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
+			}
 		}
 		// 스트링이 아니면 좌표 
 		else
@@ -2055,7 +2055,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 			if( pWorld && pWorld->VecInWorld( (FLOAT)( x ), (FLOAT)( z ) ) && x > 0 && z > 0 )
 			{
 				int nLayer	= pWorld == pUser->GetWorld()? pUser->GetLayer(): nDefaultLayer;
-				pUser->REPLACE( g_uIdofMulti, dwWorldId, D3DXVECTOR3( (FLOAT)x, 0, (FLOAT)z ), REPLACE_NORMAL, nLayer );
+				pUser->Replace( dwWorldId, D3DXVECTOR3( (FLOAT)x, 0, (FLOAT)z ), REPLACE_NORMAL, nLayer );
 			}
 		}
 	}
@@ -2556,49 +2556,6 @@ BOOL TextCmd_GuildInvite(CScanner & scanner, CPlayer_ * pUser) {
 	}
 #endif // __WORLDSERVER
 
-	return TRUE;
-}
-
-BOOL bCTDFlag	= FALSE;
-
-BOOL TextCmd_CTD(CScanner & s, CPlayer_ * pUser) {
-#ifdef __WORLDSERVER
-	if( g_eLocal.GetState( EVE_WORMON ) == 0 )
-	{
-		CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-		const CRect * pRect	= pProcessor->GetQuestRect( QUEST_WARMON_LV1 );
-		if( pRect )
-		{
-			OutputDebugString( "recv /ctd" );
-			REGIONELEM re;
-			memset( &re, 0, sizeof(REGIONELEM) );
-			re.m_uItemId	= 0xffffffff;
-			re.m_uiItemCount	= 0xffffffff;
-			re.m_uiMinLevel	= 0xffffffff;
-			re.m_uiMaxLevel	= 0xffffffff;
-			re.m_iQuest	= 0xffffffff;
-			re.m_iQuestFlag	= 0xffffffff;
-			re.m_iJob	= 0xffffffff;
-			re.m_iGender	= 0xffffffff;
-			re.m_dwAttribute	= RA_DANGER | RA_FIGHT;
-			re.m_dwIdMusic	= 121;
-			re.m_bDirectMusic	= TRUE;
-			re.m_dwIdTeleWorld	= 0;
-			re.m_rect = *pRect;
-			lstrcpy( re.m_szTitle, "Duel Zone" );
-
-			CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
-			if( pWorld )
-			{
-				LPREGIONELEM ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
-				if( ptr->m_dwAttribute != ( RA_DANGER | RA_FIGHT ) )
-					pWorld->m_aRegion.AddTail( &re );
-				pUser->AddText( "recv /ctd" );
-				g_UserMng.AddAddRegion( WI_WORLD_MADRIGAL, re );
-			}
-		}
-	}
-#endif	// __WORLDSERVER
 	return TRUE;
 }
 
@@ -4647,7 +4604,6 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_QuestState,				"QuestState",         "qs",             "퀘스트상태",     "퀘상",    TCM_SERVER, AUTH_ADMINISTRATOR, "퀘스트 설정 [ID] [State]" )
 	ON_TEXTCMDFUNC( TextCmd_LoadScript,				"loadscript",         "loscr",          "로드스크립트",   "로스",    TCM_BOTH  , AUTH_ADMINISTRATOR   , "스크립트 다시 읽기" )
 	ON_TEXTCMDFUNC( TextCmd_ReloadConstant,			"ReloadConstant",     "rec",            "리로드콘스탄트", "리콘",    TCM_SERVER, AUTH_ADMINISTRATOR, "리로드 콘스탄트파일" )
-	ON_TEXTCMDFUNC( TextCmd_CTD,					"ctd",				 "ctd",            "이벤트듀얼존",   "이듀",    TCM_BOTH  , AUTH_ADMINISTRATOR   , "이벤트 듀얼존 설정" )
 	ON_TEXTCMDFUNC( TextCmd_Piercing,				"Piercing",           "pier",           "피어싱",         "피싱",    TCM_BOTH  , AUTH_ADMINISTRATOR, "피어싱(소켓)" )
 	ON_TEXTCMDFUNC( TextCmd_PetLevel,				"petlevel",         "pl",          "펫레벨",     "펫레",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_PetExp,					"petexp",         "pe",          "펫경험치",     "펫경",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )

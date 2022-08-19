@@ -250,7 +250,7 @@ int CQuiz::TeleportToQuizEvent( CUser* pUser, int nZone )
 	int nRandz = xRandom(4) - 2;
 	vPos += D3DXVECTOR3( (float)( nRandx ), (float)( 0 ), (float)( nRandz ) );
 
-	pUser->REPLACE( g_uIdofMulti, WI_WORLD_QUIZ, vPos, REPLACE_NORMAL, nDefaultLayer );
+	pUser->Replace( WI_WORLD_QUIZ, vPos, REPLACE_NORMAL, nDefaultLayer );
 	return 0;
 }
 
@@ -637,7 +637,7 @@ bool CQuiz::IsPlayerOnLayer(const CObj * const pObj, int nLayer) {
 void CQuiz::GoOut( CUser* pUser )
 {
 //	if( !pUser->IsAuthHigher( AUTH_GAMEMASTER ) )
-		pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984f, 99.8f, 3336.884f ), REPLACE_NORMAL, nDefaultLayer );
+		pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984f, 99.8f, 3336.884f ), REPLACE_NORMAL, nDefaultLayer );
 }
 
 void CQuiz::CloseQuizEvent()

@@ -352,7 +352,7 @@ BOOL CGuildHouseBase::EnteranceGuildHouseRoom( CUser* pUser )
 	if( IsEnteranceAble( pUser ) )	
 	{
 		pUser->SetRestPointTick();
-		return pUser->REPLACE( g_uIdofMulti, m_dwWorldId, GetEnterPos(), REPLACE_NORMAL, static_cast<int>( m_dwGuildId ) );
+		return pUser->Replace( m_dwWorldId, GetEnterPos(), REPLACE_NORMAL, static_cast<int>( m_dwGuildId ) );
 	}
 
 	return FALSE;
@@ -361,7 +361,7 @@ BOOL CGuildHouseBase::EnteranceGuildHouseRoom( CUser* pUser )
 void CGuildHouseBase::GoOutGuildHouseRoom( CUser* pUser )
 {
 	if( IsValidObj( pUser ) && pUser->GetWorld()->GetID() == m_dwWorldId && pUser->GetLayer() == m_dwGuildId )
-		pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
+		pUser->Replace( WI_WORLD_MADRIGAL, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
 }
 
 void CGuildHouseBase::CheckDestroyRoom( CUser* pUser )
