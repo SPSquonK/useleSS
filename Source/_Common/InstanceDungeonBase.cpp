@@ -709,23 +709,17 @@ void CInstanceDungeonBase::SetLeaveMarkingPos( CUser* pUser, DWORD dwWorldId, D3
 	pUser->m_vMarkingPos = D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f );
 
 	CWorld* pWorld = g_WorldMng.GetWorld( dwWorldId );
-	if( !pWorld )
-		return;
+	if (!pWorld) return;
 
-	float fDist = static_cast<float>( INT_MAX );
-	for( int i = 0; i < pWorld->m_aRegion.GetSize(); i++ )
-	{
-		REGIONELEM * lpRegionElem = pWorld->m_aRegion.GetAt( i );
-		if( !lpRegionElem || lpRegionElem->m_dwIdTeleWorld == WI_WORLD_NONE )
-			continue;
-		const auto delta = vPos - lpRegionElem->m_vPos;
-		float fTemp = D3DXVec3LengthSq( &delta );
-		if( fTemp < fDist )
-		{
-			fDist = fTemp;
-			pUser->m_vMarkingPos = lpRegionElem->m_vTeleWorld;
-			pUser->m_idMarkingWorld = lpRegionElem->m_dwIdTeleWorld;
+	const REGIONELEM * closest = pWorld->m_aRegion.FindClosest(vPos,
+		[&](const REGIONELEM & lpRegionElem) {
+			return lpRegionElem.m_dwIdTeleWorld != WI_WORLD_NONE;
 		}
+	);
+
+	if (closest) {
+		pUser->m_vMarkingPos = closest->m_vTeleWorld;
+		pUser->m_idMarkingWorld = closest->m_dwIdTeleWorld;
 	}
 }
 	
