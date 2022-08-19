@@ -1810,7 +1810,7 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 		m_vRemoval = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	}
 
-	const auto lpReplaceObj = std::ranges::find_if(
+	auto lpReplaceObj = std::ranges::find_if(
 		pWorld->m_ReplaceObj,
 		[&](const REPLACEOBJ & replaceObj) {
 			return replaceObj.pObj == this;
@@ -1818,8 +1818,8 @@ BOOL CMover::Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vP
 	);
 
 	if (lpReplaceObj == pWorld->m_ReplaceObj.end()) {
-		pWorld->m_ReplaceObj.push_back(REPLACEOBJ{ });
-		lpReplaceObj->pObj = this;
+		pWorld->m_ReplaceObj.emplace_back(REPLACEOBJ{ .pObj = this });
+		lpReplaceObj = pWorld->m_ReplaceObj.end() - 1;
 	}
 
 	lpReplaceObj->dwWorldID	 = dwWorldID;

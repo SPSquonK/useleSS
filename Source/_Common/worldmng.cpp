@@ -585,8 +585,7 @@ bool CWorldMng::HasNobody_Replace(const DWORD dwWorldId, const int nLayer) const
 
 	return std::ranges::all_of(m_worlds,
 		[&](const auto & pWorld) {
-			const auto it = std::ranges::find_if(pWorld->m_ReplaceObj, IsTargettedHere);
-			return it == pWorld->m_ReplaceObj.end();
+			return std::ranges::none_of(pWorld->m_ReplaceObj, IsTargettedHere);
 		}
 	);
 }

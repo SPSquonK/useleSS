@@ -83,17 +83,15 @@ struct ON_DIE {
 };
 #endif	// __WORLDSERVER
 
-typedef struct tagREPLACEOBJ
-{
-	CMover*		pObj;
+struct REPLACEOBJ {
+	CMover * pObj;
 	DWORD		dwWorldID;
 	D3DXVECTOR3	vPos;
-//	DWORD		dpid;
 	u_long		uIdofMulti;
 #ifdef __LAYER_1015
 	int		nLayer;
 #endif	// __LAYER_1015
-} REPLACEOBJ, *LPREPLACEOBJ; 
+};
 
 
 typedef std::vector< D3DXVECTOR3 >		Vec3D_Container;
@@ -210,12 +208,11 @@ public:
 
 	ExistingObjects<CObj, MAX_DYNAMICOBJ> m_Objs;
 
-	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
+	std::vector<CObj *> m_vecBackground;			// static 객체를 담는다.
 
 	std::vector<CObj *> m_aModifyLink;
 
-	static constexpr size_t MAX_REPLACEOBJ = 1024;
-	boost::container::small_vector<REPLACEOBJ, MAX_REPLACEOBJ> m_ReplaceObj;
+	std::vector<REPLACEOBJ> m_ReplaceObj;
 
 //	CRIT_SEC		m_AddRemoveLock;
 	int				m_cbAddObjs;

@@ -89,6 +89,7 @@ m_cbRunnableObject( 0 )
 	memset( m_lpszWorld, 0, sizeof(TCHAR) * 64 );
 	m_cbUser	= 0;
 	m_aModifyLink.reserve(/* MAX_MODIFYLINK */ 4096);
+	m_ReplaceObj.reserve(/* MAX_REPLACEOBJ */ 1024);
 	m_bLoadScriptFlag = FALSE;
 
 #else	// __WORLDSERVER
@@ -1442,29 +1443,33 @@ void CWorld::_modifylink() {
 
 void CWorld::_delete( void )
 {
-	CObj* pObj;
-
 	for( int i = 0; i < m_nDeleteObjs; i++ )
 	{
-		pObj	= m_apDeleteObjs[i];
+		CObj * pObj	= m_apDeleteObjs[i];
+		if (!pObj) continue;
 
-		for (REPLACEOBJ & replaceObj : m_ReplaceObj) {
-			if (replaceObj.pObj == pObj) {
-				replaceObj.pObj = nullptr;
+		// Remove from replace obj
+		const auto itReplace = std::ranges::find_if(m_ReplaceObj,
+			[pObj](const REPLACEOBJ & replaceObj) {
+				return replaceObj.pObj == pObj;
 			}
+		);
+		if (itReplace != m_ReplaceObj.end()) {
+			itReplace->pObj = nullptr;
 		}
 
+		// Remove from modify link
 		const auto itRemoval = std::ranges::find(m_aModifyLink, pObj);
 		if (itRemoval != m_aModifyLink.end()) {
 			(*itRemoval) = nullptr;
-			pObj->m_vRemoval	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
+			pObj->m_vRemoval = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
 
-#ifdef __WORLDSERVER
-		if( !pObj->IsVirtual() )
-#endif	// __WORLDSERVER
-			RemoveObjLink( pObj );
-		DestroyObj( pObj );
+		// Remove from world and delete
+		if (!pObj->IsVirtual())
+			RemoveObjLink(pObj);
+		
+		DestroyObj(pObj);
 	}
 	m_nDeleteObjs	= 0;
 }
@@ -1474,13 +1479,13 @@ void CWorld::DestroyObj( CObj* pObj )
 	RemoveObjArray( pObj );
 #ifdef __WORLDSERVER
 	CNpcChecker::GetInstance()->RemoveNpc( pObj );
-#endif	// __WORLDSERVER
+#endif
 	SAFE_DELETE( pObj );
 }
 
 void CWorld::_replace( void )
 {
-	for (const auto & replaceObj : m_ReplaceObj) {
+	for (const REPLACEOBJ & replaceObj : m_ReplaceObj) {
 		CMover * const pMover	= replaceObj.pObj;
 		if( ::IsInvalidObj( pMover ) )
 			continue;
@@ -1506,15 +1511,14 @@ void CWorld::_replace( void )
 				vPos.y = 100.0f;
 				vPos.y = GetFullHeight( vPos );  // 검사 
 			}
-			g_UserMng.AddSetPos( (CCtrl*)pMover, vPos );
-			//vPos.y = GetFullHeight( vPos );  // 검사 
+			g_UserMng.AddSetPos( pMover, vPos );
 			pMover->SetPos( vPos );
 			if( pMover->IsPlayer() )
 				( (CUser*)pMover )->Notify();	
 		}
 		else
 		{	
-			if( pMover->IsPlayer() == FALSE )
+			if( !pMover->IsPlayer() )
 				continue;
 
 			CUser* pUser = (CUser*)pMover;
@@ -1552,10 +1556,8 @@ void CWorld::_replace( void )
 					if( pHousing )
 					{
 						pUser->AddHousingPaperingInfo( NULL_ID, FALSE );	// 벽지 및 장판 초기화
-						std::vector<DWORD> vecTemp = pHousing->GetAllPaperingInfo();
-						for( DWORD i=0; i<vecTemp.size(); i++ )
-						{
-							pUser->AddHousingPaperingInfo( vecTemp[i], TRUE );
+						for (const DWORD paperInfo : pHousing->GetAllPaperingInfo()) {
+							pUser->AddHousingPaperingInfo(paperInfo, TRUE);
 						}
 					}
 				}
