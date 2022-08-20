@@ -123,29 +123,31 @@ void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
 	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
 
 	DWORD dwSerial;
-	BYTE byData;
+	BYTE _byData;
 	ar >> dwSerial;
-	ar >> byData;	// 사용하지 않는다.
+	ar >> _byData;	// 사용하지 않는다.
+
+	// TODO: We look for the player by serial, then we destroy them by dpid?
+	// It is at least a code smell: is the dwSerial a value only managed server side?
+	// Are they unique?
 
 	CCachePlayer * pPlayer	= g_CachePlayerMng.GetPlayerBySerial( dwSerial );
-	if( pPlayer == NULL )
-	{
-		WriteLog( "CDPCoreClient::OnJoin - player not found" );
+	if (!pPlayer) {
+		WriteLog("CDPCoreClient::OnJoin - player not found");
 		return;
 	}
 
-	CDPClient* pClient = g_DPClientArray.GetClient( pPlayer->GetChannel(), pPlayer->GetWorld(), D3DXVECTOR3(0.0f, 0.0f, 0.0f) );
-	if( pClient )
-	{
-		pPlayer->SetClient( pClient );
-		pClient->SendJoin( pPlayer );
-	}
-	else
-	{
+	CDPClient* pClient = g_DPClientArray.GetClient( pPlayer->GetChannel(), pPlayer->GetWorld() );
+	
+	if (!pClient) {
 		WriteLog( "CDPCoreClient.OnJoin: server not found id: %d account: %s player: %s world: %d",
 			      pPlayer->GetPlayerId(), pPlayer->GetAccount(), pPlayer->GetPlayer(), pPlayer->GetWorld() );
 		g_DPCacheSrvr.DestroyPlayer( dpid );
+		return;
 	}
+
+	pPlayer->SetClient(pClient);
+	pClient->SendJoin(pPlayer);
 }
 
 void CDPCoreClient::OnLeave( CAr & ar, DPID dpid )

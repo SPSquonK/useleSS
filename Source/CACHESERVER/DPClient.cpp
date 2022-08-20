@@ -236,21 +236,18 @@ BOOL CDPClientArray::Remove( CDPClient* pClient )
 	return FALSE;
 }
 
-CDPClient* CDPClientArray::GetClient( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos )
+CDPClient* CDPClientArray::GetClient( const u_long uIdofMulti, const DWORD dwWorldID )
 {
 	if( uIdofMulti == NULL_ID )
 		return NULL;
 
-	CDPClient* pClient;
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-	pClient		= m_pFirstActive;
-	while( pClient )
-	{
-		if( pClient->m_pServer->GetIdofMulti() == uIdofMulti &&
-			pClient->m_pServer->IsUnderJurisdiction( dwWorldID, vPos ) == TRUE )
+	for (CDPClient * pClient = m_pFirstActive; pClient; pClient = pClient->pNext) {
+		if (pClient->m_pServer->GetIdofMulti() == uIdofMulti
+			&& pClient->m_pServer->IsIntersected(dwWorldID)) {
 			return pClient;
-		pClient		= pClient->pNext;
+		}
 	}
 	return NULL;
 }

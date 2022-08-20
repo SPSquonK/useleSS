@@ -6,31 +6,9 @@
 #include "Ar.h"
 #include "MyMap.h"
 
-class CJurisdiction
-{
+class CJurisdiction {
 public:
-	DWORD	m_dwWorldID;
-//	CRect	m_rect;
-//	WORD	m_wLeft;
-//	WORD	m_wRight;
-public:
-	// Constructions
-	CJurisdiction()
-		{
-			m_dwWorldID	= NULL_ID;
-//			m_rect.SetRect( 0, 0, 0, 0 );
-//			m_wLeft		= m_wRight	= 0;
-		}
-	CJurisdiction( DWORD dwWorldID, const CRect & rect, WORD wLeft, WORD wRight )
-		{
-			m_dwWorldID	= dwWorldID;
-//			m_rect.CopyRect( rect );
-//			m_wLeft		= wLeft;
-//			m_wRight	= wRight;
-		}
-	virtual	~CJurisdiction()
-		{
-		}
+	DWORD	m_dwWorldID = NULL_ID;
 };
 
 #define NULL_POS_ATTR	(short)-32768
@@ -53,8 +31,8 @@ public:
 	virtual	~CServerDesc();
 
 //	Operations
-	BOOL	IsUnderJurisdiction( DWORD dwWorldID, const D3DVECTOR & vPos ) const;
-	BOOL	IsIntersected( DWORD dwWorldID ) const;
+	[[nodiscard]] bool IsIntersected(DWORD dwWorldID) const;
+
 //	Attributes
 #ifdef __S8_SERVER_PORT
 	void	SetKey( u_long uKey )	{	m_uKey	= uKey;		m_uIdofMulti	= uKey % 100;	}

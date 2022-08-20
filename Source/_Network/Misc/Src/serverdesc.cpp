@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <algorithm>
 #include "ServerDesc.h"
 #include "Data.h"
 #include "Landscape.h"
@@ -22,22 +23,12 @@ CServerDesc::~CServerDesc()
 	}
 }
 
-BOOL CServerDesc::IsUnderJurisdiction(const DWORD dwWorldID, const D3DVECTOR & vPos) const {
-	int x	= (int)( vPos.x / MPU / MAP_SIZE );
-	int z	= (int)( vPos.z / MPU / MAP_SIZE );
-
-	return IsIntersected(dwWorldID);
-}
-
-BOOL CServerDesc::IsIntersected(const DWORD dwWorldID) const {
-	const auto i = std::find_if(
-		m_lspJurisdiction.begin(), m_lspJurisdiction.end(),
+bool CServerDesc::IsIntersected(const DWORD dwWorldID) const {
+	return std::ranges::any_of(m_lspJurisdiction,
 		[dwWorldID](const CJurisdiction * const juridiction) {
 			return juridiction->m_dwWorldID == dwWorldID;
 		}
 	);
-
-	return (i != m_lspJurisdiction.end()) ? TRUE : FALSE;
 }
 
 CAr & operator<<(CAr & ar, const CServerDesc & self) {

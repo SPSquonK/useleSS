@@ -122,7 +122,7 @@ public:
 private:
 	DPID	GetWorldSrvrDPID( u_long uWorldSrvr );
 private:
-	DPID	GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos );
+	DPID	GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID );
 	u_long	GetIdofMulti( DPID dpid );
 
 public:
@@ -205,30 +205,19 @@ inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uWorldSrvr )
 #endif	// __STL_0402
 }
 
-inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos )
+inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID )
 {
 	if( uIdofMulti == NULL_ID )
 		return DPID_UNKNOWN;
 
-#ifdef __STL_0402
 	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
 	{
 		CServerDesc* pServer	= i->second;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsUnderJurisdiction( dwWorldID, vPos ) )
+		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
 			return (DPID)i->first;
 	}
 	return DPID_UNKNOWN;
-#else	// __STL_0402
-	CMyBucket<CServerDesc*> *pBucket	= m_apServer.GetFirstActive();
-	while( pBucket )
-	{
-		CServerDesc* pServer	= pBucket->m_value;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsUnderJurisdiction( dwWorldID, vPos ) )
-			return (DPID)pBucket->m_dwKey;
-		pBucket		= pBucket->pNext;
-	}
-	return DPID_UNKNOWN;
-#endif	// __STL_0402
+
 	
 }
 

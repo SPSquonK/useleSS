@@ -61,7 +61,7 @@ public:
 
 	void	Add( CDPClient* pClient );
 	BOOL	Remove( CDPClient* pRemove );
-	CDPClient*	GetClient( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos );
+	CDPClient*	GetClient( u_long uIdofMulti, DWORD dwWorldID );
 	void	SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize );
 };
 

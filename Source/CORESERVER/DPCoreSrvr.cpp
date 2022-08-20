@@ -147,7 +147,7 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 						ar >> vPos;
 						u_long uIdofMulti	= GetIdofMulti( idFrom );
 						if( uIdofMulti == NULL_ID )		break;
-						dpid	= GetWorldSrvrDPID( uIdofMulti, dwWorldID, vPos );
+						dpid	= GetWorldSrvrDPID( uIdofMulti, dwWorldID );
 					}
 					else {
 						dpid	= DPID_UNKNOWN;
@@ -467,7 +467,6 @@ void CDPCoreSrvr::OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-#ifdef __STL_0402
 	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
 	{
 		CServerDesc* pServer	= i->second;
@@ -476,21 +475,6 @@ void CDPCoreSrvr::OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long )
 			SendPlayMusic( idmusic, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
 		}
 	}
-#else	// __STL_0402
-
-	CServerDesc* pServer;
-	CMyBucket<CServerDesc*>* pBucket	= m_apServer.GetFirstActive();
-	while( pBucket )
-	{
-		pServer		= pBucket->m_value;
-		ASSERT( pServer );
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlayMusic( idmusic, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-		pBucket		= pBucket->pNext;
-	}
-#endif	// __STL_0402
 }
 
 void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
@@ -504,7 +488,6 @@ void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-#ifdef __STL_0402
 	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
 	{
 		CServerDesc* pServer	= i->second;
@@ -513,20 +496,6 @@ void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
 			SendPlaySound( idsound, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
 		}
 	}
-#else	// __STL_0402
-	CServerDesc* pServer;
-	CMyBucket<CServerDesc*>* pBucket	= m_apServer.GetFirstActive();
-	while( pBucket )
-	{
-		pServer		= pBucket->m_value;
-		ASSERT( pServer );
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlaySound( idsound, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-		pBucket		= pBucket->pNext;
-	}
-#endif	// __STL_0402
 }
 
 void CDPCoreSrvr::OnKillPlayer( CAr & ar, DPID, DPID, DPID, u_long )
