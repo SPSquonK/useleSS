@@ -1810,11 +1810,20 @@ BOOL TextCmd_Summon(CScanner & scanner, CPlayer_ * pUser) {
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idPlayer > 0 ){
 			strcpy( lpszPlayer, scanner.Token );
-#ifdef __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), idPlayer, pUser->GetLayer() );
-#else	// __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), idPlayer );
-#endif	// __LAYER_1015
+
+			CUser * summoned = g_UserMng.GetUserByPlayerID(idPlayer);
+
+			if (!IsValidObj(summoned)) {
+				pUser->AddReturnSay(1, lpszPlayer);
+				return FALSE;
+			}
+
+			if (!pUser->GetWorld()) {
+				WriteError("PACKETTYPE_SUMMONPLAYER//1");
+				return FALSE;
+			}
+
+			summoned->Replace(*pUser, REPLACE_FORCE);
 		}
 		else {
 //			scanner.Token라는 이름을 가진 사용자는 이 게임에 존재하지 않는다.

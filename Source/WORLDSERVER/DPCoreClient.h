@@ -70,11 +70,6 @@ public:
 	void	SendGMSay( u_long idPlayer, DWORD dwWorldID, const CHAR* lpString );
 	void	SendPlayMusic( DWORD dwWorldID, u_long idmusic );
 	void	SendPlaySound( DWORD dwWorldID, u_long idsound );
-#ifdef __LAYER_1015
-	void	SendSummonPlayer( u_long idOperator, DWORD dwWorldID, const D3DXVECTOR3 & vPos, u_long idPlayer, int nLayer );
-#else	// __LAYER_1015
-	void	SendSummonPlayer( u_long idOperator, DWORD dwWorldID, const D3DXVECTOR3 & vPos, u_long idPlayer );
-#endif	// __LAYER_1015
 	void	SendKillPlayer( u_long idOperator, u_long idPlayer );
 	void	SendGetPlayerAddr( u_long idOperator, u_long idPlayer );
 	void	SendGetPlayerCount( u_long idOperator );
@@ -222,7 +217,6 @@ protected:
 	void	OnPing( CAr & ar, DPID, DPID, DPID );
 
 
-	void OnSummonPlayer(CAr & ar, DPID, DPID, DPID);
 	void OnBuyingInfo(CAr & ar, DPID, DPID, DPID);
 	void OnModifyMode(CAr & ar, DPID, DPID, DPID);
 };

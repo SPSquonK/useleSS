@@ -38,7 +38,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_GMSAY, &CDPCoreSrvr::OnGMSay );
 	ON_MSG( PACKETTYPE_PLAYMUSIC, &CDPCoreSrvr::OnPlayMusic );
 	ON_MSG( PACKETTYPE_PLAYSOUND, &CDPCoreSrvr::OnPlaySound );
-	ON_MSG( PACKETTYPE_SUMMONPLAYER, &CDPCoreSrvr::OnSummonPlayer );
 	ON_MSG( PACKETTYPE_KILLPLAYER, &CDPCoreSrvr::OnKillPlayer );
 	ON_MSG( PACKETTYPE_GETPLAYERADDR, &CDPCoreSrvr::OnGetPlayerAddr );
 	ON_MSG( PACKETTYPE_GETPLAYERCOUNT, &CDPCoreSrvr::OnGetPlayerCount );
@@ -528,43 +527,6 @@ void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
 		pBucket		= pBucket->pNext;
 	}
 #endif	// __STL_0402
-}
-
-void CDPCoreSrvr::OnSummonPlayer( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	DWORD dwWorldID;
-	u_long idOperator, idPlayer;
-	D3DXVECTOR3 vPos;
-
-	ar >> idOperator;
-	u_long uIdofMulti;
-	ar >> uIdofMulti;
-	ar >> dwWorldID;
-	ar >> vPos >> idPlayer;
-#ifdef __LAYER_1015
-	int nLayer;
-	ar >> nLayer;
-#endif	// __LAYER_1015
-
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CPlayer * pOperator	= g_PlayerMng.GetPlayer( idOperator );
-	CPlayer * pPlayer		= g_PlayerMng.GetPlayer( idPlayer );
-
-	if( pOperator && pPlayer )
-	{
-		// TODO: unbroadcast
-		BroadcastPacket<PACKETTYPE_SUMMONPLAYER>(
-			pPlayer->uKey, dwWorldID, vPos, uIdofMulti
-#ifdef __LAYER_1015
-			, nLayer
-#endif	// __LAYER_1015
-			);
-	}
-	else
-	{
-		g_DPCacheSrvr.SendSay( "", "", idOperator, idPlayer, "", pOperator, 1 ); // 플레이어가 접속중이지 않습니다. 
-		// player not found
-	}
 }
 
 void CDPCoreSrvr::OnKillPlayer( CAr & ar, DPID, DPID, DPID, u_long )

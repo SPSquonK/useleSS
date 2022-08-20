@@ -124,7 +124,6 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_SETCOOLTIME, &CDPCoreClient::OnInstanceDungeonSetCoolTimeInfo );
 	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_DELETECOOLTIME, &CDPCoreClient::OnInstanceDungeonDeleteCoolTimeInfo );
 	
-	ON_MSG(PACKETTYPE_SUMMONPLAYER, &CDPCoreClient::OnSummonPlayer);
 	ON_MSG(PACKETTYPE_BUYING_INFO, &CDPCoreClient::OnBuyingInfo);
 	ON_MSG(PACKETTYPE_MODIFYMODE, &CDPCoreClient::OnModifyMode);
 
@@ -529,23 +528,6 @@ void CDPCoreClient::SendPlaySound( DWORD dwWorldID, u_long idsound )
 	ar << g_uIdofMulti;
 	ar << dwWorldID;
 	ar << idsound;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-#ifdef __LAYER_1015
-void CDPCoreClient::SendSummonPlayer( u_long idOperator, DWORD dwWorldID, const D3DXVECTOR3 & vPos, u_long idPlayer, int nLayer )
-#else	// __LAYER_1015
-void CDPCoreClient::SendSummonPlayer( u_long idOperator, DWORD dwWorldID, const D3DXVECTOR3 & vPos, u_long idPlayer )
-#endif	// __LAYER_1015
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_SUMMONPLAYER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idOperator;
-	ar << g_uIdofMulti;
-	ar << dwWorldID;
-	ar << vPos << idPlayer;
-#ifdef __LAYER_1015
-	ar << nLayer;
-#endif	// __LAYER_1015
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -2674,31 +2656,6 @@ void CDPCoreClient::SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nC
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 #endif // __QUIZ
-
-
-
-// 운영자의 소환 명령어 
-void CDPCoreClient::OnSummonPlayer( CAr & ar, DPID, DPID, DPID) {
-	const auto [
-		teleported, dwWorldID, vPos, uIdofMulti
-	] = ar.Extract<u_long, DWORD, D3DXVECTOR3, u_long>();
-
-	CUser * pUser = g_UserMng.GetUserByPlayerID(teleported);
-
-	if (!IsValidObj(pUser)) return;
-	if (uIdofMulti != g_uIdofMulti) return;
-
-#ifdef __LAYER_1015
-	int nLayer; ar >> nLayer;
-#endif	// __LAYER_1015
-
-	if (!pUser->GetWorld()) {
-		WriteError("PACKETTYPE_SUMMONPLAYER//1");
-		return;
-	}
-
-	pUser->Replace( dwWorldID, vPos, REPLACE_FORCE, nLayer );
-}
 
 void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
 {
