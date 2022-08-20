@@ -4,40 +4,14 @@
 #include "Data.h"
 #include "Landscape.h"
 
-CServerDesc::CServerDesc()
-{
-	m_uIdofMulti	= 0;
-	m_uKey	= 0;
-	*m_szAddr	= '\0';
-//	memset( m_szAddr, 0, sizeof(m_szAddr) );
-}
-
-CServerDesc::~CServerDesc()
-{
-	CJurisdiction* pJurisdiction;
-	while( m_lspJurisdiction.size() > 0 )
-	{
-		pJurisdiction	= m_lspJurisdiction.front();
-		m_lspJurisdiction.pop_front();
-		safe_delete( pJurisdiction );
-	}
-}
-
-bool CServerDesc::IsIntersected(const DWORD dwWorldID) const {
-	return std::ranges::any_of(m_lspJurisdiction,
-		[dwWorldID](const CJurisdiction * const juridiction) {
-			return juridiction->m_dwWorldID == dwWorldID;
-		}
-	);
-}
 
 CAr & operator<<(CAr & ar, const CServerDesc & self) {
 	ar << self.m_uKey;
 	ar << static_cast<std::uint32_t>(self.m_lspJurisdiction.size());
-	for (const auto & juridiction : self.m_lspJurisdiction) {
-		ar << juridiction->m_dwWorldID;
+	for (const WorldId & jurisdiction : self.m_lspJurisdiction) {
+		ar << jurisdiction;
 	}
-	ar.WriteString(self.m_szAddr);
+	ar << self.m_szAddr;
 	return ar;
 }
 
@@ -45,14 +19,15 @@ CAr & operator>>(CAr & ar, CServerDesc & self) {
 	u_long uKey; ar >> uKey;
 	self.SetKey(uKey);
 
+	self.m_lspJurisdiction.clear();
 	std::uint32_t nSize;
 	ar >> nSize;
 	for (std::uint32_t i = 0; i < nSize; i++) {
-		CJurisdiction * pJurisdiction = new CJurisdiction;
-		ar >> pJurisdiction->m_dwWorldID;
-		self.m_lspJurisdiction.push_back(pJurisdiction);
+		WorldId pJurisdiction; ar >> pJurisdiction;
+		self.m_lspJurisdiction.emplace(pJurisdiction);
 	}
-	ar.ReadString(self.m_szAddr);
+
+	ar >> self.m_szAddr;
 
 	return ar;
 }

@@ -28,8 +28,8 @@ public:
 	}
 
 	void SetListOfMaps(
-		std::vector<std::pair<DWORD, std::string>> worlds,
-		std::vector<DWORD> invalidWorlds
+		std::vector<std::pair<WorldId, std::string>> worlds,
+		std::vector<WorldId> invalidWorlds
 	);
 
 	void UpdateConnectionState(ConnectedTo connectedTo) { m_connectedTo = connectedTo; }
@@ -38,8 +38,8 @@ public:
 	void Redraw();
 
 private:
-	[[nodiscard]] static std::string ExistingWorldsToString(const std::vector<std::pair<DWORD, std::string>> & worlds);
-	[[nodiscard]] static std::string InvalidWorldsToString(const std::vector<DWORD> & invalidWorlds);
+	[[nodiscard]] static std::string ExistingWorldsToString(const std::vector<std::pair<WorldId, std::string>> & worlds);
+	[[nodiscard]] static std::string InvalidWorldsToString(const std::vector<WorldId> & invalidWorlds);
 
 private:
 	std::array<StaticString<256>, LOGTYPE_MAX> g_szBuffer;

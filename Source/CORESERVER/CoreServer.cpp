@@ -496,12 +496,11 @@ BOOL Script( LPCSTR lpszFileName )
 				{
 					while( s.GetToken() != DELIMITER )
 					{
-						CJurisdiction* pJurisdiction	= new CJurisdiction;
-						pJurisdiction->m_dwWorldID	= (DWORD)_ttoi( s.Token );
+						const WorldId pJurisdiction = static_cast<WorldId>(_ttoi(s.Token));
+						pServer->m_lspJurisdiction.emplace(pJurisdiction);
 						/* Ignore x y cx cy left right */
 						s.GetNumber(); s.GetNumber(); s.GetNumber();
 						s.GetNumber(); s.GetNumber();	s.GetNumber();
-						pServer->m_lspJurisdiction.push_back( pJurisdiction );
 					}
 				}
 		#ifdef __STL_0402

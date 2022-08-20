@@ -33,7 +33,7 @@ public:
 
 	void		Free();
 	CWorld*		GetWorld( DWORD dwWorldID );
-	void		Add( CJurisdiction* pJurisdiction );
+	void Add(WorldId pJurisdiction);
 	void		ReadObject();
 	void		Process();
 	[[nodiscard]] bool HasSomeoneGoingTo(DWORD dwWorldId, int nLayer) const;

@@ -409,11 +409,7 @@ BOOL Script( LPCSTR lpszFileName )
 		else if( s.Token == "Key" )
 		{
 			g_uKey		 = (DWORD)s.GetNumber();
-#ifdef __S8_SERVER_PORT
 			g_uIdofMulti = g_uKey % 100;
-#else // __S8_SERVER_PORT
-			g_uIdofMulti = g_uKey / 100;
-#endif // __S8_SERVER_PORT
 		}
 		else if( s.Token == "Core" )
 		{
