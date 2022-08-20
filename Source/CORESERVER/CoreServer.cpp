@@ -503,7 +503,7 @@ BOOL Script( LPCSTR lpszFileName )
 						s.GetNumber(); s.GetNumber();	s.GetNumber();
 					}
 				}
-				bool bResult	= g_dpCoreSrvr.m_apSleepServer.insert( CServerDescArray::value_type( pServer->GetKey(), pServer ) ).second;
+				const bool bResult = g_dpCoreSrvr.m_apSleepServer.emplace(pServer->GetKey(), pServer).second;
 				ASSERT( bResult );
 				g_MyTrace.Add( pServer->GetKey(), TRUE, "%04d", pServer->GetKey() );
 			}

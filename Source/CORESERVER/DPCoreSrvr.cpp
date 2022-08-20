@@ -178,7 +178,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 
 	CMclAutoLock Lock( m_AccessLock );
 
-	CServerDescArray::iterator i	= m_apSleepServer.find( uWorldSrvr );
+	auto i	= m_apSleepServer.find( uWorldSrvr );
 	if( i != m_apSleepServer.end() )
 	{
 		CServerDesc* pServerDesc	= i->second;
@@ -188,7 +188,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		GetPlayerAddr( dpid, pServerDesc->m_szAddr );
 
 		
-		bool bResult	= m_apServer.insert( CServerDescArray::value_type( dpid, pServerDesc ) ).second;
+		bool bResult	= m_apServer.emplace(dpid, pServerDesc).second;
 		ASSERT( bResult );
 		bResult	= m_toHandle.emplace(uWorldSrvr, dpid).second;
 		ASSERT( bResult );
@@ -237,24 +237,23 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 {
 	CMclAutoLock Lock( m_AccessLock );
 
-	CServerDescArray::iterator i	= m_apServer.find( dpid );
-	if( i != m_apServer.end() )
-	{
-		CServerDesc* pServerDesc	= i->second;
+	auto i = m_apServer.find(dpid);
+	if (i == m_apServer.end()) return;
 
-		ULONG uWorldSrvr	= pServerDesc->GetKey();
+	CServerDesc * pServerDesc = i->second;
 
-		m_apServer.erase( i );
-		bool bResult	= m_apSleepServer.insert( CServerDescArray::value_type( uWorldSrvr, pServerDesc ) ).second;
-		m_toHandle.erase( uWorldSrvr );
-		g_MyTrace.Add( uWorldSrvr, TRUE, "%04d", uWorldSrvr );
+	const ULONG uWorldSrvr = pServerDesc->GetKey();
+
+	m_apServer.erase(i);
+	bool bResult	= m_apSleepServer.emplace( uWorldSrvr, pServerDesc ).second;
+	m_toHandle.erase(uWorldSrvr);
+	g_MyTrace.Add( uWorldSrvr, TRUE, "%04d", uWorldSrvr );
 
 #ifdef __SERVERLIST0911
-		g_dpDatabaseClient.SendServerEnable( uWorldSrvr, 0L );
+	g_dpDatabaseClient.SendServerEnable( uWorldSrvr, 0L );
 #endif	// __SERVERLIST0911
 
-		CInstanceDungeonHelper::GetInstance()->DestroyAllDungeonByMultiKey( uWorldSrvr );
-	}
+	CInstanceDungeonHelper::GetInstance()->DestroyAllDungeonByMultiKey( uWorldSrvr );
 }
 
 void CDPCoreSrvr::SendQueryTickCount( DWORD dwTime, DPID dpid, double dCurrentTime )

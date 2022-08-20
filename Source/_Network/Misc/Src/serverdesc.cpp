@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <algorithm>
+#include <ranges>
 #include "ServerDesc.h"
 #include "Data.h"
 #include "Landscape.h"
@@ -33,31 +34,17 @@ CAr & operator>>(CAr & ar, CServerDesc & self) {
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-CServerDescArray::CServerDescArray()
-{
-}
 
-CServerDescArray::~CServerDescArray()
-{
-	Free();
-}
 
-void CServerDescArray::Free( void )
-{
-	CMclAutoLock Lock( m_AddRemoveLock );
-
-	for( auto i = begin(); i != end(); ++i )
-	{
-		CServerDesc* pServer	= i->second;
-		SAFE_DELETE( pServer );
+CServerDescArray::~CServerDescArray() {
+	for (CServerDesc *& pServer : *this | std::views::values) {
+		SAFE_DELETE(pServer);
 	}
-	clear();
 }
 
-CServerDesc* CServerDescArray::GetAt( ULONG uKey )
-{
-	CServerDescArray::iterator i = find( uKey );
-	if( i != end() )
+CServerDesc * CServerDescArray::GetAt(ULONG uKey) {
+	auto i = find(uKey);
+	if (i != end())
 		return i->second;
 	return NULL;
 }

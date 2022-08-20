@@ -31,19 +31,9 @@ public:
 	friend CAr & operator>>(CAr & ar, CServerDesc & self);
 };
 
-class CServerDescArray : public std::map<u_long, CServerDesc*>
-{
+class CServerDescArray final : public std::map<u_long, CServerDesc*> {
 public:
-	CMclCritSec		m_AddRemoveLock;
-
-public:
-	// Constructions
-	CServerDescArray();
-	virtual	~CServerDescArray();
-	
-	void Free( void );
-
-	// Operations
-	CServerDesc*	GetAt( ULONG uKey );
+	~CServerDescArray();
+	CServerDesc * GetAt(ULONG uKey);
 };
 
