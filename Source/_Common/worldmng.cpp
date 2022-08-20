@@ -84,7 +84,7 @@ void CWorldMng::Add( CJurisdiction* pJurisdiction )
 	CWorld* pWorld = GetWorld( pJurisdiction->m_dwWorldID );
 	if( pWorld )
 	{
-		pWorld->ReadWorld( pJurisdiction->m_rect );
+		pWorld->ReadWorld();
 	}
 	else
 	{
@@ -92,7 +92,7 @@ void CWorldMng::Add( CJurisdiction* pJurisdiction )
 
 		pWorld->m_dwWorldID	= pJurisdiction->m_dwWorldID;
 		pWorld->OpenWorld( MakePath( DIR_WORLD, lpWorld->m_szFileName ), TRUE );
-		pWorld->ReadWorld( pJurisdiction->m_rect );
+		pWorld->ReadWorld();
 
 		m_worlds.emplace(m_worlds.begin(), pWorld); // emplace front to mimic the base flyff code
 	}

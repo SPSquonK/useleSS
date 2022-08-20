@@ -45,9 +45,6 @@ CAr & operator<<(CAr & ar, const CServerDesc & self) {
 	ar << static_cast<std::uint32_t>(self.m_lspJurisdiction.size());
 	for (const auto & juridiction : self.m_lspJurisdiction) {
 		ar << juridiction->m_dwWorldID;
-		ar << juridiction->m_rect;
-		ar << juridiction->m_wLeft;
-		ar << juridiction->m_wRight;
 	}
 	ar.WriteString(self.m_szAddr);
 	return ar;
@@ -62,9 +59,6 @@ CAr & operator>>(CAr & ar, CServerDesc & self) {
 	for (std::uint32_t i = 0; i < nSize; i++) {
 		CJurisdiction * pJurisdiction = new CJurisdiction;
 		ar >> pJurisdiction->m_dwWorldID;
-		ar >> pJurisdiction->m_rect;
-		ar >> pJurisdiction->m_wLeft;
-		ar >> pJurisdiction->m_wRight;
 		self.m_lspJurisdiction.push_back(pJurisdiction);
 	}
 	ar.ReadString(self.m_szAddr);

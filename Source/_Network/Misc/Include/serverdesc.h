@@ -10,23 +10,23 @@ class CJurisdiction
 {
 public:
 	DWORD	m_dwWorldID;
-	CRect	m_rect;
-	WORD	m_wLeft;
-	WORD	m_wRight;
+//	CRect	m_rect;
+//	WORD	m_wLeft;
+//	WORD	m_wRight;
 public:
 	// Constructions
 	CJurisdiction()
 		{
 			m_dwWorldID	= NULL_ID;
-			m_rect.SetRect( 0, 0, 0, 0 );
-			m_wLeft		= m_wRight	= 0;
+//			m_rect.SetRect( 0, 0, 0, 0 );
+//			m_wLeft		= m_wRight	= 0;
 		}
 	CJurisdiction( DWORD dwWorldID, const CRect & rect, WORD wLeft, WORD wRight )
 		{
 			m_dwWorldID	= dwWorldID;
-			m_rect.CopyRect( rect );
-			m_wLeft		= wLeft;
-			m_wRight	= wRight;
+//			m_rect.CopyRect( rect );
+//			m_wLeft		= wLeft;
+//			m_wRight	= wRight;
 		}
 	virtual	~CJurisdiction()
 		{

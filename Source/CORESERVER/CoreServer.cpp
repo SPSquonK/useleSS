@@ -451,9 +451,6 @@ void OnTimer( WORD wTimerID )
 BOOL Script( LPCSTR lpszFileName )
 {
 	CScanner s;
-	CServerDesc* pServer;
-	POINT topLeft;
-	SIZE	size;
 
 	if( s.Load( lpszFileName ) )
 	{
@@ -491,7 +488,7 @@ BOOL Script( LPCSTR lpszFileName )
 			}
 			else
 			{
-				pServer		= new CServerDesc;
+				CServerDesc * pServer		= new CServerDesc;
 				u_long uKey	= (u_long)_ttoi( s.Token );
 				pServer->SetKey( uKey );
 
@@ -501,10 +498,9 @@ BOOL Script( LPCSTR lpszFileName )
 					{
 						CJurisdiction* pJurisdiction	= new CJurisdiction;
 						pJurisdiction->m_dwWorldID	= (DWORD)_ttoi( s.Token );
-						topLeft.x	= s.GetNumber();	topLeft.y	= s.GetNumber();
-						size.cx		= s.GetNumber();	size.cy		= s.GetNumber();
-						pJurisdiction->m_rect.SetRect( topLeft.x, topLeft.y, topLeft.x + size.cx, topLeft.y + size.cy );
-						pJurisdiction->m_wLeft	= s.GetNumber();	pJurisdiction->m_wRight		= s.GetNumber();
+						/* Ignore x y cx cy left right */
+						s.GetNumber(); s.GetNumber(); s.GetNumber();
+						s.GetNumber(); s.GetNumber();	s.GetNumber();
 						pServer->m_lspJurisdiction.push_back( pJurisdiction );
 					}
 				}
