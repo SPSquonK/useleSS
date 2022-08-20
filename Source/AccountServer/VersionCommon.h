@@ -8,7 +8,6 @@
 
 #define		__SERVER				// 클라이언트 전용코드를 빌드하지 않기 위한 define
 //#define	__S0114_RELOADPRO		// 캐릭터 DB에서 읽어오기 : Neuz, Trans, login, World, Certifier, Account( ini : SKIP_TRACKING 추가 )
-#define		__STL_0402		// stl
 
 #if (_MSC_VER > 1200)
 #define		__VS2003		// 컴파일러변경.net

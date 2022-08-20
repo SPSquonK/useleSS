@@ -20,7 +20,6 @@
 //	mulcom	END100415	DB_OVERLAPPED_PLUS 메모리 풀 사용.
 
 #define		__SKILL_0205				// 스킬 변경 부분만 저장
-#define		__STL_0402					// stl
 
 #define		__ITEMDROPRATE				// 아이템 드롭률 조정(이벤트)
 #define		__EVENT_1101_2				// 출첵 이벤트 64비트 변경

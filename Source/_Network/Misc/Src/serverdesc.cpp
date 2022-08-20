@@ -35,9 +35,6 @@ CAr & operator>>(CAr & ar, CServerDesc & self) {
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 CServerDescArray::CServerDescArray()
 {
-#ifndef __STL_0402
-	SetSize( 16, 16, 8 );	
-#endif	// __STL_0402
 }
 
 CServerDescArray::~CServerDescArray()
@@ -49,35 +46,18 @@ void CServerDescArray::Free( void )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );
 
-#ifdef __STL_0402
 	for( auto i = begin(); i != end(); ++i )
 	{
 		CServerDesc* pServer	= i->second;
 		SAFE_DELETE( pServer );
 	}
 	clear();
-#else	// __STL_0402
-	CMyBucket<CServerDesc*>* pBucket	= GetFirstActive();
-	while( pBucket )
-	{
-		safe_delete( pBucket->m_value );
-		pBucket		= pBucket->pNext;
-	}
-	ClearActiveList();
-#endif	// __STL_0402
 }
 
 CServerDesc* CServerDescArray::GetAt( ULONG uKey )
 {
-#ifdef __STL_0402
 	CServerDescArray::iterator i = find( uKey );
 	if( i != end() )
 		return i->second;
 	return NULL;
-#else	// __STL_0402
-	CServerDesc* pDesc;
-	if( Lookup( uKey, pDesc ) )
-		return pDesc;
-	return NULL;
-#endif	// __STL_0402
 }

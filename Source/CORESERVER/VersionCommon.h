@@ -14,7 +14,6 @@
 #define		__MAP_SIZE						
 #define		__S8_SERVER_PORT		// 2006월 11월 7일 업데이트 - World, Cache, CoreServer
 #define		__EVE_NEWYEAR			// 신년 효과
-#define		__STL_0402				// stl
 
 //
 //#define		__HACK_0516 // 미국 해킹 2차

@@ -17,7 +17,6 @@ typedef struct _socklist : public OVERLAPPED
 #define	MAX_BYTES	2000
 #endif	// __NEWDPMNG
 
-#ifdef __STL_0402
 class CMapChild : public std::map<DPID, CClientSock*>
 {
 public:
@@ -28,7 +27,6 @@ public:
 public:
 	CMclCritSec		m_AddRemoveLock;
 };
-#endif	// __STL_0402
 
 class CServerSock : public CSock  
 {
@@ -44,11 +42,7 @@ public:
 	BOOL	AcptRequest( int iIndex );
 #endif	// __NEWDPMNG
 
-#ifdef __STL_0402
 	CMapChild	m_mapChild;
-#else	// __STL_0402
-	CMyMap<CClientSock*>	m_mapChild;
-#endif	// __STL_0402
 
 	HANDLE* m_phCompletionPort;
 	u_long	m_uIoWorker;
@@ -107,17 +101,10 @@ inline int CServerSock::GetIoWorkerCount( void )	{	return m_uIoWorker;	}
 
 inline CSock* CServerSock::Get( SOCKET hSocket )
 {
-#ifdef __STL_0402
 	CMapChild::iterator i = m_mapChild.find( hSocket );
 	if( i != m_mapChild.end() )
 		return i->second;
 	return NULL;
-#else	// __STL_0402
-	CClientSock* pChild;
-	if( m_mapChild.Lookup( hSocket, pChild ) )
-		return pChild;
-	return NULL;
-#endif	// __STL_0402
 }
 
 #endif //__SERVERSOCK_H__

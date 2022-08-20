@@ -34,9 +34,7 @@ public:
 class CServerDescArray : public std::map<u_long, CServerDesc*>
 {
 public:
-#ifdef __STL_0402
 	CMclCritSec		m_AddRemoveLock;
-#endif	// __STL_0402
 
 public:
 	// Constructions

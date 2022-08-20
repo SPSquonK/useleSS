@@ -91,17 +91,10 @@ CLoginUser * CLoginUserMng::GetUser( const char* pKey )
 
 CLoginUser * CLoginUserMng::GetUser( DPID dpid )
 {
-#ifdef __STL_0402
 	const auto i = m_dpid2User.find( dpid );
 	if( i != m_dpid2User.end() )
 		return i->second;
 	return NULL;
-#else	// __STL_0402
-	CUser* pUser;
-	if( m_dpid2User.Lookup( dpid, pUser ) )
-		return pUser;
-	return NULL;
-#endif	// __STL_0402
 }
 
 BOOL CLoginUserMng::RemoveUser( DPID dpid )

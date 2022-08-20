@@ -14,9 +14,6 @@ CServerSockE::CServerSockE( BUFFER_TYPE nBufferType )
 	m_hClose	= (HANDLE)NULL;
 	m_hListen	= WSA_INVALID_EVENT;
 	m_pDPSock	= NULL;
-#ifndef __STL_0402
-	m_mapChild.SetSize( 512, 4096, 128 );
-#endif	// __STL_0402
 
 #ifdef __CRC
 	m_dwcrc		= dwcrc;
@@ -80,12 +77,8 @@ CClientSockE* CServerSockE::AddChild( SOCKET hSocket )
 #endif	// __CRC
 	pChild->Attach( hSocket );
 	m_mapChild.Lock();
-#ifdef __STL_0402
 	bool bResult	= m_mapChild.insert( CMapChildE::value_type( hSocket, pChild ) ).second;
 	ASSERT( bResult );
-#else	// __STL_0402
-	m_mapChild.SetAt( hSocket, pChild );
-#endif	// __STL_0402
 	m_mapChild.Unlock();
 	return pChild;
 }
@@ -93,7 +86,6 @@ CClientSockE* CServerSockE::AddChild( SOCKET hSocket )
 BOOL CServerSockE::CloseChild( SOCKET hSocket )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 	CMapChildE::iterator i	= m_mapChild.find( hSocket );
 	if( i != m_mapChild.end() )
 	{
@@ -104,26 +96,12 @@ BOOL CServerSockE::CloseChild( SOCKET hSocket )
 		return TRUE;
 	}
 	return FALSE;
-#else	// __STL_0402
-	CClientSockE* pChild;
-	if( m_mapChild.Lookup( hSocket, pChild ) )
-	{
-		m_mapChild.RemoveKey( hSocket );
-		if( pChild ) {
-			pChild->Close();
-			SAFE_DELETE( pChild );
-			return( TRUE );
-		}
-	}
-	return( FALSE );
-#endif	// __STL_0402
 }
 
 void CServerSockE::CloseAllChild( void )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 
-#ifdef __STL_0402
 	for( CMapChildE::iterator i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 	{
 		CClientSockE* pChild	= i->second;
@@ -131,19 +109,6 @@ void CServerSockE::CloseAllChild( void )
 		SAFE_DELETE( pChild );
 	}
 	m_mapChild.clear();
-#else	// __STL_0402
-	CMyBucket<CClientSockE*>* pBucket;
-	CClientSockE* pChild;
-	pBucket		= m_mapChild.GetFirstActive();
-	while( pBucket )
-	{
-		pChild	= pBucket->m_value;
-		TRACE( "~%x, %d\n", pChild, pChild->GetHandle() );
-		SAFE_DELETE( pChild );
-		pBucket	= pBucket->pNext;
-	}
-	m_mapChild.RemoveAll();
-#endif	// __STL_0402
 }
 
 void CServerSockE::Send( char* lpData, DWORD dwDataSize, DPID dpidTo )
@@ -152,36 +117,19 @@ void CServerSockE::Send( char* lpData, DWORD dwDataSize, DPID dpidTo )
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 
-#ifdef __STL_0402
 		for( CMapChildE::iterator i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 		{
 			CClientSockE* pChild	= i->second;
 			pChild->Send( lpData, dwDataSize, pChild->GetHandle() );
 		}
-#else	// __STL_0402
-		CClientSockE* pChild;
-		CMyBucket<CClientSockE*>* pBucket	= m_mapChild.GetFirstActive();
-		while( pBucket )
-		{
-			pChild	= pBucket->m_value;
-			pChild->Send( lpData, dwDataSize, pChild->GetHandle() );
-			pBucket	= pBucket->pNext;
-		}
-#endif	// __STL_0402
 	}
 	else
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 
-#ifdef __STL_0402
 		CClientSockE* pChild	= (CClientSockE*)Get( dpidTo );
 		if( pChild )
 			pChild->Send( lpData, dwDataSize, dpidTo );
-#else	// __STL_0402
-		CClientSockE* pChild;
-		if( m_mapChild.Lookup( dpidTo, pChild ) )
-			pChild->Send( lpData, dwDataSize, dpidTo );
-#endif	// __STL_0402
 	}
 	
 }
@@ -206,11 +154,7 @@ HRESULT CServerSockE::GetPeerAddr( DPID dpid, LPVOID lpAddr, LPDWORD lpdwSize )
 
 	ZeroMemory( &sin, sizeof(SOCKADDR_IN) );
 
-#ifdef __STL_0402
 	pSock	= (CClientSockE*)Get( hSocket );
-#else	// __STL_0402
-	m_mapChild.Lookup( hSocket, pSock );
-#endif	// __STL_0402
 	if( !pSock )
 		return DPERR_INVALIDPARAM;
 

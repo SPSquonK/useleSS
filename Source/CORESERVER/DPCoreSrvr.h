@@ -23,11 +23,7 @@ public:
 public:
 	CServerDescArray	m_apSleepServer;
 	CServerDescArray	m_apServer;	// active
-#ifdef __STL_0402
 	std::map<u_long, DPID>	m_toHandle;	// key to dpid
-#else	// __STL_0402
-	CMyMap<DPID>	m_toHandle;	// key to dpid
-#endif	// __STL_0402
 	CMclCritSec		m_AccessLock;
 	CObjMap		m_objmap;
 public:
@@ -192,17 +188,10 @@ extern CDPCoreSrvr g_dpCoreSrvr;
 
 inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uWorldSrvr )
 {
-#ifdef __STL_0402
 	const auto i	= m_toHandle.find( uWorldSrvr );
 	if( i != m_toHandle.end() )
 		return i->second;
 	return DPID_UNKNOWN;
-#else	// __STL_0402
-	DPID dpid;
-	if( m_toHandle.Lookup( uWorldSrvr, dpid ) )
-		return dpid;
-	return DPID_UNKNOWN;
-#endif	// __STL_0402
 }
 
 inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID )
@@ -223,16 +212,9 @@ inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID )
 
 inline u_long CDPCoreSrvr::GetIdofMulti( DPID dpid )
 {
-#ifdef __STL_0402
 	CServerDescArray::iterator i	= m_apServer.find( dpid );
 	if( i != m_apServer.end() )
 		return i->second->GetIdofMulti();
 	return NULL_ID;
-#else	// __STL_0402
-	CServerDesc* pServerDesc;
-	if( m_apServer.Lookup( dpid, pServerDesc ) )
-		return pServerDesc->GetIdofMulti();
-	return NULL_ID;
-#endif	// __STL_0402
 }
 #endif	// __DPCORESRVR_H__

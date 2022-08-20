@@ -13,7 +13,6 @@
 #define		__VERIFYNETLIB
 #define		__MAP_SIZE					// CServerdesc사용 때문에 
 #define		__S8_SERVER_PORT			// 2006월 11월 7일 업데이트 - World, Cache, CoreServer
-#define		__STL_0402					// stl
 
 // 11
 #define		__MA_VER11_07				// cache 서버에서 loginserver로 유저접속끊낌을 알려주는 부분

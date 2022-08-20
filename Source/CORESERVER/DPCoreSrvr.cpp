@@ -87,9 +87,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_QUIZ_NOTICE, &CDPCoreSrvr::OnQuizSystemMessage );
 #endif // __QUIZ
 	m_nGCState = 1;
-#ifndef __STL_0402
-	m_toHandle.SetSize( 16, 16, 8 );
-#endif	// __STL_0402
 }
 
 CDPCoreSrvr::~CDPCoreSrvr()
@@ -181,32 +178,20 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 
 	CMclAutoLock Lock( m_AccessLock );
 
-#ifdef __STL_0402
 	CServerDescArray::iterator i	= m_apSleepServer.find( uWorldSrvr );
 	if( i != m_apSleepServer.end() )
 	{
 		CServerDesc* pServerDesc	= i->second;
 		m_apSleepServer.erase( i );
-#else	// __STL_0402
-	CServerDesc* pServerDesc;
-	if( m_apSleepServer.Lookup( uWorldSrvr, pServerDesc ) )
-	{
-		m_apSleepServer.RemoveKey( uWorldSrvr );
-#endif	// __STL_0402
 
 		pServerDesc->SetKey( uWorldSrvr );
 		GetPlayerAddr( dpid, pServerDesc->m_szAddr );
 
 		
-#ifdef __STL_0402
 		bool bResult	= m_apServer.insert( CServerDescArray::value_type( dpid, pServerDesc ) ).second;
 		ASSERT( bResult );
 		bResult	= m_toHandle.emplace(uWorldSrvr, dpid).second;
 		ASSERT( bResult );
-#else	// __STL_0402
-		m_apServer.SetAt( dpid, pServerDesc );
-		m_toHandle.SetAt( uWorldSrvr, dpid );
-#endif	// __STL_0402
 		SendRecharge( (u_long)10240, dpid );
 
 		BEFORESENDDUAL( ar, PACKETTYPE_LOAD_WORLD, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -252,28 +237,16 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 {
 	CMclAutoLock Lock( m_AccessLock );
 
-#ifdef __STL_0402
 	CServerDescArray::iterator i	= m_apServer.find( dpid );
 	if( i != m_apServer.end() )
 	{
 		CServerDesc* pServerDesc	= i->second;
-#else	// __STL_0402
-	CServerDesc* pServerDesc;
-	if( m_apServer.Lookup( dpid, pServerDesc ) )
-	{
-#endif	// __STL_0402
 
 		ULONG uWorldSrvr	= pServerDesc->GetKey();
 
-#ifdef __STL_0402
 		m_apServer.erase( i );
 		bool bResult	= m_apSleepServer.insert( CServerDescArray::value_type( uWorldSrvr, pServerDesc ) ).second;
 		m_toHandle.erase( uWorldSrvr );
-#else	// __STL_0402
-		m_apServer.RemoveKey( dpid );
-		m_apSleepServer.SetAt( uWorldSrvr, pServerDesc );
-		m_toHandle.RemoveKey( uWorldSrvr );
-#endif	// __STL_0402
 		g_MyTrace.Add( uWorldSrvr, TRUE, "%04d", uWorldSrvr );
 
 #ifdef __SERVERLIST0911

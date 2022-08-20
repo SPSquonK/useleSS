@@ -114,12 +114,8 @@ void CDPCacheSrvr::OnAddConnection( DPID dpid )
 		
 		CServerDesc* pServer	= new CServerDesc;
 		GetPlayerAddr( dpid, pServer->m_szAddr );
-#ifdef __STL_0402
 		bool bResult	= m_apServer.insert( CServerDescArray::value_type( dpid, pServer ) ).second;
 		ASSERT( bResult );
-#else	// __STL_0402
-		m_apServer.SetAt( dpid, pServer );
-#endif	// __STL_0402
 		g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), FALSE, "%s", pServer->m_szAddr );
 		g_PlayerMng.AddCache( dpid );
 	}
@@ -137,20 +133,12 @@ void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
 	if( s_Cachedpid == dpid )
 	{
 		s_Cachedpid	= 0xFFFFFFFF;
-#ifdef __STL_0402
 		CServerDesc* pServer	= m_apServer.GetAt( dpid );
 		m_apServer.erase( dpid );
 		if( pServer )
 			g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), TRUE, "%s", pServer->m_szAddr );
 		SAFE_DELETE( pServer );
 		g_PlayerMng.RemoveCache( dpid );
-#else	// __STL_0402
-		CServerDesc* pServer	= m_apServer.GetAt( dpid );
-		m_apServer.RemoveKey( dpid );
-		g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), TRUE, "%s", pServer->m_szAddr );
-		SAFE_DELETE( pServer );
-		g_PlayerMng.RemoveCache( dpid );
-#endif	// __STL_0402
 	}
 }
 

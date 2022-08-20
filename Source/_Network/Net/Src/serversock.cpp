@@ -55,9 +55,6 @@ CServerSock::CServerSock( BUFFER_TYPE nBufferType )
 
 	m_uIoWorker		= 0;
 
-#ifndef __STL_0402
-	m_mapChild.SetSize( 512, 4096, 128 );
-#endif	// __STL_0402
 
 #ifdef __CRC
 	m_dwcrc		= dwcrc;
@@ -215,7 +212,6 @@ CClientSock* CServerSock::AddChild( SOCKET hSocket )
 
 #ifdef __US_LOGIN_0223
 
-#ifdef __STL_0402
 	CMapChild::iterator i	= m_mapChild.find( hSocket );
 	if( i != m_mapChild.end() )
 	{
@@ -227,26 +223,10 @@ CClientSock* CServerSock::AddChild( SOCKET hSocket )
 		CCrashStatus::GetInstance()->FreeChild();
 #endif	// __CRASH_0404
 	}
-#else	// __STL_0402
-	CClientSock* ptr	= NULL;
-	if( m_mapChild.Lookup( hSocket, ptr ) )
-	{
-		ptr->Detach();	//
-		m_mapChild.RemoveKey( hSocket );
-		SAFE_DELETE( ptr );
-#ifdef __CRASH_0404
-		CCrashStatus::GetInstance()->FreeChild();
-#endif	// __CRASH_0404
-	}
-#endif	// __STL_0402
 #endif	// __US_LOGIN_0223
 
-#ifdef __STL_0402
 	bool bResult	= m_mapChild.insert( CMapChild::value_type( hSocket, pChild ) ).second;
 //	ASSERT( bResult );
-#else	// __STL_0402
-	m_mapChild.SetAt( hSocket, pChild );
-#endif	// __STL_0402
 
 	m_mapChild.Unlock();
 	return pChild;
@@ -256,7 +236,6 @@ BOOL CServerSock::CloseChild( SOCKET hSocket )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 
-#ifdef __STL_0402
 	CMapChild::iterator i	= m_mapChild.find( hSocket );
 	if( i != m_mapChild.end() )
 	{
@@ -270,29 +249,12 @@ BOOL CServerSock::CloseChild( SOCKET hSocket )
 		return TRUE;
 	}
 	return FALSE;
-#else	// __STL_0402
-	CClientSock* pChild;
-	if( m_mapChild.Lookup( hSocket, pChild ) )
-	{
-		m_mapChild.RemoveKey( hSocket );
-		if( pChild ) {
-			pChild->Close();
-			SAFE_DELETE( pChild );
-#ifdef __CRASH_0404
-			CCrashStatus::GetInstance()->FreeChild();
-#endif	// __CRASH_0404
-			return( TRUE );
-		}
-	}
-	return( FALSE );
-#endif	// __STL_0402
 }
 
 void CServerSock::CloseAllChild( void )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 
-#ifdef __STL_0402
 	for( CMapChild::iterator i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 	{
 		CClientSock* pChild	= i->second;
@@ -304,28 +266,6 @@ void CServerSock::CloseAllChild( void )
 #endif	// __CRASH_0404
 	}
 	m_mapChild.clear();
-#else	// __STL_0402
-	CMyBucket<CClientSock*>* pBucket;
-	CClientSock* pChild;
-
-	pBucket		= m_mapChild.GetFirstActive();
-
-	INIT_LOOP;
-	while( pBucket )
-	{
-		VERIFY_LOOP( __FILE__, __LINE__ );
-
-		pChild	= pBucket->m_value;
-		TRACE( "~%x, %d\n", pChild, pChild->GetHandle() );
-		pChild->Close();
-		SAFE_DELETE( pChild );
-#ifdef __CRASH_0404
-		CCrashStatus::GetInstance()->FreeChild();
-#endif	// __CRASH_0404
-		pBucket	= pBucket->pNext;
-	}
-	m_mapChild.RemoveAll();
-#endif	// __STL_0402
 }
 
 #ifdef __DOS1101
@@ -333,24 +273,12 @@ void CServerSock::ShutdownAddr( DWORD dwAddr )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 
-#ifdef __STL_0402
 	for( CMapChild::iterator i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 	{
 		CClientSock* pChild	= i->second;
 		if( pChild->m_dwAddr == dwAddr )
 			shutdown( pChild->GetHandle(), SD_BOTH );
 	}
-#else	// __STL_0402
-	CClientSock* pChild;
-	CMyBucket<CClientSock*>* pBucket	= m_mapChild.GetFirstActive();
-	while( pBucket )
-	{
-		pChild	= pBucket->m_value;
-		if( pChild->m_dwAddr == dwAddr )
-			shutdown( pChild->GetHandle(), SD_BOTH );
-		pBucket	= pBucket->pNext;
-	}
-#endif	// __STL_0402
 }
 #endif	// __DOS1101
 
@@ -359,37 +287,18 @@ void CServerSock::Send( char* lpData, DWORD dwDataSize, DPID dpidTo )
 	if( dpidTo == DPID_ALLPLAYERS )
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 		for( CMapChild::iterator i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 		{
 			CClientSock* pChild	= i->second;
 			pChild->Send( lpData, dwDataSize, pChild->GetHandle() );
 		}
-#else	// __STL_0402
-		CClientSock* pChild;
-		CMyBucket<CClientSock*>* pBucket	= m_mapChild.GetFirstActive();
-		INIT_LOOP;
-		while( pBucket )
-		{
-			VERIFY_LOOP( __FILE__, __LINE__ );
-			pChild	= pBucket->m_value;
-			pChild->Send( lpData, dwDataSize, pChild->GetHandle() );
-			pBucket	= pBucket->pNext;
-		}
-#endif	// __STL_0402
 	}
 	else
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 		CClientSock* pChild		= (CClientSock*)Get( dpidTo );
 		if( pChild )
 			pChild->Send( lpData, dwDataSize, dpidTo );
-#else	// __STL_0402
-		CClientSock* pChild;
-		if( m_mapChild.Lookup( dpidTo, pChild ) )
-			pChild->Send( lpData, dwDataSize, dpidTo );
-#endif	// __STL_0402
 	}
 	
 }
@@ -402,7 +311,6 @@ BOOL CServerSock::CloseConnection( SOCKET hSocket )
 BOOL CServerSock::Shutdown( SOCKET hSocket )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 	CClientSock* pChild		= (CClientSock*)Get( hSocket );
 	if( pChild )
 	{
@@ -410,36 +318,16 @@ BOOL CServerSock::Shutdown( SOCKET hSocket )
 		return TRUE;
 	}
 	return FALSE;
-#else	// __STL_0402
-	CClientSock* pChild;
-	if( m_mapChild.Lookup( hSocket, pChild ) )
-	{
-		ASSERT( pChild );
-		closesocket( pChild->GetHandle() );
-		return TRUE;
-	}
-	return( FALSE );
-#endif	// __STL_0402
 }
 
 #ifdef __INFO_SOCKLIB0516
 DWORD CServerSock::GetDebugInfo( SOCKET hSocket )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 	CClientSock* pChild	= (CClientSock*)Get( hSocket );
 	if( pChild )
 		return pChild->GetDebugInfo( hSocket );
 	return 0;
-#else	// __STL_0402
-	CClientSock* pChild;
-	if( m_mapChild.Lookup( hSocket, pChild ) )
-	{
-		ASSERT( pChild );
-		return pChild->GetDebugInfo( hSocket );
-	}
-	return 0;
-#endif	// __STL_0402
 }
 #endif	// __INFO_SOCKLIB0516
 
@@ -454,11 +342,7 @@ HRESULT CServerSock::GetPeerAddr( DPID dpid, LPVOID lpAddr, LPDWORD lpdwSize )
 
 	ZeroMemory( &sin, sizeof(SOCKADDR_IN) );
 
-#ifdef __STL_0402
 	pSocket		= (CClientSock*)Get( hSocket );
-#else	// __STL_0402
-	m_mapChild.Lookup( hSocket, pSocket );
-#endif	// __STL_0402
 	if( !pSocket )
 		return DPERR_INVALIDPARAM;
 
@@ -477,12 +361,7 @@ DWORD CServerSock::GetPeerAddr( DPID dpid )
 {
 	CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
 
-#ifdef __STL_0402
 	CClientSock* pSocket	= (CClientSock*)Get( dpid );
-#else	// __STL_0402
-	CClientSock* pSocket = NULL;
-	m_mapChild.Lookup( (SOCKET)dpid, pSocket );
-#endif	// __STL_0402
 
 	if( !pSocket )
 		return 0;
