@@ -1802,19 +1802,15 @@ BOOL TextCmd_Sound(CScanner & scanner, CPlayer_ * pUser) {
 }
 BOOL TextCmd_Summon(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	TCHAR lpszPlayer[32];
-
 	scanner.GetToken();
 	if( strcmp( pUser->GetName(), scanner.Token) )
 	{
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idPlayer > 0 ){
-			strcpy( lpszPlayer, scanner.Token );
-
 			CUser * summoned = g_UserMng.GetUserByPlayerID(idPlayer);
 
 			if (!IsValidObj(summoned)) {
-				pUser->AddReturnSay(1, lpszPlayer);
+				pUser->AddDefinedText(TID_GAME_NOTLOGIN);
 				return FALSE;
 			}
 
