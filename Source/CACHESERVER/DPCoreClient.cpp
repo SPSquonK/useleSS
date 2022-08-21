@@ -99,23 +99,18 @@ void CDPCoreClient::OnProcServerList( CAr & ar, DPID )
 	std::uint32_t nSize; ar >> nSize;
 
 	for (std::uint32_t i = 0; i != nSize; ++i) {
-		CServerDesc * pServer = new CServerDesc;
+		auto pServer = std::make_unique<CServerDesc>();
 		ar >> *pServer;
-
-		if( !g_DPClientArray.Connect( pServer ) ) {
-			SAFE_DELETE( pServer );
-		}
+		g_DPClientArray.Connect(std::move(pServer));
 	}
+
 	g_MyTrace.AddLine( '-' );
 }
 
 void CDPCoreClient::OnProcServer(CAr & ar, DPID) {
-	CServerDesc * pServer = new CServerDesc;
+	auto pServer = std::make_unique<CServerDesc>();
 	ar >> *pServer;
-
-	if (!g_DPClientArray.Connect(pServer)) {
-		SAFE_DELETE(pServer);
-	}
+	g_DPClientArray.Connect(std::move(pServer));
 }
 
 void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
