@@ -93,6 +93,8 @@ m_cbRunnableObject( 0 )
 	m_bLoadScriptFlag = FALSE;
 
 #else	// __WORLDSERVER
+	m_objCull.clear();
+
 	m_fElapsedTime	=0;
 	m_nVisibilityLand	= (int)( m_fFarPlane / ( MAP_SIZE * MPU ) );
 	m_fFogStartValue	= 70;
