@@ -136,14 +136,14 @@ bool CDPClientArray::Connect(std::unique_ptr<CServerDesc> pServer)
 			m_free.erase(m_free.end() - 1);
 		}
 		pClient->m_pServer	= pServer.get();
-		g_MyTrace.Add( pServer->GetKey(), TRUE, "%04d", pServer->GetKey() );
+		g_MyTrace.Add( pServer->GetKey(), TRUE, "World: %04lu", pServer->GetKey() );
 		if( pClient->CreateDPObject( FALSE ) && pClient->InitConnection( (LPVOID)pServer->m_szAddr, PN_WORLDSRVR + (u_short)pServer->GetKey() ) && pClient->JoinSession( NULL ) )
 		{
 			const u_long key = pServer->GetKey();
 			bool bResult	= m_apServer.emplace( key, pServer.release() ).second;
 			ASSERT( bResult );
 			m_active.emplace_back(pClient);
-			g_MyTrace.Add(key, FALSE, "%04d", key);
+			g_MyTrace.Add(key, FALSE, "World: %04lu", key);
 			return TRUE;
 		}
 		SAFE_DELETE( pClient );
@@ -163,7 +163,7 @@ bool CDPClientArray::Remove(CDPClient * pClient) {
 	auto itServer = m_apServer.find( pClient->m_pServer->GetKey() );
 	if (itServer != m_apServer.end()) {
 		m_apServer.erase(itServer);
-		g_MyTrace.Add(pClient->m_pServer->GetKey(), TRUE, "%04d", pClient->m_pServer->GetKey());
+		g_MyTrace.Add(pClient->m_pServer->GetKey(), TRUE, "World: %04lu", pClient->m_pServer->GetKey());
 		SAFE_DELETE(pClient->m_pServer);
 	}
 

@@ -36,7 +36,7 @@ void CDPCoreClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	{
 		case DPSYS_DESTROYPLAYERORGROUP:
 			{
-				g_MyTrace.Add( CMyTrace::Key( "main" ), TRUE, "destroy player or group." );
+				g_MyTrace.Add( CMyTrace::Key( "main" ), TRUE, "Lost connection to cache." );
 				break;
 			}
 	}

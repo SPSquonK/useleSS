@@ -142,7 +142,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-	int x = 0, y = 416;
+	static constexpr int x = 90;
+	static constexpr int y = 130 + (150 + 10) * 2;
 	SetWindowPos( hWnd, NULL, x, y, 400, 416, SWP_SHOWWINDOW );
 
 	g_GameTimer.Compute();
@@ -505,7 +506,7 @@ BOOL Script( LPCSTR lpszFileName )
 				}
 				const bool bResult = g_dpCoreSrvr.m_apSleepServer.emplace(pServer->GetKey(), pServer).second;
 				ASSERT( bResult );
-				g_MyTrace.Add( pServer->GetKey(), TRUE, "%04d", pServer->GetKey() );
+				g_MyTrace.Add( pServer->GetKey(), TRUE, "World: %04lu OFF", pServer->GetKey() );
 			}
 			s.GetToken();
 		}

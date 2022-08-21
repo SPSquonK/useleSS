@@ -189,7 +189,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		SEND( ar, this, dpid );
 		g_DPCacheSrvr.Send( lpBuf + sizeof(DPID), nBufSize - sizeof(DPID), DPID_ALLPLAYERS );
 
-		g_MyTrace.Add( uWorldSrvr, FALSE, "%04d", uWorldSrvr );
+		g_MyTrace.Add( uWorldSrvr, FALSE, "World: %04lu ON", uWorldSrvr );
 
 	#if defined(__INTERNALSERVER)
 		SendCWWantedList( dpid );
@@ -219,7 +219,7 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 
 	m_apServer.erase(i);
 	bool bResult	= m_apSleepServer.emplace( uWorldSrvr, pServerDesc ).second;
-	g_MyTrace.Add( uWorldSrvr, TRUE, "%04d", uWorldSrvr );
+	g_MyTrace.Add( uWorldSrvr, TRUE, "World: %04lu OFF", uWorldSrvr );
 
 #ifdef __SERVERLIST0911
 	g_dpDatabaseClient.SendServerEnable( uWorldSrvr, 0L );

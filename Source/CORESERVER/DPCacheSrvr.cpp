@@ -105,7 +105,7 @@ void CDPCacheSrvr::OnAddConnection(DPID dpid) {
 		SendProcServerList(dpid);
 
 		GetPlayerAddr(dpid, m_clientInfo->ipv4Address);
-		g_MyTrace.Add(CMyTrace::Key(m_clientInfo->ipv4Address), FALSE, "%s", m_clientInfo->ipv4Address);
+		g_MyTrace.Add(CMyTrace::Key(m_clientInfo->ipv4Address), FALSE, "Cache: %s ON", m_clientInfo->ipv4Address);
 	} else {
 		char ipv4Addr[16];
 		GetPlayerAddr(dpid, ipv4Addr);
@@ -119,7 +119,7 @@ void CDPCacheSrvr::OnRemoveConnection(DPID dpid) {
 		ClientInfo old = m_clientInfo.value();
 		m_clientInfo.reset();
 
-		g_MyTrace.Add(CMyTrace::Key(old.ipv4Address), TRUE, "%s", old.ipv4Address);
+		g_MyTrace.Add(CMyTrace::Key(old.ipv4Address), TRUE, "Cache: %s OFF", old.ipv4Address);
 
 		g_PlayerMng.RemoveCache(dpid);
 	}
