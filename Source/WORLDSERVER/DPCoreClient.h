@@ -9,19 +9,7 @@
 
 #include "InstanceDungeonBase.h"
 
-#define BEFOREPASS( ar, dw, wWorldSrvr, wCacheSrvr, dpid, objid )	\
-	BEFORESENDDUAL( ar, PACKETTYPE_PASSAGE, MAKELONG( wWorldSrvr, wCacheSrvr ), dpid );	\
-	ar << objid << dw;
-
-#define PASS( ar )	\
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-#define	BEFOREBROADCAST( ar, dw )	\
-	BEFORESENDDUAL( ar, PACKETTYPE_BROADCAST, DPID_UNKNOWN, DPID_UNKNOWN );	\
-	ar << dw;
-
-#define	BROADCAST( ar )	\
-	SEND( ar, this, DPID_SERVERPLAYER );
+#define PASS( ar )	SEND( ar, this, DPID_SERVERPLAYER );
 
 
 #undef	theClass
