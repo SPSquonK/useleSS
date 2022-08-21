@@ -987,7 +987,7 @@ private:
 	int		SelectTag( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, u_long uidPlayer, TAG_ENTRY* tags );
 	void	WriteTag( CAr &ar, int count, const TAG_ENTRY* tags );
 	void	InsertTag( CQuery *qry, CAr & arRead);
-	void	GetStrTime( CTime *time, const char *strbuf );
+	[[nodiscard]] static CTime GetStrTime(const char * strbuf);
 	BOOL	VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = NULL );
 	BOOL	SN( void );
 	void	LogPlayConnect(CQuery *qry, CAr & arRead);

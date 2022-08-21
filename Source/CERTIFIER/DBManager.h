@@ -83,7 +83,6 @@ public:
 	~CDbManager();
 
 	BOOL	CreateDbWorkers();
-	void	GetStrTime( CTime *time, char *strbuf );
 	void	Certify( CQuery & query, LPDB_OVERLAPPED_PLUS pData, IpAddressRecentFailChecker & accountMgr );
 	void	CloseExistingConnection( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 

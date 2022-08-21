@@ -439,11 +439,8 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 
 		qry->GetStr( "m_szName", mover.m_szName);
 
-		char strEnd_Time[13] = {0,};
-		qry->GetStr("BlockTime", strEnd_Time );
-		CTime tEnd_Time;
-
-		GetStrTime(&tEnd_Time, strEnd_Time);
+		const char * strEnd_Time = qry->GetStrPtr("BlockTime");
+		const CTime tEnd_Time = GetStrTime(strEnd_Time);
 
 		CTime NowTime = CTime::GetCurrentTime();
 		if( NowTime > tEnd_Time )
@@ -2260,7 +2257,6 @@ void CDbManager::OpenGuild( void )
 		return;
 	}
 
-	char sTime[13]	= { 0, };
 	while( pQuery->Fetch() )
 	{
 		CGuildWar* pWar	= new CGuildWar;
@@ -2276,8 +2272,7 @@ void CDbManager::OpenGuild( void )
 		pWar->m_Acpt.nDead	= (u_long)pQuery->GetInt( "f_nDeath" );
 		pWar->m_Acpt.nAbsent	= (u_long)pQuery->GetInt( "f_nAbsent" );
 		pWar->m_nFlag	= pQuery->GetChar( "State" );
-		pQuery->GetStr( "StartTime", sTime );
-		GetStrTime( &pWar->m_time, sTime );
+		pWar->m_time = GetStrTime(pQuery->GetStrPtr("StartTime"));
 		g_GuildWarMng.AddWar( pWar );
 		CGuild* pDecl	= g_GuildMng.GetGuild( pWar->m_Decl.idGuild );
 		if( pDecl )
@@ -3923,7 +3918,6 @@ void CDbManager::SerializeWanted( CQuery* pQuery, CAr& out )
 	int		nCount = 0;
 	char	szPlayer[64];
 	__int64 penya;
-	CTime	date;
 
 	u_long	idPlayer;
 	char	szMsg[WANTED_MSG_MAX + 1] = "";
@@ -3932,16 +3926,15 @@ void CDbManager::SerializeWanted( CQuery* pQuery, CAr& out )
 	out << nCount;	
 
 	char szBuffer[32];
-	char szDate[13] = {0,};
 	while( pQuery->Fetch() )
 	{
 		idPlayer = pQuery->GetInt( "m_idPlayer" );		// 
 		pQuery->GetStr( "m_szName", szPlayer );			// 현상범 이름 
 		penya = pQuery->GetInt64( "penya" );			// 현상금액 
-		pQuery->GetStr( "s_date", szDate );				// 만기일 
+		const char * szDate = pQuery->GetStrPtr("s_date");				// 만기일 
 		pQuery->GetStr( "szMsg", szBuffer );			// 십자평 
 
-		GetStrTime( &date, szDate );
+		const CTime date = GetStrTime(szDate);
 		memcpy( szMsg, szBuffer, WANTED_MSG_MAX );		// 잘못된 데이타를 막기위한 코드 
 		szMsg[WANTED_MSG_MAX] = '\0';
 
@@ -7079,7 +7072,6 @@ void CDbManager::GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOver
 //		BEFORESENDSOLE( out, PACKETTYPE_GUILDLOG_VIEW, dpidMulti);
 		BEFORESENDDUAL( out, PACKETTYPE_GUILDLOG_VIEW, DPID_UNKNOWN, DPID_UNKNOWN);
 		int		nCount = 0,m_Item = 0,Item_count = 0,nAbilityOption = 0;
-		CTime	date;
 
 		u_long	idPlayer;
 
@@ -7088,7 +7080,6 @@ void CDbManager::GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOver
 		out << byListType;	
 		out << idReceiver;	
 
-		char szDate[13] = {0,};
 		while( pQuery->Fetch() )
 		{
 			idPlayer = pQuery->GetInt( "m_idPlayer" );		// 
@@ -7099,12 +7090,12 @@ void CDbManager::GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOver
 				lstrcpy( szSender, pszPlayer );
 			CPlayerDataCenter::GetInstance()->m_Access.Leave();
 
-			pQuery->GetStr( "s_date", szDate );				//  
+			const char * szDate = pQuery->GetStrPtr("s_date");
 			m_Item = pQuery->GetInt( "m_Item" );		// 
 			nAbilityOption = pQuery->GetInt( "m_nAbilityOption" );		// 
 			Item_count = pQuery->GetInt( "Item_count" );		// 
 
-			GetStrTime( &date, szDate );
+			const CTime date = GetStrTime( szDate );
 
 			out.WriteString( szSender );
 			out << (long)date.GetTime(); 

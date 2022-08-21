@@ -38,22 +38,20 @@ extern	CProject			prj;
 #define	VERIFYSTRING_BANK( lpString, lpszPlayer )	\
 	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return FALSE;
 
-void CDbManager::GetStrTime( CTime *time, const char *strbuf )
-{
-	char cYear[5] = {0,};
-	char cMonth[3] = {0,};
-	char cDay[3] = {0,};
-	char cHour[3] = {0,};
-	char cMin[3] = {0,};
-	
+CTime CDbManager::GetStrTime(const char * strbuf) {
+	char cYear[5] = { 0, };
+	char cMonth[3] = { 0, };
+	char cDay[3] = { 0, };
+	char cHour[3] = { 0, };
+	char cMin[3] = { 0, };
+
 	strncpy(cYear, strbuf, 4);
-	strncpy(cMonth, strbuf + 4, 2 );
-	strncpy(cDay, strbuf + 6, 2 );
-	strncpy(cHour, strbuf + 8, 2 );
-	strncpy(cMin, strbuf + 10, 2 );
-	
-	CTime Timebuf( atoi(cYear), atoi(cMonth), atoi(cDay), atoi(cHour), atoi(cMin), 0 );
-	*time = Timebuf;
+	strncpy(cMonth, strbuf + 4, 2);
+	strncpy(cDay, strbuf + 6, 2);
+	strncpy(cHour, strbuf + 8, 2);
+	strncpy(cMin, strbuf + 10, 2);
+
+	return CTime(atoi(cYear), atoi(cMonth), atoi(cDay), atoi(cHour), atoi(cMin), 0);
 }
 
 #ifdef __PET_1024

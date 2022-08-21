@@ -121,7 +121,6 @@ public:
 	void	CloseDbWorkers( void );
 	void	CreateDbWorkers( void );
 
-	void	GetStrTime( CTime *time, char *strbuf );
 	void	SetTracking( BOOL bEnable );
 	void	SetLogging( BOOL bEnable );
 	void	DBQryAccount( char* qryAccount, const char* Gu, const char* szAccount = "" );
