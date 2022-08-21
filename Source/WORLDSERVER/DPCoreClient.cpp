@@ -165,16 +165,6 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 	else {
 		switch( dw )
 		{
-			case PACKETTYPE_PASSAGE:
-			{
-				DWORD objid, dwtmp;
-				ar >> objid >> dwtmp;
-
-				pfn		= GetHandler( dwtmp );
-				ASSERT( pfn != NULL );
-				( this->*( pfn ) )( ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + sizeof(DPID) ), (OBJID)objid );
-				break;
-			}
 			case PACKETTYPE_BROADCAST:
 				{
 					DWORD dwtmp;

@@ -130,31 +130,6 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	else {
 		switch( dw )
 		{
-			case PACKETTYPE_PASSAGE:
-				{
-					WORD wWorldSrvr		= LOWORD( *(UNALIGNED DWORD*)lpMsg );
-//					ASSERT( wWorldSrvr >= 0 );
-
-					if( wWorldSrvr > 0 ) {	// explicit
-						dpid	= GetWorldSrvrDPID( (u_long)wWorldSrvr );
-					}
-					else if( wWorldSrvr == 0 ) {
-						ar.Read( lptmp, 8 );	// skip
-						ar >> dwWorldID;
-						ar >> vPos;
-						u_long uIdofMulti	= GetIdofMulti( idFrom );
-						if( uIdofMulti == NULL_ID )		break;
-						dpid	= GetWorldSrvrDPID( uIdofMulti, dwWorldID );
-					}
-					else {
-						dpid	= DPID_UNKNOWN;
-						ASSERT( 0 );
-					}
-
-					if( DPID_UNKNOWN != dpid )
-						Send( lpMsg, dwMsgSize, dpid );
-					break;
-				}
 			case PACKETTYPE_BROADCAST:
 				{
 					Send( lpMsg, dwMsgSize, DPID_ALLPLAYERS );
