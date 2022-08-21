@@ -27,7 +27,7 @@ public:
 		g_szBuffer[type].Format(lpszFormat, std::forward<Ts>(ts)...);
 	}
 
-	void SetListOfMaps(std::map<WorldId, std::string> worlds, std::set<WorldId> invalidWorlds);
+	void SetListOfMaps(const std::map<WorldId, std::string> & worlds, const std::set<WorldId> & invalidWorlds);
 
 	void UpdateConnectionState(ConnectedTo connectedTo) { m_connectedTo = connectedTo; }
 

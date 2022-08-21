@@ -80,7 +80,7 @@ void CDisplayedInfo::Redraw() {
 static std::string WorldsIdsToString(const std::vector<DWORD> & ids);
 
 void CDisplayedInfo::SetListOfMaps(
-	std::map<WorldId, std::string> worlds, std::set<WorldId> invalidWorlds
+	const std::map<WorldId, std::string> & worlds, const std::set<WorldId> & invalidWorlds
 ) {
 	m_listOfMaps = ExistingWorldsToString(worlds);
 	m_invalidWorlds = InvalidWorldsToString(invalidWorlds);
