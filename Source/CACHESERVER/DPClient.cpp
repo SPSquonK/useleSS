@@ -172,7 +172,7 @@ bool CDPClientArray::Remove(CDPClient * pClient) {
 	return true;
 }
 
-CDPClient* CDPClientArray::GetClient( const u_long uIdofMulti, const DWORD dwWorldID )
+CDPClient* CDPClientArray::GetClient( const u_long uIdofMulti )
 {
 	if( uIdofMulti == NULL_ID )
 		return nullptr;
@@ -180,8 +180,7 @@ CDPClient* CDPClientArray::GetClient( const u_long uIdofMulti, const DWORD dwWor
 	CMclAutoLock Lock( m_AddRemoveLock );
 	
 	const auto it = std::ranges::find_if(m_active, [&](CDPClient * pClient) {
-		return pClient->m_pServer->GetIdofMulti() == uIdofMulti
-			&& pClient->m_pServer->IsIntersected(dwWorldID);
+		return pClient->m_pServer->GetIdofMulti() == uIdofMulti;
 		});
 
 	return it != m_active.end() ? *it : nullptr;

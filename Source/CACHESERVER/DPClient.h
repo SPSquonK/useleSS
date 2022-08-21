@@ -57,7 +57,7 @@ public:
 	bool Connect(std::unique_ptr<CServerDesc> pServer);
 	bool Remove(CDPClient * pRemove);
 
-	CDPClient*	GetClient( u_long uIdofMulti, DWORD dwWorldID );
+	CDPClient*	GetClient( u_long uIdofMulti );
 	void	SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize );
 };
 

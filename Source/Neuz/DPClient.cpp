@@ -7407,7 +7407,7 @@ void CDPClient::OnWantedList( CAr & ar )
 }
 
 // Sender
-void CDPClient::SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti )
+void CDPClient::SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti )
 {
 #ifdef __FLYFF_INITPAGE_EXT
 	CWndBase::m_Theme.DestoryTitleWorld();
@@ -7425,7 +7425,6 @@ void CDPClient::SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CRTMessen
 	g_Neuz.m_idPlayer	=  pMover->m_idPlayer;
 	
 	BEFORESENDSOLE( ar, PACKETTYPE_JOIN, DPID_UNKNOWN );
-	ar << dwWorldID;
 	ar << pMover->m_idPlayer;
 	ar << g_Neuz.m_dwAuthKey;
 	ar << pMover->m_idparty;

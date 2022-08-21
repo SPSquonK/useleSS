@@ -132,11 +132,11 @@ void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
 		return;
 	}
 
-	CDPClient* pClient = g_DPClientArray.GetClient( pPlayer->GetChannel(), pPlayer->GetWorld() );
+	CDPClient* pClient = g_DPClientArray.GetClient( pPlayer->GetChannel() );
 	
 	if (!pClient) {
-		WriteLog( "CDPCoreClient.OnJoin: server not found id: %d account: %s player: %s world: %d",
-			      pPlayer->GetPlayerId(), pPlayer->GetAccount(), pPlayer->GetPlayer(), pPlayer->GetWorld() );
+		WriteLog( "CDPCoreClient.OnJoin: server not found id: %d account: %s player: %s",
+			      pPlayer->GetPlayerId(), pPlayer->GetAccount(), pPlayer->GetPlayer() );
 		g_DPCacheSrvr.DestroyPlayer( dpid );
 		return;
 	}

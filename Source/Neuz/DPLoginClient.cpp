@@ -186,7 +186,7 @@ void CDPLoginClient::OnPreJoin( CAr & ar )
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;
 	
 	// Open world here.	
-	g_DPlay.SendJoin( (BYTE)m_nSlot, g_Neuz.m_adwWorldID[m_nSlot], g_Neuz.m_apPlayer[m_nSlot], &g_Neuz.m_aRTMessenger[m_nSlot], g_Neuz.m_uIdofMulti );	
+	g_DPlay.SendJoin( (BYTE)m_nSlot, g_Neuz.m_apPlayer[m_nSlot], &g_Neuz.m_aRTMessenger[m_nSlot], g_Neuz.m_uIdofMulti );	
 
 	// ata2k - (2)시간 저장
 	if( ::GetLanguage() == LANG_ENG && ::GetSubLanguage() == LANG_SUB_USA )
@@ -395,7 +395,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 
 		ar >> g_Neuz.m_nCharacterBlock[slot];
 		
-		ar >> g_Neuz.m_adwWorldID[slot];
 		ar >> dwIndex;
 
 
@@ -409,9 +408,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 		g_Neuz.m_apPlayer[slot]->InitProp();
 
 		ar.ReadString(  (char*)g_Neuz.m_apPlayer[slot]->GetName(), MAX_NAME );
-		D3DXVECTOR3 Pos;
-		ar >> Pos;
-		g_Neuz.m_apPlayer[slot]->SetPos(Pos);
 		ar >> g_Neuz.m_apPlayer[slot]->m_idPlayer;
 		ar >> g_Neuz.m_apPlayer[slot]->m_idparty;
 		ar >> g_Neuz.m_apPlayer[slot]->m_idGuild;

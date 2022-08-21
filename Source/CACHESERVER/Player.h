@@ -12,7 +12,6 @@ public:
 	[[nodiscard]] auto GetNetworkId() const noexcept -> DPID         { return m_dpid; }
 	[[nodiscard]] auto GetPlayerId()  const noexcept -> u_long       { return m_idPlayer; }
 	[[nodiscard]] auto GetSerial()    const noexcept -> DWORD        { return m_dwSerial; }
-	[[nodiscard]] auto GetWorld()     const noexcept -> DWORD        { return m_dwWorldId; }
 	[[nodiscard]] auto GetChannel()   const noexcept -> u_long       { return m_uChannel; }
 	[[nodiscard]] auto GetParty()     const noexcept -> u_long       { return m_idParty; }
 	[[nodiscard]] auto GetGuild()     const noexcept -> u_long       { return m_idGuild; }
@@ -45,7 +44,6 @@ private:
 	char	m_szPass[MAX_PASSWORD]   = "";
 	u_long	m_idPlayer = 0;
 	char	m_lpAddr[16] = "";
-	DWORD	m_dwWorldId  = 0;
 	u_long	m_uChannel = 0;
 	u_long	m_idParty  = 0;
 	u_long	m_idGuild  = 0;
