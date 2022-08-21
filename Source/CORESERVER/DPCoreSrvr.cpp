@@ -165,8 +165,6 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		
 		bool bResult	= m_apServer.emplace(dpid, pServerDesc).second;
 		ASSERT( bResult );
-		bResult	= m_toHandle.emplace(uWorldSrvr, dpid).second;
-		ASSERT( bResult );
 		SendRecharge( (u_long)10240, dpid );
 
 		BEFORESENDDUAL( ar, PACKETTYPE_LOAD_WORLD, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -221,7 +219,6 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 
 	m_apServer.erase(i);
 	bool bResult	= m_apSleepServer.emplace( uWorldSrvr, pServerDesc ).second;
-	m_toHandle.erase(uWorldSrvr);
 	g_MyTrace.Add( uWorldSrvr, TRUE, "%04d", uWorldSrvr );
 
 #ifdef __SERVERLIST0911
@@ -414,14 +411,10 @@ void CDPCoreSrvr::OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
-	{
-		CServerDesc* pServer	= i->second;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlayMusic( idmusic, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-	}
+	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti, dwWorldID);
+	if (targetWorldDPID != DPID_UNKNOWN) return;
+
+	SendPlayMusic(idmusic, dwWorldID, targetWorldDPID);
 }
 
 void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
@@ -435,14 +428,10 @@ void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
-	{
-		CServerDesc* pServer	= i->second;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlaySound( idsound, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-	}
+	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti, dwWorldID);
+	if (targetWorldDPID != DPID_UNKNOWN) return;
+
+	SendPlaySound(idsound, dwWorldID, targetWorldDPID);
 }
 
 void CDPCoreSrvr::OnKillPlayer( CAr & ar, DPID, DPID, DPID, u_long )

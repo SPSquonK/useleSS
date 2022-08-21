@@ -1,6 +1,7 @@
 #ifndef __DPCORESRVR_H__
 #define __DPCORESRVR_H__
 
+#include <algorithm>
 #include "DPMng.h"
 #include "msghdr.h"
 #include "ServerDesc.h"
@@ -23,7 +24,6 @@ public:
 public:
 	CServerDescArray	m_apSleepServer;
 	CServerDescArray	m_apServer;	// active
-	std::map<u_long, DPID>	m_toHandle;	// key to dpid
 	CMclCritSec		m_AccessLock;
 	CObjMap		m_objmap;
 public:
@@ -116,10 +116,7 @@ public:
 	void	OnGCAddParty( CAr & ar, DPID, DPID, DPID, u_long );
 
 private:
-	DPID	GetWorldSrvrDPID( u_long uWorldSrvr );
-private:
 	DPID	GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID );
-	u_long	GetIdofMulti( DPID dpid );
 
 public:
 	void	OnGuildMsgControl( CAr & ar, DPID, DPID, DPID, u_long );
@@ -186,35 +183,17 @@ private:
 
 extern CDPCoreSrvr g_dpCoreSrvr;
 
-inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uWorldSrvr )
-{
-	const auto i	= m_toHandle.find( uWorldSrvr );
-	if( i != m_toHandle.end() )
-		return i->second;
-	return DPID_UNKNOWN;
+inline DPID CDPCoreSrvr::GetWorldSrvrDPID(const u_long uIdofMulti, const DWORD dwWorldID) {
+	if (uIdofMulti == NULL_ID) return DPID_UNKNOWN;
+
+	const auto i = std::ranges::find_if(m_apServer,
+		[&](const CServerDescArray::value_type & pair) {
+			const CServerDesc * const pServer = pair.second;
+			return pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected(dwWorldID);
+		}
+	);
+
+	return i != m_apServer.end() ? i->first : DPID_UNKNOWN;
 }
 
-inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID )
-{
-	if( uIdofMulti == NULL_ID )
-		return DPID_UNKNOWN;
-
-	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
-	{
-		CServerDesc* pServer	= i->second;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-			return (DPID)i->first;
-	}
-	return DPID_UNKNOWN;
-
-	
-}
-
-inline u_long CDPCoreSrvr::GetIdofMulti( DPID dpid )
-{
-	CServerDescArray::iterator i	= m_apServer.find( dpid );
-	if( i != m_apServer.end() )
-		return i->second->GetIdofMulti();
-	return NULL_ID;
-}
 #endif	// __DPCORESRVR_H__
