@@ -23,10 +23,6 @@ public:
 	[[nodiscard]] u_long GetKey() const { return m_uKey; }
 	[[nodiscard]] u_long GetIdofMulti() const { return m_uIdofMulti; }
 
-	[[nodiscard]] bool IsIntersected(WorldId dwWorldID) const {
-		return m_lspJurisdiction.contains(dwWorldID);
-	}
-
 	friend CAr & operator<<(CAr & ar, const CServerDesc & self);
 	friend CAr & operator>>(CAr & ar, CServerDesc & self);
 };
