@@ -1,12 +1,15 @@
 #ifndef __DPCORESRVR_H__
 #define __DPCORESRVR_H__
 
+#include <algorithm>
+#include <boost/container/flat_map.hpp>
 #include "DPMng.h"
 #include "msghdr.h"
 #include "ServerDesc.h"
 #include "ObjMap.h"
 #include "guild.h"
 #include "party.h"
+#include "Player.h"
 
 #include "InstanceDungeonBase.h"
 #include "rtmessenger.h"
@@ -23,13 +26,15 @@ public:
 public:
 	CServerDescArray	m_apSleepServer;
 	CServerDescArray	m_apServer;	// active
-#ifdef __STL_0402
-	std::map<u_long, DPID>	m_toHandle;	// key to dpid
-#else	// __STL_0402
-	CMyMap<DPID>	m_toHandle;	// key to dpid
-#endif	// __STL_0402
+	boost::container::flat_map<u_long, DPID> m_multiIdToDpid; // [1]
 	CMclCritSec		m_AccessLock;
 	CObjMap		m_objmap;
+
+	// [1] By design, m_multiIdToDpid will never change size / invalidate its
+	// iterators / etc after reading the ini file. This make it a structure that
+	// can be read and modified without locking. We consider this design good
+	// enough as worlds should not connect / disconnect all the time, but we
+	// still want some guarantees about the core not crashing if a world crashes.
 public:
 	// Constructions
 	CDPCoreSrvr();
@@ -86,8 +91,6 @@ public:
 	void	OnGMSay( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long );
-	void	OnSummonPlayer( CAr & ar, DPID, DPID, DPID, u_long );
-	void	OnTeleportPlayer( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnKillPlayer( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGetPlayerAddr( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGetPlayerCount( CAr & ar, DPID, DPID, DPID, u_long );
@@ -122,12 +125,11 @@ public:
 	void	OnGCAddParty( CAr & ar, DPID, DPID, DPID, u_long );
 
 private:
-	DPID	GetWorldSrvrDPID( u_long uWorldSrvr );
-private:
-	DPID	GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos );
-	u_long	GetIdofMulti( DPID dpid );
+	DPID	GetWorldSrvrDPID( u_long uIdofMulti );
 
 public:
+	[[nodiscard]] DPID GetWorldSrvrDPIDWeak(u_long uIdofMulti) const;
+
 	void	OnGuildMsgControl( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGuildChat( CAr & ar, DPID, DPID, DPID, u_long );
@@ -188,64 +190,37 @@ private:
 private:
 	void	OnQuizSystemMessage( CAr & ar, DPID, DPID, DPID, u_long );
 #endif // __QUIZ
+
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacketAbout(CPlayer & player, const Ts & ... ts) {
+		const DPID dpid = GetWorldSrvrDPID(player.m_uIdofMulti);
+		if (dpid == DPID_UNKNOWN) return;
+
+		BEFORESENDDUAL(ar, PacketId, DPID_ALLPLAYERS, DPID_ALLPLAYERS);
+		ar.Accumulate(player.uKey, ts...);
+		SEND(ar, this, dpid);
+	}
 };
 
 extern CDPCoreSrvr g_dpCoreSrvr;
 
-inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uWorldSrvr )
-{
-#ifdef __STL_0402
-	const auto i	= m_toHandle.find( uWorldSrvr );
-	if( i != m_toHandle.end() )
-		return i->second;
-	return DPID_UNKNOWN;
-#else	// __STL_0402
-	DPID dpid;
-	if( m_toHandle.Lookup( uWorldSrvr, dpid ) )
-		return dpid;
-	return DPID_UNKNOWN;
-#endif	// __STL_0402
+inline DPID CDPCoreSrvr::GetWorldSrvrDPID(const u_long uIdofMulti) {
+	if (uIdofMulti == NULL_ID) return DPID_UNKNOWN;
+
+	const auto i = std::ranges::find_if(m_apServer,
+		[&](const CServerDescArray::value_type & pair) {
+			const CServerDesc * const pServer = pair.second;
+			return pServer->GetIdofMulti() == uIdofMulti;
+		}
+	);
+
+	return i != m_apServer.end() ? i->first : DPID_UNKNOWN;
 }
 
-inline DPID CDPCoreSrvr::GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos )
-{
-	if( uIdofMulti == NULL_ID )
-		return DPID_UNKNOWN;
-
-#ifdef __STL_0402
-	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
-	{
-		CServerDesc* pServer	= i->second;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsUnderJurisdiction( dwWorldID, vPos ) )
-			return (DPID)i->first;
-	}
-	return DPID_UNKNOWN;
-#else	// __STL_0402
-	CMyBucket<CServerDesc*> *pBucket	= m_apServer.GetFirstActive();
-	while( pBucket )
-	{
-		CServerDesc* pServer	= pBucket->m_value;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsUnderJurisdiction( dwWorldID, vPos ) )
-			return (DPID)pBucket->m_dwKey;
-		pBucket		= pBucket->pNext;
-	}
-	return DPID_UNKNOWN;
-#endif	// __STL_0402
-	
+inline DPID CDPCoreSrvr::GetWorldSrvrDPIDWeak(u_long uIdofMulti) const {
+	const auto it = m_multiIdToDpid.find(uIdofMulti);
+	return it != m_multiIdToDpid.end() ? it->second : DPID_UNKNOWN;
 }
 
-inline u_long CDPCoreSrvr::GetIdofMulti( DPID dpid )
-{
-#ifdef __STL_0402
-	CServerDescArray::iterator i	= m_apServer.find( dpid );
-	if( i != m_apServer.end() )
-		return i->second->GetIdofMulti();
-	return NULL_ID;
-#else	// __STL_0402
-	CServerDesc* pServerDesc;
-	if( m_apServer.Lookup( dpid, pServerDesc ) )
-		return pServerDesc->GetIdofMulti();
-	return NULL_ID;
-#endif	// __STL_0402
-}
 #endif	// __DPCORESRVR_H__

@@ -9,19 +9,7 @@
 
 #include "InstanceDungeonBase.h"
 
-#define BEFOREPASS( ar, dw, wWorldSrvr, wCacheSrvr, dpid, objid )	\
-	BEFORESENDDUAL( ar, PACKETTYPE_PASSAGE, MAKELONG( wWorldSrvr, wCacheSrvr ), dpid );	\
-	ar << objid << dw;
-
-#define PASS( ar )	\
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-#define	BEFOREBROADCAST( ar, dw )	\
-	BEFORESENDDUAL( ar, PACKETTYPE_BROADCAST, DPID_UNKNOWN, DPID_UNKNOWN );	\
-	ar << dw;
-
-#define	BROADCAST( ar )	\
-	SEND( ar, this, DPID_SERVERPLAYER );
+#define PASS( ar )	SEND( ar, this, DPID_SERVERPLAYER );
 
 
 #undef	theClass
@@ -61,7 +49,7 @@ public:
 	void	SendWhisper( u_long idFrom, u_long idTo, const CHAR* lpString );
 
 	void	SendSay( u_long idFrom, u_long idTo, const CHAR* lpString );
-	void	SendModifyMode( DWORD dwMode, BYTE fAdd, u_long idFrom, u_long idTo );
+	void	SendModifyMode( DWORD dwMode, bool fAdd, u_long idFrom, u_long idTo );
 	void	SendShout( CUser* pUser, const CHAR* lpString );
 	void	SendPartyChat( CUser* pUser, const CHAR* lpString );
 
@@ -70,12 +58,6 @@ public:
 	void	SendGMSay( u_long idPlayer, DWORD dwWorldID, const CHAR* lpString );
 	void	SendPlayMusic( DWORD dwWorldID, u_long idmusic );
 	void	SendPlaySound( DWORD dwWorldID, u_long idsound );
-#ifdef __LAYER_1015
-	void	SendSummonPlayer( u_long idOperator, DWORD dwWorldID, const D3DXVECTOR3 & vPos, u_long idPlayer, int nLayer );
-#else	// __LAYER_1015
-	void	SendSummonPlayer( u_long idOperator, DWORD dwWorldID, const D3DXVECTOR3 & vPos, u_long idPlayer );
-#endif	// __LAYER_1015
-	void	SendTeleportPlayer( u_long idOperator, u_long idPlayer );
 	void	SendKillPlayer( u_long idOperator, u_long idPlayer );
 	void	SendGetPlayerAddr( u_long idOperator, u_long idPlayer );
 	void	SendGetPlayerCount( u_long idOperator );
@@ -157,7 +139,6 @@ protected:
 	void	OnLoadWorld( CAr & ar, DPID, DPID, OBJID );
 	void	OnQueryTickCount( CAr & ar, DPID, DPID, OBJID );
 	void	OnRecharge( CAr & ar, DPID, DPID, OBJID );
-	void	OnModifyMode( CAr & ar, DPID, DPID, OBJID objid );
 
 	void	OnSetPartyExp( CAr & ar, DPID, DPID, OBJID objid );
 	void	OnRemovePartyPoint( CAr & ar, DPID, DPID, OBJID objid );
@@ -222,6 +203,10 @@ protected:
 	void	OnGuildCombatState( CAr & ar, DPID, DPID, DPID );
 	void	OnRemoveUserFromCORE( CAr & ar, DPID, DPID, DPID );
 	void	OnPing( CAr & ar, DPID, DPID, DPID );
+
+
+	void OnBuyingInfo(CAr & ar, DPID, DPID, DPID);
+	void OnModifyMode(CAr & ar, DPID, DPID, DPID);
 };
 
 extern CDPCoreClient g_DPCoreClient;

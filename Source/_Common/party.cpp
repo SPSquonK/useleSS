@@ -427,24 +427,6 @@ void CParty::DoDuelResult( CParty *pDuelOther, BOOL bWin, int nAddFame, float fS
 	m_idDuelParty = 0;
 }
 
-
-void CParty::DoUsePartyReCall( u_long uPartyId, u_long uLeaderid, int nSkill ) {
-	// TODO: Why is it a dead function?
-	CUser* pUser = g_UserMng.GetUserByPlayerID( uLeaderid );
-	if (!IsValidObj(pUser)) return;
-	
-	for (CUser * pMember : AllMembers(*this)) {
-		if (pMember->m_idPlayer != pUser->m_idPlayer) {
-			// TODO: Why does it goes to the core?
-#ifdef __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer(pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), pMember->m_idPlayer, pUser->GetLayer());
-#else	// __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer(pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), pMember->m_idPlayer);
-#endif	// __LAYER_1015
-		}
-	}
-}
-
 #endif // worldserver
 
 //

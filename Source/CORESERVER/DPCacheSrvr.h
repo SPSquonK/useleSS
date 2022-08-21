@@ -21,12 +21,18 @@ class CGuild;
 class CDPCacheSrvr : public CDPServerSole
 {
 private:
-	CServerDescArray	m_apServer;
+	struct ClientInfo {
+		DPID dpid;
+		char ipv4Address[16] = "";
+
+		ClientInfo(DPID dpid) : dpid(dpid) {}
+	};
+
+	std::optional<ClientInfo> m_clientInfo = std::nullopt;
 
 public:
 //	Constructions
 	CDPCacheSrvr();
-	virtual	~CDPCacheSrvr();
 //	Overrides
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
@@ -44,13 +50,6 @@ public:
 	void	SendFriendNoIntercept(CPlayer * pTo, u_long uFriendid);
 	void	SendFriendIntercept( CPlayer* pPlayer, CPlayer* pFriend );
 	void	SendFriendIntercept( CPlayer* pPlayer, u_long uFriendid );
-	void	SendModifyMode( DWORD dwMode, BYTE f, u_long idFrom, CPlayer* pTo );
-#ifdef __LAYER_1015
-	void	SendSummonPlayer( u_long idOperator, u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, CPlayer* pPlayer, int nLayer );
-#else	// __LAYER_1015
-	void	SendSummonPlayer( u_long idOperator, u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, CPlayer* pPlayer );
-#endif	// __LAYER_1015
-	void	SendTeleportPlayer( u_long idOperator, CPlayer* pPlayer );
 	void	SendKillPlayer( CPlayer* pPlayer );
 	void	SendGetPlayerAddr( const CHAR* lpszPlayer, const CHAR* lpAddr, CPlayer* pOperator );
 	void	SendGetPlayerCount( u_short uCount, CPlayer* pOperator );
@@ -141,7 +140,6 @@ public:
 	void	SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType );
 	void	SendWarDead(WarId idWar, const char* lpszPlayer, BOOL bDecl, CPlayer* pPlayer );
 	void	SendQueryTruce( CPlayer* pPlayer );
-	void	SendBuyingInfo( PBUYING_INFO2 pbi2, CPlayer* pPlayer );
 
 private:
 	void	OnAddVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );

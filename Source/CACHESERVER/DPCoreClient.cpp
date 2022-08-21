@@ -36,7 +36,7 @@ void CDPCoreClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	{
 		case DPSYS_DESTROYPLAYERORGROUP:
 			{
-				g_MyTrace.Add( CMyTrace::Key( "main" ), TRUE, "destroy player or group." );
+				g_MyTrace.Add( CMyTrace::Key( "main" ), TRUE, "Lost connection to cache." );
 				break;
 			}
 	}
@@ -67,21 +67,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 		( this->*( pfn ) )( ar, dpidUser );
 	else
 	{
-		switch( dw )
-		{
-			case PACKETTYPE_SUMMONPLAYER:
-			case PACKETTYPE_TELEPORTPLAYER:
-			case PACKETTYPE_MODIFYMODE:
-			case PACKETTYPE_BUYING_INFO:
-				{
-					CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
-					g_DPClientArray.SendToServer( dpidUser, lpMsg, dwMsgSize );
-					break;
-				}
-			default:
-				g_DPCacheSrvr.Send( lpBuf, uBufSize, dpidUser );
-				break;
-		}
+		g_DPCacheSrvr.Send( lpBuf, uBufSize, dpidUser );
 	}
 #ifdef __CRASH_0404
 	CCrashStatus::GetInstance()->SetLastPacket( this, 0xFFFFFFFF );
@@ -113,23 +99,18 @@ void CDPCoreClient::OnProcServerList( CAr & ar, DPID )
 	std::uint32_t nSize; ar >> nSize;
 
 	for (std::uint32_t i = 0; i != nSize; ++i) {
-		CServerDesc * pServer = new CServerDesc;
+		auto pServer = std::make_unique<CServerDesc>();
 		ar >> *pServer;
-
-		if( !g_DPClientArray.Connect( pServer ) ) {
-			SAFE_DELETE( pServer );
-		}
+		g_DPClientArray.Connect(std::move(pServer));
 	}
+
 	g_MyTrace.AddLine( '-' );
 }
 
 void CDPCoreClient::OnProcServer(CAr & ar, DPID) {
-	CServerDesc * pServer = new CServerDesc;
+	auto pServer = std::make_unique<CServerDesc>();
 	ar >> *pServer;
-
-	if (!g_DPClientArray.Connect(pServer)) {
-		SAFE_DELETE(pServer);
-	}
+	g_DPClientArray.Connect(std::move(pServer));
 }
 
 void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
@@ -137,29 +118,31 @@ void CDPCoreClient::OnJoin( CAr & ar, DPID dpid )
 	CMclAutoLock	Lock(g_CachePlayerMng.m_AddRemoveLock );
 
 	DWORD dwSerial;
-	BYTE byData;
+	BYTE _byData;
 	ar >> dwSerial;
-	ar >> byData;	// 사용하지 않는다.
+	ar >> _byData;	// 사용하지 않는다.
+
+	// TODO: We look for the player by serial, then we destroy them by dpid?
+	// It is at least a code smell: is the dwSerial a value only managed server side?
+	// Are they unique?
 
 	CCachePlayer * pPlayer	= g_CachePlayerMng.GetPlayerBySerial( dwSerial );
-	if( pPlayer == NULL )
-	{
-		WriteLog( "CDPCoreClient::OnJoin - player not found" );
+	if (!pPlayer) {
+		WriteLog("CDPCoreClient::OnJoin - player not found");
 		return;
 	}
 
-	CDPClient* pClient = g_DPClientArray.GetClient( pPlayer->GetChannel(), pPlayer->GetWorld(), D3DXVECTOR3(0.0f, 0.0f, 0.0f) );
-	if( pClient )
-	{
-		pPlayer->SetClient( pClient );
-		pClient->SendJoin( pPlayer );
-	}
-	else
-	{
-		WriteLog( "CDPCoreClient.OnJoin: server not found id: %d account: %s player: %s world: %d",
-			      pPlayer->GetPlayerId(), pPlayer->GetAccount(), pPlayer->GetPlayer(), pPlayer->GetWorld() );
+	CDPClient* pClient = g_DPClientArray.GetClient( pPlayer->GetChannel() );
+	
+	if (!pClient) {
+		WriteLog( "CDPCoreClient.OnJoin: server not found id: %d account: %s player: %s",
+			      pPlayer->GetPlayerId(), pPlayer->GetAccount(), pPlayer->GetPlayer() );
 		g_DPCacheSrvr.DestroyPlayer( dpid );
+		return;
 	}
+
+	pPlayer->SetClient(pClient);
+	pClient->SendJoin(pPlayer);
 }
 
 void CDPCoreClient::OnLeave( CAr & ar, DPID dpid )

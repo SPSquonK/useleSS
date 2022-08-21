@@ -6,7 +6,6 @@
 #include "clientsocke.h"
 #include "mymap.h"
 
-#ifdef __STL_0402
 class CMapChildE : public std::map<DPID, CClientSockE*>
 {
 public:
@@ -17,7 +16,6 @@ public:
 public:
 	CMclCritSec		m_AddRemoveLock;
 };
-#endif	// __STL_0402
 
 class CDPSock;
 class CServerSockE : public CSock  
@@ -26,11 +24,7 @@ public:
 	HANDLE	m_hListenThread;
 	HANDLE	m_hClose;
 	WSAEVENT	m_hListen;
-#ifdef __STL_0402
 	CMapChildE	m_mapChild;
-#else	// __STL_0402
-	CMyMap<CClientSockE*>	m_mapChild;
-#endif	// __STL_0402
 	CDPSock*	m_pDPSock;
 #ifdef __CRC
 	DWORD	m_dwcrc;
@@ -67,17 +61,10 @@ inline HANDLE CServerSockE::GetCloseHandle( void )	{	return m_hClose;	}
 
 inline CSock* CServerSockE::Get( SOCKET hSocket )
 {
-#ifdef __STL_0402
 	CMapChildE::iterator i	= m_mapChild.find( hSocket );
 	if( i != m_mapChild.end() )
 		return i->second;
 	return NULL;
-#else	// __STL_0402
-	CClientSockE* pChild;
-	if( m_mapChild.Lookup( hSocket, pChild ) )
-		return pChild;
-	return NULL;
-#endif	// __STL_0402
 }
 
 #endif //__SERVERSOCKE_H__

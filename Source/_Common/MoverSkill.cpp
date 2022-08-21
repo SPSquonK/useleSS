@@ -368,18 +368,6 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 
 #ifdef __WORLDSERVER
 
-/*
----- 2008.03.25 드로잉스킬 버그 삭제
-	#if __VER >= 10 // __LEGEND	//	10차 전승시스템	Neuz, World, Trans
-	if( pSkillProp->dwID == SI_KNT_HERO_DRAWING )
-	{
-		CParty* pParty	= g_PartyMng.GetParty( ((CUser*)this)->m_idparty );
-		if( pParty )
-			pParty->DoUsePartyReCall( ((CUser*)this)->m_idparty, ((CUser*)this)->m_idPlayer, 0);
-	}
-	#endif	//__LEGEND	//	10차 전승시스템	Neuz, World, Trans
----- 2008.03.25 드로잉스킬 버그 삭제
-*/
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 	{
 		if( pSkillProp->dwID == SI_ASS_HEAL_RESURRECTION )

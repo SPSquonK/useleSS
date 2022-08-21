@@ -314,8 +314,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	NotifyProcessStart( g_appInfo.dwId );	
 
-	int x = 0, y = 0;
-	SetWindowPos( hWnd, NULL, x, y, 400, 416, SWP_SHOWWINDOW );
+	static constexpr int x = 90;
+	static constexpr int y = 130 + (150 + 10);
+	SetWindowPos( hWnd, NULL, x, y, 400, 150, SWP_SHOWWINDOW );
 
 	g_MyTrace.Initialize( hWnd, "SquireD", RGB( 0xff, 0xff, 0xff ), RGB( 0x00, 0x00, 0x00 ) );
 

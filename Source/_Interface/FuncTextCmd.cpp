@@ -1802,19 +1802,24 @@ BOOL TextCmd_Sound(CScanner & scanner, CPlayer_ * pUser) {
 }
 BOOL TextCmd_Summon(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	TCHAR lpszPlayer[32];
-
 	scanner.GetToken();
 	if( strcmp( pUser->GetName(), scanner.Token) )
 	{
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idPlayer > 0 ){
-			strcpy( lpszPlayer, scanner.Token );
-#ifdef __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), idPlayer, pUser->GetLayer() );
-#else	// __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), idPlayer );
-#endif	// __LAYER_1015
+			CUser * summoned = g_UserMng.GetUserByPlayerID(idPlayer);
+
+			if (!IsValidObj(summoned)) {
+				pUser->AddDefinedText(TID_GAME_NOTLOGIN);
+				return FALSE;
+			}
+
+			if (!pUser->GetWorld()) {
+				WriteError("PACKETTYPE_SUMMONPLAYER//1");
+				return FALSE;
+			}
+
+			summoned->Replace(*pUser, REPLACE_FORCE);
 		}
 		else {
 //			scanner.Token라는 이름을 가진 사용자는 이 게임에 존재하지 않는다.
@@ -2625,7 +2630,7 @@ BOOL TextCmd_Freeze(CScanner & scanner, CPlayer_ * pUser) {
 		if( idFrom > 0 && idTo > 0 ) 
 		{
 			// 1 : 추가 m_dwMode
-			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, (BYTE)1, idFrom, idTo );					
+			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, true, idFrom, idTo );					
 		}
 		else 
 		{
@@ -2651,7 +2656,7 @@ BOOL TextCmd_NoFreeze(CScanner & scanner, CPlayer_ * pUser) {
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idFrom > 0 && idTo > 0 ) 
 		{
-			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, (BYTE)0, idFrom, idTo );	// 0 : 뺌 m_dwMode
+			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, false, idFrom, idTo );
 		}
 		else 
 		{
@@ -2676,7 +2681,7 @@ BOOL TextCmd_Talk(CScanner & scanner, CPlayer_ * pUser) {
 	idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 	if( idFrom > 0 && idTo > 0 ) 
 	{
-		g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)0, idFrom, idTo );	// 0 : 뺌 m_dwMode
+		g_DPCoreClient.SendModifyMode( DONTALK_MODE, false, idFrom, idTo );
 	}
 	else 
 	{
@@ -2698,7 +2703,7 @@ BOOL TextCmd_NoTalk(CScanner & scanner, CPlayer_ * pUser) {
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idFrom > 0 && idTo > 0 ) 
 		{
-			g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)1, idFrom, idTo );	// 1 : 추가
+			g_DPCoreClient.SendModifyMode( DONTALK_MODE, true, idFrom, idTo );	// 1 : 추가
 		}
 		else 
 		{

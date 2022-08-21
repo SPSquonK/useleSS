@@ -76,8 +76,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_JOIN, &CDPSrvr::OnAddUser );
 	OnMsg( PACKETTYPE_LEAVE, &CDPSrvr::OnRemoveUser );
 	OnMsg( PACKETTYPE_REPLACE, &CDPSrvr::OnReplace );
-	OnMsg( PACKETTYPE_SUMMONPLAYER, &CDPSrvr::OnSummonPlayer );
-	OnMsg( PACKETTYPE_TELEPORTPLAYER, &CDPSrvr::OnTeleportPlayer );
 	OnMsg( PACKETTYPE_CORR_REQ, &CDPSrvr::OnCorrReq );
 	OnMsg( PACKETTYPE_SCRIPTDLG, &CDPSrvr::OnScriptDialogReq );
 	OnMsg( PACKETTYPE_TRADEPUT, &CDPSrvr::OnTradePut );
@@ -94,7 +92,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_SNAPSHOT, &CDPSrvr::OnSnapshot );
 	OnMsg( PACKETTYPE_SEND_TO_SERVER_CHANGEJOB, &CDPSrvr::OnChangeJob );
 	OnMsg( PACKETTYPE_SETLODELIGHT, &CDPSrvr::OnSetLodelight );
-	OnMsg( PACKETTYPE_MODIFYMODE, &CDPSrvr::OnModifyMode );
 	OnMsg( PACKETTYPE_REVIVAL, &CDPSrvr::OnRevival );
 	OnMsg( PACKETTYPE_REVIVAL_TO_LODESTAR, &CDPSrvr::OnRevivalLodestar );
 	OnMsg( PACKETTYPE_REVIVAL_TO_LODELIGHT, &CDPSrvr::OnRevivalLodelight );
@@ -218,7 +215,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACHETTYPE_ITEMTRANSY, &CDPSrvr::OnItemTransy );
 	OnMsg( PACKETTYPE_PIERCING, &CDPSrvr::OnPiercing );
 	OnMsg( PACKETTYPE_PIERCINGREMOVE, &CDPSrvr::OnPiercingRemove );
-	OnMsg( PACKETTYPE_BUYING_INFO, &CDPSrvr::OnBuyingInfo );
 	OnMsg( PACKETTYPE_ENTERCHTTING, &CDPSrvr::OnEnterChattingRoom );
 	OnMsg( PACKETTYPE_CHATTING, &CDPSrvr::OnChatting );
 	OnMsg( PACKETTYPE_OPENCHATTINGROOM, &CDPSrvr::OnOpenChattingRoom );
@@ -3856,104 +3852,6 @@ void CDPSrvr::OnPlayerDestAngle( CAr & ar, CUser* pUser )
 	g_UserMng.AddSetDestAngle( pUser, fDestAngle, fLeft );
 }
 */
-void CDPSrvr::OnModifyMode( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		DWORD dwMode;
-		BYTE f;
-		u_long idFrom;
-
-		ar >> dwMode >> f >> idFrom;
-
-#ifdef __HACK_0516
-		DPID dpid;
-		ar >> dpid;
-		if( pUser->m_Snapshot.dpidUser != dpid )
-		{
-			Error( "[%s] try to hack : PACKETTYPE_MODIFYMODE", pUser->GetName() );
-			return;
-		}
-#endif	// __HACK_0516
-
-		if( f )
-			pUser->m_dwMode		|= dwMode;
-		else
-			pUser->m_dwMode		&= ~dwMode;
-
-		g_UserMng.AddModifyMode( pUser );
-	}
-}
-
-// 운영자의 소환 명령어 
-void CDPSrvr::OnSummonPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		u_long idOperator;
-		DWORD dwWorldID;
-		D3DXVECTOR3 vPos;
-		u_long uIdofMulti;
-
-		ar >> idOperator;
-		ar >> dwWorldID;
-		ar >> vPos;
-		ar >> uIdofMulti;
-
-		if (uIdofMulti != g_uIdofMulti) return;
-
-#ifdef __HACK_0516
-		DPID dpid;
-		ar >> dpid;
-		if( pUser->m_Snapshot.dpidUser != dpid )
-		{
-			Error( "[%s] try to hack : PACKETTYPE_SUMMONPLAYER", pUser->GetName() );
-			return;
-		}
-#endif	// __HACK_0516
-#ifdef __LAYER_1015
-		int nLayer;
-		ar >> nLayer;
-#endif	// __LAYER_1015
-
-		if( !pUser->GetWorld() )
-		{
-			WriteError( "PACKETTYPE_SUMMONPLAYER//1" );
-			return;
-		}
-
-		pUser->Replace( dwWorldID, vPos, REPLACE_FORCE, nLayer );
-	}
-}
-
-void CDPSrvr::OnTeleportPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
-{
-	u_long idOperator;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	CWorld* pWorld;
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) )
-	{
-		ar >> idOperator;
-#ifdef __HACK_0516
-		DPID dpid;
-		ar >> dpid;
-		if( pUser->m_Snapshot.dpidUser != dpid )
-		{
-			Error( "[%s] try to hack : PACKETTYPE_TELEPORTPLAYER", pUser->GetName() );
-			return;
-		}
-#endif	// __HACK_0516
-#ifdef __LAYER_1015
-		g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pWorld->GetID(), pUser->GetPos(), idOperator, pUser->GetLayer() );
-#else	// __LAYER_1015
-		g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pWorld->GetID(), pUser->GetPos(), idOperator );
-#endif	// __LAYER_1015
-	}
-}
-
 void CDPSrvr::OnChangeFace( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	u_long objId;
@@ -5020,43 +4918,6 @@ void CDPSrvr::OnRequestGuildRank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 			}
 		}
 	}
-}
-
-void CDPSrvr::OnBuyingInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	BUYING_INFO2 bi2;
-	ar.Read((void *)&bi2, sizeof(BUYING_INFO2));
-
-	CWorld * pWorld;
-	CUser * pUser = g_UserMng.GetUser(dpidCache, dpidUser);
-
-	SERIALNUMBER iSerialNumber = 0;
-	if (IsValidObj(pUser) && (pWorld = pUser->GetWorld())) {
-		bi2.dwRetVal = 0;
-		CItemElem itemElem;
-		itemElem.m_dwItemId = bi2.dwItemId;
-		itemElem.m_nItemNum = (short)bi2.dwItemNum;
-		itemElem.m_bCharged = TRUE;
-		BYTE nId;
-		bi2.dwRetVal = pUser->CreateItem(&itemElem, &nId);
-#ifdef __LAYER_1015
-		g_dpDBClient.SavePlayer(pUser, pWorld->GetID(), pUser->GetPos(), pUser->GetLayer());
-#else	// __LAYER_1015
-		g_dpDBClient.SavePlayer(pUser, pWorld->GetID(), pUser->GetPos());
-#endif	// __LAYER_1015
-		if (bi2.dwRetVal) {
-			CItemElem * pItemElem = pUser->m_Inventory.GetAtId(nId);
-			if (pItemElem) {
-				iSerialNumber = pItemElem->GetSerialNumber();
-				pItemElem->m_bCharged = TRUE;
-				if (bi2.dwSenderId > 0) {
-					// %s was a gift from %s.
-				}
-			}
-		}
-	}
-
-	g_dpDBClient.SendBuyingInfo(&bi2, iSerialNumber);
 }
 
 void CDPSrvr::OnEnterChattingRoom(CAr & ar, CUser & pUser) {

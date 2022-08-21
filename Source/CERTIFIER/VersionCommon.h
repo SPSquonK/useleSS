@@ -15,7 +15,6 @@
 #define		__DOS1101
 //#define		__S0114_RELOADPRO	// 캐릭터 DB에서 읽어오기 : Neuz, Trans, login, World, Certifier, Account( ini : SKIP_TRACKING 추가 )
 #define		__TWN_LOGIN0816
-#define		__STL_0402				// stl
 
 #define	__GPAUTH
 #define	__GPAUTH_01

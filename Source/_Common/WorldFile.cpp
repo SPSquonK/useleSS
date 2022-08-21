@@ -767,7 +767,7 @@ BOOL CWorld::LoadRegion()
 
 
 #ifdef __WORLDSERVER
-BOOL CWorld::ReadWorld( const CRect & rcLandscape )
+BOOL CWorld::ReadWorld()
 {
 	CString strFileName;
 	CString strLandName = m_szFileName;

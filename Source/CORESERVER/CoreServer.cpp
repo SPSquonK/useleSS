@@ -142,7 +142,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-	int x = 0, y = 416;
+	static constexpr int x = 90;
+	static constexpr int y = 130 + (150 + 10) * 2;
 	SetWindowPos( hWnd, NULL, x, y, 400, 416, SWP_SHOWWINDOW );
 
 	g_GameTimer.Compute();
@@ -451,9 +452,6 @@ void OnTimer( WORD wTimerID )
 BOOL Script( LPCSTR lpszFileName )
 {
 	CScanner s;
-	CServerDesc* pServer;
-	POINT topLeft;
-	SIZE	size;
 
 	if( s.Load( lpszFileName ) )
 	{
@@ -491,7 +489,7 @@ BOOL Script( LPCSTR lpszFileName )
 			}
 			else
 			{
-				pServer		= new CServerDesc;
+				CServerDesc * pServer		= new CServerDesc;
 				u_long uKey	= (u_long)_ttoi( s.Token );
 				pServer->SetKey( uKey );
 
@@ -499,22 +497,17 @@ BOOL Script( LPCSTR lpszFileName )
 				{
 					while( s.GetToken() != DELIMITER )
 					{
-						CJurisdiction* pJurisdiction	= new CJurisdiction;
-						pJurisdiction->m_dwWorldID	= (DWORD)_ttoi( s.Token );
-						topLeft.x	= s.GetNumber();	topLeft.y	= s.GetNumber();
-						size.cx		= s.GetNumber();	size.cy		= s.GetNumber();
-						pJurisdiction->m_rect.SetRect( topLeft.x, topLeft.y, topLeft.x + size.cx, topLeft.y + size.cy );
-						pJurisdiction->m_wLeft	= s.GetNumber();	pJurisdiction->m_wRight		= s.GetNumber();
-						pServer->m_lspJurisdiction.push_back( pJurisdiction );
+						const WorldId pJurisdiction = static_cast<WorldId>(_ttoi(s.Token));
+						pServer->m_lspJurisdiction.emplace(pJurisdiction);
+						/* Ignore x y cx cy left right */
+						s.GetNumber(); s.GetNumber(); s.GetNumber();
+						s.GetNumber(); s.GetNumber();	s.GetNumber();
 					}
 				}
-		#ifdef __STL_0402
-				bool bResult	= g_dpCoreSrvr.m_apSleepServer.insert( CServerDescArray::value_type( pServer->GetKey(), pServer ) ).second;
+				const bool bResult = g_dpCoreSrvr.m_apSleepServer.emplace(pServer->GetKey(), pServer).second;
 				ASSERT( bResult );
-		#else	// __STL_0402
-				g_dpCoreSrvr.m_apSleepServer.SetAt( pServer->GetKey(), pServer );
-		#endif	// __STL_0402
-				g_MyTrace.Add( pServer->GetKey(), TRUE, "%04d", pServer->GetKey() );
+				g_dpCoreSrvr.m_multiIdToDpid[pServer->GetIdofMulti()] = DPID_UNKNOWN;
+				g_MyTrace.Add( pServer->GetKey(), TRUE, "World: %04lu OFF", pServer->GetKey() );
 			}
 			s.GetToken();
 		}

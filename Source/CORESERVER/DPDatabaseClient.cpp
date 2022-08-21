@@ -427,8 +427,9 @@ void CDPDatabaseClient::OnBuyingInfo( CAr & ar )
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer* pPlayer	= g_PlayerMng.GetPlayer( bi2.dwPlayerId );
-	if( pPlayer )
-		g_DPCacheSrvr.SendBuyingInfo( &bi2, pPlayer );
+	if (pPlayer) {
+		g_dpCoreSrvr.SendPacketAbout<PACKETTYPE_BUYING_INFO>(*pPlayer, bi2);
+	}
 }
 
 #ifdef __SERVERLIST0911

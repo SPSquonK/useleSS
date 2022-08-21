@@ -7,9 +7,8 @@ CDisplayedInfo g_DisplayedInfo;
 extern HWND g_hMainWnd;
 
 void CDisplayedInfo::Paint(HDC & hDC) {
-	int x, y;
-	x = 0;
-	y = 0;
+	int x = 0;
+	int y = 0;
 
 	for (int i = 0; i < LOGTYPE_MAX; ++i) {
 		TextOut(hDC, x, y, g_szBuffer[i], strlen(g_szBuffer[i]));
@@ -17,7 +16,7 @@ void CDisplayedInfo::Paint(HDC & hDC) {
 		y += 20;
 	}
 
-	if (!m_connectedTo.database || !m_connectedTo.core) {
+	if (!(m_connectedTo.database && m_connectedTo.core)) {
 		const std::string_view text = m_connectedTo.GetText();
 
 		const auto originalColor = GetTextColor(hDC);
@@ -28,7 +27,7 @@ void CDisplayedInfo::Paint(HDC & hDC) {
 
 	y += 10;
 
-	if (m_invalidWorlds != "") {
+	if (!m_invalidWorlds.empty()) {
 		const auto originalColor = GetTextColor(hDC);
 		SetTextColor(hDC, RGB(255, 0, 0));
 		TextOutA(hDC, x, y, m_invalidWorlds.c_str(), m_invalidWorlds.size());
@@ -81,18 +80,18 @@ void CDisplayedInfo::Redraw() {
 static std::string WorldsIdsToString(const std::vector<DWORD> & ids);
 
 void CDisplayedInfo::SetListOfMaps(
-	std::vector<std::pair<DWORD, std::string>> worlds,
-	std::vector<DWORD> invalidWorlds
+	std::vector<std::pair<WorldId, std::string>> worlds,
+	std::vector<WorldId> invalidWorlds
 ) {
 	m_listOfMaps = ExistingWorldsToString(worlds);
 
-	std::sort(invalidWorlds.begin(), invalidWorlds.end());
+	std::ranges::sort(invalidWorlds);
 	m_invalidWorlds = InvalidWorldsToString(invalidWorlds);
 }
 
-std::string CDisplayedInfo::ExistingWorldsToString(const std::vector<std::pair<DWORD, std::string>> & worlds) {
-	std::map<DWORD, std::string> worldIdToWorldName;
-	std::map<std::string, DWORD> worldNameToFirstWorldId;
+std::string CDisplayedInfo::ExistingWorldsToString(const std::vector<std::pair<WorldId, std::string>> & worlds) {
+	std::map<WorldId, std::string> worldIdToWorldName; // TODO: why not receive a map?
+	std::map<std::string, WorldId> worldNameToFirstWorldId; // TODO: std::multimap?
 
 	for (const auto & [worldId, worldName] : worlds) {
 		worldIdToWorldName[worldId] = worldName;
@@ -166,7 +165,7 @@ static std::string WorldsIdsToString(const std::vector<DWORD> & ids) {
 
 	if (ids.size() != 0) {
 		if (ids.size() > 5 && IsContiguous(ids)) {
-			res += std::to_string(ids[0]) + ":" + std::to_string(ids.back());
+			res += std::to_string(ids.front()) + ":" + std::to_string(ids.back());
 		} else {
 			res += DWordsToString(ids, ",");
 		}

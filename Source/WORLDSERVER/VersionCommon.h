@@ -36,7 +36,6 @@
 #define		__INFINITE_0227
 
 #define		__LANG_IME_0327					// 국가별 ime표시 창 출력 구분
-#define		__STL_0402						// stl
 // 9차
 #define		__TRADESYS						// 교환 아이템 스크립트(이벤트, 퀘스트, ...) Neuz, World
 #define		__EVE_BALLOON					//풍선 이벤트 관련

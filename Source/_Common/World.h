@@ -230,7 +230,7 @@ public:
 public:
 	void			Process();
 	void			ModifyView( CCtrl* pCtrl );
-	BOOL			ReadWorld( const CRect & rcLandscapce ); 
+	BOOL			ReadWorld(); 
 	bool PreremoveObj(OBJID objid);
 	CObj*			PregetObj( OBJID objid );
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}

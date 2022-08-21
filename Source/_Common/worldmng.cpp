@@ -23,9 +23,7 @@
 #include "DPSrvr.h"
 #include "User.h"
 
-#ifdef __WORLDSERVER
 CWorldMng	g_WorldMng;
-#endif	// __WORLDSERVER
 #endif	// __WORLDSERVER
 
 CWorldMng::CWorldMng()
@@ -76,25 +74,26 @@ void CWorldMng::ReadObject() {
 	}
 }
 
-void CWorldMng::Add( CJurisdiction* pJurisdiction )
+void CWorldMng::Add(const WorldId pJurisdiction)
 {
-	LPWORLD lpWorld	= GetWorldStruct( pJurisdiction->m_dwWorldID );
+	const WORLD * lpWorld	= GetWorldStruct( pJurisdiction );
 	ASSERT( lpWorld );
 
-	CWorld* pWorld = GetWorld( pJurisdiction->m_dwWorldID );
+	CWorld* pWorld = GetWorld( pJurisdiction );
 	if( pWorld )
 	{
-		pWorld->ReadWorld( pJurisdiction->m_rect );
+		pWorld->ReadWorld();
 	}
 	else
 	{
 		pWorld	= new CWorld;
 
-		pWorld->m_dwWorldID	= pJurisdiction->m_dwWorldID;
+		pWorld->m_dwWorldID	= pJurisdiction;
 		pWorld->OpenWorld( MakePath( DIR_WORLD, lpWorld->m_szFileName ), TRUE );
-		pWorld->ReadWorld( pJurisdiction->m_rect );
+		pWorld->ReadWorld();
 
 		m_worlds.emplace(m_worlds.begin(), pWorld); // emplace front to mimic the base flyff code
+		// TODO: do we really care about the order?
 	}
 	strcpy( pWorld->m_szWorldName, lpWorld->m_szWorldName );
 }

@@ -10,7 +10,6 @@
 template <class T>
 class CDPSock;
 
-#ifdef __STL_0402
 template <class T>
 class CMapChildE : public std::map<DPID,CClientSockE<T>*>
 {
@@ -22,7 +21,6 @@ public:
 public:
 	CMclCritSec		m_AddRemoveLock;
 };
-#endif	// __STL_0402
 
 
 template <class T>
@@ -32,11 +30,7 @@ public:
 	HANDLE	m_hListenThread;
 	HANDLE	m_hClose;
 	WSAEVENT	m_hListen;
-#ifdef __STL_0402
 	CMapChildE<T>	m_mapChild;
-#else	// __STL_0402
-	CMyMap<CClientSockE<T>*>	m_mapChild;
-#endif	// __STL_0402
 	CDPSock<T>*		m_pDPSock;
 
 public:
@@ -78,17 +72,10 @@ inline HANDLE CServerSockE<T>::GetCloseHandle( void )
 template <class T>
 inline CSock* CServerSockE<T>::Get( SOCKET hSocket )
 	{
-#ifdef __STL_0402
 		auto i	= m_mapChild.find( hSocket );
 		if( i != m_mapChild.end() )
 			return i->second;
 		return NULL;
-#else	// __STL_0402
-		CClientSockE<T>* pChild;
-		if( m_mapChild.Lookup( hSocket, pChild ) )
-			return pChild;
-		return NULL;
-#endif	// __STL_0402
 	}
 
 
@@ -100,9 +87,6 @@ CServerSockE<T>::CServerSockE( DWORD dwcrc )
 		m_hClose	= (HANDLE)NULL;
 		m_hListen	= WSA_INVALID_EVENT;
 		m_pDPSock	= NULL;
-#ifndef __STL_0402
-		m_mapChild.SetSize( 512, 4096, 128 );
-#endif	// __STL_0402
 	}
 
 template <class T>
@@ -158,12 +142,8 @@ CClientSockE<T>* CServerSockE<T>::AddChild( SOCKET hSocket )
 		CClientSockE<T>* pChild		= new CClientSockE<T>( m_dwcrc );
 		pChild->Attach( hSocket );
 		m_mapChild.Lock();
-#ifdef __STL_0402
 		bool bResult	= m_mapChild.insert( CMapChildE<T>::value_type( hSocket, pChild ) ).second;
 		ASSERT( bResult );
-#else	// __STL_0402
-		m_mapChild.SetAt( hSocket, pChild );
-#endif	// __STL_0402
 		m_mapChild.Unlock();
 		return pChild;
 	}
@@ -172,7 +152,6 @@ template <class T>
 BOOL CServerSockE<T>::CloseChild( SOCKET hSocket )
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 		auto i	= m_mapChild.find( hSocket );
 		if( i != m_mapChild.end() )
 		{
@@ -183,26 +162,12 @@ BOOL CServerSockE<T>::CloseChild( SOCKET hSocket )
 			return TRUE;
 		}
 		return FALSE;
-#else	// __STL_0402
-		CClientSockE<T>* pChild;
-		if( m_mapChild.Lookup( hSocket, pChild ) )
-		{
-			m_mapChild.RemoveKey( hSocket );
-			if( pChild ) {
-				pChild->Close();
-				SAFE_DELETE( pChild );
-				return( TRUE );
-			}
-		}
-		return( FALSE );
-#endif	// __STL_0402
 	}
 
 template <class T>
 void CServerSockE<T>::CloseAllChild( void )
 	{
 		CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 		for( auto i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 		{
 			CClientSockE<T>* pChild	= i->second;
@@ -210,18 +175,6 @@ void CServerSockE<T>::CloseAllChild( void )
 			SAFE_DELETE( pChild );
 		}
 		m_mapChild.clear();
-#else	// __STL_0402
-		CClientSockE<T>* pChild;
-		CMyBucket<CClientSockE<T>*>* pBucket	= m_mapChild.GetFirstActive();
-		while( pBucket )
-		{
-			pChild	= pBucket->m_value;
-			TRACE( "~%x, %d\n", pChild, pChild->GetHandle() );
-			SAFE_DELETE( pChild );
-			pBucket	= pBucket->pNext;
-		}
-		m_mapChild.RemoveAll();
-#endif	// __STL_0402
 	}
 
 template <class T>
@@ -232,35 +185,18 @@ void CServerSockE<T>::Send( char* lpData, DWORD dwDataSize, DPID dpidTo )
 		if( dpidTo == DPID_ALLPLAYERS )
 		{
 			CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 			for( auto i = m_mapChild.begin(); i != m_mapChild.end(); ++i )
 			{
 				CClientSockE<T>* pChild	= i->second;
 				pChild->Send( lpData, dwDataSize, pChild->GetHandle() );
 			}
-#else	// __STL_0402
-			CClientSockE<T>* pChild;
-			CMyBucket<CClientSockE<T>*>* pBucket	= m_mapChild.GetFirstActive();
-			while( pBucket )
-			{
-				pChild	= pBucket->m_value;
-				pChild->Send( lpData, dwDataSize, pChild->GetHandle() );
-				pBucket	= pBucket->pNext;
-			}
-#endif	// __STL_0402
 		}
 		else
 		{
 			CMclAutoLock	Lock( m_mapChild.m_AddRemoveLock );
-#ifdef __STL_0402
 			CClientSockE<T>* pChild		= (CClientSockE<T>*)Get( dpidTo );
 			if( pChild )
 				pChild->Send( lpData, dwDataSize, dpidTo );
-#else	// __STL_0402
-			CClientSockE<T>* pChild;
-			if( m_mapChild.Lookup( dpidTo, pChild ) )
-				pChild->Send( lpData, dwDataSize, dpidTo );
-#endif	// __STL_0402
 		}
 	}
 
@@ -283,11 +219,7 @@ HRESULT CServerSockE<T>::GetPeerAddr( DPID dpid, LPVOID lpAddr, LPDWORD lpdwSize
 
 		ZeroMemory( &sin, sizeof(SOCKADDR_IN) );
 
-#ifdef __STL_0402
 		pSock	= (CClientSockE<T>*)Get( hSocket );
-#else	//	__STL_0402
-		m_mapChild.Lookup( hSocket, pSock );
-#endif	// __STL_0402
 		if( !pSock )
 			return DPERR_INVALIDPARAM;
 

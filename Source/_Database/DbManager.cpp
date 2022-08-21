@@ -366,27 +366,6 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 	FriendStatus	dwMessengerState[5];
 	int countMessenger = 0;
 
-	DWORD	adwWorldId[3];
-	D3DXVECTOR3	avPos[3];
-	memset( adwWorldId, 0, sizeof(adwWorldId) );
-	ACCOUNT_CACHE* pAccount		= NULL;
-	g_DbManager.m_AddRemoveLock.Enter();
-	{
-		pAccount = m_AccountCacheMgr.Find( lpDbOverlappedPlus->AccountInfo.szAccount );
-		if( pAccount )
-		{
-			for( int i = 0; i < 3; i++ )
-			{
-				if( pAccount->pMover[i] )
-				{
-					adwWorldId[i] = pAccount->pMover[i]->m_dwWorldID;
-					avPos[i]      = pAccount->pMover[i]->m_vPos;
-				}
-			}
-		}
-	}
-	g_DbManager.m_AddRemoveLock.Leave();
-	
 	//	mulcom	BEGIN100218	S2 Patch
 	int	nWhileCount	= 0;
 	//	mulcom	END100218	S2 Patch
@@ -448,25 +427,9 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 		CMover mover;
 		mover.InitProp();
 
-		DWORD dwWorldID;
 		int nBlock = 0;
 
 		BOOL bRefresh	= qry->GetInt( "m_idCompany" ) > 0;
-
-		if( adwWorldId[islot] > 0 
-			&& bRefresh == FALSE
-			)
-		{
-			dwWorldID	= adwWorldId[islot];
-			mover.m_vPos	= avPos[islot];
-		}
-		else
-		{
-			dwWorldID = qry->GetInt( "dwWorldID" );
-			mover.m_vPos.x = qry->GetFloat( "m_vPos_x");
-			mover.m_vPos.y = qry->GetFloat( "m_vPos_y");
-			mover.m_vPos.z = qry->GetFloat( "m_vPos_z");
-		}
 
 		mover.m_dwMode	= 0;
 		if( qry->GetInt( "last_connect" ) == 3 )
@@ -561,10 +524,8 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 
 			arbuf << islot;
 			arbuf << nBlock;
-			arbuf << dwWorldID;
 			arbuf << mover.m_dwIndex;
 			arbuf.WriteString( mover.m_szName );
-			arbuf << mover.m_vPos;
 			arbuf << mover.m_idPlayer;
 			arbuf << mover.m_idparty;
 			arbuf << mover.m_idGuild;

@@ -185,9 +185,6 @@ private:
 	void	OnPlayerPos( CAr & ar, CUser* pUser );
 	void	OnPlayerDestPos( CAr & ar, CUser* pUser );
 //	void	OnPlayerDestAngle( CAr & ar, CUser* pUser );
-	void	OnModifyMode( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
-	void	OnSummonPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
-	void	OnTeleportPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
 	void	OnExpUp( CAr & ar, CUser & pUser);
 	void	OnChangeJob(CAr & ar, CUser & pUser);
 	void	OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
@@ -251,8 +248,6 @@ private:
 	void	OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	
 	void	OnCreateMonster( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-
-	void	OnBuyingInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	
 	void	OnCreateAngel(CAr & ar, CUser & pUser);
 	void	OnAngleBuff(CAr & ar, CUser & pUser);
