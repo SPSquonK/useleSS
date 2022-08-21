@@ -451,6 +451,44 @@ void OnTimer( WORD wTimerID )
 
 BOOL Script( LPCSTR lpszFileName )
 {
+	static constexpr auto LoadMapNames = []() -> std::map<CString, WorldId> {
+		// We do not have CScript implementation in Core
+		// And importing CScript.cpp is not fun enough so we implement
+		// a buggy reader
+		CScanner s;
+		if (!s.Load("../Resource/defineWorld.h")) return {};
+
+		std::map<CString, WorldId> result;
+
+		enum class Step { None, Define, HasName };
+		Step step = Step::None;
+		CString lastDefineName;
+
+		s.GetToken();
+		while (s.tok != FINISHED) {
+			if (s.Token == "#define") {
+				step = Step::Define;
+			} else {
+				if (step == Step::Define) {
+					lastDefineName = s.Token;
+					step = Step::HasName;
+				} else if (step == Step::HasName) {
+					const int value = std::stoi(s.token);
+					if (value != 0) {
+						result[lastDefineName] = static_cast<WorldId>(value);
+					}
+					step = Step::None;
+				}
+			}
+
+			s.GetToken();
+		}
+
+		return result;
+	};
+
+	const auto mapNames = LoadMapNames();
+
 	CScanner s;
 
 	if( s.Load( lpszFileName ) )
@@ -497,11 +535,17 @@ BOOL Script( LPCSTR lpszFileName )
 				{
 					while( s.GetToken() != DELIMITER )
 					{
-						const WorldId pJurisdiction = static_cast<WorldId>(_ttoi(s.Token));
-						pServer->m_lspJurisdiction.emplace(pJurisdiction);
-						/* Ignore x y cx cy left right */
-						s.GetNumber(); s.GetNumber(); s.GetNumber();
-						s.GetNumber(); s.GetNumber();	s.GetNumber();
+						auto it = mapNames.find(s.Token);
+						if (it != mapNames.end()) {
+							pServer->m_lspJurisdiction.emplace(it->second);
+						} else {
+							const WorldId pJurisdiction = static_cast<WorldId>(_ttoi(s.Token));
+							if (pJurisdiction == 0) {
+								Error("Invalid value when reading CoreServer's worlds: %s", s.Token.GetString());
+							} else {
+								pServer->m_lspJurisdiction.emplace(pJurisdiction);
+							}
+						}
 					}
 				}
 				const bool bResult = g_dpCoreSrvr.m_apSleepServer.emplace(pServer->GetKey(), pServer).second;

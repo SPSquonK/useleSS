@@ -391,23 +391,23 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 		g_eLocal.SetState( EVE_EVENT0214, 1 );
 	}
 	
-	std::vector<std::pair<WorldId, std::string>> knownWorlds;
-	std::vector<WorldId> badWorlds;
+	std::map<WorldId, std::string> knownWorlds;
+	boost::container::flat_set<WorldId> badWorlds;
 
 	for (const WorldId pJurisdiction : desc.m_lspJurisdiction) {
 		WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction);
 		if (!lpWorld) {
 			Error(__FUNCTION__ ": The world #%lu has no world Struct", pJurisdiction);
-			badWorlds.push_back(pJurisdiction);
+			badWorlds.emplace(pJurisdiction);
 			continue;
 		}
 
-		knownWorlds.emplace_back(pJurisdiction, lpWorld->m_szFileName);
+		knownWorlds.emplace(pJurisdiction, lpWorld->m_szFileName);
 
-		g_WorldMng.Add( pJurisdiction );
+		g_WorldMng.Add(pJurisdiction);
 	}
 
-	g_DisplayedInfo.SetListOfMaps(std::move(knownWorlds), std::move(badWorlds));
+	g_DisplayedInfo.SetListOfMaps(knownWorlds, badWorlds);
 
 	g_WorldMng.ReadObject();
 

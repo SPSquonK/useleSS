@@ -80,55 +80,36 @@ void CDisplayedInfo::Redraw() {
 static std::string WorldsIdsToString(const std::vector<DWORD> & ids);
 
 void CDisplayedInfo::SetListOfMaps(
-	std::vector<std::pair<WorldId, std::string>> worlds,
-	std::vector<WorldId> invalidWorlds
+	const std::map<WorldId, std::string> & worlds,
+	const boost::container::flat_set<WorldId> & invalidWorlds
 ) {
 	m_listOfMaps = ExistingWorldsToString(worlds);
-
-	std::ranges::sort(invalidWorlds);
 	m_invalidWorlds = InvalidWorldsToString(invalidWorlds);
 }
 
-std::string CDisplayedInfo::ExistingWorldsToString(const std::vector<std::pair<WorldId, std::string>> & worlds) {
-	std::map<WorldId, std::string> worldIdToWorldName; // TODO: why not receive a map?
-	std::map<std::string, WorldId> worldNameToFirstWorldId; // TODO: std::multimap?
+std::string CDisplayedInfo::ExistingWorldsToString(const std::map<WorldId, std::string> & worlds) {
+	std::map<std::string, std::vector<DWORD>> nameToIds;
 
 	for (const auto & [worldId, worldName] : worlds) {
-		worldIdToWorldName[worldId] = worldName;
-
-		auto it = worldNameToFirstWorldId.find(worldName);
-		if (it == worldNameToFirstWorldId.end()) {
-			worldNameToFirstWorldId.insert_or_assign(worldName, worldId);
-		} else if (it->second > worldId) {
-			it->second = worldId;
-		}
+		// As worlds is an std::map, the worldId are sorted
+		nameToIds[worldName].emplace_back(worldId);
 	}
-
-	// This is "slow", but we only execute this function once with less than 200 values
-	// so the O(n^2 * m) complexity is ok (n = number of worlds, m = longest world name)
 
 	std::string str;
 
-	for (const auto & [worldId, worldName] : worldIdToWorldName) { // O(n)
-		const auto it = worldNameToFirstWorldId.find(worldName);
-		if (it == worldNameToFirstWorldId.end()) continue; // impossible by design but ok
-		if (it->second != worldId) continue; // already displayed
+	for (const auto & [worldId, worldName] : worlds) { // O(n)
+		const auto it = nameToIds.find(worldName);
+		if (it == nameToIds.end()) continue; // impossible by design but ok
+		if (it->second.front() != worldId) continue;
 
-		std::vector<DWORD> worldsIds;
-		for (const auto & [otherWorldId, otherWorldName] : worldIdToWorldName) { // O(n)
-			if (worldName != otherWorldName) continue;
-
-			worldsIds.push_back(otherWorldId);
-		}
-
-		str += WorldsIdsToString(worldsIds) + "=" + worldName + " ";
+		str += WorldsIdsToString(it->second) + "=" + worldName + " ";
 	}
 
 	return str;
 }
 
 
-std::string DWordsToString(const std::vector<DWORD> & values, const char * const separator) {
+std::string DWordsToString(std::span<const DWORD> values, const char * const separator) {
 	if (values.size() == 0) return "";
 
 	std::string res = std::to_string(values[0]);
@@ -141,7 +122,7 @@ std::string DWordsToString(const std::vector<DWORD> & values, const char * const
 	return res;
 }
 
-std::string CDisplayedInfo::InvalidWorldsToString(const std::vector<DWORD> & invalidWorlds) {
+std::string CDisplayedInfo::InvalidWorldsToString(const boost::container::flat_set<WorldId> & invalidWorlds) {
 	if (invalidWorlds.size() == 0) return "";
 	return "/!\\ Invalid worlds: " + DWordsToString(invalidWorlds, ", ");
 }
