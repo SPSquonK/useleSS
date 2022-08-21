@@ -506,6 +506,7 @@ BOOL Script( LPCSTR lpszFileName )
 				}
 				const bool bResult = g_dpCoreSrvr.m_apSleepServer.emplace(pServer->GetKey(), pServer).second;
 				ASSERT( bResult );
+				g_dpCoreSrvr.m_multiIdToDpid[pServer->GetIdofMulti()] = DPID_UNKNOWN;
 				g_MyTrace.Add( pServer->GetKey(), TRUE, "World: %04lu OFF", pServer->GetKey() );
 			}
 			s.GetToken();

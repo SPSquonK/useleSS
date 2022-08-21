@@ -165,6 +165,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		
 		bool bResult	= m_apServer.emplace(dpid, pServerDesc).second;
 		ASSERT( bResult );
+		m_multiIdToDpid[pServerDesc->GetIdofMulti()] = dpid;
 		SendRecharge( (u_long)10240, dpid );
 
 		BEFORESENDDUAL( ar, PACKETTYPE_LOAD_WORLD, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -218,7 +219,8 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 	const ULONG uWorldSrvr = pServerDesc->GetKey();
 
 	m_apServer.erase(i);
-	bool bResult	= m_apSleepServer.emplace( uWorldSrvr, pServerDesc ).second;
+	m_apSleepServer.emplace( uWorldSrvr, pServerDesc ).second;
+	g_dpCoreSrvr.m_multiIdToDpid[pServerDesc->GetIdofMulti()] = DPID_UNKNOWN;
 	g_MyTrace.Add( uWorldSrvr, TRUE, "World: %04lu OFF", uWorldSrvr );
 
 #ifdef __SERVERLIST0911
@@ -356,8 +358,7 @@ void CDPCoreSrvr::OnModifyMode(CAr & ar, DPID, DPID, DPID, u_long) {
 	CPlayer * pTo = g_PlayerMng.GetPlayer(idTo);
 
 	if (pFrom && pTo) {
-		// TODO: In a better world, only send to world pTo->dpid
-		BroadcastPacket<PACKETTYPE_MODIFYMODE, u_long, DWORD, bool, u_long>(pTo->uKey, dwMode, f, idFrom);
+		SendPacketAbout<PACKETTYPE_MODIFYMODE, DWORD, bool, u_long>(*pTo, dwMode, f, idFrom);
 	} else {
 		g_DPCacheSrvr.SendSay("", "", idFrom, idTo, "", pFrom, 1); // 플레이어가 접속중이지 않습니다. 
 	}
@@ -411,7 +412,7 @@ void CDPCoreSrvr::OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti, dwWorldID);
+	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti);
 	if (targetWorldDPID != DPID_UNKNOWN) return;
 
 	SendPlayMusic(idmusic, dwWorldID, targetWorldDPID);
@@ -428,7 +429,7 @@ void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti, dwWorldID);
+	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti);
 	if (targetWorldDPID != DPID_UNKNOWN) return;
 
 	SendPlaySound(idsound, dwWorldID, targetWorldDPID);

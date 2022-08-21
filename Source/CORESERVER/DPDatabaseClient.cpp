@@ -428,8 +428,7 @@ void CDPDatabaseClient::OnBuyingInfo( CAr & ar )
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer* pPlayer	= g_PlayerMng.GetPlayer( bi2.dwPlayerId );
 	if (pPlayer) {
-		// TODO: unbroadcast
-		g_dpCoreSrvr.BroadcastPacket<PACKETTYPE_BUYING_INFO>(pPlayer->uKey, bi2);
+		g_dpCoreSrvr.SendPacketAbout<PACKETTYPE_BUYING_INFO>(*pPlayer, bi2);
 	}
 }
 

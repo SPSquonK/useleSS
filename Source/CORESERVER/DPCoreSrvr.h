@@ -2,12 +2,14 @@
 #define __DPCORESRVR_H__
 
 #include <algorithm>
+#include <boost/container/flat_map.hpp>
 #include "DPMng.h"
 #include "msghdr.h"
 #include "ServerDesc.h"
 #include "ObjMap.h"
 #include "guild.h"
 #include "party.h"
+#include "Player.h"
 
 #include "InstanceDungeonBase.h"
 #include "rtmessenger.h"
@@ -24,8 +26,15 @@ public:
 public:
 	CServerDescArray	m_apSleepServer;
 	CServerDescArray	m_apServer;	// active
+	boost::container::flat_map<u_long, DPID> m_multiIdToDpid; // [1]
 	CMclCritSec		m_AccessLock;
 	CObjMap		m_objmap;
+
+	// [1] By design, m_multiIdToDpid will never change size / invalidate its
+	// iterators / etc after reading the ini file. This make it a structure that
+	// can be read and modified without locking. We consider this design good
+	// enough as worlds should not connect / disconnect all the time, but we
+	// still want some guarantees about the core not crashing if a world crashes.
 public:
 	// Constructions
 	CDPCoreSrvr();
@@ -116,9 +125,11 @@ public:
 	void	OnGCAddParty( CAr & ar, DPID, DPID, DPID, u_long );
 
 private:
-	DPID	GetWorldSrvrDPID( u_long uIdofMulti, DWORD dwWorldID );
+	DPID	GetWorldSrvrDPID( u_long uIdofMulti );
 
 public:
+	[[nodiscard]] DPID GetWorldSrvrDPIDWeak(u_long uIdofMulti) const;
+
 	void	OnGuildMsgControl( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGuildChat( CAr & ar, DPID, DPID, DPID, u_long );
@@ -179,21 +190,37 @@ private:
 private:
 	void	OnQuizSystemMessage( CAr & ar, DPID, DPID, DPID, u_long );
 #endif // __QUIZ
+
+public:
+	template<DWORD PacketId, typename ... Ts>
+	void SendPacketAbout(CPlayer & player, const Ts & ... ts) {
+		const DPID dpid = GetWorldSrvrDPID(player.m_uIdofMulti);
+		if (dpid == DPID_UNKNOWN) return;
+
+		BEFORESENDDUAL(ar, PacketId, DPID_ALLPLAYERS, DPID_ALLPLAYERS);
+		ar.Accumulate(player.uKey, ts...);
+		SEND(ar, this, dpid);
+	}
 };
 
 extern CDPCoreSrvr g_dpCoreSrvr;
 
-inline DPID CDPCoreSrvr::GetWorldSrvrDPID(const u_long uIdofMulti, const DWORD dwWorldID) {
+inline DPID CDPCoreSrvr::GetWorldSrvrDPID(const u_long uIdofMulti) {
 	if (uIdofMulti == NULL_ID) return DPID_UNKNOWN;
 
 	const auto i = std::ranges::find_if(m_apServer,
 		[&](const CServerDescArray::value_type & pair) {
 			const CServerDesc * const pServer = pair.second;
-			return pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected(dwWorldID);
+			return pServer->GetIdofMulti() == uIdofMulti;
 		}
 	);
 
 	return i != m_apServer.end() ? i->first : DPID_UNKNOWN;
+}
+
+inline DPID CDPCoreSrvr::GetWorldSrvrDPIDWeak(u_long uIdofMulti) const {
+	const auto it = m_multiIdToDpid.find(uIdofMulti);
+	return it != m_multiIdToDpid.end() ? it->second : DPID_UNKNOWN;
 }
 
 #endif	// __DPCORESRVR_H__
