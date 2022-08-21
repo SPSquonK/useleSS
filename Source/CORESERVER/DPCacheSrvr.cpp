@@ -54,11 +54,6 @@ CDPCacheSrvr::CDPCacheSrvr()
 	ON_MSG( PACKETTYPE_CHG_MASTER, &CDPCacheSrvr::OnChgMaster );
 }
 
-CDPCacheSrvr::~CDPCacheSrvr()
-{
-
-}
-
 void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	switch( lpMsg->dwType )
@@ -86,8 +81,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, dwMsgSize - sizeof(DPID) - sizeof(DWORD) );
-	}
-	else {
+	} else {
 		TRACE( "Handler not found(%08x)\n", lpMsg->dwType );
 	}
 }
@@ -104,41 +98,30 @@ void CDPCacheSrvr::SendProcServerList( DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-DPID	s_Cachedpid	= 0xFFFFFFFF;
-void CDPCacheSrvr::OnAddConnection( DPID dpid )
-{
-	if( s_Cachedpid == 0xFFFFFFFF )
-	{
-		s_Cachedpid = dpid;
-		SendProcServerList( dpid );
-		
-		CServerDesc* pServer	= new CServerDesc;
-		GetPlayerAddr( dpid, pServer->m_szAddr );
-		bool bResult	= m_apServer.insert( CServerDescArray::value_type( dpid, pServer ) ).second;
-		ASSERT( bResult );
-		g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), FALSE, "%s", pServer->m_szAddr );
-		g_PlayerMng.AddCache( dpid );
-	}
-	else
-	{
-		CServerDesc* pServer	= new CServerDesc;
-		GetPlayerAddr( dpid, pServer->m_szAddr );
-		Error( "Other Cache Connection - IP : %s", pServer->m_szAddr );
-		SAFE_DELETE( pServer );
+void CDPCacheSrvr::OnAddConnection(DPID dpid) {
+	if (!m_clientInfo) {
+		m_clientInfo.emplace(dpid);
+
+		SendProcServerList(dpid);
+
+		GetPlayerAddr(dpid, m_clientInfo->ipv4Address);
+		g_MyTrace.Add(CMyTrace::Key(m_clientInfo->ipv4Address), FALSE, "%s", m_clientInfo->ipv4Address);
+	} else {
+		char ipv4Addr[16];
+		GetPlayerAddr(dpid, ipv4Addr);
+		static_assert(std::same_as<DPID, unsigned long>);
+		Error("Other Cache Connection - IP : %s ~ DPID : %lu", ipv4Addr, dpid);
 	}
 }
 
-void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
-{
-	if( s_Cachedpid == dpid )
-	{
-		s_Cachedpid	= 0xFFFFFFFF;
-		CServerDesc* pServer	= m_apServer.GetAt( dpid );
-		m_apServer.erase( dpid );
-		if( pServer )
-			g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), TRUE, "%s", pServer->m_szAddr );
-		SAFE_DELETE( pServer );
-		g_PlayerMng.RemoveCache( dpid );
+void CDPCacheSrvr::OnRemoveConnection(DPID dpid) {
+	if (m_clientInfo && m_clientInfo->dpid == dpid) {
+		ClientInfo old = m_clientInfo.value();
+		m_clientInfo.reset();
+
+		g_MyTrace.Add(CMyTrace::Key(old.ipv4Address), TRUE, "%s", old.ipv4Address);
+
+		g_PlayerMng.RemoveCache(dpid);
 	}
 }
 

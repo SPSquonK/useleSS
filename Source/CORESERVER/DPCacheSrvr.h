@@ -21,12 +21,18 @@ class CGuild;
 class CDPCacheSrvr : public CDPServerSole
 {
 private:
-	CServerDescArray	m_apServer;
+	struct ClientInfo {
+		DPID dpid;
+		char ipv4Address[16] = "";
+
+		ClientInfo(DPID dpid) : dpid(dpid) {}
+	};
+
+	std::optional<ClientInfo> m_clientInfo = std::nullopt;
 
 public:
 //	Constructions
 	CDPCacheSrvr();
-	virtual	~CDPCacheSrvr();
 //	Overrides
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );

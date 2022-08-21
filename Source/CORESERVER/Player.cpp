@@ -57,11 +57,6 @@ void CPlayerMng::Free()
 	m_ulong2.clear();
 }
 
-BOOL CPlayerMng::AddCache( DPID dpidCache )
-{
-	return TRUE;
-}
-
 BOOL CPlayerMng::RemoveCache( DPID dpidCache )
 {
 	CMclAutoLock Lock( m_AddRemoveLock );

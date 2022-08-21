@@ -64,7 +64,6 @@ public:
 	virtual	~CPlayerMng();
 
 	void		Free( void );
-	BOOL		AddCache( DPID dpidCache );
 	BOOL		RemoveCache( DPID dpidCache );
 	u_long		GetCache( DPID dpidCache );
 	BOOL		AddPlayer( u_long idPlayer, const CHAR* lpszPlayer, const CHAR* lpszAccount );
