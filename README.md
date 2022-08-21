@@ -15,15 +15,14 @@ C++, and it is dumb to not use it in a project that does not have any restrictio
 
 ## Getting started
 
-- Download Blouflash's version
+- Download and install [Visual Studio 2022](https://visualstudio.microsoft.com/fr/vs/community/), [Direct X](https://www.microsoft.com/fr-fr/download/details.aspx?id=35), [SQL Server 2014](https://www.microsoft.com/fr-FR/download/details.aspx?id=42299) and [SQL Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16).
+- [Download Blouflash's version of FlyFF v15](https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html)
 - Unzip the Resource folder
 - Clone this repository
 - Apply the Database.sql script and create the ODBC links:
     - ODBC source `useless_account` = table `USELESS_ACCOUNT_DBF`
     - ODBC source `useless_character` = table `USELESS_CHARACTER_01_DBF`
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
-    - You can create `useless_ranking` but IFAIK, it is never used.
-    - Database.sql script might be glitchy. See [this issue](https://github.com/SPSquonK/useleSS/issues/39)
 
 ## Dependencies
 

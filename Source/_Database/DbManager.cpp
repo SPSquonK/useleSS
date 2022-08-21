@@ -7093,19 +7093,19 @@ void CDbManager::GuildBankLogView( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOver
 	switch( byListType )
 	{
 		case GI_LOG_VIEW_ITEM_ADD:
-			sprintf( szQuery, "RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
+			sprintf( szQuery, "USELESS_RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
 						 "S1", idGuild ,g_appInfo.dwSys );
 			break;
 		case GI_LOG_VIEW_ITEM_REMOVE:
-			sprintf( szQuery, "RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
+			sprintf( szQuery, "USELESS_RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
 						 "S2", idGuild ,g_appInfo.dwSys );
 			break;
 		case GI_LOG_VIEW_MONEY_ADD:
-			sprintf( szQuery, "RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
+			sprintf( szQuery, "USELESS_RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
 						 "S3", idGuild ,g_appInfo.dwSys );
 			break;
 		case GI_LOG_VIEW_MONEY_REMOVE:
-			sprintf( szQuery, "RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
+			sprintf( szQuery, "USELESS_RANKING_DBF.dbo.usp_guildbank_log_view '%s','%06d','%02d'",
 						 "S4", idGuild ,g_appInfo.dwSys );
 			break;
 	}
