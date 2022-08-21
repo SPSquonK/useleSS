@@ -940,7 +940,7 @@ BOOL CGuildRank::GetRanking(CQuery * pQuery, LPCTSTR p_strQuery) {
 	pQuery->Clear();
 
 	for (int i = R1; i < RANK_END; ++i) {
-		sprintf(const_cast<char *>(p_strQuery), "RANKING_DBF.dbo.RANKING_STR 'R%d','%02d'", i + 1, g_appInfo.dwSys);
+		sprintf(const_cast<char *>(p_strQuery), "USELESS_RANKING_DBF.dbo.RANKING_STR 'R%d','%02d'", i + 1, g_appInfo.dwSys);
 		if (!pQuery->Exec(p_strQuery)) {
 			Error("CDbManager::UpdateGuildRanking에서 (%s) 실패", p_strQuery);
 			m_Lock.Leave(theLineFile);
