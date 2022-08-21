@@ -23,6 +23,7 @@ C++, and it is dumb to not use it in a project that does not have any restrictio
     - ODBC source `useless_account` = table `USELESS_ACCOUNT_DBF`
     - ODBC source `useless_character` = table `USELESS_CHARACTER_01_DBF`
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
+- Use [Server Starter](https://github.com/SPSquonK/ServerStarter): `git clone https://github.com/SPSquonK/ServerStarter.git`
 
 ## Dependencies
 
