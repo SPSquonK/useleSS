@@ -80,7 +80,8 @@ void CDisplayedInfo::Redraw() {
 static std::string WorldsIdsToString(const std::vector<DWORD> & ids);
 
 void CDisplayedInfo::SetListOfMaps(
-	const std::map<WorldId, std::string> & worlds, const std::set<WorldId> & invalidWorlds
+	const std::map<WorldId, std::string> & worlds,
+	const boost::container::flat_set<WorldId> & invalidWorlds
 ) {
 	m_listOfMaps = ExistingWorldsToString(worlds);
 	m_invalidWorlds = InvalidWorldsToString(invalidWorlds);
@@ -121,10 +122,9 @@ std::string DWordsToString(std::span<const DWORD> values, const char * const sep
 	return res;
 }
 
-std::string CDisplayedInfo::InvalidWorldsToString(const std::set<WorldId> & invalidWorlds) {
+std::string CDisplayedInfo::InvalidWorldsToString(const boost::container::flat_set<WorldId> & invalidWorlds) {
 	if (invalidWorlds.size() == 0) return "";
-	std::vector<DWORD> asVector(invalidWorlds.begin(), invalidWorlds.end());
-	return "/!\\ Invalid worlds: " + DWordsToString(asVector, ", ");
+	return "/!\\ Invalid worlds: " + DWordsToString(invalidWorlds, ", ");
 }
 
 static bool IsContiguous(const std::vector<DWORD> & values) {

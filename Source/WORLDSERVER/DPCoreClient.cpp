@@ -392,7 +392,7 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	}
 	
 	std::map<WorldId, std::string> knownWorlds;
-	std::set<WorldId> badWorlds;
+	boost::container::flat_set<WorldId> badWorlds;
 
 	for (const WorldId pJurisdiction : desc.m_lspJurisdiction) {
 		WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction);
