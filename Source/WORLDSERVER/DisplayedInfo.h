@@ -27,10 +27,7 @@ public:
 		g_szBuffer[type].Format(lpszFormat, std::forward<Ts>(ts)...);
 	}
 
-	void SetListOfMaps(
-		std::vector<std::pair<WorldId, std::string>> worlds,
-		std::vector<WorldId> invalidWorlds
-	);
+	void SetListOfMaps(std::map<WorldId, std::string> worlds, std::set<WorldId> invalidWorlds);
 
 	void UpdateConnectionState(ConnectedTo connectedTo) { m_connectedTo = connectedTo; }
 
@@ -38,8 +35,8 @@ public:
 	void Redraw();
 
 private:
-	[[nodiscard]] static std::string ExistingWorldsToString(const std::vector<std::pair<WorldId, std::string>> & worlds);
-	[[nodiscard]] static std::string InvalidWorldsToString(const std::vector<WorldId> & invalidWorlds);
+	[[nodiscard]] static std::string ExistingWorldsToString(const std::map<WorldId, std::string> & worlds);
+	[[nodiscard]] static std::string InvalidWorldsToString(const std::set<WorldId> & invalidWorlds);
 
 private:
 	std::array<StaticString<256>, LOGTYPE_MAX> g_szBuffer;
