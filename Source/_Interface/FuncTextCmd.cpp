@@ -279,7 +279,7 @@ BOOL TextCmd_ChangeFace(CScanner & scanner, CPlayer_ * pUser) {
 	if( (pUser->m_dwMode & NOTFRESH_MODE) || (pUser->m_dwMode & NOTFRESH_MODE2) )
 	{
 		pUser->m_dwHeadMesh = dwFace;
-		g_UserMng.AddChangeFace( pUser->m_idPlayer, dwFace );
+		g_UserMng.AddChangeFace(*pUser, dwFace);
 		if( pUser->m_dwMode & NOTFRESH_MODE )
 		{
 			pUser->m_dwMode &= ~NOTFRESH_MODE;

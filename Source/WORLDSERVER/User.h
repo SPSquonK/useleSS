@@ -821,7 +821,7 @@ public:
 	void			AddSexChange( CMover* pMover );
 	void			AddSetLocalEvent( short id, BYTE nState );
 	void			AddGameRate( FLOAT fRate, BYTE nFlag );
-	void			AddChangeFace( u_long uidPlayer, DWORD dwFace );
+	void			AddChangeFace(CUser & player, DWORD dwFace);
 	void			AddShout( CUser* pUserSrc, int nRange, LPBYTE lpBlock, u_long uBlockSize );
 	void			AddWorldMsg( const CRect* pRect, LPCTSTR lpszString );
 	void			AddGameSetting();

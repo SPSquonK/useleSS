@@ -2364,7 +2364,7 @@ void CDPClient::SendTradeOk() {
 	SendHdr(PACKETTYPE_TRADEOK);
 }
 
-void CDPClient::SendChangeFace( u_long objid, DWORD dwFaceNum, int cost )
+void CDPClient::SendChangeFace( DWORD dwFaceNum )
 {
 	if(g_pPlayer->HasBuffByIk3(IK3_TEXT_DISGUISE))
 	{
@@ -2372,19 +2372,8 @@ void CDPClient::SendChangeFace( u_long objid, DWORD dwFaceNum, int cost )
 	}
 	else
 	{
-		BEFORESENDSOLE( ar, PACKETTYPE_CHANGEFACE, DPID_UNKNOWN );
-	#ifdef __NEWYEARDAY_EVENT_COUPON
-		BOOL bUseCoupon = FALSE;
-		if(g_WndMng.m_pWndFaceShop != NULL)
-		{
-			bUseCoupon = g_WndMng.m_pWndFaceShop->m_bUseCoupon;
-		}
-		ar << objid << dwFaceNum << cost << bUseCoupon;
-	#else //__NEWYEARDAY_EVENT_COUPON
-		ar << objid << dwFaceNum << cost;
-	#endif //__NEWYEARDAY_EVENT_COUPON
-		
-		SEND( ar, this, DPID_SERVERPLAYER );
+		const bool useCoupon = g_WndMng.m_pWndFaceShop && g_WndMng.m_pWndFaceShop->m_bUseCoupon;
+		g_DPlay.SendPacket<PACKETTYPE_CHANGEFACE, DWORD, bool>(dwFaceNum, useCoupon);
 	}
 }
 //raiders.2006.11.28

@@ -1324,7 +1324,7 @@ bool CUser::DoUseItemSexChange(int nFace) {
 
 	// 4.
 	m_dwHeadMesh = (DWORD)nFace;
-	g_UserMng.AddChangeFace(m_idPlayer, (DWORD)nFace);
+	g_UserMng.AddChangeFace(*this, (DWORD)nFace);
 
 	g_dpDBClient.SendUpdatePlayerData(this);
 

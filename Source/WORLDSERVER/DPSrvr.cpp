@@ -3852,57 +3852,33 @@ void CDPSrvr::OnPlayerDestAngle( CAr & ar, CUser* pUser )
 	g_UserMng.AddSetDestAngle( pUser, fDestAngle, fLeft );
 }
 */
-void CDPSrvr::OnChangeFace( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	u_long objId;
-	DWORD dwFaceNum;
-	int cost;
-
-#ifdef __NEWYEARDAY_EVENT_COUPON
-	BOOL bUseCoupon;
-	ar >> objId >> dwFaceNum >> cost >> bUseCoupon;
-#else //__NEWYEARDAY_EVENT_COUPON
-	ar >> objId >> dwFaceNum >> cost;
-#endif //__NEWYEARDAY_EVENT_COUPON
+void CDPSrvr::OnChangeFace( CAr & ar, CUser & pUser ) {
+	static constexpr int cost = CHANGE_FACE_COST;
 	
-	cost = CHANGE_FACE_COST;
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{	
-#ifdef __NEWYEARDAY_EVENT_COUPON
-		if(!bUseCoupon)
-		{
-			if( pUser->GetGold() < cost )
-			{
-				pUser->AddDefinedText( TID_GAME_LACKMONEY, "" );
-				return;
-			}
-			pUser->AddGold( -( cost ) );
-		}
-		else
-		{
-			CItemElem* pItemElem = NULL;
-			pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_FACEOFFFREE );
-			if( !IsUsableItem( pItemElem ) )
-			{
-				pUser->AddDefinedText( TID_GAME_WARNNING_COUPON, "" );
-				return;
-			}
+	const auto [dwFaceNum, bUseCoupon] = ar.Extract<DWORD, bool>();
 
-			pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
-		}
-		pUser->SetHead(dwFaceNum);
-#else //__NEWYEARDAY_EVENT_COUPON
-		if( pUser->GetGold() < cost )
-		{
-			pUser->AddDefinedText( TID_GAME_LACKMONEY, "" );
+	if (dwFaceNum >= MAX_HEAD) return;
+	if (CItemUpgrade::IsInTrade(pUser)) return;
+	if (!CNpcChecker::GetInstance()->IsCloseNpc<MMI_BEAUTYSHOP_SKIN>(&pUser)) return;
+
+	if (!bUseCoupon) {
+		if (pUser.GetGold() < cost) {
+			pUser.AddDefinedText(TID_GAME_LACKMONEY, "");
 			return;
 		}
-		pUser->SetHead(dwFaceNum);
-		pUser->AddGold( -( cost ) );
-#endif //__NEWYEARDAY_EVENT_COUPON
-		g_UserMng.AddChangeFace( objId, dwFaceNum );
+		pUser.AddGold(-(cost));
+	} else {
+		CItemElem * pItemElem = pUser.m_Inventory.GetAtItemId(II_SYS_SYS_SCR_FACEOFFFREE);
+		if (!IsUsableItem(pItemElem)) {
+			pUser.AddDefinedText(TID_GAME_WARNNING_COUPON, "");
+			return;
+		}
+
+		pUser.UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 	}
+
+	pUser.SetHead(dwFaceNum);
+	g_UserMng.AddChangeFace(pUser, dwFaceNum);
 }
 
 void CDPSrvr::OnExpUp(CAr & ar, CUser & pUser) {

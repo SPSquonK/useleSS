@@ -4378,14 +4378,13 @@ void CUserMng::AddGameRate( FLOAT fRate, BYTE nFlag )
 	AddBlock( lpBuf, uBufSize );	// all
 }
 
-void CUserMng::AddChangeFace( u_long uidPlayer, DWORD dwFace )
-{
+void CUserMng::AddChangeFace(CUser & player, const DWORD dwFace) {
 	CAr ar;
 	ar << NULL_ID << SNAPSHOTTYPE_CHANGEFACE;
-	ar << uidPlayer << dwFace;
-	GETBLOCK( ar, lpBuf, uBufSize );
+	ar << player.m_idPlayer << dwFace;
 
-	AddBlock( lpBuf, uBufSize );	// all
+	GETBLOCK(ar, lpBuf, uBufSize);
+	AddBlock(lpBuf, uBufSize);	// all
 }
 
 void CUserMng::AddSchoolReport( PSCHOOL_ENTRY pSchool, short nElapse )
