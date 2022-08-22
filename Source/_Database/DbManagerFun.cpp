@@ -59,11 +59,7 @@ CTime CDbManager::GetStrTime(const char * strbuf) {
 void CDbManager::GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 {
 	char szDigit[3] = {0, };
-#ifdef __VS2003
 	int ch2;
-#else	// __VS2003
-	char ch;
-#endif // __VS2003
 	char* pCur	= const_cast<char*>( szSrc );
 	int nLen	= strlen( pCur );
 	if( nLen % 2 != 0 )
@@ -82,13 +78,8 @@ void CDbManager::GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 		szDigit[0]	= pCur[0];
 		szDigit[1]	= pCur[1];
 		pCur	+= 2;
-#ifdef __VS2003
 		sscanf( szDigit, "%2X", &ch2 );
 		*szDst++	= ch2;
-#else // __VS2003
-		sscanf( szDigit, "%2X", &ch );
-		*szDst++	= ch;
-#endif // __VS2003
 	}
 	*szDst	= '\0';
 }
@@ -120,9 +111,7 @@ void CDbManager::GetStrFromDBFormat( char* szDst, const char* szSrc, int& n )
 {
 	char szDigit[3] = {0, };
 	char ch;
-#ifdef __VS2003
 	int ch2;
-#endif // __VS2003
 	
 	const char* pCur = szSrc + n;
 	while( *pCur != '/' && *pCur )		// 문자열은 '/' 로 끝난다. 안전하게 NULL도 검사 
@@ -131,12 +120,8 @@ void CDbManager::GetStrFromDBFormat( char* szDst, const char* szSrc, int& n )
 		szDigit[1] = pCur[1];
 		pCur += 2;
 		
-#ifdef __VS2003
 		sscanf( szDigit, "%2X", &ch2 );
 		ch = ch2;
-#else // __VS2003
-		sscanf( szDigit, "%2X", &ch );
-#endif // __VS2003
 		*szDst++ = ch;
 	}
 	*szDst = '\0';

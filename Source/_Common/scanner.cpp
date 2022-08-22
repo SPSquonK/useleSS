@@ -811,13 +811,8 @@ int CScanner::GetToken( BOOL bComma )
 	}
 
 	// 변수와 명령
-#ifdef __VS2003
 	if( iswalpha( *m_pProg ) || IsMultiByte( m_pProg ) || IsCyrillic( *m_pProg ) 
 		|| *m_pProg == '#' || *m_pProg == '_' || *m_pProg == '@' || *m_pProg=='$' || *m_pProg == '?' ) 
-#else //__VS2003
-	if( isalpha( *m_pProg ) || IsMultiByte( m_pProg ) || IsCyrillic( *m_pProg )
-		|| *m_pProg == '#' || *m_pProg == '_' || *m_pProg == '@' || *m_pProg=='$' || *m_pProg == '?' ) 
-#endif //__VS2003
 	{
 		while( !isdelim( *m_pProg ) ) 
 		{

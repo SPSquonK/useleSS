@@ -762,12 +762,8 @@ void CEditString::GetLine( DWORD dwLine, CHAR* szStr )
 		else 
 			size = GetLength() - begin;
 
-#ifdef __VS2003
 		PCXSTR pData = GetString();
-		memcpy( ( VOID* )szStr, ( VOID* )&pData[ begin ], size );
-#else //__VS2003
-		memcpy( (VOID*)szStr, (VOID*)&m_pchData[ begin ], size );
-#endif // __VS2003
+		memcpy( szStr, &pData[ begin ], size );
 
 		szStr[ size ] = 0;
 	}

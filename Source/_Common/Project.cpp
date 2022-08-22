@@ -932,11 +932,7 @@ BOOL CProject::LoadFilter( LPCTSTR lpszFileName )
 		int nLen	= lstrlen( scanner.token );
 		for( int i = 0; i < nLen; i++ )
 		{
-#ifdef __VS2003
 			if( !iswalpha( scanner.token[i] ) )
-#else //__VS2003
-			if( !isalpha( scanner.token[i] ) )
-#endif //__VS2003
 			{
 				bAlpha	= FALSE;
 				break;

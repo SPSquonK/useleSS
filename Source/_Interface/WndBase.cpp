@@ -18,10 +18,6 @@ CWndBase* CWndBase::m_pWndRoot = NULL;
 CWndBase* CWndBase::m_pWndFocus = NULL;
 CWndBase* CWndBase::m_pCurFocus = NULL;
 
-#ifndef __VS2003
-CPtrArray CWndBase::m_wndOrder;
-#endif
-
 std::vector<CWndBase *> CWndBase::m_wndRemove;
 std::vector<WNDMESSAGE> CWndBase::m_postMessage;
 SHORTCUT  CWndBase::m_GlobalShortcut;

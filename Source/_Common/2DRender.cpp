@@ -1792,10 +1792,7 @@ void CTextureMng::Invalidate()
 
 BOOL CTextureMng::DeleteDeviceObjects()
 {
-
-#ifdef __VS2003
 	if(m_mapTexture.size() <= 0) return TRUE;
-#endif
 
 	for( MapTexItor i = m_mapTexture.begin(); i != m_mapTexture.end(); ++i )
 		SAFE_DELETE( (*i).second );

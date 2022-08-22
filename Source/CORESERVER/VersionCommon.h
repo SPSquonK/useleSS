@@ -6,10 +6,6 @@
 	#define __INTERNALSERVER
 #endif
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
 #define		__SERVER				// 클라이언트 전용코드를 빌드하지 않기 위한 define
 #define		__MAP_SIZE						
 #define		__S8_SERVER_PORT		// 2006월 11월 7일 업데이트 - World, Cache, CoreServer

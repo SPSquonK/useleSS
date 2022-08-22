@@ -6,10 +6,6 @@
 	#define __INTERNALSERVER
 #endif
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
 #define		__TRANSFER_ERROR_TEXT
 #define		__CRC
 #define		__PROTOCOL0910

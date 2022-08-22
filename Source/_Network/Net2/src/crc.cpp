@@ -21,13 +21,7 @@ inline T2 ModPowerOf2(T1 a, T2 b)
 template <class T>
 inline unsigned int GetAlignment(T *dummy=NULL)	// VC60 workaround
 {
-#if (_MSC_VER >= 1300)
 	return __alignof(T);
-#elif defined(__GNUC__)
-	return __alignof__(T);
-#else
-	return sizeof(T);
-#endif
 }
 
 inline bool IsAlignedOn(const void *p, unsigned int alignment)

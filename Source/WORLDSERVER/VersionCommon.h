@@ -6,10 +6,6 @@
 	#define __INTERNALSERVER
 #endif
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
 #define		D3DDEVICE	NULL
 #define		__SERVER						// 클라이언트 전용코드를 빌드하지 않기 위한 define
 #define		__X15

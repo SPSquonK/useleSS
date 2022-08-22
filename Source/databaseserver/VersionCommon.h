@@ -57,10 +57,6 @@
 
 #define		__SEND_ITEM_ULTIMATE	// 얼터멋 웨폰도 ITEM_SEND_TBL에서 지급가능하게...
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
 #define		__AUTO_NOTICE		// 자동 공지
 
 // 12차

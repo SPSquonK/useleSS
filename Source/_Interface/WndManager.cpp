@@ -69,9 +69,7 @@ extern DWORD FULLSCREEN_HEIGHT;
 #define CLIENT_WIDTH FULLSCREEN_WIDTH
 #define CLIENT_HEIGHT FULLSCREEN_HEIGHT
 
-#ifdef __VS2003
 CPtrArray      m_wndOrder;
-#endif
 
 CWndMgr          g_WndMng;
 

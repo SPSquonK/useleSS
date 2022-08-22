@@ -27,12 +27,6 @@
 
 #define __ENCRYPT_PASSWORD	//	mulcom	BEGIN100218	패스워드 암호화
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
-
-
 
 #if	  defined(__INTERNALSERVER)		// 내부 사무실 테스트서버 
 	#define	__SECURITY_0628

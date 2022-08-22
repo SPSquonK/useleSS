@@ -18,10 +18,6 @@
 #define		__MA_VER11_07				// cache 서버에서 loginserver로 유저접속끊낌을 알려주는 부분
 //#define		__SYS_PLAYER_DATA
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
 //#define		__US_LOGIN_0223
 
 
