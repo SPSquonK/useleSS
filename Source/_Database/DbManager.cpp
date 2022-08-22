@@ -26,6 +26,7 @@
 
 #include "CampusDBCtrl.h"
 #include "sqktd.h"
+#include "DbSerializer.h"
 
 #if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816) || defined(__ITEM_REMOVE_LIST)
 #define	MAX_QUERY_SIZE	1024 * 64

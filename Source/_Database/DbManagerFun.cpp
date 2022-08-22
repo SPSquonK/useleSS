@@ -8,6 +8,7 @@
 #include "misc.h"
 #include "mytrace.h"
 #include "definequest.h"
+#include "DbSerializer.h"
 
 extern	BOOL CheckValidItem( DWORD dwItemId, short nNum );
 
