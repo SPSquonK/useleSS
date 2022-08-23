@@ -451,11 +451,6 @@ HRESULT CTheme::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 HRESULT CTheme::InvalidateDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_texWallPaper.Invalidate();
-	m_texWndPaper.Invalidate();
-#endif //__YDEBUG
-
 	HRESULT h = S_OK;
     SAFE_RELEASE( m_pVBTexture );
 	SAFE_RELEASE( m_pVBGauge );

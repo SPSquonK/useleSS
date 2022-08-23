@@ -3391,10 +3391,7 @@ HRESULT CWndNavigator::DeleteDeviceObjects()
 HRESULT CWndNavigator::InvalidateDeviceObjects()
 {
 	m_texNavPos.InvalidateDeviceObjects();
-	m_GuildCombatTextureMask.Invalidate();
 #ifdef __YDEBUG
-	m_texArrow.Invalidate();
-	m_texDunFog.Invalidate();
 	m_texNavObjs.InvalidateDeviceObjects();
 #endif //__YDEBUG
 	
@@ -4345,14 +4342,7 @@ HRESULT CWndStatus::InvalidateDeviceObjects()
     SAFE_RELEASE( m_pVBFPGauge );
     SAFE_RELEASE( m_pVBEXPGauge );
 	SAFE_RELEASE( m_pVBAEXPGauge );
-
-#ifdef __YDEBUG
-	m_texGauEmptyNormal.Invalidate(); 
-	m_texGauEmptySmall.Invalidate(); 
-	m_texGauFillNormal.Invalidate(); 
-	m_texGauFillSmall.Invalidate(); 
-#endif //__YDEBUG
-	
+		
 	return S_OK;//return S_OK;
 }
 HRESULT CWndStatus::DeleteDeviceObjects()

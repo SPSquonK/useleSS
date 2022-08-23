@@ -404,10 +404,6 @@ void CWndOptionGame::GetRangeSlider(DWORD dwWndId, int &nStep, CPoint point)
 
 HRESULT CWndOptionGame::InvalidateDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.Invalidate();
-	m_TexturePt.Invalidate();
-#endif //__YDEBUG
 	return CWndNeuz::InvalidateDeviceObjects();
 }
 HRESULT CWndOptionGame::RestoreDeviceObjects()

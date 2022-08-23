@@ -204,8 +204,6 @@ public:
 	CTexture();
 	~CTexture();
 
-	virtual void Invalidate();
-
 	BOOL DeleteDeviceObjects();
 	void SetAutoFree( BOOL bAuto ) { m_bAutoFree = bAuto; }
 
@@ -297,7 +295,6 @@ public:
 	CTextureMng & operator=(const CTextureMng &) = delete;
 	~CTextureMng();
 
-	void Invalidate();
 	BOOL DeleteDeviceObjects();
 	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
 

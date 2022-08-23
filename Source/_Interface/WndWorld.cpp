@@ -8224,8 +8224,6 @@ HRESULT CWndWorld::InvalidateDeviceObjects()
 	m_texAttrIcon.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
 	m_texFontDigital.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
 #endif //__YDEBUG	
-	m_TexGuildWinner.Invalidate();
-	m_TexGuildBest.Invalidate();
 
 	return S_OK;
 }

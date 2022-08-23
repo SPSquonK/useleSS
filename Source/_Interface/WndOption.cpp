@@ -502,10 +502,6 @@ void CWndOptSound::GetRangeSlider(DWORD dwWndId, int &nStep, CPoint point)
 
 HRESULT CWndOptSound::InvalidateDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.Invalidate();
-	m_TexturePt.Invalidate();
-#endif //__YDEBUG
 	return CWndNeuz::InvalidateDeviceObjects();
 }
 HRESULT CWndOptSound::RestoreDeviceObjects()
@@ -538,10 +534,6 @@ CWndOptVideo::~CWndOptVideo()
 } 
 HRESULT CWndOptVideo::InvalidateDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.Invalidate();
-	m_TexturePt.Invalidate();
-#endif //__YDEBUG
 	return CWndNeuz::InvalidateDeviceObjects();
 }
 HRESULT CWndOptVideo::RestoreDeviceObjects()

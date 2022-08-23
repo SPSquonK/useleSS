@@ -1379,15 +1379,6 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 	return 1;
 }
 
-void CTexture::Invalidate()
-{
-#ifdef __YDEBUG
-	if( m_Pool != D3DPOOL_DEFAULT )
-		return;
-		
-	SAFE_RELEASE(m_pTexture);
-#endif //__YDEBUG
-}
 
 CTexturePack::CTexturePack()
 {
@@ -1411,9 +1402,6 @@ HRESULT	CTexturePack::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 }
 HRESULT	CTexturePack::InvalidateDeviceObjects()
 {
-	for( int i=0; i<(int)( m_dwNumber ); i++ )
-		m_ap2DTexture[i].Invalidate();
-
 	return S_OK;
 }
 
@@ -1748,16 +1736,6 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 CTextureMng::~CTextureMng()
 {
 	DeleteDeviceObjects();
-}
-
-void CTextureMng::Invalidate() {
-	for (CTexture * texture : m_mapTexture | std::views::values) {
-		texture->Invalidate();
-	}
-
-	for (CTexture * texture : m_textureOfWindows | std::views::values) {
-		texture->Invalidate();
-	}
 }
 
 BOOL CTextureMng::DeleteDeviceObjects() {

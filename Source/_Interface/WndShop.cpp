@@ -896,10 +896,6 @@ void CWndBeautyShop::UseHairCoupon(BOOL isUse)
 
 HRESULT CWndBeautyShop::InvalidateDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.Invalidate();
-#endif //__YDEBUG
-	
 	CWndBase::InvalidateDeviceObjects();
 	return S_OK;
 }

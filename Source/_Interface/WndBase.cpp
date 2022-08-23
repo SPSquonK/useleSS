@@ -746,17 +746,10 @@ HRESULT CWndBase::RestoreDeviceObjects()
 }
 HRESULT CWndBase::InvalidateDeviceObjects()
 {
-	if( IsWndRoot() )
-	{
-	}
 	for(int i = 0; i < m_wndArray.GetSize(); i++) 
 		((CWndBase*)m_wndArray.GetAt(i))->InvalidateDeviceObjects();
 	SAFE_RELEASE( m_pVB );
-	
-#ifdef __YDEBUG
-	m_textureMng.Invalidate();
-#endif //__YDEBUG
-	
+		
 	return S_OK;
 }
 HRESULT CWndBase::DeleteDeviceObjects()
