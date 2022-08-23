@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{85c28766-5234-4858-8012-b1676ea9b4bd}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{90e74333-f743-45b7-aa03-b5ca57e5ac6e}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{ffa9a75a-0f1b-4b44-9574-f126a3a1bf00}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
@@ -37,31 +29,32 @@
     <Filter Include="ODBC Files">
       <UniqueIdentifier>{c57151ff-4baa-4210-a0b4-746cdf7e2cbc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Certifier Files">
+      <UniqueIdentifier>{85c28766-5234-4858-8012-b1676ea9b4bd}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IpAddressRecentFailChecker.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ClCompile>
     <ClCompile Include="certifier.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ClCompile>
     <ClCompile Include="DBManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ClCompile>
     <ClCompile Include="dpaccountclient.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ClCompile>
     <ClCompile Include="DPCertifier.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Common\memtrace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ClCompile>
     <ClCompile Include="user.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_network\net\src\buffer.cpp">
       <Filter>Network Files\Net</Filter>
@@ -138,43 +131,16 @@
     <ClCompile Include="..\_Network\ListedServer.cpp">
       <Filter>Network Files</Filter>
     </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Certifier Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="certifier.rc">
-      <Filter>Source Files</Filter>
+      <Filter>Certifier Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IpAddressRecentFailChecker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="certifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DBManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dpaccountclient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPCertifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\memtrace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="user.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VersionCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\_network\cmnhdr.h">
       <Filter>Network Files</Filter>
     </ClInclude>
@@ -280,11 +246,38 @@
     <ClInclude Include="..\_database\Query.h">
       <Filter>ODBC Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\CommonHeader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Network\ListedServer.h">
       <Filter>Network Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VersionCommon.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DBManager.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dpaccountclient.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DPCertifier.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IpAddressRecentFailChecker.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\memtrace.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="user.h">
+      <Filter>Certifier Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\CommonHeader.h">
+      <Filter>Neuz Common Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

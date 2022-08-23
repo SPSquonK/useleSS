@@ -32,7 +32,7 @@ ACCOUNT_CHECK IpAddressRecentFailChecker::MoveBackAndCheck(
 }
 
 ACCOUNT_CHECK IpAddressRecentFailChecker::IPAddressCache::GetState() const {
-	static constexpr DWORD localhost = 0xFF000001;
+	static constexpr DWORD localhost = 0x7F000001;
 	if (m_dwIP == localhost) return ACCOUNT_CHECK::Ok;
 
 	const time_t tmCur = time(nullptr);

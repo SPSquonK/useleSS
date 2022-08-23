@@ -162,7 +162,6 @@
     <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="..\_Network\ListedServer.h" />
     <ClInclude Include="IpAddressRecentFailChecker.h" />
-    <ClInclude Include="certifier.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="dpaccountclient.h" />
     <ClInclude Include="DPCertifier.h" />

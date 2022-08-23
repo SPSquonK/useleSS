@@ -33,14 +33,9 @@ public:
 	~CMemTrace();
 	static	CMemTrace*	Instance();
 private:
-#if 0	//
-	static	int __cdecl	DefautAllocHook( int, void *, size_t, int, long, const unsigned char *, int );
-	static	int __cdecl	MyAllocHook( int, void *, size_t, int, long, const unsigned char *, int );
-#endif	// 0
+
 public:
-#if 0
-	void	Initialize();
-#endif	// 0
+
 	void	Alloc( const char* szFile, int nLine, void* ptr, size_t nSize );
 	void	Free( void* ptr );
 	void	Print();
