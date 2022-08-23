@@ -292,22 +292,27 @@ public:
 	}
 };
 
+class CWndBase;
+
 class CTextureMng final {
 private:
 	std::map<std::string, CTexture *> m_mapTexture;
+	std::map<CWndBase *, CTexture *> m_textureOfWindows;
 public:
 	CTextureMng() = default;
 	CTextureMng(const CTextureMng &) = delete;
 	CTextureMng & operator=(const CTextureMng &) = delete;
 	~CTextureMng();
 
-	BOOL RemoveTexture( LPCTSTR pKey );
 	BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice);
 	void Invalidate();
 	BOOL DeleteDeviceObjects();
 	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
-	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pKey, CTexture* pTexture );
+
 	CTexture* GetAt( LPCTSTR pFileName );
+
+	void SetTextureForWnd(CWndBase * pKey, CTexture * pTexture);
+	bool RemoveTexture(CWndBase * ptr);
 };
 #ifdef __CLIENT
 // 몹, 플레이어 데미지 출력

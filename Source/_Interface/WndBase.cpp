@@ -100,13 +100,7 @@ void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, B
 {
 	m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff, bMyLoader );
 }
-void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpKey, CTexture* pTexture )
-{
-	if( lpKey )
-		m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpKey, pTexture );
-	else
-		m_pTexture = pTexture;
-}
+
 void CWndBase::SetForbid( BOOL bForbid ) 
 { 
 	m_bForbid = bForbid; 
@@ -2555,20 +2549,16 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 		return;
 
 	// 텍스춰 만들기 
-	CString strTextureId;
-	strTextureId.Format( "%p", this );
-	m_textureMng.RemoveTexture( strTextureId );
-
 	CRect rect = GetWindowRect( TRUE );
-	CSize size2, size1 = CSize( rect.Width(), rect.Height() );
-	size2 = size1;
+	CSize size1 = rect.Size();
 
 	AdjustSize( &size1 );
 
 	CTexture* pTexture = new CTexture;
 	pTexture->CreateTexture( m_pApp->m_pd3dDevice, size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
 
-	SetTexture( m_pApp->m_pd3dDevice, strTextureId, pTexture );
+	m_textureMng.SetTextureForWnd(this, pTexture);
+	m_pTexture = pTexture;
 
 	CPoint point( 0, 0);
 	D3DLOCKED_RECT lockedRect;

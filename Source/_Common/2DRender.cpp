@@ -1777,12 +1777,20 @@ BOOL CTextureMng::SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice)
 	for (CTexture * texture : m_mapTexture | std::views::values) {
 		texture->SetInvalidate(pd3dDevice);
 	}
+
+	for (CTexture * texture : m_textureOfWindows | std::views::values) {
+		texture->SetInvalidate(pd3dDevice);
+	}
 	return TRUE;
 }
 
 
 void CTextureMng::Invalidate() {
 	for (CTexture * texture : m_mapTexture | std::views::values) {
+		texture->Invalidate();
+	}
+
+	for (CTexture * texture : m_textureOfWindows | std::views::values) {
 		texture->Invalidate();
 	}
 }
@@ -1792,19 +1800,24 @@ BOOL CTextureMng::DeleteDeviceObjects() {
 		SAFE_DELETE(pTexture);
 	}
 	m_mapTexture.clear();
+
+	for (CTexture *& pTexture : m_textureOfWindows | std::views::values) {
+		SAFE_DELETE(pTexture);
+	}
+	m_textureOfWindows.clear();
+
 	return TRUE;
 }
 
-BOOL CTextureMng::RemoveTexture( LPCTSTR pKey )
-{
-	const auto mapTexItor = m_mapTexture.find( pKey );
-	if( mapTexItor != m_mapTexture.end() )
-	{
-		SAFE_DELETE( mapTexItor->second );
-		m_mapTexture.erase( pKey );
-	}
-	return TRUE;
+bool CTextureMng::RemoveTexture(CWndBase * ptr) {
+	const auto it = m_textureOfWindows.find(ptr);
+	if (it == m_textureOfWindows.end()) return false;
+
+	delete it->second;
+	m_textureOfWindows.erase(it);
+	return true;
 }
+
 CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
 {
 	 const auto mapTexItor = m_mapTexture.find( pFileName );
@@ -1819,13 +1832,14 @@ CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileNa
 	safe_delete( pTexture );
 	return NULL;
 }
-CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pKey, CTexture* pTexture )
-{
-	const auto mapTexItor = m_mapTexture.find( pKey );
-	if( mapTexItor != m_mapTexture.end() )
-		return mapTexItor->second;
-	m_mapTexture.emplace( pKey, pTexture );
-	return pTexture;
+void CTextureMng::SetTextureForWnd(CWndBase * pKey, CTexture * pTexture) {
+	const auto it = m_textureOfWindows.find(pKey);
+	if (it != m_textureOfWindows.end()) {
+		delete it->second;
+		it->second = pTexture;
+	} else {
+		m_textureOfWindows.emplace(pKey, pTexture);
+	}
 }
 CTexture* CTextureMng::GetAt( LPCTSTR pFileName )
 {

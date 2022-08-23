@@ -164,7 +164,6 @@ static void FreeTileTexture();
 	
 	BOOL Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
 	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
-	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpKey, CTexture* m_pTexture );
 
 	static void RemoveDestroyWnd();
 	void MoveParentCenter(); // 윈도를 부모 윈도의 중앙으로 옮긴다.
