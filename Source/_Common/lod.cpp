@@ -266,7 +266,35 @@ CLandscape::~CLandscape()
 {
 	FreeTerrain();
 	SAFE_DELETE_ARRAY( m_pWaterVB );
-	// 오브젝트 파괴 
+	
+	if (m_pWorld && !m_pWorld->m_aDeleteObjs.empty()) {
+		// Unusual case where a landscape is deleted at the same time
+		// as an object is in deletion in m_pWorld.
+		// Note that there may be the same issue for other vectors in m_pWorld
+		// but only checking deleteObjs seems to solve the crashes...
+		// It would be better to explore the code to see in which cases it
+		// happens and why, but this band aid fix does not rely on UB so we'll
+		// take it as of now.
+		// 
+		// How to reproduce the crash (if this condition is removed):
+		// - Put a (buff) pet on F1
+		// - Be at Flaris or Saint City, use a blinkwing to the other town
+		// - Hold F1 until the teleportation occurs
+		// - It crashes 33% of the time.
+		// SPSquonK
+		for (auto & myObjCategory : m_apObjects) {
+			for (CObj * pObj : myObjCategory.Range()) {
+				const auto it = std::ranges::find(m_pWorld->m_aDeleteObjs, pObj);
+				if (it != m_pWorld->m_aDeleteObjs.end()) {
+					// World will soon delete pObj: we tell them that we will delete
+					// it outselves.
+					m_pWorld->m_aDeleteObjs.erase(it);
+				}
+			}
+		}
+	}
+
+	// 오브젝트 파괴 	
 	for (auto & apObject : m_apObjects) {
 		for (CObj * pObj : apObject.Range()) {
 			if( m_pWorld->m_pObjFocus == pObj)

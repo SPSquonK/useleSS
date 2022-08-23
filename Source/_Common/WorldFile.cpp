@@ -971,9 +971,9 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 				{
 					if( rect.PtInRect( CPoint( j, i ) ) == FALSE )
 					{
-						m_apLand[ i * m_nLandWidth + j ]->InvalidateDeviceObjects();
-						m_apLand[ i * m_nLandWidth + j ]->DeleteDeviceObjects();
-						SAFE_DELETE( m_apLand[ i * m_nLandWidth + j] );
+						pLand->InvalidateDeviceObjects();
+						pLand->DeleteDeviceObjects();
+						SAFE_DELETE(pLand);
 						m_objCull.clear();
 					}
 					else
