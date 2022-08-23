@@ -317,8 +317,7 @@ public:
 	void			Process();
 	static DWORD	GetDiffuseColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Diffuse.r * 255),(int)(m_lightFogSky.Diffuse.g * 255),(int)(m_lightFogSky.Diffuse.b * 255) ); }
 	static DWORD	GetAmbientColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Ambient.r * 255),(int)(m_lightFogSky.Ambient.g * 255),(int)(m_lightFogSky.Ambient.b * 255) ); }
-	void			WorldPosToLand( D3DXVECTOR3 vPos, int& x, int& z ); 
-	void			WorldPosToLandPos( D3DXVECTOR3 vPos, int& x, int& z ); 
+	[[nodiscard]] std::pair<int, int> WorldPosToLand(D3DXVECTOR3 vPos) const;
 	BOOL			LandInWorld( int x, int z );
 	BOOL			IsVecInVisibleLand( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, int nVisibilityLand );
 	BOOL			IsVecInRange( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, FLOAT fRadius );
@@ -632,16 +631,11 @@ inline BOOL CWorld::IsVecInRange( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, FLOA
 	return FALSE;
 }
 
-inline void CWorld::WorldPosToLand( D3DXVECTOR3 vPos, int& x, int& z ) 
-{
-	x = int( vPos.x ) / ( MAP_SIZE * m_iMPU );
-	z = int( vPos.z ) / ( MAP_SIZE * m_iMPU );
-}
-
-inline void CWorld::WorldPosToLandPos( D3DXVECTOR3 vPos, int& x, int& z ) 
-{
-	x = int( vPos.x ) % ( MAP_SIZE * m_iMPU );
-	z = int( vPos.z ) % ( MAP_SIZE * m_iMPU );
+inline std::pair<int, int> CWorld::WorldPosToLand(const D3DXVECTOR3 vPos) const {
+	return std::pair<int, int>(
+		int(vPos.x) / (MAP_SIZE * m_iMPU),
+		int(vPos.z) / (MAP_SIZE * m_iMPU)
+		);
 }
 
 inline CLandscape* CWorld::GetLandscape( CObj* pObj )
@@ -872,8 +866,8 @@ extern CObj *GetLastPickObj( void );
 	#define FOR_LAND( _pWorld, _pLand, _nVisibilityLand, _bVisuble ) { \
 		if( (_pWorld)->m_pCamera ) \
 		{ \
-			int _i, _j, _x, _y; \
-			(_pWorld)->WorldPosToLand( (_pWorld)->m_pCamera->m_vPos, _x, _y ); \
+			int _i, _j; \
+			const auto [_x, _y] = (_pWorld)->WorldPosToLand( (_pWorld)->m_pCamera->m_vPos ); \
 			int _nXMin = _x - _nVisibilityLand; if( _nXMin < 0 ) _nXMin = 0; \
 			int _nYMin = _y - _nVisibilityLand; if( _nYMin < 0 ) _nYMin = 0; \
 			int _nXMax = _x + _nVisibilityLand; if( _nXMax >= (_pWorld)->m_nLandWidth  ) _nXMax = (_pWorld)->m_nLandWidth - 1; \

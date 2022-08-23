@@ -911,9 +911,7 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 	CString strLandTemp;
 	strLandName.Delete( strLandName.GetLength() - 4, 4 );
 
-
-	int x, z;
-	WorldPosToLand( vPos, x, z );
+	const auto [x, z] = WorldPosToLand(vPos);
 
 	// 랜드 이동이 없다. 리턴. 
 	if( x == m_nCharLandPosX && z == m_nCharLandPosZ )

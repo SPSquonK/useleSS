@@ -337,9 +337,9 @@ void CWorld::RenderTerrain()
 {
 	_PROFILE("CWorld::RenderTerrain()");
 
-	int x, z, i, j;
+	int i, j;
 	int px,pz;
-	WorldPosToLand( m_pCamera->m_vPos, x, z );
+	const auto [x, z] = WorldPosToLand( m_pCamera->m_vPos );
 	
 	for( i = z - m_nVisibilityLand; i <= z + m_nVisibilityLand; i++)
 	{
@@ -451,13 +451,11 @@ void CWorld::RenderWater()
 //	SetFogEnable( m_pd3dDevice, m_bViewFog );
 
 	{
-		int x, z, i, j;
-//		int px,pz;
-		WorldPosToLand( m_pCamera->m_vPos, x, z );
+		const auto [x, z] = WorldPosToLand( m_pCamera->m_vPos );
 
-		for( i = z - m_nVisibilityLand; i <= z + m_nVisibilityLand; i++)
+		for( int i = z - m_nVisibilityLand; i <= z + m_nVisibilityLand; i++)
 		{
-			for( j = x - m_nVisibilityLand; j <= x + m_nVisibilityLand; j++)
+			for( int j = x - m_nVisibilityLand; j <= x + m_nVisibilityLand; j++)
 			{
 				int nOffset = i * m_nLandWidth + j;
 				if( LandInWorld( (int)j, (int)i ) && m_apLand[ nOffset ] )

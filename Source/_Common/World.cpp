@@ -708,8 +708,8 @@ void CWorld::Process()
 	
 	// 처리 프로세스 
 	CHECK1();
-	int i, j, k, x, y;
-	WorldPosToLand( m_pCamera->m_vPos, x, y );
+	int i, j, k;
+	const auto [x, y] = WorldPosToLand( m_pCamera->m_vPos );
 	CLandscape* pLand = NULL;
 	DWORD dwObjProcessNum = 0;
 	D3DXVECTOR3 vPos, *pvCameraPos = &m_pCamera->m_vPos;
