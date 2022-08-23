@@ -1733,19 +1733,24 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 	return TRUE;
 }
 
-CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
-{
-	 const auto mapTexItor = m_mapTexture.find( pFileName );
-	 if( mapTexItor != m_mapTexture.end() )
+CTexture * CTextureMng::AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader) {
+	const std::string key = pFileName;
+	
+	if (const auto mapTexItor = m_mapTexture.find(key); mapTexItor != m_mapTexture.end()) {
 		return mapTexItor->second.get();
-	CTexture * pTexture = new CTexture;
-	if( pTexture->LoadTexture( pd3dDevice, pFileName, d3dKeyColor, bMyLoader ) )
-	{
-		m_mapTexture.emplace( pFileName, pTexture );
-		return pTexture;
+	} else if (m_failedTextures.contains(key)) {
+		return nullptr;
 	}
-	safe_delete( pTexture );
-	return NULL;
+
+	CTexture * pTexture = new CTexture;
+	if (pTexture->LoadTexture(pd3dDevice, pFileName, d3dKeyColor, bMyLoader)) {
+		m_mapTexture.emplace(key, pTexture);
+		return pTexture;
+	} else {
+		delete pTexture;
+		m_failedTextures.emplace(key);
+		return nullptr;
+	}
 }
 
 #ifdef __CLIENT
