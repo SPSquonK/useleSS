@@ -291,20 +291,19 @@ public:
 		p2DRender->RenderTexture( pt, &m_ap2DTexture[ dwIndex ], dwBlendFactorAlhpa, fScaleX , fScaleY ); 
 	}
 };
-typedef std::map< std::string, CTexture* > CMapTexture;
-typedef CMapTexture::value_type MapTexType;
-typedef CMapTexture::iterator MapTexItor;
 
-class CTextureMng
-{
+class CTextureMng final {
+private:
+	std::map<std::string, CTexture *> m_mapTexture;
 public:
+	CTextureMng() = default;
+	CTextureMng(const CTextureMng &) = delete;
+	CTextureMng & operator=(const CTextureMng &) = delete;
+	~CTextureMng();
+
+	BOOL RemoveTexture( LPCTSTR pKey );
 	BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice);
 	void Invalidate();
-	CMapTexture m_mapTexture;
-	//CMapStringToPtr m_mapTexture;
-	CTextureMng();
-	~CTextureMng();
-	BOOL RemoveTexture( LPCTSTR pKey );
 	BOOL DeleteDeviceObjects();
 	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
 	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pKey, CTexture* pTexture );
