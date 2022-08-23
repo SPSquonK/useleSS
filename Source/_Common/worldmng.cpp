@@ -120,24 +120,6 @@ BOOL CWorldMng::AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId )
 	return bResult;
 }
 
-bool CWorldMng::PreremoveObj(const OBJID objid ) {
-	// find because an object is only in one place
-	const auto preremovedWorld = std::ranges::find_if(m_worlds,
-		[objid](auto & pWorld) { return pWorld->PreremoveObj(objid); }
-		);
-
-	return preremovedWorld != m_worlds.end();
-}
-
-CObj * CWorldMng::PregetObj(const OBJID objid) {
-	for (auto & pWorld : m_worlds) {
-		CObj * pObj = pWorld->PregetObj(objid);
-		if (pObj) return pObj;
-	}
-
-	return nullptr;
-}
-
 #else	// __WORLDSERVER
 
 CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld ) {

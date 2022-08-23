@@ -42,8 +42,6 @@ public:
 #else	// __LAYER_1015
 	BOOL		AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId = FALSE );
 #endif	// __LAYER_1015
-	bool PreremoveObj(const OBJID objid);
-	CObj*		PregetObj( OBJID objid );
 	u_long		Respawn();
 	[[nodiscard]] DWORD GetObjCount() const noexcept;
 

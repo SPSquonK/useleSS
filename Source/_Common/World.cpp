@@ -1269,34 +1269,6 @@ void CWorld::ModifyView( CCtrl* pCtrl )
 	m_linkMap.ModifyView( pCtrl );
 }
 
-
-bool CWorld::PreremoveObj(const OBJID objid) {
-	const auto it = std::ranges::find_if(m_aAddObjs,
-		[objid](const AddRequest & addRequest) {
-			return addRequest.pObj
-				&& addRequest.pObj->IsDynamicObj()
-				&& static_cast<CCtrl *>(addRequest.pObj)->GetId() == objid;
-		}
-	);
-
-	if (it == m_aAddObjs.end()) return false;
-
-	SAFE_DELETE(it->pObj);
-	return true;
-}
-
-CObj * CWorld::PregetObj(const OBJID objid) {
-	const auto it = std::ranges::find_if(m_aAddObjs,
-		[objid](const AddRequest & addRequest) {
-			return addRequest.pObj
-				&& addRequest.pObj->IsDynamicObj()
-				&& static_cast<CCtrl *>(addRequest.pObj)->GetId() == objid;
-		}
-	);
-
-	return it != m_aAddObjs.end() ? it->pObj : nullptr;
-}
-
 void CWorld::_add() {
 	if (!g_DPCoreClient.CheckIdStack()) {
 		return;

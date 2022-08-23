@@ -231,8 +231,6 @@ public:
 	void			Process();
 	void			ModifyView( CCtrl* pCtrl );
 	BOOL			ReadWorld(); 
-	bool PreremoveObj(OBJID objid);
-	CObj*			PregetObj( OBJID objid );
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}
 	// DWORD			GetObjCount() { return m_dwObjNum; }
 	void			OnDie(CUser * pDie, CUser * pAttacker);
