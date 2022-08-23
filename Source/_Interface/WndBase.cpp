@@ -741,10 +741,7 @@ HRESULT CWndBase::RestoreDeviceObjects()
 		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
 		MakeVertexBuffer();
 	}
-#ifdef __YDEBUG
-	m_textureMng.SetInvalidate(m_pApp->m_pd3dDevice);
-#endif //__YDEBUG
-	
+
 	return S_OK;
 }
 HRESULT CWndBase::InvalidateDeviceObjects()

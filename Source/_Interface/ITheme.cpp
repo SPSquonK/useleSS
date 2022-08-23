@@ -500,12 +500,7 @@ HRESULT CTheme::DeleteDeviceObjects()
 	return h;
 }
 HRESULT CTheme::RestoreDeviceObjects( )
-{
-#ifdef __YDEBUG
-	m_texWallPaper.SetInvalidate(m_pd3dDevice);
-	m_texWndPaper.SetInvalidate(m_pd3dDevice);
-#endif //__YDEBUG
-	
+{	
 	if( m_pVBTexture ) 
 		return S_OK;
 	//g_mesh.RestoreDeviceObjects();

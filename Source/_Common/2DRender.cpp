@@ -1389,23 +1389,6 @@ void CTexture::Invalidate()
 #endif //__YDEBUG
 }
 
-BOOL CTexture::SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-#ifdef __YDEBUG
-	if( m_Pool != D3DPOOL_DEFAULT )
-		return TRUE;
-
-	if( m_pTexture == NULL )
-		return LoadTexture( pd3dDevice, m_strTexFileName, m_d3dKeyColor, m_bMyLoader );
-	else
-		return TRUE;
-#endif //__YDEBUG
-
-	return TRUE;
-}
-
-
-
 CTexturePack::CTexturePack()
 {
 	m_dwNumber = 0;
@@ -1424,9 +1407,6 @@ BOOL CTexturePack::DeleteDeviceObjects()
 }
 HRESULT	CTexturePack::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 {
-	for( int i=0; i<(int)( m_dwNumber ); i++ )
-		m_ap2DTexture[i].SetInvalidate( pd3dDevice );	
-	
 	return S_OK;
 }
 HRESULT	CTexturePack::InvalidateDeviceObjects()
@@ -1770,21 +1750,6 @@ CTextureMng::~CTextureMng()
 	DeleteDeviceObjects();
 }
 
-
-
-BOOL CTextureMng::SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-	for (CTexture * texture : m_mapTexture | std::views::values) {
-		texture->SetInvalidate(pd3dDevice);
-	}
-
-	for (CTexture * texture : m_textureOfWindows | std::views::values) {
-		texture->SetInvalidate(pd3dDevice);
-	}
-	return TRUE;
-}
-
-
 void CTextureMng::Invalidate() {
 	for (CTexture * texture : m_mapTexture | std::views::values) {
 		texture->Invalidate();
@@ -1841,14 +1806,6 @@ void CTextureMng::SetTextureForWnd(CWndBase * pKey, CTexture * pTexture) {
 		m_textureOfWindows.emplace(pKey, pTexture);
 	}
 }
-CTexture* CTextureMng::GetAt( LPCTSTR pFileName )
-{
-	const auto mapTexItor = m_mapTexture.find( pFileName );
-	if( mapTexItor != m_mapTexture.end() )
-		return (CTexture*)mapTexItor->second;
-	return NULL;
-}
-
 
 #ifdef __CLIENT
 #ifndef __VM_0820

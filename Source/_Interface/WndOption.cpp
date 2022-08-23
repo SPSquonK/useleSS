@@ -510,10 +510,6 @@ HRESULT CWndOptSound::InvalidateDeviceObjects()
 }
 HRESULT CWndOptSound::RestoreDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.SetInvalidate(m_pApp->m_pd3dDevice);
-	m_TexturePt.SetInvalidate(m_pApp->m_pd3dDevice);
-#endif //__YDEBUG
 	return CWndNeuz::RestoreDeviceObjects();
 }
 
@@ -550,10 +546,6 @@ HRESULT CWndOptVideo::InvalidateDeviceObjects()
 }
 HRESULT CWndOptVideo::RestoreDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.SetInvalidate(m_pApp->m_pd3dDevice);
-	m_TexturePt.SetInvalidate(m_pApp->m_pd3dDevice);
-#endif //__YDEBUG
 	return CWndNeuz::RestoreDeviceObjects();
 }
 

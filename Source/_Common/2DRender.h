@@ -13,12 +13,6 @@
 
 #include "xUtil.h"
 
-struct IDeviceRes
-{
-	virtual void Invalidate()								 = 0;
-	virtual BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice) = 0;
-};
-
 class CRectClip : public CRect
 {
 public:
@@ -180,7 +174,7 @@ public:
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 };
-class CTexture : public IDeviceRes
+class CTexture
 {
 	BOOL m_bAutoFree;
 public:
@@ -210,8 +204,7 @@ public:
 	CTexture();
 	~CTexture();
 
-	void Invalidate();
-	BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice);
+	virtual void Invalidate();
 
 	BOOL DeleteDeviceObjects();
 	void SetAutoFree( BOOL bAuto ) { m_bAutoFree = bAuto; }
@@ -304,12 +297,9 @@ public:
 	CTextureMng & operator=(const CTextureMng &) = delete;
 	~CTextureMng();
 
-	BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice);
 	void Invalidate();
 	BOOL DeleteDeviceObjects();
 	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
-
-	CTexture* GetAt( LPCTSTR pFileName );
 
 	void SetTextureForWnd(CWndBase * pKey, CTexture * pTexture);
 	bool RemoveTexture(CWndBase * ptr);

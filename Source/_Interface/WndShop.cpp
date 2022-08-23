@@ -910,10 +910,6 @@ HRESULT CWndBeautyShop::DeleteDeviceObjects()
 }
 HRESULT CWndBeautyShop::RestoreDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.SetInvalidate(m_pApp->m_pd3dDevice);
-#endif //__YDEBUG
-
 	CWndBase::RestoreDeviceObjects();
 
 	return S_OK;

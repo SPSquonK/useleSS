@@ -3404,10 +3404,7 @@ HRESULT CWndNavigator::InvalidateDeviceObjects()
 HRESULT CWndNavigator::RestoreDeviceObjects()
 {
 	m_texNavPos.RestoreDeviceObjects( m_pApp->m_pd3dDevice );
-	m_GuildCombatTextureMask.SetInvalidate(m_pApp->m_pd3dDevice);
 #ifdef __YDEBUG
-	m_texArrow.SetInvalidate(m_pApp->m_pd3dDevice);
-	m_texDunFog.SetInvalidate(m_pApp->m_pd3dDevice);
 	m_texNavObjs.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
 #endif //__YDEBUG
 
@@ -4337,14 +4334,7 @@ HRESULT CWndStatus::RestoreDeviceObjects()
 		m_nEXPWidth = -1;
 		m_nPXPWidth = -1;
 	}
-
-#ifdef __YDEBUG
-	m_texGauEmptyNormal.SetInvalidate(m_pApp->m_pd3dDevice); 
-	m_texGauEmptySmall.SetInvalidate(m_pApp->m_pd3dDevice);  
-	m_texGauFillNormal.SetInvalidate(m_pApp->m_pd3dDevice);  
-	m_texGauFillSmall.SetInvalidate(m_pApp->m_pd3dDevice);   
-#endif //__YDEBUG
-	
+		
 	return S_OK;
 }
 HRESULT CWndStatus::InvalidateDeviceObjects()
