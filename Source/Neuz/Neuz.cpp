@@ -377,7 +377,6 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 			g_WorldMng.Get()->RestoreDeviceObjects( m_pd3dDevice );
 		CWorld::StaticRestoreDeviceObjects( m_pd3dDevice );
 		prj.m_modelMng.RestoreDeviceObjects(m_pd3dDevice);
-		prj.m_terrainMng.RestoreDeviceObjects();
 	}
 	if( g_pBipedMesh )
 		g_pBipedMesh->RestoreDeviceObjects();	
@@ -417,7 +416,6 @@ HRESULT CNeuzApp::InvalidateDeviceObjects()
 	CWorld::StaticInvalidateDeviceObjects();
 	g_WndMng.InvalidateDeviceObjects();
 	prj.m_modelMng.InvalidateDeviceObjects();
-	prj.m_terrainMng.InvalidateDeviceObjects();
 	m_2DRender.InvalidateDeviceObjects();
 	if( g_pBipedMesh )
 		g_pBipedMesh->InvalidateDeviceObjects();

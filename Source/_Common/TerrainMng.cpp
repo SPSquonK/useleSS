@@ -25,14 +25,7 @@ HRESULT CTerrainMng::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pd3dDevice = pd3dDevice;
 	return S_OK;
 }
-HRESULT CTerrainMng::RestoreDeviceObjects()
-{
-	return S_OK;
-}
-HRESULT CTerrainMng::InvalidateDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CTerrainMng::DeleteDeviceObjects()
 {
 	for( int i = 0; i < MAX_TERRAIN; i++ )
@@ -46,7 +39,7 @@ BOOL CTerrainMng::LoadTexture( DWORD dwId )
 {
 	if( (int)( dwId ) >= m_nSize )
 		return FALSE;
-	LPTERRAIN lpTerrain = GetTerrain( dwId );
+	TERRAIN * lpTerrain = GetTerrain( dwId );
 	if( lpTerrain && lpTerrain->m_pTexture == NULL )
 	{
 		CString strPath;
@@ -76,7 +69,6 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 	if(scanner.Load(lpszFileName, FALSE )==FALSE)
 		return FALSE;
 
-	LPTERRAIN lpTerrain;
 	m_nSize = 0;
 	int nBrace = 1;
 	scanner.SetMark();
@@ -164,33 +156,17 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				IdCnt++;
 			}
 		}
-		lpTerrain = &m_aTerrain[ i ];
+		TERRAIN * lpTerrain = &m_aTerrain[ i ];
 		lpTerrain->m_dwId = i;
 		scanner.GetToken();  // texture fileName
 		strcpy( lpTerrain->m_szTextureFileName, scanner.token );
-		lpTerrain->m_bBlock = scanner.GetNumber(); // block
+		scanner.GetNumber(); // block
 		scanner.GetToken(); // sound
-		strcpy( lpTerrain->m_szSoundFileName, scanner.token );
 		scanner.SetMark();
 		i = scanner.GetNumber();  // texture fileName
 		if( i > m_nSize ) m_nSize = i;
 	}
-/*
-	
-	int i = scanner.GetNumber( TRUE );  // id
-	while( scanner.tok != FINISHED )
-	{
-		lpTerrain = &m_aTerrain[ i ];
-		lpTerrain->m_dwId = i;
-		scanner.GetToken( TRUE );  // texture fileName
-		strcpy( lpTerrain->m_szTextureFileName, scanner.token );
-		lpTerrain->m_bBlock = scanner.GetNumber( TRUE ); // block
-		scanner.GetToken( TRUE ); // sound
-		strcpy( lpTerrain->m_szSoundFileName, scanner.token );
-		i = scanner.GetNumber( TRUE );  // texture fileName
-		if( i > m_nSize ) m_nSize = i;
-	}
-*/	
+
 	m_nSize++;
 	return TRUE;
 }
