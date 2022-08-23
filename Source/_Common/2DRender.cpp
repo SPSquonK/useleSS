@@ -1733,39 +1733,11 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 	return TRUE;
 }
 
-CTextureMng::~CTextureMng()
-{
-	DeleteDeviceObjects();
-}
-
-BOOL CTextureMng::DeleteDeviceObjects() {
-	for (CTexture *& pTexture : m_mapTexture | std::views::values) {
-		SAFE_DELETE(pTexture);
-	}
-	m_mapTexture.clear();
-
-	for (CTexture *& pTexture : m_textureOfWindows | std::views::values) {
-		SAFE_DELETE(pTexture);
-	}
-	m_textureOfWindows.clear();
-
-	return TRUE;
-}
-
-bool CTextureMng::RemoveTexture(CWndBase * ptr) {
-	const auto it = m_textureOfWindows.find(ptr);
-	if (it == m_textureOfWindows.end()) return false;
-
-	delete it->second;
-	m_textureOfWindows.erase(it);
-	return true;
-}
-
 CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
 {
 	 const auto mapTexItor = m_mapTexture.find( pFileName );
 	 if( mapTexItor != m_mapTexture.end() )
-		return (*mapTexItor).second;
+		return mapTexItor->second.get();
 	CTexture * pTexture = new CTexture;
 	if( pTexture->LoadTexture( pd3dDevice, pFileName, d3dKeyColor, bMyLoader ) )
 	{
@@ -1774,15 +1746,6 @@ CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileNa
 	}
 	safe_delete( pTexture );
 	return NULL;
-}
-void CTextureMng::SetTextureForWnd(CWndBase * pKey, CTexture * pTexture) {
-	const auto it = m_textureOfWindows.find(pKey);
-	if (it != m_textureOfWindows.end()) {
-		delete it->second;
-		it->second = pTexture;
-	} else {
-		m_textureOfWindows.emplace(pKey, pTexture);
-	}
 }
 
 #ifdef __CLIENT

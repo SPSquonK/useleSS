@@ -150,6 +150,7 @@ static CTheme         m_Theme;
 
 public:
 static CTextureMng    m_textureMng;
+static std::map<CWndBase *, std::unique_ptr<CTexture>> m_backgroundTextureMng;
 static SHORTCUT       m_GlobalShortcut;
 	BOOL m_bPickup; // 포커스 윈도를 들었나?
 

@@ -12,6 +12,7 @@
 
 
 #include "xUtil.h"
+#include <memory>
 
 class CRectClip : public CRect
 {
@@ -287,20 +288,12 @@ class CWndBase;
 
 class CTextureMng final {
 private:
-	std::map<std::string, CTexture *> m_mapTexture;
-	std::map<CWndBase *, CTexture *> m_textureOfWindows;
+	std::map<std::string, std::unique_ptr<CTexture>> m_mapTexture;
 public:
-	CTextureMng() = default;
-	CTextureMng(const CTextureMng &) = delete;
-	CTextureMng & operator=(const CTextureMng &) = delete;
-	~CTextureMng();
-
-	BOOL DeleteDeviceObjects();
-	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
-
-	void SetTextureForWnd(CWndBase * pKey, CTexture * pTexture);
-	bool RemoveTexture(CWndBase * ptr);
+	CTexture * AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE);
+	void Clear() { m_mapTexture.clear(); }
 };
+
 #ifdef __CLIENT
 // 몹, 플레이어 데미지 출력
 class CDamageNum

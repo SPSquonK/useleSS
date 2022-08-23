@@ -103,7 +103,7 @@ CWndNeuz::~CWndNeuz()
 	if( m_strTexture.IsEmpty() == FALSE )
 	{
 		// 타일 형태는 파일을 읽는 것이 아니므로 자기 포인터가 텍스춰 ID로 사용되었다.
-		m_textureMng.RemoveTexture( this );
+		m_backgroundTextureMng.erase(this);
 	}
 }
 #ifdef __CLIENT

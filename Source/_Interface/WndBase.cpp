@@ -44,6 +44,7 @@ CString   CWndBase::m_strGlobalShortCutString;
 
 //CTexturePack CWndBase::m_texturePack;
 CTextureMng CWndBase::m_textureMng;
+std::map<CWndBase *, std::unique_ptr<CTexture>> CWndBase::m_backgroundTextureMng;
 CResManager CWndBase::m_resMng;
 CWndBase* CWndBase::m_pWndCapture;
 CMapStringToPtr CWndBase::m_strWndTileMap;
@@ -705,8 +706,7 @@ void CWndBase::MakeVertexBuffer()
 	
 	if( m_pTexture == NULL || m_pVB == NULL )
 		return;
-	CRect rect = GetWindowRect();
-	rect = GetScreenRect();//WindowToScreen( rect );
+	const CRect rect = GetScreenRect();
 	CPoint pt = rect.TopLeft() - m_pTexture->m_ptCenter;
 	FLOAT left   = (FLOAT)( pt.x );
 	FLOAT top    = (FLOAT)( pt.y );
@@ -754,10 +754,11 @@ HRESULT CWndBase::InvalidateDeviceObjects()
 }
 HRESULT CWndBase::DeleteDeviceObjects()
 {
-	if( IsWndRoot() )
-	{
-		m_textureMng.DeleteDeviceObjects();
+	if (IsWndRoot()) {
+		m_textureMng.Clear();
+		m_backgroundTextureMng.clear();
 	}
+
 	for(int i = 0; i < m_wndArray.GetSize(); i++) 
 		((CWndBase*)m_wndArray.GetAt(i))->DeleteDeviceObjects();
 	SAFE_RELEASE( m_pVB );
@@ -2547,7 +2548,7 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 	CTexture* pTexture = new CTexture;
 	pTexture->CreateTexture( m_pApp->m_pd3dDevice, size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
 
-	m_textureMng.SetTextureForWnd(this, pTexture);
+	m_backgroundTextureMng.insert_or_assign(this, std::unique_ptr<CTexture>(pTexture));
 	m_pTexture = pTexture;
 
 	CPoint point( 0, 0);
