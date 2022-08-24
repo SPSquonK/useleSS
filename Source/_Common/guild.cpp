@@ -370,7 +370,7 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			ar << m_idEnemyGuild;
 			ar << (short)GetSize();
 			for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
-				ar >> *( i->second );
+				ar << *( i->second );
 
 			ar << (short)m_votes.size();
 			for ( auto it = m_votes.begin(); it!=m_votes.end(); ++it )
