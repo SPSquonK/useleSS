@@ -1607,7 +1607,7 @@ void CDPCoreSrvr::OnGuildLogo( CAr & ar, DPID, DPID, DPID, u_long )
 		return;
 	}
 
-	if( pGuild->SetLogo( dwLogo ) == FALSE )
+	if (!pGuild->SetLogo(dwLogo))
 		return;
 
 	g_dpDatabaseClient.SendGuildLogo( idGuild, dwLogo );

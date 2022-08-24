@@ -460,13 +460,13 @@ int	CGuild::GetMaxMemberSize( void )
 	return (int)CGuildTable::GetInstance().GetMaxMemeber( m_nLevel );
 }
 
-BOOL CGuild::SetLogo( DWORD dwLogo )
-{
-	if( m_dwLogo )		// 로고는 한번만 setting가능 
-		return FALSE;
+bool CGuild::SetLogo(const DWORD dwLogo) {
+	if constexpr (!useless_params::CanChangeLogo) {
+		if (m_dwLogo) return false;
+	}
 
 	m_dwLogo = dwLogo;
-	return TRUE;
+	return true;
 }
 
 void CGuild::SetContribution( CONTRIBUTION_CHANGED_INFO& info )
