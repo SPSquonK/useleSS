@@ -10,15 +10,6 @@
   CtrlId : WIDC_TABCTRL1 - 
 ****************************************************/
 
-CWndCommItem::CWndCommItem() 
-{ 
-} 
-CWndCommItem::~CWndCommItem() 
-{ 
-} 
-void CWndCommItem::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndCommItem::OnInitialUpdate() 
 { 
 #ifdef __TAIWAN__
@@ -46,26 +37,6 @@ BOOL CWndCommItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_COMM_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndCommItem::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndCommItem::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndCommItem::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndCommItem::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndCommItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
-
 
 
 
@@ -92,12 +63,6 @@ void CWndCommItemCtrl::Create( DWORD dwListCtrlStyle, RECT& rect, CWndBase* pPar
 	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
 }
 
-void CWndCommItemCtrl::LoadListBoxScript(LPCTSTR lpFileName) 
-{
-}	
-void CWndCommItemCtrl::InterpriteScript(CScanner& scanner,CPtrArray& ptrArray) 
-{
-}
 HRESULT CWndCommItemCtrl::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
@@ -677,22 +642,13 @@ void CWndCommItemCtrl::OnDraw( C2DRender* p2DRender )
 	CRect rect( x, pt.y, x + nWidth, pt.y + m_nFontHeight );
 	rect.SetRect( x + 3, pt.y + 6, x + 3 + 32, pt.y + 6 + 32 ); 
 
-	memset( m_dwDraw, 0, sizeof( int ) * (SM_MAX+MAX_SKILLINFLUENCE) );
+	memset( m_dwDraw, 0, sizeof(m_dwDraw));
 	m_nMaxDraw = 0;
 	
 	int nScroll = 0;
 	DrawSM( p2DRender, &pt, x, nScroll );
 	DrawSkill( p2DRender, &pt, x, nScroll );
 
-}
-
-void CWndCommItemCtrl::SetScrollBar()
-{
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange	= g_WndMng.m_RTMessenger.size();
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
 }
 
 void CWndCommItemCtrl::OnSize( UINT nType, int cx, int cy )

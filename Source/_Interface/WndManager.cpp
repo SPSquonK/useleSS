@@ -56,6 +56,7 @@
 #include "Tax.h"
 #include "GuildHouse.h"
 #include "WndGuildHouse.h"
+#include "WndCommItem.h"
 #include "WndQuest.h"
 
 #include "boost/pfr.hpp"

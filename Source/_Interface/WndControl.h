@@ -761,8 +761,6 @@ public:
 // Attributes
 	int   GetCurSel() const;
 	int   SetCurSel(int nSelect);
-	COLORREF GetBkColor() const;
-	BOOL SetBkColor(COLORREF cr);
 
 	int GetItemCount() const;
 	BOOL GetItem(LVITEM* pItem) const;
@@ -832,21 +830,11 @@ public:
 	int InsertItem(const LVITEM* pItem);
 	int InsertItem(int nItem, LPCTSTR lpszItem);
 	int InsertItem(int nItem, LPCTSTR lpszItem, int nImage);
-	BOOL DeleteItem(int nItem);
-	BOOL DeleteAllItems();
-	//int FindItem(LVFINDINFO* pFindInfo, int nStart = -1) const;
-	//int HitTest(LVHITTESTINFO* pHitTestInfo) const;
+
 	int HitTest(CPoint pt, UINT* pFlags = NULL) const;
 	BOOL EnsureVisible(int nItem, BOOL bPartialOK);
 	BOOL Scroll(CSize size);
-	BOOL RedrawItems(int nFirst, int nLast);
-	BOOL Arrange(UINT nCode);
 	CEdit* EditLabel(int nItem);
-	int InsertColumn(int nCol, const LVCOLUMN* pColumn);
-	int InsertColumn(int nCol, LPCTSTR lpszColumnHeading,
-		int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1);
-	BOOL DeleteColumn(int nCol);
-	BOOL Update(int nItem);
 
 // Overridables
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
@@ -866,9 +854,6 @@ public:
 	int InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem, UINT nState,
 		UINT nStateMask, int nImage, LPARAM lParam);
 
-protected:
-	void RemoveImageList(int nImageList);
-protected:
 };
 
 
@@ -1056,14 +1041,6 @@ private:
 
 public:
 #endif // __IMPROVE_MAP_SYSTEM
-/*
-// Overridables (must override draw, measure and compare for owner draw)
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	virtual int CompareItem(LPCOMPAREITEMSTRUCT lpCompareItemStruct);
-	virtual void DeleteItem(LPDELETEITEMSTRUCT lpDeleteItemStruct);
-*/
-
 
 	void Create( DWORD dwComboBoxStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
 	virtual	void OnInitialUpdate();

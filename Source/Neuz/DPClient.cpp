@@ -60,6 +60,7 @@
 #include "Chatting.h"
 
 #include "WndFriendConfirm.h"
+#include "WndCommItem.h"
 #include "Network.h"
 #include "WndSelectVillage.h"
 #include "WndSealChar.h"

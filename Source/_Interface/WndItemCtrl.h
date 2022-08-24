@@ -34,7 +34,6 @@ public:
 	BOOL	IsSelectedItem( int iItem );
 
 // Operations
-	int		InsertColumn(int nCol, const LVCOLUMN* pColumn);
 
 	void	RanderIcon( C2DRender* p2DRender, CItemElem* pItemElem, int x, int y, int nParent, int nalpha = 255 );
 

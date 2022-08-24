@@ -7,7 +7,6 @@
 #include "WndBank.h"
 #include "WndRepairItem.h"	 // ¼ö¸®Ã¢
 #include "WndUpgradebase.h"
-#include "WndCommItem.h"
 
 #include "WndPiercing.h"
 
@@ -84,6 +83,7 @@ class CWndSealChar; class CWndSealCharSelect; class CWndSealCharSend; class CWnd
 class CWndGuildConfirm; class CWndGuildWarPeaceConfirm; class CWndGuildWarRequest;
 class CWndGuildBank;
 class CWndGuildNickName;
+class CWndCommercialElem; class CWndRemoveElem;
 
 #define REG_VERSION 1
 

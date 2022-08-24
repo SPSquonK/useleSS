@@ -1417,33 +1417,7 @@ int CWndItemCtrl::GetItemCount() const
 {
 	return m_aItems.GetSize();
 }
-int CWndItemCtrl::InsertColumn( int nCol, const LVCOLUMN* pColumn )
-{
-	LVCOLUMN* pNewColumn = new LVCOLUMN;
-	memcpy( pNewColumn, pColumn, sizeof( LVCOLUMN ) );
-	pNewColumn->pszText = new _TCHAR[ _tcslen( pColumn->pszText ) ];
-	_tcscpy( pNewColumn->pszText, pColumn->pszText );
-	if( nCol < m_aColumns.GetSize() && m_aColumns.GetAt( nCol ) ) 
-		return -1; // 이미 존재한다.
-	m_aColumns.SetAtGrow( nCol, (void*)pNewColumn );
-	// 컬럼 버튼 생성 
-	/*
-	CPtrArray m_aWndColumns;
-	CRect rect;// = GetWindowRect();
-	CWndButton* pWndButton = new CWndButton;
-	pWndButton->AddWndStyle( WBS_DOCKING );
-	rect = CRect( 0, 0, pColumn->cx, 20 );
-	if( nCol )
-	{
-		LVCOLUMN* pNewColumn = (LVCOLUMN*)m_aColumns.GetAt( nCol - 1 );
-		if( 
-		i
-	}
-	pWndButton->Create( pColumn->pszText, 0, rect , this, nCol );
-	m_aWndColumns.SetAtGrow( nCol, pWndButton );
-	*/
-	return nCol;
-}
+
 BOOL CWndItemCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 {
 	if( zDelta < 0 )

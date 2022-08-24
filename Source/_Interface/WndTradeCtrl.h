@@ -47,7 +47,6 @@ static CTextureMng m_textureMng;
 
 // Operations
 	int InsertItem(const LVITEM* pItem);
-	int InsertColumn(int nCol, const LVCOLUMN* pColumn);
 
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual void OnInitialUpdate();

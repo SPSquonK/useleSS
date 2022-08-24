@@ -6,86 +6,53 @@ class CItemElem;
 
 #include "WndComponentSlots.h"
 
-class CWndCommItemCtrl : public CWndBase
-{
-	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
-	//void PaintListBox(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray);
-	int           m_nFontHeight ;
+class CWndCommItemCtrl final : public CWndBase {
+	int           m_nFontHeight;
 	CWndScrollBar m_wndScrollBar;
-	
-	CWndWorld* pWndWorld;
-	int			m_dwDraw[SM_MAX+MAX_SKILLINFLUENCE];
+
+	CWndWorld * pWndWorld;
+	int			m_dwDraw[SM_MAX + MAX_SKILLINFLUENCE];
 	int			m_nMaxDraw;
 
-	CTexture m_texGauEmptyNormal ;
-	CTexture m_texGauFillNormal  ;
-	
+	CTexture m_texGauEmptyNormal;
+	CTexture m_texGauFillNormal;
+
 	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
 
-
-// Constructors
 public:
 	CRect         m_rect;
 	DWORD         m_dwListCtrlStyle;
 
-
-	void	SetScrollBar();
 	int		GetMaxBuff();			// 출력해야할 MAX값얻어오기
-	void	DrawSM( C2DRender* p2DRender, CPoint* pPoint, int x, int &nScroll );
-	void	DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, int &nScroll );
+	void	DrawSM(C2DRender * p2DRender, CPoint * pPoint, int x, int & nScroll);
+	void	DrawSkill(C2DRender * p2DRender, CPoint * pPoint, int x, int & nScroll);
 
 	CWndCommItemCtrl();
-	~CWndCommItemCtrl();
+	~CWndCommItemCtrl() override;
 
-	void GetFriendName();
-	void Create( DWORD m_dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID );
-	void LoadListBoxScript(LPCTSTR lpFileName); 
-	LPSKILL GetSkill( int i );
-// Attributes
-	COLORREF GetBkColor() const;
-	BOOL SetBkColor(COLORREF cr);
-	BOOL GetItem(LVITEM* pItem) const;
-	BOOL SetItem(int nItem, int nSubItem, UINT nMask, LPCTSTR lpszItem,
-		int nImage, UINT nState, UINT nStateMask, LPARAM lParam);
-// Operations
+	void Create(DWORD m_dwListCtrlStyle, RECT & rect, CWndBase * pParentWnd, UINT nID);
+
 
 // Overridables
-	virtual void OnMouseWndSurface( CPoint point );
-	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE );
-	virtual void OnInitialUpdate();
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
-	virtual	void PaintFrame(C2DRender* p2DRender);
+	void OnMouseWndSurface(CPoint point) override;
+	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE) override;
+	void OnInitialUpdate() override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnSize(UINT nType, int cx, int cy) override;
+	BOOL OnEraseBkgnd(C2DRender * p2DRender) override;
+	void PaintFrame(C2DRender * p2DRender) override;
 
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
-	virtual HRESULT DeleteDeviceObjects();
-
-// Implementation
-public:
-	int InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem, UINT nState,
-		UINT nStateMask, int nImage, LPARAM lParam);
-protected:
-	void RemoveImageList(int nImageList);
+	HRESULT RestoreDeviceObjects() override;
+	HRESULT InvalidateDeviceObjects() override;
+	HRESULT DeleteDeviceObjects() override;
 };
 
-class CWndCommItem : public CWndNeuz 
-{ 
+class CWndCommItem final : public CWndNeuz {
 public:
-	CWndCommItemCtrl	m_wndCommItemCtrl;
+	CWndCommItemCtrl m_wndCommItemCtrl;
 public: 
-	CWndCommItem(); 
-	~CWndCommItem(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	void OnInitialUpdate() override;
 }; 
 
 class CWndCommercialElem : public CWndNeuz 

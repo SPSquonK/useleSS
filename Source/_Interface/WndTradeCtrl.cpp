@@ -239,15 +239,4 @@ int CWndTradeCtrl::GetItemCount() const
 {
 	return m_aItems.GetSize();
 }
-int CWndTradeCtrl::InsertColumn( int nCol, const LVCOLUMN* pColumn )
-{
-	LVCOLUMN* pNewColumn = new LVCOLUMN;
-	memcpy( pNewColumn, pColumn, sizeof( LVCOLUMN ) );
-	pNewColumn->pszText = new _TCHAR[ _tcslen( pColumn->pszText ) ];
-	_tcscpy( pNewColumn->pszText, pColumn->pszText );
-	if( nCol < m_aColumns.GetSize() && m_aColumns.GetAt( nCol ) ) 
-		return -1; // 이미 존재한다.
-	m_aColumns.SetAtGrow( nCol, (void*)pNewColumn );
-	return nCol;
-}
 

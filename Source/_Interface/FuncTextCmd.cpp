@@ -10,6 +10,7 @@
 #include "WndAdminCreateItem.h"
 #include "WndIndirectTalk.h"
 #include "WndChangeFace.h"
+#include "WndCommItem.h"
 #include "dpclient.h"
 #include "timeLimit.h"
 #include "MsgHdr.h"
