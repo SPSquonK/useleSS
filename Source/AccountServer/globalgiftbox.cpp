@@ -75,7 +75,7 @@ void CGlobalGiftbox::OnUpload( CAr & ar )
 	m_bLoad	= TRUE;
 }
 
-void CGlobalGiftbox::OnQuery( CDPMng<CBuffer>* pdp, CAr & ar, DPID dpid )	// recv & check & save
+void CGlobalGiftbox::OnQuery( CDPMng* pdp, CAr & ar, DPID dpid )	// recv & check & save
 {
 	u_long idPlayer;
 	DWORD dwGiftbox, dwItem, dwObjId;

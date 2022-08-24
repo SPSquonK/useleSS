@@ -536,7 +536,6 @@ void ExitInstance( void )
 //	UninitializeNetLib();
 	SAFE_DELETE( CBuffer::m_pPool );
 	SAFE_DELETE( CBuffer2::m_pPool2 );	
-	SAFE_DELETE( CBuffer3::m_pPool2 );	
 	SAFE_DELETE( CBuffer::m_pHeapMng );
 
 	UNLOAD_WS2_32_DLL;

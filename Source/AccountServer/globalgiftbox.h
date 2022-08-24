@@ -4,8 +4,8 @@
 #include "ar.h"
 #include "buffer.h"
 
-template <class>
 class CDPMng;
+
 class CGlobalGiftbox
 {
 private:
@@ -21,7 +21,7 @@ public:
 	static	CGlobalGiftbox*	GetInstance( void );
 
 	void	OnUpload( CAr & ar );	// recv & load script
-	void	OnQuery( CDPMng<CBuffer>* pdp, CAr & ar, DPID dpid );	// recv & check & save
+	void	OnQuery( CDPMng* pdp, CAr & ar, DPID dpid );	// recv & check & save
 	void	OnRestore( CAr & ar );
 private:
 	BOOL	Save( void );

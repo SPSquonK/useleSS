@@ -5,7 +5,7 @@
 #include <mutex>
 #include <optional>
 
-class CDPAdbill : public CDPMng<CBuffer3> {
+class CDPAdbill : public CDPMng {
 private:
 	DWORD	m_dwKey = 0;
 public:

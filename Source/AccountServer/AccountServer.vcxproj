@@ -46,7 +46,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\..\resource;..\_network;..\_Network\Net2\Include;..\_Network\Misc\Include;.;..\_Network\Mcl\Include;..\_DirectX;..\_Common;..\_database;..\Libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\resource;..\_network;..\_Network\Net\Include;..\_Network\Misc\Include;.;..\_Network\Mcl\Include;..\_DirectX;..\_Common;..\_database;..\Libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NO_WARN_MBCS_MFC_DEPRECATION;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
@@ -95,6 +95,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\_Network\ListedServer.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\buffer.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\clientsock.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\clientsocke.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\crc.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\dpmng.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\dpsock.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\serversock.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\serversocke.cpp" />
+    <ClCompile Include="..\_Network\Net\Src\sock.cpp" />
     <ClCompile Include="account.cpp">
     </ClCompile>
     <ClCompile Include="AccountServer.cpp">
@@ -117,12 +126,6 @@
     <ClCompile Include="..\_Network\Misc\Src\heapmng.cpp">
     </ClCompile>
     <ClCompile Include="..\_network\misc\src\mytrace.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_network\net2\src\buffer.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_network\net2\src\crc.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_network\net2\src\sock.cpp">
     </ClCompile>
     <ClCompile Include="..\_directx\dxutil.cpp">
     </ClCompile>
@@ -155,6 +158,15 @@
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
     <ClInclude Include="..\_Network\ListedServer.h" />
+    <ClInclude Include="..\_Network\Net\Include\buffer.h" />
+    <ClInclude Include="..\_Network\Net\Include\clientsock.h" />
+    <ClInclude Include="..\_Network\Net\Include\clientsocke.h" />
+    <ClInclude Include="..\_Network\Net\Include\crc.h" />
+    <ClInclude Include="..\_Network\Net\Include\dpmng.h" />
+    <ClInclude Include="..\_Network\Net\Include\dpsock.h" />
+    <ClInclude Include="..\_Network\Net\Include\serversock.h" />
+    <ClInclude Include="..\_Network\Net\Include\serversocke.h" />
+    <ClInclude Include="..\_Network\Net\Include\sock.h" />
     <ClInclude Include="account.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="dpdbsrvr.h" />
@@ -175,15 +187,6 @@
     <ClInclude Include="..\_network\misc\include\misc.h" />
     <ClInclude Include="..\_network\misc\include\mymap.h" />
     <ClInclude Include="..\_network\misc\include\mytrace.h" />
-    <ClInclude Include="..\_network\net2\include\buffer.h" />
-    <ClInclude Include="..\_network\net2\include\clientsock.h" />
-    <ClInclude Include="..\_network\net2\include\clientsocke.h" />
-    <ClInclude Include="..\_network\net2\include\crc.h" />
-    <ClInclude Include="..\_network\net2\include\dpmng.h" />
-    <ClInclude Include="..\_network\net2\include\dpsock.h" />
-    <ClInclude Include="..\_network\net2\include\serversock.h" />
-    <ClInclude Include="..\_network\net2\include\serversocke.h" />
-    <ClInclude Include="..\_network\net2\include\sock.h" />
     <ClInclude Include="..\_Common\DefineCommon.h" />
     <ClInclude Include="..\_directx\dxutil.h" />
     <ClInclude Include="..\_common\buyinginfo.h" />
