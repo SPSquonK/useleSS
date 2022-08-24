@@ -1719,19 +1719,16 @@ BOOL CWndTaskMenu::Process()
 	if( IsVisible() == FALSE )
 		return CWndBase::Process();
 
-	for( int i = 0; i < m_awndMenuItem.GetSize(); i++ )
-	{
-		BOOL bHighLight = FALSE;
-		CWndButton* pWndButton = (CWndButton*)m_awndMenuItem.GetAt( i );
+	for (auto & pWndButton : m_wndMenuItems) {
+		
 		if( pWndButton->GetClientRect( TRUE ).PtInRect( m_ptMouse ) )
 		{
 			// 모두 숨기기 
-			if( pWndButton->m_pWndMenu == NULL || pWndButton->m_pWndMenu->IsVisible( ) == FALSE ) 
-			{
-				for( int i2 = 0; i2 < m_awndMenuItem.GetSize(); i2++)
-				{
-					if( ((CWndButton*)m_awndMenuItem.GetAt( i2 ) )->m_pWndMenu )
-						((CWndButton*)m_awndMenuItem.GetAt( i2 ) )->m_pWndMenu->SetVisibleSub( FALSE );
+			if (pWndButton->m_pWndMenu == NULL || pWndButton->m_pWndMenu->IsVisible() == FALSE) {
+				for (auto & subButton : m_wndMenuItems) {
+					if (subButton->m_pWndMenu) {
+						subButton->m_pWndMenu->SetVisibleSub(FALSE);
+					}
 				}
 			}
 			// 새 매뉴를 보이고 포커스 주기 
@@ -1763,6 +1760,7 @@ BOOL CWndTaskMenu::Process()
 				pWndButton->m_pWndMenu->SetVisible( TRUE );
 				pWndButton->m_pWndMenu->SetFocus();
 			}
+			break;
 		}
 	}
 	return CWndBase::Process();
@@ -1842,12 +1840,14 @@ void CWndTaskMenu::OnInitialUpdate()
 
 	CWndBase::SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTaskMenu.tga" ) ), TRUE );
 
-	for (int i = 0; i < m_awndMenuItem.GetSize(); i++) {
-		CWndButton * pWndButton = GetMenuItem(i);
-		pWndButton->SetWndRect(CRect(10, 50 + (i * 22), m_pTexture->m_size.cx - 20, 50 + 20 + (i * 22)));
+	CRect nextRectSurface(10, 50, m_pTexture->m_size.cx - 20, 50 + 20);
+
+	for (auto & pWndButton : m_wndMenuItems) {
+		pWndButton->SetWndRect(nextRectSurface);
+		nextRectSurface.OffsetRect(CSize(0, 22));
 	}
 
-	SetWndRect( CRect( 0, 0, m_pTexture->m_size.cx, m_pTexture->m_size.cy ) );	
+	SetWndRect(CRect(CPoint(0, 0), m_pTexture->m_size));
 }
 
 void CWndTaskMenu::AddApplet(DWORD appId, DWORD textId) {

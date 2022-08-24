@@ -1,13 +1,7 @@
-// WndBase.h: interface for the CWndBase class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_WNDCONTROL_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_)
-#define AFX_WNDCONTROL_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include <vector>
+#include <memory>
 
 class C2DRender;
 
@@ -238,42 +232,41 @@ class CWndMenu : public CWndBase
 {
 	BOOL IsOnMenu(CPoint pt);
 	int m_nLargeWidth;
+protected:
+	std::vector<std::unique_ptr<CWndButton>> m_wndMenuItems;
 public:
-	CPtrArray  m_awndMenuItem;
 	
 	// Constructors
 	CWndMenu();
-	~CWndMenu();
 	
-	CWndButton* GetMenuItem( int nPos );
 	void SetVisibleSub( BOOL bVisible );
-	void SetVisibleAllMenu( BOOL bVisible );
 	
 	BOOL CreateMenu(CWndBase* pWndParent);
 
-	virtual void OnKillFocus(CWndBase* pNewWnd);
-	virtual void PaintFrame(C2DRender* p2DRender);
-	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
-	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
+	void OnKillFocus(CWndBase* pNewWnd) override;
+	void PaintFrame(C2DRender* p2DRender) override;
+	BOOL OnEraseBkgnd(C2DRender* p2DRender) override;
+	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE ) override;
 	// Attributes
 	
 	// CMenu Operations
 	void DeleteAllMenu();
-	BOOL DeleteMenu(UINT nPosition, UINT nFlags);
 
 	// CMenuItem Operations
-	virtual CWndButton* AppendMenu(UINT nFlags, UINT nIDNewItem = 0,	LPCTSTR lpszNewItem = NULL);
+	virtual CWndButton* AppendMenu(UINT nFlags, UINT nIDNewItem = 0,	LPCTSTR lpszNewItem = NULL) final;
 
-	UINT CheckMenuItem(UINT nIDCheckItem, UINT nCheck);
-	UINT GetMenuState(UINT nID, UINT nFlags) const;
-
-	BOOL InsertMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem = 0,	LPCTSTR lpszNewItem = NULL);
-
+	bool CheckMenuItem(UINT nIDCheckItem, int nCheck);
+	[[nodiscard]] int GetMenuState(UINT nID) const;
 
 	void SetLargeWidth( int nLargeWidth ) { m_nLargeWidth = nLargeWidth; }
 	
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
+
+private:
+	void SetVisibleAllMenu(BOOL bVisible);
+
+
 };
 //////////////////////////////////////////////////////////////////////////////
 // CWndText
@@ -997,6 +990,3 @@ private:
 	void OpenListBox( void );
 	BOOL m_bOpen;
 };
-
-#endif // !defined(AFX_WNDCONTROL_H__0B45596D_70D7_48A4_BCB2_3D0F32F58E57__INCLUDED_)
-

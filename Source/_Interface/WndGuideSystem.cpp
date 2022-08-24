@@ -309,7 +309,7 @@ BOOL CWndGuideSystem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	
 	if( pWndBase->m_pParentWnd == &m_wndMenuPlace )
 	{
-		int nState = !m_wndMenuPlace.GetMenuState( nID, 0 );
+		int nState = !m_wndMenuPlace.GetMenuState( nID );
 		m_wndMenuPlace.CheckMenuItem( nID, nState );
 		m_wndMenuPlace.CheckMenuItem( 0, FALSE );
 		m_wndMenuPlace.CheckMenuItem( 1, FALSE );
