@@ -10,6 +10,7 @@
 #include "AppDefine.h"
 //#include "WndActiveDesktop.h"
 #include "WndCharacter.h"
+#include "WndGuild.h"
 #include "WndMessenger.h"
 #include "WndCommand.h"
 #include "WndNotice.h"

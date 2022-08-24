@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "ResData.h"
 #include "WndGuildTabWar.h"
-#include "WndGuildWarDecl.h"
-#include "WndGuildWarGiveUp.h"
-#include "WndGuildWarPeace.h"
 #include "guildwar.h"
 #include "defineText.h"
+#include "MsgHdr.h"
+
+#include "DPClient.h"
 
 /****************************************************
   WndId : APP_GUILD_TABGUILDWAR - 길드전
@@ -24,18 +24,6 @@
   CtrlId : WIDC_BUTTON3 - 길드전항복
 ****************************************************/
 
-CWndGuildTabWar::CWndGuildTabWar() 
-{ 
-	m_pWndGuildWarDecl = NULL;
-	m_pWndGuildWarGiveUp = NULL;
-	m_pWndGuildWarPeace = NULL;
-} 
-CWndGuildTabWar::~CWndGuildTabWar() 
-{ 
-	SAFE_DELETE( m_pWndGuildWarDecl );
-	SAFE_DELETE( m_pWndGuildWarGiveUp );
-	SAFE_DELETE( m_pWndGuildWarPeace );
-} 
 void CWndGuildTabWar::OnDraw( C2DRender* p2DRender ) 
 { 
 	if( !g_pPlayer )
@@ -112,36 +100,11 @@ void CWndGuildTabWar::OnInitialUpdate()
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildTabWar::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_GUILD_TABGUILDWAR, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndGuildTabWar::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndGuildTabWar::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildTabWar::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildTabWar::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildTabWar::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
+BOOL CWndGuildTabWar::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_GUILD_TABGUILDWAR, pWndParent, 0, CPoint(0, 0));
+}
+
 BOOL CWndGuildTabWar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CGuild* pGuild = g_pPlayer->GetGuild();
@@ -153,20 +116,19 @@ BOOL CWndGuildTabWar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	case WIDC_BUTTON1:		// 길드전 선언
 		if( !pGuild->IsMaster(g_pPlayer->m_idPlayer) )
 			return FALSE;
-		SAFE_DELETE(m_pWndGuildWarDecl);
-		m_pWndGuildWarDecl = new CWndGuildWarDecl;
+
+		m_pWndGuildWarDecl = std::make_unique<CWndGuildWarDecl>();
 		m_pWndGuildWarDecl->Initialize( this );
 		break;
 	case WIDC_BUTTON2:		// 길드전 휴전
 		if( !pGuild->IsMaster(g_pPlayer->m_idPlayer) )
 			return FALSE;
-		SAFE_DELETE(m_pWndGuildWarPeace);
-		m_pWndGuildWarPeace = new CWndGuildWarPeace;
+
+		m_pWndGuildWarPeace = std::make_unique<CWndGuildWarPeace>();
 		m_pWndGuildWarPeace->Initialize( this );
 		break;
 	case WIDC_BUTTON3:		// 길드전 항복
-		SAFE_DELETE(m_pWndGuildWarGiveUp);
-		m_pWndGuildWarGiveUp = new CWndGuildWarGiveUp;
+		m_pWndGuildWarGiveUp = std::make_unique<CWndGuildWarGiveUp>();
 		m_pWndGuildWarGiveUp->Initialize( this );
 		break;
 	}
@@ -205,3 +167,188 @@ void CWndGuildTabWar::UpdateData( void )
 	}
 }
 
+
+/****************************************************
+	WndId : APP_GUILD_WARREQUEST - 길드전요청창
+	CtrlId : WIDC_EDIT1 -
+	CtrlId : WIDC_YES - Button
+	CtrlId : WIDC_NO - No
+****************************************************/
+
+void CWndGuildWarRequest::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
+	CGuild * pEnemyGuild = g_GuildMng.GetGuild(m_idEnemyGuild);
+	if (pEnemyGuild) {
+		CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
+
+		CString strText;
+		strText.Format(prj.GetText(TID_GAME_GUILDWARREQUEST), pEnemyGuild->m_szGuild, m_szMaster);
+		pWndEdit->SetString(strText);
+		pWndEdit->EnableWindow(FALSE);
+	}
+
+	MoveParentCenter();
+}
+
+BOOL CWndGuildWarRequest::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_GUILD_WARREQUEST, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndGuildWarRequest::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_YES:
+			g_DPlay.SendPacket<PACKETTYPE_ACPT_GUILD_WAR, u_long>(m_idEnemyGuild);
+			Destroy();
+			break;
+		case WIDC_NO:
+			Destroy();
+			break;
+	}
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+
+/****************************************************
+	WndId : APP_GUILD_WARPEACECONFIRM - 휴전승인창
+	CtrlId : WIDC_YES - Yes
+	CtrlId : WIDC_NO - No
+	CtrlId : WIDC_STATIC1 - 휴전요청이 들어왔습니다.
+	CtrlId : WIDC_STATIC2 - 승인하시겠습니까?
+****************************************************/
+
+void CWndGuildWarPeaceConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+	MoveParentCenter();
+}
+
+BOOL CWndGuildWarPeaceConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_GUILD_WARPEACECONFIRM, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndGuildWarPeaceConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_YES:
+			g_DPlay.SendPacket<PACKETTYPE_ACPT_TRUCE>();
+			Destroy();
+			break;
+		case WIDC_NO:
+			Destroy();
+			break;
+	}
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+
+/****************************************************
+	WndId : APP_GUILD_WARPEACE - 휴전창
+	CtrlId : WIDC_YES - Yes
+	CtrlId : WIDC_NO - No
+	CtrlId : WIDC_STATIC1 - 상대길드에 휴전을 요청하겠습니까?
+****************************************************/
+
+void CWndGuildWarPeace::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+	MoveParentCenter();
+}
+
+BOOL CWndGuildWarPeace::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_GUILD_WARPEACE, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndGuildWarPeace::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_YES:
+			g_DPlay.SendPacket<PACKETTYPE_QUERY_TRUCE>();
+			Destroy();
+			break;
+		case WIDC_NO:
+			Destroy();
+			break;
+	}
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+/****************************************************
+	WndId : APP_GUILD_WARGIVEUP - 항복창
+	CtrlId : WIDC_YES - Button
+	CtrlId : WIDC_NO - Button
+	CtrlId : WIDC_STATIC1 - 길드전에서 항복을 하겠습니까?
+****************************************************/
+
+void CWndGuildWarGiveUp::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+	MoveParentCenter();
+}
+
+BOOL CWndGuildWarGiveUp::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_GUILD_WARGIVEUP, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndGuildWarGiveUp::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_YES:
+			g_DPlay.SendPacket<PACKETTYPE_SURRENDER>();
+			Destroy();
+			break;
+		case WIDC_NO:
+			Destroy();
+			break;
+	}
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+
+
+/****************************************************
+	WndId : APP_GUILD_WAR - 길드전선언창
+	CtrlId : WIDC_OK - Button
+	CtrlId : WIDC_CANCEL - Button
+	CtrlId : WIDC_STATIC1 - 상대길드
+	CtrlId : WIDC_STATIC2 - 대전페냐
+	CtrlId : WIDC_EDIT1 -
+	CtrlId : WIDC_EDIT2 -
+****************************************************/
+
+
+void CWndGuildWarDecl::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
+	CWndEdit * pWndName = (CWndEdit *)GetDlgItem(WIDC_EDIT1);	// 상대길드명.
+	CWndEdit * pWndPenya = (CWndEdit *)GetDlgItem(WIDC_EDIT2);	// 전쟁자금.
+
+	pWndName->SetTabStop(TRUE);
+	pWndPenya->SetTabStop(TRUE);
+	pWndName->SetFocus();
+
+	// 윈도를 중앙으로 옮기는 부분.
+	MoveParentCenter();
+}
+
+BOOL CWndGuildWarDecl::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_GUILD_WAR, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndGuildWarDecl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_OK:
+		{
+			CWndEdit * pWndEdit = (CWndEdit *)GetDlgItem(WIDC_EDIT1);
+			if (g_pPlayer) {
+				CString strGuild = pWndEdit->GetString();
+				if (strGuild.GetLength() >= 3 && strGuild.GetLength() < MAX_G_NAME) {
+					strGuild.TrimLeft();	strGuild.TrimRight();
+					g_DPlay.SendDeclWar(g_pPlayer->m_idPlayer, strGuild.GetString());
+					Destroy();
+				}
+			}
+		}
+		break;
+		case WIDC_CANCEL:
+			Destroy();
+			break;
+	}
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}

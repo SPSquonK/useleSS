@@ -1,40 +1,25 @@
-#ifndef __WNDGUILD_TAB_INFO__H
-#define __WNDGUILD_TAB_INFO__H
+#pragma once
 
+#include <memory>
 #include "WndGuildName.h"
 
-class CWndGuildDisMiss : public CWndNeuz 
-{ 
-public: 
-	CWndGuildDisMiss(); 
-	~CWndGuildDisMiss(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+// TODO: some of these Initialize functions are not overriding anything.
+// check which version is actually used in code
+
+class CWndGuildDisMiss : public CWndNeuz {
+public:
+	virtual BOOL Initialize(CWndBase * pWndParent);
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
 
 
-class CWndGuildNotice : public CWndNeuz 
-{ 
-public: 
-	CWndGuildNotice(); 
-	~CWndGuildNotice(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
+class CWndGuildNotice : public CWndNeuz {
+public:
+	virtual BOOL Initialize(CWndBase * pWndParent);
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
 
 class CWndGuildSetLogo : public CWndNeuz 
 { 
@@ -42,45 +27,24 @@ public:
 	CRect    m_rect[CUSTOM_LOGO_MAX];
 	int      m_nSelectLogo;
 	
-	CWndGuildSetLogo(); 
-	~CWndGuildSetLogo(); 
-	
 	virtual BOOL Initialize( CWndBase* pWndParent );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
 class CWndGuildTabInfo : public CWndNeuz 
 { 
 public: 
-#ifdef _DEBUG
-	int m_nMx, m_nMy;
-#endif
-
-	CWndGuildName*	m_pwndGuildName;
-	CWndGuildNotice* m_pwndGuildNotice;
-	CWndGuildSetLogo* m_pwndGuildSetLogo;
-	CWndGuildDisMiss* m_pwndGuildDisMiss;
-				
-	CWndGuildTabInfo(); 
-	~CWndGuildTabInfo(); 
+	std::unique_ptr<CWndGuildNotice>  m_pwndGuildNotice;
+	std::unique_ptr<CWndGuildSetLogo> m_pwndGuildSetLogo;
+	std::unique_ptr<CWndGuildDisMiss> m_pwndGuildDisMiss;
 	
-	void UpdateData( void );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnMouseMove(UINT nFlags, CPoint point );
+	void UpdateData();
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
 }; 
 
-
-#endif

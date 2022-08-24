@@ -27,13 +27,11 @@ void CWndParty::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 		if (dwVersion == 0) {
 			// noop
 		} else if (dwVersion == 1) {
-			int nCurSel;
-			ar >> nCurSel;
-			lpTabCtrl->SetCurSel(nCurSel);
+			ar >> *lpTabCtrl;
 		}
 	} else {
 		dwVersion = 1;
-		ar << lpTabCtrl->GetCurSel();
+		ar << *lpTabCtrl;
 	}
 }
 
@@ -122,18 +120,11 @@ void CWndParty::OnInitialUpdate()
 	rect.left = 5;
 	rect.top = 15;
 
-	WTCITEM tabTabItem;
-	
 	m_wndPartyInfo.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_INFO);
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_APP_INFOMATION);//"정보";
-	tabTabItem.pWndBase = &m_wndPartyInfo;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
+	pWndTabCtrl->InsertItem(&m_wndPartyInfo, prj.GetText(TID_APP_INFOMATION));
 	
 	m_wndPartySkill.Create(WBS_CHILD | WBS_NOFRAME | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_PARTY_SKILL);
-	tabTabItem.pszText = prj.GetText(TID_APP_SKILL);//"스킬";
-	tabTabItem.pWndBase = &m_wndPartySkill;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
+	pWndTabCtrl->InsertItem(&m_wndPartySkill, prj.GetText(TID_APP_SKILL));
 
 	MoveParentCenter();
 } 

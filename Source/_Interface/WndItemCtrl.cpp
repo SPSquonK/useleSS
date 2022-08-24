@@ -1397,36 +1397,7 @@ void CWndItemCtrl::PaintFrame( C2DRender* p2DRender )
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }
-/*
-typedef struct tagLVCOLUMNA
-{
-    UINT mask;
-    int fmt;
-    int cx;
-    LPSTR pszText;
-    int cchTextMax;
-    int iSubItem;
-#if (_WIN32_IE >= 0x0300)
-    int iImage;
-    int iOrder;
-#endif
-} LVCOLUMNA, FAR* LPLVCOLUMNA;
-typedef struct tagLVITEMA
-{
-    UINT mask;
-    int iItem;
-    int iSubItem;
-    UINT state;
-    UINT stateMask;
-    LPSTR pszText;
-    int cchTextMax;
-    int iImage;
-    LPARAM lParam;
-#if (_WIN32_IE >= 0x0300)
-    int iIndent;
-#endif
-} LVITEMA, FAR* LPLVITEMA;
-*/
+
 BOOL CWndItemCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
@@ -1441,19 +1412,7 @@ BOOL CWndItemCtrl::SetItem( const LVITEM* pItem )
 	_tcscpy( pItems[ pItem->iSubItem ].pszText, pItem->pszText );
 	return TRUE;
 }
-/*
-int CWndItemCtrl::InsertItem( const LVITEM* pItem )
-{
-	if( pItem->iItem < m_aItems.GetSize() && m_aItems.GetAt( pItem->iItem ) ) 
-		return -1; // 이미 존재한다.
-	LVITEM* pNewItems = new LVITEM[ 3 ]; // m_aColumns.GetSize()
-	memcpy( &pNewItems[ pItem->iSubItem ], pItem, sizeof( LVITEM ) );
-	pNewItems[ pItem->iSubItem ].pszText = new _TCHAR[ _tcslen( pItem->pszText ) + sizeof( _TCHAR ) ];
-	_tcscpy( pNewItems[ pItem->iSubItem ].pszText, pItem->pszText );
-	m_aItems.SetAtGrow( pItem->iItem, (void*)pNewItems );
-	return pItem->iItem;
-}
-*/
+
 int CWndItemCtrl::GetItemCount() const
 {
 	return m_aItems.GetSize();

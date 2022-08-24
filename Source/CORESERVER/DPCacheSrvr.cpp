@@ -886,55 +886,41 @@ void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, 
 
 void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idMaster;
-	ar >> _idMaster;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer* pMaster = g_PlayerMng.GetPlayerBySerial( dpidUser );
-	if( !pMaster )
-	{
+	if (!pMaster) {
 		// player not found
 		return;
 	}
 
-	CGuild* pGuild;
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
-	pGuild	= g_GuildMng.GetGuild( pMaster->m_idGuild );
-	if( !pGuild || FALSE == pGuild->IsMember( pMaster->uKey ) )
-	{
+	CGuild * pGuild	= g_GuildMng.GetGuild( pMaster->m_idGuild );
+	if (!pGuild || !pGuild->IsMember(pMaster->uKey)) {
 		// guild not found
 		// OR is not member
-		SendDefinedText( TID_GAME_COMNOHAVECOM, pMaster->dpidCache, pMaster->dpidUser, "" );
-		pMaster->m_idGuild	= 0;
+		SendDefinedText(TID_GAME_COMNOHAVECOM, pMaster->dpidCache, pMaster->dpidUser, "");
+		pMaster->m_idGuild = 0;
 		return;
 	}
 
-	if( FALSE == pGuild->IsMaster( pMaster->uKey ) )
-	{
+	if (!pGuild->IsMaster(pMaster->uKey)) {
 		// is not leader
-		SendDefinedText( TID_GAME_COMDELNOTKINGPIN, pMaster->dpidCache, pMaster->dpidUser, "" );
+		SendDefinedText(TID_GAME_COMDELNOTKINGPIN, pMaster->dpidCache, pMaster->dpidUser, "");
 		return;
 	}
 
-	if( pGuild->GetWar() )
-	{
-		SendDefinedText( TID_GAME_GUILDWARNODISMISS, pMaster->dpidCache, pMaster->dpidUser, "" );
+	if (pGuild->GetWar()) {
+		SendDefinedText(TID_GAME_GUILDWARNODISMISS, pMaster->dpidCache, pMaster->dpidUser, "");
 		return;
 	}
 
-	CGuildMember* pMember;
-	CPlayer* pPlayer;
-	for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-	{
-		pMember		= i->second;
-		pPlayer	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
+	for (CGuildMember * pMember : pGuild->m_mapPMember | std::views::values) {
+		CPlayer * pPlayer	= g_PlayerMng.GetPlayer( pMember->m_idPlayer );
 		if( pPlayer )
 		{
 			pPlayer->m_idGuild	= 0;
-			pPlayer->m_tGuildMember = CTime::GetCurrentTime();
-			pPlayer->m_tGuildMember += CTimeSpan( 2, 0, 0, 0 );
+			pPlayer->m_tGuildMember = CTime::GetCurrentTime() + CTimeSpan(2, 0, 0, 0);
 		}
-		
 	}
 	u_long idGuild	= pGuild->m_idGuild;
 	g_GuildMng.RemoveGuild( idGuild );
@@ -945,24 +931,21 @@ void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 // fixme - raiders
 void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long idMaster;//, idPlayer;
-	GUILD_MEMBER_INFO	info;
-	ar >> idMaster;// >> idPlayer;
-	ar.Read( &info, sizeof(GUILD_MEMBER_INFO) );
-	CPlayer* pMaster, *pPlayer;
+	u_long idMaster; ar >> idMaster;
 
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
 
-	pMaster	= g_PlayerMng.GetPlayer( idMaster );
-	pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
+	CPlayer * pMaster	= g_PlayerMng.GetPlayer( idMaster );
+	CPlayer * pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
 
 	if( !pPlayer )
 		return;
-	if( pPlayer->uKey != info.idPlayer )
-		return;
-	if( !pMaster )
-	{
-		SendDefinedText( TID_GAME_GUILDCHROFFLINE, pPlayer->dpidCache, pPlayer->dpidUser, "" );
+
+	GUILD_MEMBER_INFO	info;
+	info.idPlayer = pPlayer->uKey;
+
+	if (!pMaster) {
+		SendDefinedText(TID_GAME_GUILDCHROFFLINE, pPlayer->dpidCache, pPlayer->dpidUser, "");
 		return;
 	}
 
@@ -1028,10 +1011,10 @@ void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 		pPlayer->m_idGuild	= pGuild->m_idGuild;
 		g_dpCoreSrvr.SendAddGuildMember( info, pGuild->m_idGuild );
 		g_dpDatabaseClient.SendAddGuildMember( pPlayer->uKey, pGuild->m_idGuild, pMaster->uKey );
-		CPlayer* pPlayertmp;
-		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-		{
-			pPlayertmp	= g_PlayerMng.GetPlayer( i->second->m_idPlayer );
+
+		for (CGuildMember * member : pGuild->m_mapPMember | std::views::values) {
+
+			CPlayer * pPlayertmp	= g_PlayerMng.GetPlayer( member->m_idPlayer );
 			if( pPlayertmp )
 			{
 				if( pPlayertmp == pPlayer )
@@ -1180,7 +1163,7 @@ void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 		SendDefinedText( TID_GAME_GUILDWARRANTREGOVER, pMaster->dpidCache, pMaster->dpidUser, "" );
 		return;
 	}
-	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, PF_MEMBERLEVEL ) )
+	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, GuildPower::MemberLevel ) )
 	{
 		SendDefinedText( TID_GAME_GUILDAPPNOTWARRANT, pMaster->dpidCache, pMaster->dpidUser, "" );
 		return;
@@ -1215,35 +1198,29 @@ void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 	}
 }
 
-void CDPCacheSrvr::OnGuildAuthority( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
-{
-	u_long _uidPlayer, _uGuildId;
-	DWORD dwAuthority[MAX_GM_LEVEL];
-	
-	ar >> _uidPlayer >> _uGuildId;
-	
-	ar.Read( dwAuthority, sizeof(dwAuthority) );
-	
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );	
+void CDPCacheSrvr::OnGuildAuthority(CAr & ar, DPID, DPID dpidUser, u_long) {
+	GuildPowerss dwAuthority; ar >> dwAuthority;
 
-	CPlayer* pPlayer = g_PlayerMng.GetPlayerBySerial( dpidUser );	
-	if( pPlayer == NULL )
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
+	CMclAutoLock	Lock2(g_GuildMng.m_AddRemoveLock);
+
+	CPlayer * pPlayer = g_PlayerMng.GetPlayerBySerial(dpidUser);
+	if (pPlayer == NULL)
 		return;
 
-	CGuild* pGuild = g_GuildMng.GetGuild( pPlayer->m_idGuild );
-	if( pGuild && pGuild->IsMaster( pPlayer->uKey ) )
-	{
-		if( pGuild->GetWar() )
-		{
-			SendDefinedText( TID_GAME_GUILDWARNOMEMBER, pPlayer->dpidCache, pPlayer->dpidUser, "" );
+	CGuild * pGuild = g_GuildMng.GetGuild(pPlayer->m_idGuild);
+	if (pGuild && pGuild->IsMaster(pPlayer->uKey)) {
+		if (pGuild->GetWar()) {
+			SendDefinedText(TID_GAME_GUILDWARNOMEMBER, pPlayer->dpidCache, pPlayer->dpidUser, "");
 			return;
 		}
-		memcpy( pGuild->m_adwPower, dwAuthority, sizeof(dwAuthority) );
-		g_dpCoreSrvr.SendGuildAuthority( pPlayer->m_idGuild, dwAuthority );
+
+		pGuild->m_aPower = dwAuthority;
+
+		g_dpCoreSrvr.SendGuildAuthority(pPlayer->m_idGuild, dwAuthority);
 
 		// GUILD DB AUTHORITY UPDATE
-		g_dpDatabaseClient.SendGuildAuthority( pPlayer->m_idGuild, pGuild->m_adwPower );
+		g_dpDatabaseClient.SendGuildAuthority(pPlayer->m_idGuild, dwAuthority);
 	}
 }
 
@@ -1297,7 +1274,7 @@ void CDPCacheSrvr::OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 
 void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	const auto [_playerId, _guildId, dwType, dwPenya] = ar.Extract<u_long, u_long, DWORD, DWORD>();
+	const auto [dwType, dwPenya] = ar.Extract<DWORD, DWORD>();
 
 	if (dwType >= MAX_GM_LEVEL) return;
 
@@ -1313,11 +1290,11 @@ void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	{
 		if( 0 <= dwPenya && dwPenya < 1000000 )
 		{
-			pGuild->m_adwPenya[dwType] = dwPenya;
+			pGuild->m_aPenya[dwType] = dwPenya;
 			g_dpCoreSrvr.SendGuildPenya( pPlayer->m_idGuild, dwType, dwPenya );
 			
 			// GUILD DB AUTHORITY UPDATE
-			g_dpDatabaseClient.SendGuildPenya( pPlayer->m_idGuild, pGuild->m_adwPenya );
+			g_dpDatabaseClient.SendGuildPenya( pPlayer->m_idGuild, pGuild->m_aPenya );
 		}
 		else
 		{
@@ -1368,7 +1345,7 @@ void CDPCacheSrvr::OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	CGuildMember* pMember1	= pGuild->GetMember( pMaster->uKey );
 	CGuildMember* pMember2	= pGuild->GetMember( idPlayer );
 
-	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, PF_LEVEL ) )	
+	if( !pGuild->IsCmdCap( pMember1->m_nMemberLv, GuildPower::Level ) )	
 	{
 		SendDefinedText( TID_GAME_GUILDAPPNOTWARRANT, pMaster->dpidCache, pMaster->dpidUser, "" );
 		return;
@@ -1819,9 +1796,6 @@ void CDPCacheSrvr::SendBlock( BYTE nGu, char *szName, CPlayer* pTo )
 
 void CDPCacheSrvr::OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idPlayer;
-	ar >> _idPlayer;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
 
@@ -1904,9 +1878,6 @@ void CDPCacheSrvr::SendSurrender(WarId idWar, u_long idPlayer, const char* sPlay
 
 void CDPCacheSrvr::OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idPlayer;
-	ar >> _idPlayer;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
 
@@ -1946,9 +1917,6 @@ void CDPCacheSrvr::OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 
 void CDPCacheSrvr::OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idPlayer;
-	ar >> _idPlayer;
-
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
 
@@ -2047,8 +2015,7 @@ void CDPCacheSrvr::OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uB
 // fixme	- raiders
 void CDPCacheSrvr::OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _idMaster, idDecl;
-	ar >> _idMaster >> idDecl;
+	u_long idDecl; ar >> idDecl;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	

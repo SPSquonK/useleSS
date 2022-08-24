@@ -293,8 +293,8 @@ CGuild::CGuild()
 	m_GuildBank.SetItemContainer(CItemContainer::ContainerTypes::GUILDBANK);
 #endif
 	
-	ZeroMemory( m_adwPower, sizeof(m_adwPower) );
-	ZeroMemory( m_adwPenya, sizeof(m_adwPenya) );
+	m_aPower.fill(sqktd::EnumSet<GuildPower>());
+	m_aPenya.fill(0);
 	
 	m_nGoldGuild = 0;
 
@@ -362,9 +362,8 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 		ar << m_nWin << m_nLose << m_nSurrender;
 		if( !bDesc )
 		{
-			ar.Write( m_adwPower, sizeof(m_adwPower) );
-			ar.Write( m_adwPenya, sizeof(m_adwPenya) );
-			ar.WriteString( m_szNotice );	// 공지사항 
+			ar << m_aPower << m_aPenya;
+			ar << m_szNotice; // 공지사항 
 			ar << m_dwContributionPxp;		// 공헌된 PXP
 			ar << m_nLevel;					// 레벨 
 			ar << m_idEnemyGuild;
@@ -394,9 +393,8 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 		ar >> m_nWin >> m_nLose >> m_nSurrender;
 		if( !bDesc )
 		{
-			ar.Read( m_adwPower, sizeof(m_adwPower) );
-			ar.Read( m_adwPenya, sizeof(m_adwPenya) );
-			ar.ReadString( m_szNotice, MAX_BYTE_NOTICE );	// 공지사항 
+			ar >> m_aPower >> m_aPenya;
+			ar >> m_szNotice; // 공지사항 
 			ar >> m_dwContributionPxp;		// 공헌된 PXP
 			ar >> m_nLevel;					// 레벨 
 			ar >> m_idEnemyGuild;
@@ -462,13 +460,13 @@ int	CGuild::GetMaxMemberSize( void )
 	return (int)CGuildTable::GetInstance().GetMaxMemeber( m_nLevel );
 }
 
-BOOL CGuild::SetLogo( DWORD dwLogo )
-{
-	if( m_dwLogo )		// 로고는 한번만 setting가능 
-		return FALSE;
+bool CGuild::SetLogo(const DWORD dwLogo) {
+	if constexpr (!useless_params::CanChangeLogo) {
+		if (m_dwLogo) return false;
+	}
 
 	m_dwLogo = dwLogo;
-	return TRUE;
+	return true;
 }
 
 void CGuild::SetContribution( CONTRIBUTION_CHANGED_INFO& info )
@@ -1064,7 +1062,7 @@ void CGuildMng::Process( void )
 				for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 				{
 					pMember		= i->second;
-					dwPay += pGuild->m_adwPenya[ pMember->m_nMemberLv ];
+					dwPay += pGuild->m_aPenya[ pMember->m_nMemberLv ];
 				}
 				
 				if( 0 < dwPay && dwPay <= pGuild->m_nGoldGuild )

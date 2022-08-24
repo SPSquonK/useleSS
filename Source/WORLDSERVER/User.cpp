@@ -1577,30 +1577,6 @@ void CUser::AddSetNotice( u_long idGuild, const char* szNotice )
 	
 }
 
-void CUser::AddSetGuildAuthority( DWORD dwAuthority[] )
-{
-	if( IsDelete() )	return;
-	
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_GUILD_AUTHORITY;
-	m_Snapshot.ar.Write( dwAuthority, sizeof(DWORD) * MAX_GM_LEVEL );
-	
-}
-
-void CUser::AddSetGuildPenya( DWORD dwType, DWORD dwPenya )
-{
-	if( IsDelete() )	return;
-	
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_GUILD_PENYA;
-	m_Snapshot.ar << dwType << dwPenya;	
-	
-}
-
 void CUser::AddGuildRealPenya( int nGoldGuild, int nType )
 {
 	if( IsDelete() )	return;

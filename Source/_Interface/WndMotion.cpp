@@ -29,16 +29,8 @@ void CWndMotion::OnInitialUpdate()
 	m_wndMotion1.Create( WBS_CHILD | WBS_NODRAWFRAME , rect, lpTapCtrl, 100000 );
 	m_wndEmoticon.Create( WBS_CHILD | WBS_NODRAWFRAME , rect, lpTapCtrl, 1000001 );
 
-	WTCITEM tabTabItem;
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_MOTION);//"기본";
-	tabTabItem.pWndBase = &m_wndMotion1;
-	lpTapCtrl->InsertItem( 0, &tabTabItem );
-	
-	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_EMOTICON);//"자세히";
-	tabTabItem.pWndBase = &m_wndEmoticon;
-	lpTapCtrl->InsertItem( 1, &tabTabItem );
+	lpTapCtrl->InsertItem(&m_wndMotion1, prj.GetText(TID_GAME_TOOLTIP_MOTION));	
+	lpTapCtrl->InsertItem(&m_wndEmoticon, prj.GetText(TID_GAME_TOOLTIP_EMOTICON));
 	lpTapCtrl->SetCurSel( 0 );
 	
 	lpTapCtrl->SetButtonLength( 130 );

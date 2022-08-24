@@ -771,12 +771,9 @@ void CWndCharacter::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 	CWndNeuz::SerializeRegInfo(ar, dwVersion);
 	CWndTabCtrl * lpTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	if (ar.IsLoading()) {
-		int nCurSel;
-		ar >> nCurSel;
-		if (nCurSel > 1) nCurSel = 0;
-		lpTabCtrl->SetCurSel(nCurSel);
+		ar >> *lpTabCtrl;
 	} else {
-		ar << lpTabCtrl->GetCurSel();
+		ar << *lpTabCtrl;
 	}
 }
 
@@ -792,16 +789,9 @@ void CWndCharacter::OnInitialUpdate() {
 	m_wndHonor.AddWndStyle(WBS_NOFRAME);
 	m_wndHonor.AddWndStyle(WBS_NODRAWFRAME);
 	m_wndCharInfo.AddWndStyle(WBS_NOFRAME);
-	WTCITEM tabTabItem;
-
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_GAME_TITLE_CHAR_INFO);
-	tabTabItem.pWndBase = &m_wndCharInfo;
-	lpTapCtrl->InsertItem(0, &tabTabItem);
-
-	tabTabItem.pszText = prj.GetText(TID_GAME_TITLE_HONOR);
-	tabTabItem.pWndBase = &m_wndHonor;
-	lpTapCtrl->InsertItem(1, &tabTabItem);
+	
+	lpTapCtrl->InsertItem(&m_wndCharInfo, prj.GetText(TID_GAME_TITLE_CHAR_INFO));
+	lpTapCtrl->InsertItem(&m_wndHonor, prj.GetText(TID_GAME_TITLE_HONOR));
 	lpTapCtrl->SetCurSel(0);
 }
 

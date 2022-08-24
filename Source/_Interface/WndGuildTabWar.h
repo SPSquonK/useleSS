@@ -1,31 +1,61 @@
-#ifndef __WNDGUILDTABWAR__H
-#define __WNDGUILDTABWAR__H
+#pragma once
 
-#include "WndGuildWarDecl.h"
-#include "WndGuildWarGiveUp.h"
-#include "WndGuildWarPeace.h"
+#include <memory>
 
-class CWndGuildTabWar : public CWndNeuz 
-{ 
-	CWndGuildWarDecl*	m_pWndGuildWarDecl;
-	CWndGuildWarGiveUp*	m_pWndGuildWarGiveUp;
-	CWndGuildWarPeace*	m_pWndGuildWarPeace;
-	
-public: 
-	
+class CWndGuildWarPeace final : public CWndNeuz {
+public:
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
 
-	CWndGuildTabWar(); 
-	~CWndGuildTabWar(); 
+class CWndGuildWarGiveUp final : public CWndNeuz {
+public:
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
 
-	void UpdateData( void );
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
-#endif
+class CWndGuildWarDecl final : public CWndNeuz {
+public:
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
+
+class CWndGuildTabWar final : public CWndNeuz {
+	std::unique_ptr<CWndGuildWarDecl>   m_pWndGuildWarDecl;
+	std::unique_ptr<CWndGuildWarGiveUp> m_pWndGuildWarGiveUp;
+	std::unique_ptr<CWndGuildWarPeace>  m_pWndGuildWarPeace;
+
+public:
+	void UpdateData();
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
+};
+
+
+class CWndGuildWarRequest final : public CWndNeuz {
+	DWORD m_idEnemyGuild;
+	char m_szMaster[MAX_PLAYER];
+public:
+
+	void Set(DWORD idEnemyGuild, LPCTSTR szMaster) {
+		m_idEnemyGuild = idEnemyGuild;
+		strcpy(m_szMaster, szMaster);
+	}
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};
+
+class CWndGuildWarPeaceConfirm final : public CWndNeuz {
+public:
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+};

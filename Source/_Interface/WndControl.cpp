@@ -3536,36 +3536,7 @@ void CWndListCtrl::PaintFrame( C2DRender* p2DRender )
 			D3DCOLOR_ARGB( 50, 000, 000, 000 ), 20 );
 	}
 }
-/*
-typedef struct tagLVCOLUMNA
-{
-    UINT mask;
-    int fmt;
-    int cx;
-    LPSTR pszText;
-    int cchTextMax;
-    int iSubItem;
-#if (_WIN32_IE >= 0x0300)
-    int iImage;
-    int iOrder;
-#endif
-} LVCOLUMNA, FAR* LPLVCOLUMNA;
-typedef struct tagLVITEMA
-{
-    UINT mask;
-    int iItem;
-    int iSubItem;
-    UINT state;
-    UINT stateMask;
-    LPSTR pszText;
-    int cchTextMax;
-    int iImage;
-    LPARAM lParam;
-#if (_WIN32_IE >= 0x0300)
-    int iIndent;
-#endif
-} LVITEMA, FAR* LPLVITEMA;
-*/
+
 BOOL CWndListCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
@@ -3635,17 +3606,6 @@ int CWndListCtrl::InsertColumn( int nCol, const LVCOLUMN* pColumn )
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-tagWTCITEM::tagWTCITEM( void ) : 
-mask( 0 ), 
-dwState( 0 ), 
-dwStateMask( 0 ), 
-pszText( _T( "" ) ), 
-cchTextMax( 0 ), 
-iImage( 0 ), 
-lParam( 0 ), 
-pWndBase( NULL )
-{
-}
 CWndTabCtrl::CWndTabCtrl()
 {
 	m_nTabButtonLength = 0;
@@ -3656,35 +3616,12 @@ CWndTabCtrl::CWndTabCtrl()
 	//ZeroMemory( m_apTexture, sizeof( m_apTexture ) );
 //#endif
 }
-CWndTabCtrl::~CWndTabCtrl()
-{
-	for( auto itor = m_aTab.begin(); itor != m_aTab.end(); itor++ )
-		SAFE_DELETE( *itor );
-//#ifndef __NEWTAB
-//	for( int i = 0; i < 10; i++ )
-//		SAFE_DELETE( m_apTexture[ i ] );
-//#endif
-}
+
 BOOL CWndTabCtrl::Create(DWORD dwStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID)
 {
 	return CWndBase::Create( dwStyle | WBS_CHILD | WBS_NOFRAME /*| WBS_NODRAWFRAME*/, rect, pParentWnd, nID );//,pSprPack,nSprIdx,nColorTable);
 }
-HRESULT CWndTabCtrl::InitDeviceObjects()
-{
-	return CWndBase::InitDeviceObjects();
-}
-HRESULT CWndTabCtrl::RestoreDeviceObjects()
-{
-	return CWndBase::RestoreDeviceObjects();
-}
-HRESULT CWndTabCtrl::InvalidateDeviceObjects()
-{
-	return CWndBase::InvalidateDeviceObjects();
-}
-HRESULT CWndTabCtrl::DeleteDeviceObjects()
-{
-	return CWndBase::DeleteDeviceObjects();
-}
+
 void CWndTabCtrl::PaintFrame(C2DRender* p2DRender)
 {
 	return;
@@ -3703,13 +3640,12 @@ void CWndTabCtrl::PaintFrame(C2DRender* p2DRender)
 		int nLength = rectClient.Width() / m_aTab.size();
 		for( int i = 0; i < (int)( m_aTab.size() ); i++ )
 		{
-			LPWTCITEM pItem = m_aTab[ i ];
-			if( pItem )
-			{
-				CSize size = p2DRender->m_pFont->GetTextExtent( pItem->pszText );
+			const auto & pItem = m_aTab[ i ];
+
+				CSize size = p2DRender->m_pFont->GetTextExtent(pItem.pszText);
 				rect.SetRect( i * nLength, y, nLength + i * nLength, rectClient.bottom );
-				p2DRender->TextOut( i * nLength + 2, y + 4, pItem->pszText, 0xff000000);
-				p2DRender->TextOut( i * nLength + 2, y + 4, pItem->pszText, 0xffffffff);
+				p2DRender->TextOut( i * nLength + 2, y + 4, pItem.pszText, 0xff000000);
+				p2DRender->TextOut( i * nLength + 2, y + 4, pItem.pszText, 0xffffffff);
 
 				if( i != m_nCurSelect )
 				{
@@ -3717,22 +3653,22 @@ void CWndTabCtrl::PaintFrame(C2DRender* p2DRender)
 					p2DRender->RenderRoundRect( rect, D3DCOLOR_ARGB( 128, 200, 200, 200 ) );
 					//p2DRender->RenderLine( CPoint(  i * nLength, y ), CPoint( nLength + i * nLength, y ), 0xff000000 );
 					//p2DRender->RenderLine( CPoint(  i * nLength, y + 1), CPoint( nLength + i * nLength, y + 1), 0xff000000 );
-					p2DRender->TextOut( i * nLength + 2, y + 4, pItem->pszText, 0xff000000);
-					p2DRender->TextOut( i * nLength + 2, y + 4, pItem->pszText, 0xffffffff);
+					p2DRender->TextOut( i * nLength + 2, y + 4, pItem.pszText, 0xff000000);
+					p2DRender->TextOut( i * nLength + 2, y + 4, pItem.pszText, 0xffffffff);
 
 				}
 				else
 				{
-					DWORD dwColor1_ = D3DCOLOR_ARGB( 255, 255, 255, 255 );//D3DCOLOR_ARGB( 255, 130, 130, 230 );//
-					DWORD dwColor2_ = D3DCOLOR_ARGB( 255,  150, 150, 150 );//D3DCOLOR_ARGB( 255,  50,  50, 100 );//
-					DWORD dwColor3_ = D3DCOLOR_ARGB( 255, 230, 230, 230 );//D3DCOLOR_ARGB( 255, 180, 180, 220 );//
+					DWORD dwColor1_ = D3DCOLOR_ARGB( 255, 255, 255, 255 );
+					DWORD dwColor2_ = D3DCOLOR_ARGB( 255,  150, 150, 150 );
+					DWORD dwColor3_ = D3DCOLOR_ARGB( 255, 230, 230, 230 );
 
 					GradationRect( p2DRender, &rect, dwColor1_ ,dwColor2_, dwColor3_ );
 					//p2DRender->RenderFillRect( rect, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
-					p2DRender->TextOut( i * nLength + 2, y + 4, pItem->pszText, 0xff000000);
+					p2DRender->TextOut( i * nLength + 2, y + 4, pItem.pszText, 0xff000000);
 
 				}
-			}
+
 		}
 	}
 	rect = GetClientRect();
@@ -3788,50 +3724,44 @@ void CWndTabCtrl::OnDraw( C2DRender* p2DRender )
 		int nLength = rectClient.Width() / nTabSize;
 		for( int i = 0; i < nTabSize; ++i )
 		{
-			LPWTCITEM pItem = m_aTab[ i ];
-			if( pItem )
-			{
-				switch( m_eTabTitleAlign )
-				{
+			const auto & pItem = m_aTab[ i ];
+
+			switch (m_eTabTitleAlign) {
 				case ALIGN_LEFT:
-					{
-						DWORD dwTextColor = ( i != m_nCurSelect ) ? 0xffffffff : 0xff000000;
-						p2DRender->TextOut( ( i * nLength ) + 2, y, pItem->pszText, dwTextColor );
-						break;
-					}
+				{
+					DWORD dwTextColor = (i != m_nCurSelect) ? 0xffffffff : 0xff000000;
+					p2DRender->TextOut((i * nLength) + 2, y, pItem.pszText, dwTextColor);
+					break;
+				}
 				case ALIGN_RIGHT:
-					{
-						DWORD dwTextColor = ( i != m_nCurSelect ) ? 0xffffffff : 0xff000000;
-						CSize size = p2DRender->m_pFont->GetTextExtent( pItem->pszText );
-						if( size.cx < nLength )
-						{
-							int nRenderingPositionX = nLength - size.cx;
-							p2DRender->TextOut( ( i * nLength ) + nRenderingPositionX, y, pItem->pszText, dwTextColor );
-						}
-						else
-							p2DRender->TextOut( ( i * nLength ) + 2, y, pItem->pszText, dwTextColor );
-						break;
-					}
+				{
+					DWORD dwTextColor = (i != m_nCurSelect) ? 0xffffffff : 0xff000000;
+					CSize size = p2DRender->m_pFont->GetTextExtent(pItem.pszText);
+					if (size.cx < nLength) {
+						int nRenderingPositionX = nLength - size.cx;
+						p2DRender->TextOut((i * nLength) + nRenderingPositionX, y, pItem.pszText, dwTextColor);
+					} else
+						p2DRender->TextOut((i * nLength) + 2, y, pItem.pszText, dwTextColor);
+					break;
+				}
 				case ALIGN_CENTER:
-					{
-						DWORD dwTextColor = ( i != m_nCurSelect ) ? 0xffffffff : 0xff000000;
-						CSize size = p2DRender->m_pFont->GetTextExtent( pItem->pszText );
-						if( size.cx < nLength )
-						{
-							int nRenderingPositionX = ( nLength - size.cx ) / 2;
-							p2DRender->TextOut( ( i * nLength ) + nRenderingPositionX, y, pItem->pszText, dwTextColor );
-						}
-						else
-							p2DRender->TextOut( ( i * nLength ) + 2, y, pItem->pszText, dwTextColor );
-						break;
-					}
+				{
+					DWORD dwTextColor = (i != m_nCurSelect) ? 0xffffffff : 0xff000000;
+					CSize size = p2DRender->m_pFont->GetTextExtent(pItem.pszText);
+					if (size.cx < nLength) {
+						int nRenderingPositionX = (nLength - size.cx) / 2;
+						p2DRender->TextOut((i * nLength) + nRenderingPositionX, y, pItem.pszText, dwTextColor);
+					} else
+						p2DRender->TextOut((i * nLength) + 2, y, pItem.pszText, dwTextColor);
+					break;
+				}
 				default:
-					{
-						DWORD dwTextColor = ( i != m_nCurSelect ) ? 0xffffffff : 0xff000000;
-						p2DRender->TextOut( ( i * nLength ) + 2, y, pItem->pszText, dwTextColor );
-					}
+				{
+					DWORD dwTextColor = (i != m_nCurSelect) ? 0xffffffff : 0xff000000;
+					p2DRender->TextOut((i * nLength) + 2, y, pItem.pszText, dwTextColor);
 				}
 			}
+			
 		}
 	}
 }
@@ -4008,106 +3938,62 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	}
 }
 
+void CWndTabCtrl::OnLButtonDown(UINT nFlags, CPoint point) {
+	if (m_aTab.empty()) return;
 
-void CWndTabCtrl::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if( m_aTab.size() == 0 ) return;
+	const int y = GetClientRect().bottom - 18;
 
-	CRect rectClient = GetClientRect();
-	CRect rect;
-	CRect rect2 = rectClient;
-	rect2.bottom -= 18;
-	int y = rectClient.bottom - 18;
+	for (int i = 0; i < (int)(m_aTab.size()); i++) {
+		const auto & pItem = m_aTab[i];
 
-	LPWTCITEM pItem;
-	int nSelect = -1;
-	if( m_aTab.size() )
-	{
-		for( int i = 0; i < (int)( m_aTab.size() ); i++ )
-		{
-			pItem = m_aTab[ i ];
-			if( pItem )
-			{
-				rect.SetRect( i * m_nTabButtonLength, y, m_nTabButtonLength + i * m_nTabButtonLength, rectClient.bottom );
-				if( rect.PtInRect( point ) )
-					nSelect = i;
-			}
+		CRect rect(CPoint(i * m_nTabButtonLength, y), CSize(m_nTabButtonLength, 18));
+
+		if (rect.PtInRect(point)) {
+			SetCurSel(i);
+			GetParentWnd()->OnChildNotify(WNM_SELCHANGE, GetWndId(), (LRESULT *)this);
+			return;
 		}
 	}
-	if( nSelect != -1 )
-	{
-		SetCurSel( nSelect );
-		CWndBase* pParent = (CWndBase*)GetParentWnd();
-		pParent->OnChildNotify( WNM_SELCHANGE, GetWndId(), (LRESULT*) this ); 
-	}
-}
-BOOL CWndTabCtrl::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
-{
-	CWndBase* pParent = (CWndBase*)GetParentWnd();
-	return pParent->OnChildNotify( message,nID,pLResult); 
 }
 
-int CWndTabCtrl::GetCurSel() const
-{
-	return m_nCurSelect;
+BOOL CWndTabCtrl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	return GetParentWnd()->OnChildNotify(message, nID, pLResult);
 }
-int CWndTabCtrl::SetCurSel( int nItem )
-{
-	int nOldSelect = m_nCurSelect;
-	LPWTCITEM pItem;
-	CRect rect;
+
+void CWndTabCtrl::SetCurSel(const size_t nItem) {
+	if (nItem >= m_aTab.size()) return;
+	if (!m_aTab[nItem].pWndBase) return;
+
+	m_aTab[m_nCurSelect].pWndBase->SetVisible(FALSE);
+
 	m_nCurSelect = nItem;
-	if( m_aTab[ m_nCurSelect ]->pWndBase )
-	{
-		pItem = m_aTab[ nOldSelect ];
-		pItem->pWndBase->SetVisible( FALSE );
-		
-		if( m_nCurSelect >= (int)( m_aTab.size() ) )
-		{
-			CString string;
-			string.Format( "CWndTabCtrl::SetCurSel에서 nItem이 범위를 넘어섬 : nItem(%d) m_aTabSize(%d)", m_nCurSelect, m_aTab.size() );
-			//ADDERRORMSG( string );
-		}
 
-		pItem = m_aTab[ m_nCurSelect ];
-		pItem->pWndBase->SetVisible( TRUE );
-		rect = GetWindowRect( TRUE );
-		if( IsWndStyle( WBS_VSCROLL ) )
-			rect.right -= 15;
-		rect.bottom -= 18;
-		for( int i = 0; i < (int)( m_aTab.size() ); i++ )
-		{
-			LPWTCITEM pItem = m_aTab[ i ];
-			if( pItem && pItem->pWndBase )
-			{
-				rect.OffsetRect( -rect.TopLeft() );
-				pItem->pWndBase->SetWndRect( rect );
-			}
+	const auto & pItem = m_aTab[m_nCurSelect];
+	pItem.pWndBase->SetVisible(TRUE);
+
+	CRect rect = GetWindowRect(TRUE);
+	if (IsWndStyle(WBS_VSCROLL));
+	rect.right -= 15;
+	rect.bottom -= 18;
+
+	for (const auto & tab : m_aTab) {
+		if (tab.pWndBase) {
+			rect.OffsetRect(-rect.TopLeft());
+			tab.pWndBase->SetWndRect(rect);
 		}
-		GetFrameWnd()->AdjustWndBase();
-		m_aTab[ m_nCurSelect ]->pWndBase->SetFocus();
 	}
-	else
-		m_nCurSelect = nOldSelect;
-	return nItem;
-}
-BOOL CWndTabCtrl::GetItem(int nItem, WTCITEM* pTabCtrlItem) const
-{
-	if( nItem >= (int)( m_aTab.size() ) )
-		return FALSE;
-	memcpy( pTabCtrlItem, m_aTab[ nItem ], sizeof( WTCITEM ) );
-	return TRUE;
-}
-LPWTCITEM CWndTabCtrl::GetTabItem( int nItemNumber ) const
-{
-	if( nItemNumber < 0 || nItemNumber >= (int)( m_aTab.size() ) )
-		return NULL;
-	return m_aTab[ nItemNumber ];
+
+	GetFrameWnd()->AdjustWndBase();
+	m_aTab[m_nCurSelect].pWndBase->SetFocus();
 }
 
-LPWTCITEM CWndTabCtrl::GetSelectedTab( void ) const
-{
-	return m_aTab[ m_nCurSelect ];
+CWndBase * CWndTabCtrl::GetTabItem(const size_t nItemNumber) const {
+	if (nItemNumber >= m_aTab.size()) return nullptr;
+	return m_aTab[nItemNumber].pWndBase;
+}
+
+CWndBase * CWndTabCtrl::GetSelectedTab() const {
+	return m_aTab[m_nCurSelect].pWndBase;
 }
 
 void CWndTabCtrl::SetTabTitleAlign( const CWndTabCtrl::TabTitleAlign eTabTitleAlign )
@@ -4119,82 +4005,72 @@ const CWndTabCtrl::TabTitleAlign CWndTabCtrl::GetTabTitleAlign( void ) const
 {
 	return m_eTabTitleAlign;
 }
-BOOL CWndTabCtrl::InsertItem( int nItem, WTCITEM* pTabCtrlItem )
+void CWndTabCtrl::InsertItem(CWndBase * window, LPCTSTR tabText)
 {
-	if( nItem >= (int)( m_aTab.size() ) )
-		m_aTab.resize( nItem + 1 );//serve( nItem + 1 );
-	LPWTCITEM pItem = new WTCITEM;
-	memcpy( pItem, pTabCtrlItem, sizeof( WTCITEM ) );
-	m_aTab[ nItem ] = pItem;
+	m_aTab.emplace_back(WTCITEM{ tabText, window });
 
-	if( pTabCtrlItem->pWndBase )
-	{
-		if( nItem == m_nCurSelect )
-			pTabCtrlItem->pWndBase->SetVisible( TRUE );
+	if (window) {
+		if (m_aTab.size() - 1 == m_nCurSelect)
+			window->SetVisible(TRUE);
 		else
-			pTabCtrlItem->pWndBase->SetVisible( FALSE );
-		CRect rect = GetClientRect( TRUE );
+			window->SetVisible(FALSE);
+		CRect rect = GetClientRect(TRUE);
 		rect.bottom -= 18;
-		rect.OffsetRect( -rect.TopLeft() );
-		if( IsWndStyle( WBS_VSCROLL ) )
+		rect.OffsetRect(-rect.TopLeft());
+		if (IsWndStyle(WBS_VSCROLL))
 			rect.right -= 15;
 
-		pItem->pWndBase->SetWndRect( rect );
-		pItem->pWndBase->AddWndStyle( WBS_CHILDFRAME );
+		window->SetWndRect(rect);
+		window->AddWndStyle(WBS_CHILDFRAME);
 		// 언젠 처음 것에 포커스가 가게 한다.
-		if( m_aTab[ m_nCurSelect ] )
-			m_aTab[ m_nCurSelect ]->pWndBase->SetFocus();
+
+		m_aTab[m_nCurSelect].pWndBase->SetFocus();
 	}
-	m_nTabButtonLength = GetClientRect().Width() / m_aTab.size();// - 10;
-	
-/*
-	// 탭 클릭할 부분의 영역을 설정.
-	rect = GetClientRect();
-	int nLength = rect.Width() / m_aTab.size() - 10;
-	rect.SetRect( nItem * nLength, y, nLength + nItem * nLength, rect.bottom );
-	m_rect[ nItem ] = rect;
-*/
-	return TRUE;
+
+	m_nTabButtonLength = GetClientRect().Width() / m_aTab.size();
 }
-BOOL CWndTabCtrl::InsertTexture( int nItem, LPCTSTR lpszFileName )
-{
-	//m_apTexture[ nItem ] = new CTexture;
-	//m_apTexture[ nItem ]->LoadTexture( m_pApp->m_pd3dDevice, lpszFileName, 0xffff00ff, TRUE );
-	return TRUE;
-}
+
 void CWndTabCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
 	CWndBase::SetWndRect( rectWnd, bOnSize );
-}
-BOOL CWndTabCtrl::InsertItem( int nItem, LPCTSTR lpszItem )
-{
-	return TRUE;
 }
 
 void CWndTabCtrl::OnSize(UINT nType, int cx, int cy)
 {
 	CRect rect = GetClientRect( TRUE );
-//	rect.DeflateRect( 4, 6 );
-	//rect.top    += 15;
 	rect.bottom -= 18;
-	//m_wndListCtrl.SetWndRect( rect );
-//	if( IsWndStyle( WBS_VSCROLL ) )
-//		rect.right -= 15;
+	rect.OffsetRect(-rect.TopLeft());
 	
-	for( int i = 0; i < (int)( m_aTab.size() ); i++ )
-	{
-		LPWTCITEM pItem = m_aTab[ i ];
-		if( pItem && pItem->pWndBase )
-		{
-			rect.OffsetRect( -rect.TopLeft() );
-			pItem->pWndBase->SetWndRect( rect );
+	for (const auto & tab : m_aTab) {
+		if (tab.pWndBase) {
+			tab.pWndBase->SetWndRect(rect);
 		}
 	}
 	if(  m_aTab.size() )
-		m_nTabButtonLength = GetClientRect().Width() / m_aTab.size();// - 10;
+		m_nTabButtonLength = GetClientRect().Width() / m_aTab.size();
 	
 	CWndBase::OnSize(nType,cx,cy);
 }
+
+
+CAr & operator<<(CAr & ar, const CWndTabCtrl & tab) {
+	return ar << static_cast<int>(tab.m_nCurSelect);
+}
+
+CAr & operator>>(CAr & ar, CWndTabCtrl & tab) {
+	int output; ar >> output;
+
+	size_t formerSelect;
+	if (output <= 0) formerSelect = 0;
+	else formerSelect = static_cast<size_t>(output);
+
+	if (formerSelect < tab.GetSize()) {
+		tab.SetCurSel(formerSelect);
+	}
+
+	return ar;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // CWndComboBox
 //////////////////////////////////////////////////////////////////////////////

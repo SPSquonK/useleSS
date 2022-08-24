@@ -10,6 +10,7 @@
 #include "dialogmsg.h"
 #include "misc.h"
 #include "defineObj.h"
+#include "WndGuild.h"
 #include "wndmessenger.h"
 #include "WndQuest.h"
 #include "mover.h"
@@ -25,20 +26,6 @@ void CDPClient::SendDeclWar( u_long idMaster, const char* szGuild )
 	BEFORESENDSOLE( ar, PACKETTYPE_DECL_GUILD_WAR, DPID_UNKNOWN );
 	ar << idMaster;
 	ar.WriteString( szGuild );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendAcptWar( u_long idMaster, u_long idDecl )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ACPT_GUILD_WAR, DPID_UNKNOWN );
-	ar << idMaster << idDecl;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendSurrender( u_long idPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SURRENDER, DPID_UNKNOWN );
-	ar << idPlayer;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -86,40 +73,18 @@ void CDPClient::OnSurrender( CAr & ar )
 	g_WndMng.PutString( lpString , NULL, prj.GetTextColor( TID_GAME_GUILDWARGIVEUP ) );
 }
 
-void CDPClient::SendQueryTruce( u_long idPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERY_TRUCE, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendAcptTruce( u_long idPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ACPT_TRUCE, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::OnQueryTruce( CAr & ar )
-{
-	TRACE( "OnQueryTruce\n" );
-
+void CDPClient::OnQueryTruce(CAr &) {
+	SAFE_DELETE(g_WndMng.m_pWndGuildWarPeaceConfirm);
 	g_WndMng.m_pWndGuildWarPeaceConfirm = new CWndGuildWarPeaceConfirm;
 	g_WndMng.m_pWndGuildWarPeaceConfirm->Initialize();
-	
 }
-	
-void CDPClient::OnDeclWar( CAr & ar )
-{
-	TRACE( "OnDeclWar\n" );
-	
-	u_long idDecl;
-	char szMaster[MAX_PLAYER];
-	ar >> idDecl;
-	ar.ReadString( szMaster, MAX_PLAYER );
 
+void CDPClient::OnDeclWar(CAr & ar) {
+	const auto [idDecl, szMaster] = ar.Extract<u_long, char[MAX_PLAYER]>();
+
+	SAFE_DELETE(g_WndMng.m_pWndGuildWarRequest);
 	g_WndMng.m_pWndGuildWarRequest = new CWndGuildWarRequest;
-	g_WndMng.m_pWndGuildWarRequest->Set( idDecl, szMaster );
+	g_WndMng.m_pWndGuildWarRequest->Set(idDecl, szMaster);
 	g_WndMng.m_pWndGuildWarRequest->Initialize();
 }
 
@@ -127,9 +92,7 @@ void CDPClient::OnAcptWar( CAr & ar )
 {
 	TRACE( "OnAcpWar\n" );
 	
-	WarId idWar;
-	u_long idDecl, idAcpt;
-	ar >> idWar >> idDecl >> idAcpt;
+	auto [idWar, idDecl, idAcpt] = ar.Extract<WarId, u_long, u_long>();
 	
 	CGuild* pDecl	= g_GuildMng.GetGuild( idDecl );
 	CGuild* pAcpt	= g_GuildMng.GetGuild( idAcpt );

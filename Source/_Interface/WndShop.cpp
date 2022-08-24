@@ -538,7 +538,7 @@ void CWndConfirmBuy::OnOK()
 	CWndShop* pWndShop = (CWndShop*)GetWndBase( APP_SHOP_ );
 
 	CWndTabCtrl* pTabCtrl	= (CWndTabCtrl*)pWndShop->GetDlgItem( WIDC_INVENTORY );
-	CHAR cTab	= (CHAR)pTabCtrl->GetCurSel();
+	const std::uint8_t cTab	= static_cast<std::uint8_t>(pTabCtrl->GetCurSel());
 	if(m_nBuyType == 0)
 		g_DPlay.SendBuyItem( cTab, (BYTE)( m_pItemElem->m_dwObjId ), nBuy, m_dwItemId );
 	else if(m_nBuyType == 1)
@@ -590,13 +590,10 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 
 	CString string;
 
-	CWndStatic* pCost = (CWndStatic*) GetDlgItem( WIDC_COST );
 
 	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_INVENTORY );
 
-	WTCITEM item;
-	pTabCtrl->GetItem( pTabCtrl->GetCurSel(), &item );
-	CWndItemCtrl* pItemCtrl		= (CWndItemCtrl*)item.pWndBase;
+	CWndItemCtrl* pItemCtrl		= (CWndItemCtrl*)pTabCtrl->GetSelectedTab();
 	DWORD dwCost	= 0;
 	int nIndex	= -1;
 	if( pItemCtrl->GetSelectedCount() > 0 )
@@ -633,6 +630,7 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 
 	string.Format( _T( "%d" ), dwCost );
 
+	CWndStatic * pCost = (CWndStatic *)GetDlgItem(WIDC_COST);
 	pCost->SetTitle( string );
 } 
 void CWndShop::OnInitialUpdate() 
@@ -646,31 +644,23 @@ void CWndShop::OnInitialUpdate()
 	}
 
 	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_INVENTORY );
-	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
 
 	LPCHARACTER lpCharacter = m_pMover->GetCharacter();
 
 	if( lpCharacter )
 	{
-		int i = NULL;
-		for( ; i < MAX_VENDOR_INVENTORY_TAB; i++ )
+		for(size_t i = 0 ; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 		{
+			for (size_t j = pTabCtrl->GetSize(); j < i; ++j) {
+				pTabCtrl->InsertItem(nullptr, "");
+			}
+
 			if( lpCharacter->m_vendor.m_venderSlot[ i ].IsEmpty() == FALSE )
 			{
-				m_wndItemCtrl[ i ].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, i + 10 );
+				m_wndItemCtrl[ i ].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, static_cast<int>(i) + 10 );
 				m_wndItemCtrl[ i ].InitItem( m_pMover->m_ShopInventory[ i ], APP_SHOP_ );
-				tabTabItem.pszText = lpCharacter->m_vendor.m_venderSlot[ i ].LockBuffer();
-				lpCharacter->m_vendor.m_venderSlot[ i ].UnlockBuffer();
-				tabTabItem.pWndBase = &m_wndItemCtrl[ i ];
-				pTabCtrl->InsertItem( i, &tabTabItem );
+				pTabCtrl->InsertItem(&m_wndItemCtrl[i], lpCharacter->m_vendor.m_venderSlot[i].GetString());
 			}
-		}
-		for( i = pTabCtrl->GetSize(); i < 3; i++ )
-		{
-			tabTabItem.pszText = "";
-			tabTabItem.pWndBase = NULL;
-			pTabCtrl->InsertItem( i, &tabTabItem );
 		}
 	}
 	

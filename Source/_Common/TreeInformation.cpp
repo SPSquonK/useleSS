@@ -33,7 +33,7 @@ BOOL CTreeInformation::GetOpen( void ) const
 	return m_bOpen;
 }
 //-----------------------------------------------------------------------------
-int CTreeInformationManager::m_nSelectedTabNumber = 0;
+size_t CTreeInformationManager::m_nSelectedTabNumber = 0;
 CTreeInformationManager::QuestListGroup CTreeInformationManager::m_eQuestListGroup = CTreeInformationManager::CURRENT_QUEST_LIST;
 //-----------------------------------------------------------------------------
 CTreeInformationManager::CTreeInformationManager( void )

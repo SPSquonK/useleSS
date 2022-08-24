@@ -958,7 +958,7 @@ void CDPCoreSrvr::OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long )
 	pGuild	= new CGuild;
 	lstrcpy( pGuild->m_szGuild, szGuild );
 	pGuild->m_idMaster		= pPlayer->uKey;
-	pGuild->m_adwPower[ GUD_MASTER ] = 0x000000FF;
+	pGuild->m_aPower[ GUD_MASTER ].SetAll();
 	u_long idGuild	= g_GuildMng.AddGuild( pGuild );
 	if( idGuild > 0 )
 	{
@@ -1055,15 +1055,11 @@ void CDPCoreSrvr::OnGuildChat( CAr & ar, DPID, DPID, DPID, u_long )
 	}
 }
 
-void CDPCoreSrvr::SendGuildAuthority( u_long uGuildId, DWORD dwAuthority[] )
-{
+void CDPCoreSrvr::SendGuildAuthority(u_long uGuildId, const GuildPowerss & dwAuthority) {
 	//SendGuildAuthority
-	BEFORESENDDUAL( ar, PACKETTYPE_GUILD_AUTHORITY, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uGuildId;
-	
-	ar.Write( dwAuthority, sizeof(DWORD) * MAX_GM_LEVEL );
-
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BEFORESENDDUAL(ar, PACKETTYPE_GUILD_AUTHORITY, DPID_UNKNOWN, DPID_UNKNOWN);
+	ar << uGuildId << dwAuthority;
+	SEND(ar, this, DPID_ALLPLAYERS);
 }
 
 void CDPCoreSrvr::SendGuildPenya( u_long uGuildId, DWORD dwType, DWORD dwPenya )
@@ -1453,7 +1449,7 @@ void CDPCoreSrvr::OnGuildLogo( CAr & ar, DPID, DPID, DPID, u_long )
 		return;
 	}
 
-	if( pGuild->SetLogo( dwLogo ) == FALSE )
+	if (!pGuild->SetLogo(dwLogo))
 		return;
 
 	g_dpDatabaseClient.SendGuildLogo( idGuild, dwLogo );

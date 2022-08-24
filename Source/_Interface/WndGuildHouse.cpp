@@ -4,6 +4,7 @@
 
 #include "AppDefine.h"
 #include "defineText.h"
+#include "WndGuild.h"
 #include "WndGuildHouse.h"
 #include "GuildHouse.h"
 #include "dpclient.h"
@@ -136,10 +137,10 @@ BOOL CWndGHMainMenu::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 	case WIDC_BTN_UPKEEP:		//유지비 
 		{
-			BOOL bAuthority = FALSE;
+			bool bAuthority = false;
 			CGuild* pGuild = g_pPlayer->GetGuild( );
 			if( pGuild )
-				bAuthority = pGuild->IsAuthority( g_pPlayer->m_idPlayer, PF_GUILDHOUSE_UPKEEP );
+				bAuthority = pGuild->IsAuthority( g_pPlayer->m_idPlayer, GuildPower::GuildHouseUpKeep );
 
 			if( !bAuthority )		//유지비 권한이 없으면 
 			{

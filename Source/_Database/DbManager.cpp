@@ -2133,18 +2133,18 @@ void CDbManager::OpenGuild( void )
 		pGuild->m_dwContributionPxp				= (DWORD)pQuery->GetInt( "m_nGuildPxp" );
 		pGuild->m_dwLogo						= (DWORD)pQuery->GetInt( "m_dwLogo" );
 		//  권한
-		pGuild->m_adwPower[GUD_MASTER]			= 0x000000FF;
-		pGuild->m_adwPower[GUD_KINGPIN]			= (DWORD)pQuery->GetInt( "Lv_1" );
-		pGuild->m_adwPower[GUD_CAPTAIN]			= (DWORD)pQuery->GetInt( "Lv_2" );
-		pGuild->m_adwPower[GUD_SUPPORTER]		= (DWORD)pQuery->GetInt( "Lv_3" );
-		pGuild->m_adwPower[GUD_ROOKIE]			= (DWORD)pQuery->GetInt( "Lv_4" );
+		pGuild->m_aPower[GUD_MASTER].SetAll();
+		pGuild->m_aPower[GUD_KINGPIN]			= GuildPowers(static_cast<unsigned long>(pQuery->GetInt( "Lv_1" )));
+		pGuild->m_aPower[GUD_CAPTAIN]			= GuildPowers(static_cast<unsigned long>(pQuery->GetInt( "Lv_2" )));
+		pGuild->m_aPower[GUD_SUPPORTER]		= GuildPowers(static_cast<unsigned long>(pQuery->GetInt( "Lv_3" )));
+		pGuild->m_aPower[GUD_ROOKIE]			= GuildPowers(static_cast<unsigned long>(pQuery->GetInt( "Lv_4" )));
 		
 		//  월급량
-		pGuild->m_adwPenya[GUD_MASTER]			= (DWORD)pQuery->GetInt( "Pay_0" );
-		pGuild->m_adwPenya[GUD_KINGPIN]			= (DWORD)pQuery->GetInt( "Pay_1" );
-		pGuild->m_adwPenya[GUD_CAPTAIN]			= (DWORD)pQuery->GetInt( "Pay_2" );
-		pGuild->m_adwPenya[GUD_SUPPORTER]		= (DWORD)pQuery->GetInt( "Pay_3" );
-		pGuild->m_adwPenya[GUD_ROOKIE]			= (DWORD)pQuery->GetInt( "Pay_4" );
+		pGuild->m_aPenya[GUD_MASTER]			= (DWORD)pQuery->GetInt( "Pay_0" );
+		pGuild->m_aPenya[GUD_KINGPIN]			= (DWORD)pQuery->GetInt( "Pay_1" );
+		pGuild->m_aPenya[GUD_CAPTAIN]			= (DWORD)pQuery->GetInt( "Pay_2" );
+		pGuild->m_aPenya[GUD_SUPPORTER]		= (DWORD)pQuery->GetInt( "Pay_3" );
+		pGuild->m_aPenya[GUD_ROOKIE]			= (DWORD)pQuery->GetInt( "Pay_4" );
 				
 		pGuild->m_bActive						= ( pQuery->GetChar( "isuse" ) == 'F' );
 
@@ -2450,18 +2450,14 @@ void CDbManager::UpdateGuildNotice( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 void CDbManager::UpdateGuildAuthority( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	u_long idGuild;
-	DWORD adwAuthority[MAX_GM_LEVEL];
+	const auto [idGuild, adwAuthority] = ar.Extract<u_long, GuildPowerss>();
 
-	ar >> idGuild;
-	ar.Read( adwAuthority, sizeof(DWORD) * MAX_GM_LEVEL );
-	
 	GUILD_QUERYINFO info("U1");
 	info.idGuild = idGuild;
-	info.dwLv1 = adwAuthority[GUD_KINGPIN];
-	info.dwLv2 = adwAuthority[GUD_CAPTAIN];
-	info.dwLv3 = adwAuthority[GUD_SUPPORTER];
-	info.dwLv4 = adwAuthority[GUD_ROOKIE];
+	info.dwLv1 = adwAuthority[GUD_KINGPIN].ToULong();
+	info.dwLv2 = adwAuthority[GUD_CAPTAIN].ToULong();
+	info.dwLv3 = adwAuthority[GUD_SUPPORTER].ToULong();
+	info.dwLv4 = adwAuthority[GUD_ROOKIE].ToULong();
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryGuild( szQuery, info);
@@ -2476,10 +2472,7 @@ void CDbManager::UpdateGuildAuthority( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDb
 void CDbManager::UpdateGuildPenya( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-	u_long idGuild;
-	DWORD adwPenya[MAX_GM_LEVEL];
-	ar >> idGuild;
-	ar.Read( adwPenya, sizeof(DWORD) * MAX_GM_LEVEL );
+	const auto [idGuild, adwPenya] = ar.Extract<u_long, std::array<DWORD, MAX_GM_LEVEL>>();
 	
 	GUILD_QUERYINFO info("U6");
 	info.idGuild = idGuild;

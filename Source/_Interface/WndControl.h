@@ -583,81 +583,6 @@ public:
 
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	
-	//virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-/*
-	BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
-
-// Attributes
-	BOOL GetItemRect(HTREEITEM hItem, LPRECT lpRect, BOOL bTextOnly) const;
-	UINT GetCount() const;
-	UINT GetIndent() const;
-	void SetIndent(UINT nIndent);
-	CImageList* GetImageList(UINT nImageList) const;
-	CImageList* SetImageList(CImageList* pImageList, int nImageListType);
-	HTREEITEM GetNextItem(HTREEITEM hItem, UINT nCode) const;
-	HTREEITEM GetChildItem(HTREEITEM hItem) const;
-	HTREEITEM GetNextSiblingItem(HTREEITEM hItem) const;
-	HTREEITEM GetPrevSiblingItem(HTREEITEM hItem) const;
-	HTREEITEM GetParentItem(HTREEITEM hItem) const;
-	HTREEITEM GetFirstVisibleItem() const;
-	HTREEITEM GetNextVisibleItem(HTREEITEM hItem) const;
-	HTREEITEM GetPrevVisibleItem(HTREEITEM hItem) const;
-	HTREEITEM GetSelectedItem() const;
-	HTREEITEM GetDropHilightItem() const;
-	HTREEITEM GetRootItem() const;
-	BOOL GetItem(TVITEM* pItem) const;
-	CString GetItemText(HTREEITEM hItem) const;
-	BOOL GetItemImage(HTREEITEM hItem, int& nImage, int& nSelectedImage) const;
-	UINT GetItemState(HTREEITEM hItem, UINT nStateMask) const;
-	DWORD GetItemData(HTREEITEM hItem) const;
-	BOOL SetItem(TVITEM* pItem);
-	BOOL SetItem(HTREEITEM hItem, UINT nMask, LPCTSTR lpszItem, int nImage,
-		int nSelectedImage, UINT nState, UINT nStateMask, LPARAM lParam);
-	BOOL SetItemText(HTREEITEM hItem, LPCTSTR lpszItem);
-	BOOL SetItemImage(HTREEITEM hItem, int nImage, int nSelectedImage);
-	BOOL SetItemState(HTREEITEM hItem, UINT nState, UINT nStateMask);
-	BOOL SetItemData(HTREEITEM hItem, DWORD dwData);
-	BOOL ItemHasChildren(HTREEITEM hItem) const;
-	CEdit* GetEditControl() const;
-	UINT GetVisibleCount() const;
-	CToolTipCtrl* GetToolTips() const;
-	CToolTipCtrl* SetToolTips(CToolTipCtrl* pWndTip);
-	COLORREF GetBkColor() const;
-	COLORREF SetBkColor(COLORREF clr);
-	SHORT GetItemHeight() const;
-	SHORT SetItemHeight(SHORT cyHeight);
-	COLORREF GetTextColor() const;
-	COLORREF SetTextColor(COLORREF clr);
-	BOOL SetInsertMark(HTREEITEM hItem, BOOL fAfter = TRUE);
-	BOOL GetCheck(HTREEITEM hItem) const;
-	BOOL SetCheck(HTREEITEM hItem, BOOL fCheck = TRUE);
-	COLORREF GetInsertMarkColor() const;
-	COLORREF SetInsertMarkColor(COLORREF clrNew);
-
-// Operations
-	HTREEITEM InsertItem(LPTVINSERTSTRUCT lpInsertStruct);
-	HTREEITEM InsertItem(UINT nMask, LPCTSTR lpszItem, int nImage,
-		int nSelectedImage, UINT nState, UINT nStateMask, LPARAM lParam,
-		HTREEITEM hParent, HTREEITEM hInsertAfter);
-	HTREEITEM InsertItem(LPCTSTR lpszItem, HTREEITEM hParent = TVI_ROOT,
-		HTREEITEM hInsertAfter = TVI_LAST);
-	HTREEITEM InsertItem(LPCTSTR lpszItem, int nImage, int nSelectedImage,
-		HTREEITEM hParent = TVI_ROOT, HTREEITEM hInsertAfter = TVI_LAST);
-	BOOL DeleteItem(HTREEITEM hItem);
-	BOOL DeleteAllItems();
-	BOOL Expand(HTREEITEM hItem, UINT nCode);
-	BOOL Select(HTREEITEM hItem, UINT nCode);
-	BOOL SelectItem(HTREEITEM hItem);
-	BOOL SelectDropTarget(HTREEITEM hItem);
-	BOOL SelectSetFirstVisible(HTREEITEM hItem);
-	CEdit* EditLabel(HTREEITEM hItem);
-	HTREEITEM HitTest(CPoint pt, UINT* pFlags = NULL) const;
-	HTREEITEM HitTest(TVHITTESTINFO* pHitTestInfo) const;
-	CImageList* CreateDragImage(HTREEITEM hItem);
-	BOOL SortChildren(HTREEITEM hItem);
-	BOOL EnsureVisible(HTREEITEM hItem);
-	BOOL SortChildrenCB(LPTVSORTCB pSort);
-	*/
 };
 //////////////////////////////////////////////////////////////////////////////
 // CWndSliderCtrl
@@ -975,33 +900,17 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CTabCtrl
 
-typedef struct tagWTCITEM
-{
-    UINT mask;
-    DWORD dwState;
-    DWORD dwStateMask;
-    //TCHAR szText[ 32 ];
-	LPCTSTR pszText;
-    int cchTextMax;
-    int iImage;
-    LPARAM lParam;
-	CWndBase* pWndBase;
-	tagWTCITEM( void );
-} WTCITEM, FAR *LPWTCITEM;
+class CWndTabCtrl : public CWndBase {
+	struct WTCITEM {
+		LPCTSTR pszText;
+		CWndBase * pWndBase;
+	};
 
+	std::vector<WTCITEM> m_aTab;
 
-class CWndTabCtrl: public CWndBase
-{
-//	DECLARE_DYNAMIC(CTabCtrl)
-	std::vector< LPWTCITEM > m_aTab;
-//	CObjArray::iterator m_itor;
 // Constructors
-	int m_nCurSelect;
-//#ifdef __NEWTAB
+	size_t m_nCurSelect;
 	CTexture m_aTexture[ 6 ];
-//#else
-//	CTexture* m_apTexture[ 10 ];
-//#endif
 	int m_nTabButtonLength;
 public:
 	enum TabTitleAlign { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER };
@@ -1012,81 +921,32 @@ public:
 	CWndTabCtrl();
 	BOOL Create(DWORD dwStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID);
 
-	void SetButtonLength( int nLength ) { m_nTabButtonLength = nLength; }
-	BOOL InsertTexture( int nItem, LPCTSTR lpszFileName );
-	int GetSize() { return m_aTab.size(); }
-
-	virtual HRESULT InitDeviceObjects();
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
-	virtual HRESULT DeleteDeviceObjects();
+	void SetButtonLength(const int nLength) { m_nTabButtonLength = nLength; }
+	[[nodiscard]] size_t GetSize() const { return m_aTab.size(); }
 	
-	virtual	void PaintFrame( C2DRender* p2DRender );
-	virtual void OnDraw( C2DRender* p2DRender );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual void AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
-	virtual	void OnInitialUpdate();
+	void PaintFrame(C2DRender * p2DRender) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnSize(UINT nType, int cx, int cy) override;
+	void OnLButtonDown(UINT nFlags, CPoint point) override;
+	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE) override;
+	void AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 ) override;
+	void OnInitialUpdate() override;
 	
 // Attributes
-	//CImageList* GetImageList() const;
-	//CImageList* SetImageList(CImageList* pImageList);
-	//int GetItemCount() const;
-	BOOL GetItem(int nItem, WTCITEM* pTabCtrlItem) const;
-	LPWTCITEM GetTabItem( int nItemNumber ) const;
-	LPWTCITEM GetSelectedTab( void ) const;
+	[[nodiscard]] CWndBase * GetTabItem(size_t nItemNumber) const;
+	[[nodiscard]] CWndBase * GetSelectedTab() const;
 	void SetTabTitleAlign( const TabTitleAlign eTabTitleAlign );
 	const TabTitleAlign GetTabTitleAlign( void ) const;
-	//BOOL SetItem(int nItem, TCITEM* pTabCtrlItem);
-	//BOOL SetItemExtra(int nBytes);
-	//BOOL GetItemRect(int nItem, LPRECT lpRect) const;
-	int GetCurSel() const;
-	int SetCurSel(int nItem);
-	/*
-	void SetCurFocus(int nItem);
-	CSize SetItemSize(CSize size);
-	void SetPadding(CSize size);
-	int GetRowCount() const;
-	CToolTipCtrl* GetToolTips() const;
-	void SetToolTips(CToolTipCtrl* pWndTip);
-	int GetCurFocus() const;
-	int SetMinTabWidth(int cx);
-	DWORD GetExtendedStyle();
-	DWORD SetExtendedStyle(DWORD dwNewStyle, DWORD dwExMask = 0);
-	DWORD GetItemState(int nItem, DWORD dwMask) const;
-	BOOL SetItemState(int nItem, DWORD dwMask, DWORD dwState);
-*/
-// Operations
-	BOOL InsertItem(int nItem, WTCITEM* pTabCtrlItem);
-	BOOL InsertItem(int nItem, LPCTSTR lpszItem);
-	/*
-	BOOL InsertItem(int nItem, LPCTSTR lpszItem, int nImage);
-	BOOL InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem,
-		int nImage, LPARAM lParam);
-	BOOL InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem,
-		int nImage, LPARAM lParam, DWORD dwState, DWORD dwStateMask);
-	BOOL DeleteItem(int nItem);
-	BOOL DeleteAllItems();
-	void AdjustRect(BOOL bLarger, LPRECT lpRect);
-	void RemoveImage(int nImage);
-	int HitTest(TCHITTESTINFO* pHitTestInfo) const;
-	void DeselectAll(BOOL fExcludeFocus);
-	BOOL HighlightItem(int idItem, BOOL fHighlight = TRUE);
-*/
-// Overridables
-	//virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 
-// Implementation
-public:
-	virtual ~CWndTabCtrl();
-//protected:
-	//virtual BOOL OnChildNotify(UINT, WPARAM, LPARAM, LRESULT*);
-	////{{AFX_MSG(CTabCtrl)
-	//afx_msg void OnDestroy();
-	////}}AFX_MSG
-	//DECLARE_MESSAGE_MAP()
+	[[nodiscard]] size_t GetCurSel() const { return m_nCurSelect; }
+	void SetCurSel(size_t nItem);
+
+// Operations
+	void InsertItem(CWndBase * window, LPCTSTR tabText);
+
+	friend CAr & operator<<(CAr & ar, const CWndTabCtrl & tab);
+	friend CAr & operator>>(CAr & ar, CWndTabCtrl & tab);
 };
 
 //////////////////////////////////////////////////////////////////////////////

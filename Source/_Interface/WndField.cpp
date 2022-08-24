@@ -1202,11 +1202,7 @@ void CWndInventory::OnInitialUpdate()
 	m_wndItemCtrl.Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, 11 );
 	m_wndItemCtrl.InitItem( &g_pPlayer->m_Inventory, APP_INVENTORY );
 
-	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = GETTEXT( TID_GAME_ITEM );//"������";
-	tabTabItem.pWndBase = &m_wndItemCtrl;
-	pTabCtrl->InsertItem( 0, &tabTabItem );
+	pTabCtrl->InsertItem(&m_wndItemCtrl, prj.GetText(TID_GAME_ITEM));
 
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_GOLD );
 	m_wndGold.Create( "g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_GOLD );
@@ -5791,22 +5787,13 @@ void CWndPost::OnInitialUpdate()
 	rect.left = 5;
 	rect.top = 0;
 
-	if(GetWndBase( APP_BAG_EX )) GetWndBase( APP_BAG_EX )->Destroy();
+	Windows::DestroyIfOpened(APP_BAG_EX);
 
 	m_PostTabSend.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_POST_SEND );
 	m_PostTabReceive.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_POST_RECEIVE );
 
-	WTCITEM tabTabItem;
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-
-	tabTabItem.pszText = prj.GetText(TID_APP_POST_SEND);
-	tabTabItem.pWndBase = &m_PostTabSend;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-
-	tabTabItem.pszText = prj.GetText(TID_APP_POST_RECEIVE);
-	tabTabItem.pWndBase = &m_PostTabReceive;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
-
+	pWndTabCtrl->InsertItem(&m_PostTabSend, prj.GetText(TID_APP_POST_SEND));
+	pWndTabCtrl->InsertItem(&m_PostTabReceive, prj.GetText(TID_APP_POST_RECEIVE));
 	pWndTabCtrl->SetCurSel(1);
 
 	MoveParentCenter();	
@@ -5840,11 +5827,7 @@ BOOL CWndPost::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 		CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 
-		if( pWndTabCtrl->GetCurSel() == 0 )
-		{
-		}
-		else
-		{
+		if (pWndTabCtrl->GetSelectedTab() == &m_PostTabReceive) {
 #ifndef __MAIL_REQUESTING_BOX
 			m_PostTabSend.ClearData();
 #endif // __MAIL_REQUESTING_BOX
@@ -8933,32 +8916,15 @@ void CWndGuildCombatResult::OnInitialUpdate()
 	CRect rect = GetClientRect();
 	rect.left = 0;
 	rect.top = 0;
-	//pWndTabCtrl->Create( WBS_NOFRAME, rect, this, 12 );
-	
-	pWndTabCtrl->SetButtonLength( 100 );
 
 	m_WndGuildCombatTabResultRate.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_TAB_RESULT );
 	m_WndGuildCombatTabResultLog.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_TAB_RESULT_LOG );
 	
-	WTCITEM tabTabItem;
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_LOG1);
-	tabTabItem.pWndBase = &m_WndGuildCombatTabResultRate;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-
-
-	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_LOG2);
-	tabTabItem.pWndBase = &m_WndGuildCombatTabResultLog;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
+	pWndTabCtrl->InsertItem(&m_WndGuildCombatTabResultRate, prj.GetText(TID_GAME_TOOLTIP_LOG1));
+	pWndTabCtrl->InsertItem(&m_WndGuildCombatTabResultLog, prj.GetText(TID_GAME_TOOLTIP_LOG2));
 	
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-
-	{
-//		CRect r = GetWindowRect( TRUE );
-//		m_WndGuildTabMember.m_rectParent = r;
-	}
 	
 	CWndListBox* pWndList1 = (CWndListBox*)(m_WndGuildCombatTabResultRate.GetDlgItem( WIDC_LISTBOX1 ));
 	CWndListBox* pWndList2 = (CWndListBox*)(m_WndGuildCombatTabResultRate.GetDlgItem( WIDC_LISTBOX2 ));
@@ -9102,38 +9068,18 @@ void CWndGuildCombatRank_Person::OnInitialUpdate()
 	CRect rect = GetClientRect();
 	rect.left = 0;
 	rect.top = 0;
-	//pWndTabCtrl->Create( WBS_NOFRAME, rect, this, 12 );
 	
-	pWndTabCtrl->SetButtonLength( 100 );
-
 	m_WndGuildCombatTabClass_Tot.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
 	m_WndGuildCombatTabClass_Mer.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
 	m_WndGuildCombatTabClass_Mag.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
 	m_WndGuildCombatTabClass_Acr.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
 	m_WndGuildCombatTabClass_Ass.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_GUILDCOMBAT_RANKINGCLASS );
 	
-	WTCITEM tabTabItem;
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_GAME_TOOLTIP_LOG1);
-	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Tot;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-
-	tabTabItem.pszText = prj.jobs.info[ JOB_MERCENARY ].szName;
-	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Mer;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
-
-	tabTabItem.pszText = prj.jobs.info[ JOB_MAGICIAN ].szName;
-	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Mag;
-	pWndTabCtrl->InsertItem( 2, &tabTabItem );
-	
-	tabTabItem.pszText = prj.jobs.info[ JOB_ACROBAT ].szName;
-	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Acr;
-	pWndTabCtrl->InsertItem( 3, &tabTabItem );
-
-	tabTabItem.pszText = prj.jobs.info[ JOB_ASSIST ].szName;
-	tabTabItem.pWndBase = &m_WndGuildCombatTabClass_Ass;
-	pWndTabCtrl->InsertItem( 4, &tabTabItem );
+	pWndTabCtrl->InsertItem(&m_WndGuildCombatTabClass_Tot, prj.GetText(TID_GAME_TOOLTIP_LOG1));
+	pWndTabCtrl->InsertItem(&m_WndGuildCombatTabClass_Mer, prj.jobs.info[JOB_MERCENARY].szName);
+	pWndTabCtrl->InsertItem(&m_WndGuildCombatTabClass_Mag, prj.jobs.info[JOB_MAGICIAN].szName);
+	pWndTabCtrl->InsertItem(&m_WndGuildCombatTabClass_Acr, prj.jobs.info[JOB_ACROBAT].szName);
+	pWndTabCtrl->InsertItem(&m_WndGuildCombatTabClass_Ass, prj.jobs.info[JOB_ASSIST].szName);
 
 
 	// ������ �߾����� �ű��? �κ�.
@@ -12664,17 +12610,9 @@ void CWndCoupleManager::OnInitialUpdate()
 	
 	m_wndCoupleTabInfo.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_COUPLE_TAB_INFO );
 	m_wndCoupleTabSkill.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_COUPLE_TAB_SKILL );
-	
-	WTCITEM tabTabItem;
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_GAME_COUPLE_INFO);
-	tabTabItem.pWndBase = &m_wndCoupleTabInfo;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
 
-	tabTabItem.pszText = prj.GetText(TID_GAME_COUPLE_SKILL);
-	tabTabItem.pWndBase = &m_wndCoupleTabSkill;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
+	pWndTabCtrl->InsertItem(&m_wndCoupleTabInfo, prj.GetText(TID_GAME_COUPLE_INFO));
+	pWndTabCtrl->InsertItem(&m_wndCoupleTabSkill, prj.GetText(TID_GAME_COUPLE_SKILL));
 
 	MoveParentCenter();
 } 

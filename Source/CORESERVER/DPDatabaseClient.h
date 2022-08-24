@@ -32,8 +32,8 @@ public:
 	void	SendGuildLogo( u_long idGuild, DWORD dwLogo );
 	void	SendGuildContribution( CONTRIBUTION_CHANGED_INFO & info );
 	void	SendGuildNotice( u_long idGuild, LPCTSTR szNotice );
-	void	SendGuildAuthority( u_long idGuild, DWORD adwAuthority[] );
-	void	SendGuildPenya( u_long idGuild, DWORD adwPenya[] );
+	void	SendGuildAuthority( u_long idGuild, const GuildPowerss & adwPowers );
+	void	SendGuildPenya( u_long idGuild, const std::array<DWORD, MAX_GM_LEVEL> & adwPenya );
 	void	SendGuildSetName( u_long uidGuild, char * szName );
 
 	void	OnAddVoteResult( CAr & ar );

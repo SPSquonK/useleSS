@@ -26,15 +26,10 @@ void CWndMessengerEx::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 {
 	CWndNeuz::SerializeRegInfo( ar, dwVersion );
 	CWndTabCtrl* lpTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	if( ar.IsLoading() )
-	{
-		int nCurSel;
-		ar >> nCurSel;
-		lpTabCtrl->SetCurSel( nCurSel );
-	}
-	else
-	{
-		ar << lpTabCtrl->GetCurSel();
+	if (ar.IsLoading()) {
+		ar >> *lpTabCtrl;
+	} else {
+		ar << *lpTabCtrl;
 	}
 }
 
@@ -98,7 +93,7 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 	if( pWndTabCtrl == NULL )
 		return;
-	if( pWndTabCtrl->GetCurSel() == 2 )
+	if( pWndTabCtrl->GetSelectedTab() == &m_WndCampus )
 	{
 		CString strCampusPoint = _T( "" );
 		strCampusPoint.Format( prj.GetText( TID_GAME_CAMPUS_POINTS ), g_pPlayer->GetCampusPoint() );
@@ -161,7 +156,6 @@ void CWndMessengerEx::OnInitialUpdate()
 	// 여기에 코딩하세요
 
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );	
-	WTCITEM tabTabItem;
 
 	m_wndFriend.Create( CRect( 0, 0, 250, 250 ), pWndTabCtrl, 11 );
 	m_wndFriend.AddWndStyle( WBS_NODRAWFRAME );
@@ -174,21 +168,10 @@ void CWndMessengerEx::OnInitialUpdate()
 	m_wndGuild.AddWndStyle( WBS_NODRAWFRAME );
 
 	m_WndCampus.Create( WBS_CHILD | WBS_NODRAWFRAME, GetClientRect(), pWndTabCtrl, APP_MESSENGER_TAB_CAMPUS );
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_FRIEND); //"친구"
-	tabTabItem.pWndBase = &m_wndFriend;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_APP_COMPANY); //"극단"
-	tabTabItem.pWndBase = &m_wndGuild;
-	pWndTabCtrl->InsertItem( 1, &tabTabItem );
 
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText(TID_APP_COMMUNITY_CAMPUS); //"사제"
-	tabTabItem.pWndBase = &m_WndCampus;
-	pWndTabCtrl->InsertItem( 2, &tabTabItem );
+	pWndTabCtrl->InsertItem(&m_wndFriend, prj.GetText(TID_APP_COMMUNITY_FRIEND));
+	pWndTabCtrl->InsertItem(&m_wndGuild, prj.GetText(TID_APP_COMPANY));
+	pWndTabCtrl->InsertItem(&m_WndCampus, prj.GetText(TID_APP_COMMUNITY_CAMPUS));
 
 	m_wndFriend.ScrollBarPos( 0 );
 	m_wndGuild.ScrollBarPos( 0 );

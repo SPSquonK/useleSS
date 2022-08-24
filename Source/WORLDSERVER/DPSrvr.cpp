@@ -7923,7 +7923,7 @@ void CDPSrvr::InviteCompany( CUser* pUser, OBJID objid )
 					// is not member
 					return;
 				}
-				if( !pGuild->IsCmdCap( pMember->m_nMemberLv, PF_INVITATION ) )
+				if( !pGuild->IsCmdCap( pMember->m_nMemberLv, GuildPower::Invitation ) )
 				{
 					// have no power
 					pUser->AddDefinedText( TID_GAME_GUILDINVAITNOTWARR );

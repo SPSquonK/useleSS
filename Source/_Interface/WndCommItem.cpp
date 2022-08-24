@@ -34,13 +34,7 @@ void CWndCommItem::OnInitialUpdate()
 	rect.top = 0;
 	m_wndCommItemCtrl.Create( WBS_CHILD | WBS_NODRAWFRAME, rect, pWndTabCtrl, APP_COMM_ITEM );
 
-
-	WTCITEM tabTabItem;
-	
-	tabTabItem.mask = WTCIF_TEXT | WTCIF_PARAM;
-	tabTabItem.pszText = prj.GetText( TID_TOOLTIP_ITEMTIME );
-	tabTabItem.pWndBase = &m_wndCommItemCtrl;
-	pWndTabCtrl->InsertItem( 0, &tabTabItem );
+	pWndTabCtrl->InsertItem(&m_wndCommItemCtrl, prj.GetText(TID_TOOLTIP_ITEMTIME));
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
@@ -761,15 +755,6 @@ BOOL CWndCommItemCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
 }
-BOOL CWndCommItemCtrl::SetItem( const LVITEM* pItem )
-{
-	return TRUE;
-}
-int CWndCommItemCtrl::InsertItem( const LVITEM* pItem )
-{
-	return TRUE;
-}
-
 
 /****************************************************
   WndId : APP_COMMERCIAL_ELEM - 상용 속성 아이템 사용

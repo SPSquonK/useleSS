@@ -5565,10 +5565,10 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 
 		case MMI_GUILDHOUSE_CHARGE:	//유지비 
 			{
-				BOOL bAuthority = FALSE;
+				bool bAuthority = false;
 				CGuild* pGuild = g_pPlayer->GetGuild( );
 				if( pGuild )
-					bAuthority = pGuild->IsAuthority( g_pPlayer->m_idPlayer, PF_GUILDHOUSE_UPKEEP );
+					bAuthority = pGuild->IsAuthority( g_pPlayer->m_idPlayer, GuildPower::GuildHouseUpKeep );
 
 				if( !bAuthority )		//유지비 권한이 없으면 
 				{
@@ -6003,14 +6003,10 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 			m_wndMenuMover.AppendMenu( 0,  MMI_ADD_MESSENGER, prj.GetText( TID_MMI_ADD_MESSENGER ) );
 			m_wndMenuMover.AppendMenu( 0,  MMI_INVITE_PARTY , prj.GetText( TID_MMI_INVITE_PARTY ) );
 
-			CGuild* pGuild	= g_pPlayer->GetGuild();
-			if( pGuild )
-			{
-				CGuildMember* pMember	= pGuild->GetMember( g_pPlayer->m_idPlayer );
-				if( pMember )
-				{
-					if( pGuild->m_adwPower[pMember->m_nMemberLv] & PF_INVITATION )
-						m_wndMenuMover.AppendMenu( 0, MMI_INVITE_COMPANY, prj.GetText( TID_MMI_INVITE_COMPANY ) );
+			
+			if (CGuild * pGuild = g_pPlayer->GetGuild()) {
+				if (pGuild->IsAuthority(g_pPlayer->m_idPlayer, GuildPower::Invitation)) {
+					m_wndMenuMover.AppendMenu(0, MMI_INVITE_COMPANY, prj.GetText(TID_MMI_INVITE_COMPANY));
 				}
 			}
 

@@ -142,7 +142,7 @@ public:
 	void	SendGuildClass( u_long idPlayer, int nClass, u_long idGuild );
 	void	SendGuildNickName( u_long idPlayer, LPCTSTR strNickName, u_long idGuild );
 	void	SendGuildMemberLogOut( u_long idGuild, u_long idPlayer );
-	void	SendGuildAuthority( u_long uGuildId, DWORD dwAuthority[] );
+	void	SendGuildAuthority( u_long uGuildId, const GuildPowerss & dwAuthority );
 	void	SendGuildPenya( u_long uGuildId, DWORD dwType, DWORD dwPenya );
 	void	SendChgMaster( u_long idPlayer, u_long idPlayer2, u_long idGuild );
 	void	SendGuildSetName( u_long idGuild, const char * lpszGuild , u_long idPlayer = 0, BYTE nId = 0xff, BYTE nError = 0 );

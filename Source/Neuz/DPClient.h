@@ -9,6 +9,7 @@
 #include "RainbowRace.h"
 
 #include "Housing.h"
+#include "guild.h"
 
 #undef	theClass
 #define	theClass	CDPClient
@@ -291,13 +292,12 @@ public:
 	void	SendGuildInvite( OBJID objid );
 	void	SendIgnoreGuildInvite( u_long idPlayer );
 	void	SendCreateGuild( const char* szGuild );
-	void	SendDestroyGuild( u_long idMaster );
-	void	SendAddGuildMember( u_long idMaster, const GUILD_MEMBER_INFO & info, BOOL bGM );
+	void	SendDestroyGuild();
 	void	SendRemoveGuildMember( u_long idMaster, u_long idPlayer );
 	void	SendGuildLogo( DWORD dwLogo );
 	void	SendGuildContribution( BYTE cbPxpCount, int nGold, BYTE cbItemFlag = 0);
 	void    SendGuildNotice( const char* szNotice );
-	void	SendGuildAuthority( u_long uGuildId, DWORD dwAuthority[] );
+	void	SendGuildAuthority(const GuildPowerss & powers);
 	void	SendGuilPenya( u_long uGuildId, DWORD dwType, DWORD dwPenty );
 	void	SendGuildSetName( LPCTSTR szName );
 	void	SendGuildRank( DWORD nVer );
@@ -313,11 +313,7 @@ public:
 	void	OnChgMaster( CAr & ar );
 	void	OnSetWar( OBJID objid, CAr & ar );
 	void	SendDeclWar( u_long idMaster, const char* szGuild );
-	void	SendAcptWar( u_long idMaster, u_long idDecl );
 	
-	void	SendSurrender( u_long idPlayer );	// 항복
-	void	SendQueryTruce( u_long idPlayer );	// 정전 요청
-	void	SendAcptTruce( u_long idPlayer );	// 정전 수락
 	void	OnSurrender( CAr & ar );	// 항복
 	void	OnQueryTruce( CAr & ar );
 
