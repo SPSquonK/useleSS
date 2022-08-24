@@ -195,7 +195,11 @@ BOOL CWndGuildSetLogo::Initialize(CWndBase * pWndParent) {
 void CWndGuildSetLogo::OnLButtonUp(UINT nFlags, CPoint point) {
 	for (int i = 0; i < CUSTOM_LOGO_MAX - 7; i++) {
 		if (PtInRect(&m_rect[i], point)) {
-			m_nSelectLogo = i + 1;
+			if (m_nSelectLogo == i + 1) {
+				m_nSelectLogo = 0;
+			} else {
+				m_nSelectLogo = i + 1;
+			}
 			return;
 		}
 	}
@@ -378,10 +382,11 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORLOGO), MB_OK, this );
 				return FALSE;
 			}
-			if( pGuild->m_dwLogo )
-			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDSTILLLOGO), MB_OK, this );
-				return FALSE;
+			if constexpr (!useless_params::CanChangeLogo) {
+				if (pGuild->m_dwLogo) {
+					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDSTILLLOGO), MB_OK, this);
+					return FALSE;
+				}
 			}
 			if( pGuild->m_nLevel < 2 )
 			{

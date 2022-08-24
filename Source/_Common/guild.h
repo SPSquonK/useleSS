@@ -295,7 +295,7 @@ public:
 	BOOL	IsMember( u_long idPlayer )		{	return( GetMember( idPlayer ) != NULL );	}
 	BOOL	IsMaster( u_long idPlayer )	{	return( m_idMaster == idPlayer );	}
 	void	Serialize( CAr & ar, BOOL bDesc );
-	BOOL	SetLogo( DWORD dwLogo );
+	bool SetLogo(DWORD dwLogo);
 	void	SetNotice( const char* szNotice );
 
 	void	MeritResultMsg( CONTRIBUTION_RESULT cbResult );

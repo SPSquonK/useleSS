@@ -30,3 +30,10 @@ namespace std_ {
 
   template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 }
+
+// ifdefs but better
+namespace useless_params {
+  // Guild master can change their guild logo after choosing one.
+  static constexpr bool CanChangeLogo = true;
+}
+
