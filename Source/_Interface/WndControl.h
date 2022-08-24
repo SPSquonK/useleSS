@@ -303,21 +303,16 @@ protected:
 
 public:
 	void Delete( int nIndex, int nLen );
-	DWORD GetBlockBegine() { return m_dwBlockBegin; }
-	DWORD GetBlockEnd() { return m_dwBlockEnd; }
 	
-	void BlockDelete( LPCTSTR pstr, LPCTSTR pstr2 );
-	void BlockInsert( LPCTSTR pstr, LPCTSTR pstr2 );
 	void Insert( int nIndex, LPCTSTR pstr );
 	void BlockSetStyle( DWORD dwStyle );
 	void BlockClearStyle( DWORD dwStyle );
 	void BlockSetColor( DWORD dwColor );
 	CWndMenu m_wndMenu;
 	
-	TCHAR m_TextComp[3];
 	TCHAR m_szCaret[ 3 ];
 	BOOL m_bEnableClipboard;
-	//CTexture* m_apTexture[ 9 ];
+
 	int m_nLineSpace; 
 	CWndScrollBar m_wndScrollBar;
 	CEditString m_string;
@@ -335,11 +330,9 @@ public:
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
 	virtual void OnRButtonUp( UINT nFlags, CPoint point );
 	virtual BOOL OnCommand ( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual BOOL OnChildNotify ( UINT nCode, UINT nID, LRESULT* pLResult );
 	virtual void OnMouseMove( UINT nFlags, CPoint point );
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual void OnSetFocus( CWndBase* pOldWnd );
-	virtual void OnKillFocus( CWndBase* pNewWnd );
 	virtual void OnSize( UINT nType, int cx, int cy );
 	virtual void OnChar( UINT nChar );
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
@@ -353,8 +346,6 @@ public:
 	CPoint GetCaretPos() { return m_ptCaret; }
 virtual void DrawCaret( C2DRender* p2DRender );
 	void SetCaretPos( CPoint ptCaret ) { m_ptCaret = ptCaret; m_timerCaret.Reset(); }
-	void HideCaret() { m_bCaretVisible = FALSE; }
-	void ShowCaret() { m_bCaretVisible = TRUE; }
 
 	void SetString( LPCTSTR pszString, DWORD dwColor = 0xff000000 );
 	void AddString( LPCTSTR pszString, DWORD dwColor = 0xff000000, DWORD dwPStyle = 0x00000001 );
@@ -362,45 +353,7 @@ virtual void DrawCaret( C2DRender* p2DRender );
 
 	static void SetupDescription(CWndText * self, LPCTSTR filename);
 };
-//////////////////////////////////////////////////////////////////////////////
-// CWndStatic
-//////////////////////////////////////////////////////////////////////////////
-/*
-class CWndStatic : public CWndBase
-{
-public:
 
-	CWndStatic();
-	~CWndStatic();
-	BOOL Create(DWORD dwTextStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
-
-	virtual	void OnInitialUpdate();
-	virtual void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual	void PaintFrame(C2DRender* p2DRender);
-	virtual void OnDraw(C2DRender* p2DRender);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	virtual void OnLButtonDblClk(UINT nFlags, CPoint point);
-	virtual void OnSetFocus(CWndBase* pOldWnd);
-	virtual void OnKillFocus(CWndBase* pNewWnd);
-	virtual void OnSize(UINT nType, int cx, int cy);
-
-	LONG GetOffset(CPoint point);
-	void UpdateScrollBar();
-
-	CPoint OffsetToPoint(DWORD dwOffset);
-	CPoint GetCaretPos() { return m_ptCaret; }
-	void DrawCaret(C2DRender* p2DRender);
-	void SetCaretPos(CPoint ptCaret) { m_ptCaret = ptCaret; }
-	void HideCaret() { m_bCaretVisible = FALSE; }
-	void ShowCaret() { m_bCaretVisible = TRUE; }
-
-	void SetString(LPCTSTR pszString);
-	void AddString(LPCTSTR pszString);
-	void ResetString();
-};
-*/
 //////////////////////////////////////////////////////////////////////////////
 // CWndViewCtrl
 //////////////////////////////////////////////////////////////////////////////

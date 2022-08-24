@@ -2422,7 +2422,7 @@ void CWndText::OnLButtonDown( UINT nFlags, CPoint point )
 		m_dwBlockBegin = m_dwBlockEnd = m_dwOffset = lOffset; 
 	m_bLButtonDown = TRUE;
 	SetCapture();
-	m_TextComp[ 0 ] = 0;
+
 	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
 	SetCaretPos( ptCaret );
 }
@@ -2446,12 +2446,6 @@ void CWndText::OnRButtonUp(UINT nFlags, CPoint point)
 	}
 }
 
-BOOL CWndText::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-//	m_wndMenu.SetVisible( FALSE );
-	return CWndBase::OnChildNotify( message, nID, pLResult ); 
-} 
-
 BOOL CWndText::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
 	if( pWndBase == &m_wndMenu )
@@ -2473,7 +2467,6 @@ BOOL CWndText::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 } 
 void CWndText::OnMouseMove(UINT nFlags, CPoint point)
 {
-	//return;
 	if(m_bLButtonDown == TRUE)
 	{
 		m_string.ClearStyle( ESSTY_BLOCK );
@@ -2509,35 +2502,9 @@ void CWndText::OnMouseMove(UINT nFlags, CPoint point)
 					else
 						break;
 				}
-				/*
-				while(dwBlockEnd < m_string.GetLength() )
-				{
-					chr1 = m_string.GetAt ( dwBlockEnd );
 
-					if( IsDBCSLeadByte( chr1 ) )
-						dwBlockEnd += 2;
-					else
-					if( !IsWhite( chr1 ) )
-						dwBlockEnd += 1;
-					else
-						break;
-				}
-				*/
 				dwOffset = dwBlockEnd; 
 
-				CString strFind = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
-				/*
-				CStringArray* pStrArray = prj.GetHelp( strFind );
-				if(pStrArray)
-				{
-					GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point);
-					CPoint pt1 = OffsetToPoint(dwBlockBegin);
-					CPoint pt2 = OffsetToPoint(dwBlockEnd);
-					g_toolTip.PutToolTip( 100, pStrArray->GetAt(0), CRect
-						(	pt1.x, pt1.y, pt2.x, pt2.y + m_pFont->GetMaxHeight() )
-						, point);
-				}
-				*/
 			}
 		}
 	}
@@ -2620,10 +2587,7 @@ void CWndText::OnSetFocus(CWndBase* pOldWnd)
 		g_WndMng.m_pWndFontEdit->m_pWndText = this;
 	}
 }
-void CWndText::OnKillFocus(CWndBase* pNewWnd)
-{
-	CWndBase::OnKillFocus( pNewWnd );
-}
+
 void CWndText::SetString( LPCTSTR pszString, DWORD dwColor )
 {
 	// Init의 목적은 Align이 아니라 m_pfont와 Rect세팅이다.
@@ -2661,109 +2625,6 @@ void CWndText::Insert(int nIndex, LPCTSTR pstr)
 	m_dwOffset = m_string.GetLength();
 	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
 	SetCaretPos( ptCaret );	
-}
-
-void CWndText::BlockInsert( LPCTSTR pstr, LPCTSTR pstr2 )
-{
-	DWORD dwBlockTemp;
-
-	if(m_dwBlockBegin > m_dwBlockEnd) 
-	{
-		dwBlockTemp = m_dwBlockBegin;
-		m_dwBlockBegin = m_dwBlockEnd;
-		m_dwBlockEnd   = dwBlockTemp;
-	}
-		
-	if( m_dwBlockBegin >= 0 )
-	{
-		m_string.Insert( m_dwBlockBegin, pstr );
-		
-		m_dwBlockBegin += strlen(pstr);
-
-		if( (int)( m_dwBlockEnd + strlen(pstr) ) < m_string.GetLength() )
-			m_dwBlockEnd += strlen(pstr);
-		else
-			m_dwBlockEnd = m_string.GetLength();
-
-		m_string.Insert( m_dwBlockEnd, pstr2 );
-
-		UpdateScrollBar();
-		m_dwOffset = m_string.GetLength();
-		CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-		SetCaretPos( ptCaret );	
-	}
-}
-
-void CWndText::BlockDelete( LPCTSTR pstr, LPCTSTR pstr2 )
-{
-	DWORD dwBlockTemp;
-	
-	if(m_dwBlockBegin > m_dwBlockEnd) 
-	{
-		dwBlockTemp = m_dwBlockBegin;
-		m_dwBlockBegin = m_dwBlockEnd;
-		m_dwBlockEnd   = dwBlockTemp;
-	}
-	
-	if( m_dwBlockBegin >= 0 )
-	{
-		int nColor = stricmp( pstr, "#c" );
-
-		TCHAR ch;
-		int nCount = m_dwBlockEnd;
-		int nIndex = 0;
-
-		nIndex = m_string.Find( pstr2, nCount );
-
-		if( nIndex != -1 )
-			Delete( nIndex, strlen(pstr2) );
-		///////////////////////////////////////////
-
-		nCount = m_dwBlockBegin;
-
-		while( nCount-- )
-		{
-			ch = m_string.GetAt( nCount );
-
-			if( ch == '#' )
-			{
-				nIndex = m_string.Find( pstr, nCount );
-
-				if( nIndex != -1 )
-				{
-					Delete( nIndex, strlen(pstr) );	
-
-					if( nColor != -1 )
-					{
-						Delete( nIndex, 8 );							
-					}					
-					
-					break;
-				}
-			}
-		}
-
-		m_dwBlockBegin -= strlen(pstr);
-		m_dwBlockEnd   -= strlen(pstr);
-
-		if( nColor != -1 )
-		{
-			m_dwBlockBegin -= 8;
-			m_dwBlockEnd   -= 8;
-		}					
-		
-
-		if( (int)m_dwBlockBegin < 0 )
-			m_dwBlockBegin = 0;
-
-		if( (int)m_dwBlockEnd < 0 )
-			m_dwBlockEnd = 0;
-								
-		UpdateScrollBar();
-		m_dwOffset = m_string.GetLength();
-		CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-		SetCaretPos( ptCaret );	
-	}
 }
 
 void CWndText::Delete(int nIndex, int nLen)
@@ -2944,20 +2805,12 @@ BOOL CWndMenu::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 	}
 	return bResult;
 }
-void CWndMenu::PaintFrame( C2DRender* p2DRender )
-{
-	p2DRender->RenderFillRect( GetWindowRect(), D3DCOLOR_ARGB( 255, 226,198,181 ) );
-	
-	//p2DRender->RenderRoundRect( GetWindowRect(), D3DCOLOR_ARGB( 255, 238,163,128 ) );
-	//CRect rect = GetWindowRect();
-	//m_pTheme->RenderWndMenu( p2DRender, &rect );
-//	CWndBase::PaintFrame( p2DRender );
+void CWndMenu::PaintFrame(C2DRender * p2DRender) {
+	p2DRender->RenderFillRect(GetWindowRect(), D3DCOLOR_ARGB(255, 226, 198, 181));
 }
-BOOL CWndMenu::OnEraseBkgnd( C2DRender* p2DRender )
-{
-	p2DRender->RenderFillRect( GetClientRect(), D3DCOLOR_ARGB( 255, 255,255,255 ) );
-	//CRect rect = GetClientRect();
-//	p2DRender->RenderFillRect(rect, D3DCOLOR_ARGB( 255, 255,255,255 ) );
+
+BOOL CWndMenu::OnEraseBkgnd(C2DRender * p2DRender) {
+	p2DRender->RenderFillRect(GetClientRect(), D3DCOLOR_ARGB(255, 255, 255, 255));
 	return TRUE;
 }
 

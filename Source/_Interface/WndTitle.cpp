@@ -1555,43 +1555,14 @@ void CWndSelectChar::OnInitialUpdate()
 	LPWNDCTRL lpText1 = GetWndCtrl( WIDC_CUSTOM1 );
 	LPWNDCTRL lpText2 = GetWndCtrl( WIDC_CUSTOM2 );
 	LPWNDCTRL lpText3 = GetWndCtrl( WIDC_CUSTOM3 );
-	
-//	m_wndText1.Create( 0, lpText1->rect, this, WIDC_CUSTOM1 );
-//	m_wndText2.Create( 0, lpText2->rect, this, WIDC_CUSTOM2 );
-//	m_wndText3.Create( 0, lpText3->rect, this, WIDC_CUSTOM3 );
-//	m_wndText1.HideCaret();
-//	m_wndText2.HideCaret();
-///	m_wndText3.HideCaret();
-	/*
-	CWndText* pWndText1 = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	CWndText* pWndText2 = (CWndText*)GetDlgItem( WIDC_TEXT2 );
-	CWndText* pWndText3 = (CWndText*)GetDlgItem( WIDC_TEXT3 );
-	
-	pWndText1->DelWndStyle( WBS_VSCROLL );
-	pWndText2->DelWndStyle( WBS_VSCROLL );
-	pWndText3->DelWndStyle( WBS_VSCROLL );
-	*/
-	
-	//rect.SetRect( 108, 349, 180, 370 );
-	//m_wndBack  .Create( _T( "Back"   ), 0, rect, this, 100 ); rect.OffsetRect( 83, 0 );
-	//m_wndCreate.Create( _T( "Create" ), 0, rect, this, 101 ); rect.OffsetRect( 83, 0 );
-	//m_wndDelete.Create( _T( "Delete" ), 0, rect, this, 102 ); rect.OffsetRect( 83, 0 );
-	//m_wndAccept.Create( _T( "Accept" ), 0, rect, this, 103 );
+		
 	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_DELETE );
-//WndText* pWndText = (CWndButton*)GetDlgItem( WIDC_EDIT1 );
-
-//	pWndButton->EnableWindow( FALSE );
 
 	CWndButton* pWndAccept = (CWndButton*)GetDlgItem( WIDC_ACCEPT );
 	pWndAccept->SetDefault( TRUE );
 	CWndButton* pWndBack = (CWndButton*)GetDlgItem( WIDC_BACK );
 	pWndBack->SetFocus( );
 	
-//	if( ::GetLanguage() == LANG_TWN )
-//	{
-//		pWndBack->EnableWindow( FALSE );
-//	}
-
 	m_bDisconnect = FALSE;
 
 	rect = CRect( 16, 16, 174, 254 );

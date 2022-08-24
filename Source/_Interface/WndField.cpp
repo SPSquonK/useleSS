@@ -9509,12 +9509,10 @@ BOOL CWndFontEdit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if( pWndCheck->GetCheck() )
 			{
 				m_pWndText->BlockSetStyle(ESSTY_BOLD);
-//				m_pWndText->BlockInsert( "#b", "#nb" );
 			}
 			else
 			{
 				m_pWndText->BlockClearStyle(ESSTY_BOLD);
-//				m_pWndText->BlockDelete( "#b", "#nb" );
 			}
 			break;
 		case WIDC_CHECK2:
@@ -9523,12 +9521,10 @@ BOOL CWndFontEdit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if( pWndCheck->GetCheck() )
 			{
 				m_pWndText->BlockSetStyle(ESSTY_UNDERLINE);
-//				m_pWndText->BlockInsert( "#u", "#nu" );				
 			}
 			else
 			{
 				m_pWndText->BlockClearStyle(ESSTY_UNDERLINE);
-//				m_pWndText->BlockDelete( "#u", "#nu" );				
 			}
 			break;
 		case WIDC_CHECK3:			
@@ -9537,12 +9533,10 @@ BOOL CWndFontEdit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if( pWndCheck->GetCheck() )
 			{
 				m_pWndText->BlockSetStyle(ESSTY_STRIKETHROUGH);
-//				m_pWndText->BlockInsert( "#s", "#ns" );				
 			}
 			else
 			{
 				m_pWndText->BlockClearStyle(ESSTY_STRIKETHROUGH);
-//				m_pWndText->BlockDelete( "#s", "#ns" );				
 			}
 			break;
 		case WIDC_CHECK4:			
@@ -9561,12 +9555,10 @@ BOOL CWndFontEdit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				str.Format( "#c%x", dwColor );
 						
 				m_pWndText->BlockSetColor( dwColor );
-//				m_pWndText->BlockInsert( str, "#nc" );				
 			}
 			else
 			{
 				m_pWndText->BlockSetColor( 0xff000000 );
-//				m_pWndText->BlockDelete( "#c", "#nc" );				
 			}
 
 			break;
