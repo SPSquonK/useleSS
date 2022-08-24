@@ -278,7 +278,6 @@ CWndButton::CWndButton()
 	m_bGroup          = FALSE;
 	m_ptPush          = CPoint(1,1);
 	m_pWndMenu        = NULL;
-	m_bTopDown        = FALSE;
 	m_byWndType       = WTYPE_BUTTON;
 	m_cHotkey         = 0;
 	ZeroMemory( &m_shortcut, sizeof( m_shortcut ) );
@@ -378,42 +377,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 
 		if( m_pWndMenu )
 		{
-			if( m_bTopDown )
-			{
-				p2DRender->RenderFillRect( rect, dwColor3, dwColor3, dwColor3, dwColor3 );
-				p2DRender->RenderRoundRect( rect, dwColor );
-
-				if( m_bTopDown == 1 )
-				{
-					p2DRender->RenderLine( 
-						CPoint( rect.right - 14, rect.top + 6 ), 
-						CPoint( rect.right - 4 , rect.top + 6 ), 
-						dwColor
-						);
-					p2DRender->RenderFillTriangle( 
-						CPoint( rect.right - 14, rect.top + 8 ), 
-						CPoint( rect.right - 4 , rect.top + 8 ), 
-						CPoint( rect.right - 9 , rect.top + 14 ), 
-						dwColor
-						);
-				}
-				else
-				{
-					p2DRender->RenderLine( 
-						CPoint( rect.right - 14, rect.top + 13 ), 
-						CPoint( rect.right - 4 , rect.top + 13 ), 
-						dwColor
-						);
-					p2DRender->RenderFillTriangle( 
-						CPoint( rect.right - 14, rect.top + 12 ), 
-						CPoint( rect.right - 3 , rect.top + 12 ), 
-						CPoint( rect.right - 9 , rect.top + 6 ), 
-						dwColor
-						);
-				}
-			}
-			else
-			{
+			
 				if( m_pWndMenu->IsVisible() )
 				{
 					dwColor1 = 	D3DCOLOR_TEMP( 155, 200, 200, 200 );
@@ -435,7 +399,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 					m_pTexture->Render( p2DRender, CPoint( pt.x, pt.y     ), m_nAlphaCount );
 					m_pTexture->m_size = size;
 				}
-			}
+			
 			p2DRender->TextOut( pt.x + 4 + 20, pt.y + 4, m_strTitle, 0xff000000  );
 		}
 		else
@@ -514,36 +478,6 @@ void CWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 ///		PLAYSND( m_strSndEffect, NULL );
 
-		if( m_pWndMenu && m_bTopDown )
-		{
-			CWndMenu* pWndMenu = (CWndMenu*)m_pParentWnd;
-			// °ø°£ ³ÐÈ÷±â 
-			for( int i = 0; i < pWndMenu->m_awndMenuItem.GetSize(); i++ )
-			{
-				if( pWndMenu->GetMenuItem( i ) == this )
-				{
-					for(int i2 = 0; i2 < m_pWndMenu->m_awndMenuItem.GetSize(); i2++ )
-					{
-						if(m_bTopDown == 1)
-						{
-							CWndButton* pMenuIns = m_pWndMenu->GetMenuItem( i2 );
-							pWndMenu->InsertMenu( ++i, 0, pMenuIns->GetWndId(), pMenuIns->GetTitle() );
-						}
-						else
-							pWndMenu->DeleteMenu( i + 1, 0 );
-					}
-					break;
-				}
-			}
-			if(m_bTopDown == 1)
-				m_bTopDown = 2;
-			else
-				m_bTopDown = 1;
-			m_bHighLight = FALSE;
-			m_bPush = FALSE;
-			return;
-		}
-		
 		if( m_dwStyle & WBS_CHECK )
 			m_bCheck = !m_bCheck;
 

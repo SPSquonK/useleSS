@@ -116,7 +116,6 @@ public:
 	CHAR      m_cHotkey;
 
 	CWndMenu*  m_pWndMenu;
-	BOOL       m_bTopDown;
 	SHORTCUT   m_shortcut;
 
 	CWndButton();
