@@ -1,5 +1,4 @@
-#ifndef __WNDCOMMITEM__H
-#define __WNDCOMMITEM__H
+#pragma once
 
 class C2DRender;
 class CItemElem;
@@ -55,14 +54,11 @@ public:
 	void OnInitialUpdate() override;
 }; 
 
-class CWndCommercialElem : public CWndNeuz 
+class CWndCommercialElem final : public CWndNeuz 
 { 
 public: 
 	CWndComponentSlots<2> m_slots;
 
-	
-	
-	
 	CWndCommercialElem(); 
 	~CWndCommercialElem(); 
 	
@@ -70,10 +66,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnRButtonUp( UINT nFlags, CPoint point );
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 
@@ -83,29 +75,20 @@ private:
 	bool IsSMItem(CItemElem * pItemElem);
 }; 
 
-class CWndRemoveElem : public CWndNeuz 
+class CWndRemoveElem final : public CWndNeuz 
 { 
 public: 
-	BYTE		m_nType;
-	int			m_nParts;
-	DWORD		m_dwItemId;
-	OBJID		m_objid;
-	CItemElem*	m_pItemElem;
-	BOOL		m_bSetting;
-
-	CWndRemoveElem(); 
-	~CWndRemoveElem(); 
+	BYTE		m_nType = 0;
+	int			m_nParts = 0;
+	DWORD		m_dwItemId = 0;
+	OBJID		m_objid = 0;
+	CItemElem*	m_pItemElem = nullptr;
+	BOOL		m_bSetting = FALSE;
 
 	void OnSetItem( BYTE nType, DWORD dwItemId, OBJID objid, int nParts, CItemElem* pItemElem );
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
+	void OnInitialUpdate() override; 
 }; 
 
-#endif

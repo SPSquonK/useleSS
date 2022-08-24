@@ -765,30 +765,7 @@ BOOL CWndCommercialElem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_COMMERCIAL_ELEM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndCommercialElem::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndCommercialElem::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndCommercialElem::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndCommercialElem::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndCommercialElem::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 
 void CWndCommercialElem::OnRButtonUp(UINT nFlags, CPoint point) {
 	if (m_slots[0].IsIn(point)) {
@@ -1017,19 +994,6 @@ bool CWndCommercialElem::IsSMItem(CItemElem * pItemElem) {
   CtrlId : WIDC_BTN_ELEMCANCEL - Button
 ****************************************************/
 
-CWndRemoveElem::CWndRemoveElem() 
-{ 
-	m_nType		= 0;
-	m_nParts	= 0;
-	m_dwItemId	= 0;
-	m_objid		= 0;
-	m_pItemElem = NULL;
-	m_bSetting	= FALSE;
-} 
-CWndRemoveElem::~CWndRemoveElem() 
-{ 
-} 
-
 void CWndRemoveElem::OnSetItem( BYTE nType, DWORD dwItemId, OBJID objid, int nParts, CItemElem* pItemElem )
 {
 	m_nType = nType;
@@ -1039,9 +1003,7 @@ void CWndRemoveElem::OnSetItem( BYTE nType, DWORD dwItemId, OBJID objid, int nPa
 	m_pItemElem = pItemElem;
 	m_bSetting = TRUE;
 }
-void CWndRemoveElem::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndRemoveElem::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
@@ -1050,9 +1012,7 @@ void CWndRemoveElem::OnInitialUpdate()
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT_MESSAGE );
 	if( pWndText )
 	{
-		CString string;
-		string.Format( prj.GetText( TID_GAME_REMOVEELEM ) );
-		pWndText->m_string = string;
+		pWndText->m_string = prj.GetText(TID_GAME_REMOVEELEM);
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.
@@ -1064,30 +1024,7 @@ BOOL CWndRemoveElem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_REMOVE_ELEM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndRemoveElem::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndRemoveElem::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRemoveElem::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndRemoveElem::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndRemoveElem::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndRemoveElem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	switch( nID )
@@ -1111,15 +1048,9 @@ BOOL CWndRemoveElem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 		break;
 	case WIDC_BTN_ELEMCANCEL:
-		{
-			Destroy();
-		}
-		break;
 	case WTBID_CLOSE:
-		{
-			Destroy();
-		}
+		Destroy();
 		break;
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+}
