@@ -55,7 +55,6 @@ void CDPLoginSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	}
 }
 
-
 void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	static size_t	nSize	= sizeof(DPID);
@@ -76,7 +75,9 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	}
 	else
 	{
-		g_dpDBClient.SendToServer( idFrom, lpMsg, dwMsgSize );
+		if (dw == PACKETTYPE_CREATE_PLAYER || dw == PACKETTYPE_DEL_PLAYER) {
+			g_dpDBClient.SendToServer(idFrom, lpMsg, dwMsgSize);
+		}
 	}
 }
 
