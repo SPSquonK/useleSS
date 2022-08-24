@@ -356,34 +356,33 @@ virtual void DrawCaret( C2DRender* p2DRender );
 // CWndViewCtrl
 //////////////////////////////////////////////////////////////////////////////
 
-typedef struct tagScriptElem
-{
-	tagScriptElem( void );
-	tagScriptElem( const CRect* pRect );
-	tagScriptElem* m_lpParent;
+struct TREEELEM {
+	TREEELEM(const CRect * pRect = nullptr);
+	TREEELEM * m_lpParent = nullptr;
 	DWORD m_dwColor;
 	DWORD m_dwSelectColor;
-	CEditString m_strKeyword;
-	DWORD m_dwData;
-	CPtrArray m_ptrArray;
-	BOOL m_bOpen;
-	CWndButton* m_pWndCheckBox;
-} 
-TREEELEM,* LPTREEELEM;
+	CEditString m_strKeyword = _T("");
+	DWORD m_dwData = 0;
+	boost::container::stable_vector<TREEELEM> m_ptrArray;
+	BOOL m_bOpen = FALSE;
+	CWndButton * m_pWndCheckBox = nullptr;
+};
+
+using LPTREEELEM = TREEELEM *;
 
 class CWndTreeCtrl : public CWndBase
 {
 public:							//sun!!
-	typedef struct tagITEM
-	{
-		CRect      m_rect;
-		BOOL       m_bButton;
-		LPTREEELEM m_lpTreeElem;
-	} TREEITEM,* LPTREEITEM;
+	using TreeElems = boost::container::stable_vector<TREEELEM>;
+
+	struct TREEITEM {
+		CRect m_rect;
+		TREEELEM * m_lpTreeElem;
+	};
 
 private:
-	void InterpriteScript( CScript& script, CPtrArray& ptrArray ); 
-	virtual void PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptrArray );
+	void InterpriteScript(CScript & script, TreeElems & ptrArray);
+	virtual void PaintTree( C2DRender* p2DRender, CPoint& pt, TreeElems & ptrArray );
 	LPTREEELEM m_pFocusElem;
 	int  m_nFontHeight ;
 	DWORD m_nWndColor   ;
@@ -392,7 +391,7 @@ private:
 	boost::container::stable_vector<TREEITEM> m_treeItemArray; // displayed elem
 
 	CWndScrollBar m_wndScrollBar;
-	void FreeTree( CPtrArray& ptrArray );
+	void FreeTree(TreeElems & ptrArray) const;
 public:
 	enum { CHECK_BOX_SIZE_XY = 13 };
 private:
@@ -402,6 +401,9 @@ private:
 	int m_nCategoryTextSpace;
 	int m_nTreeItemsMaxWidth;
 public:
+	static TREEELEM * FindTreeElem(TreeElems & ptrArray, DWORD dwData);
+	static TREEELEM * FindTreeElem(TreeElems & ptrArray, LPCTSTR lpszKeyword);
+
 	int   m_nLineSpace  ;
 	CTexture* m_pTexButtOpen;
 	CTexture* m_pTexButtClose;
@@ -410,17 +412,16 @@ public:
 
 	CWndTreeCtrl();
 	~CWndTreeCtrl();
-	int GetFontHeight() { return m_pFont->GetMaxHeight() + m_nLineSpace; }
+	[[nodiscard]] int GetFontHeight() const { return m_pFont->GetMaxHeight() + m_nLineSpace; }
 	BOOL DeleteAllItems();
 	LPTREEELEM GetCurSel();
 	LPTREEELEM GetRootElem();
-	LPTREEELEM GetNextElem( LPTREEELEM pElem, int& nPos );
-	LPTREEELEM FindTreeElem( DWORD dwData );
-	LPTREEELEM FindTreeElem( CPtrArray& ptrArray, DWORD dwData );
+	TREEELEM * FindTreeElem( DWORD dwData );
+	
 	LPTREEELEM SetCurSel( DWORD dwData );
 	LPTREEELEM SetCurSel( LPCTSTR lpszKeyword );
 	LPTREEELEM FindTreeElem( LPCTSTR lpszKeyword );
-	LPTREEELEM FindTreeElem( CPtrArray& ptrArray, LPCTSTR lpszKeyword );
+	
 	LPTREEELEM InsertItem( LPTREEELEM lpParent, 
 						   LPCTSTR lpString, 
 						   DWORD dwData, 
@@ -451,12 +452,11 @@ public:
 	void SetTextColor( DWORD dwCategoryTextColor, DWORD dwNormalTextColor, DWORD dwSelectedCategoryTextColor, DWORD dwSelectedNormalTextColor );
 
 private:
-	void CalculateTreeItemsNumber( int& nSumTreeItemsNumber, const CPtrArray& rPtrArray ) const;
-	void CalculateTreeItemsMaxHeight( int& nSumHeight, const CPtrArray& rPtrArray );
-	void CalculateTextColor( DWORD dwCategoryTextColor, DWORD dwNormalTextColor, DWORD dwSelectedCategoryTextColor, DWORD dwSelectedNormalTextColor, const CPtrArray& rPtrArray );
+	static int CalculateTreeItemsNumber(const TreeElems & rPtrArray);
+	int CalculateTreeItemsMaxHeight(const TreeElems & rPtrArray) const;
+	static void CalculateTextColor(DWORD dwCategoryTextColor, DWORD dwNormalTextColor, DWORD dwSelectedCategoryTextColor, DWORD dwSelectedNormalTextColor, TreeElems & rPtrArray);
 
 public:
-	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
 	virtual void OnInitialUpdate();
 	virtual void OnDraw( C2DRender* p2DRender );

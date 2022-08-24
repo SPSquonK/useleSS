@@ -23,6 +23,8 @@ public:
 class CWndQuest : public CWndNeuz 
 { 
 public: 
+	using TreeElems = boost::container::stable_vector<TREEELEM>;
+
 	CWndQuest(); 
 	~CWndQuest();
 
@@ -49,8 +51,8 @@ public:
 
 private:
 	CWndQuestTreeCtrl* GetQuestTreeSelf( const DWORD dwQuestID );
-	void AddOpenTree( CWordArray& raOpenTree, CPtrArray& rPtrArray );
-	void OpenTreeArray( CPtrArray& rPtrArray, BOOL bOpen = TRUE );
+	void AddOpenTree( CWordArray& raOpenTree, const TreeElems & rPtrArray );
+	void OpenTreeArray( TreeElems & rPtrArray, BOOL bOpen = TRUE );
 	void InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQuestID, const BOOL bCompleteQuest, const int nNewQuestId = -1 );
 	DWORD FindOldHeadQuest( const CDWordArray& raOldHeadQuestID, const DWORD dwNowHeadQuestID ) const;
 	BOOL IsCheckedQuestID( DWORD dwQuestID );

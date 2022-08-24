@@ -10,9 +10,9 @@ public:
 	virtual ~CWndQITreeCtrl( void );
 
 public:
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-	virtual void OnRButtonDown( UINT nFlags, CPoint point );
-	virtual void PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptrArray );
+	void OnLButtonDown(UINT nFlags, CPoint point) override;
+	void OnRButtonDown(UINT nFlags, CPoint point) override;
+	void PaintTree(C2DRender * p2DRender, CPoint & pt, TreeElems & ptrArray) override;
 };
 //-----------------------------------------------------------------------------
 class CWndQuestQuickInfo : public CWndNeuz

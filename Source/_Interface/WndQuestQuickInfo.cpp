@@ -55,7 +55,7 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 		if( pTreeItem.m_rect.PtInRect( point ) )
 		{
-			if( pTreeElem->m_ptrArray.GetSize() > 0 || pTreeElem->m_lpParent == NULL )
+			if( !pTreeElem->m_ptrArray.empty() || pTreeElem->m_lpParent == NULL)
 			{
 				DWORD dwQuestID = pTreeElem->m_dwData;
 				if( g_WndMng.m_pWndQuestDetail && dwQuestID == g_WndMng.m_pWndQuestDetail->GetQuestID() )
@@ -106,38 +106,34 @@ void CWndQITreeCtrl::OnRButtonDown( UINT nFlags, CPoint point )
 	}
 }
 //-----------------------------------------------------------------------------
-void CWndQITreeCtrl::PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptrArray )
+void CWndQITreeCtrl::PaintTree( C2DRender* p2DRender, CPoint& pt, TreeElems & ptrArray )
 {
-	LPTREEELEM pTreeElem = NULL;
-
-	for(int i = 0; i < ptrArray.GetSize(); ++i )
-	{
-		pTreeElem = ( LPTREEELEM )ptrArray.GetAt( i );
+	for (TREEELEM & pTreeElem : ptrArray) {
 		TREEITEM pTreeItem;
 		CSize sizeStr( 0, 0 );
-		p2DRender->m_pFont->GetTextExtent( pTreeElem->m_strKeyword, &sizeStr );
+		p2DRender->m_pFont->GetTextExtent( pTreeElem.m_strKeyword, &sizeStr );
 		int nRectLeft = pt.x + GetCategoryTextSpace();
 		int nRectTop = pt.y;
 		int nRectRight = pt.x + GetCategoryTextSpace() + sizeStr.cx;
 		int nRectBottom = pt.y + sizeStr.cy;
 		pTreeItem.m_rect.SetRect( nRectLeft, nRectTop, nRectRight, nRectBottom );
 		SetTreeItemsMaxWidth( ( nRectRight > GetTreeItemsMaxWidth() ) ? nRectRight : GetTreeItemsMaxWidth() );
-		if( GetMemberCheckingMode() == TRUE && pTreeElem->m_pWndCheckBox )
+		if( GetMemberCheckingMode() == TRUE && pTreeElem.m_pWndCheckBox )
 		{
-			CWndButton* pWndCheckBox = pTreeElem->m_pWndCheckBox;
-			if( pTreeElem->m_ptrArray.GetSize() == 0 )
+			CWndButton* pWndCheckBox = pTreeElem.m_pWndCheckBox;
+			if( pTreeElem.m_ptrArray.empty() )
 			{
 				pWndCheckBox->EnableWindow( TRUE );
 				pWndCheckBox->SetVisible( TRUE );
 				pWndCheckBox->SetWndRect( CRect( pt.x, pt.y - 1, pt.x + CWndTreeCtrl::CHECK_BOX_SIZE_XY, pt.y + CWndTreeCtrl::CHECK_BOX_SIZE_XY - 1 ) );
 			}
 		}
-		pTreeItem.m_lpTreeElem = pTreeElem;
+		pTreeItem.m_lpTreeElem = &pTreeElem;
 		Add(pTreeItem);
 
-		if( pTreeElem->m_ptrArray.GetSize() )
+		if( !pTreeElem.m_ptrArray.empty() )
 		{
-			if( pTreeElem->m_bOpen )
+			if( pTreeElem.m_bOpen )
 				p2DRender->RenderTexture( pt, m_pTexButtOpen );
 			else
 				p2DRender->RenderTexture( pt, m_pTexButtClose );
@@ -153,23 +149,21 @@ void CWndQITreeCtrl::PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptr
 		}
 		else
 			p2DRender->SetFont( CWndBase::m_Theme.m_pFontText );
-		if( GetFocusElem() == pTreeElem )
-		{
-			pTreeElem->m_strKeyword.SetColor( pTreeElem->m_dwSelectColor );
-			p2DRender->TextOut_EditString( nRectLeft, nRectTop, pTreeElem->m_strKeyword );
+		
+		if (GetFocusElem() == &pTreeElem) {
+			pTreeElem.m_strKeyword.SetColor(pTreeElem.m_dwSelectColor);
+		} else {
+			pTreeElem.m_strKeyword.SetColor(pTreeElem.m_dwColor);
 		}
-		else
-		{
-			pTreeElem->m_strKeyword.SetColor( pTreeElem->m_dwColor );
-			p2DRender->TextOut_EditString( nRectLeft, nRectTop, pTreeElem->m_strKeyword );
-		}
+
+		p2DRender->TextOut_EditString(nRectLeft, nRectTop, pTreeElem.m_strKeyword);
 		p2DRender->SetFont( pOldFont );
 
 		pt.y += GetFontHeight();
-		if( pTreeElem->m_ptrArray.GetSize() && pTreeElem->m_bOpen == TRUE )
+		if( !pTreeElem.m_ptrArray.empty() && pTreeElem.m_bOpen == TRUE )
 		{
 			pt.x += GetTreeTabWidth();
-			PaintTree( p2DRender, pt, pTreeElem->m_ptrArray );
+			PaintTree( p2DRender, pt, pTreeElem.m_ptrArray );
 			pt.x -= GetTreeTabWidth();
 		}
 	}

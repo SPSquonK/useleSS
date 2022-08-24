@@ -632,35 +632,25 @@ LPTREEELEM CWndTreeCtrl::GetRootElem()
 { 
 	return &m_treeElem; 
 }
-LPTREEELEM CWndTreeCtrl::GetNextElem( LPTREEELEM pElem, int& nPos )
-{
-	LPTREEELEM pGetElem = NULL;
-	if( nPos < pElem->m_ptrArray.GetSize() ) 
-	{
-		pGetElem = (LPTREEELEM)pElem->m_ptrArray.GetAt( nPos );
-		nPos++;
-	}
-	return pGetElem;
+
+TREEELEM * CWndTreeCtrl::FindTreeElem(DWORD dwData) {
+	return FindTreeElem(m_treeElem.m_ptrArray, dwData);
 }
-LPTREEELEM CWndTreeCtrl::FindTreeElem( DWORD dwData )
-{
-	return FindTreeElem( m_treeElem.m_ptrArray, dwData );
-}
-LPTREEELEM CWndTreeCtrl::FindTreeElem( CPtrArray& ptrArray, DWORD dwData )
-{
-	for(int i = 0; i < ptrArray.GetSize(); i++)
-	{
-		LPTREEELEM lpTreeElem = (LPTREEELEM)ptrArray.GetAt(i);
-		if( lpTreeElem->m_dwData == dwData )
-			return lpTreeElem;
-		if( lpTreeElem->m_ptrArray.GetSize() )
-		{
-			lpTreeElem = FindTreeElem( lpTreeElem->m_ptrArray, dwData );
-			if( lpTreeElem ) return lpTreeElem;
+
+TREEELEM * CWndTreeCtrl::FindTreeElem(boost::container::stable_vector<TREEELEM> & ptrArray, DWORD dwData) {
+	for (TREEELEM & lpTreeElem : ptrArray) {
+		if (lpTreeElem.m_dwData == dwData)
+			return &lpTreeElem;
+
+		if (!lpTreeElem.m_ptrArray.empty()) {
+			TREEELEM * result = FindTreeElem(lpTreeElem.m_ptrArray, dwData);
+			if (result) return result;
 		}
 	}
-	return NULL;
+
+	return nullptr;
 }
+
 LPTREEELEM CWndTreeCtrl::SetCurSel( DWORD dwData )
 {
 	m_pFocusElem = FindTreeElem( m_treeElem.m_ptrArray, dwData );
@@ -672,55 +662,56 @@ LPTREEELEM CWndTreeCtrl::SetCurSel( LPCTSTR lpszKeyword )
 	return m_pFocusElem;
 }
 
-void CWndTreeCtrl::FreeTree( CPtrArray& ptrArray ) 
-{
-	for(int i = 0; i < ptrArray.GetSize(); i++)
-	{
-		LPTREEELEM lpTreeElem = (LPTREEELEM)ptrArray.GetAt(i);
-		if( m_bMemberCheckingMode == TRUE )
-			SAFE_DELETE( lpTreeElem->m_pWndCheckBox );
-		if(lpTreeElem->m_ptrArray.GetSize())
-			FreeTree(lpTreeElem->m_ptrArray);
-		safe_delete( lpTreeElem );
-	}
-	ptrArray.RemoveAll();
-}
-LPTREEELEM CWndTreeCtrl::FindTreeElem( LPCTSTR lpszKeyword )
-{
-	return FindTreeElem( m_treeElem.m_ptrArray, lpszKeyword );
-}
-LPTREEELEM CWndTreeCtrl::FindTreeElem( CPtrArray& ptrArray, LPCTSTR lpszKeyword )
-{
-	for(int i = 0; i < ptrArray.GetSize(); i++)
-	{
-		LPTREEELEM lpTreeElem = (LPTREEELEM)ptrArray.GetAt(i);
-		if( lpTreeElem->m_strKeyword == lpszKeyword )
-			return lpTreeElem;
-		if( lpTreeElem->m_ptrArray.GetSize() )
-		{
-			lpTreeElem = FindTreeElem( lpTreeElem->m_ptrArray, lpszKeyword );
-			if( lpTreeElem ) return lpTreeElem;
+void CWndTreeCtrl::FreeTree(boost::container::stable_vector<TREEELEM> & ptrArray) const {
+	for (TREEELEM & elem : ptrArray) {
+
+		if (m_bMemberCheckingMode == TRUE)
+			SAFE_DELETE(elem.m_pWndCheckBox);
+		if (!elem.m_ptrArray.empty()) {
+			FreeTree(elem.m_ptrArray);
 		}
 	}
-	return NULL;
+
+	ptrArray.clear();
 }
 
-LPTREEELEM CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWORD dwData, BOOL bForbidChecking, BOOL bCheck, DWORD dwFontColor, DWORD dwSelectColor )
+LPTREEELEM CWndTreeCtrl::FindTreeElem(LPCTSTR lpszKeyword) {
+	return FindTreeElem(m_treeElem.m_ptrArray, lpszKeyword);
+}
+
+TREEELEM * CWndTreeCtrl::FindTreeElem(boost::container::stable_vector<TREEELEM> & ptrArray, LPCTSTR lpszKeyword) {
+	for (TREEELEM & lpTreeElem : ptrArray) {
+		if (lpTreeElem.m_strKeyword == lpszKeyword)
+			return &lpTreeElem;
+
+		if (!lpTreeElem.m_ptrArray.empty()) {
+			TREEELEM * result = FindTreeElem(lpTreeElem.m_ptrArray, lpszKeyword);
+			if (result) return result;
+		}
+	}
+	return nullptr;
+}
+
+TREEELEM * CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWORD dwData, BOOL bForbidChecking, BOOL bCheck, DWORD dwFontColor, DWORD dwSelectColor )
 {
 	const CRect clientRect = GetClientRect();
-	LPTREEELEM lpTreeElem = new TREEELEM( &clientRect);
-	lpTreeElem->m_lpParent = lpParent;
-	lpTreeElem->m_dwColor = dwFontColor;
-	lpTreeElem->m_dwSelectColor = dwSelectColor;
-	lpTreeElem->m_strKeyword.Init( m_pFont, &clientRect);
-	lpTreeElem->m_strKeyword.SetParsingString( lpString, dwFontColor, 0x00000000, 0, 0x00000001, TRUE );
-	lpTreeElem->m_dwData = dwData;
-	lpTreeElem->m_bOpen = FALSE;
+
+	TREEELEM & lpTreeElem = lpParent
+		? lpParent->m_ptrArray.emplace_back(&clientRect)
+		: m_treeElem.m_ptrArray.emplace_back(&clientRect);
+
+	lpTreeElem.m_lpParent = lpParent;
+	lpTreeElem.m_dwColor = dwFontColor;
+	lpTreeElem.m_dwSelectColor = dwSelectColor;
+	lpTreeElem.m_strKeyword.Init( m_pFont, &clientRect);
+	lpTreeElem.m_strKeyword.SetParsingString( lpString, dwFontColor, 0x00000000, 0, 0x00000001, TRUE );
+	lpTreeElem.m_dwData = dwData;
+	lpTreeElem.m_bOpen = FALSE;
 
 	if( m_bMemberCheckingMode == TRUE && bForbidChecking == FALSE )
 	{
-		lpTreeElem->m_pWndCheckBox = new CWndButton;
-		CWndButton* pWndCheckBox = lpTreeElem->m_pWndCheckBox;
+		lpTreeElem.m_pWndCheckBox = new CWndButton;
+		CWndButton* pWndCheckBox = lpTreeElem.m_pWndCheckBox;
 		CRect rectCheckBox( 0, 0, CHECK_BOX_SIZE_XY, CHECK_BOX_SIZE_XY );
 		pWndCheckBox->Create( "", WBS_CHECK, rectCheckBox, this, WIDC_CHECK );
 		pWndCheckBox->SetTexture( D3DDEVICE, MakePath( DIR_THEME, _T( DEF_CTRL_CHECK ) ), 1 );
@@ -729,11 +720,8 @@ LPTREEELEM CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWOR
 		pWndCheckBox->EnableWindow( FALSE );
 		pWndCheckBox->SetVisible( FALSE );
 	}
-	if( lpParent )
-		lpParent->m_ptrArray.Add( lpTreeElem );
-	else
-		m_treeElem.m_ptrArray.Add( lpTreeElem );
-	return lpTreeElem;
+
+	return &lpTreeElem;
 }
 void CWndTreeCtrl::LoadTreeScript(LPCTSTR lpFileName) 
 {
@@ -747,29 +735,25 @@ void CWndTreeCtrl::LoadTreeScript(LPCTSTR lpFileName)
 	} while( script.tok != FINISHED );
 
 }
-void CWndTreeCtrl::InterpriteScript( CScript& script, CPtrArray& ptrArray ) 
-{
-	LPTREEELEM lpTreeElem	= NULL;
+void CWndTreeCtrl::InterpriteScript(CScript & script, boost::container::stable_vector<TREEELEM> & ptrArray) {
 	script.GetToken();	// keyword
-	while( *script.token != '}' && script.tok != FINISHED )
-	{
-		lpTreeElem	= new TREEELEM;
-		lpTreeElem->m_strKeyword	= script.Token;
-		lpTreeElem->m_bOpen		= FALSE;
-		lpTreeElem->m_dwColor	= m_nFontColor;
-		ptrArray.Add(lpTreeElem);
-		lpTreeElem->m_dwData	= 0;
+	while (*script.token != '}' && script.tok != FINISHED) {
+		TREEELEM & lpTreeElem = ptrArray.emplace_back();
+		lpTreeElem.m_strKeyword = script.Token;
+		lpTreeElem.m_bOpen = FALSE;
+		lpTreeElem.m_dwColor = m_nFontColor;
+		lpTreeElem.m_dwData = 0;
 		script.GetToken();	// keyword
-		if( *script.token == '{' )
-		{
-			if( lpTreeElem )
-				InterpriteScript( script, lpTreeElem->m_ptrArray );
+		if (*script.token == '{') {
+			InterpriteScript(script, lpTreeElem.m_ptrArray);
 		}
 	}
-	if( script.tok == FINISHED )
+
+	if (script.tok == FINISHED)
 		return;
 	script.GetToken();
 }
+
 BOOL CWndTreeCtrl::CheckParentTreeBeOpened( LPTREEELEM lpTreeElem )
 {
 	if( lpTreeElem->m_bOpen == FALSE )
@@ -831,11 +815,8 @@ int CWndTreeCtrl::GetCategoryTextSpace( void ) const
 {
 	return m_nCategoryTextSpace;
 }
-int CWndTreeCtrl::GetTreeItemsNumber( void ) const
-{
-	int nTreeItemsNumber = 0;
-	CalculateTreeItemsNumber( nTreeItemsNumber, m_treeElem.m_ptrArray );
-	return nTreeItemsNumber;
+int CWndTreeCtrl::GetTreeItemsNumber() const {
+	return CalculateTreeItemsNumber(m_treeElem.m_ptrArray);
 }
 void CWndTreeCtrl::SetTreeItemsMaxWidth( int nTreeItemsMaxWidth )
 {
@@ -845,71 +826,52 @@ int CWndTreeCtrl::GetTreeItemsMaxWidth( void ) const
 {
 	return m_nTreeItemsMaxWidth;
 }
-int CWndTreeCtrl::GetTreeItemsMaxHeight( void )
-{
-	int nTreeItemsMaxHeight = 6;
-	CalculateTreeItemsMaxHeight( nTreeItemsMaxHeight, m_treeElem.m_ptrArray );
-	return nTreeItemsMaxHeight;
+int CWndTreeCtrl::GetTreeItemsMaxHeight() {
+	return 6 + CalculateTreeItemsMaxHeight(m_treeElem.m_ptrArray);
 }
+
 void CWndTreeCtrl::SetTextColor( DWORD dwCategoryTextColor, DWORD dwNormalTextColor, DWORD dwSelectedCategoryTextColor, DWORD dwSelectedNormalTextColor )
 {
 	CalculateTextColor( dwCategoryTextColor, dwNormalTextColor, dwSelectedCategoryTextColor, dwSelectedNormalTextColor, m_treeElem.m_ptrArray );
 }
-void CWndTreeCtrl::CalculateTreeItemsNumber( int& nSumTreeItemsNumber, const CPtrArray& rPtrArray ) const
-{
-	for( int i = 0; i < rPtrArray.GetSize(); ++i )
-	{
-		LPTREEELEM lpTreeElem = ( LPTREEELEM )rPtrArray.GetAt( i );
- 		if( lpTreeElem )
-		{
-			++nSumTreeItemsNumber;
-			if( lpTreeElem->m_ptrArray.GetSize() > 0 )
-				CalculateTreeItemsNumber( nSumTreeItemsNumber, lpTreeElem->m_ptrArray );
+
+int CWndTreeCtrl::CalculateTreeItemsNumber(const TreeElems & rPtrArray) {
+	int total = 0;
+	for (const TREEELEM & lpTreeElem : rPtrArray) {
+		total += 1 + CalculateTreeItemsNumber(lpTreeElem.m_ptrArray);
+	}
+	return total;
+}
+
+int CWndTreeCtrl::CalculateTreeItemsMaxHeight(const TreeElems & rPtrArray) const {
+	int nSumHeight = 0;
+	for (const TREEELEM & treeElem : rPtrArray) {
+		nSumHeight += GetFontHeight();
+		if (!treeElem.m_ptrArray.empty() && treeElem.m_bOpen) {
+			nSumHeight += CalculateTreeItemsMaxHeight(treeElem.m_ptrArray);
 		}
 	}
+	return nSumHeight;
 }
-void CWndTreeCtrl::CalculateTreeItemsMaxHeight( int& nSumHeight, const CPtrArray& rPtrArray )
-{
-	for( int i = 0; i < rPtrArray.GetSize(); ++i )
-	{
-		LPTREEELEM lpTreeElem = ( LPTREEELEM )rPtrArray.GetAt( i );
-		if( lpTreeElem )
-		{
-			nSumHeight += GetFontHeight();
-			if( lpTreeElem->m_ptrArray.GetSize() > 0 && lpTreeElem->m_bOpen == TRUE )
-				CalculateTreeItemsMaxHeight( nSumHeight, lpTreeElem->m_ptrArray );
-		}
-	}
-}
-void CWndTreeCtrl::CalculateTextColor( DWORD dwCategoryTextColor, DWORD dwNormalTextColor, DWORD dwSelectedCategoryTextColor, DWORD dwSelectedNormalTextColor, const CPtrArray& rPtrArray )
-{
-	for( int i = 0; i < rPtrArray.GetSize(); ++i )
-	{
-		LPTREEELEM lpTreeElem = ( LPTREEELEM )rPtrArray.GetAt( i );
- 		if( lpTreeElem )
-		{
-			if( lpTreeElem->m_ptrArray.GetSize() > 0 || lpTreeElem->m_lpParent == NULL )
-			{
-				lpTreeElem->m_dwColor = dwCategoryTextColor;
-				lpTreeElem->m_dwSelectColor = dwSelectedCategoryTextColor;
-				CalculateTextColor( dwCategoryTextColor, dwNormalTextColor, dwSelectedCategoryTextColor, dwSelectedNormalTextColor, lpTreeElem->m_ptrArray );
-			}
-			else
-			{
-				lpTreeElem->m_dwColor = dwNormalTextColor;
-				lpTreeElem->m_dwSelectColor = dwSelectedNormalTextColor;
-			}
+
+void CWndTreeCtrl::CalculateTextColor(DWORD dwCategoryTextColor, DWORD dwNormalTextColor, DWORD dwSelectedCategoryTextColor, DWORD dwSelectedNormalTextColor, TreeElems & rPtrArray) {
+	for (TREEELEM & lpTreeElem : rPtrArray) {
+		if (!lpTreeElem.m_ptrArray.empty() || !lpTreeElem.m_lpParent) {
+			lpTreeElem.m_dwColor = dwCategoryTextColor;
+			lpTreeElem.m_dwSelectColor = dwSelectedCategoryTextColor;
+			CalculateTextColor(dwCategoryTextColor, dwNormalTextColor, dwSelectedCategoryTextColor, dwSelectedNormalTextColor, lpTreeElem.m_ptrArray);
+		} else {
+			lpTreeElem.m_dwColor = dwNormalTextColor;
+			lpTreeElem.m_dwSelectColor = dwSelectedNormalTextColor;
 		}
 	}
 }
 void CWndTreeCtrl::OnInitialUpdate()
 {
-	//CSize size = m_pSprPack->GetAt(13)->GetSize();
 	CRect rect = GetWindowRect();
 	m_pTexButtOpen  = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtTreeOpen.tga"   ), 0xffff00ff );
 	m_pTexButtClose = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtTreeClose.tga"   ), 0xffff00ff );
-	//AddWndStyle(WBS_CAPTION);
-	//m_wndScrollBar.AddWndStyle( WBS_DOCKING );
+
 	m_wndScrollBar.Create( WBS_DOCKING | WBS_VERT, rect, this, 1000 );//,m_pSprPack,-1);
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
 }
@@ -925,23 +887,7 @@ void CWndTreeCtrl::SetWndRect(CRect rectWnd, BOOL bOnSize )
 	if( bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
-void CWndTreeCtrl::PaintFrame(C2DRender* p2DRender)
-{
-	CRect rect = GetWindowRect();
-//	m_pTheme->RenderWndTextFrame( p2DRender, &rect );
-/*
-	DWORD dwColor1 = D3DCOLOR_ARGB( 158, 0, 0,  0 );//D3DCOLOR_TEMP( 255,   0,   0,  50 );//
-	DWORD dwColor2 = D3DCOLOR_ARGB( 180, 240, 240,  30 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  30 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
 
-	p2DRender->RenderFillRect ( rect, dwColor1 );
-	p2DRender->RenderRoundRect( rect, dwColor2 );
-	rect.DeflateRect( 1 , 1 );
-	p2DRender->RenderRect( rect, dwColor3 );
-*/
-	//p2DRender->RenderFillRect ( rect, D3DCOLOR_TEMP( 128,  50,  50,  50 ) );
-	//p2DRender->RenderRoundRect( rect, D3DCOLOR_TEMP( 128, 200, 200, 200 ) );
-}
 void CWndTreeCtrl::OnDraw(C2DRender* p2DRender) 
 {
 	CPoint pt( 3, 3);
@@ -969,62 +915,51 @@ void CWndTreeCtrl::OnDraw(C2DRender* p2DRender)
 		m_wndScrollBar.SetVisible( FALSE );
 }
 
-void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray) 
-{
-	for(int i = 0; i < ptrArray.GetSize(); i++)
-	{
-		LPTREEELEM pTreeElem = (LPTREEELEM)ptrArray.GetAt( i );
+void CWndTreeCtrl::PaintTree(C2DRender * p2DRender, CPoint & pt, TreeElems & ptrArray) {
+	for (TREEELEM & pTreeElem : ptrArray) {
 		TREEITEM pTreeItem;
 		CSize sizeStr;
-		p2DRender->m_pFont->GetTextExtent( pTreeElem->m_strKeyword, &sizeStr);
+		p2DRender->m_pFont->GetTextExtent(pTreeElem.m_strKeyword, &sizeStr);
 		int nRectLeft = pt.x + m_nCategoryTextSpace;
 		int nRectTop = pt.y;
 		int nRectRight = pt.x + m_nCategoryTextSpace + sizeStr.cx;
 		int nRectBottom = pt.y + sizeStr.cy;
-		pTreeItem.m_rect.SetRect( nRectLeft, nRectTop, nRectRight, nRectBottom );
-		m_nTreeItemsMaxWidth = ( nRectRight > m_nTreeItemsMaxWidth ) ? nRectRight : m_nTreeItemsMaxWidth;
-		if( m_bMemberCheckingMode == TRUE && pTreeElem->m_pWndCheckBox )
-		{
-			CWndButton* pWndCheckBox = pTreeElem->m_pWndCheckBox;
-			if( pTreeElem->m_ptrArray.GetSize() == 0 )
-			{
-				pWndCheckBox->EnableWindow( TRUE );
-				pWndCheckBox->SetVisible( TRUE );
-				pWndCheckBox->SetWndRect( CRect( pt.x, pt.y - 1, pt.x + CHECK_BOX_SIZE_XY, pt.y + CHECK_BOX_SIZE_XY - 1 ) );
+		pTreeItem.m_rect.SetRect(nRectLeft, nRectTop, nRectRight, nRectBottom);
+		m_nTreeItemsMaxWidth = (nRectRight > m_nTreeItemsMaxWidth) ? nRectRight : m_nTreeItemsMaxWidth;
+		if (m_bMemberCheckingMode == TRUE && pTreeElem.m_pWndCheckBox) {
+			CWndButton * pWndCheckBox = pTreeElem.m_pWndCheckBox;
+			if (pTreeElem.m_ptrArray.empty()) {
+				pWndCheckBox->EnableWindow(TRUE);
+				pWndCheckBox->SetVisible(TRUE);
+				pWndCheckBox->SetWndRect(CRect(pt.x, pt.y - 1, pt.x + CHECK_BOX_SIZE_XY, pt.y + CHECK_BOX_SIZE_XY - 1));
 			}
 		}
-		pTreeItem.m_lpTreeElem = pTreeElem;
+		pTreeItem.m_lpTreeElem = &pTreeElem;
 		m_treeItemArray.emplace_back(pTreeItem);
 
-		if( pTreeElem->m_ptrArray.GetSize() )
-		{
-
-			if( pTreeElem->m_bOpen )
-				p2DRender->RenderTexture( pt, m_pTexButtOpen );
+		if (!pTreeElem.m_ptrArray.empty()) {
+			if (pTreeElem.m_bOpen)
+				p2DRender->RenderTexture(pt, m_pTexButtOpen);
 			else
-				p2DRender->RenderTexture( pt, m_pTexButtClose );
+				p2DRender->RenderTexture(pt, m_pTexButtClose);
+		}
+		if (m_pFocusElem == &pTreeElem) {
+			pTreeElem.m_strKeyword.SetColor(pTreeElem.m_dwSelectColor);
+		} else {
+			pTreeElem.m_strKeyword.SetColor(pTreeElem.m_dwColor);
+		}
 
-		}
-		if( m_pFocusElem == pTreeElem )
-		{
-			pTreeElem->m_strKeyword.SetColor( pTreeElem->m_dwSelectColor );
-			p2DRender->TextOut_EditString( nRectLeft, nRectTop, pTreeElem->m_strKeyword );
-		}
-		else
-		{
-			pTreeElem->m_strKeyword.SetColor( pTreeElem->m_dwColor );
-			p2DRender->TextOut_EditString( nRectLeft, nRectTop, pTreeElem->m_strKeyword );
-		}
+		p2DRender->TextOut_EditString(nRectLeft, nRectTop, pTreeElem.m_strKeyword);
 
 		pt.y += GetFontHeight();
-		if( pTreeElem->m_ptrArray.GetSize() && pTreeElem->m_bOpen )
-		{
+		if (!pTreeElem.m_ptrArray.empty() && pTreeElem.m_bOpen) {
 			pt.x += m_nTreeTabWidth;
-			PaintTree( p2DRender, pt, pTreeElem->m_ptrArray );
+			PaintTree(p2DRender, pt, pTreeElem.m_ptrArray);
 			pt.x -= m_nTreeTabWidth;
 		}
 	}
 }
+
 void CWndTreeCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	for (const TREEITEM & pTreeItem : m_treeItemArray) {
@@ -1130,26 +1065,13 @@ BOOL CWndTreeCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
 }
-tagScriptElem::tagScriptElem( void ) : 
-m_lpParent( NULL ), 
-m_dwColor( D3DCOLOR_ARGB( 255, 64, 64, 64 ) ), 
-m_dwSelectColor( D3DCOLOR_ARGB( 255, 0, 0, 255 ) ), 
-m_strKeyword( _T( "" ) ), 
-m_dwData( 0 ), 
-m_bOpen( FALSE ), 
-m_pWndCheckBox( NULL )
-{}
 
-tagScriptElem::tagScriptElem( const CRect* pRect ) : 
-m_lpParent( NULL ), 
-m_dwColor( D3DCOLOR_ARGB( 255, 64, 64, 64 ) ), 
-m_dwSelectColor( D3DCOLOR_ARGB( 255, 0, 0, 255 ) ), 
-m_strKeyword( _T( "" ) ), 
-m_dwData( 0 ), 
-m_bOpen( FALSE ), 
-m_pWndCheckBox( NULL )
-{
-	m_strKeyword.Init( CWndBase::m_Theme.m_pFontText, pRect );
+TREEELEM::TREEELEM(const CRect * pRect) :
+	m_dwColor(D3DCOLOR_ARGB(255, 64, 64, 64)),
+	m_dwSelectColor(D3DCOLOR_ARGB(255, 0, 0, 255)) {
+	if (pRect) {
+		m_strKeyword.Init(CWndBase::m_Theme.m_pFontText, pRect);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
