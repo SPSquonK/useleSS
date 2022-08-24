@@ -39,7 +39,7 @@ void CWndChattingBlockingList::OnInitialUpdate( void )
 //-----------------------------------------------------------------------------
 void CWndChattingBlockingList::UpdateInformation( void )
 {
-	CWndGroupBox* pWndGroupBox = ( CWndGroupBox* )GetDlgItem( WIDC_GROUP_BOX_TOTAL_NUMBER );
+	CWndBase * pWndGroupBox = GetDlgItem( WIDC_GROUP_BOX_TOTAL_NUMBER );
 	if( pWndGroupBox )
 	{
 		CString strBlockedUsersTotalNumber = _T( "" );

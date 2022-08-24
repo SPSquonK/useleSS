@@ -206,8 +206,7 @@ void CWndDialog::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-	if (CWndGroupBox * pWndGroupBox = dynamic_cast<CWndGroupBox *>(GetDlgItem(WIDC_GROUP_BOX_TITLE))) {
-		// TODO: CWndGroupBox is never instanciated. Is it in v21 source code?
+	if (CWndBase * pWndGroupBox = GetDlgItem(WIDC_GROUP_BOX_TITLE)) {
 		pWndGroupBox->m_dwColor = D3DCOLOR_ARGB(255, 128, 0, 64);
 		pWndGroupBox->SetTitle(prj.GetText(TID_GAME_DIALOG));
 	}
@@ -320,7 +319,7 @@ void CWndDialog::OnLButtonUp( UINT nFlags, CPoint point )
 		{
 			m_nSelectKeyButton = i;
 
-			CWndGroupBox* pWndGroupBox = ( CWndGroupBox* )GetDlgItem( WIDC_GROUP_BOX_TITLE );
+			CWndBase * pWndGroupBox = GetDlgItem( WIDC_GROUP_BOX_TITLE );
 			if( pWndGroupBox )
 				pWndGroupBox->SetTitle( m_aKeyButton[ m_nSelectKeyButton ].szWord );
 

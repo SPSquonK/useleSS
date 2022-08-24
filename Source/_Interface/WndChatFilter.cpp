@@ -44,7 +44,7 @@ void CWndChatFilter::OnInitialUpdate()
 	CRect rect = GetClientRect();
 	SetWndRect( CRect(0, 0, rect.right, rect.bottom - 130));
 
-	CWndGroupBox* pWndGroup = (CWndGroupBox*)GetDlgItem( WIDC_GROUPBOX2 );
+	CWndBase * pWndGroup = GetDlgItem( WIDC_GROUPBOX2 );
 	if( pWndGroup )
 		pWndGroup->SetVisible(FALSE);	
 

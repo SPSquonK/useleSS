@@ -744,32 +744,6 @@ public:
 
 };
 
-
-//////////////////////////////////////////////////////////////////////////////
-// CWndGroupBox
-//////////////////////////////////////////////////////////////////////////////
-
-class CWndGroupBox : public CWndBase
-{
-protected:
-
-public:
-	CWndGroupBox();
-	~CWndGroupBox();
-	BOOL Create( DWORD dwTextStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
-
-	virtual	void OnInitialUpdate();
-	//virtual void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual	void PaintFrame(C2DRender* p2DRender);
-	virtual void OnDraw(C2DRender* p2DRender);
-	//virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	//virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	//virtual void OnMouseMove(UINT nFlags, CPoint point);
-	//virtual void OnLButtonDblClk(UINT nFlags, CPoint point);
-	//virtual void OnSetFocus(CWndBase* pOldWnd);
-	//virtual void OnKillFocus(CWndBase* pNewWnd);aa
-	//virtual void OnSize(UINT nType, int cx, int cy);
-};
 /////////////////////////////////////////////////////////////////////////////
 // CTabCtrl
 
