@@ -1719,46 +1719,42 @@ BOOL CWndTaskMenu::Process()
 	if( IsVisible() == FALSE )
 		return CWndBase::Process();
 
-	for (auto & pWndButton : m_wndMenuItems) {
+	for (CWndButton & pWndButton : m_wndMenuItems) {
 		
-		if( pWndButton->GetClientRect( TRUE ).PtInRect( m_ptMouse ) )
+		if( pWndButton.GetClientRect( TRUE ).PtInRect( m_ptMouse ) )
 		{
 			// 모두 숨기기 
-			if (pWndButton->m_pWndMenu == NULL || pWndButton->m_pWndMenu->IsVisible() == FALSE) {
-				for (auto & subButton : m_wndMenuItems) {
-					if (subButton->m_pWndMenu) {
-						subButton->m_pWndMenu->SetVisibleSub(FALSE);
+			if (pWndButton.m_pWndMenu == NULL || pWndButton.m_pWndMenu->IsVisible() == FALSE) {
+				for (CWndButton & subButton : m_wndMenuItems) {
+					if (subButton.m_pWndMenu) {
+						subButton.m_pWndMenu->SetVisibleSub(FALSE);
 					}
 				}
 			}
 			// 새 매뉴를 보이고 포커스 주기 
-			if( pWndButton->m_pWndMenu )
+			if( pWndButton.m_pWndMenu )
 			{
-				if( pWndButton->m_pWndMenu->IsVisible() == FALSE )
+				if( pWndButton.m_pWndMenu->IsVisible() == FALSE )
 				{
-					CRect rect = pWndButton->GetScreenRect();
-					pWndButton->m_pWndMenu->Move( CPoint( rect.right , rect.top ) );
+					CRect rect = pWndButton.GetScreenRect();
+					pWndButton.m_pWndMenu->Move( CPoint( rect.right , rect.top ) );
 				}
 				// 메뉴의 좌표 지정 
-				CRect rcButton = pWndButton->GetScreenRect();
-				pWndButton->m_pWndMenu->Move( CPoint( rcButton.right, rcButton.top ) );
+				CRect rcButton = pWndButton.GetScreenRect();
+				pWndButton.m_pWndMenu->Move( CPoint( rcButton.right, rcButton.top ) );
 				// 그런데 그 메뉴가 화면을 벗어났다면 위치를 수정 
-				CRect rcMenu = pWndButton->m_pWndMenu->GetScreenRect();
-				CRect rcLayout = m_pWndRoot->GetLayoutRect();
+				const CRect rcMenu = pWndButton.m_pWndMenu->GetScreenRect();
+				const CRect rcLayout = m_pWndRoot->GetLayoutRect();
 				CPoint pt = rcMenu.TopLeft();
-				if( rcMenu.right > rcLayout.right )
-				{
+				if (rcMenu.right > rcLayout.right) {
 					pt.x = rcButton.left - rcMenu.Width();
-					//pWndButton->m_pWndMenu->Move( CPoint( rcButton.left - rcMenu.Width(), rcButton.top ) );
 				}
-				if( rcMenu.bottom > rcLayout.bottom )
-				{
+				if (rcMenu.bottom > rcLayout.bottom) {
 					pt.y -= rcMenu.bottom - rcLayout.bottom;
-					//pWndButton->m_pWndMenu->Move( CPoint( rcButton.left - rcMenu.Width(), rcButton.top ) );
 				}
-				pWndButton->m_pWndMenu->Move( pt );
-				pWndButton->m_pWndMenu->SetVisible( TRUE );
-				pWndButton->m_pWndMenu->SetFocus();
+				pWndButton.m_pWndMenu->Move( pt );
+				pWndButton.m_pWndMenu->SetVisible( TRUE );
+				pWndButton.m_pWndMenu->SetFocus();
 			}
 			break;
 		}
@@ -1842,8 +1838,8 @@ void CWndTaskMenu::OnInitialUpdate()
 
 	CRect nextRectSurface(10, 50, m_pTexture->m_size.cx - 20, 50 + 20);
 
-	for (auto & pWndButton : m_wndMenuItems) {
-		pWndButton->SetWndRect(nextRectSurface);
+	for (CWndButton & pWndButton : m_wndMenuItems) {
+		pWndButton.SetWndRect(nextRectSurface);
 		nextRectSurface.OffsetRect(CSize(0, 22));
 	}
 

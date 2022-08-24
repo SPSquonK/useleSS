@@ -1,7 +1,7 @@
 #pragma once
 
+#include <boost/container/stable_vector.hpp>
 #include <vector>
-#include <memory>
 
 class C2DRender;
 
@@ -231,7 +231,7 @@ class CWndMenu : public CWndBase
 	BOOL IsOnMenu(CPoint pt);
 	int m_nLargeWidth;
 protected:
-	std::vector<std::unique_ptr<CWndButton>> m_wndMenuItems;
+	boost::container::stable_vector<CWndButton> m_wndMenuItems;
 public:
 	
 	// Constructors
@@ -371,7 +371,6 @@ typedef struct tagScriptElem
 } 
 TREEELEM,* LPTREEELEM;
 
-#include <boost/container/stable_vector.hpp>
 class CWndTreeCtrl : public CWndBase
 {
 public:							//sun!!

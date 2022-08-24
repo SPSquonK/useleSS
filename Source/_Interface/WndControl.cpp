@@ -2657,44 +2657,44 @@ void CWndMenu::DeleteAllMenu() {
 
 CWndButton* CWndMenu::AddButton(UINT nID,	LPCTSTR text)
 {
-	CWndButton* pWndButton = new CWndButton;
+	CWndButton & pWndButton = m_wndMenuItems.emplace_back();
+
 	const CSize size = m_pFont->GetTextExtent(text);
 	if( size.cx + 60 > m_nLargeWidth )
 		m_nLargeWidth = size.cx + 60;
-	const int nCount = static_cast<int>(m_wndMenuItems.size());
+	const int nCount = static_cast<int>(m_wndMenuItems.size()) - 1;
 
 	const CRect rect(CPoint(2, 2 + (nCount * 22)), CSize(m_nLargeWidth - 2, 20));
-	pWndButton->Create(text, WBS_MENUITEM | WBS_HIGHLIGHT, rect, this, nID );
-	pWndButton->DelWndStyle(WBS_NODRAWFRAME);
-	m_wndMenuItems.emplace_back(std::unique_ptr<CWndButton>(pWndButton));
+	pWndButton.Create(text, WBS_MENUITEM | WBS_HIGHLIGHT, rect, this, nID );
+	pWndButton.DelWndStyle(WBS_NODRAWFRAME);
 
-	for (auto & placedButton : m_wndMenuItems) {
-		CRect rect = placedButton->GetWindowRect( TRUE );
+	for (CWndButton & placedButton : m_wndMenuItems) {
+		CRect rect = placedButton.GetWindowRect( TRUE );
 		rect.right = rect.left + m_nLargeWidth; 
-		placedButton->SetWndRect(rect);
+		placedButton.SetWndRect(rect);
 	}
 
 	SetWndRect(CRect(0, 0, m_nLargeWidth, 5 + 5 + ((nCount + 1) * 22)));
-	return pWndButton;
+	return &pWndButton;
 }
 
 bool CWndMenu::CheckMenuItem(UINT nIDCheckItem, int nCheck) {
 	if (nIDCheckItem >= m_wndMenuItems.size()) return false;
-	m_wndMenuItems[nIDCheckItem]->SetCheck(nCheck);
+	m_wndMenuItems[nIDCheckItem].SetCheck(nCheck);
 	return true;
 }
 
 int CWndMenu::GetMenuState(UINT nID) const {
 	if (nID >= m_wndMenuItems.size()) return 0;
-	return m_wndMenuItems[nID]->GetCheck();
+	return m_wndMenuItems[nID].GetCheck();
 }
 
 void CWndMenu::SetVisibleSub(BOOL bVisible) {
 	CWndBase::SetVisible(bVisible);
 
-	for (auto & menuItem : m_wndMenuItems) {
-		if (menuItem->m_pWndMenu) {
-			menuItem->m_pWndMenu->SetVisibleSub(bVisible);
+	for (CWndButton & menuItem : m_wndMenuItems) {
+		if (menuItem.m_pWndMenu) {
+			menuItem.m_pWndMenu->SetVisibleSub(bVisible);
 		}
 	}
 }
@@ -2710,9 +2710,9 @@ void CWndMenu::SetVisibleAllMenu(BOOL bVisible) {
 	if (pMenu) {
 		pMenu->CWndBase::SetVisible(bVisible);
 
-		for (auto & menuItem : pMenu->m_wndMenuItems) {
-			if (menuItem->m_pWndMenu) {
-				menuItem->m_pWndMenu->SetVisibleSub(bVisible);
+		for (CWndButton & menuItem : pMenu->m_wndMenuItems) {
+			if (menuItem.m_pWndMenu) {
+				menuItem.m_pWndMenu->SetVisibleSub(bVisible);
 			}
 		}
 	}
