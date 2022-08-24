@@ -72,25 +72,27 @@ class C2DRender;
 
 class CWndMenu;
 
-class CWndStatic : public CWndBase
-{
+class CWndStatic : public CWndBase {
 public:
-	CWndStatic();// { m_byWndType = WTYPE_STATIC; m_dwColor = 0xff646464; }
-	~CWndStatic() { }
-	virtual BOOL IsPickupSpace(CPoint point); 
-	void OnDraw( C2DRender* p2DRender );
-	void SetWndRect( CRect rectWnd, BOOL bOnSize );
-	BOOL Create( LPCTSTR lpszCaption, DWORD dwStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
-	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual	void PaintFrame( C2DRender* p2DRender );
+	CWndStatic();
+	~CWndStatic() override = default;
+	
+	BOOL Create(LPCTSTR lpszCaption, DWORD dwStyle, const RECT & rect, CWndBase * pParentWnd, UINT nID);
+	
+	void OnDraw(C2DRender * p2DRender) override;
+	void SetWndRect(CRect rectWnd, BOOL bOnSize) override;
+	void OnLButtonUp(UINT nFlags, CPoint point) override;
+	void OnLButtonDown(UINT nFlags, CPoint point) override;
+	void PaintFrame(C2DRender * p2DRender) override;
+
+	virtual BOOL IsPickupSpace(CPoint point);
 };
 
 class CWndCustom : public CWndBase
 {
 public:
 	CWndCustom() { m_byWndType = WTYPE_CUSTOM; }
-	~CWndCustom() { }
+	~CWndCustom() override = default;
 
 	void OnDraw( C2DRender* p2DRender );
 	BOOL Create( LPCTSTR lpszCaption, DWORD dwStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )	{
@@ -109,9 +111,6 @@ protected:
 	int       m_nTimePush;
 	BOOL      m_bHighLight;
 	CPoint    m_ptPush;
-//	CTimer m_timerPush;
-
-	//DWORD     m_dwButtonStyle;
 
 public:
 	CHAR      m_cHotkey;
@@ -119,18 +118,10 @@ public:
 	CWndMenu*  m_pWndMenu;
 	BOOL       m_bTopDown;
 	SHORTCUT   m_shortcut;
-		/*
-	DWORD     m_dwShortCutType    ;
-	DWORD     m_dwShortCutIndex   ;
-	DWORD     m_dwShortCutUserId  ;
-	DWORD     m_dwShortCutData    ;
-	CString   m_strShortCutString ;
-//WORD     m_dwShortCutIndex;
-*/
-	CWndButton();
-	~CWndButton();
 
-	//BOOL Create(LPCTSTR lpszCaption,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID,CSprPack* pSprPack,int nSprIdx,int nColorTable = 0);
+	CWndButton();
+	~CWndButton() override = default;
+
 	BOOL Create(LPCTSTR lpszCaption,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);// { return Create(lpszCaption,dwStyle,rect,pParentWnd,nID,NULL,0); }
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual void PaintFrame( C2DRender* p2DRender );
@@ -141,24 +132,22 @@ public:
 	void FitTextureSize();
 
 	// Attributes
-	//BOOL IsButtonStyle( DWORD dwStyle ) { return ( m_dwButtonStyle & dwStyle ) ? TRUE : FALSE; }
 	void SetPushTime(int nTime); // 버튼을 누르고 nTime이후에 계속 OnCommand를 패어런트에게 보낸다.
 	UINT GetState() const; // Retrieves the check state, highlight state, and focus state of a button control.
 	void SetState(BOOL bHighlight); // Sets the highlighting state of a button control
 	int  GetCheck() const; // Retrieves the check state of a button control.
 	void SetCheck(int nCheck); // Sets the check state of a button control.
-	//UINT GetButtonStyle() const; // Retrieves information about the button control style.
-	//void SetButtonStyle(UINT nStyle, BOOL bRedraw = TRUE); // Changes the style of a button.
+
 	void SetString( CString strSndEffect ); 
 	BOOL IsHighLight() { return m_bHighLight; }
 	void SetFontColor     (DWORD dwColor) { m_nFontColor      = (DWORD)dwColor; }
 	void SetPushColor     (DWORD dwColor) { m_nPushColor      = (DWORD)dwColor; }
 	void SetDisableColor  (DWORD dwColor) { m_nDisableColor   = (DWORD)dwColor; }
 	void SetHighLightColor(DWORD dwColor) { m_nHighlightColor = (DWORD)dwColor; }
-	DWORD GetFontColor     () { return m_nFontColor     ; }
-	DWORD GetPushColor     () { return m_nPushColor     ; }
-	DWORD GetDisableColor  () { return m_nDisableColor  ; }
-	DWORD GetHighLightColor() { return m_nHighlightColor; }
+	[[nodiscard]] DWORD GetFontColor     () const noexcept { return m_nFontColor     ; }
+	[[nodiscard]] DWORD GetPushColor     () const noexcept { return m_nPushColor     ; }
+	[[nodiscard]] DWORD GetDisableColor  () const noexcept { return m_nDisableColor  ; }
+	[[nodiscard]] DWORD GetHighLightColor() const noexcept { return m_nHighlightColor; }
 	void SetPushPoint(int x,int y) { m_ptPush = CPoint(x,y); }
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
@@ -226,16 +215,7 @@ public:
 	BOOL GetScrollInfo(LPSCROLLINFO lpScrollInfo, UINT nMask = SIF_ALL); // Retrieves information about the scroll bar. 
 	int  GetScrollLimit(); // Retrieves the limit of the scroll bar
 	void SetScrollDown();
-/*
-	CSprite* GetSprVertArrow1();
-	CSprite* GetSprVertArrow2();
-	CSprite* GetSprVertPad();
-	CSprite* GetSprVertBar();
-	CSprite* GetSprHoriArrow1();
-	CSprite* GetSprHoriArrow2();
-	CSprite* GetSprHoriPad();
-	CSprite* GetSprHoriBar();
-*/
+
 	virtual void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual	void PaintFrame(C2DRender* p2DRender);
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -261,7 +241,6 @@ class CWndMenu : public CWndBase
 	int m_nLargeWidth;
 public:
 	CPtrArray  m_awndMenuItem;
-	//	CWndButton m_pWndCommand[18];
 	
 	// Constructors
 	CWndMenu();
@@ -272,63 +251,28 @@ public:
 	void SetVisibleAllMenu( BOOL bVisible );
 	
 	BOOL CreateMenu(CWndBase* pWndParent);
-	BOOL CreatePopupMenu();
-	BOOL LoadMenu(LPCTSTR lpszResourceName);
-	BOOL LoadMenu(UINT nIDResource);
-	BOOL LoadMenuIndirect(const void* lpMenuTemplate);
-	BOOL DestroyMenu();
+
 	virtual void OnKillFocus(CWndBase* pNewWnd);
 	virtual void PaintFrame(C2DRender* p2DRender);
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
 	// Attributes
-	//HMENU m_hMenu;          // must be first data member
-	//HMENU GetSafeHmenu() const;
-	//operator HMENU() const;
-	
-	//static CMenu* PASCAL FromHandle(HMENU hMenu);
-	//static void PASCAL DeleteTempMap();
-	//BOOL Attach(HMENU hMenu);
-	//HMENU Detach();
 	
 	// CMenu Operations
 	void DeleteAllMenu();
 	BOOL DeleteMenu(UINT nPosition, UINT nFlags);
-	//BOOL TrackPopupMenu(UINT nFlags, int x, int y,CWnd* pWnd, LPCRECT lpRect = 0);
-	//BOOL operator==(const CMenu& menu) const;
-	//BOOL operator!=(const CMenu& menu) const;
-	
+
 	// CMenuItem Operations
 	virtual CWndButton* AppendMenu(UINT nFlags, UINT nIDNewItem = 0,	LPCTSTR lpszNewItem = NULL);
-	//BOOL AppendMenu(UINT nFlags, UINT nIDNewItem, const CBitmap* pBmp);
+
 	UINT CheckMenuItem(UINT nIDCheckItem, UINT nCheck);
-	UINT EnableMenuItem(UINT nIDEnableItem, UINT nEnable);
-	UINT GetMenuItemCount() const;
-	UINT GetMenuItemID(int nPos) const;
 	UINT GetMenuState(UINT nID, UINT nFlags) const;
-	int  GetMenuString(UINT nIDItem, LPTSTR lpString, int nMaxCount,	UINT nFlags) const;
-	int  GetMenuString(UINT nIDItem, CString& rString, UINT nFlags) const;
-	//BOOL GetMenuItemInfo(UINT nIDItem, LPMENUITEMINFO lpMenuItemInfo,	BOOL fByPos = FALSE);
-	CWndMenu* GetSubMenu(int nPos) const;
+
 	BOOL InsertMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem = 0,	LPCTSTR lpszNewItem = NULL);
-	//BOOL InsertMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem,	const CBitmap* pBmp);
-	BOOL ModifyMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem = 0,	LPCTSTR lpszNewItem = NULL);
-	//BOOL ModifyMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem,	const CBitmap* pBmp);
-	BOOL RemoveMenu(UINT nPosition, UINT nFlags);
-	//BOOL SetMenuItemBitmaps(UINT nPosition, UINT nFlags, const CBitmap* pBmpUnchecked, const CBitmap* pBmpChecked);
-	BOOL CheckMenuRadioItem(UINT nIDFirst, UINT nIDLast, UINT nIDItem, UINT nFlags);
-	BOOL SetDefaultItem(UINT uItem, BOOL fByPos = FALSE);
-	UINT GetDefaultItem(UINT gmdiFlags, BOOL fByPos = FALSE);
+
+
 	void SetLargeWidth( int nLargeWidth ) { m_nLargeWidth = nLargeWidth; }
 	
-	// Context Help Functions
-	//BOOL SetMenuContextHelpId(DWORD dwContextHelpId);
-	//DWORD GetMenuContextHelpId() const;
-	
-	// Overridables (must override draw and measure for owner-draw menu items)
-	//virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	//virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	virtual void OnDraw(C2DRender* p2DRender);
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 };

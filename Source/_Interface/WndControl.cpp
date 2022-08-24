@@ -282,24 +282,9 @@ CWndButton::CWndButton()
 	m_byWndType       = WTYPE_BUTTON;
 	m_cHotkey         = 0;
 	ZeroMemory( &m_shortcut, sizeof( m_shortcut ) );
-		/*
-	DWORD     m_dwShortCutType    ;
-	DWORD     m_dwShortCutIndex   ;
-	DWORD     m_dwShortCutUserId  ;
-	DWORD     m_dwShortCutData    ;
-	CString   m_strShortCutString ;
 
-	m_dwShortCutType    = SHORTCUT_NONE;
-	m_dwShortCutType    = 0;
-	m_dwShortCutIndex   = 0;
-	m_dwShortCutUserId  = 0;
-	m_dwShortCutData    = 0;
-	*/
 }
-CWndButton::~CWndButton()
-{
-	//SAFE_DELETE( m_pWndMenu );
-}
+
 void CWndButton::FitTextureSize() 
 {
 	if( m_pTexture )
@@ -1390,24 +1375,7 @@ void CWndScrollBar::SetScrollPage(int nPage)
 		SetVisible( TRUE );
 	*/
 }	
-/*
-CSprite* CWndScrollBar::GetSprVertArrow1()
-{
-	return m_pSprPack->GetAt(m_nScrollBarIdx+0);
-}
-CSprite* CWndScrollBar::GetSprVertArrow2()
-{
-	return m_pSprPack->GetAt(m_nScrollBarIdx+2);
-}
-CSprite* CWndScrollBar::GetSprVertPad()
-{
-	return m_pSprPack->GetAt(m_nScrollBarIdx+4);
-}
-CSprite* CWndScrollBar::GetSprVertBar()
-{
-	return m_pSprPack->GetAt(m_nScrollBarIdx+6);
-}
-*/
+
 void CWndScrollBar::SetWndRect(CRect rectWnd, BOOL bOnSize )
 {
 	m_rectWindow = rectWnd;
@@ -2924,26 +2892,7 @@ void CWndMenu::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 	MakeVertexBuffer();
 }
-BOOL CWndMenu::CreatePopupMenu()
-{
-	return TRUE;
-}
-BOOL CWndMenu::LoadMenu(LPCTSTR lpszResourceName)
-{
-	return TRUE;
-}
-BOOL CWndMenu::LoadMenu(UINT nIDResource)
-{
-	return TRUE;
-}
-BOOL CWndMenu::LoadMenuIndirect(const void* lpMenuTemplate)
-{
-	return TRUE;
-}
-BOOL CWndMenu::DestroyMenu()
-{
-	return TRUE;
-}
+
 void CWndMenu::DeleteAllMenu()
 {	
 	for( int i = 0; i < m_awndMenuItem.GetSize(); i++)
@@ -2994,36 +2943,13 @@ UINT CWndMenu::CheckMenuItem(UINT nIDCheckItem, UINT nCheck)
 	pWndButton->SetCheck( nCheck );
 	return TRUE;
 }
-UINT CWndMenu::EnableMenuItem(UINT nIDEnableItem, UINT nEnable)
-{
-	return TRUE;
-}
-UINT CWndMenu::GetMenuItemCount() const
-{
-	return TRUE;
-}
-UINT CWndMenu::GetMenuItemID(int nPos) const
-{
-	return TRUE;
-}
+
 UINT CWndMenu::GetMenuState(UINT nID, UINT nFlags) const
 {
 	CWndButton* pWndButton = (CWndButton*)m_awndMenuItem.GetAt( nID );
-	return pWndButton->GetCheck();//( nCheck );
-	//return TRUE;
+	return pWndButton->GetCheck();
 }
-int  CWndMenu::GetMenuString(UINT nIDItem, LPTSTR lpString, int nMaxCount,	UINT nFlags) const
-{
-	return TRUE;
-}
-int  CWndMenu::GetMenuString(UINT nIDItem, CString& rString, UINT nFlags) const
-{
-	return NULL;
-}
-CWndMenu* CWndMenu::GetSubMenu(int nPos) const
-{
-	return NULL;
-}
+
 BOOL CWndMenu::InsertMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem,	LPCTSTR lpszNewItem)
 {
 	CWndButton* pWndButton = new CWndButton;
@@ -3041,26 +2967,6 @@ BOOL CWndMenu::InsertMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem,	LPCTSTR 
 	rect.OffsetRect( 0, -22);
 	rect.bottom += 22;
 	SetWndRect( rect );  
-	return TRUE;
-}
-BOOL CWndMenu::ModifyMenu(UINT nPosition, UINT nFlags, UINT nIDNewItem,	LPCTSTR lpszNewItem)
-{
-	return TRUE;
-}
-BOOL CWndMenu::RemoveMenu(UINT nPosition, UINT nFlags)
-{
-	return TRUE;
-}
-BOOL CWndMenu::CheckMenuRadioItem(UINT nIDFirst, UINT nIDLast, UINT nIDItem, UINT nFlags)
-{
-	return TRUE;
-}
-BOOL CWndMenu::SetDefaultItem(UINT uItem, BOOL fByPos)
-{
-	return TRUE;
-}
-UINT CWndMenu::GetDefaultItem(UINT gmdiFlags, BOOL fByPos)
-{
 	return TRUE;
 }
 CWndButton* CWndMenu::GetMenuItem( int nPos )
@@ -3105,25 +3011,6 @@ void CWndMenu::OnKillFocus(CWndBase* pNewWnd)
 		SetVisibleAllMenu( FALSE );
 }
 
-void CWndMenu::OnDraw(C2DRender* p2DRender)
-{
-
-/*
-//	if( m_bHighLight && ( m_pWndMenu == FALSE || m_pWndMenu->IsVisible( ) == FALSE ) )
-	{
-		//if( m_pParentWnd->IsWndStyle(WBS_POPUP) )
-		{
-			// 매뉴의 버튼을 훑어서 켜진거 다 끈다.
-		//	CWndMenu* pMenu = (CWndMenu*)m_pParentWnd;
-			for( int i = 0; i < m_awndMenuItem.GetSize(); i++)
-			{
-				if( ((CWndButton*)m_awndMenuItem.GetAt( i ) )->m_pWndMenu )
-					((CWndButton*)m_awndMenuItem.GetAt( i ) )->m_pWndMenu->SetVisibleSub( FALSE );
-			}
-		}
-	}
-*/
-}
 BOOL CWndMenu::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
 	BOOL bResult = FALSE;

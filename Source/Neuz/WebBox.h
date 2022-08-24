@@ -50,12 +50,10 @@ public:
 	LPCTSTR	GetAddress( void );
 public:
 	/*
-	CSprite2 m_BackImage ; 
 	BPTexture m_BackTex  ; 
 	D3DXVECTOR3 m_BackImagePos ; 
 
 
-	CSprite2 m_BackImage_Store ; 
 	BPTexture m_BackTex_Store  ; 
 	D3DXVECTOR3 m_BackImagePos_Store ; //*/
 
