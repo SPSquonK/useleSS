@@ -626,7 +626,7 @@ BOOL	CAIMeteonyker::ProcessSummon( BOOL bUnconditional )
 						vPos.y += 7.0f;
 					}
 
-					pPlayer->REPLACE( g_uIdofMulti, pWorld->GetID(), vPos, REPLACE_NORMAL, pMover->GetLayer() );	// 일단 몬스터 좌표로 워프 시키자.
+					pPlayer->Replace( pWorld->GetID(), vPos, REPLACE_NORMAL, pMover->GetLayer() );	// 일단 몬스터 좌표로 워프 시키자.
 				}
 			}
 		}

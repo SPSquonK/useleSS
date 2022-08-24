@@ -73,11 +73,8 @@ std::string CMiniGamePairgame::MakeGame()
 	for( char c=1; c<10; c++ )			// 9종류 카드 생성
 		vecTemp.push_back( PAIR(c) );
 
-#ifdef __VS2003
 	m_strCardStream.clear();
-#else	// __VS2003
-	m_strCardStream.resize( 0 );
-#endif	// __VS2003
+
 	for( ; vecTemp.size() > 0; )
 	{
 		auto it = vecTemp.begin();

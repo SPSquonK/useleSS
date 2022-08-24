@@ -11,7 +11,6 @@
 #include "GuildCombat1to1.h"
 
 
-typedef std::map< std::string, void* > CMapStrToPtr;
 #define	MAX_WORLD	256
 
 
@@ -174,11 +173,8 @@ public:
 		return NULL;
 	}
 
-	ItemProp*	GetSkillProp( int nIndex )
-	{
-		if( nIndex < 0 && nIndex >= m_aPropSkill.GetSize() )
-			return NULL;
-		return m_aPropSkill.GetAt( nIndex ); 
+	ItemProp * GetSkillProp(int nIndex) {
+		return m_aPropSkill.GetAt(static_cast<DWORD>(nIndex));
 	}
 #ifdef __ITEM_REMOVE_LIST
 	void SetConvMode( DWORD dwMode );

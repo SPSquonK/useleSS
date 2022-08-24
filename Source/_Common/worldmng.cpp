@@ -23,9 +23,7 @@
 #include "DPSrvr.h"
 #include "User.h"
 
-#ifdef __WORLDSERVER
 CWorldMng	g_WorldMng;
-#endif	// __WORLDSERVER
 #endif	// __WORLDSERVER
 
 CWorldMng::CWorldMng()
@@ -76,25 +74,26 @@ void CWorldMng::ReadObject() {
 	}
 }
 
-void CWorldMng::Add( CJurisdiction* pJurisdiction )
+void CWorldMng::Add(const WorldId pJurisdiction)
 {
-	LPWORLD lpWorld	= GetWorldStruct( pJurisdiction->m_dwWorldID );
+	const WORLD * lpWorld	= GetWorldStruct( pJurisdiction );
 	ASSERT( lpWorld );
 
-	CWorld* pWorld = GetWorld( pJurisdiction->m_dwWorldID );
+	CWorld* pWorld = GetWorld( pJurisdiction );
 	if( pWorld )
 	{
-		pWorld->ReadWorld( pJurisdiction->m_rect );
+		pWorld->ReadWorld();
 	}
 	else
 	{
 		pWorld	= new CWorld;
 
-		pWorld->m_dwWorldID	= pJurisdiction->m_dwWorldID;
+		pWorld->m_dwWorldID	= pJurisdiction;
 		pWorld->OpenWorld( MakePath( DIR_WORLD, lpWorld->m_szFileName ), TRUE );
-		pWorld->ReadWorld( pJurisdiction->m_rect );
+		pWorld->ReadWorld();
 
 		m_worlds.emplace(m_worlds.begin(), pWorld); // emplace front to mimic the base flyff code
+		// TODO: do we really care about the order?
 	}
 	strcpy( pWorld->m_szWorldName, lpWorld->m_szWorldName );
 }
@@ -119,24 +118,6 @@ BOOL CWorldMng::AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId )
 	if( pWorld )
 		bResult = pWorld->ADDOBJ( pObj, bAddItToGlobalId, nLayer );
 	return bResult;
-}
-
-bool CWorldMng::PreremoveObj(const OBJID objid ) {
-	// find because an object is only in one place
-	const auto preremovedWorld = std::ranges::find_if(m_worlds,
-		[objid](auto & pWorld) { return pWorld->PreremoveObj(objid); }
-		);
-
-	return preremovedWorld != m_worlds.end();
-}
-
-CObj * CWorldMng::PregetObj(const OBJID objid) {
-	for (auto & pWorld : m_worlds) {
-		CObj * pObj = pWorld->PregetObj(objid);
-		if (pObj) return pObj;
-	}
-
-	return nullptr;
 }
 
 #else	// __WORLDSERVER
@@ -239,7 +220,7 @@ BOOL CWorldMng::LoadScript( LPCTSTR lpszFileName )
 			scanner.GetToken();		// fileName
 			strcpy( world.m_szFileName, scanner.token );
 			TRACE( "Load World %s %d\n", world.m_szFileName, i );
-			m_aWorld.SetAtGrow( i, &world );
+			m_aWorld.SetAtGrow( i, world );
 		}
 
 		scanner.SetMark();
@@ -399,12 +380,12 @@ void CWorldMng::LoadRevivalPos( DWORD dwWorldId, LPCTSTR lpszWorld )
 
 					if( FALSE == pRgnElem->m_bTargetKey )
 					{
-						m_aRevivalPos.AddTail( pRgnElem );	// memcpy
+						m_aRevivalPos.Add( *pRgnElem );
 					}
 					else
 					{
 						ASSERT( strlen( pRgnElem->m_szKey ) );
-						m_aRevivalRgn.AddTail( pRgnElem );	// memcpy
+						m_aRevivalRgn.Add( *pRgnElem );
 					}
 				}
 			}
@@ -437,117 +418,69 @@ void CWorldMng::LoadAllMoverDialog()
 
 #ifdef __WORLDSERVER
 
-PRegionElem	CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey )
+const REGIONELEM * CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey ) const
 {
-	int nSize	= m_aRevivalPos.GetSize();
-	PRegionElem pRgnElem;
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && strcmp( sKey, pRgnElem->m_szKey ) == 0 && pRgnElem->m_bChaoKey )
-		{
-			return pRgnElem;
-		}
-	}
-	return NULL;	// not found
-}
-PRegionElem CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
-{
-	RegionElem *pRgnElem, *ptr	= NULL;
-	CPoint point;
-	
-	int nSize;
-	
-	nSize	= m_aRevivalPos.GetSize();
-	long	d	= 2147483647L, tmp;	// 46340	// 21722
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && pRgnElem->m_bChaoKey )
-		{
-			D3DXVECTOR3 vd	= vPos - pRgnElem->m_vPos;
-			tmp		= (long)D3DXVec3LengthSq( &vd );
-			if( tmp < d )
-			{
-				ptr		= pRgnElem;
-				d	= tmp;
-			}
-		}
-	}
-
-	if( ptr == NULL )	// 같은 서버에 찾지를 못했을 경우 다른서버검색
-	{
-		for( int i = 0; i < nSize; i++ )
-		{
-			pRgnElem	= m_aRevivalPos.GetAt( i );
-			if( dwWorldId != pRgnElem->m_dwWorldId && pRgnElem->m_bChaoKey )
-			{
-				ptr		= pRgnElem;
-				break;			// 거리계산은 필요없음
-			}
-		}
-	}
-	return ptr;
+	return m_aRevivalPos.FindAny([&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId
+			&& strcmp(sKey, pRgnElem.m_szKey) == 0
+			&& pRgnElem.m_bChaoKey;
+		});
 }
 
-PRegionElem	CWorldMng::GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey )
+const REGIONELEM * CWorldMng::GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const
 {
-	int nSize	= m_aRevivalPos.GetSize();
-	PRegionElem pRgnElem;
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && strcmp( sKey, pRgnElem->m_szKey ) == 0 && pRgnElem->m_bChaoKey == FALSE )
-			return pRgnElem;
-	}
-	return NULL;	// not found
+	const REGIONELEM * ptr = m_aRevivalPos.FindClosest(vPos, [&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId && pRgnElem.m_bChaoKey;
+		});
+
+	if (ptr) return ptr;
+
+	// 같은 서버에 찾지를 못했을 경우 다른서버검색
+	return m_aRevivalPos.FindAny([&](const REGIONELEM & pRgnElem) {
+		// 거리계산은 필요없음
+		return dwWorldId != pRgnElem.m_dwWorldId && pRgnElem.m_bChaoKey;
+		});
 }
 
-PRegionElem CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos )
-{
-	RegionElem *pRgnElem, *ptr	= NULL;
-	CPoint point;
-
-	int nSize	= m_aRevivalRgn.GetSize();
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalRgn.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && pRgnElem->m_dwIndex == RI_REVIVAL && pRgnElem->m_bChaoKey == FALSE )
-		{
-			point.x	= (LONG)( vPos.x );
-			point.y	= (LONG)( vPos.z );
-			if( pRgnElem->m_rect.PtInRect( point ) )
-				return GetRevivalPos( dwWorldId, pRgnElem->m_szKey );
-		}
-	}
-
-	nSize	= m_aRevivalPos.GetSize();
-	long	d	= 2147483647L, tmp;	// 46340	// 21722
-	for( int i = 0; i < nSize; i++ )
-	{
-		pRgnElem	= m_aRevivalPos.GetAt( i );
-		if( dwWorldId == pRgnElem->m_dwWorldId && pRgnElem->m_bChaoKey == FALSE )
-		{
-			D3DXVECTOR3 vd	= vPos - pRgnElem->m_vPos;
-			tmp		= (long)D3DXVec3LengthSq( &vd );
-			if( tmp < d )
-			{
-				ptr		= pRgnElem;
-				d	= tmp;
-			}
-		}
-	}
-	return ptr;
+const REGIONELEM * CWorldMng::GetRevivalPos(DWORD dwWorldId, LPCTSTR sKey) const {
+	return m_aRevivalPos.FindAny([&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId
+			&& strcmp(sKey, pRgnElem.m_szKey) == 0
+			&& pRgnElem.m_bChaoKey == FALSE;
+	});
 }
 
-const RegionElem * CWorldMng::GetRevival(CMover * pUser) {
+const REGIONELEM * CWorldMng::GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const
+{
+	const CPoint point(static_cast<long>(vPos.x), static_cast<long>(vPos.z));
+	const REGIONELEM * revivalRegion = m_aRevivalRgn.FindAny(
+		[&](const REGIONELEM & pRgnElem) {
+			return dwWorldId == pRgnElem.m_dwWorldId
+				&& pRgnElem.m_dwIndex == RI_REVIVAL
+				&& pRgnElem.m_bChaoKey == FALSE
+				&& pRgnElem.m_rect.PtInRect(point);
+		}
+	);
+
+	if (revivalRegion) {
+		return GetRevivalPos(dwWorldId, revivalRegion->m_szKey);
+	}
+
+	return m_aRevivalPos.FindClosest(vPos, [&](const REGIONELEM & pRgnElem) {
+		return dwWorldId == pRgnElem.m_dwWorldId && pRgnElem.m_bChaoKey == FALSE;
+		});
+
+	// tfw the code does not try to send to any respawn point if none in this world :|
+}
+
+const REGIONELEM * CWorldMng::GetRevival(CMover * pUser) {
 	const CWorld * pWorld = pUser->GetWorld();
 	if (!pWorld) return nullptr;
 	return GetRevival(*pWorld, pUser->GetPos(), pUser->IsChaotic());
 }
 
-const RegionElem * CWorldMng::GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, const bool isChaotic) {
-	const RegionElem * retval = nullptr;
+const REGIONELEM * CWorldMng::GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, const bool isChaotic) {
+	const REGIONELEM * retval = nullptr;
 
 	const bool differentWorldRevival =
 		world.GetID() != world.m_dwIdWorldRevival
@@ -578,15 +511,14 @@ void CWorldMng::Process() {
 	}
 }
 
-bool CWorldMng::HasNobody_Replace(const DWORD dwWorldId, const int nLayer) const {
-	const auto IsTargettedHere = [&](const REPLACEOBJ & replaceObj) {
+bool CWorldMng::HasSomeoneGoingTo(const DWORD dwWorldId, const int nLayer) const {
+	const auto IsGoingTo = [&](const REPLACEOBJ & replaceObj) {
 		return replaceObj.dwWorldID == dwWorldId && replaceObj.nLayer == nLayer;
 	};
 
-	return std::ranges::all_of(m_worlds,
+	return std::ranges::any_of(m_worlds,
 		[&](const auto & pWorld) {
-			const auto it = std::ranges::find_if(pWorld->m_ReplaceObj, IsTargettedHere);
-			return it == pWorld->m_ReplaceObj.end();
+			return std::ranges::any_of(pWorld->m_ReplaceObj, IsGoingTo);
 		}
 	);
 }

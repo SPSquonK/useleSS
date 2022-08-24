@@ -1046,7 +1046,7 @@ void CSecretRoomContinent::SetTeleportNormalRoom( CUser* pUser, int nIndex )
 	int nRandz = xRandom(4) - 2;
 
 	pUser->SetAngle( 180.0f );
-	pUser->REPLACE( g_uIdofMulti, m_vecSecretRoomTender[nIndex].dwWorldId, D3DXVECTOR3( (float)( 295 + nRandx ), (float)( 102 ), (float)( 530 + nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
+	pUser->Replace( m_vecSecretRoomTender[nIndex].dwWorldId, D3DXVECTOR3( (float)( 295 + nRandx ), (float)( 102 ), (float)( 530 + nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
 }
 
 // 해당 길드가 보스 몬스터와 전투중인 경우 보스룸으로 이동
@@ -1057,7 +1057,7 @@ void CSecretRoomContinent::SetTeleportBossRoom( CUser* pUser, int nIndex )
 	int nRandz = xRandom(4) - 2;
 
 	pUser->SetAngle( 180.0f );
-	pUser->REPLACE( g_uIdofMulti, m_vecSecretRoomTender[nIndex].dwWorldId, D3DXVECTOR3( (float)( 600 + nRandx ), (float)( 102 ), (float)( 310 + nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
+	pUser->Replace( m_vecSecretRoomTender[nIndex].dwWorldId, D3DXVECTOR3( (float)( 600 + nRandx ), (float)( 102 ), (float)( 310 + nRandz ) ), REPLACE_NORMAL, nDefaultLayer );
 }
 
 // state에 따라 몬스터 출현시킴(초당 nCount만큼 순차적으로 출현)
@@ -1116,11 +1116,8 @@ void CSecretRoomContinent::RemoveAllSecretRoomObj( DWORD dwWorldId )
 	if( !pWorld )
 		return;
 
-	CObj* pObj;
-	for( DWORD i=0; i<pWorld->m_dwObjNum; i++ )
-	{
-		pObj	= pWorld->m_apObject[i];
-		if( pObj && pObj->GetType() == OT_MOVER && !((CMover*)pObj)->IsPlayer() && !pObj->IsDelete() )
+	for (CObj * pObj : pWorld->m_Objs.Range()) {
+		if( pObj->GetType() == OT_MOVER && !((CMover*)pObj)->IsPlayer() && !pObj->IsDelete() )
 			pObj->Delete();
 	}
 }
@@ -1233,16 +1230,14 @@ void CSecretRoomContinent::SetContClose()
 	m_dwRemainTime = 0;
 	CSecretRoomMng::GetInstance()->SendNowStateAllMember( m_nContinent, m_nState );
 	// 여기서 모든 플레이어를 nWarState != MONSTER_FAILED 인 유저를 전부 밖으로 내보낸다.
-	for( DWORD i=0; i<m_vecSecretRoomTender.size(); i++ )
-	{
-		if( m_vecSecretRoomTender[i].nWarState == MONSTER_FAILED )
+	for (const __SECRETROOM_TENDER & secretRoomTender : m_vecSecretRoomTender) {
+		if(secretRoomTender.nWarState == MONSTER_FAILED )
 			continue;
 
-		for( DWORD j=0; j<m_vecSecretRoomTender[i].vecLineUpMember.size(); j++ )
-		{
-			CUser* pUserTemp = (CUser*)prj.GetUserByID( m_vecSecretRoomTender[i].vecLineUpMember[j] );
+		for (const DWORD memberId : secretRoomTender.vecLineUpMember) {
+			CUser* pUserTemp = prj.GetUserByID(memberId);
 			if( IsValidObj( pUserTemp ) && CSecretRoomMng::GetInstance()->IsInTheSecretRoom( pUserTemp ) )
-				pUserTemp->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( m_nContinent ), REPLACE_NORMAL, nDefaultLayer );
+				pUserTemp->Replace( WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( m_nContinent ), REPLACE_NORMAL, nDefaultLayer );
 		}
 	}
 	
@@ -1309,11 +1304,11 @@ void CSecretRoomContinent::SetContFailGuild( DWORD dwGuildId )
 	UpdateInfoToAllMember( SECRETROOM_WARSTATE, nIndex );
 	for( DWORD i=0; i<m_vecSecretRoomTender[nIndex].vecLineUpMember.size(); i++ )
 	{
-		CUser* pUserTemp = (CUser*)prj.GetUserByID( m_vecSecretRoomTender[nIndex].vecLineUpMember[i] );
+		CUser* pUserTemp = prj.GetUserByID( m_vecSecretRoomTender[nIndex].vecLineUpMember[i] );
 		if( IsValidObj( pUserTemp ) )
 		{
 			if( CSecretRoomMng::GetInstance()->IsInTheSecretRoom( pUserTemp ) )
-				pUserTemp->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( m_nContinent ), REPLACE_NORMAL, nDefaultLayer );
+				pUserTemp->Replace( WI_WORLD_MADRIGAL, CContinent::GetInstance()->GetRevivalPos( m_nContinent ), REPLACE_NORMAL, nDefaultLayer );
 			UpdateInfoToMember( pUserTemp, SECRETROOM_WARSTATE, nIndex );
 			CSecretRoomMng::GetInstance()->SendNowState( pUserTemp, SRCONT_CLOSE, 0 );
 		}

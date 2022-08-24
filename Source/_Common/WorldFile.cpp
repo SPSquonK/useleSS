@@ -258,11 +258,8 @@ BOOL CWorld::LoadPatrol()
 #ifdef __LAYER_1021
 void CWorld::DeleteLayerControls( int nLayer )
 {
-	CObj* pObj;
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		pObj	= m_apObject[i];
-		if( pObj && pObj->GetType() == OT_CTRL && pObj->GetLayer() == nLayer )
+	for (CObj * pObj : m_Objs.Range()) {
+		if( pObj->GetType() == OT_CTRL && pObj->GetLayer() == nLayer )
 			pObj->Delete();
 	}
 }
@@ -508,11 +505,11 @@ BOOL CWorld::ReadRegion( CScript& s )
 	case RI_REVIVAL:
 		break;
 	case RI_STRUCTURE:
-		m_aStructure.AddTail( pRe );
+		m_aStructure.Add( *pRe );
 		break;
 	default:
 		{
-			m_aRegion.AddTail( pRe );	
+			m_aRegion.Add( *pRe );	
 			break;
 		}
 	}
@@ -770,7 +767,7 @@ BOOL CWorld::LoadRegion()
 
 
 #ifdef __WORLDSERVER
-BOOL CWorld::ReadWorld( const CRect & rcLandscape )
+BOOL CWorld::ReadWorld()
 {
 	CString strFileName;
 	CString strLandName = m_szFileName;
@@ -914,9 +911,7 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 	CString strLandTemp;
 	strLandName.Delete( strLandName.GetLength() - 4, 4 );
 
-
-	int x, z;
-	WorldPosToLand( vPos, x, z );
+	const auto [x, z] = WorldPosToLand(vPos);
 
 	// 랜드 이동이 없다. 리턴. 
 	if( x == m_nCharLandPosX && z == m_nCharLandPosZ )
@@ -976,11 +971,10 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 				{
 					if( rect.PtInRect( CPoint( j, i ) ) == FALSE )
 					{
-						m_apLand[ i * m_nLandWidth + j ]->InvalidateDeviceObjects();
-						m_apLand[ i * m_nLandWidth + j ]->DeleteDeviceObjects();
-						SAFE_DELETE( m_apLand[ i * m_nLandWidth + j] );
-						m_nObjCullSize = 0;
-						m_nSfxCullSize = 0;
+						pLand->InvalidateDeviceObjects();
+						pLand->DeleteDeviceObjects();
+						SAFE_DELETE(pLand);
+						m_objCull.clear();
 					}
 					else
 						pLand->SetUsedAllObjects();
@@ -990,11 +984,11 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 		}
 		// 사용하지 않는 모델을 파괴한다.
 		// 정적인것만 이리로 들어와야 한다. 동적인것(스키닝을 쓰는것)이 여기서 파괴되면 안된다.
-		for( MapStrToPtrItor itor = prj.m_modelMng.m_mapFileToMesh.begin(); itor != prj.m_modelMng.m_mapFileToMesh.end(); /*itor++*/ )
+		for( auto itor = prj.m_modelMng.m_mapFileToMesh.begin(); itor != prj.m_modelMng.m_mapFileToMesh.end(); /*itor++*/ )
 		{
-			CModel* pModel = ( CModel* )(*itor).second;
+			CModelObject * pModel = itor->second;
 			pModel->DeleteDeviceObjects();
-			if( pModel->m_pModelElem->m_bUsed == FALSE &&  pModel->m_pModelElem->m_dwType != OT_ITEM )
+			if( pModel->m_pModelElem->m_bUsed == FALSE && pModel->m_pModelElem->m_dwType != OT_ITEM )
 			{
 				SAFE_DELETE( pModel );
 				prj.m_modelMng.m_mapFileToMesh.erase( itor++ );
@@ -1174,54 +1168,42 @@ BOOL CWorld::CreateLayer( int nLayer )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOL CWorld::HasNobody( int nLayer )
-{
-	if( !HasNobody_Process( nLayer ) )
-		return FALSE;
-	if( !HasNoObj_Add( nLayer ) )
-		return FALSE;
-	if( !HasNobody_Replace( nLayer ) )
-		return FALSE;
-	return TRUE;
+bool CWorld::HasSomeone(const int nLayer) const {
+	constexpr auto HasSomeoneInWorld = [](const CWorld & world, const int nLayer) {
+		for (CObj * pObj : world.m_Objs.Range()) {
+			if (IsLayerPlayer(pObj, nLayer)) {
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	constexpr auto HasSomeoneToAdd = [](const CWorld & world, const int nLayer) {
+		return std::ranges::any_of(world.m_aAddObjs,
+			[nLayer](const AddRequest & add) {
+				return add.pObj && add.pObj->GetLayer() == nLayer;
+			}
+		);
+	};
+
+	return HasSomeoneInWorld(*this, nLayer)
+		|| HasSomeoneToAdd(*this, nLayer)
+		|| g_WorldMng.HasSomeoneGoingTo(GetID(), nLayer);
 }
 
-BOOL CWorld::HasNobody_Process( int nLayer )
-{
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		if( IsLayerPlayer( m_apObject[i], nLayer ) )
-			return FALSE;
-	}
-	return TRUE;
-}
 
-BOOL CWorld::HasNoObj_Add( int nLayer )
-{
-	for( int i = 0; i < m_cbAddObjs; i++ )
-	{
-		if( m_apAddObjs[i] && m_apAddObjs[i]->GetLayer() == nLayer )
-			return FALSE;
-	}
-	return TRUE;
-}
-
-bool CWorld::HasNobody_Replace(const int nLayer) const {
-	return g_WorldMng.HasNobody_Replace(GetID(), nLayer);
-}
-
-BOOL CWorld::IsLayerPlayer( CObj* pObj, int nLayer )
-{
-	return ( pObj && pObj->GetLayer() == nLayer && pObj->GetType() == OT_MOVER && static_cast<CMover*>( pObj )->IsPlayer() );
+bool CWorld::IsLayerPlayer(CObj * pObj, int nLayer) {
+	return (pObj && pObj->GetLayer() == nLayer && pObj->GetType() == OT_MOVER && static_cast<CMover *>(pObj)->IsPlayer());
 }
 
 void CWorld::DriveOut( int nLayer )
 {
 #ifdef __WORLDSERVER
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		if( IsLayerPlayer( m_apObject[i], nLayer ) )
+	for (CObj * pObj : m_Objs.Range()) {
+		if( IsLayerPlayer( pObj, nLayer ) )
 		{
-			CUser* pUser	= static_cast<CUser*>( m_apObject[i] );
+			CUser* pUser	= static_cast<CUser*>(pObj);
 			switch( GetID() )
 			{
 				case WI_WORLD_MINIROOM : CHousingMng::GetInstance()->GoOut( pUser ); break;
@@ -1233,11 +1215,10 @@ void CWorld::DriveOut( int nLayer )
 					}
 					else if( GuildHouseMng->IsGuildHouse( GetID() ) )
 					{
-						//pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, pUser->m_vMarkingPos, REPLACE_FORCE, nDefaultLayer );
 						Invalidate( nLayer, FALSE );
 						break;
 					}
-					pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
+					pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6983.0f, 0.0f, 3330.0f ), REPLACE_FORCE, nDefaultLayer );
 					break;
 			}
 		}
@@ -1255,11 +1236,11 @@ BOOL CWorld::ReleaseLayer( int nLayer )
 
 void CWorld::DestroyObj( int nLayer )
 {
-	for( DWORD i = 0; i < m_dwObjNum; i++ )
-	{
-		CObj* pObj	= m_apObject[i];
-		if( pObj && pObj->GetLayer() == nLayer )
-			DestroyObj( pObj );
+	for (size_t i = 0; i != m_Objs.realSize; ++i) {
+		CObj * pObj = m_Objs.objects[i];
+		if (pObj && pObj->GetLayer() == nLayer) {
+			DestroyObj(pObj);
+		}
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////

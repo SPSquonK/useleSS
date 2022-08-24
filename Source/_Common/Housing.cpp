@@ -575,7 +575,7 @@ void CHousingMng::SetVisitRoom( CUser* pUser, DWORD dwPlayerId )
 		// 레이어가 존재하는지 확인하고 입장...
 		if( pWorld->m_linkMap.GetLinkMap( static_cast<int>( dwPlayerId ) ) )
 		{
-			if( pUser->REPLACE( g_uIdofMulti, WI_WORLD_MINIROOM, D3DXVECTOR3( 253.0f, 105.0f, 243.0f ), REPLACE_NORMAL, static_cast<int>( dwPlayerId ) ) )
+			if( pUser->Replace( WI_WORLD_MINIROOM, D3DXVECTOR3( 253.0f, 105.0f, 243.0f ), REPLACE_NORMAL, static_cast<int>( dwPlayerId ) ) )
 			{
 				pUser->SetAngle( 175.0f );
 				pUser->AddDefinedCaption( FALSE, TID_GAME_HOUSING_ENTER, "\"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString( dwPlayerId ) );
@@ -620,7 +620,7 @@ void CHousingMng::OnReqVisitableList( CUser* pUser )
 
 void CHousingMng::GoOut( CUser* pUser )
 {
-	pUser->REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6985.0f, 0.0f, 3234.0f ), REPLACE_FORCE, nDefaultLayer );
+	pUser->Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6985.0f, 0.0f, 3234.0f ), REPLACE_FORCE, nDefaultLayer );
 	pUser->SetAngle( 50.0f );
 }
 #endif // __WORLDSERVER
@@ -1002,7 +1002,7 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	}
 
 // gmpbigun:  clone model!!
- 	LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( OT_CTRL, nItemId );
+	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( OT_CTRL, nItemId );
  
 //	SAFE_DELETE( m_pClonedModel );
  	m_pClonedModel = new CModelObject;

@@ -38,8 +38,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_GMSAY, &CDPCoreSrvr::OnGMSay );
 	ON_MSG( PACKETTYPE_PLAYMUSIC, &CDPCoreSrvr::OnPlayMusic );
 	ON_MSG( PACKETTYPE_PLAYSOUND, &CDPCoreSrvr::OnPlaySound );
-	ON_MSG( PACKETTYPE_SUMMONPLAYER, &CDPCoreSrvr::OnSummonPlayer );
-	ON_MSG( PACKETTYPE_TELEPORTPLAYER, &CDPCoreSrvr::OnTeleportPlayer );
 	ON_MSG( PACKETTYPE_KILLPLAYER, &CDPCoreSrvr::OnKillPlayer );
 	ON_MSG( PACKETTYPE_GETPLAYERADDR, &CDPCoreSrvr::OnGetPlayerAddr );
 	ON_MSG( PACKETTYPE_GETPLAYERCOUNT, &CDPCoreSrvr::OnGetPlayerCount );
@@ -89,9 +87,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 	ON_MSG( PACKETTYPE_QUIZ_NOTICE, &CDPCoreSrvr::OnQuizSystemMessage );
 #endif // __QUIZ
 	m_nGCState = 1;
-#ifndef __STL_0402
-	m_toHandle.SetSize( 16, 16, 8 );
-#endif	// __STL_0402
 }
 
 CDPCoreSrvr::~CDPCoreSrvr()
@@ -135,31 +130,6 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	else {
 		switch( dw )
 		{
-			case PACKETTYPE_PASSAGE:
-				{
-					WORD wWorldSrvr		= LOWORD( *(UNALIGNED DWORD*)lpMsg );
-//					ASSERT( wWorldSrvr >= 0 );
-
-					if( wWorldSrvr > 0 ) {	// explicit
-						dpid	= GetWorldSrvrDPID( (u_long)wWorldSrvr );
-					}
-					else if( wWorldSrvr == 0 ) {
-						ar.Read( lptmp, 8 );	// skip
-						ar >> dwWorldID;
-						ar >> vPos;
-						u_long uIdofMulti	= GetIdofMulti( idFrom );
-						if( uIdofMulti == NULL_ID )		break;
-						dpid	= GetWorldSrvrDPID( uIdofMulti, dwWorldID, vPos );
-					}
-					else {
-						dpid	= DPID_UNKNOWN;
-						ASSERT( 0 );
-					}
-
-					if( DPID_UNKNOWN != dpid )
-						Send( lpMsg, dwMsgSize, dpid );
-					break;
-				}
 			case PACKETTYPE_BROADCAST:
 				{
 					Send( lpMsg, dwMsgSize, DPID_ALLPLAYERS );
@@ -183,32 +153,19 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 
 	CMclAutoLock Lock( m_AccessLock );
 
-#ifdef __STL_0402
-	CServerDescArray::iterator i	= m_apSleepServer.find( uWorldSrvr );
+	auto i	= m_apSleepServer.find( uWorldSrvr );
 	if( i != m_apSleepServer.end() )
 	{
 		CServerDesc* pServerDesc	= i->second;
 		m_apSleepServer.erase( i );
-#else	// __STL_0402
-	CServerDesc* pServerDesc;
-	if( m_apSleepServer.Lookup( uWorldSrvr, pServerDesc ) )
-	{
-		m_apSleepServer.RemoveKey( uWorldSrvr );
-#endif	// __STL_0402
 
 		pServerDesc->SetKey( uWorldSrvr );
 		GetPlayerAddr( dpid, pServerDesc->m_szAddr );
 
 		
-#ifdef __STL_0402
-		bool bResult	= m_apServer.insert( CServerDescArray::value_type( dpid, pServerDesc ) ).second;
+		bool bResult	= m_apServer.emplace(dpid, pServerDesc).second;
 		ASSERT( bResult );
-		bResult	= m_toHandle.emplace(uWorldSrvr, dpid).second;
-		ASSERT( bResult );
-#else	// __STL_0402
-		m_apServer.SetAt( dpid, pServerDesc );
-		m_toHandle.SetAt( uWorldSrvr, dpid );
-#endif	// __STL_0402
+		m_multiIdToDpid[pServerDesc->GetIdofMulti()] = dpid;
 		SendRecharge( (u_long)10240, dpid );
 
 		BEFORESENDDUAL( ar, PACKETTYPE_LOAD_WORLD, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -233,7 +190,7 @@ void CDPCoreSrvr::OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long )
 		SEND( ar, this, dpid );
 		g_DPCacheSrvr.Send( lpBuf + sizeof(DPID), nBufSize - sizeof(DPID), DPID_ALLPLAYERS );
 
-		g_MyTrace.Add( uWorldSrvr, FALSE, "%04d", uWorldSrvr );
+		g_MyTrace.Add( uWorldSrvr, FALSE, "World: %04lu ON", uWorldSrvr );
 
 	#if defined(__INTERNALSERVER)
 		SendCWWantedList( dpid );
@@ -254,36 +211,23 @@ void CDPCoreSrvr::OnRemoveConnection( DPID dpid )
 {
 	CMclAutoLock Lock( m_AccessLock );
 
-#ifdef __STL_0402
-	CServerDescArray::iterator i	= m_apServer.find( dpid );
-	if( i != m_apServer.end() )
-	{
-		CServerDesc* pServerDesc	= i->second;
-#else	// __STL_0402
-	CServerDesc* pServerDesc;
-	if( m_apServer.Lookup( dpid, pServerDesc ) )
-	{
-#endif	// __STL_0402
+	auto i = m_apServer.find(dpid);
+	if (i == m_apServer.end()) return;
 
-		ULONG uWorldSrvr	= pServerDesc->GetKey();
+	CServerDesc * pServerDesc = i->second;
 
-#ifdef __STL_0402
-		m_apServer.erase( i );
-		bool bResult	= m_apSleepServer.insert( CServerDescArray::value_type( uWorldSrvr, pServerDesc ) ).second;
-		m_toHandle.erase( uWorldSrvr );
-#else	// __STL_0402
-		m_apServer.RemoveKey( dpid );
-		m_apSleepServer.SetAt( uWorldSrvr, pServerDesc );
-		m_toHandle.RemoveKey( uWorldSrvr );
-#endif	// __STL_0402
-		g_MyTrace.Add( uWorldSrvr, TRUE, "%04d", uWorldSrvr );
+	const ULONG uWorldSrvr = pServerDesc->GetKey();
+
+	m_apServer.erase(i);
+	m_apSleepServer.emplace( uWorldSrvr, pServerDesc ).second;
+	g_dpCoreSrvr.m_multiIdToDpid[pServerDesc->GetIdofMulti()] = DPID_UNKNOWN;
+	g_MyTrace.Add( uWorldSrvr, TRUE, "World: %04lu OFF", uWorldSrvr );
 
 #ifdef __SERVERLIST0911
-		g_dpDatabaseClient.SendServerEnable( uWorldSrvr, 0L );
+	g_dpDatabaseClient.SendServerEnable( uWorldSrvr, 0L );
 #endif	// __SERVERLIST0911
 
-		CInstanceDungeonHelper::GetInstance()->DestroyAllDungeonByMultiKey( uWorldSrvr );
-	}
+	CInstanceDungeonHelper::GetInstance()->DestroyAllDungeonByMultiKey( uWorldSrvr );
 }
 
 void CDPCoreSrvr::SendQueryTickCount( DWORD dwTime, DPID dpid, double dCurrentTime )
@@ -406,25 +350,17 @@ void CDPCoreSrvr::OnSay( CAr & ar, DPID dpidFrom, DPID dpidCache, DPID dpidUser,
 	}
 }
 
-void CDPCoreSrvr::OnModifyMode( CAr & ar, DPID dpidFrom, DPID dpidCache, DPID dpidUser, u_long )
-{
-	u_long idFrom, idTo;
-	DWORD dwMode;
-	BYTE f;
-	ar >> dwMode >> f >> idFrom >> idTo;
+void CDPCoreSrvr::OnModifyMode(CAr & ar, DPID, DPID, DPID, u_long) {
+	const auto [dwMode, f, idFrom, idTo] = ar.Extract<DWORD, bool, u_long, u_long>();
 
-	CPlayer* pFrom, *pTo;
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	pFrom	= g_PlayerMng.GetPlayer( idFrom );
-	pTo	= g_PlayerMng.GetPlayer( idTo );
+	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
+	CPlayer * pFrom = g_PlayerMng.GetPlayer(idFrom);
+	CPlayer * pTo = g_PlayerMng.GetPlayer(idTo);
 
-	if( pFrom && pTo )
-	{
-		g_DPCacheSrvr.SendModifyMode( dwMode, f, idFrom, pTo );
-	}
-	else
-	{
-		g_DPCacheSrvr.SendSay( "", "", idFrom, idTo, "", pFrom, 1 ); // 플레이어가 접속중이지 않습니다. 
+	if (pFrom && pTo) {
+		SendPacketAbout<PACKETTYPE_MODIFYMODE, DWORD, bool, u_long>(*pTo, dwMode, f, idFrom);
+	} else {
+		g_DPCacheSrvr.SendSay("", "", idFrom, idTo, "", pFrom, 1); // 플레이어가 접속중이지 않습니다. 
 	}
 }
 
@@ -476,30 +412,10 @@ void CDPCoreSrvr::OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-#ifdef __STL_0402
-	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
-	{
-		CServerDesc* pServer	= i->second;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlayMusic( idmusic, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-	}
-#else	// __STL_0402
+	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti);
+	if (targetWorldDPID != DPID_UNKNOWN) return;
 
-	CServerDesc* pServer;
-	CMyBucket<CServerDesc*>* pBucket	= m_apServer.GetFirstActive();
-	while( pBucket )
-	{
-		pServer		= pBucket->m_value;
-		ASSERT( pServer );
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlayMusic( idmusic, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-		pBucket		= pBucket->pNext;
-	}
-#endif	// __STL_0402
+	SendPlayMusic(idmusic, dwWorldID, targetWorldDPID);
 }
 
 void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
@@ -513,84 +429,10 @@ void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
 
 	CMclAutoLock	Lock( m_AccessLock );
 
-#ifdef __STL_0402
-	for( CServerDescArray::iterator i = m_apServer.begin(); i != m_apServer.end(); ++i )
-	{
-		CServerDesc* pServer	= i->second;
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlaySound( idsound, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-	}
-#else	// __STL_0402
-	CServerDesc* pServer;
-	CMyBucket<CServerDesc*>* pBucket	= m_apServer.GetFirstActive();
-	while( pBucket )
-	{
-		pServer		= pBucket->m_value;
-		ASSERT( pServer );
-		if( pServer->GetIdofMulti() == uIdofMulti && pServer->IsIntersected( dwWorldID ) )
-		{
-			SendPlaySound( idsound, dwWorldID, GetWorldSrvrDPID( pServer->GetKey() ) );
-		}
-		pBucket		= pBucket->pNext;
-	}
-#endif	// __STL_0402
-}
+	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti);
+	if (targetWorldDPID != DPID_UNKNOWN) return;
 
-void CDPCoreSrvr::OnSummonPlayer( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	DWORD dwWorldID;
-	u_long idOperator, idPlayer;
-	D3DXVECTOR3 vPos;
-
-	ar >> idOperator;
-	u_long uIdofMulti;
-	ar >> uIdofMulti;
-	ar >> dwWorldID;
-	ar >> vPos >> idPlayer;
-#ifdef __LAYER_1015
-	int nLayer;
-	ar >> nLayer;
-#endif	// __LAYER_1015
-
-	CPlayer* pOperator, *pPlayer;
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	pOperator	= g_PlayerMng.GetPlayer( idOperator );
-	pPlayer		= g_PlayerMng.GetPlayer( idPlayer );
-
-	if( pOperator && pPlayer )
-	{
-#ifdef __LAYER_1015
-		g_DPCacheSrvr.SendSummonPlayer( idOperator, uIdofMulti, dwWorldID, vPos, pPlayer, nLayer );
-#else	// __LAYER_1015
-		g_DPCacheSrvr.SendSummonPlayer( idOperator, uIdofMulti, dwWorldID, vPos, pPlayer );
-#endif	// __LAYER_1015
-	}
-	else
-	{
-		g_DPCacheSrvr.SendSay( "", "", idOperator, idPlayer, "", pOperator, 1 ); // 플레이어가 접속중이지 않습니다. 
-		// player not found
-	}
-}
-
-void CDPCoreSrvr::OnTeleportPlayer( CAr & ar, DPID, DPID, DPID, u_long )
-{
-	u_long idOperator, idPlayer;
-	ar >> idOperator >> idPlayer;
-
-	CPlayer* pOperator, *pPlayer;
-	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
-	pOperator	= g_PlayerMng.GetPlayer( idOperator );
-	pPlayer		= g_PlayerMng.GetPlayer( idPlayer );
-	if( pOperator && pPlayer )
-	{
-		g_DPCacheSrvr.SendTeleportPlayer( idOperator, pPlayer );
-	}
-	else
-	{
-		g_DPCacheSrvr.SendSay( "", "", idOperator, idPlayer, "", pOperator, 1 ); // 플레이어가 접속중이지 않습니다. 
-	}
+	SendPlaySound(idsound, dwWorldID, targetWorldDPID);
 }
 
 void CDPCoreSrvr::OnKillPlayer( CAr & ar, DPID, DPID, DPID, u_long )

@@ -47,7 +47,6 @@ extern	void	TestNetLib( const char* lpAddr, u_short uPort );
 	DWORD dw;	\
 	ar >> dw;
 
-#ifdef __STL_0402
 	#define	USES_PFNENTRIES	\
 		private:	\
 		std::map<DWORD, void (theClass::*)( theParameters )>	m_pfnEntries;	\
@@ -66,21 +65,6 @@ extern	void	TestNetLib( const char* lpAddr, u_short uPort );
 		pfn		= hndlr;	\
 		m_pfnEntries.emplace(dwKey, pfn);
 
-#else	// __STL_0402
-	#define	USES_PFNENTRIES	\
-		private:	\
-		CMyMap<void (theClass::*)( theParameters )>	m_pfnEntries;	\
-		void ( theClass::*GetHandler( DWORD dwType ) )( theParameters )	\
-			{ void ( theClass::*pfn )( theParameters );	return ( m_pfnEntries.Lookup( dwType, pfn ) ? pfn : NULL ); }
-
-	#define BEGIN_MSG	\
-		m_pfnEntries.SetSize( 64, 128, 64 );	\
-		void ( theClass::*pfn )( theParameters );
-
-	#define	ON_MSG( dwKey, hndlr )	\
-		pfn		= hndlr;	\
-		m_pfnEntries.SetAt( dwKey, pfn );
-#endif	// __STL_0402
 
 class CDPMng
 {

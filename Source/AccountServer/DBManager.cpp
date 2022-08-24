@@ -78,23 +78,6 @@ void CDbManager::SetLogging( BOOL bEnable )
 	m_bLogItem = bEnable;
 }
 
-void CDbManager::GetStrTime( CTime *pTime, char *strbuf )
-{
-	char sYear[5]	= { 0, };
-	char sMonth[3]	= { 0, };
-	char sDay[3]	= { 0, };
-	char sHour[3]	= { 0, };
-	char sMin[3]	= { 0, };
-
-	strncpy( sYear, strbuf, 4 );
-	strncpy( sMonth, strbuf + 4, 2 );
-	strncpy( sDay, strbuf + 6, 2 );
-	strncpy( sHour, strbuf + 8, 2 );
-	strncpy( sMin, strbuf + 10, 2 );
-
-	*pTime	= CTime( atoi( sYear ), atoi( sMonth ), atoi( sDay ), atoi( sHour ), atoi( sMin ), 0 );
-}
-
 void CDbManager::DBQryAccount( char* qryAccount, const char* Gu, const char* szAccount )
 {
 	sprintf( qryAccount, "LOGINJOIN_STR '%s', '%s'", Gu, szAccount );

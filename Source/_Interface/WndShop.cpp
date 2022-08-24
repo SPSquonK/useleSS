@@ -886,10 +886,6 @@ void CWndBeautyShop::UseHairCoupon(BOOL isUse)
 
 HRESULT CWndBeautyShop::InvalidateDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.Invalidate();
-#endif //__YDEBUG
-	
 	CWndBase::InvalidateDeviceObjects();
 	return S_OK;
 }
@@ -900,10 +896,6 @@ HRESULT CWndBeautyShop::DeleteDeviceObjects()
 }
 HRESULT CWndBeautyShop::RestoreDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_Texture.SetInvalidate(m_pApp->m_pd3dDevice);
-#endif //__YDEBUG
-
 	CWndBase::RestoreDeviceObjects();
 
 	return S_OK;
@@ -1828,7 +1820,7 @@ BOOL CWndUseCouponConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			else if(m_TargetWndId == APP_BEAUTY_SHOP_SKIN)
 			{
 				CWndFaceShop* pWndFaceShop = (CWndFaceShop*)this->GetParentWnd();
-				g_DPlay.SendChangeFace( g_pPlayer->m_idPlayer, pWndFaceShop->m_nSelectedFace-1, pWndFaceShop->m_nCost );
+				g_DPlay.SendChangeFace(pWndFaceShop->m_nSelectedFace - 1);
 				pWndFaceShop->Destroy();
 			}
 		}	
@@ -1974,7 +1966,7 @@ BOOL CWndBeautyShopConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 			CWndFaceShop* pWndFaceShop = (CWndFaceShop*)this->GetParentWnd();
 			if( pWndFaceShop )
 			{
-				g_DPlay.SendChangeFace( g_pPlayer->m_idPlayer, pWndFaceShop->m_nSelectedFace-1, pWndFaceShop->m_nCost );
+				g_DPlay.SendChangeFace(pWndFaceShop->m_nSelectedFace - 1);
 			}
 			pWndFaceShop->Destroy();
 		}

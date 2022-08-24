@@ -1,7 +1,4 @@
-#ifndef __CMNHDR_H__
-#define __CMNHDR_H__
-
-//#define FD_SETSIZE	1024
+#pragma once
 
 #include <Winsock2.h>
 #include <tlhelp32.h.>
@@ -35,202 +32,12 @@ typedef unsigned (__stdcall *PTHREAD_START) (void *);
 	(unsigned)      (fdwCreate),               \
 	(unsigned *)    (pdwThreadId)))
 
-#define chSTR2(x)   #x
-#define chSTR(x)    chSTR2(x)
-#define chMSG(desc) message(__FILE__ "(" chSTR(__LINE__) "):" #desc)
-#define chINRANGE(low, Num, High) (((low) <= (Num)) && ((Num) <= (High)))
-#define chDIMOF(Array) (sizeof(Array) / sizeof(Array[0]))
-#define chSIZEOFSTRING(psz)   ((lstrlen(psz) + 1) * sizeof(TCHAR))
-
-//#define IDHash(id,HashSize)	(((id) + (id>>8) + (id>>16) + (id>>24)) & (HashSize-1));
-inline DWORD IDHash( DWORD id, size_t HashSize )
-{
-	return (((id) + (id>>8) + (id>>16) + (id>>24)) & (HashSize-1));
-}
-
-
-#ifdef _X86_
-#define DebugBreak()    _asm { int 3 }
-#endif
-
-inline void chMB( PCSTR s )
-{
-	char szTMP[256];
-	GetModuleFileNameA( NULL, szTMP, chDIMOF( szTMP ) );
-	HWND hwnd	= GetActiveWindow();
-	MessageBoxA( hwnd, s, szTMP, MB_OK | ( ( hwnd == NULL ) ? MB_SERVICE_NOTIFICATION : 0 ) );
-}
-
-inline void chMBANDDEBUG( PSTR szMsg )
-{
-	chMB( szMsg );
-	DebugBreak();
-}
-/*
-inline void chASSERTFAIL( LPCSTR file, int line, PCSTR expr )
-{
-	char sz[256];
-	wsprintfA( sz, "File %s, line %d : %s", file, line, expr );
-	chMBANDDEBUG( sz );
-}
-*/
-inline BOOL IsPrime( u_long n )
-{
-	u_long i = 2, j = n;
-	while( i < j ) {
-		if( n % i == 0 )
-			return FALSE;
-		j = n / i++;
-	}
-	return TRUE;
-}
 
 typedef	DWORD	SERIALNUMBER;
 
-// ',', '/', '\0' 을 만날때까지 값을 리턴하고 커서는 다음...
-inline int GetIntFromStr(const char *pBuf, int *pLocation)
-{
-	char strTemp[50];
-	int count=0;
-	while(pBuf[*pLocation]!=',' && pBuf[*pLocation]!='/' && pBuf[*pLocation]!=0) {
-		strTemp[count]=pBuf[*pLocation];
-		count++; (*pLocation)++;
-	}
-	strTemp[count]=0;(*pLocation)++;
-	return atoi(strTemp);
-}
-
-inline void GetStrFromStr(const char *pBuf, char *strReturn, int *pLocation)
-{
-	int count=0;
-	while(pBuf[*pLocation]!=',' && pBuf[*pLocation]!='/' && pBuf[*pLocation]!=0) {
-		strReturn[count]=pBuf[*pLocation];
-		count++; (*pLocation)++;
-	}
-	strReturn[count]=0;(*pLocation)++;
-}
-
-inline	__int64 GetInt64PaFromStr( char *pBuf, int *pLocation )
-{
-	char strTemp[50];
-	int count	=0;
-	while( pBuf[*pLocation] != ',' && pBuf[*pLocation] != 0 )
-	{
-		if( pBuf[*pLocation] != '/' )
-		{
-			strTemp[count]	=pBuf[*pLocation];
-			count++;	( *pLocation )++;
-		}
-		else
-		{
-			if( count == 0 )
-			{
-				return 0;
-			}
-			else
-			{
-				strTemp[count]	=0;
-				return _atoi64( strTemp );
-			}
-		}
-	}
-	strTemp[count]	=0;	( *pLocation )++;
-	return _atoi64( strTemp );
-}
-
-// ',', '\0' 을 만날때까지 값을 리턴하고 커서는 다음...
-// '/' 를 만나면 값을 리턴하고 커서는 현재('/')...
-inline int GetIntPaFromStr(const char *pBuf, int *pLocation )
-{
-	char strTemp[50];
-	int count=0;
-	while(pBuf[*pLocation]!=',' && pBuf[*pLocation]!=0)
-	{
-		if( pBuf[*pLocation]!='/' )
-		{
-			strTemp[count]=pBuf[*pLocation];
-			count++; (*pLocation)++;
-		}
-		else
-		{
-			if( count == 0 )
-			{
-				return 0;
-			}
-			else
-			{
-				strTemp[count]=0;
-				return atoi(strTemp);
-			}
-		}
-	}
-	strTemp[count]=0;(*pLocation)++;
-	return atoi(strTemp);
-}
-
-inline SERIALNUMBER	GetSerialNumberPaFromStr(char *pBuf, int *pLocation )
-{
-	char strTemp[50];
-	int count=0;
-	while(pBuf[*pLocation]!=',' && pBuf[*pLocation]!=0)
-	{
-		if( pBuf[*pLocation]!='/' )
-		{
-			strTemp[count]=pBuf[*pLocation];
-			count++; (*pLocation)++;
-		}
-		else
-		{
-			if( count == 0 )
-			{
-				return (SERIALNUMBER)0;
-			}
-			else
-			{
-				strTemp[count]=0;
-				return atoi(strTemp);
-			}
-		}
-	}
-	strTemp[count]=0;(*pLocation)++;
-	return atoi(strTemp);
-}
-
-inline void GetStrPaFromStr(char *pBuf, char *strReturn, int *pLocation)
-{
-	int count=0;
-	while(pBuf[*pLocation]!=',' && pBuf[*pLocation]!=0)
-	{
-		if( pBuf[*pLocation]!='/' )
-		{
-			strReturn[count]=pBuf[*pLocation];
-			count++; (*pLocation)++;
-		}
-		else
-		{
-			if( count == 0 )
-			{
-				strReturn[0] = '\0';
-			}
-			else
-			{
-				strReturn[count]=pBuf[*pLocation];
-			}
-			return;
-		}
-	}
-	strReturn[count]=0;(*pLocation)++;
-}
-
-inline HANDLE CreateNewCompletionPort( DWORD dwNumberOfConcurrentThreads )
-{
-	return( CreateIoCompletionPort( INVALID_HANDLE_VALUE, NULL, 0, dwNumberOfConcurrentThreads ) );
-}
-
-class CSystemInfo : public SYSTEM_INFO
-{
+class CSystemInfo : public SYSTEM_INFO {
 public:
-	CSystemInfo()	{	GetSystemInfo( this );	}
+	CSystemInfo() { GetSystemInfo(this); }
 };
 
 #define	CLOSE_HANDLE(h)		\
@@ -281,16 +88,12 @@ inline void	GetAddr( CHAR* lpAddr )
  
 	if( WSAStartup( wVersionRequested, &wsaData ) == 0 )
 	{
-//		if( LOBYTE( wsaData.wVersion ) == 2 &&
-//			HIBYTE( wsaData.wVersion ) == 2 )
-//		{
 			CHAR name[260];
 			if( gethostname( name, sizeof(name) ) == 0 )
 			{
 				if( ( hostinfo = gethostbyname( name ) ) )
 					strcpy( lpAddr, inet_ntoa( *(struct in_addr*)*hostinfo->h_addr_list ) );
 			}
-//		}
 	}
 	WSACleanup( );
 }
@@ -405,47 +208,6 @@ inline void	NotifyProcessStart( DWORD dwId )
 	WriteFile( hWriteHandle, &dwData, sizeof(dwData), &dwBytesWritten, NULL );	
 
 #endif
-}
-
-
-// do not use
-BOOL	KillProcess( CString sExeName )
-{
-	sExeName.MakeUpper();
-	HANDLE hSnapshot	= CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
-	if( (int)hSnapshot != -1 )
-	{
-		PROCESSENTRY32 pe32;
-		pe32.dwSize		= sizeof( PROCESSENTRY32 );
-		BOOL fContinue;
-		CString strProcessName;
-		if( Process32First( hSnapshot, &pe32 ) )
-		{
-			do
-			{
-				strProcessName	= pe32.szExeFile;
-				strProcessName.MakeUpper();
-				if( (strProcessName.Find( sExeName, 0 ) != -1 ) )
-				{
-					HANDLE hProcess		= OpenProcess( PROCESS_ALL_ACCESS, 0, pe32.th32ParentProcessID );
-					if( hProcess )
-					{
-						DWORD dwExitCode;
-						GetExitCodeProcess( hProcess, &dwExitCode );
-						TerminateProcess( hProcess, dwExitCode );
-						WaitForSingleObject( hProcess, 60 * 1000 );
-						CloseHandle( hProcess );
-						CloseHandle( hSnapshot );
-						return TRUE;
-					}
-					return FALSE;
-				}
-				fContinue	= Process32Next( hSnapshot, &pe32 );
-			} while( fContinue );
-		}
-		CloseHandle( hSnapshot );
-	}
-	return FALSE;
 }
 
 typedef	struct	tagPLAY_ACCOUNT
@@ -639,4 +401,3 @@ inline time_t	time_null( void )
 #endif	//
 }
 
-#endif	// __CMNHDR_H__

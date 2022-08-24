@@ -21,6 +21,8 @@
 
 	#include "eveschool.h"
 	#include "ItemUpgrade.h"
+
+#include <numbers>
 #endif	// __WORLDSERVER
 
 
@@ -719,6 +721,27 @@ BOOL CMover::IsBlocking( CMover* pAttacker )
 	return ( nBR > r );		// R이 6 ~ 94사이의 값이면 ->  BR > R인 경우 Blocking 성공
 }
 
+const struct DamageMultiplierReductionFromDeltaCls {
+	static constexpr int MAX_OVER_ATK = 16;
+	std::array<float, MAX_OVER_ATK> memoized;
+
+	DamageMultiplierReductionFromDeltaCls() {
+		memoized[0] = 1.0f; // oh no, we waste sizeof(float) of memory :(
+		for (int nDelta = 1; nDelta != MAX_OVER_ATK; ++nDelta) {
+			const double radian = (std::numbers::pi * nDelta) / static_cast<float>(MAX_OVER_ATK * 2);
+			// Sadly, std::cos is not a constexpr function
+			memoized[nDelta] = static_cast<float>(std::cos(radian));
+		}
+	}
+	
+	[[nodiscard]] float operator()(const int nDelta /* > 0 */) const {
+		return memoized[std::min(nDelta, MAX_OVER_ATK - 1)];
+	}
+
+} DamageMultiplierReductionFromDelta;
+
+
+
 // this -> attacker
 // 스피릿밤(SI_PSY_PSY_SPRITBOMB) 
 // 자신의 MP가 90% 이상 일경우 공격력의 1.5배
@@ -832,16 +855,9 @@ float CMover::GetDamageMultiplier( ATTACK_INFO* pInfo )
 		}
 	}
 
-	if( nDelta > 0 )
-	{
-		if( pInfo->pAttacker->IsNPC() || pInfo->pDefender->IsNPC() )
-		{
-			const int MAX_OVER_ATK = 16;
-			nDelta = std::min( nDelta, (MAX_OVER_ATK-1) ); 
-			
-			const double pi = 3.1415926535;
-			double radian = ( pi * nDelta ) / (float)(MAX_OVER_ATK * 2);
-			factor *= (float)cos( radian );
+	if (nDelta > 0) {
+		if (pInfo->pAttacker->IsNPC() || pInfo->pDefender->IsNPC()) {
+			factor *= DamageMultiplierReductionFromDelta(nDelta);
 		}
 	}
 

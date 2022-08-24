@@ -20,7 +20,6 @@
 //	mulcom	END100415	DB_OVERLAPPED_PLUS 메모리 풀 사용.
 
 #define		__SKILL_0205				// 스킬 변경 부분만 저장
-#define		__STL_0402					// stl
 
 #define		__ITEMDROPRATE				// 아이템 드롭률 조정(이벤트)
 #define		__EVENT_1101_2				// 출첵 이벤트 64비트 변경
@@ -57,10 +56,6 @@
 #define	__REMOVE_PLAYER_0221		// 캐릭터 삭제 패킷 조작
 
 #define		__SEND_ITEM_ULTIMATE	// 얼터멋 웨폰도 ITEM_SEND_TBL에서 지급가능하게...
-
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
 
 #define		__AUTO_NOTICE		// 자동 공지
 

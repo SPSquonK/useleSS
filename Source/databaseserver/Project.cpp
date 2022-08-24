@@ -64,14 +64,12 @@ CProject::CProject()
 
 CProject::~CProject()
 {
-//	if( m_pPropMover )
-//		::VirtualFree( m_pPropMover, sizeof(MoverProp) * MAX_PROPMOVER, MEM_DECOMMIT );
 	SAFE_DELETE_ARRAY( m_pPropMover );
-	for( int j = 0; j < m_colorText.GetSize(); j++ )
-	{
-		tagColorText* lpText = m_colorText.GetAt( j );
-		if( lpText && lpText->lpszData )
-			free( lpText->lpszData ); 
+
+	for (tagColorText & lpText : m_colorText) {
+		if (lpText.lpszData) {
+			free(lpText.lpszData);
+		}
 	}
 }
 

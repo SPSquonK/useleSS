@@ -35,6 +35,4 @@
 
 #include <afxdisp.h>      
 
-extern	BOOL	g_fInternal;
-
 #include "../_Common/Rijndael.h"

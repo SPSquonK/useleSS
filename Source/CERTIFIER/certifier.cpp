@@ -13,18 +13,20 @@
 #define MAX_LOADSTRING 100
 
 ////////////////////////////////////////////////////////////////////////////////
-class Heartbeat
-{
+class Heartbeat {
 public:
-	Heartbeat( const char* name );
-	virtual	~Heartbeat();
+	Heartbeat(const char * name) : _name(name) {}
+	Heartbeat(const Heartbeat &) = delete;
+	Heartbeat & operator=(const Heartbeat &) = delete;
+	~Heartbeat() { CLOSE_HANDLE(_heartbeat); }
 	void	Init();
 	void	Run();
 private:
-	HANDLE	_heartbeat;
-	const	std::string	_name;
+	HANDLE	_heartbeat = nullptr;
+	const char * _name;
 };
 Heartbeat hb( "10" );
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // Global Variables:
@@ -120,10 +122,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	CheckMenuItem( hMenu, IDM_OPT_INTERNAL, MF_CHECKED );
 	EnableMenuItem( hMenu, IDM_OPT_INTERNAL, MF_DISABLED | MF_GRAYED );
 	*/
-	g_fInternal	= TRUE;
 
-	int x = 800, y = 416;
-	SetWindowPos( hWnd, NULL, x, y, 400, 416, SWP_SHOWWINDOW );
+	static constexpr int x = 90 + (400 + 10);
+	static constexpr int y = 130;
+	SetWindowPos( hWnd, NULL, x, y, 400, 150, SWP_SHOWWINDOW );
 
 	g_MyTrace.Initialize( hWnd, "SquireD", RGB( 0x00, 0x00, 0x00 ), RGB( 0xff, 0xff, 0xff ) );
 
@@ -138,31 +140,29 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //   InitEH();
 #endif	// _DEBUG
 
-	if( Script( "Certifier.ini" ) == FALSE )
+	if (!Script("Certifier.ini")) {
 		return FALSE;
+	}
 
-//	if( CQuery::EnableConnectionPooling() )
-//		OutputDebugString( "EnableConnectionPooling\n" );
-
-	if( g_DbManager.CreateDbWorkers() == FALSE )
-	{
-		AfxMessageBox( "g_DbManager.CreateDbWorkers odbc connect timeout." ); 
+	if (!g_DbManager.CreateDbWorkers()) {
+		AfxMessageBox("g_DbManager.CreateDbWorkers odbc connect timeout.");
 		return FALSE;
 	}
 
 	g_DbManager.LoadEveSchoolAccount();
 	
-	if( InitializeNetLib() == FALSE )
+	if (!InitializeNetLib())
 		return FALSE;
 
-#ifdef __CRC
-	if( g_dpCertifier.StartServer( PN_CERTIFIER, FALSE, CSock::crcRead ) == FALSE )
-#else	// __CRC
-	if( g_dpCertifier.StartServer( PN_CERTIFIER ) == FALSE )
-#endif	// __CRC
+	if (!g_dpCertifier.StartServer(PN_CERTIFIER, FALSE, CSock::crcRead)) {
+		Error("Certifier: Could not created Cert-Neuz Server (Port %d)", PN_CERTIFIER);
 		return FALSE;
-	if( FALSE == g_dpAccountClient.ConnectToServer( lpConnection, PN_ACCOUNTSRVR_0 ) )
+	}
+
+	if (!g_dpAccountClient.ConnectToServer(lpConnection, PN_ACCOUNTSRVR_0)) {
+		Error("Certifier: could not connect to Account Server (Port %d)", PN_ACCOUNTSRVR_0);
 		return FALSE;
+	}
 
 	SetTimer( hWnd, 0, SEC( 10 ), NULL );
 
@@ -179,10 +179,6 @@ void ExitInstance( void )
 
 BOOL Script( LPCTSTR lpszFileName )
 {
-#ifdef __INTERNALSERVER
-	strcpy( g_DbManager.m_szLoginPWD, "#^#^account" );
-#endif
-
 	CScanner s;
 
 	if( s.Load( lpszFileName ) )
@@ -225,7 +221,7 @@ BOOL Script( LPCTSTR lpszFileName )
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int wmId, wmEvent;
+	int wmId;
 	PAINTSTRUCT ps;
 	HDC hdc;
 	
@@ -233,7 +229,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_COMMAND:
 			wmId    = LOWORD(wParam); 
-			wmEvent = HIWORD(wParam); 
 			// Parse the menu selections:
 			switch (wmId)
 			{
@@ -274,30 +269,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Heartbeat::Heartbeat( const char* name )
-:
-_heartbeat( 0 ),
-_name( name )
-{
+
+void Heartbeat::Init() {
+	if (!(_heartbeat = ::CreateEvent(NULL, FALSE, FALSE, _name)))
+		_heartbeat = ::OpenEvent(EVENT_MODIFY_STATE, FALSE, _name);
+	if (!_heartbeat)
+		Error("Heartbeat.Init");
 }
 
-Heartbeat::~Heartbeat()
-{
-	CLOSE_HANDLE( _heartbeat );
-}
-
-void Heartbeat::Init()
-{
-	if( !( _heartbeat	= ::CreateEvent( NULL, FALSE, FALSE, _name.c_str() ) ) )
-		_heartbeat		= ::OpenEvent( EVENT_MODIFY_STATE, FALSE, _name.c_str() );
-	if( !_heartbeat )
-		Error( "Heartbeat.Init" );
-}
-
-void Heartbeat::Run()
-{
-	if( _heartbeat )
-		::SetEvent( _heartbeat );
+void Heartbeat::Run() {
+	if (_heartbeat)
+		::SetEvent(_heartbeat);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

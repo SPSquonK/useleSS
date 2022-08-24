@@ -11,7 +11,7 @@
 
 class CAccount;
 
-class CDPDBSrvr : public CDPMng<CBuffer>
+class CDPDBSrvr : public CDPMng
 {
 public:
 //	Constructions

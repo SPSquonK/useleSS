@@ -111,7 +111,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	SetTimer( hMainWnd, 3, SEC( 60 ), NULL );	// 10(s)
 
-	int x = 480, y = 606;
+	static constexpr int x = 90 + (400 + 10);
+	static constexpr int y = 130 + (150 + 10) * 2;
 	SetWindowPos( hWnd, NULL, x, y, 400, 416, SWP_SHOWWINDOW );
 
 	g_MyTrace.Initialize( hWnd, "SquireD", RGB( 0x00, 0x00, 0x00 ), RGB( 0xff, 0xff, 0xff ) );

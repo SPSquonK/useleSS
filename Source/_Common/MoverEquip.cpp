@@ -1102,11 +1102,8 @@ CMover::EquipAble::Result CMover::IsEquipAble(const CItemElem & pItem, bool bIgn
 	}// 무기
 	
 	// 방어구 입을때 직업확인.
-	if( pItemProp->dwItemKind1 != IK1_WEAPON )
-	{
-		if( pItemProp->dwItemJob != NULL_ID && !IsInteriorityJob( pItemProp->dwItemJob ) ) {
-			return EquipAble::No(TID_GAME_WRONGJOB, "\"%s\"", pItemProp->szName);
-		}
+	if( pItemProp->dwItemJob != NULL_ID && !IsInteriorityJob( pItemProp->dwItemJob ) ) {
+		return EquipAble::No(TID_GAME_WRONGJOB, "\"%s\"", pItemProp->szName);
 	}
 
 	if( !g_eLocal.GetState( EVE_SCHOOL ) && !bIgnoreLevel )

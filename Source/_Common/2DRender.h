@@ -12,12 +12,8 @@
 
 
 #include "xUtil.h"
-
-struct IDeviceRes
-{
-	virtual void Invalidate()								 = 0;
-	virtual BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice) = 0;
-};
+#include <memory>
+#include <set>
 
 class CRectClip : public CRect
 {
@@ -180,7 +176,7 @@ public:
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 };
-class CTexture : public IDeviceRes
+class CTexture
 {
 	BOOL m_bAutoFree;
 public:
@@ -209,9 +205,6 @@ public:
 
 	CTexture();
 	~CTexture();
-
-	void Invalidate();
-	BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice);
 
 	BOOL DeleteDeviceObjects();
 	void SetAutoFree( BOOL bAuto ) { m_bAutoFree = bAuto; }
@@ -291,25 +284,18 @@ public:
 		p2DRender->RenderTexture( pt, &m_ap2DTexture[ dwIndex ], dwBlendFactorAlhpa, fScaleX , fScaleY ); 
 	}
 };
-typedef std::map< std::string, CTexture* > CMapTexture;
-typedef CMapTexture::value_type MapTexType;
-typedef CMapTexture::iterator MapTexItor;
 
-class CTextureMng
-{
+class CWndBase;
+
+class CTextureMng final {
+private:
+	std::map<std::string, std::unique_ptr<CTexture>> m_mapTexture;
+	std::set<std::string> m_failedTextures;
 public:
-	BOOL SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice);
-	void Invalidate();
-	CMapTexture m_mapTexture;
-	//CMapStringToPtr m_mapTexture;
-	CTextureMng();
-	~CTextureMng();
-	BOOL RemoveTexture( LPCTSTR pKey );
-	BOOL DeleteDeviceObjects();
-	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
-	CTexture* AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pKey, CTexture* pTexture );
-	CTexture* GetAt( LPCTSTR pFileName );
+	CTexture * AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE);
+	void Clear() { m_mapTexture.clear(); m_failedTextures.clear(); }
 };
+
 #ifdef __CLIENT
 // 몹, 플레이어 데미지 출력
 class CDamageNum

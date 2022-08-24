@@ -929,20 +929,7 @@ BOOL CWndChat::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 }
 void CWndChat::Parsing( CString string )
 {
-	/*
-	MotionProp* pProp;
-	for( int i = 0; i < prj.m_aMotionProp.GetSize(); i++ )
-	{
-		pProp = prj.GetMotionProp( i );
-		if( pProp && pProp->dwRequireLv )
-		{
-			if( string.Find( pProp->szLink ) != -1 )
-			{
-			//	g_pPlayer->SendActMsg( OBJMSG_MOTION, pProp->dwID );
-			}
-		}
-	}
-	*/
+	// TODO: remove this function
 }
 void CWndChat::PutString( LPCTSTR lpszString, DWORD dwColor, DWORD dwPStyle )
 {

@@ -115,7 +115,7 @@ public:
 	void	SendHdr( DWORD dwHdr );
 	LONG	GetErrorCode() { return m_lError; }
 	LONG	GetNetError();
-	void	SendJoin( BYTE nSlot, DWORD dwWorldID, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti );
+	void	SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti );
 
 	void	PostPlayerAngle( BOOL f );
 	void	FlushPlayerAngle( void );
@@ -177,7 +177,7 @@ public:
 	void	SendDuelPartyNo( CMover* pSrc );
 	void	SendPartyChangeLeader( u_long uLeaderId, u_long uChangerLeaderid );
 	void	SendMoverFocus( u_long uidPlayer );
-	void	SendChangeFace( u_long objid, DWORD dwFaceNum, int cost);
+	void	SendChangeFace(DWORD dwFaceNum);
 	
 	void	SendScriptDialogReq( OBJID objid, LPCTSTR lpKey, int nGlobal1, int nGlobal2, int nGlobal3, int nGlobal4 );
 	void	SendOpenShopWnd( OBJID objid );
@@ -647,7 +647,9 @@ public:
 	void	OnGCTele( CAr & ar );
 	void	OnGCDiagMessage( CAr & ar );	
 	void	OnIsRequest( CAr & ar );
+	public:
 	void	OnGCLog( CAr & ar );
+	private:
 	void	OnGCLogRealTime( CAr & ar );
 	void	OnGCPlayerPoint( CAr & ar );
 
@@ -820,7 +822,6 @@ private:
 	void	OnSummonFriendConfirm( CAr & ar );
 	void	OnSummonPartyConfirm( CAr & ar );
 	void	OnRemoveGuildBankItem( CAr & ar );
-	void	OnAddRegion( CAr & ar );
 #ifdef __EVENT_1101
 	void	OnCallTheRoll( CAr & ar );
 #endif	// __EVENT_1101

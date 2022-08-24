@@ -9,7 +9,7 @@
 #undef theParameters
 #define theParameters	CAr & ar, DPID dpid
 
-class CDPWldSrvr : public CDPMng<CBuffer>
+class CDPWldSrvr : public CDPMng
 {
 public:
 //	Constructions

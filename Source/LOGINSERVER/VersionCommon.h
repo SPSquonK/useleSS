@@ -13,11 +13,6 @@
 #define		__PROTOCOL1021
 #define		__VERIFYNETLIB
 #define		__DOS1101
-#define		__STL_0402		// stl
-
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
 
 // 15차
 //	#define		__2ND_PASSWORD_SYSTEM			// 로그인 시 2차 비밀번호 입력

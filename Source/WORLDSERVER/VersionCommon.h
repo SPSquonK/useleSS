@@ -6,10 +6,6 @@
 	#define __INTERNALSERVER
 #endif
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
 #define		D3DDEVICE	NULL
 #define		__SERVER						// 클라이언트 전용코드를 빌드하지 않기 위한 define
 #define		__X15
@@ -36,7 +32,6 @@
 #define		__INFINITE_0227
 
 #define		__LANG_IME_0327					// 국가별 ime표시 창 출력 구분
-#define		__STL_0402						// stl
 // 9차
 #define		__TRADESYS						// 교환 아이템 스크립트(이벤트, 퀘스트, ...) Neuz, World
 #define		__EVE_BALLOON					//풍선 이벤트 관련
@@ -298,8 +293,6 @@
 //	#define		__JEFF_11_5					// 메모리 누수
 
 //	#define		__DST_GIFTBOX				// 착용 아이템에 기프트 박스 기능 추가
-
-	#define		__PERF_0226
 
 	#define		__OPT_MEM_0811
 //	#define		__MEM_TRACE

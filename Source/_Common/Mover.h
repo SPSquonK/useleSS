@@ -327,12 +327,6 @@ struct	REGIONELEM;
 class	CParty;
 class	CActionMover;
 
-#ifdef __LAYER_1015
-#define	REPLACE( uMulti, dwWorld, vPos, type, nLayer )	Replace( (uMulti), (dwWorld), (vPos), (type), (nLayer) )
-#else	// __LAYER_1015
-#define	REPLACE( uMulti, dwWorld, vPos, type, nLayer )	Replace( (uMulti), (dwWorld), (vPos), (type) )
-#endif	// __LAYER_1015
-
 #ifdef __CLIENT
 class CClientPet
 {
@@ -808,7 +802,7 @@ public:
 	int				IsSteal( CMover *pTarget );		// pTarget을 스틸하려 하는가.
 	int				IsSteal( OBJID idTaget );		// id로 검사하는 버전.
 	u_long			GetPartyId() { return m_idparty; }
-	BOOL			IsMode( DWORD dwMode ); 
+	BOOL			IsMode( DWORD dwMode ) const; 
 	void			SetMode( DWORD dwMode )		{ m_dwMode |= dwMode; }	// 유저상태 셑팅
 	void			SetNotMode( DWORD dwMode )	{ m_dwMode &= (~dwMode); } // 유저상태 리셑
 	BOOL			SetDarkCover( BOOL bApply, DWORD tmMaxTime = 0 );
@@ -848,7 +842,7 @@ public:
 	void			SetDestAngle( float fDestAngle, bool bLeft )	{	m_fDestAngle	= fDestAngle;	m_bLeft	= bLeft;	}
 	void			ClearDestAngle()	{ m_fDestAngle	= -1.0f; }
 	BOOL			IsRegionAttr( DWORD dwAttribite ) { return ( m_dwRegionAttr & dwAttribite ) == dwAttribite ? TRUE : FALSE; }
-	REGIONELEM*		UpdateRegionAttr();
+	const REGIONELEM * UpdateRegionAttr();
 	DWORD			GetRideItemIdx()	{ return m_dwRideItemIdx; }
 	void			SetRide( CModel *pModel, int nRideItemIdx = 0 ) { m_dwRideItemIdx = nRideItemIdx; m_pRide = (CModelObject*)pModel; 	};
 	void			ClearDuel();
@@ -1065,7 +1059,7 @@ public:
 	[[nodiscard]] int GetItemAbilityMax(int nItem) const;
 	[[nodiscard]] std::pair<int, int> GetHitMinMax(const ATTACK_INFO * pInfo = nullptr) const;
 	BOOL			IsAfterDeath();
-	BOOL			IsDie() { return m_pActMover->IsDie() || m_nHitPoint == 0; }
+	BOOL			IsDie() const { return m_pActMover->IsDie() || m_nHitPoint == 0; }
 	BOOL			IsLive() { return m_pActMover->IsDie() == FALSE || m_nHitPoint > 0; }		// && 를  ||로 바꿨음.  !=를 >로 바꿈
 	int				GetCount() { return m_nCount; }
 	void			SetPKPink( DWORD dwTime ) { if( dwTime == 0 || m_dwPKTime < dwTime ) m_dwPKTime = dwTime; }
@@ -1261,7 +1255,7 @@ public:
 									 int nLoop, DWORD dwMotionOption );
 	void			HalfForceSet( D3DXVECTOR3 & vPos, D3DXVECTOR3 & vd,	float fAngle, float fAnlgeX, 
 		                          float fAccPower, float fTurnAngle );
-	CGuild*			GetGuild();
+	[[nodiscard]] CGuild * GetGuild() const;
 	CGuildWar*		GetWar();
 	BOOL			IsSMMode( int nType ) { return ( m_dwSMTime[nType] > 0 ) ? TRUE : FALSE; }
 	void			ReState();
@@ -1336,13 +1330,12 @@ public:
 	int				RemoveItemA( DWORD dwItemId, short nNum );
 	void			RemoveVendorItem( CHAR chTab, BYTE nId, short nNum );
 	void			RemoveItemIK3( DWORD dwItemKind3 );
-	BOOL			ReplaceInspection( REGIONELEM* pPortkey );
-#ifdef __LAYER_1015
-	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );
-#else	// __LAYER_1015
-	BOOL			Replace( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type );
-#endif	// __LAYER_1015
+
+	BOOL			ReplaceInspection(const REGIONELEM * pPortkey );
+	BOOL			Replace( DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE type, int nLayer );
 	bool Replace(const CMover & pTarget, REPLACE_TYPE replaceType = REPLACE_TYPE::REPLACE_NORMAL);
+	bool Replace(const REGIONELEM & region, REPLACE_TYPE type, int nLayer);
+
 	BOOL			IsLoot( CItem *pItem, BOOL bPet = FALSE );
 	void			ProcInstantBanker();
 	void			ProcInstantGC();
@@ -1498,7 +1491,7 @@ public:
 
 
 // 유저상태 알아봄
-inline	BOOL CMover::IsMode( DWORD dwMode ) 
+inline	BOOL CMover::IsMode( DWORD dwMode ) const
 { 
 #ifdef __HACK_0516
 	switch( dwMode )

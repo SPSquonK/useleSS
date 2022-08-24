@@ -451,11 +451,6 @@ HRESULT CTheme::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 HRESULT CTheme::InvalidateDeviceObjects()
 {
-#ifdef __YDEBUG
-	m_texWallPaper.Invalidate();
-	m_texWndPaper.Invalidate();
-#endif //__YDEBUG
-
 	HRESULT h = S_OK;
     SAFE_RELEASE( m_pVBTexture );
 	SAFE_RELEASE( m_pVBGauge );
@@ -500,12 +495,7 @@ HRESULT CTheme::DeleteDeviceObjects()
 	return h;
 }
 HRESULT CTheme::RestoreDeviceObjects( )
-{
-#ifdef __YDEBUG
-	m_texWallPaper.SetInvalidate(m_pd3dDevice);
-	m_texWndPaper.SetInvalidate(m_pd3dDevice);
-#endif //__YDEBUG
-	
+{	
 	if( m_pVBTexture ) 
 		return S_OK;
 	//g_mesh.RestoreDeviceObjects();

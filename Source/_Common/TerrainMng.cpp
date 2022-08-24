@@ -1,59 +1,42 @@
 #include "stdafx.h"
 
+void WaterTexList::Advance() {
+	currentFrame += FrameAdvance;
 
-
-CTerrainMng::CTerrainMng()
-{
-	ZeroMemory( m_aTerrain, sizeof( m_aTerrain ) );//* MAX_TERRAIN );
-	m_nWaterFrame = 0;
-	m_pd3dDevice = NULL;
-	m_nSize = 0;
-	for(int i=0; i<MAX_WATER; i++)
-		m_fWaterFrame[i] = 0.0f;
-}
-
-CTerrainMng::~CTerrainMng()
-{
-	for ( int i = 0 ; i < m_nWaterFrame ; i++ )
-	{
-		SAFE_DELETE_ARRAY( m_pWaterIndexList[i].pList );
+	if (static_cast<size_t>(currentFrame) >= terrainIds.size()) {
+		currentFrame = 0.0f;
 	}
-	SAFE_DELETE_ARRAY( m_pWaterIndexList );
 }
-HRESULT CTerrainMng::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
+
+CTerrainMng::~CTerrainMng() {
+	SAFE_DELETE_ARRAY(m_pWaterIndexList);
+}
+
+HRESULT CTerrainMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
 	m_pd3dDevice = pd3dDevice;
 	return S_OK;
 }
-HRESULT CTerrainMng::RestoreDeviceObjects()
-{
-	return S_OK;
-}
-HRESULT CTerrainMng::InvalidateDeviceObjects()
-{
-	return S_OK;
-}
-HRESULT CTerrainMng::DeleteDeviceObjects()
-{
-	for( int i = 0; i < MAX_TERRAIN; i++ )
-	{
-		if( m_aTerrain[ i ].m_pTexture )
-			SAFE_RELEASE( m_aTerrain[ i ].m_pTexture );
+
+HRESULT CTerrainMng::DeleteDeviceObjects() {
+	for (TERRAIN & terrain : m_terrains) {
+		if (terrain.m_pTexture) {
+			SAFE_RELEASE(terrain.m_pTexture);
+		}
 	}
 	return S_OK;
 }
+
 BOOL CTerrainMng::LoadTexture( DWORD dwId )
 {
-	if( (int)( dwId ) >= m_nSize )
-		return FALSE;
-	LPTERRAIN lpTerrain = GetTerrain( dwId );
+	if (dwId >= m_terrains.size()) return FALSE;
+
+	TERRAIN * lpTerrain = GetTerrain( dwId );
 	if( lpTerrain && lpTerrain->m_pTexture == NULL )
 	{
 		CString strPath;
 		if( g_Option.m_nTextureQuality == 0 )
 			strPath = MakePath( DIR_WORLDTEX, lpTerrain->m_szTextureFileName );
-		else
-		if( g_Option.m_nTextureQuality == 1 )
+		else if( g_Option.m_nTextureQuality == 1 )
 			strPath = MakePath( DIR_WORLDTEXMID, lpTerrain->m_szTextureFileName );
 		else
 			strPath = MakePath( DIR_WORLDTEXLOW, lpTerrain->m_szTextureFileName );
@@ -76,8 +59,8 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 	if(scanner.Load(lpszFileName, FALSE )==FALSE)
 		return FALSE;
 
-	LPTERRAIN lpTerrain;
-	m_nSize = 0;
+	m_terrains.clear();
+
 	int nBrace = 1;
 	scanner.SetMark();
 	int i = scanner.GetNumber(); // folder or id
@@ -85,7 +68,7 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 	//	현재는 물만 이런 형태의 프레임을 사용할 것이라는 전제하에 
 	//	하나만 되어 있지만 여러개를 사용할때는 이 부분을 구조체나
 	//	클래스로 바꾸어서 다시 만들어야 할것이다.
-	int FrameCnt = 0, ImageCnt = 0, IdCnt = 0;
+	int FrameCnt = 0, ImageCnt = 0;
 	FrameCnt = scanner.GetNumber();
 	if ( nBrace == 1 && FrameCnt )
 	{
@@ -103,10 +86,8 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 			{
 				scanner.SetMark();
 				i = scanner.GetNumber();  // folder or id
-				if( i > m_nSize ) m_nSize = i;
 				
 				FrameCnt = scanner.GetNumber();
-				IdCnt = 0;
 				if ( nBrace == 1 && FrameCnt )
 				{
 					m_nWaterFrame = FrameCnt;
@@ -116,10 +97,6 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				}
 				else if ( nBrace == 2 && FrameCnt )
 				{
-					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-					m_pWaterIndexList[ImageCnt].fWaterFrame = 0.15f;
-					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
-					ZeroMemory( m_pWaterIndexList[ImageCnt].pList, FrameCnt * sizeof(int) );
 					ImageCnt++;
 				}				
 				continue;
@@ -142,55 +119,36 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 			{
 				if ( nBrace == 2 && FrameCnt )
 				{
-					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-					m_pWaterIndexList[ImageCnt].fWaterFrame = 0.15f;
-					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
 					ImageCnt++;
 				}
 			}
 
-			if( i > m_nSize ) m_nSize = i;
 			continue;
 		}
 		else
 		{
 			scanner.GoMark();
 			i = scanner.GetNumber(); // id
-			if( i > m_nSize ) m_nSize = i;
+
 			FrameCnt = scanner.GetNumber();	//	Count
 			if ( nBrace == 3 )
 			{
-				m_pWaterIndexList[ImageCnt - 1].pList[IdCnt] = i;
-				IdCnt++;
+				m_pWaterIndexList[ImageCnt - 1].terrainIds.emplace_back(i);
 			}
 		}
-		lpTerrain = &m_aTerrain[ i ];
-		lpTerrain->m_dwId = i;
+
+		if (std::cmp_greater_equal(i, m_terrains.size())) {
+			m_terrains.resize(i + 1, TERRAIN());
+		}
+
+		TERRAIN * lpTerrain = &m_terrains[i];
 		scanner.GetToken();  // texture fileName
 		strcpy( lpTerrain->m_szTextureFileName, scanner.token );
-		lpTerrain->m_bBlock = scanner.GetNumber(); // block
+		scanner.GetNumber(); // block
 		scanner.GetToken(); // sound
-		strcpy( lpTerrain->m_szSoundFileName, scanner.token );
 		scanner.SetMark();
 		i = scanner.GetNumber();  // texture fileName
-		if( i > m_nSize ) m_nSize = i;
 	}
-/*
-	
-	int i = scanner.GetNumber( TRUE );  // id
-	while( scanner.tok != FINISHED )
-	{
-		lpTerrain = &m_aTerrain[ i ];
-		lpTerrain->m_dwId = i;
-		scanner.GetToken( TRUE );  // texture fileName
-		strcpy( lpTerrain->m_szTextureFileName, scanner.token );
-		lpTerrain->m_bBlock = scanner.GetNumber( TRUE ); // block
-		scanner.GetToken( TRUE ); // sound
-		strcpy( lpTerrain->m_szSoundFileName, scanner.token );
-		i = scanner.GetNumber( TRUE );  // texture fileName
-		if( i > m_nSize ) m_nSize = i;
-	}
-*/	
-	m_nSize++;
+
 	return TRUE;
 }

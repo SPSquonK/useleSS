@@ -819,7 +819,7 @@ public:
 	void			AddSexChange( CMover* pMover );
 	void			AddSetLocalEvent( short id, BYTE nState );
 	void			AddGameRate( FLOAT fRate, BYTE nFlag );
-	void			AddChangeFace( u_long uidPlayer, DWORD dwFace );
+	void			AddChangeFace(CUser & player, DWORD dwFace);
 	void			AddShout( CUser* pUserSrc, int nRange, LPBYTE lpBlock, u_long uBlockSize );
 	void			AddWorldMsg( const CRect* pRect, LPCTSTR lpszString );
 	void			AddGameSetting();
@@ -866,7 +866,7 @@ public:
 #else	// __IAOBJ0622
 	void			AddSetDestPos( CMover* pMover, CONST D3DXVECTOR3 & vPos, BYTE fForward );
 #endif	// __IAOBJ0622
-	void	AddAddRegion( DWORD dwWorldId, REGIONELEM & re );
+
 #ifdef __EVENT_1101
 	void	CallTheRoll( int nBit );
 #endif	// __EVENT_1101

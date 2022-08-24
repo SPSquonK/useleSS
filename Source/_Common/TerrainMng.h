@@ -1,57 +1,48 @@
-#ifndef		__TERRAINMNG_H__
-#define		__TERRAINMNG_H__
+#pragma once
 
-typedef struct tagTERRAIN
-{
-	LPDIRECT3DTEXTURE9 m_pTexture;
-	TCHAR m_szTextureFileName[128];
-	TCHAR m_szSoundFileName  [128];
-	BOOL  m_bBlock;
-	DWORD m_dwId;
+#include <vector>
+#include <optional>
 
-	BOOL IsValid() { return m_szTextureFileName[0] ? TRUE : FALSE; }
+struct TERRAIN {
+	LPDIRECT3DTEXTURE9 m_pTexture  = nullptr;
+	TCHAR m_szTextureFileName[128] = "";
+};
 
-} TERRAIN,* LPTERRAIN;
-
-typedef struct tagWaterTexList
-{
-	int  ListCnt;
-	int* pList;
-	FLOAT fWaterFrame;
-	tagWaterTexList()
-	{
-		ListCnt = 0;
-		pList = NULL;
-		fWaterFrame = 0.1f;
+struct WaterTexList {
+	static constexpr float FrameAdvance = 0.15f;
+	std::vector<DWORD> terrainIds;
+	float currentFrame = 0.0f;
+	
+	void Advance();
+	[[nodiscard]] std::optional<DWORD> GetTerrainId() const {
+		if (terrainIds.size() == 0) return std::nullopt;
+		return terrainIds[static_cast<size_t>(currentFrame)];
 	}
-}WaterTexList, *LPWATERTEXLIST;
-
-#define MAX_WATER	10
-#define MAX_TERRAIN 256
+};
 
 class CTerrainMng
 {
-	int m_nSize;
+//	int m_nSize;
 	LPDIRECT3DDEVICE9 m_pd3dDevice;
-public:
-	TERRAIN m_aTerrain[MAX_TERRAIN];
-	int				m_nWaterFrame;
-	WaterTexList	*m_pWaterIndexList;
-	FLOAT			m_fWaterFrame[MAX_WATER];
+	std::vector<TERRAIN> m_terrains;
+	TERRAIN m_defaultTerrain;
 
-	CTerrainMng();
+public:
+	int				m_nWaterFrame = 0;
+	WaterTexList	*m_pWaterIndexList = nullptr;
+
 	~CTerrainMng();
 
-	int GetSize() { return m_nSize; }
+	// int GetSize() { return m_nSize; }
 
 	BOOL LoadTexture( DWORD dwId );
-	LPTERRAIN	GetTerrain( DWORD dwId ) { return &m_aTerrain[ dwId ]; }
+	[[nodiscard]] TERRAIN * GetTerrain(DWORD dwId) {
+		if (dwId >= m_terrains.size()) return &m_defaultTerrain;
+		return &m_terrains[dwId];
+	}
 	BOOL LoadScript( LPCTSTR lpszFileName );
 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT RestoreDeviceObjects();
-	HRESULT InvalidateDeviceObjects();
-	HRESULT DeleteDeviceObjects();	
+	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT DeleteDeviceObjects();
 };
 
-#endif

@@ -65,7 +65,7 @@ void CDPCertifier::OnAddConnection( DPID dpid )
 }
 
 // 태국의 경우 돌아오는 22:00시까지의 남은 시간을 초단위로 보낸다.
-long GetPlayLeftTime( BYTE cbAccountFlag )
+static long GetPlayLeftTime( BYTE cbAccountFlag )
 {
 	if( cbAccountFlag & ACCOUNT_FLAG_18 )	// 성인은 남은 22:00시에 끊기지 않기에, 시간을 알리지 않게함 
 		return 0;		

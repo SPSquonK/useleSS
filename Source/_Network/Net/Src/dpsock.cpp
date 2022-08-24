@@ -332,7 +332,7 @@ void CDPSock::CloseConnection( DPID dpid )
 	{
 		if( m_pSock->CloseConnection( dpid ) )
 		{
-			CBuffer* pBuffer = CBufferFactory::GetInstance().CreateBuffer( BUFFER_TYPE_5BYTE );
+			CBuffer* pBuffer = CBufferFactory::CreateBuffer( BUFFER_TYPE_5BYTE );
 			AddDestroyPlayerOrGroupMsg( dpid, pBuffer );
 		}
 		if( !m_fServer )

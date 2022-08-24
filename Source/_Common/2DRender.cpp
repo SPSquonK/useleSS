@@ -1379,32 +1379,6 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 	return 1;
 }
 
-void CTexture::Invalidate()
-{
-#ifdef __YDEBUG
-	if( m_Pool != D3DPOOL_DEFAULT )
-		return;
-		
-	SAFE_RELEASE(m_pTexture);
-#endif //__YDEBUG
-}
-
-BOOL CTexture::SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-#ifdef __YDEBUG
-	if( m_Pool != D3DPOOL_DEFAULT )
-		return TRUE;
-
-	if( m_pTexture == NULL )
-		return LoadTexture( pd3dDevice, m_strTexFileName, m_d3dKeyColor, m_bMyLoader );
-	else
-		return TRUE;
-#endif //__YDEBUG
-
-	return TRUE;
-}
-
-
 
 CTexturePack::CTexturePack()
 {
@@ -1424,16 +1398,10 @@ BOOL CTexturePack::DeleteDeviceObjects()
 }
 HRESULT	CTexturePack::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 {
-	for( int i=0; i<(int)( m_dwNumber ); i++ )
-		m_ap2DTexture[i].SetInvalidate( pd3dDevice );	
-	
 	return S_OK;
 }
 HRESULT	CTexturePack::InvalidateDeviceObjects()
 {
-	for( int i=0; i<(int)( m_dwNumber ); i++ )
-		m_ap2DTexture[i].Invalidate();
-
 	return S_OK;
 }
 
@@ -1765,87 +1733,25 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 	return TRUE;
 }
 
-CTextureMng::CTextureMng()
-{
-}
-CTextureMng::~CTextureMng()
-{
-	DeleteDeviceObjects();
-}
-
-
-
-BOOL CTextureMng::SetInvalidate(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-	for( MapTexItor i = m_mapTexture.begin(); i != m_mapTexture.end(); ++i )
-		((*i).second)->SetInvalidate(pd3dDevice);
-
-	return TRUE;
-}
-
-
-void CTextureMng::Invalidate()
-{
-	for( MapTexItor i = m_mapTexture.begin(); i != m_mapTexture.end(); ++i )
-		((*i).second)->Invalidate();
-}
-
-BOOL CTextureMng::DeleteDeviceObjects()
-{
-
-#ifdef __VS2003
-	if(m_mapTexture.size() <= 0) return TRUE;
-#endif
-
-	for( MapTexItor i = m_mapTexture.begin(); i != m_mapTexture.end(); ++i )
-		SAFE_DELETE( (*i).second );
-	m_mapTexture.clear();
-	return TRUE;
-}
-BOOL CTextureMng::RemoveTexture( LPCTSTR pKey )
-{
-	MapTexItor mapTexItor = m_mapTexture.find( pKey );
-	if( mapTexItor != m_mapTexture.end() )
-	{
-		SAFE_DELETE( (*mapTexItor).second );
-		m_mapTexture.erase( pKey );
+CTexture * CTextureMng::AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader) {
+	const std::string key = pFileName;
+	
+	if (const auto mapTexItor = m_mapTexture.find(key); mapTexItor != m_mapTexture.end()) {
+		return mapTexItor->second.get();
+	} else if (m_failedTextures.contains(key)) {
+		return nullptr;
 	}
-	return TRUE;
-}
-CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
-{
-	CTexture* pTexture = NULL;
-	MapTexItor mapTexItor;
 
-	 mapTexItor = m_mapTexture.find( pFileName );
-	 if( mapTexItor != m_mapTexture.end() )
-		return (*mapTexItor).second;
-	pTexture = new CTexture;
-	if( pTexture->LoadTexture( pd3dDevice, pFileName, d3dKeyColor, bMyLoader ) )
-	{
-		m_mapTexture.insert( MapTexType( pFileName, pTexture ) );
+	CTexture * pTexture = new CTexture;
+	if (pTexture->LoadTexture(pd3dDevice, pFileName, d3dKeyColor, bMyLoader)) {
+		m_mapTexture.emplace(key, pTexture);
 		return pTexture;
+	} else {
+		delete pTexture;
+		m_failedTextures.emplace(key);
+		return nullptr;
 	}
-	safe_delete( pTexture );
-	return NULL;
 }
-CTexture* CTextureMng::AddTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pKey, CTexture* pTexture )
-{
-	MapTexItor mapTexItor;
-	mapTexItor = m_mapTexture.find( pKey );
-	if( mapTexItor != m_mapTexture.end() )
-		return (*mapTexItor).second;
-	m_mapTexture.insert( MapTexType( pKey, pTexture ) );
-	return pTexture;
-}
-CTexture* CTextureMng::GetAt( LPCTSTR pFileName )
-{
-	MapTexItor mapTexItor = m_mapTexture.find( pFileName );
-	if( mapTexItor != m_mapTexture.end() )
-		return (CTexture*)(*mapTexItor).second;
-	return NULL;
-}
-
 
 #ifdef __CLIENT
 #ifndef __VM_0820

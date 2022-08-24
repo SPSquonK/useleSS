@@ -141,15 +141,15 @@ void CWndAdminCreateItem::UpdateItems(
 	ItemPropListBox * pListBox = GetDlgItem<ItemPropListBox>(WIDC_CONTROL1);
 
 	pListBox->ResetContent();
-	for (int i = 0; i < prj.m_aPropItem.GetSize(); i++) {
-		ItemProp * pItemProp = prj.GetItemProp(i);
-		if (pItemProp && (pItemProp->dwItemKind2 == kind || kind == NULL_ID) &&
-			(pItemProp->dwItemSex == sex || sex == SEX_SEXLESS)) {
-			if (pItemProp->dwLimitLevel1 >= level && (pItemProp->dwItemJob == job || job == -1)) {
-				if (GetLanguage() != LANG_KOR && pItemProp->nVer >= 7 && pItemProp->bCharged == TRUE)
+	for (const ItemProp & pItemProp : prj.m_aPropItem) {
+
+		if ((pItemProp.dwItemKind2 == kind || kind == NULL_ID) &&
+			(pItemProp.dwItemSex == sex || sex == SEX_SEXLESS)) {
+			if (pItemProp.dwLimitLevel1 >= level && (pItemProp.dwItemJob == job || job == -1)) {
+				if (GetLanguage() != LANG_KOR && pItemProp.nVer >= 7 && pItemProp.bCharged == TRUE)
 					continue;
 
-				pListBox->Add(Item(pItemProp));
+				pListBox->Add(Item(&pItemProp));
 			}
 		}
 	}

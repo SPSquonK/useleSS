@@ -225,7 +225,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	g_hMainWnd	= hWnd	= CreateWindow(g_szWindowClass, g_szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-	int x = 480, y = 0;
+	static constexpr int x = 90 - 30;
+	static constexpr int y = 130 + (150 + 10) * 2 + 40;
 	SetWindowPos( hWnd, NULL, x, y, 800, 416, SWP_SHOWWINDOW );
 
 	if (!hWnd)
@@ -409,11 +410,7 @@ BOOL Script( LPCSTR lpszFileName )
 		else if( s.Token == "Key" )
 		{
 			g_uKey		 = (DWORD)s.GetNumber();
-#ifdef __S8_SERVER_PORT
 			g_uIdofMulti = g_uKey % 100;
-#else // __S8_SERVER_PORT
-			g_uIdofMulti = g_uKey / 100;
-#endif // __S8_SERVER_PORT
 		}
 		else if( s.Token == "Core" )
 		{

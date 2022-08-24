@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <boost/container/flat_set.hpp>
 #include "StaticString.h"
 
 enum LOGTYPE {
@@ -28,8 +29,8 @@ public:
 	}
 
 	void SetListOfMaps(
-		std::vector<std::pair<DWORD, std::string>> worlds,
-		std::vector<DWORD> invalidWorlds
+		const std::map<WorldId, std::string> & worlds,
+		const boost::container::flat_set<WorldId> & invalidWorlds
 	);
 
 	void UpdateConnectionState(ConnectedTo connectedTo) { m_connectedTo = connectedTo; }
@@ -38,8 +39,8 @@ public:
 	void Redraw();
 
 private:
-	[[nodiscard]] static std::string ExistingWorldsToString(const std::vector<std::pair<DWORD, std::string>> & worlds);
-	[[nodiscard]] static std::string InvalidWorldsToString(const std::vector<DWORD> & invalidWorlds);
+	[[nodiscard]] static std::string ExistingWorldsToString(const std::map<WorldId, std::string> & worlds);
+	[[nodiscard]] static std::string InvalidWorldsToString(const boost::container::flat_set<WorldId> & invalidWorlds);
 
 private:
 	std::array<StaticString<256>, LOGTYPE_MAX> g_szBuffer;

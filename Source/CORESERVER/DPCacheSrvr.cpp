@@ -54,11 +54,6 @@ CDPCacheSrvr::CDPCacheSrvr()
 	ON_MSG( PACKETTYPE_CHG_MASTER, &CDPCacheSrvr::OnChgMaster );
 }
 
-CDPCacheSrvr::~CDPCacheSrvr()
-{
-
-}
-
 void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	switch( lpMsg->dwType )
@@ -86,8 +81,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, dwMsgSize - sizeof(DPID) - sizeof(DWORD) );
-	}
-	else {
+	} else {
 		TRACE( "Handler not found(%08x)\n", lpMsg->dwType );
 	}
 }
@@ -104,53 +98,30 @@ void CDPCacheSrvr::SendProcServerList( DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-DPID	s_Cachedpid	= 0xFFFFFFFF;
-void CDPCacheSrvr::OnAddConnection( DPID dpid )
-{
-	if( s_Cachedpid == 0xFFFFFFFF )
-	{
-		s_Cachedpid = dpid;
-		SendProcServerList( dpid );
-		
-		CServerDesc* pServer	= new CServerDesc;
-		GetPlayerAddr( dpid, pServer->m_szAddr );
-#ifdef __STL_0402
-		bool bResult	= m_apServer.insert( CServerDescArray::value_type( dpid, pServer ) ).second;
-		ASSERT( bResult );
-#else	// __STL_0402
-		m_apServer.SetAt( dpid, pServer );
-#endif	// __STL_0402
-		g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), FALSE, "%s", pServer->m_szAddr );
-		g_PlayerMng.AddCache( dpid );
-	}
-	else
-	{
-		CServerDesc* pServer	= new CServerDesc;
-		GetPlayerAddr( dpid, pServer->m_szAddr );
-		Error( "Other Cache Connection - IP : %s", pServer->m_szAddr );
-		SAFE_DELETE( pServer );
+void CDPCacheSrvr::OnAddConnection(DPID dpid) {
+	if (!m_clientInfo) {
+		m_clientInfo.emplace(dpid);
+
+		SendProcServerList(dpid);
+
+		GetPlayerAddr(dpid, m_clientInfo->ipv4Address);
+		g_MyTrace.Add(CMyTrace::Key(m_clientInfo->ipv4Address), FALSE, "Cache: %s ON", m_clientInfo->ipv4Address);
+	} else {
+		char ipv4Addr[16];
+		GetPlayerAddr(dpid, ipv4Addr);
+		static_assert(std::same_as<DPID, unsigned long>);
+		Error("Other Cache Connection - IP : %s ~ DPID : %lu", ipv4Addr, dpid);
 	}
 }
 
-void CDPCacheSrvr::OnRemoveConnection( DPID dpid )
-{
-	if( s_Cachedpid == dpid )
-	{
-		s_Cachedpid	= 0xFFFFFFFF;
-#ifdef __STL_0402
-		CServerDesc* pServer	= m_apServer.GetAt( dpid );
-		m_apServer.erase( dpid );
-		if( pServer )
-			g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), TRUE, "%s", pServer->m_szAddr );
-		SAFE_DELETE( pServer );
-		g_PlayerMng.RemoveCache( dpid );
-#else	// __STL_0402
-		CServerDesc* pServer	= m_apServer.GetAt( dpid );
-		m_apServer.RemoveKey( dpid );
-		g_MyTrace.Add( CMyTrace::Key( pServer->m_szAddr ), TRUE, "%s", pServer->m_szAddr );
-		SAFE_DELETE( pServer );
-		g_PlayerMng.RemoveCache( dpid );
-#endif	// __STL_0402
+void CDPCacheSrvr::OnRemoveConnection(DPID dpid) {
+	if (m_clientInfo && m_clientInfo->dpid == dpid) {
+		ClientInfo old = m_clientInfo.value();
+		m_clientInfo.reset();
+
+		g_MyTrace.Add(CMyTrace::Key(old.ipv4Address), TRUE, "Cache: %s OFF", old.ipv4Address);
+
+		g_PlayerMng.RemoveCache(dpid);
 	}
 }
 
@@ -379,52 +350,6 @@ void CDPCacheSrvr::SendFriendIntercept( CPlayer* pPlayer, u_long uFriendid )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_FRIENDINTERCEPTSTATE, pPlayer->dpidUser );
 	ar << pPlayer->uKey << uFriendid;
-	SEND( ar, this, pPlayer->dpidCache );
-}
-
-void CDPCacheSrvr::SendModifyMode( DWORD dwMode, BYTE f, u_long idFrom, CPlayer* pTo )
-{
-	if( !pTo )
-		return;
-//	ASSERT( pTo );
-
-	BEFORESENDSOLE( ar, PACKETTYPE_MODIFYMODE, pTo->dpidUser );
-	ar << dwMode << f << idFrom;
-#ifdef __HACK_0516
-	ar << pTo->dpidUser;
-#endif	// __HACK_0516
-	SEND( ar, this, pTo->dpidCache );
-}
-
-#ifdef __LAYER_1015
-void CDPCacheSrvr::SendSummonPlayer( u_long idOperator, u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, CPlayer* pPlayer, int nLayer )
-#else	// __LAYER_1015
-void CDPCacheSrvr::SendSummonPlayer( u_long idOperator, u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos, CPlayer* pPlayer )
-#endif	// __LAYER_1015
-{
-	ASSERT( pPlayer );
-
-	BEFORESENDSOLE( ar, PACKETTYPE_SUMMONPLAYER, pPlayer->dpidUser );
-	ar << idOperator;
-	ar << dwWorldID;
-	ar << vPos;
-	ar << uIdofMulti;
-#ifdef __HACK_0516
-	ar << pPlayer->dpidUser;
-#endif	// __HACK_0516
-#ifdef __LAYER_1015
-	ar << nLayer;
-#endif	// __LAYER_1015
-	SEND( ar, this, pPlayer->dpidCache );
-}
-
-void CDPCacheSrvr::SendTeleportPlayer( u_long idOperator, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TELEPORTPLAYER, pPlayer->dpidUser );
-	ar << idOperator;
-#ifdef __HACK_0516
-	ar << pPlayer->dpidUser;
-#endif	// __HACK_0516
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
@@ -2356,13 +2281,6 @@ void CDPCacheSrvr::SendUpdateGuildRank()
 	BEFORESENDSOLE( ar, PACKETTYPE_UPDATE_GUILD_RANKING, DPID_ALLPLAYERS );
 	ar << CGuildRank::Instance;
 	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-void CDPCacheSrvr::SendBuyingInfo( PBUYING_INFO2 pbi2, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_BUYING_INFO, pPlayer->dpidUser );
-	ar.Write( (void*)pbi2, sizeof(BUYING_INFO2) );
-	SEND( ar, this, pPlayer->dpidCache );
 }
 
 void CDPCacheSrvr::SendSetPlayerName( u_long idPlayer, const char* lpszPlayer )

@@ -368,7 +368,7 @@ public:
 	BOOL	m_bAttackDbk;
 #endif //__YAUTOATTACK
 
-	int		n_nMoverSelectCount;
+	CMover * n_nMoverSelectCount;
 	DWORD	m_dwGuildCombatTime;
 	
 	__PGUEST_TIME_TEXT m_QuestTime;

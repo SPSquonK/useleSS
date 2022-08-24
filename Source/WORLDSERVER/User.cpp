@@ -260,8 +260,8 @@ void CUser::Process()
 	if( IsMode( MODE_OUTOF_PARTYQUESTRGN ) )
 	{
 		SetNotMode( MODE_OUTOF_PARTYQUESTRGN );
-		D3DXVECTOR3 vPos	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
-		REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, vPos, REPLACE_NORMAL, nDefaultLayer );
+		const D3DXVECTOR3 vPos	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
+		Replace( WI_WORLD_MADRIGAL, vPos, REPLACE_NORMAL, nDefaultLayer );
 		return;
 	}
 
@@ -310,7 +310,7 @@ void CUser::Process()
 			if( !pTicket )
 			{
 				RemoveIk3Buffs( IK3_TICKET );
-				REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
+				Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
 			}
 		}
 		else
@@ -2663,7 +2663,7 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 			return;
 		}
 		RemoveBuff( BUFF_ITEM, (WORD)( pItemElem->m_dwItemId ) );
-		REPLACE( g_uIdofMulti, WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
+		Replace( WI_WORLD_MADRIGAL, D3DXVECTOR3( 6971.984F, 100.0F, 3336.884F ), REPLACE_FORCE, nDefaultLayer );
 	}
 	else
 	{
@@ -2702,7 +2702,7 @@ void CUser::DoUseItemTicket( CItemElem* pItemElem )
 			if (channel <= nExpand) {
 				DoApplySkill(this, pItemProp, nullptr);
 				const int nLayer = -static_cast<int>(channel);
-				REPLACE(g_uIdofMulti, pTicketProp->dwWorldId, pTicketProp->vPos, REPLACE_NORMAL, nLayer);
+				Replace(pTicketProp->dwWorldId, pTicketProp->vPos, REPLACE_NORMAL, nLayer);
 			}
 		}
 	}
@@ -2919,7 +2919,7 @@ void CUser::AdjustGuildQuest( DWORD dwWorldId )
 		CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 		if( pWorld && pWorld == GetWorld())
 		{
-			const RegionElem * pRgnElem = g_WorldMng.GetRevival(this);
+			const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(this);
 			if (pRgnElem) {
 				SetPos(pRgnElem->m_vPos);
 			}
@@ -3218,7 +3218,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 	// 로그 아웃시 길드대전 맵에 있으면 모두 flaris로 이동
 	if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 	{
-		PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
+		const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( WI_WORLD_MADRIGAL, "flaris" );
 		if( pRgnElem )
 		{
 			dwWorldId	= pRgnElem->m_dwWorldId;
@@ -3261,7 +3261,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 				pUser->SetFatiguePoint( nVal );
 			
 
-			const RegionElem * pRgnElem = g_WorldMng.GetRevival(pUser);
+			const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(pUser);
 
 			if( pRgnElem )
 			{
@@ -4354,14 +4354,13 @@ void CUserMng::AddGameRate( FLOAT fRate, BYTE nFlag )
 	AddBlock( lpBuf, uBufSize );	// all
 }
 
-void CUserMng::AddChangeFace( u_long uidPlayer, DWORD dwFace )
-{
+void CUserMng::AddChangeFace(CUser & player, const DWORD dwFace) {
 	CAr ar;
 	ar << NULL_ID << SNAPSHOTTYPE_CHANGEFACE;
-	ar << uidPlayer << dwFace;
-	GETBLOCK( ar, lpBuf, uBufSize );
+	ar << player.m_idPlayer << dwFace;
 
-	AddBlock( lpBuf, uBufSize );	// all
+	GETBLOCK(ar, lpBuf, uBufSize);
+	AddBlock(lpBuf, uBufSize);	// all
 }
 
 void CUserMng::AddSchoolReport( PSCHOOL_ENTRY pSchool, short nElapse )
@@ -4910,15 +4909,7 @@ void CUserMng::AddGCLogWorld( void )
 	for( int veci = 0 ; veci < (int)( g_GuildCombatMng.m_vecGCGetPoint.size() ) ; ++veci )
 	{
 		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[ veci ];
-		arBlock << GCGetPoint.uidGuildAttack;
-		arBlock << GCGetPoint.uidGuildDefence;
-		arBlock << GCGetPoint.uidPlayerAttack;
-		arBlock << GCGetPoint.uidPlayerDefence;
-		arBlock << GCGetPoint.nPoint;
-		arBlock << GCGetPoint.bKillDiffernceGuild;
-		arBlock << GCGetPoint.bMaster;
-		arBlock << GCGetPoint.bDefender;
-		arBlock << GCGetPoint.bLastLife;
+		arBlock << GCGetPoint;
 	}
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 
@@ -4976,19 +4967,16 @@ void CUserMng::ReplaceWorld( DWORD dwWorldId, DWORD dwReplaceWorldId, float fRep
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	if( pWorld )
 	{
-		for(auto it = m_users.begin(); it != m_users.end(); ++it )
-		{
-			CUser* pUser = it->second;
-			if( pUser->IsValid() == FALSE )
-				continue;
+		for (CUser * pUser : m_users | std::views::values) {
+			if (!pUser->IsValid()) continue;
 			
 			if( pUser->GetWorld() == pWorld )
 			{
 				D3DXVECTOR3 v3Pos = pUser->GetPos();
-				AddCreateSfxObj( (CMover*)pUser, XI_GEN_WEARF, v3Pos.x, v3Pos.y, v3Pos.z );
-				( (CMover*)pUser)->REPLACE( g_uIdofMulti, dwReplaceWorldId, D3DXVECTOR3( fReplaceX, 0.0f, fReplaceZ ), REPLACE_NORMAL, nLayer );
+				AddCreateSfxObj( pUser, XI_GEN_WEARF, v3Pos.x, v3Pos.y, v3Pos.z );
+				pUser->Replace( dwReplaceWorldId, D3DXVECTOR3( fReplaceX, 0.0f, fReplaceZ ), REPLACE_NORMAL, nLayer );
 				pUser->m_vtInfo.SetOther( NULL );
-				AddCreateSfxObj( (CMover*)pUser, XI_GEN_WEARF, fReplaceX, v3Pos.y, fReplaceZ );				
+				AddCreateSfxObj( pUser, XI_GEN_WEARF, fReplaceX, v3Pos.y, fReplaceZ );				
 			}
 		}
 	}
@@ -5003,25 +4991,21 @@ void CUserMng::ReplaceWorldArea( u_long idParty, DWORD dwWorldId, DWORD dwReplac
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	if( pWorld )
 	{
-		for( int i = 0; i < (int)( pWorld->m_dwObjNum ); i++ )
-		{
-			CObj* pObj	= pWorld->m_apObject[i];
-			if( IsValidObj( pObj ) && pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->IsPlayer() && ( (CMover*)pObj )->m_idparty == idParty )
-			{
-				CUser* pUser	= (CUser*)pObj;
-				if( bDieFlag )
-				{
-					if( pUser->IsDie() )
+		for (CObj * pObj : pWorld->m_Objs.Range()) {
+			if (IsValidObj(pObj) && pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPlayer() && ((CMover *)pObj)->m_idparty == idParty) {
+				CUser * pUser = (CUser *)pObj;
+				if (bDieFlag) {
+					if (pUser->IsDie())
 						continue;
 				}
 
-				D3DXVECTOR3 vPos	= pUser->GetPos();
-				AddCreateSfxObj( pUser, XI_GEN_WEARF, vPos.x, vPos.y, vPos.z );
-				float fNewArea	= fArea * 2.0f;
-				fReplaceX += (-fArea) + xRandomF( fNewArea );
-				fReplaceZ += (-fArea) + xRandomF( fNewArea );
-				pUser->REPLACE( g_uIdofMulti, dwReplaceWorldId, D3DXVECTOR3( fReplaceX, 0.0f, fReplaceZ ), REPLACE_NORMAL, nLayer );
-				AddCreateSfxObj( (CMover*)pUser, XI_GEN_WEARF, fReplaceX, vPos.y, fReplaceZ );
+				D3DXVECTOR3 vPos = pUser->GetPos();
+				AddCreateSfxObj(pUser, XI_GEN_WEARF, vPos.x, vPos.y, vPos.z);
+				float fNewArea = fArea * 2.0f;
+				fReplaceX += (-fArea) + xRandomF(fNewArea);
+				fReplaceZ += (-fArea) + xRandomF(fNewArea);
+				pUser->Replace(dwReplaceWorldId, D3DXVECTOR3(fReplaceX, 0.0f, fReplaceZ), REPLACE_NORMAL, nLayer);
+				AddCreateSfxObj(pUser, XI_GEN_WEARF, fReplaceX, vPos.y, fReplaceZ);
 			}
 		}
 	}
@@ -5921,18 +5905,9 @@ void CUser::AddGCLog( void )
 	m_Snapshot.ar << SNAPSHOTTYPE_GUILDCOMBAT;
 	m_Snapshot.ar << GC_LOG;
 	m_Snapshot.ar << (u_long)g_GuildCombatMng.m_vecGCGetPoint.size();
-	for( int veci = 0 ; veci < (int)( g_GuildCombatMng.m_vecGCGetPoint.size() ) ; ++veci )
-	{
-		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[ veci ];
-		m_Snapshot.ar << GCGetPoint.uidGuildAttack;
-		m_Snapshot.ar << GCGetPoint.uidGuildDefence;
-		m_Snapshot.ar << GCGetPoint.uidPlayerAttack;
-		m_Snapshot.ar << GCGetPoint.uidPlayerDefence;
-		m_Snapshot.ar << GCGetPoint.nPoint;
-		m_Snapshot.ar << GCGetPoint.bKillDiffernceGuild;
-		m_Snapshot.ar << GCGetPoint.bMaster;
-		m_Snapshot.ar << GCGetPoint.bDefender;
-		m_Snapshot.ar << GCGetPoint.bLastLife;
+	for (int veci = 0; veci < (int)(g_GuildCombatMng.m_vecGCGetPoint.size()); ++veci) {
+		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[veci];
+		m_Snapshot.ar << GCGetPoint;
 	}
 	
 }
@@ -6135,7 +6110,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 				if( IsFly() == FALSE )
 				{
 					D3DXVECTOR3 vPos( (float)( pCommonCtrl->m_CtrlElem.m_dwTeleX ), (float)( pCommonCtrl->m_CtrlElem.m_dwTeleY ), (float)( pCommonCtrl->m_CtrlElem.m_dwTeleZ ) );
-					REPLACE( g_uIdofMulti, pCommonCtrl->m_CtrlElem.m_dwTeleWorldId, vPos, REPLACE_NORMAL, nTempLayer );
+					Replace( pCommonCtrl->m_CtrlElem.m_dwTeleWorldId, vPos, REPLACE_NORMAL, nTempLayer );
 				}
 				else
 				{
@@ -6355,42 +6330,6 @@ void CUser::DoSMItemUnEquip( CItemElem* pItemElem, DWORD dwParts )
 		((CUser*)this)->AddCommercialElem( pItemElem->m_dwObjId, 0 );
 		g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, pItemElem, pItemElem->GetProp() );
 	}
-}
-
-void CUserMng::AddAddRegion( DWORD dwWorldId, REGIONELEM & re )
-{
-	CAr ar;
-	
-	ar << NULL_ID << SNAPSHOTTYPE_ADDREGION;
-	ar << dwWorldId;
-	ar.Write( &re, sizeof(re) );
-	
-	std::list<CUser*>	lspUser;
-	for( auto it = m_users.begin(); it != m_users.end(); ++it )
-	{
-		CUser* pUser = it->second;
-		if( pUser->IsValid() == FALSE )
-			continue;
-		CWorld* pWorld	= pUser->GetWorld();
-		POINT point	= {	(LONG)( pUser->GetPos().x ), (LONG)( pUser->GetPos().z ) };
-		if( pWorld && pWorld->GetID() == dwWorldId && re.m_rect.PtInRect( point ) )
-		{
-			pUser->SetPosChanged( TRUE );
-			lspUser.push_back( pUser );
-		}
-	}
-
-	ar << (int)lspUser.size();
-	for( auto i	= lspUser.begin(); i != lspUser.end(); ++i )
-		ar << (*i)->GetId();
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	// transfer
-	for( auto i	= lspUser.begin(); i != lspUser.end(); ++i )
-		(*i)->AddBlock( lpBuf, nBufSize );
-
-	lspUser.clear();
 }
 
 #ifdef __EVENT_1101

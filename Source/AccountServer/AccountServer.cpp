@@ -120,8 +120,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	EnableMenuItem( hMenu, IDM_OPT_INTERNAL, MF_DISABLED | MF_GRAYED );
 	g_dpSrvr.m_bCheckAddr	= true;
 
-	int x = 400, y = 416;
-	SetWindowPos( hWnd, NULL, x, y, 400, 416, SWP_SHOWWINDOW );
+	static constexpr int x = 90;
+	static constexpr int y = 130;
+	SetWindowPos( hWnd, NULL, x, y, 400, 150, SWP_SHOWWINDOW );
 
 	LOAD_WS2_32_DLL;
 
@@ -535,7 +536,6 @@ void ExitInstance( void )
 //	UninitializeNetLib();
 	SAFE_DELETE( CBuffer::m_pPool );
 	SAFE_DELETE( CBuffer2::m_pPool2 );	
-	SAFE_DELETE( CBuffer3::m_pPool2 );	
 	SAFE_DELETE( CBuffer::m_pHeapMng );
 
 	UNLOAD_WS2_32_DLL;

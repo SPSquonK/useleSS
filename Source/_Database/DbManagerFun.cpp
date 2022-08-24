@@ -8,6 +8,7 @@
 #include "misc.h"
 #include "mytrace.h"
 #include "definequest.h"
+#include "DbSerializer.h"
 
 extern	BOOL CheckValidItem( DWORD dwItemId, short nNum );
 
@@ -38,33 +39,27 @@ extern	CProject			prj;
 #define	VERIFYSTRING_BANK( lpString, lpszPlayer )	\
 	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return FALSE;
 
-void CDbManager::GetStrTime( CTime *time, const char *strbuf )
-{
-	char cYear[5] = {0,};
-	char cMonth[3] = {0,};
-	char cDay[3] = {0,};
-	char cHour[3] = {0,};
-	char cMin[3] = {0,};
-	
+CTime CDbManager::GetStrTime(const char * strbuf) {
+	char cYear[5] = { 0, };
+	char cMonth[3] = { 0, };
+	char cDay[3] = { 0, };
+	char cHour[3] = { 0, };
+	char cMin[3] = { 0, };
+
 	strncpy(cYear, strbuf, 4);
-	strncpy(cMonth, strbuf + 4, 2 );
-	strncpy(cDay, strbuf + 6, 2 );
-	strncpy(cHour, strbuf + 8, 2 );
-	strncpy(cMin, strbuf + 10, 2 );
-	
-	CTime Timebuf( atoi(cYear), atoi(cMonth), atoi(cDay), atoi(cHour), atoi(cMin), 0 );
-	*time = Timebuf;
+	strncpy(cMonth, strbuf + 4, 2);
+	strncpy(cDay, strbuf + 6, 2);
+	strncpy(cHour, strbuf + 8, 2);
+	strncpy(cMin, strbuf + 10, 2);
+
+	return CTime(atoi(cYear), atoi(cMonth), atoi(cDay), atoi(cHour), atoi(cMin), 0);
 }
 
 #ifdef __PET_1024
 void CDbManager::GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 {
 	char szDigit[3] = {0, };
-#ifdef __VS2003
 	int ch2;
-#else	// __VS2003
-	char ch;
-#endif // __VS2003
 	char* pCur	= const_cast<char*>( szSrc );
 	int nLen	= strlen( pCur );
 	if( nLen % 2 != 0 )
@@ -83,13 +78,8 @@ void CDbManager::GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 		szDigit[0]	= pCur[0];
 		szDigit[1]	= pCur[1];
 		pCur	+= 2;
-#ifdef __VS2003
 		sscanf( szDigit, "%2X", &ch2 );
 		*szDst++	= ch2;
-#else // __VS2003
-		sscanf( szDigit, "%2X", &ch );
-		*szDst++	= ch;
-#endif // __VS2003
 	}
 	*szDst	= '\0';
 }
@@ -121,9 +111,7 @@ void CDbManager::GetStrFromDBFormat( char* szDst, const char* szSrc, int& n )
 {
 	char szDigit[3] = {0, };
 	char ch;
-#ifdef __VS2003
 	int ch2;
-#endif // __VS2003
 	
 	const char* pCur = szSrc + n;
 	while( *pCur != '/' && *pCur )		// 문자열은 '/' 로 끝난다. 안전하게 NULL도 검사 
@@ -132,12 +120,8 @@ void CDbManager::GetStrFromDBFormat( char* szDst, const char* szSrc, int& n )
 		szDigit[1] = pCur[1];
 		pCur += 2;
 		
-#ifdef __VS2003
 		sscanf( szDigit, "%2X", &ch2 );
 		ch = ch2;
-#else // __VS2003
-		sscanf( szDigit, "%2X", &ch );
-#endif // __VS2003
 		*szDst++ = ch;
 	}
 	*szDst = '\0';

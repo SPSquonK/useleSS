@@ -47,7 +47,6 @@ public:
 #ifdef __GPAUTH
 	void	SendErrorString( const char* szError, DPID dpid );
 #endif	// __GPAUTH
-	void	SendHdr( DWORD dwHdr, DPID dpid );
 
 	USES_PFNENTRIES;
 
@@ -62,9 +61,3 @@ public:
 };
 
 extern CDPCertifier g_dpCertifier;
-
-inline void CDPCertifier::SendHdr( DWORD dwHdr, DPID dpid )
-{
-	BEFORESEND( ar, dwHdr );
-	SEND( ar, this, dpid );
-}

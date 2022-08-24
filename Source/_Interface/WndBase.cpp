@@ -18,10 +18,6 @@ CWndBase* CWndBase::m_pWndRoot = NULL;
 CWndBase* CWndBase::m_pWndFocus = NULL;
 CWndBase* CWndBase::m_pCurFocus = NULL;
 
-#ifndef __VS2003
-CPtrArray CWndBase::m_wndOrder;
-#endif
-
 std::vector<CWndBase *> CWndBase::m_wndRemove;
 std::vector<WNDMESSAGE> CWndBase::m_postMessage;
 SHORTCUT  CWndBase::m_GlobalShortcut;
@@ -48,6 +44,7 @@ CString   CWndBase::m_strGlobalShortCutString;
 
 //CTexturePack CWndBase::m_texturePack;
 CTextureMng CWndBase::m_textureMng;
+std::map<CWndBase *, std::unique_ptr<CTexture>> CWndBase::m_backgroundTextureMng;
 CResManager CWndBase::m_resMng;
 CWndBase* CWndBase::m_pWndCapture;
 CMapStringToPtr CWndBase::m_strWndTileMap;
@@ -104,13 +101,7 @@ void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, B
 {
 	m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff, bMyLoader );
 }
-void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpKey, CTexture* pTexture )
-{
-	if( lpKey )
-		m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpKey, pTexture );
-	else
-		m_pTexture = pTexture;
-}
+
 void CWndBase::SetForbid( BOOL bForbid ) 
 { 
 	m_bForbid = bForbid; 
@@ -715,8 +706,7 @@ void CWndBase::MakeVertexBuffer()
 	
 	if( m_pTexture == NULL || m_pVB == NULL )
 		return;
-	CRect rect = GetWindowRect();
-	rect = GetScreenRect();//WindowToScreen( rect );
+	const CRect rect = GetScreenRect();
 	CPoint pt = rect.TopLeft() - m_pTexture->m_ptCenter;
 	FLOAT left   = (FLOAT)( pt.x );
 	FLOAT top    = (FLOAT)( pt.y );
@@ -751,33 +741,24 @@ HRESULT CWndBase::RestoreDeviceObjects()
 		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
 		MakeVertexBuffer();
 	}
-#ifdef __YDEBUG
-	m_textureMng.SetInvalidate(m_pApp->m_pd3dDevice);
-#endif //__YDEBUG
-	
+
 	return S_OK;
 }
 HRESULT CWndBase::InvalidateDeviceObjects()
 {
-	if( IsWndRoot() )
-	{
-	}
 	for(int i = 0; i < m_wndArray.GetSize(); i++) 
 		((CWndBase*)m_wndArray.GetAt(i))->InvalidateDeviceObjects();
 	SAFE_RELEASE( m_pVB );
-	
-#ifdef __YDEBUG
-	m_textureMng.Invalidate();
-#endif //__YDEBUG
-	
+		
 	return S_OK;
 }
 HRESULT CWndBase::DeleteDeviceObjects()
 {
-	if( IsWndRoot() )
-	{
-		m_textureMng.DeleteDeviceObjects();
+	if (IsWndRoot()) {
+		m_textureMng.Clear();
+		m_backgroundTextureMng.clear();
 	}
+
 	for(int i = 0; i < m_wndArray.GetSize(); i++) 
 		((CWndBase*)m_wndArray.GetAt(i))->DeleteDeviceObjects();
 	SAFE_RELEASE( m_pVB );
@@ -2559,20 +2540,16 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 		return;
 
 	// 텍스춰 만들기 
-	CString strTextureId;
-	strTextureId.Format( "%p", this );
-	m_textureMng.RemoveTexture( strTextureId );
-
 	CRect rect = GetWindowRect( TRUE );
-	CSize size2, size1 = CSize( rect.Width(), rect.Height() );
-	size2 = size1;
+	CSize size1 = rect.Size();
 
 	AdjustSize( &size1 );
 
 	CTexture* pTexture = new CTexture;
 	pTexture->CreateTexture( m_pApp->m_pd3dDevice, size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
 
-	SetTexture( m_pApp->m_pd3dDevice, strTextureId, pTexture );
+	m_backgroundTextureMng.insert_or_assign(this, std::unique_ptr<CTexture>(pTexture));
+	m_pTexture = pTexture;
 
 	CPoint point( 0, 0);
 	D3DLOCKED_RECT lockedRect;

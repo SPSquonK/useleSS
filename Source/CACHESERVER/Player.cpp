@@ -16,7 +16,7 @@ CCachePlayer::CCachePlayer(DPID dpidUser, DWORD dwSerial)
 
 void CCachePlayer::Join( CAr & ar )
 {
-	ar >> m_dwWorldId >> m_idPlayer >> m_dwAuthKey;
+	ar >> m_idPlayer >> m_dwAuthKey;
 	ar >> m_idParty >> m_idGuild >> m_idWar >> m_uChannel >> m_nSlot;
 	ar.ReadString( m_szPlayer, MAX_PLAYER );
 	ar.ReadString( m_szAccount, MAX_ACCOUNT );

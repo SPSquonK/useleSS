@@ -618,10 +618,6 @@ BOOL CAIMonster2::BeginAttack()
 	if( m_idTarget == NULL_ID )
 		return FALSE;
 
-//	LPMODELELEM lpModelElem = prj.m_modelMng.GetModelElem( OT_MOVER, pMover->GetIndex() );
-//	if( lpModelElem == NULL )
-//		return FALSE;
-//	if( lpModelElem->m_nMax 
 	dwMsg = OBJMSG_ATK1;
 
 	int nResult = pMover->DoAttackMelee( m_idTarget, dwMsg, dwItemID );

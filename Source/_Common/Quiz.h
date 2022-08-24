@@ -111,7 +111,7 @@ public:
 	void	GoOut( CUser* pUser );
 	void	CloseQuizEvent();
 private:
-	BOOL	IsInQuizEventPlayer( CWorld* pWorld, int nLayer, int nIndex );
+	static bool	IsPlayerOnLayer(const CObj * pObj, int nLayer);
 #endif // __WORLDSERVER
 	
 #if defined(__DBSERVER) || defined(__WORLDSERVER)

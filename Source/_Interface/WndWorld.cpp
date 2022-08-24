@@ -596,7 +596,7 @@ m_buffs( NULL )
 	m_dwPowerTick = 0;	
 	m_idLastTarget	= NULL_ID;
 	
-	n_nMoverSelectCount = 0;
+	n_nMoverSelectCount = nullptr;
 	m_dwGuildCombatTime = 0xffffffff;
 	memset( &m_QuestTime, 0, sizeof(m_QuestTime) );
 	memset( m_szGuildCombatStr, 0, sizeof(char) * 64 );	
@@ -676,7 +676,7 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 		else
 			p2DRender->TextOut( 2, 200 ,0 , D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
 
-		_stprintf( strDebug, _T("Obj:%d  Face:%d   LFace:%d" ), g_pPlayer->GetWorld()->m_nObjCullSize, g_nMaxTri,0 );
+		_stprintf( strDebug, _T("Obj:%zu  Face:%d   LFace:%d" ), g_pPlayer->GetWorld()->m_objCull.size(), g_nMaxTri, 0);
 		p2DRender->TextOut( 2, 230, strDebug, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
 		_stprintf( strDebug, _T("%f %f %f %f %f" ), _g_fReg[0], _g_fReg[1], _g_fReg[2], _g_fReg[3], _g_fReg[4]  );
 		p2DRender->TextOut( 2, 250, strDebug, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );
@@ -2989,13 +2989,11 @@ void CWndWorld::RenderAltimeter()
 //	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
 	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			D3DXVECTOR3 vPos = pObj->GetPos();
-			if( fHigh1 < vPos.y ) fHigh1 = vPos.y;
-			if( fLow1 > vPos.y ) fLow1 = vPos.y;
+			if (fHigh1 < vPos.y) fHigh1 = vPos.y;
+			if (fLow1 > vPos.y) fLow1 = vPos.y;
 		}
-		END_OBJ
 	}
 	END_LAND
 
@@ -3043,8 +3041,7 @@ void CWndWorld::RenderAltimeter()
 //	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
 	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
 	{
-		FOR_OBJ( pLand, pObj, OT_MOVER )
-		{
+		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			CMover* pMover = (CMover*) pObj;
 			/*
 			if( g_WndMng.m_nObjectFilter == OBJFILTER_PLAYER && pMover->IsPlayer() == FALSE )
@@ -3076,7 +3073,6 @@ void CWndWorld::RenderAltimeter()
 				CPoint( rect.left + 5, rect.bottom - y ), 
 				dwColor	);
 		}
-		END_OBJ
 	}
 	END_LAND
 
@@ -3252,16 +3248,11 @@ void CWndWorld::OnInitialUpdate()
 	m_texLvDn2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
 
 
-	int i = 0;
-	for( i=0; i<prj.m_aPropAddSkill.GetSize(); i++ )
-	{
-		AddSkillProp* pAddSkill = prj.m_aPropAddSkill.GetAt(i);
+	for (const AddSkillProp & pAddSkill : prj.m_aPropAddSkill) {
 
-		if( pAddSkill )
-		{
-			if( pAddSkill->dwSkillTime != -1 )
+		if( pAddSkill.dwSkillTime != -1 )
 			{
-				ItemProp* pItem = prj.GetSkillProp(pAddSkill->dwName);
+				ItemProp* pItem = prj.GetSkillProp(pAddSkill.dwName);
 
 				if( pItem )
 				{
@@ -3271,68 +3262,59 @@ void CWndWorld::OnInitialUpdate()
 					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
 				}
 			}
-		}
+
 	}
 
-	for( i=0; i<prj.m_aPartySkill.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = prj.m_aPartySkill.GetAt(i);
-		
-		if( pItemProp )
-		{
-			if( pItemProp->dwSkillTime != -1 )
+	for (const ItemProp & pItemProp : prj.m_aPartySkill) {
+			if( pItemProp.dwSkillTime != -1 )
 			{
 				BUFFSKILL buffskill;
-				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp->szIcon ), 0xffff00ff );
-				m_pBuffTexture[1].emplace(pItemProp->dwID, buffskill);
+				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
+				m_pBuffTexture[1].emplace(pItemProp.dwID, buffskill);
 			}
-		}
 	}
 
-	for( i=0; i<prj.m_aPropItem.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = (ItemProp*)prj.m_aPropItem.GetAt(i);
-		
-		if( pItemProp )
-		{
-			if( pItemProp->dwSkillTime != -1 
+	for (const ItemProp & pItemProp : prj.m_aPropItem) {
+			if( pItemProp.dwSkillTime != -1 
 #ifdef __DST_GIFTBOX
-				|| pItemProp->dwDestParam[0] == DST_GIFTBOX || pItemProp->dwDestParam[1] == DST_GIFTBOX || pItemProp->dwDestParam[2] == DST_GIFTBOX 
+				|| pItemProp.dwDestParam[0] == DST_GIFTBOX
+				|| pItemProp.dwDestParam[1] == DST_GIFTBOX
+				|| pItemProp.dwDestParam[2] == DST_GIFTBOX 
 #endif // __DST_GIFTBOX
-				|| pItemProp->dwItemKind3 == IK3_EGG
-				|| pItemProp->dwItemKind3 == IK3_PET
+				|| pItemProp.dwItemKind3 == IK3_EGG
+				|| pItemProp.dwItemKind3 == IK3_PET
 			)
 			{
 
 				BUFFSKILL buffskill;
 
-				CString strIcon	= pItemProp->szIcon;
-				if( pItemProp->dwItemKind3 == IK3_EGG && pItemProp->dwID != II_PET_EGG )
+				CString strIcon	= pItemProp.szIcon;
+				if( pItemProp.dwItemKind3 == IK3_EGG && pItemProp.dwID != II_PET_EGG )
 				{
 					strIcon.Replace( ".", "_00." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 0 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 0 ), buffskill );
 					strIcon.Replace( "0.", "1." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 1 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 1 ), buffskill );
 					strIcon.Replace( "1.", "2." );
 					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
-					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp->dwID, 2 ), buffskill );
+					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 2 ), buffskill );
 				}
 				else
 				{
 #ifdef __DST_GIFTBOX
-					if(pItemProp->dwDestParam[0] == DST_GIFTBOX || pItemProp->dwDestParam[1] == DST_GIFTBOX || pItemProp->dwDestParam[2] == DST_GIFTBOX)
+					if(pItemProp.dwDestParam[0] == DST_GIFTBOX || pItemProp.dwDestParam[1] == DST_GIFTBOX || pItemProp.dwDestParam[2] == DST_GIFTBOX)
 						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
 					else
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #else //__DST_GIFTBOX
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #endif //__DST_GIFTBOX
-					m_pBuffTexture[2].emplace( pItemProp->dwID, buffskill );
+					m_pBuffTexture[2].emplace( pItemProp.dwID, buffskill );
 				}
 			}
-		}
+
 	}
 
 	switch( m_rectWindow.Width() )
@@ -3366,7 +3348,7 @@ void CWndWorld::OnInitialUpdate()
 	
 	// 아이콘 텍스쳐 로딩
 	CString str;
-	for( i=0; i<CUSTOM_LOGO_MAX; i++ )
+	for( int i=0; i<CUSTOM_LOGO_MAX; i++ )
 	{
 		str.Format( "Icon_CloakSLogo%02d.jpg", i+1 );
 		
@@ -7004,31 +6986,21 @@ void CWndWorld::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	else if( nChar == VK_TAB )
 	{		
-		CWorld* pWorld = g_WorldMng.Get();
-		CMover* pMover = NULL;
+		const auto ppMover = std::ranges::find_if(CWorld::m_amvrSelect,
+			[&](CMover * candidate) {
+				return candidate
+					&& candidate != n_nMoverSelectCount
+					&& !candidate->IsMode(TRANSPARENT_MODE)
+					&& !candidate->IsDie();
+			});
 
-		if( n_nMoverSelectCount > MAX_MOVERSELECT )
-			n_nMoverSelectCount = 0;
-
-		int i = NULL;
-		for( ; i<MAX_MOVERSELECT; i++ )
-		{
-			if( n_nMoverSelectCount == i )
-				continue;
-
-			pMover = CWorld::m_amvrSelect[i];
-
-			if( pMover )
-				break;
+		if (ppMover != CWorld::m_amvrSelect.end()) {
+			CMover * pMover = *ppMover;
+			g_WorldMng.Get()->SetObjFocus(pMover);
+			n_nMoverSelectCount = pMover;
+		} else {
+			n_nMoverSelectCount = nullptr;
 		}
-
-		if( pMover )
-		{
-			if( !pMover->IsMode( TRANSPARENT_MODE )	&& !pMover->IsDie() ) // 대상이 투명모드일땐 타겟 안됨.
-				pWorld->SetObjFocus( pMover );
-		}
-		
-		n_nMoverSelectCount = i;
 	}
 	if( nChar == VK_ESCAPE )	
 	{
@@ -7791,11 +7763,10 @@ BOOL CWndWorld::Process()
 			}
 		}
 		m_bLButtonDowned = m_bLButtonDown;
-		int nSize = pWorld->m_aRegion.GetSize();
 		D3DXVECTOR3 vPos = g_pPlayer->GetPos();
-		for( int i = 0; i < nSize; i++ )
-		{
-			LPREGIONELEM lpRegionElem = pWorld->m_aRegion.GetAt( i );
+		
+		for (REGIONELEM & regionElem : pWorld->m_aRegion.AsSpan()) {
+			REGIONELEM * lpRegionElem = &regionElem;
 			if( lpRegionElem->m_rect.PtInRect( CPoint( (int)( vPos.x ), (int)( vPos.z ) ) ) )
 			{
 				if( lpRegionElem->m_bInside == FALSE )
@@ -8249,8 +8220,6 @@ HRESULT CWndWorld::InvalidateDeviceObjects()
 	m_texAttrIcon.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
 	m_texFontDigital.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
 #endif //__YDEBUG	
-	m_TexGuildWinner.Invalidate();
-	m_TexGuildBest.Invalidate();
 
 	return S_OK;
 }

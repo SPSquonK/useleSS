@@ -369,7 +369,7 @@ void CGuild::Serialize( CAr & ar, BOOL bDesc )
 			ar << m_idEnemyGuild;
 			ar << (short)GetSize();
 			for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
-				ar >> *( i->second );
+				ar << *( i->second );
 
 			ar << (short)m_votes.size();
 			for ( auto it = m_votes.begin(); it!=m_votes.end(); ++it )
@@ -882,10 +882,10 @@ void CGuild::ReplaceLodestar( const CRect &rect )
 				POINT point	= { (int)pUser->GetPos().x, (int)pUser->GetPos().z	};
 				if( rect.PtInRect( point ) )
 				{
-					const RegionElem * pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), true);
+					const REGIONELEM * pRgnElem = g_WorldMng.GetRevival(*pWorld, pUser->GetPos(), true);
 
 					if( pRgnElem )
-						pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+						pUser->Replace( *pRgnElem, REPLACE_NORMAL, nRevivalLayer );
 				}
 			}
 		}
@@ -895,8 +895,6 @@ void CGuild::ReplaceLodestar( const CRect &rect )
 void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 {
 //	locked
-	CUser* pUser;
-	CGuildMember* pMember;
 	CUser* pMaster	= NULL;
 	if( bMasterAround )
 	{
@@ -905,11 +903,9 @@ void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 			return;
 	}
 
-	for( auto i = m_mapPMember.begin(); i != m_mapPMember.end(); ++i )
-	{
-		pMember	= i->second;
+	for (CGuildMember * pMember : m_mapPMember | std::views::values) {
 
-		pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+		CUser * pUser	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
 		if( IsValidObj( pUser ) )
 		{
 			if( pMaster && !pMaster->IsNearPC( pUser->GetId() ) )
@@ -917,7 +913,7 @@ void CGuild::Replace( DWORD dwWorldId, D3DXVECTOR3 & vPos, BOOL bMasterAround )
 
 			if( GetStateOfQuest( QUEST_WARMON_LV1 ) ) // 클락워크 퀘스트면 비행 해제
 				pUser->UnequipRide();
-			pUser->REPLACE( g_uIdofMulti, dwWorldId, vPos, REPLACE_NORMAL, nTempLayer );
+			pUser->Replace( dwWorldId, vPos, REPLACE_NORMAL, nTempLayer );
 		}
 	}
 }
@@ -942,7 +938,7 @@ BOOL CGuildRank::GetRanking(CQuery * pQuery, LPCTSTR p_strQuery) {
 	pQuery->Clear();
 
 	for (int i = R1; i < RANK_END; ++i) {
-		sprintf(const_cast<char *>(p_strQuery), "RANKING_DBF.dbo.RANKING_STR 'R%d','%02d'", i + 1, g_appInfo.dwSys);
+		sprintf(const_cast<char *>(p_strQuery), "USELESS_RANKING_DBF.dbo.RANKING_STR 'R%d','%02d'", i + 1, g_appInfo.dwSys);
 		if (!pQuery->Exec(p_strQuery)) {
 			Error("CDbManager::UpdateGuildRanking에서 (%s) 실패", p_strQuery);
 			m_Lock.Leave(theLineFile);

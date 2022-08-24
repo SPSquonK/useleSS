@@ -14,7 +14,7 @@
 
 typedef std::map<std::string, int>	STRING2INT;
 
-class CDPSrvr_AccToCert : public CDPMng<CBuffer>
+class CDPSrvr_AccToCert : public CDPMng
 {
 public:
 	static constexpr size_t MAX_IP = 10240;

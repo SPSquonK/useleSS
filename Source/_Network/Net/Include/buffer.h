@@ -252,14 +252,8 @@ inline void CBufferQueue::RemoveHead( void )
 // CBufferFactory
 ///////////////////////////////////////////////////////////////////////
 
-class CBufferFactory
-{
-public:
-	CBuffer* CreateBuffer( BUFFER_TYPE type, u_long uBufSize = MAX_BUFFER );
-	static CBufferFactory& GetInstance();
-
-private:
-	CBufferFactory();
+struct CBufferFactory final {
+	static CBuffer * CreateBuffer(BUFFER_TYPE type, u_long uBufSize = MAX_BUFFER);
 };
 
 #endif	// __BUFFER_H__

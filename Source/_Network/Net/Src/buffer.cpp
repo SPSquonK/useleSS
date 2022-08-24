@@ -117,13 +117,13 @@ void CBufferQueue::AddData( LPBYTE lpData, u_long uDataSize, BUFFER_TYPE type )
 		if( cb < (int)( pBuffer->GetHeaderLength() ) )
 #endif	// __CRC
 		{
-			pBuffer	= CBufferFactory::GetInstance().CreateBuffer( type );
+			pBuffer	= CBufferFactory::CreateBuffer( type );
 			AddTail( pBuffer );
 		}
 	}
 	else
 	{
-		pBuffer	= CBufferFactory::GetInstance().CreateBuffer( type );
+		pBuffer	= CBufferFactory::CreateBuffer( type );
 		AddTail( pBuffer );
 	}
 	
@@ -191,7 +191,7 @@ void CBufferQueue::AddData( LPBYTE lpData, u_long uDataSize, BUFFER_TYPE type )
 	{
 		VERIFY_LOOP( __FILE__, __LINE__ );
 
-		pBuffer	= CBufferFactory::GetInstance().CreateBuffer( type );
+		pBuffer	= CBufferFactory::CreateBuffer( type );
 		ptr	= pBuffer->GetWritableBuffer( &cb );
 		cb	= ( cb < (int)( uRemnant ) ? cb: uRemnant );
 		
@@ -253,32 +253,15 @@ void CBufferQueue::GetData( LPWSABUF lpBuffers, LPDWORD lpdwBufferCount )
 }
 
 /*--------------------------------------------------------------------------------*/
-CBufferFactory::CBufferFactory()
-{
-}
 
-CBufferFactory& CBufferFactory::GetInstance()
-{
-	static CBufferFactory g_factory;
-	return g_factory;
-}
-
-CBuffer* CBufferFactory::CreateBuffer( BUFFER_TYPE type, u_long uBufSize )
-{
-	CBuffer* pBuffer = NULL;
-	switch( type )
-	{
-	case BUFFER_TYPE_5BYTE:
-		pBuffer = new CBuffer( uBufSize );
-		break;
-	case BUFFER_TYPE_2BYTE:
-		pBuffer = new CBuffer2( uBufSize );
-		break;
-	default:
-		ASSERT(0);
-		break;
+CBuffer * CBufferFactory::CreateBuffer(const BUFFER_TYPE type, const u_long uBufSize) {
+	switch (type) {
+		case BUFFER_TYPE_5BYTE:
+			return new CBuffer(uBufSize);
+		case BUFFER_TYPE_2BYTE:
+			return new CBuffer2(uBufSize);
+		default:
+			ASSERT(0);
+			return nullptr;
 	}
-	return pBuffer;
 }
-
-

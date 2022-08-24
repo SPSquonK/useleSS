@@ -31,7 +31,7 @@ void CWndDebugInfo::OnDraw(C2DRender* p2DRender)
 		D3DXVECTOR3 vPos = g_pPlayer->GetPos();
 		_stprintf( strDebug, _T("x:%6.3f y:%6.3f z:%6.3f %6.3f"), vPos.x, vPos.y, vPos.z,(float)g_pPlayer->GetAngle());
 		p2DRender->TextOut( 2, 40, strDebug, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
-		_stprintf( strDebug, _T("Objects:%d  Faces:%d   LandFace:%d %d" ), g_pPlayer->GetWorld()->m_nObjCullSize, g_nMaxTri,0, g_WndMng.m_pWndWorld->GetMouseMode() );
+		_stprintf( strDebug, _T("Objects:%zu  Faces:%d   LandFace:%d %d" ), g_pPlayer->GetWorld()->m_objCull.size(), g_nMaxTri, 0, g_WndMng.m_pWndWorld->GetMouseMode());
 		p2DRender->TextOut( 2, 55, strDebug, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
 	}
 	else

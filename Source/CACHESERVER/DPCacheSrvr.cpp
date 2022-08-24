@@ -40,7 +40,7 @@ void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 				CCrashStatus::GetInstance()->SetLastPacket( this, 0xCCCCCCCC );
 #endif	// __CRASH_0404
 				LPDPMSG_CREATEPLAYERORGROUP lpCreatePlayer	= (LPDPMSG_CREATEPLAYERORGROUP)lpMsg;
-				g_MyTrace.Add( CMyTrace::Key( "so" ), FALSE, "//%04d//", ++cbPlayer );
+				g_MyTrace.Add( CMyTrace::Key( "so" ), FALSE, "Nb of players: %04d", ++cbPlayer );
 				g_CachePlayerMng.AddPlayer(lpCreatePlayer->dpId);
 				break;
 			}
@@ -49,7 +49,7 @@ void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 #ifdef __CRASH_0404
 				CCrashStatus::GetInstance()->SetLastPacket( this, 0xDDDDDDDD );
 #endif	// __CRASH_0404
-				g_MyTrace.Add( CMyTrace::Key( "so" ), FALSE, "//%04d//", --cbPlayer );
+				g_MyTrace.Add( CMyTrace::Key( "so" ), FALSE, "Nb of players: %04d", --cbPlayer );
 				LPDPMSG_DESTROYPLAYERORGROUP lpDestroyPlayer	= (LPDPMSG_DESTROYPLAYERORGROUP)lpMsg;
 				OnRemoveConnection( lpDestroyPlayer->dpId );
 				break;

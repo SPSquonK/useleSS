@@ -1,7 +1,9 @@
 #ifndef __WORLD_2002_1_22
 #define __WORLD_2002_1_22
 
+#include <array>
 #include <boost/container/small_vector.hpp>
+#include "ExistingObjects.h"
 
 #ifdef __LAYER_1015
 #define	ADDOBJ( pObj, bAddItToGlobalId, nLayer )	AddObj( (pObj), (bAddItToGlobalId), (nLayer) )
@@ -23,17 +25,14 @@
 // define 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#define	MAX_ADDOBJS				20480
 #define	MAX_DYNAMICOBJ			81920
 //#define	MAX_BKGND				20480
-#define	MAX_MODIFYLINK			4096
 #define	CLOSEWORKER				(DWORD)-1
 #define D3DFVF_BOUNDBOXVERTEX	(D3DFVF_XYZ|D3DFVF_DIFFUSE) 
 #define MAX_DISPLAYOBJ			5000
 #define MAX_DISPLAYSFX			500
 #define MINIMAP_SIZE			256
 #define WLD_EXTRA_WIDTH			10.0f
-#define	MAX_DELETEOBJS			4096
 #define MAX_MOVERSELECT			5
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,17 +81,14 @@ struct ON_DIE {
 };
 #endif	// __WORLDSERVER
 
-typedef struct tagREPLACEOBJ
-{
-	CMover*		pObj;
+struct REPLACEOBJ {
+	CMover * pObj;
 	DWORD		dwWorldID;
 	D3DXVECTOR3	vPos;
-//	DWORD		dpid;
-	u_long		uIdofMulti;
 #ifdef __LAYER_1015
 	int		nLayer;
 #endif	// __LAYER_1015
-} REPLACEOBJ, *LPREPLACEOBJ; 
+};
 
 
 typedef std::vector< D3DXVECTOR3 >		Vec3D_Container;
@@ -206,24 +202,20 @@ public:
 	CLinkMap		m_linkMap;
 #endif	// __LAYER_1015
 
-	u_long			m_dwObjNum;
-	CCtrl*			m_apObject[MAX_DYNAMICOBJ];	// dynamic 객체를 담는다.		// 312k
-	std::vector< CObj* > m_vecBackground;			// static 객체를 담는다.
 
-//	CRIT_SEC		m_csModifyLink;
-	int				m_cbModifyLink;
-	CObj*			m_apModifyLink[MAX_MODIFYLINK];		// 16k
+	ExistingObjects<CObj, MAX_DYNAMICOBJ> m_Objs;
 
-	static constexpr size_t MAX_REPLACEOBJ = 1024;
-	boost::container::small_vector<REPLACEOBJ, MAX_REPLACEOBJ> m_ReplaceObj;
+	std::vector<CObj *> m_vecBackground;			// static 객체를 담는다.
+
+	std::vector<CObj *> m_aModifyLink;
+
+	std::vector<REPLACEOBJ> m_ReplaceObj;
 
 //	CRIT_SEC		m_AddRemoveLock;
-	int				m_cbAddObjs;
-	CObj*			m_apAddObjs[MAX_ADDOBJS];				// 80k
-	BOOL			m_bAddItToGlobalId[MAX_ADDOBJS];		// 80k
+	struct AddRequest { CObj * pObj; bool addToGlobalId; };
+	std::vector<AddRequest> m_aAddObjs;
 
 	TCHAR			m_lpszWorld[64];
-	CDWordStack		m_ObjStack;
 	u_long			m_cbUser;
 #ifdef __LAYER_1021
 	CLayerdRespawner	m_respawner;
@@ -238,11 +230,9 @@ public:
 public:
 	void			Process();
 	void			ModifyView( CCtrl* pCtrl );
-	BOOL			ReadWorld( const CRect & rcLandscapce ); 
-	BOOL			PreremoveObj( OBJID objid );
-	CObj*			PregetObj( OBJID objid );
+	BOOL			ReadWorld(); 
 	u_long			Respawn()	{	return m_respawner.Spawn( this );	}
-	DWORD			GetObjCount() { return m_dwObjNum; }
+	// DWORD			GetObjCount() { return m_dwObjNum; }
 	void			OnDie(CUser * pDie, CUser * pAttacker);
 	void			_OnDie( void );
 	CMover*			FindMover( LPCTSTR szName );
@@ -262,10 +252,7 @@ private:
 public:
 	static D3DLIGHT9	m_light;
 	static D3DLIGHT9	m_lightFogSky;
-	static CObj*		m_aobjCull[ MAX_DISPLAYOBJ ];
-	static CObj*		m_asfxCull[ MAX_DISPLAYSFX ];
-	static int			m_nObjCullSize;
-	static int			m_nSfxCullSize;
+	static boost::container::static_vector<CObj *, MAX_DISPLAYOBJ> m_objCull;
 	static CWeather		m_weather;
 	static CCamera*		m_pCamera;
 	static D3DXMATRIX	m_matProj;
@@ -275,7 +262,7 @@ public:
 	static BOOL			m_bZoomView;
 	static int			m_nZoomLevel;
 	static CSkyBox		m_skyBox;
-	static CMover*		m_amvrSelect[ MAX_MOVERSELECT ];
+	static boost::container::static_vector<CMover *, MAX_MOVERSELECT> m_amvrSelect;
 	CLandscape**		m_apLand;
 	FLOAT				m_fElapsedTime;
 	CObj*				m_pObjFocus;
@@ -328,8 +315,7 @@ public:
 	void			Process();
 	static DWORD	GetDiffuseColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Diffuse.r * 255),(int)(m_lightFogSky.Diffuse.g * 255),(int)(m_lightFogSky.Diffuse.b * 255) ); }
 	static DWORD	GetAmbientColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Ambient.r * 255),(int)(m_lightFogSky.Ambient.g * 255),(int)(m_lightFogSky.Ambient.b * 255) ); }
-	void			WorldPosToLand( D3DXVECTOR3 vPos, int& x, int& z ); 
-	void			WorldPosToLandPos( D3DXVECTOR3 vPos, int& x, int& z ); 
+	[[nodiscard]] std::pair<int, int> WorldPosToLand(D3DXVECTOR3 vPos) const;
 	BOOL			LandInWorld( int x, int z );
 	BOOL			IsVecInVisibleLand( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, int nVisibilityLand );
 	BOOL			IsVecInRange( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, FLOAT fRadius );
@@ -354,8 +340,7 @@ public:
 	CMapWordToPtr   m_mapCreateChar;
 	FLOAT			m_fMaxHeight;
 	FLOAT			m_fMinHeight;
-	int				m_nDeleteObjs;
-	CObj*			m_apDeleteObjs[MAX_DELETEOBJS];		//
+	std::vector<CObj *> m_aDeleteObjs; // can not contain null values
 	TCHAR			m_szFilePath[ MAX_PATH ];
 	TCHAR			m_szFileName[ 64  ];
 	TCHAR			m_szWorldName[ 128 ];
@@ -426,7 +411,7 @@ public:
 	void			RemoveObj( CObj* pObj );
 	void			DeleteObj( CObj* pObj );
 	void			DestroyObj( CObj* pObj );
-	BOOL			DoNotAdd( CObj* pObj );
+	bool DoNotAdd(CUser * pObj);
 	BOOL			AddObjArray( CObj* pObj );
 	void			RemoveObjArray( CObj* pObj );
 	BOOL			InsertObjLink( CObj* pObj );
@@ -577,6 +562,8 @@ private:
 
 	void			RenderObj(CObj* pObj);
 
+	static CMover * RenderObject_IsTabbable(CObj * pObj);
+
 #endif // !__WORLDSERVER
 
 	
@@ -588,14 +575,11 @@ public:
 	BOOL			OpenWorld( OBJID idWorld, BOOL bDir = FALSE );
 #ifdef __LAYER_1021
 private:
-	BOOL	HasNobody_Process( int nLayer );
-	BOOL	HasNoObj_Add( int nLayer );
-	[[nodiscard]] bool HasNobody_Replace(int nLayer) const;
-	BOOL	IsLayerPlayer( CObj* pObj, int nLayer );
+	[[nodiscard]] static bool IsLayerPlayer(CObj * pObj, int nLayer);
 
 public:
 	void	Invalidate( int nLayer, BOOL bInvalid = TRUE )	{	m_linkMap.Invalidate( nLayer, bInvalid );	}
-	BOOL	HasNobody( int nLayer );
+	[[nodiscard]] bool HasSomeone(int nLayer) const;
 	void	DriveOut( int nLayer );
 	BOOL	LoadObject( int nLayer );
 	BOOL	CreateLayer( int nLayer );
@@ -645,16 +629,11 @@ inline BOOL CWorld::IsVecInRange( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, FLOA
 	return FALSE;
 }
 
-inline void CWorld::WorldPosToLand( D3DXVECTOR3 vPos, int& x, int& z ) 
-{
-	x = int( vPos.x ) / ( MAP_SIZE * m_iMPU );
-	z = int( vPos.z ) / ( MAP_SIZE * m_iMPU );
-}
-
-inline void CWorld::WorldPosToLandPos( D3DXVECTOR3 vPos, int& x, int& z ) 
-{
-	x = int( vPos.x ) % ( MAP_SIZE * m_iMPU );
-	z = int( vPos.z ) % ( MAP_SIZE * m_iMPU );
+inline std::pair<int, int> CWorld::WorldPosToLand(const D3DXVECTOR3 vPos) const {
+	return std::pair<int, int>(
+		int(vPos.x) / (MAP_SIZE * m_iMPU),
+		int(vPos.z) / (MAP_SIZE * m_iMPU)
+		);
 }
 
 inline CLandscape* CWorld::GetLandscape( CObj* pObj )
@@ -885,8 +864,8 @@ extern CObj *GetLastPickObj( void );
 	#define FOR_LAND( _pWorld, _pLand, _nVisibilityLand, _bVisuble ) { \
 		if( (_pWorld)->m_pCamera ) \
 		{ \
-			int _i, _j, _x, _y; \
-			(_pWorld)->WorldPosToLand( (_pWorld)->m_pCamera->m_vPos, _x, _y ); \
+			int _i, _j; \
+			const auto [_x, _y] = (_pWorld)->WorldPosToLand( (_pWorld)->m_pCamera->m_vPos ); \
 			int _nXMin = _x - _nVisibilityLand; if( _nXMin < 0 ) _nXMin = 0; \
 			int _nYMin = _y - _nVisibilityLand; if( _nYMin < 0 ) _nYMin = 0; \
 			int _nXMax = _x + _nVisibilityLand; if( _nXMax >= (_pWorld)->m_nLandWidth  ) _nXMax = (_pWorld)->m_nLandWidth - 1; \
@@ -901,26 +880,6 @@ extern CObj *GetLastPickObj( void );
 						if( _bVisuble == FALSE || ( _bVisuble == TRUE && _pLand->isVisibile() ) ) 
 
 	#define END_LAND } } } } }
-
-	#define FOR_OBJARRAY( _pLand, _pObj ) { \
-		for( int _k = 0; _k < MAX_OBJARRAY; _k++ ) \
-		{ \
-			CObj** _apObjs = _pLand->m_apObject[ _k ]; \
-			for( int _l = 0; _l < int( _pLand->m_adwObjNum[ _k ] ); _l++ ) \
-			{ \
-				_pObj = _apObjs[ _l ]; \
-				if( IsValidObj( _pObj ) )  
-
-	#define END_OBJARRAY } } }
-
-	#define FOR_OBJ( _pLand, _pObj, _nType ) { \
-			CObj** _apObjs = _pLand->m_apObject[ _nType ]; \
-			for( int _l = 0; _l < int( _pLand->m_adwObjNum[ _nType ] ); _l++ ) \
-			{ \
-				_pObj = _apObjs[ _l ]; \
-				if( IsValidObj( _pObj ) )  
-
-	#define END_OBJ } }  
 
 #endif	// __WORLDSERVER
 #endif	// __WORLD_2002_1_22

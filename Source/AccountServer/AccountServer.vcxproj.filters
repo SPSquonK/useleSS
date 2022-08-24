@@ -75,15 +75,6 @@
     <ClCompile Include="..\_network\misc\src\mytrace.cpp">
       <Filter>Network Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="..\_network\net2\src\buffer.cpp">
-      <Filter>Network Files\Net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_network\net2\src\crc.cpp">
-      <Filter>Network Files\Net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_network\net2\src\sock.cpp">
-      <Filter>Network Files\Net</Filter>
-    </ClCompile>
     <ClCompile Include="..\_directx\dxutil.cpp">
       <Filter>Neuz Files\DX</Filter>
     </ClCompile>
@@ -119,6 +110,33 @@
     </ClCompile>
     <ClCompile Include="..\_Network\ListedServer.cpp">
       <Filter>Network Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\crc.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\dpmng.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\dpsock.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\serversock.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\serversocke.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\sock.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\buffer.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\clientsock.cpp">
+      <Filter>Network Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Network\Net\Src\clientsocke.cpp">
+      <Filter>Network Files\Net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -187,33 +205,6 @@
     <ClInclude Include="..\_network\misc\include\mytrace.h">
       <Filter>Network Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="..\_network\net2\include\buffer.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\clientsock.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\clientsocke.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\crc.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\dpmng.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\dpsock.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\serversock.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\serversocke.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\net2\include\sock.h">
-      <Filter>Network Files\Net</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\DefineCommon.h">
       <Filter>Neuz Files</Filter>
     </ClInclude>
@@ -261,6 +252,33 @@
     </ClInclude>
     <ClInclude Include="..\_Network\ListedServer.h">
       <Filter>Network Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\serversock.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\serversocke.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\sock.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\buffer.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\clientsock.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\clientsocke.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\crc.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\dpmng.h">
+      <Filter>Network Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Network\Net\Include\dpsock.h">
+      <Filter>Network Files\Net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

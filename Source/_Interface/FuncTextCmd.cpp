@@ -279,7 +279,7 @@ BOOL TextCmd_ChangeFace(CScanner & scanner, CPlayer_ * pUser) {
 	if( (pUser->m_dwMode & NOTFRESH_MODE) || (pUser->m_dwMode & NOTFRESH_MODE2) )
 	{
 		pUser->m_dwHeadMesh = dwFace;
-		g_UserMng.AddChangeFace( pUser->m_idPlayer, dwFace );
+		g_UserMng.AddChangeFace(*pUser, dwFace);
 		if( pUser->m_dwMode & NOTFRESH_MODE )
 		{
 			pUser->m_dwMode &= ~NOTFRESH_MODE;
@@ -1801,19 +1801,24 @@ BOOL TextCmd_Sound(CScanner & scanner, CPlayer_ * pUser) {
 }
 BOOL TextCmd_Summon(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	TCHAR lpszPlayer[32];
-
 	scanner.GetToken();
 	if( strcmp( pUser->GetName(), scanner.Token) )
 	{
 		u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idPlayer > 0 ){
-			strcpy( lpszPlayer, scanner.Token );
-#ifdef __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), idPlayer, pUser->GetLayer() );
-#else	// __LAYER_1015
-			g_DPCoreClient.SendSummonPlayer( pUser->m_idPlayer, pUser->GetWorld()->GetID(), pUser->GetPos(), idPlayer );
-#endif	// __LAYER_1015
+			CUser * summoned = g_UserMng.GetUserByPlayerID(idPlayer);
+
+			if (!IsValidObj(summoned)) {
+				pUser->AddDefinedText(TID_GAME_NOTLOGIN);
+				return FALSE;
+			}
+
+			if (!pUser->GetWorld()) {
+				WriteError("PACKETTYPE_SUMMONPLAYER//1");
+				return FALSE;
+			}
+
+			summoned->Replace(*pUser, REPLACE_FORCE);
 		}
 		else {
 //			scanner.Token라는 이름을 가진 사용자는 이 게임에 존재하지 않는다.
@@ -1894,7 +1899,7 @@ BOOL TextCmd_Layer(CScanner & s, CPlayer_ * pUser) {
 			FLOAT x	= s.GetFloat();
 			FLOAT z	= s.GetFloat();
 			if( pWorld->VecInWorld( x, z ) && x > 0 && z > 0 )	
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), D3DXVECTOR3( x, 0, z ), REPLACE_NORMAL, nLayer );
+				pUser->Replace( pWorld->GetID(), D3DXVECTOR3( x, 0, z ), REPLACE_NORMAL, nLayer );
 			else
 				pUser->AddText( "OUT OF WORLD" );
 		}
@@ -2010,7 +2015,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 					if( pWorld != pUser->GetWorld() || pUser->GetLayer() != pUserTarget->GetLayer() )
 						return TRUE;
 
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pUserTarget->GetPos(), REPLACE_NORMAL, pUserTarget->GetLayer() );
+				pUser->Replace( *pUserTarget, REPLACE_NORMAL );
 			}
 		}
 		else 
@@ -2021,7 +2026,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 			CMover* pMover = pWorld->FindMover( scanner.Token );
 			if( pMover )
 			{
-				pUser->REPLACE( g_uIdofMulti, pWorld->GetID(), pMover->GetPos(), REPLACE_NORMAL, pMover->GetLayer() );
+				pUser->Replace( *pMover, REPLACE_NORMAL );
 				return TRUE;
 			}
 		#endif // _DEBUG
@@ -2040,9 +2045,9 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 		// 두번째 파라메타가 스트링이면 리젼 키
 		if( scanner.GetToken() != NUMBER )
 		{
-			PRegionElem pRgnElem = g_WorldMng.GetRevivalPos( dwWorldId, scanner.token );
-			if( NULL != pRgnElem )
-				pUser->REPLACE( g_uIdofMulti, pRgnElem->m_dwWorldId, pRgnElem->m_vPos, REPLACE_NORMAL, nRevivalLayer );
+			if (const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos(dwWorldId, scanner.token)) {
+				pUser->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
+			}
 		}
 		// 스트링이 아니면 좌표 
 		else
@@ -2054,7 +2059,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 			if( pWorld && pWorld->VecInWorld( (FLOAT)( x ), (FLOAT)( z ) ) && x > 0 && z > 0 )
 			{
 				int nLayer	= pWorld == pUser->GetWorld()? pUser->GetLayer(): nDefaultLayer;
-				pUser->REPLACE( g_uIdofMulti, dwWorldId, D3DXVECTOR3( (FLOAT)x, 0, (FLOAT)z ), REPLACE_NORMAL, nLayer );
+				pUser->Replace( dwWorldId, D3DXVECTOR3( (FLOAT)x, 0, (FLOAT)z ), REPLACE_NORMAL, nLayer );
 			}
 		}
 	}
@@ -2423,50 +2428,6 @@ BOOL TextCmd_CallTheRoll(CScanner & s, CPlayer_ * pUser) {
 
 #endif	// __EVENT_1101
 
-BOOL TextCmd_CreatePc(CScanner & scanner, CPlayer_ * pUser) {
-#ifdef __PERF_0226
-#ifdef __WORLDSERVER
-	int nNum = scanner.GetNumber();
-	for( int i=0; i<nNum; i++ )
-	{
-		int nSex	= xRandom( 2 );
-		DWORD dwIndex	= ( nSex == SEX_FEMALE? MI_FEMALE: MI_MALE );
-
-		CMover* pMover	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, dwIndex );
-		if( NULL == pMover )	
-			return FALSE;
-		pMover->SetPos( pUser->GetPos() );
-		pMover->InitMotion( MTI_STAND );
-		pMover->UpdateLocalMatrix();
-		SAFE_DELETE( pMover->m_pAIInterface );
-		pMover->SetAIInterface( AII_MONSTER );
-		pMover->m_Inventory.SetItemContainer( CItemContainer::ContainerType::INVENTORY ); 
-
-		static DWORD adwParts[5]	= {	PARTS_CAP, PARTS_HAND, PARTS_UPPER_BODY, PARTS_FOOT, PARTS_RWEAPON };
-		for( int i = 0; i < 5; i++ )
-		{
-			CItemElem itemElem;
-			ItemProp* pProp	= CPartsItem::GetInstance()->GetItemProp( ( i == 4? SEX_SEXLESS: nSex ), adwParts[i] );
-			if( pProp )
-			{
-				CItemElem	itemElem;
-				itemElem.m_dwItemId	= pProp->dwID;
-				itemElem.m_nItemNum	= 1;
-				itemElem.SetAbilityOption( xRandom( 10 ) );
-				BYTE nId, nCount;
-				short nNum;
-				pMover->m_Inventory.Add( &itemElem, &nId, &nNum, &nCount );
-				CItemElem* pAddItem	= pMover->m_Inventory.GetAtId( nId );
-				pMover->m_Inventory.DoEquip( pAddItem->m_dwObjIndex, pProp->dwParts );
-			}
-		}
-		pUser->GetWorld()->ADDOBJ( pMover, TRUE, pUser->GetLayer() );
-	}
-#endif	// __WORLDSERVER
-#endif	// __PERF_0226
-	return TRUE;
-}
-
 BOOL TextCmd_CreateNPC(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos	= pUser->GetPos();
@@ -2602,49 +2563,6 @@ BOOL TextCmd_GuildInvite(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL bCTDFlag	= FALSE;
-
-BOOL TextCmd_CTD(CScanner & s, CPlayer_ * pUser) {
-#ifdef __WORLDSERVER
-	if( g_eLocal.GetState( EVE_WORMON ) == 0 )
-	{
-		CGuildQuestProcessor* pProcessor	= CGuildQuestProcessor::GetInstance();
-		const CRect * pRect	= pProcessor->GetQuestRect( QUEST_WARMON_LV1 );
-		if( pRect )
-		{
-			OutputDebugString( "recv /ctd" );
-			REGIONELEM re;
-			memset( &re, 0, sizeof(REGIONELEM) );
-			re.m_uItemId	= 0xffffffff;
-			re.m_uiItemCount	= 0xffffffff;
-			re.m_uiMinLevel	= 0xffffffff;
-			re.m_uiMaxLevel	= 0xffffffff;
-			re.m_iQuest	= 0xffffffff;
-			re.m_iQuestFlag	= 0xffffffff;
-			re.m_iJob	= 0xffffffff;
-			re.m_iGender	= 0xffffffff;
-			re.m_dwAttribute	= RA_DANGER | RA_FIGHT;
-			re.m_dwIdMusic	= 121;
-			re.m_bDirectMusic	= TRUE;
-			re.m_dwIdTeleWorld	= 0;
-			re.m_rect = *pRect;
-			lstrcpy( re.m_szTitle, "Duel Zone" );
-
-			CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
-			if( pWorld )
-			{
-				LPREGIONELEM ptr	= pWorld->m_aRegion.GetAt( pWorld->m_aRegion.GetSize() - 1 );
-				if( ptr->m_dwAttribute != ( RA_DANGER | RA_FIGHT ) )
-					pWorld->m_aRegion.AddTail( &re );
-				pUser->AddText( "recv /ctd" );
-				g_UserMng.AddAddRegion( WI_WORLD_MADRIGAL, re );
-			}
-		}
-	}
-#endif	// __WORLDSERVER
-	return TRUE;
-}
-
 BOOL TextCmd_Undying(CScanner & scanner, CPlayer_ * pUser) {
 	pUser->m_dwMode &= (~MATCHLESS2_MODE);
 	pUser->m_dwMode |= MATCHLESS_MODE;
@@ -2711,7 +2629,7 @@ BOOL TextCmd_Freeze(CScanner & scanner, CPlayer_ * pUser) {
 		if( idFrom > 0 && idTo > 0 ) 
 		{
 			// 1 : 추가 m_dwMode
-			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, (BYTE)1, idFrom, idTo );					
+			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, true, idFrom, idTo );					
 		}
 		else 
 		{
@@ -2737,7 +2655,7 @@ BOOL TextCmd_NoFreeze(CScanner & scanner, CPlayer_ * pUser) {
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idFrom > 0 && idTo > 0 ) 
 		{
-			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, (BYTE)0, idFrom, idTo );	// 0 : 뺌 m_dwMode
+			g_DPCoreClient.SendModifyMode( DONMOVE_MODE, false, idFrom, idTo );
 		}
 		else 
 		{
@@ -2762,7 +2680,7 @@ BOOL TextCmd_Talk(CScanner & scanner, CPlayer_ * pUser) {
 	idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 	if( idFrom > 0 && idTo > 0 ) 
 	{
-		g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)0, idFrom, idTo );	// 0 : 뺌 m_dwMode
+		g_DPCoreClient.SendModifyMode( DONTALK_MODE, false, idFrom, idTo );
 	}
 	else 
 	{
@@ -2784,7 +2702,7 @@ BOOL TextCmd_NoTalk(CScanner & scanner, CPlayer_ * pUser) {
 		idTo	= CPlayerDataCenter::GetInstance()->GetPlayerId( scanner.token );
 		if( idFrom > 0 && idTo > 0 ) 
 		{
-			g_DPCoreClient.SendModifyMode( DONTALK_MODE, (BYTE)1, idFrom, idTo );	// 1 : 추가
+			g_DPCoreClient.SendModifyMode( DONTALK_MODE, true, idFrom, idTo );	// 1 : 추가
 		}
 		else 
 		{
@@ -4416,72 +4334,107 @@ BOOL TextCmd_InvenRemove(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-#include <variant>
-#include "ar.h"
-struct One { int x; };
-CAr & operator<<(CAr & ar, One one) {
-	return ar << one.x;
-}
-CAr & operator>>(CAr & ar, One & one) {
-	return ar >> one.x;
-}
-
-struct Two_ { int x; int y; };
-CAr & operator<<(CAr & ar, Two_ one) {
-	return ar << one.x << one.y;
-}
-CAr & operator>>(CAr & ar, Two_ & one) {
-	return ar >> one.x >> one.y;
-}
-
-struct Strings { std::string str; };
-CAr & operator<<(CAr & ar, const Strings & one) {
-	ar.WriteString(one.str.c_str());
-	return ar;
-}
-CAr & operator>>(CAr & ar, Strings & one) {
-	char xxx[256];
-	ar.ReadString(xxx);
-	one.str = xxx;
-	return ar;
-}
-
-using COUCOU = std::variant<One, Two_, Strings>;
-
-#include <format>
-
-
+#include "eveschool.h"
+#include <random>
 BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __CLIENT
-	scanner.GetToken();
-	CString type = scanner.Token;
+	
+	std::vector<u_long> usablePlayers;
+	std::vector<CGuild *> usableGuilds;
 
-	COUCOU v;
-	if (type == "One") {
-		int x = scanner.GetNumber();
-		v = One{ x };
-	} else if (type == "Two") {
-		int x = scanner.GetNumber();
-		int y = scanner.GetNumber();
-		v = Two_{ x, y };
-	} else if (type == "Strings") {
-		scanner.GetToken();
-		CString content = scanner.Token;
-		v = Strings{ std::string(content.GetString()) };
-	} else if (type == "hack") {
+	for (u_long i = 0; i != 100; ++i) {
+		const char * name = CPlayerDataCenter::GetInstance()->GetPlayerString(i);
+		if (name != std::string_view("")) {
+			usablePlayers.emplace_back(i);
+		}
+	}
 
-		g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET,
-			std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t
-		>(15, 15, 15, 15);
+	for (int i = 0; i != 100; ++i) {
+		CGuild * guild = g_GuildMng.GetGuild(i);
+		if (guild) usableGuilds.emplace_back(guild);
+	}
 
-		return TRUE;
-
-	} else {
-		g_WndMng.PutString("You're drunk");
+	if (usableGuilds.size() < 5 || usablePlayers.size() < 1) {
+		g_WndMng.PutString("We need more guilds and players");
 		return TRUE;
 	}
 
-	g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET>(v);
+	usableGuilds.resize(5);
+	if (usablePlayers.size() >= 25) usablePlayers.resize(25);
+
+
+	std::vector<CGuildCombat::__GCGETPOINT> kills;
+	std::map<u_long, int> guildToPoints;
+	std::map<u_long, int> playersToPoints;
+	
+	std::random_device r;
+	std::uniform_int_distribution<int> uniform_dist(1, 25);
+	std::default_random_engine e1(r());
+
+	for (int i = 0; i != 9 * 9 * 50; ++i) {
+		u_long pAtk = usablePlayers[uniform_dist(e1) % usablePlayers.size()];
+		CGuild * gAtk = usableGuilds[uniform_dist(e1) % usableGuilds.size()];
+		
+		u_long pDef = usablePlayers[uniform_dist(e1) % usablePlayers.size()];
+		CGuild * gDef = usableGuilds[uniform_dist(e1) % usableGuilds.size()];
+
+		BOOL master = (uniform_dist(e1) % 15 == 5) ? TRUE : FALSE;
+		BOOL defender = (uniform_dist(e1) % 15 == 8) ? TRUE : FALSE;
+		BOOL bLastLife = (uniform_dist(e1) % 15 == 4) ? TRUE : FALSE;
+
+		int points = 2
+			+ (master ? 1 : 0)
+			+ (defender ? 1 : 0)
+			+ (bLastLife ? 1 : 0);
+
+		CGuildCombat::__GCGETPOINT gc;
+		gc.uidGuildAttack = gAtk->GetGuildId();
+		gc.uidGuildDefence = gDef->GetGuildId();
+		gc.uidPlayerAttack = pAtk;
+		gc.uidPlayerDefence = pDef;
+		gc.nPoint = points;
+		gc.bKillDiffernceGuild = FALSE;
+		gc.bMaster = master;
+		gc.bDefender = defender;
+		gc.bLastLife = bLastLife;
+
+		kills.emplace_back(gc);
+
+		guildToPoints[gAtk->GetGuildId()] += points;
+		playersToPoints[pAtk] += points;
+	}
+
+	CAr ar;
+	ar << static_cast<u_long>(kills.size());
+	for (const auto & gc : kills) {
+		ar << gc;
+	}
+
+	int size;
+	BYTE * buffer = ar.GetBuffer(&size);
+	
+
+	CAr receive(buffer, size);
+
+	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
+	if (!pWndWorld) return FALSE;
+
+	pWndWorld->m_mmapGuildCombat_GuildPrecedence.clear();
+
+	for (const auto & [guildId, points] : guildToPoints) {
+		CGuild * guild = g_GuildMng.GetGuild(guildId);
+		pWndWorld->m_mmapGuildCombat_GuildPrecedence.emplace(points, guild->m_szGuild);
+	}
+
+	pWndWorld->m_mmapGuildCombat_PlayerPrecedence.clear();
+	for (const auto & [playerId, points] : playersToPoints) {
+		pWndWorld->m_mmapGuildCombat_PlayerPrecedence.emplace(points, playerId);
+	}
+
+
+
+	g_DPlay.OnGCLog(receive);
+	// g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET>(v);
 		
 #endif
 	return TRUE;
@@ -4489,29 +4442,7 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 
 #ifndef __CLIENT
 void CDPSrvr::OnSquonKArbitraryPacket(CAr & ar, CUser & thisIsMe) {
-	COUCOU v; ar >> v;
 
-	if (v.valueless_by_exception()) {
-		thisIsMe.AddText("Mistakes were made");
-		return;
-	}
-
-	struct Visitor {
-		std::string operator()(One one) {
-			return std::format("One= {}", one.x);
-		}
-
-		std::string operator()(Two_ one) {
-			return std::format("Two= {} {}", one.x, one.y);
-		}
-		std::string operator()(Strings one) {
-			return std::format("Strings= {}", one.str);
-		}
-	};
-
-	std::string x = std::visit(Visitor{}, v);
-
-	thisIsMe.AddText(x.c_str());
 }
 #endif
 
@@ -4677,7 +4608,6 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_QuestState,				"QuestState",         "qs",             "퀘스트상태",     "퀘상",    TCM_SERVER, AUTH_ADMINISTRATOR, "퀘스트 설정 [ID] [State]" )
 	ON_TEXTCMDFUNC( TextCmd_LoadScript,				"loadscript",         "loscr",          "로드스크립트",   "로스",    TCM_BOTH  , AUTH_ADMINISTRATOR   , "스크립트 다시 읽기" )
 	ON_TEXTCMDFUNC( TextCmd_ReloadConstant,			"ReloadConstant",     "rec",            "리로드콘스탄트", "리콘",    TCM_SERVER, AUTH_ADMINISTRATOR, "리로드 콘스탄트파일" )
-	ON_TEXTCMDFUNC( TextCmd_CTD,					"ctd",				 "ctd",            "이벤트듀얼존",   "이듀",    TCM_BOTH  , AUTH_ADMINISTRATOR   , "이벤트 듀얼존 설정" )
 	ON_TEXTCMDFUNC( TextCmd_Piercing,				"Piercing",           "pier",           "피어싱",         "피싱",    TCM_BOTH  , AUTH_ADMINISTRATOR, "피어싱(소켓)" )
 	ON_TEXTCMDFUNC( TextCmd_PetLevel,				"petlevel",         "pl",          "펫레벨",     "펫레",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_PetExp,					"petexp",         "pe",          "펫경험치",     "펫경",    TCM_BOTH,  AUTH_ADMINISTRATOR, "" )
@@ -4789,9 +4719,6 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_Coupon,					"COUPON",		"coupon",			"쿠폰설정", "쿠폰",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 #endif // __EVENTLUA_COUPON
 
-//#ifdef __PERF_0226
-	ON_TEXTCMDFUNC( TextCmd_CreatePc,				"CreatePc",		"cp",			"cp", "cp",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
-//#endif	// __PERF_0226
 #ifdef __SFX_OPT
 	ON_TEXTCMDFUNC( TextCmd_SfxLv,					"SfxLevel",		"sl",			"sl", "sl",	TCM_BOTH, AUTH_ADMINISTRATOR, "" )
 #endif	

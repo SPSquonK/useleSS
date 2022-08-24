@@ -537,10 +537,6 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 
 	ProtectPropMover();
 
-#ifdef __PERF_0226
-	CPartsItem::GetInstance()->Init( this );
-#endif	// __PERF_0226
-
 #ifdef __WORLDSERVER
 	CSLord::Instance()->CreateColleagues();
 #else	// __WORLDSERVER
@@ -806,7 +802,7 @@ BOOL CProject::LoadMotionProp( LPCTSTR lpszFileName )
 		_tcscpy( MotionProp.szName, script.m_mszToken );
 		script.GetToken();
 		_tcscpy( MotionProp.szDesc, script.m_mszToken );
-		m_aPropMotion.SetAtGrow( MotionProp.dwID, &MotionProp);
+		m_aPropMotion.SetAtGrow( MotionProp.dwID, MotionProp);
 		
 		nVer = script.GetNumber(); 
 	}
@@ -936,11 +932,7 @@ BOOL CProject::LoadFilter( LPCTSTR lpszFileName )
 		int nLen	= lstrlen( scanner.token );
 		for( int i = 0; i < nLen; i++ )
 		{
-#ifdef __VS2003
 			if( !iswalpha( scanner.token[i] ) )
-#else //__VS2003
-			if( !isalpha( scanner.token[i] ) )
-#endif //__VS2003
 			{
 				bAlpha	= FALSE;
 				break;
@@ -1068,7 +1060,7 @@ BOOL CProject::LoadPropGuildQuest( LPCTSTR lpszFilename )
 			}
 			s.GetToken();
 		}
-		m_aPropGuildQuest.SetAtGrow( nQuestId, &prop );
+		m_aPropGuildQuest.SetAtGrow( nQuestId, prop );
 		nQuestId	= s.GetNumber();	// id
 	}
 	m_aPropGuildQuest.Optimize();
@@ -2216,7 +2208,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 		if( nQuest == QuestId(QUEST_KAWIBAWIBO01) )
 			bAdd	= FALSE;
 		if( bAdd )
-			m_aPropQuest.SetAtGrow( nQuest.get(), &propQuest);
+			m_aPropQuest.SetAtGrow( nQuest.get(), propQuest);
 
 		nQuest = QuestId(script.GetNumber());  // id
 	}
@@ -2299,7 +2291,7 @@ BOOL CProject::LoadPropAddSkill( LPCTSTR lpszFileName )
 		if( propAddSkill.dwActiveSkillRatePVP == dwDefault )
 			propAddSkill.dwActiveSkillRatePVP	= propAddSkill.dwActiveSkillRate;
 
-		m_aPropAddSkill.SetAtGrow( i, &propAddSkill );
+		m_aPropAddSkill.SetAtGrow( i, propAddSkill );
 
 		// TRACE( "PropAddSkill : %d %d %d\r\n", i, propAddSkill.dwName, propAddSkill.dwSkillLvl );
 		i = script.GetNumber( TRUE ); 
@@ -3838,21 +3830,20 @@ BOOL CProject::IsGuildQuestRegion( const D3DXVECTOR3 & vPos )
 //LoadPropItem�� ȣ���ϰ� ��ó���� �Ѵ�.
 void CProject::OnAfterLoadPropItem()
 {
-	for( int i = 0; i < m_aPropItem.GetSize(); i++ )
-	{
-		ItemProp* pItemProp = (ItemProp*)m_aPropItem.GetAt( i );
-		if( pItemProp && pItemProp->dwFlag == NULL_ID )
-			pItemProp->dwFlag = 0;
+	for (ItemProp & pItemProp : m_aPropItem) {
 
-		if( pItemProp && pItemProp->dwItemKind3 != NULL_ID )
+		if( pItemProp.dwFlag == NULL_ID )
+			pItemProp.dwFlag = 0;
+
+		if( pItemProp.dwItemKind3 != NULL_ID )
 		{
-			m_itemKindAry[ pItemProp->dwItemKind3 ].Add( pItemProp );
+			m_itemKindAry[ pItemProp.dwItemKind3 ].Add( &pItemProp );
 
-			switch( pItemProp->dwItemKind3 )
+			switch( pItemProp.dwItemKind3 )
 			{
 			case IK3_EVENTMAIN:
 			case IK3_BINDS:
-				pItemProp->dwFlag |= IP_FLAG_BINDS;
+				pItemProp.dwFlag |= IP_FLAG_BINDS;
 				break;
 			}
 		}
@@ -4087,7 +4078,7 @@ BOOL CProject::LoadPropCtrl( LPCTSTR lpszFileName, CFixedArray<CtrlProp>*	apObjP
 		ctrlProp.dwSndDamage = scanner.GetNumber();
 
 		scanner.GetToken();		// skip szCommand (������� �ʴ´�. )
-		apObjProp->SetAtGrow( i, &ctrlProp);
+		apObjProp->SetAtGrow( i, ctrlProp);
 		i = scanner.GetNumber(); 
 	}
 	apObjProp->Optimize();
@@ -4425,51 +4416,6 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 }
 #endif	// __JEFF_11_3
 #endif	// __WORLDSERVER
-
-#ifdef __PERF_0226
-CPartsItem::CPartsItem()
-{
-	m_pProject	= NULL;
-}
-
-CPartsItem::~CPartsItem()
-{
-	for( int i = 0; i < 3; i++ )
-	{
-		for( int j = 0; j < MAX_HUMAN_PARTS; j++ )
-			m_items[i][j].clear();
-	}
-}
-
-void	CPartsItem::Init( CProject* pProject )
-{
-	m_pProject	= pProject;
-	int nSize	= pProject->m_aPropItem.GetSize();
-	for( int i = 0; i < nSize; i++ )
-	{
-		ItemProp* pProp	= pProject->GetItemProp( i );
-		if( pProp && pProp->dwParts >= 0 && pProp->dwParts < MAX_HUMAN_PARTS )
-		{
-			int nSex	= pProp->dwItemSex;
-			if( nSex < 0 )
-				nSex	= SEX_SEXLESS;
-			m_items[nSex][pProp->dwParts].push_back( pProp );
-		}
-	}
-}
-
-ItemProp*	CPartsItem::GetItemProp( int nSex, int nParts )
-{
-	int nIndex	= xRandom( m_items[nSex][nParts].size() );
-	return	m_items[nSex][nParts][nIndex];
-}
-
-CPartsItem*	CPartsItem::GetInstance( void )
-{
-	static	CPartsItem	sPartsItem;
-	return &sPartsItem;
-}
-#endif	// __PERF_0226
 
 void CProject::OutputDropItem( void )
 {

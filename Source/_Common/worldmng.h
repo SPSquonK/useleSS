@@ -7,8 +7,6 @@ static_assert(false, "worldmng.h included in another project than World or Clien
 #include <vector>
 #include <memory>
 
-typedef	REGIONELEM	RegionElem, *PRegionElem;
-
 typedef struct tagWORLD
 {
 	TCHAR	m_szFileName[128];
@@ -35,17 +33,15 @@ public:
 
 	void		Free();
 	CWorld*		GetWorld( DWORD dwWorldID );
-	void		Add( CJurisdiction* pJurisdiction );
+	void Add(WorldId pJurisdiction);
 	void		ReadObject();
 	void		Process();
-	[[nodiscard]] bool HasNobody_Replace(DWORD dwWorldId, int nLayer) const;
+	[[nodiscard]] bool HasSomeoneGoingTo(DWORD dwWorldId, int nLayer) const;
 #ifdef __LAYER_1015
 	BOOL		AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId, int nLayer );
 #else	// __LAYER_1015
 	BOOL		AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId = FALSE );
 #endif	// __LAYER_1015
-	bool PreremoveObj(const OBJID objid);
-	CObj*		PregetObj( OBJID objid );
 	u_long		Respawn();
 	[[nodiscard]] DWORD GetObjCount() const noexcept;
 
@@ -71,13 +67,13 @@ private:
 
 #ifdef __WORLDSERVER
 public:
-	PRegionElem		GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey );
-	PRegionElem		GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
-	PRegionElem		GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey );
-	PRegionElem		GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos );
+	const REGIONELEM * GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey ) const;
+	const REGIONELEM * GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const;
+	const REGIONELEM * GetRevivalPos( DWORD dwWorldId, LPCTSTR sKey ) const;
+	const REGIONELEM * GetNearRevivalPos( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const;
 
-	const RegionElem * GetRevival(CMover * pUser);
-	const RegionElem * GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, bool isChaotic);
+	const REGIONELEM * GetRevival(CMover * pUser);
+	const REGIONELEM * GetRevival(const CWorld & world, const D3DXVECTOR3 & vPos, bool isChaotic);
 #endif	// __WORLDSERVER
 public:
 

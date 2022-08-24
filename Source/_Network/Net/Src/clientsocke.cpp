@@ -21,7 +21,7 @@ CClientSockE::CClientSockE( BUFFER_TYPE type )
 	m_hRecv		= m_hSend	= WSA_INVALID_EVENT;
 	m_hWorker	= (HANDLE)NULL;
 	m_l	= 0;
-	m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( BUFFER_TYPE_5BYTE );
+	m_pRecvBuffer	= CBufferFactory::CreateBuffer( BUFFER_TYPE_5BYTE );
 
 	if( CSock::crcRead & dwcrc )
 		m_dwReadHeaderSize	= HEADERSIZE13;
@@ -43,7 +43,7 @@ CClientSockE::CClientSockE( BUFFER_TYPE type )
 	m_hRecv		= m_hSend	= WSA_INVALID_EVENT;
 	m_hWorker	= (HANDLE)NULL;
 	m_l	= 0;
-	m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( type );
+	m_pRecvBuffer	= CBufferFactory::CreateBuffer( type );
 
 	m_nBufferType = type;
 
@@ -256,7 +256,7 @@ CBuffer* CClientSockE::Fetch( DWORD dwBytes )
 			if( m_pRecvBuffer->cb > 0 ) {
 				pOld	= m_pRecvBuffer;
 				pOld->m_pTail	-= nRemnant;	// remove remnant from old buffer
-				m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( m_nBufferType );
+				m_pRecvBuffer	= CBufferFactory::CreateBuffer( m_nBufferType );
 				ASSERT( m_pRecvBuffer->m_pTail + nRemnant <= m_pRecvBuffer->m_lpBufMax ); 
 				memcpy( m_pRecvBuffer->m_pTail, ptr, nRemnant );
 
@@ -302,14 +302,14 @@ CBuffer* CClientSockE::Fetch( DWORD dwBytes )
 				if( (int)( uPacketSize ) > m_pRecvBuffer->GetSize() )
 				{
 					pOld	= m_pRecvBuffer;
-					m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( m_nBufferType, uPacketSize );
+					m_pRecvBuffer	= CBufferFactory::CreateBuffer( m_nBufferType, uPacketSize );
 				}
 				else
 				{
 					if( m_pRecvBuffer->cb > 0 )
 					{
 						pOld	= m_pRecvBuffer;
-						m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( m_nBufferType );
+						m_pRecvBuffer	= CBufferFactory::CreateBuffer( m_nBufferType );
 					}
 				}
 
@@ -373,9 +373,8 @@ HRESULT CClientSockE::GetPeerAddr( DPID dpidPlayer, LPVOID lpAddr, LPDWORD lpdwS
 	return DP_OK;
 }
 
-CBuffer* CClientSockE::CreateBuffer()
-{
-	return CBufferFactory::GetInstance().CreateBuffer( m_nBufferType );
+CBuffer * CClientSockE::CreateBuffer() {
+	return CBufferFactory::CreateBuffer(m_nBufferType);
 }
 
 #ifdef __PROTOCOL0910

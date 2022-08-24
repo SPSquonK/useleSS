@@ -32,7 +32,7 @@ bool CCertUserMng::AddUser(const DPID dpid) {
 		return false;
 	}
 #ifdef _DEBUG
-	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "// %04d", m_users.size() );
+	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "Nb of players: %04zu", m_users.size() );
 #endif	// _DEBUG
 	return true;
 }
@@ -44,7 +44,7 @@ bool CCertUserMng::RemoveUser(const DPID dpid) {
 	{
 		m_users.erase( i );
 #ifdef _DEBUG
-	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "// %04d", m_users.size() );
+	g_MyTrace.Add( CMyTrace::Key( "count" ), FALSE, "Nb of players: %04zu", m_users.size() );
 #endif	// _DEBUG
 		return true;
 	}

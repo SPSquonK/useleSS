@@ -100,14 +100,9 @@ void CWndMotion1::OnInitialUpdate()
 
 	MotionProp* pMotionProp = NULL;
 	int j = 0;
-	for( int i = 0; i < prj.m_aPropMotion.GetSize(); i++ )
-	{
-		pMotionProp = prj.GetMotionProp( i );
-		if( pMotionProp )
-		{
-			m_motionArray.SetAtGrow( j, pMotionProp ); j++;
-			pMotionProp->pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp->szIconName ), 0xffff00ff );
-		}
+	for (MotionProp & pMotionProp : prj.m_aPropMotion) {
+		m_motionArray.SetAtGrow( j, &pMotionProp ); j++;
+		pMotionProp.pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp.szIconName ), 0xffff00ff );
 	}
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CRect rectWindow = GetWindowRect();

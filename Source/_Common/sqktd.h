@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <type_traits>
 
 namespace sqktd {
   template<typename InputIt, typename UnaryPredicate>
@@ -41,4 +42,16 @@ namespace sqktd {
     if (it != map.end()) return it->second.get();
     return nullptr;
   }
+
+	namespace ranges {
+		template<typename Collection>
+		[[nodiscard]] constexpr bool all_are(const Collection & collection, const typename Collection::value_type & value) {
+			return std::ranges::all_of(collection, [&](const auto & value_) { return value_ == value; });
+		}
+	}
+}
+
+namespace sqktd {
+	template<typename Wanted, typename ... Possibilities>
+	static constexpr bool IsOneOf = (std::is_same_v<Wanted, Possibilities> || ...);
 }

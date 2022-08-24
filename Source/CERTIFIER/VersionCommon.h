@@ -15,7 +15,6 @@
 #define		__DOS1101
 //#define		__S0114_RELOADPRO	// 캐릭터 DB에서 읽어오기 : Neuz, Trans, login, World, Certifier, Account( ini : SKIP_TRACKING 추가 )
 #define		__TWN_LOGIN0816
-#define		__STL_0402				// stl
 
 #define	__GPAUTH
 #define	__GPAUTH_01
@@ -27,12 +26,6 @@
 //	#define 	__PCBANG		// PC방 혜택
 
 #define __ENCRYPT_PASSWORD	//	mulcom	BEGIN100218	패스워드 암호화
-
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
-
 
 
 #if	  defined(__INTERNALSERVER)		// 내부 사무실 테스트서버 

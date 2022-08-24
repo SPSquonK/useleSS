@@ -81,7 +81,7 @@ protected:
 public:
 	DWORD				m_dwColor;
 	D3DXVECTOR3			m_vMin, m_vMax;
-	LPMODELELEM			m_pModelElem;
+	MODELELEM * m_pModelElem;
 
 	int					m_nPause;			// Pause대기 시간.  0이면 Pause상태 아님 1이상이면 포즈상태고 숫자는 대기시간
 	int					m_bSlow;			// 슬로우 모드.

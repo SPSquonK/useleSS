@@ -124,10 +124,6 @@ static CWndBase*      m_pWndRoot        ;
 static CWndBase*      m_pWndFocus       ; // 다이얼로그 윈도 포커스 
 static CWndBase*      m_pCurFocus       ; // 다이얼로그, 차일드 중 최종 현재 포커스 
 
-#ifndef __VS2003
-static CPtrArray      m_wndOrder        ;
-#endif
-
 static std::vector<CWndBase *> m_wndRemove;
 static std::vector<WNDMESSAGE> m_postMessage;
 //static CTexturePack   m_texturePack     ;
@@ -154,6 +150,7 @@ static CTheme         m_Theme;
 
 public:
 static CTextureMng    m_textureMng;
+static std::map<CWndBase *, std::unique_ptr<CTexture>> m_backgroundTextureMng;
 static SHORTCUT       m_GlobalShortcut;
 	BOOL m_bPickup; // 포커스 윈도를 들었나?
 
@@ -168,7 +165,6 @@ static void FreeTileTexture();
 	
 	BOOL Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
 	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
-	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpKey, CTexture* m_pTexture );
 
 	static void RemoveDestroyWnd();
 	void MoveParentCenter(); // 윈도를 부모 윈도의 중앙으로 옮긴다.

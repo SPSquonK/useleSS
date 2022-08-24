@@ -6,10 +6,6 @@
 	#define __INTERNALSERVER
 #endif
 
-#if (_MSC_VER > 1200)
-#define		__VS2003		// 컴파일러변경.net
-#endif
-
 #define		__TRANSFER_ERROR_TEXT
 #define		__CRC
 #define		__PROTOCOL0910
@@ -24,7 +20,6 @@
 
 #define		__S_SERVER_UNIFY			// 서버 통합 Neuz, World
 #define		__LANG_IME_0327				// 국가별 ime표시 창 출력 구분
-#define		__STL_0402					// stl
 
 #define		__NEWYEARDAY_EVENT_COUPON	// 설 이벤트 - 헤어샾, 성형 무료이용권 관련.
 // 해외 6차 적용

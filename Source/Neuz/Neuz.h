@@ -102,7 +102,6 @@ public:
 	DWORD					m_dwSys;
 	DWORD					m_dwAuthKey;
 	CMover*					m_apPlayer[MAX_CHARACTER_LIST];
-	DWORD					m_adwWorldID[MAX_CHARACTER_LIST];
 	int						m_nCharacterBlock[MAX_CHARACTER_LIST];
 	CRTMessenger	m_aRTMessenger[MAX_CHARACTER_LIST];
 #ifdef __THROUGHPORTAL0810

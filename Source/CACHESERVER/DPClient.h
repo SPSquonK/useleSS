@@ -1,10 +1,8 @@
-#ifndef __DPCLIENT_H__
-#define __DPCLIENT_H__
-
 #pragma once
 
 #include "DPMng.h"
 #include "ServerDesc.h"
+#include <memory>
 
 #undef	theClass
 #define	theClass	CDPClient
@@ -12,59 +10,55 @@
 #define theParameters	CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize
 
 class CCachePlayer;
-class CDPClient : public CDPMng
-{
+class CDPClient final : public CDPMng {
 public:
-	CServerDesc*	m_pServer;
-	CDPClient*	pNext;
+	CServerDesc * m_pServer = nullptr;
 
 public:
-	// Constructions
-	CDPClient();
-	virtual	~CDPClient();
+	// We do not really want this class to be copied because of m_pServer
+	// that has a weird ownership model.
+	CDPClient() = default;
+	CDPClient(const CDPClient &) = delete;
+	CDPClient & operator=(const CDPClient &) = delete;
+	~CDPClient() override = default;
 
 	// Operations
-	virtual	void SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
-	virtual void UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
+	void SysMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom) override;
+	void UserMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom) override;
 
-	void	SendToServer( DPID dpidUser, LPVOID pData, DWORD dwDataSize )
-		{
-			*reinterpret_cast<UNALIGNED DPID*>( pData )	= dpidUser;
-			Send( pData, dwDataSize, DPID_SERVERPLAYER );
-		}
+	void	SendToServer(DPID dpidUser, LPVOID pData, DWORD dwDataSize) {
+		*reinterpret_cast<UNALIGNED DPID *>(pData) = dpidUser;
+		Send(pData, dwDataSize, DPID_SERVERPLAYER);
+	}
 
-	void	SendJoin(CCachePlayer * pPlayer );
-
-	USES_PFNENTRIES;
+	void	SendJoin(CCachePlayer * pPlayer);
 
 	// Handlers
-	void	OnReplace( CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize);
-	void	OnQueryDestroyPlayer( CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize);
+	void	OnReplace(CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize);
+	void	OnQueryDestroyPlayer(CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize);
 };
 
-class CDPClientArray
-{
+class CDPClientArray final {
 public:
-	CDPClient*	m_pFirstActive;
-	CDPClient*	m_pFirstFree;
 	CMclCritSec		m_AddRemoveLock;
 	CServerDescArray	m_apServer;
+	std::vector<CDPClient *> m_active;
+	std::vector<CDPClient *> m_free;
 
 public:
 	// Constructions
-	CDPClientArray();
+	CDPClientArray() = default;
+	CDPClientArray(const CDPClientArray &) = delete;
+	CDPClientArray & operator=(const CDPClientArray &) = delete;
 	virtual	~CDPClientArray();
+	void Free();
 
 	// Operations
-	void	Free( void );
-	BOOL	Connect( CServerDesc* pServer );
+	bool Connect(std::unique_ptr<CServerDesc> pServer);
+	bool Remove(CDPClient * pRemove);
 
-	void	Add( CDPClient* pClient );
-	BOOL	Remove( CDPClient* pRemove );
-	CDPClient*	GetClient( u_long uIdofMulti, DWORD dwWorldID, const D3DXVECTOR3 & vPos );
+	CDPClient*	GetClient( u_long uIdofMulti );
 	void	SendToServer( DPID dpidUser, LPVOID lpMsg, DWORD dwMsgSize );
 };
 
 extern CDPClientArray g_DPClientArray;
-
-#endif	// __DPCLIENT_H__
