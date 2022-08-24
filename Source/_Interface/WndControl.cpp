@@ -555,13 +555,6 @@ void CWndButton::OnMouseMove(UINT nFlags, CPoint point)
 	}
 }
 
-void CWndButton::OnRButtonUp(UINT nFlags, CPoint point)
-{
-}
-
-void CWndButton::OnRButtonDown(UINT nFlags, CPoint point)
-{
-}
 void CWndButton::OnLButtonDblClk( UINT nFlags, CPoint point)
 {
 	//PLAYSND( m_strSndEffect, NULL );
@@ -623,16 +616,11 @@ BOOL CWndTreeCtrl::Create(DWORD dwTextStyle,const RECT& rect,CWndBase* pParentWn
 {
 	return CWndBase::Create( WBS_CHILD | dwTextStyle, rect, pParentWnd, nID );
 }
-void CWndTreeCtrl::DeleteItemArray( void )
-{
-	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
-		safe_delete( (LPTREEITEM)m_treeItemArray.GetAt(i) );
-	m_treeItemArray.RemoveAll();
-}
+
 BOOL CWndTreeCtrl::DeleteAllItems()
 {
 	FreeTree(m_treeElem.m_ptrArray);
-	DeleteItemArray();
+	m_treeItemArray.clear();
 	m_pFocusElem = NULL;
 	return TRUE;
 }
@@ -794,10 +782,7 @@ BOOL CWndTreeCtrl::CheckParentTreeBeOpened( LPTREEELEM lpTreeElem )
 			return lpTreeElem->m_bOpen;
 	}
 }
-CPtrArray* CWndTreeCtrl::GetTreeItemArray( void )
-{
-	return &m_treeItemArray;
-}
+
 void CWndTreeCtrl::SetFocusElem( const LPTREEELEM pFocusElem )
 {
 	m_pFocusElem = pFocusElem;
@@ -962,14 +947,14 @@ void CWndTreeCtrl::OnDraw(C2DRender* p2DRender)
 	CPoint pt( 3, 3);
 	m_nFontHeight = GetFontHeight();
 	pt.y -= (m_nFontHeight + 3) * m_wndScrollBar.GetScrollPos();
-	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
-		safe_delete( (LPTREEITEM)m_treeItemArray.GetAt(i) );
-	m_treeItemArray.RemoveAll();
+	
+	m_treeItemArray.clear();
+
 	m_nTreeItemsMaxWidth = 0;
 	PaintTree(p2DRender,pt,m_treeElem.m_ptrArray) ;
 
 	int nPage = GetClientRect().Height() / m_nFontHeight;
-	int nRange = m_treeItemArray.GetSize();// - nPage;
+	int nRange = m_treeItemArray.size();// - nPage;
 
 	if(	IsWndStyle( WBS_VSCROLL ) )  
 	{
@@ -986,19 +971,17 @@ void CWndTreeCtrl::OnDraw(C2DRender* p2DRender)
 
 void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray) 
 {
-	LPTREEELEM pTreeElem;
-	LPTREEITEM pTreeItem;
 	for(int i = 0; i < ptrArray.GetSize(); i++)
 	{
-		pTreeElem = (LPTREEELEM)ptrArray.GetAt( i );
-		pTreeItem = new TREEITEM;
+		LPTREEELEM pTreeElem = (LPTREEELEM)ptrArray.GetAt( i );
+		TREEITEM pTreeItem;
 		CSize sizeStr;
 		p2DRender->m_pFont->GetTextExtent( pTreeElem->m_strKeyword, &sizeStr);
 		int nRectLeft = pt.x + m_nCategoryTextSpace;
 		int nRectTop = pt.y;
 		int nRectRight = pt.x + m_nCategoryTextSpace + sizeStr.cx;
 		int nRectBottom = pt.y + sizeStr.cy;
-		pTreeItem->m_rect.SetRect( nRectLeft, nRectTop, nRectRight, nRectBottom );
+		pTreeItem.m_rect.SetRect( nRectLeft, nRectTop, nRectRight, nRectBottom );
 		m_nTreeItemsMaxWidth = ( nRectRight > m_nTreeItemsMaxWidth ) ? nRectRight : m_nTreeItemsMaxWidth;
 		if( m_bMemberCheckingMode == TRUE && pTreeElem->m_pWndCheckBox )
 		{
@@ -1010,8 +993,9 @@ void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray
 				pWndCheckBox->SetWndRect( CRect( pt.x, pt.y - 1, pt.x + CHECK_BOX_SIZE_XY, pt.y + CHECK_BOX_SIZE_XY - 1 ) );
 			}
 		}
-		pTreeItem->m_lpTreeElem = pTreeElem;
-		m_treeItemArray.Add( pTreeItem );
+		pTreeItem.m_lpTreeElem = pTreeElem;
+		m_treeItemArray.emplace_back(pTreeItem);
+
 		if( pTreeElem->m_ptrArray.GetSize() )
 		{
 
@@ -1043,13 +1027,10 @@ void CWndTreeCtrl::PaintTree(C2DRender* p2DRender,CPoint& pt,CPtrArray& ptrArray
 }
 void CWndTreeCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	LPTREEITEM pTreeItem;
-	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
-	{
-		pTreeItem = (LPTREEITEM)m_treeItemArray.GetAt(i);
-		if(pTreeItem->m_rect.PtInRect(point))
+	for (const TREEITEM & pTreeItem : m_treeItemArray) {
+		if(pTreeItem.m_rect.PtInRect(point))
 		{
-			m_pFocusElem = pTreeItem->m_lpTreeElem;
+			m_pFocusElem = pTreeItem.m_lpTreeElem;
 			CWndBase* pWnd = m_pParentWnd;
 			while(pWnd->GetStyle() & WBS_CHILD)
 				pWnd = pWnd->GetParentWnd();
@@ -1060,14 +1041,11 @@ void CWndTreeCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CWndTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	LPTREEITEM pTreeItem;
-	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
-	{
-		pTreeItem = (LPTREEITEM)m_treeItemArray.GetAt(i);
+	for (const TREEITEM & pTreeItem : m_treeItemArray) {
 		if( m_bMemberCheckingMode == TRUE )
 		{
-			CWndButton* pWndCheckBox = pTreeItem->m_lpTreeElem->m_pWndCheckBox;
-			LPTREEELEM pParentTreeElem = pTreeItem->m_lpTreeElem->m_lpParent;
+			CWndButton* pWndCheckBox = pTreeItem.m_lpTreeElem->m_pWndCheckBox;
+			LPTREEELEM pParentTreeElem = pTreeItem.m_lpTreeElem->m_lpParent;
 			if( pWndCheckBox && pParentTreeElem && CheckParentTreeBeOpened( pParentTreeElem ) == FALSE )
 			{
 				if( pWndCheckBox->IsWindowEnabled() == TRUE )
@@ -1076,35 +1054,25 @@ void CWndTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 					pWndCheckBox->SetVisible( FALSE );
 			}
 		}
-		CRect rect = pTreeItem->m_rect;
+		CRect rect = pTreeItem.m_rect;
 		SIZE size = m_pTexButtOpen->m_size;
 		rect.left -= m_nCategoryTextSpace;
 		rect.SetRect( rect.left, rect.top, rect.left + size.cx, rect.top + size.cy );
 		if( rect.PtInRect( point ) )
 		{
-			pTreeItem->m_lpTreeElem->m_bOpen = !pTreeItem->m_lpTreeElem->m_bOpen;
-			m_pFocusElem = pTreeItem->m_lpTreeElem;
+			pTreeItem.m_lpTreeElem->m_bOpen = !pTreeItem.m_lpTreeElem->m_bOpen;
+			m_pFocusElem = pTreeItem.m_lpTreeElem;
 		}
 	}
 }
 
-void CWndTreeCtrl::OnRButtonUp(UINT nFlags, CPoint point)
-{
-}
-
-void CWndTreeCtrl::OnRButtonDown(UINT nFlags, CPoint point)
-{
-}
 void CWndTreeCtrl::OnLButtonDblClk( UINT nFlags, CPoint point)
 {
-	LPTREEITEM pTreeItem;
-	for(int i = 0; i < m_treeItemArray.GetSize(); i++)
-	{
-		pTreeItem = (LPTREEITEM)m_treeItemArray.GetAt(i);
+	for (const TREEITEM & pTreeItem : m_treeItemArray) {
 		if( m_bMemberCheckingMode == TRUE )
 		{
-			CWndButton* pWndCheckBox = pTreeItem->m_lpTreeElem->m_pWndCheckBox;
-			LPTREEELEM pParentTreeElem = pTreeItem->m_lpTreeElem->m_lpParent;
+			CWndButton* pWndCheckBox = pTreeItem.m_lpTreeElem->m_pWndCheckBox;
+			TREEELEM * pParentTreeElem = pTreeItem.m_lpTreeElem->m_lpParent;
 			if( pWndCheckBox && pParentTreeElem && CheckParentTreeBeOpened( pParentTreeElem ) == FALSE )
 			{
 				if( pWndCheckBox->IsWindowEnabled() == TRUE )
@@ -1113,9 +1081,9 @@ void CWndTreeCtrl::OnLButtonDblClk( UINT nFlags, CPoint point)
 					pWndCheckBox->SetVisible( FALSE );
 			}
 		}
-		if(pTreeItem->m_rect.PtInRect(point))
+		if(pTreeItem.m_rect.PtInRect(point))
 		{
-			m_pFocusElem = pTreeItem->m_lpTreeElem;
+			m_pFocusElem = pTreeItem.m_lpTreeElem;
 			m_pFocusElem->m_bOpen = !m_pFocusElem->m_bOpen;
 			CWndBase* pWnd = m_pParentWnd;
 			while( pWnd->GetStyle() & WBS_CHILD )

@@ -20,14 +20,13 @@ CWndQITreeCtrl::~CWndQITreeCtrl( void )
 //-----------------------------------------------------------------------------
 void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 {
-	LPTREEITEM pTreeItem = NULL;
-	for( int i = 0; i < GetTreeItemArray()->GetSize(); ++i )
-	{
-		pTreeItem = ( LPTREEITEM )GetTreeItemArray()->GetAt( i );
+
+	for (const TREEITEM & pTreeItem : GetTreeItemArray()) {
+
 		if( GetMemberCheckingMode() == TRUE )
 		{
-			CWndButton* pWndCheckBox = pTreeItem->m_lpTreeElem->m_pWndCheckBox;
-			LPTREEELEM pParentTreeElem = pTreeItem->m_lpTreeElem->m_lpParent;
+			CWndButton* pWndCheckBox = pTreeItem.m_lpTreeElem->m_pWndCheckBox;
+			LPTREEELEM pParentTreeElem = pTreeItem.m_lpTreeElem->m_lpParent;
 			if( pWndCheckBox && pParentTreeElem && pParentTreeElem->m_bOpen == FALSE )
 			{
 				if( pWndCheckBox->IsWindowEnabled() == TRUE )
@@ -36,8 +35,8 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 					pWndCheckBox->SetVisible( FALSE );
 			}
 		}
-		LPTREEELEM pTreeElem = pTreeItem->m_lpTreeElem;
-		CRect rect = pTreeItem->m_rect;
+		LPTREEELEM pTreeElem = pTreeItem.m_lpTreeElem;
+		CRect rect = pTreeItem.m_rect;
 		SIZE size = m_pTexButtOpen->m_size;
 		rect.left -= GetCategoryTextSpace();
 		rect.SetRect( rect.left, rect.top, rect.left + size.cx, rect.top + size.cy );
@@ -48,13 +47,13 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 			if( pTreeInformation )
 			{
 				pTreeInformation->SetOpen( pTreeElem->m_bOpen );
-				SetFocusElem( pTreeItem->m_lpTreeElem );
+				SetFocusElem( pTreeItem.m_lpTreeElem );
 			}
 			if( pTreeElem->m_bOpen == TRUE )
 				( ( CWndQuestQuickInfo* )m_pParentWnd )->ExtendAppletHeight();
 		}
 
-		if( pTreeItem->m_rect.PtInRect( point ) )
+		if( pTreeItem.m_rect.PtInRect( point ) )
 		{
 			if( pTreeElem->m_ptrArray.GetSize() > 0 || pTreeElem->m_lpParent == NULL )
 			{
@@ -77,7 +76,7 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 				DWORD dwGoalTextID = SetQuestDestinationInformation( pTreeElem->m_lpParent->m_dwData, pTreeElem->m_dwData );
 				ProcessQuestDestinationWorldMap( dwGoalTextID );
 			}
-			SetFocusElem( pTreeItem->m_lpTreeElem );
+			SetFocusElem( pTreeItem.m_lpTreeElem );
 		}
 	}
 
@@ -110,18 +109,18 @@ void CWndQITreeCtrl::OnRButtonDown( UINT nFlags, CPoint point )
 void CWndQITreeCtrl::PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptrArray )
 {
 	LPTREEELEM pTreeElem = NULL;
-	LPTREEITEM pTreeItem = NULL;
+
 	for(int i = 0; i < ptrArray.GetSize(); ++i )
 	{
 		pTreeElem = ( LPTREEELEM )ptrArray.GetAt( i );
-		pTreeItem = new TREEITEM;
+		TREEITEM pTreeItem;
 		CSize sizeStr( 0, 0 );
 		p2DRender->m_pFont->GetTextExtent( pTreeElem->m_strKeyword, &sizeStr );
 		int nRectLeft = pt.x + GetCategoryTextSpace();
 		int nRectTop = pt.y;
 		int nRectRight = pt.x + GetCategoryTextSpace() + sizeStr.cx;
 		int nRectBottom = pt.y + sizeStr.cy;
-		pTreeItem->m_rect.SetRect( nRectLeft, nRectTop, nRectRight, nRectBottom );
+		pTreeItem.m_rect.SetRect( nRectLeft, nRectTop, nRectRight, nRectBottom );
 		SetTreeItemsMaxWidth( ( nRectRight > GetTreeItemsMaxWidth() ) ? nRectRight : GetTreeItemsMaxWidth() );
 		if( GetMemberCheckingMode() == TRUE && pTreeElem->m_pWndCheckBox )
 		{
@@ -133,8 +132,9 @@ void CWndQITreeCtrl::PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptr
 				pWndCheckBox->SetWndRect( CRect( pt.x, pt.y - 1, pt.x + CWndTreeCtrl::CHECK_BOX_SIZE_XY, pt.y + CWndTreeCtrl::CHECK_BOX_SIZE_XY - 1 ) );
 			}
 		}
-		pTreeItem->m_lpTreeElem = pTreeElem;
-		GetTreeItemArray()->Add( pTreeItem );
+		pTreeItem.m_lpTreeElem = pTreeElem;
+		Add(pTreeItem);
+
 		if( pTreeElem->m_ptrArray.GetSize() )
 		{
 			if( pTreeElem->m_bOpen )

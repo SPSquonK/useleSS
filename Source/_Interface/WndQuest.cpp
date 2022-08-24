@@ -555,12 +555,11 @@ BOOL CWndQuestTreeCtrl::OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult )
 	{
 	case WIDC_CHECK:
 		{
-			for( int i = 0; i < GetTreeItemArray()->GetSize(); ++i )
-			{
-				LPTREEITEM pTreeItem = ( LPTREEITEM )GetTreeItemArray()->GetAt( i );
+		for (const TREEITEM & pTreeItem : GetTreeItemArray()) {
+
 				if( GetMemberCheckingMode() == TRUE )
 				{
-					LPTREEELEM pTreeElem = pTreeItem->m_lpTreeElem;
+					TREEELEM * pTreeElem = pTreeItem.m_lpTreeElem;
 					CWndButton* pWndCheckBox = pTreeElem->m_pWndCheckBox;
 					DWORD dwQuestID = pTreeElem->m_dwData;
 					if( pWndCheckBox && ( CWndButton* )pLResult == pWndCheckBox )
@@ -594,14 +593,13 @@ BOOL CWndQuestTreeCtrl::OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult )
 
 void CWndQuestTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 {
-	LPTREEITEM pTreeItem = NULL;
-	for( int i = 0; i < GetTreeItemArray()->GetSize(); ++i )
-	{
-		pTreeItem = ( LPTREEITEM )GetTreeItemArray()->GetAt( i );
+
+	for (const TREEITEM & pTreeItem : GetTreeItemArray()) {
+
 		if( GetMemberCheckingMode() == TRUE )
 		{
-			CWndButton* pWndCheckBox = pTreeItem->m_lpTreeElem->m_pWndCheckBox;
-			LPTREEELEM pParentTreeElem = pTreeItem->m_lpTreeElem->m_lpParent;
+			CWndButton* pWndCheckBox = pTreeItem.m_lpTreeElem->m_pWndCheckBox;
+			LPTREEELEM pParentTreeElem = pTreeItem.m_lpTreeElem->m_lpParent;
 			if( pWndCheckBox && pParentTreeElem && CheckParentTreeBeOpened( pParentTreeElem ) == FALSE )
 			{
 				if( pWndCheckBox->IsWindowEnabled() == TRUE )
@@ -610,13 +608,13 @@ void CWndQuestTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 					pWndCheckBox->SetVisible( FALSE );
 			}
 		}
-		CRect rect = pTreeItem->m_rect;
+		CRect rect = pTreeItem.m_rect;
 		SIZE size = m_pTexButtOpen->m_size;
 		rect.left -= GetCategoryTextSpace();
 		rect.SetRect( rect.left, rect.top, rect.left + size.cx, rect.top + size.cy );
 		if( rect.PtInRect( point ) )
 		{
-			LPTREEELEM lpTreeElem = pTreeItem->m_lpTreeElem;
+			TREEELEM * lpTreeElem = pTreeItem.m_lpTreeElem;
 			lpTreeElem->m_bOpen = !lpTreeElem->m_bOpen;
 			SetFocusElem( lpTreeElem );
 
@@ -632,14 +630,13 @@ void CWndQuestTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 void CWndQuestDetail::CWndQConditionTreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 {
-	LPTREEITEM pTreeItem = NULL;
-	for( int i = 0; i < GetTreeItemArray()->GetSize(); ++i )
-	{
-		pTreeItem = ( LPTREEITEM )GetTreeItemArray()->GetAt( i );
+
+	for (const TREEITEM & pTreeItem : GetTreeItemArray()) {
+
 		if( GetMemberCheckingMode() == TRUE )
 		{
-			CWndButton* pWndCheckBox = pTreeItem->m_lpTreeElem->m_pWndCheckBox;
-			LPTREEELEM pParentTreeElem = pTreeItem->m_lpTreeElem->m_lpParent;
+			CWndButton* pWndCheckBox = pTreeItem.m_lpTreeElem->m_pWndCheckBox;
+			LPTREEELEM pParentTreeElem = pTreeItem.m_lpTreeElem->m_lpParent;
 			if( pWndCheckBox && pParentTreeElem && pParentTreeElem->m_bOpen == FALSE )
 			{
 				if( pWndCheckBox->IsWindowEnabled() == TRUE )
@@ -649,8 +646,8 @@ void CWndQuestDetail::CWndQConditionTreeCtrl::OnLButtonDown( UINT nFlags, CPoint
 			}
 		}
 
-		LPTREEELEM pTreeElem = pTreeItem->m_lpTreeElem;
-		if( pTreeItem->m_rect.PtInRect( point ) )
+		LPTREEELEM pTreeElem = pTreeItem.m_lpTreeElem;
+		if( pTreeItem.m_rect.PtInRect( point ) )
 		{
 			DWORD dwGoalTextID = SetQuestDestinationInformation( ( ( CWndQuestDetail* )m_pParentWnd )->GetQuestID(), pTreeElem->m_dwData );
 			ProcessQuestDestinationWorldMap( dwGoalTextID );

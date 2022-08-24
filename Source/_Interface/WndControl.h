@@ -145,8 +145,6 @@ public:
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual void OnRButtonUp(UINT nFlags, CPoint point);
-	virtual void OnRButtonDown(UINT nFlags, CPoint point);
 	virtual void OnLButtonDblClk(UINT nFlags, CPoint point);
 	virtual void OnRButtonDblClk(UINT nFlags, CPoint point);
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -373,6 +371,7 @@ typedef struct tagScriptElem
 } 
 TREEELEM,* LPTREEELEM;
 
+#include <boost/container/stable_vector.hpp>
 class CWndTreeCtrl : public CWndBase
 {
 public:							//sun!!
@@ -384,13 +383,15 @@ public:							//sun!!
 	} TREEITEM,* LPTREEITEM;
 
 private:
-	CPtrArray m_treeItemArray;
 	void InterpriteScript( CScript& script, CPtrArray& ptrArray ); 
 	virtual void PaintTree( C2DRender* p2DRender, CPoint& pt, CPtrArray& ptrArray );
 	LPTREEELEM m_pFocusElem;
 	int  m_nFontHeight ;
 	DWORD m_nWndColor   ;
-	TREEELEM m_treeElem;
+	
+	TREEELEM m_treeElem; // root
+	boost::container::stable_vector<TREEITEM> m_treeItemArray; // displayed elem
+
 	CWndScrollBar m_wndScrollBar;
 	void FreeTree( CPtrArray& ptrArray );
 public:
@@ -412,7 +413,6 @@ public:
 	~CWndTreeCtrl();
 	int GetFontHeight() { return m_pFont->GetMaxHeight() + m_nLineSpace; }
 	BOOL DeleteAllItems();
-	void DeleteItemArray( void );
 	LPTREEELEM GetCurSel();
 	LPTREEELEM GetRootElem();
 	LPTREEELEM GetNextElem( LPTREEELEM pElem, int& nPos );
@@ -432,7 +432,7 @@ public:
 	void LoadTreeScript( LPCTSTR lpFileName ); 
 	BOOL Create(DWORD dwTextStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
 	BOOL CheckParentTreeBeOpened( LPTREEELEM lpTreeElem );
-	CPtrArray* GetTreeItemArray( void );
+	const auto & GetTreeItemArray() { return m_treeItemArray; }
 	void SetFocusElem( const LPTREEELEM pFocusElem );
 	const LPTREEELEM GetFocusElem( void ) const;
 	void SetLineSpace( int nLineSpace );
@@ -463,8 +463,6 @@ public:
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
 	virtual void OnLButtonDown( UINT nFlags, CPoint point );
-	virtual void OnRButtonUp( UINT nFlags, CPoint point );
-	virtual void OnRButtonDown( UINT nFlags, CPoint point );
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual void OnRButtonDblClk( UINT nFlags, CPoint point );
 	virtual void OnSize( UINT nType, int cx, int cy );
@@ -472,6 +470,8 @@ public:
 
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	
+	void Add(const TREEITEM & treeItem) { m_treeItemArray.emplace_back(treeItem); }
+
 };
 //////////////////////////////////////////////////////////////////////////////
 // CWndSliderCtrl
