@@ -109,34 +109,6 @@ void CClientMsg::SetLineNum(C2DRender* p2DRender,int nLineNum)
 	SetSize(nLineNum);
 //	MakeImageString(p2DRender);
 }
-void CClientMsg::Scroll()
-{
-	/*
-	if( m_textArray.GetSize() == 0 )
-		return;
-	LPCLIENTMSG lpClientMsg = (LPCLIENTMSG)m_textArray.GetAt( 0 );
-	if(lpClientMsg)
-	{
-		delete lpClientMsg;
-		m_textArray.SetAt(0,NULL);
-	}
-	m_nAddLineNum--;
-	for(int i = 0; i < m_textArray.GetSize(); i++)
-		m_textArray.SetAt(i,m_textArray.GetAt(i+1));
-*/
-	/*
-	Image* pImage = (Image*)GetAt(0);
-	if(pImage)
-	{
-		delete pImage->m_pDibBitmap;
-		delete pImage;
-		SetAt(0,NULL);
-	}
-	m_nAddLineNum--;
-	for(int i = 0; i < m_nAddLineNum; i++)
-		SetAt(i,GetAt(i+1));
-		*/
-}
 void CClientMsg::AddMessage( LPCTSTR lpszMessage, DWORD RGB, BOOL bEffect )
 {
 	LPCLIENTMSG lpClientMsg = new CLIENTMSG;

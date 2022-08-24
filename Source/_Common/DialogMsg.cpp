@@ -731,33 +731,6 @@ void CDialogMsg::SetLineNum(C2DRender* p2DRender,int nLineNum)
 	SetSize(nLineNum);
 //	MakeImageString(p2DRender);
 }
-void CDialogMsg::Scroll()
-{
-	if(m_nAddLineNum == 0)
-		return;
-	LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT)m_textArray.GetAt(0);
-	if(lpCustomText)
-	{
-		safe_delete( lpCustomText );
-		m_textArray.SetAt(0,NULL);
-	}
-	m_nAddLineNum--;
-	for(int i = 0; i < m_nAddLineNum; i++)
-		m_textArray.SetAt(i,m_textArray.GetAt(i+1));
-
-	/*
-	Image* pImage = (Image*)GetAt(0);
-	if(pImage)
-	{
-		delete pImage->m_pDibBitmap;
-		delete pImage;
-		SetAt(0,NULL);
-	}
-	m_nAddLineNum--;
-	for(int i = 0; i < m_nAddLineNum; i++)
-		SetAt(i,GetAt(i+1));
-		*/
-}
 
 #define		MAX_CLIENTMSG_LEN		100
 

@@ -33,7 +33,6 @@ class CClientMsg : public CPtrArray
 	int    m_nLineSpace;
 	int    m_nBeginLine;
 	//int    m_nAddLineNum;
-	void  Scroll();
 public:
 	CD3DFont* m_pFont;
 	CD3DFont* m_pFontEffect;

@@ -37,9 +37,7 @@ void CWndTradeCtrl::InitItem( CMover* pMover )
 	m_pMover = pMover;
 	m_pFocusItem	= NULL;
 }
-void CWndTradeCtrl::LoadListBoxScript(LPCTSTR lpFileName) 
-{
-}	
+
 void CWndTradeCtrl::OnInitialUpdate()
 {
 }

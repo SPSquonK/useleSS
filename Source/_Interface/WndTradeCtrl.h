@@ -14,8 +14,6 @@ class CItemElem;
 
 class CWndTradeCtrl : public CWndBase
 {
-	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
-
 	CItemElem *    m_pFocusItem;
 	int           m_nCurSelect  ;
 	int           m_nFontHeight ;
@@ -39,7 +37,6 @@ static CTextureMng m_textureMng;
 	virtual ~CWndTradeCtrl();
 
 	void Create( DWORD m_dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
-	void LoadListBoxScript(LPCTSTR lpFileName); 
 
 // Attributes
 	int GetItemCount() const;

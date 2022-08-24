@@ -57,7 +57,6 @@ class CDialogMsg : public CPtrArray
 	int    m_nLineSpace;
 	int    m_nBeginLine;
 	int    m_nAddLineNum;
-	void  Scroll();
 public:
 	
 	CTexturePack m_texPack_ex[3];

@@ -1659,11 +1659,6 @@ BOOL CWndListBox::GetItemValidity(int nIndex) {
 	return m_listItemArray[nIndex].m_bIsValid;
 }
 
-const CRect & CWndListBox::GetItemRect(int nIndex) const {
-	const LISTITEM & lpListItem = m_listItemArray[nIndex];
-	return lpListItem.m_rect;
-}
-
 void CWndListBox::GetText(int nIndex, CString & rString) const {
 	if (nIndex >= 0 && std::cmp_less(nIndex, m_listItemArray.size())) {
 		const LISTITEM & lpListItem = m_listItemArray[nIndex];
@@ -2742,42 +2737,12 @@ CWndListCtrl::~CWndListCtrl()
 }
 void CWndListCtrl::Create( DWORD dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
-	//m_dwListCtrlStyle = dwListCtrlStyle;
 	CWndBase::Create( dwListCtrlStyle | WBS_CHILD, rect, pParentWnd, nID );
 }
-void CWndListCtrl::LoadListBoxScript(LPCTSTR lpFileName) 
-{
-/*Scanner scanner;
- 	if(scanner.Load(lpFileName) == FALSE)
-		return;
-	scanner.GetToken(); // keyword
-	do {
-		InterpriteScript(scanner,m_listItemArray);
-		scanner.GetToken(); // keyword
-	} while(scanner.tok != FINISHED);
-	*/
-}	
-void CWndListCtrl::InterpriteScript(CScanner& scanner,CPtrArray& ptrArray) 
-{
-	/*
-	do {
-		LPLISTITEM lpListItem = new LISTITEM;
-		lpListItem->m_strWord = scanner.Token;
-		ptrArray.Add(lpListItem);
-		scanner.GetToken(); 
-	} while(*scanner.token != '}' && scanner.tok != FINISHED);
-	if(scanner.tok == FINISHED)
-		return;
-	scanner.GetToken(); 
-	*/
-}
+
 void CWndListCtrl::OnInitialUpdate()
 {
-	//CSize size = m_pSprPack->GetAt(13)->GetSize();
-	//CRect rect = GetClientRect();
-	//rect.left = rect.right - size.cx;
 	CRect rect = GetWindowRect();
-	//rect.right += 5;
 	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );//,m_pSprPack,-1);
 }

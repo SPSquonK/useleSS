@@ -472,14 +472,7 @@ public:
 	void Add(const TREEITEM & treeItem) { m_treeItemArray.emplace_back(treeItem); }
 
 };
-//////////////////////////////////////////////////////////////////////////////
-// CWndSliderCtrl
-//////////////////////////////////////////////////////////////////////////////
 
-class CWndSliderCtrl : public CWndBase
-{
-public:
-};
 //////////////////////////////////////////////////////////////////////////////
 // CWndListBox
 //////////////////////////////////////////////////////////////////////////////
@@ -547,7 +540,6 @@ public:
 	int   SetItemData(int nIndex,DWORD dwItemData);
 	int   SetItemDataPtr(int nIndex,void* pData);
 	BOOL GetItemValidity( int nIndex );
-	const CRect& GetItemRect( int nIndex ) const;
 	void  GetText(int nIndex,CString& rString) const;
 	int   GetTextLen(int nIndex) const;
 	
@@ -625,7 +617,6 @@ class CWndEdit;
 
 class CWndListCtrl : public CWndBase
 {
-	void InterpriteScript(CScanner& scanner,CPtrArray& ptrArray); 
 	LVITEM*       m_pFocusItem;
 	int           m_nCurSelect  ;
 	int           m_nFontHeight ;
@@ -644,7 +635,6 @@ public:
 	~CWndListCtrl();
 
 	void Create( DWORD dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID );
-	void LoadListBoxScript(LPCTSTR lpFileName); 
 	int GetFontHeight() { return m_pFont->GetMaxHeight() + m_nLineSpace; }
 // Attributes
 	int   GetCurSel() const;
@@ -655,62 +645,14 @@ public:
 	BOOL SetItem(const LVITEM* pItem);
 	BOOL SetItem(int nItem, int nSubItem, UINT nMask, LPCTSTR lpszItem,
 		int nImage, UINT nState, UINT nStateMask, LPARAM lParam);
-	UINT GetCallbackMask() const;
-	BOOL SetCallbackMask(UINT nMask);
-	int GetNextItem(int nItem, int nFlags) const;
-	POSITION GetFirstSelectedItemPosition() const;
-	int GetNextSelectedItem(POSITION& pos) const;
-	BOOL GetItemRect(int nItem, LPRECT lpRect, UINT nCode) const;
-	BOOL SetItemPosition(int nItem, POINT pt);
-	BOOL GetItemPosition(int nItem, LPPOINT lpPoint) const;
-	int GetStringWidth(LPCTSTR lpsz) const;
-	CWndEdit* GetEditControl() const;
-	BOOL GetColumn(int nCol, LVCOLUMN* pColumn) const;
-	BOOL SetColumn(int nCol, const LVCOLUMN* pColumn);
-	int GetColumnWidth(int nCol) const;
-	BOOL SetColumnWidth(int nCol, int cx);
-	BOOL GetViewRect(LPRECT lpRect) const;
 	COLORREF GetTextColor() const;
 	BOOL SetTextColor(COLORREF cr);
-	COLORREF GetTextBkColor() const;
-	BOOL SetTextBkColor(COLORREF cr);
-	int GetTopIndex() const;
-	int GetCountPerPage() const;
-	BOOL GetOrigin(LPPOINT lpPoint) const;
-	BOOL SetItemState(int nItem, LVITEM* pItem);
-	BOOL SetItemState(int nItem, UINT nState, UINT nMask);
-	UINT GetItemState(int nItem, UINT nMask) const;
 	CString GetItemText(int nItem, int nSubItem) const;
 	int GetItemText(int nItem, int nSubItem, LPTSTR lpszText, int nLen) const;
-	BOOL SetItemText(int nItem, int nSubItem, LPCTSTR lpszText);
-	void SetItemCount(int nItems);
 	BOOL SetItemData(int nItem, DWORD dwData);
 	DWORD GetItemData(int nItem) const;
 	UINT GetSelectedCount() const;
-	BOOL SetColumnOrderArray(int iCount, LPINT piArray);
-	BOOL GetColumnOrderArray(LPINT piArray, int iCount = -1);
-	CSize SetIconSpacing(CSize size);
-	CSize SetIconSpacing(int cx, int cy);
 
-	BOOL GetSubItemRect(int iItem, int iSubItem, int nArea, CRect& ref);
-	int GetHotItem();
-	int SetHotItem(int iIndex);
-	int GetSelectionMark();
-	int SetSelectionMark(int iIndex);
-	DWORD GetExtendedStyle();
-	DWORD SetExtendedStyle(DWORD dwNewStyle);
-	int SubItemHitTest(LPLVHITTESTINFO pInfo);
-	void SetWorkAreas(int nWorkAreas, LPRECT lpRect);
-	BOOL SetItemCountEx(int iCount, DWORD dwFlags = LVSICF_NOINVALIDATEALL);
-	CSize ApproximateViewRect(CSize sz = CSize(-1, -1), int iCount = -1) const;
-	BOOL GetBkImage(LVBKIMAGE* plvbkImage) const;
-	DWORD GetHoverTime() const;
-	void GetWorkAreas(int nWorkAreas, LPRECT prc) const;
-	BOOL SetBkImage(HBITMAP hbm, BOOL fTile = TRUE, int xOffsetPercent = 0, int yOffsetPercent = 0);
-	BOOL SetBkImage(LPTSTR pszUrl, BOOL fTile = TRUE, int xOffsetPercent = 0, int yOffsetPercent = 0);
-	BOOL SetBkImage(LVBKIMAGE* plvbkImage);
-	DWORD SetHoverTime(DWORD dwHoverTime = (DWORD)-1);
-	UINT GetNumberOfWorkAreas() const;
 	BOOL GetCheck(int nItem) const;
 	BOOL SetCheck(int nItem, BOOL fCheck = TRUE);
 
@@ -720,9 +662,6 @@ public:
 	int InsertItem(int nItem, LPCTSTR lpszItem, int nImage);
 
 	int HitTest(CPoint pt, UINT* pFlags = NULL) const;
-	BOOL EnsureVisible(int nItem, BOOL bPartialOK);
-	BOOL Scroll(CSize size);
-	CEdit* EditLabel(int nItem);
 
 // Overridables
 	virtual	void SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
@@ -840,21 +779,6 @@ public:
 	int GetCount() const;
 	int GetCurSel() const;
 	int SetCurSel(int nSelect);
-	LCID GetLocale() const;
-	LCID SetLocale(LCID nNewLocale);
-// Win4
-	int GetTopIndex() const;
-	int SetTopIndex(int nIndex);
-	int InitStorage(int nItems, UINT nBytes);
-	void SetHorizontalExtent(UINT nExtent);
-	UINT GetHorizontalExtent() const;
-	int SetDroppedWidth(UINT nWidth);
-	int GetDroppedWidth() const;
-
-	// for edit control
-	DWORD GetEditSel() const;
-	BOOL LimitText(int nMaxChars);
-	BOOL SetEditSel(int nStartChar, int nEndChar);
 
 	// for combobox item
 	DWORD GetItemData(int nIndex) const;
@@ -869,13 +793,8 @@ public:
 
 	int SetItemHeight(int nIndex, UINT cyItemHeight);
 	int GetItemHeight(int nIndex) const;
-	int SetExtendedUI(BOOL bExtended = TRUE);
-	void GetDroppedControlRect(LPRECT lprect) const;
-	BOOL GetDroppedState() const;
 
 // Operations
-	// for drop-down combo boxes
-	void ShowDropDown(BOOL bShowIt = TRUE);
 
 	// manipulating listbox items
 	CWndListBox::LISTITEM & AddString(LPCTSTR lpszString);

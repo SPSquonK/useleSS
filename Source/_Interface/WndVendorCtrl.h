@@ -32,7 +32,6 @@ public:
 	
 	void	InitVendor( CMover* pMover );
 	void	Create( DWORD dwListCtrlStyle, const RECT & rect, CWndBase* pParentWnd, UINT nID );
-//	void	LoadListBoxScript( LPCTSTR lpFileName );
 
 	int		HitTest( CPoint point );
 	CItemElem * GetItem( BYTE i );
