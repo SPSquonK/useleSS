@@ -1,16 +1,14 @@
 #include "stdafx.h"
 
+void WaterTexList::Advance() {
+	currentFrame += FrameAdvance;
 
-
-CTerrainMng::CTerrainMng() {
-	for (int i = 0; i < MAX_WATER; i++)
-		m_fWaterFrame[i] = 0.0f;
+	if (static_cast<size_t>(currentFrame) >= terrainIds.size()) {
+		currentFrame = 0.0f;
+	}
 }
 
 CTerrainMng::~CTerrainMng() {
-	for (int i = 0; i < m_nWaterFrame; i++) {
-		SAFE_DELETE_ARRAY(m_pWaterIndexList[i].pList);
-	}
 	SAFE_DELETE_ARRAY(m_pWaterIndexList);
 }
 
@@ -70,7 +68,7 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 	//	현재는 물만 이런 형태의 프레임을 사용할 것이라는 전제하에 
 	//	하나만 되어 있지만 여러개를 사용할때는 이 부분을 구조체나
 	//	클래스로 바꾸어서 다시 만들어야 할것이다.
-	int FrameCnt = 0, ImageCnt = 0, IdCnt = 0;
+	int FrameCnt = 0, ImageCnt = 0;
 	FrameCnt = scanner.GetNumber();
 	if ( nBrace == 1 && FrameCnt )
 	{
@@ -90,7 +88,6 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				i = scanner.GetNumber();  // folder or id
 				
 				FrameCnt = scanner.GetNumber();
-				IdCnt = 0;
 				if ( nBrace == 1 && FrameCnt )
 				{
 					m_nWaterFrame = FrameCnt;
@@ -100,9 +97,6 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				}
 				else if ( nBrace == 2 && FrameCnt )
 				{
-					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
-					ZeroMemory( m_pWaterIndexList[ImageCnt].pList, FrameCnt * sizeof(int) );
 					ImageCnt++;
 				}				
 				continue;
@@ -125,8 +119,6 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 			{
 				if ( nBrace == 2 && FrameCnt )
 				{
-					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
 					ImageCnt++;
 				}
 			}
@@ -141,8 +133,7 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 			FrameCnt = scanner.GetNumber();	//	Count
 			if ( nBrace == 3 )
 			{
-				m_pWaterIndexList[ImageCnt - 1].pList[IdCnt] = i;
-				IdCnt++;
+				m_pWaterIndexList[ImageCnt - 1].terrainIds.emplace_back(i);
 			}
 		}
 

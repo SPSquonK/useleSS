@@ -855,15 +855,8 @@ void CWorld::Process()
 	}
 
 	// 물 애니메이션
-	for(i=0; i<prj.m_terrainMng.m_nWaterFrame; i++)
-    {
-		if(i<MAX_WATER)
-		{
-			prj.m_terrainMng.m_fWaterFrame[i] += WaterTexList::FrameAdvance;
-
-			if(prj.m_terrainMng.m_fWaterFrame[i] >= static_cast<FLOAT>(prj.m_terrainMng.m_pWaterIndexList[i].ListCnt))
-				prj.m_terrainMng.m_fWaterFrame[i] = 0.0f;
-		}
+	for (i = 0; i < prj.m_terrainMng.m_nWaterFrame; i++) {
+		prj.m_terrainMng.m_pWaterIndexList[i].Advance();
 	}
 
 #ifdef __BS_EFFECT_LUA

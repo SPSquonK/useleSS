@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <optional>
+
 struct TERRAIN {
 	LPDIRECT3DTEXTURE9 m_pTexture  = nullptr;
 	TCHAR m_szTextureFileName[128] = "";
@@ -7,11 +10,15 @@ struct TERRAIN {
 
 struct WaterTexList {
 	static constexpr float FrameAdvance = 0.15f;
-	int  ListCnt = 0;
-	int * pList = nullptr;
+	std::vector<DWORD> terrainIds;
+	float currentFrame = 0.0f;
+	
+	void Advance();
+	[[nodiscard]] std::optional<DWORD> GetTerrainId() const {
+		if (terrainIds.size() == 0) return std::nullopt;
+		return terrainIds[static_cast<size_t>(currentFrame)];
+	}
 };
-
-#define MAX_WATER	10
 
 class CTerrainMng
 {
@@ -23,9 +30,7 @@ class CTerrainMng
 public:
 	int				m_nWaterFrame = 0;
 	WaterTexList	*m_pWaterIndexList = nullptr;
-	FLOAT			m_fWaterFrame[MAX_WATER];
 
-	CTerrainMng();
 	~CTerrainMng();
 
 	// int GetSize() { return m_nSize; }

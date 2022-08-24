@@ -1721,13 +1721,14 @@ HRESULT CWorld::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	HRESULT hr = S_OK;
 	m_pd3dDevice = pd3dDevice;
 
-	if( prj.m_terrainMng.GetTerrain( 10 )->m_pTexture == NULL )
-		prj.m_terrainMng.LoadTexture( 10 );
+	if (!prj.m_terrainMng.GetTerrain(10)->m_pTexture) {
+		prj.m_terrainMng.LoadTexture(10);
+	}
  
-	for( int i = 0; i < prj.m_terrainMng.m_nWaterFrame ; i++ )
-	{
-		for ( int j = 0 ; j < prj.m_terrainMng.m_pWaterIndexList[ i ].ListCnt ; j++ )
-			prj.m_terrainMng.LoadTexture( prj.m_terrainMng.m_pWaterIndexList[ i ].pList[ j ] );
+	for (int i = 0; i < prj.m_terrainMng.m_nWaterFrame; i++) {
+		for (const DWORD terrainID : prj.m_terrainMng.m_pWaterIndexList[i].terrainIds) {
+			prj.m_terrainMng.LoadTexture(terrainID);
+		}
 	}
 		
 

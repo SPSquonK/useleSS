@@ -985,15 +985,10 @@ HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
 		m_pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
 		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
 
-		if(prj.m_terrainMng.m_fWaterFrame[i] >= static_cast<FLOAT>(prj.m_terrainMng.m_pWaterIndexList[i].ListCnt))
-			prj.m_terrainMng.m_fWaterFrame[i] = static_cast<FLOAT>(prj.m_terrainMng.m_pWaterIndexList[i].ListCnt - 1);
-
 		//gmpbigsun : 함수분해함, 배열 인덱스가 0보다 작은경우가 발생할 경우 안전조치 
-		int a = static_cast<int>(prj.m_terrainMng.m_fWaterFrame[i]);
-		if( a > -1 )
+		if(const auto pdwID = prj.m_terrainMng.m_pWaterIndexList[i].GetTerrainId())
 		{
-			DWORD dwID = prj.m_terrainMng.m_pWaterIndexList[ i ].pList[ a ];
-			LPDIRECT3DTEXTURE9 pTexture = prj.m_terrainMng.GetTerrain( dwID )->m_pTexture;
+			LPDIRECT3DTEXTURE9 pTexture = prj.m_terrainMng.GetTerrain(pdwID.value())->m_pTexture;
 			m_pd3dDevice->SetTexture(0, pTexture );
 
 		//	prj.m_terrainMng.GetTerrain( prj.m_terrainMng.m_pWaterIndexList[ i ].pList[ static_cast<int>(prj.m_terrainMng.m_fWaterFrame[i]) ] )->m_pTexture);  
