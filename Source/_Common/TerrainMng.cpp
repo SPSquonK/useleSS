@@ -101,7 +101,6 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				else if ( nBrace == 2 && FrameCnt )
 				{
 					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-					m_pWaterIndexList[ImageCnt].fWaterFrame = 0.15f;
 					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
 					ZeroMemory( m_pWaterIndexList[ImageCnt].pList, FrameCnt * sizeof(int) );
 					ImageCnt++;
@@ -127,7 +126,6 @@ BOOL CTerrainMng::LoadScript( LPCTSTR lpszFileName )
 				if ( nBrace == 2 && FrameCnt )
 				{
 					m_pWaterIndexList[ImageCnt].ListCnt = FrameCnt;
-					m_pWaterIndexList[ImageCnt].fWaterFrame = 0.15f;
 					m_pWaterIndexList[ImageCnt].pList = new int[ FrameCnt ];
 					ImageCnt++;
 				}

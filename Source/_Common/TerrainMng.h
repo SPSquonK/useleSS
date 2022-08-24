@@ -6,9 +6,9 @@ struct TERRAIN {
 };
 
 struct WaterTexList {
+	static constexpr float FrameAdvance = 0.15f;
 	int  ListCnt = 0;
 	int * pList = nullptr;
-	FLOAT fWaterFrame = 0.1f;
 };
 
 #define MAX_WATER	10

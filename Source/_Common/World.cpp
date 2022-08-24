@@ -859,7 +859,7 @@ void CWorld::Process()
     {
 		if(i<MAX_WATER)
 		{
-			prj.m_terrainMng.m_fWaterFrame[i] += prj.m_terrainMng.m_pWaterIndexList[i].fWaterFrame;
+			prj.m_terrainMng.m_fWaterFrame[i] += WaterTexList::FrameAdvance;
 
 			if(prj.m_terrainMng.m_fWaterFrame[i] >= static_cast<FLOAT>(prj.m_terrainMng.m_pWaterIndexList[i].ListCnt))
 				prj.m_terrainMng.m_fWaterFrame[i] = 0.0f;
