@@ -49,3 +49,8 @@ uses the same window.
 - Using the scroll will only give access to job of the same type: for example
 if you are master, you can only access master jobs.
 
+
+## Guild logo
+
+The guild master can change their guild logo or even remove it.
+This feature can be disabled in *CommonHeader.h*.
