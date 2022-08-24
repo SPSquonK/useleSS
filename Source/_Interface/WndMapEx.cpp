@@ -125,10 +125,10 @@ void CWndMapEx::OnInitialUpdate( void )
 	}
 
 	m_WndMenuUserMark.CreateMenu( this );
-	m_WndMenuUserMark.AppendMenu( 0, ID_USER_MARK_MENU_DELETE , _T( "삭제" ) );
-	m_WndMenuUserMark.AppendMenu( 0, ID_USER_MARK_MENU_DELETE_ALL , _T( "전체 삭제" ) );
-	m_WndMenuUserMark.AppendMenu( 0, ID_USER_MARK_MENU_INSERT_CHATTING_WINDOW , _T( "채팅창에 넣기" ) );
-	m_WndMenuUserMark.AppendMenu( 0, ID_USER_MARK_MENU_CHANGE_NAME , _T( "이름 변경" ) );
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_DELETE , _T( "삭제" ) );
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_DELETE_ALL , _T( "전체 삭제" ) );
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_INSERT_CHATTING_WINDOW , _T( "채팅창에 넣기" ) );
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_CHANGE_NAME , _T( "이름 변경" ) );
 
 	CalculateMaximumWindowTileLength();
 }

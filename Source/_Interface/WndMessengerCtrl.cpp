@@ -555,27 +555,27 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 		m_menu.DeleteAllMenu();
 
 		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
-			m_menu.AppendMenu( 0, 0 ,_T( prj.GetText( TID_APP_MESSAGE ) ) );
+			m_menu.AddButton( 0 ,_T( prj.GetText( TID_APP_MESSAGE ) ) );
 
 		if( pFriend->bBlock )
-			m_menu.AppendMenu( 0, 1 ,_T( prj.GetText( TID_FRS_BLOCKRESTORE ) ) );
+			m_menu.AddButton( 1 ,_T( prj.GetText( TID_FRS_BLOCKRESTORE ) ) );
 		else
-			m_menu.AppendMenu( 0, 1 ,_T( prj.GetText( TID_FRS_BLOCK ) ) );
+			m_menu.AddButton( 1 ,_T( prj.GetText( TID_FRS_BLOCK ) ) );
 
-		m_menu.AppendMenu( 0, 2 ,_T( prj.GetText( TID_FRS_DELETE ) ) );
+		m_menu.AddButton( 2 ,_T( prj.GetText( TID_FRS_DELETE ) ) );
 
 		if( dwState != FriendStatus::OFFLINE && !pFriend->bBlock )
 		{					
 			if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-				m_menu.AppendMenu( 0, 3 ,_T( prj.GetText( TID_FRS_MOVE2 ) ) );
+				m_menu.AddButton( 3 ,_T( prj.GetText( TID_FRS_MOVE2 ) ) );
 			if( !pFriend->bBlock )
 			{
 				if( g_Party.IsMember( idPlayer ) == FALSE )
-					m_menu.AppendMenu( 0, 4 ,_T( prj.GetText(TID_MMI_INVITE_PARTY) ) );
+					m_menu.AddButton( 4 ,_T( prj.GetText(TID_MMI_INVITE_PARTY) ) );
 			}
 		}
 		if( dwState == FriendStatus::OFFLINE || pFriend->bBlock )
-			m_menu.AppendMenu( 0, 6 , _T( prj.GetText( TID_GAME_TAGSEND ) ) );
+			m_menu.AddButton( 6 , _T( prj.GetText( TID_GAME_TAGSEND ) ) );
 
 		
 		int		nCount		= 0;
@@ -589,9 +589,9 @@ void CWndFriendCtrlEx::OnRButtonUp( UINT nFlags, CPoint point )
 			}
 		}
 		if(bIsAllowed)
-			m_menu.AppendMenu( 0, 7 , _T( prj.GetText( TID_GAME_PROHIBIT_VISIT ) ) );
+			m_menu.AddButton( 7 , _T( prj.GetText( TID_GAME_PROHIBIT_VISIT ) ) );
 		else
-			m_menu.AppendMenu( 0, 8 , _T( prj.GetText( TID_GAME_ALLOW_VISIT ) ) );
+			m_menu.AddButton( 8 , _T( prj.GetText( TID_GAME_ALLOW_VISIT ) ) );
 		m_menu.Move( point );
 		m_menu.SetVisible( TRUE );
 		m_menu.SetFocus();
@@ -1141,7 +1141,7 @@ void CWndCampus::OnRButtonUp( UINT nFlags, CPoint point )
 	}
 	ClientToScreen( &point );
 	m_Menu.DeleteAllMenu();
-	m_Menu.AppendMenu( 0, 0, prj.GetText( TID_GAME_MENU_CAMPUS_SEVERANCE ) );
+	m_Menu.AddButton( 0, prj.GetText( TID_GAME_MENU_CAMPUS_SEVERANCE ) );
 	m_Menu.Move( point );
 	m_Menu.SetVisible( TRUE );
 	m_Menu.SetFocus();

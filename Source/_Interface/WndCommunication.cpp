@@ -1296,7 +1296,7 @@ void CWndChatLog::OnInitialUpdate()
 	Move( point );
 	
 	m_wndMenuPlace.CreateMenu( this );	
-	m_wndMenuPlace.AppendMenu( 0, 0 , prj.GetText(TID_GAME_GUIDE_HIDE) );
+	m_wndMenuPlace.AddButton(0, prj.GetText(TID_GAME_GUIDE_HIDE));
 }
 
 BOOL CWndChatLog::Process ()

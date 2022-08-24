@@ -88,9 +88,8 @@ protected:
 class CWndTaskMenu : public CWndMenu //Neuz
 {
 public:
-	// static void SetTexture( CWndButton* pWndButton );
-//	virtual CItem* GetFocusItem() { return NULL; }
-	static CWndButton * MakeButton(CWndMenu * pWndMenu, UINT nFlags, UINT nIDNewItem, LPCTSTR lpszNewItem);
+	static CWndButton * MakeButton(CWndMenu * pWndMenu, UINT nIDNewItem, LPCTSTR lpszNewItem);
+
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual void PaintFrame(C2DRender* p2DRender);
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
@@ -111,7 +110,7 @@ private:
 		FolderAdder(CWndMenu * self) : m_self(self) {}
 		
 		FolderAdder AddApplet(DWORD appId, DWORD textId) const {
-			CWndTaskMenu::MakeButton(m_self, 0, appId, prj.GetText(textId));
+			CWndTaskMenu::MakeButton(m_self, appId, prj.GetText(textId));
 			return *this;
 		}
 	};

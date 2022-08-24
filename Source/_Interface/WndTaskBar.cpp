@@ -690,7 +690,7 @@ void CWndTaskBar::OnInitialUpdate()
 	m_texPack.LoadScript( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "hotkey.inc" ) );
 
 	m_menuShortcut.CreateMenu( this );	
-	m_menuShortcut.AppendMenu( 0, 0 ,_T( "삭제" ) );
+	m_menuShortcut.AddButton( 0 ,_T( "삭제" ) );
 
 	m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, "icon_ActionSkill.dds" ), 0xffff00ff );
 	m_aSlotSkill.m_dwShortcut = ShortcutType::SkillFun;
@@ -1851,11 +1851,11 @@ void CWndTaskMenu::OnInitialUpdate()
 }
 
 void CWndTaskMenu::AddApplet(DWORD appId, DWORD textId) {
-	MakeButton(this, 0, appId, prj.GetText(textId));
+	MakeButton(this, appId, prj.GetText(textId));
 }
 
 CWndTaskMenu::FolderAdder CWndTaskMenu::AddFolder(DWORD textId) {
-	CWndButton * menuButton = MakeButton(this, 0, 0, prj.GetText(textId));
+	CWndButton * menuButton = MakeButton(this, 0, prj.GetText(textId));
 	menuButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_Folder.dds")));
 
 	CWndMenu * menu = new CWndMenu;
@@ -1865,9 +1865,9 @@ CWndTaskMenu::FolderAdder CWndTaskMenu::AddFolder(DWORD textId) {
 	return FolderAdder(menu);
 }
 
-CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nFlags, UINT nIDNewItem,	LPCTSTR lpszNewItem )
+CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nIDNewItem,	LPCTSTR lpszNewItem )
 {
-	CWndButton* pWndButton = (CWndButton*)pWndMenu->AppendMenu( nFlags, nIDNewItem, lpszNewItem );
+	CWndButton* pWndButton = (CWndButton*)pWndMenu->AddButton( nIDNewItem, lpszNewItem );
 	
 	const AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( nIDNewItem ); 
 	if (!pAppletFunc) return pWndButton;

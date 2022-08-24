@@ -455,18 +455,17 @@ void CWndGuildTabMember::OnRButtonDown( UINT nFlags, CPoint point )
 void CWndGuildTabMember::OnRButtonUp( UINT nFlags, CPoint point ) 
 { 
 	m_wndMenu.DeleteAllMenu();
-	m_wndMenu.AppendMenu( 0, MGI_APPELL_UP,		prj.GetText( TID_GAME_GUILD_APPELLATIONUP ) );
-	m_wndMenu.AppendMenu( 0, MGI_APPELL_DOWN,	prj.GetText( TID_GAME_GUILD_APPELLATIONDOWN ) );
-	m_wndMenu.AppendMenu( 0, MGI_CLASS_UP,		prj.GetText( TID_GAME_GUILD_CLASSUP ) );
-	m_wndMenu.AppendMenu( 0, MGI_CLASS_DOWN,	prj.GetText( TID_GAME_GUILD_CLASSDOWN ) );
-	m_wndMenu.AppendMenu( 0, MGI_NICKNAME,		prj.GetText( TID_GAME_GUILD_NICKNAME ) );
-	m_wndMenu.AppendMenu( 0, MGI_GUILD_LEAVE,	prj.GetText( TID_GAME_GUILD_LEAVE ) );
-	CMover* pMover	= CMover::GetActiveMover();
-	if( pMover )
-	{
-		CGuild* pGuild	= pMover->GetGuild();
-		if( pGuild && pGuild->IsMaster( pMover->m_idPlayer ) )
-			m_wndMenu.AppendMenu( 0, MGI_CHG_MASTER,	prj.GetText( TID_GAME_CHG_MASTER ) );
+	m_wndMenu.AddButton(MGI_APPELL_UP  , prj.GetText(TID_GAME_GUILD_APPELLATIONUP));
+	m_wndMenu.AddButton(MGI_APPELL_DOWN, prj.GetText(TID_GAME_GUILD_APPELLATIONDOWN));
+	m_wndMenu.AddButton(MGI_CLASS_UP   , prj.GetText(TID_GAME_GUILD_CLASSUP));
+	m_wndMenu.AddButton(MGI_CLASS_DOWN , prj.GetText(TID_GAME_GUILD_CLASSDOWN));
+	m_wndMenu.AddButton(MGI_NICKNAME   , prj.GetText(TID_GAME_GUILD_NICKNAME));
+	m_wndMenu.AddButton(MGI_GUILD_LEAVE, prj.GetText(TID_GAME_GUILD_LEAVE));
+	
+	if (CMover * pMover = CMover::GetActiveMover()) {
+		CGuild * pGuild = pMover->GetGuild();
+		if (pGuild && pGuild->IsMaster(pMover->m_idPlayer))
+			m_wndMenu.AddButton(MGI_CHG_MASTER, prj.GetText(TID_GAME_CHG_MASTER));
 	}
 
 	m_wndMenu.Move( CPoint( m_rectCurrentWindow.left, m_rectCurrentWindow.top ) + point );

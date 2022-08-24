@@ -2439,9 +2439,9 @@ void CWndText::OnRButtonUp(UINT nFlags, CPoint point)
 	if( g_pPlayer && g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_FONTEDIT ) )
 	{
 		m_wndMenu.DeleteAllMenu();
-		m_wndMenu.AppendMenu( 0, MGI_APPELL_UP,		prj.GetText( TID_GAME_FONT_EDIT ) );
+		m_wndMenu.AddButton(MGI_APPELL_UP, prj.GetText(TID_GAME_FONT_EDIT));
 		m_wndMenu.Move( CPoint( m_rectCurrentWindow.left, m_rectCurrentWindow.top ) + point );
-		m_wndMenu.SetVisible( TRUE );//!m_wndMenuMover.IsVisible() );
+		m_wndMenu.SetVisible( TRUE );
 		m_wndMenu.SetFocus();
 	}
 }
@@ -2826,14 +2826,16 @@ void CWndMenu::DeleteAllMenu() {
 	m_wndMenuItems.clear();
 }
 
-CWndButton* CWndMenu::AppendMenu(UINT nFlags, UINT nIDNewItem,	LPCTSTR lpszNewItem)
+CWndButton* CWndMenu::AddButton(UINT nID,	LPCTSTR text)
 {
 	CWndButton* pWndButton = new CWndButton;
-	const CSize size = m_pFont->GetTextExtent( lpszNewItem );
+	const CSize size = m_pFont->GetTextExtent(text);
 	if( size.cx + 60 > m_nLargeWidth )
 		m_nLargeWidth = size.cx + 60;
 	const int nCount = static_cast<int>(m_wndMenuItems.size());
-	pWndButton->Create(lpszNewItem, WBS_MENUITEM | WBS_HIGHLIGHT, CRect( 2, 2 + ( nCount * 22 ), m_nLargeWidth, 2 + ( nCount * 22 ) + 20 ), this, nIDNewItem );
+
+	const CRect rect(CPoint(2, 2 + (nCount * 22)), CSize(m_nLargeWidth - 2, 20));
+	pWndButton->Create(text, WBS_MENUITEM | WBS_HIGHLIGHT, rect, this, nID );
 	pWndButton->DelWndStyle(WBS_NODRAWFRAME);
 	m_wndMenuItems.emplace_back(std::unique_ptr<CWndButton>(pWndButton));
 

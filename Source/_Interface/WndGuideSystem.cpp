@@ -406,9 +406,9 @@ void CWndGuideSystem::OnInitialUpdate()
 	m_dwTime = g_tmCurrent;
 
 	m_wndMenuPlace.CreateMenu( this );	
-	m_wndMenuPlace.AppendMenu( 0, 0 , prj.GetText(TID_GAME_GUIDE_HIDE) );
-	m_wndMenuPlace.AppendMenu( 0, 1 , prj.GetText(TID_GAME_GUIDE_OPEN) );
-	m_wndMenuPlace.AppendMenu( 0, 2 , prj.GetText(TID_GAME_VIEW_TUTORIAL) );
+	m_wndMenuPlace.AddButton(0, prj.GetText(TID_GAME_GUIDE_HIDE));
+	m_wndMenuPlace.AddButton(1, prj.GetText(TID_GAME_GUIDE_OPEN));
+	m_wndMenuPlace.AddButton(2, prj.GetText(TID_GAME_VIEW_TUTORIAL));
 	m_wndMenuPlace.CheckMenuItem( 0, FALSE );
 	m_wndMenuPlace.CheckMenuItem( 1, m_wndGuideText->m_bVisible );
 	m_wndMenuPlace.CheckMenuItem( 2, FALSE );

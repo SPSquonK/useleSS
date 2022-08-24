@@ -253,7 +253,7 @@ public:
 	void DeleteAllMenu();
 
 	// CMenuItem Operations
-	virtual CWndButton* AppendMenu(UINT nFlags, UINT nIDNewItem = 0,	LPCTSTR lpszNewItem = NULL) final;
+	CWndButton * AddButton(UINT nID, LPCTSTR text);
 
 	bool CheckMenuItem(UINT nIDCheckItem, int nCheck);
 	[[nodiscard]] int GetMenuState(UINT nID) const;

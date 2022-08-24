@@ -5996,18 +5996,18 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 
 			if( pTarget->m_vtInfo.IsVendorOpen() )
 			{
-				m_wndMenuMover.AppendMenu( 0,  MMI_QUERYEQUIP , prj.GetText(TID_MMI_QUERYEQUIP) );
+				m_wndMenuMover.AddButton( MMI_QUERYEQUIP , prj.GetText(TID_MMI_QUERYEQUIP) );
 			}
 			else
 			{
-			m_wndMenuMover.AppendMenu( 0,  MMI_TRADE        , prj.GetText( TID_MMI_TRADE ) );
-			m_wndMenuMover.AppendMenu( 0,  MMI_ADD_MESSENGER, prj.GetText( TID_MMI_ADD_MESSENGER ) );
-			m_wndMenuMover.AppendMenu( 0,  MMI_INVITE_PARTY , prj.GetText( TID_MMI_INVITE_PARTY ) );
+			m_wndMenuMover.AddButton( MMI_TRADE        , prj.GetText( TID_MMI_TRADE ) );
+			m_wndMenuMover.AddButton( MMI_ADD_MESSENGER, prj.GetText( TID_MMI_ADD_MESSENGER ) );
+			m_wndMenuMover.AddButton( MMI_INVITE_PARTY , prj.GetText( TID_MMI_INVITE_PARTY ) );
 
 			
 			if (CGuild * pGuild = g_pPlayer->GetGuild()) {
 				if (pGuild->IsAuthority(g_pPlayer->m_idPlayer, GuildPower::Invitation)) {
-					m_wndMenuMover.AppendMenu(0, MMI_INVITE_COMPANY, prj.GetText(TID_MMI_INVITE_COMPANY));
+					m_wndMenuMover.AddButton( MMI_INVITE_COMPANY, prj.GetText(TID_MMI_INVITE_COMPANY));
 				}
 			}
 
@@ -6023,7 +6023,7 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 
 				if( bInsert )
 				{
-					m_wndMenuMover.AppendMenu( 0,  MMI_DUEL, prj.GetText( TID_MMI_DUEL ) );
+					m_wndMenuMover.AddButton( MMI_DUEL, prj.GetText( TID_MMI_DUEL ) );
 				}
 			}
 #else	// __VER >= 8  */
@@ -6041,26 +6041,26 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 
 					if( bInsert )
 					{
-						m_wndMenuMover.AppendMenu( 0,  MMI_DUEL, "Duel - 1 vs 1" );
+						m_wndMenuMover.AddButton( MMI_DUEL, "Duel - 1 vs 1" );
 						if( g_Party.IsLeader( g_pPlayer->m_idPlayer ) == TRUE )
-							m_wndMenuMover.AppendMenu( 0,  MMI_DUEL_PARTY, "Duel - Party vs Party" );
+							m_wndMenuMover.AddButton( MMI_DUEL_PARTY, "Duel - Party vs Party" );
 					}
 				}
 			}
 //#endif	// __VER >= 8  
 
-			m_wndMenuMover.AppendMenu( 0, MMI_TRACE, prj.GetText( TID_MMI_TRACE ) );	
-			m_wndMenuMover.AppendMenu( 0, MMI_QUERYEQUIP , prj.GetText(TID_MMI_QUERYEQUIP) );
-			m_wndMenuMover.AppendMenu( 0, MMI_CHEER , prj.GetText( TID_MMI_CHEER ) );
+			m_wndMenuMover.AddButton( MMI_TRACE, prj.GetText( TID_MMI_TRACE ) );
+			m_wndMenuMover.AddButton( MMI_QUERYEQUIP , prj.GetText(TID_MMI_QUERYEQUIP) );
+			m_wndMenuMover.AddButton( MMI_CHEER , prj.GetText( TID_MMI_CHEER ) );
 			CCampus* pCampus = CCampusHelper::GetInstance()->GetCampus();
 			if( pCampus == NULL )
-				m_wndMenuMover.AppendMenu( 0, MMI_INVITE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_INVITATION) );
+				m_wndMenuMover.AddButton( MMI_INVITE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_INVITATION) );
 			else
 			{
 				if( pCampus->IsMember( pTarget->m_idPlayer ) )
-					m_wndMenuMover.AppendMenu( 0, MMI_REMOVE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_SEVERANCE) );
+					m_wndMenuMover.AddButton( MMI_REMOVE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_SEVERANCE) );
 				else
-					m_wndMenuMover.AppendMenu( 0, MMI_INVITE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_INVITATION) );
+					m_wndMenuMover.AddButton( MMI_INVITE_CAMPUS , prj.GetText(TID_GAME_MENU_CAMPUS_INVITATION) );
 			}
 			}
 			bView = TRUE;
@@ -6107,20 +6107,20 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 							{
 								CGuild* pGuild	= g_pPlayer->GetGuild();
 								if( pGuild && g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) )
-									m_wndMenuMover.AppendMenu( 0, i, prj.GetText( TID_MMI_DIALOG + i ) );
+									m_wndMenuMover.AddButton( i, prj.GetText( TID_MMI_DIALOG + i ) );
 								bView = TRUE;
 							}
 #ifdef __JEFF_11_4
 							else if( i == MMI_ARENA_ENTER )
 							{
 								if( g_pPlayer && !g_pPlayer->IsBaseJob() )
-									m_wndMenuMover.AppendMenu( 0, i, prj.GetText( TID_MMI_DIALOG + i ) );
+									m_wndMenuMover.AddButton( i, prj.GetText( TID_MMI_DIALOG + i ) );
 								bView = TRUE;
 							}
 #endif	// __JEFF_11_4
 							else
 							{
-								m_wndMenuMover.AppendMenu( 0, i, prj.GetText( TID_MMI_DIALOG + i ) );
+								m_wndMenuMover.AddButton( i, prj.GetText( TID_MMI_DIALOG + i ) );
 								bView = TRUE;
 							}
 						}
@@ -9802,9 +9802,9 @@ void CWndWorld::ShowCCtrlMenu( CCtrl* pCCtrl )
 	if( slotIndex < 0 )			//해당 아이디를 가진 녀석을 못찾음
 		return;
 
-	m_wndMenuMover.AppendMenu( slotIndex, MMI_GHOUSE_INFO, GETTEXT(TID_APP_INFOMATION) ); 
-	m_wndMenuMover.AppendMenu( slotIndex, MMI_GHOUSE_REINSTALL, GETTEXT(TID_MMI_GHOUSE_REINSTALL) ); 
-	m_wndMenuMover.AppendMenu( slotIndex, MMI_GHOUSE_RECALL, GETTEXT(TID_MMI_GHOUSE_RECALL) ); 
+	m_wndMenuMover.AddButton( MMI_GHOUSE_INFO, GETTEXT(TID_APP_INFOMATION) );
+	m_wndMenuMover.AddButton( MMI_GHOUSE_REINSTALL, GETTEXT(TID_MMI_GHOUSE_REINSTALL) );
+	m_wndMenuMover.AddButton( MMI_GHOUSE_RECALL, GETTEXT(TID_MMI_GHOUSE_RECALL) );
 
 	CRect rectBound;
 	GetBoundRect( pCCtrl, &rectBound );

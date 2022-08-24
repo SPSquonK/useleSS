@@ -177,13 +177,13 @@ void CWndMessengerEx::OnInitialUpdate()
 	m_wndGuild.ScrollBarPos( 0 );
 
 	m_menuState.CreateMenu( this );	
-	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::ONLINE  ) , prj.GetText( TID_FRS_ONLINE_STATUS   ) );
-	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::ABSENT  ) , prj.GetText( TID_FRS_ABSENT   ) );
-	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::HARDPLAY) , prj.GetText( TID_FRS_HARDPLAY ) );
-	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::EAT     ) , prj.GetText( TID_FRS_EAT      ) );
-	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::REST    ) , prj.GetText( TID_FRS_REST     ) );
-	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::MOVE    ) , prj.GetText( TID_FRS_MOVE     ) );
-	m_menuState.AppendMenu( 0, static_cast<UINT>(FriendStatus::OFFLINE ) , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
+	m_menuState.AddButton( static_cast<UINT>(FriendStatus::ONLINE  ) , prj.GetText( TID_FRS_ONLINE_STATUS   ) );
+	m_menuState.AddButton( static_cast<UINT>(FriendStatus::ABSENT  ) , prj.GetText( TID_FRS_ABSENT   ) );
+	m_menuState.AddButton( static_cast<UINT>(FriendStatus::HARDPLAY) , prj.GetText( TID_FRS_HARDPLAY ) );
+	m_menuState.AddButton( static_cast<UINT>(FriendStatus::EAT     ) , prj.GetText( TID_FRS_EAT      ) );
+	m_menuState.AddButton( static_cast<UINT>(FriendStatus::REST    ) , prj.GetText( TID_FRS_REST     ) );
+	m_menuState.AddButton( static_cast<UINT>(FriendStatus::MOVE    ) , prj.GetText( TID_FRS_MOVE     ) );
+	m_menuState.AddButton( static_cast<UINT>(FriendStatus::OFFLINE ) , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
 	
 	m_TexMail.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndMail.dds" ), 0xffff00ff );
 	m_nFlashCounter = 0;

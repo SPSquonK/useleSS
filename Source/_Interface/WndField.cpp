@@ -3466,10 +3466,10 @@ void CWndNavigator::OnInitialUpdate()
 	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
 
 	m_wndMenuPlace.CreateMenu( this );	
-	m_wndMenuPlace.AppendMenu( 0, 0 , prj.GetText(TID_GAME_PLAYER) );
-	m_wndMenuPlace.AppendMenu( 0, 1 , prj.GetText(TID_GAME_PARTYTEXT) ); 
-	m_wndMenuPlace.AppendMenu( 0, 2 , prj.GetText(TID_GAME_NPC) );
-	m_wndMenuPlace.AppendMenu( 0, 3 , prj.GetText(TID_GAME_MONSTER) ); 
+	m_wndMenuPlace.AddButton(0, prj.GetText(TID_GAME_PLAYER));
+	m_wndMenuPlace.AddButton(1, prj.GetText(TID_GAME_PARTYTEXT));
+	m_wndMenuPlace.AddButton(2, prj.GetText(TID_GAME_NPC));
+	m_wndMenuPlace.AddButton(3, prj.GetText(TID_GAME_MONSTER));
 	
 
 	m_wndMenuPlace.CheckMenuItem( 0, m_bObjFilterPlayer );
@@ -3573,12 +3573,12 @@ BOOL CWndNavigator::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					m_wndMenuMover.DeleteAllMenu();
 					CWorld* pWorld	= g_WorldMng();
 					CLandscape* pLand;
-					int i = 0;
 
 					FOR_LAND( pWorld, pLand, pWorld->m_nVisibilityLand, FALSE )
 					{
 						for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
-							CWndButton *pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
+							CMover * mover = static_cast<CMover *>(pObj);
+							CWndButton * pWndButton = m_wndMenuMover.AddButton(mover->GetId(), mover->GetName(TRUE));
 							pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Object;
 						}
 					}
@@ -3670,24 +3670,23 @@ void CWndNavigator::OnRButtonDown(UINT nFlags, CPoint point)
 
 	m_wndMenuMover.DeleteAllMenu();
 	CLandscape* pLand;
-	int i = 0;
 
-	int nTarget = 0;
+	bool hasTarget = false;
 	FOR_LAND( pWorld, pLand, pWorld->m_nVisibilityLand, FALSE )
 	{
 		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			CMover * pMover = ( CMover* )pObj;
 			if( !pMover->IsPlayer( ) && pMover->GetCharacter( ) )		//NPCï¿½Î°ï¿½ì¸? 
 			{
-				CWndButton * pWndButton = m_wndMenuMover.AppendMenu( i++, ((CMover*)pObj)->GetId() , ((CMover*)pObj)->GetName( TRUE ) );
+				CWndButton * pWndButton = m_wndMenuMover.AddButton(pMover->GetId(), pMover->GetName(TRUE));
 				pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Object;
-				++nTarget;
+				hasTarget = true;
 			}
 		}
 	}
 	END_LAND
 
-	if( nTarget > 0 )
+	if(hasTarget)
 	{
 		CRect rect = GetWindowRect( TRUE );
 		CRect rectRootLayout = m_pWndRoot->GetLayoutRect();
