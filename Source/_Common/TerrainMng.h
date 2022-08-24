@@ -1,9 +1,8 @@
 #pragma once
 
 struct TERRAIN {
-	LPDIRECT3DTEXTURE9 m_pTexture;
-	TCHAR m_szTextureFileName[128];
-	DWORD m_dwId;
+	LPDIRECT3DTEXTURE9 m_pTexture  = nullptr;
+	TCHAR m_szTextureFileName[128] = "";
 };
 
 struct WaterTexList {
@@ -13,28 +12,32 @@ struct WaterTexList {
 };
 
 #define MAX_WATER	10
-#define MAX_TERRAIN 256
 
 class CTerrainMng
 {
-	int m_nSize;
+//	int m_nSize;
 	LPDIRECT3DDEVICE9 m_pd3dDevice;
+	std::vector<TERRAIN> m_terrains;
+	TERRAIN m_defaultTerrain;
+
 public:
-	TERRAIN m_aTerrain[MAX_TERRAIN];
-	int				m_nWaterFrame;
-	WaterTexList	*m_pWaterIndexList;
+	int				m_nWaterFrame = 0;
+	WaterTexList	*m_pWaterIndexList = nullptr;
 	FLOAT			m_fWaterFrame[MAX_WATER];
 
 	CTerrainMng();
 	~CTerrainMng();
 
-	int GetSize() { return m_nSize; }
+	// int GetSize() { return m_nSize; }
 
 	BOOL LoadTexture( DWORD dwId );
-	TERRAIN	* GetTerrain( DWORD dwId ) { return &m_aTerrain[ dwId ]; }
+	[[nodiscard]] TERRAIN * GetTerrain(DWORD dwId) {
+		if (dwId >= m_terrains.size()) return &m_defaultTerrain;
+		return &m_terrains[dwId];
+	}
 	BOOL LoadScript( LPCTSTR lpszFileName );
 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT DeleteDeviceObjects();	
+	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT DeleteDeviceObjects();
 };
 
