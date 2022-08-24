@@ -41,7 +41,7 @@ CClientSock::CClientSock( BUFFER_TYPE type )
 #endif	// __CRC
 {
 #ifdef __CRC
-	m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( BUFFER_TYPE_5BYTE );
+	m_pRecvBuffer	= CBufferFactory::CreateBuffer( BUFFER_TYPE_5BYTE );
 	if( CSock::crcRead & dwcrc )
 		m_dwReadHeaderSize	= HEADERSIZE13;
 	else
@@ -60,7 +60,7 @@ CClientSock::CClientSock( BUFFER_TYPE type )
 	m_nBufferType = BUFFER_TYPE_5BYTE;
 #else	// __CRC
 //	m_l	= 0;
-	m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( type );
+	m_pRecvBuffer	= CBufferFactory::CreateBuffer( type );
 	m_nBufferType = type;
 #endif	// __CRC
 
@@ -326,7 +326,7 @@ CBuffer* CClientSock::Fetch( DWORD dwBytes )
 			if( m_pRecvBuffer->cb > 0 ) {
 				pOld	= m_pRecvBuffer;
 				pOld->m_pTail	-= nRemnant;	// remove remnant from old buffer
-				m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( m_nBufferType );
+				m_pRecvBuffer	= CBufferFactory::CreateBuffer( m_nBufferType );
 //				ASSERT( m_pRecvBuffer->m_pTail + nRemnant <= m_pRecvBuffer->m_lpBufMax ); 
 #ifdef __SO1014
 //				if( m_pRecvBuffer->m_pTail + nRemnant > m_pRecvBuffer->m_lpBufMax )
@@ -409,7 +409,7 @@ CBuffer* CClientSock::Fetch( DWORD dwBytes )
 				if( (int)( uPacketSize ) > m_pRecvBuffer->GetSize() || m_pRecvBuffer->cb > 0 )
 				{
 					pOld	= m_pRecvBuffer;
-					m_pRecvBuffer	= CBufferFactory::GetInstance().CreateBuffer( m_nBufferType, uPacketSize ); 
+					m_pRecvBuffer	= CBufferFactory::CreateBuffer( m_nBufferType, uPacketSize ); 
 					if( !m_pRecvBuffer->m_lpBufStart )
 					{
 						char lpAddr[16]		= { 0,};
@@ -471,7 +471,7 @@ CBuffer* CClientSock::Fetch( DWORD dwBytes )
 	return NULL;
 }
 
-HRESULT CClientSock::GetPeerAddr( DPID dpidPlayer, LPVOID lpAddr, LPDWORD lpdwSize )
+HRESULT CClientSock::GetPeerAddr( DPID dpidPlayer, LPVOID lpAddr, LPDWORD )
 {
 	ASSERT( lpAddr );
 
@@ -489,9 +489,8 @@ HRESULT CClientSock::GetPeerAddr( DPID dpidPlayer, LPVOID lpAddr, LPDWORD lpdwSi
 	return DP_OK;
 }
 
-CBuffer* CClientSock::CreateBuffer()
-{
-	return CBufferFactory::GetInstance().CreateBuffer( m_nBufferType );
+CBuffer * CClientSock::CreateBuffer() {
+	return CBufferFactory::CreateBuffer(m_nBufferType);
 }
 
 #ifdef __PROTOCOL0910
