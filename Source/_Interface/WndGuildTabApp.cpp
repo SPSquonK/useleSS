@@ -260,8 +260,9 @@ BOOL CWndGuildPayConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 void CWndGuildTabApp::EnableButton(BOOL bEnable)
 {
-	ForEachPower([bEnable](CWndButton & button, int, GuildPower) {
-		button.EnableWindow(bEnable);
+	ForEachPower([bEnable](CWndButton & button, int gud, GuildPower) {
+		if (gud == GUD_MASTER) button.EnableWindow(FALSE);
+		else button.EnableWindow(bEnable);
 		});
 
 	CWndButton* pWndCheck = NULL;
