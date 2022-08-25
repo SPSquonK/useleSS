@@ -5,6 +5,7 @@
 #include "AppDefine.h"
 #include "randomoption.h"
 #include "Tax.h"
+#include "ItemMorph.h"
 
 CString SingleDstToString(const SINGLE_DST & singleDst);
 const char * FindDstString(int nDstParam);
@@ -1150,8 +1151,6 @@ namespace WndMgr {
 	}
 
 	void CTooltipBuilder::PutSex(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const {
-		// TODO: maybe add automorph? Gendered items are super inconvenient and
-		// bring no value to the gameplay.
 		if (itemProp.dwItemSex == NULL_ID) return;
 
 		LPCTSTR sexText;
@@ -1163,10 +1162,12 @@ namespace WndMgr {
 
 		// TODO: itemProp.dwItemSex and pMover.GetSex() should have the same type
 
-		const DWORD sexColor = GetOkOrErrorColor(itemProp.dwItemSex == pMover.GetSex());
-
+		const bool equipable = itemProp.dwItemSex == pMover.GetSex();
+		const bool willBeMorphed = !equipable && useless_params::AutoMorph && ItemMorph::GetTransyItem(itemProp);
+		
+		const DWORD sexColor = GetOkOrErrorColor(equipable || willBeMorphed);
 		pEdit.AddString("\n");
-		pEdit.AddString(sexText, sexColor);
+		pEdit.AddString(sexText, sexColor, willBeMorphed ? ESSTY_STRIKETHROUGH : 0);
 	}
 
 	void CTooltipBuilder::PutJob(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const {

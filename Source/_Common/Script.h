@@ -3,6 +3,7 @@
 
 #include "scanner.h"
 #include <optional>
+#include "ScriptDefines.h"
  
 #define NUM_FUNC 	  	10 
 #define NUM_GLOBAL_VARS 10 
@@ -139,7 +140,7 @@ protected:
 #endif
 
 public:
-	static std::map<CString, int>		    m_defines;
+	static CScriptDefines m_defines;
 	static std::map<CString,CString>		m_mapString;
 
 #if !defined(__REMOVE_SCIRPT_060712)

@@ -994,6 +994,9 @@
     <ClCompile Include="..\_Interface\WndCharacter.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndEquipmentSex.cpp">
+      <Filter>Source Files\_Interface\Admin</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1848,6 +1851,12 @@
     </ClInclude>
     <ClInclude Include="..\_Interface\WndCharacter.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndEquipmentSex.h">
+      <Filter>Source Files\_Interface\Admin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\ScriptDefines.h">
+      <Filter>Source Files\_Common\Script</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

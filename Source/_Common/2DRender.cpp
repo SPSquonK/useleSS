@@ -565,7 +565,13 @@ void C2DRender::TextOut_EditString( int x,int y, CEditString& strEditString, int
  				if( dwStyle & ESSTY_UNDERLINE )
 					RenderLine( CPoint( x - m_ptOrigin.x, y + size.cy - m_ptOrigin.y - 2 ), CPoint( x + size.cx - m_ptOrigin.x, y + size.cy - m_ptOrigin.y - 2 ), dwColor );
 				if( dwStyle & ESSTY_STRIKETHROUGH )
-					RenderLine( CPoint( x - m_ptOrigin.x, y + ( size.cy / 2 ) - m_ptOrigin.y ), CPoint( x + size.cx - m_ptOrigin.x, y + ( size.cy / 2 ) - m_ptOrigin.y ), dwColor );
+					RenderFillRect(
+						CRect(
+							CPoint(x - m_ptOrigin.x, y + (size.cy / 2) - m_ptOrigin.y),
+							CSize(size.cx, 1)
+						),
+						dwColor
+					);
 
 				x += size.cx;
 			}

@@ -1811,8 +1811,12 @@ void CWndTaskMenu::OnInitialUpdate()
 #endif
 		;
 
-	AddFolder(TID_APP_INFOMATION)
+	const auto infoFolder = AddFolder(TID_APP_INFOMATION)
 		.AddApplet(APP_INFO_NOTICE, TID_APP_INFO_NOTICE);
+
+	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		infoFolder.AddApplet(APP_EQUIPMENT_SEX, TID_APP_EQUIPMENT_SEX);
+	}
 
 	const auto adderForHelp = AddFolder(TID_APP_HELPER)
 		.AddApplet(APP_HELPER_HELP, TID_APP_HELPER_HELP)
@@ -1871,7 +1875,7 @@ CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nIDNewItem,	LPCTS
 	pWndButton->m_cHotkey = pAppletFunc->m_cHotkey;
 	CString string = pAppletFunc->m_pAppletDesc;
 	if (pAppletFunc->m_cHotkey != 0) {
-		string.AppendFormat("\n[%s %c]", pAppletFunc->m_pAppletDesc, prj.GetText(TID_GAME_TOOLTIP_HOTKEY), pAppletFunc->m_cHotkey);
+		string.AppendFormat("\n[%s %c]", prj.GetText(TID_GAME_TOOLTIP_HOTKEY), pAppletFunc->m_cHotkey);
 	}
 	pWndButton->m_strToolTip = string;
 	pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Applet; 

@@ -849,6 +849,7 @@
 #define APP_WNDPETRES             686
 #define APP_WORLD             2002
 #define APP_WORLDMAP_HELPER             868
+#define APP_EQUIPMENT_SEX 2023
 
 // Control Id
 #define WIDC_2ND_PASSWORD             865

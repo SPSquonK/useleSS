@@ -28,6 +28,7 @@
 #include "WndGuildHouse.h"
 #include "WndBuffStatus.h"
 #include "Wnd2ndPassword.h"
+#include "WndEquipmentSex.h"
 
 #ifdef __NEW_WEB_BOX
 #include "WndHelperWebBox.h"
@@ -131,4 +132,6 @@ void CWndMgr::AddAllApplet() {
 #ifdef __NEW_WEB_BOX
 	AddAppletFunc(WindowBuilder<CWndHelperWebBox> , APP_WEBBOX2              , _T( "HelperWebBox" )       , _T( "Icon_HelperHelp.dds" ) , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TOOLTIP ), 0 );
 #endif // __NEW_WEB_BOX
+
+	AddAppletFunc(WindowBuilder<CWndEquipmentSex>, APP_EQUIPMENT_SEX, _T("EquipmentSex"), _T("Icon_Applet.dds"), "Equipement Sex", 0);
 }

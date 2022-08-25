@@ -10,6 +10,7 @@
 #include "party.h"
 #include "guild.h"
 #include "guildwar.h"
+#include "ItemMorph.h"
 
 #ifdef __CLIENT
 	#include "DPClient.h"
@@ -1092,12 +1093,13 @@ CMover::EquipAble::Result CMover::IsEquipAble(const CItemElem & pItem, bool bIgn
 #endif	// __WORLDSERVER
 	}
 
+	bool automorph = false;
 	// 무기류가 아닌것(방어구)는 성별을 확인한다.
 	{
 		// 성별 확인( 무기는 빠짐 )
 		if( pItemProp->dwItemSex != NULL_ID && pItemProp->dwItemSex != GetSex() )
 		{
-			return EquipAble::No(TID_GAME_WRONGSEX, "\"%s\"", pItemProp->szName);
+			automorph = true;
 		} // 성별
 	}// 무기
 	
@@ -1129,6 +1131,8 @@ CMover::EquipAble::Result CMover::IsEquipAble(const CItemElem & pItem, bool bIgn
 	// 화살을 착용하려 했을때 보우일때만 착용돼야 함
 	if( pItemProp->dwItemKind3 == IK3_ARROW && ( pHandItemProp == NULL || pHandItemProp->dwItemKind3 != IK3_BOW ) )
 		return EquipAble::No();
+
+	if (automorph) return EquipAble::AutoMorph();
 
 	return EquipAble::Yes();
 }
@@ -1181,7 +1185,27 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 			return FALSE;
 		}
 
-		static_assert(std::variant_size_v<EquipAble::Result> == 2);
+		if (std::holds_alternative<EquipAble::AutoMorph>(result)) {
+			if constexpr (useless_params::AutoMorph) {
+#ifdef __CLIENT
+				EquipAble::No(TID_GAME_WRONGSEX, "\"%s\"", pItemProp->szName).Display(*this);
+				return FALSE;
+#endif
+#ifdef __WORLDSERVER
+				const auto autoMorphTo = UI::ChangeItemId::MorphItem(*pItemElem);
+
+				if (!autoMorphTo) {
+					EquipAble::No(TID_GAME_WRONGSEX, "\"%s\"", pItemProp->szName).Display(*this);
+					return FALSE;
+				}
+
+				UpdateItem(*pItemElem, autoMorphTo.value());
+#endif
+			} else {
+				EquipAble::No(TID_GAME_WRONGSEX, "\"%s\"", pItemProp->szName).Display(*this);
+				return FALSE;
+			}
+		}
 	}
 	else
 	{
