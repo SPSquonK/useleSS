@@ -125,10 +125,10 @@ void CWndMapEx::OnInitialUpdate( void )
 	}
 
 	m_WndMenuUserMark.CreateMenu( this );
-	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_DELETE , _T( "삭제" ) );
-	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_DELETE_ALL , _T( "전체 삭제" ) );
-	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_INSERT_CHATTING_WINDOW , _T( "채팅창에 넣기" ) );
-	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_CHANGE_NAME , _T( "이름 변경" ) );
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_DELETE , _T( "삭제" ) /* prj.GetText(TID_GAME_MAP_EX_MARK_DELETE) */);
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_DELETE_ALL , _T( "전체 삭제" ) /* prj.GetText(TID_GAME_MAP_EX_MARK_DELETE_ALL) */);
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_INSERT_CHATTING_WINDOW , _T( "채팅창에 넣기" ) /* prj.GetText(TID_GAME_MAP_EX_MARK_INSERT_CHATTING_WINDOW) */);
+	m_WndMenuUserMark.AddButton(ID_USER_MARK_MENU_CHANGE_NAME , _T( "이름 변경" ) /* prj.GetText(TID_GAME_MAP_EX_MARK_CHANGE_NAME) */);
 
 	CalculateMaximumWindowTileLength();
 }
