@@ -1193,6 +1193,9 @@
     <ClInclude Include="..\_Common\ProjectJob.h">
       <Filter>Source Files\Project</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\ScriptDefines.h">
+      <Filter>Neuz Common Files\Common Files\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldServer.rc">

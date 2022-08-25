@@ -18,8 +18,6 @@ public:
 	};
 
 	struct DisplayedDisplayer {
-		std::map<int, CString> reverseIndex;
-
 		void Render(
 			C2DRender * const p2DRender, CRect rect,
 			const Displayed & displayed,

@@ -61,11 +61,24 @@ BOOL CWndEquipmentSex::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 		CWndTListBox<Displayed, DisplayedDisplayer> * box = GetDlgItem<CWndTListBox<Displayed, DisplayedDisplayer>>(WIDC_LISTBOX);
 		const Displayed * selection = box->GetCurSelItem();
 		if (selection && selection->item1) {
-			CString str = box->displayer.reverseIndex[selection->item1->dwID];
+			const auto & map = CScript::m_defines.GetOrBuild("II_");
+
+			CString str;
+
+			if (const auto nameIt = map.find(selection->item1->dwID); nameIt != map.end()) {
+				str += nameIt->second;
+			} else {
+				str.AppendFormat("Item #%lu", selection->item1->dwID);
+			}
 
 			if (selection->item2) {
 				str += " / ";
-				str += box->displayer.reverseIndex[selection->item2->dwID];
+
+				if (const auto nameIt = map.find(selection->item2->dwID); nameIt != map.end()) {
+					str += nameIt->second;
+				} else {
+					str.AppendFormat("Item #%lu", selection->item2->dwID);
+				}
 			}
 
 			CopyToClipboard(str);
@@ -85,8 +98,7 @@ void CWndEquipmentSex::ChangeMode(const Mode mode) {
 	CWndTListBox<Displayed, DisplayedDisplayer> * box = GetDlgItem<CWndTListBox<Displayed, DisplayedDisplayer>>(WIDC_LISTBOX);
 	box->ResetContent();
 
-	const auto idsToDefines = BuildReverseIndex(CScript::m_defines, "II_");
-	box->displayer.reverseIndex = idsToDefines;
+	CScript::m_defines.GetOrBuild("II_");
 
 	const std::vector<Displayed> * toList =
 		mode == Mode::Vanilla ? &m_lists.vanilla :
@@ -137,11 +149,9 @@ void CWndEquipmentSex::DisplayedDisplayer::Render(
 			+ CPoint(64 + 3, 0)
 			+ CPoint(0, startYOffset + i * 18);
 
-		const auto it = reverseIndex.find(toDisplay[i]->dwID);
-		if (it != reverseIndex.end()) {
-			p2DRender->TextOut(
-				tidPoint.x, tidPoint.y, it->second.GetString(), color
-			);
+		const auto it = CScript::m_defines.Lookup(toDisplay[i]->dwID, "II_");
+		if (it) {
+			p2DRender->TextOut(tidPoint.x, tidPoint.y, it->GetString(), color);
 		}
 
 //		CPoint textPoint = rect.TopLeft()
@@ -268,16 +278,16 @@ std::map<int, CString> CWndEquipmentSex::BuildReverseIndex(
 }
 
 CStringDetectedMorphs::CStringDetectedMorphs() {
-	const auto reverseIndex = CWndEquipmentSex::BuildReverseIndex(CScript::m_defines, "II_");
+	const auto & reverseIndex = CScript::m_defines.GetOrBuild("II_");
 	if (reverseIndex.size() == 0) return;
 
 	const auto trySomething = [&](const ItemProp & maleItem, const CString & name) -> bool {
 		if (name == "") return false;
 
-		const auto idIt = CScript::m_defines.find(name);
-		if (idIt == CScript::m_defines.end()) return false;
+		const auto idIt = CScript::m_defines.Find(name);
+		if (!idIt) return false;
 
-		const ItemProp * femaleItem = prj.m_aPropItem.GetAt(idIt->second);
+		const ItemProp * femaleItem = prj.m_aPropItem.GetAt(idIt.value());
 		if (!femaleItem) return false;
 		if (femaleItem->dwItemSex != SEX_FEMALE) return false;
 
@@ -315,7 +325,7 @@ CStringDetectedMorphs::CStringDetectedMorphs() {
 
 
 		for (const auto [male, female] : pairs) {
-			bool ok = trySomething(prop, Replace(reverseIndex.at(prop.dwID), male, female));
+			bool ok = trySomething(prop, Replace(reverseIndex.find(prop.dwID)->second, male, female));
 			if (ok) break;
 		}
 

@@ -57,7 +57,7 @@ void CParser::SntxErr( LPCTSTR lpszHeader, int error)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
-std::map<CString, int> CScript::m_defines;
+CScriptDefines CScript::m_defines;
 std::map<CString, CString>	CScript::m_mapString;
 
 #if defined( __WORLDSERVER ) 
@@ -339,7 +339,7 @@ void CScript::PreScan()
 					GetTkn(); // ,
 				}
 				
-				if( m_defines.emplace(Token, eNum).second == false )
+				if( !m_defines.Insert(Token, eNum) )
 					TRACE("Enum %s dup.\n", Token);
 				eNum++;
 			} 
@@ -415,7 +415,7 @@ void CScript::ExecDefine()
 	else
 		return;
 
-	if( m_defines.emplace(str, n).second == false )
+	if( !m_defines.Insert(str, n) )
 		TRACE("define %s dup\n", Token);
 }
 
@@ -501,16 +501,11 @@ BOOL CScript::Load( LPCTSTR lpszFileName, BOOL bMultiByte, int nProcess)
 }
 
 
-BOOL CScript::LookupDefine( LPCTSTR lpszString, int& rValue )
-{
-	const auto it = m_defines.find( lpszString );
-	if( it != m_defines.end() )
-	{
-		rValue = it->second;
-		return TRUE;
-	}
-	else
-		return FALSE;
+BOOL CScript::LookupDefine(LPCTSTR lpszString, int & rValue) {
+	const auto result = m_defines.Find(lpszString);
+	if (!result) return FALSE;
+	rValue = result.value();
+	return TRUE;
 }
 
 //
@@ -520,26 +515,16 @@ BOOL CScript::LookupDefine( LPCTSTR lpszString, int& rValue )
 // return 
 //   그 Define에 Number를 돌려준다. 다른 경우 -1
 //  
-int CScript::GetDefineNum(LPCTSTR lpId)
-{
-	int nValue;
-	if(LookupDefine(lpId,nValue) == FALSE)
-		return -1;
-	return nValue;
+int CScript::GetDefineNum(LPCTSTR lpId) {
+	return m_defines.Find(lpId).value_or(-1);
 }
 
 //
 // XX_로 시작하는 것을 찾아준다.
 //
-void CScript::GetFindIdToArray(LPCTSTR lpStrDef,CStringArray* pStrArray)
-{
-	std::string strValue;
-
-	for( auto it = m_defines.begin(); it != m_defines.end(); ++it )
-	{
-		strValue = it->first;
-		if( strValue.find( lpStrDef ) == 0 )	// 인덱스 0에서 찾았으면 결과배열에 넣는다.
-			pStrArray->Add( strValue.c_str() );
+void CScript::GetFindIdToArray(LPCTSTR lpStrDef, CStringArray * pStrArray) {
+	for (const auto & pair : m_defines.GetOrBuild(lpStrDef)) {
+		pStrArray->Add(pair.second);
 	}
 }
 

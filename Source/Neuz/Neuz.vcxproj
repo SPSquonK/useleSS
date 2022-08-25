@@ -666,6 +666,7 @@
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
     <ClInclude Include="..\_Common\ProjectJob.h" />
+    <ClInclude Include="..\_Common\ScriptDefines.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />
     <ClInclude Include="..\_Common\SkillsOfMover.h" />
     <ClInclude Include="..\_Common\UpdateItem.h" />
