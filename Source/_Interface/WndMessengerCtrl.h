@@ -21,8 +21,8 @@ struct MessengerHelper {
 	struct Sorter {
 		enum class By { Channel, Status, Level, Job, Name };
 
-		bool channelAsc = true;
-		bool statusAsc  = false;
+		bool channelAsc = false;
+		bool statusAsc  = true;
 		bool levelAsc   = true;
 		bool jobAsc     = true;
 		bool nameAsc    = true;
