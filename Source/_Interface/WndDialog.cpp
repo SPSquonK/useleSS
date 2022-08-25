@@ -941,7 +941,7 @@ void CWndDialog::CurrentQuestDisplayer::Render(
 	ListedQuest & quest, DWORD color,
 	const WndTListBox::DisplayArgs &
 ) const {
-	CTexture * icon = __IsEndQuestCondition(g_pPlayer->GetActiveMover(), quest.questId.get())
+	CTexture * icon = __IsEndQuestCondition(g_pPlayer, quest.questId.get())
 		? m_pCompleteQuestListIconTexture
 		: m_pCurrentQuestListIconTexture;
 	p2DRender->RenderTexture(rect.TopLeft(), icon);

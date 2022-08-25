@@ -90,18 +90,16 @@ void CCamera::ControlCamera( DWORD dwStyle )
 
 void CBackCamera::Lock()
 {
-#ifdef __CLIENT
-
 	m_bLock = TRUE;
 	if( g_WorldMng.Get() )
 	{
 		CMover* pMoverTarget = (CMover*)g_WorldMng.Get()->GetObjFocus() ;
-		if( !(pMoverTarget && CMover::GetActiveMover() && CMover::GetActiveMover()->m_pActMover->IsFly()) ) {
-			FLOAT fAngle = CMover::GetActiveMover()->GetAngle(); 
+		if( !(pMoverTarget && g_pPlayer && g_pPlayer->m_pActMover->IsFly()) ) {
+			FLOAT fAngle = g_pPlayer->GetAngle();
 			m_fRotx=-fAngle;
 		}
 	}
-#endif
+
 }
 void CBackCamera::Unlock()
 {
@@ -127,8 +125,8 @@ void CBackCamera::ControlCamera( DWORD dwStyle )
 {
 	return;
 	CCamera::ControlCamera( dwStyle );
-	D3DXVECTOR3 vPos = CMover::GetActiveMover()->GetPos();
-	D3DXVECTOR3 vTemp = vPos - m_vPos;
+	const D3DXVECTOR3 vPos = g_pPlayer->GetPos();
+	const D3DXVECTOR3 vTemp = vPos - m_vPos;
 
 	switch( dwStyle )
 	{
@@ -182,7 +180,7 @@ BOOL CBackCamera::SetCamMode(int nType)
 void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
 {
 #ifdef __CLIENT
-	CMover *pMover = CMover::GetActiveMover();
+	CMover *pMover = g_pPlayer;
 	// 여기서 카메라 세팅!!!!!
 	if( pMover == NULL )	return;
 

@@ -771,7 +771,7 @@ void CDPClient::OnJoin( CAr & ar )
 	OnSnapshot( ar );
 	fJoin	= FALSE;
 
-	CMover* pMover	= CMover::GetActiveMover();
+	CMover* pMover	= g_pPlayer;
 	if( pMover )
 	{
 		time_t	tNULL	= time_null();
@@ -951,7 +951,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 				{
 					CMover* pPlayer	= (CMover*)pObj;
 //					pPlayer->RedoEquip( FALSE );
-					pPlayer->RedoEquip( CMover::GetActiveMover() != NULL );
+					pPlayer->RedoEquip( g_pPlayer != NULL );
 					PlayerData pd;
 					pd.data.nJob	= pPlayer->GetJob();
 					pd.data.nLevel	= pPlayer->GetLevel();
@@ -970,7 +970,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					}
 				}
 
-				if( !CMover::GetActiveMover() )
+				if( !g_pPlayer )
 				{
 
 					if( ( (CMover*)pObj )->m_idPlayer != g_Neuz.m_idPlayer )
@@ -979,7 +979,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 						ExitProcess( -1 );
 					}
 
-					CMover::SetActiveObj( pObj );
 					g_WndMng.SetPlayer( g_pPlayer = (CMover*)pObj );
 					//GMPBIGSUN : check world loading
 					Error( "Created g_pPlayer but World is NULL" );
@@ -1028,7 +1027,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			if( ( (CMover*)pObj )->IsPlayer() )
 			{
 				CMover* pPlayer	= (CMover*)pObj;
-				pPlayer->RedoEquip( CMover::GetActiveMover() != NULL );
+				pPlayer->RedoEquip( g_pPlayer != NULL );
 				PlayerData pd;
 				pd.data.nJob	= pPlayer->GetJob();
 				pd.data.nLevel	= pPlayer->GetLevel();
@@ -1052,14 +1051,14 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 				}
 			}
 
-			if( !CMover::GetActiveMover() )
+			if( !g_pPlayer )
 			{
 				if( ( (CMover*)pObj )->m_idPlayer != g_Neuz.m_idPlayer )
 				{
 					Error( "error - 0" );
 					ExitProcess( -1 );
 				}
-				CMover::SetActiveObj( pObj );
+
 				g_WndMng.SetPlayer( g_pPlayer = (CMover*)pObj );
 				//GMPBIGSUN : check world loading
 				Error( "g_pPlayer is ready" );			//월드가 생성되고 g_pPlayer가 생성되는지 check
@@ -1964,7 +1963,7 @@ void CDPClient::OnSetPos( OBJID objid, CAr & ar )
 	{
 		((CWndWorld*)g_WndMng.m_pWndWorld)->m_pSelectRenderObj = NULL;
 
-		if( pCtrl->IsActiveObj() )
+		if( pCtrl->IsActiveMover() )
 		{
 			CMover* pMover	= (CMover*)pCtrl;
 			if( pMover->m_pet.GetObj() )
@@ -2129,7 +2128,6 @@ void CDPClient::OnReplace( CAr & ar )
 		g_GameTimer.SetFixed( FALSE );	
 	}
 	
-	CMover::SetActiveObj( NULL );	
 	g_WndMng.SetPlayer( g_pPlayer = NULL );
 	//g_DialogMsg.ClearAllMessage();
 	g_DialogMsg.RemoveDeleteObjMsg();
@@ -2811,11 +2809,10 @@ void CDPClient::OnUpdateItemVariant(const OBJID objid, CAr & ar) {
 	if (!IsValidObj(pMover)) return;
 
 	if (const UI::Num * uiNum = std::get_if<UI::Num>(&operation); uiNum && uiNum->startCooldown) {
-		CMover * pPlayer = CMover::GetActiveMover();
-		if (!pPlayer)  return;
+		if (!g_pPlayer)  return;
 
-		if (pMover == pPlayer) {
-			const CItemElem * const pItemBase = pPlayer->GetItemId(dwId);
+		if (pMover == g_pPlayer) {
+			const CItemElem * const pItemBase = g_pPlayer->GetItemId(dwId);
 			if (!pItemBase) return;
 
 			const ItemProp * const pItemProp = pItemBase->GetProp();
@@ -4439,11 +4436,10 @@ void CDPClient::OnPartySkillCall( OBJID objid, CAr & ar )
 	D3DXVECTOR3	vLeader;
 	ar >> vLeader;
 	
-	CMover *pMover = CMover::GetActiveMover();
-	if( IsInvalidObj(pMover) )	return;
+	if( IsInvalidObj(g_pPlayer) )	return;
 	
-	D3DXVECTOR3 v = pMover->GetPos();
-	v.y += pMover->m_pModel->GetMaxHeight();;
+	D3DXVECTOR3 v = g_pPlayer->GetPos();
+	v.y += g_pPlayer->m_pModel->GetMaxHeight();;
 
 	ItemProp* pItemProp = prj.GetPartySkill( ST_CALL );
 	
@@ -4522,8 +4518,7 @@ void CDPClient::OnPartySkillBlitz( CAr & ar )
 
 void CDPClient::OnPartySkillRetreat( OBJID objid )
 {
-	CMover *pMover = CMover::GetActiveMover();
-	if( IsInvalidObj(pMover) )	return;
+	if( IsInvalidObj(g_pPlayer) )	return;
 
 	ItemProp* pItemProp = prj.GetPartySkill( ST_RETREAT );
 	
@@ -4547,8 +4542,7 @@ void CDPClient::OnPartySkillRetreat( OBJID objid )
 // 1회타격에 한해서 크리티컬 발동확률을 높인다.
 void CDPClient::OnPartySkillSphereCircle( OBJID objid )
 {
-	CMover *pMover = CMover::GetActiveMover();
-	if( IsInvalidObj(pMover) )	return;
+	if( IsInvalidObj(g_pPlayer) )	return;
 
 //	pMover->m_dwFlag |= MVRF_CRITICAL;
 
@@ -6747,10 +6741,9 @@ void CDPClient::OnTagResult(CAr & ar) {
 void CDPClient::OnSetGuildQuest(CAr & ar) {
 	const auto [nQuestId, nState] = ar.Extract<int, int>();
 
-	CMover * pPlayer = CMover::GetActiveMover();
-	if (!pPlayer) return;
+	if (!g_pPlayer) return;
 
-	CGuild * pGuild = pPlayer->GetGuild();
+	CGuild * pGuild = g_pPlayer->GetGuild();
 	if (!pGuild) return;
 	
 	TRACE("SNAPSHOTTYPE_SETGUILDQUEST\n");
@@ -6760,10 +6753,9 @@ void CDPClient::OnSetGuildQuest(CAr & ar) {
 void CDPClient::OnRemoveGuildQuest(CAr & ar) {
 	int nQuestId; ar >> nQuestId;
 
-	CMover * pPlayer = CMover::GetActiveMover();
-	if (!pPlayer) return;
+	if (!g_pPlayer) return;
 
-	CGuild * pGuild = pPlayer->GetGuild();
+	CGuild * pGuild = g_pPlayer->GetGuild();
 	if (!pGuild) return;
 
 	TRACE("SNAPSHOTTYPE_REMOVEGUILDQUEST\n");
@@ -8229,7 +8221,7 @@ void CDPClient::SendScriptAddExp( int nExp )
 
 void CDPClient::SendPlayerMoved( void )
 {
-	CMover* pPlayer	= CMover::GetActiveMover();
+	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) {
 		D3DXVECTOR3 v, vd;
 		float f;
@@ -8261,7 +8253,7 @@ void CDPClient::SendPlayerMoved( void )
 
 void CDPClient::SendPlayerBehavior( void )
 {
-	CMover* pPlayer	= CMover::GetActiveMover();
+	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) {
 		D3DXVECTOR3 vd, v	= pPlayer->GetPos();
 		vd	= pPlayer->m_pActMover->m_vDelta;
@@ -8294,7 +8286,7 @@ void CDPClient::SendPlayerMoved2( BYTE nFrame )
 {
 	PostPlayerAngle( FALSE );	
 
-	CMover* pPlayer	= CMover::GetActiveMover();
+	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) 
 	{
 		D3DXVECTOR3 v, vd;
@@ -8321,7 +8313,7 @@ void CDPClient::SendPlayerBehavior2( void )
 {
 	PostPlayerAngle( FALSE );	//
 
-	CMover* pPlayer	= CMover::GetActiveMover();
+	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) 
 	{
 		D3DXVECTOR3 vd, v	= pPlayer->GetPos();
@@ -8345,20 +8337,12 @@ void CDPClient::SendPlayerBehavior2( void )
 	}
 }
 
-void CDPClient::SendPlayerAngle( void )
-{
-	CMover* pPlayer	= CMover::GetActiveMover();
-	if( pPlayer ) 
-	{
-		float f		= pPlayer->GetAngle();
-		float fAngleX	= pPlayer->GetAngleX();
-		
-		BEFORESENDSOLE( ar, PACKETTYPE_PLAYERANGLE, DPID_UNKNOWN );
-		
-		ar << f << fAngleX;
-		
-		SEND( ar, this, DPID_SERVERPLAYER );
-	}
+void CDPClient::SendPlayerAngle(void) {
+	if (!g_pPlayer) return;
+
+	const float f = g_pPlayer->GetAngle();
+	const float fAngleX = g_pPlayer->GetAngleX();
+	SendPacket<PACKETTYPE_PLAYERANGLE, float, float>(f, fAngleX);
 }
 
 
@@ -8394,7 +8378,7 @@ void CDPClient::SendBlessednessCancel( int nItem )
 
 void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bResult )
 {
-	CMover* pPlayer	= CMover::GetActiveMover();
+	CMover* pPlayer	= g_pPlayer;
 	if( !pPlayer ) 
 		return;
 
@@ -8938,7 +8922,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 
 void CDPClient::SendPlayerCorr( void )
 {
-	CMover* pPlayer	= CMover::GetActiveMover();
+	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) {
 		D3DXVECTOR3 vd, v	= pPlayer->GetPos();
 		vd	= pPlayer->m_pActMover->m_vDelta;
@@ -8969,7 +8953,7 @@ void CDPClient::SendPlayerCorr( void )
 
 void CDPClient::SendPlayerCorr2( void )
 {
-	CMover* pPlayer	= CMover::GetActiveMover();
+	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) 
 	{
 		D3DXVECTOR3 vd, v	= pPlayer->GetPos();
@@ -8993,14 +8977,9 @@ void CDPClient::SendPlayerCorr2( void )
 	}
 }
 
-void CDPClient::SendPlayerDestObj( OBJID objid, float fRange )
-{
-	CMover* pPlayer	= CMover::GetActiveMover();
-	if( IsValidObj( (CObj*)pPlayer ) )
-	{
-		BEFORESENDSOLE( ar, PACKETTYPE_PLAYERSETDESTOBJ, DPID_UNKNOWN );
-		ar << objid << fRange;
-		SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendPlayerDestObj(OBJID objid, float fRange) {
+	if (IsValidObj(g_pPlayer)) {
+		SendPacket<PACKETTYPE_PLAYERSETDESTOBJ, OBJID, float>(objid, fRange);
 	}
 }
 
@@ -11443,9 +11422,9 @@ void CDPClient::OnPVendorClose( OBJID objid, CAr & ar )
 	CMover* pMover = prj.GetMover( objid );
 	if( IsValidObj( pMover ) )
 	{
-		if( pMover == CMover::GetActiveMover()->m_vtInfo.GetOther() )
+		if( pMover == g_pPlayer->m_vtInfo.GetOther() )
 		{
-			CMover::GetActiveMover()->m_vtInfo.SetOther( NULL );
+			g_pPlayer->m_vtInfo.SetOther( NULL );
 			CWndVendor* pWndVendor	= (CWndVendor*)g_WndMng.GetWndVendorBase();
 			if( pWndVendor )
 			{
@@ -11587,7 +11566,7 @@ void CDPClient::OnPVendorItem( OBJID objid, CAr & ar )
 	CMover* pPVendor	= prj.GetMover( objid );
 	if( IsValidObj( pPVendor ) && pPVendor->IsPlayer() )
 	{
-		CMover::GetActiveMover()->m_vtInfo.SetOther( pPVendor );
+		g_pPlayer->m_vtInfo.SetOther( pPVendor );
 		pPVendor->m_vtInfo.VendorCopyItems(std::move(apItemVd));
 
 		CWndVendor* pWndVendor	= (CWndVendor*)g_WndMng.CreateApplet( APP_VENDOR_REVISION );
@@ -11746,9 +11725,8 @@ void CDPClient::SendMotion( DWORD dwMotion )
 
 void CDPClient::SendRepairItem( DWORD* pdwIdRepair )
 {
-	CMover* pMover	= CMover::GetActiveMover();
-	if( pMover )
-	{
+	if (!g_pPlayer) return;
+
 		BEFORESENDSOLE( ar, PACKETTYPE_REPAIRITEM, DPID_UNKNOWN );
 		u_long uOffset	= ar.GetOffset();
 		BYTE c	= 0;
@@ -11784,7 +11762,7 @@ void CDPClient::SendRepairItem( DWORD* pdwIdRepair )
 			//수리할것이 없습니다.
 			g_WndMng.PutString( prj.GetText( TID_GAME_REPAIR_NO ), NULL, prj.GetTextColor( TID_GAME_REPAIR_NO ) );
 		}
-	}
+
 }
 
 void CDPClient::OnTag( OBJID objid, CAr & ar )
@@ -11904,8 +11882,8 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 		case FUNCTYPE_INITSTAT:
 			{
 				ar >> rsf.dwVal1;
-				CMover* pMover	= CMover::GetActiveMover();
-				if( IsValidObj( (CObj*)pMover ) )
+				CMover* pMover	= g_pPlayer;
+				if( IsValidObj( pMover ) )
 				{
 					pMover->SetStr( 15 );
 					pMover->SetInt( 15 );
@@ -11919,8 +11897,8 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 		case FUNCTYPE_INITSTR:
 			{
 				ar >> rsf.dwVal1;
-				CMover* pMover	= CMover::GetActiveMover();
-				if( IsValidObj( (CObj*)pMover ) )
+				CMover* pMover	= g_pPlayer;
+				if( IsValidObj( pMover ) )
 				{
 					pMover->SetStr( 15 );
 					pMover->m_nRemainGP	= (long)rsf.dwVal1;
@@ -11930,8 +11908,8 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 		case FUNCTYPE_INITSTA:
 			{
 				ar >> rsf.dwVal1;
-				CMover* pMover	= CMover::GetActiveMover();
-				if( IsValidObj( (CObj*)pMover ) )
+				CMover* pMover	= g_pPlayer;
+				if( IsValidObj( pMover ) )
 				{
 					pMover->SetSta( 15 );
 					pMover->m_nRemainGP	= (long)rsf.dwVal1;
@@ -11941,8 +11919,8 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 		case FUNCTYPE_INITDEX:
 			{
 				ar >> rsf.dwVal1;
-				CMover* pMover	= CMover::GetActiveMover();
-				if( IsValidObj( (CObj*)pMover ) )
+				CMover* pMover	= g_pPlayer;
+				if( IsValidObj( pMover ) )
 				{
 					pMover->SetDex( 15 );
 					pMover->m_nRemainGP	= (long)rsf.dwVal1;
@@ -11952,8 +11930,8 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 		case FUNCTYPE_INITINT:
 			{
 				ar >> rsf.dwVal1;
-				CMover* pMover	= CMover::GetActiveMover();
-				if( IsValidObj( (CObj*)pMover ) )
+				CMover* pMover	= g_pPlayer;
+				if( IsValidObj( pMover ) )
 				{
 					pMover->SetInt( 15 );
 					pMover->m_nRemainGP	= (long)rsf.dwVal1;
@@ -12019,7 +11997,7 @@ void CDPClient::FlushPlayerAngle( void )
 //		static	int	i	= 0;
 //		TRACE( "FlushPlayerAngle(): %d\n", ++i );
 		m_pa.fValid		= FALSE;
-		CMover* pPlayer	= CMover::GetActiveMover();
+		CMover* pPlayer	= g_pPlayer;
 		if( pPlayer )
 		{
 			BOOL nIsFly = pPlayer->m_pActMover->IsFly();
@@ -12055,9 +12033,8 @@ void CDPClient::SendAddVote( const char* szTitle, const char* szQuestion, const 
 	ASSERT( szSelections );
 
 	BEFORESENDSOLE( ar, PACKETTYPE_NC_ADDVOTE, DPID_UNKNOWN );
-	CMover* pMover	= CMover::GetActiveMover();
-	ar << pMover->m_idGuild;
-	ar << pMover->m_idPlayer;
+	ar << g_pPlayer->m_idGuild;
+	ar << g_pPlayer->m_idPlayer;
 
 	ar.WriteString( szTitle );
 	ar.WriteString( szQuestion );
@@ -12074,9 +12051,8 @@ void CDPClient::SendRemoveVote( u_long idVote )
 	ASSERT( idVote );
 	
 	BEFORESENDSOLE( ar, PACKETTYPE_NC_REMOVEVOTE, DPID_UNKNOWN );
-	CMover* pMover	= CMover::GetActiveMover();
-	ar << pMover->m_idGuild;
-	ar << pMover->m_idPlayer;
+	ar << g_pPlayer->m_idGuild;
+	ar << g_pPlayer->m_idPlayer;
 	ar << idVote;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
@@ -12088,9 +12064,8 @@ void CDPClient::SendCloseVote( u_long idVote )
 	ASSERT( idVote );
 
 	BEFORESENDSOLE( ar, PACKETTYPE_NC_CLOSEVOTE, DPID_UNKNOWN );
-	CMover* pMover	= CMover::GetActiveMover();
-	ar << pMover->m_idGuild;
-	ar << pMover->m_idPlayer;
+	ar << g_pPlayer->m_idGuild;
+	ar << g_pPlayer->m_idPlayer;
 	ar << idVote;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
@@ -12103,9 +12078,8 @@ void CDPClient::SendCastVote( u_long idVote, BYTE cbSelection )
 	ASSERT( cbSelection < 4 );
 
 	BEFORESENDSOLE( ar, PACKETTYPE_NC_CASTVOTE, DPID_UNKNOWN );
-	CMover* pMover	= CMover::GetActiveMover();
-	ar << pMover->m_idGuild;
-	ar << pMover->m_idPlayer;
+	ar << g_pPlayer->m_idGuild;
+	ar << g_pPlayer->m_idPlayer;
 	ar << idVote;
 	ar << cbSelection;
 	SEND( ar, this, DPID_SERVERPLAYER );
@@ -14485,13 +14459,14 @@ void CDPClient::OnPocketAttribute( CAr & ar )
 {
 	int nAttribute, nPocket, nData;
 	ar >> nAttribute >> nPocket >> nData;
-	CMover* pPlayer	= CMover::GetActiveMover();
-	if( pPlayer )
+
+	if(g_pPlayer)
 	{
-		pPlayer->m_Pocket.SetAttribute( nAttribute, nPocket, nData );
-		CWndBagEx* pWnd	= (CWndBagEx*)g_WndMng.GetWndBase( APP_BAG_EX );
-		if( pWnd )
+		g_pPlayer->m_Pocket.SetAttribute( nAttribute, nPocket, nData );
+		
+		if (CWndBagEx * pWnd = g_WndMng.GetWndBase<CWndBagEx>(APP_BAG_EX)) {
 			pWnd->InitItem();
+		}
 	}
 }
 
@@ -14500,9 +14475,9 @@ void CDPClient::OnPocketAddItem( CAr & ar )
 	int nPocket;
 	CItemElem item;
 	ar >> nPocket >> item;
-	CMover* pPlayer	= CMover::GetActiveMover();
-	if( pPlayer )
-		pPlayer->m_Pocket.Add( nPocket, &item );
+
+	if(g_pPlayer)
+		g_pPlayer->m_Pocket.Add( nPocket, &item );
 }
 
 void CDPClient::OnPocketRemoveItem( CAr & ar )
@@ -14510,9 +14485,9 @@ void CDPClient::OnPocketRemoveItem( CAr & ar )
 	int nPocket, nItem;
 	short nNum;
 	ar >> nPocket >> nItem >> nNum;
-	CMover* pPlayer	= CMover::GetActiveMover();
-	if( pPlayer )
-		pPlayer->m_Pocket.RemoveAtId( nPocket, nItem, nNum );
+
+	if(g_pPlayer)
+		g_pPlayer->m_Pocket.RemoveAtId( nPocket, nItem, nNum );
 }
 
 #ifdef __NPC_BUFF

@@ -20,7 +20,6 @@
 
 BOOL		CObj::m_bCollision		= TRUE;
 BOOL		CObj::m_bAnimate		= TRUE;
-CObj*		CObj::m_pObjActive		= NULL;
 CObj*		CObj::m_pObjHighlight	= NULL; 
 int			CObj::m_nMethod			= METHOD_NONE;
 //CRIT_SEC	CObj::m_csMethod;
@@ -237,13 +236,13 @@ void CObj::Process()
 
 	if( m_pModel->m_pModelElem->m_bTrans )
 	{
-		D3DXVECTOR3 vPosObj, vPosAct, vPosCam;
+		D3DXVECTOR3 vPosAct, vPosCam;
 		float fLengthObj, fLengthAct;
-		if( GetActiveObj() != NULL )
+		if(g_pPlayer)
 		{
 			vPosCam = m_pWorld->m_pCamera->m_vPos;
-			vPosObj = GetPos() - vPosCam;
-			vPosAct = GetActiveObj()->GetPos() - vPosCam;
+			const D3DXVECTOR3 vPosObj = GetPos() - vPosCam;
+			vPosAct = g_pPlayer->GetPos() - vPosCam;
 			fLengthObj = D3DXVec3LengthSq( &vPosObj );	// Length¸¦ LengthSq·Î ¹Ù²Þ. xuzhu
 			fLengthAct = D3DXVec3LengthSq( &vPosAct );
 		}		

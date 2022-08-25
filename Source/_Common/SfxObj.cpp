@@ -119,7 +119,7 @@ void CSfx::DamageToTarget( int nDmgCnt, float fDmgAngle, float fDmgPower, int nM
 		PLAYSND( pMover->GetProp()->dwSndDmg2, &pos );	// 마법류 맞을때 타격음.	
 
 		// 쏜놈이 플레이어이거나 / 쏜놈은 플레이어가 아닌데 맞은놈이 플레이어일경우 전송
-		if( pObjSrc->IsActiveMover() || (pObjSrc->IsPlayer() == FALSE && pObjDest->IsActiveObj()) )
+		if( pObjSrc->IsActiveMover() || (pObjSrc->IsPlayer() == FALSE && pObjDest->IsActiveMover()) )
 		{
 			pMover->SetDmgCnt( 10 );	// 발사체 맞아도 이제 흔들린다,
 			g_DPlay.SendSfxHit( m_idSfxHit, m_nMagicPower, m_dwSkill, pObjSrc->GetId(), nDmgCnt, fDmgAngle, fDmgPower );

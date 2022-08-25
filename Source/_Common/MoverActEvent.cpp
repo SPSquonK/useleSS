@@ -1554,7 +1554,7 @@ BOOL	CMover::OnAttackMelee( DWORD dwState, CMover *pHitObj )
 #ifdef __CLIENT
 	if( bSuccess )		// 타격에 성공했다면 타격음을 플레이.
 	{
-		if( CMover::GetActiveMover() == this )
+		if( IsActiveMover() )
 		{
 			if( dwState == OBJSTA_ATK1 && g_WndMng.m_pWndTaskBar->m_nActionPoint < 100 )	// 2타째 치는건 액션포인트 올라감.
 				g_WndMng.m_pWndTaskBar->m_nActionPoint ++;
@@ -2001,18 +2001,18 @@ void	CMover::OnActIALanding( CObj *pIAObj, const D3DXVECTOR3 &vPos )
 
 	CObj *pOldIA = GetIAObjLink();
 	SetIAObjLink( pIA );
-	
+
+#ifdef __CLIENT			
 	if( IsActiveMover() )
 	{
 		if( pIA != pOldIA )	// 걸어다닐때도 계속 갱신되기땜에 매번 보낼필요는 없다.
 		{
-#ifdef __CLIENT			
 			D3DXVECTOR3 vLocal = GetPos() - pIA->GetPos();		// IA오브젝트로부터의 상대 좌표를 뽑음.
 			g_DPlay.SendLocalPosFromIA( vLocal, pIA->GetId() );				// 상대좌표 서버로 전송
 			TRACE( "SendLocalPosFromIA\n" );
-#endif //__CLIENT
 		}
 	}
+#endif //__CLIENT
 
 }
 

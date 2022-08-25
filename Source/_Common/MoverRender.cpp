@@ -340,7 +340,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		}
 	}
 	
-	if( GetActiveObj() == this ) 
+	if( IsActiveMover() )
 		m_pModel->SetGroup( 0 );
 	else
 	{	
@@ -1666,7 +1666,7 @@ void CMover::RenderHP(LPDIRECT3DDEVICE9 pd3dDevice)
 	}
 
 #ifdef __QUIZ
-	if( !IsActiveObj() && ( m_dwMode & QUIZ_RENDER_SKIP_MODE ) )
+	if( !IsActiveMover() && ( m_dwMode & QUIZ_RENDER_SKIP_MODE ) )
 		return;
 #endif // __QUIZ
 	

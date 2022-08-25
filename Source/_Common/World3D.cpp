@@ -61,13 +61,13 @@ void CWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight )
 	float fFov = D3DX_PI / fDiv;
 	extern int g_nFlySpeed;
 
-	float fNear = CWorld::m_fNearPlane;
+	const float fNear = CWorld::m_fNearPlane;
 
-	if( CMover::GetActiveMover() )
+	if(g_pPlayer)
 	{
-		if( CMover::GetActiveMover()->m_pActMover->IsFly() && (CMover::GetActiveMover()->m_pActMover->IsStateFlag( OBJSTAF_ACC ) ) )
+		if(g_pPlayer->m_pActMover->IsFly() && (g_pPlayer->m_pActMover->IsStateFlag( OBJSTAF_ACC ) ) )
 		{
-			if( CMover::GetActiveMover()->m_pActMover->IsStateFlag( OBJSTAF_TURBO ) )
+			if(g_pPlayer->m_pActMover->IsStateFlag( OBJSTAF_TURBO ) )
 			{
 				fDiv -= 0.2f;
 				if( fDiv <= 2.0f )	fDiv = 2.0f;
@@ -584,7 +584,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					}
 			#ifdef __QUIZ
 					// Skip rendering in the quiz event area
-					if( !pObj->IsActiveObj() && ( pMover->m_dwMode & QUIZ_RENDER_SKIP_MODE ) )
+					if( !pObj->IsActiveMover() && ( pMover->m_dwMode & QUIZ_RENDER_SKIP_MODE ) )
 						continue;
 			#endif // __QUIZ
 				}
@@ -686,11 +686,11 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				// Skip translucent objects (printed last)
 				if( pObj->m_wBlendFactor < 255 )	
 					continue;
-				if( pObj->IsActiveObj() && m_nZoomLevel != 0 )
+				if( pObj->IsActiveMover() && m_nZoomLevel != 0 )
 					continue;
 
 				// TAB key set target - contains a list...
-				if( !pObj->IsActiveObj() )
+				if( !pObj->IsActiveMover() )
 				{
 					if (bScan && CWorld::m_amvrSelect.size() < CWorld::m_amvrSelect.max_size()) {
 						if (CMover * asMover = CWorld::RenderObject_IsTabbable(pObj)) {
@@ -1058,14 +1058,14 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					if( !pMover->IsMode( TRANSPARENT_MODE ) )
 					{
 						
-						if( pMover->IsAuthHigher( AUTH_GAMEMASTER ) && CMover::GetActiveMover()->IsAuthHigher( AUTH_GAMEMASTER ) )
+						if( pMover->IsAuthHigher( AUTH_GAMEMASTER ) && g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
 						{
 							// High-level identities can distinguish lower-level identities, but low-level identities cannot see higher identities.
-							if( pMover->m_dwAuthorization <= CMover::GetActiveMover()->m_dwAuthorization )
+							if( pMover->m_dwAuthorization <= g_pPlayer->m_dwAuthorization )
 							{
-								if( pMover->IsAuthorization( AUTH_GAMEMASTER    ) ) dwColor = 0xffffff90; else
-									if( pMover->IsAuthorization( AUTH_OPERATOR      ) ) dwColor = 0xff90ff90; else
-										if( pMover->IsAuthorization( AUTH_ADMINISTRATOR ) ) dwColor = 0xff9090ff;						
+								if( pMover->IsAuthorization( AUTH_GAMEMASTER    ) ) dwColor = 0xffffff90;
+								else if( pMover->IsAuthorization( AUTH_OPERATOR      ) ) dwColor = 0xff90ff90;
+								else if( pMover->IsAuthorization( AUTH_ADMINISTRATOR ) ) dwColor = 0xff9090ff;						
 							}
 						}
 						else
@@ -1492,11 +1492,8 @@ void CWorld::SetLight( BOOL bLight )
 	
 #ifndef  __WORLDSERVER 
 	DWORD dwAmbient = D3DCOLOR_ARGB( 0,0,0,0);
-	CLight* pLight = NULL;
 
-	D3DXVECTOR3 vPos = ( CObj::GetActiveObj() != NULL ? CObj::GetActiveObj()->GetPos() : D3DXVECTOR3( 0, 0, 0 ) );
-
-	pLight = GetLight( "direction" );
+	CLight * pLight = GetLight( "direction" );
 
 	ENVIR_INFO* pInfo = GetInContinent( g_pPlayer->GetPos( ) );
 	if( pInfo && m_kCurContinent._bUseEnvir )		// 대륙 안이고 대륙정보를 이용할 경우만 !!
@@ -2044,7 +2041,7 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 
 	if( bObject )
 	{
-		pObj = CWorld::PickObject( rect, point, pmatProj, pmatView, 0xffffffff, CMover::GetActiveObj(), pVector, TRUE );
+		pObj = CWorld::PickObject( rect, point, pmatProj, pmatView, 0xffffffff, g_pPlayer, pVector, TRUE );
 		if( pObj ) 
 		{
 			vPickObj = *pVector;		// 오브젝트에 피킹되었으면 받아둠.

@@ -225,16 +225,6 @@ CWndWebBox2::~CWndWebBox2()
 }
 BOOL CWndWebBox2::Initialize( CWndBase* pWndParent, DWORD nType )
 {	
-	CMover* pPlayer	= CMover::GetActiveMover();
-/*
-	if( pPlayer == NULL || pPlayer->GetLevel() < 16 )
-	{
-		m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
-		g_WndMng.PutString( prj.GetText(TID_TIP_QOODO_LEVEL), NULL, prj.GetTextColor(TID_TIP_QOODO_LEVEL) );
-		Destroy();
-		return FALSE;
-	}
-*/
 	CWndWebBox* pWndWebBox = (CWndWebBox*)g_WndMng.GetApplet( APP_WEBBOX );
 	if(pWndWebBox)
 		pWndWebBox->Destroy();

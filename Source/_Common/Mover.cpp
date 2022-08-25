@@ -937,7 +937,7 @@ void CMover::ProcessQuest()
 	LPCHARACTER lpCharacter = GetCharacter();
 	if( lpCharacter )
 	{
-		CMover* pMover = GetActiveMover();
+		CMover* pMover = g_pPlayer;
 		m_nQuestEmoticonIndex = -1;
 		// NPC 퀘스트 이모티콘 우선순위 변경 - 완료 > 신규 > 진행 > 근레벨
 		for (const auto & [nQuest, nItem] : lpCharacter->m_srcQuests) {
@@ -3466,7 +3466,7 @@ void CMover::Interpolate()
 	fAngle	= GetAngle();
 	fAngleX	= GetAngleX();
 
-	if( TRUE == IsActiveObj() )
+	if(IsActiveMover() )
 	{
 //		pos
 		if( fabs( vPos.x - m_vScrPos.x ) > 0.001 || fabs( vPos.y - m_vScrPos.y ) > 0.001 || fabs( vPos.z - m_vScrPos.z ) > 0.001 )	// dif
@@ -4086,12 +4086,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 		if( pModel->m_bEndFrame && nLoop == ANILOOP_CONT )	// 애니메이션이 끝난상태고 지속모드면 마지막 프레임으로 지속
 			return FALSE;
 	}
-#ifdef _DEBUG
-	if( dwOrigMotion == MTI_WALK )
-	{
-		int a = 0;
-	}
-#endif
+
 	prj.m_modelMng.LoadMotion( m_pModel, m_dwType, m_dwIndex, dwMotion );
 	m_dwMotion = dwOrigMotion;		// +100 하지 않은 값을 저장하자.
 	m_dwMotionOption = dwOption;
@@ -4109,6 +4104,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 	{
 		if( IsPlayer() )
 		{
+#ifdef __CLIENT
 			int nOption = 0;
 			DWORD dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255 );
 			if( IsActiveMover() )
@@ -4140,6 +4136,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 
 			pModel->MakeSWDForce( PARTS_RWEAPON, pItemProp->dwItemKind3, (dwOption & MOP_HITSLOW) ? TRUE : FALSE, dwColor, m_fAniSpeed );
 			pModel->MakeSWDForce( PARTS_LWEAPON, pItemProp->dwItemKind3, (dwOption & MOP_HITSLOW) ? TRUE : FALSE, dwColor, m_fAniSpeed );
+#endif __CLIENT
 		}
 	}
 	else
@@ -6324,8 +6321,7 @@ CGuild* CMover::GetGuild() const
 	return NULL;
 #else	// __WORLDSERVER
 #ifdef __CLIENT
-	if( m_idGuild > 0 && CMover::GetActiveMover() &&
-		 m_idGuild == CMover::GetActiveMover()->m_idGuild )
+	if( m_idGuild > 0 && g_pPlayer && m_idGuild == g_pPlayer->m_idGuild )
 	{
 		CGuild* pGuild	= g_GuildMng.GetGuild( m_idGuild );
 		if( pGuild && pGuild->IsMember( m_idPlayer ) )
@@ -6839,7 +6835,9 @@ int CMover::GetSetItemParts(DWORD dwParts) const {
 	if (pItemElem) {
 		nAbilityOption = pItemElem->GetAbilityOption();
 	} else {
+#ifdef __CLIENT
 		if (IsActiveMover()) return 0;
+#endif
 		nAbilityOption	= (m_aEquipInfo[dwParts].nOption & 0xFF);
 	}
 

@@ -413,8 +413,8 @@ BOOL CWorld::AddObj( CObj* pObj, BOOL bAddItToGlobalId )
 #endif	// __WORLDSERVER
 
 #ifdef __CLIENT
-	if( CMover::GetActiveMover() && CMover::GetActiveMover()->m_pActMover &&
-		CMover::GetActiveMover()->m_pActMover->IsFly() )
+	if(g_pPlayer && g_pPlayer->m_pActMover &&
+		g_pPlayer->m_pActMover->IsFly() )
 	{
 		if( pObj->GetType() == OT_MOVER )
 		{
@@ -833,9 +833,9 @@ void CWorld::Process()
 
 	if( m_pCamera )
 	{
-		if( CMover::GetActiveMover() && CMover::GetActiveMover()->m_pActMover )
+		if(g_pPlayer && g_pPlayer->m_pActMover )
 		{
-			if( CMover::GetActiveMover()->m_pActMover->IsFly() )
+			if(g_pPlayer->m_pActMover->IsFly() )
 				m_pCamera->Process( m_pd3dDevice, 10.0f );
 			else
 				m_pCamera->Process( m_pd3dDevice, 4.0f );

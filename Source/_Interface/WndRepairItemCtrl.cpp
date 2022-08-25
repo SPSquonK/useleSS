@@ -42,8 +42,7 @@ void CWndRepairItemCtrl::OnDraw( C2DRender* p2DRender )
 	if( NULL == m_pdwIdRepair )
 		return;
 
-	CMover* pMover	= CMover::GetActiveMover();
-	if( !pMover )
+	if (!g_pPlayer)
 		return;
 
 	CRect rect	= GetClientRect();
@@ -58,7 +57,7 @@ void CWndRepairItemCtrl::OnDraw( C2DRender* p2DRender )
 		if( m_pdwIdRepair[i] != NULL_ID )
 		{
 
-			CItemElem* pItemElem	= pMover->m_Inventory.GetAtId( m_pdwIdRepair[i] );
+			CItemElem* pItemElem	= g_pPlayer->m_Inventory.GetAtId( m_pdwIdRepair[i] );
 			if( pItemElem )
 			{
 				pItemElem->GetTexture()->Render( p2DRender, CPoint( x * 32 + 6, y * 32 + 10 ) );

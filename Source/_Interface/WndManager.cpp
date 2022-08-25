@@ -773,7 +773,6 @@ void CWndMgr::OpenTitle( BOOL bFirstTime )
 		Free();
 		g_WorldMng.DestroyCurrentWorld();
 		g_pPlayer = NULL;
-		CMover::SetActiveObj( NULL );
 		g_dpCertified.DeleteDPObject();
 #ifdef __CERTIFIER_COLLECTING_SYSTEM
 		DPCollectClient->DeleteDPObject();
@@ -1293,7 +1292,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 	}
 	else if( pShortcut->m_dwShortcut == ShortcutType::Item  )
 	{
-		if( CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
+		if(g_pPlayer->m_vtInfo.VendorIsVendor() )
 			return;
 
 		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
@@ -1338,7 +1337,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 		}
 	}
 	else if (pShortcut->m_dwShortcut == ShortcutType::Skill) {
-	  if (CMover::GetActiveMover()->m_vtInfo.VendorIsVendor()) return;
+	  if (g_pPlayer->m_vtInfo.VendorIsVendor()) return;
 
 		UseSkillShortCut(pShortcut->m_dwId);
 
@@ -2116,15 +2115,13 @@ void CWndMgr::SetPlayer( CMover* pMover )
 
 		g_Neuz.m_camera.SetPos( pMover->GetPos() );		//
 
-		if( CMover::GetActiveMover() == NULL )
+		if(!g_pPlayer)
 		{
-			LPCTSTR szErr = Error( "SetPlayer : ActiveMover 없음" ); 
-			//ADDERRORMSG( szErr );
+			Error( "SetPlayer : ActiveMover 없음" ); 
 		}
-		if( CMover::GetActiveMover()->m_pActMover == NULL )
+		if(g_pPlayer->m_pActMover == NULL )
 		{
-			LPCTSTR szErr = Error( "SetPlayer : ActionMover 없음" ); 
-			//ADDERRORMSG( szErr );
+			Error( "SetPlayer : ActionMover 없음" ); 
 		}
 
 		/*

@@ -1059,12 +1059,12 @@ NEXT:
 #else	// __GPAUTH_01
 			, m_szAccount
 #endif	// __GPAUTH_01
-			, CMover::GetActiveMover()? CMover::GetActiveMover()->m_idPlayer: 0
+			, g_pPlayer ? g_pPlayer->m_idPlayer: 0
 			, m_dwSys
-			, CMover::GetActiveMover()? (int)CMover::GetActiveMover()->GetLevel(): 0
-			, CMover::GetActiveMover()? (int)CMover::GetActiveMover()->GetJob(): 0
-			, CMover::GetActiveMover()? (int)CMover::GetActiveMover()->GetSex(): 0
-			, CMover::GetActiveMover()? CMover::GetActiveMover()->GetName(): ""
+			, g_pPlayer ? (int)g_pPlayer->GetLevel(): 0
+			, g_pPlayer ? (int)g_pPlayer->GetJob(): 0
+			, g_pPlayer ? (int)g_pPlayer->GetSex(): 0
+			, g_pPlayer ? g_pPlayer->GetName(): ""
 			);
 	}
 	

@@ -293,7 +293,7 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 #endif	// __JEFF_9_20
 		pMover->SetAngleX(0);
 		#ifdef __CLIENT
-		if( m_pMover == CMover::GetActiveMover() )
+		if( m_pMover == g_pPlayer )
 			g_Neuz.m_camera.Lock();
 		#endif
 		m_pMover->SetRide( NULL );
@@ -337,7 +337,7 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 	}
 	case OBJMSG_TEMP2:	// 디버깅용 공격동작만 볼때.
 #ifdef __CLIENT
-		if( CMover::GetActiveMover()->IsAuthHigher( AUTH_GAMEMASTER ) )	// 영자 계정일때
+		if(g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )	// 영자 계정일때
 		{
 			CObj *pObj = pMover->GetWorld()->GetObjFocus();
 			g_DPlay.SendCorrReq( pObj );

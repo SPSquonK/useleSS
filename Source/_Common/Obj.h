@@ -67,6 +67,10 @@ class		CAr;
 class CMover;
 #endif
 
+#ifdef __CLIENT
+extern CMover * g_pPlayer;
+#endif
+
 /// 지형 위에 들어가는 모든 객체의 Base
 class CObj  
 { 
@@ -99,7 +103,6 @@ protected:
 public:
 	static int		m_nMethod;				/// Serialize와 관련된 변수 
 	static CObj*	m_pObjHighlight;		/// 하이라이트 된 오브젝트(클라이언트) 
-	static CObj*	m_pObjActive;			/// 활성화된 오브젝트 - 일반적으로 플레이어를 가리킴(클라이언트)  
 	static BOOL		m_bCollision;			/// 시스템이 배경과 오브젝트의 충돌을 할 것인가(클라이언트)  
 	static BOOL		m_bAnimate;				/// 오브젝를 애니메이션 할 것인지. 디버그 옵션(클라이언트)  
 
@@ -256,9 +259,7 @@ public:
 #else	// __WORLDSERVER
 	D3DXVECTOR3		GetLinkPos()					{	return m_vPos;	}
 
-	static void		SetActiveObj( CObj* pObj )		{ m_pObjActive = pObj; }
-	static CObj*	GetActiveObj()					{ return m_pObjActive; }
-	BOOL			IsActiveObj()					{ return m_pObjActive == this; }
+	[[nodiscard]] bool IsActiveMover() const noexcept { return static_cast<const void *>(g_pPlayer) == static_cast<const void *>(this); }
 
 	BOOL			IsCull() { return m_cullstate == CS_OUTSIDE; } 
 	void			SetCullState( CULLSTATE cullState ) { m_cullstate = cullState; }

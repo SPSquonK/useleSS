@@ -280,8 +280,7 @@ namespace	election
 
 BOOL IsActivePlayer( u_long idPlayer )
 {
-	CMover* pPlayer		= CMover::GetActiveMover();
-	return( IsValidObj( pPlayer ) && pPlayer->m_idPlayer == idPlayer );
+	return( IsValidObj( g_pPlayer ) && g_pPlayer->m_idPlayer == idPlayer );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

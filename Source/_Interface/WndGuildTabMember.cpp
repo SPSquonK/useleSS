@@ -318,7 +318,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 		return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
 	}
 
-	CMover* pMover	= (CMover*)CMover::GetActiveObj();
+	CMover* pMover	= g_pPlayer;
 	if( !pMover )
 		return FALSE;
 	CGuild* pGuild	= pMover->GetGuild();
@@ -462,9 +462,9 @@ void CWndGuildTabMember::OnRButtonUp( UINT nFlags, CPoint point )
 	m_wndMenu.AddButton(MGI_NICKNAME   , prj.GetText(TID_GAME_GUILD_NICKNAME));
 	m_wndMenu.AddButton(MGI_GUILD_LEAVE, prj.GetText(TID_GAME_GUILD_LEAVE));
 	
-	if (CMover * pMover = CMover::GetActiveMover()) {
-		CGuild * pGuild = pMover->GetGuild();
-		if (pGuild && pGuild->IsMaster(pMover->m_idPlayer))
+	if (g_pPlayer) {
+		CGuild * pGuild = g_pPlayer->GetGuild();
+		if (pGuild && pGuild->IsMaster(g_pPlayer->m_idPlayer))
 			m_wndMenu.AddButton(MGI_CHG_MASTER, prj.GetText(TID_GAME_CHG_MASTER));
 	}
 

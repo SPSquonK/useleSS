@@ -111,8 +111,6 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 	BOOL	bWalk;
 	static int	s_bWalk2 = 0;
 
-	CMover* pMover = CMover::GetActiveMover();
-
 	CWndChat* pWndChat = (CWndChat*) g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );
 	BOOL bWhisper = g_bKeyTable['R'];
 	if( pWndChat && bWhisper )
@@ -226,6 +224,7 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 	D3DXVECTOR3 vRayEnd;
 	CObj* pFocusObj = pWorld->GetObjFocus();
 
+	CMover * pMover = g_pPlayer;
 	CActionMover *pAct = pMover->m_pActMover;
 	pAct->m_dwCtrlMsg = 0;
 		
@@ -647,19 +646,16 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 //	static	BOOL	s_bFastTurn;
 	int		nMsg = 0;
 //	BOOL	bFlyKey;
- 	BOOL	bUp, bDown, bLeft, bRight;
 	BOOL	bAcc = FALSE;
-	BOOL	bTurbo;
 //	BOOL	bFastTurn = FALSE;
 	BYTE nFrame		= MAX_CORR_SIZE_150;
-	CMover* pMover = CMover::GetActiveMover();
 
-	bUp	  = g_bKeyTable[g_Neuz.Key.chUp];
-	bDown = g_bKeyTable['S'];
+	BOOL bUp	  = g_bKeyTable[g_Neuz.Key.chUp];
+	BOOL bDown = g_bKeyTable['S'];
 
 	// 좌/우 회전
-	bLeft  = g_bKeyTable[g_Neuz.Key.chLeft];
-	bRight = g_bKeyTable['D'];
+	BOOL bLeft  = g_bKeyTable[g_Neuz.Key.chLeft];
+	BOOL bRight = g_bKeyTable['D'];
 	
 	// 급선회.
 //	bFastTurn = g_bKeyTable[ VK_SHIFT ];
@@ -669,7 +665,8 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 	// 가속 상태면 전진 명령 계속 보냄
 	bool fMoved	= false;
 	bool fBehavior	= false;
-	
+
+	CMover * pMover = g_pPlayer;
 	if( pMover->m_pActMover->IsStateFlag( OBJSTAF_ACC ) ) {
 		if( pMover->SendActMsg( OBJMSG_FORWARD ) == 1 ) {
 			fMoved	= true;
@@ -706,7 +703,7 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 	}
 	s_bAccKeyed = bAcc;
 
-	bTurbo = g_bKeyTable[g_Neuz.Key.chWalk];
+	BOOL bTurbo = g_bKeyTable[g_Neuz.Key.chWalk];
 	if( bTurbo && !s_bTurbo2 )		// 토글 방식.
 	{
 		if( pMover->m_pActMover->IsStateFlag( OBJSTAF_TURBO ) )

@@ -669,7 +669,7 @@ void CSfxItemWandAtkAir::Process()
 
 		if( IsValidObj(pObjDest) )
 		{
-			if( pObjDest == CMover::GetActiveMover() )	// ³¯ Å¸°ÙÀ¸·Î Àâ°í ³¯¾Æ¿À´Â ³ðÀº »¡°£»ö
+			if( pObjDest == g_pPlayer )	// ³¯ Å¸°ÙÀ¸·Î Àâ°í ³¯¾Æ¿À´Â ³ðÀº »¡°£»ö
 				g_ParticleMng.CreateParticle( 0, GetPos(), D3DXVECTOR3(0,0,0), pObjDest->GetPos().y );
 			else
 				g_ParticleMng.CreateParticle( 1, GetPos(), D3DXVECTOR3(0,0,0), pObjDest->GetPos().y );

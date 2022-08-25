@@ -2416,7 +2416,7 @@ BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 	}
 	else
 	{
-		if( ( CMover::GetActiveMover() && CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() ) || g_WndMng.GetWndBase(APP_WEBBOX) || g_WndMng.GetWndBase(APP_WEBBOX2) || g_WndMng.GetWndVendorBase() )
+		if( (g_pPlayer && g_pPlayer->m_vtInfo.VendorIsVendor() ) || g_WndMng.GetWndBase(APP_WEBBOX) || g_WndMng.GetWndBase(APP_WEBBOX2) || g_WndMng.GetWndVendorBase() )
 			dwCursor = CUR_NO;
 
 #ifdef __EVE_MINIGAME
@@ -5474,7 +5474,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 #endif //__TRADESYS
 		case MMI_SMELT_SAFETY_GENERAL:
 			{
-				if( CMover::GetActiveMover()->m_vtInfo.GetOther() || CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
+				if( g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_SMELT_SAFETY_ERROR16), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR16) );
 					break;
@@ -5489,7 +5489,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 		case MMI_SMELT_SAFETY_ACCESSORY:
 			{
-				if( CMover::GetActiveMover()->m_vtInfo.GetOther() || CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
+				if(g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_SMELT_SAFETY_ERROR16), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR16) );
 					break;
@@ -5504,7 +5504,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 		case MMI_SMELT_SAFETY_PIERCING:
 			{
-				if( CMover::GetActiveMover()->m_vtInfo.GetOther() || CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
+				if(g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
 				{
 					g_WndMng.PutString( prj.GetText(TID_GAME_SMELT_SAFETY_ERROR16), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR16) );
 					break;
@@ -5519,7 +5519,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 		case MMI_SMELT_SAFETY_ELEMENT:
 			{
-				if( CMover::GetActiveMover()->m_vtInfo.GetOther() || CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
+				if(g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
 				{
 					g_WndMng.PutString( prj.GetText( TID_GAME_SMELT_SAFETY_ERROR16 ), NULL, prj.GetTextColor( TID_GAME_SMELT_SAFETY_ERROR16 ) );
 					break;
@@ -5775,7 +5775,7 @@ CObj* CWndWorld::PickObj( POINT point, BOOL bOnlyNPC )
 
 	// 박스 피킹먼저.
 	pObj = pWorld->PickObject_Fast( rectClient, point, &pWorld->m_matProj, &g_Neuz.m_camera.m_matView, 
-									OF_MOVER|OF_ITEM|OF_CTRL,  CMover::GetActiveMover(), TRUE, bOnlyNPC );
+									OF_MOVER|OF_ITEM|OF_CTRL, g_pPlayer, TRUE, bOnlyNPC );
 	if( pObj )
 	{
 		if( pObj->GetType() == OT_CTRL )
@@ -5795,7 +5795,7 @@ CObj* CWndWorld::PickObj( POINT point, BOOL bOnlyNPC )
 			case RANK_BOSS:
 			case RANK_MATERIAL:
 				// 대형몹의 경우엔 정밀피킹을 한번더 한다
-				pObj = pWorld->PickObject( rectClient, point, &pWorld->m_matProj, &g_Neuz.m_camera.m_matView, OF_MOVER|OF_ITEM, CMover::GetActiveMover(), NULL, FALSE, bOnlyNPC );
+				pObj = pWorld->PickObject( rectClient, point, &pWorld->m_matProj, &g_Neuz.m_camera.m_matView, OF_MOVER|OF_ITEM, g_pPlayer, NULL, FALSE, bOnlyNPC );
 				break;
 			}
 
@@ -6409,7 +6409,7 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 			if( pMover->IsPlayer() &&
 				!pMover->IsActiveMover() &&
 				pMover->m_vtInfo.IsVendorOpen() &&
-				CMover::GetActiveMover()->m_vtInfo.GetOther() == NULL &&
+				g_pPlayer->m_vtInfo.GetOther() == NULL &&
 				pMover->m_fDistCamera < fDistant &&
 				!(GetAsyncKeyState(VK_MENU) & 0x8000) ) //Alt Key 안 눌렀을 경우에만 진입
 			{
@@ -6495,7 +6495,7 @@ void CWndWorld::OnRButtonUp(UINT nFlags, CPoint point)
 			ShowMoverMenu( pMover );
 		}
 	}
-	CMover* pMover = CMover::GetActiveMover();
+	CMover* pMover = g_pPlayer;
 //	pMover->SendActMsg( OBJMSG_ACC_STOP );	// 가속중지
 #ifndef __VRCAMERA
 	if( g_pPlayer && g_pPlayer->m_pActMover->IsFly() && !g_Neuz.m_camera.IsLock() )
@@ -6518,7 +6518,7 @@ void CWndWorld::OnRButtonDown(UINT nFlags, CPoint point)
 		return;
 	if( g_pPlayer == NULL ) 
 		return;
-	if( CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
+	if(g_pPlayer->m_vtInfo.VendorIsVendor() )
 		return;
 	if( g_WndMng.GetWndBase(APP_WEBBOX) || g_WndMng.GetWndBase(APP_WEBBOX2) )
 		return;
@@ -6658,8 +6658,8 @@ void CWndWorld::OnMButtonDblClk( UINT nFlags, CPoint point)
 }
 void CWndWorld::OnRButtonDblClk( UINT nFlags, CPoint point)
 {
-	CMover* pMover = CMover::GetActiveMover();
-//	CRect rect = GetClientRect();
+
+	//	CRect rect = GetClientRect();
 	CWorld* pWorld = g_WorldMng.Get();
 	// 포커스 타겟 해제
 	CObj* pTargetObj = CObj::m_pObjHighlight;
@@ -6798,8 +6798,8 @@ void CWndWorld::OnMouseMove(UINT nFlags, CPoint point)
 #endif //__Y_INTERFACE_VER3
 	{
 		SetCapture();
-		CMover *pPlayer = CMover::GetActiveMover();
-		if( pPlayer->m_pActMover->IsFly() /*&& m_bMButtonDown == FALSE*/ )
+
+		if(g_pPlayer->m_pActMover->IsFly() /*&& m_bMButtonDown == FALSE*/ )
 		{
 			int nWidth = (int)g_Neuz.GetCreationWidth();
 			int nHeight = (int)g_Neuz.GetCreationHeight();
@@ -6951,8 +6951,6 @@ void CWndWorld::OnMouseWndSurface( CPoint point )
 void CWndWorld::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 #ifdef __CLIENT
-	CMover* pMover = CMover::GetActiveMover();
-
 	if( m_bCtrlPushed && nChar == 'F' )
 		m_bRenderFPS  = !m_bRenderFPS;
 	
@@ -7022,8 +7020,7 @@ void CWndWorld::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 			{
 				if( pTargetObj )	// 커서를 대고 있던 오브젝트가 있으면
 				{
-					CMover* pMover = (CMover*)pTargetObj;
-					if( pMover->GetType() == OT_MOVER )
+					if(pTargetObj->GetType() == OT_MOVER )
 						m_dwNextSkill = NEXTSKILL_ACTIONSLOT;	// 스킬 사용 예약.
 				} else
 					m_dwNextSkill = NEXTSKILL_ACTIONSLOT;	// 스킬 사용 예약.

@@ -170,9 +170,9 @@ void CreateFlyParticle( CMover *pMover, float fAngX, int nType )
 		vVel.z = -cosf(fAngXZ) * fDist;
 		vVel.y = -sinf(-fAngH) * fSpeed;
 		if( nType == 1 ) // 근두운용.
-			g_ParticleMng.CreateParticle( 10 + xRandom(3), vPos, vVel, CMover::GetActiveMover()->GetPos().y + 0.5f );
+			g_ParticleMng.CreateParticle( 10 + xRandom(3), vPos, vVel, g_pPlayer->GetPos().y + 0.5f );
 		else
-			g_ParticleMng.CreateParticle( 2 + xRandom(3), vPos, vVel, CMover::GetActiveMover()->GetPos().y + 0.5f );
+			g_ParticleMng.CreateParticle( 2 + xRandom(3), vPos, vVel, g_pPlayer->GetPos().y + 0.5f );
 	}
 	
 }

@@ -765,7 +765,6 @@ protected:
 	TCHAR			m_szName[MAX_NAME];			/// 이름 
 	
 public:
-	static CMover*  GetActiveMover() { return (CMover*)m_pObjActive; }	// 주인공 객체 얻기 	
 	static	int		GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair );
 	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
 	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer* pInventory, EQUIP_INFO * pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
@@ -798,7 +797,6 @@ public:
 	void			InitNPCProperty();							// NPC관련 스크립트 초기화 	
 	BOOL			LoadDialog();								// dialog 스크립트 로드 
 	void			ProcessRecovery();							// HP, MP, FP회복을 처리한다.
-	[[nodiscard]] BOOL IsActiveMover() const { return m_pObjActive == this; }	// 내가 주인공 객체인가?
 	int				IsSteal( CMover *pTarget );		// pTarget을 스틸하려 하는가.
 	int				IsSteal( OBJID idTaget );		// id로 검사하는 버전.
 	u_long			GetPartyId() { return m_idparty; }

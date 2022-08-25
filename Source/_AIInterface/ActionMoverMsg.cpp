@@ -1024,7 +1024,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 #endif	// __JEFF_9_20
 		ClearState();
 #ifdef __CLIENT
-		if( m_pMover == CMover::GetActiveMover() )
+		if( m_pMover == g_pPlayer )
 		{
 			m_pMover->GetWorld()->SetObjFocus( NULL );	// 비행직전에 기존타겟팅을 클리어해준다.
 			g_Neuz.m_camera.Unlock();

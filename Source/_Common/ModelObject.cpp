@@ -1254,7 +1254,7 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 		if( m_pForce2 && m_pForce2->m_nMaxSpline > 0 )	m_pForce2->Draw( pd3dDevice, mWorld );
 		
 #ifdef __CLIENT
-		if( CObj::GetActiveObj() )
+		if( g_pPlayer )
 		{
 			int nEffect, nLevel, nLevel2;
 			nLevel2 = nLeveR;
@@ -1570,31 +1570,8 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 		int nFrame	= ( static_cast<int>( m_fFrameCurrent ) + 1 ) % GetMaxFrame();
 		while( i != nFrame )
 		{
-			BOOL bAttr	= FALSE;
-			/*
-			MOTION_ATTR* pAttr	= IsAttrSound( i );
-			if( pAttr && pAttr->m_nSndID > 0 && m_nPause == 0 )
-			{
-				PLAYSND( pAttr->m_nSndID, pvSndPos );
-				bAttr	= TRUE;
-			}
-			*/
+			// TODO: if IsAttrQuake does not change the state of the memory, we can remove this loop
 			BOOL bQuake	= IsAttrQuake( (float)( i ) );
-			if( bQuake && m_nPause == 0 )
-			{
-				CMover *pMover	= CMover::GetActiveMover();
-				if( pMover )
-				{
-					const ItemProp* pItemProp	= pMover->GetActiveHandItemProp();
-					if( pItemProp && pItemProp->dwItemKind3 != IK3_YOYO && !pMover->IsActiveMover() )
-					{
-						pMover->GetWorld()->m_pCamera->SetQuake( 15 );				
-						bAttr	= TRUE;
-					}
-				}
-			}
-			if( bAttr )
-				break;
 			i	= ( i + 1 ) % GetMaxFrame();
 		}
 	} else
@@ -1622,10 +1599,9 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 				BOOL bQuake	= pObject->IsAttrQuake( (float)( i ) );
 				if( bQuake && m_nPause == 0 )
 				{
-					CMover *pMover	= CMover::GetActiveMover();
-					if( pMover && m_nPause == 0 )
+					if(g_pPlayer && m_nPause == 0 )
 					{
-						pMover->GetWorld()->m_pCamera->SetQuake( 30, 1.0f );
+						g_pPlayer->GetWorld()->m_pCamera->SetQuake( 30, 1.0f );
 						bAttr	= TRUE;
 					}
 				}
@@ -1693,12 +1669,12 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 #endif //__ATTACH_MODEL
 }
 
+#ifdef __CLIENT
 //
 //	검광을 생성
 //	m_pMotion의 첫프레임~마지막프레임까지의 검광을 생성한다.
 void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWORD dwColor, float fSpeed )
 {
-#ifdef __CLIENT
 	D3DXVECTOR3		v1, v2;
 	O3D_ELEMENT		*pElem = GetParts( nParts );		// 오른손 무기의 포인터
 	D3DXMATRIX	m1;
@@ -1767,8 +1743,8 @@ void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWOR
 	m_bEndFrame = FALSE;
 	m_nLoop = nLoop;
 	m_bSlow = FALSE;
-#endif
 }
+#endif
 
 void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nType, int nLevel, int nLevel2 )
 {

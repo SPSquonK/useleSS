@@ -349,7 +349,9 @@ public:
 
 #endif //__WORLDSERVER
 
+#ifdef __CLIENT
 	void	MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow = FALSE, DWORD dwColor = D3DCOLOR_ARGB(255,120,120,230), float fSpeed = 1.0f );		// m_pMotion의 검광을 생성
+#endif
 	void	FrameMove( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
 
 	// collision detect

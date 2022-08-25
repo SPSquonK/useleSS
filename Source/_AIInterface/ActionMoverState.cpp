@@ -937,7 +937,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 		{
 			CMover* pHitObj	= prj.GetMover( m_idTarget );
 		#ifdef __CLIENT
-			D3DXVECTOR3 vDist = pMover->GetPos() - CMover::GetActiveMover()->GetPos();
+			D3DXVECTOR3 vDist = pMover->GetPos() - g_pPlayer->GetPos();
 			float fDistSq = D3DXVec3LengthSq( &vDist );
 			if( pHitObj && pMover->IsPlayer() && fDistSq < 32.0f * 32.0f )		// 멀리있는놈은 파티클 생성안함.
 			{
@@ -999,9 +999,9 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					{
 						if( nEffLevel == 5 )
 						{
-							pParticles = g_ParticleMng.CreateParticle( nEffLevel + xRandom(6), vPos, vVel, CMover::GetActiveMover()->GetPos().y );
+							pParticles = g_ParticleMng.CreateParticle( nEffLevel + xRandom(6), vPos, vVel, g_pPlayer->GetPos().y );
 						} else
-							pParticles = g_ParticleMng.CreateParticle( nEffLevel, vPos, vVel, CMover::GetActiveMover()->GetPos().y );
+							pParticles = g_ParticleMng.CreateParticle( nEffLevel, vPos, vVel, g_pPlayer->GetPos().y );
 					}
 					if( pParticles )
 						pParticles->m_bGravity = TRUE;

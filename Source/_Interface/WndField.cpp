@@ -3759,7 +3759,7 @@ void CWndNavigator::OnLButtonDown(UINT nFlags, CPoint point)
 					CRect rectHittest( x, y, x + 5, y + 5);
 					if( rectHittest.PtInRect( point ) )
 					{
-						if( CMover::GetActiveMover() != pObj )
+						if(g_pPlayer != pObj )
 							pWorld->SetObjFocus( pObj );
 						return;
 					}
@@ -3815,7 +3815,7 @@ void CWndStatus::MakeGaugeVertex()
 	LPWNDCTRL lpExp  = GetWndCtrl( WIDC_CUSTOM4 );
 	LPWNDCTRL lpPxp  = GetWndCtrl( WIDC_CUSTOM5 );
 	LPWNDCTRL lpFace = GetWndCtrl( WIDC_CUSTOM6 );
-	CMover* pMover = CMover::GetActiveMover();
+	CMover* pMover = g_pPlayer;
 
 	if( pMover )
 	{
@@ -3936,7 +3936,7 @@ void CWndStatus::PaintFrame( C2DRender* p2DRender )
 
 void CWndStatus::OnDraw(C2DRender* p2DRender)
 {
-	CMover* pMover = CMover::GetActiveMover();
+	CMover* pMover = g_pPlayer;
 	if( pMover == NULL )
 		return;
 
@@ -12926,7 +12926,7 @@ void CWndSmeltSafety::OnInitialUpdate()
 
 BOOL CWndSmeltSafety::Process()
 {
-	if( CMover::GetActiveMover()->m_vtInfo.GetOther() || CMover::GetActiveMover()->m_vtInfo.VendorIsVendor() )
+	if(g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
 	{
 		Destroy();
 	}
