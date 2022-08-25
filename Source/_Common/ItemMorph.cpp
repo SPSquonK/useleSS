@@ -3,7 +3,13 @@
 #include <format>
 
 namespace ItemMorph {
-  const ItemProp * GetTransyItem(const ItemProp & toMorph) {
+
+	template<typename Implem> std::string GenericBuildListOfExistingMorphs();
+
+	//////////////////////////////////////////////////////////////////////////////
+	// Vanilla Morph
+
+  const ItemProp * VanillaMorph::GetTransyItem(const ItemProp & toMorph) {
 		if (!_IsPotentiallyMorphable(toMorph)) {
 			return nullptr;
 		}
@@ -12,26 +18,23 @@ namespace ItemMorph {
 		// modifying the default behaviour (which is mapping to the farthest possible
 		// item)
 
-		for (int j = 0; j < prj.m_aPropItem.GetSize(); ++j) {
-			const ItemProp * const otherItem = prj.GetItemProp(prj.m_aPropItem.GetSize() - j - 1);
-			if (!otherItem) continue;
-			if (otherItem->dwID == toMorph.dwID) continue;
-			if (!_IsPotentiallyMorphable(*otherItem)) continue;
+		for (const ItemProp & otherItem : prj.m_aPropItem) {
+			if (!_IsPotentiallyMorphable(otherItem)) continue;
 
-			if (IsMorphableTo(toMorph, *otherItem)) {
-				return otherItem;
+			if (IsMorphableTo(toMorph, otherItem)) {
+				return &otherItem;
 			}
 		}
 
 		return nullptr;
   }
 
-	bool _IsPotentiallyMorphable(const ItemProp & pItemProp) {
+	bool VanillaMorph::_IsPotentiallyMorphable(const ItemProp & pItemProp) {
 		return pItemProp.dwItemKind2 == IK2_ARMOR || pItemProp.dwItemKind2 == IK2_ARMORETC
 			&& (pItemProp.dwItemSex == SEX_MALE || pItemProp.dwItemSex == SEX_FEMALE);
 	}
 
-	bool IsMorphableTo(const ItemProp & lhs, const ItemProp & rhs) {
+	bool VanillaMorph::IsMorphableTo(const ItemProp & lhs, const ItemProp & rhs) {
 		if (!_IsPotentiallyMorphable(lhs)) return false;
 		if (!_IsPotentiallyMorphable(rhs)) return false;
 		
@@ -69,8 +72,41 @@ namespace ItemMorph {
 		
 		return lhsHasSet == rhsHasSet;
 	}
+
+	std::string VanillaMorph::BuildListOfExistingMorphs() {
+		return GenericBuildListOfExistingMorphs<VanillaMorph>();
+	}
 	
-	std::string BuildListOfExistingMorphs() {
+	//////////////////////////////////////////////////////////////////////////////
+	// Reflexive Morph
+
+
+	const ItemProp * ReflexiveMorph::GetTransyItem(const ItemProp & toMorph) {
+		return nullptr;
+	}
+
+	bool ReflexiveMorph::_IsPotentiallyMorphable(const ItemProp & pItemProp) {
+		return true;
+	}
+
+	bool ReflexiveMorph::IsMorphableTo(const ItemProp & lhs, const ItemProp & rhs) {
+
+		return false;
+	}
+
+
+
+
+	std::string ReflexiveMorph::BuildListOfExistingMorphs() {
+		return GenericBuildListOfExistingMorphs<VanillaMorph>();
+	}
+
+	/////////////////////////////////////////////////////////////////////////////
+
+	// Generic implementation of BuildListOfExistingMorphs that uses the other
+	// methods to generate the list of morphs.
+	template<typename Implem>
+	std::string GenericBuildListOfExistingMorphs() {
 		std::string output;
 
 		std::vector<const char *> canBeMorphedTo;
@@ -78,9 +114,9 @@ namespace ItemMorph {
 
 		for (const ItemProp & self : prj.m_aPropItem) {
 			canBeMorphedTo.clear();
-			
+
 			for (const ItemProp & other : prj.m_aPropItem) {
-				if (IsMorphableTo(self, other)) {
+				if (Implem::IsMorphableTo(self, other)) {
 					canBeMorphedTo.push_back(other.szName);
 				}
 			}
@@ -100,6 +136,7 @@ namespace ItemMorph {
 
 		return output;
 	}
+
 }
 
 namespace UI {
