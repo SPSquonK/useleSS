@@ -73,10 +73,6 @@ namespace sqktd {
 }
 #endif
 
-namespace sqktd {
-	template<class> inline constexpr bool always_false_v = false;
-}
-
 static constexpr int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
 
 #ifdef __ADD_RESTATE_LOW
@@ -1121,7 +1117,7 @@ public:
 		} else if constexpr (std::is_invocable_v<Generator>) {
 			UpdateItem(itemElem, generator());
 		} else {
-			static_assert(sqktd::always_false_v<Generator>, "Could not find a valid invocation");
+			static_assert(false, "Could not find a valid invocation");
 		}
 	}
 #endif

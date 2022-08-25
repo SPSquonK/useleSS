@@ -50,8 +50,3 @@ namespace sqktd {
 		}
 	}
 }
-
-namespace sqktd {
-	template<typename Wanted, typename ... Possibilities>
-	static constexpr bool IsOneOf = (std::is_same_v<Wanted, Possibilities> || ...);
-}

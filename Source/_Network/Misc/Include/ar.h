@@ -5,7 +5,7 @@
 #include <boost/container/static_vector.hpp>
 #include <optional>
 #include <variant>
-#include "sqktd.h"
+#include "sqktd/type_traits.hpp"
 
 namespace ArHelper {
 	template<typename T>

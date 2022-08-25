@@ -5,7 +5,7 @@
 #include <array>
 #include <memory>
 #include <optional>
-#include "sqktd.h"
+#include "sqktd/type_traits.hpp"
 
 class CQuery {
 public:
