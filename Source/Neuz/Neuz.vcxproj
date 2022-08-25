@@ -104,6 +104,7 @@
     <ClCompile Include="..\_Interface\WndBuffStatus.cpp" />
     <ClCompile Include="..\_Interface\WndCharacter.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
+    <ClCompile Include="..\_Interface\WndEquipmentSex.cpp" />
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp" />
     <ClCompile Include="..\_Interface\WndRankCmn.cpp" />
     <ClCompile Include="..\_Interface\WndSkillTree.cpp" />
@@ -674,6 +675,7 @@
     <ClInclude Include="..\_Interface\WndBuffStatus.h" />
     <ClInclude Include="..\_Interface\WndCharacter.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
+    <ClInclude Include="..\_Interface\WndEquipmentSex.h" />
     <ClInclude Include="..\_Interface\WndRankCmn.h" />
     <ClInclude Include="..\_Interface\WndSkillTree.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
