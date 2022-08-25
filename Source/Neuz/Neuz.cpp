@@ -1736,3 +1736,14 @@ void CNeuzApp::CalculateGameGradeMarkAlpha( void )
 }
 #endif // __CLIENT
 #endif // __GAME_GRADE_SYSTEM
+
+
+void CNeuzApp::SetCharacterName(const char * name) {
+	if (name) {
+		const std::string windowName = std::format("{} - {}", m_strWindowTitle, name);
+		::SetWindowText(g_Neuz.GetSafeHwnd(), windowName.c_str());
+	} else {
+		::SetWindowText(g_Neuz.GetSafeHwnd(), m_strWindowTitle);
+	}
+}
+

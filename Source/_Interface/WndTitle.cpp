@@ -226,6 +226,8 @@ void CWndLogin::OnInitialUpdate()
 	m_wndRegist. Create( "Registration", 0, CRect( 0, 0, 100, 20 ), this, 1001 ); rect.OffsetRect( 120,0 );
 #endif
 
+	g_Neuz.SetCharacterName(nullptr);
+
 	CWndEdit* pAccount = (CWndEdit*) GetDlgItem( WIDC_ACCOUNT );
 	CWndEdit* pPassword = (CWndEdit*) GetDlgItem( WIDC_PASSWORD );
 	CWndButton* pSaveAccount = (CWndButton*) GetDlgItem( WIDC_CHECK1 );

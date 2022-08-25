@@ -233,6 +233,8 @@ public:
 	bool KillWindow(int wParam);
 	void		BeginLoadThread();	
 	void		WaitLoading();
+
+	void SetCharacterName(const char * name);
 };
 
 extern LPCTSTR GetProtocolVersion();

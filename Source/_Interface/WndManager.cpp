@@ -2124,6 +2124,8 @@ void CWndMgr::SetPlayer( CMover* pMover )
 			Error( "SetPlayer : ActionMover ¾øÀ½" ); 
 		}
 
+		g_Neuz.SetCharacterName(pMover->GetName(FALSE));
+
 		/*
 		m_bLock = TRUE;
 		CMover* pMoverTarget = (CMover*)g_WorldMng.Get()->GetObjFocus() ;
