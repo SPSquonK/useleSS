@@ -133,5 +133,5 @@ void CWndMgr::AddAllApplet() {
 	AddAppletFunc(WindowBuilder<CWndHelperWebBox> , APP_WEBBOX2              , _T( "HelperWebBox" )       , _T( "Icon_HelperHelp.dds" ) , GETTEXT( TID_GAME_HELPER_WEB_BOX_ICON_TOOLTIP ), 0 );
 #endif // __NEW_WEB_BOX
 
-	AddAppletFunc(WindowBuilder<CWndEquipmentSex>, APP_EQUIPMENT_SEX, _T("oui"), _T("Icon_Applet.dds"), "Equipement Sex", 'U');
+	AddAppletFunc(WindowBuilder<CWndEquipmentSex>, APP_EQUIPMENT_SEX, _T("EquipmentSex"), _T("Icon_Applet.dds"), "Equipement Sex", 0);
 }

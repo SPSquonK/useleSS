@@ -1811,8 +1811,12 @@ void CWndTaskMenu::OnInitialUpdate()
 #endif
 		;
 
-	AddFolder(TID_APP_INFOMATION)
+	const auto infoFolder = AddFolder(TID_APP_INFOMATION)
 		.AddApplet(APP_INFO_NOTICE, TID_APP_INFO_NOTICE);
+
+	if (g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		infoFolder.AddApplet(APP_EQUIPMENT_SEX, TID_APP_EQUIPMENT_SEX);
+	}
 
 	const auto adderForHelp = AddFolder(TID_APP_HELPER)
 		.AddApplet(APP_HELPER_HELP, TID_APP_HELPER_HELP)
