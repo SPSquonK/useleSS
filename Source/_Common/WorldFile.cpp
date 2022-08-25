@@ -966,7 +966,7 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 		{
 			for( int j = 0; j < m_nLandWidth; j++ )
 			{
-				CLandscape* pLand = m_apLand[ i * m_nLandWidth + j];
+				CLandscape *& pLand = m_apLand[i * m_nLandWidth + j];
 				if( pLand )
 				{
 					if( rect.PtInRect( CPoint( j, i ) ) == FALSE )
