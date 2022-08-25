@@ -314,26 +314,6 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE proc [dbo].[usp_MessengerList]
-@serverindex char(2),
-@m_szName varchar(32)
-as
-
-set nocount on
-
-declare @q1 nvarchar(4000)
-declare @m_idPlayer char(7)
-set @q1 = '
-select @m_idPlayer = m_idPlayer from CHR' + @serverindex + '.CHARACTER_' + @serverindex + '_DBF.dbo.CHARACTER_TBL where m_szName = ''' + @m_szName + ''''
-exec sp_executesql @q1, N'@m_idPlayer char(7) output', @m_idPlayer output
-
-set @q1 = '
-select c.m_szName, m_idPlayer
-from CHR' + @serverindex + '.CHARACTER_' + @serverindex + '_DBF.dbo.tblMessenger as m
-	inner join CHR' + @serverindex + '.CHARACTER_' + @serverindex + '_DBF.dbo.CHARACTER_TBL as c on m.idFriend = c.m_idPlayer
-where m.idPlayer = ''' + @m_idPlayer + ''' and isblock = ''F'' and chUse = ''T'' order by m.idFriend'
-exec sp_executesql @q1
-GO
 /****** Object:  Table [dbo].[Event_PCZone_20091027_01]    Script Date: 04/03/2010 12:41:04 ******/
 SET ANSI_NULLS ON
 GO
@@ -14170,7 +14150,7 @@ set nocount on
 declare @q1 nvarchar(4000), @q2 nvarchar(4000)
 
 set @q1 = '
-			INSERT INTO LOGGING_[&serverindex&]_DBF.dbo.LOG_INS_DUNGEON_TBL(serverindex, m_DungeonID, m_WorldID, m_channel, m_Type, m_State)
+			INSERT INTO USELESS_LOGGING_[&serverindex&]_DBF.dbo.LOG_INS_DUNGEON_TBL(serverindex, m_DungeonID, m_WorldID, m_channel, m_Type, m_State)
 			VALUES(@serverindex, @m_DungeonID, @m_WorldID, @m_channel, @m_Type, @m_State)'
 set @q2 = replace(@q1, '[&serverindex&]', @serverindex)
 exec sp_executesql @q2, N'@serverindex char(2), @m_DungeonID char(7), @m_WorldID int, @m_channel int, @m_Type int, @m_State char(1)', @serverindex = @serverindex, @m_DungeonID = @m_DungeonID, @m_WorldID = @m_WorldID, @m_channel = @m_channel, @m_Type = @m_Type, @m_State = @m_State
@@ -14193,15 +14173,15 @@ set nocount on
 declare @q1 nvarchar(4000), @q2 nvarchar(4000)
 
 set @q1 = '
-delete CHARACTER_[&serverindex&]_DBF.dbo.tblElection
+delete USELESS_CHARACTER_[&serverindex&]_DBF.dbo.tblElection
 where s_week = cast(datepart(yy, getdate()) as varchar(10)) + right(''00'' + cast(datepart(ww, getdate()) as varchar(30)), 2)'
 set @q2 = replace(@q1, '[&serverindex&]', @serverindex)
 exec sp_executesql @q2
 
 set @q1 = '
-insert into CHARACTER_[&serverindex&]_DBF.dbo.tblElection (s_week, chrcount)
+insert into USELESS_HARACTER_[&serverindex&]_DBF.dbo.tblElection (s_week, chrcount)
 select cast(datepart(yy, getdate()) as varchar(10)) + right(''00'' + cast(datepart(ww, getdate()) as varchar(30)), 2), count(distinct m_idPlayer)
-from LOGGING_[&serverindex&]_DBF.dbo.LOG_LOGIN_TBL
+from USELESS_LOGGING_[&serverindex&]_DBF.dbo.LOG_LOGIN_TBL
 where Start_Time >= convert(varchar(20), dateadd(m, -1, getdate()), 112) and CharLevel >= 60'
 set @q2 = replace(@q1, '[&serverindex&]', @serverindex)
 exec sp_executesql @q2
@@ -15333,18 +15313,6 @@ create proc [dbo].[usp_SystemError_Insert]
 as
 set nocount on
 
-/*
-	declare @q1 nvarchar(4000), @q2 nvarchar(4000)
-
-	set @q1 = '
-			INSERT INTO LOGGING_[&serverindex&]_DBF.dbo.tblSystemErrorLog(m_idPlayer, serverindex, account, nChannel, chType, szError)
-			select @m_idPlayer, @serverindex, @account, @nChannel, @chType, @szError'
-	set @q2 = replace(@q1, '[&serverindex&]', @serverindex)
-
-	exec sp_executesql @q2, N'@m_idPlayer char(7), @serverindex char(2), @account varchar(32), @nChannel int, @chType char(1), @szError varchar(1024)', @m_idPlayer = @m_idPlayer, @serverindex = @serverindex, @account = @account, @nChannel = @nChannel, @chType = @chType, @szError = @szError
-
-*/
-
 	INSERT INTO tblSystemErrorLog(m_idPlayer, serverindex, account, nChannel, chType, szError)
 	select @m_idPlayer, @serverindex, @account, @nChannel, @chType, @szError
 
@@ -15511,18 +15479,6 @@ CREATE proc [dbo].[usp_QuizLog_Insert]
 AS
 set nocount on
 
-/*
-	declare @q1 nvarchar(4000), @q2 nvarchar(4000)
-
-	set @q1 = '
-			INSERT INTO LOGGING_[&serverindex&]_DBF.dbo.tblQuizLog(m_idQuizEvent, serverindex, m_nChannel, m_nQuizType)
-			select @idQuizEvent, @serverindex, @nChannel, @nQuizType'
-	set @q2 = replace(@q1, '[&serverindex&]', @serverindex)
-
-	exec sp_executesql @q2, N'@serverindex char(2), @idQuizEvent int, @nChannel int, @nQuizType int ', @serverindex = @serverindex, @idQuizEvent = @idQuizEvent, @nChannel = @nChannel, @nQuizType = @nQuizType
-
-*/
-
 	INSERT INTO tblQuizLog(m_idQuizEvent, serverindex, m_nChannel, m_nQuizType)
 	select @idQuizEvent, @serverindex, @nChannel, @nQuizType
 
@@ -15647,18 +15603,6 @@ CREATE proc [dbo].[usp_CampusPointLog_Insert]
 AS
 set nocount on
 
-/*
-	declare @q1 nvarchar(4000), @q2 nvarchar(4000)
-
-	set @q1 = '
-			INSERT INTO LOGGING_[&serverindex&]_DBF.dbo.tblCampus_PointLog(m_idPlayer, serverindex, chState, nPrevPoint, nCurrPoint)
-			select @m_idPlayer, @serverindex, @chState, @nPrevPoint, @nCurrPoint'
-	set @q2 = replace(@q1, '[&serverindex&]', @serverindex)
-
-	exec sp_executesql @q2, N'@m_idPlayer char(7), @serverindex char(2), @chState char(1), @nPrevPoint int, @nCurrPoint int', @m_idPlayer = @m_idPlayer, @serverindex = @serverindex, @chState = @chState, @nPrevPoint = @nPrevPoint, @nCurrPoint = @nCurrPoint
-
-*/
-
 	INSERT INTO tblCampus_PointLog(m_idPlayer, serverindex, chState, nPrevPoint, nCurrPoint)
 	select @m_idPlayer, @serverindex, @chState, @nPrevPoint, @nCurrPoint
 
@@ -15702,18 +15646,6 @@ CREATE proc [dbo].[usp_CampusLog_Insert]
  @chState  char(1)  
 AS  
 set nocount on  
-  
-/*  
- declare @q1 nvarchar(4000), @q2 nvarchar(4000)  
-  
- set @q1 = '  
-   INSERT INTO LOGGING_[&serverindex&]_DBF.dbo.tblCampusLog(m_idMaster, serverindex, m_idPupil, idCampus, chState)  
-   select @m_idMaster, @serverindex, @idCampus, @m_idPupil, @chState'  
- set @q2 = replace(@q1, '[&serverindex&]', @serverindex)  
-  
- exec sp_executesql @q2, N'@serverindex char(2), @m_idMaster char(7), @m_idPupil char(7), @idCampus int, @chState char(1)', @serverindex = @serverindex, @m_idMaster = @m_idMaster, @idCampus = @idCampus, @m_idPupil = @m_idPupil, @chState = @chState  
-  
-*/  
   
  INSERT INTO tblCampusLog(m_idMaster, serverindex, idCampus, m_idPupil, chState)  
  select @m_idMaster, @serverindex, @idCampus, @m_idPupil, @chState  
