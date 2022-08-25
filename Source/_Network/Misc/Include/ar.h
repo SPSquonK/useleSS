@@ -5,22 +5,16 @@
 #include <boost/container/static_vector.hpp>
 #include <optional>
 #include <variant>
+#include "sqktd.h"
 
 namespace ArHelper {
 	template<typename T>
 	concept UnitTypes =
-		std::same_as<T, BYTE>
-		|| std::same_as<T, WORD>
-		|| std::same_as<T, LONG>
-		|| std::same_as<T, DWORD>
-		|| std::same_as<T, float>
-		|| std::same_as<T, double>
-		|| std::same_as<T, int>
-		|| std::same_as<T, short>
-		|| std::same_as<T, char>
-		|| std::same_as<T, unsigned int>
-		|| std::same_as<T, __int64>
-		|| std::same_as<T, bool>;
+		sqktd::IsOneOf<T,
+		BYTE, WORD, LONG, DWORD,
+		float, double, int, short,
+		char, unsigned int, __int64, bool
+		>;
 }
 
 

@@ -1843,9 +1843,6 @@
     <ClInclude Include="..\_Interface\WndRankCmn.h">
       <Filter>Source Files\_Interface\WndApplet\Rank</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\Flasher.h">
-      <Filter>Source Files\_Interface\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Interface\WndBuffStatus.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>

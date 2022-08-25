@@ -21,7 +21,7 @@
 #include "misc.h"
 #include "..\_Network\Objects\Obj.h"
 #include "AccountCacheMgr.h"
-#include "MutexedObject.h"
+#include "sqktd/mutexed_object.h"
 
 #ifdef __TRANS_0413
 	const int	MAX_GETTHREAD_SIZE		= 8;

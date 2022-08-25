@@ -671,7 +671,6 @@
     <ClInclude Include="..\_Common\SkillsOfMover.h" />
     <ClInclude Include="..\_Common\UpdateItem.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
-    <ClInclude Include="..\_Interface\Flasher.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndBuffStatus.h" />
     <ClInclude Include="..\_Interface\WndCharacter.h" />
