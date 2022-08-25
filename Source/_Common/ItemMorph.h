@@ -1,18 +1,6 @@
 #pragma once
 
-namespace sqktd {
-  template<bool Boolean, typename A, typename B>
-  struct ChooseType {};
-
-  template<typename A, typename B>
-  struct ChooseType<true, A, B> { using type = A; };
-
-  template<typename A, typename B>
-  struct ChooseType<false, A, B> { using type = B; };
-
-  template<bool Boolean, typename A, typename B>
-  using ChooseTypeV = ChooseType<Boolean, A, B>::type;
-}
+#include <type_traits>
 
 namespace ItemMorph {
   // TODO: a Morph concept?
@@ -39,7 +27,7 @@ namespace ItemMorph {
     static std::string BuildListOfExistingMorphs();
   };
   
-  using CurrentMorph = sqktd::ChooseTypeV<!::useless_params::ReflexiveMorph, VanillaMorph, ReflexiveMorph>;
+  using CurrentMorph = std::conditional_t<!::useless_params::ReflexiveMorph, VanillaMorph, ReflexiveMorph>;
 
   /// Return the item prop that the given itemprop morphs to
   inline const ItemProp * GetTransyItem(const ItemProp & toMorph) {
