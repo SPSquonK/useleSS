@@ -45,8 +45,4 @@ public:
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
-
-	static std::map<int, CString> BuildReverseIndex(
-		const std::map<CString, int> & defines, std::string_view prefix
-	);
 };

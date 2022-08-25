@@ -56,9 +56,19 @@ The guild master can change their guild logo or even remove it.
 This feature can be disabled in *CommonHeader.h*.
 
 
-# AutoMorph
+## Morph item
+
+### Auto morph
 
 If you are a trying to equip equipment of the opposite gender, the equipment will 
 automatically change its gender.
 
 This feature can be disabled in *CommonHeader.h*.
+
+### Reflexive morph
+
+A new morph algorithm is used based on the II names of the items. This allow to morph
+more things, in particular fashion items.
+
+This feature can be disabled in *CommonHeader.h*.
+

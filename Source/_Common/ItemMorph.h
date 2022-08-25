@@ -39,7 +39,7 @@ namespace ItemMorph {
     static std::string BuildListOfExistingMorphs();
   };
   
-  using CurrentMorph = VanillaMorph; // sqktd::ChooseTypeV<!::useless_params::AutoMorph, VanillaMorph, ReflexiveMorph>;
+  using CurrentMorph = sqktd::ChooseTypeV<!::useless_params::ReflexiveMorph, VanillaMorph, ReflexiveMorph>;
 
   /// Return the item prop that the given itemprop morphs to
   inline const ItemProp * GetTransyItem(const ItemProp & toMorph) {

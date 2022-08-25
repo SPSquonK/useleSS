@@ -82,20 +82,72 @@ namespace ItemMorph {
 
 
 	const ItemProp * ReflexiveMorph::GetTransyItem(const ItemProp & toMorph) {
+		if (!_IsPotentiallyMorphable(toMorph)) return nullptr;
+
+		using GenderTextPair = std::pair<const char *, const char *>;
+		
+		static constexpr std::initializer_list<std::pair<const char *, const char *>> pairs = {
+			GenderTextPair("_M_", "_F_"),
+			GenderTextPair("M_CHR_TUXEDO01", "F_CHR_DRESS01"),
+			GenderTextPair("M_CHR_TUXEDO02", "F_CHR_DRESS03"),
+			GenderTextPair("M_CHR_TUXEDO03", "F_CHR_DRESS04"),
+			GenderTextPair("M_CHR_BULL01", "F_CHR_COW01"),
+			GenderTextPair("M_CHR_CHINESE01", "F_CHR_MARTIALART01"),
+			GenderTextPair("M_CHR_HATTER01", "F_CHR_ALICE01"),
+		};
+
+		const auto & reverseIndex = CScript::m_defines.GetOrBuild("II_");
+
+		const auto nameIt = reverseIndex.find(toMorph.dwID);
+		if (nameIt == reverseIndex.end()) return nullptr;
+		
+		const CString & myName = nameIt->second;
+
+		constexpr auto ForgeNewName = [](const char * name, const char * from, const char * to) -> CString {
+			CString res = name;
+			const auto index = res.Find(from);
+
+			if (index == -1) return "";
+
+			return res.Left(index) + to + res.Right(res.GetLength() - index - strlen(from));
+		};
+
+		for (const auto & [male, female] : pairs) {
+			const CString & newName = ForgeNewName(
+				myName,
+				toMorph.dwItemSex == SEX_MALE ? male : female,
+				toMorph.dwItemSex == SEX_MALE ? female : male
+			);
+
+			if (newName.IsEmpty()) continue;
+
+			const auto oppositeId = CScript::m_defines.Find(newName);
+			if (!oppositeId) continue;
+
+			const ItemProp * oppositeItem = prj.m_aPropItem.GetAt(oppositeId.value());
+			if (!oppositeItem) continue;
+
+			if (oppositeItem->dwItemSex == SEX_FEMALE) {
+				if (toMorph.dwItemSex != SEX_MALE) continue;
+			} else if (oppositeItem->dwItemSex == SEX_MALE) {
+				if (toMorph.dwItemSex != SEX_FEMALE) continue;
+			} else {
+				continue;
+			}
+
+			return oppositeItem;
+		}
+
 		return nullptr;
 	}
 
 	bool ReflexiveMorph::_IsPotentiallyMorphable(const ItemProp & pItemProp) {
-		return true;
+		return pItemProp.dwItemSex == SEX_MALE || pItemProp.dwItemSex == SEX_FEMALE;
 	}
 
 	bool ReflexiveMorph::IsMorphableTo(const ItemProp & lhs, const ItemProp & rhs) {
-
-		return false;
+		return GetTransyItem(lhs) == &rhs;
 	}
-
-
-
 
 	std::string ReflexiveMorph::BuildListOfExistingMorphs() {
 		return GenericBuildListOfExistingMorphs<VanillaMorph>();

@@ -154,6 +154,7 @@ void CWndEquipmentSex::DisplayedDisplayer::Render(
 			p2DRender->TextOut(tidPoint.x, tidPoint.y, it->GetString(), color);
 		}
 
+//		// Name display
 //		CPoint textPoint = rect.TopLeft()
 //			+ CPoint(64 + 3 + 224, 0)
 //			+ CPoint(0, startYOffset + i * 18);
@@ -171,17 +172,6 @@ void CWndEquipmentSex::DisplayedDisplayer::Render(
 		0xFF808080
 	);
 }
-
-struct CStringDetectedMorphs {
-	std::map<const ItemProp *, const ItemProp *> pairs;
-	std::set<const ItemProp *> contained;
-
-	CStringDetectedMorphs();
-
-	bool Contains(const ItemProp * prop) const {
-		return contained.contains(prop);
-	}
-};
 
 void CWndEquipmentSex::Lists::EnsureBuilt() {
 	if (!empty) {
@@ -214,22 +204,27 @@ void CWndEquipmentSex::Lists::EnsureBuilt() {
 	Builder forDetected;
 	Builder forUnattributed;
 
-	CStringDetectedMorphs stringDetector;
-
 	for (const ItemProp & itemProp : prj.m_aPropItem) {
 		if (itemProp.dwItemSex != SEX_MALE && itemProp.dwItemSex != SEX_FEMALE) continue;
 
-		const ItemProp * vanilla = ItemMorph::GetTransyItem(itemProp);
+		const ItemProp * vanilla = ItemMorph::VanillaMorph::GetTransyItem(itemProp);
 		if (vanilla) forVanilla.Push(&itemProp, vanilla);
 
-		if (itemProp.dwItemSex == SEX_MALE) {
-			const auto propFem = stringDetector.pairs.find(&itemProp);
-			if (propFem != stringDetector.pairs.end()) {
-				forDetected.Push(&itemProp, propFem->second);
-			}
+		const ItemProp * reflexive = ItemMorph::ReflexiveMorph::GetTransyItem(itemProp);
+		if (reflexive) forDetected.Push(&itemProp, reflexive);
+
+		if (vanilla && vanilla != reflexive) {
+			const std::string s = std::format(
+				"Error: Item {} maps to {} in vanilla and to {} in reflexive",
+				itemProp.szName,
+				vanilla->szName,
+				reflexive ? reflexive->szName : "nothing"
+			);
+
+			g_WndMng.PutString(s.c_str());
 		}
 
-		if (!vanilla && !stringDetector.Contains(&itemProp)) {
+		if (!vanilla && !reflexive) {
 			forUnattributed.Push(&itemProp, vanilla);
 		}
 	}
@@ -257,85 +252,3 @@ std::string CWndEquipmentSex::Displayed::ToString(const std::map<int, CString> &
 
 	return res;
 }
-
-std::map<int, CString> CWndEquipmentSex::BuildReverseIndex(
-	const std::map<CString, int> & defines, std::string_view prefix
-) {
-	std::map<int, CString> reverseIndex;
-
-	for (const auto & [textId, numberId] : defines) {
-		if (textId.Left(prefix.size()) == prefix.data()) {
-			const bool dupe = reverseIndex.insert_or_assign(numberId, textId).second;
-			if (dupe) {
-				Error("BuildReverseIndex(%s): Duplicated entry %d - %s and %s",
-					prefix.data(), numberId, reverseIndex[numberId], textId.GetString()
-				);
-			}
-		}
-	}
-
-	return reverseIndex;
-}
-
-CStringDetectedMorphs::CStringDetectedMorphs() {
-	const auto & reverseIndex = CScript::m_defines.GetOrBuild("II_");
-	if (reverseIndex.size() == 0) return;
-
-	const auto trySomething = [&](const ItemProp & maleItem, const CString & name) -> bool {
-		if (name == "") return false;
-
-		const auto idIt = CScript::m_defines.Find(name);
-		if (!idIt) return false;
-
-		const ItemProp * femaleItem = prj.m_aPropItem.GetAt(idIt.value());
-		if (!femaleItem) return false;
-		if (femaleItem->dwItemSex != SEX_FEMALE) return false;
-
-		pairs.emplace(&maleItem, femaleItem);
-		contained.emplace(&maleItem);
-		contained.emplace(femaleItem);
-
-		return true;
-	};
-
-	constexpr auto Replace = [](const char * name, const char * from, const char * to) -> CString {
-		CString res = name;
-		const auto index = res.Find(from);
-
-		if (index == -1) return "";
-
-		return res.Left(index) + to + res.Right(res.GetLength() - index - strlen(from));
-	};
-
-
-	using DCCS = std::pair<const char *, const char *>;
-
-	const std::initializer_list<std::pair<const char *, const char *>> pairs = {
-		DCCS("_M_", "_F_"),
-		DCCS("M_CHR_TUXEDO01", "F_CHR_DRESS01"),
-		DCCS("M_CHR_TUXEDO02", "F_CHR_DRESS03"),
-		DCCS("M_CHR_TUXEDO03", "F_CHR_DRESS04"),
-		DCCS("M_CHR_BULL01", "F_CHR_COW01"),
-		DCCS("M_CHR_CHINESE01", "F_CHR_MARTIALART01"),
-		DCCS("M_CHR_HATTER01", "F_CHR_ALICE01"),
-	};
-
-	for (const ItemProp & prop : prj.m_aPropItem) {
-		if (prop.dwItemSex != SEX_MALE) continue;
-
-
-		for (const auto [male, female] : pairs) {
-			bool ok = trySomething(prop, Replace(reverseIndex.find(prop.dwID)->second, male, female));
-			if (ok) break;
-		}
-
-	}
-
-	// II_ARM_F_CLO_MAS_WIG07BL_1 II_ARM_M_CLO_MAS_WIG09BR_1
-	// II_ARM_F_CLO_MAS_WIG07B_1 II_ARM_M_CLO_MAS_WIG09B_1
-	// II_ARM_F_CLO_MAS_WIG07BR_1 II_ARM_M_CLO_MAS_WIG09S_1
-	// II_ARM_M_CLO_MAS_WIG04BL II_ARM_F_CLO_MAS_WIG04GO
-	// II_ARM_M_CLO_MAS_WIG04SB II_ARM_F_CLO_MAS_WIG04G
-	// II_ARM_M_CLO_MAS_WIG06R II_ARM_F_CLO_MAS_WIG06B
-}
-
