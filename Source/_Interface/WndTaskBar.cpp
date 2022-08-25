@@ -1875,7 +1875,7 @@ CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nIDNewItem,	LPCTS
 	pWndButton->m_cHotkey = pAppletFunc->m_cHotkey;
 	CString string = pAppletFunc->m_pAppletDesc;
 	if (pAppletFunc->m_cHotkey != 0) {
-		string.AppendFormat("\n[%s %c]", pAppletFunc->m_pAppletDesc, prj.GetText(TID_GAME_TOOLTIP_HOTKEY), pAppletFunc->m_cHotkey);
+		string.AppendFormat("\n[%s %c]", prj.GetText(TID_GAME_TOOLTIP_HOTKEY), pAppletFunc->m_cHotkey);
 	}
 	pWndButton->m_strToolTip = string;
 	pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Applet; 
