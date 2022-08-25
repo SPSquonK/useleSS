@@ -271,19 +271,19 @@ CStringDetectedMorphs::CStringDetectedMorphs() {
 	const auto reverseIndex = CWndEquipmentSex::BuildReverseIndex(CScript::m_defines, "II_");
 	if (reverseIndex.size() == 0) return;
 
-	const auto trySomething = [&](const ItemProp * maleItem, const CString & name) -> bool {
+	const auto trySomething = [&](const ItemProp & maleItem, const CString & name) -> bool {
 		if (name == "") return false;
 
 		const auto idIt = CScript::m_defines.find(name);
 		if (idIt == CScript::m_defines.end()) return false;
 
-		const ItemProp * prop = prj.m_aPropItem.GetAt(idIt->second);
-		if (!prop) return false;
-		if (prop->dwItemSex != SEX_FEMALE) return false;
+		const ItemProp * femaleItem = prj.m_aPropItem.GetAt(idIt->second);
+		if (!femaleItem) return false;
+		if (femaleItem->dwItemSex != SEX_FEMALE) return false;
 
-		pairs.emplace(maleItem, prop);
-		contained.emplace(maleItem);
-		contained.emplace(prop);
+		pairs.emplace(&maleItem, femaleItem);
+		contained.emplace(&maleItem);
+		contained.emplace(femaleItem);
 
 		return true;
 	};
@@ -310,15 +310,12 @@ CStringDetectedMorphs::CStringDetectedMorphs() {
 		DCCS("M_CHR_HATTER01", "F_CHR_ALICE01"),
 	};
 
-	for (size_t i = 0; i != prj.m_aPropItem.GetSize(); ++i) {
-		ItemProp * prop = prj.m_aPropItem.GetAt(i);
-		if (!prop) continue;
-		if (prop->dwID != i) continue;
-		if (prop->dwItemSex != SEX_MALE) continue;
+	for (const ItemProp & prop : prj.m_aPropItem) {
+		if (prop.dwItemSex != SEX_MALE) continue;
 
 
 		for (const auto [male, female] : pairs) {
-			bool ok = trySomething(prop, Replace(reverseIndex.at(prop->dwID), male, female));
+			bool ok = trySomething(prop, Replace(reverseIndex.at(prop.dwID), male, female));
 			if (ok) break;
 		}
 
