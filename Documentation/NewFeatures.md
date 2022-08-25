@@ -54,3 +54,11 @@ if you are master, you can only access master jobs.
 
 The guild master can change their guild logo or even remove it.
 This feature can be disabled in *CommonHeader.h*.
+
+
+# AutoMorph
+
+If you are a trying to equip equipment of the opposite gender, the equipment will 
+automatically change its gender.
+
+This feature can be disabled in *CommonHeader.h*.

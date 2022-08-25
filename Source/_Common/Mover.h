@@ -867,6 +867,7 @@ public:
 	
 	struct EquipAble {
 		struct Yes { Yes() = default; };
+		struct AutoMorph { AutoMorph() = default; };
 		struct No {
 		private:
 			std::optional<DWORD> tooltip;
@@ -885,7 +886,7 @@ public:
 			void Display(CMover & mover) const;
 		};
 
-		using Result = std::variant<Yes, No>;
+		using Result = std::variant<Yes, AutoMorph, No>;
 	};
 	
 	[[nodiscard]] EquipAble::Result IsEquipAble(const CItemElem & pItem, bool bIgnoreLevel = false) const;		// 장착가능한가?

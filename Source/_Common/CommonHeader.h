@@ -35,5 +35,8 @@ namespace std_ {
 namespace useless_params {
   // Guild master can change their guild logo after choosing one.
   static constexpr bool CanChangeLogo = true;
+  // Items of the wrong gender are automatically morphed when trying to equip them.
+  static constexpr bool AutoMorph = true;
+
 }
 
