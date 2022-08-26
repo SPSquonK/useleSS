@@ -62,54 +62,45 @@ public:
 };
 #endif
 
-class CObjMap 
-{
+class CObjMap final {
 public:
 #ifndef __CLIENT
 	CIdStack					m_idStack;
 #endif
-	std::map<DWORD, CCtrl*>		m_map;
+	std::map<DWORD, CCtrl *> m_map;
 
 public:
-	BOOL		Add( CCtrl* pCtrl );
-	BOOL		RemoveKey( DWORD dwKey );
-	BOOL		Lookup( DWORD dwKey, CCtrl* & value );
+	bool Add(CCtrl * pCtrl);
+	bool RemoveKey(DWORD dwKey);
+	CCtrl * Find(DWORD dwKey) const;
 };
 
-inline BOOL CObjMap::Lookup( DWORD dwKey, CCtrl* & value )
-{
-	const auto it = m_map.find( dwKey );
-	if( it == m_map.end() )
-		return FALSE;
-
-	value = it->second;
-	return TRUE;
+inline CCtrl * CObjMap::Find(const DWORD dwKey) const {
+	const auto it = m_map.find(dwKey);
+	return it != m_map.end() ? it->second : nullptr;
 }
 
-inline BOOL CObjMap::RemoveKey( DWORD dwKey )
-{
-	return m_map.erase( dwKey ) > 0;
+inline bool CObjMap::RemoveKey(const DWORD dwKey) {
+	return m_map.erase(dwKey) > 0;
 }
 
-inline BOOL CObjMap::Add( CCtrl* pCtrl )
-{
+inline bool CObjMap::Add(CCtrl * const pCtrl) {
 	OBJID id = pCtrl->GetId();
-	if( id == NULL_ID )
-	{
-	#ifdef __CLIENT
-		assert( 0 );
-		return FALSE;
-	#else
+	if (id == NULL_ID) {
+#ifdef __CLIENT
+		assert(0);
+		return false;
+#else
 		id = m_idStack.GetId();
-		pCtrl->SetId( id );
-	#endif
+		pCtrl->SetId(id);
+#endif
 	}
 
-	if( m_map.emplace(id, pCtrl).second )
-		return TRUE;
+	if (m_map.emplace(id, pCtrl).second)
+		return true;
 
-	assert( 0 );
-	return FALSE;
+	assert(0);
+	return false;
 }
 
 
