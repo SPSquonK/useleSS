@@ -1,5 +1,13 @@
 # sqktd
 
+## Algorithms
+
+`#include "sqktd/algorithm.h`
+
+- `find_in_map(map, key, defaultValue)` will basically return `map[key] || defaultValue`.
+
+- `all_are(collection, value)` returns true if all values in `collection` are equal to `value`. Usefull for checking the return values of multiple BindParameter calls.
+
 ## Copyable Unique Ptr
 
 `#include "sqktd/copyable_unique_ptr.hpp`
