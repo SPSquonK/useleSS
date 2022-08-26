@@ -558,12 +558,7 @@ namespace WndMgr {
 
 void CWndMgr::DestroyApplet()
 {
-	CWndNeuz* pWndBase;
-	DWORD dwIdApplet;
-	POSITION pos = m_mapWndApplet.GetStartPosition();
-	while( pos )
-	{
-		m_mapWndApplet.GetNextAssoc( pos, dwIdApplet, (void*&)pWndBase );
+	for (auto & [dwIdApplet, pWndBase] : m_mapWndApplet) {
 		// 윈도가 종료될 때 WndRect정보를 저장하지 않게 해야한다.
 		// 여기서 파괴되는 것은 오픈되어 있는 것으로 간주해야되는데,
 		// 내부에서 파괴되면 크로즈로 판단하기 때문에 재실행시 윈도가 열리지 않게 된다.
@@ -575,10 +570,11 @@ void CWndMgr::DestroyApplet()
 		// 이제 다 끝났다. 파괴하자.
 		safe_delete( pWndBase );
 	}
+	m_mapWndApplet.clear();
+
 	// 파괴할 때 인터페이스 정보가 저장된다. 따라서 파괴 이후 save하기.
 	if( m_bTitle == FALSE )
 		SaveRegInfo( "regInfo.dat" );
-	m_mapWndApplet.RemoveAll();
 }
 
 BOOL CWndMgr::Initialize(CWndBase* pParentWnd)
@@ -657,7 +653,6 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 	//else
 	if( pWndChild )
 	{
-		CWndNeuz* pWndBase;
 #ifndef __IMPROVE_MAP_SYSTEM
 		if( pWndChild->GetWndId() == APP_MAP_EX )
 		{
@@ -673,9 +668,10 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 			//return;
 		}
 		else
-		if( m_mapWndApplet.Lookup( pWndChild->GetWndId(), (void*&) pWndBase ) == TRUE )
+		if( auto it = m_mapWndApplet.find( pWndChild->GetWndId() ); it != m_mapWndApplet.end())
 		{
-			m_mapWndApplet.RemoveKey( pWndChild->GetWndId() );
+			CWndNeuz * pWndBase = it->second;
+			m_mapWndApplet.erase(it);
 			// 애플렛으로 등록된 윈도만 파괴할 때 윈도의 정보를 저장한다. 
 			if( pWndBase->IsPutRegInfo() )
 				PutRegInfo( pWndBase, FALSE );
@@ -1067,12 +1063,9 @@ DWORD CWndMgr::GetAppletId( TCHAR* lpszAppletName ) {
 	}
 	return 0xffffffff;
 }
-CWndBase* CWndMgr::GetApplet( DWORD dwIdApplet )
-{
-	CWndBase* pWndBase;
-	if( m_mapWndApplet.Lookup( dwIdApplet, (void*&)pWndBase ) == FALSE )
-		return NULL;
-	return pWndBase;
+
+CWndBase * CWndMgr::GetApplet(DWORD dwIdApplet) {
+	return sqktd::find_in_map(m_mapWndApplet, dwIdApplet, nullptr);
 }
 
 void CWndMgr::__HotKeyChange(DWORD dwId, char *pch)
@@ -1147,7 +1140,7 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 		itWndRegInfo->second.RestoreParameters(*pWndBase);
 	}
 
-	m_mapWndApplet.SetAt( dwIdApplet, pWndBase );
+	m_mapWndApplet.insert_or_assign(dwIdApplet, pWndBase);
 
 	return pWndBase;
 }
@@ -3190,20 +3183,15 @@ BOOL CWndMgr::CheckConfirm(CItemElem * pItem )
 
 void CWndMgr::ClearAllWnd()
 {
-	CWndNeuz* pWndBase;
-	DWORD dwIdApplet;
 	if(!m_clearFlag)
 	{
-		POSITION pos = m_mapWndApplet.GetStartPosition();
-		while( pos )
-		{
-			m_mapWndApplet.GetNextAssoc( pos, dwIdApplet, (void*&)pWndBase );
-			if( pWndBase && pWndBase->GetWndId() != APP_WORLD)
-			{
+		for (CWndNeuz * pWndBase : m_mapWndApplet | std::views::values) {
+			if (pWndBase && pWndBase->GetWndId() != APP_WORLD) {
 				m_tempWndId.push_back(pWndBase->GetWndId());
 				pWndBase->SetVisible(FALSE);
 			}
 		}
+
 		CWndChat* pWndChat = (CWndChat*)g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );
 		if(pWndChat != NULL && pWndChat->m_bChatLog)
 			m_pWndChatLog->SetVisible(FALSE);
@@ -3236,15 +3224,8 @@ void CWndMgr::RestoreWnd() {
 	if (!m_clearFlag) return;
 
 	for (const int wndId : m_tempWndId) {
-		POSITION pos = m_mapWndApplet.GetStartPosition();
-		while( pos )
-		{
-			DWORD dwIdApplet;
-			CWndBase * pWndBase;
-			m_mapWndApplet.GetNextAssoc( pos, dwIdApplet, (void*&)pWndBase );
-
-			if(wndId == pWndBase->GetWndId())
-			{
+		for (const auto & [dwIdApplet, pWndBase] : m_mapWndApplet) {
+			if (wndId == pWndBase->GetWndId()) {
 				pWndBase->SetVisible(TRUE);
 				break;
 			}

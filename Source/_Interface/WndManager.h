@@ -643,7 +643,7 @@ public:
 	void ChangeTextLetter(CItemElem * pItemBase);
 	// Field
 
-	CMapDWordToPtr	m_mapWndApplet ;
+	std::map<DWORD, CWndNeuz *> m_mapWndApplet;
 	std::map<DWORD, WndMgr::RegInfo>  m_mapWndRegInfo;
 
 	void PutDefinedString( DWORD dwText, ... );
