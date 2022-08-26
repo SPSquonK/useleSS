@@ -21,13 +21,17 @@ struct MessengerHelper {
 	struct Sorter {
 		enum class By { Channel, Status, Level, Job, Name };
 
-		bool channelAsc = false;
+		explicit Sorter(By defaultSort = By::Channel)
+			: lastSort(defaultSort) {
+		}
+
+		bool channelAsc = true;
 		bool statusAsc  = true;
 		bool levelAsc   = true;
 		bool jobAsc     = true;
 		bool nameAsc    = true;
 
-		By lastSort = By::Channel;
+		By lastSort;
 
 		void ChangeSort(By criterion, std::span<__MESSENGER_PLAYER> list);
 		void ReApply(std::span<__MESSENGER_PLAYER> list) const;
@@ -45,7 +49,7 @@ public:
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
-	MessengerHelper::Sorter m_sortStrategy;
+	MessengerHelper::Sorter m_sortStrategy{ MessengerHelper::Sorter::By::Status };
 
 public:
 	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
@@ -85,7 +89,7 @@ public:
 	std::vector < __MESSENGER_PLAYER > m_vPlayerList;
 
 private:
-	MessengerHelper::Sorter m_sortStrategy;
+	MessengerHelper::Sorter m_sortStrategy{ MessengerHelper::Sorter::By::Channel };
 
 public:
 	void Create( const RECT& rect, CWndBase* pParentWnd, UINT nID );
@@ -135,7 +139,7 @@ public:
 
 private:
 	enum { MASTER_RENDERING_POSITION = 43, DISCIPLE_RENDERING_POSITION = 122 };
-	MessengerHelper::Sorter m_sortStrategy;
+	MessengerHelper::Sorter m_sortStrategy{ MessengerHelper::Sorter::By::Level };
 
 	BOOL m_bCurSelectedMaster  = FALSE;
 	int m_nCurSelectedDisciple = -1;
