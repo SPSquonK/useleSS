@@ -32,6 +32,24 @@ CString GetTextureName(CString strTex,int nIndex)
 	return strRet;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+SfxKeyFrame SfxKeyFrame::FromFile(CResFile & file) {
+	SfxKeyFrame Key;
+	file.Read(&(Key.nFrame), sizeof(WORD));
+	file.Read(&(Key.vPos), sizeof(D3DXVECTOR3));
+	file.Read(&(Key.vPosRotate), sizeof(D3DXVECTOR3));
+	file.Read(&(Key.vScale), sizeof(D3DXVECTOR3));
+	file.Read(&(Key.vRotate), sizeof(D3DXVECTOR3));
+	file.Read(&(Key.nAlpha), sizeof(int));
+	return Key;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 CSfxPart::CSfxPart()
 {
 }
@@ -441,16 +459,9 @@ void CSfxPartBill::Load(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 void CSfxPartBill::Load2(CResFile &file)
@@ -481,16 +492,9 @@ void CSfxPartBill::Load2(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 void CSfxPartBill::OldLoad(CResFile &file)
@@ -511,16 +515,9 @@ void CSfxPartBill::OldLoad(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 
@@ -724,16 +721,9 @@ void CSfxPartParticle::Load(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		int nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 void CSfxPartParticle::Load2(CResFile &file)
@@ -798,16 +788,9 @@ void CSfxPartParticle::Load2(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		int nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 void CSfxPartParticle::Load3(CResFile &file)
@@ -872,16 +855,9 @@ void CSfxPartParticle::Load3(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		int nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 void CSfxPartParticle::OldLoad(CResFile &file)
@@ -937,16 +913,9 @@ void CSfxPartParticle::OldLoad(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		int nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 
@@ -983,16 +952,9 @@ void CSfxPartMesh::Load(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 void CSfxPartMesh::Load2(CResFile &file)
@@ -1023,16 +985,9 @@ void CSfxPartMesh::Load2(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 
@@ -1055,16 +1010,9 @@ void CSfxPartMesh::OldLoad(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 }
 
@@ -1212,16 +1160,9 @@ void CSfxPartCustomMesh::Load(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 	file.Read(&m_nPoints,sizeof(int));
 }
@@ -1252,16 +1193,9 @@ void CSfxPartCustomMesh::Load2(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 	file.Read(&m_nPoints,sizeof(int));
 }
@@ -1283,16 +1217,9 @@ void CSfxPartCustomMesh::OldLoad(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		WORD nFrame;
-		file.Read(&nFrame,sizeof(WORD));
-		AddKeyFrame(nFrame);
-		SfxKeyFrame Key;
-		file.Read(&(Key.vPos),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vPosRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vScale),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.vRotate),sizeof(D3DXVECTOR3));
-		file.Read(&(Key.nAlpha),sizeof(int));
-		AdjustKeyFrame(nFrame,Key);
+		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
+		AddKeyFrame(Key.nFrame);
+		AdjustKeyFrame(Key.nFrame, Key);
 	}
 	file.Read(&m_nPoints,sizeof(int));
 }

@@ -64,6 +64,8 @@ struct SfxKeyFrame
 	D3DXVECTOR3 vScale; // 크기
 	D3DXVECTOR3 vRotate; // 회전
 	int nAlpha;
+
+	[[nodiscard]] static SfxKeyFrame FromFile(CResFile & file);
 }; // 키프레임 구조체
 
 struct Particle
