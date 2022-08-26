@@ -112,7 +112,7 @@ public:
 	void AddAndAdjustKeyFrame(SfxKeyFrame frame); // 키프레임 추가 -  특정 프레임의 키프레임의 내용을 갱신
 
 	SfxKeyFrame* GetPrevKey(WORD nFrame); // 주어진 프레임부터 이전 키프레임을 갖고온다
-	SfxKeyFrame* GetNextKey(WORD nFrame, BOOL bSkip=TRUE); // 주어진 프레임부터 다음 키프레임을 갖고온다
+	SfxKeyFrame* GetNextKey(WORD nFrame); // 주어진 프레임부터 다음 키프레임을 갖고온다
 	virtual void Load(CResFile& file); // 로드
 	virtual void OldLoad(CResFile& file); // 이전버젼 로드
 	virtual void Load2(CResFile& file); 

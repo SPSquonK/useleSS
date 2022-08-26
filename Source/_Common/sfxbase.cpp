@@ -83,21 +83,14 @@ SfxKeyFrame * CSfxPart::GetPrevKey(const WORD nFrame) {
 	return pKey;
 }
 
-SfxKeyFrame* CSfxPart::GetNextKey(WORD nFrame, BOOL bSkip)
+SfxKeyFrame* CSfxPart::GetNextKey(WORD nFrame)
 {
 	SfxKeyFrame * pKey = nullptr;
 
 	for (SfxKeyFrame & pTempKey : m_aKeyFrames) {
-		if (bSkip) {
-			if (pTempKey.nFrame >= nFrame) {
-				pKey = &pTempKey;
-				break;
-			}
-		} else {
-			if (pTempKey.nFrame > nFrame) {
-				pKey = &pTempKey;
-				break;
-			}
+		if (pTempKey.nFrame >= nFrame) {
+			pKey = &pTempKey;
+			break;
 		}
 	}
 
