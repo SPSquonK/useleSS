@@ -156,9 +156,6 @@ public:
 	virtual int		SaveModel( LPCTSTR szFileName ) { return 1; }
 	virtual void	ClearNormal( void ) {}		// 모든 노말을 초기화시킨다.
 
-	virtual void	AddFrame( FLOAT fAddFrame );
-	virtual void	SetFrame( FLOAT fFrame );
-
 	// Animation - 일단여기 넣었는데 깝깝하다.....
 	virtual BOOL	IsLoadAttr( void ) { return FALSE; }
 	virtual MOTION_ATTR *GetMotionAttr( int nNumFrm ) { return NULL; }

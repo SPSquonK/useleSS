@@ -39,8 +39,6 @@ public:
 	CBillboard();
 	~CBillboard();
 
-	void AddFrame( FLOAT fAddFrame ) { }
-	void SetFrame( FLOAT fFrame ) { }
 	CTexture* GetTexture(void) { return m_pTexture; }
 	virtual BOOL Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmatWorld = NULL );
 	virtual void FrameMove() { }

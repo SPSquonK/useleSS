@@ -295,7 +295,7 @@ public:
 	void RenderParticles2( D3DXVECTOR3 vPos,WORD nFrame,D3DXVECTOR3 fAngle,CSfxPartParticle* pPartParticle,CPtrArray* pParticles, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) );
 	//void Render(void);
 	BOOL Process(void);
-	BOOL SetFrame( int nFrame );
+
 #ifdef __CLIENT
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
