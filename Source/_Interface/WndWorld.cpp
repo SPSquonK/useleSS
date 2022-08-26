@@ -8072,7 +8072,7 @@ BOOL CWndWorld::Process()
 			m_pWndBuffStatus = g_WndMng.CreateApplet(APP_BUFF_STATUS);
 	} else {
 		if (m_pWndBuffStatus) {
-			m_pWndBuffStatus->Destroy(TRUE);
+			m_pWndBuffStatus->Destroy();
 			m_pWndBuffStatus = nullptr;
 			CWndBase * pWndBaseFocus = CWndBase::GetFocusWnd();
 			if (pWndBaseFocus && pWndBaseFocus->GetWndApplet() && pWndBaseFocus->GetWndApplet()->dwWndId != APP_COMMUNICATION_CHAT)
