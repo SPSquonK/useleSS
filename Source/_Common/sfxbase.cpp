@@ -59,50 +59,24 @@ CSfxPart::~CSfxPart()
 		safe_delete( (SfxKeyFrame*)m_apKeyFrames.GetAt(i) );
 }
 
-void CSfxPart::AddKeyFrame(WORD nFrame)
-{
-	if(KeyByFrame(nFrame)) return;
-	SfxKeyFrame* pKey=new SfxKeyFrame;
+void CSfxPart::AddAndAdjustKeyFrame(SfxKeyFrame frame) {
+	for (int i = 0; i != m_apKeyFrames.GetSize(); ++i) {
+		SfxKeyFrame * iterationKey = (SfxKeyFrame *)(m_apKeyFrames.GetAt(i));
+		if (iterationKey->nFrame < frame.nFrame) {
+			// continue
+		} else if (iterationKey->nFrame == frame.nFrame) {
+			*iterationKey = frame;
+			return;
+		} else {
+			m_apKeyFrames.InsertAt(i, new SfxKeyFrame(frame), 1);
+			return;
+		}
+	}
 
-	SfxKeyFrame* pPrevKey=GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) {
-		pKey->vPos=D3DXVECTOR3(0,0,0);
-		pKey->vPosRotate.x=pKey->vPosRotate.y=pKey->vPosRotate.z=.0f;
-		if(this->m_nType==SFXPARTTYPE_CUSTOMMESH) pKey->vPosRotate.z=1.0f;
-		pKey->vScale.x=pKey->vScale.y=pKey->vScale.z=1.0f;
-		pKey->vRotate.x=pKey->vRotate.y=pKey->vRotate.z=.0f;
-		pKey->nAlpha=255;
-	}
-	else {
-		int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-		*(pKey)=*(pPrevKey);
-		if( dFrame!=0 )
-		{
-			pKey->vPos		+= (pNextKey->vPos - pPrevKey->vPos) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-			pKey->vPosRotate = (pNextKey->vPosRotate - pPrevKey->vPosRotate) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-			pKey->vRotate	+= (pNextKey->vRotate - pPrevKey->vRotate) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-			pKey->vScale	+= (pNextKey->vScale - pPrevKey->vScale) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-			pKey->nAlpha	+= (pNextKey->nAlpha - pPrevKey->nAlpha) * (nFrame - pPrevKey->nFrame) / dFrame;
-		}
-	}
-	if(m_apKeyFrames.GetSize()>0) {
-		for(int i=0;i<m_apKeyFrames.GetSize();i++) {
-			if(Key(i)->nFrame==nFrame) {
-				safe_delete( pKey );
-				return;
-			}
-			if(Key(i)->nFrame>nFrame) {
-				pKey->nFrame=nFrame;
-				m_apKeyFrames.InsertAt(i,pKey);
-				return;
-			}
-//			*(pKey)=*(Key(i));
-		}
-	}
-	pKey->nFrame=nFrame;
-	m_apKeyFrames.Add(pKey);
+	// insert at the end
+	m_apKeyFrames.Add(new SfxKeyFrame(frame));
 }
+
 void CSfxPart::DeleteKeyFrame(WORD nFrame)
 {
 	for(int i=0;i<m_apKeyFrames.GetSize();i++)
@@ -160,15 +134,6 @@ SfxKeyFrame* CSfxPart::GetNextKey(WORD nFrame, BOOL bSkip)
 	return pKey;
 }
 
-void CSfxPart::AdjustKeyFrame(WORD nFrame, SfxKeyFrame& key)
-{
-	key.nFrame=nFrame;
-	for(int i=0;i<m_apKeyFrames.GetSize();i++)
-		if(Key(i)->nFrame==nFrame) {
-			*(Key(i))=key;
-			return;
-		}
-}
 #ifndef __WORLDSERVER
 void CSfxPart::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECTOR3 vScale )
 {
@@ -459,9 +424,7 @@ void CSfxPartBill::Load(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 void CSfxPartBill::Load2(CResFile &file)
@@ -492,9 +455,7 @@ void CSfxPartBill::Load2(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 void CSfxPartBill::OldLoad(CResFile &file)
@@ -515,9 +476,7 @@ void CSfxPartBill::OldLoad(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 
@@ -721,9 +680,7 @@ void CSfxPartParticle::Load(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 void CSfxPartParticle::Load2(CResFile &file)
@@ -788,9 +745,7 @@ void CSfxPartParticle::Load2(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 void CSfxPartParticle::Load3(CResFile &file)
@@ -855,9 +810,7 @@ void CSfxPartParticle::Load3(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 void CSfxPartParticle::OldLoad(CResFile &file)
@@ -913,9 +866,7 @@ void CSfxPartParticle::OldLoad(CResFile &file)
 	int nKey=m_apKeyFrames.GetSize();
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 
@@ -952,9 +903,7 @@ void CSfxPartMesh::Load(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 void CSfxPartMesh::Load2(CResFile &file)
@@ -985,9 +934,7 @@ void CSfxPartMesh::Load2(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 
@@ -1010,9 +957,7 @@ void CSfxPartMesh::OldLoad(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 }
 
@@ -1160,9 +1105,7 @@ void CSfxPartCustomMesh::Load(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 	file.Read(&m_nPoints,sizeof(int));
 }
@@ -1193,9 +1136,7 @@ void CSfxPartCustomMesh::Load2(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 	file.Read(&m_nPoints,sizeof(int));
 }
@@ -1217,9 +1158,7 @@ void CSfxPartCustomMesh::OldLoad(CResFile &file)
 	int nKey;
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
-		SfxKeyFrame Key = SfxKeyFrame::FromFile(file);
-		AddKeyFrame(Key.nFrame);
-		AdjustKeyFrame(Key.nFrame, Key);
+		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
 	}
 	file.Read(&m_nPoints,sizeof(int));
 }
