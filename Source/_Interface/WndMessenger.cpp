@@ -81,13 +81,13 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	if( g_pPlayer && g_pPlayer->IsMode(MODE_MAILBOX) )
 	{
 		LPWNDCTRL lpMail = GetWndCtrl( WIDC_CUSTOM1 );
-		p2DRender->RenderTexture( CPoint(lpMail->rect.left, lpMail->rect.top), &m_TexMail, m_nFlashCounter );
+		p2DRender->RenderTexture( CPoint(lpMail->rect.left, lpMail->rect.top), &m_TexMail, m_mailIconFlash.Get());
 	}
 
 	if(g_Neuz.m_nTagCount > 0 && g_Neuz.m_bCheckTag == FALSE)
 	{
 		LPWNDCTRL lpTagButton = GetWndCtrl( WIDC_BUTTON2 );
-		p2DRender->RenderTexture( CPoint(lpTagButton->rect.left + 2, lpTagButton->rect.top + 2), &m_TexMail, m_nFlashCounter );
+		p2DRender->RenderTexture( CPoint(lpTagButton->rect.left + 2, lpTagButton->rect.top + 2), &m_TexMail, m_mailIconFlash.Get());
 	}
 
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
@@ -118,19 +118,7 @@ BOOL CWndMessengerEx::Process()
 {
 	if( (g_pPlayer && g_pPlayer->IsMode(MODE_MAILBOX)) || (g_Neuz.m_nTagCount > 0 && g_Neuz.m_bCheckTag == FALSE) )
 	{
-		m_nFlashCounter += (m_nSwitch*8);
-		
-		if( m_nFlashCounter >= 255 )
-		{
-			m_nFlashCounter = 255;
-			m_nSwitch = -1;
-		}
-		
-		if( m_nFlashCounter <= 50 )
-		{
-			m_nFlashCounter = 50;
-			m_nSwitch = 1;
-		}
+		m_mailIconFlash.Increment();
 	}
 
 	if( g_pPlayer && g_pPlayer->IsMode(MODE_MAILBOX) )
@@ -186,8 +174,7 @@ void CWndMessengerEx::OnInitialUpdate()
 	m_menuState.AddButton( static_cast<UINT>(FriendStatus::OFFLINE ) , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
 	
 	m_TexMail.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndMail.dds" ), 0xffff00ff );
-	m_nFlashCounter = 0;
-	m_nSwitch       = 1;
+	m_mailIconFlash.Set(255);
 	
 	// 버튼 이미지 세팅
 	CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_CHANNEL);
@@ -256,19 +243,6 @@ BOOL CWndMessengerEx::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_MESSENGER_EX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndMessengerEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-}
-
-void CWndMessengerEx::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-}
-
-void CWndMessengerEx::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-}
-
 BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_ADD )
@@ -321,13 +295,6 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 	CWndBase* pChild = pTabCtrl->GetFocusChild();
-	int nFocusChild = 0;
-	if(pChild == &m_wndFriend)
-		nFocusChild = 1;
-	else if(pChild == &m_wndGuild)
-		nFocusChild = 2;
-	else if( pChild == &m_WndCampus )
-		nFocusChild = 3;
 
 	std::optional<MessengerHelper::Sorter::By> sort = std::nullopt;
 	switch (nID) {
@@ -339,11 +306,11 @@ BOOL CWndMessengerEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 
 	if (sort) {
-		if (nFocusChild == 1)
+		if (pChild == &m_wndFriend)
 			m_wndFriend.ChangeSort(sort.value());
-		else if (nFocusChild == 2)
+		else if (pChild == &m_wndGuild)
 			m_wndGuild.ChangeSort(sort.value());
-		else if (nFocusChild == 3)
+		else if (pChild == &m_WndCampus)
 			m_WndCampus.ChangeSort(sort.value());
 	}
 	

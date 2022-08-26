@@ -2,6 +2,7 @@
 #define __WNDMESSENGER__H
 
 #include "WndMessengerCtrl.h"
+#include "sqktd/flasher.h"
 
 class CWndMessengerEx : public CWndNeuz 
 { 
@@ -14,8 +15,10 @@ public:
 	CWndGuildCtrlEx		m_wndGuild;
 	CWndCampus			m_WndCampus;
 	CTexture			m_TexMail;
-	int					m_nFlashCounter;
-	int					m_nSwitch;
+private:
+	sqktd::_::Flasher<DWORD, 50, 255, 8> m_mailIconFlash;
+
+public:
 
 	virtual	BOOL Process();
 //	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
@@ -24,10 +27,7 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
 //	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 
 	enum class UpdateListType { Friend, Guild, Campus, Any };
 	static void TryUpdateList(UpdateListType type);
