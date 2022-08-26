@@ -1056,7 +1056,7 @@ HRESULT CWndMgr::RestoreDeviceObjects()
 	return 0;
 }
 AppletFunc * CWndMgr::GetAppletFunc(DWORD dwIdApplet) {
-	return sqktd::find_in_map(m_mapAppletFunc, dwIdApplet);
+	return sqktd::find_in_map(m_mapAppletFunc, dwIdApplet, nullptr);
 }
 
 DWORD CWndMgr::GetAppletId( TCHAR* lpszAppletName ) {

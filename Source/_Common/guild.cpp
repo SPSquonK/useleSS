@@ -576,9 +576,10 @@ void CGuild::AddVote( const VOTE_INSERTED_INFO& info, bool bCompleted, BYTE* cbC
 
 // 투표 찾기 
 CGuildVote * CGuild::FindVote(const u_long idVote) {
-	return sqktd::find_if_by_value(m_votes,
+	const auto it = std::ranges::find_if(m_votes,
 		[idVote](const CGuildVote * const vote) { return vote->GetID() == idVote; }
 	);
+	return it != m_votes.end() ? *it : nullptr;
 }
 
 // idVote투표의 데이타를 변경하기 
@@ -724,11 +725,11 @@ BOOL CGuildMng::RemoveGuild( u_long idGuild )
 }
 
 CGuild * CGuildMng::GetGuild(const u_long idGuild) {
-	return sqktd::find_in_map(m_mapPGuild, idGuild);
+	return sqktd::find_in_map(m_mapPGuild, idGuild, nullptr);
 }
 
 CGuild * CGuildMng::GetGuild(const char * const szGuild) {
-	return sqktd::find_in_map(m_mapPGuild2, szGuild);
+	return sqktd::find_in_map(m_mapPGuild2, szGuild, nullptr);
 }
 
 void CGuildMng::Serialize( CAr & ar, BOOL bDesc )

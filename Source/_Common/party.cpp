@@ -595,7 +595,7 @@ BOOL CPartyMng::DeleteParty( u_long uPartyId )
 }
 
 CParty * CPartyMng::GetParty(const u_long uPartyId) {
-	return sqktd::find_in_map(m_2PartyPtr, uPartyId);
+	return sqktd::find_in_map(m_2PartyPtr, uPartyId, nullptr);
 }
 
 CAr & operator<<(CAr & ar, const CPartyMng & self) {
