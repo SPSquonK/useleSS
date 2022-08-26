@@ -18,9 +18,9 @@ class CUltimateWeapon
 {
 public:
 	struct Answer {
-		struct Fail : sqktd::IsEmptyClass {};
-		struct Cancel : sqktd::IsEmptyClass {};
-		struct Inventory : sqktd::IsEmptyClass {};
+		struct Fail : useless_util::IsEmptyClass {};
+		struct Cancel : useless_util::IsEmptyClass {};
+		struct Inventory : useless_util::IsEmptyClass {};
 	};
 public:
 	enum class Result { Success, Cancel, Inventory };

@@ -57,8 +57,8 @@ public:
 	// -- Trivial Types
 	template<ArHelper::UnitTypes Type> CAr & operator<<(Type value);
 	template<ArHelper::UnitTypes Type> CAr & operator>>(Type & value);
-	template<sqktd::Archivable Archivable> CAr & operator<<(const Archivable & archivable);
-	template<sqktd::Archivable Archivable> CAr & operator>>(Archivable & archivable);
+	template<useless_util::Archivable Archivable> CAr & operator<<(const Archivable & archivable);
+	template<useless_util::Archivable Archivable> CAr & operator>>(Archivable & archivable);
 
 	// -- Strings
 	void WriteString(LPCTSTR lpsz);
@@ -84,8 +84,8 @@ public:
 	template<typename ... Ts> friend CAr & operator<<(CAr & ar, const std::variant<Ts ...> & variant);
 	template<typename ... Ts> friend CAr & operator>>(CAr & ar, std::variant<Ts ...> & variant);
 	
-	template<sqktd::EmptyArchivable EmptyArchivable> CAr & operator<<(const EmptyArchivable & e) { return *this; }
-	template<sqktd::EmptyArchivable EmptyArchivable> CAr & operator>>(EmptyArchivable & e) { return *this; }
+	template<useless_util::EmptyArchivable EmptyArchivable> CAr & operator<<(const EmptyArchivable & e) { return *this; }
+	template<useless_util::EmptyArchivable EmptyArchivable> CAr & operator>>(EmptyArchivable & e) { return *this; }
 
 	template<typename T> CAr & operator<<(const std::optional<T> & opt);
 	template<typename T> CAr & operator>>(      std::optional<T> & opt);
@@ -139,13 +139,13 @@ CAr & CAr::operator>>(Type & value) {
 	return *this;
 }
 
-template<sqktd::Archivable Archivable>
+template<useless_util::Archivable Archivable>
 CAr & CAr::operator<<(const Archivable & archivable) {
 	Write(&archivable, sizeof(Archivable));
 	return *this;
 }
 
-template<sqktd::Archivable Archivable>
+template<useless_util::Archivable Archivable>
 CAr & CAr::operator>>(Archivable & archivable) {
 	Read(&archivable, sizeof(Archivable));
 	return *this;

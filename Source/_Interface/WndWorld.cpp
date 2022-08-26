@@ -1715,7 +1715,7 @@ void CWndWorld::DrawSecretRoomGuildInfo(C2DRender *p2DRender, BOOL bIsMyGuild, i
 		this->m_pTextureLogo[g_GuildMng.GetGuild(stGuildInfo.dwGuildId)->m_dwLogo-1].RenderScal( &g_Neuz.m_2DRender, ptLogo, 255, fLogoScaleX, fLogoScaleY );
 
 	// Draw Guild Name
-	strFormat = sqktd::CStringMaxSize(g_GuildMng.GetGuild(stGuildInfo.dwGuildId)->m_szGuild, 14);
+	strFormat = strings::CStringMaxSize(g_GuildMng.GetGuild(stGuildInfo.dwGuildId)->m_szGuild, 14);
 	p2DRender->TextOut( ptGName.x, ptGName.y, strFormat, 0xFFFEBB1B );
 
 	// Draw Hypoon
@@ -2132,7 +2132,7 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 		p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 60, 192, 217, 217 ) );
 
 		// Draw Guild Name
-		CString strFormat = sqktd::CStringMaxSize(g_pPlayer->GetGuild()->m_szGuild, 16);
+		CString strFormat = strings::CStringMaxSize(g_pPlayer->GetGuild()->m_szGuild, 16);
 		p2DRender->TextOut( cPoint.x, cPoint.y-(nGap+5) ,strFormat, 0xFFEBAD18, 0xFF000000 );
 
 		// Draw Player Info
@@ -2144,7 +2144,7 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 			stPlayerInfo = g_GuildCombat1to1Mng.m_vecGuildCombat1to1_Players[i];
 			
 			nRate++;
-			strTemp = sqktd::CStringMaxSize(
+			strTemp = strings::CStringMaxSize(
 				CPlayerDataCenter::GetInstance()->GetPlayerString( stPlayerInfo.m_uidPlayer ),
 				10
 			);
@@ -2218,7 +2218,7 @@ void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 	p2DRender->TextOut( cPoint.x+22, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_WINCOUNT), 0xFFADEAEA, 0xFF000000 );
 
 	// Draw Guild Info
-	CString strFormat = sqktd::CStringMaxSize(g_pPlayer->GetGuild()->m_szGuild, 16);
+	CString strFormat = strings::CStringMaxSize(g_pPlayer->GetGuild()->m_szGuild, 16);
 	p2DRender->TextOut( cPoint.x, cPoint.y+30 ,strFormat, 0xFFEBAD18, 0xFF000000 );
 	strFormat.Format("%d", g_GuildCombat1to1Mng.m_nMyGuildCount);
 	p2DRender->TextOut( cPoint.x+120, cPoint.y+30 ,strFormat, 0xFFF5CCB0, 0xFF000000 );
@@ -2228,7 +2228,7 @@ void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 		CGuild* pGuild = g_GuildMng.GetGuild( g_GuildCombat1to1Mng.m_nGuildCombat1to1Guild );
 		if(pGuild)
 		{
-			strFormat = sqktd::CStringMaxSize(pGuild->m_szGuild, 16);
+			strFormat = strings::CStringMaxSize(pGuild->m_szGuild, 16);
 			p2DRender->TextOut( cPoint.x, cPoint.y+60 ,strFormat, 0xFFEBAD18, 0xFF000000 );
 
 			strFormat.Format("%d", g_GuildCombat1to1Mng.m_nVsGuildCount);

@@ -382,7 +382,7 @@ inline CWndClass * CWndBase::ConvertWndBaseToWndClass(CWndBase * pWindow, const 
 	}
 }
 
-namespace sqktd {
+namespace strings {
 	[[nodiscard]] CString CStringMaxSize(const char * text, int length);
 	void ReduceSize(CString & str, int length);
 }

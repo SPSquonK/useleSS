@@ -58,7 +58,7 @@ void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 		CString strMasterName;
 		strMasterName.Format("%s", guild.m_szName);
 		strMasterName.TrimRight();
-		sqktd::ReduceSize(strMasterName, 12);
+		strings::ReduceSize(strMasterName, 12);
 		p2DRender->TextOut(sx + 210, sy, strMasterName, dwColor);
 
 		// ½Â / ÆÐ

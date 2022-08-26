@@ -332,7 +332,7 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 		if (stPlayer.m_bBlock) dwColor = 0xffff0000;
 		if (stPlayer.m_bVisitAllowed) dwColor = 0xff00ff00;
 		
-		strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
+		strFormat = strings::CStringMaxSize(stPlayer.m_szName, 10);
 
 		const int NAME_TEXT_X = 226;
 		const int NAME_TEXT_Y = pt.y + 3;
@@ -768,7 +768,7 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		if( i == m_nCurSelect )
 			dwColor = 0xff6060ff;
 		
-		strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
+		strFormat = strings::CStringMaxSize(stPlayer.m_szName, 10);
 		p2DRender->TextOut( 226, pt.y + 3, strFormat, dwColor );
 		
 		pt.y += m_nFontHeight;
@@ -1071,7 +1071,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 
 			// Draw Name
 			DWORD dwColor = ( i == m_nCurSelectedDisciple ) ? 0xff6060ff : 0xff000000;
-			strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
+			strFormat = strings::CStringMaxSize(stPlayer.m_szName, 10);
 			p2DRender->TextOut( 226, pt.y + 3, strFormat, dwColor );
 			pt.y += m_nFontHeight;
 		}
@@ -1107,7 +1107,7 @@ void CWndCampus::OnDraw( C2DRender* p2DRender )
 
 		// Draw Name
 		DWORD dwColor = ( m_bCurSelectedMaster == TRUE ) ? 0xff6060ff : 0xff000000;
-		strFormat = sqktd::CStringMaxSize(stPlayer.m_szName, 10);
+		strFormat = strings::CStringMaxSize(stPlayer.m_szName, 10);
 		p2DRender->TextOut( 226, pt.y + 3, strFormat, dwColor );
 	}
 }

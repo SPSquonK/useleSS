@@ -2,7 +2,7 @@
 
 #include "NamedType/named_type.hpp"
 
-namespace sqktd {
+namespace useless_util {
   template <typename T>
   struct ArchivableType : fluent::crtp<T, ArchivableType> {
     static constexpr bool Archivable = true;
@@ -28,11 +28,11 @@ namespace sqktd {
 }
 
 using PartyId = fluent::NamedType<unsigned long, struct PartyIdTag,
-  fluent::Comparable, sqktd::ArchivableType
+  fluent::Comparable, useless_util::ArchivableType
 >;
 
 using WarId = fluent::NamedType<unsigned long, struct WarIdTag,
-  fluent::Comparable, sqktd::ArchivableType
+  fluent::Comparable, useless_util::ArchivableType
 >;
 
 static constexpr auto WarIdNone = WarId(0);
@@ -40,7 +40,7 @@ static constexpr auto WarIdNone = WarId(0);
 struct QuestProp;
 
 using QuestId = fluent::NamedType<unsigned short, struct QuestIdTag,
-  fluent::Comparable, sqktd::ArchivableType, sqktd::HasProjProp<QuestProp>::Type
+  fluent::Comparable, useless_util::ArchivableType, useless_util::HasProjProp<QuestProp>::Type
 >;
 
 static constexpr auto QuestIdNone = QuestId(0);

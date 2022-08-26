@@ -59,7 +59,7 @@ typedef	MemPooler<CMover>	CMoverPool;
 #include "UpdateItem.h"
 
 #ifdef __WORLDSERVER
-namespace sqktd {
+namespace useless_util {
 	template<typename F>
 	concept UIGenerator =
 		(
@@ -1110,7 +1110,7 @@ public:
 #ifdef __WORLDSERVER
 	void UpdateItem(CItemElem & itemElem, const UI::Variant & operation);
 
-	template <sqktd::UIGenerator Generator>
+	template <useless_util::UIGenerator Generator>
 	void UpdateItem(CItemElem & itemElem, Generator generator) {
 		if constexpr (std::is_invocable_v<Generator, const CItemElem &>) {
 			UpdateItem(itemElem, generator(itemElem));

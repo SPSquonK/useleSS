@@ -14296,7 +14296,7 @@ void CDPClient::OnGuildBankLogList( CAr & ar )
 
 			const ItemProp * pItemProp = prj.GetItemProp(nItem);
 			
-			CString strCharName = sqktd::CStringMaxSize(szPlayer, 9);
+			CString strCharName = strings::CStringMaxSize(szPlayer, 9);
 
 			CString strItemName;
 			if(pItemProp->dwReferStat1 == WEAPON_ULTIMATE)
@@ -14319,7 +14319,7 @@ void CDPClient::OnGuildBankLogList( CAr & ar )
 					strItemName.Format( "%s", pItemProp->szName );
 			}
 
-			sqktd::ReduceSize(strItemName, 25);
+			strings::ReduceSize(strItemName, 25);
 
 			if(nAbilityOption > 0)
 			{

@@ -93,7 +93,7 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 		}
 		//Member - Level, Name Draw
 		//긴 이름은 ... 으로.
-		sqktd::ReduceSize(strMember, 13);
+		strings::ReduceSize(strMember, 13);
 		p2DRender->TextOut( rect.TopLeft().x+5, rect.TopLeft().y+5, strMember, dwColor );
 
 		//Member - Gauge Draw
@@ -125,14 +125,14 @@ CString CWndPartyQuick::FormatPlayerName(int level, DWORD dwJob, const char * na
 	return result;
 }
 
-CString sqktd::CStringMaxSize(const char * text, int length) {
+CString strings::CStringMaxSize(const char * text, int length) {
 	CString str = text;
-	::sqktd::ReduceSize(str, length);
+	::strings::ReduceSize(str, length);
 	return str;
 }
 
 
-void sqktd::ReduceSize(CString & str, int length) {
+void strings::ReduceSize(CString & str, int length) {
 	if (str.GetLength() > length) {
 		int	nReduceCount = 0;
 
