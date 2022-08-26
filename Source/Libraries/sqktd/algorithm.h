@@ -28,16 +28,6 @@ namespace sqktd {
     return defaultValue;
   }
 
-  template<typename MapType>
-  [[nodiscard]] constexpr typename MapType::mapped_type::pointer find_in_unique_map(
-    const MapType & map,
-    const typename MapType::key_type & key
-  ) {
-    const auto it = map.find(key);
-    if (it != map.end()) return it->second.get();
-    return nullptr;
-  }
-
 	template<typename Collection>
 	[[nodiscard]] constexpr bool all_are(const Collection & collection, const typename Collection::value_type & value) {
 		return std::ranges::all_of(collection, [&](const auto & value_) { return value_ == value; });

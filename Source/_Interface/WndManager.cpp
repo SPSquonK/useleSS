@@ -2979,10 +2979,11 @@ BOOL CWndMgr::CloseCollecting()
 	return FALSE;
 }
 
-
-CWndMessage* CWndMgr::GetMessage( LPCTSTR lpszFrom ) {
-	return sqktd::find_in_unique_map(m_mapMessage, lpszFrom);
+CWndMessage * CWndMgr::GetMessage(LPCTSTR lpszFrom) {
+	const auto it = m_mapMessage.find(lpszFrom);
+	return it != m_mapMessage.end() ? it->second.get() : nullptr;
 }
+
 CWndMessage* CWndMgr::OpenMessage( LPCTSTR lpszFrom ) {
 	CWndMessage * pWndMessage = GetMessage(lpszFrom);
 	if (pWndMessage) {
@@ -3018,8 +3019,9 @@ BOOL CWndMgr::UpdateMessage( LPCTSTR pszOld, LPCTSTR pszNew ) {
 	return TRUE;
 }
 
-CWndInstantMsg* CWndMgr::GetInstantMsg( LPCTSTR lpszFrom ) {
-	return sqktd::find_in_unique_map(m_mapInstantMsg, lpszFrom);
+CWndInstantMsg * CWndMgr::GetInstantMsg(LPCTSTR lpszFrom) {
+	const auto it = m_mapInstantMsg.find(lpszFrom);
+	return it != m_mapInstantMsg.end() ? it->second.get() : nullptr;
 }
 
 CWndInstantMsg* CWndMgr::OpenInstantMsg( LPCTSTR lpszFrom )
