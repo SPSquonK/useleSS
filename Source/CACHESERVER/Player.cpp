@@ -3,7 +3,6 @@
 #include "dpcachesrvr.h"
 #include "dpcoreclient.h"
 #include <ranges>
-#include "sqktd.h"
 
 CCachePlayerMng g_CachePlayerMng;
 

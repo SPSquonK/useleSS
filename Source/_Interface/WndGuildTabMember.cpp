@@ -221,7 +221,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		}
 		p2DRender->TextOut( sx + 126, sy, pMember->nLevel, dwColor );
 		
-		const CString strFormat = sqktd::CStringMaxSize(pMember->szName, 10);
+		const CString strFormat = strings::CStringMaxSize(pMember->szName, 10);
 		p2DRender->TextOut( sx + 168, sy, strFormat, dwColor );
 		p2DRender->TextOut( sx + 264, sy, pMember->szAlias , dwColor );
 

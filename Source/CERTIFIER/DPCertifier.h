@@ -6,7 +6,7 @@
 #include <map>
 #include <span>
 #include "ListedServer.h"
-#include "MutexedObject.h"
+#include "sqktd/mutexed_object.h"
 
 #undef	theClass
 #define theClass	CDPCertifier

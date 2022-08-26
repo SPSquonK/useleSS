@@ -10,7 +10,7 @@ static_assert(false, "Project.h was included")
 #include <boost/container/small_vector.hpp>
 #include "boost/container/static_vector.hpp"
 #include <boost/container/flat_map.hpp>
-#include "StaticString.h"
+#include "sqktd/static_string.h"
 #include "FlyFFTypes.h"
 
 #include "SingleDst.h"

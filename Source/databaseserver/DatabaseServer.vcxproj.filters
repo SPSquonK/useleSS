@@ -578,9 +578,6 @@
     <ClInclude Include="..\_Common\CommonHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\MutexedObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\SkillsOfMover.h">
       <Filter>Source Files</Filter>
     </ClInclude>

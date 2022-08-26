@@ -101,14 +101,14 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	}
 	else
 	{
-		const CString strServerName = sqktd::CStringMaxSize(g_dpCertified.GetServerName(g_Option.m_nSer), 18);
+		const CString strServerName = strings::CStringMaxSize(g_dpCertified.GetServerName(g_Option.m_nSer), 18);
 		p2DRender->TextOut( 170, 13, 1, 1, strServerName, 0xff606060 );
 
 		//채널 정보
 		CListedServers::Channel * channel = g_dpCertified.m_servers.GetChannelFromPos(g_Option.m_nSer, g_Option.m_nMSer);
 		
 		if (channel) {
-			const CString strServerName = sqktd::CStringMaxSize(channel->lpName, 18);
+			const CString strServerName = strings::CStringMaxSize(channel->lpName, 18);
 			p2DRender->TextOut(170, 27, 1, 1, strServerName, 0xff606060);
 		}
 	}

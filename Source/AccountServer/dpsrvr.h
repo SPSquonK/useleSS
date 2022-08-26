@@ -5,7 +5,7 @@
 #include "misc.h"
 #include <map>
 #include "ListedServer.h"
-#include "MutexedObject.h"
+#include "sqktd/mutexed_object.h"
 
 #undef	theClass
 #define theClass	CDPSrvr_AccToCert

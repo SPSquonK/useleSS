@@ -1,7 +1,7 @@
 #pragma once
 
 #include <boost/pool/object_pool.hpp>
-#include "StaticString.h"
+#include "sqktd/static_string.h"
 
 #include <thread>
 #include "query.h"
@@ -14,9 +14,7 @@
 #include <string>
 #include <set>
 
-namespace sqktd {
-	using shared_ptr_timed_mutex = std::shared_ptr<std::timed_mutex>;
-}
+using shared_ptr_timed_mutex = std::shared_ptr<std::timed_mutex>;
 
 enum QUERYMODE
 {	
@@ -103,4 +101,4 @@ public:
 
 extern CDbManager g_DbManager;
 
-void	DbWorkerThread(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex);
+void	DbWorkerThread(HANDLE hIOCP, shared_ptr_timed_mutex mutex);

@@ -88,7 +88,7 @@ extern CCaption g_Caption1;
 #define NEXTSKILL_ACTIONSLOT		0x7fffffff	// 다음스킬 액션슬롯으로 사용
 // 그외는 스킬인덱스.
 
-#include "Flasher.h"
+#include "sqktd/flasher.h"
 
 struct BUFFSKILL {
 	sqktd::Flasher<64, 192, 6> m_flasher;

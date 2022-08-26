@@ -3,7 +3,7 @@
 #include "defineSkill.h"
 #include "defineItem.h"
 #include "party.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 
 #define II_SYS_SYS_SCR_PARTYEXPUP01_01 20296
 #define II_SYS_SYS_SCR_PARTYSKILLUP01_01 20297
@@ -595,7 +595,7 @@ BOOL CPartyMng::DeleteParty( u_long uPartyId )
 }
 
 CParty * CPartyMng::GetParty(const u_long uPartyId) {
-	return sqktd::find_in_map(m_2PartyPtr, uPartyId);
+	return sqktd::find_in_map(m_2PartyPtr, uPartyId, nullptr);
 }
 
 CAr & operator<<(CAr & ar, const CPartyMng & self) {

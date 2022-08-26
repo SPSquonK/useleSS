@@ -2,7 +2,7 @@
 
 #include "guildwar.h"
 #include "guild.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"
@@ -111,7 +111,7 @@ BOOL CGuildWarMng::RemoveWar(const WarId idWar) {
 }
 
 CGuildWar * CGuildWarMng::GetWar(const WarId idWar) {
-	return sqktd::find_in_map(m_mapPWar, idWar);
+	return sqktd::find_in_map(m_mapPWar, idWar, nullptr);
 }
 
 CAr & operator<<(CAr & ar, const CGuildWarMng & self) {

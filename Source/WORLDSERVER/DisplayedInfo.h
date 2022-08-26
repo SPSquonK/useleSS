@@ -2,7 +2,7 @@
 
 #include <array>
 #include <boost/container/flat_set.hpp>
-#include "StaticString.h"
+#include "sqktd/static_string.h"
 
 enum LOGTYPE {
 	LOGTYPE_TIME,

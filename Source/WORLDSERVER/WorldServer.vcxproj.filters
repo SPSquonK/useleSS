@@ -1166,16 +1166,10 @@
     <ClInclude Include="DisplayedInfo.h">
       <Filter>World Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\StaticString.h">
-      <Filter>World Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\CommonHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\GroupUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\sqktd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GroupedEmission.h">

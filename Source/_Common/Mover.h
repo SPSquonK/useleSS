@@ -59,7 +59,7 @@ typedef	MemPooler<CMover>	CMoverPool;
 #include "UpdateItem.h"
 
 #ifdef __WORLDSERVER
-namespace sqktd {
+namespace useless_util {
 	template<typename F>
 	concept UIGenerator =
 		(
@@ -72,10 +72,6 @@ namespace sqktd {
 	;
 }
 #endif
-
-namespace sqktd {
-	template<class> inline constexpr bool always_false_v = false;
-}
 
 static constexpr int PETVIS_DEFAULT_VIS_SLOT_SZIE	=	2;
 
@@ -1114,14 +1110,14 @@ public:
 #ifdef __WORLDSERVER
 	void UpdateItem(CItemElem & itemElem, const UI::Variant & operation);
 
-	template <sqktd::UIGenerator Generator>
+	template <useless_util::UIGenerator Generator>
 	void UpdateItem(CItemElem & itemElem, Generator generator) {
 		if constexpr (std::is_invocable_v<Generator, const CItemElem &>) {
 			UpdateItem(itemElem, generator(itemElem));
 		} else if constexpr (std::is_invocable_v<Generator>) {
 			UpdateItem(itemElem, generator());
 		} else {
-			static_assert(sqktd::always_false_v<Generator>, "Could not find a valid invocation");
+			static_assert(false, "Could not find a valid invocation");
 		}
 	}
 #endif

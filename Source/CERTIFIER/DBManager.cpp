@@ -33,7 +33,7 @@ CDbManager::~CDbManager() {
 
 BOOL CDbManager::CreateDbWorkers()
 {
-	sqktd::shared_ptr_timed_mutex loadedDatabase = std::make_shared<std::timed_mutex>();
+	shared_ptr_timed_mutex loadedDatabase = std::make_shared<std::timed_mutex>();
 	loadedDatabase->lock();
 
 	for (auto & [thread, ioCompletionPort] : m_workers) {
@@ -240,7 +240,7 @@ void CDbManager::CloseExistingConnection( CQuery & query, LPDB_OVERLAPPED_PLUS p
 	}
 }
 
-void DbWorkerThread(HANDLE hIOCP, sqktd::shared_ptr_timed_mutex mutex) {
+void DbWorkerThread(HANDLE hIOCP, shared_ptr_timed_mutex mutex) {
 	IpAddressRecentFailChecker mgr;
 
 	CQuery query;

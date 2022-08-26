@@ -1,14 +1,14 @@
 #include "stdafx.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 #include <ranges>
 #include <memory>
 #include "ResManager.h"
 
 LPWNDCTRL WNDAPPLET::GetAt( DWORD dwWndId ) {
-	return sqktd::find_if_or_default(ptrCtrlArray,
-		[&](const WNDCTRL * pWndCtrl) {
-		return pWndCtrl->dwWndId == dwWndId;
-		});
+	const auto it = std::ranges::find_if(ptrCtrlArray,
+		[dwWndId](const WNDCTRL * pWndCtrl) { return pWndCtrl->dwWndId == dwWndId; }
+	);
+	return it != ptrCtrlArray.end() ? *it : nullptr;
 }
 
 CResManager::~CResManager() {
@@ -21,7 +21,7 @@ CResManager::~CResManager() {
 }
 
 LPWNDAPPLET CResManager::GetAt( DWORD dwAppletId ) {
-	return sqktd::find_in_map(m_mapWndApplet, dwAppletId);
+	return sqktd::find_in_map(m_mapWndApplet, dwAppletId, nullptr);
 }
 
 LPWNDCTRL CResManager::GetAtControl( DWORD dwAppletId, DWORD dwCtrlId )

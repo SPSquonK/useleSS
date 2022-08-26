@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sqktd/type_traits.hpp"
 #include <variant>
 #include "ar.h"
 
@@ -9,18 +10,6 @@ class CMover;
 // == Variant UI API
 // @SPSquonK 2022-06
 // Under the Boost License
-
-namespace sqktd {
-  namespace _ {
-    template<typename AnyType> struct PointerToMemberInfo{};
-
-    template<typename TheClass, typename TheMember>
-    struct PointerToMemberInfo<TheMember TheClass:: *> {
-      using Class = TheClass;
-      using Member = TheMember;
-    };
-  }
-}
 
 namespace UI {
   /// The generic Synchronizer class aims to synchronize values from World to
@@ -33,7 +22,7 @@ namespace UI {
   template<auto Field>
     requires requires(CItemElem & itemElem) { itemElem.*Field; }
   struct Synchronizer {
-    using SynchronizedType = typename sqktd::_::PointerToMemberInfo<decltype(Field)>::Member;
+    using SynchronizedType = typename sqktd::PointerToMemberInfo<decltype(Field)>::Member;
     SynchronizedType synchronizedValue{};
 
     Synchronizer() = default;

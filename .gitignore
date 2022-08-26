@@ -25,7 +25,10 @@ Output/
 ServerStarter/
 error_*
 .vs/
-Source/Libraries/
+
+!Source/Libraries/
+Source/Libraries/*
+!Source/Libraries/sqktd/
 
 Resource/Atools - Credits.txt
 Resource/Licenses/
