@@ -1634,94 +1634,12 @@ void CSfxBase::DeletePart(BYTE nIndex)
 }
 
 
-
-
-
-
-BOOL CSfxBase::LoadMerge()
-{
-	CString strFilename= MakePath( DIR_SFX, LPCTSTR(m_strName+".sfx") );
-	int i;
-	CResFile file;
-	if(file.Open(strFilename,"rb")) 
-	{
-		char strTemp[9];
-		file.Read(strTemp,8);
-		strTemp[8]=0;
-		CString strTemp2(strTemp);
-		if(strTemp2.Left(6)=="SFX0.1") { // 버젼체크. 현재는 구버젼인지 신버젼인지만 체크해서 버젼에 맞게 로딩.
-			int nPart;
-			file.Read(&nPart,sizeof(int));
-			for(i=0;i<nPart;i++) 
-			{
-				CSfxPart* pPart;
-				SFXPARTTYPE nType;
-				file.Read(&nType,sizeof(SFXPARTTYPE));
-				pPart=AddPart(nType);
-				pPart->Load(file);
-			}
-		}
-		else 
-			if(strTemp2.Left(6)=="SFX0.2") { // 버젼체크. 현재는 구버젼인지 신버젼인지만 체크해서 버젼에 맞게 로딩.
-				// 신버젼. 현재 SFX0.2
-				int nPart;
-				file.Read(&nPart,sizeof(int));
-				for(i=0;i<nPart;i++) 
-				{
-					CSfxPart* pPart;
-					SFXPARTTYPE nType;
-					file.Read(&nType,sizeof(SFXPARTTYPE));
-					pPart=AddPart(nType);
-					pPart->Load2(file);
-				}
-			}
-			else
-			if(strTemp2.Left(6)=="SFX0.3") { // 버젼체크. 현재는 구버젼인지 신버젼인지만 체크해서 버젼에 맞게 로딩.
-				// 신버젼. 현재 SFX0.3
-				int nPart;
-				file.Read(&nPart,sizeof(int));
-				for(i=0;i<nPart;i++) 
-				{
-					CSfxPart* pPart;
-					SFXPARTTYPE nType;
-					file.Read(&nType,sizeof(SFXPARTTYPE));
-					pPart=AddPart(nType);
-					if( nType == SFXPARTTYPE_PARTICLE )
-						pPart->Load3(file);
-					else
-						pPart->Load2(file);
-				}
-			}
-			else
-			{
-				// 버젼 정보 없으면 구버젼
-				file.Seek(0,SEEK_SET); // 위치 다시 돌려놓고 로딩
-				int nPart;
-				file.Read(&nPart,sizeof(int));
-				for(i=0;i<nPart;i++) 
-				{
-					CSfxPart* pPart;
-					SFXPARTTYPE nType;
-					file.Read(&nType,sizeof(SFXPARTTYPE));
-					pPart=AddPart(nType);
-					pPart->OldLoad(file);
-				}
-			}
-	}
-	else 
-	{
-		return FALSE;
-	}
-	file.Close();
-	return TRUE;
-}
-
-BOOL CSfxBase::Load(void)
+BOOL CSfxBase::Load(const std::string & filename)
 {
 	for(int i=0;i<m_apParts.GetSize();i++)
 		safe_delete( (CSfxPart*)m_apParts.GetAt(i) );
 	m_apParts.RemoveAll();
-	CString strFilename=_T( MakePath( DIR_SFX, LPCTSTR(m_strName+".sfx") ) );
+	CString strFilename=_T( MakePath( DIR_SFX, filename.c_str() ) );
 	CResFile file;
 	if(file.Open(strFilename,"rb")) 
 	{
@@ -1801,34 +1719,26 @@ BOOL CSfxBase::Load(void)
 
 CSfxMng::~CSfxMng()
 {
-	for(int i=0;i<m_apSfxBase.GetSize();i++)
-		safe_delete( (CSfxBase*)m_apSfxBase.GetAt(i) );
+	m_sfxBases.clear();
 
 #ifdef __BS_EFFECT_LUA
 	close_lua_sfx( );
 #endif	//__BS_EFFECT_LUA
 }
-void CSfxMng::AddSfxBase(CSfxBase* pSfxBase)
+
+CSfxBase* CSfxMng::GetSfxBase( std::string_view strSfxName )
 {
-	m_apSfxBase.Add(pSfxBase);
-}
-CSfxBase* CSfxMng::GetSfxBase(BYTE nIndex)
-{
-	return (CSfxBase*)(m_apSfxBase[nIndex]);
-}
-CSfxBase* CSfxMng::GetSfxBase( CString strSfxName )
-{
-	for( int i = 0; i < m_apSfxBase.GetSize(); i++ ) 
-	{
-		if( GetSfxBase( i )->m_strName == strSfxName )
-			return GetSfxBase( i );
+	const auto it = m_sfxBases.find(strSfxName);
+	if (it != m_sfxBases.end()) {
+		return it->second.get();
 	}
+
 	// strSfxName 로드
 	CSfxBase* pSfxBase = new CSfxBase;
-	pSfxBase->m_strName = strSfxName;
-	if( pSfxBase->Load() ) 
+
+	if( pSfxBase->Load(std::string(strSfxName) + ".sfx"))
 	{
-		AddSfxBase( pSfxBase );
+		m_sfxBases.emplace(strSfxName, pSfxBase);
 		return pSfxBase;
 	}
 	else 

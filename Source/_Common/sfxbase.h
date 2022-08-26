@@ -1,6 +1,12 @@
 #ifndef __SFXBASE_H
 #define __SFXBASE_H
 
+#include <map>
+#include <memory>
+#include <functional>
+#include <string_view>
+#include <string>
+
 class CModel;
 
 #define DEGREETORADIAN(x) ((2.0f*D3DX_PI*(x))/(360.0f))
@@ -223,12 +229,9 @@ public:
 };
 
 // SFX의 원형. 로딩하면 SFX별로 저장해뒀다가 게임상 오브젝트가 꺼내 쓴다.
-class CSfxBase
+class CSfxBase final
 {
 public:
-	BOOL    LoadMerge();
-	CString m_strName; // sfx의 이름. 파일명에서 확장자를 제외한 것
-
 	CPtrArray m_apParts; // 파트의 배열
 	CSfxPart* Part(BYTE nIndex) { // 지정한 파트의 포인터를 꺼내온다. 범위를 벗어나면 NULL을 리턴
 		if(m_apParts.GetSize()>nIndex) return (CSfxPart*)(m_apParts[nIndex]);
@@ -242,7 +245,7 @@ public:
 	void DeletePart(BYTE nIndex); // 파트 삭제
 	void AdjustPart(BYTE nIndex); // 파트 수정
 
-	BOOL Load(void); // 로드
+	BOOL Load(const std::string & filename); // 로드
 };
 
 // CSfxBase 관리자
@@ -252,17 +255,16 @@ public:
 	static LPDIRECT3DDEVICE9 m_pd3dDevice; // d3d 디바이스 포인터
 	static LPDIRECT3DVERTEXBUFFER9 m_pSfxVB; // 에 사용할 버텍스 버퍼
 
-	FLOAT m_fScale; // sfx의 크기
+	FLOAT m_fScale = 0.5f; // sfx의 크기
 
-	CPtrArray m_apSfxBase; // SfxBase의 배열
+private:
+	std::map<std::string, std::unique_ptr<CSfxBase>, std::less<>> m_sfxBases;
 
-	CSfxMng() {	m_fScale=0.5f; }
+public:
+
 	~CSfxMng();
 
-	void AddSfxBase(CSfxBase* pSfxBase); // SfxBase를 추가
-	void DeleteSfxBase(BYTE nIndex); // 지정한 SfxBase를 삭제
-	CSfxBase* GetSfxBase(BYTE nIndex); // 지정한 SfxBase의 포인터를 갖고온다.
-	CSfxBase* GetSfxBase(CString strSfxName); // SfxBase의 이름으로 지정한 SfxBase의 포인터를 갖고온다.
+	CSfxBase* GetSfxBase(std::string_view strSfxName); // SfxBase의 이름으로 지정한 SfxBase의 포인터를 갖고온다.
 
 	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
 	HRESULT RestoreDeviceObjects();
