@@ -6,6 +6,7 @@
 #include <functional>
 #include <string_view>
 #include <string>
+#include <boost/container/stable_vector.hpp>
 
 class CModel;
 
@@ -97,22 +98,11 @@ public:
 	WORD m_nTexLoop;  // 텍스쳐 애니메이션 한바퀴 도는동안 걸리는 프레임 수 (시간)
 	BOOL m_bUseing;
 
-	CPtrArray m_apKeyFrames; // 키프레임 배열
-	SfxKeyFrame* Key(BYTE nIndex) { // 키프레임
-		if(nIndex>=m_apKeyFrames.GetSize()) return NULL;
-		return (SfxKeyFrame*)(m_apKeyFrames[nIndex]);
-	}
-	SfxKeyFrame* KeyByFrame(WORD nFrame) { // 특정 프레임의 키프레임
-		SfxKeyFrame* pKey;
-		for(int i=0;i<m_apKeyFrames.GetSize();i++) {
-			pKey=Key((BYTE)i);
-			if(pKey->nFrame==nFrame) return pKey;
-		}
-		return NULL;
-	}
+	// TODO: can we replace this with a std::vector<SfxKeyFrame>?
+	boost::container::stable_vector<SfxKeyFrame> m_aKeyFrames; // 키프레임 배열
 
-	CSfxPart();
-	virtual ~CSfxPart();
+	CSfxPart() = default;
+	virtual ~CSfxPart() = default;
 #ifndef __WORLDSERVER
 	virtual void Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) ); // 렌더
 #endif
@@ -121,7 +111,6 @@ public:
 	void DeleteAllKeyFrame();
 	void AddAndAdjustKeyFrame(SfxKeyFrame frame); // 키프레임 추가 -  특정 프레임의 키프레임의 내용을 갱신
 
-	void DeleteKeyFrame(WORD nFrame); // 키프레임 삭제
 	SfxKeyFrame* GetPrevKey(WORD nFrame); // 주어진 프레임부터 이전 키프레임을 갖고온다
 	SfxKeyFrame* GetNextKey(WORD nFrame, BOOL bSkip=TRUE); // 주어진 프레임부터 다음 키프레임을 갖고온다
 	virtual void Load(CResFile& file); // 로드

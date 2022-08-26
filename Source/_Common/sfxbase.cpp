@@ -50,87 +50,57 @@ SfxKeyFrame SfxKeyFrame::FromFile(CResFile & file) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CSfxPart::CSfxPart()
-{
-}
-CSfxPart::~CSfxPart()
-{
-	for(int i=0;i<m_apKeyFrames.GetSize();i++)
-		safe_delete( (SfxKeyFrame*)m_apKeyFrames.GetAt(i) );
-}
-
 void CSfxPart::AddAndAdjustKeyFrame(SfxKeyFrame frame) {
-	for (int i = 0; i != m_apKeyFrames.GetSize(); ++i) {
-		SfxKeyFrame * iterationKey = (SfxKeyFrame *)(m_apKeyFrames.GetAt(i));
+	auto iterationKey = m_aKeyFrames.begin();
+
+	while (iterationKey != m_aKeyFrames.end()) {
 		if (iterationKey->nFrame < frame.nFrame) {
-			// continue
+			++iterationKey;
 		} else if (iterationKey->nFrame == frame.nFrame) {
 			*iterationKey = frame;
 			return;
 		} else {
-			m_apKeyFrames.InsertAt(i, new SfxKeyFrame(frame), 1);
-			return;
+			break;
 		}
 	}
 
-	// insert at the end
-	m_apKeyFrames.Add(new SfxKeyFrame(frame));
+	m_aKeyFrames.insert(iterationKey, frame);
 }
 
-void CSfxPart::DeleteKeyFrame(WORD nFrame)
-{
-	for(int i=0;i<m_apKeyFrames.GetSize();i++)
-		if(Key(i)->nFrame==nFrame) {
-			safe_delete( Key(i) );
-			m_apKeyFrames.RemoveAt(i);
-			return;
-		}
-}
-void CSfxPart::DeleteAllKeyFrame()
-{
-	for(int i=0;i<m_apKeyFrames.GetSize();i++)
-	{
-		if( Key( i ) ) 
-			safe_delete( Key(i) );
-	}
-	m_apKeyFrames.RemoveAll();
+void CSfxPart::DeleteAllKeyFrame() {
+	m_aKeyFrames.clear();
 }
 
-SfxKeyFrame* CSfxPart::GetPrevKey(WORD nFrame)
-{
-	SfxKeyFrame* pKey=NULL;
-	SfxKeyFrame* pTempKey=NULL;
-	for(int i=0;i<m_apKeyFrames.GetSize();i++) {
-		pTempKey=Key(i);
-		if(pTempKey->nFrame>nFrame) break;
-		pKey=pTempKey;
+SfxKeyFrame * CSfxPart::GetPrevKey(const WORD nFrame) {
+	if (m_aKeyFrames.empty()) return nullptr;
+
+	SfxKeyFrame * pKey = nullptr;
+	for (SfxKeyFrame & pTempKey : m_aKeyFrames) {
+		if (pTempKey.nFrame > nFrame) break;
+		pKey = &pTempKey;
 	}
+
 	return pKey;
 }
+
 SfxKeyFrame* CSfxPart::GetNextKey(WORD nFrame, BOOL bSkip)
 {
-	SfxKeyFrame* pKey=NULL;
-	SfxKeyFrame* pTempKey;
-	for( int i = 0; i < m_apKeyFrames.GetSize(); i++ ) 
-	{
-		pTempKey = Key( i );
-		if( bSkip )
-		{
-			if( pTempKey->nFrame >= nFrame ) 
-			{
-				pKey=pTempKey;
+	SfxKeyFrame * pKey = nullptr;
+
+	for (SfxKeyFrame & pTempKey : m_aKeyFrames) {
+		if (bSkip) {
+			if (pTempKey.nFrame >= nFrame) {
+				pKey = &pTempKey;
 				break;
 			}
-		}
-		else
-		{
-			if( pTempKey->nFrame > nFrame ) 
-			{
-				pKey=pTempKey;
+		} else {
+			if (pTempKey.nFrame > nFrame) {
+				pKey = &pTempKey;
 				break;
 			}
 		}
 	}
+
 	return pKey;
 }
 
@@ -677,7 +647,8 @@ void CSfxPartParticle::Load(CResFile &file)
 	m_vScaleSpeed2 = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 	m_vScaleEnd    = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 	
-	int nKey=m_apKeyFrames.GetSize();
+	// TODO: why do we ~~not 0~~ initialize nKey?
+	int nKey = static_cast<int>(m_aKeyFrames.size());
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
 		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
@@ -742,7 +713,7 @@ void CSfxPartParticle::Load2(CResFile &file)
 	file.Read(&m_vScaleSpeed2,sizeof(D3DXVECTOR3));
 	file.Read(&m_vScaleEnd,sizeof(D3DXVECTOR3));
 
-	int nKey=m_apKeyFrames.GetSize();
+	int nKey = static_cast<int>(m_aKeyFrames.size());
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
 		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
@@ -806,8 +777,8 @@ void CSfxPartParticle::Load3(CResFile &file)
 	file.Read(&m_fScalSpeedZHigh,sizeof(FLOAT));
 	file.Read(&m_vScaleSpeed2,sizeof(D3DXVECTOR3));
 	file.Read(&m_vScaleEnd,sizeof(D3DXVECTOR3));
-	
-	int nKey=m_apKeyFrames.GetSize();
+
+	int nKey = static_cast<int>(m_aKeyFrames.size());
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
 		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
@@ -862,8 +833,8 @@ void CSfxPartParticle::OldLoad(CResFile &file)
 	m_fScalSpeedZHigh  = 0;
 	m_vScaleSpeed2 = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 	m_vScaleEnd    = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-	
-	int nKey=m_apKeyFrames.GetSize();
+
+	int nKey = static_cast<int>(m_aKeyFrames.size());
 	file.Read(&nKey,sizeof(int));
 	for(i=0;i<nKey;i++) {
 		AddAndAdjustKeyFrame(SfxKeyFrame::FromFile(file));
@@ -2516,10 +2487,10 @@ BOOL CSfxModel::Process(void)
 			}
 			int nStartFrame = 0;
 			int nEndFrame = 0;
-			if( pPartParticle->Key( 0 ) ) 
+			if( !pPartParticle->m_aKeyFrames.empty() )
 			{
-				nStartFrame = pPartParticle->Key( 0 )->nFrame;
-				nEndFrame = pPartParticle->Key( pPartParticle->m_apKeyFrames.GetSize() - 1 )->nFrame;
+				nStartFrame = pPartParticle->m_aKeyFrames.front().nFrame;
+				nEndFrame = pPartParticle->m_aKeyFrames.back().nFrame;
 			}
 			if( m_nCurFrame >= nStartFrame && m_nCurFrame <= nEndFrame - pPartParticle->m_nParticleFrameDisappear ) 
 			{
@@ -2534,7 +2505,7 @@ BOOL CSfxModel::Process(void)
 					{
 						for( int i = 0; i < pPartParticle->m_nParticleCreateNum; i++ ) 
 						{
-							pParticle = new Particle;
+							pParticle = new Particle; // !!! new?
 							pParticle->nFrame = 0;
 							float fAngle = RANDF*360.0f;
 							pParticle->vPos = 
