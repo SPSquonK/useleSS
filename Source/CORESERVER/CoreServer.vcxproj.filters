@@ -298,9 +298,6 @@
     <ClInclude Include="..\_network\misc\include\MEMPOOLER.H">
       <Filter>Network Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="..\_network\misc\include\memspy.h">
-      <Filter>Network Files\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="..\_network\misc\include\Misc.h">
       <Filter>Network Files\Misc</Filter>
     </ClInclude>

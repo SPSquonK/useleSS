@@ -1737,9 +1737,6 @@
     <ClInclude Include="..\_network\misc\include\MEMPOOLER.H">
       <Filter>Source Files\_Network\Mics</Filter>
     </ClInclude>
-    <ClInclude Include="..\_network\misc\include\memspy.h">
-      <Filter>Source Files\_Network\Mics</Filter>
-    </ClInclude>
     <ClInclude Include="..\_network\misc\include\Misc.h">
       <Filter>Source Files\_Network\Mics</Filter>
     </ClInclude>

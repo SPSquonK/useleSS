@@ -169,7 +169,6 @@
     <ClInclude Include="..\_network\misc\include\heapmng.h" />
     <ClInclude Include="..\_network\misc\include\mempool.h" />
     <ClInclude Include="..\_network\misc\include\MEMPOOLER.H" />
-    <ClInclude Include="..\_network\misc\include\memspy.h" />
     <ClInclude Include="..\_network\misc\include\MyMap.h" />
     <ClInclude Include="..\_network\misc\include\MyTrace.h" />
     <ClInclude Include="..\_network\misc\include\ObjMap.h" />
