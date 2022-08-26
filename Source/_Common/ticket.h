@@ -8,7 +8,7 @@ struct TicketProp {
 class CTicketProperty final {
 public:
 	[[nodiscard]] const TicketProp * GetTicketProp(DWORD dwItemId) const;
-	[[nodiscard]] BOOL IsTarget(DWORD dwWorldId) const;
+	[[nodiscard]] bool IsTarget(DWORD dwWorldId) const;
 	BOOL LoadScript();
 	[[nodiscard]] unsigned int GetExpandedLayer(DWORD dwWorldId) const;
 private:

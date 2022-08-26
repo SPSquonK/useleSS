@@ -4,18 +4,13 @@
 #include <type_traits>
 
 namespace sqktd {
-  template<typename InputIt, typename UnaryPredicate>
-  [[nodiscard]] constexpr auto * find_ptr_if(InputIt first, const InputIt last, UnaryPredicate p) {
-    const auto it = std::find_if(first, last, p);
-    if (it != last) return &*it;
-    return nullptr;
-  }
-
+  /// Returns the value of *std::ranges::find_if(container, p). If the
+  /// iterator is invalid, return defaultValue instead.
   template<typename Container, typename UnaryPredicate>
-  [[nodiscard]] constexpr typename Container::value_type find_if_or_default(
+  [[nodiscard]] constexpr typename Container::value_type find_if_by_value(
     const Container & container,
     UnaryPredicate p,
-    typename Container::value_type defaultValue = nullptr
+    typename Container::value_type defaultValue = 0
   ) {
     const auto it = std::ranges::find_if(container, p);
     if (it != container.end()) return *it;
@@ -43,10 +38,9 @@ namespace sqktd {
     return nullptr;
   }
 
-	namespace ranges {
-		template<typename Collection>
-		[[nodiscard]] constexpr bool all_are(const Collection & collection, const typename Collection::value_type & value) {
-			return std::ranges::all_of(collection, [&](const auto & value_) { return value_ == value; });
-		}
+	template<typename Collection>
+	[[nodiscard]] constexpr bool all_are(const Collection & collection, const typename Collection::value_type & value) {
+		return std::ranges::all_of(collection, [&](const auto & value_) { return value_ == value; });
 	}
+
 }

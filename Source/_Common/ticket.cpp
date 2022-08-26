@@ -1,20 +1,17 @@
 #include "stdafx.h"
 #include <algorithm>
 #include "ticket.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 #include <rapidjson/document.h>
 
 CTicketProperty g_ticketProperties;
 
-BOOL CTicketProperty::IsTarget(DWORD dwWorldId) const {
-	const auto it = std::find_if(
-		m_mapTicketProp.begin(), m_mapTicketProp.end(),
+bool CTicketProperty::IsTarget(DWORD dwWorldId) const {
+	return std::ranges::any_of(m_mapTicketProp,
 		[dwWorldId](const auto & pair) {
 			return pair.second.dwWorldId == dwWorldId;
 		}
 	);
-
-	return (it != m_mapTicketProp.end()) ? TRUE : FALSE;
 }
 
 const TicketProp * CTicketProperty::GetTicketProp(DWORD dwItemId) const {

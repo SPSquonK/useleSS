@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "sqktd.h"
 #include "defineItem.h"
 #include "lang.h"
 #include "Ship.h"

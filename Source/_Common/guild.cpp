@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 #include <ranges>
 
 #include "guild.h"
@@ -576,7 +576,7 @@ void CGuild::AddVote( const VOTE_INSERTED_INFO& info, bool bCompleted, BYTE* cbC
 
 // 투표 찾기 
 CGuildVote * CGuild::FindVote(const u_long idVote) {
-	return sqktd::find_if_or_default(m_votes,
+	return sqktd::find_if_by_value(m_votes,
 		[idVote](const CGuildVote * const vote) { return vote->GetID() == idVote; }
 	);
 }

@@ -32,7 +32,7 @@
 #include "eveschool.h"
 #include "post.h"
 #include "wndbagex.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 
 #include "couplehelper.h"
 #include "FuncTextCmd.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <boost/pool/object_pool.hpp>
-#include "StaticString.h"
+#include "sqktd/static_string.h"
 
 #include <thread>
 #include "query.h"

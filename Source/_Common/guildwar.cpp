@@ -2,7 +2,7 @@
 
 #include "guildwar.h"
 #include "guild.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 
 #ifdef __CORESERVER
 #include "dpcoresrvr.h"

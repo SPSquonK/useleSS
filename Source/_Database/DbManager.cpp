@@ -25,7 +25,7 @@
 #include "GuildHouseDBCtrl.h"
 
 #include "CampusDBCtrl.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 #include "DbSerializer.h"
 
 #if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816) || defined(__ITEM_REMOVE_LIST)
@@ -2868,7 +2868,7 @@ void CDbManager::AddGuildVote( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlapp
 	bOK[5] = pQuery->BindParameter( 6, szSelections[3], MAX_BYTE_VOTESELECT);
 	
 	u_long idVote = 0;
-	if (sqktd::ranges::all_are(bOK, true)) {
+	if (sqktd::all_are(bOK, true)) {
 		if (pQuery->Exec(szQuery) && pQuery->Fetch()) {
 			idVote = (u_long)pQuery->GetInt("m_idVote");
 		}

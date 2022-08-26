@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "sqktd.h"
+#include "sqktd/algorithm.h"
 #include <ranges>
 #include <memory>
 #include "ResManager.h"
 
 LPWNDCTRL WNDAPPLET::GetAt( DWORD dwWndId ) {
-	return sqktd::find_if_or_default(ptrCtrlArray,
+	return sqktd::find_if_by_value(ptrCtrlArray,
 		[&](const WNDCTRL * pWndCtrl) {
 		return pWndCtrl->dwWndId == dwWndId;
 		});

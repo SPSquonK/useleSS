@@ -3,10 +3,6 @@
 #include <array>
 #include <string>
 
-// In a world where we use Boost, we would use
-// https://www.boost.org/doc/libs/1_75_0/libs/static_string/doc/html/index.html
-// instead
-
 class CAr;
 
 template<size_t N>
