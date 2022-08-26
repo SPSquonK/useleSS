@@ -376,7 +376,6 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 	ar << g_GuildCombatMng.m_uBestPlayer;
 	
 	// 길드 저장
-#ifdef __S_BUG_GC
 	ar << (u_long)g_GuildCombatMng.m_vecGuildCombatMem.size();
 	for( int gcmi = 0 ; gcmi != g_GuildCombatMng.m_vecGuildCombatMem.size() ; ++gcmi )
 	{
@@ -458,89 +457,6 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 			}
 		}
 	}
-#else // __S_BUG_GC
-	ar << (u_long)g_GuildCombatMng.m_GuildCombatMem.size();
-	for( map<u_long, CGuildCombat::__GuildCombatMember*>::iterator it = g_GuildCombatMng.m_GuildCombatMem.begin() ; 
-		it != g_GuildCombatMng.m_GuildCombatMem.end() ; ++it )
-	{
-		BOOL bSelectGuild = FALSE; // 출전한 길드인가
-		for( int veci = 0 ; veci < g_GuildCombatMng.vecRequestRanking.size() ; ++veci )
-		{
-			if( veci >= g_GuildCombatMng.m_nMaxGuild )
-				break;
-
-			CGuildCombat::__REQUESTGUILD RequestGuild = g_GuildCombatMng.vecRequestRanking[veci];
-			if( RequestGuild.uidGuild == it->first )
-			{
-				bSelectGuild = TRUE;
-				break;
-			}
-		}
-
-		CGuildCombat::__GuildCombatMember* pGCMember = it->second;
-		ar << (u_long)it->first;
-		ar << pGCMember->nGuildPoint;
-		if( bSelectGuild )	// 출전 길드
-		{
-			if( g_GuildCombatMng.m_uWinGuildId == it->first )	// 승리한 길드
-			{
-				ar << g_GuildCombatMng.GetPrizePenya( 0 );
-				ar << (DWORD)0;
-				ar << g_GuildCombatMng.m_nWinGuildCount;
-			}
-			else
-			{
-				ar << (__int64)0;
-				ar << (DWORD)0;
-				ar << (int)0;
-			}
-		}
-		else
-		{
-			if( pGCMember->bRequest )	// 신청은 했는데 출전이 안된 길드 수수료 2%
-			{
-				ar << (__int64)0;
-				ar << (DWORD)0; //(DWORD)(pGCMember->dwPenya * fNotRequestPercent );
-				ar << (int)0;
-
-				// 바로 우편함으로 지급
-				CGuild* pGuild = g_GuildMng.GetGuild( it->first );
-				if( pGuild )
-				{
-					CItemElem pItemElem;
-					char szMsg[1000];
-					sprintf( szMsg, "%s", prj.GetText( TID_GAME_GC_NOTREQUEST ) );
-					char szMsg1[1000];
-					sprintf( szMsg1, "%s", prj.GetText( TID_GAME_GC_NOTREQUEST1 ) );
-					SendQueryPostMail( pGuild->m_idMaster, 0, pItemElem, pGCMember->dwPenya * fNotRequestPercent, szMsg, szMsg1 );
-				}
-			}
-			else						// 취소한 길드 수수료 20%
-			{
-				ar << (__int64)0;
-				ar << (DWORD)0; //(DWORD)(pGCMember->dwPenya * fRequstCanclePercent );
-				ar << (int)0;
-			}
-		}
-
-		// 참가자 포인트
-		ar << (u_long)pGCMember->vecGCSelectMember.size();
-		for( veci = 0 ; veci < pGCMember->vecGCSelectMember.size() ; ++veci )
-		{
-			CGuildCombat::__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-			ar << pJoinPlayer->uidPlayer;
-			ar << pJoinPlayer->nPoint;
-			if( pJoinPlayer->uidPlayer == g_GuildCombatMng.m_uBestPlayer )
-			{
-				ar << g_GuildCombatMng.GetPrizePenya( 1 );
-			}
-			else 
-			{
-				ar << (__int64)0;
-			}
-		}
-	}
-#endif // __S_BUG_GC
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
@@ -1240,7 +1156,6 @@ void CDPDatabaseClient::OnOutGuildCombat( CAr & ar, DPID, DPID )
 	if( pGuild )
 	{
 		BOOL bJoin = TRUE;
-#ifdef __S_BUG_GC
 		CGuildCombat::__GuildCombatMember* pGCMember = g_GuildCombatMng.FindGuildCombatMember( idGuild );
 		if( pGCMember == NULL )
 		{
@@ -1251,19 +1166,6 @@ void CDPDatabaseClient::OnOutGuildCombat( CAr & ar, DPID, DPID )
 			if( pGCMember->bRequest == FALSE )
 				bJoin = FALSE;
 		}
-#else // __S_BUG_GC
-		map<u_long, CGuildCombat::__GuildCombatMember*>::iterator it = g_GuildCombatMng.m_GuildCombatMem.find( idGuild );
-		if( it == g_GuildCombatMng.m_GuildCombatMem.end() )
-		{
-			bJoin = FALSE;
-		}
-		else
-		{
-			CGuildCombat::__GuildCombatMember* pGCMember = it->second;
-			if( pGCMember->bRequest == FALSE )
-				bJoin = FALSE;				
-		}
-#endif // __S_BUG_GC
 		if( bJoin )
 		{
 			g_GuildCombatMng.OutGuildCombat( idGuild );

@@ -1558,7 +1558,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			if( 9 < nCount )
 				break;
 
-#ifdef __S_BUG_GC
 			BOOL bFind = FALSE;
 			__GuildCombatJoin GuildCombatJoin;
 			for( int gci = 0 ; gci < (int)( m_vecGuildCombatJoin.size() ) ; ++gci )
@@ -1618,59 +1617,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 				++nCount;
 			}
-#else // __S_BUG_GC
-			map< u_long, __GuildCombatJoin >::iterator itw = m_GuildCombatJoin.find( ((__GuildCombatJoin)*itv).uidGuild );
-			if( itw != m_GuildCombatJoin.end() )
-			{
-				__GuildCombatJoin GuildCombatJoin = itw->second;
-				
-
-				if( g_GuildCombatMng.m_nState == CGuildCombat::WAR_STATE )
-				{
-					if( GuildCombatJoin.nJoinSize == 0 )
-						continue;
-				}
-
-				nY += (cSize.cy+10);
-
-				char szBuf[MAX_NAME] = {0,};
-
-				GetStrCut( GuildCombatJoin.szJoinGuildName, szBuf, 8 );
-				
-				if( 8 <= GetStrLen(GuildCombatJoin.szJoinGuildName) )
-				{
-					strcat( szBuf, "..." );
-				}
-				else
-				{
-					strcpy( szBuf, GuildCombatJoin.szJoinGuildName );
-				}
-				
-				sprintf( szMsgGuild, "%s", szBuf );
-				sprintf( szMsg, "%.2d/%.2d", GuildCombatJoin.nJoinSize, GuildCombatJoin.nJoinSize + GuildCombatJoin.nOutSize );
-
-				crect = CRect(nX-10, nY-5, nX+160, nY+18);
-				p2DRender->RenderFillRect(crect, D3DCOLOR_ARGB( 30, 0, 0, 200 ) );
-
-				if( nCount < 1 )
-				{
-					p2DRender->TextOut( nX, nY, szMsgGuild, 0xFFFF0000, 0xFF000000 );
-					p2DRender->TextOut( nX + 120, nY, szMsg, 0xFFFF0000, 0xFF000000 );
-				}
-				else if( nCount < 3 )
-				{
-					p2DRender->TextOut( nX, nY, szMsgGuild, 0xFF26F4F6, 0xFF000000 );
-					p2DRender->TextOut( nX + 120, nY, szMsg, 0xFF26F4F6, 0xFF000000 );
-				}
-				else
-				{
-					p2DRender->TextOut( nX, nY, szMsgGuild, 0xFFFFFFFF, 0xFF000000 );
-					p2DRender->TextOut( nX + 120, nY, szMsg, 0xFFFFFFFF, 0xFF000000 );
-				}
-
-				++nCount;
-			}
-#endif // __S_BUG_GC
 		}
 	}
 

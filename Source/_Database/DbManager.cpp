@@ -602,11 +602,7 @@ BOOL CDbManager::OpenGuildCombat( void )
 	m_uWinGuildId = 0;
 	m_nWinGuildCount = 0;
 	m_uBestPlayer = 0;
-#ifdef __S_BUG_GC
 	m_vecGuildCombat.clear();
-#else // __S_BUG_GC
-	m_GuildCombat.clear();
-#endif // __S_BUG_GC
 	
 	CQuery qry;
 	
@@ -686,12 +682,8 @@ BOOL CDbManager::OpenGuildCombat( void )
 				GCJoin.bRequest = TRUE;
 			else
 				GCJoin.bRequest = FALSE;
-#ifdef __S_BUG_GC
 			GCJoin.uGuildId = GuildId;
 			m_vecGuildCombat.push_back( GCJoin);
-#else // __S_BUG_GC
-			m_GuildCombat.insert( map<u_long, __GUILDCOMBATJOIN>::value_type(GuildId, GCJoin) );
-#endif // __S_BUG_GC
 		}
 		
 		// 지금 까지 보상 및 참여금을 안받은 길드 및 베스트 플레이어 얻어오기
@@ -3838,7 +3830,6 @@ void CDbManager::SerializeGuildCombat( CAr & ar )
 	ar << m_uWinGuildId;
 	ar << m_nWinGuildCount;
 	ar << m_uBestPlayer;
-#ifdef __S_BUG_GC
 	ar << (u_long)m_vecGuildCombat.size();
 	for( DWORD gci = 0 ; gci < m_vecGuildCombat.size() ; ++gci )
 	{
@@ -3847,16 +3838,6 @@ void CDbManager::SerializeGuildCombat( CAr & ar )
 		ar << GCJoin.dwPenya;
 		ar << GCJoin.bRequest;
 	}
-#else // __S_BUG_GC
-	ar << (u_long)m_GuildCombat.size();
-	for( map<u_long, __GUILDCOMBATJOIN>::iterator it = m_GuildCombat.begin() ; it != m_GuildCombat.end() ; ++ it )
-	{
-		__GUILDCOMBATJOIN GCJoin = it->second;
-		ar << (u_long)it->first;
-		ar << GCJoin.dwPenya;
-		ar << GCJoin.bRequest;
-	}
-#endif // __S_BUG_GC
 	SerializeResultValue( ar );
 	SerializePlayerPoint( ar );
 }
@@ -4064,12 +4045,8 @@ void CDbManager::InGuildCombat( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlap
 		__GUILDCOMBATJOIN GCJoin;
 		GCJoin.dwPenya = dwPenya;
 		GCJoin.bRequest = TRUE;
-#ifdef __S_BUG_GC
 		GCJoin.uGuildId = idGuild;
 		m_vecGuildCombat.push_back( GCJoin );
-#else // __S_BUG_GC
-		m_GuildCombat.insert( map<u_long, __GUILDCOMBATJOIN>::value_type( idGuild, GCJoin) );
-#endif // __S_BUG_GC
 		CDPTrans::GetInstance()->SendInGuildCombat( idGuild, dwPenya, dwExistingPenya );
 	}
 	else
@@ -4089,7 +4066,6 @@ void CDbManager::OutGuildCombat( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverla
 
 	if( pQuery->Exec( szQuery ) )
 	{
-#ifdef __S_BUG_GC
 		BOOL bFind = FALSE;
 		__GUILDCOMBATJOIN GCJoin;
 		for( DWORD gci = 0 ; gci < m_vecGuildCombat.size() ; ++gci )
@@ -4103,14 +4079,6 @@ void CDbManager::OutGuildCombat( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverla
 		}
 		if( bFind )
 			GCJoin.bRequest = FALSE;
-#else // __S_BUG_GC
-		map<u_long, __GUILDCOMBATJOIN>::iterator it = m_GuildCombat.find( idGuild );
-		if( it != m_GuildCombat.end() )
-		{
-			__GUILDCOMBATJOIN GCJoin = it->second;
-			GCJoin.bRequest = FALSE;
-		}
-#endif // __S_BUG_GC
 		CDPTrans::GetInstance()->SendOutGuildCombat( idGuild );
 	}
 	else
@@ -4226,11 +4194,7 @@ void CDbManager::ResultGuildCombat( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 		}
 	}
 
-#ifdef __S_BUG_GC
 	m_vecGuildCombat.clear();
-#else // __S_BUG_GC
-	m_GuildCombat.clear();
-#endif // __S_BUG_GC
 	++m_nGuildCombatIndex;
 
 	// 다음대전 시작

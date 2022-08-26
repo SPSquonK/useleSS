@@ -381,11 +381,7 @@ public:
 		int nJoinSize;
 		int nOutSize;
 	};
-#ifdef __S_BUG_GC
 	std::vector< __GuildCombatJoin > m_vecGuildCombatJoin;
-#else // __S_BUG_GC
-	std::map< u_long, __GuildCombatJoin > m_GuildCombatJoin;
-#endif // __S_BUG_GC
 	std::vector< __GuildCombatJoin > m_vGuildCombatSort;
 
 	CWndButton m_wndMenu;

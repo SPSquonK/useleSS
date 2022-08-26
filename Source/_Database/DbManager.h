@@ -608,9 +608,7 @@ class CDbManager
 	{
 		DWORD dwPenya;
 		BOOL  bRequest;
-#ifdef __S_BUG_GC
 		u_long uGuildId;
-#endif // __S_BUG_GC
 	};
 	struct __SendItemContents
 	{
@@ -695,11 +693,7 @@ public:
 	std::vector<__GCRESULTVALUEPLAYER>			m_GCResultValuePlayer;		// 길드대전 결과값
 	std::vector<__GCPLAYERPOINT> m_vecGCPlayerPoint;
 
-#ifdef __S_BUG_GC
 	std::vector<__GUILDCOMBATJOIN>	m_vecGuildCombat;	
-#else // __S_BUG_GC
-	std::map<u_long, __GUILDCOMBATJOIN>	m_GuildCombat;	
-#endif // __S_BUG_GC
 	int		m_nGuildCombatIndex;
 	u_long	m_uWinGuildId;
 	u_long	m_uBestPlayer;

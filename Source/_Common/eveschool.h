@@ -103,9 +103,7 @@ public:
 	};
 	struct __GuildCombatMember
 	{
-#ifdef __S_BUG_GC
 		u_long	uGuildId;
-#endif // __S_BUG_GC
 		std::vector<__JOINPLAYER*> vecGCSelectMember;	// 대전에 선택된 멤버 정보
 //		set<u_long> GuildCombatJoinMember;		// 길드전에 참가한멤버
 //		set<u_long> GuildCombatOutMember;		// 참가했는데 죽었던가 나간 멤버
@@ -120,9 +118,7 @@ public:
 
 		void Clear()
 		{
-#ifdef __S_BUG_GC
 			uGuildId = 0;
-#endif // __S_BUG_GC
 			SelectMemberClear();
 			dwPenya = 0;
 			bRequest = FALSE;
@@ -201,11 +197,7 @@ public:
 	std::vector<__GCGETPOINT> m_vecGCGetPoint;
 	std::vector<__GCPLAYERPOINT> m_vecGCPlayerPoint;
 #ifdef __WORLDSERVER 
-#ifdef __S_BUG_GC
 	std::vector<__GuildCombatMember*> m_vecGuildCombatMem;
-#else // __S_BUG_GC
-	std::map<u_long, __GuildCombatMember*> m_GuildCombatMem;
-#endif // __S_BUG_GC
 	DWORD	m_dwTime;
 	int		m_nProcessGo;
 	int	 	m_nProcessCount[ 25 ];
@@ -300,9 +292,7 @@ public:
 	CTime	GetNextGuildCobmatTime(void);
 	int		m_nDay;
 
-#ifdef __S_BUG_GC
 	__GuildCombatMember* FindGuildCombatMember( u_long GuildId );
-#endif // __S_BUG_GC
 #endif // __WORLDSERVER
 };
 

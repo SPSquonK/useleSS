@@ -49,7 +49,6 @@
 #define		__S_ADD_EXP						// EXP_S 아이템 생성
 
 #define		__RULE_0615						// 명명 규칙 정리
-#define		__S_BUG_GC						// 길드대전 신청시 같은 금액을 신청하면 길드아이디로 쇼트 되서 순위가 바뀌는 문제 수정( map -> vector ) 
 #define		__S_ADD_RESTATE					// 상용화 아이템 생성( 리스테트 힘, 민첩, 체력, 지능 )
 
 //	#define		__REMOVE_ATTRIBUTE			// 속성제련 제거(10차로 변경)
