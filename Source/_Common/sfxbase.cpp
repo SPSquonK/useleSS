@@ -115,20 +115,41 @@ void CSfxPart::Load2(CResFile &file)
 {
 }
 
-void CSfxPart::GetKey(WORD nFrame,SfxKeyFrame* pKey)
-{
-	SfxKeyFrame* pPrevKey=GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) return;
-	int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-	*pKey=*(pPrevKey);
-	if(dFrame!=0) {
-		pKey->vPos			+= (pNextKey->vPos - pPrevKey->vPos) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		pKey->vPosRotate	+= (pNextKey->vPosRotate - pPrevKey->vPosRotate) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		pKey->vRotate		+= (pNextKey->vRotate - pPrevKey->vRotate) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		pKey->vScale		+= (pNextKey->vScale - pPrevKey->vScale) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		pKey->nAlpha		+= (pNextKey->nAlpha - pPrevKey->nAlpha) * (nFrame - pPrevKey->nFrame) / dFrame;
+std::optional<CSfxPart::ComputedKeyResult> CSfxPart::GetComputedKey(WORD nFrame, bool usePreviousScale) const {
+	const SfxKeyFrame * pPrevKey = nullptr; // <=
+	const SfxKeyFrame * pNextKey = nullptr; // >
+
+	// m_aKeyFrames is sorted by nFrame
+	for (const SfxKeyFrame & key : m_aKeyFrames) {
+		if (key.nFrame < nFrame) {
+			pPrevKey = &key;
+		} else if (key.nFrame == nFrame) {
+			return ComputedKeyResult{ .key = key, .lerp = 0.0f };
+		} else {
+			pNextKey = &key;
+			break;
+		}
 	}
+
+	if (!pPrevKey || !pNextKey) return std::nullopt;
+
+	const int dFrame = pNextKey->nFrame - pPrevKey->nFrame;
+	// dFrame is > 0 because pPrevKey->nFrame < nFrame < pNextKey->nFrame
+
+	SfxKeyFrame result;
+	result.nFrame = nFrame;
+
+	const float lerp = static_cast<float>(nFrame - pPrevKey->nFrame) / static_cast<float>(dFrame);
+	D3DXVec3Lerp(&result.vPos, &pPrevKey->vPos, &pNextKey->vPos, lerp);
+	D3DXVec3Lerp(&result.vPosRotate, &pPrevKey->vPosRotate, &pNextKey->vPosRotate, lerp);
+	if (usePreviousScale) {
+		result.vScale = pPrevKey->vScale;
+	} else {
+		D3DXVec3Lerp(&result.vScale, &pPrevKey->vScale, &pNextKey->vScale, lerp);
+	}
+	D3DXVec3Lerp(&result.vRotate, &pPrevKey->vRotate, &pNextKey->vRotate, lerp);
+	result.nAlpha = static_cast<int>(std::lerp(pPrevKey->nAlpha, pNextKey->nAlpha, lerp));
+	return ComputedKeyResult{ .key = result, .lerp = lerp };
 }
 
 CSfxPartBill::CSfxPartBill()
@@ -151,21 +172,10 @@ void CSfxPartBill::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAngle, D
 	}
 	else 
 		CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( m_strTex ) );
-	SfxKeyFrame* pPrevKey = GetPrevKey( nFrame );
-	SfxKeyFrame* pNextKey = GetNextKey( nFrame );
-	if( pPrevKey == NULL || pNextKey == NULL ) return;
-	SfxKeyFrame Key;
-	int dFrame = pNextKey->nFrame-pPrevKey->nFrame;
-	Key = *(pPrevKey);
-	// 앞뒤 keyframe을 색출하여 현재 키값을 산출해 낸다.
-	if( dFrame != 0 ) 
-	{
-		Key.vPos		+= (pNextKey->vPos - pPrevKey->vPos) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate - pPrevKey->vPosRotate) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate - pPrevKey->vRotate) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vScale		+= (pNextKey->vScale - pPrevKey->vScale) * (FLOAT)( (nFrame - pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.nAlpha		+= (pNextKey->nAlpha - pPrevKey->nAlpha) * (nFrame - pPrevKey->nFrame)/dFrame;
-	}
+
+	const auto maybeKey = GetComputedKey(nFrame);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -268,21 +278,10 @@ void CSfxPartBill::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECT
 	}
 	else 
 		CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( m_strTex ) );
-	SfxKeyFrame* pPrevKey = GetPrevKey( nFrame );
-	SfxKeyFrame* pNextKey = GetNextKey( nFrame );
-	if( pPrevKey == NULL || pNextKey == NULL ) return;
-	SfxKeyFrame Key;
-	int dFrame = pNextKey->nFrame-pPrevKey->nFrame;
-	Key = *(pPrevKey);
-	// 앞뒤 keyframe을 색출하여 현재 키값을 산출해 낸다.
-	if( dFrame != 0 ) 
-	{
-		Key.vPos		+= (pNextKey->vPos - pPrevKey->vPos) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate - pPrevKey->vPosRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate - pPrevKey->vRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vScale		+= (pNextKey->vScale - pPrevKey->vScale) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) /(FLOAT)( dFrame );
-		Key.nAlpha		+= (pNextKey->nAlpha - pPrevKey->nAlpha) * (nFrame-pPrevKey->nFrame) / dFrame;
-	}
+
+	const auto maybeKey = GetComputedKey(nFrame);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -497,20 +496,10 @@ CSfxPartParticle::~CSfxPartParticle()
 void CSfxPartParticle::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECTOR3 vScale )
 {
 	CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
-	SfxKeyFrame* pPrevKey=GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) return;
-	SfxKeyFrame Key;
-	int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-	Key=*(pPrevKey);
-	if(dFrame!=0) 
-	{
-		Key.vPos		+= (pNextKey->vPos - pPrevKey->vPos) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate - pPrevKey->vPosRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate - pPrevKey->vRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vScale		+= (pNextKey->vScale - pPrevKey->vScale) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.nAlpha		+= (pNextKey->nAlpha - pPrevKey->nAlpha)*(nFrame-pPrevKey->nFrame)/dFrame;
-	}
+
+	const auto maybeKey = GetComputedKey(nFrame);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -928,22 +917,9 @@ void CSfxPartMesh::OldLoad(CResFile &file)
 #ifndef __WORLDSERVER
 void CSfxPartMesh::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECTOR3 vScale )
 {
-	SfxKeyFrame* pPrevKey=GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) 
-	{
-		return;
-	}
-	SfxKeyFrame Key;
-	int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-	Key=*(pPrevKey);
-	if(dFrame!=0) {
-		Key.vPos		+= (pNextKey->vPos-pPrevKey->vPos) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate-pPrevKey->vPosRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate-pPrevKey->vRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vScale		+= (pNextKey->vScale-pPrevKey->vScale) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.nAlpha		+= (pNextKey->nAlpha-pPrevKey->nAlpha) * (nFrame-pPrevKey->nFrame) / dFrame;
-	}
+	const auto maybeKey = GetComputedKey(nFrame);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -1140,20 +1116,10 @@ void CSfxPartCustomMesh::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3
 		CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
 	}
 	else CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
-	SfxKeyFrame* pPrevKey=GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) return;
-	SfxKeyFrame Key;
-	int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-	Key=*(pPrevKey);
-	if(dFrame!=0) 
-	{
-		Key.vPos		+= (pNextKey->vPos - pPrevKey->vPos) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate - pPrevKey->vPosRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate - pPrevKey->vRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vScale		+= (pNextKey->vScale - pPrevKey->vScale) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.nAlpha		+= (pNextKey->nAlpha - pPrevKey->nAlpha) * (nFrame-pPrevKey->nFrame) / dFrame;
-	}
+
+	const auto maybeKey = GetComputedKey(nFrame);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -1283,20 +1249,10 @@ void CSfxPartCustomMesh::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 		CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
 	}
 	else CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
-	SfxKeyFrame* pPrevKey=GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) return;
-	SfxKeyFrame Key;
-	int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-	Key=*(pPrevKey);
-	if(dFrame!=0) 
-	{
-		Key.vPos		+= (pNextKey->vPos-pPrevKey->vPos) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate-pPrevKey->vPosRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate-pPrevKey->vRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vScale		+= (pNextKey->vScale-pPrevKey->vScale) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.nAlpha		+= (pNextKey->nAlpha-pPrevKey->nAlpha) * (nFrame-pPrevKey->nFrame) / dFrame;
-	}
+
+	const auto maybeKey = GetComputedKey(nFrame);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -1888,27 +1844,10 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 
 	// 기본 world 매트릭스의 계산 등은 빌보드part의 그것과 크게 다르지 않다.
 	CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(pPartParticle->m_strTex));
-	SfxKeyFrame* pPrevKey=pPartParticle->GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=pPartParticle->GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) return;
-	SfxKeyFrame Key;
-	int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-	Key=*(pPrevKey);
-	if(dFrame!=0) 
-	{
-		Key.vPos		+= (pNextKey->vPos-pPrevKey->vPos) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate-pPrevKey->vPosRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate-pPrevKey->vRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		//Key.vScale	+=(pNextKey->vScale-pPrevKey->vScale)*(nFrame-pPrevKey->nFrame)/dFrame;
 
-		if( !pPartParticle->m_bRepeatScal )
-		{
-			Key.vScale	+= (pNextKey->vScale-pPrevKey->vScale) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		}
-		
-
-		Key.nAlpha+=(pNextKey->nAlpha-pPrevKey->nAlpha)*(nFrame-pPrevKey->nFrame)/dFrame;
-	}
+	const auto maybeKey = pPartParticle->GetComputedKey(nFrame, true);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -2049,10 +1988,8 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 		D3DXMATRIX matRot;
 		D3DXVECTOR3 v3Rot = D3DXVECTOR3(0.0f,0.0f,0.0f);
 		
-		if( dFrame != 0 )
-		{
-			FLOAT Lerp = (FLOAT)(nFrame-pPrevKey->nFrame)/dFrame;
-			v3Rot = D3DXR::LerpWith0(pParticle->vRotation, Lerp);
+		if (maybeKey->lerp != 0.0f) {
+			v3Rot = D3DXR::LerpWith0(pParticle->vRotation, maybeKey->lerp);
 		}
 		
 		D3DXMatrixRotationYawPitchRoll(&matRot, DEGREETORADIAN(v3Rot.y), DEGREETORADIAN(v3Rot.x), DEGREETORADIAN(v3Rot.z) );
@@ -2251,24 +2188,10 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 
 	// 기본 world 매트릭스의 계산 등은 빌보드part의 그것과 크게 다르지 않다.
 	//CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(pPartParticle->m_strTex));
-	SfxKeyFrame* pPrevKey=pPartParticle->GetPrevKey(nFrame);
-	SfxKeyFrame* pNextKey=pPartParticle->GetNextKey(nFrame);
-	if(pPrevKey==NULL || pNextKey==NULL) return;
-	SfxKeyFrame Key;
-	int dFrame=pNextKey->nFrame-pPrevKey->nFrame;
-	Key=*(pPrevKey);
-	if(dFrame!=0) 
-	{
-		Key.vPos		+= (pNextKey->vPos-pPrevKey->vPos) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vPosRotate	+= (pNextKey->vPosRotate-pPrevKey->vPosRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		Key.vRotate		+= (pNextKey->vRotate-pPrevKey->vRotate) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		
-		if( !pPartParticle->m_bRepeatScal )
-		{
-			Key.vScale	+= (pNextKey->vScale-pPrevKey->vScale) * (FLOAT)( (nFrame-pPrevKey->nFrame) ) / (FLOAT)( dFrame );
-		}
-		Key.nAlpha+=(pNextKey->nAlpha-pPrevKey->nAlpha)*(nFrame-pPrevKey->nFrame)/dFrame;
-	}
+
+	const auto maybeKey = pPartParticle->GetComputedKey(nFrame, true);
+	if (!maybeKey) return;
+	const SfxKeyFrame & Key = maybeKey->key;
 
 	D3DXMATRIX matTemp,matTemp1,matTemp2;
 	D3DXMATRIX matTrans,matAngle,matScale,matInv;
@@ -2394,10 +2317,8 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 		D3DXMATRIX matRot;
 		D3DXVECTOR3 v3Rot = D3DXVECTOR3(0.0f,0.0f,0.0f);
 		
-		if( dFrame != 0 )
-		{
-			FLOAT Lerp = (FLOAT)(nFrame-pPrevKey->nFrame)/dFrame;
-			v3Rot = D3DXR::LerpWith0(pParticle->vRotation, Lerp);
+		if (maybeKey->lerp != 0.0f) {
+			v3Rot = D3DXR::LerpWith0(pParticle->vRotation, maybeKey->lerp);
 		}
 
 		D3DXMatrixRotationYawPitchRoll(&matRot, DEGREETORADIAN(v3Rot.y), DEGREETORADIAN(v3Rot.x), DEGREETORADIAN(v3Rot.z) );
@@ -2454,9 +2375,6 @@ BOOL CSfxModel::Process(void)
 
 			if( pPartParticle->m_bUseing == FALSE )
 				continue;
-
-			SfxKeyFrame Key;
-			pPartParticle->GetKey( m_nCurFrame, &Key );
 
 			// 파티클 이동, 생성 및 제거
 			int j;

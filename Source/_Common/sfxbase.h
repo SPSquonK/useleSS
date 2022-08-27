@@ -118,7 +118,8 @@ public:
 	virtual void Load2(CResFile& file); 
 	virtual void Load3(CResFile& file) {}; // 최신버젼
 	
-	void GetKey(WORD nFrame,SfxKeyFrame* pKey); // 특정프레임의 인터폴레이션된 키값을 갖고온다
+	struct ComputedKeyResult { SfxKeyFrame key; float lerp; };
+	[[nodiscard]] std::optional<ComputedKeyResult> GetComputedKey(WORD nFrame, bool usePreviousScale = false) const; // 특정프레임의 인터폴레이션된 키값을 갖고온다
 
 };
 
