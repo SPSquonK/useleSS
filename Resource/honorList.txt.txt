@@ -25,7 +25,7 @@ IDS_TITLE_TXT_0024	Master Ranger
 IDS_TITLE_TXT_0025	Master Ringmaster
 IDS_TITLE_TXT_0026	Master Billposter
 IDS_TITLE_TXT_0027	Master Psykeeper
-IDS_TITLE_TXT_0028	Master Elementer
+IDS_TITLE_TXT_0028	Master Elementor
 IDS_TITLE_TXT_0029	Hero Knight
 IDS_TITLE_TXT_0030	Hero Blade
 IDS_TITLE_TXT_0031	Hero Jester
@@ -76,7 +76,7 @@ IDS_TITLE_TXT_0075	Lawolf Hunter
 IDS_TITLE_TXT_0076	Cardpuppet Hunter
 IDS_TITLE_TXT_0077	Glaphan Hunter
 IDS_TITLE_TXT_0078	Meteonyker Hunter
-IDS_TITLE_TXT_0079	Psyclops Hunter
+IDS_TITLE_TXT_0079	Cyclops X Hunter
 IDS_TITLE_TXT_0080	Yetti Hunter
 IDS_TITLE_TXT_0081	Mutant Yetti Hunter
 IDS_TITLE_TXT_0082	Augu Hunter
