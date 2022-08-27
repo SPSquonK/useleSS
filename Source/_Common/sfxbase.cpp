@@ -2404,7 +2404,6 @@ BOOL CSfxModel::Process(void)
 			}
 			if( m_nCurFrame >= nStartFrame && m_nCurFrame <= nEndFrame - pPartParticle->m_nParticleFrameDisappear ) 
 			{
-#ifdef __SFX_OPT
 				float fRand1 = RANDF;
 				float fRand2 = RANDF;
 				float fRand3 = RANDF;
@@ -2502,101 +2501,6 @@ BOOL CSfxModel::Process(void)
 					else
 						ret = FALSE;
 				}
-#else 
-				if( pPartParticle->m_nParticleCreate == 0 ) 
-				{
-					if( m_nCurFrame == nStartFrame ) 
-					{
-						for( int i = 0; i < pPartParticle->m_nParticleCreateNum; i++ ) 
-						{
-							pParticle = new Particle;
-							pParticle->nFrame = 0;
-							float fAngle = RANDF*360.0f;
-							pParticle->vPos = 
-								D3DXVECTOR3(
-									sin(fAngle)*pPartParticle->m_fParticleStartPosVar,
-									RANDF*pPartParticle->m_fParticleStartPosVarY,
-									cos(fAngle)*pPartParticle->m_fParticleStartPosVar
-							);
-							float fFactor = pPartParticle->m_fParticleXZLow + RANDF*( pPartParticle->m_fParticleXZHigh - pPartParticle->m_fParticleXZLow );
-							pParticle->vSpeed=
-								D3DXVECTOR3(
-									sin(fAngle)*fFactor,
-									pPartParticle->m_fParticleYLow + RANDF * (pPartParticle->m_fParticleYHigh - pPartParticle->m_fParticleYLow ),
-									cos(fAngle)*fFactor
-							);
-							pParticle->vScaleStart = pParticle->vScale = pPartParticle->m_vScale;
-//#ifdef __ATEST
-							pParticle->vRotation = D3DXVECTOR3( pPartParticle->m_vRotationLow.x + RANDF * 
-								                                (pPartParticle->m_vRotationHigh.x-pPartParticle->m_vRotationLow.x ),
-																pPartParticle->m_vRotationLow.y + RANDF * 
-																(pPartParticle->m_vRotationHigh.y-pPartParticle->m_vRotationLow.y ),
-																pPartParticle->m_vRotationLow.z + RANDF * 
-																(pPartParticle->m_vRotationHigh.z-pPartParticle->m_vRotationLow.z ) );
-						
-							pParticle->bSwScal   = FALSE;
-							pParticle->vScaleEnd = pPartParticle->m_vScaleEnd;
-							pParticle->vScaleSpeed = D3DXVECTOR3( pPartParticle->m_fScalSpeedXLow + RANDF * 
-								(pPartParticle->m_fScalSpeedXHigh-pPartParticle->m_fScalSpeedXLow ),
-								pPartParticle->m_fScalSpeedYLow + RANDF * 
-								(pPartParticle->m_fScalSpeedYHigh-pPartParticle->m_fScalSpeedYLow),
-								pPartParticle->m_fScalSpeedZLow + RANDF * 
-								(pPartParticle->m_fScalSpeedZHigh-pPartParticle->m_fScalSpeedZLow) );
-//#endif
-							pParticles->Add( pParticle );
-						}
-					}
-				}
-				else 
-				{
-					if( ( (m_nCurFrame) - nStartFrame ) % pPartParticle->m_nParticleCreate == 0 ) 
-					{
-						for( int i = 0; i < pPartParticle->m_nParticleCreateNum; i++ ) 
-						{
-							pParticle = new Particle;
-							pParticle->nFrame=0;
-							float fAngle=RANDF*360.0f;
-							pParticle->vPos=
-								D3DXVECTOR3(
-									sin(fAngle)*pPartParticle->m_fParticleStartPosVar,
-									RANDF*pPartParticle->m_fParticleStartPosVarY,
-									cos(fAngle)*pPartParticle->m_fParticleStartPosVar
-							);
-							float fFactor = pPartParticle->m_fParticleXZLow+RANDF*(pPartParticle->m_fParticleXZHigh-pPartParticle->m_fParticleXZLow);
-							pParticle->vSpeed=
-								D3DXVECTOR3(
-									sin(fAngle)*fFactor,
-									pPartParticle->m_fParticleYLow+RANDF*(pPartParticle->m_fParticleYHigh-pPartParticle->m_fParticleYLow),
-									cos(fAngle)*fFactor
-							);
-							pParticle->vScaleStart = pParticle->vScale = pPartParticle->m_vScale;
-//#ifdef __ATEST
-							pParticle->vRotation = D3DXVECTOR3( pPartParticle->m_vRotationLow.x + RANDF * 
-								(pPartParticle->m_vRotationHigh.x-pPartParticle->m_vRotationLow.x ),
-								pPartParticle->m_vRotationLow.y + RANDF * 
-								(pPartParticle->m_vRotationHigh.y-pPartParticle->m_vRotationLow.y ),
-								pPartParticle->m_vRotationLow.z + RANDF * 
-								(pPartParticle->m_vRotationHigh.z-pPartParticle->m_vRotationLow.z ) );
-
-							
-							pParticle->bSwScal   = FALSE;
-							pParticle->vScaleEnd = pPartParticle->m_vScaleEnd;
-							pParticle->vScaleSpeed = D3DXVECTOR3( pPartParticle->m_fScalSpeedXLow + RANDF * 
-								(pPartParticle->m_fScalSpeedXHigh-pPartParticle->m_fScalSpeedXLow ),
-								pPartParticle->m_fScalSpeedYLow + RANDF * 
-								(pPartParticle->m_fScalSpeedYHigh-pPartParticle->m_fScalSpeedYLow),
-								pPartParticle->m_fScalSpeedZLow + RANDF * 
-								(pPartParticle->m_fScalSpeedZHigh-pPartParticle->m_fScalSpeedZLow) );
-							
-							
-//#endif
-							pParticles->Add(pParticle);
-						}
-					}
-					else
-						ret = FALSE;
-				}
-#endif
 			}
 			if( pParticles->GetSize() > 0 ) 
 				ret = FALSE;
