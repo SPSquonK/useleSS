@@ -2977,7 +2977,7 @@ void CSfxModelMng::Free() { SAFE_DELETE(_pThis); }
 
 bool CSfxModelMng::AddData(SfxModelSet::ConstructorParams sfxParams) { 
 	// ²Ë Ã¡´Â°¡?
-	static constexpr int MAX_PLAY = 5;
+	static constexpr int MAX_PLAY = 7;
 
 	const auto iter = _cDatas.find(sfxParams.idMaster);
 	if (iter != _cDatas.end()) {
@@ -2988,10 +2988,10 @@ bool CSfxModelMng::AddData(SfxModelSet::ConstructorParams sfxParams) {
 		// If the bone name is the same, delete the existing effect and
 		// add it to the looping property
 		const auto iter2 = std::ranges::find_if(rSMS,
-			[&](const auto & existingSfx) {
-				return /* Clamp allows duplicates */ existingSfx->_bLoop 
+			[&](const SfxModelSet & existingSfx) {
+				return /* Clamp allows duplicates */ existingSfx._bLoop 
 					/* location is the same Delete existing sfx */
-					&& strcmp(existingSfx->_szBone, sfxParams.szBoneName) == 0;
+					&& strcmp(existingSfx._szBone, sfxParams.szBoneName) == 0;
 			}
 		);
 
@@ -3001,26 +3001,17 @@ bool CSfxModelMng::AddData(SfxModelSet::ConstructorParams sfxParams) {
 			return false; // Full
 		}
 
-		rSMS.emplace_back(std::make_unique<SfxModelSet>(sfxParams));
-
+		rSMS.emplace_back(sfxParams);
 		return true;
 	} else {
 		// new data
-		_cDatas[sfxParams.idMaster].emplace_back(std::make_unique<SfxModelSet>(sfxParams));
+		_cDatas[sfxParams.idMaster].emplace_back(sfxParams);
 		return true;
 	}
 }
 
-BOOL CSfxModelMng::SubData( OBJID objID )
-{
-	auto iter = _cDatas.find( objID );
-	if( iter != _cDatas.end() )
-	{
-		_cDatas.erase(iter);
-		return TRUE;
-	}
-
-	return FALSE;
+BOOL CSfxModelMng::SubData(const OBJID objID) {
+	return _cDatas.erase(objID) > 0;
 }
 
 BOOL CSfxModelMng::SubData( OBJID objID, const int nState )
@@ -3033,23 +3024,19 @@ BOOL CSfxModelMng::SubData( OBJID objID, const int nState )
 
 	auto & kSubData = finder->second;
 
-	for (auto iter = kSubData.begin(); iter != kSubData.end(); /*none*/) {
-		auto & pSfx = *iter;
-
+	for (auto pSfx = kSubData.begin(); pSfx != kSubData.end(); /*none*/) {
 		if (pSfx->_idMaster == objID) {
 			if (nState == pSfx->_nState) {
-				iter = kSubData.erase(iter);
+				pSfx = kSubData.erase(pSfx);
 
 				bOK = TRUE;		//ok Ã£¾Æ¼­ Áö¿üÀ½.
 			} else {
-				++iter;
+				++pSfx;
 			}
 		}
 	}
 
-
 	return bOK;
-
 }
 
 
@@ -3063,20 +3050,17 @@ BOOL CSfxModelMng::SubData( OBJID objID, const char* szBone )
 
 	auto & kSubData = finder->second;
 
-	for (auto iter = kSubData.begin(); iter != kSubData.end(); /*none*/) {
-		auto & pSfx = *iter;
-
+	for (auto pSfx = kSubData.begin(); pSfx != kSubData.end(); /*none*/) {
 		if (pSfx->_idMaster == objID) {
 			if (0 == strcmp(pSfx->_szBone, szBone)) {
-				iter = kSubData.erase(iter);
+				pSfx = kSubData.erase(pSfx);
 
 				bOK = TRUE;		//ok Ã£¾Æ¼­ Áö¿üÀ½.
 			} else {
-				++iter;
+				++pSfx;
 			}
 		}
 	}
-	
 
 	return bOK;
 }
@@ -3099,12 +3083,11 @@ void CSfxModelMng::Update( )
 		auto & cSMS = iter->second;
 
 		//sub loop
-		for (auto iter2 = cSMS.begin(); iter2 != cSMS.end(); ) {
-			auto & pData = *iter2;
-			if (pData->Update()) {
-				++iter2;
+		for (auto pSfx = cSMS.begin(); pSfx != cSMS.end(); ) {
+			if (pSfx->Update()) {
+				++pSfx;
 			} else {
-				iter2 = cSMS.erase(iter2);
+				pSfx = cSMS.erase(pSfx);
 			}
 		}
 
@@ -3119,8 +3102,8 @@ void CSfxModelMng::Update( )
 
 void CSfxModelMng::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
 	for (auto & cSMS : _cDatas | std::views::values) {
-		for (auto & pData : cSMS) {
-			pData->Render(pd3dDevice);
+		for (SfxModelSet & pSfx : cSMS) {
+			pSfx.Render(pd3dDevice);
 		}
 	}
 }

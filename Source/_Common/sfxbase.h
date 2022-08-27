@@ -7,7 +7,7 @@
 #include <string_view>
 #include <string>
 #include <boost/container/stable_vector.hpp>
-
+#include <boost/container/small_vector.hpp>
 class CModel;
 
 #define DEGREETORADIAN(x) ((2.0f*D3DX_PI*(x))/(360.0f))
@@ -403,11 +403,6 @@ struct SfxModelSet final {
 // bone 에 링크되어 loop되는 이펙만 지원한다. 
 class CSfxModelMng final {
 public:
-	CSfxModelMng() = default;
-	CSfxModelMng(const CSfxModelMng &) = delete;
-	CSfxModelMng & operator=(const CSfxModelMng &) = delete;
-	~CSfxModelMng() = default;
-
 	bool AddData(SfxModelSet::ConstructorParams sfxParams);
 	
 	BOOL SubData( OBJID objID );						//해당 오브젝트의 모든 lua관련 sfx삭제 
@@ -426,7 +421,7 @@ public:
 private:
 	static CSfxModelMng* _pThis;
 
-	std::map<OBJID, std::vector<std::unique_ptr<SfxModelSet>>>	_cDatas;
+	std::map<OBJID, boost::container::small_vector<SfxModelSet, 10>> _cDatas;
 };
 
 
