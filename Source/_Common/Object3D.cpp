@@ -2074,7 +2074,7 @@ D3DXVECTOR3 *GetLastPickTri( void )
 #endif // __CLIENT
 
 // 용량이 큰 이유는 스킨오브젝트는 뼈대변환된 버텍스를 다시 계산 해야하므로 그 변환된 버텍스가 vPool로 들어온다.
-static D3DXVECTOR3	_vPool[4096];
+static D3DXVECTOR3	_vPool[6144];
 
 
 void	CObject3D::ComputeInterval(float fVV0,float fVV1,float fVV2,float fD0,float fD1,float fD2,float fD0D1,float fD0D2,float &fA,float &fB,float &fC,float &fX0,float &fX1)
