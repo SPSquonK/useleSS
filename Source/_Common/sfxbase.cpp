@@ -1590,43 +1590,33 @@ CSfxModel::~CSfxModel()
 	DeleteAll();
 }
 
-void CSfxModel::DeleteAll(void)
-{
-	int i,j;
-	CPtrArray* pParticles;
-	for(i=0;i<m_apParticles.GetSize();i++) 
-	{
-		pParticles=(CPtrArray*)m_apParticles[i];
-		if(pParticles) 
-		{
-			for(j=0;j<pParticles->GetSize();j++)
-			{
-				safe_delete( (Particle*)pParticles->GetAt(j) );
-			}
-		}
-		safe_delete( pParticles );
-	}
-	m_apParticles.RemoveAll();
+void CSfxModel::DeleteAll() {
+	m_apParticles.clear();
 }
+
 void CSfxModel::RemovePart( int nIndex )
 {
 	CSfxPart* pPart = m_pSfxBase->Part( nIndex );
 	pPart->DeleteAllKeyFrame();
 	m_pSfxBase->DeletePart( nIndex );
-	if( m_apParticles.GetSize() )
-	{
-		CPtrArray* pParticles = (CPtrArray*)m_apParticles.GetAt( nIndex );
-		if( pParticles ) 
-		{
-			for( int i = 0; i < pParticles->GetSize(); i++ )
-			{
-				safe_delete( (Particle*)pParticles->GetAt( i ) );
-			}
-		}
-		safe_delete( pParticles );
-		m_apParticles.RemoveAt( nIndex );
+	if (!m_apParticles.empty()) {
+		m_apParticles.erase(m_apParticles.begin() + nIndex);
 	}
 }
+
+std::vector<CSfxModel::Particles> CSfxModel::DuplicateStructure(CSfxBase & pSfxBase) {
+	std::vector<CSfxModel::Particles> result;
+	result.reserve(pSfxBase.m_apParts.GetSize());
+	for (int i = 0; i < pSfxBase.m_apParts.GetSize(); i++) {
+		if (pSfxBase.Part(i)->m_nType == SFXPARTTYPE_PARTICLE) {
+			result.emplace_back(Particles::value_type());
+		} else {
+			result.emplace_back(std::nullopt);
+		}
+	}
+	return result;
+}
+
 void CSfxModel::SetSfx( CSfxBase* pSfxBase )
 {
 	m_vPos=D3DXVECTOR3(0,0,0);
@@ -1636,19 +1626,9 @@ void CSfxModel::SetSfx( CSfxBase* pSfxBase )
 	m_pSfxBase=NULL;
 	
 	m_pSfxBase = pSfxBase;
-	DeleteAll();
-	for( int i = 0; i < pSfxBase->m_apParts.GetSize(); i++ )  
-	{
-		if(pSfxBase->Part(i)->m_nType==SFXPARTTYPE_PARTICLE) 
-		{
-			CPtrArray* pParticles=new CPtrArray;
-			m_apParticles.Add(pParticles);
-		}
-		else 
-		{
-			m_apParticles.Add(NULL);
-		}
-	}
+
+	m_apParticles = DuplicateStructure(*pSfxBase);
+
 	//     - z
 	//   3 | 2
 	// - --+-- + x
@@ -1674,19 +1654,7 @@ void CSfxModel::SetSfx( LPCTSTR szSfxName )
 	m_pSfxBase = g_SfxMng.GetSfxBase( szSfxName );
 	if( m_pSfxBase ) 
 	{
-		DeleteAll();
-		for( int i = 0; i < m_pSfxBase->m_apParts.GetSize(); i++ ) 
-		{
-			if( m_pSfxBase->Part( i )->m_nType == SFXPARTTYPE_PARTICLE ) 
-			{
-				CPtrArray* pParticles=new CPtrArray;
-				m_apParticles.Add(pParticles);
-			}
-			else 
-			{
-				m_apParticles.Add(NULL);
-			}
-		}
+		m_apParticles = DuplicateStructure(*m_pSfxBase);
 	}
 	//     - z
 	//   3 | 2
@@ -1719,19 +1687,7 @@ void CSfxModel::SetSfx( DWORD dwIndex )
 
 		if( m_pSfxBase ) 
 		{
-			DeleteAll();
-			for( int i = 0; i < m_pSfxBase->m_apParts.GetSize(); i++ ) 
-			{
-				if( m_pSfxBase->Part( i )->m_nType == SFXPARTTYPE_PARTICLE ) 
-				{
-					CPtrArray* pParticles=new CPtrArray;
-					m_apParticles.Add(pParticles);
-				}
-				else 
-				{
-					m_apParticles.Add(NULL);
-				}
-			}
+			m_apParticles = DuplicateStructure(*m_pSfxBase);
 		}
 	}
 	//     - z
@@ -1801,13 +1757,13 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 					//  파티클이 프로세스 안되었으면 아직 생성되지 않았다.
 					// m_apPart는 생성된 파티클들의 배열들.
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
-					if( i < m_apParticles.GetSize() )
+					if( i < m_apParticles.size() )
 					{
 						CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
 						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-						RenderParticles2( m_vPos, m_nCurFrame, m_vRotate, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ),(CPtrArray*)(m_apParticles[ i ] ), m_vScale );
+						RenderParticles2( m_vPos, m_nCurFrame, m_vRotate, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ), m_apParticles[ i ], m_vScale);
 					}
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
@@ -1835,7 +1791,7 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 #endif //__CLIENT
 	return TRUE;
 }
-void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAngle, CSfxPartParticle* pPartParticle, CPtrArray* pParticles, D3DXVECTOR3 vScale )
+void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAngle, CSfxPartParticle* pPartParticle, Particles & pParticles, D3DXVECTOR3 vScale )
 {
 #ifdef __CLIENT
 	// 파티클 part는 다른 part들과 다르게 모델 오브젝트에서 직접 렌더한다.
@@ -1911,13 +1867,13 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 
 	// 위에서 산출된 기본 world 매트릭스를 로컬 원점으로 현재 생성되어 있는 모든 파티클들을 렌더한다.
 	D3DXVECTOR3 vTemp3;
-	Particle* pParticle = NULL;
 	CString		TexName;
+	
+	if (!pParticles) return; // Probably not needed, TODO: check the logic
 
-	for( int i = 0; i < pParticles->GetSize(); i++ ) 
-	{
-		pParticle = (Particle*)(pParticles->GetAt(i));
-#ifdef __SFX_OPT
+	for (Particle & vParticle : *pParticles) {
+		Particle * pParticle = &vParticle;
+
 		if(pPartParticle->m_nTexFrame>1) 
 		{ // 텍스쳐 애니메이션일 경우
 			int nTexFrame= (pPartParticle->m_nTexFrame*(pParticle->nFrame)/pPartParticle->m_nTexLoop)%pPartParticle->m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
@@ -1936,15 +1892,7 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 				TexName = pPartParticle->m_strTex;
 			}
 		}
-#else
-		if(pPartParticle->m_nTexFrame>1) 
-		{ // 텍스쳐 애니메이션일 경우
-			int nTexFrame= (pPartParticle->m_nTexFrame*(pParticle->nFrame)/pPartParticle->m_nTexLoop)%pPartParticle->m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
-			CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(pPartParticle->m_strTex,nTexFrame)));
-		}
-		else 
-			CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( pPartParticle->m_strTex ) );
-#endif	
+
 		if( pPartParticle->m_bRepeatScal )
 		{
 			
@@ -2068,13 +2016,13 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 					
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 					
-					if( i < m_apParticles.GetSize() )
+					if( i < m_apParticles.size() )
 					{
 						CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
 						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ),(CPtrArray*)(m_apParticles[ i ] ), m_vScale );
+						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ), m_apParticles[ i ], m_vScale);
 					}
 
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
@@ -2146,13 +2094,13 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 					
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 					
-					if( i < m_apParticles.GetSize() )
+					if( i < m_apParticles.size() )
 					{
 						CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
 						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ),(CPtrArray*)(m_apParticles[ i ] ), m_vScale );
+						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ), m_apParticles[ i ], m_vScale);
 					}
 
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
@@ -2180,7 +2128,7 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 	return TRUE;
 }
 
-void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CSfxPartParticle* pPartParticle, CPtrArray* pParticles, D3DXVECTOR3 vScale )
+void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CSfxPartParticle* pPartParticle, Particles & pParticles, D3DXVECTOR3 vScale )
 {
 	// 파티클 part는 다른 part들과 다르게 모델 오브젝트에서 직접 렌더한다.
 	// 똑같은 sfx가 여러개 나올수도 있는데 각 파티클들의 데이터를 공유할 수 없기 때문이다.
@@ -2244,18 +2192,16 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 	D3DXMatrixRotationYawPitchRoll( &matTemp2, vTemp2.y, vTemp2.x, vTemp2.z );
 	D3DXVec3TransformCoord( &vTemp, &(Key.vPos), &matTemp2 );
 
-	if( pParticles == NULL )
-		return;
+	if (!pParticles) return;
 
 	// 위에서 산출된 기본 world 매트릭스를 로컬 원점으로 현재 생성되어 있는 모든 파티클들을 렌더한다.
 	D3DXVECTOR3 vTemp3;
 	Particle* pParticle = NULL;
 	CString TexName;
 
-	for( int i = 0; i < pParticles->GetSize(); i++ ) 
-	{
-		pParticle = (Particle*)(pParticles->GetAt(i));
-#ifdef __SFX_OPT
+	for (Particle & vParticle : *pParticles) {
+		Particle * pParticle = &vParticle;
+
 		if(pPartParticle->m_nTexFrame>1) 
 		{ // 텍스쳐 애니메이션일 경우
 			int nTexFrame= (pPartParticle->m_nTexFrame*(pParticle->nFrame)/pPartParticle->m_nTexLoop)%pPartParticle->m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
@@ -2274,15 +2220,6 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 				TexName = pPartParticle->m_strTex;
 			}
 		}
-#else
-		if(pPartParticle->m_nTexFrame>1) 
-		{ // 텍스쳐 애니메이션일 경우
-			int nTexFrame= (pPartParticle->m_nTexFrame*(pParticle->nFrame)/pPartParticle->m_nTexLoop)%pPartParticle->m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
-			CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(pPartParticle->m_strTex,nTexFrame)));
-		}
-		else 
-			CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( pPartParticle->m_strTex ) );
-#endif	
 
 		if( pPartParticle->m_bRepeatScal )
 		{
@@ -2359,27 +2296,24 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 BOOL CSfxModel::Process(void)
 {
 	BOOL ret=TRUE;
-	CSfxPartParticle* pPartParticle;
-	Particle* pParticle;
 
 	m_nCurFrame++;
 	
 	// 이 sfx에 파티클 part가 포함되어 있다면 파티클의 생성, 파괴 등을 처리한다.
-	for( int i = 0; i < m_apParticles.GetSize(); i++ ) 
+	for( int i = 0; i < m_apParticles.size(); i++ ) 
 	{
-		CPtrArray* pParticles = (CPtrArray*)m_apParticles[ i ];
+		Particles & pParticles = m_apParticles[i];
+		
 		if( pParticles ) 
 		{
-			pPartParticle = (CSfxPartParticle*)(m_pSfxBase->Part( i ) );
+			CSfxPartParticle * pPartParticle = (CSfxPartParticle*)(m_pSfxBase->Part( i ) );
 
 			if( pPartParticle->m_bUseing == FALSE )
 				continue;
 
 			// 파티클 이동, 생성 및 제거
-			int j;
-			for( j = 0; j < pParticles->GetSize(); j++ ) 
-			{
-				pParticle = (Particle*)(pParticles->GetAt( j ) );
+
+			for (auto pParticle = pParticles->begin(); pParticle != pParticles->end(); /* noop */) {
 				pParticle->vPos += pParticle->vSpeed;
 				pParticle->vSpeed += pPartParticle->m_vParticleAccel;
 
@@ -2388,13 +2322,13 @@ BOOL CSfxModel::Process(void)
 
 				pParticle->nFrame++;
 
-				if( pParticle->nFrame >= pPartParticle->m_nParticleFrameDisappear ) 
-				{
-					safe_delete( pParticle );
-					pParticles->RemoveAt( j );
-					j--;
+				if (pParticle->nFrame >= pPartParticle->m_nParticleFrameDisappear) {
+					pParticle = pParticles->erase(pParticle);
+				} else {
+					++pParticle;
 				}
 			}
+
 			int nStartFrame = 0;
 			int nEndFrame = 0;
 			if( !pPartParticle->m_aKeyFrames.empty() )
@@ -2414,41 +2348,41 @@ BOOL CSfxModel::Process(void)
 					{
 						for( int i = 0; i < pPartParticle->m_nParticleCreateNum; i++ ) 
 						{
-							pParticle = new Particle; // !!! new?
-							pParticle->nFrame = 0;
+							Particle & pParticle = pParticles->emplace_back();
+							pParticle.nFrame = 0;
 							float fAngle = RANDF*360.0f;
-							pParticle->vPos = 
+							pParticle.vPos = 
 								D3DXVECTOR3(
 									sin(fAngle)*pPartParticle->m_fParticleStartPosVar,
 									fRand1*pPartParticle->m_fParticleStartPosVarY,
 									cos(fAngle)*pPartParticle->m_fParticleStartPosVar
 							);
 							float fFactor = pPartParticle->m_fParticleXZLow + fRand2*( pPartParticle->m_fParticleXZHigh - pPartParticle->m_fParticleXZLow );
-							pParticle->vSpeed=
+							pParticle.vSpeed=
 								D3DXVECTOR3(
 									sin(fAngle)*fFactor,
 									pPartParticle->m_fParticleYLow + fRand2 * (pPartParticle->m_fParticleYHigh - pPartParticle->m_fParticleYLow ),
 									cos(fAngle)*fFactor
 							);
-							pParticle->vScaleStart = pParticle->vScale = pPartParticle->m_vScale;
+							pParticle.vScaleStart = pParticle.vScale = pPartParticle->m_vScale;
 //#ifdef __ATEST
-							pParticle->vRotation = D3DXVECTOR3( pPartParticle->m_vRotationLow.x + fRand1 * 
+							pParticle.vRotation = D3DXVECTOR3( pPartParticle->m_vRotationLow.x + fRand1 * 
 								                                (pPartParticle->m_vRotationHigh.x-pPartParticle->m_vRotationLow.x ),
 																pPartParticle->m_vRotationLow.y + fRand3 * 
 																(pPartParticle->m_vRotationHigh.y-pPartParticle->m_vRotationLow.y ),
 																pPartParticle->m_vRotationLow.z + fRand2 * 
 																(pPartParticle->m_vRotationHigh.z-pPartParticle->m_vRotationLow.z ) );
 						
-							pParticle->bSwScal   = FALSE;
-							pParticle->vScaleEnd = pPartParticle->m_vScaleEnd;
-							pParticle->vScaleSpeed = D3DXVECTOR3( pPartParticle->m_fScalSpeedXLow + fRand3 * 
+							pParticle.bSwScal   = FALSE;
+							pParticle.vScaleEnd = pPartParticle->m_vScaleEnd;
+							pParticle.vScaleSpeed = D3DXVECTOR3( pPartParticle->m_fScalSpeedXLow + fRand3 * 
 								(pPartParticle->m_fScalSpeedXHigh-pPartParticle->m_fScalSpeedXLow ),
 								pPartParticle->m_fScalSpeedYLow + fRand2 * 
 								(pPartParticle->m_fScalSpeedYHigh-pPartParticle->m_fScalSpeedYLow),
 								pPartParticle->m_fScalSpeedZLow + fRand1 * 
 								(pPartParticle->m_fScalSpeedZHigh-pPartParticle->m_fScalSpeedZLow) );
 //#endif
-							pParticles->Add( pParticle );
+							
 						}
 					}
 				}
@@ -2458,25 +2392,25 @@ BOOL CSfxModel::Process(void)
 					{
 						for( int i = 0; i < pPartParticle->m_nParticleCreateNum; i++ ) 
 						{
-							pParticle = new Particle;
-							pParticle->nFrame=0;
+							Particle & pParticle = pParticles->emplace_back();
+							pParticle.nFrame=0;
 							float fAngle=RANDF*360.0f;
-							pParticle->vPos=
+							pParticle.vPos=
 								D3DXVECTOR3(
 									sin(fAngle)*pPartParticle->m_fParticleStartPosVar,
 									fRand1*pPartParticle->m_fParticleStartPosVarY,
 									cos(fAngle)*pPartParticle->m_fParticleStartPosVar
 							);
 							float fFactor = pPartParticle->m_fParticleXZLow+fRand2*(pPartParticle->m_fParticleXZHigh-pPartParticle->m_fParticleXZLow);
-							pParticle->vSpeed=
+							pParticle.vSpeed=
 								D3DXVECTOR3(
 									sin(fAngle)*fFactor,
 									pPartParticle->m_fParticleYLow+fRand2*(pPartParticle->m_fParticleYHigh-pPartParticle->m_fParticleYLow),
 									cos(fAngle)*fFactor
 							);
-							pParticle->vScaleStart = pParticle->vScale = pPartParticle->m_vScale;
+							pParticle.vScaleStart = pParticle.vScale = pPartParticle->m_vScale;
 //#ifdef __ATEST
-							pParticle->vRotation = D3DXVECTOR3( pPartParticle->m_vRotationLow.x + fRand1 * 
+							pParticle.vRotation = D3DXVECTOR3( pPartParticle->m_vRotationLow.x + fRand1 * 
 								(pPartParticle->m_vRotationHigh.x-pPartParticle->m_vRotationLow.x ),
 								pPartParticle->m_vRotationLow.y + fRand3 * 
 								(pPartParticle->m_vRotationHigh.y-pPartParticle->m_vRotationLow.y ),
@@ -2484,9 +2418,9 @@ BOOL CSfxModel::Process(void)
 								(pPartParticle->m_vRotationHigh.z-pPartParticle->m_vRotationLow.z ) );
 
 							
-							pParticle->bSwScal   = FALSE;
-							pParticle->vScaleEnd = pPartParticle->m_vScaleEnd;
-							pParticle->vScaleSpeed = D3DXVECTOR3( pPartParticle->m_fScalSpeedXLow + fRand3 * 
+							pParticle.bSwScal   = FALSE;
+							pParticle.vScaleEnd = pPartParticle->m_vScaleEnd;
+							pParticle.vScaleSpeed = D3DXVECTOR3( pPartParticle->m_fScalSpeedXLow + fRand3 * 
 								(pPartParticle->m_fScalSpeedXHigh-pPartParticle->m_fScalSpeedXLow ),
 								pPartParticle->m_fScalSpeedYLow + fRand2 * 
 								(pPartParticle->m_fScalSpeedYHigh-pPartParticle->m_fScalSpeedYLow),
@@ -2495,14 +2429,14 @@ BOOL CSfxModel::Process(void)
 							
 							
 //#endif
-							pParticles->Add(pParticle);
+
 						}
 					}
 					else
 						ret = FALSE;
 				}
 			}
-			if( pParticles->GetSize() > 0 ) 
+			if( pParticles->size() > 0 ) 
 				ret = FALSE;
 			
 			if( m_nCurFrame < nStartFrame ) 

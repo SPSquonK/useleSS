@@ -276,8 +276,10 @@ public:
 	D3DXVECTOR3 m_vRotate;
 	D3DXVECTOR3 m_vScale;
 	WORD m_nCurFrame;
-
-	CPtrArray m_apParticles;
+	
+	using Particles = std::optional<std::vector<Particle>>;
+	std::vector<Particles> m_apParticles;
+	static std::vector<Particles> DuplicateStructure(CSfxBase & pSfxBase);
 
 	CSfxModel();
 	~CSfxModel();
@@ -289,10 +291,10 @@ public:
 #ifndef __WORLDSERVER	
 	virtual BOOL Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
 	BOOL RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
-	void RenderParticles( D3DXVECTOR3 vPos,WORD nFrame,FLOAT fAngle,CSfxPartParticle* pPartParticle,CPtrArray* pParticles, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) );
+	void RenderParticles( D3DXVECTOR3 vPos,WORD nFrame,FLOAT fAngle,CSfxPartParticle* pPartParticle, Particles & pParticles, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) );
 #endif
 	virtual BOOL Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
-	void RenderParticles2( D3DXVECTOR3 vPos,WORD nFrame,D3DXVECTOR3 fAngle,CSfxPartParticle* pPartParticle,CPtrArray* pParticles, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) );
+	void RenderParticles2( D3DXVECTOR3 vPos,WORD nFrame,D3DXVECTOR3 fAngle,CSfxPartParticle* pPartParticle, Particles & pParticles, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) );
 	//void Render(void);
 	BOOL Process(void);
 
