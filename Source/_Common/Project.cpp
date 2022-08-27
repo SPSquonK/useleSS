@@ -284,7 +284,7 @@ CProject::~CProject()
 
 void CProject::LoadSkill()
 {
-	LoadPropItem( "propSkill.txt", &m_aPropSkill );
+	LoadPropItem( "propSkill.txt", &m_aPropSkill, LoadPropItemStyle::V22SkillsSkip );
 	jobs.LoadSkills(m_aPropSkill);
 }
 

@@ -223,8 +223,17 @@
 #define CHS_ATK_COUNTERATTACK	0x00040000	// 반격 대기중 : 공격당했을때 지정된확률(destData1)로 지정된스킬(destData2)이 발동됨.
 #define CHS_LOOT				0x00080000	// 이동불가 상태.
 
-#define CHS_SETSTONE				0x00100000	// 석화 상태.
-#define CHS_DEBUFFALL				0x00200000	// 모든 상태영향 해제.
+#define CHS_SETSTONE			0x00100000	// 석화 상태.
+
+
+
+#define CHS_SLEEPING			0x00200000	// 잠자는 상태.
+//#define CHS_DEBUFFALL			0x00400000	// 모든 상태영향 해제.
+
+#define	CHS_ATTACKSPEED_DOWN	0x00400000	// 공격속도 감소
+#define	CHS_CRITICALRATE_DOWN	0x00800000	// 치명타 확률 감소
+#define	CHS_CRITICALDMG_DOWN	0x01000000	//	치명타 추가 데미지 감소
+
 
 
 // 위에꺼 조합한 형태...

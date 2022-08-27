@@ -1169,13 +1169,13 @@ void CMover::RemoveDebuff( DWORD dwState )
 	if( dwState & CHS_BLEEDING )
 		SetBleeding( FALSE );
 	
-	if( dwState & CHS_DEBUFFALL )
-	{
-		RemoveDstParamBuffs( DST_SPEED );
-		RemoveDstParamBuffs( DST_CHR_CHANCEPOISON );
-		RemoveDstParamBuffs( DST_CHR_CHANCESTUN );
-		RemoveDstParamBuffs( DST_CHR_CHANCEBLEEDING );
-	}
+//	if( dwState & CHS_DEBUFFALL )
+//	{
+//		RemoveDstParamBuffs( DST_SPEED );
+//		RemoveDstParamBuffs( DST_CHR_CHANCEPOISON );
+//		RemoveDstParamBuffs( DST_CHR_CHANCESTUN );
+//		RemoveDstParamBuffs( DST_CHR_CHANCEBLEEDING );
+//	}
 
 
 	// �̰� �ȿ��� Reset�� ȣ���Ѵ�.

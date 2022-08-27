@@ -247,7 +247,7 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
-BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apObjProp )
+BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apObjProp, LoadPropItemStyle style)
 {
 	CScript scanner;
 	if( scanner.Load( lpszFileName, FALSE ) == FALSE )
@@ -477,6 +477,14 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 			}
 		}
 #endif	// __CLIENT
+
+		if (style == LoadPropItemStyle::V22SkillsSkip) {
+			scanner.GetToken(); // =
+			scanner.GetToken(); // RANK_MAX
+			scanner.GetToken(); // =
+			scanner.GetToken(); // 1
+		}
+
 		apObjProp->SetAtGrow(prop.dwID, prop);
 
 

@@ -97,7 +97,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 		else if( s.Token == _T( "propSkill" ) )
 		{
 			s.GetToken();
-			LoadPropItem( s.token, &m_aPropSkill );
+			LoadPropItem( s.token, &m_aPropSkill, LoadPropItemStyle::V22SkillsSkip );
 			jobs.LoadSkills(m_aPropSkill);
 		}
 		else if( s.Token == _T( "world" ) )

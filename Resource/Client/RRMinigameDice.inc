@@ -1,4 +1,3 @@
-#b#cff0000ffLucky Roller#nb#nc
-A random number is displayed.  Roll the dice and match that number!
-
-The [Spirit of Rainbow]Orange is located in Southern Saint Morning.  Refer to your World Map (M Key) for the precise location.
+#bDice minigame#nb
+Find the #b[Spirit of Rainbow] Orange#nb to the south of St Morning and it will give you a set of dice. Throw the dice until you get the same results as the blue to win.
+You can find the [Spirit of Rainbow] Orange on your map (hotkey M), it is on one of the floating island.

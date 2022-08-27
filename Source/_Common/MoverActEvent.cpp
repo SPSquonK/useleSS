@@ -320,6 +320,10 @@ BOOL	CMover::ApplyParam( CCtrl *pSrc, const ItemProp *pSkillProp, const AddSkill
 		case DST_CHR_CHANCESTEALHP:	// adj:È®·ü		data1:½ºÅ³
 			pTarget->SetDestParam( dwDestParam, nAdjParam, nChgParam, TRUE );
 			break;
+
+		case DST_DEBUFF_ALL_CLEAR:
+			pTarget->RemoveDebufBuffs();
+			break;
 			
 #ifdef __WORLDSERVER
 		case DST_HP:	// Èú¸µ.

@@ -847,7 +847,7 @@ public:
 	void			LoadStrings();
 	BOOL			OpenProject( LPCTSTR lpszFileName );
 	BOOL			LoadPropMover( LPCTSTR lpszFileName );
-	BOOL			LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apObjProp );
+	BOOL			LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apObjProp, LoadPropItemStyle style = LoadPropItemStyle::V15);
 	void			OnAfterLoadPropItem();
 	BOOL			LoadPropSfx( LPCTSTR lpszFileName );
 	BOOL			LoadPropCtrl( LPCTSTR lpszFileName, CFixedArray<CtrlProp>*	apObjProp);
