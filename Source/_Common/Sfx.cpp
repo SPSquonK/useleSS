@@ -1332,8 +1332,8 @@ void CSfxItemYoyoAtk::Process()
 		}
 		if( m_pTail == NULL )	// 아직 할당 안됐으면 할당하고.
 		{
-			if( m_pSfxObj->m_pSfxBase->Part(0) )
-				m_pTail = (CTailEffectModel*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, m_pSfxObj->m_pSfxBase->Part(0)->m_strTex, 100, 30.0f );
+			if( m_pSfxObj->m_pSfxBase->m_aParts[0] )
+				m_pTail = (CTailEffectModel*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, m_pSfxObj->m_pSfxBase->m_aParts[0]->m_strTex, 100, 30.0f );
 		}
 
 		if( m_pTail )

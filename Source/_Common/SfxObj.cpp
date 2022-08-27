@@ -150,19 +150,15 @@ void CSfx::Process()
 	}
 
 #ifdef __CLIENT
-	if(m_pSfxObj->m_pSfxBase != NULL)
+	if(m_pSfxObj->m_pSfxBase)
 	{
-		for( int j=0; j<m_pSfxObj->m_pSfxBase->m_apParts.GetSize(); j++ )
-		{
-			if( m_pSfxObj->m_pSfxBase->Part(j)->m_nType != SFXPARTTYPE_MESH )
+		for (auto & pSfxPart : m_pSfxObj->m_pSfxBase->m_aParts) {
+			if(pSfxPart->m_nType != SFXPARTTYPE_MESH )
 				continue;
 			
-			CModelObject* pMesh = NULL;
-			
-			pMesh = g_SfxMeshMng.Mesh( m_pSfxObj->m_pSfxBase->Part(j)->m_strTex );
-			
-			if( pMesh )
+			if (CModelObject * pMesh = g_SfxMeshMng.Mesh(pSfxPart->m_strTex)) {
 				pMesh->FrameMove();
+			}
 		}
 	}
 #endif //__CLIENT

@@ -66,10 +66,6 @@ void CSfxPart::AddAndAdjustKeyFrame(SfxKeyFrame frame) {
 	m_aKeyFrames.insert(iterationKey, frame);
 }
 
-void CSfxPart::DeleteAllKeyFrame() {
-	m_aKeyFrames.clear();
-}
-
 SfxKeyFrame * CSfxPart::GetPrevKey(const WORD nFrame) {
 	if (m_aKeyFrames.empty()) return nullptr;
 
@@ -1362,16 +1358,6 @@ void CSfxPartCustomMesh::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 #endif //__CLIENT
 }
 
-CSfxBase::CSfxBase()
-{
-}
-CSfxBase::~CSfxBase()
-{
-	for(int i=0;i<m_apParts.GetSize();i++)
-		safe_delete( (CSfxPart*)m_apParts.GetAt(i) );
-	m_apParts.RemoveAll();
-}
-
 CSfxPart* CSfxBase::AddPart(SFXPARTTYPE nType)
 {
 	CSfxPart* pSfxPart;
@@ -1384,9 +1370,6 @@ CSfxPart* CSfxBase::AddPart(SFXPARTTYPE nType)
 		case SFXPARTTYPE_PARTICLE:
 			{
 				pSfxPart=new CSfxPartParticle;
-				//CPtrArray* pParticles=new CPtrArray;
-				//m_apPart.Add(pParticles);
-				
 				break;
 			}
 		case SFXPARTTYPE_MESH:
@@ -1404,26 +1387,15 @@ CSfxPart* CSfxBase::AddPart(SFXPARTTYPE nType)
 	pSfxPart->m_strTex="";
 	pSfxPart->m_nBillType=SFXPARTBILLTYPE_BILL;
 	pSfxPart->m_nAlphaType=SFXPARTALPHATYPE_BLEND;
-	m_apParts.Add(pSfxPart);
+	m_aParts.emplace_back(std::unique_ptr<CSfxPart>(pSfxPart));
 	return pSfxPart;
-}
-
-void CSfxBase::DeletePart(BYTE nIndex)
-{
-	CSfxPart* pSfxPart=Part(nIndex);
-	if(pSfxPart) {
-		safe_delete( pSfxPart );
-		m_apParts.RemoveAt(nIndex);
-	}
-	CString strFilename;
 }
 
 
 BOOL CSfxBase::Load(const std::string & filename)
 {
-	for(int i=0;i<m_apParts.GetSize();i++)
-		safe_delete( (CSfxPart*)m_apParts.GetAt(i) );
-	m_apParts.RemoveAll();
+	m_aParts.clear();
+
 	CString strFilename=_T( MakePath( DIR_SFX, filename.c_str() ) );
 	CResFile file;
 	if(file.Open(strFilename,"rb")) 
@@ -1435,12 +1407,12 @@ BOOL CSfxBase::Load(const std::string & filename)
 		if(strTemp2.Left(6)=="SFX0.1") { // 버젼체크. 현재는 구버젼인지 신버젼인지만 체크해서 버젼에 맞게 로딩.
 			int nPart;
 			file.Read(&nPart,sizeof(int));
+			m_aParts.reserve(nPart);
 			for( int i=0;i<nPart;i++) 
 			{
-				CSfxPart* pPart;
 				SFXPARTTYPE nType;
 				file.Read(&nType,sizeof(SFXPARTTYPE));
-				pPart=AddPart(nType);
+				CSfxPart * pPart=AddPart(nType);
 				pPart->Load(file);
 			}
 		}
@@ -1449,12 +1421,12 @@ BOOL CSfxBase::Load(const std::string & filename)
 			// 신버젼. 현재 SFX0.2
 			int nPart;
 			file.Read(&nPart,sizeof(int));
+			m_aParts.reserve(nPart);
 			for( int i=0;i<nPart;i++) 
 			{
-				CSfxPart* pPart;
 				SFXPARTTYPE nType;
 				file.Read(&nType,sizeof(SFXPARTTYPE));
-				pPart=AddPart(nType);
+				CSfxPart * pPart=AddPart(nType);
 				pPart->Load2(file);
 			}
 		}
@@ -1465,10 +1437,9 @@ BOOL CSfxBase::Load(const std::string & filename)
 			file.Read(&nPart,sizeof(int));
 			for( int i=0;i<nPart;i++) 
 			{
-				CSfxPart* pPart;
 				SFXPARTTYPE nType;
 				file.Read(&nType,sizeof(SFXPARTTYPE));
-				pPart=AddPart(nType);
+				CSfxPart * pPart=AddPart(nType);
 				if( nType == SFXPARTTYPE_PARTICLE )
 					pPart->Load3(file);
 				else
@@ -1481,12 +1452,12 @@ BOOL CSfxBase::Load(const std::string & filename)
 			file.Seek(0,SEEK_SET); // 위치 다시 돌려놓고 로딩
 			int nPart;
 			file.Read(&nPart,sizeof(int));
+			m_aParts.reserve(nPart);
 			for( int i=0;i<nPart;i++) 
 			{
-				CSfxPart* pPart;
 				SFXPARTTYPE nType;
 				file.Read(&nType,sizeof(SFXPARTTYPE));
-				pPart=AddPart(nType);
+				CSfxPart * pPart=AddPart(nType);
 				pPart->OldLoad(file);
 			}
 		}
@@ -1594,21 +1565,11 @@ void CSfxModel::DeleteAll() {
 	m_apParticles.clear();
 }
 
-void CSfxModel::RemovePart( int nIndex )
-{
-	CSfxPart* pPart = m_pSfxBase->Part( nIndex );
-	pPart->DeleteAllKeyFrame();
-	m_pSfxBase->DeletePart( nIndex );
-	if (!m_apParticles.empty()) {
-		m_apParticles.erase(m_apParticles.begin() + nIndex);
-	}
-}
-
 std::vector<CSfxModel::Particles> CSfxModel::DuplicateStructure(CSfxBase & pSfxBase) {
 	std::vector<CSfxModel::Particles> result;
-	result.reserve(pSfxBase.m_apParts.GetSize());
-	for (int i = 0; i < pSfxBase.m_apParts.GetSize(); i++) {
-		if (pSfxBase.Part(i)->m_nType == SFXPARTTYPE_PARTICLE) {
+	result.reserve(pSfxBase.m_aParts.size());
+	for (const auto & pSfxPart : pSfxBase.m_aParts) {
+		if (pSfxPart->m_nType == SFXPARTTYPE_PARTICLE) {
 			result.emplace_back(Particles::value_type());
 		} else {
 			result.emplace_back(std::nullopt);
@@ -1731,12 +1692,14 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
 		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 		
-		for( int i = 0 ; i < m_pSfxBase->m_apParts.GetSize(); i++ ) 
+		for( size_t i = 0 ; i < m_pSfxBase->m_aParts.size(); ++i ) 
 		{
-			if( m_pSfxBase->Part( i )->m_bUseing == FALSE )
+			auto & pSfxPart = m_pSfxBase->m_aParts[i];
+
+			if(pSfxPart->m_bUseing == FALSE )
 				continue;
 			
-			switch( m_pSfxBase->Part( i )->m_nType ) 
+			switch(pSfxPart->m_nType )
 			{
 			case SFXPARTTYPE_BILL:
 				{
@@ -1747,7 +1710,7 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 					CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
 
-					m_pSfxBase->Part( i )->Render2( m_vPos, m_nCurFrame, m_vRotate, m_vScale );
+					pSfxPart->Render2( m_vPos, m_nCurFrame, m_vRotate, m_vScale );
 
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
@@ -1763,14 +1726,14 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-						RenderParticles2( m_vPos, m_nCurFrame, m_vRotate, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ), m_apParticles[ i ], m_vScale);
+						RenderParticles2( m_vPos, m_nCurFrame, m_vRotate, (CSfxPartParticle*)pSfxPart.get(), m_apParticles[ i ], m_vScale);
 					}
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
 			case SFXPARTTYPE_MESH:
 				{
-					m_pSfxBase->Part(i)->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
+				pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 				}
 				break;
 			case SFXPARTTYPE_CUSTOMMESH:
@@ -1779,7 +1742,7 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 					CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
 					CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-					m_pSfxBase->Part(i)->Render2( m_vPos, m_nCurFrame, m_vRotate, m_vScale );
+					pSfxPart->Render2( m_vPos, m_nCurFrame, m_vRotate, m_vScale );
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
@@ -1991,12 +1954,13 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
 		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 
-		for( int i = 0 ; i < m_pSfxBase->m_apParts.GetSize(); i++ ) 
+		for( size_t i = 0 ; i < m_pSfxBase->m_aParts.size(); ++i ) 
 		{
-			if( m_pSfxBase->Part( i )->m_bUseing == FALSE )
+			auto & pSfxPart = m_pSfxBase->m_aParts[i];
+			if( pSfxPart->m_bUseing == FALSE )
 				continue;
 
-			switch( m_pSfxBase->Part( i )->m_nType ) 
+			switch(pSfxPart->m_nType )
 			{
 			case SFXPARTTYPE_BILL:
 				{
@@ -2005,7 +1969,7 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 					CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 					CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-					m_pSfxBase->Part( i )->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
+					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
@@ -2022,7 +1986,7 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ), m_apParticles[ i ], m_vScale);
+						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)pSfxPart.get(), m_apParticles[ i ], m_vScale);
 					}
 
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
@@ -2031,14 +1995,14 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 				break;
 			case SFXPARTTYPE_MESH:
 				{
-					m_pSfxBase->Part(i)->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
+				pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 				}
 				break;
 			case SFXPARTTYPE_CUSTOMMESH:
 				{
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-					m_pSfxBase->Part(i)->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
+					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 					
 				}
 				break;
@@ -2068,13 +2032,14 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 
 		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
 		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
-
-		for( int i = 0 ; i < m_pSfxBase->m_apParts.GetSize(); i++ ) 
+		
+		for( size_t i = 0 ; i < m_pSfxBase->m_aParts.size(); ++i ) 
 		{
-			if( m_pSfxBase->Part( i )->m_bUseing == FALSE )
+			auto & pSfxPart = m_pSfxBase->m_aParts[i];
+			if(pSfxPart->m_bUseing == FALSE )
 				continue;
 
-			switch( m_pSfxBase->Part( i )->m_nType ) 
+			switch(pSfxPart->m_nType )
 			{
 			case SFXPARTTYPE_BILL:
 				{
@@ -2083,7 +2048,7 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 					CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 					CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-					m_pSfxBase->Part( i )->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
+					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
@@ -2100,7 +2065,7 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
 						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)(m_pSfxBase->Part( i ) ), m_apParticles[ i ], m_vScale);
+						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)pSfxPart.get(), m_apParticles[ i ], m_vScale);
 					}
 
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
@@ -2109,14 +2074,14 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 				break;
 			case SFXPARTTYPE_MESH:
 				{
-					m_pSfxBase->Part(i)->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
+				pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 				}
 				break;
 			case SFXPARTTYPE_CUSTOMMESH:
 				{
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-					m_pSfxBase->Part(i)->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
+					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
@@ -2306,7 +2271,7 @@ BOOL CSfxModel::Process(void)
 		
 		if( pParticles ) 
 		{
-			CSfxPartParticle * pPartParticle = (CSfxPartParticle*)(m_pSfxBase->Part( i ) );
+			CSfxPartParticle * pPartParticle = (CSfxPartParticle*)(m_pSfxBase->m_aParts[i].get());
 
 			if( pPartParticle->m_bUseing == FALSE )
 				continue;
@@ -2462,7 +2427,7 @@ BOOL CSfxModel::Process(void)
 		}
 		else 
 		{
-			if( m_pSfxBase->Part( i )->GetNextKey( m_nCurFrame ) ) 
+			if( m_pSfxBase->m_aParts[i]->GetNextKey(m_nCurFrame))
 				ret = FALSE;
 		}
 	}
@@ -2565,8 +2530,8 @@ SfxModelSet::SfxModelSet( const OBJID idMaster, const char* szSfxName, const cha
 	_pModel->SetSfx( szSfxName );
 
 	// 최대 프레임을 찾는다 
-	for (int i = 0; i < _pModel->m_pSfxBase->m_apParts.GetSize(); i++) {
-		const auto & keyFrames = _pModel->m_pSfxBase->Part(i)->m_aKeyFrames;
+	for (const auto & pSfxPart : _pModel->m_pSfxBase->m_aParts) {
+		const auto & keyFrames = pSfxPart->m_aKeyFrames;
 		if (!keyFrames.empty()) {
 			_nMaxFrame = std::max(_nMaxFrame, static_cast<int>(keyFrames.back().nFrame));
 		}

@@ -107,7 +107,6 @@ public:
 #endif
 	virtual void Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAngle, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) ); // 렌더
 
-	void DeleteAllKeyFrame();
 	void AddAndAdjustKeyFrame(SfxKeyFrame frame); // 키프레임 추가 -  특정 프레임의 키프레임의 내용을 갱신
 
 	SfxKeyFrame* GetPrevKey(WORD nFrame); // 주어진 프레임부터 이전 키프레임을 갖고온다
@@ -220,22 +219,11 @@ public:
 };
 
 // SFX의 원형. 로딩하면 SFX별로 저장해뒀다가 게임상 오브젝트가 꺼내 쓴다.
-class CSfxBase final
-{
+class CSfxBase final {
 public:
-	CPtrArray m_apParts; // 파트의 배열
-	CSfxPart* Part(BYTE nIndex) { // 지정한 파트의 포인터를 꺼내온다. 범위를 벗어나면 NULL을 리턴
-		if(m_apParts.GetSize()>nIndex) return (CSfxPart*)(m_apParts[nIndex]);
-		return NULL;
-	}
+	std::vector<std::unique_ptr<CSfxPart>> m_aParts; // 파트의 배열
 
-	CSfxBase();
-	~CSfxBase();
-
-	CSfxPart* AddPart(SFXPARTTYPE nType); // 파트 추가
-	void DeletePart(BYTE nIndex); // 파트 삭제
-	void AdjustPart(BYTE nIndex); // 파트 수정
-
+	CSfxPart * AddPart(SFXPARTTYPE nType); // 파트 추가
 	BOOL Load(const std::string & filename); // 로드
 };
 
@@ -284,7 +272,7 @@ public:
 	CSfxModel();
 	~CSfxModel();
 	void DeleteAll(void);
-	void RemovePart( int nIndex );
+
 	void SetSfx(CSfxBase* pSfxBase);
 	void SetSfx(DWORD dwIndex);	
 	void SetSfx(LPCTSTR strSfxName);
