@@ -1,17 +1,9 @@
-#ifndef __BS_COMMON_H_
-#define __BS_COMMON_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 	template< typename T >
-	struct Deleter : public unary_function< T, void >
-	{
-		void operator( ) ( T& t )
-		{
-			if( t )
-			{
+	struct Deleter {
+		void operator( ) (T & t) {
+			if (t) {
 				delete t;
 				t = 0;
 			}
@@ -19,7 +11,7 @@
 	};
 
 	template< typename T >
-	struct PairDeleter : public unary_function< T, void >
+	struct PairDeleter
 	{
 		void operator( ) ( T& t )
 		{
@@ -37,7 +29,7 @@
 	{
 		void operator( ) ( T& t )
 		{
-			for_each( t.begin(), t.end(), Deleter< T::value_type > ( ) );
+			std::ranges::for_each( t, Deleter< T::value_type > ( ) );
 			t.clear();
 		}
 	};
@@ -47,9 +39,8 @@
 	{
 		void operator( ) ( T& t )
 		{
-			for_each( t.begin(), t.end(), PairDeleter< T::value_type > ( ) );
+			std::ranges::for_each( t, PairDeleter< T::value_type > ( ) );
 			t.clear();
 		}
 	};
 
-#endif __BS_COMMON_H_

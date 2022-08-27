@@ -2283,36 +2283,27 @@ void	CModelObject::GetHandPos( D3DXVECTOR3 *vOut, int nParts, const D3DXMATRIX &
 }
 
 #ifdef __BS_EFFECT_LUA
-BOOL CModelObject::GetPosBone( D3DXVECTOR3* pOut, const char* bonename )
-{
+std::optional<D3DXVECTOR3> CModelObject::GetPosBone(const char * const bonename) {
 	//gmpbigsun : 본이름으로 본좌표 추출 
-	for( int i =0; i < m_pBone->m_nMaxBone; ++i )
-	{
-		BONE* pUnitBone = m_pBone->GetBone( i );
-		if( !pUnitBone )
-		{
-			assert( 0 );
+	for (int i = 0; i < m_pBone->m_nMaxBone; ++i) {
+		BONE * pUnitBone = m_pBone->GetBone(i);
+		if (!pUnitBone) {
+			assert(0);
 			continue;
 		}
 
-		if( strcmp( bonename, pUnitBone->m_szName ) == 0 )
-		{
+		if (strcmp(bonename, pUnitBone->m_szName) == 0) {
 			D3DXMATRIX matTemp;
-			if( pUnitBone->m_pParent )
-				D3DXMatrixMultiply( &matTemp, &pUnitBone->m_mLocalTM, &m_mUpdateBone[ pUnitBone->m_nParentIdx ] );
-			else 
-				D3DXMatrixMultiply( &matTemp, &pUnitBone->m_mLocalTM, &m_mUpdateBone[ i ] );
+			if (pUnitBone->m_pParent)
+				D3DXMatrixMultiply(&matTemp, &pUnitBone->m_mLocalTM, &m_mUpdateBone[pUnitBone->m_nParentIdx]);
+			else
+				D3DXMatrixMultiply(&matTemp, &pUnitBone->m_mLocalTM, &m_mUpdateBone[i]);
 
-			pOut->x = matTemp._41;
-			pOut->y = matTemp._42;
-			pOut->z = matTemp._43;
-
-			return TRUE;
+			return D3DXVECTOR3(matTemp._41, matTemp._42, matTemp._43);
 		}
 	}
 
-	return FALSE;
-	
+	return std::nullopt;
 }
 
 #endif //__BS_EFFECT_LUA

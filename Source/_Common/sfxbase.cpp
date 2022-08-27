@@ -2912,19 +2912,15 @@ SfxModelSet::SfxModelSet( const OBJID idMaster, const char* szSfxName, const cha
 {
 	_idMaster = idMaster;
 
-	_pModel = new CSfxModel;
+	_pModel = std::make_unique<CSfxModel>();
 	_pModel->SetSfx( szSfxName );
 
 	// 최대 프레임을 찾는다 
-	for(int i = 0; i < _pModel->m_pSfxBase->m_apParts.GetSize(); i++)
-	{	
-		for(int j = 0; j < _pModel->m_pSfxBase->Part( i )->m_apKeyFrames.GetSize(); j++)
-		{
-			// 각 파트의 프레임 수와 비교해서 최대 프레임을 찾음
-			if(_nMaxFrame < _pModel->m_pSfxBase->Part( i )->Key(j)->nFrame)
-				_nMaxFrame = _pModel->m_pSfxBase->Part( i )->Key(j)->nFrame;
+	for (int i = 0; i < _pModel->m_pSfxBase->m_apParts.GetSize(); i++) {
+		const auto & keyFrames = _pModel->m_pSfxBase->Part(i)->m_aKeyFrames;
+		if (!keyFrames.empty()) {
+			_nMaxFrame = std::max(_nMaxFrame, static_cast<int>(keyFrames.back().nFrame));
 		}
-		
 	}
 
 	strcpy( _szFileName, szSfxName );
@@ -2934,182 +2930,129 @@ SfxModelSet::SfxModelSet( const OBJID idMaster, const char* szSfxName, const cha
 	_nState = nState;
 }
 
-SfxModelSet::~SfxModelSet( )
-{
-	SAFE_DELETE( _pModel );
-}
 
-BOOL SfxModelSet::Update( )
-{
-	CMover* pMaster = prj.GetMover( _idMaster );
-	if( !pMaster )
-		return FALSE;
+bool SfxModelSet::Update() {
+	CMover * pMaster = prj.GetMover(_idMaster);
+	if (!pMaster) return false;
 
-	CModelObject* pMasterModel = (CModelObject*)pMaster->GetModel( );
-	if( !pMasterModel )
-		return FALSE;
+	CModelObject * pMasterModel = (CModelObject *)pMaster->GetModel();
+	if (!pMasterModel) return false;
 
-	D3DXVECTOR3 kPos( 0.0f, 0.0f, 0.0f );
+	auto pkPos = pMasterModel->GetPosBone(_szBone);
+	if (!pkPos) return false;
 
-	BOOL bOK = pMasterModel->GetPosBone( &kPos, _szBone );
-	if( !bOK )
-		return FALSE;
+	const D3DXMATRIX * const pMat = pMaster->GetMatrixWorldPtr();
+	D3DXVec3TransformCoord(&_pModel->m_vPos, &pkPos.value(), pMat);
 
-	D3DXMATRIX* pMat = &pMaster->GetMatrixWorld( );
-	D3DXVec3TransformCoord( &kPos, &kPos, pMat );
-	_pModel->m_vPos = kPos;
-	
 	//looping
-	if( _nMaxFrame < _pModel->m_nCurFrame )
-	{
-		if( _bLoop )
+	if (_pModel->m_nCurFrame > _nMaxFrame) {
+		if (_bLoop)
 			_pModel->m_nCurFrame = 0;
-		else 
-			return FALSE;
+		else
+			return false;
 	}
 
-	_pModel->Process( );
+	_pModel->Process();
 
-	return TRUE;
+	return true;
 }
 
-BOOL SfxModelSet::Render( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	if( _pModel )
-		_pModel->Render( pd3dDevice );
-
-	return TRUE;
+void SfxModelSet::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+	_pModel->Render(pd3dDevice);
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CSfxModelMng
 
-CSfxModelMng* CSfxModelMng::_pThis = NULL;
+CSfxModelMng* CSfxModelMng::_pThis = nullptr;
 
-CSfxModelMng* CSfxModelMng::GetThis()
-{
-	if( !_pThis )
-		_pThis = new CSfxModelMng;
+CSfxModelMng * CSfxModelMng::GetThis() {
+	if (!_pThis) _pThis = new CSfxModelMng;
 
 	return _pThis;
 }
 
-void CSfxModelMng::Free()
-{
-	SAFE_DELETE( _pThis );
-}
-
-CSfxModelMng::CSfxModelMng( )
-{
-}
-
-CSfxModelMng::~CSfxModelMng( )
-{
-	for( SfxModelSetIter iter = _cDatas.begin(); iter != _cDatas.end(); ++iter )
-	{
-		SMSVector& cSMS = iter->second;
-		SeqDeleter< SMSVector >() ( cSMS );
-	}
-
-	_cDatas.clear();
-}
+void CSfxModelMng::Free() { SAFE_DELETE(_pThis); }
 
 BOOL CSfxModelMng::IsFull( OBJID objID, const char* szSfx, const char* szBone )
 {
 	// 꽉 찼는가?
-	static const int MAX_PLAY = 5;
+	static constexpr int MAX_PLAY = 5;
 
-	SfxModelSetIter iter = _cDatas.find( objID );
-	if( iter != _cDatas.end() )
+	auto iter = _cDatas.find( objID );
+	if (iter == _cDatas.end()) return FALSE;
+
+
+	auto & cSMS = iter->second;
+
+	// 최대 동시 가능한 이펙트 검사
+	if( cSMS.size() > MAX_PLAY )
+		return TRUE;
+
+	// 이름이 같은 sfx는 일단 중복 안댐
+	for( auto iter2 = cSMS.begin(); iter2 != cSMS.end(); ++iter2 )
 	{
-		SMSVector& cSMS = iter->second;
+		auto & pData = *iter2;
+		if( !pData->_bLoop )		//clamp 중복허용 
+			continue;
 
-		// 최대 동시 가능한 이펙트 검사
-		if( cSMS.size() > MAX_PLAY )
+		// looping인데 bone 이 같고 , sfx 가 같으면 이건 무시할 데이터로 판단.
+		// 즉 같은곳에 같은 이펙트를 루핑시키자고 했다면 무시한다. ( 이미 같은 이펙트가 출력되고 있으므로 )
+		if (strcmp(pData->_szBone, szBone) == 0
+			&& strcmp(pData->_szFileName, szSfx) == 0) {
 			return TRUE;
-
-		// 이름이 같은 sfx는 일단 중복 안댐
-		for( SMSVector::iterator iter2 = cSMS.begin(); iter2 != cSMS.end(); ++iter2 )
-		{
-			SfxModelSet* pData = *iter2;
-			if( !pData->_bLoop )		//clamp 중복허용 
-				continue;
-
-			// looping인데 bone 이 같고 , sfx 가 같으면 이건 무시할 데이터로 판단.
-			// 즉 같은곳에 같은 이펙트를 루핑시키자고 했다면 무시한다. ( 이미 같은 이펙트가 출력되고 있으므로 )
-			if( strcmp( pData->_szBone, szBone ) == 0 )
-			{
-				if( strcmp( pData->_szFileName, szSfx ) == 0 )
-					return TRUE;
-			}
 		}
 	}
+
 
 	return FALSE;
 
 }
 
-BOOL CSfxModelMng::AddData( SfxModelSet* pData, BOOL bChecked )
+bool CSfxModelMng::AddData( std::unique_ptr<SfxModelSet> pData )
 {
-	// IsFull로 검사한우 AddData가 불려야 함, 최소한의 안젼대책 
-	if( !bChecked )
-		return FALSE;
+	// AddData must be called if inspected with IsFull
+	//! It is judged that the test has already been performed with the IsFull
+	//! function, so the test is not performed again.
 
-	//! IsFull함수로 이미 검사가 되있다고 판단하여 재 검사는 하지 않음.
-
-	SfxModelSetIter iter = _cDatas.find( pData->_idMaster );
+	const auto iter = _cDatas.find( pData->_idMaster );
 	if( iter != _cDatas.end() )
 	{
-		//Bone name이 같은경우 looping 속성에 대해서 기존 이펙트 삭제 후 추가 
-		SMSVector& rSMS = iter->second;
+		// If the bone name is the same, delete the existing effect and
+		// add it to the looping property
+		auto & rSMS = iter->second;
 
-		for( SMSVector::iterator iter2 = rSMS.begin(); iter2 != rSMS.end();  )
-		{
-			SfxModelSet* pSet = *iter2;
-			
-			if( !pSet->_bLoop )		//clamp이면 중복허용 
-			{
-				++iter2;
-				continue;
+		const auto iter2 = std::ranges::find_if(rSMS,
+			[&](const auto & existingSfx) {
+				return /* Clamp allows duplicates */ existingSfx->_bLoop 
+					/* location is the same Delete existing sfx */
+					&& strcmp(existingSfx->_szBone, pData->_szBone) == 0;
 			}
+		);
 
-			if( strcmp( pSet->_szBone, pData->_szBone ) == 0 )
-			{
-				//위치가 같다. 기존 sfx삭제 
-				SAFE_DELETE( pSet );
-				iter2 = rSMS.erase( iter2 );
-			}
-			else ++iter2;
+		if (iter2 != rSMS.end()) {
+			rSMS.erase(iter2);
 		}
 
-		rSMS.push_back( pData );
+		rSMS.emplace_back(std::move(pData));
 
-		return TRUE;
+		return true;
 	}
 	else
 	{
 		// new data
-		SMSVector cSMS;
-		cSMS.push_back( pData );
-
-		pair< SfxModelSetIter, bool > rst =  _cDatas.insert( SfxModelSetContainer::value_type( pData->_idMaster, cSMS ) );
-
-		assert( rst.second );
-		return (BOOL)rst.second;
+		_cDatas[pData->_idMaster].emplace_back(std::move(pData));
+		return true;
 	}
-	 
-	 return TRUE;
 }
 
 BOOL CSfxModelMng::SubData( OBJID objID )
 {
-	SfxModelSetIter iter = _cDatas.find( objID );
+	auto iter = _cDatas.find( objID );
 	if( iter != _cDatas.end() )
 	{
-		SeqDeleter< SMSVector >() ( iter->second );
-
-		_cDatas.erase( iter++ );
+		_cDatas.erase(iter);
 		return TRUE;
 	}
 
@@ -3119,30 +3062,27 @@ BOOL CSfxModelMng::SubData( OBJID objID )
 BOOL CSfxModelMng::SubData( OBJID objID, const int nState )
 {
 	// 해당 상태에 해당하는 모든 sfx를 삭제한다.
+	auto finder = _cDatas.find( objID );
+	if (finder == _cDatas.end()) return FALSE;
 
 	BOOL bOK = FALSE;
-	SfxModelSetIter finder = _cDatas.find( objID );
-	if( finder != _cDatas.end() )
-	{
-		SMSVector& kSubData = finder->second;
 
-		for( SMSVector::iterator iter = kSubData.begin(); iter != kSubData.end(); /*none*/ )
-		{
-			SfxModelSet* pSfx = *iter;
+	auto & kSubData = finder->second;
 
-			if( pSfx->_idMaster == objID )
-			{
-				if( nState == pSfx->_nState )
-				{
-					SAFE_DELETE( pSfx );
-					iter = kSubData.erase( iter );
+	for (auto iter = kSubData.begin(); iter != kSubData.end(); /*none*/) {
+		auto & pSfx = *iter;
 
-					bOK = TRUE;		//ok 찾아서 지웠음.
-				}
-				else ++iter;
+		if (pSfx->_idMaster == objID) {
+			if (nState == pSfx->_nState) {
+				iter = kSubData.erase(iter);
+
+				bOK = TRUE;		//ok 찾아서 지웠음.
+			} else {
+				++iter;
 			}
 		}
 	}
+
 
 	return bOK;
 
@@ -3152,86 +3092,71 @@ BOOL CSfxModelMng::SubData( OBJID objID, const int nState )
 BOOL CSfxModelMng::SubData( OBJID objID, const char* szBone )
 {
 	//해당 본에 링크되어 있는 모든 sfx를 삭제한다.
+	auto finder = _cDatas.find(objID);
+	if (finder == _cDatas.end()) return FALSE;
+
 	BOOL bOK = FALSE;
-	SfxModelSetIter finder = _cDatas.find( objID );
-	if( finder != _cDatas.end() )
-	{
-		SMSVector& kSubData = finder->second;
 
-		for( SMSVector::iterator iter = kSubData.begin(); iter != kSubData.end(); /*none*/ )
-		{
-			SfxModelSet* pSfx = *iter;
+	auto & kSubData = finder->second;
 
-			if( pSfx->_idMaster == objID )
-			{
-				if( 0 == strcmp( pSfx->_szBone, szBone ) )
-				{
-					SAFE_DELETE( pSfx );
-					iter = kSubData.erase( iter );
+	for (auto iter = kSubData.begin(); iter != kSubData.end(); /*none*/) {
+		auto & pSfx = *iter;
 
-					bOK = TRUE;		//ok 찾아서 지웠음.
-				}
-				else ++iter;
+		if (pSfx->_idMaster == objID) {
+			if (0 == strcmp(pSfx->_szBone, szBone)) {
+				iter = kSubData.erase(iter);
+
+				bOK = TRUE;		//ok 찾아서 지웠음.
+			} else {
+				++iter;
 			}
 		}
 	}
+	
 
 	return bOK;
 }
 
 void CSfxModelMng::Update( )
 {
-	if( !_cWaitingObj.empty() )
-	{
-		for( map<DWORD,int>::iterator iter = _cWaitingObj.begin(); iter != _cWaitingObj.end(); ++iter )
-		{
-			CMover* pMover = prj.GetMover( iter->first );
-			if( pMover )
-			{
-				int nState = iter->second;
-				pMover->m_pActMover->RemoveStateFlag( nState );		//빼고
-				pMover->m_pActMover->AddStateFlag( nState );		//넣으면 lua가 발동
+	if (!_cWaitingObj.empty()) {
+		for (const auto & [moverId, nState] : _cWaitingObj) {
+
+			if (CMover * pMover = prj.GetMover(moverId)) {
+				pMover->m_pActMover->RemoveStateFlag(nState);		//빼고
+				pMover->m_pActMover->AddStateFlag(nState);		//넣으면 lua가 발동
 			}
 		}
 
 		_cWaitingObj.clear();
 	}
 
-	for( SfxModelSetIter iter = _cDatas.begin(); iter != _cDatas.end();  )
-	{
-		SMSVector& cSMS = iter->second;
+	for (auto iter = _cDatas.begin(); iter != _cDatas.end(); ) {
+		auto & cSMS = iter->second;
 
 		//sub loop
-		for( SMSVector::iterator iter2 = cSMS.begin(); iter2 != cSMS.end();  )
-		{
-			SfxModelSet* pData = *iter2;
-			if( !pData->Update() )
-			{
-				SAFE_DELETE( pData );
-				iter2 = cSMS.erase( iter2 );
-			}
-			else 
+		for (auto iter2 = cSMS.begin(); iter2 != cSMS.end(); ) {
+			auto & pData = *iter2;
+			if (pData->Update()) {
 				++iter2;
+			} else {
+				iter2 = cSMS.erase(iter2);
+			}
 		}
 
 		// main loop
-		if( cSMS.empty() )
-			_cDatas.erase( iter++ );
-		else ++iter;
+		if (cSMS.empty()) {
+			iter = _cDatas.erase(iter);
+		} else {
+			++iter;
+		}
 	}
 }
 
-void CSfxModelMng::Render( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	for( SfxModelSetIter iter = _cDatas.begin(); iter != _cDatas.end(); ++iter )
-	{
-		SMSVector& cSMS = iter->second;
-	//	for_each( cSMS.begin(), cSMS.end(), bind2nd( mem_fun( &SfxModelSet::Render ), pd3dDevice ) );
-
-		for( SMSVector::iterator iter2 = cSMS.begin(); iter2 != cSMS.end(); ++iter2 )
-		{
-			SfxModelSet* pData = *iter2;
-			pData->Render( pd3dDevice );
+void CSfxModelMng::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+	for (auto & cSMS : _cDatas | std::views::values) {
+		for (auto & pData : cSMS) {
+			pData->Render(pd3dDevice);
 		}
 	}
 }
@@ -3266,11 +3191,8 @@ int call_sfx( lua_State* L )
 	if( bFull )
 		return 0;
 
-	SfxModelSet* pSfxSet = new SfxModelSet( who, szSfx, szBone, bLoop, nState );
-	BOOL bOK = CSfxModelMng::GetThis()->AddData( pSfxSet, TRUE );
-
-	if( !bOK )
-		SAFE_DELETE( pSfxSet );
+	SfxModelSet * pSfxSet = new SfxModelSet(who, szSfx, szBone, bLoop, nState);
+	CSfxModelMng::GetThis()->AddData(std::unique_ptr<SfxModelSet>(pSfxSet));
 
 	return 0;
 }
@@ -3340,7 +3262,7 @@ void open_lua_sfx()
 {
 	if( !g_SfxLua )
  	{
-		g_SfxLua = lua_open();
+		g_SfxLua = luaL_newstate();
 //		luaL_openlibs(g_SfxLua);
 
 		// push function
@@ -3370,7 +3292,7 @@ void run_lua_sfx( int nState, OBJID caller, const char* szMoverName )
 	if( !pWho )
 	{
 		// 흠 생성이 되는도중 불릴수가 있다. 이런경우는 prj에서 못찼을껏이므로 등록상태로 두고 다음 프레임에 시도한다.
-		CSfxModelMng::GetThis()->_cWaitingObj.insert( map< DWORD, int >::value_type( caller, nState ) );
+		CSfxModelMng::GetThis()->_cWaitingObj.emplace( caller, nState );
 		return;
 	}
 

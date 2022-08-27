@@ -237,6 +237,8 @@
 	#define		__BS_ITEM_UNLIMITEDTIME		// 아이템 유지시간 ( 999999999 >= 일경우 무제한 표기 )
 	
 
+#define __BS_EFFECT_LUA /* Behemoth's SFX */
+
 // 8.5차
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
 //	#define	__RULE_0615

@@ -6,6 +6,7 @@
 #include "xuzhu.h"
 #include "xUtil3D.h"
 #include "ModelGlobal.h"
+#include <optional>
 #ifdef __ATTACH_MODEL
 #include <boost/shared_ptr.hpp>
 #endif //__ATTACH_MODEL
@@ -395,7 +396,7 @@ public:
 	int LoadModel( LPCTSTR szFileName ) { return LoadElement( szFileName, 0 ); }
 
 #ifdef __BS_EFFECT_LUA
-	BOOL CModelObject::GetPosBone( D3DXVECTOR3* pOut, const char* bonename );
+	[[nodiscard]] std::optional<D3DXVECTOR3> CModelObject::GetPosBone(const char * bonename);
 #endif
 
 	// 디바이스 초기화 및 삭제 

@@ -369,44 +369,34 @@ void run_lua_sfx( int nState, OBJID caller, const char* szMoverName );
 
 //for lua glue
 struct lua_State;
-static int call_sfx( lua_State* L );
-static BOOL stop_sfx( OBJID caller );
 
 // 자체 update 
-struct SfxModelSet
-{
-	SfxModelSet( ) : _idMaster(0), _pModel(NULL), _bLoop(FALSE), _nMaxFrame(0), _nState(0) { }
+struct SfxModelSet final {
 	SfxModelSet( const OBJID idMaster, const char* szSfxName, const char* szBoneName, BOOL bLoop, int _nState );
 	
-	~SfxModelSet( );
-
-	BOOL Update( );
-	BOOL Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	bool Update();
+	void Render(LPDIRECT3DDEVICE9 pd3dDevice);
 	
 	OBJID _idMaster;
 	char _szBone[ 64 ];
 	char _szFileName[ 64 ];
 	int _nMaxFrame;
 	BOOL _bLoop;
-	CSfxModel* _pModel;
+	std::unique_ptr<CSfxModel> _pModel; /* never empty */
 
 	int _nState;		//상태 : 어떤상태일때 발동되는 효과인지
-
 };
-
-typedef vector< SfxModelSet* >					SMSVector;				//SMS : SfxModelSet
-typedef map< OBJID, SMSVector >					SfxModelSetContainer;
-typedef SfxModelSetContainer::iterator			SfxModelSetIter;
 
 //gmpbigsun(100128 ) : Lua에서 호출한 sfx( 모든 속성이 data로 존재하는 ) 관리자
 // bone 에 링크되어 loop되는 이펙만 지원한다. 
-class CSfxModelMng 
-{
+class CSfxModelMng final {
 public:
-	CSfxModelMng( );
-	~CSfxModelMng( );
+	CSfxModelMng() = default;
+	CSfxModelMng(const CSfxModelMng &) = delete;
+	CSfxModelMng & operator=(const CSfxModelMng &) = delete;
+	~CSfxModelMng() = default;
 
-	BOOL AddData( SfxModelSet* pData, BOOL bChecked );				
+	bool AddData(std::unique_ptr<SfxModelSet> pData);
 	BOOL SubData( OBJID objID );						//해당 오브젝트의 모든 lua관련 sfx삭제 
 	BOOL SubData( OBJID objID, const int nState );		//해당 오브젝트의 모든 상태에 해당하는 sfx삭제
 	BOOL SubData( OBJID objID, const char* szBone );	//해당 오브젝트의 해당 본에 링크된 모든 sfx삭제
@@ -420,12 +410,12 @@ public:
 	static void Free();
 
 public:
-	map< DWORD, int > _cWaitingObj;
+	std::map< DWORD, int > _cWaitingObj;
 
 private:
 	static CSfxModelMng* _pThis;
 
-	SfxModelSetContainer	_cDatas;
+	std::map<OBJID, std::vector<std::unique_ptr<SfxModelSet>>>	_cDatas;
 };
 
 
