@@ -111,7 +111,6 @@ public:
 	virtual HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice );
 };
 
-//CModelObject* pMesh=g_SfxMeshMng.Mesh(m_strTex);
 typedef struct TAILMODEL
 {
 	D3DXMATRIX  m_mWorld;

@@ -352,19 +352,13 @@ public:
 	void DeleteAll() { m_aTextures.clear(); }
 };
 
-class CSfxMeshMng
-{
+class CSfxMeshMng final {
 public:
 	LPDIRECT3DDEVICE9 m_pd3dDevice; // d3d디바이스 포인터
-	CMapStringToPtr m_apMesh; // 스트링으로 메쉬 포인터를 참조하는 해쉬테이블
+	std::map<CString, std::unique_ptr<CModelObject>> m_aMeshs; // 스트링으로 메쉬 포인터를 참조하는 해쉬테이블
 
-	CSfxMeshMng();
-	~CSfxMeshMng();
-
-	CModelObject* AddMesh(CString str);// 메쉬 추가
-	void DeleteMesh(CString str); // 메쉬 삭제
-	CModelObject* Mesh(CString str); //  지정한 이름의 메쉬 포인터를 돌려준다
-	void DeleteAll(void); // 전부 삭제
+	CModelObject * Mesh(const CString & str); //  지정한 이름의 메쉬 포인터를 돌려준다
+	void DeleteAll() { m_aMeshs.clear(); } // 전부 삭제
 
 	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
 	HRESULT RestoreDeviceObjects();

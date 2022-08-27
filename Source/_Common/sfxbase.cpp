@@ -2678,6 +2678,9 @@ void CSfxObjMng::RemoveAll(void)
 	m_apSfxObj.RemoveAll();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
 LPDIRECT3DTEXTURE9 CSfxTexture::Tex(const CString & str) {
 	if (str.GetLength() == 0) return nullptr;
 	
@@ -2699,97 +2702,63 @@ LPDIRECT3DTEXTURE9 CSfxTexture::Tex(const CString & str) {
 	return pTex;
 }
 
-CSfxMeshMng::CSfxMeshMng()
-{
-}
-CSfxMeshMng::~CSfxMeshMng()
-{
-	DeleteAll();
-}
 
-CModelObject* CSfxMeshMng::AddMesh(CString str)
-{
-	CModelObject* pMesh=new CModelObject;
+///////////////////////////////////////////////////////////////////////////////
+
+CModelObject * CSfxMeshMng::Mesh(const CString & str) {
+	if (str.IsEmpty()) return nullptr;
+
+	// Look for the mesh in cache
+	const auto it = m_aMeshs.find(str);
+	if (it != m_aMeshs.end()) return it->second.get();
+
+	// Load the mesh
+	CModelObject * pMesh = new CModelObject;
 	pMesh->InitDeviceObjects(m_pd3dDevice);
-#ifndef __SERVER
-	int nTex = g_Option.m_nTextureQuality;
+
+	const int nTex = g_Option.m_nTextureQuality;
 	g_Option.m_nTextureQuality = 0;
-#endif // not server
+
 	pMesh->LoadModel(str);
 	pMesh->RestoreDeviceObjects();
-#ifndef __SERVER
+
 	g_Option.m_nTextureQuality = nTex;
-#endif // not server
-	
-	m_apMesh[str]=pMesh;
+
+	m_aMeshs.emplace(str, std::unique_ptr<CModelObject>(pMesh));
+
 	return pMesh;
 }
-void CSfxMeshMng::DeleteMesh(CString str)
-{
-	CModelObject* pMesh=Mesh(str);
-	if(pMesh) { safe_delete( pMesh ); }
-}
-CModelObject* CSfxMeshMng::Mesh(CString str)
-{
-	if(str.IsEmpty()) return NULL;
-	CModelObject* pMesh=(CModelObject*)(m_apMesh[str]);
-	if(pMesh) return pMesh;
-	return AddMesh(str);
+
+HRESULT CSfxMeshMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
+	m_pd3dDevice = pd3dDevice;
+	return S_OK;
 }
 
-void CSfxMeshMng::DeleteAll(void)
-{
-	POSITION pos;
-	CString key;
-	CModelObject* pMesh;
-	for( pos = m_apMesh.GetStartPosition(); pos != NULL; ) {
-		m_apMesh.GetNextAssoc( pos, key, (void*&)pMesh);
-		if(pMesh) safe_delete( pMesh );
-	}
-	m_apMesh.RemoveAll();
-}
-
-HRESULT CSfxMeshMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-	m_pd3dDevice=pd3dDevice;
-	return S_OK;
-}
-HRESULT CSfxMeshMng::RestoreDeviceObjects()
-{
-	POSITION pos;
-	CString key;
-	CModelObject* pMesh;
-	for( pos = m_apMesh.GetStartPosition(); pos != NULL; ) {
-		m_apMesh.GetNextAssoc( pos, key, (void*&)pMesh);
-		if(pMesh) pMesh->RestoreDeviceObjects();
-	}
-	return S_OK;
-}
-HRESULT CSfxMeshMng::InvalidateDeviceObjects()
-{
-	POSITION pos;
-	CString key;
-	CModelObject* pMesh;
-	for( pos = m_apMesh.GetStartPosition(); pos != NULL; ) 
-	{
-		m_apMesh.GetNextAssoc( pos, key, (void*&)pMesh );
-		if( pMesh ) pMesh->InvalidateDeviceObjects();
-	}
-	return S_OK;
-}
-HRESULT CSfxMeshMng::DeleteDeviceObjects()
-{
-	POSITION pos;
-	CString key;
-	CModelObject* pMesh;
-	for( pos = m_apMesh.GetStartPosition(); pos != NULL; ) 
-	{
-		m_apMesh.GetNextAssoc( pos, key, (void*&)pMesh );
-		if( pMesh ) pMesh->DeleteDeviceObjects();
+HRESULT CSfxMeshMng::RestoreDeviceObjects() {
+	for (auto & pMesh : m_aMeshs | std::views::values) {
+		pMesh->RestoreDeviceObjects();
 	}
 	return S_OK;
 }
 
+HRESULT CSfxMeshMng::InvalidateDeviceObjects() {
+	for (auto & pMesh : m_aMeshs | std::views::values) {
+		pMesh->InvalidateDeviceObjects();
+	}
+
+	return S_OK;
+}
+
+HRESULT CSfxMeshMng::DeleteDeviceObjects() {
+	for (auto & pMesh : m_aMeshs | std::views::values) {
+		pMesh->DeleteDeviceObjects();
+	}
+
+	return S_OK;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 #ifdef __BS_EFFECT_LUA
 
