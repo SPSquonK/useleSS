@@ -2880,8 +2880,12 @@ void CSfxModelMng::Update( )
 {
 	if (!_cWaitingObj.empty()) {
 		for (const auto & [moverId, nState] : _cWaitingObj) {
-
 			if (CMover * pMover = prj.GetMover(moverId)) {
+				// Official v21 does this instad of Removing / adding flags:
+				//if (pMover->IsNPC()) {
+				//	run_lua_sfx(nState, pMover->GetId(), pMover->GetNameO3D());
+				//}
+
 				pMover->m_pActMover->RemoveStateFlag(nState);		//빼고
 				pMover->m_pActMover->AddStateFlag(nState);		//넣으면 lua가 발동
 			}
@@ -3066,7 +3070,6 @@ void run_lua_sfx( int nState, OBJID caller, const char* szMoverName )
 	BOOL bRet = file.Open( strFullPath.GetBuffer(0), "rt" );
 	if( bRet == FALSE )	
 	{
-		Error( "run_lua_sfx : %s 읽기 실패", strFullPath.GetBuffer(0) );
 		return;
 	}
 
