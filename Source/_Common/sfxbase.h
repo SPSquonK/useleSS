@@ -17,7 +17,6 @@ class CSfxMeshMng;
 class CSfxMng; 
 class CSfxObjMng;
 extern CSfxMng g_SfxMng; // SFX 원형 관리자
-extern CSfxObjMng g_SfxObjMng; // 실제 생성된 SFX 오브젝트 관리자 (게임에서는 CModelMng를 사용하므로 필요없음)
 extern CSfxTexture g_SfxTex; // SFX에 사용되는 텍스쳐를 관리하는 관리자
 extern CSfxMeshMng g_SfxMeshMng; // SFX에 사용되는 메쉬를 관리하는 관리자
 
@@ -308,22 +307,6 @@ public:
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 #endif	// __CLIENT
-};
-
-// 게임상 실제 SFX오브젝트들의 관리자. (만들어는 놨는데 다른걸로 관리하므로 실제로는 안쓴다)
-class CSfxObjMng
-{
-public:
-	CPtrArray m_apSfxObj; // 게임상 SFX오브젝트들의 배열
-
-	CSfxObjMng();
-	~CSfxObjMng();
-	void AddObj(CSfxBase *pSfxBase,D3DXVECTOR3 vPos=D3DXVECTOR3(0,0,0),D3DXVECTOR3 vRotate=D3DXVECTOR3(0,0,0)); // 
-	void Process(void);
-#ifndef __WORLDSERVER
-	void Render(void);
-#endif
-	void RemoveAll(void); // 구성요소를 전부 파괴한다
 };
 
 namespace useless_util {

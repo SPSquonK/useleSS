@@ -42,7 +42,6 @@
 
 extern CSfxTexture      g_SfxTex;
 extern CSfxMng          g_SfxMng;
-extern CSfxObjMng       g_SfxObjMng;
 extern CSfxMeshMng      g_SfxMeshMng;
 extern HANDLE			g_hMutex;
 
@@ -486,7 +485,6 @@ HRESULT CNeuzApp::DeleteDeviceObjects()
 
 	g_SfxMng.DeleteDeviceObjects();
 	g_SfxTex.DeleteAll();
-	g_SfxObjMng.RemoveAll();
 	g_SfxMeshMng.DeleteAll();
 
 	g_Object3DMng.Destroy();	

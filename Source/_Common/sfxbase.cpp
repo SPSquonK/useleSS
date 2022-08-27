@@ -8,7 +8,6 @@ LPDIRECT3DDEVICE9 CSfxMng::m_pd3dDevice;
 LPDIRECT3DVERTEXBUFFER9 CSfxMng::m_pSfxVB;
 CSfxTexture g_SfxTex;
 CSfxMng g_SfxMng;
-CSfxObjMng g_SfxObjMng;
 CSfxMeshMng g_SfxMeshMng;
 
 #define RANDF ((rand()%50000)/50000.0f) // 0.0~1.0 사이의 실수 랜덤값 생성용
@@ -2630,52 +2629,6 @@ BOOL CSfxModel::Process(void)
 		}
 	}
 	return ret;
-}
-
-CSfxObjMng::CSfxObjMng()
-{
-}
-CSfxObjMng::~CSfxObjMng()
-{
-	RemoveAll();
-}
-
-void CSfxObjMng::AddObj(CSfxBase *pSfxBase,D3DXVECTOR3 vPos,D3DXVECTOR3 vRotate)
-{
-	CSfxModel* pSfxObj=new CSfxModel;
-	pSfxObj->SetSfx(pSfxBase);
-	pSfxObj->m_vPos=vPos; pSfxObj->m_vRotate=vRotate;
-	m_apSfxObj.Add(pSfxObj);
-}
-
-void CSfxObjMng::Process(void)                                                                                                                                                                                                                                                                                                                                                                           
-{
-	CSfxModel* pSfxObj;
-	for(int i=0;i<m_apSfxObj.GetSize();i++) 
-	{
-		pSfxObj=((CSfxModel*)(m_apSfxObj.GetAt(i)));
-		if(pSfxObj->Process()) 
-		{
-			safe_delete( pSfxObj );
-			m_apSfxObj.RemoveAt(i);
-			i--;
-		}
-	}
-}
-#ifndef __WORLDSERVER
-void CSfxObjMng::Render(void)
-{
-	for(int i=0;i<m_apSfxObj.GetSize();i++) {
-		((CSfxModel*)(m_apSfxObj.GetAt(i)))->Render( CSfxMng::m_pd3dDevice );
-	}
-}
-#endif
-void CSfxObjMng::RemoveAll(void)
-{
-	for(int i=0;i<m_apSfxObj.GetSize();i++) {
-		safe_delete( (CSfxModel*)m_apSfxObj.GetAt(i) );
-	}
-	m_apSfxObj.RemoveAll();
 }
 
 
