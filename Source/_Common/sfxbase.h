@@ -372,7 +372,19 @@ struct lua_State;
 
 // 자체 update 
 struct SfxModelSet final {
-	SfxModelSet( const OBJID idMaster, const char* szSfxName, const char* szBoneName, BOOL bLoop, int _nState );
+	struct ConstructorParams {
+		OBJID idMaster;
+		const char * szSfxName;
+		const char * szBoneName;
+		BOOL bLoop;
+		int nState;
+	};
+
+	SfxModelSet(const ConstructorParams & params)
+		: SfxModelSet(params.idMaster, params.szSfxName, params.szBoneName, params.bLoop, params.nState) {
+	}
+
+	SfxModelSet(OBJID idMaster, const char * szSfxName, const char * szBoneName, BOOL bLoop, int _nState);
 	
 	bool Update();
 	void Render(LPDIRECT3DDEVICE9 pd3dDevice);
@@ -396,15 +408,14 @@ public:
 	CSfxModelMng & operator=(const CSfxModelMng &) = delete;
 	~CSfxModelMng() = default;
 
-	bool AddData(std::unique_ptr<SfxModelSet> pData);
+	bool AddData(SfxModelSet::ConstructorParams sfxParams);
+	
 	BOOL SubData( OBJID objID );						//해당 오브젝트의 모든 lua관련 sfx삭제 
 	BOOL SubData( OBJID objID, const int nState );		//해당 오브젝트의 모든 상태에 해당하는 sfx삭제
 	BOOL SubData( OBJID objID, const char* szBone );	//해당 오브젝트의 해당 본에 링크된 모든 sfx삭제
 	
 	void Update( );
 	void Render( LPDIRECT3DDEVICE9 pd3dDevice );
-
-	BOOL IsFull( OBJID objID, const char* szSfx, const char* szBone );	//optimized 
 
 	static CSfxModelMng* GetThis();
 	static void Free();

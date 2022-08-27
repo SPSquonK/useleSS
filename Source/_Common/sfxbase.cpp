@@ -2975,74 +2975,38 @@ CSfxModelMng * CSfxModelMng::GetThis() {
 
 void CSfxModelMng::Free() { SAFE_DELETE(_pThis); }
 
-BOOL CSfxModelMng::IsFull( OBJID objID, const char* szSfx, const char* szBone )
-{
+bool CSfxModelMng::AddData(SfxModelSet::ConstructorParams sfxParams) { 
 	// 꽉 찼는가?
 	static constexpr int MAX_PLAY = 5;
 
-	auto iter = _cDatas.find( objID );
-	if (iter == _cDatas.end()) return FALSE;
-
-
-	auto & cSMS = iter->second;
-
-	// 최대 동시 가능한 이펙트 검사
-	if( cSMS.size() > MAX_PLAY )
-		return TRUE;
-
-	// 이름이 같은 sfx는 일단 중복 안댐
-	for( auto iter2 = cSMS.begin(); iter2 != cSMS.end(); ++iter2 )
-	{
-		auto & pData = *iter2;
-		if( !pData->_bLoop )		//clamp 중복허용 
-			continue;
-
-		// looping인데 bone 이 같고 , sfx 가 같으면 이건 무시할 데이터로 판단.
-		// 즉 같은곳에 같은 이펙트를 루핑시키자고 했다면 무시한다. ( 이미 같은 이펙트가 출력되고 있으므로 )
-		if (strcmp(pData->_szBone, szBone) == 0
-			&& strcmp(pData->_szFileName, szSfx) == 0) {
-			return TRUE;
-		}
-	}
-
-
-	return FALSE;
-
-}
-
-bool CSfxModelMng::AddData( std::unique_ptr<SfxModelSet> pData )
-{
-	// AddData must be called if inspected with IsFull
-	//! It is judged that the test has already been performed with the IsFull
-	//! function, so the test is not performed again.
-
-	const auto iter = _cDatas.find( pData->_idMaster );
-	if( iter != _cDatas.end() )
-	{
-		// If the bone name is the same, delete the existing effect and
-		// add it to the looping property
+	const auto iter = _cDatas.find(sfxParams.idMaster);
+	if (iter != _cDatas.end()) {
 		auto & rSMS = iter->second;
 
+		if (rSMS.size() > MAX_PLAY + 1) return false; // Overfull
+
+		// If the bone name is the same, delete the existing effect and
+		// add it to the looping property
 		const auto iter2 = std::ranges::find_if(rSMS,
 			[&](const auto & existingSfx) {
 				return /* Clamp allows duplicates */ existingSfx->_bLoop 
 					/* location is the same Delete existing sfx */
-					&& strcmp(existingSfx->_szBone, pData->_szBone) == 0;
+					&& strcmp(existingSfx->_szBone, sfxParams.szBoneName) == 0;
 			}
 		);
 
 		if (iter2 != rSMS.end()) {
 			rSMS.erase(iter2);
+		} else if (rSMS.size() > MAX_PLAY) {
+			return false; // Full
 		}
 
-		rSMS.emplace_back(std::move(pData));
+		rSMS.emplace_back(std::make_unique<SfxModelSet>(sfxParams));
 
 		return true;
-	}
-	else
-	{
+	} else {
 		// new data
-		_cDatas[pData->_idMaster].emplace_back(std::move(pData));
+		_cDatas[sfxParams.idMaster].emplace_back(std::make_unique<SfxModelSet>(sfxParams));
 		return true;
 	}
 }
@@ -3172,28 +3136,22 @@ int call_sfx( lua_State* L )
 	// 루아에서 call ( lua glue )
 	int n = lua_gettop( L ); 
 
-	int who = lua_tointeger( L, 1 );				// master id
-	int nKind = lua_tointeger( L, 2 );				// kind of the effect
-	const char* szSfx = lua_tostring( L, 3 );		// sfx
-	const char* szBone = lua_tostring( L, 4 );		// bone
-	BOOL bLoop = lua_tointeger( L, 5 );				// is loop ?
-	int nState = lua_tointeger( L, 6 );				// state ( create, battle ... )
+	SfxModelSet::ConstructorParams sfxParams;
+	sfxParams.idMaster = lua_tointeger( L, 1 );				// master id
+	[[maybe_unused]] int nKind = lua_tointeger( L, 2 );				// kind of the effect
+	sfxParams.szSfxName = lua_tostring( L, 3 );		// sfx
+	sfxParams.szBoneName = lua_tostring( L, 4 );		// bone
+	sfxParams.bLoop = lua_tointeger( L, 5 );				// is loop ?
+	sfxParams.nState = lua_tointeger( L, 6 );				// state ( create, battle ... )
 
-	CMover* pMover = prj.GetMover( who );
-	if( !pMover )
-	{
-		assert( 0 );
+	CMover* pMover = prj.GetMover(sfxParams.idMaster);
+	if (!pMover) {
+		assert(0);
 		return 0;
 	}
 
 	//! 생성하기 전에 필히 검사해야함.
-	BOOL bFull = CSfxModelMng::GetThis()->IsFull( who, szSfx, szBone );
-	if( bFull )
-		return 0;
-
-	SfxModelSet * pSfxSet = new SfxModelSet(who, szSfx, szBone, bLoop, nState);
-	CSfxModelMng::GetThis()->AddData(std::unique_ptr<SfxModelSet>(pSfxSet));
-
+	CSfxModelMng::GetThis()->AddData(sfxParams);
 	return 0;
 }
 
