@@ -326,19 +326,30 @@ public:
 	void RemoveAll(void); // 구성요소를 전부 파괴한다
 };
 
+namespace useless_util {
+	template<typename T>
+	struct releaser {
+		void operator()(T * t) const {
+			if (t) {
+				t->Release();
+				delete t;
+			}
+		}
+	};
+}
+
+template<typename T>
+using unique_ptr_release = ::std::unique_ptr<T, useless_util::releaser<T>>;
+
 // SFX에서만 사용되는 텍스쳐 관리자
-class CSfxTexture
-{
+class CSfxTexture final {
+	std::map<CString, unique_ptr_release<IDirect3DTexture9>> m_aTextures; // 스트링으로 텍스쳐 포인터를 참조하는 해쉬테이블
 public:
-	CMapStringToPtr m_apTexture; // 스트링으로 텍스쳐 포인터를 참조하는 해쉬테이블
+	//  지정한 이름의 텍스쳐 포인터를 돌려준다
+	LPDIRECT3DTEXTURE9 Tex(const CString & str);
 
-	CSfxTexture();
-	~CSfxTexture();
-
-	LPDIRECT3DTEXTURE9 AddTex(CString str); // 텍스쳐 추가
-	void DeleteTex(CString str); // 텍스쳐 삭제
-	LPDIRECT3DTEXTURE9 Tex(CString str); //  지정한 이름의 텍스쳐 포인터를 돌려준다
-	void DeleteAll(void); // 모든 텍스쳐 삭제
+	// 모든 텍스쳐 삭제
+	void DeleteAll() { m_aTextures.clear(); }
 };
 
 class CSfxMeshMng

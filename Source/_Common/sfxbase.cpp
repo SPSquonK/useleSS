@@ -2678,56 +2678,27 @@ void CSfxObjMng::RemoveAll(void)
 	m_apSfxObj.RemoveAll();
 }
 
-CSfxTexture::CSfxTexture()
-{
-}
-CSfxTexture::~CSfxTexture()
-{
-	DeleteAll();
-}
+LPDIRECT3DTEXTURE9 CSfxTexture::Tex(const CString & str) {
+	if (str.GetLength() == 0) return nullptr;
+	
+	const auto it = m_aTextures.find(str);
+	if (it != m_aTextures.end()) return it->second.get();
 
-LPDIRECT3DTEXTURE9 CSfxTexture::AddTex(CString str)
-{
 	LPDIRECT3DTEXTURE9 pTex;
-	HRESULT hr = LoadTextureFromRes( CSfxMng::m_pd3dDevice, _T( MakePath( DIR_SFXTEX, LPCTSTR(str) ) ), 
-		D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5, 
-		D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
-		D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, &pTex );
-		
-	if( hr != D3D_OK ) 
-	{
-		TRACE( "CSfxTexture::AddTex에서 텍스춰 없음 %s", str );
-		return NULL;
+	HRESULT hr = LoadTextureFromRes(CSfxMng::m_pd3dDevice, _T(MakePath(DIR_SFXTEX, str.GetString())),
+		D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5,
+		D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR,
+		D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR, 0, NULL, NULL, &pTex);
+
+	if (hr != D3D_OK) {
+		TRACE("CSfxTexture::AddTex에서 텍스춰 없음 %s", str);
+		return nullptr;
 	}
-	m_apTexture[str]=pTex;
+
+	m_aTextures.emplace(str, unique_ptr_release<IDirect3DTexture9>(pTex));
 	return pTex;
 }
-void CSfxTexture::DeleteTex(CString str)
-{
-	LPDIRECT3DTEXTURE9 pTex=Tex(str);
-	SAFE_RELEASE(pTex);
-}
-LPDIRECT3DTEXTURE9 CSfxTexture::Tex(CString str)
-{
-	if(str.IsEmpty()) return NULL;
-	LPDIRECT3DTEXTURE9 pTex=(LPDIRECT3DTEXTURE9)(m_apTexture[str]);
-	if(pTex) return pTex;
-	return AddTex(str);
-}
 
-void CSfxTexture::DeleteAll(void)
-{
-	POSITION pos;
-
-	CString key;
-	LPDIRECT3DTEXTURE9 pTex;
-
-	for( pos = m_apTexture.GetStartPosition(); pos != NULL; ) {
-		m_apTexture.GetNextAssoc( pos, key, (void*&)pTex );
-		SAFE_RELEASE(pTex);
-	}
-	m_apTexture.RemoveAll();
-}
 CSfxMeshMng::CSfxMeshMng()
 {
 }
