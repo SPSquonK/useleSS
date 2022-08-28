@@ -3,7 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "AppDefine.h"
 #include "resdata.h"
+#include "WndSkillTree.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -1926,12 +1928,13 @@ CWndBase* CWndBase::GetWndBase()
 		if(pWnd && pWnd->IsVisible() && !pWnd->IsWndStyle(WBS_MANAGER|WBS_TOPMOST) )
 		{
 			// 상태창과 네비게이션은 걸러낸다...
-			if( pWnd->GetWndId() == APP_SKILL3 )
+			if( pWnd->GetWndId() == APP_SKILL_ )
 			{
-				CWndBase* pWndBase = (CWndBase*)g_WndMng.GetWndBase( APP_QUEITMWARNING );	
+				CWndBase* pWndBase = g_WndMng.GetWndBase<CWndBase>( APP_QUEITMWARNING );
 				if( pWndBase )
-					return NULL;			// 스킬 확인창이면 스킬창을 닫을수가 없음.
-				if( ((CWndSkillTreeEx*)pWnd)->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
+					return nullptr;			// 스킬 확인창이면 스킬창을 닫을수가 없음.
+
+				if( ((CWndSkillTreeCommon*)pWnd)->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
 				{
 					if( pWndBase == NULL )
 					{

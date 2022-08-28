@@ -11,6 +11,7 @@
 #include "WndIndirectTalk.h"
 #include "WndChangeFace.h"
 #include "WndCommItem.h"
+#include "WndSkillTree.h"
 #include "dpclient.h"
 #include "timeLimit.h"
 #include "MsgHdr.h"
@@ -1091,13 +1092,13 @@ BOOL TextCmd_SkillLevel(CScanner & scanner, CPlayer_ * pUser) {
 
 	DWORD dwSkillLevel = scanner.GetNumber();
 
-	CWndSkillTreeEx* pSkillWnd = g_WndMng.GetWndBase<CWndSkillTreeEx>( APP_SKILL3 );
+	CWndSkillTreeCommon * pSkillWnd = g_WndMng.GetWndBase<CWndSkillTreeCommon>(APP_SKILL_);
 	if (!pSkillWnd) {
 		g_WndMng.PutString(prj.GetText(TID_GAME_CHOICESKILL), NULL, 0xffff0000);
 		return FALSE;
 	}
 
-	const SKILL * pSkill = pSkillWnd->GetFocusedSkill();
+	const SKILL * pSkill = pSkillWnd->GetFocusedItem();
 	if (!pSkill) {
 		g_WndMng.PutString(prj.GetText(TID_GAME_CHOICESKILL), NULL, 0xffff0000);
 		return FALSE;

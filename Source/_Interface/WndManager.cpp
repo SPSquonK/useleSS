@@ -14,7 +14,7 @@
 #include "WndMessenger.h"
 #include "WndCommand.h"
 #include "WndNotice.h"
-#include "WndNotice.h"
+#include "WndSkillTree.h"
 #include "WndMap.h"
 #include "WndParty.h"
 #include "WndFriendConfirm.h"
@@ -1160,13 +1160,13 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 		if( pWndBase )
 			return;
 
-		if( pShortcut->m_dwId == APP_SKILL3 )
+		if( pShortcut->m_dwId == APP_SKILL_ )
 		{
 			CWndBase* pWndBase = (CWndBase*)g_WndMng.GetWndBase( APP_QUEITMWARNING );	
 			if( pWndBase )
 				return;			// 스킬 확인창이면 스킬창을 닫을수가 없음.
-			CWndBase* pWndBase1 = (CWndBase*)g_WndMng.GetWndBase( APP_SKILL3 );
-			if( pWndBase1 && ((CWndSkillTreeEx*)pWndBase1)->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
+			CWndSkillTreeCommon * pWndBase1 = g_WndMng.GetWndBase<CWndSkillTreeCommon>( APP_SKILL_ );
+			if( pWndBase1 && pWndBase1->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
 			{
 				if( pWndBase == NULL )
 				{
@@ -2094,8 +2094,7 @@ void CWndMgr::SetPlayer( CMover* pMover )
 			//prj.m_modelMng.LoadMotion( ( (CWndStatus*)pWndBase )->m_pModel, pMover->m_dwType, pMover->m_dwIndex, 0 );
 		}
 
-		if( pWndBase = GetApplet( APP_SKILL3 ) )
-			( (CWndSkillTreeEx*)pWndBase )->InitItem();
+		CWndSkillTreeCommon::ReInitIfOpen();
 		
 		if( pWndBase = GetApplet( APP_INVENTORY ) )
 		{
@@ -2156,8 +2155,7 @@ void CWndMgr::SetPlayer( CMover* pMover )
 	}
 	else 
 	{
-		if( pWndBase = GetApplet( APP_SKILL3 ) )
-			( (CWndSkillTreeEx*)pWndBase )->InitItem();
+		CWndSkillTreeCommon::ReInitIfOpen();
 
 		if( pWndBase = GetApplet( APP_GAUGE ) )
 			SAFE_DELETE( ( (CWndStatus*)pWndBase )->m_pModel );

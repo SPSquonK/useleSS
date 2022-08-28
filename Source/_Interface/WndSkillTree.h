@@ -10,13 +10,20 @@
 class CWndSkillTreeCommon : public CWndNeuz {
 public:
 	[[nodiscard]] static bool IsSkillHigherThanReal(const SKILL & windowSkill);
+	[[nodiscard]] static const char * GetBackgroundFilename(int nJob);
+	[[nodiscard]] static const char * GetHeroBackground(int nJob);
+	[[nodiscard]] static boost::container::static_vector<DWORD, 4> JobToTabJobs(int nJob);
 
 public:
+	static void ReInitIfOpen();
+
 	enum class SkillStatus { No, Learnable, Usable };
 	[[nodiscard]] SkillStatus GetSkillStatus(const SKILL & skill) const;
 	[[nodiscard]] CTexture * GetTextureOf(const SKILL & skill) const;
 
 	[[nodiscard]] const MoverSkills & GetSkills() const { return m_apSkills; };
+	[[nodiscard]] int GetCurrSkillPoint() const noexcept { return m_nCurrSkillPoint; }
+	[[nodiscard]] const SKILL * GetFocusedItem() const { return m_pFocusItem; }
 
 	void ResetSkills();
 
@@ -25,6 +32,9 @@ public:
 public:
 	MoverSkills m_apSkills;
 	int m_nCurrSkillPoint = 0;
+
+protected:
+	SKILL * m_pFocusItem = nullptr;
 
 private:
 	boost::container::flat_map<DWORD, CTexture *> m_pTexSkill;
@@ -43,7 +53,7 @@ protected:
 
 	CTexture * m_aSkillLevel[3] = { nullptr, nullptr, nullptr };
 	IMAGE * m_atexJobPannel[2] = { nullptr, nullptr };
-	CString		  m_strHeroSkilBg;			//히어로 이미지 파일 이름
+	const char * m_strHeroSkilBg = nullptr;			//히어로 이미지 파일 이름
 	int m_nJob = -1;			//class 번호
 
 	CTexture m_texGauEmptyNormal;
@@ -59,7 +69,7 @@ protected:
 	CWndStatic * m_pWndHeroStatic[2] = { nullptr, nullptr };
 
 public:
-	[[nodiscard]] int GetCurrSkillPoint() const noexcept { return m_nCurrSkillPoint; }
+	
 
 	int		GetCalcImagePos(int nIndex);
 
@@ -69,8 +79,6 @@ public:
 
 
 	[[nodiscard]] const SKILL * GetFocusedSkill() const { return m_focusedSkill; }
-
-	virtual ~CWndSkillTreeEx();
 
 	void AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);
 	void SetJob(int nJob);
@@ -128,9 +136,6 @@ public:
 	[[nodiscard]] static std::optional<JobSkillPositionInfo> GetSkillIconInfo(DWORD dwSkillID);
 
 	[[nodiscard]] static const char * GetFileNameClassBtn(int nJob);
-	[[nodiscard]] static const char * GetBackgroundFilename(int nJob);
-	[[nodiscard]] static const char * GetHeroBackground(int nJob);
-	[[nodiscard]] static boost::container::static_vector<DWORD, 4> JobToTabJobs(int nJob);
 
 public:
 	CWndSkill_16() = default;
@@ -150,9 +155,6 @@ public:
 
 //exposed
 	void	InitItem();
-	SKILL * GetdwSkill(DWORD dwSkill);
-
-	void	SubSkillPointDown(LPSKILL lpSkill);
 
 protected:
 	// Return the absolute icon location in the window
@@ -178,9 +180,6 @@ private:
 	// Picture for skill level number display (1, 2, ..., max)
 	CTexturePack m_kTexLevel;
 
-
-	SKILL * m_pFocusItem = nullptr;				//Selected item: In other words, a skill item that can be leveled up by double-clicking the skill.
-
 	// Current skill tree image
 	std::unique_ptr<IMAGE> m_pTexJobPannel = nullptr;
 
@@ -204,3 +203,4 @@ private:
 	CTexture * m_pTexSeletionBack = nullptr;
 };
 
+using CWndSkillTree = CWndSkillTreeEx;

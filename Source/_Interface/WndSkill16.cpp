@@ -4,34 +4,6 @@
 #include "defineSkill.h"
 #include "sqktd/algorithm.h"
 
-///////////////////////////////////////////////////////////////////////////////
-
-[[nodiscard]] boost::container::static_vector<DWORD, 4> CWndSkill_16::JobToTabJobs(const int nJob) {
-	boost::container::static_vector<DWORD, 4> result;
-
-	const auto jobLine = prj.jobs.GetAllJobsOfLine(nJob);
-
-	// 0 = Vagrant
-	result.emplace_back(JOB_VAGRANT);
-
-	// 1 = Expert
-	if (jobLine.size() <= 1) return result;
-	result.emplace_back(jobLine[1]);
-
-	// 2 = Pascal Praud
-	if (jobLine.size() <= 2) return result;
-	result.emplace_back(jobLine[2]);
-
-	// 3 = Master
-	// 4 = Hero
-
-	// 5 = Legend Hero
-	if (jobLine.size() <= 5) return result;
-	result.emplace_back(jobLine[5]);
-
-	return result;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -101,7 +73,7 @@ BOOL CWndSkill_16::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 						m_nCurrSkillPoint += nPoint;
 						--m_pFocusItem->dwLevel;
 
-						// SubSkillPointDown(curSel);
+						OnSkillPointDown(*m_pFocusItem);
 					}
 					break;
 
@@ -722,37 +694,6 @@ void CWndSkill_16::OnMouseMove(UINT nFlags, CPoint point) {
 	}
 }
 
-void CWndSkill_16::SubSkillPointDown(SKILL * lpSkill) {
-	// TODO: inherit from a common class with CWndSkillTreeEx
-	for (SKILL & skill : m_apSkills) {
-		SKILL * pSkill2 = &skill;
-
-		if (pSkill2->GetProp()->dwReSkill1 == lpSkill->dwSkill) {
-			if (pSkill2->GetProp()->dwReSkillLevel1) {
-				if (lpSkill->dwLevel < pSkill2->GetProp()->dwReSkillLevel1) {
-					if (pSkill2->dwLevel > 0) {
-						m_nCurrSkillPoint += (prj.GetSkillPoint(pSkill2->GetProp()) * pSkill2->dwLevel);
-						pSkill2->dwLevel = 0;
-						SubSkillPointDown(pSkill2);
-					}
-				}
-			}
-		}
-
-		if (pSkill2->GetProp()->dwReSkill2 == lpSkill->dwSkill) {
-			if (pSkill2->GetProp()->dwReSkillLevel2) {
-				if (lpSkill->dwLevel < pSkill2->GetProp()->dwReSkillLevel2) {
-					if (pSkill2->dwLevel > 0) {
-						m_nCurrSkillPoint += (prj.GetSkillPoint(pSkill2->GetProp()) * pSkill2->dwLevel);
-						pSkill2->dwLevel = 0;
-						SubSkillPointDown(pSkill2);
-					}
-				}
-			}
-		}
-	}
-}
-
 void CWndSkill_16::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFormat) {
 	LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDC_STATIC_PANNEL);
 
@@ -854,67 +795,6 @@ const char * CWndSkill_16::GetFileNameClassBtn(const int nJob) {
 
 		default:
 			Error(__FUNCTION__"(): Unknown job: %d", nJob);
-			return nullptr;
-	}
-}
-
-const char * CWndSkill_16::GetBackgroundFilename(const int nJob) {
-	switch (nJob) {
-		case JOB_VAGRANT:							return "ImgSkillVagrant.tga";
-		case JOB_MERCENARY:						return "Back_Me.TGA";
-		case JOB_ACROBAT:							return "Back_Acr.tga";
-		case JOB_ASSIST:							return "Back_As.TGA";
-		case JOB_MAGICIAN:						return "Back_Ma.TGA";
-		case JOB_KNIGHT:							return "Back_Night.TGA";
-		case JOB_BLADE:								return "Back_Blade.TGA";
-		case JOB_BILLPOSTER:					return "Back_Bill.TGA";
-		case JOB_RINGMASTER:					return "Back_Ring.TGA";
-		case JOB_ELEMENTOR:						return "Back_Ele.TGA";
-		case JOB_PSYCHIKEEPER:				return "Back_Psy.TGA";
-		case JOB_JESTER:							return "Back_Jst.TGA";
-		case JOB_RANGER:							return "Back_Rag.TGA";
-		case JOB_LORDTEMPLER_HERO:		return "SkillTreeLord.tga";
-		case JOB_STORMBLADE_HERO:			return "SkillTreeStormb.tga";
-		case JOB_WINDLURKER_HERO:			return "SkillTreeWindI.tga";
-		case JOB_CRACKSHOOTER_HERO:		return "SkillTreeCracks.tga";
-		case JOB_FLORIST_HERO:				return "SkillTreeFlor.tga";
-		case JOB_FORCEMASTER_HERO:		return "SkillTreeForcm.tga";
-		case JOB_MENTALIST_HERO:			return "SkillTreeMent.tga";
-		case JOB_ELEMENTORLORD_HERO:	return "SkillTreeElel.tga";
-		default:
-			Error(__FUNCTION__"(): Invalid job %d", nJob);
-			return nullptr;
-	}
-}
-
-const char * CWndSkill_16::GetHeroBackground(const int nJob) {
-	// Master Skill is 1 Lv from the start, so the background image is excluded from skill icon image.
-	switch (nJob) {
-		case JOB_KNIGHT_HERO:
-		case JOB_LORDTEMPLER_HERO:
-			return "Back_Hero_KntDrawing.tga";
-		case JOB_BLADE_HERO:
-		case JOB_STORMBLADE_HERO:
-			return "Back_Hero_BldDefence.tga";
-		case JOB_BILLPOSTER_HERO:
-		case JOB_FORCEMASTER_HERO:
-			return "Back_Hero_BilDisEnchant.tga";
-		case JOB_RINGMASTER_HERO:
-		case JOB_FLORIST_HERO:
-			return "Back_Hero_RigReturn.tga";
-		case JOB_ELEMENTOR_HERO:
-		case JOB_ELEMENTORLORD_HERO:
-			return "Back_Hero_EleCursemind.tga";
-		case JOB_PSYCHIKEEPER_HERO:
-		case JOB_MENTALIST_HERO:
-			return "Back_Hero_PsyStone.tga";
-		case JOB_JESTER_HERO:
-		case JOB_WINDLURKER_HERO:
-			return "Back_Hero_JstSilence.tga";
-		case JOB_RANGER_HERO:
-		case JOB_CRACKSHOOTER_HERO:
-			return "Back_Hero_RagHawkeye.tga";
-		default:
 			return nullptr;
 	}
 }
