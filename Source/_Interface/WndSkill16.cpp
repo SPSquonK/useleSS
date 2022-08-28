@@ -115,7 +115,7 @@ void CWndSkill_16::InitItem() {
 
 	InitItem_FillJobNames();
 
-	m_strHeroSkilBg = GetHeroBackground(selectedJob);
+	m_strHeroSkilBg = GetHeroBackground(g_pPlayer->GetJob());
 
 	const char * background = GetBackgroundFilename(selectedJob);
 	if (background != nullptr) {
@@ -132,7 +132,6 @@ void CWndSkill_16::InitItem() {
 	AdjustWndBase();
 
 	InitItem_AutoControlClassBtn();
-
 }
 
 void CWndSkill_16::InitItem_FillJobNames() {
@@ -194,11 +193,12 @@ std::optional<CRect> CWndSkill_16::GetSkillIconRect(DWORD dwSkillID) {
 		if (tabPos->tab == m_selectedTab) {
 			LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDC_STATIC_PANNEL);
 
-			CPoint point = lpWndCtrl->rect.TopLeft();
-			point.Offset(-13, -88);
+			CPoint point = 
+				tabPos->point
+				+ lpWndCtrl->rect.TopLeft()
+				+ CPoint(-13, -88);
 
 			return CRect(point, CSize(24, 24));
-
 		} else {
 			return std::nullopt;
 		}
@@ -349,8 +349,6 @@ void CWndSkill_16::OnMouseWndSurface(CPoint point) {
 
 	//스킬 트리 처리
 	for (const SKILL & pSkill : m_apSkills) {
-		const ItemProp * pSkillProp = pSkill.GetProp();
-
 		const auto maybeRect = GetSkillIconRect(pSkill.dwSkill);
 
 		if (maybeRect) {
@@ -378,8 +376,8 @@ void CWndSkill_16::OnMouseWndSurface(CPoint point) {
 	m_dwMouseSkill = dwMouseSkill;
 }
 
-void CWndSkill_16::OnLButtonDown(UINT nFlags, CPoint point) {
-	CPoint ptMouse = GetMousePoint();
+void CWndSkill_16::OnLButtonDown(UINT, CPoint point) {
+	const CPoint ptMouse = GetMousePoint();
 
 	for (SKILL & pSkill : m_apSkills) {
 		const auto rect = GetSkillIconRect(pSkill.dwSkill);
@@ -410,8 +408,6 @@ void CWndSkill_16::OnMouseMove(UINT nFlags, CPoint point) {
 	if (!m_bDrag) return;
 	if (!m_pFocusItem) return;
 
-	CPoint pt(3, 3);
-
 	const SKILL * playerSkill = g_pPlayer->GetSkill(m_pFocusItem->dwSkill);
 	if (playerSkill && playerSkill->dwLevel > 0) {
 		m_bDrag = false;
@@ -437,28 +433,6 @@ void CWndSkill_16::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dForma
 	if (m_pTexJobPannel) PaintTexture(pDest, m_pTexJobPannel.get(), pt, size);
 }
 
-int CWndSkill_16::GetJobByJobLevel(const TabType tab, const int realJob) {
-	if (tab == TabType::Vagrant) {
-		return JOB_VAGRANT;
-	}
-
-	const auto line = prj.jobs.GetAllJobsOfLine(realJob);
-	// 0 = Vagrant, 1 = Pro, 2 = Expert, 3 = Master, 4 = Hero, 5 = LegendHero
-
-	if (tab == TabType::Expert) {
-		if (line.size() > 1) return line[1];
-		else return -1;
-	} else if (tab == TabType::Pro) {
-		if (line.size() > 2) return line[2];
-		return -1;
-	} else if (tab == TabType::LegendHero) {
-		if (line.size() > 5) return line[5];
-		return -1;
-	} else {
-		return -1;
-	}
-}
-
 void CWndSkill_16::InitItem_AutoControlClassBtn() {
 	const auto tabs = JobToTabJobs(g_pPlayer->m_nJob);
 
@@ -473,8 +447,11 @@ void CWndSkill_16::InitItem_AutoControlClassBtn() {
 		CWndButton * jobButton = buttons[i];
 		
 		const char * buttonName;
-		if (i < tabs.size()) buttonName = nullptr;
-		else buttonName = GetFileNameClassBtn(static_cast<int>(tabs[i]));
+		if (i < tabs.size()) {
+			buttonName = GetFileNameClassBtn(static_cast<int>(tabs[i]));
+		} else {
+			buttonName = nullptr;
+		}
 
 		if (buttonName) {
 			jobButton->SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, buttonName));
@@ -531,16 +508,6 @@ const char * CWndSkill_16::GetFileNameClassBtn(const int nJob) {
 			Error(__FUNCTION__"(): Unknown job: %d", nJob);
 			return nullptr;
 	}
-}
-
-std::optional<CWndSkill_16::TabType> CWndSkill_16::GetMaxTabFromJob(const int nJob) {
-	if (nJob == JOB_VAGRANT)		return TabType::Vagrant;
-	if (nJob < MAX_EXPERT)			return TabType::Expert;
-	if (nJob < MAX_HERO)				return TabType::Pro;
-	if (nJob < MAX_LEGEND_HERO) return TabType::LegendHero;
-
-	Error(__FUNCTION__"(): Invalid job %d", nJob);
-	return std::nullopt;
 }
 
 HRESULT CWndSkill_16::DeleteDeviceObjects() {

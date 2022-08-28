@@ -164,11 +164,6 @@ protected:
 	std::optional<CRect> GetSkillIconRect(DWORD dwSkillID);
 
 	void	AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);
-	static int GetJobByJobLevel(TabType jobLevel, int currentJob);
-
-	static std::optional<TabType> GetMaxTabFromJob(int Job);
-
-	
 
 private:
 	void InitItem_FillJobNames();
