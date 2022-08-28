@@ -383,7 +383,6 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 	g_SfxMng.RestoreDeviceObjects();
 	g_SfxMeshMng.RestoreDeviceObjects();
 	
-	g_DamageNumMng.RestoreDeviceObjects();
 	g_DialogMsg.RestoreDeviceObjects();
 	
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
@@ -430,7 +429,6 @@ HRESULT CNeuzApp::InvalidateDeviceObjects()
 
 	g_ModelGlobal.InvalidateDeviceObjects( m_pd3dDevice );
 
-	g_DamageNumMng.InvalidateDeviceObjects();
 	g_DialogMsg.InvalidateDeviceObjects();
 	
 	return S_OK;

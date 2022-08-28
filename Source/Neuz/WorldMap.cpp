@@ -739,7 +739,6 @@ void CWorldMap::DeleteWorldMap()
 
 void CWorldMap::DeleteDeviceObjects()
 {
-//	m_pTexWorldMap->DeleteDeviceObjects();
 	m_texArrow[0].DeleteDeviceObjects();
 	m_texArrow[1].DeleteDeviceObjects();
 	m_billArrow[0].DeleteDeviceObjects();
@@ -751,14 +750,10 @@ void CWorldMap::DeleteDeviceObjects()
 
 void CWorldMap::RestoreDeviceObjects()
 {
-//	m_pTexWorldMap->DeleteDeviceObjects();
 	m_texArrow[0].DeleteDeviceObjects();
 	m_billArrow[0].DeleteDeviceObjects();
 	m_texArrow[1].DeleteDeviceObjects();
 	m_billArrow[1].DeleteDeviceObjects();
-	m_texMapButton.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-	m_MonsterInfo.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-	m_RainbowNPC.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
 
 }
 
@@ -766,9 +761,6 @@ void CWorldMap::InvalidateDeviceObjects()
 {
 	m_billArrow[0].InvalidateDeviceObjects();
 	m_billArrow[1].InvalidateDeviceObjects();
-	m_texMapButton.InvalidateDeviceObjects();
-	m_MonsterInfo.InvalidateDeviceObjects();
-	m_RainbowNPC.InvalidateDeviceObjects();
 }
 
 void CWorldMap::OnLButtonDown( )

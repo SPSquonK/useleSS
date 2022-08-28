@@ -58,27 +58,11 @@ HRESULT CDialogMsg::DeleteDeviceObjects()
 }
 HRESULT CDialogMsg::RestoreDeviceObjects()
 {
-	m_texEmoticon.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-
-	m_texPack_ex[0].RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-	m_texPack_ex[1].RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-	m_texPack_ex[2].RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-
-	m_texEmoticonUser.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-	
 	return S_OK;
 }
 
 HRESULT CDialogMsg::InvalidateDeviceObjects()
 {
-	m_texEmoticon.InvalidateDeviceObjects();
-
-	m_texPack_ex[0].InvalidateDeviceObjects();
-	m_texPack_ex[1].InvalidateDeviceObjects();
-	m_texPack_ex[2].InvalidateDeviceObjects();
-
-	m_texEmoticonUser.InvalidateDeviceObjects();
-	
 	return S_OK;
 }
 void CDialogMsg::ClearAllMessage()
