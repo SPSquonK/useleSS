@@ -70,7 +70,6 @@ public:
 	virtual HRESULT DeleteDeviceObjects();
 
 private:
-	[[nodiscard]] bool IsDownPoint(const SKILL & skill) const; // Return true if the skill can be down leveled
 	[[nodiscard]] bool CheckSkill(int i);
 };
 

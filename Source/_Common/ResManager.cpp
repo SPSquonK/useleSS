@@ -102,7 +102,7 @@ BOOL CResManager::Load( LPCTSTR lpszName )
 
 			if (it != pWndApplet->ptrCtrlArray.end()) {
 				CString string;
-				string.Format( "%s¿¡¼­ ID Ãæµ¹ %s ", pWndApplet->strDefine, pWndCtrl->strDefine );
+				string.Format( "%s applet­: ID is duplicated %s ", pWndApplet->strDefine.GetString(), pWndCtrl->strDefine.GetString());
 				AfxMessageBox( string );
 			}
 

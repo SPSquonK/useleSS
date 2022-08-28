@@ -4,6 +4,7 @@
 #include "defineSkill.h"
 #include "defineText.h"
 #include "DPClient.h"
+#include "WndSkill16.h"
 
 /////////////
 
@@ -290,13 +291,6 @@ void CWndSkillTreeEx::SetActiveSlot(int nSlot, BOOL bFlag) {
 			}
 
 			AdjustWndBase();
-}
-
-bool CWndSkillTreeEx::IsDownPoint(const SKILL & skill) const {
-	SKILL * pSkillMy = g_pPlayer->GetSkill(skill.dwSkill);
-	if (!pSkillMy) return false;
-
-	return skill.dwLevel > pSkillMy->dwLevel;
 }
 
 void CWndSkillTreeEx::SubSkillPointDown(SKILL * lpSkill) {
@@ -1332,7 +1326,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 					}
 					break;
 				case WIDC_BUTTON2:	// - ��ư
-					if (curSel && IsDownPoint(*curSel)) {
+					if (curSel && CWndSkill_16::IsSkillHigherThanReal(*curSel)) {
 						m_nCurrSkillPoint += nPoint;
 						--curSel->dwLevel;
 						SubSkillPointDown(curSel);
