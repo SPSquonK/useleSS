@@ -39,6 +39,8 @@ public:
 	[[nodiscard]] int GetCurrSkillPoint() const noexcept { return m_nCurrSkillPoint; }
 	[[nodiscard]] const SKILL * GetFocusedItem() const { return m_pFocusItem; }
 
+	void RenderLevel(C2DRender * p2DRender, CPoint point, DWORD curLevel, DWORD maxLevel, bool isLevelDiff);
+
 	void ResetSkills();
 
 	void OnSkillPointDown(const SKILL & reducedSkill);
@@ -50,8 +52,14 @@ public:
 protected:
 	SKILL * m_pFocusItem = nullptr;
 
+
+
 private:
+	// List of textures of the skills. Accessed with GetTextureOf()
 	boost::container::flat_map<DWORD, CTexture *> m_pTexSkill;
+	
+	// Picture for skill level number display (1, 2, ..., max). Accessed with RenderLevel()
+	CTexturePack m_kTexLevel;
 };
 
 
@@ -62,7 +70,6 @@ protected:
 
 
 	BOOL m_bDrag = FALSE;					//마우스로 클릭했는데 스킬아이콘 영역 안 인 경우 TRUE
-	CTexturePack	m_textPackNum;			//스킬 레벨숫자 표시용 그림 ( 1, 2,..... max )
 	CWndButton * m_pWndButton[4];		//+, -, reset, finish
 
 	CTexture * m_aSkillLevel[3] = { nullptr, nullptr, nullptr };
@@ -88,7 +95,6 @@ public:
 	int		GetCalcImagePos(int nIndex);
 
 	std::optional<CRect> GetSkillPoint(DWORD dwSkillID);
-	void LoadTextureSkillicon();
 	void InitItem();
 
 
@@ -166,7 +172,6 @@ protected:
 
 private:
 	void InitItem_FillJobNames();
-	void InitItem_LoadTextureSkillIcon();
 	void InitItem_AutoControlClassBtn();
 
 private:
@@ -174,8 +179,6 @@ private:
 	TabType m_selectedTab = TabType::Vagrant;
 
 
-	// Picture for skill level number display (1, 2, ..., max)
-	CTexturePack m_kTexLevel;
 
 	// Current skill tree image
 	std::unique_ptr<IMAGE> m_pTexJobPannel = nullptr;
@@ -189,9 +192,6 @@ private:
 
 	// Hero skill image filename
 	const char * m_strHeroSkilBg = "";
-
-	// True if player is >= master
-	bool m_bLegend = false;
 
 	// TRUE if clicked with the mouse is not in the skill icon area
 	bool m_bDrag = false;

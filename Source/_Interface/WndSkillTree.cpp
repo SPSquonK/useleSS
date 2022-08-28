@@ -452,6 +452,9 @@ void CWndSkillTreeCommon::ResetSkills() {
 
 		m_pTexSkill.emplace(skill.dwSkill, texture);
 	}
+
+	m_kTexLevel.DeleteDeviceObjects();
+	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
 }
 
 void CWndSkillTreeCommon::OnSkillPointDown(const SKILL & reducedSkill) {
@@ -485,11 +488,27 @@ void CWndSkillTreeCommon::OnSkillPointDown(const SKILL & reducedSkill) {
 	}
 }
 
+
+///////////////////////////////////////
+
 CTexture * CWndSkillTreeCommon::GetTextureOf(const SKILL & skill) const {
 	return sqktd::find_in_map(m_pTexSkill, skill.dwSkill, nullptr);
 }
 
-//////////////
+void CWndSkillTreeCommon::RenderLevel(
+	C2DRender * p2DRender, CPoint point,
+	DWORD curLevel, DWORD maxLevel, bool isLevelDiff
+) {
+	if (curLevel == 0) return;
+
+	const int offset = isLevelDiff ? 20 : 0;
+	if (curLevel < maxLevel)
+		m_kTexLevel.Render(p2DRender, point, curLevel - 1 + offset);
+	else
+		m_kTexLevel.Render(p2DRender, point, 19 + offset);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void CWndSkillTreeEx::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 	CWndNeuz::SerializeRegInfo(ar, dwVersion);
@@ -808,10 +827,6 @@ void CWndSkillTreeEx::InitItem() {
 
 	}
 	AdjustWndBase();
-
-	// �ҽ� �������� �Է�
-	LoadTextureSkillicon();
-
 }
 
 std::optional<CRect> CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID) {
@@ -871,10 +886,6 @@ std::optional<CRect> CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID) {
 			CSize(24, 24)
 		) + topLeftOfCtrl;
 	}
-}
-
-void CWndSkillTreeEx::LoadTextureSkillicon() {
-	m_textPackNum.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
 }
 
 void CWndSkillTreeEx::OnMouseMove(UINT nFlags, CPoint point) {
@@ -1131,14 +1142,14 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 				rect->top -= 2;
 				rect->OffsetRect(0, m_nTopDownGap);
 				skillTexture->Render(p2DRender, rect->TopLeft(), CPoint(27, 27));
-				int nAddNum = 0;
-				LPSKILL pSkillUser = g_pPlayer->GetSkill(pSkill.dwSkill);
-				if (pSkillUser && pSkill.dwLevel != pSkillUser->dwLevel)
-					nAddNum = 20;
-				if (pSkill.dwLevel < pSkillProp->dwExpertMax)
-					m_textPackNum.Render(p2DRender, rect->TopLeft() - CPoint(2, 2), pSkill.dwLevel - 1 + nAddNum);
-				else
-					m_textPackNum.Render(p2DRender, rect->TopLeft() - CPoint(2, 2), 19 + nAddNum);
+
+				const SKILL * pSkillUser = g_pPlayer->GetSkill(pSkill.dwSkill);
+
+				RenderLevel(
+					p2DRender, rect->TopLeft() - CPoint(2, 2),
+					pSkill.dwLevel, pSkillProp->dwExpertMax,
+					pSkillUser && pSkill.dwLevel != pSkillUser->dwLevel
+				);
 			}
 		} else if (m_dwMouseSkill == dwSkill) {
 			if (std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID)) {
@@ -1162,15 +1173,13 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 
 		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 		if (pSkillProp && m_focusedSkill->dwLevel > 0) {
-			int nAddNum = 0;
-			LPSKILL pSkillUser = g_pPlayer->GetSkill(m_focusedSkill->dwSkill);
-			if (pSkillUser && m_focusedSkill->dwLevel != pSkillUser->dwLevel)
-				nAddNum = 20;
+			const SKILL * pSkillUser = g_pPlayer->GetSkill(m_focusedSkill->dwSkill);
 
-			if (m_focusedSkill->dwLevel < pSkillProp->dwExpertMax)
-				m_textPackNum.Render(p2DRender, lpWndCtrl->rect.TopLeft(), m_focusedSkill->dwLevel - 1 + nAddNum);
-			else
-				m_textPackNum.Render(p2DRender, lpWndCtrl->rect.TopLeft(), 19 + nAddNum);
+			RenderLevel(
+				p2DRender, lpWndCtrl->rect.TopLeft(),
+				m_focusedSkill->dwLevel, pSkillProp->dwExpertMax,
+				pSkillUser && m_focusedSkill->dwLevel != pSkillUser->dwLevel
+			);
 		}
 	}
 

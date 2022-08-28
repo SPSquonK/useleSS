@@ -28,8 +28,6 @@ void CWndSkill_16::OnInitialUpdate() {
 	m_buttonOk    = GetDlgItem<CWndButton>(WIDC_BUTTON_OK);
 	m_buttonReset = GetDlgItem<CWndButton>(WIDC_BUTTON_BACK);
 
-	m_bLegend = g_pPlayer->GetJobType() >= JTYPE_MASTER;
-
 	m_pTexSeletionBack = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "WndPosMark.tga"), 0xffff00ff);
 	assert(m_pTexSeletionBack);
 
@@ -133,7 +131,6 @@ void CWndSkill_16::InitItem() {
 
 	AdjustWndBase();
 
-	InitItem_LoadTextureSkillIcon();
 	InitItem_AutoControlClassBtn();
 
 }
@@ -185,11 +182,6 @@ void CWndSkill_16::InitItem_FillJobNames() {
 	}
 }
 
-void CWndSkill_16::InitItem_LoadTextureSkillIcon() {
-	m_kTexLevel.DeleteDeviceObjects();
-	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
-}
-
 std::optional<CRect> CWndSkill_16::GetSkillIconRect(DWORD dwSkillID) {
 	const auto skillIconInfo = GetSkillIconInfo(dwSkillID);
 	if (!skillIconInfo) return std::nullopt;
@@ -217,7 +209,7 @@ std::optional<CRect> CWndSkill_16::GetSkillIconRect(DWORD dwSkillID) {
 
 //-----------------------------------------------------------------------------
 void CWndSkill_16::OnDraw(C2DRender * p2DRender) {
-	if (m_bLegend && m_strHeroSkilBg) {
+	if (m_strHeroSkilBg) {
 		LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDC_CUSTOM3);
 
 		CPoint point = lpWndCtrl->rect.TopLeft();
@@ -256,16 +248,11 @@ void CWndSkill_16::OnDraw(C2DRender * p2DRender) {
 		if (pSkill.dwLevel > 0) {
 			const SKILL * pSkillUser = g_pPlayer->GetSkill(pSkill.dwSkill);
 
-			int nAddNum = 0;
-			if (pSkillUser && pSkill.dwLevel != pSkillUser->dwLevel)
-				nAddNum = 20;
-
-			if (pSkill.dwLevel != 0) {
-				if (pSkill.dwLevel < pSkillProp->dwExpertMax)
-					m_kTexLevel.Render(p2DRender, skillAnchor - CPoint(2, 2), pSkill.dwLevel - 1 + nAddNum);
-				else
-					m_kTexLevel.Render(p2DRender, skillAnchor - CPoint(2, 2), 19 + nAddNum);
-			}
+			RenderLevel(
+				p2DRender, skillAnchor - CPoint(2, 2),
+				pSkill.dwLevel, pSkillProp->dwExpertMax,
+				pSkillUser && pSkill.dwLevel != pSkillUser->dwLevel
+				);
 		}
 	}
 
@@ -284,17 +271,14 @@ void CWndSkill_16::OnDraw(C2DRender * p2DRender) {
 		const ItemProp * pSkillProp = m_pFocusItem->GetProp();
 		if (!pSkillProp) return;
 
-		if (pSkillProp && 0 < m_pFocusItem->dwLevel) {
-			int nAddNum = 0;
-			LPSKILL pSkillUser = g_pPlayer->GetSkill(m_pFocusItem->dwSkill);
-			if (pSkillUser && m_pFocusItem->dwLevel != pSkillUser->dwLevel)
-				nAddNum = 20;
+		if (pSkillProp && m_pFocusItem->dwLevel > 0) {
+			const SKILL * pSkillUser = g_pPlayer->GetSkill(m_pFocusItem->dwSkill);
 
-			//스킬당 레벨 표시
-			if (m_pFocusItem->dwLevel < pSkillProp->dwExpertMax)
-				m_kTexLevel.Render(p2DRender, lpWndCtrl->rect.TopLeft(), m_pFocusItem->dwLevel - 1 + nAddNum);
-			else
-				m_kTexLevel.Render(p2DRender, lpWndCtrl->rect.TopLeft(), 19 + nAddNum);
+			RenderLevel(
+				p2DRender, lpWndCtrl->rect.TopLeft(),
+				m_pFocusItem->dwLevel, pSkillProp->dwExpertMax,
+				pSkillUser && m_pFocusItem->dwLevel != pSkillUser->dwLevel
+			);
 		}
 
 		//선택한 스킬의 필요sp 출력
