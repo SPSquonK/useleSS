@@ -678,7 +678,6 @@
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
     <ClInclude Include="..\_Interface\WndEquipmentSex.h" />
     <ClInclude Include="..\_Interface\WndRankCmn.h" />
-    <ClInclude Include="..\_Interface\WndSkill16.h" />
     <ClInclude Include="..\_Interface\WndSkillTree.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
     <ClInclude Include="..\_Interface\WndTListBox.hpp" />

@@ -1,19 +1,45 @@
 #pragma once
 
 #include <vector>
+#include <boost/container/flat_map.hpp>
+#include <boost/container/small_vector.hpp>
+#include <optional>
+#include <memory>
+#include <variant>
+
+class CWndSkillTreeCommon : public CWndNeuz {
+public:
+	[[nodiscard]] static bool IsSkillHigherThanReal(const SKILL & windowSkill);
+
+public:
+	enum class SkillStatus { No, Learnable, Usable };
+	[[nodiscard]] SkillStatus GetSkillStatus(const SKILL & skill) const;
+	[[nodiscard]] CTexture * GetTextureOf(const SKILL & skill) const;
+
+	[[nodiscard]] const MoverSkills & GetSkills() const { return m_apSkills; };
+
+	void ResetSkills();
+
+	void OnSkillPointDown(const SKILL & reducedSkill);
+
+public:
+	MoverSkills m_apSkills;
+	int m_nCurrSkillPoint = 0;
+
+private:
+	boost::container::flat_map<DWORD, CTexture *> m_pTexSkill;
+};
 
 
-class CWndSkillTreeEx : public CWndNeuz {
+class CWndSkillTreeEx : public CWndSkillTreeCommon {
 protected:
-	int  m_nCurSelect = -1;			//잉 안쓰고있는데?
-	BOOL m_bDrag = FALSE;					//마우스로 클릭했는데 스킬아이콘 영역 안 인 경우 TRUE
-	int				m_nCurrSkillPoint = 0;		//현재 남은 스킬포인트
-	CTexturePack	m_textPackNum;			//스킬 레벨숫자 표시용 그림 ( 1, 2,..... max )
 	DWORD			m_dwMouseSkill = 0;			//마우스에 위치한 스킬
-	CWndButton * m_pWndButton[4];		//+, -, reset, finish
+	SKILL * m_focusedSkill = nullptr;
 
-	MoverSkills m_skills;				//스킬 목록
-	std::vector<CTexture * > m_skillsTexture;
+
+	BOOL m_bDrag = FALSE;					//마우스로 클릭했는데 스킬아이콘 영역 안 인 경우 TRUE
+	CTexturePack	m_textPackNum;			//스킬 레벨숫자 표시용 그림 ( 1, 2,..... max )
+	CWndButton * m_pWndButton[4];		//+, -, reset, finish
 
 	CTexture * m_aSkillLevel[3] = { nullptr, nullptr, nullptr };
 	IMAGE * m_atexJobPannel[2] = { nullptr, nullptr };
@@ -34,18 +60,15 @@ protected:
 
 public:
 	[[nodiscard]] int GetCurrSkillPoint() const noexcept { return m_nCurrSkillPoint; }
-	void	SubSkillPointDown(SKILL * lpSkill);
 
 	int		GetCalcImagePos(int nIndex);
-	[[nodiscard]] int GetCurSelect() const { return m_nCurSelect; }
-	SKILL * GetFocusedItem() { return GetSkill(m_nCurSelect); }
 
 	BOOL	GetSkillPoint(DWORD dwSkillID, CRect & rect);
-	LPSKILL GetSkill(int i);
 	void LoadTextureSkillicon();
 	void InitItem();
 
-	const MoverSkills & GetSkills() const { return m_skills; };
+
+	[[nodiscard]] const SKILL * GetFocusedSkill() const { return m_focusedSkill; }
 
 	virtual ~CWndSkillTreeEx();
 
@@ -68,9 +91,6 @@ public:
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
-
-private:
-	[[nodiscard]] bool CheckSkill(int i);
 };
 
 
@@ -84,5 +104,103 @@ public:
 	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual void OnDestroy();
+};
+
+
+class CWndSkill_16 : public CWndSkillTreeCommon {
+public:
+	// Utility classes and enums
+
+	enum class SelectedTab : size_t { Vagrant, Expert, Pro, LegendHero };
+
+	struct TabPosition {
+		SelectedTab tab; CPoint point;
+		TabPosition(SelectedTab tab, int x, int y) : tab(tab), point(x, y) {}
+	};
+	struct HeroPosition {};
+	struct MasterPosition {};
+
+	using JobSkillPositionInfo = std::variant<TabPosition, MasterPosition, HeroPosition>;
+
+
+public:
+	// Return the relative icon location in the panel
+	[[nodiscard]] static std::optional<JobSkillPositionInfo> GetSkillIconInfo(DWORD dwSkillID);
+
+	[[nodiscard]] static const char * GetFileNameClassBtn(int nJob);
+	[[nodiscard]] static const char * GetBackgroundFilename(int nJob);
+	[[nodiscard]] static const char * GetHeroBackground(int nJob);
+	[[nodiscard]] static boost::container::static_vector<DWORD, 4> JobToTabJobs(int nJob);
+
+public:
+	CWndSkill_16() = default;
+	~CWndSkill_16() override = default;
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	void OnInitialUpdate() override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	BOOL Process() override;
+	void OnMouseWndSurface(CPoint point) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnMouseMove(UINT nFlags, CPoint point) override;
+	void OnLButtonDown(UINT nFlags, CPoint point) override;
+	void OnLButtonUp(UINT nFlags, CPoint point) override;
+
+	HRESULT DeleteDeviceObjects() override;
+
+//exposed
+	void	InitItem();
+	SKILL * GetdwSkill(DWORD dwSkill);
+
+	void	SubSkillPointDown(LPSKILL lpSkill);
+
+protected:
+	// Return the absolute icon location in the window
+	std::optional<CRect> GetSkillIconRect(DWORD dwSkillID);
+
+	void	AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);
+	static int GetJobByJobLevel(SelectedTab jobLevel, int currentJob);
+
+	static std::optional<SelectedTab> GetMaxTabFromJob(int Job);
+
+	
+
+private:
+	void InitItem_FillJobNames();
+	void InitItem_LoadTextureSkillIcon();
+	void InitItem_AutoControlClassBtn();
+
+private:
+
+	SelectedTab m_selectedTab = SelectedTab::Vagrant;
+
+
+	// Picture for skill level number display (1, 2, ..., max)
+	CTexturePack m_kTexLevel;
+
+
+	SKILL * m_pFocusItem = nullptr;				//Selected item: In other words, a skill item that can be leveled up by double-clicking the skill.
+
+	// Current skill tree image
+	std::unique_ptr<IMAGE> m_pTexJobPannel = nullptr;
+
+	CWndButton * m_buttonPlus = nullptr;
+	CWndButton * m_buttonMinus = nullptr;
+	CWndButton * m_buttonOk = nullptr;
+	CWndButton * m_buttonReset = nullptr;
+
+	DWORD			m_dwMouseSkill = NULL_ID; // Skill hovered by mouse
+
+	// Hero skill image filename
+	const char * m_strHeroSkilBg = "";
+
+	// True if player is >= master
+	bool m_bLegend = false;
+
+	// TRUE if clicked with the mouse is not in the skill icon area
+	bool m_bDrag = false;
+
+	// Background of the selected skill
+	CTexture * m_pTexSeletionBack = nullptr;
 };
 

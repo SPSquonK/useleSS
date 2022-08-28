@@ -4,7 +4,7 @@
 #include "defineSkill.h"
 #include "defineText.h"
 #include "DPClient.h"
-#include "WndSkill16.h"
+#include "sqktd/algorithm.h"
 
 /////////////
 
@@ -35,9 +35,9 @@ BOOL CWndReSkillWarning::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
 
 BOOL CWndReSkillWarning::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	if (nID == WIDC_BTN_YES || message == EN_RETURN) {
-		CWndSkillTreeEx * pSkillTree = (CWndSkillTreeEx *)g_WndMng.GetWndBase(APP_SKILL3);
-		if (pSkillTree)
+		if (CWndSkillTreeCommon * pSkillTree = g_WndMng.GetWndBase<CWndSkillTreeCommon>(APP_SKILL3)) {
 			g_DPlay.SendDoUseSkillPoint(pSkillTree->GetSkills());
+		}
 
 		Destroy();
 	} else if (nID == WIDC_BTN_NO) {
@@ -47,6 +47,95 @@ BOOL CWndReSkillWarning::OnChildNotify(UINT message, UINT nID, LRESULT * pLResul
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+bool CWndSkillTreeCommon::IsSkillHigherThanReal(const SKILL & windowSkill) {
+	const SKILL * realSkill = g_pPlayer->GetSkill(windowSkill.dwSkill);
+	return realSkill && realSkill->dwLevel < windowSkill.dwLevel;
+}
+
+CWndSkillTreeCommon::SkillStatus CWndSkillTreeCommon::GetSkillStatus(const SKILL & pSkill) const {
+	// Is it usable?
+	if (!g_pPlayer) return SkillStatus::No;
+
+	const SKILL * playerSkill = g_pPlayer->GetSkill(pSkill.dwSkill);
+	if (!playerSkill) return SkillStatus::No;
+
+	if (playerSkill->dwLevel > 0) return SkillStatus::Usable;
+
+	// Is it learnable?
+	const ItemProp * pSkillProp = pSkill.GetProp();
+	if (!pSkillProp) return SkillStatus::No;
+
+	if (!g_pPlayer->HasLevelForSkill(*pSkillProp))
+		return SkillStatus::No;
+
+	if (pSkillProp->dwReSkill1 != NULL_ID) {
+		const SKILL * reqSkill = m_apSkills.FindBySkillId(pSkillProp->dwReSkill1);
+		if (!reqSkill || reqSkill->dwLevel < pSkillProp->dwReSkillLevel1) {
+			return SkillStatus::No;
+		}
+	}
+
+	if (pSkillProp->dwReSkill2 != NULL_ID) {
+		const SKILL * reqSkill = m_apSkills.FindBySkillId(pSkillProp->dwReSkill2);
+		if (!reqSkill || reqSkill->dwLevel < pSkillProp->dwReSkillLevel2) {
+			return SkillStatus::No;
+		}
+	}
+
+	return SkillStatus::Learnable;
+}
+
+void CWndSkillTreeCommon::ResetSkills() {
+	m_nCurrSkillPoint = g_pPlayer->m_nSkillPoint;
+	m_apSkills = g_pPlayer->m_jobSkills;
+
+	for (const SKILL & skill : m_apSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
+		if (!pSkillProp) continue;
+
+		CTexture * texture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
+		if (!texture) continue;
+
+		m_pTexSkill.emplace(skill.dwSkill, texture);
+	}
+}
+
+void CWndSkillTreeCommon::OnSkillPointDown(const SKILL & reducedSkill) {
+	for (SKILL & inPlaceSkill : m_apSkills) {
+		const ItemProp * prop = inPlaceSkill.GetProp();
+		if (!prop) continue;
+
+		if (prop->dwReSkill1 == reducedSkill.dwSkill) {
+			if (prop->dwReSkillLevel1) {
+				if (reducedSkill.dwLevel < prop->dwReSkillLevel1) {
+					if (inPlaceSkill.dwLevel > 0) {
+						m_nCurrSkillPoint += (prj.GetSkillPoint(prop) * inPlaceSkill.dwLevel);
+						inPlaceSkill.dwLevel = 0;
+						OnSkillPointDown(inPlaceSkill);
+					}
+				}
+			}
+		}
+
+		if (prop->dwReSkill2 == reducedSkill.dwSkill) {
+			if (prop->dwReSkillLevel2) {
+				if (reducedSkill.dwLevel < prop->dwReSkillLevel2) {
+					if (inPlaceSkill.dwLevel > 0) {
+						m_nCurrSkillPoint += (prj.GetSkillPoint(prop) * inPlaceSkill.dwLevel);
+						inPlaceSkill.dwLevel = 0;
+						OnSkillPointDown(inPlaceSkill);
+					}
+				}
+			}
+		}
+	}
+}
+
+CTexture * CWndSkillTreeCommon::GetTextureOf(const SKILL & skill) const {
+	return sqktd::find_in_map(m_pTexSkill, skill.dwSkill, nullptr);
+}
 
 //////////////
 
@@ -293,84 +382,6 @@ void CWndSkillTreeEx::SetActiveSlot(int nSlot, BOOL bFlag) {
 			AdjustWndBase();
 }
 
-void CWndSkillTreeEx::SubSkillPointDown(SKILL * lpSkill) {
-	for (SKILL & skill : m_skills) {
-		SKILL * pSkill2 = &skill;
-
-		if (pSkill2->GetProp()->dwReSkill1 == lpSkill->dwSkill) {
-			if (pSkill2->GetProp()->dwReSkillLevel1) {
-				if (lpSkill->dwLevel < pSkill2->GetProp()->dwReSkillLevel1) {
-					if (pSkill2->dwLevel > 0) {
-						m_nCurrSkillPoint += (prj.GetSkillPoint(pSkill2->GetProp()) * pSkill2->dwLevel);
-						pSkill2->dwLevel = 0;
-						SubSkillPointDown(pSkill2);
-					}
-				}
-			}
-		}
-
-		if (pSkill2->GetProp()->dwReSkill2 == lpSkill->dwSkill) {
-			if (pSkill2->GetProp()->dwReSkillLevel2) {
-				if (lpSkill->dwLevel < pSkill2->GetProp()->dwReSkillLevel2) {
-					if (pSkill2->dwLevel > 0) {
-						m_nCurrSkillPoint += (prj.GetSkillPoint(pSkill2->GetProp()) * pSkill2->dwLevel);
-						pSkill2->dwLevel = 0;
-						SubSkillPointDown(pSkill2);
-					}
-				}
-			}
-		}
-	}
-}
-
-SKILL * CWndSkillTreeEx::GetSkill(int i) {
-	if (i < 0 || std::cmp_greater_equal(i, m_skills.size())) {
-		return nullptr;
-	}
-
-	return &m_skills[i];
-}
-
-bool CWndSkillTreeEx::CheckSkill(int i) {
-	SKILL * pSkill = GetSkill(i);
-
-	if (!pSkill || !g_pPlayer) return FALSE;
-
-	const DWORD dwSkill = pSkill->dwSkill;
-	const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
-
-	if (pSkillProp == NULL || pSkillProp->nLog == 1)
-		return FALSE;
-
-	const int reqLevel = static_cast<int>(pSkillProp->dwReqDisLV);
-	if (!g_pPlayer->HasLevelForSkill(*pSkillProp)) {
-		return FALSE;
-	}
-
-	if (pSkillProp->dwReSkill1 != 0xffffffff) {
-		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill1);
-
-		if (pSkillBuf) {
-			if (pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel1) {
-				return FALSE;
-			}
-		} else {
-		}
-	}
-
-	if (pSkillProp->dwReSkill2 != 0xffffffff) {
-		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill2);
-		if (pSkillBuf) {
-			if (pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel2) {
-				return FALSE;
-			}
-		} else {
-		}
-	}
-
-	return TRUE;
-}
-
 HRESULT CWndSkillTreeEx::RestoreDeviceObjects() {
 	CWndBase::RestoreDeviceObjects();
 	if (m_pVBGauge == NULL)
@@ -389,26 +400,16 @@ HRESULT CWndSkillTreeEx::DeleteDeviceObjects() {
 	SAFE_DELETE(m_atexJobPannel[0]);
 	SAFE_DELETE(m_atexJobPannel[1]);
 
-	m_skills.clear();
-	m_skillsTexture.clear();
-
 	return S_OK;
 }
 
 void CWndSkillTreeEx::InitItem() {
 	if (!g_pPlayer) return;
 
-	if (g_pPlayer->m_nSkillPoint > 0) {
-		m_nCurrSkillPoint = g_pPlayer->m_nSkillPoint;
-	} else {
-		m_nCurrSkillPoint = 0;
-	}
+	ResetSkills();
+	m_dwMouseSkill = NULL_ID;
+	m_focusedSkill = nullptr;
 
-	m_skills = g_pPlayer->m_jobSkills;
-	m_skillsTexture.clear();
-	m_skillsTexture.resize(m_skills.size(), nullptr);
-
-	m_nCurSelect = -1;
 	m_nJob = g_pPlayer->m_nJob;
 
 	CString strTex[2];
@@ -595,7 +596,6 @@ void CWndSkillTreeEx::InitItem() {
 	// �ҽ� �������� �Է�
 	LoadTextureSkillicon();
 
-	m_dwMouseSkill = NULL_ID;
 }
 BOOL CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID, CRect & rect) {
 	int nExpertGapX = 9;
@@ -844,33 +844,25 @@ BOOL CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID, CRect & rect) {
 }
 
 void CWndSkillTreeEx::LoadTextureSkillicon() {
-	m_skillsTexture.resize(m_skills.size(), nullptr);
-
-	for (size_t i = 0; i != m_skillsTexture.size(); ++i) {
-		const ItemProp * pSkillProp = prj.m_aPropSkill.GetAt(m_skills[i].dwSkill);
-		if (pSkillProp) {
-			m_skillsTexture[i] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
-		}
-	}
-
-
 	m_textPackNum.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
 }
+
 void CWndSkillTreeEx::OnMouseMove(UINT nFlags, CPoint point) {
 	if (m_bDrag == FALSE)
 		return;
 
-	if (CheckSkill(m_nCurSelect)) {
+	if (!m_focusedSkill) return;
+
+	if (GetSkillStatus(*m_focusedSkill) == SkillStatus::Usable) {
 		m_bDrag = FALSE;
-		const DWORD dwSkill = m_skills[m_nCurSelect].dwSkill;
-		const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 
 		m_GlobalShortcut.m_pFromWnd = this;
 		m_GlobalShortcut.m_dwShortcut = ShortcutType::Skill;
-		m_GlobalShortcut.m_dwIndex = dwSkill;
+		m_GlobalShortcut.m_dwIndex = m_focusedSkill->dwSkill;
 		m_GlobalShortcut.m_dwData = 0;
-		m_GlobalShortcut.m_dwId = dwSkill;
-		m_GlobalShortcut.m_pTexture = m_skillsTexture[m_nCurSelect];
+		m_GlobalShortcut.m_dwId = m_focusedSkill->dwSkill;
+		m_GlobalShortcut.m_pTexture = GetTextureOf(*m_focusedSkill);
 		_tcscpy(m_GlobalShortcut.m_szString, pSkillProp->szName);
 	}
 }
@@ -938,18 +930,17 @@ BOOL CWndSkillTreeEx::Process() {
 	m_pWndButton[2]->EnableWindow(FALSE);
 	m_pWndButton[3]->EnableWindow(FALSE);
 
-	SKILL * m_pFocusItem = GetFocusedItem();
-	if (m_pFocusItem && 0 < g_pPlayer->m_nSkillPoint) {
-		LPSKILL lpSkillUser = g_pPlayer->GetSkill(m_pFocusItem->dwSkill);
-		const ItemProp * pSkillProp = m_pFocusItem->GetProp();
+	if (m_focusedSkill && 0 < g_pPlayer->m_nSkillPoint) {
+		LPSKILL lpSkillUser = g_pPlayer->GetSkill(m_focusedSkill->dwSkill);
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 		if (pSkillProp == NULL || lpSkillUser == NULL)
 			return TRUE;
 
 		int nPoint = prj.GetSkillPoint(pSkillProp);
-		if (m_pFocusItem->dwLevel < pSkillProp->dwExpertMax && nPoint <= m_nCurrSkillPoint)
+		if (m_focusedSkill->dwLevel < pSkillProp->dwExpertMax && nPoint <= m_nCurrSkillPoint)
 			m_pWndButton[0]->EnableWindow(TRUE);
 
-		if (m_pFocusItem->dwLevel != lpSkillUser->dwLevel)
+		if (m_focusedSkill->dwLevel != lpSkillUser->dwLevel)
 			m_pWndButton[1]->EnableWindow(TRUE);
 
 		if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint) {
@@ -957,7 +948,6 @@ BOOL CWndSkillTreeEx::Process() {
 			m_pWndButton[3]->EnableWindow(TRUE);
 		}
 
-		pSkillProp = prj.GetSkillProp(m_pFocusItem->dwSkill);
 		if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO) {
 			m_pWndButton[0]->EnableWindow(FALSE);
 			m_pWndButton[1]->EnableWindow(FALSE);
@@ -971,13 +961,8 @@ BOOL CWndSkillTreeEx::Process() {
 void CWndSkillTreeEx::OnMouseWndSurface(CPoint point) {
 	DWORD dwMouseSkill = NULL_ID;
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); i++) {
-		LPSKILL pSkill = GetSkill(i);
-		if (pSkill == NULL)
-			continue;
-		DWORD dwSkill = pSkill->dwSkill;
-
-		ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+	for (SKILL & skill : m_apSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
 
 		if (pSkillProp) {
 			if (!m_bSlot[0]) {
@@ -1001,7 +986,6 @@ void CWndSkillTreeEx::OnMouseWndSurface(CPoint point) {
 			GetCalcImagePos(pSkillProp->dwItemKind1);
 		}
 
-		if (dwSkill != NULL_ID) {
 			CRect rect;
 			if (GetSkillPoint(pSkillProp->dwID, rect)) {
 				rect.top -= 2;
@@ -1010,15 +994,16 @@ void CWndSkillTreeEx::OnMouseWndSurface(CPoint point) {
 				rect.OffsetRect(0, m_nTopDownGap);
 
 				if (rect.PtInRect(point)) {
-					dwMouseSkill = dwSkill;
+					dwMouseSkill = skill.dwSkill;
 
 					ClientToScreen(&point);
 					ClientToScreen(&rect);
-					g_WndMng.PutToolTip_Skill(dwSkill, pSkill->dwLevel, point, &rect, CheckSkill(i));
+					g_WndMng.PutToolTip_Skill(skill.dwSkill, skill.dwLevel, point, &rect, 
+						(GetSkillStatus(skill) != SkillStatus::No) ? TRUE : FALSE
+					);
 					break;
 				}
 			}
-		}
 	}
 	m_dwMouseSkill = dwMouseSkill;
 }
@@ -1110,27 +1095,20 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 		}
 	}
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); i++) {
-		SKILL * pSkill = &m_skills[i];
-		const DWORD dwSkill = pSkill->dwSkill;
+	for (const SKILL & pSkill : m_apSkills) {
+		const DWORD dwSkill = pSkill.dwSkill;
 
-		const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		const ItemProp * pSkillProp = pSkill.GetProp();
 		if (!pSkillProp) continue;
 
-		if (!m_bSlot[0]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-				continue;
-		}
+		if (!m_bSlot[0] && pSkillProp->dwItemKind1 == JTYPE_BASE)
+			continue;
 
-		if (!m_bSlot[1]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-				continue;
-		}
+		if (!m_bSlot[1] && pSkillProp->dwItemKind1 == JTYPE_EXPERT)
+			continue;
 
-		if (!m_bSlot[2]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-				continue;
-		}
+		if (!m_bSlot[2] && pSkillProp->dwItemKind1 == JTYPE_PRO)
+			continue;
 
 		if (!m_bSlot[3]) {
 			if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
@@ -1139,32 +1117,42 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 
 		GetCalcImagePos(pSkillProp->dwItemKind1);
 
-		if (pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
-			// ��ų ������ ���? 
-			if (m_skillsTexture[i] && CheckSkill(i) && 0 < pSkill->dwLevel) {
-				CRect rect;
-				if (GetSkillPoint(pSkillProp->dwID, rect)) {
-					rect.top -= 2;
-					rect.OffsetRect(0, m_nTopDownGap);
-					m_skillsTexture[i]->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
-					int nAddNum = 0;
-					LPSKILL pSkillUser = g_pPlayer->GetSkill(pSkill->dwSkill);
-					if (pSkillUser && pSkill->dwLevel != pSkillUser->dwLevel)
-						nAddNum = 20;
-					if (pSkill->dwLevel < pSkillProp->dwExpertMax)
-						m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), pSkill->dwLevel - 1 + nAddNum);
-					else
-						m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), 19 + nAddNum);
-				}
-			} else if (m_dwMouseSkill == dwSkill && m_skillsTexture[i] && CheckSkill(i)) {
-				CRect rect;
-				if (GetSkillPoint(pSkillProp->dwID, rect)) {
-					rect.top -= 2;
-					rect.OffsetRect(0, m_nTopDownGap);
-					m_skillsTexture[i]->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
-				}
+		if (pSkillProp->nLog == 1) {
+			continue;
+		}
+
+
+		CTexture * skillTexture = GetTextureOf(pSkill);
+		if (!skillTexture) continue;
+
+		const SkillStatus status = GetSkillStatus(pSkill);
+		if (status == SkillStatus::No) continue;
+
+		// ��ų ������ ���? 
+		if (pSkill.dwLevel > 0) {
+			CRect rect;
+			if (GetSkillPoint(pSkillProp->dwID, rect)) {
+				rect.top -= 2;
+				rect.OffsetRect(0, m_nTopDownGap);
+				skillTexture->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
+				int nAddNum = 0;
+				LPSKILL pSkillUser = g_pPlayer->GetSkill(pSkill.dwSkill);
+				if (pSkillUser && pSkill.dwLevel != pSkillUser->dwLevel)
+					nAddNum = 20;
+				if (pSkill.dwLevel < pSkillProp->dwExpertMax)
+					m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), pSkill.dwLevel - 1 + nAddNum);
+				else
+					m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), 19 + nAddNum);
+			}
+		} else if (m_dwMouseSkill == dwSkill) {
+			CRect rect;
+			if (GetSkillPoint(pSkillProp->dwID, rect)) {
+				rect.top -= 2;
+				rect.OffsetRect(0, m_nTopDownGap);
+				skillTexture->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
 			}
 		}
+		
 	}
 
 	CWndStatic * lpWndStatic9 = (CWndStatic *)GetDlgItem(WIDC_STATIC9);
@@ -1173,24 +1161,24 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 	lpWndStatic9->SetTitle(strSP);
 
 	// ���õ� ��ų�� ������ �� â�� ���?
-	SKILL * pFocusItem = GetFocusedItem();
-	if (pFocusItem) {
+	if (m_focusedSkill) {
 		LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDC_CUSTOM1);
-		m_skillsTexture[m_nCurSelect]->Render(p2DRender, lpWndCtrl->rect.TopLeft());
+		GetTextureOf(*m_focusedSkill)->Render(p2DRender, lpWndCtrl->rect.TopLeft());
 
-		ItemProp * pSkillProp = prj.GetSkillProp(pFocusItem->dwSkill);
-		if (pSkillProp && 0 < pFocusItem->dwLevel) {
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
+		if (pSkillProp && m_focusedSkill->dwLevel > 0) {
 			int nAddNum = 0;
-			LPSKILL pSkillUser = g_pPlayer->GetSkill(pFocusItem->dwSkill);
-			if (pSkillUser && pFocusItem->dwLevel != pSkillUser->dwLevel)
+			LPSKILL pSkillUser = g_pPlayer->GetSkill(m_focusedSkill->dwSkill);
+			if (pSkillUser && m_focusedSkill->dwLevel != pSkillUser->dwLevel)
 				nAddNum = 20;
 
-			if (pFocusItem->dwLevel < pSkillProp->dwExpertMax)
-				m_textPackNum.Render(p2DRender, lpWndCtrl->rect.TopLeft(), pFocusItem->dwLevel - 1 + nAddNum);
+			if (m_focusedSkill->dwLevel < pSkillProp->dwExpertMax)
+				m_textPackNum.Render(p2DRender, lpWndCtrl->rect.TopLeft(), m_focusedSkill->dwLevel - 1 + nAddNum);
 			else
 				m_textPackNum.Render(p2DRender, lpWndCtrl->rect.TopLeft(), 19 + nAddNum);
 		}
 	}
+
 	CRect rect;
 	CWndStatic * pStatic;
 	pStatic = (CWndStatic *)GetDlgItem(WIDC_STATIC2);
@@ -1262,7 +1250,7 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 	m_bSlot[2] = TRUE;
 	m_bSlot[3] = TRUE;
 
-	m_nCurSelect = -1;
+	m_focusedSkill = nullptr;
 
 	m_pWndButton[0] = (CWndButton *)GetDlgItem(WIDC_BUTTON1);	// + ��ư
 	m_pWndButton[1] = (CWndButton *)GetDlgItem(WIDC_BUTTON2);	// - ��ư
@@ -1311,32 +1299,31 @@ BOOL CWndSkillTreeEx::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
 	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
 }
 BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
-	SKILL * curSel = GetFocusedItem();
-	if (curSel && g_pPlayer->m_nSkillPoint > 0) {
-		const ItemProp * pSkillProp = curSel->GetProp();
+	if (m_focusedSkill && g_pPlayer->m_nSkillPoint > 0) {
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 		if (pSkillProp) {
 			const int nPoint = prj.GetSkillPoint(pSkillProp);
 			switch (nID) {
 				case WIDC_BUTTON1:	// + ��ư
 					if (nPoint <= m_nCurrSkillPoint) {
-						if (curSel->dwLevel < pSkillProp->dwExpertMax) {
+						if (m_focusedSkill->dwLevel < pSkillProp->dwExpertMax) {
 							m_nCurrSkillPoint -= nPoint;
-							++curSel->dwLevel;
+							++m_focusedSkill->dwLevel;
 						}
 					}
 					break;
 				case WIDC_BUTTON2:	// - ��ư
-					if (curSel && CWndSkill_16::IsSkillHigherThanReal(*curSel)) {
+					if (IsSkillHigherThanReal(*m_focusedSkill)) {
 						m_nCurrSkillPoint += nPoint;
-						--curSel->dwLevel;
-						SubSkillPointDown(curSel);
+						--m_focusedSkill->dwLevel;
+						OnSkillPointDown(*m_focusedSkill);
 					}
 					break;
 				case WIDC_BUTTON3:	// Reset ��ư
 					if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint)
 						InitItem();
 
-					m_nCurSelect = -1;
+					m_focusedSkill = nullptr;
 					break;
 				case WIDC_BUTTON4:	// Finish ��ư
 				{
@@ -1456,38 +1443,34 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 	}
 
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); ++i) {
-		SKILL * pSkill = &m_skills[i];
-		DWORD dwSkill = pSkill->dwSkill;
+	for (SKILL & pSkill : m_apSkills) {
+		const DWORD dwSkill = pSkill.dwSkill;
+		const ItemProp * pSkillProp = pSkill.GetProp();
 
-		ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		if (!pSkillProp) continue;
 
-		if (pSkillProp) {
-			if (!m_bSlot[0]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-					continue;
-			}
-
-			if (!m_bSlot[1]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-					continue;
-			}
-
-			if (!m_bSlot[2]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-					continue;
-			}
-
-			if (!m_bSlot[3]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-					continue;
-			}
-			GetCalcImagePos(pSkillProp->dwItemKind1);
+		if (!m_bSlot[0] && pSkillProp->dwItemKind1 == JTYPE_BASE) {
+			continue;
 		}
 
-		if (pSkillProp && pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
+		if (!m_bSlot[1] && pSkillProp->dwItemKind1 == JTYPE_EXPERT) {
+			continue;
+		}
+
+		if (!m_bSlot[2] && pSkillProp->dwItemKind1 == JTYPE_PRO) {
+			continue;
+		}
+
+		if (!m_bSlot[3]) {
+			if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
+				continue;
+		}
+		GetCalcImagePos(pSkillProp->dwItemKind1);
+
+
+		if (pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
 			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect) && CheckSkill(i)) {
+			if (GetSkillPoint(pSkillProp->dwID, rect) && GetSkillStatus(pSkill) != SkillStatus::No) {
 				rect.top -= 2;
 
 				rect.right = rect.left + 27;
@@ -1496,7 +1479,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 				rect.OffsetRect(0, m_nTopDownGap);
 
 				if (rect.PtInRect(ptMouse)) {
-					m_nCurSelect = i;
+					m_focusedSkill = &pSkill;
 					m_bDrag = TRUE;
 					break;
 				}
@@ -1511,40 +1494,35 @@ void CWndSkillTreeEx::OnRButtonDblClk(UINT nFlags, CPoint point) {
 void CWndSkillTreeEx::OnLButtonDblClk(UINT nFlags, CPoint point) {
 	// ��ųâ���� ����Ŭ���ϸ� �ڵ����� ��ų�ٿ� ��ϵȴ�?.
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); i++) {
-		LPSKILL pSkill = GetSkill(i);
-		if (pSkill == NULL)
+	for (SKILL & pSkill : m_apSkills) {
+		DWORD dwSkill = pSkill.dwSkill;
+
+		const ItemProp * pSkillProp = pSkill.GetProp();
+		if (!pSkillProp) continue;
+
+		if (!m_bSlot[0] && pSkillProp->dwItemKind1 == JTYPE_BASE) {
 			continue;
-		DWORD dwSkill = pSkill->dwSkill;
-
-		ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
-
-		if (pSkillProp) {
-			if (!m_bSlot[0]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-					continue;
-			}
-
-			if (!m_bSlot[1]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-					continue;
-			}
-
-			if (!m_bSlot[2]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-					continue;
-			}
-			if (!m_bSlot[3]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-					continue;
-			}
-
-			GetCalcImagePos(pSkillProp->dwItemKind1);
 		}
 
-		if (pSkillProp && pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
+		if (!m_bSlot[1] && pSkillProp->dwItemKind1 == JTYPE_EXPERT) {
+			continue;
+		}
+
+		if (!m_bSlot[2] && pSkillProp->dwItemKind1 == JTYPE_PRO) {
+			continue;
+		}
+
+		if (!m_bSlot[3]) {
+			if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
+				continue;
+		}
+
+		GetCalcImagePos(pSkillProp->dwItemKind1);
+		
+
+		if (pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
 			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect) && CheckSkill(i)) {
+			if (GetSkillPoint(pSkillProp->dwID, rect) && GetSkillStatus(pSkill) != SkillStatus::Learnable) {
 				rect.top -= 2;
 
 				rect.right = rect.left + 27;
@@ -1555,13 +1533,11 @@ void CWndSkillTreeEx::OnLButtonDblClk(UINT nFlags, CPoint point) {
 				rect.OffsetRect(0, m_nTopDownGap);
 
 				if (rect.PtInRect(ptMouse)) {
-					m_nCurSelect = i;
+					m_focusedSkill = &pSkill;
 
-					if (g_pPlayer->CheckSkill(dwSkill) == FALSE)
-						return;
 					CWndTaskBar * pTaskBar = g_WndMng.m_pWndTaskBar;
 					if (pTaskBar->m_nExecute == 0)		// ��ųť�� ������ �������� ��ϵ�?.
-						pTaskBar->SetSkillQueue(pTaskBar->m_nCurQueueNum, dwSkill, m_skillsTexture[i]);
+						pTaskBar->SetSkillQueue(pTaskBar->m_nCurQueueNum, dwSkill, GetTextureOf(pSkill));
 					break;
 				}
 			}
@@ -1589,6 +1565,4 @@ void CWndSkillTreeEx::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFo
 	pt.y += m_nTopDownGap;
 
 	if (m_atexJobPannel[1] && m_bSlot[2]) PaintTexture(pDest, m_atexJobPannel[1], pt, size);
-
-
 }

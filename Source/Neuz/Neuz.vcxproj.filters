@@ -1855,9 +1855,6 @@
     <ClInclude Include="..\_Common\ScriptDefines.h">
       <Filter>Source Files\_Common\Script</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Interface\WndSkill16.h">
-      <Filter>Source Files\_Interface</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

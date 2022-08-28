@@ -1081,7 +1081,7 @@ BOOL TextCmd_SkillLevel(CScanner & scanner, CPlayer_ * pUser) {
 	const DWORD dwSkillKind	= scanner.GetNumber();
 	const DWORD dwSkillLevel = scanner.GetNumber();
 
-	SKILL * pSkill = pUser->GetSkill( dwSkillKind );
+	SKILL * pSkill = pUser->GetSkill(dwSkillKind);
 	if (!pSkill) return FALSE;
 
 	pSkill->dwLevel = dwSkillLevel;
@@ -1091,46 +1091,32 @@ BOOL TextCmd_SkillLevel(CScanner & scanner, CPlayer_ * pUser) {
 
 	DWORD dwSkillLevel = scanner.GetNumber();
 
-	CWndSkillTreeEx* pSkill = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-	if( pSkill )
-	{
-		int nIndex = pSkill->GetCurSelect();
-		if( nIndex == -1 )
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_CHOICESKILL), NULL, 0xffff0000 );
-			//g_WndMng.PutString( "스킬창에 있는 스킬을 선택하여 주십시요", NULL, 0xffff0000 );
-			return FALSE;
-		}
-		LPSKILL pSkillbuf = pSkill->GetSkill( nIndex );
-		if( pSkillbuf == NULL ) 
-		{
-			g_WndMng.PutString( prj.GetText(TID_GAME_CHOICESKILL), NULL, 0xffff0000 );
-			//g_WndMng.PutString( "스킬창에 있는 스킬을 선택하여 주십시요", NULL, 0xffff0000 );
-			return FALSE;
-		}
-
-		ItemProp* pSkillProp = prj.GetSkillProp( pSkillbuf->dwSkill );
-
-		if( pSkillProp->dwExpertMax < 1 || pSkillProp->dwExpertMax < dwSkillLevel )
-		{
-			char szMessage[MAX_PATH];
-			sprintf ( szMessage, prj.GetText(TID_GAME_SKILLLEVELLIMIT), pSkillProp->szName, pSkillProp->dwExpertMax );
-//			sprintf ( szMessage, "%s' 스킬은 1 ~ %d 로만 레벨을 올릴수 있습니다", pSkillProp->szName, pSkillProp->dwExpertMax );
-
-			g_WndMng.PutString( szMessage, NULL, 0xffff0000 );
-			return FALSE;
-		}
-		char szSkillLevel[MAX_PATH];
-		sprintf( szSkillLevel, prj.GetText(TID_GAME_GAMETEXT001), pSkillbuf->dwSkill, dwSkillLevel );
-		scanner.SetProg( szSkillLevel );		
-		//sprintf( scanner.pBuf, "/스렙 %d %d", pSkillbuf->dwSkill, dwSkillLevel );
-	}
-	else
-	{
-		g_WndMng.PutString( prj.GetText(TID_GAME_CHOICESKILL), NULL, 0xffff0000 );
-//		g_WndMng.PutString( "스킬창에 있는 스킬을 선택하여 주십시요", NULL, 0xffff0000 );
+	CWndSkillTreeEx* pSkillWnd = g_WndMng.GetWndBase<CWndSkillTreeEx>( APP_SKILL3 );
+	if (!pSkillWnd) {
+		g_WndMng.PutString(prj.GetText(TID_GAME_CHOICESKILL), NULL, 0xffff0000);
 		return FALSE;
 	}
+
+	const SKILL * pSkill = pSkillWnd->GetFocusedSkill();
+	if (!pSkill) {
+		g_WndMng.PutString(prj.GetText(TID_GAME_CHOICESKILL), NULL, 0xffff0000);
+		return FALSE;
+	}
+
+	const ItemProp * pSkillProp = pSkill->GetProp();
+
+	if (pSkillProp->dwExpertMax < 1 || pSkillProp->dwExpertMax < dwSkillLevel) {
+		char szMessage[MAX_PATH];
+		sprintf(szMessage, prj.GetText(TID_GAME_SKILLLEVELLIMIT), pSkillProp->szName, pSkillProp->dwExpertMax);
+
+		g_WndMng.PutString(szMessage, NULL, 0xffff0000);
+		return FALSE;
+	}
+
+	char szSkillLevel[MAX_PATH];
+	sprintf(szSkillLevel, prj.GetText(TID_GAME_GAMETEXT001), pSkill->dwSkill, dwSkillLevel);
+	scanner.SetProg(szSkillLevel);
+
 #endif // __CLIENT
 	return TRUE;
 }

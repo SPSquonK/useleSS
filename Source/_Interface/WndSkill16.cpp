@@ -1,6 +1,6 @@
 ﻿#include "StdAfx.h"
 #include "AppDefine.h"
-#include "WndSkill16.h"
+#include "WndSkillTree.h"
 #include "defineSkill.h"
 #include "sqktd/algorithm.h"
 
@@ -130,8 +130,9 @@ void CWndSkill_16::InitItem() {
 	if (!g_pPlayer) return;
 
 	// Reset skills and points
-	m_nCurrSkillPoint = g_pPlayer->m_nSkillPoint;
-	m_apSkills = g_pPlayer->m_jobSkills;
+	ResetSkills();
+	m_pFocusItem = nullptr;
+	m_dwMouseSkill = NULL_ID;
 
 	// 
 	const auto tabs = JobToTabJobs(g_pPlayer->GetJob());
@@ -163,8 +164,6 @@ void CWndSkill_16::InitItem() {
 	InitItem_LoadTextureSkillIcon();
 	InitItem_AutoControlClassBtn();
 
-	m_pFocusItem = nullptr;
-	m_dwMouseSkill = NULL_ID;
 }
 
 void CWndSkill_16::InitItem_FillJobNames() {
@@ -215,61 +214,8 @@ void CWndSkill_16::InitItem_FillJobNames() {
 }
 
 void CWndSkill_16::InitItem_LoadTextureSkillIcon() {
-	for (const SKILL & skill : m_apSkills) {
-		if (skill.dwLevel == NULL_ID) continue; // Should be impossible
-
-		const ItemProp * pSkillProp = skill.GetProp();
-		if (!pSkillProp) continue;
-
-		CTexture * texture = pSkillProp->GetTexture();
-		if (!texture) continue;
-		
-		m_pTexSkill.emplace(skill.dwSkill, texture);
-	}
-
 	m_kTexLevel.DeleteDeviceObjects();
 	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
-}
-
-CWndSkill_16::SkillStatus CWndSkill_16::GetSkillStatus(const SKILL & pSkill) const {
-	// Is it usable?
-	if (!g_pPlayer) return SkillStatus::No;
-
-	const SKILL * playerSkill = g_pPlayer->GetSkill(pSkill.dwSkill);
-	if (!playerSkill) return SkillStatus::No;
-
-	if (playerSkill->dwLevel > 0) return SkillStatus::Usable;
-
-	// Is it learnable?
-	const ItemProp * pSkillProp = pSkill.GetProp();
-	if (!pSkillProp) return SkillStatus::No;
-
-	if (g_pPlayer->GetLevel() < (int)(pSkillProp->dwReqDisLV) && !g_pPlayer->IsMaster() && !g_pPlayer->IsHero())
-		return SkillStatus::No;
-
-	if (pSkillProp->dwReSkill1 != NULL_ID) {
-		const auto reqSkill = std::ranges::find_if(m_apSkills,
-			[&](const SKILL & skill) { return skill.dwSkill == pSkillProp->dwReSkill1; }
-			);
-		if (reqSkill == m_apSkills.end()) return SkillStatus::No;
-
-		if (reqSkill->dwLevel < pSkillProp->dwReSkillLevel1) {
-			return SkillStatus::No;
-		}
-	}
-
-	if (pSkillProp->dwReSkill2 != NULL_ID) {
-		const auto reqSkill = std::ranges::find_if(m_apSkills,
-			[&](const SKILL & skill) { return skill.dwSkill == pSkillProp->dwReSkill2; }
-		);
-		if (reqSkill == m_apSkills.end()) return SkillStatus::No;
-
-		if (reqSkill->dwLevel < pSkillProp->dwReSkillLevel2) {
-			return SkillStatus::No;
-		}
-	}
-
-	return SkillStatus::Learnable;
 }
 
 std::optional<CWndSkill_16::JobSkillPositionInfo> CWndSkill_16::GetSkillIconInfo(const DWORD dwSkillID) {
@@ -580,8 +526,7 @@ void CWndSkill_16::OnDraw(C2DRender * p2DRender) {
 				continue;
 			}
 		}
-
-		CTexture * texture = sqktd::find_in_map(m_pTexSkill, pSkill.dwSkill, nullptr);
+		CTexture * texture = GetTextureOf(pSkill);
 		if (!texture) continue;
 
 		texture->Render(p2DRender, skillAnchor, CPoint(27, 27));
@@ -612,7 +557,7 @@ void CWndSkill_16::OnDraw(C2DRender * p2DRender) {
 	if (m_pFocusItem) {
 		//선택한 스킬 표현슬롯
 		LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDC_CUSTOM1);
-		m_pTexSkill[m_pFocusItem->dwSkill]->Render(p2DRender, lpWndCtrl->rect.TopLeft() - CPoint(0, 2), CPoint(36, 36));
+		GetTextureOf(*m_pFocusItem)->Render(p2DRender, lpWndCtrl->rect.TopLeft() - CPoint(0, 2), CPoint(36, 36));
 
 		const ItemProp * pSkillProp = m_pFocusItem->GetProp();
 		if (!pSkillProp) return;
@@ -772,14 +717,9 @@ void CWndSkill_16::OnMouseMove(UINT nFlags, CPoint point) {
 		m_GlobalShortcut.m_dwIndex = dwSkill;
 		m_GlobalShortcut.m_dwData = 0;
 		m_GlobalShortcut.m_dwId = dwSkill;
-		m_GlobalShortcut.m_pTexture = m_pTexSkill[dwSkill];
+		m_GlobalShortcut.m_pTexture = GetTextureOf(*m_pFocusItem);
 		_tcscpy(m_GlobalShortcut.m_szString, pSkillProp->szName);
 	}
-}
-
-bool CWndSkill_16::IsSkillHigherThanReal(const SKILL & windowSkill) {
-	const SKILL * realSkill = g_pPlayer->GetSkill(windowSkill.dwSkill);
-	return realSkill && realSkill->dwLevel < windowSkill.dwLevel;
 }
 
 void CWndSkill_16::SubSkillPointDown(SKILL * lpSkill) {
