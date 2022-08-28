@@ -141,43 +141,32 @@ void CWndSkill_16::InitItem_FillJobNames() {
 	CWndStatic * const lpWndStatic_C3 = GetDlgItem<CWndStatic>(WIDC_STATIC_C3);
 	CWndStatic * const lpWndStatic_C4 = GetDlgItem<CWndStatic>(WIDC_STATIC_C4);
 
-	const auto jobLine = prj.jobs.GetAllJobsOfLine(g_pPlayer->GetJob());
+	const auto jobTabs = JobToTabJobs(g_pPlayer->GetJob());
 	lpWndStatic_C1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
 
-	if (jobLine.size() > 1) {
-		lpWndStatic_C2->SetTitle(prj.jobs.info[jobLine[1]].szName);
+	if (jobTabs.size() > 1) {
+		lpWndStatic_C2->SetTitle(prj.jobs.info[jobTabs[1]].szName);
 	} else {
-		lpWndStatic_C2->SetTitle("CLOSED");
+		lpWndStatic_C2->SetTitle("");
 	}
 
-	if (jobLine.size() > 2) {
-		lpWndStatic_C3->SetTitle(prj.jobs.info[jobLine[2]].szName);
+	if (jobTabs.size() > 2) {
+		lpWndStatic_C3->SetTitle(prj.jobs.info[jobTabs[2]].szName);
 	} else {
-		lpWndStatic_C3->SetTitle("CLOSED");
+		lpWndStatic_C3->SetTitle("");
 	}
 
-	// 3 = Master
-	// 4 = Hero
-
-	if (jobLine.size() > 5) {
-		lpWndStatic_C4->SetTitle(prj.jobs.info[jobLine[5]].szName);
+	if (jobTabs.size() > 3) {
+		lpWndStatic_C4->SetTitle(prj.jobs.info[jobTabs[3]].szName);
 	} else {
-		lpWndStatic_C4->SetTitle("CLOSED");
+		lpWndStatic_C4->SetTitle("");
 	}
 
 	switch (m_selectedTab) {
-		case TabType::Vagrant:
-			lpWndStatic1->SetTitle(lpWndStatic_C1->GetTitle());
-			break;
-		case TabType::Expert:
-			lpWndStatic1->SetTitle(lpWndStatic_C2->GetTitle());
-			break;
-		case TabType::Pro:
-			lpWndStatic1->SetTitle(lpWndStatic_C3->GetTitle());
-			break;
-		case TabType::LegendHero:
-			lpWndStatic1->SetTitle(lpWndStatic_C4->GetTitle());
-			break;
+		case TabType::Vagrant:		lpWndStatic1->SetTitle(lpWndStatic_C1->GetTitle()); break;
+		case TabType::Expert:			lpWndStatic1->SetTitle(lpWndStatic_C2->GetTitle()); break;
+		case TabType::Pro:				lpWndStatic1->SetTitle(lpWndStatic_C3->GetTitle()); break;
+		case TabType::LegendHero: lpWndStatic1->SetTitle(lpWndStatic_C4->GetTitle()); break;
 	}
 }
 
@@ -293,19 +282,18 @@ void CWndSkill_16::OnDraw(C2DRender * p2DRender) {
 BOOL CWndSkill_16::Process() {
 	if (g_pPlayer == NULL) return FALSE;
 
-	m_buttonPlus ->EnableWindow(FALSE);			//plus
-	m_buttonMinus->EnableWindow(FALSE);			//minus
-	m_buttonOk   ->EnableWindow(FALSE);			//ok
-	m_buttonReset->EnableWindow(FALSE);			//cancel
+	m_buttonPlus ->EnableWindow(FALSE);
+	m_buttonMinus->EnableWindow(FALSE);
+	m_buttonOk   ->EnableWindow(FALSE);
+	m_buttonReset->EnableWindow(FALSE);
 
-
-	if (m_pFocusItem && 0 < g_pPlayer->m_nSkillPoint) {
+	if (m_pFocusItem && g_pPlayer->m_nSkillPoint > 0) {
 		const SKILL * lpSkillUser = g_pPlayer->GetSkill(m_pFocusItem->dwSkill);
 		const ItemProp * pSkillProp = m_pFocusItem->GetProp();
 		if (!pSkillProp || !lpSkillUser)
 			return TRUE;
 
-		int nPoint = prj.GetSkillPoint(pSkillProp);
+		const int nPoint = prj.GetSkillPoint(pSkillProp);
 		if (m_pFocusItem->dwLevel < pSkillProp->dwExpertMax && nPoint <= m_nCurrSkillPoint)
 			m_buttonPlus->EnableWindow(TRUE);
 
@@ -429,6 +417,8 @@ void CWndSkill_16::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dForma
 
 	CPoint pt = lpWndCtrl->rect.TopLeft();
 	pt.y += 26;
+
+	if (m_selectedTab == TabType::Vagrant) pt += CPoint(86, 57);
 
 	if (m_pTexJobPannel) PaintTexture(pDest, m_pTexJobPannel.get(), pt, size);
 }
