@@ -9,10 +9,24 @@
 
 class CWndSkillTreeCommon : public CWndNeuz {
 public:
+	enum class TabType : size_t { Vagrant = 0, Expert = 1, Pro = 2, LegendHero = 3 };
+	
 	[[nodiscard]] static bool IsSkillHigherThanReal(const SKILL & windowSkill);
 	[[nodiscard]] static const char * GetBackgroundFilename(int nJob);
 	[[nodiscard]] static const char * GetHeroBackground(int nJob);
 	[[nodiscard]] static boost::container::static_vector<DWORD, 4> JobToTabJobs(int nJob);
+
+	struct TabPosition {
+		TabType tab; CPoint point;
+		TabPosition(TabType tab, int x, int y) : tab(tab), point(x, y) {}
+	};
+	struct HeroPosition {};
+	struct MasterPosition {};
+
+	using JobSkillPositionInfo = std::variant<TabPosition, MasterPosition, HeroPosition>;
+	
+	// Return the relative icon location in the panel
+	[[nodiscard]] static std::optional<JobSkillPositionInfo> GetSkillIconInfo(DWORD dwSkillID);
 
 public:
 	static void ReInitIfOpen();
@@ -73,7 +87,7 @@ public:
 
 	int		GetCalcImagePos(int nIndex);
 
-	BOOL	GetSkillPoint(DWORD dwSkillID, CRect & rect);
+	std::optional<CRect> GetSkillPoint(DWORD dwSkillID);
 	void LoadTextureSkillicon();
 	void InitItem();
 
@@ -117,23 +131,6 @@ public:
 
 class CWndSkill_16 : public CWndSkillTreeCommon {
 public:
-	// Utility classes and enums
-
-	enum class SelectedTab : size_t { Vagrant, Expert, Pro, LegendHero };
-
-	struct TabPosition {
-		SelectedTab tab; CPoint point;
-		TabPosition(SelectedTab tab, int x, int y) : tab(tab), point(x, y) {}
-	};
-	struct HeroPosition {};
-	struct MasterPosition {};
-
-	using JobSkillPositionInfo = std::variant<TabPosition, MasterPosition, HeroPosition>;
-
-
-public:
-	// Return the relative icon location in the panel
-	[[nodiscard]] static std::optional<JobSkillPositionInfo> GetSkillIconInfo(DWORD dwSkillID);
 
 	[[nodiscard]] static const char * GetFileNameClassBtn(int nJob);
 
@@ -161,9 +158,9 @@ protected:
 	std::optional<CRect> GetSkillIconRect(DWORD dwSkillID);
 
 	void	AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);
-	static int GetJobByJobLevel(SelectedTab jobLevel, int currentJob);
+	static int GetJobByJobLevel(TabType jobLevel, int currentJob);
 
-	static std::optional<SelectedTab> GetMaxTabFromJob(int Job);
+	static std::optional<TabType> GetMaxTabFromJob(int Job);
 
 	
 
@@ -174,7 +171,7 @@ private:
 
 private:
 
-	SelectedTab m_selectedTab = SelectedTab::Vagrant;
+	TabType m_selectedTab = TabType::Vagrant;
 
 
 	// Picture for skill level number display (1, 2, ..., max)

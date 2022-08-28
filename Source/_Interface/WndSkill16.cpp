@@ -39,19 +39,19 @@ void CWndSkill_16::OnInitialUpdate() {
 BOOL CWndSkill_16::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	switch (nID) {
 		case WIDC_BUTTON_C1:
-			m_selectedTab = SelectedTab::Vagrant;
+			m_selectedTab = TabType::Vagrant;
 			InitItem();
 			break;
 		case WIDC_BUTTON_C2:
-			m_selectedTab = SelectedTab::Expert;
+			m_selectedTab = TabType::Expert;
 			InitItem();
 			break;
 		case WIDC_BUTTON_C3:
-			m_selectedTab = SelectedTab::Pro;
+			m_selectedTab = TabType::Pro;
 			InitItem();
 			break;
 		case WIDC_BUTTON_C4:
-			m_selectedTab = SelectedTab::LegendHero;
+			m_selectedTab = TabType::LegendHero;
 			InitItem();
 			break;
 	}
@@ -110,7 +110,7 @@ void CWndSkill_16::InitItem() {
 	const auto tabs = JobToTabJobs(g_pPlayer->GetJob());
 
 	if (static_cast<size_t>(m_selectedTab) >= tabs.size()) {
-		m_selectedTab = SelectedTab::Vagrant;
+		m_selectedTab = TabType::Vagrant;
 	}
 
 	const int selectedJob = static_cast<int>(tabs[static_cast<size_t>(m_selectedTab)]);
@@ -170,16 +170,16 @@ void CWndSkill_16::InitItem_FillJobNames() {
 	}
 
 	switch (m_selectedTab) {
-		case SelectedTab::Vagrant:
+		case TabType::Vagrant:
 			lpWndStatic1->SetTitle(lpWndStatic_C1->GetTitle());
 			break;
-		case SelectedTab::Expert:
+		case TabType::Expert:
 			lpWndStatic1->SetTitle(lpWndStatic_C2->GetTitle());
 			break;
-		case SelectedTab::Pro:
+		case TabType::Pro:
 			lpWndStatic1->SetTitle(lpWndStatic_C3->GetTitle());
 			break;
-		case SelectedTab::LegendHero:
+		case TabType::LegendHero:
 			lpWndStatic1->SetTitle(lpWndStatic_C4->GetTitle());
 			break;
 	}
@@ -188,256 +188,6 @@ void CWndSkill_16::InitItem_FillJobNames() {
 void CWndSkill_16::InitItem_LoadTextureSkillIcon() {
 	m_kTexLevel.DeleteDeviceObjects();
 	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
-}
-
-std::optional<CWndSkill_16::JobSkillPositionInfo> CWndSkill_16::GetSkillIconInfo(const DWORD dwSkillID) {
-	using enum SelectedTab;
-	
-	switch (dwSkillID) {
-		// Vagrant
-		case SI_VAG_ONE_CLEANHIT:   return TabPosition(Vagrant,  94, 149);
-		case SI_VAG_ONE_BRANDISH:   return TabPosition(Vagrant, 144, 149);
-		case SI_VAG_ONE_OVERCUTTER: return TabPosition(Vagrant, 194, 149);
-		// Mercenary
-		case SI_MER_ONE_SPLMASH:				return TabPosition(Expert,  34, 109);
-		case SI_MER_SHIELD_PROTECTION:	return TabPosition(Expert,  34, 161);
-		case SI_MER_ONE_KEENWHEEL:			return TabPosition(Expert,  84,  97);
-		case SI_MER_ONE_BLOODYSTRIKE:		return TabPosition(Expert,  84, 123);
-		case SI_MER_SUP_IMPOWERWEAPON:	return TabPosition(Expert,  84, 175);
-		case SI_MER_SHIELD_PANBARRIER:	return TabPosition(Expert,  84, 149);
-		case SI_MER_ONE_BLINDSIDE:			return TabPosition(Expert, 134,  97);
-		case SI_MER_ONE_REFLEXHIT:			return TabPosition(Expert, 134, 123);
-		case SI_MER_ONE_SNEAKER:				return TabPosition(Expert, 134, 149);
-		case SI_MER_SUP_SMITEAXE:				return TabPosition(Expert, 134, 175);
-		case SI_MER_SUP_BLAZINGSWORD:		return TabPosition(Expert, 134, 201);
-		case SI_MER_ONE_SPECIALHIT:			return TabPosition(Expert, 184,  97);
-		case SI_MER_ONE_GUILOTINE:			return TabPosition(Expert, 184, 123);
-		case SI_MER_SUP_AXEMASTER:			return TabPosition(Expert, 184, 175);
-		case SI_MER_SUP_SWORDMASTER:		return TabPosition(Expert, 184, 201);
-
-		// Knight
-		case SI_KNT_TWOSW_CHARGE:				return TabPosition(Pro,  34, 260 - 138);
-		case SI_KNT_TWOAX_PAINDEALER:		return TabPosition(Pro,  34, 286 - 138);
-		case SI_KNT_SUP_GUARD:					return TabPosition(Pro,  34, 312 - 138);
-		case SI_KNT_TWOSW_EARTHDIVIDER:	return TabPosition(Pro,  84, 260 - 138);
-		case SI_KNT_TWOAX_POWERSTUMP:		return TabPosition(Pro,  84, 286 - 138);
-		case SI_KNT_SUP_RAGE:						return TabPosition(Pro,  84, 312 - 138);
-		case SI_KNT_TWO_POWERSWING:			return TabPosition(Pro, 134, 272 - 138);
-		case SI_KNT_SUP_PAINREFLECTION:	return TabPosition(Pro, 134, 312 - 138);
-
-		// Blade
-		case SI_BLD_DOUBLESW_SILENTSTRIKE:	return TabPosition(Pro,  34, 260 - 138);
-		case SI_BLD_DOUBLEAX_SPRINGATTACK:	return TabPosition(Pro,  34, 286 - 138);
-		case SI_BLD_DOUBLE_ARMORPENETRATE:	return TabPosition(Pro,  34, 312 - 138);
-		case SI_BLD_DOUBLESW_BLADEDANCE:		return TabPosition(Pro,  84, 260 - 138);
-		case SI_BLD_DOUBLEAX_HAWKATTACK:		return TabPosition(Pro,  84, 286 - 138);
-		case SI_BLD_SUP_BERSERK:						return TabPosition(Pro,  84, 312 - 138);
-		case SI_BLD_DOUBLE_CROSSSTRIKE:			return TabPosition(Pro, 134, 272 - 138);
-		case SI_BLD_DOUBLE_SONICBLADE:			return TabPosition(Pro, 134, 312 - 138);
-
-		// Assist
-		case SI_ASS_HEAL_HEALING:					return TabPosition(Expert,  18, 135);
-		case SI_ASS_HEAL_PATIENCE:				return TabPosition(Expert,  64, 109);
-		case SI_ASS_CHEER_QUICKSTEP:			return TabPosition(Expert,  64, 135);
-		case SI_ASS_CHEER_MENTALSIGN:			return TabPosition(Expert,  64, 161);
-		case SI_ASS_KNU_TAMPINGHOLE:			return TabPosition(Expert,  64, 187);
-		case SI_ASS_HEAL_RESURRECTION:		return TabPosition(Expert, 110, 109);
-		case SI_ASS_CHEER_HASTE:					return TabPosition(Expert, 110, 135);
-		case SI_ASS_CHEER_HEAPUP:					return TabPosition(Expert, 110, 161);
-		case SI_ASS_CHEER_STONEHAND:			return TabPosition(Expert, 110, 187);
-		case SI_ASS_CHEER_CIRCLEHEALING:	return TabPosition(Expert, 156, 109);
-		case SI_ASS_CHEER_CATSREFLEX:			return TabPosition(Expert, 156, 135);
-		case SI_ASS_CHEER_BEEFUP:					return TabPosition(Expert, 156, 161);
-		case SI_ASS_KNU_BURSTCRACK:				return TabPosition(Expert, 156, 187);
-		case SI_ASS_HEAL_PREVENTION:			return TabPosition(Expert, 202, 109);
-		case SI_ASS_CHEER_CANNONBALL:			return TabPosition(Expert, 202, 135);
-		case SI_ASS_CHEER_ACCURACY:				return TabPosition(Expert, 202, 161);
-		case SI_ASS_KNU_POWERFIST:				return TabPosition(Expert, 202, 187);
-
-		// Ringmaster
-		case SI_RIN_SUP_PROTECT:						return TabPosition(Pro,  34, 260 - 138);
-		case SI_RIN_SUP_HOLYCROSS:					return TabPosition(Pro,  34, 286 - 138);
-		case SI_RIN_HEAL_GVURTIALLA:				return TabPosition(Pro,  34, 312 - 138);
-		case SI_RIN_SUP_HOLYGUARD:					return TabPosition(Pro,  84, 260 - 138);
-		case SI_RIN_SUP_SPIRITUREFORTUNE:		return TabPosition(Pro,  84, 286 - 138);
-		case SI_RIN_HEAL_HEALRAIN:					return TabPosition(Pro,  84, 312 - 138);
-		case SI_RIN_SQU_GEBURAHTIPHRETH:		return TabPosition(Pro, 134, 272 - 138);
-		case SI_RIN_SUP_MERKABAHANZELRUSHA:	return TabPosition(Pro, 134, 312 - 138);
-
-		// Billposter
-		case SI_BIL_KNU_BELIALSMESHING:		return TabPosition(Pro,  34, 260 - 138);
-		case SI_BIL_PST_ASMODEUS:					return TabPosition(Pro,  34, 286 - 138);
-		case SI_BIL_KNU_BLOODFIST:				return TabPosition(Pro,  84, 260 - 138);
-		case SI_BIL_PST_BARAQIJALESNA:		return TabPosition(Pro,  84, 286 - 138);
-		case SI_BIL_KNU_PIERCINGSERPENT:	return TabPosition(Pro, 134, 260 - 138);
-		case SI_BIL_PST_BGVURTIALBOLD:		return TabPosition(Pro, 134, 286 - 138);
-		case SI_BIL_KNU_SONICHAND:				return TabPosition(Pro, 184, 272 - 138);
-		case SI_BIL_PST_ASALRAALAIKUM:		return TabPosition(Pro, 184, 312 - 138);
-
-		// Magician
-		case SI_MAG_MAG_MENTALSTRIKE:						return TabPosition(Expert,  34,  96);
-		case SI_MAG_MAG_BLINKPOOL: 							return TabPosition(Expert,  34, 148);
-		case SI_MAG_FIRE_BOOMERANG:							return TabPosition(Expert,  84,  96);
-		case SI_MAG_WIND_SWORDWIND:							return TabPosition(Expert,  84, 122);
-		case SI_MAG_WATER_ICEMISSILE:						return TabPosition(Expert,  84, 148);
-		case SI_MAG_ELECTRICITY_LIGHTINGBALL:		return TabPosition(Expert,  84, 174);
-		case SI_MAG_EARTH_SPIKESTONE:						return TabPosition(Expert,  84, 200);
-		case SI_MAG_FIRE_HOTAIR:								return TabPosition(Expert, 134,  96);
-		case SI_MAG_WIND_STRONGWIND:						return TabPosition(Expert, 134, 122);
-		case SI_MAG_WATER_WATERBALL:						return TabPosition(Expert, 134, 148);
-		case SI_MAG_ELECTRICITY_LIGHTINGPARM:		return TabPosition(Expert, 134, 174);
-		case SI_MAG_EARTH_ROCKCRASH:						return TabPosition(Expert, 134, 200);
-		case SI_MAG_FIRE_FIRESTRIKE:						return TabPosition(Expert, 184,  96);
-		case SI_MAG_WIND_WINDCUTTER:						return TabPosition(Expert, 184, 122);
-		case SI_MAG_WATER_SPRINGWATER:					return TabPosition(Expert, 184, 148);
-		case SI_MAG_ELECTRICITY_LIGHTINGSHOCK:	return TabPosition(Expert, 184, 174);
-		case SI_MAG_EARTH_LOOTING:							return TabPosition(Expert, 184, 200);
-
-		// Elementor
-		case SI_ELE_FIRE_FIREBIRD:							return TabPosition(Pro,  34, 234 - 138);
-		case SI_ELE_EARTH_STONESPEAR:						return TabPosition(Pro,  34, 260 - 138);
-		case SI_ELE_WIND_VOID:									return TabPosition(Pro,  34, 286 - 138);
-		case SI_ELE_ELECTRICITY_THUNDERSTRIKE:	return TabPosition(Pro,  34, 312 - 138);
-		case SI_ELE_WATER_ICESHARK:							return TabPosition(Pro,  34, 338 - 138);
-		case SI_ELE_FIRE_BURINGFIELD:						return TabPosition(Pro,  84, 234 - 138);
-		case SI_ELE_EARTH_EARTHQUAKE:						return TabPosition(Pro,  84, 260 - 138);
-		case SI_ELE_WIND_WINDFIELD:							return TabPosition(Pro,  84, 286 - 138);
-		case SI_ELE_ELECTRICITY_ELETRICSHOCK:		return TabPosition(Pro,  84, 312 - 138);
-		case SI_ELE_WATER_POISONCLOUD:					return TabPosition(Pro,  84, 338 - 138);
-		case SI_ELE_MULTY_METEOSHOWER:					return TabPosition(Pro, 134, 246 - 138);
-		case SI_ELE_MULTY_SANDSTORM:						return TabPosition(Pro, 134, 272 - 138);
-		case SI_ELE_MULTY_LIGHTINGSTORM:				return TabPosition(Pro, 134, 298 - 138);
-		case SI_ELE_MULTY_AVALANCHE:						return TabPosition(Pro, 134, 338 - 138);
-		case SI_ELE_FIRE_FIREMASTER:						return TabPosition(Pro, 184, 234 - 138);
-		case SI_ELE_EARTH_EARTHMASTER:					return TabPosition(Pro, 184, 260 - 138);
-		case SI_ELE_WIND_WINDMASTER:						return TabPosition(Pro, 184, 286 - 138);
-		case SI_ELE_ELECTRICITY_LIGHTINGMASTER:	return TabPosition(Pro, 184, 312 - 138);
-		case SI_ELE_WATER_WATERMASTER:					return TabPosition(Pro, 184, 338 - 138);
-		
-		// Psych... Sorcerer :>
-		case SI_PSY_NLG_DEMONOLGY:			return TabPosition(Pro,  34, 260 - 138);
-		case SI_PSY_PSY_PSYCHICBOMB:		return TabPosition(Pro,  34, 286 - 138);
-		case SI_PSY_NLG_CRUCIOSPELL:		return TabPosition(Pro,  34, 312 - 138);
-		case SI_PSY_NLG_SATANOLGY:			return TabPosition(Pro,  84, 260 - 138);
-		case SI_PSY_PSY_SPRITBOMB:			return TabPosition(Pro,  84, 286 - 138);
-		case SI_PSY_PSY_MAXIMUMCRISIS:	return TabPosition(Pro,  84, 312 - 138);
-		case SI_PSY_PSY_PSYCHICWALL:		return TabPosition(Pro, 134, 272 - 138);
-		case SI_PSY_PSY_PSYCHICSQUARE:	return TabPosition(Pro, 134, 312 - 138);
-
-		// Acrobat
-		case SI_ACR_YOYO_PULLING:				return TabPosition(Expert,  34,  97);
-		case SI_ACR_SUP_SLOWSTEP:				return TabPosition(Expert,  34, 123);
-		case SI_ACR_BOW_JUNKBOW:				return TabPosition(Expert,  34, 175);
-		case SI_ACR_SUP_FASTWALKER:			return TabPosition(Expert,  84,  96);
-		case SI_ACR_SUP_YOYOMASTER:			return TabPosition(Expert,  84, 122);
-		case SI_ACR_SUP_BOWMASTER: 			return TabPosition(Expert,  84, 174);
-		case SI_ACR_SUP_DARKILLUSION:		return TabPosition(Expert, 134,  96);
-		case SI_ACR_YOYO_SNITCH:				return TabPosition(Expert, 134, 122);
-		case SI_ACR_YOYO_CROSSLINE:			return TabPosition(Expert, 134, 149);
-		case SI_ACR_BOW_SILENTSHOT:			return TabPosition(Expert, 134, 174);
-		case SI_ACR_BOW_AIMEDSHOT:			return TabPosition(Expert, 134, 200);
-		case SI_ACR_YOYO_ABSOLUTEBLOCK:	return TabPosition(Expert, 184,  96);
-		case SI_ACR_YOYO_DEADLYSWING:		return TabPosition(Expert, 184, 122);
-		case SI_ACR_YOYO_COUNTER:				return TabPosition(Expert, 184, 149);
-		case SI_ACR_BOW_AUTOSHOT:				return TabPosition(Expert, 184, 174);
-		case SI_ACR_BOW_ARROWRAIN:			return TabPosition(Expert, 184, 200);
-
-		// Jester
-		case SI_JST_SUP_POISON:					return TabPosition(Pro,  34, 260 - 138);
-		case SI_JST_SUP_BLEEDING:				return TabPosition(Pro,  34, 286 - 138);
-		case SI_JST_YOYO_ESCAPE:				return TabPosition(Pro,  34, 312 - 138);
-		case SI_JST_YOYO_CRITICALSWING:	return TabPosition(Pro,  84, 260 - 138);
-		case SI_JST_YOYO_BACKSTAB:			return TabPosition(Pro,  84, 286 - 138);
-		case SI_JST_SUP_ABSORB:					return TabPosition(Pro,  84, 312 - 138);
-		case SI_JST_YOYO_VATALSTAB:			return TabPosition(Pro, 134, 272 - 138);
-		case SI_JST_YOYO_HITOFPENYA:		return TabPosition(Pro, 134, 312 - 138);
-
-		// Ranger
-		case SI_RAG_BOW_ICEARROW:				return TabPosition(Pro,  34, 260 - 138);
-		case SI_RAG_BOW_FLAMEARROW:			return TabPosition(Pro,  34, 286 - 138);
-		case SI_RAG_BOW_POISONARROW:		return TabPosition(Pro,  34, 312 - 138);
-		case SI_RAG_SUP_FASTATTACK:			return TabPosition(Pro,  84, 260 - 138);
-		case SI_RAG_BOW_PIRCINGARROW:		return TabPosition(Pro,  84, 286 - 138);
-		case SI_RAG_SUP_NATURE:					return TabPosition(Pro,  84, 312 - 138);
-		case SI_RAG_BOW_TRIPLESHOT:			return TabPosition(Pro, 134, 272 - 138);
-		case SI_RAG_BOW_SILENTARROW:		return TabPosition(Pro, 134, 312 - 138);
-
-		// Master
-		case SI_BLD_MASTER_ONEHANDMASTER:	return MasterPosition{};
-		case SI_KNT_MASTER_TWOHANDMASTER:	return MasterPosition{};
-		case SI_JST_MASTER_YOYOMASTER:		return MasterPosition{};
-		case SI_RAG_MASTER_BOWMASTER:			return MasterPosition{};
-		case SI_ELE_MASTER_INTMASTER:			return MasterPosition{};
-		case SI_PSY_MASTER_INTMASTER:			return MasterPosition{};
-		case SI_BIL_MASTER_KNUCKLEMASTER:	return MasterPosition{};
-		case SI_RIG_MASTER_BLESSING:			return MasterPosition{};
-
-		// Hero
-		case SI_BLD_HERO_DEFFENCE:		return HeroPosition{};
-		case SI_KNT_HERO_DRAWING:			return HeroPosition{};
-		case SI_JST_HERO_SILENCE:			return HeroPosition{};
-		case SI_RAG_HERO_HAWKEYE:			return HeroPosition{};
-		case SI_ELE_HERO_CURSEMIND:		return HeroPosition{};
-		case SI_PSY_HERO_STONE:				return HeroPosition{};
-		case SI_BIL_HERO_DISENCHANT:	return HeroPosition{};
-		case SI_RIG_HERO_RETURN:			return HeroPosition{};
-
-		// Templar
-		case SI_LOD_SUP_PULLING:			return TabPosition(LegendHero,  34, 122);
-		case SI_LOD_ONE_GRANDRAGE:		return TabPosition(LegendHero, 34, 148);
-		case SI_LOD_SUP_HOLYARMOR:		return TabPosition(LegendHero, 34, 174);
-		case SI_LOD_SUP_SCOPESTRIKE:	return TabPosition(LegendHero, 84, 148);
-		case SI_LOD_SUP_ANGER:				return TabPosition(LegendHero, 84, 174);
-		case SI_LOD_ONE_SHILDSTRIKE:	return TabPosition(LegendHero, 134, 148);
-
-		// Stormblade
-		case SI_STORM_DOUBLE_CROSSBLOOD:		return TabPosition(LegendHero, 34, 122);
-		case SI_STORM_SUP_POWERINCREASE:		return TabPosition(LegendHero, 34, 148);
-		case SI_STORM_DOUBLE_STORMBLAST:		return TabPosition(LegendHero, 84, 122);
-		case SI_STORM_DOUBLE_HOLDINGSTORM:	return TabPosition(LegendHero, 84, 148);
-
-		// Windlurker
-		case SI_WIN_SUP_EVASIONINCREASE:		return TabPosition(LegendHero, 34, 122);
-		case SI_WIN_YOYO_MADHURRICANE:			return TabPosition(LegendHero, 34, 148);
-		case SI_WIN_SUP_CONTROLINCREASE:		return TabPosition(LegendHero, 84, 122);
-		case SI_WIN_YOYO_BACKSTEP:					return TabPosition(LegendHero, 84, 148);
-
-		// Crackshooter
-		case SI_CRA_SUP_POWERINCREASE:			return TabPosition(LegendHero,  34, 122);
-		case SI_CRA_CRBOW_RANGESTRIKE:			return TabPosition(LegendHero,  34, 148);
-		case SI_CRA_SUP_CONTROLINCREASE:		return TabPosition(LegendHero,  84, 122);
-		case SI_CRA_SUP_HAWKEYE:						return TabPosition(LegendHero, 134, 122);
-
-		// Florist
-		case SI_FLO_HEAL_DOT:						return TabPosition(LegendHero,  34    , 122 + 13);
-		case SI_FLO_SQU_BLESSSTEP:			return TabPosition(LegendHero,  84 - 4,  96 + 13);
-		case SI_FLO_SQU_BLESSBODY:			return TabPosition(LegendHero,  84 - 4, 122 + 13);
-		case SI_FLO_SQU_BLESSARMOR:			return TabPosition(LegendHero,  84 - 4, 148 + 13);
-		case SI_FLO_CHEER_PATTERS:			return TabPosition(LegendHero,  84 - 4, 174 + 13);
-		case SI_FLO_SUP_ABSOLUTE:				return TabPosition(LegendHero, 134 - 8, 174 + 13);
-
-		// Forcemaster
-		case SI_FOR_SQU_FORCETENACITY:	return TabPosition(LegendHero, 34, 122);
-		case SI_FOR_SQU_FORCEANGER:			return TabPosition(LegendHero, 84, 122);
-		case SI_FOR_SQU_FORCESPEED:			return TabPosition(LegendHero, 34, 148);
-		case SI_FOR_SQU_FORCEMAD:				return TabPosition(LegendHero, 84, 148);
-
-		// Mentalist
-		case SI_MEN_WAN_ATKDECREASE:		return TabPosition(LegendHero, 84 - 4,  96 + 13);
-		case SI_MEN_WAN_FEARSCREAM:			return TabPosition(LegendHero, 34 - 0, 122 + 13);
-		case SI_MEN_WAN_DEFDECREASE:		return TabPosition(LegendHero, 84 - 4, 122 + 13);
-		case SI_MEN_WAN_SPEDECREASE:		return TabPosition(LegendHero, 84 - 4, 148 + 13);
-		case SI_MEN_WAN_DARKNESSLAKE:		return TabPosition(LegendHero, 84 - 4, 174 + 13);
-
-		// Elementor but better
-		case SI_ELE_STF_FINALSPEAR:			return TabPosition(LegendHero, 34, 122);
-		case SI_ELE_STF_COSMICELEMENT:	return TabPosition(LegendHero, 34, 148);
-		case SI_ELE_STF_THUNDERBOLT:		return TabPosition(LegendHero, 84, 122 + 13);
-		case SI_ELE_STF_SLIPPING:				return TabPosition(LegendHero, 84, 148 + 26);
-
-		// Bad skill
-		default:												return std::nullopt;
-	}
 }
 
 std::optional<CRect> CWndSkill_16::GetSkillIconRect(DWORD dwSkillID) {
@@ -703,21 +453,21 @@ void CWndSkill_16::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dForma
 	if (m_pTexJobPannel) PaintTexture(pDest, m_pTexJobPannel.get(), pt, size);
 }
 
-int CWndSkill_16::GetJobByJobLevel(const SelectedTab tab, const int realJob) {
-	if (tab == SelectedTab::Vagrant) {
+int CWndSkill_16::GetJobByJobLevel(const TabType tab, const int realJob) {
+	if (tab == TabType::Vagrant) {
 		return JOB_VAGRANT;
 	}
 
 	const auto line = prj.jobs.GetAllJobsOfLine(realJob);
 	// 0 = Vagrant, 1 = Pro, 2 = Expert, 3 = Master, 4 = Hero, 5 = LegendHero
 
-	if (tab == SelectedTab::Expert) {
+	if (tab == TabType::Expert) {
 		if (line.size() > 1) return line[1];
 		else return -1;
-	} else if (tab == SelectedTab::Pro) {
+	} else if (tab == TabType::Pro) {
 		if (line.size() > 2) return line[2];
 		return -1;
-	} else if (tab == SelectedTab::LegendHero) {
+	} else if (tab == TabType::LegendHero) {
 		if (line.size() > 5) return line[5];
 		return -1;
 	} else {
@@ -754,10 +504,10 @@ void CWndSkill_16::InitItem_AutoControlClassBtn() {
 	}
 
 	switch (m_selectedTab) {
-		case SelectedTab::Vagrant:		buttons[0]->SetCheck(2); break;
-		case SelectedTab::Expert:			buttons[1]->SetCheck(2); break;
-		case SelectedTab::Pro:				buttons[2]->SetCheck(2); break;
-		case SelectedTab::LegendHero: buttons[3]->SetCheck(2); break;
+		case TabType::Vagrant:		buttons[0]->SetCheck(2); break;
+		case TabType::Expert:			buttons[1]->SetCheck(2); break;
+		case TabType::Pro:				buttons[2]->SetCheck(2); break;
+		case TabType::LegendHero: buttons[3]->SetCheck(2); break;
 	}
 }
 
@@ -799,11 +549,11 @@ const char * CWndSkill_16::GetFileNameClassBtn(const int nJob) {
 	}
 }
 
-std::optional<CWndSkill_16::SelectedTab> CWndSkill_16::GetMaxTabFromJob(const int nJob) {
-	if (nJob == JOB_VAGRANT)		return SelectedTab::Vagrant;
-	if (nJob < MAX_EXPERT)			return SelectedTab::Expert;
-	if (nJob < MAX_HERO)				return SelectedTab::Pro;
-	if (nJob < MAX_LEGEND_HERO) return SelectedTab::LegendHero;
+std::optional<CWndSkill_16::TabType> CWndSkill_16::GetMaxTabFromJob(const int nJob) {
+	if (nJob == JOB_VAGRANT)		return TabType::Vagrant;
+	if (nJob < MAX_EXPERT)			return TabType::Expert;
+	if (nJob < MAX_HERO)				return TabType::Pro;
+	if (nJob < MAX_LEGEND_HERO) return TabType::LegendHero;
 
 	Error(__FUNCTION__"(): Invalid job %d", nJob);
 	return std::nullopt;

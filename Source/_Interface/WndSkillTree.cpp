@@ -123,6 +123,255 @@ const char * CWndSkillTreeCommon::GetHeroBackground(const int nJob) {
 	}
 }
 
+std::optional<CWndSkillTreeCommon::JobSkillPositionInfo> CWndSkillTreeCommon::GetSkillIconInfo(const DWORD dwSkillID) {
+	using enum TabType;
+
+	switch (dwSkillID) {
+		// Vagrant
+		case SI_VAG_ONE_CLEANHIT:   return TabPosition(Vagrant, 94, 149);
+		case SI_VAG_ONE_BRANDISH:   return TabPosition(Vagrant, 144, 149);
+		case SI_VAG_ONE_OVERCUTTER: return TabPosition(Vagrant, 194, 149);
+		// Mercenary
+		case SI_MER_ONE_SPLMASH:				return TabPosition(Expert, 34, 109);
+		case SI_MER_SHIELD_PROTECTION:	return TabPosition(Expert, 34, 161);
+		case SI_MER_ONE_KEENWHEEL:			return TabPosition(Expert, 84, 97);
+		case SI_MER_ONE_BLOODYSTRIKE:		return TabPosition(Expert, 84, 123);
+		case SI_MER_SUP_IMPOWERWEAPON:	return TabPosition(Expert, 84, 175);
+		case SI_MER_SHIELD_PANBARRIER:	return TabPosition(Expert, 84, 149);
+		case SI_MER_ONE_BLINDSIDE:			return TabPosition(Expert, 134, 97);
+		case SI_MER_ONE_REFLEXHIT:			return TabPosition(Expert, 134, 123);
+		case SI_MER_ONE_SNEAKER:				return TabPosition(Expert, 134, 149);
+		case SI_MER_SUP_SMITEAXE:				return TabPosition(Expert, 134, 175);
+		case SI_MER_SUP_BLAZINGSWORD:		return TabPosition(Expert, 134, 201);
+		case SI_MER_ONE_SPECIALHIT:			return TabPosition(Expert, 184, 97);
+		case SI_MER_ONE_GUILOTINE:			return TabPosition(Expert, 184, 123);
+		case SI_MER_SUP_AXEMASTER:			return TabPosition(Expert, 184, 175);
+		case SI_MER_SUP_SWORDMASTER:		return TabPosition(Expert, 184, 201);
+
+		// Knight
+		case SI_KNT_TWOSW_CHARGE:				return TabPosition(Pro, 34, 260 - 138);
+		case SI_KNT_TWOAX_PAINDEALER:		return TabPosition(Pro, 34, 286 - 138);
+		case SI_KNT_SUP_GUARD:					return TabPosition(Pro, 34, 312 - 138);
+		case SI_KNT_TWOSW_EARTHDIVIDER:	return TabPosition(Pro, 84, 260 - 138);
+		case SI_KNT_TWOAX_POWERSTUMP:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_KNT_SUP_RAGE:						return TabPosition(Pro, 84, 312 - 138);
+		case SI_KNT_TWO_POWERSWING:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_KNT_SUP_PAINREFLECTION:	return TabPosition(Pro, 134, 312 - 138);
+
+		// Blade
+		case SI_BLD_DOUBLESW_SILENTSTRIKE:	return TabPosition(Pro, 34, 260 - 138);
+		case SI_BLD_DOUBLEAX_SPRINGATTACK:	return TabPosition(Pro, 34, 286 - 138);
+		case SI_BLD_DOUBLE_ARMORPENETRATE:	return TabPosition(Pro, 34, 312 - 138);
+		case SI_BLD_DOUBLESW_BLADEDANCE:		return TabPosition(Pro, 84, 260 - 138);
+		case SI_BLD_DOUBLEAX_HAWKATTACK:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_BLD_SUP_BERSERK:						return TabPosition(Pro, 84, 312 - 138);
+		case SI_BLD_DOUBLE_CROSSSTRIKE:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_BLD_DOUBLE_SONICBLADE:			return TabPosition(Pro, 134, 312 - 138);
+
+		// Assist
+		case SI_ASS_HEAL_HEALING:					return TabPosition(Expert, 18, 135);
+		case SI_ASS_HEAL_PATIENCE:				return TabPosition(Expert, 64, 109);
+		case SI_ASS_CHEER_QUICKSTEP:			return TabPosition(Expert, 64, 135);
+		case SI_ASS_CHEER_MENTALSIGN:			return TabPosition(Expert, 64, 161);
+		case SI_ASS_KNU_TAMPINGHOLE:			return TabPosition(Expert, 64, 187);
+		case SI_ASS_HEAL_RESURRECTION:		return TabPosition(Expert, 110, 109);
+		case SI_ASS_CHEER_HASTE:					return TabPosition(Expert, 110, 135);
+		case SI_ASS_CHEER_HEAPUP:					return TabPosition(Expert, 110, 161);
+		case SI_ASS_CHEER_STONEHAND:			return TabPosition(Expert, 110, 187);
+		case SI_ASS_CHEER_CIRCLEHEALING:	return TabPosition(Expert, 156, 109);
+		case SI_ASS_CHEER_CATSREFLEX:			return TabPosition(Expert, 156, 135);
+		case SI_ASS_CHEER_BEEFUP:					return TabPosition(Expert, 156, 161);
+		case SI_ASS_KNU_BURSTCRACK:				return TabPosition(Expert, 156, 187);
+		case SI_ASS_HEAL_PREVENTION:			return TabPosition(Expert, 202, 109);
+		case SI_ASS_CHEER_CANNONBALL:			return TabPosition(Expert, 202, 135);
+		case SI_ASS_CHEER_ACCURACY:				return TabPosition(Expert, 202, 161);
+		case SI_ASS_KNU_POWERFIST:				return TabPosition(Expert, 202, 187);
+
+		// Ringmaster
+		case SI_RIN_SUP_PROTECT:						return TabPosition(Pro, 34, 260 - 138);
+		case SI_RIN_SUP_HOLYCROSS:					return TabPosition(Pro, 34, 286 - 138);
+		case SI_RIN_HEAL_GVURTIALLA:				return TabPosition(Pro, 34, 312 - 138);
+		case SI_RIN_SUP_HOLYGUARD:					return TabPosition(Pro, 84, 260 - 138);
+		case SI_RIN_SUP_SPIRITUREFORTUNE:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_RIN_HEAL_HEALRAIN:					return TabPosition(Pro, 84, 312 - 138);
+		case SI_RIN_SQU_GEBURAHTIPHRETH:		return TabPosition(Pro, 134, 272 - 138);
+		case SI_RIN_SUP_MERKABAHANZELRUSHA:	return TabPosition(Pro, 134, 312 - 138);
+
+		// Billposter
+		case SI_BIL_KNU_BELIALSMESHING:		return TabPosition(Pro, 34, 260 - 138);
+		case SI_BIL_PST_ASMODEUS:					return TabPosition(Pro, 34, 286 - 138);
+		case SI_BIL_KNU_BLOODFIST:				return TabPosition(Pro, 84, 260 - 138);
+		case SI_BIL_PST_BARAQIJALESNA:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_BIL_KNU_PIERCINGSERPENT:	return TabPosition(Pro, 134, 260 - 138);
+		case SI_BIL_PST_BGVURTIALBOLD:		return TabPosition(Pro, 134, 286 - 138);
+		case SI_BIL_KNU_SONICHAND:				return TabPosition(Pro, 184, 272 - 138);
+		case SI_BIL_PST_ASALRAALAIKUM:		return TabPosition(Pro, 184, 312 - 138);
+
+		// Magician
+		case SI_MAG_MAG_MENTALSTRIKE:						return TabPosition(Expert, 34, 96);
+		case SI_MAG_MAG_BLINKPOOL: 							return TabPosition(Expert, 34, 148);
+		case SI_MAG_FIRE_BOOMERANG:							return TabPosition(Expert, 84, 96);
+		case SI_MAG_WIND_SWORDWIND:							return TabPosition(Expert, 84, 122);
+		case SI_MAG_WATER_ICEMISSILE:						return TabPosition(Expert, 84, 148);
+		case SI_MAG_ELECTRICITY_LIGHTINGBALL:		return TabPosition(Expert, 84, 174);
+		case SI_MAG_EARTH_SPIKESTONE:						return TabPosition(Expert, 84, 200);
+		case SI_MAG_FIRE_HOTAIR:								return TabPosition(Expert, 134, 96);
+		case SI_MAG_WIND_STRONGWIND:						return TabPosition(Expert, 134, 122);
+		case SI_MAG_WATER_WATERBALL:						return TabPosition(Expert, 134, 148);
+		case SI_MAG_ELECTRICITY_LIGHTINGPARM:		return TabPosition(Expert, 134, 174);
+		case SI_MAG_EARTH_ROCKCRASH:						return TabPosition(Expert, 134, 200);
+		case SI_MAG_FIRE_FIRESTRIKE:						return TabPosition(Expert, 184, 96);
+		case SI_MAG_WIND_WINDCUTTER:						return TabPosition(Expert, 184, 122);
+		case SI_MAG_WATER_SPRINGWATER:					return TabPosition(Expert, 184, 148);
+		case SI_MAG_ELECTRICITY_LIGHTINGSHOCK:	return TabPosition(Expert, 184, 174);
+		case SI_MAG_EARTH_LOOTING:							return TabPosition(Expert, 184, 200);
+
+		// Elementor
+		case SI_ELE_FIRE_FIREBIRD:							return TabPosition(Pro, 34, 234 - 138);
+		case SI_ELE_EARTH_STONESPEAR:						return TabPosition(Pro, 34, 260 - 138);
+		case SI_ELE_WIND_VOID:									return TabPosition(Pro, 34, 286 - 138);
+		case SI_ELE_ELECTRICITY_THUNDERSTRIKE:	return TabPosition(Pro, 34, 312 - 138);
+		case SI_ELE_WATER_ICESHARK:							return TabPosition(Pro, 34, 338 - 138);
+		case SI_ELE_FIRE_BURINGFIELD:						return TabPosition(Pro, 84, 234 - 138);
+		case SI_ELE_EARTH_EARTHQUAKE:						return TabPosition(Pro, 84, 260 - 138);
+		case SI_ELE_WIND_WINDFIELD:							return TabPosition(Pro, 84, 286 - 138);
+		case SI_ELE_ELECTRICITY_ELETRICSHOCK:		return TabPosition(Pro, 84, 312 - 138);
+		case SI_ELE_WATER_POISONCLOUD:					return TabPosition(Pro, 84, 338 - 138);
+		case SI_ELE_MULTY_METEOSHOWER:					return TabPosition(Pro, 134, 246 - 138);
+		case SI_ELE_MULTY_SANDSTORM:						return TabPosition(Pro, 134, 272 - 138);
+		case SI_ELE_MULTY_LIGHTINGSTORM:				return TabPosition(Pro, 134, 298 - 138);
+		case SI_ELE_MULTY_AVALANCHE:						return TabPosition(Pro, 134, 338 - 138);
+		case SI_ELE_FIRE_FIREMASTER:						return TabPosition(Pro, 184, 234 - 138);
+		case SI_ELE_EARTH_EARTHMASTER:					return TabPosition(Pro, 184, 260 - 138);
+		case SI_ELE_WIND_WINDMASTER:						return TabPosition(Pro, 184, 286 - 138);
+		case SI_ELE_ELECTRICITY_LIGHTINGMASTER:	return TabPosition(Pro, 184, 312 - 138);
+		case SI_ELE_WATER_WATERMASTER:					return TabPosition(Pro, 184, 338 - 138);
+
+		// Psych... Sorcerer :>
+		case SI_PSY_NLG_DEMONOLGY:			return TabPosition(Pro, 34, 260 - 138);
+		case SI_PSY_PSY_PSYCHICBOMB:		return TabPosition(Pro, 34, 286 - 138);
+		case SI_PSY_NLG_CRUCIOSPELL:		return TabPosition(Pro, 34, 312 - 138);
+		case SI_PSY_NLG_SATANOLGY:			return TabPosition(Pro, 84, 260 - 138);
+		case SI_PSY_PSY_SPRITBOMB:			return TabPosition(Pro, 84, 286 - 138);
+		case SI_PSY_PSY_MAXIMUMCRISIS:	return TabPosition(Pro, 84, 312 - 138);
+		case SI_PSY_PSY_PSYCHICWALL:		return TabPosition(Pro, 134, 272 - 138);
+		case SI_PSY_PSY_PSYCHICSQUARE:	return TabPosition(Pro, 134, 312 - 138);
+
+		// Acrobat
+		case SI_ACR_YOYO_PULLING:				return TabPosition(Expert, 34, 97);
+		case SI_ACR_SUP_SLOWSTEP:				return TabPosition(Expert, 34, 123);
+		case SI_ACR_BOW_JUNKBOW:				return TabPosition(Expert, 34, 175);
+		case SI_ACR_SUP_FASTWALKER:			return TabPosition(Expert, 84, 96);
+		case SI_ACR_SUP_YOYOMASTER:			return TabPosition(Expert, 84, 122);
+		case SI_ACR_SUP_BOWMASTER: 			return TabPosition(Expert, 84, 174);
+		case SI_ACR_SUP_DARKILLUSION:		return TabPosition(Expert, 134, 96);
+		case SI_ACR_YOYO_SNITCH:				return TabPosition(Expert, 134, 122);
+		case SI_ACR_YOYO_CROSSLINE:			return TabPosition(Expert, 134, 149);
+		case SI_ACR_BOW_SILENTSHOT:			return TabPosition(Expert, 134, 174);
+		case SI_ACR_BOW_AIMEDSHOT:			return TabPosition(Expert, 134, 200);
+		case SI_ACR_YOYO_ABSOLUTEBLOCK:	return TabPosition(Expert, 184, 96);
+		case SI_ACR_YOYO_DEADLYSWING:		return TabPosition(Expert, 184, 122);
+		case SI_ACR_YOYO_COUNTER:				return TabPosition(Expert, 184, 149);
+		case SI_ACR_BOW_AUTOSHOT:				return TabPosition(Expert, 184, 174);
+		case SI_ACR_BOW_ARROWRAIN:			return TabPosition(Expert, 184, 200);
+
+		// Jester
+		case SI_JST_SUP_POISON:					return TabPosition(Pro, 34, 260 - 138);
+		case SI_JST_SUP_BLEEDING:				return TabPosition(Pro, 34, 286 - 138);
+		case SI_JST_YOYO_ESCAPE:				return TabPosition(Pro, 34, 312 - 138);
+		case SI_JST_YOYO_CRITICALSWING:	return TabPosition(Pro, 84, 260 - 138);
+		case SI_JST_YOYO_BACKSTAB:			return TabPosition(Pro, 84, 286 - 138);
+		case SI_JST_SUP_ABSORB:					return TabPosition(Pro, 84, 312 - 138);
+		case SI_JST_YOYO_VATALSTAB:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_JST_YOYO_HITOFPENYA:		return TabPosition(Pro, 134, 312 - 138);
+
+		// Ranger
+		case SI_RAG_BOW_ICEARROW:				return TabPosition(Pro, 34, 260 - 138);
+		case SI_RAG_BOW_FLAMEARROW:			return TabPosition(Pro, 34, 286 - 138);
+		case SI_RAG_BOW_POISONARROW:		return TabPosition(Pro, 34, 312 - 138);
+		case SI_RAG_SUP_FASTATTACK:			return TabPosition(Pro, 84, 260 - 138);
+		case SI_RAG_BOW_PIRCINGARROW:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_RAG_SUP_NATURE:					return TabPosition(Pro, 84, 312 - 138);
+		case SI_RAG_BOW_TRIPLESHOT:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_RAG_BOW_SILENTARROW:		return TabPosition(Pro, 134, 312 - 138);
+
+		// Master
+		case SI_BLD_MASTER_ONEHANDMASTER:	return MasterPosition{};
+		case SI_KNT_MASTER_TWOHANDMASTER:	return MasterPosition{};
+		case SI_JST_MASTER_YOYOMASTER:		return MasterPosition{};
+		case SI_RAG_MASTER_BOWMASTER:			return MasterPosition{};
+		case SI_ELE_MASTER_INTMASTER:			return MasterPosition{};
+		case SI_PSY_MASTER_INTMASTER:			return MasterPosition{};
+		case SI_BIL_MASTER_KNUCKLEMASTER:	return MasterPosition{};
+		case SI_RIG_MASTER_BLESSING:			return MasterPosition{};
+
+		// Hero
+		case SI_BLD_HERO_DEFFENCE:		return HeroPosition{};
+		case SI_KNT_HERO_DRAWING:			return HeroPosition{};
+		case SI_JST_HERO_SILENCE:			return HeroPosition{};
+		case SI_RAG_HERO_HAWKEYE:			return HeroPosition{};
+		case SI_ELE_HERO_CURSEMIND:		return HeroPosition{};
+		case SI_PSY_HERO_STONE:				return HeroPosition{};
+		case SI_BIL_HERO_DISENCHANT:	return HeroPosition{};
+		case SI_RIG_HERO_RETURN:			return HeroPosition{};
+
+		// Templar
+		case SI_LOD_SUP_PULLING:			return TabPosition(LegendHero, 34, 122);
+		case SI_LOD_ONE_GRANDRAGE:		return TabPosition(LegendHero, 34, 148);
+		case SI_LOD_SUP_HOLYARMOR:		return TabPosition(LegendHero, 34, 174);
+		case SI_LOD_SUP_SCOPESTRIKE:	return TabPosition(LegendHero, 84, 148);
+		case SI_LOD_SUP_ANGER:				return TabPosition(LegendHero, 84, 174);
+		case SI_LOD_ONE_SHILDSTRIKE:	return TabPosition(LegendHero, 134, 148);
+
+		// Stormblade
+		case SI_STORM_DOUBLE_CROSSBLOOD:		return TabPosition(LegendHero, 34, 122);
+		case SI_STORM_SUP_POWERINCREASE:		return TabPosition(LegendHero, 34, 148);
+		case SI_STORM_DOUBLE_STORMBLAST:		return TabPosition(LegendHero, 84, 122);
+		case SI_STORM_DOUBLE_HOLDINGSTORM:	return TabPosition(LegendHero, 84, 148);
+
+		// Windlurker
+		case SI_WIN_SUP_EVASIONINCREASE:		return TabPosition(LegendHero, 34, 122);
+		case SI_WIN_YOYO_MADHURRICANE:			return TabPosition(LegendHero, 34, 148);
+		case SI_WIN_SUP_CONTROLINCREASE:		return TabPosition(LegendHero, 84, 122);
+		case SI_WIN_YOYO_BACKSTEP:					return TabPosition(LegendHero, 84, 148);
+
+		// Crackshooter
+		case SI_CRA_SUP_POWERINCREASE:			return TabPosition(LegendHero, 34, 122);
+		case SI_CRA_CRBOW_RANGESTRIKE:			return TabPosition(LegendHero, 34, 148);
+		case SI_CRA_SUP_CONTROLINCREASE:		return TabPosition(LegendHero, 84, 122);
+		case SI_CRA_SUP_HAWKEYE:						return TabPosition(LegendHero, 134, 122);
+
+		// Florist
+		case SI_FLO_HEAL_DOT:						return TabPosition(LegendHero, 34, 122 + 13);
+		case SI_FLO_SQU_BLESSSTEP:			return TabPosition(LegendHero, 84 - 4, 96 + 13);
+		case SI_FLO_SQU_BLESSBODY:			return TabPosition(LegendHero, 84 - 4, 122 + 13);
+		case SI_FLO_SQU_BLESSARMOR:			return TabPosition(LegendHero, 84 - 4, 148 + 13);
+		case SI_FLO_CHEER_PATTERS:			return TabPosition(LegendHero, 84 - 4, 174 + 13);
+		case SI_FLO_SUP_ABSOLUTE:				return TabPosition(LegendHero, 134 - 8, 174 + 13);
+
+		// Forcemaster
+		case SI_FOR_SQU_FORCETENACITY:	return TabPosition(LegendHero, 34, 122);
+		case SI_FOR_SQU_FORCEANGER:			return TabPosition(LegendHero, 84, 122);
+		case SI_FOR_SQU_FORCESPEED:			return TabPosition(LegendHero, 34, 148);
+		case SI_FOR_SQU_FORCEMAD:				return TabPosition(LegendHero, 84, 148);
+
+		// Mentalist
+		case SI_MEN_WAN_ATKDECREASE:		return TabPosition(LegendHero, 84 - 4, 96 + 13);
+		case SI_MEN_WAN_FEARSCREAM:			return TabPosition(LegendHero, 34 - 0, 122 + 13);
+		case SI_MEN_WAN_DEFDECREASE:		return TabPosition(LegendHero, 84 - 4, 122 + 13);
+		case SI_MEN_WAN_SPEDECREASE:		return TabPosition(LegendHero, 84 - 4, 148 + 13);
+		case SI_MEN_WAN_DARKNESSLAKE:		return TabPosition(LegendHero, 84 - 4, 174 + 13);
+
+		// Elementor but better
+		case SI_ELE_STF_FINALSPEAR:			return TabPosition(LegendHero, 34, 122);
+		case SI_ELE_STF_COSMICELEMENT:	return TabPosition(LegendHero, 34, 148);
+		case SI_ELE_STF_THUNDERBOLT:		return TabPosition(LegendHero, 84, 122 + 13);
+		case SI_ELE_STF_SLIPPING:				return TabPosition(LegendHero, 84, 148 + 26);
+
+		// Bad skill
+		default:												return std::nullopt;
+	}
+}
 
 ///////////////////////////////////////
 
@@ -564,250 +813,64 @@ void CWndSkillTreeEx::InitItem() {
 	LoadTextureSkillicon();
 
 }
-BOOL CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID, CRect & rect) {
-	int nExpertGapX = 9;
-	int nExpertGapY = 90;
 
-	int nProGapX = 8;
-	int nProGapY = 228;
+std::optional<CRect> CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID) {
+	// Vagrant skills are positioned relatively to a custom
 
-	ItemProp * pPropSkill = prj.GetSkillProp(dwSkillID);
+	if (dwSkillID == SI_VAG_ONE_CLEANHIT) {
+		if (!m_bSlot[0]) return std::nullopt;
 
-	if (pPropSkill) {
-		CPoint pt;
+		CRect rect = GetWndCtrl(WIDC_CUSTOM2)->rect;
+		rect.top += 1;
+		return rect;
+	} else if (dwSkillID == SI_VAG_ONE_BRANDISH) {
+		if (!m_bSlot[0]) return std::nullopt;
 
-		LPWNDCTRL lpWndCtrl;
-		LPWNDCTRL lpWndCtrlUpper = GetWndCtrl(WIDC_STATIC5);
-		LPWNDCTRL lpWndCtrlLower = GetWndCtrl(WIDC_STATIC7);
+		CRect rect = GetWndCtrl(WIDC_CUSTOM3)->rect;
+		rect.top += 1;
+		return rect;
+	} else if (dwSkillID == SI_VAG_ONE_OVERCUTTER) {
+		if (!m_bSlot[0]) return std::nullopt;
 
-		switch (pPropSkill->dwItemKind1) {
-			case JTYPE_BASE: pt = 0; break;
-			case JTYPE_EXPERT: pt = lpWndCtrlUpper->rect.TopLeft(); break;
-			case JTYPE_PRO: pt = lpWndCtrlLower->rect.TopLeft(); break;
-			case JTYPE_MASTER: pt = 0; break;
-			case JTYPE_HERO: pt = 0; break;
-		}
-		int nRectX, nRectY, nJobKind;
-		nRectX = nRectY = 0;
-		nJobKind = MAX_JOBBASE;
-		int nLegendSkill = 0;
-		switch (dwSkillID) {
-			case SI_VAG_ONE_CLEANHIT:
-			{
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM2);
-				rect = lpWndCtrl->rect;
-				rect.top += 1;
-			}
-			break;
-			case SI_VAG_ONE_BRANDISH:
-			{
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM3);
-				rect = lpWndCtrl->rect;
-				rect.top += 1;
-			}
-			break;
-			case SI_VAG_ONE_OVERCUTTER:
-			{
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM4);
-				rect = lpWndCtrl->rect;
-				rect.top += 1;
-			}
-			break;
-			//�Ӽ��ʸ�
-			case SI_MER_ONE_SPLMASH:				nRectX = 34, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SHIELD_PROTECTION:			nRectX = 34, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_KEENWHEEL:				nRectX = 84, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_BLOODYSTRIKE:			nRectX = 84, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SHIELD_PANBARRIER:			nRectX = 84, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_IMPOWERWEAPON:			nRectX = 84, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_BLINDSIDE:				nRectX = 134, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_REFLEXHIT:				nRectX = 134, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_SNEAKER:				nRectX = 134, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_SMITEAXE:				nRectX = 134, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_BLAZINGSWORD:			nRectX = 134, nRectY = 201, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_SPECIALHIT:				nRectX = 184, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_GUILOTINE:				nRectX = 184, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_AXEMASTER:				nRectX = 184, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_SWORDMASTER:			nRectX = 184, nRectY = 201, nJobKind = MAX_EXPERT; break;
-				// ����Ʈ
-			case SI_KNT_TWOSW_CHARGE:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWOAX_PAINDEALER:			nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_SUP_GUARD:					nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWOSW_EARTHDIVIDER:			nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWOAX_POWERSTUMP:			nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_SUP_RAGE:					nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWO_POWERSWING:				nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_SUP_PAINREFLECTION:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				// �����̵�
-			case SI_BLD_DOUBLESW_SILENTSTRIKE:		nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLEAX_SPRINGATTACK:		nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLE_ARMORPENETRATE:		nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLESW_BLADEDANCE:		nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLEAX_HAWKATTACK:		nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_SUP_BERSERK:				nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLE_CROSSSTRIKE:			nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLE_SONICBLADE:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-
-				// ��ý��?	
-			case SI_ASS_HEAL_HEALING:				nRectX = 18, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_HEAL_PATIENCE:				nRectX = 64, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_QUICKSTEP:			nRectX = 64, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_MENTALSIGN:			nRectX = 64, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_KNU_TAMPINGHOLE:			nRectX = 64, nRectY = 187, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_HEAL_RESURRECTION:			nRectX = 110, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_HASTE:				nRectX = 110, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_HEAPUP:				nRectX = 110, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_STONEHAND:			nRectX = 110, nRectY = 187, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_CIRCLEHEALING:		nRectX = 156, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_CATSREFLEX:			nRectX = 156, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_BEEFUP:				nRectX = 156, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_KNU_BURSTCRACK:				nRectX = 156, nRectY = 187, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_HEAL_PREVENTION:			nRectX = 202, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_CANNONBALL:			nRectX = 202, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_ACCURACY:				nRectX = 202, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_KNU_POWERFIST:				nRectX = 202, nRectY = 187, nJobKind = MAX_EXPERT; break;
-				//��������
-			case SI_RIN_SUP_PROTECT:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_HOLYCROSS:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_HEAL_GVURTIALLA:			nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_HOLYGUARD:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_SPIRITUREFORTUNE:		nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_HEAL_HEALRAIN:				nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SQU_GEBURAHTIPHRETH:		nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_MERKABAHANZELRUSHA:		nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				//��������
-			case SI_BIL_KNU_BELIALSMESHING:			nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_ASMODEUS:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_KNU_BLOODFIST:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_BARAQIJALESNA:			nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_KNU_PIERCINGSERPENT:		nRectX = 134, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_BGVURTIALBOLD:			nRectX = 134, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_KNU_SONICHAND:				nRectX = 184, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_ASALRAALAIKUM:			nRectX = 184, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-
-				// ������
-			case SI_MAG_MAG_MENTALSTRIKE:			nRectX = 34, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_MAG_BLINKPOOL: 				nRectX = 34, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_FIRE_BOOMERANG:				nRectX = 84, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WIND_SWORDWIND:				nRectX = 84, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WATER_ICEMISSILE:			nRectX = 84, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_ELECTRICITY_LIGHTINGBALL:	nRectX = 84, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_EARTH_SPIKESTONE:			nRectX = 84, nRectY = 200, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_FIRE_HOTAIR:				nRectX = 134, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WIND_STRONGWIND:			nRectX = 134, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WATER_WATERBALL:			nRectX = 134, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_ELECTRICITY_LIGHTINGPARM:	nRectX = 134, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_EARTH_ROCKCRASH:			nRectX = 134, nRectY = 200, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_FIRE_FIRESTRIKE:			nRectX = 184, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WIND_WINDCUTTER:			nRectX = 184, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WATER_SPRINGWATER:			nRectX = 184, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_ELECTRICITY_LIGHTINGSHOCK:	nRectX = 184, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_EARTH_LOOTING:				nRectX = 184, nRectY = 200, nJobKind = MAX_EXPERT; break;
-				// ��������
-			case SI_ELE_FIRE_FIREBIRD:				nRectX = 34, nRectY = 234, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_EARTH_STONESPEAR:			nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WIND_VOID:					nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_ELECTRICITY_THUNDERSTRIKE:	nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WATER_ICESHARK:				nRectX = 34, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_FIRE_BURINGFIELD:			nRectX = 84, nRectY = 234, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_EARTH_EARTHQUAKE:			nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WIND_WINDFIELD:				nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_ELECTRICITY_ELETRICSHOCK:	nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WATER_POISONCLOUD:			nRectX = 84, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_METEOSHOWER:			nRectX = 134, nRectY = 246, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_SANDSTORM:			nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_LIGHTINGSTORM:		nRectX = 134, nRectY = 298, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_AVALANCHE:			nRectX = 134, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_FIRE_FIREMASTER:			nRectX = 184, nRectY = 234, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_EARTH_EARTHMASTER:			nRectX = 184, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WIND_WINDMASTER:			nRectX = 184, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_ELECTRICITY_LIGHTINGMASTER:	nRectX = 184, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WATER_WATERMASTER:			nRectX = 184, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-				// ����Ű��
-			case SI_PSY_NLG_DEMONOLGY:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_PSYCHICBOMB:			nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_NLG_CRUCIOSPELL:			nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_NLG_SATANOLGY:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_SPRITBOMB:				nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_MAXIMUMCRISIS:			nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_PSYCHICWALL:			nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_PSYCHICSQUARE:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				////////////////////////////////////////////////////////////////////////////////////
-				// ��ũ�κ�
-			case SI_ACR_YOYO_PULLING:				nRectX = 34, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_SLOWSTEP:				nRectX = 34, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_JUNKBOW:				nRectX = 34, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_FASTWALKER:				nRectX = 84, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_YOYOMASTER:				nRectX = 84, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_BOWMASTER: 				nRectX = 84, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_DARKILLUSION:			nRectX = 134, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_SNITCH:				nRectX = 134, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_CROSSLINE:				nRectX = 134, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_SILENTSHOT:				nRectX = 134, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_AIMEDSHOT:				nRectX = 134, nRectY = 200, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_ABSOLUTEBLOCK:			nRectX = 184, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_DEADLYSWING:			nRectX = 184, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_COUNTER:				nRectX = 184, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_AUTOSHOT:				nRectX = 184, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_ARROWRAIN:				nRectX = 184, nRectY = 200, nJobKind = MAX_EXPERT; break;
-				//������
-			case SI_JST_SUP_POISON:					nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_SUP_BLEEDING:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_ESCAPE:				nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_CRITICALSWING:			nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_BACKSTAB:				nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_SUP_ABSORB:					nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_VATALSTAB:				nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_HITOFPENYA:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				//������
-			case SI_RAG_BOW_ICEARROW:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_FLAMEARROW:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_POISONARROW:			nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_SUP_FASTATTACK:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_PIRCINGARROW:			nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_SUP_NATURE:					nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_TRIPLESHOT:				nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_SILENTARROW:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-
-				//������ ��ų
-			case SI_BLD_MASTER_ONEHANDMASTER:		nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_KNT_MASTER_TWOHANDMASTER:		nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_JST_MASTER_YOYOMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_RAG_MASTER_BOWMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_ELE_MASTER_INTMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_PSY_MASTER_INTMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_BIL_MASTER_KNUCKLEMASTER:		nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_RIG_MASTER_BLESSING:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-				//���� ��ų			
-			case SI_BLD_HERO_DEFFENCE:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_KNT_HERO_DRAWING:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_JST_HERO_SILENCE:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_RAG_HERO_HAWKEYE:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_ELE_HERO_CURSEMIND:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_PSY_HERO_STONE:					nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_BIL_HERO_DISENCHANT:			nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_RIG_HERO_RETURN:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			default:
-				return FALSE;
-		}
-
-		if (nJobKind == MAX_EXPERT)
-			rect = CRect(nRectX - nExpertGapX, nRectY - nExpertGapY, nRectX + 24 - nExpertGapX, nRectY + 24 - nExpertGapY);
-		else if (nJobKind == MAX_PROFESSIONAL)
-			rect = CRect(nRectX - nProGapX, nRectY - nProGapY, nRectX + 24 - nProGapX, nRectY + 24 - nProGapY);
-		else if (nJobKind == MAX_MASTER || nJobKind == MAX_HERO) {
-			LPWNDCTRL lpWndCtrl;
-			if (nLegendSkill == 0)
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM5);
-			else if (nLegendSkill == 1)
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM6);
-
-			rect = lpWndCtrl->rect;
-		}
-
-		rect += pt;
+		CRect rect = GetWndCtrl(WIDC_CUSTOM4)->rect;
+		rect.top += 1;
+		return rect;
 	}
-	return TRUE;
+
+	// It's not a vagrant skill. Let's discover where it is.
+
+	const auto where = GetSkillIconInfo(dwSkillID);
+	if (!where) return std::nullopt;
+
+	if (std::holds_alternative<MasterPosition>(*where)) {
+		if (!m_bSlot[3]) return std::nullopt;
+		return GetWndCtrl(WIDC_CUSTOM5)->rect;
+	} else if (std::holds_alternative<HeroPosition>(*where)) {
+		if (!m_bSlot[3]) return std::nullopt;
+		return GetWndCtrl(WIDC_CUSTOM6)->rect;
+	} else {
+		const TabPosition * tabPos = std::get_if<TabPosition>(&*where);
+		if (!tabPos) return std::nullopt; // ??
+
+		if (tabPos->tab == TabType::LegendHero) return std::nullopt; // Not supported by this window
+
+		CPoint topLeftOfCtrl;
+		if (tabPos->tab == TabType::Expert) {
+			if (!m_bSlot[1]) return std::nullopt;
+			topLeftOfCtrl = GetWndCtrl(WIDC_STATIC5)->rect.TopLeft();
+		} else if (tabPos->tab == TabType::Pro) {
+			if (!m_bSlot[2]) return std::nullopt;
+			topLeftOfCtrl = GetWndCtrl(WIDC_STATIC7)->rect.TopLeft();
+		} else {
+			// Should not happen but ok
+			return std::nullopt;
+		}
+
+		return CRect(
+			CPoint(tabPos->point.x - 9, tabPos->point.y - 90),
+			CSize(24, 24)
+		) + topLeftOfCtrl;
+	}
 }
 
 void CWndSkillTreeEx::LoadTextureSkillicon() {
@@ -931,46 +994,26 @@ void CWndSkillTreeEx::OnMouseWndSurface(CPoint point) {
 	for (SKILL & skill : m_apSkills) {
 		const ItemProp * pSkillProp = skill.GetProp();
 
-		if (pSkillProp) {
-			if (!m_bSlot[0]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-					continue;
-			}
+		if (!pSkillProp) continue;
+		GetCalcImagePos(pSkillProp->dwItemKind1);
 
-			if (!m_bSlot[1]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-					continue;
-			}
+		if (std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID)) {
+			rect->top -= 2;
+			rect->right = rect->left + 27;
+			rect->bottom = rect->top + 27;
+			rect->OffsetRect(0, m_nTopDownGap);
 
-			if (!m_bSlot[2]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-					continue;
+			if (rect->PtInRect(point)) {
+				dwMouseSkill = skill.dwSkill;
+
+				ClientToScreen(&point);
+				ClientToScreen(&*rect);
+				g_WndMng.PutToolTip_Skill(skill.dwSkill, skill.dwLevel, point, &*rect, 
+					(GetSkillStatus(skill) != SkillStatus::No) ? TRUE : FALSE
+				);
+				break;
 			}
-			if (!m_bSlot[3]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_HERO)
-					continue;
-			}
-			GetCalcImagePos(pSkillProp->dwItemKind1);
 		}
-
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect)) {
-				rect.top -= 2;
-				rect.right = rect.left + 27;
-				rect.bottom = rect.top + 27;
-				rect.OffsetRect(0, m_nTopDownGap);
-
-				if (rect.PtInRect(point)) {
-					dwMouseSkill = skill.dwSkill;
-
-					ClientToScreen(&point);
-					ClientToScreen(&rect);
-					g_WndMng.PutToolTip_Skill(skill.dwSkill, skill.dwLevel, point, &rect, 
-						(GetSkillStatus(skill) != SkillStatus::No) ? TRUE : FALSE
-					);
-					break;
-				}
-			}
 	}
 	m_dwMouseSkill = dwMouseSkill;
 }
@@ -1057,7 +1100,7 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 			point = rect.TopLeft();
 			point.y -= 2;
 			CTexture * pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
-			if (pTexture != NULL)
+			if (pTexture)
 				pTexture->Render(p2DRender, point, CPoint(27, 27));
 		}
 	}
@@ -1068,19 +1111,6 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 		const ItemProp * pSkillProp = pSkill.GetProp();
 		if (!pSkillProp) continue;
 
-		if (!m_bSlot[0] && pSkillProp->dwItemKind1 == JTYPE_BASE)
-			continue;
-
-		if (!m_bSlot[1] && pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-			continue;
-
-		if (!m_bSlot[2] && pSkillProp->dwItemKind1 == JTYPE_PRO)
-			continue;
-
-		if (!m_bSlot[3]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-				continue;
-		}
 
 		GetCalcImagePos(pSkillProp->dwItemKind1);
 
@@ -1097,26 +1127,24 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 
 		// ��ų ������ ���? 
 		if (pSkill.dwLevel > 0) {
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect)) {
-				rect.top -= 2;
-				rect.OffsetRect(0, m_nTopDownGap);
-				skillTexture->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
+			if (std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID)) {
+				rect->top -= 2;
+				rect->OffsetRect(0, m_nTopDownGap);
+				skillTexture->Render(p2DRender, rect->TopLeft(), CPoint(27, 27));
 				int nAddNum = 0;
 				LPSKILL pSkillUser = g_pPlayer->GetSkill(pSkill.dwSkill);
 				if (pSkillUser && pSkill.dwLevel != pSkillUser->dwLevel)
 					nAddNum = 20;
 				if (pSkill.dwLevel < pSkillProp->dwExpertMax)
-					m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), pSkill.dwLevel - 1 + nAddNum);
+					m_textPackNum.Render(p2DRender, rect->TopLeft() - CPoint(2, 2), pSkill.dwLevel - 1 + nAddNum);
 				else
-					m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), 19 + nAddNum);
+					m_textPackNum.Render(p2DRender, rect->TopLeft() - CPoint(2, 2), 19 + nAddNum);
 			}
 		} else if (m_dwMouseSkill == dwSkill) {
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect)) {
-				rect.top -= 2;
-				rect.OffsetRect(0, m_nTopDownGap);
-				skillTexture->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
+			if (std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID)) {
+				rect->top -= 2;
+				rect->OffsetRect(0, m_nTopDownGap);
+				skillTexture->Render(p2DRender, rect->TopLeft(), CPoint(27, 27));
 			}
 		}
 		
@@ -1416,36 +1444,23 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 
 		if (!pSkillProp) continue;
 
-		if (!m_bSlot[0] && pSkillProp->dwItemKind1 == JTYPE_BASE) {
-			continue;
-		}
 
-		if (!m_bSlot[1] && pSkillProp->dwItemKind1 == JTYPE_EXPERT) {
-			continue;
-		}
-
-		if (!m_bSlot[2] && pSkillProp->dwItemKind1 == JTYPE_PRO) {
-			continue;
-		}
-
-		if (!m_bSlot[3]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-				continue;
-		}
 		GetCalcImagePos(pSkillProp->dwItemKind1);
 
 
-		if (pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect) && GetSkillStatus(pSkill) != SkillStatus::No) {
-				rect.top -= 2;
+		if (pSkillProp->nLog != 1) {
+			std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID);
+			if (!rect) continue;
 
-				rect.right = rect.left + 27;
-				rect.bottom = rect.top + 27;
+			if (GetSkillStatus(pSkill) != SkillStatus::No) {
+				rect->top -= 2;
 
-				rect.OffsetRect(0, m_nTopDownGap);
+				rect->right = rect->left + 27;
+				rect->bottom = rect->top + 27;
 
-				if (rect.PtInRect(ptMouse)) {
+				rect->OffsetRect(0, m_nTopDownGap);
+
+				if (rect->PtInRect(ptMouse)) {
 					m_focusedSkill = &pSkill;
 					m_bDrag = TRUE;
 					break;
@@ -1461,49 +1476,35 @@ void CWndSkillTreeEx::OnRButtonDblClk(UINT nFlags, CPoint point) {
 void CWndSkillTreeEx::OnLButtonDblClk(UINT nFlags, CPoint point) {
 	// ��ųâ���� ����Ŭ���ϸ� �ڵ����� ��ų�ٿ� ��ϵȴ�?.
 
+	CPoint ptMouse = GetMousePoint();
+
 	for (SKILL & pSkill : m_apSkills) {
 		DWORD dwSkill = pSkill.dwSkill;
 
 		const ItemProp * pSkillProp = pSkill.GetProp();
 		if (!pSkillProp) continue;
 
-		if (!m_bSlot[0] && pSkillProp->dwItemKind1 == JTYPE_BASE) {
-			continue;
-		}
-
-		if (!m_bSlot[1] && pSkillProp->dwItemKind1 == JTYPE_EXPERT) {
-			continue;
-		}
-
-		if (!m_bSlot[2] && pSkillProp->dwItemKind1 == JTYPE_PRO) {
-			continue;
-		}
-
-		if (!m_bSlot[3]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-				continue;
-		}
-
 		GetCalcImagePos(pSkillProp->dwItemKind1);
 		
 
-		if (pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect) && GetSkillStatus(pSkill) != SkillStatus::Learnable) {
-				rect.top -= 2;
+		if (pSkillProp->nLog != 1) {
+			std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID);
+			if (!rect) continue;
 
-				rect.right = rect.left + 27;
-				rect.bottom = rect.top + 27;
+			if (GetSkillStatus(pSkill) != SkillStatus::Learnable) {
+				rect->top -= 2;
 
-				CPoint ptMouse = GetMousePoint();
+				rect->right = rect->left + 27;
+				rect->bottom = rect->top + 27;
 
-				rect.OffsetRect(0, m_nTopDownGap);
 
-				if (rect.PtInRect(ptMouse)) {
+				rect->OffsetRect(0, m_nTopDownGap);
+
+				if (rect->PtInRect(ptMouse)) {
 					m_focusedSkill = &pSkill;
 
 					CWndTaskBar * pTaskBar = g_WndMng.m_pWndTaskBar;
-					if (pTaskBar->m_nExecute == 0)		// ��ųť�� ������ �������� ��ϵ�?.
+					if (pTaskBar->m_nExecute == 0)
 						pTaskBar->SetSkillQueue(pTaskBar->m_nCurQueueNum, dwSkill, GetTextureOf(pSkill));
 					break;
 				}
