@@ -108,8 +108,13 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 						
 						if(g_pMoveMark!=NULL) g_pMoveMark->m_pSfxObj->m_nCurFrame=180;
 						CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_MOVEMARK01,pWndWorld->m_vTelePos);
+					} else if (pSkill->dwSkill == SI_WIN_YOYO_BACKSTEP) {
+						if (pWorld->IntersectObjLine(NULL, vStart, vEnd, FALSE, FALSE) == TRUE) {
+							g_WndMng.m_pWndWorld->SetNextSkill(NEXTSKILL_NONE);
+							g_WndMng.PutString(TID_GAME_BLOCKTARGETING);
+							break;
+						}
 					}
-					
 
 					// 뒤에서 공격가능한 스킬인지 판단한다
 					// 강탈 스킬은 뒤에서 사용가능(일단 클라에서 판정하자~)

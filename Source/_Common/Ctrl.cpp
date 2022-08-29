@@ -1176,7 +1176,7 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 					}
 					
 					// 상대방을 끌어당긴다
-					if( pSkillProp->dwID == SI_ACR_YOYO_PULLING )
+					if( pSkillProp->dwID == SI_ACR_YOYO_PULLING || pSkillProp->dwID == SI_LOD_SUP_PULLING )
 					{
 						if( pAddSkillProp && pAddSkillProp->nDestData1[2] != NULL_ID )
 						{

@@ -714,6 +714,10 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 			m_nAtkCnt = 1;						// 빗자루 딜레이를 위한 공격 카운터 시작.
 		}
 
+		if (dwSkill == SI_WIN_YOYO_BACKSTEP) {
+			Replace(*pTarget, REPLACE_NORMAL);
+		}
+
 		// DST param이 적용되는 스킬은 여기서 적용함.
 		g_UserMng.AddUseSkill( this, dwSkill, nLevel, idFocusObj, sutType, nCastingTime );
 	#endif	// __WORLDSERVER
