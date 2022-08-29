@@ -91,6 +91,20 @@ const char * CWndSkillTreeCommon::GetBackgroundFilename(const int nJob) {
 	}
 }
 
+std::unique_ptr<IMAGE> CWndSkillTreeCommon::GetBackgroundImage(const int nJob) {
+	const char * background = GetBackgroundFilename(nJob);
+	if (!background) return nullptr;
+
+	std::unique_ptr<IMAGE> image = std::make_unique<IMAGE>();
+
+	if (LoadImage(MakePath(DIR_THEME, background), image.get()) == FALSE) {
+		Error("Could not load skill background %s (job %d)", background, nJob);
+		return nullptr;
+	}
+
+	return image;
+}
+
 const char * CWndSkillTreeCommon::GetHeroBackground(const int nJob) {
 	// Master Skill is 1 Lv from the start, so the background image is excluded from skill icon image.
 	switch (nJob) {
@@ -764,8 +778,8 @@ HRESULT CWndSkillTreeEx::DeleteDeviceObjects() {
 	CWndBase::DeleteDeviceObjects();
 	SAFE_RELEASE(m_pVBGauge);
 
-	SAFE_DELETE(m_atexJobPannel[0]);
-	SAFE_DELETE(m_atexJobPannel[1]);
+	m_aTexJobPannelExpert = nullptr;
+	m_aTexJobPannelPro = nullptr;
 
 	return S_OK;
 }
@@ -777,55 +791,31 @@ void CWndSkillTreeEx::InitItem() {
 	m_dwMouseSkill = NULL_ID;
 	m_focusedSkill = nullptr;
 
-	m_nJob = g_pPlayer->m_nJob;
-
-	CString strTex[2];
-
 	CWndStatic * lpWndStatic1 = GetDlgItem<CWndStatic>(WIDC_STATIC2);
 	lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
 
-
-	const auto jobTabs = JobToTabJobs(m_nJob);
+	const auto jobTabs = JobToTabJobs(g_pPlayer->m_nJob);
 
 	CWndStatic * lpWndStatic2 = GetDlgItem<CWndStatic>(WIDC_STATIC3);
 	if (jobTabs.size() < 2) {
-		strTex[0] = "";
+		m_aTexJobPannelExpert = nullptr;
 		lpWndStatic2->SetTitle("");
 	} else {
-		const char * bg = GetBackgroundFilename(jobTabs[1]);
-		strTex[0] = bg ? bg : "";
+		m_aTexJobPannelExpert = GetBackgroundImage(jobTabs[1]);
 		lpWndStatic2->SetTitle(prj.jobs.info[jobTabs[1]].szName);
 	}
 
 	CWndStatic * lpWndStatic3 = (CWndStatic *)GetDlgItem(WIDC_STATIC6);
 	if (jobTabs.size() < 3) {
-		strTex[1] = "";
+		m_aTexJobPannelPro = nullptr;
 		lpWndStatic3->SetTitle("");
 	} else {
-		const char * bg = GetBackgroundFilename(jobTabs[2]);
-		strTex[1] = bg ? bg : "";
+		m_aTexJobPannelPro = GetBackgroundImage(jobTabs[2]);
 		lpWndStatic3->SetTitle(prj.jobs.info[jobTabs[2]].szName);
 	}
 
-	m_strHeroSkilBg = GetHeroBackground(m_nJob);
+	m_strHeroSkilBg = GetHeroBackground(g_pPlayer->m_nJob);
 
-	
-	SAFE_DELETE(m_atexJobPannel[0]);
-	SAFE_DELETE(m_atexJobPannel[1]);
-
-	if (!strTex[0].IsEmpty()) {
-		m_atexJobPannel[0] = new IMAGE;
-		if (LoadImage(MakePath(DIR_THEME, strTex[0]), m_atexJobPannel[0]) == FALSE)
-			Error("CWndSkillTreeEx::InitItem���� %s Open1 ����", strTex[0]);
-
-	}
-
-	if (!strTex[1].IsEmpty()) {
-		m_atexJobPannel[1] = new IMAGE;
-		if (LoadImage(MakePath(DIR_THEME, strTex[1]), m_atexJobPannel[1]) == FALSE)
-			Error("CWndSkillTreeEx::InitItem���� %s Open1 ����", strTex[1]);
-
-	}
 	AdjustWndBase();
 }
 
@@ -1356,9 +1346,6 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-void CWndSkillTreeEx::SetJob(int nJob) {
-	m_nJob = nJob;
-}
 void CWndSkillTreeEx::OnLButtonUp(UINT nFlags, CPoint point) {
 	m_bDrag = FALSE;
 }
@@ -1478,9 +1465,6 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 		}
 	}
 }
-void CWndSkillTreeEx::OnRButtonDblClk(UINT nFlags, CPoint point) {
-
-}
 
 void CWndSkillTreeEx::OnLButtonDblClk(UINT nFlags, CPoint point) {
 	// ��ųâ���� ����Ŭ���ϸ� �ڵ����� ��ų�ٿ� ��ϵȴ�?.
@@ -1533,7 +1517,9 @@ void CWndSkillTreeEx::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFo
 	GetCalcImagePos(JTYPE_EXPERT);
 	pt.y += m_nTopDownGap;
 
-	if (m_atexJobPannel[0] && m_bSlot[1]) PaintTexture(pDest, m_atexJobPannel[0], pt, size);
+	if (m_aTexJobPannelExpert && m_bSlot[1]) {
+		PaintTexture(pDest, m_aTexJobPannelExpert.get(), pt, size);
+	}
 
 	lpWndCtrl = GetWndCtrl(WIDC_STATIC7);
 	pt = lpWndCtrl->rect.TopLeft() + pt2;
@@ -1541,5 +1527,7 @@ void CWndSkillTreeEx::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFo
 	pt.y += 2;
 	pt.y += m_nTopDownGap;
 
-	if (m_atexJobPannel[1] && m_bSlot[2]) PaintTexture(pDest, m_atexJobPannel[1], pt, size);
+	if (m_aTexJobPannelPro && m_bSlot[2]) {
+		PaintTexture(pDest, m_aTexJobPannelPro.get(), pt, size);
+	}
 }

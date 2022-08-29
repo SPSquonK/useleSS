@@ -116,18 +116,7 @@ void CWndSkill_16::InitItem() {
 	InitItem_FillJobNames();
 
 	m_strHeroSkilBg = GetHeroBackground(g_pPlayer->GetJob());
-
-	const char * background = GetBackgroundFilename(selectedJob);
-	if (background != nullptr) {
-		m_pTexJobPannel = std::make_unique<IMAGE>();
-		const bool ok = LoadImage(MakePath(DIR_THEME, background), m_pTexJobPannel.get());
-		if (!ok) {
-			Error(__FUNCTION__"(): Could not load panel background %s", background);
-			m_pTexJobPannel = nullptr;
-		}
-	} else {
-		m_pTexJobPannel = nullptr;
-	}
+	m_pTexJobPannel = GetBackgroundImage(selectedJob);
 
 	AdjustWndBase();
 

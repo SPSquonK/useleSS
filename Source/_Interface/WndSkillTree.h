@@ -13,6 +13,7 @@ public:
 	
 	[[nodiscard]] static bool IsSkillHigherThanReal(const SKILL & windowSkill);
 	[[nodiscard]] static const char * GetBackgroundFilename(int nJob);
+	[[nodiscard]] static std::unique_ptr<IMAGE> GetBackgroundImage(int nJob);
 	[[nodiscard]] static const char * GetHeroBackground(int nJob);
 	[[nodiscard]] static boost::container::static_vector<DWORD, 4> JobToTabJobs(int nJob);
 
@@ -73,9 +74,9 @@ protected:
 	CWndButton * m_pWndButton[4];		//+, -, reset, finish
 
 	CTexture * m_aSkillLevel[3] = { nullptr, nullptr, nullptr };
-	IMAGE * m_atexJobPannel[2] = { nullptr, nullptr };
+	std::unique_ptr<IMAGE> m_aTexJobPannelExpert = nullptr;
+	std::unique_ptr<IMAGE> m_aTexJobPannelPro    = nullptr;
 	const char * m_strHeroSkilBg = nullptr;			//히어로 이미지 파일 이름
-	int m_nJob = -1;			//class 번호
 
 	CTexture m_texGauEmptyNormal;
 	CTexture m_texGauFillNormal;
@@ -101,7 +102,7 @@ public:
 	[[nodiscard]] const SKILL * GetFocusedSkill() const { return m_focusedSkill; }
 
 	void AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);
-	void SetJob(int nJob);
+	// void SetJob(int nJob);
 	virtual BOOL Process();
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
@@ -113,7 +114,6 @@ public:
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual void OnLButtonDblClk(UINT nFlags, CPoint point);
-	virtual void OnRButtonDblClk(UINT nFlags, CPoint point);
 	void SetActiveSlot(int nSlot, BOOL bFlag);
 	virtual void SerializeRegInfo(CAr & ar, DWORD & dwVersion);
 	virtual HRESULT RestoreDeviceObjects();
