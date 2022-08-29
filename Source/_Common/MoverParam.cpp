@@ -1468,8 +1468,8 @@ void CMover::SetDestParam( int nDstParameter, int nAdjParameterValue, int nChgPa
 			m_chgParamAry[nDstParameter] = nChgParameterValue;		// ������ �ɷ����� ���ӽð�		// %HP�� ȸ���ɲ���.
 			break;
 		case DST_HEAL:
-			m_nHealCnt	= (short)( PROCESS_COUNT * 6.0f );		// ��Ÿ�� 6��
-			m_adjParamAry[nDstParameter]	+= nAdjParameterValue;	
+			m_nHealCnt	= PROCESS_COUNT * 2;		// ��Ÿ�� 6��
+			m_adjParamAry[nDstParameter] = nAdjParameterValue;	
 			break;
 		default:
 			m_adjParamAry[nDstParameter] += nAdjParameterValue;		// ����

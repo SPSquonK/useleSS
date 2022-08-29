@@ -1068,12 +1068,10 @@ void CMover::ProcessAbnormalState()
 
 		if( m_nHealCnt == 0 )
 		{
-			// HP가 30% 이하로 내려갔을 시, 정해진 수치만큼 HP가 채워진다. 쿨타임 6초
-//			if( IsLive() && GetHitPointPercent( 100 ) <= 30 )
 			if( IsLive() )
 			{
-				m_nHealCnt	= (short)( PROCESS_COUNT * 6.0f );		// 쿨타임 6초
-				SetPointParam( DST_HP, nHeal );
+				m_nHealCnt	= PROCESS_COUNT * 2;		// 쿨타임 6초
+				IncHitPoint(nHeal);
 			}
 		}
 	}
