@@ -88,6 +88,7 @@ FLOAT	CProject::m_fSkillExpRate = 1.0f;
 DWORD	CProject::m_dwVagSP = 1;				// ����� ��ų�� �������� �ʿ��� SP����Ʈ
 DWORD	CProject::m_dwExpertSP = 2;				// 1������ ��ų�� �������� �ʿ��� SP����Ʈ
 DWORD	CProject::m_dwProSP = 3;				// 2������ ��ų�� �������� �ʿ��� SP����Ʈ
+DWORD CProject::m_dwLegendSP = 4;
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4326,6 +4327,8 @@ DWORD CProject::GetSkillPoint(const ItemProp * pSkillProp) const {
 		case JTYPE_PRO:
 		default:
 			return m_dwProSP;
+		case JTYPE_LEGEND_HERO:
+			return m_dwLegendSP;
 		case JTYPE_MASTER:
 		case JTYPE_HERO:
 			return 0;

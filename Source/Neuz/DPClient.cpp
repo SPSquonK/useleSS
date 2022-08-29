@@ -2963,7 +2963,7 @@ void CDPClient::OnSetExperience( OBJID objid, CAr & ar )
 	ar >> nSkillLevel >> nSkillPoint >> nDeathExp >> wDeathLevel;
 
 	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) )
+	if( IsValidObj( pMover ) )
 	{
 		pMover->SetExperience( nExp1, (int)wLevel );
 		if( nDeathExp != static_cast<EXPINTEGER>( -1 ) )

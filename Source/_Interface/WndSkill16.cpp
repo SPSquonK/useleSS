@@ -60,10 +60,7 @@ BOOL CWndSkill_16::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 
 			switch (nID) {
 				case WIDC_BUTTON_PLUS:
-					if (m_nCurrSkillPoint >= nPoint && m_pFocusItem->dwLevel < pSkillProp->dwExpertMax) {
-						m_nCurrSkillPoint -= nPoint;
-						++m_pFocusItem->dwLevel;
-					}
+					OnSkillPointUp();
 					break;
 
 				case WIDC_BUTTON_MINUS:

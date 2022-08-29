@@ -471,6 +471,27 @@ void CWndSkillTreeCommon::ResetSkills() {
 	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
 }
 
+void CWndSkillTreeCommon::OnSkillPointUp() {
+	if (!m_pFocusItem) return;
+
+	const ItemProp * prop = m_pFocusItem->GetProp();
+	if (!prop) return;
+
+	const int nPoint = prj.GetSkillPoint(prop);
+	if (nPoint == 0) return;
+
+	const bool loop = g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->m_bShiftPushed;
+
+	do {
+		if (nPoint <= m_nCurrSkillPoint && m_pFocusItem->dwLevel < prop->dwExpertMax) {
+			m_nCurrSkillPoint -= nPoint;
+			++m_pFocusItem->dwLevel;
+		} else {
+			break;
+		}
+	} while (loop);
+}
+
 void CWndSkillTreeCommon::OnSkillPointDown(const SKILL & reducedSkill) {
 	for (SKILL & inPlaceSkill : m_apSkills) {
 		const ItemProp * prop = inPlaceSkill.GetProp();
@@ -1299,12 +1320,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 			const int nPoint = prj.GetSkillPoint(pSkillProp);
 			switch (nID) {
 				case WIDC_BUTTON1:	// + ��ư
-					if (nPoint <= m_nCurrSkillPoint) {
-						if (m_focusedSkill->dwLevel < pSkillProp->dwExpertMax) {
-							m_nCurrSkillPoint -= nPoint;
-							++m_focusedSkill->dwLevel;
-						}
-					}
+					OnSkillPointUp();
 					break;
 				case WIDC_BUTTON2:	// - ��ư
 					if (IsSkillHigherThanReal(*m_focusedSkill)) {

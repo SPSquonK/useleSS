@@ -715,6 +715,7 @@ public:
 	static DWORD				m_dwVagSP;					// 방랑자 스킬의 레벨업때 필요한 SP포인트
 	static DWORD				m_dwExpertSP;				// 1차직업 스킬의 레벨업때 필요한 SP포인트
 	static DWORD				m_dwProSP;					// 2차직업 스킬의 레벨업때 필요한 SP포인트
+	static DWORD m_dwLegendSP;
 
 	std::map<u_long, CPlayerCls *>		m_idPlayerToUserPtr;
 	CObjMap						m_objmap;
