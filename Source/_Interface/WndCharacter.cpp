@@ -380,9 +380,9 @@ void CWndCharInfo::OnInitialUpdate() {
 
 	for (StatChange * stat : { &m_str, &m_sta, &m_dex, &m_int }) {
 		forStats.DrawLine("x", [&](const int posY) {
-			stat->edit.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, nextAppId + 1);
-			stat->plus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, nextAppId + 2);
-			stat->minus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, nextAppId + 3);
+			stat->edit.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, nextAppId);
+			stat->plus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, nextAppId + 1);
+			stat->minus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, nextAppId + 2);
 			stat->Setup(m_pApp->m_pd3dDevice, m_nGpPoint > 0);
 
 			nextAppId += 3;
