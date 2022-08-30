@@ -2682,6 +2682,7 @@ static boost::container::flat_map<DWORD, DWORD> g_DstString = {
 	{ DST_CHR_RANGE,					TID_GAME_TOOLTIP_ATTACKRANGE4 },
 	{ DST_STOP_MOVEMENT,				TID_GAME_TOOLTIP_MOVEMENT1 },
 	{ DST_IMMUNITY,					TID_GAME_TOOLTIP_IMMUNITY1 },
+	{ DST_IGNORE_DMG_PVP , TID_TOOLTIP_DST_DMG_GET },
 };
 
 bool IsDst_Rate(int nDstParam) {

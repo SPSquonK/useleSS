@@ -51,6 +51,8 @@ private:
 	int				CalcATK( ATTACK_INFO* pInfo );
 	int				PostCalcDamage( int nATK, ATTACK_INFO* pInfo );
 	int				OnAfterDamage( ATTACK_INFO* pInfo, int nDamage );
+
+	static int ReduceDamageUsingSoulOfRhisis(CMover & defender, int nDamage);
 };
 
 

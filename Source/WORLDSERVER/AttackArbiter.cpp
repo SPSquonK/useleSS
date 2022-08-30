@@ -178,6 +178,13 @@ int CAttackArbiter::OnDamageMsgW()
 	}
 
 	nDamage = std::max( nDamage, 1 );
+
+	int damageReduction = 0;
+	if (m_pAttacker->IsPlayer() && m_pDefender->IsPlayer()) {
+		damageReduction = ReduceDamageUsingSoulOfRhisis(*m_pDefender, nDamage);
+		nDamage = nDamage - damageReduction;
+	}
+
 	int nHP = MinusHP( &nDamage );							// HP 감소 시킴 
 
 	if( CMonsterSkill::GetInstance()->MonsterTransform( m_pDefender, nHP ) )
@@ -190,7 +197,7 @@ int CAttackArbiter::OnDamageMsgW()
 	m_pDefender->OnAttacked( m_pAttacker, nDamage, m_bTarget, m_nReflect );		// 공격자 피격자 저장, 경험치 지급율 변경	
 	if( nHP > 0 )
 	{
-		OnDamaged( nDamage );								// 데미지 모션 취하기, 데미지 전송, 범죄자설정 
+		OnDamaged( nDamage + damageReduction );								// 데미지 모션 취하기, 데미지 전송, 범죄자설정 
 		// MinusHP()에서 가져옴 - 데미지 이후 회복시켜야 한다.
 		int nActionHPRate = m_pDefender->GetAdjParam( DST_AUTOHP );							// 발동 HP율
 		if( nActionHPRate > 0 )
@@ -827,3 +834,16 @@ BYTE CAttackArbiter::GetHandFlag( void )
 	return cbHandFlag;
 }
 
+int CAttackArbiter::ReduceDamageUsingSoulOfRhisis(CMover & defender, const int nDamage) {
+	const int immunityLeft = defender.GetParam(DST_IGNORE_DMG_PVP, 0);
+	if (immunityLeft <= 0) return 0;
+
+	if (immunityLeft > nDamage) {
+		defender.ResetDestParam(DST_IGNORE_DMG_PVP, nDamage);
+		return nDamage;
+	}
+
+	defender.ResetDestParam(DST_IGNORE_DMG_PVP, immunityLeft);
+	defender.RemoveBuff(BUFF_SKILL, SI_FLO_SUP_ABSOLUTE);
+	return immunityLeft;
+}

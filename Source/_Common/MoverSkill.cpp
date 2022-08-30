@@ -942,6 +942,11 @@ void	CMover::OnEndSkillState( DWORD dwSkill, DWORD dwLevel )
 	}
   #endif	// 
 
+	if (dwSkill == SI_FLO_SUP_ABSOLUTE) {
+		ResetDestParam(DST_IGNORE_DMG_PVP, GetParam(DST_IGNORE_DMG_PVP, 0), TRUE);
+		return;
+	}
+
 	BOOL	bSend = FALSE;
 #ifdef __WORLDSERVER
 	bSend = TRUE;			// 서버일경우 유저들에게 보내줌.
