@@ -550,7 +550,6 @@ HRESULT CNeuzApp::FinalCleanup()
 	SAFE_DELETE( CMover::m_pPool );
 	SAFE_DELETE( CActionMover::m_pPool );
 	SAFE_DELETE( CItem::m_pPool );
-	SAFE_DELETE( CDamageNum::m_pPool );
 	SAFE_DELETE( CSfxGenMoveMark::m_pPool );
 	SAFE_DELETE( CSfxGenWaterCircle::m_pPool );
 	SAFE_DELETE( CSfxGenNormalDmg01::m_pPool );

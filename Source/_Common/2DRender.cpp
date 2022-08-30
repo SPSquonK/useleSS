@@ -1752,9 +1752,6 @@ CTexture * CTextureMng::AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileNa
 }
 
 #ifdef __CLIENT
-#ifndef __VM_0820
-MemPooler<CDamageNum>*	CDamageNum::m_pPool	= new MemPooler<CDamageNum>( 32 );
-#endif	// __VM_0820
 
 void CDamageNum::Process()
 {
@@ -1907,78 +1904,40 @@ void CDamageNum::Render(CTexturePack *textPackNum)
 	
 }
 
-void CDamageNumMng::LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-	m_textPackNum.LoadScript( pd3dDevice, MakePath( DIR_SFX, _T( "DmgEffect.inc" ) ) );
+void CDamageNumMng::LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice) {
+	m_textPackNum.LoadScript(pd3dDevice, MakePath(DIR_SFX, _T("DmgEffect.inc")));
 }
 
-CDamageNumMng::~CDamageNumMng()
-{
+CDamageNumMng::~CDamageNumMng() {
 	DeleteDeviceObjects();
 }
-BOOL CDamageNumMng::DeleteDeviceObjects()
-{
-	CDamageNum* pDamagenum;
-	for(int i=0;i<m_Array.GetSize();i++)
-	{
-		pDamagenum=(CDamageNum*)m_Array.GetAt(i);
-		safe_delete( pDamagenum );
-	}
-	m_Array.RemoveAll();
+
+void CDamageNumMng::DeleteDeviceObjects() {
+	m_damages.clear();
 	m_textPackNum.DeleteDeviceObjects();
-	return TRUE;
-}
-void CDamageNumMng::AddNumber(D3DXVECTOR3 vPos,DWORD nNumber,DWORD nAttribute)
-{
-	CDamageNum* pDamagenum=new CDamageNum(vPos,nNumber,nAttribute);
-	m_Array.Add(pDamagenum);
 }
 
-void CDamageNumMng::Process()
-{
-	CDamageNum* pDamagenum;
+void CDamageNumMng::AddNumber(D3DXVECTOR3 vPos, DWORD nNumber, DWORD nAttribute) {
+	m_damages.emplace_back(vPos, nNumber, nAttribute);
+}
 
-	for(int i=0;i<m_Array.GetSize();i++)
-	{
-		pDamagenum=(CDamageNum*)m_Array.GetAt(i);
-		if(pDamagenum->m_nFrame>=100)
-		{
-			safe_delete( pDamagenum );
-			m_Array.RemoveAt(i);
-			i--;
-		}
-		else
-		{
+void CDamageNumMng::Process() {
+	auto pDamagenum = m_damages.begin();
+	while (pDamagenum != m_damages.end()) {
+		if (pDamagenum->m_nFrame >= 100) {
+			pDamagenum = m_damages.erase(pDamagenum);
+		} else {
 			pDamagenum->Process();
+			++pDamagenum;
 		}
 	}
 }
-void CDamageNumMng::Render()
-{
-	CDamageNum* pDamagenum;
 
-	for(int i=0;i<m_Array.GetSize();i++)
-	{
-		pDamagenum=(CDamageNum*)m_Array.GetAt(i);
-		pDamagenum->Render(&m_textPackNum);
+void CDamageNumMng::Render() {
+	for (CDamageNum & pDamagenum : m_damages) {
+		pDamagenum.Render(&m_textPackNum);
 	}
 }
+
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -292,41 +292,29 @@ public:
 
 #ifdef __CLIENT
 // 몹, 플레이어 데미지 출력
-class CDamageNum
+class CDamageNum final
 {
 public:
-	DWORD m_nFrame;
+	DWORD m_nFrame = 0;
 	DWORD m_nNumber;
 	DWORD m_nAttribute;
 	D3DXVECTOR3 m_vPos;
-	FLOAT	m_fY, m_fDy;
-	int		m_nState;
-	int		m_nCnt;
+	FLOAT	m_fY = 0.0f, m_fDy = 0.0f;
+	int		m_nState = 0;
+	int		m_nCnt = 0;
 
-	CDamageNum(D3DXVECTOR3 vPos,DWORD nNumber,DWORD nAttribute) 
-	{ m_nFrame=0; m_nNumber=nNumber; m_vPos=vPos; m_nAttribute=nAttribute; m_nState = 0; m_nCnt = 0; }
-	~CDamageNum() {};
+	CDamageNum(D3DXVECTOR3 vPos, DWORD nNumber, DWORD nAttribute) {
+		m_nNumber = nNumber; m_vPos = vPos; m_nAttribute = nAttribute;
+	}
 
 	void Process();
 	void Render(CTexturePack *textPackNum);
-#ifdef __CLIENT
-#ifndef __VM_0820
-#ifndef __MEM_TRACE
-	static MemPooler<CDamageNum>*	m_pPool;
-	void*	operator new( size_t nSize )	{	return CDamageNum::m_pPool->Alloc();	}
-	void*	operator new( size_t nSize, LPCSTR lpszFileName, int nLine )	{	return CDamageNum::m_pPool->Alloc();	}
-	void	operator delete( void* lpMem )	{	CDamageNum::m_pPool->Free( (CDamageNum*)lpMem );	}
-	void	operator delete( void* lpMem, LPCSTR lpszFileName, int nLine )	{	CDamageNum::m_pPool->Free( (CDamageNum*)lpMem );	}
-#endif	// __MEM_TRACE
-#endif	// __VM_0820
-#endif	// __CLIENT
 };
 
 // 데미지 숫자 관리자
-class CDamageNumMng
-{
+class CDamageNumMng final {
+	std::vector<CDamageNum> m_damages;
 public:
-	CPtrArray m_Array;
 	D3DXMATRIX m_matProj,m_matView,m_matWorld;
 	D3DVIEWPORT9 m_viewport;
 	CTexturePack m_textPackNum;
@@ -334,7 +322,7 @@ public:
 	CDamageNumMng() { D3DXMatrixIdentity(&m_matWorld); };
 	~CDamageNumMng();
 
-	BOOL DeleteDeviceObjects();
+	void DeleteDeviceObjects();
 	void LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice);
 	void AddNumber(D3DXVECTOR3 vPos,DWORD nNumber,DWORD nAttribute); // 새로운 데미지 표시를 생성시킨다.
 	void Process(); // 현재 생성된 데미지 표시들을 처리한다.
