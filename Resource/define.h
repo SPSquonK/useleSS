@@ -35,28 +35,30 @@
 #define WET_HIT              11 // 대상이 공격을 할때 
 
 // 발동 대상        (EXecuteTarget)
-#define EXT_NONE              0 // 
-#define EXT_SELFCHGPARAMET    1 // 자신의 파라미터를 변경
-#define EXT_OBJCHGPARAMET     2 // 타인의 파라미터를 변경
-#define	EXT_MAGICSHOT		  3 // 발사체가 날아간 후 발동되지만 발사체가 직접 데미지를 주진 않음.
-#define EXT_MAGICATK          4 // 마법 직접 공격
-#define EXT_AMPLIFICATION     5 // 마법을 증폭한다
-#define EXT_ATTACKER          6 // 공격한 대상에게 적용
-#define EXT_MAGIC             7 // 기타 일반 마법
-#define EXT_ANOTHER           8 // 다른 사람에게만 적용(사용하지 않음)
-#define EXT_ANOTHERWITH       9 // 다른 사람이나 자신에게 적용
-#define EXT_SUMMON           10 // 생명체를 소환한다.
-#define EXT_AROUNDATK		 11 // 주변의 적들을 공격한다.
-#define EXT_OTHER            12 // 기타 그외의 것들
-#define EXT_TROUPE           13 // 극단을 대상으로 함
-#define EXT_MAGICATKSHOT     14 // 마법공격계 스킬중 발사체가 있는 형태
-#define EXT_MENTALATK		 15 // 정신공격 
-#define EXT_MELEEATKSHOT     16 // 물리공격계 스킬중 발사체가 있는 형태
-#define EXT_MELEEATK	     17 // 근거리 밀리 공격
-#define EXT_RANGEATK	     18 // 원거리 비 마법 공격
+#define EXT_NONE             	 0 // 
+#define EXT_SELFCHGPARAMET   	 1 // 자신의 파라미터를 변경
+#define EXT_OBJCHGPARAMET    	 2 // 타인의 파라미터를 변경
+#define	EXT_MAGICSHOT		 	 3 // 발사체가 날아간 후 발동되지만 발사체가 직접 데미지를 주진 않음.
+#define EXT_MAGICATK         	 4 // 마법 직접 공격
+#define EXT_AMPLIFICATION    	 5 // 마법을 증폭한다
+#define EXT_ATTACKER         	 6 // 공격한 대상에게 적용
+#define EXT_MAGIC            	 7 // 기타 일반 마법
+#define EXT_ANOTHER          	 8 // 다른 사람에게만 적용(사용하지 않음)
+#define EXT_ANOTHERWITH      	 9 // 다른 사람이나 자신에게 적용
+#define EXT_SUMMON           	10 // 생명체를 소환한다.
+#define EXT_AROUNDATK		 	11 // 주변의 적들을 공격한다.
+#define EXT_OTHER            	12 // 기타 그외의 것들
+#define EXT_TROUPE           	13 // 극단을 대상으로 함
+#define EXT_MAGICATKSHOT     	14 // 마법공격계 스킬중 발사체가 있는 형태
+#define EXT_MENTALATK		 	15 // 정신공격 
+#define EXT_MELEEATKSHOT     	16 // 물리공격계 스킬중 발사체가 있는 형태
+#define EXT_MELEEATK	     	17 // 근거리 밀리 공격
+#define EXT_RANGEATK	     	18 // 원거리 비 마법 공격
 #define EXT_PET					19 // 원거리 비 마법 공격
-#define EXT_TROUPEWITH           20 // 극단이나 나를  대상으로 함
-#define	EXT_ITEM	21
+#define EXT_TROUPEWITH			20 // 극단이나 나를  대상으로 함
+#define	EXT_ITEM				21 // 아이템 사용 대상이 필요하다.
+#define	EXT_ITEM_ENCHANT		22 // 아이템 사용 대상이 필요하고 사용 시 인첸트 이펙트가 발생된다. 
+
 
 // 스크립트를 누가 실행시켰나. (WhoExecuteScript)
 
@@ -247,14 +249,25 @@
 #define TOT_RANDOM			0    // 랜덤 발동
 #define TOT_NOENDU		1    // 내구도가 0이면 발동
 
-#define	PK_TIGER	0
-#define	PK_LION		1
-#define	PK_RABBIT	2
-#define	PK_FOX	3
-#define	PK_DRAGON	4
-#define	PK_GRIFFIN	5
-#define	PK_UNICORN	6
-#define	PK_MAX	7
+//#define	PK_NPC			-1
+#define	PK_TIGER		0
+#define	PK_LION			1
+#define	PK_RABBIT		2
+#define	PK_FOX			3
+#define	PK_DRAGON		4
+#define	PK_GRIFFIN		5
+#define	PK_UNICORN		6
+#define PK_MAX			7
+const BYTE	PK_NPC		=	static_cast< BYTE >( -1 );
+// const BYTE	PK_TIGER	=	0;
+// const BYTE	PK_LION		=	1;
+// const BYTE	PK_RABBIT	=	2;
+// const BYTE	PK_FOX		=	3;
+// const BYTE	PK_DRAGON	=	4;
+// const BYTE	PK_GRIFFIN	=	5;
+// const BYTE	PK_UNICORN	=	6;
+// const BYTE	PK_MAX	=	7;
+
 
 // 알 변환 결과에 의해 생성되는 아이템의 타입
 #define	TI_GENERIC	0
@@ -272,6 +285,11 @@
 #define SEASON_FALL			3
 #define SEASON_WINTER		4
 #define SEASON_MAX			5
+
+
+// 스킬이 부여된 아이템 사용 시 적용 대상(Item Skill Target)
+#define IST_SELF			1	// 자기 자신에게 발동
+#define IST_ANOTHER			2	// 상대방에게 발동
 
 
 #endif

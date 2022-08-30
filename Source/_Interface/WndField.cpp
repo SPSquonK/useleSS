@@ -3385,22 +3385,12 @@ HRESULT CWndNavigator::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 HRESULT CWndNavigator::InvalidateDeviceObjects()
-{
-	m_texNavPos.InvalidateDeviceObjects();
-#ifdef __YDEBUG
-	m_texNavObjs.InvalidateDeviceObjects();
-#endif //__YDEBUG
-	
+{	
 	m_billArrow.InvalidateDeviceObjects();
 	return CWndNeuz::InvalidateDeviceObjects();
 }
 HRESULT CWndNavigator::RestoreDeviceObjects()
 {
-	m_texNavPos.RestoreDeviceObjects( m_pApp->m_pd3dDevice );
-#ifdef __YDEBUG
-	m_texNavObjs.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
-#endif //__YDEBUG
-
 	ResizeMiniMap();
 	m_billArrow.RestoreDeviceObjects();
 	return CWndNeuz::RestoreDeviceObjects();

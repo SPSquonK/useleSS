@@ -997,6 +997,9 @@
     <ClCompile Include="..\_Interface\WndEquipmentSex.cpp">
       <Filter>Source Files\_Interface\Admin</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndSkill16.cpp">
+      <Filter>Source Files\_Interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">

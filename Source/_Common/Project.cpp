@@ -88,6 +88,7 @@ FLOAT	CProject::m_fSkillExpRate = 1.0f;
 DWORD	CProject::m_dwVagSP = 1;				// ����� ��ų�� �������� �ʿ��� SP����Ʈ
 DWORD	CProject::m_dwExpertSP = 2;				// 1������ ��ų�� �������� �ʿ��� SP����Ʈ
 DWORD	CProject::m_dwProSP = 3;				// 2������ ��ų�� �������� �ʿ��� SP����Ʈ
+DWORD CProject::m_dwLegendSP = 4;
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -284,7 +285,7 @@ CProject::~CProject()
 
 void CProject::LoadSkill()
 {
-	LoadPropItem( "propSkill.txt", &m_aPropSkill );
+	LoadPropItem( "propSkill.txt", &m_aPropSkill, LoadPropItemStyle::V22SkillsSkip );
 	jobs.LoadSkills(m_aPropSkill);
 }
 
@@ -2289,6 +2290,9 @@ BOOL CProject::LoadPropAddSkill( LPCTSTR lpszFileName )
 			propAddSkill.nProbabilityPVP	= propAddSkill.nProbability;
 		if( propAddSkill.dwActiveSkillRatePVP == dwDefault )
 			propAddSkill.dwActiveSkillRatePVP	= propAddSkill.dwActiveSkillRate;
+
+		if (propAddSkill.nAdjParamVal[0] == CHS_SLEEPING) propAddSkill.nAdjParamVal[0] = CHS_STUN;
+		if (propAddSkill.nAdjParamVal[1] == CHS_SLEEPING) propAddSkill.nAdjParamVal[1] = CHS_STUN;
 
 		m_aPropAddSkill.SetAtGrow( i, propAddSkill );
 
@@ -4326,6 +4330,8 @@ DWORD CProject::GetSkillPoint(const ItemProp * pSkillProp) const {
 		case JTYPE_PRO:
 		default:
 			return m_dwProSP;
+		case JTYPE_LEGEND_HERO:
+			return m_dwLegendSP;
 		case JTYPE_MASTER:
 		case JTYPE_HERO:
 			return 0;

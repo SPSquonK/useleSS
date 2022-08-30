@@ -6,6 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include <memory>
+#include <optional>
 
 #include "post.h"
 #include "guild.h"
@@ -238,13 +239,6 @@ public:
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
-
-//////////////////////////////////////////////////////////////////////////////////////
-// 스킬 EX 
-//
-
-#include "WndSkillTree.h"
-#include <optional>
 
 //////////////////////////////////////////////////////////////////////////////////////
 // 매신저  

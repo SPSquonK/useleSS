@@ -12,6 +12,14 @@
 #define AII_BEAR			8
 #define	AII_EGG		9
 #define	AII_METEONYKER	10
+#define	AII_AGGRO_NORMAL	11
+
+#define	AII_PARTY_AGGRO_LEADER	12
+#define	AII_PARTY_AGGRO_SUB		13
+
+#define AII_ARENA_REAPER	14
+
+#define	AII_BEETLE			15
 
 #define AII_VER2_TYPE0		100
 
@@ -21,6 +29,7 @@
 #define GRP_PARTY             2
 #define GRP_GUILD             3
 
+//////////////////////////////////////////////////////////////////////////
 #define	PARTS_HEAD				0  // 장비에서 제외 
 #define	PARTS_HAIR				1  // 장비에서 제외 
 #define	PARTS_UPPER_BODY		2
@@ -79,6 +88,8 @@
 #define SRT_DUNGEON             11
 #define SRT_BUCKLER				12
 #define SRT_WARPZONE			13
+#define SRT_KEY					14
+#define SRT_CASH				15
 #define MAX_STRUCTURE            20
 
 
@@ -302,9 +313,515 @@
 
 #define	MMI_CHANGEGG01				169
 
-#define MAX_MOVER_MENU				170 // MMI를 추가시킬 일이 있다면 이 수치를 상승시켜야 한다.
+#define	MMI_EVENT_TRADE_KOR2010		170
+
+#define	MMI_GUILDHOUSE_AUCTION01	171
+
+#define	MMI_EVENT_HAPPY_USA2010		172
+
+#define	MMI_EVENT_WORLDCUP10_KOR	173
+#define	MMI_EVENT_WORLDCUP10_FOR	174
+#define	MMI_EVENT_MATCHMAKER_FOR	175
+
+#define	MMI_EVENT_ALICE_PHP_FOR	176
+
+#define	MMI_EVENT_AROTTO_KOR	177 //롯토
 
 
+#define MMI_SUMMON_SMELT				178
+#define MMI_SUMMON_EXTRACTOPER			179
+#define MMI_SUMMON_MAKEOPER				180
+#define MMI_SUMMON_UPGRADECID			181
+#define MMI_SUMMON_MAKECID				182
+#define MMI_SUMMON_MAKEOPERCID			183
+
+//16차 추가
+#define MMI_GHOUSE_BARUNASMELPROT			184
+#define MMI_GHOUSE_OPERPIECE				185
+#define MMI_GHOUSE_OPERMIX					186
+#define MMI_GHOUSE_OPERENCHANT				187
+#define MMI_GHOUSE_UNSKILL					188
+#define MMI_ERRORSENCHANT_BARUNA					189
+
+#define MMI_EVENT_TRADE_TWN					190
+//중형 길드하우스 문 매뉴
+#define MMI_GUILDHOUSE_ENTER_DOOR			191
+//중형 길드하우스 표지판
+#define MMI_GUILDHOUSE_NOTICE			192
+
+//교환매뉴 MMI
+#define MMI_ZOMBIES_CHANGE1			193
+#define MMI_ZOMBIES_CHANGE2			194
+#define MMI_ZOMBIES_CHANGE3			195
+#define MMI_ZOMBIES_CHANGE4			196
+
+//교환매뉴 MMI
+#define MMI_JAP_CHANGE			197
+
+//유럽 홀덤 이벤트 교환 메뉴
+#define MMI_HOLDEMEVENT01		198 // A카드 4장 교환
+#define MMI_HOLDEMEVENT02		199 // K카드 4장 교환
+#define MMI_HOLDEMEVENT03		200 // Q카드 4장 교환
+#define MMI_HOLDEMEVENT04		201 // J카드 4장 교환
+#define MMI_HOLDEMEVENT05		202 // A/K/Q/J 카드 1장씩 교환
+
+#define MMI_SUMMON_PEARCING		203 //바루나 피어싱
+
+#define MMI_COOPERATIVE_CONTRIBUTIONS 204 // 협동 기부
+
+#define MMI_COLOSSEUM_COLOENTER01 205 // 협동 기부
+#define MMI_COLOSSEUM_COLOENTER02 206 // 협동 기부
+
+#define MMI_CHRISTMASFAIRY01	207 // 크리스마스 정령 토큰 교환 1개
+#define MMI_CHRISTMASFAIRY02	208 // 크리스마스 정령 토큰 교환 25개
+#define MMI_CHRISTMASFAIRY03	209 // 크리스마스 정령 토큰 교환 50개
+#define MMI_CHRISTMASFAIRY04	210 // 크리스마스 정령 토큰 교환 75개
+#define MMI_CHRISTMASFAIRY05	211 // 크리스마스 정령 토큰 교환 100개
+
+#define MMI_COSTUMEBUY01	212 // 코스튬 재료 구입
+#define MMI_COSTUMESELL01	213 // 코스튬 재료 판매
+#define MMI_COSTUMEMIX01	214 // 코스튬 합성
+
+#define MMI_DONATION		215 // 협동 기부 메뉴
+#define MMI_DONATION_RANK	216 // 협동 기부 랭킹 보기
+
+#define MMI_WHITEDAY_EXCHANGE01		217 //화이트 데이 교환
+#define MMI_WHITEDAY_EXCHANGE02		218 //화이트 데이 교환
+#define MMI_WHITEDAY_EXCHANGE03		219 //화이트 데이 교환
+#define MMI_WHITEDAY_EXCHANGE04		220 //화이트 데이 교환
+
+#define MMI_GHOUSE_CABINET			221// 길드 카테고리 장식장
+#define MMI_GHOUSE_CRYSTAL			222// 길드 카테고리 크리스탈
+
+#define MMI_FIRSEED2011					223//전나무 교환
+#define	MMI_PEARSEED2011				224//배나무 교환
+#define	MMI_PINESEED2011				225//소나무 교환
+#define	MMI_PERSIMSEED2011				226//감나무 교환
+
+#define	MMI_RIVERCARD2011				227//리버카드 교환
+#define	MMI_FLAMECARD2011				228//플레임카드 교환
+#define	MMI_DESERTCARD2011				229//데저트카드 교환
+#define	MMI_GENERATERCARD2011			230//제너레이터카드 교환
+#define	MMI_CYCLONECARD2011				231//싸이클론 카드
+#define	MMI_EXCHANGEBLOSSOM				232//벚꽃씨앗-가위바위보 쿠폰 교환
+
+
+#define	MMI_TELEPORTPOINTMENU01			233//삭제
+#define	MMI_TELEPORTPOINTMENU02			234//전체삭제
+#define	MMI_TELEPORTPOINTMENU03			235//이름변경
+#define	MMI_TELEPORTPOINTMENU04			236//닫기
+
+#define MMI_BARUNA_ELEMENT_SMELT		237//바루나속성제련
+#define MMI_BARUNA_WAKEUP				238//바루나각성
+#define MMI_BARUNA_WAKEUP_CANCEL		239//바루나각성취소
+
+#define MMI_EVENTARENA_ENTER			241//전투 지역 입장
+
+#define MMI_TWBOXTRADE01			242//깃발 교환하기
+
+#define MMI_HANGAWI_TRADE		244//꿀송편 10개와 50,000 페냐를 가위바위보 쿠폰 1장으로 교환
+
+#define MMI_MARKETJOIN				245//시장 입장 메뉴
+
+#define MMI_TWBOXTRADE				246 // 5주년 기념 상자 교환
+
+#define	MMI_BEHEMOTHSMELTEVENT_TWOSWORD			247	// 속성제련된 베히모스의 우든 투핸드 소드를 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_TWOAXE			248	// 속성제련된 베히모스의 우든 투핸드 엑스를 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_ONESWORD			249	// 속성제련된 베히모스의 우든소드를 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_ONEAXE			250	// 속성제련된 베히모스의 우든 엑스를 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_BOW				251	// 속성제련된 베히모스의 우든 보우를 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_YOYO				252	// 속성제련된 베히모스의 우든 요요를 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_KNUCKLE			253	// 속성제련된 베히모스의 우든 너클을 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_STICK			254	// 속성제련된 베히모스의 우든 스틱을 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_WAND				255	// 속성제련된 베히모스의 우든 완드를 보상아이템으로 교환
+#define	MMI_BEHEMOTHSMELTEVENT_STAFF			256	// 속성제련된 베히모스의 우든 스태프를 보상아이템으로 교환
+
+#define	MMI_MAPLE_TRADE					257	// 낙엽 교환하기
+#define	MMI_MARKET_TRADE				258	// 거래 중개 메뉴
+
+#define	MMI_USAKAWIBAWIBOCOUPON2011			259	// 호박 10개와 100,000 페냐를 가위바위보 쿠폰으로 교환
+
+#define	MMI_TWOHANDEDWEAPONMERGE			260	// 양손 무기 합성
+#define	MMI_TWOHANDEDWEAPONMERGE_CANCEL		261	// 양손 무기 합성 취소
+
+#define	MMI_ELLDINPOTION			262	// 항아리 전용 UI
+
+
+#define	MMI_COLOSSEUM_REWARD_MIX		263	//증표로 기타 보상 아이템 교환
+#define	MMI_COLOSSEUM_REWARD_WEAPON_1	264	// 증표로 초급 투사의 무기 교환
+#define	MMI_COLOSSEUM_REWARD_WEAPON_2	265	// 증표로 중급 투사의 무기 교환
+#define	MMI_COLOSSEUM_REWARD_WEAPON_3	266	// 증표로 고급 투사의 무기 교환
+
+#define	MMI_CRISTMASRUBETRADEMENU		267 //크리스 마스 토큰으로 아이템 교환
+
+#define	MMI_LOOKCHANGE					268
+
+#define	MMI_CHRISTMASENCHANTEVENTMENU		269	//크리스마스 제련 이벤트 교환 메뉴
+
+#define	MMI_MARKETEXIT				270	//시장에서 마을로 이동 메뉴
+
+#define	MMI_EVENT_2012HAPPYMONEYMENU		271	//2012해피머니 이벤트 메뉴
+
+#define	MMI_POR_2012KAWIBAWIBOCUPONMENU		272	//2012가위바위보 이벤트_쿠폰 교환 메뉴
+
+#define	MMI_SEAKINGLOOKCHANGEMENU		273	//용왕의상 성별 교환 메뉴
+
+#define	MMI_SEAKINGMASKCHANGEMENU		274	//용왕가면(남) 옵션 교환 메뉴
+#define	MMI_SEAKINGMASKCHANGEMENU_1		275	//용왕가면(여) 옵션 교환 메뉴
+
+#define	MMI_FLYFFCOUPONSHOP			276	//프리프 쿠폰 교환 UI
+
+#define	MMI_FLYFFPIECE_CHANGE		277
+
+#define	MMI_MUSICFESTIVALETC		278	//뮤직페스티벌 음표
+#define	MMI_MUSICFESTIVALGUITAR		279	//뮤직페스티벌 기타
+
+//미국 길드전 이벤트(12.07.25 ~ 12.08.28)
+#define MMI_ENGGUILDEVENTARMOR     280  //방어구 랜덤박스 교환
+#define MMI_ENGGUILDEVENTWEA     281  //무기 랜덤박스 교환
+#define MMI_ENGGUILDEVENTGCHIP     282 //기타 아이템 교환
+
+#define MMI_SUMMERENCHANTEVENTMENU     283  //해외 제련 이벤트(12.07.31 ~ 12.09.25)
+
+//크리스마스 곰인형
+#define MMI_CHRISTMAS_BEARDOLL		284 // 크리스마스 곰인형 교환
+
+#define MMI_CHRISTMAS_SNOW_GOLD		285 // 크리스마스 황금 눈의결정 교환
+
+//크리스마스 제련 이벤트
+
+#define MMI_CHRISTMASENCHANTEVENT		286 // 황금종 교환
+
+//발렌타인 이벤트
+#define MMI_VALENTAINEVENT		287 // 발렌타인 이벤트
+#define MMI_VALENTAIN_QUPID		288 // 발렌타인 이벤트(변덕스러운 큐피드)
+
+//화이트데이 남성 교환메뉴 추가
+#define MMI_WHITEDAY_EXCHANGE05		289 //화이트 데이 교환
+#define MMI_WHITEDAY_EXCHANGE06		290 //화이트 데이 교환
+#define MMI_WHITEDAY_EXCHANGE07		291 //화이트 데이 교환
+#define MMI_WHITEDAY_EXCHANGE08		292 //화이트 데이 교환
+
+// 2014 할로윈 이벤트
+#define	MMI_HALLOWEEN_EVENT_2014	293
+
+// 2014 와인 이벤트
+#define	MMI_WINE_EVENT_FLARIS_2014		294
+#define	MMI_WINE_EVENT_SAINT_2014		295
+#define	MMI_WINE_EVENT_DARKON_2014		296
+
+// 2014 크리스마스 이벤트
+#define	MMI_CHRISTMAS_EVENT_02_2014		297
+#define	MMI_CHRISTMAS_EVENT_04_2014		298
+#define	MMI_CHRISTMAS_EVENT_05_2014		299
+#define	MMI_CHRISTMAS_EVENT_07_2014		300
+#define	MMI_CHRISTMAS_EVENT_08_2014		301
+
+// 2015 클로버 이벤트
+#define	MMI_CLOVER_EVENT_2015			302
+
+// 2015 웹젠.com 6주년 이벤트
+#define	MMI_6TH_ANNIVERSARY_WEBZEN_WEAPON_EXCHANGE_2015			303
+#define	MMI_6TH_ANNIVERSARY_WEBZEN_MALE_ARMOR_EXCHANGE_2015		304
+#define	MMI_6TH_ANNIVERSARY_WEBZEN_FEMALE_ARMOR_EXCHANGE_2015	305
+
+#define	MMI_JP_11TH_ANNIVERSARY_PIGGY_EXCHANGE_2015				306
+
+#define 	MMI_MADRIGAL_TOUR_EXCHANGE					307
+
+#define 	MMI_BARUNA_ULTIMATETRANS	308
+
+#define		MMI_CARD_UPGRADE			309
+
+#define 	MMI_COLLECT03                  	310 	// 카드 조각 교환
+
+#define 	MMI_12TH_ANNIVERSARY_EXCHANGE01          	311
+#define 	MMI_12TH_ANNIVERSARY_EXCHANGE02          	312
+
+
+#define		MMI_COSTUME_EXCHANGE01		313		// 코스튬 교환
+#define		MMI_COSTUME_EXCHANGE02		314
+#define		MMI_COSTUME_EXCHANGE03		315
+#define		MMI_COSTUME_EXCHANGE04		316
+#define		MMI_COSTUME_EXCHANGE05		317
+#define		MMI_COSTUME_EXCHANGE06		318
+#define		MMI_COSTUME_EXCHANGE07		319
+
+#define		MMI_WEAPONBOX_EXCHANGE01		320		// 2017 추석 아이템 교환
+#define		MMI_ARMORBOX_EXCHANGE01		321		
+#define		MMI_ARMORBOX_EXCHANGE02		322	
+
+#define		MMI_SMELT_SAFETY_COSTUME	323
+
+#define		MMI_SMELT_JEWEL_COSTUME		324 //제련 : 코스튬 아이템 보석 제련	
+
+#define 	MMI_NPC_BUFF2					325 // 프리미엄 버프
+
+#define		MMI_SMELT_REMOVE_JEWEL_COSTUME		326 	//제련 : 코스튬 아이템 보석 제거	
+
+#define		MMI_SMELT_MIXCOSTUME			327 //제련 : 코스튬 합성
+
+#define		MMI_SMELT_MIXMATERIAL			328	//제련 : 재료 합성
+
+#define		MMI_155_LORDK_F_CHANGE		329	//여성용 로드 템플러 방어구 아이템 교환
+#define		MMI_155_LORDK_M_CHANGE		330	//남성용 로드 템플러 방어구 아이템 교환
+#define		MMI_155_STORMB_F_CHANGE		331	//여성용 스톰 블레이드 템플러 방어구 아이템 교환
+#define		MMI_155_STORMB_M_CHANGE		332	//남성용 스톰 블레이드 템플러 방어구 아이템 교환
+#define		MMI_155_CRACKS_F_CHANGE		333	//여성용 크랙슈터 방어구 아이템 교환
+#define		MMI_155_CRACKS_M_CHANGE		334	//남성용 크랙슈터 방어구 아이템 교환
+#define		MMI_155_WINDL_F_CHANGE		335	//여성용 윈드러커 방어구 아이템 교환
+#define		MMI_155_WINDL_M_CHANGE		336	//남성용 윈드러커 방어구 아이템 교환
+#define		MMI_155_FLOR_F_CHANGE		337	//여성용 플로리스트 방어구 아이템 교환
+#define		MMI_155_FLOR_M_CHANGE		338	//남성용 플로리스트 방어구 아이템 교환
+#define		MMI_155_FORCEM_F_CHANGE		339	//여성용 포스마스터 방어구 아이템 교환
+#define		MMI_155_FORCEM_M_CHANGE		340	//남성용 포스마스터 방어구 아이템 교환
+#define		MMI_155_MENT_F_CHANGE		341	//여성용 멘탈리스트 방어구 아이템 교환
+#define		MMI_155_MENT_M_CHANGE		342	//남성용 멘탈리스트 방어구 아이템 교환
+#define		MMI_155_ELEL_F_CHANGE		343	//여성용 엘리멘탈 로드 방어구 아이템 교환
+#define		MMI_155_ELEL_M_CHANGE		344	//남성용 엘리멘탈 로드 방어구 아이템 교환
+#define		MMI_155_LORDK_WEA_CHANGE	345	//로드 템플러 전용 무기 교환
+#define		MMI_155_STORMB_WEA_CHANGE	346	//스톰 블레이드 전용 무기 교환
+#define		MMI_155_CRACKS_WEA_CHANGE	347	//크랙슈터 전용 무기 교환
+#define		MMI_155_WINDL_WEA_CHANGE	348	//윈드러커 전용 무기 교환
+#define		MMI_155_FLOR_WEA_CHANGE		349	//플로리스트 전용 무기 교환
+#define		MMI_155_FORCEM_WEA_CHANGE	350	//포스마스터 전용 무기 교환
+#define		MMI_155_MENT_WEA_CHANGE		351	//멘탈리스트 전용 무기 교환
+#define		MMI_155_ELEL_WEA_CHANGE		352	//엘리멘탈 로드 전용 무기 교환
+#define		MMI_155_SHEILD_BOOK_CHANGE		353	//방패 및 책 교환
+#define		MMI_GUILD_COIN		354	//길드 대전 코인
+
+#define		MMI_SMELT_SAFETY_GENERAL_BARUNA	355
+#define		MMI_SMELT_SAFETY_PIERCING_BARUNA	356
+#define		MMI_SMELT_JEWEL_BARUNA				357
+
+#define MMI_SMELT_REMOVE_PIERCING_BARUNA		358 // 슈트의 피어싱 옵션 제거
+
+#define MMI_SMELT_REMOVE_JEWEL_BARUNA			359
+
+#define MMI_CARD_EXCHANGE			360
+#define MMI_BARUNA_CARD_EXCHANGE			361
+
+#define	MMI_FLYCOIN_CASH_COSTUME	362
+#define	MMI_FLYCOIN_CASH_PET	363
+#define	MMI_FLYCOIN_CASH_CONVENIENCE	364
+#define	MMI_FLYCOIN_CASH_PARTY	365
+#define	MMI_FLYCOIN_CASH_BUFF	366
+#define	MMI_FLYCOIN_CASH_UPGRADE	367
+#define	MMI_FLYCOIN_CASH_PRIMIUM	368
+#define	MMI_FLYCOIN_CASH_RIDE	369
+#define	MMI_FLYCOIN_CASH_FECOSTUME	370
+#define	MMI_FLYCOIN_CASH_BARUNA	371
+
+#define	MMI_DRAGONQUEEN_M	372	// 필리핀 옥토버 페스티벌
+#define	MMI_DRAGONQUEEN_F	373
+
+#define	MMI_HALLOWEENQUEEN	374	// 2019년 할로윈 이벤트
+
+#define	MMI_OCTORBERPH_1	375	// 필리핀 10월 출석
+#define	MMI_OCTORBERPH_2	376	// 필리핀 10월 출석
+#define	MMI_HALLOWEENQUEEN_PH	377	// 2019년 필리핀 할로윈 이벤트
+
+#define	MMI_CHIRSTMASPH_1	378	// 2019 필리핀 크리스마스 교환
+#define	MMI_CHIRSTMASPH_2	379	// 2019 필리핀 크리스마스 교환
+#define	MMI_CHIRSTMASPH_3	380	// 2019 필리핀 크리스마스 교환
+
+#define	MMI_NEWYEAR2020	381	// 필리핀 2020 신년 이벤트
+
+#define	MMI_TWNEWSERVER1	382	// 대만 신규 서버 이벤트
+#define	MMI_TWNEWSERVER2	383	// 대만 신규 서버 이벤트
+
+#define	MMI_VALENTINE2020	384
+
+#define	MMI_SAINT2020	385
+
+#define	MMI_SUMMER2020	386	// 필리핀 2020 여름 이벤트
+
+#define	MMI_DEVILWEAPON	387	// 데빌 웨폰 교환
+#define	MMI_DEVILWEAPON_QUE	388	// 데빌 웨폰 교환(퀘재료)
+
+#define	MMI_GROWGREEN	389	// 필리핀 식목일
+
+#define	MMI_WEDDING	390	// 2020 웨딩 이벤트
+
+#define	MMI_SUMMER	391	// 2020 섬머 이벤트
+
+#define	MMI_TREASUREPH	392	// 2020 섬머 이벤트
+
+#define	MMI_DEVILARMOR	393	// 데빌 아머 교환
+
+#define	MMI_DRAGONWINGVIP	394	// VIP 교환 메뉴
+#define	MMI_VIPHORNOR	395	
+#define	MMI_VIIPSUNGLASS	396	
+#define	MMI_DEVILWPTIKET	397	
+#define	MMI_METEONIKERSET	398	
+#define	MMI_METEONIKERCLOAK	399	
+#define	MMI_METEONIKERMASK	400	
+#define	MMI_RTIERBX	401	
+#define	MMI_DRAGONWING	402	
+#define	MMI_COSTUMEBX	403	
+#define	MMI_ALTAIRBX	404	
+#define	MMI_ARTIFACTBX	405	
+#define	MMI_DEVILCLOAK	406	
+
+#define	MMI_NINJAEVE	407	// 필리핀 닌자 이벤트
+
+#define	MMI_CHRISTMAS_EVENT_2020	408	// 2020 크리스마스 제련 이벤트
+
+#define	MMI_GUILDWIN_COIN	409	// 길드 우승
+#define	MMI_GUILD_COIN_NEW		410	//길드 대전 코인 추가
+
+#define	MMI_TEDDYBEAR		411	//크리스마스 교환
+#define	MMI_CHRISTTREE		412
+#define	MMI_CHRISTWORK		413
+#define	MMI_GOLDAPPLE		414
+#define	MMI_CHRISTFAIRY		415
+#define	MMI_SANTA		416
+
+#define	MMI_JESSICA	417
+#define	MMI_NANA	418
+
+#define	MMI_BORAEGG_EVENT	419
+#define	MMI_BORARING_EVENT	420
+
+#define	MMI_FAIRY_EVENT	421
+
+#define	MMI_BORAJAPAN_EVENT	422
+
+#define	MMI_BORA_ACCESSORY	423
+#define	MMI_BORA_DRAGON	424
+
+#define	MMI_TAIWANOPEN	425
+
+#define	MMI_ELF_EVENT	426
+
+#define	MMI_STAR_EVENT	427
+
+#define	MMI_LITA_EVENT	428
+
+#define	MMI_PHMERGE	429
+
+#define	MMI_MOONCAKE_EVENT	430
+
+#define	MMI_1STANNIVERSARY	431
+
+#define	MMI_THANKSGIVING_CAKE	432
+
+#define	MMI_THANKSGIVING_BALL	433
+
+#define	MMI_HALLOWEENTW	434
+
+#define	MMI_HALLOWEENPH	435
+
+#define	MMI_LEAFEXCHANGETW	436
+
+#define	MMI_DUNGEONTICKETONE	437
+
+#define	MMI_DUNGEONTICKETTWO	438
+
+#define	MMI_LOTTOTICKET	439
+
+#define	MMI_FARMER	440
+
+#define	MMI_GABITOKEN	441
+
+#define	MMI_DEATHCLOAK	442
+
+#define	MMI_NEWYEAR2022	443
+
+#define	MMI_NEWYEAR2022_TW_1	444
+
+#define	MMI_NEWYEAR2022_TW_2	445
+
+#define	MMI_SRCARDCHANGE	446
+#define	MMI_18CARDCHANGE	447
+#define	MMI_STRBARUNACHANGE	448
+#define	MMI_INTBARUNACHANGE	449
+#define	MMI_DEXBARUNACHANGE	450
+#define	MMI_STABARUNACHANGE	451
+#define	MMI_SUNGLASSCHANGE	452
+
+#define	MMI_FULLMOON	453
+
+#define	MMI_CATEVENT	454
+
+// 필리핀 로닌 이벤트		
+#define	MMI_RONIN	455
+#define	MMI_SAKURA	456
+#define	MMI_TIMETICKET	457
+
+// 2022 부활절
+#define	MMI_EASTERTICKET	458
+
+// 던전 방어구 티켓
+#define	MMI_DUNGEONTICKETARMOR	459
+
+// VIP 보상
+#define	MMI_NEWVVIP	460
+
+#define	MMI_NEWVIP	461
+
+#define	MMI_VVIPTICKET	462
+
+#define	MMI_VIPVVIP	463
+
+#define	MMI_VIPRETURN	464
+
+#define	MMI_VIPRETURN_2	465
+
+// 22차 업데이트 이벤트
+#define	MMI_FLOATINGSEARCH	466
+#define	MMI_22THWELCOMEBACK_TOKEN	467
+#define	MMI_22THWELCOMEBACK_TICKET	468
+
+// 대만 어버이날 이벤트
+#define	MMI_CARNATION	469
+#define	MMI_CARNATION_ACCESSORY	470
+
+// 필리핀 5월 악세서리 이벤트
+#define	MMI_MAYACCESORY_PH	471
+
+// 필리핀 엘리트 무기 교환
+#define	MMI_ELITEWEAPON_PH	472
+
+// 필리핀 엘리트 악세 교환
+#define	MMI_ELITEACCESORY_PH	473
+
+// 필리핀 사냥 이벤트
+#define	MMI_HUNTING_PH	474
+
+// 무사 이벤트
+#define	MMI_SAKURALETTER	475
+#define	MMI_SAKURAPETAL	476
+#define	MMI_SAKURACLOTH	477
+
+// 대만 1주년 이벤트
+#define	MMI_ANNIVERSARY01	478
+#define	MMI_ANNIVERSARY02	479
+#define	MMI_ANNIVERSARY03	480
+#define	MMI_ANNIVERSARY04	481
+#define	MMI_ANNIVERSARY05	482
+
+// 필리핀 22차 업데이트
+#define	MMI_22THUPDATE01	483
+#define	MMI_22THUPDATE02	484
+
+#define	MMI_PMCOIN	485
+
+#define	MMI_PMCOIN_CONSUMABLE	486
+#define	MMI_PMCOIN_FASHION	487
+#define	MMI_PMCOIN_FURNITURE	488
+#define	MMI_PMCOIN_GOTCHA	489
+
+#define	MMI_DEVILWEAPON_NEW	490
+#define	MMI_DEVILWEAPON_SHARD	491
+
+#define MAX_MOVER_MENU				800	// MMI를 추가시킬 일이 있다면 이 수치를 상승시켜야 한다.
+
+/*
+====================================================================================================
+MMI 메뉴 종료
+====================================================================================================
+*/
 
 #define MGI_APPELL_UP		0	// 호칭 업
 #define MGI_APPELL_DOWN		1
@@ -913,6 +1430,36 @@
 #define	MTI_ATK7_14	       2383
 #define	MTI_ATK8_14	       2384
 
+//크랙슈터 석궁 전투동작
+#define	MTI_STAND_15	2385
+#define	MTI_IDLE1_15	2386
+#define	MTI_IDLE2_15	2387
+#define	MTI_WALK_15		2388
+#define	MTI_BACK_15		2389
+#define	MTI_RUN_15		2390
+#define	MTI_DMG1_15		2391
+#define	MTI_DMG2_15		2392
+#define	MTI_DIE1_15		2393
+#define	MTI_DMGLIVE_15	2394
+#define	MTI_DMGDIE_15	2395
+#define	MTI_DMGFLY_15	2396
+#define	MTI_GROGGY_15	2397
+#define	MTI_JUMP1_15	2398
+#define	MTI_JUMP2_15	2399
+#define	MTI_JUMP3_15	2400
+#define	MTI_JUMP4_15	2401
+#define	MTI_IN_15		2402
+#define	MTI_OUT_15		2403
+#define	MTI_SWIM_15 	2404
+#define	MTI_SIT_15		2405
+#define	MTI_SITSTAND_15	2406
+#define	MTI_GETUP_15	2407
+#define	MTI_ATK1_15		2408
+#define	MTI_ATK2_15		2409
+#define	MTI_ATK5_15		2410
+#define	MTI_ATK6_15		2411
+#define	MTI_ATK7_15		2412
+#define	MTI_ATK8_15		2413
 
 
 // 특정 동작에 추가적으로 더해져서 완성된 모션 인덱스를 만든다.
@@ -1069,7 +1616,7 @@
 
 //제스터
 #define	MTI_JST_SUP_CRITICALSWING01		1191
-#define	MTI_JST_SUP_ENCHANT			1192
+#define	MTI_JST_SUP_ENCHANT				1192
 #define	MTI_JST_YOYO_BACKSTAB01			1193
 #define	MTI_JST_YOYO_HITOFPENYA01		1194
 #define	MTI_JST_YOYO_ESCAPE01			1195
@@ -1085,6 +1632,127 @@
 #define	MTI_RAG_SUP_NATURE01			1203
 #define	MTI_RAG_BOW_TRIPLESHOT01		1204
 
+//3차 전직 클래스 스킬
+
+//로드템플러
+#define	MTI_LORDK_SUP_TEMPLARPULLING01	1235
+#define	MTI_LORDK_ONE_GRANDRAGE01		1236
+#define	MTI_LORDK_ONE_SHILDSTRIKE01		1237
+#define	MTI_LORDK_SUP_ANGRYINCREASE01	1238
+#define	MTI_LORDK_SUP_HOLYARMOR01		1239
+#define	MTI_LORDK_TWO_SCOPESTRIKE01		1240
+
+//스톰블레이드
+#define	MTI_STORMB_DOUBLE_CROSSOFBLOOD01	1241
+#define	MTI_STORMB_DOUBLE_CROSSOFBLOOD02	1242
+#define	MTI_STORMB_DOUBLE_STORMBLASTE01		1243
+#define	MTI_STORMB_DOUBLE_HOLDINGSTORM01	1244
+#define	MTI_STORMB_DOUBLE_POWERINCREASE01	1245
+
+//크랙슈터
+#define	MTI_CRA_BOW_RANGESTRIKE01			1246
+#define	MTI_CRA_SUP_POWERINCREASE01			1247
+#define	MTI_CRA_SUP_CONTROLINCREASE01		1248
+#define	MTI_CRA_SUP_HAWKEYE01				1249
+
+//윈드러커
+#define	MTI_WINDL_YOYO_MADHURRICANE01		1250
+#define	MTI_WINDL_YOYO_EVASIONINCREASE01	1251
+#define	MTI_WINDL_YOYO_CONTROLINCREASE01	1252
+#define	MTI_WINDL_YOYO_BACKSTEP01			1253
+
+//플로리스트
+#define	MTI_FLO_HEAL_PLAYEROFTHEREVIVAL01		1254
+#define	MTI_FLO_HEAL_PLAYEROFTHEREVIVAL02		1255
+#define	MTI_FLO_HEAL_PLAYEROFTHEREVIVAL03		1256
+#define	MTI_FLO_SUP_BLESSEDSTEP01				1257
+#define	MTI_FLO_SUP_BLESSEDSTEP02				1258
+#define	MTI_FLO_SUP_BLESSEDSTEP03				1259
+#define	MTI_FLO_SUP_BLESSEDBODY01				1260
+#define	MTI_FLO_SUP_BLESSEDBODY02				1261
+#define	MTI_FLO_SUP_BLESSEDBODY03				1262
+#define	MTI_FLO_SUP_BLESSEDARMOR01				1263
+#define	MTI_FLO_SUP_BLESSEDARMOR02				1264
+#define	MTI_FLO_SUP_BLESSEDARMOR03				1265
+#define	MTI_FLO_SUP_ABSOLUTEBARRIER01			1266
+#define	MTI_FLO_SUP_ABSOLUTEBARRIER02			1267
+#define	MTI_FLO_SUP_ABSOLUTEBARRIER03			1268
+#define	MTI_FLO_SUP_FETTERS01					1269
+#define	MTI_FLO_SUP_FETTERS02					1270
+#define	MTI_FLO_SUP_FETTERS03					1271
+
+//포스마스터
+#define	MTI_FORCEM_SUP_AURORAOFTHERAGE01		1272
+#define	MTI_FORCEM_SUP_AURORAOFTHERAGE02		1273
+#define	MTI_FORCEM_SUP_AURORAOFTHERAGE03		1274
+#define	MTI_FORCEM_SUP_AURORAOFTHETENACITY01	1275
+#define	MTI_FORCEM_SUP_AURORAOFTHETENACITY02	1276
+#define	MTI_FORCEM_SUP_AURORAOFTHETENACITY03	1277
+#define	MTI_FORCEM_SUP_AURORAOFTHESPEED01		1278
+#define	MTI_FORCEM_SUP_AURORAOFTHESPEED02		1279
+#define	MTI_FORCEM_SUP_AURORAOFTHESPEED03		1280
+#define	MTI_FORCEM_SUP_AURORAOFTHEMAD01			1281
+#define	MTI_FORCEM_SUP_AURORAOFTHEMAD02			1282
+#define	MTI_FORCEM_SUP_AURORAOFTHEMAD03			1283
+
+//멘탈리스트
+#define	MTI_MENT_PSY_DARKNESSSCREAM01		1284
+#define	MTI_MENT_PSY_DARKNESSSCREAM02		1285
+#define	MTI_MENT_PSY_DARKNESSSCREAM03		1286
+#define	MTI_MENT_PSY_DARKNESSRAKE01			1287
+#define	MTI_MENT_PSY_DARKNESSRAKE02			1288
+#define	MTI_MENT_PSY_DARKNESSRAKE03			1289
+#define	MTI_MENT_PSY_ATTACKDECREASE01		1290
+#define	MTI_MENT_PSY_ATTACKDECREASE02		1291
+#define	MTI_MENT_PSY_ATTACKDECREASE03		1292
+#define	MTI_MENT_PSY_DEFENDERDECREASE01		1293
+#define	MTI_MENT_PSY_DEFENDERDECREASE02		1294
+#define	MTI_MENT_PSY_DEFENDERDECREASE03		1295
+#define	MTI_MENT_PSY_SPEEDDECREASE01		1296
+#define	MTI_MENT_PSY_SPEEDDECREASE02		1297
+#define	MTI_MENT_PSY_SPEEDDECREASE03		1298
+
+//엘리멘탈로드
+#define	MTI_ELE_MULTI_THUNDERBOLTS01		1299
+#define	MTI_ELE_MULTI_THUNDERBOLTS02		1300
+#define	MTI_ELE_MULTI_THUNDERBOLTS03		1301
+#define	MTI_ELE_MULTI_FINALSPEAR01			1302
+#define	MTI_ELE_MULTI_FINALSPEAR02			1303
+#define	MTI_ELE_MULTI_FINALSPEAR03			1304
+#define	MTI_ELE_MULTI_COSMICELEMENT01		1305
+#define	MTI_ELE_MULTI_COSMICELEMENT02		1306
+#define	MTI_ELE_MULTI_COSMICELEMENT03		1307
+#define	MTI_ELE_MULTI_SLEEPING01			1308
+#define	MTI_ELE_MULTI_SLEEPING02			1309
+#define	MTI_ELE_MULTI_SLEEPING03			1310
+
+
+//크랙슈터 크로스보우 
+
+#define	MTI_ACR_SUP_BOWMASTER_CRA			1378
+#define	MTI_ACR_BOW_JUNKBOW01_CRA			1379
+#define	MTI_ACR_BOW_AIMEDSHOT01_CRA			1380
+#define	MTI_ACR_BOW_SILENTSHOT01_CRA		1382
+#define	MTI_ACR_DEF_SUPPORT01_CRA			1383
+#define	MTI_ACR_BOW_ARROWRAIN01_CRA			1384
+#define	MTI_ACR_BOW_AUTOSHOT01_CRA			1386
+
+#define	MTI_RAG_SUP_FASTATTACK01_CRA		1397
+#define	MTI_RAG_BOW_ICEARROW01_CRA			1398
+#define	MTI_RAG_BOW_FLAMEARROW01_CRA		1399
+#define	MTI_RAG_BOW_PIRCINGARROW01_CRA		1400
+#define	MTI_RAG_BOW_POISONARROW01_CRA		1401
+#define	MTI_RAG_BOW_SILENTARROW01_CRA		1402
+#define	MTI_RAG_SUP_NATURE01_CRA			1403
+#define	MTI_RAG_BOW_TRIPLESHOT01_CRA		1404
+
+#define	MTI_CRA_BOW_RANGESTRIKE01_CRA			1446
+#define	MTI_CRA_SUP_POWERINCREASE01_CRA			1447
+#define	MTI_CRA_SUP_CONTROLINCREASE01_CRA		1448
+#define	MTI_CRA_SUP_HAWKEYE01_CRA				1449
+
+
+
 //날개모션
 #define	MTI_FSTAND1_D				1206
 #define	MTI_FIDLE1_D				1207
@@ -1099,6 +1767,25 @@
 #define MTI_FATK1_D				1216
 #define MTI_FATK2_D				1217
 #define MTI_FATK3_D				1218
+
+//유럽 신규 자동차 
+
+#define	MTI_GENFSTAND1_D				1223
+#define	MTI_GENFLTURN1_D				1226
+#define	MTI_GENFRTURN1_D				1228
+#define	MTI_GENFRUNNING1_D				1230
+#define	MTI_GENFDMG1_D					1232
+#define	MTI_GENFATK1_D					1233
+#define	MTI_GENFATK2_D					1234
+
+//동물 탈 것
+#define	MTI_FSTAND1_F						1457
+#define	MTI_GENFLTURN1_F					1460
+#define	MTI_GENFRTURN1_F					1462
+#define	MTI_GENFRUNNING1_F					1464
+#define	MTI_GENFDMG1_F						1466
+#define	MTI_GENFATK1_F						1467
+#define	MTI_GENFATK2_F						1468
 
 // parts
 #define HAIRMESH_01                            0

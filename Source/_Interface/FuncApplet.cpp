@@ -29,6 +29,7 @@
 #include "WndBuffStatus.h"
 #include "Wnd2ndPassword.h"
 #include "WndEquipmentSex.h"
+#include "WndSkillTree.h"
 
 #ifdef __NEW_WEB_BOX
 #include "WndHelperWebBox.h"
@@ -76,7 +77,13 @@ void CWndMgr::AddAllApplet() {
 	AddAppletFunc(WindowBuilder<CWndInventory>    , APP_INVENTORY               , _T( "WndInventory" )    , _T( "Icon_Inventory.dds" )    , GETTEXT( TID_TIP_INVENTORY      ), 'I' );
 	
 	AddAppletFunc(WindowBuilder<CWndWebBox>       , APP_WEBBOX                  , _T( "WebBox" )          , _T( "Icon_CitemMall.dds" )    , GETTEXT( TID_TIP_ITEMMALL       ), 0 );
-	AddAppletFunc(WindowBuilder<CWndSkillTreeEx>  , APP_SKILL3                  , _T( "WndSkill"     )    , _T( "Icon_Skill.dds"     )    , GETTEXT( TID_TIP_SKILL          ), 'K' );
+	
+	if (APP_SKILL_ == APP_SKILL3) {
+		AddAppletFunc(WindowBuilder<CWndSkillTreeEx>, APP_SKILL3, _T("WndSkill"), _T("Icon_Skill.dds"), GETTEXT(TID_TIP_SKILL), 'K');
+	} else if (APP_SKILL_ == APP_SKILL_V16) {
+		AddAppletFunc(WindowBuilder<CWndSkill_16>, APP_SKILL_V16, _T("WndSkill"), _T("Icon_Skill.dds"), GETTEXT(TID_TIP_SKILL), 'K');
+	}
+	
 
 	AddAppletFunc(WindowBuilder<CWndMotion>       , APP_MOTION                  , _T( "WndMotion"    )    , _T( "Icon_Motion.dds"   )     , GETTEXT( TID_TIP_MOTION         ),  'O'  );
 	AddAppletFunc(WindowBuilder<CWndTrade>        , APP_TRADE                   , _T( "WndTrade"     )    , _T( "Icon_Trade.dds"     )    , GETTEXT( TID_TIP_TRADE          ),  0  );

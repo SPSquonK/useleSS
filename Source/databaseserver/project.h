@@ -138,7 +138,7 @@ public:
 	void	LoadBeginPos( void );
 	std::optional<D3DXVECTOR3> GetRandomBeginPos(DWORD dwWorldID) const;
 	BOOL	LoadPropMover( LPCTSTR lpszFileName );
-	BOOL	LoadPropItem( LPCTSTR lpszFileName, CFixedArray<ItemProp>* apObjProp );
+	BOOL	LoadPropItem( LPCTSTR lpszFileName, CFixedArray<ItemProp>* apObjProp, LoadPropItemStyle style = LoadPropItemStyle::V15);
 	BOOL	LoadDefOfWorld( LPCTSTR lpszFileName );
 	BOOL	LoadText( LPCTSTR lpszFileName );
 	LPCTSTR GetText( DWORD dwIndex ) 

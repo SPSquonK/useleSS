@@ -239,12 +239,31 @@ void CWndBuffStatus::RenderBuffIcon(C2DRender * p2DRender, IBuff * pBuff, const 
 	CWndMgr::CTooltipBuilder::PutDestParam(pItem->dwDestParam[0], pItem->dwDestParam[1],
 		pItem->nAdjParamVal[0], pItem->nAdjParamVal[1], strEdit);
 
-	if (pBuff->GetType() == BUFF_SKILL &&
-		pBuff->GetId() != SI_RIG_MASTER_BLESSING &&
-		pBuff->GetId() != SI_ASS_CHEER_STONEHAND &&
-		pBuff->GetId() != SI_MAG_EARTH_LOOTING &&
-		pBuff->GetId() != SI_ASS_HEAL_PREVENTION)
-	{
+	bool show = true;
+
+	if (pBuff->GetType() == BUFF_SKILL) {
+
+		switch (pBuff->GetId()) {
+			case SI_RIG_MASTER_BLESSING:
+			case SI_ASS_CHEER_STONEHAND:
+			case SI_MAG_EARTH_LOOTING:
+			case SI_ASS_HEAL_PREVENTION:
+				show = false;
+				break;
+			case SI_FLO_SUP_ABSOLUTE:
+				CWndMgr::CTooltipBuilder::PutDestParam(
+					SINGLE_DST{
+						.nDst = DST_IGNORE_DMG_PVP,
+						.nAdj = g_pPlayer->GetParam(DST_IGNORE_DMG_PVP, 0)
+					},
+					strEdit
+				);
+				show = false;
+				break;
+		}
+	}
+
+	if (show) {
 		const AddSkillProp * pAddSkillProp = prj.GetAddSkillProp(pItem->dwSubDefine, pBuff->GetLevel());
 
 		if (pAddSkillProp) {

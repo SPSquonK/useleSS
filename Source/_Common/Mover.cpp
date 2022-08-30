@@ -1068,12 +1068,10 @@ void CMover::ProcessAbnormalState()
 
 		if( m_nHealCnt == 0 )
 		{
-			// HP가 30% 이하로 내려갔을 시, 정해진 수치만큼 HP가 채워진다. 쿨타임 6초
-//			if( IsLive() && GetHitPointPercent( 100 ) <= 30 )
 			if( IsLive() )
 			{
-				m_nHealCnt	= (short)( PROCESS_COUNT * 6.0f );		// 쿨타임 6초
-				SetPointParam( DST_HP, nHeal );
+				m_nHealCnt	= PROCESS_COUNT * 2;		// 쿨타임 6초
+				IncHitPoint(nHeal);
 			}
 		}
 	}
@@ -1353,51 +1351,64 @@ void CMover::InitLevel( int nJob, LONG nLevel ) {
 	m_nJob = nJob;
 
 	int nPoint = 0;
-	if( m_nLevel <= 20 )
-		nPoint = 2 * m_nLevel - 2;	
-	else if( m_nLevel <= 40 )
-		nPoint = 3 * m_nLevel - 22;	
-	else if( m_nLevel <= 60 )
-		nPoint = 4 * m_nLevel - 62;	
-	else if( m_nLevel <= 80 )
-		nPoint = 5 * m_nLevel - 122;	
-	else if( m_nLevel <= 100 )
-		nPoint = 6 * m_nLevel - 202;	
-	else
-		nPoint = 7 * m_nLevel - 302;		
+	if (GetJobType() >= JTYPE_MASTER) {
+		// Masters and more should be able to max all skills
+		for (const SKILL & skill : m_jobSkills) {
+			const ItemProp * propSkill = skill.GetProp();
+			if (propSkill) {
+				nPoint += propSkill->dwExpertMax * prj.GetSkillPoint(propSkill);
+			}
+		}
+	} else {
+		if (m_nLevel <= 20)
+			nPoint = 2 * m_nLevel - 2;
+		else if (m_nLevel <= 40)
+			nPoint = 3 * m_nLevel - 22;
+		else if (m_nLevel <= 60)
+			nPoint = 4 * m_nLevel - 62;
+		else if (m_nLevel <= 80)
+			nPoint = 5 * m_nLevel - 122;
+		else if (m_nLevel <= 100)
+			nPoint = 6 * m_nLevel - 202;
+		else
+			nPoint = 7 * m_nLevel - 302;
 
-	if( m_nJob == JOB_MERCENARY )
-		nPoint += 40;
-	else if( m_nJob == JOB_ACROBAT )
-		nPoint += 50;
-	else if( m_nJob == JOB_ASSIST )
-		nPoint += 60;
-	else if( m_nJob == JOB_MAGICIAN )
-		nPoint += 90;
-	else if( m_nJob ==  JOB_KNIGHT || m_nJob ==  JOB_BLADE )
-		nPoint += 120;
-	else if( m_nJob ==  JOB_JESTER || m_nJob ==  JOB_RANGER )
-		nPoint += 150;
-	else if( m_nJob ==  JOB_RINGMASTER )
-		nPoint += 160;
-	else if( m_nJob ==  JOB_BILLPOSTER || m_nJob ==  JOB_PSYCHIKEEPER )
-		nPoint += 180;
-	else if( m_nJob ==  JOB_ELEMENTOR )
-		nPoint += 390;
+		if (m_nJob == JOB_MERCENARY)
+			nPoint += 40;
+		else if (m_nJob == JOB_ACROBAT)
+			nPoint += 50;
+		else if (m_nJob == JOB_ASSIST)
+			nPoint += 60;
+		else if (m_nJob == JOB_MAGICIAN)
+			nPoint += 90;
+		else if (m_nJob == JOB_KNIGHT || m_nJob == JOB_BLADE)
+			nPoint += 120;
+		else if (m_nJob == JOB_JESTER || m_nJob == JOB_RANGER)
+			nPoint += 150;
+		else if (m_nJob == JOB_RINGMASTER)
+			nPoint += 160;
+		else if (m_nJob == JOB_BILLPOSTER || m_nJob == JOB_PSYCHIKEEPER)
+			nPoint += 180;
+		else if (m_nJob == JOB_ELEMENTOR)
+			nPoint += 390;
+	}
+		 
 	m_nSkillLevel = m_nSkillPoint = nPoint;
 
 	m_nDeathLevel = nLevel;
 
-	const DWORD masterSkillLevel =
-		nLevel <  72 ? 1 :
-		nLevel <  84 ? 2 :
-		nLevel <  96 ? 3 :
-		nLevel < 108 ? 4 : 5;
+	if (GetJobType() >= JTYPE_MASTER) {
+		const DWORD masterSkillLevel =
+			nLevel < 72 ? 1 :
+			nLevel < 84 ? 2 :
+			nLevel < 96 ? 3 :
+			nLevel < 108 ? 4 : 5;
 
-	for (SKILL & skill : m_jobSkills) {
-		const ItemProp * skillProp = skill.GetProp();
-		if (skillProp && skillProp->dwItemKind1 == JTYPE_MASTER) {
-			skill.dwLevel = masterSkillLevel;
+		for (SKILL & skill : m_jobSkills) {
+			const ItemProp * skillProp = skill.GetProp();
+			if (skillProp && skillProp->dwItemKind1 == JTYPE_MASTER) {
+				skill.dwLevel = masterSkillLevel;
+			}
 		}
 	}
 
@@ -1479,31 +1490,11 @@ BOOL CMover::InitSkillExp() {
 int CMover::GetCurrentMaxSkillPoint() const {
 	int nCurrentMaxSkillPoint = m_nSkillPoint;
 	for (const SKILL & skill : m_jobSkills) {
-		const ItemProp * pSkillProp = skill.GetProp();
+		const ItemProp * const pSkillProp = skill.GetProp();
 		if (!pSkillProp) continue;
-
-		if (skill.dwLevel == 0) continue;
-
-		if (pSkillProp->dwItemKind1 == JTYPE_MASTER
-			|| pSkillProp->dwItemKind1 == JTYPE_HERO) {
-			continue;
-		}
 
 		nCurrentMaxSkillPoint += skill.dwLevel * prj.GetSkillPoint(pSkillProp);
 	}
-
-	int nMaxPoint = 1280;	// 최대인 JOB_ELEMENTOR 꺼로 설정함
-	if( m_nJob == JOB_KNIGHT || m_nJob == JOB_BLADE || m_nJob == JOB_KNIGHT_MASTER || m_nJob == JOB_BLADE_MASTER || m_nJob == JOB_KNIGHT_HERO || m_nJob == JOB_BLADE_HERO )
-		nMaxPoint = 870;
-	else if( m_nJob == JOB_JESTER || m_nJob == JOB_RANGER || m_nJob == JOB_JESTER_MASTER || m_nJob == JOB_RANGER_MASTER || m_nJob == JOB_JESTER_HERO || m_nJob == JOB_RANGER_HERO )
-		nMaxPoint = 910;
-	else if( m_nJob == JOB_RINGMASTER || m_nJob == JOB_RINGMASTER_MASTER || m_nJob == JOB_RINGMASTER_HERO )
-		nMaxPoint = 902;
-	else if( m_nJob == JOB_BILLPOSTER || m_nJob == JOB_PSYCHIKEEPER || m_nJob == JOB_BILLPOSTER_MASTER || m_nJob == JOB_PSYCHIKEEPER_MASTER || m_nJob == JOB_BILLPOSTER_HERO || m_nJob == JOB_PSYCHIKEEPER_HERO )
-		nMaxPoint = 950;
-
-	if( nCurrentMaxSkillPoint > nMaxPoint)
-		nCurrentMaxSkillPoint = nMaxPoint;
 
 	return nCurrentMaxSkillPoint;
 }
@@ -7243,27 +7234,7 @@ void CMover::ProcInstantGC()
 }
 #endif	// __WORLDSERVER
 
-void CMover::AddSkillPoint( int nPoint )
-{
-	int nMaxPoint = 1280;	// 최대인 JOB_ELEMENTOR 꺼로 설정함
-	if( IsPro() )
-	{
-		if( m_nJob == JOB_KNIGHT || m_nJob == JOB_BLADE )
-			nMaxPoint = 870;
-		else if( m_nJob == JOB_JESTER || m_nJob == JOB_RANGER )
-			nMaxPoint = 910;
-		else if( m_nJob == JOB_RINGMASTER )
-			nMaxPoint = 902;
-		else if( m_nJob == JOB_BILLPOSTER || m_nJob == JOB_PSYCHIKEEPER )
-			nMaxPoint = 950;
-	}
-
-	if( m_nSkillLevel >= nMaxPoint )
-		return;
-
-	if( nMaxPoint < m_nSkillLevel + nPoint )	// 더 해지면 넘는 경우(현재 넘지 않음)
-		nPoint = nMaxPoint - m_nSkillLevel;	// 맥스치에 모자른 만큼만 포인트 지급
-
+void CMover::AddSkillPoint(const int nPoint) {
 	m_nSkillPoint += nPoint;
 	m_nSkillLevel += nPoint;
 }

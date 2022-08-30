@@ -1,7 +1,7 @@
 #ifndef __2DRENDER_H
 #define __2DRENDER_H
 
-
+#include <exception>
 
 #ifdef __CLIENT
 #include "mempooler.h"
@@ -256,11 +256,8 @@ public:
 	CTexturePack();
 	~CTexturePack();
 
-	HRESULT		RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
-	HRESULT		InvalidateDeviceObjects();
-
 	BOOL DeleteDeviceObjects();
-	DWORD GetNumber() { return m_dwNumber; }
+	[[nodiscard]] DWORD GetNumber() const noexcept { return m_dwNumber; }
 	void MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, TEXTUREVERTEX** ppVertices );
 	void MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, TEXTUREVERTEX2** ppVertices, DWORD dwColor );
 	void Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertices, int nVertexNum );
@@ -274,12 +271,9 @@ public:
 	}
 	void Render( C2DRender* p2DRender, CPoint pt, DWORD dwIndex, DWORD dwBlendFactorAlhpa = 255, FLOAT fScaleX=1.0f , FLOAT fScaleY=1.0f ) 
 	{
-		if( ((int)dwIndex >= (int)m_dwNumber) || (int)dwIndex < 0 )
-		{
-			LPCTSTR szErr = Error( "CTexturePack::Render : 범위를 벗어남 %d", (int)dwIndex );
-			//ADDERRORMSG( szErr );
-			int *p = NULL;
-			*p = 1;
+		if (dwIndex >= m_dwNumber || (int)dwIndex < 0) {
+			Error("CTexturePack::Render : %lu", dwIndex);
+			throw std::exception("Trying to render an unexisting texture");
 		}
 		p2DRender->RenderTexture( pt, &m_ap2DTexture[ dwIndex ], dwBlendFactorAlhpa, fScaleX , fScaleY ); 
 	}
@@ -339,9 +333,6 @@ public:
 
 	CDamageNumMng() { D3DXMatrixIdentity(&m_matWorld); };
 	~CDamageNumMng();
-
-	HRESULT		RestoreDeviceObjects();
-	HRESULT		InvalidateDeviceObjects();
 
 	BOOL DeleteDeviceObjects();
 	void LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice);

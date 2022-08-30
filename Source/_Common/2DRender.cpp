@@ -1402,14 +1402,6 @@ BOOL CTexturePack::DeleteDeviceObjects()
 	SAFE_DELETE_ARRAY( m_ap2DTexture );
 	return TRUE;
 }
-HRESULT	CTexturePack::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-	return S_OK;
-}
-HRESULT	CTexturePack::InvalidateDeviceObjects()
-{
-	return S_OK;
-}
 
 void CTexturePack::MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, TEXTUREVERTEX** ppVertices )
 {
@@ -1940,17 +1932,6 @@ void CDamageNumMng::AddNumber(D3DXVECTOR3 vPos,DWORD nNumber,DWORD nAttribute)
 {
 	CDamageNum* pDamagenum=new CDamageNum(vPos,nNumber,nAttribute);
 	m_Array.Add(pDamagenum);
-}
-
-HRESULT	CDamageNumMng::RestoreDeviceObjects()
-{
-	m_textPackNum.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-	return S_OK;
-}
-HRESULT	CDamageNumMng::InvalidateDeviceObjects()
-{
-	m_textPackNum.InvalidateDeviceObjects();
-	return S_OK;
 }
 
 void CDamageNumMng::Process()

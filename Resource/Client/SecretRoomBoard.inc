@@ -1,5 +1,8 @@
 #b#cff0000ff Entry Information#nb#nc
-* Application Period : Secret Room closing  ~ Sunday 12:00
+* Application Period
+EN -> Secret Room closing  ~ Sunday 12:00
+US -> Secret Room closing  ~ Sunday 21:00
+* All times in UTC
 * Area : First sub server of each server set
 * Condition
  - Only the Guildmaster applies for the Secret Room
@@ -8,9 +11,16 @@
  - GuildMaster must participate
  - Top 8 highest bidding Guilds join(Until the end of the Application Period)
 * Process
+[EN]
  - 12:00  Secrect Room opens
  - 13:00  Entry
  - 13:10  Battle starts 
+
+[US]
+ - 21:00  Secrect Room opens
+ - 22:00  Entry
+ - 22:10  Battle starts 
+
 #b#cffff0000¡Ø Secret Room opens at least 1 Guild's application.#nb#nc
 
 #b#cff0000ff Basic Rules#nb#nc

@@ -1,9 +1,11 @@
 #include "StdAfx.h"
+#include "WndSkillTree.h"
 #include "WndField.h"
 #include "AppDefine.h"
 #include "defineSkill.h"
 #include "defineText.h"
 #include "DPClient.h"
+#include "sqktd/algorithm.h"
 
 /////////////
 
@@ -13,7 +15,7 @@ CWndReSkillWarning::~CWndReSkillWarning() {
 
 void CWndReSkillWarning::OnDestroy() {
 	if (m_bParentDestroy) {
-		g_WndMng.GetWndBase(APP_SKILL3)->Destroy();
+		g_WndMng.GetWndBase(APP_SKILL_)->Destroy();
 	}
 }
 
@@ -34,9 +36,9 @@ BOOL CWndReSkillWarning::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
 
 BOOL CWndReSkillWarning::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	if (nID == WIDC_BTN_YES || message == EN_RETURN) {
-		CWndSkillTreeEx * pSkillTree = (CWndSkillTreeEx *)g_WndMng.GetWndBase(APP_SKILL3);
-		if (pSkillTree)
+		if (auto * pSkillTree = g_WndMng.GetWndBase<CWndSkillTreeCommon>(APP_SKILL_)) {
 			g_DPlay.SendDoUseSkillPoint(pSkillTree->GetSkills());
+		}
 
 		Destroy();
 	} else if (nID == WIDC_BTN_NO) {
@@ -46,12 +48,502 @@ BOOL CWndReSkillWarning::OnChildNotify(UINT message, UINT nID, LRESULT * pLResul
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
-//////////////
-
-CWndSkillTreeEx::~CWndSkillTreeEx() {
-	DeleteDeviceObjects();
+void CWndSkillTreeCommon::ReInitIfOpen() {
+	if (APP_SKILL_ == APP_SKILL3) {
+		CWndSkillTreeEx * wnd = g_WndMng.GetWndBase<CWndSkillTreeEx>(APP_SKILL3);
+		if (wnd) wnd->InitItem();
+	} else if (APP_SKILL_ == APP_SKILL_V16) {
+		CWndSkill_16 * wnd = g_WndMng.GetWndBase<CWndSkill_16>(APP_SKILL_V16);
+		if (wnd) wnd->InitItem();
+	}
 }
+
+///////////////////////////////////////
+
+const char * CWndSkillTreeCommon::GetBackgroundFilename(const int nJob) {
+	switch (nJob) {
+		case JOB_VAGRANT:							return "ImgSkillVagrant.tga";
+		case JOB_MERCENARY:						return "Back_Me.TGA";
+		case JOB_ACROBAT:							return "Back_Acr.tga";
+		case JOB_ASSIST:							return "Back_As.TGA";
+		case JOB_MAGICIAN:						return "Back_Ma.TGA";
+		case JOB_KNIGHT:							return "Back_Night.TGA";
+		case JOB_BLADE:								return "Back_Blade.TGA";
+		case JOB_BILLPOSTER:					return "Back_Bill.TGA";
+		case JOB_RINGMASTER:					return "Back_Ring.TGA";
+		case JOB_ELEMENTOR:						return "Back_Ele.TGA";
+		case JOB_PSYCHIKEEPER:				return "Back_Psy.TGA";
+		case JOB_JESTER:							return "Back_Jst.TGA";
+		case JOB_RANGER:							return "Back_Rag.TGA";
+		case JOB_LORDTEMPLER_HERO:		return "SkillTreeLord.tga";
+		case JOB_STORMBLADE_HERO:			return "SkillTreeStormb.tga";
+		case JOB_WINDLURKER_HERO:			return "SkillTreeWindI.tga";
+		case JOB_CRACKSHOOTER_HERO:		return "SkillTreeCracks.tga";
+		case JOB_FLORIST_HERO:				return "SkillTreeFlor.tga";
+		case JOB_FORCEMASTER_HERO:		return "SkillTreeForcm.tga";
+		case JOB_MENTALIST_HERO:			return "SkillTreeMent.tga";
+		case JOB_ELEMENTORLORD_HERO:	return "SkillTreeElel.tga";
+		default:
+			Error(__FUNCTION__"(): Invalid job %d", nJob);
+			return nullptr;
+	}
+}
+
+std::unique_ptr<IMAGE> CWndSkillTreeCommon::GetBackgroundImage(const int nJob) {
+	const char * background = GetBackgroundFilename(nJob);
+	if (!background) return nullptr;
+
+	std::unique_ptr<IMAGE> image = std::make_unique<IMAGE>();
+
+	if (LoadImage(MakePath(DIR_THEME, background), image.get()) == FALSE) {
+		Error("Could not load skill background %s (job %d)", background, nJob);
+		return nullptr;
+	}
+
+	return image;
+}
+
+const char * CWndSkillTreeCommon::GetHeroBackground(const int nJob) {
+	// Master Skill is 1 Lv from the start, so the background image is excluded from skill icon image.
+	switch (nJob) {
+		case JOB_KNIGHT_HERO:
+		case JOB_LORDTEMPLER_HERO:
+			return "Back_Hero_KntDrawing.tga";
+		case JOB_BLADE_HERO:
+		case JOB_STORMBLADE_HERO:
+			return "Back_Hero_BldDefence.tga";
+		case JOB_BILLPOSTER_HERO:
+		case JOB_FORCEMASTER_HERO:
+			return "Back_Hero_BilDisEnchant.tga";
+		case JOB_RINGMASTER_HERO:
+		case JOB_FLORIST_HERO:
+			return "Back_Hero_RigReturn.tga";
+		case JOB_ELEMENTOR_HERO:
+		case JOB_ELEMENTORLORD_HERO:
+			return "Back_Hero_EleCursemind.tga";
+		case JOB_PSYCHIKEEPER_HERO:
+		case JOB_MENTALIST_HERO:
+			return "Back_Hero_PsyStone.tga";
+		case JOB_JESTER_HERO:
+		case JOB_WINDLURKER_HERO:
+			return "Back_Hero_JstSilence.tga";
+		case JOB_RANGER_HERO:
+		case JOB_CRACKSHOOTER_HERO:
+			return "Back_Hero_RagHawkeye.tga";
+		default:
+			return nullptr;
+	}
+}
+
+std::optional<CWndSkillTreeCommon::JobSkillPositionInfo> CWndSkillTreeCommon::GetSkillIconInfo(const DWORD dwSkillID) {
+	using enum TabType;
+
+	switch (dwSkillID) {
+		// Vagrant
+		case SI_VAG_ONE_CLEANHIT:   return TabPosition(Vagrant, 94, 149);
+		case SI_VAG_ONE_BRANDISH:   return TabPosition(Vagrant, 144, 149);
+		case SI_VAG_ONE_OVERCUTTER: return TabPosition(Vagrant, 194, 149);
+		// Mercenary
+		case SI_MER_ONE_SPLMASH:				return TabPosition(Expert, 34, 109);
+		case SI_MER_SHIELD_PROTECTION:	return TabPosition(Expert, 34, 161);
+		case SI_MER_ONE_KEENWHEEL:			return TabPosition(Expert, 84, 97);
+		case SI_MER_ONE_BLOODYSTRIKE:		return TabPosition(Expert, 84, 123);
+		case SI_MER_SUP_IMPOWERWEAPON:	return TabPosition(Expert, 84, 175);
+		case SI_MER_SHIELD_PANBARRIER:	return TabPosition(Expert, 84, 149);
+		case SI_MER_ONE_BLINDSIDE:			return TabPosition(Expert, 134, 97);
+		case SI_MER_ONE_REFLEXHIT:			return TabPosition(Expert, 134, 123);
+		case SI_MER_ONE_SNEAKER:				return TabPosition(Expert, 134, 149);
+		case SI_MER_SUP_SMITEAXE:				return TabPosition(Expert, 134, 175);
+		case SI_MER_SUP_BLAZINGSWORD:		return TabPosition(Expert, 134, 201);
+		case SI_MER_ONE_SPECIALHIT:			return TabPosition(Expert, 184, 97);
+		case SI_MER_ONE_GUILOTINE:			return TabPosition(Expert, 184, 123);
+		case SI_MER_SUP_AXEMASTER:			return TabPosition(Expert, 184, 175);
+		case SI_MER_SUP_SWORDMASTER:		return TabPosition(Expert, 184, 201);
+
+		// Knight
+		case SI_KNT_TWOSW_CHARGE:				return TabPosition(Pro, 34, 260 - 138);
+		case SI_KNT_TWOAX_PAINDEALER:		return TabPosition(Pro, 34, 286 - 138);
+		case SI_KNT_SUP_GUARD:					return TabPosition(Pro, 34, 312 - 138);
+		case SI_KNT_TWOSW_EARTHDIVIDER:	return TabPosition(Pro, 84, 260 - 138);
+		case SI_KNT_TWOAX_POWERSTUMP:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_KNT_SUP_RAGE:						return TabPosition(Pro, 84, 312 - 138);
+		case SI_KNT_TWO_POWERSWING:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_KNT_SUP_PAINREFLECTION:	return TabPosition(Pro, 134, 312 - 138);
+
+		// Blade
+		case SI_BLD_DOUBLESW_SILENTSTRIKE:	return TabPosition(Pro, 34, 260 - 138);
+		case SI_BLD_DOUBLEAX_SPRINGATTACK:	return TabPosition(Pro, 34, 286 - 138);
+		case SI_BLD_DOUBLE_ARMORPENETRATE:	return TabPosition(Pro, 34, 312 - 138);
+		case SI_BLD_DOUBLESW_BLADEDANCE:		return TabPosition(Pro, 84, 260 - 138);
+		case SI_BLD_DOUBLEAX_HAWKATTACK:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_BLD_SUP_BERSERK:						return TabPosition(Pro, 84, 312 - 138);
+		case SI_BLD_DOUBLE_CROSSSTRIKE:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_BLD_DOUBLE_SONICBLADE:			return TabPosition(Pro, 134, 312 - 138);
+
+		// Assist
+		case SI_ASS_HEAL_HEALING:					return TabPosition(Expert, 18, 135);
+		case SI_ASS_HEAL_PATIENCE:				return TabPosition(Expert, 64, 109);
+		case SI_ASS_CHEER_QUICKSTEP:			return TabPosition(Expert, 64, 135);
+		case SI_ASS_CHEER_MENTALSIGN:			return TabPosition(Expert, 64, 161);
+		case SI_ASS_KNU_TAMPINGHOLE:			return TabPosition(Expert, 64, 187);
+		case SI_ASS_HEAL_RESURRECTION:		return TabPosition(Expert, 110, 109);
+		case SI_ASS_CHEER_HASTE:					return TabPosition(Expert, 110, 135);
+		case SI_ASS_CHEER_HEAPUP:					return TabPosition(Expert, 110, 161);
+		case SI_ASS_CHEER_STONEHAND:			return TabPosition(Expert, 110, 187);
+		case SI_ASS_CHEER_CIRCLEHEALING:	return TabPosition(Expert, 156, 109);
+		case SI_ASS_CHEER_CATSREFLEX:			return TabPosition(Expert, 156, 135);
+		case SI_ASS_CHEER_BEEFUP:					return TabPosition(Expert, 156, 161);
+		case SI_ASS_KNU_BURSTCRACK:				return TabPosition(Expert, 156, 187);
+		case SI_ASS_HEAL_PREVENTION:			return TabPosition(Expert, 202, 109);
+		case SI_ASS_CHEER_CANNONBALL:			return TabPosition(Expert, 202, 135);
+		case SI_ASS_CHEER_ACCURACY:				return TabPosition(Expert, 202, 161);
+		case SI_ASS_KNU_POWERFIST:				return TabPosition(Expert, 202, 187);
+
+		// Ringmaster
+		case SI_RIN_SUP_PROTECT:						return TabPosition(Pro, 34, 260 - 138);
+		case SI_RIN_SUP_HOLYCROSS:					return TabPosition(Pro, 34, 286 - 138);
+		case SI_RIN_HEAL_GVURTIALLA:				return TabPosition(Pro, 34, 312 - 138);
+		case SI_RIN_SUP_HOLYGUARD:					return TabPosition(Pro, 84, 260 - 138);
+		case SI_RIN_SUP_SPIRITUREFORTUNE:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_RIN_HEAL_HEALRAIN:					return TabPosition(Pro, 84, 312 - 138);
+		case SI_RIN_SQU_GEBURAHTIPHRETH:		return TabPosition(Pro, 134, 272 - 138);
+		case SI_RIN_SUP_MERKABAHANZELRUSHA:	return TabPosition(Pro, 134, 312 - 138);
+
+		// Billposter
+		case SI_BIL_KNU_BELIALSMESHING:		return TabPosition(Pro, 34, 260 - 138);
+		case SI_BIL_PST_ASMODEUS:					return TabPosition(Pro, 34, 286 - 138);
+		case SI_BIL_KNU_BLOODFIST:				return TabPosition(Pro, 84, 260 - 138);
+		case SI_BIL_PST_BARAQIJALESNA:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_BIL_KNU_PIERCINGSERPENT:	return TabPosition(Pro, 134, 260 - 138);
+		case SI_BIL_PST_BGVURTIALBOLD:		return TabPosition(Pro, 134, 286 - 138);
+		case SI_BIL_KNU_SONICHAND:				return TabPosition(Pro, 184, 272 - 138);
+		case SI_BIL_PST_ASALRAALAIKUM:		return TabPosition(Pro, 184, 312 - 138);
+
+		// Magician
+		case SI_MAG_MAG_MENTALSTRIKE:						return TabPosition(Expert, 34, 96);
+		case SI_MAG_MAG_BLINKPOOL: 							return TabPosition(Expert, 34, 148);
+		case SI_MAG_FIRE_BOOMERANG:							return TabPosition(Expert, 84, 96);
+		case SI_MAG_WIND_SWORDWIND:							return TabPosition(Expert, 84, 122);
+		case SI_MAG_WATER_ICEMISSILE:						return TabPosition(Expert, 84, 148);
+		case SI_MAG_ELECTRICITY_LIGHTINGBALL:		return TabPosition(Expert, 84, 174);
+		case SI_MAG_EARTH_SPIKESTONE:						return TabPosition(Expert, 84, 200);
+		case SI_MAG_FIRE_HOTAIR:								return TabPosition(Expert, 134, 96);
+		case SI_MAG_WIND_STRONGWIND:						return TabPosition(Expert, 134, 122);
+		case SI_MAG_WATER_WATERBALL:						return TabPosition(Expert, 134, 148);
+		case SI_MAG_ELECTRICITY_LIGHTINGPARM:		return TabPosition(Expert, 134, 174);
+		case SI_MAG_EARTH_ROCKCRASH:						return TabPosition(Expert, 134, 200);
+		case SI_MAG_FIRE_FIRESTRIKE:						return TabPosition(Expert, 184, 96);
+		case SI_MAG_WIND_WINDCUTTER:						return TabPosition(Expert, 184, 122);
+		case SI_MAG_WATER_SPRINGWATER:					return TabPosition(Expert, 184, 148);
+		case SI_MAG_ELECTRICITY_LIGHTINGSHOCK:	return TabPosition(Expert, 184, 174);
+		case SI_MAG_EARTH_LOOTING:							return TabPosition(Expert, 184, 200);
+
+		// Elementor
+		case SI_ELE_FIRE_FIREBIRD:							return TabPosition(Pro, 34, 234 - 138);
+		case SI_ELE_EARTH_STONESPEAR:						return TabPosition(Pro, 34, 260 - 138);
+		case SI_ELE_WIND_VOID:									return TabPosition(Pro, 34, 286 - 138);
+		case SI_ELE_ELECTRICITY_THUNDERSTRIKE:	return TabPosition(Pro, 34, 312 - 138);
+		case SI_ELE_WATER_ICESHARK:							return TabPosition(Pro, 34, 338 - 138);
+		case SI_ELE_FIRE_BURINGFIELD:						return TabPosition(Pro, 84, 234 - 138);
+		case SI_ELE_EARTH_EARTHQUAKE:						return TabPosition(Pro, 84, 260 - 138);
+		case SI_ELE_WIND_WINDFIELD:							return TabPosition(Pro, 84, 286 - 138);
+		case SI_ELE_ELECTRICITY_ELETRICSHOCK:		return TabPosition(Pro, 84, 312 - 138);
+		case SI_ELE_WATER_POISONCLOUD:					return TabPosition(Pro, 84, 338 - 138);
+		case SI_ELE_MULTY_METEOSHOWER:					return TabPosition(Pro, 134, 246 - 138);
+		case SI_ELE_MULTY_SANDSTORM:						return TabPosition(Pro, 134, 272 - 138);
+		case SI_ELE_MULTY_LIGHTINGSTORM:				return TabPosition(Pro, 134, 298 - 138);
+		case SI_ELE_MULTY_AVALANCHE:						return TabPosition(Pro, 134, 338 - 138);
+		case SI_ELE_FIRE_FIREMASTER:						return TabPosition(Pro, 184, 234 - 138);
+		case SI_ELE_EARTH_EARTHMASTER:					return TabPosition(Pro, 184, 260 - 138);
+		case SI_ELE_WIND_WINDMASTER:						return TabPosition(Pro, 184, 286 - 138);
+		case SI_ELE_ELECTRICITY_LIGHTINGMASTER:	return TabPosition(Pro, 184, 312 - 138);
+		case SI_ELE_WATER_WATERMASTER:					return TabPosition(Pro, 184, 338 - 138);
+
+		// Psych... Sorcerer :>
+		case SI_PSY_NLG_DEMONOLGY:			return TabPosition(Pro, 34, 260 - 138);
+		case SI_PSY_PSY_PSYCHICBOMB:		return TabPosition(Pro, 34, 286 - 138);
+		case SI_PSY_NLG_CRUCIOSPELL:		return TabPosition(Pro, 34, 312 - 138);
+		case SI_PSY_NLG_SATANOLGY:			return TabPosition(Pro, 84, 260 - 138);
+		case SI_PSY_PSY_SPRITBOMB:			return TabPosition(Pro, 84, 286 - 138);
+		case SI_PSY_PSY_MAXIMUMCRISIS:	return TabPosition(Pro, 84, 312 - 138);
+		case SI_PSY_PSY_PSYCHICWALL:		return TabPosition(Pro, 134, 272 - 138);
+		case SI_PSY_PSY_PSYCHICSQUARE:	return TabPosition(Pro, 134, 312 - 138);
+
+		// Acrobat
+		case SI_ACR_YOYO_PULLING:				return TabPosition(Expert, 34, 97);
+		case SI_ACR_SUP_SLOWSTEP:				return TabPosition(Expert, 34, 123);
+		case SI_ACR_BOW_JUNKBOW:				return TabPosition(Expert, 34, 175);
+		case SI_ACR_SUP_FASTWALKER:			return TabPosition(Expert, 84, 96);
+		case SI_ACR_SUP_YOYOMASTER:			return TabPosition(Expert, 84, 122);
+		case SI_ACR_SUP_BOWMASTER: 			return TabPosition(Expert, 84, 174);
+		case SI_ACR_SUP_DARKILLUSION:		return TabPosition(Expert, 134, 96);
+		case SI_ACR_YOYO_SNITCH:				return TabPosition(Expert, 134, 122);
+		case SI_ACR_YOYO_CROSSLINE:			return TabPosition(Expert, 134, 149);
+		case SI_ACR_BOW_SILENTSHOT:			return TabPosition(Expert, 134, 174);
+		case SI_ACR_BOW_AIMEDSHOT:			return TabPosition(Expert, 134, 200);
+		case SI_ACR_YOYO_ABSOLUTEBLOCK:	return TabPosition(Expert, 184, 96);
+		case SI_ACR_YOYO_DEADLYSWING:		return TabPosition(Expert, 184, 122);
+		case SI_ACR_YOYO_COUNTER:				return TabPosition(Expert, 184, 149);
+		case SI_ACR_BOW_AUTOSHOT:				return TabPosition(Expert, 184, 174);
+		case SI_ACR_BOW_ARROWRAIN:			return TabPosition(Expert, 184, 200);
+
+		// Jester
+		case SI_JST_SUP_POISON:					return TabPosition(Pro, 34, 260 - 138);
+		case SI_JST_SUP_BLEEDING:				return TabPosition(Pro, 34, 286 - 138);
+		case SI_JST_YOYO_ESCAPE:				return TabPosition(Pro, 34, 312 - 138);
+		case SI_JST_YOYO_CRITICALSWING:	return TabPosition(Pro, 84, 260 - 138);
+		case SI_JST_YOYO_BACKSTAB:			return TabPosition(Pro, 84, 286 - 138);
+		case SI_JST_SUP_ABSORB:					return TabPosition(Pro, 84, 312 - 138);
+		case SI_JST_YOYO_VATALSTAB:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_JST_YOYO_HITOFPENYA:		return TabPosition(Pro, 134, 312 - 138);
+
+		// Ranger
+		case SI_RAG_BOW_ICEARROW:				return TabPosition(Pro, 34, 260 - 138);
+		case SI_RAG_BOW_FLAMEARROW:			return TabPosition(Pro, 34, 286 - 138);
+		case SI_RAG_BOW_POISONARROW:		return TabPosition(Pro, 34, 312 - 138);
+		case SI_RAG_SUP_FASTATTACK:			return TabPosition(Pro, 84, 260 - 138);
+		case SI_RAG_BOW_PIRCINGARROW:		return TabPosition(Pro, 84, 286 - 138);
+		case SI_RAG_SUP_NATURE:					return TabPosition(Pro, 84, 312 - 138);
+		case SI_RAG_BOW_TRIPLESHOT:			return TabPosition(Pro, 134, 272 - 138);
+		case SI_RAG_BOW_SILENTARROW:		return TabPosition(Pro, 134, 312 - 138);
+
+		// Master
+		case SI_BLD_MASTER_ONEHANDMASTER:	return MasterPosition{};
+		case SI_KNT_MASTER_TWOHANDMASTER:	return MasterPosition{};
+		case SI_JST_MASTER_YOYOMASTER:		return MasterPosition{};
+		case SI_RAG_MASTER_BOWMASTER:			return MasterPosition{};
+		case SI_ELE_MASTER_INTMASTER:			return MasterPosition{};
+		case SI_PSY_MASTER_INTMASTER:			return MasterPosition{};
+		case SI_BIL_MASTER_KNUCKLEMASTER:	return MasterPosition{};
+		case SI_RIG_MASTER_BLESSING:			return MasterPosition{};
+
+		// Hero
+		case SI_BLD_HERO_DEFFENCE:		return HeroPosition{};
+		case SI_KNT_HERO_DRAWING:			return HeroPosition{};
+		case SI_JST_HERO_SILENCE:			return HeroPosition{};
+		case SI_RAG_HERO_HAWKEYE:			return HeroPosition{};
+		case SI_ELE_HERO_CURSEMIND:		return HeroPosition{};
+		case SI_PSY_HERO_STONE:				return HeroPosition{};
+		case SI_BIL_HERO_DISENCHANT:	return HeroPosition{};
+		case SI_RIG_HERO_RETURN:			return HeroPosition{};
+
+		// Templar
+		case SI_LOD_SUP_PULLING:			return TabPosition(LegendHero, 34, 122);
+		case SI_LOD_ONE_GRANDRAGE:		return TabPosition(LegendHero, 34, 148);
+		case SI_LOD_SUP_HOLYARMOR:		return TabPosition(LegendHero, 34, 174);
+		case SI_LOD_SUP_SCOPESTRIKE:	return TabPosition(LegendHero, 84, 148);
+		case SI_LOD_SUP_ANGER:				return TabPosition(LegendHero, 84, 174);
+		case SI_LOD_ONE_SHILDSTRIKE:	return TabPosition(LegendHero, 134, 148);
+
+		// Stormblade
+		case SI_STORM_DOUBLE_CROSSBLOOD:		return TabPosition(LegendHero, 34, 122);
+		case SI_STORM_SUP_POWERINCREASE:		return TabPosition(LegendHero, 34, 148);
+		case SI_STORM_DOUBLE_STORMBLAST:		return TabPosition(LegendHero, 84, 122);
+		case SI_STORM_DOUBLE_HOLDINGSTORM:	return TabPosition(LegendHero, 84, 148);
+
+		// Windlurker
+		case SI_WIN_SUP_EVASIONINCREASE:		return TabPosition(LegendHero, 34, 122);
+		case SI_WIN_YOYO_MADHURRICANE:			return TabPosition(LegendHero, 34, 148);
+		case SI_WIN_SUP_CONTROLINCREASE:		return TabPosition(LegendHero, 84, 122);
+		case SI_WIN_YOYO_BACKSTEP:					return TabPosition(LegendHero, 84, 148);
+
+		// Crackshooter
+		case SI_CRA_SUP_POWERINCREASE:			return TabPosition(LegendHero, 34, 122);
+		case SI_CRA_CRBOW_RANGESTRIKE:			return TabPosition(LegendHero, 34, 148);
+		case SI_CRA_SUP_CONTROLINCREASE:		return TabPosition(LegendHero, 84, 122);
+		case SI_CRA_SUP_HAWKEYE:						return TabPosition(LegendHero, 134, 122);
+
+		// Florist
+		case SI_FLO_HEAL_DOT:						return TabPosition(LegendHero, 34, 122 + 13);
+		case SI_FLO_SQU_BLESSSTEP:			return TabPosition(LegendHero, 84 - 4, 96 + 13);
+		case SI_FLO_SQU_BLESSBODY:			return TabPosition(LegendHero, 84 - 4, 122 + 13);
+		case SI_FLO_SQU_BLESSARMOR:			return TabPosition(LegendHero, 84 - 4, 148 + 13);
+		case SI_FLO_CHEER_PATTERS:			return TabPosition(LegendHero, 84 - 4, 174 + 13);
+		case SI_FLO_SUP_ABSOLUTE:				return TabPosition(LegendHero, 134 - 8, 174 + 13);
+
+		// Forcemaster
+		case SI_FOR_SQU_FORCETENACITY:	return TabPosition(LegendHero, 34, 122);
+		case SI_FOR_SQU_FORCEANGER:			return TabPosition(LegendHero, 84, 122);
+		case SI_FOR_SQU_FORCESPEED:			return TabPosition(LegendHero, 34, 148);
+		case SI_FOR_SQU_FORCEMAD:				return TabPosition(LegendHero, 84, 148);
+
+		// Mentalist
+		case SI_MEN_WAN_ATKDECREASE:		return TabPosition(LegendHero, 84 - 4, 96 + 13);
+		case SI_MEN_WAN_FEARSCREAM:			return TabPosition(LegendHero, 34 - 0, 122 + 13);
+		case SI_MEN_WAN_DEFDECREASE:		return TabPosition(LegendHero, 84 - 4, 122 + 13);
+		case SI_MEN_WAN_SPEDECREASE:		return TabPosition(LegendHero, 84 - 4, 148 + 13);
+		case SI_MEN_WAN_DARKNESSLAKE:		return TabPosition(LegendHero, 84 - 4, 174 + 13);
+
+		// Elementor but better
+		case SI_ELE_STF_FINALSPEAR:			return TabPosition(LegendHero, 34, 122);
+		case SI_ELE_STF_COSMICELEMENT:	return TabPosition(LegendHero, 34, 148);
+		case SI_ELE_STF_THUNDERBOLT:		return TabPosition(LegendHero, 84, 122 + 13);
+		case SI_ELE_STF_SLIPPING:				return TabPosition(LegendHero, 84, 148 + 26);
+
+		// Bad skill
+		default:												return std::nullopt;
+	}
+}
+
+///////////////////////////////////////
+
+[[nodiscard]] boost::container::static_vector<DWORD, 4> CWndSkillTreeCommon::JobToTabJobs(const int nJob) {
+	boost::container::static_vector<DWORD, 4> result;
+
+	const auto jobLine = prj.jobs.GetAllJobsOfLine(nJob);
+
+	// 0 = Vagrant
+	result.emplace_back(JOB_VAGRANT);
+
+	// 1 = Expert
+	if (jobLine.size() <= 1) return result;
+	result.emplace_back(jobLine[1]);
+
+	// 2 = Pascal Praud
+	if (jobLine.size() <= 2) return result;
+	result.emplace_back(jobLine[2]);
+
+	// 3 = Master
+	// 4 = Hero
+
+	// 5 = Legend Hero
+	if (jobLine.size() <= 5) return result;
+	result.emplace_back(jobLine[5]);
+
+	return result;
+}
+
+bool CWndSkillTreeCommon::IsSkillHigherThanReal(const SKILL & windowSkill) {
+	const SKILL * realSkill = g_pPlayer->GetSkill(windowSkill.dwSkill);
+	return realSkill && realSkill->dwLevel < windowSkill.dwLevel;
+}
+
+CWndSkillTreeCommon::SkillStatus CWndSkillTreeCommon::GetSkillStatus(const SKILL & pSkill) const {
+	// Is it usable?
+	if (!g_pPlayer) return SkillStatus::No;
+
+	const SKILL * playerSkill = g_pPlayer->GetSkill(pSkill.dwSkill);
+	if (!playerSkill) return SkillStatus::No;
+
+	if (playerSkill->dwLevel > 0) return SkillStatus::Usable;
+
+	// Is it learnable?
+	const ItemProp * pSkillProp = pSkill.GetProp();
+	if (!pSkillProp) return SkillStatus::No;
+
+	if (!g_pPlayer->HasLevelForSkill(*pSkillProp))
+		return SkillStatus::No;
+
+	if (pSkillProp->dwReSkill1 != NULL_ID) {
+		const SKILL * reqSkill = m_apSkills.FindBySkillId(pSkillProp->dwReSkill1);
+		if (!reqSkill || reqSkill->dwLevel < pSkillProp->dwReSkillLevel1) {
+			return SkillStatus::No;
+		}
+	}
+
+	if (pSkillProp->dwReSkill2 != NULL_ID) {
+		const SKILL * reqSkill = m_apSkills.FindBySkillId(pSkillProp->dwReSkill2);
+		if (!reqSkill || reqSkill->dwLevel < pSkillProp->dwReSkillLevel2) {
+			return SkillStatus::No;
+		}
+	}
+
+	return SkillStatus::Learnable;
+}
+
+void CWndSkillTreeCommon::ResetSkills() {
+	m_nCurrSkillPoint = g_pPlayer->m_nSkillPoint;
+	m_apSkills = g_pPlayer->m_jobSkills;
+
+	for (const SKILL & skill : m_apSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
+		if (!pSkillProp) continue;
+
+		CTexture * texture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
+		if (!texture) continue;
+
+		m_pTexSkill.emplace(skill.dwSkill, texture);
+	}
+
+	m_kTexLevel.DeleteDeviceObjects();
+	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
+}
+
+void CWndSkillTreeCommon::OnSkillPointUp() {
+	if (!m_pFocusItem) return;
+
+	const ItemProp * prop = m_pFocusItem->GetProp();
+	if (!prop) return;
+
+	const int nPoint = prj.GetSkillPoint(prop);
+	if (nPoint == 0) return;
+
+	const bool loop = g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->m_bShiftPushed;
+
+	do {
+		if (nPoint <= m_nCurrSkillPoint && m_pFocusItem->dwLevel < prop->dwExpertMax) {
+			m_nCurrSkillPoint -= nPoint;
+			++m_pFocusItem->dwLevel;
+		} else {
+			break;
+		}
+	} while (loop);
+}
+
+void CWndSkillTreeCommon::OnSkillPointDown(const SKILL & reducedSkill) {
+	for (SKILL & inPlaceSkill : m_apSkills) {
+		const ItemProp * prop = inPlaceSkill.GetProp();
+		if (!prop) continue;
+
+		if (prop->dwReSkill1 == reducedSkill.dwSkill) {
+			if (prop->dwReSkillLevel1) {
+				if (reducedSkill.dwLevel < prop->dwReSkillLevel1) {
+					if (inPlaceSkill.dwLevel > 0) {
+						m_nCurrSkillPoint += (prj.GetSkillPoint(prop) * inPlaceSkill.dwLevel);
+						inPlaceSkill.dwLevel = 0;
+						OnSkillPointDown(inPlaceSkill);
+					}
+				}
+			}
+		}
+
+		if (prop->dwReSkill2 == reducedSkill.dwSkill) {
+			if (prop->dwReSkillLevel2) {
+				if (reducedSkill.dwLevel < prop->dwReSkillLevel2) {
+					if (inPlaceSkill.dwLevel > 0) {
+						m_nCurrSkillPoint += (prj.GetSkillPoint(prop) * inPlaceSkill.dwLevel);
+						inPlaceSkill.dwLevel = 0;
+						OnSkillPointDown(inPlaceSkill);
+					}
+				}
+			}
+		}
+	}
+}
+
+
+///////////////////////////////////////
+
+CTexture * CWndSkillTreeCommon::GetTextureOf(const SKILL & skill) const {
+	return sqktd::find_in_map(m_pTexSkill, skill.dwSkill, nullptr);
+}
+
+void CWndSkillTreeCommon::RenderLevel(
+	C2DRender * p2DRender, CPoint point,
+	DWORD curLevel, DWORD maxLevel, bool isLevelDiff
+) {
+	if (curLevel == 0) return;
+
+	const int offset = isLevelDiff ? 20 : 0;
+	if (curLevel < maxLevel)
+		m_kTexLevel.Render(p2DRender, point, curLevel - 1 + offset);
+	else
+		m_kTexLevel.Render(p2DRender, point, 19 + offset);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void CWndSkillTreeEx::SerializeRegInfo(CAr & ar, DWORD & dwVersion) {
 	CWndNeuz::SerializeRegInfo(ar, dwVersion);
@@ -292,91 +784,6 @@ void CWndSkillTreeEx::SetActiveSlot(int nSlot, BOOL bFlag) {
 			AdjustWndBase();
 }
 
-bool CWndSkillTreeEx::IsDownPoint(const SKILL & skill) const {
-	SKILL * pSkillMy = g_pPlayer->GetSkill(skill.dwSkill);
-	if (!pSkillMy) return false;
-
-	return skill.dwLevel > pSkillMy->dwLevel;
-}
-
-void CWndSkillTreeEx::SubSkillPointDown(SKILL * lpSkill) {
-	for (SKILL & skill : m_skills) {
-		SKILL * pSkill2 = &skill;
-
-		if (pSkill2->GetProp()->dwReSkill1 == lpSkill->dwSkill) {
-			if (pSkill2->GetProp()->dwReSkillLevel1) {
-				if (lpSkill->dwLevel < pSkill2->GetProp()->dwReSkillLevel1) {
-					if (pSkill2->dwLevel > 0) {
-						m_nCurrSkillPoint += (prj.GetSkillPoint(pSkill2->GetProp()) * pSkill2->dwLevel);
-						pSkill2->dwLevel = 0;
-						SubSkillPointDown(pSkill2);
-					}
-				}
-			}
-		}
-
-		if (pSkill2->GetProp()->dwReSkill2 == lpSkill->dwSkill) {
-			if (pSkill2->GetProp()->dwReSkillLevel2) {
-				if (lpSkill->dwLevel < pSkill2->GetProp()->dwReSkillLevel2) {
-					if (pSkill2->dwLevel > 0) {
-						m_nCurrSkillPoint += (prj.GetSkillPoint(pSkill2->GetProp()) * pSkill2->dwLevel);
-						pSkill2->dwLevel = 0;
-						SubSkillPointDown(pSkill2);
-					}
-				}
-			}
-		}
-	}
-}
-
-SKILL * CWndSkillTreeEx::GetSkill(int i) {
-	if (i < 0 || std::cmp_greater_equal(i, m_skills.size())) {
-		return nullptr;
-	}
-
-	return &m_skills[i];
-}
-
-bool CWndSkillTreeEx::CheckSkill(int i) {
-	SKILL * pSkill = GetSkill(i);
-
-	if (!pSkill || !g_pPlayer) return FALSE;
-
-	const DWORD dwSkill = pSkill->dwSkill;
-	const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
-
-	if (pSkillProp == NULL || pSkillProp->nLog == 1)
-		return FALSE;
-
-	const int reqLevel = static_cast<int>(pSkillProp->dwReqDisLV);
-	if (!g_pPlayer->HasLevelForSkill(*pSkillProp)) {
-		return FALSE;
-	}
-
-	if (pSkillProp->dwReSkill1 != 0xffffffff) {
-		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill1);
-
-		if (pSkillBuf) {
-			if (pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel1) {
-				return FALSE;
-			}
-		} else {
-		}
-	}
-
-	if (pSkillProp->dwReSkill2 != 0xffffffff) {
-		LPSKILL pSkillBuf = m_skills.FindBySkillId(pSkillProp->dwReSkill2);
-		if (pSkillBuf) {
-			if (pSkillBuf->dwLevel < pSkillProp->dwReSkillLevel2) {
-				return FALSE;
-			}
-		} else {
-		}
-	}
-
-	return TRUE;
-}
-
 HRESULT CWndSkillTreeEx::RestoreDeviceObjects() {
 	CWndBase::RestoreDeviceObjects();
 	if (m_pVBGauge == NULL)
@@ -392,11 +799,8 @@ HRESULT CWndSkillTreeEx::DeleteDeviceObjects() {
 	CWndBase::DeleteDeviceObjects();
 	SAFE_RELEASE(m_pVBGauge);
 
-	SAFE_DELETE(m_atexJobPannel[0]);
-	SAFE_DELETE(m_atexJobPannel[1]);
-
-	m_skills.clear();
-	m_skillsTexture.clear();
+	m_aTexJobPannelExpert = nullptr;
+	m_aTexJobPannelPro = nullptr;
 
 	return S_OK;
 }
@@ -404,479 +808,113 @@ HRESULT CWndSkillTreeEx::DeleteDeviceObjects() {
 void CWndSkillTreeEx::InitItem() {
 	if (!g_pPlayer) return;
 
-	if (g_pPlayer->m_nSkillPoint > 0) {
-		m_nCurrSkillPoint = g_pPlayer->m_nSkillPoint;
-	} else {
-		m_nCurrSkillPoint = 0;
-	}
-
-	m_skills = g_pPlayer->m_jobSkills;
-	m_skillsTexture.clear();
-	m_skillsTexture.resize(m_skills.size(), nullptr);
-
-	m_nCurSelect = -1;
-	m_nJob = g_pPlayer->m_nJob;
-
-	CString strTex[2];
-
-	CWndStatic * lpWndStatic1 = (CWndStatic *)GetDlgItem(WIDC_STATIC2);
-	CWndStatic * lpWndStatic2 = (CWndStatic *)GetDlgItem(WIDC_STATIC3);
-	CWndStatic * lpWndStatic3 = (CWndStatic *)GetDlgItem(WIDC_STATIC6);
-
-	switch (m_nJob) {
-		case JOB_VAGRANT:
-			strTex[0] = "";//"Back_Upper.TGA";
-			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle("");
-			lpWndStatic3->SetTitle("");
-			break;
-		case JOB_KNIGHT:
-		case JOB_KNIGHT_MASTER:
-		case JOB_KNIGHT_HERO:
-		case JOB_LORDTEMPLER_HERO:
-			strTex[0] = "Back_Me.TGA";
-			strTex[1] = "Back_Night.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MERCENARY].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_KNIGHT].szName);
-			break;
-		case JOB_BLADE:
-		case JOB_BLADE_MASTER:
-		case JOB_BLADE_HERO:
-		case JOB_STORMBLADE_HERO:
-			strTex[0] = "Back_Me.TGA";
-			strTex[1] = "Back_Blade.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MERCENARY].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_BLADE].szName);
-			break;
-		case JOB_MERCENARY:
-			strTex[0] = "Back_Me.TGA";
-			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MERCENARY].szName);
-			lpWndStatic3->SetTitle("");
-			break;
-		case JOB_BILLPOSTER:
-		case JOB_BILLPOSTER_MASTER:
-		case JOB_BILLPOSTER_HERO:
-		case JOB_FORCEMASTER_HERO:
-			strTex[0] = "Back_As.TGA";
-			strTex[1] = "Back_Bill.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ASSIST].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_BILLPOSTER].szName);
-			break;
-		case JOB_RINGMASTER:
-		case JOB_RINGMASTER_MASTER:
-		case JOB_RINGMASTER_HERO:
-		case JOB_FLORIST_HERO:
-			strTex[0] = "Back_As.TGA";
-			strTex[1] = "Back_Ring.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ASSIST].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_RINGMASTER].szName);
-			break;
-		case JOB_ASSIST:
-			strTex[0] = "Back_As.TGA";
-			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ASSIST].szName);
-			lpWndStatic3->SetTitle("");
-			break;
-		case JOB_ELEMENTOR:
-		case JOB_ELEMENTOR_MASTER:
-		case JOB_ELEMENTOR_HERO:
-		case JOB_ELEMENTORLORD_HERO:
-			strTex[0] = "Back_Ma.TGA";
-			strTex[1] = "Back_Ele.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MAGICIAN].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_ELEMENTOR].szName);
-			break;
-		case JOB_PSYCHIKEEPER:
-		case JOB_PSYCHIKEEPER_MASTER:
-		case JOB_PSYCHIKEEPER_HERO:
-		case JOB_MENTALIST_HERO:
-			strTex[0] = "Back_Ma.TGA";
-			strTex[1] = "Back_Psy.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MAGICIAN].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_PSYCHIKEEPER].szName);
-			break;
-		case JOB_MAGICIAN:
-			strTex[0] = "Back_Ma.TGA";
-			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_MAGICIAN].szName);
-			lpWndStatic3->SetTitle("");
-			break;
-		case JOB_ACROBAT:
-			strTex[0] = "Back_Acr.tga";
-			strTex[1] = "";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ACROBAT].szName);
-			lpWndStatic3->SetTitle("");
-			break;
-		case JOB_JESTER:
-		case JOB_JESTER_MASTER:
-		case JOB_JESTER_HERO:
-		case JOB_WINDLURKER_HERO:
-			strTex[0] = "Back_Acr.tga";
-			strTex[1] = "Back_Jst.TGA";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ACROBAT].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_JESTER].szName);
-			break;
-		case JOB_RANGER:
-		case JOB_RANGER_MASTER:
-		case JOB_RANGER_HERO:
-		case JOB_CRACKSHOOTER_HERO:
-			strTex[0] = "Back_Acr.tga";
-			strTex[1] = "Back_Rag.TGA";//"Back_Lower.TGA";
-			lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
-			lpWndStatic2->SetTitle(prj.jobs.info[JOB_ACROBAT].szName);
-			lpWndStatic3->SetTitle(prj.jobs.info[JOB_RANGER].szName);
-			break;
-		default:
-			Error("CWndSkillTreeEx::InitItem �˼����� ���� : %d", m_nJob);
-			return;
-	}
-
-	//Master Skill�� ���ۺ��� 1Lv�̹Ƿ� ���? �̹��� ����.
-	switch (m_nJob) {
-		case JOB_KNIGHT_HERO:
-		case JOB_LORDTEMPLER_HERO:
-			m_strHeroSkilBg = "Back_Hero_KntDrawing.tga";
-			break;
-		case JOB_BLADE_HERO:
-		case JOB_STORMBLADE_HERO:
-			m_strHeroSkilBg = "Back_Hero_BldDefence.tga";
-			break;
-		case JOB_BILLPOSTER_HERO:
-		case JOB_FORCEMASTER_HERO:
-			m_strHeroSkilBg = "Back_Hero_BilDisEnchant.tga";
-			break;
-		case JOB_RINGMASTER_HERO:
-		case JOB_FLORIST_HERO:
-			m_strHeroSkilBg = "Back_Hero_RigReturn.tga";
-			break;
-		case JOB_ELEMENTOR_HERO:
-		case JOB_ELEMENTORLORD_HERO:
-			m_strHeroSkilBg = "Back_Hero_EleCursemind.tga";
-			break;
-		case JOB_PSYCHIKEEPER_HERO:
-		case JOB_MENTALIST_HERO:
-			m_strHeroSkilBg = "Back_Hero_PsyStone.tga";
-			break;
-		case JOB_JESTER_HERO:
-		case JOB_WINDLURKER_HERO:
-			m_strHeroSkilBg = "Back_Hero_JstSilence.tga";
-			break;
-		case JOB_RANGER_HERO:
-		case JOB_CRACKSHOOTER_HERO:
-			m_strHeroSkilBg = "Back_Hero_RagHawkeye.tga";
-			break;
-	}
-
-	SAFE_DELETE(m_atexJobPannel[0]);
-	SAFE_DELETE(m_atexJobPannel[1]);
-
-	if (!strTex[0].IsEmpty()) {
-		m_atexJobPannel[0] = new IMAGE;
-		if (LoadImage(MakePath(DIR_THEME, strTex[0]), m_atexJobPannel[0]) == FALSE)
-			Error("CWndSkillTreeEx::InitItem���� %s Open1 ����", strTex[0]);
-
-	}
-
-	if (!strTex[1].IsEmpty()) {
-		m_atexJobPannel[1] = new IMAGE;
-		if (LoadImage(MakePath(DIR_THEME, strTex[1]), m_atexJobPannel[1]) == FALSE)
-			Error("CWndSkillTreeEx::InitItem���� %s Open1 ����", strTex[1]);
-
-	}
-	AdjustWndBase();
-
-	// �ҽ� �������� �Է�
-	LoadTextureSkillicon();
-
+	ResetSkills();
 	m_dwMouseSkill = NULL_ID;
-}
-BOOL CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID, CRect & rect) {
-	int nExpertGapX = 9;
-	int nExpertGapY = 90;
+	m_focusedSkill = nullptr;
 
-	int nProGapX = 8;
-	int nProGapY = 228;
+	CWndStatic * lpWndStatic1 = GetDlgItem<CWndStatic>(WIDC_STATIC2);
+	lpWndStatic1->SetTitle(prj.jobs.info[JOB_VAGRANT].szName);
 
-	ItemProp * pPropSkill = prj.GetSkillProp(dwSkillID);
+	const auto jobTabs = JobToTabJobs(g_pPlayer->m_nJob);
 
-	if (pPropSkill) {
-		CPoint pt;
-
-		LPWNDCTRL lpWndCtrl;
-		LPWNDCTRL lpWndCtrlUpper = GetWndCtrl(WIDC_STATIC5);
-		LPWNDCTRL lpWndCtrlLower = GetWndCtrl(WIDC_STATIC7);
-
-		switch (pPropSkill->dwItemKind1) {
-			case JTYPE_BASE: pt = 0; break;
-			case JTYPE_EXPERT: pt = lpWndCtrlUpper->rect.TopLeft(); break;
-			case JTYPE_PRO: pt = lpWndCtrlLower->rect.TopLeft(); break;
-			case JTYPE_MASTER: pt = 0; break;
-			case JTYPE_HERO: pt = 0; break;
-		}
-		int nRectX, nRectY, nJobKind;
-		nRectX = nRectY = 0;
-		nJobKind = MAX_JOBBASE;
-		int nLegendSkill = 0;
-		switch (dwSkillID) {
-			case SI_VAG_ONE_CLEANHIT:
-			{
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM2);
-				rect = lpWndCtrl->rect;
-				rect.top += 1;
-			}
-			break;
-			case SI_VAG_ONE_BRANDISH:
-			{
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM3);
-				rect = lpWndCtrl->rect;
-				rect.top += 1;
-			}
-			break;
-			case SI_VAG_ONE_OVERCUTTER:
-			{
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM4);
-				rect = lpWndCtrl->rect;
-				rect.top += 1;
-			}
-			break;
-			//�Ӽ��ʸ�
-			case SI_MER_ONE_SPLMASH:				nRectX = 34, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SHIELD_PROTECTION:			nRectX = 34, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_KEENWHEEL:				nRectX = 84, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_BLOODYSTRIKE:			nRectX = 84, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SHIELD_PANBARRIER:			nRectX = 84, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_IMPOWERWEAPON:			nRectX = 84, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_BLINDSIDE:				nRectX = 134, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_REFLEXHIT:				nRectX = 134, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_SNEAKER:				nRectX = 134, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_SMITEAXE:				nRectX = 134, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_BLAZINGSWORD:			nRectX = 134, nRectY = 201, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_SPECIALHIT:				nRectX = 184, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_MER_ONE_GUILOTINE:				nRectX = 184, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_AXEMASTER:				nRectX = 184, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_MER_SUP_SWORDMASTER:			nRectX = 184, nRectY = 201, nJobKind = MAX_EXPERT; break;
-				// ����Ʈ
-			case SI_KNT_TWOSW_CHARGE:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWOAX_PAINDEALER:			nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_SUP_GUARD:					nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWOSW_EARTHDIVIDER:			nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWOAX_POWERSTUMP:			nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_SUP_RAGE:					nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_TWO_POWERSWING:				nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_KNT_SUP_PAINREFLECTION:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				// �����̵�
-			case SI_BLD_DOUBLESW_SILENTSTRIKE:		nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLEAX_SPRINGATTACK:		nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLE_ARMORPENETRATE:		nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLESW_BLADEDANCE:		nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLEAX_HAWKATTACK:		nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_SUP_BERSERK:				nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLE_CROSSSTRIKE:			nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BLD_DOUBLE_SONICBLADE:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-
-				// ��ý��?	
-			case SI_ASS_HEAL_HEALING:				nRectX = 18, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_HEAL_PATIENCE:				nRectX = 64, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_QUICKSTEP:			nRectX = 64, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_MENTALSIGN:			nRectX = 64, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_KNU_TAMPINGHOLE:			nRectX = 64, nRectY = 187, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_HEAL_RESURRECTION:			nRectX = 110, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_HASTE:				nRectX = 110, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_HEAPUP:				nRectX = 110, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_STONEHAND:			nRectX = 110, nRectY = 187, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_CIRCLEHEALING:		nRectX = 156, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_CATSREFLEX:			nRectX = 156, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_BEEFUP:				nRectX = 156, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_KNU_BURSTCRACK:				nRectX = 156, nRectY = 187, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_HEAL_PREVENTION:			nRectX = 202, nRectY = 109, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_CANNONBALL:			nRectX = 202, nRectY = 135, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_CHEER_ACCURACY:				nRectX = 202, nRectY = 161, nJobKind = MAX_EXPERT; break;
-			case SI_ASS_KNU_POWERFIST:				nRectX = 202, nRectY = 187, nJobKind = MAX_EXPERT; break;
-				//��������
-			case SI_RIN_SUP_PROTECT:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_HOLYCROSS:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_HEAL_GVURTIALLA:			nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_HOLYGUARD:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_SPIRITUREFORTUNE:		nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_HEAL_HEALRAIN:				nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SQU_GEBURAHTIPHRETH:		nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RIN_SUP_MERKABAHANZELRUSHA:		nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				//��������
-			case SI_BIL_KNU_BELIALSMESHING:			nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_ASMODEUS:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_KNU_BLOODFIST:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_BARAQIJALESNA:			nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_KNU_PIERCINGSERPENT:		nRectX = 134, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_BGVURTIALBOLD:			nRectX = 134, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_KNU_SONICHAND:				nRectX = 184, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_BIL_PST_ASALRAALAIKUM:			nRectX = 184, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-
-				// ������
-			case SI_MAG_MAG_MENTALSTRIKE:			nRectX = 34, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_MAG_BLINKPOOL: 				nRectX = 34, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_FIRE_BOOMERANG:				nRectX = 84, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WIND_SWORDWIND:				nRectX = 84, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WATER_ICEMISSILE:			nRectX = 84, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_ELECTRICITY_LIGHTINGBALL:	nRectX = 84, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_EARTH_SPIKESTONE:			nRectX = 84, nRectY = 200, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_FIRE_HOTAIR:				nRectX = 134, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WIND_STRONGWIND:			nRectX = 134, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WATER_WATERBALL:			nRectX = 134, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_ELECTRICITY_LIGHTINGPARM:	nRectX = 134, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_EARTH_ROCKCRASH:			nRectX = 134, nRectY = 200, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_FIRE_FIRESTRIKE:			nRectX = 184, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WIND_WINDCUTTER:			nRectX = 184, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_WATER_SPRINGWATER:			nRectX = 184, nRectY = 148, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_ELECTRICITY_LIGHTINGSHOCK:	nRectX = 184, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_MAG_EARTH_LOOTING:				nRectX = 184, nRectY = 200, nJobKind = MAX_EXPERT; break;
-				// ��������
-			case SI_ELE_FIRE_FIREBIRD:				nRectX = 34, nRectY = 234, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_EARTH_STONESPEAR:			nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WIND_VOID:					nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_ELECTRICITY_THUNDERSTRIKE:	nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WATER_ICESHARK:				nRectX = 34, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_FIRE_BURINGFIELD:			nRectX = 84, nRectY = 234, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_EARTH_EARTHQUAKE:			nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WIND_WINDFIELD:				nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_ELECTRICITY_ELETRICSHOCK:	nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WATER_POISONCLOUD:			nRectX = 84, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_METEOSHOWER:			nRectX = 134, nRectY = 246, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_SANDSTORM:			nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_LIGHTINGSTORM:		nRectX = 134, nRectY = 298, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_MULTY_AVALANCHE:			nRectX = 134, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_FIRE_FIREMASTER:			nRectX = 184, nRectY = 234, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_EARTH_EARTHMASTER:			nRectX = 184, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WIND_WINDMASTER:			nRectX = 184, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_ELECTRICITY_LIGHTINGMASTER:	nRectX = 184, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_ELE_WATER_WATERMASTER:			nRectX = 184, nRectY = 338, nJobKind = MAX_PROFESSIONAL; break;
-				// ����Ű��
-			case SI_PSY_NLG_DEMONOLGY:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_PSYCHICBOMB:			nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_NLG_CRUCIOSPELL:			nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_NLG_SATANOLGY:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_SPRITBOMB:				nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_MAXIMUMCRISIS:			nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_PSYCHICWALL:			nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_PSY_PSY_PSYCHICSQUARE:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				////////////////////////////////////////////////////////////////////////////////////
-				// ��ũ�κ�
-			case SI_ACR_YOYO_PULLING:				nRectX = 34, nRectY = 97, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_SLOWSTEP:				nRectX = 34, nRectY = 123, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_JUNKBOW:				nRectX = 34, nRectY = 175, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_FASTWALKER:				nRectX = 84, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_YOYOMASTER:				nRectX = 84, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_BOWMASTER: 				nRectX = 84, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_SUP_DARKILLUSION:			nRectX = 134, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_SNITCH:				nRectX = 134, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_CROSSLINE:				nRectX = 134, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_SILENTSHOT:				nRectX = 134, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_AIMEDSHOT:				nRectX = 134, nRectY = 200, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_ABSOLUTEBLOCK:			nRectX = 184, nRectY = 96, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_DEADLYSWING:			nRectX = 184, nRectY = 122, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_YOYO_COUNTER:				nRectX = 184, nRectY = 149, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_AUTOSHOT:				nRectX = 184, nRectY = 174, nJobKind = MAX_EXPERT; break;
-			case SI_ACR_BOW_ARROWRAIN:				nRectX = 184, nRectY = 200, nJobKind = MAX_EXPERT; break;
-				//������
-			case SI_JST_SUP_POISON:					nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_SUP_BLEEDING:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_ESCAPE:				nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_CRITICALSWING:			nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_BACKSTAB:				nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_SUP_ABSORB:					nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_VATALSTAB:				nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_JST_YOYO_HITOFPENYA:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-				//������
-			case SI_RAG_BOW_ICEARROW:				nRectX = 34, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_FLAMEARROW:				nRectX = 34, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_POISONARROW:			nRectX = 34, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_SUP_FASTATTACK:				nRectX = 84, nRectY = 260, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_PIRCINGARROW:			nRectX = 84, nRectY = 286, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_SUP_NATURE:					nRectX = 84, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_TRIPLESHOT:				nRectX = 134, nRectY = 272, nJobKind = MAX_PROFESSIONAL; break;
-			case SI_RAG_BOW_SILENTARROW:			nRectX = 134, nRectY = 312, nJobKind = MAX_PROFESSIONAL; break;
-
-				//������ ��ų
-			case SI_BLD_MASTER_ONEHANDMASTER:		nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_KNT_MASTER_TWOHANDMASTER:		nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_JST_MASTER_YOYOMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_RAG_MASTER_BOWMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_ELE_MASTER_INTMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_PSY_MASTER_INTMASTER:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_BIL_MASTER_KNUCKLEMASTER:		nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-			case SI_RIG_MASTER_BLESSING:			nLegendSkill = 0, nJobKind = MAX_MASTER; break;
-				//���� ��ų			
-			case SI_BLD_HERO_DEFFENCE:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_KNT_HERO_DRAWING:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_JST_HERO_SILENCE:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_RAG_HERO_HAWKEYE:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_ELE_HERO_CURSEMIND:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_PSY_HERO_STONE:					nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_BIL_HERO_DISENCHANT:			nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			case SI_RIG_HERO_RETURN:				nLegendSkill = 1, nJobKind = MAX_HERO; break;
-			default:
-				return FALSE;
-		}
-
-		if (nJobKind == MAX_EXPERT)
-			rect = CRect(nRectX - nExpertGapX, nRectY - nExpertGapY, nRectX + 24 - nExpertGapX, nRectY + 24 - nExpertGapY);
-		else if (nJobKind == MAX_PROFESSIONAL)
-			rect = CRect(nRectX - nProGapX, nRectY - nProGapY, nRectX + 24 - nProGapX, nRectY + 24 - nProGapY);
-		else if (nJobKind == MAX_MASTER || nJobKind == MAX_HERO) {
-			LPWNDCTRL lpWndCtrl;
-			if (nLegendSkill == 0)
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM5);
-			else if (nLegendSkill == 1)
-				lpWndCtrl = GetWndCtrl(WIDC_CUSTOM6);
-
-			rect = lpWndCtrl->rect;
-		}
-
-		rect += pt;
-	}
-	return TRUE;
-}
-
-void CWndSkillTreeEx::LoadTextureSkillicon() {
-	m_skillsTexture.resize(m_skills.size(), nullptr);
-
-	for (size_t i = 0; i != m_skillsTexture.size(); ++i) {
-		const ItemProp * pSkillProp = prj.m_aPropSkill.GetAt(m_skills[i].dwSkill);
-		if (pSkillProp) {
-			m_skillsTexture[i] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
-		}
+	CWndStatic * lpWndStatic2 = GetDlgItem<CWndStatic>(WIDC_STATIC3);
+	if (jobTabs.size() < 2) {
+		m_aTexJobPannelExpert = nullptr;
+		lpWndStatic2->SetTitle("");
+	} else {
+		m_aTexJobPannelExpert = GetBackgroundImage(jobTabs[1]);
+		lpWndStatic2->SetTitle(prj.jobs.info[jobTabs[1]].szName);
 	}
 
+	CWndStatic * lpWndStatic3 = (CWndStatic *)GetDlgItem(WIDC_STATIC6);
+	if (jobTabs.size() < 3) {
+		m_aTexJobPannelPro = nullptr;
+		lpWndStatic3->SetTitle("");
+	} else {
+		m_aTexJobPannelPro = GetBackgroundImage(jobTabs[2]);
+		lpWndStatic3->SetTitle(prj.jobs.info[jobTabs[2]].szName);
+	}
 
-	m_textPackNum.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
+	m_strHeroSkilBg = GetHeroBackground(g_pPlayer->m_nJob);
+
+	AdjustWndBase();
 }
+
+std::optional<CRect> CWndSkillTreeEx::GetSkillPoint(DWORD dwSkillID) {
+	// Vagrant skills are positioned relatively to a custom
+
+	if (dwSkillID == SI_VAG_ONE_CLEANHIT) {
+		if (!m_bSlot[0]) return std::nullopt;
+
+		CRect rect = GetWndCtrl(WIDC_CUSTOM2)->rect;
+		rect.top += 1;
+		return rect;
+	} else if (dwSkillID == SI_VAG_ONE_BRANDISH) {
+		if (!m_bSlot[0]) return std::nullopt;
+
+		CRect rect = GetWndCtrl(WIDC_CUSTOM3)->rect;
+		rect.top += 1;
+		return rect;
+	} else if (dwSkillID == SI_VAG_ONE_OVERCUTTER) {
+		if (!m_bSlot[0]) return std::nullopt;
+
+		CRect rect = GetWndCtrl(WIDC_CUSTOM4)->rect;
+		rect.top += 1;
+		return rect;
+	}
+
+	// It's not a vagrant skill. Let's discover where it is.
+
+	const auto where = GetSkillIconInfo(dwSkillID);
+	if (!where) return std::nullopt;
+
+	if (std::holds_alternative<MasterPosition>(*where)) {
+		if (!m_bSlot[3]) return std::nullopt;
+		return GetWndCtrl(WIDC_CUSTOM5)->rect;
+	} else if (std::holds_alternative<HeroPosition>(*where)) {
+		if (!m_bSlot[3]) return std::nullopt;
+		return GetWndCtrl(WIDC_CUSTOM6)->rect;
+	} else {
+		const TabPosition * tabPos = std::get_if<TabPosition>(&*where);
+		if (!tabPos) return std::nullopt; // ??
+
+		if (tabPos->tab == TabType::LegendHero) return std::nullopt; // Not supported by this window
+
+		CPoint topLeftOfCtrl;
+		if (tabPos->tab == TabType::Expert) {
+			if (!m_bSlot[1]) return std::nullopt;
+			topLeftOfCtrl = GetWndCtrl(WIDC_STATIC5)->rect.TopLeft();
+		} else if (tabPos->tab == TabType::Pro) {
+			if (!m_bSlot[2]) return std::nullopt;
+			topLeftOfCtrl = GetWndCtrl(WIDC_STATIC7)->rect.TopLeft();
+		} else {
+			// Should not happen but ok
+			return std::nullopt;
+		}
+
+		return CRect(
+			CPoint(tabPos->point.x - 9, tabPos->point.y - 90),
+			CSize(24, 24)
+		) + topLeftOfCtrl;
+	}
+}
+
 void CWndSkillTreeEx::OnMouseMove(UINT nFlags, CPoint point) {
 	if (m_bDrag == FALSE)
 		return;
 
-	if (CheckSkill(m_nCurSelect)) {
+	if (!m_focusedSkill) return;
+
+	if (GetSkillStatus(*m_focusedSkill) == SkillStatus::Usable) {
 		m_bDrag = FALSE;
-		const DWORD dwSkill = m_skills[m_nCurSelect].dwSkill;
-		const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 
 		m_GlobalShortcut.m_pFromWnd = this;
 		m_GlobalShortcut.m_dwShortcut = ShortcutType::Skill;
-		m_GlobalShortcut.m_dwIndex = dwSkill;
+		m_GlobalShortcut.m_dwIndex = m_focusedSkill->dwSkill;
 		m_GlobalShortcut.m_dwData = 0;
-		m_GlobalShortcut.m_dwId = dwSkill;
-		m_GlobalShortcut.m_pTexture = m_skillsTexture[m_nCurSelect];
+		m_GlobalShortcut.m_dwId = m_focusedSkill->dwSkill;
+		m_GlobalShortcut.m_pTexture = GetTextureOf(*m_focusedSkill);
 		_tcscpy(m_GlobalShortcut.m_szString, pSkillProp->szName);
 	}
 }
@@ -944,18 +982,17 @@ BOOL CWndSkillTreeEx::Process() {
 	m_pWndButton[2]->EnableWindow(FALSE);
 	m_pWndButton[3]->EnableWindow(FALSE);
 
-	SKILL * m_pFocusItem = GetFocusedItem();
-	if (m_pFocusItem && 0 < g_pPlayer->m_nSkillPoint) {
-		LPSKILL lpSkillUser = g_pPlayer->GetSkill(m_pFocusItem->dwSkill);
-		const ItemProp * pSkillProp = m_pFocusItem->GetProp();
+	if (m_focusedSkill && 0 < g_pPlayer->m_nSkillPoint) {
+		LPSKILL lpSkillUser = g_pPlayer->GetSkill(m_focusedSkill->dwSkill);
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 		if (pSkillProp == NULL || lpSkillUser == NULL)
 			return TRUE;
 
 		int nPoint = prj.GetSkillPoint(pSkillProp);
-		if (m_pFocusItem->dwLevel < pSkillProp->dwExpertMax && nPoint <= m_nCurrSkillPoint)
+		if (m_focusedSkill->dwLevel < pSkillProp->dwExpertMax && nPoint <= m_nCurrSkillPoint)
 			m_pWndButton[0]->EnableWindow(TRUE);
 
-		if (m_pFocusItem->dwLevel != lpSkillUser->dwLevel)
+		if (m_focusedSkill->dwLevel != lpSkillUser->dwLevel)
 			m_pWndButton[1]->EnableWindow(TRUE);
 
 		if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint) {
@@ -963,7 +1000,6 @@ BOOL CWndSkillTreeEx::Process() {
 			m_pWndButton[3]->EnableWindow(TRUE);
 		}
 
-		pSkillProp = prj.GetSkillProp(m_pFocusItem->dwSkill);
 		if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO) {
 			m_pWndButton[0]->EnableWindow(FALSE);
 			m_pWndButton[1]->EnableWindow(FALSE);
@@ -977,52 +1013,27 @@ BOOL CWndSkillTreeEx::Process() {
 void CWndSkillTreeEx::OnMouseWndSurface(CPoint point) {
 	DWORD dwMouseSkill = NULL_ID;
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); i++) {
-		LPSKILL pSkill = GetSkill(i);
-		if (pSkill == NULL)
-			continue;
-		DWORD dwSkill = pSkill->dwSkill;
+	for (SKILL & skill : m_apSkills) {
+		const ItemProp * pSkillProp = skill.GetProp();
 
-		ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		if (!pSkillProp) continue;
+		GetCalcImagePos(pSkillProp->dwItemKind1);
 
-		if (pSkillProp) {
-			if (!m_bSlot[0]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-					continue;
-			}
+		if (std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID)) {
+			rect->top -= 2;
+			rect->right = rect->left + 27;
+			rect->bottom = rect->top + 27;
+			rect->OffsetRect(0, m_nTopDownGap);
 
-			if (!m_bSlot[1]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-					continue;
-			}
+			if (rect->PtInRect(point)) {
+				dwMouseSkill = skill.dwSkill;
 
-			if (!m_bSlot[2]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-					continue;
-			}
-			if (!m_bSlot[3]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_HERO)
-					continue;
-			}
-			GetCalcImagePos(pSkillProp->dwItemKind1);
-		}
-
-		if (dwSkill != NULL_ID) {
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect)) {
-				rect.top -= 2;
-				rect.right = rect.left + 27;
-				rect.bottom = rect.top + 27;
-				rect.OffsetRect(0, m_nTopDownGap);
-
-				if (rect.PtInRect(point)) {
-					dwMouseSkill = dwSkill;
-
-					ClientToScreen(&point);
-					ClientToScreen(&rect);
-					g_WndMng.PutToolTip_Skill(dwSkill, pSkill->dwLevel, point, &rect, CheckSkill(i));
-					break;
-				}
+				ClientToScreen(&point);
+				ClientToScreen(&*rect);
+				g_WndMng.PutToolTip_Skill(skill.dwSkill, skill.dwLevel, point, &*rect, 
+					(GetSkillStatus(skill) != SkillStatus::No) ? TRUE : FALSE
+				);
+				break;
 			}
 		}
 	}
@@ -1101,7 +1112,7 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 	if (m_bLegend && m_bSlot[3]) {
 		//Master Skill�� ���ۺ��� 1Lv�̹Ƿ� ���? �̹��� ����.
 
-		if (!m_strHeroSkilBg.IsEmpty()) {
+		if (m_strHeroSkilBg) {
 			CPoint point;
 
 			LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDC_CUSTOM6);
@@ -1111,66 +1122,54 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 			point = rect.TopLeft();
 			point.y -= 2;
 			CTexture * pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
-			if (pTexture != NULL)
+			if (pTexture)
 				pTexture->Render(p2DRender, point, CPoint(27, 27));
 		}
 	}
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); i++) {
-		SKILL * pSkill = &m_skills[i];
-		const DWORD dwSkill = pSkill->dwSkill;
+	for (const SKILL & pSkill : m_apSkills) {
+		const DWORD dwSkill = pSkill.dwSkill;
 
-		const ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		const ItemProp * pSkillProp = pSkill.GetProp();
 		if (!pSkillProp) continue;
 
-		if (!m_bSlot[0]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-				continue;
-		}
-
-		if (!m_bSlot[1]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-				continue;
-		}
-
-		if (!m_bSlot[2]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-				continue;
-		}
-
-		if (!m_bSlot[3]) {
-			if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-				continue;
-		}
 
 		GetCalcImagePos(pSkillProp->dwItemKind1);
 
-		if (pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
-			// ��ų ������ ���? 
-			if (m_skillsTexture[i] && CheckSkill(i) && 0 < pSkill->dwLevel) {
-				CRect rect;
-				if (GetSkillPoint(pSkillProp->dwID, rect)) {
-					rect.top -= 2;
-					rect.OffsetRect(0, m_nTopDownGap);
-					m_skillsTexture[i]->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
-					int nAddNum = 0;
-					LPSKILL pSkillUser = g_pPlayer->GetSkill(pSkill->dwSkill);
-					if (pSkillUser && pSkill->dwLevel != pSkillUser->dwLevel)
-						nAddNum = 20;
-					if (pSkill->dwLevel < pSkillProp->dwExpertMax)
-						m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), pSkill->dwLevel - 1 + nAddNum);
-					else
-						m_textPackNum.Render(p2DRender, rect.TopLeft() - CPoint(2, 2), 19 + nAddNum);
-				}
-			} else if (m_dwMouseSkill == dwSkill && m_skillsTexture[i] && CheckSkill(i)) {
-				CRect rect;
-				if (GetSkillPoint(pSkillProp->dwID, rect)) {
-					rect.top -= 2;
-					rect.OffsetRect(0, m_nTopDownGap);
-					m_skillsTexture[i]->Render(p2DRender, rect.TopLeft(), CPoint(27, 27));
-				}
+		if (pSkillProp->nLog == 1) {
+			continue;
+		}
+
+
+		CTexture * skillTexture = GetTextureOf(pSkill);
+		if (!skillTexture) continue;
+
+		const SkillStatus status = GetSkillStatus(pSkill);
+		if (status == SkillStatus::No) continue;
+
+		// ��ų ������ ���? 
+		if (pSkill.dwLevel > 0) {
+			if (std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID)) {
+				rect->top -= 2;
+				rect->OffsetRect(0, m_nTopDownGap);
+				skillTexture->Render(p2DRender, rect->TopLeft(), CPoint(27, 27));
+
+				const SKILL * pSkillUser = g_pPlayer->GetSkill(pSkill.dwSkill);
+
+				RenderLevel(
+					p2DRender, rect->TopLeft() - CPoint(2, 2),
+					pSkill.dwLevel, pSkillProp->dwExpertMax,
+					pSkillUser && pSkill.dwLevel != pSkillUser->dwLevel
+				);
+			}
+		} else if (m_dwMouseSkill == dwSkill) {
+			if (std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID)) {
+				rect->top -= 2;
+				rect->OffsetRect(0, m_nTopDownGap);
+				skillTexture->Render(p2DRender, rect->TopLeft(), CPoint(27, 27));
 			}
 		}
+		
 	}
 
 	CWndStatic * lpWndStatic9 = (CWndStatic *)GetDlgItem(WIDC_STATIC9);
@@ -1179,24 +1178,22 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 	lpWndStatic9->SetTitle(strSP);
 
 	// ���õ� ��ų�� ������ �� â�� ���?
-	SKILL * pFocusItem = GetFocusedItem();
-	if (pFocusItem) {
+	if (m_focusedSkill) {
 		LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDC_CUSTOM1);
-		m_skillsTexture[m_nCurSelect]->Render(p2DRender, lpWndCtrl->rect.TopLeft());
+		GetTextureOf(*m_focusedSkill)->Render(p2DRender, lpWndCtrl->rect.TopLeft());
 
-		ItemProp * pSkillProp = prj.GetSkillProp(pFocusItem->dwSkill);
-		if (pSkillProp && 0 < pFocusItem->dwLevel) {
-			int nAddNum = 0;
-			LPSKILL pSkillUser = g_pPlayer->GetSkill(pFocusItem->dwSkill);
-			if (pSkillUser && pFocusItem->dwLevel != pSkillUser->dwLevel)
-				nAddNum = 20;
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
+		if (pSkillProp && m_focusedSkill->dwLevel > 0) {
+			const SKILL * pSkillUser = g_pPlayer->GetSkill(m_focusedSkill->dwSkill);
 
-			if (pFocusItem->dwLevel < pSkillProp->dwExpertMax)
-				m_textPackNum.Render(p2DRender, lpWndCtrl->rect.TopLeft(), pFocusItem->dwLevel - 1 + nAddNum);
-			else
-				m_textPackNum.Render(p2DRender, lpWndCtrl->rect.TopLeft(), 19 + nAddNum);
+			RenderLevel(
+				p2DRender, lpWndCtrl->rect.TopLeft(),
+				m_focusedSkill->dwLevel, pSkillProp->dwExpertMax,
+				pSkillUser && m_focusedSkill->dwLevel != pSkillUser->dwLevel
+			);
 		}
 	}
+
 	CRect rect;
 	CWndStatic * pStatic;
 	pStatic = (CWndStatic *)GetDlgItem(WIDC_STATIC2);
@@ -1268,7 +1265,7 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 	m_bSlot[2] = TRUE;
 	m_bSlot[3] = TRUE;
 
-	m_nCurSelect = -1;
+	m_focusedSkill = nullptr;
 
 	m_pWndButton[0] = (CWndButton *)GetDlgItem(WIDC_BUTTON1);	// + ��ư
 	m_pWndButton[1] = (CWndButton *)GetDlgItem(WIDC_BUTTON2);	// - ��ư
@@ -1317,32 +1314,26 @@ BOOL CWndSkillTreeEx::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
 	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
 }
 BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
-	SKILL * curSel = GetFocusedItem();
-	if (curSel && g_pPlayer->m_nSkillPoint > 0) {
-		const ItemProp * pSkillProp = curSel->GetProp();
+	if (m_focusedSkill && g_pPlayer->m_nSkillPoint > 0) {
+		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 		if (pSkillProp) {
 			const int nPoint = prj.GetSkillPoint(pSkillProp);
 			switch (nID) {
 				case WIDC_BUTTON1:	// + ��ư
-					if (nPoint <= m_nCurrSkillPoint) {
-						if (curSel->dwLevel < pSkillProp->dwExpertMax) {
-							m_nCurrSkillPoint -= nPoint;
-							++curSel->dwLevel;
-						}
-					}
+					OnSkillPointUp();
 					break;
 				case WIDC_BUTTON2:	// - ��ư
-					if (curSel && IsDownPoint(*curSel)) {
+					if (IsSkillHigherThanReal(*m_focusedSkill)) {
 						m_nCurrSkillPoint += nPoint;
-						--curSel->dwLevel;
-						SubSkillPointDown(curSel);
+						--m_focusedSkill->dwLevel;
+						OnSkillPointDown(*m_focusedSkill);
 					}
 					break;
 				case WIDC_BUTTON3:	// Reset ��ư
 					if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint)
 						InitItem();
 
-					m_nCurSelect = -1;
+					m_focusedSkill = nullptr;
 					break;
 				case WIDC_BUTTON4:	// Finish ��ư
 				{
@@ -1371,9 +1362,6 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-void CWndSkillTreeEx::SetJob(int nJob) {
-	m_nJob = nJob;
-}
 void CWndSkillTreeEx::OnLButtonUp(UINT nFlags, CPoint point) {
 	m_bDrag = FALSE;
 }
@@ -1462,47 +1450,30 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 	}
 
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); ++i) {
-		SKILL * pSkill = &m_skills[i];
-		DWORD dwSkill = pSkill->dwSkill;
+	for (SKILL & pSkill : m_apSkills) {
+		const DWORD dwSkill = pSkill.dwSkill;
+		const ItemProp * pSkillProp = pSkill.GetProp();
 
-		ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+		if (!pSkillProp) continue;
 
-		if (pSkillProp) {
-			if (!m_bSlot[0]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-					continue;
-			}
 
-			if (!m_bSlot[1]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-					continue;
-			}
+		GetCalcImagePos(pSkillProp->dwItemKind1);
 
-			if (!m_bSlot[2]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-					continue;
-			}
 
-			if (!m_bSlot[3]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-					continue;
-			}
-			GetCalcImagePos(pSkillProp->dwItemKind1);
-		}
+		if (pSkillProp->nLog != 1) {
+			std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID);
+			if (!rect) continue;
 
-		if (pSkillProp && pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect) && CheckSkill(i)) {
-				rect.top -= 2;
+			if (GetSkillStatus(pSkill) != SkillStatus::No) {
+				rect->top -= 2;
 
-				rect.right = rect.left + 27;
-				rect.bottom = rect.top + 27;
+				rect->right = rect->left + 27;
+				rect->bottom = rect->top + 27;
 
-				rect.OffsetRect(0, m_nTopDownGap);
+				rect->OffsetRect(0, m_nTopDownGap);
 
-				if (rect.PtInRect(ptMouse)) {
-					m_nCurSelect = i;
+				if (rect->PtInRect(ptMouse)) {
+					m_focusedSkill = &pSkill;
 					m_bDrag = TRUE;
 					break;
 				}
@@ -1510,64 +1481,40 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 		}
 	}
 }
-void CWndSkillTreeEx::OnRButtonDblClk(UINT nFlags, CPoint point) {
-
-}
 
 void CWndSkillTreeEx::OnLButtonDblClk(UINT nFlags, CPoint point) {
 	// ��ųâ���� ����Ŭ���ϸ� �ڵ����� ��ų�ٿ� ��ϵȴ�?.
 
-	for (int i = 0; std::cmp_less(i, m_skills.size()); i++) {
-		LPSKILL pSkill = GetSkill(i);
-		if (pSkill == NULL)
-			continue;
-		DWORD dwSkill = pSkill->dwSkill;
+	CPoint ptMouse = GetMousePoint();
 
-		ItemProp * pSkillProp = prj.GetSkillProp(dwSkill);
+	for (SKILL & pSkill : m_apSkills) {
+		DWORD dwSkill = pSkill.dwSkill;
 
-		if (pSkillProp) {
-			if (!m_bSlot[0]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_BASE)
-					continue;
-			}
+		const ItemProp * pSkillProp = pSkill.GetProp();
+		if (!pSkillProp) continue;
 
-			if (!m_bSlot[1]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_EXPERT)
-					continue;
-			}
+		GetCalcImagePos(pSkillProp->dwItemKind1);
+		
 
-			if (!m_bSlot[2]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_PRO)
-					continue;
-			}
-			if (!m_bSlot[3]) {
-				if (pSkillProp->dwItemKind1 == JTYPE_MASTER || pSkillProp->dwItemKind1 == JTYPE_HERO)
-					continue;
-			}
+		if (pSkillProp->nLog != 1) {
+			std::optional<CRect> rect = GetSkillPoint(pSkillProp->dwID);
+			if (!rect) continue;
 
-			GetCalcImagePos(pSkillProp->dwItemKind1);
-		}
+			if (GetSkillStatus(pSkill) != SkillStatus::Learnable) {
+				rect->top -= 2;
 
-		if (pSkillProp && pSkillProp->nLog != 1 && dwSkill != NULL_ID) {
-			CRect rect;
-			if (GetSkillPoint(pSkillProp->dwID, rect) && CheckSkill(i)) {
-				rect.top -= 2;
+				rect->right = rect->left + 27;
+				rect->bottom = rect->top + 27;
 
-				rect.right = rect.left + 27;
-				rect.bottom = rect.top + 27;
 
-				CPoint ptMouse = GetMousePoint();
+				rect->OffsetRect(0, m_nTopDownGap);
 
-				rect.OffsetRect(0, m_nTopDownGap);
+				if (rect->PtInRect(ptMouse)) {
+					m_focusedSkill = &pSkill;
 
-				if (rect.PtInRect(ptMouse)) {
-					m_nCurSelect = i;
-
-					if (g_pPlayer->CheckSkill(dwSkill) == FALSE)
-						return;
 					CWndTaskBar * pTaskBar = g_WndMng.m_pWndTaskBar;
-					if (pTaskBar->m_nExecute == 0)		// ��ųť�� ������ �������� ��ϵ�?.
-						pTaskBar->SetSkillQueue(pTaskBar->m_nCurQueueNum, dwSkill, m_skillsTexture[i]);
+					if (pTaskBar->m_nExecute == 0)
+						pTaskBar->SetSkillQueue(pTaskBar->m_nCurQueueNum, dwSkill, GetTextureOf(pSkill));
 					break;
 				}
 			}
@@ -1586,7 +1533,9 @@ void CWndSkillTreeEx::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFo
 	GetCalcImagePos(JTYPE_EXPERT);
 	pt.y += m_nTopDownGap;
 
-	if (m_atexJobPannel[0] && m_bSlot[1]) PaintTexture(pDest, m_atexJobPannel[0], pt, size);
+	if (m_aTexJobPannelExpert && m_bSlot[1]) {
+		PaintTexture(pDest, m_aTexJobPannelExpert.get(), pt, size);
+	}
 
 	lpWndCtrl = GetWndCtrl(WIDC_STATIC7);
 	pt = lpWndCtrl->rect.TopLeft() + pt2;
@@ -1594,7 +1543,7 @@ void CWndSkillTreeEx::AfterSkinTexture(LPWORD pDest, CSize size, D3DFORMAT d3dFo
 	pt.y += 2;
 	pt.y += m_nTopDownGap;
 
-	if (m_atexJobPannel[1] && m_bSlot[2]) PaintTexture(pDest, m_atexJobPannel[1], pt, size);
-
-
+	if (m_aTexJobPannelPro && m_bSlot[2]) {
+		PaintTexture(pDest, m_aTexJobPannelPro.get(), pt, size);
+	}
 }

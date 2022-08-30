@@ -3706,9 +3706,10 @@ void CDPSrvr::OnTeleSkill( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-		LPSKILL pSkill	= pUser->GetSkill( SI_MAG_MAG_BLINKPOOL );
-		if( pSkill == NULL || pSkill->dwLevel == 0 )
-			return;
+		const SKILL * blinkpool = pUser->GetSkill(SI_MAG_MAG_BLINKPOOL);
+
+		if (!blinkpool || blinkpool->dwLevel == 0) return;
+
 		// 현재 위치 - 클락워크 지역 x, 대상 위치 - 클락워크 지역 o = 불가
 //		if( prj.IsGuildQuestRegion( pUser->GetPos() ) == FALSE && prj.IsGuildQuestRegion( vPos ) == TRUE )
 		D3DXVECTOR3 v	= pUser->GetPos();

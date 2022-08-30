@@ -283,13 +283,11 @@ HRESULT CWndQuizEventButton::DeleteDeviceObjects()
 
 HRESULT CWndQuizEventButton::RestoreDeviceObjects()
 {
-	m_BtnTexture.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
 	return CWndNeuz::RestoreDeviceObjects();
 }
 
 HRESULT CWndQuizEventButton::InvalidateDeviceObjects()
 {
-	m_BtnTexture.InvalidateDeviceObjects();
 	return CWndNeuz::InvalidateDeviceObjects();
 }
 

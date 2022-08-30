@@ -999,3 +999,7 @@ public:
 
 #include "ProjectJob.h"
 
+enum class LoadPropItemStyle {
+	V15, V22SkillsSkip
+};
+

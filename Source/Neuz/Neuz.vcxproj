@@ -107,6 +107,7 @@
     <ClCompile Include="..\_Interface\WndEquipmentSex.cpp" />
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp" />
     <ClCompile Include="..\_Interface\WndRankCmn.cpp" />
+    <ClCompile Include="..\_Interface\WndSkill16.cpp" />
     <ClCompile Include="..\_Interface\WndSkillTree.cpp" />
     <ClCompile Include="..\_Interface\WndSqKComponents.cpp" />
     <ClCompile Include="..\_Network\ListedServer.cpp" />

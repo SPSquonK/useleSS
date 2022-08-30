@@ -84,6 +84,7 @@ class CWndGuildConfirm; class CWndGuildWarPeaceConfirm; class CWndGuildWarReques
 class CWndGuildBank;
 class CWndGuildNickName;
 class CWndCommercialElem; class CWndRemoveElem;
+class CWndReSkillWarning;
 
 #define REG_VERSION 1
 

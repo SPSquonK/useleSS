@@ -16,6 +16,7 @@
 #include "WndCharacter.h"
 #include "WndGuild.h"
 #include "wndmessenger.h"
+#include "WndSkillTree.h"
 #include "WndQuest.h" 
 #include "mover.h"
 #include "Ship.h"
@@ -2962,7 +2963,7 @@ void CDPClient::OnSetExperience( OBJID objid, CAr & ar )
 	ar >> nSkillLevel >> nSkillPoint >> nDeathExp >> wDeathLevel;
 
 	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) )
+	if( IsValidObj( pMover ) )
 	{
 		pMover->SetExperience( nExp1, (int)wLevel );
 		if( nDeathExp != static_cast<EXPINTEGER>( -1 ) )
@@ -2985,16 +2986,16 @@ void CDPClient::OnSetExperience( OBJID objid, CAr & ar )
 						g_Caption1.AddCaption(  prj.GetText( TID_GAME_SKILLPOINT_UP ), g_WndMng.m_pWndWorld->m_pFontAPICaption );// CWndBase::m_Theme.m_pFontCaption );
 					else
 						g_Caption1.AddCaption(  prj.GetText( TID_GAME_SKILLPOINT_UP ), NULL );// CWndBase::m_Theme.m_pFontCaption );
-					g_WndMng.m_pWndWorld->GetAdvMgr()->AddAdvButton(APP_SKILL3);
+					g_WndMng.m_pWndWorld->GetAdvMgr()->AddAdvButton(APP_SKILL_);
 				}
 			}
 		}
 
 		if( pMover == g_pPlayer )
 		{
-			CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-			if( pSkillTree && nSP != nSkillPoint )
-				pSkillTree->InitItem();
+			if (nSP != nSkillPoint) {
+				CWndSkillTreeCommon::ReInitIfOpen();
+			}
 		}
 	}
 }
@@ -3094,9 +3095,7 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar ) {
 	ar >> nJob >> pMover->m_jobSkills;
 	pMover->m_nJob = nJob;
 
-	if (CWndSkillTreeEx * pSkillTree = g_WndMng.GetWndBase<CWndSkillTreeEx>(APP_SKILL3)) {
-		pSkillTree->InitItem();
-	}
+	CWndSkillTreeCommon::ReInitIfOpen();
 		
 	if (pMover->IsActiveMover()) {
 		if (pMover->m_pActMover && (pMover->m_pActMover->IsState(OBJSTA_STAND) || pMover->m_pActMover->IsState(OBJSTA_STAND2)))
@@ -3105,7 +3104,7 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar ) {
 		PlayMusic(BGM_IN_LEVELUP);
 		g_WndMng.PutString(TID_EVE_CHGJOB, pMover->GetJobString());
 
-		CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
+		CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD);
 
 		if (pWndWorld) {
 			pWndWorld->m_pWndGuideSystem->ChangeModel(pMover->GetJob());
@@ -11244,9 +11243,7 @@ void CDPClient::OnCmdSetSkillLevel( CAr & ar )
 		
 	g_pPlayer->PutLvUpSkillName_2(dwSkill);
 
-	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-	if( pSkillTree )
-		pSkillTree->InitItem();
+	CWndSkillTreeCommon::ReInitIfOpen();
 
 	CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 	if( pWndQuestDetail )
@@ -12183,10 +12180,8 @@ void CDPClient::OnInitSkillPoint( CAr & ar )
 
 		skill.dwLevel = 0;
 	}
-
-	CWndSkillTreeEx* pSkillTree = (CWndSkillTreeEx*)g_WndMng.GetWndBase( APP_SKILL3 );
-	if( pSkillTree )
-		pSkillTree->InitItem();
+	
+	CWndSkillTreeCommon::ReInitIfOpen();
 	
 	g_WndMng.PutString(TID_GAME_RECCURENCE);
 }
@@ -12195,9 +12190,7 @@ void CDPClient::OnDoUseSkillPoint(CAr & ar) {
 	ar >> g_pPlayer->m_jobSkills;
 	ar >> g_pPlayer->m_nSkillPoint;
 
-	if (CWndSkillTreeEx * pSkillTree = g_WndMng.GetWndBase<CWndSkillTreeEx>(APP_SKILL3)) {
-		pSkillTree->InitItem();
-	}
+	CWndSkillTreeCommon::ReInitIfOpen();
 }
 
 void CDPClient::SendUpgradeBase( DWORD dwItemId0, DWORD dwItemId1, 

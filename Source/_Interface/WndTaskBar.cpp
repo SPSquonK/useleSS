@@ -1212,7 +1212,15 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	CWndBase* pWndFrame =  pShortcut->m_pFromWnd->GetFrameWnd();
 
 
-	if( pWndFrame && ( pWndFrame->GetWndId() != APP_INVENTORY && pWndFrame != g_WndMng.m_pWndTaskBar && pWndFrame->GetWndId() != APP_COMMUNICATION_CHAT && pWndFrame->GetWndId() != APP_SKILL3 && pWndFrame->GetWndId() != APP_MOTION && pWndFrame->GetWndId() != APP_PARTY && pWndFrame->GetWndId() != APP_LORD_SKILL) )
+	if( pWndFrame && (
+		pWndFrame->GetWndId() != APP_INVENTORY
+		&& pWndFrame != g_WndMng.m_pWndTaskBar
+		&& pWndFrame->GetWndId() != APP_COMMUNICATION_CHAT
+		&& pWndFrame->GetWndId() != APP_SKILL3 && pWndFrame->GetWndId() != APP_SKILL_V16
+		&& pWndFrame->GetWndId() != APP_MOTION
+		&& pWndFrame->GetWndId() != APP_PARTY
+		&& pWndFrame->GetWndId() != APP_LORD_SKILL)
+		)
 	{
 		SetForbid( TRUE );
 		return FALSE;
@@ -1781,7 +1789,7 @@ void CWndTaskMenu::OnInitialUpdate()
 #endif
 	AddApplet(APP_HOUSING        , TID_GAME_HOUSING_BOX);
 	AddApplet(APP_VENDOR_REVISION, TID_APP_VENDOR);
-	AddApplet(APP_SKILL3         , TID_APP_SKILL);
+	AddApplet(APP_SKILL_         , TID_APP_SKILL);
 	AddApplet(APP_QUEST_EX_LIST  , TID_APP_QUEST);
 	AddApplet(APP_MOTION         , TID_APP_MOTION);
 

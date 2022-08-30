@@ -850,6 +850,7 @@
 #define APP_WORLD             2002
 #define APP_WORLDMAP_HELPER             868
 #define APP_EQUIPMENT_SEX 2023
+#define APP_SKILL_V16 2024
 
 // Control Id
 #define WIDC_2ND_PASSWORD             865
@@ -1570,5 +1571,20 @@
 #define WIDC_WORD_NUM5             872
 #define WIDC_X             889
 #define WIDC_YES             101
+#define WIDC_BUTTON_BACK             2025
+#define WIDC_BUTTON_C1          2026
+#define WIDC_BUTTON_C2          2027
+#define WIDC_BUTTON_C3              2028
+#define WIDC_BUTTON_C4          2029
+#define WIDC_STATIC_CLASSNAME           2030
+#define WIDC_STATIC_PANNEL              2031
+#define WIDC_STATIC_C1          2032
+#define WIDC_STATIC_C2          2033
+#define WIDC_STATIC_C3           2034
+#define WIDC_STATIC_C4           2035
+#define WIDC_STATIC_NEEDSP          2036
+#define WIDC_STATIC_SP          2037
+#define WIDC_STATIC_MASTER          2038
+#define WIDC_STATIC_HERO            2039
 
 #endif
