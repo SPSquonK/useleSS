@@ -3147,13 +3147,13 @@ template<> [[nodiscard]] const CShip * obj_cast<CShip>(const CObj * pObj) {
 #ifdef __WORLDSERVER
 template<> [[nodiscard]] CUser * obj_cast<CUser>(CObj * pObj) {
 	CMover * mover = _::TryConvertObj<CMover, OT_MOVER>(pObj);
-	if (!mover->IsPlayer()) return nullptr;
+	if (!mover || !mover->IsPlayer()) return nullptr;
 	return reinterpret_cast<CUser *>(mover);
 }
 
 template<> [[nodiscard]] const CUser * obj_cast<CUser>(const CObj * pObj) {
 	const CMover * mover = _::TryConvertObj<CMover, OT_MOVER>(pObj);
-	if (!mover->IsPlayer()) return nullptr;
+	if (!mover || !mover->IsPlayer()) return nullptr;
 	return reinterpret_cast<const CUser *>(mover);
 }
 #endif
