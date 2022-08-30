@@ -305,7 +305,6 @@ namespace useless_util {
 		void operator()(T * t) const {
 			if (t) {
 				t->Release();
-				delete t;
 			}
 		}
 	};
