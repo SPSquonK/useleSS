@@ -2291,6 +2291,9 @@ BOOL CProject::LoadPropAddSkill( LPCTSTR lpszFileName )
 		if( propAddSkill.dwActiveSkillRatePVP == dwDefault )
 			propAddSkill.dwActiveSkillRatePVP	= propAddSkill.dwActiveSkillRate;
 
+		if (propAddSkill.nAdjParamVal[0] == CHS_SLEEPING) propAddSkill.nAdjParamVal[0] = CHS_STUN;
+		if (propAddSkill.nAdjParamVal[1] == CHS_SLEEPING) propAddSkill.nAdjParamVal[1] = CHS_STUN;
+
 		m_aPropAddSkill.SetAtGrow( i, propAddSkill );
 
 		// TRACE( "PropAddSkill : %d %d %d\r\n", i, propAddSkill.dwName, propAddSkill.dwSkillLvl );
