@@ -2834,8 +2834,6 @@ void CMover::ProcessActionPoint()
 			g_WndMng.m_pWndTaskBar->m_nActionPoint += (int)(fTime * 2.0f);
 			if( g_WndMng.m_pWndTaskBar->m_nActionPoint > 100 )
 				g_WndMng.m_pWndTaskBar->m_nActionPoint = 100;
-
-			g_Neuz.m_NeuzEnemy.CheckInvalid();
 		}
 	#endif // CLIENT
 		
@@ -5066,7 +5064,7 @@ BOOL CMover::IsPKInspection( CMover* pOther )
 			{
 				;
 			}
-			else if( !( g_Neuz.m_NeuzEnemy.IsPKing( pOther->GetId() ) ) )
+			else
 				bAble	= FALSE;
 		}
 		else

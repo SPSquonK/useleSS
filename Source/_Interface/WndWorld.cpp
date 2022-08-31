@@ -3385,8 +3385,6 @@ void CWndWorld::OnInitialUpdate()
 		if(g_pPlayer->m_nLevel <= 5) m_pWndGuideSystem->GuideStart(FALSE);
 	}
 
-	g_Neuz.m_NeuzEnemy.Clear();
-
 	if( g_pPlayer->IsMode( MODE_MAILBOX ) )
 	{
 		CWndInstantMsg* pWndInstantMsg = g_WndMng.OpenInstantMsg( "Mail" );

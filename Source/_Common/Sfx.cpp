@@ -2836,14 +2836,6 @@ void CSfxDuelParty::Process()
 			}
 			break;
 		}
-	case ENEMY_PK:		
-		{
-			if( !( g_Neuz.m_NeuzEnemy.IsPKing( pMover->GetId() ) ) )
-			{
-				DeleteSfx( pMover );
-			}
-			break;
-		}
 	case ENEMY_PVP:
 		{
 			if( pMover->m_nDuel != 1 )

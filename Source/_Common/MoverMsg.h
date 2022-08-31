@@ -202,7 +202,6 @@ enum OBJACT
 
 #define		ENEMY_PVP_PARTY		0		// 파티 듀얼
 #define		ENEMY_WAR			1		// 길드전
-#define		ENEMY_PK			2		// 피케이
 #define		ENEMY_PVP			3		// 듀얼
 
 #endif	// __MOVERMSG_H__

@@ -34,8 +34,6 @@ struct LOGIN_STEP_INFO
 	int			nCount;				// 
 };
 
-#include "NeuzEnemy.h"
-
 struct SavedSoldItem {
 	using Container = std::array<SavedSoldItem, MAX_VENDITEM>;
 
@@ -62,7 +60,6 @@ public:
 	BOOL					m_bTexLoadAlpha;
 	CTexture				m_TexLoading;
 	BOOL					m_bActiveNeuz;
-	CNeuzEnemy				m_NeuzEnemy;
 	DWORD					m_dwTimeReSkillPoint;
 	BOOL					m_bQuit;
 	CTimer					m_timerQuit;//.Set( SEC( 1 ) );	

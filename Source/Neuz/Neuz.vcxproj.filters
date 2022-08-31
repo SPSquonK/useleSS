@@ -157,9 +157,6 @@
     <ClCompile Include="Neuz.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NeuzEnemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NeuzMsgProc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1033,9 +1030,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Neuz.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NeuzEnemy.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenLoadWnd.h">

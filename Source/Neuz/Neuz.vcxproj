@@ -141,8 +141,6 @@
     </ClCompile>
     <ClCompile Include="Neuz.cpp">
     </ClCompile>
-    <ClCompile Include="NeuzEnemy.cpp">
-    </ClCompile>
     <ClCompile Include="NeuzMsgProc.cpp">
     </ClCompile>
     <ClCompile Include="OpenLoadWnd.cpp">
@@ -693,7 +691,6 @@
     <ClInclude Include="..\_Common\mss.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="Neuz.h" />
-    <ClInclude Include="NeuzEnemy.h" />
     <ClInclude Include="OpenLoadWnd.h" />
     <ClInclude Include="..\_Common\playerdata.h" />
     <ClInclude Include="StdAfx.h" />

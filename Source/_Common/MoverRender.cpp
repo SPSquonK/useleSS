@@ -1601,14 +1601,6 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		}
 		
 
-		if( IsPlayer() && !IsActiveMover() && g_Neuz.m_NeuzEnemy.IsPKing( GetId() ) )
-		{
-			if( (m_dwFlag & MVRF_WARMARK) == 0 )	// 전쟁마크가 아직 안떠있는 상태면
-			{
-				RenderFlag( ENEMY_PK );		// 생성 전투 SFX
-			}
-		}
-		else
 #ifdef __CLIENT
 		// 길드전시에 머리위에 뜨는 전투마크
 		if( g_eLocal.GetState( EVE_GUILDWAR ) == 1 )		// 길드전 가능한 서버인가.
