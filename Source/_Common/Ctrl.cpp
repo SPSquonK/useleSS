@@ -99,11 +99,10 @@ void CCtrl::AddItToGlobalId()
 {
 	prj.m_objmap.Add( this );
 
-	if( OT_MOVER == GetType() && ( (CMover*)this )->IsPlayer() )
-	{
-		bool bResult = prj.m_idPlayerToUserPtr.emplace(((CPlayerCls *)this)->m_idPlayer, (CPlayerCls *)this).second;
+	if (CMoverPlayer * const asUser = ToUser()) {
+		bool bResult = prj.m_idPlayerToUserPtr.emplace(asUser->m_idPlayer, asUser).second;
 		if( bResult == false )
-			Error("AddItToGlobalId id:%d duplicated.", ((CPlayerCls *)this)->m_idPlayer );
+			Error("AddItToGlobalId id:%d duplicated.", asUser->m_idPlayer );
 	}
 
 #ifdef __WORLDSERVER	

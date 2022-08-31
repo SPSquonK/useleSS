@@ -1484,6 +1484,35 @@ public:
 	}
 };
 
+inline CMover * CObj::ToMover() {
+	if (GetType() != OT_MOVER) return nullptr;
+	return static_cast<CMover *>(this);
+}
+
+inline const CMover * CObj::ToMover() const {
+	if (GetType() != OT_MOVER) return nullptr;
+	return static_cast<const CMover *>(this);
+}
+
+inline CMover * CObj::ToNpc() {
+	CMover * mover = ToMover();
+	return mover && mover->IsNPC() ? mover : nullptr;
+}
+
+inline const CMover * CObj::ToNpc() const {
+	const CMover * mover = ToMover();
+	return mover && mover->IsNPC() ? mover : nullptr;
+}
+
+inline CMoverPlayer * CObj::ToUser() {
+	CMover * mover = ToMover();
+	return mover && mover->IsPlayer() ? reinterpret_cast<CMoverPlayer *>(mover) : nullptr;
+}
+
+inline const CMoverPlayer * CObj::ToUser() const {
+	const CMover * mover = ToMover();
+	return mover && mover->IsPlayer() ? reinterpret_cast<const CMoverPlayer *>(mover) : nullptr;
+}
 
 // 유저상태 알아봄
 inline	BOOL CMover::IsMode( DWORD dwMode ) const

@@ -127,6 +127,16 @@ public:
 #endif	// __VM_0820
 };
 
+inline CItem * CObj::ToItem() {
+	if (GetType() != OT_ITEM) return nullptr;
+	return static_cast<CItem *>(this);
+}
+
+inline const CItem * CObj::ToItem() const {
+	if (GetType() != OT_ITEM) return nullptr;
+	return static_cast<const CItem *>(this);
+}
+
 bool IsUsableItem(const CItemElem * pItem);
 bool IsUsingItem(const CItemElem * pItem);
 

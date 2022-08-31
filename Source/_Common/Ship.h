@@ -46,6 +46,16 @@ public:
 		
 };
 
+inline CShip * CObj::ToShip() {
+	if (GetType() != OT_SHIP) return nullptr;
+	return static_cast<CShip *>(this);
+}
+
+inline const CShip * CObj::ToShip() const {
+	if (GetType() != OT_SHIP) return nullptr;
+	return static_cast<const CShip *>(this);
+}
+
 // 플라리스 위에서 뺑뺑이 도는 배
 class CShipLoop : public CShip
 {

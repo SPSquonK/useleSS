@@ -74,6 +74,17 @@ public:
 
 };
 
+
+inline CSfx * CObj::ToSfx() {
+	if (GetType() != OT_SFX) return nullptr;
+	return static_cast<CSfx *>(this);
+}
+
+inline const CSfx * CObj::ToSfx() const {
+	if (GetType() != OT_SFX) return nullptr;
+	return static_cast<const CSfx *>(this);
+}
+
 // 쏘고 날아가서 맞고 터지는 일반적인 이펙트
 class CSfxShoot : public CSfx
 {

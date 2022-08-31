@@ -3092,94 +3092,33 @@ CCtrl * CProject::GetCtrl(const OBJID objid) {
 	return m_objmap.Find(objid);
 }
 
-namespace _ {
-	template<typename T, DWORD OT_Type>
-	inline T * TryConvertObj(CObj * pObj) {
-		if (!pObj) return nullptr;
-		if (pObj->GetType() != OT_Type) return nullptr;
-		return static_cast<T *>(pObj);
-	}
-
-	template<typename T, DWORD OT_Type>
-	inline const T * TryConvertObj(const CObj * pObj) {
-		if (!pObj) return nullptr;
-		if (pObj->GetType() != OT_Type) return nullptr;
-		return static_cast<const T *>(pObj);
-	}
-}
-template<typename T> [[nodiscard]] T * obj_cast(CObj * pObj);
-template<typename T> [[nodiscard]] const T * obj_cast(const CObj * pObj);
-
-template<> [[nodiscard]] CItem * obj_cast<CItem>(CObj * pObj) {
-	return _::TryConvertObj<CItem, OT_ITEM>(pObj);
-}
-
-template<> [[nodiscard]] const CItem * obj_cast<CItem>(const CObj * pObj) {
-	return _::TryConvertObj<CItem, OT_ITEM>(pObj);
-}
-
-#ifdef __CLIENT
-template<> [[nodiscard]] CSfx * obj_cast<CSfx>(CObj * pObj) {
-	return _::TryConvertObj<CSfx, OT_SFX>(pObj);
-}
-
-template<> [[nodiscard]] const CSfx * obj_cast<CSfx>(const CObj * pObj) {
-	return _::TryConvertObj<CSfx, OT_SFX>(pObj);
-}
-#endif
-
-template<> [[nodiscard]] CMover * obj_cast<CMover>(CObj * pObj) {
-	return _::TryConvertObj<CMover, OT_MOVER>(pObj);
-}
-
-template<> [[nodiscard]] const CMover * obj_cast<CMover>(const CObj * pObj) {
-	return _::TryConvertObj<CMover, OT_MOVER>(pObj);
-}
-
-template<> [[nodiscard]] CShip * obj_cast<CShip>(CObj * pObj) {
-	return _::TryConvertObj<CShip, OT_SHIP>(pObj);
-}
-
-template<> [[nodiscard]] const CShip * obj_cast<CShip>(const CObj * pObj) {
-	return _::TryConvertObj<CShip, OT_SHIP>(pObj);
-}
-
-#ifdef __WORLDSERVER
-template<> [[nodiscard]] CUser * obj_cast<CUser>(CObj * pObj) {
-	CMover * mover = _::TryConvertObj<CMover, OT_MOVER>(pObj);
-	if (!mover || !mover->IsPlayer()) return nullptr;
-	return reinterpret_cast<CUser *>(mover);
-}
-
-template<> [[nodiscard]] const CUser * obj_cast<CUser>(const CObj * pObj) {
-	const CMover * mover = _::TryConvertObj<CMover, OT_MOVER>(pObj);
-	if (!mover || !mover->IsPlayer()) return nullptr;
-	return reinterpret_cast<const CUser *>(mover);
-}
-#endif
-
 #ifdef __CLIENT
 CSfx * CProject::GetSfx(const OBJID objid) {
-	return obj_cast<CSfx>(m_objmap.Find(objid));
+	CCtrl * ctrl = m_objmap.Find(objid);
+	return ctrl ? ctrl->ToSfx() : nullptr;
 }
 #endif
 
 CItem * CProject::GetItem(const OBJID objid) {
-	return obj_cast<CItem>(m_objmap.Find(objid));
+	CCtrl * ctrl = m_objmap.Find(objid);
+	return ctrl ? ctrl->ToItem() : nullptr;
 }
 
 CMover * CProject::GetMover(OBJID objid) {
-	return obj_cast<CMover>(m_objmap.Find(objid));
+	CCtrl * ctrl = m_objmap.Find(objid);
+	return ctrl ? ctrl->ToMover() : nullptr;
 }
 
 CShip * CProject::GetShip(OBJID objid) {
-	return obj_cast<CShip>(m_objmap.Find(objid));
+	CCtrl * ctrl = m_objmap.Find(objid);
+	return ctrl ? ctrl->ToShip() : nullptr;
 }
 
 
 #ifdef __WORLDSERVER
 CUser * CProject::GetUser(OBJID objid) {
-	return obj_cast<CUser>(m_objmap.Find(objid));
+	CCtrl * ctrl = m_objmap.Find(objid);
+	return ctrl ? ctrl->ToUser() : nullptr;
 }
 #endif	
 

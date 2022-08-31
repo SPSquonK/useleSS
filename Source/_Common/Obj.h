@@ -6,6 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include "XUtil3D.h"
+#include "define.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +65,23 @@ struct		ObjProp;
 class		CAr;
 
 #if defined(__WORLDSERVER) || defined(__CLIENT)
+class CItem;
 class CMover;
+class CShip;
+class CCommonCtrl;
+
+#ifdef __WORLDSERVER
+class CUser;
+using CMoverPlayer = CUser;
+#else
+using CMoverPlayer = CMover;
+#endif
+
+#ifdef __CLIENT
+class CSfx;
+#endif
+
+
 #endif
 
 #ifdef __CLIENT
@@ -159,8 +176,22 @@ public:
 	enum	{	linkStatic	= 0, linkDynamic	= 1, linkPlayer	= 2,	linkAirShip		= 3,	};
 
 #if defined(__WORLDSERVER) || defined(__CLIENT)
-	CMover * ToMover();
-	const CMover * ToMover() const;
+	[[nodiscard]]       CMover * ToMover();
+	[[nodiscard]] const CMover * ToMover() const;
+	[[nodiscard]]       CMover * ToNpc();
+	[[nodiscard]] const CMover * ToNpc() const;
+	[[nodiscard]]       CMoverPlayer * ToUser();
+	[[nodiscard]] const CMoverPlayer * ToUser() const;
+	[[nodiscard]]       CShip * ToShip();
+	[[nodiscard]] const CShip * ToShip() const;
+	[[nodiscard]]       CItem * ToItem();
+	[[nodiscard]] const CItem * ToItem() const;
+	[[nodiscard]]       CCommonCtrl * ToCommonCtrl();
+	[[nodiscard]] const CCommonCtrl * ToCommonCtrl() const;
+#endif
+#if defined(__CLIENT)
+	[[nodiscard]]       CSfx * ToSfx();
+	[[nodiscard]] const CSfx * ToSfx() const;
 #endif
 
 public:

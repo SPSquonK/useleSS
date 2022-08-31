@@ -119,4 +119,14 @@ public:
 	virtual BOOL Read( CFileIO* pFile );
 };
 
+inline CCommonCtrl * CObj::ToCommonCtrl() {
+	if (GetType() != OT_CTRL) return nullptr;
+	return static_cast<CCommonCtrl *>(this);
+}
+
+inline const CCommonCtrl * CObj::ToCommonCtrl() const {
+	if (GetType() != OT_CTRL) return nullptr;
+	return static_cast<const CCommonCtrl *>(this);
+}
+
 #endif //__COMMONCTRL_H__
