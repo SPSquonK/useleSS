@@ -415,6 +415,11 @@ CDPSrvr::CDPSrvr()
 #endif // __GUILD_HOUSE_MIDDLE
 
 	OnMsg(PACKETTYPE_SQUONK_ARBITRARY_PACKET, &CDPSrvr::OnSquonKArbitraryPacket);
+
+	// Reception is disabled on official V15, Emission is disabled on official v21. It is up to
+	// the developers of the server to choose whtenever they want to look further in this method
+	// on entirely remove this packet.
+	// OnMsg(PACKETTYPE_ERRORCODE, &CDPSrvr::OnError);
 }
 
 bool CDPSrvrHandlers::Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpidUser) {
