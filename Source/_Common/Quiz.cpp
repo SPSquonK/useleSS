@@ -320,7 +320,7 @@ void CQuiz::Process()
 				if( pWorld )
 				{
 
-					for (CObj * pObj : pWorld->m_Objs.Range()) {
+					for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 						if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 							static_cast<CUser *>(pObj)->AddQuizEventMessage(prj.GetText(TID_GAME_QUIZ_WAIT_QUESTION));
 							bAble = TRUE;
@@ -353,7 +353,7 @@ void CQuiz::Process()
 			CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 			if( pWorld )
 			{
-				for (CObj * pObj : pWorld->m_Objs.Range()) {
+				for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 					if(IsPlayerOnLayer(pObj, nDefaultLayer ) )
 					{
 						static_cast<CUser *>(pObj)->AddQuizEventMessage(prj.GetText(TID_GAME_QUIZ_QUESTION), QE_QUESTION);
@@ -428,7 +428,7 @@ void CQuiz::Process()
 			CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 			if( pWorld )
 			{
-				for (CObj * pObj : pWorld->m_Objs.Range()) {
+				for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 					if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 						static_cast<CUser *>(pObj)->AddQuizEventMessage(str_Message, QE_CORRECT_ANSWER);
 						static_cast<CUser *>(pObj)->AddQuizEventMessage(strMessage);
@@ -461,7 +461,7 @@ void CQuiz::Process()
 				CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 				if( pWorld )
 				{
-					for (CObj * pObj : pWorld->m_Objs.Range()) {
+					for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 						if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 							static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WATCHINGZONE_OPEN ), QE_WATCHINGZONE_OPEN );
 							static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_TELEPORT_QUIZZONE ) );
@@ -497,7 +497,7 @@ void CQuiz::Process()
 			if( pWorld )
 			{
 
-				for (CObj * pObj : pWorld->m_Objs.Range()) {
+				for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 					if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 						static_cast<CUser*>( pObj )->AddQuizEventMessage( prj.GetText( TID_GAME_QUIZ_WAIT_QUESTION ) );
 
@@ -534,7 +534,7 @@ void CQuiz::DropOutWrongUser( int nQuizId, int nCorrect, int nItemId, int nItemN
 	if( pWorld )
 	{
 
-		for (CObj * pObj : pWorld->m_Objs.Range()) {
+		for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 			if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 				if( m_bSelectLog )
 				{
@@ -570,7 +570,7 @@ void CQuiz::DropOutWrongUser( int nQuizId, int nCorrect, int nItemId, int nItemN
 		if( pWorld )
 		{
 
-			for (CObj * pObj : pWorld->m_Objs.Range()) {
+			for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 				if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 					static_cast<CUser*>( pObj )->AddQuizEventMessage( strMessage, QE_CLOSE_WAIT );
 					// 스크립트에 정해진 아이템 지급
@@ -653,7 +653,7 @@ void CQuiz::CloseQuizEvent()
 	CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 	if( pWorld )
 	{
-		for (CObj * pObj : pWorld->m_Objs.Range()) {
+		for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
 			if (IsPlayerOnLayer(pObj, nDefaultLayer)) {
 				GoOut(static_cast<CUser *>(pObj));
 			}

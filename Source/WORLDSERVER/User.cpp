@@ -4991,8 +4991,8 @@ void CUserMng::ReplaceWorldArea( u_long idParty, DWORD dwWorldId, DWORD dwReplac
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	if( pWorld )
 	{
-		for (CObj * pObj : pWorld->m_Objs.Range()) {
-			if (IsValidObj(pObj) && pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPlayer() && ((CMover *)pObj)->m_idparty == idParty) {
+		for (CObj * pObj : pWorld->m_Objs.ValidObjs()) {
+			if (pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPlayer() && ((CMover *)pObj)->m_idparty == idParty) {
 				CUser * pUser = (CUser *)pObj;
 				if (bDieFlag) {
 					if (pUser->IsDie())

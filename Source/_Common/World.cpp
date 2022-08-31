@@ -214,7 +214,7 @@ void CWorld::CalcBound()
 void CWorld::LoadAllMoverDialog()
 {
 #ifdef __WORLDSERVER
-	for (CObj * pObj : m_Objs.Range()) {
+	for (CObj * pObj : m_Objs.ValidObjs()) {
 		if(pObj->GetType() == OT_MOVER )
 			((CMover*)pObj)->LoadDialog();
 	}
@@ -741,8 +741,8 @@ void CWorld::Process()
 				for( k = OT_ANI; k < MAX_OBJARRAY; k++ )
 				{
 					auto & apObject = pLand->m_apObjects[idx[k]];
-					for (CObj * pObj : apObject.Range()) {
-						if(pObj->IsDelete() == FALSE && pObj->GetWorld() != NULL )
+					for (CObj * pObj : apObject.ValidObjs()) {
+						if(pObj->GetWorld() != NULL )
 						{
 							vPos = pObj->GetPos() - *pvCameraPos;
 							fLengthSq = D3DXVec3LengthSq( &vPos );
@@ -1495,8 +1495,8 @@ void CWorld::_replace( void )
 
 void CWorld::_process( void )
 {
-	for (CObj * pObj : m_Objs.Range()) {
-		if (!pObj->IsDelete() && pObj->m_dwObjAryIdx != 0xffffffff) {
+	for (CObj * pObj : m_Objs.ValidObjs()) {
+		if (pObj->m_dwObjAryIdx != 0xffffffff) {
 			pObj->Process();
 		}
 	}
@@ -1765,7 +1765,7 @@ void CWorld::_OnDie() {
 
 CMover* CWorld::FindMover( LPCTSTR szName )
 {
-	for (CObj * pObj : m_Objs.Range()) {
+	for (CObj * pObj : m_Objs.ValidObjs()) {
 		if (pObj->GetType() == OT_MOVER) {
 			CMover * pMover = (CMover *)pObj;
 			if (_tcscmp(pMover->GetName(), szName) == 0)

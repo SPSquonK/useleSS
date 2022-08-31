@@ -258,7 +258,7 @@ BOOL CWorld::LoadPatrol()
 #ifdef __LAYER_1021
 void CWorld::DeleteLayerControls( int nLayer )
 {
-	for (CObj * pObj : m_Objs.Range()) {
+	for (CObj * pObj : m_Objs.ValidObjs()) {
 		if( pObj->GetType() == OT_CTRL && pObj->GetLayer() == nLayer )
 			pObj->Delete();
 	}
@@ -1170,7 +1170,7 @@ BOOL CWorld::CreateLayer( int nLayer )
 ////////////////////////////////////////////////////////////////////////////////
 bool CWorld::HasSomeone(const int nLayer) const {
 	constexpr auto HasSomeoneInWorld = [](const CWorld & world, const int nLayer) {
-		for (CObj * pObj : world.m_Objs.Range()) {
+		for (CObj * pObj : world.m_Objs.ValidObjs()) {
 			if (IsLayerPlayer(pObj, nLayer)) {
 				return true;
 			}
@@ -1200,7 +1200,7 @@ bool CWorld::IsLayerPlayer(CObj * pObj, int nLayer) {
 void CWorld::DriveOut( int nLayer )
 {
 #ifdef __WORLDSERVER
-	for (CObj * pObj : m_Objs.Range()) {
+	for (CObj * pObj : m_Objs.ValidObjs()) {
 		if( IsLayerPlayer( pObj, nLayer ) )
 		{
 			CUser* pUser	= static_cast<CUser*>(pObj);

@@ -355,7 +355,7 @@ HRESULT CLandscape::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 	pd3dDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );		
 
 	for (auto & apObject : m_apObjects) {
-		for (CObj * pObj : apObject.Range()) {
+		for (CObj * pObj : apObject.ValidObjs()) {
 			if (pObj->m_pModel->IsAniable()) {
 				pObj->m_pModel->RestoreDeviceObjects();
 			}
@@ -624,7 +624,7 @@ HRESULT CLandscape::InvalidateDeviceObjects()
 	//SAFE_RELEASE( m_texMiniMap.m_pTexture );
 
 	for (auto & apObject : m_apObjects) {
-		for (CObj * pObj : apObject.Range()) {
+		for (CObj * pObj : apObject.ValidObjs()) {
 			if (pObj->m_pModel->IsAniable()) {
 				pObj->m_pModel->InvalidateDeviceObjects();
 			}
@@ -637,7 +637,7 @@ HRESULT CLandscape::DeleteDeviceObjects()
 {
 	SAFE_RELEASE( m_texMiniMap.m_pTexture );
 	for (auto & apObject : m_apObjects) {
-		for (CObj * pObj : apObject.Range()) {
+		for (CObj * pObj : apObject.ValidObjs()) {
 			if (pObj->m_pModel->IsAniable()) {
 				pObj->m_pModel->DeleteDeviceObjects();
 			}
@@ -1240,7 +1240,7 @@ FLOAT CLandscape::GetHeight(POINT pos)
 
 void CLandscape::SetUsedAllObjects() {
 	for (auto & apObjs : m_apObjects) {
-		for (CObj * pObj : apObjs.Range()) {
+		for (CObj * pObj : apObjs.ValidObjs()) {
 			pObj->m_pModel->m_pModelElem->m_bUsed = TRUE;
 		}
 	}
