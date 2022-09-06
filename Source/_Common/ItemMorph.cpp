@@ -150,7 +150,7 @@ namespace ItemMorph {
 	}
 
 	std::string ReflexiveMorph::BuildListOfExistingMorphs() {
-		return GenericBuildListOfExistingMorphs<VanillaMorph>();
+		return GenericBuildListOfExistingMorphs<ReflexiveMorph>();
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
