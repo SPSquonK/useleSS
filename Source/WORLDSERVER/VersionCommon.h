@@ -293,7 +293,6 @@
 
 //	#define		__DST_GIFTBOX				// 착용 아이템에 기프트 박스 기능 추가
 
-	#define		__OPT_MEM_0811
 //	#define		__MEM_TRACE
 	#define		__NEW_PROFILE		// 새로운 프로파일러 적용
 
@@ -366,7 +365,6 @@
 
 //	#define		__JAPAN_SAKURA				// 벗꽃 이벤트
 
-	#define		__OPT_MEM_0811
 //	#define		__MEM_TRACE
 	
 	#define		__NEW_PROFILE		// 새로운 프로파일러 적용
@@ -390,7 +388,6 @@
 //	#define		__JAPAN_SAKURA				// 벗꽃 이벤트
 //	#define		__RAIN_EVENT		// 장마 이벤트(비오는 동안 경험치 2배)
 
-	#define		__OPT_MEM_0811
 //	#define		__MEM_TRACE
 	//#define		__NEW_PROFILE		// 새로운 프로파일러 적용
 	#define		__GLOBAL_COUNT_0705			// CTime::GetTimer

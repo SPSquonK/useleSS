@@ -1,5 +1,4 @@
-#ifndef __AI_MONSTER2_H
-#define __AI_MONSTER2_H
+#pragma once
 
 #include "AIInterface.h"
 
@@ -10,7 +9,6 @@ class CAIMonster2 : public CAIInterface
 public:
 	CAIMonster2();
 	CAIMonster2( CObj* pObj );
-	virtual ~CAIMonster2();
 	
 	virtual void	RouteMessage();
 	virtual void	SendAIMsg( DWORD dwMessage, DWORD dwParam1 = 0, DWORD dwParam2 = 0 );
@@ -37,13 +35,9 @@ private:
 	BOOL	IsControllable();
 	void	ProcessAIMsg( int nInput, int nOutput, DWORD dwParam1, DWORD dwParam2 );
 	void	OnBeginState( int nInput, DWORD dwParam1, DWORD dwParam2 );
-	void	OnEndState( int nInput, DWORD dwParam1, DWORD dwParam2 );
 	BOOL	BeginAttack();
 	void	MoveToDst( const D3DXVECTOR3& vDst );
 	BOOL	SelectTarget();
 	BOOL	Search();
 	BOOL	IsInValidTarget();
 };
-
-#endif
-

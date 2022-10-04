@@ -1,5 +1,4 @@
-#ifndef __AI_GUARD_H
-#define __AI_GUARD_H
+#pragma once
 
 #include "mempooler.h"
 //#include "Mover.h"
@@ -23,9 +22,6 @@ public:
 
 	CAIGuard();
 	CAIGuard( CObj* pObj );
-	virtual ~CAIGuard();
-
-	virtual void InitAI();
 
 public:
 #ifndef __VM_0820
@@ -40,6 +36,4 @@ public:
 	
 	DECLARE_AISTATE()
 };
-
-#endif
 

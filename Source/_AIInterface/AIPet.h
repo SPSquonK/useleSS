@@ -1,5 +1,4 @@
-#ifndef __AI_PET_H
-#define __AI_PET_H
+#pragma once
 
 #include "..\_AIInterface\AIInterface.h"
 #include "mempooler.h"
@@ -68,6 +67,3 @@ public:
 	
 	DECLARE_AISTATE()
 };
-
-#endif
-

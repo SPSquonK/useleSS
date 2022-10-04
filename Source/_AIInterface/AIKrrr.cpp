@@ -57,11 +57,6 @@ CAIKrrr::CAIKrrr( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
-CAIKrrr::~CAIKrrr()
-{
-	Destroy();
-}
-
 void CAIKrrr::Init( void )
 {
 	m_vPosBegin.x = m_vPosBegin.y = m_vPosBegin.z = 0;
@@ -76,10 +71,6 @@ void CAIKrrr::Init( void )
 	m_nEventCount = 10;
 
 	memset( m_bEventFlag, 0, sizeof(BOOL)*5 );
-}
-
-void CAIKrrr::Destroy( void )
-{
 }
 
 void CAIKrrr::InitAI()
@@ -115,9 +106,6 @@ BOOL CAIKrrr::MoveProcessIdle()
 
 BOOL CAIKrrr::StateIdle( const AIMSG & msg )
 {
-	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	
 	BeginAIHandler( )
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,8 +141,6 @@ BOOL CAIKrrr::StateIdle( const AIMSG & msg )
 BOOL	CAIKrrr::SelectTarget( void )
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
-	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 
 	FLOAT fRadius = pMover->GetRadiusXZ();		// this의 반지름
 	FLOAT fRadiusSq = fRadius * fRadius;		// 반지름Sq버전.
@@ -307,7 +293,6 @@ BOOL	CAIKrrr::SelectTarget( void )
 BOOL CAIKrrr::MoveProcessRage()
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
 	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 /*
 	if( m_bDefenseMode == FALSE && pMover->GetHitPointPercent() <= 100 )		// 20%이하로 피가 빠지면
@@ -523,7 +508,6 @@ BOOL CAIKrrr::MoveProcessRage()
 BOOL CAIKrrr::StateRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	
 	BeginAIHandler( )
 		
@@ -626,10 +610,8 @@ BOOL CAIKrrr::StateRage( const AIMSG & msg )
 			// 폭발 이펙트 생성지점 계산.
 			// 폭발 이펙트 생성;
 			// 범위 공격;
-			break;
 		case CAT_DOUBLE_CRASH:
 			// 미사일 오브젝트 생성;
-			break;
 		case CAT_SUMMONS:		// 밟는 공격 타점.
 			// 범위 데미지;
 			break;

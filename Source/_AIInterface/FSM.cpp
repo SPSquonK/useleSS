@@ -14,10 +14,6 @@ CFSM* GetFSM( DWORD type )
 // CFSM
 //////////////////////////////////////////////////////////////////////
 
-CFSM::CFSM()
-{
-}
-
 CFSM::~CFSM()
 {
 	for( auto it = m_map.begin(); it != m_map.end(); ++it )

@@ -57,9 +57,9 @@ CPocketController::CPocketController()
 	m_pMover	= NULL;
 #endif	// __WORLDSERVER
 	memset( m_apPocket, 0, sizeof(m_apPocket) );
-#ifndef __OPT_MEM_0811
+#ifndef __WORLDSERVER
 	Avail( 0 );
-#endif	// __OPT_MEM_0811
+#endif	// __WORLDSERVER
 }
 
 CPocketController::~CPocketController()

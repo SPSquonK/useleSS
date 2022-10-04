@@ -1,5 +1,4 @@
-#ifndef __ACTIONSHIP_H__
-#define __ACTIONSHIP_H__
+#pragma once
 
 #include "Action.h"
 
@@ -25,5 +24,3 @@ public:
 	void	ProcessState( DWORD dwState, float fSpeed = 0.0f );
 	
 };
-
-#endif // actionship.h

@@ -202,10 +202,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 				m_vDelta.z = -cosf(fTheta) * (fSpeed/4.0f);
 			}
 			if( GetState() != OBJSTA_FMOVE )		break;		// 전진중일때만 동작 나옴
-			if( IsStateFlag( OBJSTAF_COMBAT ) )	// 전투모드
-				pMover->SetMotion( MTI_WALK );		// 전투모드로 걷기
-			else
-				pMover->SetMotion( MTI_WALK );		// 걍 걷기
+				pMover->SetMotion( MTI_WALK );
 		} else
 		{
 			if( pMover->m_dwTypeFlag & OBJTYPE_FLYING )
@@ -245,10 +242,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 		m_vDelta.x =  sinf(fTheta) * (-fSpeed/5.0f);
 		m_vDelta.z = -cosf(fTheta) * (-fSpeed/5.0f);
 		if( GetState() != OBJSTA_BMOVE )		break;		// 전진중일때만 동작 나옴
-		if( IsStateFlag( OBJSTAF_COMBAT ) )		
-			pMover->SetMotion( MTI_BACK );	// 전투모드로 걷기
-		else
-			pMover->SetMotion( MTI_BACK );			// 걍 걷기
+		pMover->SetMotion( MTI_BACK );			// 걍 걷기
 		break;
 	// 수평이동
 	case OBJSTA_LEFT:
@@ -293,25 +287,6 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 		{
 			ResetState( OBJSTA_MOVE_ALL );
 		}
-		break;
-	case OBJSTA_COLLECT:
-		/*
-		if( pMover->IsNPC() )
-		{
-			Error( "OBJSTA_COLLECT : 웬 몬스터가 채집으로 들어왔다 %s", pMover->GetName() );
-			break;
-		}
- #ifdef __WORLDSERVER
-		if( pMover->OnActCollecting() == TRUE || IsMove() )		// 채집동작이 끝나면 / 채집하다 움직이면.
-		{
-			ResetState( OBJSTA_ACTION_ALL );			// 해제
-			g_UserMng.AddHdr( (CUser *)pMover, SNAPSHOTTYPE_STOP_COLLECT );	// 채집끝남.
-		}
- #elif defined(__CLIENT)
-		pMover->OnActCollecting();
- #endif
-		*/
-		// 모션은 조건이 끝날때까지 계속 반복됨.
 		break;
 	case OBJSTA_STUN:
 		if( pMover->m_dwMotion != MTI_GROGGY )		// 그로기 모션이 돌고 있지 않을때
@@ -555,7 +530,7 @@ if(!pMover->IsPlayer())
 		break;
 	case OBJSTA_DISAPPEAR:	// 사라지는 상태
 #ifndef __CLIENT
-		if( m_nCount > FRAME_PER_SEC )	// 1초후 사라짐
+		if( !pMover->IsPlayer() && m_nCount > FRAME_PER_SEC )	// 1초후 사라짐
 //		if( m_nCount++ > SEC1 )
 		{
 			pMover->Delete();
@@ -643,7 +618,6 @@ void	CActionMover::ProcessStateMeleeSkill( DWORD dwState, int nParam )
 			if( pMover->GetAct() != OBJACT_USESKILL )	
 				return;	// 스킬사용후 타점이 되기전에 다른 명령으로 바뀐경우. 이런상황이 와선 안된다.
 			int		nSkill = pMover->GetActParam(0);
-			OBJID	idTarget = pMover->GetActParam(1);
 			DWORD	dwLevel = pMover->GetActParam(3);
 			
 			ItemProp* pSkillProp = NULL;
@@ -737,7 +711,6 @@ void	CActionMover::ProcessStateMagicSkill( DWORD dwState, int nParam )
 		if( pMover->GetAct() != OBJACT_USESKILL )	
 			return;	// 스킬사용후 타점이 되기전에 다른 명령으로 바뀐경우. 이런상황이 와선 안된다.
 		int		nSkill = pMover->GetActParam(0);
-		OBJID	idTarget = pMover->GetActParam(1);
 		DWORD	dwLevel = pMover->GetActParam(3);
 		
 		ItemProp* pSkillProp = NULL;
@@ -764,6 +737,9 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 	CMover* pMover = m_pMover;
 	CModelObject	*pModel = (CModelObject *)pMover->m_pModel;
 
+	if (pMover == NULL || pModel == NULL)
+		return;
+
 	switch( dwState )
 	{
 	case OBJSTA_ATK1:
@@ -777,58 +753,49 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 			OBJMSG	dwNextMsg = OBJMSG_ATK2;
 			switch( dwState )
 			{
-			case OBJSTA_ATK1:	
-			case OBJSTA_ATK2:	
-			case OBJSTA_ATK3:	
-			case OBJSTA_ATK4:	
-
-				switch( dwState )
+			case OBJSTA_ATK1:	nReqLevel = 2;	dwNextMsg = OBJMSG_ATK2;	break;
+			case OBJSTA_ATK2:	nReqLevel = 8;	dwNextMsg = OBJMSG_ATK3;	break;
+			case OBJSTA_ATK3:	nReqLevel = 12;	dwNextMsg = OBJMSG_ATK4;	break;
+			case OBJSTA_ATK4:	nReqLevel = 999;	dwNextMsg = OBJMSG_ATK1;	break;
+			}
+			if( pModel->IsEndFrame() )		// 애니메이션이 끝났다. 연타로 넘어갈껀지 말껀지.
+			{
+			#ifdef __WORLDSERVER					
+				m_objidHit = NULL_ID;
+			#endif
+				ResetState( OBJSTA_ATK_ALL );
+			#ifdef __CLIENT
+				if( GetMover()->IsActiveMover() )
 				{
-				case OBJSTA_ATK1:	nReqLevel = 2;	dwNextMsg = OBJMSG_ATK2;	break;
-				case OBJSTA_ATK2:	nReqLevel = 8;	dwNextMsg = OBJMSG_ATK3;	break;
-				case OBJSTA_ATK3:	nReqLevel = 12;	dwNextMsg = OBJMSG_ATK4;	break;
-				case OBJSTA_ATK4:	nReqLevel = 999;	dwNextMsg = OBJMSG_ATK1;	break;
-				}
-				if( pModel->IsEndFrame() )		// 애니메이션이 끝났다. 연타로 넘어갈껀지 말껀지.
-				{
-				#ifdef __WORLDSERVER					
-					m_objidHit = NULL_ID;
-				#endif
-					ResetState( OBJSTA_ATK_ALL );
-				#ifdef __CLIENT
-					if( GetMover()->IsActiveMover() )
+					if( (pMover->GetLevel() >= nReqLevel) && ((m_dwCtrlMsg & CTRLMSG_LDOWN) || ((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack) )	// 직업레벨 X이상이면 다음연타가능
 					{
-						if( (pMover->GetLevel() >= nReqLevel) && ((m_dwCtrlMsg & CTRLMSG_LDOWN) || ((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack) )	// 직업레벨 X이상이면 다음연타가능
+						const ItemProp* pItemProp = pMover->GetActiveHandItemProp();
+						if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )
 						{
-							const ItemProp* pItemProp = pMover->GetActiveHandItemProp();
-							if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )
-							{
-								if( dwState == OBJSTA_ATK2 || dwState == OBJSTA_ATK3 || dwState == OBJSTA_ATK4 )
-									break;
-							}
-
-							CMover* pHitObj	= prj.GetMover( m_objidHit );
-							if( IsValidObj( (CObj*)pHitObj ) &&		// 다음 스킬이 예약되어있으면 여기서 끝낸다.
-								g_WndMng.m_pWndWorld->GetNextSkill() == NEXTSKILL_NONE ) 
-							{
-								int nError	= SendActMsg( dwNextMsg, m_objidHit, MAKELONG( 0, 0 ), MAKELONG( 0, 0 ) );
-								if( nError > 0 )	
-								{
-#ifdef __HACK_1023
-									const ItemProp* pHandItemProp		= pMover->GetActiveHandItemProp();
-									FLOAT fVal	= pHandItemProp? pHandItemProp->fAttackSpeed: 0.0F;
-									g_DPlay.SendMeleeAttack ( dwNextMsg, m_objidHit, MAKELONG( 0, 0 ), MAKELONG( 0, (WORD)nError ), fVal );
-#else	// __HACK_1023
-									g_DPlay.SendMeleeAttack ( dwNextMsg, m_objidHit, MAKELONG( 0, 0 ), MAKELONG( 0, (WORD)nError ) );
-#endif	// __HACK_1023
-								}
-							} else
-								m_objidHit = NULL_ID;
+							if( dwState == OBJSTA_ATK2 || dwState == OBJSTA_ATK3 || dwState == OBJSTA_ATK4 )
+								break;
 						}
+
+						CMover* pHitObj	= prj.GetMover( m_objidHit );
+						if( IsValidObj( (CObj*)pHitObj ) &&		// 다음 스킬이 예약되어있으면 여기서 끝낸다.
+							g_WndMng.m_pWndWorld->GetNextSkill() == NEXTSKILL_NONE ) 
+						{
+							int nError	= SendActMsg( dwNextMsg, m_objidHit, MAKELONG( 0, 0 ), MAKELONG( 0, 0 ) );
+							if( nError > 0 )	
+							{
+#ifdef __HACK_1023
+								const ItemProp* pHandItemProp		= pMover->GetActiveHandItemProp();
+								FLOAT fVal	= pHandItemProp? pHandItemProp->fAttackSpeed: 0.0F;
+								g_DPlay.SendMeleeAttack ( dwNextMsg, m_objidHit, MAKELONG( 0, 0 ), MAKELONG( 0, (WORD)nError ), fVal );
+#else	// __HACK_1023
+								g_DPlay.SendMeleeAttack ( dwNextMsg, m_objidHit, MAKELONG( 0, 0 ), MAKELONG( 0, (WORD)nError ) );
+#endif	// __HACK_1023
+							}
+						} else
+							m_objidHit = NULL_ID;
 					}
-				#endif	// CLIENT
 				}
-				break;
+			#endif	// CLIENT
 			}
 		} 
 		else	

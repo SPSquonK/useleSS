@@ -58,11 +58,6 @@ CAIBigMuscle::CAIBigMuscle( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
-CAIBigMuscle::~CAIBigMuscle()
-{
-	Destroy();
-}
-
 void CAIBigMuscle::Init( void )
 {
 	m_vPosBegin.x = m_vPosBegin.y = m_vPosBegin.z = 0;
@@ -76,10 +71,6 @@ void CAIBigMuscle::Init( void )
 	m_nAppearCnt = 0;
 
 	memset( m_bEventFlag, 0, sizeof(BOOL)*5 );
-}
-
-void CAIBigMuscle::Destroy( void )
-{
 }
 
 void CAIBigMuscle::InitAI()
@@ -115,10 +106,7 @@ BOOL CAIBigMuscle::MoveProcessIdle()
 }
 
 BOOL CAIBigMuscle::StateIdle( const AIMSG & msg )
-{
-	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	
+{	
 	BeginAIHandler( )
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,8 +142,6 @@ BOOL CAIBigMuscle::StateIdle( const AIMSG & msg )
 BOOL	CAIBigMuscle::SelectTarget( void )
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
-	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 
 	FLOAT fRadius = pMover->GetRadiusXZ();		// this의 반지름
 	FLOAT fRadiusSq = fRadius * fRadius;		// 반지름Sq버전.
@@ -313,18 +299,7 @@ BOOL	CAIBigMuscle::SelectTarget( void )
 BOOL CAIBigMuscle::MoveProcessRage()
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
 	CModelObject *pModel = (CModelObject *)pMover->GetModel();
-/*
-	if( m_bDefenseMode == FALSE && pMover->GetHitPointPercent() <= 100 )		// 20%이하로 피가 빠지면
-	{
-		m_bDefenseMode = TRUE;
-		pMover->SetDestParam( DST_ADJDEF_RATE, 800, NULL_CHGPARAM );			// 방어도 30%증가.
-#ifdef __INTERNALSERVER
-//		Error( "보스의 방어도가 증가되었음. 엔터를 치시고 계속 즐겜을 하시오" );
-#endif
-	}
-*/
 	
 	// 이벤트 메세지
 	// 보스몬스터가 유저에게 말을 한다.
@@ -521,7 +496,6 @@ BOOL CAIBigMuscle::MoveProcessRage()
 BOOL CAIBigMuscle::StateRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	
 	BeginAIHandler( )
 		
@@ -621,13 +595,10 @@ BOOL CAIBigMuscle::StateRage( const AIMSG & msg )
 			// 폭발 이펙트 생성지점 계산.
 			// 폭발 이펙트 생성;
 			// 범위 공격;
-			break;
 		case CAT_QUAKEDOUBLE:
 			// 미사일 오브젝트 생성;
-			break;
 		case CAT_QUAKE_ONE:		// 밟는 공격 타점.
 			// 범위 데미지;
-			break;
 		case CAT_NORMAL2:
 			break;			
 		default:

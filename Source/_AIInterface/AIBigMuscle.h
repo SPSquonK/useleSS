@@ -1,5 +1,4 @@
-#ifndef __AI_BIGMUSCLE_H
-#define __AI_BIGMUSCLE_H
+#pragma once
 
 #include "mempooler.h"
 
@@ -23,29 +22,20 @@ class CAIBigMuscle : public CAIInterface
 
 	BOOL	MoveProcessIdle();
 	BOOL	MoveProcessRage();
-	BOOL	MoveProcessRunaway();
-	
-	BOOL	StopProcessIdle();
-
 	BOOL	SelectTarget( void );		// 리어택 타이밍이 됬을때 타겟을 선정함.
 		
 	void Init( void );
-	void Destroy( void );
 
 public:
 	
 	CAIBigMuscle();
 	CAIBigMuscle( CObj* pObj );
-	virtual ~CAIBigMuscle();
 	
 	virtual void InitAI();
 
 	int GetEvent( void ) { return m_nEvent; }
 	BOOL	StateInit( const AIMSG & msg );
 	BOOL	StateIdle( const AIMSG & msg );
-	BOOL	StateWander( const AIMSG & msg );
-	BOOL	StateRunaway( const AIMSG & msg );
-	BOOL	StateEvade( const AIMSG & msg );
 	BOOL	StateRage( const AIMSG & msg );
 
 public:
@@ -61,6 +51,3 @@ public:
 	
 	DECLARE_AISTATE()
 };
-
-#endif
-

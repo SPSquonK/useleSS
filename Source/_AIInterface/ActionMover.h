@@ -1,6 +1,4 @@
-#ifndef __ACTIONMOVER_H
-#define __ACTIONMOVER_H
-
+#pragma once
 
 #include "Mover.h"
 #include "Action.h"
@@ -187,7 +185,3 @@ inline int CActionMover::MakeParamDamage( int nMagicPower, int nSkill, int nDmgC
 	nParam |= (nSkill << 16);	// D16~D31
 	return nParam;
 }
-
-
-
-#endif	// __ACTIONMOVER_H

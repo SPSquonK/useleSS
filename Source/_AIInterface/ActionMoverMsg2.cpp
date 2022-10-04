@@ -43,7 +43,10 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 			if( IsActAttack() )		return -2;	// 공격 동작상태면 취소
 			if( IsActTurn() )		return 0;
 			if( !pItemProp )
+			{
 				Error( "ItemProp is NULL in ProcessActMsg2() %d", m_pMover->m_dwRideItemIdx );
+				return 0;
+			}
 			SetMoveState( OBJSTA_STAND );	// 상태설정
 			BOOL ret;
 			if( pItemProp )
@@ -73,7 +76,10 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 		if( GetState() & OBJSTA_ATK_ALL )	
 			return 1;
 		if( !pItemProp )
+		{
 			Error( "ItemProp is NULL in ProcessActMsg2()\n" );
+			return 0;
+		}
 		pMover->SetMotion( pItemProp->dwUseMotion + MTA_FRUNNING1, ANILOOP_LOOP, MOP_FIXED );	// 일단은 다 대기 동작으로 쓴다
 		break;
 	// 좌/우 턴 해라! 
@@ -85,7 +91,10 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 		SetTurnState( OBJSTA_LTURN );
 		if( GetState() & OBJSTA_ATK_ALL )	return 0;
 		if( !pItemProp )
+		{
 			Error( "ItemProp is NULL in ProcessActMsg2()\n" );
+			return 0;
+		}
 		if( fTurnAngle > 1.0f )
 			pMover->SetMotion( pItemProp->dwUseMotion + MTA_FLTURN1, ANILOOP_LOOP, MOP_FIXED );
 		}
@@ -98,7 +107,10 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 		SetTurnState( OBJSTA_RTURN );
 		if( GetState() & OBJSTA_ATK_ALL )	return 0;	// 공격중엔 회전모션 하지 않음.
 		if( !pItemProp )
+		{
 			Error( "ItemProp is NULL in ProcessActMsg2()\n" );
+			return 0;
+		}
 		if( fTurnAngle > 1.0f )
 			pMover->SetMotion( pItemProp->dwUseMotion + MTA_FRTURN1, ANILOOP_LOOP, MOP_FIXED );
 		}
@@ -109,7 +121,10 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 		SetTurnState( 0 );		// 턴을 중지
 		if( GetState() & OBJSTA_ATK_ALL )	return 0;
 		if( !pItemProp )
+		{
 			Error( "ItemProp is NULL in ProcessActMsg2()\n" );
+			return 0;
+		}
 		if( GetMoveState() == OBJSTA_FMOVE )
 			pMover->SetMotion( pItemProp->dwUseMotion + MTA_FRUNNING1, ANILOOP_LOOP, MOP_FIXED );
 		else
@@ -153,7 +168,10 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 			AddStateFlag( OBJSTAF_COMBAT );	// 전투모드로 전환.
 			SetState( OBJSTA_ATK_ALL, OBJSTA_ATK1 );
 			if( pItemProp )
+			{
 				pMover->SetMotion( pItemProp->dwUseMotion + MTA_FATK1, ANILOOP_1PLAY, MOP_NO_TRANS | MOP_SWDFORCE | MOP_FIXED );		// 최초 메시지 입력시 동작 설정
+				return 0;
+			}
 			else
 				Error( "ItemProp is NULL in ProcessActMsg2()\n" );
 			pHitObj->SetJJim( pMover );
@@ -190,7 +208,10 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 			SendActMsg( OBJMSG_STAND );
 			SetState( OBJSTA_ATK_ALL, OBJSTA_ATK_MAGIC1 );
 			if( pItemProp )
+			{
 				pMover->SetMotion( pItemProp->dwUseMotion + MTA_FATK1, ANILOOP_1PLAY, MOP_NO_TRANS | MOP_SWDFORCE | MOP_FIXED );		// 
+				return 0;
+			}
 			pHitObj->SetJJim( pMover );
 			pMover->RemoveInvisible();
 			

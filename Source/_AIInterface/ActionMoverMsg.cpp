@@ -224,7 +224,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsActJump() )	return 0;
 
 		// 무적이면 여기서 리턴.
-		if( pMover->m_dwMode & MATCHLESS_MODE )		
+		if ((pMover->m_dwMode & MATCHLESS_MODE) && pMover->IsAuthHigher(AUTH_GAMEMASTER2))
 			return 0;
 		
 		pMover->m_dwFlag |= MVRF_NOACTION;				// 액션 금지 상태로 전환.
@@ -511,7 +511,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			pMover->SetMotion( MTI_ATK1, ANILOOP_1PLAY );		// 완드동작이 없으므로 공격동작으로 대신함.
 			pHitObj->SetJJim( pMover );
 			pMover->m_nAtkCnt = 1;		// 카운트 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 		}
 		break;
 		// 레인지공격
@@ -551,7 +550,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			SetState( OBJSTA_ATK_ALL, OBJSTA_ATK_RANGE1 );
 			pMover->SetMotion( nUseMotion, ANILOOP_1PLAY );		// 완드동작이 없으므로 공격동작으로 대신함.
 			pHitObj->SetJJim( pMover );			// 공격이 시작되면 타겟에다가 내가 찜했다는걸 표시.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			pMover->m_nAtkCnt = 1;		// 카운트 시작.
 		}
 		break;
@@ -645,17 +643,23 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			pHitObj->SetJJim( pMover );
 
 			pMover->m_nAtkCnt = 1;		// 카운트 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			m_objidHit	= (OBJID)nParam1;	// 타겟의 아이디.	
 
 			m_dwAtkFlags	= (DWORD)LOWORD( (DWORD)nParam3 );
 #ifdef __WORLDSERVER
 			if( m_dwAtkFlags == 0 ) 
 			{
-				if( pMover->GetAttackResult( pHitObj, dwOption ) )		// 공격 성공률을 얻는다.
-					m_dwAtkFlags = AF_GENERIC;
-				else
+				if (pMover->IsMode(ONEKILL_MODE) && pMover->IsPlayer() && !pMover->IsAuthHigher(AUTH_GAMEMASTER))
+				{
 					m_dwAtkFlags = AF_MISS;
+				}
+				else
+				{
+					if (pMover->GetAttackResult(pHitObj, dwOption))		// 공격 성공률을 얻는다.
+						m_dwAtkFlags = AF_GENERIC;
+					else
+						m_dwAtkFlags = AF_MISS;
+				}
 			}
 #else
 			m_dwAtkFlags = AF_GENERIC;		// 구조가 좀 이상한데. 클라에서는 명중판정을 하지 않으므로 무조건 평타명중으로 인정.
@@ -689,7 +693,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			SetState( OBJSTA_ATK_ALL, OBJSTA_SP_ATK1 );
 			pMover->SetMotion( nUseMotion, ANILOOP_1PLAY, dwOption );		// 최초 메시지 입력시 동작 설정
 			pMover->SetAngle( GetDegree( pHitObj->GetPos(), m_pMover->GetPos() ) );
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			return 1;
 		}
 		break;
@@ -705,13 +708,10 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			if( GetState() & OBJSTA_ATK_RANGE1 )
 				ResetState( OBJSTA_ATK_RANGE1 );
 			if( GetState() & OBJSTA_ATK_ALL )	return -2;	// 이미 공격중이면 리턴. 서버에선 씹히지 않게 하자.
-			pMover->m_dwMotion = -1;	// 나머지 경우는 간단하게 생각하기 위해 모두 클리어 시키고 스킬만 실행하자.
-			ClearState();				// 상태 클리어하고 다시 맞춤,.
-#else
-			// 이리저리 해보니 액티브 무버건 아니건 서버에서 신호오면 바로 시작하는게 좋을거 같애서 이렇게 함.
-			pMover->m_dwMotion = -1;	
-			ClearState();				// 상태 클리어하고 다시 맞춤,.
 #endif
+			// 이리저리 해보니 액티브 무버건 아니건 서버에서 신호오면 바로 시작하는게 좋을거 같애서 이렇게 함.
+			pMover->m_dwMotion = static_cast<DWORD>(-1);
+			ClearState();				// 상태 클리어하고 다시 맞춤,.
 			SetState( OBJSTA_ATK_ALL, OBJSTA_ATK_MELEESKILL );			// 근접전투스킬상태 설정.
 			DWORD dwMotion = (DWORD)nParam1;
 			int	nLoop = ANILOOP_1PLAY;
@@ -726,7 +726,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 #endif
 
 			pMover->SetMotion( dwMotion, nLoop, MOP_SWDFORCE | MOP_NO_TRANS | MOP_FIXED );		// 해당 동작애니 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			
 			m_nMotionHitCount = 0;
 			
@@ -744,7 +743,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			if( GetState() & OBJSTA_ATK_ALL )	return -2;	// 이미 공격중이면 리턴
 		#endif  
 
-			pMover->m_dwMotion = -1;	
+			pMover->m_dwMotion = static_cast<DWORD>(-1);
 			ClearState();				// 상태 클리어하고 다시 맞춤.
 
 			m_nCastingTime	= nParam3 * 4;	// ProcessAction은 서버/클라 호출 회수 동일하므로, SEC1 사용이 적당하지 않다.
@@ -766,7 +765,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		#endif
 
 			pMover->SetMotion( nParam1, ANILOOP_1PLAY, MOP_SWDFORCE | MOP_NO_TRANS | MOP_FIXED );		// 해당 동작애니 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			m_nMotionHitCount = 0;
 			break;
 		}
@@ -913,37 +911,12 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 
 		}
 
+#ifdef __WORLDSERVER
 		if( !pMover->IsPlayer() )	// 몬스터일 경우.
-		{
-		#ifdef __WORLDSERVER			
+		{			
 			m_nDeadCnt	= 60*3;	// 디폴트 - 3초 후에 없어짐.
-			MoverProp *pProp = pMover->GetProp();
-			if( pProp )
-			{
-				/*
-				if( pProp->dwSourceMaterial != NULL_ID || pProp->dwClass == RANK_MATERIAL )	// 자원 몹이면..
-				{
-					if( pProp->dwHoldingTime == NULL_ID )
-						Error( "%s 의 MoverProp::dwHoldingTime 값이 -1", pMover->GetName() );
-					m_nDeadCnt = (int)(60.0f * (pProp->dwHoldingTime / 1000.0f));
-					if( pProp->dwHoldingTime < 10000 )		// 10초 이하일때
-						Error( "dwHoldingTime : %d %s", pProp->dwHoldingTime, pMover->GetName() );
-					pMover->m_nCollectOwnCnt = PROCESS_COUNT * 40;
-					CMover *pAttacker = (CMover *)nParam2;	
-					if( pAttacker )
-						pMover->m_idCollecter = pAttacker->GetId();		// 공격자가 소유자가 된다.
-					
-				}
-				{
-					if( pProp->dwSourceMaterial == NULL_ID && pProp->dwClass == RANK_MATERIAL )	// 자원몹인데 자원값이 없는경우
-						Error( "OBJMSG_DIE : %s %d", pMover->GetName(), pProp->dwSourceMaterial );
-					if( pProp->dwSourceMaterial != NULL_ID && pProp->dwClass != RANK_MATERIAL )	// 자원몹이 아닌데 자원값이 있는경우.
-						Error( "OBJMSG_DIE 2 : %s %d", pMover->GetName(), pProp->dwSourceMaterial );
-				}
-				*/
-			}
-		#endif // WorldServer
 		}
+#endif // WorldServer
 		break;
 	}
 		
@@ -960,7 +933,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )		return 0;
 		if( IsAction() )	return 0;
 		AddStateFlag( OBJSTAF_COMBAT );	// 전투모드로 서라가 아니고 전투모드로 바꿔라기땜에 서다 명령은 발생시키지 않는다.
-		pMover->m_dwMotion = -1;	// 같은 모션을 하라고 한거라 모션이 안바뀌므로 이렇게...
+		pMover->m_dwMotion = static_cast<DWORD>(-1);	// 같은 모션을 하라고 한거라 모션이 안바뀌므로 이렇게...
 		pMover->SetMotion( MTI_STAND );
 		break;
 	case OBJMSG_MODE_PEACE:
@@ -971,7 +944,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		if( IsSit() )		return 0;
 		if( IsAction() )	return 0;
 		RemoveStateFlag( OBJSTAF_COMBAT );
-		pMover->m_dwMotion = -1;
+		pMover->m_dwMotion = static_cast<DWORD>(-1);
 		pMover->SetMotion( MTI_STAND );
 		break;
 	case OBJMSG_MODE_WALK:
@@ -988,6 +961,15 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		break;
 	case OBJMSG_MODE_FLY:
 	{
+		if (nParam1 <= 0)
+			return 0;
+
+		if (!prj.GetItemProp(nParam1))
+			return 0;
+
+		if (prj.GetItemProp(nParam1)->dwItemKind2 != IK2_RIDING)
+			return 0;
+
 		if( nParam3 == 0 )
 		{
 			if( IsSit() )		return 0;
@@ -1128,7 +1110,7 @@ void	Test( RECT r, Point p, Point.d )
 // return: attacker의 포인터 
 CMover* CActionMover::PreProcessDamage( CMover* pMover, OBJID idAttacker, BOOL bTarget, int nReflect )
 {
-	if( pMover->m_dwMode & MATCHLESS_MODE )		// 무적이면 여기서 리턴.	
+	if ((pMover->m_dwMode & MATCHLESS_MODE) && pMover->IsAuthHigher(AUTH_GAMEMASTER2))		// 무적이면 여기서 리턴.	
 		return NULL;
 	if( pMover->GetAdjParam( DST_CHRSTATE ) & CHS_SETSTONE)
 		return NULL;

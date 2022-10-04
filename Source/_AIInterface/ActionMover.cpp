@@ -262,9 +262,7 @@ int		CActionMover :: ProcessAction( const D3DXVECTOR3 *vPos )
 		if( m_vDeltaE.x == 0 && m_vDeltaE.y == 0 && m_vDeltaE.z == 0 )
 			m_bMove = 0;
 	
-	if( m_vDelta.y != 0 || m_bMove )			// delta x, y, z값에 변경이 있었다면 "서있다" 해제
-		m_bGround = 0;	
-	else if( fabs(vPos->y - m_vPosLast.y) > 0.001f )
+	if (m_vDelta.y != 0 || m_bMove || fabs(vPos->y - m_vPosLast.y) > 0.001f)
 		m_bGround = 0;
 	
 	if( IsFly() == FALSE )	

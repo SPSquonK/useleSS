@@ -642,8 +642,6 @@
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverCollision.cpp">
     </ClCompile>
-    <ClCompile Include="..\_AIInterface\ActionMoverCtrl.cpp">
-    </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverDmg.cpp">
     </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverMsg.cpp">

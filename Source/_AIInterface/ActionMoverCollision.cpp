@@ -85,7 +85,8 @@ BOOL CActionMover::ProcessCollisionFly( D3DXVECTOR3 *pPos )
 		pPos->z -= vDelta.z;		// 이동하려는 곳이 이동 금지 구역이면 좌표를 다시 뺌
 		break;
 	case HATTR_DIE:		// 이영역에 들어가면 죽음.
-		pMover->DoDie( NULL );
+		if (pMover->IsPlayer())
+			pMover->DoDie( NULL );
 		break;
 	case HATTR_NOFLY:	// 비행 금지 - 자동으로 비행모드 풀림.
 		pPos->x -= vDelta.x;
@@ -127,7 +128,6 @@ BOOL CActionMover::ProcessCollisionFly( D3DXVECTOR3 *pPos )
 BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 {
 	CMover*			pMover = m_pMover;
-	CModelObject	*pModel = (CModelObject *)pMover->m_pModel;
 	D3DXVECTOR3		vDelta = m_vDeltaAccu;
 	BOOL			fResult = FALSE;
 	CWorld*			pWorld = GetWorld();
@@ -257,7 +257,8 @@ BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 			}
 			break;
 		case HATTR_DIE:		// 이영역에 들어가면 죽음. - die는 x, z가 다 더해지고 난후에 검사해야 한다.
-			pMover->DoDie( NULL );
+			if (pMover->IsPlayer())
+				pMover->DoDie( NULL );
 			break;
 		}
 		
@@ -352,13 +353,15 @@ BOOL CActionMover::ProcessCollisionGround( D3DXVECTOR3 *pPos )
 	else if( vDelta.y > 0 )			// 좌표가 올라갔음
 	{
 		FLOAT h = 65535.0f;			// pPos위치의 천장 높이
+		D3DXVECTOR3 vTmp = *pPos;
+		vTmp.y += 1.5f;
 		if( pMover->IsPlayer() )
 		{
-			h = pWorld->GetOverHeightForPlayer( D3DXVECTOR3( pPos->x, pPos->y + 1.5f, pPos->z ), pMover );
+			h = pWorld->GetOverHeightForPlayer( vTmp, pMover );
 		}
 		else
 		{
-			h = pWorld->GetOverHeight( D3DXVECTOR3( pPos->x, pPos->y + 1.5f, pPos->z ), pMover );
+			h = pWorld->GetOverHeight( vTmp, pMover );
 		}
 			
 		pPos->y += vDelta.y;		// 운동량을 더해줌

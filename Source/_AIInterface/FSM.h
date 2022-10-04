@@ -9,8 +9,7 @@ class CFSM
 private:
 	std::map< int, CFSMstate* >	m_map;
 
-public:
-	CFSM();										
+public:								
 	~CFSM();									
 
 	CFSMstate *GetState( int nStateID );			

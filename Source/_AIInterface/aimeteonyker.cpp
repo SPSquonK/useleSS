@@ -104,7 +104,6 @@ void CAIMeteonyker::MoveToDst(	const D3DXVECTOR3& vDst )
 void CAIMeteonyker::MoveToRandom( UINT nState )
 {
 	CMover* pMover	= GetMover();
-	CWorld* pWorld	= GetWorld();
 
 	D3DXVECTOR3 vPos	= pMover->GetPos();
 	DWORD x1	= xRand();
@@ -177,7 +176,6 @@ BOOL CAIMeteonyker::StateInit( const AIMSG & msg )
 BOOL CAIMeteonyker::MoveProcessIdle( void )
 {
 	CMover* pMover	= GetMover();
-	CWorld* pWorld	= GetWorld();
 	MoverProp *pProp	= pMover->GetProp();
 
 	if( pMover->IsDie() || ( pMover->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL) )
@@ -246,7 +244,6 @@ BOOL CAIMeteonyker::MoveProcessIdle( void )
 BOOL CAIMeteonyker::StateIdle( const AIMSG & msg )
 {
 	CMover* pMover	= GetMover();
-	CWorld* pWorld	= GetWorld();
 
 	BeginAIHandler()
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,7 +289,6 @@ BOOL CAIMeteonyker::StateIdle( const AIMSG & msg )
 BOOL CAIMeteonyker::StateRage( const AIMSG & msg )
 {
 	CMover* pMover	= GetMover();
-	CWorld* pWorld	= GetWorld();
 
 	BeginAIHandler()
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -490,10 +486,7 @@ BOOL CAIMeteonyker::MoveProcessRage( void )
 
 			if( ProcessSPAttack() )
 				return TRUE;
-//			//	4. 자신의 HP가 30%이하가 되었을 시 1회에 한해 HP를 50% 회복 한다.
-//			if( ProcessHeal() )
-//				return TRUE;
-			//	5. 자신의 HP가 2%가 되었을 시 모든 공격력 2배 증가	- propMoverEx.inc
+			//	4. 자신의 HP가 2%가 되었을 시 모든 공격력 2배 증가	- propMoverEx.inc
 			// 일반 공격
 			if( m_dwIdTarget == NULL_ID )
 				SelectTarget();
@@ -666,21 +659,6 @@ BOOL	CAIMeteonyker::ProcessBurn( BOOL bUnconditional )
 	return FALSE;
 }
 
-/*
-BOOL	CAIMeteonyker::ProcessHeal( void )
-{
-	CMover* pMover	= GetMover();
-	// 자신의 HP가 30%이하가 되었을 시 1회에 한해 HP를 50% 회복 한다.
-	if( m_bHeal	== FALSE && pMover->GetHitPointPercent() <= 30 )
-	{
-		m_bHeal	= TRUE;
-		int nHeal	= pMover->GetMaxHitPoint() / 2;
-		pMover->IncHitPoint( nHeal );
-		return TRUE;
-	}
-	return FALSE;
-}
-*/
 void	CAIMeteonyker::ProcessRecovery( void )
 {
 // idle 상태에서만 동작
@@ -701,8 +679,6 @@ void	CAIMeteonyker::ProcessRecovery( void )
 BOOL CAIMeteonyker::SelectTarget( void )
 {
 	CMover	*pMover	= GetMover();
-	CWorld	*pWorld	= GetWorld();
-	CModelObject *pModel	= (CModelObject *)pMover->GetModel();
 
 	FLOAT fRadius	= pMover->GetRadiusXZ();
 	FLOAT fRadiusSq	= fRadius * fRadius;

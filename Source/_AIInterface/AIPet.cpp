@@ -99,7 +99,6 @@ BOOL CAIPet::SubItemLoot( void )
 	CMover* pMover = GetMover();
 	CMover* pOwner = prj.GetMover( m_idOwner );
 	CWorld* pWorld = GetWorld();
-	MoverProp *pProp = pMover->GetProp();
 	D3DXVECTOR3 vPos = pMover->GetPos();
 	CObj *pObj = NULL;
 	int nRange = 0;
@@ -171,15 +170,11 @@ BOOL CAIPet::MoveProcessIdle( const AIMSG & msg )
 {
 	CMover *pMover = GetMover();
 	CMover *pOwner = prj.GetMover( m_idOwner ); 
-	CWorld *pWorld = GetWorld();
-	MoverProp *pProp = pMover->GetProp();
 
-
-	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
-	if( pMover->IsDie() || (pMover->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL) )
+	if (NotOwnedPetInactivated())
 		return FALSE;
 
-	if( NotOwnedPetInactivated() )
+	if ((pMover->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL))
 		return FALSE;
 	
 	if( m_bLootMove == FALSE )	// 루팅하러 갈땐 아래 처리를 하면 안되긋제...
@@ -251,7 +246,6 @@ BOOL CAIPet::MoveProcessIdle( const AIMSG & msg )
 BOOL CAIPet::StateIdle( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	BeginAIHandler( )
 
@@ -335,8 +329,6 @@ BOOL CAIPet::StateIdle( const AIMSG & msg )
 BOOL CAIPet::MoveProcessRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	MoverProp *pProp = pMover->GetProp();
 	
 	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
 	if( pMover->IsDie() || (pMover->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL) )
@@ -348,7 +340,6 @@ BOOL CAIPet::MoveProcessRage( const AIMSG & msg )
 BOOL CAIPet::StateRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	if( IsInvalidObj(pMover) )	return FALSE;
 
 	BeginAIHandler( )
@@ -400,26 +391,13 @@ BOOL CAIPet::NotOwnedPetInactivated( void )
 		pEatPet->Delete();
 		return TRUE;
 	}
-/*#if __VER < 15 // __REACTIVATE_EATPET
-	if( pOwner->IsDie() 
-		|| !pOwner->IsValidArea( pEatPet, 32 )
-	)
+
+	if (pOwner->IsDie() || pEatPet->IsDie())
 	{
 		pOwner->InactivateEatPet();
 		return TRUE;
 	}
-#else // __REACTIVATE_EATPET*/
-	if( pOwner->IsDie() )
-	{
-		pOwner->InactivateEatPet();
-		return TRUE;
-	}
-	else if( !pOwner->IsValidArea( pEatPet, 32 ) )
-	{
-		pOwner->InactivateEatPet();
-		return TRUE;
-	}
-//#endif // __REACTIVATE_EATPET
+
 	return FALSE;
 }
 

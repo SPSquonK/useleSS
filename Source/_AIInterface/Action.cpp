@@ -15,10 +15,6 @@ CAction::CAction( CMover* pMover )
 	m_pMover = pMover;
 }
 
-CAction::~CAction()
-{
-}
-
 void CAction::Init( void )
 {
 	m_pMover		= NULL;
@@ -132,7 +128,7 @@ void	CAction::ClearState( void )
 	
 	if( m_dwState )
 	{
-		Error( "CAction::ClearState : 아직도 뭔가 클리어되지 않은 값이 있다. %08x, %08x", dwState, m_dwState );
+		Error( "CAction::ClearState : There are still some uncleared values.. %08x, %08x", dwState, m_dwState );
 		m_dwState = 0; 
 	}
 }
@@ -180,53 +176,3 @@ void	CAction::ResetState( DWORD dwState )
 		m_dwState &= (~dwState);
 	}
 }
-
-#ifndef __OPT_MEM_0811
-//{{AFX
-CActMsgq::CActMsgq()
-:
-m_uHead( 0 ),
-m_uTail( 0 )
-{
-}
-
-CActMsgq::~CActMsgq()
-{
-}
-
-void CActMsgq::RemoveHead()
-{
-	if( IsEmpty() )
-		return;
-	LPACTMSG lpActMsg	= m_aActMsg + m_uHead;
-	m_uHead		= ( m_uHead + 1 ) % MAX_ACTMSG;
-}
-
-void CActMsgq::AddTail( const ACTMSG & rActMsg )
-{
-	u_long uTail	= ( m_uTail + 1 ) % MAX_ACTMSG;
-	if( uTail == m_uHead )
-		return;
-	memcpy( ( m_aActMsg + m_uTail ), &rActMsg, sizeof(ACTMSG) );
-	m_uTail	= uTail;
-}
-
-void CActMsgq::AddTail( OBJMSG dwMsg, int nParam1, int nParam2, int nParam3 )
-{
-	u_long uTail	= ( m_uTail + 1 ) % MAX_ACTMSG;
-	if( uTail == m_uHead )
-		return;
-		LPACTMSG lpActMsg	= m_aActMsg + m_uTail;
-	lpActMsg->dwMsg	= dwMsg;
-	lpActMsg->nParam1	= nParam1;
-	lpActMsg->nParam2	= nParam2;
-	lpActMsg->nParam3	= nParam3;
-	m_uTail	= uTail;
-}
-
-LPACTMSG CActMsgq::GetHead()
-{
-	return ( IsEmpty()? NULL: m_aActMsg + m_uHead );
-}
-//}}AFX
-#endif	// __OPT_MEM_0811

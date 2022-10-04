@@ -913,9 +913,6 @@
     <ClCompile Include="..\_AIInterface\ActionMoverCollision.cpp">
       <Filter>Source Files\_ObjSubClass\Action</Filter>
     </ClCompile>
-    <ClCompile Include="..\_AIInterface\ActionMoverCtrl.cpp">
-      <Filter>Source Files\_ObjSubClass\Action</Filter>
-    </ClCompile>
     <ClCompile Include="..\_AIInterface\ActionMoverDmg.cpp">
       <Filter>Source Files\_ObjSubClass\Action</Filter>
     </ClCompile>

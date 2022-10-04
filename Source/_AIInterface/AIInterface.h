@@ -1,5 +1,4 @@
-#ifndef __AI_INTERFACE_H
-#define __AI_INTERFACE_H
+#pragma once
 
 #include "MoverMsg.h"
 
@@ -99,7 +98,6 @@ public:
 
 	CAIInterface();
 	CAIInterface( CObj* pObj );
-	virtual	~CAIInterface();
 
 	// 매시지 관련 처리 매소드 
 	virtual void	RouteMessage();
@@ -120,7 +118,3 @@ protected:
 	u_long	m_uParty;
 };
 //////////////////////////////////////////////////////////////////////////////
-
-
-#endif
-

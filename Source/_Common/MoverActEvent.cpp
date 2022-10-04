@@ -2020,36 +2020,6 @@ void	CMover::OnActIALanding( CObj *pIAObj, const D3DXVECTOR3 &vPos )
 
 }
 
-/*
-int		CMover::OnActCollecting() 
-{ 
-#ifdef __CLIENT
-	if( (m_dwFlag & MVRF_COLLECT) == 0 )
-	{
-		ItemProp *pHandProp = GetActiveHandItemProp();
-		if( pHandProp->dwSfxObj2 != NULL_ID )
-		{
-			D3DXVECTOR3 vSrc, vLocal = D3DXVECTOR3(0, 0.5f, 0);
-			((CModelObject *)m_pModel)->GetForcePos( &vLocal, 0, PARTS_RWEAPON, GetMatrixWorld() );
-			vSrc = vLocal;
-			CSfx *pSfx = CreateSfx( D3DDEVICE, pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
-			if( pSfx )
-			{
-				pSfx->SetAngle( -GetAngle() + 90.0f );
-				m_dwFlag |= MVRF_COLLECT;		// SFX가 생성됐음.
-			}
-		}
-	}
-#endif // Client
-	return 0; 
-}				
-*/
-
-// 공격을 막 시작했을때(일반/스킬/완드 등)
-void	CMover::OnAttackStart( CMover *pTarget, OBJMSG dwMsg )
-{
-}
-
 // this가 투명화 상태 걸려있으면 해제시킴.
 void	CMover::RemoveInvisible()
 {

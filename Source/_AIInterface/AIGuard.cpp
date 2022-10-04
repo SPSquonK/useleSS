@@ -46,19 +46,10 @@ static DWORD s_tmAttack = SEC(10);		//  m_tmAttack 10초
 CAIGuard::CAIGuard()
 {
 }
+
 CAIGuard::CAIGuard( CObj* pObj ) : CAIMonster( pObj )
 {
 }
-
-CAIGuard::~CAIGuard()
-{
-}
-
-void CAIGuard::InitAI()
-{
-	// 상위클래스 InitAI()부르는지 확인할 것
-}
-
 
 BOOL CAIGuard::StateInit( const AIMSG & msg )
 {
@@ -68,67 +59,34 @@ BOOL CAIGuard::StateInit( const AIMSG & msg )
 BOOL CAIGuard::MoveProcessIdle( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	MoverProp *pProp = pMover->GetProp();
 
 	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
 	if( pMover->IsDie() || (pMover->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL) )
 		return FALSE;
 
-/*
-	if( 이동경로 있는가? )
+	if( GetMover()->m_bActiveAttack )
 	{
-		비스트상의 이동경로 노드를 따라서 이동을 시킴(마을 순찰)
-	} else
-		현재 자리에서 대기;
-*/
+		int nAttackFirstRange = pMover->GetProp()->m_nAttackFirstRange;
 
-	{
-		// 루팅옵션이 있는 몹이다.
-/*		if( pProp->m_nLoot )
+		if( pMover->GetProp()->m_nAttackFirstRange > 10 || pMover->GetProp()->m_nAttackFirstRange <= 0 )
 		{
-			if( (pMover->GetCount() & 63) == 0 )		// 가끔씩 주변을 스캔해서.(63이면 약 4.2초)
-			{	
-				if( pProp->m_nLootProb == 0 || xRandom(100) < pProp->m_nLootProb  )	// 디폴트값(0)은 100% / 이거나 루팅확률에 들어가면 루팅시도
-					if( m_bLootMove == FALSE )		// 루팅하러 가고 있을때 또 체크하면 안뒘
-						SubItemLoot();		// 아이템을 루팅함.
-			}
+			Error( "m_nAttackFirstRange 이상:%d %s\n", pMover->GetProp()->m_nAttackFirstRange, pMover->GetName() );
+			return TRUE;
 		}
 
-		if( m_bLootMove == TRUE )
+		MoverProp *pProp = GetMover()->GetProp();
+		CMover* pTarget = ScanTarget( pMover, nAttackFirstRange, pProp->m_nScanJob );		// 자기 카르마와 반대되는 유저 검색기능을 추가.
+		if( IsValidObj( (CObj*)pTarget ) )
 		{
-			CCtrl *pCtrl = prj.GetCtrl( m_idLootItem );		// 그아이템이 사라졌을수 있으니까 검사함.
-			if( IsInvalidObj(pCtrl) )		// 아이템 집으러 이동중에 아템이 없어지면
+			// this가 비행형 몬스터거나 || 타겟이 비행중이 아닐때만 공격.
+			if( pMover->IsFlyingNPC() || pTarget->m_pActMover->IsFly() == FALSE )	
 			{
-				MoveToDst( pMover->GetPos() );	// 제자리에 섬.
-			}
-		} */
-
-		// 선공속성이면 주변을 늘 감시한다.
-		if( GetMover()->m_bActiveAttack )
-		{
-			int nAttackFirstRange = pMover->GetProp()->m_nAttackFirstRange;
-
-			if( pMover->GetProp()->m_nAttackFirstRange > 10 || pMover->GetProp()->m_nAttackFirstRange <= 0 )
-			{
-				Error( "m_nAttackFirstRange 이상:%d %s\n", pMover->GetProp()->m_nAttackFirstRange, pMover->GetName() );
-				return TRUE;
-			}
-
-			MoverProp *pProp = GetMover()->GetProp();
-			CMover* pTarget = ScanTarget( pMover, nAttackFirstRange, pProp->m_nScanJob );		// 자기 카르마와 반대되는 유저 검색기능을 추가.
-			if( IsValidObj( (CObj*)pTarget ) )
-			{
-				// this가 비행형 몬스터거나 || 타겟이 비행중이 아닐때만 공격.
-				if( pMover->IsFlyingNPC() || pTarget->m_pActMover->IsFly() == FALSE )	
+				m_dwIdTarget = pTarget->GetId();
+				// 타겟이 존재하면 추적 모드로 변경 
+				if( m_dwIdTarget != NULL_ID )	
 				{
-					m_dwIdTarget = pTarget->GetId();
-					// 타겟이 존재하면 추적 모드로 변경 
-					if( m_dwIdTarget != NULL_ID )	
-					{
-						g_UserMng.AddDlgEmoticon( pMover, DLGEMOT_ATTACK );
-						SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, NULL_ID );
-					}
+					g_UserMng.AddDlgEmoticon( pMover, DLGEMOT_ATTACK );
+					SendAIMsg( AIMSG_SETSTATE, STATE_RAGE, NULL_ID );
 				}
 			}
 		}
@@ -139,7 +97,6 @@ BOOL CAIGuard::MoveProcessIdle( const AIMSG & msg )
 BOOL CAIGuard::StateIdle( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	BeginAIHandler( )
 
@@ -273,7 +230,6 @@ BOOL CAIGuard::MoveProcessRage( const AIMSG & msg )
 BOOL CAIGuard::StateRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	if( IsInvalidObj(pMover) )	return FALSE;
 
 	BeginAIHandler( )
@@ -369,7 +325,6 @@ BOOL CAIGuard::StateRage( const AIMSG & msg )
 BOOL CAIGuard::MoveProcessRunaway()
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
 	if( pMover->IsDie() || (pMover->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL))
@@ -388,9 +343,7 @@ BOOL CAIGuard::MoveProcessRunaway()
 
 BOOL CAIGuard::StateRunaway( const AIMSG & msg )
 {
-
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	BeginAIHandler( )
 

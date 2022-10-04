@@ -1,5 +1,4 @@
-#ifndef __AIMETEONYKER_H__
-#define	__AIMETEONYKER_H__
+#pragma once
 
 class CAIMeteonyker : public CAIInterface
 {
@@ -30,7 +29,6 @@ class CAIMeteonyker : public CAIInterface
 	int		m_nSPAttackType;
 	BOOL	ProcessSPAttack( void );
 
-	BOOL	ProcessHeal( void );
 	time_t	m_tmRecovery;
 	void	ProcessRecovery( void );
 //	5. 자신의 HP가 2%가 되었을 시 모든 공격력 2배 증가
@@ -53,7 +51,6 @@ class CAIMeteonyker : public CAIInterface
 	void Destroy( void );
 	BOOL	MoveProcessIdle( void );
 	BOOL	MoveProcessRage( void );
-	BOOL	MoveProcessRunaway( void );
 	BOOL	StateInit( const AIMSG & msg );
 	BOOL	StateIdle( const AIMSG & msg );
 	BOOL	StateRage( const AIMSG & msg );
@@ -79,5 +76,3 @@ public:
 
 	DECLARE_AISTATE();
 };
-
-#endif	// __AIMETEONYKER_H__

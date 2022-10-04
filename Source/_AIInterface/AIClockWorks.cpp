@@ -53,11 +53,6 @@ CAIClockWorks::CAIClockWorks( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
-CAIClockWorks::~CAIClockWorks()
-{
-	Destroy();
-}
-
 void CAIClockWorks::Init( void )
 {
 	m_vPosBegin.x = m_vPosBegin.y = m_vPosBegin.z = 0;
@@ -69,10 +64,6 @@ void CAIClockWorks::Init( void )
 	m_idLastAttacker = NULL_ID;
 	m_bDefenseMode = FALSE;
 	m_nAppearCnt = 0;
-}
-
-void CAIClockWorks::Destroy( void )
-{
 }
 
 void CAIClockWorks::InitAI()
@@ -107,10 +98,7 @@ BOOL CAIClockWorks::MoveProcessIdle()
 }
 
 BOOL CAIClockWorks::StateIdle( const AIMSG & msg )
-{
-	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	
+{	
 	BeginAIHandler( )
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,8 +132,6 @@ BOOL CAIClockWorks::StateIdle( const AIMSG & msg )
 BOOL	CAIClockWorks::SelectTarget( void )
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
-	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 
 	FLOAT fRadius = pMover->GetRadiusXZ();		// this의 반지름
 	FLOAT fRadiusSq = fRadius * fRadius;		// 반지름Sq버전.
@@ -289,7 +275,6 @@ BOOL	CAIClockWorks::SelectTarget( void )
 BOOL CAIClockWorks::MoveProcessRage()
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
 	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 
 	if( m_bDefenseMode == FALSE && pMover->GetHitPointPercent() <= 100 )		// 20%이하로 피가 빠지면
@@ -446,7 +431,6 @@ BOOL CAIClockWorks::MoveProcessRage()
 BOOL CAIClockWorks::StateRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	
 	BeginAIHandler( )
 		
@@ -525,17 +509,12 @@ BOOL CAIClockWorks::StateRage( const AIMSG & msg )
 			// 폭발 이펙트 생성지점 계산.
 			// 폭발 이펙트 생성;
 			// 범위 공격;
-			break;
 		case CAT_LASER:
-//			if( 타점 이후 부터 )
-			{
-				//레이저 좌표 이동;
-				//범위 데미지;
-			}
-			break;
+			//if( 타점 이후 부터 )
+			//레이저 좌표 이동;
+			//범위 데미지;
 		case CAT_SHOOT:
 			// 미사일 오브젝트 생성;
-			break;
 		case CAT_QUAKE:		// 밟는 공격 타점.
 			// 범위 데미지;
 			break;

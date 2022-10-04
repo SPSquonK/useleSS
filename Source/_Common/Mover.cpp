@@ -843,10 +843,8 @@ void CMover::InitCharacter( LPCHARACTER lpCharacter )
 {
 	if( lpCharacter )
 	{
-#ifdef __OPT_MEM_0811
 		if( lpCharacter->m_nEquipNum > 0 )
 			m_Inventory.SetItemContainer(CItemContainer::ContainerTypes::INVENTORY);
-#endif	// __OPT_MEM_0811
 		strcpy( m_szName, lpCharacter->m_strName );
 		for( int i = 0; i < lpCharacter->m_nEquipNum; i++ )
 		{

@@ -1,5 +1,4 @@
-#ifndef __AI_MONSTER_H
-#define __AI_MONSTER_H
+#pragma once
 
 #include "mempooler.h"
 #include "Mover.h"
@@ -84,7 +83,6 @@ protected:
 public:
 	CAIMonster();
 	CAIMonster( CObj* pObj );
-	virtual ~CAIMonster();
 	
 	virtual void	InitAI();
 
@@ -133,8 +131,6 @@ const DWORD ATK_RANGE = 2;
 
 class CMonsterSkill
 {
-private:
-	CMonsterSkill();
 public:
 	~CMonsterSkill();
 	static CMonsterSkill* GetInstance( void );
@@ -149,6 +145,3 @@ public:
 private:
 	MAPMONSTERSKILL		m_mapMonsterSkill;
 };
-
-#endif
-

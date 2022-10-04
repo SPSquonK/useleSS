@@ -93,10 +93,6 @@ void CAIMonster::Init()
 	m_vPosDamage	= D3DXVECTOR3( 0, 0, 0 );
 }
 
-CAIMonster::~CAIMonster()
-{
-}
-
 void CAIMonster::InitAI()
 {
 	m_vPosBegin = GetMover()->GetPos();
@@ -118,6 +114,10 @@ BOOL CAIMonster::IsEndStop()
 void CAIMonster::MoveToDst(	const D3DXVECTOR3& vDst )
 {
 	CMover* pMover = GetMover();
+
+	if (!pMover)
+		return;
+
 	if( pMover->GetDestPos() == vDst )
 		return;
 
@@ -129,6 +129,10 @@ void CAIMonster::MoveToDst(	const D3DXVECTOR3& vDst )
 void CAIMonster::MoveToDst(	OBJID dwIdTarget )
 {
 	CMover* pMover = GetMover();
+
+	if (!pMover)
+		return;
+
 	if( pMover->GetDestId() == dwIdTarget )
 		return;
 
@@ -145,7 +149,6 @@ void CAIMonster::MoveToDst(	OBJID dwIdTarget )
 void CAIMonster::MoveToRandom( UINT nState )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	D3DXVECTOR3 vPos = pMover->GetPos();
 	DWORD x1 = xRand();
@@ -278,7 +281,6 @@ void CAIMonster::DoReturnToBegin( BOOL bReturn )
 BOOL CAIMonster::MoveProcessIdle( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	MoverProp *pProp = pMover->GetProp();
 
 	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
@@ -391,7 +393,6 @@ BOOL CAIMonster::MoveProcessIdle( const AIMSG & msg )
 BOOL CAIMonster::StateIdle( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	BeginAIHandler( )
 
@@ -507,7 +508,6 @@ BOOL CAIMonster::StateEvade( const AIMSG & msg )
 BOOL CAIMonster::StateStand( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	BeginAIHandler( )
 
@@ -622,7 +622,6 @@ BOOL CAIMonster::StateStand( const AIMSG & msg )
 BOOL CAIMonster::StatePatrol( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	BeginAIHandler( )
 
@@ -697,7 +696,6 @@ BOOL CAIMonster::StatePatrol( const AIMSG & msg )
 BOOL CAIMonster::MoveProcessStand( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	MoverProp *pProp = pMover->GetProp();
 
 	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
@@ -803,7 +801,6 @@ BOOL CAIMonster::MoveProcessStand( const AIMSG & msg )
 BOOL CAIMonster::MoveProcessPatrol( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	MoverProp *pProp = pMover->GetProp();
 
 	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
@@ -1020,7 +1017,6 @@ NEXT2:
 DWORD CAIMonster::GetAtkMethod_Far()
 {
 	CMover* pMover = GetMover();
-	MoverProp* pMoverProp = pMover->GetProp();
 	DWORD dwRandom = xRandom( 100 );
 
 	// 필살 판정 성공!
@@ -1053,7 +1049,6 @@ DWORD CAIMonster::GetAtkMethod_Far()
 DWORD CAIMonster::GetAtkMethod_Near()
 {
 	CMover* pMover = GetMover();
-	MoverProp* pMoverProp = pMover->GetProp();
 	DWORD dwRandom = xRandom( 100 );
 	int nDeathblow = (int)( pMover->GetHitPointPercent() / 4.5f );
 	if( nDeathblow )
@@ -1168,7 +1163,6 @@ void CAIMonster::DoAttack( DWORD dwAtkMethod, CMover* pTarget )
 BOOL CAIMonster::SubAttackChance( const AIMSG & msg, CMover *pTarget )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	MoverProp *pProp = pMover->GetProp();
 	int		nTargetJob = 0;
 	if( pTarget->IsPlayer() )
@@ -1176,8 +1170,6 @@ BOOL CAIMonster::SubAttackChance( const AIMSG & msg, CMover *pTarget )
 	
 	BOOL bAttack = TRUE;
 	D3DXVECTOR3	vTargetTo = pTarget->GetPos() - pMover->GetPos();	
-	
-	BOOL bRangeAttack = (pProp->m_bRangeAttack[ nTargetJob ] & 0x7F) ? TRUE : FALSE;	// 장거리 공격 AI가 있냐.
 
 	if( pProp->m_bRecvCond )	// 회복 AI가 있느냐
 	{
@@ -1257,7 +1249,6 @@ int CAIMonster::SelectAttackType( CMover *pTarget )
 	int nAttackType = 0;
 
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	MoverProp *pProp = pMover->GetProp();
 	
 	int		nTargetJob = 0;
@@ -1676,7 +1667,6 @@ BOOL CAIMonster::MoveProcessRagePatrol( const AIMSG & msg )
 BOOL CAIMonster::StateRagePatrol( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	if( IsInvalidObj(pMover) )	return FALSE;
 
 	BeginAIHandler( )
@@ -1786,8 +1776,6 @@ BOOL CAIMonster::StateRagePatrol( const AIMSG & msg )
 BOOL CAIMonster::StateRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	MoverProp *pProp	= pMover->GetProp();
 	if( IsInvalidObj(pMover) )	return FALSE;
 
 	DWORD dwAIState = pMover->m_dwAIInterfaceState;
@@ -1922,7 +1910,6 @@ BOOL CAIMonster::StateRage( const AIMSG & msg )
 BOOL CAIMonster::MoveProcessRunaway()
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	// 데미지 상태거나 죽었을 경우 이동 처리 수행 않음 
 	if( pMover->IsDie() || (pMover->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL))
@@ -1975,7 +1962,6 @@ BOOL CAIMonster::MoveProcessRunaway()
 BOOL CAIMonster::StateRunaway( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 
 	DWORD dwAIState = pMover->m_dwAIInterfaceState;
 
@@ -2066,13 +2052,6 @@ void	CAIMonster::SetTarget( OBJID dwIdTarget, u_long uParty )
 	if( dwIdTarget == NULL_ID )
 		GetMover()->SetSpeedFactor( 1.0F );
 }
-
-
-CMonsterSkill::CMonsterSkill()
-{
-
-}
-
 
 CMonsterSkill::~CMonsterSkill()
 {

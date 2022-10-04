@@ -23,12 +23,6 @@ CAIInterface::CAIInterface( CObj* pObj )
 	m_uParty	= 0;
 }
 
-CAIInterface::~CAIInterface()
-{
-}
-
-
-
 FUNCAISTATE CAIInterface::GetAIStateFunc( DWORD dwState)
 {
 	const STATEMAP* lpCurrentStateMap = GetStateMap();
@@ -136,9 +130,10 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 				vDist	= pTarget->GetPos() - vPos;				
 				if( D3DXVec3LengthSq( &vDist ) < fRadius && pTarget->m_idparty == uParty )
 				{
-					if( pTarget->IsMode( TRANSPARENT_MODE ) == FALSE )
-						if( !pTarget->HasBuffByIk3( IK3_TEXT_DISGUISE ) )
-							return pTarget;
+					if (!pTarget->IsMode(TRANSPARENT_MODE))
+						if (!pTarget->HasBuffByIk3(IK3_TEXT_DISGUISE))
+							if (!pTarget->HasBuff(BUFF_SKILL, SI_ACR_SUP_DARKILLUSION))
+								return pTarget;
 				}
 			}
 		}

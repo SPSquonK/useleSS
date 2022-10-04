@@ -1,5 +1,4 @@
-#ifndef __AI_KRRR_H
-#define __AI_KRRR_H
+#pragma once
 
 #include "mempooler.h"
 
@@ -26,27 +25,18 @@ class CAIKrrr : public CAIInterface
 	
 	BOOL	MoveProcessIdle();
 	BOOL	MoveProcessRage();
-	BOOL	MoveProcessRunaway();
-	
-	BOOL	StopProcessIdle();
-
 	BOOL	SelectTarget( void );		// 리어택 타이밍이 됬을때 타겟을 선정함.
 		
 	void Init( void );
-	void Destroy( void );
 	int GetEvent( void ) { return m_nEvent; }
 	BOOL	StateInit( const AIMSG & msg );
 	BOOL	StateIdle( const AIMSG & msg );
-	BOOL	StateWander( const AIMSG & msg );
-	BOOL	StateRunaway( const AIMSG & msg );
-	BOOL	StateEvade( const AIMSG & msg );
 	BOOL	StateRage( const AIMSG & msg );
 
 public:
 	
 	CAIKrrr();
 	CAIKrrr( CObj* pObj );
-	virtual ~CAIKrrr();
 	
 	virtual void InitAI();
 
@@ -63,6 +53,3 @@ public:
 	
 	DECLARE_AISTATE()
 };
-
-#endif
-

@@ -66,16 +66,15 @@ READ_TYPE ReadAILine( FILE* fp, char szTokens[3][64] )
 
 BOOL ReadAIScriptHelper( FILE* fp )
 {
-	READ_TYPE type;
 	char szTokens[3][64];
-	std::string strState;
-	int nAI, nState;
+	string strState;
+	int nAI = FSM_TYPE_0;
 	int nBlock = 0;
 	CFSMstate* pState = NULL;
 
 	for( ;; )
 	{
-		type = ReadAILine( fp, szTokens );
+		const READ_TYPE type = ReadAILine(fp, szTokens);
 		switch( type )
 		{
 		case READ_TYPE_FILE_EOF: 
@@ -102,15 +101,16 @@ BOOL ReadAIScriptHelper( FILE* fp )
 			}
 			else if( nBlock == 1 )
 			{
-				nState = GetAIConst( szTokens[0] );
-				pState = new CFSMstate( nState );
-				
-				int nPolling = atoi( szTokens[1] );
-				pState->SetPolling( nPolling );
-				CFSM* pFSM = GetFSM( nAI ); // nAI = FSM_TYPE_0
-				pFSM->AddState( pState );
+				const int nState = GetAIConst(szTokens[0]);
+				pState = new CFSMstate(nState);
 
-				//printf("state:%s(%d)\n", szTokens[0], nState );
+				int nPolling = atoi(szTokens[1]);
+				pState->SetPolling(nPolling);
+				CFSM* pFSM = GetFSM(nAI); // nAI = FSM_TYPE_0
+				if (pFSM->AddState(pState) == FALSE)
+				{
+					SAFE_DELETE(pState);
+				}
 			}
 			break;
 		case READ_TOKEN3:
@@ -208,10 +208,6 @@ CAIMonster2::CAIMonster2( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
-CAIMonster2::~CAIMonster2()
-{
-}
-
 void CAIMonster2::Init()
 {
 	m_dwFsmType = FSM_TYPE_0;
@@ -281,16 +277,10 @@ BOOL CAIMonster2::Check( int nInput, DWORD dwCurTick, DWORD dwValue )
 // nInput이 발생했다. 처리하고 nOutput으로 전이 
 void CAIMonster2::ProcessAIMsg( int nInput, int nOutput, DWORD dwParam1, DWORD dwParam2 )
 {
-	OnEndState( nInput, dwParam1, dwParam2 );
-
 	m_nState = (AI2_STATE)nOutput;
 	m_dwTick = ::GetTickCount();
 
 	OnBeginState( nInput, dwParam1, dwParam2 );
-}
-
-void CAIMonster2::OnEndState( int nInput, DWORD dwParam1, DWORD dwParam2 )
-{
 }
 
 void CAIMonster2::OnBeginState( int nInput, DWORD dwParam1, DWORD dwParam2 )
@@ -406,7 +396,6 @@ void CAIMonster2::MoveToDst( const D3DXVECTOR3& vDst )
 BOOL CAIMonster2::SelectTarget()
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
 	int		nAttackFirstRange = pMover->GetProp()->m_nAttackFirstRange;
 
 	FLOAT fRadius = pMover->GetRadiusXZ();		// this의 반지름
@@ -508,8 +497,6 @@ BOOL CAIMonster2::SelectTarget()
 BOOL CAIMonster2::Search()
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
-	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 
 	FLOAT fRadius = pMover->GetRadiusXZ();		// this의 반지름
 	FLOAT fRadiusSq = fRadius * fRadius;		// 반지름Sq버전.

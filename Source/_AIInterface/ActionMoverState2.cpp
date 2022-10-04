@@ -549,7 +549,12 @@ void	CActionMover::ProcessState2( CMover* pMover, DWORD dwState, float fSpeed )
 void	CActionMover::_ProcessStateAttack2( DWORD dwState, int nParam )
 {
 	CMover* pMover = m_pMover;
+	if (IsInvalidObj(pMover))
+		return;
+
 	CModelObject	*pModel = (CModelObject *)pMover->m_pModel;
+	if (!pModel)
+		return;
 	
 	switch( dwState )
 	{

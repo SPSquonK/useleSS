@@ -1,5 +1,4 @@
-#ifndef __FSMSTATE_H__ 
-#define __FSMSTATE_H__ 
+#pragma once
 
 struct FSM_STATE
 {
@@ -27,5 +26,3 @@ public:
 	FSM_STATE*	GetEntry( int nIndex ) { return m_array[nIndex]; }
 	BOOL		GetOutput( int nInput, int& nOutputID );						
 };
-
-#endif // __FSMSTATE_H__

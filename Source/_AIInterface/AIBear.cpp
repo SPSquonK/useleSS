@@ -57,11 +57,6 @@ CAIBear::CAIBear( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
-CAIBear::~CAIBear()
-{
-	Destroy();
-}
-
 void CAIBear::Init( void )
 {
 	m_vPosBegin.x = m_vPosBegin.y = m_vPosBegin.z = 0;
@@ -75,10 +70,6 @@ void CAIBear::Init( void )
 	m_nAppearCnt = 0;
 
 	memset( m_bEventFlag, 0, sizeof(BOOL)*5 );
-}
-
-void CAIBear::Destroy( void )
-{
 }
 
 void CAIBear::InitAI()
@@ -115,9 +106,6 @@ BOOL CAIBear::MoveProcessIdle()
 
 BOOL CAIBear::StateIdle( const AIMSG & msg )
 {
-	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
-	
 	BeginAIHandler( )
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,8 +141,6 @@ BOOL CAIBear::StateIdle( const AIMSG & msg )
 BOOL	CAIBear::SelectTarget( void )
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
-	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 
 	FLOAT fRadius = pMover->GetRadiusXZ();		// this의 반지름
 	FLOAT fRadiusSq = fRadius * fRadius;		// 반지름Sq버전.
@@ -322,7 +308,6 @@ void CAIBear::SummonMonster( DWORD dwObjIndex, D3DXVECTOR3 vPos )
 BOOL CAIBear::MoveProcessRage()
 {
 	CMover	*pMover = GetMover();
-	CWorld	*pWorld = GetWorld();
 	CModelObject *pModel = (CModelObject *)pMover->GetModel();
 
 	// 이벤트 메세지
@@ -439,9 +424,6 @@ BOOL CAIBear::MoveProcessRage()
 			fDistSq = D3DXVec3LengthSq( &vDist );		// 목표지점까지는 거리.
 			FLOAT fArrivalRange = fRadius;			// 얼마나 근접해야하는가? 디폴트로 반지름 길이.
 	
-			int ppp = pMover->GetHitPointPercent();
-
-
 			if( fDistSq < fRadiusSq * 32.0f )		// 근거리면.
 			{
 				DWORD dwRate = xRandom(100);
@@ -507,7 +489,6 @@ BOOL CAIBear::MoveProcessRage()
 BOOL CAIBear::StateRage( const AIMSG & msg )
 {
 	CMover* pMover = GetMover();
-	CWorld* pWorld = GetWorld();
 	
 	BeginAIHandler( )
 		
@@ -616,10 +597,8 @@ BOOL CAIBear::StateRage( const AIMSG & msg )
 			// 폭발 이펙트 생성지점 계산.
 			// 폭발 이펙트 생성;
 			// 범위 공격;
-			break;
 		case CAT_LOOT:
 			// 미사일 오브젝트 생성;
-			break;
 		case CAT_BUFFTIME:		// 밟는 공격 타점.
 			// 범위 데미지;
 			break;
