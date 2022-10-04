@@ -51,6 +51,10 @@ CAIGuard::CAIGuard( CObj* pObj ) : CAIMonster( pObj )
 {
 }
 
+CAIGuard::~CAIGuard()
+{
+}
+
 BOOL CAIGuard::StateInit( const AIMSG & msg )
 {
 	return TRUE;

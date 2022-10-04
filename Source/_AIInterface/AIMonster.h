@@ -83,6 +83,7 @@ protected:
 public:
 	CAIMonster();
 	CAIMonster( CObj* pObj );
+	virtual ~CAIMonster();
 	
 	virtual void	InitAI();
 

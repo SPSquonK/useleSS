@@ -72,6 +72,10 @@ CAIMonster::CAIMonster( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
+CAIMonster::~CAIMonster()
+{
+}
+
 void CAIMonster::Init()
 {
 	SetTarget( NULL_ID, 0 );

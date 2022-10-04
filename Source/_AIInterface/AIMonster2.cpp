@@ -208,6 +208,10 @@ CAIMonster2::CAIMonster2( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
+CAIMonster2::~CAIMonster2()
+{
+}
+
 void CAIMonster2::Init()
 {
 	m_dwFsmType = FSM_TYPE_0;

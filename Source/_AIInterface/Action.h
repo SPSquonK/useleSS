@@ -110,6 +110,7 @@ class CAction
 public:
 	CAction();
 	CAction( CMover* pMover );
+	virtual	~CAction();
 
 protected:
 	DWORD			m_dwState;			// 동작 상태 - 외부에서 직접 건드리지 말것.

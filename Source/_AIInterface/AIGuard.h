@@ -22,6 +22,7 @@ public:
 
 	CAIGuard();
 	CAIGuard( CObj* pObj );
+	virtual ~CAIGuard();
 
 public:
 #ifndef __VM_0820

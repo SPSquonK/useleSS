@@ -57,6 +57,11 @@ CAIKrrr::CAIKrrr( CObj* pObj ) : CAIInterface( pObj )
 	Init();
 }
 
+CAIKrrr::~CAIKrrr()
+{
+	Destroy();
+}
+
 void CAIKrrr::Init( void )
 {
 	m_vPosBegin.x = m_vPosBegin.y = m_vPosBegin.z = 0;
@@ -71,6 +76,10 @@ void CAIKrrr::Init( void )
 	m_nEventCount = 10;
 
 	memset( m_bEventFlag, 0, sizeof(BOOL)*5 );
+}
+
+void CAIKrrr::Destroy(void)
+{
 }
 
 void CAIKrrr::InitAI()

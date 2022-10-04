@@ -14,6 +14,9 @@ CAction::CAction( CMover* pMover )
 	Init();
 	m_pMover = pMover;
 }
+CAction::~CAction()
+{
+}
 
 void CAction::Init( void )
 {

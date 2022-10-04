@@ -9,6 +9,7 @@ class CAIMonster2 : public CAIInterface
 public:
 	CAIMonster2();
 	CAIMonster2( CObj* pObj );
+	virtual ~CAIMonster2();
 	
 	virtual void	RouteMessage();
 	virtual void	SendAIMsg( DWORD dwMessage, DWORD dwParam1 = 0, DWORD dwParam2 = 0 );

@@ -52,6 +52,10 @@ CAIClockWorks::CAIClockWorks( CObj* pObj ) : CAIInterface( pObj )
 {
 	Init();
 }
+CAIClockWorks::~CAIClockWorks()
+{
+	Destroy();
+}
 
 void CAIClockWorks::Init( void )
 {
@@ -64,6 +68,10 @@ void CAIClockWorks::Init( void )
 	m_idLastAttacker = NULL_ID;
 	m_bDefenseMode = FALSE;
 	m_nAppearCnt = 0;
+}
+
+void CAIClockWorks::Destroy(void)
+{
 }
 
 void CAIClockWorks::InitAI()

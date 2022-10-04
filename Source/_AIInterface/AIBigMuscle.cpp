@@ -57,6 +57,10 @@ CAIBigMuscle::CAIBigMuscle( CObj* pObj ) : CAIInterface( pObj )
 {
 	Init();
 }
+CAIBigMuscle::~CAIBigMuscle()
+{
+	Destroy();
+}
 
 void CAIBigMuscle::Init( void )
 {
@@ -71,6 +75,10 @@ void CAIBigMuscle::Init( void )
 	m_nAppearCnt = 0;
 
 	memset( m_bEventFlag, 0, sizeof(BOOL)*5 );
+}
+
+void CAIBigMuscle::Destroy(void)
+{
 }
 
 void CAIBigMuscle::InitAI()

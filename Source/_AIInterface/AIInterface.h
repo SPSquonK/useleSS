@@ -98,6 +98,7 @@ public:
 
 	CAIInterface();
 	CAIInterface( CObj* pObj );
+	virtual	~CAIInterface();
 
 	// 매시지 관련 처리 매소드 
 	virtual void	RouteMessage();

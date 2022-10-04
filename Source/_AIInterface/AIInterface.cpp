@@ -22,6 +22,9 @@ CAIInterface::CAIInterface( CObj* pObj )
 	m_pStateFunc = NULL;
 	m_uParty	= 0;
 }
+CAIInterface::~CAIInterface()
+{
+}
 
 FUNCAISTATE CAIInterface::GetAIStateFunc( DWORD dwState)
 {

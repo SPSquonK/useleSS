@@ -56,6 +56,10 @@ CAIBear::CAIBear( CObj* pObj ) : CAIInterface( pObj )
 {
 	Init();
 }
+CAIBear::~CAIBear()
+{
+	Destroy();
+}
 
 void CAIBear::Init( void )
 {
@@ -70,6 +74,10 @@ void CAIBear::Init( void )
 	m_nAppearCnt = 0;
 
 	memset( m_bEventFlag, 0, sizeof(BOOL)*5 );
+}
+
+void CAIBear::Destroy(void)
+{
 }
 
 void CAIBear::InitAI()

@@ -26,11 +26,13 @@ class CAIBear : public CAIInterface
 	BOOL	SelectTarget( void );		// 리어택 타이밍이 됬을때 타겟을 선정함.
 		
 	void Init( void );
+	void Destroy(void);
 
 public:
 	
 	CAIBear();
 	CAIBear( CObj* pObj );
+	virtual ~CAIBear();
 	
 	virtual void InitAI();
 
