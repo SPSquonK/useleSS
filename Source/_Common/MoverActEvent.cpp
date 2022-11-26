@@ -2045,11 +2045,6 @@ int		CMover::OnActCollecting()
 }				
 */
 
-// 공격을 막 시작했을때(일반/스킬/완드 등)
-void	CMover::OnAttackStart( CMover *pTarget, OBJMSG dwMsg )
-{
-}
-
 // this가 투명화 상태 걸려있으면 해제시킴.
 void	CMover::RemoveInvisible()
 {

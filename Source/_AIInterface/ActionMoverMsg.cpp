@@ -511,7 +511,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			pMover->SetMotion( MTI_ATK1, ANILOOP_1PLAY );		// 완드동작이 없으므로 공격동작으로 대신함.
 			pHitObj->SetJJim( pMover );
 			pMover->m_nAtkCnt = 1;		// 카운트 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 		}
 		break;
 		// 레인지공격
@@ -551,7 +550,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			SetState( OBJSTA_ATK_ALL, OBJSTA_ATK_RANGE1 );
 			pMover->SetMotion( nUseMotion, ANILOOP_1PLAY );		// 완드동작이 없으므로 공격동작으로 대신함.
 			pHitObj->SetJJim( pMover );			// 공격이 시작되면 타겟에다가 내가 찜했다는걸 표시.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			pMover->m_nAtkCnt = 1;		// 카운트 시작.
 		}
 		break;
@@ -645,7 +643,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			pHitObj->SetJJim( pMover );
 
 			pMover->m_nAtkCnt = 1;		// 카운트 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			m_objidHit	= (OBJID)nParam1;	// 타겟의 아이디.	
 
 			m_dwAtkFlags	= (DWORD)LOWORD( (DWORD)nParam3 );
@@ -689,7 +686,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 			SetState( OBJSTA_ATK_ALL, OBJSTA_SP_ATK1 );
 			pMover->SetMotion( nUseMotion, ANILOOP_1PLAY, dwOption );		// 최초 메시지 입력시 동작 설정
 			pMover->SetAngle( GetDegree( pHitObj->GetPos(), m_pMover->GetPos() ) );
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			return 1;
 		}
 		break;
@@ -726,7 +722,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 #endif
 
 			pMover->SetMotion( dwMotion, nLoop, MOP_SWDFORCE | MOP_NO_TRANS | MOP_FIXED );		// 해당 동작애니 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			
 			m_nMotionHitCount = 0;
 			
@@ -766,7 +761,6 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		#endif
 
 			pMover->SetMotion( nParam1, ANILOOP_1PLAY, MOP_SWDFORCE | MOP_NO_TRANS | MOP_FIXED );		// 해당 동작애니 시작.
-			pMover->OnAttackStart( pHitObj, dwMsg );			// 공격시작 핸들러.
 			m_nMotionHitCount = 0;
 			break;
 		}
