@@ -115,7 +115,7 @@ void CAr::Reserve( u_int nSize )
 
 void CAr::CheckBuf( u_int nSize )
 {
-	if( m_lpBufCur + nSize > m_lpBufMax )
+	while( m_lpBufCur + nSize > m_lpBufMax )
 	{
 		u_int uOffset	= m_lpBufCur - m_lpBufStart;
 
