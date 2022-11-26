@@ -359,7 +359,8 @@ public:
 	void			AddDuelPartyNo( OBJID idTarget );
 	void			AddDuelPartyCancel( CParty *pDuelOther );	// µà¾óÁß Ãë¼Ò½ÃÅ´
 	void			AddDuelPartyResult( CParty *pDuelOther, BOOL bWin );		// µà¾ó°á°ú Åëº¸.
-	void			AddQueryPlayerData( u_long idPlayer, PlayerData* pPlayerData );
+	void			AddQueryPlayerData(u_long idPlayer, const PlayerData * pPlayerData);
+	void			AddQueryPlayerData(u_long idPlayer);
 	void			AddPlayerData( void );
 	void			AddSetState( LONG nStr, LONG nSta, LONG nDex, LONG nInt, LONG nGP );	
 	void			AddSetSkill(const SKILL & skill);

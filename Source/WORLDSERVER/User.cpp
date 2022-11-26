@@ -1437,7 +1437,7 @@ void CUser::AddDuelPartyResult( CParty *pDuelOther, BOOL bWin )
 	
 }
 
-void CUser::AddQueryPlayerData( u_long idPlayer, PlayerData* pPlayerData )
+void CUser::AddQueryPlayerData( u_long idPlayer, const PlayerData* pPlayerData )
 {
 	if( IsDelete() )	return;
 	m_Snapshot.cb++;
@@ -1448,26 +1448,21 @@ void CUser::AddQueryPlayerData( u_long idPlayer, PlayerData* pPlayerData )
 	m_Snapshot.ar.Write( &pPlayerData->data, sizeof(sPlayerData) );
 }
 
-void CUser::AddPlayerData( void )
-{
-	const auto messengerPlayerIds = m_RTMessenger | std::views::keys;
+void CUser::AddQueryPlayerData(const u_long idPlayer) {
+	const PlayerData * const pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(idPlayer);
+	if (pPlayerData) {
+		AddQueryPlayerData(idPlayer, pPlayerData);
+	}
+}
 
-	std::vector<u_long>	aPlayer = std::vector<u_long>(messengerPlayerIds.begin(), messengerPlayerIds.end());
-
-	if (CGuild * pGuild = GetGuild()) {
-		const auto guildRange = pGuild->m_mapPMember
-			| std::views::values
-			| std::views::transform([](const CGuildMember * const gm) { return gm->m_idPlayer; });
-
-		for (const u_long guildMemberId : guildRange) {
-			aPlayer.push_back(guildMemberId);
-		}
+void CUser::AddPlayerData() {
+	for (const u_long friendId : m_RTMessenger | std::views::keys) {
+		AddQueryPlayerData(friendId);
 	}
 
-	for (const u_long playerId : aPlayer) {
-		PlayerData * pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
-		if (pPlayerData) {
-			AddQueryPlayerData(playerId, pPlayerData);
+	if (CGuild * pGuild = GetGuild()) {
+		for (const CGuildMember * guildMemberId : pGuild->m_mapPMember | std::views::values) {
+			AddQueryPlayerData(guildMemberId->m_idPlayer);
 		}
 	}
 }
