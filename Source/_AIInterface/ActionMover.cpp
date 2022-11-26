@@ -29,7 +29,7 @@ BOOL CMeleeAtkMsgq::Process( CAction* pActMover )
 		return FALSE;
 #endif	// __CLIENT
 
-	LPACTMSG lpActMsg	= GetHead();
+	std::optional<ACTMSG> lpActMsg	= GetHead();
 	int nError;
 	while( lpActMsg )
 	{
@@ -56,7 +56,7 @@ BOOL CMagicAtkMsgq::Process( CMover* pMover )
 		return( FALSE );
 #endif	// __WORLDSERVER
 
-	LPMAGICATKMSG pMagicAtkMsg	= GetHead();
+	std::optional<MAGICATKMSG> pMagicAtkMsg	= GetHead();
 	int nError;
 	CCtrl* pObj;
 	while( pMagicAtkMsg )

@@ -1,5 +1,4 @@
-#ifndef __ACTION_H
-#define __ACTION_H
+#pragma once
 
 #include "MoverMsg.h"
 
@@ -7,256 +6,77 @@
 //
 //  Mover action msg / state
 
-#define	MAX_ACTMSG	0xff
-
-// 무버의 동작상태를 기술
-enum ACTTYPE
-{
-	ACT_NONE,
-
-	ACT_STOP,				// 대기
-	ACT_STOPWALK,			// 제자리걷기
-	ACT_FORWARD,			// 전진
-	ACT_BACKWARD,			// 후진
-	ACT_LEFT,				// 왼쪽으로이동
-	ACT_RIGHT,				// 오른쪽으로 이동
-
-	ACT_WALKMODE,			// 걷기/뛰기모드
-
-	ACT_LEFTTURN,			// 왼족으로 도는중
-	ACT_RIGHTTURN,			// 오른쪽으로 도는중
-
-	ACT_FJUMPREADY,
-	ACT_FJUMP,				// 앞으로 점프중
-	ACT_FLAND,
-	ACT_SJUMPREADY,
-	ACT_SJUMP,				// 제자리 점프중
-	ACT_SLAND,
-	ACT_BJUMPREADY,
-	ACT_BJUMP,				// 백 점프중
-	ACT_BLAND,
-	ACT_LJUMPREADY,
-	ACT_LJUMP,				// 왼족 점프중
-	ACT_LLAND,
-	ACT_RJUMPREADY,
-	ACT_RJUMP,				// 오른쪽 점프중
-	ACT_RLAND,
-
-	ACT_ATTACKMODE,			// 전투모드
-	ACT_ATTACK1,			// 공격동작 1
-	ACT_ATTACK2,
-	ACT_ATTACK3,
-	ACT_ATTACK4,
-
-	ACT_RANGE1,				// 공격동작 1
-	ACT_RANGE2,
-	ACT_RANGE3,
-	ACT_RANGE4,
-
-	ACT_DAMAGE,				// 피격중
-	ACT_DIE					// 죽어있는 중(?)
-};
-
 class CAction;
-typedef struct tagACTMSG
-{
+
+struct ACTMSG {
 	DWORD	dwMsg;
 	int		nParam1;
 	int		nParam2;
 	int		nParam3;
-	tagACTMSG() : dwMsg( 0 ), nParam1( 0 ), nParam2( 0 ), nParam3( 0 )	{}
-	tagACTMSG( DWORD dw, int n1, int n2, int n3 ) : dwMsg( dw ), nParam1( n1 ), nParam2( n2 ), nParam3( n3 )	{}
-}	ACTMSG, *LPACTMSG;
+	ACTMSG(DWORD dw, int n1, int n2, int n3) : dwMsg(dw), nParam1(n1), nParam2(n2), nParam3(n3) {}
+};
 
-#ifdef __OPT_MEM_0811
 template <class T>
-#endif	// __OPT_MEM_0811
 class CActMsgq
 {
 private:
-#ifdef __OPT_MEM_0811
-	std::deque<T*>	m_qpam;
-#else	// __OPT_MEM_0811
-//{{AFX
-	ACTMSG	m_aActMsg[MAX_ACTMSG];
-	u_long	m_uHead;
-	u_long	m_uTail;
-//}}AFX
-#endif	// __OPT_MEM_0811
-public:
-	CActMsgq();
-	virtual ~CActMsgq();
+	static constexpr size_t MAX_ACTMSG = 255;
+	static inline bool TRIGGERED_MAX = false;
+	std::deque<T>	m_qpam;
 public:
 	void	RemoveHead();
-#ifdef __OPT_MEM_0811
-	void	AddTail( T * ptr );
-	T*	GetHead();
-#else	// __OPT_MEM_0811
-//{{AFX
-	void	AddTail( const ACTMSG & rActMsg );
-	void	AddTail( OBJMSG dwMsg, int nParam1, int nParam2, int nParam3 );
-	LPACTMSG	GetHead();
-//}}AFX
-#endif	// __OPT_MEM_0811
-	BOOL	IsEmpty();
-	void	Empty();
+	void	AddTail( T value );
+	std::optional<T>	GetHead();
+	[[nodiscard]] BOOL	IsEmpty() const noexcept { return m_qpam.empty(); }
+	void	Empty() { return m_qpam.clear(); }
 };
 
 //--------------------------------------------------------------------------------
-#ifdef __OPT_MEM_0811
-template <class T> CActMsgq<T>::CActMsgq()
-{
-}
 
-template <class T>CActMsgq<T>::~CActMsgq()
-{
-	for( auto i = m_qpam.begin(); i != m_qpam.end(); ++i )
-		safe_delete( *i );
-	m_qpam.clear();
-}
-
-template <class T> inline BOOL CActMsgq<T>::IsEmpty()
-{
-	return m_qpam.empty();
-}
-
-template <class T> inline void CActMsgq<T>::Empty()
-{
-	m_qpam.clear();
-}
-
-template <class T> void CActMsgq<T>::RemoveHead()
-{
-	if( !IsEmpty() )
-	{
-		safe_delete( m_qpam.front() );
+template <class T> void CActMsgq<T>::RemoveHead() {
+	if (!IsEmpty()) {
 		m_qpam.pop_front();
 	}
 }
 
-template <class T> void CActMsgq<T>::AddTail( T* ptr )
-{
+template <class T> void CActMsgq<T>::AddTail( T value ) {
 	if( m_qpam.size() >= MAX_ACTMSG )
 	{
-		safe_delete( ptr );
+		TRIGGERED_MAX = true;
+		Error(__FUNCTION__ "(): triggered the maximum");
 		return;
 	}
-	m_qpam.push_back( ptr );
+	m_qpam.push_back( value );
 }
 
-template <class T>T* CActMsgq<T>::GetHead()
+template <class T> std::optional<T> CActMsgq<T>::GetHead()
 {
-	return( IsEmpty()? NULL: m_qpam.front() );
+	if (IsEmpty()) return std::nullopt;
+	return m_qpam.front();
 }
-#else	// __OPT_MEM_0811 
-//{{AFX
-inline BOOL CActMsgq::IsEmpty()
-{
-	return( m_uHead == m_uTail );
-}
-
-inline void CActMsgq::Empty()
-{
-	m_uHead	= m_uTail	= 0;
-}
-//}}AFX
-#endif	// __OPT_MEM_0811 
 //--------------------------------------------------------------------------------
 
-#ifdef __OPT_MEM_0811
-class CMeleeAtkMsgq : public CActMsgq<ACTMSG>
-{
+class CMeleeAtkMsgq : public CActMsgq<ACTMSG> {
 public:
-	CMeleeAtkMsgq()	{}
-	virtual ~CMeleeAtkMsgq() {}
 	BOOL	Process( CAction* pActMover );
 };
-#else	// __OPT_MEM_0811
-//{{AFX
-class CMeleeAtkMsgq : public CActMsgq
-{
-public:
-	CMeleeAtkMsgq()	{}
-	virtual ~CMeleeAtkMsgq() {}
-	BOOL	Process( CAction* pActMover );
-};
-//}}AFX
-#endif	// __OPT_MEM_0811
 
-typedef	struct	tagMAGICATKMSG : public ACTMSG
-{
+struct MAGICATKMSG : public ACTMSG {
 	int		nMagicPower;
 	int		idSfxHit;
-	tagMAGICATKMSG() : ACTMSG( 0, 0, 0, 0 ), nMagicPower( 0 ), idSfxHit( 0 )	{}
-	tagMAGICATKMSG( DWORD dw, int n1, int n2, int n3, int p, int s ) : ACTMSG( dw, n1, n2, n3 ), nMagicPower( p ), idSfxHit( s )	{}
-}	MAGICATKMSG, *LPMAGICATKMSG;
+
+	MAGICATKMSG(DWORD dw, int n1, int n2, int n3, int p, int s)
+		: ACTMSG(dw, n1, n2, n3)
+		, nMagicPower(p), idSfxHit(s) {}
+};
 
 class CMover;
 
-#ifdef __OPT_MEM_0811
 class CMagicAtkMsgq : public CActMsgq<MAGICATKMSG>
 {
 public:
-	CMagicAtkMsgq()	{}
-	virtual	~CMagicAtkMsgq()	{}
 	BOOL	Process( CMover* pMover );
 };
-
-#else	// __OPT_MEM_0811
-//{{AFX
-class CMagicAtkMsgq
-{
-private:
-	MAGICATKMSG	m_aMagicAtkMsg[MAX_ACTMSG];
-	u_long	m_uHead;
-	u_long	m_uTail;
-
-public:
-	//	Constructions
-	CMagicAtkMsgq() { m_uHead = m_uTail	= 0; }
-	virtual  ~CMagicAtkMsgq()	{}
-	//	Operations
-	void	AddTail( OBJMSG dwAtkMsg, int nParam1, int nParam2, int nParam3, int nMagicPower, int idSfxHit )
-	{
-		u_long uTail	= ( m_uTail + 1 ) % MAX_ACTMSG;
-		if( uTail == m_uHead )
-			return;
-		
-		LPMAGICATKMSG pMagicAtkMsg	= m_aMagicAtkMsg + m_uTail;
-		pMagicAtkMsg->dwMsg	= dwAtkMsg;
-		pMagicAtkMsg->nParam1	= nParam1;
-		pMagicAtkMsg->nParam2	= nParam2;
-		pMagicAtkMsg->nParam3	= nParam3;
-		pMagicAtkMsg->nMagicPower	= nMagicPower;
-		pMagicAtkMsg->idSfxHit	= idSfxHit;
-		m_uTail	= uTail;
-	}
-	LPMAGICATKMSG	RemoveHead()
-	{
-		if( IsEmpty() )
-			return NULL;
-		LPMAGICATKMSG pMagicAtkMsg	= m_aMagicAtkMsg + m_uHead;
-		m_uHead		= ( m_uHead + 1 ) % MAX_ACTMSG;
-		return pMagicAtkMsg;
-	}
-	LPMAGICATKMSG	GetHead()
-	{
-		if( IsEmpty() )
-			return NULL;
-		return( m_aMagicAtkMsg + m_uHead );
-	}
-	BOOL	IsEmpty()
-	{
-		return( m_uHead == m_uTail );
-	}
-	void	Empty()
-	{
-		m_uHead	= m_uTail	= 0;
-	}
-	BOOL	Process( CMover* pMover );
-};
-//}}AFX
-#endif	// __OPT_MEM_0811
 
 class CAction
 {
@@ -337,6 +157,3 @@ private:
 	BOOL			IsAtkMsgEmpty()	{	return( m_qMeleeAtkMsg.IsEmpty() && m_qMagicAtkMsg.IsEmpty() );	}
 	void			ProcessAtkMsg();
 };
-
-#endif
-

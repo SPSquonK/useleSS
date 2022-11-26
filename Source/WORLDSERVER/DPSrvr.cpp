@@ -3602,11 +3602,8 @@ void CDPSrvr::OnMeleeAttack( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			int nRet = pUser->SendActMsg( (OBJMSG)dwAtkMsg, objid, nParam2, nParam3 );
 			
 			if( nRet == 0 && pUser->IsFly() == FALSE )
-#ifdef __OPT_MEM_0811
-				pUser->m_pActMover->m_qMeleeAtkMsg.AddTail( new ACTMSG( dwAtkMsg, objid, nParam2, nParam3 ) );
-#else	// __OPT_MEM_0811
 				pUser->m_pActMover->m_qMeleeAtkMsg.AddTail( ACTMSG( dwAtkMsg, objid, nParam2, nParam3 ) );
-#endif	// __OPT_MEM_0811
+
 			if( nRet != -2 )	// -2는 명령 완전 무시.
 			{
 				g_UserMng.AddMeleeAttack( pUser, dwAtkMsg, objid, nParam2, nParam3 );
@@ -3636,11 +3633,7 @@ void CDPSrvr::OnMeleeAttack2( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 		{			
 			int nRet = pUser->SendActMsg( (OBJMSG)dwAtkMsg, objid, nParam2, nParam3 );
 			if( nRet == 0 )
-#ifdef __OPT_MEM_0811
-				pUser->m_pActMover->m_qMeleeAtkMsg.AddTail( new ACTMSG( dwAtkMsg, objid, nParam2, nParam3 ) );
-#else	// __OPT_MEM_0811
 				pUser->m_pActMover->m_qMeleeAtkMsg.AddTail( ACTMSG( dwAtkMsg, objid, nParam2, nParam3 ) );
-#endif	// __OPT_MEM_0811
 			
 			if( nRet != -2 )	// -2는 명령 완전 무시.
 				g_UserMng.AddMeleeAttack2( pUser, dwAtkMsg, objid, nParam2, nParam3 );
@@ -3668,11 +3661,7 @@ void CDPSrvr::OnMagicAttack( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			int nRet = pUser->DoAttackMagic( pTargetObj, nMagicPower, idSfxHit );
 			
 			if( nRet == 0 && pUser->IsFly() == FALSE )
-#ifdef __OPT_MEM_0811
-				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( new MAGICATKMSG( dwAtkMsg, objid, nParam2, nParam3, nMagicPower, idSfxHit ) );
-#else	// __OPT_MEM_0811
-				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( (OBJMSG)dwAtkMsg, objid, nParam2, nParam3, nMagicPower, idSfxHit );
-#endif	// __OPT_MEM_0811
+				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( MAGICATKMSG( dwAtkMsg, objid, nParam2, nParam3, nMagicPower, idSfxHit ) );
 		}
 	}
 }
@@ -3694,11 +3683,7 @@ void CDPSrvr::OnRangeAttack( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( IsValidObj( pTargetObj ) ) 
 		{
 			if( pUser->DoAttackRange( pTargetObj, dwItemID, idSfxHit ) == 0 )
-#ifdef __OPT_MEM_0811
-				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( new MAGICATKMSG( dwAtkMsg, objid, 1, dwItemID, 0, idSfxHit ) );
-#else	// __OPT_MEM_0811
-				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( (OBJMSG)dwAtkMsg, objid, 1, dwItemID, 0, idSfxHit );
-#endif	// __OPT_MEM_0811
+				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( MAGICATKMSG( dwAtkMsg, objid, 1, dwItemID, 0, idSfxHit ) );
 		}
 	}
 }

@@ -3209,7 +3209,7 @@ void CDPClient::OnMeleeAttack( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) )
 	{
 		if( pMover->SendActMsg( (OBJMSG)dwAtkMsg, id, nParam2, nParam3 ) == 0 )
-			pMover->m_pActMover->m_qMeleeAtkMsg.AddTail( (OBJMSG)dwAtkMsg, id, nParam2, nParam3 );
+			pMover->m_pActMover->m_qMeleeAtkMsg.AddTail(ACTMSG( (OBJMSG)dwAtkMsg, id, nParam2, nParam3 ));
 	}
 }
 
@@ -3225,7 +3225,7 @@ void CDPClient::OnMeleeAttack2( OBJID objid, CAr & ar )
 	{
 		if( pMover->SendActMsg( (OBJMSG)dwAtkMsg, id, nParam2, nParam3 ) == 0 )
 		{
-			pMover->m_pActMover->m_qMeleeAtkMsg.AddTail( (OBJMSG)dwAtkMsg, id, nParam2, nParam3 );
+			pMover->m_pActMover->m_qMeleeAtkMsg.AddTail(ACTMSG( (OBJMSG)dwAtkMsg, id, nParam2, nParam3 ));
 		}
 	}
 }
@@ -3245,7 +3245,7 @@ void CDPClient::OnMagicAttack( OBJID objid, CAr & ar )
 		if( IsValidObj( pTarget ) ) 
 		{
 			if( pMover->DoAttackMagic( pTarget, nMagicPower, idSfxHit ) == 0 )
-				pMover->m_pActMover->m_qMagicAtkMsg.AddTail( (OBJMSG)dwAtkMsg, id, nParam2, nParam3, nMagicPower, idSfxHit );
+				pMover->m_pActMover->m_qMagicAtkMsg.AddTail(MAGICATKMSG( (OBJMSG)dwAtkMsg, id, nParam2, nParam3, nMagicPower, idSfxHit ));
 		}
 	}
 }
@@ -3268,7 +3268,7 @@ void CDPClient::OnRangeAttack( OBJID objid, CAr & ar )
 		if( IsValidObj( pTarget ) ) 
 		{
 			if( pMover->DoAttackRange( pTarget, dwItemID, idSfxHit ) == 0 )
-				pMover->m_pActMover->m_qMagicAtkMsg.AddTail( (OBJMSG)dwAtkMsg, id, 1, dwItemID, 0, idSfxHit );
+				pMover->m_pActMover->m_qMagicAtkMsg.AddTail(MAGICATKMSG((OBJMSG)dwAtkMsg, id, 1, dwItemID, 0, idSfxHit ));
 		}
 	}
 }
