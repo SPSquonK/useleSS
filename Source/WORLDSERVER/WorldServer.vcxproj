@@ -446,13 +446,7 @@
     </ClCompile>
     <ClCompile Include="..\_aiinterface\aimonster.cpp">
     </ClCompile>
-    <ClCompile Include="..\_AIInterface\AIMonster2.cpp">
-    </ClCompile>
     <ClCompile Include="..\_AIInterface\AIPet.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_AIInterface\FSM.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_AIInterface\FSMstate.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -643,10 +637,7 @@
     <ClInclude Include="..\_AIInterface\AIKrrr.h" />
     <ClInclude Include="..\_AIInterface\aimeteonyker.h" />
     <ClInclude Include="..\_aiinterface\aimonster.h" />
-    <ClInclude Include="..\_AIInterface\AIMonster2.h" />
     <ClInclude Include="..\_AIInterface\AIPet.h" />
-    <ClInclude Include="..\_AIInterface\FSM.h" />
-    <ClInclude Include="..\_AIInterface\FSMstate.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldServer.rc" />

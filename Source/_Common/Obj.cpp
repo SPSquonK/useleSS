@@ -4,7 +4,6 @@
 	#include "..\_AIInterface\AIInterface.h"
 #ifdef __WORLDSERVER
 	#include "..\_AIInterface\AIMonster.h"
-	#include "..\_AIInterface\AIMonster2.h"
 	#include "..\_AIInterface\AIClockWorks.h"
 	#include "..\_AIInterface\AIPet.h"
 	#include "..\_AIInterface\AIBigMuscle.h"
@@ -715,8 +714,10 @@ void CObj::SetAIInterface( DWORD dwAIInterface, DWORD dwState )
 		case AII_BIGMUSCLE:		m_pAIInterface = new CAIBigMuscle( this );	break;
 		case AII_KRRR:			m_pAIInterface = new CAIKrrr( this );		break;
 		case AII_BEAR:			m_pAIInterface = new CAIBear( this );		break;
-		case AII_VER2_TYPE0:	m_pAIInterface = new CAIMonster2( this );	break;
 		case AII_METEONYKER:	m_pAIInterface	= new CAIMeteonyker( this );	break;
+		case 100:
+			Error(__FUNCTION__"(): dwAIInterface = 100 = AII_VER2_TYPE0 = CAIMonster2 is not implemented");
+			break;
 	}
 
 	m_dwAIInterface		 = dwAIInterface;

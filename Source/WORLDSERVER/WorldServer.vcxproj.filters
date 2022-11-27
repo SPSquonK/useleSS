@@ -576,16 +576,7 @@
     <ClCompile Include="..\_aiinterface\aimonster.cpp">
       <Filter>AI</Filter>
     </ClCompile>
-    <ClCompile Include="..\_AIInterface\AIMonster2.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
     <ClCompile Include="..\_AIInterface\AIPet.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_AIInterface\FSM.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_AIInterface\FSMstate.cpp">
       <Filter>AI</Filter>
     </ClCompile>
     <ClCompile Include="DisplayedInfo.cpp">
@@ -1151,16 +1142,7 @@
     <ClInclude Include="..\_aiinterface\aimonster.h">
       <Filter>AI</Filter>
     </ClInclude>
-    <ClInclude Include="..\_AIInterface\AIMonster2.h">
-      <Filter>AI</Filter>
-    </ClInclude>
     <ClInclude Include="..\_AIInterface\AIPet.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_AIInterface\FSM.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_AIInterface\FSMstate.h">
       <Filter>AI</Filter>
     </ClInclude>
     <ClInclude Include="DisplayedInfo.h">

@@ -21,8 +21,6 @@
 
 #define	AII_BEETLE			15
 
-#define AII_VER2_TYPE0		100
-
 // group 그룹 설정 
 #define GRP_ALL               0
 #define GRP_SOLO              1
