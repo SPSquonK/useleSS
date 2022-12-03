@@ -413,7 +413,7 @@ void CDPCoreSrvr::OnPlayMusic( CAr & ar, DPID, DPID, DPID, u_long )
 	CMclAutoLock	Lock( m_AccessLock );
 
 	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti);
-	if (targetWorldDPID != DPID_UNKNOWN) return;
+	if (targetWorldDPID == DPID_UNKNOWN) return;
 
 	SendPlayMusic(idmusic, dwWorldID, targetWorldDPID);
 }
@@ -430,7 +430,7 @@ void CDPCoreSrvr::OnPlaySound( CAr & ar, DPID, DPID, DPID, u_long )
 	CMclAutoLock	Lock( m_AccessLock );
 
 	const DPID targetWorldDPID = GetWorldSrvrDPID(uIdofMulti);
-	if (targetWorldDPID != DPID_UNKNOWN) return;
+	if (targetWorldDPID == DPID_UNKNOWN) return;
 
 	SendPlaySound(idsound, dwWorldID, targetWorldDPID);
 }
