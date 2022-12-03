@@ -11602,6 +11602,9 @@ BOOL CWndRemoveAttribute::CWndConfirm::OnChildNotify(UINT message, UINT nID, LRE
 		}
 	} else if (nID == WIDC_NO || nID == WTBID_CLOSE) {
 		// TODO: isn't that a memory leak?
+		// - pParentwnd->m_pWndConfirm loses the pointer to this so nobody points
+		// to this anymore
+		// - Destroy() does not free this -> memleak
 		pParentwnd->m_pWndConfirm = nullptr;
 		Destroy();
 	}
