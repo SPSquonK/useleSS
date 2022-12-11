@@ -170,9 +170,6 @@ CRunObject::~CRunObject()
 
 BOOL CRunObject::Init( void )
 {
-	if( LoadAIScript() == FALSE )
-		return FALSE;
-
 // 
 	m_hClose	= CreateEvent( NULL, FALSE, FALSE, NULL );
 	DWORD dwThreadId;
