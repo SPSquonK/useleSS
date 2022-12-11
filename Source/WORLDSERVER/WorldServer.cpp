@@ -155,9 +155,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						g_dpDBClient.SendPing();
 						g_DPCoreClient.SendPing();
 						break;
-					case 1:
-						// g_UserMng.OutputStatistics();
-						break;
 				}
 				break;
 			}

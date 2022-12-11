@@ -5547,50 +5547,6 @@ void CUser::AddReturnScroll()
 	
 }
 
-void CUserMng::OutputStatistics( void )
-{
-	struct ExtendedLevel {
-		int level;
-		int mode;
-
-		ExtendedLevel(CUser * pUser) {
-			level = pUser->GetLevel();
-			const auto jtype = pUser->GetJobType();
-			if (jtype < JTYPE_MASTER) mode = 0;
-			else mode = 1;
-		}
-		
-		bool operator<(ExtendedLevel other) const {
-			if (mode < other.mode) return true;
-			if (mode > other.mode) return false;
-			return level < other.level;
-		}
-	};
-
-	std::map<ExtendedLevel, int> acbUser;
-
-	for (CUser * pUser : m_users | std::views::values) {
-		if (pUser->IsValid()) {
-			++acbUser[ExtendedLevel(pUser)];
-		}
-	}
-
-	CString lpOutputString;
-
-	for (const auto & [level, quantity] : acbUser) {
-		if (level.mode == 0) {
-			lpOutputString.AppendFormat("%d\t%d\n", level.level, quantity);
-		} else if (level.level <= 120) {
-			lpOutputString.AppendFormat("%d-M\t%d\n", level.level, quantity);
-		} else {
-			lpOutputString.AppendFormat("%d-H\t%d\n", level.level, quantity);
-		}
-	}
-
-	CTime time	= CTime::GetCurrentTime();
-	FILEOUT( time.Format( "../statistics%Y%m%d%H%M%S.txt" ), lpOutputString.GetString() );
-}
-
 void CUser::AddPostMail( CMail* pMail )
 {
 	if( IsDelete() )	return;

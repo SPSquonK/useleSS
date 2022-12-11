@@ -825,7 +825,6 @@ public:
 	void			AddWorldMsg( const CRect* pRect, LPCTSTR lpszString );
 	void			AddGameSetting();
 	void			AddCommonPlace( CCtrl* pCtrl, BYTE nType );
-	void			OutputStatistics( void );
 	void			AddGuildCombatNextTimeWorld( DWORD dwTime, DWORD dwState );
 	void			AddGuildCombatState( void );
 	void			AddGuildCombatUserState( CMover* pMover );
