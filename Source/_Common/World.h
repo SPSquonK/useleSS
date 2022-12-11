@@ -33,7 +33,6 @@
 #define MAX_DISPLAYSFX			500
 #define MINIMAP_SIZE			256
 #define WLD_EXTRA_WIDTH			10.0f
-#define MAX_MOVERSELECT			5
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // extern 
@@ -262,7 +261,7 @@ public:
 	static BOOL			m_bZoomView;
 	static int			m_nZoomLevel;
 	static CSkyBox		m_skyBox;
-	static boost::container::static_vector<CMover *, MAX_MOVERSELECT> m_amvrSelect;
+	static std::vector<CMover *> m_amvrSelect;
 	CLandscape**		m_apLand;
 	FLOAT				m_fElapsedTime;
 	CObj*				m_pObjFocus;

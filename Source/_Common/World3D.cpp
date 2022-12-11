@@ -37,7 +37,7 @@ BOOL       CWorld::m_bMiniMapRender = FALSE;
 CSkyBox    CWorld::m_skyBox;
 BOOL	   CWorld::m_bZoomView = FALSE;
 int		   CWorld::m_nZoomLevel = 0;
-boost::container::static_vector<CMover *, MAX_MOVERSELECT> CWorld::m_amvrSelect;
+std::vector<CMover *> CWorld::m_amvrSelect;
 
 CWeather   CWorld::m_weather;
 D3DCOLOR   CWorld::m_dwBgColor = D3DCOLOR_XRGB(0xe0,0xe0,0xff);
@@ -692,7 +692,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				// TAB key set target - contains a list...
 				if( !pObj->IsActiveMover() )
 				{
-					if (bScan && CWorld::m_amvrSelect.size() < CWorld::m_amvrSelect.max_size()) {
+					if (bScan) {
 						if (CMover * asMover = CWorld::RenderObject_IsTabbable(pObj)) {
 							CWorld::m_amvrSelect.emplace_back(asMover);
 						}
@@ -734,6 +734,17 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				}
 			}
 			// OT_OBJÀÎ°Í
+
+			const auto nearestToPlayer = [](const CMover * lhs, const CMover * rhs) {
+				if (!g_pPlayer) return lhs->m_fDistCamera < rhs->m_fDistCamera;
+
+				const auto fromPlayerL = g_pPlayer->GetPos() - lhs->GetPos();
+				const auto fromPlayerR = g_pPlayer->GetPos() - rhs->GetPos();
+				return D3DXVec3LengthSq(&fromPlayerL) < D3DXVec3LengthSq(&fromPlayerR);
+			};
+
+			std::sort(CWorld::m_amvrSelect.begin(), CWorld::m_amvrSelect.end(), nearestToPlayer);
+
 			if( g_Option.m_nShadow < 2 )	
 			{
 
