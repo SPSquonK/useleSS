@@ -5549,48 +5549,46 @@ void CUser::AddReturnScroll()
 
 void CUserMng::OutputStatistics( void )
 {
-	int	acbUser[MAX_LEGEND_LEVEL];
-	
-	int cb	= 0;
-	int nTotal	= 0;
+	struct ExtendedLevel {
+		int level;
+		int mode;
 
-	memset( acbUser, 0, sizeof(int) * MAX_LEGEND_LEVEL );
+		ExtendedLevel(CUser * pUser) {
+			level = pUser->GetLevel();
+			const auto jtype = pUser->GetJobType();
+			if (jtype < JTYPE_MASTER) mode = 0;
+			else mode = 1;
+		}
+		
+		bool operator<(ExtendedLevel other) const {
+			if (mode < other.mode) return true;
+			if (mode > other.mode) return false;
+			return level < other.level;
+		}
+	};
 
-	for(auto it = m_users.begin(); it != m_users.end(); ++it )
-	{
-		CUser* pUser = it->second;
-		if( pUser->IsValid() == FALSE )
-			continue;
+	std::map<ExtendedLevel, int> acbUser;
 
-		if( pUser->GetLevel() >= 1 && pUser->GetLevel() <= MAX_LEGEND_LEVEL )
-		{
-			acbUser[pUser->GetLevel() - 1]++;
-			cb++;
-			nTotal	+= pUser->GetLevel();
+	for (CUser * pUser : m_users | std::views::values) {
+		if (pUser->IsValid()) {
+			++acbUser[ExtendedLevel(pUser)];
 		}
 	}
 
-	static char lpOutputString[4096];
-	*lpOutputString	= '\0';
-	for( int i = 0; i < MAX_LEGEND_LEVEL; i++ )
-	{
-		if( acbUser[i] == 0 )
-			continue;
-		char lpString[32]	= { 0, };
-		sprintf( lpString, "%d\t%d\n", i+1, acbUser[i] );
-		lstrcat( lpOutputString, lpString );
-	}
+	CString lpOutputString;
 
-	if( cb > 0 )
-	{
-		char lpOverview[32]	= { 0, };
-		sprintf( lpOverview, "U=%d, A=%d", cb, nTotal / cb );
-		lstrcat( lpOutputString, lpOverview );
+	for (const auto & [level, quantity] : acbUser) {
+		if (level.mode == 0) {
+			lpOutputString.AppendFormat("%d\t%d\n", level.level, quantity);
+		} else if (level.level <= 120) {
+			lpOutputString.AppendFormat("%d-M\t%d\n", level.level, quantity);
+		} else {
+			lpOutputString.AppendFormat("%d-H\t%d\n", level.level, quantity);
+		}
 	}
 
 	CTime time	= CTime::GetCurrentTime();
-	FILEOUT( time.Format( "../statistics%Y%m%d%H%M%S.txt" ), lpOutputString );
-
+	FILEOUT( time.Format( "../statistics%Y%m%d%H%M%S.txt" ), lpOutputString.GetString() );
 }
 
 void CUser::AddPostMail( CMail* pMail )
