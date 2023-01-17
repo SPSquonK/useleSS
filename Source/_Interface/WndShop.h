@@ -1,97 +1,77 @@
-#ifndef __SHOP_H
-#define __SHOP_H
+#pragma once
 
-class CWndItemCtrlVendor : public CWndItemCtrl
-{
+class CWndItemCtrlVendor : public CWndItemCtrl {
 public:
 	CWndItemCtrlVendor();
-	~CWndItemCtrlVendor();
-	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
-
+	BOOL OnDropIcon(LPSHORTCUT pShortcut, CPoint point = 0) override;
 };
-class CWndConfirmBuy : public CWndNeuz 
-{ 
-public: 
-	CWndConfirmBuy(); 
-	~CWndConfirmBuy(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+class CWndConfirmBuy : public CWndNeuz
+{
+public:
+	[[nodiscard]] static std::uint32_t GetBuyLimitForItem(const ItemProp & itemProp);
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnDraw(C2DRender * p2DRender) override;
 
 private:
 	void		OnOK();
-	void		OnChangeBuyCount( DWORD dwBuy );
+	void		OnChangeBuyCount(DWORD dwBuy);
 
-public: 
-	CMover*			m_pMover;
-	CItemElem*		m_pItemElem;
-	DWORD			m_dwItemId;
-	CWndEdit*		m_pEdit;
-	CWndStatic*		m_pStatic;
-	CWndStatic*		m_pStaticGold;
-	int				m_nBuyType;
+public:
+	CMover *     m_pMover     = nullptr;
+	CItemElem *  m_pItemElem   = nullptr;
+	DWORD			   m_dwItemId    = 0;
+	CWndEdit *   m_pEdit       = nullptr;
+	CWndStatic * m_pStatic     = nullptr;
+	CWndStatic * m_pStaticGold = nullptr;
+	int				   m_nBuyType    = 0;
 };
 
-class CWndWarning : public CWndNeuz 
-{ 
-public: 
-	CMover* m_pMover;
-	CItemElem* m_pItemElem;
-	CWndWarning(); 
-	~CWndWarning(); 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-}; 
+class CWndWarning : public CWndNeuz
+{
+public:
+	CMover * m_pMover = nullptr;
+	CItemElem * m_pItemElem = nullptr;
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+};
 
 class CWndConfirmSell : public CWndNeuz 
 { 
 public: 
-	CMover* m_pMover;
-	CItemElem* m_pItemElem;
-	CWndEdit* m_pEdit;
-	CWndStatic* m_pStatic;
-	CWndStatic* m_pStaticGold;
-	CWndConfirmSell(); 
-	~CWndConfirmSell(); 
+	CMover* m_pMover = nullptr;
+	CItemElem* m_pItemElem = nullptr;
+	CWndEdit* m_pEdit = nullptr;
+	CWndStatic* m_pStatic = nullptr;
+	CWndStatic* m_pStaticGold = nullptr;
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual BOOL Process( void );
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
+
 class CWndShop : public CWndNeuz 
 { 
 public:
-	CWndConfirmSell* m_pWndConfirmSell;
-	CWndWarning*	m_pWndWarning;
+	CWndConfirmSell * m_pWndConfirmSell = nullptr;
+	CWndWarning     * m_pWndWarning = nullptr;
 public: 
-	BOOL m_bSexSort;
-	BOOL m_bLevelSort;
+	bool m_bSexSort   = false;
+	bool m_bLevelSort = false;
 
-	CMover* m_pMover;
+	CMover* m_pMover = nullptr;
 	CWndItemCtrlVendor m_wndItemCtrl[ MAX_VENDOR_INVENTORY_TAB ];
-	CWndShop(); 
-	~CWndShop(); 
+	~CWndShop() override;
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 	virtual	void OnDestroy( void );
 }; 

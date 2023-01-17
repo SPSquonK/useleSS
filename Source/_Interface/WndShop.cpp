@@ -20,15 +20,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndWarning::CWndWarning() 
-{ 
-	m_pMover = NULL;
-	m_pItemElem = NULL;
-} 
-CWndWarning::~CWndWarning() 
-{ 
-
-} 
 
 BOOL CWndWarning::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
@@ -42,11 +33,12 @@ BOOL CWndWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 { 
 	if( nID == WIDC_OK )
 	{
-		SAFE_DELETE( ((CWndShop*)m_pParentWnd)->m_pWndConfirmSell );
-		((CWndShop*)m_pParentWnd)->m_pWndConfirmSell = new CWndConfirmSell;
-		((CWndShop*)m_pParentWnd)->m_pWndConfirmSell->m_pItemElem = m_pItemElem;
-		((CWndShop*)m_pParentWnd)->m_pWndConfirmSell->m_pMover = m_pMover;
-		((CWndShop*)m_pParentWnd)->m_pWndConfirmSell->Initialize( m_pParentWnd, APP_CONFIRM_SELL );
+		CWndShop * parent = static_cast<CWndShop *>(m_pParentWnd);
+		SAFE_DELETE(parent->m_pWndConfirmSell);
+		parent->m_pWndConfirmSell = new CWndConfirmSell;
+		parent->m_pWndConfirmSell->m_pItemElem = m_pItemElem;
+		parent->m_pWndConfirmSell->m_pMover = m_pMover;
+		parent->m_pWndConfirmSell->Initialize( m_pParentWnd, APP_CONFIRM_SELL );
 		Destroy();
 	}
 	if( nID == WIDC_CANCEL )
@@ -58,16 +50,7 @@ BOOL CWndWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndConfirmSell::CWndConfirmSell() 
-{ 
-	m_pMover = NULL;
-	m_pItemElem = NULL;
-	m_pEdit = NULL;
-	m_pStatic = NULL;
-} 
-CWndConfirmSell::~CWndConfirmSell() 
-{ 
-} 
+
 BOOL CWndConfirmSell::Process( void )
 {
 	if(m_pItemElem->GetExtra() > 0)
@@ -192,20 +175,7 @@ BOOL CWndConfirmSell::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	m_pStaticGold->SetTitle( szNumberGold );	
 	return TRUE;
 }
-BOOL CWndConfirmSell::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndConfirmSell::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndConfirmSell::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndConfirmSell::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndConfirmSell::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )
@@ -235,41 +205,20 @@ BOOL CWndConfirmSell::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndConfirmBuy::CWndConfirmBuy() 
-{ 
-	m_pMover = NULL;
-	m_pItemElem = NULL;
-	m_dwItemId	= 0;
-	m_pEdit = NULL;
-	m_pStatic = NULL;
-	m_nBuyType = 0;
-} 
-CWndConfirmBuy::~CWndConfirmBuy() 
-{ 
-} 
 
-void CWndConfirmBuy::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-} 
+std::uint32_t CWndConfirmBuy::GetBuyLimitForItem(const ItemProp & itemProp) {
+	if (itemProp.dwItemKind3 == IK3_BCHARM ||
+		itemProp.dwItemKind3 == IK3_RCHARM ||
+		itemProp.dwItemKind3 == IK3_ARROW ||
+		itemProp.dwID == II_CHP_RED
+		)
+		return 9999;
 
-BOOL CWndConfirmBuy::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
+	if (itemProp.dwID == II_SYS_SYS_SCR_PERIN)
+		return 21;
 
-void CWndConfirmBuy::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndConfirmBuy::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndConfirmBuy::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+	return itemProp.dwPackMax;
+}
 
 // 살려는 수량이 바뀌면, 가격표시도 변경시킨다.
 void CWndConfirmBuy::OnChangeBuyCount( DWORD dwBuy )
@@ -374,8 +323,6 @@ void CWndConfirmBuy::OnDraw( C2DRender* p2DRender )
 	return;
 } 
 
-const int MAX_BUY_ITEMCOUNT = 99;
-
 BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	int nBuyNum = 0;
@@ -386,20 +333,10 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		nBuyNum = atoi(m_pEdit->GetString());
 		++nBuyNum;
 
-		if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
-			m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
-			m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
-			m_pItemElem->GetProp()->dwID == II_CHP_RED
-			)
-		{
-			if ( nBuyNum > 9999 )
-				nBuyNum = 9999;
-		}
-		else
-		{
-			if ( nBuyNum > MAX_BUY_ITEMCOUNT )
-				nBuyNum = MAX_BUY_ITEMCOUNT;
-		}
+		nBuyNum = std::min(
+			nBuyNum,
+			static_cast<int>(GetBuyLimitForItem(*m_pItemElem->GetProp()))
+		);
 
 		OnChangeBuyCount(nBuyNum);
 		break;
@@ -414,45 +351,21 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 	case WIDC_MAX:
 		{
-
-			if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
-				m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
-				m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
-				m_pItemElem->GetProp()->dwID == II_CHP_RED
-				)
-				OnChangeBuyCount( 9999 );
-			else if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
-				OnChangeBuyCount( 21 );
-			else
-				OnChangeBuyCount( MAX_BUY_ITEMCOUNT );
+		const auto limit = GetBuyLimitForItem(*m_pItemElem->GetProp());
+		OnChangeBuyCount(limit);
 		}		
 		break;
 
 	case WIDC_CONTROL2:
 		if( EN_CHANGE == message )
 		{
-			if( m_pEdit == NULL )
-			{
-				//ADDERRORMSG( "CWndConfirmBuy::OnChildNotify : m_pEdit == NULL" );
-				char szMsg[256];
-				sprintf( szMsg, "CWndConfirmBuy::OnChildNotify : more info(%d, %d)", pLResult, GetDlgItem( WIDC_CONTROL2 ) );
-				//ADDERRORMSG( szMsg );
-
+			if (m_pEdit == NULL) {
 				nBuyNum = 1;
-			}
-			else
+			} else {
 				nBuyNum = atoi(m_pEdit->GetString());
+			}
 
-			DWORD dwMAXCount = MAX_BUY_ITEMCOUNT;
-			if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
-				m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
-				m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
-				m_pItemElem->GetProp()->dwID == II_CHP_RED
-				)
-				dwMAXCount = 9999;
-			else if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
-				dwMAXCount = 21;
-
+			const DWORD dwMAXCount = GetBuyLimitForItem(*m_pItemElem->GetProp());
 			nBuyNum = std::clamp( nBuyNum, 0, (int)( dwMAXCount ) );
 
 			OnChangeBuyCount(nBuyNum);
@@ -516,13 +429,7 @@ void CWndConfirmBuy::OnOK()
 		}
 	}
 
-	DWORD dwMAXCount = MAX_BUY_ITEMCOUNT;
-	if( m_pItemElem->GetProp()->dwItemKind3 == IK3_BCHARM ||
-		m_pItemElem->GetProp()->dwItemKind3 == IK3_RCHARM ||
-		m_pItemElem->GetProp()->dwItemKind3 == IK3_ARROW ||
-		m_pItemElem->GetProp()->dwID == II_CHP_RED
-		)
-		dwMAXCount = 9999;
+	const DWORD dwMAXCount = GetBuyLimitForItem(*m_pItemElem->GetProp());
 
 	if( nBuy < 1 || nBuy > (int)( dwMAXCount ) )
 	{
@@ -551,37 +458,26 @@ void CWndConfirmBuy::OnOK()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndItemCtrlVendor::CWndItemCtrlVendor()
-{
+CWndItemCtrlVendor::CWndItemCtrlVendor() {
 	m_bVisibleCount = FALSE;
 }
-CWndItemCtrlVendor::~CWndItemCtrlVendor()
-{
-}
-BOOL CWndItemCtrlVendor::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
-{
-	if( pShortcut->m_dwShortcut == ShortcutType::Item)
-		GetParentWnd()->OnChildNotify( WIN_ITEMDROP, m_nIdWnd, (LRESULT*)pShortcut ); 
+
+BOOL CWndItemCtrlVendor::OnDropIcon(LPSHORTCUT pShortcut, CPoint point) {
+	if (pShortcut->m_dwShortcut == ShortcutType::Item)
+		GetParentWnd()->OnChildNotify(WIN_ITEMDROP, m_nIdWnd, (LRESULT *)pShortcut);
 	return TRUE;
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndShop::CWndShop() 
-{ 
-	m_pMover = NULL;
-	m_pWndConfirmSell = NULL;
-	m_pWndWarning	= NULL;
-	m_bSexSort    = FALSE;
-	m_bLevelSort  = FALSE;
-} 
-CWndShop::~CWndShop() 
-{ 
-	SAFE_DELETE( m_pWndConfirmSell );
-	SAFE_DELETE( m_pWndWarning );
-	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
-} 
+CWndShop::~CWndShop() {
+	SAFE_DELETE(m_pWndConfirmSell);
+	SAFE_DELETE(m_pWndWarning);
+	SAFE_DELETE(g_WndMng.m_pWndTradeGold);
+}
+
 void CWndShop::OnDraw( C2DRender* p2DRender ) 
 { 
 	LPCHARACTER lpCharacter = m_pMover->GetCharacter();
@@ -682,24 +578,6 @@ void CWndShop::OnInitialUpdate()
 BOOL CWndShop::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
 	return InitDialog( APP_SHOP_, pWndParent, 0, 0 );
-} 
-
-BOOL CWndShop::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndShop::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndShop::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndShop::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
