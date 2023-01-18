@@ -236,5 +236,3 @@ public:
 	void UseFaceCoupon(BOOL isUse);
 #endif //__NEWYEARDAY_EVENT_COUPON
 };
-
-#endif

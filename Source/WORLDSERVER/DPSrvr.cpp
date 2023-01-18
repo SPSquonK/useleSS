@@ -2319,118 +2319,107 @@ void CDPSrvr::OnCloseShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	}
 }
 
-void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	auto [cTab, nId, nNum, dwItemId] = ar.Extract<CHAR, BYTE, short, DWORD>();
-	if( cTab >= MAX_VENDOR_INVENTORY_TAB || nNum < 1 )
-		return;
+	if (cTab >= MAX_VENDOR_INVENTORY_TAB || nNum < 1) return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && pUser->m_vtInfo.GetOther() )
-	{
-		CMover* pVendor = pUser->m_vtInfo.GetOther();
-		LPCHARACTER lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
-		if (!lpChar) return;
+	CUser * pUser = g_UserMng.GetUser(dpidCache, dpidUser);
+	if (!IsValidObj(pUser)) return;
 
-		if(lpChar->m_vendor.m_type != CVendor::Type::Penya)	// 0 - 페냐 상인
-			return;
+	CMover * pVendor = pUser->m_vtInfo.GetOther();
+	if (!pVendor) return;
 
-		if( pVendor->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
-			return;
+	CHARACTER * lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
+	if (!lpChar) return;
 
-		if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_TRADE>(pUser) )
-			return;
+	if (lpChar->m_vendor.m_type != CVendor::Type::Penya)	return;
+	if (!pVendor->IsNPC()) return;
+	if (!CNpcChecker::GetInstance()->IsCloseNpc<MMI_TRADE>(pUser)) return;
 
-		CItemElem* pItemElem = pVendor->m_ShopInventory[cTab]->GetAtId( nId );
-		if( NULL == pItemElem )
-			return;
+	CItemElem * pItemElem = pVendor->m_ShopInventory[cTab]->GetAtId(nId);
+	if (!pItemElem) return;
 
-		if( dwItemId != pItemElem->m_dwItemId )
-			return;
+	if (dwItemId != pItemElem->m_dwItemId) return;
 
-		if( nNum > pItemElem->m_nItemNum )
-			nNum = pItemElem->m_nItemNum;
+	nNum = std::min(nNum, pItemElem->m_nItemNum);
 
 #ifdef __OCCUPATION_SHOPITEM
-		if( CTax::GetInstance()->IsOccupationShopItem( dwItemId ) && !CTax::GetInstance()->IsOccupationGuildMember( pUser ) )
-		{
-			pUser->AddDefinedText( TID_GAME_SECRETROOM_STORE_BUY );
-			return;
-		}
+	if (CTax::GetInstance()->IsOccupationShopItem(dwItemId) && !CTax::GetInstance()->IsOccupationGuildMember(pUser)) {
+		pUser->AddDefinedText(TID_GAME_SECRETROOM_STORE_BUY);
+		return;
+	}
 #endif // __OCCUPATION_SHOPITEM
 		
-		int nCost = (int)pItemElem->GetCost();
-		nCost = (int)( prj.m_fShopCost * nCost );
+	int nCost = (int)pItemElem->GetCost();
+	nCost = (int)( prj.m_fShopCost * nCost );
 #ifdef __SHOP_COST_RATE
-		nCost = (int)( prj.m_EventLua.GetShopBuyFactor() * nCost );
+	nCost = (int)( prj.m_EventLua.GetShopBuyFactor() * nCost );
 #endif // __SHOP_COST_RATE
+
+	if (pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN) nCost = PERIN_VALUE;
+	nCost = std::max(nCost, 1);
 		
+	int nPracticable = pUser->GetGold() / nCost;
+	
+	if (nNum > nPracticable)
+		nNum = (short)nPracticable;
 
-		if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
-			nCost = PERIN_VALUE;
-		if( nCost < 1 )
-			nCost = 1;
-		
-		int nPracticable = pUser->GetGold() / nCost;
-		if( nNum > nPracticable )
-			nNum = (short)nPracticable;
+	if (nNum <= 0) {
+		pUser->AddDefinedText(TID_GAME_LACKMONEY, "");
+		return;
+	}
 
-		if( nNum <= 0 )
-		{
-			pUser->AddDefinedText( TID_GAME_LACKMONEY, "" );
-			return;
-		}
+	int nTax = 0;
+	if (CTax::GetInstance()->IsApplyTaxRate(pUser, pItemElem))
+		nTax = (int)(nCost * CTax::GetInstance()->GetPurchaseTaxRate(pUser));
+	nCost += nTax;
+	nTax *= nNum;
+	int nGold = nCost * nNum;
+	
+	if (nGold <= 0) return;
 
-		int nTax = 0;
-		if( CTax::GetInstance()->IsApplyTaxRate( pUser, pItemElem ) )
-			nTax = (int)( nCost * CTax::GetInstance()->GetPurchaseTaxRate( pUser ) );
-		nCost += nTax;
-		nTax *= nNum;
-		int nGold = nCost * nNum;
-		if( nGold <= 0 )
-			return;
+	if (pUser->GetGold() < nGold) return;
 
-		if( pUser->GetGold() >= nGold )
-		{
 #ifdef __PERIN_BUY_BUG
-			if( pUser->m_dwLastBuyItemTick + 500 > GetTickCount() ) // 아이템 구입시도 후 0.5초이내에 다시 구입시도한 경우
-			{
-				Error( "CDPSrvr::OnBuyItem : __PERIN_BUY_BUG -> [PlayerId:%07d(%s)], [LastTick:%d], [CurTick:%d], [LastTryItem:%d], [Packet:%d,%d,%d,%d]",
-						pUser->m_idPlayer, pUser->GetName(), pUser->m_dwLastBuyItemTick, GetTickCount(), pUser->m_dwLastTryBuyItem, cTab, nId, nNum, dwItemId );
-				//g_DPSrvr.QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer );
-				return;
-			}
-			pUser->m_dwLastTryBuyItem = pItemElem->m_dwItemId;
-			pUser->m_dwLastBuyItemTick = GetTickCount();
+	if( pUser->m_dwLastBuyItemTick + 500 > GetTickCount() ) // 아이템 구입시도 후 0.5초이내에 다시 구입시도한 경우
+	{
+		Error( "CDPSrvr::OnBuyItem : __PERIN_BUY_BUG -> [PlayerId:%07d(%s)], [LastTick:%d], [CurTick:%d], [LastTryItem:%d], [Packet:%d,%d,%d,%d]",
+				pUser->m_idPlayer, pUser->GetName(), pUser->m_dwLastBuyItemTick, GetTickCount(), pUser->m_dwLastTryBuyItem, cTab, nId, nNum, dwItemId );
+		//g_DPSrvr.QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer );
+		return;
+	}
+	pUser->m_dwLastTryBuyItem = pItemElem->m_dwItemId;
+	pUser->m_dwLastBuyItemTick = GetTickCount();
 #endif // __PERIN_BUY_BUG
 	
-			CItemElem itemElem;
-			itemElem	= *pItemElem;
-			itemElem.m_nItemNum	      = nNum;
-			itemElem.SetSerialNumber();
+	CItemElem itemElem;
+	itemElem	= *pItemElem;
+	itemElem.m_nItemNum	      = nNum;
+	itemElem.SetSerialNumber();
 
-			if( pUser->CreateItem( &itemElem ) )
-			{
-				LogItemInfo aLogItem;
-				aLogItem.Action = "B";
-				aLogItem.SendName = pUser->GetName();
-				aLogItem.RecvName = pVendor->GetName();
-				aLogItem.WorldId = pUser->GetWorld()->GetID();
-				aLogItem.Gold = pUser->GetGold();
-				aLogItem.Gold2 = pUser->GetGold() - nGold;
-				aLogItem.Gold_1 = pVendor->GetGold();
-
-				pItemElem->SetSerialNumber( itemElem.GetSerialNumber() );
-				OnLogItem( aLogItem, pItemElem, nNum );		// why do not pass &itemElem as argument?
-				pItemElem->SetSerialNumber( 0 );
-				pUser->AddGold( -nGold );	
-				if( nTax )
-					CTax::GetInstance()->AddTax( CTax::GetInstance()->GetContinent( pUser ), nTax, TAX_PURCHASE );
-			}
-			else
-				pUser->AddDefinedText( TID_GAME_LACKSPACE, "" );
-		}
+	const bool created = pUser->CreateItem(&itemElem);
+	
+	if (!created) {
+		pUser->AddDefinedText(TID_GAME_LACKSPACE, "");
+		return;
 	}
+
+	LogItemInfo aLogItem;
+	aLogItem.Action = "B";
+	aLogItem.SendName = pUser->GetName();
+	aLogItem.RecvName = pVendor->GetName();
+	aLogItem.WorldId = pUser->GetWorld()->GetID();
+	aLogItem.Gold = pUser->GetGold();
+	aLogItem.Gold2 = pUser->GetGold() - nGold;
+	aLogItem.Gold_1 = pVendor->GetGold();
+
+	pItemElem->SetSerialNumber( itemElem.GetSerialNumber() );
+	OnLogItem( aLogItem, pItemElem, nNum );		// why do not pass &itemElem as argument?
+	pItemElem->SetSerialNumber( 0 );
+	pUser->AddGold( -nGold );	
+	if (nTax)
+		CTax::GetInstance()->AddTax(CTax::GetInstance()->GetContinent(pUser), nTax, TAX_PURCHASE);
 }
 
 // 칩으로 아이템 구매
